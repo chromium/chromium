@@ -48,12 +48,12 @@ const CGFloat kVoiceOverAnnouncementDelay = 1;
 // strong reference to the timer so it is not deallocated until it is
 // invalidated.
 @property(nonatomic, strong) NSTimer* engagementTimer;
-// The `parentView` of the underlying BubbleView, passed in
-// -presentInViewController:view:anchorPoint.
+// The `parentView` of the underlying BubbleView which corresponds to the
+// `parentViewController`'s view passed in -presentInViewController:anchorPoint.
 @property(nonatomic, strong) UIView* parentView;
 // The frame of the view the underlying BubbleView anchored to, can be
 // CGRectZero if un-provided or inapplicable. Passed in
-// -presentInViewController:view:anchorPoint:anchorViewFrame.
+// -presentInViewController:anchorPoint:anchorViewFrame.
 @property(nonatomic, assign) CGRect anchorViewFrame;
 // Redeclared as readwrite so the value can be changed internally.
 @property(nonatomic, assign, readwrite, getter=isUserEngaged) BOOL userEngaged;
@@ -161,34 +161,31 @@ const CGFloat kVoiceOverAnnouncementDelay = 1;
 }
 
 - (void)presentInViewController:(UIViewController*)parentViewController
-                           view:(UIView*)parentView
                     anchorPoint:(CGPoint)anchorPoint {
   [self presentInViewController:parentViewController
-                           view:parentView
                     anchorPoint:anchorPoint
                 anchorViewFrame:CGRectZero];
 }
 
 - (void)presentInViewController:(UIViewController*)parentViewController
-                           view:(UIView*)parentView
                     anchorPoint:(CGPoint)anchorPoint
                 anchorViewFrame:(CGRect)anchorViewFrame {
-  _parentView = parentView;
+  self.parentView = parentViewController.view;
   _anchorViewFrame = anchorViewFrame;
   CGPoint anchorPointInParent =
-      [parentView.window convertPoint:anchorPoint toView:parentView];
+      [self.parentView.window convertPoint:anchorPoint toView:self.parentView];
   self.bubbleViewController.view.frame =
-      [self frameForBubbleInRect:parentView.bounds
+      [self frameForBubbleInRect:self.parentView.bounds
                    atAnchorPoint:anchorPointInParent];
   // The bubble's frame must be set. Call `canPresentInView` to make sure that
   // the frame can be set before calling `presentInViewController`.
   DCHECK(!CGRectIsEmpty(self.bubbleViewController.view.frame));
 
-  [self addGestureRecognizersToParentView:parentView];
+  [self addGestureRecognizersToParentView:self.parentView];
 
   self.presenting = YES;
   [parentViewController addChildViewController:self.bubbleViewController];
-  [parentView addSubview:self.bubbleViewController.view];
+  [self.parentView addSubview:self.bubbleViewController.view];
   [self.bubbleViewController
       didMoveToParentViewController:parentViewController];
   [self.bubbleViewController animateContentIn];

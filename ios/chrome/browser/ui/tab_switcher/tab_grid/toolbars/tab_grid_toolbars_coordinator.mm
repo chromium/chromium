@@ -97,7 +97,6 @@
                                     CGRectGetMaxY(lastSegmentFrame));
 
   [presenter presentInViewController:self.baseViewController
-                                view:self.baseViewController.view
                          anchorPoint:anchorPoint];
 }
 

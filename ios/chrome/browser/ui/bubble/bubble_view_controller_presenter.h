@@ -93,24 +93,22 @@ using CallbackWithIPHDismissalReasonType =
 // anchor point at `anchorPoint`.
 - (BOOL)canPresentInView:(UIView*)parentView anchorPoint:(CGPoint)anchorPoint;
 
-// Presents the bubble in `parentView`. The underlying BubbleViewController is
-// added as a child view controller of `parentViewController`. `anchorPoint`
-// determines where the bubble is anchored in window coordinates.
-// Has the same effect as
-// -presentInViewController:view:anchorPoint:anchorViewFrame: with
+// Presents the bubble in `parentViewController`'s view. The underlying
+// BubbleViewController is added as a child view controller of
+// `parentViewController`. `anchorPoint` determines where the bubble is anchored
+// in window coordinates. Has the same effect as
+// -presentInViewController:anchorPoint:anchorViewFrame: with
 // `anchorViewFrame` == CGRectZero.
 - (void)presentInViewController:(UIViewController*)parentViewController
-                           view:(UIView*)parentView
                     anchorPoint:(CGPoint)anchorPoint;
 
-// Presents the bubble in `parentView`. The underlying BubbleViewController is
-// added as a child view controller of `parentViewController`. `anchorPoint`
-// determines where the bubble is anchored in window coordinates.
-// `anchorViewFrame` is the frame of the anchored view, in the coordinate system
-// of the `parentView`, used for determining whether the user acts on the IPH by
-// touching inside the frame.
+// Presents the bubble in `parentViewController`'s view. The underlying
+// BubbleViewController is added as a child view controller of
+// `parentViewController`. `anchorPoint` determines where the bubble is anchored
+// in window coordinates. `anchorViewFrame` is the frame of the anchored view,
+// in the coordinate system of the `parentView`, used for determining whether
+// the user acts on the IPH by touching inside the frame.
 - (void)presentInViewController:(UIViewController*)parentViewController
-                           view:(UIView*)parentView
                     anchorPoint:(CGPoint)anchorPoint
                 anchorViewFrame:(CGRect)anchorViewFrame;
 

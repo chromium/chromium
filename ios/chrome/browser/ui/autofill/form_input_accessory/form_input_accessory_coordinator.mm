@@ -802,7 +802,6 @@ const CGFloat kIPHVerticalOffset = -5;
 // Actually presents the bubble.
 - (void)presentBubbleAtAnchorPoint:(CGPoint)anchorPoint {
   [self.bubblePresenter presentInViewController:self.baseViewController
-                                           view:self.baseViewController.view
                                     anchorPoint:anchorPoint];
 }
 

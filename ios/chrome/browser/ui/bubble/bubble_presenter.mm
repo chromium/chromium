@@ -821,7 +821,6 @@ BOOL CanGestureInProductHelpViewFitInGuide(GestureInProductHelpView* view,
       ([self shouldForcePresentBubbleForFeature:feature] ||
        self.engagementTracker->ShouldTriggerHelpUI(feature))) {
     [presenter presentInViewController:self.rootViewController
-                                  view:self.rootViewController.view
                            anchorPoint:anchorPoint];
     if (presentAction) {
       presentAction();

@@ -84,7 +84,6 @@ TEST_F(BubbleViewControllerPresenterTest, InitializedNotAdded) {
 TEST_F(BubbleViewControllerPresenterTest, PresentAddsToViewController) {
   [bubble_view_controller_presenter_
       presentInViewController:parent_view_controller_
-                         view:parent_view_controller_.view
                   anchorPoint:anchor_point_];
   EXPECT_TRUE([parent_view_controller_.childViewControllers
       containsObject:bubble_view_controller_presenter_.bubbleViewController]);
@@ -103,7 +102,6 @@ TEST_F(BubbleViewControllerPresenterTest, DismissalCallbackCountInitialized) {
 TEST_F(BubbleViewControllerPresenterTest, DismissalCallbackNotCalled) {
   [bubble_view_controller_presenter_
       presentInViewController:parent_view_controller_
-                         view:parent_view_controller_.view
                   anchorPoint:anchor_point_];
   EXPECT_EQ(0, dismissal_callback_count_);
 }
@@ -113,7 +111,6 @@ TEST_F(BubbleViewControllerPresenterTest, DismissalCallbackNotCalled) {
 TEST_F(BubbleViewControllerPresenterTest, DismissalCallbackCalledOnce) {
   [bubble_view_controller_presenter_
       presentInViewController:parent_view_controller_
-                         view:parent_view_controller_.view
                   anchorPoint:anchor_point_];
   [bubble_view_controller_presenter_ dismissAnimated:NO];
   EXPECT_EQ(1, dismissal_callback_count_);
@@ -124,7 +121,6 @@ TEST_F(BubbleViewControllerPresenterTest, DismissalCallbackCalledOnce) {
 TEST_F(BubbleViewControllerPresenterTest, DismissalCallbackNotCalledTwice) {
   [bubble_view_controller_presenter_
       presentInViewController:parent_view_controller_
-                         view:parent_view_controller_.view
                   anchorPoint:anchor_point_];
   [bubble_view_controller_presenter_ dismissAnimated:NO];
   [bubble_view_controller_presenter_ dismissAnimated:NO];
@@ -149,7 +145,6 @@ TEST_F(BubbleViewControllerPresenterTest, TimersInitiallyNil) {
 TEST_F(BubbleViewControllerPresenterTest, TimersInstantiatedOnPresent) {
   [bubble_view_controller_presenter_
       presentInViewController:parent_view_controller_
-                         view:parent_view_controller_.view
                   anchorPoint:anchor_point_];
   EXPECT_NE(nil, bubble_view_controller_presenter_.bubbleDismissalTimer);
   EXPECT_NE(nil, bubble_view_controller_presenter_.engagementTimer);
@@ -160,7 +155,6 @@ TEST_F(BubbleViewControllerPresenterTest, TimersInstantiatedOnPresent) {
 TEST_F(BubbleViewControllerPresenterTest, BubbleTimerNilOnDismissal) {
   [bubble_view_controller_presenter_
       presentInViewController:parent_view_controller_
-                         view:parent_view_controller_.view
                   anchorPoint:anchor_point_];
   [bubble_view_controller_presenter_ dismissAnimated:NO];
   EXPECT_EQ(nil, bubble_view_controller_presenter_.bubbleDismissalTimer);
@@ -177,7 +171,6 @@ TEST_F(BubbleViewControllerPresenterTest, UserEngagedInitiallyNo) {
 TEST_F(BubbleViewControllerPresenterTest, UserEngagedYesOnPresent) {
   [bubble_view_controller_presenter_
       presentInViewController:parent_view_controller_
-                         view:parent_view_controller_.view
                   anchorPoint:anchor_point_];
   EXPECT_TRUE(bubble_view_controller_presenter_.isUserEngaged);
 }
@@ -187,7 +180,6 @@ TEST_F(BubbleViewControllerPresenterTest, UserEngagedYesOnPresent) {
 TEST_F(BubbleViewControllerPresenterTest, UserEngagedYesOnDismissal) {
   [bubble_view_controller_presenter_
       presentInViewController:parent_view_controller_
-                         view:parent_view_controller_.view
                   anchorPoint:anchor_point_];
   EXPECT_TRUE(bubble_view_controller_presenter_.isUserEngaged);
 }
@@ -198,7 +190,6 @@ TEST_F(BubbleViewControllerPresenterTest,
        BubbleViewCloseButtonCallDismissalCallback) {
   [bubble_view_controller_presenter_
       presentInViewController:parent_view_controller_
-                         view:parent_view_controller_.view
                   anchorPoint:anchor_point_];
   BubbleView* bubble_view = base::apple::ObjCCastStrict<BubbleView>(
       bubble_view_controller_presenter_.bubbleViewController.view);
@@ -218,7 +209,6 @@ TEST_F(BubbleViewControllerPresenterTest,
        BubbleViewSnoozeButtonCallDismissalCallback) {
   [bubble_view_controller_presenter_
       presentInViewController:parent_view_controller_
-                         view:parent_view_controller_.view
                   anchorPoint:anchor_point_];
   BubbleView* bubble_view = base::apple::ObjCCastStrict<BubbleView>(
       bubble_view_controller_presenter_.bubbleViewController.view);
@@ -236,7 +226,6 @@ TEST_F(BubbleViewControllerPresenterTest,
 TEST_F(BubbleViewControllerPresenterTest, BubbleViewGestureRecognizersPresent) {
   [bubble_view_controller_presenter_
       presentInViewController:parent_view_controller_
-                         view:parent_view_controller_.view
                   anchorPoint:anchor_point_];
   BubbleView* bubble_view = base::apple::ObjCCastStrict<BubbleView>(
       bubble_view_controller_presenter_.bubbleViewController.view);
@@ -251,7 +240,6 @@ TEST_F(BubbleViewControllerPresenterTest, BubbleViewGestureRecognizersReduced) {
   bubble_view_controller_presenter_.ignoreOutsideInteractions = YES;
   [bubble_view_controller_presenter_
       presentInViewController:parent_view_controller_
-                         view:parent_view_controller_.view
                   anchorPoint:anchor_point_];
   BubbleView* bubble_view = base::apple::ObjCCastStrict<BubbleView>(
       bubble_view_controller_presenter_.bubbleViewController.view);
@@ -265,7 +253,6 @@ TEST_F(BubbleViewControllerPresenterTest, BubbleViewGestureRecognizersReduced) {
 TEST_F(BubbleViewControllerPresenterTest, BubbleViewGestureRecognizersRemoved) {
   [bubble_view_controller_presenter_
       presentInViewController:parent_view_controller_
-                         view:parent_view_controller_.view
                   anchorPoint:anchor_point_];
   BubbleView* bubble_view = base::apple::ObjCCastStrict<BubbleView>(
       bubble_view_controller_presenter_.bubbleViewController.view);
@@ -286,7 +273,6 @@ TEST_F(BubbleViewControllerPresenterTest,
   bubble_view_controller_presenter_.ignoreOutsideInteractions = YES;
   [bubble_view_controller_presenter_
       presentInViewController:parent_view_controller_
-                         view:parent_view_controller_.view
                   anchorPoint:anchor_point_];
   BubbleView* bubble_view = base::apple::ObjCCastStrict<BubbleView>(
       bubble_view_controller_presenter_.bubbleViewController.view);

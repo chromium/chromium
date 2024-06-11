@@ -1933,7 +1933,6 @@ UIImage* GetBrandedGoogleServicesSymbol() {
           feature_engagement::kIPHiOSReplaceSyncPromosWithSignInPromos);
   if (canShowSigninIPH) {
     [_bubblePresenter presentInViewController:self
-                                         view:self.view
                                   anchorPoint:anchorPointInWindow];
   } else {
     _bubblePresenter = nil;

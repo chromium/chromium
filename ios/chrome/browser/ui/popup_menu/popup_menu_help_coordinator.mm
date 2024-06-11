@@ -175,7 +175,6 @@ base::TimeDelta kPromoDisplayDelayForTests = base::Seconds(1);
   self.inSessionWithHistoryMenuItemIPH = NO;
 
   [self.overflowMenuBubblePresenter presentInViewController:menu
-                                                       view:menu.view
                                                 anchorPoint:anchorPoint];
   return YES;
 }
@@ -207,7 +206,6 @@ base::TimeDelta kPromoDisplayDelayForTests = base::Seconds(1);
   }
 
   [self.overflowMenuBubblePresenter presentInViewController:menu
-                                                       view:menu.view
                                                 anchorPoint:anchorPoint];
 
   OverflowMenuAction* editActionsAction = [self.actionProvider
@@ -337,7 +335,6 @@ base::TimeDelta kPromoDisplayDelayForTests = base::Seconds(1);
   self.popupMenuBubblePresenter = bubblePresenter;
   [self.popupMenuBubblePresenter
       presentInViewController:self.baseViewController
-                         view:self.baseViewController.view
                   anchorPoint:anchorPoint
               anchorViewFrame:anchorFrame];
   [self.UIUpdater updateUIForOverflowMenuIPHDisplayed];
