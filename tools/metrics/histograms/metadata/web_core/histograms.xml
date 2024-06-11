@@ -614,18 +614,21 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="WebCore.Scripts.InlineStreamerTimedOut" enum="BooleanTimedOut"
-    expires_after="2023-11-12">
+    expires_after="2024-12-11">
   <owner>cduvall@chromium.org</owner>
   <owner>leszeks@chromium.org</owner>
   <summary>
     Whether waiting for the background compile for an inline script timed out on
     the main thread. This is recorded each time an inline script streamer is
     available when executing an inline script.
+
+    Warning: This histogram was expired from 2023-11-12 to 2024-06-11. Data may
+    be missing.
   </summary>
 </histogram>
 
 <histogram name="WebCore.Scripts.InlineStreamerWaitTime" units="microseconds"
-    expires_after="2023-12-04">
+    expires_after="2024-12-11">
   <owner>cduvall@chromium.org</owner>
   <owner>leszeks@chromium.org</owner>
   <summary>
@@ -634,6 +637,9 @@ chromium-metrics-reviews@google.com.
     script that is compiled on a background thread.
 
     This histogram only records metrics on machines with high-resolution clocks.
+
+    Warning: This histogram was expired from 2023-11-12 to 2024-06-11. Data may
+    be missing.
   </summary>
 </histogram>
 
