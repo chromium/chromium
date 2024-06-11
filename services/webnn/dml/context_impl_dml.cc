@@ -17,6 +17,7 @@
 #include "services/webnn/dml/graph_impl_dml.h"
 #include "services/webnn/dml/utils.h"
 #include "services/webnn/error.h"
+#include "services/webnn/public/mojom/webnn_buffer.mojom.h"
 
 namespace webnn::dml {
 
@@ -101,7 +102,7 @@ std::unique_ptr<WebNNBufferImpl> ContextImplDml::CreateBufferImpl(
   // Safe to use ContextImplDml* because this context owns the buffer
   // being connected and that context cannot destruct before the buffer.
   return std::make_unique<BufferImplDml>(std::move(receiver), std::move(buffer),
-                                         this, buffer_info->size,
+                                         this, std::move(buffer_info),
                                          buffer_handle);
 }
 

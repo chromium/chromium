@@ -12,11 +12,12 @@ namespace webnn {
 WebNNBufferImpl::WebNNBufferImpl(
     mojo::PendingAssociatedReceiver<mojom::WebNNBuffer> receiver,
     WebNNContextImpl* context,
-    uint64_t size,
+    mojom::BufferInfoPtr buffer_info,
     const base::UnguessableToken& buffer_handle)
     : WebNNObjectImpl(buffer_handle),
       context_(context),
-      size_(size),
+      // TODO(crbug.com/343638938): Use buffer_info->usage.
+      size_(buffer_info->size),
       receiver_(this, std::move(receiver)) {
   // Safe to use base::Unretained because `this` owns `receiver_`.
   receiver_.set_disconnect_handler(

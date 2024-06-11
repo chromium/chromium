@@ -7,6 +7,7 @@
 #include <climits>
 
 #include "base/memory/ptr_util.h"
+#include "services/webnn/public/mojom/webnn_buffer.mojom.h"
 
 namespace webnn::tflite {
 
@@ -21,17 +22,20 @@ std::unique_ptr<WebNNBufferImpl> BufferImplTflite::Create(
     return nullptr;
   }
 
-  return base::WrapUnique(new BufferImplTflite(std::move(receiver), context,
-                                         buffer_info->size, buffer_handle));
+  return base::WrapUnique(new BufferImplTflite(
+      std::move(receiver), context, std::move(buffer_info), buffer_handle));
 }
 
 BufferImplTflite::BufferImplTflite(
     mojo::PendingAssociatedReceiver<mojom::WebNNBuffer> receiver,
     WebNNContextImpl* context,
-    size_t size,
+    mojom::BufferInfoPtr buffer_info,
     const base::UnguessableToken& buffer_handle)
-    : WebNNBufferImpl(std::move(receiver), context, size, buffer_handle) {
-  buffer_ = base::HeapArray<uint8_t>::WithSize(size);
+    : WebNNBufferImpl(std::move(receiver),
+                      context,
+                      std::move(buffer_info),
+                      buffer_handle) {
+  buffer_ = base::HeapArray<uint8_t>::WithSize(size());
 }
 
 BufferImplTflite::~BufferImplTflite() = default;

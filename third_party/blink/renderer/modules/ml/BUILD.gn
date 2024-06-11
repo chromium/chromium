@@ -46,6 +46,7 @@ blink_modules_sources("ml") {
     "//components/ml/mojom:mojom_blink",
     "//components/ml/webnn",
     "//components/ml/webnn:features",
+    "//services/webnn/public/cpp",
     "//services/webnn/public/mojom:mojom_blink",
   ]
 }

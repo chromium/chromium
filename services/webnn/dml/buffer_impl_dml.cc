@@ -6,6 +6,7 @@
 
 #include "mojo/public/cpp/bindings/pending_associated_receiver.h"
 #include "services/webnn/dml/context_impl_dml.h"
+#include "services/webnn/public/mojom/webnn_buffer.mojom.h"
 
 namespace webnn::dml {
 
@@ -13,9 +14,12 @@ BufferImplDml::BufferImplDml(
     mojo::PendingAssociatedReceiver<mojom::WebNNBuffer> receiver,
     Microsoft::WRL::ComPtr<ID3D12Resource> buffer,
     ContextImplDml* context,
-    uint64_t size,
+    mojom::BufferInfoPtr buffer_info,
     const base::UnguessableToken& buffer_handle)
-    : WebNNBufferImpl(std::move(receiver), context, size, buffer_handle),
+    : WebNNBufferImpl(std::move(receiver),
+                      context,
+                      std::move(buffer_info),
+                      buffer_handle),
       buffer_(std::move(buffer)) {}
 
 BufferImplDml::~BufferImplDml() = default;

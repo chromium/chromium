@@ -9,6 +9,7 @@
 
 #include "base/memory/scoped_refptr.h"
 #include "gpu/config/gpu_feature_info.h"
+#include "services/webnn/public/mojom/webnn_buffer.mojom-forward.h"
 #include "services/webnn/webnn_context_impl.h"
 
 namespace webnn::dml {

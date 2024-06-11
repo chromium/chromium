@@ -6,6 +6,7 @@
 #define SERVICES_WEBNN_TFLITE_BUFFER_IMPL_TFLITE_H_
 
 #include "base/containers/heap_array.h"
+#include "services/webnn/public/mojom/webnn_buffer.mojom-forward.h"
 #include "services/webnn/webnn_buffer_impl.h"
 
 namespace webnn {
@@ -32,7 +33,7 @@ class BufferImplTflite final : public WebNNBufferImpl {
  private:
   BufferImplTflite(mojo::PendingAssociatedReceiver<mojom::WebNNBuffer> receiver,
                    WebNNContextImpl* context,
-                   size_t size,
+                   mojom::BufferInfoPtr buffer_info,
                    const base::UnguessableToken& buffer_handle);
 
   void ReadBufferImpl(ReadBufferCallback callback) override;

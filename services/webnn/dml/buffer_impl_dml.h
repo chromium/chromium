@@ -8,6 +8,7 @@
 #include <d3d12.h>
 #include <wrl.h>
 
+#include "services/webnn/public/mojom/webnn_buffer.mojom-forward.h"
 #include "services/webnn/webnn_buffer_impl.h"
 
 namespace webnn::dml {
@@ -19,7 +20,7 @@ class BufferImplDml final : public WebNNBufferImpl {
   BufferImplDml(mojo::PendingAssociatedReceiver<mojom::WebNNBuffer> receiver,
                 Microsoft::WRL::ComPtr<ID3D12Resource> buffer,
                 ContextImplDml* context,
-                uint64_t size,
+                mojom::BufferInfoPtr buffer_info,
                 const base::UnguessableToken& buffer_handle);
 
   BufferImplDml(const BufferImplDml&) = delete;

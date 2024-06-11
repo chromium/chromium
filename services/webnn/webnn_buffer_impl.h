@@ -23,7 +23,7 @@ class COMPONENT_EXPORT(WEBNN_SERVICE) WebNNBufferImpl
   explicit WebNNBufferImpl(
       mojo::PendingAssociatedReceiver<mojom::WebNNBuffer> receiver,
       WebNNContextImpl* context,
-      uint64_t size,
+      mojom::BufferInfoPtr buffer_info,
       const base::UnguessableToken& buffer_handle);
   ~WebNNBufferImpl() override;
 

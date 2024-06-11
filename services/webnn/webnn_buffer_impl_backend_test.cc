@@ -17,6 +17,7 @@
 #include "mojo/public/cpp/system/functions.h"
 #include "services/webnn/buildflags.h"
 #include "services/webnn/error.h"
+#include "services/webnn/public/cpp/ml_buffer_usage.h"
 #include "services/webnn/public/mojom/webnn_buffer.mojom.h"
 #include "services/webnn/public/mojom/webnn_context_provider.mojom.h"
 #include "services/webnn/webnn_context_provider_impl.h"
@@ -209,7 +210,8 @@ TEST_F(WebNNBufferImplBackendTest, CreateBufferImplTest) {
   mojo::AssociatedRemote<mojom::WebNNBuffer> webnn_buffer_remote;
   webnn_context_remote->CreateBuffer(
       webnn_buffer_remote.BindNewEndpointAndPassReceiver(),
-      mojom::BufferInfo::New(kBufferSize), base::UnguessableToken::Create());
+      mojom::BufferInfo::New(kBufferSize, MLBufferUsage()),
+      base::UnguessableToken::Create());
 
   EXPECT_TRUE(webnn_buffer_remote.is_bound());
 
@@ -233,7 +235,7 @@ TEST_F(WebNNBufferImplBackendTest, CreateBufferImplOversizedTest) {
   mojo::AssociatedRemote<mojom::WebNNBuffer> webnn_buffer_remote;
   webnn_context_remote->CreateBuffer(
       webnn_buffer_remote.BindNewEndpointAndPassReceiver(),
-      mojom::BufferInfo::New(kBufferSizeTooLarge),
+      mojom::BufferInfo::New(kBufferSizeTooLarge, MLBufferUsage()),
       base::UnguessableToken::Create());
 
   EXPECT_TRUE(webnn_buffer_remote.is_bound());
@@ -257,14 +259,16 @@ TEST_F(WebNNBufferImplBackendTest, CreateBufferImplManyTest) {
   mojo::AssociatedRemote<mojom::WebNNBuffer> webnn_buffer_remote_1;
   webnn_context_remote->CreateBuffer(
       webnn_buffer_remote_1.BindNewEndpointAndPassReceiver(),
-      mojom::BufferInfo::New(kBufferSize), base::UnguessableToken::Create());
+      mojom::BufferInfo::New(kBufferSize, MLBufferUsage()),
+      base::UnguessableToken::Create());
 
   EXPECT_TRUE(webnn_buffer_remote_1.is_bound());
 
   mojo::AssociatedRemote<mojom::WebNNBuffer> webnn_buffer_remote_2;
   webnn_context_remote->CreateBuffer(
       webnn_buffer_remote_2.BindNewEndpointAndPassReceiver(),
-      mojom::BufferInfo::New(kBufferSize), base::UnguessableToken::Create());
+      mojom::BufferInfo::New(kBufferSize, MLBufferUsage()),
+      base::UnguessableToken::Create());
 
   EXPECT_TRUE(webnn_buffer_remote_2.is_bound());
 
@@ -289,12 +293,12 @@ TEST_F(WebNNBufferImplBackendTest, CreateBufferImplManySameTokenTest) {
   mojo::AssociatedRemote<mojom::WebNNBuffer> webnn_buffer_remote_1;
   webnn_context_remote->CreateBuffer(
       webnn_buffer_remote_1.BindNewEndpointAndPassReceiver(),
-      mojom::BufferInfo::New(kBufferSize), buffer_handle);
+      mojom::BufferInfo::New(kBufferSize, MLBufferUsage()), buffer_handle);
 
   mojo::AssociatedRemote<mojom::WebNNBuffer> webnn_buffer_remote_2;
   webnn_context_remote->CreateBuffer(
       webnn_buffer_remote_2.BindNewEndpointAndPassReceiver(),
-      mojom::BufferInfo::New(kBufferSize), buffer_handle);
+      mojom::BufferInfo::New(kBufferSize, MLBufferUsage()), buffer_handle);
 
   webnn_context_remote.FlushForTesting();
   EXPECT_EQ(bad_message_helper.GetLastBadMessage(), kBadMessageInvalidBuffer);
@@ -319,14 +323,14 @@ TEST_F(WebNNBufferImplBackendTest,
   mojo::AssociatedRemote<mojom::WebNNBuffer> webnn_buffer_remote_1;
   webnn_context_remote->CreateBuffer(
       webnn_buffer_remote_1.BindNewEndpointAndPassReceiver(),
-      mojom::BufferInfo::New(kBufferSize), buffer_handle);
+      mojom::BufferInfo::New(kBufferSize, MLBufferUsage()), buffer_handle);
 
   webnn_buffer_remote_1.reset();
 
   mojo::AssociatedRemote<mojom::WebNNBuffer> webnn_buffer_remote_2;
   webnn_context_remote->CreateBuffer(
       webnn_buffer_remote_2.BindNewEndpointAndPassReceiver(),
-      mojom::BufferInfo::New(kBufferSize), buffer_handle);
+      mojom::BufferInfo::New(kBufferSize, MLBufferUsage()), buffer_handle);
 
   webnn_context_remote.FlushForTesting();
   EXPECT_FALSE(bad_message_helper.GetLastBadMessage().has_value());
@@ -334,7 +338,7 @@ TEST_F(WebNNBufferImplBackendTest,
   mojo::AssociatedRemote<mojom::WebNNBuffer> webnn_buffer_remote_3;
   webnn_context_remote->CreateBuffer(
       webnn_buffer_remote_3.BindNewEndpointAndPassReceiver(),
-      mojom::BufferInfo::New(kBufferSize), buffer_handle);
+      mojom::BufferInfo::New(kBufferSize, MLBufferUsage()), buffer_handle);
 
   webnn_context_remote.FlushForTesting();
   EXPECT_EQ(bad_message_helper.GetLastBadMessage(), kBadMessageInvalidBuffer);
@@ -353,7 +357,8 @@ TEST_F(WebNNBufferImplBackendTest, WriteBufferImplTest) {
   mojo::AssociatedRemote<mojom::WebNNBuffer> webnn_buffer_remote;
   webnn_context_remote->CreateBuffer(
       webnn_buffer_remote.BindNewEndpointAndPassReceiver(),
-      mojom::BufferInfo::New(4ull), base::UnguessableToken::Create());
+      mojom::BufferInfo::New(4ull, MLBufferUsage()),
+      base::UnguessableToken::Create());
 
   const std::array<const uint8_t, 4> input_data{0xAA, 0xAA, 0xAA, 0xAA};
   webnn_buffer_remote->WriteBuffer(mojo_base::BigBuffer(input_data));
@@ -381,7 +386,8 @@ TEST_F(WebNNBufferImplBackendTest, WriteBufferImplTooLargeTest) {
   mojo::AssociatedRemote<mojom::WebNNBuffer> webnn_buffer_remote;
   webnn_context_remote->CreateBuffer(
       webnn_buffer_remote.BindNewEndpointAndPassReceiver(),
-      mojom::BufferInfo::New(4ull), base::UnguessableToken::Create());
+      mojom::BufferInfo::New(4ull, MLBufferUsage()),
+      base::UnguessableToken::Create());
 
   webnn_buffer_remote->WriteBuffer(mojo_base::BigBuffer(
       std::array<const uint8_t, 5>({0xBB, 0xBB, 0xBB, 0xBB, 0xBB})));

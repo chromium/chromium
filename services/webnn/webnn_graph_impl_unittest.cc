@@ -22,6 +22,8 @@
 #include "mojo/public/cpp/bindings/self_owned_associated_receiver.h"
 #include "mojo/public/cpp/system/functions.h"
 #include "services/webnn/error.h"
+#include "services/webnn/public/cpp/ml_buffer_usage.h"
+#include "services/webnn/public/mojom/webnn_buffer.mojom.h"
 #include "services/webnn/public/mojom/webnn_context_provider.mojom.h"
 #include "services/webnn/public/mojom/webnn_graph.mojom.h"
 #include "services/webnn/webnn_buffer_impl.h"
@@ -89,9 +91,12 @@ class FakeWebNNBufferImpl final : public WebNNBufferImpl {
   explicit FakeWebNNBufferImpl(
       mojo::PendingAssociatedReceiver<mojom::WebNNBuffer> receiver,
       WebNNContextImpl* context,
-      uint64_t size,
+      mojom::BufferInfoPtr buffer_info,
       const base::UnguessableToken& buffer_handle)
-      : WebNNBufferImpl(std::move(receiver), context, size, buffer_handle) {}
+      : WebNNBufferImpl(std::move(receiver),
+                        context,
+                        std::move(buffer_info),
+                        buffer_handle) {}
   ~FakeWebNNBufferImpl() override = default;
 
  private:
@@ -125,7 +130,7 @@ class FakeWebNNContextImpl final : public WebNNContextImpl {
       mojom::BufferInfoPtr buffer_info,
       const base::UnguessableToken& buffer_handle) override {
     return std::make_unique<FakeWebNNBufferImpl>(
-        std::move(receiver), this, buffer_info->size, buffer_handle);
+        std::move(receiver), this, std::move(buffer_info), buffer_handle);
   }
 };
 
@@ -251,9 +256,10 @@ bool ValidateDispatch(mojom::GraphInfoPtr graph_info,
   for (const auto& [name, buffer_info] : inputs) {
     if (buffer_info.create_buffer) {
       mojo::AssociatedRemote<mojom::WebNNBuffer> webnn_buffer;
-      webnn_context->CreateBuffer(webnn_buffer.BindNewEndpointAndPassReceiver(),
-                                  mojom::BufferInfo::New(buffer_info.size),
-                                  buffer_info.buffer_handle);
+      webnn_context->CreateBuffer(
+          webnn_buffer.BindNewEndpointAndPassReceiver(),
+          mojom::BufferInfo::New(buffer_info.size, MLBufferUsage()),
+          buffer_info.buffer_handle);
       input_buffers.push_back(std::move(webnn_buffer));
     }
     dispatch_inputs.emplace(name, buffer_info.buffer_handle);
@@ -266,9 +272,10 @@ bool ValidateDispatch(mojom::GraphInfoPtr graph_info,
   for (const auto& [name, buffer_info] : outputs) {
     if (buffer_info.create_buffer) {
       mojo::AssociatedRemote<mojom::WebNNBuffer> webnn_buffer;
-      webnn_context->CreateBuffer(webnn_buffer.BindNewEndpointAndPassReceiver(),
-                                  mojom::BufferInfo::New(buffer_info.size),
-                                  buffer_info.buffer_handle);
+      webnn_context->CreateBuffer(
+          webnn_buffer.BindNewEndpointAndPassReceiver(),
+          mojom::BufferInfo::New(buffer_info.size, MLBufferUsage()),
+          buffer_info.buffer_handle);
       output_buffers.push_back(std::move(webnn_buffer));
     }
     dispatch_outputs.emplace(name, buffer_info.buffer_handle);

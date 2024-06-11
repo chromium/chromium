@@ -11,9 +11,27 @@ mojom("mojom") {
     "webnn_error.mojom",
     "webnn_graph.mojom",
   ]
+
   deps = [
     "//components/ml/webnn:features",
     "//mojo/public/mojom/base",
     "//sandbox/policy/mojom",
   ]
+
+  shared_webnn_typemaps = [
+    {
+      types = [
+        {
+          mojom = "webnn.mojom.BufferUsage"
+          cpp = "::webnn::MLBufferUsage"
+          copyable_pass_by_value = true
+        },
+      ]
+      traits_headers = [ "buffer_usage_mojom_traits.h" ]
+      traits_public_deps = [ "//services/webnn/public/cpp" ]
+    },
+  ]
+
+  cpp_typemaps = shared_webnn_typemaps
+  blink_cpp_typemaps = shared_webnn_typemaps
 }

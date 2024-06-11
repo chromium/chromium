@@ -6,6 +6,7 @@
 
 #include "base/types/expected.h"
 #include "base/types/expected_macros.h"
+#include "services/webnn/public/cpp/ml_buffer_usage.h"
 #include "services/webnn/public/mojom/webnn_buffer.mojom-blink.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_ml_buffer_descriptor.h"
 #include "third_party/blink/renderer/core/execution_context/execution_context.h"
@@ -123,7 +124,10 @@ void MLBuffer::WriteBufferImpl(base::span<const uint8_t> src_data,
 }
 
 webnn::mojom::blink::BufferInfoPtr MLBuffer::GetMojoBufferInfo() const {
-  return webnn::mojom::blink::BufferInfo::New(descriptor_.size());
+  return webnn::mojom::blink::BufferInfo::New(
+      descriptor_.size(),
+      // TODO(crbug.com/343638938): Pass real buffer usages.
+      webnn::MLBufferUsage());
 }
 
 }  // namespace blink
