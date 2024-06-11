@@ -39,7 +39,7 @@ const CGFloat kOmniboxLayoutGuideLeadingOffset = -10.0f;
 @interface OmniboxPopupRowContentConfiguration ()
 
 // Background.
-@property(nonatomic, assign, readwrite) BOOL showSelectedBackgroundView;
+@property(nonatomic, assign, readwrite) BOOL isBackgroundHighlighted;
 
 // Leading Icon.
 @property(nonatomic, strong, readwrite) id<OmniboxIcon> leadingIcon;
@@ -73,6 +73,19 @@ const CGFloat kOmniboxLayoutGuideLeadingOffset = -10.0f;
 /// Layout this cell with the given data before displaying.
 + (instancetype)cellConfiguration {
   return [[OmniboxPopupRowContentConfiguration alloc] init];
+}
+
++ (NSAttributedString*)highlightedAttributedStringWithString:
+    (NSAttributedString*)string {
+  if (!string.length) {
+    return nil;
+  }
+  NSMutableAttributedString* mutableString =
+      [[NSMutableAttributedString alloc] initWithAttributedString:string];
+  [mutableString addAttribute:NSForegroundColorAttributeName
+                        value:[UIColor whiteColor]
+                        range:NSMakeRange(0, string.length)];
+  return mutableString;
 }
 
 - (void)setSuggestion:(id<AutocompleteSuggestion>)suggestion {
@@ -153,7 +166,7 @@ const CGFloat kOmniboxLayoutGuideLeadingOffset = -10.0f;
   // Setting `suggestion` already sets some properties in "Content View
   // interface". Update the properties that can change with
   // `updatedConfigurationForState`.
-  configuration.showSelectedBackgroundView = self.showSelectedBackgroundView;
+  configuration.isBackgroundHighlighted = self.isBackgroundHighlighted;
   configuration.leadingIconHighlighted = self.leadingIconHighlighted;
   configuration.primaryText = self.primaryText;
   configuration.secondaryText = self.secondaryText;
@@ -178,15 +191,16 @@ const CGFloat kOmniboxLayoutGuideLeadingOffset = -10.0f;
   UIViewConfigurationState* viewState = state;
   // Highlight.
   const BOOL allowHighlight = viewState.highlighted || viewState.selected;
-  configuration.showSelectedBackgroundView = allowHighlight;
+  configuration.isBackgroundHighlighted = allowHighlight;
   configuration.leadingIconHighlighted = allowHighlight;
   configuration.primaryText =
       allowHighlight
-          ? [self highlightedAttributedStringWithString:_suggestion.text]
+          ? [self.class highlightedAttributedStringWithString:_suggestion.text]
           : _suggestion.text;
   configuration.secondaryText =
       allowHighlight
-          ? [self highlightedAttributedStringWithString:_suggestion.detailText]
+          ? [self.class highlightedAttributedStringWithString:_suggestion
+                                                                  .detailText]
           : _suggestion.detailText;
   configuration.trailingIconTintColor =
       allowHighlight ? UIColor.whiteColor : [UIColor colorNamed:kBlueColor];
@@ -225,21 +239,6 @@ const CGFloat kOmniboxLayoutGuideLeadingOffset = -10.0f;
 }
 
 #pragma mark - Private
-
-/// Returns the input string but painted white when the blue and white
-/// highlighting is enabled in pedals. Returns the original string otherwise.
-- (NSAttributedString*)highlightedAttributedStringWithString:
-    (NSAttributedString*)string {
-  if (!string.length) {
-    return nil;
-  }
-  NSMutableAttributedString* mutableString =
-      [[NSMutableAttributedString alloc] initWithAttributedString:string];
-  [mutableString addAttribute:NSForegroundColorAttributeName
-                        value:[UIColor whiteColor]
-                        range:NSMakeRange(0, string.length)];
-  return mutableString;
-}
 
 /// Handles tap on the trailing button.
 - (void)trailingButtonTapped {

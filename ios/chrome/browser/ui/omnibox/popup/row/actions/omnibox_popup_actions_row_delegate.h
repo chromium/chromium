@@ -16,6 +16,7 @@
 - (void)omniboxPopupRowActionSelectedWithConfiguration:
             (OmniboxPopupActionsRowContentConfiguration*)configuration
                                                 action:(SuggestAction*)action;
+
 @end
 
 #endif  // IOS_CHROME_BROWSER_UI_OMNIBOX_POPUP_ROW_ACTIONS_OMNIBOX_POPUP_ACTIONS_ROW_DELEGATE_H_

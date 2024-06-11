@@ -105,9 +105,34 @@ const CGFloat kLeadingTrailingPadding = 61;
     (OmniboxPopupActionsRowContentConfiguration*)configuration {
   _configuration = configuration;
   [self setupActionsStackView:configuration];
+  [self scrollToHighlightedAction];
 }
 
 #pragma mark - Private
+
+// Scrolls to the highlighted action, if there is any.
+- (void)scrollToHighlightedAction {
+  if (_configuration.highlightedActionIndex == NSNotFound) {
+    return;
+  }
+
+  // Make sure the scroll view layout is done before computing frames.
+  [_actionsScrollView layoutIfNeeded];
+
+  NSUInteger highlightedActionIndex = _configuration.highlightedActionIndex;
+
+  CHECK(_actionsStackView.arrangedSubviews.count > highlightedActionIndex);
+
+  UIButton* highlightedActionButton =
+      _actionsStackView.arrangedSubviews[highlightedActionIndex];
+
+  CGRect frameInScrollViewCoordinates =
+      [highlightedActionButton convertRect:highlightedActionButton.bounds
+                                    toView:_actionsScrollView];
+  CGRect frameWithPadding = CGRectInset(frameInScrollViewCoordinates,
+                                        -kLeadingTrailingPadding * 2, 0);
+  [_actionsScrollView scrollRectToVisible:frameWithPadding animated:NO];
+}
 
 // Setup the actions buttons with the given configuration actions and adds them
 // to the actions stack view.
@@ -118,9 +143,14 @@ const CGFloat kLeadingTrailingPadding = 61;
     [view removeFromSuperview];
   }
 
-  for (SuggestAction* action in configuration.actions) {
+  for (NSUInteger i = 0; i < configuration.actions.count; i++) {
+    SuggestAction* action = configuration.actions[i];
+
+    BOOL isActionHighlighted = configuration.highlightedActionIndex == i;
+
     UIButton* actionButton =
-        [[self class] actionButtonWithSuggestAction:action];
+        [[self class] actionButtonWithSuggestAction:action
+                                        highlighted:isActionHighlighted];
 
     [_actionsStackView addArrangedSubview:actionButton];
 
@@ -151,7 +181,8 @@ const CGFloat kLeadingTrailingPadding = 61;
 
 // Creates a suggestion action button and setup its configutation attributes
 // (eg. Call action button).
-+ (UIButton*)actionButtonWithSuggestAction:(SuggestAction*)suggestAction {
++ (UIButton*)actionButtonWithSuggestAction:(SuggestAction*)suggestAction
+                               highlighted:(BOOL)highlighted {
   UIButton* button = [[UIButton alloc] init];
   button.layer.cornerRadius = kButtonLayerRadius;
   button.layer.masksToBounds = YES;
@@ -170,16 +201,19 @@ const CGFloat kLeadingTrailingPadding = 61;
           }];
 
   UIButtonConfiguration* configuration =
-      [UIButtonConfiguration plainButtonConfiguration];
+      highlighted ? [UIButtonConfiguration filledButtonConfiguration]
+                  : [UIButtonConfiguration plainButtonConfiguration];
   configuration.imagePadding = kButtonTitleImagePadding;
   configuration.attributedTitle = attributedTitle;
   configuration.image = [SuggestAction imageIconForAction:suggestAction
                                                      size:kIconSize];
-  UIBackgroundConfiguration* backgroundConfig =
-      [UIBackgroundConfiguration clearConfiguration];
-  backgroundConfig.backgroundColor =
-      [UIColor colorNamed:kFaviconBackgroundColor];
-  configuration.background = backgroundConfig;
+  if (!highlighted) {
+    UIBackgroundConfiguration* backgroundConfig =
+        [UIBackgroundConfiguration clearConfiguration];
+    backgroundConfig.backgroundColor =
+        [UIColor colorNamed:kFaviconBackgroundColor];
+    configuration.background = backgroundConfig;
+  }
 
   button.configuration = configuration;
 

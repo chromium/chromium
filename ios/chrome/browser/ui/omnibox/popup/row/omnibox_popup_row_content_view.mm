@@ -299,7 +299,7 @@ const char kOmniboxSearchSuggestionNumberOfLines[] =
       [configuration isKindOfClass:OmniboxPopupRowContentConfiguration.class]);
 
   // Background.
-  _selectedBackgroundView.hidden = !configuration.showSelectedBackgroundView;
+  _selectedBackgroundView.hidden = !configuration.isBackgroundHighlighted;
 
   // Leading Icon.
   [_leadingIconView prepareForReuse];

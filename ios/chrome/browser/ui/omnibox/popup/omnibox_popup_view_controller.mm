@@ -479,6 +479,21 @@ BOOL ShouldDismissKeyboardOnScroll() {
 #pragma mark - OmniboxKeyboardDelegate
 
 - (BOOL)canPerformKeyboardAction:(OmniboxKeyboardAction)keyboardAction {
+  UITableViewCell* cell =
+      [self.tableView cellForRowAtIndexPath:self.highlightedIndexPath];
+
+  BOOL isActionsRowCell = [cell.contentConfiguration
+      isKindOfClass:OmniboxPopupActionsRowContentConfiguration.class];
+
+  if (isActionsRowCell) {
+    OmniboxPopupActionsRowContentConfiguration* configuration =
+        base::apple::ObjCCastStrict<OmniboxPopupActionsRowContentConfiguration>(
+            cell.contentConfiguration);
+    if ([configuration canPerformKeyboardAction:keyboardAction]) {
+      return YES;
+    }
+  }
+
   switch (keyboardAction) {
     case OmniboxKeyboardActionUpArrow:
     case OmniboxKeyboardActionDownArrow:
@@ -494,6 +509,24 @@ BOOL ShouldDismissKeyboardOnScroll() {
 
 - (void)performKeyboardAction:(OmniboxKeyboardAction)keyboardAction {
   DCHECK([self canPerformKeyboardAction:keyboardAction]);
+
+  UITableViewCell* cell =
+      [self.tableView cellForRowAtIndexPath:self.highlightedIndexPath];
+
+  BOOL isActionsRowCell = [cell.contentConfiguration
+      isKindOfClass:OmniboxPopupActionsRowContentConfiguration.class];
+
+  if (isActionsRowCell) {
+    OmniboxPopupActionsRowContentConfiguration* configuration =
+        base::apple::ObjCCastStrict<OmniboxPopupActionsRowContentConfiguration>(
+            cell.contentConfiguration);
+    if ([configuration canPerformKeyboardAction:keyboardAction]) {
+      [configuration performKeyboardAction:keyboardAction];
+      cell.contentConfiguration = configuration;
+      return;
+    }
+  }
+
   switch (keyboardAction) {
     case OmniboxKeyboardActionUpArrow:
       [self highlightPreviousSuggestion];
@@ -712,6 +745,23 @@ BOOL ShouldDismissKeyboardOnScroll() {
   if (self.highlightedIndexPath) {
     id<AutocompleteSuggestion> suggestion =
         [self suggestionAtIndexPath:self.highlightedIndexPath];
+
+    UITableViewCell* cell =
+        [self.tableView cellForRowAtIndexPath:self.highlightedIndexPath];
+    BOOL isActionsRowCell = [cell.contentConfiguration
+        isKindOfClass:OmniboxPopupActionsRowContentConfiguration.class];
+
+    if (isActionsRowCell) {
+      OmniboxPopupActionsRowContentConfiguration* config =
+          base::apple::ObjCCastStrict<
+              OmniboxPopupActionsRowContentConfiguration>(
+              cell.contentConfiguration);
+      if (config.highlightedActionIndex != NSNotFound) {
+        [config omniboxReturnPressed:sender];
+        return;
+      }
+    }
+
     if (suggestion) {
       NSInteger absoluteRow =
           [self absoluteRowIndexForIndexPath:self.highlightedIndexPath];

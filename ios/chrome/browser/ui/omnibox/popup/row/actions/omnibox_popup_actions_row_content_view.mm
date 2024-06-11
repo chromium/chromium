@@ -336,7 +336,7 @@ const CGFloat kActionScrollViewSeparatorSpace = 8;
   [_actionsView updateConfiguration:configuration];
 
   // Background.
-  _selectedBackgroundView.hidden = !configuration.showSelectedBackgroundView;
+  _selectedBackgroundView.hidden = !configuration.isBackgroundHighlighted;
 
   // Leading Icon.
   [_leadingIconView prepareForReuse];

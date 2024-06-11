@@ -44,12 +44,17 @@
 /// Returns the default configuration for a list cell.
 + (instancetype)cellConfiguration;
 
+/// Returns the input string but painted white when the blue and white
+/// highlighting is enabled in pedals. Returns the original string otherwise.
++ (NSAttributedString*)highlightedAttributedStringWithString:
+    (NSAttributedString*)string;
+
 - (instancetype)init NS_UNAVAILABLE;
 
 #pragma mark - Content View interface
 
 // Background.
-@property(nonatomic, assign, readonly) BOOL showSelectedBackgroundView;
+@property(nonatomic, assign, readonly) BOOL isBackgroundHighlighted;
 
 // Leading Icon.
 @property(nonatomic, strong, readonly) id<OmniboxIcon> leadingIcon;
