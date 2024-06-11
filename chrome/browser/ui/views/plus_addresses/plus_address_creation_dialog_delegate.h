@@ -21,6 +21,7 @@ class ImageButton;
 class Label;
 class MdTextButton;
 class StyledLabel;
+class TableLayoutView;
 }  // namespace views
 
 namespace plus_addresses {
@@ -65,6 +66,7 @@ class PlusAddressCreationDialogDelegate : public views::BubbleDialogDelegate,
 
   base::WeakPtr<PlusAddressCreationController> controller_;
   raw_ptr<content::WebContents> web_contents_;
+  raw_ptr<views::TableLayoutView> plus_address_label_container_ = nullptr;
   raw_ptr<views::Label> plus_address_label_ = nullptr;
   raw_ptr<views::ImageButton> refresh_button_ = nullptr;
   raw_ptr<views::StyledLabel> error_report_label_ = nullptr;

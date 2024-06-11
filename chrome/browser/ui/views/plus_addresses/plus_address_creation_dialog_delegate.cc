@@ -254,42 +254,42 @@ PlusAddressCreationDialogDelegate::PlusAddressCreationDialogDelegate(
                            : ui::kColorSubtleEmphasisBackground,
           kRectangleRadius);
 
-  views::TableLayoutView* label_container =
+  plus_address_label_container_ =
       primary_view->AddChildView(views::Builder<views::TableLayoutView>()
                                      .SetBackground(std::move(background))
                                      .Build());
 
   const bool add_plus_address_icon = redesign_enabled;
-  label_container->SetProperty(
+  plus_address_label_container_->SetProperty(
       views::kMarginsKey,
       gfx::Insets::VH(GetPlusAddressLabelVerticalMargin(), 0));
   if (add_plus_address_icon) {
-    label_container->AddColumn(
+    plus_address_label_container_->AddColumn(
         views::LayoutAlignment::kCenter, views::LayoutAlignment::kCenter,
         views::TableLayout::kFixedSize, views::TableLayout::ColumnSize::kFixed,
         kPlusAddressIconColumnWidth, 0);
   } else if (offer_refresh) {
-    label_container->AddPaddingColumn(views::TableLayout::kFixedSize,
-                                      kPlusAddressRefreshColumnWidth);
+    plus_address_label_container_->AddPaddingColumn(
+        views::TableLayout::kFixedSize, kPlusAddressRefreshColumnWidth);
   }
-  label_container->AddColumn(
+  plus_address_label_container_->AddColumn(
       add_plus_address_icon ? views::LayoutAlignment::kStart
                             : views::LayoutAlignment::kCenter,
       views::LayoutAlignment::kCenter, 1.0f,
       views::TableLayout::ColumnSize::kUsePreferred, 0, 0);
   if (offer_refresh) {
-    label_container->AddColumn(
+    plus_address_label_container_->AddColumn(
         views::LayoutAlignment::kStart, views::LayoutAlignment::kStretch,
         views::TableLayout::kFixedSize, views::TableLayout::ColumnSize::kFixed,
         kPlusAddressRefreshColumnWidth, 0);
   } else if (add_plus_address_icon) {
-    label_container->AddPaddingColumn(views::TableLayout::kFixedSize,
-                                      kPlusAddressIconColumnWidth);
+    plus_address_label_container_->AddPaddingColumn(
+        views::TableLayout::kFixedSize, kPlusAddressIconColumnWidth);
   }
-  label_container->AddRows(1, views::TableLayout::kFixedSize);
+  plus_address_label_container_->AddRows(1, views::TableLayout::kFixedSize);
 
   if (add_plus_address_icon) {
-    label_container->AddChildView(
+    plus_address_label_container_->AddChildView(
         views::Builder<views::ImageView>()
             .SetImage(ui::ImageModel::FromVectorIcon(kPlusAddressLogoLargeIcon,
                                                      ui::kColorIcon,
@@ -297,7 +297,7 @@ PlusAddressCreationDialogDelegate::PlusAddressCreationDialogDelegate(
             .Build());
   }
 
-  plus_address_label_ = label_container->AddChildView(
+  plus_address_label_ = plus_address_label_container_->AddChildView(
       views::Builder<views::Label>()
           .SetText(l10n_util::GetStringUTF16(
               IDS_PLUS_ADDRESS_MODAL_PROPOSED_PLUS_ADDRESS_PLACEHOLDER))
@@ -315,7 +315,7 @@ PlusAddressCreationDialogDelegate::PlusAddressCreationDialogDelegate(
 
   // The refresh button.
   if (offer_refresh) {
-    refresh_button_ = label_container->AddChildView(
+    refresh_button_ = plus_address_label_container_->AddChildView(
         views::CreateVectorImageButton(base::BindRepeating(
             &PlusAddressCreationDialogDelegate::OnRefreshClicked,
             base::Unretained(this))));
@@ -335,7 +335,8 @@ PlusAddressCreationDialogDelegate::PlusAddressCreationDialogDelegate(
       l10n_util::GetStringUTF16(IDS_PLUS_ADDRESS_MODAL_ERROR_REPORT_LINK_TEXT);
   error_report_label_ = primary_view->AddChildView(
       views::Builder<views::StyledLabel>()
-          .SetHorizontalAlignment(gfx::ALIGN_CENTER)
+          .SetHorizontalAlignment(redesign_enabled ? gfx::ALIGN_LEFT
+                                                   : gfx::ALIGN_CENTER)
           .SetText(l10n_util::GetStringFUTF16(
               IDS_PLUS_ADDRESS_MODAL_REPORT_ERROR_INSTRUCTION_DESKTOP,
               {error_link_text}, &error_link_offsets))
@@ -519,7 +520,7 @@ void PlusAddressCreationDialogDelegate::HandleButtonPress(
 
 void PlusAddressCreationDialogDelegate::ShowErrorStateUI() {
   CHECK(GetWidget() && web_contents_);
-  plus_address_label_->SetVisible(false);
+  plus_address_label_container_->SetVisible(false);
   // Show the error report instructions.
   error_report_label_->SetVisible(true);
   // Update the size of modal.
