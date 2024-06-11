@@ -549,10 +549,7 @@ void VideoOverlayWindowViews::OnKeyEvent(ui::KeyEvent* event) {
 #if BUILDFLAG(IS_WIN)
   if (event->type() == ui::ET_KEY_PRESSED && event->IsAltDown() &&
       event->key_code() == ui::VKEY_F4) {
-    PictureInPictureWindowManager::GetInstance()
-        ->ExitPictureInPictureViaWindowUi(
-            PictureInPictureWindowManager::UiBehavior::
-                kCloseWindowAndPauseVideo);
+    CloseAndPauseIfAvailable();
     event->SetHandled();
   }
 #endif  // BUILDFLAG(IS_WIN)
@@ -806,20 +803,9 @@ void VideoOverlayWindowViews::SetUpViews() {
   auto video_view = std::make_unique<views::View>();
   auto controls_scrim_view = std::make_unique<ControlsBackgroundView>();
   auto controls_container_view = std::make_unique<views::View>();
-  auto close_controls_view =
-      std::make_unique<CloseImageButton>(base::BindRepeating(
-          [](VideoOverlayWindowViews* overlay) {
-            // Only pause the video if play/pause is available.
-            const bool should_pause_video = overlay->show_play_pause_button_;
-            PictureInPictureWindowManager::GetInstance()
-                ->ExitPictureInPictureViaWindowUi(
-                    should_pause_video
-                        ? PictureInPictureWindowManager::UiBehavior::
-                              kCloseWindowAndPauseVideo
-                        : PictureInPictureWindowManager::UiBehavior::
-                              kCloseWindowOnly);
-          },
-          base::Unretained(this)));
+  auto close_controls_view = std::make_unique<CloseImageButton>(
+      base::BindRepeating(&VideoOverlayWindowViews::CloseAndPauseIfAvailable,
+                          base::Unretained(this)));
   std::unique_ptr<OverlayWindowMinimizeButton> minimize_button;
   if (base::FeatureList::IsEnabled(
           media::kVideoPictureInPictureMinimizeButton)) {
@@ -1517,10 +1503,7 @@ void VideoOverlayWindowViews::OnGestureEvent(ui::GestureEvent* event) {
     controller_->SkipAd();
     event->SetHandled();
   } else if (GetCloseControlsBounds().Contains(event->location())) {
-    PictureInPictureWindowManager::GetInstance()
-        ->ExitPictureInPictureViaWindowUi(
-            PictureInPictureWindowManager::UiBehavior::
-                kCloseWindowAndPauseVideo);
+    CloseAndPauseIfAvailable();
     event->SetHandled();
   } else if (GetMinimizeControlsBounds().Contains(event->location())) {
     PictureInPictureWindowManager::GetInstance()
@@ -1617,6 +1600,15 @@ void VideoOverlayWindowViews::TogglePlayPause() {
   // the media player yet.
   bool is_active = controller_->TogglePlayPause();
   play_pause_controls_view_->SetPlaybackState(is_active ? kPlaying : kPaused);
+}
+
+void VideoOverlayWindowViews::CloseAndPauseIfAvailable() {
+  // Only pause the video if play/pause is available.
+  const bool should_pause_video = !!show_play_pause_button_;
+  PictureInPictureWindowManager::GetInstance()->ExitPictureInPictureViaWindowUi(
+      should_pause_video
+          ? PictureInPictureWindowManager::UiBehavior::kCloseWindowAndPauseVideo
+          : PictureInPictureWindowManager::UiBehavior::kCloseWindowOnly);
 }
 
 PlaybackImageButton*

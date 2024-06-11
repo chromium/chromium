@@ -519,12 +519,30 @@ TEST_F(VideoOverlayWindowViewsTest, OnlyPauseOnCloseWhenPauseIsAvailable) {
   close_button_clicker.NotifyClick(dummy_event);
   testing::Mock::VerifyAndClearExpectations(&pip_window_controller());
 
+  // Same for tapping the close button. Note that the controls must be visible
+  // for the tap to work, otherwise the tap will just show the controls.
+  overlay_window().ForceControlsVisibleForTesting(true);
+  gfx::Point close_button_center =
+      overlay_window().GetCloseControlsBounds().CenterPoint();
+  ui::GestureEvent tap_event(close_button_center.x(), close_button_center.y(),
+                             0, base::TimeTicks::Now(),
+                             ui::GestureEventDetails(ui::ET_GESTURE_TAP));
+  EXPECT_CALL(pip_window_controller(), Close(true));
+  overlay_window().OnGestureEvent(&tap_event);
+  testing::Mock::VerifyAndClearExpectations(&pip_window_controller());
+
   // When the play/pause controls are not visible, closing via the close button
   // should not pause the video.
   overlay_window().SetPlayPauseButtonVisibility(false);
   EXPECT_CALL(pip_window_controller(), Close(false));
   close_button_clicker.NotifyClick(dummy_event);
   testing::Mock::VerifyAndClearExpectations(&pip_window_controller());
+
+  // Same for tapping the close button.
+  EXPECT_CALL(pip_window_controller(), Close(false));
+  overlay_window().OnGestureEvent(&tap_event);
+  testing::Mock::VerifyAndClearExpectations(&pip_window_controller());
+
   PictureInPictureWindowManager::GetInstance()
       ->set_window_controller_for_testing(nullptr);
 }

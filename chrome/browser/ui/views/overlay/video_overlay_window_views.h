@@ -229,6 +229,10 @@ class VideoOverlayWindowViews
   // state.
   void TogglePlayPause();
 
+  // Closes this window and also pauses the underlying video if pausing is
+  // available.
+  void CloseAndPauseIfAvailable();
+
   // Returns the current frame sink id for the surface displayed in the
   // |video_view_|. If |video_view_| is not currently displaying a surface then
   // returns nullptr.
