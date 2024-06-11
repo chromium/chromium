@@ -1,0 +1,5 @@
+include_rules = [
+  "+ios/chrome/browser/default_browser/model/utils.h",
+  "+ios/chrome/browser/promos_manager/model",
+  "+ios/chrome/browser/ui/promos_manager/standard_promo_display_handler.h",
+]

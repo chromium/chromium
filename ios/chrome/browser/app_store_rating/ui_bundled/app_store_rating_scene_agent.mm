@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#import "ios/chrome/browser/ui/app_store_rating/app_store_rating_scene_agent.h"
+#import "ios/chrome/browser/app_store_rating/ui_bundled/app_store_rating_scene_agent.h"
 
 #import "base/metrics/histogram_functions.h"
 #import "base/ranges/algorithm.h"
@@ -18,7 +18,7 @@
 #import "ios/chrome/browser/shared/model/browser/browser_provider_interface.h"
 #import "ios/chrome/browser/shared/model/browser_state/chrome_browser_state.h"
 #import "ios/chrome/browser/shared/model/prefs/pref_names.h"
-#import "ios/chrome/browser/ui/app_store_rating/features.h"
+#import "ios/chrome/browser/app_store_rating/ui_bundled/features.h"
 
 @interface AppStoreRatingSceneAgent ()
 
