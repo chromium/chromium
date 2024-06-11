@@ -86,8 +86,9 @@ std::vector<const ash::NetworkState*> GetHostActiveNetworks() {
 }
 
 bool IsActiveNetworkState(const ash::NetworkState* network) {
-  if (!network)
+  if (!network) {
     return false;
+  }
 
   const std::string& state = network->connection_state();
   return state == shill::kStateReady || state == shill::kStateOnline ||
@@ -100,17 +101,20 @@ bool IsActiveNetworkState(const ash::NetworkState* network) {
 
 const ash::NetworkState* GetShillBackedNetwork(
     const ash::NetworkState* network) {
-  if (!network)
+  if (!network) {
     return nullptr;
+  }
 
   // Non-Tether networks are already backed by Shill.
   const std::string type = network->type();
-  if (type.empty() || !ash::NetworkTypePattern::Tether().MatchesType(type))
+  if (type.empty() || !ash::NetworkTypePattern::Tether().MatchesType(type)) {
     return network;
+  }
 
   // Tether networks which are not connected are also not backed by Shill.
-  if (!network->IsConnectedState())
+  if (!network->IsConnectedState()) {
     return nullptr;
+  }
 
   // Connected Tether networks delegate to an underlying Wi-Fi network.
   DCHECK(!network->tether_guid().empty());
@@ -323,8 +327,9 @@ void ArcNetHostImpl::OnConnectionReady() {
 void ArcNetHostImpl::SetUpFlags() {
   auto* net_instance =
       ARC_GET_INSTANCE_FOR_METHOD(arc_bridge_service_->net(), SetUpFlag);
-  if (!net_instance)
+  if (!net_instance) {
     return;
+  }
 
   // arc::mojom::Flag::DEPRECATE_ENABLE_ARC_HOST_VPN no longer passed to ARC,
   // see b/257889534
@@ -335,8 +340,9 @@ void ArcNetHostImpl::OnConnectionClosed() {
   // goes down.
   AndroidVpnDisconnected();
 
-  if (!observing_network_state_)
+  if (!observing_network_state_) {
     return;
+  }
 
   GetStateHandler()->RemoveObserver(this, FROM_HERE);
   GetNetworkConnectionHandler()->RemoveObserver(this);
@@ -692,8 +698,9 @@ void ArcNetHostImpl::StartScan() {
 void ArcNetHostImpl::ScanCompleted(const ash::DeviceState* /*unused*/) {
   auto* net_instance =
       ARC_GET_INSTANCE_FOR_METHOD(arc_bridge_service_->net(), ScanCompleted);
-  if (!net_instance)
+  if (!net_instance) {
     return;
+  }
 
   net_instance->ScanCompleted();
 }
@@ -701,8 +708,9 @@ void ArcNetHostImpl::ScanCompleted(const ash::DeviceState* /*unused*/) {
 void ArcNetHostImpl::DeviceListChanged() {
   auto* net_instance = ARC_GET_INSTANCE_FOR_METHOD(arc_bridge_service_->net(),
                                                    WifiEnabledStateChanged);
-  if (!net_instance)
+  if (!net_instance) {
     return;
+  }
 
   bool is_enabled =
       GetStateHandler()->IsTechnologyEnabled(ash::NetworkTypePattern::WiFi());
@@ -717,11 +725,13 @@ std::string ArcNetHostImpl::LookupArcVpnServicePath() {
 
   for (const ash::NetworkState* state : state_list) {
     const auto* shill_backed_network = GetShillBackedNetwork(state);
-    if (!shill_backed_network)
+    if (!shill_backed_network) {
       continue;
+    }
 
-    if (shill_backed_network->GetVpnProviderType() == shill::kProviderArcVpn)
+    if (shill_backed_network->GetVpnProviderType() == shill::kProviderArcVpn) {
       return shill_backed_network->path();
+    }
   }
   return std::string();
 }
@@ -739,8 +749,9 @@ void ArcNetHostImpl::ConnectArcVpn(const std::string& service_path,
 base::Value::List ArcNetHostImpl::TranslateLongListToStringValue(
     const std::vector<uint64_t>& long_list) {
   base::Value::List result;
-  for (const auto& item : long_list)
+  for (const auto& item : long_list) {
     result.Append(base::NumberToString(item));
+  }
 
   return result;
 }
@@ -969,11 +980,13 @@ void ArcNetHostImpl::TranslateEapCredentialsToShillDictWithCertID(
     dict.Set(shill::kEapAnonymousIdentityProperty,
              cred->anonymous_identity.value());
   }
-  if (cred->identity.has_value())
+  if (cred->identity.has_value()) {
     dict.Set(shill::kEapIdentityProperty, cred->identity.value());
+  }
 
-  if (cred->password.has_value())
+  if (cred->password.has_value()) {
     dict.Set(shill::kEapPasswordProperty, cred->password.value());
+  }
 
   dict.Set(shill::kEapKeyMgmtProperty,
            net_utils::TranslateKeyManagement(cred->key_management));
@@ -1205,15 +1218,17 @@ void ArcNetHostImpl::DisconnectArcVpn() {
 
   auto* net_instance = ARC_GET_INSTANCE_FOR_METHOD(arc_bridge_service_->net(),
                                                    DisconnectAndroidVpn);
-  if (!net_instance)
+  if (!net_instance) {
     return;
+  }
 
   net_instance->DisconnectAndroidVpn();
 }
 
 void ArcNetHostImpl::DisconnectRequested(const std::string& service_path) {
-  if (arc_vpn_service_path_ != service_path)
+  if (arc_vpn_service_path_ != service_path) {
     return;
+  }
 
   // This code path is taken when a user clicks the blue Disconnect button
   // in Chrome OS.  Chrome is about to send the Disconnect call to shill,
@@ -1224,8 +1239,9 @@ void ArcNetHostImpl::DisconnectRequested(const std::string& service_path) {
 void ArcNetHostImpl::NetworkConnectionStateChanged(
     const ash::NetworkState* network) {
   const auto* shill_backed_network = GetShillBackedNetwork(network);
-  if (!shill_backed_network)
+  if (!shill_backed_network) {
     return;
+  }
 
   if (arc_vpn_service_path_ != shill_backed_network->path() ||
       shill_backed_network->IsConnectingOrConnected()) {
@@ -1282,8 +1298,9 @@ void ArcNetHostImpl::UpdateHostNetworks(
     const std::vector<patchpanel::NetworkDevice>& devices) {
   auto* net_instance = ARC_GET_INSTANCE_FOR_METHOD(arc_bridge_service_->net(),
                                                    ActiveNetworksChanged);
-  if (!net_instance)
+  if (!net_instance) {
     return;
+  }
 
   std::vector<arc::mojom::NetworkConfigurationPtr> latest_networks =
       net_utils::TranslateNetworkDevices(devices, arc_vpn_service_path_,
@@ -1319,8 +1336,9 @@ void ArcNetHostImpl::NetworkListChanged() {
         &ArcNetHostImpl::UpdateHostNetworks, weak_factory_.GetWeakPtr()));
     return;
   }
-  for (const auto* network : active_networks)
+  for (const auto* network : active_networks) {
     NetworkPropertiesUpdated(network);
+  }
 }
 
 void ArcNetHostImpl::StartLohs(mojom::LohsConfigPtr config,
