@@ -46,14 +46,14 @@ Browser* BrowserFromWebContents(content::WebContents* web_contents) {
 }  // namespace
 
 LensOverlaySidePanelWebView::LensOverlaySidePanelWebView(
-    Profile* profile,
+    content::BrowserContext* browser_context,
     lens::LensOverlaySidePanelCoordinator* coordinator)
     : SidePanelWebUIViewT(
           base::RepeatingClosure(),
           base::RepeatingClosure(),
           std::make_unique<WebUIContentsWrapperT<lens::LensUntrustedUI>>(
               GURL(chrome::kChromeUILensUntrustedSidePanelURL),
-              profile,
+              browser_context,
               /*task_manager_string_id=*/IDS_SIDE_PANEL_COMPANION_TITLE,
               /*webui_resizes_host=*/false,
               /*esc_closes_ui=*/false)),

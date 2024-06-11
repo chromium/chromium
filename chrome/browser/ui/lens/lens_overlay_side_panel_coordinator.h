@@ -11,11 +11,9 @@
 #include "content/public/browser/page_navigator.h"
 #include "content/public/browser/web_contents_observer.h"
 
-class Browser;
 class GURL;
 class LensOverlayController;
 class LensOverlaySidePanelWebView;
-class SidePanelUI;
 
 namespace content {
 class WebContents;
@@ -40,20 +38,13 @@ namespace lens {
 class LensOverlaySidePanelCoordinator : public SidePanelEntryObserver,
                                         public content::WebContentsObserver {
  public:
-  LensOverlaySidePanelCoordinator(
-      Browser* browser,
-      LensOverlayController* lens_overlay_controller,
-      SidePanelUI* side_panel_ui,
-      content::WebContents* web_contents);
+  explicit LensOverlaySidePanelCoordinator(
+      LensOverlayController* lens_overlay_controller);
   LensOverlaySidePanelCoordinator(const LensOverlaySidePanelCoordinator&) =
       delete;
   LensOverlaySidePanelCoordinator& operator=(
       const LensOverlaySidePanelCoordinator&) = delete;
   ~LensOverlaySidePanelCoordinator() override;
-
-  // Handles activations of the Lens overlay side panel entry.
-  static actions::ActionItem::InvokeActionCallback
-  CreateSidePanelActionCallback(Browser* browser);
 
   // Registers the side panel entry in the side panel if it doesn't already
   // exist and then shows it.
@@ -94,21 +85,11 @@ class LensOverlaySidePanelCoordinator : public SidePanelEntryObserver,
   // Called to get the URL for the "open in new tab" button.
   GURL GetOpenInNewTabUrl();
 
-  // Gets the tab web contents where this side panel was opened.
-  content::WebContents* GetTabWebContents();
-
   std::unique_ptr<views::View> CreateLensOverlayResultsView();
-
-  // The browser of the tab web contents passed by the overlay.
-  const raw_ptr<Browser> tab_browser_;
 
   // Owns this.
   const raw_ptr<LensOverlayController> lens_overlay_controller_;
 
-  // The side panel UI corresponding to the tab's browser.
-  const raw_ptr<SidePanelUI> side_panel_ui_;
-
-  base::WeakPtr<content::WebContents> tab_web_contents_;
   raw_ptr<LensOverlaySidePanelWebView> side_panel_web_view_;
   base::WeakPtrFactory<LensOverlaySidePanelCoordinator> weak_ptr_factory_{this};
 };

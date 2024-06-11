@@ -88,8 +88,6 @@ class CustomizeToolbarHandlerTest : public BrowserWithTestWindowTest {
         static_cast<MockPinnedToolbarActionsModel*>(
             PinnedToolbarActionsModelFactory::GetForProfile(profile()));
 
-    browser_actions_ = std::make_unique<BrowserActions>(*(browser()));
-
     EXPECT_CALL(mock_pinned_toolbar_actions_model(), AddObserver)
         .Times(1)
         .WillOnce(SaveArg<0>(&pinned_toolbar_actions_model_observer_));
@@ -107,7 +105,6 @@ class CustomizeToolbarHandlerTest : public BrowserWithTestWindowTest {
   void TearDown() override {
     pinned_toolbar_actions_model_observer_ = nullptr;
     handler_.reset();
-    browser_actions_.reset();
     mock_pinned_toolbar_actions_model_ = nullptr;
 
     BrowserWithTestWindowTest::TearDown();
@@ -125,7 +122,6 @@ class CustomizeToolbarHandlerTest : public BrowserWithTestWindowTest {
   testing::NiceMock<MockPage> mock_page_;
 
   raw_ptr<MockPinnedToolbarActionsModel> mock_pinned_toolbar_actions_model_;
-  std::unique_ptr<BrowserActions> browser_actions_;
   raw_ptr<PinnedToolbarActionsModel::Observer>
       pinned_toolbar_actions_model_observer_;
   std::unique_ptr<CustomizeToolbarHandler> handler_;

@@ -337,9 +337,7 @@ void LensOverlayController::ShowUI(
   // not already exist for this tab's web contents.
   if (!results_side_panel_coordinator_) {
     results_side_panel_coordinator_ =
-        std::make_unique<lens::LensOverlaySidePanelCoordinator>(
-            tab_browser, this, tab_browser->GetFeatures().side_panel_ui(),
-            tab_->GetContents());
+        std::make_unique<lens::LensOverlaySidePanelCoordinator>(this);
   }
   if (lens::features::IsLensOverlaySearchBubbleEnabled()) {
     search_bubble_controller_->Show();

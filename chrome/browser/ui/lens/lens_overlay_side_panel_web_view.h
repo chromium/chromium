@@ -19,7 +19,9 @@ namespace lens {
 class LensOverlaySidePanelCoordinator;
 }  // namespace lens
 
-class Profile;
+namespace content {
+class BrowserContext;
+}  // namespace content
 
 // LensOverlaySidePanelWebView holds custom behavior needed for the lens overlay
 // that separates it from other views. This includes context menu support and
@@ -33,7 +35,7 @@ class LensOverlaySidePanelWebView
 
  public:
   LensOverlaySidePanelWebView(
-      Profile* profile,
+      content::BrowserContext* browser_context,
       lens::LensOverlaySidePanelCoordinator* coordinator);
   LensOverlaySidePanelWebView(const LensOverlaySidePanelWebView&) = delete;
   LensOverlaySidePanelWebView& operator=(const LensOverlaySidePanelWebView&) =
