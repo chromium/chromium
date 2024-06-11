@@ -370,6 +370,7 @@ try_.builder(
 
 try_.builder(
     name = "mac13-tests",
+    branch_selector = branches.selector.MAC_BRANCHES,
     mirrors = [
         "ci/Mac Builder",
         "ci/Mac13 Tests",
