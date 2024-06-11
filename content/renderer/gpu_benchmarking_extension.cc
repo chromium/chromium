@@ -1323,9 +1323,7 @@ bool GpuBenchmarking::PointerActionSequence(gin::Arguments* args) {
   std::unique_ptr<base::Value> value =
       V8ValueConverter::Create()->FromV8Value(obj, v8_context);
   if (!value.get()) {
-    // TODO(dtapuska): Throw an error here, some web tests start
-    // failing when this is done though.
-    // args->ThrowTypeError(actions_parser.error_message());
+    args->ThrowError();
     return false;
   }
 
@@ -1334,9 +1332,7 @@ bool GpuBenchmarking::PointerActionSequence(gin::Arguments* args) {
   ActionsParser actions_parser(
       base::Value::FromUniquePtrValue(std::move(value)));
   if (!actions_parser.Parse()) {
-    // TODO(dtapuska): Throw an error here, some web tests start
-    // failing when this is done though.
-    // args->ThrowTypeError(actions_parser.error_message());
+    args->ThrowTypeError(actions_parser.error_message());
     return false;
   }
 
