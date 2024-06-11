@@ -53,7 +53,7 @@ PLATFORM_EXPORT const UChar* GetFallbackFamily(
     const LayoutLocale* content_locale,
     UScriptCode* script_checked,
     FontFallbackPriority,
-    SkFontMgr* font_manager);
+    const SkFontMgr& font_manager);
 
 }  // namespace blink
 

@@ -48,11 +48,11 @@ namespace blink {
 
 namespace {
 
-static inline bool IsFontPresent(const UChar* font_name,
-                                 SkFontMgr* font_manager) {
+inline bool IsFontPresent(const UChar* font_name,
+                          const SkFontMgr& font_manager) {
   String family = font_name;
   sk_sp<SkTypeface> tf(
-      font_manager->matchFamilyStyle(family.Utf8().c_str(), SkFontStyle()));
+      font_manager.matchFamilyStyle(family.Utf8().c_str(), SkFontStyle()));
   if (!tf)
     return false;
 
@@ -305,7 +305,7 @@ void InitializeScriptFontMap(ScriptToFontMap& script_font_map) {
 }
 
 void FindFirstExistingCandidateFont(FontMapping& script_font_mapping,
-                                    SkFontMgr* font_manager) {
+                                    const SkFontMgr& font_manager) {
   for (const UChar* family : script_font_mapping.candidate_family_names) {
     if (IsFontPresent(family, font_manager)) {
       script_font_mapping.family_name = family;
@@ -362,7 +362,7 @@ UScriptCode GetScript(int ucs4) {
 }
 
 const UChar* GetFontBasedOnUnicodeBlock(UBlockCode block_code,
-                                        SkFontMgr* font_manager) {
+                                        const SkFontMgr& font_manager) {
   static const UChar* const kEmojiFonts[] = {u"Segoe UI Emoji",
                                              u"Segoe UI Symbol"};
   static const UChar* const kMathFonts[] = {u"Cambria Math", u"Segoe UI Symbol",
@@ -437,7 +437,7 @@ const UChar* GetFontBasedOnUnicodeBlock(UBlockCode block_code,
 
 const UChar* GetFontFamilyForScript(UScriptCode script,
                                     FontDescription::GenericFamilyType generic,
-                                    SkFontMgr* font_manager) {
+                                    const SkFontMgr& font_manager) {
   static ScriptToFontMap script_font_map;
   static bool initialized = false;
   if (!initialized) {
@@ -471,9 +471,8 @@ const UChar* GetFallbackFamily(UChar32 character,
                                const LayoutLocale* content_locale,
                                UScriptCode* script_checked,
                                FontFallbackPriority fallback_priority,
-                               SkFontMgr* font_manager) {
+                               const SkFontMgr& font_manager) {
   DCHECK(character);
-  DCHECK(font_manager);
   UBlockCode block = fallback_priority == FontFallbackPriority::kEmojiEmoji
                          ? UBLOCK_EMOTICONS
                          : ublock_getCode(character);

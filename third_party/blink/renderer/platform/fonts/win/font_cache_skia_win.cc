@@ -173,9 +173,10 @@ const SimpleFontData* FontCache::GetFallbackFamilyNameFromHardcodedChoices(
     UChar32 codepoint,
     FontFallbackPriority fallback_priority) {
   UScriptCode script;
+  DCHECK(font_manager_);
   const UChar* legacy_fallback_family = GetFallbackFamily(
       codepoint, font_description.GenericFamily(), font_description.Locale(),
-      &script, fallback_priority, font_manager_.get());
+      &script, fallback_priority, *font_manager_);
 
   if (legacy_fallback_family) {
     FontFaceCreationParams create_by_family =
