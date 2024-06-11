@@ -44,8 +44,22 @@
 #include "ui/gfx/image/image.h"
 #include "ui/native_theme/native_theme.h"
 
+#if !BUILDFLAG(IS_CHROMEOS)
+#include "base/feature_list.h"
+#include "chrome/browser/enterprise/profile_management/profile_management_features.h"
+#endif
+
 namespace {
 const int kAvatarSize = 100;
+
+bool UseMultiscreen() {
+#if BUILDFLAG(IS_CHROMEOS)
+  return false;
+#else
+  return base::FeatureList::IsEnabled(
+      profile_management::features::kOidcAuthProfileManagement);
+#endif
+}
 
 std::string GetManagedAccountTitle(ProfileAttributesEntry* entry,
                                    const std::string& account_domain_name) {
@@ -82,7 +96,7 @@ ManagedUserProfileNoticeHandler::ManagedUserProfileNoticeHandler(
     bool profile_creation_required_by_policy,
     bool show_link_data_option,
     const AccountInfo& account_info,
-    signin::SigninChoiceCallback process_user_choice_callback,
+    signin::SigninChoiceCallbackVariant process_user_choice_callback,
     base::OnceClosure done_callback)
     : browser_(browser),
       type_(type),
@@ -98,14 +112,31 @@ ManagedUserProfileNoticeHandler::ManagedUserProfileNoticeHandler(
               ? std::string()
               : gaia::ExtractDomainName(account_info.email)),
       account_id_(account_info.account_id),
-      process_user_choice_callback_(std::move(process_user_choice_callback)),
       done_callback_(std::move(done_callback)) {
-  DCHECK(process_user_choice_callback_);
-  DCHECK(done_callback_);
-  DCHECK(
-      browser_ ||
-      type_ !=
-          ManagedUserProfileNoticeUI::ScreenType::kEnterpriseAccountCreation);
+  if (std::holds_alternative<signin::SigninChoiceWithConfirmationCallback>(
+          process_user_choice_callback)) {
+    process_user_choice_with_confirmation_callback_ =
+        std::move(std::get<signin::SigninChoiceWithConfirmationCallback>(
+            process_user_choice_callback));
+    CHECK(process_user_choice_with_confirmation_callback_);
+  }
+  if (std::holds_alternative<signin::SigninChoiceCallback>(
+          process_user_choice_callback)) {
+    CHECK(std::get<signin::SigninChoiceCallback>(process_user_choice_callback));
+    process_user_choice_with_confirmation_callback_ = base::BindOnce(
+        [](signin::SigninChoiceCallback callback, signin::SigninChoice choice,
+           signin::SigninChoiceOperationDoneCallback done) {
+          std::move(callback).Run(choice);
+          std::move(done).Run(
+              signin::SigninChoiceOperationResult::SIGNIN_SILENT_SUCCESS);
+        },
+        std::move(std::get<signin::SigninChoiceCallback>(
+            process_user_choice_callback)));
+  }
+  CHECK(done_callback_);
+  CHECK(browser_ ||
+        type_ !=
+            ManagedUserProfileNoticeUI::ScreenType::kEnterpriseAccountCreation);
   BrowserList::AddObserver(this);
 }
 
@@ -198,11 +229,15 @@ void ManagedUserProfileNoticeHandler::HandleInitializedWithSize(
 void ManagedUserProfileNoticeHandler::HandleProceed(
     const base::Value::List& args) {
   CHECK_EQ(1u, args.size());
-  if (process_user_choice_callback_) {
-    bool use_existing_profile = args[0].GetIfBool().value_or(false);
-    std::move(process_user_choice_callback_)
-        .Run(use_existing_profile ? signin::SIGNIN_CHOICE_CONTINUE
-                                  : signin::SIGNIN_CHOICE_NEW_PROFILE);
+  bool use_existing_profile = args[0].GetIfBool().value_or(false);
+  auto result = use_existing_profile ? signin::SIGNIN_CHOICE_CONTINUE
+                                     : signin::SIGNIN_CHOICE_NEW_PROFILE;
+  if (process_user_choice_with_confirmation_callback_) {
+    std::move(process_user_choice_with_confirmation_callback_)
+        .Run(result, base::BindOnce(
+                         &ManagedUserProfileNoticeHandler::OnUserChoiceHandled,
+                         weak_ptr_factory_.GetWeakPtr()));
+    return;
   }
   if (done_callback_) {
     std::move(done_callback_).Run();
@@ -211,8 +246,9 @@ void ManagedUserProfileNoticeHandler::HandleProceed(
 
 void ManagedUserProfileNoticeHandler::HandleCancel(
     const base::Value::List& args) {
-  if (process_user_choice_callback_) {
-    std::move(process_user_choice_callback_).Run(signin::SIGNIN_CHOICE_CANCEL);
+  if (process_user_choice_with_confirmation_callback_) {
+    std::move(process_user_choice_with_confirmation_callback_)
+        .Run(signin::SIGNIN_CHOICE_CANCEL, base::DoNothing());
   }
   if (done_callback_) {
     std::move(done_callback_).Run();
@@ -421,8 +457,30 @@ ManagedUserProfileNoticeHandler::GetTypeForTesting() {
 
 void ManagedUserProfileNoticeHandler::CallProceedCallbackForTesting(
     signin::SigninChoice choice) {
-  auto done_callback = std::move(done_callback_);
-  if (process_user_choice_callback_) {
-    std::move(process_user_choice_callback_).Run(choice);
+  if (process_user_choice_with_confirmation_callback_) {
+    std::move(process_user_choice_with_confirmation_callback_)
+        .Run(choice, base::BindOnce(
+                         &ManagedUserProfileNoticeHandler::OnUserChoiceHandled,
+                         weak_ptr_factory_.GetWeakPtr()));
+  }
+}
+
+void ManagedUserProfileNoticeHandler::OnUserChoiceHandled(
+    signin::SigninChoiceOperationResult result) {
+  if (!UseMultiscreen() && done_callback_) {
+    std::move(done_callback_).Run();
+    return;
+  }
+  switch (result) {
+    case signin::SigninChoiceOperationResult::SIGNIN_SILENT_SUCCESS:
+      if (done_callback_) {
+        std::move(done_callback_).Run();
+      }
+      return;
+    case signin::SigninChoiceOperationResult::SIGNIN_TIMEOUT:
+    case signin::SigninChoiceOperationResult::SIGNIN_ERROR:
+    case signin::SigninChoiceOperationResult::SIGNIN_CONFIRM_SUCCESS:
+      NOTIMPLEMENTED();
+      return;
   }
 }

@@ -193,7 +193,7 @@ SigninViewControllerDelegateViews::CreateManagedUserNoticeConfirmationWebView(
     bool is_oidc_account,
     bool profile_creation_required_by_policy,
     bool show_link_data_option,
-    signin::SigninChoiceCallback process_user_choice_callback,
+    signin::SigninChoiceCallbackVariant process_user_choice_callback,
     base::OnceClosure done_callback) {
   bool enable_updated_dialog = base::FeatureList::IsEnabled(
       features::kEnterpriseUpdatedProfileCreationScreen);
@@ -519,7 +519,7 @@ SigninViewControllerDelegate::CreateManagedUserNoticeDelegate(
     bool is_oidc_account,
     bool profile_creation_required_by_policy,
     bool show_link_data_option,
-    signin::SigninChoiceCallback process_user_choice_callback,
+    signin::SigninChoiceCallbackVariant process_user_choice_callback,
     base::OnceClosure done_callback) {
   return new SigninViewControllerDelegateViews(
       SigninViewControllerDelegateViews::

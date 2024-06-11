@@ -38,7 +38,24 @@ enum SigninChoice {
   SIGNIN_CHOICE_SIZE,
 };
 
+// Result of the operation done after the user choice.
+enum SigninChoiceOperationResult {
+  SIGNIN_TIMEOUT = 0,
+  SIGNIN_SILENT_SUCCESS = 1,
+  SIGNIN_ERROR = 2,
+  SIGNIN_CONFIRM_SUCCESS = 3
+};
+
+// Callback with the signin choice and a handler for when the choice has been
+// handled.
+using SigninChoiceOperationDoneCallback =
+    base::OnceCallback<void(SigninChoiceOperationResult)>;
+using SigninChoiceWithConfirmationCallback =
+    base::OnceCallback<void(SigninChoice, SigninChoiceOperationDoneCallback)>;
 using SigninChoiceCallback = base::OnceCallback<void(SigninChoice)>;
+using SigninChoiceCallbackVariant =
+    std::variant<SigninChoiceCallback,
+                 signin::SigninChoiceWithConfirmationCallback>;
 
 // Gets a webview within an auth page that has the specified parent frame name
 // (i.e. <webview name="foobar"></webview>).

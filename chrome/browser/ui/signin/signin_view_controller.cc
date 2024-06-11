@@ -337,7 +337,7 @@ void SigninViewController::ShowModalManagedUserNoticeDialog(
     bool is_oidc_account,
     bool force_new_profile,
     bool show_link_data_option,
-    signin::SigninChoiceCallback process_user_choice_callback,
+    signin::SigninChoiceCallbackVariant process_user_choice_callback,
     base::OnceClosure done_callback) {
 #if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX) || \
     BUILDFLAG(IS_CHROMEOS_LACROS)

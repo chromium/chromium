@@ -109,7 +109,7 @@ void ManagedUserProfileNoticeUI::Initialize(
     const AccountInfo& account_info,
     bool profile_creation_required_by_policy,
     bool show_link_data_option,
-    signin::SigninChoiceCallback process_user_choice_callback,
+    signin::SigninChoiceCallbackVariant process_user_choice_callback,
     base::OnceClosure done_callback) {
   auto handler = std::make_unique<ManagedUserProfileNoticeHandler>(
       browser, type, profile_creation_required_by_policy, show_link_data_option,
