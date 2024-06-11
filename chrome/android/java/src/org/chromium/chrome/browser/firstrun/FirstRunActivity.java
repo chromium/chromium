@@ -320,6 +320,10 @@ public class FirstRunActivity extends FirstRunActivityBase implements FirstRunPa
 
     private void onNativeDependenciesFullyInitialized() {
         mNativeInitializationPromise.fulfill(null);
+        if (ChromeFeatureList.isEnabled(
+                ChromeFeatureList.REPLACE_SYNC_PROMOS_WITH_SIGN_IN_PROMOS)) {
+            mPager.setOffscreenPageLimit(ViewPager2.OFFSCREEN_PAGE_LIMIT_DEFAULT);
+        }
 
         onInternalStateChanged();
     }
