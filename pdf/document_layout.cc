@@ -8,6 +8,8 @@
 
 #include "base/check_op.h"
 #include "base/values.h"
+#include "pdf/draw_utils/coordinates.h"
+#include "ui/gfx/geometry/insets.h"
 #include "ui/gfx/geometry/point.h"
 #include "ui/gfx/geometry/rect.h"
 #include "ui/gfx/geometry/size.h"
@@ -29,18 +31,13 @@ int GetWidestPageWidth(const std::vector<gfx::Size>& page_sizes) {
   return widest_page_width;
 }
 
-gfx::Rect InsetRect(const gfx::Rect& rect,
-                    const draw_utils::PageInsetSizes& inset_sizes) {
+gfx::Rect InsetRect(const gfx::Rect& rect, const gfx::Insets& inset_sizes) {
   gfx::Rect inset_rect(rect);
-  inset_rect.Inset(gfx::Insets::TLBR(inset_sizes.top, inset_sizes.left,
-                                     inset_sizes.bottom, inset_sizes.right));
+  inset_rect.Inset(inset_sizes);
   return inset_rect;
 }
 
 }  // namespace
-
-const draw_utils::PageInsetSizes DocumentLayout::kSingleViewInsets{
-    /*left=*/5, /*top=*/3, /*right=*/5, /*bottom=*/7};
 
 DocumentLayout::Options::Options() = default;
 
@@ -157,9 +154,8 @@ void DocumentLayout::ComputeTwoUpOddLayout(
   }
 
   for (size_t i = 0; i < page_sizes.size(); ++i) {
-    draw_utils::PageInsetSizes page_insets =
-        draw_utils::GetPageInsetsForTwoUpView(
-            i, page_sizes.size(), kSingleViewInsets, kHorizontalSeparator);
+    gfx::Insets page_insets = draw_utils::GetPageInsetsForTwoUpView(
+        i, page_sizes.size(), kSingleViewInsets, kHorizontalSeparator);
     const gfx::Size& page_size = page_sizes[i];
 
     gfx::Rect page_rect;

@@ -80,6 +80,7 @@
 #include "ui/base/cursor/mojom/cursor_type.mojom-shared.h"
 #include "ui/base/window_open_disposition_utils.h"
 #include "ui/events/keycodes/keyboard_codes.h"
+#include "ui/gfx/geometry/insets.h"
 #include "ui/gfx/geometry/point.h"
 #include "ui/gfx/geometry/point_conversions.h"
 #include "ui/gfx/geometry/rect.h"
@@ -3109,7 +3110,7 @@ gfx::Size PDFiumEngine::GetPageSizeForLayout(
   return gfx::Size(width_in_pixels, height_in_pixels);
 }
 
-draw_utils::PageInsetSizes PDFiumEngine::GetInsetSizes(
+gfx::Insets PDFiumEngine::GetInsetSizes(
     const DocumentLayout::Options& layout_options,
     size_t page_index,
     size_t num_of_pages) const {
@@ -3128,10 +3129,10 @@ void PDFiumEngine::EnlargePage(const DocumentLayout::Options& layout_options,
                                size_t page_index,
                                size_t num_of_pages,
                                gfx::Size* page_size) const {
-  draw_utils::PageInsetSizes inset_sizes =
+  gfx::Insets inset_sizes =
       GetInsetSizes(layout_options, page_index, num_of_pages);
-  page_size->Enlarge(inset_sizes.left + inset_sizes.right,
-                     inset_sizes.top + inset_sizes.bottom);
+  page_size->Enlarge(inset_sizes.left() + inset_sizes.right(),
+                     inset_sizes.top() + inset_sizes.bottom());
 }
 
 void PDFiumEngine::InsetPage(const DocumentLayout::Options& layout_options,
@@ -3139,13 +3140,13 @@ void PDFiumEngine::InsetPage(const DocumentLayout::Options& layout_options,
                              size_t num_of_pages,
                              double multiplier,
                              gfx::Rect& rect) const {
-  draw_utils::PageInsetSizes inset_sizes =
+  gfx::Insets inset_sizes =
       GetInsetSizes(layout_options, page_index, num_of_pages);
   rect.Inset(gfx::Insets::TLBR(
-      static_cast<int>(ceil(inset_sizes.top * multiplier)),
-      static_cast<int>(ceil(inset_sizes.left * multiplier)),
-      static_cast<int>(ceil(inset_sizes.bottom * multiplier)),
-      static_cast<int>(ceil(inset_sizes.right * multiplier))));
+      static_cast<int>(ceil(inset_sizes.top() * multiplier)),
+      static_cast<int>(ceil(inset_sizes.left() * multiplier)),
+      static_cast<int>(ceil(inset_sizes.bottom() * multiplier)),
+      static_cast<int>(ceil(inset_sizes.right() * multiplier))));
 }
 
 std::optional<size_t> PDFiumEngine::GetAdjacentPageIndexForTwoUpView(
@@ -3257,7 +3258,7 @@ void PDFiumEngine::FillPageSides(int progressive_index) {
   int page_index = progressive_paints_[progressive_index].page_index();
   gfx::Rect dirty_in_screen = progressive_paints_[progressive_index].rect();
   FPDF_BITMAP bitmap = progressive_paints_[progressive_index].bitmap();
-  draw_utils::PageInsetSizes inset_sizes =
+  gfx::Insets inset_sizes =
       GetInsetSizes(layout_.options(), page_index, pages_.size());
 
   gfx::Rect page_rect = pages_[page_index]->rect();
@@ -3467,7 +3468,7 @@ gfx::Rect PDFiumEngine::GetVisibleRect() const {
 
 gfx::Rect PDFiumEngine::GetPageScreenRect(int page_index) const {
   gfx::Rect page_rect = pages_[page_index]->rect();
-  draw_utils::PageInsetSizes inset_sizes =
+  gfx::Insets inset_sizes =
       GetInsetSizes(layout_.options(), page_index, pages_.size());
 
   int max_page_height = page_rect.height();

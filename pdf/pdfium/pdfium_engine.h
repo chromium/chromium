@@ -37,6 +37,7 @@
 #include "third_party/pdfium/public/fpdfview.h"
 #include "third_party/skia/include/core/SkBitmap.h"
 #include "third_party/skia/include/core/SkColor.h"
+#include "ui/gfx/geometry/insets.h"
 #include "ui/gfx/geometry/point.h"
 #include "ui/gfx/geometry/rect.h"
 #include "ui/gfx/geometry/rect_f.h"
@@ -60,7 +61,6 @@ struct PageCharacterIndex;
 
 namespace draw_utils {
 class ShadowMatrix;
-struct PageInsetSizes;
 }  // namespace draw_utils
 
 class PDFiumEngine : public PDFEngine,
@@ -364,10 +364,9 @@ class PDFiumEngine : public PDFEngine,
   // Helper function for getting the inset sizes for the current layout. If
   // two-up view is enabled, the configuration of inset sizes depends on
   // the position of the page, specified by `page_index` and `num_of_pages`.
-  draw_utils::PageInsetSizes GetInsetSizes(
-      const DocumentLayout::Options& layout_options,
-      size_t page_index,
-      size_t num_of_pages) const;
+  gfx::Insets GetInsetSizes(const DocumentLayout::Options& layout_options,
+                            size_t page_index,
+                            size_t num_of_pages) const;
 
   // If two-up view is disabled, enlarges `page_size` with inset sizes for
   // single-view. If two-up view is enabled, calls GetInsetSizes() with
