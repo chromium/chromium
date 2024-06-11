@@ -37,14 +37,3 @@ android_library("ip_protection_auth_javatests") {
     "//third_party/junit:junit",
   ]
 }
-
-android_apk("ip_protection_auth_test_service_apk") {
-  testonly = true
-
-  # Used as an additional_apk in test scripts.
-  never_incremental = true
-  apk_name = "IpProtectionAuth"
-  testonly = true
-  android_manifest = "AndroidManifest.xml"
-  deps = [ "../mock_service:ip_protection_auth_service_mock_java" ]
-}
