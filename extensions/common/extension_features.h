@@ -100,6 +100,10 @@ BASE_DECLARE_FEATURE(kExtensionIconVariants);
 // supported.
 BASE_DECLARE_FEATURE(kExtensionManifestV2DeprecationWarning);
 
+// Controls disabling affected MV2 extensions that are no longer supported.
+// Users can re-enable these extensions.
+BASE_DECLARE_FEATURE(kExtensionManifestV2Disabled);
+
 // Allows server-side configuration of a temporary exception list.
 BASE_DECLARE_FEATURE(kExtensionManifestV2ExceptionList);
 extern const base::FeatureParam<std::string>

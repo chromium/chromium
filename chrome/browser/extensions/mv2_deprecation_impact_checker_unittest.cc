@@ -73,6 +73,9 @@ std::string DescribeTestVariant(const TestVariant& test_variant) {
     case MV2ExperimentStage::kWarning:
       description += "WarningExperiment";
       break;
+    case MV2ExperimentStage::kDisableWithReEnable:
+      description += "DisableExperiment";
+      break;
   }
 
   return description;
@@ -235,7 +238,8 @@ INSTANTIATE_TEST_SUITE_P(
     MV2DeprecationImpactCheckerUnitTest,
     testing::Combine(
         testing::Values(MV2ExperimentStage::kNone,
-                        MV2ExperimentStage::kWarning),
+                        MV2ExperimentStage::kWarning,
+                        MV2ExperimentStage::kDisableWithReEnable),
         testing::Values(MV2PolicyLevel::kUnset,
                         MV2PolicyLevel::kAllowed,
                         MV2PolicyLevel::kDisallowed,

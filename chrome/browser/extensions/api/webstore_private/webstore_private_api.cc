@@ -1364,6 +1364,9 @@ WebstorePrivateGetMV2DeprecationStatusFunction::Run() {
     case MV2ExperimentStage::kWarning:
       api_status = api::webstore_private::MV2DeprecationStatus::kWarning;
       break;
+    case MV2ExperimentStage::kDisableWithReEnable:
+      api_status = api::webstore_private::MV2DeprecationStatus::kSoftDisable;
+      break;
   }
 
   return RespondNow(ArgumentList(

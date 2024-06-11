@@ -811,9 +811,19 @@ WebstorePrivateManifestV2DeprecationUnitTest::
     case MV2ExperimentStage::kNone:
       disabled_features.push_back(
           extensions_features::kExtensionManifestV2DeprecationWarning);
+      disabled_features.push_back(
+          extensions_features::kExtensionManifestV2Disabled);
       break;
     case MV2ExperimentStage::kWarning:
       enabled_features.push_back(
+          extensions_features::kExtensionManifestV2DeprecationWarning);
+      disabled_features.push_back(
+          extensions_features::kExtensionManifestV2Disabled);
+      break;
+    case MV2ExperimentStage::kDisableWithReEnable:
+      enabled_features.push_back(
+          extensions_features::kExtensionManifestV2Disabled);
+      disabled_features.push_back(
           extensions_features::kExtensionManifestV2DeprecationWarning);
       break;
   }
@@ -831,6 +841,8 @@ INSTANTIATE_TEST_SUITE_P(
           return "ExperimentDisabled";
         case MV2ExperimentStage::kWarning:
           return "WarningExperiment";
+        case MV2ExperimentStage::kDisableWithReEnable:
+          return "DisableExperiment";
       }
     });
 
@@ -851,6 +863,9 @@ TEST_P(WebstorePrivateManifestV2DeprecationUnitTest,
       break;
     case MV2ExperimentStage::kWarning:
       expected = "warning";
+      break;
+    case MV2ExperimentStage::kDisableWithReEnable:
+      expected = "soft_disable";
       break;
   }
 

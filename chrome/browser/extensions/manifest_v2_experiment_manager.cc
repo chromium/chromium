@@ -75,7 +75,14 @@ KeyedService* ManifestV2ExperimentManagerFactory::BuildServiceInstanceFor(
   return new ManifestV2ExperimentManager(context);
 }
 
+// Determines the current stage of the MV2 deprecation experiments.
 MV2ExperimentStage CalculateCurrentExperimentStage() {
+  // Return the "highest" stage that is currently active for the user.
+  if (base::FeatureList::IsEnabled(
+          extensions_features::kExtensionManifestV2Disabled)) {
+    return MV2ExperimentStage::kDisableWithReEnable;
+  }
+
   if (base::FeatureList::IsEnabled(
           extensions_features::kExtensionManifestV2DeprecationWarning)) {
     return MV2ExperimentStage::kWarning;
