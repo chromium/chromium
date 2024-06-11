@@ -227,7 +227,7 @@ BASE_FEATURE(kAdjustGpuProcessPriority,
 // order to avoid race in GpuInfo. crbug.com/1506660.
 BASE_FEATURE(kGenGpuDiskCacheKeyPrefixInGpuService,
              "GenGpuDiskCacheKeyPrefixInGpuService",
-             base::FEATURE_DISABLED_BY_DEFAULT);
+             base::FEATURE_ENABLED_BY_DEFAULT);
 
 // Controls the decode acceleration of JPEG images (as opposed to camera
 // captures) in Chrome OS using the VA-API.
