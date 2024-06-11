@@ -61,6 +61,7 @@ enum SearchResultIcon {
   kPower,
   kPrinter,
   kPrivacyControls,
+  kReducedAnimations,
   kReleaseNotes,
   kReset,
   kRestore,

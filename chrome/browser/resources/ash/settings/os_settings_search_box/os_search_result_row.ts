@@ -803,6 +803,8 @@ export class OsSearchResultRowElement extends OsSearchResultRowElementBase {
                                  'os-settings:print';
       case SearchResultIcon.kPrivacyControls:
         return 'os-settings:privacy-controls';
+      case SearchResultIcon.kReducedAnimations:
+        return 'os-settings:reduced-animations';
       case SearchResultIcon.kReleaseNotes:
         return 'os-settings:about-release-notes';
       case SearchResultIcon.kReset:
