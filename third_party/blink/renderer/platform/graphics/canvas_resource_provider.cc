@@ -1350,6 +1350,7 @@ CanvasResourceProvider::CanvasResourceProvider(
         gpu::kGpuFeatureStatusEnabled) {
       max_recorded_op_bytes_ =
           static_cast<size_t>(kMaxRecordedOpGraphiteKB.Get()) * 1024;
+      recorder_->DisableLineDrawingAsPaths();
     }
   }
 
@@ -1376,6 +1377,7 @@ CanvasResourceProvider::ReleaseRecorder() {
   auto recorder = std::make_unique<MemoryManagedPaintRecorder>(Size(), this);
   recorder_->SetClient(nullptr);
   recorder_.swap(recorder);
+  DisableLineDrawingAsPathsIfNecessary();
   return recorder;
 }
 
@@ -1383,6 +1385,7 @@ void CanvasResourceProvider::SetRecorder(
     std::unique_ptr<MemoryManagedPaintRecorder> recorder) {
   recorder->SetClient(this);
   recorder_ = std::move(recorder);
+  DisableLineDrawingAsPathsIfNecessary();
 }
 
 void CanvasResourceProvider::FlushIfRecordingLimitExceeded() {
@@ -1923,6 +1926,16 @@ void CanvasResourceProvider::OnMemoryDump(
 
 size_t CanvasResourceProvider::GetSize() const {
   return ComputeSurfaceSize();
+}
+
+void CanvasResourceProvider::DisableLineDrawingAsPathsIfNecessary() {
+  if (context_provider_wrapper_ &&
+      context_provider_wrapper_->ContextProvider()
+              ->GetGpuFeatureInfo()
+              .status_values[gpu::GPU_FEATURE_TYPE_SKIA_GRAPHITE] ==
+          gpu::kGpuFeatureStatusEnabled) {
+    recorder_->DisableLineDrawingAsPaths();
+  }
 }
 
 }  // namespace blink

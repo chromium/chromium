@@ -402,6 +402,10 @@ class PLATFORM_EXPORT CanvasResourceProvider
   void MaybePostUnusedResourcesReclaimTask();
   void ClearOldUnusedResources();
 
+  // Disables lines drawing as paths if necessary. Drawing lines as paths is
+  // only needed for ganesh.
+  void DisableLineDrawingAsPathsIfNecessary();
+
   base::WeakPtr<WebGraphicsContext3DProviderWrapper> context_provider_wrapper_;
   base::WeakPtr<CanvasResourceDispatcher> resource_dispatcher_;
   // Note that `info_` should be const, but the relevant SkImageInfo

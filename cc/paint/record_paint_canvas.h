@@ -37,6 +37,9 @@ class CC_PAINT_EXPORT RecordPaintCanvas : public PaintCanvas {
 
   virtual PaintRecord ReleaseAsRecord();
 
+  // See comments around `maybe_draw_lines_as_paths_` for details.
+  void DisableLineDrawingAsPaths();
+
   bool HasRecordedDrawOps() const { return buffer_.has_draw_ops(); }
   size_t TotalOpCount() const { return buffer_.total_op_count(); }
   size_t OpBytesUsed() const { return buffer_.paint_ops_size(); }
@@ -198,6 +201,8 @@ class CC_PAINT_EXPORT RecordPaintCanvas : public PaintCanvas {
                                 bool antialias,
                                 UsePaintCache use_paint_cache);
 
+  bool IsDrawLinesAsPathsEnabled() const { return maybe_draw_lines_as_paths_; }
+
  private:
   template <typename T, typename... Args>
   void push(Args&&... args);
@@ -213,7 +218,8 @@ class CC_PAINT_EXPORT RecordPaintCanvas : public PaintCanvas {
   // Rasterization may batch operations, and that batching may be disabled if
   // drawLine() is used instead of drawPath(). These members are used to
   // determine is a drawLine() should be rastered as a drawPath().
-  // TODO(crbug.com/40258748): figure out better heurstics.
+  // TODO(crbug.com/40045234): figure out better heurstics.
+  bool maybe_draw_lines_as_paths_ = true;
   uint32_t draw_path_count_ = 0;
   uint32_t draw_line_count_ = 0;
 };

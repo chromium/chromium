@@ -43,6 +43,13 @@ void MemoryManagedPaintRecorder::SetClient(Client* client) {
   client_ = client;
 }
 
+void MemoryManagedPaintRecorder::DisableLineDrawingAsPaths() {
+  main_canvas_.DisableLineDrawingAsPaths();
+  if (side_canvas_) {
+    side_canvas_->DisableLineDrawingAsPaths();
+  }
+}
+
 cc::PaintRecord MemoryManagedPaintRecorder::ReleaseMainRecording() {
   cc::PaintRecord record = main_canvas_.ReleaseAsRecord();
   if (client_) {

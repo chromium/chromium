@@ -36,6 +36,11 @@ PaintRecord RecordPaintCanvas::ReleaseAsRecord() {
   return buffer_.ReleaseAsRecord();
 }
 
+void RecordPaintCanvas::DisableLineDrawingAsPaths() {
+  maybe_draw_lines_as_paths_ = false;
+  draw_path_count_ = draw_line_count_ = 0;
+}
+
 template <typename T, typename... Args>
 void RecordPaintCanvas::push(Args&&... args) {
 #if DCHECK_IS_ON()
@@ -230,7 +235,8 @@ void RecordPaintCanvas::drawLine(SkScalar x0,
                                  SkScalar x1,
                                  SkScalar y1,
                                  const PaintFlags& flags) {
-  if (draw_line_count_ != std::numeric_limits<uint32_t>::max()) {
+  if (maybe_draw_lines_as_paths_ &&
+      draw_line_count_ != std::numeric_limits<uint32_t>::max()) {
     ++draw_line_count_;
     // If a bunch of paths have been drawn, only switch to drawing lines
     // after a number of lines have been drawn.
@@ -309,7 +315,8 @@ void RecordPaintCanvas::drawRoundRect(const SkRect& rect,
 void RecordPaintCanvas::drawPath(const SkPath& path,
                                  const PaintFlags& flags,
                                  UsePaintCache use_paint_cache) {
-  if (draw_path_count_ != std::numeric_limits<uint32_t>::max()) {
+  if (maybe_draw_lines_as_paths_ &&
+      draw_path_count_ != std::numeric_limits<uint32_t>::max()) {
     ++draw_path_count_;
     if (draw_path_count_ > 4) {
       draw_line_count_ = 0;

@@ -48,6 +48,10 @@ class PLATFORM_EXPORT MemoryManagedPaintRecorder {
 
   void SetClient(Client* client);
 
+  // See comments around `RecordPaintCanvas::maybe_draw_lines_as_paths_` for
+  // details.
+  void DisableLineDrawingAsPaths();
+
   // Releases the main recording, leaving the side recording untouched.
   // This effectively flushes the part of the recording that can be flushed,
   // leaving unclosed layer content unflushed, available to be closed and

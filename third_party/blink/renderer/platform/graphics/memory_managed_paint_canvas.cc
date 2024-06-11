@@ -21,8 +21,12 @@ MemoryManagedPaintCanvas::~MemoryManagedPaintCanvas() = default;
 std::unique_ptr<MemoryManagedPaintCanvas>
 MemoryManagedPaintCanvas::CreateChildCanvas() {
   // Using `new` to access a non-public constructor.
-  return base::WrapUnique(
+  auto canvas = base::WrapUnique(
       new MemoryManagedPaintCanvas(CreateChildCanvasTag(), *this));
+  if (!IsDrawLinesAsPathsEnabled()) {
+    canvas->DisableLineDrawingAsPaths();
+  }
+  return canvas;
 }
 
 cc::PaintRecord MemoryManagedPaintCanvas::ReleaseAsRecord() {
