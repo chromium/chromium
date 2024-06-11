@@ -3422,7 +3422,7 @@
     {
       // crbug.com/324111880
       name: "RubyShortHeuristics",
-      status: "test",
+      status: "stable",
     },
     {
       // Runs a microtask checkpoint before creating custom elements in
