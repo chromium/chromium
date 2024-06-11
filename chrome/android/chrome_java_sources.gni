@@ -181,8 +181,6 @@ chrome_java_sources = [
   "java/src/org/chromium/chrome/browser/bookmarks/BookmarkImageFetcher.java",
   "java/src/org/chromium/chrome/browser/bookmarks/BookmarkListEntry.java",
   "java/src/org/chromium/chrome/browser/bookmarks/BookmarkManagerCoordinator.java",
-  "java/src/org/chromium/chrome/browser/bookmarks/BookmarkManagerEmptyStateProperties.java",
-  "java/src/org/chromium/chrome/browser/bookmarks/BookmarkManagerEmptyStateViewBinder.java",
   "java/src/org/chromium/chrome/browser/bookmarks/BookmarkManagerMediator.java",
   "java/src/org/chromium/chrome/browser/bookmarks/BookmarkManagerProperties.java",
   "java/src/org/chromium/chrome/browser/bookmarks/BookmarkManagerViewBinder.java",

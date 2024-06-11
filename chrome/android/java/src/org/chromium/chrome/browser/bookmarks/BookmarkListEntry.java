@@ -31,8 +31,7 @@ public final class BookmarkListEntry {
         ViewType.SECTION_HEADER,
         ViewType.IMPROVED_BOOKMARK_VISUAL,
         ViewType.IMPROVED_BOOKMARK_COMPACT,
-        ViewType.SEARCH_BOX,
-        ViewType.EMPTY_STATE
+        ViewType.SEARCH_BOX
     })
     public @interface ViewType {
         int INVALID = -1;
@@ -44,7 +43,6 @@ public final class BookmarkListEntry {
         int IMPROVED_BOOKMARK_VISUAL = 5;
         int IMPROVED_BOOKMARK_COMPACT = 6;
         int SEARCH_BOX = 7;
-        int EMPTY_STATE = 8;
     }
 
     /** Contains data used by section header in bookmark UI. */
