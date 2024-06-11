@@ -118,12 +118,20 @@ GURL GetPreloadURLFromMatch(
   GURL prefetch_url = GURL(default_provider->url_ref().ReplaceSearchTerms(
       search_terms_args, template_url_service->search_terms_data(), nullptr));
 #if BUILDFLAG(IS_ANDROID)
-  if (CheckPrefetchParameterExistence(prefetch_url) ||
-      caller_type == CallerType::kSuggestPrerender) {
+  if (caller_type == CallerType::kSuggestPrerender) {
     // It is expected that prerender does not specify a parameter as the request
     // does not reach the network.
     return prefetch_url;
   }
+  const bool prefetch_parameter_existence =
+      CheckPrefetchParameterExistence(prefetch_url);
+  base::UmaHistogramBoolean("Omnibox.SearchPrefetch.PrefetchParameterExistence",
+                            prefetch_parameter_existence);
+
+  if (prefetch_parameter_existence) {
+    return prefetch_url;
+  }
+
   // It is quite common that a test does not specify the parameter.
   if (!is_test) {
     SCOPED_CRASH_KEY_BOOL("Bug_345275145", "temp_url_origin",
