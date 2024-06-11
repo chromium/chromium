@@ -202,3 +202,12 @@ select:not(:-internal-list-box) option {
   min-block-size: max(24px, 1.2em);
   align-content: center;
 }
+
+/* TODO(crbug.com/1511354): Consider using ::marker or a whole new
+ * pseudo-element to implement this. */
+select:not(:-internal-list-box) option::before {
+  content: '\2713' / '';
+}
+select option:not(:checked)::before {
+  visibility: hidden;
+}
