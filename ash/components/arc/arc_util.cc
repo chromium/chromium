@@ -266,32 +266,6 @@ bool ShouldShowOptInForTesting() {
       ash::switches::kArcForceShowOptInUi);
 }
 
-bool IsArcKioskAvailable() {
-  const auto* command_line = base::CommandLine::ForCurrentProcess();
-
-  if (command_line->HasSwitch(ash::switches::kArcAvailability)) {
-    std::string value =
-        command_line->GetSwitchValueASCII(ash::switches::kArcAvailability);
-    if (value == kAvailabilityInstalled) {
-      return true;
-    }
-    return IsArcAvailable();
-  }
-
-  // TODO(hidehiko): Remove this when session_manager supports the new flag.
-  if (command_line->HasSwitch(ash::switches::kArcAvailable)) {
-    return true;
-  }
-
-  // If not special kiosk device case, use general ARC check.
-  return IsArcAvailable();
-}
-
-bool IsArcKioskMode() {
-  // TODO(b/336756417): Remove
-  return false;
-}
-
 bool IsRobotOrOfflineDemoAccountMode() {
   return user_manager::UserManager::IsInitialized() &&
          user_manager::UserManager::Get()->IsLoggedInAsManagedGuestSession();

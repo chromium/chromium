@@ -17,7 +17,8 @@ void ArcKioskModeThrottleObserver::StartObserving(
     const ObserverStateChangedCallback& callback) {
   ThrottleObserver::StartObserving(context, callback);
   DCHECK(user_manager::UserManager::IsInitialized());
-  SetActive(IsArcKioskMode());
+  // TODO(b/336756417): Remove this class
+  SetActive(false);
 }
 
 void ArcKioskModeThrottleObserver::StopObserving() {

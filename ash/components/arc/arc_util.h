@@ -175,31 +175,13 @@ bool ShouldArcStartManually();
 // Returns true if ARC OptIn ui needs to be shown for testing.
 bool ShouldShowOptInForTesting();
 
-// Returns true if ARC is installed and running ARC kiosk apps on the current
-// device is officially supported.
-// It doesn't follow that ARC is available for user sessions and
-// IsArcAvailable() will return true, although the reverse should be.
-// This is used to distinguish special cases when ARC kiosk is available on
-// the device, but is not yet supported for regular user sessions.
-// In most cases, IsArcAvailable() check should be used instead of this.
-// Also not that this function may return true when ARC is not running in
-// Kiosk mode, it checks only ARC Kiosk availability.
-bool IsArcKioskAvailable();
-
-// Returns true if ARC should run under Kiosk mode for the current profile.
-// As it can return true only when user is already initialized, it implies
-// that ARC availability was checked before and IsArcKioskAvailable()
-// should also return true in that case.
-bool IsArcKioskMode();
-
 // Returns true if current user is a robot account user, or offline demo mode
 // user.
-// These are Public Session and ARC Kiosk users. Note that demo mode, including
+// These are Public Session users. Note that demo mode, including
 // offline demo mode, is implemented as a Public Session - offline demo mode
 // is setup offline and it isn't associated with a working robot account.
 // As it can return true only when user is already initialized, it implies
 // that ARC availability was checked before.
-// The check is basically IsArcKioskMode() | IsLoggedInAsPublicSession().
 bool IsRobotOrOfflineDemoAccountMode();
 
 // Returns true if ARC is allowed for the given user. Note this should not be

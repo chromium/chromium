@@ -170,10 +170,6 @@ bool ShouldUseErrorDialog() {
     return false;
   }
 
-  if (IsArcKioskMode()) {
-    return false;
-  }
-
   if (ash::DemoSession::IsDeviceInDemoMode()) {
     return false;
   }
@@ -657,13 +653,6 @@ void ArcSessionManager::OnProvisioningFinished(
     // will be kept alive without Android apps.
     if (IsRobotOrOfflineDemoAccountMode()) {
       VLOG(1) << "Robot account auth code fetching error";
-    }
-    if (IsArcKioskMode()) {
-      VLOG(1) << "Exiting kiosk session due to provisioning failure";
-      // Log out the user. All the cleanup will be done in Shutdown() method.
-      // The callback is not called because auth code is empty.
-      attempt_user_exit_callback_.Run();
-      return;
     }
 
     // For backwards compatibility, use NETWORK_ERROR for

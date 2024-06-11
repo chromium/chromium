@@ -217,10 +217,6 @@ void ArcUsbHostPermissionManager::RestorePermissionFromChromePrefs() {
 void ArcUsbHostPermissionManager::RequestUsbScanDeviceListPermission(
     const std::string& package_name,
     ArcUsbHostUiDelegate::RequestPermissionCallback callback) {
-  // Grants Arc USB permission for |package_name| in Arc kiosk mode.
-  if (IsArcKioskMode())
-    UpdateArcUsbScanDeviceListPermission(package_name, true /*allowed*/);
-
   if (HasUsbScanDeviceListPermission(package_name)) {
     std::move(callback).Run(true);
     return;
@@ -251,12 +247,6 @@ void ArcUsbHostPermissionManager::RequestUsbAccessPermission(
           vendor_id, product_id, manufacturer_string, product_string,
           serial_number, true /*always_include_manufacturer*/),
       serial_number, vendor_id, product_id);
-
-  // Grants Arc USB permission for |package_name| in Arc kiosk mode.
-  if (IsArcKioskMode()) {
-    UpdateArcUsbAccessPermission(package_name, usb_device_entry,
-                                 true /*allowed*/);
-  }
 
   if (HasUsbAccessPermission(package_name, usb_device_entry)) {
     std::move(callback).Run(true);

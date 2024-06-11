@@ -244,10 +244,7 @@ ArcStatus GetArcStatusForProfile(const Profile* profile,
     return ArcStatus::kDisallowedForTesting;
   }
 
-  // ARC Kiosk can be enabled even if ARC is not yet supported on the device.
-  // In that case IsArcKioskMode() should return true as profile is already
-  // created.
-  if (!IsArcAvailable() && !(IsArcKioskMode() && IsArcKioskAvailable())) {
+  if (!IsArcAvailable()) {
     VLOG_IF(1, should_report_reason) << "ARC is not available.";
     return ArcStatus::kNotAvailable;
   }
@@ -697,7 +694,7 @@ void UpdateArcFileSystemCompatibilityPrefIfNeeded(
   // old devices without ARC. We can always safely remove the following 4 lines
   // without changing any functionality when, say, the code clarity becomes
   // more important in the future.
-  if (!IsArcAvailable() && !IsArcKioskAvailable()) {
+  if (!IsArcAvailable()) {
     std::move(callback).Run();
     return;
   }

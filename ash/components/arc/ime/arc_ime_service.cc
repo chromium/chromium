@@ -92,10 +92,9 @@ class ArcWindowDelegateImpl : public ArcImeService::ArcWindowDelegate {
   ~ArcWindowDelegateImpl() override = default;
 
   bool IsInArcAppWindow(const aura::Window* window) const override {
-    // WMHelper is not craeted in browser_tests.
+    // WMHelper is not created in browser_tests.
     if (!exo::WMHelper::HasInstance())
       return false;
-    aura::Window* active = exo::WMHelper::GetInstance()->GetActiveWindow();
     for (; window; window = window->parent()) {
       if (ash::IsArcWindow(window))
         return true;
@@ -105,17 +104,6 @@ class ArcWindowDelegateImpl : public ArcImeService::ArcWindowDelegate {
       // have kSkipImeProcessing.
       if (window->GetProperty(aura::client::kSkipImeProcessing))
         return true;
-
-      // IsArcAppWindow returns false for a window of ARC++ Kiosk app, so we
-      // have to check application id of the active window to cover that case.
-      // TODO(yhanada): Make IsArcAppWindow support a window of ARC++ Kiosk.
-      // Specifically, a window of ARC++ Kiosk should have
-      // chromeos::AppType::ARC_APP property. Please see implementation of
-      // IsArcAppWindow().
-      if (window == active && IsArcKioskMode() &&
-          GetWindowTaskId(window).has_value()) {
-        return true;
-      }
     }
     return false;
   }

@@ -241,16 +241,6 @@ void LoginPerformer::LoginAsKioskAccount(const AccountId& app_account_id) {
       user_manager::UserManager::Get()->IsEphemeralAccountId(app_account_id));
 }
 
-void LoginPerformer::LoginAsArcKioskAccount(
-    const AccountId& arc_app_account_id) {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  EnsureAuthenticator();
-  authenticator_->LoginAsArcKioskAccount(
-      arc_app_account_id,
-      user_manager::UserManager::Get()->IsEphemeralAccountId(
-          arc_app_account_id));
-}
-
 void LoginPerformer::LoginAsWebKioskAccount(
     const AccountId& web_app_account_id) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);

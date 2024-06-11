@@ -138,12 +138,6 @@ void StubAuthenticator::LoginAsKioskAccount(
   consumer_->OnAuthSuccess(user_context);
 }
 
-void StubAuthenticator::LoginAsArcKioskAccount(
-    const AccountId& /* app_account_id */,
-    bool /* ephemeral */) {
-  NOTREACHED_NORETURN();
-}
-
 void StubAuthenticator::LoginAsWebKioskAccount(
     const AccountId& /* app_account_id */,
     bool /* ephemeral */) {
