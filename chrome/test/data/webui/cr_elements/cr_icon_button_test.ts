@@ -69,21 +69,31 @@ suite('cr-icon-button', function() {
   });
 
   test('cr-icon created, reused, removed based on |ironIcon|', async () => {
-    assertFalse(!!button.shadowRoot!.querySelector('cr-icon'));
-    button.ironIcon = 'icon-key';
-    await button.updateComplete;
+    function queryIcon() {
+      return button.shadowRoot!.querySelector('cr-icon');
+    }
 
-    assertTrue(!!button.shadowRoot!.querySelector('cr-icon'));
-    button.shadowRoot!.querySelector('cr-icon')!.icon = 'icon-key';
-    button.ironIcon = 'another-icon-key';
-    await button.updateComplete;
+    assertFalse(!!queryIcon());
 
+    // cr-icon created.
+    button.ironIcon = 'cr:search';
+    await button.updateComplete;
+    let icon = queryIcon();
+    assertTrue(!!icon);
+    assertEquals(button.ironIcon, icon.icon);
+
+    // cr-icon reused.
+    button.ironIcon = 'cr:open-in-new';
+    await button.updateComplete;
     assertEquals(1, button.shadowRoot!.querySelectorAll('cr-icon').length);
-    button.shadowRoot!.querySelector('cr-icon')!.icon = 'another-icon-key';
+    icon = queryIcon();
+    assertTrue(!!icon);
+    assertEquals(button.ironIcon, icon.icon);
+
+    // cr-icon removed.
     button.ironIcon = '';
     await button.updateComplete;
-
-    assertFalse(!!button.shadowRoot!.querySelector('cr-icon'));
+    assertFalse(!!queryIcon());
   });
 
   test('cr-icon children svg and img elements role set to none', async () => {
@@ -161,11 +171,11 @@ suite('cr-icon-button', function() {
   });
 
   test('multiple iron icons', async () => {
-    button.ironIcon = 'icon1,icon2';
+    button.ironIcon = ['cr:search', 'cr:open-in-new'].join(',');
     await button.updateComplete;
     const elements = button.shadowRoot!.querySelectorAll('cr-icon');
     assertEquals(2, elements.length);
-    assertEquals('icon1', elements[0]!.icon);
-    assertEquals('icon2', elements[1]!.icon);
+    assertEquals('cr:search', elements[0]!.icon);
+    assertEquals('cr:open-in-new', elements[1]!.icon);
   });
 });

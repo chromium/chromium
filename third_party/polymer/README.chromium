@@ -38,6 +38,9 @@ Local Modifications:
 - Modified iron-iconset-svg to apply icons to an element's shadowRoot if
   it exists, instead of always using Polymer's dom() method on element.root.
   This allows elements written in Lit to use icons from an iron-iconset-svg.
+- Modified iron-iconset-svg to fire the 'iron-iconset-added' event
+  synchronously, which in turn makes it possible to automatically detect missing
+  iron-iconset-svg dependencies in client code.
 - Removed CSS properties that are not needed in Chromium using
   css_strip_prefixes.py script.
 - Bundled and minified Polymer 3 with minify_polymer.py, since Polymer 3 repo

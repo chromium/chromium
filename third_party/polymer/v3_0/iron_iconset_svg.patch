@@ -1,0 +1,54 @@
+diff --git b/components-chromium/iron-iconset-svg/iron-iconset-svg.js a/components-chromium/iron-iconset-svg/iron-iconset-svg.js
+index 9bd6935fa7a9f..603f83c270ca6 100644
+--- b/components-chromium/iron-iconset-svg/iron-iconset-svg.js
++++ a/components-chromium/iron-iconset-svg/iron-iconset-svg.js
+@@ -127,13 +127,26 @@ Polymer({
+         iconName, this.rtlMirroring && this._targetIsRTL(element));
+     if (svg) {
+       // insert svg element into shadow root, if it exists
+-      var pde = dom(element.root || element);
++      var pde = element.shadowRoot ?
++          element.shadowRoot : dom(element.root || element);
+       pde.insertBefore(svg, pde.childNodes[0]);
+       return element._svgIcon = svg;
+     }
+     return null;
+   },
+ 
++  /**
++   * Produce installable clone of the SVG element matching `id` in this
++   * iconset, or `undefined` if there is no matching element.
++   * @param {string} iconName Name of the icon to apply.
++   * @param {boolean} targetIsRTL Whether the target element is RTL.
++   * @return {Element} Returns an installable clone of the SVG element
++   *     matching `id`.
++   */
++  createIcon: function(iconName, targetIsRTL) {
++    return this._cloneIcon(iconName, this.rtlMirroring && targetIsRTL);
++  },
++
+   /**
+    * Remove an icon from the given element by undoing the changes effected
+    * by `applyIcon`.
+@@ -143,7 +156,9 @@ Polymer({
+   removeIcon: function(element) {
+     // Remove old svg element
+     if (element._svgIcon) {
+-      dom(element.root || element).removeChild(element._svgIcon);
++      var root = element.shadowRoot ?
++          element.shadowRoot : dom(element.root || element);
++      root.removeChild(element._svgIcon);
+       element._svgIcon = null;
+     }
+   },
+@@ -185,9 +200,7 @@ Polymer({
+     this._meta.key = this.name;
+     this._meta.value = this;
+ 
+-    this.async(function() {
+-      this.fire('iron-iconset-added', this, {node: window});
+-    });
++    this.fire('iron-iconset-added', this, {node: window});
+   },
+ 
+   /**

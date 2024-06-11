@@ -200,9 +200,7 @@ Polymer({
     this._meta.key = this.name;
     this._meta.value = this;
 
-    this.async(function() {
-      this.fire('iron-iconset-added', this, {node: window});
-    });
+    this.fire('iron-iconset-added', this, {node: window});
   },
 
   /**

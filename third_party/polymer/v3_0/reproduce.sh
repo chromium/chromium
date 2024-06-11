@@ -55,6 +55,7 @@ find components-chromium/polymer/ -mindepth 3 -maxdepth 3 -name '*.js' \
 # Apply additional chrome specific patches.
 patch -p1 --forward < chromium.patch
 patch -p1 --forward < iron_icon.patch
+patch -p1 --forward < iron_iconset_svg.patch
 patch -p1 --forward < iron_list.patch
 patch -p1 --forward < iron_overlay_backdrop.patch
 patch -p1 --forward < paper_progress.patch

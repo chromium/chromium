@@ -3,6 +3,7 @@
 // found in the LICENSE file.
 
 import {assert} from '//resources/js/assert.js';
+import {EventTracker} from '//resources/js/event_tracker.js';
 
 // Common interface implemented by CrIconsetElement and IronIconset.
 export interface Iconset {
@@ -14,21 +15,40 @@ export interface Iconset {
 
 let iconsetMap: IconsetMap|null = null;
 
-// Detect iron-iconsets and add them to the map. This is so that every
-// iconset in the codebase does not need to migrate to CrIconset at once.
-// Remove once iron-iconset is no longer used.
-window.addEventListener('iron-iconset-added', e => {
-  const event = e as unknown as CustomEvent<Iconset>;
-  const map = IconsetMap.getInstance();
-  map.setIronIconset(event.detail.name, event.detail);
-});
-
 export class IconsetMap extends EventTarget {
   private iconsets_: Map<string, Iconset> = new Map();
   private ironIconsets_: Map<string, Iconset> = new Map();
+  private tracker_: EventTracker = new EventTracker();
+
+  constructor() {
+    super();
+
+    // Firstly add any 'iron-iconset-svg' instances that have possibly already
+    // been added by the time this instance is created.
+    const iconsets =
+        document.head.querySelectorAll<HTMLElement&Iconset>('iron-iconset-svg');
+    for (const iconset of iconsets) {
+      this.setIronIconset(iconset.name!, iconset);
+    }
+
+    // Secondly, detect any new 'iron-iconset-svg' instances and add them to the
+    // map. This is so that every iconset in the codebase does not need to
+    // migrate to CrIconset at once. Remove once iron-iconset is no longer used.
+    this.tracker_.add(
+        window, 'iron-iconset-added', (e: CustomEvent<Iconset>) => {
+          this.setIronIconset(e.detail.name, e.detail);
+        });
+  }
 
   static getInstance() {
     return iconsetMap || (iconsetMap = new IconsetMap());
+  }
+
+  static resetInstanceForTesting(instance: IconsetMap) {
+    if (iconsetMap !== null) {
+      iconsetMap.tracker_.removeAll();
+    }
+    iconsetMap = instance;
   }
 
   get(id: string): Iconset|null {

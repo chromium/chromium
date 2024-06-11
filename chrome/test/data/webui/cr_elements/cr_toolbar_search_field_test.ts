@@ -233,9 +233,9 @@ suite('cr-toolbar-search-field', function() {
 
   test('overrides search icon', async () => {
     assertEquals('cr:search', field.$.icon.ironIcon);
-    field.iconOverride = 'custom-icon';
+    field.iconOverride = 'cr:more-vert';
     await field.updateComplete;
-    assertEquals('custom-icon', field.$.icon.ironIcon);
+    assertEquals('cr:more-vert', field.$.icon.ironIcon);
     field.iconOverride = undefined;
     await field.updateComplete;
     assertEquals('cr:search', field.$.icon.ironIcon);

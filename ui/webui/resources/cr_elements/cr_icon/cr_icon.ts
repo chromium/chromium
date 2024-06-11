@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import {EventTracker} from '//resources/js/event_tracker.js';
+import {assert} from '//resources/js/assert.js';
 import type {PropertyValues} from '//resources/lit/v3_0/lit.rollup.js';
 import {CrLitElement} from '//resources/lit/v3_0/lit.rollup.js';
 
@@ -33,7 +33,6 @@ export class CrIconElement extends CrLitElement {
   private iconsetName_: string = '';
   private iconName_: string = '';
   private iconset_: Iconset|null = null;
-  private tracker_: EventTracker = new EventTracker();
 
   override updated(changedProperties: PropertyValues<this>) {
     super.updated(changedProperties);
@@ -52,13 +51,11 @@ export class CrIconElement extends CrLitElement {
     } else if (this.iconsetName_) {
       const iconsetMap = IconsetMap.getInstance();
       this.iconset_ = iconsetMap.get(this.iconsetName_);
-      if (this.iconset_) {
-        this.iconset_.applyIcon(this, this.iconName_);
-        this.tracker_.remove(iconsetMap, 'cr-iconset-added');
-      } else {
-        this.tracker_.add(
-            iconsetMap, 'cr-iconset-added', () => this.updateIcon());
-      }
+      assert(
+          this.iconset_,
+          `Could not find iconset for: '${this.iconsetName_}:${
+              this.iconName_}`);
+      this.iconset_.applyIcon(this, this.iconName_);
     }
   }
 }
