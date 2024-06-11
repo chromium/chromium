@@ -482,12 +482,9 @@ template("generate_jni") {
     forward_variables_from(invoker, "*", TESTONLY_AND_VISIBILITY)
     forward_variables_from(invoker, TESTONLY_AND_VISIBILITY)
     metadata = {
-      jni_source_files = sources
-
-      # This field is only used by Cronet team during the translation
-      # of the GN build targets to Soong modules. From a pure
-      # GN perspective, it is unused.
-      jni_source_files_abs = get_path_info(sources, "abspath")
+      # keep as abspath as this is used by cronet team
+      # to convert JNI registration targets from GN to BP (GN2BP).
+      jni_source_files = get_path_info(sources, "abspath")
     }
   }
 }
