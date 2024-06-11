@@ -3416,7 +3416,7 @@
     {
       // crbug.com/340041662
       name: "RubyLineEdgeAlignment",
-      status: "experimental",
+      status: "stable",
       depends_on: ["RubyLineBreakable"],
     },
     {
