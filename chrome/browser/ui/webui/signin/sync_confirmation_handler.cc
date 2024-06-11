@@ -52,26 +52,12 @@ const int kProfileImageSize = 128;
 
 // Derives screen mode of sync opt in screen from the
 // CanShowHistorySyncOptInsWithoutMinorModeRestrictions capability.
-bool UseMinorModeRestrictions() {
+constexpr bool UseMinorModeRestrictions() {
 #if BUILDFLAG(IS_CHROMEOS_ASH) || BUILDFLAG(IS_CHROMEOS_LACROS)
   // ChromeOS handles minor modes separately.
   return false;
 #else
-  return base::FeatureList::IsEnabled(
-      ::switches::kMinorModeRestrictionsForHistorySyncOptIn);
-#endif
-}
-
-// After this time delta, user must see a screen. If it was impossible to get
-// the CanShowHistorySyncOptInsWithoutMinorModeRestrictions capability before
-// the deadline, the screen should be configured in minor-safe way.
-base::TimeDelta GetMinorModeRestrictionsDeadline() {
-#if BUILDFLAG(IS_CHROMEOS_ASH) || BUILDFLAG(IS_CHROMEOS_LACROS)
-  // Not implemented for those platforms.
-  NOTREACHED_NORETURN();
-#else
-  return base::Milliseconds(
-      ::switches::kMinorModeRestrictionsFetchDeadlineMs.Get());
+  return true;
 #endif
 }
 
@@ -470,7 +456,8 @@ void SyncConfirmationHandler::HandleInitializedWithSize(
 
   if (!screen_mode_notified_ && UseMinorModeRestrictions()) {
     // Deadline timer for the case when screen mode doesn't arrive in time.
-    screen_mode_deadline_.Start(FROM_HERE, GetMinorModeRestrictionsDeadline(),
+    screen_mode_deadline_.Start(FROM_HERE,
+                                signin::GetMinorModeRestrictionsDeadline(),
                                 this, &SyncConfirmationHandler::OnDeadline);
   }
 

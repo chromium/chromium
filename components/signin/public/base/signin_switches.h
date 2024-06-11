@@ -111,8 +111,7 @@ COMPONENT_EXPORT(SIGNIN_SWITCHES)
 bool IsExplicitBrowserSigninUIOnDesktopEnabled();
 
 // Controls the view mode for (history) sync screen.
-#if BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_WIN) || \
-    BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_IOS)
+#if BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_IOS)
 COMPONENT_EXPORT(SIGNIN_SWITCHES)
 BASE_DECLARE_FEATURE(kMinorModeRestrictionsForHistorySyncOptIn);
 

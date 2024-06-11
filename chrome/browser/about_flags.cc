@@ -11398,12 +11398,11 @@ const FeatureEntry kFeatureEntries[] = {
 #endif  // BUILDFLAG(IS_ANDROID)
 
 // Controls the view mode for (history) sync screen.
-#if BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_WIN) || \
-    BUILDFLAG(IS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
     {"minor-mode-restrictions-for-history-sync-opt-in",
      flag_descriptions::kMinorModeRestrictionsForHistorySyncOptInName,
      flag_descriptions::kMinorModeRestrictionsForHistorySyncOptInDescription,
-     kOsLinux | kOsMac | kOsWin | kOsAndroid,
+     kOsAndroid,
      FEATURE_VALUE_TYPE(::switches::kMinorModeRestrictionsForHistorySyncOptIn)},
 #endif
 

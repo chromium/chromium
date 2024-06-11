@@ -81,8 +81,7 @@ const DeepQuery kSearchEngineChoiceActionButton{"search-engine-choice-app",
                                                 "#actionButton"};
 
 enum class SyncButtonsFeatureConfig : int {
-  // The kMinorModeRestrictionsForHistorySyncOptIn feature shall be disabled.
-  kDisabled = 0,
+  // Deprecated: kDisabled = 0,
   // For the rest of the cases the kMinorModeRestrictionsForHistorySyncOptIn
   // feature shall be enabled.
   // Simulate async load resulting in not-equal buttons.
@@ -100,7 +99,7 @@ struct TestParam {
   bool with_search_engine_choice_step = false;
   bool with_privacy_sandbox_enabled = false;
   SyncButtonsFeatureConfig sync_buttons_feature_config =
-      SyncButtonsFeatureConfig::kDisabled;
+      SyncButtonsFeatureConfig::kAsyncNotEqualButtons;
 };
 
 // Returned type is optional, because for the kButtonsStillLoading no buttons
@@ -108,7 +107,6 @@ struct TestParam {
 std::optional<::signin_metrics::SyncButtonsType> ExpectedButtonShownMetric(
     SyncButtonsFeatureConfig config) {
   switch (config) {
-    case SyncButtonsFeatureConfig::kDisabled:
     case SyncButtonsFeatureConfig::kAsyncNotEqualButtons:
       return ::signin_metrics::SyncButtonsType::kSyncNotEqualWeighted;
     case SyncButtonsFeatureConfig::kAsyncEqualButtons:
@@ -124,7 +122,6 @@ std::optional<::signin_metrics::SyncButtonsType> ExpectedButtonShownMetric(
 ::signin_metrics::SyncButtonClicked ExpectedOptInButtonClickedMetric(
     SyncButtonsFeatureConfig config) {
   switch (config) {
-    case SyncButtonsFeatureConfig::kDisabled:
     case SyncButtonsFeatureConfig::kAsyncNotEqualButtons:
       return ::signin_metrics::SyncButtonClicked::kSyncOptInNotEqualWeighted;
     case SyncButtonsFeatureConfig::kAsyncEqualButtons:
@@ -138,7 +135,6 @@ std::optional<::signin_metrics::SyncButtonsType> ExpectedButtonShownMetric(
 ::signin_metrics::SyncButtonClicked ExpectedDeclinedButtonClickedMetric(
     SyncButtonsFeatureConfig config) {
   switch (config) {
-    case SyncButtonsFeatureConfig::kDisabled:
     case SyncButtonsFeatureConfig::kAsyncNotEqualButtons:
       return ::signin_metrics::SyncButtonClicked::kSyncCancelNotEqualWeighted;
     case SyncButtonsFeatureConfig::kAsyncEqualButtons:
@@ -152,7 +148,6 @@ std::optional<::signin_metrics::SyncButtonsType> ExpectedButtonShownMetric(
 ::signin_metrics::SyncButtonClicked ExpectedSettingsButtonClickedMetric(
     SyncButtonsFeatureConfig config) {
   switch (config) {
-    case SyncButtonsFeatureConfig::kDisabled:
     case SyncButtonsFeatureConfig::kAsyncNotEqualButtons:
       return ::signin_metrics::SyncButtonClicked::kSyncSettingsNotEqualWeighted;
     case SyncButtonsFeatureConfig::kAsyncEqualButtons:
@@ -337,16 +332,6 @@ class FirstRunParameterizedInteractiveUiTest
              "true"}}});
     }
 
-    if (SyncButtonsFeatureConfig() == SyncButtonsFeatureConfig::kDisabled) {
-      disabled_features.push_back(
-          ::switches::kMinorModeRestrictionsForHistorySyncOptIn);
-    } else {
-      // Set long deadline to ensure that all interactions will complete before.
-      enabled_features_and_params.push_back(
-          {::switches::kMinorModeRestrictionsForHistorySyncOptIn,
-           {{::switches::kMinorModeRestrictionsFetchDeadlineMs.name, "5000"}}});
-    }
-
     scoped_feature_list_.InitWithFeaturesAndParameters(
         enabled_features_and_params, disabled_features);
   }
@@ -479,7 +464,6 @@ class FirstRunParameterizedInteractiveUiTest
         break;
       case SyncButtonsFeatureConfig::kDeadlined:
       case SyncButtonsFeatureConfig::kButtonsStillLoading:
-      case SyncButtonsFeatureConfig::kDisabled:
         // Screen configures itself without capabilities.
         break;
     }
@@ -676,9 +660,9 @@ IN_PROC_BROWSER_TEST_P(FirstRunParameterizedInteractiveUiTest, SignInAndSync) {
       "Signin.SyncOptIn.Completed",
       signin_metrics::AccessPoint::ACCESS_POINT_FOR_YOU_FRE, 1);
 
-  histogram_tester().ExpectUniqueSample(
-      "ProfilePicker.FirstRun.DefaultBrowser",
-      DefaultBrowserChoice::kClickSetAsDefault, 1);
+  histogram_tester().ExpectBucketCount("ProfilePicker.FirstRun.DefaultBrowser",
+                                       DefaultBrowserChoice::kClickSetAsDefault,
+                                       1);
 
   if (WithSearchEngineChoiceStep()) {
     histogram_tester().ExpectBucketCount(

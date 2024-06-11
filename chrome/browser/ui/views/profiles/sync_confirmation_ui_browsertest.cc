@@ -40,37 +40,16 @@ namespace {
 // that relies on can_show_history_sync_opt_ins_without_minor_mode_restrictions
 // capability.
 struct MinorModeRestrictions {
-  // Enable or disable the Feature
-  bool enable_feature = false;
   // Related capability value
   signin::Tribool capability = signin::Tribool::kTrue;
 };
 
 #if BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_WIN)
 constexpr MinorModeRestrictions kWithMinorModeRestrictionsWithUnrestrictedUser{
-    .enable_feature = true,
     .capability = signin::Tribool::kTrue};
 constexpr MinorModeRestrictions kWithMinorModeRestrictionsWithRestrictedUser{
-    .enable_feature = true,
     .capability = signin::Tribool::kFalse};
 #endif
-
-void ConfigureMinorModeRestrictionFeature(
-    MinorModeRestrictions minor_mode_restrictions,
-    base::test::ScopedFeatureList& feature_flag_) {
-#if BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_WIN)
-  if (minor_mode_restrictions.enable_feature) {
-    feature_flag_.InitAndEnableFeature(
-        ::switches::kMinorModeRestrictionsForHistorySyncOptIn);
-  } else {
-    feature_flag_.InitAndDisableFeature(
-        ::switches::kMinorModeRestrictionsForHistorySyncOptIn);
-  }
-#else
-  CHECK(!minor_mode_restrictions.enable_feature)
-      << "This feature can be only enabled for selected platforms.";
-#endif
-}
 
 struct SyncConfirmationTestParam {
   PixelTestParam pixel_test_param;
@@ -210,9 +189,6 @@ class SyncConfirmationUIWindowPixelTest
   SyncConfirmationUIWindowPixelTest()
       : ProfilesPixelTestBaseT<UiBrowserTest>(GetParam().pixel_test_param) {
     DCHECK(GetParam().sync_style == SyncConfirmationStyle::kWindow);
-
-    ConfigureMinorModeRestrictionFeature(GetParam().minor_mode_restrictions,
-                                         scoped_feature_list);
   }
 
   void ShowUi(const std::string& name) override {
@@ -288,9 +264,6 @@ class SyncConfirmationUIDialogPixelTest
   SyncConfirmationUIDialogPixelTest()
       : ProfilesPixelTestBaseT<DialogBrowserTest>(GetParam().pixel_test_param) {
     DCHECK(GetParam().sync_style != SyncConfirmationStyle::kWindow);
-
-    ConfigureMinorModeRestrictionFeature(GetParam().minor_mode_restrictions,
-                                         scoped_feature_list);
   }
 
   ~SyncConfirmationUIDialogPixelTest() override = default;

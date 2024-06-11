@@ -8,6 +8,7 @@
 #include <string>
 
 #include "base/functional/callback.h"
+#include "base/time/time.h"
 #include "base/values.h"
 #include "build/chromeos_buildflags.h"
 
@@ -69,6 +70,11 @@ extensions::WebViewGuest* GetAuthWebViewGuest(
 // Gets the browser containing the web UI; if none is found, returns the last
 // active browser for web UI's profile.
 Browser* GetDesktopBrowser(content::WebUI* web_ui);
+
+// After this time delta, user must see a screen. If it was impossible to get
+// the CanShowHistorySyncOptInsWithoutMinorModeRestrictions capability before
+// the deadline, the screen should be configured in minor-safe way.
+base::TimeDelta GetMinorModeRestrictionsDeadline();
 
 // Sets the height of the WebUI modal dialog after its initialization. This is
 // needed to better accomodate different locales' text heights.

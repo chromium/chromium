@@ -22,6 +22,14 @@
 
 namespace signin {
 
+namespace {
+#if !(BUILDFLAG(IS_CHROMEOS_ASH) || BUILDFLAG(IS_CHROMEOS_LACROS))
+// Default timeout used to wait for account capabilities fetch.
+const int kMinorModeRestrictionsFetchDeadlineMs = 1000;
+#endif
+
+}  // namespace
+
 content::RenderFrameHost* GetAuthFrame(content::WebContents* web_contents,
                                        const std::string& parent_frame_name) {
   content::RenderFrameHost* frame = nullptr;
@@ -50,6 +58,15 @@ Browser* GetDesktopBrowser(content::WebUI* web_ui) {
   if (!browser)
     browser = chrome::FindLastActiveWithProfile(Profile::FromWebUI(web_ui));
   return browser;
+}
+
+base::TimeDelta GetMinorModeRestrictionsDeadline() {
+#if BUILDFLAG(IS_CHROMEOS_ASH) || BUILDFLAG(IS_CHROMEOS_LACROS)
+  // Not implemented for those platforms.
+  NOTREACHED_NORETURN();
+#else
+  return base::Milliseconds(kMinorModeRestrictionsFetchDeadlineMs);
+#endif
 }
 
 void SetInitializedModalHeight(Browser* browser,
