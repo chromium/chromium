@@ -252,16 +252,36 @@ class OOFCandidateStyleIterator {
     if (element_) {
       position_try_options_ = style_->GetPositionTryOptions();
       position_try_order_ = style_->PositionTryOrder();
-      // We may have previously resolved a style using some try set,
-      // and may have speculated that the same try set still applied.
-      // Calling UpdateStyle with an explicit nullptr clears the set,
-      // and re-resolves the ComputedStyle.
+
+      // If the base styles contain anchor*() queries, or depend on other
+      // information produced by the AnchorEvaluator, then the ComputedStyle
+      // produced by the main style recalc pass (which has no AnchorEvaluator)
+      // is incorrect. For example, all anchor() queries would have evaluated
+      // to their fallback value. Now that we have an AnchorEvaluator, we can
+      // fix this by updating the style.
       //
-      // Note that UpdateStyle returns early without any update
-      // if the incoming try_set matches the set on OutOfFlowData
-      // (including the case where both are nullptr).
-      style_ = UpdateStyle(/* try_set */ nullptr, kNoTryTactics);
+      // Note that it's important to avoid the expensive call to UpdateStyle
+      // here if we *don't* depend on anchor*(), since every out-of-flow will
+      // reach this function, regardless of whether or not anchor positioning
+      // is actually used.
+      if (ElementStyleDependsOnAnchor(*element_, *style_)) {
+        style_ = UpdateStyle(/* try_set */ nullptr, kNoTryTactics);
+      }
     }
+  }
+
+  bool ElementStyleDependsOnAnchor(const Element& element,
+                                   const ComputedStyle& style) {
+    if (style.PositionAnchor() || element.ImplicitAnchorElement()) {
+      // anchor-center offsets may need to be updated since the layout of the
+      // anchor may have changed. anchor-center offsets are computed when a
+      // default anchor is present.
+      return true;
+    }
+    if (style.HasAnchorFunctions()) {
+      return true;
+    }
+    return false;
   }
 
   const StyleRulePositionTry* GetPositionTryRule(
