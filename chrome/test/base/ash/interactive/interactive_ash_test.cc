@@ -22,7 +22,9 @@
 #include "chrome/browser/ui/browser_list.h"
 #include "chrome/browser/ui/browser_navigator.h"
 #include "chrome/test/base/chromeos/crosier/aura_window_title_observer.h"
+#include "ui/base/accelerators/accelerator.h"
 #include "ui/base/interaction/element_identifier.h"
+#include "ui/events/event_constants.h"
 #include "url/gurl.h"
 
 namespace {
@@ -309,4 +311,46 @@ InteractiveAshTest::NavigateSettingsToPage(
         base::StringPrintf("os-settings-menu-item[path=\"%s\"]", path)}});
   return Steps(ScrollIntoView(element_id, menu_item),
                MoveMouseTo(element_id, menu_item), ClickMouse());
+}
+
+ui::test::internal::InteractiveTestPrivate::MultiStep
+InteractiveAshTest::SendTextAsKeyEvents(const ui::ElementIdentifier& element_id,
+                                        const std::string& text) {
+  MultiStep steps;
+  for (char c : text) {
+    if (c >= 'a' && c <= 'z') {
+      AddStep(steps,
+              SendAccelerator(
+                  element_id,
+                  ui::Accelerator(
+                      static_cast<ui::KeyboardCode>(
+                          static_cast<unsigned char>(ui::VKEY_A) + (c - 'a')),
+                      0, ui::Accelerator::KeyState::PRESSED)));
+    } else if (c >= 'A' && c <= 'Z') {
+      AddStep(steps,
+              SendAccelerator(
+                  element_id,
+                  ui::Accelerator(
+                      static_cast<ui::KeyboardCode>(
+                          static_cast<unsigned char>(ui::VKEY_A) + (c - 'A')),
+                      ui::EF_SHIFT_DOWN, ui::Accelerator::KeyState::PRESSED)));
+    } else if (c >= '0' && c <= '9') {
+      AddStep(steps,
+              SendAccelerator(
+                  element_id,
+                  ui::Accelerator(
+                      static_cast<ui::KeyboardCode>(
+                          static_cast<unsigned char>(ui::VKEY_0) + (c - '0')),
+                      0, ui::Accelerator::KeyState::PRESSED)));
+    } else if (c == '\n') {
+      AddStep(steps, SendAccelerator(
+                         element_id,
+                         ui::Accelerator(ui::VKEY_RETURN, 0,
+                                         ui::Accelerator::KeyState::PRESSED)));
+    } else {
+      // Unsupported input.
+      NOTREACHED_IN_MIGRATION();
+    }
+  }
+  return steps;
 }

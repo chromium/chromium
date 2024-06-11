@@ -167,6 +167,17 @@ class InteractiveAshTest
                               const DeepQuery& query,
                               const std::string& option);
 
+  // Sends the given text to the element as individual key press commands.
+  //
+  // This handles uppercase and lowercase ASCII letters and numbers, plus maps
+  // "\n" to return, but no symbols or other shifted things.
+  //
+  // TODO(crbug.com/40286410) have a more supported way to do this and remove
+  // this function.
+  ui::test::internal::InteractiveTestPrivate::MultiStep SendTextAsKeyEvents(
+      const ui::ElementIdentifier& element_id,
+      const std::string& text);
+
  private:
   // Helper function that navigates to a top-level page of the Settings app.
   // This function expects the Settings app to already be open. The `path`

@@ -16,60 +16,7 @@
 
 namespace {
 
-class TerminalIntegrationTest : public AshIntegrationTest {
- public:
-  // Sends the given text to the element as individual key press commands.
-  //
-  // This handles uppercase and lowercase ASCII letters and numbers, plus maps
-  // "\n" to return, but no symbols or other shifted things.
-  //
-  // TODO(crbug.com/40286410) have a more supported way to do this and remove
-  // this function.
-  auto SendTextAsKeyEvents(const ui::ElementIdentifier& element_id,
-                           const std::string& text) {
-    MultiStep steps;
-    for (char c : text) {
-      if (c >= 'a' && c <= 'z') {
-        AddStep(steps,
-                SendAccelerator(
-                    element_id,
-                    ui::Accelerator(
-                        static_cast<ui::KeyboardCode>(
-                            static_cast<unsigned char>(ui::VKEY_A) + (c - 'a')),
-                        0, ui::Accelerator::KeyState::PRESSED)));
-      } else if (c >= 'A' && c <= 'Z') {
-        AddStep(
-            steps,
-            SendAccelerator(
-                element_id,
-                ui::Accelerator(
-                    static_cast<ui::KeyboardCode>(
-                        static_cast<unsigned char>(ui::VKEY_A) + (c - 'A')),
-                    ui::EF_SHIFT_DOWN, ui::Accelerator::KeyState::PRESSED)));
-      } else if (c >= '0' && c <= '9') {
-        AddStep(steps,
-                SendAccelerator(
-                    element_id,
-                    ui::Accelerator(
-                        static_cast<ui::KeyboardCode>(
-                            static_cast<unsigned char>(ui::VKEY_0) + (c - '0')),
-                        0, ui::Accelerator::KeyState::PRESSED)));
-      } else if (c == '\n') {
-        AddStep(steps,
-                SendAccelerator(
-                    element_id,
-                    ui::Accelerator(ui::VKEY_RETURN, 0,
-                                    ui::Accelerator::KeyState::PRESSED)));
-      } else {
-        // Unsupported input.
-        NOTREACHED_IN_MIGRATION();
-      }
-    }
-    return steps;
-  }
-};
-
-IN_PROC_BROWSER_TEST_F(TerminalIntegrationTest, Crosh) {
+IN_PROC_BROWSER_TEST_F(AshIntegrationTest, Crosh) {
   ui::ScopedAnimationDurationScaleMode zero_duration(
       ui::ScopedAnimationDurationScaleMode::ZERO_DURATION);
 
