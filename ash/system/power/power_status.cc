@@ -333,6 +333,11 @@ gfx::ImageSkia PowerStatus::GetBatteryImage(
 
 std::u16string PowerStatus::GetAccessibleNameString(
     bool full_description) const {
+  if (!proto_initialized_) {
+    return l10n_util::GetStringUTF16(
+        IDS_ASH_STATUS_TRAY_BATTERY_CALCULATING_CHARGE_LEVEL_ACCESSIBLE);
+  }
+
   if (IsBatteryFull()) {
     return l10n_util::GetStringUTF16(
         IDS_ASH_STATUS_TRAY_BATTERY_FULL_CHARGE_ACCESSIBLE);
@@ -395,7 +400,10 @@ std::pair<std::u16string, std::u16string> PowerStatus::GetStatusStrings()
     const {
   std::u16string percentage;
   std::u16string status;
-  if (IsBatteryFull()) {
+  if (!proto_initialized_) {
+    status = l10n_util::GetStringUTF16(
+        IDS_ASH_STATUS_TRAY_BATTERY_CALCULATING_CHARGE_LEVEL);
+  } else if (IsBatteryFull()) {
     status = l10n_util::GetStringUTF16(IDS_ASH_STATUS_TRAY_BATTERY_FULL);
   } else {
     percentage = base::FormatPercent(GetRoundedBatteryPercent());
