@@ -93,6 +93,18 @@ enum class DownloadNativeTaskState {
 
 - (void)dealloc {
   [self stopObservingDownloadProgress];
+
+  // At this point, _startDownloadBlock should be nil. However as seen in
+  // https://crbug.com/344476170 it appears this invariant is not true.
+  // Since WebKit terminates the app with a NSException if the block is
+  // not called, invoke here if it is still set. This is a workaround
+  // until a proper fix is implemented (i.e. using a real state object
+  // to ensure that it is not possible for the block to not be invoked
+  // when the `_status` changes).
+  if (_startDownloadBlock) {
+    _startDownloadBlock(nil);
+    _startDownloadBlock = nil;
+  }
 }
 
 - (void)cancel {
@@ -147,6 +159,7 @@ enum class DownloadNativeTaskState {
       [self responseReceived:_response];
       [self startObservingDownloadProgress];
       _startDownloadBlock(_urlForDownload);
+      _startDownloadBlock = nil;
       return;
     }
 
