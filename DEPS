@@ -1910,11 +1910,11 @@ deps = {
       'condition': 'checkout_android',
   },
 
-  'src/third_party/jdk': {
+  'src/third_party/jdk/current': {
       'packages': [
           {
               'package': 'chromium/third_party/jdk',
-              'version': 'tUJrCBvDNDE9jFvgkuOwX8tU6oCWT8CtI2_JxpGlTJIC',
+              'version': 'BXZwbslDFpYhPRuG8hBh2z7ApP36ZG-ZfkBWrkpnPl4C',
           },
       ],
       # Needed on Linux for use on chromium_presubmit (for checkstyle).
