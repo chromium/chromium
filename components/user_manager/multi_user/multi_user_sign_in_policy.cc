@@ -15,7 +15,7 @@ namespace user_manager {
 namespace {
 constexpr auto kPolicyMap =
     base::MakeFixedFlatMap<MultiUserSignInPolicy, std::string_view>({
-        {MultiUserSignInPolicy::kUnrestricted, "restricted"},
+        {MultiUserSignInPolicy::kUnrestricted, "unrestricted"},
         {MultiUserSignInPolicy::kPrimaryOnly, "primary-only"},
         {MultiUserSignInPolicy::kNotAllowed, "not-allowed"},
     });
