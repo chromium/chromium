@@ -212,26 +212,6 @@ bool HasAriaCellRole(Element* elem) {
       AXObject::FirstValidRoleInRoleString(role_str));
 }
 
-// Can role="presentation" aka "none" propagate to descendants of this node?
-// Example: it propagates from table->tbody->tr->td, making them all ignored.
-bool RolePresentationPropagates(Node* node) {
-  // Check for list markup.
-  if (IsA<HTMLMenuElement>(node) || IsA<HTMLUListElement>(node) ||
-      IsA<HTMLOListElement>(node)) {
-    return true;
-  }
-
-  // Check for <table>.
-  if (IsA<HTMLTableElement>(node))
-    return true;  // table section, table row, table cells,
-
-  // Check for display: table CSS.
-  if (node->GetLayoutObject() && node->GetLayoutObject()->IsTable())
-    return true;
-
-  return false;
-}
-
 // Return true if whitespace is not necessary to keep adjacent_node separate
 // in screen reader output from surrounding nodes.
 bool CanIgnoreSpaceNextTo(LayoutObject* layout_object,
@@ -4119,19 +4099,11 @@ void AXObjectCacheImpl::HandleRoleChangeWithCleanLayout(Node* node) {
     ChildrenChangedOnAncestorOf(obj);
 
     if (!obj->IsDetached()) {
-      // When the role of `obj` is changed, its AXObject needs to be destroyed
-      // and a new one needs to be created in its place.
-      if (RolePresentationPropagates(node) || IsA<HTMLSelectElement>(node)) {
-        // If role changes on a table, menu, or list invalidate the subtree of
-        // objects that may require a specific parent role in order to keep
-        // their role. For example, rows and cells require a table ancestor, and
-        // list items require a parent list (must be direct DOM parent).
-        RemoveSubtree(node, /* remove_root */ true,
-                      /* notify_parent */ false);
-      } else {
-        // The children of this thing need to detach from parent.
-        Remove(obj, /* notify_parent */ false);
-      }
+      // Remove and rebuild the subtree, because some descendant computations
+      // rely on the role of ancestors.
+      // Examples, whether rows return true from SupportsNameFromContents(),
+      // propagation of role="none", some table descendant roles.
+      RemoveSubtree(node, /* remove_root */ true, /* notify_parent */ false);
     }
 
     if (was_owned) {
