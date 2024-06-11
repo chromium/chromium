@@ -1,8 +1,16 @@
 # Orderfile
 
-An orderfile is a list of symbols that defines an ordering of functions which is
-respected by the linker when generating a binary. It can improve performance by
-reducing the number of random reads and improving the usefulness of readahead.
+An orderfile is a list of symbols that defines an ordering of functions. One can
+make a static linker, such as LLD, respect this ordering when generating a
+binary.
+
+Reordering code this way can improve startup performance by fetching machine
+code to memory more efficiently, since it requires fetching fewer pages from
+disk, and a big part of the I/O work is done sequentially by the readahead.
+
+Code reordering can also improve memory usage by keeping the used code in a
+smaller number of memory pages. It can also reduce TLB and L1i cache misses by
+placing functions commonly called together closely in memory.
 
 ## Generating Orderfiles Manually
 
@@ -44,10 +52,11 @@ be added to the local branch and uploaded to Gerrit along with
 The `orderfile_generator_backend.py` script runs several key steps:
 
 1. **Build and install Chrome with orderfile instrumentation.** This uses the
-[`-finstrument-function-entry-bare`](https://gcc.gnu.org/onlinedocs/gcc/Instrumentation-Options.html#index-finstrument-functions)
-gcc flag to insert instrumentation for function entry. The build will be
-generated in `out/arm_instrumented_out/` or `out/arm64_instrumented_out`,
-depending on the architecture.
+[`-finstrument-function-entry-bare`](https://clang.llvm.org/docs/ClangCommandLineReference.html#cmdoption-clang-finstrument-function-entry-bare)
+Clang command line option to insert instrumentation for function entry. The
+build will be generated in `out/arm_instrumented_out/` or
+`out/arm64_instrumented_out`, depending on the CPU architecture (instruction
+set).
 
 
 2. **Run the benchmarks and collect profiles.** These benchmarks can be found
