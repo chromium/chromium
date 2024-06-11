@@ -9,6 +9,7 @@
 
 #import <optional>
 
+#import "base/time/time.h"
 #import "ios/chrome/browser/shared/ui/list_model/list_model.h"
 #import "url/gurl.h"
 
@@ -19,9 +20,10 @@ struct CredentialUIEntry;
 // Represents the credential type (blocked, federated or regular) of the
 // credential in this Password Details.
 typedef NS_ENUM(NSInteger, CredentialType) {
-  CredentialTypeRegular = kItemTypeEnumZero,
+  CredentialTypeRegularPassword = kItemTypeEnumZero,
   CredentialTypeBlocked,
   CredentialTypeFederation,
+  CredentialTypePasskey,
 };
 
 // Enum which represents the entry point from which the password details are
@@ -37,7 +39,7 @@ enum class DetailsContext {
 };
 
 // Object which is used by `PasswordDetailsViewController` to show
-// information about password.
+// information about password and/or passkey.
 @interface PasswordDetails : NSObject
 
 // Represents the type of the credential (blocked, federated or regular).
@@ -56,8 +58,14 @@ enum class DetailsContext {
 // Associated username.
 @property(nonatomic, copy) NSString* username;
 
+// The user's display name, if this is a passkey. Always empty otherwise.
+@property(nonatomic, copy) NSString* userDisplayName;
+
 // The federation providing this credential, if any.
 @property(nonatomic, copy, readonly) NSString* federation;
+
+// The creation time, if this is a passkey, nullopt otherwise.
+@property(nonatomic, readonly) std::optional<base::Time> creationTime;
 
 // Associated password.
 @property(nonatomic, copy) NSString* password;

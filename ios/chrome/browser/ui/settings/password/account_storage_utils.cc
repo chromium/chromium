@@ -29,6 +29,11 @@ bool ShouldShowLocalOnlyIcon(const CredentialUIEntry& credential,
     return false;
   }
 
+  if (!credential.passkey_credential_id.empty()) {
+    // The local -> account migration flow only covers passwords.
+    return false;
+  }
+
   // Syncing and signed-out users shouldn't see the icon.
   // TODO(crbug.com/40066949): Remove usage of IsSyncFeatureEnabled() after
   // kSync users are migrated to kSignin in phase 3. See ConsentLevel::kSync

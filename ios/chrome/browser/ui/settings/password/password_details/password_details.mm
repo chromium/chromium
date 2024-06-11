@@ -7,6 +7,7 @@
 #import "base/strings/sys_string_conversions.h"
 #import "components/affiliations/core/browser/affiliation_utils.h"
 #import "components/password_manager/core/browser/ui/credential_ui_entry.h"
+#import "components/sync/base/features.h"
 
 @implementation PasswordDetails
 
@@ -39,6 +40,8 @@
       _username = base::SysUTF16ToNSString(credential.username);
     }
 
+    _userDisplayName = base::SysUTF16ToNSString(credential.user_display_name);
+
     if (credential.federation_origin.opaque()) {
       _password = base::SysUTF16ToNSString(credential.password);
     } else {
@@ -46,12 +49,19 @@
           base::SysUTF8ToNSString(credential.federation_origin.host());
     }
 
+    _creationTime = credential.creation_time;
+
     _note = base::SysUTF16ToNSString(credential.note);
-    _credentialType = credential.blocked_by_user ? CredentialTypeBlocked
-                                                 : CredentialTypeRegular;
-    if (_credentialType == CredentialTypeRegular &&
+    _credentialType = credential.blocked_by_user
+                          ? CredentialTypeBlocked
+                          : CredentialTypeRegularPassword;
+    if (_credentialType == CredentialTypeRegularPassword &&
         !credential.federation_origin.opaque()) {
       _credentialType = CredentialTypeFederation;
+    }
+    if (base::FeatureList::IsEnabled(syncer::kSyncWebauthnCredentials) &&
+        !credential.passkey_credential_id.empty()) {
+      _credentialType = CredentialTypePasskey;
     }
   }
   return self;

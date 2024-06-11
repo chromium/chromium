@@ -34,6 +34,12 @@ extern NSString* const kAddPasswordButtonID;
 // Username text field accessibility identifier for Password Details.
 extern NSString* const kUsernameTextfieldForPasswordDetailsID;
 
+// User Display Name text field accessibility identifier for Password Details.
+extern NSString* const kUserDisplayNameTextfieldForPasswordDetailsID;
+
+// Creation Date text field accessibility identifier for Password Details.
+extern NSString* const kCreationDateTextfieldForPasswordDetailsID;
+
 // Password text field accessibility identifier for Password Details.
 extern NSString* const kPasswordTextfieldForPasswordDetailsID;
 

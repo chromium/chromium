@@ -27,6 +27,12 @@ NSString* const kDismissedWarningsCellID = @"DismissedWarningsCellID";
 NSString* const kUsernameTextfieldForPasswordDetailsID =
     @"kUsernameTextfieldForPasswordDetailsID";
 
+NSString* const kUserDisplayNameTextfieldForPasswordDetailsID =
+    @"kUserDisplayNameTextfieldForPasswordDetailsID";
+
+NSString* const kCreationDateTextfieldForPasswordDetailsID =
+    @"kCreationDateTextfieldForPasswordDetailsID";
+
 NSString* const kPasswordTextfieldForPasswordDetailsID =
     @"kPasswordTextfieldForPasswordDetailsID";
 

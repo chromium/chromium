@@ -3,9 +3,9 @@
 // found in the LICENSE file.
 
 #import "ios/chrome/browser/ui/settings/password/password_details/password_details_table_view_controller.h"
-#import "ios/chrome/browser/ui/settings/password/password_details/password_details_table_view_controller+Testing.h"
 
 #import "base/apple/foundation_util.h"
+#import "base/i18n/time_formatting.h"
 #import "base/ios/ios_util.h"
 #import "base/metrics/histogram_functions.h"
 #import "base/metrics/histogram_macros.h"
@@ -38,6 +38,7 @@
 #import "ios/chrome/browser/ui/settings/password/password_details/password_details_menu_item.h"
 #import "ios/chrome/browser/ui/settings/password/password_details/password_details_metrics_utils.h"
 #import "ios/chrome/browser/ui/settings/password/password_details/password_details_table_view_constants.h"
+#import "ios/chrome/browser/ui/settings/password/password_details/password_details_table_view_controller+Testing.h"
 #import "ios/chrome/browser/ui/settings/password/password_details/password_details_table_view_controller_delegate.h"
 #import "ios/chrome/browser/ui/settings/password/password_manager_ui_features.h"
 #import "ios/chrome/browser/ui/settings/password/passwords_table_view_constants.h"
@@ -116,6 +117,9 @@ bool ShouldAllowToRestoreWarning(DetailsContext context, bool is_muted) {
 // Displays one or more websites on which this credential is used.
 @property(nonatomic, strong) TableViewStackedDetailsItem* websiteItem;
 
+// The text item related to the user display name value.
+@property(nonatomic, strong) TableViewTextEditItem* userDisplayNameTextItem;
+
 // The text item related to the username value.
 @property(nonatomic, strong) TableViewTextEditItem* usernameTextItem;
 
@@ -124,6 +128,9 @@ bool ShouldAllowToRestoreWarning(DetailsContext context, bool is_muted) {
 
 // The text item related to the password note.
 @property(nonatomic, strong) TableViewMultiLineTextEditItem* passwordNoteItem;
+
+// The text item related to the creation date value.
+@property(nonatomic, strong) TableViewTextEditItem* creationDateTextItem;
 
 // If yes, the footer informing about the max note length is shown.
 @property(nonatomic, assign) BOOL isNoteFooterShown;
@@ -347,6 +354,65 @@ bool ShouldAllowToRestoreWarning(DetailsContext context, bool is_muted) {
   return item;
 }
 
+- (TableViewTextEditItem*)userDisplayNameItemForPasswordDetails:
+    (PasswordDetails*)passwordDetails {
+  TableViewTextEditItem* item = [[TableViewTextEditItem alloc]
+      initWithType:PasswordDetailsItemTypeUsername];
+  item.textFieldBackgroundColor = [UIColor clearColor];
+  item.fieldNameLabelText =
+      l10n_util::GetNSString(IDS_IOS_SHOW_PASSKEY_DISPLAY_NAME);
+  item.textFieldValue = passwordDetails.userDisplayName;
+  item.textFieldEnabled = self.tableView.editing;
+  item.autoCapitalizationType = UITextAutocapitalizationTypeNone;
+  item.delegate = self;
+  item.hideIcon = YES;
+  if (!self.tableView.editing) {
+    item.textFieldTextColor = [UIColor colorNamed:kTextSecondaryColor];
+  }
+
+  // For testing: only use this custom accessibility identifier if there are
+  // more than one password shown on the Password Details.
+  if (_passwords.count > 1) {
+    item.customTextfieldAccessibilityIdentifier = [NSString
+        stringWithFormat:@"%@%@%@",
+                         kUserDisplayNameTextfieldForPasswordDetailsID,
+                         passwordDetails.userDisplayName,
+                         passwordDetails.websites[0]];
+  }
+  return item;
+}
+
+- (TableViewTextEditItem*)creationDateItemForPasswordDetails:
+    (PasswordDetails*)passwordDetails {
+  TableViewTextEditItem* item = [[TableViewTextEditItem alloc]
+      initWithType:PasswordDetailsItemTypeUsername];
+  item.textFieldBackgroundColor = [UIColor clearColor];
+  item.fieldNameLabelText =
+      l10n_util::GetNSString(IDS_IOS_SHOW_PASSKEY_CREATION_DATE);
+  item.textFieldValue =
+      passwordDetails.creationTime.has_value()
+          ? l10n_util::GetNSStringF(IDS_IOS_PASSKEY_CREATION_DATE,
+                                    base::TimeFormatShortDateNumeric(
+                                        *(passwordDetails.creationTime)))
+          : @"";
+  item.textFieldEnabled = NO;
+  item.autoCapitalizationType = UITextAutocapitalizationTypeNone;
+  item.delegate = self;
+  item.hideIcon = YES;
+  if (!self.tableView.editing) {
+    item.textFieldTextColor = [UIColor colorNamed:kTextSecondaryColor];
+  }
+
+  // For testing: only use this custom accessibility identifier if there are
+  // more than one password shown on the Password Details.
+  if (_passwords.count > 1) {
+    item.customTextfieldAccessibilityIdentifier = [NSString
+        stringWithFormat:@"%@%@%@", kCreationDateTextfieldForPasswordDetailsID,
+                         item.textFieldValue, passwordDetails.websites[0]];
+  }
+  return item;
+}
+
 - (TableViewTextEditItem*)passwordItemForPasswordDetails:
     (PasswordDetails*)passwordDetails {
   TableViewTextEditItem* item = [[TableViewTextEditItem alloc]
@@ -464,9 +530,13 @@ bool ShouldAllowToRestoreWarning(DetailsContext context, bool is_muted) {
     (PasswordDetails*)passwordDetails {
   TableViewTextItem* item = [[TableViewTextItem alloc]
       initWithType:PasswordDetailsItemTypeDeleteButton];
-  item.text = l10n_util::GetNSString(self.isBlockedSite
-                                         ? IDS_IOS_DELETE_ACTION_TITLE
-                                         : IDS_IOS_CONFIRM_PASSWORD_DELETION);
+  int itemText = IDS_IOS_CONFIRM_PASSWORD_DELETION;
+  if (self.isBlockedSite) {
+    itemText = IDS_IOS_DELETE_ACTION_TITLE;
+  } else if (passwordDetails.credentialType == CredentialTypePasskey) {
+    itemText = IDS_IOS_CONFIRM_PASSKEY_DELETION;
+  }
+  item.text = l10n_util::GetNSString(itemText);
   item.textColor = [UIColor colorNamed:kRedColor];
   item.accessibilityTraits = UIAccessibilityTraitButton;
   item.accessibilityIdentifier = [NSString
@@ -1121,26 +1191,24 @@ bool ShouldAllowToRestoreWarning(DetailsContext context, bool is_muted) {
   NSInteger sectionForCompromisedInfo;
   NSInteger sectionForMoveCredential;
 
-    // Password details are displayed in its own section when Grouping is
-    // enabled.
-    NSInteger nextSection =
-        kSectionIdentifierEnumZero + [model numberOfSections];
-    [model addSectionWithIdentifier:nextSection];
+  // Password details are displayed in its own section when Grouping is enabled.
+  NSInteger nextSection = kSectionIdentifierEnumZero + [model numberOfSections];
+  [model addSectionWithIdentifier:nextSection];
 
-    sectionForWebsite = nextSection;
-    sectionForPassword = nextSection;
-    sectionForCompromisedInfo = nextSection;
-    sectionForMoveCredential = nextSection;
+  sectionForWebsite = nextSection;
+  sectionForPassword = nextSection;
+  sectionForCompromisedInfo = nextSection;
+  sectionForMoveCredential = nextSection;
 
-    // Add sites to section.
-    passwordItem.websiteItem =
-        [self websiteItemForPasswordDetails:passwordDetails];
-    [model addItem:passwordItem.websiteItem
-        toSectionWithIdentifier:sectionForWebsite];
+  // Add sites to section.
+  passwordItem.websiteItem =
+      [self websiteItemForPasswordDetails:passwordDetails];
+  [model addItem:passwordItem.websiteItem
+      toSectionWithIdentifier:sectionForWebsite];
 
-    // Add username and password to section according to credential type.
-    switch (passwordDetails.credentialType) {
-    case CredentialTypeRegular: {
+  // Add username and password to section according to credential type.
+  switch (passwordDetails.credentialType) {
+    case CredentialTypeRegularPassword: {
       passwordItem.usernameTextItem =
           [self usernameItemForPasswordDetails:passwordDetails];
       [model addItem:passwordItem.usernameTextItem
@@ -1204,6 +1272,24 @@ bool ShouldAllowToRestoreWarning(DetailsContext context, bool is_muted) {
     }
 
     case CredentialTypeBlocked: {
+      break;
+    }
+
+    case CredentialTypePasskey: {
+      passwordItem.userDisplayNameTextItem =
+          [self userDisplayNameItemForPasswordDetails:passwordDetails];
+      [model addItem:passwordItem.userDisplayNameTextItem
+          toSectionWithIdentifier:sectionForPassword];
+
+      passwordItem.usernameTextItem =
+          [self usernameItemForPasswordDetails:passwordDetails];
+      [model addItem:passwordItem.usernameTextItem
+          toSectionWithIdentifier:sectionForPassword];
+
+      passwordItem.creationDateTextItem =
+          [self creationDateItemForPasswordDetails:passwordDetails];
+      [model addItem:passwordItem.creationDateTextItem
+          toSectionWithIdentifier:sectionForPassword];
       break;
     }
   }
