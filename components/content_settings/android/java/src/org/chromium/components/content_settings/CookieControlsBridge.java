@@ -131,6 +131,11 @@ public class CookieControlsBridge {
         mObserver.onHighlightCookieControl(shouldHighlight);
     }
 
+    @CalledByNative
+    private void onHighlightPwaCookieControl() {
+        mObserver.onHighlightPwaCookieControl();
+    }
+
     @NativeMethods
     public interface Natives {
         long init(

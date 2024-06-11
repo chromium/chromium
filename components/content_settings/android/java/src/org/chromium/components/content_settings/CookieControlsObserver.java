@@ -42,4 +42,10 @@ public interface CookieControlsObserver {
 
     /** Called when we should surface a visual indicator due to potential site breakage. */
     default void onHighlightCookieControl(boolean shouldHighlight) {}
+
+    /**
+     * Called when we should surface a visual indicator for PWA surface due to potential site
+     * breakage.
+     */
+    default void onHighlightPwaCookieControl() {}
 }

@@ -33,6 +33,8 @@ import java.util.concurrent.locks.ReentrantLock;
  * WebApk, the logic won't be executed.
  */
 public class TrackingProtectionSnackbarController implements CookieControlsObserver {
+    private static final long MINIMUM_DELAY_BETWEEN_CONSECUTIVE_SNACKBARS_MS = 5 * 60 * 1000;
+
     private final Supplier<SnackbarManager> mSnackbarManagerSupplier;
     private final Runnable mSnakcbarOnAction;
     private final CookieControlsBridge mCookieControlsBridge;
@@ -51,6 +53,7 @@ public class TrackingProtectionSnackbarController implements CookieControlsObser
     private boolean mTrackingProtectionControlsVisible;
     private boolean mTrackingProtectionBlocked;
     private int mBlockingStatus3pcd;
+    private long mLastTimestamp;
 
     /**
      * Creates the {@link TrackingProtectionSnackbarController} object.
@@ -81,6 +84,18 @@ public class TrackingProtectionSnackbarController implements CookieControlsObser
         }
 
         if (mTrackingProtectionControlsVisible && !mTrackingProtectionBlocked && shouldHighlight) {
+            showSnackbar();
+        }
+    }
+
+    @Override
+    public void onHighlightPwaCookieControl() {
+        long current = System.currentTimeMillis();
+        long diff = current - mLastTimestamp;
+        if (diff > MINIMUM_DELAY_BETWEEN_CONSECUTIVE_SNACKBARS_MS
+                && mTrackingProtectionControlsVisible
+                && !mTrackingProtectionBlocked) {
+            mLastTimestamp = current;
             showSnackbar();
         }
     }

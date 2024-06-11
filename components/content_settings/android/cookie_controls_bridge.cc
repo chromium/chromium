@@ -102,7 +102,8 @@ void CookieControlsBridge::OnCookieControlsIconStatusChanged(
 }
 
 void CookieControlsBridge::OnReloadThresholdExceeded() {
-  // TODO(https://b/343220993): Clank implementation.
+  JNIEnv* env = base::android::AttachCurrentThread();
+  Java_CookieControlsBridge_onHighlightPwaCookieControl(env, jobject_);
 }
 
 void CookieControlsBridge::SetThirdPartyCookieBlockingEnabledForSite(

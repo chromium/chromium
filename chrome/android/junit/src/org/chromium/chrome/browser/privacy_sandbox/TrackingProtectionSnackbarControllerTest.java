@@ -10,6 +10,7 @@ import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.verifyNoInteractions;
+import static org.mockito.Mockito.verifyNoMoreInteractions;
 
 import org.junit.Before;
 import org.junit.Rule;
@@ -59,6 +60,65 @@ public class TrackingProtectionSnackbarControllerTest {
 
         controller.showSnackbar();
         verify(mSnackbarManagerMock, times(1)).showSnackbar(any());
+    }
+
+    @Test
+    @Features.EnableFeatures(ChromeFeatureList.TRACKING_PROTECTION_USER_BYPASS_PWA)
+    public void testShowSnackbarTriggeredByReloadEvent() {
+        doNothing().when(mSnackbarManagerMock).showSnackbar(any());
+        doReturn(mSnackbarManagerMock).when(mSnackbarManagerSupplierMock).get();
+        TrackingProtectionSnackbarController controller =
+                new TrackingProtectionSnackbarController(
+                        null, mSnackbarManagerSupplierMock, null, null, ActivityType.WEB_APK);
+
+        controller.onStatusChanged(true, false, 0, 0, 0);
+        controller.onHighlightPwaCookieControl();
+        verify(mSnackbarManagerMock, times(1)).showSnackbar(any());
+    }
+
+    @Test
+    @Features.EnableFeatures(ChromeFeatureList.TRACKING_PROTECTION_USER_BYPASS_PWA)
+    public void testShowSnackbarTriggeredByMultipleReloadEvents() {
+        doNothing().when(mSnackbarManagerMock).showSnackbar(any());
+        doReturn(mSnackbarManagerMock).when(mSnackbarManagerSupplierMock).get();
+        TrackingProtectionSnackbarController controller =
+                new TrackingProtectionSnackbarController(
+                        null, mSnackbarManagerSupplierMock, null, null, ActivityType.WEB_APK);
+
+        controller.onStatusChanged(true, false, 0, 0, 0);
+        controller.onHighlightPwaCookieControl();
+        verify(mSnackbarManagerMock, times(1)).showSnackbar(any());
+
+        controller.onHighlightPwaCookieControl();
+        verifyNoMoreInteractions(mSnackbarManagerMock);
+    }
+
+    @Test
+    @Features.EnableFeatures(ChromeFeatureList.TRACKING_PROTECTION_USER_BYPASS_PWA)
+    public void testShowSnackbarTriggeredByReloadEventsWithoutTrackingProtection() {
+        doNothing().when(mSnackbarManagerMock).showSnackbar(any());
+        doReturn(mSnackbarManagerMock).when(mSnackbarManagerSupplierMock).get();
+        TrackingProtectionSnackbarController controller =
+                new TrackingProtectionSnackbarController(
+                        null, mSnackbarManagerSupplierMock, null, null, ActivityType.WEB_APK);
+
+        controller.onStatusChanged(false, false, 0, 0, 0);
+        controller.onHighlightPwaCookieControl();
+        verifyNoInteractions(mSnackbarManagerMock);
+    }
+
+    @Test
+    @Features.EnableFeatures(ChromeFeatureList.TRACKING_PROTECTION_USER_BYPASS_PWA)
+    public void testShowSnackbarTriggeredByReloadEventsWithProtectionsOn() {
+        doNothing().when(mSnackbarManagerMock).showSnackbar(any());
+        doReturn(mSnackbarManagerMock).when(mSnackbarManagerSupplierMock).get();
+        TrackingProtectionSnackbarController controller =
+                new TrackingProtectionSnackbarController(
+                        null, mSnackbarManagerSupplierMock, null, null, ActivityType.WEB_APK);
+
+        controller.onStatusChanged(false, true, 0, 0, 0);
+        controller.onHighlightPwaCookieControl();
+        verifyNoInteractions(mSnackbarManagerMock);
     }
 
     @Test
