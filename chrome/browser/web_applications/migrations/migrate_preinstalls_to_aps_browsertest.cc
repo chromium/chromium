@@ -9,6 +9,7 @@
 #include "base/auto_reset.h"
 #include "base/containers/contains.h"
 #include "base/functional/bind.h"
+#include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/test_future.h"
 #include "build/build_config.h"
@@ -147,10 +148,22 @@ class MigratePreinstallsToApsToggleTest : public InProcessBrowserTest {
     return result;
   }
 
+  void ValidateHistograms(int install, int source_removed, int app_removed) {
+    histograms_.ExpectUniqueSample("WebApp.Preinstalled.InstallCount", install,
+                                   1);
+    histograms_.ExpectUniqueSample(
+        "WebApp.Preinstalled.UninstallSourceRemovedCount", source_removed, 1);
+    histograms_.ExpectUniqueSample(
+        "WebApp.Preinstalled.UninstallAppRemovedCount", app_removed, 1);
+    histograms_.ExpectUniqueSample("WebApp.Preinstalled.UninstallTotalCount",
+                                   source_removed + app_removed, 1);
+  }
+
   Profile* profile() { return browser()->profile(); }
 
  private:
   base::test::ScopedFeatureList feature_list_;
+  base::HistogramTester histograms_;
 };
 
 // All apps should be installed as kDefault.
@@ -161,6 +174,7 @@ IN_PROC_BROWSER_TEST_F(MigratePreinstallsToApsToggleTest, PRE_TurnOn) {
       testing::UnorderedElementsAre(
           kGmailAppId, kGoogleDocsAppId, kGoogleDriveAppId, kGoogleSheetsAppId,
           kGoogleSlidesAppId, kYoutubeAppId, kGoogleCalendarAppId));
+  ValidateHistograms(/*install=*/10, /*source_removed=*/0, /*app_removed=*/0);
 }
 
 // Non-core apps (calendar) should be migrated to kApsDefault.
@@ -173,6 +187,7 @@ IN_PROC_BROWSER_TEST_F(MigratePreinstallsToApsToggleTest, TurnOn) {
   EXPECT_THAT(GetAppIdsWithSources(
                   WebAppManagementTypes({WebAppManagement::Type::kApsDefault})),
               testing::ElementsAre(kGoogleCalendarAppId));
+  ValidateHistograms(/*install=*/6, /*source_removed=*/1, /*app_removed=*/0);
 }
 
 // Core apps will be preinstalled, we must simulate APS installing calendar.
@@ -193,6 +208,7 @@ IN_PROC_BROWSER_TEST_F(MigratePreinstallsToApsToggleTest, PRE_Rollback) {
   EXPECT_THAT(GetAppIdsWithSources(
                   WebAppManagementTypes({WebAppManagement::Type::kApsDefault})),
               testing::ElementsAre(kGoogleCalendarAppId));
+  ValidateHistograms(/*install=*/6, /*source_removed=*/0, /*app_removed=*/0);
 }
 
 // Core apps are kDefault, calendar is kDefault and kApsDefault.
@@ -206,6 +222,7 @@ IN_PROC_BROWSER_TEST_F(MigratePreinstallsToApsToggleTest, Rollback) {
                   WebAppManagementTypes({WebAppManagement::Type::kDefault,
                                          WebAppManagement::Type::kApsDefault})),
               testing::ElementsAre(kGoogleCalendarAppId));
+  ValidateHistograms(/*install=*/8, /*source_removed=*/0, /*app_removed=*/0);
 }
 
 #endif  // BUILDFLAG(GOOGLE_CHROME_BRANDING)

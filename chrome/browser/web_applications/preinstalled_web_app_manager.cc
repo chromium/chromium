@@ -584,6 +584,14 @@ const char*
         "WebApp.Preinstalled.CorruptUserUninstallPrefsCount";
 const char* PreinstalledWebAppManager::kHistogramInstallResult =
     "Webapp.InstallResult.Default";
+const char* PreinstalledWebAppManager::kHistogramInstallCount =
+    "WebApp.Preinstalled.InstallCount";
+const char* PreinstalledWebAppManager::kHistogramUninstallTotalCount =
+    "WebApp.Preinstalled.UninstallTotalCount";
+const char* PreinstalledWebAppManager::kHistogramUninstallSourceRemovedCount =
+    "WebApp.Preinstalled.UninstallSourceRemovedCount";
+const char* PreinstalledWebAppManager::kHistogramUninstallAppRemovedCount =
+    "WebApp.Preinstalled.UninstallAppRemovedCount";
 const char* PreinstalledWebAppManager::kHistogramUninstallAndReplaceCount =
     "WebApp.Preinstalled.UninstallAndReplaceCount";
 const char*
@@ -1061,6 +1069,25 @@ void PreinstalledWebAppManager::OnExternalWebAppsSynchronized(
       }
     }
   }
+
+  size_t uninstall_source_removed_count = 0;
+  size_t uninstall_app_removed_count = 0;
+
+  for (const auto& [url, result] : uninstall_results) {
+    if (result == webapps::UninstallResultCode::kInstallSourceRemoved) {
+      ++uninstall_source_removed_count;
+    } else if (result == webapps::UninstallResultCode::kAppRemoved) {
+      ++uninstall_app_removed_count;
+    }
+  }
+
+  base::UmaHistogramCounts100(kHistogramInstallCount, install_results.size());
+  base::UmaHistogramCounts100(kHistogramUninstallTotalCount,
+                              uninstall_results.size());
+  base::UmaHistogramCounts100(kHistogramUninstallSourceRemovedCount,
+                              uninstall_source_removed_count);
+  base::UmaHistogramCounts100(kHistogramUninstallAppRemovedCount,
+                              uninstall_app_removed_count);
   base::UmaHistogramCounts100(kHistogramUninstallAndReplaceCount,
                               uninstall_and_replace_count);
 

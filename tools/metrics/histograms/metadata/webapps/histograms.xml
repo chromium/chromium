@@ -1295,6 +1295,17 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="WebApp.Preinstalled.InstallCount" units="apps"
+    expires_after="2025-06-07">
+  <owner>joelhockey@chromium.org</owner>
+  <owner>pwa-team@google.com</owner>
+  <summary>
+    Records how many preinstalled web app installations were attempted during
+    synchronization at startup. This is the size of install_results in the
+    SynchronizeInstalledApps() callback.
+  </summary>
+</histogram>
+
 <histogram name="WebApp.Preinstalled.UninstallAndReplaceCount" units="apps"
     expires_after="2023-12-01">
   <owner>alancutter@chromium.org</owner>
@@ -1303,6 +1314,42 @@ chromium-metrics-reviews@google.com.
     Records how many preinstalled web app installations uninstalled and replaced
     an old default app (web app or Chrome app). This corresponds to the
     &quot;uninstall_and_replace&quot; field in preinstalled web app configs.
+  </summary>
+</histogram>
+
+<histogram name="WebApp.Preinstalled.UninstallAppRemovedCount" units="apps"
+    expires_after="2025-06-07">
+  <owner>joelhockey@chromium.org</owner>
+  <owner>pwa-team@google.com</owner>
+  <summary>
+    Records how many of the preinstalled web app uninstalls attempted during
+    synchronization at startup removed the app since it had no other install
+    sources. This is the number of items set to kAppRemoved in uninstall_results
+    in the SynchronizeInstalledApps() callback.
+  </summary>
+</histogram>
+
+<histogram name="WebApp.Preinstalled.UninstallSourceRemovedCount" units="apps"
+    expires_after="2025-06-07">
+  <owner>joelhockey@chromium.org</owner>
+  <owner>pwa-team@google.com</owner>
+  <summary>
+    Records how many of the preinstalled web app uninstalls attempted during
+    synchronization at startup removed a single install source but left the app
+    installed since other sources remained. This is the number of items set to
+    kInstallSourceRemoved in uninstall_results in the SynchronizeInstalledApps()
+    callback.
+  </summary>
+</histogram>
+
+<histogram name="WebApp.Preinstalled.UninstallTotalCount" units="apps"
+    expires_after="2025-06-07">
+  <owner>joelhockey@chromium.org</owner>
+  <owner>pwa-team@google.com</owner>
+  <summary>
+    Records the total of how many preinstalled web app uninstalls were attempted
+    during synchronization at startup. This is the total size of
+    uninstall_results in the SynchronizeInstalledApps() callback.
   </summary>
 </histogram>
 
