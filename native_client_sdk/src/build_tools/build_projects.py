@@ -196,17 +196,7 @@ def BuildProjectsBranch(pepperdir, branch, deps, clean, config, args=None):
     make = 'make'
 
   env = None
-  if os.environ.get('USE_GOMA') == '1':
-    env = dict(os.environ)
-    env['NACL_COMPILER_PREFIX'] = 'gomacc'
-    # Add -m32 to the CFLAGS when building using i686-nacl-gcc
-    # otherwise goma won't recognise it as different to the x86_64
-    # build.
-    env['X86_32_CFLAGS'] = '-m32'
-    env['X86_32_CXXFLAGS'] = '-m32'
-    jobs = '50'
-  else:
-    jobs = str(multiprocessing.cpu_count())
+  jobs = str(multiprocessing.cpu_count())
 
   make_cmd = [make, '-j', jobs]
 

@@ -10,7 +10,7 @@ declare_args() {
   enable_cross_trusted = is_linux || is_chromeos
 
   # Build the nacl SDK untrusted components.  This is disabled by default since
-  # not all NaCl untrusted compilers are in goma (e.g arm-nacl-glibc)
+  # not all NaCl untrusted compilers are in RBE (e.g arm-nacl-glibc)
   nacl_sdk_untrusted = false
 }
 
