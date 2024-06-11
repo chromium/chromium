@@ -284,6 +284,9 @@ void SetupRealUpdaterLowerVersion(UpdaterScope scope) {
 #elif BUILDFLAG(GOOGLE_CHROME_BRANDING)
   old_updater_path = old_updater_path.Append("chrome_mac_universal");
 #endif
+#if BUILDFLAG(CHROMIUM_BRANDING) || BUILDFLAG(GOOGLE_CHROME_BRANDING)
+  old_updater_path = old_updater_path.Append("cipd");
+#endif
   base::CommandLine command_line(
       old_updater_path.Append(PRODUCT_FULLNAME_STRING "_test.app")
           .Append("Contents")

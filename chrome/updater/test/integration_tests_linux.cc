@@ -199,6 +199,9 @@ void SetupRealUpdaterLowerVersion(UpdaterScope scope) {
 #elif BUILDFLAG(GOOGLE_CHROME_BRANDING)
   old_updater_path = old_updater_path.AppendASCII("chrome_linux64");
 #endif
+#if BUILDFLAG(CHROMIUM_BRANDING) || BUILDFLAG(GOOGLE_CHROME_BRANDING)
+  old_updater_path = old_updater_path.AppendASCII("cipd");
+#endif
   old_updater_path = old_updater_path.AppendASCII(
       base::StrCat({kExecutableName, kExecutableSuffix}));
 

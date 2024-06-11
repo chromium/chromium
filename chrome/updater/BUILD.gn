@@ -902,15 +902,15 @@ if (is_win || is_mac || is_linux) {
 
       if (target_cpu == "x64") {
         data += [
-          "//third_party/updater/chrome_win_x86_64/UpdaterSetup_test.exe",
-          "//third_party/updater/chromium_win_x86_64/UpdaterSetup_test.exe",
+          "//third_party/updater/chrome_win_x86_64/cipd/UpdaterSetup_test.exe",
+          "//third_party/updater/chromium_win_x86_64/cipd/UpdaterSetup_test.exe",
         ]
       }
 
       if (target_cpu == "x86") {
         data += [
-          "//third_party/updater/chrome_win_x86/UpdaterSetup_test.exe",
-          "//third_party/updater/chromium_win_x86/UpdaterSetup_test.exe",
+          "//third_party/updater/chrome_win_x86/cipd/UpdaterSetup_test.exe",
+          "//third_party/updater/chromium_win_x86/cipd/UpdaterSetup_test.exe",
         ]
       }
 
@@ -971,28 +971,28 @@ if (is_win || is_mac || is_linux) {
         "//chrome/test/data/updater/setup_test_envcheck/.install",
         "//chrome/test/data/updater/setup_test_envcheck/marker.app",
         "//chrome/test/data/updater/updater_qualification_app_dmg.crx",
-        "//third_party/updater/chrome_mac_universal/GoogleUpdater_test.app/Contents/MacOS/GoogleUpdater_test",
-        "//third_party/updater/chrome_mac_universal/GoogleUpdater_test.app/Contents/Info.plist",
-        "//third_party/updater/chrome_mac_universal/GoogleUpdater_test.app/Contents/Helpers/GoogleSoftwareUpdate.bundle/Contents/MacOS/GoogleSoftwareUpdate",
-        "//third_party/updater/chrome_mac_universal/GoogleUpdater_test.app/Contents/Helpers/GoogleSoftwareUpdate.bundle/Contents/Resources/GoogleSoftwareUpdateAgent.app/Contents/MacOS/GoogleSoftwareUpdateAgent",
-        "//third_party/updater/chrome_mac_universal/GoogleUpdater_test.app/Contents/Helpers/GoogleSoftwareUpdate.bundle/Contents/Resources/GoogleSoftwareUpdateAgent.app/Contents/Info.plist",
-        "//third_party/updater/chrome_mac_universal/GoogleUpdater_test.app/Contents/Helpers/GoogleSoftwareUpdate.bundle/Contents/Helpers/ksinstall",
-        "//third_party/updater/chrome_mac_universal/GoogleUpdater_test.app/Contents/Helpers/GoogleSoftwareUpdate.bundle/Contents/Helpers/ksadmin",
-        "//third_party/updater/chrome_mac_universal/GoogleUpdater_test.app/Contents/Helpers/GoogleSoftwareUpdate.bundle/Contents/Info.plist",
-        "//third_party/updater/chrome_mac_universal_prod/GoogleUpdater.app/Contents/CodeResources",
-        "//third_party/updater/chrome_mac_universal_prod/GoogleUpdater.app/Contents/Helpers/GoogleSoftwareUpdate.bundle/Contents/Helpers/ksadmin",
-        "//third_party/updater/chrome_mac_universal_prod/GoogleUpdater.app/Contents/Helpers/GoogleSoftwareUpdate.bundle/Contents/Helpers/ksinstall",
-        "//third_party/updater/chrome_mac_universal_prod/GoogleUpdater.app/Contents/Helpers/GoogleSoftwareUpdate.bundle/Contents/Info.plist",
-        "//third_party/updater/chrome_mac_universal_prod/GoogleUpdater.app/Contents/Helpers/GoogleSoftwareUpdate.bundle/Contents/MacOS/GoogleSoftwareUpdate",
-        "//third_party/updater/chrome_mac_universal_prod/GoogleUpdater.app/Contents/Helpers/GoogleSoftwareUpdate.bundle/Contents/MacOS/ksadmin",
-        "//third_party/updater/chrome_mac_universal_prod/GoogleUpdater.app/Contents/Helpers/GoogleSoftwareUpdate.bundle/Contents/Resources/GoogleSoftwareUpdateAgent.app/Contents/Info.plist",
-        "//third_party/updater/chrome_mac_universal_prod/GoogleUpdater.app/Contents/Helpers/GoogleSoftwareUpdate.bundle/Contents/Resources/GoogleSoftwareUpdateAgent.app/Contents/MacOS/GoogleSoftwareUpdateAgent",
-        "//third_party/updater/chrome_mac_universal_prod/GoogleUpdater.app/Contents/Helpers/GoogleSoftwareUpdate.bundle/Contents/Resources/GoogleSoftwareUpdateAgent.app/Contents/_CodeSignature",
-        "//third_party/updater/chrome_mac_universal_prod/GoogleUpdater.app/Contents/Helpers/GoogleSoftwareUpdate.bundle/Contents/_CodeSignature",
-        "//third_party/updater/chrome_mac_universal_prod/GoogleUpdater.app/Contents/Helpers/launcher",
-        "//third_party/updater/chrome_mac_universal_prod/GoogleUpdater.app/Contents/Info.plist",
-        "//third_party/updater/chrome_mac_universal_prod/GoogleUpdater.app/Contents/MacOS/GoogleUpdater",
-        "//third_party/updater/chrome_mac_universal_prod/GoogleUpdater.app/Contents/_CodeSignature",
+        "//third_party/updater/chrome_mac_universal/cipd/GoogleUpdater_test.app/Contents/MacOS/GoogleUpdater_test",
+        "//third_party/updater/chrome_mac_universal/cipd/GoogleUpdater_test.app/Contents/Info.plist",
+        "//third_party/updater/chrome_mac_universal/cipd/GoogleUpdater_test.app/Contents/Helpers/GoogleSoftwareUpdate.bundle/Contents/MacOS/GoogleSoftwareUpdate",
+        "//third_party/updater/chrome_mac_universal/cipd/GoogleUpdater_test.app/Contents/Helpers/GoogleSoftwareUpdate.bundle/Contents/Resources/GoogleSoftwareUpdateAgent.app/Contents/MacOS/GoogleSoftwareUpdateAgent",
+        "//third_party/updater/chrome_mac_universal/cipd/GoogleUpdater_test.app/Contents/Helpers/GoogleSoftwareUpdate.bundle/Contents/Resources/GoogleSoftwareUpdateAgent.app/Contents/Info.plist",
+        "//third_party/updater/chrome_mac_universal/cipd/GoogleUpdater_test.app/Contents/Helpers/GoogleSoftwareUpdate.bundle/Contents/Helpers/ksinstall",
+        "//third_party/updater/chrome_mac_universal/cipd/GoogleUpdater_test.app/Contents/Helpers/GoogleSoftwareUpdate.bundle/Contents/Helpers/ksadmin",
+        "//third_party/updater/chrome_mac_universal/cipd/GoogleUpdater_test.app/Contents/Helpers/GoogleSoftwareUpdate.bundle/Contents/Info.plist",
+        "//third_party/updater/chrome_mac_universal_prod/cipd/GoogleUpdater.app/Contents/CodeResources",
+        "//third_party/updater/chrome_mac_universal_prod/cipd/GoogleUpdater.app/Contents/Helpers/GoogleSoftwareUpdate.bundle/Contents/Helpers/ksadmin",
+        "//third_party/updater/chrome_mac_universal_prod/cipd/GoogleUpdater.app/Contents/Helpers/GoogleSoftwareUpdate.bundle/Contents/Helpers/ksinstall",
+        "//third_party/updater/chrome_mac_universal_prod/cipd/GoogleUpdater.app/Contents/Helpers/GoogleSoftwareUpdate.bundle/Contents/Info.plist",
+        "//third_party/updater/chrome_mac_universal_prod/cipd/GoogleUpdater.app/Contents/Helpers/GoogleSoftwareUpdate.bundle/Contents/MacOS/GoogleSoftwareUpdate",
+        "//third_party/updater/chrome_mac_universal_prod/cipd/GoogleUpdater.app/Contents/Helpers/GoogleSoftwareUpdate.bundle/Contents/MacOS/ksadmin",
+        "//third_party/updater/chrome_mac_universal_prod/cipd/GoogleUpdater.app/Contents/Helpers/GoogleSoftwareUpdate.bundle/Contents/Resources/GoogleSoftwareUpdateAgent.app/Contents/Info.plist",
+        "//third_party/updater/chrome_mac_universal_prod/cipd/GoogleUpdater.app/Contents/Helpers/GoogleSoftwareUpdate.bundle/Contents/Resources/GoogleSoftwareUpdateAgent.app/Contents/MacOS/GoogleSoftwareUpdateAgent",
+        "//third_party/updater/chrome_mac_universal_prod/cipd/GoogleUpdater.app/Contents/Helpers/GoogleSoftwareUpdate.bundle/Contents/Resources/GoogleSoftwareUpdateAgent.app/Contents/_CodeSignature",
+        "//third_party/updater/chrome_mac_universal_prod/cipd/GoogleUpdater.app/Contents/Helpers/GoogleSoftwareUpdate.bundle/Contents/_CodeSignature",
+        "//third_party/updater/chrome_mac_universal_prod/cipd/GoogleUpdater.app/Contents/Helpers/launcher",
+        "//third_party/updater/chrome_mac_universal_prod/cipd/GoogleUpdater.app/Contents/Info.plist",
+        "//third_party/updater/chrome_mac_universal_prod/cipd/GoogleUpdater.app/Contents/MacOS/GoogleUpdater",
+        "//third_party/updater/chrome_mac_universal_prod/cipd/GoogleUpdater.app/Contents/_CodeSignature",
       ]
 
       data_deps += [
@@ -1002,27 +1002,27 @@ if (is_win || is_mac || is_linux) {
 
       if (target_cpu == "arm64") {
         data += [
-          "//third_party/updater/chromium_mac_arm64/ChromiumUpdater_test.app/Contents/MacOS/ChromiumUpdater_test",
-          "//third_party/updater/chromium_mac_arm64/ChromiumUpdater_test.app/Contents/Info.plist",
-          "//third_party/updater/chromium_mac_arm64/ChromiumUpdater_test.app/Contents/Helpers/ChromiumSoftwareUpdate.bundle/Contents/MacOS/ChromiumSoftwareUpdate",
-          "//third_party/updater/chromium_mac_arm64/ChromiumUpdater_test.app/Contents/Helpers/ChromiumSoftwareUpdate.bundle/Contents/Resources/ChromiumSoftwareUpdateAgent.app/Contents/MacOS/ChromiumSoftwareUpdateAgent",
-          "//third_party/updater/chromium_mac_arm64/ChromiumUpdater_test.app/Contents/Helpers/ChromiumSoftwareUpdate.bundle/Contents/Resources/ChromiumSoftwareUpdateAgent.app/Contents/Info.plist",
-          "//third_party/updater/chromium_mac_arm64/ChromiumUpdater_test.app/Contents/Helpers/ChromiumSoftwareUpdate.bundle/Contents/Helpers/ksinstall",
-          "//third_party/updater/chromium_mac_arm64/ChromiumUpdater_test.app/Contents/Helpers/ChromiumSoftwareUpdate.bundle/Contents/Helpers/ksadmin",
-          "//third_party/updater/chromium_mac_arm64/ChromiumUpdater_test.app/Contents/Helpers/ChromiumSoftwareUpdate.bundle/Contents/Info.plist",
+          "//third_party/updater/chromium_mac_arm64/cipd/ChromiumUpdater_test.app/Contents/MacOS/ChromiumUpdater_test",
+          "//third_party/updater/chromium_mac_arm64/cipd/ChromiumUpdater_test.app/Contents/Info.plist",
+          "//third_party/updater/chromium_mac_arm64/cipd/ChromiumUpdater_test.app/Contents/Helpers/ChromiumSoftwareUpdate.bundle/Contents/MacOS/ChromiumSoftwareUpdate",
+          "//third_party/updater/chromium_mac_arm64/cipd/ChromiumUpdater_test.app/Contents/Helpers/ChromiumSoftwareUpdate.bundle/Contents/Resources/ChromiumSoftwareUpdateAgent.app/Contents/MacOS/ChromiumSoftwareUpdateAgent",
+          "//third_party/updater/chromium_mac_arm64/cipd/ChromiumUpdater_test.app/Contents/Helpers/ChromiumSoftwareUpdate.bundle/Contents/Resources/ChromiumSoftwareUpdateAgent.app/Contents/Info.plist",
+          "//third_party/updater/chromium_mac_arm64/cipd/ChromiumUpdater_test.app/Contents/Helpers/ChromiumSoftwareUpdate.bundle/Contents/Helpers/ksinstall",
+          "//third_party/updater/chromium_mac_arm64/cipd/ChromiumUpdater_test.app/Contents/Helpers/ChromiumSoftwareUpdate.bundle/Contents/Helpers/ksadmin",
+          "//third_party/updater/chromium_mac_arm64/cipd/ChromiumUpdater_test.app/Contents/Helpers/ChromiumSoftwareUpdate.bundle/Contents/Info.plist",
         ]
       }
 
       if (target_cpu == "x64") {
         data += [
-          "//third_party/updater/chromium_mac_amd64/ChromiumUpdater_test.app/Contents/MacOS/ChromiumUpdater_test",
-          "//third_party/updater/chromium_mac_amd64/ChromiumUpdater_test.app/Contents/Info.plist",
-          "//third_party/updater/chromium_mac_amd64/ChromiumUpdater_test.app/Contents/Helpers/ChromiumSoftwareUpdate.bundle/Contents/MacOS/ChromiumSoftwareUpdate",
-          "//third_party/updater/chromium_mac_amd64/ChromiumUpdater_test.app/Contents/Helpers/ChromiumSoftwareUpdate.bundle/Contents/Resources/ChromiumSoftwareUpdateAgent.app/Contents/MacOS/ChromiumSoftwareUpdateAgent",
-          "//third_party/updater/chromium_mac_amd64/ChromiumUpdater_test.app/Contents/Helpers/ChromiumSoftwareUpdate.bundle/Contents/Resources/ChromiumSoftwareUpdateAgent.app/Contents/Info.plist",
-          "//third_party/updater/chromium_mac_amd64/ChromiumUpdater_test.app/Contents/Helpers/ChromiumSoftwareUpdate.bundle/Contents/Helpers/ksinstall",
-          "//third_party/updater/chromium_mac_amd64/ChromiumUpdater_test.app/Contents/Helpers/ChromiumSoftwareUpdate.bundle/Contents/Helpers/ksadmin",
-          "//third_party/updater/chromium_mac_amd64/ChromiumUpdater_test.app/Contents/Helpers/ChromiumSoftwareUpdate.bundle/Contents/Info.plist",
+          "//third_party/updater/chromium_mac_amd64/cipd/ChromiumUpdater_test.app/Contents/MacOS/ChromiumUpdater_test",
+          "//third_party/updater/chromium_mac_amd64/cipd/ChromiumUpdater_test.app/Contents/Info.plist",
+          "//third_party/updater/chromium_mac_amd64/cipd/ChromiumUpdater_test.app/Contents/Helpers/ChromiumSoftwareUpdate.bundle/Contents/MacOS/ChromiumSoftwareUpdate",
+          "//third_party/updater/chromium_mac_amd64/cipd/ChromiumUpdater_test.app/Contents/Helpers/ChromiumSoftwareUpdate.bundle/Contents/Resources/ChromiumSoftwareUpdateAgent.app/Contents/MacOS/ChromiumSoftwareUpdateAgent",
+          "//third_party/updater/chromium_mac_amd64/cipd/ChromiumUpdater_test.app/Contents/Helpers/ChromiumSoftwareUpdate.bundle/Contents/Resources/ChromiumSoftwareUpdateAgent.app/Contents/Info.plist",
+          "//third_party/updater/chromium_mac_amd64/cipd/ChromiumUpdater_test.app/Contents/Helpers/ChromiumSoftwareUpdate.bundle/Contents/Helpers/ksinstall",
+          "//third_party/updater/chromium_mac_amd64/cipd/ChromiumUpdater_test.app/Contents/Helpers/ChromiumSoftwareUpdate.bundle/Contents/Helpers/ksadmin",
+          "//third_party/updater/chromium_mac_amd64/cipd/ChromiumUpdater_test.app/Contents/Helpers/ChromiumSoftwareUpdate.bundle/Contents/Info.plist",
         ]
       }
     }

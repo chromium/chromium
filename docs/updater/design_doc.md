@@ -258,7 +258,7 @@ releasing. The other target produces test binaries, which are suffixed by
 behavior of the updater to facilitate testing it.
 
 Some tests require two versions of the updater. For this reason, an older
-version of the updater is checked into `//third_party/updater`. Updaters for
+version of the updater is checked into `//third_party/updater/*/cipd`. Updaters for
 each architecture and platform, Google-branded and Chromium-branded, are
 available there. These versions of the updater are sourced from Chromium or
 Google's official build output, brought in through CIPD and 3pp.

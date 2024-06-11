@@ -121,7 +121,7 @@ Example:
  TODO(crbug.com/40841197): Document how to remote into bots for debugging.
 
 ### Updating the Checked-In Version of the Updater
-An older version of the updater is checked in under `//third_party/updater`.
+An older version of the updater is checked in under `//third_party/updater/*/cipd`.
 This version of the updater is used in some integration tests. The updater is
 pulled from
 [CIPD](https://chrome-infra-packages.appspot.com/p/chromium/third_party/updater)

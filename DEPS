@@ -1110,7 +1110,7 @@ deps = {
     '/external/github.com/llvm/llvm-project/libunwind.git' + '@' +
     Var('libunwind_revision'),
 
-  'src/third_party/updater/chrome_linux64': {
+  'src/third_party/updater/chrome_linux64/cipd': {
       'dep_type': 'cipd',
       'condition': 'checkout_linux and non_git_source',
       'packages': [
@@ -1121,7 +1121,7 @@ deps = {
       ],
   },
 
-  'src/third_party/updater/chrome_mac_universal': {
+  'src/third_party/updater/chrome_mac_universal/cipd': {
       'dep_type': 'cipd',
       'condition': 'checkout_mac',
       'packages': [
@@ -1132,7 +1132,7 @@ deps = {
       ],
   },
 
-  'src/third_party/updater/chrome_mac_universal_prod': {
+  'src/third_party/updater/chrome_mac_universal_prod/cipd': {
       'dep_type': 'cipd',
       'condition': 'checkout_mac',
       'packages': [
@@ -1143,7 +1143,7 @@ deps = {
       ],
   },
 
-  'src/third_party/updater/chrome_win_x86': {
+  'src/third_party/updater/chrome_win_x86/cipd': {
       'dep_type': 'cipd',
       'condition': 'checkout_win',
       'packages': [
@@ -1154,7 +1154,7 @@ deps = {
       ],
   },
 
-  'src/third_party/updater/chrome_win_x86_64': {
+  'src/third_party/updater/chrome_win_x86_64/cipd': {
       'dep_type': 'cipd',
       'condition': 'checkout_win',
       'packages': [
@@ -1165,7 +1165,7 @@ deps = {
       ],
   },
 
-  'src/third_party/updater/chromium_linux64': {
+  'src/third_party/updater/chromium_linux64/cipd': {
       'dep_type': 'cipd',
       'condition': 'checkout_linux and non_git_source',
       'packages': [
@@ -1177,7 +1177,7 @@ deps = {
   },
 
   # A somewhat recent Chromium-branded updater build. (x86_64)
-  'src/third_party/updater/chromium_mac_amd64': {
+  'src/third_party/updater/chromium_mac_amd64/cipd': {
       'dep_type': 'cipd',
       'condition': 'checkout_mac',
       'packages': [
@@ -1189,7 +1189,7 @@ deps = {
   },
 
   # A somewhat recent Chromium-branded updater build. (ARM64)
-  'src/third_party/updater/chromium_mac_arm64': {
+  'src/third_party/updater/chromium_mac_arm64/cipd': {
       'dep_type': 'cipd',
       'condition': 'checkout_mac',
       'packages': [
@@ -1200,7 +1200,7 @@ deps = {
       ],
   },
 
-  'src/third_party/updater/chromium_win_x86': {
+  'src/third_party/updater/chromium_win_x86/cipd': {
       'dep_type': 'cipd',
       'condition': 'checkout_win',
       'packages': [
@@ -1211,7 +1211,7 @@ deps = {
       ],
   },
 
-  'src/third_party/updater/chromium_win_x86_64': {
+  'src/third_party/updater/chromium_win_x86_64/cipd': {
       'dep_type': 'cipd',
       'condition': 'checkout_win',
       'packages': [
