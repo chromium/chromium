@@ -737,7 +737,7 @@ int KSAdminAppMain(int argc, const char* argv[]) {
   base::CommandLine::Init(argc, argv);
   std::map<std::string, std::string> command_line =
       ParseCommandLine(argc, argv);
-  updater::InitLogging(Scope(command_line));
+  updater::InitLogging(geteuid() ? UpdaterScope::kUser : Scope(command_line));
   InitializeThreadPool("keystone");
   const base::ScopedClosureRunner shutdown_thread_pool(
       base::BindOnce([] { base::ThreadPoolInstance::Get()->Shutdown(); }));
