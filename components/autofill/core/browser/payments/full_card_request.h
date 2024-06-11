@@ -15,6 +15,7 @@
 #include "build/build_config.h"
 #include "components/autofill/core/browser/autofill_client.h"
 #include "components/autofill/core/browser/payments/card_unmask_delegate.h"
+#include "components/autofill/core/browser/payments/payments_autofill_client.h"
 #include "components/autofill/core/browser/payments/payments_network_interface.h"
 #include "components/autofill/core/browser/ui/payments/card_unmask_prompt_options.h"
 #include "url/origin.h"
@@ -127,7 +128,7 @@ class FullCardRequest final : public CardUnmaskDelegate {
   // expiration date, then this function will write the new information to
   // autofill table on disk.
   void GetFullCard(const CreditCard& card,
-                   AutofillClient::UnmaskCardReason reason,
+                   payments::PaymentsAutofillClient::UnmaskCardReason reason,
                    base::WeakPtr<ResultDelegate> result_delegate,
                    base::WeakPtr<UIDelegate> ui_delegate,
                    const url::Origin& merchant_domain_for_footprints,
@@ -139,7 +140,7 @@ class FullCardRequest final : public CardUnmaskDelegate {
   // unmasking a Virtual Card via CVC authentication.
   void GetFullVirtualCardViaCVC(
       const CreditCard& card,
-      AutofillClient::UnmaskCardReason reason,
+      payments::PaymentsAutofillClient::UnmaskCardReason reason,
       base::WeakPtr<ResultDelegate> result_delegate,
       base::WeakPtr<UIDelegate> ui_delegate,
       const GURL& last_committed_primary_main_frame_origin,
@@ -164,7 +165,7 @@ class FullCardRequest final : public CardUnmaskDelegate {
   // autofill table on disk.
   void GetFullCardViaFIDO(
       const CreditCard& card,
-      AutofillClient::UnmaskCardReason reason,
+      payments::PaymentsAutofillClient::UnmaskCardReason reason,
       base::WeakPtr<ResultDelegate> result_delegate,
       base::Value::Dict fido_assertion_info,
       const url::Origin& merchant_domain_for_footprints,
@@ -226,7 +227,7 @@ class FullCardRequest final : public CardUnmaskDelegate {
   // autofill table on disk.
   void GetFullCardImpl(
       const CreditCard& card,
-      AutofillClient::UnmaskCardReason reason,
+      payments::PaymentsAutofillClient::UnmaskCardReason reason,
       base::WeakPtr<ResultDelegate> result_delegate,
       base::WeakPtr<UIDelegate> ui_delegate,
       std::optional<base::Value::Dict> fido_assertion_info,

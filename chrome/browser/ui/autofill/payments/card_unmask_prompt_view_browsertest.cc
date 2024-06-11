@@ -2,6 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include "components/autofill/core/browser/ui/payments/card_unmask_prompt_view.h"
+
 #include "base/functional/bind.h"
 #include "base/functional/callback_helpers.h"
 #include "base/location.h"
@@ -17,9 +19,9 @@
 #include "chrome/test/base/in_process_browser_test.h"
 #include "components/autofill/core/browser/autofill_test_utils.h"
 #include "components/autofill/core/browser/payments/card_unmask_delegate.h"
+#include "components/autofill/core/browser/payments/payments_autofill_client.h"
 #include "components/autofill/core/browser/ui/payments/card_unmask_prompt_controller_impl.h"
 #include "components/autofill/core/browser/ui/payments/card_unmask_prompt_options.h"
-#include "components/autofill/core/browser/ui/payments/card_unmask_prompt_view.h"
 #include "components/user_prefs/user_prefs.h"
 #include "content/public/browser/browser_context.h"
 #include "content/public/browser/web_contents.h"
@@ -181,7 +183,8 @@ class CardUnmaskPromptViewBrowserTest : public DialogBrowserTest {
     CardUnmaskPromptOptions card_unmask_prompt_options =
         CardUnmaskPromptOptions(
             /*challenge_option=*/
-            std::nullopt, AutofillClient::UnmaskCardReason::kAutofill);
+            std::nullopt,
+            payments::PaymentsAutofillClient::UnmaskCardReason::kAutofill);
     controller_ = std::make_unique<TestCardUnmaskPromptController>(
         contents(), runner_, card, card_unmask_prompt_options,
         delegate_->GetWeakPtr());

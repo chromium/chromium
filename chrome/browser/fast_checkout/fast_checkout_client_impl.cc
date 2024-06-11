@@ -442,7 +442,8 @@ void FastCheckoutClientImpl::TryToFillForms() {
           credit_card_form_global_id_ = form_global_id;
           cvc_authenticator.GetFullCardRequest()->GetFullCard(
               *credit_card,
-              autofill::AutofillClient::UnmaskCardReason::kAutofill,
+              autofill::payments::PaymentsAutofillClient::UnmaskCardReason::
+                  kAutofill,
               weak_ptr_factory_.GetWeakPtr(),
               cvc_authenticator.GetAsFullCardRequestUIDelegate(),
               autofill_client_->GetLastCommittedPrimaryMainFrameOrigin());

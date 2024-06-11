@@ -18,7 +18,6 @@
 #include "components/autofill/core/browser/metrics/payments/better_auth_metrics.h"
 #include "components/autofill/core/browser/metrics/payments/card_unmask_authentication_metrics.h"
 #include "components/autofill/core/browser/payments/autofill_payments_feature_availability.h"
-#include "components/autofill/core/browser/payments/payments_autofill_client.h"
 #include "components/autofill/core/browser/payments/payments_util.h"
 #include "components/autofill/core/browser/payments_data_manager.h"
 #include "components/autofill/core/browser/personal_data_manager.h"
@@ -47,7 +46,7 @@ FullCardRequest::~FullCardRequest() = default;
 
 void FullCardRequest::GetFullCard(
     const CreditCard& card,
-    AutofillClient::UnmaskCardReason reason,
+    payments::PaymentsAutofillClient::UnmaskCardReason reason,
     base::WeakPtr<ResultDelegate> result_delegate,
     base::WeakPtr<UIDelegate> ui_delegate,
     const url::Origin& merchant_domain_for_footprints,
@@ -63,7 +62,7 @@ void FullCardRequest::GetFullCard(
 
 void FullCardRequest::GetFullVirtualCardViaCVC(
     const CreditCard& card,
-    AutofillClient::UnmaskCardReason reason,
+    payments::PaymentsAutofillClient::UnmaskCardReason reason,
     base::WeakPtr<ResultDelegate> result_delegate,
     base::WeakPtr<UIDelegate> ui_delegate,
     const GURL& last_committed_primary_main_frame_origin,
@@ -82,7 +81,7 @@ void FullCardRequest::GetFullVirtualCardViaCVC(
 
 void FullCardRequest::GetFullCardViaFIDO(
     const CreditCard& card,
-    AutofillClient::UnmaskCardReason reason,
+    payments::PaymentsAutofillClient::UnmaskCardReason reason,
     base::WeakPtr<ResultDelegate> result_delegate,
     base::Value::Dict fido_assertion_info,
     const url::Origin& merchant_domain_for_footprints,
@@ -97,7 +96,7 @@ void FullCardRequest::GetFullCardViaFIDO(
 
 void FullCardRequest::GetFullCardImpl(
     const CreditCard& card,
-    AutofillClient::UnmaskCardReason reason,
+    payments::PaymentsAutofillClient::UnmaskCardReason reason,
     base::WeakPtr<ResultDelegate> result_delegate,
     base::WeakPtr<UIDelegate> ui_delegate,
     std::optional<base::Value::Dict> fido_assertion_info,

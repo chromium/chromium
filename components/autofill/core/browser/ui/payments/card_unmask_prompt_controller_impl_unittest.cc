@@ -20,6 +20,7 @@
 #include "components/autofill/core/browser/data_model/credit_card.h"
 #include "components/autofill/core/browser/metrics/autofill_metrics.h"
 #include "components/autofill/core/browser/payments/card_unmask_challenge_option.h"
+#include "components/autofill/core/browser/payments/payments_autofill_client.h"
 #include "components/autofill/core/browser/ui/payments/card_unmask_prompt_options.h"
 #include "components/autofill/core/browser/ui/payments/card_unmask_prompt_view.h"
 #include "components/autofill/core/common/autofill_features.h"
@@ -139,8 +140,9 @@ class CardUnmaskPromptControllerImplGenericTest : public testing::Test {
                               : CreditCard::RecordType::kMaskedServerCard);
 
     CardUnmaskPromptOptions card_unmask_prompt_options =
-        CardUnmaskPromptOptions(challenge_option,
-                                AutofillClient::UnmaskCardReason::kAutofill);
+        CardUnmaskPromptOptions(
+            challenge_option,
+            payments::PaymentsAutofillClient::UnmaskCardReason::kAutofill);
     controller_ = std::make_unique<TestCardUnmaskPromptController>(
         pref_service_.get(), card_, card_unmask_prompt_options,
         delegate_->GetWeakPtr());

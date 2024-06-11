@@ -2,9 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#import "ios/web_view/internal/autofill/cwv_credit_card_verifier_internal.h"
-
 #import <UIKit/UIKit.h>
+
 #include <string>
 
 #include "base/base_paths.h"
@@ -19,6 +18,7 @@
 #include "components/autofill/core/browser/autofill_test_utils.h"
 #include "components/autofill/core/browser/data_model/credit_card.h"
 #include "components/autofill/core/browser/payments/card_unmask_delegate.h"
+#import "components/autofill/core/browser/payments/payments_autofill_client.h"
 #include "components/autofill/core/common/autofill_payments_features.h"
 #include "components/autofill/core/common/autofill_prefs.h"
 #include "components/prefs/pref_registry_simple.h"
@@ -27,6 +27,7 @@
 #include "ios/web/public/thread/web_task_traits.h"
 #include "ios/web/public/thread/web_thread.h"
 #import "ios/web_view/internal/autofill/cwv_credit_card_internal.h"
+#import "ios/web_view/internal/autofill/cwv_credit_card_verifier_internal.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #import "testing/gtest_mac.h"
 #include "testing/platform_test.h"
@@ -119,7 +120,8 @@ class CWVCreditCardVerifierTest : public PlatformTest {
          initWithPrefs:pref_service_.get()
         isOffTheRecord:NO
             creditCard:credit_card
-                reason:autofill::AutofillClient::UnmaskCardReason::kAutofill
+                reason:autofill::payments::PaymentsAutofillClient::
+                           UnmaskCardReason::kAutofill
               delegate:card_unmask_delegate_.GetWeakPtr()];
     card_unmask_delegate_.SetCreditCardVerifier(credit_card_verifier_);
   }

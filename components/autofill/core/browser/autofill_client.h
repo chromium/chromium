@@ -158,14 +158,6 @@ class AutofillClient {
     kIgnored,
   };
 
-  enum class UnmaskCardReason {
-    // The card is being unmasked for PaymentRequest.
-    kPaymentRequest,
-
-    // The card is being unmasked for Autofill.
-    kAutofill,
-  };
-
   // Authentication methods for card unmasking.
   enum class UnmaskAuthMethod {
     kUnknown = 0,

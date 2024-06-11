@@ -63,6 +63,14 @@ class PaymentsAutofillClient : public RiskDataLoader {
     kIgnored,
   };
 
+  enum class UnmaskCardReason {
+    // The card is being unmasked for PaymentRequest.
+    kPaymentRequest,
+
+    // The card is being unmasked for Autofill.
+    kAutofill,
+  };
+
   // Callback to run if user presses the Save button in the migration dialog.
   // Will pass a vector of GUIDs of cards that the user selected to upload to
   // LocalCardMigrationManager.

@@ -14,6 +14,7 @@
 #include "build/build_config.h"
 #include "components/autofill/core/browser/autofill_experiments.h"
 #include "components/autofill/core/browser/metrics/autofill_metrics.h"
+#include "components/autofill/core/browser/payments/payments_autofill_client.h"
 #include "components/autofill/core/browser/ui/payments/card_unmask_prompt_view.h"
 #include "components/autofill/core/browser/validation.h"
 #include "components/autofill/core/common/autofill_clock.h"
@@ -267,7 +268,7 @@ std::u16string CardUnmaskPromptControllerImpl::GetInstructionsMessage() const {
   if (!VirtualCardFeatureEnabled()) {
     int ids;
     if (card_unmask_prompt_options_.reason ==
-            AutofillClient::UnmaskCardReason::kAutofill &&
+            payments::PaymentsAutofillClient::UnmaskCardReason::kAutofill &&
         ShouldRequestExpirationDate()) {
       ids = IDS_AUTOFILL_CARD_UNMASK_PROMPT_INSTRUCTIONS_EXPIRED;
     } else {
@@ -429,11 +430,11 @@ bool CardUnmaskPromptControllerImpl::IsChallengeOptionPresent() const {
 
 base::TimeDelta CardUnmaskPromptControllerImpl::GetSuccessMessageDuration()
     const {
-  return base::Milliseconds(
-      card_unmask_prompt_options_.reason ==
-              AutofillClient::UnmaskCardReason::kPaymentRequest
-          ? 0
-          : 500);
+  return base::Milliseconds(card_unmask_prompt_options_.reason ==
+                                    payments::PaymentsAutofillClient::
+                                        UnmaskCardReason::kPaymentRequest
+                                ? 0
+                                : 500);
 }
 
 AutofillClient::PaymentsRpcResult
