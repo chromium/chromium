@@ -9,10 +9,20 @@
 
 #include "base/check_is_test.h"
 #include "base/logging.h"
+#include "base/metrics/histogram_functions.h"
 #include "base/unguessable_token.h"
 #include "chromeos/crosapi/mojom/extension_printer.mojom.h"
 
 namespace crosapi {
+
+namespace {
+
+void ReportNumberOfLacrosExtensionPrinters(size_t number) {
+  base::UmaHistogramCounts100000(
+      "Printing.LacrosExtensions.FromAsh.NumberOfPrinters", number);
+}
+
+}  // namespace
 
 ExtensionPrinterServiceAsh::ExtensionPrinterServiceAsh() = default;
 
@@ -36,6 +46,7 @@ void ExtensionPrinterServiceAsh::ClearPendingRequests() {
   // Clear pending get printers requests if any.
   pending_printers_added_callbacks_.clear();
   pending_get_printers_done_callbacks_.clear();
+  total_printers_so_far_.clear();
 
   weak_ptr_factory_.InvalidateWeakPtrs();
 }
@@ -60,6 +71,7 @@ void ExtensionPrinterServiceAsh::PrintersAdded(
 
   if (!printers.empty() &&
       pending_printers_added_callbacks_.contains(request_id)) {
+    total_printers_so_far_[request_id] += printers.size();
     pending_printers_added_callbacks_[request_id].Run(std::move(printers));
   }
 
@@ -72,6 +84,12 @@ void ExtensionPrinterServiceAsh::PrintersAdded(
     pending_get_printers_done_callbacks_.erase(request_id);
   }
   pending_printers_added_callbacks_.erase(request_id);
+
+  // Record number of printers if any from all printing extensions.
+  if (total_printers_so_far_[request_id] > 0) {
+    ReportNumberOfLacrosExtensionPrinters(total_printers_so_far_[request_id]);
+    total_printers_so_far_.erase(request_id);
+  }
 }
 
 void ExtensionPrinterServiceAsh::ExtensionPrinterServiceProviderDisconnected() {

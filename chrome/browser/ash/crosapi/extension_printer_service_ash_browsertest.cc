@@ -8,6 +8,7 @@
 #include <utility>
 
 #include "base/logging.h"
+#include "base/test/metrics/histogram_tester.h"
 #include "base/test/repeating_test_future.h"
 #include "base/test/test_future.h"
 #include "base/test/values_test_util.h"
@@ -148,6 +149,11 @@ IN_PROC_BROWSER_TEST_F(ExtensionPrinterServiceAshBrowserTest,
 // Verifies that StartGetPrinters can receive printers from multiple extensions.
 IN_PROC_BROWSER_TEST_F(ExtensionPrinterServiceAshBrowserTest,
                        StartGetPrinters) {
+  base::HistogramTester histogram_tester;
+
+  constexpr char kNumberOfPrintersMetricName[] =
+      "Printing.LacrosExtensions.FromAsh.NumberOfPrinters";
+
   EXPECT_CALL(mock_provider(), DispatchGetPrintersRequest(_))
       .WillOnce([](const ::base::UnguessableToken& requestId) {
         ExtensionPrinterServiceAsh* service = ExtensionPrinterService();
@@ -209,6 +215,8 @@ IN_PROC_BROWSER_TEST_F(ExtensionPrinterServiceAshBrowserTest,
   // Verifies that the GetPrintersDoneCallback is invoked when no more printers
   // will be reported.
   EXPECT_TRUE(done_future.Wait());
+  // The histogram is recorded once with a value of 3 (number of printers).
+  histogram_tester.ExpectUniqueSample(kNumberOfPrintersMetricName, 3, 1);
 }
 
 // Verifies that StartGetCapability can receive capability.

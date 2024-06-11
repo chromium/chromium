@@ -89,6 +89,10 @@ class ExtensionPrinterServiceAsh : public mojom::ExtensionPrinterService {
   // GetPrintersDoneCallback.
   std::map<base::UnguessableToken, GetPrintersDoneCallback>
       pending_get_printers_done_callbacks_;
+  // There may be more than one printer extensions installed. Each one will
+  // report printers separately. Cache their printer counts and record the total
+  // when all extensions have reported.
+  std::map<base::UnguessableToken, size_t> total_printers_so_far_;
 
   base::WeakPtrFactory<ExtensionPrinterServiceAsh> weak_ptr_factory_{this};
 };
