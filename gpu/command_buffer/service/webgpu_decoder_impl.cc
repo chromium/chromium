@@ -1703,10 +1703,7 @@ wgpu::Adapter WebGPUDecoderImpl::CreatePreferredAdapter(
 #if BUILDFLAG(USE_DAWN) && BUILDFLAG(DAWN_ENABLE_BACKEND_OPENGLES)
   dawn::native::opengl::RequestAdapterOptionsGetGLProc
       adapter_options_get_gl_proc = {};
-  // TODO(343870490): Remove the cast once the type is updated in Dawn.
-  adapter_options_get_gl_proc.getProc =
-      reinterpret_cast<decltype(adapter_options_get_gl_proc.getProc)>(
-          gl::GetGLProcAddress);
+  adapter_options_get_gl_proc.getProc = gl::GetGLProcAddress;
   gl::GLDisplayEGL* gl_display = gl::GLSurfaceEGL::GetGLDisplayEGL();
   if (gl_display) {
     adapter_options_get_gl_proc.display = gl_display->GetDisplay();

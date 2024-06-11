@@ -426,10 +426,7 @@ void ReportWebGPUSupportMetrics(dawn::native::Instance* instance) {
 
   dawn::native::opengl::RequestAdapterOptionsGetGLProc
       adapter_options_get_gl_proc = {};
-  // TODO(343870490): Remove the cast once the type is updated in Dawn.
-  adapter_options_get_gl_proc.getProc =
-      reinterpret_cast<decltype(adapter_options_get_gl_proc.getProc)>(
-          gl::GetGLProcAddress);
+  adapter_options_get_gl_proc.getProc = gl::GetGLProcAddress;
   adapter_options_get_gl_proc.display = EGL_NO_DISPLAY;
   adapter_options_get_gl_proc.nextInChain = adapter_options.nextInChain;
   adapter_options.nextInChain = &adapter_options_get_gl_proc;
@@ -918,10 +915,7 @@ void CollectDawnInfo(const gpu::GpuPreferences& gpu_preferences,
 #if BUILDFLAG(DAWN_ENABLE_BACKEND_OPENGLES)
   dawn::native::opengl::RequestAdapterOptionsGetGLProc
       adapter_options_get_gl_proc = {};
-  // TODO(343870490): Remove the cast once the type is updated in Dawn.
-  adapter_options_get_gl_proc.getProc =
-      reinterpret_cast<decltype(adapter_options_get_gl_proc.getProc)>(
-          gl::GetGLProcAddress);
+  adapter_options_get_gl_proc.getProc = gl::GetGLProcAddress;
   adapter_options_get_gl_proc.display = EGL_NO_DISPLAY;
   adapter_options_get_gl_proc.nextInChain = adapter_options.nextInChain;
   adapter_options.nextInChain = &adapter_options_get_gl_proc;
