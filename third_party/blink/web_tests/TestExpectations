@@ -3504,6 +3504,7 @@ crbug.com/1494838 external/wpt/css/css-page/page-name-img-003-print.html [ Failu
 crbug.com/1494838 external/wpt/css/css-page/page-name-img-004-print.html [ Failure ]
 crbug.com/1494847 external/wpt/css/css-page/page-name-margin-001-print.html [ Failure ]
 crbug.com/1494863 external/wpt/css/css-page/page-name-zero-height-001-print.html [ Failure ]
+crbug.com/346088869 [ Mac ] external/wpt/css/css-page/page-size-011-print.html [ Pass Timeout ]
 
 # Implement reading-order-items
 crbug.com/338162121 external/wpt/shadow-dom/focus-navigation/reading-order/tentative/grid-order-across-scopes.html [ Failure ]
@@ -3550,9 +3551,6 @@ crbug.com/1031667 external/wpt/css/css-pseudo/marker-content-011.tentative.html 
 crbug.com/1097992 external/wpt/css/css-pseudo/marker-font-variant-numeric-normal.html [ Failure ]
 crbug.com/1060007 external/wpt/css/css-pseudo/marker-text-combine-upright.html [ Failure ]
 
-crbug.com/1498015 [ Mac11 ] external/wpt/css/css-page/page-size-011-print.html [ Timeout ]
-crbug.com/1498015 [ Mac12 ] external/wpt/css/css-page/page-size-011-print.html [ Timeout ]
-crbug.com/1498015 [ Mac14 ] external/wpt/css/css-page/page-size-011-print.html [ Timeout ]
 crbug.com/325836823 external/wpt/css/printing/table-overflow-quirks-frameset-crash-print.html [ Crash Timeout ]
 
 # iframe tests time out if the request is blocked as mixed content.
