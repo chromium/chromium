@@ -1087,6 +1087,11 @@ bool Validator::ValidateIPConfig(base::Value::Dict* result,
     return false;
   }
 
+  if (FieldExistsAndIsNotInRange(*result, ::onc::ipconfig::kMTU, 0,
+                                 std::numeric_limits<int>::max())) {
+    return false;
+  }
+
   bool all_required_exist = true;
   if (require_fields) {
     all_required_exist &= RequireField(*result, ::onc::ipconfig::kIPAddress);

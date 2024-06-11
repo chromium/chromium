@@ -43,7 +43,8 @@
       "1.1.1.8"
     ],
     "RoutingPrefix":26,
-    "Type":"IPv4"
+    "Type":"IPv4",
+    "MTU": 1480
   },
   "Type":"Ethernet"
 }

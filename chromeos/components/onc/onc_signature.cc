@@ -231,6 +231,7 @@ const OncFieldSignature ipconfig_fields[] = {
     {::onc::ipconfig::kType, &kStringSignature,
      []() { return base::Value(::onc::ipconfig::kIPv4); }},
     {::onc::ipconfig::kWebProxyAutoDiscoveryUrl, &kStringSignature},
+    {::onc::ipconfig::kMTU, &kIntegerSignature},
     {nullptr}};
 
 const OncFieldSignature proxy_location_fields[] = {

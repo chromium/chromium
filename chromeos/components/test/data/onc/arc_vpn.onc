@@ -17,5 +17,6 @@
         "ExcludedRoutes": [ "192.168.1.0/24" ],
         "NameServers": [ "8.8.8.8", "8.8.4.4" ],
         "SearchDomains": [ "example.com" ],
+        "MTU": 1420,
     }
 }

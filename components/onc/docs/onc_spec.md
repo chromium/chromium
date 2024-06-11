@@ -552,6 +552,10 @@ static IP configuration (see **StaticIPConfig**).
     * (optional if part of **IPConfigs**, read-only) - **string**
     * The Web Proxy Auto-Discovery URL for this network as reported over DHCP.
 
+* **MTU**
+    * (optional) - **integer**
+    * Maximum transmission unit for this network. If not specified (or set to
+      0), the value will be determined automatically.
 
 ## WiFi networks
 

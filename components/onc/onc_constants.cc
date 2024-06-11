@@ -256,6 +256,7 @@ const char kIncludedRoutes[] = "IncludedRoutes";
 const char kExcludedRoutes[] = "ExcludedRoutes";
 const char kType[] = "Type";
 const char kWebProxyAutoDiscoveryUrl[] = "WebProxyAutoDiscoveryUrl";
+const char kMTU[] = "MTU";
 }  // namespace ipconfig
 
 namespace wifi {

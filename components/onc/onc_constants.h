@@ -259,6 +259,7 @@ COMPONENT_EXPORT(ONC) extern const char kIncludedRoutes[];
 COMPONENT_EXPORT(ONC) extern const char kExcludedRoutes[];
 COMPONENT_EXPORT(ONC) extern const char kType[];
 COMPONENT_EXPORT(ONC) extern const char kWebProxyAutoDiscoveryUrl[];
+COMPONENT_EXPORT(ONC) extern const char kMTU[];
 }  // namespace ipconfig
 
 namespace ethernet {

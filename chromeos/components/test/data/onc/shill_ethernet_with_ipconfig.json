@@ -30,7 +30,8 @@
     "Address":"125.125.125.125",
     "Gateway":"1.1.1.7",
     "NameServers":["1.1.1.8"],
-    "Prefixlen":26
+    "Prefixlen": 26,
+    "Mtu": 1480
   },
   "Type":"ethernet"
 }
