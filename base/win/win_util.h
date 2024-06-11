@@ -30,6 +30,7 @@
 #include <vector>
 
 #include "base/base_export.h"
+#include "base/strings/cstring_view.h"
 #include "base/win/windows_types.h"
 
 struct IPropertyStore;
@@ -251,6 +252,20 @@ BASE_EXPORT bool IsCurrentSessionRemote();
 // IsAppVerifierLoaded() indicates whether Application Verifier is *already*
 // loaded into the current process.
 BASE_EXPORT bool IsAppVerifierLoaded();
+
+// Replaces the name of each environment variable embedded in the specified
+// string with the string equivalent of the value of the variable, then returns
+// the resulting string.
+//
+// The implementation calls the `ExpandEnvironmentStrings` WinAPI, meaning:
+// * Each %variableName% portion is replaced with the current value of that
+//   environment variable.
+// * Case is ignored when looking up the environment-variable name.
+// * If the name is not found, the %variableName% portion is left unexpanded.
+//
+// If `ExpandEnvironmentStrings` fails, `std::nullopt` is returned.
+BASE_EXPORT std::optional<std::wstring> ExpandEnvironmentVariables(
+    wcstring_view str);
 
 // Allows changing the domain enrolled state for the life time of the object.
 // The original state is restored upon destruction.

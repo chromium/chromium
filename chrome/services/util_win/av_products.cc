@@ -32,6 +32,7 @@
 #include "base/threading/scoped_blocking_call.h"
 #include "base/win/com_init_util.h"
 #include "base/win/scoped_bstr.h"
+#include "base/win/win_util.h"
 #include "base/win/windows_version.h"
 #include "components/variations/hashing.h"
 #include "third_party/abseil-cpp/absl/strings/ascii.h"
@@ -53,32 +54,16 @@ bool ShouldFilterPart(const std::string& str) {
   return false;
 }
 
-// Helper function for expanding all environment variables in |path|.
-std::wstring ExpandEnvironmentVariables(const std::wstring& path) {
-  static const DWORD kMaxBuffer = 32 * 1024;  // Max according to MSDN.
-  std::wstring path_expanded;
-  DWORD path_len = MAX_PATH;
-  do {
-    DWORD result = ExpandEnvironmentStrings(
-        path.c_str(), base::WriteInto(&path_expanded, path_len), path_len);
-    if (!result) {
-      // Failed to expand variables. Return the original string.
-      DPLOG(ERROR) << path;
-      break;
-    }
-    if (result <= path_len)
-      return path_expanded.substr(0, result - 1);
-    path_len = result;
-  } while (path_len < kMaxBuffer);
-
-  return path;
-}
-
 // Helper function to take a |path| to a file, that might contain environment
 // strings, and read the file version information in |product_version|. Returns
 // true if it was possible to extract the file information correctly.
 bool GetProductVersion(std::wstring* path, std::string* product_version) {
-  base::FilePath full_path(ExpandEnvironmentVariables(*path));
+  auto expanded_path = base::win::ExpandEnvironmentVariables(*path);
+  if (!expanded_path) {
+    return false;
+  }
+
+  base::FilePath full_path(*expanded_path);
 
 #if !defined(_WIN64)
   if (!base::PathExists(full_path)) {
@@ -86,7 +71,13 @@ bool GetProductVersion(std::wstring* path, std::string* product_version) {
     // C:\Program Files.
     base::ReplaceFirstSubstringAfterOffset(path, 0, L"%ProgramFiles%",
                                            L"%ProgramW6432%");
-    full_path = base::FilePath(ExpandEnvironmentVariables(*path));
+
+    expanded_path = base::win::ExpandEnvironmentVariables(*path);
+    if (!expanded_path) {
+      return false;
+    }
+
+    full_path = base::FilePath(*expanded_path);
   }
 #endif  // !defined(_WIN64)
   std::unique_ptr<FileVersionInfo> version_info(

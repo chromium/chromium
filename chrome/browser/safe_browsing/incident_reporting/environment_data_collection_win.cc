@@ -18,6 +18,7 @@
 #include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/win/registry.h"
+#include "base/win/win_util.h"
 #include "chrome/browser/install_verification/win/module_info.h"
 #include "chrome/browser/install_verification/win/module_verification_common.h"
 #include "chrome/browser/net/service_providers_win.h"
@@ -44,27 +45,6 @@ const wchar_t* const kModulesToVerify[] = {
 const RegistryKeyInfo kRegKeysToCollect[] = {
     {HKEY_CURRENT_USER, L"Software\\CSAStats"},
 };
-
-// Helper function for expanding all environment variables in |path|.
-std::wstring ExpandEnvironmentVariables(const std::wstring& path) {
-  static const DWORD kMaxBuffer = 32 * 1024;  // Max according to MSDN.
-  std::wstring path_expanded;
-  DWORD path_len = MAX_PATH;
-  do {
-    DWORD result = ExpandEnvironmentStrings(
-        path.c_str(), base::WriteInto(&path_expanded, path_len), path_len);
-    if (!result) {
-      // Failed to expand variables. Return the original string.
-      DPLOG(ERROR) << path;
-      break;
-    }
-    if (result <= path_len)
-      return path_expanded.substr(0, result - 1);
-    path_len = result;
-  } while (path_len < kMaxBuffer);
-
-  return path;
-}
 
 // Helper function to convert HKEYs to strings.
 std::wstring HKEYToString(HKEY key) {
@@ -218,7 +198,9 @@ void RecordLspFeature(ClientIncidentReport_EnvironmentData_Process* process) {
   PathSanitizer path_sanitizer;
   std::set<std::wstring> lsp_paths;
   for (size_t i = 0; i < lsp_list.size(); ++i) {
-    base::FilePath lsp_path(ExpandEnvironmentVariables(lsp_list[i].path));
+    auto expanded_path =
+        base::win::ExpandEnvironmentVariables(lsp_list[i].path);
+    base::FilePath lsp_path(expanded_path.value_or(lsp_list[i].path));
     path_sanitizer.StripHomeDirectory(&lsp_path);
     lsp_paths.insert(
         base::UTF16ToWide(base::i18n::ToLower(lsp_path.AsUTF16Unsafe())));

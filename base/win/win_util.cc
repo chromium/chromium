@@ -822,6 +822,25 @@ bool IsAppVerifierLoaded() {
   return GetModuleHandleA(kApplicationVerifierDllName);
 }
 
+std::optional<std::wstring> ExpandEnvironmentVariables(wcstring_view str) {
+  std::wstring path_expanded;
+  DWORD path_len = MAX_PATH;
+  for (int iterations = 0; iterations < 5; iterations++) {
+    DWORD result = ::ExpandEnvironmentStringsW(
+        str.c_str(), base::WriteInto(&path_expanded, path_len), path_len);
+    if (!result) {
+      // Failed to expand variables.
+      break;
+    }
+    if (result <= path_len) {
+      return path_expanded.substr(0, result - 1);
+    }
+    path_len = result;
+  }
+
+  return std::nullopt;
+}
+
 ScopedDomainStateForTesting::ScopedDomainStateForTesting(bool state)
     : initial_state_(IsEnrolledToDomain()) {
   *GetDomainEnrollmentStateStorage() = state;

@@ -10,8 +10,10 @@
 
 #include "base/containers/contains.h"
 #include "base/files/file_path.h"
+#include "base/scoped_environment_variable_override.h"
 #include "base/scoped_native_library.h"
 #include "base/strings/string_util.h"
+#include "base/strings/utf_string_conversions.h"
 #include "base/win/scoped_co_mem.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -118,6 +120,42 @@ TEST(BaseWinUtilTest, IsRunningUnderDesktopName) {
       AsWString(ToUpperASCII(AsStringPiece16(desktop_name)))));
   EXPECT_FALSE(
       IsRunningUnderDesktopName(desktop_name + L"_non_existent_desktop_name"));
+}
+
+TEST(BaseWinUtilTest, ExpandEnvironmentVariables) {
+  constexpr char kTestEnvVar[] = "TEST_ENV_VAR";
+  constexpr char kTestEnvVarValue[] = "TEST_VALUE";
+  ScopedEnvironmentVariableOverride scoped_env(kTestEnvVar, kTestEnvVarValue);
+
+  auto path_with_env_var = UTF8ToWide(std::string("C:\\%") + kTestEnvVar + "%");
+  auto path_expanded = UTF8ToWide(std::string("C:\\") + kTestEnvVarValue);
+
+  EXPECT_EQ(ExpandEnvironmentVariables(path_with_env_var).value(),
+            path_expanded);
+}
+
+TEST(BaseWinUtilTest, ExpandEnvironmentVariablesEmptyValue) {
+  constexpr char kTestEnvVar[] = "TEST_ENV_VAR";
+  constexpr char kTestEnvVarValue[] = "";
+  ScopedEnvironmentVariableOverride scoped_env(kTestEnvVar, kTestEnvVarValue);
+
+  auto path_with_env_var = UTF8ToWide(std::string("C:\\%") + kTestEnvVar + "%");
+  auto path_expanded = UTF8ToWide(std::string("C:\\") + kTestEnvVarValue);
+
+  EXPECT_EQ(ExpandEnvironmentVariables(path_with_env_var).value(),
+            path_expanded);
+}
+
+TEST(BaseWinUtilTest, ExpandEnvironmentVariablesUndefinedValue) {
+  constexpr char kTestEnvVar[] = "TEST_ENV_VAR";
+
+  auto path_with_env_var = UTF8ToWide(std::string("C:\\%") + kTestEnvVar + "%");
+
+  // Undefined env vars are left unexpanded.
+  auto path_expanded = path_with_env_var;
+
+  EXPECT_EQ(ExpandEnvironmentVariables(path_with_env_var).value(),
+            path_expanded);
 }
 
 }  // namespace win

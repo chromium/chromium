@@ -30,6 +30,7 @@
 #include "base/metrics/histogram_macros.h"
 #include "base/no_destructor.h"
 #include "base/ranges/algorithm.h"
+#include "base/strings/cstring_view.h"
 #include "base/strings/string_util.h"
 #include "base/strings/sys_string_conversions.h"
 #include "base/system/system_monitor.h"
@@ -38,6 +39,7 @@
 #include "base/win/core_winrt_util.h"
 #include "base/win/scoped_co_mem.h"
 #include "base/win/scoped_variant.h"
+#include "base/win/win_util.h"
 #include "base/win/windows_version.h"
 #include "media/base/media_switches.h"
 #include "media/base/win/mf_helpers.h"
@@ -212,14 +214,18 @@ bool IsDeviceBlockedForMediaFoundationByDisplayName(
   return base::Contains(kDisplayNamesBlockedForMediaFoundation, display_name);
 }
 
-HMODULE ExpandEnvironmentStringsAndLoadLibrary(const wchar_t* path) {
-  wchar_t expanded_path[MAX_PATH] = {0};
-  ExpandEnvironmentStringsW(path, expanded_path, std::size(expanded_path));
-  return LoadLibraryExW(expanded_path, nullptr, LOAD_WITH_ALTERED_SEARCH_PATH);
+HMODULE ExpandEnvironmentStringsAndLoadLibrary(base::wcstring_view path) {
+  auto expanded_path = base::win::ExpandEnvironmentVariables(path);
+  if (!expanded_path) {
+    return nullptr;
+  }
+
+  return LoadLibraryExW(expanded_path->c_str(), nullptr,
+                        LOAD_WITH_ALTERED_SEARCH_PATH);
 }
 
 bool LoadMediaFoundationDlls() {
-  static const wchar_t* const kMfDLLs[] = {
+  static constexpr base::wcstring_view kMfDLLs[] = {
       L"%WINDIR%\\system32\\mf.dll", L"%WINDIR%\\system32\\mfplat.dll",
       L"%WINDIR%\\system32\\mfreadwrite.dll",
       L"%WINDIR%\\system32\\MFCaptureEngine.dll"};
@@ -229,7 +235,7 @@ bool LoadMediaFoundationDlls() {
   SCOPED_MAY_LOAD_LIBRARY_AT_BACKGROUND_PRIORITY_REPEATEDLY();
 
   // Load required DLLs.
-  for (const wchar_t* kMfDLL : kMfDLLs) {
+  for (const auto& kMfDLL : kMfDLLs) {
     if (!ExpandEnvironmentStringsAndLoadLibrary(kMfDLL)) {
       return false;
     }

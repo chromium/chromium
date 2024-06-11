@@ -7,6 +7,7 @@
 #include <iterator>
 
 #include "base/check.h"
+#include "base/win/win_util.h"
 
 namespace avrt {
 
@@ -23,12 +24,16 @@ AvSetMmThreadPriorityFn g_set_mm_thread_priority = NULL;
 bool Initialize() {
   if (!g_set_mm_thread_priority) {
     // The avrt.dll is available on Windows Vista and later.
-    wchar_t path[MAX_PATH] = {0};
-    ExpandEnvironmentStrings(L"%SystemRoot%\\system32\\avrt.dll", path,
-                             std::size(path));
-    g_avrt = LoadLibraryExW(path, NULL, LOAD_WITH_ALTERED_SEARCH_PATH);
-    if (!g_avrt)
+    auto path = base::win::ExpandEnvironmentVariables(
+        L"%SystemRoot%\\system32\\avrt.dll");
+    if (!path) {
       return false;
+    }
+
+    g_avrt = LoadLibraryExW(path->c_str(), NULL, LOAD_WITH_ALTERED_SEARCH_PATH);
+    if (!g_avrt) {
+      return false;
+    }
 
     g_revert_mm_thread_characteristics =
         reinterpret_cast<AvRevertMmThreadCharacteristicsFn>(

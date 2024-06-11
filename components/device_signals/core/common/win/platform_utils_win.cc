@@ -17,6 +17,7 @@
 #include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/win/registry.h"
+#include "base/win/win_util.h"
 #include "components/device_signals/core/common/common_types.h"
 #include "components/device_signals/core/common/signals_constants.h"
 
@@ -32,27 +33,6 @@ constexpr wchar_t kCSCURegKey[] = L"CU";
 
 // AG is the registry value containing the agent ID.
 constexpr wchar_t kCSAGRegKey[] = L"AG";
-
-// Helper function for expanding all environment variables in `path`.
-std::optional<std::wstring> ExpandEnvironmentVariables(
-    const std::wstring& path) {
-  static const DWORD kMaxBuffer = 32 * 1024;  // Max according to MSDN.
-  std::wstring path_expanded;
-  DWORD path_len = MAX_PATH;
-  do {
-    DWORD result = ::ExpandEnvironmentStrings(
-        path.c_str(), base::WriteInto(&path_expanded, path_len), path_len);
-    if (!result) {
-      // Failed to expand variables.
-      break;
-    }
-    if (result <= path_len)
-      return path_expanded.substr(0, result - 1);
-    path_len = result;
-  } while (path_len < kMaxBuffer);
-
-  return std::nullopt;
-}
 
 std::optional<std::string> GetHexStringRegValue(
     const base::win::RegKey& key,
@@ -78,7 +58,8 @@ std::optional<std::string> GetHexStringRegValue(
 
 bool ResolvePath(const base::FilePath& file_path,
                  base::FilePath* resolved_file_path) {
-  auto expanded_path_wstring = ExpandEnvironmentVariables(file_path.value());
+  auto expanded_path_wstring =
+      base::win::ExpandEnvironmentVariables(file_path.value());
   if (!expanded_path_wstring) {
     return false;
   }
