@@ -84,6 +84,20 @@ bool MenuPreTargetHandlerAura::ShouldCancelMenuForEvent(
         return true;
       }
       break;
+    case ui::VKEY_H:
+    case ui::VKEY_R:
+    case ui::VKEY_N:
+    case ui::VKEY_T:
+      // Fully exit the menu when:
+      // Ctrl+H is pressed because it is supposed to open the history page.
+      // Ctrl+R is pressed because it is supposed to reload the current page.
+      // Ctrl+N/Ctrl+Shift+N is pressed because it is supposed to open the
+      // new window/new incognito window.
+      // Ctrl+T is pressed because it is supposed to open the new tab.
+      if (event.IsControlDown()) {
+        return true;
+      }
+      break;
     default:
       break;
   }
