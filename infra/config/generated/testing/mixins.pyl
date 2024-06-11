@@ -437,6 +437,9 @@
       'idempotent': False,
     },
   },
+  'experiments': {
+    'experiment_percentage': 100,
+  },
   'finch-chromium-swarming-pool': {
     'swarming': {
       'dimensions': {

@@ -492,6 +492,11 @@ targets.mixin(
 )
 
 targets.mixin(
+    name = "experiments",
+    experiment_percentage = 100,
+)
+
+targets.mixin(
     name = "chromium-tests-oslogin",
     swarming = targets.swarming(
         dimensions = {
