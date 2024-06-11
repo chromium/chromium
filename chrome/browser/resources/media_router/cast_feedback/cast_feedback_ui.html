@@ -1,137 +1,6 @@
-<style include="cr-shared-style">
-:host {
-  background: var(--md-background-color);
-  color: var(--cr-primary-text-color);
-  height: inherit;
-}
-
-#description,
-#required-legend {
-  margin-top: 22px;
-}
-
-#description,
-#form-buttons,
-#required-legend,
-#title {
-  padding: 0 17px;
-}
-
-.informative {
-  font-size: 13px;
-  line-height: 13px;
-}
-
-#allow-contact-by-email {
-  padding: 10px 0;
-}
-
-#feedback-confirmation {
-  width: initial;
-}
-
-#fine-log-warning {
-  color: var(--google-red-500);
-  margin: 10px 0;
-}
-
-#feedback-type-toggle,
-.question {
-  padding: 16px 17px;
-}
-
-.question-part {
-  padding: 8px 17px;
-}
-
-#form {
-  background-color: var(--cr-card-background-color);
-  border-radius: var(--cr-card-border-radius);
-  box-shadow: var(--cr-card-shadow);
-  margin: -100px auto 48px auto;
-  padding: 34px 17px;
-  padding-inline-end: 24px;
-  padding-inline-start: 24px;
-  width: 720px;
-  z-index: 1;
-}
-
-#form-buttons {
-  display: flex;
-  flex-direction: row;
-  justify-content: flex-end;
-  margin-top: 34px;
-}
-
-#header {
-  margin-bottom: 22px;
-}
-
-#header-banner {
-  background-color: var(--google-blue-500);
-  height: 278px;
-}
-
-md-dialog {
-  width: 80%;
-}
-
-md-dialog-content {
-  padding: 20px;
-}
-
-textarea,
-cr-radio-button {
-  font-size: 16px;
-}
-
-textarea {
-  font-family: inherit;
-}
-
-cr-radio-button {
-  padding: 0;
-}
-
-pre {
-  border: 1px solid rgb(191, 191, 191);
-  font-size: 9.75px;
-  margin: 24px 0;
-  max-height: 240px;
-  min-height: 120px;
-  overflow: scroll;
-  width: 100%;
-}
-
-.required-message {
-  color: var(--google-red-500);
-}
-
-.checkbox-label {
-  font-size: 15px;
-}
-
-.h1,
-.h2,
-.h3 {
-  line-height: 135%;
-  margin-bottom: 10px;
-}
-
-.h1 {
-  font-size: 32px;
-}
-
-.h2 {
-  font-size: 20px;
-}
-
-.h3 {
-  font-size: 18px;
-}
-
-</style>
-
+<!-- #html_wrapper_imports_start
+import {FeedbackType} from './cast_feedback_ui.js';
+#html_wrapper_imports_end -->
 <div>
   <div id="header-banner"></div>
   <div id="form">
@@ -147,47 +16,46 @@ pre {
     </div>
     <div id="feedback-type-toggle">
       <div class="h2">$i18n{typeQuestion}</div>
-      <cr-radio-group selected="{{feedbackType_}}">
-        <cr-radio-button name="[[feedbackTypeEnum_.BUG]]">
+      <cr-radio-group .selected="${this.feedbackType_}"
+          @selected-changed="${this.onFeedbackTypeChanged_}">
+        <cr-radio-button name="${FeedbackType.BUG}">
           $i18n{typeBugOrError}
         </cr-radio-button>
-        <cr-radio-button name="[[feedbackTypeEnum_.FEATURE_REQUEST]]">
+        <cr-radio-button name="${FeedbackType.FEATURE_REQUEST}">
           $i18n{typeFeatureRequest}
         </cr-radio-button>
-        <cr-radio-button name="[[feedbackTypeEnum_.MIRRORING_QUALITY]]">
+        <cr-radio-button name="${FeedbackType.MIRRORING_QUALITY}">
           $i18n{typeProjectionQuality}
         </cr-radio-button>
-        <cr-radio-button name="[[feedbackTypeEnum_.DISCOVERY]]">
+        <cr-radio-button name="${FeedbackType.DISCOVERY}">
           $i18n{typeDiscovery}
         </cr-radio-button>
-        <cr-radio-button name="[[feedbackTypeEnum_.OTHER]]">
+        <cr-radio-button name="${FeedbackType.OTHER}">
           $i18n{typeOther}
         </cr-radio-button>
       </cr-radio-group>
     </div>
-    <div class="question"
-         hidden="[[!showDefaultSection_(feedbackType_)]]">
+    <div class="question" ?hidden="${!this.showDefaultSection_()}">
       <div class="h2">
         $i18n{prompt}
         <span class="required-message"
-              hidden="[[sufficientFeedback_]]">*</span>
+            ?hidden="${this.sufficientFeedback_}">*</span>
       </div>
-      <textarea placeholder="$i18n{yourAnswer}"
-                rows="8" cols="60"
-                value="{{comments_::input}}">
+      <textarea placeholder="$i18n{yourAnswer}" rows="8" cols="60"
+          .value="${this.comments_}" @input="${this.onCommentsInput_}">
       </textarea>
     </div>
-    <template is="dom-if"
-              if="[[showMirroringQualitySection_(feedbackType_)]]">
+    ${this.showMirroringQualitySection_() ? html`
       <div class="question">
         <div class="h2">
           $i18n{mirroringQualitySubheading}
           <span class="required-message"
-                hidden="[[sufficientFeedback_]]">*</span>
+              ?hidden="${this.sufficientFeedback_}">*</span>
         </div>
         <div class="question-part">
           <div class="h3">$i18n{videoSmoothness}</div>
-          <cr-radio-group selected="{{videoSmoothness_}}">
+          <cr-radio-group .selected="${this.videoSmoothness_}"
+              @selected-changed="${this.onVideoSmoothnessChanged_}">
             <cr-radio-button name="1">
               1 ($i18n{videoFreezes})
             </cr-radio-button>
@@ -210,7 +78,8 @@ pre {
         </div>
         <div class="question-part">
           <div class="h3">$i18n{videoQuality}</div>
-          <cr-radio-group selected="{{videoQuality_}}">
+          <cr-radio-group .selected="${this.videoQuality_}"
+              @selected-changed="${this.onVideoQualityChanged_}">
             <cr-radio-button name="1">
               1 ($i18n{videoUnwatchable})
             </cr-radio-button>
@@ -233,7 +102,8 @@ pre {
         </div>
         <div class="question-part">
           <div class="h3">$i18n{audioQuality}</div>
-          <cr-radio-group selected="{{audioQuality_}}">
+          <cr-radio-group .selected="${this.audioQuality_}"
+              @selected-changed="${this.onAudioQualityChanged_}">
             <cr-radio-button name="1">
               1 ($i18n{audioUnintelligible})
             </cr-radio-button>
@@ -258,30 +128,30 @@ pre {
       <div class="question">
         <div class="h2">$i18n{contentQuestion}</div>
         <cr-input placeholder="$i18n{yourAnswer}"
-                  value="{{projectedContentUrl_}}">
+            .value="${this.projectedContentUrl_}"
+            @value-changed="${this.onProjectedContentUrlChanged_}">
         </cr-input>
       </div>
       <div class="question">
         <div class="h2">
           $i18n{additionalComments}
           <span class="required-message"
-                hidden="[[sufficientFeedback_]]">*</span>
+              ?hidden="${this.sufficientFeedback_}">*</span>
         </div>
-        <textarea placeholder="$i18n{yourAnswer}"
-                  rows="8" cols="60"
-                  value="{{comments_::input}}">
+        <textarea placeholder="$i18n{yourAnswer}" rows="8" cols="60"
+            .value="${this.comments_}" @input="${this.onCommentsInput_}">
         </textarea>
       </div>
-    </template>
-    <template is="dom-if"
-              if="[[showDiscoverySection_(feedbackType_)]]">
+    ` : ''}
+    ${this.showDiscoverySection_() ? html`
       <div class="question">
         <div class="h2">
           $i18nRaw{setupVisibilityQuestion}
           <span class="required-message"
-                hidden="[[sufficientFeedback_]]">*</span>
+              ?hidden="${this.sufficientFeedback_}">*</span>
         </div>
-        <cr-radio-group selected="{{visibleInSetup_}}">
+        <cr-radio-group .selected="${this.visibleInSetup_}"
+            @selected-changed="${this.onVisibleInSetupChanged_}">
           <cr-radio-button name="Yes">
             $i18n{yes}
           </cr-radio-button>
@@ -295,7 +165,8 @@ pre {
       </div>
       <div class="question">
         <div class="h2">$i18n{softwareQuestion}</div>
-        <cr-radio-group selected="{{hasNetworkSoftware_}}">
+        <cr-radio-group .selected="${this.hasNetworkSoftware_}"
+            @selected-changed="${this.onHasNetworkSoftwareChanged_}">
           <cr-radio-button name="Yes">
             $i18n{yes}
           </cr-radio-button>
@@ -325,21 +196,21 @@ pre {
         <div class="h2">
           $i18n{additionalComments}
           <span class="required-message"
-                hidden="[[sufficientFeedback_]]">*</span>
+              ?hidden="${this.sufficientFeedback_}">*</span>
         </div>
         <textarea placeholder="$i18n{yourAnswer}"
-                  rows="8" cols="60"
-                  value="{{comments_::input}}">
+            rows="8" cols="60" value="{{comments_::input}}">
         </textarea>
       </div>
-    </template>
+    ` : ''}
     <div class="question">
       <!-- Show the email field only if the user is logged into Chrome
            (i.e. |userEmail_| is set). -->
-      <cr-checkbox checked="{{allowContactByEmail_}}"
-                   aria-description="$i18n{allowContactByEmail}"
-                   id="allow-contact-by-email"
-                   hidden="[[!userEmail_]]">
+      <cr-checkbox ?checked="${this.allowContactByEmail_}"
+           @checked-changed="${this.onAllowContactByEmailChanged_}"
+           aria-description="$i18n{allowContactByEmail}"
+           id="allow-contact-by-email"
+           ?hidden="${!this.userEmail_}">
         <span class="checkbox-label">
           $i18n{allowContactByEmail}
         </span>
@@ -347,41 +218,36 @@ pre {
       <!-- We do not allow the user to edit the email address.
            See b/228865049 for context. -->
       <cr-input placeholder="$i18n{yourEmailAddress}"
-                value="[[userEmail_]]"
-                type="text"
-                hidden="[[!allowContactByEmail_]]"
-                disabled="true">
+          .value="${this.userEmail_}"
+          type="text"
+          ?hidden="${!this.allowContactByEmail_}"
+          disabled>
       </cr-input>
-      <cr-checkbox checked="{{attachLogs_}}"
-                   aria-description="$i18n{sendLogs}">
+      <cr-checkbox ?checked="${this.attachLogs_}"
+          @checked-changed="${this.onAttachLogsChanged_}"
+          aria-description="$i18n{sendLogs}">
         <span class="checkbox-label" id="send-logs">
           $i18nRaw{sendLogsHtml}
         </span>
       </cr-checkbox>
-      <p class="informative">
-        $i18n{privacyDataUsage}
-      </p>
+      <p class="informative">$i18n{privacyDataUsage}</p>
     </div>
     <div id="form-buttons">
-      <cr-button class="cancel-button"
-                 on-click="onCancel_">
+      <cr-button class="cancel-button" @click="${this.onCancel_}">
         $i18n{cancel}
       </cr-button>
-      <cr-button class="action-button"
-                 on-click="onSubmit_"
-                 disabled="[[!sufficientFeedback_]]">
+      <cr-button class="action-button" @click="${this.onSubmit_}"
+          ?disabled="${!this.sufficientFeedback_}">
         $i18n{sendButton}
       </cr-button>
     </div>
   </div>
 
   <cr-dialog id="sendDialog">
-    <div slot="body">
-      [[sendDialogText_]]
-    </div>
+    <div slot="body">${this.sendDialogText_}</div>
     <div slot="button-container">
-      <cr-button on-click="onSendDialogOk_"
-                 hidden="[[!sendDialogIsInteractive_]]">
+      <cr-button @click="${this.onSendDialogOk_}"
+          ?hidden="${!this.sendDialogIsInteractive_}">
         $i18n{ok}
       </cr-button>
     </div>
@@ -390,22 +256,20 @@ pre {
   <cr-dialog id="logsDialog">
     <div slot="title">$i18n{logsHeader}</div>
     <div slot="body">
-      <div id="fine-log-warning"
-           class="informative">
+      <div id="fine-log-warning" class="informative">
         $i18n{fineLogsWarning}
       </div>
-      <pre>[[logData_]]</pre>
+      <pre>${this.logData_}</pre>
       <div class="send-logs">
-        <cr-checkbox checked="{{attachLogs_}}"
-                     aria-description="$i18n{sendLogs}">
-          <span class="send-logs">
-            $i18n{sendLogs}
-          </span>
+        <cr-checkbox ?checked="${this.attachLogs_}"
+            @checked-changed="${this.onAttachLogsChanged_}"
+            aria-description="$i18n{sendLogs}">
+          <span class="send-logs">$i18n{sendLogs}</span>
         </cr-checkbox>
       </div>
     </div>
     <div slot="button-container">
-      <cr-button on-click="onLogsDialogOk_">$i18n{ok}</cr-button>
+      <cr-button @click="${this.onLogsDialogOk_}">$i18n{ok}</cr-button>
     </div>
   </cr-dialog>
 </div>

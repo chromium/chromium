@@ -25,6 +25,7 @@ ts_library("build_ts") {
     "//chrome/browser/resources/feedback:build_ts",
     "//chrome/browser/resources/key_value_pair_viewer_shared:build_ts",
     "//chrome/browser/resources/management:build_ts",
+    "//chrome/browser/resources/media_router/cast_feedback:build_ts",
     "//chrome/browser/resources/side_panel/customize_chrome:build_ts",
     "//chrome/browser/resources/side_panel/history_clusters:build_ts",
     "//chrome/browser/resources/side_panel/reading_list:build_ts",

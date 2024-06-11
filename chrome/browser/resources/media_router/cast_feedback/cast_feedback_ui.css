@@ -1,0 +1,142 @@
+/* Copyright 2024 The Chromium Authors
+ * Use of this source code is governed by a BSD-style license that can be
+ * found in the LICENSE file. */
+
+/* #css_wrapper_metadata_start
+ * #type=style-lit
+ * #import=//resources/cr_elements/cr_shared_style_lit.css.js
+ * #import=//resources/cr_elements/cr_shared_vars.css.js
+ * #scheme=relative
+ * #include=cr-shared-style-lit
+ * #css_wrapper_metadata_end */
+
+:host {
+  background: var(--md-background-color);
+  color: var(--cr-primary-text-color);
+  height: inherit;
+}
+
+#description,
+#required-legend {
+  margin-top: 22px;
+}
+
+#description,
+#form-buttons,
+#required-legend,
+#title {
+  padding: 0 17px;
+}
+
+.informative {
+  font-size: 13px;
+  line-height: 13px;
+}
+
+#allow-contact-by-email {
+  padding: 10px 0;
+}
+
+#feedback-confirmation {
+  width: initial;
+}
+
+#fine-log-warning {
+  color: var(--google-red-500);
+  margin: 10px 0;
+}
+
+#feedback-type-toggle,
+.question {
+  padding: 16px 17px;
+}
+
+.question-part {
+  padding: 8px 17px;
+}
+
+#form {
+  background-color: var(--cr-card-background-color);
+  border-radius: var(--cr-card-border-radius);
+  box-shadow: var(--cr-card-shadow);
+  margin: -100px auto 48px auto;
+  padding: 34px 17px;
+  padding-inline-end: 24px;
+  padding-inline-start: 24px;
+  width: 720px;
+  z-index: 1;
+}
+
+#form-buttons {
+  display: flex;
+  flex-direction: row;
+  justify-content: flex-end;
+  margin-top: 34px;
+}
+
+#header {
+  margin-bottom: 22px;
+}
+
+#header-banner {
+  background-color: var(--google-blue-500);
+  height: 278px;
+}
+
+md-dialog {
+  width: 80%;
+}
+
+md-dialog-content {
+  padding: 20px;
+}
+
+textarea,
+cr-radio-button {
+  font-size: 16px;
+}
+
+textarea {
+  font-family: inherit;
+}
+
+cr-radio-button {
+  padding: 0;
+}
+
+pre {
+  border: 1px solid rgb(191, 191, 191);
+  font-size: 9.75px;
+  margin: 24px 0;
+  max-height: 240px;
+  min-height: 120px;
+  overflow: scroll;
+  width: 100%;
+}
+
+.required-message {
+  color: var(--google-red-500);
+}
+
+.checkbox-label {
+  font-size: 15px;
+}
+
+.h1,
+.h2,
+.h3 {
+  line-height: 135%;
+  margin-bottom: 10px;
+}
+
+.h1 {
+  font-size: 32px;
+}
+
+.h2 {
+  font-size: 20px;
+}
+
+.h3 {
+  font-size: 18px;
+}
