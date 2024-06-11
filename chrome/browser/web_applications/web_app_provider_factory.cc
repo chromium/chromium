@@ -23,6 +23,9 @@
 #include "components/keyed_service/content/browser_context_dependency_manager.h"
 #include "components/pref_registry/pref_registry_syncable.h"
 
+#if BUILDFLAG(IS_CHROMEOS)
+#include "chrome/browser/web_applications/isolated_web_apps/policy/isolated_web_app_policy_manager.h"
+#endif  // BUILDFLAG(IS_CHROMEOS)
 namespace web_app {
 
 // static
@@ -85,6 +88,11 @@ void WebAppProviderFactory::RegisterProfilePrefs(
   PreinstalledWebAppManager::RegisterProfilePrefs(registry);
   WebAppPrefGuardrails::RegisterProfilePrefs(registry);
   WebAppPolicyManager::RegisterProfilePrefs(registry);
+
+#if BUILDFLAG(IS_CHROMEOS)
+  IsolatedWebAppPolicyManager::RegisterProfilePrefs(registry);
+#endif  // BUILDFLAG(IS_CHROMEOS)
+
   registry->RegisterBooleanPref(prefs::kShouldGarbageCollectStoragePartitions,
                                 false);
   RegisterInstallBounceMetricProfilePrefs(registry);

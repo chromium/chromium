@@ -201,9 +201,6 @@ void WebAppPolicyManager::RegisterProfilePrefs(
     user_prefs::PrefRegistrySyncable* registry) {
   registry->RegisterListPref(prefs::kWebAppInstallForceList);
   registry->RegisterListPref(prefs::kWebAppSettings);
-#if BUILDFLAG(IS_CHROMEOS)
-  registry->RegisterListPref(prefs::kIsolatedWebAppInstallForceList);
-#endif
 }
 
 void WebAppPolicyManager::InitChangeRegistrarAndRefreshPolicy(

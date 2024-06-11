@@ -188,6 +188,8 @@ std::ostream& operator<<(std::ostream& os,
 // of the policy installed IWAs.
 class IsolatedWebAppPolicyManager {
  public:
+  static void RegisterProfilePrefs(user_prefs::PrefRegistrySyncable* registry);
+
   explicit IsolatedWebAppPolicyManager(Profile* profile);
 
   IsolatedWebAppPolicyManager(const IsolatedWebAppPolicyManager&) = delete;

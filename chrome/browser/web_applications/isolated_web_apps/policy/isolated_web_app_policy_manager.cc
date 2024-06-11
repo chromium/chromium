@@ -467,6 +467,12 @@ std::ostream& operator<<(std::ostream& os,
 
 }  // namespace internal
 
+// static
+void IsolatedWebAppPolicyManager::RegisterProfilePrefs(
+    user_prefs::PrefRegistrySyncable* registry) {
+  registry->RegisterListPref(prefs::kIsolatedWebAppInstallForceList);
+}
+
 IsolatedWebAppPolicyManager::IsolatedWebAppPolicyManager(Profile* profile)
     : profile_(profile),
       install_retry_backoff_entry_(&kInstallRetryBackoffPolicy) {}
