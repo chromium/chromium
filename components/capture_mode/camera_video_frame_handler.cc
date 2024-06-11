@@ -7,6 +7,7 @@
 #include "base/check.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
+#include "base/functional/callback_helpers.h"
 #include "base/logging.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/memory/shared_memory_mapping.h"
@@ -202,40 +203,30 @@ class SharedMemoryBufferHandleHolder : public BufferHandleHolder {
       video_capture::mojom::ReadyFrameInBufferPtr buffer) override {
     const size_t mapping_size = media::VideoFrame::AllocationSize(
         buffer->frame_info->pixel_format, buffer->frame_info->coded_size);
-    if (!MaybeUpdateMapping(mapping_size)) {
+
+    auto mapping = region_.Map();
+    if (!mapping.IsValid()) {
       return {};
     }
+    DCHECK_GE(mapping.size(), mapping_size);
 
     auto& frame_info = buffer->frame_info;
     auto frame = media::VideoFrame::WrapExternalData(
         frame_info->pixel_format, frame_info->coded_size,
         frame_info->visible_rect, frame_info->visible_rect.size(),
-        mapping_.GetMemoryAs<uint8_t>(), mapping_.size(),
-        frame_info->timestamp);
+        mapping.GetMemoryAs<uint8_t>(), mapping.size(), frame_info->timestamp);
+
+    if (frame) {
+      frame->AddDestructionObserver(
+          base::DoNothingWithBoundArgs(std::move(mapping)));
+    }
 
     return frame;
   }
 
  private:
-  // Maps a new region with a size `new_mapping_size` bytes if no `mapping_` is
-  // available. Returns true if already mapped, or mapping is successful, false
-  // otherwise.
-  bool MaybeUpdateMapping(size_t new_mapping_size) {
-    if (mapping_.IsValid()) {
-      DCHECK_GE(mapping_.size(), new_mapping_size);
-      return true;
-    }
-
-    mapping_ = region_.Map();
-    DCHECK_GE(mapping_.size(), new_mapping_size);
-    return mapping_.IsValid();
-  }
-
   // The held shared memory region associated with this object.
   base::UnsafeSharedMemoryRegion region_;
-
-  // Shared memory mapping associated with the held `region_`.
-  base::WritableSharedMemoryMapping mapping_;
 };
 
 // -----------------------------------------------------------------------------
