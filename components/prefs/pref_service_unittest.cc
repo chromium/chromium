@@ -32,6 +32,34 @@ const char kStandaloneBrowserPref[] = "standalone_browser_pref";
 
 }  // namespace
 
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+TEST(PrefServiceUtilTest, GetAllDottedPaths) {
+  using pref_service_util::GetAllDottedPaths;
+
+  base::Value::Dict dict;
+  std::vector<std::string> paths;
+
+  GetAllDottedPaths(dict, paths);
+  // Expect paths to be [].
+  EXPECT_EQ(paths.size(), std::size_t(0));
+
+  dict.SetByDottedPath("one.two", base::Value(12));
+  GetAllDottedPaths(dict, paths);
+  EXPECT_THAT(paths, testing::UnorderedElementsAre("one.two"));
+
+  paths.clear();
+  dict.SetByDottedPath("one.three", base::Value(13));
+  GetAllDottedPaths(dict, paths);
+  EXPECT_THAT(paths, testing::UnorderedElementsAre("one.two", "one.three"));
+
+  paths.clear();
+  dict.SetByDottedPath("key", "value");
+  GetAllDottedPaths(dict, paths);
+  EXPECT_THAT(paths,
+              testing::UnorderedElementsAre("one.two", "one.three", "key"));
+}
+#endif
+
 TEST(PrefServiceTest, NoObserverFire) {
   TestingPrefServiceSimple prefs;
 
@@ -537,3 +565,21 @@ TEST_F(PrefStandaloneBrowserPrefsTest, CheckStandaloneBrowserPref) {
       kStandaloneBrowserPref, WriteablePrefStore::DEFAULT_PREF_WRITE_FLAGS);
   EXPECT_EQ(base::Value(4), *(preference->GetValue()));
 }
+
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+TEST_F(PrefStandaloneBrowserPrefsTest, RemoveAllStandaloneBrowserPrefs) {
+  const char int_pref_name[] = "int.name";
+  const char str_pref_name[] = "str.pref.name";
+  pref_registry_->RegisterIntegerPref(int_pref_name, 0);
+  pref_registry_->RegisterStringPref(str_pref_name, "");
+
+  pref_service_->SetStandaloneBrowserPref(int_pref_name, base::Value(4));
+  pref_service_->SetStandaloneBrowserPref(str_pref_name, base::Value("value"));
+  EXPECT_EQ(base::Value(4), pref_service_->GetValue(int_pref_name));
+  EXPECT_EQ(base::Value("value"), pref_service_->GetValue(str_pref_name));
+
+  pref_service_->RemoveAllStandaloneBrowserPrefs();
+  EXPECT_EQ(base::Value(0), pref_service_->GetValue(int_pref_name));
+  EXPECT_EQ(base::Value(""), pref_service_->GetValue(str_pref_name));
+}
+#endif

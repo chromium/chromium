@@ -21,6 +21,7 @@
 #include "base/memory/ptr_util.h"
 #include "base/metrics/histogram.h"
 #include "base/notreached.h"
+#include "base/strings/strcat.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_util.h"
 #include "base/task/sequenced_task_runner.h"
@@ -39,10 +40,33 @@
 #include "components/prefs/android/pref_service_android.h"
 #endif
 
-namespace {
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+namespace pref_service_util {
+void GetAllDottedPaths(std::string_view prefix,
+                       const base::Value::Dict& dict,
+                       std::vector<std::string>& paths) {
+  for (const auto pair : dict) {
+    std::string path;
+    if (prefix.empty()) {
+      path = pair.first;
+    } else {
+      path = base::StrCat({prefix, ".", pair.first});
+    }
 
+    if (pair.second.is_dict()) {
+      GetAllDottedPaths(path, pair.second.GetDict(), paths);
+    } else {
+      paths.push_back(path);
+    }
+  }
+}
 
-}  // namespace
+void GetAllDottedPaths(const base::Value::Dict& dict,
+                       std::vector<std::string>& paths) {
+  GetAllDottedPaths("", dict, paths);
+}
+}  // namespace pref_service_util
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
 PrefService::PersistentPrefStoreLoadingObserver::
     PersistentPrefStoreLoadingObserver(PrefService* pref_service)
@@ -704,6 +728,22 @@ void PrefService::RemoveStandaloneBrowserPref(const std::string& path) {
   }
   standalone_browser_pref_store_->RemoveValue(
       path, WriteablePrefStore::DEFAULT_PREF_WRITE_FLAGS);
+}
+
+void PrefService::RemoveAllStandaloneBrowserPrefs() {
+  if (!standalone_browser_pref_store_) {
+    LOG(WARNING) << "standalone_browser_pref_store_ is null";
+    return;
+  }
+
+  std::vector<std::string> paths;
+  pref_service_util::GetAllDottedPaths(
+      standalone_browser_pref_store_->GetValues(), paths);
+
+  for (const std::string& path : paths) {
+    standalone_browser_pref_store_->RemoveValue(
+        path, WriteablePrefStore::DEFAULT_PREF_WRITE_FLAGS);
+  }
 }
 #endif
 

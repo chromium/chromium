@@ -59,6 +59,15 @@ class PrefMemberBase;
 class ScopedUserPrefUpdateBase;
 }
 
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+namespace pref_service_util {
+// Gets all the dotted paths from `dict`. For example if values stored are
+// `{"a" : { "b" : true, "c": false }}`, then `paths` gets ["a.b", "a.c"].
+void COMPONENTS_PREFS_EXPORT GetAllDottedPaths(const base::Value::Dict& dict,
+                                               std::vector<std::string>& paths);
+}  // namespace pref_service_util
+#endif
+
 // Base class for PrefServices. You can use the base class to read and
 // interact with preferences, but not to register new preferences; for
 // that see e.g. PrefRegistrySimple.
@@ -403,6 +412,10 @@ class COMPONENTS_PREFS_EXPORT PrefService {
                                 const base::Value& value);
   // Clear extension-controlled prefs from Lacros in ash.
   void RemoveStandaloneBrowserPref(const std::string& path);
+
+  // Clear all prefs in standalone_browser_pref_store_. Use it when rolling back
+  // to Ash (i.e. disabling Lacros).
+  void RemoveAllStandaloneBrowserPrefs();
 #endif
 
 #if BUILDFLAG(IS_ANDROID)

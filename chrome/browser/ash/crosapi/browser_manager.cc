@@ -108,6 +108,7 @@
 #include "components/user_manager/user.h"
 #include "components/user_manager/user_manager.h"
 #include "components/user_manager/user_type.h"
+#include "components/user_prefs/user_prefs.h"
 #include "components/version_info/version_info.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "ui/base/l10n/l10n_util.h"
@@ -899,7 +900,21 @@ void BrowserManager::ClearLacrosData() {
         }));
   }
 
-  // TODO(b/297826137): Remove 'standalone_browser_preferences.json'.
+  // Clear prefs set by Lacros and stored in
+  // 'standalone_browser_preferences.json' if Lacros is disabled.
+  const user_manager::User* user =
+      user_manager::UserManager::Get()->GetPrimaryUser();
+  if (!user) {
+    CHECK_IS_TEST();
+    return;
+  }
+  content::BrowserContext* context =
+      ash::BrowserContextHelper::Get()->GetBrowserContextByUser(user);
+  if (!context) {
+    CHECK_IS_TEST();
+    return;
+  }
+  user_prefs::UserPrefs::Get(context)->RemoveAllStandaloneBrowserPrefs();
 }
 
 void BrowserManager::OnBrowserServiceConnected(
