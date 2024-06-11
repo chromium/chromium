@@ -7,7 +7,6 @@
 #include <limits>
 #include <vector>
 
-#include "base/compiler_specific.h"
 #include "base/containers/span.h"
 #include "base/test/task_environment.h"
 #include "mojo/public/c/system/types.h"
@@ -17,19 +16,19 @@
 namespace mojo {
 namespace {
 
-TEST(DataPipeCppTest, BeginWriteDataGracefullyHandlesBigSizeHint) {
+TEST(DataPipeCppTest, BeginWriteDataGracefullyHandlesBigSize) {
   base::test::TaskEnvironment task_environment;
   ScopedDataPipeProducerHandle producer_handle;
   ScopedDataPipeConsumerHandle consumer_handle;
   ASSERT_EQ(CreateDataPipe(16, producer_handle, consumer_handle),
             MOJO_RESULT_OK);
 
-  base::span<uint8_t> data;
-  size_t size_hint = std::numeric_limits<size_t>::max();
-  ASSERT_EQ(producer_handle->BeginWriteData(
-                size_hint, MOJO_BEGIN_WRITE_DATA_FLAG_NONE, data),
+  void* data = nullptr;
+  size_t size = std::numeric_limits<size_t>::max();
+  ASSERT_EQ(producer_handle->BeginWriteData(&data, &size,
+                                            MOJO_BEGIN_WRITE_DATA_FLAG_NONE),
             MOJO_RESULT_OK);
-  EXPECT_LE(data.size(), 16u);
+  EXPECT_LE(size, 16u);
 }
 
 TEST(DataPipeCppTest, EndWriteDataErrorWhenSizeTooBig) {
@@ -46,12 +45,12 @@ TEST(DataPipeCppTest, EndWriteDataErrorWhenSizeTooBig) {
     ASSERT_EQ(CreateDataPipe(16, producer_handle, consumer_handle),
               MOJO_RESULT_OK);
 
-    base::span<uint8_t> data;
-    ASSERT_EQ(
-        producer_handle->BeginWriteData(DataPipeProducerHandle::kNoSizeHint,
-                                        MOJO_BEGIN_WRITE_DATA_FLAG_NONE, data),
-        MOJO_RESULT_OK);
-    EXPECT_LE(data.size(), 16u);
+    void* data = nullptr;
+    size_t size = 0;  // No size hint.
+    ASSERT_EQ(producer_handle->BeginWriteData(&data, &size,
+                                              MOJO_BEGIN_WRITE_DATA_FLAG_NONE),
+              MOJO_RESULT_OK);
+    EXPECT_LE(size, 16u);
 
     // Main test:
     ASSERT_EQ(producer_handle->EndWriteData(big_size),
@@ -82,16 +81,12 @@ TEST(DataPipeCppTest, WriteDataGracefullyHandlesBigSize) {
   // TODO(lukasza): Avoid UB risk by testing with a `std::vector` that contains
   // `std::numeric_limits<uint32_t>::max() + 123` bytes.  (Once our allocator
   // supports such big vectors.)
-  std::vector<uint8_t> kData(1024, 0x00);
-  base::span<const uint8_t> big_span = UNSAFE_BUFFERS(base::span<const uint8_t>(
-      kData.data(),
-      std::numeric_limits<size_t>::max()));  // subtle - see above why ok
-  size_t actually_written_bytes = 0;
-  ASSERT_EQ(
-      producer_handle->WriteData(big_span, MOJO_BEGIN_WRITE_DATA_FLAG_NONE,
-                                 actually_written_bytes),
-      MOJO_RESULT_OK);
-  EXPECT_EQ(actually_written_bytes, 16u);
+  const char kData[] = "1234567890123456";  // 16 bytes
+  size_t written_bytes = std::numeric_limits<size_t>::max();
+  ASSERT_EQ(producer_handle->WriteData(kData, &written_bytes,
+                                       MOJO_BEGIN_WRITE_DATA_FLAG_NONE),
+            MOJO_RESULT_OK);
+  EXPECT_EQ(written_bytes, 16u);
 }
 
 TEST(DataPipeCppTest, ReadDataGracefullyHandlesBigSize) {
@@ -101,13 +96,12 @@ TEST(DataPipeCppTest, ReadDataGracefullyHandlesBigSize) {
   ASSERT_EQ(CreateDataPipe(16, producer_handle, consumer_handle),
             MOJO_RESULT_OK);
 
-  const std::string kData = "0123456789";
-  size_t actually_written_bytes = 0;
-  ASSERT_EQ(producer_handle->WriteData(base::as_byte_span(kData),
-                                       MOJO_BEGIN_WRITE_DATA_FLAG_NONE,
-                                       actually_written_bytes),
+  const char kData[] = "0123456789";
+  size_t written_bytes = strlen(kData);
+  ASSERT_EQ(producer_handle->WriteData(kData, &written_bytes,
+                                       MOJO_BEGIN_WRITE_DATA_FLAG_NONE),
             MOJO_RESULT_OK);
-  EXPECT_EQ(actually_written_bytes, 10u);
+  EXPECT_EQ(written_bytes, 10u);
 
   // On one hand, we are asking to potentially read more bytes than will fit
   // into `read_buffer` (because we are using a huge `read_bytes` value as
@@ -118,13 +112,11 @@ TEST(DataPipeCppTest, ReadDataGracefullyHandlesBigSize) {
   // accommodate `std::numeric_limits<uint32_t>::max() + 123` bytes.  (Once our
   // allocator supports such big vectors.)
   std::vector<uint8_t> read_buffer(100);
-  base::span<uint8_t> big_span = UNSAFE_BUFFERS(base::span<uint8_t>(
-      read_buffer.data(), std::numeric_limits<size_t>::max()));
-  size_t actually_read_bytes;
-  ASSERT_EQ(consumer_handle->ReadData(MOJO_READ_DATA_FLAG_NONE, big_span,
-                                      actually_read_bytes),
+  size_t read_bytes = std::numeric_limits<size_t>::max();
+  ASSERT_EQ(consumer_handle->ReadData(read_buffer.data(), &read_bytes,
+                                      MOJO_READ_DATA_FLAG_NONE),
             MOJO_RESULT_OK);
-  EXPECT_EQ(actually_read_bytes, 10u);
+  EXPECT_EQ(read_bytes, 10u);
   EXPECT_EQ(base::as_byte_span(read_buffer).first(10u),
             base::as_byte_span(std::string_view(kData)));
 }
@@ -144,19 +136,20 @@ TEST(DataPipeCppTest, EndReadDataErrorWhenSizeTooBig) {
     ASSERT_EQ(CreateDataPipe(16, producer_handle, consumer_handle),
               MOJO_RESULT_OK);
 
-    const std::string kData = "0123456789";
-    size_t actually_written_bytes = 0;
-    ASSERT_EQ(producer_handle->WriteData(base::as_byte_span(kData),
-                                         MOJO_BEGIN_WRITE_DATA_FLAG_NONE,
-                                         actually_written_bytes),
+    const char kData[] = "0123456789";
+    size_t written_bytes = strlen(kData);
+    EXPECT_EQ(written_bytes, 10u);
+    ASSERT_EQ(producer_handle->WriteData(kData, &written_bytes,
+                                         MOJO_BEGIN_WRITE_DATA_FLAG_NONE),
               MOJO_RESULT_OK);
-    EXPECT_EQ(actually_written_bytes, 10u);
+    EXPECT_EQ(written_bytes, 10u);
 
-    base::span<const uint8_t> read_buffer;
-    ASSERT_EQ(
-        consumer_handle->BeginReadData(MOJO_READ_DATA_FLAG_NONE, read_buffer),
-        MOJO_RESULT_OK);
-    EXPECT_EQ(read_buffer.size(), 10u);
+    const void* read_buffer = nullptr;
+    size_t read_bytes = std::numeric_limits<size_t>::max();
+    ASSERT_EQ(consumer_handle->BeginReadData(&read_buffer, &read_bytes,
+                                             MOJO_READ_DATA_FLAG_NONE),
+              MOJO_RESULT_OK);
+    EXPECT_EQ(read_bytes, 10u);
 
     ASSERT_EQ(consumer_handle->EndReadData(big_size),
               MOJO_RESULT_INVALID_ARGUMENT);

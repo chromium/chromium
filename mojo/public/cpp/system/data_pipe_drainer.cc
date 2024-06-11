@@ -29,11 +29,13 @@ DataPipeDrainer::DataPipeDrainer(Client* client,
 DataPipeDrainer::~DataPipeDrainer() {}
 
 void DataPipeDrainer::ReadData() {
-  base::span<const uint8_t> buffer;
-  MojoResult rv = source_->BeginReadData(MOJO_READ_DATA_FLAG_NONE, buffer);
+  const void* buffer = nullptr;
+  size_t num_bytes = 0;
+  MojoResult rv =
+      source_->BeginReadData(&buffer, &num_bytes, MOJO_READ_DATA_FLAG_NONE);
   if (rv == MOJO_RESULT_OK) {
-    client_->OnDataAvailable(buffer.data(), buffer.size());
-    source_->EndReadData(buffer.size());
+    client_->OnDataAvailable(buffer, num_bytes);
+    source_->EndReadData(num_bytes);
   } else if (rv == MOJO_RESULT_FAILED_PRECONDITION) {
     client_->OnDataComplete();
   } else if (rv != MOJO_RESULT_SHOULD_WAIT) {
