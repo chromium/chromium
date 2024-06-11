@@ -1122,7 +1122,7 @@ void CreditCardSaveManager::OnUserDidDecideOnUploadSave(
                 weak_ptr_factory_.GetWeakPtr()));
         // On mobile, requesting expiration date is a two step flow.
       } else if (should_request_expiration_date_from_user_) {
-        client_->ConfirmExpirationDateFixFlow(
+        client_->GetPaymentsAutofillClient()->ConfirmExpirationDateFixFlow(
             upload_request_.card,
             base::BindOnce(
                 &CreditCardSaveManager::OnUserDidAcceptExpirationDateFixFlow,

@@ -8,7 +8,9 @@
 
 #include "base/check_deref.h"
 #include "base/functional/callback.h"
+#include "base/strings/utf_string_conversions.h"
 #include "components/autofill/core/browser/autofill_client.h"
+#include "components/autofill/core/browser/autofill_test_utils.h"
 #include "components/autofill/core/browser/payments/credit_card_cvc_authenticator.h"
 #include "components/autofill/core/browser/payments/credit_card_otp_authenticator.h"
 #include "components/autofill/core/browser/payments/test/mock_payments_window_manager.h"
@@ -78,6 +80,16 @@ void TestPaymentsAutofillClient::ConfirmAccountNameFixFlow(
     base::OnceCallback<void(const std::u16string&)> callback) {
   credit_card_name_fix_flow_bubble_was_shown_ = true;
   std::move(callback).Run(std::u16string(u"Gaia Name"));
+}
+
+void TestPaymentsAutofillClient::ConfirmExpirationDateFixFlow(
+    const CreditCard& card,
+    base::OnceCallback<void(const std::u16string&, const std::u16string&)>
+        callback) {
+  credit_card_name_fix_flow_bubble_was_shown_ = true;
+  std::move(callback).Run(
+      std::u16string(u"03"),
+      std::u16string(base::ASCIIToUTF16(test::NextYear().c_str())));
 }
 #endif  // !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
 

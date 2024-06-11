@@ -37,7 +37,6 @@
 #include "chrome/browser/touch_to_fill/autofill/android/touch_to_fill_payment_method_controller.h"
 #include "chrome/browser/ui/android/autofill/save_update_address_profile_flow_manager.h"
 #include "components/autofill/core/browser/ui/fast_checkout_client.h"
-#include "components/autofill/core/browser/ui/payments/card_expiration_date_fix_flow_controller_impl.h"
 #else
 #include "chrome/browser/ui/autofill/payments/manage_migration_ui_controller.h"
 #include "chrome/browser/ui/autofill/payments/save_card_bubble_controller.h"
@@ -129,12 +128,6 @@ class ChromeAutofillClient : public ContentAutofillClient,
   void ShowAutofillSettings(SuggestionType suggestion_type) override;
   payments::MandatoryReauthManager* GetOrCreatePaymentsMandatoryReauthManager()
       override;
-#if BUILDFLAG(IS_ANDROID)
-  void ConfirmExpirationDateFixFlow(
-      const CreditCard& card,
-      base::OnceCallback<void(const std::u16string&, const std::u16string&)>
-          callback) override;
-#endif
   void ConfirmSaveCreditCardLocally(
       const CreditCard& card,
       SaveCreditCardOptions options,
@@ -259,8 +252,6 @@ class ChromeAutofillClient : public ContentAutofillClient,
   // the test machine, that may normally cause the popup to be hidden
   bool keep_popup_open_for_testing_ = false;
 #if BUILDFLAG(IS_ANDROID)
-  CardExpirationDateFixFlowControllerImpl
-      card_expiration_date_fix_flow_controller_;
   SaveUpdateAddressProfileFlowManager save_update_address_profile_flow_manager_;
   TouchToFillPaymentMethodController touch_to_fill_payment_method_controller_{
       this};

@@ -50,9 +50,11 @@
 #include "chrome/browser/ui/android/autofill/autofill_save_card_bottom_sheet_bridge.h"
 #include "chrome/browser/ui/android/autofill/autofill_save_iban_bottom_sheet_bridge.h"
 #include "chrome/browser/ui/android/autofill/autofill_save_iban_delegate.h"
+#include "chrome/browser/ui/android/autofill/card_expiration_date_fix_flow_view_android.h"
 #include "chrome/browser/ui/android/autofill/card_name_fix_flow_view_android.h"
 #include "chrome/browser/ui/android/tab_model/tab_model_list.h"
 #include "chrome/browser/ui/autofill/payments/offer_notification_controller_android.h"
+#include "components/autofill/core/browser/ui/payments/card_expiration_date_fix_flow_view.h"
 #include "components/autofill/core/browser/ui/payments/card_name_fix_flow_view.h"
 #else  // !BUILDFLAG(IS_ANDROID)
 #include "chrome/browser/ui/autofill/payments/desktop_payments_window_manager.h"
@@ -141,6 +143,19 @@ void ChromePaymentsAutofillClient::ConfirmAccountNameFixFlow(
                                      web_contents());
   card_name_fix_flow_controller_.Show(
       card_name_fix_flow_view_android, GetAccountHolderName(),
+      /*upload_save_card_callback=*/std::move(callback));
+}
+
+void ChromePaymentsAutofillClient::ConfirmExpirationDateFixFlow(
+    const CreditCard& card,
+    base::OnceCallback<void(const std::u16string&, const std::u16string&)>
+        callback) {
+  CardExpirationDateFixFlowViewAndroid*
+      card_expiration_date_fix_flow_view_android =
+          new CardExpirationDateFixFlowViewAndroid(
+              &card_expiration_date_fix_flow_controller_, web_contents());
+  card_expiration_date_fix_flow_controller_.Show(
+      card_expiration_date_fix_flow_view_android, card,
       /*upload_save_card_callback=*/std::move(callback));
 }
 #else   // !BUILDFLAG(IS_ANDROID)

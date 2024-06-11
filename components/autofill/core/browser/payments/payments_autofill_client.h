@@ -154,10 +154,18 @@ class PaymentsAutofillClient : public RiskDataLoader {
 #endif  // BUILDFLAG(IS_ANDROID)
 
 #if BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_IOS)
-  // Display the cardholder name fix flow prompt and run the |callback| if
+  // Display the cardholder name fix flow prompt and run the `callback` if
   // the card should be uploaded to payments with updated name from the user.
   virtual void ConfirmAccountNameFixFlow(
       base::OnceCallback<void(const std::u16string&)> callback);
+
+  // Display the expiration date fix flow prompt with the `card` details
+  // and run the `callback` if the card should be uploaded to payments with
+  // updated expiration date from the user.
+  virtual void ConfirmExpirationDateFixFlow(
+      const CreditCard& card,
+      base::OnceCallback<void(const std::u16string&, const std::u16string&)>
+          callback);
 #endif  // BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_IOS)
 
   // Shows upload result to users. Called after credit card upload is finished.

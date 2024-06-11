@@ -135,12 +135,10 @@
 #include "chrome/browser/ui/android/autofill/autofill_logger_android.h"
 #include "chrome/browser/ui/android/autofill/autofill_save_card_bottom_sheet_bridge.h"
 #include "chrome/browser/ui/android/autofill/autofill_save_card_delegate_android.h"
-#include "chrome/browser/ui/android/autofill/card_expiration_date_fix_flow_view_android.h"
 #include "chrome/browser/ui/autofill/payments/autofill_snackbar_controller_impl.h"
 #include "chrome/browser/ui/autofill/payments/offer_notification_controller_android.h"
 #include "components/autofill/core/browser/payments/autofill_save_card_infobar_delegate_mobile.h"
 #include "components/autofill/core/browser/payments/autofill_save_card_infobar_mobile.h"
-#include "components/autofill/core/browser/ui/payments/card_expiration_date_fix_flow_view.h"
 #include "components/infobars/content/content_infobar_manager.h"
 #include "components/infobars/core/infobar.h"
 #include "components/messages/android/messages_feature.h"
@@ -499,21 +497,6 @@ ChromeAutofillClient::GetOrCreatePaymentsMandatoryReauthManager() {
 
   return payments_mandatory_reauth_manager_.get();
 }
-
-#if BUILDFLAG(IS_ANDROID)
-void ChromeAutofillClient::ConfirmExpirationDateFixFlow(
-    const CreditCard& card,
-    base::OnceCallback<void(const std::u16string&, const std::u16string&)>
-        callback) {
-  CardExpirationDateFixFlowViewAndroid*
-      card_expiration_date_fix_flow_view_android =
-          new CardExpirationDateFixFlowViewAndroid(
-              &card_expiration_date_fix_flow_controller_, web_contents());
-  card_expiration_date_fix_flow_controller_.Show(
-      card_expiration_date_fix_flow_view_android, card,
-      /*upload_save_card_callback=*/std::move(callback));
-}
-#endif
 
 void ChromeAutofillClient::ConfirmSaveCreditCardLocally(
     const CreditCard& card,

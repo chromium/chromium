@@ -29,6 +29,7 @@
 #import "ios/chrome/browser/autofill/model/bottom_sheet/autofill_bottom_sheet_tab_helper.h"
 #import "ios/chrome/browser/shared/model/browser_state/chrome_browser_state.h"
 #import "ios/chrome/browser/shared/public/commands/autofill_commands.h"
+#import "ios/chrome/browser/ui/autofill/card_expiration_date_fix_flow_view_bridge.h"
 #import "ios/chrome/browser/ui/autofill/card_name_fix_flow_view_bridge.h"
 #import "ios/chrome/browser/ui/autofill/card_unmask_prompt_view_bridge.h"
 #import "ios/chrome/browser/ui/autofill/chrome_autofill_client_ios.h"
@@ -210,6 +211,19 @@ void IOSChromePaymentsAutofillClient::ConfirmAccountNameFixFlow(
       new CardNameFixFlowViewBridge(&card_name_fix_flow_controller_,
                                     client_->base_view_controller()),
       account_name, std::move(callback));
+}
+
+void IOSChromePaymentsAutofillClient::ConfirmExpirationDateFixFlow(
+    const CreditCard& card,
+    base::OnceCallback<void(const std::u16string&, const std::u16string&)>
+        callback) {
+  card_expiration_date_fix_flow_controller_.Show(
+      // CardExpirationDateFixFlowViewBridge manages its own lifetime,
+      // so do not use std::unique_ptr<> here.
+      new CardExpirationDateFixFlowViewBridge(
+          &card_expiration_date_fix_flow_controller_,
+          client_->base_view_controller()),
+      card, std::move(callback));
 }
 
 VirtualCardEnrollmentManager*

@@ -17,6 +17,7 @@
 #include "content/public/browser/web_contents_observer.h"
 
 #if BUILDFLAG(IS_ANDROID)
+#include "components/autofill/core/browser/ui/payments/card_expiration_date_fix_flow_controller_impl.h"
 #include "components/autofill/core/browser/ui/payments/card_name_fix_flow_controller_impl.h"
 #else  // !BUILDFLAG(IS_ANDROID)
 #include "chrome/browser/ui/autofill/payments/manage_migration_ui_controller.h"
@@ -77,6 +78,10 @@ class ChromePaymentsAutofillClient : public PaymentsAutofillClient,
   AutofillSnackbarControllerImpl* GetAutofillSnackbarController();
   void ConfirmAccountNameFixFlow(
       base::OnceCallback<void(const std::u16string&)> callback) override;
+  void ConfirmExpirationDateFixFlow(
+      const CreditCard& card,
+      base::OnceCallback<void(const std::u16string&, const std::u16string&)>
+          callback) override;
 #else   // !BUILDFLAG(IS_ANDROID)
   void ShowLocalCardMigrationDialog(
       base::OnceClosure show_migration_dialog_closure) override;
@@ -191,6 +196,9 @@ class ChromePaymentsAutofillClient : public PaymentsAutofillClient,
       autofill_snackbar_controller_impl_;
 
   CardNameFixFlowControllerImpl card_name_fix_flow_controller_;
+
+  CardExpirationDateFixFlowControllerImpl
+      card_expiration_date_fix_flow_controller_;
 #endif
   const raw_ref<ContentAutofillClient> client_;
 

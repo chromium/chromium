@@ -59,6 +59,11 @@ void PaymentsAutofillClient::HideVirtualCardEnrollBubbleAndIconIfVisible() {}
 #if BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_IOS)
 void PaymentsAutofillClient::ConfirmAccountNameFixFlow(
     base::OnceCallback<void(const std::u16string&)> callback) {}
+
+void PaymentsAutofillClient::ConfirmExpirationDateFixFlow(
+    const CreditCard& card,
+    base::OnceCallback<void(const std::u16string&, const std::u16string&)>
+        callback) {}
 #endif  // BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_IOS)
 
 void PaymentsAutofillClient::CreditCardUploadCompleted(

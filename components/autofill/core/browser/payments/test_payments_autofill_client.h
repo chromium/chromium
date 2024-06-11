@@ -62,6 +62,10 @@ class TestPaymentsAutofillClient : public PaymentsAutofillClient {
 #else   // BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_IOS)
   void ConfirmAccountNameFixFlow(
       base::OnceCallback<void(const std::u16string&)> callback) override;
+  void ConfirmExpirationDateFixFlow(
+      const CreditCard& card,
+      base::OnceCallback<void(const std::u16string&, const std::u16string&)>
+          callback) override;
 #endif  // !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
   TestPaymentsNetworkInterface* GetPaymentsNetworkInterface() override;
   void ShowAutofillProgressDialog(

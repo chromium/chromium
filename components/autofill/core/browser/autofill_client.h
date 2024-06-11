@@ -483,16 +483,6 @@ class AutofillClient {
   virtual payments::MandatoryReauthManager*
   GetOrCreatePaymentsMandatoryReauthManager();
 
-#if BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_IOS)
-  // Display the expiration date fix flow prompt with the |card| details
-  // and run the |callback| if the card should be uploaded to payments with
-  // updated expiration date from the user.
-  virtual void ConfirmExpirationDateFixFlow(
-      const CreditCard& card,
-      base::OnceCallback<void(const std::u16string&, const std::u16string&)>
-          callback);
-#endif  // BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_IOS)
-
   // Runs |callback| once the user makes a decision with respect to the
   // offer-to-save prompt. This includes both the save local card prompt and the
   // save CVC for a local card prompt. On desktop, shows the offer-to-save

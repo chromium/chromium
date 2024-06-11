@@ -17,7 +17,6 @@
 #include "base/functional/callback.h"
 #include "base/i18n/rtl.h"
 #include "base/scoped_observation.h"
-#include "base/strings/utf_string_conversions.h"
 #include "build/build_config.h"
 #include "components/autofill/core/browser/autofill_client.h"
 #include "components/autofill/core/browser/autofill_plus_address_delegate.h"
@@ -285,20 +284,6 @@ class TestAutofillClientTemplate : public T {
               std::move(callback).Run(true);
             })));
   }
-#endif
-
-#if BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_IOS)
-
-  void ConfirmExpirationDateFixFlow(
-      const CreditCard& card,
-      base::OnceCallback<void(const std::u16string&, const std::u16string&)>
-          callback) override {
-    credit_card_name_fix_flow_bubble_was_shown_ = true;
-    std::move(callback).Run(
-        std::u16string(u"03"),
-        std::u16string(base::ASCIIToUTF16(test::NextYear().c_str())));
-  }
-
 #endif
 
   void ConfirmSaveCreditCardLocally(
@@ -650,10 +635,6 @@ class TestAutofillClientTemplate : public T {
 
   // Populated if save was offered. True if bubble was shown, false otherwise.
   std::optional<bool> offer_to_save_credit_card_bubble_was_shown_;
-
-  // Populated if name fix flow was offered. True if bubble was shown, false
-  // otherwise.
-  std::optional<bool> credit_card_name_fix_flow_bubble_was_shown_;
 
   version_info::Channel channel_for_testing_ = version_info::Channel::UNKNOWN;
 
