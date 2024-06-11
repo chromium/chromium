@@ -328,19 +328,20 @@ class FwupdClientImpl : public FwupdClient {
       }
 
       // Values in the response can have different types. The fields we are
-      // interested in, are all either strings (s), uint64 (t), or uint32 (u).
+      // interested in, are all either strings, uint64, or uint32.
       // Some fields in the response have other types, but we don't use them, so
       // we just skip them.
 
-      if (variant_reader.GetDataSignature() == "u") {
+      const dbus::Message::DataType data_type = variant_reader.GetDataType();
+      if (data_type == dbus::Message::UINT32) {
         variant_reader.PopUint32(&value_uint);
         // Value doesn't support unsigned numbers, so this has to be converted
         // to int.
         result.Set(key, (int)value_uint);
-      } else if (variant_reader.GetDataSignature() == "s") {
+      } else if (data_type == dbus::Message::STRING) {
         variant_reader.PopString(&value_string);
         result.Set(key, value_string);
-      } else if (variant_reader.GetDataSignature() == "t") {
+      } else if (data_type == dbus::Message::UINT64) {
         if (key == "Flags") {
           uint64_t value_uint64 = 0;
           variant_reader.PopUint64(&value_uint64);
