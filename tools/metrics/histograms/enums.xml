@@ -14781,6 +14781,7 @@ Called by update_permissions_policy_enum.py.-->
   <int value="9" label="Stretch"/>
   <int value="10" label="Buster"/>
   <int value="11" label="Bullseye"/>
+  <int value="12" label="Bookworm"/>
 </enum>
 
 <enum name="LinuxDistroFedoraVersion">
@@ -14837,6 +14838,14 @@ Called by update_permissions_policy_enum.py.-->
   <int value="19004" label="19.04"/>
   <int value="19010" label="19.10"/>
   <int value="20004" label="20.04"/>
+  <int value="20010" label="20.10"/>
+  <int value="21004" label="21.04"/>
+  <int value="21010" label="21.10"/>
+  <int value="22004" label="22.04"/>
+  <int value="22010" label="22.10"/>
+  <int value="23004" label="23.04"/>
+  <int value="23010" label="23.10"/>
+  <int value="24004" label="24.04"/>
 </enum>
 
 <enum name="LinuxGlibcVersion">
@@ -14861,6 +14870,16 @@ Called by update_permissions_policy_enum.py.-->
   <int value="18" label="2.27"/>
   <int value="19" label="2.28"/>
   <int value="20" label="2.29"/>
+  <int value="21" label="2.30"/>
+  <int value="22" label="2.31"/>
+  <int value="23" label="2.32"/>
+  <int value="24" label="2.33"/>
+  <int value="25" label="2.34"/>
+  <int value="26" label="2.35"/>
+  <int value="27" label="2.36"/>
+  <int value="28" label="2.37"/>
+  <int value="29" label="2.38"/>
+  <int value="30" label="2.39"/>
 </enum>
 
 <enum name="LinuxPasswordStoreUsage">
