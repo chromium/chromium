@@ -4,20 +4,14 @@
 
 package org.chromium.chrome.browser.keyboard_accessory;
 
-import static androidx.test.espresso.action.ViewActions.click;
-import static androidx.test.espresso.contrib.RecyclerViewActions.actionOnItemAtPosition;
-import static androidx.test.espresso.matcher.ViewMatchers.withId;
-
 import static org.chromium.base.test.util.Matchers.is;
-import static org.chromium.chrome.browser.keyboard_accessory.ManualFillingTestHelper.whenDisplayed;
 import static org.chromium.chrome.browser.touch_to_fill.password_generation.TouchToFillPasswordGenerationTestHelper.acceptPasswordInGenerationBottomSheet;
 import static org.chromium.chrome.browser.touch_to_fill.password_generation.TouchToFillPasswordGenerationTestHelper.rejectPasswordInGenerationBottomSheet;
 import static org.chromium.content_public.browser.test.util.TestThreadUtils.runOnUiThreadBlocking;
 import static org.chromium.content_public.browser.test.util.TestThreadUtils.runOnUiThreadBlockingNoException;
 
-import android.os.Build.VERSION_CODES;
 import android.view.View;
-import android.widget.TextView;
+import android.widget.Button;
 
 import androidx.recyclerview.widget.RecyclerView;
 import androidx.test.platform.app.InstrumentationRegistry;
@@ -33,7 +27,6 @@ import org.junit.runner.RunWith;
 import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.base.test.util.Criteria;
 import org.chromium.base.test.util.CriteriaHelper;
-import org.chromium.base.test.util.DisableIf;
 import org.chromium.base.test.util.DisabledTest;
 import org.chromium.base.test.util.DoNotBatch;
 import org.chromium.base.test.util.Features;
@@ -52,6 +45,8 @@ import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
 import org.chromium.chrome.test.util.ChromeTabUtils;
 import org.chromium.chrome.test.util.browser.signin.SigninTestRule;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetController;
+import org.chromium.components.browser_ui.bottomsheet.BottomSheetController.SheetState;
+import org.chromium.components.browser_ui.bottomsheet.BottomSheetController.StateChangeReason;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetControllerProvider;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetTestSupport;
 import org.chromium.components.messages.MessagesTestHelper;
@@ -73,10 +68,6 @@ import java.util.concurrent.TimeoutException;
                 "TODO(crbug.com/40232561): add resetting logic for"
                         + "FakePasswordStoreAndroidBackend to allow batching")
 @CommandLineFlags.Add({ChromeSwitches.DISABLE_FIRST_RUN_EXPERIENCE, "show-autofill-signatures"})
-@DisableIf.Build(
-        message = "crbug.com/1496214",
-        sdk_is_greater_than = VERSION_CODES.R,
-        sdk_is_less_than = VERSION_CODES.TIRAMISU)
 public class PasswordGenerationIntegrationTest {
     /**
      * The number of buttons currently available in the keyboard accessory bar. The offered options
@@ -104,9 +95,7 @@ public class PasswordGenerationIntegrationTest {
     private PasswordStoreBridge mPasswordStoreBridge;
     private ChromeTabbedActivity mActivity;
     private RecyclerView mKeyboardAccessoryBarItems;
-    private TextView mGeneratedPasswordTextView;
     private BottomSheetController mBottomSheetController;
-    private BottomSheetTestSupport mBottomSheetTestSupport;
 
     @Before
     public void setUp() throws InterruptedException {
@@ -121,7 +110,6 @@ public class PasswordGenerationIntegrationTest {
                     mBottomSheetController =
                             BottomSheetControllerProvider.from(
                                     mSyncTestRule.getActivity().getWindowAndroid());
-                    mBottomSheetTestSupport = new BottomSheetTestSupport(mBottomSheetController);
                 });
 
         mTestServer =
@@ -141,7 +129,6 @@ public class PasswordGenerationIntegrationTest {
 
     @Test
     @IntegrationTest
-    @DisabledTest(message = "Flaky. See crbug.com/1505927")
     public void testAutomaticGenerationCancel() throws InterruptedException, TimeoutException {
         waitForGenerationLabel();
         focusField(PASSWORD_NODE_ID);
@@ -149,9 +136,9 @@ public class PasswordGenerationIntegrationTest {
         // Focus again, because the sheet steals the focus from web contents.
         focusField(PASSWORD_NODE_ID);
         mHelper.waitForKeyboardAccessoryToBeShown(true);
-        whenDisplayed(withId(R.id.bar_items_view)).perform(actionOnItemAtPosition(0, click()));
+        clickSuggestPasswordInItemsBar();
         BottomSheetTestSupport.waitForOpen(mBottomSheetController);
-        rejectPasswordInGenerationBottomSheet();
+        rejectPasswordInGenerationBottomSheet(mActivity);
         assertPasswordTextEmpty(PASSWORD_NODE_ID);
         assertNoInfobarsAreShown();
         CriteriaHelper.pollUiThread(
@@ -173,7 +160,7 @@ public class PasswordGenerationIntegrationTest {
         toggleAccessorySheet();
         pressManualGenerationSuggestion();
         BottomSheetTestSupport.waitForOpen(mBottomSheetController);
-        rejectPasswordInGenerationBottomSheet();
+        rejectPasswordInGenerationBottomSheet(mActivity);
         assertPasswordTextEmpty(PASSWORD_NODE_ID_MANUAL);
         assertNoInfobarsAreShown();
         CriteriaHelper.pollUiThread(
@@ -187,7 +174,6 @@ public class PasswordGenerationIntegrationTest {
 
     @Test
     @IntegrationTest
-    @DisabledTest(message = "crbug.com/1498678")
     public void testAutomaticGenerationUsePassword() throws InterruptedException, TimeoutException {
         waitForGenerationLabel();
         focusField(PASSWORD_NODE_ID);
@@ -195,9 +181,9 @@ public class PasswordGenerationIntegrationTest {
         // Focus again, because the sheet steals the focus from web contents.
         focusField(PASSWORD_NODE_ID);
         mHelper.waitForKeyboardAccessoryToBeShown(true);
-        whenDisplayed(withId(R.id.bar_items_view)).perform(actionOnItemAtPosition(0, click()));
+        clickSuggestPasswordInItemsBar();
         BottomSheetTestSupport.waitForOpen(mBottomSheetController);
-        String generatedPassword = acceptPasswordInGenerationBottomSheet();
+        String generatedPassword = acceptPasswordInGenerationBottomSheet(mActivity);
         CriteriaHelper.pollInstrumentationThread(
                 () -> !mHelper.getFieldText(PASSWORD_NODE_ID).isEmpty());
         assertPasswordText(PASSWORD_NODE_ID, generatedPassword);
@@ -225,7 +211,7 @@ public class PasswordGenerationIntegrationTest {
         toggleAccessorySheet();
         pressManualGenerationSuggestion();
         BottomSheetTestSupport.waitForOpen(mBottomSheetController);
-        String generatedPassword = acceptPasswordInGenerationBottomSheet();
+        String generatedPassword = acceptPasswordInGenerationBottomSheet(mActivity);
         CriteriaHelper.pollInstrumentationThread(
                 () -> !mHelper.getFieldText(PASSWORD_NODE_ID_MANUAL).isEmpty());
         assertPasswordText(PASSWORD_NODE_ID_MANUAL, generatedPassword);
@@ -289,17 +275,24 @@ public class PasswordGenerationIntegrationTest {
         InstrumentationRegistry.getInstrumentation().waitForIdleSync();
     }
 
-    private void focusField(String node) throws TimeoutException, InterruptedException {
-        DOMUtils.clickNode(mHelper.getWebContents(), node);
-        // TODO(crbug.com/40266339): Remove the code below. Manually calling focus and scroll is
-        // needed because this test uses a screen keyboard stub instead of the real screen keyboard.
-        // Integration tests in general should use the real keyboard to reflect the production
-        // behavior better.
-        DOMUtils.focusNode(mHelper.getWebContents(), node);
-        TestThreadUtils.runOnUiThreadBlocking(
+    private void clickSuggestPasswordInItemsBar() {
+        CriteriaHelper.pollUiThread(
                 () -> {
-                    mHelper.getWebContents().scrollFocusedEditableNodeIntoView();
+                    mKeyboardAccessoryBarItems =
+                            (RecyclerView) mActivity.findViewById(R.id.bar_items_view);
+                    Button button =
+                            (Button)
+                                    mKeyboardAccessoryBarItems.findViewHolderForLayoutPosition(0)
+                                            .itemView;
+                    Assert.assertEquals(
+                            mActivity.getString(R.string.password_generation_accessory_button),
+                            button.getText());
+                    button.performClick();
                 });
+    }
+
+    private void focusField(String node) throws TimeoutException {
+        DOMUtils.clickNode(mHelper.getWebContents(), node);
     }
 
     private void clickNode(String node) throws InterruptedException, TimeoutException {
@@ -311,8 +304,7 @@ public class PasswordGenerationIntegrationTest {
         assertPasswordText(passwordNode, "");
     }
 
-    private void assertPasswordText(String passwordNode, String text)
-            throws InterruptedException, TimeoutException {
+    private void assertPasswordText(String passwordNode, String text) throws TimeoutException {
         Assert.assertEquals(text, mHelper.getFieldText(passwordNode));
     }
 
@@ -348,8 +340,11 @@ public class PasswordGenerationIntegrationTest {
     private void dismissBottomSheet() {
         BottomSheetTestSupport.waitForOpen(mBottomSheetController);
         TestThreadUtils.runOnUiThreadBlocking(
-                () -> {
-                    mBottomSheetTestSupport.forceClickOutsideTheSheet();
-                });
+                () ->
+                        mBottomSheetController.hideContent(
+                                mBottomSheetController.getCurrentSheetContent(),
+                                false,
+                                StateChangeReason.BACK_PRESS));
+        BottomSheetTestSupport.waitForState(mBottomSheetController, SheetState.HIDDEN);
     }
 }
