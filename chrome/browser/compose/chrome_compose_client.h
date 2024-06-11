@@ -219,7 +219,6 @@ class ChromeComposeClient
   optimization_guide::OptimizationGuideDecider* GetOptimizationGuide();
   base::Token GetSessionId();
   InnerTextProvider* GetInnerTextProvider();
-  std::unique_ptr<TranslateLanguageProvider> translate_language_provider_;
   std::unique_ptr<ComposeEnabling> compose_enabling_;
 
  private:
