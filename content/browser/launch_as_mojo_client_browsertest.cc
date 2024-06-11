@@ -30,7 +30,7 @@
 #include "ui/ozone/public/ozone_switches.h"
 #endif
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS_ASH) || defined(MEMORY_SANITIZER)
 #include "ui/gl/gl_switches.h"
 #endif
 
@@ -82,6 +82,15 @@ class LaunchAsMojoClientBrowserTest : public ContentBrowserTest {
                                    gl::kGLImplementationANGLEName);
     command_line.AppendSwitchASCII(switches::kUseANGLE,
                                    gl::kANGLEImplementationSwiftShaderName);
+#endif
+
+#if defined(MEMORY_SANITIZER)
+    // MSan and GL do not get along so avoid using the GPU with MSan. Normally,
+    // BrowserTestBase::SetUp() forces browser tests to use software GL for
+    // tests (in both non-MSan and MSan builds), but since this test builds a
+    // command line to launch the shell directly, that logic needs to be
+    // replicated here.
+    command_line.AppendSwitch(switches::kOverrideUseSoftwareGLForTests);
 #endif
 
     const auto& current_command_line = *base::CommandLine::ForCurrentProcess();
