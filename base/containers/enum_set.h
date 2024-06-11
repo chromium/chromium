@@ -8,6 +8,7 @@
 #include <bitset>
 #include <cstddef>
 #include <initializer_list>
+#include <optional>
 #include <string>
 #include <type_traits>
 #include <utility>
