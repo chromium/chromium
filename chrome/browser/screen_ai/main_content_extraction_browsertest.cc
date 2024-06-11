@@ -2,6 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/test_future.h"
 #include "chrome/browser/profiles/profile.h"
@@ -11,6 +12,7 @@
 #include "chrome/browser/ui/browser.h"
 #include "chrome/test/base/in_process_browser_test.h"
 #include "chrome/test/base/ui_test_utils.h"
+#include "components/metrics/content/subprocess_metrics_provider.h"
 #include "content/public/test/browser_test.h"
 #include "mojo/public/cpp/bindings/remote.h"
 #include "net/dns/mock_host_resolver.h"
@@ -173,6 +175,8 @@ IN_PROC_BROWSER_TEST_F(MainContentExtractionTest, EmptyInput) {
 
 // Tests main content extraction on a simple page with content.
 IN_PROC_BROWSER_TEST_F(MainContentExtractionTest, RequestWithContent) {
+  base::HistogramTester histograms;
+
   Connect();
 
   ui::AXTreeUpdate tree_update = DistillPage(kTestPageRelativeURL);
@@ -183,6 +187,13 @@ IN_PROC_BROWSER_TEST_F(MainContentExtractionTest, RequestWithContent) {
   ASSERT_FALSE(main_content_ids.empty());
 
   ASSERT_TRUE(HasExpectedText(tree_update.nodes, main_content_ids));
+
+  metrics::SubprocessMetricsProvider::MergeHistogramDeltasForTesting();
+
+  histograms.ExpectTotalCount(
+      "Accessibility.ScreenAI.MainContentExtraction.Successful", 1);
+  histograms.ExpectBucketCount(
+      "Accessibility.ScreenAI.MainContentExtraction.Successful", true, 1);
 }
 
 // Test requesting several extractions without waiting for the previous ones to

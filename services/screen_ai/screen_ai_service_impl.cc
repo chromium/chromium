@@ -391,7 +391,6 @@ ScreenAIService::PerformOcrAndRecordMetrics(const SkBitmap& image,
   unsigned image_size = image.width() * image.height();
   VLOG(1) << "OCR returned " << lines_count << " lines in " << elapsed_time;
 
-  // TODO(crbug.com/342796806): Add browser test.
   base::UmaHistogramBoolean("Accessibility.ScreenAI.OCR.Successful",
                             result.has_value());
   base::UmaHistogramCounts100("Accessibility.ScreenAI.OCR.LinesCount",
@@ -501,7 +500,6 @@ bool ScreenAIService::ExtractMainContentInternal(
   CHECK(tree.Unserialize(snapshot));
   std::string serialized_snapshot = SnapshotToViewHierarchy(&tree);
   content_node_ids = library_->ExtractMainContent(serialized_snapshot);
-  // TODO(crbug.com/342796806): Add browser test.
   base::UmaHistogramBoolean(
       "Accessibility.ScreenAI.MainContentExtraction.Successful",
       content_node_ids.has_value());

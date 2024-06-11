@@ -8,10 +8,12 @@
 #include "base/path_service.h"
 #include "base/scoped_observation.h"
 #include "base/strings/stringprintf.h"
+#include "base/test/metrics/histogram_tester.h"
 #include "base/test/test_future.h"
 #include "chrome/browser/screen_ai/screen_ai_install_state.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/test/base/in_process_browser_test.h"
+#include "components/metrics/content/subprocess_metrics_provider.h"
 #include "content/public/test/browser_test.h"
 #include "services/screen_ai/buildflags/buildflags.h"
 #include "services/screen_ai/public/cpp/utilities.h"
@@ -201,6 +203,8 @@ IN_PROC_BROWSER_TEST_P(OpticalCharacterRecognizerTest, PerformOCR) {
 }
 
 IN_PROC_BROWSER_TEST_P(OpticalCharacterRecognizerTest, PerformOCR_WithResults) {
+  base::HistogramTester histograms;
+
   // Init OCR.
   base::test::TestFuture<bool> init_future;
   scoped_refptr<OpticalCharacterRecognizer> ocr =
@@ -218,14 +222,55 @@ IN_PROC_BROWSER_TEST_P(OpticalCharacterRecognizerTest, PerformOCR_WithResults) {
   ASSERT_TRUE(perform_future.Wait());
 
 // Fake library always returns empty.
-#if !BUILDFLAG(USE_FAKE_SCREEN_AI)
+#if BUILDFLAG(USE_FAKE_SCREEN_AI)
+  bool expected_call_success = false;
+#else
+  bool expected_call_success = true;
+#endif
+
   auto& results = perform_future.Get<mojom::VisualAnnotationPtr>();
-  ASSERT_EQ(results->lines.size(), IsOcrAvailable() ? 6u : 0u);
+  unsigned expected_lines_count =
+      (expected_call_success && IsOcrAvailable()) ? 6 : 0;
+  ASSERT_EQ(expected_lines_count, results->lines.size());
   if (results->lines.size()) {
     ASSERT_EQ(results->lines[0]->text_line,
               "The quick brown fox jumps over the lazy dog.");
   }
-#endif
+
+  metrics::SubprocessMetricsProvider::MergeHistogramDeltasForTesting();
+
+  unsigned expected_calls = IsOcrAvailable() ? 1 : 0;
+  histograms.ExpectTotalCount("Accessibility.ScreenAI.OCR.ClientType",
+                              expected_calls);
+  histograms.ExpectBucketCount("Accessibility.ScreenAI.OCR.ClientType",
+                               mojom::OcrClientType::kTest, expected_calls);
+
+  histograms.ExpectTotalCount("Accessibility.ScreenAI.OCR.Successful",
+                              expected_calls);
+  histograms.ExpectBucketCount("Accessibility.ScreenAI.OCR.Successful",
+                               expected_call_success, expected_calls);
+
+  histograms.ExpectTotalCount("Accessibility.ScreenAI.OCR.LinesCount",
+                              expected_calls);
+  histograms.ExpectBucketCount("Accessibility.ScreenAI.OCR.LinesCount",
+                               expected_lines_count, expected_calls);
+
+  int image_size = bitmap.width() * bitmap.height();
+  histograms.ExpectTotalCount("Accessibility.ScreenAI.OCR.ImageSize10M",
+                              expected_calls);
+  histograms.ExpectBucketCount("Accessibility.ScreenAI.OCR.ImageSize10M",
+                               image_size, expected_calls);
+
+  // Expect measured latency, but we don't know how long it taskes to process.
+  // So we just check the total count of the expected bucket determined by the
+  // image size.
+  EXPECT_GT(image_size, 500 * 500);
+  EXPECT_GT(1000 * 1000, image_size);
+  histograms.ExpectTotalCount("Accessibility.ScreenAI.OCR.Latency.Small", 0);
+  histograms.ExpectTotalCount("Accessibility.ScreenAI.OCR.Latency.Medium",
+                              expected_calls);
+  histograms.ExpectTotalCount("Accessibility.ScreenAI.OCR.Latency.Large", 0);
+  histograms.ExpectTotalCount("Accessibility.ScreenAI.OCR.Latency.XLarge", 0);
 }
 
 INSTANTIATE_TEST_SUITE_P(All,
