@@ -237202,6 +237202,35 @@
        {}
       ]
      ],
+     "new-content-root-scrollbar-with-fixed-background.html": [
+      "89f8158b58b96886ad0abcc6bb2f1e3c6663ff37",
+      [
+       null,
+       [
+        [
+         "/css/css-view-transitions/root-scrollbar-with-fixed-background-ref.html",
+         "=="
+        ]
+       ],
+       {
+        "fuzzy": [
+         [
+          null,
+          [
+           [
+            0,
+            2
+           ],
+           [
+            0,
+            4500
+           ]
+          ]
+         ]
+        ]
+       }
+      ]
+     ],
      "new-content-scaling.html": [
       "376b7fd11f7e2e86e549c300fcb09cc8767751c4",
       [
@@ -237305,6 +237334,19 @@
        [
         [
          "/css/css-view-transitions/new-root-vertical-writing-mode-ref.html",
+         "=="
+        ]
+       ],
+       {}
+      ]
+     ],
+     "no-painting-while-render-blocked.html": [
+      "1feb4759eb87e43e125f0753bd3c0c9c889816f7",
+      [
+       null,
+       [
+        [
+         "/css/css-view-transitions/no-painting-while-render-blocked-ref.html",
          "=="
         ]
        ],
@@ -237760,6 +237802,35 @@
        {}
       ]
      ],
+     "old-content-root-scrollbar-with-fixed-background.html": [
+      "7c8b7dd92e47d81938fb13fe0de925047f387331",
+      [
+       null,
+       [
+        [
+         "/css/css-view-transitions/root-scrollbar-with-fixed-background-ref.html",
+         "=="
+        ]
+       ],
+       {
+        "fuzzy": [
+         [
+          null,
+          [
+           [
+            0,
+            2
+           ],
+           [
+            0,
+            4500
+           ]
+          ]
+         ]
+        ]
+       }
+      ]
+     ],
      "old-content-with-object-view-box.html": [
       "df32005546ee27a3edd23a8f3a63e8cc29bf7f15",
       [
@@ -238099,35 +238170,6 @@
            [
             0,
             500
-           ]
-          ]
-         ]
-        ]
-       }
-      ]
-     ],
-     "root-scrollbar-with-fixed-background.html": [
-      "11673d82fc3f24d3084a64819c2d8c669ec834f2",
-      [
-       null,
-       [
-        [
-         "/css/css-view-transitions/root-scrollbar-with-fixed-background-ref.html",
-         "=="
-        ]
-       ],
-       {
-        "fuzzy": [
-         [
-          null,
-          [
-           [
-            0,
-            2
-           ],
-           [
-            0,
-            4500
            ]
           ]
          ]
@@ -343701,6 +343743,10 @@
       "99ca705d00e3d6e9b1a5d26c1cf2477a2d8c9d7e",
       []
      ],
+     "no-painting-while-render-blocked-ref.html": [
+      "8c7ab1bc5ffee13ff74e7bf33532145180b50e70",
+      []
+     ],
      "no-root-capture-ref.html": [
       "1fe68ad941e111f74aa5b71828c95050d6c33d44",
       []
@@ -380114,7 +380160,7 @@
     ]
    },
    "lint.ignore": [
-    "31ce1ab3a96d3e9184dcdafcb8fa211f80bd845d",
+    "170f4136d4b4f60827f37965152be573671d28fc",
     []
    ],
    "loading": {
@@ -400389,11 +400435,11 @@
      ]
     },
     "idlharness.https.any-expected.txt": [
-     "552532ef88d2832116262157230861eb24c32205",
+     "9d5f55ef1f9e825e2a369890685ca0a049e35848",
      []
     ],
     "idlharness.https.any.worker-expected.txt": [
-     "70c9d9e1014a474105a98eddebfeceb6612c379e",
+     "9d5f55ef1f9e825e2a369890685ca0a049e35848",
      []
     ],
     "resources": {
@@ -687728,7 +687774,7 @@
      ]
     },
     "idlharness.https.any.js": [
-     "93e88294ef1ed0347db722a9c1305aac47fc4129",
+     "c2f579a2b4f58e6806d603c9201e7f98c2fe8409",
      [
       "webnn/idlharness.https.any.html",
       {

@@ -1,6 +1,6 @@
 <!DOCTYPE html>
 <html class=reftest-wait style="background: lightblue;">
-<title>When the root element has scrollbars, these should be excluded in snapshot</title>
+<title>When the root element has scrollbars, these should be excluded in old snapshot</title>
 <link rel="help" href="https://drafts.csswg.org/css-view-transitions-1/">
 <link rel="author" href="mailto:khushalsagar@chromium.org">
 <link rel="match" href="root-scrollbar-with-fixed-background-ref.html">
@@ -37,12 +37,12 @@ html::view-transition-group(hide) {
 }
 html::view-transition-new(*) {
   animation: unset;
-  filter: invert(1);
+  opacity: 0;
   height: 100%;
 }
 html::view-transition-old(*) {
   animation: unset;
-  opacity: 0;
+  filter: invert(1);
   height: 100%;
 }
 </style>
