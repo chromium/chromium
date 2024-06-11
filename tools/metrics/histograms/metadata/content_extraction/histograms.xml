@@ -49,7 +49,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="ContentExtraction.Inner{InnerType}.ValidResults"
-    enum="Boolean" expires_after="2024-10-06">
+    enum="Boolean" expires_after="2024-12-08">
   <owner>sky@chromium.org</owner>
   <owner>swarm-team@google.com</owner>
   <summary>

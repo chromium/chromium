@@ -124,7 +124,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="AutoScreenBrightness.BrightnessChange.Cause"
-    enum="AutoScreenBrightnessBrightnessChangeCause" expires_after="2024-09-25">
+    enum="AutoScreenBrightnessBrightnessChangeCause" expires_after="2024-12-08">
   <owner>thanhdng@chromium.org</owner>
   <owner>tby@chromium.org</owner>
   <summary>Reason for the model to change brightness. Chrome OS only.</summary>
@@ -151,7 +151,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="AutoScreenBrightness.BrightnessMonitorStatus"
     enum="AutoScreenBrightnessBrightnessMonitorStatus"
-    expires_after="2024-09-25">
+    expires_after="2024-12-08">
   <owner>thanhdng@chromium.org</owner>
   <owner>tby@chromium.org</owner>
   <summary>
