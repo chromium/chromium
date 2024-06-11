@@ -313,6 +313,22 @@ class GpmPasskeyChromeWebAuthnCredentialsDelegateTest
   };
 };
 
+// Regression test for crbug.com/346263461.
+TEST_F(GpmPasskeyChromeWebAuthnCredentialsDelegateTest,
+       IgnoreRepeatedSelectPasskey) {
+  base::MockCallback<OnPasskeySelectedCallback> mock_callback;
+  SetCredList({userGpm});
+  credentials_delegate()->OnCredentialsReceived(
+      {passkeyGpm},
+      /*offer_passkey_from_another_device=*/true);
+  dialog_controller()->SetAccountPreselectedCallback(base::DoNothing());
+  EXPECT_CALL(mock_callback, Run()).Times(0);
+  credentials_delegate()->SelectPasskey(base::Base64Encode(kCredIdGpm),
+                                        mock_callback.Get());
+  credentials_delegate()->SelectPasskey(base::Base64Encode(kCredIdGpm),
+                                        mock_callback.Get());
+}
+
 TEST_F(GpmPasskeyChromeWebAuthnCredentialsDelegateTest,
        OnStepTransitionCallbackGpmSource) {
   base::MockCallback<OnPasskeySelectedCallback> mock_callback;

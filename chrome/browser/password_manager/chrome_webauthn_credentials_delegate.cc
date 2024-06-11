@@ -90,6 +90,13 @@ void ChromeWebAuthnCredentialsDelegate::SelectPasskey(
     std::move(callback).Run();
     return;
   }
+  if (passkey_selected_callback_) {
+    // The user tapped on another passkey while the enclave was loading. Ignore
+    // the tap.
+    // TODO(crbug.com/344950143): Disable the rows that are not supposed to be
+    // clicked.
+    return;
+  }
   passkey_selected_callback_ = std::move(callback);
   authenticator_observation_.Observe(authenticator_delegate->dialog_model());
   AuthenticatorType credential_source =
