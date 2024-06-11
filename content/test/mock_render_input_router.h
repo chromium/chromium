@@ -13,6 +13,8 @@
 #include "content/common/input/render_input_router.h"
 #include "content/test/mock_widget_input_handler.h"
 
+using blink::WebGestureEvent;
+
 namespace content {
 
 class MockRenderInputRouter : public RenderInputRouter {
@@ -44,6 +46,12 @@ class MockRenderInputRouter : public RenderInputRouter {
       const blink::WebTouchEvent& touch_event,
       const ui::LatencyInfo& ui_latency) override;
 
+  void ForwardGestureEventWithLatencyInfo(
+      const blink::WebGestureEvent& gesture_event,
+      const ui::LatencyInfo& ui_latency) override;
+
+  std::optional<WebGestureEvent> GetAndResetLastForwardedGestureEvent();
+
   void SetLastWheelOrTouchEventLatencyInfo(ui::LatencyInfo latency_info) {
     last_wheel_or_touch_event_latency_info_ = latency_info;
   }
@@ -64,6 +72,7 @@ class MockRenderInputRouter : public RenderInputRouter {
 
  private:
   std::optional<ui::LatencyInfo> last_wheel_or_touch_event_latency_info_;
+  std::optional<WebGestureEvent> last_forwarded_gesture_event_;
 };
 
 }  // namespace content

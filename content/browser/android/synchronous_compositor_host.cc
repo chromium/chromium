@@ -701,7 +701,8 @@ void SynchronousCompositorHost::OnBeginFrame(const viz::BeginFrameArgs& args) {
 
   ClearBeginFrameRequest(BEGIN_FRAME);
 
-  if (on_compute_scroll_called_ || !rwhva_->is_currently_scrolling_viewport()) {
+  if (on_compute_scroll_called_ ||
+      !rwhva_->GetViewRenderInputRouter()->is_currently_scrolling_viewport()) {
     rwhva_->host()->ProgressFlingIfNeeded(args.frame_time);
   } else if (base::FeatureList::IsEnabled(
                  features::kWebViewSuppressTapDuringFling)) {

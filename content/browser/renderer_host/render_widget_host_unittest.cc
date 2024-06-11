@@ -776,7 +776,7 @@ class RenderWidgetHostTest : public testing::Test {
   void SimulateGestureEventWithLatencyInfo(WebInputEvent::Type type,
                                            WebGestureDevice sourceDevice,
                                            const ui::LatencyInfo& ui_latency) {
-    host_->ForwardGestureEventWithLatencyInfo(
+    host_->GetRenderInputRouter()->ForwardGestureEventWithLatencyInfo(
         blink::SyntheticWebGestureEventBuilder::Build(type, sourceDevice),
         ui_latency);
   }
@@ -1964,7 +1964,7 @@ TEST_F(RenderWidgetHostTest, InputEventRWHLatencyComponent) {
   CheckLatencyInfoComponentInMessage(dispatched_events,
                                      WebInputEvent::Type::kGestureScrollBegin);
 
-  // Tests RWHI::ForwardGestureEventWithLatencyInfo().
+  // Tests RIR::ForwardGestureEventWithLatencyInfo().
   SimulateGestureEventWithLatencyInfo(WebInputEvent::Type::kGestureScrollUpdate,
                                       blink::WebGestureDevice::kTouchscreen,
                                       ui::LatencyInfo());
@@ -2234,7 +2234,7 @@ TEST_F(RenderWidgetHostTest, EventDispatchPostDetach) {
 
   host_->DetachDelegate();
 
-  // Tests RWHI::ForwardGestureEventWithLatencyInfo().
+  // Tests RIR::ForwardGestureEventWithLatencyInfo().
   SimulateGestureEventWithLatencyInfo(WebInputEvent::Type::kGestureScrollUpdate,
                                       blink::WebGestureDevice::kTouchscreen,
                                       ui::LatencyInfo());

@@ -570,7 +570,8 @@ void RenderWidgetHostViewEventHandler::OnGestureEvent(ui::GestureEvent* event) {
       host_->delegate()->GetInputEventRouter()->RouteGestureEvent(
           host_view_, &gesture, *event->latency());
     } else {
-      host_->ForwardGestureEventWithLatencyInfo(gesture, *event->latency());
+      host_->GetRenderInputRouter()->ForwardGestureEventWithLatencyInfo(
+          gesture, *event->latency());
     }
   }
 

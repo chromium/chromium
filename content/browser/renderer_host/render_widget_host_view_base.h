@@ -493,15 +493,6 @@ class CONTENT_EXPORT RenderWidgetHostViewBase
 
   void StopFling();
 
-  void set_is_currently_scrolling_viewport(
-      bool is_currently_scrolling_viewport) {
-    is_currently_scrolling_viewport_ = is_currently_scrolling_viewport;
-  }
-
-  bool is_currently_scrolling_viewport() {
-    return is_currently_scrolling_viewport_;
-  }
-
   virtual void DidNavigate();
 
   // Called when the RenderWidgetHostImpl establishes a connection to the
@@ -649,8 +640,6 @@ class CONTENT_EXPORT RenderWidgetHostViewBase
   // The default background color used before getting the
   // |content_background_color|.
   std::optional<SkColor> default_background_color_;
-
-  bool is_currently_scrolling_viewport_ = false;
 
   raw_ptr<TooltipObserver> tooltip_observer_for_testing_ = nullptr;
 

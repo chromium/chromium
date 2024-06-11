@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CONTENT_PUBLIC_BROWSER_PEAK_GPU_MEMORY_TRACKER_H_
-#define CONTENT_PUBLIC_BROWSER_PEAK_GPU_MEMORY_TRACKER_H_
+#ifndef CONTENT_PUBLIC_COMMON_PEAK_GPU_MEMORY_TRACKER_H_
+#define CONTENT_PUBLIC_COMMON_PEAK_GPU_MEMORY_TRACKER_H_
 
 #include <memory>
 
@@ -51,4 +51,4 @@ class CONTENT_EXPORT PeakGpuMemoryTracker {
 
 }  // namespace content
 
-#endif  // CONTENT_PUBLIC_BROWSER_PEAK_GPU_MEMORY_TRACKER_H_
+#endif  // CONTENT_PUBLIC_COMMON_PEAK_GPU_MEMORY_TRACKER_H_

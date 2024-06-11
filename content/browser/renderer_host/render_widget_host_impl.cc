@@ -65,7 +65,6 @@
 #include "content/browser/renderer_host/frame_token_message_queue.h"
 #include "content/browser/renderer_host/frame_tree.h"
 #include "content/browser/renderer_host/input/fling_scheduler.h"
-#include "content/browser/renderer_host/input/touch_emulator_impl.h"
 #include "content/browser/renderer_host/render_process_host_impl.h"
 #include "content/browser/renderer_host/render_view_host_delegate.h"
 #include "content/browser/renderer_host/render_view_host_delegate_view.h"
@@ -92,7 +91,6 @@
 #include "content/public/browser/keyboard_event_processing_result.h"
 #include "content/public/browser/notification_service.h"
 #include "content/public/browser/notification_types.h"
-#include "content/public/browser/peak_gpu_memory_tracker.h"
 #include "content/public/browser/render_frame_metadata_provider.h"
 #include "content/public/browser/render_process_host_priority_client.h"
 #include "content/public/browser/render_widget_host_iterator.h"
@@ -102,6 +100,7 @@
 #include "content/public/common/content_features.h"
 #include "content/public/common/content_switches.h"
 #include "content/public/common/drop_data.h"
+#include "content/public/common/peak_gpu_memory_tracker.h"
 #include "content/public/common/result_codes.h"
 #include "gpu/GLES2/gl2extchromium.h"
 #include "gpu/command_buffer/service/gpu_switches.h"
@@ -1574,68 +1573,10 @@ void RenderWidgetHostImpl::WaitForInputProcessed(base::OnceClosure callback) {
 
 void RenderWidgetHostImpl::ForwardGestureEvent(
     const WebGestureEvent& gesture_event) {
-  ForwardGestureEventWithLatencyInfo(
+  GetRenderInputRouter()->ForwardGestureEventWithLatencyInfo(
       gesture_event,
       ui::WebInputEventTraits::CreateLatencyInfoForWebGestureEvent(
           gesture_event));
-}
-
-void RenderWidgetHostImpl::ForwardGestureEventWithLatencyInfo(
-    const WebGestureEvent& gesture_event,
-    const ui::LatencyInfo& latency) {
-  TRACE_EVENT1("input", "RenderWidgetHostImpl::ForwardGestureEvent", "type",
-               WebInputEvent::GetName(gesture_event.GetType()));
-
-  // Early out if necessary, prior to performing latency logic.
-  if (IsIgnoringWebInputEvents(gesture_event)) {
-    // IgnoreWebInputEvents is primarily concerned with suppressing event
-    // dispatch to the renderer. However, the embedder may be filtering gesture
-    // events to drive its own UI so we still give it an opportunity to see
-    // these events.
-    if (GetView()) {
-      GetView()->FilterInputEvent(gesture_event);
-    }
-    return;
-  }
-
-  // The gesture events must have a known source.
-  CHECK_NE(gesture_event.SourceDevice(),
-           blink::WebGestureDevice::kUninitialized);
-
-  if (gesture_event.GetType() == WebInputEvent::Type::kGestureScrollBegin) {
-    scroll_peak_gpu_mem_tracker_ =
-        PeakGpuMemoryTracker::Create(PeakGpuMemoryTracker::Usage::SCROLL);
-  } else if (gesture_event.GetType() ==
-             WebInputEvent::Type::kGestureScrollEnd) {
-    if (view_) {
-      if (scroll_peak_gpu_mem_tracker_ &&
-          !view_->is_currently_scrolling_viewport()) {
-        // We start tracking peak gpu-memory usage when the initial scroll-begin
-        // is dispatched. However, it is possible that the scroll-begin did not
-        // trigger any scrolls (e.g. the page is not scrollable). In such cases,
-        // we do not want to report the peak-memory usage metric. So it is
-        // canceled here.
-        scroll_peak_gpu_mem_tracker_->Cancel();
-      }
-
-      view_->set_is_currently_scrolling_viewport(false);
-    }
-    scroll_peak_gpu_mem_tracker_ = nullptr;
-  }
-
-  NotifyUISchedulerOfGestureEventUpdate(gesture_event.GetType());
-
-  // Delegate must be non-null, due to `IsIgnoringWebInputEvents()` test.
-  if (delegate_->PreHandleGestureEvent(gesture_event)) {
-    return;
-  }
-
-  input::GestureEventWithLatencyInfo gesture_with_latency(gesture_event,
-                                                          latency);
-  GetRenderInputRouter()->DispatchInputEventWithLatencyInfo(
-      gesture_with_latency.event, &gesture_with_latency.latency,
-      &gesture_with_latency.event.GetModifiableEventLatencyMetadata());
-  GetRenderInputRouter()->SendGestureEventWithLatencyInfo(gesture_with_latency);
 }
 
 void RenderWidgetHostImpl::ForwardKeyboardEvent(
@@ -2577,6 +2518,18 @@ void RenderWidgetHostImpl::NotifyObserversOfInputEventAcks(
   }
 }
 
+bool RenderWidgetHostImpl::PreHandleGestureEvent(
+    const blink::WebGestureEvent& event) {
+  NotifyUISchedulerOfGestureEventUpdate(event.GetType());
+  return delegate()->PreHandleGestureEvent(event);
+}
+
+std::unique_ptr<PeakGpuMemoryTracker>
+RenderWidgetHostImpl::MakePeakGpuMemoryTracker(
+    PeakGpuMemoryTracker::Usage usage) {
+  return PeakGpuMemoryTracker::Create(usage);
+}
+
 void RenderWidgetHostImpl::ShowPopup(const gfx::Rect& initial_screen_rect,
                                      const gfx::Rect& anchor_screen_rect,
                                      ShowPopupCallback callback) {
@@ -2903,7 +2856,7 @@ void RenderWidgetHostImpl::AutoscrollFling(const gfx::Vector2dF& velocity) {
     scroll_begin.data.scroll_begin.delta_x_hint = velocity.x();
     scroll_begin.data.scroll_begin.delta_y_hint = velocity.y();
 
-    ForwardGestureEventWithLatencyInfo(
+    GetRenderInputRouter()->ForwardGestureEventWithLatencyInfo(
         scroll_begin, ui::LatencyInfo(ui::SourceEventType::OTHER));
     sent_autoscroll_scroll_begin_ = true;
   }
@@ -2915,7 +2868,7 @@ void RenderWidgetHostImpl::AutoscrollFling(const gfx::Vector2dF& velocity) {
   event.data.fling_start.velocity_x = velocity.x();
   event.data.fling_start.velocity_y = velocity.y();
 
-  ForwardGestureEventWithLatencyInfo(
+  GetRenderInputRouter()->ForwardGestureEventWithLatencyInfo(
       event, ui::LatencyInfo(ui::SourceEventType::OTHER));
 }
 
@@ -2936,7 +2889,7 @@ void RenderWidgetHostImpl::AutoscrollEnd() {
   cancel_event.data.fling_cancel.prevent_boosting = true;
   cancel_event.SetPositionInWidget(autoscroll_start_position_);
 
-  ForwardGestureEventWithLatencyInfo(
+  GetRenderInputRouter()->ForwardGestureEventWithLatencyInfo(
       cancel_event, ui::LatencyInfo(ui::SourceEventType::OTHER));
 }
 
@@ -3266,10 +3219,10 @@ void RenderWidgetHostImpl::DidStopFlinging() {
   }
 }
 
+// TODO(b/331420891): Remove this method completely once InputRouterImplClient
+// is implemented by RenderInputRouter only.
 void RenderWidgetHostImpl::DidStartScrollingViewport() {
-  if (view_) {
-    view_->set_is_currently_scrolling_viewport(true);
-  }
+  NOTREACHED_NORETURN();
 }
 
 void RenderWidgetHostImpl::OnInvalidInputEventSource() {
@@ -3380,21 +3333,6 @@ void RenderWidgetHostImpl::OnWheelEventAck(
       ack_result = blink::mojom::InputEventResultState::kConsumed;
     }
     view_->WheelEventAck(wheel_event.event, ack_result);
-  }
-}
-
-void RenderWidgetHostImpl::OnGestureEventAck(
-    const input::GestureEventWithLatencyInfo& event,
-    blink::mojom::InputEventResultSource ack_source,
-    blink::mojom::InputEventResultState ack_result) {
-  // If the TouchEmulator didn't exist when this GestureEvent was sent, we
-  // shouldn't create it here.
-  if (auto* touch_emulator = GetTouchEmulator(/*create_if_necessary=*/false)) {
-    touch_emulator->OnGestureEventAck(event.event, GetView());
-  }
-
-  if (view_) {
-    view_->GestureEventAck(event.event, ack_result);
   }
 }
 

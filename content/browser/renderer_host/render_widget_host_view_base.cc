@@ -805,7 +805,8 @@ void RenderWidgetHostViewBase::ProcessGestureEvent(
     NOTREACHED_NORETURN();
   }
 
-  host()->ForwardGestureEventWithLatencyInfo(event, latency);
+  host()->GetRenderInputRouter()->ForwardGestureEventWithLatencyInfo(event,
+                                                                     latency);
 }
 
 gfx::PointF RenderWidgetHostViewBase::TransformPointToRootCoordSpaceF(

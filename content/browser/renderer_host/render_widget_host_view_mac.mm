@@ -783,7 +783,8 @@ void RenderWidgetHostViewMac::OnGestureEvent(
     host()->delegate()->GetInputEventRouter()->RouteGestureEvent(
         this, &gesture_event, latency_info);
   } else {
-    host()->ForwardGestureEventWithLatencyInfo(web_gesture, latency_info);
+    host()->GetRenderInputRouter()->ForwardGestureEventWithLatencyInfo(
+        web_gesture, latency_info);
   }
 }
 

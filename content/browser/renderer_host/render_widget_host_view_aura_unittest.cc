@@ -345,20 +345,6 @@ class MockRenderWidgetHostImpl : public RenderWidgetHostImpl {
         ui::LatencyInfo(ui_latency));
   }
 
-  void ForwardGestureEventWithLatencyInfo(
-      const blink::WebGestureEvent& gesture_event,
-      const ui::LatencyInfo& ui_latency) override {
-    RenderWidgetHostImpl::ForwardGestureEventWithLatencyInfo(gesture_event,
-                                                             ui_latency);
-    last_forwarded_gesture_event_ = gesture_event;
-  }
-
-  std::optional<WebGestureEvent> GetAndResetLastForwardedGestureEvent() {
-    std::optional<WebGestureEvent> ret;
-    last_forwarded_gesture_event_.swap(ret);
-    return ret;
-  }
-
   void ClearVisualProperties() {
     base::RunLoop().RunUntilIdle();
     widget_.ClearVisualProperties();
@@ -450,7 +436,6 @@ class MockRenderWidgetHostImpl : public RenderWidgetHostImpl {
 
   bool new_content_rendering_timeout_fired_ = false;
   MockWidget widget_;
-  std::optional<WebGestureEvent> last_forwarded_gesture_event_;
 };
 
 class TestScopedKeyboardHook : public aura::ScopedKeyboardHook {
@@ -2427,7 +2412,8 @@ TEST_F(RenderWidgetHostViewAuraTest,
   view_->OnScrollEvent(&scroll_event);
   base::RunLoop().RunUntilIdle();
   std::optional<WebGestureEvent> last_gesture =
-      widget_host_->GetAndResetLastForwardedGestureEvent();
+      widget_host_->GetMockRenderInputRouter()
+          ->GetAndResetLastForwardedGestureEvent();
   ASSERT_TRUE(last_gesture);
   EXPECT_EQ(WebInputEvent::Type::kGestureFlingCancel, last_gesture->GetType());
 
@@ -2445,7 +2431,8 @@ TEST_F(RenderWidgetHostViewAuraTest,
   // this sequence, so we should not generate another.
   view_->OnScrollEvent(&scroll_event);
   base::RunLoop().RunUntilIdle();
-  last_gesture = widget_host_->GetAndResetLastForwardedGestureEvent();
+  last_gesture = widget_host_->GetMockRenderInputRouter()
+                     ->GetAndResetLastForwardedGestureEvent();
   EXPECT_FALSE(last_gesture);
 
   dispatched_events = GetAndResetDispatchedMessages();

@@ -16,6 +16,7 @@
 #include "content/common/input/input_router_config_helper.h"
 #include "content/common/input/render_widget_host_input_event_router.h"
 #include "content/common/input/render_widget_host_view_input.h"
+#include "content/common/input/touch_emulator.h"
 #include "mojo/public/cpp/bindings/callback_helpers.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
@@ -266,7 +267,7 @@ void RenderInputRouter::DidOverscroll(const ui::DidOverscrollParams& params) {
 }
 
 void RenderInputRouter::DidStartScrollingViewport() {
-  input_router_impl_client_->DidStartScrollingViewport();
+  set_is_currently_scrolling_viewport(true);
 }
 
 void RenderInputRouter::OnInvalidInputEventSource() {
@@ -276,9 +277,57 @@ void RenderInputRouter::OnInvalidInputEventSource() {
 void RenderInputRouter::ForwardGestureEventWithLatencyInfo(
     const blink::WebGestureEvent& gesture_event,
     const ui::LatencyInfo& latency_info) {
-  input_router_impl_client_->ForwardGestureEventWithLatencyInfo(gesture_event,
-                                                                latency_info);
+  TRACE_EVENT1("input", "RenderInputRouter::ForwardGestureEvent", "type",
+               WebInputEvent::GetName(gesture_event.GetType()));
+
+  // Early out if necessary, prior to performing latency logic.
+  if (delegate_->IsIgnoringWebInputEvents(gesture_event)) {
+    // IgnoreWebInputEvents is primarily concerned with suppressing event
+    // dispatch to the renderer. However, the embedder may be filtering gesture
+    // events to drive its own UI so we still give it an opportunity to see
+    // these events.
+    if (view_input_) {
+      view_input_->FilterInputEvent(gesture_event);
+    }
+    return;
+  }
+
+  // The gesture events must have a known source.
+  CHECK_NE(gesture_event.SourceDevice(),
+           blink::WebGestureDevice::kUninitialized);
+
+  if (gesture_event.GetType() == WebInputEvent::Type::kGestureScrollBegin) {
+    scroll_peak_gpu_mem_tracker_ = delegate_->MakePeakGpuMemoryTracker(
+        PeakGpuMemoryTracker::Usage::SCROLL);
+  } else if (gesture_event.GetType() ==
+             WebInputEvent::Type::kGestureScrollEnd) {
+    if (scroll_peak_gpu_mem_tracker_ && !is_currently_scrolling_viewport()) {
+      // We start tracking peak gpu-memory usage when the initial scroll-begin
+      // is dispatched. However, it is possible that the scroll-begin did not
+      // trigger any scrolls (e.g. the page is not scrollable). In such cases,
+      // we do not want to report the peak-memory usage metric. So it is
+      // canceled here.
+      scroll_peak_gpu_mem_tracker_->Cancel();
+    }
+
+    set_is_currently_scrolling_viewport(false);
+
+    scroll_peak_gpu_mem_tracker_ = nullptr;
+  }
+
+  // Delegate must be non-null, due to `IsIgnoringWebInputEvents()` test.
+  if (delegate_->PreHandleGestureEvent(gesture_event)) {
+    return;
+  }
+
+  input::GestureEventWithLatencyInfo gesture_with_latency(gesture_event,
+                                                          latency_info);
+  DispatchInputEventWithLatencyInfo(
+      gesture_with_latency.event, &gesture_with_latency.latency,
+      &gesture_with_latency.event.GetModifiableEventLatencyMetadata());
+  SendGestureEventWithLatencyInfo(gesture_with_latency);
 }
+
 void RenderInputRouter::ForwardWheelEventWithLatencyInfo(
     const blink::WebMouseWheelEvent& wheel_event,
     const ui::LatencyInfo& latency_info) {
@@ -328,7 +377,16 @@ void RenderInputRouter::OnGestureEventAck(
   delegate_->NotifyObserversOfInputEventAcks(ack_source, ack_result,
                                              event.event);
 
-  delegate_->OnGestureEventAck(event, ack_source, ack_result);
+  // If the TouchEmulator didn't exist when this GestureEvent was sent, we
+  // shouldn't create it here.
+  if (auto* touch_emulator =
+          delegate_->GetTouchEmulator(/*create_if_necessary=*/false)) {
+    touch_emulator->OnGestureEventAck(event.event, view_input_.get());
+  }
+
+  if (view_input_) {
+    view_input_->GestureEventAck(event.event, ack_result);
+  }
 }
 
 void RenderInputRouter::DispatchInputEventWithLatencyInfo(

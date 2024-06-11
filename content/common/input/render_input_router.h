@@ -32,6 +32,7 @@
 namespace content {
 
 class MockRenderInputRouter;
+class PeakGpuMemoryTracker;
 
 // RenderInputRouter is currently owned by RenderWidgetHostImpl and is being
 // used for forwarding input events. It maintains mojo connections
@@ -162,6 +163,15 @@ class CONTENT_EXPORT RenderInputRouter : public InputRouterImplClient,
     return latency_tracker_.get();
   }
 
+  void set_is_currently_scrolling_viewport(
+      bool is_currently_scrolling_viewport) {
+    is_currently_scrolling_viewport_ = is_currently_scrolling_viewport;
+  }
+
+  bool is_currently_scrolling_viewport() {
+    return is_currently_scrolling_viewport_;
+  }
+
   void FlushForTesting() {
     if (widget_input_handler_) {
       return widget_input_handler_.FlushForTesting();
@@ -182,6 +192,8 @@ class CONTENT_EXPORT RenderInputRouter : public InputRouterImplClient,
  private:
   friend MockRenderInputRouter;
 
+  bool is_currently_scrolling_viewport_ = false;
+
   // Must be declared before `input_router_`. The latter is constructed by
   // borrowing a reference to this object, so it must be deleted first.
   std::unique_ptr<input::FlingSchedulerBase> fling_scheduler_;
@@ -195,6 +207,8 @@ class CONTENT_EXPORT RenderInputRouter : public InputRouterImplClient,
       is_in_gesture_scroll_ = {{false}};
   bool is_in_touchpad_gesture_fling_ = false;
   std::unique_ptr<RenderInputRouterLatencyTracker> latency_tracker_;
+
+  std::unique_ptr<PeakGpuMemoryTracker> scroll_peak_gpu_mem_tracker_;
 
   raw_ptr<InputRouterImplClient> input_router_impl_client_;
   raw_ptr<RenderInputRouterDelegate> delegate_;

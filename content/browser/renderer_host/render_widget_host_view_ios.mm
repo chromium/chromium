@@ -626,7 +626,8 @@ void RenderWidgetHostViewIOS::InjectGestureEvent(
     host()->delegate()->GetInputEventRouter()->RouteGestureEvent(
         this, &gesture_event, latency_info);
   } else {
-    host()->ForwardGestureEventWithLatencyInfo(event, latency_info);
+    host()->GetRenderInputRouter()->ForwardGestureEventWithLatencyInfo(
+        event, latency_info);
   }
 }
 

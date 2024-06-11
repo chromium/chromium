@@ -37,6 +37,7 @@
 #include "components/viz/common/surfaces/frame_sink_id.h"
 #include "content/browser/renderer_host/agent_scheduling_group_host.h"
 #include "content/browser/renderer_host/frame_token_message_queue.h"
+#include "content/browser/renderer_host/input/touch_emulator_impl.h"
 #include "content/browser/renderer_host/render_frame_metadata_provider_impl.h"
 #include "content/browser/renderer_host/render_widget_host_delegate.h"
 #include "content/browser/renderer_host/render_widget_host_view_base.h"
@@ -110,12 +111,10 @@ class FrameTree;
 class InputRouter;
 class MockRenderWidgetHost;
 class MockRenderWidgetHostImpl;
-class PeakGpuMemoryTracker;
 class RenderWidgetHostOwnerDelegate;
 class RenderWidgetHostFactory;
 class SiteInstanceGroup;
 class SyntheticGestureController;
-class TouchEmulatorImpl;
 class VisibleTimeRequestTrigger;
 
 // This implements the RenderWidgetHost interface that is exposed to
@@ -377,10 +376,10 @@ class CONTENT_EXPORT RenderWidgetHostImpl
       blink::mojom::InputEventResultSource ack_source,
       blink::mojom::InputEventResultState ack_result,
       const blink::WebInputEvent& event) override;
-  void OnGestureEventAck(
-      const input::GestureEventWithLatencyInfo& event,
-      blink::mojom::InputEventResultSource ack_source,
-      blink::mojom::InputEventResultState ack_result) override;
+  bool PreHandleGestureEvent(const blink::WebGestureEvent& event) override;
+  TouchEmulatorImpl* GetTouchEmulator(bool create_if_necessary) override;
+  std::unique_ptr<PeakGpuMemoryTracker> MakePeakGpuMemoryTracker(
+      PeakGpuMemoryTracker::Usage usage) override;
   void OnWheelEventAck(const input::MouseWheelEventWithLatencyInfo& event,
                        blink::mojom::InputEventResultSource ack_source,
                        blink::mojom::InputEventResultState ack_result) override;
@@ -572,7 +571,7 @@ class CONTENT_EXPORT RenderWidgetHostImpl
       const ui::LatencyInfo& latency) override;
   void ForwardGestureEventWithLatencyInfo(
       const blink::WebGestureEvent& gesture_event,
-      const ui::LatencyInfo& latency) override;
+      const ui::LatencyInfo& latency) override {}
   void ForwardMouseEventWithLatencyInfo(const blink::WebMouseEvent& mouse_event,
                                         const ui::LatencyInfo& latency);
   void ForwardWheelEventWithLatencyInfo(
@@ -589,11 +588,6 @@ class CONTENT_EXPORT RenderWidgetHostImpl
   // have been fully realized (i.e. resulting compositor frame has been drawn,
   // swapped, and presented).
   void WaitForInputProcessed(base::OnceClosure callback);
-
-  // Returns an pointer to the existing touch emulator serving this host if
-  // |create_if_necessary| is false. If true, calling this function will force
-  // creation of a TouchEmulator.
-  TouchEmulatorImpl* GetTouchEmulator(bool create_if_necessary);
 
   // Queues a synthetic gesture for testing purposes.  Invokes the on_complete
   // callback when the gesture is finished running.
@@ -657,7 +651,8 @@ class CONTENT_EXPORT RenderWidgetHostImpl
   void ImeCancelComposition();
 
   // Whether forwarded WebInputEvents or other events are being ignored.
-  bool IsIgnoringWebInputEvents(const blink::WebInputEvent& event) const;
+  bool IsIgnoringWebInputEvents(
+      const blink::WebInputEvent& event) const override;
   bool IsIgnoringInputEvents() const;
 
   // Called when the response to a pending pointer lock request has arrived.
@@ -1515,8 +1510,6 @@ class CONTENT_EXPORT RenderWidgetHostImpl
   // This timer resets |pending_user_activation_counter_| after a short delay.
   // See comments on Add/ClearPendingUserActivation().
   base::OneShotTimer pending_user_activation_timer_;
-
-  std::unique_ptr<PeakGpuMemoryTracker> scroll_peak_gpu_mem_tracker_;
 
   InputRouterImpl::RequestMouseLockCallback request_pointer_lock_callback_;
 

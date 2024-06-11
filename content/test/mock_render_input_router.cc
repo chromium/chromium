@@ -41,6 +41,21 @@ void MockRenderInputRouter::ForwardTouchEventWithLatencyInfo(
   SetLastWheelOrTouchEventLatencyInfo(ui::LatencyInfo(ui_latency));
 }
 
+void MockRenderInputRouter::ForwardGestureEventWithLatencyInfo(
+    const blink::WebGestureEvent& gesture_event,
+    const ui::LatencyInfo& ui_latency) {
+  RenderInputRouter::ForwardGestureEventWithLatencyInfo(gesture_event,
+                                                        ui_latency);
+  last_forwarded_gesture_event_ = gesture_event;
+}
+
+std::optional<WebGestureEvent>
+MockRenderInputRouter::GetAndResetLastForwardedGestureEvent() {
+  std::optional<WebGestureEvent> ret;
+  last_forwarded_gesture_event_.swap(ret);
+  return ret;
+}
+
 MockWidgetInputHandler::MessageVector
 MockRenderInputRouter::GetAndResetDispatchedMessages() {
   return mock_widget_input_handler_->GetAndResetDispatchedMessages();

@@ -5,7 +5,10 @@
 #ifndef CONTENT_COMMON_INPUT_RENDER_INPUT_ROUTER_DELEGATE_H_
 #define CONTENT_COMMON_INPUT_RENDER_INPUT_ROUTER_DELEGATE_H_
 
+#include <memory>
+
 #include "cc/trees/render_frame_metadata.h"
+#include "content/public/common/peak_gpu_memory_tracker.h"
 #include "third_party/blink/public/mojom/input/input_event_result.mojom-shared.h"
 #include "ui/gfx/delegated_ink_point.h"
 
@@ -14,6 +17,7 @@ namespace content {
 class RenderWidgetHostViewInput;
 class RenderInputRouterIterator;
 class RenderWidgetHostInputEventRouter;
+class TouchEmulator;
 
 class CONTENT_EXPORT RenderInputRouterDelegate {
  public:
@@ -42,6 +46,11 @@ class CONTENT_EXPORT RenderInputRouterDelegate {
 
   virtual ukm::SourceId GetCurrentPageUkmSourceId() = 0;
 
+  virtual bool IsIgnoringWebInputEvents(
+      const blink::WebInputEvent& event) const = 0;
+
+  virtual bool PreHandleGestureEvent(const blink::WebGestureEvent& event) = 0;
+
   virtual void NotifyObserversOfInputEvent(
       const blink::WebInputEvent& event) = 0;
   virtual void NotifyObserversOfInputEventAcks(
@@ -49,11 +58,15 @@ class CONTENT_EXPORT RenderInputRouterDelegate {
       blink::mojom::InputEventResultState ack_result,
       const blink::WebInputEvent& event) = 0;
 
+  // Returns an pointer to the existing touch emulator serving this host if
+  // |create_if_necessary| is false. If true, calling this function will force
+  // creation of a TouchEmulator.
+  virtual TouchEmulator* GetTouchEmulator(bool create_if_necessary) = 0;
+
+  virtual std::unique_ptr<PeakGpuMemoryTracker> MakePeakGpuMemoryTracker(
+      PeakGpuMemoryTracker::Usage usage) = 0;
+
   // Called upon event ack receipt from the renderer.
-  virtual void OnGestureEventAck(
-      const input::GestureEventWithLatencyInfo& event,
-      blink::mojom::InputEventResultSource ack_source,
-      blink::mojom::InputEventResultState ack_result) = 0;
   virtual void OnWheelEventAck(
       const input::MouseWheelEventWithLatencyInfo& event,
       blink::mojom::InputEventResultSource ack_source,
