@@ -63,7 +63,7 @@ std::unique_ptr<web_app::WebAppInstallInfo> CreateWebAppInfoForFileManager() {
   info->scope = GURL(kChromeUIFileManagerURL);
   info->title = l10n_util::GetStringUTF16(IDS_FILEMANAGER_APP_NAME);
   web_app::CreateIconInfoForSystemWebApp(
-      info->start_url,
+      info->start_url(),
       {
           {"icon16.png", 16, IDR_FILE_MANAGER_ICON_16},
           {"icon32.png", 32, IDR_FILE_MANAGER_ICON_32},

@@ -233,7 +233,7 @@ class CustomTabBarViewBrowserTest : public web_app::WebAppBrowserTestBase {
 
  private:
   void Install(std::unique_ptr<web_app::WebAppInstallInfo> web_app_info) {
-    const GURL start_url = web_app_info->start_url;
+    const GURL start_url = web_app_info->start_url();
     webapps::AppId app_id = InstallWebApp(std::move(web_app_info));
 
     ui_test_utils::UrlLoadObserver url_observer(start_url);

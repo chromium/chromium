@@ -82,7 +82,7 @@ WebAppInstallDialogDelegate::WebAppInstallDialogDelegate(
       tracker_(tracker),
       dialog_type_(dialog_type) {
   CHECK(install_info_);
-  CHECK(install_info_->manifest_id.is_valid());
+  CHECK(install_info_->manifest_id().is_valid());
   CHECK(install_tracker_);
   CHECK(prefs_);
 }
@@ -111,14 +111,14 @@ void WebAppInstallDialogDelegate::OnAccept() {
   MeasureAcceptUserActionsForInstallDialog();
   if (iph_state_ == PwaInProductHelpState::kShown) {
     webapps::AppId app_id =
-        GenerateAppIdFromManifestId(install_info_->manifest_id);
+        GenerateAppIdFromManifestId(install_info_->manifest_id());
     WebAppPrefGuardrails::GetForDesktopInstallIph(prefs_).RecordAccept(app_id);
     tracker_->NotifyEvent(feature_engagement::events::kDesktopPwaInstalled);
   }
 
 #if BUILDFLAG(IS_CHROMEOS)
   const webapps::AppId app_id =
-      web_app::GenerateAppIdFromManifestId(install_info_->manifest_id);
+      web_app::GenerateAppIdFromManifestId(install_info_->manifest_id());
   metrics::structured::StructuredMetricsClient::Record(
       cros_events::AppDiscovery_Browser_AppInstallDialogResult()
           .SetWebAppInstallStatus(
@@ -223,7 +223,7 @@ void WebAppInstallDialogDelegate::MeasureIphOnDialogClose() {
   MeasureCancelUserActionsForInstallDialog();
   if (iph_state_ == PwaInProductHelpState::kShown && install_info_) {
     webapps::AppId app_id =
-        GenerateAppIdFromManifestId(install_info_->manifest_id);
+        GenerateAppIdFromManifestId(install_info_->manifest_id());
     WebAppPrefGuardrails::GetForDesktopInstallIph(prefs_).RecordIgnore(
         app_id, base::Time::Now());
   }
@@ -232,7 +232,7 @@ void WebAppInstallDialogDelegate::MeasureIphOnDialogClose() {
   if (install_info_) {
 #if BUILDFLAG(IS_CHROMEOS)
     const webapps::AppId app_id =
-        web_app::GenerateAppIdFromManifestId(install_info_->manifest_id);
+        web_app::GenerateAppIdFromManifestId(install_info_->manifest_id());
     metrics::structured::StructuredMetricsClient::Record(
         cros_events::AppDiscovery_Browser_AppInstallDialogResult()
             .SetWebAppInstallStatus(

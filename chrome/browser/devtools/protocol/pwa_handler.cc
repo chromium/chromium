@@ -238,7 +238,7 @@ void PWAHandler::InstallFromManifestId(
             // returning kUserInstallDeclined. And maybe change it to a more
             // neutral name other than "Dialog" to avoid implying the use of UI.
             const bool manifest_match =
-                (web_app_info->manifest_id.spec() == in_manifest_id);
+                (web_app_info->manifest_id().spec() == in_manifest_id);
             std::move(acceptance_callback)
                 .Run(manifest_match, std::move(web_app_info));
           },
@@ -308,7 +308,7 @@ void PWAHandler::InstallFromInstallInfo(
                       " from ", in_install_url_or_bundle_url})));
     return;
   }
-  if (web_app_info->manifest_id.spec() != in_manifest_id) {
+  if (web_app_info->manifest_id().spec() != in_manifest_id) {
     std::move(callback)->sendFailure(errors::InconsistentManifestId(
         in_manifest_id, in_install_url_or_bundle_url));
     return;

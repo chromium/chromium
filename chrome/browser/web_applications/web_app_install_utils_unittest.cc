@@ -183,7 +183,7 @@ TEST(WebAppInstallUtils, UpdateWebAppInfoFromManifest) {
   const GURL kAppManifestUrl("http://www.chromium.org/manifest.json");
   UpdateWebAppInfoFromManifest(manifest, kAppManifestUrl, &web_app_info);
   EXPECT_EQ(kAppTestShortName, web_app_info.title);
-  EXPECT_EQ(kAppUrl, web_app_info.start_url);
+  EXPECT_EQ(kAppUrl, web_app_info.start_url());
   EXPECT_EQ(kAppUrl.GetWithoutFilename(), web_app_info.scope);
   EXPECT_EQ(DisplayMode::kBrowser, web_app_info.display_mode);
   EXPECT_TRUE(web_app_info.display_override.empty());
@@ -491,7 +491,7 @@ TEST(WebAppInstallUtils, UpdateWebAppInfoFromManifestWithShortcuts) {
   const GURL kAppManifestUrl("http://www.chromium.org/manifest.json");
   UpdateWebAppInfoFromManifest(manifest, kAppManifestUrl, &web_app_info);
   EXPECT_EQ(kAppTestShortName, web_app_info.title);
-  EXPECT_EQ(kAppUrl, web_app_info.start_url);
+  EXPECT_EQ(kAppUrl, web_app_info.start_url());
   EXPECT_EQ(kAppUrl.GetWithoutFilename(), web_app_info.scope);
   EXPECT_EQ(DisplayMode::kBrowser, web_app_info.display_mode);
 
@@ -778,7 +778,7 @@ TEST(WebAppInstallUtils,
   UpdateWebAppInfoFromManifest(
       manifest, GURL("http://www.chromium.org/manifest.json"), &install_info);
 
-  EXPECT_EQ(kAppUrl, install_info.start_url);
+  EXPECT_EQ(kAppUrl, install_info.start_url());
   EXPECT_TRUE(install_info.lock_screen_start_url.is_empty());
   EXPECT_TRUE(install_info.note_taking_new_note_url.is_empty());
 }
@@ -806,7 +806,7 @@ TEST(WebAppInstallUtils,
   UpdateWebAppInfoFromManifest(
       manifest, GURL("http://www.chromium.org/manifest.json"), &install_info);
 
-  EXPECT_EQ(kAppUrl, install_info.start_url);
+  EXPECT_EQ(kAppUrl, install_info.start_url());
   EXPECT_TRUE(install_info.lock_screen_start_url.is_empty());
 }
 
@@ -1819,7 +1819,7 @@ INSTANTIATE_TEST_SUITE_P(, FileHandlersFromManifestTest, testing::Bool());
 TEST(WebAppInstallUtils, SetWebAppManifestFields_Summary) {
   GURL start_url("https://www.chromium.org/index.html");
   auto web_app_info = CreateWebAppInstallInfoFromStartUrl(start_url);
-  web_app_info.scope = web_app_info.start_url.GetWithoutFilename();
+  web_app_info.scope = web_app_info.start_url().GetWithoutFilename();
   web_app_info.title = u"App Name";
   web_app_info.description = u"App Description";
   web_app_info.theme_color = SK_ColorCYAN;
@@ -1827,8 +1827,8 @@ TEST(WebAppInstallUtils, SetWebAppManifestFields_Summary) {
   web_app_info.background_color = SK_ColorMAGENTA;
   web_app_info.dark_mode_background_color = SK_ColorBLACK;
 
-  const webapps::AppId app_id =
-      GenerateAppId(/*manifest_id=*/std::nullopt, web_app_info.start_url);
+  const webapps::AppId app_id = GenerateAppId(/*manifest_id_path=*/std::nullopt,
+                                              web_app_info.start_url());
   auto web_app = std::make_unique<WebApp>(app_id);
   SetWebAppManifestFields(web_app_info, *web_app);
 
@@ -1857,11 +1857,11 @@ TEST(WebAppInstallUtils, SetWebAppManifestFields_Summary) {
 
 TEST(WebAppInstallUtils, SetWebAppManifestFields_ShareTarget) {
   auto web_app_info = CreateWebAppInstallInfoFromStartUrl(StartUrl());
-  web_app_info.scope = web_app_info.start_url.GetWithoutFilename();
+  web_app_info.scope = web_app_info.start_url().GetWithoutFilename();
   web_app_info.title = u"App Name";
 
-  const webapps::AppId app_id =
-      GenerateAppId(/*manifest_id=*/std::nullopt, web_app_info.start_url);
+  const webapps::AppId app_id = GenerateAppId(/*manifest_id_path=*/std::nullopt,
+                                              web_app_info.start_url());
   auto web_app = std::make_unique<WebApp>(app_id);
 
   {

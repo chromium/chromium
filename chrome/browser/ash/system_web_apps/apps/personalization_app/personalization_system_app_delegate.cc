@@ -42,7 +42,7 @@ PersonalizationSystemAppDelegate::GetWebAppInfo() const {
       IDS_PERSONALIZATION_APP_PERSONALIZATION_HUB_TITLE);
 
   web_app::CreateIconInfoForSystemWebApp(
-      info->start_url,
+      info->start_url(),
       {
           {
               "app_hub_icon_64.png",

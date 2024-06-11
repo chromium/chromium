@@ -1068,7 +1068,7 @@ IN_PROC_BROWSER_TEST_P(SystemWebAppManagerInstallAllAppsBrowserTest,
     if (type_and_info.first != SystemWebAppType::SETTINGS) {
       EXPECT_TRUE(url::IsSameOriginWith(
           type_and_info.second->GetInstallUrl(),
-          type_and_info.second->GetWebAppInfo()->start_url));
+          type_and_info.second->GetWebAppInfo()->start_url()));
     }
 
     // Check app's web app shortcuts fields is self-consistent.
@@ -1089,7 +1089,7 @@ IN_PROC_BROWSER_TEST_P(SystemWebAppManagerInstallAllAppsBrowserTest,
     install_url_origins.insert(install_url_origin);
 
     auto start_url_origin =
-        url::Origin::Create(type_and_info.second->GetWebAppInfo()->start_url);
+        url::Origin::Create(type_and_info.second->GetWebAppInfo()->start_url());
     EXPECT_EQ(0u, start_url_origins.count(start_url_origin))
         << "System web app's start_url origin should be unique.";
     start_url_origins.insert(start_url_origin);

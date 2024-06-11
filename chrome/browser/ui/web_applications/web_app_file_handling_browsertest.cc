@@ -209,7 +209,7 @@ class WebAppFileHandlingBrowserTest : public WebAppFileHandlingTestBase {
         https_server()->GetURL("app.com", "/web_app_file_handling/index.html");
     auto web_app_info =
         WebAppInstallInfo::CreateWithStartUrlForTesting(start_url);
-    web_app_info->scope = web_app_info->start_url.GetWithoutFilename();
+    web_app_info->scope = web_app_info->start_url().GetWithoutFilename();
     web_app_info->title = title;
     apps::FileHandler entry;
     entry.action = handler_url;

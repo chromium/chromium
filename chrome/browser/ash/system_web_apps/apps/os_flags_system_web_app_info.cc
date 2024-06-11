@@ -31,7 +31,7 @@ OsFlagsSystemWebAppDelegate::GetWebAppInfo() const {
   info->title = l10n_util::GetStringUTF16(IDS_OS_FLAGS_APP_NAME);
 
   web_app::CreateIconInfoForSystemWebApp(
-      info->start_url,
+      info->start_url(),
       {
           {"os_flags_app_icon_48.png", 48, IDR_OS_FLAGS_APP_ICONS_48_PNG},
           {"os_flags_app_icon_128.png", 128, IDR_OS_FLAGS_APP_ICONS_128_PNG},

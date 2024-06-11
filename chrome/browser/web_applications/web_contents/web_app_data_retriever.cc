@@ -51,9 +51,9 @@ void WebAppDataRetriever::PopulateWebAppInfoFromMetadata(
     info->description = metadata.description;
   }
   if (metadata.application_url.is_valid()) {
-    info->start_url = metadata.application_url;
-    info->manifest_id =
-        web_app::GenerateManifestIdFromStartUrlOnly(info->start_url);
+    info->SetStartUrl(metadata.application_url);
+    info->SetManifestId(
+        web_app::GenerateManifestIdFromStartUrlOnly(info->start_url()));
   }
 
   for (const auto& icon : metadata.icons) {

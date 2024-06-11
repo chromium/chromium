@@ -69,7 +69,7 @@ void OnWebAppInstallShowInstallDialog(
 #if BUILDFLAG(IS_CHROMEOS)
       if (install_source == webapps::WebappInstallSource::MENU_BROWSER_TAB) {
         webapps::AppId app_id =
-            web_app::GenerateAppIdFromManifestId(web_app_info->manifest_id);
+            web_app::GenerateAppIdFromManifestId(web_app_info->manifest_id());
         metrics::structured::StructuredMetricsClient::Record(
             cros_events::AppDiscovery_Browser_ClickInstallAppFromMenu()
                 .SetAppId(app_id));
@@ -100,7 +100,7 @@ void OnWebAppInstallShowInstallDialog(
 #if BUILDFLAG(IS_CHROMEOS)
     {
       webapps::AppId app_id =
-          web_app::GenerateAppIdFromManifestId(web_app_info->manifest_id);
+          web_app::GenerateAppIdFromManifestId(web_app_info->manifest_id());
       metrics::structured::StructuredMetricsClient::Record(
           cros_events::AppDiscovery_Browser_CreateShortcut().SetAppId(app_id));
     }

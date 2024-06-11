@@ -145,8 +145,8 @@ mojo::Remote<crosapi::mojom::Arc>* GetArcRemoteWithMinVersion(
 
 void LogInstallInfo(base::Value::Dict& dict,
                     const WebAppInstallInfo& install_info) {
-  dict.Set("manifest_id", install_info.manifest_id.spec());
-  dict.Set("start_url", install_info.start_url.spec());
+  dict.Set("manifest_id", install_info.manifest_id().spec());
+  dict.Set("start_url", install_info.start_url().spec());
   dict.Set("name", install_info.title);
 }
 
@@ -332,7 +332,7 @@ void FetchManifestAndInstallCommand::OnGetWebAppInstallInfo(
     return;
   }
   web_app_info_ = std::move(fallback_web_app_info);
-  CHECK(web_app_info_->manifest_id.is_valid());
+  CHECK(web_app_info_->manifest_id().is_valid());
   LogInstallInfo(*GetMutableDebugValue().EnsureDict("fallback_web_app_info"),
                  *web_app_info_);
 
@@ -473,7 +473,7 @@ void FetchManifestAndInstallCommand::OnDidPerformInstallableCheck(
 
   command_manager()->lock_manager().UpgradeAndAcquireLock(
       std::move(noop_lock_),
-      {GenerateAppIdFromManifestId(web_app_info_->manifest_id)},
+      {GenerateAppIdFromManifestId(web_app_info_->manifest_id())},
       base::BindOnce(
           &FetchManifestAndInstallCommand::CheckForPlayStoreIntentOrGetIcons,
           weak_ptr_factory_.GetWeakPtr()));

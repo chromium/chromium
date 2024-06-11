@@ -23,7 +23,7 @@ CreateWebAppInfoForPrintManagementApp() {
   info->scope = GURL(ash::kChromeUIPrintManagementAppUrl);
   info->title = l10n_util::GetStringUTF16(IDS_PRINT_MANAGEMENT_TITLE);
   web_app::CreateIconInfoForSystemWebApp(
-      info->start_url,
+      info->start_url(),
       {{"print_management_192.png", 192,
         IDR_ASH_PRINT_MANAGEMENT_PRINT_MANAGEMENT_192_PNG}},
       *info);

@@ -244,7 +244,7 @@ std::unique_ptr<web_app::WebAppInstallInfo> CreateWebAppInfoForMediaWebApp() {
   info->title = l10n_util::GetStringUTF16(IDS_MEDIA_APP_APP_NAME);
 
   web_app::CreateIconInfoForSystemWebApp(
-      info->start_url,
+      info->start_url(),
       {
           {"app_icon_16.png", 16, IDR_MEDIA_APP_APP_ICON_16_PNG},
           {"app_icon_32.png", 32, IDR_MEDIA_APP_APP_ICON_32_PNG},

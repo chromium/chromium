@@ -20,7 +20,7 @@ std::unique_ptr<web_app::WebAppInstallInfo> CreateWebAppInfoForBocaApp() {
   // TODO(aprilzhou): Convert the title to a localized string
   info->title = u"BOCA";
   web_app::CreateIconInfoForSystemWebApp(
-      info->start_url,
+      info->start_url(),
       {{"app_icon_120.png", 120, IDR_ASH_BOCA_UI_APP_ICON_120_PNG}}, *info);
   info->theme_color =
       web_app::GetDefaultBackgroundColor(/*use_dark_mode=*/false);

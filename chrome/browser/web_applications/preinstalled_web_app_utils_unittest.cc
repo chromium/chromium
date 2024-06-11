@@ -238,7 +238,7 @@ TEST_F(PreinstalledWebAppUtilsTest, MAYBE_OfflineManifestValid) {
                                                     .Run();
   EXPECT_TRUE(app_info);
   EXPECT_EQ(app_info->title, u"Test App");
-  EXPECT_EQ(app_info->start_url, GURL("https://test.org/start.html"));
+  EXPECT_EQ(app_info->start_url(), GURL("https://test.org/start.html"));
   EXPECT_EQ(app_info->scope, GURL("https://test.org/"));
   EXPECT_EQ(app_info->display_mode, DisplayMode::kStandalone);
   EXPECT_EQ(app_info->icon_bitmaps.any.size(), 1u);

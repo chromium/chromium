@@ -181,9 +181,10 @@ void ManifestUpdateCheckCommand::StashNewManifestJson(
 
   new_install_info_ = std::make_unique<WebAppInstallInfo>(
       CreateWebAppInfoFromManifest(*opt_manifest, manifest_url));
-  CHECK(new_install_info_->manifest_id.is_valid());
+  CHECK(new_install_info_->manifest_id().is_valid());
 
-  if (app_id_ != GenerateAppIdFromManifestId(new_install_info_->manifest_id)) {
+  if (app_id_ !=
+      GenerateAppIdFromManifestId(new_install_info_->manifest_id())) {
     CompleteCommandAndSelfDestruct(ManifestUpdateCheckResult::kAppIdMismatch);
     return;
   }
@@ -244,11 +245,11 @@ void ManifestUpdateCheckCommand::ValidateNewScopeExtensions(
   }
 
   CHECK(new_install_info_);
-  CHECK(new_install_info_->manifest_id.is_valid());
+  CHECK(new_install_info_->manifest_id().is_valid());
   ScopeExtensions new_scope_extensions = new_install_info_->scope_extensions;
 
   lock_->origin_association_manager().GetWebAppOriginAssociations(
-      new_install_info_->manifest_id, std::move(new_scope_extensions),
+      new_install_info_->manifest_id(), std::move(new_scope_extensions),
       std::move(next_step_callback));
 }
 

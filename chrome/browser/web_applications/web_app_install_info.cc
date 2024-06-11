@@ -352,7 +352,7 @@ WebAppInstallInfo::CreateWithStartUrlForTesting(const GURL& start_url) {
 
 WebAppInstallInfo::WebAppInstallInfo(const webapps::ManifestId& manifest_id,
                                      const GURL& start_url)
-    : manifest_id(manifest_id), start_url(start_url) {
+    : manifest_id_(manifest_id), start_url_(start_url) {
   // TODO(b/280862254): Ideally move this validation logic into a creator
   // function that can return error messages.
   CHECK(manifest_id.is_valid());

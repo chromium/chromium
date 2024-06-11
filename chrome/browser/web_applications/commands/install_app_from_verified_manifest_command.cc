@@ -201,7 +201,7 @@ void InstallAppFromVerifiedManifestCommand::OnIconsRetrieved(
   PopulateOtherIcons(web_app_info_.get(), icons_map);
 
   webapps::AppId app_id =
-      GenerateAppIdFromManifestId(web_app_info_->manifest_id);
+      GenerateAppIdFromManifestId(web_app_info_->manifest_id());
 
   if (app_id != expected_id_) {
     Abort(CommandResult::kFailure,

@@ -739,12 +739,13 @@ void UpdateWebAppInfoFromManifest(const blink::mojom::Manifest& manifest,
     web_app_info->title = *manifest.short_name;
 
   if (manifest.id.is_valid()) {
-    web_app_info->manifest_id = manifest.id;
+    web_app_info->SetManifestId(manifest.id);
   }
 
   // Set the url based on the manifest value, if any.
-  if (manifest.start_url.is_valid())
-    web_app_info->start_url = manifest.start_url;
+  if (manifest.start_url.is_valid()) {
+    web_app_info->SetStartUrl(manifest.start_url);
+  }
 
   if (manifest.scope.is_valid())
     web_app_info->scope = manifest.scope;
@@ -783,8 +784,8 @@ void UpdateWebAppInfoFromManifest(const blink::mojom::Manifest& manifest,
       ToWebAppScopeExtensions(manifest.scope_extensions);
 
   GURL inferred_scope = web_app_info->scope.is_valid() ? web_app_info->scope
-                        : web_app_info->start_url.is_valid()
-                            ? web_app_info->start_url.GetWithoutFilename()
+                        : web_app_info->start_url().is_valid()
+                            ? web_app_info->start_url().GetWithoutFilename()
                             : GURL();
   if (base::FeatureList::IsEnabled(
           blink::features::kWebAppManifestLockScreen) &&
@@ -898,7 +899,7 @@ void PopulateProductIcons(WebAppInstallInfo* web_app_info,
 
   char32_t icon_letter =
       web_app_info->title.empty()
-          ? shortcuts::GenerateIconLetterFromUrl(web_app_info->start_url)
+          ? shortcuts::GenerateIconLetterFromUrl(web_app_info->start_url())
           : shortcuts::GenerateIconLetterFromName(web_app_info->title);
 
   // Ensure that all top-level icons that are in web_app_info with  Purpose::ANY
@@ -1106,13 +1107,13 @@ void SetWebAppManifestFields(const WebAppInstallInfo& web_app_info,
   DCHECK(!web_app_info.title.empty());
   web_app.SetName(base::UTF16ToUTF8(web_app_info.title));
 
-  web_app.SetStartUrl(web_app_info.start_url);
+  web_app.SetStartUrl(web_app_info.start_url());
 
   // TODO(b/280862254): CHECK that the manifest_id isn't empty after the empty
   // constructor is removed. Currently, `SetStartUrl` sets a default manifest_id
   // based on the start_url.
-  if (web_app_info.manifest_id.is_valid()) {
-    web_app.SetManifestId(web_app_info.manifest_id);
+  if (web_app_info.manifest_id().is_valid()) {
+    web_app.SetManifestId(web_app_info.manifest_id());
   }
 
   web_app.SetDisplayMode(web_app_info.display_mode);

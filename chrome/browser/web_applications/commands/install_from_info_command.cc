@@ -24,9 +24,9 @@ namespace web_app {
 namespace {
 webapps::ManifestId GetManifestIdWithBackup(
     const WebAppInstallInfo& install_info) {
-  return install_info.manifest_id.is_empty()
-             ? GenerateManifestIdFromStartUrlOnly(install_info.start_url)
-             : install_info.manifest_id;
+  return install_info.manifest_id().is_empty()
+             ? GenerateManifestIdFromStartUrlOnly(install_info.start_url())
+             : install_info.manifest_id();
 }
 
 webapps::AppId GetAppIdWithBackup(const WebAppInstallInfo& install_info) {

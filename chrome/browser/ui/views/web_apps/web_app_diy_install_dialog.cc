@@ -89,7 +89,7 @@ void ShowDiyAppInstallDialog(
 
 #if BUILDFLAG(IS_CHROMEOS)
   webapps::AppId app_id =
-      web_app::GenerateAppIdFromManifestId(web_app_info->manifest_id);
+      web_app::GenerateAppIdFromManifestId(web_app_info->manifest_id());
   metrics::structured::StructuredMetricsClient::Record(
       cros_events::AppDiscovery_Browser_AppInstallDialogShown().SetAppId(
           app_id));
@@ -101,7 +101,7 @@ void ShowDiyAppInstallDialog(
   gfx::ImageSkia icon_image(std::make_unique<WebAppInfoImageSource>(
                                 kIconSize, web_app_info->icon_bitmaps.any),
                             gfx::Size(kIconSize, kIconSize));
-  GURL start_url = web_app_info->start_url;
+  GURL start_url = web_app_info->start_url();
 
   // Fallback to using the document title if the web_app_info->title is not
   // populated, as the document title is always guaranteed to exist.

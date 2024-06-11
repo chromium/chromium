@@ -419,7 +419,7 @@ void SubAppsServiceImpl::ProcessDialogResponse(int add_call_id,
   for (const std::unique_ptr<web_app::WebAppInstallInfo>& install_info :
        add_call_info.install_infos) {
     add_call_info.results.emplace_back(SubAppsServiceAddResult::New(
-        ConvertUrlToPath(install_info->manifest_id),
+        ConvertUrlToPath(install_info->manifest_id()),
         blink::mojom::SubAppsServiceResultCode::kFailure));
   }
 
@@ -433,7 +433,7 @@ void SubAppsServiceImpl::ScheduleSubAppInstalls(int add_call_id) {
   WebAppProvider* provider = GetWebAppProvider(render_frame_host());
   base::ConcurrentCallbacks<SubAppInstallResult> concurrent;
   for (auto& install_info : add_call_info.install_infos) {
-    webapps::ManifestId manifest_id = install_info->manifest_id;
+    webapps::ManifestId manifest_id = install_info->manifest_id();
     provider->scheduler().InstallFromInfoWithParams(
         std::move(install_info), /*overwrite_existing_manifest_fields=*/false,
         webapps::WebappInstallSource::SUB_APP,

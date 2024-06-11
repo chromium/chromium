@@ -67,7 +67,7 @@ Profile* CreateAdditionalProfile() {
 void InstallAppForProfile(
     Profile* profile,
     std::unique_ptr<web_app::WebAppInstallInfo> app_info) {
-  GURL app_url(app_info->start_url);
+  GURL app_url(app_info->start_url());
   web_app::test::InstallWebApp(profile, std::move(app_info));
   ASSERT_TRUE(web_app::FindInstalledAppWithUrlInScope(profile, app_url));
 }

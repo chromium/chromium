@@ -38,7 +38,7 @@ std::unique_ptr<web_app::WebAppInstallInfo> CreateWebAppInfoForHelpWebApp() {
 
   info->title = l10n_util::GetStringUTF16(IDS_HELP_APP_EXPLORE);
   web_app::CreateIconInfoForSystemWebApp(
-      info->start_url,
+      info->start_url(),
       {
           {"app_icon_192.png", 192, IDR_HELP_APP_ICON_192},
           {"app_icon_512.png", 512, IDR_HELP_APP_ICON_512},

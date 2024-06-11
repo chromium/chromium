@@ -24,7 +24,7 @@ CreateWebAppInfoForShimlessRMASystemWebApp() {
   info->scope = GURL(ash::kChromeUIShimlessRMAUrl);
   info->title = l10n_util::GetStringUTF16(IDS_ASH_SHIMLESS_RMA_APP_TITLE);
   web_app::CreateIconInfoForSystemWebApp(
-      info->start_url,
+      info->start_url(),
       {{"app_icon_192.png", 192, IDR_ASH_SHIMLESS_RMA_APP_ICON_192_PNG}},
       *info);
   info->theme_color = 0xFFFFFFFF;

@@ -26,7 +26,7 @@ CreateWebAppInfoForOSSettingsSystemWebApp() {
   info->scope = GURL(chrome::kChromeUIOSSettingsURL);
   info->title = l10n_util::GetStringUTF16(IDS_SETTINGS_SETTINGS);
   web_app::CreateIconInfoForSystemWebApp(
-      info->start_url,
+      info->start_url(),
       {
           {"icon-192.png", 192, IDR_SETTINGS_LOGO_192},
 

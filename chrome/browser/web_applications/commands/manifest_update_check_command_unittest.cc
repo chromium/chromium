@@ -418,8 +418,8 @@ class ManifestUpdateCheckCommandTest : public WebAppTest {
  private:
   blink::mojom::ManifestPtr GetManifestFromInfo(const WebAppInstallInfo& info) {
     auto manifest = blink::mojom::Manifest::New();
-    manifest->start_url = info.start_url;
-    manifest->id = GenerateManifestIdFromStartUrlOnly(info.start_url);
+    manifest->start_url = info.start_url();
+    manifest->id = GenerateManifestIdFromStartUrlOnly(info.start_url());
     manifest->scope = info.scope;
     manifest->display = info.display_mode;
     manifest->name = info.title;

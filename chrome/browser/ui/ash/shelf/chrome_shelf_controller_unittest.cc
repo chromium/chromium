@@ -1256,7 +1256,7 @@ class ChromeShelfControllerTestBase : public BrowserWithTestWindowTest,
             GURL(start_url));
     web_app_info->install_url = GURL(install_url ? *install_url : start_url);
     const webapps::AppId expected_web_app_id = web_app::GenerateAppId(
-        /*manifest_id=*/std::nullopt, web_app_info->start_url);
+        /*manifest_id=*/std::nullopt, web_app_info->start_url());
     webapps::AppId web_app_id = web_app::test::InstallWebApp(
         profile(), std::move(web_app_info),
         /*overwrite_existing_manifest_fields =*/false,

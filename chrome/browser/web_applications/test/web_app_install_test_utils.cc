@@ -103,7 +103,7 @@ webapps::AppId InstallWebApp(Profile* profile,
   // In Shortstand, user-installed web app should always have a scope.
   if (chromeos::features::IsCrosShortstandEnabled() &&
       web_app_info->scope.is_empty()) {
-    web_app_info->scope = web_app_info->start_url.GetWithoutFilename();
+    web_app_info->scope = web_app_info->start_url().GetWithoutFilename();
   }
 #endif
 

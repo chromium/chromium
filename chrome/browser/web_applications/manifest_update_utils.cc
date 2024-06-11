@@ -249,10 +249,10 @@ ManifestDataChanges GetManifestDataChanges(
        *existing_app_icon_bitmaps != new_install_info.icon_bitmaps);
 
   result.other_fields_changed = [&] {
-    if (existing_web_app.manifest_id() != new_install_info.manifest_id) {
+    if (existing_web_app.manifest_id() != new_install_info.manifest_id()) {
       return true;
     }
-    if (existing_web_app.start_url() != new_install_info.start_url) {
+    if (existing_web_app.start_url() != new_install_info.start_url()) {
       return true;
     }
     if (existing_web_app.theme_color() != new_install_info.theme_color) {

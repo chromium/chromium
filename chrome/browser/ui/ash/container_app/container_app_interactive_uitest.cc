@@ -247,7 +247,8 @@ class ContainerAppInteractiveUiTestBase
   GURL GetContainerAppLaunchUrl() const {
     GURL::Replacements components;
     components.SetQueryStr(*container_app_install_info_->launch_query_params);
-    return container_app_install_info_->start_url.ReplaceComponents(components);
+    return container_app_install_info_->start_url().ReplaceComponents(
+        components);
   }
 
   // Returns the expected title for the container app.

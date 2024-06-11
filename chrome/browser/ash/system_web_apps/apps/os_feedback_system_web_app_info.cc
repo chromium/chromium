@@ -51,7 +51,7 @@ CreateWebAppInfoForOSFeedbackSystemWebApp() {
   info->scope = GURL(ash::kChromeUIOSFeedbackUrl);
   info->title = l10n_util::GetStringUTF16(IDS_FEEDBACK_REPORT_APP_TITLE);
   web_app::CreateIconInfoForSystemWebApp(
-      info->start_url,
+      info->start_url(),
       {// use the new icons per the request in http://b/186638497
        {"app_icon_48.png", 48, IDR_ASH_OS_FEEDBACK_APP_ICON_48_PNG},
        {"app_icon_192.png", 192, IDR_ASH_OS_FEEDBACK_APP_ICON_192_PNG},

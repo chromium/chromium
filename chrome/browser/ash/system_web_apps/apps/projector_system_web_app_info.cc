@@ -32,7 +32,7 @@ ProjectorSystemWebAppDelegate::GetWebAppInfo() const {
   info->title = l10n_util::GetStringUTF16(IDS_PROJECTOR_APP_NAME);
 
   web_app::CreateIconInfoForSystemWebApp(
-      info->start_url,
+      info->start_url(),
       {
           {"app_icon_16.png", 16,
            IDR_ASH_PROJECTOR_APP_UNTRUSTED_ASSETS_ICON_16_PNG},

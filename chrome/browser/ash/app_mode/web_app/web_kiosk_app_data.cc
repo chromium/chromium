@@ -240,7 +240,7 @@ GURL WebKioskAppData::GetLaunchableUrl() const {
 
 void WebKioskAppData::UpdateFromWebAppInfo(
     const web_app::WebAppInstallInfo& app_info) {
-  UpdateAppInfo(base::UTF16ToUTF8(app_info.title), app_info.start_url,
+  UpdateAppInfo(base::UTF16ToUTF8(app_info.title), app_info.start_url(),
                 app_info.icon_bitmaps);
 }
 

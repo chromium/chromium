@@ -64,7 +64,7 @@ CreateWebAppInfoForPrintPreviewCrosSystemWebApp() {
 
   // TODO(b/323421684): Replace with actual app icons when available.
   web_app::CreateIconInfoForSystemWebApp(
-      info->start_url,
+      info->start_url(),
       {{"app_icon_192.png", 192,
         IDR_ASH_PRINT_PREVIEW_CROS_APP_IMAGES_APP_ICON_192_PNG}},
       *info);

@@ -575,11 +575,11 @@ WebAppInstallInfoFactoryOrError ParseOfflineManifest(
     return base::StrCat({file.AsUTF8Unsafe(), " ", kOfflineManifest, " ",
                          kOfflineManifestScope, " invalid: ", *scope_string});
   }
-  if (!base::StartsWith(app_info->start_url.path(), app_info->scope.path(),
+  if (!base::StartsWith(app_info->start_url().path(), app_info->scope.path(),
                         base::CompareCase::SENSITIVE)) {
     return base::StrCat(
         {file.AsUTF8Unsafe(), " ", kOfflineManifest, " ", kOfflineManifestScope,
-         " (", app_info->start_url.spec(), ") not within ",
+         " (", app_info->start_url().spec(), ") not within ",
          kOfflineManifestScope, " (", app_info->scope.spec(), ")."});
   }
 

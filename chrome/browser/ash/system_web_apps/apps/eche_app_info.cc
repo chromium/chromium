@@ -33,7 +33,7 @@ std::unique_ptr<web_app::WebAppInstallInfo> CreateWebAppInfoForEcheApp() {
   info->scope = GURL(ash::eche_app::kChromeUIEcheAppURL);
   info->title = l10n_util::GetStringUTF16(IDS_ECHE_APP_NAME);
   web_app::CreateIconInfoForSystemWebApp(
-      info->start_url,
+      info->start_url(),
       {{"app_icon_256.png", 256, IDR_ASH_ECHE_APP_ICON_256_PNG}}, *info);
   info->theme_color = 0xFFFFFFFF;
   info->background_color = 0xFFFFFFFF;

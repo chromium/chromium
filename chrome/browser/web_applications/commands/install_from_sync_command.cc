@@ -210,12 +210,12 @@ void InstallFromSyncCommand::OnDidPerformInstallableCheck(
                                  install_info_.get());
   } else {
     // If there is no manifest, set the manifest id from the parameters.
-    install_info_->manifest_id = params_.manifest_id;
+    install_info_->SetManifestId(params_.manifest_id);
   }
 
   // Ensure that the manifest linked is the right one.
   webapps::AppId generated_app_id =
-      GenerateAppIdFromManifestId(install_info_->manifest_id);
+      GenerateAppIdFromManifestId(install_info_->manifest_id());
   if (params_.app_id != generated_app_id) {
     // Add the error to the log.
     base::Value::Dict expected_id_error;

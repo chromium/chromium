@@ -228,9 +228,9 @@ void ExternalAppResolutionCommand::OnGetWebAppInstallInfoInCommand(
   // Set start_url to fallback_start_url as web_contents may have been
   // redirected. Will be overridden by manifest values if present.
   CHECK(install_params_->fallback_start_url.is_valid());
-  web_app_info_->start_url = install_params_->fallback_start_url;
-  web_app_info_->manifest_id =
-      GenerateManifestIdFromStartUrlOnly(web_app_info_->start_url);
+  web_app_info_->SetStartUrl(install_params_->fallback_start_url);
+  web_app_info_->SetManifestId(
+      GenerateManifestIdFromStartUrlOnly(web_app_info_->start_url()));
 
   if (install_params_->fallback_app_name.has_value()) {
     web_app_info_->title = install_params_->fallback_app_name.value();
@@ -281,7 +281,7 @@ void ExternalAppResolutionCommand::OnDidPerformInstallableCheck(
 
   // TODO(b/300878868): Reject installation if the manifest id provided in the
   // WebAppInstallForceList does not match the final manifest id.
-  app_id_ = GenerateAppIdFromManifestId(web_app_info_->manifest_id);
+  app_id_ = GenerateAppIdFromManifestId(web_app_info_->manifest_id());
   GetMutableDebugValue().Set("app_id", app_id_);
 
   // If the manifest specified icons, don't use the page icons.
@@ -610,16 +610,16 @@ void ExternalAppResolutionCommand::InstallFromInfo() {
                std::move(install_params_->additional_search_terms));
   web_app_info_->install_url = install_params_->install_url;
 
-  if (web_app_info_->manifest_id.is_empty() ||
-      !web_app_info_->manifest_id.is_valid()) {
-    web_app_info_->manifest_id =
-        GenerateManifestIdFromStartUrlOnly(web_app_info_->start_url);
+  if (web_app_info_->manifest_id().is_empty() ||
+      !web_app_info_->manifest_id().is_valid()) {
+    web_app_info_->SetManifestId(
+        GenerateManifestIdFromStartUrlOnly(web_app_info_->start_url()));
   }
 
   if (!apps_lock_) {
     command_manager()->lock_manager().UpgradeAndAcquireLock(
         std::move(web_contents_lock_),
-        {GenerateAppIdFromManifestId(web_app_info_->manifest_id)},
+        {GenerateAppIdFromManifestId(web_app_info_->manifest_id())},
         base::BindOnce(
             &ExternalAppResolutionCommand::OnInstallFromInfoAppLockAcquired,
             weak_ptr_factory_.GetWeakPtr()));

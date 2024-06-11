@@ -255,21 +255,30 @@ struct WebAppInstallInfo {
   // Creates a deep copy of this struct.
   WebAppInstallInfo Clone() const;
 
-  // Id specified in the manifest.
-  // TODO(b/280862254): After the manifest id constructor is required, this can
-  // be guaranteed to be valid & non-empty.
+  // ID specified in the manifest.
+  // Guaranteed to be valid & non-empty & same-origin with `start_url()` & have
+  // no "#ref" part in the URL.
   // https://www.w3.org/TR/appmanifest/#id-member
-  webapps::ManifestId manifest_id;
+  const webapps::ManifestId& manifest_id() const { return manifest_id_; }
+
+  // URL the site would prefer the user agent load when launching the app.
+  // Guaranteed to be valid & non-empty & same-origin with `manifest_id()`.
+  // https://www.w3.org/TR/appmanifest/#start_url-member
+  const GURL& start_url() const { return start_url_; }
+
+  // TODO(b/280862254): Replace this method with a safe alternative.
+  void SetManifestId(const webapps::ManifestId& manifest_id) {
+    manifest_id_ = manifest_id;
+  }
+
+  // TODO(b/280862254): Replace this method with a safe alternative.
+  void SetStartUrl(const GURL& start_url) { start_url_ = start_url; }
 
   // Title of the application.
   std::u16string title;
 
   // Description of the application.
   std::u16string description;
-
-  // The URL the site would prefer the user agent load when launching the app.
-  // https://www.w3.org/TR/appmanifest/#start_url-member
-  GURL start_url;
 
   // The URL of the manifest.
   // https://www.w3.org/TR/appmanifest/#web-application-manifest
@@ -443,6 +452,12 @@ struct WebAppInstallInfo {
  private:
   // Used this method in Clone() method. Use Clone() to deep copy explicitly.
   WebAppInstallInfo(const WebAppInstallInfo& other);
+
+  // See `manifest_id()`.
+  webapps::ManifestId manifest_id_;
+
+  // See `start_url()`.
+  GURL start_url_;
 };
 
 bool operator==(const IconSizes& icon_sizes1, const IconSizes& icon_sizes2);

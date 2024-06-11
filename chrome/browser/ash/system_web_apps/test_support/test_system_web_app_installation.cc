@@ -384,7 +384,7 @@ SkBitmap CreateIcon(int size) {
 std::unique_ptr<web_app::WebAppInstallInfo>
 GenerateWebAppInstallInfoWithValidIcons() {
   auto info = GenerateWebAppInstallInfoForTestApp();
-  info->manifest_icons.emplace_back(info->start_url.Resolve("test.png"),
+  info->manifest_icons.emplace_back(info->start_url().Resolve("test.png"),
                                     web_app::icon_size::k256);
   info->icon_bitmaps.any[web_app::icon_size::k256] =
       CreateIcon(web_app::icon_size::k256);

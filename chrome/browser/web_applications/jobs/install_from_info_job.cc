@@ -31,9 +31,9 @@ InstallFromInfoJob::InstallFromInfoJob(
     : profile_(*profile),
       debug_value_(debug_value),
       manifest_id_(
-          install_info->manifest_id.is_empty()
-              ? GenerateManifestIdFromStartUrlOnly(install_info->start_url)
-              : install_info->manifest_id),
+          install_info->manifest_id().is_empty()
+              ? GenerateManifestIdFromStartUrlOnly(install_info->start_url())
+              : install_info->manifest_id()),
       app_id_(
           GenerateAppIdFromManifestId(manifest_id_,
                                       install_info->parent_app_manifest_id)),
@@ -42,23 +42,23 @@ InstallFromInfoJob::InstallFromInfoJob(
       install_params_(std::move(install_params)),
       install_info_(std::move(install_info)),
       callback_(std::move(install_callback)) {
-  if (install_info_->manifest_id.is_empty()) {
+  if (install_info_->manifest_id().is_empty()) {
     // TODO(b/280862254): After the manifest id constructor is required, this
     // can be removed.
-    install_info_->manifest_id = manifest_id_;
+    install_info_->SetManifestId(manifest_id_);
   }
 
-  CHECK(install_info_->manifest_id.is_valid());
+  CHECK(install_info_->manifest_id().is_valid());
 
   if (install_params_.has_value() && !install_params_->locally_installed) {
     CHECK(!install_params_->add_to_applications_menu);
     CHECK(!install_params_->add_to_desktop);
     CHECK(!install_params_->add_to_quick_launch_bar);
   }
-  CHECK(install_info_->start_url.is_valid());
+  CHECK(install_info_->start_url().is_valid());
 
   debug_value_->Set("app_id", app_id_);
-  debug_value_->Set("start_url", install_info_->start_url.spec());
+  debug_value_->Set("start_url", install_info_->start_url().spec());
   debug_value_->Set("overwrite_existing_manifest_fields",
                     overwrite_existing_manifest_fields_);
   debug_value_->Set("install_surface", static_cast<int>(install_surface_));

@@ -44,7 +44,7 @@ VcBackgroundUISystemAppDelegate::GetWebAppInfo() const {
   info->title = l10n_util::GetStringUTF16(IDS_VC_BACKGROUND_APP_TITLE);
 
   web_app::CreateIconInfoForSystemWebApp(
-      info->start_url,
+      info->start_url(),
       {
           {
               .icon_name = "vc_background_ui_app_icon_128.png",

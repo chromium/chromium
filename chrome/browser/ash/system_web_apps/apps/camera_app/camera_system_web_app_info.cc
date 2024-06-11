@@ -35,7 +35,7 @@ CreateWebAppInfoForCameraSystemWebApp() {
 
   info->title = l10n_util::GetStringUTF16(IDS_NAME);
   web_app::CreateIconInfoForSystemWebApp(
-      info->start_url,
+      info->start_url(),
       {
           {"camera_app_icons_48.png", 48,
            IDR_ASH_CAMERA_APP_IMAGES_CAMERA_APP_ICONS_48_PNG},

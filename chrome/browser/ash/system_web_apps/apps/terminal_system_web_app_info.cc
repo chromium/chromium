@@ -44,8 +44,8 @@ CreateWebAppInfoForTerminalSystemWebApp() {
   info->scope = GURL(chrome::kChromeUIUntrustedTerminalURL);
   info->title = l10n_util::GetStringUTF16(IDS_CROSTINI_TERMINAL_APP_NAME);
   web_app::CreateIconInfoForSystemWebApp(
-      info->start_url, {{"app_icon_256.png", 256, IDR_LOGO_CROSTINI_TERMINAL}},
-      *info);
+      info->start_url(),
+      {{"app_icon_256.png", 256, IDR_LOGO_CROSTINI_TERMINAL}}, *info);
   info->background_color = 0xFF202124;
   info->display_mode = blink::mojom::DisplayMode::kStandalone;
   info->additional_search_terms = {

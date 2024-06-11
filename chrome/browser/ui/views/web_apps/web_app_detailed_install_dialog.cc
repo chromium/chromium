@@ -388,7 +388,7 @@ void ShowWebAppDetailedInstallDialog(
                             gfx::Size(kIconSize, kIconSize));
 
   auto title = install_info->title;
-  GURL start_url = install_info->start_url;
+  GURL start_url = install_info->start_url();
   std::u16string start_url_host_formatted_for_display =
       url_formatter::FormatUrlForDisplayOmitSchemePathAndTrivialSubdomains(
           start_url);
@@ -396,7 +396,7 @@ void ShowWebAppDetailedInstallDialog(
   const std::u16string description = gfx::TruncateString(
       install_info->description, webapps::kMaximumDescriptionLength,
       gfx::CHARACTER_BREAK);
-  auto manifest_id = install_info->manifest_id;
+  auto manifest_id = install_info->manifest_id();
 
   auto delegate = std::make_unique<WebAppInstallDialogDelegate>(
       web_contents, std::move(install_info), std::move(install_tracker),

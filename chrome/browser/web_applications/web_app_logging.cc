@@ -135,7 +135,7 @@ void InstallErrorLogEntry::LogDownloadedIconsErrors(
     icon_errors.Set("is_generated_icon", true);
 
   if (!icon_errors.empty()) {
-    LogErrorObject("OnIconsRetrieved", web_app_info.start_url.spec(),
+    LogErrorObject("OnIconsRetrieved", web_app_info.start_url().spec(),
                    std::move(icon_errors));
   }
 }

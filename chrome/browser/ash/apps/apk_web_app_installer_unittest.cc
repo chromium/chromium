@@ -113,7 +113,7 @@ TEST_F(ApkWebAppInstallerTest, IconDecodeCallsWebAppInstallManager) {
   EXPECT_EQ(u"Fake App Title",
             apk_web_app_installer.web_app_install_info().title);
   EXPECT_EQ(GURL("https://www.google.com/index.html"),
-            apk_web_app_installer.web_app_install_info().start_url);
+            apk_web_app_installer.web_app_install_info().start_url());
   EXPECT_EQ(GURL("https://www.google.com/"),
             apk_web_app_installer.web_app_install_info().scope);
   EXPECT_EQ(

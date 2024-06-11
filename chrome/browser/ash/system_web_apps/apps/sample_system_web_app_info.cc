@@ -25,7 +25,7 @@ CreateWebAppInfoForSampleSystemWebApp() {
   // doesn't have one.
   info->title = u"Sample System Web App";
   web_app::CreateIconInfoForSystemWebApp(
-      info->start_url,
+      info->start_url(),
       {{"app_icon_192.png", 192,
         IDR_ASH_SAMPLE_SYSTEM_WEB_APP_APP_ICON_192_PNG}},
       *info);

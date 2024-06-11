@@ -155,7 +155,7 @@ PWAConfirmationBubbleView::PWAConfirmationBubbleView(
   labels->AddChildView(
       web_app::CreateNameLabel(web_app_info_->title).release());
   labels->AddChildView(
-      web_app::CreateOriginLabelFromStartUrl(web_app_info_->start_url, false)
+      web_app::CreateOriginLabelFromStartUrl(web_app_info_->start_url(), false)
           .release());
 
   if (base::FeatureList::IsEnabled(blink::features::kDesktopPWAsTabStrip) &&
@@ -232,7 +232,7 @@ void PWAConfirmationBubbleView::WindowClosing() {
   if (web_app_info_) {
     base::RecordAction(base::UserMetricsAction("WebAppInstallCancelled"));
     const webapps::AppId app_id =
-        web_app::GenerateAppIdFromManifestId(web_app_info_->manifest_id);
+        web_app::GenerateAppIdFromManifestId(web_app_info_->manifest_id());
 #if BUILDFLAG(IS_CHROMEOS)
     metrics::structured::StructuredMetricsClient::Record(
         cros_events::AppDiscovery_Browser_AppInstallDialogResult()
@@ -263,7 +263,7 @@ bool PWAConfirmationBubbleView::Accept() {
           : web_app::mojom::UserDisplayMode::kStandalone;
 
   webapps::AppId app_id =
-      web_app::GenerateAppIdFromManifestId(web_app_info_->manifest_id);
+      web_app::GenerateAppIdFromManifestId(web_app_info_->manifest_id());
 
 #if BUILDFLAG(IS_CHROMEOS)
   metrics::structured::StructuredMetricsClient::Record(

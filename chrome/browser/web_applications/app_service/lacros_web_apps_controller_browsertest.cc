@@ -432,7 +432,7 @@ IN_PROC_BROWSER_TEST_F(LacrosWebAppsControllerBrowserTest, ContentSettings) {
   {
     auto web_app_info = WebAppInstallInfo::CreateWithStartUrlForTesting(
         GURL("https://example.com:8080/"));
-    web_app_info->scope = web_app_info->start_url;
+    web_app_info->scope = web_app_info->start_url();
     web_app_info->title = u"Unrelated Web App";
     InstallWebApp(std::move(web_app_info));
   }
@@ -841,7 +841,7 @@ IN_PROC_BROWSER_TEST_F(LacrosWebAppsControllerBrowserTest, DisabledState) {
         embedded_test_server()->GetURL("app.site.com", "/simple.html");
     auto web_app_info =
         WebAppInstallInfo::CreateWithStartUrlForTesting(start_url);
-    web_app_info->scope = web_app_info->start_url.GetWithoutFilename();
+    web_app_info->scope = web_app_info->start_url().GetWithoutFilename();
     web_app_info->title = description;
     web_app_info->description = description;
     app2_id = InstallWebApp(std::move(web_app_info));

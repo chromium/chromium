@@ -177,13 +177,13 @@ void ApkWebAppInstaller::OnImageDecoded(const SkBitmap& decoded_image) {
 
 void ApkWebAppInstaller::DoInstall() {
   if (web_app::IsWebAppsCrosapiEnabled()) {
-    GURL start_url = web_app_install_info_->start_url;
+    GURL start_url = web_app_install_info_->start_url();
 
     std::unique_ptr<web_app::WebAppInstallInfo> web_app_install_info =
         std::move(web_app_install_info_);
     auto arc_install_info = crosapi::mojom::ArcWebAppInstallInfo::New();
     arc_install_info->title = std::move(web_app_install_info->title);
-    arc_install_info->start_url = std::move(web_app_install_info->start_url);
+    arc_install_info->start_url = std::move(web_app_install_info->start_url());
     arc_install_info->scope = std::move(web_app_install_info->scope);
     arc_install_info->theme_color = web_app_install_info->theme_color;
     arc_install_info->additional_policy_ids =
@@ -214,7 +214,7 @@ void ApkWebAppInstaller::DoInstall() {
     DCHECK(provider);
     // Doesn't overwrite already existing web app with manifest fields from the
     // apk.
-    GURL start_url = web_app_install_info_->start_url;
+    GURL start_url = web_app_install_info_->start_url();
     provider->scheduler().InstallFromInfoWithParams(
         std::move(web_app_install_info_),
         /*overwrite_existing_manifest_fields=*/false,

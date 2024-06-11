@@ -87,7 +87,7 @@ void ShowSimpleInstallDialogForWebApps(
 
 #if BUILDFLAG(IS_CHROMEOS)
   webapps::AppId app_id =
-      web_app::GenerateAppIdFromManifestId(web_app_info->manifest_id);
+      web_app::GenerateAppIdFromManifestId(web_app_info->manifest_id());
   metrics::structured::StructuredMetricsClient::Record(
       cros_events::AppDiscovery_Browser_AppInstallDialogShown().SetAppId(
           app_id));
@@ -103,7 +103,7 @@ void ShowSimpleInstallDialogForWebApps(
                                   kIconSize, web_app_info->icon_bitmaps.any),
                               gfx::Size(kIconSize, kIconSize));
     auto app_name = web_app_info->title;
-    GURL start_url = web_app_info->start_url;
+    GURL start_url = web_app_info->start_url();
 
     auto delegate = std::make_unique<web_app::WebAppInstallDialogDelegate>(
         web_contents, std::move(web_app_info), std::move(install_tracker),

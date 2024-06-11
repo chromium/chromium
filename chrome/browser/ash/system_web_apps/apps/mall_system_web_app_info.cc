@@ -41,7 +41,7 @@ MallSystemAppDelegate::GetWebAppInfo() const {
   info->title = l10n_util::GetStringUTF16(IDS_MALL_APP_NAME);
 
   web_app::CreateIconInfoForSystemWebApp(
-      info->start_url,
+      info->start_url(),
       {{"mall_icon_192.png", 192,
         IDR_ASH_MALL_CROS_APP_IMAGES_MALL_ICON_192_PNG}},
       *info);

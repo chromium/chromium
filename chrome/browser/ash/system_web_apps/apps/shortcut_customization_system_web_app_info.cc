@@ -30,7 +30,7 @@ CreateWebAppInfoForShortcutCustomizationSystemWebApp() {
   info->background_color = info->theme_color;
   info->dark_mode_background_color = info->dark_mode_theme_color;
   web_app::CreateIconInfoForSystemWebApp(
-      info->start_url,
+      info->start_url(),
       {{"app_icon_192.png", 192,
         IDR_ASH_SHORTCUT_CUSTOMIZATION_APP_APP_ICON_192_PNG}},
       *info);

@@ -172,7 +172,7 @@ IN_PROC_BROWSER_TEST_P(SimpleInstallDialogBubbleViewBrowserTest,
 IN_PROC_BROWSER_TEST_P(SimpleInstallDialogBubbleViewBrowserTest,
                        CancelledDialogReportsIphIgnored) {
   auto app_info = GetAppInfo();
-  GURL start_url = app_info->start_url;
+  GURL start_url = app_info->start_url();
   std::unique_ptr<webapps::MlInstallOperationTracker> install_tracker =
       GetInstallTracker(browser());
   content::WebContents* web_contents =
@@ -222,7 +222,7 @@ IN_PROC_BROWSER_TEST_P(SimpleInstallDialogBubbleViewBrowserTest,
 IN_PROC_BROWSER_TEST_P(SimpleInstallDialogBubbleViewBrowserTest,
                        AcceptDialogResetIphCounters) {
   auto app_info = GetAppInfo();
-  GURL start_url = app_info->start_url;
+  GURL start_url = app_info->start_url();
   webapps::AppId app_id =
       GenerateAppId(/*manifest_id=*/std::nullopt, start_url);
   PrefService* pref_service =

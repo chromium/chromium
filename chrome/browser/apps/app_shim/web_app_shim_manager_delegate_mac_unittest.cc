@@ -467,7 +467,7 @@ TEST_F(WebAppShimManagerDelegateTest, GetAppShortcutsMenuItemInfos) {
     auto web_app_info = WebAppInstallInfo::CreateWithStartUrlForTesting(
         GURL("https://mytestpwa.com/"));
     web_app_info->title = u"WebAppTestWithShortcutMenuItems";
-    web_app_info->scope = web_app_info->start_url;
+    web_app_info->scope = web_app_info->start_url();
     web_app_info->description = web_app_info->title;
     web_app_info->user_display_mode =
         web_app::mojom::UserDisplayMode::kStandalone;

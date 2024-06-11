@@ -327,7 +327,7 @@ class TestExternallyManagedAppManager : public ExternallyManagedAppManager {
 
       const GURL install_url =
           install_options().only_use_app_info_factory
-              ? install_options().app_info_factory.Run()->start_url
+              ? install_options().app_info_factory.Run()->start_url()
               : install_options().install_url;
       test_install_task_manager_->RunOrSaveRequest(base::BindLambdaForTesting(
           [&, install_url, callback = std::move(callback)]() mutable {

@@ -154,7 +154,7 @@ TEST_F(WebAppInstallFinalizerUnitTest, BasicInstallSucceeds) {
 
   EXPECT_EQ(webapps::InstallResultCode::kSuccessNewInstall, result.code);
   EXPECT_EQ(result.installed_app_id,
-            GenerateAppId(/*manifest_id=*/std::nullopt, info->start_url));
+            GenerateAppId(/*manifest_id=*/std::nullopt, info->start_url()));
 }
 
 TEST_F(WebAppInstallFinalizerUnitTest, ConcurrentInstallSucceeds) {
@@ -182,7 +182,7 @@ TEST_F(WebAppInstallFinalizerUnitTest, ConcurrentInstallSucceeds) {
           EXPECT_EQ(webapps::InstallResultCode::kSuccessNewInstall, code);
           EXPECT_EQ(
               installed_app_id,
-              GenerateAppId(/*manifest_id=*/std::nullopt, info1->start_url));
+              GenerateAppId(/*manifest_id=*/std::nullopt, info1->start_url()));
           callback1_called = true;
           if (callback2_called)
             run_loop.Quit();
@@ -198,7 +198,7 @@ TEST_F(WebAppInstallFinalizerUnitTest, ConcurrentInstallSucceeds) {
           EXPECT_EQ(webapps::InstallResultCode::kSuccessNewInstall, code);
           EXPECT_EQ(
               installed_app_id,
-              GenerateAppId(/*manifest_id=*/std::nullopt, info2->start_url));
+              GenerateAppId(/*manifest_id=*/std::nullopt, info2->start_url()));
           callback2_called = true;
           if (callback1_called)
             run_loop.Quit();
@@ -342,7 +342,7 @@ TEST_F(WebAppInstallFinalizerUnitTest, InstallNoDesktopShortcut) {
 
   EXPECT_EQ(webapps::InstallResultCode::kSuccessNewInstall, result.code);
   EXPECT_EQ(result.installed_app_id,
-            GenerateAppId(/*manifest_id=*/std::nullopt, info->start_url));
+            GenerateAppId(/*manifest_id=*/std::nullopt, info->start_url()));
 }
 
 TEST_F(WebAppInstallFinalizerUnitTest, InstallNoQuickLaunchBarShortcut) {
@@ -357,7 +357,7 @@ TEST_F(WebAppInstallFinalizerUnitTest, InstallNoQuickLaunchBarShortcut) {
 
   EXPECT_EQ(webapps::InstallResultCode::kSuccessNewInstall, result.code);
   EXPECT_EQ(result.installed_app_id,
-            GenerateAppId(/*manifest_id=*/std::nullopt, info->start_url));
+            GenerateAppId(/*manifest_id=*/std::nullopt, info->start_url()));
 }
 
 TEST_F(WebAppInstallFinalizerUnitTest,
@@ -374,7 +374,7 @@ TEST_F(WebAppInstallFinalizerUnitTest,
 
   EXPECT_EQ(webapps::InstallResultCode::kSuccessNewInstall, result.code);
   EXPECT_EQ(result.installed_app_id,
-            GenerateAppId(/*manifest_id=*/std::nullopt, info->start_url));
+            GenerateAppId(/*manifest_id=*/std::nullopt, info->start_url()));
 }
 
 TEST_F(WebAppInstallFinalizerUnitTest, InstallNoCreateOsShorcuts) {
@@ -389,7 +389,7 @@ TEST_F(WebAppInstallFinalizerUnitTest, InstallNoCreateOsShorcuts) {
 
   EXPECT_EQ(webapps::InstallResultCode::kSuccessNewInstall, result.code);
   EXPECT_EQ(result.installed_app_id,
-            GenerateAppId(/*manifest_id=*/std::nullopt, info->start_url));
+            GenerateAppId(/*manifest_id=*/std::nullopt, info->start_url()));
 }
 
 TEST_F(WebAppInstallFinalizerUnitTest,
@@ -404,7 +404,7 @@ TEST_F(WebAppInstallFinalizerUnitTest,
 
   EXPECT_EQ(webapps::InstallResultCode::kSuccessNewInstall, result.code);
   EXPECT_EQ(result.installed_app_id,
-            GenerateAppId(/*manifest_id=*/std::nullopt, info->start_url));
+            GenerateAppId(/*manifest_id=*/std::nullopt, info->start_url()));
 }
 
 TEST_F(WebAppInstallFinalizerUnitTest, InstallOsHooksDisabledForDefaultApps) {
@@ -418,12 +418,12 @@ TEST_F(WebAppInstallFinalizerUnitTest, InstallOsHooksDisabledForDefaultApps) {
 
   EXPECT_EQ(webapps::InstallResultCode::kSuccessNewInstall, result.code);
   EXPECT_EQ(result.installed_app_id,
-            GenerateAppId(/*manifest_id=*/std::nullopt, info->start_url));
+            GenerateAppId(/*manifest_id=*/std::nullopt, info->start_url()));
 
   // Update the app, adding a file handler.
   std::vector<blink::mojom::ManifestFileHandlerPtr> file_handlers;
   AddFileHandler(&file_handlers);
-  PopulateFileHandlerInfoFromManifest(file_handlers, info->start_url,
+  PopulateFileHandlerInfoFromManifest(file_handlers, info->start_url(),
                                       info.get());
 
   base::test::TestFuture<const webapps::AppId&, webapps::InstallResultCode>
@@ -445,7 +445,7 @@ TEST_F(WebAppInstallFinalizerUnitTest, InstallUrlSetInWebAppDB) {
 
   EXPECT_EQ(webapps::InstallResultCode::kSuccessNewInstall, result.code);
   EXPECT_EQ(result.installed_app_id,
-            GenerateAppId(/*manifest_id=*/std::nullopt, info->start_url));
+            GenerateAppId(/*manifest_id=*/std::nullopt, info->start_url()));
 
   const WebApp* installed_app = registrar().GetAppById(result.installed_app_id);
   const WebApp::ExternalConfigMap& config_map =
@@ -475,7 +475,7 @@ TEST_F(WebAppInstallFinalizerUnitTest, IsolationDataSetInWebAppDB) {
 
   EXPECT_EQ(webapps::InstallResultCode::kSuccessNewInstall, result.code);
   EXPECT_EQ(result.installed_app_id,
-            GenerateAppId(/*manifest_id=*/std::nullopt, info->start_url));
+            GenerateAppId(/*manifest_id=*/std::nullopt, info->start_url()));
 
   const WebApp* installed_app = registrar().GetAppById(result.installed_app_id);
   EXPECT_EQ(location, installed_app->isolation_data()->location);
