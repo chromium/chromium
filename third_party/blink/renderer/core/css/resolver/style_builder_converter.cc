@@ -65,6 +65,7 @@
 #include "third_party/blink/renderer/core/css/css_uri_value.h"
 #include "third_party/blink/renderer/core/css/css_value_list.h"
 #include "third_party/blink/renderer/core/css/parser/css_tokenizer.h"
+#include "third_party/blink/renderer/core/css/properties/computed_style_utils.h"
 #include "third_party/blink/renderer/core/css/properties/css_parsing_utils.h"
 #include "third_party/blink/renderer/core/css/resolver/filter_operation_resolver.h"
 #include "third_party/blink/renderer/core/css/resolver/transform_builder.h"
@@ -166,10 +167,6 @@ Color ResolveQuirkOrLinkOrFocusRingColor(
       NOTREACHED_IN_MIGRATION();
       return Color();
   }
-}
-
-bool CanResolveAtComputedValueTime(const StyleColor& color) {
-  return !color.IsCurrentColor() && !color.IsUnresolvedColorMixFunction();
 }
 
 }  // namespace
@@ -2241,34 +2238,17 @@ ShadowData StyleBuilderConverter::ConvertShadow(
     } else {
       // For OffScreen canvas, we default to black and only parse non
       // Document dependent CSS colors.
-      color = StyleColor(Color::kBlack);
-      if (auto* color_value =
-              DynamicTo<cssvalue::CSSColor>(shadow.color.Get())) {
-        color = StyleColor(color_value->Value());
-      } else {
-        CSSValueID value_id =
-            To<CSSIdentifierValue>(*shadow.color).GetValueID();
-        mojom::blink::ColorScheme color_scheme =
-            state ? state->StyleBuilder().UsedColorScheme()
-                  : mojom::blink::ColorScheme::kLight;
-        const ui::ColorProvider* color_provider =
-            state
-                ? state->GetDocument().GetColorProviderForPainting(color_scheme)
-                : nullptr;
-        switch (value_id) {
-          case CSSValueID::kInvalid:
-            NOTREACHED_IN_MIGRATION();
-            [[fallthrough]];
-          case CSSValueID::kInternalQuirkInherit:
-          case CSSValueID::kWebkitLink:
-          case CSSValueID::kWebkitActivelink:
-          case CSSValueID::kWebkitFocusRingColor:
-          case CSSValueID::kCurrentcolor:
-            break;
-          default:
-            color = StyleColor(StyleColor::ColorFromKeyword(
-                value_id, mojom::blink::ColorScheme::kLight, color_provider));
-        }
+      TextLinkColors black_text_link_colors;
+      black_text_link_colors.SetTextColor(Color::kBlack);
+      black_text_link_colors.SetLinkColor(Color::kBlack);
+      black_text_link_colors.SetVisitedLinkColor(Color::kBlack);
+      black_text_link_colors.SetActiveLinkColor(Color::kBlack);
+
+      color = ResolveColorValue(*shadow.color, black_text_link_colors,
+                                mojom::blink::ColorScheme::kLight, nullptr,
+                                /*for_visited_link=*/false);
+      if (!color.IsAbsoluteColor()) {
+        color = StyleColor(Color::kBlack);
       }
     }
   }
@@ -2427,8 +2407,7 @@ StyleColor ResolveColorValue(const CSSValue& value,
     // currentcolor) then color-mix functions can be resolved right now like
     // other colors. Otherwise we need to store an unresolved value on
     // StyleColor.
-    if (!CanResolveAtComputedValueTime(style_color1) ||
-        !CanResolveAtComputedValueTime(style_color2)) {
+    if (!style_color1.IsAbsoluteColor() || !style_color2.IsAbsoluteColor()) {
       return StyleColor(MakeGarbageCollected<StyleColor::UnresolvedColorMix>(
           color_mix_value, style_color1, style_color2));
     }
@@ -2890,6 +2869,17 @@ scoped_refptr<BasicShape> StyleBuilderConverter::ConvertObjectViewBox(
   return BasicShapeForValue(state, value);
 }
 
+static const CSSValue& ComputeColorValue(
+    const CSSValue& color_value,
+    const Document& document,
+    mojom::blink::ColorScheme color_scheme) {
+  const bool kNotForVisitedLink = false;
+  const StyleColor style_color = ResolveColorValue(
+      color_value, document.GetTextLinkColors(), color_scheme,
+      document.GetColorProviderForPainting(color_scheme), kNotForVisitedLink);
+  return *ComputedStyleUtils::ValueForColor(style_color);
+}
+
 static const CSSValue& ComputeRegisteredPropertyValue(
     const Document& document,
     const StyleResolverState* state,
@@ -2969,25 +2959,13 @@ static const CSSValue& ComputeRegisteredPropertyValue(
       state ? state->StyleBuilder().UsedColorScheme()
             : mojom::blink::ColorScheme::kLight;
 
-  const bool not_for_visited_link = false;
-
   if (auto* identifier_value = DynamicTo<CSSIdentifierValue>(value)) {
     CSSValueID value_id = identifier_value->GetValueID();
     if (value_id == CSSValueID::kCurrentcolor) {
       return value;
     }
     if (StyleColor::IsColorKeyword(value_id)) {
-      Color color;
-      if (IsQuirkOrLinkOrFocusRingColor(value_id)) {
-        color = ResolveQuirkOrLinkOrFocusRingColor(
-            value_id, document.GetTextLinkColors(), color_scheme,
-            not_for_visited_link);
-      } else {
-        color = StyleColor::ColorFromKeyword(
-            value_id, color_scheme,
-            document.GetColorProviderForPainting(color_scheme));
-      }
-      return *cssvalue::CSSColor::Create(color);
+      return ComputeColorValue(*identifier_value, document, color_scheme);
     }
   }
 
@@ -2999,23 +2977,17 @@ static const CSSValue& ComputeRegisteredPropertyValue(
   }
 
   if (const auto* light_dark_pair = DynamicTo<CSSLightDarkValuePair>(value)) {
-    const CSSValue& color_value =
+    const CSSValue& selected_value =
         color_scheme == mojom::blink::ColorScheme::kLight
             ? light_dark_pair->First()
             : light_dark_pair->Second();
-    return ComputeRegisteredPropertyValue(
-        document, state, css_to_length_conversion_data, color_value, context);
+    return ComputeRegisteredPropertyValue(document, state,
+                                          css_to_length_conversion_data,
+                                          selected_value, context);
   }
 
   if (auto* color_mix_value = DynamicTo<cssvalue::CSSColorMixValue>(value)) {
-    StyleColor style_color = ResolveColorValue(
-        *color_mix_value, document.GetTextLinkColors(), color_scheme,
-        document.GetColorProviderForPainting(color_scheme),
-        not_for_visited_link);
-    if (style_color.IsUnresolvedColorMixFunction()) {
-      return *style_color.GetUnresolvedColorMix().ToCSSColorMixValue();
-    }
-    return *cssvalue::CSSColor::Create(style_color.GetColor());
+    return ComputeColorValue(*color_mix_value, document, color_scheme);
   }
 
   return value;

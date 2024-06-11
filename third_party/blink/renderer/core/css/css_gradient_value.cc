@@ -366,8 +366,7 @@ static Color ResolveStopColor(const CSSValue& stop_color,
       ResolveColorValue(stop_color, document.GetTextLinkColors(), color_scheme,
                         document.GetColorProviderForPainting(color_scheme));
   return style_stop_color.Resolve(
-      style.VisitedDependentColor(GetCSSPropertyColor()),
-      style.UsedColorScheme());
+      style.VisitedDependentColor(GetCSSPropertyColor()), color_scheme);
 }
 
 void CSSGradientValue::AddDeprecatedStops(GradientDesc& desc,
@@ -396,66 +395,19 @@ void CSSGradientValue::AddDeprecatedStops(GradientDesc& desc,
 
 // NOTE: The difference between this and ResolveStopColor() is that
 // ResolveStopColor() returns a Color, whereas this returns a CSSValue.
-// https://www.w3.org/TR/css-images-3/#image-values says we should
-// _compute_ any <color>, so we do that, including within color-mix().
-//
-// We do not currently resolve color-contrast() and probably a few others.
-//
-// TODO(sesse): Could we avoid having all of this machinery, and instead
-// rely on regular color resolving?
-static const CSSValue* GetComputedStopColor(const CSSValue* color,
+static const CSSValue* GetComputedStopColor(const CSSValue& color,
                                             const ComputedStyle& style,
                                             bool allow_visited_style,
                                             CSSValuePhase value_phase) {
-  CSSValueID value_id = CSSValueID::kInvalid;
-  if (color && color->IsIdentifierValue()) {
-    value_id = To<CSSIdentifierValue>(*color).GetValueID();
-  } else if (const CSSColorMixValue* color_mix_value =
-                 DynamicTo<CSSColorMixValue>(color)) {
-    const CSSValue* color1 = GetComputedStopColor(
-        &color_mix_value->Color1(), style, allow_visited_style, value_phase);
-    const CSSValue* color2 = GetComputedStopColor(
-        &color_mix_value->Color2(), style, allow_visited_style, value_phase);
-    if (IsA<CSSColor>(color1) && IsA<CSSColor>(color2)) {
-      // We can resolve this color fully.
-      StyleColor style_color1(To<CSSColor>(color1)->Value());
-      StyleColor style_color2(To<CSSColor>(color2)->Value());
-      return CSSColor::Create(StyleColor::UnresolvedColorMix(
-                                  color_mix_value, style_color1, style_color2)
-                                  .Resolve(Color()));
-    } else {
-      return MakeGarbageCollected<CSSColorMixValue>(
-          color1, color2, color_mix_value->Percentage1(),
-          color_mix_value->Percentage2(),
-          color_mix_value->ColorInterpolationSpace(),
-          color_mix_value->HueInterpolationMethod());
-    }
-  }
-
-  switch (value_id) {
-    case CSSValueID::kInvalid:
-    case CSSValueID::kInternalQuirkInherit:
-    case CSSValueID::kWebkitLink:
-    case CSSValueID::kWebkitActivelink:
-    case CSSValueID::kWebkitFocusRingColor:
-      return color;
-    case CSSValueID::kCurrentcolor:
-      if (allow_visited_style) {
-        return CSSColor::Create(
-            style.VisitedDependentColor(GetCSSPropertyColor()));
-      } else {
-        return ComputedStyleUtils::CurrentColorOrValidColor(style, StyleColor(),
-                                                            value_phase);
-      }
-
-    default:
-      // TODO(crbug.com/929098) Need to pass an appropriate color scheme here.
-      // TODO(crbug.com/1231644): Need to pass an appropriate color provider
-      // here.
-      return CSSColor::Create(StyleColor::ColorFromKeyword(
-          value_id, mojom::blink::ColorScheme::kLight,
-          /*color_provider=*/nullptr));
-  }
+  // TODO(crbug.com/40779801): Need to pass an appropriate color provider here.
+  const mojom::blink::ColorScheme color_scheme = style.UsedColorScheme();
+  const StyleColor style_stop_color =
+      ResolveColorValue(color, TextLinkColors(), color_scheme, nullptr);
+  const Color current_color =
+      style.VisitedDependentColor(GetCSSPropertyColor());
+  return ComputedStyleUtils::ValueForColor(
+      style_stop_color, style, allow_visited_style ? &current_color : nullptr,
+      value_phase);
 }
 
 void CSSGradientValue::AddComputedStops(
@@ -464,8 +416,10 @@ void CSSGradientValue::AddComputedStops(
     const HeapVector<CSSGradientColorStop, 2>& stops,
     CSSValuePhase value_phase) {
   for (CSSGradientColorStop stop : stops) {
-    stop.color_ = GetComputedStopColor(stop.color_, style, allow_visited_style,
-                                       value_phase);
+    if (!stop.IsHint()) {
+      stop.color_ = GetComputedStopColor(*stop.color_, style,
+                                         allow_visited_style, value_phase);
+    }
     AddStop(stop);
   }
 }
@@ -1948,7 +1902,7 @@ CSSConstantGradientValue* CSSConstantGradientValue::ComputedCSSValue(
     bool allow_visited_style,
     CSSValuePhase value_phase) const {
   return MakeGarbageCollected<CSSConstantGradientValue>(
-      GetComputedStopColor(color_, style, allow_visited_style, value_phase));
+      GetComputedStopColor(*color_, style, allow_visited_style, value_phase));
 }
 
 }  // namespace blink::cssvalue

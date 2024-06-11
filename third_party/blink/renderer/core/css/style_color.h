@@ -169,6 +169,9 @@ class CORE_EXPORT StyleColor {
     DCHECK(IsUnresolvedColorMixFunction());
     return *color_or_unresolved_color_mix_.unresolved_color_mix;
   }
+  bool IsAbsoluteColor() const {
+    return !IsCurrentColor() && !IsUnresolvedColorMixFunction();
+  }
   Color GetColor() const;
 
   CSSValueID GetColorKeyword() const {

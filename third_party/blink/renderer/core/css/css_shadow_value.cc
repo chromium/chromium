@@ -32,7 +32,7 @@ CSSShadowValue::CSSShadowValue(CSSPrimitiveValue* x,
                                CSSPrimitiveValue* blur,
                                CSSPrimitiveValue* spread,
                                CSSIdentifierValue* style,
-                               CSSValue* color)
+                               const CSSValue* color)
     : CSSValue(kShadowClass),
       x(x),
       y(y),
