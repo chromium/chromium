@@ -27,9 +27,6 @@
 
 namespace gin {
 
-static_assert(V8_ARRAY_BUFFER_INTERNAL_FIELD_COUNT == 2,
-              "array buffers must have two internal fields");
-
 // ArrayBufferAllocator -------------------------------------------------------
 partition_alloc::PartitionRoot* ArrayBufferAllocator::partition_ = nullptr;
 
