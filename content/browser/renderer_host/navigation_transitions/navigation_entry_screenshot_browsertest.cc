@@ -330,6 +330,9 @@ class NavigationEntryScreenshotBrowserTest
       host_getter_ = std::make_unique<HostGetterCrossOrigin>();
     }
 
+    InitAndEnableRenderDocumentFeature(&scoped_feature_list_render_document_,
+                                       RenderDocumentFeatureFullyEnabled()[0]);
+
     NavigationEntryScreenshotBrowserTestBase::SetUpCommandLine(command_line);
   }
 
@@ -375,6 +378,7 @@ class NavigationEntryScreenshotBrowserTest
 
  private:
   base::test::ScopedFeatureList scoped_feature_list_;
+  base::test::ScopedFeatureList scoped_feature_list_render_document_;
 
   std::unique_ptr<HostGetter> host_getter_;
 };
