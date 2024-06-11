@@ -1266,7 +1266,7 @@ std::unique_ptr<NavigationRequest> NavigationRequest::Create(
       base::TimeTicks() /* renderer_before_unload_start */,
       base::TimeTicks() /* renderer_before_unload_end */,
       initiator_activation_and_ad_status, is_container_initiated,
-      false /* is_fullscreen_requested */, false /* has_storage_access */);
+      false /* has_storage_access */);
 
   // Shift-Reload forces bypassing caches and service workers.
   if (common_params->navigation_type ==

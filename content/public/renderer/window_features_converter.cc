@@ -24,7 +24,6 @@ blink::mojom::WindowFeaturesPtr ConvertWebWindowFeaturesToMojoWindowFeatures(
   result->bounds.set_height(web_window_features.height);
   result->has_height = web_window_features.height_set;
   result->is_popup = web_window_features.is_popup;
-  result->is_fullscreen = web_window_features.is_fullscreen;
   return result;
 }
 
@@ -40,7 +39,6 @@ blink::WebWindowFeatures ConvertMojoWindowFeaturesToWebWindowFeatures(
   result.height = window_features.bounds.height();
   result.height_set = window_features.has_height;
   result.is_popup = window_features.is_popup;
-  result.is_fullscreen = window_features.is_fullscreen;
   return result;
 }
 

@@ -588,8 +588,7 @@ void LocalFrameClientImpl::BeginNavigation(
     std::unique_ptr<SourceLocation> source_location,
     mojo::PendingRemote<mojom::blink::NavigationStateKeepAliveHandle>
         initiator_navigation_state_keep_alive_handle,
-    bool is_container_initiated,
-    bool is_fullscreen_requested) {
+    bool is_container_initiated) {
   if (!web_frame_->Client())
     return;
 
@@ -641,15 +640,6 @@ void LocalFrameClientImpl::BeginNavigation(
   }
 
   navigation_info->impression = impression;
-  navigation_info->is_fullscreen_requested = is_fullscreen_requested;
-  // TODO(crbug.com/1142516): Enforce requirements here, before IPC to browser?
-  if (is_fullscreen_requested && !request.HasUserGesture() && origin_frame &&
-      origin_frame->GetSettings() &&
-      !origin_frame->GetSettings()
-           ->GetRequireTransientActivationForHtmlFullscreen()) {
-    UseCounter::Count(origin_frame->GetDocument(),
-                      WebFeature::kFullscreenAllowedByContentSetting);
-  }
 
   // Allow cookie access via Storage Access API during the navigation, if the
   // initiator has obtained storage access. Note that the network service still

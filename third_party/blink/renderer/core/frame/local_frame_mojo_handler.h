@@ -234,7 +234,6 @@ class LocalFrameMojoHandler
       bool is_validated,
       const WTF::String& normalized_server_timing,
       const ::network::URLLoaderCompletionStatus& completion_status) final;
-  void RequestFullscreenDocumentElement() final;
 
   // blink::mojom::LocalMainFrame overrides:
   void AnimateDoubleTapZoom(const gfx::Point& point,

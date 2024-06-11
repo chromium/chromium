@@ -8529,11 +8529,6 @@ const FeatureEntry kFeatureEntries[] = {
      FEATURE_VALUE_TYPE(display::features::kPanelSelfRefresh2)},
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
-    {"fullscreen-popup-windows", flag_descriptions::kFullscreenPopupWindowsName,
-     flag_descriptions::kFullscreenPopupWindowsDescription,
-     kOsDesktop | kOsAndroid,
-     FEATURE_VALUE_TYPE(blink::features::kFullscreenPopupWindows)},
-
     {"automatic-fullscreen-content-setting",
      flag_descriptions::kAutomaticFullscreenContentSettingName,
      flag_descriptions::kAutomaticFullscreenContentSettingDescription,

@@ -1067,9 +1067,6 @@ extern const char kForceUiDirectionDescription[];
 extern const char kForgotPasswordFormSupportName[];
 extern const char kForgotPasswordFormSupportDescription[];
 
-extern const char kFullscreenPopupWindowsName[];
-extern const char kFullscreenPopupWindowsDescription[];
-
 extern const char kGalleryAppLensName[];
 extern const char kGalleryAppLensDescription[];
 

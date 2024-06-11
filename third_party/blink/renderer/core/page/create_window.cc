@@ -166,7 +166,7 @@ WebWindowFeatures GetWindowFeaturesFromString(const String& feature_string,
     }
 
     if (!ui_features_were_disabled && key_string != "noopener" &&
-        key_string != "noreferrer" && key_string != "fullscreen" &&
+        key_string != "noreferrer" &&
         (!attribution_reporting_enabled || key_string != "attributionsrc")) {
       ui_features_were_disabled = true;
       menu_bar = false;
@@ -208,14 +208,6 @@ WebWindowFeatures GetWindowFeaturesFromString(const String& feature_string,
       window_features.background = true;
     } else if (key_string == "persistent") {
       window_features.persistent = true;
-    } else if (key_string == "fullscreen" &&
-               RuntimeEnabledFeatures::FullscreenPopupWindowsEnabled(
-                   dom_window)) {
-      // TODO(crbug.com/1142516): Add permission check to give earlier
-      // feedback / console warning if permission isn't granted, and/or just
-      // silently drop the flag. Currently the browser will block the popup
-      // entirely if this flag is set and permission is not granted.
-      window_features.is_fullscreen = value;
     } else if (attribution_reporting_enabled &&
                key_string == "attributionsrc") {
       if (!window_features.attribution_srcs.has_value()) {
@@ -249,11 +241,6 @@ WebWindowFeatures GetWindowFeaturesFromString(const String& feature_string,
 
   if (window_features.noreferrer)
     window_features.noopener = true;
-
-  if (window_features.is_fullscreen) {
-    UseCounter::Count(dom_window->document(),
-                      WebFeature::kWindowOpenFullscreenRequested);
-  }
 
   return window_features;
 }

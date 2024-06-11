@@ -305,7 +305,6 @@ UseCounterMetricsRecorder::GetAllowedUkmFeatures() {
           WebFeature::kURLPatternReliantOnLaterComponentFromBaseURL,
           WebFeature::kV8Window_GetScreenDetails_Method,
           WebFeature::kV8Window_ShowSaveFilePicker_Method,
-          WebFeature::kFullscreenAllowedByWindowOpen,
           WebFeature::kChromeCSIUnknown,
           WebFeature::kChromeCSIOnloadT,
           WebFeature::kChromeCSIPageT,

@@ -2853,7 +2853,6 @@ if (!is_android) {
       "../browser/ui/test/fullscreen_test_util.cc",
       "../browser/ui/test/fullscreen_test_util.h",
       "../browser/ui/test/popup_browsertest.cc",
-      "../browser/ui/test/popup_fullscreen_browsertest.cc",
       "../browser/ui/test/test_browser_dialog.cc",
       "../browser/ui/test/test_browser_dialog.h",
       "../browser/ui/test/test_infobar.cc",

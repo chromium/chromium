@@ -5597,9 +5597,6 @@ void RenderFrameImpl::BeginNavigation(
       // If this is a subframe history navigation that should be sent to the
       // browser, don't commit it synchronously.
       !is_history_navigation_in_new_child_frame &&
-      // Fullscreen navigation requests must go to the browser (for permission
-      // checks and other security measures).
-      !info->is_fullscreen_requested &&
       // Synchronous about:blank commits on iframes should only be triggered
       // when first creating the iframe with an unset/about:blank URL, which
       // means the origin should inherit from the parent.
@@ -6148,8 +6145,7 @@ void RenderFrameImpl::BeginNavigationInternal(
               : nullptr,
           info->impression, renderer_before_unload_start,
           renderer_before_unload_end, initiator_activation_and_ad_status,
-          info->is_container_initiated, info->is_fullscreen_requested,
-          info->has_storage_access);
+          info->is_container_initiated, info->has_storage_access);
 
   mojo::PendingAssociatedRemote<mojom::NavigationClient>
       navigation_client_remote;

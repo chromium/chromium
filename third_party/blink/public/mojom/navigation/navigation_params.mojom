@@ -183,10 +183,6 @@ struct BeginNavigationParams {
   // TODO(https://github.com/whatwg/html/issues/8846): clarify this further.
   bool is_container_initiated = false;
 
-  // True if the initiator requested the tab become fullscreen after navigation.
-  // See: https://chromestatus.com/feature/6002307972464640
-  bool is_fullscreen_requested = false;
-
   // Whether this navigation can include cookies via the Storage Access API,
   // according to the renderer. Note that this is not trusted; cookies will not
   // actually be attached unless there is also a matching permission grant

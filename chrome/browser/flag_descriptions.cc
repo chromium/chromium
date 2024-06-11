@@ -1874,12 +1874,6 @@ const char kForgotPasswordFormSupportName[] = "Forgot Password Form Support";
 const char kForgotPasswordFormSupportDescription[] =
     "Detect and fill usernames in forgot password forms.";
 
-const char kFullscreenPopupWindowsName[] = "Fullscreen popup windows";
-const char kFullscreenPopupWindowsDescription[] =
-    "Enables sites with Window Management permission to open fullscreen popup "
-    "windows with a `fullscreen` window.open() features parameter. See "
-    "https://chromestatus.com/feature/6002307972464640 for more information.";
-
 const char kGalleryAppLensName[] = "Gallery App Lens";
 const char kGalleryAppLensDescription[] =
     "Enable Gallery App lens integration.";
