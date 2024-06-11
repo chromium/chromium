@@ -312,14 +312,6 @@ export class SettingsInternetDetailPageElement extends
         },
       },
 
-      isCellularCarrierLockEnabled_: {
-        type: Boolean,
-        value() {
-          return loadTimeData.valueExists('isCellularCarrierLockEnabled') &&
-              loadTimeData.getBoolean('isCellularCarrierLockEnabled');
-        },
-      },
-
       isPasspointSettingsEnabled_: {
         type: Boolean,
         readOnly: true,
@@ -424,7 +416,6 @@ export class SettingsInternetDetailPageElement extends
   private ipAddress_: string;
   private isApnRevampEnabled_: boolean;
   private suppressTextMessagesOverride_: boolean;
-  private isCellularCarrierLockEnabled_: boolean;
   private isPasspointSettingsEnabled_: boolean;
   private isApnRevampAndAllowApnModificationPolicyEnabled_: boolean;
   private isRevampWayfindingEnabled_: boolean;
@@ -1173,9 +1164,7 @@ export class SettingsInternetDetailPageElement extends
       }
     }
 
-    if (isCarrierLockedActiveSim(
-            this.isCellularCarrierLockEnabled_, managedProperties,
-            deviceState)) {
+    if (isCarrierLockedActiveSim(managedProperties, deviceState)) {
       return this.i18n('networkMobileProviderLocked');
     }
 
@@ -1216,9 +1205,7 @@ export class SettingsInternetDetailPageElement extends
     }
 
     // Display carrier locked network as warning
-    if (isCarrierLockedActiveSim(
-            this.isCellularCarrierLockEnabled_, managedProperties,
-            deviceState)) {
+    if (isCarrierLockedActiveSim(managedProperties, deviceState)) {
       return true;
     }
 
@@ -1938,9 +1925,7 @@ export class SettingsInternetDetailPageElement extends
                    managedProperties, globalPolicy, managedNetworkAvailable,
                    isWifiSyncEnabled)) {
       first = 'synced';
-    } else if (isCarrierLockedActiveSim(
-                   this.isCellularCarrierLockEnabled_, managedProperties,
-                   deviceState)) {
+    } else if (isCarrierLockedActiveSim(managedProperties, deviceState)) {
       first = 'carrierlocked';
     }
 
@@ -1958,9 +1943,7 @@ export class SettingsInternetDetailPageElement extends
       managedProperties: ManagedProperties, _globalPolicy: GlobalPolicy,
       _managedNetworkAvailable: boolean,
       deviceState: OncMojo.DeviceStateProperties|null): boolean {
-    if (isCarrierLockedActiveSim(
-            this.isCellularCarrierLockEnabled_, managedProperties,
-            deviceState)) {
+    if (isCarrierLockedActiveSim(managedProperties, deviceState)) {
       return false;
     }
 
@@ -1972,8 +1955,7 @@ export class SettingsInternetDetailPageElement extends
   private isCarrierLockedActiveSim_(
       managedProperties: ManagedProperties|undefined,
       deviceState: OncMojo.DeviceStateProperties|null): boolean {
-    return isCarrierLockedActiveSim(
-        this.isCellularCarrierLockEnabled_, managedProperties, deviceState);
+    return isCarrierLockedActiveSim(managedProperties, deviceState);
   }
 
   private showAutoConnect_(
@@ -2422,8 +2404,7 @@ export class SettingsInternetDetailPageElement extends
 
   private computeDisabled_(): boolean {
     return shouldDisallowNetworkModifications(
-        this.isCellularCarrierLockEnabled_, this.deviceState_,
-        this.managedProperties_);
+        this.deviceState_, this.managedProperties_);
   }
 
   private shouldShowMacAddress_(): boolean {

@@ -101,15 +101,6 @@ export class NetworkIconElement extends NetworkIconElementBase {
               loadTimeData.getBoolean('isUserLoggedIn');
         },
       },
-
-      /** @private {boolean} */
-      isCellularCarrierLockEnabled_: {
-        type: Boolean,
-        value() {
-          return loadTimeData.valueExists('isCellularCarrierLockEnabled') &&
-              loadTimeData.getBoolean('isCellularCarrierLockEnabled');
-        },
-      },
     };
   }
 
@@ -162,8 +153,7 @@ export class NetworkIconElement extends NetworkIconElementBase {
 
     if (this.networkState.type === NetworkType.kCellular &&
         this.networkState.typeState.cellular.simLocked) {
-      if (this.isCellularCarrierLockEnabled_ &&
-          this.networkState.typeState.cellular.simLockType === 'network-pin') {
+      if (this.networkState.typeState.cellular.simLockType === 'network-pin') {
         return prefix + 'carrier-locked';
       }
       return prefix + 'locked';

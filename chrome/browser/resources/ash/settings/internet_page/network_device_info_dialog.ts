@@ -14,7 +14,6 @@ import {OncMojo} from 'chrome://resources/ash/common/network/onc_mojo.js';
 import {CrButtonElement} from 'chrome://resources/ash/common/cr_elements/cr_button/cr_button.js';
 import {CrDialogElement} from 'chrome://resources/ash/common/cr_elements/cr_dialog/cr_dialog.js';
 import {I18nMixin} from 'chrome://resources/ash/common/cr_elements/i18n_mixin.js';
-import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
 import {EuiccProperties, EuiccRemote, QRCode} from 'chrome://resources/mojo/chromeos/ash/services/cellular_setup/public/mojom/esim_manager.mojom-webui.js';
 import {flush, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
@@ -61,14 +60,6 @@ export class NetworkDeviceInfoDialogElement extends I18nMixin
       canvasSize_: Number,
 
       eid_: String,
-
-      isCellularCarrierLockEnabled_: {
-        type: Boolean,
-        value() {
-          return loadTimeData.valueExists('isCellularCarrierLockEnabled') &&
-              loadTimeData.getBoolean('isCellularCarrierLockEnabled');
-        },
-      },
     };
   }
 
@@ -77,8 +68,6 @@ export class NetworkDeviceInfoDialogElement extends I18nMixin
   private canvasSize_: number;
   private eid_: string|undefined;
   private canvasContext_: CanvasRenderingContext2D|null;
-  private isCellularCarrierLockEnabled_:
-    boolean;
 
     override ready(): void {
       super.ready();
@@ -159,9 +148,6 @@ export class NetworkDeviceInfoDialogElement extends I18nMixin
     }
 
     private shouldShowSerial_(): boolean {
-      if (!this.isCellularCarrierLockEnabled_) {
-        return false;
-      }
       return !!this.deviceState?.serial;
     }
 
@@ -170,8 +156,7 @@ export class NetworkDeviceInfoDialogElement extends I18nMixin
     }
 
     private getA11yLabel_(): string {
-      if (this.eid_ && this.deviceState?.imei &&
-          this.isCellularCarrierLockEnabled_ && this.deviceState?.serial) {
+      if (this.eid_ && this.deviceState?.imei && this.deviceState?.serial) {
         return this.i18n(
             'deviceInfoPopupA11yEidImeiAndSerial', this.eid_,
             this.deviceState.imei, this.deviceState.serial);
@@ -183,7 +168,7 @@ export class NetworkDeviceInfoDialogElement extends I18nMixin
               'deviceInfoPopupA11yEidAndImei', this.eid_,
               this.deviceState.imei);
         }
-        if (this.isCellularCarrierLockEnabled_ && this.deviceState?.serial) {
+        if (this.deviceState?.serial) {
           return this.i18n(
               'deviceInfoPopupA11yEidAndSerial', this.eid_,
               this.deviceState.serial);
@@ -192,7 +177,7 @@ export class NetworkDeviceInfoDialogElement extends I18nMixin
       }
 
       if (this.deviceState?.imei) {
-        if (this.isCellularCarrierLockEnabled_ && this.deviceState?.serial) {
+        if (this.deviceState?.serial) {
           return this.i18n(
               'deviceInfoPopupA11yImeiAndSerial', this.deviceState.imei,
               this.deviceState.serial);
@@ -200,7 +185,7 @@ export class NetworkDeviceInfoDialogElement extends I18nMixin
         return this.i18n('deviceInfoPopupA11yImei', this.deviceState.imei);
       }
 
-      if (this.isCellularCarrierLockEnabled_ && this.deviceState?.serial) {
+      if (this.deviceState?.serial) {
         return this.i18n('deviceInfoPopupA11ySerial', this.deviceState.serial);
       }
 

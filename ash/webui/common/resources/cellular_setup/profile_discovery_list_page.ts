@@ -16,7 +16,6 @@ import './profile_discovery_list_item.js';
 import {I18nMixin} from '//resources/ash/common/cr_elements/i18n_mixin.js';
 import {MojoInterfaceProviderImpl} from '//resources/ash/common/network/mojo_interface_provider.js';
 import {assert} from '//resources/js/assert.js';
-import {loadTimeData} from '//resources/js/load_time_data.js';
 import {ESimProfileProperties} from '//resources/mojo/chromeos/ash/services/cellular_setup/public/mojom/esim_manager.mojom-webui.js';
 import {NetworkType} from '//resources/mojo/chromeos/services/network_config/public/mojom/network_types.mojom-webui.js';
 import {PolymerElement} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
@@ -51,21 +50,12 @@ export class ProfileDiscoveryListPageElement extends
         type: Boolean,
         value: false,
       },
-
-      isCellularCarrierLockEnabled_: {
-        type: Boolean,
-        value() {
-          return loadTimeData.valueExists('isCellularCarrierLockEnabled') &&
-              loadTimeData.getBoolean('isCellularCarrierLockEnabled');
-        },
-      },
     };
   }
 
   pendingProfileProperties: ESimProfileProperties[];
   selectedProfileProperties: ESimProfileProperties|null;
   private isDeviceCarrierLocked_: boolean;
-  private isCellularCarrierLockEnabled_: boolean;
 
   attemptToFocusOnFirstProfile(): boolean {
     if (!this.pendingProfileProperties ||
@@ -91,10 +81,6 @@ export class ProfileDiscoveryListPageElement extends
   constructor() {
     super();
 
-    if (!this.isCellularCarrierLockEnabled_) {
-      return;
-    }
-
     const networkConfig =
         MojoInterfaceProviderImpl.getInstance().getMojoServiceRemote();
     networkConfig!.getDeviceStateList().then(response => {
@@ -108,7 +94,7 @@ export class ProfileDiscoveryListPageElement extends
   }
 
   private shouldShowCarrierLockWarning_(): boolean {
-    return this.isCellularCarrierLockEnabled_ && this.isDeviceCarrierLocked_;
+    return this.isDeviceCarrierLocked_;
   }
 
   private enterManuallyClicked_(e: CustomEvent): void {

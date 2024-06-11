@@ -230,14 +230,6 @@ export class SettingsInternetPageElement extends
         },
       },
 
-      isCellularCarrierLockEnabled_: {
-        type: Boolean,
-        value() {
-          return loadTimeData.valueExists('isCellularCarrierLockEnabled') &&
-              loadTimeData.getBoolean('isCellularCarrierLockEnabled');
-        },
-      },
-
       /**
        * Return true if instant hotspot rebrand feature flag is enabled
        */
@@ -388,7 +380,6 @@ export class SettingsInternetPageElement extends
   private eSimNetworkState_: NetworkStateProperties;
   private globalPolicy_: GlobalPolicy|undefined;
   private hasActiveCellularNetwork_: boolean;
-  private isCellularCarrierLockEnabled_: boolean;
   private isConnectedToNonCellularNetwork_: boolean;
   private isNumCustomApnsLimitReached_: boolean;
   private isInstantHotspotRebrandEnabled_: boolean;
@@ -785,9 +776,6 @@ export class SettingsInternetPageElement extends
   }
 
   private showProviderLocked_(): boolean {
-    if (!this.isCellularCarrierLockEnabled_) {
-      return false;
-    }
     if (this.subpageType_ !== NetworkType.kCellular) {
       return false;
     }

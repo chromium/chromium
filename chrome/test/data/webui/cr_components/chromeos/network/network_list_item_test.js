@@ -712,7 +712,6 @@ suite('NetworkListItemTest', function() {
       async () => {
         loadTimeData.overrideValues({
           'isUserLoggedIn': true,
-          'isCellularCarrierLockEnabled': true,
         });
         init();
         const iccid = '11111111111111111111';
@@ -728,24 +727,6 @@ suite('NetworkListItemTest', function() {
         assertTrue(!!sublabel);
         assertEquals(networkStateLockedText, sublabel.textContent.trim());
       });
-
-  test('Show sim locked sublabel when carrier lock is disabled', async () => {
-    loadTimeData.overrideValues(
-        {'isUserLoggedIn': true, 'isCellularCarrierLockEnabled': false});
-    init();
-    const iccid = '11111111111111111111';
-    const eid = '1';
-    eSimManagerRemote.addEuiccForTest(/*numProfiles=*/ 1);
-    const networkStateLockedText =
-        listItem.i18n('networkListItemUpdatedCellularSimCardLocked');
-    listItem.item = initCellularNetwork(
-        iccid, eid, /*simlocked=*/ true, /*simlocktype*/ 'network-pin');
-
-    await flushAsync();
-    const sublabel = listItem.$$('#sublabel');
-    assertTrue(!!sublabel);
-    assertEquals(networkStateLockedText, sublabel.textContent.trim());
-  });
 
   test(
       'Show locked sublabel when cellular network is locked and scanning',

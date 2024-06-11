@@ -51,7 +51,6 @@ suite('NetworkIconTest', function() {
   });
 
   test('Display locked cellular icon for  carrier lock', async function() {
-    loadTimeData.overrideValues({'isCellularCarrierLockEnabled': true});
     init();
     const networkState =
         OncMojo.getDefaultNetworkState(NetworkType.kCellular, 'cellular');

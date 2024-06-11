@@ -168,14 +168,6 @@ export class ActivationCodePageElement extends ActivationCodePageElementBase {
         value: false,
       },
 
-      isCellularCarrierLockEnabled_: {
-        type: Boolean,
-        value() {
-          return loadTimeData.valueExists('isCellularCarrierLockEnabled') &&
-              loadTimeData.getBoolean('isCellularCarrierLockEnabled');
-        },
-      },
-
       /**
        * Indicates whether or not |activationCode| matches the correct
        * activation code format. If there is a partial match (i.e. the code is
@@ -198,7 +190,6 @@ export class ActivationCodePageElement extends ActivationCodePageElementBase {
   private expanded_: boolean;
   private qrCodeCameraA11yString_: string;
   private isDeviceCarrierLocked_: boolean;
-  private isCellularCarrierLockEnabled_: boolean;
   private isActivationCodeInvalidFormat_: boolean;
   private networkConfig_: CrosNetworkConfigInterface|null = null;
   private mediaDevices_: MediaDevices|null = null;
@@ -216,10 +207,6 @@ export class ActivationCodePageElement extends ActivationCodePageElementBase {
 
   constructor() {
     super();
-
-    if (!this.isCellularCarrierLockEnabled_) {
-      return;
-    }
 
     this.networkConfig_ =
         MojoInterfaceProviderImpl.getInstance().getMojoServiceRemote();
@@ -277,7 +264,7 @@ export class ActivationCodePageElement extends ActivationCodePageElementBase {
   }
 
   private shouldShowCarrierLockWarning_(): boolean {
-    return this.isCellularCarrierLockEnabled_ && this.isDeviceCarrierLocked_;
+    return this.isDeviceCarrierLocked_;
   }
 
   /**

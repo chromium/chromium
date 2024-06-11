@@ -125,14 +125,6 @@ Polymer({
       computed: 'computeIsSimPinLockRestricted_(globalPolicy,' +
           'globalPolicy.*, lockEnabled_)',
     },
-
-    isCellularCarrierLockEnabled_: {
-      type: Boolean,
-      value() {
-        return loadTimeData.valueExists('isCellularCarrierLockEnabled') &&
-            loadTimeData.getBoolean('isCellularCarrierLockEnabled');
-      },
-    },
   },
 
   /** @private {boolean|undefined} */
@@ -337,10 +329,6 @@ Polymer({
    * @private
    */
   isSimCarrierLocked_() {
-    if (!this.isCellularCarrierLockEnabled_) {
-      return false;
-    }
-
     const simLockStatus = this.deviceState && this.deviceState.simLockStatus;
 
     if (this.isActiveSim_ && simLockStatus &&

@@ -10,7 +10,6 @@ import type {EsimFlowUiElement} from 'chrome://resources/ash/common/cellular_set
 import {setESimManagerRemoteForTesting} from 'chrome://resources/ash/common/cellular_setup/mojo_interface_provider.js';
 import type {ProfileDiscoveryListPageElement} from 'chrome://resources/ash/common/cellular_setup/profile_discovery_list_page.js';
 import {MojoInterfaceProviderImpl} from 'chrome://resources/ash/common/network/mojo_interface_provider.js';
-import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
 import {InhibitReason} from 'chrome://resources/mojo/chromeos/services/network_config/public/mojom/cros_network_config.mojom-webui.js';
 import {DeviceStateType, NetworkType} from 'chrome://resources/mojo/chromeos/services/network_config/public/mojom/network_types.mojom-webui.js';
 import {assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
@@ -25,12 +24,6 @@ suite('CrComponentsProfileDiscoveryListPageTest', function() {
   let networkConfigRemote: FakeNetworkConfig;
   let eSimPage: EsimFlowUiElement;
   let profileDiscoveryPage: ProfileDiscoveryListPageElement|null;
-
-  function setCarrierLockEnabled(value: boolean): void {
-    loadTimeData.overrideValues({
-      'isCellularCarrierLockEnabled': value,
-    });
-  }
 
   async function init(isCarrierLocked: boolean) {
     networkConfigRemote.setDeviceStateForTest({
@@ -71,7 +64,6 @@ suite('CrComponentsProfileDiscoveryListPageTest', function() {
 
   [true, false].forEach(isCarrierLocked => {
     test('Show/hide Carrier lock warning', async function() {
-      setCarrierLockEnabled(true);
       await init(isCarrierLocked);
       assertTrue(!!profileDiscoveryPage);
       if (isCarrierLocked) {
@@ -82,17 +74,5 @@ suite('CrComponentsProfileDiscoveryListPageTest', function() {
             '#carrierLockWarningContainer'));
       }
     });
-  });
-
-  [true, false].forEach(isCarrierLocked => {
-    test(
-        'Carrier lock warning is not shown when feature flag is disabled',
-        async function() {
-          setCarrierLockEnabled(false);
-          await init(isCarrierLocked);
-          assertTrue(!!profileDiscoveryPage);
-          assertFalse(!!profileDiscoveryPage.shadowRoot!.querySelector(
-              '#carrierLockWarningContainer'));
-        });
   });
 });

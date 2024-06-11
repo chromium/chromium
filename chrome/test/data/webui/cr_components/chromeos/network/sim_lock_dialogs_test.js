@@ -83,7 +83,6 @@ suite('NetworkSimLockDialogsTest', function() {
   });
 
   test('Unlock dialog not displayed when carrier locked', async function() {
-    loadTimeData.overrideValues({'isCellularCarrierLockEnabled': true});
     const deviceState = {
       simLockStatus:
           {lockEnabled: true, lockType: 'network-pin', retriesLeft: 3},

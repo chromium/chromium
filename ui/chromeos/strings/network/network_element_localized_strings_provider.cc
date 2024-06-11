@@ -549,8 +549,6 @@ void AddDetailsLocalizedStrings(content::WebUIDataSource* html_source) {
 
   html_source->AddBoolean("isApnRevampEnabled",
                           ash::features::IsApnRevampEnabled());
-  html_source->AddBoolean("isCellularCarrierLockEnabled",
-                          ash::features::IsCellularCarrierLockEnabled());
   html_source->AddBoolean(
       "isApnRevampAndAllowApnModificationPolicyEnabled",
       ash::features::IsApnRevampAndAllowApnModificationPolicyEnabled());

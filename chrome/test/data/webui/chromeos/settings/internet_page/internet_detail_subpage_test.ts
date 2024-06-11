@@ -1104,9 +1104,6 @@ suite('<settings-internet-detail-subpage>', () => {
 
     test('carrier locked subtext when carrier locked', async () => {
       const TEST_ICCID = '11111111111111111';
-      loadTimeData.overrideValues({
-        isCellularCarrierLockEnabled: true,
-      });
       init();
       mojoApi.setNetworkTypeEnabledState(NetworkType.kCellular, true);
       mojoApi.setDeviceStateForTest({
@@ -1151,46 +1148,6 @@ suite('<settings-internet-detail-subpage>', () => {
           internetDetailPage.i18n('networkMobileProviderLocked'),
           networkStateText.textContent!.trim());
     });
-
-    test(
-        'carrier locked subtext not displayed when carrier lock disabled',
-        async () => {
-          const TEST_ICCID = '11111111111111111';
-          loadTimeData.overrideValues({
-            isCellularCarrierLockEnabled: false,
-          });
-          init();
-          mojoApi.setNetworkTypeEnabledState(NetworkType.kCellular, true);
-          mojoApi.setDeviceStateForTest({
-            ...getDefaultDeviceStateProps(),
-            deviceState: DeviceStateType.kEnabled,
-            simLockStatus: {
-              lockEnabled: true,
-              lockType: 'network-pin',
-              retriesLeft: 0,
-            },
-            simInfos: [{
-              iccid: TEST_ICCID,
-              isPrimary: true,
-              slotId: 0,
-              eid: '',
-            }],
-          });
-
-          const cellularNetwork =
-              getManagedProperties(NetworkType.kCellular, 'cellular');
-          cellularNetwork.connectable = false;
-          cellularNetwork.typeProperties.cellular!.iccid = TEST_ICCID;
-          cellularNetwork.typeProperties.cellular!.simLocked = true;
-          mojoApi.setManagedPropertiesForTest(cellularNetwork);
-
-          internetDetailPage.init('cellular_guid', 'Cellular', 'cellular');
-          await flushTasks();
-          const carrierLockedText = internetDetailPage.shadowRoot!
-                                        .querySelector<LocalizedLinkElement>(
-                                            '#carrierLockedNoticeLink');
-          assertNull(carrierLockedText);
-        });
 
     test(
         'Connect button disabled when not connectable and locked', async () => {

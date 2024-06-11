@@ -174,15 +174,10 @@ export function processDeviceState(type, devices, deviceState) {
 /**
  * Returns whether or not the network associated with |managedProperties| is
  * carrier locked.
- * @param {boolean} isCellularCarrierLockEnabled
  * @param {?OncMojo.DeviceStateProperties} deviceState
  * @param {ManagedProperties|undefined} managedProperties
  */
-export function isCarrierLockedActiveSim(
-    isCellularCarrierLockEnabled, managedProperties, deviceState) {
-  if (!isCellularCarrierLockEnabled) {
-    return false;
-  }
+export function isCarrierLockedActiveSim(managedProperties, deviceState) {
   if (!deviceState || deviceState.type !== NetworkType.kCellular) {
     return false;
   }
@@ -205,19 +200,17 @@ export function isCarrierLockedActiveSim(
 /**
  * Returns whether or not the network associated with |managedProperties| should
  * allow modification of its properties via the UI.
- * @param {boolean} isCellularCarrierLockEnabled
  * @param {?OncMojo.DeviceStateProperties} deviceState
  * @param {ManagedProperties|undefined} managedProperties
  */
 export function shouldDisallowNetworkModifications(
-    isCellularCarrierLockEnabled, deviceState, managedProperties) {
+    deviceState, managedProperties) {
   if (!deviceState || deviceState.type !== NetworkType.kCellular) {
     return false;
   }
   // If device is carrier locked, all the settings should be
   // disabled for non compatible SIMs.
-  if (isCarrierLockedActiveSim(
-          isCellularCarrierLockEnabled, managedProperties, deviceState)) {
+  if (isCarrierLockedActiveSim(managedProperties, deviceState)) {
     return true;
   }
   // If this is a cellular device and inhibited, state cannot be changed, so
