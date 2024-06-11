@@ -5,9 +5,7 @@
 #include "mojo/public/cpp/system/simple_watcher.h"
 
 #include <memory>
-#include <string_view>
 
-#include "base/containers/span.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
 #include "base/run_loop.h"
@@ -100,13 +98,13 @@ TEST_F(SimpleWatcherTest, WatchFailedPreconditionNoSpam) {
                     OnReady([&](MojoResult result) {
                       EXPECT_FALSE(had_failed_precondition);
                       switch (result) {
-                        case MOJO_RESULT_OK: {
-                          base::span<const uint8_t> buffer;
+                        case MOJO_RESULT_OK:
+                          const void* begin;
+                          size_t num_bytes;
                           consumer_handle->BeginReadData(
-                              MOJO_READ_DATA_FLAG_NONE, buffer);
-                          consumer_handle->EndReadData(buffer.size());
+                              &begin, &num_bytes, MOJO_READ_DATA_FLAG_NONE);
+                          consumer_handle->EndReadData(num_bytes);
                           break;
-                        }
                         case MOJO_RESULT_FAILED_PRECONDITION:
                           had_failed_precondition = true;
                           break;
@@ -114,12 +112,9 @@ TEST_F(SimpleWatcherTest, WatchFailedPreconditionNoSpam) {
                     }));
   EXPECT_EQ(MOJO_RESULT_OK, rc);
 
-  size_t actually_written_bytes = 0;
-  EXPECT_EQ(MOJO_RESULT_OK,
-            producer_handle->WriteData(base::byte_span_from_cstring("hello"),
-                                       MOJO_WRITE_DATA_FLAG_NONE,
-                                       actually_written_bytes));
-  EXPECT_EQ(actually_written_bytes, 5u);
+  size_t size = 5;
+  EXPECT_EQ(MOJO_RESULT_OK, producer_handle->WriteData(
+                                "hello", &size, MOJO_WRITE_DATA_FLAG_NONE));
   base::RunLoop().RunUntilIdle();
   producer_handle.reset();
   base::RunLoop().RunUntilIdle();
