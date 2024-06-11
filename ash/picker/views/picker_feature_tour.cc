@@ -13,6 +13,8 @@
 #include "ash/style/pill_button.h"
 #include "ash/style/typography.h"
 #include "base/functional/callback.h"
+#include "components/prefs/pref_registry_simple.h"
+#include "components/prefs/pref_service.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/base/models/image_model.h"
@@ -49,6 +51,11 @@ constexpr int kBodyTextTopMargin = 16;
 constexpr int kButtonRowTopMargin = 32;
 // Margin between the two buttons.
 constexpr int kBetweenButtonMargin = 8;
+// Pref storing whether the feature tour was completed.
+constexpr char kFeatureTourCompletedPref[] =
+    "ash.picker.feature_tour.completed";
+
+bool g_feature_tour_enabled = true;
 
 class FeatureTourBubbleView : public views::WidgetDelegate,
                               public views::FlexLayoutView {
@@ -174,9 +181,33 @@ PickerFeatureTour::~PickerFeatureTour() {
   }
 }
 
-void PickerFeatureTour::Show(base::RepeatingClosure completion_callback) {
+void PickerFeatureTour::RegisterProfilePrefs(PrefRegistrySimple* registry) {
+  registry->RegisterBooleanPref(kFeatureTourCompletedPref, false);
+}
+
+void PickerFeatureTour::DisableFeatureTourForTesting() {
+  g_feature_tour_enabled = false;
+}
+
+bool PickerFeatureTour::MaybeShowForFirstUse(
+    PrefService* prefs,
+    base::RepeatingClosure completion_callback) {
+  if (!g_feature_tour_enabled) {
+    return false;
+  }
+
+  auto* pref = prefs->FindPreference(kFeatureTourCompletedPref);
+  // Don't show if `pref` is null (this happens in unit tests that don't call
+  // `RegisterProfilePrefs`).
+  if (pref == nullptr || pref->GetValue()->GetBool()) {
+    return false;
+  }
+
   widget_ = CreateWidget(std::move(completion_callback));
   widget_->Show();
+
+  prefs->SetBoolean(kFeatureTourCompletedPref, true);
+  return true;
 }
 
 views::Button* PickerFeatureTour::complete_button_for_testing() {

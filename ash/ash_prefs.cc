@@ -33,6 +33,7 @@
 #include "ash/login/ui/login_expanded_public_account_view.h"
 #include "ash/media/media_controller_impl.h"
 #include "ash/metrics/feature_discovery_duration_reporter_impl.h"
+#include "ash/picker/views/picker_feature_tour.h"
 #include "ash/projector/projector_controller_impl.h"
 #include "ash/public/cpp/holding_space/holding_space_prefs.h"
 #include "ash/quick_pair/feature_status_tracker/scanning_enabled_provider.h"
@@ -159,6 +160,7 @@ void RegisterProfilePrefs(PrefRegistrySimple* registry,
   OnboardingNudgeController::RegisterProfilePrefs(registry);
   PaletteTray::RegisterProfilePrefs(registry);
   PaletteWelcomeBubble::RegisterProfilePrefs(registry);
+  PickerFeatureTour::RegisterProfilePrefs(registry);
   PciePeripheralNotificationController::RegisterProfilePrefs(registry);
   PrivacyHubController::RegisterProfilePrefs(registry);
   PrivacyScreenController::RegisterProfilePrefs(registry);

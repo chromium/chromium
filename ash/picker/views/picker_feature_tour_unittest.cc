@@ -4,6 +4,7 @@
 
 #include "ash/picker/views/picker_feature_tour.h"
 
+#include "ash/public/cpp/ash_prefs.h"
 #include "ash/test/ash_test_base.h"
 #include "ash/test/view_drawn_waiter.h"
 #include "base/test/test_future.h"
@@ -16,13 +17,24 @@
 namespace ash {
 namespace {
 
-using PickerFeatureTourTest = AshTestBase;
+class PickerFeatureTourTest : public AshTestBase {
+ public:
+  PickerFeatureTourTest() {
+    RegisterUserProfilePrefs(pref_service_.registry(), /*country=*/"",
+                             /*for_test=*/true);
+  }
 
-TEST_F(PickerFeatureTourTest, ShowShowsDialog) {
+  TestingPrefServiceSimple* pref_service() { return &pref_service_; }
+
+ private:
+  TestingPrefServiceSimple pref_service_;
+};
+
+TEST_F(PickerFeatureTourTest, ShowShowsDialogForFirstTime) {
   PickerFeatureTour feature_tour;
 
-  feature_tour.Show(base::DoNothing());
-
+  EXPECT_TRUE(
+      feature_tour.MaybeShowForFirstUse(pref_service(), base::DoNothing()));
   views::Widget* widget = feature_tour.widget_for_testing();
   EXPECT_NE(widget, nullptr);
   views::test::WidgetVisibleWaiter(widget).Wait();
@@ -32,7 +44,8 @@ TEST_F(PickerFeatureTourTest,
        ClickingCompleteButtonClosesWidgetAndTriggersCallback) {
   PickerFeatureTour feature_tour;
   base::test::TestFuture<void> completed_future;
-  feature_tour.Show(completed_future.GetRepeatingCallback());
+  feature_tour.MaybeShowForFirstUse(pref_service(),
+                                    completed_future.GetRepeatingCallback());
   views::test::WidgetVisibleWaiter(feature_tour.widget_for_testing()).Wait();
 
   views::Button* button = feature_tour.complete_button_for_testing();
@@ -42,6 +55,16 @@ TEST_F(PickerFeatureTourTest,
 
   views::test::WidgetDestroyedWaiter(feature_tour.widget_for_testing()).Wait();
   EXPECT_TRUE(completed_future.Wait());
+  EXPECT_EQ(feature_tour.widget_for_testing(), nullptr);
+}
+
+TEST_F(PickerFeatureTourTest, ShouldNotShowDialogSecondTime) {
+  PickerFeatureTour feature_tour;
+  feature_tour.MaybeShowForFirstUse(pref_service(), base::DoNothing());
+  feature_tour.widget_for_testing()->CloseNow();
+
+  EXPECT_FALSE(
+      feature_tour.MaybeShowForFirstUse(pref_service(), base::DoNothing()));
   EXPECT_EQ(feature_tour.widget_for_testing(), nullptr);
 }
 

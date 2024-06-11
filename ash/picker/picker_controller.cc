@@ -351,6 +351,15 @@ void PickerController::ToggleWidget(
     return;
   }
 
+  // Show the feature tour if it's the first time this feature is used.
+  if (PrefService* prefs = client_->GetPrefs();
+      prefs &&
+      feature_tour_.MaybeShowForFirstUse(
+          prefs, base::BindRepeating(&PickerController::OnFeatureTourCompleted,
+                                     weak_ptr_factory_.GetWeakPtr()))) {
+    return;
+  }
+
   if (widget_) {
     CloseWidget();
   } else {
@@ -732,6 +741,10 @@ void PickerController::UpdateRecentEmoji(ui::EmojiPickerCategory category,
 
   ScopedDictPrefUpdate update(client_->GetPrefs(), prefs::kEmojiPickerHistory);
   update->Set(ConvertToString(category), std::move(history_value));
+}
+
+void PickerController::OnFeatureTourCompleted() {
+  ShowWidget(base::TimeTicks::Now());
 }
 
 }  // namespace ash

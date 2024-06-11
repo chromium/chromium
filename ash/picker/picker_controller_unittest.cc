@@ -15,16 +15,19 @@
 #include "ash/picker/model/picker_model.h"
 #include "ash/picker/model/picker_search_results_section.h"
 #include "ash/picker/picker_test_util.h"
+#include "ash/public/cpp/ash_prefs.h"
 #include "ash/public/cpp/clipboard_history_controller.h"
 #include "ash/public/cpp/picker/mock_picker_client.h"
 #include "ash/public/cpp/system/toast_manager.h"
 #include "ash/public/cpp/test/test_new_window_delegate.h"
 #include "ash/shell.h"
 #include "ash/test/ash_test_base.h"
+#include "ash/test/view_drawn_waiter.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/test_future.h"
+#include "components/prefs/pref_registry_simple.h"
 #include "components/prefs/scoped_user_pref_update.h"
 #include "components/sync_preferences/testing_pref_service_syncable.h"
 #include "services/network/test/test_shared_url_loader_factory.h"
@@ -40,6 +43,7 @@
 #include "ui/base/ime/input_method.h"
 #include "ui/base/models/image_model.h"
 #include "ui/gfx/geometry/size.h"
+#include "ui/views/controls/button/button.h"
 #include "ui/views/test/widget_test.h"
 
 namespace ash {
@@ -156,6 +160,8 @@ class TestPickerClient : public MockPickerClient {
   }
   ~TestPickerClient() override { controller_->SetClient(nullptr); }
 
+  PrefRegistrySimple* registry() { return prefs_.registry(); }
+
  private:
   raw_ptr<PickerController> controller_ = nullptr;
   sync_preferences::TestingPrefServiceSyncable prefs_;
@@ -195,6 +201,35 @@ TEST_F(PickerControllerTest, ToggleWidgetShowsWidgetIfOpenedThenClosed) {
   controller.ToggleWidget();
 
   EXPECT_TRUE(controller.widget_for_testing());
+}
+
+TEST_F(PickerControllerTest, ToggleWidgetShowsFeatureTourForFirstTime) {
+  PickerController controller;
+  NiceMock<TestPickerClient> client(&controller);
+  RegisterUserProfilePrefs(client.registry(), /*country=*/"",
+                           /*for_test=*/true);
+  controller.ToggleWidget();
+
+  EXPECT_TRUE(controller.feature_tour_for_testing().widget_for_testing());
+  EXPECT_FALSE(controller.widget_for_testing());
+}
+
+TEST_F(PickerControllerTest,
+       ToggleWidgetShowsWidgetAfterCompletingFeatureTour) {
+  PickerController controller;
+  NiceMock<TestPickerClient> client(&controller);
+  RegisterUserProfilePrefs(client.registry(), /*country=*/"",
+                           /*for_test=*/true);
+  controller.ToggleWidget();
+  auto& feature_tour = controller.feature_tour_for_testing();
+  views::test::WidgetVisibleWaiter(feature_tour.widget_for_testing()).Wait();
+  views::Button* button = feature_tour.complete_button_for_testing();
+  ASSERT_NE(button, nullptr);
+  ViewDrawnWaiter().Wait(button);
+  LeftClickOn(button);
+  views::test::WidgetDestroyedWaiter(feature_tour.widget_for_testing()).Wait();
+
+  views::test::WidgetVisibleWaiter(controller.widget_for_testing()).Wait();
 }
 
 TEST_F(PickerControllerTest,

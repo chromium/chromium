@@ -10,6 +10,9 @@
 #include "ui/base/metadata/metadata_header_macros.h"
 #include "ui/views/widget/unique_widget_ptr.h"
 
+class PrefRegistrySimple;
+class PrefService;
+
 namespace views {
 class Widget;
 class Button;
@@ -24,10 +27,18 @@ class ASH_EXPORT PickerFeatureTour {
   PickerFeatureTour& operator=(const PickerFeatureTour&) = delete;
   ~PickerFeatureTour();
 
-  // Shows the feature tour dialog.
+  // Registers Picker feature tour prefs to the provided `registry`.
+  static void RegisterProfilePrefs(PrefRegistrySimple* registry);
+
+  // Disables the feature tour for tests.
+  static void DisableFeatureTourForTesting();
+
+  // Shows the feature tour dialog if the tour has not been shown before.
   // `completion_callback` is called when the user has completed the feature
   // tour.
-  void Show(base::RepeatingClosure completion_callback);
+  // Returns whether the feature tour dialog was shown or not.
+  bool MaybeShowForFirstUse(PrefService* prefs,
+                            base::RepeatingClosure completion_callback);
 
   views::Widget* widget_for_testing();
 

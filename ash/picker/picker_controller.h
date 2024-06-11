@@ -13,6 +13,7 @@
 #include "ash/picker/metrics/picker_feature_usage_metrics.h"
 #include "ash/picker/metrics/picker_session_metrics.h"
 #include "ash/picker/picker_asset_fetcher_impl_delegate.h"
+#include "ash/picker/views/picker_feature_tour.h"
 #include "ash/picker/views/picker_view_delegate.h"
 #include "base/functional/callback_forward.h"
 #include "base/memory/scoped_refptr.h"
@@ -74,6 +75,7 @@ class ASH_EXPORT PickerController : public PickerViewDelegate,
 
   // Returns the Picker widget for tests.
   views::Widget* widget_for_testing() { return widget_.get(); }
+  PickerFeatureTour& feature_tour_for_testing() { return feature_tour_; }
 
   // PickerViewDelegate:
   std::vector<PickerCategory> GetAvailableCategories() override;
@@ -119,7 +121,9 @@ class ASH_EXPORT PickerController : public PickerViewDelegate,
   void CloseWidget();
   void UpdateRecentEmoji(ui::EmojiPickerCategory category,
                          std::u16string_view text);
+  void OnFeatureTourCompleted();
 
+  PickerFeatureTour feature_tour_;
   raw_ptr<PickerClient> client_ = nullptr;
   std::unique_ptr<PickerModel> model_;
   views::UniqueWidgetPtr widget_;
