@@ -1,15 +1,15 @@
-
 // Copyright 2024 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef COMPONENTS_MANTA_ANCHOVY_PROVIDER_H_
-#define COMPONENTS_MANTA_ANCHOVY_PROVIDER_H_
+#ifndef COMPONENTS_MANTA_ANCHOVY_ANCHOVY_PROVIDER_H_
+#define COMPONENTS_MANTA_ANCHOVY_ANCHOVY_PROVIDER_H_
 
 #include <cstdint>
 #include <vector>
 
 #include "base/component_export.h"
+#include "components/manta/anchovy/anchovy_requests.h"
 #include "components/manta/base_provider.h"
 #include "components/manta/manta_service_callbacks.h"
 #include "components/signin/public/identity_manager/identity_manager.h"
@@ -31,27 +31,14 @@ class COMPONENT_EXPORT(MANTA) AnchovyProvider : public BaseProvider {
   AnchovyProvider& operator=(const AnchovyProvider&) = delete;
   ~AnchovyProvider() override;
 
-  struct ImageDescriptionRequest {
-    ImageDescriptionRequest(std::string source_id,
-                            std::string lang_tag,
-                            const std::vector<uint8_t>& bytes)
-        : image_bytes(bytes), lang_tag(lang_tag), source_id(source_id) {}
-    ImageDescriptionRequest(ImageDescriptionRequest&& other) = default;
-    ImageDescriptionRequest(const ImageDescriptionRequest&) = delete;
-    ImageDescriptionRequest& operator=(const ImageDescriptionRequest&) = delete;
-    const raw_ref<const std::vector<uint8_t>> image_bytes;
-    const std::string lang_tag;
-    const std::string source_id;
-  };
-
-  virtual void GetImageDescription(ImageDescriptionRequest& request,
-                                   MantaGenericCallback callback);
-  // signin::IdentityManager::Observer:
-  void OnIdentityManagerShutdown(
-      signin::IdentityManager* identity_manager) override;
+  virtual void GetImageDescription(
+      anchovy::ImageDescriptionRequest& request,
+      net::NetworkTrafficAnnotationTag traffic_annotation,
+      MantaGenericCallback callback);
 
  private:
   base::WeakPtrFactory<AnchovyProvider> weak_ptr_factory_{this};
 };
 }  // namespace manta
-#endif  // COMPONENTS_MANTA_ANCHOVY_PROVIDER_H_
+
+#endif  // COMPONENTS_MANTA_ANCHOVY_ANCHOVY_PROVIDER_H_

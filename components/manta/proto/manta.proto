@@ -86,13 +86,15 @@ message RequestConfig {
   optional ImageDimensions image_dimensions = 7;
 
   optional AspectRatio aspect_ratio = 8;
+
+  optional Proto3Any specific_options = 9;
 }
 
 message InputData {
-  reserved 2;
 
   oneof input_data {
     string text = 1;
+    Image image = 2;
     Proto3Any custom = 3;
     SparkyContextData sparky_context_data = 5;
   }
@@ -111,13 +113,15 @@ message Image {
 }
 
 message OutputData {
-  reserved 4, 5;
+  reserved 4;
   oneof output_data {
     string text = 1;
     Image image = 2;
     Proto3Any custom = 3;
     SparkyResponse sparky_response = 7;
   }
+
+  optional float score = 5;
 
   optional uint32 generation_seed = 6;
 }

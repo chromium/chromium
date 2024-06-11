@@ -6,8 +6,10 @@ import("//build/config/chromeos/ui_mode.gni")
 
 component("manta") {
   sources = [
-    "anchovy_provider.cc",
-    "anchovy_provider.h",
+    "anchovy/anchovy_provider.cc",
+    "anchovy/anchovy_provider.h",
+    "anchovy/anchovy_requests.cc",
+    "anchovy/anchovy_requests.h",
     "base_provider.cc",
     "base_provider.h",
     "features.cc",

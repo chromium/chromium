@@ -11,7 +11,7 @@
 #include "base/memory/scoped_refptr.h"
 #include "build/chromeos_buildflags.h"
 #include "components/account_id/account_id.h"
-#include "components/manta/anchovy_provider.h"
+#include "components/manta/anchovy/anchovy_provider.h"
 #include "components/manta/sparky/system_info_delegate.h"
 #include "components/signin/public/identity_manager/account_capabilities.h"
 #include "components/signin/public/identity_manager/identity_manager.h"
