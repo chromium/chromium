@@ -3343,6 +3343,7 @@ if (!is_android) {
         "../browser/browser_process_platform_part_chromeos_browsertest.cc",
         "../browser/certificate_provider/test_certificate_provider_extension_mixin.cc",
         "../browser/certificate_provider/test_certificate_provider_extension_mixin.h",
+        "../browser/chromeos/enterprise/floating_sso/floating_sso_browsertest.cc",
         "../browser/chromeos/enterprise/incognito_navigation_throttle_browsertest.cc",
         "../browser/chromeos/kcer/kcer_factory_nss_browsertest.cc",
         "../browser/chromeos/policy/default_notifications_setting_browsertest.cc",

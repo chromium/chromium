@@ -326,6 +326,7 @@
 #include "chrome/browser/certificate_provider/certificate_provider_service_factory.h"
 #include "chrome/browser/chromeos/cros_apps/cros_apps_key_event_handler_factory.h"
 #include "chrome/browser/chromeos/enterprise/cloud_storage/one_drive_pref_observer.h"
+#include "chrome/browser/chromeos/enterprise/floating_sso/floating_sso_service_factory.h"
 #include "chrome/browser/chromeos/policy/dlp/dlp_download_observer_factory.h"
 #include "chrome/browser/chromeos/policy/dlp/dlp_rules_manager_factory.h"
 #include "chrome/browser/policy/networking/policy_cert_service_factory.h"
@@ -859,6 +860,19 @@ void ChromeBrowserMainExtraPartsProfiles::
 #if !BUILDFLAG(IS_CHROMEOS_ASH) && !BUILDFLAG(IS_ANDROID)
   FirstRunServiceFactory::GetInstance();
 #endif
+#if BUILDFLAG(IS_CHROMEOS_LACROS)
+  if (chromeos::features::IsFloatingSsoAllowed()) {
+    chromeos::floating_sso::FloatingSsoServiceFactory::GetInstance();
+  }
+#endif  // BUILDFLAG(IS_CHROMEOS_LACROS)
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+  // Floating SSO service must run in the main browser only, i.e. we shouldn't
+  // launch it in Ash when Lacros is enabled.
+  if (chromeos::features::IsFloatingSsoAllowed() &&
+      !crosapi::browser_util::IsLacrosEnabled()) {
+    chromeos::floating_sso::FloatingSsoServiceFactory::GetInstance();
+  }
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
   FontPrefChangeNotifierFactory::GetInstance();
 #if !BUILDFLAG(IS_CHROMEOS_ASH)
   GAIAInfoUpdateServiceFactory::GetInstance();

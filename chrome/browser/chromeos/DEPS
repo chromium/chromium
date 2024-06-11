@@ -15,4 +15,8 @@ specific_include_rules = {
     # Included within #if BUILDFLAG(IS_CHROMEOS_ASH).
     "+chrome/browser/ash/crosapi/browser_util.h"
   ],
+  "floating_sso_browsertest\.cc": [
+    # Included within #if BUILDFLAG(IS_CHROMEOS_ASH).
+    "+chrome/browser/ash/crosapi/browser_util.h"
+  ],
 }

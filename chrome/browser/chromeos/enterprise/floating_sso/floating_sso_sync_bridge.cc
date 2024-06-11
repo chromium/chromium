@@ -1,0 +1,75 @@
+// Copyright 2024 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+#include "chrome/browser/chromeos/enterprise/floating_sso/floating_sso_sync_bridge.h"
+
+#include <memory>
+#include <optional>
+#include <string>
+#include <vector>
+
+#include "components/sync/base/model_type.h"
+#include "components/sync/model/metadata_batch.h"
+#include "components/sync/model/model_type_change_processor.h"
+#include "components/sync/model/model_type_store.h"
+#include "components/sync/model/model_type_sync_bridge.h"
+
+namespace chromeos::floating_sso {
+
+FloatingSsoSyncBridge::FloatingSsoSyncBridge(
+    std::unique_ptr<syncer::ModelTypeChangeProcessor> change_processor)
+    : syncer::ModelTypeSyncBridge(std::move(change_processor)) {
+  // TODO: b/346354110 - add Sync store creation.
+}
+
+FloatingSsoSyncBridge::~FloatingSsoSyncBridge() = default;
+
+std::unique_ptr<syncer::MetadataChangeList>
+FloatingSsoSyncBridge::CreateMetadataChangeList() {
+  // TODO: b/346355106 - implement.
+  NOTIMPLEMENTED();
+  return nullptr;
+}
+
+std::optional<syncer::ModelError> FloatingSsoSyncBridge::MergeFullSyncData(
+    std::unique_ptr<syncer::MetadataChangeList> metadata_change_list,
+    syncer::EntityChangeList entity_changes) {
+  // TODO: b/346354354 - implement.
+  NOTIMPLEMENTED();
+  return std::nullopt;
+}
+std::optional<syncer::ModelError>
+FloatingSsoSyncBridge::ApplyIncrementalSyncChanges(
+    std::unique_ptr<syncer::MetadataChangeList> metadata_change_list,
+    syncer::EntityChangeList entity_changes) {
+  // TODO: b/346354109 - implement.
+  NOTIMPLEMENTED();
+  return std::nullopt;
+}
+
+std::string FloatingSsoSyncBridge::GetStorageKey(
+    const syncer::EntityData& entity_data) {
+  // TODO: b/346354877 - implement.
+  NOTIMPLEMENTED();
+  return "";
+}
+std::string FloatingSsoSyncBridge::GetClientTag(
+    const syncer::EntityData& entity_data) {
+  // TODO: b/346354877 - implement.
+  NOTIMPLEMENTED();
+  return "";
+}
+
+void FloatingSsoSyncBridge::GetData(StorageKeyList storage_keys,
+                                    DataCallback callback) {
+  // TODO: b/346354248 - implement.
+  NOTIMPLEMENTED();
+}
+
+void FloatingSsoSyncBridge::GetAllDataForDebugging(DataCallback callback) {
+  // TODO: b/346354358 - implement.
+  NOTIMPLEMENTED();
+}
+
+}  // namespace chromeos::floating_sso

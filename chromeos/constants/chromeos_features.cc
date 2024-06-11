@@ -169,6 +169,12 @@ BASE_FEATURE(kExperimentalWebAppStoragePartitionIsolation,
              "ExperimentalWebAppStoragePartitionIsolation",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
+// Controls Floating SSO feature which can move cookies between ChromeOS
+// enterprise devices. The feature is also guarded by an enterprise policy, this
+// flag controls if we are even allowed to launch the service observing that
+// policy.
+BASE_FEATURE(kFloatingSso, "FloatingSso", base::FEATURE_DISABLED_BY_DEFAULT);
+
 // Enables Jelly features. go/jelly-flags
 BASE_FEATURE(kJelly, "Jelly", base::FEATURE_ENABLED_BY_DEFAULT);
 
@@ -448,6 +454,10 @@ bool IsFileSystemProviderContentCacheEnabled() {
 #else
   return base::FeatureList::IsEnabled(kFileSystemProviderContentCache);
 #endif
+}
+
+bool IsFloatingSsoAllowed() {
+  return base::FeatureList::IsEnabled(kFloatingSso);
 }
 
 bool IsJellyEnabled() {
