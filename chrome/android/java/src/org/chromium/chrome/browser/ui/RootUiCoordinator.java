@@ -846,6 +846,7 @@ public class RootUiCoordinator
                                             tab,
                                             tab.isIncognito());
                         },
+                        showWebSearchInActionMode(),
                         mShareDelegateSupplier,
                         mReadAloudControllerSupplier);
 
@@ -879,6 +880,10 @@ public class RootUiCoordinator
         } else {
             sheetContainer.setVisibility(View.GONE);
         }
+    }
+
+    protected boolean showWebSearchInActionMode() {
+        return true;
     }
 
     @Override

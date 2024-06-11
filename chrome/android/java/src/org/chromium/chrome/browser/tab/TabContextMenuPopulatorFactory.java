@@ -36,6 +36,11 @@ class TabContextMenuPopulatorFactory implements ContextMenuPopulatorFactory {
     }
 
     @Override
+    public boolean isEnabled() {
+        return mPopulatorFactory != null;
+    }
+
+    @Override
     public ContextMenuPopulator createContextMenuPopulator(
             Context context, ContextMenuParams params, ContextMenuNativeDelegate nativeDelegate) {
         return new TabContextMenuPopulator(

@@ -592,6 +592,11 @@ public class BaseCustomTabRootUiCoordinator extends RootUiCoordinator {
     }
 
     @Override
+    protected boolean showWebSearchInActionMode() {
+        return !mIntentDataProvider.get().isAuthView();
+    }
+
+    @Override
     protected void setStatusBarScrimFraction(float scrimFraction) {
         super.setStatusBarScrimFraction(scrimFraction);
         // TODO(jinsukkim): Separate CCT scrim update action from status bar scrim stuff.
