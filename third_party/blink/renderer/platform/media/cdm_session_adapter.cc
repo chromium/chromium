@@ -26,6 +26,7 @@ namespace {
 const char kMediaEME[] = "Media.EME.";
 const char kDot[] = ".";
 const char kCreateCdmUMAName[] = "CreateCdm";
+const char kCreateCdmStatusUMAName[] = "CreateCdmStatus";
 const char kTimeToCreateCdmUMAName[] = "CreateCdmTime";
 }  // namespace
 
@@ -165,23 +166,25 @@ void CdmSessionAdapter::OnCdmCreated(
     const media::CdmConfig& cdm_config,
     base::TimeTicks start_time,
     const scoped_refptr<media::ContentDecryptionModule>& cdm,
-    const std::string& error_message) {
+    media::CreateCdmStatus status) {
   DVLOG(1) << __func__ << ": "
-           << (cdm ? "success" : "failure (" + error_message + ")");
+           << (cdm ? "success" : "failure (" + base::ToString(status) + ")");
   DCHECK(!cdm_);
 
-  TRACE_EVENT_NESTABLE_ASYNC_END2(
-      "media", "CdmSessionAdapter::CreateCdm", trace_id_, "success",
-      (cdm ? "true" : "false"), "error_message", error_message);
+  TRACE_EVENT_NESTABLE_ASYNC_END2("media", "CdmSessionAdapter::CreateCdm",
+                                  trace_id_, "success",
+                                  (cdm ? "true" : "false"), "status", status);
 
   auto key_system_name_for_uma = media::GetKeySystemNameForUMA(
       cdm_config.key_system, cdm_config.use_hw_secure_codecs);
   auto key_system_uma_prefix = kMediaEME + key_system_name_for_uma + kDot;
   base::UmaHistogramBoolean(key_system_uma_prefix + kCreateCdmUMAName,
                             cdm ? true : false);
+  base::UmaHistogramEnumeration(key_system_uma_prefix + kCreateCdmStatusUMAName,
+                                status);
 
   if (!cdm) {
-    std::move(web_cdm_created_cb_).Run(nullptr, error_message);
+    std::move(web_cdm_created_cb_).Run(nullptr, status);
     return;
   }
 
@@ -198,7 +201,7 @@ void CdmSessionAdapter::OnCdmCreated(
   std::move(web_cdm_created_cb_)
       .Run(std::make_unique<WebContentDecryptionModuleImpl>(
                base::PassKey<CdmSessionAdapter>(), this, key_systems_),
-           "");
+           media::CreateCdmStatus::kSuccess);
 }
 
 void CdmSessionAdapter::OnSessionMessage(const std::string& session_id,

@@ -196,7 +196,8 @@ void FramelessMediaInterfaceProxy::CreateMediaFoundationRenderer(
 
 void FramelessMediaInterfaceProxy::CreateCdm(const media::CdmConfig& cdm_config,
                                              CreateCdmCallback callback) {
-  std::move(callback).Run(mojo::NullRemote(), nullptr, "CDM not supported");
+  std::move(callback).Run(mojo::NullRemote(), nullptr,
+                          media::CreateCdmStatus::kCdmNotSupported);
 }
 
 media::mojom::InterfaceFactory*

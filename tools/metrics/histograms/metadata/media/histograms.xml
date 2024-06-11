@@ -3393,6 +3393,18 @@ chromium-metrics-reviews@google.com.
   <token key="KeySystem" variants="KeySystemWithRobustness"/>
 </histogram>
 
+<histogram name="Media.EME.{KeySystem}.CreateCdmStatus" enum="CreateCdmStatus"
+    expires_after="2025-02-27">
+  <owner>sangbaekpark@chromium.org</owner>
+  <owner>media-dev-uma@chromium.org</owner>
+  <summary>
+    The status when creating a CDM instance for {KeySystem}. Reported each time
+    a CDM instance creation is attempted, usually as a result of Javascript call
+    of createMediaKeys().
+  </summary>
+  <token key="KeySystem" variants="KeySystemWithRobustness"/>
+</histogram>
+
 <histogram name="Media.EME.{KeySystem}.CreateCdmTime" units="ms"
     expires_after="2025-02-27">
   <owner>xhwang@chromium.org</owner>

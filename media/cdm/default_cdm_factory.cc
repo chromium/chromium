@@ -9,6 +9,7 @@
 #include "base/location.h"
 #include "base/task/single_thread_task_runner.h"
 #include "media/base/cdm_config.h"
+#include "media/base/cdm_factory.h"
 #include "media/base/content_decryption_module.h"
 #include "media/base/key_system_names.h"
 #include "media/base/media_switches.h"
@@ -41,7 +42,7 @@ void DefaultCdmFactory::Create(
   if (!ShouldCreateAesDecryptor(cdm_config.key_system)) {
     base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
         FROM_HERE, base::BindOnce(std::move(cdm_created_cb), nullptr,
-                                  "Unsupported key system."));
+                                  CreateCdmStatus::kUnsupportedKeySystem));
     return;
   }
 
@@ -49,7 +50,8 @@ void DefaultCdmFactory::Create(
       session_message_cb, session_closed_cb, session_keys_change_cb,
       session_expiration_update_cb);
   base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
-      FROM_HERE, base::BindOnce(std::move(cdm_created_cb), cdm, ""));
+      FROM_HERE, base::BindOnce(std::move(cdm_created_cb), cdm,
+                                CreateCdmStatus::kSuccess));
 }
 
 }  // namespace media

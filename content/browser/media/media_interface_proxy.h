@@ -134,7 +134,7 @@ class MediaInterfaceProxy final : public DocumentUserData<MediaInterfaceProxy>,
       CreateCdmCallback callback,
       mojo::PendingRemote<media::mojom::ContentDecryptionModule> receiver,
       media::mojom::CdmContextPtr cdm_context,
-      const std::string& error_message);
+      media::CreateCdmStatus status);
 #endif  // BUILDFLAG(IS_CHROMEOS)
 
 #if BUILDFLAG(IS_WIN)

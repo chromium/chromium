@@ -13,6 +13,7 @@
 #include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversions.h"
 #include "media/base/cdm_context.h"
+#include "media/base/cdm_factory.h"
 #include "media/base/cdm_promise.h"
 #include "media/base/content_decryption_module.h"
 #include "media/base/key_systems.h"
@@ -83,21 +84,24 @@ void WebContentDecryptionModuleImpl::Create(
   // Chromium only supports ASCII key systems.
   if (!base::IsStringASCII(key_system)) {
     NOTREACHED_IN_MIGRATION();
-    std::move(web_cdm_created_cb).Run(nullptr, "Invalid keysystem.");
+    std::move(web_cdm_created_cb)
+        .Run(nullptr, media::CreateCdmStatus::kUnsupportedKeySystem);
     return;
   }
 
   // TODO(ddorwin): This should be a DCHECK.
   if (!key_systems->IsSupportedKeySystem(key_system)) {
-    std::string message = "Keysystem '" + key_system + "' is not supported.";
-    std::move(web_cdm_created_cb).Run(nullptr, message);
+    DVLOG(1) << __func__ << "Keysystem '" << key_system
+             << "' is not supported.";
+    std::move(web_cdm_created_cb)
+        .Run(nullptr, media::CreateCdmStatus::kUnsupportedKeySystem);
     return;
   }
 
   // If opaque security origin, don't try to create the CDM.
   if (security_origin.IsOpaque() || security_origin.ToString() == "null") {
     std::move(web_cdm_created_cb)
-        .Run(nullptr, "EME use is not allowed on unique origins.");
+        .Run(nullptr, media::CreateCdmStatus::kNotAllowedOnUniqueOrigin);
     return;
   }
 

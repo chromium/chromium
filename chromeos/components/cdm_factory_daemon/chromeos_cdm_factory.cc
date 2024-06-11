@@ -161,19 +161,20 @@ class ArcCdmContext : public ChromeOsCdmContext, public media::CdmContext {
 void OnCdmCreated(media::CdmCreatedCB callback,
                   scoped_refptr<ContentDecryptionModuleAdapter> cdm,
                   cdm::mojom::CdmFactory::CreateCdmStatus result) {
-  std::string err;
   switch (result) {
     case cdm::mojom::CdmFactory::CreateCdmStatus::kSuccess:
-      std::move(callback).Run(std::move(cdm), "");
+      std::move(callback).Run(std::move(cdm), media::CreateCdmStatus::kSuccess);
       return;
     case cdm::mojom::CdmFactory::CreateCdmStatus::kNoMoreInstances:
-      err = "Only one instance allowed";
-      break;
+      std::move(callback).Run(nullptr,
+                              media::CreateCdmStatus::kNoMoreInstances);
+      return;
     case cdm::mojom::CdmFactory::CreateCdmStatus::kInsufficientGpuResources:
-      err = "Insufficient GPU memory available";
-      break;
+      std::move(callback).Run(
+          nullptr, media::CreateCdmStatus::kInsufficientGpuResources);
+      return;
   }
-  std::move(callback).Run(nullptr, err);
+  std::move(callback).Run(nullptr, media::CreateCdmStatus::kUnknownError);
 }
 }  // namespace
 
@@ -304,8 +305,9 @@ void ChromeOsCdmFactory::OnVerifiedAccessEnabled(
     DVLOG(1)
         << "Not using Chrome OS CDM factory due to Verified Access disabled";
     base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
-        FROM_HERE, base::BindOnce(std::move(cdm_created_cb), nullptr,
-                                  "Verified Access is disabled."));
+        FROM_HERE,
+        base::BindOnce(std::move(cdm_created_cb), nullptr,
+                       media::CreateCdmStatus::kCrOsVerifiedAccessDisabled));
     return;
   }
   // If we haven't retrieved the remote CDM factory, do that first.
@@ -346,8 +348,10 @@ void ChromeOsCdmFactory::OnCreateFactory(
   if (!remote_factory) {
     LOG(ERROR) << "Failed creating the remote CDM factory";
     base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
-        FROM_HERE, base::BindOnce(std::move(cdm_created_cb), nullptr,
-                                  "Remote factory creation failed."));
+        FROM_HERE,
+        base::BindOnce(
+            std::move(cdm_created_cb), nullptr,
+            media::CreateCdmStatus::kCrOsRemoteFactoryCreationFailed));
     return;
   }
   // Check if this is bound already, which could happen due to asynchronous

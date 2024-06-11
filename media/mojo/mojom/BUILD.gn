@@ -680,6 +680,15 @@ mojom("mojom") {
       ]
       traits_headers = [ "media_types_enum_mojom_traits.h" ]
     },
+    {
+      types = [
+        {
+          mojom = "media.mojom.CreateCdmStatus"
+          cpp = "::media::CreateCdmStatus"
+        },
+      ]
+      traits_headers = [ "media_types_enum_mojom_traits.h" ]
+    },
   ]
 
   if (is_win) {

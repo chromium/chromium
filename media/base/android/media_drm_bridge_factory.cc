@@ -7,6 +7,7 @@
 #include "base/functional/bind.h"
 #include "base/functional/callback_helpers.h"
 #include "media/base/cdm_config.h"
+#include "media/base/cdm_factory.h"
 #include "media/base/content_decryption_module.h"
 #include "media/base/key_system_names.h"
 #include "media/cdm/clear_key_cdm_common.h"
@@ -24,7 +25,8 @@ MediaDrmBridgeFactory::MediaDrmBridgeFactory(CreateFetcherCB create_fetcher_cb,
 
 MediaDrmBridgeFactory::~MediaDrmBridgeFactory() {
   if (cdm_created_cb_)
-    std::move(cdm_created_cb_).Run(nullptr, "CDM creation aborted");
+    std::move(cdm_created_cb_)
+        .Run(nullptr, CreateCdmStatus::kCdmCreationAborted);
 }
 
 void MediaDrmBridgeFactory::Create(
@@ -54,7 +56,7 @@ void MediaDrmBridgeFactory::Create(
         cdm_config.key_system +
         " may require use_video_overlay_for_embedded_encrypted_video";
     NOTREACHED_IN_MIGRATION() << error_message;
-    std::move(cdm_created_cb).Run(nullptr, error_message);
+    std::move(cdm_created_cb).Run(nullptr, CreateCdmStatus::kInvalidCdmConfig);
     return;
   }
 
@@ -86,7 +88,8 @@ void MediaDrmBridgeFactory::OnStorageInitialized(bool success) {
 
   // MediaDrmStorageBridge should only be created on a successful Initialize().
   if (!success) {
-    std::move(cdm_created_cb_).Run(nullptr, "Cannot fetch origin ID");
+    std::move(cdm_created_cb_)
+        .Run(nullptr, CreateCdmStatus::kGetCdmOriginIdFailed);
     return;
   }
 
@@ -106,7 +109,8 @@ void MediaDrmBridgeFactory::CreateMediaDrmBridge(const std::string& origin_id) {
       session_expiration_update_cb_);
 
   if (!media_drm_bridge_) {
-    std::move(cdm_created_cb_).Run(nullptr, "MediaDrmBridge creation failed");
+    std::move(cdm_created_cb_)
+        .Run(nullptr, CreateCdmStatus::kMediaDrmBridgeCreationFailed);
     return;
   }
 
@@ -120,11 +124,12 @@ void MediaDrmBridgeFactory::OnMediaCryptoReady(
   DCHECK(media_crypto);
   if (media_crypto->is_null()) {
     media_drm_bridge_ = nullptr;
-    std::move(cdm_created_cb_).Run(nullptr, "MediaCrypto not available");
+    std::move(cdm_created_cb_)
+        .Run(nullptr, CreateCdmStatus::kMediaCryptoNotAvailable);
     return;
   }
 
-  std::move(cdm_created_cb_).Run(media_drm_bridge_, "");
+  std::move(cdm_created_cb_).Run(media_drm_bridge_, CreateCdmStatus::kSuccess);
 }
 
 }  // namespace media

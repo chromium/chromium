@@ -15,14 +15,14 @@ CdmInitializedPromise::~CdmInitializedPromise() = default;
 
 void CdmInitializedPromise::resolve() {
   MarkPromiseSettled();
-  std::move(cdm_created_cb_).Run(cdm_, "");
+  std::move(cdm_created_cb_).Run(cdm_, CreateCdmStatus::kSuccess);
 }
 
 void CdmInitializedPromise::reject(CdmPromise::Exception exception_code,
                                    uint32_t system_code,
                                    const std::string& error_message) {
   MarkPromiseSettled();
-  std::move(cdm_created_cb_).Run(nullptr, error_message);
+  std::move(cdm_created_cb_).Run(nullptr, CreateCdmStatus::kInitCdmFailed);
   // Usually after this |this| (and the |cdm_| within it) will be destroyed.
 }
 

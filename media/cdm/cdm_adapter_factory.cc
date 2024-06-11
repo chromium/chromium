@@ -34,7 +34,7 @@ void CdmAdapterFactory::Create(
   if (!create_cdm_func) {
     base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
         FROM_HERE, base::BindOnce(std::move(cdm_created_cb), nullptr,
-                                  "CreateCdmFunc not available."));
+                                  CreateCdmStatus::kCreateCdmFuncNotAvailable));
     return;
   }
 
@@ -42,7 +42,7 @@ void CdmAdapterFactory::Create(
   if (!cdm_helper) {
     base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
         FROM_HERE, base::BindOnce(std::move(cdm_created_cb), nullptr,
-                                  "CDM helper creation failed."));
+                                  CreateCdmStatus::kCdmHelperCreationFailed));
     return;
   }
 

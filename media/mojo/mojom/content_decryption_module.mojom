@@ -175,11 +175,11 @@ interface CdmFactory {
   // untrusted process (e.g. renderer), so the implementation must fully
   // validate `key_system` before creating the CDM. `cdm_config` also specifies
   // other properties of the CDM which may influence creation. Upon failure,
-  // the returned `cdm` and `cdm_context` will be null, and `error_message`
+  // the returned `cdm` and `cdm_context` will be null, and `status`
   // will specify the error reason. Upon success, `cdm` and `cdm_context` will
-  // be valid, and `error_message` will be empty.
+  // be valid, and `status` will be CreateCdmStatus::kSuccess.
   CreateCdm(CdmConfig cdm_config) =>
             (pending_remote<ContentDecryptionModule>? cdm,
              CdmContext? cdm_context,
-             string error_message);
+             CreateCdmStatus status);
 };

@@ -13,6 +13,7 @@
 #include "base/functional/callback_forward.h"
 #include "media/base/callback_registry.h"
 #include "media/base/cdm_context.h"
+#include "media/base/cdm_factory.h"
 #include "media/base/cdm_promise_adapter.h"
 #include "media/base/content_decryption_module.h"
 #include "media/cdm/fuchsia/fuchsia_cdm_context.h"
@@ -40,7 +41,7 @@ class FuchsiaCdm : public ContentDecryptionModule,
     SessionKeysChangeCB keys_change_cb;
     SessionExpirationUpdateCB expiration_update_cb;
   };
-  using ReadyCB = base::OnceCallback<void(bool, const std::string&)>;
+  using ReadyCB = base::OnceCallback<void(bool, CreateCdmStatus)>;
 
   FuchsiaCdm(fuchsia::media::drm::ContentDecryptionModulePtr cdm,
              ReadyCB ready_cb,

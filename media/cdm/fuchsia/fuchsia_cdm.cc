@@ -11,6 +11,7 @@
 #include "base/fuchsia/mem_buffer_util.h"
 #include "base/logging.h"
 #include "media/base/callback_registry.h"
+#include "media/base/cdm_factory.h"
 #include "media/base/cdm_promise.h"
 
 #define REJECT_PROMISE_AND_RETURN_IF_BAD_CDM(promise, cdm)         \
@@ -307,8 +308,7 @@ FuchsiaCdm::FuchsiaCdm(fuchsia::media::drm::ContentDecryptionModulePtr cdm,
     // If the channel closed prior to invoking the ready_cb_, we should invoke
     // it here with failure.
     if (ready_cb_) {
-      std::move(ready_cb_).Run(
-          false, "ContentDecryptionModule closed prior to being ready");
+      std::move(ready_cb_).Run(false, CreateCdmStatus::kDisconnectionError);
     }
   });
 }
@@ -406,7 +406,7 @@ void FuchsiaCdm::CreateSessionAndGenerateRequest(
 
 void FuchsiaCdm::OnProvisioned() {
   if (ready_cb_) {
-    std::move(ready_cb_).Run(true, "");
+    std::move(ready_cb_).Run(true, CreateCdmStatus::kSuccess);
   }
 }
 

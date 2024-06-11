@@ -35,13 +35,13 @@ const char kKeySystemSupportUMAPrefix[] =
 void CompleteWebContentDecryptionModuleResult(
     std::unique_ptr<WebContentDecryptionModuleResult> result,
     std::unique_ptr<WebContentDecryptionModule> cdm,
-    const std::string& error_message) {
+    media::CreateCdmStatus status) {
   DCHECK(result);
 
   if (!cdm) {
     result->CompleteWithError(
         kWebContentDecryptionModuleExceptionNotSupportedError, 0,
-        WebString::FromUTF8(error_message));
+        WebString::FromASCII(base::ToString(status)));
     return;
   }
 

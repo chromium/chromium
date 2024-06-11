@@ -585,3 +585,28 @@ enum RendererType {
   kContentEmbedderDefined = 10,  // Defined by the content embedder
   kTest= 11,             // Renderer implementations used in tests
 };
+
+// See media::CreateCdmStatus
+enum CreateCdmStatus {
+  kSuccess,
+  kUnknownError,
+  kCdmCreationAborted,
+  kLoadCdmFailed,
+  kCreateCdmFuncNotAvailable,
+  kCdmHelperCreationFailed,
+  kGetCdmPrefDataFailed,
+  kGetCdmOriginIdFailed,
+  kInitCdmFailed,
+  kCdmFactoryCreationFailed,
+  kCdmNotSupported,
+  kInvalidCdmConfig,
+  kUnsupportedKeySystem,
+  kDisconnectionError,
+  kNotAllowedOnUniqueOrigin,
+  kMediaDrmBridgeCreationFailed,
+  kMediaCryptoNotAvailable,
+  kNoMoreInstances,
+  kInsufficientGpuResources,
+  kCrOsVerifiedAccessDisabled,
+  kCrOsRemoteFactoryCreationFailed,
+};

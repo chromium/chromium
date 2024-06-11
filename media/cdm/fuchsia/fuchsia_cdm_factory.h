@@ -43,7 +43,7 @@ class MEDIA_EXPORT FuchsiaCdmFactory final : public CdmFactory {
   void OnCdmReady(uint32_t creation_id,
                   CdmCreatedCB cdm_created_cb,
                   bool success,
-                  const std::string& error_message);
+                  CreateCdmStatus status);
 
   std::unique_ptr<FuchsiaCdmProvider> cdm_provider_;
   uint32_t creation_id_ = 0;

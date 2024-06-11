@@ -843,8 +843,9 @@ class WebMediaPlayerImplTest
 
   void OnCdmCreated(base::RepeatingClosure quit_closure,
                     std::unique_ptr<WebContentDecryptionModule> cdm,
-                    const std::string& error_message) {
-    LOG_IF(ERROR, !error_message.empty()) << error_message;
+                    media::CreateCdmStatus status) {
+    LOG_IF(ERROR, status != media::CreateCdmStatus::kSuccess)
+        << "status = " << static_cast<int>(status);
     EXPECT_TRUE(cdm);
     web_cdm_ = std::move(cdm);
     quit_closure.Run();

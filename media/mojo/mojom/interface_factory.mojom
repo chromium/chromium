@@ -9,6 +9,7 @@ import "media/mojo/mojom/audio_encoder.mojom";
 import "media/mojo/mojom/decryptor.mojom";
 import "media/mojo/mojom/content_decryption_module.mojom";
 import "media/mojo/mojom/media_log.mojom";
+import "media/mojo/mojom/media_types.mojom";
 import "media/mojo/mojom/renderer.mojom";
 import "media/mojo/mojom/renderer_extensions.mojom";
 import "media/mojo/mojom/stable/stable_video_decoder.mojom";
@@ -106,11 +107,11 @@ interface InterfaceFactory {
   // untrusted process (e.g. renderer), so the implementation must fully
   // validate `key_system` before creating the CDM. `cdm_config` specifies other
   // properties of the CDM which may influence creation. Upon failure, the
-  // returned `cdm` and `cdm_context` will be null, and `error_message` will
+  // returned `cdm` and `cdm_context` will be null, and `status` will
   // specify the error reason. Upon success, `cdm` and `cdm_context` will be
-  // valid, and `error_message` will be empty.
+  // valid, and `status` will be CreateCdmStatus::kSuccess.
   CreateCdm(CdmConfig cdm_config) =>
             (pending_remote<ContentDecryptionModule>? cdm,
              CdmContext? cdm_context,
-             string error_message);
+             CreateCdmStatus status);
 };

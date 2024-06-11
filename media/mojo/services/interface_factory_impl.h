@@ -122,7 +122,7 @@ class InterfaceFactoryImpl final
   void OnCdmServiceInitialized(MojoCdmService* raw_mojo_cdm_service,
                                CreateCdmCallback callback,
                                mojom::CdmContextPtr cdm_context,
-                               const std::string& error_message);
+                               CreateCdmStatus status);
 #endif  // BUILDFLAG(ENABLE_MOJO_CDM)
 
 #if BUILDFLAG(ALLOW_OOP_VIDEO_DECODER)

@@ -15,6 +15,7 @@
 #include "base/memory/scoped_refptr.h"
 #include "base/types/pass_key.h"
 #include "media/base/cdm_config.h"
+#include "media/base/cdm_factory.h"
 #include "media/base/key_systems.h"
 #include "third_party/blink/public/platform/web_content_decryption_module.h"
 #include "third_party/blink/renderer/platform/platform_export.h"
@@ -32,7 +33,7 @@ class WebSecurityOrigin;
 
 using WebCdmCreatedCB =
     base::OnceCallback<void(std::unique_ptr<WebContentDecryptionModule> cdm,
-                            const std::string& error_message)>;
+                            media::CreateCdmStatus status)>;
 
 class PLATFORM_EXPORT WebContentDecryptionModuleImpl
     : public WebContentDecryptionModule {
