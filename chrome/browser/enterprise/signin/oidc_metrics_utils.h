@@ -42,7 +42,8 @@ enum class OidcInterceptionResult {
   kInvalidUrlOrTokens = 2,
   kConsetDialogRejected = 3,
   kFailedToRegisterProfile = 4,
-  kMaxValue = kFailedToRegisterProfile,
+  kInvalidProfile = 5,
+  kMaxValue = kInvalidProfile,
 };
 
 // Outcomes of the OIDC profile enrolllment flow after profile registration.
