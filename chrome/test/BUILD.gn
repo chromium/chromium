@@ -5218,6 +5218,7 @@ if (!is_android) {
         "//chrome/browser/ash:arc_test_support",
         "//chrome/browser/ash:login_logout_event_proto",
         "//chrome/browser/ash:test_support",
+        "//chrome/browser/ash/bluetooth",
         "//chrome/browser/ash/crosapi",
         "//chrome/browser/ash/crosapi:test_support",
         "//chrome/browser/ash/geolocation:browser_tests",

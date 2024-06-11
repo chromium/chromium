@@ -1,0 +1,51 @@
+# Copyright 2024 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+import("//build/config/chromeos/ui_mode.gni")
+
+assert(is_chromeos_ash)
+
+source_set("bluetooth") {
+  sources = [
+    "bluetooth_log_controller.cc",
+    "bluetooth_log_controller.h",
+    "debug_logs_manager.cc",
+    "debug_logs_manager.h",
+    "debug_logs_manager_factory.cc",
+    "debug_logs_manager_factory.h",
+    "hats_bluetooth_revamp_trigger_impl.cc",
+    "hats_bluetooth_revamp_trigger_impl.h",
+  ]
+  deps = [
+    "//chromeos/ash/components/dbus/upstart",
+    "//components/device_event_log",
+    "//components/session_manager/core",
+  ]
+  public_deps = [
+    "//ash",
+    "//base",
+    "//chrome/browser/profiles",
+    "//chrome/browser/ui/webui/bluetooth_internals:mojo_bindings",
+    "//device/bluetooth",
+  ]
+}
+
+source_set("unit_tests") {
+  testonly = true
+  sources = [
+    "bluetooth_log_controller_unittest.cc",
+    "debug_logs_manager_unittest.cc",
+  ]
+  deps = [
+    ":bluetooth",
+    "//ash/constants",
+    "//base/test:test_support",
+    "//chromeos/ash/components/dbus/upstart",
+    "//components/account_id",
+    "//components/prefs:test_support",
+    "//components/user_manager:test_support",
+    "//dbus",
+    "//device/bluetooth",
+  ]
+}
