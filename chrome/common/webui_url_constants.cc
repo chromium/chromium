@@ -46,6 +46,13 @@ const char kChromeUIBluetoothInternalsURL[] = "chrome://bluetooth-internals";
 const char kChromeUIBookmarksHost[] = "bookmarks";
 const char kChromeUIBookmarksURL[] = "chrome://bookmarks/";
 const char kChromeUIBrowsingTopicsInternalsHost[] = "topics-internals";
+
+#if BUILDFLAG(CHROME_ROOT_STORE_CERT_MANAGEMENT_UI)
+const char kChromeUICertificateManagerDialogURL[] =
+    "chrome://certificate-manager/";
+const char kChromeUICertificateManagerHost[] = "certificate-manager";
+#endif  // BUILDFLAG(CHROME_ROOT_STORE_CERT_MANAGEMENT_UI)
+
 const char kChromeUICertificateViewerHost[] = "view-cert";
 const char kChromeUICertificateViewerURL[] = "chrome://view-cert/";
 const char kChromeUIChromeSigninHost[] = "chrome-signin";
@@ -345,9 +352,6 @@ const char kChromeUIBluetoothPairingHost[] = "bluetooth-pairing";
 const char kChromeUIBluetoothPairingURL[] = "chrome://bluetooth-pairing/";
 const char kChromeUIBorealisInstallerHost[] = "borealis-installer";
 const char kChromeUIBorealisInstallerUrl[] = "chrome://borealis-installer";
-const char kChromeUICertificateManagerDialogURL[] =
-    "chrome://certificate-manager/";
-const char kChromeUICertificateManagerHost[] = "certificate-manager";
 const char kChromeUICloudUploadHost[] = "cloud-upload";
 const char kChromeUICloudUploadURL[] = "chrome://cloud-upload/";
 const char kChromeUIConfirmPasswordChangeHost[] = "confirm-password-change";

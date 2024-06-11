@@ -314,8 +314,6 @@ extern const char kChromeUIBluetoothPairingHost[];
 extern const char kChromeUIBluetoothPairingURL[];
 extern const char kChromeUIBorealisInstallerHost[];
 extern const char kChromeUIBorealisInstallerUrl[];
-extern const char kChromeUICertificateManagerDialogURL[];
-extern const char kChromeUICertificateManagerHost[];
 extern const char kChromeUICloudUploadHost[];
 extern const char kChromeUICloudUploadURL[];
 extern const char kChromeUIConfirmPasswordChangeHost[];
@@ -578,6 +576,11 @@ extern const char kChromeUICastFeedbackHost[];
 #if BUILDFLAG(ENABLE_LENS_DESKTOP_GOOGLE_BRANDED_FEATURES)
 extern const char kChromeUILensURL[];
 #endif
+
+#if BUILDFLAG(CHROME_ROOT_STORE_CERT_MANAGEMENT_UI)
+extern const char kChromeUICertificateManagerDialogURL[];
+extern const char kChromeUICertificateManagerHost[];
+#endif  // BUILDFLAG(CHROME_ROOT_STORE_CERT_MANAGEMENT_UI)
 
 // Extensions sub pages.
 extern const char kExtensionConfigureCommandsSubPage[];

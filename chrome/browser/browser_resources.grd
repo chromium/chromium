@@ -88,7 +88,6 @@
         <include name="IDR_MOBILE_SETUP_PORTAL_PAGE_HTML" file="resources\chromeos\mobile_setup_portal.html" flattenhtml="true" type="BINDATA" />
 
         <include name="IDR_OS_CREDITS_HTML" file="resources\chromeos\about_os_credits.html" type="BINDATA" />
-        <include name="IDR_CERT_MANAGER_DIALOG_HTML" file="resources\chromeos\certificate_manager_dialog.html" type="BINDATA" />
         <include name="IDR_SLOW_CSS" file="resources\chromeos\slow.css" type="BINDATA" />
         <include name="IDR_SLOW_HTML" file="resources\chromeos\slow.html" type="BINDATA" />
         <include name="IDR_SLOW_JS" file="resources\chromeos\slow.js" type="BINDATA" />
@@ -251,6 +250,10 @@
         <part file="cart/resources/cart_resources.grdp" />
         <!-- FedCM -->
         <part file="ui/views/webid/resources/webid_resources.grdp" />
+      </if>
+      <if expr="chrome_root_store_cert_management_ui">
+        <include name="IDR_CERT_MANAGER_DIALOG_HTML" file="resources\certificate_manager\certificate_manager_dialog.html" type="BINDATA" />
+        <include name="IDR_CERT_MANAGER_DIALOG_V2_HTML" file="resources\certificate_manager\certificate_manager_dialog_v2.html" type="BINDATA" />
       </if>
     </includes>
   </release>
