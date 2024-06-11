@@ -394,7 +394,16 @@ bool IsSameOriginRedirect(const std::vector<GURL>& url_chain) {
   return previous_origin.IsSameOriginWith(url_chain[url_chain.size() - 1]);
 }
 
-#if DCHECK_IS_ON()
+// TODO(https://crbug.com/346000235) there is a known failure with extensions
+// See test: ExtensionWebRequestApiTestWithContextType.HSTSUpgradeAfterRedirect
+// We still want to check this in debug mode to avoid further regressions, but
+// because it was affecting to many developers with DCHECK_IS_ON() this was
+// downgraded as a DEBUG only check.
+// After getting the approval to rewrite the CSP parser in Rust, we should be
+// able to remove "pre-parsing" of CSP in the network process and directly
+// parse them later in the browser process. This will make this check to become
+// unnecessary.
+#ifndef NDEBUG
 void CheckParsedHeadersEquals(const network::mojom::ParsedHeadersPtr& lhs,
                               const network::mojom::ParsedHeadersPtr& rhs,
                               const GURL& url) {
@@ -463,7 +472,7 @@ void CheckParsedHeadersEquals(const network::mojom::ParsedHeadersPtr& lhs,
          "field does not match. Please add a DCHECK before this one "
          "checking for the missing field.";
 }
-#endif
+#endif  // NDEBUG
 
 }  // namespace
 
@@ -1412,7 +1421,7 @@ void NavigationURLLoaderImpl::ParseHeaders(
   // - ServiceWorker
   // - WebUI
   if (head->parsed_headers) {
-#if DCHECK_IS_ON()
+#ifndef NDEBUG
     // In debug mode, force reparsing the headers and check that they match.
     auto check = [](base::OnceClosure continuation,
                     network::mojom::URLResponseHead* head, GURL url,
@@ -1423,9 +1432,9 @@ void NavigationURLLoaderImpl::ParseHeaders(
     GetNetworkService()->ParseHeaders(
         url, head->headers,
         base::BindOnce(check, std::move(continuation), head, url));
-#else
+#else   // NDEBUG
     std::move(continuation).Run();
-#endif
+#endif  // NDEBUG
     return;
   }
 
