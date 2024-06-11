@@ -64,7 +64,6 @@ class ChromeUserManagerImpl
   void OnDeviceLocalAccountsChanged() override;
 
   void StopPolicyObserverForTesting();
-  void SetUsingSamlForTesting(const AccountId& account_id, bool using_saml);
 
   // policy::MinimumVersionPolicyHandler::Observer:
   void OnMinimumVersionStateChanged() override;

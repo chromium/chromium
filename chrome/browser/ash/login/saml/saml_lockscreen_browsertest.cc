@@ -193,8 +193,9 @@ class LockscreenWebUiTest : public MixinBasedInProcessBrowserTest {
 
     // Mark user as a SAML user: in production this would be done during online
     // sign in on the login screen, which we skip in these tests.
-    static_cast<ash::ChromeUserManagerImpl*>(user_manager::UserManager::Get())
-        ->SetUsingSamlForTesting(GetAccountId(), true);
+    user_manager::UserManager::Get()->SetUserUsingSaml(
+        GetAccountId(), /*using_saml=*/true,
+        /*using_saml_principals_api=*/false);
   }
 
   AccountId GetAccountId() { return logged_in_user_mixin_.GetAccountId(); }

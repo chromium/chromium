@@ -301,12 +301,6 @@ void ChromeUserManagerImpl::StopPolicyObserverForTesting() {
   cloud_external_data_policy_handlers_.clear();
 }
 
-void ChromeUserManagerImpl::SetUsingSamlForTesting(const AccountId& account_id,
-                                                   bool using_saml) {
-  user_manager::User& user = CHECK_DEREF(FindUserAndModify(account_id));
-  user.set_using_saml(using_saml);
-}
-
 void ChromeUserManagerImpl::OwnershipStatusChanged() {
   if (!device_local_account_policy_service_) {
     policy::BrowserPolicyConnectorAsh* connector =

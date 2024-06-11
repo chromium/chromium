@@ -160,6 +160,9 @@ class USER_MANAGER_EXPORT UserManagerBase : public UserManager {
                             const std::string& display_email) override;
   UserType GetUserType(const AccountId& account_id) override;
   void SaveUserType(const User* user) override;
+  void SetUserUsingSaml(const AccountId& account_id,
+                        bool using_saml,
+                        bool using_saml_principals_api) override;
   std::optional<std::string> GetOwnerEmail() override;
   void RecordOwner(const AccountId& owner) override;
   void UpdateUserAccountData(const AccountId& account_id,

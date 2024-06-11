@@ -335,6 +335,11 @@ class USER_MANAGER_EXPORT UserManager {
   // Saves user's type for |user| into local state preferences.
   virtual void SaveUserType(const User* user) = 0;
 
+  // Sets using saml to the user identified by `account_id`.
+  virtual void SetUserUsingSaml(const AccountId& account_id,
+                                bool using_saml,
+                                bool using_saml_principals_api) = 0;
+
   // Returns the email of the owner user stored in local state. Can return
   // nullopt if no user attempted to take ownership so far (e.g. there were
   // only guest sessions or it's a managed device). This is a secondary / backup

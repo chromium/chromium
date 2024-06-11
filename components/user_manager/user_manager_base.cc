@@ -14,6 +14,7 @@
 
 #include "ash/constants/ash_pref_names.h"
 #include "ash/constants/ash_switches.h"
+#include "base/check_deref.h"
 #include "base/check_is_test.h"
 #include "base/command_line.h"
 #include "base/compiler_specific.h"
@@ -692,6 +693,23 @@ void UserManagerBase::SaveUserType(const User* user) {
   user_type_update->Set(user->GetAccountId().GetAccountIdKey(),
                         static_cast<int>(user->GetType()));
   local_state_->CommitPendingWrite();
+}
+
+void UserManagerBase::SetUserUsingSaml(const AccountId& account_id,
+                                       bool using_saml,
+                                       bool using_saml_principals_api) {
+  DCHECK(!task_runner_ || task_runner_->RunsTasksInCurrentSequence());
+
+  auto& user = CHECK_DEREF(FindUserAndModify(account_id));
+  user.set_using_saml(using_saml);
+
+  user_manager::KnownUser known_user(local_state_);
+  known_user.UpdateUsingSAML(account_id, using_saml);
+  known_user.UpdateIsUsingSAMLPrincipalsAPI(
+      account_id, using_saml && using_saml_principals_api);
+  if (!using_saml) {
+    known_user.ClearPasswordSyncToken(account_id);
+  }
 }
 
 std::optional<std::string> UserManagerBase::GetOwnerEmail() {
