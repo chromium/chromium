@@ -1,5 +1,6 @@
 caption: Control the visibility of enterprise badging
 default: 0
+deprecated: true
 example_value: 1
 desc: |-
   This is a temporary policy that will be removed in M127.
