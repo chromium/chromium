@@ -58,6 +58,7 @@ import org.chromium.ui.display.DisplayUtil;
 
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
+import java.util.Optional;
 
 /** The URL text entry view for the Omnibox. */
 public abstract class UrlBar extends AutocompleteEditText {
@@ -89,7 +90,7 @@ public abstract class UrlBar extends AutocompleteEditText {
     private int mUrlDirection;
 
     private UrlBarDelegate mUrlBarDelegate;
-    private UrlTextChangeListener mUrlTextChangeListener;
+    private Optional<Callback<String>> mTextChangeListener;
     private UrlBarTextContextMenuDelegate mTextContextMenuDelegate;
     private Callback<Integer> mUrlDirectionListener;
 
@@ -171,16 +172,6 @@ public abstract class UrlBar extends AutocompleteEditText {
         void onTouchAfterFocus();
     }
 
-    /** Provides updates about the URL text changes. */
-    public interface UrlTextChangeListener {
-        /**
-         * Called when the text state has changed.
-         *
-         * @param textWithoutAutocomplete The url bar text without autocompletion.
-         */
-        void onTextChanged(String textWithoutAutocomplete);
-    }
-
     /** Delegate that provides the additional functionality to the textual context menus. */
     interface UrlBarTextContextMenuDelegate {
         /**
@@ -248,7 +239,7 @@ public abstract class UrlBar extends AutocompleteEditText {
         mUrlBarDelegate = null;
         setOnFocusChangeListener(null);
         mTextContextMenuDelegate = null;
-        mUrlTextChangeListener = null;
+        mTextChangeListener = Optional.empty();
     }
 
     /** Initialize the delegate that allows interaction with the Window. */
@@ -475,8 +466,8 @@ public abstract class UrlBar extends AutocompleteEditText {
      *
      * @param listener The listener to be notified.
      */
-    public void setUrlTextChangeListener(UrlTextChangeListener listener) {
-        mUrlTextChangeListener = listener;
+    public void setTextChangeListener(Callback<String> listener) {
+        mTextChangeListener = Optional.ofNullable(listener);
     }
 
     /** Set the text to report to Autofill services upon call to onProvideAutofillStructure. */
@@ -1052,14 +1043,7 @@ public abstract class UrlBar extends AutocompleteEditText {
 
     @Override
     public void onAutocompleteTextStateChanged(boolean updateDisplay) {
-        if (DEBUG) {
-            Log.i(TAG, "onAutocompleteTextStateChanged: DIS[%b]", updateDisplay);
-        }
-        if (mUrlTextChangeListener == null) return;
-        // crbug.com/764749
-        Log.w(TAG, "Text change observed, triggering autocomplete.");
-
-        mUrlTextChangeListener.onTextChanged(getTextWithoutAutocomplete());
+        mTextChangeListener.ifPresent(l -> l.onResult(getTextWithoutAutocomplete()));
     }
 
     private boolean containsRtl(CharSequence text) {

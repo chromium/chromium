@@ -19,7 +19,6 @@ import androidx.annotation.VisibleForTesting;
 import org.chromium.base.Callback;
 import org.chromium.base.ContextUtils;
 import org.chromium.chrome.browser.omnibox.UrlBar.ScrollType;
-import org.chromium.chrome.browser.omnibox.UrlBar.UrlTextChangeListener;
 import org.chromium.chrome.browser.omnibox.UrlBarCoordinator.SelectionState;
 import org.chromium.chrome.browser.omnibox.UrlBarProperties.AutocompleteText;
 import org.chromium.chrome.browser.omnibox.UrlBarProperties.UrlBarTextState;
@@ -29,15 +28,11 @@ import org.chromium.components.browser_ui.styles.SemanticColorUtils;
 import org.chromium.components.omnibox.OmniboxUrlEmphasizer.UrlEmphasisSpan;
 import org.chromium.ui.modelutil.PropertyModel;
 
-import java.util.ArrayList;
-import java.util.List;
-
 /** Handles collecting and pushing state information to the UrlBar model. */
-class UrlBarMediator implements UrlBar.UrlBarTextContextMenuDelegate, UrlBar.UrlTextChangeListener {
+class UrlBarMediator implements UrlBar.UrlBarTextContextMenuDelegate {
     private final @NonNull Context mContext;
     private final @NonNull PropertyModel mModel;
     private final @NonNull Callback<Boolean> mOnFocusChangeCallback;
-    private final @NonNull List<UrlTextChangeListener> mUrlTextChangeListeners = new ArrayList<>();
 
     private boolean mHasFocus;
 
@@ -69,7 +64,6 @@ class UrlBarMediator implements UrlBar.UrlBarTextContextMenuDelegate, UrlBar.Url
         mModel.set(UrlBarProperties.FOCUS_CHANGE_CALLBACK, this::onUrlFocusChange);
         mModel.set(UrlBarProperties.SHOW_CURSOR, false);
         mModel.set(UrlBarProperties.TEXT_CONTEXT_MENU_DELEGATE, this);
-        mModel.set(UrlBarProperties.URL_TEXT_CHANGE_LISTENER, this);
         mModel.set(UrlBarProperties.HAS_URL_SUGGESTIONS, false);
         setBrandedColorScheme(BrandedColorScheme.APP_DEFAULT);
         pushTextToModel();
@@ -78,13 +72,12 @@ class UrlBarMediator implements UrlBar.UrlBarTextContextMenuDelegate, UrlBar.Url
     public void destroy() {
         mModel.set(UrlBarProperties.FOCUS_CHANGE_CALLBACK, null);
         mModel.set(UrlBarProperties.TEXT_CONTEXT_MENU_DELEGATE, null);
-        mModel.set(UrlBarProperties.URL_TEXT_CHANGE_LISTENER, null);
-        mUrlTextChangeListeners.clear();
+        mModel.set(UrlBarProperties.TEXT_CHANGE_LISTENER, null);
     }
 
-    /** Adds a listener for url text changes. */
-    public void addUrlTextChangeListener(UrlTextChangeListener listener) {
-        mUrlTextChangeListeners.add(listener);
+    /** Sets a listener for url text changes. */
+    public void setTextChangeListener(Callback<String> listener) {
+        mModel.set(UrlBarProperties.TEXT_CHANGE_LISTENER, listener);
     }
 
     /**
@@ -375,16 +368,6 @@ class UrlBarMediator implements UrlBar.UrlBarTextContextMenuDelegate, UrlBar.Url
         if (pathIndex <= 0) return url;
 
         return url.substring(0, pathIndex);
-    }
-
-    /**
-     * @see UrlTextChangeListener
-     */
-    @Override
-    public void onTextChanged(String textWithoutAutocomplete) {
-        for (int i = 0; i < mUrlTextChangeListeners.size(); i++) {
-            mUrlTextChangeListeners.get(i).onTextChanged(textWithoutAutocomplete);
-        }
     }
 
     /**

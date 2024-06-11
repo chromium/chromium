@@ -24,6 +24,7 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mockito;
 
+import org.chromium.base.Callback;
 import org.chromium.base.MathUtils;
 import org.chromium.base.test.params.ParameterAnnotations.UseRunnerDelegate;
 import org.chromium.base.test.util.Batch;
@@ -213,12 +214,12 @@ public class UrlBarTest {
         final CallbackHelper autocompleteHelper = new CallbackHelper();
         final AtomicReference<String> requestedAutocompleteText = new AtomicReference<String>();
         final AtomicBoolean didPreventInlineAutocomplete = new AtomicBoolean();
-        mUrlBar.setUrlTextChangeListener(
+        mUrlBar.setTextChangeListener(
                 (textWithoutAutocomplete) -> {
                     autocompleteHelper.notifyCalled();
                     requestedAutocompleteText.set(textWithoutAutocomplete);
                     didPreventInlineAutocomplete.set(!mUrlBar.shouldAutocomplete());
-                    mUrlBar.setUrlTextChangeListener(null);
+                    mUrlBar.setTextChangeListener(null);
                 });
 
         AutocompleteState state = setSelection(selectionStart, selectionEnd);
@@ -343,7 +344,7 @@ public class UrlBarTest {
     public void testSendCursorPosition() throws TimeoutException {
         final CallbackHelper autocompleteHelper = new CallbackHelper();
         final AtomicInteger cursorPositionUsed = new AtomicInteger();
-        mUrlBar.setUrlTextChangeListener(
+        mUrlBar.setTextChangeListener(
                 (textWithoutAutocomplete) -> {
                     int cursorPosition =
                             mUrlBar.getSelectionEnd() == mUrlBar.getSelectionStart()
@@ -392,7 +393,7 @@ public class UrlBarTest {
         autocompleteHelper.waitForCallback(4);
         Assert.assertEquals(0, cursorPositionUsed.get());
 
-        mUrlBar.setUrlTextChangeListener(null);
+        mUrlBar.setTextChangeListener(null);
     }
 
     /**
@@ -411,14 +412,14 @@ public class UrlBarTest {
 
         final CallbackHelper autocompleteHelper = new CallbackHelper();
         final AtomicBoolean didPreventInlineAutocomplete = new AtomicBoolean();
-        mUrlBar.setUrlTextChangeListener(
+        mUrlBar.setTextChangeListener(
                 (textWithoutAutocomplete) -> {
                     if (!TextUtils.equals(textToBeEntered, mUrlBar.getTextWithoutAutocomplete())) {
                         return;
                     }
                     didPreventInlineAutocomplete.set(!mUrlBar.shouldAutocomplete());
                     autocompleteHelper.notifyCalled();
-                    mUrlBar.setUrlTextChangeListener(null);
+                    mUrlBar.setTextChangeListener(null);
                 });
 
         mOmnibox.typeText(textToBeEntered, false);
@@ -439,12 +440,12 @@ public class UrlBarTest {
 
         final CallbackHelper autocompleteHelper = new CallbackHelper();
         final AtomicBoolean didPreventInlineAutocomplete = new AtomicBoolean();
-        mUrlBar.setUrlTextChangeListener(
+        mUrlBar.setTextChangeListener(
                 (textWithoutAutocomplete) -> {
                     if (!TextUtils.equals("test", mUrlBar.getTextWithoutAutocomplete())) return;
                     didPreventInlineAutocomplete.set(!mUrlBar.shouldAutocomplete());
                     autocompleteHelper.notifyCalled();
-                    mUrlBar.setUrlTextChangeListener(null);
+                    mUrlBar.setTextChangeListener(null);
                 });
 
         mOmnibox.sendKey(KeyEvent.KEYCODE_DEL);
@@ -578,17 +579,17 @@ public class UrlBarTest {
     @SmallTest
     @DisabledTest(message = "Disabled because of b/333536371")
     public void testUrlTextChangeListener() {
-        UrlBar.UrlTextChangeListener listener = Mockito.mock(UrlBar.UrlTextChangeListener.class);
-        mUrlBar.setUrlTextChangeListener(listener);
+        Callback<String> listener = Mockito.mock(Callback.class);
+        mUrlBar.setTextChangeListener(listener);
 
         mOmnibox.setText("onomatop");
-        Mockito.verify(listener).onTextChanged("onomatop");
+        Mockito.verify(listener).onResult("onomatop");
 
         // Setting autocomplete does not send a change update.
         mOmnibox.setAutocompleteText("oeia", Optional.empty());
 
         mOmnibox.setText("");
-        Mockito.verify(listener).onTextChanged("");
+        Mockito.verify(listener).onResult("");
     }
 
     @Test

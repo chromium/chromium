@@ -89,8 +89,8 @@ class UrlBarViewBinder {
             }
         } else if (UrlBarProperties.URL_DIRECTION_LISTENER.equals(propertyKey)) {
             view.setUrlDirectionListener(model.get(UrlBarProperties.URL_DIRECTION_LISTENER));
-        } else if (UrlBarProperties.URL_TEXT_CHANGE_LISTENER.equals(propertyKey)) {
-            view.setUrlTextChangeListener(model.get(UrlBarProperties.URL_TEXT_CHANGE_LISTENER));
+        } else if (UrlBarProperties.TEXT_CHANGE_LISTENER.equals(propertyKey)) {
+            view.setTextChangeListener(model.get(UrlBarProperties.TEXT_CHANGE_LISTENER));
         } else if (UrlBarProperties.WINDOW_DELEGATE.equals(propertyKey)) {
             view.setWindowDelegate(model.get(UrlBarProperties.WINDOW_DELEGATE));
         } else if (UrlBarProperties.HAS_URL_SUGGESTIONS.equals(propertyKey)) {

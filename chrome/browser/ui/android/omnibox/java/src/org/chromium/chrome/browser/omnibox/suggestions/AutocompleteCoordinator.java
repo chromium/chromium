@@ -24,7 +24,6 @@ import org.chromium.chrome.browser.lifecycle.ActivityLifecycleDispatcher;
 import org.chromium.chrome.browser.omnibox.DeferredIMEWindowInsetApplicationCallback;
 import org.chromium.chrome.browser.omnibox.LocationBarDataProvider;
 import org.chromium.chrome.browser.omnibox.R;
-import org.chromium.chrome.browser.omnibox.UrlBar.UrlTextChangeListener;
 import org.chromium.chrome.browser.omnibox.UrlBarEditingTextStateProvider;
 import org.chromium.chrome.browser.omnibox.UrlFocusChangeListener;
 import org.chromium.chrome.browser.omnibox.suggestions.AutocompleteController.OnSuggestionsReceivedListener;
@@ -71,7 +70,7 @@ import java.util.Optional;
 
 /** Coordinator that handles the interactions with the autocomplete system. */
 public class AutocompleteCoordinator
-        implements UrlFocusChangeListener, UrlTextChangeListener, OmniboxSuggestionsVisualState {
+        implements UrlFocusChangeListener, OmniboxSuggestionsVisualState {
     private final @NonNull ViewGroup mParent;
     private final @NonNull ObservableSupplier<Profile> mProfileSupplier;
     private final @NonNull Callback<Profile> mProfileChangeCallback;
@@ -435,7 +434,7 @@ public class AutocompleteCoordinator
         return false;
     }
 
-    @Override
+    /** Notify the Autocomplete about Omnibox text change. */
     public void onTextChanged(String textWithoutAutocomplete) {
         mMediator.onTextChanged(textWithoutAutocomplete);
     }

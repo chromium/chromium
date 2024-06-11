@@ -157,12 +157,12 @@ public class OmniboxTestUtils {
 
     /** Disables any live autocompletion, making Omnibox behave like a standard text field. */
     public void disableLiveAutocompletion() {
-        TestThreadUtils.runOnUiThreadBlocking(() -> mUrlBar.setUrlTextChangeListener(null));
+        TestThreadUtils.runOnUiThreadBlocking(() -> mUrlBar.setTextChangeListener(null));
     }
 
     /**
-     * Waits for all the animations to complete.
-     * Allows any preceding operation to kick off an animation.
+     * Waits for all the animations to complete. Allows any preceding operation to kick off an
+     * animation.
      */
     public void waitAnimationsComplete() {
         // Note: SearchActivity has no toolbar and no animations, but we still need to

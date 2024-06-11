@@ -14,7 +14,6 @@ import org.chromium.base.Callback;
 import org.chromium.chrome.browser.omnibox.UrlBar.ScrollType;
 import org.chromium.chrome.browser.omnibox.UrlBar.UrlBarDelegate;
 import org.chromium.chrome.browser.omnibox.UrlBar.UrlBarTextContextMenuDelegate;
-import org.chromium.chrome.browser.omnibox.UrlBar.UrlTextChangeListener;
 import org.chromium.chrome.browser.omnibox.UrlBarCoordinator.SelectionState;
 import org.chromium.ui.base.WindowDelegate;
 import org.chromium.ui.modelutil.PropertyKey;
@@ -136,8 +135,8 @@ class UrlBarProperties {
     public static final WritableObjectPropertyKey<Callback<Integer>> URL_DIRECTION_LISTENER =
             new WritableObjectPropertyKey<>();
 
-    /** The callback to be notified on url text changes. @see UrlTextChangeListener. */
-    public static final WritableObjectPropertyKey<UrlTextChangeListener> URL_TEXT_CHANGE_LISTENER =
+    /** The callback to be notified on url text changes. */
+    public static final WritableObjectPropertyKey<Callback<String>> TEXT_CHANGE_LISTENER =
             new WritableObjectPropertyKey<>();
 
     /** Specifies the typeface for url bar text. */
@@ -176,7 +175,7 @@ class UrlBarProperties {
                 TEXT_CONTEXT_MENU_DELEGATE,
                 TEXT_STATE,
                 URL_DIRECTION_LISTENER,
-                URL_TEXT_CHANGE_LISTENER,
+                TEXT_CHANGE_LISTENER,
                 INCOGNITO_COLORS_ENABLED,
                 WINDOW_DELEGATE,
                 HAS_URL_SUGGESTIONS,
