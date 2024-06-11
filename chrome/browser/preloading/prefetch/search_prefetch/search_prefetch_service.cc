@@ -131,7 +131,7 @@ GURL GetPreloadURLFromMatch(
                               template_url_service->search_terms_data()));
     SCOPED_CRASH_KEY_STRING32("Bug_345275145", "prefetch_param",
                               prefetch_param);
-    SCOPED_CRASH_KEY_STRING256("Bug_345275145", "provider_url",
+    SCOPED_CRASH_KEY_STRING1024("Bug_345275145", "provider_url",
                                default_provider->url());
     base::debug::DumpWithoutCrashing();
   }
