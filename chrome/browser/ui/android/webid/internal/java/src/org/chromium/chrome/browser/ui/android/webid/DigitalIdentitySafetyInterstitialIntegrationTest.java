@@ -347,6 +347,46 @@ public class DigitalIdentitySafetyInterstitialIntegrationTest {
     }
 
     /**
+     * Test that no interestitial is shown if the user switches to a different tab prior to the
+     * browser determining whether an interstitial should be shown.
+     *
+     * <p>This scenario is unlikely because it is difficult for a user to open a tab in this very
+     * short period of time.
+     */
+    @Test
+    @LargeTest
+    @EnableFeatures(ContentFeatureList.WEB_IDENTITY_DIGITAL_CREDENTIALS)
+    public void testNoDialogIfTabSwitchedDuringAndroidOsCall() throws TimeoutException {
+        DelayedReturnIdentityCredentialsDelegate delegate =
+                new DelayedReturnIdentityCredentialsDelegate();
+        DigitalIdentityProvider.setDelegateForTesting(delegate);
+        setFieldTrialParam(
+                DigitalIdentitySafetyInterstitialBridge
+                        .DIGITAL_IDENTITY_HIGH_RISK_DIALOG_PARAM_VALUE);
+        addModalDialogObserver(
+                /* expectedInterstitialParagraph1ResourceId= */ -1, /* pressButtonOnShow= */ false);
+
+        DOMUtils.clickNode(mActivityTestRule.getWebContents(), "request_age_only_button");
+
+        CriteriaHelper.pollInstrumentationThread(
+                () -> {
+                    return delegate.hasPromiseToFulfill();
+                });
+
+        // Open new tab.
+        mActivityTestRule.loadUrlInNewTab(
+                mTestServer.getURL("/chrome/test/data/android/simple.html"));
+
+        TestThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    delegate.fulfillPromise();
+                });
+
+        // An interstitial should not have been shown.
+        assertFalse(mModalDialogObserver.wasAnyDialogShown());
+    }
+
+    /**
      * Test that the interstitial is updated to indicate that the credential request has been
      * canceled if the page navigates while the interstitial is showing.
      */

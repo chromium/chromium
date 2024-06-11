@@ -300,7 +300,9 @@ void DigitalIdentityRequestImpl::ShowInterstitialIfNeeded(
     return;
   }
 
-  if (!render_frame_host().IsActive()) {
+  if (!render_frame_host().IsActive() ||
+      render_frame_host().GetVisibilityState() !=
+          content::PageVisibilityState::kVisible) {
     CompleteRequest(base::unexpected(RequestStatusForMetrics::kErrorOther));
     return;
   }
