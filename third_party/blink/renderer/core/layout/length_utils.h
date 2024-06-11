@@ -360,10 +360,29 @@ CORE_EXPORT LayoutUnit ResolveUsedColumnGap(LayoutUnit available_size,
 
 CORE_EXPORT LayoutUnit ColumnInlineProgression(LayoutUnit available_size,
                                                const ComputedStyle&);
+
 // Compute physical margins.
 CORE_EXPORT PhysicalBoxStrut
 ComputePhysicalMargins(const ComputedStyle&,
-                       LogicalSize percentage_resolution_size);
+                       PhysicalSize percentage_resolution_size);
+
+inline PhysicalBoxStrut ComputePhysicalMargins(
+    const ComputedStyle& style,
+    LogicalSize percentage_resolution_size) {
+  if (!style.MayHaveMargin()) {
+    return PhysicalBoxStrut();
+  }
+
+  // This function may be called for determining intrinsic margins, clamp
+  // indefinite %-sizes to zero. See:
+  // https://drafts.csswg.org/css-sizing-3/#min-percentage-contribution
+  percentage_resolution_size =
+      percentage_resolution_size.ClampIndefiniteToZero();
+
+  PhysicalSize physical_resolution_size =
+      ToPhysicalSize(percentage_resolution_size, style.GetWritingMode());
+  return ComputePhysicalMargins(style, physical_resolution_size);
+}
 
 inline PhysicalBoxStrut ComputePhysicalMargins(
     const ConstraintSpace& constraint_space,

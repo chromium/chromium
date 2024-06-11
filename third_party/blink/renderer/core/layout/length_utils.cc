@@ -1217,27 +1217,19 @@ LayoutUnit ColumnInlineProgression(LayoutUnit available_size,
 
 PhysicalBoxStrut ComputePhysicalMargins(
     const ComputedStyle& style,
-    LogicalSize percentage_resolution_size) {
+    PhysicalSize percentage_resolution_size) {
   if (!style.MayHaveMargin())
     return PhysicalBoxStrut();
 
-  // This function may be called for determining intrinsic margins, clamp
-  // indefinite %-sizes to zero. See:
-  // https://drafts.csswg.org/css-sizing-3/#min-percentage-contribution
-  percentage_resolution_size =
-      percentage_resolution_size.ClampIndefiniteToZero();
-
-  PhysicalSize physical_resolution_size =
-      ToPhysicalSize(percentage_resolution_size, style.GetWritingMode());
-
   return PhysicalBoxStrut(
-      MinimumValueForLength(style.MarginTop(), physical_resolution_size.height),
+      MinimumValueForLength(style.MarginTop(),
+                            percentage_resolution_size.height),
       MinimumValueForLength(style.MarginRight(),
-                            physical_resolution_size.width),
+                            percentage_resolution_size.width),
       MinimumValueForLength(style.MarginBottom(),
-                            physical_resolution_size.height),
+                            percentage_resolution_size.height),
       MinimumValueForLength(style.MarginLeft(),
-                            physical_resolution_size.width));
+                            percentage_resolution_size.width));
 }
 
 BoxStrut ComputeMarginsFor(const ConstraintSpace& constraint_space,
