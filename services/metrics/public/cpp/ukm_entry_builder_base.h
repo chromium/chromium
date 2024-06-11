@@ -17,7 +17,9 @@ namespace ukm::internal {
 class METRICS_EXPORT UkmEntryBuilderBase {
  public:
   UkmEntryBuilderBase(const UkmEntryBuilderBase&) = delete;
+  UkmEntryBuilderBase(UkmEntryBuilderBase&&);
   UkmEntryBuilderBase& operator=(const UkmEntryBuilderBase&) = delete;
+  UkmEntryBuilderBase& operator=(UkmEntryBuilderBase&&);
 
   virtual ~UkmEntryBuilderBase();
 
