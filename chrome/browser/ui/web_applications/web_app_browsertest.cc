@@ -804,9 +804,8 @@ IN_PROC_BROWSER_TEST_F(WebAppBrowserTest, DesktopPWAsOpenLinksInNewTab) {
   ASSERT_TRUE(app_browser->app_controller());
 
   EXPECT_EQ(chrome::GetTotalBrowserCount(), 2u);
-  Browser* browser2 =
-      ui_test_utils::OpenNewEmptyWindowAndWaitUntilSetAsLastActive(
-          app_browser->profile());
+  Browser* browser2 = ui_test_utils::OpenNewEmptyWindowAndWaitUntilActivated(
+      app_browser->profile());
   EXPECT_EQ(chrome::GetTotalBrowserCount(), 3u);
 
   TabStripModel* model2 = browser2->tab_strip_model();

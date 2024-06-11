@@ -326,6 +326,13 @@ void WaitUntilBrowserBecomeActive(Browser* browser);
 // Returns true if |browser| is active.
 bool IsBrowserActive(Browser* browser);
 
+// Opens a new browser window with chrome::NewEmptyWindow() and wait until it
+// becomes active.
+// Returns newly created browser.
+Browser* OpenNewEmptyWindowAndWaitUntilActivated(
+    Profile* profile,
+    bool should_trigger_session_restore = false);
+
 // Waits for |browser| becomes the last active browser.
 // By default, the waiting will be satisfied if the expected |browser| is the
 // last active browser in BrowserList. In most cases, this is enough for the
@@ -338,16 +345,13 @@ bool IsBrowserActive(Browser* browser);
 // executed first, we can configure the waiter to be satisfied upon
 // OnBrowserSetLastActive is observed by passing
 // |wait_for_set_last_active_observed| being true.
+// Note: The last active browser is not necessarily the current active browser.
+// A browser could be de-activated and still the last active browser. In many
+// tests, BrowserList::GetLastActive() is incorrectly used to verify the
+// expected browser being the active browser, see b/345848530.
 void WaitForBrowserSetLastActive(
     Browser* browser,
     bool wait_for_set_last_active_observed = false);
-
-// Opens a new browser window with chrome::NewEmptyWindow() and wait until it
-// becomes the last active browser.
-// Returns newly created browser.
-Browser* OpenNewEmptyWindowAndWaitUntilSetAsLastActive(
-    Profile* profile,
-    bool should_trigger_session_restore = false);
 
 // Send the given text to the omnibox and wait until it's updated.
 void SendToOmniboxAndSubmit(

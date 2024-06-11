@@ -239,9 +239,9 @@ IN_PROC_BROWSER_TEST_F(BrowserCommandsTest, MoveToExistingWindow) {
   };
 
   // Create another window, and add tabs.
-  ui_test_utils::OpenNewEmptyWindowAndWaitUntilSetAsLastActive(
-      browser()->profile());
-  Browser* second_window = BrowserList::GetInstance()->GetLastActive();
+  Browser* second_window =
+      ui_test_utils::OpenNewEmptyWindowAndWaitUntilActivated(
+          browser()->profile());
   AddTabs(browser(), 2);
   AddTabs(second_window, 1);
   ASSERT_TRUE(browser()->tab_strip_model()->count() == 3);
@@ -285,11 +285,11 @@ IN_PROC_BROWSER_TEST_F(BrowserCommandsTest, MoveActiveTabToNewWindow) {
   ui_test_utils::BrowserChangeObserver new_browser_observer(
       nullptr, ui_test_utils::BrowserChangeObserver::ChangeType::kAdded);
   chrome::ExecuteCommand(browser(), IDC_MOVE_TAB_TO_NEW_WINDOW);
-  ui_test_utils::WaitForBrowserSetLastActive(new_browser_observer.Wait());
+  Browser* active_browser = new_browser_observer.Wait();
+  ui_test_utils::WaitUntilBrowserBecomeActive(active_browser);
 
   // Now we should have: two browsers, each with one tab (url1 in browser(),
   // and url2 in the new one).
-  Browser* active_browser = browser_list->GetLastActive();
   EXPECT_EQ(browser_list->size(), 2u);
   EXPECT_NE(active_browser, browser());
   EXPECT_EQ(browser()->tab_strip_model()->count(), 1);
@@ -318,14 +318,14 @@ IN_PROC_BROWSER_TEST_F(BrowserCommandsTest,
   ui_test_utils::BrowserChangeObserver new_browser_observer(
       nullptr, ui_test_utils::BrowserChangeObserver::ChangeType::kAdded);
   chrome::ExecuteCommand(browser(), IDC_MOVE_TAB_TO_NEW_WINDOW);
-  ui_test_utils::WaitForBrowserSetLastActive(new_browser_observer.Wait());
+  Browser* active_browser = new_browser_observer.Wait();
+  ui_test_utils::WaitUntilBrowserBecomeActive(active_browser);
 
   // Now we should have two browsers:
   // The original, now with only a single tab: url2
   // The new one with the two tabs we moved: url1 and url3. This one should
   // be active.
   BrowserList* browser_list = BrowserList::GetInstance();
-  Browser* active_browser = browser_list->GetLastActive();
   EXPECT_EQ(browser_list->size(), 2u);
   EXPECT_NE(active_browser, browser());
   ASSERT_EQ(browser()->tab_strip_model()->count(), 1);

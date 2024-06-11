@@ -1106,7 +1106,7 @@ IN_PROC_BROWSER_TEST_F(BrowserCloseManagerBrowserTest,
   Profile* other_profile_ptr = other_profile.get();
   profile_manager->RegisterTestingProfile(std::move(other_profile), true);
   Browser* other_profile_browser = CreateBrowser(other_profile_ptr);
-  ui_test_utils::WaitForBrowserSetLastActive(other_profile_browser);
+  ui_test_utils::WaitUntilBrowserBecomeActive(other_profile_browser);
 
   ASSERT_NO_FATAL_FAILURE(CreateStalledDownload(browser()));
   {
@@ -1121,10 +1121,10 @@ IN_PROC_BROWSER_TEST_F(BrowserCloseManagerBrowserTest,
       nullptr, ui_test_utils::BrowserChangeObserver::ChangeType::kAdded);
   TestBrowserCloseManager::AttemptClose(
       TestBrowserCloseManager::USER_CHOICE_USER_CANCELS_CLOSE);
-  ui_test_utils::WaitForBrowserSetLastActive(new_browser_observer.Wait());
-  EXPECT_FALSE(browser_shutdown::IsTryingToQuit());
-  Browser* opened_browser = BrowserList::GetInstance()->GetLastActive();
+  Browser* opened_browser = new_browser_observer.Wait();
   ASSERT_TRUE(opened_browser);
+  ui_test_utils::WaitUntilBrowserBecomeActive(opened_browser);
+  EXPECT_FALSE(browser_shutdown::IsTryingToQuit());
   EXPECT_NE(other_profile_ptr, opened_browser->profile());
   EXPECT_EQ(GURL(chrome::kChromeUIDownloadsURL),
             opened_browser->tab_strip_model()
