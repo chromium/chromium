@@ -21,7 +21,7 @@ import {
   setAvc1Parameters,
   VideoResult,
 } from '../device/index.js';
-import {TimeLapseResult} from '../device/mode/video';
+import {TimeLapseResult} from '../device/mode/video.js';
 import * as dom from '../dom.js';
 import * as error from '../error.js';
 import * as expert from '../expert.js';
