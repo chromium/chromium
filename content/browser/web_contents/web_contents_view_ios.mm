@@ -242,7 +242,7 @@ void WebContentsViewIOS::RenderViewHostChanged(RenderViewHost* old_host,
   }
   web_contents_->UpdateBrowserControlsState(cc::BrowserControlsState::kBoth,
                                             cc::BrowserControlsState::kHidden,
-                                            false);
+                                            false, std::nullopt);
 }
 
 void WebContentsViewIOS::SetOverscrollControllerEnabled(bool enabled) {}
