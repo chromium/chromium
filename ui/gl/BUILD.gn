@@ -50,8 +50,6 @@ component("gl") {
 
   sources = [
     "angle_implementation.h",
-    "dual_gpu_state.cc",
-    "dual_gpu_state.h",
     "egl_timestamps.h",
     "gl_bindings.cc",
     "gl_bindings.h",
@@ -360,11 +358,6 @@ component("gl") {
     ]
   }
   if (is_mac) {
-    sources += [
-      "dual_gpu_state_mac.cc",
-      "dual_gpu_state_mac.h",
-    ]
-
     frameworks += [
       "OpenGL.framework",
       "Quartz.framework",
