@@ -7138,6 +7138,7 @@
     'ios18_sdk_simulator_tests': {
       'ios_common_tests': {
         'variants': [
+          'SIM_IPHONE_14_17_5',
           'SIM_IPHONE_15_18_0',
         ],
       },
@@ -7146,6 +7147,7 @@
           'xcodebuild_sim_runner',
         ],
         'variants': [
+          'SIM_IPHONE_14_17_5',
           'SIM_IPHONE_15_18_0',
         ],
       },
@@ -7155,8 +7157,8 @@
           'record_failed_tests',
         ],
         'variants': [
-          'SIM_IPAD_AIR_6TH_GEN_18_0',
           'SIM_IPAD_PRO_7TH_GEN_18_0',
+          'SIM_IPHONE_14_17_5',
           'SIM_IPHONE_15_18_0',
         ],
       },
@@ -7166,8 +7168,8 @@
           'record_failed_tests',
         ],
         'variants': [
-          'SIM_IPAD_AIR_6TH_GEN_18_0',
           'SIM_IPAD_PRO_7TH_GEN_18_0',
+          'SIM_IPHONE_14_17_5',
           'SIM_IPHONE_15_18_0',
         ],
       },

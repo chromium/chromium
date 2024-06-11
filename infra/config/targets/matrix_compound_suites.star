@@ -839,6 +839,7 @@ targets.legacy_matrix_compound_suite(
         "ios_common_tests": targets.legacy_matrix_config(
             variants = [
                 "SIM_IPHONE_15_18_0",
+                "SIM_IPHONE_14_17_5",
             ],
         ),
         "ios_crash_xcuitests": targets.legacy_matrix_config(
@@ -847,6 +848,7 @@ targets.legacy_matrix_compound_suite(
             ],
             variants = [
                 "SIM_IPHONE_15_18_0",
+                "SIM_IPHONE_14_17_5",
             ],
         ),
         "ios_eg2_tests": targets.legacy_matrix_config(
@@ -856,7 +858,7 @@ targets.legacy_matrix_compound_suite(
             ],
             variants = [
                 "SIM_IPHONE_15_18_0",
-                "SIM_IPAD_AIR_6TH_GEN_18_0",
+                "SIM_IPHONE_14_17_5",
                 "SIM_IPAD_PRO_7TH_GEN_18_0",
             ],
         ),
@@ -867,7 +869,7 @@ targets.legacy_matrix_compound_suite(
             ],
             variants = [
                 "SIM_IPHONE_15_18_0",
-                "SIM_IPAD_AIR_6TH_GEN_18_0",
+                "SIM_IPHONE_14_17_5",
                 "SIM_IPAD_PRO_7TH_GEN_18_0",
             ],
         ),
