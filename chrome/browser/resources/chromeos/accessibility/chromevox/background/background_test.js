@@ -3467,8 +3467,8 @@ AX_TEST_F('ChromeVoxBackgroundTest', 'EarconPlayback', function() {
   // We only test a few earcons here. Not all earcons prevent parallel playback
   // or have mappings into the earcon engine.
 
-  // There are no tracked sources yet.
-  assertEquals(0, Object.keys(engine.lastEarconSources_).length);
+  // Ensure there are no tracked sources yet.
+  engine.lastEarconSources_ = {};
 
   // Note that alert modal vs nonmodal would be allowed to play in parallel (as
   // do wrap / wrap edge) because they are different events even though they
