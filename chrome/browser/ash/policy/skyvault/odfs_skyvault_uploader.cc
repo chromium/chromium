@@ -14,10 +14,12 @@ namespace ash::cloud_upload {
 namespace {
 
 // Runs the upload callback provided to `OdfsSkyvaultUploader::Upload`.
-void OnUploadDone(scoped_refptr<OdfsSkyvaultUploader> odfs_skyvault_uploader,
-                  base::OnceCallback<void(bool)> upload_callback,
-                  bool success) {
-  std::move(upload_callback).Run(success);
+void OnUploadDone(
+    scoped_refptr<OdfsSkyvaultUploader> odfs_skyvault_uploader,
+    base::OnceCallback<void(bool, storage::FileSystemURL)> upload_callback,
+    bool success,
+    storage::FileSystemURL file_url) {
+  std::move(upload_callback).Run(success, std::move(file_url));
 }
 
 }  // namespace
@@ -27,8 +29,8 @@ void OdfsSkyvaultUploader::Upload(
     Profile* profile,
     const base::FilePath& file_path,
     FileType file_type,
-    base::RepeatingCallback<void(int)> progress_callback,
-    base::OnceCallback<void(bool)> upload_callback) {
+    base::RepeatingCallback<void(int64_t)> progress_callback,
+    base::OnceCallback<void(bool, storage::FileSystemURL)> upload_callback) {
   scoped_refptr<OdfsSkyvaultUploader> odfs_skyvault_uploader =
       new OdfsSkyvaultUploader(profile, file_path, file_type,
                                std::move(progress_callback));
@@ -42,7 +44,7 @@ OdfsSkyvaultUploader::OdfsSkyvaultUploader(
     Profile* profile,
     const base::FilePath& file_path,
     FileType file_type,
-    base::RepeatingCallback<void(int)> progress_callback)
+    base::RepeatingCallback<void(int64_t)> progress_callback)
     : profile_(profile),
       file_system_context_(
           file_manager::util::GetFileManagerFileSystemContext(profile)),
@@ -57,12 +59,13 @@ OdfsSkyvaultUploader::~OdfsSkyvaultUploader() {
   }
 }
 
-void OdfsSkyvaultUploader::Run(base::OnceCallback<void(bool)> upload_callback) {
+void OdfsSkyvaultUploader::Run(
+    base::OnceCallback<void(bool, storage::FileSystemURL)> upload_callback) {
   upload_callback_ = std::move(upload_callback);
 
   if (!profile_) {
     LOG(ERROR) << "No profile";
-    OnEndUpload(/*success=*/false);
+    OnEndUpload(/*success=*/false, /*url=*/{});
     return;
   }
 
@@ -70,13 +73,13 @@ void OdfsSkyvaultUploader::Run(base::OnceCallback<void(bool)> upload_callback) {
       (file_manager::VolumeManager::Get(profile_));
   if (!volume_manager) {
     LOG(ERROR) << "No volume manager";
-    OnEndUpload(/*success=*/false);
+    OnEndUpload(/*success=*/false, /*url=*/{});
     return;
   }
   io_task_controller_ = volume_manager->io_task_controller();
   if (!io_task_controller_) {
     LOG(ERROR) << "No task_controller";
-    OnEndUpload(/*success=*/false);
+    OnEndUpload(/*success=*/false, /*url=*/{});
     return;
   }
 
@@ -86,8 +89,9 @@ void OdfsSkyvaultUploader::Run(base::OnceCallback<void(bool)> upload_callback) {
   GetODFSMetadataAndStartIOTask();
 }
 
-void OdfsSkyvaultUploader::OnEndUpload(bool success) {
-  std::move(upload_callback_).Run(success);
+void OdfsSkyvaultUploader::OnEndUpload(bool success,
+                                       storage::FileSystemURL url) {
+  std::move(upload_callback_).Run(success, std::move(url));
 }
 
 void OdfsSkyvaultUploader::GetODFSMetadataAndStartIOTask() {
@@ -95,7 +99,7 @@ void OdfsSkyvaultUploader::GetODFSMetadataAndStartIOTask() {
       GetODFS(profile_);
   if (!file_system) {
     LOG(ERROR) << "ODFS not found";
-    OnEndUpload(/*success=*/false);
+    OnEndUpload(/*success=*/false, /*url=*/{});
     return;
   }
 
@@ -104,7 +108,7 @@ void OdfsSkyvaultUploader::GetODFSMetadataAndStartIOTask() {
       profile_, file_system_context_, destination_folder_path);
   if (!destination_folder_url.is_valid()) {
     LOG(ERROR) << "Unable to generate destination folder ODFS URL";
-    OnEndUpload(/*success=*/false);
+    OnEndUpload(/*success=*/false, /*url=*/{});
     return;
   }
 
@@ -146,8 +150,7 @@ void OdfsSkyvaultUploader::OnIOTaskStatus(
   switch (status.state) {
     case file_manager::io_task::State::kInProgress:
       if (status.bytes_transferred > 0) {
-        progress_callback_.Run(100 * status.bytes_transferred /
-                               status.total_bytes);
+        progress_callback_.Run(status.bytes_transferred);
       }
       return;
     case file_manager::io_task::State::kPaused:
@@ -155,12 +158,12 @@ void OdfsSkyvaultUploader::OnIOTaskStatus(
     case file_manager::io_task::State::kQueued:
       return;
     case file_manager::io_task::State::kSuccess:
-      progress_callback_.Run(100);
-      OnEndUpload(/*success=*/true);
+      progress_callback_.Run(status.bytes_transferred);
+      OnEndUpload(/*success=*/true, status.outputs[0].url);
       return;
     case file_manager::io_task::State::kCancelled:
     case file_manager::io_task::State::kError:
-      OnEndUpload(/*success=*/false);
+      OnEndUpload(/*success=*/false, /*url=*/{});
       return;
     case file_manager::io_task::State::kNeedPassword:
       NOTREACHED_IN_MIGRATION()

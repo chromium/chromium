@@ -148,6 +148,10 @@
 #include "chrome/browser/safe_browsing/download_protection/download_protection_util.h"
 #endif
 
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+#include "chrome/browser/ash/policy/skyvault/skyvault_rename_handler.h"
+#endif
+
 using content::BrowserThread;
 using content::DownloadManager;
 using download::DownloadItem;
@@ -1908,8 +1912,11 @@ ChromeDownloadManagerDelegate::GetQuarantineConnectionCallback() {
 std::unique_ptr<download::DownloadItemRenameHandler>
 ChromeDownloadManagerDelegate::GetRenameHandlerForDownload(
     download::DownloadItem* download_item) {
-  // TODO(b/341259898): Add implementation for SkyVault on CrOS.
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+  return policy::SkyvaultRenameHandler::CreateIfNeeded(download_item);
+#else
   return nullptr;
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 }
 
 void ChromeDownloadManagerDelegate::CheckSavePackageAllowed(

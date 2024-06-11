@@ -15,9 +15,14 @@ DownloadItemRenameHandler::DownloadItemRenameHandler(
 
 DownloadItemRenameHandler::~DownloadItemRenameHandler() = default;
 
-void DownloadItemRenameHandler::Start(Callback callback) {
-  std::move(callback).Run(DOWNLOAD_INTERRUPT_REASON_FILE_FAILED,
-                          base::FilePath());
+void DownloadItemRenameHandler::Start(ProgressCallback progress_callback,
+                                      RenameCallback rename_callback) {
+  std::move(rename_callback)
+      .Run(DOWNLOAD_INTERRUPT_REASON_FILE_FAILED, base::FilePath());
+}
+
+bool DownloadItemRenameHandler::ShowRenameProgress() {
+  return false;
 }
 
 }  // namespace download

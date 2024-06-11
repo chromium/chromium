@@ -146,9 +146,9 @@ IN_PROC_BROWSER_TEST_F(OdfsSkyvaultUploaderTest, SuccessfulUpload) {
 
   // Start the upload workflow and end the test once the upload upload callback
   // is run.
-  base::MockCallback<base::RepeatingCallback<void(int)>> progress_callback;
-  base::test::TestFuture<bool> upload_callback;
-  EXPECT_CALL(progress_callback, Run(/*progress=*/100));
+  base::MockCallback<base::RepeatingCallback<void(int64_t)>> progress_callback;
+  base::test::TestFuture<bool, storage::FileSystemURL> upload_callback;
+  EXPECT_CALL(progress_callback, Run(/*bytes_transferred=*/230096));
   OdfsSkyvaultUploader::Upload(profile(), source_file_url.path(),
                                OdfsSkyvaultUploader::FileType::kDownload,
                                progress_callback.Get(),
@@ -173,8 +173,8 @@ IN_PROC_BROWSER_TEST_F(OdfsSkyvaultUploaderTest, FailedUpload) {
 
   // Start the upload workflow and end the test once the upload upload callback
   // is run.
-  base::MockCallback<base::RepeatingCallback<void(int)>> progress_callback;
-  base::test::TestFuture<bool> upload_callback;
+  base::MockCallback<base::RepeatingCallback<void(int64_t)>> progress_callback;
+  base::test::TestFuture<bool, storage::FileSystemURL> upload_callback;
   OdfsSkyvaultUploader::Upload(profile(), source_file_url.path(),
                                OdfsSkyvaultUploader::FileType::kDownload,
                                progress_callback.Get(),

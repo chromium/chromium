@@ -518,6 +518,10 @@ FakeDownloadItem::GetReceivedSlices() const {
   return slices;
 }
 
+int64_t FakeDownloadItem::GetUploadedBytes() const {
+  return uploaded_bytes_;
+}
+
 bool FakeDownloadItem::CanShowInFolder() {
   NOTREACHED_IN_MIGRATION();
   return true;

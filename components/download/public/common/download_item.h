@@ -487,6 +487,9 @@ class COMPONENTS_DOWNLOAD_EXPORT DownloadItem : public base::SupportsUserData {
   // This is only used when parallel downloading is enabled.
   virtual const std::vector<ReceivedSlice>& GetReceivedSlices() const = 0;
 
+  // Total number of bytes that have been uploaded to the cloud.
+  virtual int64_t GetUploadedBytes() const = 0;
+
   // Time the download was first started. This timestamp is always valid and
   // doesn't change.
   virtual base::Time GetStartTime() const = 0;

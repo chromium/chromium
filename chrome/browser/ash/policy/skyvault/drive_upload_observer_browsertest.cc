@@ -296,12 +296,12 @@ IN_PROC_BROWSER_TEST_F(DriveUploadObserverTest, ImmediatelyUpload) {
   EXPECT_CALL(fake_drivefs(), ImmediatelyUpload(_, _))
       .WillOnce(RunOnceCallback<1>(drive::FileError::FILE_ERROR_OK));
 
-  base::MockCallback<base::RepeatingCallback<void(int)>> progress_callback;
+  base::MockCallback<base::RepeatingCallback<void(int64_t)>> progress_callback;
   base::MockCallback<base::OnceCallback<void(bool)>> upload_callback;
   EXPECT_CALL(upload_callback, Run(/*success=*/true));
-  DriveUploadObserver::Observe(profile(),
-                               drive_root_dir_.AppendASCII(test_file_name_),
-                               progress_callback.Get(), upload_callback.Get());
+  DriveUploadObserver::Observe(
+      profile(), drive_root_dir_.AppendASCII(test_file_name_), kFileSize,
+      progress_callback.Get(), upload_callback.Get());
 
   SimulateDriveUploadQueued();
 
@@ -319,14 +319,14 @@ IN_PROC_BROWSER_TEST_F(DriveUploadObserverTest, SuccessfulSync) {
       drive_root_dir_.AppendASCII(test_file_name_),
       &observed_relative_drive_path);
 
-  base::MockCallback<base::RepeatingCallback<void(int)>> progress_callback;
+  base::MockCallback<base::RepeatingCallback<void(int64_t)>> progress_callback;
   base::MockCallback<base::OnceCallback<void(bool)>> upload_callback;
-  EXPECT_CALL(progress_callback, Run(/*progress=*/25));
-  EXPECT_CALL(progress_callback, Run(/*progress=*/100));
+  EXPECT_CALL(progress_callback, Run(/*bytes_so_far=*/kFileSize / 4));
+  EXPECT_CALL(progress_callback, Run(/*bytes_so_far=*/kFileSize));
   EXPECT_CALL(upload_callback, Run(/*success=*/true));
-  DriveUploadObserver::Observe(profile(),
-                               drive_root_dir_.AppendASCII(test_file_name_),
-                               progress_callback.Get(), upload_callback.Get());
+  DriveUploadObserver::Observe(
+      profile(), drive_root_dir_.AppendASCII(test_file_name_), kFileSize,
+      progress_callback.Get(), upload_callback.Get());
 
   SimulateDriveUploadInProgress(kFileSize / 4);
   SimulateDriveUploadCompleted();
@@ -341,12 +341,12 @@ IN_PROC_BROWSER_TEST_F(DriveUploadObserverTest, ErrorSync) {
   base::FilePath source_file_path =
       SetUpSourceFile(test_file_name, drive_mount_point_);
 
-  base::MockCallback<base::RepeatingCallback<void(int)>> progress_callback;
+  base::MockCallback<base::RepeatingCallback<void(int64_t)>> progress_callback;
   base::MockCallback<base::OnceCallback<void(bool)>> upload_callback;
   EXPECT_CALL(upload_callback, Run(/*success=*/false));
-  DriveUploadObserver::Observe(profile(),
-                               drive_root_dir_.AppendASCII(test_file_name_),
-                               progress_callback.Get(), upload_callback.Get());
+  DriveUploadObserver::Observe(
+      profile(), drive_root_dir_.AppendASCII(test_file_name_), kFileSize,
+      progress_callback.Get(), upload_callback.Get());
 
   SetUpObservers();
 
@@ -365,12 +365,12 @@ IN_PROC_BROWSER_TEST_F(DriveUploadObserverTest, NoSyncUpdates) {
   base::FilePath source_file_path =
       SetUpSourceFile(test_file_name, drive_mount_point_);
 
-  base::MockCallback<base::RepeatingCallback<void(int)>> progress_callback;
+  base::MockCallback<base::RepeatingCallback<void(int64_t)>> progress_callback;
   base::MockCallback<base::OnceCallback<void(bool)>> upload_callback;
   scoped_refptr<DriveUploadObserver> drive_upload_observer =
       new DriveUploadObserver(profile(),
                               drive_root_dir_.AppendASCII(test_file_name_),
-                              progress_callback.Get());
+                              kFileSize, progress_callback.Get());
   drive_upload_observer->Run(upload_callback.Get());
 
   EXPECT_TRUE(drive_upload_observer->no_sync_update_timeout_.IsRunning());
@@ -403,12 +403,12 @@ IN_PROC_BROWSER_TEST_F(DriveUploadObserverTest, NoFileMetadata) {
   base::FilePath source_file_path =
       SetUpSourceFile(test_file_name, drive_mount_point_);
 
-  base::MockCallback<base::RepeatingCallback<void(int)>> progress_callback;
+  base::MockCallback<base::RepeatingCallback<void(int64_t)>> progress_callback;
   base::MockCallback<base::OnceCallback<void(bool)>> upload_callback;
   scoped_refptr<DriveUploadObserver> drive_upload_observer =
       new DriveUploadObserver(profile(),
                               drive_root_dir_.AppendASCII(test_file_name_),
-                              progress_callback.Get());
+                              kFileSize, progress_callback.Get());
   drive_upload_observer->Run(upload_callback.Get());
 
   EXPECT_TRUE(drive_upload_observer->no_sync_update_timeout_.IsRunning());

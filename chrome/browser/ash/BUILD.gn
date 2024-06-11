@@ -2915,6 +2915,8 @@ source_set("ash") {
     "policy/skyvault/odfs_skyvault_uploader.h",
     "policy/skyvault/policy_utils.cc",
     "policy/skyvault/policy_utils.h",
+    "policy/skyvault/skyvault_rename_handler.cc",
+    "policy/skyvault/skyvault_rename_handler.h",
     "policy/status_collector/activity_storage.cc",
     "policy/status_collector/activity_storage.h",
     "policy/status_collector/app_info_generator.cc",

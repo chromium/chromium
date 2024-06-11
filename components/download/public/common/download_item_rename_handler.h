@@ -26,19 +26,25 @@ class DownloadItem;
 // Instances of DownloadItemRenameHandler are owned by DownloadItem.
 class COMPONENTS_DOWNLOAD_EXPORT DownloadItemRenameHandler {
  public:
-  using Callback = base::OnceCallback<void(DownloadInterruptReason reason,
-                                           const base::FilePath& path)>;
+  using ProgressCallback = base::RepeatingCallback<void(int64_t bytes_so_far,
+                                                        int64_t bytes_per_sec)>;
+  using RenameCallback = base::OnceCallback<void(DownloadInterruptReason reason,
+                                                 const base::FilePath& path)>;
 
   explicit DownloadItemRenameHandler(DownloadItem* download_item);
   virtual ~DownloadItemRenameHandler();
 
   DownloadItem* download_item() { return download_item_; }
 
-  // Starts the process of renaming the file and invokes |callback| when
-  // done.
-  virtual void Start(Callback callback);
+  // Starts the process of renaming the file, invokes |progress_callback| with
+  // renaming progress and invokes |rename_callback| when done.
+  virtual void Start(ProgressCallback progress_callback,
+                     RenameCallback rename_callback);
 
- private:
+  // Returns whether there's rename progress to be shown.
+  virtual bool ShowRenameProgress();
+
+ protected:
   raw_ptr<DownloadItem> download_item_;
 };
 

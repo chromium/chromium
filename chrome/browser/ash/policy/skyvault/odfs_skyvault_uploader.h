@@ -29,11 +29,12 @@ class OdfsSkyvaultUploader
   };
 
   // Starts uploading the file specified at `file_path`.
-  static void Upload(Profile* profile,
-                     const base::FilePath& file_path,
-                     FileType file_type,
-                     base::RepeatingCallback<void(int)> progress_callback,
-                     base::OnceCallback<void(bool)> upload_callback);
+  static void Upload(
+      Profile* profile,
+      const base::FilePath& file_path,
+      FileType file_type,
+      base::RepeatingCallback<void(int64_t)> progress_callback,
+      base::OnceCallback<void(bool, storage::FileSystemURL)> upload_callback);
 
   OdfsSkyvaultUploader(const OdfsSkyvaultUploader&) = delete;
   OdfsSkyvaultUploader& operator=(const OdfsSkyvaultUploader&) = delete;
@@ -41,16 +42,18 @@ class OdfsSkyvaultUploader
  private:
   friend base::RefCounted<OdfsSkyvaultUploader>;
 
-  OdfsSkyvaultUploader(Profile* profile,
-                       const base::FilePath& file_path,
-                       FileType file_type,
-                       base::RepeatingCallback<void(int)> progress_callback);
+  OdfsSkyvaultUploader(
+      Profile* profile,
+      const base::FilePath& file_path,
+      FileType file_type,
+      base::RepeatingCallback<void(int64_t)> progress_callback);
   ~OdfsSkyvaultUploader() override;
 
   // Starts the upload workflow.
-  void Run(base::OnceCallback<void(bool)> upload_callback);
+  void Run(
+      base::OnceCallback<void(bool, storage::FileSystemURL)> upload_callback);
 
-  void OnEndUpload(bool success);
+  void OnEndUpload(bool success, storage::FileSystemURL url);
 
   void GetODFSMetadataAndStartIOTask();
 
@@ -76,10 +79,11 @@ class OdfsSkyvaultUploader
   FileType file_type_;
 
   // Progress callback repeatedly run with progress updates.
-  base::RepeatingCallback<void(int)> progress_callback_;
+  base::RepeatingCallback<void(int64_t)> progress_callback_;
 
-  // Upload callback run once with upload success/failure.
-  base::OnceCallback<void(bool)> upload_callback_;
+  // Upload callback run once with upload success/failure and the file url (if
+  // successfully uploaded).
+  base::OnceCallback<void(bool, storage::FileSystemURL)> upload_callback_;
 
   base::WeakPtrFactory<OdfsSkyvaultUploader> weak_ptr_factory_{this};
 };

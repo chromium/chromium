@@ -159,6 +159,10 @@ class COMPONENTS_DOWNLOAD_EXPORT DownloadItemImpl
     // Current received bytes.
     int64_t received_bytes = 0;
 
+    // Current uploaded bytes. Used only when the downloaded file is to be save
+    // in the cloud.
+    int64_t uploaded_bytes = 0;
+
     // True if we've saved all the data for the download. If true, then the file
     // at |current_path| contains |received_bytes|, which constitute the
     // entirety of what we expect to save there. A digest of its contents can be
@@ -316,6 +320,7 @@ class COMPONENTS_DOWNLOAD_EXPORT DownloadItemImpl
   int64_t GetReceivedBytes() const override;
   const std::vector<DownloadItem::ReceivedSlice>& GetReceivedSlices()
       const override;
+  int64_t GetUploadedBytes() const override;
   base::Time GetStartTime() const override;
   base::Time GetEndTime() const override;
   bool CanShowInFolder() override;
@@ -608,6 +613,9 @@ class COMPONENTS_DOWNLOAD_EXPORT DownloadItemImpl
   // DownloadItem::Completed().
   void OnDownloadCompleting();
 
+  void OnRenameAndAnnotateDone(DownloadInterruptReason reason,
+                               const base::FilePath& full_path);
+
   void OnDownloadRenamedToFinalName(DownloadInterruptReason reason,
                                     const base::FilePath& full_path);
 
@@ -708,6 +716,8 @@ class COMPONENTS_DOWNLOAD_EXPORT DownloadItemImpl
                                                 DownloadInternalState to);
   static bool IsValidStateTransition(DownloadInternalState from,
                                      DownloadInternalState to);
+
+  void UpdateRenameProgress(int64_t bytes_so_far, int64_t bytes_per_sec);
 
   RequestInfo request_info_;
 
@@ -883,6 +893,9 @@ class COMPONENTS_DOWNLOAD_EXPORT DownloadItemImpl
 
   // A handler for renaming and helping with displaying the item.
   std::unique_ptr<DownloadItemRenameHandler> rename_handler_;
+
+  // Whether renaming is in progress.
+  bool renaming_ = false;
 
 #if BUILDFLAG(IS_ANDROID)
   bool is_from_external_app_ = false;

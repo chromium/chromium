@@ -42,10 +42,12 @@ void OnUploadDone(scoped_refptr<DriveUploadObserver> drive_upload_observer,
 void DriveUploadObserver::Observe(
     Profile* profile,
     base::FilePath file_path,
-    base::RepeatingCallback<void(int)> progress_callback,
+    int64_t file_bytes,
+    base::RepeatingCallback<void(int64_t)> progress_callback,
     base::OnceCallback<void(bool)> upload_callback) {
   scoped_refptr<DriveUploadObserver> drive_upload_observer =
-      new DriveUploadObserver(profile, file_path, std::move(progress_callback));
+      new DriveUploadObserver(profile, file_path, file_bytes,
+                              std::move(progress_callback));
 
   // Keep `drive_upload_observer` alive until the upload is done.
   drive_upload_observer->Run(base::BindOnce(
@@ -55,13 +57,15 @@ void DriveUploadObserver::Observe(
 DriveUploadObserver::DriveUploadObserver(
     Profile* profile,
     base::FilePath file_path,
-    base::RepeatingCallback<void(int)> progress_callback)
+    int64_t file_bytes,
+    base::RepeatingCallback<void(int64_t)> progress_callback)
     : profile_(profile),
       file_system_context_(
           file_manager::util::GetFileManagerFileSystemContext(profile)),
       drive_integration_service_(
           drive::DriveIntegrationServiceFactory::FindForProfile(profile)),
       observed_local_path_(file_path),
+      file_bytes_(file_bytes),
       progress_callback_(std::move(progress_callback)) {}
 
 DriveUploadObserver::~DriveUploadObserver() = default;
@@ -159,17 +163,17 @@ void DriveUploadObserver::OnSyncingStatusUpdate(
         drive_integration_service_->ImmediatelyUpload(
             observed_drive_path_,
             base::BindOnce(&DriveUploadObserver::OnImmediatelyUploadDone,
-                           weak_ptr_factory_.GetWeakPtr()));
+                           weak_ptr_factory_.GetWeakPtr(),
+                           item->bytes_to_transfer));
         return;
       }
       case drivefs::mojom::ItemEvent::State::kInProgress:
         if (item->bytes_transferred > 0) {
-          progress_callback_.Run(100 * item->bytes_transferred /
-                                 item->bytes_to_transfer);
+          progress_callback_.Run(item->bytes_transferred);
         }
         return;
       case drivefs::mojom::ItemEvent::State::kCompleted:
-        progress_callback_.Run(100);
+        progress_callback_.Run(item->bytes_transferred);
         OnEndUpload(/*success=*/true);
         return;
       case drivefs::mojom::ItemEvent::State::kFailed:
@@ -224,13 +228,20 @@ void DriveUploadObserver::OnIOTaskStatus(
   }
 }
 
-void DriveUploadObserver::OnImmediatelyUploadDone(drive::FileError error) {
+void DriveUploadObserver::OnImmediatelyUploadDone(int64_t bytes_transferred,
+                                                  drive::FileError error) {
   LOG_IF(ERROR, error != drive::FileError::FILE_ERROR_OK)
       << "ImmediatelyUpload failed with status: " << error;
-  if (error == drive::FileError::FILE_ERROR_OK) {
-    OnEndUpload(/*success=*/true);
-  } else {
+  if (error != drive::FileError::FILE_ERROR_OK) {
     OnEndUpload(/*success=*/false);
+  } else {
+    if (bytes_transferred == file_bytes_) {
+      // The file is successfully uploaded.
+      OnEndUpload(/*success=*/true);
+    } else if (bytes_transferred < file_bytes_) {
+      // This the first event for just creating the file.
+      progress_callback_.Run(bytes_transferred);
+    }
   }
 }
 

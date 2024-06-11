@@ -111,6 +111,7 @@ class FakeDownloadItem : public download::DownloadItem {
   bool AllDataSaved() const override;
   const std::vector<download::DownloadItem::ReceivedSlice>& GetReceivedSlices()
       const override;
+  int64_t GetUploadedBytes() const override;
   bool CanShowInFolder() override;
   bool CanOpenDownload() override;
   bool ShouldOpenFileBasedOnExtension() override;
@@ -196,6 +197,7 @@ class FakeDownloadItem : public download::DownloadItem {
   download::DownloadInterruptReason last_reason_ =
       download::DOWNLOAD_INTERRUPT_REASON_NONE;
   int64_t received_bytes_ = 0;
+  int64_t uploaded_bytes_ = 0;
   int64_t total_bytes_ = 0;
   bool is_transient_ = false;
   bool is_parallel_download_ = false;
