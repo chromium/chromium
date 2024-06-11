@@ -105,16 +105,14 @@
   _toolbarHandler =
       HandlerForProtocol(self.browser->GetCommandDispatcher(), ToolbarCommands);
 
-  BOOL isIncognito = self.browser->GetBrowserState()->IsOffTheRecord();
-
-  self.viewController =
-      [[OmniboxViewController alloc] initWithIncognito:isIncognito];
-
+  self.viewController = [[OmniboxViewController alloc] init];
   self.viewController.defaultLeadingImage =
       GetOmniboxSuggestionIcon(OmniboxSuggestionIconType::kDefaultFavicon);
   self.viewController.textInputDelegate = self;
   self.viewController.layoutGuideCenter =
       LayoutGuideCenterForBrowser(self.browser);
+
+  BOOL isIncognito = self.browser->GetBrowserState()->IsOffTheRecord();
   self.mediator = [[OmniboxMediator alloc]
       initWithIncognito:isIncognito
                 tracker:feature_engagement::TrackerFactory::GetForBrowserState(

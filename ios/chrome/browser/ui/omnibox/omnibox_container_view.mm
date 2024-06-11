@@ -215,11 +215,6 @@ const CGFloat kClearButtonSize = 28.5f;
   _leadingImageView.accessibilityIdentifier = accessibilityIdentifier;
 }
 
-- (void)setIncognito:(BOOL)incognito {
-  _incognito = incognito;
-  self.textField.incognito = incognito;
-}
-
 - (void)setLeadingImageScale:(CGFloat)scaleValue {
   _leadingImageView.transform =
       CGAffineTransformMakeScale(scaleValue, scaleValue);

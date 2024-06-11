@@ -25,10 +25,6 @@
 /// The contained clear button. Hide with `setClearButtonHidden`.
 @property(nonatomic, strong, readonly) UIButton* clearButton;
 
-/// Incognito status of the location bar changes the appearance, such as text
-/// and icon colors.
-@property(nonatomic, assign) BOOL incognito;
-
 /// The layout guide center to use to refer to the omnibox leading image.
 @property(nonatomic, strong) LayoutGuideCenter* layoutGuideCenter;
 

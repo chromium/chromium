@@ -51,19 +51,6 @@ NSString* const kOmniboxFadeAnimationKey = @"OmniboxFadeAnimation";
 
 @interface OmniboxTextFieldIOS () <UIGestureRecognizerDelegate>
 
-// Font to use in regular x regular size class. If not set, the regular font is
-// used instead.
-@property(nonatomic, strong, readonly) UIFont* largerFont;
-// Font to use in Compact x Any and Any x Compact size class.
-@property(nonatomic, strong, readonly) UIFont* normalFont;
-
-// Returns the layers affected by animations added by `-animateFadeWithStyle:`.
-- (NSArray*)fadeAnimationLayers;
-// Font that should be used in current size class.
-- (UIFont*)currentFont;
-
-// Tap gesture recognizer for this view.
-@property(nonatomic, strong) UITapGestureRecognizer* tapGestureRecognizer;
 @property(nonatomic, assign, getter=isPreEditing) BOOL preEditing;
 
 @end
@@ -71,11 +58,14 @@ NSString* const kOmniboxFadeAnimationKey = @"OmniboxFadeAnimation";
 @implementation OmniboxTextFieldIOS {
   /// Length of autocomplete text.
   NSUInteger _autocompleteTextLength;
+  /// Tap gesture recognizer for this view.
+  UITapGestureRecognizer* _tapGestureRecognizer;
 }
 
 @dynamic delegate;
 
 #pragma mark - Public methods
+
 // Overload to allow for code-based initialization.
 - (instancetype)initWithFrame:(CGRect)frame {
   return [self initWithFrame:frame textColor:TextColor() tintColor:nil];
@@ -113,11 +103,11 @@ NSString* const kOmniboxFadeAnimationKey = @"OmniboxFadeAnimation";
     self.font = self.currentFont;
     [super setText:@" "];
 
-    self.tapGestureRecognizer =
+    _tapGestureRecognizer =
         [[UITapGestureRecognizer alloc] initWithTarget:self
                                                 action:@selector(handleTap:)];
-    self.tapGestureRecognizer.delegate = self;
-    [self addGestureRecognizer:self.tapGestureRecognizer];
+    _tapGestureRecognizer.delegate = self;
+    [self addGestureRecognizer:_tapGestureRecognizer];
   }
   return self;
 }
@@ -395,12 +385,15 @@ NSString* const kOmniboxFadeAnimationKey = @"OmniboxFadeAnimation";
 
 #pragma mark - Properties
 
+/// Font to use in regular x regular size class. If not set, the regular font is
+/// used instead.
 - (UIFont*)largerFont {
   return PreferredFontForTextStyleWithMaxCategory(
       UIFontTextStyleBody, self.traitCollection.preferredContentSizeCategory,
       UIContentSizeCategoryAccessibilityExtraLarge);
 }
 
+/// Font to use in Compact x Any and Any x Compact size class.
 - (UIFont*)normalFont {
   return PreferredFontForTextStyleWithMaxCategory(
       UIFontTextStyleSubheadline,
@@ -408,6 +401,7 @@ NSString* const kOmniboxFadeAnimationKey = @"OmniboxFadeAnimation";
       UIContentSizeCategoryAccessibilityExtraLarge);
 }
 
+/// Font that should be used in current size class.
 - (UIFont*)currentFont {
   return IsCompactWidth(self) ? self.normalFont : self.largerFont;
 }
@@ -551,7 +545,7 @@ NSString* const kOmniboxFadeAnimationKey = @"OmniboxFadeAnimation";
 }
 
 - (BOOL)gestureRecognizerShouldBegin:(UIGestureRecognizer*)gestureRecognizer {
-  if (gestureRecognizer == self.tapGestureRecognizer) {
+  if (gestureRecognizer == _tapGestureRecognizer) {
     return [self isPreEditing] || [self hasAutocompleteText] ||
            (IsRichAutocompletionEnabled() && [self hasAdditionalText]) ||
            self.omniboxHasRichInline;
@@ -1067,6 +1061,7 @@ NSString* const kOmniboxFadeAnimationKey = @"OmniboxFadeAnimation";
   return [self.tintColor colorWithAlphaComponent:0.2];
 }
 
+/// Returns the layers affected by animations added by `-animateFadeWithStyle:`.
 - (NSArray*)fadeAnimationLayers {
   NSMutableArray* layers = [NSMutableArray array];
   for (UIView* subview in self.subviews) {

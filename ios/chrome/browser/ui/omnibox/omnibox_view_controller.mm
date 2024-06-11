@@ -47,8 +47,6 @@ using base::UserMetricsAction;
 // edit menu option to do a Lens search.
 @property(nonatomic, assign) BOOL lensImageEnabled;
 
-@property(nonatomic, assign) BOOL incognito;
-
 // YES if we are already forwarding an OnDidChange() message to the edit view.
 // Needed to prevent infinite recursion.
 // TODO(crbug.com/40103694): There must be a better way.
@@ -92,14 +90,6 @@ using base::UserMetricsAction;
 
 @dynamic view;
 
-- (instancetype)initWithIncognito:(BOOL)isIncognito {
-  self = [super init];
-  if (self) {
-    _incognito = isIncognito;
-  }
-  return self;
-}
-
 #pragma mark - UIViewController
 
 - (void)loadView {
@@ -112,7 +102,6 @@ using base::UserMetricsAction;
                                                 textColor:textColor
                                             textFieldTint:textFieldTintColor
                                                  iconTint:iconTintColor];
-  self.view.incognito = self.incognito;
   self.view.layoutGuideCenter = self.layoutGuideCenter;
   _clearButton = self.view.clearButton;
 

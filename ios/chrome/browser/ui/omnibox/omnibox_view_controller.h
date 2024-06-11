@@ -83,9 +83,6 @@ class OmniboxTextChangeDelegate;
 // The layout guide center to use to refer to the omnibox leading image.
 @property(nonatomic, strong) LayoutGuideCenter* layoutGuideCenter;
 
-// Designated initializer.
-- (instancetype)initWithIncognito:(BOOL)isIncognito;
-
 - (void)setTextChangeDelegate:(OmniboxTextChangeDelegate*)textChangeDelegate;
 
 // Hides extra chrome, i.e. attributed text, and clears.
