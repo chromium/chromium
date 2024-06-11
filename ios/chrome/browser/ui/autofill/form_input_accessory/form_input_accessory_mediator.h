@@ -11,6 +11,7 @@
 #import "ios/chrome/browser/autofill/model/form_suggestion_client.h"
 
 @protocol FormInputAccessoryConsumer;
+@protocol FormInputAccessoryMediatorHandler;
 @protocol FormInputSuggestionsProvider;
 class PrefService;
 @class ReauthenticationModule;
@@ -29,20 +30,6 @@ class WebState;
 }
 
 class WebStateList;
-
-// Handler in charge of accessory mediator events.
-@protocol FormInputAccessoryMediatorHandler
-
-// The mediator detected that the keyboard input view should be reset.
-- (void)resetFormInputView;
-
-// The mediator shows autofill suggestion tip if needed.
-- (void)showAutofillSuggestionIPHIfNeeded;
-
-// The mediator notifies that the autofill suggestion has been selected.
-- (void)notifyAutofillSuggestionWithIPHSelected;
-
-@end
 
 // This class contains all the logic to get and provide keyboard input accessory
 // views to its consumer. As well as telling the consumer when the default

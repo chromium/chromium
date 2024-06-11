@@ -49,6 +49,7 @@
 #import "ios/chrome/browser/shared/ui/util/util_swift.h"
 #import "ios/chrome/browser/ui/autofill/branding/branding_coordinator.h"
 #import "ios/chrome/browser/ui/autofill/form_input_accessory/form_input_accessory_mediator.h"
+#import "ios/chrome/browser/ui/autofill/form_input_accessory/form_input_accessory_mediator_handler.h"
 #import "ios/chrome/browser/ui/autofill/form_input_accessory/form_input_accessory_view_controller.h"
 #import "ios/chrome/browser/ui/autofill/form_input_accessory/form_input_accessory_view_controller_delegate.h"
 #import "ios/chrome/browser/ui/autofill/manual_fill/address_coordinator.h"
@@ -57,6 +58,7 @@
 #import "ios/chrome/browser/ui/autofill/manual_fill/fallback_view_controller.h"
 #import "ios/chrome/browser/ui/autofill/manual_fill/manual_fill_all_password_coordinator.h"
 #import "ios/chrome/browser/ui/autofill/manual_fill/manual_fill_all_password_coordinator_delegate.h"
+#import "ios/chrome/browser/ui/autofill/manual_fill/manual_fill_constants.h"
 #import "ios/chrome/browser/ui/autofill/manual_fill/manual_fill_injection_handler.h"
 #import "ios/chrome/browser/ui/autofill/manual_fill/manual_fill_password_coordinator.h"
 #import "ios/chrome/browser/ui/bubble/bubble_constants.h"
@@ -382,6 +384,13 @@ const CGFloat kIPHVerticalOffset = -5;
         [weakSelf tryPresentingBubble];
       }),
       kAutofillSuggestionHighlightDelay);
+}
+
+- (void)startManualFillForDataType:(manual_fill::ManualFillDataType)dataType {
+  // Currently only payment methods form input accessory may start manual fill
+  // directly.
+  CHECK_EQ(dataType, manual_fill::ManualFillDataType::kPaymentMethod);
+  [self startManualFillForDataType:dataType invokedOnObfuscatedField:NO];
 }
 
 #pragma mark - FormInputAccessoryViewControllerDelegate
