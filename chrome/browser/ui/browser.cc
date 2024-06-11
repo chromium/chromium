@@ -664,6 +664,10 @@ Browser::Browser(const CreateParams& params)
 }
 
 Browser::~Browser() {
+  // Proactively destroy BrowserUserData objects now so they do not use this
+  // Browser in a partially-destroyed state.
+  ClearAllUserData();
+
   auto* saved_tab_group_keyed_service =
       tab_groups::SavedTabGroupServiceFactory::GetForProfile(profile_);
   if (saved_tab_group_keyed_service && tab_groups::IsTabGroupsSaveV2Enabled()) {
