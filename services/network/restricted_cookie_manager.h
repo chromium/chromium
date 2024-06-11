@@ -31,6 +31,7 @@
 #include "net/first_party_sets/first_party_set_metadata.h"
 #include "services/network/public/mojom/cookie_access_observer.mojom.h"
 #include "services/network/public/mojom/restricted_cookie_manager.mojom.h"
+#include "services/network/public/mojom/source_location.mojom.h"
 #include "url/gurl.h"
 #include "url/origin.h"
 
@@ -145,6 +146,7 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) RestrictedCookieManager
                           const url::Origin& top_frame_origin,
                           bool has_storage_access,
                           net::CookieInclusionStatus status,
+                          mojom::SourceLocationPtr source_location,
                           SetCanonicalCookieCallback callback) override;
 
   void AddChangeListener(
@@ -160,6 +162,7 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) RestrictedCookieManager
                            const url::Origin& top_frame_origin,
                            bool has_storage_access,
                            const std::string& cookie,
+                           mojom::SourceLocationPtr source_location,
                            SetCookieFromStringCallback callback) override;
 
   void GetCookiesString(const GURL& url,
@@ -238,6 +241,7 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) RestrictedCookieManager
       const net::SiteForCookies& site_for_cookies,
       const net::CanonicalCookie& cookie,
       const net::CookieOptions& net_options,
+      mojom::SourceLocationPtr source_location,
       SetCanonicalCookieCallback user_callback,
       net::CookieAccessResult access_result);
 

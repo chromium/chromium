@@ -98,7 +98,8 @@ interface RestrictedCookieManager {
                      SiteForCookies site_for_cookies,
                      url.mojom.Origin top_frame_origin,
                      bool has_storage_access,
-                     CookieInclusionStatus status) => (bool success);
+                     CookieInclusionStatus status,
+                     SourceLocation? source_location) => (bool success);
 
   // Subscribes to changes in the cookies transmitted in a request to an URL.
   //
@@ -120,7 +121,8 @@ interface RestrictedCookieManager {
   SetCookieFromString(url.mojom.Url url, SiteForCookies site_for_cookies,
                       url.mojom.Origin top_frame_origin,
                       bool has_storage_access,
-                      string cookie) => ();
+                      string cookie,
+                      SourceLocation? source_location) => ();
 
   // Used to get cookies for the given URL. Cookies that are blocked by user
   // preferences will be skipped, down to potentially returning an empty string.
