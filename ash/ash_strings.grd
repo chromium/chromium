@@ -7341,10 +7341,10 @@ New install
         Create
       </message>
       <message name="IDS_PICKER_FEATURE_TOUR_LEARN_MORE_BUTTON_LABEL" translateable="false" desc="Button label in feature tour dialog to learn more about Picker.">
-        Learn More
+        Learn more
       </message>
-      <message name="IDS_PICKER_FEATURE_TOUR_GOT_IT_BUTTON_LABEL" translateable="false" desc="Button label in feature tour dialog to acknowledge Picker.">
-        Got it
+      <message name="IDS_PICKER_FEATURE_TOUR_START_BUTTON_LABEL" translateable="false" desc="Button label in feature tour dialog to start using Picker.">
+        Get started
       </message>
 
       <!-- WM -->

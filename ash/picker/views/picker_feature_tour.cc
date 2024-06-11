@@ -100,7 +100,7 @@ class FeatureTourBubbleView : public views::WidgetDelegate,
                                 base::Unretained(this))
                                 .Then(std::move(completion_callback)),
                             l10n_util::GetStringUTF16(
-                                IDS_PICKER_FEATURE_TOUR_GOT_IT_BUTTON_LABEL),
+                                IDS_PICKER_FEATURE_TOUR_START_BUTTON_LABEL),
                             PillButton::Type::kPrimaryWithoutIcon))
                         .CopyAddressTo(&complete_button_)
                         .SetProperty(
