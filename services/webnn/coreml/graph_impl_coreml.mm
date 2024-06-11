@@ -18,6 +18,7 @@
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
 #include "base/functional/callback_helpers.h"
+#include "base/memory/weak_ptr.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/numerics/checked_math.h"
 #include "base/ranges/algorithm.h"
@@ -128,7 +129,8 @@ mojo_base::BigBuffer ExtractMaybeNonContiguousOutput(
 // static
 void GraphImplCoreml::CreateAndBuild(
     mojom::GraphInfoPtr graph_info,
-    mojom::CreateContextOptionsPtr options,
+    mojom::CreateContextOptionsPtr context_options,
+    mojom::ContextPropertiesPtr context_properties,
     mojom::WebNNContext::CreateGraphCallback callback) {
   auto current_runner = base::SequencedTaskRunner::GetCurrentDefault();
   base::ThreadPool::PostTask(
@@ -136,14 +138,16 @@ void GraphImplCoreml::CreateAndBuild(
       {base::TaskPriority::USER_BLOCKING,
        base::TaskShutdownBehavior::CONTINUE_ON_SHUTDOWN, base::MayBlock()},
       base::BindOnce(&GraphImplCoreml::CreateAndBuildOnBackgroundThread,
-                     std::move(graph_info), std::move(options), current_runner,
+                     std::move(graph_info), std::move(context_options),
+                     std::move(context_properties), current_runner,
                      std::move(callback)));
 }
 
 // static
 void GraphImplCoreml::CreateAndBuildOnBackgroundThread(
     mojom::GraphInfoPtr graph_info,
-    mojom::CreateContextOptionsPtr options,
+    mojom::CreateContextOptionsPtr context_options,
+    mojom::ContextPropertiesPtr context_properties,
     scoped_refptr<base::SequencedTaskRunner> originating_sequence,
     mojom::WebNNContext::CreateGraphCallback callback) {
   CHECK(graph_info);
@@ -160,6 +164,7 @@ void GraphImplCoreml::CreateAndBuildOnBackgroundThread(
   ASSIGN_OR_RETURN(
       std::unique_ptr<GraphBuilderCoreml::Result> build_graph_result,
       GraphBuilderCoreml::CreateAndBuild(*graph_info.get(),
+                                         std::move(context_properties),
                                          model_file_dir.GetPath()),
       [&](mojom::ErrorPtr error) {
         originating_sequence->PostTask(
@@ -213,7 +218,7 @@ void GraphImplCoreml::CreateAndBuildOnBackgroundThread(
   __block auto compilation_context = std::make_unique<CompilationContext>(
       std::move(compute_resource_info), std::move(input_feature_info),
       std::move(coreml_name_to_operand_name), std::move(model_file_dir),
-      std::move(options), std::move(callback));
+      std::move(context_options), std::move(callback));
 
   [MLModel
       compileModelAtURL:base::apple::FilePathToNSURL(
@@ -243,7 +248,7 @@ void GraphImplCoreml::CreateAndBuildOnBackgroundThread(
         }
         MLModelConfiguration* configuration =
             [[MLModelConfiguration alloc] init];
-        switch (compilation_context->options->device) {
+        switch (compilation_context->context_options->device) {
           case mojom::CreateContextOptions::Device::kCpu:
             configuration.computeUnits = MLComputeUnitsCPUOnly;
             break;
@@ -535,13 +540,13 @@ GraphImplCoreml::CompilationContext::CompilationContext(
     std::unique_ptr<CoreMLFeatureInfoMap> input_feature_info,
     base::flat_map<std::string, std::string> coreml_name_to_operand_name,
     base::ScopedTempDir model_file_dir,
-    mojom::CreateContextOptionsPtr options,
+    mojom::CreateContextOptionsPtr context_options,
     mojom::WebNNContext::CreateGraphCallback callback)
     : compute_resource_info(std::move(compute_resource_info)),
       input_feature_info(std::move(input_feature_info)),
       coreml_name_to_operand_name(std::move(coreml_name_to_operand_name)),
       model_file_dir(std::move(model_file_dir)),
-      options(std::move(options)),
+      context_options(std::move(context_options)),
       callback(std::move(callback)) {}
 
 GraphImplCoreml::CompilationContext::~CompilationContext() {

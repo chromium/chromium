@@ -560,8 +560,10 @@ std::string GetCoreMLNameFromOutput(std::string_view output_name) {
 
 // static
 base::expected<std::unique_ptr<GraphBuilderCoreml::Result>, mojom::ErrorPtr>
-GraphBuilderCoreml::CreateAndBuild(const mojom::GraphInfo& graph_info,
-                             const base::FilePath& working_directory) {
+GraphBuilderCoreml::CreateAndBuild(
+    const mojom::GraphInfo& graph_info,
+    mojom::ContextPropertiesPtr context_properties,
+    const base::FilePath& working_directory) {
   // Use a random string for the model package directory, because MLModel
   // compileModelAtURL creates a folder directly in the NSTemporaryDirectory
   // with the name of the .mlmodel file. Using a random string will avoid any
@@ -572,7 +574,8 @@ GraphBuilderCoreml::CreateAndBuild(const mojom::GraphInfo& graph_info,
 
   base::FilePath data_dir = ml_package_dir.Append(kMlPackageDataDir);
 
-  GraphBuilderCoreml graph_builder(graph_info, std::move(ml_package_dir));
+  GraphBuilderCoreml graph_builder(graph_info, std::move(context_properties),
+                                   std::move(ml_package_dir));
 
   RETURN_IF_ERROR(graph_builder.BuildCoreMLModel());
   RETURN_IF_ERROR(graph_builder.SerializeModel());
@@ -585,9 +588,12 @@ mojom::ContextPropertiesPtr GraphBuilderCoreml::GetContextProperties() {
       /*conv2d_input_layout=*/mojom::InputOperandLayout::kChannelsFirst);
 }
 
-GraphBuilderCoreml::GraphBuilderCoreml(const mojom::GraphInfo& graph_info,
-                                       base::FilePath ml_package_dir)
+GraphBuilderCoreml::GraphBuilderCoreml(
+    const mojom::GraphInfo& graph_info,
+    mojom::ContextPropertiesPtr context_properties,
+    base::FilePath ml_package_dir)
     : graph_info_(graph_info),
+      context_properties_(std::move(context_properties)),
       internal_operand_id_(
           base::ranges::max_element(
               graph_info_->id_to_operand_map,

@@ -72,8 +72,9 @@ class WebnnGraphLPMFuzzer {
       base::ScopedTempDir temp_dir;
       CHECK(temp_dir.CreateUniqueTempDir());
       auto coreml_graph_builder =
-          webnn::coreml::GraphBuilderCoreml::CreateAndBuild(*graph_info_ptr,
-                                                            temp_dir.GetPath());
+          webnn::coreml::GraphBuilderCoreml::CreateAndBuild(
+              *graph_info_ptr, std::move(coreml_properties),
+              temp_dir.GetPath());
     }
 #endif
 

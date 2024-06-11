@@ -27,7 +27,7 @@ void ContextImplCoreml::CreateGraphImpl(
     mojom::GraphInfoPtr graph_info,
     mojom::WebNNContext::CreateGraphCallback callback) {
   GraphImplCoreml::CreateAndBuild(std::move(graph_info), options_.Clone(),
-                                  std::move(callback));
+                                  properties().Clone(), std::move(callback));
 }
 
 std::unique_ptr<WebNNBufferImpl> ContextImplCoreml::CreateBufferImpl(

@@ -11,6 +11,7 @@
 #include "base/files/file_path.h"
 #include "base/files/scoped_temp_dir.h"
 #include "base/memory/scoped_refptr.h"
+#include "base/memory/weak_ptr.h"
 #include "base/sequence_checker.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/timer/elapsed_timer.h"
@@ -33,7 +34,8 @@ namespace webnn::coreml {
 class API_AVAILABLE(macos(14.0)) GraphImplCoreml final : public WebNNGraphImpl {
  public:
   static void CreateAndBuild(mojom::GraphInfoPtr graph_info,
-                             mojom::CreateContextOptionsPtr options,
+                             mojom::CreateContextOptionsPtr context_options,
+                             mojom::ContextPropertiesPtr context_properties,
                              mojom::WebNNContext::CreateGraphCallback callback);
 
   GraphImplCoreml(const GraphImplCoreml&) = delete;
@@ -74,7 +76,8 @@ class API_AVAILABLE(macos(14.0)) GraphImplCoreml final : public WebNNGraphImpl {
   // temporary .modelc file to OnCreateAndBuildSuccess
   static void CreateAndBuildOnBackgroundThread(
       mojom::GraphInfoPtr graph_info,
-      mojom::CreateContextOptionsPtr options,
+      mojom::CreateContextOptionsPtr context_options,
+      mojom::ContextPropertiesPtr context_properties,
       scoped_refptr<base::SequencedTaskRunner> originating_sequence,
       mojom::WebNNContext::CreateGraphCallback callback);
 
@@ -88,7 +91,7 @@ class API_AVAILABLE(macos(14.0)) GraphImplCoreml final : public WebNNGraphImpl {
         std::unique_ptr<CoreMLFeatureInfoMap> input_feature_info,
         base::flat_map<std::string, std::string> coreml_name_to_operand_name,
         base::ScopedTempDir model_file_dir,
-        mojom::CreateContextOptionsPtr options,
+        mojom::CreateContextOptionsPtr context_options,
         mojom::WebNNContext::CreateGraphCallback callback);
     ~CompilationContext();
 
@@ -99,7 +102,7 @@ class API_AVAILABLE(macos(14.0)) GraphImplCoreml final : public WebNNGraphImpl {
     base::ScopedTempDir model_file_dir;
     base::ScopedTempDir compiled_model_dir;
     MLModel* __strong ml_model;
-    mojom::CreateContextOptionsPtr options;
+    mojom::CreateContextOptionsPtr context_options;
     mojom::WebNNContext::CreateGraphCallback callback;
   };
   static void OnCreateAndBuildFailure(
