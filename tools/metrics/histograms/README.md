@@ -1037,7 +1037,7 @@ interpretable and what data will have hidden surprises/gotchas.
     escalated by being assigned to chromium-metrics-reviews@google.com.
 
 * Are expiry dates being set
-  [appropriately](#How-to-choose-expiry-for-histograms)?
+  [appropriately](#How-to-choose-expiry-for-new-histograms)?
 
 ## Everything Else!
 

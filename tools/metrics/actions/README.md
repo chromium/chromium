@@ -100,9 +100,9 @@ Test your user actions using `chrome://user-actions`. Make sure they're being
 emitted when you expect and not emitted otherwise.
 
 If this is a general UI surface, please try to check every platform. In
-particular, check Windows (Views-based platforms), Mac (non-Views), Android
-phone (yet other UI wrapper code), Android tablet (often triggers look-alike but
-different menus), and iOS (yet more different UI wrapper code).
+particular, check Windows (Views-based platforms), Android phone (yet other UI
+wrapper code), Android tablet (often triggers look-alike but different menus),
+and iOS (yet more different UI wrapper code).
 
 Also, check that your new user action is not mostly redundant in light of
 existing user actions (see [advice above](#Try-to-avoid-redundant-emits)) and
