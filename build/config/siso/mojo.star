@@ -88,6 +88,7 @@ def __step_config(ctx, step_config):
             "command_prefix": platform.python_bin + " ../../mojo/public/tools/bindings/validate_typemap_config.py",
             "remote": True,
             "canonicalize_dir": True,
+            "timeout": "2m",
             "output_local": True,
             "platform_ref": platform_ref,
         },
