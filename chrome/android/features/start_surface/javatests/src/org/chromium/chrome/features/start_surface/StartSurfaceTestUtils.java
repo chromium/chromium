@@ -56,6 +56,7 @@ import org.chromium.chrome.browser.init.AsyncInitializationActivity;
 import org.chromium.chrome.browser.layouts.LayoutTestUtils;
 import org.chromium.chrome.browser.layouts.LayoutType;
 import org.chromium.chrome.browser.logo.LogoUtils;
+import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.suggestions.SiteSuggestion;
 import org.chromium.chrome.browser.suggestions.tile.TileSectionType;
 import org.chromium.chrome.browser.suggestions.tile.TileSource;
@@ -702,6 +703,11 @@ public class StartSurfaceTestUtils {
                 },
                 CriteriaHelper.DEFAULT_MAX_TIME_TO_POLL,
                 CriteriaHelper.DEFAULT_POLLING_INTERVAL);
+    }
+
+    /** Returns a regular profile. */
+    public static Profile getRegularProfile(ChromeTabbedActivityTestRule activityTestRule) {
+        return activityTestRule.getProfile(/* incognito= */ false);
     }
 
     /**

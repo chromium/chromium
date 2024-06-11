@@ -216,9 +216,9 @@ public class ExploreSurfaceCoordinator {
     private class ExploreFeedSurfaceDelegate implements FeedSurfaceDelegate {
         @Override
         public FeedSurfaceLifecycleManager createStreamLifecycleManager(
-                Activity activity, SurfaceCoordinator coordinator) {
+                Activity activity, SurfaceCoordinator coordinator, Profile profile) {
             return new ExploreSurfaceFeedLifecycleManager(
-                    activity, (FeedSurfaceCoordinator) coordinator);
+                    activity, (FeedSurfaceCoordinator) coordinator, profile);
         }
 
         @Override

@@ -47,7 +47,6 @@ import org.chromium.chrome.browser.magic_stack.ModuleRegistry;
 import org.chromium.chrome.browser.omnibox.OmniboxStub;
 import org.chromium.chrome.browser.omnibox.styles.OmniboxResourceProvider;
 import org.chromium.chrome.browser.profiles.Profile;
-import org.chromium.chrome.browser.profiles.ProfileManager;
 import org.chromium.chrome.browser.share.ShareDelegate;
 import org.chromium.chrome.browser.single_tab.SingleTabSwitcherCoordinator;
 import org.chromium.chrome.browser.suggestions.tile.MostVisitedTilesCoordinator;
@@ -400,12 +399,15 @@ public class StartSurfaceCoordinator implements StartSurface {
                             mToolbarSupplier,
                             mConstructedTimeNs,
                             mSwipeRefreshLayout,
-                            mTabStripHeightSupplier);
+                            mTabStripHeightSupplier,
+                            mProfileSupplier);
         }
+        Profile profile = mProfileSupplier.get();
+        assert !profile.isOffTheRecord();
         mStartSurfaceMediator.initWithNative(
                 mIsStartSurfaceEnabled ? mOmniboxStubSupplier.get() : null,
                 mExploreSurfaceCoordinatorFactory,
-                UserPrefs.get(ProfileManager.getLastUsedRegularProfile()));
+                UserPrefs.get(profile));
 
         if (mIsInitPending) {
             initialize();
@@ -509,7 +511,8 @@ public class StartSurfaceCoordinator implements StartSurface {
         mView.initialize(
                 mActivityLifecycleDispatcher,
                 mParentTabSupplier.hasValue() && mParentTabSupplier.get().isIncognito(),
-                mWindowAndroid);
+                mWindowAndroid,
+                mProfileSupplier);
         if (tabSwitcherType == TabSwitcherType.SINGLE) {
             // We always pass the parameter isTablet to be false here since StartSurfaceCoordinator
             // is only created on phones.
@@ -745,7 +748,8 @@ public class StartSurfaceCoordinator implements StartSurface {
             return;
         }
 
-        Profile profile = ProfileManager.getLastUsedRegularProfile();
+        Profile profile = mProfileSupplier.get();
+        assert !profile.isOffTheRecord();
         MostVisitedTileNavigationDelegate navigationDelegate =
                 new MostVisitedTileNavigationDelegate(mActivity, profile, mParentTabSupplier);
         mSuggestionsUiDelegate =

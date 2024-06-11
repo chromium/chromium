@@ -11,18 +11,23 @@ import androidx.annotation.Nullable;
 import org.chromium.chrome.browser.feed.FeedSurfaceCoordinator;
 import org.chromium.chrome.browser.feed.FeedSurfaceLifecycleManager;
 import org.chromium.chrome.browser.preferences.Pref;
-import org.chromium.chrome.browser.profiles.ProfileManager;
+import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.components.user_prefs.UserPrefs;
 
 /** Explore surface feed lifecycle manager. */
 class ExploreSurfaceFeedLifecycleManager extends FeedSurfaceLifecycleManager {
+    private Profile mProfile;
+
     /**
      * The constructor.
+     *
      * @param activity The activity the {@link FeedSurfaceCoordinator} associates with.
      * @param coordinator The coordinator for which this manages the feed lifecycle of.
      */
-    ExploreSurfaceFeedLifecycleManager(Activity activity, FeedSurfaceCoordinator coordinator) {
+    ExploreSurfaceFeedLifecycleManager(
+            Activity activity, FeedSurfaceCoordinator coordinator, Profile profile) {
         super(activity, coordinator);
+        mProfile = profile;
         start();
     }
 
@@ -32,8 +37,7 @@ class ExploreSurfaceFeedLifecycleManager extends FeedSurfaceLifecycleManager {
     }
 
     private boolean shouldShowFeed() {
-        return UserPrefs.get(ProfileManager.getLastUsedRegularProfile())
-                .getBoolean(Pref.ARTICLES_LIST_VISIBLE);
+        return UserPrefs.get(mProfile).getBoolean(Pref.ARTICLES_LIST_VISIBLE);
     }
 
     @Nullable

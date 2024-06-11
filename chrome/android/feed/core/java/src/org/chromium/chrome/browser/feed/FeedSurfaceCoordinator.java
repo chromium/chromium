@@ -939,7 +939,8 @@ public class FeedSurfaceCoordinator
 
         if (feedEnabled) {
             mActionDelegate.onStreamCreated();
-            mFeedSurfaceLifecycleManager = mDelegate.createStreamLifecycleManager(mActivity, this);
+            mFeedSurfaceLifecycleManager =
+                    mDelegate.createStreamLifecycleManager(mActivity, this, mProfile);
             headerList.add(mSectionHeaderView);
             if (mSwipeRefreshLayout != null) {
                 mSwipeRefreshLayout.enableSwipe(mScrollableContainerDelegate);

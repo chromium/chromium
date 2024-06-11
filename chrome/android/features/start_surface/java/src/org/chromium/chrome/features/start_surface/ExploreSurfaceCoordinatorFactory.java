@@ -17,7 +17,6 @@ import org.chromium.chrome.browser.feed.FeedSwipeRefreshLayout;
 import org.chromium.chrome.browser.feed.ScrollableContainerDelegate;
 import org.chromium.chrome.browser.ntp.NewTabPageLaunchOrigin;
 import org.chromium.chrome.browser.profiles.Profile;
-import org.chromium.chrome.browser.profiles.ProfileManager;
 import org.chromium.chrome.browser.share.ShareDelegate;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tabmodel.TabModelSelector;
@@ -45,6 +44,7 @@ class ExploreSurfaceCoordinatorFactory {
     @Nullable private final FeedSwipeRefreshLayout mSwipeRefreshLayout;
     @NonNull private final ViewGroup mParentView;
     private final ObservableSupplier<Integer> mTabStripHeightSupplier;
+    private final ObservableSupplier<Profile> mProfileSupplier;
 
     /**
      * @param activity The current {@link Activity}.
@@ -78,7 +78,8 @@ class ExploreSurfaceCoordinatorFactory {
             @NonNull Supplier<Toolbar> toolbarSupplier,
             long embeddingSurfaceConstructedTimeNs,
             @Nullable FeedSwipeRefreshLayout swipeRefreshLayout,
-            @NonNull ObservableSupplier<Integer> tabStripHeightSupplier) {
+            @NonNull ObservableSupplier<Integer> tabStripHeightSupplier,
+            ObservableSupplier<Profile> profileSupplier) {
         mActivity = activity;
         mParentView = parentView;
         mParentTabSupplier = parentTabSupplier;
@@ -96,6 +97,7 @@ class ExploreSurfaceCoordinatorFactory {
                 PropertyModelChangeProcessor.create(
                         containerPropertyModel, parentView, ExploreSurfaceViewBinder::bind);
         mTabStripHeightSupplier = tabStripHeightSupplier;
+        mProfileSupplier = profileSupplier;
     }
 
     /**
@@ -107,7 +109,8 @@ class ExploreSurfaceCoordinatorFactory {
      */
     ExploreSurfaceCoordinator create(
             boolean isInNightMode, @NewTabPageLaunchOrigin int launchOrigin) {
-        Profile profile = ProfileManager.getLastUsedRegularProfile();
+        Profile profile = mProfileSupplier.get();
+        assert !profile.isOffTheRecord();
 
         return new ExploreSurfaceCoordinator(
                 profile,

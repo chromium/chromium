@@ -22,6 +22,7 @@ import androidx.coordinatorlayout.widget.CoordinatorLayout;
 
 import com.google.android.material.appbar.AppBarLayout;
 
+import org.chromium.base.supplier.ObservableSupplier;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.feed.FeedStreamViewResizer;
 import org.chromium.chrome.browser.feed.FeedSurfaceCoordinator;
@@ -31,7 +32,6 @@ import org.chromium.chrome.browser.ntp.IncognitoDescriptionView;
 import org.chromium.chrome.browser.ntp.search.SearchBoxCoordinator;
 import org.chromium.chrome.browser.preferences.Pref;
 import org.chromium.chrome.browser.profiles.Profile;
-import org.chromium.chrome.browser.profiles.ProfileManager;
 import org.chromium.components.browser_ui.widget.CoordinatorLayoutForPointer;
 import org.chromium.components.browser_ui.widget.displaystyle.UiConfig;
 import org.chromium.components.content_settings.CookieControlsEnforcement;
@@ -55,6 +55,7 @@ public class TasksView extends CoordinatorLayoutForPointer {
             CookieControlsEnforcement.NO_ENFORCEMENT;
     private View.OnClickListener mIncognitoCookieControlsIconClickListener;
     private UiConfig mUiConfig;
+    private ObservableSupplier<Profile> mProfileSupplier;
 
     /** Default constructor needed to inflate via XML. */
     public TasksView(Context context, AttributeSet attrs) {
@@ -65,7 +66,9 @@ public class TasksView extends CoordinatorLayoutForPointer {
     public void initialize(
             ActivityLifecycleDispatcher activityLifecycleDispatcher,
             boolean isIncognito,
-            WindowAndroid windowAndroid) {
+            WindowAndroid windowAndroid,
+            ObservableSupplier<Profile> profileSupplier) {
+        mProfileSupplier = profileSupplier;
         assert mSearchBoxCoordinator != null
                 : "#onFinishInflate should be completed before the call to initialize.";
 
@@ -371,9 +374,8 @@ public class TasksView extends CoordinatorLayoutForPointer {
     }
 
     boolean shouldShowTrackingProtectionNtp() {
-        Profile profile =
-                ProfileManager.getLastUsedRegularProfile()
-                        .getPrimaryOTRProfile(/* createIfNeeded= */ true);
+        Profile profile = mProfileSupplier.get();
+        assert !profile.isOffTheRecord();
         return (UserPrefs.get(profile).getBoolean(Pref.TRACKING_PROTECTION3PCD_ENABLED)
                 || ChromeFeatureList.isEnabled(ChromeFeatureList.TRACKING_PROTECTION_3PCD));
     }

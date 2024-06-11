@@ -97,7 +97,10 @@ public class ExploreSurfaceViewBinderTest {
                                     },
                                     0L,
                                     null,
-                                    tabStripHeightSupplier);
+                                    tabStripHeightSupplier,
+                                    new ObservableSupplierImpl<>(
+                                            mActivityTestRule.getProfile(
+                                                    /* isIncognito= */ false)));
                     mExploreSurfaceCoordinator =
                             mExploreSurfaceCoordinatorFactory.create(
                                     false, NewTabPageLaunchOrigin.UNKNOWN);

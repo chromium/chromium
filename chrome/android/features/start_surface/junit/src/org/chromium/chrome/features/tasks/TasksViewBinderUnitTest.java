@@ -47,12 +47,14 @@ import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 import org.robolectric.annotation.Config;
 
+import org.chromium.base.supplier.ObservableSupplierImpl;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.base.test.util.Features;
 import org.chromium.base.test.util.Features.DisableFeatures;
 import org.chromium.base.test.util.JniMocker;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
+import org.chromium.chrome.browser.lifecycle.ActivityLifecycleDispatcher;
 import org.chromium.chrome.browser.ntp.IncognitoCookieControlsManager;
 import org.chromium.chrome.browser.preferences.Pref;
 import org.chromium.chrome.browser.profiles.Profile;
@@ -63,6 +65,7 @@ import org.chromium.components.user_prefs.UserPrefs;
 import org.chromium.components.user_prefs.UserPrefsJni;
 import org.chromium.content_public.browser.test.util.TestThreadUtils;
 import org.chromium.ui.base.TestActivity;
+import org.chromium.ui.base.WindowAndroid;
 import org.chromium.ui.modelutil.PropertyModel;
 import org.chromium.ui.modelutil.PropertyModelChangeProcessor;
 import org.chromium.ui.text.EmptyTextWatcher;
@@ -94,6 +97,8 @@ public class TasksViewBinderUnitTest {
     @Mock private PrefService mPrefService;
 
     @Mock private UserPrefs.Natives mUserPrefsJniMock;
+    @Mock private ActivityLifecycleDispatcher mActivityLifecycleDispatcher;
+    @Mock private WindowAndroid mWindowAndroid;
 
     @Before
     public void setUp() throws Exception {
@@ -326,6 +331,11 @@ public class TasksViewBinderUnitTest {
 
     private void createTasksView(int layoutId) {
         mTasksView = (TasksView) mActivity.getLayoutInflater().inflate(layoutId, null);
+        mTasksView.initialize(
+                mActivityLifecycleDispatcher,
+                false,
+                mWindowAndroid,
+                new ObservableSupplierImpl<>(mProfile));
         mActivity.setContentView(mTasksView);
         mTasksViewPropertyModel = new PropertyModel(TasksSurfaceProperties.ALL_KEYS);
         PropertyModelChangeProcessor.create(

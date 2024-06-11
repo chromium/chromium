@@ -49,7 +49,6 @@ import org.chromium.chrome.browser.omnibox.OmniboxStub;
 import org.chromium.chrome.browser.omnibox.voice.VoiceRecognitionHandler;
 import org.chromium.chrome.browser.preferences.PrefChangeRegistrar;
 import org.chromium.chrome.browser.profiles.Profile;
-import org.chromium.chrome.browser.profiles.ProfileManager;
 import org.chromium.chrome.browser.search_engines.TemplateUrlServiceFactory;
 import org.chromium.chrome.browser.signin.services.IdentityServicesProvider;
 import org.chromium.chrome.browser.signin.services.IdentityServicesProviderJni;
@@ -91,6 +90,9 @@ public class StartSurfaceCoordinatorUnitTestRule implements TestRule {
     @Rule public SuggestionsDependenciesRule mSuggestionsDeps = new SuggestionsDependenciesRule();
     @Rule public BookmarkNativesMockRule mBookmarkNativesMockRule = new BookmarkNativesMockRule();
 
+    private Profile mProfile;
+    private Profile mIncogonitoProfile;
+
     private TabModelSelector mTabModelSelector;
     private ViewGroup mContainerView;
     private TemplateUrlService mTemplateUrlService;
@@ -104,15 +106,11 @@ public class StartSurfaceCoordinatorUnitTestRule implements TestRule {
     private ObservableSupplierImpl<Profile> mProfileSupplier = new ObservableSupplierImpl<>();
 
     private static class MockTabModelFilterProvider extends TabModelFilterProvider {
-        public MockTabModelFilterProvider(Activity activity) {
+        public MockTabModelFilterProvider(
+                Activity activity, Profile profile, Profile incogonitoProfile) {
             List<TabModel> tabModels = new ArrayList<>();
             MockTabModelSelector selector =
-                    new MockTabModelSelector(
-                            ProfileManager.getLastUsedRegularProfile(),
-                            ProfileManager.getLastUsedRegularProfile().getPrimaryOTRProfile(true),
-                            0,
-                            0,
-                            null);
+                    new MockTabModelSelector(profile, incogonitoProfile, 0, 0, null);
             tabModels.add(selector.getModel(false));
             tabModels.add(selector.getModel(true));
             selector.selectModel(true);
@@ -146,6 +144,8 @@ public class StartSurfaceCoordinatorUnitTestRule implements TestRule {
                 ChromeFeatureList.sStartSurfaceAndroid.setForTesting(true);
                 ChromeFeatureList.sShowNtpAtStartupAndroid.setForTesting(false);
 
+                mProfile = Mockito.mock(Profile.class);
+                mIncogonitoProfile = Mockito.mock(Profile.class);
                 mTabModelSelector = Mockito.mock(TabModelSelector.class);
                 mContainerView = Mockito.mock(ViewGroup.class);
                 mTemplateUrlService = Mockito.mock(TemplateUrlService.class);
@@ -154,7 +154,7 @@ public class StartSurfaceCoordinatorUnitTestRule implements TestRule {
                 initJniMocks();
                 initViewsMocks();
 
-                doReturn(new MockTabModelFilterProvider(mActivity))
+                doReturn(new MockTabModelFilterProvider(mActivity, mProfile, mIncogonitoProfile))
                         .when(mTabModelSelector)
                         .getTabModelFilterProvider();
 
@@ -169,13 +169,10 @@ public class StartSurfaceCoordinatorUnitTestRule implements TestRule {
     }
 
     private void initJniMocks() {
-        Profile incognitoProfile = Mockito.mock(Profile.class);
-        Mockito.when(incognitoProfile.isOffTheRecord()).thenReturn(true);
-        Profile profile = Mockito.mock(Profile.class);
-        Mockito.when(profile.getPrimaryOTRProfile(Mockito.anyBoolean()))
-                .thenReturn(incognitoProfile);
+        when(mProfile.isOffTheRecord()).thenReturn(false);
+        when(mIncogonitoProfile.isOffTheRecord()).thenReturn(true);
+        when(mProfile.getPrimaryOTRProfile(Mockito.anyBoolean())).thenReturn(mIncogonitoProfile);
         PrefService prefService = Mockito.mock(PrefService.class);
-        ProfileManager.setLastUsedProfileForTesting(profile);
 
         mSuggestionsDeps.getFactory().offlinePageBridge = new FakeOfflinePageBridge();
         mSuggestionsDeps.getFactory().mostVisitedSites = new FakeMostVisitedSites();
@@ -192,8 +189,8 @@ public class StartSurfaceCoordinatorUnitTestRule implements TestRule {
         LibraryLoader.setLibraryLoaderForTesting(mLibraryLoader);
 
         UserPrefs.Natives userPrefsJniMock = Mockito.mock(UserPrefs.Natives.class);
-        Mockito.when(userPrefsJniMock.get(profile)).thenReturn(prefService);
-        when(userPrefsJniMock.get(profile)).thenReturn(prefService);
+        Mockito.when(userPrefsJniMock.get(mProfile)).thenReturn(prefService);
+        when(userPrefsJniMock.get(mProfile)).thenReturn(prefService);
         mJniMocker.mock(UserPrefsJni.TEST_HOOKS, userPrefsJniMock);
 
         IdentityServicesProvider.Natives identityServicesProviderJniMock =
