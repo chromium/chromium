@@ -16,6 +16,7 @@
 #include "base/timer/timer.h"
 #include "content/browser/media/capture/io_surface_capture_device_base_mac.h"
 #include "content/browser/media/capture/screen_capture_kit_fullscreen_module.h"
+#include "content/public/common/content_features.h"
 #include "third_party/webrtc/modules/desktop_capture/desktop_capture_types.h"
 #include "ui/gfx/native_widget_types.h"
 
@@ -134,6 +135,10 @@ namespace content {
 
 namespace {
 
+BASE_FEATURE(kScreenCaptureKitFullDesktopFallback,
+             "ScreenCaptureKitFullDesktopFallback",
+             base::FEATURE_ENABLED_BY_DEFAULT);
+
 class API_AVAILABLE(macos(12.3)) ScreenCaptureKitDeviceMac
     : public IOSurfaceCaptureDeviceBase,
       public ScreenCaptureKitResetStreamInterface {
@@ -170,7 +175,11 @@ class API_AVAILABLE(macos(12.3)) ScreenCaptureKitDeviceMac
     switch (source_.type) {
       case DesktopMediaID::TYPE_SCREEN:
         for (SCDisplay* display in content.displays) {
-          if (source_.id == display.displayID) {
+          // There's currently no support for stitching desktops together as
+          // requested by kFullDesktopScreenId. Capture the first display as a
+          // fallback. See https://crbug.com/325530044.
+          if (source_.id == display.displayID ||
+              source_.id == webrtc::kFullDesktopScreenId) {
             filter = [[SCContentFilter alloc] initWithDisplay:display
                                              excludingWindows:@[]];
             stream_config_content_size_ =
@@ -467,8 +476,14 @@ std::unique_ptr<media::VideoCaptureDevice> CreateScreenCaptureKitDeviceMac(
     switch (source.type) {
       case DesktopMediaID::TYPE_SCREEN:
         // ScreenCaptureKitDeviceMac only supports a single display at a time.
-        // It will not stitch desktops together. https://crbug.com/1178360
-        if (source.id == webrtc::kFullDesktopScreenId ||
+        // It will not stitch desktops together. If
+        // kScreenCaptureKitFullDesktopFallback is enabled, we will fallback to
+        // capturing the first display in the list returned from
+        // getShareableContent. https://crbug.com/1178360 and
+        // https://crbug.com/325530044
+        if ((source.id == webrtc::kFullDesktopScreenId &&
+             !base::FeatureList::IsEnabled(
+                 kScreenCaptureKitFullDesktopFallback)) ||
             source.id == webrtc::kInvalidScreenId) {
           return nullptr;
         }
