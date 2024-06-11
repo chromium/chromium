@@ -352,25 +352,12 @@ void MailboxVideoFrameConverter::WrapSharedImageAndVideoFrameAndOutput(
   CHECK_EQ(frame->format(), origin_frame->format());
   CHECK(buffer_format);
 
-  uint32_t texture_target = GL_TEXTURE_2D;
-  // NOTE: The change to simplify logic for computing the texture target here is
-  // under the `kUseUniversalGetTextureTargetFunction` killswitch as it is
-  // following the same logic that ClientSharedImage::GetTextureTarget() is
-  // using, and thus it makes sense to roll out the changes together.
-  if (base::FeatureList::IsEnabled(
-          gpu::kUseUniversalGetTextureTargetFunction)) {
-    // The target should be GL_TEXTURE_2D unless external sampling is being
-    // used, which in this context is equivalent to the passed-in buffer format
-    // being multiplanar as we never use per-plane sampling in this context.
-    texture_target = gfx::BufferFormatIsMultiplanar(*buffer_format)
-                         ? GL_TEXTURE_EXTERNAL_OES
-                         : GL_TEXTURE_2D;
-  } else {
-    texture_target = gpu::NativeBufferNeedsPlatformSpecificTextureTarget(
-                         *buffer_format, gfx::BufferPlane::DEFAULT)
-                         ? GL_TEXTURE_EXTERNAL_OES
-                         : GL_TEXTURE_2D;
-  }
+  // The target should be GL_TEXTURE_2D unless external sampling is being
+  // used, which in this context is equivalent to the passed-in buffer format
+  // being multiplanar as we never use per-plane sampling in this context.
+  uint32_t texture_target = gfx::BufferFormatIsMultiplanar(*buffer_format)
+                                ? GL_TEXTURE_EXTERNAL_OES
+                                : GL_TEXTURE_2D;
 
   VideoFrame::ReleaseMailboxCB release_mailbox_cb = base::BindOnce(
       [](scoped_refptr<base::SequencedTaskRunner> gpu_task_runner,

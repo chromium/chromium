@@ -118,10 +118,6 @@ uint32_t ComputeTextureTargetForSharedImage(
 
 }  // namespace
 
-BASE_FEATURE(kUseUniversalGetTextureTargetFunction,
-             "UseUniversalGetTextureTargetFunction",
-             base::FEATURE_ENABLED_BY_DEFAULT);
-
 BASE_FEATURE(kEnableAutomaticSharedImageManagement,
              "EnableAutomaticSharedImageManagement",
              base::FEATURE_ENABLED_BY_DEFAULT);
@@ -319,60 +315,20 @@ uint32_t ClientSharedImage::GetTextureTarget() {
 }
 
 uint32_t ClientSharedImage::GetTextureTargetForOverlays() {
-  if (base::FeatureList::IsEnabled(kUseUniversalGetTextureTargetFunction)) {
-    return GetTextureTarget();
-  }
-
-#if BUILDFLAG(IS_MAC)
-  return GetPlatformSpecificTextureTarget();
-#else
-  return GL_TEXTURE_2D;
-#endif
+  return GetTextureTarget();
 }
 
 uint32_t ClientSharedImage::GetTextureTarget(gfx::BufferFormat format) {
-  if (base::FeatureList::IsEnabled(kUseUniversalGetTextureTargetFunction)) {
-    return GetTextureTarget();
-  }
-
-  return NativeBufferNeedsPlatformSpecificTextureTarget(format)
-             ? GetPlatformSpecificTextureTarget()
-             : GL_TEXTURE_2D;
+  return GetTextureTarget();
 }
 
 uint32_t ClientSharedImage::GetTextureTarget(gfx::BufferUsage usage,
                                              gfx::BufferFormat format) {
-  if (base::FeatureList::IsEnabled(kUseUniversalGetTextureTargetFunction)) {
-    return GetTextureTarget();
-  }
-
-  CHECK(HasHolder());
-
-  auto capabilities = sii_holder_->Get()->GetCapabilities();
-  bool found = base::Contains(capabilities.texture_target_exception_list,
-                              gfx::BufferUsageAndFormat(usage, format));
-  return found ? gpu::GetPlatformSpecificTextureTarget() : GL_TEXTURE_2D;
+  return GetTextureTarget();
 }
 
 uint32_t ClientSharedImage::GetTextureTarget(gfx::BufferUsage usage) {
-  if (base::FeatureList::IsEnabled(kUseUniversalGetTextureTargetFunction)) {
-    return GetTextureTarget();
-  }
-
-  uint32_t usages_forcing_native_buffer = SHARED_IMAGE_USAGE_SCANOUT;
-#if BUILDFLAG(IS_MAC)
-  // On Mac, WebGPU usage results in SharedImages being backed by IOSurfaces.
-  usages_forcing_native_buffer = usages_forcing_native_buffer |
-                                 SHARED_IMAGE_USAGE_WEBGPU_READ |
-                                 SHARED_IMAGE_USAGE_WEBGPU_WRITE;
-#endif
-
-  bool uses_native_buffer = this->usage() & usages_forcing_native_buffer;
-  return uses_native_buffer
-             ? GetTextureTarget(usage,
-                                viz::SinglePlaneSharedImageFormatToBufferFormat(
-                                    metadata_.format))
-             : GL_TEXTURE_2D;
+  return GetTextureTarget();
 }
 
 scoped_refptr<ClientSharedImage> ClientSharedImage::MakeUnowned() {

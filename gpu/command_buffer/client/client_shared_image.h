@@ -23,10 +23,6 @@ namespace gpu {
 class ClientSharedImageInterface;
 class TestSharedImageInterface;
 
-// Controls whether all ClientSharedImage::GetTextureTarget*(...) variants call
-// through to ClientSharedImage::GetTextureTarget() under the hood.
-GPU_EXPORT BASE_DECLARE_FEATURE(kUseUniversalGetTextureTargetFunction);
-
 // Controls whether SharedImageInterface::DestroySharedImage() should be called
 // in ClientSharedImage's destructor if the shared image has not been marked
 // for destruction.
