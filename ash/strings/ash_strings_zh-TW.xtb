@@ -283,7 +283,7 @@
 <translation id="2108303511227308752">「Alt + Backspace 鍵」的鍵盤快速鍵已變更。如要使用 Delete 鍵，請按下<ph name="LAUNCHER_KEY_NAME" />鍵 + Backspace 鍵。</translation>
 <translation id="2126242104232412123">新增虛擬桌面</translation>
 <translation id="2132302418721800944">錄製全螢幕畫面</translation>
-<translation id="2135456203358955318">停駐放大鏡</translation>
+<translation id="2135456203358955318">置頂放大鏡</translation>
 <translation id="2148716181193084225">今天</translation>
 <translation id="2149229036084364364">播放上一首曲目</translation>
 <translation id="2152895518047545149">你沒有缺交任何作業，表現真好！</translation>
@@ -474,7 +474,7 @@
 <translation id="2931572158271115754">這份待辦事項清單沒有任何項目。</translation>
 <translation id="2935225303485967257">管理個人資料</translation>
 <translation id="2941112035454246133">低</translation>
-<translation id="2942350706960889382">停駐放大鏡</translation>
+<translation id="2942350706960889382">置頂放大鏡</translation>
 <translation id="2942516765047364088">檔案櫃位置</translation>
 <translation id="2946119680249604491">新增連線</translation>
 <translation id="2947835478872237115">目前電池電量：<ph name="BATTERY_PERCENTAGE" />%；充電所需時間：<ph name="TIME" /></translation>
