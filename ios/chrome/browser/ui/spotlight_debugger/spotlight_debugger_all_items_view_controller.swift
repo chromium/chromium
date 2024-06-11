@@ -23,7 +23,8 @@ class ItemsController {
   func fetchAllItems(completionHandler: @escaping () -> Void) {
     self.allItems = []
     let queryString = "title == *"
-    let attributes = [
+    let context = CSSearchQueryContext()
+    context.fetchAttributes = [
       "uniqueIdentifier",
       "title", "domain", "id", "URL", "description",
       "thumbnail data", "displayName", "keywords",
@@ -31,7 +32,7 @@ class ItemsController {
     ]
     self.query = CSSearchQuery(
       queryString: queryString,
-      attributes: attributes)
+      queryContext: context)
     self.query?.foundItemsHandler = { (items: [CSSearchableItem]) -> Void in
       self.allItems.append(contentsOf: items)
     }

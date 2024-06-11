@@ -182,9 +182,10 @@ void GetURLForSpotlightItemID(NSString* itemID, BlockWithNSURL completion) {
       [NSString stringWithFormat:@"%@ == \"%@\"",
                                  GetSpotlightCustomAttributeItemID(), itemID];
 
-  CSSearchQuery* query =
-      [[CSSearchQuery alloc] initWithQueryString:queryString
-                                      attributes:@[ @"contentURL" ]];
+  CSSearchQueryContext* context = [[CSSearchQueryContext alloc] init];
+  context.fetchAttributes = @[ @"contentURL" ];
+  CSSearchQuery* query = [[CSSearchQuery alloc] initWithQueryString:queryString
+                                                       queryContext:context];
 
   [query setFoundItemsHandler:^(NSArray<CSSearchableItem*>* items) {
     if ([items count] == 1) {
