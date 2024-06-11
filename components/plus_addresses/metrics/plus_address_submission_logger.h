@@ -5,7 +5,7 @@
 #ifndef COMPONENTS_PLUS_ADDRESSES_METRICS_PLUS_ADDRESS_SUBMISSION_LOGGER_H_
 #define COMPONENTS_PLUS_ADDRESSES_METRICS_PLUS_ADDRESS_SUBMISSION_LOGGER_H_
 
-#include <memory>
+#include <string>
 
 #include "base/containers/flat_map.h"
 #include "base/functional/callback_forward.h"
@@ -75,7 +75,7 @@ class PlusAddressSubmissionLogger final : autofill::AutofillManager::Observer {
     Record& operator=(Record&&);
     ~Record();
 
-    std::unique_ptr<ukm::builders::PlusAddresses_Submission> ukm_builder;
+    ukm::builders::PlusAddresses_Submission ukm_builder;
     // This information for the following members is contained in the builder
     // but cannot be read from there. This duplicates it to allow recording a
     // UMA at submission.
