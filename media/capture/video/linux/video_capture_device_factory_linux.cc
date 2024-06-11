@@ -51,7 +51,7 @@ void VideoCaptureDeviceFactoryLinux::GetDevicesInfo(
   if (webrtc_factory_->IsAvailable()) {
     webrtc_factory_->GetDevicesInfo(
         base::BindOnce(&VideoCaptureDeviceFactoryLinux::OnGetDevicesInfo,
-                       base::Unretained(this), std::move(callback)));
+                       weak_ptr_factory_.GetWeakPtr(), std::move(callback)));
     return;
   }
 #endif  // defined(WEBRTC_USE_PIPEWIRE)
