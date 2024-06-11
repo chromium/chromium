@@ -5523,45 +5523,6 @@ chromium-metrics-reviews@google.com.
   <summary>Size of HTML5 media (when known), in MB.</summary>
 </histogram>
 
-<histogram name="Media.Ui.GetDiplayMedia.HasScreenRecordingPermission"
-    enum="Boolean" expires_after="2025-05-22">
-  <owner>tovep@chromium.org</owner>
-  <owner>eladalon@chromium.org</owner>
-  <owner>kron@chromium.org</owner>
-  <summary>
-    Records whether the user has screen recording permission when the
-    DesktopMedia picker dialog is opened.
-  </summary>
-</histogram>
-
-<histogram name="Media.Ui.GetDiplayMedia.ScreenSharingPermissionInteractionMac"
-    enum="MediaUiGetDisplayMediaPermissionInteraction"
-    expires_after="2025-05-22">
-  <owner>tovep@chromium.org</owner>
-  <owner>eladalon@chromium.org</owner>
-  <owner>kron@chromium.org</owner>
-  <summary>
-    Records how far the user has proceeded in the journey to open the
-    screen-recording settings when trying to share a screen without having the
-    permission to do so. This histogram is recorded each time the dialog is
-    closed.
-  </summary>
-</histogram>
-
-<histogram name="Media.Ui.GetDiplayMedia.WindowSharingPermissionInteractionMac"
-    enum="MediaUiGetDisplayMediaPermissionInteraction"
-    expires_after="2025-05-22">
-  <owner>tovep@chromium.org</owner>
-  <owner>eladalon@chromium.org</owner>
-  <owner>kron@chromium.org</owner>
-  <summary>
-    Records how far the user has proceeded in the journey to open the
-    screen-recording settings when trying to share a window without having the
-    permission to do so. This histogram is recorded each time the dialog is
-    closed.
-  </summary>
-</histogram>
-
 <histogram
     name="Media.Ui.GetDisplayMedia.BasicFlow.HighlightedTabDiscardStatus"
     enum="HighlightedTabDiscardStatus" expires_after="2024-11-06">
@@ -5633,6 +5594,17 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Media.Ui.GetDisplayMedia.HasScreenRecordingPermission"
+    enum="Boolean" expires_after="2025-05-22">
+  <owner>tovep@chromium.org</owner>
+  <owner>eladalon@chromium.org</owner>
+  <owner>kron@chromium.org</owner>
+  <summary>
+    Records whether the user has screen recording permission when the
+    DesktopMedia picker dialog is opened.
+  </summary>
+</histogram>
+
 <histogram name="Media.Ui.GetDisplayMedia.PreferCurrentTabFlow.UserInteraction"
     enum="MediaUiGetDisplayMediaPreferCurrentTabFlowUserInteraction"
     expires_after="2024-09-22">
@@ -5642,6 +5614,36 @@ chromium-metrics-reviews@google.com.
     Records the result of the user's interaction with the media picker dialog
     which is displayed following a call to getDisplayMedia where
     preferCurrentTab was specified.
+  </summary>
+</histogram>
+
+<histogram
+    name="Media.Ui.GetDisplayMedia.ScreenSharingPermissionInteractionMac"
+    enum="MediaUiGetDisplayMediaPermissionInteraction"
+    expires_after="2025-05-22">
+  <owner>tovep@chromium.org</owner>
+  <owner>eladalon@chromium.org</owner>
+  <owner>kron@chromium.org</owner>
+  <summary>
+    Records how far the user has proceeded in the journey to open the
+    screen-recording settings when trying to share a screen without having the
+    permission to do so. This histogram is recorded each time the dialog is
+    closed.
+  </summary>
+</histogram>
+
+<histogram
+    name="Media.Ui.GetDisplayMedia.WindowSharingPermissionInteractionMac"
+    enum="MediaUiGetDisplayMediaPermissionInteraction"
+    expires_after="2025-05-22">
+  <owner>tovep@chromium.org</owner>
+  <owner>eladalon@chromium.org</owner>
+  <owner>kron@chromium.org</owner>
+  <summary>
+    Records how far the user has proceeded in the journey to open the
+    screen-recording settings when trying to share a window without having the
+    permission to do so. This histogram is recorded each time the dialog is
+    closed.
   </summary>
 </histogram>
 
