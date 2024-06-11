@@ -9,7 +9,7 @@ import ios_chrome_browser_ui_tab_switcher_tab_strip_ui_swift_constants
 /// View Controller displaying the TabStrip.
 @objcMembers
 class TabStripViewController: UIViewController,
-  TabStripConsumer, TabStripNewTabButtonDelegate, TabStripTabCellDelegate
+  TabStripConsumer, TabStripNewTabButtonDelegate, TabStripGroupCellDelegate, TabStripTabCellDelegate
 {
 
   // The enum used by the data source to manage the sections.
@@ -431,6 +431,15 @@ class TabStripViewController: UIViewController,
     newTabButton.IPHHighlighted = iphHighlighted
   }
 
+  // MARK: - TabStripGroupCellDelegate
+
+  func collapseOrExpandTapped(for cell: TabStripGroupCell?) {
+    guard let cell = cell,
+      let indexPath = collectionView.indexPath(for: cell)
+    else { return }
+    collapseOrExpandGroup(at: indexPath)
+  }
+
   // MARK: - TabStripTabCellDelegate
 
   func closeButtonTapped(for cell: TabStripTabCell?) {
@@ -454,6 +463,18 @@ class TabStripViewController: UIViewController,
   }
 
   // MARK: - Private
+
+  /// Collapses or expands the group at `indexPath`.
+  func collapseOrExpandGroup(at indexPath: IndexPath) {
+    guard let tabGroupItem = dataSource.itemIdentifier(for: indexPath)?.tabGroupItem else {
+      return
+    }
+    if tabGroupItem.collapsed {
+      mutator?.expandGroup(tabGroupItem)
+    } else {
+      mutator?.collapseGroup(tabGroupItem)
+    }
+  }
 
   /// Applies `snapshot` to `dataSource` and updates the collection view layout.
   private func applySnapshot(
@@ -571,6 +592,7 @@ class TabStripViewController: UIViewController,
       cell.title = item.title
       cell.titleContainerBackgroundColor = item.groupColor
       cell.collapsed = item.collapsed
+      cell.delegate = self
       cell.groupStrokeColor = itemData?.groupStrokeColor
       cell.accessibilityIdentifier = self.tabTripGroupCellAccessibilityIdentifier(
         index: indexPath.item)
@@ -789,11 +811,7 @@ extension TabStripViewController: UICollectionViewDelegateFlowLayout {
     case .tab(let tabSwitcherItem):
       mutator?.activate(tabSwitcherItem)
     case .group(let tabGroupItem):
-      if tabGroupItem.collapsed {
-        mutator?.expandGroup(tabGroupItem)
-      } else {
-        mutator?.collapseGroup(tabGroupItem)
-      }
+      collapseOrExpandGroup(at: indexPath)
     }
   }
 

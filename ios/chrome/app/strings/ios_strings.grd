@@ -5229,6 +5229,12 @@ While in Incognito, sites can't use cookies to see your browsing activity across
       <message name="IDS_IOS_TAB_STRIP_TAB_CELL_IN_GROUP_VOICE_OVER_VALUE" desc="Accessibility value to let the user know the position of the currently focused grouped tab compared to the others. Read by Text-to-Speech">
         Tab Group Tab. <ph name="TAB_INDEX_IN_GROUP">$1<ex>3</ex></ph> of <ph name="NUMBER_OF_TABS_IN_GROUP">$2<ex>27</ex></ph>.
       </message>
+      <message name="IDS_IOS_TAB_STRIP_TAB_GROUP_COLLAPSE" desc="The accessibility label for collapsing an expanded tab group. [iOS only]">
+          Collapse tab group.
+      </message>
+        <message name="IDS_IOS_TAB_STRIP_TAB_GROUP_EXPAND" desc="The accessibility label for expanding a collapsed tab group. [iOS only]">
+        Expand tab group.
+      </message>
       <message name="IDS_IOS_TAB_SWITCHER_CLOSE_TAB" desc="The accessibility label for the closing of a selected tab. [iOS only]">
         Close tab.
       </message>

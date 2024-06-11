@@ -7,8 +7,19 @@
 
 #import "ios/chrome/browser/ui/tab_switcher/tab_strip/ui/tab_strip_cell.h"
 
+@class TabStripGroupCell;
+
+// Informs the receiver of actions on the cell.
+@protocol TabStripGroupCellDelegate
+// Informs the receiver that the expand or collapse selector has been tapped.
+- (void)collapseOrExpandTappedForCell:(TabStripGroupCell*)cell;
+@end
+
 // TabStripCell that contains a group title.
 @interface TabStripGroupCell : TabStripCell
+
+// Delegate to inform the TabStrip on the cell.
+@property(nonatomic, weak) id<TabStripGroupCellDelegate> delegate;
 
 // Background color of the title container.
 @property(nonatomic, strong) UIColor* titleContainerBackgroundColor;

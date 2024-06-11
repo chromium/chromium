@@ -100,8 +100,11 @@ id<GREYMatcher> TabStripGroupCellMatcher() {
 
 // Returns a matcher for a tab strip group cell with `title` as title.
 id<GREYMatcher> TabStripGroupCellMatcher(NSString* title) {
-  return grey_allOf(grey_accessibilityLabel(title), TabStripGroupCellMatcher(),
-                    nil);
+  return grey_allOf(grey_kindOfClassName(@"UIView"),
+                    grey_not(grey_kindOfClassName(@"UILabel")),
+                    grey_accessibilityLabel(title),
+                    grey_ancestor(grey_kindOfClassName(@"TabStripGroupCell")),
+                    grey_sufficientlyVisible(), nil);
 }
 
 // Matcher for an unnamed tab group that has the `number_of_tabs`.

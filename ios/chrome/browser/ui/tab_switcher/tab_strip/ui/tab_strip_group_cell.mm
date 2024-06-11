@@ -33,7 +33,6 @@ constexpr double kTitleContainerFadeAnimationSeconds = 0.25;
 - (instancetype)initWithFrame:(CGRect)frame {
   self = [super initWithFrame:frame];
   if (self) {
-    self.isAccessibilityElement = YES;
     _titleContainer = [self createTitleContainer];
     [self.contentView addSubview:_titleContainer];
     _groupStrokeView = [[TabStripGroupStrokeView alloc] init];
@@ -60,6 +59,10 @@ constexpr double kTitleContainerFadeAnimationSeconds = 0.25;
 
 - (void)prepareForReuse {
   [super prepareForReuse];
+  _titleContainer.accessibilityValue = nil;
+  _titleContainer.accessibilityLabel = nil;
+  _titleLabel.text = nil;
+  self.delegate = nil;
   self.titleContainerBackgroundColor = nil;
   self.collapsed = NO;
 }
@@ -85,7 +88,7 @@ constexpr double kTitleContainerFadeAnimationSeconds = 0.25;
 
 - (void)setTitle:(NSString*)title {
   [super setTitle:title];
-  self.accessibilityLabel = title;
+  _titleContainer.accessibilityLabel = title;
   _titleLabel.text = [title copy];
 }
 
@@ -155,11 +158,28 @@ constexpr double kTitleContainerFadeAnimationSeconds = 0.25;
   UIView* titleContainer = [[UIView alloc] init];
   titleContainer.translatesAutoresizingMaskIntoConstraints = NO;
   titleContainer.layer.masksToBounds = YES;
+  titleContainer.isAccessibilityElement = YES;
   titleContainer.layer.cornerRadius =
       TabStripGroupItemConstants.titleContainerHorizontalPadding;
   _titleLabel = [self createTitleLabel];
   [titleContainer addSubview:_titleLabel];
   return titleContainer;
+}
+
+#pragma mark - UIAccessibility
+
+- (NSArray*)accessibilityCustomActions {
+  int stringID = self.collapsed ? IDS_IOS_TAB_STRIP_TAB_GROUP_EXPAND
+                                : IDS_IOS_TAB_STRIP_TAB_GROUP_COLLAPSE;
+  return @[ [[UIAccessibilityCustomAction alloc]
+      initWithName:l10n_util::GetNSString(stringID)
+            target:self
+          selector:@selector(collapseOrExpandTapped:)] ];
+}
+
+// Selector registered to expand or collapse tab group.
+- (void)collapseOrExpandTapped:(id)sender {
+  [self.delegate collapseOrExpandTappedForCell:self];
 }
 
 #pragma mark - Private
@@ -294,7 +314,7 @@ constexpr double kTitleContainerFadeAnimationSeconds = 0.25;
 - (void)updateAccessibilityValue {
   // Use the accessibility Value as there is a pause when using the
   // accessibility hint.
-  self.accessibilityValue = l10n_util::GetNSString(
+  _titleContainer.accessibilityValue = l10n_util::GetNSString(
       self.collapsed ? IDS_IOS_TAB_STRIP_GROUP_CELL_COLLAPSED_VOICE_OVER_VALUE
                      : IDS_IOS_TAB_STRIP_GROUP_CELL_EXPANDED_VOICE_OVER_VALUE);
 }
