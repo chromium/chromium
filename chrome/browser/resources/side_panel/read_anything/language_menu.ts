@@ -237,10 +237,15 @@ export class LanguageMenuElement extends LanguageMenuElementBase {
     });
 
     return langsAndReadableLangs
-        .filter(([_, readableLang]) => {
+        .filter(([lang, readableLang]) => {
           if (languageSearchValue) {
+            // In addition to matching the readable language, also allow
+            // the search term to extend to the language code to make
+            // searching for specific languages easier. e.g. 'pt-br' will
+            // match with Portugues (Brasil)
             return readableLang.toLowerCase().includes(
-                languageSearchValue.toLowerCase());
+                       languageSearchValue.toLowerCase()) ||
+                lang.includes(languageSearchValue.toLowerCase());
           } else {
             return true;
           }
