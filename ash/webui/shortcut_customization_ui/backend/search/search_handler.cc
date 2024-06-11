@@ -7,15 +7,11 @@
 #include <optional>
 #include <vector>
 
-#include "ash/constants/ash_features.h"
 #include "ash/public/mojom/accelerator_info.mojom-forward.h"
-#include "ash/public/mojom/accelerator_info.mojom-shared.h"
 #include "ash/public/mojom/accelerator_info.mojom.h"
-#include "ash/webui/shortcut_customization_ui/backend/search/fake_search_data.h"
 #include "ash/webui/shortcut_customization_ui/backend/search/search.mojom.h"
 #include "ash/webui/shortcut_customization_ui/backend/search/search_concept.h"
 #include "base/check.h"
-#include "ui/base/accelerators/accelerator.h"
 
 // Sets the relevance_threshold to be low enough for single-character queries
 // to produce results, but high enough to avoid too many irrelevant results.

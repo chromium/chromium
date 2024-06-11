@@ -4,23 +4,15 @@
 
 #include "ash/webui/shortcut_customization_ui/backend/search/search_concept_registry.h"
 
-#include <iterator>
-#include <map>
 #include <string>
 #include <vector>
 
-#include "ash/constants/ash_features.h"
-#include "ash/public/mojom/accelerator_info.mojom-shared.h"
 #include "ash/public/mojom/accelerator_info.mojom.h"
-#include "ash/webui/shortcut_customization_ui/backend/accelerator_layout_table.h"
-#include "ash/webui/shortcut_customization_ui/backend/search/search.mojom.h"
 #include "ash/webui/shortcut_customization_ui/backend/search/search_concept.h"
 #include "base/check.h"
 #include "base/functional/bind.h"
-#include "base/functional/callback_helpers.h"
 #include "base/strings/strcat.h"
 #include "base/strings/string_number_conversions.h"
-#include "base/strings/utf_string_conversions.h"
 #include "chromeos/ash/components/local_search_service/public/cpp/local_search_service_proxy.h"
 #include "chromeos/ash/components/local_search_service/shared_structs.h"
 

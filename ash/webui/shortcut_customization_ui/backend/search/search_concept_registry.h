@@ -9,7 +9,6 @@
 #include <memory>
 #include <string>
 
-#include "ash/webui/shortcut_customization_ui/backend/search/search.mojom.h"
 #include "ash/webui/shortcut_customization_ui/backend/search/search_concept.h"
 #include "base/containers/flat_map.h"
 #include "base/gtest_prod_util.h"

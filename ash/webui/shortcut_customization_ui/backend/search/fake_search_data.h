@@ -10,7 +10,6 @@
 #include "ash/public/mojom/accelerator_info.mojom-forward.h"
 #include "ash/public/mojom/accelerator_info.mojom-shared.h"
 #include "ash/webui/shortcut_customization_ui/backend/search/search.mojom.h"
-#include "ash/webui/shortcut_customization_ui/backend/search/search_concept.h"
 
 namespace ash::shortcut_ui::fake_search_data {
 

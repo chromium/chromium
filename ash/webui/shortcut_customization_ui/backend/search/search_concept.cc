@@ -9,7 +9,6 @@
 #include "ash/webui/shortcut_customization_ui/backend/search/search_concept.h"
 #include "base/strings/strcat.h"
 #include "base/strings/string_number_conversions.h"
-#include "mojo/public/cpp/bindings/clone_traits.h"
 
 namespace ash::shortcut_ui {
 
