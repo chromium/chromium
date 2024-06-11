@@ -59,7 +59,9 @@ class OwnedObjects {
     DCHECK(!base::Contains(objects_, raw));
     objects_.insert(std::move(object));
     // We should stop using a flat_set at this point.
-    DCHECK_GE(100u, objects_.size());
+    // TODO(joenotcharles): https://crrev.com/c/5605323 creates object 101 on
+    // some bots. Time to stop using flat_set.
+    DCHECK_GE(110u, objects_.size());
     ((raw)->*(OnPassedMemberFunction))(std::forward<ArgTypes>(args)...);
   }
 
