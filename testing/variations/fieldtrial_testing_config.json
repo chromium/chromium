@@ -10720,6 +10720,21 @@
             ]
         }
     ],
+    "HeatmapPalmDetectionStudy": [
+        {
+            "platforms": [
+                "chromeos"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "enable_features": [
+                        "EnableHeatmapPalmDetection"
+                    ]
+                }
+            ]
+        }
+    ],
     "HelpAppAppsDiscoveryV2": [
         {
             "platforms": [
