@@ -783,6 +783,7 @@ base::Value::Dict ArcNetHostImpl::TranslateVpnConfigurationToOnc(
               net_utils::TranslateStringListToValue(cfg.split_include));
   ip_dict.Set(onc::ipconfig::kExcludedRoutes,
               net_utils::TranslateStringListToValue(cfg.split_exclude));
+  ip_dict.Set(onc::ipconfig::kMTU, cfg.mtu);
 
   top_dict.Set(onc::network_config::kStaticIPConfig, std::move(ip_dict));
 
