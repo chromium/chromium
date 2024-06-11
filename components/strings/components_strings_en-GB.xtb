@@ -547,6 +547,7 @@ This will otherwise be blocked by your privacy settings. This will allow the con
 <translation id="2003709556000175978">Reset your password now</translation>
 <translation id="2003775180883135320">Quad punch top</translation>
 <translation id="2004697686368036666">Features on some sites may not work</translation>
+<translation id="2005042463110681802">You are seeing this warning because this site does not support HTTPS and you are in Incognito mode. <ph name="BEGIN_LEARN_MORE_LINK" />Learn more<ph name="END_LEARN_MORE_LINK" /></translation>
 <translation id="2009942480257059311">Create event button, activate to quickly create a new event in Google Calendar</translation>
 <translation id="201174227998721785">Manage permissions and data stored across sites in Chrome settings</translation>
 <translation id="2012276282211112603">No topics to show right now</translation>
@@ -573,7 +574,6 @@ This will otherwise be blocked by your privacy settings. This will allow the con
 <translation id="2046951263634619614">Book Retailers</translation>
 <translation id="2048261947532620704">Translating page</translation>
 <translation id="2053111141626950936">Pages in <ph name="LANGUAGE" /> will not be translated.</translation>
-<translation id="2055461225779831292">Use and move your cameras (<ph name="CAMERAS_COUNT" />)</translation>
 <translation id="2056492565825767809">Lock your mouse pointer</translation>
 <translation id="2056658168519009885">Sites can ask Chrome for information to help personalise the ads that you see.</translation>
 <translation id="2059166748188874810">Municipality</translation>
@@ -651,7 +651,6 @@ This will otherwise be blocked by your privacy settings. This will allow the con
 <translation id="2170417331417184438">Card saved only to device</translation>
 <translation id="2172089022819052306">Vehicle repair and maintenance</translation>
 <translation id="2175630235841878061">Files over 100MB are not available for download</translation>
-<translation id="2176198174348007293">Use your cameras (<ph name="CAMERAS_COUNT" />)</translation>
 <translation id="2176974405772725904">Save address in Account</translation>
 <translation id="2178665390943006934">Update Chrome button, activate to update Chrome from your Chrome settings</translation>
 <translation id="2181821976797666341">Policies</translation>
@@ -1484,6 +1483,7 @@ This will otherwise be blocked by your privacy settings. This will allow the con
 <translation id="3799805948399000906">Font requested</translation>
 <translation id="3801265110651850478">Send a 'Do Not Track' request with your browsing traffic</translation>
 <translation id="380329542618494757">Name</translation>
+<translation id="3803801106042434208">These search engines are popular in your region</translation>
 <translation id="3806932344025766608">Attackers on the site you're trying to visit might trick you into installing software or revealing things like your password, phone or credit card number. Chrome strongly recommends going back to safety. <ph name="BEGIN_LEARN_MORE_LINK" />Learn more<ph name="END_LEARN_MORE_LINK" /></translation>
 <translation id="3807366285948165054">Image X shift</translation>
 <translation id="3807709094043295184">Classic rock and oldies</translation>
@@ -3629,7 +3629,6 @@ Additional details:
 <translation id="7947813448670013867"><ph name="SEE_CHROME_TIPS_FOCUSED_FRIENDLY_MATCH_TEXT" />: press Tab then Enter to learn about Chrome features</translation>
 <translation id="7949135979217012031">Antivirus and malware</translation>
 <translation id="7950027195171824198">Manage your cookie preferences in Chrome settings</translation>
-<translation id="7950440490184876634">Use your microphones (<ph name="MICS_COUNT" />)</translation>
 <translation id="7951415247503192394">(32-bit)</translation>
 <translation id="7952192831285741665">European EDP</translation>
 <translation id="7952250633095257243">Shortcut can't be empty</translation>

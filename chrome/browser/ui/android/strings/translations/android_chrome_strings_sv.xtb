@@ -274,6 +274,7 @@ Din krypterade data kan endast läsas av en person som har din lösenfras. Löse
 <translation id="2450083983707403292">Vill du börja ladda ned <ph name="FILE_NAME" /> igen?</translation>
 <translation id="2453860139492968684">Slutför</translation>
 <translation id="2461822463642141190">Nuvarande</translation>
+<translation id="2472163211318554013">Logga in så att du får ut mesta möjliga av Chrome</translation>
 <translation id="247737702124049222">Bildbeskrivningar har aktiverats</translation>
 <translation id="2479148705183875116">Öppna inställningarna</translation>
 <translation id="2482878487686419369">Aviseringar</translation>
@@ -285,6 +286,7 @@ Din krypterade data kan endast läsas av en person som har din lösenfras. Löse
 <translation id="2515921719039583189">Radera din Chrome-data från denna enhet?</translation>
 <translation id="2517113738956581680">Ark i full storlek</translation>
 <translation id="2523184218357549926">Skickar webbadresserna till sidor du besöker till Google</translation>
+<translation id="2524132927880411790">Öppna röstsökning i Google-appen</translation>
 <translation id="2527209463677295330">Om du tar med mer av sidans text kanske du får bättre resultat</translation>
 <translation id="2527497042232966453">Byter till inkognitoflikar</translation>
 <translation id="2527779675047087889">Dölj innehållet i Urklipp</translation>
@@ -424,7 +426,6 @@ Din krypterade data kan endast läsas av en person som har din lösenfras. Löse
 <translation id="3098745985164956033">Vissa bilder skickas till Google så att du får bättre beskrivningar</translation>
 <translation id="3114507951000454849">Läs dagens nyheter <ph name="NEWS_ICON" /></translation>
 <translation id="3123734510202723619">Meddelanden</translation>
-<translation id="3146775326699342508">Logga in om du vill ha dina bokmärken och annat från dina andra enheter</translation>
 <translation id="314939179385989105">Chromes startsida</translation>
 <translation id="3158667104057012316">Sorterar efter manuell ordning</translation>
 <translation id="3166827708714933426">Kortkommandon för flikar och fönster</translation>
@@ -519,6 +520,7 @@ Din krypterade data kan endast läsas av en person som har din lösenfras. Löse
 <translation id="363596933471559332">Logga in automatiskt på webbplatser med hjälp av lagrade inloggningsuppgifter. När funktionen är inaktiverad måste du verifiera dina uppgifter varje gång du besöker webbplatsen innan du kan logga in.</translation>
 <translation id="3636940436873918441">Föredragna språk</translation>
 <translation id="3637744895182738742">Om du har glömt lösenfrasen eller vill ändra den här inställningen <ph name="BEGIN_LINK" />raderar du Chrome-datan i kontot<ph name="END_LINK" />.</translation>
+<translation id="3674208116086565128">Öppna startskärmen i Google-appen</translation>
 <translation id="368329460027487650">Utloggad. Öppnar inloggningsalternativen.</translation>
 <translation id="3687645719033307815">Du tittar på en förhandsgranskning av den här sidan</translation>
 <translation id="3690369331356918524">En varning visas om lösenord har läckt ut vid ett dataintrång</translation>
@@ -1342,6 +1344,7 @@ Om du vill ändra den här inställningen <ph name="BEGIN_LINK" />raderar du Chr
 <translation id="752220631458524187">Koppla från när du är klar</translation>
 <translation id="7523960634226602883">Sök med kameran med hjälp av Google Lens</translation>
 <translation id="752731652852882757">Blockera i inkognitoläget</translation>
+<translation id="7557508262441527045">Utloggad</translation>
 <translation id="7577900504646297215">Hantera intressen</translation>
 <translation id="757855969265046257">{FILES,plural, =1{<ph name="FILES_DOWNLOADED_ONE" /> fil har laddats ned}other{<ph name="FILES_DOWNLOADED_MANY" /> filer har laddats ned}}</translation>
 <translation id="7581273696622423628">Svara på enkäten</translation>
@@ -1387,7 +1390,6 @@ Om du vill ändra den här inställningen <ph name="BEGIN_LINK" />raderar du Chr
 <translation id="777637629667389858">När du är inloggad skyddas du i alla Googles tjänster.</translation>
 <translation id="7778840695157240389">Återkom senare för nya berättelser</translation>
 <translation id="7780645209293383778">Denna data länkas tillfälligt till Google-kontot när du loggar in för att skydda dig i Googles appar</translation>
-<translation id="7786562169000598736">Få tillgång till alla dina bokmärken</translation>
 <translation id="7791543448312431591">Lägg till</translation>
 <translation id="7798392620021911922"><ph name="TAB_COUNT" /> flikar har återställts</translation>
 <translation id="780287761701992588">Få dina bokmärken, lösenord med mera på alla dina enheter</translation>
@@ -1476,6 +1478,7 @@ Om du vill ändra den här inställningen <ph name="BEGIN_LINK" />raderar du Chr
 <translation id="813082847718468539">Visa information om webbplatsen</translation>
 <translation id="8135406045838672858">Nedladdade PDF-filer öppnas automatiskt med <ph name="APP_NAME" /></translation>
 <translation id="8137562778192957619">Du behöver inte komma ihåg det här lösenordet. Det sparas med Google Lösenordshantering.</translation>
+<translation id="8152331954420209374">Öppna Lens</translation>
 <translation id="8163820386638255770">Verifiera din identitet om du vill använda och spara lösenord i Google-kontot</translation>
 <translation id="8171286197772512427">Dela med feedbackarket för sammanfattningen har öppnats</translation>
 <translation id="8179976553408161302">Enter</translation>
@@ -1512,6 +1515,7 @@ Om du vill ändra den här inställningen <ph name="BEGIN_LINK" />raderar du Chr
 <translation id="8348430946834215779">Använd HTTPS när det är möjligt och få en varning innan webbplatser som saknar stöd för HTTPS läses in</translation>
 <translation id="8354977102499939946">Gör en röstsökning snabbt. Öppna inställningarna om du vill ändra genvägen.</translation>
 <translation id="835847953965672673"><ph name="NUMBER_OF_DOWNLOADS" /> nedladdningar har återställts</translation>
+<translation id="8367705492654390392">Fråga vad som helst</translation>
 <translation id="8368001212524806591">Bevaka pris</translation>
 <translation id="8378850197701296741">Du har bokmärken, historik och andra inställningar från <ph name="FROM_ACCOUNT" />.</translation>
 <translation id="8387617938027387193">Verifiera din identitet</translation>

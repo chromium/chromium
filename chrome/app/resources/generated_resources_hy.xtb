@@ -370,7 +370,6 @@
 <translation id="1260810365552581339">Հնարավոր է՝ Լինուքսի սկավառակում բավարար տարածք չկա։ Կարող եք <ph name="LINK_START" />Կարգավորումներում<ph name="LINK_END" /> ավելացնել Լինուքսի սկավառակի տարածքը և նորից փորձել վերականգնել պահուստավորված տվյալները։</translation>
 <translation id="1261380933454402672">Չափավոր</translation>
 <translation id="126156426083987769">Դեմո ռեժիմում աշխատող սարքերի արտոնագրերի հետ խնդիր է առաջացել։</translation>
-<translation id="1261885284931493480">Հեռացնե՞լ ներդիր(ներ)ը և ջնջե՞լ խումբը</translation>
 <translation id="1263231323834454256">Ընթերցանության ցանկ</translation>
 <translation id="1263733306853729545">«<ph name="MINUS" />» և «<ph name="EQUAL" />» ստեղները թույլ են տալիս թերթել տարբերակների ցանկը</translation>
 <translation id="126387934568812801">Ներառեք այս սքրինշոթը և բացված ներդիրների անունները</translation>
@@ -1643,7 +1642,6 @@
 <translation id="2187895286714876935">Սերվերի վկայագրի ներմուծման սխալ</translation>
 <translation id="2187906491731510095">Ընդլայնումները թարմացվել են</translation>
 <translation id="2188881192257509750">Բացել <ph name="APPLICATION" /> հավելվածը</translation>
-<translation id="2188919919468240749">Ջնջե՞լ ներդիրների խումբը</translation>
 <translation id="2190069059097339078">WiFi հավատարմագրերի կորզիչ</translation>
 <translation id="219008588003277019">Native Client մոդուլ` <ph name="NEXE_NAME" /></translation>
 <translation id="2190355936436201913">(դատարկ)</translation>
@@ -2084,7 +2082,6 @@
 <translation id="249113932447298600"><ph name="DEVICE_LABEL" /> սարքը չի աջակցվում:</translation>
 <translation id="2491587035099903063">լսել ձայնը <ph name="LANGUAGE" /> լեզվով</translation>
 <translation id="2492461744635776704">Հավաստագրի ստորագրման հայտի նախապատրաստում</translation>
-<translation id="2492964937550251173">Փակե՞լ ներդիր(ներ)ը և ջնջե՞լ խումբը</translation>
 <translation id="249330843868392562">Բացել տեքստի հնչեցման կարգավորումները</translation>
 <translation id="2494555621641843783">Հնարավոր չէ տեղադրել Steam-ը</translation>
 <translation id="2495141202137516054">Ձեր Drive-ից</translation>
@@ -2809,7 +2806,6 @@
 <translation id="3021066826692793094">Թիթեռ</translation>
 <translation id="3021678814754966447">&amp;Դիտել շրջանակի սկզբնաղբյուրը</translation>
 <translation id="3021902017511220299">Չհաջողվեց սկանավորել։ Ադմինիստրատորն արգելափակել է այս գործողությունը։</translation>
-<translation id="3022068420678496307">Խումբը կջնջվի բոլոր սարքերում, որոնցում այս Google հաշվով մուտք եք գործել Chrome։</translation>
 <translation id="3022361196600037287"><ph name="DEVICE" /> սարքը կհեռացվի այս Chromebook-ից և չի պահվի <ph name="PRIMARY_EMAIL" /> հաշվում։</translation>
 <translation id="3022978424994383087">Անհասկանալի է:</translation>
 <translation id="3023464535986383522">Ընտրեք և լսեք</translation>
@@ -2984,6 +2980,7 @@
 <translation id="3163511056918491211">Հեշտությամբ վերականգնեք և տեղափոխեք տվյալները նոր սարք։ Պահուստավորված տվյալները վերբեռնվում են Google և գաղտնագրվում ձեր Google հաշվի գաղտնաբառի միջոցով։</translation>
 <translation id="3164329792803560526"><ph name="APP_NAME" />-ին հասանելի է այս ներդիրը</translation>
 <translation id="3165390001037658081">Որոշ մատակարարներ կարող են արգելափակել այս գործառույթը։</translation>
+<translation id="316542773973815724">Նավիգացիա</translation>
 <translation id="3165734944977250074">Ֆայլը չի կարող տեղափոխվել, քանի որ այն այլևս գոյություն չունի</translation>
 <translation id="3166443275568926403">Արտադրողականությունը և մարտկոցի վիճակը</translation>
 <translation id="3169930038976362151">Ընտրեք ձեզ հարմար թեմա։ Թեման, պաստառը, էկրանապահը և այլ տարրեր փոխելու համար պարզապես հպեք աշխատասեղանին և պահեք։</translation>
@@ -3865,7 +3862,6 @@
 <translation id="3810914450553844415">Ձեր ադմինիստրատորը թույլ չի տալիս օգտագործել Google-ի լրացուցիչ հաշիվներ։</translation>
 <translation id="3810973564298564668">Կառավարել</translation>
 <translation id="381202950560906753">Նոր մատնահետք</translation>
-<translation id="381219490185664296">Ապախմբավորե՞լ ներդիրների խումբը</translation>
 <translation id="3812525830114410218">Սխալ վկայական</translation>
 <translation id="3813296892522778813">Եթե չեք գտնում ձեր ուզածը, այցելեք <ph name="BEGIN_LINK_CHROMIUM" />Google Chrome-ի օգնության էջ<ph name="END_LINK_CHROMIUM" /></translation>
 <translation id="3813358687923336574">Էջերի թարգմանության և արագ պատասխանների համար օգտագործվող լեզուն</translation>
@@ -4229,7 +4225,6 @@
 <translation id="4078738236287221428">Ագրեսիվ</translation>
 <translation id="4078903002989614318">Տեսակավորման և ցանկի ընտրանքներ</translation>
 <translation id="4079140982534148664">Օգտագործել ուղղագրության ընդլայնված ստուգումը</translation>
-<translation id="4083735423615351075">Այս սարքում ներդիրները կմնան բացված, սակայն խումբը կջնջվի բոլոր սարքերից, որոնցում այս Google հաշվով մուտք եք գործել Chrome։</translation>
 <translation id="4084682180776658562">Էջանիշ</translation>
 <translation id="4084835346725913160">Փակել <ph name="TAB_NAME" /> ներդիրը</translation>
 <translation id="4085298594534903246">JavaScript-ն արգելափակված է այս էջում:</translation>
@@ -4239,7 +4234,6 @@
 
 <ph name="EXTENSION_FILE" /></translation>
 <translation id="4087328411748538168">Ցուցադրել աջ կողմում</translation>
-<translation id="4088879333319441249">Ապախմբավորե՞լ ներդիրների խումբը</translation>
 <translation id="4089235344645910861">Կարգավորումները պահվեցին: Համաժամացումը սկսվեց:</translation>
 <translation id="4089817585533500276">shift + <ph name="TOP_ROW_KEY" /></translation>
 <translation id="4090103403438682346">Միացնել ստուգված մուտքի ծառայությունը</translation>
@@ -4325,7 +4319,6 @@
 <translation id="4148195018520464922">Դուք կարող եք թույլատրել մուտքը միայն որոշակի օգտատերերի։ Այդ դեպքում մուտքի էկրանից կհեռացվի «Ավելացնել օգտատեր» ընտրանքը։ Դուք նաև կարող եք հեռացնել առկա օգտատերերին։</translation>
 <translation id="4148957013307229264">Տեղադրում…</translation>
 <translation id="4150201353443180367">Էկրան</translation>
-<translation id="4150417452770391330">Միացրեք տեսախցիկ</translation>
 <translation id="4150569944729499860">Էկրանի համատեքստ</translation>
 <translation id="4151449637210235443">Պատմեք մեզ խաղային ձեր վերջին փորձառության մասին</translation>
 <translation id="4151503145138736576">Անցանց հիշողությունը դատարկ է</translation>
@@ -5124,7 +5117,6 @@
 <translation id="4777458362738635055">Սարքի մյուս օգտատերերը կարող են օգտագործել այս ցանցը</translation>
 <translation id="4777813841994368231">Միացված է • Այս ընդլայնման հրապարակումը չեղարկվել է մշակողի կողմից</translation>
 <translation id="4777825441726637019">Play Խանութ</translation>
-<translation id="4777866634702576038">Ջնջե՞լ ներդիրների խումբը</translation>
 <translation id="4777943778632837590">Կարգավորել DNS-ների հասցեները</translation>
 <translation id="4778653490315793244">Բովանդակություն չկա</translation>
 <translation id="4779083564647765204">Խոշորացում</translation>
@@ -5537,7 +5529,6 @@
 <translation id="5093477827231450397">Արգելափակված կայքերը, որոնց արգելված է գովազդ առաջարկել այլ կայքերի</translation>
 <translation id="5093569275467863761">Հետադարձ քեշի ենթաշրջանակ ինկոգնիտո ռեժիմում՝ <ph name="BACK_FORWARD_CACHE_INCOGNITO_PAGE_URL" /></translation>
 <translation id="5094176498302660097">Դուք կարող եք բացել և փոփոխել աջակցվող ֆայլերն այս հավելվածի միջոցով Ֆայլեր հավելվածից կամ այլ հավելվածներից։ <ph name="BEGIN_LINK" />Այս էջում<ph name="END_LINK" /> կարող եք իմանալ, թե ինչպես ձեր սարքում կանխադրված հավելվածներ սահմանել և նշել, թե որ ֆայլերը պետք է ըստ կանխադրման բացվեն տվյալ հավելվածով։</translation>
-<translation id="5094423602314093681">Հեռացնե՞լ ներդիր(ներ)ը և ջնջե՞լ խումբը</translation>
 <translation id="5094721898978802975">Կապվել հարակից native հավելվածների հետ</translation>
 <translation id="5095252080770652994">Ընթացագոտի</translation>
 <translation id="5095507226704905004">Ֆայլը չի կարող պատճենվել, քանի որ այն այլևս գոյություն չունի</translation>
@@ -7312,7 +7303,6 @@
 <translation id="6445450263907939268">Կարող եք վերականգնել ձեր նախկին կարգավորումները:</translation>
 <translation id="6446213738085045933">Ստեղծեք աշխատասեղանի դյուրանցում</translation>
 <translation id="6447842834002726250">Cookie ֆայլեր</translation>
-<translation id="6449554712554071184">Խումբն ընդմիշտ կջնջվի ձեր սարքից։</translation>
 <translation id="6450876761651513209">Փոխել գաղտնիության հետ առնչվող կարգավորումները</translation>
 <translation id="6451591602925140504">{NUM_PAGES,plural, =0{<ph name="PAGE_TITLE" />}=1{<ph name="PAGE_TITLE" /> ու ևս 1 ներդիր}one{<ph name="PAGE_TITLE" /> ու ևս # ներդիր}other{<ph name="PAGE_TITLE" /> ու ևս # ներդիր}}</translation>
 <translation id="6451689256222386810">Եթե մոռացել եք ձեր անցաբառը կամ ուզում եք փոխել այս կարգավորումը, <ph name="BEGIN_LINK" />վերակայեք համաժամացումը<ph name="END_LINK" />:</translation>
@@ -8465,7 +8455,6 @@
 <translation id="7340650977506865820">Կայքը ցուցադրում է ձեր սարքի էկրանը</translation>
 <translation id="7340757554212515731">Ավտոմատ կերպով Google-ին է ուղարկում խափանման մասին հաշվետվությունները, ինչպես նաև օգտագործման և դիագնոստիկ տվյալները։</translation>
 <translation id="734088800888587319">Ցանցի ցուցանիշներ</translation>
-<translation id="7341612916770129581">Միացրեք խոսափող</translation>
 <translation id="7341834142292923918">Ընդլայնումն այս կայքի հասանելիություն է հարցում</translation>
 <translation id="7343372807593926528">Կարծիքն ուղարկելուց առաջ նկարագրեք խնդիրը։</translation>
 <translation id="7344585835349671209">Կառավարել HTTPS/SSL հավաստագրերը ձեր սարքում</translation>
@@ -9364,7 +9353,6 @@
 <translation id="7974936243149753750">էկրանի շրջանակ</translation>
 <translation id="7975504106303186033">Գրանցեք Chrome Education լիցենզիայով այս սարքը ուսումնական հաշվում։ Նոր հաշիվ ստեղծելու համար անցեք g.co/workspace/edusignup էջ։</translation>
 <translation id="7977451675950311423">Զգուշացնում է ձեզ, երբ տվյալների արտահոսքի հետևանքով կոտրված գաղտնաբառ եք օգտագործում։</translation>
-<translation id="797824194429476746">Այս սարքում ներդիրները կմնան բացված, սակայն խումբն ընդմիշտ կջնջվի։</translation>
 <translation id="7978412674231730200">Մասնավոր բանալի</translation>
 <translation id="7978450511781612192">Դուք դուրս կգաք Google հաշվից: Ձեր էջանիշները, այցելությունների պատմությունը, գաղտնաբառերը և մյուս կարգավորումներն այլևս չեն համաժամացվի:</translation>
 <translation id="7980066177668669492">Base64-գաղտնագրված ASCII, բազմակի վկայագրեր</translation>
@@ -9418,6 +9406,7 @@
 <translation id="8017679124341497925">Դյուրանցումը փոխվեց</translation>
 <translation id="8018298733481692628">Ջնջե՞լ այս պրոֆիլը</translation>
 <translation id="8018313076035239964">Վերահսկեք, թե ձեր մասին ինչ տեղեկություններ հասանելի կլինեն կայքերին և ինչ են ցուցադրելու ձեզ կայքերը։</translation>
+<translation id="802154636333426148">Ներբեռնումը ձախողվեց</translation>
 <translation id="8022466874160067884">Մուտքագրել ձեր Google հաշիվը և գաղտնաբառը</translation>
 <translation id="8023133589013344428">Լեզուների կառավարում ChromeOS Flex-ի կարգավորումներում</translation>
 <translation id="8023801379949507775">Թարմացնել ընդլայնումները հիմա</translation>
@@ -10706,7 +10695,6 @@
 <translation id="8962863356073277855">URL-ն անհրաժեշտ է նշել հետևյալ ձևաչափով՝ https://www.example.com</translation>
 <translation id="8962918469425892674">Այս կայքն օգտագործում է շարժման և լուսավորության տվիչներ:</translation>
 <translation id="8963117664422609631">Անցնել կայքի կարգավորումներ</translation>
-<translation id="8964795217937248330">Փակե՞լ ներդիր(ներ)ը և ջնջե՞լ խումբը</translation>
 <translation id="8965037249707889821">Մուտքագրեք հին գաղտնաբառը</translation>
 <translation id="8966809848145604011">Այլ պրոֆիլներ</translation>
 <translation id="8967427617812342790">Ավելացնել ընթերցանության ցանկում</translation>

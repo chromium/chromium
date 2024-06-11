@@ -6,4 +6,5 @@
 <translation id="4301151630239508244">Os tópicos de anúncios são apenas um dos muitos elementos que um site pode usar para personalizar anúncios. Mesmo sem tópicos de anúncios, os sites podem continuar a mostrar-lhe anúncios, mas estes podem ser menos personalizados. Saiba mais sobre a <ph name="BEGIN_LINK_1" />gestão da privacidade dos anúncios<ph name="END_LINK_1" />.</translation>
 <translation id="4598427486995631491">Ocultar endereço IP</translation>
 <translation id="6371812158043974664">Quando tem sessão iniciada no Chromium, esta definição ajuda a manter o seu endereço IP privado. Se o Chromium suspeitar que um site pode estar a fazer o acompanhamento do seu perfil, algum do seu tráfego pode ser enviado através de servidores de privacidade. Saiba <ph name="LINK_BEGIN" />como funciona a proteção de IP<ph name="LINK_END" /></translation>
+<translation id="7040031291654706261">Saiba <ph name="BEGIN_LINK" />como funciona a proteção de IP<ph name="END_LINK" /></translation>
 </translationbundle>

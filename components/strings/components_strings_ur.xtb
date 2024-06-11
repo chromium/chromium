@@ -547,6 +547,7 @@
 <translation id="2003709556000175978">اپنا پاس ورڈ ابھی ری سیٹ کریں</translation>
 <translation id="2003775180883135320">اوپر مستطیل سوراخ</translation>
 <translation id="2004697686368036666">ہو سکتا ہے کہ کچھ سائٹس پر خصوصیات کام نہ کریں</translation>
+<translation id="2005042463110681802">‏آپ یہ وارننگ اس لیے دیکھ رہے ہیں کیونکہ یہ سائٹ HTTPS کو سپورٹ نہیں کرتی ہے اور آپ پوشیدگی وضع میں ہیں۔ <ph name="BEGIN_LEARN_MORE_LINK" />مزید جانیں<ph name="END_LEARN_MORE_LINK" /></translation>
 <translation id="2009942480257059311">‏ایونٹ تخلیق کریں بٹن، Google کیلنڈر میں تیزی سے نیا ایونٹ تخلیق کرنے کے لیے فعال کریں</translation>
 <translation id="201174227998721785">‏Chrome کی ترتیبات میں موجود تمام سائٹس پر اسٹور کردہ اجازتوں اور ڈیٹا کا نظم کریں</translation>
 <translation id="2012276282211112603">فی الوقت دکھانے کیلئے کوئی موضوع نہیں</translation>
@@ -573,7 +574,6 @@
 <translation id="2046951263634619614">کتاب کے ریٹیلرز</translation>
 <translation id="2048261947532620704">صفحہ کا ترجمہ کیا جا رہا ہے</translation>
 <translation id="2053111141626950936"><ph name="LANGUAGE" /> کے صفحات کا ترجمہ نہیں کیا جائے گا۔</translation>
-<translation id="2055461225779831292">آپ کا کیمرا استعمال کرنا اور اسے حرکت دینا چاہتی ہے (<ph name="CAMERAS_COUNT" />)</translation>
 <translation id="2056492565825767809">اپنے ماؤس پوائنٹر کو لاک کریں</translation>
 <translation id="2056658168519009885">‏آپ کو دکھائی دینے والے اشتہارات کو ذاتی نوعیت کا بنانے میں مدد کرنے کے لیے سائٹس Chrome سے معلومات طلب کر سکتی ہیں۔</translation>
 <translation id="2059166748188874810">میونسپلٹی</translation>
@@ -651,7 +651,6 @@
 <translation id="2170417331417184438">کارڈ صرف آلہ میں محفوظ کیا گیا ہے</translation>
 <translation id="2172089022819052306">گاڑیوں کی مرمت اور دیکھ بھال</translation>
 <translation id="2175630235841878061">‏100MB سے زیادہ کی فائلز ڈاؤن لوڈ کے لیے دستیاب نہیں ہیں</translation>
-<translation id="2176198174348007293">اپنے کیمرے کا استعمال کریں (<ph name="CAMERAS_COUNT" />)</translation>
 <translation id="2176974405772725904">اکاؤنٹ میں پتہ محفوظ کریں</translation>
 <translation id="2178665390943006934">‏Chrome اپ ڈیٹ کریں بٹن، اپنی Chrome کی ترتیبات سے Chrome کو اپ ڈیٹ کرنے کے لیے فعال کریں</translation>
 <translation id="2181821976797666341">پالیسیاں</translation>
@@ -1485,6 +1484,7 @@
 <translation id="3799805948399000906">فونٹ کی درخواست کی گئی</translation>
 <translation id="3801265110651850478">‏اپنے براؤزنگ ٹریفک کے ساتھ ایک "Do Not Track" درخواست بھیجیں</translation>
 <translation id="380329542618494757">نام</translation>
+<translation id="3803801106042434208">یہ سرچ انجنز آپ کے علاقے میں مقبول ہیں</translation>
 <translation id="3806932344025766608">‏آپ جو سائٹ ملاحظہ کرنے کی کوشش کر رہے ہیں، اس پر حملہ آور دھوکے سے آپ سے سافٹ ویئر انسٹال کروا سکتے ہیں یا آپ کے پاس ورڈ، فون یا کریڈٹ کارڈ نمبر جیسی چیزیں افشاء کروا سکتے ہیں۔ Chrome تحفظ پر واپس جانے کا پُرزور مشورہ دیتا ہے۔ <ph name="BEGIN_LEARN_MORE_LINK" />مزید جانیں<ph name="END_LEARN_MORE_LINK" /></translation>
 <translation id="3807366285948165054">‏تصویر X شفٹ</translation>
 <translation id="3807709094043295184">کلاسک راک اور پرانے گانے</translation>
@@ -3631,7 +3631,6 @@
 <translation id="7947813448670013867">‏<ph name="SEE_CHROME_TIPS_FOCUSED_FRIENDLY_MATCH_TEXT" />، Chrome کی خصوصیات کے بارے میں جاننے کیلئے Tab، پھر Enter دبائیں</translation>
 <translation id="7949135979217012031">اینٹی وائرس اور میلوئیر</translation>
 <translation id="7950027195171824198">‏Chrome ترتیبات میں اپنی کوکی کی ترجیحات کا نظم کریں</translation>
-<translation id="7950440490184876634">اپنے مائیکروفون کا استعمال کریں (<ph name="MICS_COUNT" />)</translation>
 <translation id="7951415247503192394">(32 بٹ)</translation>
 <translation id="7952192831285741665">European EDP</translation>
 <translation id="7952250633095257243">شارٹ کٹ خالی نہیں ہو سکتا</translation>

@@ -23,6 +23,7 @@
 <translation id="1869137256605757565">{TABS_COUNT,plural, =1{<ph name="TABS_COUNT_ONE" /> lap}other{<ph name="TABS_COUNT_MANY" /> lap}}</translation>
 <translation id="2050597508048557928">{TABS_COUNT,plural, =1{<ph name="TABS_COUNT_ONE" /> kiválasztott lap felvétele a könyvjelzők közé}other{<ph name="TABS_COUNT_MANY" /> kiválasztott lap felvétele a könyvjelzők közé}}</translation>
 <translation id="2118649612461486615">Üzletadatok</translation>
+<translation id="2123073051266141035">{INCOGNITO_TABS_COUNT,plural, =1{A bezárt lapok és csoportok újra megnyithatók a Nemrég megnyitott lapok és a Lapcsoportok szakaszban. Az inkognitó lap nem lesz hozzáférhető.}other{A bezárt lapok és csoportok újra megnyithatók a Nemrég megnyitott lapok és a Lapcsoportok szakaszban. # inkognitó lap nem lesz hozzáférhető.}}</translation>
 <translation id="2162620598375156287">Most <ph name="CURRENT_PRICE" /> áron a következő webhelyen: <ph name="SOURCE_WEBSITE" /></translation>
 <translation id="22623456902492423">{TABS_COUNT,plural, =1{Lap kivétele a csoportból}other{Lapok kivétele a csoportból}}</translation>
 <translation id="2271452184061378400">Ide menti a rendszer a lapcsoportokat</translation>

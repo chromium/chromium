@@ -309,6 +309,7 @@ Det här är några saker du kan testa för att komma igång.</translation>
 <translation id="2208323208084708176">Enhetligt skrivbordsläge</translation>
 <translation id="2220572644011485463">Pinkod eller lösenord</translation>
 <translation id="2222841058024245321">Skrivbord 7</translation>
+<translation id="2223384056430485343">På delad skärm</translation>
 <translation id="2224075387478458881">Skärminspelning tillåts inte när skyddat innehåll är synligt</translation>
 <translation id="2227179592712503583">Ta bort förslag</translation>
 <translation id="2248634276911611268">Öppna länken i en ny flik och byt till den nya fliken</translation>
@@ -1132,6 +1133,7 @@ Du kan även använda kortkommandot. Markera först text och tryck sedan på <ph
 <translation id="5208059991603368177">På</translation>
 <translation id="5216991270656129561">Av till <ph name="TIME" /></translation>
 <translation id="5222676887888702881">Logga ut</translation>
+<translation id="5228195526683428788">Avdelare för delad skärm</translation>
 <translation id="5229343007215035173">Aktivera/inaktivera integritetsskärmen</translation>
 <translation id="5230516054153933099">Fönster</translation>
 <translation id="5234764350956374838">Stäng</translation>
@@ -1518,6 +1520,7 @@ Nyligen installerad</translation>
 <translation id="6613765291890844037"><ph name="STORAGE_IN_USE_SIZE" /> lagringsutrymme används | <ph name="STORAGE_TOTAL_SIZE" /> totalt</translation>
 <translation id="6614169507485700968">Integritetsskärmen är aktiverad</translation>
 <translation id="6622679827379792051">Ställ in visning av telefonens appar</translation>
+<translation id="662279009180869175">Använd vänster- och högerpilarna för att ändra storlek på den delade skärmen</translation>
 <translation id="6624493541160101248">Aktuellt skrivbord: <ph name="DESK_NAME" /> Skrivbord <ph name="DESK_INDEX" /> av <ph name="DESK_COUNT" />.</translation>
 <translation id="6625718907317144388">Aviseringar från <ph name="APP_1_TITLE" />, <ph name="APP_2_TITLE" /> och andra appar har dolts eftersom skyddet mot smygtittare har aktiverats</translation>
 <translation id="6627638273713273709">Söktangenten + Skift + K</translation>
@@ -1536,6 +1539,7 @@ Nyligen installerad</translation>
 <translation id="6670153871843998651">Skrivbord 3</translation>
 <translation id="6671495933530132209">Kopiera bild</translation>
 <translation id="6671661918848783005">Det går inte att låsa upp Chromebook</translation>
+<translation id="6676552993057022464">Använd uppåt- och nedåtpilarna för att ändra storlek på den delade skärmen</translation>
 <translation id="6682029141988159141">Klistra in innehåll från Urklipp</translation>
 <translation id="6683022854667115063">Hörlurar</translation>
 <translation id="6686023075541098243">Ställ in visning av telefonens aviseringar</translation>

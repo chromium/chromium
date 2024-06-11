@@ -278,6 +278,7 @@
 <translation id="5690795753582697420">Камера је искључена у Android подешавањима</translation>
 <translation id="5691080386278724773"><ph name="SITE" /> може да користи ваше податке док прегледате</translation>
 <translation id="5700761515355162635">Колачићи трећих страна су дозвољени</translation>
+<translation id="5705383358494210886"><ph name="HOST_NAME" /> <ph name="SEPARATOR1" /> <ph name="RECENCY" /></translation>
 <translation id="5706552988683188916">Овим се бришу колачићи и други подаци о сајту за <ph name="WEBSITE" /></translation>
 <translation id="5723967018671998714">Колачићи треће стране су блокирани у режиму без архивирања</translation>
 <translation id="5740126560802162366">Сајтови могу да чувају податке на уређају</translation>

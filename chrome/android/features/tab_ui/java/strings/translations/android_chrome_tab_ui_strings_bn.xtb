@@ -23,6 +23,7 @@
 <translation id="1869137256605757565">{TABS_COUNT,plural, =1{<ph name="TABS_COUNT_ONE" />টি ট্যাব}one{<ph name="TABS_COUNT_MANY" />টি ট্যাব}other{<ph name="TABS_COUNT_MANY" />টি ট্যাব}}</translation>
 <translation id="2050597508048557928">{TABS_COUNT,plural, =1{<ph name="TABS_COUNT_ONE" />টি বেছে নেওয়া ট্যাব বুকমার্ক করুন}one{<ph name="TABS_COUNT_MANY" />টি বেছে নেওয়া ট্যাব বুকমার্ক করুন}other{<ph name="TABS_COUNT_MANY" />টি বেছে নেওয়া ট্যাব বুকমার্ক করুন}}</translation>
 <translation id="2118649612461486615">স্টোর সংক্রান্ত তথ্য</translation>
+<translation id="2123073051266141035">{INCOGNITO_TABS_COUNT,plural, =1{আপনার বন্ধ করে দেওয়া ট্যাব ও গ্রুপ, 'সাম্প্রতিক' ট্যাব ও ট্যাব গ্রুপ বিভাগ থেকে আবার খোলা যাবে। আপনার 'ছদ্মবেশী' ট্যাবের সুবিধা উপলভ্য হবে না।}one{আপনার বন্ধ করে দেওয়া ট্যাব ও গ্রুপ, 'সাম্প্রতিক' ট্যাব ও ট্যাব গ্রুপ বিভাগ থেকে আবার খোলা যাবে। আপনার #টি 'ছদ্মবেশী' ট্যাবের সুবিধা উপলভ্য হবে না।}other{আপনার বন্ধ করে দেওয়া ট্যাব ও গ্রুপ, 'সাম্প্রতিক' ট্যাব ও ট্যাব গ্রুপ বিভাগ থেকে আবার খোলা যাবে। আপনার #টি 'ছদ্মবেশী' ট্যাবের সুবিধা উপলভ্য হবে না।}}</translation>
 <translation id="2162620598375156287">এখন <ph name="SOURCE_WEBSITE" />-এ <ph name="CURRENT_PRICE" /></translation>
 <translation id="22623456902492423">{TABS_COUNT,plural, =1{ট্যাব আনগ্রুপ করুন}one{ট্যাব আনগ্রুপ করুন}other{ট্যাব আনগ্রুপ করুন}}</translation>
 <translation id="2271452184061378400">আপনার ট্যাব গ্রুপ এখানে সেভ করা হয়েছে</translation>

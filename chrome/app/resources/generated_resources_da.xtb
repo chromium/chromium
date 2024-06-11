@@ -369,7 +369,6 @@ Du kan til enhver tid tjekke dine adgangskoder i <ph name="GOOGLE_PASSWORD_MANAG
 <translation id="1260810365552581339">Linux har muligvis ikke nok diskplads. Du kan øge din Linux-diskplads og prøve at gendanne igen under <ph name="LINK_START" />Indstillinger<ph name="LINK_END" />.</translation>
 <translation id="1261380933454402672">Moderat</translation>
 <translation id="126156426083987769">Der opstod et problem med enhedslicenser i demotilstand.</translation>
-<translation id="1261885284931493480">Vil du fjerne fanerne og slette gruppen?</translation>
 <translation id="1263231323834454256">Læseliste</translation>
 <translation id="1263733306853729545">Brug tasterne <ph name="MINUS" /> og <ph name="EQUAL" /> til at bladre igennem en kandidatliste</translation>
 <translation id="126387934568812801">Medtag dette screenshot og titlerne på de åbne faner</translation>
@@ -1652,7 +1651,6 @@ Du kan administrere indstillingerne for denne konto ved at installere Family Lin
 <translation id="2187895286714876935">Fejl ved import af servercertifikat</translation>
 <translation id="2187906491731510095">Udvidelserne er opdateret</translation>
 <translation id="2188881192257509750">Åbn <ph name="APPLICATION" /></translation>
-<translation id="2188919919468240749">Vil du slette fanegruppen?</translation>
 <translation id="2190069059097339078">Hentning af Wi-Fi-loginoplysninger</translation>
 <translation id="219008588003277019">Native Client-modul: <ph name="NEXE_NAME" /></translation>
 <translation id="2190355936436201913">(tom)</translation>
@@ -2096,7 +2094,6 @@ Du kan administrere indstillingerne for denne konto ved at installere Family Lin
 <translation id="249113932447298600">Vi beklager, men enheden <ph name="DEVICE_LABEL" /> understøttes ikke på nuværende tidspunkt.</translation>
 <translation id="2491587035099903063">hør et eksempel på stemmen på <ph name="LANGUAGE" /></translation>
 <translation id="2492461744635776704">Forbereder anmodning om certifikatsignering</translation>
-<translation id="2492964937550251173">Vil du lukke fanerne og slette gruppen?</translation>
 <translation id="249330843868392562">Åbn indstillinger for oplæsning</translation>
 <translation id="2494555621641843783">Steam kan ikke installeres</translation>
 <translation id="2495141202137516054">Fra dit Drev</translation>
@@ -2823,7 +2820,6 @@ Du kan administrere indstillingerne for denne konto ved at installere Family Lin
 <translation id="3021066826692793094">Sommerfugl</translation>
 <translation id="3021678814754966447">&amp;Vis rammens kilde</translation>
 <translation id="3021902017511220299">Scanningen mislykkedes. Denne handling er blokeret af din administrator.</translation>
-<translation id="3022068420678496307">Dette sletter gruppen fra alle enheder, hvor du er logget ind i Chrome med denne Google-konto.</translation>
 <translation id="3022361196600037287"><ph name="DEVICE" /> fjernes fra denne Chromebook og gemmes ikke på <ph name="PRIMARY_EMAIL" />.</translation>
 <translation id="3022978424994383087">Det er ikke forstået.</translation>
 <translation id="3023464535986383522">Tekstoplæsning</translation>
@@ -2998,6 +2994,7 @@ Du kan administrere indstillingerne for denne konto ved at installere Family Lin
 <translation id="3163511056918491211">Du kan altid nemt gendanne dine data eller skifte enhed. Dine sikkerhedskopier uploades til Google og krypteres ved hjælp af adgangskoden til din Google-konto.</translation>
 <translation id="3164329792803560526">Denne fane deles med <ph name="APP_NAME" /></translation>
 <translation id="3165390001037658081">Nogle mobilselskaber blokerer muligvis denne funktion.</translation>
+<translation id="316542773973815724">Navigation</translation>
 <translation id="3165734944977250074">Filen kan ikke flyttes, fordi den ikke længere findes</translation>
 <translation id="3166443275568926403">Ydeevne og batteristatus</translation>
 <translation id="3169930038976362151">Vælg det tema, der passer til dine behov. Du kan ændre dit tema, din baggrund, din pauseskærm og meget mere ved at holde fingeren nede på skrivebordet.</translation>
@@ -3881,7 +3878,6 @@ Du kan administrere indstillingerne for denne konto ved at installere Family Lin
 <translation id="3810914450553844415">Din administrator tillader ikke yderligere Google-konti.</translation>
 <translation id="3810973564298564668">Administrer</translation>
 <translation id="381202950560906753">Tilføj endnu et</translation>
-<translation id="381219490185664296">Vil du ophæve grupperingen af fanegruppen?</translation>
 <translation id="3812525830114410218">Ugyldigt certifikat</translation>
 <translation id="3813296892522778813">Gå til <ph name="BEGIN_LINK_CHROMIUM" />Hjælp til Google Chrome<ph name="END_LINK_CHROMIUM" />, hvis du ikke kan finde det, du leder efter.</translation>
 <translation id="3813358687923336574">Sprog, der bruges til oversættelse af sider og Hurtig info</translation>
@@ -4244,7 +4240,6 @@ Dette kan omfatte oplysninger om installeret software, filer, din browser og enh
 <translation id="4078738236287221428">Aggressiv</translation>
 <translation id="4078903002989614318">Valgmuligheder for sortering og liste</translation>
 <translation id="4079140982534148664">Brug forbedret stavekontrol</translation>
-<translation id="4083735423615351075">Fanerne forbliver åbne på denne enhed, men gruppen slettes fra alle enheder, hvor du er logget ind i Chrome med denne Google-konto.</translation>
 <translation id="4084682180776658562">Bogmærke</translation>
 <translation id="4084835346725913160">Luk <ph name="TAB_NAME" /></translation>
 <translation id="4085298594534903246">JavaScript blev blokeret på denne side.</translation>
@@ -4254,7 +4249,6 @@ Dette kan omfatte oplysninger om installeret software, filer, din browser og enh
 
 <ph name="EXTENSION_FILE" /></translation>
 <translation id="4087328411748538168">Vis i højre side</translation>
-<translation id="4088879333319441249">Vil du ophæve grupperingen af fanegruppen?</translation>
 <translation id="4089235344645910861">Indstillingerne blev gemt, og synkroniseringen er nu startet.</translation>
 <translation id="4089817585533500276">Shift + <ph name="TOP_ROW_KEY" /></translation>
 <translation id="4090103403438682346">Aktivér Verificeret adgang</translation>
@@ -4340,7 +4334,6 @@ Dette kan omfatte oplysninger om installeret software, filer, din browser og enh
 <translation id="4148195018520464922">Du kan angive begrænsninger, så det kun er bestemte brugere, der kan logge ind. Hvis du gør dette, fjernes valgmuligheden "Tilføj person" på loginskærmen. Du kan også fjerne aktuelle brugere.</translation>
 <translation id="4148957013307229264">Installerer...</translation>
 <translation id="4150201353443180367">Skærm</translation>
-<translation id="4150417452770391330">Tilslut et kamera</translation>
 <translation id="4150569944729499860">Skærmkontekst</translation>
 <translation id="4151449637210235443">Fortæl os om dit seneste gameplay</translation>
 <translation id="4151503145138736576">Der er ingen offlinelagerplads at rydde</translation>
@@ -5139,7 +5132,6 @@ Brug Ctrl+Alt+Lysstyrke ned for at zoome ud.</translation>
 <translation id="4777458362738635055">Andre brugere af denne enhed kan bruge dette netværk</translation>
 <translation id="4777813841994368231">Til • Udgivelsen af denne udvidelse er fjernet af udvikleren</translation>
 <translation id="4777825441726637019">Play Butik</translation>
-<translation id="4777866634702576038">Vil du slette fanegruppen?</translation>
 <translation id="4777943778632837590">Konfigurer navneservere for netværk</translation>
 <translation id="4778653490315793244">Der er intet at vise endnu</translation>
 <translation id="4779083564647765204">Zoom</translation>
@@ -5551,7 +5543,6 @@ Brug Ctrl+Alt+Lysstyrke ned for at zoome ud.</translation>
 <translation id="5093477827231450397">Liste over websites, du har blokeret, som du ikke vil have skal foreslå annoncer på andre websites</translation>
 <translation id="5093569275467863761">Inkognito-underramme i back/forward-cache: <ph name="BACK_FORWARD_CACHE_INCOGNITO_PAGE_URL" /></translation>
 <translation id="5094176498302660097">Du kan åbne og redigere understøttede filer med denne app via appen Filer eller andre apps. Hvis du vil styre, hvilke filer der som standard skal åbnes i denne app, kan du <ph name="BEGIN_LINK" />se, hvordan du angiver standardapps på din enhed<ph name="END_LINK" />.</translation>
-<translation id="5094423602314093681">Vil du fjerne fanerne og slette gruppen?</translation>
 <translation id="5094721898978802975">Kommunikere med indbyggede apps</translation>
 <translation id="5095252080770652994">Status</translation>
 <translation id="5095507226704905004">Filen kan ikke kopieres, fordi den ikke længere findes</translation>
@@ -7330,7 +7321,6 @@ De tilladelser, du har givet til websites og apps, gælder muligvis for denne ko
 <translation id="6445450263907939268">Hvis du ikke var interesseret i disse ændringer, kan du gendanne dine tidligere indstillinger.</translation>
 <translation id="6446213738085045933">Opret genvej på skrivebordet</translation>
 <translation id="6447842834002726250">Cookies</translation>
-<translation id="6449554712554071184">Denne handling sletter gruppen permanent fra din enhed.</translation>
 <translation id="6450876761651513209">Rediger privatlivsrelaterede indstillinger</translation>
 <translation id="6451591602925140504">{NUM_PAGES,plural, =0{<ph name="PAGE_TITLE" />}=1{<ph name="PAGE_TITLE" /> og 1 anden fane}one{<ph name="PAGE_TITLE" /> og # anden fane}other{<ph name="PAGE_TITLE" /> og # andre faner}}</translation>
 <translation id="6451689256222386810">Hvis du har glemt din adgangssætning eller vil ændre denne indstilling, skal du <ph name="BEGIN_LINK" />nulstille synkroniseringen<ph name="END_LINK" />.</translation>
@@ -8483,7 +8473,6 @@ Du har # andre kompromitterede adgangskoder. Google Adgangs­kode­admin­istrat
 <translation id="7340650977506865820">Websitet deler din skærm</translation>
 <translation id="7340757554212515731">Sender automatisk nedbrudsrapporter samt diagnostik- og brugsdata til Google</translation>
 <translation id="734088800888587319">Metrics for netværket</translation>
-<translation id="7341612916770129581">Tilslut en mikrofon</translation>
 <translation id="7341834142292923918">Udvidelsen anmoder om adgang til dette website</translation>
 <translation id="7343372807593926528">Beskriv problemet, før du sender feedback</translation>
 <translation id="7344585835349671209">Administrer HTTPS-/SSL-certifikater på din enhed</translation>
@@ -9382,7 +9371,6 @@ Tryk på en kontakt eller tast, der er tildelt en handling, for at fjerne tildel
 <translation id="7974936243149753750">Overscan</translation>
 <translation id="7975504106303186033">Denne Chrome Education-enhed skal tilmeldes med en skolekonto. Du kan oprette en ny konto på g.co/workspace/edusignup.</translation>
 <translation id="7977451675950311423">Advarer dig, hvis du bruger en adgangskode, der er blevet kompromitteret som følge af et brud på datasikkerheden.</translation>
-<translation id="797824194429476746">Fanerne forbliver åbne på denne enhed, men gruppen slettes permanent.</translation>
 <translation id="7978412674231730200">Privat nøgle</translation>
 <translation id="7978450511781612192">Dermed logges du ud af dine Google-konti. Dine bogmærker, din historik, dine adgangskoder m.m. synkroniseres ikke længere.</translation>
 <translation id="7980066177668669492">Base64-krypteret ASCII, flere certifikater</translation>
@@ -9437,6 +9425,7 @@ Opbevar din nøglefil på et sikkert sted. Du skal bruge den til at oprette nye 
 <translation id="8017679124341497925">Genvejen blev redigeret</translation>
 <translation id="8018298733481692628">Vil du slette denne profil?</translation>
 <translation id="8018313076035239964">Kontrollér, hvilke oplysninger websites kan bruge, og hvilket indhold de kan vise dig</translation>
+<translation id="802154636333426148">Download mislykkedes</translation>
 <translation id="8022466874160067884">Angiv din Google-konto og -adgangskode</translation>
 <translation id="8023133589013344428">Administrer sprog i indstillingerne for ChromeOS Flex</translation>
 <translation id="8023801379949507775">Opdater udvidelser nu</translation>
@@ -10726,7 +10715,6 @@ De tilladelser, du har givet til websites og apps, gælder muligvis for denne ko
 <translation id="8962863356073277855">Webadresseformatet skal være https://www.eksempel.com</translation>
 <translation id="8962918469425892674">Dette website anvender bevægelses- og lyssensorer.</translation>
 <translation id="8963117664422609631">Gå til indstillingerne for websitet</translation>
-<translation id="8964795217937248330">Vil du lukke fanerne og slette gruppen?</translation>
 <translation id="8965037249707889821">Angiv den gamle adgangskode</translation>
 <translation id="8966809848145604011">Andre profiler</translation>
 <translation id="8967427617812342790">Føj til læseliste</translation>

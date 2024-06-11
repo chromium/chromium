@@ -274,6 +274,7 @@
 <translation id="2450083983707403292">क्या <ph name="FILE_NAME" /> को फिर से डाउनलोड करना है?</translation>
 <translation id="2453860139492968684">खत्म करें</translation>
 <translation id="2461822463642141190">मौजूदा</translation>
+<translation id="2472163211318554013">Chrome का ज़्यादा से ज़्यादा फ़ायदा पाने के लिए, साइन इन करें</translation>
 <translation id="247737702124049222">इमेज की जानकारी जोड़ने की सुविधा चालू कर दी गई है</translation>
 <translation id="2479148705183875116">सेटिंग पर जाएं</translation>
 <translation id="2482878487686419369">सूचनाएं</translation>
@@ -285,6 +286,7 @@
 <translation id="2515921719039583189">इस डिवाइस से Chrome का डेटा मिटाना है?</translation>
 <translation id="2517113738956581680">फ़ुल-साइज़ शीट</translation>
 <translation id="2523184218357549926">जिन पेजों को ब्राउज़ किया जाता है उनके यूआरएल Google को भेजती है</translation>
+<translation id="2524132927880411790">Google ऐप्लिकेशन की वॉइस सर्च की सुविधा इस्तेमाल करें</translation>
 <translation id="2527209463677295330">किसी पेज के ज़्यादा शब्द शामिल करने से, आपको बेहतर नतीजे दिख सकते हैं</translation>
 <translation id="2527497042232966453">गुप्त टैब पर स्विच किया गया</translation>
 <translation id="2527779675047087889">क्लिपबोर्ड का कॉन्टेंट छिपाएं</translation>
@@ -424,7 +426,6 @@
 <translation id="3098745985164956033">कुछ इमेज Google को भेजी जाती हैं, ताकि आपको मिलने वाली जानकारी को बेहतर बनाया जा सके</translation>
 <translation id="3114507951000454849">आज की खबरें <ph name="NEWS_ICON" /> पढ़ें</translation>
 <translation id="3123734510202723619">एलान</translation>
-<translation id="3146775326699342508">दूसरे डिवाइसों में सेव किए गए बुकमार्क वगैरह पाने के लिए साइन इन करें</translation>
 <translation id="314939179385989105">Chrome का होम पेज</translation>
 <translation id="3158667104057012316">मैन्युअल तरीके से, क्रम में लगाया जा रहा है</translation>
 <translation id="3166827708714933426">टैब और विंडो शॉर्टकट</translation>
@@ -519,6 +520,7 @@
 <translation id="363596933471559332">स्टोर किए गए क्रेडेंशियल का इस्तेमाल करके वेबसाइटों में अपने आप साइन इन करें. सुविधा के बंद होने पर, किसी वेबसाइट में साइन इन करने से पहले आपसे हर बार पुष्टि करने को कहा जाएगा.</translation>
 <translation id="3636940436873918441">पसंदीदा भाषाएं</translation>
 <translation id="3637744895182738742">अगर आपको अपना लंबा पासवर्ड याद नहीं है या आपको यह सेटिंग बदलनी है, तो <ph name="BEGIN_LINK" />अपने खाते से Chrome का डेटा मिटाएं<ph name="END_LINK" />.</translation>
+<translation id="3674208116086565128">Google ऐप्लिकेशन के होम टैब पर जाएं</translation>
 <translation id="368329460027487650">साइन आउट किया गया. इस बटन पर टैप करने से, साइन इन करने के विकल्प मिलते हैं.</translation>
 <translation id="3687645719033307815">आप इस पेज की झलक देख रहे हैं</translation>
 <translation id="3690369331356918524">अगर डेटा का गलत इस्तेमाल होने पर आपके पासवर्ड बिना अनुमति के सार्वजनिक हो जाते हैं, तो आपको चेतावनी मिलती है</translation>
@@ -1341,6 +1343,7 @@
 <translation id="752220631458524187">काम हो जाने के बाद डिसकनेक्ट कर दें</translation>
 <translation id="7523960634226602883">Google Lens के ज़रिए अपने कैमरे और फ़ोटो की मदद से खोजें</translation>
 <translation id="752731652852882757">गुप्त मोड इस्तेमाल करते समय ब्लॉक करें</translation>
+<translation id="7557508262441527045">साइन आउट किया जा चुका है</translation>
 <translation id="7577900504646297215">पसंद प्रबंधित करें</translation>
 <translation id="757855969265046257">{FILES,plural, =1{<ph name="FILES_DOWNLOADED_ONE" /> फ़ाइल डाउनलोड की गई}one{<ph name="FILES_DOWNLOADED_MANY" /> फ़ाइलें डाउनलोड की गईं}other{<ph name="FILES_DOWNLOADED_MANY" /> फ़ाइलें डाउनलोड की गईं}}</translation>
 <translation id="7581273696622423628">सर्वेक्षण में भाग लें</translation>
@@ -1386,7 +1389,6 @@
 <translation id="777637629667389858">जब आप साइन इन होते हैं, तब यह सुविधा Google की सभी सेवाओं पर आपकी सुरक्षा करती है.</translation>
 <translation id="7778840695157240389">नई कहानियों के लिए कुछ समय बाद आएं</translation>
 <translation id="7780645209293383778">आपके साइन इन होने पर, थोड़ी देर के लिए इस डेटा को आपके Google खाते से जोड़ा जाता है. ऐसा Google के सभी ऐप्लिकेशन पर आपके डेटा की सुरक्षा के लिए किया जाता है</translation>
-<translation id="7786562169000598736">अपने सभी बुकमार्क पाएं</translation>
 <translation id="7791543448312431591">जोड़ें</translation>
 <translation id="7798392620021911922"><ph name="TAB_COUNT" /> टैब वापस लाए गए</translation>
 <translation id="780287761701992588">अपने सभी डिवाइसों पर बुकमार्क, पासवर्ड वगैरह का ऐक्सेस पाएं</translation>
@@ -1475,6 +1477,7 @@
 <translation id="813082847718468539">साइट जानकारी देखें</translation>
 <translation id="8135406045838672858">डाउनलोड की गई PDF फ़ाइलें, <ph name="APP_NAME" /> में अपने-आप खुलती हैं</translation>
 <translation id="8137562778192957619">आपको यह पासवर्ड याद नहीं रखना पड़ेगा. यह Google Password Manager में सेव हो जाएगा.</translation>
+<translation id="8152331954420209374">Lens पर जाएं</translation>
 <translation id="8163820386638255770">अपने Google खाते में पासवर्ड इस्तेमाल करने और सेव करने के लिए, अपनी पहचान की पुष्टि करें</translation>
 <translation id="8171286197772512427">वेब पेज की जनरेट की गई खास जानकारी के बारे में सुझाव/राय देने या शिकायत करने से जुड़ी शीट खुली है</translation>
 <translation id="8179976553408161302">Enter</translation>
@@ -1511,6 +1514,7 @@
 <translation id="8348430946834215779">जब भी हो सके एचटीटीपीएस का इस्तेमाल करें. ऐसा करने से, आपको उन साइटों के लोड होने से पहले चेतावनी मिलेगी जो एचटीटीपीएस पर काम नहीं करतीं</translation>
 <translation id="8354977102499939946">बोलकर तेज़ी से खोजें. इस शॉर्टकट में बदलाव करने के लिए, सेटिंग पर जाएं.</translation>
 <translation id="835847953965672673"><ph name="NUMBER_OF_DOWNLOADS" /> डाउनलोड वापस लाया गया</translation>
+<translation id="8367705492654390392">किसी भी विषय के बारे में पूछें</translation>
 <translation id="8368001212524806591">कीमत ट्रैक करें</translation>
 <translation id="8378850197701296741">आपके पास <ph name="FROM_ACCOUNT" /> के बुकमार्क, इतिहास, और अन्य सेटिंग हैं.</translation>
 <translation id="8387617938027387193">अपनी पहचान की पुष्टि करें</translation>

@@ -274,6 +274,7 @@
 <translation id="2450083983707403292"><ph name="FILE_NAME" /> ကို ထပ်မံ ဒေါင်းလုဒ်လုပ်လိုပါသလား။</translation>
 <translation id="2453860139492968684">ပြီးပြီ</translation>
 <translation id="2461822463642141190">လက်ရှိ</translation>
+<translation id="2472163211318554013">Chrome ကို အကောင်းဆုံးသုံးနိုင်ရန် လက်မှတ်ထိုးဝင်ပါ</translation>
 <translation id="247737702124049222">ပုံအကြောင်းအရာများကို ဖွင့်ထားသည်</translation>
 <translation id="2479148705183875116">'ဆက်တင်များ' သို့ သွားရန်</translation>
 <translation id="2482878487686419369">အကြောင်းကြားစာ</translation>
@@ -425,7 +426,6 @@
 <translation id="3098745985164956033">သင့်အတွက် ရှင်းလင်းချက်များ ပိုကောင်းမွန်စေရန် ပုံအချို့ကို Google သို့ ပို့သည်</translation>
 <translation id="3114507951000454849">ယနေ့သတင်းများကို ဖတ်ရန် <ph name="NEWS_ICON" /></translation>
 <translation id="3123734510202723619">ကြေညာချက်များ</translation>
-<translation id="3146775326699342508">သင့်အခြားစက်များထံမှ လိပ်စာနှင့် အခြားအရာများ ရယူရန် လက်မှတ်ထိုးဝင်ပါ</translation>
 <translation id="314939179385989105">Chrome ၏ ပင်မစာမျက်နှာ</translation>
 <translation id="3158667104057012316">ကိုယ်တိုင်အစဉ်ဖြင့် စီနေသည်</translation>
 <translation id="3166827708714933426">တဘ်နှင့် ဝင်းဒိုးဖြတ်လမ်းလင့်ခ်များ</translation>
@@ -1342,6 +1342,7 @@
 <translation id="752220631458524187">ပြီးသွားသည့်အခါ ချိတ်ဆက်မှုဖြုတ်ပါ</translation>
 <translation id="7523960634226602883">Google Lens ကိုသုံး၍ သင့်ကင်မရာဖြင့် ရှာဖွေရန်</translation>
 <translation id="752731652852882757">‘ရုပ်ဖျက်မုဒ်’ သုံးနေစဉ် ပိတ်ထားရန်</translation>
+<translation id="7557508262441527045">ထွက်ထားသည်</translation>
 <translation id="7577900504646297215">စိတ်ဝင်စားမှုများ စီမံရန်</translation>
 <translation id="757855969265046257">{FILES,plural, =1{<ph name="FILES_DOWNLOADED_ONE" /> ဖိုင် ဒေါင်းလုဒ်လုပ်ပြီးပြီ}other{<ph name="FILES_DOWNLOADED_MANY" /> ဖိုင် ဒေါင်းလုဒ်လုပ်ပြီးပြီ}}</translation>
 <translation id="7581273696622423628">စစ်တမ်းကောက်ယူမှုကို ဖြေဆိုရန်</translation>
@@ -1387,7 +1388,6 @@
 <translation id="777637629667389858">လက်မှတ်ထိုးဝင်ထားသောအခါ သင့်အား Google ဝန်ဆောင်မှုများတွင် ကာကွယ်ပေးသည်။</translation>
 <translation id="7778840695157240389">သတင်းဆောင်းပါးသစ်များအတွက် နောက်မှ ပြန်လာကြည့်ပါ</translation>
 <translation id="7780645209293383778">သင်လက်မှတ်ထိုးဝင်ထားသည့်အခါ Google အက်ပ်များတွင် သင့်အားကာကွယ်ရန် ဤဒေတာကို သင်၏ Google Account နှင့် ယာယီ လင့်ခ်ချိတ်ပေးသည်</translation>
-<translation id="7786562169000598736">သင့်လိပ်စာအားလုံး ရယူခြင်း</translation>
 <translation id="7791543448312431591">ထည့်ရန်</translation>
 <translation id="7798392620021911922">တဘ် <ph name="TAB_COUNT" /> ခု ပြန်ယူထားသည်</translation>
 <translation id="780287761701992588">သင့်စက်အားလုံးပေါ်ရှိ လိပ်စာ၊ စကားဝှက် စသည်တို့ကို ရယူနိုင်သည်</translation>

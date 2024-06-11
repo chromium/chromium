@@ -368,7 +368,6 @@
 <translation id="1260810365552581339">Linux मध्ये पुरेशी डिस्कमधील जागा नसू शकते. तुम्ही तुमची Linux डिस्कमधील जागा वाढवू शकता आणि <ph name="LINK_START" />सेटिंग्ज<ph name="LINK_END" /> मध्ये पुन्हा रिस्टोअर करण्याचा प्रयत्न करू शकता.</translation>
 <translation id="1261380933454402672">मर्यादित</translation>
 <translation id="126156426083987769">डेमो मोड डिव्हाइस परवान्यांना समस्या आली.</translation>
-<translation id="1261885284931493480">टॅब काढून टाकून गट हटवायचा आहे का?</translation>
 <translation id="1263231323834454256">वाचन सूची</translation>
 <translation id="1263733306853729545">उमेदवारांची सूची पेजवर आणण्यासाठी, <ph name="MINUS" /> आणि <ph name="EQUAL" /> की वापरा</translation>
 <translation id="126387934568812801">हा स्क्रीनशॉट आणि उघड्या टॅबची शीर्षके समाविष्ट करा</translation>
@@ -1650,7 +1649,6 @@
 <translation id="2187895286714876935">सर्व्हर सर्टिफिकेट आयात एरर</translation>
 <translation id="2187906491731510095">विस्तार अपडेट केले</translation>
 <translation id="2188881192257509750"><ph name="APPLICATION" /> उघडा</translation>
-<translation id="2188919919468240749">टॅब गट हटवायचा आहे का?</translation>
 <translation id="2190069059097339078">WiFi क्रेडेंशियल मिळविणारा</translation>
 <translation id="219008588003277019">नेटिव्ह क्लायंट मॉड्युल: <ph name="NEXE_NAME" /></translation>
 <translation id="2190355936436201913">(रिक्त)</translation>
@@ -2094,7 +2092,6 @@
 <translation id="249113932447298600">क्षमस्व, <ph name="DEVICE_LABEL" /> डिव्हाइसला आता सपोर्ट नाही.</translation>
 <translation id="2491587035099903063"><ph name="LANGUAGE" /> साठी आवाजाचे पूर्वावलोकन</translation>
 <translation id="2492461744635776704">सर्टिफिकेटवर स्वाक्षरी करण्याची विनंती तयार करत आहे</translation>
-<translation id="2492964937550251173">टॅब बंद करून गट हटवायचा आहे का?</translation>
 <translation id="249330843868392562">टेक्‍स्‍ट टू स्‍पीच सेटिंग्ज उघडा</translation>
 <translation id="2494555621641843783">Steam इंस्टॉल करू शकत नाही</translation>
 <translation id="2495141202137516054">तुमच्या Drive मधून</translation>
@@ -2821,7 +2818,6 @@
 <translation id="3021066826692793094">फुलपाखरू</translation>
 <translation id="3021678814754966447">फ्रेम स्रोत &amp;पहा</translation>
 <translation id="3021902017511220299">स्कॅन पूर्ण झाले नाही. तुमच्या अ‍ॅडमिनिस्ट्रेटरने ही कृती ब्लॉक केली आहे.</translation>
-<translation id="3022068420678496307">यामुळे हे Google खाते वापरून Chrome मध्ये साइन इन केलेल्या सर्व डिव्हाइसवरून गट हटवले जातील.</translation>
 <translation id="3022361196600037287"><ph name="DEVICE" /> हे या Chromebook वरून काढून टाकले जाईल आणि <ph name="PRIMARY_EMAIL" /> मध्ये सेव्ह केले जाणार नाही.</translation>
 <translation id="3022978424994383087">ते समजू शकले नाही.</translation>
 <translation id="3023464535986383522">बोलण्यासाठी निवडा</translation>
@@ -2996,6 +2992,7 @@
 <translation id="3163511056918491211">तुमचा डेटा सहजरीत्‍या रिस्टोअर करा किंवा डिव्हाइस कधीही स्विच करा. तुमचे बॅकअप Google वर अपलोड केले जातात आणि तुमचा Google खाते पासवर्ड वापरून एंक्रिप्ट केले जातात.</translation>
 <translation id="3164329792803560526"><ph name="APP_NAME" /> यावर हा टॅब शेअर करत आहे</translation>
 <translation id="3165390001037658081">काही वाहक हे वैशिष्ट्य ब्लॉक करू शकतात.</translation>
+<translation id="316542773973815724">नेव्हिगेशन</translation>
 <translation id="3165734944977250074">फाइल यापुढे अस्तित्वात नसल्यामुळे ती हलवता येणार नाही</translation>
 <translation id="3166443275568926403">परफॉर्मन्स आणि बॅटरी स्थिती</translation>
 <translation id="3169930038976362151">तुमच्या आवश्यकतांची पूर्तता करणारी थीम निवडा. तुमची थीम, वॉलपेपर, स्क्रीन सेव्हर आणि आणखी बरेच काही बदलण्यासाठी, डेस्कटॉपवर फक्त स्पर्श करून धरून ठेवा.</translation>
@@ -3879,7 +3876,6 @@
 <translation id="3810914450553844415">तुमचा अ‍ॅडमिनिस्ट्रेटर अतिरिक्त Google खाती यांना अनुमती देत नाही.</translation>
 <translation id="3810973564298564668">व्यवस्थापित करा</translation>
 <translation id="381202950560906753">दुसरे जोडा</translation>
-<translation id="381219490185664296">टॅब गट हा गटामधून काढून टाकायचा आहे का?</translation>
 <translation id="3812525830114410218">खराब सर्टिफिकेट</translation>
 <translation id="3813296892522778813">तुम्ही जे शोधत आहात ते तुम्हाला सापडले नसेल तर <ph name="BEGIN_LINK_CHROMIUM" />Google Chrome मदत<ph name="END_LINK_CHROMIUM" /> वर जा</translation>
 <translation id="3813358687923336574">पेजचे भाषांतर आणि क्विक आन्सर्स साठी वापरली जाणारी भाषा</translation>
@@ -4242,7 +4238,6 @@
 <translation id="4078738236287221428">आक्रमक</translation>
 <translation id="4078903002989614318">क्रमाने लावणे आणि सूचीशी संबंधित पर्याय</translation>
 <translation id="4079140982534148664">वर्धित केलेले स्पेल चेक वापरा</translation>
-<translation id="4083735423615351075">या डिव्हाइसवर टॅब उघडे राहतील, पण हे Google खाते वापरून Chrome मध्ये साइन इन केलेल्या सर्व डिव्हाइसवरून गट हटवला जाईल.</translation>
 <translation id="4084682180776658562">बुकमार्क</translation>
 <translation id="4084835346725913160"><ph name="TAB_NAME" /> बंद करा</translation>
 <translation id="4085298594534903246">या पेजवर JavaScript  ब्लॉक केलेले होते.</translation>
@@ -4250,7 +4245,6 @@
 <translation id="4085620044235559093"><ph name="FILE_TYPE" /> फाइल उघडण्यासाठी अ‍ॅप निवडा</translation>
 <translation id="4087089424473531098">एक्स्टेंशन तयार केले: <ph name="EXTENSION_FILE" /></translation>
 <translation id="4087328411748538168">उजवीकडे दाखवा</translation>
-<translation id="4088879333319441249">गटामधून टॅब गटाला काढून टाकायचे आहे का?</translation>
 <translation id="4089235344645910861">सेटिंग्ज सेव्ह केल्या. सिंक सुरू केले.</translation>
 <translation id="4089817585533500276">shift + <ph name="TOP_ROW_KEY" /></translation>
 <translation id="4090103403438682346">पडताळणीने दिलेला ॲक्सेस सक्षम करा</translation>
@@ -4336,7 +4330,6 @@
 <translation id="4148195018520464922">तुम्ही साइन-इन काही वापरकर्त्यांसाठी मर्यादित करू शकता. हे साइन-इन स्क्रीनवरील "व्यक्ती जोडा" पर्याय काढून टाकते. तुम्ही सध्याचे वापरकर्ते काढूनदेखील टाकू शकता.</translation>
 <translation id="4148957013307229264">स्थापना करत आहे...</translation>
 <translation id="4150201353443180367">डिस्प्ले करा</translation>
-<translation id="4150417452770391330">कॅमेरा कनेक्ट करा</translation>
 <translation id="4150569944729499860">स्क्रीन संदर्भ</translation>
 <translation id="4151449637210235443">आम्हाला तुमच्या अलीकडील गेमप्लेबद्दल सांगा</translation>
 <translation id="4151503145138736576">साफ करण्यासाठी कोणतेही ऑफलाइन स्टोरेज नाही</translation>
@@ -5135,7 +5128,6 @@
 <translation id="4777458362738635055">या डिव्हाइसचे इतर वापरकर्ते हे नेटवर्क वापरू शकतात</translation>
 <translation id="4777813841994368231">सुरू केले • हे एक्स्टेंशन त्याच्या डेव्हलपरने अप्रकाशित केले होते</translation>
 <translation id="4777825441726637019">Play स्टोअर</translation>
-<translation id="4777866634702576038">टॅब गट हटवायचा आहे का?</translation>
 <translation id="4777943778632837590">नेटवर्क नाव सर्व्हर कॉन्फिगर करा</translation>
 <translation id="4778653490315793244">अद्याप दाखवण्यासाठी काहीही नाही</translation>
 <translation id="4779083564647765204">झूम</translation>
@@ -5547,7 +5539,6 @@
 <translation id="5093477827231450397">तुम्ही ब्लॉक केलेल्या साइटची सूची, ज्यांनी इतर साइटना जाहिराती सुचवू नयेत असे तुम्हाला वाटते</translation>
 <translation id="5093569275467863761">बॅक/फॉरवर्ड कॅशे केलेली गुप्त सबफ्रेम: <ph name="BACK_FORWARD_CACHE_INCOGNITO_PAGE_URL" /></translation>
 <translation id="5094176498302660097">तुम्ही सपोर्ट असलेल्या फाइल या अ‍ॅपद्वारे Files अ‍ॅप किंवा इतर अ‍ॅप्समध्ये उघडू शकता आणि संपादित करू शकता. या ॲपमध्ये कोणत्या फाइल बाय डीफॉल्ट उघडल्या जाव्यात हे नियंत्रित करण्यासाठी, <ph name="BEGIN_LINK" />तुमच्या डिव्हाइसवर डीफॉल्ट अ‍ॅप्स कशी सेट करायची ते जाणून घ्या<ph name="END_LINK" />.</translation>
-<translation id="5094423602314093681">टॅब काढून टाकून गट हटवायचा आहे का?</translation>
 <translation id="5094721898978802975">मूळ अनुप्रयोगांना सहकार्य करून संवाद प्रस्थापित करा</translation>
 <translation id="5095252080770652994">प्रगती</translation>
 <translation id="5095507226704905004">फाइल यापुढे अस्तित्वात नसल्यामुळे ती उघडता येणार नाही</translation>
@@ -7327,7 +7318,6 @@
 <translation id="6445450263907939268">तुम्हाला हे बदल नको असल्यास, तुम्ही आपल्या मागील सेटिंग्ज पुनर्संचयित करू शकता.</translation>
 <translation id="6446213738085045933">डेस्कटॉप शॉर्टकट तयार करा</translation>
 <translation id="6447842834002726250">कुकीज</translation>
-<translation id="6449554712554071184">यामुळे तुमच्या डिव्हाइसमधून गट कायमचा हटवला जाईल.</translation>
 <translation id="6450876761651513209">आपल्या गोपनीयतेशी संबंधित सेटिंग्ज बदला</translation>
 <translation id="6451591602925140504">{NUM_PAGES,plural, =0{<ph name="PAGE_TITLE" />}=1{<ph name="PAGE_TITLE" /> आणि दुसरा एक टॅब}other{<ph name="PAGE_TITLE" /> आणि दुसरे # टॅब}}</translation>
 <translation id="6451689256222386810">तुमचा सांकेतिक पासफ्रेझ विसरल्यास किंवा हे सेटिंग बदलू इच्छित असल्यास, <ph name="BEGIN_LINK" />सिंक रीसेट करा<ph name="END_LINK" />.</translation>
@@ -8478,7 +8468,6 @@
 <translation id="7340650977506865820">साइट तुमची स्क्रीन शेअर करत आहे</translation>
 <translation id="7340757554212515731">Google ला क्रॅश अहवाल तसेच निदान आणि वापर डेटा आपोआप पाठवते</translation>
 <translation id="734088800888587319">नेटवर्क मेट्रिक</translation>
-<translation id="7341612916770129581">मायक्रोफोन कनेक्ट करा</translation>
 <translation id="7341834142292923918">या साइटचा ॲक्सेस हवा आहे</translation>
 <translation id="7343372807593926528">कृपया फीडबॅक पाठवण्यापूर्वी समस्येचे वर्णन करा.</translation>
 <translation id="7344585835349671209">तुमच्या डिव्हाइसवर HTTPS/SSL सर्टिफिकेट व्यवस्थापित करा</translation>
@@ -9376,7 +9365,6 @@
 <translation id="7974936243149753750">ओव्हरस्कॅन</translation>
 <translation id="7975504106303186033">तुम्ही या Chrome Education डिव्हाइसची शिक्षण खात्यामध्ये नोंदणी करणे आवश्यक आहे. नवीन खात्यासाठी साइन अप करण्याकरिता, कृपया g.co/workspace/edusignup ला भेट द्या.</translation>
 <translation id="7977451675950311423">तुम्ही डेटा भंगामध्ये धोक्यात असलेला पासवर्ड वापरल्यास, तुम्हाला चेतावणी देते.</translation>
-<translation id="797824194429476746">या डिव्हाइसवर टॅब उघडे राहतील, पण गट कायमचा हटवला जाईल.</translation>
 <translation id="7978412674231730200">प्रायव्हेट की</translation>
 <translation id="7978450511781612192">हे तुम्हाला तुमच्या Google खात्यामधून साइन आउट करेल. तुमचे बुकमार्क, इतिहास, पासवर्ड आणि बरेच काही आता सिंक होणार नाही.</translation>
 <translation id="7980066177668669492">Base64 एन्कोड केलेला ASCII, एकाहून अधिक सर्टिफिकेट</translation>
@@ -9431,6 +9419,7 @@
 <translation id="8017679124341497925">शॉर्टकट संपादित केला</translation>
 <translation id="8018298733481692628">ही प्रोफाइल हटवायची आहे का?</translation>
 <translation id="8018313076035239964">वेबसाइट कोणती माहिती वापरू शकतात आणि कोणती आशय तुम्हाला दर्शवू शकतात ते नियंत्रित करा</translation>
+<translation id="802154636333426148">डाउनलोड अयशस्वी झाले</translation>
 <translation id="8022466874160067884">तुमचे Google खाते आणि पासवर्ड एंटर करा</translation>
 <translation id="8023133589013344428">ChromeOS Flex सेटिंग्जमध्ये भाषा व्यवस्थापित करा</translation>
 <translation id="8023801379949507775">एक्स्टेंशन त्वरित अपडेट करा</translation>
@@ -10719,7 +10708,6 @@
 <translation id="8962863356073277855">URL चा फॉरमॅट https://www.example.com असणे आवश्यक आहे</translation>
 <translation id="8962918469425892674">ही साइट गती किंवा प्रकाश सेन्सर वापरत आहे.</translation>
 <translation id="8963117664422609631">साइट सेटिंग्जवर जा</translation>
-<translation id="8964795217937248330">टॅब बंद करून गट हटवायचा आहे का?</translation>
 <translation id="8965037249707889821">जुना पासवर्ड एंटर करा</translation>
 <translation id="8966809848145604011">इतर प्रोफाइल</translation>
 <translation id="8967427617812342790">वाचन सूचीमध्ये जोडा</translation>

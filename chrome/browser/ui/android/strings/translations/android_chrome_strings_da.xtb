@@ -274,6 +274,7 @@ Kun personer med din adgangssætning kan læse dine krypterede data. Adgangssæt
 <translation id="2450083983707403292">Vil du begynde at downloade <ph name="FILE_NAME" /> igen?</translation>
 <translation id="2453860139492968684">Udfør</translation>
 <translation id="2461822463642141190">Aktuel</translation>
+<translation id="2472163211318554013">Log ind for at få mest muligt ud af Chrome</translation>
 <translation id="247737702124049222">Billedbeskrivelser er slået til</translation>
 <translation id="2479148705183875116">Gå til Indstillinger</translation>
 <translation id="2482878487686419369">Notifikationer</translation>
@@ -425,7 +426,6 @@ Kun personer med din adgangssætning kan læse dine krypterede data. Adgangssæt
 <translation id="3098745985164956033">Nogle billeder sendes til Google for at give dig bedre beskrivelser</translation>
 <translation id="3114507951000454849">Læs dagens nyheder <ph name="NEWS_ICON" /></translation>
 <translation id="3123734510202723619">Meddelelser</translation>
-<translation id="3146775326699342508">Log ind for at få adgang til dine bogmærker m.m. fra dine andre enheder</translation>
 <translation id="314939179385989105">Chromes startside</translation>
 <translation id="3158667104057012316">Sorteres i manuel rækkefølge</translation>
 <translation id="3166827708714933426">Genveje på faner og i vinduer</translation>
@@ -1343,6 +1343,7 @@ Du kan ændre denne indstilling ved at <ph name="BEGIN_LINK" />slette Chrome-dat
 <translation id="752220631458524187">Afbryd forbindelsen, når du er færdig</translation>
 <translation id="7523960634226602883">Søg med dit kamera ved hjælp af Google Lens</translation>
 <translation id="752731652852882757">Bloker under brug af inkognitotilstand</translation>
+<translation id="7557508262441527045">Logget ud</translation>
 <translation id="7577900504646297215">Administrer interesser</translation>
 <translation id="757855969265046257">{FILES,plural, =1{<ph name="FILES_DOWNLOADED_ONE" /> fil blev downloadet}one{<ph name="FILES_DOWNLOADED_MANY" /> fil blev downloadet}other{<ph name="FILES_DOWNLOADED_MANY" /> filer blev downloadet}}</translation>
 <translation id="7581273696622423628">Deltag i undersøgelsen</translation>
@@ -1388,7 +1389,6 @@ Du kan ændre denne indstilling ved at <ph name="BEGIN_LINK" />slette Chrome-dat
 <translation id="777637629667389858">Når du er logget ind, beskyttes du i Google-tjenester.</translation>
 <translation id="7778840695157240389">Vend tilbage senere for at se nye historier</translation>
 <translation id="7780645209293383778">Disse data knyttes midlertidigt til din Google-konto, når du er logget ind, for at beskytte dig i Google-apps</translation>
-<translation id="7786562169000598736">Få alle dine bogmærker</translation>
 <translation id="7791543448312431591">Tilføj</translation>
 <translation id="7798392620021911922"><ph name="TAB_COUNT" /> faner blev gendannet</translation>
 <translation id="780287761701992588">Få adgang til dine bogmærker, adgangskoder og meget mere på alle dine enheder</translation>

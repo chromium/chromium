@@ -251,6 +251,7 @@
 <translation id="1915307458270490472">ह्याङ्ग अप</translation>
 <translation id="1918022425394817322">क्यामेरा सिरानको दायाँ कुनामा स्न्याप गरियो</translation>
 <translation id="1923539912171292317">स्वचालित क्लिकहरू</translation>
+<translation id="1925320505152357008">१ मिनेटभन्दा कम</translation>
 <translation id="1928739107511554905">उक्त अद्यावधिक प्राप्त गर्न, किबोर्ड जोडिएकै अवस्थामा आफ्नो Chromebook लाई पुनः सुचारु गर्न टचस्क्रिनको प्रयोग गर्नुहोस्।</translation>
 <translation id="1948405482892809935">अर्को प्रयोगकर्ताका रूपमा साइन इन गर्नुहोस्</translation>
 <translation id="1951012854035635156">सहायक</translation>
@@ -606,6 +607,7 @@
 <translation id="334927402682780278">कर्सरबाट लाइनको अन्तिमसम्मको टेक्स्ट चयन गर्नुहोस्</translation>
 <translation id="3349345708646875009">टास्क म्यानेजर खोल्नुहोस्</translation>
 <translation id="3364721542077212959">स्टाइलस सम्बन्धी उपकरणहरू</translation>
+<translation id="3365281428003534650">टाइमर, कार्य र सङ्गीत सेट गर्नुहोस्</translation>
 <translation id="3365977133351922112">तपाईंको फोन धेरै टाढा छ। फोन अझ नजिक ल्याउनुहोस्।</translation>
 <translation id="3368922792935385530">जडित</translation>
 <translation id="3369111525500416043">पूरा गर्नु पर्ने मिति निकट रहेका</translation>
@@ -908,6 +910,7 @@
 <translation id="4406883609789734330">लाइभ क्याप्सन</translation>
 <translation id="4412698727486357573">मद्दत केन्द्र</translation>
 <translation id="4412944820643904175"><ph name="FEATURE_NAME" /> अफ छ।</translation>
+<translation id="4417647906073317561">फोकस मोडका सेटिङ। यो सेटिङ प्रयोग गरी टाइमर, कार्य र सङ्गीत सेट गर्नुहोस्।</translation>
 <translation id="4424159417645388645">डेस्क ५</translation>
 <translation id="4430019312045809116">आयतन</translation>
 <translation id="4441283832827406317">एपहरू नामअनुसार क्रमबद्ध गरिन्छन्</translation>
@@ -1859,6 +1862,7 @@
         <ph name="MANAGED" />
         <ph name="IME" />
         <ph name="LOCALE" /></translation>
+<translation id="7899977217122813285">फोकस गरिरहेका बेला <ph name="TIME" /> सम्म सूचनाहरू म्युट गरिन्छन्</translation>
 <translation id="7901190436359881020">विन्डोहरू अदलबदल गर्नुहोस्</translation>
 <translation id="7901405293566323524">फोन हब</translation>
 <translation id="7902625623987030061">फिंगरप्रिन्ट सेन्सरमा छुनुहोस्</translation>

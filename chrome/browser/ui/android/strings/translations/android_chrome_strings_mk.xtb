@@ -274,6 +274,7 @@
 <translation id="2450083983707403292">Дали сакате да започнете со преземање на <ph name="FILE_NAME" /> одново?</translation>
 <translation id="2453860139492968684">Заврши</translation>
 <translation id="2461822463642141190">Моментално</translation>
+<translation id="2472163211318554013">Најавете се за да извадите максимум од Chrome</translation>
 <translation id="247737702124049222">Описите за слики се вклучени.</translation>
 <translation id="2479148705183875116">Отворете „Поставки“</translation>
 <translation id="2482878487686419369">Известувања</translation>
@@ -285,6 +286,7 @@
 <translation id="2515921719039583189">Да се избришат податоците од Chrome одовде?</translation>
 <translation id="2517113738956581680">Лист со целосна големина</translation>
 <translation id="2523184218357549926">Испраќа URL-адреси од страници што ги посетувате до Google</translation>
+<translation id="2524132927880411790">Одете на „Гласовно пребарување“ во апликацијата Google</translation>
 <translation id="2527209463677295330">Ако вклучите повеќе текст од страницата, можеби ќе гледате подобри резултати</translation>
 <translation id="2527497042232966453">Префрлено на картички „Инкогнито“</translation>
 <translation id="2527779675047087889">Скриј содржини од привремената меморија</translation>
@@ -424,7 +426,6 @@
 <translation id="3098745985164956033">Некои слики се испраќаат во Google за да им се подобрат описите</translation>
 <translation id="3114507951000454849">Прочитајте ги денешните вести <ph name="NEWS_ICON" /></translation>
 <translation id="3123734510202723619">Соопштенија</translation>
-<translation id="3146775326699342508">Најавете се за да ги добиете обележувачите и друго од другите ваши уреди</translation>
 <translation id="314939179385989105">Почетна страница на Chrome</translation>
 <translation id="3158667104057012316">Се подредува рачно</translation>
 <translation id="3166827708714933426">Кратенки за картичката и прозорецот</translation>
@@ -519,6 +520,7 @@
 <translation id="363596933471559332">Автоматски најавувајте се на веб-сајтови со складирани акредитиви. Кога функцијата е исклучена, ќе се бара проверка од вас секогаш пред најавување на веб-сајт.</translation>
 <translation id="3636940436873918441">Претпочитани јазици</translation>
 <translation id="3637744895182738742">Ако сте ја заборавиле лозинката или сакате да ја промените поставкава, <ph name="BEGIN_LINK" />избришете ги податоците од Chrome во вашата сметка<ph name="END_LINK" />.</translation>
+<translation id="3674208116086565128">Одете на почетната картичка во апликацијата Google</translation>
 <translation id="368329460027487650">Одјавено. Отвора опции за најавување.</translation>
 <translation id="3687645719033307815">Гледате преглед на страницава</translation>
 <translation id="3690369331356918524">Ве предупредува ако лозинките се откриени при упад во податоците</translation>
@@ -1341,6 +1343,7 @@
 <translation id="752220631458524187">Прекинете ја врската кога ќе завршите</translation>
 <translation id="7523960634226602883">Пребарувајте со камерата со Google Lens</translation>
 <translation id="752731652852882757">Блокирај додека се користи „Инкогнито“</translation>
+<translation id="7557508262441527045">Одјавени сте</translation>
 <translation id="7577900504646297215">Управувајте со она што ве интересира</translation>
 <translation id="757855969265046257">{FILES,plural, =1{Преземена е <ph name="FILES_DOWNLOADED_ONE" /> датотека}one{Преземена е <ph name="FILES_DOWNLOADED_MANY" /> датотека}other{Преземени се <ph name="FILES_DOWNLOADED_MANY" /> датотеки}}</translation>
 <translation id="7581273696622423628">Пополнете ја анкетата</translation>
@@ -1386,7 +1389,6 @@
 <translation id="777637629667389858">Кога сте најавени, ве штити на услугите на Google.</translation>
 <translation id="7778840695157240389">Проверете подоцна дали има нови статии</translation>
 <translation id="7780645209293383778">Привремено ги поврзува податоциве со вашата сметка на Google кога сте најавени за да ве заштити на апликациите на Google</translation>
-<translation id="7786562169000598736">Синхронизирајте за да ги добиете сите ваши обележувачи</translation>
 <translation id="7791543448312431591">Додај</translation>
 <translation id="7798392620021911922">Вратени се <ph name="TAB_COUNT" /> картички</translation>
 <translation id="780287761701992588">Добијте ги обележувачите, лозинките и друго на сите ваши уреди</translation>
@@ -1475,6 +1477,7 @@
 <translation id="813082847718468539">Прикажи информации за локација</translation>
 <translation id="8135406045838672858">Преземените PDF-датотеки се отвораат автоматски со <ph name="APP_NAME" /></translation>
 <translation id="8137562778192957619">Не треба да ја памтите лозинкава. Ќе се зачува во Google Password Manager.</translation>
+<translation id="8152331954420209374">Одете на Lens</translation>
 <translation id="8163820386638255770">За да користите и зачувувате лозинки во вашата сметка на Google, потврдете го вашиот идентитет</translation>
 <translation id="8171286197772512427">Листот за споделување повратни информации за резиме е отворен</translation>
 <translation id="8179976553408161302">Enter</translation>
@@ -1511,6 +1514,7 @@
 <translation id="8348430946834215779">Користете HTTPS секогаш кога е возможно и добивајте известувања пред вчитувањето сајтови што не ја поддржуваат</translation>
 <translation id="8354977102499939946">Брзо пребарувајте со гласот. За да ја измените кратенкава, одете во „Поставки“.</translation>
 <translation id="835847953965672673">Вратени се <ph name="NUMBER_OF_DOWNLOADS" /> преземања</translation>
+<translation id="8367705492654390392">Прашајте што било</translation>
 <translation id="8368001212524806591">Следи ја цената</translation>
 <translation id="8378850197701296741">Имате обележувачи, историја и други поставки од <ph name="FROM_ACCOUNT" />.</translation>
 <translation id="8387617938027387193">Потврдете дека сте вие</translation>

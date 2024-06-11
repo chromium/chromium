@@ -13,6 +13,7 @@
 <translation id="1049663189809099096">პასტელური ყვითელი</translation>
 <translation id="1056898198331236512">გაფრთხილება</translation>
 <translation id="1059913517121127803">სკანირების დაწყება ვერ მოხერხდა</translation>
+<translation id="1061864016440983342">მდებარეობის გარეშე გამოყენება</translation>
 <translation id="1062823486781306604"><ph name="INDEX" /> / <ph name="COUNT" />-დან, <ph name="NAME" />.</translation>
 <translation id="1070066693520972135">WEP</translation>
 <translation id="1071587090247825784">აღმოჩენილია ქსელის დაცვა</translation>
@@ -217,6 +218,7 @@
 <translation id="2080070583977670716">დამატებითი პარამეტრები</translation>
 <translation id="2082932131694554252">მინიჭებულია კლავიატურის კლავიში</translation>
 <translation id="2085089206770112532">ეკრანის სიკაშკაშის დაკლება</translation>
+<translation id="2086091080968010660">დროზე დაფუძნებული ცვლილებები შეიძლება არაზუსტი იყოს. ჩართეთ სისტემის მდებარეობაზე წვდომა პარამეტრებიდან.</translation>
 <translation id="2102231663024125441">ტექსტის რედაქტირება</translation>
 <translation id="2105810540595158374">მოწყობილობა არის სათამაშო კონტროლერი.</translation>
 <translation id="2119172414412204879"><ph name="BOARD_NAME" />, ვერსია <ph name="MILESTONE_VERSION" /></translation>
@@ -258,6 +260,7 @@
 <translation id="2279051792571591988">ნაგულისხმევის აღდგენა</translation>
 <translation id="2286454467119466181">მარტივი</translation>
 <translation id="2287186687001756809">სურათი მიუწვდომელია. ფოტოების დასამატებლად გადადით აქ: <ph name="LINK" /></translation>
+<translation id="2294577623958216786">მიმდინარე განრიგის დაყენებული დროები არის <ph name="SUNRISE" />-<ph name="SUNSET" />. მზის ჩასვლისა და ამოსვლის განრიგების ავტომატურად გასაახლებლად ჩართეთ მდებარეობაზე წვდომა.</translation>
 <translation id="2305172810646967500">შავი</translation>
 <translation id="2307344026739914387">ამჟამინდელი წყვილის გამოყენება</translation>
 <translation id="2308243864813041101">გამოაერთეთ <ph name="DEVICE_NAME" />-ის USB კაბელი, რომ განახლება განაგრძოთ</translation>
@@ -961,6 +964,7 @@
 <translation id="6411934471898487866">კლავიატურის სიკაშკაშე</translation>
 <translation id="6412715219990689313">ჩაშენებული კლავიატურა</translation>
 <translation id="6417265370957905582">Google ასისტენტი</translation>
+<translation id="6419454453018688975">დაუშვით სისტემის მდებარეობაზე წვდომა</translation>
 <translation id="6423239382391657905">OpenVPN</translation>
 <translation id="6439505561246192797">სუსტი (<ph name="SIGNAL_STRENGTH" />)</translation>
 <translation id="6447630859861661624">ანგარიშის პარამეტრებზე გადასვლა</translation>

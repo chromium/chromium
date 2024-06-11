@@ -473,7 +473,7 @@
 <translation id="1840009953725035797">家庭影院系統</translation>
 <translation id="1842969606798536927">支付</translation>
 <translation id="1846432862466000825">塑膠 (封存用)</translation>
-<translation id="1848640291751752317">下載內容</translation>
+<translation id="1848640291751752317">下載檔案</translation>
 <translation id="1848982255014129637">相紙 (高光面)</translation>
 <translation id="1853392626017747777">閂咗虛擬卡註冊對話框</translation>
 <translation id="1854180393107901205">停止投放</translation>
@@ -573,7 +573,6 @@
 <translation id="2046951263634619614">圖書零售商</translation>
 <translation id="2048261947532620704">正在翻譯頁面</translation>
 <translation id="2053111141626950936">系統將不會翻譯<ph name="LANGUAGE" />網頁。</translation>
-<translation id="2055461225779831292">使用和移動攝錄機 (<ph name="CAMERAS_COUNT" />)</translation>
 <translation id="2056492565825767809">鎖定滑鼠游標</translation>
 <translation id="2056658168519009885">網站可要求 Chrome 提供資料以向你放送個人化廣告。</translation>
 <translation id="2059166748188874810">自治市</translation>
@@ -651,7 +650,6 @@
 <translation id="2170417331417184438">付款卡只會儲存至此裝置</translation>
 <translation id="2172089022819052306">汽車維修和保養</translation>
 <translation id="2175630235841878061">無法下載超過 100 MB 的檔案</translation>
-<translation id="2176198174348007293">使用攝錄機 (<ph name="CAMERAS_COUNT" />)</translation>
 <translation id="2176974405772725904">將地址儲存在帳戶中</translation>
 <translation id="2178665390943006934">更新 Chrome 按鈕，啟動之後就可以透過 Chrome 設定更新 Chrome</translation>
 <translation id="2181821976797666341">政策</translation>
@@ -756,7 +754,7 @@
 <translation id="2366689192918515749">肉類和海鮮</translation>
 <translation id="2367567093518048410">級別</translation>
 <translation id="23703388716193220">高爾夫球用品</translation>
-<translation id="2370368710215137370">上傳檔案</translation>
+<translation id="2370368710215137370">檔案上載</translation>
 <translation id="2374629208601905275">根據你所在地區的法律規定，Chrome 會要求你選擇預設搜尋引擎。這些搜尋引擎是你所在地區的熱門之選，次序隨機排列。</translation>
 <translation id="2377241607395428273">平面設計和動畫軟件</translation>
 <translation id="2378084239755710604">閂咗儲存內容資訊卡功能表。</translation>
@@ -1424,7 +1422,7 @@
 <translation id="3682094733650754138">揀咗填入地址選項</translation>
 <translation id="3687920599421452763">客貨車和小型客貨車</translation>
 <translation id="3693327506115126094">選擇身分驗證方式</translation>
-<translation id="3698353241727597930">系統管理員已將<ph name="FILES" />的儲存位置設為由貴公司管理的 <ph name="CLOUD_STORAGE" />。即使你刪除這些檔案，貴公司仍可能會監控、稽核及保留這些檔案。</translation>
+<translation id="3698353241727597930">管理員已將<ph name="FILES" />的儲存位置設定為由公司管理的 <ph name="CLOUD_STORAGE" />。即使你刪除這些檔案，公司仍可能會監控、審核及保留這些檔案。</translation>
 <translation id="3698629142018988477">建立網站按鈕，啟動之後就可以喺「Google 協作平台」度快速建立新網站</translation>
 <translation id="3701325639446035885">活動售票</translation>
 <translation id="3701427423622901115">重設已確認。</translation>
@@ -1500,7 +1498,7 @@
 <translation id="3826050100957962900">第三方登入</translation>
 <translation id="3827112369919217609">絕對</translation>
 <translation id="3828924085048779000">複雜密碼欄位不得留空。</translation>
-<translation id="3830139096297532361">這份 PDF 無法存取，因此無法下載文字擷取檔案，請稍後再試。</translation>
+<translation id="3830139096297532361">無法存取此 PDF。�無法下載文字擷取檔案。請稍後再試。</translation>
 <translation id="3830470485672984938">使用其他密鑰</translation>
 <translation id="3831065134033923230">檢查您已儲存的密碼</translation>
 <translation id="3831915413245941253"><ph name="ENROLLMENT_DOMAIN" /> 的管理員已安裝支援額外功能的擴充程式。擴充程式可存取您的部分資料。</translation>
@@ -2736,7 +2734,7 @@
 <translation id="6270066318535733958">划船</translation>
 <translation id="6272088941196661550">恢復瀏覽過程以查看 Chrome 記錄中的相關活動</translation>
 <translation id="6272383483618007430">Google 更新</translation>
-<translation id="6278015583149890680">Google 雲端硬碟和 OneDrive</translation>
+<translation id="6278015583149890680">「Google 雲端硬碟」和 OneDrive</translation>
 <translation id="6280223929691119688">無法送貨至此地址，請選取其他地址。</translation>
 <translation id="6284292079994426700">26 x 38 吋</translation>
 <translation id="6284449872909111707">短訊和即時通訊</translation>
@@ -3175,7 +3173,7 @@
 <translation id="7119063404975271297">電視劇</translation>
 <translation id="7119371694555167493">複製逾時</translation>
 <translation id="7119414471315195487">關閉其他分頁或程式</translation>
-<translation id="7120588595737538743">下載內容和螢幕截圖</translation>
+<translation id="7120588595737538743">下載檔案和螢幕截圖</translation>
 <translation id="7124354851782353862">輸入 CVC</translation>
 <translation id="7129409597930077180">無法運送至此地址，請選取其他地址。</translation>
 <translation id="7129809579943936035"><ph name="VALUE_PROP" /><ph name="DETAILS" /></translation>
@@ -3628,7 +3626,6 @@
 <translation id="7947813448670013867"><ph name="SEE_CHROME_TIPS_FOCUSED_FRIENDLY_MATCH_TEXT" />，㩒一下 Tab 鍵，然後㩒一下 Enter 鍵就可以了解 Chrome 嘅功能</translation>
 <translation id="7949135979217012031">防毒軟件和惡意軟件</translation>
 <translation id="7950027195171824198">在 Chrome 設定中管理 Cookie 偏好設定</translation>
-<translation id="7950440490184876634">使用麥克風 (<ph name="MICS_COUNT" />)</translation>
 <translation id="7951415247503192394">(32 位元)</translation>
 <translation id="7952192831285741665">European EDP</translation>
 <translation id="7952250633095257243">快速指令不可留空</translation>

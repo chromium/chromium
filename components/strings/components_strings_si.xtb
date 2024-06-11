@@ -573,7 +573,6 @@
 <translation id="2046951263634619614">පොත් විකුණන්නන්</translation>
 <translation id="2048261947532620704">පිටුව පරිවර්තනය කරමින්</translation>
 <translation id="2053111141626950936"><ph name="LANGUAGE" /> හි පිටු පරිවර්තන නොකෙරේ</translation>
-<translation id="2055461225779831292">ඔබේ කැමරා භාවිත කරන්න සහ එහා මෙහා කරන්න (<ph name="CAMERAS_COUNT" />)</translation>
 <translation id="2056492565825767809">ඔබේ මූසික ලකුණුකරයට අගුලු දමන්න</translation>
 <translation id="2056658168519009885">ඔබ දකින දැන්වීම් පෞද්ගලීකරණය කිරීමට උදවු කිරීමට අඩවිවලට තොරතුරු සඳහා Chrome වෙතින් විමසිය හැක.</translation>
 <translation id="2059166748188874810">නගර සභාව</translation>
@@ -651,7 +650,6 @@
 <translation id="2170417331417184438">කාඩ්පත උපාංගයට පමණක් සුරකින ලදි</translation>
 <translation id="2172089022819052306">වාහන අලුත්වැඩියාව සහ නඩත්තුව</translation>
 <translation id="2175630235841878061">100MBට වැඩි ගොනු බාගැනීම සඳහා නොමැත</translation>
-<translation id="2176198174348007293">ඔබේ කැමරා භාවිත කරන්න (<ph name="CAMERAS_COUNT" />)</translation>
 <translation id="2176974405772725904">ගිණුමේ ලිපිනය සුරකින්න</translation>
 <translation id="2178665390943006934">Chrome යාවත්කාලීන කරන්න බොත්තම, ඔබේ Chrome සැකසීම් වෙතින් Chrome යාවත්කාලීන කිරීමට සක්‍රිය කරන්න</translation>
 <translation id="2181821976797666341">ප්‍රතිපත්ති</translation>
@@ -1484,6 +1482,7 @@
 <translation id="3799805948399000906">අකුරු වර්ගය ඉල්ලුවා</translation>
 <translation id="3801265110651850478">ඔබේ බ්‍රවුස් කිරීමේ මාර්ග තදබදය සමගින් “හඹා නොයන්න” ඉල්ලීමක් යවන්න</translation>
 <translation id="380329542618494757">නම</translation>
+<translation id="3803801106042434208">මෙම සෙවුම් යන්ත්‍ර ඔබේ කලාපය තුළ ජනප්‍රිය ය</translation>
 <translation id="3806932344025766608">ඔබ පිවිසීමට උත්සාහ කරන අඩවියේ සිටින ප්‍රහාරකයන් මෘදුකාංග ස්ථාපනය කිරීමට හෝ ඔබේ මුරපදය, දුරකථනය, හෝ ණය කාඩ්පත් අංකය වැනි දේවල් හෙළි කිරීමට ඔබව රවටා ගත හැක. සුරක්ෂිතව ආපසු යාමට Chrome දැඩි ලෙස නිර්දේශ කරයි. <ph name="BEGIN_LEARN_MORE_LINK" />තව දැන ගන්න<ph name="END_LEARN_MORE_LINK" /></translation>
 <translation id="3807366285948165054">රූපයේ X වැඩ මුරය</translation>
 <translation id="3807709094043295184">ක්ලැසික් රොක් සහ ඕල්ඩීස්</translation>
@@ -3629,7 +3628,6 @@
 <translation id="7947813448670013867"><ph name="SEE_CHROME_TIPS_FOCUSED_FRIENDLY_MATCH_TEXT" />, Chrome විශේෂාංග ගැන දැන ගැනීමට Tab ඔබා අනතුරුව Enter ඔබන්න</translation>
 <translation id="7949135979217012031">ප්‍රතිවෛරස් සහ අනිෂ්ට මෘදුකාංග</translation>
 <translation id="7950027195171824198">Chrome සැකසීම් තුළ ඔබගේ කුකි මනාප කළමනාකරණය කරන්න</translation>
-<translation id="7950440490184876634">ඔබේ මයික්‍රොෆෝන භාවිත කරන්න (<ph name="MICS_COUNT" />)</translation>
 <translation id="7951415247503192394">(බිට්-32)</translation>
 <translation id="7952192831285741665">යුරෝපීය EDP</translation>
 <translation id="7952250633095257243">කෙටිමඟ හිස් විය නොහැක</translation>

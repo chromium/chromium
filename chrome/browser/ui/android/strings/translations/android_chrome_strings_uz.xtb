@@ -153,6 +153,7 @@
 <translation id="1755203724116202818">Reklama samaradorligini hisoblash maqsadida saytga tashrifdan keyin bajarilgan xarid kabi cheklangan turdagi axborotlar saytlararo almashinishi mumkin.</translation>
 <translation id="1757620656501361327">Google Parollar menejeri yangilanishi</translation>
 <translation id="1760873718737761808">{FILE_COUNT,plural, =1{Sahifalar, roʻyxatdagi 1 ta sahifa}other{Sahifalar, roʻyxatdagi # ta sahifa}}</translation>
+<translation id="1771929606532798550">Chrome foydalanish statistikasi Googlega yuborildi, lekin bu axborot sizga tegishli emas\n\nChrome ishgan chiqsa, ishdan chiqishlar hisobotiga ayrim shaxsiy axborotlar kirishi mumkin\n\nAgar tarix Google hisobingizga sinxronlansa, yuboriladigan statistikaga siz tashrif buyurgan URL manzillar ham kirishi mumkin</translation>
 <translation id="1778457539567749232">Oʻqilmagan deb belgilash</translation>
 <translation id="1779766957982586368">Oynani yopish</translation>
 <translation id="1780023393214832643"><ph name="USERNAME" /> hisobida saqlangan parollar.</translation>
@@ -274,6 +275,7 @@ Shifrlangan maʼlumotlarni faqatgina kodli ibora yordamida oʻqish mumkin. Kodli
 <translation id="2450083983707403292"><ph name="FILE_NAME" /> qaytadan yuklab olinsinmi?</translation>
 <translation id="2453860139492968684">Tamom</translation>
 <translation id="2461822463642141190">Ayni vaqtda</translation>
+<translation id="2472163211318554013">Chromening barcha imkoniyatlaridan foydalanish uchun hisobga kiring</translation>
 <translation id="247737702124049222">Rasmlar tavsifi yoniq</translation>
 <translation id="2479148705183875116">Sozlamalarni ochish</translation>
 <translation id="2482878487686419369">Bildirishnomalar</translation>
@@ -425,7 +427,6 @@ Shifrlangan maʼlumotlarni faqatgina kodli ibora yordamida oʻqish mumkin. Kodli
 <translation id="3098745985164956033">Tavsiflarini yaxshilash uchun ayrim rasmlar Googlega yuborildi</translation>
 <translation id="3114507951000454849">Bugungi yangiliklar bilan tanishing <ph name="NEWS_ICON" /></translation>
 <translation id="3123734510202723619">Xabarnomalar</translation>
-<translation id="3146775326699342508">Boshqa qurilmalaringizdan bukmark va boshqalarni olish uchun hisobingizga kiring</translation>
 <translation id="314939179385989105">Chrome bosh sahifasi</translation>
 <translation id="3158667104057012316">Qoʻlda saralanmoqda</translation>
 <translation id="3166827708714933426">Varaq va oynalar bilan ishlash</translation>
@@ -798,6 +799,7 @@ Google hisobingiz orqali amalga oshirgan qidiruvlaringiz, brauzer tarixi va bosh
 <translation id="4987271110129728827">Bunday sahifa topilmadi. Manzilning xatosiz kiritilganini tekshiring yoki Internetdan qidiring.</translation>
 <translation id="4988526792673242964">Sahifalar</translation>
 <translation id="4991110219272367918">Yopilgan saytni tasdiqlash yoki tasdiqlamaslik varianti</translation>
+<translation id="4996095658297597226">Taklif qilingan parol ishlatilsinmi?</translation>
 <translation id="499724277181351974">Ochish: <ph name="WEBSITE_TITLE" />: <ph name="WEBSITE_URL" /></translation>
 <translation id="5001388021414335527">Bu saytni shu yerda kuzatish</translation>
 <translation id="5004416275253351869">Google hisobidagi harakatlarni kuzatish</translation>
@@ -1042,6 +1044,7 @@ Masalan, qaysi sahifalarga kirganligingizdan qat’i nazar, ba’zi saytlarda re
 <translation id="6233974827872475843">Sinxronizatsiyani yoqib, bu qurilmadagi parollarni Google hisobida saqlang</translation>
 <translation id="6247557882553405851">Google Parollar menejeri</translation>
 <translation id="6251449557817521191">Chrome tarixi shu yerda chiqadi</translation>
+<translation id="6254139308321626268">Bu — PDF fayl</translation>
 <translation id="6255794742848779505">Bu qurilmada parollarning qanday saqlanishi oʻzgarmoqda</translation>
 <translation id="6264376385120300461">Baribir yuklab olish</translation>
 <translation id="6277522088822131679">Sahifani chop etishda muammo yuzaga keldi. Qayta urinib ko‘ring.</translation>
@@ -1083,6 +1086,7 @@ Masalan, qaysi sahifalarga kirganligingizdan qat’i nazar, ba’zi saytlarda re
 <translation id="641643625718530986">Chop etish…</translation>
 <translation id="6433501201775827830">Qidiruv tizimini tanlang</translation>
 <translation id="6434309073475700221">Bekor qilish</translation>
+<translation id="6437162790453527153">Barcha qurilmalaringizda bukmarklar va boshqalarni uchun hisobingizga kiring.</translation>
 <translation id="6437478888915024427">Sahifa haqida</translation>
 <translation id="6440291723980579689">Sahifalar ular ochilganidan keyingina yuklanadi</translation>
 <translation id="6441734959916820584">Bu nom juda uzun</translation>
@@ -1343,6 +1347,7 @@ Bu sozlamani oʻzgartirish uchun <ph name="BEGIN_LINK" />hisobingizda Chrome ma�
 <translation id="752220631458524187">Ish tugasa, kabelni uzing</translation>
 <translation id="7523960634226602883">Google Lens yordamida kamera bilan qidiring</translation>
 <translation id="752731652852882757">Inkognito rejimida bloklash</translation>
+<translation id="7557508262441527045">Hisobdan chiqqansiz</translation>
 <translation id="7577900504646297215">Qiziqishlarni sozlash</translation>
 <translation id="757855969265046257">{FILES,plural, =1{<ph name="FILES_DOWNLOADED_ONE" /> ta fayl yuklab olindi}other{<ph name="FILES_DOWNLOADED_MANY" /> ta fayl yuklab olindi}}</translation>
 <translation id="7581273696622423628">So‘rovnomada qatnashing</translation>
@@ -1388,7 +1393,6 @@ Bu sozlamani oʻzgartirish uchun <ph name="BEGIN_LINK" />hisobingizda Chrome ma�
 <translation id="777637629667389858">Hisobingizga kirsangiz, barcha Google xizmatlarida himoya qilinasiz.</translation>
 <translation id="7778840695157240389">Yangi hikoyalar uchun keyinroq qayta tekshiring</translation>
 <translation id="7780645209293383778">Hisobingizga kirganingizda Google ilovalaridan foydalanishingizni himoyalash maqsadida bu axborotni vaqtincha Google hisobingizga ulaydi</translation>
-<translation id="7786562169000598736">Barcha bukmarklarni oling</translation>
 <translation id="7791543448312431591">Qo‘shish</translation>
 <translation id="7798392620021911922"><ph name="TAB_COUNT" /> ta varaq tiklandi</translation>
 <translation id="780287761701992588">Bukmark, parol va barcha qurilmalaringizdagi maʼlumotlarni oling</translation>
@@ -1438,6 +1442,7 @@ Bu sozlamani oʻzgartirish uchun <ph name="BEGIN_LINK" />hisobingizda Chrome ma�
 <translation id="7986497153528221272">Parollarni koʻrish uchun qurilmangizni ekran kodi bilan qulflang.</translation>
 <translation id="7995059495660416932">Kontent chiqqanda sizga koʻrinadi</translation>
 <translation id="799576009106109668">Sahifalar joriy tashrifi asosida oldindan yuklanadi va tezroq ochiladi</translation>
+<translation id="8001245658307297681">Bu — mahalliy fayl</translation>
 <translation id="8004582292198964060">Brauzer</translation>
 <translation id="8015452622527143194">Sahifadagi barcha narsani standart hajmga qaytarish</translation>
 <translation id="8026238112629815203">Bu qurilmada parollar qanday saqlanishini oʻzgartirdik</translation>

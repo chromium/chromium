@@ -573,7 +573,6 @@ En caso contrario, a configuración de privacidade impedirao. Se o permites, o c
 <translation id="2046951263634619614">Librarías</translation>
 <translation id="2048261947532620704">Traducindo páxina</translation>
 <translation id="2053111141626950936">Non se traducirán as páxinas en <ph name="LANGUAGE" />.</translation>
-<translation id="2055461225779831292">Utilizar e mover as túas cámaras (<ph name="CAMERAS_COUNT" />)</translation>
 <translation id="2056492565825767809">Bloquear o punteiro do rato</translation>
 <translation id="2056658168519009885">Os sitios poden solicitarlle información a Chrome para axudar a personalizar os anuncios que se che mostren.</translation>
 <translation id="2059166748188874810">Concello</translation>
@@ -651,7 +650,6 @@ En caso contrario, a configuración de privacidade impedirao. Se o permites, o c
 <translation id="2170417331417184438">A tarxeta gardouse só neste dispositivo</translation>
 <translation id="2172089022819052306">Mantemento e reparación de vehículos</translation>
 <translation id="2175630235841878061">Os ficheiros de máis 100 MB non se poden descargar</translation>
-<translation id="2176198174348007293">Usar as cámaras (<ph name="CAMERAS_COUNT" />)</translation>
 <translation id="2176974405772725904">Gardar o enderezo na conta</translation>
 <translation id="2178665390943006934">Botón para actualizar Chrome. Actívao para actualizar Chrome desde a configuración do navegador</translation>
 <translation id="2181821976797666341">Políticas</translation>
@@ -2684,6 +2682,7 @@ En caso contrario, a configuración de privacidade impedirao. Se o permites, o c
 <translation id="6165508094623778733">Máis información</translation>
 <translation id="6167577165590485365">Último intento de obtención:</translation>
 <translation id="617256461084925519">Google Chrome está tentando verificar a túa identidade para poder completar a túa información de pago.</translation>
+<translation id="6173208311907792313">Completa a compra con Windows Hello</translation>
 <translation id="6176387967264100435">Este prezo é alto</translation>
 <translation id="6177128806592000436">A túa conexión a este sitio non é segura</translation>
 <translation id="6177531123306197852">Sobre C2</translation>
@@ -3628,7 +3627,6 @@ Detalles adicionais:
 <translation id="7947813448670013867"><ph name="SEE_CHROME_TIPS_FOCUSED_FRIENDLY_MATCH_TEXT" />. Preme Tabulador e, a continuación, Introducir para obter máis información sobre as funcións de Chrome</translation>
 <translation id="7949135979217012031">Antivirus e software malicioso</translation>
 <translation id="7950027195171824198">Xestionar as túas preferencias relativas ás cookies na configuración de Chrome</translation>
-<translation id="7950440490184876634">Usar os micrófonos (<ph name="MICS_COUNT" />)</translation>
 <translation id="7951415247503192394">(32 bits)</translation>
 <translation id="7952192831285741665">EDP europeo</translation>
 <translation id="7952250633095257243">O atallo non pode estar baleiro</translation>
@@ -3844,6 +3842,7 @@ Detalles adicionais:
 <translation id="8332188693563227489">Denegouse o acceso a <ph name="HOST_NAME" /></translation>
 <translation id="833262891116910667">Destacar</translation>
 <translation id="8339163506404995330">Non se traducirán as páxinas en <ph name="LANGUAGE" /></translation>
+<translation id="8339275256517065202">Completa a compra con Touch ID</translation>
 <translation id="8340095855084055290"><ph name="EXPIRATION_MONTH" />/<ph name="EXPIRATION_YEAR" /></translation>
 <translation id="8344776605855290140">Rexistro de tarxeta virtual aberto a altura completa</translation>
 <translation id="8349305172487531364">Barra de marcadores</translation>
@@ -4037,6 +4036,7 @@ Detalles adicionais:
 <translation id="8726549941689275341">Tamaño da páxina:</translation>
 <translation id="8730621377337864115">Feito</translation>
 <translation id="8731268612289859741">Código de seguranza</translation>
+<translation id="8731917264694569036">Completa a compra co teu dispositivo</translation>
 <translation id="8733345475331865475">Seguros de automóbil</translation>
 <translation id="8733764070897080460">Podes bloquear os temas que non queiras compartir cos sitios. Chrome tamén elimina automaticamente os temas que teñen máis de 4 semanas. Máis información</translation>
 <translation id="8734529307927223492"><ph name="MANAGER" /> xestiona o teu dispositivo (<ph name="DEVICE_TYPE" />)</translation>
@@ -4230,6 +4230,7 @@ Detalles adicionais:
 <translation id="9116548361133462832">Máis información sobre os anuncios en Chrome</translation>
 <translation id="9118692854637641831"><ph name="HISTORY_CLUSTERS_SEARCH_FOCUSED_FRIENDLY_MATCH_TEXT" />; para retomar o percorrido e ver a actividade relevante do teu historial de Chrome, preme Tabulador e, despois, Introducir</translation>
 <translation id="9119042192571987207">Cargouse</translation>
+<translation id="9119308212838450857"><ph name="PROVIDER_ORIGIN" /> quere verificar a túa identidade</translation>
 <translation id="912327514020027767">Saias</translation>
 <translation id="912414390325846156">Anteriormente denegaches o permiso para este sitio</translation>
 <translation id="9128870381267983090">Conectarse á rede</translation>

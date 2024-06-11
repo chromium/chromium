@@ -573,7 +573,6 @@
 <translation id="2046951263634619614">Книжные магазины</translation>
 <translation id="2048261947532620704">Перевод страницы…</translation>
 <translation id="2053111141626950936">Страницы на этом языке (<ph name="LANGUAGE" />) не будут переводиться автоматически.</translation>
-<translation id="2055461225779831292">Использование и перемещение камер (<ph name="CAMERAS_COUNT" />)</translation>
 <translation id="2056492565825767809">Заблокировать указатель мыши</translation>
 <translation id="2056658168519009885">Сайты могут запрашивать у Chrome информацию, чтобы персонализировать рекламу для вас.</translation>
 <translation id="2059166748188874810">Муниципалитет</translation>
@@ -651,7 +650,6 @@
 <translation id="2170417331417184438">Карта сохранена только на устройстве</translation>
 <translation id="2172089022819052306">Ремонт и обслуживание транспортных средств</translation>
 <translation id="2175630235841878061">Файлы больше 100 МБ недоступны для скачивания</translation>
-<translation id="2176198174348007293">Использование камер (<ph name="CAMERAS_COUNT" />)</translation>
 <translation id="2176974405772725904">Сохранение адреса в аккаунте</translation>
 <translation id="2178665390943006934">Кнопка "Обновить Chrome". Нажмите ее, чтобы обновить Chrome.</translation>
 <translation id="2181821976797666341">Правила</translation>
@@ -3628,7 +3626,6 @@
 <translation id="7947813448670013867"><ph name="SEE_CHROME_TIPS_FOCUSED_FRIENDLY_MATCH_TEXT" />. Чтобы узнать больше о функциях Chrome, нажмите Tab, а затем Ввод.</translation>
 <translation id="7949135979217012031">Антивирусы и защита от вредоносного ПО</translation>
 <translation id="7950027195171824198">Задать параметры файлов cookie в настройках Chrome</translation>
-<translation id="7950440490184876634">Использование микрофонов (<ph name="MICS_COUNT" />)</translation>
 <translation id="7951415247503192394">(32 бит)</translation>
 <translation id="7952192831285741665">European EDP</translation>
 <translation id="7952250633095257243">Нужно указать быструю команду.</translation>

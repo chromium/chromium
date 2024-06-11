@@ -274,6 +274,7 @@
 <translation id="2450083983707403292">Θέλετε να ξεκινήσετε ξανά τη λήψη του αρχείου <ph name="FILE_NAME" />;</translation>
 <translation id="2453860139492968684">Τέλος</translation>
 <translation id="2461822463642141190">Τρέχουσα</translation>
+<translation id="2472163211318554013">Συνδεθείτε για να αξιοποιήσετε πλήρως το Chrome</translation>
 <translation id="247737702124049222">Οι περιγραφές εικόνων είναι ενεργοποιημένες</translation>
 <translation id="2479148705183875116">Μετάβαση στις Ρυθμίσεις</translation>
 <translation id="2482878487686419369">Ειδοποιήσεις</translation>
@@ -425,7 +426,6 @@
 <translation id="3098745985164956033">Ορισμένες εικόνες αποστέλλονται στην Google για τη βελτίωση των περιγραφών για εσάς.</translation>
 <translation id="3114507951000454849">Διαβάστε τις σημερινές ειδήσεις <ph name="NEWS_ICON" /></translation>
 <translation id="3123734510202723619">Ανακοινώσεις</translation>
-<translation id="3146775326699342508">Συνδεθείτε για να λάβετε τους σελιδοδείκτες σας και πολλά ακόμα από τις άλλες συσκευές σας</translation>
 <translation id="314939179385989105">Αρχική σελίδα του Chrome</translation>
 <translation id="3158667104057012316">Ταξινόμηση κατά μη αυτόματη σειρά</translation>
 <translation id="3166827708714933426">Συντομεύσεις καρτέλας και παραθύρου</translation>
@@ -1343,6 +1343,7 @@
 <translation id="752220631458524187">Αποσυνδεθείτε όταν ολοκληρώσετε τις εργασίες σας</translation>
 <translation id="7523960634226602883">Αναζητήστε με την κάμερα χρησιμοποιώντας το Google Lens</translation>
 <translation id="752731652852882757">Αποκλεισμός κατά τη χρήση ανώνυμης περιήγησης</translation>
+<translation id="7557508262441527045">Έγινε αποσύνδεση</translation>
 <translation id="7577900504646297215">Διαχείριση ενδιαφερόντων</translation>
 <translation id="757855969265046257">{FILES,plural, =1{Έγινε λήψη <ph name="FILES_DOWNLOADED_ONE" /> αρχείου}other{Έγινε λήψη <ph name="FILES_DOWNLOADED_MANY" /> αρχείων}}</translation>
 <translation id="7581273696622423628">Συμμετοχή σε έρευνα</translation>
@@ -1388,7 +1389,6 @@
 <translation id="777637629667389858">Όταν είστε συνδεδεμένοι, σας προστατεύει σε όλες τις υπηρεσίες Google.</translation>
 <translation id="7778840695157240389">Ελέγξτε πάλι αργότερα για νέες ιστορίες</translation>
 <translation id="7780645209293383778">Όταν είστε συνδεδεμένοι, συνδέει προσωρινά αυτά τα δεδομένα με τον Λογαριασμό σας Google, για να σας προστατεύσει σε όλες τις εφαρμογές Google.</translation>
-<translation id="7786562169000598736">Λήψη όλων των σελιδοδεικτών σας</translation>
 <translation id="7791543448312431591">Προσθήκη</translation>
 <translation id="7798392620021911922">Έγινε επαναφορά <ph name="TAB_COUNT" /> καρτελών</translation>
 <translation id="780287761701992588">Μεταφορά σελιδοδεικτών, κωδικών πρόσβασης και άλλων δεδομένων σε όλες τις συσκευές σας</translation>

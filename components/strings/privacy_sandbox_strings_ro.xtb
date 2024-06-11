@@ -6,4 +6,5 @@
 <translation id="4301151630239508244">Subiectele anunțurilor reprezintă doar unul dintre numeroasele tipuri de date pe care un site le poate folosi pentru a personaliza anunțurile. Chiar și fără subiecte ale anunțurilor, site-urile pot afișa în continuare anunțuri, dar ele pot fi mai puțin personalizate. Află mai multe despre <ph name="BEGIN_LINK_1" />gestionarea confidențialității anunțurilor<ph name="END_LINK_1" />.</translation>
 <translation id="4598427486995631491">Ascunde-ți adresa IP</translation>
 <translation id="6371812158043974664">Dacă te-ai conectat la Chromium, această setare îți menține adresa IP privată. Dacă Chromium suspectează că un site te urmărește, o parte din trafic poate fi trimis prin serverele de confidențialitate. Află mai multe despre <ph name="LINK_BEGIN" />cum funcționează protecția IP<ph name="LINK_END" /></translation>
+<translation id="7040031291654706261">Află <ph name="BEGIN_LINK" />cum funcționează Protecția IP<ph name="END_LINK" /></translation>
 </translationbundle>

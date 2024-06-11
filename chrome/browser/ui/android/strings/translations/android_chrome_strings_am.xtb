@@ -274,6 +274,7 @@
 <translation id="2450083983707403292"><ph name="FILE_NAME" />ን እንደገና ማውረድ መጀመር ይፈልጋሉ?</translation>
 <translation id="2453860139492968684">ጨርስ</translation>
 <translation id="2461822463642141190">የአሁኑ ጊዜ</translation>
+<translation id="2472163211318554013">ከChrome የሚችሉትን ሁሉ ለማግኘት በመለያ ይግቡ</translation>
 <translation id="247737702124049222">የምስል መግለጫዎች በርተዋል</translation>
 <translation id="2479148705183875116">ወደ ቅንብሮች ሂድ</translation>
 <translation id="2482878487686419369">ማስታወቂያዎች</translation>
@@ -425,7 +426,6 @@
 <translation id="3098745985164956033">ለእርስዎ መግለጫዎችን ለማሻሻል አንዳንድ ምስሎች ወደ Google ይላካሉ</translation>
 <translation id="3114507951000454849">የዛሬውን ዜና ያንብቡ <ph name="NEWS_ICON" /></translation>
 <translation id="3123734510202723619">ማስታወቂያዎች</translation>
-<translation id="3146775326699342508">እልባቶችዎን እና ሌሎችንም ከሌሎች መሣሪያዎችዎ ለማግኘት በመለያ ይግቡ</translation>
 <translation id="314939179385989105">የChrome መነሻ ገፅ</translation>
 <translation id="3158667104057012316">በእጅ ቅደም ተከተል በመደርደር ላይ</translation>
 <translation id="3166827708714933426">የትር እና የመስኮት አቋራጮች</translation>
@@ -1343,6 +1343,7 @@
 <translation id="752220631458524187">ሲጨርሱ ግንኙነቱን ያቋርጡ</translation>
 <translation id="7523960634226602883">Google ሌንስን በመጠቀም በካሜራዎ ይፈልጉ</translation>
 <translation id="752731652852882757">ማንነት የማያሳውቅን በመጠቀም ላይ ሳለ አግድ</translation>
+<translation id="7557508262441527045">ዘግተው ወጥተዋል</translation>
 <translation id="7577900504646297215">ፍላጎቶችን አቀናብር</translation>
 <translation id="757855969265046257">{FILES,plural, =1{<ph name="FILES_DOWNLOADED_ONE" />ፋይል ወርዷል}one{<ph name="FILES_DOWNLOADED_MANY" /> ፋይሎች ወርደዋል}other{<ph name="FILES_DOWNLOADED_MANY" /> ፋይሎች ወርደዋል}}</translation>
 <translation id="7581273696622423628">አጠቃላይ ጥናት ላይ ይሳተፉ</translation>
@@ -1388,7 +1389,6 @@
 <translation id="777637629667389858">በመለያ ሲገቡ በመላው የGoogle አገልግሎቶች ላይ ይጠብቅዎታል።</translation>
 <translation id="7778840695157240389">ለአዳዲስ ዘገባዎች በኋላ ላይ መልሰው ይፈትሹ</translation>
 <translation id="7780645209293383778">እርስዎን በመላው የGoogle መተግበሪያዎች ላይ ለመጠበቅ ይህን ውሂብ ለጊዜው ከGoogle መለያዎ ጋር ያገናኘዋል</translation>
-<translation id="7786562169000598736">ሁሉንም የእርስዎ እልባቶች ያግኙ</translation>
 <translation id="7791543448312431591">ያክሉ</translation>
 <translation id="7798392620021911922">ወደነበሩበት የተመለሱ <ph name="TAB_COUNT" /> ትሮች</translation>
 <translation id="780287761701992588">የእርስዎን እልባቶች፣ የይለፍ ቃላት እና ሌሎችን በሁሉም መሣሪያዎችዎ ላይ ያግኙ</translation>

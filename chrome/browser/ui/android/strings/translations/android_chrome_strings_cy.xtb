@@ -274,6 +274,7 @@ Dim ond rhywun sydd â'ch cyfrinymadrodd all ddarllen eich data sydd wedi'u hamg
 <translation id="2450083983707403292">Ydych chi am ddechrau lawrlwytho <ph name="FILE_NAME" /> eto?</translation>
 <translation id="2453860139492968684">Gorffen</translation>
 <translation id="2461822463642141190">Presennol</translation>
+<translation id="2472163211318554013">Mewngofnodwch i gael y gorau o Chrome</translation>
 <translation id="247737702124049222">Mae disgrifiadau lluniau wedi'u troi ymlaen</translation>
 <translation id="2479148705183875116">Mynd i'r Gosodiadau</translation>
 <translation id="2482878487686419369">Hysbysiadau</translation>
@@ -285,6 +286,7 @@ Dim ond rhywun sydd â'ch cyfrinymadrodd all ddarllen eich data sydd wedi'u hamg
 <translation id="2515921719039583189">Dileu eich data Chrome o'r ddyfais hon?</translation>
 <translation id="2517113738956581680">Dalen maint llawn</translation>
 <translation id="2523184218357549926">Yn anfon URL o dudalennau rydych yn ymweld â nhw at Google</translation>
+<translation id="2524132927880411790">Mynd i Google App Voice Search</translation>
 <translation id="2527209463677295330">Drwy gynnwys mwy o destun tudalen, gallech weld canlyniadau gwell</translation>
 <translation id="2527497042232966453">Wedi newid i dabiau Anhysbys</translation>
 <translation id="2527779675047087889">Cuddio cynnwys y clipfwrdd</translation>
@@ -424,7 +426,6 @@ Dim ond rhywun sydd â'ch cyfrinymadrodd all ddarllen eich data sydd wedi'u hamg
 <translation id="3098745985164956033">Anfonir rhai lluniau at Google i wella disgrifiadau i chi.</translation>
 <translation id="3114507951000454849">Darllen y newyddion heddiw <ph name="NEWS_ICON" /></translation>
 <translation id="3123734510202723619">Cyhoeddiadau</translation>
-<translation id="3146775326699342508">Mewngofnodwch i gael eich nodau tudalen a rhagor o'ch dyfeisiau eraill</translation>
 <translation id="314939179385989105">Tudalen hafan Chrome</translation>
 <translation id="3158667104057012316">Wrthi'n trefnu yn ôl trefn bwrpasol</translation>
 <translation id="3166827708714933426">Llwybrau byr tabiau a ffenestri</translation>
@@ -519,6 +520,7 @@ Dim ond rhywun sydd â'ch cyfrinymadrodd all ddarllen eich data sydd wedi'u hamg
 <translation id="363596933471559332">Mewngofnodi'n awtomatig i wefannau gan ddefnyddio manylion adnabod sydd wedi'u cadw. Pan fydd y gosodiad hwn wedi'i ddiffodd, gofynnir i chi gadarnhau bob tro cyn mewngofnodi i wefan.</translation>
 <translation id="3636940436873918441">Dewis ieithoedd</translation>
 <translation id="3637744895182738742">Os byddwch yn anghofio'ch cyfrinymadrodd neu eisiau newid y gosodiad hwn, <ph name="BEGIN_LINK" />dileu'r data Chrome yn eich cyfrif<ph name="END_LINK" />.</translation>
+<translation id="3674208116086565128">Mynd i Google App Home</translation>
 <translation id="368329460027487650">Rydych wedi'ch allgofnodi. Yn agor opsiynau i fewngofnodi.</translation>
 <translation id="3687645719033307815">Rydych yn edrych ar ragolwg o'r dudalen hon</translation>
 <translation id="3690369331356918524">Yn eich rhybuddio os yw cyfrineiriau'n cael eu datgelu mewn tor data</translation>
@@ -1341,6 +1343,7 @@ I newid y gosodiad hwn, <ph name="BEGIN_LINK" />dileu'r data Chrome yn eich cyfr
 <translation id="752220631458524187">Datgysylltwch pan fyddwch wedi gorffen</translation>
 <translation id="7523960634226602883">Chwilio gyda'ch camera drwy ddefnyddio Google Lens</translation>
 <translation id="752731652852882757">Rhwystro tra'n defnyddio'r modd Anhysbys</translation>
+<translation id="7557508262441527045">Rydych wedi'ch allgofnodi</translation>
 <translation id="7577900504646297215">Rheoli diddordebau</translation>
 <translation id="757855969265046257">{FILES,plural, =1{Mae <ph name="FILES_DOWNLOADED_ONE" /> ffeil wedi'i lawrlwytho}zero{Mae <ph name="FILES_DOWNLOADED_MANY" /> ffeil wedi'u lawrlwytho}two{Mae <ph name="FILES_DOWNLOADED_MANY" /> ffeil wedi'u lawrlwytho}few{Mae <ph name="FILES_DOWNLOADED_MANY" /> ffeil wedi'u lawrlwytho}many{Mae <ph name="FILES_DOWNLOADED_MANY" /> ffeil wedi'u lawrlwytho}other{Mae <ph name="FILES_DOWNLOADED_MANY" /> ffeil wedi'u lawrlwytho}}</translation>
 <translation id="7581273696622423628">Cymryd yr arolwg</translation>
@@ -1386,7 +1389,6 @@ I newid y gosodiad hwn, <ph name="BEGIN_LINK" />dileu'r data Chrome yn eich cyfr
 <translation id="777637629667389858">Pan fyddwch wedi mewngofnodi, mae'n eich diogelu ar draws gwasanaethau Google.</translation>
 <translation id="7778840695157240389">Dewch yn ôl yn nes ymlaen am straeon newydd</translation>
 <translation id="7780645209293383778">Mae'n cysylltu'r data hyn dros dro â'ch Cyfrif Google pan fyddwch wedi mewngofnodi, i'ch amddiffyn ar draws apiau Google</translation>
-<translation id="7786562169000598736">Cael eich holl nodau tudalen</translation>
 <translation id="7791543448312431591">Ychwanegu</translation>
 <translation id="7798392620021911922">Adferwyd <ph name="TAB_COUNT" /> o dabiau</translation>
 <translation id="780287761701992588">Cael eich nodau tudalen, eich cyfrineiriau a rhagor ar eich holl ddyfeisiau</translation>
@@ -1475,6 +1477,7 @@ I newid y gosodiad hwn, <ph name="BEGIN_LINK" />dileu'r data Chrome yn eich cyfr
 <translation id="813082847718468539">Gweld gwybodaeth am y wefan</translation>
 <translation id="8135406045838672858">Mae ffeiliau PDF sydd wedi'u lawrlwytho yn agor yn awtomatig gyda <ph name="APP_NAME" /></translation>
 <translation id="8137562778192957619">Ni fydd angen i chi gofio'r cyfrinair hwn. Bydd yn cael ei gadw i'r Rheolwr Cyfrineiriau Google.</translation>
+<translation id="8152331954420209374">Mynd i Lens</translation>
 <translation id="8163820386638255770">I ddefnyddio a chadw cyfrineiriau yn eich Cyfrif Google, cadarnhewch mai chi sydd yno</translation>
 <translation id="8171286197772512427">Rhannu gyda thaflen adborth gryno ar agor</translation>
 <translation id="8179976553408161302">Enter</translation>
@@ -1511,6 +1514,7 @@ I newid y gosodiad hwn, <ph name="BEGIN_LINK" />dileu'r data Chrome yn eich cyfr
 <translation id="8348430946834215779">Defnyddiwch HTTPS lle bynnag y bo'n bosib a chael rhybudd cyn llwytho gwefannau nad ydynt yn ei gefnogi</translation>
 <translation id="8354977102499939946">Chwilio yn gyflym â'ch llais. I olygu'r llwybr byr hwn, ewch i'r Gosodiadau.</translation>
 <translation id="835847953965672673">Mae <ph name="NUMBER_OF_DOWNLOADS" /> lawrlwythiad wedi'u hadfer</translation>
+<translation id="8367705492654390392">Gofynnwch unrhyw beth</translation>
 <translation id="8368001212524806591">Dilyn y pris</translation>
 <translation id="8378850197701296741">Mae gennych nodau tudalen, hanes a gosodiadau eraill o <ph name="FROM_ACCOUNT" />.</translation>
 <translation id="8387617938027387193">Cadarnhewch mai chi sydd yno</translation>

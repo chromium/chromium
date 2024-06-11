@@ -23,6 +23,7 @@
 <translation id="1869137256605757565">{TABS_COUNT,plural, =1{<ph name="TABS_COUNT_ONE" /> scheda}other{<ph name="TABS_COUNT_MANY" /> schede}}</translation>
 <translation id="2050597508048557928">{TABS_COUNT,plural, =1{Aggiungi <ph name="TABS_COUNT_ONE" /> scheda selezionata ai preferiti}other{Aggiungi <ph name="TABS_COUNT_MANY" /> schede selezionate ai preferiti}}</translation>
 <translation id="2118649612461486615">Informazioni sul negozio</translation>
+<translation id="2123073051266141035">{INCOGNITO_TABS_COUNT,plural, =1{Le schede e i gruppi chiusi possono essere riaperti dalle sezioni Schede recenti e Gruppi di schede. La scheda di navigazione in incognito non sarà disponibile.}other{Le schede e i gruppi chiusi possono essere riaperti dalle sezioni Schede recenti e Gruppi di schede. # schede di navigazione in incognito non saranno disponibili.}}</translation>
 <translation id="2162620598375156287">Ora a <ph name="CURRENT_PRICE" /> su <ph name="SOURCE_WEBSITE" /></translation>
 <translation id="22623456902492423">{TABS_COUNT,plural, =1{Separa scheda}other{Separa schede}}</translation>
 <translation id="2271452184061378400">I tuoi gruppi di schede vengono salvati qui</translation>

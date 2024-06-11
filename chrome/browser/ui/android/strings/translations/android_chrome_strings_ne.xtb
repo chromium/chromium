@@ -90,6 +90,9 @@
 <translation id="1390418506739274310">तपाईं Chrome मा लिंक खोल्ने अन्य एपहरूको हिस्ट्री देख्न सक्नुहुन्छ। तपाईंको Google खातामा रहेको <ph name="BEGIN_LINK" />myactivity.google.com<ph name="END_LINK" /> मा अन्य स्वरूपमा ब्राउजिङ हिस्ट्री सेभ गरिएको हुन सक्छ।</translation>
 <translation id="13931502444227376"><ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> ले जारी राख्ने प्रयोजनका लागि यो साइटसँग तपाईंको नाम, इमेल ठेगाना र प्रोफाइल फोटो सेयर गर्ने छ। यो साइटको <ph name="BEGIN_LINK1" />सेवाका सर्तहरू<ph name="END_LINK1" /> हेर्नुहोस्।</translation>
 <translation id="1397811292916898096"><ph name="PRODUCT_NAME" /> मार्फत खोज्नुहोस्</translation>
+<translation id="1398057416966591719">तपाईं आफ्नो Google खातामा <ph name="BEGIN_LINK1" />Chrome को कुन जानकारी सेभ गरिन्छ भन्ने कुरा व्यवस्थापन गर्न<ph name="END_LINK1" /> सक्नुहुन्छ।
+
+Chrome मा तपाईंलाई अझ राम्रो ब्राउजिङ सुविधा दिने प्रयोजनका लागि जानकारी प्रयोग गर्ने अन्य सेटिङ मिलाउन <ph name="BEGIN_LINK2" />Google का सेवाहरू<ph name="END_LINK2" />मा जानुहोस्।</translation>
 <translation id="1407069428457324124">अँध्यारो थिम</translation>
 <translation id="1407135791313364759">सबै खोल्नुहोस्</translation>
 <translation id="1409879593029778104"><ph name="FILE_NAME" /> फाइल पहिल्यै अवस्थित भएकाले डाउनलोड रोकियो।</translation>
@@ -248,6 +251,7 @@
 <translation id="2286841657746966508">बिल पठाउने ठेगाना</translation>
 <translation id="228704530595896923">सेयर गर्ने सुविधासम्बन्धी विकल्पहरूको सूची।</translation>
 <translation id="2297822946037605517">यो पेज सेयर गर्नुहोस्</translation>
+<translation id="22981027763501686">तपाईं आफूले चलाउने अन्य डिभाइसमा आफ्ना बुकमार्क र हिस्ट्रीलगायतका कुरा प्राप्त गर्न चाहनुहुन्छ भने सिंक गर्नुहोस्</translation>
 <translation id="230115972905494466">कुनै पनि मिल्दाजुल्दा यन्त्र भेटिएनन्</translation>
 <translation id="2318045970523081853">कल गर्न ट्याप गर्नुहोस्</translation>
 <translation id="2321086116217818302">पासवर्डहरू निर्यात गर्ने तयारी गरिँदै…</translation>
@@ -274,6 +278,7 @@
 <translation id="2450083983707403292">तपाईं <ph name="FILE_NAME" /> लाई फेरि डाउनलोड गर्न चाहनुहुन्छ?</translation>
 <translation id="2453860139492968684">समाप्त</translation>
 <translation id="2461822463642141190">हालको</translation>
+<translation id="2472163211318554013">तपाईं Chrome बाट बढीभन्दा बढी फाइदा लिन चाहनुहुन्छ भने साइन इन गर्नुहोस्</translation>
 <translation id="247737702124049222">'फोटोको वर्णन गर्ने' सुविधा अन छ</translation>
 <translation id="2479148705183875116">सेटिङमा जानुहोस्</translation>
 <translation id="2482878487686419369">सूचनाहरू</translation>
@@ -425,7 +430,6 @@
 <translation id="3098745985164956033">तपाईंलाई उपलब्ध गराइने वर्णनको गुणस्तर सुधार गर्न केही फोटोहरू Google मा पठाइन्छन्</translation>
 <translation id="3114507951000454849">आजको समाचार पढ्नुहोस् <ph name="NEWS_ICON" /></translation>
 <translation id="3123734510202723619">घोषणाहरू</translation>
-<translation id="3146775326699342508">आफ्ना अन्य डिभाइसहरूबाट बुकमार्क र थप कुराहरू प्राप्त गर्न साइन इन गर्नुहोस्</translation>
 <translation id="314939179385989105">Chrome को गृहपृष्ठ</translation>
 <translation id="3158667104057012316">म्यानुअल तरिकाले क्रमबद्ध गर्नुहोस्</translation>
 <translation id="3166827708714933426">ट्याब र विन्डोका सर्टकटहरू</translation>
@@ -855,6 +859,7 @@
 <translation id="5292796745632149097">निम्न यन्त्रमा पठाउनुहोस्</translation>
 <translation id="5301876394151419436">तपाईं <ph name="EMAIL" /> खाताबाट साइन इन हुनुहुन्छ। तपाईं जुनसुकै बेला सेटिङमा गई सिंक गर्न छाड्न सक्नुहुन्छ। Google ले तपाईंले विगतमा हेरेका वेबपेजका आधारमा Search र अन्य सेवाहरू पर्सनलाइज गर्न सक्छ।</translation>
 <translation id="5304593522240415983">यो क्षेत्र खाली हुन सक्दैन</translation>
+<translation id="5306014156308790439">"सङ्ग्रहमा हाल्नुहोस्" बटन अफ गरिएको छ</translation>
 <translation id="5308380583665731573">कनेक्ट गर्नुहोस्</translation>
 <translation id="5316947901395241499">तपाईंका एड्मिनले पासवर्ड सेभ गर्ने सुविधा अफ गर्नुभएको छ</translation>
 <translation id="5317780077021120954">बचत गर्नुहोस्</translation>
@@ -1342,6 +1347,7 @@
 <translation id="752220631458524187">आफ्नो काम सकिएपछि डिस्कनेक्ट गर्नुहोस्</translation>
 <translation id="7523960634226602883">Google लेन्स प्रयोग गरी आफ्नो क्यामेरामार्फत खोज्नुहोस्</translation>
 <translation id="752731652852882757">इन्कोग्निटो मोड प्रयोग गर्दा ब्लक गर्नुहोस्</translation>
+<translation id="7557508262441527045">साइन आउट गरिएको छ</translation>
 <translation id="7577900504646297215">रुचिहरू व्यवस्थापन गर्नुहोस्</translation>
 <translation id="757855969265046257">{FILES,plural, =1{<ph name="FILES_DOWNLOADED_ONE" /> फाइल डाउनलोड गरियो}other{<ph name="FILES_DOWNLOADED_MANY" /> फाइलहरू डाउनलोड गरिए}}</translation>
 <translation id="7581273696622423628">सर्वेक्षणमा भाग लिनुहोस्</translation>
@@ -1387,7 +1393,6 @@
 <translation id="777637629667389858">तपाईं साइन इन हुनुभएका अवस्थामा Google का सेवाहरूमा तपाईंको जानकारी सुरक्षित राख्छ।</translation>
 <translation id="7778840695157240389">नयाँ समाचार हेर्न पछि फर्केर आउनुहोस्</translation>
 <translation id="7780645209293383778">यो सुविधाले तपाईंको Google खाता Google का विभिन्न एपहरूमा सुरक्षित राख्ने प्रयोजनका लागि तपाईं साइन इन भएका बेला यो डेटा केही समयका लागि उक्त खातासँग लिंक गर्छ</translation>
-<translation id="7786562169000598736">आफ्ना सबै बुकमार्कहरू प्राप्त गर्नुहोस्</translation>
 <translation id="7791543448312431591">थप्नुहोस्</translation>
 <translation id="7798392620021911922"><ph name="TAB_COUNT" /> वटा ट्याब रिस्टोर गरिए</translation>
 <translation id="780287761701992588">आफूले प्रयोग गर्ने सबै डिभाइसमा आफ्ना बुकमार्क, पासवर्डलगायतका थप कुरा प्राप्त गर्नुहोस्</translation>

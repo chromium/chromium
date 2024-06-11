@@ -274,6 +274,7 @@ Net iemand met jou wagfrase kan jou geënkripteerde data lees. Die wagfrase word
 <translation id="2450083983707403292">Wil jy <ph name="FILE_NAME" /> weer begin aflaai?</translation>
 <translation id="2453860139492968684">Voltooi</translation>
 <translation id="2461822463642141190">Huidig</translation>
+<translation id="2472163211318554013">Meld aan om Chrome ten beste te benut</translation>
 <translation id="247737702124049222">Prentbeskrywings is aan</translation>
 <translation id="2479148705183875116">Gaan na Instellings</translation>
 <translation id="2482878487686419369">Kennisgewings</translation>
@@ -285,6 +286,7 @@ Net iemand met jou wagfrase kan jou geënkripteerde data lees. Die wagfrase word
 <translation id="2515921719039583189">Vee jou Chrome-data op hierdie toestel uit?</translation>
 <translation id="2517113738956581680">Volgrootteblad</translation>
 <translation id="2523184218357549926">Stuur URL'e van bladsye wat jy besoek na Google toe</translation>
+<translation id="2524132927880411790">Gaan na stemsoektog van Google-app</translation>
 <translation id="2527209463677295330">As jy meer van 'n bladsy se teks insluit, sal jy dalk beter resultate sien</translation>
 <translation id="2527497042232966453">Het na Incognito-oortjies oorgeskakel</translation>
 <translation id="2527779675047087889">Versteek knipbordinhoud</translation>
@@ -424,7 +426,6 @@ Net iemand met jou wagfrase kan jou geënkripteerde data lees. Die wagfrase word
 <translation id="3098745985164956033">Sommige prente word na Google toe gestuur om hul beskrywings vir jou te verbeter</translation>
 <translation id="3114507951000454849">Lees vandag se nuus <ph name="NEWS_ICON" /></translation>
 <translation id="3123734510202723619">Aankondigings</translation>
-<translation id="3146775326699342508">Meld aan om jou boekmerke en meer van jou ander toestelle af te kry</translation>
 <translation id="314939179385989105">Chrome se tuisblad</translation>
 <translation id="3158667104057012316">Sorteer tans orde handmatig</translation>
 <translation id="3166827708714933426">Oortjie- en vensterkortpaaie</translation>
@@ -519,6 +520,7 @@ Net iemand met jou wagfrase kan jou geënkripteerde data lees. Die wagfrase word
 <translation id="363596933471559332">Meld outomaties met gebergde eiebewyse by webwerwe aan. As die kenmerk af is, sal jy elke keer om verifikasie gevra word voordat jy by 'n webwerf aanmeld.</translation>
 <translation id="3636940436873918441">Voorkeurtale</translation>
 <translation id="3637744895182738742"><ph name="BEGIN_LINK" />Vee die Chrome-data in jou rekening uit<ph name="END_LINK" /> indien jy jou wagfrase vergeet het of hierdie instelling wil verander.</translation>
+<translation id="3674208116086565128">Gaan na tuisblad van Google-app</translation>
 <translation id="368329460027487650">Afgemeld. Maak opsies oop om aan te meld.</translation>
 <translation id="3687645719033307815">Jy bekyk tans 'n voorskou van hierdie bladsy</translation>
 <translation id="3690369331356918524">Waarsku jou as wagwoorde in 'n dataskending blootgestel is</translation>
@@ -1341,6 +1343,7 @@ Byvoorbeeld, sommige webwerwe kan op hierdie versoek reageer deur vir jou advert
 <translation id="752220631458524187">Ontkoppel wanneer jy klaar is</translation>
 <translation id="7523960634226602883">Gebruik Google Lens om met jou kamera te soek</translation>
 <translation id="752731652852882757">Blokkeer terwyl Incognitomodus gebruik word</translation>
+<translation id="7557508262441527045">Afgemeld</translation>
 <translation id="7577900504646297215">Bestuur belangstellings</translation>
 <translation id="757855969265046257">{FILES,plural, =1{<ph name="FILES_DOWNLOADED_ONE" /> lêer is afgelaai}other{<ph name="FILES_DOWNLOADED_MANY" /> lêers is afgelaai}}</translation>
 <translation id="7581273696622423628">Voltooi die opname</translation>
@@ -1386,7 +1389,6 @@ Byvoorbeeld, sommige webwerwe kan op hierdie versoek reageer deur vir jou advert
 <translation id="777637629667389858">Wanneer jy aangemeld is, beskerm dit jou oral in Google-dienste.</translation>
 <translation id="7778840695157240389">Loer later weer in vir nuwe stories</translation>
 <translation id="7780645209293383778">Koppel hierdie data tydelik aan jou Google-rekening wanneer jy aangemeld is om jou oral in Google-programme te beskerm</translation>
-<translation id="7786562169000598736">Kry al jou boekmerke</translation>
 <translation id="7791543448312431591">Voeg by</translation>
 <translation id="7798392620021911922">Het <ph name="TAB_COUNT" /> oortjies teruggestel</translation>
 <translation id="780287761701992588">Kry jou boekmerke, wagwoorde en meer op al jou toestelle</translation>
@@ -1475,6 +1477,7 @@ Byvoorbeeld, sommige webwerwe kan op hierdie versoek reageer deur vir jou advert
 <translation id="813082847718468539">Bekyk werfinligting</translation>
 <translation id="8135406045838672858">Afgelaaide PDF’s maak met <ph name="APP_NAME" /> outomaties oop</translation>
 <translation id="8137562778192957619">Jy hoef nie hierdie wagwoord te onthou nie. Dit sal in Google Wagwoordbestuurder gestoor word.</translation>
+<translation id="8152331954420209374">Gaan na Lens</translation>
 <translation id="8163820386638255770">Verifieer dis jy om wagwoorde in jou Google-rekening te gebruik en te stoor</translation>
 <translation id="8171286197772512427">Deel met opsommingsterugvoerblad oop</translation>
 <translation id="8179976553408161302">Enter</translation>
@@ -1511,6 +1514,7 @@ Byvoorbeeld, sommige webwerwe kan op hierdie versoek reageer deur vir jou advert
 <translation id="8348430946834215779">Gebruik HTTPS waar moontlik en word gewaarsku voordat werwe laai wat dit nie steun nie</translation>
 <translation id="8354977102499939946">Soek vinnig met jou stem. Gaan na Instellings om hierdie kortpad te wysig.</translation>
 <translation id="835847953965672673"><ph name="NUMBER_OF_DOWNLOADS" /> aflaaie is teruggestel</translation>
+<translation id="8367705492654390392">Vra enigiets</translation>
 <translation id="8368001212524806591">Spoor prys na</translation>
 <translation id="8378850197701296741">Jy het boekmerke, geskiedenis, wagwoorde en ander instellings uit <ph name="FROM_ACCOUNT" />.</translation>
 <translation id="8387617938027387193">Verifieer dat dit jy is</translation>

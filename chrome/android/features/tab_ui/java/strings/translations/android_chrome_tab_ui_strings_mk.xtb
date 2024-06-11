@@ -23,6 +23,7 @@
 <translation id="1869137256605757565">{TABS_COUNT,plural, =1{<ph name="TABS_COUNT_ONE" /> картичка}one{<ph name="TABS_COUNT_MANY" /> картичка}other{<ph name="TABS_COUNT_MANY" /> картички}}</translation>
 <translation id="2050597508048557928">{TABS_COUNT,plural, =1{Обележи <ph name="TABS_COUNT_ONE" /> избрана картичка}one{Обележи <ph name="TABS_COUNT_MANY" /> избрана картичка}other{Обележи <ph name="TABS_COUNT_MANY" /> избрани картички}}</translation>
 <translation id="2118649612461486615">Информации за продавницата</translation>
+<translation id="2123073051266141035">{INCOGNITO_TABS_COUNT,plural, =1{Вашите затворени картички и групи може да се отворат повторно од делот „Неодамнешни картички“ и делот „Групи картички“. Картичката „Инкогнито“ нема да биде достапна.}one{Вашите затворени картички и групи може да се отворат повторно од делот „Неодамнешни картички“ и делот „Групи картички“. Вашите # картичка „Инкогнито“ нема да бидат достапни.}other{Вашите затворени картички и групи може да се отворат повторно од делот „Неодамнешни картички“ и делот „Групи картички“. Вашите # картички „Инкогнито“ нема да бидат достапни.}}</translation>
 <translation id="2162620598375156287">Сега <ph name="CURRENT_PRICE" /> на <ph name="SOURCE_WEBSITE" /></translation>
 <translation id="22623456902492423">{TABS_COUNT,plural, =1{Одгрупирај ја картичката}one{Одгрупирај ги картичките}other{Одгрупирај ги картичките}}</translation>
 <translation id="2271452184061378400">Вашите групи картички се зачувани овде</translation>

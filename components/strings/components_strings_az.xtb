@@ -573,7 +573,6 @@
 <translation id="2046951263634619614">Kitab mağazaları</translation>
 <translation id="2048261947532620704">Səhifə tərcümə edilir</translation>
 <translation id="2053111141626950936"><ph name="LANGUAGE" /> dilindəki səhifələr tərcümə edilməyəcək.</translation>
-<translation id="2055461225779831292">Kameraları istifadə edin və hərəkət etdirin (<ph name="CAMERAS_COUNT" />)</translation>
 <translation id="2056492565825767809">Maus göstəricisini kilidləyin</translation>
 <translation id="2056658168519009885">Saytlar gördüyünüz reklamları fərdiləşdirmək üçün Chrome'dan məlumat istəyə bilər.</translation>
 <translation id="2059166748188874810">Bələdiyyə</translation>
@@ -651,7 +650,6 @@
 <translation id="2170417331417184438">Kart yalnız bu cihazda yadda saxlanıldı</translation>
 <translation id="2172089022819052306">Avto Təmir və Texniki Qulluq</translation>
 <translation id="2175630235841878061">100 MB-dən böyük fayllar endirilə bilməz</translation>
-<translation id="2176198174348007293">Kameralardan istifadə edin (<ph name="CAMERAS_COUNT" />)</translation>
 <translation id="2176974405772725904">Ünvanı Hesabda yadda saxlayın</translation>
 <translation id="2178665390943006934">"Chrome-u güncəlləyin" düyməsi, aktivləşdirərək Chrome ayarlarında Chrome-u güncəlləyin</translation>
 <translation id="2181821976797666341">Siyasətlər</translation>
@@ -3625,7 +3623,6 @@
 <translation id="7947813448670013867"><ph name="SEE_CHROME_TIPS_FOCUSED_FRIENDLY_MATCH_TEXT" />, Tab düyməsi, sonra Enter düyməsinə basaraq Chrome funksiyaları haqqında ətraflı məlumat əldə edin</translation>
 <translation id="7949135979217012031">Antivirus və Zərərli Proqramlar</translation>
 <translation id="7950027195171824198">Chrome ayarlarında kuki tərcihlərinizi idarə edin</translation>
-<translation id="7950440490184876634">Mikrofonlardan istifadə edin (<ph name="MICS_COUNT" />)</translation>
 <translation id="7951415247503192394">(32-bit)</translation>
 <translation id="7952192831285741665">Avropa EDP</translation>
 <translation id="7952250633095257243">Qısayol boş ola bilməz</translation>

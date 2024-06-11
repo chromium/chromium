@@ -72,6 +72,7 @@ Ja disa gjëra që mund të provosh për të filluar.</translation>
 <translation id="1235458158152011030">Rrjetet e njohura</translation>
 <translation id="1239161794459865856"><ph name="FEATURE_NAME" /> është lidhur.</translation>
 <translation id="1240638468526743569">Një aplikacion</translation>
+<translation id="1242198791279543032">Njoftimet janë vendosur në heshtje</translation>
 <translation id="1242883863226959074">pajisja</translation>
 <translation id="1245644940275736236">Shko tek "Asistenti"</translation>
 <translation id="124678866338384709">Mbyll skedën aktuale</translation>
@@ -308,6 +309,7 @@ Ja disa gjëra që mund të provosh për të filluar.</translation>
 <translation id="2208323208084708176">Modaliteti i desktopit të unifikuar</translation>
 <translation id="2220572644011485463">Kodi PIN ose fjalëkalimi</translation>
 <translation id="2222841058024245321">Tavolina e punës 7</translation>
+<translation id="2223384056430485343">Në një ekran të ndarë</translation>
 <translation id="2224075387478458881">Regjistrimi i ekranit nuk lejohet kur përmbajtja e mbrojtur është e dukshme</translation>
 <translation id="2227179592712503583">Hiq sugjerimin</translation>
 <translation id="2248634276911611268">Hape lidhjen në një skedë të re dhe kalo te kjo skedë e re</translation>
@@ -1131,6 +1133,7 @@ Gjithashtu, mund të përdorësh shkurtoren e tastierës. Fillimisht thekso teks
 <translation id="5208059991603368177">Aktive</translation>
 <translation id="5216991270656129561">Joaktive deri në <ph name="TIME" /></translation>
 <translation id="5222676887888702881">Dil</translation>
+<translation id="5228195526683428788">Ndarësi i ekranit të ndarë</translation>
 <translation id="5229343007215035173">Aktivizo/çaktivizo ekranin e privatësisë</translation>
 <translation id="5230516054153933099">Dritare</translation>
 <translation id="5234764350956374838">Hiq</translation>
@@ -1517,6 +1520,7 @@ Instalim i ri</translation>
 <translation id="6613765291890844037">Hapësira ruajtëse: <ph name="STORAGE_IN_USE_SIZE" /> në përdorim | <ph name="STORAGE_TOTAL_SIZE" /> në total</translation>
 <translation id="6614169507485700968">Ekrani i privatësisë është aktiv</translation>
 <translation id="6622679827379792051">Konfiguro shikimin e aplikacioneve të telefonit tënd</translation>
+<translation id="662279009180869175">Përdor shigjetat majtas dhe djathtas për të ndryshuar madhësinë e ekranit të ndarë</translation>
 <translation id="6624493541160101248">Tavolina aktuale e punës: <ph name="DESK_NAME" />. Tavolina e punës <ph name="DESK_INDEX" /> nga <ph name="DESK_COUNT" />.</translation>
 <translation id="6625718907317144388"><ph name="APP_1_TITLE" />, <ph name="APP_2_TITLE" /> dhe njoftimet e tjera janë fshehur sepse është aktivizuar mbrojtja e shikimit</translation>
 <translation id="6627638273713273709">Kërko+Shift+K</translation>
@@ -1535,6 +1539,7 @@ Instalim i ri</translation>
 <translation id="6670153871843998651">Tavolina e punës 3</translation>
 <translation id="6671495933530132209">Kopjo imazhin</translation>
 <translation id="6671661918848783005">Nuk mund të shkyçet Chromebook-u yt</translation>
+<translation id="6676552993057022464">Përdor shigjetat lart dhe poshtë për të ndryshuar madhësinë e ekranit të ndarë</translation>
 <translation id="6682029141988159141">Ngjit përmbajtjen nga kujtesa e fragmenteve</translation>
 <translation id="6683022854667115063">Kufje</translation>
 <translation id="6686023075541098243">Konfiguro shikimin e njoftimeve të telefonit tënd</translation>

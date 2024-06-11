@@ -278,6 +278,7 @@
 <translation id="5690795753582697420">Kamera je isključena u postavkama Androida</translation>
 <translation id="5691080386278724773">Web lokacija <ph name="SITE" /> može koristiti informacije o vama dok pregledate</translation>
 <translation id="5700761515355162635">Kolačići treće strane su dozvoljeni</translation>
+<translation id="5705383358494210886"><ph name="HOST_NAME" /> <ph name="SEPARATOR1" /> <ph name="RECENCY" /></translation>
 <translation id="5706552988683188916">Ovim se brišu kolačići i drugi podaci web lokacije za <ph name="WEBSITE" /></translation>
 <translation id="5723967018671998714">Kolačići trećih strana su blokirani u anonimnom načinu rada</translation>
 <translation id="5740126560802162366">Web lokacije mogu pohranjivati podatke na vaš uređaj</translation>

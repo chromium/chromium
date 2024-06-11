@@ -309,6 +309,7 @@ Voici quelques exemples de choses que vous pouvez essayer pour commencer.</trans
 <translation id="2208323208084708176">Mode Bureau unifié</translation>
 <translation id="2220572644011485463">NIP ou mot de passe</translation>
 <translation id="2222841058024245321">Bureau 7</translation>
+<translation id="2223384056430485343">Sur un écran divisé</translation>
 <translation id="2224075387478458881">L'enregistrement de l'écran n"est pas autorisé lorsque du contenu protégé est visible</translation>
 <translation id="2227179592712503583">Supprimer la suggestion</translation>
 <translation id="2248634276911611268">Ouvrir le lien dans un nouvel onglet et passer à ce nouvel onglet</translation>
@@ -1131,6 +1132,7 @@ Vous pouvez également utiliser le raccourci-clavier. Tout d'abord, mettez le te
 <translation id="5208059991603368177">Activé</translation>
 <translation id="5216991270656129561">Désactivée jusqu'à <ph name="TIME" /></translation>
 <translation id="5222676887888702881">Déconnexion</translation>
+<translation id="5228195526683428788">Séparateur d'Écran divisé</translation>
 <translation id="5229343007215035173">Activer ou désactiver l'écran de confidentialité</translation>
 <translation id="5230516054153933099">Fenêtre</translation>
 <translation id="5234764350956374838">Fermer</translation>
@@ -1517,6 +1519,7 @@ Nouvelle installation</translation>
 <translation id="6613765291890844037">Espace de stockage en cours d'utilisation : <ph name="STORAGE_IN_USE_SIZE" /> | Espace de stockage total : <ph name="STORAGE_TOTAL_SIZE" /></translation>
 <translation id="6614169507485700968">L'écran de confidentialité est activé</translation>
 <translation id="6622679827379792051">Configurer l'affichage des applications de votre téléphone</translation>
+<translation id="662279009180869175">Utiliser les flèches vers la gauche et vers la droite pour redimensionner l'Écran divisé</translation>
 <translation id="6624493541160101248">Bureau actuel : <ph name="DESK_NAME" />. Bureau <ph name="DESK_INDEX" /> de <ph name="DESK_COUNT" />.</translation>
 <translation id="6625718907317144388">Les notifications de <ph name="APP_1_TITLE" />, de <ph name="APP_2_TITLE" /> et d'autres applications sont masquées parce que la protection de l'affichage est activée</translation>
 <translation id="6627638273713273709">Recherche+Maj+K</translation>
@@ -1535,6 +1538,7 @@ Nouvelle installation</translation>
 <translation id="6670153871843998651">Bureau 3</translation>
 <translation id="6671495933530132209">Copier l'image</translation>
 <translation id="6671661918848783005">Impossible de déverrouiller votre Chromebook</translation>
+<translation id="6676552993057022464">Utiliser les flèches vers le haut et vers le bas pour redimensionner l'Écran divisé</translation>
 <translation id="6682029141988159141">Coller le contenu du presse-papiers</translation>
 <translation id="6683022854667115063">Écouteurs</translation>
 <translation id="6686023075541098243">Configurer l'affichage des notifications de votre téléphone</translation>

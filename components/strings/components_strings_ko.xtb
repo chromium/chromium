@@ -573,7 +573,6 @@
 <translation id="2046951263634619614">서점</translation>
 <translation id="2048261947532620704">페이지 번역 중</translation>
 <translation id="2053111141626950936"><ph name="LANGUAGE" />로 된 페이지를 번역하지 않습니다.</translation>
-<translation id="2055461225779831292">카메라 사용 및 이동(<ph name="CAMERAS_COUNT" />)</translation>
 <translation id="2056492565825767809">마우스 포인터 잠금</translation>
 <translation id="2056658168519009885">사이트에서 광고 개인 최적화에 도움이 되는 정보를 Chrome에 요청할 수 있습니다.</translation>
 <translation id="2059166748188874810">지방 자치제</translation>
@@ -651,7 +650,6 @@
 <translation id="2170417331417184438">카드가 기기에만 저장됨</translation>
 <translation id="2172089022819052306">차량 수리 및 유지관리</translation>
 <translation id="2175630235841878061">100MB를 초과하는 파일은 다운로드할 수 없습니다.</translation>
-<translation id="2176198174348007293">카메라 사용(<ph name="CAMERAS_COUNT" />)</translation>
 <translation id="2176974405772725904">계정에 주소 저장</translation>
 <translation id="2178665390943006934">Chrome 업데이트 버튼, Chrome 설정에서 Chrome을 업데이트하려면 활성화하세요.</translation>
 <translation id="2181821976797666341">정책</translation>
@@ -3628,7 +3626,6 @@
 <translation id="7947813448670013867"><ph name="SEE_CHROME_TIPS_FOCUSED_FRIENDLY_MATCH_TEXT" />, Tab을 누른 다음 Enter를 눌러 Chrome 기능 자세히 알아보기</translation>
 <translation id="7949135979217012031">바이러스 백신 및 멀웨어</translation>
 <translation id="7950027195171824198">Chrome 설정에서 쿠키 환경설정 관리</translation>
-<translation id="7950440490184876634">마이크 사용(<ph name="MICS_COUNT" />)</translation>
 <translation id="7951415247503192394">(32비트)</translation>
 <translation id="7952192831285741665">European EDP</translation>
 <translation id="7952250633095257243">단축어는 비워 둘 수 없습니다.</translation>

@@ -274,6 +274,7 @@
 <translation id="2450083983707403292">Chcete znovu spustiť sťahovanie súboru <ph name="FILE_NAME" />?</translation>
 <translation id="2453860139492968684">Dokončiť</translation>
 <translation id="2461822463642141190">Aktuálna</translation>
+<translation id="2472163211318554013">Prihláste sa, aby ste mohli Chrome využívať naplno</translation>
 <translation id="247737702124049222">Popisy obrázkov sú zapnuté</translation>
 <translation id="2479148705183875116">Prejsť do Nastavení</translation>
 <translation id="2482878487686419369">Upozornenia</translation>
@@ -425,7 +426,6 @@
 <translation id="3098745985164956033">Niektoré obrázky sa na zlepšovanie popisov pre vás odosielajú Googlu</translation>
 <translation id="3114507951000454849">Prečítajte si dnešné správy <ph name="NEWS_ICON" /></translation>
 <translation id="3123734510202723619">Oznámenia</translation>
-<translation id="3146775326699342508">Prihláste sa a získajte tak svoje záložky a ďalší obsah zo všetkých ďalších zariadení</translation>
 <translation id="314939179385989105">Domovská stránky Chromu</translation>
 <translation id="3158667104057012316">Zoraďuje sa manuálne</translation>
 <translation id="3166827708714933426">Skratky pre karty a okná</translation>
@@ -1343,6 +1343,7 @@ Ak chcete toto nastavenie zmeniť, <ph name="BEGIN_LINK" />odstráňte údaje Ch
 <translation id="752220631458524187">Po dokončení odpojte</translation>
 <translation id="7523960634226602883">Vyhľadávať fotoaparátom pomocou funkcie Google Lens</translation>
 <translation id="752731652852882757">Blokovať počas používania režimu inkognito</translation>
+<translation id="7557508262441527045">Účet je odhlásený</translation>
 <translation id="7577900504646297215">Spravovať záujmy</translation>
 <translation id="757855969265046257">{FILES,plural, =1{<ph name="FILES_DOWNLOADED_ONE" /> stiahnutý súbor}few{<ph name="FILES_DOWNLOADED_MANY" /> stiahnuté súbory}many{<ph name="FILES_DOWNLOADED_MANY" /> files downloaded}other{<ph name="FILES_DOWNLOADED_MANY" /> stiahnutých súborov}}</translation>
 <translation id="7581273696622423628">Zúčastniť sa prieskumu</translation>
@@ -1388,7 +1389,6 @@ Ak chcete toto nastavenie zmeniť, <ph name="BEGIN_LINK" />odstráňte údaje Ch
 <translation id="777637629667389858">Keď sa prihlásite, chráni váš v službách Googlu.</translation>
 <translation id="7778840695157240389">Neskôr tu nájdete nové príbehy</translation>
 <translation id="7780645209293383778">Keď sa prihlásite, dočasne prepojí tieto údaje s vaším účtom Google, aby vás chránilo v aplikáciách Googlu.</translation>
-<translation id="7786562169000598736">Majte k dispozícii všetky svoje záložky</translation>
 <translation id="7791543448312431591">Pridať</translation>
 <translation id="7798392620021911922">Bolo obnovených niekoľko kariet (<ph name="TAB_COUNT" />)</translation>
 <translation id="780287761701992588">Majte k dispozícii svoje záložky, heslá a ďalší obsah vo všetkých zariadeniach</translation>

@@ -1133,6 +1133,7 @@ També pots utilitzar les tecles de drecera. Primer, marca el text i, a continua
 <translation id="5208059991603368177">Activat</translation>
 <translation id="5216991270656129561">Desactivada fins a les <ph name="TIME" /></translation>
 <translation id="5222676887888702881">Tanca la sessió</translation>
+<translation id="5228195526683428788">Separador de pantalla dividida</translation>
 <translation id="5229343007215035173">Activa/desactiva la pantalla de privadesa</translation>
 <translation id="5230516054153933099">Finestra</translation>
 <translation id="5234764350956374838">Ignora</translation>
@@ -1519,6 +1520,7 @@ Instal·lació nova</translation>
 <translation id="6613765291890844037">Emmagatzematge: <ph name="STORAGE_IN_USE_SIZE" /> en ús | <ph name="STORAGE_TOTAL_SIZE" /> en total</translation>
 <translation id="6614169507485700968">La pantalla de privadesa està activada</translation>
 <translation id="6622679827379792051">Configura la visualització de les aplicacions del telèfon</translation>
+<translation id="662279009180869175">Utilitza les fletxes esquerra i dreta per canviar la mida de la pantalla dividida</translation>
 <translation id="6624493541160101248">Escriptori actual: <ph name="DESK_NAME" />. Escriptori <ph name="DESK_INDEX" /> de <ph name="DESK_COUNT" />.</translation>
 <translation id="6625718907317144388"><ph name="APP_1_TITLE" />, <ph name="APP_2_TITLE" /> i altres notificacions estan amagades perquè la protecció antimirades està activada</translation>
 <translation id="6627638273713273709">Cerca+Maj+K</translation>
@@ -1537,6 +1539,7 @@ Instal·lació nova</translation>
 <translation id="6670153871843998651">Escriptori 3</translation>
 <translation id="6671495933530132209">Copia la imatge</translation>
 <translation id="6671661918848783005">No es pot desbloquejar el Chromebook</translation>
+<translation id="6676552993057022464">Utilitza les fletxes amunt i avall per canviar la mida de la pantalla dividida</translation>
 <translation id="6682029141988159141">Enganxa el contingut del porta-retalls</translation>
 <translation id="6683022854667115063">Auriculars</translation>
 <translation id="6686023075541098243">Configura la visualització de les notificacions del telèfon</translation>

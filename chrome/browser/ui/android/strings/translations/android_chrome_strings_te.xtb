@@ -274,6 +274,7 @@
 <translation id="2450083983707403292">మీరు <ph name="FILE_NAME" /> డౌన్‌లోడ్‌ని మళ్లీ ప్రారంభించాలనుకుంటున్నారా?</translation>
 <translation id="2453860139492968684">ముగించు</translation>
 <translation id="2461822463642141190">ప్రస్తుత</translation>
+<translation id="2472163211318554013">Chrome నుండి మరిన్ని ప్రయోజనాలను పొందడానికి సైన్ ఇన్ చేయండి</translation>
 <translation id="247737702124049222">ఇమేజ్ వివరణలు ఆన్ చేయబడ్డాయి</translation>
 <translation id="2479148705183875116">సెట్టింగ్‌లకు వెళ్లు</translation>
 <translation id="2482878487686419369">నోటిఫికేషన్‌లు</translation>
@@ -425,7 +426,6 @@
 <translation id="3098745985164956033">మీ కోసం వివరణలను మెరుగుపరచడానికి కొన్ని ఇమేజ్‌లు Googleకు పంపబడ్డాయి</translation>
 <translation id="3114507951000454849">ఈరోజు వార్తలను చదవండి <ph name="NEWS_ICON" /></translation>
 <translation id="3123734510202723619">అనౌన్స్‌మెంట్‌లు</translation>
-<translation id="3146775326699342508">సైన్ ఇన్ చేసి మీ ఇతర పరికరాలలోని బుక్‌మార్క్‌లు, మరిన్నింటిని పొందండి</translation>
 <translation id="314939179385989105">Chrome హోమ్ పేజీ</translation>
 <translation id="3158667104057012316">మాన్యువల్ ఆర్డర్ ఆధారంగా క్రమపద్ధతిలో అమర్చుతున్నారు</translation>
 <translation id="3166827708714933426">ట్యాబ్ మరియు విండో షార్ట్‌కట్‌లు</translation>
@@ -1343,6 +1343,7 @@
 <translation id="752220631458524187">మీ చర్యలు పూర్తయిన తర్వాత డిస్‌కనెక్ట్ చేయండి</translation>
 <translation id="7523960634226602883">Google Lensను ఉపయోగించి మీ కెమెరాతో సెర్చ్ చేయండి</translation>
 <translation id="752731652852882757">అజ్ఞాత మోడ్‌లో ఉపయోగించేటప్పుడు బ్లాక్ చేయండి</translation>
+<translation id="7557508262441527045">సైన్ అవుట్ చేశారు</translation>
 <translation id="7577900504646297215">ఆసక్తులను మేనేజ్ చేయండి</translation>
 <translation id="757855969265046257">{FILES,plural, =1{<ph name="FILES_DOWNLOADED_ONE" /> ఫైల్ డౌన్‌లోడ్ చేయబడింది}other{<ph name="FILES_DOWNLOADED_MANY" /> ఫైళ్లు డౌన్‌లోడ్ చేయబడ్డాయి}}</translation>
 <translation id="7581273696622423628">సర్వేలో పాల్గొనండి</translation>
@@ -1388,7 +1389,6 @@
 <translation id="777637629667389858">మీరు సైన్ ఇన్ చేసినప్పుడు, Google సర్వీస్‌లన్నింటిలో మిమ్మల్ని సురక్షితంగా ఉంచుతుంది.</translation>
 <translation id="7778840695157240389">కొత్త కథనాల కోసం తర్వాత మళ్లీ చెక్ చేయండి</translation>
 <translation id="7780645209293383778">మీరు సైన్ ఇన్ చేసి ఉన్నప్పుడు, మిమ్మల్ని అన్ని Google యాప్‌లలో కాపాడటానికి ఈ డేటాను తాత్కాలికంగా మీ Google ఖాతాకు లింక్ చేస్తుంది</translation>
-<translation id="7786562169000598736">మీ బుక్‌మార్క్‌లు అన్నిటినీ పొందండి</translation>
 <translation id="7791543448312431591">జోడించండి</translation>
 <translation id="7798392620021911922"><ph name="TAB_COUNT" /> ట్యాబ్‌లు రీస్టోర్ చేయబడ్డాయి</translation>
 <translation id="780287761701992588">మీ బుక్‌మార్క్‌లు, పాస్‌వర్డ్‌లు, అలాగే మరిన్నింటిని మీ పరికరాలన్నింటిలో పొందండి</translation>

@@ -345,6 +345,7 @@ I pattern corrispondenti alle origini di questo criterio non possono però conte
 
       Avviso: Wipe e MinimalMigrate comportano la rimozione dei dati locali.</translation>
 <translation id="1248955696540150266">Consenti i download di aggiornamento automatico peer-to-peer</translation>
+<translation id="1249640740800891502">Impostazioni di SkyVault (tutti i dati nel cloud)</translation>
 <translation id="1250597158212586309">Se il criterio viene impostato su Attivato o se non viene configurato, l'utente ha la possibilità di ignorare/ripristinare gli avvisi relativi alle password compromesse.
 
       Se disattivi questa impostazione, gli utenti non potranno ignorare gli avvisi relativi alle password compromesse. Se la attivi, gli utenti potranno ignorare gli avvisi relativi alle password compromesse.</translation>
@@ -2063,6 +2064,7 @@ Se il criterio non viene configurato, <ph name="POLICY_VALUE_VISIBLE" /> è la s
 
       Tieni presente che per il corretto comportamento di questa funzionalità sono necessari componenti aggiuntivi non disponibili al di fuori dell'ambiente della rete Google.</translation>
 <translation id="2536525645274582300">L'utente decide se abilitare i servizi di geolocalizzazione di Google</translation>
+<translation id="2536717624356629471">Attiva i suoni in modalità Niente distrazioni per ChromeOS</translation>
 <translation id="254653220329944566">Consente di attivare il reporting su cloud di <ph name="PRODUCT_NAME" /></translation>
 <translation id="2547854230073316008">La configurazione del criterio consente di impostare la risoluzione e il fattore di scalabilità per ogni display. Le impostazioni del display esterno si applicano ai display collegati. Il criterio non viene applicato se un display non supporta la risoluzione o la scalabilità specificate.
 
@@ -3064,6 +3066,7 @@ Su <ph name="MS_WIN_NAME" />, questo criterio è disponibile soltanto per le ist
 <translation id="3338431256935927407">Consente di gestire le impostazioni relative alla funzionalità Cloud Upload.</translation>
 <translation id="3339271789059866414">Consente di configurare la disponibilità del servizio proxy di sistema e le credenziali proxy dei servizi di sistema.
       Se il criterio non viene impostato, il servizio proxy di sistema non sarà disponibile.</translation>
+<translation id="3341649870321644698">Attiva la modalità Niente distrazioni solo con Suoni della modalità Niente distrazioni.</translation>
 <translation id="334231891933432876">Disconnetti l'utente non appena il suo account non è più autenticato</translation>
 <translation id="3345323903592385588">L'ordine in cui la configurazione VM verrà visualizzata nel programma di installazione. Quando vengono specificate più configurazioni VM, quella con il valore display_order più basso appare in cima all'elenco. Il valore predefinito è zero.</translation>
 <translation id="3351661569026056296">Se il criterio è impostato su True, i tasti della fila superiore della tastiera riprodurranno i comandi dei tasti funzione. Per ripristinare il comportamento dei tasti multimediali, è necessario premere il tasto Ricerca.
@@ -3394,6 +3397,7 @@ Ricorda di non tenere questo criterio sempre attivo, soprattutto nelle distribuz
 <translation id="3587482841069643663">Tutti</translation>
 <translation id="3587766503874071316">Disabilita scorciatoie di accessibilità</translation>
 <translation id="3589193811812796052">Impedisci che i moduli WebAssembly vengano inviati tra origini</translation>
+<translation id="3591518189681300697">Attiva la migrazione dei file locali nel cloud</translation>
 <translation id="3591527072193107424">Attiva la funzionalità Supporto dei browser precedenti.</translation>
 <translation id="3591584750136265240">Configura il comportamento di autenticazione dell'accesso</translation>
 <translation id="3593905652755912452">Verrà utilizzato il comportamento precedente per l'esecuzione di eventi sui controlli dei moduli disattivati.</translation>
@@ -3918,6 +3922,7 @@ Equivale al criterio <ph name="RELATED_WEBSITE_SETS_ENABLED_POLICY_NAME" />.
 Entrambi hanno lo stesso effetto sul comportamento del browser.</translation>
 <translation id="4016700865356669962">Se il criterio viene impostato su Attivato, gli utenti possono usare i modelli di layout di scrivanie.  Se il criterio viene impostato su Disattivato o se non viene configurato, questi modelli non saranno disponibili.</translation>
 <translation id="4020682745012723568">Le app Android non possono accedere ai cookie trasferiti al profilo dell'utente.</translation>
+<translation id="4021684548211845008">Disattiva i suoni in modalità Niente distrazioni.</translation>
 <translation id="4025500273782820766">Consenti agli utenti di selezionare "Consenti sempre" quando viene mostrata una finestra di dialogo relativa a un protocollo esterno per non ricevere più messaggi di conferma in futuro</translation>
 <translation id="402759845255257575">Non consentire ad alcun sito di eseguire JavaScript</translation>
 <translation id="4027608872760987929">Attiva il provider di ricerca predefinito</translation>
@@ -4164,6 +4169,7 @@ Nota: il blocco degli URL interni chrome://* e chrome-untrusted://* può causare
 
           Se questo criterio non viene impostato, inizialmente il clic automatico è disattivato, ma l'utente può attivarlo in qualsiasi momento.</translation>
 <translation id="4212181786686887763">L'URL da cui è possibile scaricare l'immagine di sfondo.</translation>
+<translation id="4221677608399717135">Attiva o disattiva SkyVault</translation>
 <translation id="4224610387358583899">Ritardi del blocco schermo</translation>
 <translation id="42267415200641481">Se questo criterio viene impostato su true, la risoluzione DNS di sistema (getaddrinfo()) potrebbe essere eseguita al di fuori del processo di rete, a seconda della configurazione di sistema e dei flag funzionalità.
 
@@ -6081,6 +6087,15 @@ Il supporto di questa impostazione dei criteri terminerà con <ph name="PRODUCT_
 <translation id="5775235485119094648">Carica la batteria mentre si trova in un intervallo stabilito.</translation>
 <translation id="5776485039795852974">Chiedi ogni volta che un sito desidera mostrare le notifiche desktop</translation>
 <translation id="5783009211970309878">Stampa intestazioni e piè di pagina</translation>
+<translation id="5786733040432065904">La modalità Niente distrazioni è una funzionalità che controlla la modalità Non disturbare con un timer e ha lo scopo di ridurre le distrazioni dell'utente. Una funzionalità della modalità Niente distrazioni consente agli utenti di ascoltare un numero limitato di brani per aiutarli a concentrarsi. Questo criterio consente di stabilire l'accesso a questa funzionalità.
+
+Se il criterio non viene configurato, tutti i suoni sono disattivati per gli utenti gestiti.
+
+Se il criterio viene attivato, sarà possibile accedere a tutti i suoni in modalità Niente distrazioni.
+
+Se il criterio viene impostato su Solo suoni della modalità Niente distrazioni, l'audio verrà attivato solo con Suoni della modalità Niente distrazioni.
+
+Se il criterio viene disattivato, l'audio verrà disattivato in modalità Niente distrazioni.</translation>
 <translation id="5790763087505467169">Riduci notifiche sull'avvio automatico della sessione Ospite gestita</translation>
 <translation id="5800329278018669527">Disattiva la richiesta di configurazione di rete in modalità offline</translation>
 <translation id="5802931736499687181">Disabilita la Pipeline di reporting criptato</translation>
@@ -6399,6 +6414,10 @@ Questo criterio è stato ritirato a partire dalla versione M124.</translation>
       Se il criterio non viene configurato (se l'impostazione è supportata dal dispositivo), viene applicata la modalità di ricarica standard della batteria e gli utenti non possono modificarlo.
 
       Nota: se viene selezionata la modalità di ricarica personalizzata della batteria, vengono specificati anche i criteri <ph name="DEVICE_BATTERY_CHARGE_CUSTOM_START_CHARGING_POLICY_NAME" /> e <ph name="DEVICE_BATTERY_CHARGE_CUSTOM_STOP_CHARGING_POLICY_NAME" />.</translation>
+<translation id="6064418365347066084">Attiva la migrazione dei file locali esistenti sul cloud.
+Si applica solo agli utenti di SkyVault, ovvero quando LocalUserFilesAllowed è false e DownloadDirectory è Google Drive o OneDrive. In caso contrario, viene ignorato.
+    Se impostato su True, i file locali vengono spostati nel cloud e le cartelle locali vengono nascoste all'utente.
+    Se il valore è False o non viene impostato, i file locali rimangono in modalità di sola lettura.</translation>
 <translation id="60655674079349516">Consente di configurare un elenco dei tipi di dati di navigazione che dovrebbero essere eliminati alla chiusura di tutte le finestre del browser da parte dell'utente.
 
 Avviso: l'impostazione di questo criterio può influire sulla rimozione definitiva dei dati personali locali. Ti consigliamo di testare le impostazioni prima del deployment per evitare l'eliminazione accidentale di dati personali.
@@ -8272,6 +8291,7 @@ Questo sostituisce il criterio <ph name="WINDOW_PLACEMENT_BLOCKED_FOR_URLS_POLIC
       Se il criterio viene impostato su Attivato o se non viene configurato, i dispositivi registrati segnalano l'elenco di interfacce di rete con i relativi tipi e indirizzi hardware.
 
       Se il criterio viene impostato su Disattivato, i dispositivi registrati non segnalano l'interfaccia di rete.</translation>
+<translation id="7388618954884540850">Disattiva la migrazione dei file locali nel cloud</translation>
 <translation id="7389872682701720082">Se attivi questa impostazione, i plug-in non obsoleti verranno sempre eseguiti.
 
       Se questa impostazione è disattivata o non è configurata, agli utenti verrà chiesta l'autorizzazione di eseguire i plug-in per i quali è necessaria. Questi sono plug-in che possono compromettere la sicurezza.</translation>
@@ -8444,6 +8464,7 @@ Se questo criterio viene impostato su true, <ph name="PRODUCT_OS_NAME" /> tenter
 
       Se il criterio non viene impostato o viene impostato su True, viene mostrato un avviso per ricordare agli utenti di uscire dalla modalità a schermo intero prima di digitare la password. Se il criterio viene impostato su False, l'avviso non viene mostrato.</translation>
 <translation id="7531630046107845550">Consenti connessioni SSH client in uscita in Terminal System App</translation>
+<translation id="753332207298659209">Configura i criteri per controllare se i dati utente sono consentiti sul dispositivo e se i dati esistenti devono essere caricati sul cloud.</translation>
 <translation id="7533385610709354870">A meno che <ph name="ENABLE_MEDIA_ROUTER_POLICY_NAME" /> non sia disattivato, l'attivazione di <ph name="MEDIA_ROUTER_CAST_ALLOW_ALL_IPS_POLICY_NAME" /> connette <ph name="PRODUCT_NAME" /> ai dispositivi di trasmissione su tutti gli indirizzi IP e non solo su indirizzi privati RFC1918/RFC4193.
 
 Se il criterio viene disattivato, <ph name="PRODUCT_NAME" /> si connette ai dispositivi di trasmissione solo su indirizzi RFC1918/RFC4193.
@@ -8963,6 +8984,7 @@ Se il criterio <ph name="ENABLE_MEDIA_ROUTER_POLICY_NAME" /> viene impostato su 
 <translation id="7962093600142350905">Questo criterio controlla se vengono mostrate agli utenti eventuali stampanti Privet disponibili nella finestra di dialogo dell'anteprima di stampa.
       Se viene impostato su Attivato, le stampanti Privet disponibili vengono mostrate.
       Se viene impostato su Disattivato o se non viene configurato, le stampanti Privet non vengono mostrate nell'anteprima di stampa, poiché questo metodo di stampa è deprecato.</translation>
+<translation id="7969865441622729072">Attiva tutti i suoni in modalità Niente distrazioni.</translation>
 <translation id="7970660709107174905">Impostazioni di partizionamento dello spazio di archiviazione di terze parti</translation>
 <translation id="7972223739742725350">Non abilitare l'API Save and Share per il controllo di <ph name="PRODUCT_OS_NAME" /> di terze parti.</translation>
 <translation id="7972642710812569707">Forza la riattivazione di WebSQL in contesti di terze parti.</translation>
@@ -9547,6 +9569,7 @@ Se il criterio non viene impostato o viene impostato su 0 e si passa a un URL de
 
       Se il criterio viene disattivato o non viene impostato, saranno utilizzati solo i normali profili locali.</translation>
 <translation id="8417305981081876834">Imposta la lunghezza massima del PIN per la schermata di blocco</translation>
+<translation id="8418438383184278931">Attiva la migrazione dei file utente locali allo spazio di archiviazione sul cloud</translation>
 <translation id="841977920223099909">Attivazione dell'avviso di protezione tramite password</translation>
 <translation id="8419965165591256432">La frequenza del rilevamento dello stato dell'attività del dispositivo su dispositivi registrati di utenti affiliati. Il valore minimo consentito è 1 minuto.
 

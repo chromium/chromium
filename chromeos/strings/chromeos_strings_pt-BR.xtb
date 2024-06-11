@@ -361,6 +361,7 @@
 <translation id="3017079585324758401">Plano de fundo</translation>
 <translation id="3027578600144895987">Fechar a câmera</translation>
 <translation id="3031560714565892478">Este dispositivo é uma câmera de vídeo.</translation>
+<translation id="3051968340259309715">Isso permite que os serviços do sistema utilizem a "Precisão de local" para determinar sua localização. A "Precisão de local" usa informações sobre sinais sem fio, como pontos de acesso Wi-Fi, torres de rede celular e GPS, além de dados do sensor do dispositivo, como acelerômetro e giroscópio, para estimar a localização do dispositivo. É possível desativar a localização em "Configurações &gt; Privacidade e segurança &gt; Controles de privacidade &gt; Acesso ao local". <ph name="LINK_BEGIN" />Saiba mais<ph name="LINK_END" /></translation>
 <translation id="3054177598518735801"><ph name="CURRENT_VALUE" /> mA</translation>
 <translation id="3056720590588772262">Endpoint</translation>
 <translation id="3060579846059757016">Circunscritos</translation>

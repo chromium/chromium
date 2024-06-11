@@ -274,6 +274,7 @@ Vaše šifrirane podatke lahko bere samo oseba, ki ima vaše geslo. Geslo ni pos
 <translation id="2450083983707403292">Ali želite znova začeti prenos datoteke <ph name="FILE_NAME" />?</translation>
 <translation id="2453860139492968684">Dokončaj</translation>
 <translation id="2461822463642141190">Trenutno</translation>
+<translation id="2472163211318554013">Prijavite se, če želite čim bolje izkoristiti Chrome</translation>
 <translation id="247737702124049222">Opisi slik so vklopljeni</translation>
 <translation id="2479148705183875116">V nastavitve</translation>
 <translation id="2482878487686419369">Obvestila</translation>
@@ -425,7 +426,6 @@ Vaše šifrirane podatke lahko bere samo oseba, ki ima vaše geslo. Geslo ni pos
 <translation id="3098745985164956033">Nekatere slike so poslane Googlu zaradi izboljšanja opisov.</translation>
 <translation id="3114507951000454849">Preberite današnje novice <ph name="NEWS_ICON" /></translation>
 <translation id="3123734510202723619">Obvestila</translation>
-<translation id="3146775326699342508">Prijavite se, da boste lahko dostopali do zaznamkov in drugega iz drugih naprav</translation>
 <translation id="314939179385989105">Chromova začetna stran</translation>
 <translation id="3158667104057012316">Ročno razvrščanje</translation>
 <translation id="3166827708714933426">Bližnjice za zavihke in okna</translation>
@@ -1343,6 +1343,7 @@ Nekatera spletna mesta se lahko na primer na zahtevo odzovejo tako, da prikažej
 <translation id="752220631458524187">Prekinite povezavo, ko opravite.</translation>
 <translation id="7523960634226602883">Iskanje s fotoaparatom z Googlom Lens.</translation>
 <translation id="752731652852882757">Blokiraj v anonimnem načinu</translation>
+<translation id="7557508262441527045">Odjavljen</translation>
 <translation id="7577900504646297215">Upravljanje zanimanj</translation>
 <translation id="757855969265046257">{FILES,plural, =1{<ph name="FILES_DOWNLOADED_ONE" /> prenesena datoteka}one{<ph name="FILES_DOWNLOADED_MANY" /> prenesena datoteka}two{<ph name="FILES_DOWNLOADED_MANY" /> preneseni datoteki}few{<ph name="FILES_DOWNLOADED_MANY" /> prenesene datoteke}other{<ph name="FILES_DOWNLOADED_MANY" /> prenesenih datotek}}</translation>
 <translation id="7581273696622423628">Izpolnjevanje ankete</translation>
@@ -1388,7 +1389,6 @@ Nekatera spletna mesta se lahko na primer na zahtevo odzovejo tako, da prikažej
 <translation id="777637629667389858">Ko ste prijavljeni, vas ščiti v Googlovih storitvah.</translation>
 <translation id="7778840695157240389">Vrnite se pozneje in preverite, ali so na voljo nove novice</translation>
 <translation id="7780645209293383778">Te podatke začasno poveže z vašim računom Google, če ste prijavljeni, zaradi zagotavljanja zaščite v Googlovih aplikacijah.</translation>
-<translation id="7786562169000598736">Zagotovitev vseh zaznamkov</translation>
 <translation id="7791543448312431591">Dodaj</translation>
 <translation id="7798392620021911922">Število obnovljenih zavihkov: <ph name="TAB_COUNT" /></translation>
 <translation id="780287761701992588">Dostop do zaznamkov, gesel in drugih podatkov v vseh vaših napravah</translation>

@@ -253,6 +253,7 @@
 <translation id="1915307458270490472">විසන්ධි කරන්න</translation>
 <translation id="1918022425394817322">කැමරාව ඉහළ දකුණු කෙළවරට සවි කර ඇත</translation>
 <translation id="1923539912171292317">ස්වයංක්‍රීය ක්ලික්</translation>
+<translation id="1925320505152357008">1 විනාඩියකට අඩු</translation>
 <translation id="1928739107511554905">යාවත්කාලීනය ලබා ගැනීමට, අමුණා ඇති යතුරු පුවරුව සමග ඔබගේ Chromebook නැවත ආරම්භ කිරීමට ස්පර්ශ තිරය භාවිතා කරන්න.</translation>
 <translation id="1948405482892809935">ඊළඟ පරිශීලක වෙත මාරු කරන්න</translation>
 <translation id="1951012854035635156">සහායක</translation>
@@ -311,6 +312,7 @@
 <translation id="2208323208084708176">එකාබද්ධ ඩෙස්ක්ටොප් ප්‍රකාරය</translation>
 <translation id="2220572644011485463">PIN අංකය හෝ මුරපදය</translation>
 <translation id="2222841058024245321">මේසය 7</translation>
+<translation id="2223384056430485343">බෙදුණු තිරයක</translation>
 <translation id="2224075387478458881">ආරක්ෂිත අන්තර්ගතයන් දෘශ්‍යමාන විට තිර පටිගත කිරීමට ඉඩ නොදේ</translation>
 <translation id="2227179592712503583">යෝජනාව ඉවත් කරන්න</translation>
 <translation id="2248634276911611268">සබැඳිය නව පටිත්තක විවෘත කර මෙම නව පටිත්තට මාරු වන්න</translation>
@@ -609,6 +611,7 @@
 <translation id="334927402682780278">කර්සරයේ සිට පේළියේ අවසානය දක්වා පෙළ තෝරන්න</translation>
 <translation id="3349345708646875009">කාර්ය කළමණාකරු විවෘත කරන්න</translation>
 <translation id="3364721542077212959">පන්හිඳ මෙවලම්</translation>
+<translation id="3365281428003534650">මුහූර්තකයක්, කාර්යයක්, සහ සංගීතය සකසන්න</translation>
 <translation id="3365977133351922112">ඔබගේ දුරකථනය දුර වැඩිය. ඔබගේ දුරකථනය සමීපයට ගෙන එන්න.</translation>
 <translation id="3368922792935385530">සම්බන්ධ කළ</translation>
 <translation id="3369111525500416043">ඉක්මනින් නියමිතයි</translation>
@@ -911,6 +914,7 @@
 <translation id="4406883609789734330">සජීවී සිරස්තලය</translation>
 <translation id="4412698727486357573">උදවු මධ්‍යස්ථානය</translation>
 <translation id="4412944820643904175"><ph name="FEATURE_NAME" /> ක්‍රියාවිරහිතයි.</translation>
+<translation id="4417647906073317561">අවධාන සැකසීම්. ප්‍රවාහයට ඇතුළු වීමට මුහූර්තකයක්, කාර්යයක්, සහ සංගීතය සකසන්න.</translation>
 <translation id="4424159417645388645">මේසය 5</translation>
 <translation id="4430019312045809116">ශබ්ද තීව්‍රතාවය</translation>
 <translation id="4441283832827406317">නාමය අනුව යෙදුම් අනුපිළිවෙළට සකසා ඇත</translation>
@@ -1863,6 +1867,7 @@
         <ph name="MANAGED" />
         <ph name="IME" />
         <ph name="LOCALE" /></translation>
+<translation id="7899977217122813285">අවධානය යොමු කරන අතරතුර <ph name="TIME" /> දක්වා දැනුම්දීම් නිහඬ කෙරේ</translation>
 <translation id="7901190436359881020">කවුළු මාරු කරන්න</translation>
 <translation id="7901405293566323524">දුරකථන මධ්‍යස්ථානය</translation>
 <translation id="7902625623987030061">ඇඟිලි සලකුණු සංවේදකය ස්පර්ශ කරන්න</translation>

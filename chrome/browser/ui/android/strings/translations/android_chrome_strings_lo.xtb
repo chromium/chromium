@@ -153,6 +153,7 @@
 <translation id="1755203724116202818">ເພື່ອວັດແທກປະສິດທິພາບຂອງໂຄສະນາໃດໜຶ່ງ, ຂໍ້ມູນປະເພດທີ່ຈຳກັດຈະຖືກແບ່ງປັນລະຫວ່າງເວັບໄຊຕ່າງໆ, ເຊັ່ນ: ທ່ານມີການຊື້ເຄື່ອງຫຼັງຈາກເຂົ້າເວັບໄຊໃດໜຶ່ງຫຼືບໍ່.</translation>
 <translation id="1757620656501361327">ການອັບເດດຕົວຈັດການລະຫັດຜ່ານ Google</translation>
 <translation id="1760873718737761808">{FILE_COUNT,plural, =1{ໜ້າ, 1 ໜ້າໃນລາຍຊື່}other{ໜ້າ, # ໜ້າໃນລາຍຊື່}}</translation>
+<translation id="1771929606532798550">ຂໍ້ມູນກ່ຽວກັບການນຳໃຊ້ Chrome ຂອງທ່ານຈະຖືກສົ່ງໄປໃຫ້ Google, ແຕ່ມັນບໍ່ໄດ້ຖືກຜູກມັດກັບທ່ານ\n\nຫາກ Chrome ຂັດຂ້ອງ, ລາຍລະອຽດຕ່າງໆກ່ຽວກັບການຂັດຂ້ອງອາດຈະຮວມເອົາບາງຂໍ້ມູນສ່ວນຕົວ\n\nຫາກທ່ານຊິງປະຫວັດຂອງທ່ານກັບບັນຊີ Google ຂອງທ່ານ, ການວັດແທກຕ່າງໆອາດຮວມມີຂໍ້ມູນກ່ຽວກັບ URL ທີ່ທ່ານເຂົ້າເບິ່ງນຳ</translation>
 <translation id="1778457539567749232">ໝາຍໄວ້ວ່າຍັງບໍ່ໄດ້ອ່ານ</translation>
 <translation id="1779766957982586368">ປິດໜ້າ​ຕ່າງ</translation>
 <translation id="1780023393214832643">ບັນທຶກລະຫັດຜ່ານໃສ່ <ph name="USERNAME" /> ແລ້ວ</translation>
@@ -274,6 +275,7 @@
 <translation id="2450083983707403292">ທ່ານຕ້ອງການເລີ່ມການດາວໂຫຼດ <ph name="FILE_NAME" /> ອີກຄັ້ງບໍ່?</translation>
 <translation id="2453860139492968684">ສໍາ​ເລັດ​</translation>
 <translation id="2461822463642141190">ປັດຈຸບັນ</translation>
+<translation id="2472163211318554013">ເຂົ້າສູ່ລະບົບເພື່ອໃຊ້ປະໂຫຍດສູງສຸດຈາກ Chrome</translation>
 <translation id="247737702124049222">ຄຳອະທິບາຍຮູບພາບເປີດຢູ່</translation>
 <translation id="2479148705183875116">ໄປທີ່ການຕັ້ງຄ່າ</translation>
 <translation id="2482878487686419369">ການແຈ້ງເຕືອນ</translation>
@@ -425,7 +427,6 @@
 <translation id="3098745985164956033">ລະບົບຈະສົ່ງບາງຮູບໃຫ້ Google ເພື່ອປັບປຸງຄຳອະທິບາຍສຳລັບທ່ານ.</translation>
 <translation id="3114507951000454849">ອ່ານຂ່າວຂອງມື້ນີ້ <ph name="NEWS_ICON" /></translation>
 <translation id="3123734510202723619">ການປະກາດ</translation>
-<translation id="3146775326699342508">ເຂົ້າສູ່ລະບົບເພື່ອຮັບບຸກມາກຂອງທ່ານ ແລະ ອື່ນໆອີກຫຼາກຫຼາຍຈາກອຸປະກອນອື່ນໆຂອງທ່ານ</translation>
 <translation id="314939179385989105">ໜ້າຫຼັກຂອງ Chrome</translation>
 <translation id="3158667104057012316">ການຈັດຮຽງຕາມລຳດັບດ້ວຍຕົນເອງ</translation>
 <translation id="3166827708714933426">ທາງລັດແຖບ ແລະ ໜ້າຈໍ</translation>
@@ -798,6 +799,7 @@
 <translation id="4987271110129728827">ບໍ່ສາມາດຊອກເຫັນໜ້ານັ້ນໄດ້. ກະລຸນາກວດສອບການສະກົດຄຳຂອງທ່ານ ຫຼື ລອງຊອກຫາໃນເວັບໄຊ.</translation>
 <translation id="4988526792673242964">ໜ້າ</translation>
 <translation id="4991110219272367918">ຕົວເລືອກເພື່ອອະນຸມັດ ຫຼື ບໍ່ອະນຸມັດເວັບໄຊປິດຢູ່</translation>
+<translation id="4996095658297597226">ໃຊ້ລະຫັດຜ່ານທີ່ແນະນຳບໍ?</translation>
 <translation id="499724277181351974">ນຳທາງ: <ph name="WEBSITE_TITLE" />: <ph name="WEBSITE_URL" /></translation>
 <translation id="5001388021414335527">ຕິດຕາມເວັບໄຊນີ້ຢູ່ບ່ອນນີ້</translation>
 <translation id="5004416275253351869">ການຄວບຄຸມການເຄື່ອນໄຫວໃນ Google</translation>
@@ -1042,6 +1044,7 @@
 <translation id="6233974827872475843">ບັນທຶກລະຫັດຜ່ານໄວ້ໃນອຸປະກອນນີ້ໃນບັນຊີ Google ຂອງທ່ານໂດຍເປີດການຊິ້ງຂໍ້ມູນ</translation>
 <translation id="6247557882553405851">ຕົວຈັດການລະຫັດຜ່ານ Google</translation>
 <translation id="6251449557817521191">ເບິ່ງປະຫວັດ Chrome ຂອງທ່ານຢູ່ບ່ອນນີ້</translation>
+<translation id="6254139308321626268">ທ່ານກຳລັງເບິ່ງໄຟລ໌ PDF</translation>
 <translation id="6255794742848779505">ພວກເຮົາກຳລັງປ່ຽນວິທີທີ່ລະຫັດຜ່ານຖືກບັນທຶກໄວ້ຢູ່ອຸປະກອນນີ້</translation>
 <translation id="6264376385120300461">ຢືນຢັນການດາວໂຫຼດ</translation>
 <translation id="6277522088822131679">ມີບັນຫາການພິມໜ້າ. ກະລຸນາລອງໃໝ່ອີກ.</translation>
@@ -1083,6 +1086,7 @@
 <translation id="641643625718530986">ພິມ</translation>
 <translation id="6433501201775827830">ເລືອກໂປຣແກຣມຊອກຫາຂອງທ່ານ</translation>
 <translation id="6434309073475700221">ກໍາຈັດຖິ້ມ</translation>
+<translation id="6437162790453527153">ເຂົ້າສູ່ລະບົບເພື່ອຮັບເອົາບຸກມາກຂອງທ່ານ ແລະ ອື່ນໆຢູ່ອຸປະກອນທັງໝົດຂອງທ່ານ</translation>
 <translation id="6437478888915024427">ຂໍ້ມູນໜ້າ</translation>
 <translation id="6440291723980579689">ໜ້າຈະໂຫຼດຫຼັງຈາກທີ່ທ່ານເປີດພວກມັນເທົ່ານັ້ນ</translation>
 <translation id="6441734959916820584">ຊື່ຍາວເກີນໄປ</translation>
@@ -1343,6 +1347,7 @@
 <translation id="752220631458524187">ຕັດການເຊື່ອມຕໍ່ເມື່ອທ່ານສຳເລັດແລ້ວ</translation>
 <translation id="7523960634226602883">ຊອກຫາດ້ວຍກ້ອງຂອງທ່ານໂດຍໃຊ້ Google Lens</translation>
 <translation id="752731652852882757">ບລັອກໃນເວລາໃຊ້ໂໝດບໍ່ເປີດເຜີຍຕົວຕົນ</translation>
+<translation id="7557508262441527045">ອອກຈາກລະບົບແລ້ວ</translation>
 <translation id="7577900504646297215">ຈັດການຄວາມສົນໃຈ</translation>
 <translation id="757855969265046257">{FILES,plural, =1{ດາວໂຫຼດ <ph name="FILES_DOWNLOADED_ONE" /> ໄຟລ໌ແລ້ວ}other{ດາວໂຫຼດ <ph name="FILES_DOWNLOADED_MANY" /> ໄຟລ໌ແລ້ວ}}</translation>
 <translation id="7581273696622423628">ເຮັດແບບສຳຫຼວດ</translation>
@@ -1388,7 +1393,6 @@
 <translation id="777637629667389858">ປົກປ້ອງທ່ານໃນທົ່ວບໍລິການ Google ເມື່ອທ່ານເຂົ້າສູ່ລະບົບ.</translation>
 <translation id="7778840695157240389">ກວດເບິ່ງເລື່ອງລາວໃໝ່ໃນພາຍຫຼັງ</translation>
 <translation id="7780645209293383778">ລິ້ງຂໍ້ມູນນີ້ກັບບັນຊີ Google ຂອງທ່ານຊົ່ວຄາວເມື່ອທ່ານເຂົ້າສູ່ລະບົບແລ້ວ, ເພື່ອປົກປ້ອງທ່ານໃນຕ່າງໆຂອງ Google</translation>
-<translation id="7786562169000598736">ຮັບບຸກມາກທັງໝົດຂອງທ່ານ</translation>
 <translation id="7791543448312431591">ເພີ່ມ</translation>
 <translation id="7798392620021911922">ກູ້ <ph name="TAB_COUNT" /> ແຖບຄືນແລ້ວ</translation>
 <translation id="780287761701992588">ໃຊ້ບຸກມາກ, ລະຫັດຜ່ານ ແລະ ອື່ນໆຢູ່ອຸປະກອນທັງໝົດຂອງທ່ານ</translation>
@@ -1438,6 +1442,7 @@
 <translation id="7986497153528221272">ເພື່ອເບິ່ງລະຫັດຜ່ານ, ກະລຸນາຕັ້ງຄ່າລັອກໜ້າຈໍໃນອຸປະກອນຂອງທ່ານກ່ອນ</translation>
 <translation id="7995059495660416932">ທ່ານຈະເຫັນເນື້ອຫາເມື່ອມັນພ້ອມໃຫ້ນຳໃຊ້</translation>
 <translation id="799576009106109668">ທ່ານຈະທ່ອງເວັບໄດ້ໄວຂຶ້ນເນື່ອງຈາກເນື້ອຫາມີການໂຫຼດໄວ້ກ່ອນໂດຍອ້າງອີງໃສ່ການເຂົ້າເບິ່ງໜ້າເວັບປັດຈຸບັນຂອງທ່ານ</translation>
+<translation id="8001245658307297681">ທ່ານກຳລັງເບິ່ງໄຟລ໌ໃນເຄື່ອງ</translation>
 <translation id="8004582292198964060">ບຣາວ​ເຊີ</translation>
 <translation id="8015452622527143194">ປ່ຽນທຸກຢ່າງໃນໜ້າກັບຄືນສູ່ຂະໜາດເລີ່ມຕົ້ນ</translation>
 <translation id="8026238112629815203">ພວກເຮົາປ່ຽນວິທີບັນທຶກລະຫັດຜ່ານໃນອຸປະກອນນີ້ແລ້ວ</translation>

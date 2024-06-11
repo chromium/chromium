@@ -274,6 +274,7 @@ Tik jūsų slaptafrazę turintis asmuo galės perskaityti šifruotus duomenis. S
 <translation id="2450083983707403292">Ar norite vėl pradėti <ph name="FILE_NAME" /> atsisiuntimą?</translation>
 <translation id="2453860139492968684">Užbaigti</translation>
 <translation id="2461822463642141190">Dabartinė</translation>
+<translation id="2472163211318554013">Prisijunkite, kad išnaudotumėte visas „Chrome“ galimybes</translation>
 <translation id="247737702124049222">Vaizdų aprašai įjungti</translation>
 <translation id="2479148705183875116">Eiti į nustatymus</translation>
 <translation id="2482878487686419369">Pranešimai</translation>
@@ -425,7 +426,6 @@ Tik jūsų slaptafrazę turintis asmuo galės perskaityti šifruotus duomenis. S
 <translation id="3098745985164956033">Vaizdai siunčiami „Google“ norint patobulinti jums teikiamus aprašus</translation>
 <translation id="3114507951000454849">Skaitykite šiandienos naujienas <ph name="NEWS_ICON" /></translation>
 <translation id="3123734510202723619">Pranešimai</translation>
-<translation id="3146775326699342508">Prisijunkite, kad gautumėte žymes ir kt. iš kitų įrenginių</translation>
 <translation id="314939179385989105">Pagrindinis „Chrome“ puslapis</translation>
 <translation id="3158667104057012316">Rūšiuojama neautomatiškai</translation>
 <translation id="3166827708714933426">Skirtukų ir langų spartieji klavišai</translation>
@@ -1343,6 +1343,7 @@ Jei norite pakeisti šį nustatymą, <ph name="BEGIN_LINK" />ištrinkite „Chro
 <translation id="752220631458524187">Baigę atsijunkite</translation>
 <translation id="7523960634226602883">Ieškoti naudojant fotoaparatą ir „Google Lens“</translation>
 <translation id="752731652852882757">Blokuoti naudojant inkognito režimą</translation>
+<translation id="7557508262441527045">Atsijungta</translation>
 <translation id="7577900504646297215">Tvarkyti pomėgius</translation>
 <translation id="757855969265046257">{FILES,plural, =1{Atsisiųstas <ph name="FILES_DOWNLOADED_ONE" /> failas}one{Atsisiųstas <ph name="FILES_DOWNLOADED_MANY" /> failas}few{Atsisiųsti <ph name="FILES_DOWNLOADED_MANY" /> failai}many{Atsisiųsta <ph name="FILES_DOWNLOADED_MANY" /> failo}other{Atsisiųsta <ph name="FILES_DOWNLOADED_MANY" /> failų}}</translation>
 <translation id="7581273696622423628">Dalyvauti apklausoje</translation>
@@ -1388,7 +1389,6 @@ Jei norite pakeisti šį nustatymą, <ph name="BEGIN_LINK" />ištrinkite „Chro
 <translation id="777637629667389858">Kai esate prisijungę, esate apsaugoti „Google“ paslaugose.</translation>
 <translation id="7778840695157240389">Patikrinkite vėliau, ar yra naujų istorijų</translation>
 <translation id="7780645209293383778">Laikinai susieja šiuos duomenis su „Google“ paskyra, kai esate prisijungę, kad apsaugotų jus „Google“ programose</translation>
-<translation id="7786562169000598736">Gaukite visas žymes</translation>
 <translation id="7791543448312431591">Pridėti</translation>
 <translation id="7798392620021911922">Atkurta skirtukų: <ph name="TAB_COUNT" /></translation>
 <translation id="780287761701992588">Žymių, slaptažodžių ir kitų duomenų pasiekimas visuose įrenginiuose</translation>

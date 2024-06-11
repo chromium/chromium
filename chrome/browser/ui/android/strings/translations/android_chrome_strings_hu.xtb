@@ -274,6 +274,7 @@ Csak az Ön összetett jelszava ismeretében tudja bárki is megtekinteni a titk
 <translation id="2450083983707403292">Szeretné újra elkezdeni a(z) <ph name="FILE_NAME" /> letöltését?</translation>
 <translation id="2453860139492968684">Befejezés</translation>
 <translation id="2461822463642141190">Jelenlegi</translation>
+<translation id="2472163211318554013">Jelentkezzen be, hogy a legtöbbet hozhassa ki a Chrome-ból</translation>
 <translation id="247737702124049222">A képleírások be vannak kapcsolva</translation>
 <translation id="2479148705183875116">Beállítások</translation>
 <translation id="2482878487686419369">Értesítések</translation>
@@ -425,7 +426,6 @@ Csak az Ön összetett jelszava ismeretében tudja bárki is megtekinteni a titk
 <translation id="3098745985164956033">A leírások pontosítása érdekében a böngésző egyes képeket elküld a Google-nak</translation>
 <translation id="3114507951000454849">Olvassa el a mai híreket <ph name="NEWS_ICON" /></translation>
 <translation id="3123734510202723619">Hirdetmények</translation>
-<translation id="3146775326699342508">Bejelentkezve hozzáférhet a többi eszközéről származó könyvjelzőihez és egyéb tartalmaihoz.</translation>
 <translation id="314939179385989105">A Chrome kezdőlapja</translation>
 <translation id="3158667104057012316">Manuális rendezés folyamatban</translation>
 <translation id="3166827708714933426">Lapokkal és ablakokkal kapcsolatos billentyűparancsok</translation>
@@ -1343,6 +1343,7 @@ A beállítás módosításához <ph name="BEGIN_LINK" />törölje a fiókjában
 <translation id="752220631458524187">Válassza le eszközét, ha végzett</translation>
 <translation id="7523960634226602883">Keresés a kamerájával a Google Lens segítségével</translation>
 <translation id="752731652852882757">Letiltás az Inkognitó mód használata közben</translation>
+<translation id="7557508262441527045">Kijelentkezve</translation>
 <translation id="7577900504646297215">Érdeklődési körök kezelése</translation>
 <translation id="757855969265046257">{FILES,plural, =1{<ph name="FILES_DOWNLOADED_ONE" /> fájl letöltve}other{<ph name="FILES_DOWNLOADED_MANY" /> fájl letöltve}}</translation>
 <translation id="7581273696622423628">Kérdőív kitöltése</translation>
@@ -1388,7 +1389,6 @@ A beállítás módosításához <ph name="BEGIN_LINK" />törölje a fiókjában
 <translation id="777637629667389858">Amikor be van jelentkezve, védi Önt a Google szolgáltatásaiban.</translation>
 <translation id="7778840695157240389">Új hírekért látogasson vissza később</translation>
 <translation id="7780645209293383778">Amikor be van jelentkezve, ideiglenesen a Google-fiókjához kapcsolja ezeket az adatokat, hogy megvédhessük Önt a Google-alkalmazásokban</translation>
-<translation id="7786562169000598736">Az összes könyvjelző megtekintése</translation>
 <translation id="7791543448312431591">Hozzáadás</translation>
 <translation id="7798392620021911922"><ph name="TAB_COUNT" /> lap visszaállítva</translation>
 <translation id="780287761701992588">Bármely eszközéről elérheti a könyvjelzőit, jelszavait és egyebéb tartalmait</translation>

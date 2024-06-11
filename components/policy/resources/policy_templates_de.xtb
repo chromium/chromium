@@ -345,6 +345,7 @@ Die Muster für diese Richtlinie dürfen allerdings keine „/path“- oder „@
 
       Warnung: Bei den Einstellungen „Wipe“ und „MinimalMigrate“ werden lokale Daten entfernt.</translation>
 <translation id="1248955696540150266">Peer-to-Peer-Downloads von automatischen Updates zulassen</translation>
+<translation id="1249640740800891502">Einstellungen für SkyVault (alle Daten in der Cloud)</translation>
 <translation id="1250597158212586309">Wenn die Richtlinie aktiviert oder nicht konfiguriert ist, haben Nutzer die Möglichkeit, Warnungen zu gehackten Passwörtern zu schließen und wiederherzustellen.
 
       Wird die Richtlinie deaktiviert, können Nutzer Warnungen zu gehackten Passwörtern nicht schließen. Ist sie aktiv, können Nutzer Warnungen zu gehackten Passwörtern schließen.</translation>
@@ -2031,6 +2032,7 @@ Ist die Richtlinie nicht konfiguriert, ist „<ph name="POLICY_VALUE_VISIBLE" />
 
       Damit diese Funktion richtig funktioniert, sind zusätzliche Komponenten erforderlich, die außerhalb der Netzwerkumgebung von Google nicht verfügbar sind.</translation>
 <translation id="2536525645274582300">Der Nutzer entscheidet, ob die Standortdienste von Google aktiviert werden sollen</translation>
+<translation id="2536717624356629471">Im Konzentrationsmodus Töne für ChromeOS aktivieren</translation>
 <translation id="254653220329944566">Cloud-Berichte für <ph name="PRODUCT_NAME" /> aktivieren</translation>
 <translation id="2547854230073316008">Wenn die Richtlinie konfiguriert ist, wird die Auflösung und der Skalierungsfaktor der einzelnen Bildschirme festgelegt. Externe Bildschirmeinstellungen werden auf alle angeschlossenen Bildschirme angewendet. Die Richtlinie wird nicht angewendet, wenn ein Bildschirm die Auflösung oder den Skalierungsfaktor nicht unterstützt.
 
@@ -3024,6 +3026,7 @@ Unter <ph name="MS_WIN_NAME" /> steht diese Richtlinie nur bei Instanzen zur Ver
 <translation id="3338431256935927407">Über diese Richtlinie werden die Einstellungen für die Cloud Upload-Funktion konfiguriert.</translation>
 <translation id="3339271789059866414">Konfiguriert die Verfügbarkeit des System-Proxy-Dienstes und die Proxy-Anmeldedaten für Systemdienste.
       Ist diese Richtlinie nicht konfiguriert, ist der System-Proxy-Dienst nicht verfügbar.</translation>
+<translation id="3341649870321644698">Konzentrationsmodus mit „nur Sounds für mehr Konzentration“ aktivieren.</translation>
 <translation id="334231891933432876">Nutzer wird abgemeldet, sobald sein Konto nicht mehr authentifiziert ist</translation>
 <translation id="3345323903592385588">Die Reihenfolge, in der die VM-Konfigurationen im Installationsprogramm angezeigt werden. Wenn du mehrere VM-Konfigurationen angegeben hast, wird oben in der Liste die mit dem niedrigsten „display_order“-Wert angezeigt. Der Standardwert ist null.</translation>
 <translation id="3351661569026056296">Wenn du die Richtlinie auf „True“ setzt, führt die oberste Reihe der Tastatur Funktionstastenbefehle aus. Bei gedrückter Suchtaste führt die Tastatur stattdessen wieder Medientastenbefehle aus.
@@ -3355,6 +3358,7 @@ Denke daran, diese Richtlinie nicht dauerhaft aktiviert zu lassen, insbesondere 
 <translation id="3587482841069643663">Alle</translation>
 <translation id="3587766503874071316">Kurzbefehle für Bedienungshilfen deaktivieren</translation>
 <translation id="3589193811812796052">Verhindern, dass WebAssembly-Module ursprungsübergreifend gesendet werden</translation>
+<translation id="3591518189681300697">Migration lokaler Dateien in die Cloud aktivieren</translation>
 <translation id="3591527072193107424">Funktion für die Unterstützung älterer Browser aktivieren.</translation>
 <translation id="3591584750136265240">Verhalten der Log-in-Authentifizierung konfigurieren</translation>
 <translation id="3593905652755912452">Bei deaktivierten Formularsteuerelementen wird die alte Ereignisweiterleitung verwendet.</translation>
@@ -3880,6 +3884,7 @@ Beide Richtlinien können verwendet werden, diese Richtlinie wird jedoch bald ei
 Beide haben den gleichen Effekt auf das Browserverhalten.</translation>
 <translation id="4016700865356669962">Wenn diese Richtlinie aktiviert ist, dürfen Nutzer Vorlagen für Desktoplayouts verwenden.  Ist diese Richtlinie deaktiviert oder nicht konfiguriert, sind diese Vorlagen nicht verfügbar.</translation>
 <translation id="4020682745012723568">In das Nutzerprofil übertragene Cookies sind für Android-Apps nicht zugänglich.</translation>
+<translation id="4021684548211845008">Im Konzentrationsmodus Töne deaktivieren.</translation>
 <translation id="4025500273782820766">Zulassen, dass Nutzer „Immer öffnen“ auswählen, wenn ein Dialog für ein externes Protokoll angezeigt wird, sodass das Protokoll in Zukunft ohne die Bestätigung geöffnet wird</translation>
 <translation id="402759845255257575">Ausführung von JavaScript für keine Website zulassen</translation>
 <translation id="4027608872760987929">Standardsuchmaschine aktivieren</translation>
@@ -4120,6 +4125,7 @@ Hinweis: Wenn interne URLs von „chrome://*“ und „chrome-untrusted://*“ b
 
           Ist die Richtlinie nicht konfiguriert, ist "Automatisch klicken" anfangs deaktiviert, kann jedoch vom Nutzer jederzeit aktiviert werden.</translation>
 <translation id="4212181786686887763">URL, über die das Hintergrundbild heruntergeladen werden kann.</translation>
+<translation id="4221677608399717135">SkyVault aktivieren oder deaktivieren</translation>
 <translation id="4224610387358583899">Verzögerungen für die Bildschirmsperre</translation>
 <translation id="42267415200641481">Wenn diese Richtlinie auf „true“ gesetzt ist, kann die System-DNS-Auflösung (getaddrinfo()) je nach Systemkonfiguration und Funktions-Flags möglicherweise außerhalb des Netzwerkprozesses ausgeführt werden.
 
@@ -6013,6 +6019,15 @@ Die Unterstützung dieser Richtlinieneinstellung wird in <ph name="PRODUCT_NAME"
 <translation id="5775235485119094648">Lädt den Akku auf, solange er sich in einem festen Bereich befindet.</translation>
 <translation id="5776485039795852974">Nachfragen, wenn eine Website Desktop-Benachrichtigungen anzeigen will</translation>
 <translation id="5783009211970309878">Kopf- und Fußzeilen drucken</translation>
+<translation id="5786733040432065904">Mit dem Konzentrationsmodus kann Einstellung „Bitte nicht stören“ auf Grundlage eines Timers konfiguriert werden, um Ablenkungen für Nutzer zu reduzieren. Eine Funktion des Konzentrationsmodus ermöglicht es Nutzern, eine Musikauswahl zu hören, mit der sie sich besser konzentrieren können. Diese Richtlinie legt den Zugriff auf diese Funktion fest.
+
+Wenn die Richtlinie nicht konfiguriert ist, sind für verwaltete Nutzer alle Töne deaktiviert.
+
+Wenn die Richtlinie aktiviert ist, bleiben im Konzentrationsmodus alle Töne an.
+
+Wenn die Richtlinie auf „nur Sounds für mehr Konzentration“ gesetzt ist, wird die Einstellung „nur Sounds für mehr Konzentration“ aktiviert.
+
+Wenn die Richtlinie deaktiviert ist, werden im Konzentrationsmodus keine Töne abgespielt.</translation>
 <translation id="5790763087505467169">Benachrichtigungen zum automatischen Start bei verwalteten Gastsitzungen reduzieren</translation>
 <translation id="5800329278018669527">Eingabeaufforderung zur Netzwerkkonfiguration im Offlinemodus deaktivieren</translation>
 <translation id="5802931736499687181">Verschlüsselte Pipeline für die Berichterstellung deaktivieren</translation>
@@ -6322,6 +6337,10 @@ Diese Richtlinie wird ab M124 eingestellt.</translation>
       Wenn die Richtlinie nicht konfiguriert ist (sofern die Funktion vom Gerät unterstützt wird), wird der Standardakkulademodus verwendet und Nutzer können sie nicht ändern.
 
       Hinweis: Wenn der benutzerdefinierte Akkulademodus ausgewählt wird, müssen „<ph name="DEVICE_BATTERY_CHARGE_CUSTOM_START_CHARGING_POLICY_NAME" />“ und „<ph name="DEVICE_BATTERY_CHARGE_CUSTOM_STOP_CHARGING_POLICY_NAME" />“ konfiguriert sein.</translation>
+<translation id="6064418365347066084">Löst die Migration vorhandener lokaler Dateien in die Cloud aus.
+Gilt nur für SkyVault-Nutzer, d. h. wenn „LocalUserFilesAllowed“ auf „false“ gesetzt ist und als „DownloadDirectory“ entweder Google Drive oder OneDrive ausgewählt ist. Ansonsten wird die Option ignoriert.
+    Wenn „True“ aktiviert ist, werden lokale Dateien in die Cloud verschoben und lokale Ordner sind dann für den Nutzer ausgeblendet.
+    Wenn „False“ aktiviert ist oder die Richtlinie nicht konfiguriert ist, bleiben lokale Dateien im Lesemodus.</translation>
 <translation id="60655674079349516">Konfiguriert eine Liste von Browserdatentypen, die beim Schließen aller Browserfenster gelöscht werden sollen.
 
 Warnung: Das Festlegen dieser Richtlinie kann sich auf lokale private Daten auswirken und diese dauerhaft entfernen. Wir empfehlen, die Einstellungen vor der Bereitstellung zu testen, um das versehentliche Löschen von privaten Daten zu verhindern.
@@ -8146,6 +8165,7 @@ Dies ersetzt die eingestellte Richtlinie <ph name="WINDOW_PLACEMENT_BLOCKED_FOR_
       Wenn die Richtlinie aktiviert oder nicht konfiguriert ist, wird über registrierte Geräte eine Liste der Netzwerkschnittstellen mit deren Typen und Hardwareadressen gemeldet.
 
       Ist sie deaktiviert, melden registrierte Geräte keine Netzwerkschnittstellen.</translation>
+<translation id="7388618954884540850">Migration lokaler Dateien in die Cloud deaktivieren</translation>
 <translation id="7389872682701720082">Wenn du diese Einstellung aktivierst, werden nicht veraltete Plug-ins immer ausgeführt.
 
       Ist diese Einstellung deaktiviert oder nicht konfiguriert, müssen die Nutzer der Ausführung von Plug-ins zustimmen, die eine Autorisierung erfordern. Diese Plug-ins können ein Sicherheitsrisiko darstellen.</translation>
@@ -8318,6 +8338,7 @@ Ist diese Richtlinie auf „true“ gesetzt, versucht <ph name="PRODUCT_OS_NAME"
 
       Wenn die Richtlinie nicht konfiguriert oder auf „True“ gesetzt ist, wird eine Warnung angezeigt, die Nutzer daran erinnert, den Vollbildmodus zu beenden, bevor sie ihr Passwort eingeben. Ist die Richtlinie auf „False“ gesetzt, wird keine Warnung angezeigt.</translation>
 <translation id="7531630046107845550">Ausgehende SSH-Client-Verbindungen in der Terminal System App erlauben</translation>
+<translation id="753332207298659209">Du kannst Richtlinien konfigurieren, um festzulegen, ob Nutzerdaten auf dem Gerät zulässig sind und ob vorhandene Daten in die Cloud hochgeladen werden sollen.</translation>
 <translation id="7533385610709354870">Wenn <ph name="ENABLE_MEDIA_ROUTER_POLICY_NAME" /> aktiviert und <ph name="MEDIA_ROUTER_CAST_ALLOW_ALL_IPS_POLICY_NAME" /> konfiguriert ist, wird <ph name="PRODUCT_NAME" /> unter allen IP-Adressen und nicht nur unter privaten RFC1918-/RFC4193-Adressen mit Übertragungsgeräten verbunden.
 
 Ist die Richtlinie deaktiviert, wird <ph name="PRODUCT_NAME" /> nur unter RFC1918-/RFC4193-Adressen mit Cast-Geräten verbunden.
@@ -8839,6 +8860,7 @@ Wenn die Richtlinie „<ph name="ENABLE_MEDIA_ROUTER_POLICY_NAME" />“ deaktivi
 <translation id="7962093600142350905">Mit dieser Richtlinie wird festgelegt, ob Nutzern im Dialogfeld mit der Druckvorschau verfügbare Privet-Drucker angezeigt werden.
       Wenn diese Richtlinie aktiviert ist, werden verfügbare Privet-Drucker angezeigt.
       Ist sie deaktiviert oder nicht konfiguriert, erscheinen Privet-Drucker nicht in der Druckvorschau, weil diese Druckmethode veraltet ist.</translation>
+<translation id="7969865441622729072">Im Konzentrationsmodus alle Töne aktivieren.</translation>
 <translation id="7970660709107174905">Einstellungen für die Drittanbieter-Speicherpartitionierung</translation>
 <translation id="7972223739742725350">Save and Share API nicht für die <ph name="PRODUCT_OS_NAME" />-Steuerung durch Drittanbieter aktivieren.</translation>
 <translation id="7972642710812569707">Erzwingen, dass WebSQL im Zusammenhang mit Drittanbietern wieder aktiviert wird.</translation>
@@ -9419,6 +9441,7 @@ Ist die Richtlinie nicht konfiguriert oder auf 0 gesetzt, wird eine bestimmte au
 
 Wenn diese Richtlinie deaktiviert oder nicht konfiguriert ist, werden nur die regulären lokalen Profile verwendet.</translation>
 <translation id="8417305981081876834">Maximale Länge der Sperrbildschirm-PIN festlegen</translation>
+<translation id="8418438383184278931">Migration lokaler Nutzerdateien in den Cloud-Speicher aktivieren</translation>
 <translation id="841977920223099909">Auslöser für Passwortschutzwarnung</translation>
 <translation id="8419965165591256432">Häufigkeit, mit der der Status der Geräteaktivität auf registrierten Geräten verknüpfter Nutzer erfasst wird. Die geringste zulässige Häufigkeit beträgt 1 Minute.
 

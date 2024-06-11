@@ -345,6 +345,7 @@ Toutefois, dans le cadre de cette règle, ces formats ne doivent pas inclure les
 
       Avertissement : Les valeurs "Wipe" et "MinimalMigrate" entraînent la suppression des données locales.</translation>
 <translation id="1248955696540150266">Autoriser le téléchargement automatique de mises à jour peer-to-peer</translation>
+<translation id="1249640740800891502">Paramètres SkyVault (toutes les données dans le cloud)</translation>
 <translation id="1250597158212586309">Si cette règle est activée ou qu'elle n'est pas configurée, l'utilisateur peut choisir de fermer/restaurer les alertes de mot de passe compromis.
 
       Si vous désactivez ce paramètre, les utilisateurs ne pourront plus fermer les alertes concernant les mots de passe compromis. S'il est activé, les utilisateurs pourront fermer ces alertes.</translation>
@@ -2035,6 +2036,7 @@ Si cette règle n'est pas configurée, la valeur par défaut est <ph name="POLIC
 
       Notez que cette fonctionnalité nécessite des composants supplémentaires qui ne sont pas disponibles en dehors de l'environnement réseau de Google pour fonctionner correctement.</translation>
 <translation id="2536525645274582300">L'utilisateur décide d'activer ou non les services de localisation Google</translation>
+<translation id="2536717624356629471">Activer les sons en mode Sans distractions pour ChromeOS</translation>
 <translation id="254653220329944566">Active la création de rapports dans le cloud pour <ph name="PRODUCT_NAME" /></translation>
 <translation id="2547854230073316008">Permet de définir la résolution et le facteur de scaling de chaque écran. Les paramètres des écrans externes s'appliquent aux écrans connectés. (Cette règle ne s'applique pas si un écran n'accepte pas la résolution ni le scaling spécifiés.)
 
@@ -3026,6 +3028,7 @@ Sous <ph name="MS_WIN_NAME" />, cette règle n'est disponible que sur les instan
 <translation id="3338431256935927407">Paramètres de commande de la fonctionnalité d'importation cloud.</translation>
 <translation id="3339271789059866414">Configure la disponibilité du service proxy du système et les identifiants de proxy pour les services système.
       Si la règle n'est pas définie, le service proxy du système n'est pas disponible.</translation>
+<translation id="3341649870321644698">Activer le mode Sans distractions avec uniquement les sons pour se concentrer.</translation>
 <translation id="334231891933432876">Déconnecter l'utilisateur dès que son compte n'est plus authentifié</translation>
 <translation id="3345323903592385588">Ordre d'affichage de la configuration de VM dans le programme d'installation. Lorsque plusieurs configurations de VM sont spécifiées, celle avec la plus petite valeur display_order s'affiche en haut de la liste. Prend la valeur zéro par défaut.</translation>
 <translation id="3351661569026056296">Si vous définissez cette règle sur "True", les touches de la première rangée du clavier deviennent des touches de fonction. Le comportement d'origine des touches multimédias est rétabli en appuyant sur la touche de recherche.
@@ -3356,6 +3359,7 @@ Veillez à ne pas laisser cette règle activée en permanence, en particulier po
 <translation id="3587482841069643663">Tous</translation>
 <translation id="3587766503874071316">Désactiver les raccourcis d'accessibilité</translation>
 <translation id="3589193811812796052">Empêcher l'envoi des modules WebAssembly en multi-origine</translation>
+<translation id="3591518189681300697">Activer la migration des fichiers locaux vers le cloud</translation>
 <translation id="3591527072193107424">Activer la fonctionnalité Legacy Browser Support.</translation>
 <translation id="3591584750136265240">Configurer le mode d'authentification lors de la connexion</translation>
 <translation id="3593905652755912452">L'ancien comportement d'envoi des événements sur les commandes de formulaire désactivées sera utilisé.</translation>
@@ -3880,6 +3884,7 @@ Vous pouvez utiliser l'une ou l'autre de ces règles, mais celle-ci sera bientô
 Ces deux règles ont le même effet sur le comportement du navigateur.</translation>
 <translation id="4016700865356669962">Si cette règle est activée, elle permet aux utilisateurs de se servir de modèles de bureau.  Si elle est désactivée ou si elle n'est pas configurée, ces modèles seront indisponibles.</translation>
 <translation id="4020682745012723568">Les applications Android n'ont pas accès aux cookies transférés vers le profil de l'utilisateur.</translation>
+<translation id="4021684548211845008">Désactiver les sons en mode Sans distractions.</translation>
 <translation id="4025500273782820766">Autoriser les utilisateurs à sélectionner "Toujours autoriser" quand une boîte de dialogue de protocole externe s'affiche pour permettre à l'utilisateur d'ignorer les futures invites de confirmation</translation>
 <translation id="402759845255257575">Interdire à tous les sites d'exécuter JavaScript</translation>
 <translation id="4027608872760987929">Activer le moteur de recherche par défaut</translation>
@@ -4120,6 +4125,7 @@ Remarque : Bloquer des URL internes chrome://* et chrome-untrusted://* peut ent
 
           Si elle n'est pas définie, le clic automatique est désactivé au départ, mais les utilisateurs peuvent l'activer à tout moment.</translation>
 <translation id="4212181786686887763">URL depuis laquelle l'image de fond d'écran peut être téléchargée.</translation>
+<translation id="4221677608399717135">Activer ou désactiver SkyVault</translation>
 <translation id="4224610387358583899">Délais de verrouillage de l'écran</translation>
 <translation id="42267415200641481">Si cette règle est définie sur "True", la résolution DNS du système (getaddrinfo()) peut éventuellement s'exécuter en dehors du processus réseau, en fonction de la configuration système et des flags de fonctionnalité.
 
@@ -6037,6 +6043,15 @@ Cette règle ne sera plus disponible à partir de <ph name="PRODUCT_NAME" /> 13
 <translation id="5775235485119094648">Recharge de la batterie tant que le niveau de charge défini n'est pas atteint.</translation>
 <translation id="5776485039795852974">Demander confirmation chaque fois qu'un site veut afficher des notifications sur le bureau</translation>
 <translation id="5783009211970309878">Imprimer les en-têtes et les pieds de page</translation>
+<translation id="5786733040432065904">Le mode Sans distractions contrôle Ne pas déranger à l'aide d'un minuteur et vise à réduire les distractions pour les utilisateurs. Une fonctionnalité de ce mode permet aux utilisateurs d'écouter un ensemble limité de musiques pour les aider à se concentrer. Cette règle contrôle l'accès à cette fonctionnalité.
+
+Si cette règle n'est pas configurée, tous les sons sont désactivés pour les utilisateurs gérés.
+
+Si cette règle est activée, tous les sons sont accessibles en mode Sans distractions.
+
+Si cette règle est définie sur "Sons pour se concentrer uniquement", la fonctionnalité de sons sera activée avec uniquement les sons pour se concentrer.
+
+Si cette règle est désactivée, les sons seront désactivés en mode Sans distractions.</translation>
 <translation id="5790763087505467169">Réduire les notifications de lancement automatique des sessions Invité gérées</translation>
 <translation id="5800329278018669527">Désactiver l'invite de configuration réseau lorsque l'utilisateur n'est pas connecté</translation>
 <translation id="5802931736499687181">Désactiver le pipeline de rapports chiffrés</translation>
@@ -6346,6 +6361,10 @@ Cette règle a été abandonnée dans la version M124.</translation>
       Si cette règle n'est pas configurée (et que l'appareil le permet), le mode standard de recharge de la batterie est appliqué, et les utilisateurs ne peuvent pas modifier ce paramètre.
 
       Remarque : Si le mode personnalisé de recharge de la batterie est sélectionné, les règles "<ph name="DEVICE_BATTERY_CHARGE_CUSTOM_START_CHARGING_POLICY_NAME" />" et "<ph name="DEVICE_BATTERY_CHARGE_CUSTOM_STOP_CHARGING_POLICY_NAME" />" doivent alors être spécifiées.</translation>
+<translation id="6064418365347066084">Déclenche la migration des fichiers locaux existants vers le cloud.
+S'applique uniquement aux utilisateurs de SkyVault (c'est-à-dire lorsque LocalUserFilesAllowed est défini sur "False" et que DownloadDirectory est Google Drive ou OneDrive) et est ignoré dans le cas contraire.
+    Si cette règle est définie sur "True", les fichiers locaux sont migrés vers le cloud et les dossiers locaux sont ensuite masqués pour l'utilisateur.
+    Si cette règle est définie sur "False" ou n'est pas configurée, les fichiers locaux restent en mode lecture seule.</translation>
 <translation id="60655674079349516">Configure une liste des types de données de navigation devant être supprimés lorsque l'utilisateur ferme toutes les fenêtres du navigateur.
 
 Avertissement : La définition de cette règle peut affecter les données personnelles locales et entraîner leur suppression définitive. Nous vous recommandons de tester vos paramètres avant de les déployer pour éviter toute suppression accidentelle de données personnelles.
@@ -8171,6 +8190,7 @@ Si elle est définie sur "False" ou si elle n'est pas configurée, ces publicit�
       Si cette règle est activée ou n'est pas configurée, les appareils enregistrés communiquent la liste des interfaces réseau, avec leur type et leur adresse matérielle.
 
       Si elle est désactivée, les appareils enregistrés ne communiquent pas l'interface réseau.</translation>
+<translation id="7388618954884540850">Désactiver la migration des fichiers locaux vers le cloud</translation>
 <translation id="7389872682701720082">Si vous activez ce paramètre, les plug-ins non obsolètes sont toujours exécutés.
 
       Si ce paramètre est désactivé ou n'est pas configuré, les utilisateurs doivent donner leur permission pour l'exécution des plug-ins qui nécessitent une autorisation. Ceux-ci présentent un risque de sécurité.</translation>
@@ -8342,6 +8362,7 @@ Si cette règle est définie sur "True", le téléchargement des charges utiles 
 
       Si cette règle n'est pas configurée ou qu'elle est définie sur "True", une alerte s'affiche pour rappeler aux utilisateurs de quitter le plein écran avant de saisir leur mot de passe. Si cette règle est définie sur "False", cette alerte n'est pas affichée.</translation>
 <translation id="7531630046107845550">Autoriser les connexions client sortantes SSH dans Terminal System App</translation>
+<translation id="753332207298659209">Configurez des règles pour déterminer si les données utilisateur sont autorisées ou non sur l'appareil et si les données existantes doivent être importées dans le cloud.</translation>
 <translation id="7533385610709354870">Tant que la règle <ph name="ENABLE_MEDIA_ROUTER_POLICY_NAME" /> n'est pas désactivée, l'activation de la règle <ph name="MEDIA_ROUTER_CAST_ALLOW_ALL_IPS_POLICY_NAME" /> connecte <ph name="PRODUCT_NAME" /> aux appareils Cast pour toutes les adresses IP, et pas seulement les adresses privées décrites dans la RFC 1918 ou la RFC 4193.
 
 Si cette règle est désactivée, <ph name="PRODUCT_NAME" /> ne se connecte aux appareils Cast que sur les adresses privées décrites dans la RFC 1918 ou la RFC 4193.
@@ -8862,6 +8883,7 @@ Si la règle <ph name="ENABLE_MEDIA_ROUTER_POLICY_NAME" /> est désactivée, ell
 <translation id="7962093600142350905">Cette règle détermine si des imprimantes Privet disponibles s'affichent dans la boîte de dialogue d'aperçu avant impression à l'attention des utilisateurs.
       Si cette règle est activée, les imprimantes Privet disponibles s'affichent.
       Si vous désactivez cette règle ou ne la configurez pas, les imprimantes Privet ne s'affichent pas dans la boîte de dialogue d'aperçu avant impression, cette méthode d'impression étant obsolète.</translation>
+<translation id="7969865441622729072">Activer tous les sons en mode Sans distractions.</translation>
 <translation id="7970660709107174905">Paramètres de partitionnement du stockage tiers</translation>
 <translation id="7972223739742725350">Ne pas activer l'API Save and Share pour le contrôle <ph name="PRODUCT_OS_NAME" /> tiers.</translation>
 <translation id="7972642710812569707">Forcer la réactivation de WebSQL dans des contextes tiers.</translation>
@@ -9444,6 +9466,7 @@ Si cette règle n'est pas configurée ou qu'elle est définie sur 0, l'URL sél
 
       Si cette règle est désactivée ou qu'elle n'est pas configurée, seuls les profils locaux standards sont utilisés.</translation>
 <translation id="8417305981081876834">Définir le nombre maximal de caractères pour le code de l'écran de verrouillage</translation>
+<translation id="8418438383184278931">Activer la migration des fichiers utilisateur locaux vers le stockage cloud</translation>
 <translation id="841977920223099909">Déclencheur d'avertissement de protection par mot de passe</translation>
 <translation id="8419965165591256432">Fréquence à laquelle l'état d'activité de l'appareil est collecté sur les appareils enregistrés pour les utilisateurs affiliés. La valeur minimale autorisée est de 1 minute.
 

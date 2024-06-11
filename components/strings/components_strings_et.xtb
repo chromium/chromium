@@ -573,7 +573,6 @@ Vastasel korral blokeeritakse see teie privaatsusseadetes. See võimaldab teie k
 <translation id="2046951263634619614">Raamatute jaemüüjad</translation>
 <translation id="2048261947532620704">Lehe tõlkimine</translation>
 <translation id="2053111141626950936">Selles keeles lehti ei tõlgita: <ph name="LANGUAGE" />.</translation>
-<translation id="2055461225779831292">Kaamerate kasutamine ja liigutamine (<ph name="CAMERAS_COUNT" />)</translation>
 <translation id="2056492565825767809">Lukustage oma hiirekursor</translation>
 <translation id="2056658168519009885">Saidid võivad teile näidatavate reklaamide isikupärastamiseks Chrome'ilt teavet küsida.</translation>
 <translation id="2059166748188874810">Vald</translation>
@@ -651,7 +650,6 @@ Vastasel korral blokeeritakse see teie privaatsusseadetes. See võimaldab teie k
 <translation id="2170417331417184438">Kaart salvestati ainult seadmesse</translation>
 <translation id="2172089022819052306">Sõidukite remont ja hooldus</translation>
 <translation id="2175630235841878061">Suuremad kui 100 MB failid ei ole allalaadimiseks saadaval</translation>
-<translation id="2176198174348007293">Kasutada teie kaameraid (<ph name="CAMERAS_COUNT" />)</translation>
 <translation id="2176974405772725904">Kas salvestada aadress kontole?</translation>
 <translation id="2178665390943006934">Nupp Värskenda Chrome'i, aktiveerige nupp Chrome'i seadetes Chrome'i värskendamiseks</translation>
 <translation id="2181821976797666341">Reeglid</translation>
@@ -3629,7 +3627,6 @@ Lisateave:
 <translation id="7947813448670013867"><ph name="SEE_CHROME_TIPS_FOCUSED_FRIENDLY_MATCH_TEXT" />, Chrome'i funktsioonide kohta lisateabe saamiseks vajutage tabulaatorit ja seejärel sisestusklahvi</translation>
 <translation id="7949135979217012031">Viiruse- ja pahavaratõrje</translation>
 <translation id="7950027195171824198">Hallake Chrome'i seadetes küpsiste eelistusi</translation>
-<translation id="7950440490184876634">Kasutada teie mikrofone (<ph name="MICS_COUNT" />)</translation>
 <translation id="7951415247503192394">(32-bitine)</translation>
 <translation id="7952192831285741665">Euroopa EDP</translation>
 <translation id="7952250633095257243">Otsetee väli ei tohi olla tühi</translation>

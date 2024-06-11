@@ -573,7 +573,6 @@
 <translation id="2046951263634619614">خرده‌فروشی کتاب</translation>
 <translation id="2048261947532620704">درحال ترجمه صفحه</translation>
 <translation id="2053111141626950936">صفحه‌های <ph name="LANGUAGE" /> ترجمه نخواهند شد.</translation>
-<translation id="2055461225779831292">استفاده و حرکت دادن دوبین‌ها (<ph name="CAMERAS_COUNT" />)</translation>
 <translation id="2056492565825767809">قفل کردن اشاره‌گر موشواره</translation>
 <translation id="2056658168519009885">‏سایت‌ها می‌توانند برای کمک به شخصی‌سازی آگهی‌هایی که می‌بینید اطلاعاتی از Chrome درخواست کنند.</translation>
 <translation id="2059166748188874810">شهرداری</translation>
@@ -651,7 +650,6 @@
 <translation id="2170417331417184438">کارت فقط در دستگاه ذخیره شد</translation>
 <translation id="2172089022819052306">تعمیر و نگهداری خودرو</translation>
 <translation id="2175630235841878061">فایل‌های بیش‌از ۱۰۰ مگابایت برای بارگیری دردسترس نیست</translation>
-<translation id="2176198174348007293">استفاده از دوربین‌های شما (<ph name="CAMERAS_COUNT" />)</translation>
 <translation id="2176974405772725904">ذخیره نشانی در حساب</translation>
 <translation id="2178665390943006934">‏دکمه «به‌روزرسانی Chrome»؛ برای به‌روزرسانی Chrome ازطریق تنظیمات Chrome، آن را فعال کنید</translation>
 <translation id="2181821976797666341">خط‌ مشی‌ها</translation>
@@ -1484,6 +1482,7 @@
 <translation id="3799805948399000906">قلم درخواست شد</translation>
 <translation id="3801265110651850478">‏ارسال درخواست «Do Not Track» با ترافیک مرور</translation>
 <translation id="380329542618494757">نام</translation>
+<translation id="3803801106042434208">این موتورهای جستجو در منطقه شما پرطرفدار هستند</translation>
 <translation id="3806932344025766608">‏مهاجمان ممکن است در سایتی که می‌خواهید بازدید کنید شما را فریب دهند تا نرم‌افزاری را نصب کنید یا چیزهایی مثل گذرواژه، شماره تلفن، یا شماره کارت اعتباری را فاش کنید. ‏Chrome اکیداً توصیه می‌کند به ایمنی بازگردید. <ph name="BEGIN_LEARN_MORE_LINK" />بیشتر بدانید<ph name="END_LEARN_MORE_LINK" /></translation>
 <translation id="3807366285948165054">‏تغییر جهت تصویر حول محور X</translation>
 <translation id="3807709094043295184">راک کلاسیک و موسیقی قدیمی</translation>
@@ -3629,7 +3628,6 @@
 <translation id="7947813448670013867">‏<ph name="SEE_CHROME_TIPS_FOCUSED_FRIENDLY_MATCH_TEXT" />؛ برای اطلاع از ویژگی‌های جدید Chrome، کلید «جهش» و سپس «ورود» را فشار دهید</translation>
 <translation id="7949135979217012031">ضدویروس و بدافزار</translation>
 <translation id="7950027195171824198">‏مدیریت اولویت‌های کوکی در تنظیمات Chrome</translation>
-<translation id="7950440490184876634">استفاده از میکروفون‌های شما (<ph name="MICS_COUNT" />)</translation>
 <translation id="7951415247503192394">(۳۲ بیت)</translation>
 <translation id="7952192831285741665">‏‫EDP اروپایی</translation>
 <translation id="7952250633095257243">میان‌بر نمی‌تواند خالی باشد</translation>

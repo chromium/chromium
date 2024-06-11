@@ -312,6 +312,7 @@
 <translation id="2618015542787108131">dunë rëre</translation>
 <translation id="2619761439309613843">Rifreskimi i përditshëm</translation>
 <translation id="2620436844016719705">Sistemi</translation>
+<translation id="2637303424821734920">JOAKTIV - Për të shfaqur motin lokal, <ph name="BEGIN_LINK" />aktivizo qasjen te vendndodhja e sistemit<ph name="END_LINK" /></translation>
 <translation id="2638662041295312666">Imazhi i identifikimit</translation>
 <translation id="2640549051766135490">Është zgjedhur albumi <ph name="TITLE" /> <ph name="DESC" /></translation>
 <translation id="2645380101799517405">Kontrollet</translation>
@@ -360,6 +361,7 @@
 <translation id="3017079585324758401">Sfondi</translation>
 <translation id="3027578600144895987">Mbylle kamerën</translation>
 <translation id="3031560714565892478">Pajisja është një video-kamerë.</translation>
+<translation id="3051968340259309715">Kjo i lejon shërbimet e sistemit që të përdorin "Saktësinë e vendndodhjes" për të përcaktuar vendndodhjen tënde. "Saktësia e vendndodhjes" përdor informacionet për sinjalet wireless, si p.sh. pikat e qasjes Wi-Fi, kullat e rrjetit celular dhe sistemin GPS, bashkë me të dhënat e sensorëve të pajisjes, si p.sh. përshpejtuesi dhe xhiroskopi, për të përllogaritur vendndodhjen e pajisjes. Mund ta çaktivizosh vendndodhjen te Cilësimet &gt; Privatësia dhe siguria &gt; Kontrollet e privatësisë &gt; Qasja te vendndodhja. <ph name="LINK_BEGIN" />Mëso më shumë<ph name="LINK_END" /></translation>
 <translation id="3054177598518735801"><ph name="CURRENT_VALUE" /> mA</translation>
 <translation id="3056720590588772262">Pika përfundimtare</translation>
 <translation id="3060579846059757016">Përvijimet</translation>

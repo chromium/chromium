@@ -1133,6 +1133,7 @@ Gallwch hefyd ddefnyddio'r llwybr byr bysellfwrdd. Yn gyntaf, amlygwch y testun,
 <translation id="5208059991603368177">Ymlaen</translation>
 <translation id="5216991270656129561">Wedi'i ddiffodd tan <ph name="TIME" /></translation>
 <translation id="5222676887888702881">Allgofnodi</translation>
+<translation id="5228195526683428788">Rhannwr sgrîn hollt</translation>
 <translation id="5229343007215035173">Troi'r sgrîn preifatrwydd ymlaen/ei ddiffodd</translation>
 <translation id="5230516054153933099">Ffenestr</translation>
 <translation id="5234764350956374838">Diystyru</translation>
@@ -1519,6 +1520,7 @@ Gosodiad newydd</translation>
 <translation id="6613765291890844037">Mae storfa <ph name="STORAGE_IN_USE_SIZE" /> yn cael ei defnyddio | <ph name="STORAGE_TOTAL_SIZE" /> mewn cyfanswm</translation>
 <translation id="6614169507485700968">Mae'r sgrîn preifatrwydd ymlaen</translation>
 <translation id="6622679827379792051">Gosod gweld apiau eich ffôn</translation>
+<translation id="662279009180869175">Defnyddiwch y saeth chwith a'r saeth dde i newid maint y sgrîn hollt</translation>
 <translation id="6624493541160101248">Desg bresennol: <ph name="DESK_NAME" />. Desg <ph name="DESK_INDEX" /> o <ph name="DESK_COUNT" />.</translation>
 <translation id="6625718907317144388">Mae hysbysiadau <ph name="APP_1_TITLE" />, <ph name="APP_2_TITLE" /> ac eraill wedi'u cuddio oherwydd bod amddiffyniad gwylio ymlaen</translation>
 <translation id="6627638273713273709">Search+Shift+K</translation>
@@ -1537,6 +1539,7 @@ Gosodiad newydd</translation>
 <translation id="6670153871843998651">Desg 3</translation>
 <translation id="6671495933530132209">Copïo’r llun</translation>
 <translation id="6671661918848783005">Methu â datgloi eich Chromebook</translation>
+<translation id="6676552993057022464">Defnyddiwch y saeth i fyny a'r saeth i lawr i newid maint y sgrîn hollt</translation>
 <translation id="6682029141988159141">Gludo cynnwys o'r clipfwrdd</translation>
 <translation id="6683022854667115063">Clustffonau</translation>
 <translation id="6686023075541098243">Gosod gweld hysbysiadau eich ffôn</translation>

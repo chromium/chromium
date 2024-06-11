@@ -278,6 +278,7 @@
 <translation id="5690795753582697420">Android の設定でカメラがオフになっています</translation>
 <translation id="5691080386278724773"><ph name="SITE" /> は次のサイトの閲覧時にあなたの情報を使用できます</translation>
 <translation id="5700761515355162635">サードパーティ Cookie が許可されています</translation>
+<translation id="5705383358494210886"><ph name="HOST_NAME" /> <ph name="SEPARATOR1" /> <ph name="RECENCY" /></translation>
 <translation id="5706552988683188916"><ph name="WEBSITE" /> の Cookie などのサイトデータが削除されます</translation>
 <translation id="5723967018671998714">シークレット モードでサードパーティの Cookie がブロックされています</translation>
 <translation id="5740126560802162366">サイトはデバイスにデータを保存できます</translation>

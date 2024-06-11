@@ -47,6 +47,7 @@
 <translation id="1082026381988252344">Faire défiler le contenu de l'onglet partagé et faire un zoom dessus</translation>
 <translation id="1089439967362294234">Modifier le mot de passe</translation>
 <translation id="1090629319939036170">Menu RV</translation>
+<translation id="1091779689406092804">captures d'écran</translation>
 <translation id="1094777233105318927">Informations sur votre navigateur, votre OS, votre appareil, les logiciels installés et les fichiers</translation>
 <translation id="1096545575934602868">Ce champ ne peut pas contenir plus de <ph name="MAX_ITEMS_LIMIT" /> entrées. Toutes les entrées supplémentaires seront supprimées.</translation>
 <translation id="1097803577928227769">Parcs et jardins régionaux</translation>
@@ -472,6 +473,7 @@ Par défaut, ce type d'accès est bloqué par vos paramètres de confidentialit�
 <translation id="1840009953725035797">Systèmes home cinéma</translation>
 <translation id="1842969606798536927">Paiement</translation>
 <translation id="1846432862466000825">Plastique (archive)</translation>
+<translation id="1848640291751752317">téléchargements</translation>
 <translation id="1848982255014129637">Photo (haute brillance)</translation>
 <translation id="1853392626017747777">Enregistrement par carte virtuelle fermé</translation>
 <translation id="1854180393107901205">Arrêter la diffusion</translation>
@@ -571,7 +573,6 @@ Par défaut, ce type d'accès est bloqué par vos paramètres de confidentialit�
 <translation id="2046951263634619614">Librairies</translation>
 <translation id="2048261947532620704">Traduction de la page</translation>
 <translation id="2053111141626950936">Les pages en <ph name="LANGUAGE" /> ne seront pas traduites.</translation>
-<translation id="2055461225779831292">Utiliser et bouger vos caméras (<ph name="CAMERAS_COUNT" />)</translation>
 <translation id="2056492565825767809">Verrouiller le pointeur de la souris</translation>
 <translation id="2056658168519009885">Les sites peuvent demander des informations à Chrome pour personnaliser les annonces qui vous sont présentées.</translation>
 <translation id="2059166748188874810">Municipalité</translation>
@@ -649,7 +650,6 @@ Par défaut, ce type d'accès est bloqué par vos paramètres de confidentialit�
 <translation id="2170417331417184438">Carte enregistrée uniquement sur l'appareil</translation>
 <translation id="2172089022819052306">Réparation et entretien de véhicules</translation>
 <translation id="2175630235841878061">Les fichiers de plus de 100 Mo ne sont pas disponibles pour le téléchargement</translation>
-<translation id="2176198174348007293">Utiliser vos appareils photo (<ph name="CAMERAS_COUNT" />)</translation>
 <translation id="2176974405772725904">Enregistrer l'adresse dans le compte</translation>
 <translation id="2178665390943006934">Bouton "Mise à jour de Chrome" à activer pour mettre à jour Chrome depuis les paramètres du navigateur</translation>
 <translation id="2181821976797666341">Règles</translation>
@@ -754,6 +754,7 @@ Par défaut, ce type d'accès est bloqué par vos paramètres de confidentialit�
 <translation id="2366689192918515749">Viande et fruits de mer</translation>
 <translation id="2367567093518048410">Niveau</translation>
 <translation id="23703388716193220">Équipement de golf</translation>
+<translation id="2370368710215137370">Importation de fichiers</translation>
 <translation id="2374629208601905275">Conformément à la législation de votre région, Chrome vous demande de sélectionner un moteur de recherche par défaut. Ces moteurs de recherche sont populaires dans votre région et sont affichés dans un ordre aléatoire.</translation>
 <translation id="2377241607395428273">Logiciels de graphisme et d'animation</translation>
 <translation id="2378084239755710604">Invite "Enregistrer la carte" fermée.</translation>
@@ -1422,6 +1423,7 @@ Par défaut, ce type d'accès est bloqué par vos paramètres de confidentialit�
 <translation id="3682094733650754138">L'option "Remplir l'adresse" a été sélectionnée</translation>
 <translation id="3687920599421452763">Fourgons et fourgonnettes</translation>
 <translation id="3693327506115126094">Choisir comment confirmer votre identité</translation>
+<translation id="3698353241727597930">Votre administrateur a configuré l'enregistrement des <ph name="FILES" /> dans votre espace de stockage <ph name="CLOUD_STORAGE" /> géré par l'entreprise. Ces fichiers peuvent être surveillés, audités et conservés lorsque vous les supprimez.</translation>
 <translation id="3698629142018988477">Bouton "Créer un site" à activer pour créer rapidement un site dans Google Sites</translation>
 <translation id="3701325639446035885">Billetterie</translation>
 <translation id="3701427423622901115">Réinitialisation appliquée.</translation>
@@ -1497,6 +1499,7 @@ Par défaut, ce type d'accès est bloqué par vos paramètres de confidentialit�
 <translation id="3826050100957962900">Connexion tierce</translation>
 <translation id="3827112369919217609">Valeur absolue</translation>
 <translation id="3828924085048779000">La phrase secrète est obligatoire.</translation>
+<translation id="3830139096297532361">Ce PDF est inaccessible. Impossible de télécharger les fichiers d'extraction de texte. Veuillez réessayer plus tard.</translation>
 <translation id="3830470485672984938">Utiliser une autre clé d'accès</translation>
 <translation id="3831065134033923230">Vérifier vos mots de passe enregistrés</translation>
 <translation id="3831915413245941253">L'administrateur du domaine <ph name="ENROLLMENT_DOMAIN" /> a installé des extensions permettant d'utiliser des fonctions supplémentaires. Ces extensions ont accès à certaines de vos données.</translation>
@@ -1671,6 +1674,7 @@ Par défaut, ce type d'accès est bloqué par vos paramètres de confidentialit�
 <translation id="4202554117186904723">5e rouleau</translation>
 <translation id="4203769790323223880">Appareil photo non autorisé</translation>
 <translation id="4203896806696719780"><ph name="BEGIN_LINK" />Vérifier les configurations du pare-feu et de l'antivirus<ph name="END_LINK" /></translation>
+<translation id="4207195957038009075">Google Drive</translation>
 <translation id="4209092469652827314">Grande</translation>
 <translation id="4210602799576081649">Le code de validation a expiré. Demandez-en un autre.</translation>
 <translation id="421066178035138955">Utiliser vos données et appareils de réalité virtuelle</translation>
@@ -2731,6 +2735,7 @@ Par défaut, ce type d'accès est bloqué par vos paramètres de confidentialit�
 <translation id="6270066318535733958">Nautisme</translation>
 <translation id="6272088941196661550">Reprenez votre parcours pour voir les activités pertinentes dans votre historique Chrome</translation>
 <translation id="6272383483618007430">Google Update</translation>
+<translation id="6278015583149890680">Google Drive et OneDrive</translation>
 <translation id="6280223929691119688">Impossible de livrer à cette adresse. Sélectionnez-en une autre.</translation>
 <translation id="6284292079994426700">26 x 38 pouces</translation>
 <translation id="6284449872909111707">SMS et messagerie instantanée</translation>
@@ -3169,6 +3174,7 @@ Par défaut, ce type d'accès est bloqué par vos paramètres de confidentialit�
 <translation id="7119063404975271297">Drames (films TV)</translation>
 <translation id="7119371694555167493">Délai de copie dépassé</translation>
 <translation id="7119414471315195487">Fermez les autres onglets ou programmes</translation>
+<translation id="7120588595737538743">téléchargements et captures d'écran</translation>
 <translation id="7124354851782353862">Saisissez votre code CVC</translation>
 <translation id="7129409597930077180">Impossible d'expédier à cette adresse. Sélectionnez-en une autre.</translation>
 <translation id="7129809579943936035"><ph name="VALUE_PROP" /> <ph name="DETAILS" /></translation>
@@ -3369,6 +3375,7 @@ Informations supplémentaires :
 <translation id="7483863401933039889"><ph name="CHROME_TIP" />, appuyez sur Tabulation, puis sur Entrée pour fermer l'astuce Chrome.</translation>
 <translation id="7485085230273446323">Commerce et industrie</translation>
 <translation id="7485870689360869515">Aucune donnée n'a été trouvée.</translation>
+<translation id="7486880426035242089">OneDrive</translation>
 <translation id="7489392576326061356">Shampooings et après-shampooings</translation>
 <translation id="7495528107193238112">Ce contenu est bloqué. Pour résoudre le problème, contactez le propriétaire du site.</translation>
 <translation id="749865518782565832">Plomberie</translation>
@@ -3621,7 +3628,6 @@ Informations supplémentaires :
 <translation id="7947813448670013867"><ph name="SEE_CHROME_TIPS_FOCUSED_FRIENDLY_MATCH_TEXT" />, appuyez sur Tabulation, puis sur Entrée pour en savoir plus sur les fonctionnalités de Chrome</translation>
 <translation id="7949135979217012031">Antivirus et logiciels malveillants</translation>
 <translation id="7950027195171824198">Gérez vos préférences de cookies dans les paramètres Chrome</translation>
-<translation id="7950440490184876634">Utiliser vos micros (<ph name="MICS_COUNT" />)</translation>
 <translation id="7951415247503192394">(32 bits)</translation>
 <translation id="7952192831285741665">EDP européen</translation>
 <translation id="7952250633095257243">Un raccourci doit être saisi</translation>

@@ -171,6 +171,7 @@
 <translation id="3261565993776444564">ცადეთ ახალი ფერი თქვენი ბრაუზერის მოსარგებად</translation>
 <translation id="3282568296779691940">შესვლა Chrome-ში</translation>
 <translation id="3286538390144397061">გადატვირთეთ ახლა</translation>
+<translation id="3292333338048274092">დაგჭირდებათ Chrome-ის გადატვირთვა.</translation>
 <translation id="3360895254066713204">Chrome-ის დამხმარე</translation>
 <translation id="3379938682270551431">{0,plural, =0{Chrome ახლა ხელახლა გაეშვება}=1{Chrome ხელახლა გაეშვება 1 წამში}other{Chrome ხელახლა გაეშვება # წამში}}</translation>
 <translation id="3396977131400919238">ინსტალაციის დროს წარმოიქმნა ოპერატიული სისტემის შეცდომა. ხელახლა ჩამოტვირთეთ Google Chrome.</translation>
@@ -215,6 +216,7 @@
 <translation id="4035053306113201399">განახლების მისასადაგებლად, ChromeOS უნდა გადაიტვირთოს.</translation>
 <translation id="4050175100176540509">უსაფრთხოების მნიშვნელოვანი გაუმჯობესება და ახალი თვისებები ხელმისაწვდომია უახლეს ვერსიაში.</translation>
 <translation id="4053720452172726777">Google Chrome-ის მორგება და კონტროლი</translation>
+<translation id="4084404300720192944">თქვენი ფანჯრის გასაზიარებლად დაუშვით ეკრანის ჩაწერა Chrome-ისთვის სისტემის პარამეტრებში.</translation>
 <translation id="4106587138345390261">Chrome მუშაობს ახალ ფუნქციებზე, რომელთა მეშვეობითაც საიტებს იგივე ფუნქციონალი შეუნარჩუნდება თქვენი ნაკლები ინფორმაციის გამოყენებით</translation>
 <translation id="4110895483821904099">შექმენით ახალი Chrome პროფილი</translation>
 <translation id="4111566860456076004">Chrome ვერ ადასტურებს ამ გაფართოების წარმომავლობას და შესაძლოა, ის სახიფათო იყოს. წაშალეთ ის Chrome-იდან, რომ მას აღარ შეეძლოს თქვენი მონაცემების (მათ შორის, პერსონალური ინფორმაციის) ნახვა და შეცვლა თქვენ მიერ მონახულებულ საიტებზე.</translation>
@@ -353,6 +355,7 @@ Google Chrome ვერ შეძლებს თქვენი პარამ
 <translation id="6173637689840186878"><ph name="PAGE_TITLE" /> — Google Chrome Beta</translation>
 <translation id="6182736845697986886">ინსტალაცია ვერ მოხერხდა განახლების სერვერის შიდა შეცდომის გამო.</translation>
 <translation id="6200139057479872438">ბოლო დროს არ ყოფილხართ. Chrome-მა ამოშალა <ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /></translation>
+<translation id="621585339844629864">თქვენი ეკრანის გასაზიარებლად დაუშვით ეკრანის ჩაწერა Chrome-ისთვის სისტემის პარამეტრებში.</translation>
 <translation id="6235018212288296708">Google Chrome-ის შემომავალი ტრაფიკის წესი mDNS ტრაფიკისთვის.</translation>
 <translation id="624230925347970731">Chrome მალე დაიხურება</translation>
 <translation id="6247557882553405851">Google პაროლების მმართველი</translation>

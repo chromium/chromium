@@ -572,7 +572,6 @@
 <translation id="2046951263634619614">零售書店</translation>
 <translation id="2048261947532620704">正在翻譯頁面</translation>
 <translation id="2053111141626950936">系統不會翻譯<ph name="LANGUAGE" />網頁。</translation>
-<translation id="2055461225779831292">使用及移動攝影機 (<ph name="CAMERAS_COUNT" /> 部)</translation>
 <translation id="2056492565825767809">鎖定滑鼠游標</translation>
 <translation id="2056658168519009885">網站可以要求 Chrome 提供資訊，據此向你放送個人化廣告。</translation>
 <translation id="2059166748188874810">縣/市</translation>
@@ -650,7 +649,6 @@
 <translation id="2170417331417184438">卡片只會儲存到這部裝置</translation>
 <translation id="2172089022819052306">交通工具維修保養</translation>
 <translation id="2175630235841878061">無法下載超過 100 MB 的檔案</translation>
-<translation id="2176198174348007293">使用攝影機 (<ph name="CAMERAS_COUNT" />)</translation>
 <translation id="2176974405772725904">將地址儲存到帳戶</translation>
 <translation id="2178665390943006934">「更新 Chrome」按鈕，啟動後即可透過 Chrome 設定更新 Chrome</translation>
 <translation id="2181821976797666341">政策</translation>
@@ -3627,7 +3625,6 @@
 <translation id="7947813448670013867"><ph name="SEE_CHROME_TIPS_FOCUSED_FRIENDLY_MATCH_TEXT" />；按下 Tab 鍵再按下 Enter 鍵即可瞭解 Chrome 功能</translation>
 <translation id="7949135979217012031">防毒與惡意軟體</translation>
 <translation id="7950027195171824198">在 Chrome 設定中管理 Cookie 偏好設定</translation>
-<translation id="7950440490184876634">使用麥克風 (<ph name="MICS_COUNT" />)</translation>
 <translation id="7951415247503192394">(32 位元)</translation>
 <translation id="7952192831285741665">歐洲 EDP</translation>
 <translation id="7952250633095257243">快捷字詞不可留空</translation>

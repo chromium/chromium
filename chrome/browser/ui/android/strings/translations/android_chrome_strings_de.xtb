@@ -274,6 +274,7 @@ Nur Personen, die deine Passphrase kennen, können deine verschlüsselten Daten 
 <translation id="2450083983707403292">Möchtest du den Download von <ph name="FILE_NAME" /> noch einmal starten?</translation>
 <translation id="2453860139492968684">Fertig</translation>
 <translation id="2461822463642141190">Aktuell</translation>
+<translation id="2472163211318554013">Wenn du Chrome optimal nutzen möchtest, melde dich an</translation>
 <translation id="247737702124049222">Bildbeschreibungen sind aktiviert</translation>
 <translation id="2479148705183875116">Zu den Einstellungen</translation>
 <translation id="2482878487686419369">Benachrichtigungen</translation>
@@ -285,6 +286,7 @@ Nur Personen, die deine Passphrase kennen, können deine verschlüsselten Daten 
 <translation id="2515921719039583189">Deine Chrome-Daten vom Gerät löschen?</translation>
 <translation id="2517113738956581680">Tabellenblatt in Originalgröße</translation>
 <translation id="2523184218357549926">URLs der von dir besuchten Seiten werden an Google gesendet</translation>
+<translation id="2524132927880411790">Zur Sprachsuche in der Google App</translation>
 <translation id="2527209463677295330">Wenn du mehr Text einer Seite einschließt, kannst du bessere Ergebnisse erhalten</translation>
 <translation id="2527497042232966453">Zu Inkognitotabs gewechselt</translation>
 <translation id="2527779675047087889">Inhalte der Zwischenablage ausblenden</translation>
@@ -424,7 +426,6 @@ Nur Personen, die deine Passphrase kennen, können deine verschlüsselten Daten 
 <translation id="3098745985164956033">Einige Bilder werden an Google gesendet, um die Beschreibungen zu verbessern</translation>
 <translation id="3114507951000454849">Nachrichten von heute lesen <ph name="NEWS_ICON" /></translation>
 <translation id="3123734510202723619">Ankündigungen</translation>
-<translation id="3146775326699342508">Melde dich an, um Lesezeichen und mehr von deinen anderen Geräten abzurufen</translation>
 <translation id="314939179385989105">Chrome-Startseite</translation>
 <translation id="3158667104057012316">Nach manueller Reihenfolge sortieren</translation>
 <translation id="3166827708714933426">Tastenkombinationen für Tabs und Fenster</translation>
@@ -519,6 +520,7 @@ Nur Personen, die deine Passphrase kennen, können deine verschlüsselten Daten 
 <translation id="363596933471559332">Du wirst mit gespeicherten Anmeldedaten automatisch auf Websites angemeldet. Wenn diese Funktion nicht aktiviert ist, wirst du jedes Mal aufgefordert, dich manuell auf einer Website anzumelden.</translation>
 <translation id="3636940436873918441">Bevorzugte Sprachen</translation>
 <translation id="3637744895182738742">Falls du deine Passphrase vergessen hast oder diese Einstellung ändern möchtest, <ph name="BEGIN_LINK" />lösche die Chrome-Daten in deinem Konto<ph name="END_LINK" />.</translation>
+<translation id="3674208116086565128">Zur Startseite der Google App</translation>
 <translation id="368329460027487650">Abgemeldet. Anmeldeoptionen werden geöffnet.</translation>
 <translation id="3687645719033307815">Du siehst eine Vorschau dieser Seite</translation>
 <translation id="3690369331356918524">Warnt dich, wenn Passwörter durch eine Datenpanne preisgegeben worden sind</translation>
@@ -1341,6 +1343,7 @@ Wenn du diese Einstellung ändern möchtest, <ph name="BEGIN_LINK" />lösche die
 <translation id="752220631458524187">Wenn du fertig bist, kannst du die Verbindung trennen</translation>
 <translation id="7523960634226602883">Mit deiner Kamera über Google Lens suchen</translation>
 <translation id="752731652852882757">Im Inkognitomodus blockieren</translation>
+<translation id="7557508262441527045">Abgemeldet</translation>
 <translation id="7577900504646297215">Interessen verwalten</translation>
 <translation id="757855969265046257">{FILES,plural, =1{<ph name="FILES_DOWNLOADED_ONE" /> Datei heruntergeladen}other{<ph name="FILES_DOWNLOADED_MANY" /> Dateien heruntergeladen}}</translation>
 <translation id="7581273696622423628">An Umfrage teilnehmen</translation>
@@ -1386,7 +1389,6 @@ Wenn du diese Einstellung ändern möchtest, <ph name="BEGIN_LINK" />lösche die
 <translation id="777637629667389858">Wenn du angemeldet bist, bist du in allen Google-Diensten besser geschützt.</translation>
 <translation id="7778840695157240389">Komm später wieder vorbei, um neue Artikel zu lesen</translation>
 <translation id="7780645209293383778">Verknüpft diese Daten vorübergehend mit deinem Google-Konto, sofern du angemeldet bist, um dich in Google-Apps zu schützen</translation>
-<translation id="7786562169000598736">Alle deine Lesezeichen abrufen</translation>
 <translation id="7791543448312431591">Hinzufügen</translation>
 <translation id="7798392620021911922"><ph name="TAB_COUNT" /> Tabs wiederhergestellt</translation>
 <translation id="780287761701992588">Lesezeichen, Passwörter und andere Daten auf allen deinen Geräten aufrufen</translation>
@@ -1475,6 +1477,7 @@ Wenn du diese Einstellung ändern möchtest, <ph name="BEGIN_LINK" />lösche die
 <translation id="813082847718468539">Website-Informationen anzeigen</translation>
 <translation id="8135406045838672858">Heruntergeladene PDFs werden automatisch mit <ph name="APP_NAME" /> geöffnet</translation>
 <translation id="8137562778192957619">Du musst dir dieses Passwort nicht merken. Es wird im Google Passwortmanager gespeichert.</translation>
+<translation id="8152331954420209374">Zu Lens</translation>
 <translation id="8163820386638255770">Bestätige deine Identität, um Passwörter in deinem Google-Konto zu verwenden und zu speichern</translation>
 <translation id="8171286197772512427">Tabellenblatt zum Teilen von zusammenfassendem Feedback geöffnet</translation>
 <translation id="8179976553408161302">Eingabetaste</translation>
@@ -1511,6 +1514,7 @@ Wenn du diese Einstellung ändern möchtest, <ph name="BEGIN_LINK" />lösche die
 <translation id="8348430946834215779">Nach Möglichkeit HTTPS verwenden und warnen, bevor Websites geladen werden, die das Protokoll nicht unterstützen</translation>
 <translation id="8354977102499939946">Schnelle Sprachsuche verwenden. Wenn du diese Verknüpfung bearbeiten möchtest, rufe die Einstellungen auf.</translation>
 <translation id="835847953965672673"><ph name="NUMBER_OF_DOWNLOADS" /> Downloads wurden wiederhergestellt</translation>
+<translation id="8367705492654390392">Frage hier eingeben</translation>
 <translation id="8368001212524806591">Preis beobachten</translation>
 <translation id="8378850197701296741">Du hast Lesezeichen, den Verlauf und andere Einstellungen von <ph name="FROM_ACCOUNT" /> übernommen.</translation>
 <translation id="8387617938027387193">Deine Identität bestätigen</translation>

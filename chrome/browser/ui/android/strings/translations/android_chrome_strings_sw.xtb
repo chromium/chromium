@@ -274,6 +274,7 @@ Mtu aliye na kauli yako ya siri pekee ndiye anaweza kusoma data yako iliyosimbwa
 <translation id="2450083983707403292">Je, unataka kuanza kupakua <ph name="FILE_NAME" /> tena?</translation>
 <translation id="2453860139492968684">Maliza</translation>
 <translation id="2461822463642141190">Ya sasa</translation>
+<translation id="2472163211318554013">Ingia katika akaunti ili unufaike zaidi kutokana na Chrome</translation>
 <translation id="247737702124049222">Kipengele cha maelezo ya picha kimewashwa</translation>
 <translation id="2479148705183875116">Nenda kwenye Mipangilio</translation>
 <translation id="2482878487686419369">Arifa</translation>
@@ -285,6 +286,7 @@ Mtu aliye na kauli yako ya siri pekee ndiye anaweza kusoma data yako iliyosimbwa
 <translation id="2515921719039583189">Ungependa kufuta data yako ya Chrome kwenye kifaa hiki?</translation>
 <translation id="2517113738956581680">Safu yenye ukubwa kamili</translation>
 <translation id="2523184218357549926">Hutuma URL za kurasa unazotembelea kwa Google</translation>
+<translation id="2524132927880411790">Nenda kwenye kipengele cha Kutafuta kwa Kutamka katika Programu ya Google</translation>
 <translation id="2527209463677295330">Ukijumuisha maandishi zaidi ya ukurasa, huenda ukaona matokeo bora zaidi</translation>
 <translation id="2527497042232966453">Umebadilisha utumie vichupo fiche</translation>
 <translation id="2527779675047087889">Ficha yaliyomo kwenye ubao wa kunakili</translation>
@@ -424,7 +426,6 @@ Mtu aliye na kauli yako ya siri pekee ndiye anaweza kusoma data yako iliyosimbwa
 <translation id="3098745985164956033">Baadhi ya picha hutumwa kwa Google ili kuboresha maelezo unayopata</translation>
 <translation id="3114507951000454849">Soma habari za leo <ph name="NEWS_ICON" /></translation>
 <translation id="3123734510202723619">Matangazo</translation>
-<translation id="3146775326699342508">Ingia katika akaunti ili upate alamisho zako na zaidi kwenye vifaa vyako vingine</translation>
 <translation id="314939179385989105">Ukurasa wa kwanza wa Chrome</translation>
 <translation id="3158667104057012316">Inapanga yenyewe</translation>
 <translation id="3166827708714933426">Njia za mikato ya vichupo na vidirisha</translation>
@@ -519,6 +520,7 @@ Mtu aliye na kauli yako ya siri pekee ndiye anaweza kusoma data yako iliyosimbwa
 <translation id="363596933471559332">Ingia katika tovuti kiotomatiki kwa kutumia kitambulisho kilichohifadhiwa. Kipengele kikiwa kimezimwa, utaombwa kuthibitisha kila wakati kabla ya kuingia katika tovuti.</translation>
 <translation id="3636940436873918441">Lugha unazopendelea</translation>
 <translation id="3637744895182738742">Ikiwa ulisahau kauli yako ya siri au ungependa kubadilisha mipangilio hii, <ph name="BEGIN_LINK" />futa data ya Chrome kwenye akaunti yako<ph name="END_LINK" />.</translation>
+<translation id="3674208116086565128">Nenda kwenye Ukurasa wa Mwanzo wa Programu ya Google</translation>
 <translation id="368329460027487650">Umeondoka kwenye akaunti. Hufungua chaguo za kuingia katika akaunti.</translation>
 <translation id="3687645719033307815">Unaangalia onyesho la kukagua ukurasa huu</translation>
 <translation id="3690369331356918524">Hukuonya iwapo manenosiri yamefichuliwa katika tukio la ufichuzi haramu wa data</translation>
@@ -1341,6 +1343,7 @@ Ili ubadilishe mipangilio hii, <ph name="BEGIN_LINK" />futa data ya Chrome kweny
 <translation id="752220631458524187">Ichomoe ukimaliza</translation>
 <translation id="7523960634226602883">Tafuta kupitia kamera yako ukitumia Lenzi ya Google</translation>
 <translation id="752731652852882757">Zuia unapotumia hali fiche</translation>
+<translation id="7557508262441527045">Umeondoka kwenye akaunti</translation>
 <translation id="7577900504646297215">Dhibiti yanayokuvutia</translation>
 <translation id="757855969265046257">{FILES,plural, =1{Umepakua faili <ph name="FILES_DOWNLOADED_ONE" />}other{Umepakua faili <ph name="FILES_DOWNLOADED_MANY" />}}</translation>
 <translation id="7581273696622423628">Shiriki katika utafiti</translation>
@@ -1386,7 +1389,6 @@ Ili ubadilishe mipangilio hii, <ph name="BEGIN_LINK" />futa data ya Chrome kweny
 <translation id="777637629667389858">Unapokuwa umeingia katika akaunti, hukulinda kwenye huduma zote za Google.</translation>
 <translation id="7778840695157240389">Angalia tena baadaye ili upate taarifa mpya</translation>
 <translation id="7780645209293383778">Huunganisha data hii kwenye Akaunti yako ya Google kwa muda mfupi ukiwa umeingia katika akaunti, ili kukulinda kwenye programu zote za Google</translation>
-<translation id="7786562169000598736">Pata alamisho zako zote</translation>
 <translation id="7791543448312431591">Ongeza</translation>
 <translation id="7798392620021911922">Umerejesha vichupo <ph name="TAB_COUNT" /></translation>
 <translation id="780287761701992588">Fikia alamisho, manenosiri na zaidi kwenye vifaa vyako vyote</translation>
@@ -1475,6 +1477,7 @@ Ili ubadilishe mipangilio hii, <ph name="BEGIN_LINK" />futa data ya Chrome kweny
 <translation id="813082847718468539">Angalia maelezo ya tovuti</translation>
 <translation id="8135406045838672858">PDF zilizopakuliwa hufunguliwa kiotomatiki kwa kutumia <ph name="APP_NAME" /></translation>
 <translation id="8137562778192957619">Hutahitaji kukumbuka nenosiri hili. Litahifadhiwa kwenye Kidhibiti cha Manenosiri cha Google.</translation>
+<translation id="8152331954420209374">Nenda kwenye Lenzi</translation>
 <translation id="8163820386638255770">Ili utumie na uhifadhi manenosiri katika Akaunti yako ya Google, thibitisha kuwa ni wewe</translation>
 <translation id="8171286197772512427">Laha ya kutuma maoni kwa muhtasari imefunguliwa</translation>
 <translation id="8179976553408161302">Enter</translation>
@@ -1511,6 +1514,7 @@ Ili ubadilishe mipangilio hii, <ph name="BEGIN_LINK" />futa data ya Chrome kweny
 <translation id="8348430946834215779">Tumia HTTPS panapowezekana na upate tahadhari kabla ya kupakia tovuti zisizotumia kiendelezi hicho</translation>
 <translation id="8354977102499939946">Tafuta kwa haraka ukitumia sauti yako. Ili ubadilishe njia hii ya mkato, nenda kwenye Mipangilio.</translation>
 <translation id="835847953965672673">Umerejesha vipakuliwa <ph name="NUMBER_OF_DOWNLOADS" /></translation>
+<translation id="8367705492654390392">Uliza chochote</translation>
 <translation id="8368001212524806591">Fuatilia bei</translation>
 <translation id="8378850197701296741">Una alamisho, historia na mipangilio mingine kutoka <ph name="FROM_ACCOUNT" />.</translation>
 <translation id="8387617938027387193">Thibitisha kuwa ni wewe</translation>

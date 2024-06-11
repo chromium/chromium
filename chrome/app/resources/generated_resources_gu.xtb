@@ -369,7 +369,6 @@
 <translation id="1260810365552581339">Linuxમાં કદાચ પર્યાપ્ત ડિસ્ક સ્પેસ નથી. તમે તમારા Linuxમાં ડિસ્ક સ્પેસ વધારી શકો છો અને <ph name="LINK_START" />સેટિંગ<ph name="LINK_END" />માં જઈને ફરી રિસ્ટોર કરવાનો પ્રયાસ કરી શકો છો.</translation>
 <translation id="1261380933454402672">વિનમ્ર</translation>
 <translation id="126156426083987769">ડેમો મોડ ડિવાઇસ લાઇસન્સમાં સમસ્યા આવી.</translation>
-<translation id="1261885284931493480">શું ટૅબ કાઢી નાખીને ગ્રૂપ ડિલીટ કરીએ?</translation>
 <translation id="1263231323834454256">વાચન સૂચિ</translation>
 <translation id="1263733306853729545">ઉમેદવારોની સૂચિનું પેજ બનાવવા માટે <ph name="MINUS" /> અને <ph name="EQUAL" /> કીનો ઉપયોગ કરો</translation>
 <translation id="126387934568812801">ખુલ્લી ટૅબના આ સ્ક્રીનશૉટ અને શીર્ષકો શામેલ કરો</translation>
@@ -1638,7 +1637,6 @@
 <translation id="2187895286714876935">સર્વર પ્રમાણપત્ર આયાત કરવામાં ભૂલ</translation>
 <translation id="2187906491731510095">એક્સ્ટેંશન અપડેટ કર્યા</translation>
 <translation id="2188881192257509750"><ph name="APPLICATION" /> ખોલો</translation>
-<translation id="2188919919468240749">શું ટૅબના ગ્રૂપને ડિલીટ કરીએ?</translation>
 <translation id="2190069059097339078">WiFi ઓળખપત્રો બનાવનાર</translation>
 <translation id="219008588003277019">મૂળ ક્લાયંટ મોડ્યુલ: <ph name="NEXE_NAME" /></translation>
 <translation id="2190355936436201913">(ખાલી)</translation>
@@ -2080,7 +2078,6 @@
 <translation id="249113932447298600">માફ કરશો, આ સમયે ઉપકરણ <ph name="DEVICE_LABEL" /> ને સપોર્ટ નથી.</translation>
 <translation id="2491587035099903063"><ph name="LANGUAGE" /> માટે વૉઇસનો પ્રીવ્યૂ કરો</translation>
 <translation id="2492461744635776704">પ્રમાણપત્ર પર સહી કરવાની વિનંતીની પ્રક્રિયા ચાલુ છે</translation>
-<translation id="2492964937550251173">શું ટૅબ બંધ કરીને ગ્રૂપ ડિલીટ કરીએ?</translation>
 <translation id="249330843868392562">ટેક્સ્ટ-ટૂ-સ્પીચ સેટિંગ ખોલો</translation>
 <translation id="2494555621641843783">Steam ઇન્સ્ટૉલ કરી શકતા નથી</translation>
 <translation id="2495141202137516054">તમારી ડ્રાઇવમાંથી</translation>
@@ -2807,7 +2804,6 @@
 <translation id="3021066826692793094">પતંગિયું</translation>
 <translation id="3021678814754966447">ફ્રેમ સ્રોત &amp;જુઓ</translation>
 <translation id="3021902017511220299">સ્કૅન કરવાનું નિષ્ફળ રહ્યું. આ ક્રિયાને તમારા ઍડમિનિસ્ટ્રેટર દ્વારા બ્લૉક કરવામાં આવી છે.</translation>
-<translation id="3022068420678496307">આમ કરવાથી આ Google એકાઉન્ટ વડે Chromeમાં સાઇન ઇન કરેલા બધા ડિવાઇસમાંથી ગ્રૂપ ડિલીટ કરવામાં આવશે.</translation>
 <translation id="3022361196600037287"><ph name="DEVICE" />ને આ Chromebookમાંથી કાઢી નાખવામાં આવશે અને તેને <ph name="PRIMARY_EMAIL" />માં સાચવવામાં આવશે નહીં.</translation>
 <translation id="3022978424994383087">તે મળ્યો નથી.</translation>
 <translation id="3023464535986383522">સાંભળવા માટે પસંદ કરો</translation>
@@ -2982,6 +2978,7 @@
 <translation id="3163511056918491211">તમારા ડેટાને સરળતાથી રિસ્ટોર કરો અથવા કોઈપણ સમયે ડિવાઇસ સ્વિચ કરો. તમારું બૅકઅપ Google પર અપલોડ કરવામાં આવે છે અને તમારા Google એકાઉન્ટના પાસવર્ડનો ઉપયોગ કરીને એન્ક્રિપ્ટ કરવામાં આવે છે.</translation>
 <translation id="3164329792803560526">આ ટૅબને <ph name="APP_NAME" />માં શેર કરી રહ્યાં છીએ</translation>
 <translation id="3165390001037658081">કેટલાક કૅરિઅર આ સુવિધાને અવરોધિત કરી શકે છે.</translation>
+<translation id="316542773973815724">નૅવિગેશન</translation>
 <translation id="3165734944977250074">ફાઇલ ખસેડી શકાતી નથી કારણ કે તે હવે અસ્તિત્વમાં નથી</translation>
 <translation id="3166443275568926403">પર્ફોર્મન્સ અને બૅટરીની સ્થિતિ</translation>
 <translation id="3169930038976362151">તમારી જરૂરિયાત પ્રમાણે થીમ પસંદ કરો. તમારી થીમ, વૉલપેપર અને સ્ક્રીન સેવર જેવું બીજું ઘણું બધું બદલવા માટે, ડેસ્કટૉપ પર માત્ર ટચ કરીને થોડીવાર દબાવી રાખો.</translation>
@@ -3865,7 +3862,6 @@
 <translation id="3810914450553844415">તમારા વ્યવસ્થાપક વધારાના Google એકાઉન્ટની મંજૂરી આપતા નથી.</translation>
 <translation id="3810973564298564668">મેનેજ કરો</translation>
 <translation id="381202950560906753">બીજી ઉમેરો</translation>
-<translation id="381219490185664296">શું ટૅબનું ગ્રૂપ અનગ્રૂપ કરીએ?</translation>
 <translation id="3812525830114410218">ખોટું પ્રમાણપત્ર</translation>
 <translation id="3813296892522778813">જો તમે શોધી રહ્યાં છો તે શોધી શકતાં ન હોવ તો <ph name="BEGIN_LINK_CHROMIUM" />Google Chrome સહાય<ph name="END_LINK_CHROMIUM" /> પર જાઓ</translation>
 <translation id="3813358687923336574">પેજનો અનુવાદ કરવા અને ઝડપી જવાબો આપવા ઉપયોગમાં લેવાતી ભાષા</translation>
@@ -4228,7 +4224,6 @@
 <translation id="4078738236287221428">એગ્રેસિવ</translation>
 <translation id="4078903002989614318">સૉર્ટિંગ અને સૂચિના વિકલ્પો</translation>
 <translation id="4079140982534148664">વધુ સારી બનાવાયેલી જોડણીની તપાસનો ઉપયોગ કરો</translation>
-<translation id="4083735423615351075">આ ડિવાઇસ પર ટૅબ ખુલ્લા રહેશે, પરંતુ આ Google એકાઉન્ટ વડે Chromeમાં સાઇન ઇન કરેલા બધા ડિવાઇસમાંથી ગ્રૂપ ડિલીટ કરવામાં આવશે.</translation>
 <translation id="4084682180776658562">બુકમાર્ક</translation>
 <translation id="4084835346725913160"><ph name="TAB_NAME" /> બંધ કરો</translation>
 <translation id="4085298594534903246">આ પેજ પર JavaScript બ્લૉક હતું.</translation>
@@ -4238,7 +4233,6 @@
 
 <ph name="EXTENSION_FILE" /></translation>
 <translation id="4087328411748538168">જમણી બાજુએ બતાવો</translation>
-<translation id="4088879333319441249">શું ટૅબના ગ્રૂપને અનગ્રૂપ કરીએ?</translation>
 <translation id="4089235344645910861">સેટિંગ સાચવી. સિંક શરૂ થયું.</translation>
 <translation id="4089817585533500276">shift + <ph name="TOP_ROW_KEY" /></translation>
 <translation id="4090103403438682346">ચકાસાયેલો ઍક્સેસ ચાલુ કરો</translation>
@@ -4324,7 +4318,6 @@
 <translation id="4148195018520464922">તમે સાઇન ઇનની સુવિધા અમુક વપરાશકર્તાઓ પૂરતી જ મર્યાદિત રાખી શકો છો. આ સાઇન ઇન કરવાની સ્ક્રીન પરથી "વ્યક્તિ ઉમેરો"નો વિકલ્પ કાઢી નાખે છે. તમે હાલના વપરાશકર્તાઓને કાઢી પણ નાખી શકો છો.</translation>
 <translation id="4148957013307229264">ઇન્સ્ટોલ કરી રહ્યું છે...</translation>
 <translation id="4150201353443180367">ડિસ્પ્લે</translation>
-<translation id="4150417452770391330">કોઈ કૅમેરા કનેક્ટ કરો</translation>
 <translation id="4150569944729499860">સ્ક્રીન સંદર્ભ</translation>
 <translation id="4151449637210235443">અમને તમારા તાજેતરના ગેમપ્લે વિશે જણાવો</translation>
 <translation id="4151503145138736576">સાફ કરવા માટે કોઈ ઑફલાઇન સ્ટોરેજ નથી</translation>
@@ -5123,7 +5116,6 @@
 <translation id="4777458362738635055">આ ડિવાઇસના અન્ય વપરાશકર્તાઓ આ નેટવર્કનો ઉપયોગ કરી શકે છે</translation>
 <translation id="4777813841994368231">ચાલુ • આ એક્સ્ટેન્શન તેના ડેવલપર દ્વારા અનપબ્લિશ કરવામાં આવ્યું હતું</translation>
 <translation id="4777825441726637019">Play Store</translation>
-<translation id="4777866634702576038">શું ટૅબનું ગ્રૂપ ડિલીટ કરીએ?</translation>
 <translation id="4777943778632837590">નેટવર્કના નામ સર્વરને ગોઠવો</translation>
 <translation id="4778653490315793244">હજી સુધી બતાવવા માટે કંઈ નથી</translation>
 <translation id="4779083564647765204">ઝૂમ કરો</translation>
@@ -5535,7 +5527,6 @@
 <translation id="5093477827231450397">તમે બ્લૉક કરેલી એવી સાઇટની સૂચિ કે જે અન્ય સાઇટને જાહેરાતો સૂચવે એવું તમે ઇચ્છતા નથી</translation>
 <translation id="5093569275467863761">બૅક/ફૉરવર્ડ કૅશ મેમરીમાં સ્ટોર કરેલી છૂપી સબફ્રેમ: <ph name="BACK_FORWARD_CACHE_INCOGNITO_PAGE_URL" /></translation>
 <translation id="5094176498302660097">તમે Files ઍપ અથવા અન્ય ઍપમાં, આ ઍપ વડે સપોર્ટેડ ફાઇલો ખોલી શકો છો અને તેમાં ફેરફાર કરી શકો છો. આ ઍપમાં ડિફૉલ્ટ તરીકે ખોલવામાં આવે તેવી ફાઇલોને નિયંત્રિત કરવા માટે, <ph name="BEGIN_LINK" />તમારા ડિવાઇસ પર ડિફૉલ્ટ ઍપને સેટ કરવાની રીત વિશે જાણો<ph name="END_LINK" />.</translation>
-<translation id="5094423602314093681">શું ટૅબ કાઢી નાખીને ગ્રૂપ ડિલીટ કરીએ?</translation>
 <translation id="5094721898978802975">સહયોગ કરતી મૂળ ઍપ્લિકેશન સાથે સંચાર કરો</translation>
 <translation id="5095252080770652994">પ્રગતિ</translation>
 <translation id="5095507226704905004">ફાઇલ કૉપિ કરી શકાતી નથી કારણ કે તે હવે અસ્તિત્વમાં નથી</translation>
@@ -7316,7 +7307,6 @@ USB ડિવાઇસ</translation>
 <translation id="6445450263907939268">જો તમે આ ફેરફારો ઇચ્છતા ન હોય, તો તમે તમારા પાછલાં સેટિંગને પહેલાંના જેવું કરો.</translation>
 <translation id="6446213738085045933">ડેસ્કટૉપ શોર્ટકટ બનાવો</translation>
 <translation id="6447842834002726250">કૂકીઝ</translation>
-<translation id="6449554712554071184">આમ કરવાથી તમારા ડિવાઇસમાંથી ગ્રૂપ કાયમ માટે ડિલીટ થઈ જશે.</translation>
 <translation id="6450876761651513209">તમારા પ્રાઇવસી સંબંધિત સેટિંગ બદલો</translation>
 <translation id="6451591602925140504">{NUM_PAGES,plural, =0{<ph name="PAGE_TITLE" />}=1{<ph name="PAGE_TITLE" /> અને અન્ય 1 ટૅબ}one{<ph name="PAGE_TITLE" /> અને અન્ય # ટૅબ}other{<ph name="PAGE_TITLE" /> અને અન્ય # ટૅબ}}</translation>
 <translation id="6451689256222386810">જો તમે તમારો પાસફ્રેઝ ભૂલી ગયાં હોવ અથવા આ સેટિંગ બદલવા માગતા હોવ, તો <ph name="BEGIN_LINK" />સમન્વયનને ફરીથી સેટ કરો<ph name="END_LINK" />.</translation>
@@ -8469,7 +8459,6 @@ USB ડિવાઇસ</translation>
 <translation id="7340650977506865820">સાઇટ તમારી સ્ક્રીન શેર કરી રહી છે</translation>
 <translation id="7340757554212515731">Googleને ક્રૅશ રિપોર્ટ તેમજ ડાયગ્નોસ્ટિક અને વપરાશનો ડેટા ઑટોમૅટિક રીતે મોકલે છે</translation>
 <translation id="734088800888587319">નેટવર્ક મેટ્રિક</translation>
-<translation id="7341612916770129581">માઇક્રોફોન કનેક્ટ કરો</translation>
 <translation id="7341834142292923918">આ સાઇટને ઍક્સેસ કરવા માગે છે</translation>
 <translation id="7343372807593926528">કૃપા કરીને પ્રતિસાદ મોકલતા પહેલાં સમસ્યાનું વર્ણન કરો.</translation>
 <translation id="7344585835349671209">તમારા ડિવાઇસ પર HTTPS/SSL પ્રમાણપત્રો મેનેજ કરો</translation>
@@ -9368,7 +9357,6 @@ USB ડિવાઇસ</translation>
 <translation id="7974936243149753750">ઓવરસ્કૅન</translation>
 <translation id="7975504106303186033">તમારે આ Chrome શૈક્ષણિક ડિવાઇસની નોંધણી શિક્ષણ સંબંધિત એકાઉન્ટમાં કરાવવી જરૂરી છે. નવા એકાઉન્ટ માટે સાઇન અપ કરવા, કૃપા કરીને g.co/workspace/edusignupની મુલાકાત લો.</translation>
 <translation id="7977451675950311423">તમે ઉપયોગમાં લો છો તે પાસવર્ડ સાથે કોઈ ડેટા ઉલ્લંઘન દરમિયાન ચેડાં કરવામાં આવ્યા હોય તો તમને ચેતવણી આપે છે.</translation>
-<translation id="797824194429476746">આ ડિવાઇસ પર ટૅબ ખુલ્લા રહેશે, પરંતુ ગ્રૂપ કાયમ માટે ડિલીટ કરવામાં આવશે.</translation>
 <translation id="7978412674231730200">ખાનગી કી</translation>
 <translation id="7978450511781612192">આનાથી તમે તમારા Google એકાઉન્ટમાંથી સાઇન આઉટ થઈ જશો. ત્યાર પછી તમારાં બુકમાર્ક, ઇતિહાસ, પાસવર્ડ અને ઘણું બધું સિંક કરવામાં નહીં આવે.</translation>
 <translation id="7980066177668669492">Base64-encoded ASCII, એકથી વધુ સર્ટિફિકેટ</translation>
@@ -9418,6 +9406,7 @@ USB ડિવાઇસ</translation>
 <translation id="8017679124341497925">શૉર્ટકટમાં ફેરફાર કર્યો</translation>
 <translation id="8018298733481692628">આ પ્રોફાઇલ ડિલીટ કરીએ?</translation>
 <translation id="8018313076035239964">વેબસાઇટ કઈ માહિતીનો ઉપયોગ કરી શકે અને તેઓ કઈ કન્ટેન્ટ તમને બતાવી શકે તે નિયંત્રિત કરો</translation>
+<translation id="802154636333426148">ડાઉનલોડ નિષ્ફળ થયું</translation>
 <translation id="8022466874160067884">તમારું Google એકાઉન્ટ અને પાસવર્ડ દાખલ કરો</translation>
 <translation id="8023133589013344428">ChromeOS Flexના સેટિંગમાં ભાષાઓને મેનેજ કરો</translation>
 <translation id="8023801379949507775">એક્સ્ટેન્શન્સ હમણાં અપડેટ કરો</translation>
@@ -10706,7 +10695,6 @@ USB ડિવાઇસ</translation>
 <translation id="8962863356073277855">URLનું ફૉર્મેટ https://www.example.com હોવું જોઈએ</translation>
 <translation id="8962918469425892674">આ સાઇટ મોશન અથવા લાઇટ સેન્સરનો ઉપયોગ કરી રહી છે.</translation>
 <translation id="8963117664422609631">સાઇટ સેટિંગ પર જાઓ</translation>
-<translation id="8964795217937248330">શું ટૅબ બંધ કરીને ગ્રૂપ ડિલીટ કરીએ?</translation>
 <translation id="8965037249707889821">જૂનો પાસવર્ડ દાખલ કરો</translation>
 <translation id="8966809848145604011">અન્ય પ્રોફાઇલ</translation>
 <translation id="8967427617812342790">વાંચન સૂચિમાં ઉમેરો</translation>

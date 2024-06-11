@@ -274,6 +274,7 @@
 <translation id="2450083983707403292">ଆପଣ କ’ଣ ପୁଣି <ph name="FILE_NAME" /> ଡାଉନ୍‌ଲୋଡ୍‌ କରିବାକୁ ଚାହୁଁଛନ୍ତି?</translation>
 <translation id="2453860139492968684">ସମାପ୍ତ କରନ୍ତୁ</translation>
 <translation id="2461822463642141190">ବର୍ତ୍ତମାନର</translation>
+<translation id="2472163211318554013">Chromeରୁ ସବୁଠାରୁ ଅଧିକ ସୁବିଧା ପାଇବା ପାଇଁ ସାଇନ ଇନ କରନ୍ତୁ</translation>
 <translation id="247737702124049222">ଛବିର ବର୍ଣ୍ଣନା ଚାଲୁ ଅଛି</translation>
 <translation id="2479148705183875116">ସେଟିଂସକୁ ଯାଆନ୍ତୁ</translation>
 <translation id="2482878487686419369">ବିଜ୍ଞପ୍ତି</translation>
@@ -425,7 +426,6 @@
 <translation id="3098745985164956033">ଆପଣଙ୍କ ପାଇଁ ବର୍ଣ୍ଣନାକୁ ଉନ୍ନତ କରିବା ନିମନ୍ତେ କିଛି ଛବି Googleକୁ ପଠାଯାଇଛି</translation>
 <translation id="3114507951000454849">ଆଜିର ସମାଚାର ପଢ଼ନ୍ତୁ <ph name="NEWS_ICON" /></translation>
 <translation id="3123734510202723619">ଘୋଷଣାଗୁଡ଼ିକ</translation>
-<translation id="3146775326699342508">ଆପଣଙ୍କର ଅନ୍ୟ ଡିଭାଇସଗୁଡ଼ିକରୁ ଆପଣଙ୍କ ବୁକମାର୍କ ଏବଂ ଆହୁରି ଅନେକ କିଛି ପାଇବାକୁ ସାଇନ ଇନ କରନ୍ତୁ</translation>
 <translation id="314939179385989105">Chromeର ମୂଳପୃଷ୍ଠା</translation>
 <translation id="3158667104057012316">ମାନୁଆଲ କ୍ରମରେ ସର୍ଟ କରାଯାଉଛି</translation>
 <translation id="3166827708714933426">ଟାବ୍‌ ଏବଂ ୱିଣ୍ଡୋ ସର୍ଟକଟ୍‌</translation>
@@ -1343,6 +1343,7 @@
 <translation id="752220631458524187">ଆପଣଙ୍କର କାର୍ଯ୍ୟ ସମ୍ପୂର୍ଣ୍ଣ ହୋଇଗଲେ ବିଚ୍ଛିନ୍ନ କରନ୍ତୁ</translation>
 <translation id="7523960634226602883">Google Lens ବ୍ୟବହାର କରି ଆପଣଙ୍କ କ୍ୟାମେରା ମାଧ୍ୟମରେ ସନ୍ଧାନ କରନ୍ତୁ</translation>
 <translation id="752731652852882757">ଇନକଗ୍ନିଟୋ ମୋଡ ବ୍ୟବହାର କରିବା ସମୟରେ ବ୍ଲକ କରନ୍ତୁ</translation>
+<translation id="7557508262441527045">ସାଇନ ଆଉଟ କରାଯାଇଛି</translation>
 <translation id="7577900504646297215">ରୁଚିଗୁଡ଼ିକୁ ପରିଚାଳନା କରନ୍ତୁ</translation>
 <translation id="757855969265046257">{FILES,plural, =1{<ph name="FILES_DOWNLOADED_ONE" />ଟି ଫାଇଲ୍‌ ଡାଉନ୍‌ଲୋଡ୍‌ କରାଗଲା}other{<ph name="FILES_DOWNLOADED_MANY" />ଟି ଫାଇଲ୍‌ ଡାଉନ୍‌ଲୋଡ୍‌ କରାଗଲା}}</translation>
 <translation id="7581273696622423628">ସର୍ଭେରେ ଭାଗ ନିଅନ୍ତୁ</translation>
@@ -1388,7 +1389,6 @@
 <translation id="777637629667389858">ଆପଣ ସାଇନ ଇନ ଥିବା ବେଳେ Google ସେବାଗୁଡ଼ିକରେ ଆପଣଙ୍କୁ ସୁରକ୍ଷା ଦେଇଥାଏ।</translation>
 <translation id="7778840695157240389">ନୂଆ ଷ୍ଟୋରୀଗୁଡ଼ିକ ପାଇଁ ପରେ ପୁଣି ଦେଖନ୍ତୁ</translation>
 <translation id="7780645209293383778">ସମଗ୍ର Google ଆପରେ ଆପଣଙ୍କୁ ସୁରକ୍ଷା ଦେବା ପାଇଁ, ଆପଣ ସାଇନ ଇନ କଲେ ଏହି ଡାଟାକୁ ଆପଣଙ୍କ Google ଆକାଉଣ୍ଟରେ ଅସ୍ଥାୟୀ ଭାବେ ଲିଙ୍କ କରେ</translation>
-<translation id="7786562169000598736">ଆପଣଙ୍କର ସମସ୍ତ ବୁକମାର୍କ ପାଆନ୍ତୁ</translation>
 <translation id="7791543448312431591">ଯୋଡନ୍ତୁ</translation>
 <translation id="7798392620021911922"><ph name="TAB_COUNT" />ଟି ଟାବ୍ ରିଷ୍ଟୋର କରାଯାଇଛି</translation>
 <translation id="780287761701992588">ଆପଣଙ୍କର ସମସ୍ତ ଡିଭାଇସରେ ଆପଣଙ୍କ ବୁକମାର୍କ, ପାସୱାର୍ଡ ଏବଂ ଆହୁରି ଅନେକ କିଛି ପାଆନ୍ତୁ</translation>

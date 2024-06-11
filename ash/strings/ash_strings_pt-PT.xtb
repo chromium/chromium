@@ -180,6 +180,7 @@ Eis alguns exemplos do que pode experimentar para começar.</translation>
 <translation id="1611993646327628135">Ativado</translation>
 <translation id="1620510694547887537">Câmara</translation>
 <translation id="1623768535032616219">Reduzir Google Classroom</translation>
+<translation id="163032029566320584"><ph name="UNAVAILABLE_DLC" /> não está disponível.</translation>
 <translation id="1632985212731562677">O acesso por comutador pode ser desativado em Definições &gt; Acessibilidade.</translation>
 <translation id="1637505162081889933"><ph name="NUM_DEVICES" /> dispositivos</translation>
 <translation id="1639239467298939599">A carregar…</translation>
@@ -723,6 +724,7 @@ Ligue o dispositivo à corrente.</translation>
 <translation id="3702846122927433391">População da Nigéria</translation>
 <translation id="3705722231355495246">-</translation>
 <translation id="3706423975342040244">Entretenimento</translation>
+<translation id="3707093869106077605"><ph name="UNAVAILABLE_DLC_ONE" /> e <ph name="UNAVAILABLE_DLC_TWO" /> não estão disponíveis.</translation>
 <translation id="3708186454126126312">Ligados anteriormente</translation>
 <translation id="3712143870407382523">Escolha uma janela para este lado</translation>
 <translation id="371370241367527062">Microfone frontal</translation>
@@ -995,6 +997,7 @@ Algumas funcionalidades são limitadas para aumentar a autonomia da bateria.</tr
 <translation id="4733161265940833579"><ph name="BATTERY_PERCENTAGE" />% (esquerdo)</translation>
 <translation id="4734965478015604180">Horizontal</translation>
 <translation id="4735944890391795473">Espaço de trabalho 12</translation>
+<translation id="4736732123074402682">Verifique a ligação e tente novamente.</translation>
 <translation id="473775607612524610">Atualizar</translation>
 <translation id="4740516757091333363">Eliminar espaço de trabalho guardado?</translation>
 <translation id="4746798685375253449">{0,plural, =1{Atualize o dispositivo para a versão anterior dentro de 1 dia}other{Atualize o dispositivo para a versão anterior dentro de # dias}}</translation>
@@ -1328,6 +1331,7 @@ Nenhum dispositivo ligado.</translation>
 <translation id="588258955323874662">Ecrã inteiro</translation>
 <translation id="5887954372087850114">Janela <ph name="WINDOW_TITLE" /> atribuída a <ph name="DESK_TITLE" /> e não atribuída a mais nenhum espaço de trabalho</translation>
 <translation id="588817334757907802">Abrir ficheiro no navegador Chrome</translation>
+<translation id="5892014525522223653">Está offline.</translation>
 <translation id="5895138241574237353">Reiniciar</translation>
 <translation id="589817443623831496">Análise de pontos</translation>
 <translation id="5901316534475909376">Shift+Esc</translation>
@@ -1387,6 +1391,7 @@ Nenhum dispositivo ligado.</translation>
 <translation id="6095425951508823973">Adicionar ligação a <ph name="PROVIDER" /></translation>
 <translation id="6099678161144790572">Editado no mês passado</translation>
 <translation id="6103838137565245112">sistema</translation>
+<translation id="610395411842312282">Agrupar duas janelas lado a lado</translation>
 <translation id="6108952804512516814">Criar com IA</translation>
 <translation id="6114505516289286752">Ficheiros de voz em <ph name="LANGUAGE" /> transferidos</translation>
 <translation id="6119360623251949462"><ph name="CHARGING_STATE" />. <ph name="BATTERY_SAVER_STATE" /></translation>
@@ -1394,6 +1399,7 @@ Nenhum dispositivo ligado.</translation>
 <translation id="6121838516699723042">Confirmar transferência de <ph name="FILENAME" /></translation>
 <translation id="612734058257491180">O Assistente Google não está disponível em sessões de convidado.</translation>
 <translation id="6127370444807669747">Para playlists personalizadas e mais música de concentração, experimente o YouTube Music Premium</translation>
+<translation id="6127395413317891856">Está offline. Verifique a ligação e tente novamente.</translation>
 <translation id="6129953537138746214">Espaço</translation>
 <translation id="6137566720514957455">Abrir caixa de diálogo de remoção para <ph name="USER_EMAIL_ADDRESS" /></translation>
 <translation id="6141205840878048728">Em que é que gostaria de se focar?</translation>
@@ -1967,6 +1973,7 @@ Para encerrar o dispositivo, prima sem soltar o botão ligar/desligar novamente 
 <translation id="8257510091797044096">Configurar o dispositivo</translation>
 <translation id="8261506727792406068">Eliminar</translation>
 <translation id="8262312463845990408">Ativar/desativar reprodução</translation>
+<translation id="8268302343625273732">Ver todos os trabalhos no Google Classroom</translation>
 <translation id="8277261673056602147">Realce texto no ecrã</translation>
 <translation id="8287009018010202411">Produtividade</translation>
 <translation id="828708037801473432">Desativada</translation>

@@ -274,6 +274,7 @@
 <translation id="2450083983707403292">Пачаць спампоўваць файл "<ph name="FILE_NAME" />" зноў?</translation>
 <translation id="2453860139492968684">Завяршыць</translation>
 <translation id="2461822463642141190">Цяпер</translation>
+<translation id="2472163211318554013">Увайдзіце ва ўліковы запіс, каб карыстацца ўсімі магчымасцямі Chrome</translation>
 <translation id="247737702124049222">Апісанні відарысаў уключаны</translation>
 <translation id="2479148705183875116">Перайсці ў Налады</translation>
 <translation id="2482878487686419369">Апавяшчэнні</translation>
@@ -425,7 +426,6 @@
 <translation id="3098745985164956033">Некаторыя відарысы адпраўляюцца ў Google, каб палепшыць іх апісанне</translation>
 <translation id="3114507951000454849">Чытайце сённяшнія навіны <ph name="NEWS_ICON" /></translation>
 <translation id="3123734510202723619">Апавяшчэнні</translation>
-<translation id="3146775326699342508">Увайдзіце ва ўліковы запіс, каб сінхранізаваць закладкі і іншую інфармацыю на сваіх прыладах</translation>
 <translation id="314939179385989105">Галоўная старонка Chrome</translation>
 <translation id="3158667104057012316">Адсартавана ўручную</translation>
 <translation id="3166827708714933426">Спалучэнні клавіш для працы з укладкамі і вокнамі</translation>
@@ -1343,6 +1343,7 @@
 <translation id="752220631458524187">Калі скончыце, адключыце прыладу</translation>
 <translation id="7523960634226602883">Пошук з дапамогай камеры і Google Аб'ектыва</translation>
 <translation id="752731652852882757">Блакіраваць у рэжыме інкогніта</translation>
+<translation id="7557508262441527045">Выкананы выхад</translation>
 <translation id="7577900504646297215">Кіраваць інтарэсамі</translation>
 <translation id="757855969265046257">{FILES,plural, =1{Спампаваны <ph name="FILES_DOWNLOADED_ONE" /> файл}one{Спампаваны <ph name="FILES_DOWNLOADED_MANY" /> файл}few{Спампавана <ph name="FILES_DOWNLOADED_MANY" /> файлы}many{Спампавана <ph name="FILES_DOWNLOADED_MANY" /> файлаў}other{Спампавана <ph name="FILES_DOWNLOADED_MANY" /> файла}}</translation>
 <translation id="7581273696622423628">Прыняць удзел у апытанні</translation>
@@ -1388,7 +1389,6 @@
 <translation id="777637629667389858">Калі вы ўвайшлі ва ўліковы запіс, абараняе вас ва ўсіх сэрвісах Google.</translation>
 <translation id="7778840695157240389">Каб праверыць, ці з'явіліся новыя артыкулы, загляніце сюды пазней</translation>
 <translation id="7780645209293383778">Часова звязвае гэтыя даныя з Уліковым запісам Google, у які вы ўвайшлі, каб абараніць вас у праграмах Google</translation>
-<translation id="7786562169000598736">Трымайце ўсе закладкі пад рукой</translation>
 <translation id="7791543448312431591">Дадаць</translation>
 <translation id="7798392620021911922">Адноўлена ўкладак: <ph name="TAB_COUNT" /></translation>
 <translation id="780287761701992588">Выкарыстоўвайце свае закладкі, паролі і іншыя даныя на ўсіх сваіх прыладах</translation>

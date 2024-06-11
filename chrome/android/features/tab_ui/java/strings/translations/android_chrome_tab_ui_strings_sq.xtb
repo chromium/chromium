@@ -23,6 +23,7 @@
 <translation id="1869137256605757565">{TABS_COUNT,plural, =1{<ph name="TABS_COUNT_ONE" /> skedë}other{<ph name="TABS_COUNT_MANY" /> skeda}}</translation>
 <translation id="2050597508048557928">{TABS_COUNT,plural, =1{Shto te faqeshënuesit <ph name="TABS_COUNT_ONE" /> skedë të zgjedhur}other{Shto te faqeshënuesit <ph name="TABS_COUNT_MANY" /> skeda të zgjedhura}}</translation>
 <translation id="2118649612461486615">Informacione për dyqanin</translation>
+<translation id="2123073051266141035">{INCOGNITO_TABS_COUNT,plural, =1{Skedat dhe grupet e tua të mbyllura mund të hapen përsëri nga seksioni "Skedat e fundit" dhe seksioni "Grupet e skedave". Skeda "e fshehtë" nuk do të ofrohet.}other{Skedat dhe grupet e tua të mbyllura mund të hapen përsëri nga seksioni "Skedat e fundit" dhe seksioni "Grupet e skedave". # skedat "e fshehta" nuk do të ofrohen.}}</translation>
 <translation id="2162620598375156287">Tani <ph name="CURRENT_PRICE" /> te <ph name="SOURCE_WEBSITE" /></translation>
 <translation id="22623456902492423">{TABS_COUNT,plural, =1{Anulo grupimin e skedës}other{Anulo grupimin e skedave}}</translation>
 <translation id="2271452184061378400">Grupet e skedave ruhen këtu</translation>

@@ -571,7 +571,6 @@
 <translation id="2046951263634619614">图书零售商</translation>
 <translation id="2048261947532620704">正在翻译网页</translation>
 <translation id="2053111141626950936">系统不会翻译<ph name="LANGUAGE" />网页。</translation>
-<translation id="2055461225779831292">使用和移动您的摄像头 (<ph name="CAMERAS_COUNT" />)</translation>
 <translation id="2056492565825767809">锁定鼠标指针</translation>
 <translation id="2056658168519009885">网站可请求 Chrome 提供相关信息，以便向您展示个性化广告。</translation>
 <translation id="2059166748188874810">自治市</translation>
@@ -649,7 +648,6 @@
 <translation id="2170417331417184438">卡仅保存至设备</translation>
 <translation id="2172089022819052306">车辆维修与保养</translation>
 <translation id="2175630235841878061">无法下载超过 100MB 的文件</translation>
-<translation id="2176198174348007293">使用摄像头（<ph name="CAMERAS_COUNT" /> 个）</translation>
 <translation id="2176974405772725904">将地址保存到账号</translation>
 <translation id="2178665390943006934">“更新 Chrome”按钮，激活它即可从 Chrome 设置中更新 Chrome</translation>
 <translation id="2181821976797666341">政策</translation>
@@ -3615,7 +3613,6 @@
 <translation id="7947813448670013867"><ph name="SEE_CHROME_TIPS_FOCUSED_FRIENDLY_MATCH_TEXT" />，依次按 Tab 键和 Enter 键即可了解各项 Chrome 功能</translation>
 <translation id="7949135979217012031">杀毒软件与恶意软件</translation>
 <translation id="7950027195171824198">在 Chrome 设置中管理您的 Cookie 偏好设置</translation>
-<translation id="7950440490184876634">使用麦克风（<ph name="MICS_COUNT" /> 个）</translation>
 <translation id="7951415247503192394">（32 位）</translation>
 <translation id="7952192831285741665">欧洲 EDP</translation>
 <translation id="7952250633095257243">快捷字词不得为空</translation>

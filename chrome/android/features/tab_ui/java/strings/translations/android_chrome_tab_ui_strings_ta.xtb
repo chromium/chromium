@@ -23,6 +23,7 @@
 <translation id="1869137256605757565">{TABS_COUNT,plural, =1{<ph name="TABS_COUNT_ONE" /> தாவல்}other{<ph name="TABS_COUNT_MANY" /> தாவல்கள்}}</translation>
 <translation id="2050597508048557928">{TABS_COUNT,plural, =1{தேர்ந்தெடுத்துள்ள <ph name="TABS_COUNT_ONE" /> பக்கத்தை புக்மார்க் செய்யும்}other{தேர்ந்தெடுத்துள்ள <ph name="TABS_COUNT_MANY" /> பக்கங்களை புக்மார்க் செய்யும்}}</translation>
 <translation id="2118649612461486615">ஸ்டோர் தகவல்</translation>
+<translation id="2123073051266141035">{INCOGNITO_TABS_COUNT,plural, =1{மூடிய பக்கங்களையும் குழுக்களையும் ‘சமீபத்திய பக்கங்கள்’, ‘பக்கக் குழுக்கள்’ ஆகிய பிரிவுகளுக்குச் சென்று மீண்டும் திறக்கலாம். உங்களின் மறைநிலைப் பக்கத்தைப் பார்க்க முடியாது.}other{மூடிய பக்கங்களையும் குழுக்களையும் ‘சமீபத்திய பக்கங்கள்’, ‘பக்கக் குழுக்கள்’ ஆகிய பிரிவுகளுக்குச் சென்று மீண்டும் திறக்கலாம். உங்களின் # மறைநிலைப் பக்கங்களைப் பார்க்க முடியாது.}}</translation>
 <translation id="2162620598375156287"><ph name="SOURCE_WEBSITE" /> தளத்தில் தற்போதைய விலை: <ph name="CURRENT_PRICE" /></translation>
 <translation id="22623456902492423">{TABS_COUNT,plural, =1{பக்கத்தைப் பிரி}other{பக்கங்களைப் பிரி}}</translation>
 <translation id="2271452184061378400">உங்கள் பக்கக் குழுக்கள் இங்கே சேமிக்கப்படும்</translation>

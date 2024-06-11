@@ -274,6 +274,7 @@ Solo alguien con tu frase de contraseña puede leer los datos encriptados. Googl
 <translation id="2450083983707403292">¿Deseas comenzar la descarga de <ph name="FILE_NAME" /> de nuevo?</translation>
 <translation id="2453860139492968684">Finalizar</translation>
 <translation id="2461822463642141190">Actual</translation>
+<translation id="2472163211318554013">Para aprovechar Chrome al máximo, accede a tu cuenta.</translation>
 <translation id="247737702124049222">Las descripciones de imágenes están activadas.</translation>
 <translation id="2479148705183875116">Configurar</translation>
 <translation id="2482878487686419369">Notificaciones</translation>
@@ -285,6 +286,7 @@ Solo alguien con tu frase de contraseña puede leer los datos encriptados. Googl
 <translation id="2515921719039583189">¿Borrar datos de Chrome del dispositivo?</translation>
 <translation id="2517113738956581680">Hoja de tamaño completo</translation>
 <translation id="2523184218357549926">Envía a Google las URLs de las páginas que visitas</translation>
+<translation id="2524132927880411790">Ir a la Búsqueda por voz de la app de Google</translation>
 <translation id="2527209463677295330">Si incluyes más texto de la página, obtendrás mejores resultados.</translation>
 <translation id="2527497042232966453">Se seleccionaron las pestañas de incógnito</translation>
 <translation id="2527779675047087889">Oculta el contenido del portapapeles</translation>
@@ -424,7 +426,6 @@ Solo alguien con tu frase de contraseña puede leer los datos encriptados. Googl
 <translation id="3098745985164956033">Se envían algunas imágenes a Google para proporcionarte mejores descripciones.</translation>
 <translation id="3114507951000454849">Lee las noticias de hoy <ph name="NEWS_ICON" /></translation>
 <translation id="3123734510202723619">Anuncios</translation>
-<translation id="3146775326699342508">Accede para obtener tus favoritos y más de tus otros dispositivos</translation>
 <translation id="314939179385989105">Página principal de Chrome</translation>
 <translation id="3158667104057012316">Ordenados manualmente</translation>
 <translation id="3166827708714933426">Accesos directos a ventanas y pestañas</translation>
@@ -519,6 +520,7 @@ Solo alguien con tu frase de contraseña puede leer los datos encriptados. Googl
 <translation id="363596933471559332">Permite acceder automáticamente a los sitios web con las credenciales almacenadas. Si la función está desactivada, siempre se solicitará verificación antes de acceder a un sitio web.</translation>
 <translation id="3636940436873918441">Idiomas preferidos</translation>
 <translation id="3637744895182738742">Si olvidaste tu frase de contraseña o quieres cambiar este parámetro de configuración, <ph name="BEGIN_LINK" />borra los datos de Chrome de tu cuenta<ph name="END_LINK" />.</translation>
+<translation id="3674208116086565128">Ir a la página principal de la app de Google</translation>
 <translation id="368329460027487650">Saliste de tu cuenta. Abre las opciones de acceso.</translation>
 <translation id="3687645719033307815">Estás viendo una vista previa de esta página</translation>
 <translation id="3690369331356918524">Te advierte si quedan expuestas las contraseñas ante una violación de la seguridad de los datos.</translation>
@@ -1341,6 +1343,7 @@ Para cambiar este parámetro de configuración, <ph name="BEGIN_LINK" />borra lo
 <translation id="752220631458524187">Desconéctalo cuando termines.</translation>
 <translation id="7523960634226602883">Buscar con la cámara mediante Google Lens</translation>
 <translation id="752731652852882757">Bloquear cuando se usa el modo Incógnito</translation>
+<translation id="7557508262441527045">Saliste de la cuenta</translation>
 <translation id="7577900504646297215">Administrar intereses</translation>
 <translation id="757855969265046257">{FILES,plural, =1{<ph name="FILES_DOWNLOADED_ONE" /> archivo descargado}other{<ph name="FILES_DOWNLOADED_MANY" /> archivos descargados}}</translation>
 <translation id="7581273696622423628">Responder encuesta</translation>
@@ -1386,7 +1389,6 @@ Para cambiar este parámetro de configuración, <ph name="BEGIN_LINK" />borra lo
 <translation id="777637629667389858">Cuando accedes a tu cuenta, te protege en todos los servicios de Google.</translation>
 <translation id="7778840695157240389">Vuelve más tarde para ver historias nuevas</translation>
 <translation id="7780645209293383778">Vincula estos datos de manera temporal con tu Cuenta de Google cuando accedes a ella para protegerte en todas las apps de Google.</translation>
-<translation id="7786562169000598736">Accede a todos tus favoritos</translation>
 <translation id="7791543448312431591">Agregar</translation>
 <translation id="7798392620021911922">Se restablecieron <ph name="TAB_COUNT" /> pestañas</translation>
 <translation id="780287761701992588">Accede a tus favoritos, contraseñas y más en todos tus dispositivos</translation>
@@ -1475,6 +1477,7 @@ Para cambiar este parámetro de configuración, <ph name="BEGIN_LINK" />borra lo
 <translation id="813082847718468539">Consulta la información del sitio</translation>
 <translation id="8135406045838672858">Los archivos PDF descargados se abren automáticamente con <ph name="APP_NAME" /></translation>
 <translation id="8137562778192957619">No será necesario que recuerdes esta contraseña. Se guardará en el Administrador de contraseñas de Google.</translation>
+<translation id="8152331954420209374">Ir a Lens</translation>
 <translation id="8163820386638255770">Para usar y guardar contraseñas en tu Cuenta de Google, verifica tu identidad</translation>
 <translation id="8171286197772512427">Se abrió la hoja de comentarios del resumen para compartir</translation>
 <translation id="8179976553408161302">Intro</translation>
@@ -1511,6 +1514,7 @@ Para cambiar este parámetro de configuración, <ph name="BEGIN_LINK" />borra lo
 <translation id="8348430946834215779">Usa HTTPS siempre que sea posible y recibe advertencias antes de cargar sitios que no lo admitan</translation>
 <translation id="8354977102499939946">Haz una búsqueda rápida con la voz. Para editar este atajo, ve a Configuración.</translation>
 <translation id="835847953965672673">Se restablecieron <ph name="NUMBER_OF_DOWNLOADS" /> descargas</translation>
+<translation id="8367705492654390392">Haz una pregunta</translation>
 <translation id="8368001212524806591">Seguir precio</translation>
 <translation id="8378850197701296741">Tienes favoritos, historial y otros parámetros de configuración de <ph name="FROM_ACCOUNT" />.</translation>
 <translation id="8387617938027387193">Verifica que eres tú</translation>

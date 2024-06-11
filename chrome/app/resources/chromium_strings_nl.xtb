@@ -18,6 +18,7 @@ Sommige functies zijn wellicht niet beschikbaar en wijzigingen in voorkeuren wor
 <translation id="1203500561924088507">Bedankt voor het installeren. Je moet de browser opnieuw opstarten voordat je <ph name="BUNDLE_NAME" /> kunt gebruiken.</translation>
 <translation id="1262876892872089030">Terwijl dit tabblad inactief was, is er geheugen vrijgemaakt om Chromium snel te houden. Je kunt ervoor kiezen deze site altijd uit te sluiten van inactiviteit.</translation>
 <translation id="1265577313130862557">Chromium heeft deze download geblokkeerd, omdat het bestand gevaarlijk is</translation>
+<translation id="126567311906253476">Als je met <ph name="USER_EMAIL" /> inlogt bij Google-services zoals Gmail of YouTube, kun je met hetzelfde account automatisch inloggen bij Chromium</translation>
 <translation id="1315551408014407711">Je nieuwe Chromium-profiel instellen</translation>
 <translation id="1342274909142618978">Gegevens ook verwijderen uit Chromium (<ph name="URL" />)</translation>
 <translation id="1414495520565016063">Je bent ingelogd bij Chromium.</translation>
@@ -42,6 +43,7 @@ Rechten die je al hebt gegeven aan websites en apps, kunnen van toepassing zijn 
 <translation id="1749104137266986751">Als HTTPS niet beschikbaar is, gebruikt Chromium een niet-beveiligde verbinding zonder je te waarschuwen</translation>
 <translation id="1774152462503052664">Chromium laten uitvoeren op de achtergrond</translation>
 <translation id="1779356040007214683">Om Chromium veiliger te maken, hebben we een aantal extensies uitgezet die niet worden vermeld in de <ph name="IDS_EXTENSION_WEB_STORE_TITLE" /> en mogelijk zonder je medeweten zijn geïnstalleerd.</translation>
+<translation id="1804128559285178512">Als je bent ingelogd, kun je onder andere je wachtwoorden uit je Google-account gebruiken in Chromium</translation>
 <translation id="1808667845054772817">Chromium opnieuw installeren</translation>
 <translation id="1820835682567584003">Chromium probeert het volgende te doen: <ph name="AUTHENTICATION_PURPOSE" /></translation>
 <translation id="18552579716432081">Als je browsegegevens alleen van dit apparaat wilt verwijderen, maar ze in je Google-account wilt houden, <ph name="BEGIN_LINK" />log je uit van Chromium<ph name="END_LINK" />.</translation>

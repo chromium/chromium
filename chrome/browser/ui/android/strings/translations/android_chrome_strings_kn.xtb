@@ -274,6 +274,7 @@
 <translation id="2450083983707403292">ನೀವು <ph name="FILE_NAME" /> ಅನ್ನು ಪುನಃ ಡೌನ್‌ಲೋಡ್ ಮಾಡಲು ಬಯಸುತ್ತೀರಾ?</translation>
 <translation id="2453860139492968684">ಪೂರ್ಣಗೊಳಿಸು</translation>
 <translation id="2461822463642141190">ಪ್ರಸ್ತುತ</translation>
+<translation id="2472163211318554013">Chrome ನಿಂದ ಹೆಚ್ಚಿನದನ್ನು ಪಡೆಯಲು ಸೈನ್ ಇನ್ ಮಾಡಿ</translation>
 <translation id="247737702124049222">ಚಿತ್ರ ವಿವರಣೆಗಳು ಆನ್ ಆಗಿವೆ</translation>
 <translation id="2479148705183875116">ಸೆಟ್ಟಿಂಗ್‌ಗಳಿಗೆ ಹೋಗಿ</translation>
 <translation id="2482878487686419369">ಸೂಚನೆಗಳು</translation>
@@ -425,7 +426,6 @@
 <translation id="3098745985164956033">ನಿಮಗಾಗಿ ವಿವರಣೆಗಳನ್ನು ಸುಧಾರಿಸಲು, ಕೆಲವು ಚಿತ್ರಗಳನ್ನು Google ಗೆ ಕಳುಹಿಸಲಾಗಿದೆ</translation>
 <translation id="3114507951000454849">ಇಂದಿನ ಸುದ್ದಿಗಳನ್ನು ಓದಿ <ph name="NEWS_ICON" /></translation>
 <translation id="3123734510202723619">ಪ್ರಕಟಣೆಗಳು</translation>
-<translation id="3146775326699342508">ನಿಮ್ಮ ಇತರ ಸಾಧನಗಳಿಂದ ನಿಮ್ಮ ಬುಕ್‌ಮಾರ್ಕ್‌ಗಳು ಮತ್ತು ಇತ್ಯಾದಿಗಳನ್ನು ಪಡೆಯಲು ಸೈನ್ ಇನ್ ಮಾಡಿ</translation>
 <translation id="314939179385989105">Chrome ನ ಮುಖಪುಟ</translation>
 <translation id="3158667104057012316">ಹಸ್ತಚಾಲಿತ ಕ್ರಮದ ಪ್ರಕಾರವಾಗಿ ವಿಂಗಡಿಸುವುದು</translation>
 <translation id="3166827708714933426">ಟ್ಯಾಬ್ ಮತ್ತು ವಿಂಡೋ ಶಾರ್ಟ್‌ಕಟ್‌ಗಳು</translation>
@@ -1342,6 +1342,7 @@
 <translation id="752220631458524187">ನೀವು ಪೂರ್ಣಗೊಳಿಸಿದ ನಂತರ ಕನೆಕ್ಷನ್ ರದ್ದುಮಾಡಿ</translation>
 <translation id="7523960634226602883">Google Lens ಬಳಸಿಕೊಂಡು ನಿಮ್ಮ ಕ್ಯಾಮರಾದ ಮೂಲಕ ಹುಡುಕಿ</translation>
 <translation id="752731652852882757">ಅಜ್ಞಾತ ಮೋಡ್ ಬಳಸುವಾಗ ನಿರ್ಬಂಧಿಸಿ</translation>
+<translation id="7557508262441527045">ಸೈನ್ ಔಟ್ ಮಾಡಿ</translation>
 <translation id="7577900504646297215">ಆಸಕ್ತಿಗಳನ್ನು ನಿರ್ವಹಿಸಿ</translation>
 <translation id="757855969265046257">{FILES,plural, =1{<ph name="FILES_DOWNLOADED_ONE" /> ಫೈಲ್ ಡೌನ್‌ಲೋಡ್‌ ಮಾಡಲಾಗಿದೆ}one{<ph name="FILES_DOWNLOADED_MANY" /> ಫೈಲ್‌ಗಳನ್ನು ಡೌನ್‌ಲೋಡ್‌ ಮಾಡಲಾಗಿದೆ}other{<ph name="FILES_DOWNLOADED_MANY" /> ಫೈಲ್‌ಗಳನ್ನು ಡೌನ್‌ಲೋಡ್‌ ಮಾಡಲಾಗಿದೆ}}</translation>
 <translation id="7581273696622423628">ಸಮೀಕ್ಷೆಯನ್ನು ಕೈಗೊಳ್ಳಿ</translation>
@@ -1387,7 +1388,6 @@
 <translation id="777637629667389858">ನಿಮ್ಮ ಸೈನ್ ಇನ್ ಮಾಡಿದಾಗ, ಈ ಆಯ್ಕೆಯು Google ಸೇವೆಗಳಲ್ಲಿ ನಿಮ್ಮನ್ನು ರಕ್ಷಿಸುತ್ತದೆ.</translation>
 <translation id="7778840695157240389">ಹೊಸ ಸುದ್ದಿಗಳಿಗಾಗಿ ನಂತರ ಪುನಃ ಪರಿಶೀಲಿಸಿ</translation>
 <translation id="7780645209293383778">ನೀವು ಸೈನ್ ಇನ್ ಮಾಡಿದಾಗ, Google ಆ್ಯಪ್‌ಗಳಾದ್ಯಂತ ನಿಮ್ಮನ್ನು ಸುರಕ್ಷಿತವಾಗಿರಿಸುವುದಕ್ಕಾಗಿ, ಈ ಡೇಟಾವನ್ನು ನಿಮ್ಮ Google ಖಾತೆಯೊಂದಿಗೆ ತಾತ್ಕಾಲಿಕವಾಗಿ ಲಿಂಕ್ ಮಾಡುತ್ತದೆ</translation>
-<translation id="7786562169000598736">ನಿಮ್ಮ ಎಲ್ಲಾ ಬುಕ್‌ಮಾರ್ಕ್‌ಗಳನ್ನು ಪಡೆಯಿರಿ</translation>
 <translation id="7791543448312431591">ಸೇರಿಸು</translation>
 <translation id="7798392620021911922"><ph name="TAB_COUNT" /> ಟ್ಯಾಬ್‌ಗಳನ್ನು ಮರುಸ್ಥಾಪಿಸಲಾಗಿದೆ</translation>
 <translation id="780287761701992588">ನಿಮ್ಮ ಎಲ್ಲಾ ಸಾಧನಗಳಲ್ಲಿ ನಿಮ್ಮ ಬುಕ್‌ಮಾರ್ಕ್‌‌ಗಳು, ಪಾಸ್‍ವರ್ಡ್‍ಗಳು ಹಾಗೂ ಇನ್ನಷ್ಟು ಪಡೆಯಿರಿ</translation>

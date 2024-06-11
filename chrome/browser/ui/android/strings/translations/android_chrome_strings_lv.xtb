@@ -274,6 +274,7 @@ Jūsu šifrētos datus var lasīt tikai personas, kurām ir jūsu ieejas frāze.
 <translation id="2450083983707403292">Vai vēlaties vēlreiz sākt faila <ph name="FILE_NAME" /> lejupielādi?</translation>
 <translation id="2453860139492968684">Pabeigt</translation>
 <translation id="2461822463642141190">Šobrīd</translation>
+<translation id="2472163211318554013">Pierakstieties, lai pilnvērtīgi izmantotu pārlūku Chrome</translation>
 <translation id="247737702124049222">Attēlu aprakstu pievienošana ir ieslēgta</translation>
 <translation id="2479148705183875116">Atvērt iestatījumus</translation>
 <translation id="2482878487686419369">Paziņojumi</translation>
@@ -285,6 +286,7 @@ Jūsu šifrētos datus var lasīt tikai personas, kurām ir jūsu ieejas frāze.
 <translation id="2515921719039583189">Vai izdzēst Chrome datus no šīs ierīces?</translation>
 <translation id="2517113738956581680">Pilna lieluma lapa</translation>
 <translation id="2523184218357549926">Nosūta Google serveriem apmeklēto lapu vietrāžus URL</translation>
+<translation id="2524132927880411790">Pāriet uz meklēšanu ar balsi Google lietotnē</translation>
 <translation id="2527209463677295330">Iekļaujot vairāk lapas teksta, varat iegūt labākus rezultātus.</translation>
 <translation id="2527497042232966453">Notika pārslēgšanās uz inkognito cilnēm</translation>
 <translation id="2527779675047087889">Slēpt starpliktuves saturu</translation>
@@ -424,7 +426,6 @@ Jūsu šifrētos datus var lasīt tikai personas, kurām ir jūsu ieejas frāze.
 <translation id="3098745985164956033">Daži attēli tiek sūtīti uz Google serveriem, lai uzlabotu aprakstus</translation>
 <translation id="3114507951000454849">Lasiet šodienas ziņas <ph name="NEWS_ICON" /></translation>
 <translation id="3123734510202723619">Paziņojumi</translation>
-<translation id="3146775326699342508">Pierakstieties, lai iegūtu grāmatzīmes un citu saturu no savām pārējām ierīcēm.</translation>
 <translation id="314939179385989105">Chrome sākumlapa</translation>
 <translation id="3158667104057012316">Kārtošana manuāli</translation>
 <translation id="3166827708714933426">Ciļņu un logu īsinājumtaustiņi</translation>
@@ -519,6 +520,7 @@ Jūsu šifrētos datus var lasīt tikai personas, kurām ir jūsu ieejas frāze.
 <translation id="363596933471559332">Automātiski pierakstīties vietnēs, izmantojot saglabātos akreditācijas datus. Ja funkcija ir izslēgta, verifikācija būs jāveic ikreiz, kad pierakstīsieties vietnē.</translation>
 <translation id="3636940436873918441">Vēlamās valodas</translation>
 <translation id="3637744895182738742">Ja aizmirstat ieejas frāzi vai vēlaties mainīt šo iestatījumu, <ph name="BEGIN_LINK" />izdzēsiet Chrome datus savā kontā<ph name="END_LINK" />.</translation>
+<translation id="3674208116086565128">Pāriet uz Google lietotnes sākumlapu</translation>
 <translation id="368329460027487650">Jūs esat izrakstījies. Tiek atvērtas pierakstīšanās opcijas.</translation>
 <translation id="3687645719033307815">Jūs skatāt šīs lapas priekšskatījumu.</translation>
 <translation id="3690369331356918524">Tiek parādīts brīdinājums, ja paroles ir atklātas datu aizsardzības pārkāpuma dēļ.</translation>
@@ -1341,6 +1343,7 @@ Lai mainītu šo iestatījumu, <ph name="BEGIN_LINK" />izdzēsiet Chrome datus s
 <translation id="752220631458524187">Kad esat pabeidzis darbu, atvienojiet tālruni</translation>
 <translation id="7523960634226602883">Meklēt ar kameru, izmantojot Google Lens</translation>
 <translation id="752731652852882757">Bloķēt, kad tiek izmantots inkognito režīms</translation>
+<translation id="7557508262441527045">Izrakstījies</translation>
 <translation id="7577900504646297215">Pārvaldīt intereses</translation>
 <translation id="757855969265046257">{FILES,plural, =1{Lejupielādēts <ph name="FILES_DOWNLOADED_ONE" /> fails}zero{Lejupielādēti <ph name="FILES_DOWNLOADED_MANY" /> faili}one{Lejupielādēts <ph name="FILES_DOWNLOADED_MANY" /> fails}other{Lejupielādēti <ph name="FILES_DOWNLOADED_MANY" /> faili}}</translation>
 <translation id="7581273696622423628">Piedalīties aptaujā</translation>
@@ -1386,7 +1389,6 @@ Lai mainītu šo iestatījumu, <ph name="BEGIN_LINK" />izdzēsiet Chrome datus s
 <translation id="777637629667389858">Kad esat pierakstījies, šī funkcija aizsargā jūsu informāciju Google pakalpojumos.</translation>
 <translation id="7778840695157240389">Lai skatītu jaunus rakstus, atgriezieties vēlāk</translation>
 <translation id="7780645209293383778">Lai aizsargātu jūs dažādās Google lietotnēs, šie dati tiek īslaicīgi saistīti ar jūsu Google kontu, kad esat pierakstījies.</translation>
-<translation id="7786562169000598736">Piekļūstiet visām savām grāmatzīmēm</translation>
 <translation id="7791543448312431591">Pievienot</translation>
 <translation id="7798392620021911922">Cilnes atjaunotas, skaits: <ph name="TAB_COUNT" /></translation>
 <translation id="780287761701992588">Iegūstiet grāmatzīmes, paroles un citus datus visās savās ierīcēs</translation>
@@ -1475,6 +1477,7 @@ Lai mainītu šo iestatījumu, <ph name="BEGIN_LINK" />izdzēsiet Chrome datus s
 <translation id="813082847718468539">Skatīt informāciju par vietni</translation>
 <translation id="8135406045838672858">Lejupielādētie PDF faili automātiski tiks atvērti lietotnē <ph name="APP_NAME" /></translation>
 <translation id="8137562778192957619">Jums nebūs jāatceras šī parole. Tā tiks saglabāta Google paroļu pārvaldniekā.</translation>
+<translation id="8152331954420209374">Pāriet uz Lens</translation>
 <translation id="8163820386638255770">Lai izmantotu un saglabātu paroles savā Google kontā, apstipriniet savu identitāti</translation>
 <translation id="8171286197772512427">Lapa atsauksmju kopīgošanai par kopsavilkumu ir atvērta</translation>
 <translation id="8179976553408161302">Ievadīt</translation>
@@ -1511,6 +1514,7 @@ Lai mainītu šo iestatījumu, <ph name="BEGIN_LINK" />izdzēsiet Chrome datus s
 <translation id="8348430946834215779">Kad vien iespējams, izmantojiet protokolu HTTPS un saņemiet brīdinājumus pirms tādu vietņu ielādes, kas šo protokolu neatbalsta.</translation>
 <translation id="8354977102499939946">Ātra meklēšana ar balsi. Lai rediģētu šo saīsni, pārejiet uz iestatījumiem.</translation>
 <translation id="835847953965672673">Lejupielādes atjaunotas, skaits: <ph name="NUMBER_OF_DOWNLOADS" /></translation>
+<translation id="8367705492654390392">Uzdodiet jebkādu jautājumu</translation>
 <translation id="8368001212524806591">Izsekot cenu</translation>
 <translation id="8378850197701296741">Ir pieejamas grāmatzīmes, vēsture un citi iestatījumi no konta <ph name="FROM_ACCOUNT" />.</translation>
 <translation id="8387617938027387193">Apstipriniet, ka tas esat jūs</translation>

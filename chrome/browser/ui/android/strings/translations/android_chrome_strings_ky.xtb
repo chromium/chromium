@@ -274,6 +274,7 @@
 <translation id="2450083983707403292"><ph name="FILE_NAME" /> файлын кайрадан жүктөп аласызбы?</translation>
 <translation id="2453860139492968684">Бүтүрүү</translation>
 <translation id="2461822463642141190">Учурда</translation>
+<translation id="2472163211318554013">Chrome'дун бардык мүмкүнчүлүктөрүн пайдалуу үчүн аккаунтуңузга кириңиз</translation>
 <translation id="247737702124049222">Сүрөттөмөлөр күйүк</translation>
 <translation id="2479148705183875116">Параметрлерге өтүү</translation>
 <translation id="2482878487686419369">Билдирмелер</translation>
@@ -425,7 +426,6 @@
 <translation id="3098745985164956033">Сүрөттөмөлөрдү жакшыртуу үчүн айрым сүрөттөр Google'га жөнөтүлөт</translation>
 <translation id="3114507951000454849">Бүгүнкү жаңылыктарды окуңуз <ph name="NEWS_ICON" /></translation>
 <translation id="3123734510202723619">Жарыялар</translation>
-<translation id="3146775326699342508">Башка түзмөктөрүңүздө кыстармаларды жана башкаларды алуу үчүн кириңиз</translation>
 <translation id="314939179385989105">Chrome’дун башкы бети</translation>
 <translation id="3158667104057012316">Кол менен иреттелүүдө</translation>
 <translation id="3166827708714933426">Өтмөктүн жана терезенин кыска жолдору</translation>
@@ -1343,6 +1343,7 @@ Google аккаунтуңуздун башка Google кызматтарынан
 <translation id="752220631458524187">Бүтүргөндө ажыратыңыз</translation>
 <translation id="7523960634226602883">Камераны иштетип, Google Lens'те колдонуңуз</translation>
 <translation id="752731652852882757">Жашыруун режимде бөгөттөө</translation>
+<translation id="7557508262441527045">Аккаунтуңуздан чыктыңыз</translation>
 <translation id="7577900504646297215">Кызыккан нерселерди башкаруу</translation>
 <translation id="757855969265046257">{FILES,plural, =1{<ph name="FILES_DOWNLOADED_ONE" /> файл жүктөлүп алынды}other{<ph name="FILES_DOWNLOADED_MANY" /> файл жүктөлүп алынды}}</translation>
 <translation id="7581273696622423628">Сурамжылоого катышуу</translation>
@@ -1388,7 +1389,6 @@ Google аккаунтуңуздун башка Google кызматтарынан
 <translation id="777637629667389858">Кирип турганыңызда, сизди Google кызматтарында коргойт.</translation>
 <translation id="7778840695157240389">Жаңы окуяларды көрүү үчүн мезгил-мезгили менен баш багып туруңуз</translation>
 <translation id="7780645209293383778">Google колдонмолорунда коопсуздугуңузду коргоо үчүн аккаунтуңуз менен кирип турганда, бул маалыматты Google аккаунтуңуз менен байланыштырат</translation>
-<translation id="7786562169000598736">Бардык кыстамаларды алыңыз</translation>
 <translation id="7791543448312431591">Кошуу</translation>
 <translation id="7798392620021911922"><ph name="TAB_COUNT" /> өтмөк калыбына келтирилди</translation>
 <translation id="780287761701992588">Бардык түзмөктөрүңүздө кыстармаларды, сырсөздөрдү жана башка нерселерди алыңыз</translation>

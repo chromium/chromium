@@ -251,6 +251,7 @@
 <translation id="1915307458270490472">Жабу</translation>
 <translation id="1918022425394817322">Камера жоғарғы оң жақ бұрышқа ауыстырылды.</translation>
 <translation id="1923539912171292317">Автоматты басу әрекеттері</translation>
+<translation id="1925320505152357008">1 минуттан аз</translation>
 <translation id="1928739107511554905">Жаңартылған нұсқаны алу үшін, пернетақта жалғанған күйі Chromebook ноутбугын сенсорлық экран арқылы қайта қосыңыз.</translation>
 <translation id="1948405482892809935">Келесі пайдаланушыға ауысу</translation>
 <translation id="1951012854035635156">Assistant</translation>
@@ -309,6 +310,7 @@
 <translation id="2208323208084708176">Бірыңғай жұмыс үстелі режимі</translation>
 <translation id="2220572644011485463">PIN коды немесе құпия сөз</translation>
 <translation id="2222841058024245321">7-ші жұмыс үстелі</translation>
+<translation id="2223384056430485343">Бөлінген экранда</translation>
 <translation id="2224075387478458881">Қорғалған контент көрініп тұрғанда, экранды жазуға болмайды.</translation>
 <translation id="2227179592712503583">Ұсынысты өшіру</translation>
 <translation id="2248634276911611268">Сілтемені жаңа қойындыда ашып, осы жаңа қойындыға ауысу</translation>
@@ -605,6 +607,7 @@
 <translation id="334927402682780278">Курсордан жолдың соңына дейінгі мәтінді таңдау</translation>
 <translation id="3349345708646875009">Тапсырмалар реттегішін ашу</translation>
 <translation id="3364721542077212959">Стилус құралдары</translation>
+<translation id="3365281428003534650">Таймер, тапсырма, музыка орнатыңыз.</translation>
 <translation id="3365977133351922112">Телефоныңыз тым алыста. Оны жақындатыңыз.</translation>
 <translation id="3368922792935385530">Қосылған</translation>
 <translation id="3369111525500416043">Жақында төленуі тиіс</translation>
@@ -907,6 +910,7 @@
 <translation id="4406883609789734330">Live Caption</translation>
 <translation id="4412698727486357573">Анықтама орталығы</translation>
 <translation id="4412944820643904175"><ph name="FEATURE_NAME" /> өшірулі.</translation>
+<translation id="4417647906073317561">Зейін қою режимінің параметрлері. Іске кірісу үшін таймер, тапсырма және музыка орнатыңыз.</translation>
 <translation id="4424159417645388645">5-ші жұмыс үстелі</translation>
 <translation id="4430019312045809116">Дыбыс деңгейі</translation>
 <translation id="4441283832827406317">Қолданбалар атауы бойынша сұрыпталған.</translation>
@@ -1132,6 +1136,7 @@
 <translation id="5208059991603368177">Қосулы</translation>
 <translation id="5216991270656129561"><ph name="TIME" /> дейін өшірулі</translation>
 <translation id="5222676887888702881">Шығу</translation>
+<translation id="5228195526683428788">Бөлінген экран бөлгіші</translation>
 <translation id="5229343007215035173">Құпиялық экранын қосу/өшіру</translation>
 <translation id="5230516054153933099">Терезе</translation>
 <translation id="5234764350956374838">Жабу</translation>
@@ -1518,6 +1523,7 @@
 <translation id="6613765291890844037"><ph name="STORAGE_IN_USE_SIZE" /> жады қолданыста | жалпы <ph name="STORAGE_TOTAL_SIZE" /></translation>
 <translation id="6614169507485700968">Құпиялық экраны қосулы.</translation>
 <translation id="6622679827379792051">Телефондағы қолданбаларды көру мүмкіндігін реттеу</translation>
+<translation id="662279009180869175">Бөлінген экран өлшемін өзгерту үшін сол және оң бағыт пернелерін пайдаланыңыз.</translation>
 <translation id="6624493541160101248">Қазіргі жұмыс үстелі: <ph name="DESK_NAME" />. <ph name="DESK_INDEX" />/<ph name="DESK_COUNT" /> жұмыс үстелі.</translation>
 <translation id="6625718907317144388"><ph name="APP_1_TITLE" />, <ph name="APP_2_TITLE" /> және тағы басқа хабарландырулар жасырылған, себебі көруден қорғау режимі қосулы тұр.</translation>
 <translation id="6627638273713273709">Іздеу+Shift+K</translation>
@@ -1536,6 +1542,7 @@
 <translation id="6670153871843998651">3-ші жұмыс үстелі</translation>
 <translation id="6671495933530132209">Кескінді көшіру</translation>
 <translation id="6671661918848783005">Chromebook құлпын ашу мүмкін емес.</translation>
+<translation id="6676552993057022464">Бөлінген экран өлшемін өзгерту үшін жоғары және төмен бағыт пернелерін пайдаланыңыз.</translation>
 <translation id="6682029141988159141">Буферден мазмұнды қою</translation>
 <translation id="6683022854667115063">Құлақаспап</translation>
 <translation id="6686023075541098243">Телефондағы хабарландыруларды көру мүмкіндігін реттеу</translation>
@@ -1855,6 +1862,7 @@
         <ph name="MANAGED" />
         <ph name="IME" />
         <ph name="LOCALE" /></translation>
+<translation id="7899977217122813285">Зейін қою кезінде <ph name="TIME" /> дейін хабарландырулар дыбысы өшіріледі.</translation>
 <translation id="7901190436359881020">Терезелерді ауыстыру</translation>
 <translation id="7901405293566323524">Phone Hub</translation>
 <translation id="7902625623987030061">Саусақ ізін оқу сканерін түртіңіз.</translation>

@@ -274,6 +274,7 @@
 <translation id="2450083983707403292">要重新下載「<ph name="FILE_NAME" />」嗎？</translation>
 <translation id="2453860139492968684">結束</translation>
 <translation id="2461822463642141190">電流</translation>
+<translation id="2472163211318554013">登入以充分運用 Chrome 的各項功能</translation>
 <translation id="247737702124049222">圖片說明功能已開啟</translation>
 <translation id="2479148705183875116">前往「設定」</translation>
 <translation id="2482878487686419369">通知</translation>
@@ -425,7 +426,6 @@
 <translation id="3098745985164956033">系統會將某些圖片傳送到 Google，為你提供更完善的圖片說明</translation>
 <translation id="3114507951000454849">閱讀今日新聞 <ph name="NEWS_ICON" /></translation>
 <translation id="3123734510202723619">公告事項</translation>
-<translation id="3146775326699342508">登入後，即可取得其他裝置上的書籤和其他資訊</translation>
 <translation id="314939179385989105">Chrome 首頁</translation>
 <translation id="3158667104057012316">手動排序</translation>
 <translation id="3166827708714933426">分頁與視窗快速鍵</translation>
@@ -1343,6 +1343,7 @@
 <translation id="752220631458524187">請在完成後拔除傳輸線</translation>
 <translation id="7523960634226602883">使用 Google 智慧鏡頭透過相機進行搜尋</translation>
 <translation id="752731652852882757">使用無痕模式時封鎖</translation>
+<translation id="7557508262441527045">已登出</translation>
 <translation id="7577900504646297215">管理興趣喜好</translation>
 <translation id="757855969265046257">{FILES,plural, =1{已下載 <ph name="FILES_DOWNLOADED_ONE" /> 個檔案}other{已下載 <ph name="FILES_DOWNLOADED_MANY" /> 個檔案}}</translation>
 <translation id="7581273696622423628">填寫問卷</translation>
@@ -1388,7 +1389,6 @@
 <translation id="777637629667389858">當你登入帳戶後，保護你在各項 Google 服務中的安全。</translation>
 <translation id="7778840695157240389">請稍後再返回查看是否有新的報導</translation>
 <translation id="7780645209293383778">登入 Google 帳戶後，系統會將這些資料暫時連結至你的帳戶，以便在你使用各個 Google 應用程式時提供保護</translation>
-<translation id="7786562169000598736">取得所有書籤</translation>
 <translation id="7791543448312431591">新增</translation>
 <translation id="7798392620021911922">已還原 <ph name="TAB_COUNT" /> 個分頁</translation>
 <translation id="780287761701992588">無論使用任何裝置，都能存取書籤、密碼和其他設定</translation>

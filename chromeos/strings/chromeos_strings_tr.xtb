@@ -361,6 +361,7 @@
 <translation id="3017079585324758401">Arka plan</translation>
 <translation id="3027578600144895987">Kamerayı kapat</translation>
 <translation id="3031560714565892478">Cihazın türü video kamera.</translation>
+<translation id="3051968340259309715">Sisteme ait hizmetler, bu işlemden sonra konumunuzu belirlemek için Konum Doğruluğu'nu kullanabilir. Konum Doğruluğu; kablosuz erişim noktaları, baz istasyonları ve GPS gibi kablosuz sinyaller hakkındaki bilgilerin yanı sıra ivme ölçer ve jiroskop gibi cihaz sensör verilerini, cihaz konumunu tahmin etmek için kullanır. Ayarlar &gt; Gizlilik ve güvenlik &gt; Gizlilik denetimleri &gt; Konum erişimi bölümünden konumu kapatabilirsiniz. <ph name="LINK_BEGIN" />Daha fazla bilgi<ph name="LINK_END" /></translation>
 <translation id="3054177598518735801"><ph name="CURRENT_VALUE" /> mA</translation>
 <translation id="3056720590588772262">Uç nokta</translation>
 <translation id="3060579846059757016">Ana hatlar</translation>

@@ -369,7 +369,6 @@
 <translation id="1260810365552581339">Linux-এ ডিস্ক স্টোরেজে হয়ত পর্যাপ্ত খালি জায়গা নেই। Linux ডিস্ক স্টোরেজে খালি জায়গা বাড়িয়ে, <ph name="LINK_START" />সেটিংস<ph name="LINK_END" /> থেকে আবার ফিরিয়ে আনার চেষ্টা করুন।</translation>
 <translation id="1261380933454402672">মাঝারি রকমের</translation>
 <translation id="126156426083987769">ডেমো মোড ডিভাইস লাইসেন্স নিয়ে সমস্যা হয়েছে।</translation>
-<translation id="1261885284931493480">ট্যাব সরাবেন ও গ্রুপ মুছবেন?</translation>
 <translation id="1263231323834454256">পড়ার তালিকা</translation>
 <translation id="1263733306853729545">প্রার্থী তালিকা পৃষ্ঠাতে সূচীবদ্ধ করার জন্য <ph name="MINUS" /> এবং <ph name="EQUAL" /> কী ব্যবহার করুন</translation>
 <translation id="126387934568812801">এই স্ক্রিনশট এবং খোলা ট্যাবের শীর্ষক অন্তর্ভুক্ত করুন</translation>
@@ -1649,7 +1648,6 @@
 <translation id="2187895286714876935">সার্ভার সার্টিফিকেট আমদানি করতে সমস্যা</translation>
 <translation id="2187906491731510095">এক্সটেনশনগুলি আপডেট করা হয়েছে</translation>
 <translation id="2188881192257509750"><ph name="APPLICATION" /> খুলুন</translation>
-<translation id="2188919919468240749">ট্যাব গ্রুপ মুছবেন?</translation>
 <translation id="2190069059097339078">ওয়াই-ফাই সার্টিফিকেট সংগ্রহকারী</translation>
 <translation id="219008588003277019">স্থানীয় গ্রাহক মডিউল: <ph name="NEXE_NAME" /></translation>
 <translation id="2190355936436201913">(খালি)</translation>
@@ -2093,7 +2091,6 @@
 <translation id="249113932447298600">দুঃখিত, <ph name="DEVICE_LABEL" /> ডিভাইসটি এই মুহুর্তে সমর্থিত নয়৷</translation>
 <translation id="2491587035099903063"><ph name="LANGUAGE" />-এর জন্য ভয়েসের প্রিভিউ দেখুন</translation>
 <translation id="2492461744635776704">সার্টিফিকেট স্বাক্ষর করার অনুরোধ তৈরি করা হচ্ছে</translation>
-<translation id="2492964937550251173">ট্যাব বন্ধ করবেন ও গ্রুপ মুছবেন?</translation>
 <translation id="249330843868392562">টেক্সট টু স্পিচ সেটিংস খুলুন</translation>
 <translation id="2494555621641843783">Steam ইনস্টল করা যাচ্ছে না</translation>
 <translation id="2495141202137516054">আপনার Drive থেকে</translation>
@@ -2819,7 +2816,6 @@
 <translation id="3021066826692793094">প্রজাপতি</translation>
 <translation id="3021678814754966447">ফ্রেম উৎস &amp;দেখুন</translation>
 <translation id="3021902017511220299">স্ক্যান করা যায়নি। আপনার অ্যাডমিনিস্ট্রেটর এই অ্যাকশন ব্লক করে দিয়েছেন।</translation>
-<translation id="3022068420678496307">এর ফলে, এই Google অ্যাকাউন্ট ব্যবহার করে Chrome-এ সাইন-ইন করা আছে, এমন সব ডিভাইস থেকে গ্রুপ মুছে দেওয়া হবে।</translation>
 <translation id="3022361196600037287">Chromebook থেকে <ph name="DEVICE" /> সরিয়ে দেওয়া হবে এবং <ph name="PRIMARY_EMAIL" />-এ সেভ করা হবে না।</translation>
 <translation id="3022978424994383087">বুঝতে পারিনি।</translation>
 <translation id="3023464535986383522">বাছুন ও শুনুন</translation>
@@ -2993,6 +2989,7 @@
 <translation id="3163511056918491211">যেকোনও সময় সহজে আপনার ডেটা ফিরিয়ে আনুন বা ডিভাইস পাল্টান। ব্যাক-আপ Google-এ আপলোড করা এবং আপনার Google অ্যাকাউন্টের পাসওয়ার্ড ব্যবহার করে এনক্রিপ্ট করা থাকে।</translation>
 <translation id="3164329792803560526"><ph name="APP_NAME" />-এর সাথে এই ট্যাব শেয়ার করা হচ্ছে</translation>
 <translation id="3165390001037658081">কিছু পরিষেবা প্রদানকারী এই বৈশিষ্ট্যকে অবরুদ্ধ করতে পারে।</translation>
+<translation id="316542773973815724">নেভিগেশন</translation>
 <translation id="3165734944977250074">ফাইলটি সরানো যাচ্ছে না কারণ এর আর অস্তিত্ব নেই</translation>
 <translation id="3166443275568926403">পারফর্ম্যান্স ও ব্যাটারির অবস্থা</translation>
 <translation id="3169930038976362151">প্রয়োজন অনুযায়ী মানানসই থিম বেছে নিন। আপনার থিম, ওয়ালপেপার, স্ক্রিন সেভার ও আরও অনেক কিছু পরিবর্তন করতে, ডেস্কটপের উপরে শুধু টাচ করে ধরে থাকুন।</translation>
@@ -3874,7 +3871,6 @@
 <translation id="3810914450553844415">আপনার অ্যাডমিনিস্ট্রেটর আর কোনও Google অ্যাকাউন্ট ব্যবহার করার অনুমতি দেয় না।</translation>
 <translation id="3810973564298564668">পরিচালনা করুন</translation>
 <translation id="381202950560906753">আরেকটি জুড়ুন</translation>
-<translation id="381219490185664296">ট্যাব গ্রুপ আনগ্রুপ করবেন?</translation>
 <translation id="3812525830114410218">খারাপ সার্টিফিকেট</translation>
 <translation id="3813296892522778813">আপনি যা খুঁজছেন তা খুঁজে না পেলে <ph name="BEGIN_LINK_CHROMIUM" />Google Chrome সহায়তা<ph name="END_LINK_CHROMIUM" />য় যান</translation>
 <translation id="3813358687923336574">পৃষ্ঠাগুলি অনুবাদ ও 'কুইক আন্সার' ফিচারের জন্য ব্যবহার করা ভাষা</translation>
@@ -4235,7 +4231,6 @@
 <translation id="4078738236287221428">আক্রমণাত্মক</translation>
 <translation id="4078903002989614318">সাজানো এবং তালিকা বিকল্প</translation>
 <translation id="4079140982534148664">উন্নত বানান পরীক্ষা ব্যবহার করুন</translation>
-<translation id="4083735423615351075">এই ডিভাইসে ট্যাবটি খোলা থাকবে, তবে এই Google অ্যাকাউন্ট ব্যবহার করে Chrome-এ সাইন-ইন করা আছে, এমন সব ডিভাইস থেকে গ্রুপ মুছে দেওয়া হবে।</translation>
 <translation id="4084682180776658562">বুকমার্ক</translation>
 <translation id="4084835346725913160"><ph name="TAB_NAME" /> বন্ধ করুন</translation>
 <translation id="4085298594534903246">এই পৃষ্ঠাতে জাভাস্ক্রিপ্ট ব্লক করা হয়েছে৷</translation>
@@ -4245,7 +4240,6 @@
 
 <ph name="EXTENSION_FILE" /></translation>
 <translation id="4087328411748538168">ডানদিকে দেখান</translation>
-<translation id="4088879333319441249">ট্যাব গ্রুপ, গ্রুপ থেকে সরিয়ে দেবেন?</translation>
 <translation id="4089235344645910861">সেটিংস সেভ করা হয়েছে। সিঙ্ক শুরু করা হয়েছে।</translation>
 <translation id="4089817585533500276">shift + <ph name="TOP_ROW_KEY" /></translation>
 <translation id="4090103403438682346">যাচাইকৃত অ্যাক্সেস সক্ষম করুন</translation>
@@ -4331,7 +4325,6 @@
 <translation id="4148195018520464922">আপনি নির্দিষ্ট ব্যবহারকারীর সাইন-ইন করা সীমিত করতে পারেন। এটি সাইন-ইন স্ক্রিনে "ব্যক্তি যোগ করুন" বিকল্প সরিয়ে দেয়। এছাড়াও আপনি বর্তমান ব্যবহারকারীকে সরাতে পারেন।</translation>
 <translation id="4148957013307229264">ইনস্টল হচ্ছে...</translation>
 <translation id="4150201353443180367">প্রদর্শন</translation>
-<translation id="4150417452770391330">ক্যামেরার সাথে কানেক্ট করুন</translation>
 <translation id="4150569944729499860">স্ক্রিনের তথ্য</translation>
 <translation id="4151449637210235443">আপনার সাম্প্রতিক গেমপ্লে সম্পর্কে আমাদের বলুন</translation>
 <translation id="4151503145138736576">মোছার জন্য অফলাইনে কোনও স্টোরেজ নেই</translation>
@@ -5131,7 +5124,6 @@
 <translation id="4777458362738635055">এই ডিভাইসের অন্যান্য ব্যবহারকারীরা এই নেটওয়ার্ক ব্যবহার করতে পারবেন</translation>
 <translation id="4777813841994368231">চালু আছে • ডেভেলপার এই এক্সটেনশনটি প্রকাশনা থেকে সরিয়ে নিয়েছেন</translation>
 <translation id="4777825441726637019">Play Store</translation>
-<translation id="4777866634702576038">ট্যাব গ্রুপ মুছবেন?</translation>
 <translation id="4777943778632837590">নেটওয়ার্ক সার্ভারের নাম কনফিগার করুন</translation>
 <translation id="4778653490315793244">এখনও দেখানোর মতো কিছুই নেই</translation>
 <translation id="4779083564647765204">জুম</translation>
@@ -5543,7 +5535,6 @@
 <translation id="5093477827231450397">সেইসব সাইটের তালিকা যা আপনি ব্লক করেছেন এবং যার থেকে আপনি অন্য সাইটে বিজ্ঞাপনের সাজেশন চান না</translation>
 <translation id="5093569275467863761">ব্যাক-ফরোয়ার্ড ক্যাশেতে স্টোর করা ছদ্মবেশী সাবফ্রেম: <ph name="BACK_FORWARD_CACHE_INCOGNITO_PAGE_URL" /></translation>
 <translation id="5094176498302660097">Files অ্যাপ বা অন্য অ্যাপ থেকে এই অ্যাপে কাজ করে এমন ফাইল খুলতে ও এডিট করতে পারবেন। ডিফল্ট হিসেবে কোন কোন ফাইল এই অ্যাপে খোলে তা নিয়ন্ত্রণ করতে, <ph name="BEGIN_LINK" />আপনার ডিভাইসে কীভাবে ডিফল্ট হিসেবে অ্যাপ সেট করবেন তা জানুন<ph name="END_LINK" />।</translation>
-<translation id="5094423602314093681">ট্যাব সরাবেন ও গ্রুপ মুছবেন?</translation>
 <translation id="5094721898978802975">সহযোগী ন্যাটিভ অ্যাপ্লিকেশানগুলির সাথে যোগাযোগ করুন</translation>
 <translation id="5095252080770652994">প্রোগ্রেস</translation>
 <translation id="5095507226704905004">ফাইলটি কপি করা যাচ্ছে না কারণ এর আর অস্তিত্ব নেই</translation>
@@ -7322,7 +7313,6 @@
 <translation id="6445450263907939268">এই পরিবর্তনগুলি না চাইলে আপনি আপনার পূর্ববর্তী সেটিংস পুনরুদ্ধার করতে পারেন।</translation>
 <translation id="6446213738085045933">ডেস্কটপ শর্টকাট তৈরি করুন</translation>
 <translation id="6447842834002726250">কুকিজ</translation>
-<translation id="6449554712554071184">এর ফলে আপনার ডিভাইস থেকে গ্রুপ স্থায়ীভাবে মুছে যাবে।</translation>
 <translation id="6450876761651513209">আপনার গোপনীয়তা-সংক্রান্ত সেটিংস পরিবর্তন করুন</translation>
 <translation id="6451591602925140504">{NUM_PAGES,plural, =0{<ph name="PAGE_TITLE" />}=1{<ph name="PAGE_TITLE" /> এবং অন্য ১টি ট্যাব}one{<ph name="PAGE_TITLE" /> এবং অন্য #টি ট্যাব}other{<ph name="PAGE_TITLE" /> এবং অন্য #টি ট্যাব}}</translation>
 <translation id="6451689256222386810">আপনি যদি আপনার পাসফ্রেজ ভুলে যান বা এই সেটিং পরিবর্তন করতে চান, তাহলে <ph name="BEGIN_LINK" />সিঙ্ক রিসেট করুন<ph name="END_LINK" />।</translation>
@@ -8473,7 +8463,6 @@
 <translation id="7340650977506865820">সাইটটি আপনার স্ক্রিন শেয়ার করছে</translation>
 <translation id="7340757554212515731">ক্র্যাশ রিপোর্ট, ডায়াগনস্টিক ও ব্যবহারের ডেটা অটোমেটিক Google-কে পাঠানো হয়</translation>
 <translation id="734088800888587319">নেটওয়ার্ক মেট্রিক্স</translation>
-<translation id="7341612916770129581">মাইক্রোফোন কানেক্ট করুন</translation>
 <translation id="7341834142292923918">এই সাইটে অ্যাক্সেস চায়</translation>
 <translation id="7343372807593926528">মতামত পাঠানোর আগে সমস্যাটি বর্ণনা করুন।</translation>
 <translation id="7344585835349671209">আপনার ডিভাইসে HTTPS/SSL সার্টিফিকেট ম্যানেজ করুন</translation>
@@ -9371,7 +9360,6 @@
 <translation id="7974936243149753750">ওভারস্ক্যান</translation>
 <translation id="7975504106303186033">আপনাকে এই Chrome Education ডিভাইসটি একটি এডুকেশন অ্যাকাউন্টে এনরোল করতে হবে। নতুন অ্যাকাউন্টে সাইন-আপ করতে, g.co/workspace/edusignup লিঙ্কে যান।</translation>
 <translation id="7977451675950311423">আপনি যদি এমন কোনও পাসওয়ার্ড ব্যবহার করেন যা ডেটার নিরাপত্তা লঙ্ঘনের কারণে সুরক্ষিত নয়, সেক্ষেত্রে এটি আপনাকে সতর্ক করে।</translation>
-<translation id="797824194429476746">এই ডিভাইসে ট্যাব খোলা থাকবে কিন্তু গ্রুপ স্থায়ীভাবে মুছে ফেলা হবে।</translation>
 <translation id="7978412674231730200">ব্যক্তিগত কী</translation>
 <translation id="7978450511781612192">এটি আপনাকে আপনার Google অ্যাকাউন্ট থেকে সাইন-আউট করিয়ে দেবে। আপনার বুকমার্ক, ইতিহাস, পাসওয়ার্ড এবং আরও অনেক কিছু আর সিঙ্ক করা হবে না।</translation>
 <translation id="7980066177668669492">Base64-এনকোড করা ASCII, একাধিক সার্টিফিকেট</translation>
@@ -9426,6 +9414,7 @@
 <translation id="8017679124341497925">শর্টকাট এডিট করা হয়েছে</translation>
 <translation id="8018298733481692628">এই প্রোফাইল মুছতে চান?</translation>
 <translation id="8018313076035239964">ওয়েবসাইটগুলি কোন তথ্য ব্যবহার করতে পারবে এবং আপনাকে কোন কোন কন্টেন্ট দেখাতে পারবে তা নিয়ন্ত্রণ করে</translation>
+<translation id="802154636333426148">ডাউনলোড করা যায়নি</translation>
 <translation id="8022466874160067884">আপনার Google অ্যাকাউন্ট ও পাসওয়ার্ড লিখুন</translation>
 <translation id="8023133589013344428">ChromeOS Flex সেটিংসে ভাষা ম্যানেজ করুন</translation>
 <translation id="8023801379949507775">এক্সটেনশগুলি এখনই আপডেট করুন</translation>
@@ -10712,7 +10701,6 @@
 <translation id="8962863356073277855">URL ফর্ম্যাটটি https://www.example.com হতে হবে</translation>
 <translation id="8962918469425892674">এই সাইটটি মোশন এবং লাইট সেন্সর ব্যবহার করছে।</translation>
 <translation id="8963117664422609631">সাইট সেটিংসে যান</translation>
-<translation id="8964795217937248330">ট্যাব বন্ধ করবেন ও গ্রুপ মুছবেন?</translation>
 <translation id="8965037249707889821">পুরানো পাসওয়ার্ড লিখুন</translation>
 <translation id="8966809848145604011">অন্যান্য প্রোফাইল</translation>
 <translation id="8967427617812342790">পড়ার তালিকায় যোগ করুন</translation>

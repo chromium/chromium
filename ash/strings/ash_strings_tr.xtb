@@ -309,6 +309,7 @@ Başlamak için şunları deneyebilirsin.</translation>
 <translation id="2208323208084708176">Birleştirilmiş masaüstü modu</translation>
 <translation id="2220572644011485463">PIN veya şifre</translation>
 <translation id="2222841058024245321">Masa 7</translation>
+<translation id="2223384056430485343">Bölünmüş ekranda</translation>
 <translation id="2224075387478458881">Ekranda korunan içerik varken ekran kaydı almaya izin verilmez</translation>
 <translation id="2227179592712503583">Öneriyi kaldır</translation>
 <translation id="2248634276911611268">Bağlantıyı yeni sekmede açıp bu yeni sekmeye geç</translation>
@@ -1132,6 +1133,7 @@ Klavye kısayolunu da kullanabilirsiniz. Önce metni vurgulayın, ardından <ph 
 <translation id="5208059991603368177">Açık</translation>
 <translation id="5216991270656129561">Saat <ph name="TIME" /> olana kadar kapalı</translation>
 <translation id="5222676887888702881">Çıkış</translation>
+<translation id="5228195526683428788">Bölünmüş ekran ayırıcı</translation>
 <translation id="5229343007215035173">Gizlilik ekranını açın/kapatın</translation>
 <translation id="5230516054153933099">Pencere</translation>
 <translation id="5234764350956374838">Kapat</translation>
@@ -1518,6 +1520,7 @@ Yeni yüklenmiş</translation>
 <translation id="6613765291890844037"><ph name="STORAGE_IN_USE_SIZE" /> depolama alanı kullanılıyor | Toplam <ph name="STORAGE_TOTAL_SIZE" /></translation>
 <translation id="6614169507485700968">Gizlilik ekranı açık</translation>
 <translation id="6622679827379792051">Telefonunuzdaki uygulamaları görme seçeneğini ayarlayın</translation>
+<translation id="662279009180869175">Bölünmüş ekranı yeniden boyutlandırmak için sol ve sağ okları kullanın</translation>
 <translation id="6624493541160101248">Geçerli masa: <ph name="DESK_NAME" />. Masa <ph name="DESK_INDEX" />/<ph name="DESK_COUNT" />.</translation>
 <translation id="6625718907317144388">Görüntüleme koruması açık olduğundan <ph name="APP_1_TITLE" />, <ph name="APP_2_TITLE" /> ve diğer bildirimler gösterilmiyor</translation>
 <translation id="6627638273713273709">Ara+Üst Karakter+K</translation>
@@ -1536,6 +1539,7 @@ Yeni yüklenmiş</translation>
 <translation id="6670153871843998651">Çalışma Masası 3</translation>
 <translation id="6671495933530132209">Resmi kopyala</translation>
 <translation id="6671661918848783005">Chromebook'unuzun kilidi açılamıyor</translation>
+<translation id="6676552993057022464">Bölünmüş ekranı yeniden boyutlandırmak için yukarı ve aşağı okları kullanın</translation>
 <translation id="6682029141988159141">Panodaki içeriği yapıştır</translation>
 <translation id="6683022854667115063">Kulaklık</translation>
 <translation id="6686023075541098243">Telefonunuzdaki bildirimleri görme seçeneğini ayarlayın</translation>

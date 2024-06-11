@@ -47,6 +47,7 @@
 <translation id="1082026381988252344">Posouvání a přibližování obsahu sdílené karty</translation>
 <translation id="1089439967362294234">Změnit heslo</translation>
 <translation id="1090629319939036170">Nabídka VR</translation>
+<translation id="1091779689406092804">snímky obrazovky</translation>
 <translation id="1094777233105318927">Informace o prohlížeči, operačním systému, zařízení, nainstalovaném softwaru a souborech</translation>
 <translation id="1096545575934602868">Toto pole nesmí mít více než <ph name="MAX_ITEMS_LIMIT" /> položek. Všechny další položky budou zahozeny.</translation>
 <translation id="1097803577928227769">Místní parky a zahrady</translation>
@@ -472,6 +473,7 @@ Jinak to vaše nastavení ochrany soukromí bude blokovat. Povolením umožníte
 <translation id="1840009953725035797">Systémy pro domácí kino</translation>
 <translation id="1842969606798536927">Zaplatit</translation>
 <translation id="1846432862466000825">Plast (archivační)</translation>
+<translation id="1848640291751752317">stažené soubory</translation>
 <translation id="1848982255014129637">Fotografie (vysoký lesk)</translation>
 <translation id="1853392626017747777">Registrace virtuální karty je zavřena</translation>
 <translation id="1854180393107901205">Zastavit odesílání</translation>
@@ -571,7 +573,6 @@ Jinak to vaše nastavení ochrany soukromí bude blokovat. Povolením umožníte
 <translation id="2046951263634619614">Knižní maloobchod</translation>
 <translation id="2048261947532620704">Překlad stránky</translation>
 <translation id="2053111141626950936">Stránky v jazyce <ph name="LANGUAGE" /> se nebudou překládat.</translation>
-<translation id="2055461225779831292">Používat a natáčet vaše kamery (<ph name="CAMERAS_COUNT" />)</translation>
 <translation id="2056492565825767809">Zamykat ukazatel myši</translation>
 <translation id="2056658168519009885">Weby mohou prohlížeč Chrome žádat o informace k personalizaci reklam.</translation>
 <translation id="2059166748188874810">Samosprávná oblast</translation>
@@ -649,7 +650,6 @@ Jinak to vaše nastavení ochrany soukromí bude blokovat. Povolením umožníte
 <translation id="2170417331417184438">Karta je uložena pouze v zařízení</translation>
 <translation id="2172089022819052306">Opravy a údržba vozidel</translation>
 <translation id="2175630235841878061">Soubory větší než 100 MB nejsou k dispozici ke stažení</translation>
-<translation id="2176198174348007293">Používat vaše kamery (<ph name="CAMERAS_COUNT" />)</translation>
 <translation id="2176974405772725904">Uložení adresy do účtu</translation>
 <translation id="2178665390943006934">Tlačítko Aktualizovat Chrome, aktivací aktualizujete Chrome z nastavení Chromu</translation>
 <translation id="2181821976797666341">Zásady</translation>
@@ -754,6 +754,7 @@ Jinak to vaše nastavení ochrany soukromí bude blokovat. Povolením umožníte
 <translation id="2366689192918515749">Maso a mořské produkty</translation>
 <translation id="2367567093518048410">Úroveň</translation>
 <translation id="23703388716193220">Golfové vybavení</translation>
+<translation id="2370368710215137370">Nahrávání souborů</translation>
 <translation id="2374629208601905275">V souladu s právními předpisy ve vaší oblasti vás Chrome žádá, abyste vybrali svůj výchozí vyhledávač. Tyto vyhledávače jsou ve vašem regionu oblíbené a zobrazují se v náhodném pořadí.</translation>
 <translation id="2377241607395428273">Grafika a animační software</translation>
 <translation id="2378084239755710604">Uložení karty je zavřeno.</translation>
@@ -1418,6 +1419,7 @@ Jinak to vaše nastavení ochrany soukromí bude blokovat. Povolením umožníte
 <translation id="3682094733650754138">Byla vybrána možnost Vyplnit adresu</translation>
 <translation id="3687920599421452763">Dodávky a malá nákladní vozidla</translation>
 <translation id="3693327506115126094">Vyberte způsob ověření totožnosti</translation>
+<translation id="3698353241727597930">Váš administrátor nakonfiguroval, aby se <ph name="FILES" /> ukládaly do úložiště <ph name="CLOUD_STORAGE" /> spravovaného vaší organizací. Tyto soubory mohou být monitorovány a auditovány a můžou zůstat uchovány, když je odstraníte.</translation>
 <translation id="3698629142018988477">Tlačítko Vytvořit web, aktivací rychle vytvoříte nový web ve Webech Google</translation>
 <translation id="3701325639446035885">Prodej vstupenek na akce</translation>
 <translation id="3701427423622901115">Resetování bylo potvrzeno.</translation>
@@ -1493,6 +1495,7 @@ Jinak to vaše nastavení ochrany soukromí bude blokovat. Povolením umožníte
 <translation id="3826050100957962900">Externí přihlašování</translation>
 <translation id="3827112369919217609">Absolutní</translation>
 <translation id="3828924085048779000">Prázdná heslová fráze není povolena.</translation>
+<translation id="3830139096297532361">Tento soubor PDF není přístupný. Nepodařilo se stáhnout soubory k extrakci textu. Zkuste to znovu později.</translation>
 <translation id="3830470485672984938">Použít jiný přístupový klíč</translation>
 <translation id="3831065134033923230">Kontrola uložených hesel</translation>
 <translation id="3831915413245941253">Z domény <ph name="ENROLLMENT_DOMAIN" />do tohoto zařízení byla nainstalována rozšíření pro dodatečné funkce. Rozšíření mají přístup k některým vašim datům.</translation>
@@ -1667,6 +1670,7 @@ Jinak to vaše nastavení ochrany soukromí bude blokovat. Povolením umožníte
 <translation id="4202554117186904723">Pátá role</translation>
 <translation id="4203769790323223880">Fotoaparát není povolen</translation>
 <translation id="4203896806696719780"><ph name="BEGIN_LINK" />Zkontrolovat konfiguraci firewallu a antivirového softwaru<ph name="END_LINK" /></translation>
+<translation id="4207195957038009075">Disk Google</translation>
 <translation id="4209092469652827314">Velké</translation>
 <translation id="4210602799576081649">Platnost ověřovacího kódu vypršela, požádejte o nový</translation>
 <translation id="421066178035138955">Používat zařízení a data pro virtuální realitu</translation>
@@ -2726,6 +2730,7 @@ Kontaktujte administrátora systému.</translation>
 <translation id="6270066318535733958">Plavby na lodi</translation>
 <translation id="6272088941196661550">Obnovením cesty zobrazíte příslušnou aktivitu v historii Chromu</translation>
 <translation id="6272383483618007430">Aktualizace Google</translation>
+<translation id="6278015583149890680">Disk Google a OneDrive</translation>
 <translation id="6280223929691119688">Doručení na tuto adresu není možné. Vyberte jinou adresu.</translation>
 <translation id="6284292079994426700">26 × 38 palců</translation>
 <translation id="6284449872909111707">Textové zprávy a chat</translation>
@@ -3164,6 +3169,7 @@ Kontaktujte administrátora systému.</translation>
 <translation id="7119063404975271297">Televizní dramata</translation>
 <translation id="7119371694555167493">Časový limit kopírování vypršel</translation>
 <translation id="7119414471315195487">Zavřete ostatní karty nebo programy</translation>
+<translation id="7120588595737538743">stažené soubory a snímky obrazovek</translation>
 <translation id="7124354851782353862">Zadejte kód CVC</translation>
 <translation id="7129409597930077180">Dodání na tuto adresu není možné. Vyberte jinou adresu.</translation>
 <translation id="7129809579943936035"><ph name="VALUE_PROP" /> <ph name="DETAILS" /></translation>
@@ -3362,6 +3368,7 @@ Kontaktujte administrátora systému.</translation>
 <translation id="7483863401933039889"><ph name="CHROME_TIP" />, tip pro Chrome zavřete stisknutím klávesy Tab a poté Enter.</translation>
 <translation id="7485085230273446323">Obchod a průmysl</translation>
 <translation id="7485870689360869515">Nebyla nalezena žádná data.</translation>
+<translation id="7486880426035242089">OneDrive</translation>
 <translation id="7489392576326061356">Šampony a kondicionéry</translation>
 <translation id="7495528107193238112">Tento obsah je blokován. Požádejte vlastníka webu, aby tento problém vyřešil.</translation>
 <translation id="749865518782565832">Vodoinstalace</translation>
@@ -3614,7 +3621,6 @@ Kontaktujte administrátora systému.</translation>
 <translation id="7947813448670013867"><ph name="SEE_CHROME_TIPS_FOCUSED_FRIENDLY_MATCH_TEXT" />, stisknutím klávesy Tab a poté Enter zobrazíte informace o funkcích Chromu</translation>
 <translation id="7949135979217012031">Antivirové programy a malware</translation>
 <translation id="7950027195171824198">Spravujte nastavení souborů cookie v nastavení Chromu</translation>
-<translation id="7950440490184876634">Používat vaše mikrofony (<ph name="MICS_COUNT" />)</translation>
 <translation id="7951415247503192394">(32bitový)</translation>
 <translation id="7952192831285741665">European EDP</translation>
 <translation id="7952250633095257243">Zkratka nesmí být prázdná</translation>

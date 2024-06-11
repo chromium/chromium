@@ -1133,6 +1133,7 @@
 <translation id="5208059991603368177">Вкл.</translation>
 <translation id="5216991270656129561">Изключено до <ph name="TIME" /></translation>
 <translation id="5222676887888702881">Изход</translation>
+<translation id="5228195526683428788">Разделител в режима за разделен екран</translation>
 <translation id="5229343007215035173">Включване/изключване на екрана за поверителност</translation>
 <translation id="5230516054153933099">Window</translation>
 <translation id="5234764350956374838">Отхвърляне</translation>
@@ -1519,6 +1520,7 @@
 <translation id="6613765291890844037">Използвано място от хранилището: <ph name="STORAGE_IN_USE_SIZE" /> | Общо: <ph name="STORAGE_TOTAL_SIZE" /></translation>
 <translation id="6614169507485700968">Екранът за поверителност е включен</translation>
 <translation id="6622679827379792051">Настройване на прегледа на приложенията на телефона ви</translation>
+<translation id="662279009180869175">Използвайте стрелките за наляво и надясно, за да преоразмерите разделения екран</translation>
 <translation id="6624493541160101248">Текущ работен кът: <ph name="DESK_NAME" />. Работен кът <ph name="DESK_INDEX" /> от <ph name="DESK_COUNT" />.</translation>
 <translation id="6625718907317144388">Известията от <ph name="APP_1_TITLE" />, <ph name="APP_2_TITLE" /> и други приложения са скрити, тъй като защитата срещу надничане е включена</translation>
 <translation id="6627638273713273709">клавиш „търсене“ + Shift + K</translation>
@@ -1537,6 +1539,7 @@
 <translation id="6670153871843998651">Работен кът 3</translation>
 <translation id="6671495933530132209">Копиране на изображението</translation>
 <translation id="6671661918848783005">Chromebook не може да се отключи</translation>
+<translation id="6676552993057022464">Използвайте стрелките за нагоре и надолу, за да преоразмерите разделения екран</translation>
 <translation id="6682029141988159141">Поставяне на съдържанието от буферната памет</translation>
 <translation id="6683022854667115063">Слушалки</translation>
 <translation id="6686023075541098243">Настройване на прегледа на известията на телефона ви</translation>

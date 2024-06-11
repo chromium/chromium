@@ -357,6 +357,7 @@ diinstal.</translation>
 
       Peringatan: Wipe dan MinimalMigrate akan menghapus data lokal.</translation>
 <translation id="1248955696540150266">Izinkan download update otomatis peer to peer</translation>
+<translation id="1249640740800891502">Setelan SkyVault (semua data di cloud)</translation>
 <translation id="1250597158212586309">Jika kebijakan disetel ke Aktif atau tidak disetel, pengguna akan memiliki opsi untuk menutup/memulihkan notifikasi sandi yang telah dibobol.
 
       Jika Anda menonaktifkan setelan ini, pengguna tidak akan dapat menutup notifikasi sandi yang telah dibobol. Jika Anda mengaktifkan setelan ini, pengguna akan dapat menutup notifikasi sandi yang telah dibobol.</translation>
@@ -2118,6 +2119,7 @@ pilihan default.</translation>
 
       Perlu diperhatikan bahwa fitur ini memerlukan komponen tambahan yang tidak tersedia di luar lingkungan jaringan Google agar dapat berfungsi sebagaimana mestinya.</translation>
 <translation id="2536525645274582300">Pengguna memutuskan apakah akan mengaktifkan layanan lokasi Google</translation>
+<translation id="2536717624356629471">Mengaktifkan Suara dalam Mode Fokus untuk ChromeOS</translation>
 <translation id="254653220329944566">Mengaktifkan pelaporan cloud <ph name="PRODUCT_NAME" /></translation>
 <translation id="2547854230073316008">Menyetel kebijakan akan menyetel resolusi dan faktor penskalaan untuk setiap tampilan. Setelan tampilan eksternal akan berlaku untuk tampilan yang terhubung. (Kebijakan tidak berlaku jika tampilan tidak mendukung resolusi atau skala yang ditentukan.)
 
@@ -3134,6 +3136,7 @@ Di <ph name="MS_WIN_NAME" />, kebijakan ini hanya tersedia pada instance yang di
 <translation id="3338431256935927407">Mengontrol setelan yang terkait dengan fitur Cloud Upload.</translation>
 <translation id="3339271789059866414">Mengonfigurasi ketersediaan layanan System-proxy dan kredensial proxy untuk layanan sistem.
       Jika kebijakan tidak ditetapkan, layanan System-proxy tidak akan tersedia.</translation>
+<translation id="3341649870321644698">Aktifkan Mode Fokus dengan Suara Fokus saja.</translation>
 <translation id="334231891933432876">Buat pengguna logout segera setelah akunnya menjadi tidak terautentikasi</translation>
 <translation id="3345323903592385588">Urutan konfigurasi VM yang akan ditampilkan di penginstal. Jika beberapa konfigurasi VM ditentukan, konfigurasi dengan nilai display_order terkecil ditampilkan di bagian atas daftar. Nilai defaultnya adalah nol.</translation>
 <translation id="3351661569026056296">Jika kebijakan disetel ke Benar (True), tombol baris teratas pada keyboard akan bertindak sebagai perintah tombol fungsi. Jika menekan tombol Penelusuran, perilaku tombol tersebut akan kembali menjadi tombol media.
@@ -3465,6 +3468,7 @@ Perlu diingat untuk tidak selalu mengaktifkan kebijakan ini, terutama dalam depl
 <translation id="3587482841069643663">Semua</translation>
 <translation id="3587766503874071316">Nonaktifkan pintasan aksesibilitas</translation>
 <translation id="3589193811812796052">Cegah modul WebAssembly dikirim lintas asal</translation>
+<translation id="3591518189681300697">Aktifkan migrasi file lokal ke cloud</translation>
 <translation id="3591527072193107424">Mengaktifkan fitur Dukungan Browser Lama.</translation>
 <translation id="3591584750136265240">Mengonfigurasi perilaku autentikasi proses masuk</translation>
 <translation id="3593905652755912452">Perilaku lama pengiriman peristiwa pada kontrol formulir yang dinonaktifkan akan digunakan.</translation>
@@ -4017,6 +4021,7 @@ Salah satu kebijakan dapat digunakan, tetapi kebijakan ini tidak akan digunakan 
 Kedua kebijakan tersebut memiliki efek yang sama pada perilaku browser.</translation>
 <translation id="4016700865356669962">Jika kebijakan disetel ke Aktif, pengguna akan dapat menggunakan template tata letak desktop.  Jika kebijakan disetel ke Nonaktif atau tidak disetel, template tersebut tidak akan tersedia.</translation>
 <translation id="4020682745012723568">Cookie yang ditransfer ke profil pengguna tidak dapat diakses oleh aplikasi Android.</translation>
+<translation id="4021684548211845008">Menonaktifkan suara dalam Mode Fokus.</translation>
 <translation id="4025500273782820766">Izinkan pengguna memilih "Selalu izinkan" untuk melewati perintah konfirmasi di waktu mendatang, jika dialog protokol eksternal muncul</translation>
 <translation id="402759845255257575">Jangan izinkan situs apa pun menjalankan JavaScript</translation>
 <translation id="4027608872760987929">Aktifkan penyedia penelusuran default</translation>
@@ -4272,6 +4277,7 @@ Catatan: Jika diblokir, URL chrome://* dan chrome-untrusted://* internal dapat m
 
           Jika kebijakan ini tidak ditetapkan, klik otomatis mula-mula akan dinonaktifkan, tetapi dapat diaktifkan oleh pengguna kapan saja.</translation>
 <translation id="4212181786686887763">URL tempat gambar wallpaper dapat didownload.</translation>
+<translation id="4221677608399717135">Mengaktifkan atau menonaktifkan SkyVault</translation>
 <translation id="4224610387358583899">Penundaan kunci layar</translation>
 <translation id="42267415200641481">Menyetel kebijakan ini ke benar (true) akan menyebabkan resolusi DNS sistem (getaddrinfo()) dapat berjalan di luar proses jaringan, bergantung pada konfigurasi sistem dan tombol fitur.
 
@@ -6271,6 +6277,15 @@ Dukungan untuk setelan kebijakan ini akan berakhir pada <ph name="PRODUCT_NAME" 
 <translation id="5775235485119094648">Mengisi daya baterai saat tingkat daya berada dalam rentang yang ditetapkan.</translation>
 <translation id="5776485039795852974">Tanyakan setiap kali situs ingin menampilkan pemberitahuan desktop</translation>
 <translation id="5783009211970309878">Cetak Header dan Footer</translation>
+<translation id="5786733040432065904">Mode Fokus adalah fitur yang mengontrol mode Jangan Ganggu berdasarkan timer dan dimaksudkan untuk mengurangi gangguan pengguna. Fitur Mode Fokus memungkinkan pengguna mendengarkan serangkaian musik terbatas untuk membantu mereka fokus. Kebijakan ini mengontrol akses ke fitur ini.
+
+Jika kebijakan ini tidak disetel, semua suara akan dinonaktifkan untuk pengguna terkelola.
+
+Jika kebijakan ini disetel ke Aktif, akses ke semua suara dalam Mode Fokus akan diizinkan.
+
+Jika kebijakan ini disetel ke Suara Fokus saja, fitur suara hanya akan diaktifkan dengan Suara Fokus.
+
+Jika kebijakan ini disetel ke Nonaktif, suara dalam Mode Fokus akan dinonaktifkan.</translation>
 <translation id="5790763087505467169">Mengurangi Notifikasi otomatis untuk sesi tamu terkelola</translation>
 <translation id="5800329278018669527">Nonaktifkan perintah konfigurasi jaringan saat offline</translation>
 <translation id="5802931736499687181">Nonaktifkan Pipeline Pelaporan Terenkripsi</translation>
@@ -6589,6 +6604,11 @@ Kebijakan ini tidak digunakan lagi mulai M124.</translation>
       Tidak menyetel kebijakan (jika didukung di perangkat) akan menerapkan mode pengisian daya baterai standar, dan pengguna tidak dapat mengubahnya.
 
       Catatan: Jika mode pengisian daya baterai Kustom dipilih, <ph name="DEVICE_BATTERY_CHARGE_CUSTOM_START_CHARGING_POLICY_NAME" /> dan <ph name="DEVICE_BATTERY_CHARGE_CUSTOM_STOP_CHARGING_POLICY_NAME" /> juga harus ditentukan.</translation>
+<translation id="6064418365347066084">Memicu migrasi file lokal yang ada ke cloud.
+Hanya berlaku untuk pengguna SkyVault, misalnya jika LocalUserFilesAllowed disetel ke salah (false)
+dan DownloadDirectory berupa Google Drive atau OneDrive, dan jika diabaikan.
+    Jika kebijakan ini disetel ke Benar (True), file lokal akan dipindahkan ke folder cloud dan lokal, lalu disembunyikan dari pengguna.
+    Jika kebijakan ini disetel ke Salah (False) atau tidak disetel, file lokal akan tetap dalam mode hanya baca.</translation>
 <translation id="60655674079349516">Mengonfigurasi daftar jenis data penjelajahan yang harus dihapus saat pengguna menutup semua jendela browser.
 
 Peringatan: Menyetel kebijakan ini dapat memengaruhi dan menghapus data pribadi lokal secara permanen. Sebaiknya uji setelan Anda sebelum men-deploy untuk mencegah penghapusan data pribadi secara tidak sengaja.
@@ -8510,6 +8530,7 @@ Perilaku ini akan menggantikan kebijakan <ph name="WINDOW_PLACEMENT_BLOCKED_FOR_
       Jika kebijakan disetel ke Aktif atau tidak disetel, perangkat yang terdaftar akan melaporkan daftar antarmuka jaringan beserta jenis dan alamat hardware-nya.
 
       Jika kebijakan disetel ke Nonaktif, perangkat yang terdaftar tidak akan melaporkan antarmuka jaringan.</translation>
+<translation id="7388618954884540850">Nonaktifkan migrasi file lokal ke cloud</translation>
 <translation id="7389872682701720082">Jika setelan ini diaktifkan, plugin yang masih berlaku selalu berjalan.
 
       Jika setelan ini dinonaktifkan atau tidak ditetapkan, pengguna akan dimintai izin untuk menjalankan plugin yang memerlukan otorisasi. Ini adalah plugin yang dapat membahayakan keamanan.</translation>
@@ -8685,6 +8706,7 @@ Jika kebijakan ini disetel ke benar (true), <ph name="PRODUCT_OS_NAME" /> akan b
 
       Jika kebijakan tidak disetel atau disetel ke Benar (True), peringatan akan ditampilkan untuk mengingatkan pengguna agar keluar dari layar penuh sebelum memasukkan sandi. Jika kebijakan disetel ke Salah (False), tidak ada peringatan yang akan ditampilkan.</translation>
 <translation id="7531630046107845550">Mengizinkan koneksi SSH klien keluar di Terminal System App</translation>
+<translation id="753332207298659209">Mengonfigurasi kebijakan untuk mengontrol apakah data pengguna diizinkan di perangkat, dan apakah data yang ada harus diupload ke cloud.</translation>
 <translation id="7533385610709354870">Kecuali <ph name="ENABLE_MEDIA_ROUTER_POLICY_NAME" /> disetel ke Nonaktif, menyetel <ph name="MEDIA_ROUTER_CAST_ALLOW_ALL_IPS_POLICY_NAME" /> ke Aktif akan menghubungkan <ph name="PRODUCT_NAME" /> ke perangkat Transmisi di semua alamat IP, bukan hanya alamat pribadi RFC1918/RFC4193.
 
 Jika kebijakan disetel ke Nonaktif, <ph name="PRODUCT_NAME" /> hanya akan terhubung ke perangkat Transmisi di RFC1918/RFC4193.
@@ -9215,6 +9237,7 @@ Jika kebijakan <ph name="ENABLE_MEDIA_ROUTER_POLICY_NAME" /> disetel ke Nonaktif
 <translation id="7962093600142350905">Kebijakan ini mengontrol apakah printer privet yang tersedia akan ditampilkan kepada pengguna di dialog pratinjau cetak.
       Jika kebijakan ini disetel ke Aktif, printer privet yang tersedia akan ditampilkan.
       Jika kebijakan ini disetel ke Nonaktif atau tidak disetel, printer privet tidak akan muncul di pratinjau cetak, karena metode pencetakan ini sudah tidak digunakan lagi.</translation>
+<translation id="7969865441622729072">Aktifkan semua suara dalam Mode Fokus.</translation>
 <translation id="7970660709107174905">Setelan partisi penyimpanan pihak ketiga</translation>
 <translation id="7972223739742725350">Jangan aktifkan Save and Share API untuk kontrol <ph name="PRODUCT_OS_NAME" /> pihak ketiga.</translation>
 <translation id="7972642710812569707">Paksa WebSQL di konteks pihak ketiga diaktifkan kembali.</translation>
@@ -9819,6 +9842,7 @@ Jika kebijakan tidak disetel atau disetel ke 0, navigasi ke URL yang ditetapkan 
 
       Jika kebijakan ini dinonaktifkan atau tidak disetel, hanya profil lokal reguler yang akan digunakan.</translation>
 <translation id="8417305981081876834">Setel panjang maksimal PIN layar kunci</translation>
+<translation id="8418438383184278931">Mengaktifkan migrasi file pengguna lokal ke penyimpanan cloud</translation>
 <translation id="841977920223099909">Pemicu peringatan perlindungan sandi</translation>
 <translation id="8419965165591256432">Interval pengumpulan status aktivitas perangkat di perangkat terdaftar untuk pengguna terafiliasi. Batas minimum yang diizinkan adalah 1 menit.
 

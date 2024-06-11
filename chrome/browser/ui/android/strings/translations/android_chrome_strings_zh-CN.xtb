@@ -274,6 +274,7 @@
 <translation id="2450083983707403292">要重新开始下载 <ph name="FILE_NAME" /> 吗？</translation>
 <translation id="2453860139492968684">完成</translation>
 <translation id="2461822463642141190">当前</translation>
+<translation id="2472163211318554013">登录即可充分利用 Chrome</translation>
 <translation id="247737702124049222">“图片说明”功能已开启</translation>
 <translation id="2479148705183875116">转到“设置”</translation>
 <translation id="2482878487686419369">通知</translation>
@@ -424,7 +425,6 @@
 <translation id="3098745985164956033">系统会将部分图片发送给 Google 以便为您改进说明</translation>
 <translation id="3114507951000454849">阅读今日新闻 <ph name="NEWS_ICON" /></translation>
 <translation id="3123734510202723619">通告</translation>
-<translation id="3146775326699342508">登录即可获取其他设备上的书签及其他信息</translation>
 <translation id="314939179385989105">Chrome 主页</translation>
 <translation id="3158667104057012316">手动排序</translation>
 <translation id="3166827708714933426">标签页和窗口快捷键</translation>
@@ -1339,6 +1339,7 @@
 <translation id="752220631458524187">完成当前操作后断开连接</translation>
 <translation id="7523960634226602883">借助摄像头使用 Google 智能镜头进行搜索</translation>
 <translation id="752731652852882757">使用无痕模式时屏蔽</translation>
+<translation id="7557508262441527045">已退出账号</translation>
 <translation id="7577900504646297215">管理我的兴趣</translation>
 <translation id="757855969265046257">{FILES,plural, =1{已下载 <ph name="FILES_DOWNLOADED_ONE" /> 个文件}other{已下载 <ph name="FILES_DOWNLOADED_MANY" /> 个文件}}</translation>
 <translation id="7581273696622423628">参与调查</translation>
@@ -1384,7 +1385,6 @@
 <translation id="777637629667389858">当您登录后，在各种 Google 服务中保护您。</translation>
 <translation id="7778840695157240389">请稍后再回来查看是否有新报道</translation>
 <translation id="7780645209293383778">而且，会在您登录后暂时将这些数据关联到您的 Google 账号，以便在各款 Google 应用中为您提供保护</translation>
-<translation id="7786562169000598736">获取您的所有书签</translation>
 <translation id="7791543448312431591">添加</translation>
 <translation id="7798392620021911922">已恢复 <ph name="TAB_COUNT" /> 个标签页</translation>
 <translation id="780287761701992588">获取您在所有设备上保存的书签、密码等信息</translation>

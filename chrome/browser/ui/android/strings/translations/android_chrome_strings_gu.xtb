@@ -274,6 +274,7 @@
 <translation id="2450083983707403292">શું તમે <ph name="FILE_NAME" />ને ફરી ડાઉનલોડ કરવાનું શરૂ કરવા માગો છો?</translation>
 <translation id="2453860139492968684">સમાપ્ત</translation>
 <translation id="2461822463642141190">વર્તમાન</translation>
+<translation id="2472163211318554013">Chromeનો સૌથી વધુ લાભ મેળવવા માટે સાઇન ઇન કરો</translation>
 <translation id="247737702124049222">છબીના વર્ણનોની સુવિધા ચાલુ છે</translation>
 <translation id="2479148705183875116">સેટિંગ પર જાઓ</translation>
 <translation id="2482878487686419369">નોટિફિકેશનો</translation>
@@ -425,7 +426,6 @@
 <translation id="3098745985164956033">તમારા માટે વર્ણનોને બહેતર બનાવવા માટે કેટલીક છબીઓ Googleને મોકલવામાં આવે છે</translation>
 <translation id="3114507951000454849">આજના સમાચાર વાંચો <ph name="NEWS_ICON" /></translation>
 <translation id="3123734510202723619">ઘોષણાઓ</translation>
-<translation id="3146775326699342508">તમારા અન્ય ડિવાઇસમાંથી તમારા બુકમાર્ક અને બીજું ઘણું મેળવવા માટે સાઇન ઇન કરો</translation>
 <translation id="314939179385989105">Chromeનું હોમપેજ</translation>
 <translation id="3158667104057012316">મેન્યુઅલ ક્રમ અનુસાર સૉર્ટ કરી રહ્યાં છીએ</translation>
 <translation id="3166827708714933426">ટૅબ અને વિંડો શૉર્ટકટ્સ</translation>
@@ -1343,6 +1343,7 @@
 <translation id="752220631458524187">તમારું કામ પૂર્ણ થાય ત્યારે એટલે ડિસ્કનેક્ટ કરો</translation>
 <translation id="7523960634226602883">Google Lensનો ઉપયોગ કરીને તમારા કૅમેરા વડે શોધો</translation>
 <translation id="752731652852882757">છૂપા મોડનો ઉપયોગ કરતી વખતે બ્લૉક કરો</translation>
+<translation id="7557508262441527045">સાઇન આઉટ કર્યું</translation>
 <translation id="7577900504646297215">રુચિઓ મેનેજ કરો</translation>
 <translation id="757855969265046257">{FILES,plural, =1{<ph name="FILES_DOWNLOADED_ONE" /> ફાઇલ ડાઉનલોડ કરી}one{<ph name="FILES_DOWNLOADED_MANY" /> ફાઇલ ડાઉનલોડ કરી}other{<ph name="FILES_DOWNLOADED_MANY" /> ફાઇલ ડાઉનલોડ કરી}}</translation>
 <translation id="7581273696622423628">સર્વેક્ષણમાં ભાગ લો</translation>
@@ -1388,7 +1389,6 @@
 <translation id="777637629667389858">તમે સાઇન ઇન હો ત્યારે, તમને સમગ્ર Google સેવાઓમાં સંરક્ષિત કરે છે.</translation>
 <translation id="7778840695157240389">નવી સ્ટોરી માટે થોડા સમય પછી ફરી ચેક કરો</translation>
 <translation id="7780645209293383778">તમે સાઇન ઇન કરેલું હોય ત્યારે Googleની તમામ ઍપ પર તમારું રક્ષણ કરવા માટે, આ ડેટાને હંગામી રીતે તમારા Google એકાઉન્ટ સાથે લિંક કરે છે</translation>
-<translation id="7786562169000598736">તમારા બધા બુકમાર્ક મેળવો</translation>
 <translation id="7791543448312431591">ઉમેરો</translation>
 <translation id="7798392620021911922"><ph name="TAB_COUNT" /> ટૅબ રિસ્ટોર કરી</translation>
 <translation id="780287761701992588">તમારા બધા ડિવાઇસ પર તમારા બુકમાર્ક, પાસવર્ડ અને બીજું ઘણું મેળવો</translation>

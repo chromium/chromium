@@ -18,6 +18,7 @@
 <translation id="1203500561924088507">Хвала вам на инсталацији. Потребно је да рестартујете прегледач пре него што почнете да користите <ph name="BUNDLE_NAME" />.</translation>
 <translation id="1262876892872089030">Док је ова картица била неактивна, меморија је ослобођена да би Chromium био брз. Можете да одаберете да увек изузмете овај сајт из неактивности.</translation>
 <translation id="1265577313130862557">Chromium је блокирао ово преузимање јер је овај фајл опасан</translation>
+<translation id="126567311906253476">Када се пријављујете у Google услуге као што су Gmail или YouTube помоћу налога <ph name="USER_EMAIL" />, можете аутоматски да се пријавите у Chromium помоћу истог налога</translation>
 <translation id="1315551408014407711">Подесите нов Chromium профил</translation>
 <translation id="1342274909142618978">Избриши и податке из Chromium-а (<ph name="URL" />)</translation>
 <translation id="1414495520565016063">Пријављени сте на Chromium!</translation>
@@ -42,6 +43,7 @@
 <translation id="1749104137266986751">Када HTTPS није доступан, Chromium ће користити небезбедну везу без упозорења</translation>
 <translation id="1774152462503052664">Нека Chromium ради у позадини</translation>
 <translation id="1779356040007214683">Да бисмо учинили Chromium безбеднијим, онемогућили смо неке додатке које не наводи <ph name="IDS_EXTENSION_WEB_STORE_TITLE" /> и који су можда додати без вашег знања.</translation>
+<translation id="1804128559285178512">Док сте пријављени, можете да користите лозинке и друго са Google налога у Chromium-у</translation>
 <translation id="1808667845054772817">Поново инсталирај Chromium</translation>
 <translation id="1820835682567584003">Chromium покушава да <ph name="AUTHENTICATION_PURPOSE" /></translation>
 <translation id="18552579716432081">Да бисте избрисали податке прегледања само са овог уређаја, али не и са Google налога, <ph name="BEGIN_LINK" />одјавите се из Chromium-а<ph name="END_LINK" />.</translation>

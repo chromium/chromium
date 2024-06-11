@@ -549,6 +549,7 @@
 <translation id="2003709556000175978">កំណត់​ពាក្យសម្ងាត់​របស់អ្នក​ឡើងវិញ​ឥឡូវនេះ</translation>
 <translation id="2003775180883135320">ចោះ​បួនរន្ធ​ខាងលើ</translation>
 <translation id="2004697686368036666">មុខងារ​នៅលើ​គេហទំព័រ​មួយចំនួន​អាចនឹងមិនដំណើរការទេ</translation>
+<translation id="2005042463110681802">អ្នក​មើលឃើញ​សារ​ប្រុងប្រយ័ត្ន​នេះ ដោយសារ​គេហទំព័រ​នេះ​មិនស្គាល់ HTTPS ហើយអ្នក​កំពុងប្រើ​មុខងារ​ឯកជន។ <ph name="BEGIN_LEARN_MORE_LINK" />ស្វែងយល់​បន្ថែម<ph name="END_LEARN_MORE_LINK" /></translation>
 <translation id="2009942480257059311">ប៊ូតុង "បង្កើត​ព្រឹត្តិការណ៍", បើកដំណើរការ ដើម្បីបង្កើត​ព្រឹត្តិការណ៍ថ្មី​នៅក្នុង Google ប្រតិទិន​បានរហ័ស</translation>
 <translation id="201174227998721785">គ្រប់គ្រងការអនុញ្ញាត និងទិន្នន័យដែលបានរក្សាទុកនៅលើគេហទំព័រនានានៅក្នុងការកំណត់ Chrome</translation>
 <translation id="2012276282211112603">មិនមានប្រធានបទដែលត្រូវបង្ហាញនៅពេលនេះទេ</translation>
@@ -575,7 +576,6 @@
 <translation id="2046951263634619614">អ្នក​លក់សៀវភៅរាយ​</translation>
 <translation id="2048261947532620704">កំពុងបកប្រែទំព័រ</translation>
 <translation id="2053111141626950936">ទំព័រជា <ph name="LANGUAGE" /> នឹងមិនត្រូវ​បានបកប្រែទេ។</translation>
-<translation id="2055461225779831292">ប្រើប្រាស់ និង​ផ្លាស់ទី​កាមេរ៉ា​របស់អ្នក (<ph name="CAMERAS_COUNT" />)</translation>
 <translation id="2056492565825767809">ចាក់សោ​ទស្សន៍ទ្រនិច​ម៉ៅស៍​របស់អ្នក</translation>
 <translation id="2056658168519009885">គេហទំព័រ​អាច​ស្នើសុំ​​ព័ត៌មានពី Chrome ​ដើម្បី​ជួយកំណត់​កា​រផ្សាយពាណិជ្ជកម្ម​ដែល​អ្នកមើលឃើញ​ឱ្យ​មានលក្ខណៈ​ផ្ទាល់ខ្លួន។</translation>
 <translation id="2059166748188874810">ក្រុង</translation>
@@ -653,7 +653,6 @@
 <translation id="2170417331417184438">បានរក្សាទុកកាតទៅក្នុងឧបករណ៍តែប៉ុណ្ណោះ</translation>
 <translation id="2172089022819052306">ការជួសជុល និងការថែទាំយានជំនិះ</translation>
 <translation id="2175630235841878061">មិនអាចទាញយកឯកសារលើសពី 100MB បានទេ</translation>
-<translation id="2176198174348007293">ប្រើកាមេរ៉ារបស់អ្នក (<ph name="CAMERAS_COUNT" />)</translation>
 <translation id="2176974405772725904">រក្សាទុក​អាសយដ្ឋាន​នៅក្នុង​គណនី</translation>
 <translation id="2178665390943006934">ប៊ូតុង "ដំឡើងកំណែ Chrome", បើកដំណើរការ ដើម្បីដំឡើងកំណែ Chrome ពីការកំណត់ Chrome របស់អ្នក</translation>
 <translation id="2181821976797666341">គោលការណ៍</translation>
@@ -1487,6 +1486,7 @@
 <translation id="3799805948399000906">បានស្នើសុំ​ពុម្ពអក្សរ</translation>
 <translation id="3801265110651850478">ផ្ញើ​សំណើ “Do Not Track” ជាមួយ​ចរាចរណ៍នៃ​ការរុករក​របស់អ្នក</translation>
 <translation id="380329542618494757">ឈ្មោះ</translation>
+<translation id="3803801106042434208">ម៉ាស៊ីន​ស្វែងរក​ទាំងនេះ​មានភាព​ពេញនិយម​នៅក្នុង​តំបន់​របស់អ្នក</translation>
 <translation id="3806932344025766608">អ្នកវាយប្រហារ​នៅលើ​គេហទំព័រ​ដែលអ្នកកំពុង​ព្យាយាមចូលមើល​អាចបញ្ឆោតអ្នក​ឱ្យដំឡើង​កម្មវិធី ឬ​បង្ហាញអ្វីៗ ដូចជា​ពាក្យសម្ងាត់ លេខទូរសព្ទ ឬ​លេខកាតឥណទាន​របស់អ្នក​ជាដើម។ Chrome សូមណែនាំ​យ៉ាងមុតមាំឱ្យ​ត្រឡប់ទៅកាន់​កន្លែងដែលមានសុវត្ថិភាពវិញ។ <ph name="BEGIN_LEARN_MORE_LINK" />ស្វែងយល់បន្ថែម<ph name="END_LEARN_MORE_LINK" /></translation>
 <translation id="3807366285948165054">ការប្ដូរ​រូបភាព X</translation>
 <translation id="3807709094043295184">ក្លាស៊ិករ៉ក់ និងអូលឌី</translation>
@@ -3634,7 +3634,6 @@
 <translation id="7947813448670013867"><ph name="SEE_CHROME_TIPS_FOCUSED_FRIENDLY_MATCH_TEXT" />, ចុច Tab រួចចុច Enter ដើម្បី​ស្វែងយល់អំពី​មុខងារ Chrome</translation>
 <translation id="7949135979217012031">កម្មវិធី​កម្ចាត់​មេរោគ និងកម្មវិធីគ្រោះថ្នាក់</translation>
 <translation id="7950027195171824198">គ្រប់គ្រងចំណូលចិត្តខូគីរបស់អ្នកនៅក្នុងការកំណត់ Chrome</translation>
-<translation id="7950440490184876634">ប្រើមីក្រូហ្វូនរបស់អ្នក (<ph name="MICS_COUNT" />)</translation>
 <translation id="7951415247503192394">(32-ប៊ីត)</translation>
 <translation id="7952192831285741665">European EDP</translation>
 <translation id="7952250633095257243">ផ្លូវកាត់​មិនអាច​ទទេ​ឡើយ</translation>
@@ -4291,6 +4290,7 @@
 <translation id="920643408853370361">ធានា​រ៉ាប់រង​ការធ្វើ​ដំណើរ</translation>
 <translation id="9207861905230894330">បានបរាជ័យក្នុងបន្ថែមអត្ថបទ។</translation>
 <translation id="9210825002219699214">ការធ្វើដំណើរ​តាមអាកាស</translation>
+<translation id="9211461151375991073">វាយបញ្ចូល @ ដើម្បី​ស្វែងរក <ph name="FEATURED_SEARCH_LIST" /></translation>
 <translation id="9213433120051936369">ប្ដូររូបរាងតាមបំណង</translation>
 <translation id="9215416866750762878">កម្មវិធី​មួយកំពុង​បញ្ឈប់ Chrome មិនឱ្យ​ភ្ជាប់ទៅកាន់ទំព័រ​នេះដោយ​សុវត្ថិភាពទេ</translation>
 <translation id="92178312226016010">អ្នក​កំពុងតាមដាន​ផលិតផល​នេះ។</translation>

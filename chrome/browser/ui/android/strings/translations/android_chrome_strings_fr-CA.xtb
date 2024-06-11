@@ -274,6 +274,7 @@ Seule une personne connaissant votre phrase de passe peut lire vos données chif
 <translation id="2450083983707403292">Voulez-vous recommencer le téléchargement de <ph name="FILE_NAME" />?</translation>
 <translation id="2453860139492968684">Terminer</translation>
 <translation id="2461822463642141190">Actuelle</translation>
+<translation id="2472163211318554013">Connectez-vous pour profiter pleinement de Chrome</translation>
 <translation id="247737702124049222">Les descriptions d'images sont activées</translation>
 <translation id="2479148705183875116">Accéder aux paramètres</translation>
 <translation id="2482878487686419369">Notifications</translation>
@@ -285,6 +286,7 @@ Seule une personne connaissant votre phrase de passe peut lire vos données chif
 <translation id="2515921719039583189">Supprimer données Chrome de l'appareil?</translation>
 <translation id="2517113738956581680">Feuille grand format</translation>
 <translation id="2523184218357549926">Envoie les URL des pages que vous consultez à Google</translation>
+<translation id="2524132927880411790">Accéder à la recherche vocale de l'appli Google</translation>
 <translation id="2527209463677295330">En ajoutant plus de texte d'une page, vous pourriez obtenir de meilleurs résultats</translation>
 <translation id="2527497042232966453">Passé aux onglets de navigation privée</translation>
 <translation id="2527779675047087889">Masquer le contenu du presse-papier</translation>
@@ -424,7 +426,6 @@ Seule une personne connaissant votre phrase de passe peut lire vos données chif
 <translation id="3098745985164956033">Certaines images sont envoyées à Google afin d'améliorer les descriptions pour vous</translation>
 <translation id="3114507951000454849">Actualités du jour <ph name="NEWS_ICON" /></translation>
 <translation id="3123734510202723619">Annonces</translation>
-<translation id="3146775326699342508">Connectez-vous pour récupérer vos favoris et plus de vos autres appareils</translation>
 <translation id="314939179385989105">Page d'accueil de Chrome</translation>
 <translation id="3158667104057012316">Tri par ordre manuel</translation>
 <translation id="3166827708714933426">Raccourcis relatifs aux onglets et aux fenêtres</translation>
@@ -519,6 +520,7 @@ Seule une personne connaissant votre phrase de passe peut lire vos données chif
 <translation id="363596933471559332">Connexion automatique à des sites Web à l'aide d'authentifiants enregistrés. Lorsque la fonctionnalité est désactivée, une vérification est effectuée avant chaque connexion à un site Web.</translation>
 <translation id="3636940436873918441">Langues préférées</translation>
 <translation id="3637744895182738742">Si vous avez oublié votre phrase de passe ou si vous souhaitez modifier ce paramètre, <ph name="BEGIN_LINK" />supprimez les données Chrome de votre compte<ph name="END_LINK" />.</translation>
+<translation id="3674208116086565128">Accéder à l'onglet d'accueil de l'appli Google</translation>
 <translation id="368329460027487650">Déconnecté. Ouvre les options de connexion.</translation>
 <translation id="3687645719033307815">Vous regardez un aperçu de cette page</translation>
 <translation id="3690369331356918524">Vous avertit si des mots de passe sont exposés dans une violation de données</translation>
@@ -1341,6 +1343,7 @@ Pour modifier ce paramètre, <ph name="BEGIN_LINK" />supprimez les données Chro
 <translation id="752220631458524187">Déconnectez-vous lorsque vous avez terminé</translation>
 <translation id="7523960634226602883">Recherchez avec votre appareil photo à l'aide de Lentille Google</translation>
 <translation id="752731652852882757">Bloquer les témoins tiers seulement durant l'utilisation du mode de navigation privée</translation>
+<translation id="7557508262441527045">Déconnecté</translation>
 <translation id="7577900504646297215">Gérer les centres d'intérêt</translation>
 <translation id="757855969265046257">{FILES,plural, =1{<ph name="FILES_DOWNLOADED_ONE" /> fichier téléchargé}one{<ph name="FILES_DOWNLOADED_MANY" /> fichier téléchargé}other{<ph name="FILES_DOWNLOADED_MANY" /> fichiers téléchargés}}</translation>
 <translation id="7581273696622423628">Répondre au sondage</translation>
@@ -1386,7 +1389,6 @@ Pour modifier ce paramètre, <ph name="BEGIN_LINK" />supprimez les données Chro
 <translation id="777637629667389858">Vous protège dans l'ensemble des services Google lorsque vous êtes connecté.</translation>
 <translation id="7778840695157240389">Revenez plus tard lorsque de nouveaux articles seront proposés</translation>
 <translation id="7780645209293383778">Associe temporairement ces données à votre compte Google lorsque vous êtes connecté pour vous protéger dans l'ensemble des applications Google</translation>
-<translation id="7786562169000598736">Ajouter tous vos favoris</translation>
 <translation id="7791543448312431591">Ajouter</translation>
 <translation id="7798392620021911922"><ph name="TAB_COUNT" /> onglets restaurés</translation>
 <translation id="780287761701992588">Accédez à vos favoris, à vos mots de passe et à d'autres données sur tous vos appareils</translation>
@@ -1475,6 +1477,7 @@ Pour modifier ce paramètre, <ph name="BEGIN_LINK" />supprimez les données Chro
 <translation id="813082847718468539">Afficher l'information sur le site</translation>
 <translation id="8135406045838672858">Les fichiers PDF téléchargés s'ouvrent automatiquement avec <ph name="APP_NAME" /></translation>
 <translation id="8137562778192957619">Vous n'aurez pas à mémoriser ce mot de passe. Il sera enregistré dans le gestionnaire de mots de passe Google.</translation>
+<translation id="8152331954420209374">Accéder à Lentille</translation>
 <translation id="8163820386638255770">Pour utiliser et enregistrer des mots de passe dans votre compte Google, confirmez qu'il s'agit bien de vous</translation>
 <translation id="8171286197772512427">Partager avec la feuille de commentaires récapitulative ouverte</translation>
 <translation id="8179976553408161302">Entrée</translation>
@@ -1511,6 +1514,7 @@ Pour modifier ce paramètre, <ph name="BEGIN_LINK" />supprimez les données Chro
 <translation id="8348430946834215779">Dans la mesure du possible, utilisez le protocole HTTPS et soyez averti avant de charger des sites qui ne le prennent pas en charge</translation>
 <translation id="8354977102499939946">Effectuez une recherche rapide à l'aide de commandes vocales. Pour modifier ce raccourci, accédez à Paramètres.</translation>
 <translation id="835847953965672673"><ph name="NUMBER_OF_DOWNLOADS" /> téléchargements restaurés</translation>
+<translation id="8367705492654390392">Poser une question</translation>
 <translation id="8368001212524806591">Suivre le prix</translation>
 <translation id="8378850197701296741">Vous avez les favoris, l'historique et d'autres paramètres de <ph name="FROM_ACCOUNT" />.</translation>
 <translation id="8387617938027387193">Confirmez que c'est vous</translation>

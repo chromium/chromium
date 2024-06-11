@@ -90,6 +90,9 @@
 <translation id="1390418506739274310">‏قد يظهر لك السجلّ من خلال التطبيقات الأخرى التي تفتح الروابط في Chrome. قد يتضمّن حسابك على Google نماذج أخرى من سجلّ التصفّح في <ph name="BEGIN_LINK" />myactivity.google.com<ph name="END_LINK" />.</translation>
 <translation id="13931502444227376">للمتابعة، سيشارك <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> اسمك وعنوان بريدك الإلكتروني وصورة ملفك الشخصي مع هذا الموقع الإلكتروني. يُرجى الاطّلاع على <ph name="BEGIN_LINK1" />بنود الخدمة<ph name="END_LINK1" /> لهذا الموقع الإلكتروني.</translation>
 <translation id="1397811292916898096">البحث باستخدام <ph name="PRODUCT_NAME" /></translation>
+<translation id="1398057416966591719">‏يمكنك <ph name="BEGIN_LINK1" />إدارة بيانات Chrome التي يتم حفظها<ph name="END_LINK1" /> في حسابك على Google.
+
+وللوصول إلى الإعدادات الإضافية التي تستخدم البيانات لتحسين تجربة استخدام Chrome، انتقِل إلى <ph name="BEGIN_LINK2" />خدمات Google<ph name="END_LINK2" />.</translation>
 <translation id="1407069428457324124">المظهر الداكن</translation>
 <translation id="1407135791313364759">فتح الكل</translation>
 <translation id="1409879593029778104">مُنع تنزيل الملف <ph name="FILE_NAME" /> لأنه موجود بالفعل.</translation>
@@ -248,6 +251,7 @@
 <translation id="2286841657746966508">عنوان إرسال الفواتير</translation>
 <translation id="228704530595896923">قائمة خيارات المشاركة</translation>
 <translation id="2297822946037605517">مشاركة هذه الصفحة</translation>
+<translation id="22981027763501686">يمكنك تفعيل المزامنة للحصول على الإشارات المرجعية والسجلّ وغير ذلك على أجهزتك الأخرى</translation>
 <translation id="230115972905494466">لم يتم العثور على أي أجهزة متوافقة</translation>
 <translation id="2318045970523081853">انقر لإجراء اتصال.</translation>
 <translation id="2321086116217818302">جارٍ تحضير كلمات المرور…</translation>
@@ -274,6 +278,7 @@
 <translation id="2450083983707403292">هل ترغب في بدء تنزيل <ph name="FILE_NAME" /> مرة أخرى؟</translation>
 <translation id="2453860139492968684">اكتمل</translation>
 <translation id="2461822463642141190">حاليًا</translation>
+<translation id="2472163211318554013">‏تسجيل الدخول للاستفادة إلى أقصى حدّ من Chrome</translation>
 <translation id="247737702124049222">ميزة أوصاف الصور مفعَّلة.</translation>
 <translation id="2479148705183875116">الانتقال إلى الإعدادات</translation>
 <translation id="2482878487686419369">الإشعارات</translation>
@@ -427,7 +432,6 @@
 <translation id="3098745985164956033">‏يتم إرسال بعض الصور إلى Google لتحسين أوصاف الصور.</translation>
 <translation id="3114507951000454849">الاطّلاع على أخبار اليوم <ph name="NEWS_ICON" /></translation>
 <translation id="3123734510202723619">الإعلامات</translation>
-<translation id="3146775326699342508">سجِّل الدخول للوصول إلى الإشارات المرجعية وأكثر على أجهزتك الأخرى</translation>
 <translation id="314939179385989105">‏الصفحة الرئيسية لمتصفّح Chrome</translation>
 <translation id="3158667104057012316">جارٍ الترتيب يدويًا</translation>
 <translation id="3166827708714933426">اختصارات علامات التبويب والنوافذ</translation>
@@ -858,6 +862,7 @@
 <translation id="5292796745632149097">إرسال إلى</translation>
 <translation id="5301876394151419436">‏لقد سجّلت الدخول باستخدام <ph name="EMAIL" />. يمكنك إيقاف المزامنة في أي وقت من خلال الإعدادات. وقد تستخدم Google السجلّ لتخصيص "بحث Google" والخدمات الأخرى.</translation>
 <translation id="5304593522240415983">لا يمكن ترك هذا الحقل فارغًا</translation>
+<translation id="5306014156308790439">خيار "الإضافة إلى المجموعة" غير مفعَّل</translation>
 <translation id="5308380583665731573">اتصال</translation>
 <translation id="5316947901395241499">أوقفَ المشرف ميزة "حفظ كلمات المرور".</translation>
 <translation id="5317780077021120954">حفظ</translation>
@@ -1346,6 +1351,7 @@
 <translation id="752220631458524187">‏يُرجي نزع كابل USB من الهاتف عند الانتهاء.</translation>
 <translation id="7523960634226602883">‏البحث من خلال الكاميرا باستخدام "عدسة Google"</translation>
 <translation id="752731652852882757">حظر ملفات تعريف الارتباط أثناء استخدام وضع التصفّح المتخفي</translation>
+<translation id="7557508262441527045">تمّ تسجيل الخروج.</translation>
 <translation id="7577900504646297215">إدارة الاهتمامات</translation>
 <translation id="757855969265046257">{FILES,plural, =1{تم تنزيل ملف <ph name="FILES_DOWNLOADED_ONE" />}zero{تم تنزيل <ph name="FILES_DOWNLOADED_MANY" /> ملفات}two{تم تنزيل ملفين (<ph name="FILES_DOWNLOADED_MANY" />)}few{تم تنزيل <ph name="FILES_DOWNLOADED_MANY" /> ملفات}many{تم تنزيل <ph name="FILES_DOWNLOADED_MANY" /> ملفًا}other{تم تنزيل <ph name="FILES_DOWNLOADED_MANY" /> ملف}}</translation>
 <translation id="7581273696622423628">المشاركة في استطلاع الرأي</translation>
@@ -1391,7 +1397,6 @@
 <translation id="777637629667389858">‏عندما تكون مسجّلاً الدخول، تتم حماية حسابك على خدمات Google.</translation>
 <translation id="7778840695157240389">يُرجى إعادة التحقُّق من توفّر قصص جديدة لاحقًا.</translation>
 <translation id="7780645209293383778">‏يتم ربط هذه البيانات مؤقتًا بحسابك على Google عندما يكون دخولك مسجّلاً، بهدف حمايتك على مختلف تطبيقات Google.</translation>
-<translation id="7786562169000598736">الحصول على جميع الإشارات المرجعية</translation>
 <translation id="7791543448312431591">إضافة</translation>
 <translation id="7798392620021911922">تمت استعادة <ph name="TAB_COUNT" /> علامة تبويب</translation>
 <translation id="780287761701992588">احتفِظ بالإشارات المرجعية وكلمات المرور وغيرها على جميع أجهزتك</translation>

@@ -274,6 +274,7 @@ Ang taong may passphrase mo lang ang makakapagbasa ng iyong naka-encrypt na data
 <translation id="2450083983707403292">Gusto mo bang simulang muli ang pag-download sa <ph name="FILE_NAME" />?</translation>
 <translation id="2453860139492968684">Tapos na</translation>
 <translation id="2461822463642141190">Kasalukuyan</translation>
+<translation id="2472163211318554013">Mag-sign in para masulit ang Chrome</translation>
 <translation id="247737702124049222">Naka-on ang mga paglalarawan ng larawan</translation>
 <translation id="2479148705183875116">Pumunta sa Mga Setting</translation>
 <translation id="2482878487686419369">Mga Abiso</translation>
@@ -425,7 +426,6 @@ Ang taong may passphrase mo lang ang makakapagbasa ng iyong naka-encrypt na data
 <translation id="3098745985164956033">Ipinapadala sa Google ang ilang larawan para mapahusay ang mga paglalarawan para sa iyo</translation>
 <translation id="3114507951000454849">Basahin ang balita ngayong araw <ph name="NEWS_ICON" /></translation>
 <translation id="3123734510202723619">Mga Anunsyo</translation>
-<translation id="3146775326699342508">Mag-sign in para makuha ang iyong mga bookmark at higit pa mula sa iba pang device mo</translation>
 <translation id="314939179385989105">Homepage ng Chrome</translation>
 <translation id="3158667104057012316">Ibinubukod-bukod ayon sa manual na pagkakasunod-sunod</translation>
 <translation id="3166827708714933426">Mga shortcut ng tab at window</translation>
@@ -1343,6 +1343,7 @@ Para baguhin ang setting na ito, <ph name="BEGIN_LINK" />i-delete ang data sa Ch
 <translation id="752220631458524187">Magdiskonekta kapag tapos ka na</translation>
 <translation id="7523960634226602883">Maghanap sa pamamagitan ng iyong camera gamit ang Google Lens</translation>
 <translation id="752731652852882757">I-block habang gumagamit ng Incognito</translation>
+<translation id="7557508262441527045">Nag-sign out</translation>
 <translation id="7577900504646297215">Pamahalaan ang mga interes</translation>
 <translation id="757855969265046257">{FILES,plural, =1{<ph name="FILES_DOWNLOADED_ONE" /> file ang na-download}one{<ph name="FILES_DOWNLOADED_MANY" /> file ang na-download}other{<ph name="FILES_DOWNLOADED_MANY" /> na file ang na-download}}</translation>
 <translation id="7581273696622423628">Sagutan ang survey</translation>
@@ -1388,7 +1389,6 @@ Para baguhin ang setting na ito, <ph name="BEGIN_LINK" />i-delete ang data sa Ch
 <translation id="777637629667389858">Kapag naka-sign in ka, poprotektahan ka nito sa lahat ng serbisyo ng Google.</translation>
 <translation id="7778840695157240389">Bumalik sa ibang pagkakataon para sa mga bagong kuwento</translation>
 <translation id="7780645209293383778">Pansamantalang nili-link ang data na ito sa iyong Google Account kapag naka-sign in ka, para protektahan ka sa lahat ng Google app</translation>
-<translation id="7786562169000598736">Kunin ang lahat ng bookmark mo</translation>
 <translation id="7791543448312431591">Idagdag</translation>
 <translation id="7798392620021911922">Na-restore ang <ph name="TAB_COUNT" /> (na) tab</translation>
 <translation id="780287761701992588">Makuha ang iyong mga bookmark, password, at higit pa sa lahat ng device mo</translation>

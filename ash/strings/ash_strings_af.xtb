@@ -1134,6 +1134,7 @@ Jy kan ook die kortpadsleutels gebruik. Merk eers die teks en druk dan <ph name=
 <translation id="5208059991603368177">Aan</translation>
 <translation id="5216991270656129561">Af tot <ph name="TIME" /></translation>
 <translation id="5222676887888702881">Meld af</translation>
+<translation id="5228195526683428788">Verdeler van verdeelde skerm</translation>
 <translation id="5229343007215035173">Skakel privaatheidskerm aan of af</translation>
 <translation id="5230516054153933099">Venster</translation>
 <translation id="5234764350956374838">Verwerp</translation>
@@ -1520,6 +1521,7 @@ Nuwe installasie</translation>
 <translation id="6613765291890844037">Berging <ph name="STORAGE_IN_USE_SIZE" /> word tans gebruik | <ph name="STORAGE_TOTAL_SIZE" /> totaal</translation>
 <translation id="6614169507485700968">Privaatheidskerm is aan</translation>
 <translation id="6622679827379792051">Stel jou foon op om jou apps te bekyk</translation>
+<translation id="662279009180869175">Gebruik links- en regspyl om die grootte van verdeelde skerm te verander</translation>
 <translation id="6624493541160101248">Huidige lessenaar: <ph name="DESK_NAME" />. Lessenaar <ph name="DESK_INDEX" /> van <ph name="DESK_COUNT" />.</translation>
 <translation id="6625718907317144388"><ph name="APP_1_TITLE" />-, <ph name="APP_2_TITLE" />- en ander kennisgewings word versteek omdat kykbeskerming aan is</translation>
 <translation id="6627638273713273709">Soek+Shift+K</translation>
@@ -1538,6 +1540,7 @@ Nuwe installasie</translation>
 <translation id="6670153871843998651">Lessenaar 3</translation>
 <translation id="6671495933530132209">Kopieer prent</translation>
 <translation id="6671661918848783005">Kan nie jou Chromebook ontsluit nie</translation>
+<translation id="6676552993057022464">Gebruik op- en afpyl om die grootte van verdeelde skerm te verander</translation>
 <translation id="6682029141988159141">Plak inhoud van knipbord af</translation>
 <translation id="6683022854667115063">Oorfone</translation>
 <translation id="6686023075541098243">Stel jou foon op om jou kennisgewings te bekyk</translation>

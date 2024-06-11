@@ -274,6 +274,7 @@ Vetëm dikush me frazën tënde të kalimit mund të lexojë të dhënat e tua t
 <translation id="2450083983707403292">Dëshiron që të fillosh ta shkarkosh <ph name="FILE_NAME" /> përsëri?</translation>
 <translation id="2453860139492968684">Përfundo</translation>
 <translation id="2461822463642141190">Rryma</translation>
+<translation id="2472163211318554013">Identifikohu për të përfituar sa më shumë nga Chrome</translation>
 <translation id="247737702124049222">Përshkrimet e imazheve janë aktive</translation>
 <translation id="2479148705183875116">Shko te "Cilësimet"</translation>
 <translation id="2482878487686419369">Njoftimet</translation>
@@ -285,6 +286,7 @@ Vetëm dikush me frazën tënde të kalimit mund të lexojë të dhënat e tua t
 <translation id="2515921719039583189">Të fshihen të dhënat e Chrome në pajisje?</translation>
 <translation id="2517113738956581680">Fleta me madhësi të plotë</translation>
 <translation id="2523184218357549926">Dërgon te Google URL-të e faqeve që ti viziton</translation>
+<translation id="2524132927880411790">Shko te kërkimi me zë në aplikacionin e Google</translation>
 <translation id="2527209463677295330">Duke përfshirë më shumë nga teksti i një faqeje, mund të shikosh rezultate më të mira</translation>
 <translation id="2527497042232966453">Kaloi te skedat "e fshehta"</translation>
 <translation id="2527779675047087889">Fshih përmbajtjet e kujtesës së fragmenteve</translation>
@@ -424,7 +426,6 @@ Vetëm dikush me frazën tënde të kalimit mund të lexojë të dhënat e tua t
 <translation id="3098745985164956033">Disa imazhet i dërgohen Google për të përmirësuar përshkrimet për ty</translation>
 <translation id="3114507951000454849">Lexo lajmet e sotme <ph name="NEWS_ICON" /></translation>
 <translation id="3123734510202723619">Njoftime</translation>
-<translation id="3146775326699342508">Identifikohu për të marrë faqeshënuesit dhe më shumë nga pajisjet e tua të tjera</translation>
 <translation id="314939179385989105">Faqja kryesore e Chrome</translation>
 <translation id="3158667104057012316">Po renditen sipas renditjes manuale</translation>
 <translation id="3166827708714933426">Shkurtoret e skedës dhe dritares</translation>
@@ -519,6 +520,7 @@ Vetëm dikush me frazën tënde të kalimit mund të lexojë të dhënat e tua t
 <translation id="363596933471559332">Identifikohu automatikisht në uebsajte duke përdorur kredencialet e ruajtura. Kur veçoria është e çaktivizuar, do të të kërkohet gjithmonë verifikimi  përpara se të identifikohesh në një uebsajt.</translation>
 <translation id="3636940436873918441">Gjuhët e preferuara</translation>
 <translation id="3637744895182738742">Nëse ke harruar frazën tënde të kalimit apo dëshiron ta ndryshosh këtë cilësim, <ph name="BEGIN_LINK" />fshi të dhënat e Chrome në llogarinë tënde<ph name="END_LINK" />.</translation>
+<translation id="3674208116086565128">Shko te faqja bazë e aplikacionit të Google</translation>
 <translation id="368329460027487650">Ke dalë Hap opsionet për t'u identifikuar.</translation>
 <translation id="3687645719033307815">Po shikon një pamje paraprake të kësaj faqeje</translation>
 <translation id="3690369331356918524">Të paralajmëron nëse fjalëkalimet janë ekspozuar në një nxjerrje të paautorizuar të të dhënave</translation>
@@ -1341,6 +1343,7 @@ Për ta ndryshuar këtë cilësim, <ph name="BEGIN_LINK" />fshi të dhënat e Ch
 <translation id="752220631458524187">Shkëputu kur të kesh mbaruar</translation>
 <translation id="7523960634226602883">Kërko me kamerën duke përdorur "Lenten e Google"</translation>
 <translation id="752731652852882757">Bllokoji kur përdor modalitetin "e fshehtë"</translation>
+<translation id="7557508262441527045">Ke dalë</translation>
 <translation id="7577900504646297215">Menaxho interesat</translation>
 <translation id="757855969265046257">{FILES,plural, =1{<ph name="FILES_DOWNLOADED_ONE" /> skedar i shkarkuar}other{<ph name="FILES_DOWNLOADED_MANY" /> skedarë të shkarkuar}}</translation>
 <translation id="7581273696622423628">Merr pjesë në anketë</translation>
@@ -1386,7 +1389,6 @@ Për ta ndryshuar këtë cilësim, <ph name="BEGIN_LINK" />fshi të dhënat e Ch
 <translation id="777637629667389858">Kur je i identifikuar, të mbron nëpër shërbimet e Google.</translation>
 <translation id="7778840695157240389">Kontrollo përsëri më vonë për histori të reja</translation>
 <translation id="7780645209293383778">I lidh përkohësisht këto të dhëna me "Llogarinë tënde të Google" kur je identifikuar, për të të mbrojtur në të gjitha aplikacionet e Google</translation>
-<translation id="7786562169000598736">Merr të gjithë faqeshënuesit e tu</translation>
 <translation id="7791543448312431591">Shtoje</translation>
 <translation id="7798392620021911922">Rikthyer <ph name="TAB_COUNT" /> skeda</translation>
 <translation id="780287761701992588">Merr faqeshënuesit, fjalëkalimet etj. në të gjitha pajisjet e tua</translation>
@@ -1475,6 +1477,7 @@ Për ta ndryshuar këtë cilësim, <ph name="BEGIN_LINK" />fshi të dhënat e Ch
 <translation id="813082847718468539">Shiko informacionin rreth faqes</translation>
 <translation id="8135406045838672858">Skedarët e shkarkuar PDF hapen automatikisht me aplikacionin "<ph name="APP_NAME" />"</translation>
 <translation id="8137562778192957619">Nuk është nevoja ta kujtosh këtë fjalëkalim. Ai do të ruhet te "Menaxheri i fjalëkalimeve i Google".</translation>
+<translation id="8152331954420209374">Shko te "Lentja"</translation>
 <translation id="8163820386638255770">Për të përdorur dhe për të ruajtur fjalëkalimet në "Llogarinë tënde të Google", verifiko që je ti</translation>
 <translation id="8171286197772512427">Fleta për ndarjen e komenteve për përmbledhjen u hap</translation>
 <translation id="8179976553408161302">Enter</translation>
@@ -1511,6 +1514,7 @@ Për ta ndryshuar këtë cilësim, <ph name="BEGIN_LINK" />fshi të dhënat e Ch
 <translation id="8348430946834215779">Përdor HTTPS kur është e mundur dhe merr paralajmërime para ngarkimit të sajteve që nuk e mbështesin atë</translation>
 <translation id="8354977102499939946">Kërko me shpejtësi me zërin tënd. Për ta modifikuar këtë shkurtore, shko te "Cilësimet".</translation>
 <translation id="835847953965672673"><ph name="NUMBER_OF_DOWNLOADS" /> shkarkime u restauruan</translation>
+<translation id="8367705492654390392">Pyet për çdo gjë</translation>
 <translation id="8368001212524806591">Monitoro çmimin</translation>
 <translation id="8378850197701296741">Ke faqeshënues, historik dhe cilësime të tjera nga <ph name="FROM_ACCOUNT" />.</translation>
 <translation id="8387617938027387193">Verifiko që je ti</translation>

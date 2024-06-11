@@ -368,7 +368,6 @@
 <translation id="1260810365552581339">‏ممکن ہے کہ Linux میں کافی ڈسک اسپیس نہ ہو۔ آپ اپنے Linux ڈسک اسپیس کو بڑھا سکتے ہیں اور <ph name="LINK_START" />ترتیبات<ph name="LINK_END" /> میں دوبارہ بحال کرنے کی کوشش کر سکتے ہیں۔</translation>
 <translation id="1261380933454402672">معتدل</translation>
 <translation id="126156426083987769">ڈیمو موڈ میں آلہ کے لائسنسز سے متعلق ایک مسئلہ پیش آگیا۔</translation>
-<translation id="1261885284931493480">ٹیب (ٹیبز) کو ہٹائیں اور گروپ کو حذف کریں؟</translation>
 <translation id="1263231323834454256">پڑھنے کی فہرست</translation>
 <translation id="1263733306853729545">امیدواروں کی فہرست کا صفحہ بنانے کیلئے، <ph name="MINUS" /> اور <ph name="EQUAL" /> کلیدوں کا استعمال کریں</translation>
 <translation id="126387934568812801">اس اسکرین شاٹ اور کھلے ٹیبز کے عنوانات شامل کریں</translation>
@@ -1642,7 +1641,6 @@
 <translation id="2187895286714876935">سرور سرٹیفکیٹ کی درآمد میں خرابی</translation>
 <translation id="2187906491731510095">ایکسٹینشنز اپ ڈیٹ ہو گئیں</translation>
 <translation id="2188881192257509750"><ph name="APPLICATION" /> کھولیں</translation>
-<translation id="2188919919468240749">ٹیب گروپ کو حذف کریں؟</translation>
 <translation id="2190069059097339078">‏WiFi اسناد حاصل کنندہ</translation>
 <translation id="219008588003277019">‏Native Client ماڈیول: <ph name="NEXE_NAME" /></translation>
 <translation id="2190355936436201913">(خالی)</translation>
@@ -1859,6 +1857,7 @@
 <translation id="233375395665273385">حذف کریں اور سائن آؤٹ کریں</translation>
 <translation id="233471714539944337">حساس مواد</translation>
 <translation id="2335111415680198280">{0,plural, =1{# ونڈو بند کریں}other{# ونڈوز بند کریں}}</translation>
+<translation id="2335758110242123814">گروپ کھولیں</translation>
 <translation id="2336228925368920074">سبھی ٹیبز کا بک مارک بنائیں…</translation>
 <translation id="2336258397628212480"><ph name="APP_NAME" /> <ph name="PRINTER_NAME" /> میں سے 1 پرنٹ کر رہی ہے</translation>
 <translation id="2336381494582898602">پاور واش</translation>
@@ -1879,6 +1878,7 @@
 <translation id="2351923523007389195">اجازت دی گئی – <ph name="PERMISSION_DETAILS" />۔ <ph name="LINK_BEGIN" />سسٹم مقام کی رسائی<ph name="LINK_END" /> کو آن کریں۔</translation>
 <translation id="2352662711729498748">‎&lt; 1 MB</translation>
 <translation id="2352810082280059586">مقفل اسکرین کے نوٹس خودکار طور پر <ph name="LOCK_SCREEN_APP_NAME" /> میں محفوظ ہوتے ہیں۔ آپ کا حالیہ ترین نوٹ مقفل اسکرین پر باقی رہے گا۔</translation>
+<translation id="2353168619378866466">گروپ کھولیں</translation>
 <translation id="2353297238722298836">کیمرا اور مائیکروفون اجازت یافتہ ہے</translation>
 <translation id="2353910600995338714">برآمد کا عمل مکمل ہو گیا ہے</translation>
 <translation id="2355314311311231464">فراہمی ناکام ہو گئی کیوں کہ آپ کے اکاؤنٹ کی تفصیلات بازیافت نہیں کی جا سکیں۔ براہ کرم دوبارہ کوشش کریں۔ خرابی کا کوڈ: <ph name="ERROR_CODE" />۔</translation>
@@ -2084,7 +2084,6 @@
 <translation id="249113932447298600">معذرت، آلہ <ph name="DEVICE_LABEL" /> اس وقت تعاون یافتہ نہیں ہے۔</translation>
 <translation id="2491587035099903063"><ph name="LANGUAGE" /> زبان کی آواز کا پیش منظر</translation>
 <translation id="2492461744635776704">سرٹیفیکیٹ پر دستخط کرنے کی درخواست تیار ہو رہی ہے</translation>
-<translation id="2492964937550251173">ٹیب (ٹیبز) کو بند اور گروپ کو حذف کریں؟</translation>
 <translation id="249330843868392562">ٹیکسٹ ٹو اسپیچ ترتیبات کھولیں</translation>
 <translation id="2494555621641843783">‏Steam انسٹال نہیں کر سکتے</translation>
 <translation id="2495141202137516054">‏آپ کے Drive سے</translation>
@@ -2811,7 +2810,6 @@
 <translation id="3021066826692793094">تتلی</translation>
 <translation id="3021678814754966447">فریم ماخذ &amp;دیکھیں</translation>
 <translation id="3021902017511220299">اسکین ناکام ہوا۔ اس کارروائی کو آپ کے منتظم نے مسدود کر دیا ہے۔</translation>
-<translation id="3022068420678496307">‏ایسا کرنے سے گروپ اس Google اکاؤنٹ سے Chrome میں سائن ان کردہ تمام آلات سے حذف ہو جائے گا۔</translation>
 <translation id="3022361196600037287">‏<ph name="DEVICE" /> کو اس Chromebook سے ہٹا دیا جائے گا اور <ph name="PRIMARY_EMAIL" /> میں محفوظ نہیں کیا جائے گا۔</translation>
 <translation id="3022978424994383087">سمجھ نہیں آئی۔</translation>
 <translation id="3023464535986383522">سننے کیلئے منتخب کریں</translation>
@@ -2834,6 +2832,7 @@
 <translation id="3033348223765101500">اپنا ڈيٹا کنٹرول کریں</translation>
 <translation id="3036327949511794916">اس <ph name="DEVICE_TYPE" /> کو واپس کرنے کی آخری تاریخ گزر چکی ہے۔</translation>
 <translation id="3036546437875325427">‏Flash کو فعال کریں</translation>
+<translation id="3037193115779933814">حروف اور نمبرز</translation>
 <translation id="3038272154009688107">سبھی سائٹس دیکھیں</translation>
 <translation id="3038612606416062604">دستی طور پر پرنٹر شامل کریں</translation>
 <translation id="3039491566278747710">آلہ پر آف لائن پالیسی انسٹال نہیں ہو سکی۔</translation>
@@ -2986,6 +2985,7 @@
 <translation id="3163511056918491211">‏آسانی سے کسی بھی وقت اپنا ڈیٹا بحال یا آلات سوئچ کریں۔ آپ کے بیک اپس کو Google پر اپ لوڈ کیا جاتا ہے اور آپ کے Google اکاؤنٹ کا پاس ورڈ استعمال کر کے انہیں مرموز کیا جاتا ہے۔</translation>
 <translation id="3164329792803560526">اس ٹیب کا اشتراک<ph name="APP_NAME" /> کے ساتھ کیا جا رہا ہے</translation>
 <translation id="3165390001037658081">کچھ کیریئر اس خصوصیت کو مسدود کر سکتے ہیں۔</translation>
+<translation id="316542773973815724">نیویگیشن</translation>
 <translation id="3165734944977250074">فائل کو منتقل نہیں کیا جا سکتا کیونکہ یہ اب موجود نہیں ہے</translation>
 <translation id="3166443275568926403">کارکردگی اور بیٹری کی حالت</translation>
 <translation id="3169930038976362151">وہ تھیم منتخب کریں جو آپ کی ضروریات کے مطابق ہو۔ اپنی تھیم، وال پیپر، اسکرین سیور اور مزید کو تبدیل کرنے کے لیے، بس ڈیسک ٹاپ پر ٹچ کریں اور دبائے رکھیں۔</translation>
@@ -3867,7 +3867,6 @@
 <translation id="3810914450553844415">‏آپ کا منتظم اضافی Google اکاؤنٹس کی اجازت نہیں دیتا ہے۔</translation>
 <translation id="3810973564298564668">نظم کریں</translation>
 <translation id="381202950560906753">کوئی دوسرا شامل کریں</translation>
-<translation id="381219490185664296">ٹیب گروپ کا گروپ ختم کریں؟</translation>
 <translation id="3812525830114410218">غلط سرٹیفیکیٹ</translation>
 <translation id="3813296892522778813">‏آپ جو چیز تلاش کر رہے ہیں اگر وہ نہیں مل رہی ہے تو <ph name="BEGIN_LINK_CHROMIUM" />Google Chrome مدد<ph name="END_LINK_CHROMIUM" /> پر جائیں</translation>
 <translation id="3813358687923336574">صفحات کا ترجمہ کرنے اور فوری جوابات کے لیے استعمال کردہ زبان</translation>
@@ -4222,6 +4221,7 @@
 <translation id="4066207411788646768">اپنے نیٹ ورک میں دستیاب پرنٹرز دیکھنے کے لیے براہ کرم اپنا کنکشن چیک کریں</translation>
 <translation id="4067839975993712852">موجودہ ٹیب کو پڑھا ہوا کے بطور نشان زد کریں</translation>
 <translation id="4068776064906523561">محفوظ کردہ فنگر پرنٹس</translation>
+<translation id="4070132839822635162">سائن ان نہ کریں</translation>
 <translation id="407173827865827707">کلک کرنے پر</translation>
 <translation id="4072805772816336153">بعد میں دوبارہ کوشش کریں</translation>
 <translation id="4074164314564067597">کی بورڈ</translation>
@@ -4230,7 +4230,6 @@
 <translation id="4078738236287221428">پرجوش</translation>
 <translation id="4078903002989614318">ترتیب دینے اور فہرست کے اختیارات</translation>
 <translation id="4079140982534148664">املا کی بہتر جانچ استعمال کریں</translation>
-<translation id="4083735423615351075">‏اس آلے پر ٹیبز کھلے رہیں گے، لیکن گروپ کو اس Google اکاؤنٹ سے Chrome میں سائن ان کردہ تمام آلات سے حذف کر دیا جائے گا۔</translation>
 <translation id="4084682180776658562">بُک مارک</translation>
 <translation id="4084835346725913160"><ph name="TAB_NAME" /> کو بند کریں</translation>
 <translation id="4085298594534903246">‏JavaScript کو اس صفحہ پر مسدود کر دیا گیا۔</translation>
@@ -4240,7 +4239,6 @@
 
 <ph name="EXTENSION_FILE" /></translation>
 <translation id="4087328411748538168">دائیں طرف دکھائیں</translation>
-<translation id="4088879333319441249">ٹیب گروپ کا گروپ ختم کریں؟</translation>
 <translation id="4089235344645910861">ترتیبات محفوظ ہو گئیں۔ مطابقت پذیری شروع ہو گئی۔</translation>
 <translation id="4089817585533500276">shift + <ph name="TOP_ROW_KEY" /></translation>
 <translation id="4090103403438682346">توثیق شدہ رسائی فعال کریں</translation>
@@ -4326,7 +4324,6 @@
 <translation id="4148195018520464922">آپ سائن ان کو بعض مخصوص صارفین تک محدود کر سکتے ہیں۔ اس سے سائن ان اسکرین پر "شخص کو شامل کریں" اختیار ہٹ جاتا ہے۔ آپ موجودہ صارفین کو بھی ہٹا سکتے ہیں۔</translation>
 <translation id="4148957013307229264">انسٹال جاری…</translation>
 <translation id="4150201353443180367">ڈسپلے</translation>
-<translation id="4150417452770391330">کیمرہ منسلک کریں</translation>
 <translation id="4150569944729499860">اسکرین کا سیاق و سباق</translation>
 <translation id="4151449637210235443">ہمیں اپنے حالیہ گیم پلے کے بارے میں بتائیں</translation>
 <translation id="4151503145138736576">صاف کرنے کے لیے کوئی آف لائن اسٹوریج نہیں ہے</translation>
@@ -5125,7 +5122,6 @@
 <translation id="4777458362738635055">اس آلہ کے دیگر صارفین یہ نیٹ ورک استعمال کر سکتے ہيں</translation>
 <translation id="4777813841994368231">آن ہے • اس ایکسٹینشن کی اشاعت اس کے ڈویلپر نے ختم کی تھی</translation>
 <translation id="4777825441726637019">‏Play اسٹور</translation>
-<translation id="4777866634702576038">ٹیب گروپ کو حذف کریں؟</translation>
 <translation id="4777943778632837590">نیٹ ورک کے نام کے سرورز کو کنفیگر کریں</translation>
 <translation id="4778653490315793244">دکھانے کے لیے ابھی تک کچھ نہیں ہے</translation>
 <translation id="4779083564647765204">زوم</translation>
@@ -5537,7 +5533,6 @@
 <translation id="5093477827231450397">آپ کی مسدود کردہ سائٹس کی فہرست جن سے آپ نہیں چاہتے ہیں کہ وہ دوسری سائٹس پر اشتہارات تجویز کرے</translation>
 <translation id="5093569275467863761">بیک/فارورڈ کیش کردہ پوشیدگی کا سب فریم: <ph name="BACK_FORWARD_CACHE_INCOGNITO_PAGE_URL" /></translation>
 <translation id="5094176498302660097">آپ اس ایپ کے ساتھ فائلز کی ایپس یا دیگر ایپس سے تعاون یافتہ فائلز کو کھول اور ان میں ترمیم کر سکتے ہیں۔ جو فائلز بطور ڈیفالٹ اس ایپ کو کھولتی ہیں انہیں کنٹرول کرنے کے لیے، <ph name="BEGIN_LINK" />جانیں کہ اپنے آلے پر ڈیفالٹ ایپس کیسے سیٹ کریں<ph name="END_LINK" />۔</translation>
-<translation id="5094423602314093681">ٹیب (ٹیبز) ہٹائیں اور گروپ کو حذف کریں؟</translation>
 <translation id="5094721898978802975">تعاون کرنے والی اصل ایپلیکیشنز کے ساتھ مواصلت کریں</translation>
 <translation id="5095252080770652994">پیشرفت</translation>
 <translation id="5095507226704905004">فائل کو کاپی نہیں کیا جا سکتا کیونکہ یہ اب موجود نہیں ہے</translation>
@@ -6034,6 +6029,7 @@
 <translation id="5469540749878136997">استعمال کی بنیاد پر میموری کو خالی کریں</translation>
 <translation id="5469852975082458401">‏آپ اپنے صفحات کو ٹیکسٹ کرسر سے نیویگیٹ کر سکتے ہیں۔ آف کرنے کے لیے F7 دبائیں۔</translation>
 <translation id="5470735824776589490">‏Powerwash کے ساتھ آپ کا آلہ دوبارہ ترتیب دینے سے پہلے ایک ری اسٹارٹ درکار ہے۔ <ph name="LINK_BEGIN" />مزید جانیں<ph name="LINK_END" /></translation>
+<translation id="5470741195701938302">نمبرز</translation>
 <translation id="5471768120198416576">آداب! میں آپ کی ٹیکسٹ ٹو اسپیچ آواز ہوں۔</translation>
 <translation id="5472627187093107397">اس سائٹ کے لیے پاس ورڈز محفوظ کریں</translation>
 <translation id="5473062644742711742">‏Chrome ویب اسٹور میں مزید ایکسیسبیلٹی ٹولز تلاش کریں</translation>
@@ -6870,6 +6866,7 @@
 <translation id="6101226222197207147">نئی ایپ شامل کر دی گئی (<ph name="EXTENSION_NAME" />)</translation>
 <translation id="6102043788063419338">اعلی تحفظ نے اس فائل کو مسدود کر دیا ہے۔</translation>
 <translation id="6103681770816982672">وارننگ: آپ ڈویلپر چینل پر سوئچ کر رہے ہیں</translation>
+<translation id="610395411842312282">سائیڈ و سائیڈ دو ونڈوز کو گروپ کریں</translation>
 <translation id="6104068876731806426">‏Google اکاؤنٹس</translation>
 <translation id="6104667115274478616">‏ChromeOS آڈیو ترتیبات کا نظم کریں</translation>
 <translation id="6104796831253957966">پرنٹر کی قطار فُل ہے</translation>
@@ -7314,7 +7311,6 @@
 <translation id="6445450263907939268">اگر آپ یہ تبدیلیاں نہ چاہیں تو، آپ اپنی پچھلی ترتیبات بحال کر سکتے ہیں۔</translation>
 <translation id="6446213738085045933">ڈیسک ٹاپ شارٹ کٹ بنائیں</translation>
 <translation id="6447842834002726250">کوکیز</translation>
-<translation id="6449554712554071184">ایسا کرنے سے آپ کے آلے سے گروپ مستقل طور پر حذف ہو جائے گا۔</translation>
 <translation id="6450876761651513209">رازداری سے متعلقہ اپنی ترتیبات تبدیل کریں</translation>
 <translation id="6451591602925140504">{NUM_PAGES,plural, =0{<ph name="PAGE_TITLE" />}=1{<ph name="PAGE_TITLE" /> اور 1 دیگر ٹیب}other{<ph name="PAGE_TITLE" /> اور # دیگر ٹیبز}}</translation>
 <translation id="6451689256222386810">اگر آپ اپنا پاس فریز بھول گئے ہیں یا اس ترتیب کو تبدیل کرنا چاہتے ہیں تو <ph name="BEGIN_LINK" />مطابقت پذیری کو دوبارہ ترتیب دیں<ph name="END_LINK" />۔</translation>
@@ -7349,6 +7345,7 @@
 <translation id="6469702164109431067">پاس ورڈز اور پاس کیز</translation>
 <translation id="6470823736074966819">اطلاعات کو خاموش کریں</translation>
 <translation id="6472893788822429178">ہوم بٹن دکھائیں</translation>
+<translation id="6473315466413288899">ایک اختیار منتخب کریں</translation>
 <translation id="6474498546677193336">‏اشتراک ختم نہیں ہوسکا کیونکہ ایک ایپلیکیشن اس فولڈر کو استعمال کر رہی ہے۔ اگلی بار Linux بند ہونے پر فولڈر کا اشتراک ختم کر دیا جائے گا۔</translation>
 <translation id="6474884162850599008">‏Google Drive اکاؤنٹ منقطع کریں</translation>
 <translation id="6475294023568239942">‏ڈسک اسپیس خالی کریں یا ترتیبات میں Linux ڈسک کا سائز تبدیل کریں</translation>
@@ -8464,7 +8461,6 @@
 <translation id="7340650977506865820">سائٹ آپ کی اسکرین کا اشتراک کر رہی ہے</translation>
 <translation id="7340757554212515731">‏Google کو کریش رپورٹس کے ساتھ ساتھ ڈائیگناسٹک اور استعمال کا ڈیٹا خودکار طور پر بھیجتا ہے</translation>
 <translation id="734088800888587319">نیٹ ورک کے میٹرکس</translation>
-<translation id="7341612916770129581">مائیکروفون منسلک کریں</translation>
 <translation id="7341834142292923918">اس سائٹ تک رسائی درکار ہے</translation>
 <translation id="7343372807593926528">براہ کرم تاثرات بھیجنے سے پہلے مسئلے کی توضیح کریں۔</translation>
 <translation id="7344585835349671209">‏اپنے آلے پر HTTPS/SSL سرٹیفکیٹس کا نظم کریں</translation>
@@ -9364,7 +9360,6 @@
 <translation id="7974936243149753750">اوور سکین</translation>
 <translation id="7975504106303186033">‏آپ کو اس Chrome Education آلے کا اندراج ایک تعلیمی اکاؤنٹ میں کرنا ہوگا۔ نئے اکاؤنٹ کی خاطر سائن اپ کرنے کے لئے، براہ کرم g.co/workspace/edusignup ملاحظہ کریں۔</translation>
 <translation id="7977451675950311423">اگر آپ کوئی ایسا پاس ورڈ استعمال کرتے ہیں جس سے ڈیٹا کی خلاف ورزی میں سمجھوتہ کیا گیا ہو تو آپ کو متنبہ کرتا ہے۔</translation>
-<translation id="797824194429476746">اس آلے پر ٹیبز کھلے رہیں گے، لیکن گروپ مستقل طور پر حذف ہو جائے گا۔</translation>
 <translation id="7978412674231730200">نجی کلید</translation>
 <translation id="7978450511781612192">اس سے آپ اپنے اکاؤنٹ سے سائن آؤٹ ہو جائیں گے۔ آپ کے بُک مارکس، سرگزشت، پاس ورڈز اور بھی بہت کـچھ کی اب مطابقت پذیری نہیں کی جائے گی۔</translation>
 <translation id="7980066177668669492">‏‫Base64-encoded ASCII، متعدد سرٹیفکیٹس</translation>
@@ -9418,6 +9413,7 @@
 <translation id="8017679124341497925">شارٹ کٹ میں ترمیم کی گئی</translation>
 <translation id="8018298733481692628">اس پروفائل کو حذف کریں؟</translation>
 <translation id="8018313076035239964">کنٹرول کریں کہ ویب سائٹس کس طرح کی معلومات استعمال کر سکتی ہیں اور آپ کو کس طرح کے مواد دکھا سکتی ہیں</translation>
+<translation id="802154636333426148">ڈاؤن لوڈ ناکام ہوگیا</translation>
 <translation id="8022466874160067884">‏اپنا Google اکاؤنٹ اور پاس ورڈ درج کریں</translation>
 <translation id="8023133589013344428">‏ChromeOS Flex کی ترتیبات میں زبانوں کا نظم کریں</translation>
 <translation id="8023801379949507775">ایکسٹینشنز کو ابھی اپ ڈیٹ کریں</translation>
@@ -10705,7 +10701,6 @@
 <translation id="8962863356073277855">‏URL فارمیٹ https://www.example.com ہونا چاہیے</translation>
 <translation id="8962918469425892674">یہ سائٹ موشن یا لائٹ سینسرز کا استعمال کر رہی ہے۔</translation>
 <translation id="8963117664422609631">سائٹ ترتیبات پر جائیں</translation>
-<translation id="8964795217937248330">ٹیب (ٹیبز) کو بند اور گروپ کو حذف کریں؟</translation>
 <translation id="8965037249707889821">پرانا پاس ورڈ درج کریں</translation>
 <translation id="8966809848145604011">دیگر پروفائلز</translation>
 <translation id="8967427617812342790">پڑھنے کی فہرست میں شامل کریں</translation>
@@ -10814,6 +10809,7 @@
 <translation id="9031811691986152304">دوبارہ کوشش کریں</translation>
 <translation id="9032004780329249150">‏اپنے iOS آلات پر اپنے پاس ورڈز استعمال کریں</translation>
 <translation id="9032097289595078011">فاسٹ پئیر کو غیر فعال کریں</translation>
+<translation id="9032513103438497286">‏اس <ph name="DEVICE_TYPE" /> پر انسٹال کردہ ایپس کو مسدود کریں۔ ایپس یا مواد کو ڈاؤن لوڈ کرنے پر پابندی لگانے کے لیے، Google Play کی ترتیبات پر جائیں۔</translation>
 <translation id="9033765790910064284">بہرصورت جاری رکھیں</translation>
 <translation id="9033857511263905942">&amp;پیسٹ کریں</translation>
 <translation id="9034408118624208974">‏Chromebook پر نئے ہیں؟ مطابقت پذیری کو آن کریں تاکہ آپ کی ترجیحات کا بیک اپ لیا جائے۔</translation>

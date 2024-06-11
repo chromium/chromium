@@ -353,6 +353,7 @@ instalação.</translation>
 
       Cuidado: Wipe e MinimalMigrate removem dados locais.</translation>
 <translation id="1248955696540150266">Permitir downloads ponto a ponto de atualizações automáticas</translation>
+<translation id="1249640740800891502">Configurações do SkyVault (todos os dados na nuvem)</translation>
 <translation id="1250597158212586309">Se a política for definida como "Enabled" (ativada) ou deixada sem definição, o usuário tem a opção de dispensar/restaurar alertas de senha comprometida.
 
       Se você desativar esta configuração, os usuários não vão poder dispensar alertas de senha comprometida. Se ela estiver ativada, os usuários vão poder dispensar alertas sobre senhas comprometidas.</translation>
@@ -2113,6 +2114,7 @@ seleção padrão.</translation>
 
       Observe que, para funcionar adequadamente, este recurso precisa de outros componentes que não estão disponíveis fora do ambiente da Rede do Google.</translation>
 <translation id="2536525645274582300">O usuário decide se quer ativar os serviços de localização do Google</translation>
+<translation id="2536717624356629471">Ativar sons no "Modo sem distrações" para o ChromeOS</translation>
 <translation id="254653220329944566">Ativa a geração de relatórios em nuvem do <ph name="PRODUCT_NAME" /></translation>
 <translation id="2547854230073316008">A definição da política especifica a resolução e o fator de escalonamento para cada tela. Configurações de tela externas são aplicadas às telas conectadas. A política não será aplicada se uma tela não for compatível com a resolução ou escala especificadas.
 
@@ -3124,6 +3126,7 @@ No <ph name="MS_WIN_NAME" />, essa política só está disponível em instância
 <translation id="3338431256935927407">Controla as configurações relacionadas ao recurso do Cloud Upload.</translation>
 <translation id="3339271789059866414">Configura a disponibilidade do serviço de proxy do sistema e as credenciais de proxy para os serviços do sistema.
       Se a política não for definida, o serviço de proxy do sistema não estará disponível.</translation>
+<translation id="3341649870321644698">Ativar o "Modo sem distrações" com "Somente sons de foco".</translation>
 <translation id="334231891933432876">Desconectar o usuário assim que a conta perder a autenticação</translation>
 <translation id="3345323903592385588">A ordem em que a configuração da VM será mostrada no instalador. Quando várias configurações de VM são especificadas, aquela com o menor valor de display_order é mostrada no início da lista. O padrão é zero.</translation>
 <translation id="3351661569026056296">Se a política for definida como verdadeira, a primeira linha de teclas do teclado vai funcionar como comandos de teclas de função. Pressionar a tecla de pesquisa faz com que elas voltem a funcionar como teclas de mídia.
@@ -3453,6 +3456,7 @@ Não deixe a política sempre ativada, especialmente em implantações de produ�
 <translation id="3587482841069643663">Tudo</translation>
 <translation id="3587766503874071316">Desativar atalhos de acessibilidade</translation>
 <translation id="3589193811812796052">Impedir módulos WebAssembly de serem enviados em origem cruzada</translation>
+<translation id="3591518189681300697">Ativar a migração de arquivos locais para a nuvem</translation>
 <translation id="3591527072193107424">Ativa o recurso "Suporte a navegadores legados".</translation>
 <translation id="3591584750136265240">Configura o comportamento de autenticação de login</translation>
 <translation id="3593905652755912452">O comportamento antigo para envio de eventos em controles de formulário desativados vai ser usado.</translation>
@@ -4005,6 +4009,7 @@ Qualquer uma dessas políticas pode ser usada, mas esta será descontinuada em b
 Ambas têm o mesmo efeito no comportamento do navegador.</translation>
 <translation id="4016700865356669962">Se a política for ativada, os usuários poderão usar modelos de layout do espaço de trabalho.  Se ela for desativada ou deixada sem definição, esses modelos não ficarão disponíveis.</translation>
 <translation id="4020682745012723568">Os cookies transferidos para o perfil do usuário não podem ser acessados por apps Android.</translation>
+<translation id="4021684548211845008">Desativar sons no "Modo sem distrações".</translation>
 <translation id="4025500273782820766">Permitir que os usuários selecionem "Sempre permitir" em uma caixa de diálogo de protocolo externo para pular as solicitações de confirmação futuras</translation>
 <translation id="402759845255257575">Não permitir que nenhum site execute o JavaScript</translation>
 <translation id="4027608872760987929">Ativar o provedor de pesquisa padrão</translation>
@@ -4261,6 +4266,7 @@ Observação: o bloqueio de URLs internos chrome://* e chrome-untrusted://* pode
 
           Se esta política não for definida, o clique automático ficará desativado inicialmente, mas poderá ser ativado pelo usuário a qualquer momento.</translation>
 <translation id="4212181786686887763">O URL no qual o download da imagem do plano de fundo pode ser feito.</translation>
+<translation id="4221677608399717135">Ativar ou desativar o SkyVault</translation>
 <translation id="4224610387358583899">Tempo de espera para bloqueio de tela</translation>
 <translation id="42267415200641481">Se a política for definida como verdadeira, a resolução de DNS (getaddrinfo()) poderá ser executada fora do processo de rede, dependendo da configuração do sistema e das flags de recursos.
 
@@ -6255,6 +6261,15 @@ O suporte para essa configuração de política vai terminar no <ph name="PRODUC
 <translation id="5775235485119094648">Carregar a bateria enquanto ela estiver dentro de um intervalo fixo.</translation>
 <translation id="5776485039795852974">Perguntar cada vez que um site quiser exibir notificações da área de trabalho</translation>
 <translation id="5783009211970309878">Imprimir cabeçalhos e rodapés</translation>
+<translation id="5786733040432065904">O "Modo sem distrações" é um recurso que controla o "Não perturbe" com um timer e tem o objetivo de reduzir as distrações do usuário. Um recurso do "Modo sem distrações" permite que os usuários ouçam músicas específicas para se concentrar melhor. Esta política controla o acesso ao recurso.
+
+Se ela for deixada sem definição, todos os sons serão desativados para os usuários gerenciados.
+
+Se for ativada, todos os sons poderão ser acessados no "Modo sem distrações".
+
+Se for definida como "Somente sons de foco", o recurso de som será ativado apenas para sons de foco.
+
+Se a política for desativada, os sons no "Modo sem distrações" também serão.</translation>
 <translation id="5790763087505467169">Reduzir notificações de lançamento automático para sessões de visitante gerenciadas</translation>
 <translation id="5800329278018669527">Desativar a solicitação de configuração de rede quando estiver off-line</translation>
 <translation id="5802931736499687181">Desativar o pipeline de geração de relatórios criptografados</translation>
@@ -6572,6 +6587,11 @@ Esta política foi descontinuada na versão M124.</translation>
       Se a política não for definida, e se compatível com o dispositivo, o modo padrão de carregamento da bateria será aplicado e os usuários não poderão mudá-lo.
 
       Observação: se o modo personalizado de carregamento da bateria for selecionado, <ph name="DEVICE_BATTERY_CHARGE_CUSTOM_START_CHARGING_POLICY_NAME" /> e <ph name="DEVICE_BATTERY_CHARGE_CUSTOM_STOP_CHARGING_POLICY_NAME" /> precisarão ser especificadas.</translation>
+<translation id="6064418365347066084">Aciona a migração de arquivos locais para a nuvem.
+Aplicável apenas a usuários do SkyVault, ou seja, quando o valor LocalUserFilesAllowed é falso
+e DownloadDirectory é o Google Drive ou o OneDrive. Caso contrário, a política é ignorada.
+    Se a política for verdadeira, os arquivos locais serão movidos para a nuvem e as pastas locais serão ocultadas do usuário.
+    Se for falsa ou deixada sem definição, os arquivos locais vão continuar no modo somente leitura.</translation>
 <translation id="60655674079349516">Configurar uma lista de tipos de dados de navegação a serem excluídos quando o usuário fechar todas as janelas do navegador.
 
 Aviso: definir essa política pode afetar e remover permanentemente os dados pessoais locais. Recomendamos testar as configurações antes da implantação para evitar a exclusão acidental de dados pessoais.
@@ -8485,6 +8505,7 @@ Isso substitui a política <ph name="WINDOW_PLACEMENT_BLOCKED_FOR_URLS_POLICY_NA
       Se a política for ativada ou deixada sem configuração, a lista de interfaces de rede com os tipos e endereços de hardware delas vai ser informada pelos dispositivos registrados.
 
       Se a política for desativada, a interface de rede não vai ser informada pelos dispositivos registrados.</translation>
+<translation id="7388618954884540850">Desativar a migração de arquivos locais para a nuvem</translation>
 <translation id="7389872682701720082">Se você ativar esta configuração, plug-ins que não estiverem obsoletos sempre serão executados.
 
       Se esta configuração estiver desativada ou não for definida, os usuários precisarão dar permissão para executar plug-ins que exigem autorização. Esses são plug-ins que podem comprometer a segurança.</translation>
@@ -8660,6 +8681,7 @@ Se essa política for definida como verdadeira, o <ph name="PRODUCT_OS_NAME" /> 
 
       Quando a política for definida como verdadeira ou não for definida, um alerta será exibido para lembrar os usuários de saírem da tela cheia antes de digitarem a senha. Quando a política for definida como falsa, nenhum alerta será exibido.</translation>
 <translation id="7531630046107845550">Permitir conexões de saída do cliente SSH no app Terminal System</translation>
+<translation id="753332207298659209">Configure políticas para controlar se os dados do usuário são permitidos no dispositivo e se os dados atuais precisam ser enviados para a nuvem.</translation>
 <translation id="7533385610709354870">A menos que <ph name="ENABLE_MEDIA_ROUTER_POLICY_NAME" /> esteja definida como desativada, definir <ph name="MEDIA_ROUTER_CAST_ALLOW_ALL_IPS_POLICY_NAME" /> como ativada irá conectar o <ph name="PRODUCT_NAME" /> aos dispositivos Cast em todos os endereços IP, não apenas no endereço particular RFC1918/RFC4193.
 
 Se a política for definida como desativada, o <ph name="PRODUCT_NAME" /> será conectado aos dispositivos Cast apenas em RFC1918/RFC4193.
@@ -9192,6 +9214,7 @@ Se a política não for definida, a configuração ficará ativada, mas o usuár
 <translation id="7962093600142350905">Esta política controla se as impressoras com protocolo Privet disponíveis serão exibidas ao usuário na caixa de diálogo de visualização de impressão.
       Se a política for definida como "Ativada", as impressoras com protocolo Privet disponíveis serão exibidas.
       Se ela for definida como "Desativada" ou deixada sem definição, as impressoras com protocolo Privet não serão exibidas na visualização de impressão, já que esse método de impressão está suspenso.</translation>
+<translation id="7969865441622729072">Ativar todos os sons no "Modo sem distrações".</translation>
 <translation id="7970660709107174905">Configurações do particionamento de armazenamento de terceiros</translation>
 <translation id="7972223739742725350">Não ativar a API Save and Share para o controle do <ph name="PRODUCT_OS_NAME" /> de terceiros.</translation>
 <translation id="7972642710812569707">Forçar a reativação do WebSQL em contextos de terceiros.</translation>
@@ -9796,6 +9819,7 @@ Se ela não for definida ou for definida como "0", a navegação para um URL des
 
       Se a política for desativada ou não for configurada, apenas os perfis locais normais serão usados.</translation>
 <translation id="8417305981081876834">Definir o tamanho máximo do PIN da tela de bloqueio</translation>
+<translation id="8418438383184278931">Ativar a migração de arquivos locais do usuário para armazenamento em nuvem</translation>
 <translation id="841977920223099909">Acionamento de aviso de proteção de senha</translation>
 <translation id="8419965165591256432">Taxa em que o estado da atividade do dispositivo é coletado em dispositivos registrados para usuários afiliados. O mínimo permitido é de 1 minuto.
 

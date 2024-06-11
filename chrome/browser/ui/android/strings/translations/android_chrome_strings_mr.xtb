@@ -274,6 +274,7 @@
 <translation id="2450083983707403292">तुम्हाला <ph name="FILE_NAME" /> चे डाउनलोड पुन्हा सुरू करायचे आहे का?</translation>
 <translation id="2453860139492968684">समाप्त</translation>
 <translation id="2461822463642141190">सद्य</translation>
+<translation id="2472163211318554013">Chrome चा पुरेपूर वापर करण्यासाठी साइन इन करा</translation>
 <translation id="247737702124049222">इमेजची वर्णने सुरू आहेत</translation>
 <translation id="2479148705183875116">सेटिंग्ज वर जा</translation>
 <translation id="2482878487686419369">सूचना</translation>
@@ -425,7 +426,6 @@
 <translation id="3098745985164956033">तुमच्यासाठी वर्णनांमध्ये सुधारणा करण्याकरिता काही इमेज Google कडे पाठवल्या जातात</translation>
 <translation id="3114507951000454849">आजच्या बातम्या वाचा <ph name="NEWS_ICON" /></translation>
 <translation id="3123734510202723619">घोषणा</translation>
-<translation id="3146775326699342508">तुमच्या इतर डिव्हाइसवरून तुमचे बुकमार्क आणि बरेच काही मिळवण्यासाठी साइन इन करा</translation>
 <translation id="314939179385989105">Chrome चे होम पेज</translation>
 <translation id="3158667104057012316">मॅन्युअल ऑर्डरनुसार क्रमाने लावत आहे</translation>
 <translation id="3166827708714933426">टॅब आणि विंडो शॉर्टकट</translation>
@@ -1343,6 +1343,7 @@
 <translation id="752220631458524187">तुमचे पूर्ण झाल्यावर फोन डिस्कनेक्ट करा</translation>
 <translation id="7523960634226602883">Google Lens वापरून तुमच्या कॅमेरासह शोधा</translation>
 <translation id="752731652852882757">गुप्त मोड वापरताना ब्लॉक करा</translation>
+<translation id="7557508262441527045">साइन आउट केले आहे</translation>
 <translation id="7577900504646297215">स्वारस्ये व्यवस्थापित करा</translation>
 <translation id="757855969265046257">{FILES,plural, =1{<ph name="FILES_DOWNLOADED_ONE" /> फाइल डाउनलोड केली}other{<ph name="FILES_DOWNLOADED_MANY" /> फाइल डाउनलोड केल्या}}</translation>
 <translation id="7581273696622423628">सर्वेक्षण घ्या</translation>
@@ -1388,7 +1389,6 @@
 <translation id="777637629667389858">तुम्ही साइन इन केलेले असते, तेव्हा संपूर्ण Google सेवांवर तुमचे संरक्षण करते.</translation>
 <translation id="7778840695157240389">नवीन बातम्यांसाठी नंतर पुन्हा भेट द्या</translation>
 <translation id="7780645209293383778">सर्व Google अ‍ॅप्सवर तुमचे संरक्षण करण्यासाठी, तुम्ही पुन्हा साइन इन केल्यावर, हा डेटा तुमच्या Google खाते शी तात्पुरते लिंक करते</translation>
-<translation id="7786562169000598736">तुमचे सर्व बुकमार्क मिळवा</translation>
 <translation id="7791543448312431591">जोडा</translation>
 <translation id="7798392620021911922"><ph name="TAB_COUNT" /> टॅब रिस्टोअर केले</translation>
 <translation id="780287761701992588">तुमच्या सर्व डिव्हाइसवर तुमचे बुकमार्क, पासवर्ड आणि बरेच काही मिळवा</translation>

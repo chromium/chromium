@@ -275,6 +275,7 @@
 <translation id="2450083983707403292"><ph name="FILE_NAME" /> のダウンロードをやり直してもよろしいですか？</translation>
 <translation id="2453860139492968684">終了</translation>
 <translation id="2461822463642141190">現在</translation>
+<translation id="2472163211318554013">Chrome を最大限に活用するにはログインしてください</translation>
 <translation id="247737702124049222">画像の説明をオンにしました</translation>
 <translation id="2479148705183875116">設定に移動</translation>
 <translation id="2482878487686419369">通知</translation>
@@ -426,7 +427,6 @@
 <translation id="3098745985164956033">正確な説明を生成するため、画像が Google に送信される場合があります</translation>
 <translation id="3114507951000454849">今日のニュースをチェック <ph name="NEWS_ICON" /></translation>
 <translation id="3123734510202723619">お知らせ</translation>
-<translation id="3146775326699342508">ログインすると、他のデバイスからブックマークなどを使用できます</translation>
 <translation id="314939179385989105">Chrome のホームページ</translation>
 <translation id="3158667104057012316">手動での並べ替え</translation>
 <translation id="3166827708714933426">タブとウィンドウのショートカット</translation>
@@ -1344,6 +1344,7 @@
 <translation id="752220631458524187">完了したら取り外してください</translation>
 <translation id="7523960634226602883">Google レンズを使ってカメラで検索します</translation>
 <translation id="752731652852882757">シークレット モードのときはブロックする</translation>
+<translation id="7557508262441527045">ログアウトしました</translation>
 <translation id="7577900504646297215">興味のあるトピックを管理</translation>
 <translation id="757855969265046257">{FILES,plural, =1{<ph name="FILES_DOWNLOADED_ONE" /> 件のファイルをダウンロードしました}other{<ph name="FILES_DOWNLOADED_MANY" /> 件のファイルをダウンロードしました}}</translation>
 <translation id="7581273696622423628">アンケートに答える</translation>
@@ -1389,7 +1390,6 @@
 <translation id="777637629667389858">ログイン中、すべての Google サービスで保護します。</translation>
 <translation id="7778840695157240389">しばらくしてからご確認ください</translation>
 <translation id="7780645209293383778">ログイン時には、このデータを一時的に Google アカウントにリンクして、すべての Google アプリを安全に利用できるように保護します</translation>
-<translation id="7786562169000598736">すべてのブックマークにアクセス</translation>
 <translation id="7791543448312431591">追加</translation>
 <translation id="7798392620021911922"><ph name="TAB_COUNT" /> 個のタブを復元しました</translation>
 <translation id="780287761701992588">すべてのデバイスで同じブックマーク、パスワード、その他の設定を利用する</translation>

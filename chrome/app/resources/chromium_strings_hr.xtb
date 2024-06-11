@@ -16,6 +16,7 @@
 <translation id="1203500561924088507">Zahvaljujemo što ste izvršili instaliranje. Da biste mogli koristiti <ph name="BUNDLE_NAME" />, morate ponovno pokrenuti preglednik.</translation>
 <translation id="1262876892872089030">Dok je ova kartica bila neaktivna, memorija je oslobođena kako bi Chromium ostao brz. Možete odabrati da ta web-lokacija uvijek bude neaktivna.</translation>
 <translation id="1265577313130862557">Chromium je blokirao ovo preuzimanje jer je datoteka opasna</translation>
+<translation id="126567311906253476">Kad se na Googleove usluge kao što su Gmail ili YouTube prijavljujete pomoću računa <ph name="USER_EMAIL" />, možete se automatski prijaviti u Chromium istim računom</translation>
 <translation id="1315551408014407711">Postavite novi profil u Chromiumu</translation>
 <translation id="1342274909142618978">Izbriši i podatke s Chromiuma (<ph name="URL" />)</translation>
 <translation id="1414495520565016063">Prijavljeni ste na Chromium!</translation>
@@ -40,6 +41,7 @@ Dopuštenja koja ste već dali web-lokacijama i aplikacijama mogu se primijeniti
 <translation id="1749104137266986751">Kad HTTPS nije dostupan, Chromium će upotrebljavati nesigurnu vezu bez upozorenja</translation>
 <translation id="1774152462503052664">Neka Chromium radi u pozadini</translation>
 <translation id="1779356040007214683">Kako bismo Chromium učinili sigurnijim, onemogućili smo neka proširenja koja nisu navedena u trgovini <ph name="IDS_EXTENSION_WEB_STORE_TITLE" /> i možda su dodana bez vašeg znanja.</translation>
+<translation id="1804128559285178512">Dok ste prijavljeni, možete koristiti svoje zaporke i još mnogo toga sa svog Google računa u Chromiumu</translation>
 <translation id="1808667845054772817">Ponovo instaliraj Chromium</translation>
 <translation id="1820835682567584003">Chromium pokušava sljedeće: <ph name="AUTHENTICATION_PURPOSE" /></translation>
 <translation id="18552579716432081">Da biste podatke o pregledavanju izbrisali samo s ovog uređaja, a zadržali ih na svojem Google računu, <ph name="BEGIN_LINK" />odjavite se iz Chromiuma<ph name="END_LINK" />.</translation>

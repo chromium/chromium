@@ -274,6 +274,7 @@ Só poderán ler os teus datos encriptados as persoas que coñezan a túa frase 
 <translation id="2450083983707403292">Queres empezar a descargar <ph name="FILE_NAME" /> de novo?</translation>
 <translation id="2453860139492968684">Finalizar</translation>
 <translation id="2461822463642141190">Actual</translation>
+<translation id="2472163211318554013">Inicia sesión para sacarlle o máximo partido a Chrome</translation>
 <translation id="247737702124049222">As descricións das imaxes están activadas</translation>
 <translation id="2479148705183875116">Ir a Configuración</translation>
 <translation id="2482878487686419369">Notificacións</translation>
@@ -425,7 +426,6 @@ Só poderán ler os teus datos encriptados as persoas que coñezan a túa frase 
 <translation id="3098745985164956033">Algunhas imaxes envíanse a Google coa finalidade de mellorar as descricións para ti</translation>
 <translation id="3114507951000454849">Le as noticias do día <ph name="NEWS_ICON" /></translation>
 <translation id="3123734510202723619">Avisos</translation>
-<translation id="3146775326699342508">Inicia sesión para acceder aos teus marcadores, entre outras cousas, desde outros dispositivos</translation>
 <translation id="314939179385989105">Páxina de inicio de Chrome</translation>
 <translation id="3158667104057012316">Ordenando de maneira manual</translation>
 <translation id="3166827708714933426">Atallos da ventá e da pestana</translation>
@@ -1343,6 +1343,7 @@ Para cambiar esta opción de configuración, <ph name="BEGIN_LINK" />elimina os 
 <translation id="752220631458524187">Cando remates, desconéctao</translation>
 <translation id="7523960634226602883">Realizar buscas coa cámara usando Google Lens</translation>
 <translation id="752731652852882757">Bloquear no modo de incógnito</translation>
+<translation id="7557508262441527045">Pechouse a sesión</translation>
 <translation id="7577900504646297215">Xestionar intereses</translation>
 <translation id="757855969265046257">{FILES,plural, =1{<ph name="FILES_DOWNLOADED_ONE" /> ficheiro descargado}other{<ph name="FILES_DOWNLOADED_MANY" /> ficheiros descargados}}</translation>
 <translation id="7581273696622423628">Completar enquisa</translation>
@@ -1388,7 +1389,6 @@ Para cambiar esta opción de configuración, <ph name="BEGIN_LINK" />elimina os 
 <translation id="777637629667389858">Cando teñas a sesión iniciada, ofrecerache protección nos servizos de Google.</translation>
 <translation id="7778840695157240389">Volve máis tarde para comprobar se hai historias novas</translation>
 <translation id="7780645209293383778">Vincula temporalmente estes datos á túa Conta de Google cando tes a sesión iniciada para protexerte nas nosas aplicacións</translation>
-<translation id="7786562169000598736">Obtén todos os teus marcadores</translation>
 <translation id="7791543448312431591">Engadir</translation>
 <translation id="7798392620021911922"><ph name="TAB_COUNT" /> pestanas restauradas</translation>
 <translation id="780287761701992588">Accede aos teus marcadores, contrasinais e moito máis en todos os dispositivos</translation>

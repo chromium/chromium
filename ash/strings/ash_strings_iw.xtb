@@ -180,6 +180,7 @@
 <translation id="1611993646327628135">פועל</translation>
 <translation id="1620510694547887537">מצלמה</translation>
 <translation id="1623768535032616219">‏כיווץ של Google Classroom</translation>
+<translation id="163032029566320584">התכונה <ph name="UNAVAILABLE_DLC" /> לא זמינה.</translation>
 <translation id="1632985212731562677">ניתן להשבית את התכונה 'גישה באמצעות מתג' דרך 'הגדרות' &gt; 'נגישות'.</translation>
 <translation id="1637505162081889933"><ph name="NUM_DEVICES" /> מכשירים</translation>
 <translation id="1639239467298939599">בטעינה</translation>
@@ -721,6 +722,7 @@
 <translation id="3702846122927433391">אוכלוסיית ניגריה</translation>
 <translation id="3705722231355495246">-</translation>
 <translation id="3706423975342040244">תרבות ובידור</translation>
+<translation id="3707093869106077605">התכונות '<ph name="UNAVAILABLE_DLC_ONE" />' ו-'<ph name="UNAVAILABLE_DLC_TWO" />' לא זמינות.</translation>
 <translation id="3708186454126126312">מכשירים שחוברו בעבר</translation>
 <translation id="3712143870407382523">בחירת חלון לצד הזה</translation>
 <translation id="371370241367527062">מיקרופון קדמי</translation>
@@ -992,6 +994,7 @@
 <translation id="4733161265940833579">%<ph name="BATTERY_PERCENTAGE" /> (שמאל)</translation>
 <translation id="4734965478015604180">אופקי</translation>
 <translation id="4735944890391795473">שולחן עבודה וירטואלי מספר 12</translation>
+<translation id="4736732123074402682">יש לבדוק את החיבור ולנסות שוב.</translation>
 <translation id="473775607612524610">עדכון</translation>
 <translation id="4740516757091333363">למחוק את שולחן העבודה השמור?</translation>
 <translation id="4746798685375253449">{0,plural, =1{עליך לעדכן את המכשיר לגרסה הקודמת בתוך יום אחד}one{עליך לעדכן את המכשיר לגרסה הקודמת בתוך # ימים}two{עליך לעדכן את המכשיר לגרסה הקודמת בתוך יומיים (#)}other{עליך לעדכן את המכשיר לגרסה הקודמת בתוך # ימים}}</translation>
@@ -1325,6 +1328,7 @@
 <translation id="588258955323874662">מסך מלא</translation>
 <translation id="5887954372087850114">החלון <ph name="WINDOW_TITLE" /> מוקצה לטובת <ph name="DESK_TITLE" /> וההקצאה שלו לכל שאר שולחנות העבודה הווירטואליים בוטלה.</translation>
 <translation id="588817334757907802">‏פתיחת הקובץ בדפדפן Chrome</translation>
+<translation id="5892014525522223653">אין חיבור לאינטרנט.</translation>
 <translation id="5895138241574237353">הפעלה מחדש</translation>
 <translation id="589817443623831496">סריקת נקודות</translation>
 <translation id="5901316534475909376">Shift+Esc</translation>
@@ -1384,6 +1388,7 @@
 <translation id="6095425951508823973">הוספת חיבור באמצעות <ph name="PROVIDER" /></translation>
 <translation id="6099678161144790572">נערך בחודש האחרון</translation>
 <translation id="6103838137565245112">מערכת</translation>
+<translation id="610395411842312282">קיבוץ שני חלונות אחד ליד השני</translation>
 <translation id="6108952804512516814">‏יצירה באמצעות AI</translation>
 <translation id="6114505516289286752">הורדת קובצי הדיבור של <ph name="LANGUAGE" /> הסתיימה</translation>
 <translation id="6119360623251949462"><ph name="CHARGING_STATE" />. <ph name="BATTERY_SAVER_STATE" /></translation>
@@ -1391,6 +1396,7 @@
 <translation id="6121838516699723042">אישור ההורדה של <ph name="FILENAME" /></translation>
 <translation id="612734058257491180">‏Google Assistant לא זמינה בגלישה כאורח.</translation>
 <translation id="6127370444807669747">‏כדאי לנסות את YouTube Music Premium כדי ליהנות מפלייליסטים בהתאמה אישית וממוזיקה שמתאימה יותר לריכוז</translation>
+<translation id="6127395413317891856">אין חיבור לאינטרנט. יש לבדוק את החיבור ולנסות שוב.</translation>
 <translation id="6129953537138746214">רווח</translation>
 <translation id="6137566720514957455">פתיחת תיבת דו-דיח להסרה של <ph name="USER_EMAIL_ADDRESS" /></translation>
 <translation id="6141205840878048728">במה היית רוצה להתרכז?</translation>
@@ -1965,6 +1971,7 @@
 <translation id="8257510091797044096">הגדרת המכשיר שלך</translation>
 <translation id="8261506727792406068">מחיקה</translation>
 <translation id="8262312463845990408">הפעלה או השהיה של הקראת הטקסט</translation>
+<translation id="8268302343625273732">‏הצגת כל המטלות ב-Google Classroom</translation>
 <translation id="8277261673056602147">יש להדגיש טקסט במסך</translation>
 <translation id="8287009018010202411">פרודוקטיביות</translation>
 <translation id="828708037801473432">כבויה</translation>

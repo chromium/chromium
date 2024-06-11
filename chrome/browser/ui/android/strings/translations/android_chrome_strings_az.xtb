@@ -274,6 +274,7 @@ Yalnız parol ifadəsini bilən şəxs şifrələnmiş datanı oxuya bilər. Goo
 <translation id="2450083983707403292"><ph name="FILE_NAME" /> faylını yenidən endirmək istəyirsiniz?</translation>
 <translation id="2453860139492968684">Son</translation>
 <translation id="2461822463642141190">Cari</translation>
+<translation id="2472163211318554013">Chrome'dan maksimum yararlanmaq üçün daxil olun</translation>
 <translation id="247737702124049222">Şəkil təsvirləri aktivdir</translation>
 <translation id="2479148705183875116">Ayarlara keçin</translation>
 <translation id="2482878487686419369">Bildirişlər</translation>
@@ -425,7 +426,6 @@ Yalnız parol ifadəsini bilən şəxs şifrələnmiş datanı oxuya bilər. Goo
 <translation id="3098745985164956033">Sizin üçün təsvirləri yaxşılaşdırmaq üçün bəzi şəkillər Google'a göndərilir</translation>
 <translation id="3114507951000454849">Bugünün <ph name="NEWS_ICON" /> xəbərlərini oxuyun</translation>
 <translation id="3123734510202723619">Elanlar</translation>
-<translation id="3146775326699342508">Digər cihazlardan əlfəcin və s. əldə etmək üçün daxil olun</translation>
 <translation id="314939179385989105">Chrome’un əsas səhifəsi</translation>
 <translation id="3158667104057012316">Manual sıra ilə çeşidlənir</translation>
 <translation id="3166827708714933426">Panel və pəncərə qısayolları</translation>
@@ -1341,6 +1341,7 @@ Bu ayarı dəyişmək üçün <ph name="BEGIN_LINK" />hesabda Chrome datasını 
 <translation id="752220631458524187">Hazır olduqda bağlantını ayırın</translation>
 <translation id="7523960634226602883">Google Linza istifadə edərək kameranızla axtarış edin</translation>
 <translation id="752731652852882757">Anonim rejimdə bloklayın</translation>
+<translation id="7557508262441527045">Çıxılıb</translation>
 <translation id="7577900504646297215">Maraqları idarə edin</translation>
 <translation id="757855969265046257">{FILES,plural, =1{<ph name="FILES_DOWNLOADED_ONE" /> fayl endirildi}other{<ph name="FILES_DOWNLOADED_MANY" /> fayl endirildi}}</translation>
 <translation id="7581273696622423628">Sorğudan keçin</translation>
@@ -1386,7 +1387,6 @@ Bu ayarı dəyişmək üçün <ph name="BEGIN_LINK" />hesabda Chrome datasını 
 <translation id="777637629667389858">Daxil olduqda Google xidmətlərində sizi qoruyur.</translation>
 <translation id="7778840695157240389">Yeni hekayələr üçün sonra yenidən yoxlayın</translation>
 <translation id="7780645209293383778">Daxil olduğunuzda sizi Google tətbiqlərində qorumaq üçün bu datanı Google Hesabınız ilə müvəqqəti olaraq əlaqələndirir</translation>
-<translation id="7786562169000598736">Bütün əlfəcinlərinizi əldə edin</translation>
 <translation id="7791543448312431591">Əlavə etmək</translation>
 <translation id="7798392620021911922"><ph name="TAB_COUNT" /> tab bərpa edilib</translation>
 <translation id="780287761701992588">Əlfəcin, parol və s. məlumatları bütün cihazlarda əldə edin</translation>

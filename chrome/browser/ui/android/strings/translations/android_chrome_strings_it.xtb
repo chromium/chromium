@@ -274,6 +274,7 @@ Solo chi conosce la tua passphrase può leggere i tuoi dati criptati. La passphr
 <translation id="2450083983707403292">Vuoi avviare di nuovo il download di <ph name="FILE_NAME" />?</translation>
 <translation id="2453860139492968684">Termina</translation>
 <translation id="2461822463642141190">Attuale</translation>
+<translation id="2472163211318554013">Accedi per usare al meglio Chrome</translation>
 <translation id="247737702124049222">Le descrizioni delle immagini sono attive</translation>
 <translation id="2479148705183875116">Vai a Impostazioni</translation>
 <translation id="2482878487686419369">Notifiche</translation>
@@ -285,6 +286,7 @@ Solo chi conosce la tua passphrase può leggere i tuoi dati criptati. La passphr
 <translation id="2515921719039583189">Eliminare i dati di Chrome dal dispositivo?</translation>
 <translation id="2517113738956581680">Riquadro a dimensioni intere</translation>
 <translation id="2523184218357549926">Invia a Google gli URL delle pagine che visiti</translation>
+<translation id="2524132927880411790">Vai alla ricerca vocale dell'app Google</translation>
 <translation id="2527209463677295330">Se includi più testo di una pagina, potresti vedere risultati migliori</translation>
 <translation id="2527497042232966453">Schede di navigazione in incognito attivate</translation>
 <translation id="2527779675047087889">Nascondi contenuti degli appunti</translation>
@@ -424,7 +426,6 @@ Solo chi conosce la tua passphrase può leggere i tuoi dati criptati. La passphr
 <translation id="3098745985164956033">Alcune immagini vengono inviate a Google per migliorare le descrizioni</translation>
 <translation id="3114507951000454849">Leggi le notizie di oggi <ph name="NEWS_ICON" /></translation>
 <translation id="3123734510202723619">Annunci</translation>
-<translation id="3146775326699342508">Accedi per visualizzare i tuoi preferiti e altri dati dagli altri dispositivi</translation>
 <translation id="314939179385989105">Pagina iniziale di Chrome</translation>
 <translation id="3158667104057012316">Ordinamento manuale</translation>
 <translation id="3166827708714933426">Scorciatoie di finestre e schede</translation>
@@ -519,6 +520,7 @@ Solo chi conosce la tua passphrase può leggere i tuoi dati criptati. La passphr
 <translation id="363596933471559332">Accedi automaticamente ai siti web utilizzando credenziali memorizzate. Quando la funzione non è attiva, ti viene chiesta la verifica prima di ogni accesso ai siti web.</translation>
 <translation id="3636940436873918441">Lingue preferite</translation>
 <translation id="3637744895182738742">Se dimentichi la passphrase o vuoi modificare questa impostazione, <ph name="BEGIN_LINK" />elimina i dati di Chrome nel tuo account<ph name="END_LINK" />.</translation>
+<translation id="3674208116086565128">Vai alla home page dell'app Google</translation>
 <translation id="368329460027487650">Account disconnesso. Consente di aprire le opzioni per accedere.</translation>
 <translation id="3687645719033307815">È visualizzata un'anteprima di questa pagina</translation>
 <translation id="3690369331356918524">Ricevi un avviso se le password sono esposte a violazione dei dati</translation>
@@ -1341,6 +1343,7 @@ Per modificare questa impostazione, <ph name="BEGIN_LINK" />elimina i dati di Ch
 <translation id="752220631458524187">Scollegati quando hai finito</translation>
 <translation id="7523960634226602883">Cerca con la fotocamera usando Google Lens</translation>
 <translation id="752731652852882757">Blocca quando la modalità di navigazione in incognito è in uso</translation>
+<translation id="7557508262441527045">Account disconnesso</translation>
 <translation id="7577900504646297215">Gestisci interessi</translation>
 <translation id="757855969265046257">{FILES,plural, =1{<ph name="FILES_DOWNLOADED_ONE" /> file scaricato}other{<ph name="FILES_DOWNLOADED_MANY" /> file scaricati}}</translation>
 <translation id="7581273696622423628">Vai al sondaggio</translation>
@@ -1386,7 +1389,6 @@ Per modificare questa impostazione, <ph name="BEGIN_LINK" />elimina i dati di Ch
 <translation id="777637629667389858">Se hai eseguito l'accesso, ti protegge nei servizi Google.</translation>
 <translation id="7778840695157240389">Ricontrolla più tardi se ci sono nuove notizie</translation>
 <translation id="7780645209293383778">Se hai eseguito l'accesso, collega temporaneamente questi dati al tuo Account Google per proteggerti nelle app Google</translation>
-<translation id="7786562169000598736">Recupera tutti i tuoi preferiti</translation>
 <translation id="7791543448312431591">Aggiungi</translation>
 <translation id="7798392620021911922"><ph name="TAB_COUNT" /> schede ripristinate</translation>
 <translation id="780287761701992588">Trova i preferiti, le password e altri dati su tutti i dispositivi</translation>
@@ -1475,6 +1477,7 @@ Per modificare questa impostazione, <ph name="BEGIN_LINK" />elimina i dati di Ch
 <translation id="813082847718468539">Visualizza informazioni sul sito</translation>
 <translation id="8135406045838672858">I PDF scaricati si aprono automaticamente con <ph name="APP_NAME" /></translation>
 <translation id="8137562778192957619">Non dovrai ricordare questa password perché verrà salvata in Gestore delle password di Google.</translation>
+<translation id="8152331954420209374">Vai a Lens</translation>
 <translation id="8163820386638255770">Verifica la tua identità per usare e salvare le password nel tuo Account Google</translation>
 <translation id="8171286197772512427">Condividi con il foglio di feedback sul riepilogo aperto</translation>
 <translation id="8179976553408161302">Invio</translation>
@@ -1511,6 +1514,7 @@ Per modificare questa impostazione, <ph name="BEGIN_LINK" />elimina i dati di Ch
 <translation id="8348430946834215779">Utilizza HTTPS quando possibile e ricevi un avviso prima di caricare i siti che non lo supportano</translation>
 <translation id="8354977102499939946">Cerca rapidamente con la tua voce. Per modificare questa scorciatoia, vai a Impostazioni.</translation>
 <translation id="835847953965672673"><ph name="NUMBER_OF_DOWNLOADS" /> download ripristinati</translation>
+<translation id="8367705492654390392">Chiedi qualsiasi cosa</translation>
 <translation id="8368001212524806591">Monitora prezzo</translation>
 <translation id="8378850197701296741">Sono presenti preferiti, cronologia e altre impostazioni di <ph name="FROM_ACCOUNT" />.</translation>
 <translation id="8387617938027387193">Verifica la tua identità</translation>

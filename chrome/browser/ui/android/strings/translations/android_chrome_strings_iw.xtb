@@ -274,6 +274,7 @@
 <translation id="2450083983707403292">להתחיל שוב את ההורדה של <ph name="FILE_NAME" />?</translation>
 <translation id="2453860139492968684">סיום</translation>
 <translation id="2461822463642141190">כרגע</translation>
+<translation id="2472163211318554013">‏כדי להפיק את המרב מ-Chrome, עליך להיכנס לחשבון</translation>
 <translation id="247737702124049222">התכונה 'תיאורי תמונות' מופעלת</translation>
 <translation id="2479148705183875116">למעבר אל ההגדרות</translation>
 <translation id="2482878487686419369">התראות</translation>
@@ -425,7 +426,6 @@
 <translation id="3098745985164956033">‏חלק מהתמונות נשלחות אל Google כדי לשפר עבורך את התיאורים</translation>
 <translation id="3114507951000454849">קראת חדשות היום? <ph name="NEWS_ICON" /></translation>
 <translation id="3123734510202723619">הודעות</translation>
-<translation id="3146775326699342508">עליך להיכנס לחשבון כדי לראות את הסימניות ולקבל נתונים נוספים מהמכשירים האחרים שלך</translation>
 <translation id="314939179385989105">‏דף הבית של Chrome</translation>
 <translation id="3158667104057012316">בתהליך מיון לפי סדר ידני</translation>
 <translation id="3166827708714933426">מקשי קיצור לכרטיסיות ולחלונות</translation>
@@ -1322,7 +1322,7 @@
 <translation id="7456774706094330779">טעינה מורחבת מראש</translation>
 <translation id="7466431077154602932">תצוגה קומפקטית</translation>
 <translation id="7474822150871987353">לומדים על נושאים שמופיעים באתרים בלי לצאת מהדף. בוחרים מילה אחת או יותר בדף כדי לבצע חיפוש.</translation>
-<translation id="7475192538862203634">אם נתקלת בזה לעתים קרובות, כדאי לנסות את <ph name="BEGIN_LINK" />ההצעות<ph name="END_LINK" /> האלה.</translation>
+<translation id="7475192538862203634">אם זה קורה הרבה, כדאי לנסות <ph name="BEGIN_LINK" />ההצעות<ph name="END_LINK" /> האלה.</translation>
 <translation id="7475688122056506577">‏לא נמצא כרטיס SD. ייתכן שחלק מהקבצים שלך חסרים.</translation>
 <translation id="7479104141328977413">ניהול כרטיסיות</translation>
 <translation id="7481312909269577407">קדימה</translation>
@@ -1343,6 +1343,7 @@
 <translation id="752220631458524187">יש לנתק את הכבל בסיום הפעולה</translation>
 <translation id="7523960634226602883">‏חיפוש עם המצלמה באמצעות Google Lens</translation>
 <translation id="752731652852882757">חסימה במהלך גלישה במצב פרטי</translation>
+<translation id="7557508262441527045">החשבון לא מחובר</translation>
 <translation id="7577900504646297215">ניהול תחומי עניין</translation>
 <translation id="757855969265046257">{FILES,plural, =1{הורדת קובץ אחד (<ph name="FILES_DOWNLOADED_ONE" />)}one{הורדת <ph name="FILES_DOWNLOADED_MANY" /> קבצים}two{הורדת <ph name="FILES_DOWNLOADED_MANY" /> קבצים}other{הורדת <ph name="FILES_DOWNLOADED_MANY" /> קבצים}}</translation>
 <translation id="7581273696622423628">השתתף בסקר</translation>
@@ -1388,7 +1389,6 @@
 <translation id="777637629667389858">‏אחרי שנכנסת לחשבון, המערכת מגינה עליך בשירותי Google.</translation>
 <translation id="7778840695157240389">בהמשך יהיו פה סיפורים חדשים</translation>
 <translation id="7780645209293383778">‏כדי להגן עליך באפליקציות של Google, הנתונים האלה מקושרים באופן זמני לחשבון Google שלך. ההגנה הזו פעילה רק אם נכנסים לחשבון.</translation>
-<translation id="7786562169000598736">הוספה של כל הסימניות</translation>
 <translation id="7791543448312431591">הוספה</translation>
 <translation id="7798392620021911922">שוחזרו <ph name="TAB_COUNT" /> כרטיסיות</translation>
 <translation id="780287761701992588">אפשר לקבל גישה לסימניות, לסיסמאות ולנתונים נוספים בכל המכשירים שלך</translation>

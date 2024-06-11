@@ -19,6 +19,7 @@
 <translation id="1203500561924088507">ইনষ্টল কৰাৰ বাবে ধন্যবাদ। আপুনি <ph name="BUNDLE_NAME" /> ব্যৱহাৰ কৰাৰ পূৰ্বে আপোনাৰ ব্ৰাউজাৰটো ৰিষ্টাৰ্ট কৰিবই লাগিব।</translation>
 <translation id="1262876892872089030">এই টেবটো নিষ্ক্ৰিয় হৈ থকাৰ সময়ত, Chromium দ্ৰুত কৰি ৰাখিবলৈ মেম’ৰী খালী কৰা হৈছে। আপুনি এই ছাইটটো নিষ্ক্ৰিয় হোৱাৰ পৰা সদায় বাদ দিয়াটো বাছনি কৰিব পাৰে।</translation>
 <translation id="1265577313130862557">ফাইলটো বিপজ্জনক হোৱাৰ বাবে Chromiumএ এই ডাউনল’ডটো অৱৰোধ কৰিছে</translation>
+<translation id="126567311906253476"><ph name="USER_EMAIL" />ৰ জৰিয়তে Gmail বা Youtubeৰ দৰে Google সেৱাসমূহত ছাইন ইন কৰাৰ সময়ত, আপুনি একেটা একাউণ্ট ব্যৱহাৰ কৰি স্বয়ংক্ৰিয়ভাৱে Chromiumত ছাইন ইন কৰিব পাৰে</translation>
 <translation id="1315551408014407711">আপোনাৰ নতুন Chromium প্ৰ'ফাইল ছেট আপ কৰক</translation>
 <translation id="1342274909142618978">লগতে Chromium (<ph name="URL" />)ৰ পৰা ডেটা মচক</translation>
 <translation id="1414495520565016063">আপুনি Chromiumত ছাইন ইন হৈ আছে!</translation>
@@ -43,6 +44,7 @@
 <translation id="1749104137266986751">HTTPS উপলব্ধ নোহোৱা সময়ত, Chromiumএ আপোনাক সতৰ্ক নকৰাকৈ কোনো অসুৰক্ষিত সংযোগ ব্যৱহাৰ কৰিব</translation>
 <translation id="1774152462503052664">Chromiumক নেপথ্যত চলিবলৈ দিয়ক</translation>
 <translation id="1779356040007214683">আমি Chromiumক অধিক সুৰক্ষিত কৰিবলৈ<ph name="IDS_EXTENSION_WEB_STORE_TITLE" />ত সূচীভুক্ত কিছুমান এক্সটেনশ্বন অক্ষম কৰিছোঁ যিবোৰ হয়তো আপোনাৰ অজ্ঞাতে যোগ কৰা হৈছিল।</translation>
+<translation id="1804128559285178512">আপুনি ছাইন ইন হৈ থকাৰ সময়ত, আপুনি Chromiumত আপোনাৰ Google একাউণ্টৰ পৰা আপোনাৰ পাছৱৰ্ড আৰু অধিক ব্যৱহাৰ কৰিব পাৰে</translation>
 <translation id="1808667845054772817">Chromium ৰিইনষ্টল কৰক</translation>
 <translation id="1820835682567584003">Chromiumএ <ph name="AUTHENTICATION_PURPOSE" /> চেষ্টা কৰি আছে</translation>
 <translation id="18552579716432081">আপোনাৰ Google একাউণ্টত ব্ৰাউজিঙৰ ডেটা ৰাখি কেৱল এই ডিভাইচৰ পৰা সেই ডেটা মচিবলৈ <ph name="BEGIN_LINK" />Chromiumৰ পৰা ছাইন আউট কৰক<ph name="END_LINK" />।</translation>

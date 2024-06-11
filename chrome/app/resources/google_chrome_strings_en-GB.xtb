@@ -125,6 +125,7 @@ Some features may be unavailable and changes to preferences won't be saved.</tra
 <translation id="2765403129283291972">Chrome needs permission to access your microphone for this site</translation>
 <translation id="2770231113462710648">Change default browser to:</translation>
 <translation id="2775140325783767197">Chrome can't check your passwords. Try checking your Internet connection.</translation>
+<translation id="2797864378188255696">When signing in to Google services like Gmail or YouTube with <ph name="USER_EMAIL" />, you can automatically sign in to Chrome with the same account</translation>
 <translation id="2799223571221894425">Relaunch</translation>
 <translation id="2825024317344269723">Dangerous site. Chrome removed notifications.</translation>
 <translation id="2846251086934905009">Install error: The installer did not complete. The installation has been aborted.</translation>
@@ -299,6 +300,7 @@ Some features may be unavailable. Please specify a different profile directory o
 <translation id="5334309298019785904">Chrome OS could not sync your data because sync is not available for your domain.</translation>
 <translation id="5334487786912937552">Chrome needs storage access permission to download files</translation>
 <translation id="5337648990166757586">Optional: Help improve Chrome OS features and performance by automatically sending diagnostic and usage data to Google.</translation>
+<translation id="5345497718959596593">While you're signed in, you can use your passwords and more from your Google Account in Chrome</translation>
 <translation id="5357889879764279201">Get help with Chrome OS Flex</translation>
 <translation id="5368118228313795342">Extra code: <ph name="EXTRA_CODE" />.</translation>
 <translation id="5386244825306882791">It also controls what page is shown when you start Chrome or search from the Omnibox.</translation>

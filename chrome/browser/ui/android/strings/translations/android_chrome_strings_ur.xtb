@@ -90,6 +90,9 @@
 <translation id="1390418506739274310">‏آپ Chrome میں لنکس کو کھولنے والی دیگر ایپس کی سرگزشت دیکھ سکتے ہیں۔ ممکن ہے کہ <ph name="BEGIN_LINK" />myactivity.google.com<ph name="END_LINK" /> پر آپ کے Google اکاؤنٹ میں براؤزنگ کی سرگزشت کی دیگر شکلیں موجود ہوں۔</translation>
 <translation id="13931502444227376">جاری رکھنے کے لیے، <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> اس سائٹ کے ساتھ آپ کے نام، ای میل پتہ اور پروفائل کی تصویر کا اشتراک کرے گا۔ اس سائٹ کی <ph name="BEGIN_LINK1" />سروس کی شرائط<ph name="END_LINK1" /> دیکھیں۔</translation>
 <translation id="1397811292916898096"><ph name="PRODUCT_NAME" /> کے ساتھ تلاش کریں</translation>
+<translation id="1398057416966591719">‏آپ اس بات کا نظم کر سکتے ہیں کہ آپ کے Google اکاؤنٹ میں <ph name="BEGIN_LINK1" />Chrome کا کون سا ڈیٹا محفوظ کیا جائے<ph name="END_LINK1" />۔
+
+آپ کے Chrome کے تجربے کو بہتر بنانے کے لیے ڈیٹا کا استعمال کرنے والی مزید ترتیبات کے لیے <ph name="BEGIN_LINK2" />Google سروسز<ph name="END_LINK2" /> پر جائیں۔</translation>
 <translation id="1407069428457324124">گہری تھیم</translation>
 <translation id="1407135791313364759">سبھی کو کھولیں</translation>
 <translation id="1409879593029778104">فائل پہلے سے موجود ہونے کی وجہ سے <ph name="FILE_NAME" /> کو ڈاؤن لوڈ ہونے سے روک دیا گیا۔</translation>
@@ -248,6 +251,7 @@
 <translation id="2286841657746966508">بلنگ پتہ</translation>
 <translation id="228704530595896923">اشتراک کرنے کے اختیارات کی فہرست۔</translation>
 <translation id="2297822946037605517">اس صفحہ کا اشتراک کریں</translation>
+<translation id="22981027763501686">اپنے بُک مارکس، سرگزشت اور مزید کو اپنے دوسرے آلات پر حاصل کرنے کے لیے مطابقت پذیری کریں</translation>
 <translation id="230115972905494466">کوئی مطابقت پذیر آلہ نہیں ملا</translation>
 <translation id="2318045970523081853">کال کرنے کے لیے تھپتھپائیں</translation>
 <translation id="2321086116217818302">پاس ورڈز تیار کیے جا رہے ہيں…</translation>
@@ -274,6 +278,7 @@
 <translation id="2450083983707403292">کیا آپ <ph name="FILE_NAME" /> کو دوبارہ ڈاؤن لوڈ کرنا شروع کرنا چاہتے ہیں؟</translation>
 <translation id="2453860139492968684">مکمل کریں</translation>
 <translation id="2461822463642141190">حالیہ</translation>
+<translation id="2472163211318554013">‏Chrome سے زیادہ سے زیادہ فائدہ اٹھانے کے لیے سائن ان کریں</translation>
 <translation id="247737702124049222">تصویر کی تفصیلات آن ہیں</translation>
 <translation id="2479148705183875116">ترتیبات پر جائیں</translation>
 <translation id="2482878487686419369">اطلاعات</translation>
@@ -425,7 +430,6 @@
 <translation id="3098745985164956033">‏آپ کے لیے تفصیلات میں بہتری لانے کے لیے Google کو کچھ تصاویر بھیجی جاتی ہیں</translation>
 <translation id="3114507951000454849">آج کی خبریں پڑھیں <ph name="NEWS_ICON" /></translation>
 <translation id="3123734510202723619">اعلانات</translation>
-<translation id="3146775326699342508">اپنے دیگر آلات سے اپنے بُک مارکس وغیرہ حاصل کرنے کیلئے سائن ان کریں</translation>
 <translation id="314939179385989105">‏Chrome کا ہوم پیج</translation>
 <translation id="3158667104057012316">دستی ترتیب کے لحاظ سے ترتیب دیا جا رہا ہے</translation>
 <translation id="3166827708714933426">ٹیب اور ونڈو شارٹ کٹس</translation>
@@ -856,6 +860,7 @@
 <translation id="5292796745632149097">اس پر بھیجیں</translation>
 <translation id="5301876394151419436">‏آپ <ph name="EMAIL" /> کے طور پر سائن ان ہیں۔ آپ ترتیبات میں کسی بھی وقت مطابقت پذیری کو روک سکتے ہیں۔ ‫Google آپ کی سرگزشت کی بنیاد پر تلاش اور دیگر سروسز کو ذاتی نوعیت کا بنا سکتا ہے۔</translation>
 <translation id="5304593522240415983">یہ فیلڈ خالی نہیں رہ سکتی ہے</translation>
+<translation id="5306014156308790439">مجموعے میں شامل کریں کا بٹن غیر فعال ہے</translation>
 <translation id="5308380583665731573">منسلک کریں</translation>
 <translation id="5316947901395241499">آپ کے منتظم نے پاس ورڈ محفوظ کرنے کی سہولت کو آف کر دیا ہے</translation>
 <translation id="5317780077021120954">محفوظ کریں</translation>
@@ -1343,6 +1348,7 @@
 <translation id="752220631458524187">جب آپ کا کام مکمل ہو جائے تو غیر منسلک کر لیں</translation>
 <translation id="7523960634226602883">‏Google لینز کا استعمال کرتے ہوئے اپنے کیمرے کی مدد سے تلاش کریں</translation>
 <translation id="752731652852882757">پوشیدگی وضع کا استعمال کرتے وقت مسدود کریں</translation>
+<translation id="7557508262441527045">سائن آؤٹ ہو گئے</translation>
 <translation id="7577900504646297215">دلچسپیوں کا نظم کریں</translation>
 <translation id="757855969265046257">{FILES,plural, =1{<ph name="FILES_DOWNLOADED_ONE" /> فائل ڈاؤن لوڈ ہو گئی}other{<ph name="FILES_DOWNLOADED_MANY" /> فائلز ڈاؤن لوڈ ہو گئیں}}</translation>
 <translation id="7581273696622423628">سروے مکمل کریں</translation>
@@ -1388,7 +1394,6 @@
 <translation id="777637629667389858">‏آپ کے سائن ان ہونے پر، تمام Google سروسز پر آپ کی حفاظت کرتا ہے۔</translation>
 <translation id="7778840695157240389">نئی کہانیوں کے لئے بعد میں دوبارہ چیک کریں</translation>
 <translation id="7780645209293383778">‏Google ایپس پر آپ کی حفاظت کرنے کے لیے آپ کے سائن ان ہونے پر آپ کے Google اکاؤنٹ سے اس ڈیٹا کو عارضی طور پر لنک کرتا ہے</translation>
-<translation id="7786562169000598736">اپنے تمام بُک مارکس حاصل کریں</translation>
 <translation id="7791543448312431591">شامل کریں</translation>
 <translation id="7798392620021911922"><ph name="TAB_COUNT" /> ٹیبز کو بحال کیا گیا</translation>
 <translation id="780287761701992588">اپنے تمام آلات پر اپنے بُک مارکس، پاس ورڈز وغیرہ حاصل کریں</translation>

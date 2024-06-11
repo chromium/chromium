@@ -186,7 +186,6 @@ Du bør tenke på følgende:
 <translation id="6484712497741564393">Logget på som <ph name="EMAIL" />.
 
 Dataene dine er kryptert med passordfrasen din. Skriv den inn for å bruke og lagre Chrome-data i Google-kontoen din.</translation>
-<translation id="6540120577248033958">Besøk et nettsted, og klikk på Følg på Chrome-menyen</translation>
 <translation id="6545449117344801102">Chrome registrerer adresser og bruker Google Maps for å gi deg veibeskrivelser og lokal informasjon.</translation>
 <translation id="6634107063912726160">Når du logger av, synkroniserer ikke Chrome nye data med Google-kontoen din. Tidligere synkroniserte data blir værende på kontoen.</translation>
 <translation id="6646696210740573446">Sender en obfuskert del av nettadressen til Google via en personverntjener som skjuler IP-adressen din. Hvis nettsteder prøver å stjele passordet ditt, eller når du laster ned skadelige filer, kan Chrome også sende nettadresser, inkludert deler av sideinnholdet, til Google.</translation>

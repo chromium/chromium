@@ -180,6 +180,7 @@
 <translation id="1611993646327628135">オン</translation>
 <translation id="1620510694547887537">カメラ</translation>
 <translation id="1623768535032616219">Google Classroom を折りたたむ</translation>
+<translation id="163032029566320584"><ph name="UNAVAILABLE_DLC" /> は使用できません。</translation>
 <translation id="1632985212731562677">スイッチ アクセスは [設定] &gt; [ユーザー補助機能] で無効にできます。</translation>
 <translation id="1637505162081889933"><ph name="NUM_DEVICES" /> 台のデバイス</translation>
 <translation id="1639239467298939599">読み込んでいます</translation>
@@ -721,6 +722,7 @@
 <translation id="3702846122927433391">ナイジェリアの人口を教えて</translation>
 <translation id="3705722231355495246">-</translation>
 <translation id="3706423975342040244">エンターテイメント</translation>
+<translation id="3707093869106077605"><ph name="UNAVAILABLE_DLC_ONE" /> と <ph name="UNAVAILABLE_DLC_TWO" /> は使用できません。</translation>
 <translation id="3708186454126126312">以前に接続したデバイス</translation>
 <translation id="3712143870407382523">こちら側のウィンドウを選択</translation>
 <translation id="371370241367527062">前方のマイク</translation>
@@ -992,6 +994,7 @@
 <translation id="4733161265940833579"><ph name="BATTERY_PERCENTAGE" />%（左）</translation>
 <translation id="4734965478015604180">横</translation>
 <translation id="4735944890391795473">デスク 12</translation>
+<translation id="4736732123074402682">接続を確認してから、もう一度お試しください。</translation>
 <translation id="473775607612524610">更新</translation>
 <translation id="4740516757091333363">保存済みのデスクを削除しますか？</translation>
 <translation id="4746798685375253449">{0,plural, =1{1 日以内にデバイスを以前のバージョンに更新してください}other{# 日以内にデバイスを以前のバージョンに更新してください}}</translation>
@@ -1325,6 +1328,7 @@
 <translation id="588258955323874662">全画面表示</translation>
 <translation id="5887954372087850114">ウィンドウ <ph name="WINDOW_TITLE" /> を <ph name="DESK_TITLE" /> に割り当て、他のすべてのデスクへの割り当てを解除しました</translation>
 <translation id="588817334757907802">Chrome ブラウザでファイルを開く</translation>
+<translation id="5892014525522223653">オフラインです。</translation>
 <translation id="5895138241574237353">再起動</translation>
 <translation id="589817443623831496">ポイント スキャン</translation>
 <translation id="5901316534475909376">Shift+Esc</translation>
@@ -1384,6 +1388,7 @@
 <translation id="6095425951508823973"><ph name="PROVIDER" /> との接続を追加</translation>
 <translation id="6099678161144790572">過去 1 か月以内に編集したファイル</translation>
 <translation id="6103838137565245112">システム</translation>
+<translation id="610395411842312282">横に並んだ 2 つのウィンドウをグループ化する</translation>
 <translation id="6108952804512516814">AI を使用して作成</translation>
 <translation id="6114505516289286752"><ph name="LANGUAGE" />の音声ファイルをダウンロードしました</translation>
 <translation id="6119360623251949462"><ph name="CHARGING_STATE" />。<ph name="BATTERY_SAVER_STATE" /></translation>
@@ -1391,6 +1396,7 @@
 <translation id="6121838516699723042"><ph name="FILENAME" /> のダウンロードの確認</translation>
 <translation id="612734058257491180">Google アシスタントは、ゲスト セッションではご利用いただけません。</translation>
 <translation id="6127370444807669747">YouTube Music Premium では、自分だけのプレイリストやフォーカス モード用の音楽を再生できます</translation>
+<translation id="6127395413317891856">オフラインです。接続を確認してから、もう一度お試しください。</translation>
 <translation id="6129953537138746214">Space</translation>
 <translation id="6137566720514957455"><ph name="USER_EMAIL_ADDRESS" /> の削除ダイアログを開きます</translation>
 <translation id="6141205840878048728">何の作業に集中しますか？</translation>
@@ -1964,6 +1970,7 @@
 <translation id="8257510091797044096">デバイスをセットアップする</translation>
 <translation id="8261506727792406068">削除</translation>
 <translation id="8262312463845990408">再生を切り替える</translation>
+<translation id="8268302343625273732">Google Classroom ですべての課題を表示</translation>
 <translation id="8277261673056602147">画面上のテキストを選択</translation>
 <translation id="8287009018010202411">仕事効率化</translation>
 <translation id="828708037801473432">オフ</translation>

@@ -547,6 +547,7 @@ To će u suprotnom biti onemogućeno na temelju vaših postavki privatnosti. To 
 <translation id="2003709556000175978">Poništite zaporku odmah</translation>
 <translation id="2003775180883135320">Četverostruko bušenje pri vrhu</translation>
 <translation id="2004697686368036666">Značajke na nekim web-lokacijama možda neće funkcionirati</translation>
+<translation id="2005042463110681802">Upozorenje vam se prikazuje jer ova web-lokacija ne podržava HTTPS i jer ste u anonimnom načinu. <ph name="BEGIN_LEARN_MORE_LINK" />Saznajte više<ph name="END_LEARN_MORE_LINK" /></translation>
 <translation id="2009942480257059311">Gumb Izradi događaj, aktivirajte ga za brzu izradu novog događaja u Google kalendaru</translation>
 <translation id="201174227998721785">Dopuštenjima i podacima koji se pohranjuju na web-lokacijama možete upravljati u postavkama Chromea</translation>
 <translation id="2012276282211112603">Trenutačno nema tema za prikaz</translation>
@@ -573,7 +574,6 @@ To će u suprotnom biti onemogućeno na temelju vaših postavki privatnosti. To 
 <translation id="2046951263634619614">Knjižare</translation>
 <translation id="2048261947532620704">Prevođenje stranice</translation>
 <translation id="2053111141626950936">Neće se prevoditi <ph name="LANGUAGE" />.</translation>
-<translation id="2055461225779831292">Upotreba i pomicanje kamera (<ph name="CAMERAS_COUNT" />)</translation>
 <translation id="2056492565825767809">zaključati pokazivač miša</translation>
 <translation id="2056658168519009885">Web-lokacije mogu zatražiti informacije od Chromea radi personalizacije oglasa koji vam se prikazuju.</translation>
 <translation id="2059166748188874810">Općina</translation>
@@ -651,7 +651,6 @@ To će u suprotnom biti onemogućeno na temelju vaših postavki privatnosti. To 
 <translation id="2170417331417184438">Kartica je spremljena samo na uređaj</translation>
 <translation id="2172089022819052306">Popravak i servis vozila</translation>
 <translation id="2175630235841878061">Datoteke veće od 100 MB nisu dostupne za preuzimanje</translation>
-<translation id="2176198174348007293">upotrebu kamera (<ph name="CAMERAS_COUNT" />)</translation>
 <translation id="2176974405772725904">Spremanje adrese na račun</translation>
 <translation id="2178665390943006934">Gumb Ažuriraj Chrome, aktivirajte ga da biste ažurirali Chrome u postavkama Chromea</translation>
 <translation id="2181821976797666341">Pravila</translation>
@@ -1483,6 +1482,7 @@ To će u suprotnom biti onemogućeno na temelju vaših postavki privatnosti. To 
 <translation id="3799805948399000906">Zatraženi font</translation>
 <translation id="3801265110651850478">Pošalji zahtjev Do Not Track uz promet pregledavanja</translation>
 <translation id="380329542618494757">Ime</translation>
+<translation id="3803801106042434208">Ove su tražilice popularne u vašoj regiji</translation>
 <translation id="3806932344025766608">Napadači na web-lokaciji koju pokušavate posjetiti mogu vas na prijevaru navesti da instalirate softver ili otkrijete svoju zaporku, broj telefona ili broj kreditne kartice. Chrome preporučuje povratak na sigurnost. <ph name="BEGIN_LEARN_MORE_LINK" />Saznajte više<ph name="END_LEARN_MORE_LINK" /></translation>
 <translation id="3807366285948165054">X-pomak slike</translation>
 <translation id="3807709094043295184">Klasični rock i stare pjesme</translation>
@@ -3628,7 +3628,6 @@ Dodatne pojedinosti:
 <translation id="7947813448670013867"><ph name="SEE_CHROME_TIPS_FOCUSED_FRIENDLY_MATCH_TEXT" />, pritisnite Tab, a zatim Enter da biste saznali više o Chromeovim značajkama</translation>
 <translation id="7949135979217012031">Antivirusni programi i programi protiv zlonamjernog softvera</translation>
 <translation id="7950027195171824198">Preferencijama za kolačiće možete upravljati u postavkama Chromea</translation>
-<translation id="7950440490184876634">upotrebu mikrofona (<ph name="MICS_COUNT" />)</translation>
 <translation id="7951415247503192394">(32-bitni)</translation>
 <translation id="7952192831285741665">European EDP</translation>
 <translation id="7952250633095257243">Polje za prečace ne može biti prazno</translation>

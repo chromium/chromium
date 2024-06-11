@@ -368,7 +368,6 @@
 <translation id="1260810365552581339">Linux อาจมีพื้นที่ในดิสก์ไม่พอ คุณเพิ่มพื้นที่ในดิสก์ของ Linux และพยายามกู้คืนข้อมูลอีกครั้งได้ใน<ph name="LINK_START" />การตั้งค่า<ph name="LINK_END" /></translation>
 <translation id="1261380933454402672">ปานกลาง</translation>
 <translation id="126156426083987769">เกิดปัญหาเกี่ยวกับใบอนุญาตของอุปกรณ์โหมดสาธิต</translation>
-<translation id="1261885284931493480">นําแท็บออกและลบกลุ่มใช่ไหม</translation>
 <translation id="1263231323834454256">เรื่องรออ่าน</translation>
 <translation id="1263733306853729545">ใช้คีย์ <ph name="MINUS" /> และ <ph name="EQUAL" /> เพื่อสร้างหน้ารายการตัวเลือก</translation>
 <translation id="126387934568812801">รวมภาพหน้าจอนี้และชื่อของแท็บที่เปิดอยู่</translation>
@@ -1641,7 +1640,6 @@
 <translation id="2187895286714876935">ข้อผิดพลาดในการนำเข้าใบรับรองเซิร์ฟเวอร์</translation>
 <translation id="2187906491731510095">อัปเดตส่วนขยายแล้ว</translation>
 <translation id="2188881192257509750">เปิด <ph name="APPLICATION" /></translation>
-<translation id="2188919919468240749">ลบกลุ่มแท็บใช่ไหม</translation>
 <translation id="2190069059097339078">ตัวรับข้อมูลรับรอง Wi-Fi</translation>
 <translation id="219008588003277019">โมดูล Native Client: <ph name="NEXE_NAME" /></translation>
 <translation id="2190355936436201913">(ว่างเปล่า)</translation>
@@ -2082,7 +2080,6 @@
 <translation id="249113932447298600">ขออภัย อุปกรณ์ <ph name="DEVICE_LABEL" /> ไม่ได้รับการสนับสนุนในขณะนี้</translation>
 <translation id="2491587035099903063">ตัวอย่างเสียงภาษา<ph name="LANGUAGE" /></translation>
 <translation id="2492461744635776704">กำลังเตรียมคำขอลงนามใบรับรอง</translation>
-<translation id="2492964937550251173">ปิดแท็บและลบกลุ่มใช่ไหม</translation>
 <translation id="249330843868392562">เปิดการตั้งค่าการอ่านออกเสียงข้อความ</translation>
 <translation id="2494555621641843783">ติดตั้ง Steam ไม่ได้</translation>
 <translation id="2495141202137516054">จากไดรฟ์ของคุณ</translation>
@@ -2809,7 +2806,6 @@
 <translation id="3021066826692793094">ผีเสื้อ</translation>
 <translation id="3021678814754966447">&amp;ดูแหล่งที่มาของเฟรม</translation>
 <translation id="3021902017511220299">การสแกนไม่สำเร็จ ผู้ดูแลระบบของคุณบล็อกการดำเนินการนี้</translation>
-<translation id="3022068420678496307">การดำเนินการนี้จะลบกลุ่มออกจากอุปกรณ์ทั้งหมดที่ลงชื่อเข้าใช้ Chrome ด้วยบัญชี Google นี้</translation>
 <translation id="3022361196600037287">ระบบจะนำ <ph name="DEVICE" /> ออกจาก Chromebook เครื่องนี้และจะไม่บันทึกไปยัง <ph name="PRIMARY_EMAIL" /></translation>
 <translation id="3022978424994383087">ฟังไม่เข้าใจ</translation>
 <translation id="3023464535986383522">เลือกเพื่อให้อ่าน</translation>
@@ -2984,6 +2980,7 @@
 <translation id="3163511056918491211">กู้คืนข้อมูลหรือเปลี่ยนอุปกรณ์ได้ง่ายๆ ทุกเมื่อ ข้อมูลสำรองดังกล่าวจะอัปโหลดขึ้น Google และเข้ารหัสโดยใช้รหัสผ่านบัญชี Google</translation>
 <translation id="3164329792803560526">กำลังแชร์แท็บนี้กับ <ph name="APP_NAME" /></translation>
 <translation id="3165390001037658081">ผู้ให้บริการบางรายอาจบล็อกฟีเจอร์นี้</translation>
+<translation id="316542773973815724">การนำทาง</translation>
 <translation id="3165734944977250074">ย้ายไฟล์ไม่ได้เนื่องจากไม่มีอยู่แล้ว</translation>
 <translation id="3166443275568926403">สถานะประสิทธิภาพและแบตเตอรี่</translation>
 <translation id="3169930038976362151">เลือกธีมที่ตรงกับความต้องการของคุณ หากต้องการเปลี่ยนธีม วอลเปเปอร์ โปรแกรมรักษาหน้าจอ และอื่นๆ เพียงแตะค้างไว้บนเดสก์ท็อป</translation>
@@ -3865,7 +3862,6 @@
 <translation id="3810914450553844415">ผู้ดูแลระบบไม่อนุญาตให้มีบัญชี Google เพิ่มเติม</translation>
 <translation id="3810973564298564668">จัดการ</translation>
 <translation id="381202950560906753">เพิ่มลายนิ้วมืออีก</translation>
-<translation id="381219490185664296">เลิกจัดกลุ่มแท็บใช่ไหม</translation>
 <translation id="3812525830114410218">ใบรับรองมีปัญหา</translation>
 <translation id="3813296892522778813">ไปที่<ph name="BEGIN_LINK_CHROMIUM" />ความช่วยเหลือของ Google Chrome<ph name="END_LINK_CHROMIUM" /> หากคุณไม่พบข้อมูลที่กำลังค้นหา</translation>
 <translation id="3813358687923336574">ภาษาที่ใช้ในการแปลหน้าเว็บและใช้กับคำตอบด่วน</translation>
@@ -4228,7 +4224,6 @@
 <translation id="4078738236287221428">เข้มงวด</translation>
 <translation id="4078903002989614318">ตัวเลือกการจัดเรียงและการแสดงรายการ</translation>
 <translation id="4079140982534148664">ใช้ฟีเจอร์ตรวจตัวสะกดที่ได้รับการปรับปรุง</translation>
-<translation id="4083735423615351075">แท็บจะยังคงเปิดอยู่ในอุปกรณ์นี้ แต่ระบบจะลบกลุ่มออกจากอุปกรณ์ทั้งหมดที่ลงชื่อเข้าใช้ Chrome ด้วยบัญชี Google นี้</translation>
 <translation id="4084682180776658562">บุ๊กมาร์ก</translation>
 <translation id="4084835346725913160">ปิด <ph name="TAB_NAME" /></translation>
 <translation id="4085298594534903246">หน้าเว็บนี้บล็อกการเรียกใช้ JavaScript</translation>
@@ -4238,7 +4233,6 @@
 
 <ph name="EXTENSION_FILE" /></translation>
 <translation id="4087328411748538168">แสดงทางด้านขวา</translation>
-<translation id="4088879333319441249">เลิกจัดกลุ่มแท็บใช่ไหม</translation>
 <translation id="4089235344645910861">บันทึกการตั้งค่าและเริ่มซิงค์แล้ว</translation>
 <translation id="4089817585533500276">Shift + <ph name="TOP_ROW_KEY" /></translation>
 <translation id="4090103403438682346">เปิดใช้การเข้าถึงที่ได้รับการยืนยัน</translation>
@@ -4324,7 +4318,6 @@
 <translation id="4148195018520464922">คุณจำกัดการลงชื่อเข้าใช้ให้เฉพาะผู้ใช้บางรายได้ ซึ่งจะนำตัวเลือก "เพิ่มบุคคล" ออกจากหน้าจอลงชื่อเข้าใช้ นอกจากนี้ คุณยังสามารถนำผู้ใช้ปัจจุบันออกได้ด้วย</translation>
 <translation id="4148957013307229264">กำลังติดตั้ง...</translation>
 <translation id="4150201353443180367">การแสดงผล</translation>
-<translation id="4150417452770391330">เชื่อมต่อกล้อง</translation>
 <translation id="4150569944729499860">บริบทบนหน้าจอ</translation>
 <translation id="4151449637210235443">บอกเราเกี่ยวกับเกมเพลย์ล่าสุดของคุณ</translation>
 <translation id="4151503145138736576">ไม่มีพื้นที่เก็บข้อมูลออฟไลน์ให้ล้าง</translation>
@@ -5123,7 +5116,6 @@
 <translation id="4777458362738635055">ผู้ใช้คนอื่นๆ ของอุปกรณ์นี้จะใช้เครือข่ายนี้ได้</translation>
 <translation id="4777813841994368231">เปิด • นักพัฒนาเลิกเผยแพร่ส่วนขยายนี้แล้ว</translation>
 <translation id="4777825441726637019">Play Store</translation>
-<translation id="4777866634702576038">ลบกลุ่มแท็บใช่ไหม</translation>
 <translation id="4777943778632837590">กำหนดค่าเนมเซิร์ฟเวอร์ของเครือข่าย</translation>
 <translation id="4778653490315793244">ยังไม่มีรายการให้แสดง</translation>
 <translation id="4779083564647765204">ซูม</translation>
@@ -5535,7 +5527,6 @@
 <translation id="5093477827231450397">รายการเว็บไซต์ที่คุณบล็อกและไม่ต้องการให้แนะนำโฆษณาไปยังเว็บไซต์อื่นๆ</translation>
 <translation id="5093569275467863761">ซับเฟรมแคชย้อนหลังในโหมดไม่ระบุตัวตน: <ph name="BACK_FORWARD_CACHE_INCOGNITO_PAGE_URL" /></translation>
 <translation id="5094176498302660097">คุณสามารถเปิดและแก้ไขไฟล์ที่ระบบรองรับด้วยแอปนี้ได้จากแอป Files หรือจากแอปอื่นๆ หากต้องการควบคุมว่ามีไฟล์ใดบ้างที่เปิดในแอปนี้ได้โดยค่าเริ่มต้น ให้<ph name="BEGIN_LINK" />ดูวิธีตั้งค่าแอปเริ่มต้นในอุปกรณ์<ph name="END_LINK" /></translation>
-<translation id="5094423602314093681">นําแท็บออกและลบกลุ่มใช่ไหม</translation>
 <translation id="5094721898978802975">สื่อสารกับแอปพลิเคชันการประสานงานที่มาพร้อมเครื่อง</translation>
 <translation id="5095252080770652994">ความคืบหน้า</translation>
 <translation id="5095507226704905004">คัดลอกไฟล์ไม่ได้เนื่องจากไม่มีอยู่แล้ว</translation>
@@ -7310,7 +7301,6 @@
 <translation id="6445450263907939268">หากคุณไม่ต้องการการเปลี่ยนแปลงเหล่านี้ คุณสามารถกู้คืนการตั้งค่าก่อนหน้าได้</translation>
 <translation id="6446213738085045933">สร้างทางลัดบนเดสก์ท็อป</translation>
 <translation id="6447842834002726250">คุกกี้</translation>
-<translation id="6449554712554071184">การดำเนินการนี้จะลบกลุ่มออกจากอุปกรณ์ของคุณอย่างถาวร</translation>
 <translation id="6450876761651513209">เปลี่ยนการตั้งค่าที่เกี่ยวข้องกับความเป็นส่วนตัว</translation>
 <translation id="6451591602925140504">{NUM_PAGES,plural, =0{<ph name="PAGE_TITLE" />}=1{<ph name="PAGE_TITLE" /> และอีก 1 แท็บ}other{<ph name="PAGE_TITLE" /> และอีก # แท็บ}}</translation>
 <translation id="6451689256222386810">หากคุณลืมรหัสผ่านหรือต้องการเปลี่ยนการตั้งค่านี้ ให้<ph name="BEGIN_LINK" />รีเซ็ตการซิงค์<ph name="END_LINK" /></translation>
@@ -8461,7 +8451,6 @@
 <translation id="7340650977506865820">เว็บไซต์กำลังแชร์หน้าจอของคุณ</translation>
 <translation id="7340757554212515731">ส่งรายงานข้อขัดข้อง รวมถึงข้อมูลการวินิจฉัยและการใช้งานให้ Google โดยอัตโนมัติ</translation>
 <translation id="734088800888587319">เมตริกเครือข่าย</translation>
-<translation id="7341612916770129581">เชื่อมต่อไมโครโฟน</translation>
 <translation id="7341834142292923918">ต้องการเข้าถึงเว็บไซต์นี้</translation>
 <translation id="7343372807593926528">โปรดอธิบายปัญหาก่อนส่งความคิดเห็น</translation>
 <translation id="7344585835349671209">จัดการใบรับรอง HTTPS/SSL ในอุปกรณ์</translation>
@@ -9360,7 +9349,6 @@
 <translation id="7974936243149753750">โอเวอร์สแกน</translation>
 <translation id="7975504106303186033">คุณต้องลงทะเบียนอุปกรณ์ Chrome Education เครื่องนี้ในบัญชีสถานศึกษา หากต้องการลงชื่อสมัครใช้บัญชีใหม่ โปรดไปที่ g.co/workspace/edusignup</translation>
 <translation id="7977451675950311423">เตือนคุณหากใช้รหัสผ่านที่ถูกละเมิดในการละเมิดข้อมูล</translation>
-<translation id="797824194429476746">แท็บจะยังคงเปิดอยู่ในอุปกรณ์นี้ แต่ระบบจะลบกลุ่มอย่างถาวร</translation>
 <translation id="7978412674231730200">กุญแจส่วนตัว</translation>
 <translation id="7978450511781612192">การดำเนินการนี้จะนำคุณออกจากบัญชี Google บุ๊กมาร์ก ประวัติการเข้าชม รหัสผ่าน และข้อมูลอื่นๆ จะไม่ซิงค์อีกต่อไป</translation>
 <translation id="7980066177668669492">ASCII ที่เข้ารหัสฐาน 64, ใบรับรองหลายใบ</translation>
@@ -9415,6 +9403,7 @@
 <translation id="8017679124341497925">แก้ไขทางลัดแล้ว</translation>
 <translation id="8018298733481692628">ลบโปรไฟล์นี้ใช่ไหม</translation>
 <translation id="8018313076035239964">ควบคุมว่าจะให้เว็บไซต์ใช้ข้อมูลใดได้บ้าง และสามารถแสดงเนื้อหาใดให้กับคุณ</translation>
+<translation id="802154636333426148">การดาวน์โหลดล้มเหลว</translation>
 <translation id="8022466874160067884">ป้อนบัญชี Google และรหัสผ่าน</translation>
 <translation id="8023133589013344428">จัดการภาษาในการตั้งค่า Chrome OS Flex</translation>
 <translation id="8023801379949507775">อัปเดตส่วนขยายทันที</translation>
@@ -10702,7 +10691,6 @@
 <translation id="8962863356073277855">รูปแบบ URL ควรเป็น https://www.example.com</translation>
 <translation id="8962918469425892674">เว็บไซต์นี้ใช้เซ็นเซอร์ตรวจจับการเคลื่อนไหวหรือแสงอยู่</translation>
 <translation id="8963117664422609631">ไปที่การตั้งค่าเว็บไซต์</translation>
-<translation id="8964795217937248330">ปิดแท็บและลบกลุ่มใช่ไหม</translation>
 <translation id="8965037249707889821">ป้อนรหัสผ่านเก่า</translation>
 <translation id="8966809848145604011">โปรไฟล์อื่นๆ</translation>
 <translation id="8967427617812342790">เพิ่มไปยังเรื่องรออ่าน</translation>

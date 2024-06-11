@@ -274,6 +274,7 @@
 <translation id="2450083983707403292">Завантажити файл <ph name="FILE_NAME" /> ще раз?</translation>
 <translation id="2453860139492968684">Готово</translation>
 <translation id="2461822463642141190">Зараз</translation>
+<translation id="2472163211318554013">Увійдіть, щоб користуватися всіма можливостями Chrome</translation>
 <translation id="247737702124049222">Описи зображень увімкнено</translation>
 <translation id="2479148705183875116">Перейти в налаштування</translation>
 <translation id="2482878487686419369">Сповіщення</translation>
@@ -285,6 +286,7 @@
 <translation id="2515921719039583189">Видалити дані Chrome із цього пристрою?</translation>
 <translation id="2517113738956581680">Панель на весь екран</translation>
 <translation id="2523184218357549926">Надсилає в Google URL-адреси відвіданих сторінок</translation>
+<translation id="2524132927880411790">Перейти до голосового пошуку в додатку Google</translation>
 <translation id="2527209463677295330">Урахування контексту на сторінці може покращити результати</translation>
 <translation id="2527497042232966453">Переключено на анонімні вкладки</translation>
 <translation id="2527779675047087889">Сховати вміст буфера обміну</translation>
@@ -424,7 +426,6 @@
 <translation id="3098745985164956033">Деякі зображення надсилаються на сервери Google, що дає змогу покращувати їх описи</translation>
 <translation id="3114507951000454849">Читайте сьогоднішні новини <ph name="NEWS_ICON" /></translation>
 <translation id="3123734510202723619">Оголошення</translation>
-<translation id="3146775326699342508">Увійдіть в обліковий запис, щоб мати доступ до закладок і інших даних із ваших пристроїв</translation>
 <translation id="314939179385989105">Головна сторінка Chrome</translation>
 <translation id="3158667104057012316">Сортування вручну</translation>
 <translation id="3166827708714933426">Комбінації клавіш для роботи з вкладками та вікнами</translation>
@@ -519,6 +520,7 @@
 <translation id="363596933471559332">Автоматично входити в облікові записи на веб-сайтах за допомогою збережених даних. Якщо цю функцію вимкнено, потрібно вводити облікові дані під час кожного входу.</translation>
 <translation id="3636940436873918441">Вибрані мови</translation>
 <translation id="3637744895182738742">Якщо ви забули парольну фразу або хочете змінити це налаштування, <ph name="BEGIN_LINK" />видаліть дані Chrome у своєму обліковому записі<ph name="END_LINK" />.</translation>
+<translation id="3674208116086565128">Перейти на головну сторінку додатка Google</translation>
 <translation id="368329460027487650">Ви вийшли. Натисніть, щоб переглянути параметри входу.</translation>
 <translation id="3687645719033307815">Ви попередньо переглядаєте цю сторінку</translation>
 <translation id="3690369331356918524">Попереджає, якщо паролі розкрито через порушення безпеки даних</translation>
@@ -1341,6 +1343,7 @@
 <translation id="752220631458524187">Коли завершите, відключіть телефон</translation>
 <translation id="7523960634226602883">Пошук за допомогою камери через Google Об’єктив</translation>
 <translation id="752731652852882757">Блокувати в анонімному режимі</translation>
+<translation id="7557508262441527045">Ви вийшли</translation>
 <translation id="7577900504646297215">Керувати інтересами</translation>
 <translation id="757855969265046257">{FILES,plural, =1{Завантажено <ph name="FILES_DOWNLOADED_ONE" /> файл}one{Завантажено <ph name="FILES_DOWNLOADED_MANY" /> файл}few{Завантажено <ph name="FILES_DOWNLOADED_MANY" /> файли}many{Завантажено <ph name="FILES_DOWNLOADED_MANY" /> файлів}other{Завантажено <ph name="FILES_DOWNLOADED_MANY" /> файлу}}</translation>
 <translation id="7581273696622423628">Відповісти на запитання</translation>
@@ -1386,7 +1389,6 @@
 <translation id="777637629667389858">Якщо ви ввійшли в обліковий запис, ця функція захищає вас у всіх сервісах Google.</translation>
 <translation id="7778840695157240389">Повертайтеся пізніше, щоб переглянути останні новини</translation>
 <translation id="7780645209293383778">Тимчасово зв’язує ці дані з обліковим записом Google, у який ви ввійшли, щоб захищати вас у всіх додатках Google</translation>
-<translation id="7786562169000598736">Переглядайте всі закладки</translation>
 <translation id="7791543448312431591">Додати</translation>
 <translation id="7798392620021911922">Відновлено стільки вкладок: <ph name="TAB_COUNT" /></translation>
 <translation id="780287761701992588">Отримуйте доступ до своїх закладок, паролів і інших даних на всіх пристроях</translation>
@@ -1475,6 +1477,7 @@
 <translation id="813082847718468539">Перегляд інформації про сайт</translation>
 <translation id="8135406045838672858">Завантажені файли PDF автоматично відкриватимуться в додатку <ph name="APP_NAME" /></translation>
 <translation id="8137562778192957619">Цей пароль не потрібно запам’ятовувати. Його буде збережено в Google Менеджері паролів.</translation>
+<translation id="8152331954420209374">Перейти в Об’єктив</translation>
 <translation id="8163820386638255770">Щоб використовувати й зберігати паролі в обліковому записі Google, підтвердьте свою особу</translation>
 <translation id="8171286197772512427">Аркуш із відгуком "Поділитися разом із коротким викладом" відкрито</translation>
 <translation id="8179976553408161302">Enter</translation>
@@ -1511,6 +1514,7 @@
 <translation id="8348430946834215779">За можливості використовуйте HTTPS і отримуйте попередження перед завантаженням сайтів, які не підтримують цей протокол</translation>
 <translation id="8354977102499939946">Швидко шукайте за допомогою голосу. Щоб змінити функцію цієї кнопки, перейдіть у налаштування.</translation>
 <translation id="835847953965672673">Відновлено стільки завантажень: <ph name="NUMBER_OF_DOWNLOADS" /></translation>
+<translation id="8367705492654390392">Поставте запитання</translation>
 <translation id="8368001212524806591">Відстеження цін</translation>
 <translation id="8378850197701296741">У вас є закладки, історія і інші налаштування з облікового запису <ph name="FROM_ACCOUNT" />.</translation>
 <translation id="8387617938027387193">Підтвердьте свою особу</translation>

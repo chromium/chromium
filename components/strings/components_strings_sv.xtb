@@ -47,6 +47,7 @@
 <translation id="1082026381988252344">Scrolla och zooma på innehållet i en delad flik</translation>
 <translation id="1089439967362294234">Ändra lösenordet</translation>
 <translation id="1090629319939036170">VR-meny</translation>
+<translation id="1091779689406092804">skärmbilder</translation>
 <translation id="1094777233105318927">Information om webbläsaren, operativsystemet, enheten, installerad mjukvara och filer</translation>
 <translation id="1096545575934602868">Fältet får ha högst <ph name="MAX_ITEMS_LIMIT" /> poster. Alla poster utöver detta antal ignoreras.</translation>
 <translation id="1097803577928227769">Parker och trädgårdar</translation>
@@ -472,6 +473,7 @@ Annars blockeras detta av integritetsinställningarna. Om du tillåter detta kan
 <translation id="1840009953725035797">Hemmabiosystem</translation>
 <translation id="1842969606798536927">Betala</translation>
 <translation id="1846432862466000825">Plast (arkiv)</translation>
+<translation id="1848640291751752317">nedladdningar</translation>
 <translation id="1848982255014129637">Foto (högblankt)</translation>
 <translation id="1853392626017747777">Registreringen av virtuella kort har stängts</translation>
 <translation id="1854180393107901205">Sluta casta</translation>
@@ -571,7 +573,6 @@ Annars blockeras detta av integritetsinställningarna. Om du tillåter detta kan
 <translation id="2046951263634619614">Bokhandlare</translation>
 <translation id="2048261947532620704">Översätter sida</translation>
 <translation id="2053111141626950936">Sidor på <ph name="LANGUAGE" /> översätts inte.</translation>
-<translation id="2055461225779831292">Använda och röra kamerorna (<ph name="CAMERAS_COUNT" />)</translation>
 <translation id="2056492565825767809">låsa muspekaren</translation>
 <translation id="2056658168519009885">Webbplatser kan be Chrome om information för att anpassa vilka annonser som visas.</translation>
 <translation id="2059166748188874810">Kommun</translation>
@@ -649,7 +650,6 @@ Annars blockeras detta av integritetsinställningarna. Om du tillåter detta kan
 <translation id="2170417331417184438">Kortet har endast sparats på enheten</translation>
 <translation id="2172089022819052306">Fordonsreparation och fordonsvård</translation>
 <translation id="2175630235841878061">Det går inte att ladda ned filer som är större än 100 MB</translation>
-<translation id="2176198174348007293">Använda kamerorna (<ph name="CAMERAS_COUNT" />)</translation>
 <translation id="2176974405772725904">Spara adressen i kontot</translation>
 <translation id="2178665390943006934">Knappen Uppdatera Chrome: aktivera om du vill uppdatera Chrome via inställningarna för Chrome</translation>
 <translation id="2181821976797666341">Policyer</translation>
@@ -754,6 +754,7 @@ Annars blockeras detta av integritetsinställningarna. Om du tillåter detta kan
 <translation id="2366689192918515749">Kött och fisk</translation>
 <translation id="2367567093518048410">Nivå</translation>
 <translation id="23703388716193220">Golfutrustning</translation>
+<translation id="2370368710215137370">Uppladdning av filer</translation>
 <translation id="2374629208601905275">Enligt lagen i din region ber Chrome dig att välja en standardsökmotor. Dessa sökmotorer är populära i din region och visas i slumpmässig ordning.</translation>
 <translation id="2377241607395428273">Grafik- och animationsprogram</translation>
 <translation id="2378084239755710604">Uppmaningen till att spara kortet har stängts.</translation>
@@ -1422,6 +1423,7 @@ Annars blockeras detta av integritetsinställningarna. Om du tillåter detta kan
 <translation id="3682094733650754138">Alternativet för att fylla i adress har valts</translation>
 <translation id="3687920599421452763">Skåpbilar och minibussar</translation>
 <translation id="3693327506115126094">Välj hur du vill verifiera din identitet</translation>
+<translation id="3698353241727597930">Administratören har ställt in att <ph name="FILES" /> ska sparas i ditt företagshanterade lagringsutrymme på <ph name="CLOUD_STORAGE" />. Dessa filer kan övervakas, granskas och behållas när du raderar dem.</translation>
 <translation id="3698629142018988477">Knappen Skapa webbplats: aktivera om du snabbt vill skapa en ny webbplats i Google Sites</translation>
 <translation id="3701325639446035885">Biljettförsäljning</translation>
 <translation id="3701427423622901115">Återställning bekräftad.</translation>
@@ -1497,6 +1499,7 @@ Annars blockeras detta av integritetsinställningarna. Om du tillåter detta kan
 <translation id="3826050100957962900">Inloggning hos tredje part</translation>
 <translation id="3827112369919217609">Absolut</translation>
 <translation id="3828924085048779000">Lösenfrasen får inte vara tom.</translation>
+<translation id="3830139096297532361">Denna PDF är inte tillgänglig. Det gick inte att ladda ned textextraktionsfilerna. Försök igen senare.</translation>
 <translation id="3830470485672984938">Använd en annan nyckel</translation>
 <translation id="3831065134033923230">Kontrollera sparade lösenord</translation>
 <translation id="3831915413245941253"><ph name="ENROLLMENT_DOMAIN" /> har installerat tillägg för fler funktioner. Tilläggen har åtkomst till en del av din data.</translation>
@@ -1671,6 +1674,7 @@ Annars blockeras detta av integritetsinställningarna. Om du tillåter detta kan
 <translation id="4202554117186904723">Femte rullen</translation>
 <translation id="4203769790323223880">Kamera tillåts inte</translation>
 <translation id="4203896806696719780"><ph name="BEGIN_LINK" />kontrollera konfigureringarna för brandväggen och antivirusprogram<ph name="END_LINK" /></translation>
+<translation id="4207195957038009075">Google Drive</translation>
 <translation id="4209092469652827314">Stor</translation>
 <translation id="4210602799576081649">Verifieringskoden har löpt ut. Begär en ny kod.</translation>
 <translation id="421066178035138955">använda VR-enheter och data</translation>
@@ -2731,6 +2735,7 @@ Annars blockeras detta av integritetsinställningarna. Om du tillåter detta kan
 <translation id="6270066318535733958">Båt</translation>
 <translation id="6272088941196661550">Återuppta sökningen för att se relevant aktivitet i Chrome-historiken</translation>
 <translation id="6272383483618007430">Google Update</translation>
+<translation id="6278015583149890680">Google Drive och OneDrive</translation>
 <translation id="6280223929691119688">Det går inte att leverera till den här adressen. Välj en annan adress.</translation>
 <translation id="6284292079994426700">26 x 38 tum</translation>
 <translation id="6284449872909111707">Sms och snabbmeddelanden</translation>
@@ -3169,6 +3174,7 @@ Annars blockeras detta av integritetsinställningarna. Om du tillåter detta kan
 <translation id="7119063404975271297">Tv-drama</translation>
 <translation id="7119371694555167493">Tidsgränsen för kopiering överskreds</translation>
 <translation id="7119414471315195487">Stäng andra flikar eller program</translation>
+<translation id="7120588595737538743">nedladdningar och skärmbilder</translation>
 <translation id="7124354851782353862">Ange CVC-koden</translation>
 <translation id="7129409597930077180">Det går inte att skicka till den här adressen. Välj en annan adress.</translation>
 <translation id="7129809579943936035"><ph name="VALUE_PROP" /> <ph name="DETAILS" /></translation>
@@ -3368,6 +3374,7 @@ Mer information.
 <translation id="7483863401933039889"><ph name="CHROME_TIP" />, tryck på Tabb och sedan på Retur för att stänga Chrome-tipset.</translation>
 <translation id="7485085230273446323">Företag och industri</translation>
 <translation id="7485870689360869515">Ingen data hittades.</translation>
+<translation id="7486880426035242089">OneDrive</translation>
 <translation id="7489392576326061356">Schampo och balsam</translation>
 <translation id="7495528107193238112">Det här innehållet har blockerats. Kontakta webbplatsägaren om du vill åtgärda problemet.</translation>
 <translation id="749865518782565832">Rörmokeri</translation>
@@ -3620,7 +3627,6 @@ Mer information.
 <translation id="7947813448670013867"><ph name="SEE_CHROME_TIPS_FOCUSED_FRIENDLY_MATCH_TEXT" />: tryck på Tabb och sedan på Retur om du vill läsa mer om funktioner i Chrome</translation>
 <translation id="7949135979217012031">Antivirus och skadliga program</translation>
 <translation id="7950027195171824198">Hantera cookies i inställningarna för Chrome</translation>
-<translation id="7950440490184876634">Använda mikrofonerna (<ph name="MICS_COUNT" />)</translation>
 <translation id="7951415247503192394">(32 bitar)</translation>
 <translation id="7952192831285741665">Europeisk EDP</translation>
 <translation id="7952250633095257243">Genväg måste anges</translation>

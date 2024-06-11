@@ -1134,6 +1134,7 @@
 <translation id="5208059991603368177">चालू करें</translation>
 <translation id="5216991270656129561">यह सुविधा <ph name="TIME" /> तक बंद रहेगी</translation>
 <translation id="5222676887888702881">साइन आउट करें</translation>
+<translation id="5228195526683428788">स्प्लिट स्क्रीन डिवाइडर</translation>
 <translation id="5229343007215035173">निजता स्क्रीन चालू/बंद करें</translation>
 <translation id="5230516054153933099">विंडो</translation>
 <translation id="5234764350956374838">खारिज करें</translation>
@@ -1520,6 +1521,7 @@
 <translation id="6613765291890844037"><ph name="STORAGE_IN_USE_SIZE" /> स्टोरेज इस्तेमाल किया जा रहा है | कुल <ph name="STORAGE_TOTAL_SIZE" /></translation>
 <translation id="6614169507485700968">निजता स्क्रीन चालू है</translation>
 <translation id="6622679827379792051">अपने फ़ोन में मौजूद ऐप्लिकेशन को देखने की सुविधा सेट अप करें</translation>
+<translation id="662279009180869175">स्प्लिट स्क्रीन का साइज़ बदलने के लिए, लेफ़्ट और राइट ऐरो बटन का इस्तेमाल करें</translation>
 <translation id="6624493541160101248">मौजूदा डेस्क: <ph name="DESK_NAME" />. <ph name="DESK_COUNT" /> में से <ph name="DESK_INDEX" /> डेस्क.</translation>
 <translation id="6625718907317144388">व्यूइंग प्रोटेक्शन चालू होने की वजह से, <ph name="APP_1_TITLE" /> और <ph name="APP_2_TITLE" /> से मिलने वाली सूचनाओं के साथ-साथ अन्य सूचनाओं को छिपाया गया है</translation>
 <translation id="6627638273713273709">Search+Shift+K</translation>
@@ -1538,6 +1540,7 @@
 <translation id="6670153871843998651">डेस्क 3</translation>
 <translation id="6671495933530132209">इमेज की कॉपी बनाएं</translation>
 <translation id="6671661918848783005">आपका Chromebook अनलॉक नहीं किया जा सका</translation>
+<translation id="6676552993057022464">स्प्लिट स्क्रीन का साइज़ बदलने के लिए, अप और डाउन ऐरो बटन का इस्तेमाल करें</translation>
 <translation id="6682029141988159141">क्लिपबोर्ड से कॉन्टेंट चिपकाएं</translation>
 <translation id="6683022854667115063">हेडफ़ोन</translation>
 <translation id="6686023075541098243">अपने फ़ोन की सूचनाओं को देखने की सुविधा सेट अप करें</translation>

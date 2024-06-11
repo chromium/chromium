@@ -23,6 +23,7 @@
 <translation id="1869137256605757565">{TABS_COUNT,plural, =1{<ph name="TABS_COUNT_ONE" /> sekme}other{<ph name="TABS_COUNT_MANY" /> sekme}}</translation>
 <translation id="2050597508048557928">{TABS_COUNT,plural, =1{Seçili <ph name="TABS_COUNT_ONE" /> sekmeye yer işareti koy}other{Seçili <ph name="TABS_COUNT_MANY" /> sekmeye yer işareti koy}}</translation>
 <translation id="2118649612461486615">Mağaza bilgileri</translation>
+<translation id="2123073051266141035">{INCOGNITO_TABS_COUNT,plural, =1{Kapattığınız sekmeleri ve grupları, "Son sekmeler" bölümünden ve "Sekme grupları" bölümünden yeniden açabilirsiniz. Gizli sekmeniz kullanılamaz.}other{Kapattığınız sekmeleri ve grupları, "Son sekmeler" bölümünden ve "Sekme grupları" bölümünden yeniden açabilirsiniz. # gizli sekmeniz kullanılamaz.}}</translation>
 <translation id="2162620598375156287">Şimdi <ph name="SOURCE_WEBSITE" /> sitesinde <ph name="CURRENT_PRICE" /></translation>
 <translation id="22623456902492423">{TABS_COUNT,plural, =1{Sekme grubunu iptal et}other{Sekme grubunu iptal et}}</translation>
 <translation id="2271452184061378400">Sekme gruplarınız buraya kaydedilir</translation>

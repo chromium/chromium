@@ -28,6 +28,7 @@
 <translation id="1407223320754252908">Chromeda istalganda xizmatga tayyor ichki Google Tarjimon mavjud</translation>
 <translation id="1425903838053942728">{COUNT,plural, =0{Chrome yangilandi. Qayta ochilganda oxirgi versiyadan foydalanish mumkin. Keyin joriy varaqlar tiklanadi.}=1{Chrome yangilandi. Qayta ochilganda oxirgi versiyadan foydalanish mumkin. Keyin joriy varaqlar tiklanadi. Inkognito oynalar qayta ochilmaydi.}other{Chrome yangilandi. Qayta ochilganda oxirgi versiyadan foydalanish mumkin. Keyin joriy varaqlar tiklanadi. # ta inkognito oyna qayta ochilmaydi.}}</translation>
 <translation id="1434626383986940139">Chrome Canary ilovalari</translation>
+<translation id="1438479496118074429">\"<ph name="EXTENSION_NAME" />\" kengaytmasi Chrome hisobiga kirishingizni soʻramoqda</translation>
 <translation id="146866447420868597">Chrome hisobiga kirasizmi?</translation>
 <translation id="1492280395845991349">Chrome yangilanishini yakunlash uchun qayta oching</translation>
 <translation id="1497802159252041924">O'rnatishdagi xatolik: <ph name="INSTALL_ERROR" /></translation>
@@ -464,6 +465,7 @@ Sayt va ilovalarga berilgan ruxsatlar bu hisobga tatbiq etilishi mumkin. Google 
 <translation id="7802622118583152311">Chrome sahifalarni kezishni yaxshilaydigan eng yangi texnologiyalardan iborat</translation>
 <translation id="7808348361785373670">Chrome‘dan olib tashlash...</translation>
 <translation id="7825851276765848807">O‘rnatish vaqtida kutilmagan xatolik yuz berdi. Google Chrome‘ni qayta yuklab oling.</translation>
+<translation id="7828063580843052643">Bu kengaytmadan <ph name="USER_EMAIL_ADDRESS" /> nomidan foydalanish uchun Chrome hisobingizga kiring.\nBunda Google hisobidagi parollar kabi maʼlumotlardan foydalanish va ularni saqlash imkoniga ega boʻlasiz.</translation>
 <translation id="7836610565365456468">Brauzerni rassomlar, tabiat va boshqa turkumdagi mavzular bilan bezating</translation>
 <translation id="7845233973568007926">Oʻrnatganingiz uchun tashakkur! <ph name="BUNDLE_NAME" />ni ishlatishdan oldin kompyuterni qayta ishga tushirishingiz lozim.</translation>
 <translation id="7852254990718225089">AI yordamida Chrome endi yanada tez, xavfsiz va qulay ishlaydi</translation>
@@ -483,6 +485,7 @@ Sayt va ilovalarga berilgan ruxsatlar bu hisobga tatbiq etilishi mumkin. Google 
 <translation id="8009904340233602924">Chrome brauzeridan hisobsiz foydalanish</translation>
 <translation id="8013993649590906847">Agar rasmga foydali tavsif berilmagan boʻlsa, Google Chrome uni sizga tavsiflaydi. Tavsif yaratish uchun rasmlar Googlega yuboriladi.</translation>
 <translation id="8019103195866286235">Bu kengaytma dasturchisi uning nashrini bekor qildi va u xavfli boʻlishi mumkin. Ochilgan saytlarda shaxsiy axborot kabi maʼlumotlarni koʻrishi va oʻzgartirishini tugatish uchun uni Chromedan olib tashlang.</translation>
+<translation id="8040768861829554732">Kengaytma Chrome hisobiga kirishingizni soʻramoqda</translation>
 <translation id="80471789339884597">Oʻrnatganingiz uchun tashakkur! <ph name="BUNDLE_NAME" />ni ishlatishdan oldin barcha brauzerlarni qayta ishga tushirishingiz kerak.</translation>
 <translation id="8064015041956107954">Yuqori oʻng burchakdagi Chrome menyusidan bukmark, oʻqish rejimi va boshqalarni ochishingiz mumkin</translation>
 <translation id="8064015586118426197">ChromeOS Flex</translation>

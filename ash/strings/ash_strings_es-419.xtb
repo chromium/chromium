@@ -309,6 +309,7 @@ Estas son algunas de las cosas que puedes probar para comenzar.</translation>
 <translation id="2208323208084708176">Modo de escritorio unificado</translation>
 <translation id="2220572644011485463">PIN o contraseña</translation>
 <translation id="2222841058024245321">Escritorio 7</translation>
+<translation id="2223384056430485343">En una pantalla dividida</translation>
 <translation id="2224075387478458881">No se permite la grabación de pantalla cuando hay contenido protegido a la vista.</translation>
 <translation id="2227179592712503583">Quitar sugerencia</translation>
 <translation id="2248634276911611268">Abrir el vínculo en una pestaña nueva y cambiar a esa pestaña</translation>
@@ -1133,6 +1134,7 @@ También puedes usar la combinación de teclas. Primero, destaca el texto y, lue
 <translation id="5208059991603368177">Sí</translation>
 <translation id="5216991270656129561">Desactivada hasta las <ph name="TIME" /></translation>
 <translation id="5222676887888702881">Salir</translation>
+<translation id="5228195526683428788">Divisor de pantalla dividida</translation>
 <translation id="5229343007215035173">Activar o desactivar la pantalla de privacidad</translation>
 <translation id="5230516054153933099">Ventana</translation>
 <translation id="5234764350956374838">Descartar</translation>
@@ -1519,6 +1521,7 @@ Nueva instalación</translation>
 <translation id="6613765291890844037">Almacenamiento en uso: <ph name="STORAGE_IN_USE_SIZE" /> | Total: <ph name="STORAGE_TOTAL_SIZE" /></translation>
 <translation id="6614169507485700968">La pantalla de privacidad está activada</translation>
 <translation id="6622679827379792051">Configurar la visualización de las apps de tu teléfono</translation>
+<translation id="662279009180869175">Usa las flechas hacia la izquierda y la derecha para cambiar el tamaño de la pantalla dividida</translation>
 <translation id="6624493541160101248">Escritorio actual: <ph name="DESK_NAME" />; escritorio <ph name="DESK_INDEX" /> de <ph name="DESK_COUNT" /></translation>
 <translation id="6625718907317144388">Se ocultan <ph name="APP_1_TITLE" />, <ph name="APP_2_TITLE" /> y otras notificaciones porque está activada la protección de visualización</translation>
 <translation id="6627638273713273709">Búsqueda+mayúscula+K</translation>
@@ -1537,6 +1540,7 @@ Nueva instalación</translation>
 <translation id="6670153871843998651">Escritorio 3</translation>
 <translation id="6671495933530132209">Copiar imagen</translation>
 <translation id="6671661918848783005">No se puede desbloquear la Chromebook</translation>
+<translation id="6676552993057022464">Usa las flechas hacia arriba y hacia abajo para cambiar el tamaño de la pantalla dividida</translation>
 <translation id="6682029141988159141">Pegar el contenido del portapapeles</translation>
 <translation id="6683022854667115063">Auriculares</translation>
 <translation id="6686023075541098243">Configurar la visualización de las notificaciones de tu teléfono</translation>

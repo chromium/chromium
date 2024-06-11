@@ -274,6 +274,7 @@
 <translation id="2450083983707403292">আপনি কি আবার <ph name="FILE_NAME" /> ডাউনলোড করা শুরু করতে চান?</translation>
 <translation id="2453860139492968684">সমাপ্ত করুন</translation>
 <translation id="2461822463642141190">বর্তমান</translation>
+<translation id="2472163211318554013">Chrome থেকে সবচেয়ে বেশি সুবিধা পেতে সাইন-ইন করুন</translation>
 <translation id="247737702124049222">ছবির বিবরণ চালু করা আছে</translation>
 <translation id="2479148705183875116">সেটিংসে যান</translation>
 <translation id="2482878487686419369">বিজ্ঞপ্তিগুলি</translation>
@@ -424,7 +425,6 @@
 <translation id="3098745985164956033">আপনার জন্য ছবির বিবরণ আরও উন্নত করতে কিছু ছবি Google-কে পাঠানো হয়</translation>
 <translation id="3114507951000454849">আজকের খবর পড়ুন <ph name="NEWS_ICON" /></translation>
 <translation id="3123734510202723619">ঘোষণা</translation>
-<translation id="3146775326699342508">আপনার অন্যান্য ডিভাইস থেকে বুকমার্ক ও আরও অনেক কিছু পেতে সাইন-ইন করুন</translation>
 <translation id="314939179385989105">Chrome-এর হোমপেজ</translation>
 <translation id="3158667104057012316">ম্যানুয়াল অর্ডার অনুযায়ী সাজানো হচ্ছে</translation>
 <translation id="3166827708714933426">ট্যাব এবং উইন্ডোর শর্টকাটগুলি</translation>
@@ -1341,6 +1341,7 @@
 <translation id="752220631458524187">আপনার হয়ে গেলে ডিসকানেক্ট করে দিন</translation>
 <translation id="7523960634226602883">Google Lens ব্যবহার করে আপনার ক্যামেরার সাহায্যে সার্চ করুন</translation>
 <translation id="752731652852882757">'ছদ্মবেশী মোড' ব্যবহার করার সময় ব্লক করুন</translation>
+<translation id="7557508262441527045">সাইন-আউট করুন</translation>
 <translation id="7577900504646297215">আপনার পছন্দ ম্যানেজ করুন</translation>
 <translation id="757855969265046257">{FILES,plural, =1{<ph name="FILES_DOWNLOADED_ONE" />টি ফাইল ডাউনলোড হয়েছে}one{<ph name="FILES_DOWNLOADED_MANY" />টি ফাইল ডাউনলোড হয়েছে}other{<ph name="FILES_DOWNLOADED_MANY" />টি ফাইল ডাউনলোড হয়েছে}}</translation>
 <translation id="7581273696622423628">সমীক্ষায় যোগ দিন</translation>
@@ -1386,7 +1387,6 @@
 <translation id="777637629667389858">আপনি যখন সাইন-ইন করে থাকেন, তখন Google পরিষেবা জুড়ে আপনাকে সুরক্ষিত রাখে।</translation>
 <translation id="7778840695157240389">নতুন খবরের জন্য পরে আবার চেক করুন</translation>
 <translation id="7780645209293383778">সব Google অ্যাপ জুড়ে আপনাকে সুরক্ষিত রাখতে, যখন আপনি সাইন-ইন করেন, তখন আপনার Google অ্যাকাউন্টে অস্থায়ীভাবে এই ডেটা লিঙ্ক করায়</translation>
-<translation id="7786562169000598736">আপনার সব বুকমার্ক পান</translation>
 <translation id="7791543448312431591">জুড়ুন</translation>
 <translation id="7798392620021911922"><ph name="TAB_COUNT" />টি ট্যাব ফিরিয়ে আনা হয়েছে</translation>
 <translation id="780287761701992588">আপনার সবকটি ডিভাইসে, বুকমার্ক, পাসওয়ার্ড এবং আরও অনেক কিছু পান</translation>

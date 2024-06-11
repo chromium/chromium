@@ -274,6 +274,7 @@ Sadece parolanıza sahip olan kişiler şifrelenmiş verilerinizi okuyabilir. Pa
 <translation id="2450083983707403292"><ph name="FILE_NAME" /> dosyasını tekrar indirmeye başlamak istiyor musunuz?</translation>
 <translation id="2453860139492968684">Tamamlandı</translation>
 <translation id="2461822463642141190">Şu an</translation>
+<translation id="2472163211318554013">Chrome'dan en iyi şekilde yararlanmak için oturum açın</translation>
 <translation id="247737702124049222">Resim açıklamaları açık</translation>
 <translation id="2479148705183875116">Ayarlar'a git</translation>
 <translation id="2482878487686419369">Bildirimler</translation>
@@ -285,6 +286,7 @@ Sadece parolanıza sahip olan kişiler şifrelenmiş verilerinizi okuyabilir. Pa
 <translation id="2515921719039583189">Chrome verileriniz bu cihazdan silinsin mi?</translation>
 <translation id="2517113738956581680">Tam boyutlu sayfa</translation>
 <translation id="2523184218357549926">Ziyaret ettiğiniz sayfaların URL'lerini Google'a gönderir</translation>
+<translation id="2524132927880411790">Google uygulamasındaki sesli arama özelliğine gidin</translation>
 <translation id="2527209463677295330">Sayfadaki metnin daha fazlasını dahil ederek daha iyi sonuçlara ulaşabilirsiniz</translation>
 <translation id="2527497042232966453">Gizli sekmelere geçildi</translation>
 <translation id="2527779675047087889">Pano içeriklerini gizle</translation>
@@ -424,7 +426,6 @@ Sadece parolanıza sahip olan kişiler şifrelenmiş verilerinizi okuyabilir. Pa
 <translation id="3098745985164956033">Bazı resimler size daha iyi açıklamalar sunmak için Google'a gönderilir</translation>
 <translation id="3114507951000454849">Bugünkü haberleri <ph name="NEWS_ICON" /> okuyun</translation>
 <translation id="3123734510202723619">Duyurular</translation>
-<translation id="3146775326699342508">Diğer cihazlarınızdan yer işaretlerinizi ve daha fazlasını almak için oturum açın</translation>
 <translation id="314939179385989105">Chrome’un ana sayfası</translation>
 <translation id="3158667104057012316">Manuel şekilde sıralanıyor</translation>
 <translation id="3166827708714933426">Sekme ve pencere kısayolları</translation>
@@ -519,6 +520,7 @@ Sadece parolanıza sahip olan kişiler şifrelenmiş verilerinizi okuyabilir. Pa
 <translation id="363596933471559332">Depolanmış kimlik bilgileriyle web sitelerinde otomatik olarak oturum açın. Bu özellik kapatıldığında, bir web sitesinde oturum açmadan önce her defasında doğrulama yapmanız istenir.</translation>
 <translation id="3636940436873918441">Tercih edilen diller</translation>
 <translation id="3637744895182738742">Parolanızı unuttuysanız veya bu ayarı değiştirmek istiyorsanız <ph name="BEGIN_LINK" />hesabınızdaki Chrome verilerini silin<ph name="END_LINK" />.</translation>
+<translation id="3674208116086565128">Google uygulamasının ana sayfasına gidin</translation>
 <translation id="368329460027487650">Oturum kapatıldı. Oturum açma seçeneklerini açar.</translation>
 <translation id="3687645719033307815">Bu sayfanın önizlemesini görüntülüyorsunuz</translation>
 <translation id="3690369331356918524">Şifreleriniz bir veri ihlalinde ifşa olursa uyarır</translation>
@@ -1341,6 +1343,7 @@ Bu ayarı değiştirmek için <ph name="BEGIN_LINK" />hesabınızdaki Chrome ver
 <translation id="752220631458524187">İşiniz bittiğinde bağlantıyı kesin</translation>
 <translation id="7523960634226602883">Google Lens'i kullanarak kameranızla arama yapın</translation>
 <translation id="752731652852882757">Gizli mod kullanılırken engelle</translation>
+<translation id="7557508262441527045">Oturum kapatıldı</translation>
 <translation id="7577900504646297215">İlgi alanlarını yönet</translation>
 <translation id="757855969265046257">{FILES,plural, =1{<ph name="FILES_DOWNLOADED_ONE" /> dosya indirildi}other{<ph name="FILES_DOWNLOADED_MANY" /> dosya indirildi}}</translation>
 <translation id="7581273696622423628">Ankete katıl</translation>
@@ -1386,7 +1389,6 @@ Bu ayarı değiştirmek için <ph name="BEGIN_LINK" />hesabınızdaki Chrome ver
 <translation id="777637629667389858">Oturum açtığınızda Google hizmetlerinde korunmanızı sağlar.</translation>
 <translation id="7778840695157240389">Yeni haberler için sonra yine gelin</translation>
 <translation id="7780645209293383778">Sizi Google uygulamalarında korumak için oturumunuz açıkken bu verileri geçici olarak Google Hesabınıza bağlar</translation>
-<translation id="7786562169000598736">Tüm yer işaretlerinize ulaşın</translation>
 <translation id="7791543448312431591">Ekle</translation>
 <translation id="7798392620021911922"><ph name="TAB_COUNT" /> sekme geri yüklendi</translation>
 <translation id="780287761701992588">Yer işaretleri, şifreler ve diğer öğelerinizi tüm cihazlarınızda alın</translation>
@@ -1475,6 +1477,7 @@ Bu ayarı değiştirmek için <ph name="BEGIN_LINK" />hesabınızdaki Chrome ver
 <translation id="813082847718468539">Site bilgilerini görüntüle</translation>
 <translation id="8135406045838672858">İndirilen PDF'ler <ph name="APP_NAME" /> ile otomatik olarak açılır</translation>
 <translation id="8137562778192957619">Bu şifreyi hatırlamanız gerekmez. Şifre Google Şifre Yöneticisi'ne kaydedilir.</translation>
+<translation id="8152331954420209374">Lens'e Git</translation>
 <translation id="8163820386638255770">Şifreleri kullanmak ve Google Hesabınıza kaydetmek için kimliğinizi doğrulayın</translation>
 <translation id="8171286197772512427">Özet ile paylaş geri bildirim sayfası açıldı</translation>
 <translation id="8179976553408161302">Enter</translation>
@@ -1511,6 +1514,7 @@ Bu ayarı değiştirmek için <ph name="BEGIN_LINK" />hesabınızdaki Chrome ver
 <translation id="8348430946834215779">Mümkün olduğunda HTTPS kullanın ve HTTPS'yi desteklemeyen siteleri yüklemeden önce uyarı alın</translation>
 <translation id="8354977102499939946">Sesinizle hızlı bir şekilde arama yapın. Bu kısayolu düzenlemek için Ayarlar'a gidin.</translation>
 <translation id="835847953965672673"><ph name="NUMBER_OF_DOWNLOADS" /> indirme geri yüklendi</translation>
+<translation id="8367705492654390392">Soru sorun</translation>
 <translation id="8368001212524806591">Fiyatı takip et</translation>
 <translation id="8378850197701296741"><ph name="FROM_ACCOUNT" /> hesabında yer işaretleriniz, geçmişiniz ve diğer ayarlarınız mevcut.</translation>
 <translation id="8387617938027387193">Siz olduğunuzu doğrulayın</translation>

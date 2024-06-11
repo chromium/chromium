@@ -573,7 +573,6 @@ Jeśli się nie zgodzisz, zostaną one zablokowane ze względu na Twoje ustawien
 <translation id="2046951263634619614">Sprzedaż detaliczna książek</translation>
 <translation id="2048261947532620704">Tłumaczę stronę</translation>
 <translation id="2053111141626950936">Strony w tym języku (<ph name="LANGUAGE" />) nie będą tłumaczone.</translation>
-<translation id="2055461225779831292">Używaj kamer (<ph name="CAMERAS_COUNT" />) i poruszaj nimi</translation>
 <translation id="2056492565825767809">Zablokuj wskaźnik myszy</translation>
 <translation id="2056658168519009885">Witryny mogą prosić Chrome o informacje umożliwiające personalizację wyświetlanych Ci reklam.</translation>
 <translation id="2059166748188874810">Gmina</translation>
@@ -651,7 +650,6 @@ Jeśli się nie zgodzisz, zostaną one zablokowane ze względu na Twoje ustawien
 <translation id="2170417331417184438">Karta została zapisana tylko na urządzeniu</translation>
 <translation id="2172089022819052306">Naprawa i serwisowanie pojazdów</translation>
 <translation id="2175630235841878061">Nie można pobrać plików przekraczających 100 MB</translation>
-<translation id="2176198174348007293">Użyj kamer (<ph name="CAMERAS_COUNT" />)</translation>
 <translation id="2176974405772725904">Zapisz adres na koncie</translation>
 <translation id="2178665390943006934">Przycisk Zaktualizuj Chrome; aktywuj, aby zaktualizować przeglądarkę Chrome z poziomu jej ustawień</translation>
 <translation id="2181821976797666341">Zasady</translation>
@@ -3630,7 +3628,6 @@ Dodatkowe informacje:
 <translation id="7947813448670013867"><ph name="SEE_CHROME_TIPS_FOCUSED_FRIENDLY_MATCH_TEXT" />; naciśnij Tab, a potem Enter, aby poznać funkcje Chrome</translation>
 <translation id="7949135979217012031">Ochrona przed wirusami i złośliwym oprogramowaniem</translation>
 <translation id="7950027195171824198">Zarządzaj opcjami plików cookie w ustawieniach Chrome</translation>
-<translation id="7950440490184876634">Użyj mikrofonów (<ph name="MICS_COUNT" />)</translation>
 <translation id="7951415247503192394">(32-bitowa)</translation>
 <translation id="7952192831285741665">European EDP</translation>
 <translation id="7952250633095257243">Skrót nie może być pusty</translation>

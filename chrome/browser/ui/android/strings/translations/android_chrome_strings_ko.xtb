@@ -274,6 +274,7 @@
 <translation id="2450083983707403292"><ph name="FILE_NAME" />의 다운로드를 다시 시작하시겠습니까?</translation>
 <translation id="2453860139492968684">완료</translation>
 <translation id="2461822463642141190">현재</translation>
+<translation id="2472163211318554013">로그인하여 Chrome의 모든 기능을 이용하세요</translation>
 <translation id="247737702124049222">이미지 설명 사용 설정됨</translation>
 <translation id="2479148705183875116">설정으로 이동</translation>
 <translation id="2482878487686419369">알림</translation>
@@ -425,7 +426,6 @@
 <translation id="3098745985164956033">설명을 개선하기 위해 일부 이미지가 Google에 전송됨</translation>
 <translation id="3114507951000454849">오늘의 뉴스 읽기 <ph name="NEWS_ICON" /></translation>
 <translation id="3123734510202723619">공지사항</translation>
-<translation id="3146775326699342508">다른 기기의 북마크 등을 사용하려면 로그인하세요.</translation>
 <translation id="314939179385989105">Chrome 홈페이지</translation>
 <translation id="3158667104057012316">직접 정렬</translation>
 <translation id="3166827708714933426">탭 및 창 단축키</translation>
@@ -1343,6 +1343,7 @@
 <translation id="752220631458524187">완료 후 연결 해제하세요.</translation>
 <translation id="7523960634226602883">Google 렌즈를 사용하여 카메라로 검색</translation>
 <translation id="752731652852882757">시크릿 모드를 사용하는 동안에는 차단</translation>
+<translation id="7557508262441527045">로그아웃됨</translation>
 <translation id="7577900504646297215">관심분야 관리</translation>
 <translation id="757855969265046257">{FILES,plural, =1{<ph name="FILES_DOWNLOADED_ONE" />개 파일 다운로드됨}other{<ph name="FILES_DOWNLOADED_MANY" />개 파일 다운로드됨}}</translation>
 <translation id="7581273696622423628">설문조사 참여</translation>
@@ -1388,7 +1389,6 @@
 <translation id="777637629667389858">로그인하면 Google 서비스 전반에서 사용자를 보호합니다.</translation>
 <translation id="7778840695157240389">나중에 다시 새 스토리를 확인하세요.</translation>
 <translation id="7780645209293383778">사용자가 로그인하면 이 데이터를 사용자의 Google 계정에 일시적으로 연결하여 Google 앱 전반에서 사용자를 보호합니다.</translation>
-<translation id="7786562169000598736">모든 북마크 가져오기</translation>
 <translation id="7791543448312431591">추가</translation>
 <translation id="7798392620021911922">탭 <ph name="TAB_COUNT" />개를 복원했습니다.</translation>
 <translation id="780287761701992588">모든 기기에 북마크, 비밀번호 등 가져오기</translation>

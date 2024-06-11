@@ -309,6 +309,7 @@ Pro začátek můžete vyzkoušet třeba tohle.</translation>
 <translation id="2208323208084708176">Jednotný režim klasické plochy</translation>
 <translation id="2220572644011485463">PIN nebo heslo</translation>
 <translation id="2222841058024245321">Plocha 7</translation>
+<translation id="2223384056430485343">Je zobrazena rozdělená obrazovka</translation>
 <translation id="2224075387478458881">Když je viditelný chráněný obsah, nahrávání obrazovky je zakázáno</translation>
 <translation id="2227179592712503583">Odebrat návrh</translation>
 <translation id="2248634276911611268">Otevřít odkaz na nové kartě a přepnout na tuto novou kartu</translation>
@@ -1132,6 +1133,7 @@ Můžete také použít klávesovou zkratku. Nejdříve zvýrazněte text a pak
 <translation id="5208059991603368177">Zap</translation>
 <translation id="5216991270656129561">Vypnuto do <ph name="TIME" /></translation>
 <translation id="5222676887888702881">Odhlásit se</translation>
+<translation id="5228195526683428788">Čára rozdělující obrazovku</translation>
 <translation id="5229343007215035173">Zapnout/vypnout obrazovku ochrany soukromí</translation>
 <translation id="5230516054153933099">Okno</translation>
 <translation id="5234764350956374838">Zavřít</translation>
@@ -1518,6 +1520,7 @@ Nová instalace</translation>
 <translation id="6613765291890844037">Využité úložiště: <ph name="STORAGE_IN_USE_SIZE" /> | celkem <ph name="STORAGE_TOTAL_SIZE" /></translation>
 <translation id="6614169507485700968">Obrazovka ochrany soukromí je zapnutá</translation>
 <translation id="6622679827379792051">Nastavit zobrazování aplikací z telefonu</translation>
+<translation id="662279009180869175">Velikost rozdělené obrazovky změníte šipkami vlevo a vpravo</translation>
 <translation id="6624493541160101248">Aktuální plocha: <ph name="DESK_NAME" />. Plocha <ph name="DESK_INDEX" /> z <ph name="DESK_COUNT" />.</translation>
 <translation id="6625718907317144388">Oznámení aplikací <ph name="APP_1_TITLE" />, <ph name="APP_2_TITLE" /> a další oznámení jsou skryta, protože je zapnutá ochrana před špehováním</translation>
 <translation id="6627638273713273709">Vyhledávací tlačítko + Shift + K</translation>
@@ -1536,6 +1539,7 @@ Nová instalace</translation>
 <translation id="6670153871843998651">Plocha 3</translation>
 <translation id="6671495933530132209">Zkopírovat obrázek</translation>
 <translation id="6671661918848783005">Chromebook se nepodařilo odemknout.</translation>
+<translation id="6676552993057022464">Velikost rozdělené obrazovky změníte šipkami nahoru a dolů</translation>
 <translation id="6682029141988159141">Vložit obsah ze schránky</translation>
 <translation id="6683022854667115063">Sluchátka</translation>
 <translation id="6686023075541098243">Nastavit zobrazování oznámení z telefonu</translation>

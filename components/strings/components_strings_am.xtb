@@ -573,7 +573,6 @@
 <translation id="2046951263634619614">የመጽሐፍ ቸርቻሪዎች</translation>
 <translation id="2048261947532620704">ገጽን በመተርጎም ላይ</translation>
 <translation id="2053111141626950936">በ<ph name="LANGUAGE" /> ያሉ ገጾች አይተረጎሙም።</translation>
-<translation id="2055461225779831292">ካሜራዎችዎን ይጠቀሙ እና ያንቀሳቅሱ (<ph name="CAMERAS_COUNT" />)</translation>
 <translation id="2056492565825767809">የመዳፊት ጠቋሚዎን ይቆልፉ</translation>
 <translation id="2056658168519009885">ጣቢያዎች እርስዎ የሚያዩዋቸው ማስታወቂያዎች ግላዊነት እንዲላበሱ ለማገዝ Chromeን መረጃ ሊጠይቁ ይችላሉ።</translation>
 <translation id="2059166748188874810">ማዘጋጃ ቤት</translation>
@@ -651,7 +650,6 @@
 <translation id="2170417331417184438">ካርድ በመሣሪያ ብቻ ተቀምጧል</translation>
 <translation id="2172089022819052306">የተሽከርካሪ ጥገና እና እድሳት</translation>
 <translation id="2175630235841878061">ከ100 ሜባ በላይ የሆኑ ፋይሎች ለማውረድ አይገኙም</translation>
-<translation id="2176198174348007293">ካሜራዎችዎን መጠቀም (<ph name="CAMERAS_COUNT" />)</translation>
 <translation id="2176974405772725904">አድራሻ በመለያ ውስጥ ያስቀምጡ</translation>
 <translation id="2178665390943006934">Chrome አዝራርን ያዘምኑ፣ Chromeን ለማዘመን ከእርስዎ Chrome ቅንብሮች ሆነው ያግብሩ</translation>
 <translation id="2181821976797666341">መምሪያዎች</translation>
@@ -3628,7 +3626,6 @@
 <translation id="7947813448670013867"><ph name="SEE_CHROME_TIPS_FOCUSED_FRIENDLY_MATCH_TEXT" />፣ ስለChrome ባህሪዎች ለማወቅ ትርን ከዚያ አስገባን ይጫኑ</translation>
 <translation id="7949135979217012031">ጸረ-ቫይረስ እና ተንኮል አዘል ዌር</translation>
 <translation id="7950027195171824198">በChrome ቅንብሮች ውስጥ የኩኪ ምርጫዎችዎን ያቀናብሩ</translation>
-<translation id="7950440490184876634">ማይክሮፎኖችዎን መጠቀም (<ph name="MICS_COUNT" />)</translation>
 <translation id="7951415247503192394">(32-ቢት)</translation>
 <translation id="7952192831285741665">የአውሮፓ EDP</translation>
 <translation id="7952250633095257243">አቋራጭ ባዶ መሆን አይችልም</translation>

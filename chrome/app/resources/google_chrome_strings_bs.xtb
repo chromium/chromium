@@ -126,6 +126,7 @@ uparivanjem. <ph name="IDS_BLUETOOTH_DEVICE_CHOOSER_AUTHORIZE_BLUETOOTH_LINK" />
 <translation id="2765403129283291972">Chromeu treba odobrenje za pristup vašem mikrofonu za ovu web lokaciju</translation>
 <translation id="2770231113462710648">Promijenite zadani preglednik u:</translation>
 <translation id="2775140325783767197">Chrome ne može provjeravati vaše lozinke. Predlažemo da provjerite internetsku vezu.</translation>
+<translation id="2797864378188255696">Prilikom prijavljivanja na Googleove usluge kao što su Gmail ili YouTube koristeći <ph name="USER_EMAIL" /> možete se automatski prijaviti u Chrome putem istog računa</translation>
 <translation id="2799223571221894425">Ponovo pokreni</translation>
 <translation id="2825024317344269723">Opasna web lokacija. Chrome je uklonio obavještenja.</translation>
 <translation id="2846251086934905009">Greška prilikom instaliranja: program za instaliranje nije završio. Instalacija je prekinuta.</translation>
@@ -300,6 +301,7 @@ Moguće je da neke funkcije neće biti dostupne. Odredite drugi direktorij profi
 <translation id="5334309298019785904">ChromeOS nije sinhronizirao vaše podatke jer sinhronizacija nije dostupna za vašu domenu.</translation>
 <translation id="5334487786912937552">Chromeu je potrebno odobrenje za pristup pohrani radi preuzimanja fajlova</translation>
 <translation id="5337648990166757586">Nije obavezno: Pomozite nam da poboljšamo funkcije i performanse ChromeOS-a automatskim slanjem podataka o dijagnostici i korištenju Googleu.</translation>
+<translation id="5345497718959596593">Dok ste prijavljeni, lozinke i drugo s Google računa možete koristiti u Chromeu</translation>
 <translation id="5357889879764279201">Potražite pomoć za ChromeOS Flex</translation>
 <translation id="5368118228313795342">Dodatni kôd: <ph name="EXTRA_CODE" />.</translation>
 <translation id="5386244825306882791">Također kontrolira koja stranica će se prikazati kada pokrenete Chrome ili budete pretraživali iz višenamjenskog okvira.</translation>

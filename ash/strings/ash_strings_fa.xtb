@@ -251,6 +251,7 @@
 <translation id="1915307458270490472">قطع تماس</translation>
 <translation id="1918022425394817322">دوربین به گوشه بالا سمت راست چسبید</translation>
 <translation id="1923539912171292317">کلیک‌های خودکار</translation>
+<translation id="1925320505152357008">کمتر از ۱ دقیقه</translation>
 <translation id="1928739107511554905">‏برای دریافت به‌روزرسانی، از صفحه لمسی برای بازراه‌اندازی Chromebook خود با صفحه‌کلید متصل استفاده کنید.</translation>
 <translation id="1948405482892809935">جابه‌جایی به کاربر بعدی</translation>
 <translation id="1951012854035635156">دستیار</translation>
@@ -606,6 +607,7 @@
 <translation id="334927402682780278">انتخاب متن از مکان‌نما تا انتهای خط</translation>
 <translation id="3349345708646875009">باز کردن مدیر وظایف</translation>
 <translation id="3364721542077212959">ابزارهای قلم</translation>
+<translation id="3365281428003534650">زمان‌سنج، تکلیف، و موسیقی تنظیم کنید</translation>
 <translation id="3365977133351922112">تلفنتان خیلی دور است. تلفنتان را نزدیک‌تر بیاورید.</translation>
 <translation id="3368922792935385530">متصل</translation>
 <translation id="3369111525500416043">سررسید به‌زودی فرا می‌رسد</translation>
@@ -908,6 +910,7 @@
 <translation id="4406883609789734330">زیرنویس زنده</translation>
 <translation id="4412698727486357573">مرکز راهنمایی</translation>
 <translation id="4412944820643904175"><ph name="FEATURE_NAME" /> خاموش است.</translation>
+<translation id="4417647906073317561">تنظیمات «تمرکز». زمان‌سنج، تکلیف، و موسیقی تنظیم کنید تا وارد جریان شوید.</translation>
 <translation id="4424159417645388645">میزکار ۵</translation>
 <translation id="4430019312045809116">میزان صدا</translation>
 <translation id="4441283832827406317">برنامه‌ها براساس نام مرتب شده‌اند</translation>
@@ -1859,6 +1862,7 @@
         <ph name="MANAGED" />
         <ph name="IME" />
         <ph name="LOCALE" /></translation>
+<translation id="7899977217122813285">وقتی «تمرکز» روشن باشد، اعلان‌ها تا <ph name="TIME" /> بی‌صدا می‌شود</translation>
 <translation id="7901190436359881020">جابه‌جا کردن پنجره‌ها</translation>
 <translation id="7901405293566323524">مرکز تلفن</translation>
 <translation id="7902625623987030061">حسگر اثر انگشت را لمس کنید</translation>

@@ -574,7 +574,6 @@
 <translation id="2046951263634619614">စာအုပ်လက်လီအရောင်းဆိုင်</translation>
 <translation id="2048261947532620704">စာမျက်နှာကို ဘာသာပြန်နေသည်</translation>
 <translation id="2053111141626950936"><ph name="LANGUAGE" /> ဘာသာဖြင့် စာမျက်နှာများကို ဘာသာပြန်မည် မဟုတ်ပါ။</translation>
-<translation id="2055461225779831292">သင့်ကင်မရာများကို အသုံးပြုရန်နှင့် ရွှေ့ရန် (<ph name="CAMERAS_COUNT" />)</translation>
 <translation id="2056492565825767809">မောက်စ်ညွှန်မြားကို လော့ခ်ချခြင်း</translation>
 <translation id="2056658168519009885">သင်မြင်ရသော ကြော်ငြာများကို ပုဂ္ဂိုလ်ရေးသီးသန့်ပြုလုပ်ရန်အတွက် ဝဘ်ဆိုက်များသည် Chrome ထံမှ အချက်အလက်များ တောင်းဆိုနိုင်သည်။</translation>
 <translation id="2059166748188874810">မြူနီစီပယ်</translation>
@@ -652,7 +651,6 @@
 <translation id="2170417331417184438">ကတ်ကို ဤစက်တွင်သာ သိမ်းထားသည်</translation>
 <translation id="2172089022819052306">ယာဉ်ပြင်ဆင်ထိန်းသိမ်းရေး</translation>
 <translation id="2175630235841878061">100MB ကျော်သော ဖိုင်များကို ဒေါင်းလုဒ်လုပ်၍မရပါ</translation>
-<translation id="2176198174348007293">သင့်ကင်မရာများ သုံးရန် (<ph name="CAMERAS_COUNT" />)</translation>
 <translation id="2176974405772725904">အကောင့်တွင် လိပ်စာသိမ်းပါ</translation>
 <translation id="2178665390943006934">သင့် Chrome ဆက်တင်များမှတစ်ဆင့် Chrome ကို အပ်ဒိတ်လုပ်ရန်အတွက် ‘Chrome အပ်ဒိတ်လုပ်ရန်’ ခလုတ်ကို နှိပ်နိုင်သည်</translation>
 <translation id="2181821976797666341">ပေါ်လစီများ</translation>
@@ -3630,7 +3628,6 @@
 <translation id="7947813448670013867"><ph name="SEE_CHROME_TIPS_FOCUSED_FRIENDLY_MATCH_TEXT" />၊ Chrome ဝန်ဆောင်မှုများအကြောင်း လေ့လာရန် ‘တဘ်’ နှိပ်ပြီးနောက် Enter ခလုတ် နှိပ်ပါ</translation>
 <translation id="7949135979217012031">ဗိုင်းရပ်အကာအကွယ်၊ မဲလ်ဝဲ</translation>
 <translation id="7950027195171824198">Chrome ဆက်တင်များတွင် သင်၏ကွတ်ကီး သတ်မှတ်ချက်များကို စီမံရန်</translation>
-<translation id="7950440490184876634">သင့်မိုက်ခရိုဖုန်းများ သုံးရန် (<ph name="MICS_COUNT" />)</translation>
 <translation id="7951415247503192394">(32-bit)</translation>
 <translation id="7952192831285741665">ဥရောပ EDP</translation>
 <translation id="7952250633095257243">ဖြတ်လမ်းလင့်ခ်သည် အလွတ်ဖြစ်၍မရပါ</translation>

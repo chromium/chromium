@@ -547,6 +547,7 @@
 <translation id="2003709556000175978">Ресетујте лозинку</translation>
 <translation id="2003775180883135320">Четвороструко бушење на врху</translation>
 <translation id="2004697686368036666">Функције на неким сајтовима могу да не раде</translation>
+<translation id="2005042463110681802">Ово упозорење вам се приказује јер овај сајт не подржава HTTPS, а ви сте у режиму без архивирања. <ph name="BEGIN_LEARN_MORE_LINK" />Сазнајте више<ph name="END_LEARN_MORE_LINK" /></translation>
 <translation id="2009942480257059311">Дугме Направи догађај, активирајте га да бисте брзо направили нов догађај у Google календару</translation>
 <translation id="201174227998721785">Управљајте дозволама и подацима сачуваним на различитим сајтовима у подешавањима Chrome-а</translation>
 <translation id="2012276282211112603">Тренутно нема тема за приказ</translation>
@@ -573,7 +574,6 @@
 <translation id="2046951263634619614">Продаја књига</translation>
 <translation id="2048261947532620704">Страница се преводи</translation>
 <translation id="2053111141626950936">Странице на језику <ph name="LANGUAGE" /> неће бити преведене.</translation>
-<translation id="2055461225779831292">Коришћење и померање камера (<ph name="CAMERAS_COUNT" />)</translation>
 <translation id="2056492565825767809">Закључавање показивача миша</translation>
 <translation id="2056658168519009885">Сајтови могу да затраже од Chrome-а информације да би персонализовали огласе који вам се приказују.</translation>
 <translation id="2059166748188874810">Општина</translation>
@@ -651,7 +651,6 @@
 <translation id="2170417331417184438">Картица је сачувана само на уређају</translation>
 <translation id="2172089022819052306">Поправка и одржавање возила</translation>
 <translation id="2175630235841878061">Фајлови већи од 100 MB нису доступни за преузимање</translation>
-<translation id="2176198174348007293">Користите камере (<ph name="CAMERAS_COUNT" />)</translation>
 <translation id="2176974405772725904">Сачувајте адресу на налогу</translation>
 <translation id="2178665390943006934">Дугме Ажурирај Chrome, активирајте га да бисте ажурирали Chrome из подешавања Chrome-а</translation>
 <translation id="2181821976797666341">Смернице</translation>
@@ -1484,6 +1483,7 @@
 <translation id="3799805948399000906">Фонт је затражен</translation>
 <translation id="3801265110651850478">Шаљи захтев „Не прати“ уз саобраћај прегледања</translation>
 <translation id="380329542618494757">Име</translation>
+<translation id="3803801106042434208">Ови претраживачи су популарни у вашем региону</translation>
 <translation id="3806932344025766608">Нападачи на сајту који покушавате да посетите могу да вас преваре да инсталирате софтвер или откријете ствари попут лозинке, телефона или броја кредитне картице. Chrome искрено препоручује да се вратите на безбедно место. <ph name="BEGIN_LEARN_MORE_LINK" />Сазнајте више<ph name="END_LEARN_MORE_LINK" /></translation>
 <translation id="3807366285948165054">Померање слике по X оси</translation>
 <translation id="3807709094043295184">Класични рок и евергрин</translation>
@@ -3628,7 +3628,6 @@
 <translation id="7947813448670013867"><ph name="SEE_CHROME_TIPS_FOCUSED_FRIENDLY_MATCH_TEXT" />, притисните Tab, па Enter да бисте сазнали више о Chrome функцијама</translation>
 <translation id="7949135979217012031">Програми за заштиту од вируса и малвера</translation>
 <translation id="7950027195171824198">Управљајте подешавањима колачића у подешавањима Chrome-а</translation>
-<translation id="7950440490184876634">Користите микрофоне (<ph name="MICS_COUNT" />)</translation>
 <translation id="7951415247503192394">(32-битни)</translation>
 <translation id="7952192831285741665">European EDP</translation>
 <translation id="7952250633095257243">Пречица не може да буде празна</translation>

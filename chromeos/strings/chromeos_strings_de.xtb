@@ -361,6 +361,7 @@
 <translation id="3017079585324758401">Hintergrund</translation>
 <translation id="3027578600144895987">Kamera schließen</translation>
 <translation id="3031560714565892478">Das Gerät ist eine Videokamera.</translation>
+<translation id="3051968340259309715">Dadurch dürfen Systemdienste die Einstellung „Standortgenauigkeit“ nutzen, um deinen Standort zu ermitteln. „Standortgenauigkeit“ verwendet Informationen zu drahtlosen Signalen wie WLAN‑Zugangspunkten, Mobilfunkmasten und GPS sowie Sensordaten des Geräts wie Beschleunigungsmesser und Gyroskop, um den Standort des Geräts einschätzen zu können. Du kannst die Standortermittlung deaktivieren, indem du die Einstellungen &gt; Datenschutz und Sicherheit &gt; Datenschutzeinstellungen &gt; Standortzugriff aufrufst. <ph name="LINK_BEGIN" />Weitere Informationen<ph name="LINK_END" /></translation>
 <translation id="3054177598518735801"><ph name="CURRENT_VALUE" /> mA</translation>
 <translation id="3056720590588772262">Endpunkt</translation>
 <translation id="3060579846059757016">Übersicht</translation>

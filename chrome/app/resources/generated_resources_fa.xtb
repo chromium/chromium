@@ -369,7 +369,6 @@
 <translation id="1260810365552581339">‏Linux ممکن است فضای دیسک کافی نداشته باشد. می‌توانید در <ph name="LINK_START" />تنظیمات<ph name="LINK_END" /> فضای دیسک Linux را افزایش دهید و بازیابی را دوباره امتحان کنید.</translation>
 <translation id="1261380933454402672">متوسط</translation>
 <translation id="126156426083987769">مشکلی در رابطه با مجوزهای حالت نمایشی دستگاه پیش آمد.</translation>
-<translation id="1261885284931493480">برگه(ها) برداشته و گروه حذف شود؟</translation>
 <translation id="1263231323834454256">فهرست خواندن</translation>
 <translation id="1263733306853729545">استفاده از کلیدهای <ph name="MINUS" /> و <ph name="EQUAL" /> برای پی‌جویی فهرست کاندیداها</translation>
 <translation id="126387934568812801">این نماگرفت و عنوان برگه‌های باز اضافه شوند</translation>
@@ -1648,7 +1647,6 @@
 <translation id="2187895286714876935">خطای وارد کردن مجوز سرور</translation>
 <translation id="2187906491731510095">افزونه‌ها به‌روزرسانی شدند</translation>
 <translation id="2188881192257509750">باز کردن <ph name="APPLICATION" /></translation>
-<translation id="2188919919468240749">گروه برگه حذف شود؟</translation>
 <translation id="2190069059097339078">‏گیرنده اعتبارنامه‌های WiFi</translation>
 <translation id="219008588003277019">‏ماژول Native Client: <ph name="NEXE_NAME" /></translation>
 <translation id="2190355936436201913">(خالی)</translation>
@@ -2092,7 +2090,6 @@
 <translation id="249113932447298600">متأسفیم، دستگاه <ph name="DEVICE_LABEL" /> در حال حاضر پشتیبانی نمی‌شود.</translation>
 <translation id="2491587035099903063">پیش‌دید کردن صدای <ph name="LANGUAGE" /></translation>
 <translation id="2492461744635776704">درحال آماده‌سازی درخواست امضای گواهینامه</translation>
-<translation id="2492964937550251173">برگه(ها) بسته شود و گروه حذف شود؟</translation>
 <translation id="249330843868392562">باز کردن تنظیمات نوشتار به گفتار</translation>
 <translation id="2494555621641843783">‏Steam نصب نشد</translation>
 <translation id="2495141202137516054">‏از Drive شما</translation>
@@ -2819,7 +2816,6 @@
 <translation id="3021066826692793094">پروانه</translation>
 <translation id="3021678814754966447">&amp;نمای منبع قاب</translation>
 <translation id="3021902017511220299">اسکن انجام نشد. سرپرست این کنش را مسدود کرده است.</translation>
-<translation id="3022068420678496307">‏با این کار، گروه از همه دستگاه‌هایی که با این «حساب Google» به سیستم Chrome وارد شده‌اند حذف می‌شود.</translation>
 <translation id="3022361196600037287">‏<ph name="DEVICE" /> از این Chromebook برداشته خواهد شد و در <ph name="PRIMARY_EMAIL" /> ذخیره نخواهد شد.</translation>
 <translation id="3022978424994383087">متوجه نشدم.</translation>
 <translation id="3023464535986383522">انتخاب برای شنیدن</translation>
@@ -2994,6 +2990,7 @@
 <translation id="3163511056918491211">‏هرزمان خواستید به‌آسانی داده‌هایتان را بازیابی کنید یا دستگاه‌هایتان را عوض کنید. داده‌های پشتیبان در Google بارگذاری می‌شود و بااستفاده از گذرواژه «حساب Google» رمزگذاری می‌شود.</translation>
 <translation id="3164329792803560526">درحال هم‌رسانی این برگه با <ph name="APP_NAME" /></translation>
 <translation id="3165390001037658081">برخی شرکت‌های مخابراتی ممکن است این قابلیت را مسدود کنند.</translation>
+<translation id="316542773973815724">پیمایش</translation>
 <translation id="3165734944977250074">نمی‌توان فایل را منتقل کرد چون دیگر وجود ندارد</translation>
 <translation id="3166443275568926403">وضعیت باتری و عملکرد</translation>
 <translation id="3169930038976362151">زمینه‌ای را انتخاب کنید که مناسب نیازهایتان باشد. برای تغییر زمینه، کاغذدیواری، محافظ صفحه‌نمایش، و موارد دیگر، کافی است میز کار را لمس کنید و نگه دارید.</translation>
@@ -3877,7 +3874,6 @@
 <translation id="3810914450553844415">‏سرپرستتان «حساب‌های Google» تکمیلی را مجاز نمی‌کند.</translation>
 <translation id="3810973564298564668">مدیریت</translation>
 <translation id="381202950560906753">افزودن دستگاه دیگر</translation>
-<translation id="381219490185664296">گروه‌بندی برگه‌ها لغو شود؟</translation>
 <translation id="3812525830114410218">گواهی نادرست</translation>
 <translation id="3813296892522778813">‏اگر نمی‌توانید چیزی را که می‌خواهید پیدا کنید،‌ به <ph name="BEGIN_LINK_CHROMIUM" />راهنمای Google Chrome‏<ph name="END_LINK_CHROMIUM" /> بروید</translation>
 <translation id="3813358687923336574">زبان استفاده‌شده برای ترجمه صفحات و «پاسخ‌های سریع»</translation>
@@ -4232,6 +4228,7 @@
 <translation id="4066207411788646768">لطفاً اتصالتان را بررسی کنید تا چاپگرهای موجود در شبکه را ببینید.</translation>
 <translation id="4067839975993712852">علامت‌گذاری برگه کنونی به‌عنوان خوانده‌شده</translation>
 <translation id="4068776064906523561">اثرانگشت‌های ذخیره‌شده</translation>
+<translation id="4070132839822635162">به سیستم وارد نمی‌شوم</translation>
 <translation id="407173827865827707">با کلیک</translation>
 <translation id="4072805772816336153">بعداً دوباره امتحان کنید</translation>
 <translation id="4074164314564067597">صفحه‌کلید</translation>
@@ -4240,7 +4237,6 @@
 <translation id="4078738236287221428">قوی</translation>
 <translation id="4078903002989614318">گزینه‌های مرتب‌سازی و فهرست</translation>
 <translation id="4079140982534148664">استفاده از غلط‌گیر املای بهبودیافته</translation>
-<translation id="4083735423615351075">‏برگه‌ها در این دستگاه باز می‌مانند اما گروه از همه دستگاه‌هایی که با این «حساب Google» به سیستم Chrome وارد شده‌اند حذف می‌شود.</translation>
 <translation id="4084682180776658562">نشانک</translation>
 <translation id="4084835346725913160">بستن <ph name="TAB_NAME" /></translation>
 <translation id="4085298594534903246">جاوا اسکریپت در این صفحه مسدود شده است.</translation>
@@ -4250,7 +4246,6 @@
 
 <ph name="EXTENSION_FILE" /></translation>
 <translation id="4087328411748538168">نمایش در راست</translation>
-<translation id="4088879333319441249">گروه‌بندی برگه‌ها لغو شود؟</translation>
 <translation id="4089235344645910861">تنظیمات ذخیره شد. همگام‌سازی شروع شد.</translation>
 <translation id="4089817585533500276">تبدیل + <ph name="TOP_ROW_KEY" /></translation>
 <translation id="4090103403438682346">فعال کردن دسترسی تأییدشده</translation>
@@ -4336,7 +4331,6 @@
 <translation id="4148195018520464922">می‌توانید ورود به سیستم را برای کاربران خاصی محدود کنید. با این کار، گزینه «افزودن شخص» در صفحه ورود به سیستم برداشته می‌شود. همچنین می‌توانید کاربران فعلی را نیز بردارید.</translation>
 <translation id="4148957013307229264">در حال نصب...</translation>
 <translation id="4150201353443180367">صفحه‌نمایش</translation>
-<translation id="4150417452770391330">دوربین را وصل کنید</translation>
 <translation id="4150569944729499860">بافت صفحه</translation>
 <translation id="4151449637210235443">درباره تجربه بازی اخیرتان به ما بگویید</translation>
 <translation id="4151503145138736576">هیچ فضای ذخیره‌سازی آفلاینی برای پاک کردن نیست</translation>
@@ -5135,7 +5129,6 @@
 <translation id="4777458362738635055">دیگر کاربران این دستگاه می‌توانند از این شبکه استفاده کنند</translation>
 <translation id="4777813841994368231">روشن • این افزونه توسط توسعه‌دهنده‌اش لغو انتشار شده است</translation>
 <translation id="4777825441726637019">‏فروشگاه Play</translation>
-<translation id="4777866634702576038">گروه برگه حذف شود؟</translation>
 <translation id="4777943778632837590">پیکربندی سرورهای نام شبکه</translation>
 <translation id="4778653490315793244">هنوز موردی برای نشان‌دادن وجود ندارد</translation>
 <translation id="4779083564647765204">بزرگ‌نمایی</translation>
@@ -5547,7 +5540,6 @@
 <translation id="5093477827231450397">فهرست سایت‌های مسدودشده‌ای که نمی‌خواهید آگهی به سایت‌های دیگر پیشنهاد دهند</translation>
 <translation id="5093569275467863761">قاب فرعی ناشناس ذخیره‌شده در حافظه پنهان عقب-جلو: <ph name="BACK_FORWARD_CACHE_INCOGNITO_PAGE_URL" /></translation>
 <translation id="5094176498302660097">‏می‌توانید فایل‌های پشتیبانی‌شده را با این برنامه ازطریق برنامه Files یا برنامه‌های دیگر باز کنید و ویرایش کنید. برای کنترل اینکه کدام فایل‌ها این برنامه را به‌طور پیش‌فرض باز کنند، <ph name="BEGIN_LINK" />با نحوه تنظیم برنامه‌های پیش‌فرض در دستگاه آشنا شوید<ph name="END_LINK" />.</translation>
-<translation id="5094423602314093681">برگه(ها) برداشته و گروه حذف شود؟</translation>
 <translation id="5094721898978802975">ارتباط با برنامه‌های بومی همکار</translation>
 <translation id="5095252080770652994">پیشرفت</translation>
 <translation id="5095507226704905004">نمی‌توان فایل را کپی کرد چون دیگر وجود ندارد</translation>
@@ -7326,7 +7318,6 @@
 <translation id="6445450263907939268">اگر این تغییرات مدنظر شما نبود، می‌توانید تنظیمات قبلی‌تان را بازیابی کنید.</translation>
 <translation id="6446213738085045933">ایجاد میان‌بر دسک تاپ</translation>
 <translation id="6447842834002726250">کوکی‌ها</translation>
-<translation id="6449554712554071184">با این کار، گروه برای همیشه از دستگاهتان حذف خواهد شد.</translation>
 <translation id="6450876761651513209">تغییر تنظیمات مربوط به حریم خصوصی شما</translation>
 <translation id="6451591602925140504">{NUM_PAGES,plural, =0{<ph name="PAGE_TITLE" />}=1{<ph name="PAGE_TITLE" /> و ۱ برگه دیگر}one{<ph name="PAGE_TITLE" /> و # برگه دیگر}other{<ph name="PAGE_TITLE" /> و # برگه دیگر}}</translation>
 <translation id="6451689256222386810">اگر عبارت عبورتان را فراموش کرده‌اید یا می‌خواهید این تنظیم را تغییر دهید، <ph name="BEGIN_LINK" />همگام‌سازی را بازنشانی کنید<ph name="END_LINK" />.</translation>
@@ -7361,6 +7352,7 @@
 <translation id="6469702164109431067">گذرواژه‌ها و گذرکلیدها</translation>
 <translation id="6470823736074966819">بی‌صدا کردن اعلان‌ها</translation>
 <translation id="6472893788822429178">نمایش دکمه صفحه اصلی</translation>
+<translation id="6473315466413288899">انتخاب یک گزینه</translation>
 <translation id="6474498546677193336">‏لغو هم‌رسانی امکان‌پذیر نیست زیرا برنامه‌ای از این پوشه استفاده می‌کند. دفعه بعد که Linux را خاموش کنید، پوشه لغو هم‌رسانی می‌شود.</translation>
 <translation id="6474884162850599008">‏قطع ارتباط حساب Google Drive</translation>
 <translation id="6475294023568239942">‏فضای دیسک را آزاد کنید یا حجم دیسک Linux را در «تنظیمات» تغییر دهید</translation>
@@ -8479,7 +8471,6 @@
 <translation id="7340650977506865820">سایت درحال هم‌رسانی صفحه‌نمایش شما است</translation>
 <translation id="7340757554212515731">‏گزارش‌های خرابی و داده‌های استفاده و عیب‌یابی را به‌طور خودکار به Google ارسال می‌کند</translation>
 <translation id="734088800888587319">سنجه‌های شبکه</translation>
-<translation id="7341612916770129581">میکروفون را متصل کنید</translation>
 <translation id="7341834142292923918">می‌خواهد به این سایت دسترسی پیدا کند</translation>
 <translation id="7343372807593926528">لطفاً قبل‌از ارسال بازخورد، مشکل را شرح دهید.</translation>
 <translation id="7344585835349671209">‏مدیریت گواهینامه‌های HTTPS/SSL در دستگاه</translation>
@@ -9378,7 +9369,6 @@
 <translation id="7974936243149753750">تصویر بزرگ‌تر از صفحه</translation>
 <translation id="7975504106303186033">‏باید این دستگاه Chrome Education را در «حساب آموزشی» ثبت‌نام کنید. برای ساخت حساب جدید، لطفاً به g.co/workspace/edusignup بروید.</translation>
 <translation id="7977451675950311423">اگر از گذرواژه‌ای استفاده کنید که در سرقت اطلاعات شبکه لو رفته باشد، به شما هشدار می‌دهد.</translation>
-<translation id="797824194429476746">برگه‌ها در این دستگاه باز می‌مانند اما گروه برای همیشه حذف خواهد شد.</translation>
 <translation id="7978412674231730200">کلید خصوصی</translation>
 <translation id="7978450511781612192">‏با این کار از سیستم حساب Google خود خارج می‌شوید. نشانک‌ها، سابقه، گذرواژه‌ها و سایر موارد دیگر همگام‌سازی نمی‌شوند.</translation>
 <translation id="7980066177668669492">‏‫Base64-encoded ASCII،‏ چند گواهی</translation>
@@ -9433,6 +9423,7 @@
 <translation id="8017679124341497925">میان‌بر ویرایش شد</translation>
 <translation id="8018298733481692628">این نمایه حذف شود؟</translation>
 <translation id="8018313076035239964">اطلاعاتی را که وب‌سایت‌ها می‌توانند استفاده کنند و محتوایی را که می‌توانند به شما نشان دهند کنترل کنید</translation>
+<translation id="802154636333426148">بارگیری نشد</translation>
 <translation id="8022466874160067884">‏حساب Google و گذرواژه خود را وارد کنید</translation>
 <translation id="8023133589013344428">‏مدیریت زبان‌ها در تنظیمات ChromeOS Flex</translation>
 <translation id="8023801379949507775">اکنون افزونه‌ها به‌روز شوند</translation>
@@ -10721,7 +10712,6 @@
 <translation id="8962863356073277855">‏قالب نشانی وب باید به این صورت باشد: https://www.example.com</translation>
 <translation id="8962918469425892674">این سایت از حسگرهای نور یا حرکت استفاده می‌کند.</translation>
 <translation id="8963117664422609631">رفتن به تنظیمات سایت</translation>
-<translation id="8964795217937248330">برگه(ها) بسته شود و گروه حذف شود؟</translation>
 <translation id="8965037249707889821">گذرواژه قدیمی را وارد کنید</translation>
 <translation id="8966809848145604011">نمایه‌های دیگر</translation>
 <translation id="8967427617812342790">افزودن به فهرست خواندن</translation>
@@ -10830,6 +10820,7 @@
 <translation id="9031811691986152304">امتحان مجدد</translation>
 <translation id="9032004780329249150">‏از گذرواژه‌هایتان در دستگاه‌های iOS استفاده کنید</translation>
 <translation id="9032097289595078011">غیرفعال کردن «جفت‌سازی سریع»</translation>
+<translation id="9032513103438497286">‏برنامه‌های نصب‌شده در این <ph name="DEVICE_TYPE" /> را مسدود می‌کنید. برای محدود کردن بارگیری برنامه‌ها یا محتوا، به «تنظیمات Google Play» بروید.</translation>
 <translation id="9033765790910064284">ادامه درهرصورت</translation>
 <translation id="9033857511263905942">&amp;جای‌گذاری</translation>
 <translation id="9034408118624208974">‏به‌تازگی استفاده از Chromebook را شروع کرده‌اید؟ همگام‌سازی را روشن کنید تا از اولویت‌های شما پشتیبان‌گیری شود.</translation>

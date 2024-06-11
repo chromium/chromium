@@ -278,6 +278,7 @@
 <translation id="2450083983707403292">Ուզո՞ւմ եք նորից ներբեռնել <ph name="FILE_NAME" /> ֆայլը:</translation>
 <translation id="2453860139492968684">Ավարտել</translation>
 <translation id="2461822463642141190">Ընթացիկ</translation>
+<translation id="2472163211318554013">Մտեք հաշիվ՝ Chromе-ի բոլոր գործառույթներից օգտվելու համար</translation>
 <translation id="247737702124049222">Պատկերների նկարագրությունները միացված են</translation>
 <translation id="2479148705183875116">Անցնել կարգավորումներ</translation>
 <translation id="2482878487686419369">Ծանուցումներ</translation>
@@ -429,7 +430,6 @@
 <translation id="3098745985164956033">Պատկերներն ուղարկվում են Google-ին՝ նկարագրությունները բարելավելու նպատակով</translation>
 <translation id="3114507951000454849">Կարդացեք այսօրվա նորությունները <ph name="NEWS_ICON" /></translation>
 <translation id="3123734510202723619">Հայտարարություններ</translation>
-<translation id="3146775326699342508">Մուտք գործեք՝ ձեր էջանիշները և սարքից այլ բովանդակություն օգտագործելու համար</translation>
 <translation id="314939179385989105">Chrome-ի գլխավոր էջ</translation>
 <translation id="3158667104057012316">Ձեռքով տեսակավորում</translation>
 <translation id="3166827708714933426">Ներդիրների և պատուհանների դյուրանցումներ</translation>
@@ -1348,6 +1348,7 @@
 <translation id="752220631458524187">Աշխատանքն ավարտեուց հետո անջատեք մալուխը</translation>
 <translation id="7523960634226602883">Որոնել տեսախցիկի միջոցով՝ օգտագործելով Google Տեսապակին</translation>
 <translation id="752731652852882757">Արգելափակել ինկոգնիտո ռեժիմում</translation>
+<translation id="7557508262441527045">Դուք դուրս եք գրվել հաշվից</translation>
 <translation id="7577900504646297215">Կառավարել հետաքրքրությունները</translation>
 <translation id="757855969265046257">{FILES,plural, =1{Ներբեռնվեց <ph name="FILES_DOWNLOADED_ONE" /> ֆայլ}one{Ներբեռնվեց <ph name="FILES_DOWNLOADED_MANY" /> ֆայլ}other{Ներբեռնվեց <ph name="FILES_DOWNLOADED_MANY" /> ֆայլ}}</translation>
 <translation id="7581273696622423628">Մասնակցել հարցմանը</translation>
@@ -1393,7 +1394,6 @@
 <translation id="777637629667389858">Երբ դուք մուտք եք գործած հաշիվ, գործառույթը պաշտպանում է ձեզ Google-ի ծառայություններում։</translation>
 <translation id="7778840695157240389">Վերադարձեք ավելի ուշ՝ նոր բովանդակություն տեսնելու համար</translation>
 <translation id="7780645209293383778">Երբ մտնում եք Google հաշիվ, այդ տվյալները ժամանակավորապես կապվում են տվյալ հաշվի հետ՝ պաշտպանելով ձեզ Google-ի հավելվածներում։</translation>
-<translation id="7786562169000598736">Ստացեք ձեր բոլոր էջանիշները</translation>
 <translation id="7791543448312431591">Ավելացնել</translation>
 <translation id="7798392620021911922">Վերականգնվել է <ph name="TAB_COUNT" /> ներդիր</translation>
 <translation id="780287761701992588">Օգտագործեք ձեր էջանիշները, գաղտնաբառերը և մյուս տվյալները ձեր բոլոր սարքերում</translation>

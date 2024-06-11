@@ -371,7 +371,6 @@
 <translation id="1260810365552581339">Магчыма ў Linux недастаткова месца на дыску. Вы можаце павялічыць месца на дыску Linux і паўтарыць спробу аднаўлення ў <ph name="LINK_START" />наладах<ph name="LINK_END" />.</translation>
 <translation id="1261380933454402672">Умераная</translation>
 <translation id="126156426083987769">Праблема з ліцэнзіямі прылад у дэманстрацыйным рэжыме.</translation>
-<translation id="1261885284931493480">Выдаліць укладкі і групу?</translation>
 <translation id="1263231323834454256">Спіс чытання</translation>
 <translation id="1263733306853729545">Выкарыстоўваць клавішы <ph name="MINUS" /> і <ph name="EQUAL" /> для пераходу паміж старонкамі спіса кандыдатаў</translation>
 <translation id="126387934568812801">Уключыць гэты здымак экрана і загалоўкі адкрытых укладак</translation>
@@ -1642,7 +1641,6 @@
 <translation id="2187895286714876935">Памылка імпарту сертыфіката сервера</translation>
 <translation id="2187906491731510095">Пашырэнні абноўлены</translation>
 <translation id="2188881192257509750">Адкрыць <ph name="APPLICATION" /></translation>
-<translation id="2188919919468240749">Выдаліць групу ўкладак?</translation>
 <translation id="2190069059097339078">Сродак атрымання ўліковых даных Wi-Fi</translation>
 <translation id="219008588003277019">Модуль Native Client: <ph name="NEXE_NAME" /></translation>
 <translation id="2190355936436201913">(пуста)</translation>
@@ -2083,7 +2081,6 @@
 <translation id="249113932447298600">На жаль, прылада <ph name="DEVICE_LABEL" /> зараз не падтрымліваецца.</translation>
 <translation id="2491587035099903063">праслухаць голас для наступнай мовы: <ph name="LANGUAGE" /></translation>
 <translation id="2492461744635776704">Рыхтуецца запыт на подпіс сертыфіката</translation>
-<translation id="2492964937550251173">Закрыць укладкі і выдаліць групу?</translation>
 <translation id="249330843868392562">Адкрыць налады сінтэзу маўлення</translation>
 <translation id="2494555621641843783">Не ўдалося ўсталяваць Steam</translation>
 <translation id="2495141202137516054">З вашага Дыска</translation>
@@ -2810,7 +2807,6 @@
 <translation id="3021066826692793094">Матылёк</translation>
 <translation id="3021678814754966447">&amp;Прагляд крыніцы фрэйма</translation>
 <translation id="3021902017511220299">Не ўдалося выканаць сканіраванне. Гэта дзеянне заблакіравана адміністратарам.</translation>
-<translation id="3022068420678496307">Група будзе выдалена з усіх прылад, на якіх выкананы ўваход у Chrome з гэтага Уліковага запісу Google.</translation>
 <translation id="3022361196600037287">Прылада "<ph name="DEVICE" />" будзе выдалена з гэтага Chromebook і не захаваецца ва ўліковым запісе <ph name="PRIMARY_EMAIL" />.</translation>
 <translation id="3022978424994383087">Незразумела.</translation>
 <translation id="3023464535986383522">Чытаць уголас</translation>
@@ -2985,6 +2981,7 @@
 <translation id="3163511056918491211">Аднавіць даныя або перайсці на іншую прыладу можна з лёгкасцю і ў любы час. Рэзервовыя копіі даных запампоўваюцца ў Google і шыфруюцца пад паролем вашага Уліковага запісу Google.</translation>
 <translation id="3164329792803560526">Укладка абагульваецца з <ph name="APP_NAME" /></translation>
 <translation id="3165390001037658081">Некаторыя аператары могуць блакіраваць гэту функцыю.</translation>
+<translation id="316542773973815724">Навігацыя</translation>
 <translation id="3165734944977250074">Гэты файл нельга перамясціць, бо ён больш не існуе</translation>
 <translation id="3166443275568926403">Прадукцыйнасць і стан акумулятара</translation>
 <translation id="3169930038976362151">Выберыце тэму, якая адпавядае вашым патрэбам. Каб змяніць тэму, шпалеры, застаўку і іншыя параметры, проста дакраніцеся да працоўнага стала і ўтрымлівайце палец.</translation>
@@ -3866,7 +3863,6 @@
 <translation id="3810914450553844415">Адміністратар не дазваляе выкарыстоўваць дадатковыя Уліковыя запісы Google.</translation>
 <translation id="3810973564298564668">Кіраваць</translation>
 <translation id="381202950560906753">Дадаць яшчэ</translation>
-<translation id="381219490185664296">Разгрупаваць групу ўкладак?</translation>
 <translation id="3812525830114410218">Недапушчальны сертыфікат</translation>
 <translation id="3813296892522778813">Калі вы не знайшлі тое, што шукалі, адкрыйце<ph name="BEGIN_LINK_CHROMIUM" />Даведку Google Chrome<ph name="END_LINK_CHROMIUM" /></translation>
 <translation id="3813358687923336574">Мова для перакладу старонак і для Хуткіх адказаў</translation>
@@ -4229,7 +4225,6 @@
 <translation id="4078738236287221428">Дзейная</translation>
 <translation id="4078903002989614318">Параметры сартавання і спісу</translation>
 <translation id="4079140982534148664">Выкарыстоўваць палепшаную праверку правапісу</translation>
-<translation id="4083735423615351075">Укладкі застануцца адкрытымі на гэтай прыладзе, але група будзе выдалена з усіх прылад, на якіх выкананы ўваход у Chrome з гэтага Уліковага запісу Google.</translation>
 <translation id="4084682180776658562">Дадаць у закладкі</translation>
 <translation id="4084835346725913160">Закрыць укладку "<ph name="TAB_NAME" />"</translation>
 <translation id="4085298594534903246">JavaScript заблакіраваны на гэтай старонцы.</translation>
@@ -4239,7 +4234,6 @@
 
 <ph name="EXTENSION_FILE" /></translation>
 <translation id="4087328411748538168">Паказваць справа</translation>
-<translation id="4088879333319441249">Разгрупаваць групу ўкладак?</translation>
 <translation id="4089235344645910861">Налады захаваныя. Сінхранізацыя пачалася.</translation>
 <translation id="4089817585533500276">Shift + <ph name="TOP_ROW_KEY" /></translation>
 <translation id="4090103403438682346">Уключыць спраўджаны доступ</translation>
@@ -4325,7 +4319,6 @@
 <translation id="4148195018520464922">Вы можаце дазволіць уваход толькі пэўным карыстальнікам. Пры гэтым будзе выдалены пункт "Дадаць карыстальніка" на экране ўваходу. Таксама можна выдаліць бягучых карыстальнікаў.</translation>
 <translation id="4148957013307229264">Ідзе ўсталяванне...</translation>
 <translation id="4150201353443180367">Дысплэй</translation>
-<translation id="4150417452770391330">Падключыце камеру</translation>
 <translation id="4150569944729499860">Кантэкст экрана</translation>
 <translation id="4151449637210235443">Раскажыце пра нядаўні працэс гульні</translation>
 <translation id="4151503145138736576">Няма пазасеткавага сховішча, у якім можна было б вызваліць месца</translation>
@@ -5124,7 +5117,6 @@
 <translation id="4777458362738635055">Іншыя карыстальнікі прылады могуць выкарыстоўваць гэту сетку</translation>
 <translation id="4777813841994368231">Уключана • Распрацоўшчык адрабіў публікацыю гэтага пашырэння</translation>
 <translation id="4777825441726637019">Крама Play</translation>
-<translation id="4777866634702576038">Выдаліць групу ўкладак?</translation>
 <translation id="4777943778632837590">Наладзіць серверы даменных імён</translation>
 <translation id="4778653490315793244">Няма даступнага для прагляду змесціва</translation>
 <translation id="4779083564647765204">Маштаб</translation>
@@ -5536,7 +5528,6 @@
 <translation id="5093477827231450397">Спіс заблакіраваных вамі сайтаў, якім забаронена прапаноўваць рэкламу іншым сайтам</translation>
 <translation id="5093569275467863761">Субфрэйм у рэжыме інкогніта, захаваны ў кэшы пераходу назад і наперад: <ph name="BACK_FORWARD_CACHE_INCOGNITO_PAGE_URL" /></translation>
 <translation id="5094176498302660097">З дапамогай гэтай праграмы можна адкрываць і змяняць сумяшчальныя файлы ў іншых праграмах (у прыватнасці, у "Файлах"). Каб указаць, якія файлы павінны адкрывацца ў гэтай праграме стандартна, <ph name="BEGIN_LINK" />паглядзіце, як задаць стандартныя праграмы для прылады<ph name="END_LINK" />.</translation>
-<translation id="5094423602314093681">Прыбраць укладкі і выдаліць групу?</translation>
 <translation id="5094721898978802975">Абменьвацца данымі з уласнымі праграмамі, якія дазваляюць сумесную працу</translation>
 <translation id="5095252080770652994">Ход выканання</translation>
 <translation id="5095507226704905004">Гэты файл нельга скапіраваць, бо ён больш не існуе</translation>
@@ -7314,7 +7305,6 @@
 <translation id="6445450263907939268">Калі вам гэтыя змены непатрэбныя, можна аднавіць папярэднія налады.</translation>
 <translation id="6446213738085045933">Стварыць ярлык на працоўным стале</translation>
 <translation id="6447842834002726250">Файлы cookie</translation>
-<translation id="6449554712554071184">Гэта дзеянне незваротна выдаліць групу з прылады.</translation>
 <translation id="6450876761651513209">Змяніць налады, звязаныя з прыватнасцю</translation>
 <translation id="6451591602925140504">{NUM_PAGES,plural, =0{<ph name="PAGE_TITLE" />}=1{<ph name="PAGE_TITLE" /> і яшчэ адна ўкладка}one{<ph name="PAGE_TITLE" /> і яшчэ # укладка}few{<ph name="PAGE_TITLE" /> і яшчэ # укладкі}many{<ph name="PAGE_TITLE" /> і яшчэ # укладак}other{<ph name="PAGE_TITLE" /> і яшчэ # укладкі}}</translation>
 <translation id="6451689256222386810">Калі вы забылі фразу-пароль або хочаце змяніць гэту наладу, <ph name="BEGIN_LINK" />скіньце сінхранізацыю<ph name="END_LINK" />.</translation>
@@ -8470,7 +8460,6 @@
 <translation id="7340650977506865820">Сайт абагульвае ваш экран</translation>
 <translation id="7340757554212515731">Аўтаматычна адпраўляе ў Google справаздачы аб збоях, а таксама даныя пра выкарыстанне і дыягностыку.</translation>
 <translation id="734088800888587319">Паказчыкі сеткі</translation>
-<translation id="7341612916770129581">Падключыце мікрафон</translation>
 <translation id="7341834142292923918">Запытвае доступ да гэтага сайта</translation>
 <translation id="7343372807593926528">Перш чым адправіць водгук, апішыце праблему.</translation>
 <translation id="7344585835349671209">Кіраванне сертыфікатамі HTTPS/SSL на прыладзе</translation>
@@ -9370,7 +9359,6 @@
 <translation id="7974936243149753750">Вылет разгорткі</translation>
 <translation id="7975504106303186033">Вы павінны зарэгістраваць гэту прыладу Chrome Education у навучальным уліковым запісе. Каб стварыць новы ўліковы запіс, наведайце старонку g.co/workspace/edusignup.</translation>
 <translation id="7977451675950311423">Папярэджвае, калі вы выкарыстоўваеце пароль, які быў раскрыты ў выніку ўцечкі даных.</translation>
-<translation id="797824194429476746">Укладкі застануцца адкрытымі на гэтай прыладзе, але група будзе выдалена назаўсёды.</translation>
 <translation id="7978412674231730200">Закрыты ключ</translation>
 <translation id="7978450511781612192">Вы выйдзеце з Уліковых запісаў Google. Вашы закладкі, гісторыя, паролі і г. д. больш не будуць сінхранізавацца.</translation>
 <translation id="7980066177668669492">ASCII з кадаваннем Base64, некалькі сертыфікатаў</translation>
@@ -9424,6 +9412,7 @@
 <translation id="8017679124341497925">Ярлык зменены</translation>
 <translation id="8018298733481692628">Выдаліць гэты профіль?</translation>
 <translation id="8018313076035239964">Кантралююць, якую інфармацыю могуць выкарыстоўваць вэб-сайты і якое змесціва яны могуць паказваць</translation>
+<translation id="802154636333426148">Збой спампоўкі</translation>
 <translation id="8022466874160067884">Увесці імя карыстальніка і пароль Уліковага запісу Google</translation>
 <translation id="8023133589013344428">Кіраванне моўнымі параметрамі ў наладах Chrome OS Flex</translation>
 <translation id="8023801379949507775">Абнавіць пашырэнні</translation>
@@ -10714,7 +10703,6 @@
 <translation id="8962863356073277855">URL-адрас павінен мець фармат https://www.example.com</translation>
 <translation id="8962918469425892674">Гэты сайт выкарыстоўвае датчыкі руху або святла.</translation>
 <translation id="8963117664422609631">Перайсці ў налады сайта</translation>
-<translation id="8964795217937248330">Закрыць укладкі і выдаліць групу?</translation>
 <translation id="8965037249707889821">Увядзіце стары пароль</translation>
 <translation id="8966809848145604011">Іншыя профілі</translation>
 <translation id="8967427617812342790">Дадаць у спіс чытання</translation>

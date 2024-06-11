@@ -309,6 +309,7 @@ Tālāk ir norādīti daži ieteikumi darba sākšanai.</translation>
 <translation id="2208323208084708176">Vienots darbvirsmas režīms</translation>
 <translation id="2220572644011485463">PIN vai parole</translation>
 <translation id="2222841058024245321">7. darbvieta</translation>
+<translation id="2223384056430485343">Sadalītā ekrānā</translation>
 <translation id="2224075387478458881">Ja ekrānā ir redzams aizsargāts saturs, ekrāna ierakstīšana ir liegta.</translation>
 <translation id="2227179592712503583">Noņemt ieteikumu</translation>
 <translation id="2248634276911611268">Atvērt saiti jaunā cilnē un pāriet uz jauno cilni</translation>
@@ -1132,6 +1133,7 @@ Varat arī izmantot īsinājumtaustiņus. Vispirms atzīmējiet tekstu un pēc t
 <translation id="5208059991603368177">Ieslēgts</translation>
 <translation id="5216991270656129561">Izslēgts līdz plkst. <ph name="TIME" /></translation>
 <translation id="5222676887888702881">Izrakstīties</translation>
+<translation id="5228195526683428788">Ekrāna sadalītājs</translation>
 <translation id="5229343007215035173">Ieslēgt/izslēgt konfidencialitātes ekrānu</translation>
 <translation id="5230516054153933099">Logs</translation>
 <translation id="5234764350956374838">Nerādīt</translation>
@@ -1518,6 +1520,7 @@ Jauna instalācija</translation>
 <translation id="6613765291890844037">Izmantotais krātuves apjoms: <ph name="STORAGE_IN_USE_SIZE" /> | Kopā: <ph name="STORAGE_TOTAL_SIZE" /></translation>
 <translation id="6614169507485700968">Konfidencialitātes ekrāns ir ieslēgts</translation>
 <translation id="6622679827379792051">Iestatīt tālruņa lietotņu skatīšanu</translation>
+<translation id="662279009180869175">Lai mainītu sadalītā ekrāna lielumu, izmantojiet kreiso un labo bultiņu</translation>
 <translation id="6624493541160101248">Pašreizējā darbvieta: <ph name="DESK_NAME" />. <ph name="DESK_INDEX" />. darbvieta no <ph name="DESK_COUNT" />.</translation>
 <translation id="6625718907317144388">Lietotņu <ph name="APP_1_TITLE" />, <ph name="APP_2_TITLE" /> un citu lietotņu paziņojumi ir paslēpti, jo ir ieslēgta skatīšanas aizsardzība.</translation>
 <translation id="6627638273713273709">Meklēšana+Shift+K</translation>
@@ -1536,6 +1539,7 @@ Jauna instalācija</translation>
 <translation id="6670153871843998651">3. galds</translation>
 <translation id="6671495933530132209">Kopēt attēlu</translation>
 <translation id="6671661918848783005">Nevar atbloķēt Chromebook datoru.</translation>
+<translation id="6676552993057022464">Lai mainītu sadalītā ekrāna lielumu, izmantojiet augšupvērsto un lejupvērsto bultiņu</translation>
 <translation id="6682029141988159141">Ielīmēt saturu no starpliktuves</translation>
 <translation id="6683022854667115063">Austiņas</translation>
 <translation id="6686023075541098243">Iestatīt tālruņa paziņojumu skatīšanu</translation>

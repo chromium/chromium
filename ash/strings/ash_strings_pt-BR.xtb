@@ -309,6 +309,7 @@ Veja o que você pode fazer para começar.</translation>
 <translation id="2208323208084708176">Modo de área de trabalho unificada.</translation>
 <translation id="2220572644011485463">PIN ou senha</translation>
 <translation id="2222841058024245321">Espaço de trabalho 7</translation>
+<translation id="2223384056430485343">Em uma tela dividida</translation>
 <translation id="2224075387478458881">A gravação de tela não é permitida quando conteúdo protegido está visível</translation>
 <translation id="2227179592712503583">Remover sugestão</translation>
 <translation id="2248634276911611268">Abrir link em uma nova guia e mudar para ela</translation>
@@ -1132,6 +1133,7 @@ Também é possível usar o atalho do teclado. Primeiro, destaque o texto e depo
 <translation id="5208059991603368177">Ativado</translation>
 <translation id="5216991270656129561">Desativado até <ph name="TIME" /></translation>
 <translation id="5222676887888702881">Sair</translation>
+<translation id="5228195526683428788">Divisor de tela</translation>
 <translation id="5229343007215035173">Ativar/desativar a Tela de privacidade</translation>
 <translation id="5230516054153933099">Janela</translation>
 <translation id="5234764350956374838">Dispensar</translation>
@@ -1518,6 +1520,7 @@ Nova instalação</translation>
 <translation id="6613765291890844037">Armazenamento: <ph name="STORAGE_IN_USE_SIZE" /> em uso | Total: <ph name="STORAGE_TOTAL_SIZE" /></translation>
 <translation id="6614169507485700968">A tela de privacidade está ativada</translation>
 <translation id="6622679827379792051">Configurar a visualização dos apps do seu smartphone</translation>
+<translation id="662279009180869175">Use as setas para a esquerda e direita para redimensionar a tela dividida</translation>
 <translation id="6624493541160101248">Espaço de trabalho atual: <ph name="DESK_NAME" />. Espaço de trabalho <ph name="DESK_INDEX" /> de <ph name="DESK_COUNT" />.</translation>
 <translation id="6625718907317144388">As notificações dos apps <ph name="APP_1_TITLE" />, <ph name="APP_2_TITLE" />, entre outros estão ocultas porque a proteção de visualização está ativada</translation>
 <translation id="6627638273713273709">Pesquisar+Shift+K</translation>
@@ -1536,6 +1539,7 @@ Nova instalação</translation>
 <translation id="6670153871843998651">Espaço de trabalho 3</translation>
 <translation id="6671495933530132209">Copiar imagem</translation>
 <translation id="6671661918848783005">Não foi possível desbloquear o Chromebook</translation>
+<translation id="6676552993057022464">Use as setas para cima e para baixo para redimensionar a tela dividida</translation>
 <translation id="6682029141988159141">Colar conteúdo da área de transferência</translation>
 <translation id="6683022854667115063">Fones de ouvido</translation>
 <translation id="6686023075541098243">Configurar a visualização de notificações do smartphone</translation>

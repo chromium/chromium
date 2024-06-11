@@ -309,6 +309,7 @@ Hier sind ein paar Dinge, die du tun kannst, um loszulegen.</translation>
 <translation id="2208323208084708176">Unified Desktop-Modus</translation>
 <translation id="2220572644011485463">PIN oder Passwort</translation>
 <translation id="2222841058024245321">Desktop 7</translation>
+<translation id="2223384056430485343">In einem Splitscreen</translation>
 <translation id="2224075387478458881">Die Bildschirmaufzeichnung ist blockiert, wenn geschützte Inhalte sichtbar sind</translation>
 <translation id="2227179592712503583">Vorschlag entfernen</translation>
 <translation id="2248634276911611268">Link auf neuem Tab öffnen und zu diesem wechseln</translation>
@@ -1132,6 +1133,7 @@ Du kannst auch die entsprechende Tastenkombination verwenden. Markiere zuerst de
 <translation id="5208059991603368177">An</translation>
 <translation id="5216991270656129561">Deaktiviert bis <ph name="TIME" /></translation>
 <translation id="5222676887888702881">Abmelden</translation>
+<translation id="5228195526683428788">Bildschirmteiler</translation>
 <translation id="5229343007215035173">Privatsphärefunktion aktivieren/deaktivieren</translation>
 <translation id="5230516054153933099">Fenster</translation>
 <translation id="5234764350956374838">Schließen</translation>
@@ -1518,6 +1520,7 @@ Neuinstallation</translation>
 <translation id="6613765291890844037"><ph name="STORAGE_IN_USE_SIZE" /> Speicher verwendet | <ph name="STORAGE_TOTAL_SIZE" /> insgesamt</translation>
 <translation id="6614169507485700968">Der Datenschutzbildschirm ist momentan aktiviert</translation>
 <translation id="6622679827379792051">Anzeige der Apps auf deinem Smartphone einrichten</translation>
+<translation id="662279009180869175">Verwende die Links- und Rechtspfeile, um die Größe des geteilten Bildschirms anzupassen</translation>
 <translation id="6624493541160101248">Aktueller Desktop: <ph name="DESK_NAME" />. Desktop <ph name="DESK_INDEX" /> von <ph name="DESK_COUNT" />.</translation>
 <translation id="6625718907317144388">Benachrichtigungen von <ph name="APP_1_TITLE" />, <ph name="APP_2_TITLE" /> und weiteren Apps wurden ausgeblendet, da der Spionageschutz aktiviert ist</translation>
 <translation id="6627638273713273709">Suchtaste + Umschalttaste + K</translation>
@@ -1536,6 +1539,7 @@ Neuinstallation</translation>
 <translation id="6670153871843998651">Desktop 3</translation>
 <translation id="6671495933530132209">Bild kopieren</translation>
 <translation id="6671661918848783005">Chromebook kann nicht entsperrt werden</translation>
+<translation id="6676552993057022464">Verwende den Auf- und Abwärtspfeil, um die Größe des geteilten Bildschirms anzupassen</translation>
 <translation id="6682029141988159141">Inhalt aus Zwischenablage einfügen</translation>
 <translation id="6683022854667115063">Kopfhörer</translation>
 <translation id="6686023075541098243">Anzeige der Benachrichtigungen auf deinem Smartphone einrichten</translation>

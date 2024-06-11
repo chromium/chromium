@@ -368,7 +368,6 @@
 <translation id="1260810365552581339">Linux 磁碟空間可能不足。你可以增加 Linux 磁碟空間並嘗試在<ph name="LINK_START" />設定<ph name="LINK_END" />中再次還原。</translation>
 <translation id="1261380933454402672">普通模式</translation>
 <translation id="126156426083987769">展示模式的裝置授權發生問題。</translation>
-<translation id="1261885284931493480">要移除分頁並刪除群組嗎？</translation>
 <translation id="1263231323834454256">閱讀清單</translation>
 <translation id="1263733306853729545">使用 <ph name="MINUS" /> 鍵與 <ph name="EQUAL" /> 鍵呼叫候選字清單</translation>
 <translation id="126387934568812801">加入這張螢幕截圖和已開啟分頁的標題</translation>
@@ -1568,7 +1567,7 @@
 <translation id="2133857665503360653">重新嘗試下載「<ph name="FILE_NAME" />」</translation>
 <translation id="2134905185275441536">系統 CA</translation>
 <translation id="21354425047973905">隱藏 PIN 碼</translation>
-<translation id="2135456203358955318">停駐放大鏡</translation>
+<translation id="2135456203358955318">置頂放大鏡</translation>
 <translation id="2135787500304447609">繼續(&amp;R)</translation>
 <translation id="2136476978468204130">你輸入的通關密語不正確</translation>
 <translation id="2137128126782078222">不允許接收來自 <ph name="WEBSITE" /> 的通知</translation>
@@ -1641,7 +1640,6 @@
 <translation id="2187895286714876935">伺服器憑證匯入錯誤</translation>
 <translation id="2187906491731510095">擴充功能已更新</translation>
 <translation id="2188881192257509750">開啟「<ph name="APPLICATION" />」</translation>
-<translation id="2188919919468240749">要刪除分頁群組嗎？</translation>
 <translation id="2190069059097339078">WiFi 憑證擷取工具</translation>
 <translation id="219008588003277019">Native Client 模組：<ph name="NEXE_NAME" /></translation>
 <translation id="2190355936436201913">(空白)</translation>
@@ -2082,7 +2080,6 @@
 <translation id="249113932447298600">很抱歉，系統目前不支援 <ph name="DEVICE_LABEL" /> 裝置。</translation>
 <translation id="2491587035099903063">試聽<ph name="LANGUAGE" />的語音</translation>
 <translation id="2492461744635776704">正在準備憑證簽署要求</translation>
-<translation id="2492964937550251173">要關閉分頁並刪除群組嗎？</translation>
 <translation id="249330843868392562">開啟文字轉語音設定</translation>
 <translation id="2494555621641843783">無法安裝 Steam</translation>
 <translation id="2495141202137516054">你的雲端硬碟</translation>
@@ -2809,7 +2806,6 @@
 <translation id="3021066826692793094">蝴蝶</translation>
 <translation id="3021678814754966447">檢視頁框原始碼(&amp;V)</translation>
 <translation id="3021902017511220299">掃描失敗。系統管理員已禁止這項操作。</translation>
-<translation id="3022068420678496307">這項操作會將該群組從所有使用此 Google 帳戶登入 Chrome 的裝置刪除。</translation>
 <translation id="3022361196600037287"><ph name="DEVICE" /> 將從這部 Chromebook 中移除，且不會儲存至 <ph name="PRIMARY_EMAIL" />。</translation>
 <translation id="3022978424994383087">無法辨識語音內容。</translation>
 <translation id="3023464535986383522">隨選朗讀</translation>
@@ -2984,6 +2980,7 @@
 <translation id="3163511056918491211">隨時可以輕鬆還原資料或改用其他裝置。備份內容會上傳到 Google，並使用您的 Google 帳戶密碼加密。</translation>
 <translation id="3164329792803560526">這個分頁正與 <ph name="APP_NAME" /> 共用</translation>
 <translation id="3165390001037658081">部分電信業者可能會封鎖這項功能。</translation>
+<translation id="316542773973815724">導覽</translation>
 <translation id="3165734944977250074">檔案已不存在，因此無法移動</translation>
 <translation id="3166443275568926403">效能與電池狀態</translation>
 <translation id="3169930038976362151">選擇符合自身需求的主題。如要變更主題、桌布、螢幕保護程式和其他設定，只要按住桌面即可。</translation>
@@ -3864,7 +3861,6 @@
 <translation id="3810914450553844415">管理員已禁止新增其他 Google 帳戶。</translation>
 <translation id="3810973564298564668">管理</translation>
 <translation id="381202950560906753">新增其他指紋</translation>
-<translation id="381219490185664296">要將所有分頁移出群組嗎？</translation>
 <translation id="3812525830114410218">錯誤的憑證</translation>
 <translation id="3813296892522778813">如果你找不到需要的資訊，請參閱 <ph name="BEGIN_LINK_CHROMIUM" />Google Chrome 說明<ph name="END_LINK_CHROMIUM" /></translation>
 <translation id="3813358687923336574">網頁譯文和快速解答功能所用語言</translation>
@@ -4226,7 +4222,6 @@
 <translation id="4078738236287221428">積極</translation>
 <translation id="4078903002989614318">排序與清單選項</translation>
 <translation id="4079140982534148664">使用進階拼字檢查功能</translation>
-<translation id="4083735423615351075">這些分頁會在這部裝置上保持開啟，但該群組會從所有使用此 Google 帳戶登入 Chrome 的裝置刪除。</translation>
 <translation id="4084682180776658562">書籤</translation>
 <translation id="4084835346725913160">關閉 <ph name="TAB_NAME" /></translation>
 <translation id="4085298594534903246">系統已封鎖此網頁的 JavaScript。</translation>
@@ -4236,7 +4231,6 @@
 
 <ph name="EXTENSION_FILE" /></translation>
 <translation id="4087328411748538168">顯示在右側</translation>
-<translation id="4088879333319441249">要將所有分頁移出群組嗎？</translation>
 <translation id="4089235344645910861">設定儲存完畢，已開始同步處理。</translation>
 <translation id="4089817585533500276">Shift + <ph name="TOP_ROW_KEY" /> 鍵</translation>
 <translation id="4090103403438682346">啟用已驗證存取權</translation>
@@ -4322,7 +4316,6 @@
 <translation id="4148195018520464922">你可以限制只有特定使用者才能登入。設定完成後，系統會移除登入畫面上的「新增使用者」選項。你也可以移除現有的使用者。</translation>
 <translation id="4148957013307229264">安裝中...</translation>
 <translation id="4150201353443180367">顯示設定</translation>
-<translation id="4150417452770391330">連接攝影機</translation>
 <translation id="4150569944729499860">畫面內容</translation>
 <translation id="4151449637210235443">請與我們分享你近期的遊戲體驗</translation>
 <translation id="4151503145138736576">沒有可清理的離線儲存空間</translation>
@@ -5121,7 +5114,6 @@
 <translation id="4777458362738635055">這部裝置的其他使用者可以使用這個網路</translation>
 <translation id="4777813841994368231">已開啟 • 開發人員已取消發布這項擴充功能</translation>
 <translation id="4777825441726637019">Play 商店</translation>
-<translation id="4777866634702576038">要刪除分頁群組嗎？</translation>
 <translation id="4777943778632837590">設定網路名稱伺服器</translation>
 <translation id="4778653490315793244">目前還沒有內容</translation>
 <translation id="4779083564647765204">縮放</translation>
@@ -5533,7 +5525,6 @@
 <translation id="5093477827231450397">這份網站封鎖清單列出了你不希望向其他網站提供廣告建議的網站</translation>
 <translation id="5093569275467863761">無痕模式往返快取子頁框：<ph name="BACK_FORWARD_CACHE_INCOGNITO_PAGE_URL" /></translation>
 <translation id="5094176498302660097">你可以在「檔案」應用程式或其他應用程式中，透過這個應用程式開啟及編輯支援的檔案。如要控管要在這個應用程式預設開啟哪些檔案，請<ph name="BEGIN_LINK" />進一步瞭解如何在裝置上設定預設應用程式<ph name="END_LINK" />。</translation>
-<translation id="5094423602314093681">要移除分頁並刪除群組嗎？</translation>
 <translation id="5094721898978802975">與合作原生應用程式建立連線</translation>
 <translation id="5095252080770652994">進度</translation>
 <translation id="5095507226704905004">檔案已不存在，因此無法複製</translation>
@@ -7307,7 +7298,6 @@
 <translation id="6445450263907939268">如果你不想套用這些變更，可以還原為先前的設定。</translation>
 <translation id="6446213738085045933">建立桌面捷徑</translation>
 <translation id="6447842834002726250">Cookie</translation>
-<translation id="6449554712554071184">這項操作會將群組從裝置中永久刪除。</translation>
 <translation id="6450876761651513209">變更隱私權相關設定</translation>
 <translation id="6451591602925140504">{NUM_PAGES,plural, =0{<ph name="PAGE_TITLE" />}=1{<ph name="PAGE_TITLE" /> 和另外 1 個分頁}other{<ph name="PAGE_TITLE" /> 和另外 # 個分頁}}</translation>
 <translation id="6451689256222386810">如果你忘記通關密語，或是要變更這項設定，請<ph name="BEGIN_LINK" />重設同步處理功能<ph name="END_LINK" />。</translation>
@@ -8458,7 +8448,6 @@
 <translation id="7340650977506865820">網站正在分享你的螢幕畫面</translation>
 <translation id="7340757554212515731">自動將當機報告連同診斷與使用資料傳送給 Google</translation>
 <translation id="734088800888587319">網路指標</translation>
-<translation id="7341612916770129581">連接麥克風</translation>
 <translation id="7341834142292923918">需要這個網站的存取權限</translation>
 <translation id="7343372807593926528">請先說明問題再傳送意見回饋。</translation>
 <translation id="7344585835349671209">管理裝置上的 HTTPS/SSL 憑證</translation>
@@ -9358,7 +9347,6 @@
 <translation id="7974936243149753750">遮視區域</translation>
 <translation id="7975504106303186033">你必須將這部 Chrome Education 裝置註冊至教育版帳戶。如要註冊新帳戶，請前往 g.co/workspace/edusignup。</translation>
 <translation id="7977451675950311423">如果你使用的密碼因資料侵害事件而外洩，系統會顯示警告訊息。</translation>
-<translation id="797824194429476746">這些分頁會在這部裝置上保持開啟，但該群組會永久刪除。</translation>
 <translation id="7978412674231730200">秘密金鑰</translation>
 <translation id="7978450511781612192">你將登出自己的 Google 帳戶。你的書籤、歷史記錄、密碼和其他設定將不再保持同步。</translation>
 <translation id="7980066177668669492">Base64 編碼 ASCII，多項憑證</translation>
@@ -9413,6 +9401,7 @@
 <translation id="8017679124341497925">已編輯捷徑</translation>
 <translation id="8018298733481692628">要刪除這個設定檔嗎？</translation>
 <translation id="8018313076035239964">控制網站可使用的資訊，以及可對你顯示的內容</translation>
+<translation id="802154636333426148">下載失敗</translation>
 <translation id="8022466874160067884">輸入 Google 帳戶和密碼</translation>
 <translation id="8023133589013344428">在 ChromeOS Flex 設定中管理語言</translation>
 <translation id="8023801379949507775">立即更新擴充功能</translation>
@@ -10700,7 +10689,6 @@
 <translation id="8962863356073277855">網址格式必須是 https://www.example.com</translation>
 <translation id="8962918469425892674">這個網站正在使用動作感應器或光源感應器。</translation>
 <translation id="8963117664422609631">前往網站設定</translation>
-<translation id="8964795217937248330">要關閉分頁並刪除群組嗎？</translation>
 <translation id="8965037249707889821">輸入先前的密碼</translation>
 <translation id="8966809848145604011">其他個人資料</translation>
 <translation id="8967427617812342790">加入閱讀清單</translation>

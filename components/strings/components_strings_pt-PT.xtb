@@ -547,6 +547,7 @@ Se não permitir, isto será bloqueado pelas suas definições de privacidade. I
 <translation id="2003709556000175978">Repor a palavra-passe agora</translation>
 <translation id="2003775180883135320">Perfuração quádrupla na parte superior</translation>
 <translation id="2004697686368036666">As funcionalidades em alguns sites podem não funcionar</translation>
+<translation id="2005042463110681802">Está a ver este aviso porque o site não suporta HTTPS e está no Modo de navegação anónima. <ph name="BEGIN_LEARN_MORE_LINK" />Saiba mais<ph name="END_LEARN_MORE_LINK" /></translation>
 <translation id="2009942480257059311">Botão Criar evento; ative para criar rapidamente um novo evento no Calendário Google</translation>
 <translation id="201174227998721785">Faça a gestão das autorizações e dos dados armazenados em sites nas Definições do Chrome.</translation>
 <translation id="2012276282211112603">Não existem tópicos para apresentar neste momento</translation>
@@ -573,7 +574,6 @@ Se não permitir, isto será bloqueado pelas suas definições de privacidade. I
 <translation id="2046951263634619614">Retalhistas de livros</translation>
 <translation id="2048261947532620704">A traduzir a página</translation>
 <translation id="2053111141626950936">As páginas em <ph name="LANGUAGE" /> não serão traduzidas.</translation>
-<translation id="2055461225779831292">Usar e mover as suas câmaras (<ph name="CAMERAS_COUNT" />)</translation>
 <translation id="2056492565825767809">Bloquear o ponteiro do rato</translation>
 <translation id="2056658168519009885">Os sites podem pedir informações ao Chrome para ajudar a personalizar os anúncios que vê.</translation>
 <translation id="2059166748188874810">Município</translation>
@@ -651,7 +651,6 @@ Se não permitir, isto será bloqueado pelas suas definições de privacidade. I
 <translation id="2170417331417184438">Cartão guardado apenas no dispositivo</translation>
 <translation id="2172089022819052306">Reparação e manutenção de veículos</translation>
 <translation id="2175630235841878061">Os ficheiros com mais de 100 MB não estão disponíveis para transferência</translation>
-<translation id="2176198174348007293">Usar as suas câmaras (<ph name="CAMERAS_COUNT" />)</translation>
 <translation id="2176974405772725904">Guarde a morada na conta</translation>
 <translation id="2178665390943006934">Botão Atualizar Chrome; ative para atualizar o Chrome nas definições do Chrome</translation>
 <translation id="2181821976797666341">Políticas</translation>
@@ -3629,7 +3628,6 @@ Detalhes adicionais:
 <translation id="7947813448670013867"><ph name="SEE_CHROME_TIPS_FOCUSED_FRIENDLY_MATCH_TEXT" />, prima Tab e, em seguida, Enter para saber mais acerca das funcionalidades do Chrome</translation>
 <translation id="7949135979217012031">Antivírus e software malicioso</translation>
 <translation id="7950027195171824198">Faça a gestão das suas preferências de cookies nas Definições do Chrome.</translation>
-<translation id="7950440490184876634">Usar os seus microfones (<ph name="MICS_COUNT" />)</translation>
 <translation id="7951415247503192394">32 bits</translation>
 <translation id="7952192831285741665">EDP europeu</translation>
 <translation id="7952250633095257243">O atalho não pode estar vazio</translation>

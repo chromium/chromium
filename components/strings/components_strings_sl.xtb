@@ -547,6 +547,7 @@ V nasprotnem primeru bodo to blokirale nastavitve zasebnosti. S tem bo vsebina, 
 <translation id="2003709556000175978">Ponastavite geslo</translation>
 <translation id="2003775180883135320">Četverno luknjanje zgoraj</translation>
 <translation id="2004697686368036666">Funkcije na nekaterih spletnih mestih morda ne bodo delovale.</translation>
+<translation id="2005042463110681802">To opozorilo je prikazano, ker spletno mesto ne podpira protokola HTTPS in uporabljate anonimni način. <ph name="BEGIN_LEARN_MORE_LINK" />Več o tem<ph name="END_LEARN_MORE_LINK" /></translation>
 <translation id="2009942480257059311">Gumb za ustvarjanje dogodkov, aktivirajte, če želite hitro ustvariti nov dogodek v Google Koledarju</translation>
 <translation id="201174227998721785">Upravljajte dovoljenja in podatke, shranjene na spletnih mestih v Chromovih nastavitvah.</translation>
 <translation id="2012276282211112603">Trenutno ni tem, ki bi jih lahko prikazali</translation>
@@ -573,7 +574,6 @@ V nasprotnem primeru bodo to blokirale nastavitve zasebnosti. S tem bo vsebina, 
 <translation id="2046951263634619614">Trgovine s knjigami</translation>
 <translation id="2048261947532620704">Prevajanje strani</translation>
 <translation id="2053111141626950936">Strani v jeziku <ph name="LANGUAGE" /> ne bodo prevedene.</translation>
-<translation id="2055461225779831292">Uporaba in premikanje kamer (<ph name="CAMERAS_COUNT" />)</translation>
 <translation id="2056492565825767809">Zaklepanje kazalca miške</translation>
 <translation id="2056658168519009885">Spletna mesta lahko od Chroma zahtevajo podatke za pomoč pri osebnem prilagajanju prikazanih oglasov.</translation>
 <translation id="2059166748188874810">Občina</translation>
@@ -651,7 +651,6 @@ V nasprotnem primeru bodo to blokirale nastavitve zasebnosti. S tem bo vsebina, 
 <translation id="2170417331417184438">Kartica je shranjena samo v napravi</translation>
 <translation id="2172089022819052306">Servis in vzdrževanje vozil</translation>
 <translation id="2175630235841878061">Datoteke, večje od 100 MB, niso na voljo za prenos</translation>
-<translation id="2176198174348007293">Uporaba kamer (<ph name="CAMERAS_COUNT" />)</translation>
 <translation id="2176974405772725904">Shranite naslov v račun</translation>
 <translation id="2178665390943006934">Gumb za posodobitev Chroma, aktivirajte, če želite posodobiti Chrome v Chromovih nastavitvah</translation>
 <translation id="2181821976797666341">Pravilniki</translation>
@@ -3629,7 +3628,6 @@ Dodatne podrobnosti:
 <translation id="7947813448670013867"><ph name="SEE_CHROME_TIPS_FOCUSED_FRIENDLY_MATCH_TEXT" />, pritisnite tabulatorko, nato Enter, če želite izvedeti več o funkcijah Chroma</translation>
 <translation id="7949135979217012031">Zaščita pred virusi in zlonamerno programsko opremo</translation>
 <translation id="7950027195171824198">Upravljajte nastavitve piškotkov v Chromovih nastavitvah.</translation>
-<translation id="7950440490184876634">Uporaba mikrofonov (<ph name="MICS_COUNT" />)</translation>
 <translation id="7951415247503192394">(32-bitno)</translation>
 <translation id="7952192831285741665">European EDP</translation>
 <translation id="7952250633095257243">Polje za bližnjico ne sme biti prazno</translation>

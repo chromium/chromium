@@ -252,6 +252,7 @@
 <translation id="1915307458270490472">قطع الاتصال</translation>
 <translation id="1918022425394817322">تم توجيه الكاميرا إلى الزاوية العلوية اليمنى.</translation>
 <translation id="1923539912171292317">النقرات التلقائية</translation>
+<translation id="1925320505152357008">أقل من دقيقة واحدة</translation>
 <translation id="1928739107511554905">‏للحصول على التحديث، استخدم الشاشة التي تعمل باللمس لإعادة تشغيل جهاز Chromebook، مع توصيل لوحة المفاتيح المرفقة.</translation>
 <translation id="1948405482892809935">التبديل إلى المستخدم التالي</translation>
 <translation id="1951012854035635156">المساعد</translation>
@@ -607,6 +608,7 @@
 <translation id="334927402682780278">اختيار النص من موضع المؤشر إلى نهاية السطر</translation>
 <translation id="3349345708646875009">فتح "إدارة المهام"</translation>
 <translation id="3364721542077212959">أدوات قلم الشاشة</translation>
+<translation id="3365281428003534650">ضبط موقّت ومَهمّة وموسيقى</translation>
 <translation id="3365977133351922112">‏هاتفك بعيد جدًا. ضَع هاتفك في مكان قريب من جهاز Chromebook.</translation>
 <translation id="3368922792935385530">متصل</translation>
 <translation id="3369111525500416043">مطلوب تسليمها قريبًا</translation>
@@ -910,6 +912,7 @@
 <translation id="4406883609789734330">النسخ النصي التلقائي</translation>
 <translation id="4412698727486357573">مركز المساعدة</translation>
 <translation id="4412944820643904175">ميزة <ph name="FEATURE_NAME" /> غير مُفعَّلة.</translation>
+<translation id="4417647906073317561">إعدادات "وضع التركيز" لضبط موقّت ومَهمّة وموسيقى ومساعدتك في التركيز على مهامك</translation>
 <translation id="4424159417645388645">سطح المكتب 5</translation>
 <translation id="4430019312045809116">مستوى الصوت</translation>
 <translation id="4441283832827406317">تم ترتيب التطبيقات حسب الاسم.</translation>
@@ -1862,6 +1865,7 @@
         <ph name="MANAGED" />،
         <ph name="IME" />،
         <ph name="LOCALE" /></translation>
+<translation id="7899977217122813285">يتم كتم صوت الإشعارات حتى <ph name="TIME" /> أثناء استخدام "وضع التركيز"</translation>
 <translation id="7901190436359881020">تبديل النوافذ</translation>
 <translation id="7901405293566323524">Phone Hub</translation>
 <translation id="7902625623987030061">المس أداة استشعار بصمات الإصبع.</translation>

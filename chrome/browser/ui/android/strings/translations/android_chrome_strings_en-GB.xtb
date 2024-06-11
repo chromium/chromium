@@ -90,6 +90,9 @@
 <translation id="1390418506739274310">You may see the history from other apps that open links in Chrome. Your Google Account may have other forms of browsing history at <ph name="BEGIN_LINK" />myactivity.google.com<ph name="END_LINK" />.</translation>
 <translation id="13931502444227376">To continue, <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> will share your name, email address and profile picture with this site. See this site's <ph name="BEGIN_LINK1" />Terms of Service<ph name="END_LINK1" />.</translation>
 <translation id="1397811292916898096">Search with <ph name="PRODUCT_NAME" /></translation>
+<translation id="1398057416966591719">You can <ph name="BEGIN_LINK1" />manage what Chrome data is saved<ph name="END_LINK1" /> in your Google Account.
+
+For more settings that use data to improve your Chrome experience, go to <ph name="BEGIN_LINK2" />Google services<ph name="END_LINK2" />.</translation>
 <translation id="1407069428457324124">Dark theme</translation>
 <translation id="1407135791313364759">Open all</translation>
 <translation id="1409879593029778104"><ph name="FILE_NAME" /> download prevented because file already exists.</translation>
@@ -248,6 +251,7 @@ Only someone with your passphrase can read your encrypted data. The passphrase i
 <translation id="2286841657746966508">Billing address</translation>
 <translation id="228704530595896923">List of sharing options.</translation>
 <translation id="2297822946037605517">Share this page</translation>
+<translation id="22981027763501686">Sync to get your bookmarks, history and more on your other devices</translation>
 <translation id="230115972905494466">No compatible devices found</translation>
 <translation id="2318045970523081853">Tap to make call</translation>
 <translation id="2321086116217818302">Preparing passwords…</translation>
@@ -274,6 +278,7 @@ Only someone with your passphrase can read your encrypted data. The passphrase i
 <translation id="2450083983707403292">Do you want to start downloading <ph name="FILE_NAME" /> again?</translation>
 <translation id="2453860139492968684">Finish</translation>
 <translation id="2461822463642141190">Current</translation>
+<translation id="2472163211318554013">Sign in to get the most out of Chrome</translation>
 <translation id="247737702124049222">Image descriptions are on</translation>
 <translation id="2479148705183875116">Go to Settings</translation>
 <translation id="2482878487686419369">Notifications</translation>
@@ -425,7 +430,6 @@ Only someone with your passphrase can read your encrypted data. The passphrase i
 <translation id="3098745985164956033">Some images are sent to Google to improve descriptions for you</translation>
 <translation id="3114507951000454849">Read today's news <ph name="NEWS_ICON" /></translation>
 <translation id="3123734510202723619">Announcements</translation>
-<translation id="3146775326699342508">Sign in to get your bookmarks and more from your other devices</translation>
 <translation id="314939179385989105">Chrome’s homepage</translation>
 <translation id="3158667104057012316">Sorting by manual order</translation>
 <translation id="3166827708714933426">Tab and window shortcuts</translation>
@@ -856,6 +860,7 @@ Your Google Account may have other forms of browsing history such as searches an
 <translation id="5292796745632149097">Send to</translation>
 <translation id="5301876394151419436">You are signed in as <ph name="EMAIL" />. You can stop syncing at any time in settings. Google may personalise Search and other services based on your history.</translation>
 <translation id="5304593522240415983">This field cannot be blank</translation>
+<translation id="5306014156308790439">Disabled Add to collection</translation>
 <translation id="5308380583665731573">Connect</translation>
 <translation id="5316947901395241499">Password saving has been turned off by your administrator</translation>
 <translation id="5317780077021120954">Save</translation>
@@ -1343,6 +1348,7 @@ To change this setting, <ph name="BEGIN_LINK" />delete the Chrome data in your a
 <translation id="752220631458524187">Disconnect when you’ve finished</translation>
 <translation id="7523960634226602883">Search with your camera using Google Lens</translation>
 <translation id="752731652852882757">Block while using Incognito</translation>
+<translation id="7557508262441527045">Signed out</translation>
 <translation id="7577900504646297215">Manage interests</translation>
 <translation id="757855969265046257">{FILES,plural, =1{<ph name="FILES_DOWNLOADED_ONE" /> file downloaded}other{<ph name="FILES_DOWNLOADED_MANY" /> files downloaded}}</translation>
 <translation id="7581273696622423628">Take survey</translation>
@@ -1388,7 +1394,6 @@ To change this setting, <ph name="BEGIN_LINK" />delete the Chrome data in your a
 <translation id="777637629667389858">When you're signed in, protects you across Google services.</translation>
 <translation id="7778840695157240389">Check back later for new stories</translation>
 <translation id="7780645209293383778">Temporarily links this data to your Google Account when you're signed in, to protect you across Google apps</translation>
-<translation id="7786562169000598736">Get all your bookmarks</translation>
 <translation id="7791543448312431591">Add</translation>
 <translation id="7798392620021911922">Restored <ph name="TAB_COUNT" /> tabs</translation>
 <translation id="780287761701992588">Get your bookmarks, passwords and more on all your devices</translation>

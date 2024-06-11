@@ -186,7 +186,6 @@ Tasub teada
 <translation id="6484712497741564393">Sisse logitud kasutajana <ph name="EMAIL" />.
 
 Teie andmed on krüpteeritud teie parooliga. Chrome’i andmete kasutamiseks ja salvestamiseks oma Google’i kontole sisestage parool.</translation>
-<translation id="6540120577248033958">Külastage saiti ja klõpsake Chrome'i menüüs nupul Jälgi</translation>
 <translation id="6545449117344801102">Chrome tuvastab aadressid ning annab teile Google Mapsi abil juhiseid ja kohalikku teavet.</translation>
 <translation id="6634107063912726160">Väljalogimisel ei sünkrooni Chrome teie Google'i kontoga uusi andmeid. Varem sünkroonitud andmed jäävad kontole.</translation>
 <translation id="6646696210740573446">Saadab privaatse serveri kaudu Google'ile URL-i hägustatud osa, mis peidab teie IP-aadressi. Kui sait üritab teie parooli varastada või laadite alla kahjuliku faili, võib Chrome saata Google'ile ka URL-e, sh lehe sisu.</translation>

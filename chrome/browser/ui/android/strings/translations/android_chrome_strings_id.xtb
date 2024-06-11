@@ -274,6 +274,7 @@ Hanya orang yang memiliki frasa sandi Anda yang dapat membaca data terenkripsi A
 <translation id="2450083983707403292">Ingin mulai mendownload <ph name="FILE_NAME" /> lagi?</translation>
 <translation id="2453860139492968684">Selesai</translation>
 <translation id="2461822463642141190">Arus</translation>
+<translation id="2472163211318554013">Login untuk mengoptimalkan penggunaan Chrome</translation>
 <translation id="247737702124049222">Deskripsi gambar aktif</translation>
 <translation id="2479148705183875116">Buka Setelan</translation>
 <translation id="2482878487686419369">Notifikasi</translation>
@@ -285,6 +286,7 @@ Hanya orang yang memiliki frasa sandi Anda yang dapat membaca data terenkripsi A
 <translation id="2515921719039583189">Hapus data Chrome dari perangkat ini?</translation>
 <translation id="2517113738956581680">Sheet ukuran penuh</translation>
 <translation id="2523184218357549926">Mengirimkan URL halaman yang Anda buka ke Google</translation>
+<translation id="2524132927880411790">Buka Penelusuran Suara Aplikasi Google</translation>
 <translation id="2527209463677295330">Dengan menyertakan lebih banyak teks halaman, Anda dapat melihat hasil yang lebih baik</translation>
 <translation id="2527497042232966453">Beralih ke tab Samaran</translation>
 <translation id="2527779675047087889">Sembunyikan konten papan klip</translation>
@@ -424,7 +426,6 @@ Hanya orang yang memiliki frasa sandi Anda yang dapat membaca data terenkripsi A
 <translation id="3098745985164956033">Beberapa gambar dikirim ke Google guna menyempurnakan deskripsi untuk Anda</translation>
 <translation id="3114507951000454849">Baca berita hari ini <ph name="NEWS_ICON" /></translation>
 <translation id="3123734510202723619">Pengumuman</translation>
-<translation id="3146775326699342508">Login untuk mendapatkan bookmark dan data lainnya dari perangkat Anda yang lain</translation>
 <translation id="314939179385989105">Halaman beranda Chrome</translation>
 <translation id="3158667104057012316">Mengurutkan berdasarkan urutan manual</translation>
 <translation id="3166827708714933426">Pintasan tab dan jendela</translation>
@@ -519,6 +520,7 @@ Hanya orang yang memiliki frasa sandi Anda yang dapat membaca data terenkripsi A
 <translation id="363596933471559332">Otomatis login ke situs web menggunakan kredensial yang tersimpan. Saat fitur dinonaktifkan, Anda akan dimintai verifikasi setiap kali hendak login ke situs web.</translation>
 <translation id="3636940436873918441">Bahasa pilihan</translation>
 <translation id="3637744895182738742">Jika lupa frasa sandi atau ingin mengubah setelan ini, <ph name="BEGIN_LINK" />hapus data Chrome di akun Anda<ph name="END_LINK" />.</translation>
+<translation id="3674208116086565128">Buka Beranda Aplikasi Google</translation>
 <translation id="368329460027487650">Logout. Buka opsi untuk login.</translation>
 <translation id="3687645719033307815">Anda sedang melihat pratinjau halaman ini</translation>
 <translation id="3690369331356918524">Memberikan peringatan jika sandi terekspos saat terjadi pelanggaran data</translation>
@@ -1341,6 +1343,7 @@ Untuk mengubah setelan ini, <ph name="BEGIN_LINK" />hapus data Chrome di akun An
 <translation id="752220631458524187">Putuskan koneksi saat Anda selesai</translation>
 <translation id="7523960634226602883">Telusuri dengan kamera Anda menggunakan Google Lens</translation>
 <translation id="752731652852882757">Blokir saat menggunakan mode Samaran</translation>
+<translation id="7557508262441527045">Telah logout</translation>
 <translation id="7577900504646297215">Kelola minat</translation>
 <translation id="757855969265046257">{FILES,plural, =1{<ph name="FILES_DOWNLOADED_ONE" /> file didownload}other{<ph name="FILES_DOWNLOADED_MANY" /> file didownload}}</translation>
 <translation id="7581273696622423628">Ikuti survei</translation>
@@ -1386,7 +1389,6 @@ Untuk mengubah setelan ini, <ph name="BEGIN_LINK" />hapus data Chrome di akun An
 <translation id="777637629667389858">Jika login, Anda akan dilindungi di berbagai layanan Google.</translation>
 <translation id="7778840695157240389">Periksa kembali nanti untuk membaca artikel baru</translation>
 <translation id="7780645209293383778">Menautkan sementara data ini ke Akun Google Anda saat login, untuk melindungi Anda di berbagai aplikasi Google</translation>
-<translation id="7786562169000598736">Dapatkan semua bookmark Anda</translation>
 <translation id="7791543448312431591">Tambahkan</translation>
 <translation id="7798392620021911922">Memulihkan <ph name="TAB_COUNT" /> tab</translation>
 <translation id="780287761701992588">Mendapatkan bookmark, sandi, dan info Anda yang lain di semua perangkat Anda</translation>
@@ -1475,6 +1477,7 @@ Untuk mengubah setelan ini, <ph name="BEGIN_LINK" />hapus data Chrome di akun An
 <translation id="813082847718468539">Lihat informasi situs</translation>
 <translation id="8135406045838672858">PDF hasil download akan otomatis dibuka dengan <ph name="APP_NAME" /></translation>
 <translation id="8137562778192957619">Anda tidak perlu mengingat sandi ini. Sandi akan disimpan ke Pengelola Sandi Google.</translation>
+<translation id="8152331954420209374">Buka Lens</translation>
 <translation id="8163820386638255770">Untuk menggunakan dan menyimpan sandi di Akun Google Anda, verifikasi diri Anda</translation>
 <translation id="8171286197772512427">Sheet bagikan dengan masukan ringkasan dibuka</translation>
 <translation id="8179976553408161302">Enter</translation>
@@ -1511,6 +1514,7 @@ Untuk mengubah setelan ini, <ph name="BEGIN_LINK" />hapus data Chrome di akun An
 <translation id="8348430946834215779">Gunakan HTTPS jika memungkinkan dan dapatkan peringatan sebelum memuat situs yang tidak mendukungnya</translation>
 <translation id="8354977102499939946">Telusuri dengan cepat menggunakan suara Anda. Untuk mengedit pintasan ini, buka Setelan.</translation>
 <translation id="835847953965672673"><ph name="NUMBER_OF_DOWNLOADS" /> download dipulihkan</translation>
+<translation id="8367705492654390392">Tanyakan apa saja</translation>
 <translation id="8368001212524806591">Pantau harga</translation>
 <translation id="8378850197701296741">Anda memiliki bookmark, histori, dan setelan lain dari <ph name="FROM_ACCOUNT" />.</translation>
 <translation id="8387617938027387193">Verifikasi diri Anda</translation>

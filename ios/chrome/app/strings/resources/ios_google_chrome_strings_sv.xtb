@@ -186,7 +186,6 @@ Tänk på detta:
 <translation id="6484712497741564393">Inloggad som <ph name="EMAIL" />.
 
 Din data krypteras med lösenfrasen. Ange den om du vill använda och spara Chrome-data i ditt Google-konto.</translation>
-<translation id="6540120577248033958">Besök en webbplats och klicka på Följ i Chrome-menyn</translation>
 <translation id="6545449117344801102">Chrome identifierar adresser och använder Google Maps för att ge dig vägbeskrivningar och lokal information.</translation>
 <translation id="6634107063912726160">När du har loggat ut synkroniseras ingen mer data med ditt Google-konto i Chrome. Data som redan har synkroniserats finns kvar i kontot.</translation>
 <translation id="6646696210740573446">En obfuskerad del av webbadressen skickas till Google via en integritetsserver som döljer din IP-adress. Om du utsätts för försök att kapa ditt lösenord på en webbplats eller om du laddar ned en skadlig fil kan webbadresserna skickas från Chrome till Google tillsammans med delar av sidinnehållet.</translation>

@@ -372,7 +372,6 @@
 <translation id="1260810365552581339">‏قد لا تتوفّر مساحة تخزين كافية على القرص في نظام التشغيل Linux. يمكنك زيادة مساحة التخزين على القرص في نظام التشغيل Linux ومحاولة الاستعادة مرة أخرى من خلال <ph name="LINK_START" />الإعدادات<ph name="LINK_END" />.</translation>
 <translation id="1261380933454402672">معتدل</translation>
 <translation id="126156426083987769">حدثت مشكلة متعلِّقة بتراخيص الجهاز في الوضع التجريبي</translation>
-<translation id="1261885284931493480">هل تريد إزالة علامات التبويب وحذف المجموعة؟</translation>
 <translation id="1263231323834454256">قائمة القراءة</translation>
 <translation id="1263733306853729545">استخدام مفتاحَي <ph name="MINUS" /> و<ph name="EQUAL" /> لتصفّح قائمة خيارات</translation>
 <translation id="126387934568812801">يُرجى إدراج لقطة الشاشة هذه وعناوين علامات التبويب المفتوحة.</translation>
@@ -1646,7 +1645,6 @@
 <translation id="2187895286714876935">خط استيراد شهادة الخادم</translation>
 <translation id="2187906491731510095">تم تحديث الإضافات.</translation>
 <translation id="2188881192257509750">فتح <ph name="APPLICATION" /></translation>
-<translation id="2188919919468240749">هل تريد حذف مجموعة علامات التبويب؟</translation>
 <translation id="2190069059097339078">‏أداة الحصول على بيانات اعتماد WiFi</translation>
 <translation id="219008588003277019">وحدة البرنامج العميل الأصلي: <ph name="NEXE_NAME" /></translation>
 <translation id="2190355936436201913">(فارغ)</translation>
@@ -2087,7 +2085,6 @@
 <translation id="249113932447298600">عذرًا، لا يتوفر الجهاز <ph name="DEVICE_LABEL" /> في الوقت الحالي.</translation>
 <translation id="2491587035099903063">معاينة الصوت باللغة <ph name="LANGUAGE" /></translation>
 <translation id="2492461744635776704">جارٍ تحضير طلب توقيع الشهادة</translation>
-<translation id="2492964937550251173">هل تريد إغلاق علامات التبويب وحذف المجموعة؟</translation>
 <translation id="249330843868392562">فتح إعدادات تحويل النص إلى كلام</translation>
 <translation id="2494555621641843783">‏يتعذّر تثبيت تطبيق Steam</translation>
 <translation id="2495141202137516054">‏من Drive</translation>
@@ -2814,7 +2811,6 @@
 <translation id="3021066826692793094">فراشة</translation>
 <translation id="3021678814754966447">عرض م&amp;صدر الإطار</translation>
 <translation id="3021902017511220299">تعذَّر إجراء عملية الفحص. حظرَ المشرف هذا الإجراء.</translation>
-<translation id="3022068420678496307">‏سيؤدي هذا الإجراء إلى حذف المجموعة من جميع الأجهزة التي تم تسجيل الدخول إلى Chrome عليها باستخدام حساب Google هذا.</translation>
 <translation id="3022361196600037287">‏ستتم إزالة <ph name="DEVICE" /> من جهاز Chromebook هذا ولن يتم حفظه في حساب <ph name="PRIMARY_EMAIL" />.</translation>
 <translation id="3022978424994383087">لم يتم استيعاب هذا.</translation>
 <translation id="3023464535986383522">الاستماع والاختيار</translation>
@@ -2989,6 +2985,7 @@
 <translation id="3163511056918491211">‏يمكنك استعادة بياناتك أو تبديل الأجهزة بسهولة متى شئت. يتم تحميل النُسخ الاحتياطية إلى Google ويتم تشفيرها باستخدام كلمة مرور حساب Google.</translation>
 <translation id="3164329792803560526">مشاركة علامة التبويب هذه مع <ph name="APP_NAME" /></translation>
 <translation id="3165390001037658081">قد يحظر بعض مشغلي شبكات الجوّال هذه الميزة.</translation>
+<translation id="316542773973815724">تنقل</translation>
 <translation id="3165734944977250074">لا يمكن نقل الملف لأنّه لم يعُد متوفّرًا.</translation>
 <translation id="3166443275568926403">حالة البطارية والأداء</translation>
 <translation id="3169930038976362151">اختَر المظهر الذي يناسب احتياجاتك. لتغيير المظهر والخلفية وشاشة الاستراحة وغيرها، كل ما عليك فعله هو النقر مع الاستمرار على سطح المكتب.</translation>
@@ -3873,7 +3870,6 @@
 <translation id="3810914450553844415">‏لا يسمح المشرف بإنشاء حسابات Google إضافية.</translation>
 <translation id="3810973564298564668">إدارة</translation>
 <translation id="381202950560906753">إضافة بصمة إصبع أخرى</translation>
-<translation id="381219490185664296">هل تريد إلغاء تجميع مجموعة علامات التبويب؟</translation>
 <translation id="3812525830114410218">شهادة سيئة</translation>
 <translation id="3813296892522778813">‏يمكنك الانتقال إلى <ph name="BEGIN_LINK_CHROMIUM" />مساعدة Google Chrome<ph name="END_LINK_CHROMIUM" /> إذا لم تتمكن من العثور عما تبحث عنه</translation>
 <translation id="3813358687923336574">اللغة المستخدمة لترجمة الصفحات وميزة "معلومات سريعة"</translation>
@@ -4225,6 +4221,7 @@
 <translation id="4066207411788646768">يُرجى التحقق من الاتصال بالإنترنت لمعرفة الطابعات المتاحة في شبكتك.</translation>
 <translation id="4067839975993712852">وضع علامة "مقروءة" على علامة التبويب الحالية</translation>
 <translation id="4068776064906523561">بصمات الإصبع المحفوظة</translation>
+<translation id="4070132839822635162">عدم تسجيل الدخول</translation>
 <translation id="407173827865827707">عند النقر</translation>
 <translation id="4072805772816336153">يُرجى إعادة المحاولة لاحقًا.</translation>
 <translation id="4074164314564067597">لوحة المفاتيح</translation>
@@ -4233,7 +4230,6 @@
 <translation id="4078738236287221428">حادّ</translation>
 <translation id="4078903002989614318">خيارات الترتيب والقوائم</translation>
 <translation id="4079140982534148664">استخدام التدقيق الإملائي المُحسَّن</translation>
-<translation id="4083735423615351075">‏ستظل علامات التبويب مفتوحة على هذا الجهاز، ولكن سيتم حذف المجموعة من جميع الأجهزة التي تم تسجيل الدخول إلى Chrome عليها باستخدام حساب Google هذا.</translation>
 <translation id="4084682180776658562">إشارة</translation>
 <translation id="4084835346725913160">غلق <ph name="TAB_NAME" /></translation>
 <translation id="4085298594534903246">‏تم منع تشغيل JavaScript في هذه الصفحة.</translation>
@@ -4243,7 +4239,6 @@
 
 <ph name="EXTENSION_FILE" /></translation>
 <translation id="4087328411748538168">عرض على الجانب الأيمن</translation>
-<translation id="4088879333319441249">هل تريد إلغاء تجميع مجموعة علامات التبويب؟</translation>
 <translation id="4089235344645910861">تم حفظ الإعدادات، وبدأت عملية المزامنة.</translation>
 <translation id="4089817585533500276">shift + <ph name="TOP_ROW_KEY" /></translation>
 <translation id="4090103403438682346">تفعيل الدخول الذي تم التحقق منه</translation>
@@ -4329,7 +4324,6 @@
 <translation id="4148195018520464922">يمكنك حصر إمكانية تسجيل الدخول على مستخدمين معيّنين. سيؤدي هذا الإجراء إلى إزالة خيار "إضافة شخص" على شاشة تسجيل الدخول. ويمكنك أيضًا إزالة المستخدمين الحاليين.</translation>
 <translation id="4148957013307229264">جارٍ التثبيت...</translation>
 <translation id="4150201353443180367">عرض</translation>
-<translation id="4150417452770391330">توصيل كاميرا</translation>
 <translation id="4150569944729499860">سياق الشاشة</translation>
 <translation id="4151449637210235443">أخبِرنا عن تجربتك مع اللّعب في الفترة الأخيرة.</translation>
 <translation id="4151503145138736576">لا تتوفّر مساحة تخزين بلا إنترنت للمسح</translation>
@@ -5128,7 +5122,6 @@
 <translation id="4777458362738635055">يمكن للمستخدمين الآخرين لهذا الجهاز استخدام هذه الشبكة.</translation>
 <translation id="4777813841994368231">مفعَّلة • ألغى المطوِّر نشر هذه الإضافة.</translation>
 <translation id="4777825441726637019">‏متجر Play</translation>
-<translation id="4777866634702576038">هل تريد حذف مجموعة علامات التبويب؟</translation>
 <translation id="4777943778632837590">ضبط خوادم أسماء الشبكة</translation>
 <translation id="4778653490315793244">ما من محتوى متوفّر حتى الآن</translation>
 <translation id="4779083564647765204">تكبير/تصغير</translation>
@@ -5540,7 +5533,6 @@
 <translation id="5093477827231450397">تضم هذه القائمة المواقع الإلكترونية التي حظرتها ولا تريدها أن تقترح إعلانات لعرضها على مواقع إلكترونية أخرى.</translation>
 <translation id="5093569275467863761">الإطار الفرعي المخزّن من خلال ميزة "التخزين المؤقت للصفحات" في وضع "التصفّح المتخفي": <ph name="BACK_FORWARD_CACHE_INCOGNITO_PAGE_URL" /></translation>
 <translation id="5094176498302660097">يمكنك فتح الملفات المتوافقة وتعديلها باستخدام هذا التطبيق من تطبيق "الملفات" أو من تطبيقات أخرى. للتحكّم في الملفات التي تفتح هذا التطبيق تلقائيًا، <ph name="BEGIN_LINK" />تعرَّف على كيفية تحديد التطبيقات التلقائية على جهازك<ph name="END_LINK" />.</translation>
-<translation id="5094423602314093681">هل تريد إزالة علامات التبويب وحذف المجموعة؟</translation>
 <translation id="5094721898978802975">الاتصال بتطبيقات التعاون الأصلية</translation>
 <translation id="5095252080770652994">مستوى التقدُّم</translation>
 <translation id="5095507226704905004">لا يمكن نسخ الملف لأنّه لم يعُد متوفّرًا.</translation>
@@ -7319,7 +7311,6 @@
 <translation id="6445450263907939268">إذا كنت لا تريد هذه التغييرات، فيمكنك استعادة الإعدادات السابقة.</translation>
 <translation id="6446213738085045933">إنشاء اختصار على سطح المكتب</translation>
 <translation id="6447842834002726250">ملفّات تعريف الارتباط</translation>
-<translation id="6449554712554071184">سيؤدي هذا الإجراء إلى حذف المجموعة نهائيًا من جهازك.</translation>
 <translation id="6450876761651513209">تغيير الإعدادات المتعلقة بالخصوصية</translation>
 <translation id="6451591602925140504">{NUM_PAGES,plural, =0{<ph name="PAGE_TITLE" />}=1{<ph name="PAGE_TITLE" /> وعلامة تبويب واحدة إضافية}two{<ph name="PAGE_TITLE" /> وعلامَتا تبويب إضافيتان}few{<ph name="PAGE_TITLE" /> و# علامات تبويب إضافية}many{<ph name="PAGE_TITLE" /> و# علامة تبويب إضافية}other{<ph name="PAGE_TITLE" /> و# علامة تبويب إضافية}}</translation>
 <translation id="6451689256222386810">إذا نسيت عبارة المرور أو رغبت في تغيير هذا الإعداد، يمكنك <ph name="BEGIN_LINK" />إعادة ضبط المزامنة<ph name="END_LINK" />.</translation>
@@ -7354,6 +7345,7 @@
 <translation id="6469702164109431067">كلمات المرور ومفاتيح المرور</translation>
 <translation id="6470823736074966819">كتم صوت الإشعارات</translation>
 <translation id="6472893788822429178">عرض زر الصفحة الرئيسية</translation>
+<translation id="6473315466413288899">حدِّد خيارًا</translation>
 <translation id="6474498546677193336">‏تعذّر إلغاء المشاركة بسبب استخدام تطبيق لهذا الملف. سيتم إلغاء مشاركة الملف عند إيقاف Linux.</translation>
 <translation id="6474884162850599008">‏إلغاء ربط حساب Google Drive</translation>
 <translation id="6475294023568239942">‏يجب إخلاء بعض المساحة على القرص أو تغيير حجم القرص في Linux من الإعدادات.</translation>
@@ -8479,7 +8471,6 @@
 <translation id="7340650977506865820">يشارك الموقع الإلكتروني شاشتك.</translation>
 <translation id="7340757554212515731">‏يؤدي تفعيل هذا الخيار إلى إرسال تقارير الأعطال بالإضافة إلى بيانات التشخيص وبيانات الاستخدام إلى Google تلقائيًا.</translation>
 <translation id="734088800888587319">مقاييس الشبكة</translation>
-<translation id="7341612916770129581">توصيل ميكروفون</translation>
 <translation id="7341834142292923918">تريد الإضافة الوصول إلى الموقع الإلكتروني هذا</translation>
 <translation id="7343372807593926528">يُرجى وصف المشكلة قبل إرسال التعليقات.</translation>
 <translation id="7344585835349671209">‏إدارة شهادات HTTPS أو شهادات طبقة المقابس الآمنة على جهازك</translation>
@@ -9378,7 +9369,6 @@
 <translation id="7974936243149753750">الخروج عن إطار الشاشة</translation>
 <translation id="7975504106303186033">‏يجب تسجيل جهاز Chrome Education هذا باستخدام حساب تعليم. للاشتراك في حساب جديد، يُرجى زيارة g.co/workspace/edusignup.</translation>
 <translation id="7977451675950311423">ستتلقّى تحذيرًا إذا كنت تستخدم كلمة مرور تم اختراقها في عملية اختراق للبيانات.</translation>
-<translation id="797824194429476746">ستظل علامات التبويب مفتوحة على هذا الجهاز، ولكن سيتم حذف المجموعة نهائيًا.</translation>
 <translation id="7978412674231730200">مفتاح خاص</translation>
 <translation id="7978450511781612192">‏سيؤدي ذلك إلى تسجيل خروجك من حساباتك على Google. ولن تتم بعد ذلك مزامنة الإشارات المرجعية والسجلّ وكلمات المرور والمزيد.</translation>
 <translation id="7980066177668669492">‏حفظ عدة شهادات باستخدام ترميز ASCII عبر Base64</translation>
@@ -9433,6 +9423,7 @@
 <translation id="8017679124341497925">تمّ تعديل الاختصار</translation>
 <translation id="8018298733481692628">هل تريد حذف هذا الملف الشخصي؟</translation>
 <translation id="8018313076035239964">تتحكّم هذه الإعدادات في المعلومات التي يمكن أن تستخدمها المواقع الإلكترونية والمحتوى الذي يمكن أن تعرضه لك</translation>
+<translation id="802154636333426148">تعذّر التنزيل</translation>
 <translation id="8022466874160067884">‏إدخال حسابك على Google وكلمة المرور</translation>
 <translation id="8023133589013344428">‏إدارة اللغات في إعدادات نظام التشغيل ChromeOS Flex</translation>
 <translation id="8023801379949507775">تحديث الإضافات الآن</translation>
@@ -10725,7 +10716,6 @@
 <translation id="8962863356073277855">‏يجب أن يكون تنسيق عنوان URL كالتالي: https://www.example.com.</translation>
 <translation id="8962918469425892674">تم السماح لهذا الموقع باستخدام أجهزة استشعار الإضاءة أو الحركة.</translation>
 <translation id="8963117664422609631">الانتقال إلى إعدادات الموقع الإلكتروني</translation>
-<translation id="8964795217937248330">هل تريد إغلاق علامات التبويب وحذف المجموعة؟</translation>
 <translation id="8965037249707889821">إدخال كلمة المرور القديمة</translation>
 <translation id="8966809848145604011">الملفات الشخصية الأخرى</translation>
 <translation id="8967427617812342790">الإضافة إلى قائمة القراءة</translation>
@@ -10834,6 +10824,7 @@
 <translation id="9031811691986152304">إعادة المحاولة</translation>
 <translation id="9032004780329249150">‏استخدام كلمات المرور على أجهزة iOS</translation>
 <translation id="9032097289595078011">إيقاف ميزة "الإقران السريع"</translation>
+<translation id="9032513103438497286">‏بإمكانك حظر التطبيقات المثبَّتة على <ph name="DEVICE_TYPE" /> هذا. ولفرض قيود على تنزيل التطبيقات أو المحتوى، يُرجى الانتقال إلى إعدادات Google Play.</translation>
 <translation id="9033765790910064284">متابعة على أي حال</translation>
 <translation id="9033857511263905942">ل&amp;صق</translation>
 <translation id="9034408118624208974">‏ألم يسبق لك استخدام جهاز Chromebook؟ فعِّل المزامنة حتى يتم الاحتفاظ بنسخة احتياطية من إعداداتك المفضَّلة.</translation>

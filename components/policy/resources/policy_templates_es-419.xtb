@@ -357,6 +357,7 @@ que se instale.</translation>
 
       Advertencia: "Wipe" y "MinimalMigrate" eliminarán los datos locales.</translation>
 <translation id="1248955696540150266">Permitir descargas de actualizaciones automáticas entre pares</translation>
+<translation id="1249640740800891502">Configuración de SkyVault (todos los datos en la nube)</translation>
 <translation id="1250597158212586309">Si habilitas esta política o no la estableces, el usuario podrá descartar o restablecer las alertas de contraseña hackeada.
 
       Si inhabilitas esta configuración, los usuarios no podrán descartar las alertas de contraseña hackeada. Si la habilitas, los usuarios podrán descartar las alertas de contraseña hackeada.</translation>
@@ -2115,6 +2116,7 @@ selección predeterminada.</translation>
 
       Debe tenerse en cuenta que, para que tenga un funcionamiento correcto, esta función requiere componentes adicionales que no están disponibles fuera del entorno de red de Google.</translation>
 <translation id="2536525645274582300">El usuario decide si habilita los servicios de ubicación de Google</translation>
+<translation id="2536717624356629471">Habilitar sonidos en el Modo sin distracciones para ChromeOS</translation>
 <translation id="254653220329944566">Habilitar los informes en la nube de <ph name="PRODUCT_NAME" /></translation>
 <translation id="2547854230073316008">Si estableces la política, se especificarán la resolución y el factor de escala para cada pantalla. Se aplicará la configuración de pantallas externas a las pantallas que se conecten. (No se aplicará la política si las pantallas no admiten la escala o la resolución especificadas).
 
@@ -3129,6 +3131,7 @@ En <ph name="MS_WIN_NAME" />, esta política solo está disponible en instancias
 <translation id="3338431256935927407">Controla los parámetros de configuración relacionados con la función de carga en la nube.</translation>
 <translation id="3339271789059866414">Configura la disponibilidad del servicio de proxy del sistema y las credenciales de proxy para los servicios del sistema.
       Si no se establece la política, no estará disponible el servicio de proxy del sistema.</translation>
+<translation id="3341649870321644698">Habilitar el Modo sin distracciones con sonidos del Modo sin distracciones únicamente.</translation>
 <translation id="334231891933432876">Cerrar la sesión del usuario en cuanto se anule la autenticación de su cuenta</translation>
 <translation id="3345323903592385588">El orden en el que se mostrará la configuración de VM en el instalador. Cuando especificas varias configuraciones de VM, la que tiene el valor de display_order más pequeño aparece en la parte superior de la lista. El valor predeterminado es cero.</translation>
 <translation id="3351661569026056296">Si estableces la política como verdadera, las teclas de la fila superior del teclado serán comandos de teclas de funciones. Si presionas la tecla de búsqueda, se restablecerá el comportamiento de las teclas multimedia.
@@ -3457,6 +3460,7 @@ Recuerda que no debes mantener habilitada esta política todo el tiempo, especia
 <translation id="3587482841069643663">Todos</translation>
 <translation id="3587766503874071316">Inhabilitar las combinaciones de accesibilidad</translation>
 <translation id="3589193811812796052">Impedir el envío de módulos de WebAssembly entre orígenes cruzados</translation>
+<translation id="3591518189681300697">Habilitar la migración de archivos locales a la nube</translation>
 <translation id="3591527072193107424">Habilitar la función "Compatibilidad con navegadores heredados"</translation>
 <translation id="3591584750136265240">Configurar el comportamiento de autenticación en el acceso</translation>
 <translation id="3593905652755912452">Usar el comportamiento anterior de envío de eventos en los controles de formularios inhabilitados</translation>
@@ -4007,6 +4011,7 @@ Se puede usar cualquiera de las políticas, pero esta dejará de estar disponibl
 Ambas tienen el mismo efecto en el comportamiento del navegador.</translation>
 <translation id="4016700865356669962">Si habilitas la política, los usuarios podrán usar las plantillas de diseño de escritorio.  Si inhabilitas la política o no la estableces, estas plantillas no estarán disponibles.</translation>
 <translation id="4020682745012723568">Las apps de Android no pueden acceder a las cookies transferidas al perfil del usuario.</translation>
+<translation id="4021684548211845008">Inhabilitar los sonidos en el Modo sin distracciones.</translation>
 <translation id="4025500273782820766">Permitir que los usuarios seleccionen "Permitir siempre" cuando se muestra un diálogo de protocolo externo para omitir futuros mensajes de confirmación</translation>
 <translation id="402759845255257575">No permitir que los sitios ejecuten JavaScript.</translation>
 <translation id="4027608872760987929">Habilitar el proveedor de búsqueda predeterminado</translation>
@@ -4262,6 +4267,7 @@ Nota: Si bloqueas las URLs internas chrome://* y chrome-untrusted://*, es posibl
 
           Si no la estableces, el clic automático estará inicialmente inhabilitado, pero el usuario podrá habilitarlo en cualquier momento.</translation>
 <translation id="4212181786686887763">La URL desde la cual se puede descargar la imagen de fondo de pantalla.</translation>
+<translation id="4221677608399717135">Activar o desactivar SkyVault</translation>
 <translation id="4224610387358583899">Demoras de bloqueo de pantalla</translation>
 <translation id="42267415200641481">Si estableces esta política como verdadera, es posible que la resolución de DNS del sistema (getaddrinfo()) se ejecute fuera del proceso de red, según la configuración del sistema y las marcas de función.
 
@@ -6260,6 +6266,15 @@ La compatibilidad con este parámetro de configuración de política finalizará
 <translation id="5775235485119094648">Cargar la batería mientras está en un rango fijo</translation>
 <translation id="5776485039795852974">Preguntar siempre que un sitio quiera mostrar notificaciones de escritorio.</translation>
 <translation id="5783009211970309878">Imprimir encabezados y pies de página</translation>
+<translation id="5786733040432065904">El Modo sin distracciones es una función que controla No interrumpir con un temporizador y está diseñada para reducir las distracciones del usuario. Una función del Modo sin distracciones permite que los usuarios escuchen una variedad limitada de música para ayudarlos a concentrarse. Esta política controla el acceso a esta función.
+
+Si no estableces la política, se inhabilitarán todos los sonidos para los usuarios administrados.
+
+Si habilitas la política, se permitirá el acceso a todos los sonidos en el Modo sin distracciones.
+
+Si estableces la política en FocusSounds, se habilitará la función de sonido solo con los sonidos del Modo sin distracciones.
+
+Si inhabilitas la política, se inhabilitarán los sonidos del Modo sin distracciones.</translation>
 <translation id="5790763087505467169">Reducir la cantidad de notificaciones de inicio automático de la sesión de invitado administrada</translation>
 <translation id="5800329278018669527">Inhabilitar el mensaje de configuración de red cuando no haya conexión</translation>
 <translation id="5802931736499687181">Inhabilitar la canalización de informes encriptados</translation>
@@ -6578,6 +6593,11 @@ Esta política dejará de estar disponible a partir de la versión M124.</transl
       Si no estableces la política (cuando lo admita el dispositivo), se aplicará el modo estándar de carga de la batería. Los usuarios no podrán cambiar esta configuración.
 
       Nota: Si seleccionas el modo personalizado de carga de la batería, también se especificará <ph name="DEVICE_BATTERY_CHARGE_CUSTOM_START_CHARGING_POLICY_NAME" /> y <ph name="DEVICE_BATTERY_CHARGE_CUSTOM_STOP_CHARGING_POLICY_NAME" />.</translation>
+<translation id="6064418365347066084">Activa la migración de archivos locales existentes a la nube.
+Se aplica solo a los usuarios de SkyVault, es decir, cuando LocalUserFilesAllowed se establezca como falsa
+y DownloadDirectory sea Google Drive o OneDrive, y se ignora en otros casos.
+    Si se establece como verdadera, los archivos locales se mueven a la nube y las carpetas locales se ocultan del usuario.
+    Si se establece como falsa o no se establece, los archivos locales permanecerán en modo de solo lectura.</translation>
 <translation id="60655674079349516">Configura una lista de los tipos de datos de navegación que deben borrarse cuando el usuario cierra todas las ventanas del navegador.
 
 Advertencia: Si estableces esta política, es posible que se vean afectados los datos personales locales y que se quiten de forma permanente. Se recomienda probar la configuración antes de la implementación para evitar la eliminación accidental de datos personales.
@@ -8498,6 +8518,7 @@ Esto reemplaza la política <ph name="WINDOW_PLACEMENT_BLOCKED_FOR_URLS_POLICY_N
       Si habilitas la política o no la estableces, los dispositivos inscritos informarán la lista de interfaces de redes con sus tipos y direcciones de hardware.
 
       Si inhabilitas la política, los dispositivos inscritos no informarán sobre las interfaces de redes.</translation>
+<translation id="7388618954884540850">Inhabilitar la migración de archivos locales a la nube</translation>
 <translation id="7389872682701720082">Si habilitas esta opción, se ejecutarán siempre los complementos actualizados.
 
       Si no se habilita o no se configura esta opción, se solicitará permiso a los usuarios para ejecutar complementos que requieran autorización (estos complementos pueden comprometer la seguridad).</translation>
@@ -8674,6 +8695,7 @@ Si estableces esta política como verdadera, <ph name="PRODUCT_OS_NAME" /> inten
 
       Si no estableces la política o la estableces como verdadera, se mostrará una alerta para recordar a los usuarios que deben salir de la pantalla completa antes de ingresar la contraseña. Si la estableces como falsa, no se mostrarán alertas.</translation>
 <translation id="7531630046107845550">Permitir las conexiones salientes de clientes de SSH en la app del sistema de la terminal</translation>
+<translation id="753332207298659209">Configura políticas para controlar si se permiten los datos del usuario en el dispositivo y si los datos existentes se deben subir a la nube.</translation>
 <translation id="7533385610709354870">A menos que inhabilites <ph name="ENABLE_MEDIA_ROUTER_POLICY_NAME" />, si habilitas <ph name="MEDIA_ROUTER_CAST_ALLOW_ALL_IPS_POLICY_NAME" />, se conectará <ph name="PRODUCT_NAME" /> a dispositivos de transmisión en todas las direcciones IP, no solo en las direcciones privadas RFC1918/RFC4193.
 
 Si inhabilitas la política, se conectará <ph name="PRODUCT_NAME" /> a dispositivos de transmisión solo en las direcciones RFC1918/RFC4193.
@@ -9202,6 +9224,7 @@ Si inhabilitas la política <ph name="ENABLE_MEDIA_ROUTER_POLICY_NAME" />, el va
 <translation id="7962093600142350905">Esta política controla si el usuario visualiza las impresoras Privet disponibles en el diálogo de la vista previa de impresión.
       Si habilitas esta política, se mostrarán las impresoras Privet disponibles.
       Si la inhabilitas o no la estableces, no se mostrarán impresoras Privet en la vista previa, ya que ese método de impresión está obsoleto.</translation>
+<translation id="7969865441622729072">Habilitar todos los sonidos en el Modo sin distracciones.</translation>
 <translation id="7970660709107174905">Configuración de la partición de almacenamiento de terceros</translation>
 <translation id="7972223739742725350">No habilitar la API de Save and Share para el control de terceros de <ph name="PRODUCT_OS_NAME" />.</translation>
 <translation id="7972642710812569707">Forzar que se vuelva a habilitar WebSQL en contextos de terceros</translation>
@@ -9820,6 +9843,7 @@ Si no estableces la política o la estableces con el valor "0", la navegación a
 
       Si inhabilitas la política o no la estableces, solo se usarán los perfiles locales comunes.</translation>
 <translation id="8417305981081876834">Establecer la longitud máxima del PIN de pantalla bloqueada</translation>
+<translation id="8418438383184278931">Habilitar la migración de archivos locales de usuarios al almacenamiento en la nube</translation>
 <translation id="841977920223099909">Activador de advertencia de la protección de la contraseña</translation>
 <translation id="8419965165591256432">Tasa con la que se recopila el estado de la actividad del dispositivo en dispositivos inscriptos para usuarios afiliados. El mínimo permitido es 1 minuto.
 

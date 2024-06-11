@@ -1,11 +1,11 @@
 <?xml version="1.0" ?>
 <!DOCTYPE translationbundle>
 <translationbundle lang="nl">
+<translation id="2252052615723281030">Wanneer je bent ingelogd bij Chrome, kan deze instelling je IP-adres privé houden. Als Chrome vermoedt dat een site jou volgt, kan een deel van je verkeer worden verstuurd via privacyservers.</translation>
 <translation id="33479675708419823">Wanneer je bent ingelogd bij Chrome, kan deze instelling je IP-adres privé houden. Als Chrome vermoedt dat een site jou volgt, kan een deel van je verkeer worden verstuurd via privacyservers. Meer informatie over <ph name="LINK_BEGIN" />hoe IP-beveiliging werkt<ph name="LINK_END" /></translation>
 <translation id="3529311220178827364">Meer informatie over hoe je je IP-adres verbergt</translation>
 <translation id="4301151630239508244">Advertentieonderwerpen zijn maar een van de vele factoren die een site kan gebruiken om advertenties te personaliseren. Ook zonder advertentieonderwerpen kunnen sites je nog steeds advertenties tonen, maar die zijn dan misschien minder gepersonaliseerd. Ontdek meer informatie over hoe je <ph name="BEGIN_LINK_1" />je advertentieprivacy beheert<ph name="END_LINK_1" />.</translation>
 <translation id="4598427486995631491">Je IP-adres verbergen</translation>
 <translation id="6371812158043974664">Wanneer je bent ingelogd bij Chromium, kan deze instelling je IP-adres privé houden. Als Chromium vermoedt dat een site jou volgt, kan een deel van je verkeer worden verstuurd via privacyservers. Meer informatie over <ph name="LINK_BEGIN" />hoe IP-beveiliging werkt<ph name="LINK_END" /></translation>
-<translation id="6714624304519805468">Als je bent ingelogd bij Chrome, kan deze instelling beperken wat vermoedelijke trackers kunnen zien terwijl je browst. Wanneer een pagina wordt geladen, worden bepaalde verzoeken om content verstuurd via privacyservers.</translation>
 <translation id="7040031291654706261">Meer informatie over <ph name="BEGIN_LINK" />hoe IP-beveiliging werkt<ph name="END_LINK" /></translation>
 </translationbundle>

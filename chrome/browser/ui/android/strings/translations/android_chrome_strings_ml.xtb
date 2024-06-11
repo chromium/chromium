@@ -274,6 +274,7 @@
 <translation id="2450083983707403292"><ph name="FILE_NAME" /> വീണ്ടും ഡൗൺലോഡുചെയ്യാൻ തുടങ്ങണോ?</translation>
 <translation id="2453860139492968684">പൂര്‍ത്തിയാക്കുക</translation>
 <translation id="2461822463642141190">നിലവിൽ</translation>
+<translation id="2472163211318554013">Chrome പരമാവധി പ്രയോജനപ്പെടുത്താൻ സൈൻ ഇൻ ചെയ്യുക</translation>
 <translation id="247737702124049222">ചിത്രത്തിന്റെ വിവരണങ്ങൾ ഓണാണ്</translation>
 <translation id="2479148705183875116">ക്രമീകരണത്തിലേക്ക് പോകുക</translation>
 <translation id="2482878487686419369">അറിയിപ്പുകൾ</translation>
@@ -425,7 +426,6 @@
 <translation id="3098745985164956033">മെച്ചപ്പെട്ട വിവരണങ്ങൾ നിങ്ങൾക്ക് നൽകുന്നതിന് ചില ചിത്രങ്ങൾ Google-ന് അയയ്ക്കുന്നു</translation>
 <translation id="3114507951000454849">ഇന്നത്തെ വാർത്തകൾ വായിക്കൂ <ph name="NEWS_ICON" /></translation>
 <translation id="3123734510202723619">അറിയിപ്പുകൾ</translation>
-<translation id="3146775326699342508">നിങ്ങളുടെ മറ്റ് ഉപകരണങ്ങളിൽ നിന്ന് ബുക്ക്‌മാർക്കുകളും മറ്റും ലഭിക്കാൻ സൈൻ ഇൻ ചെയ്യുക</translation>
 <translation id="314939179385989105">Chrome-ന്റെ ഹോംപേജ്</translation>
 <translation id="3158667104057012316">നേരിട്ടുള്ള ക്രമം പ്രകാരം അടുക്കുന്നു</translation>
 <translation id="3166827708714933426">ടാബ്, വിൻഡോ കുറുക്കുവഴികൾ</translation>
@@ -1343,6 +1343,7 @@
 <translation id="752220631458524187">പൂർത്തിയാകുമ്പോൾ വിച്ഛേദിക്കുക</translation>
 <translation id="7523960634226602883">Google Lens ഉപയോഗിച്ച് ക്യാമറയുടെ സഹായത്തോടെ തിരയുക</translation>
 <translation id="752731652852882757">അദൃശ്യ മോഡ് ഉപയോഗിക്കുമ്പോൾ ബ്ലോക്ക് ചെയ്യുക</translation>
+<translation id="7557508262441527045">സൈൻ ഔട്ട് ചെയ്‌തു</translation>
 <translation id="7577900504646297215">താൽപ്പര്യങ്ങൾ മാനേജ് ചെയ്യുക</translation>
 <translation id="757855969265046257">{FILES,plural, =1{<ph name="FILES_DOWNLOADED_ONE" /> ഫയൽ ഡൗൺലോഡ് ചെയ്‌തു}other{<ph name="FILES_DOWNLOADED_MANY" /> ഫയലുകൾ ഡൗൺലോഡ് ചെയ്‌തു}}</translation>
 <translation id="7581273696622423628">സർവേയിൽ പങ്കെടുക്കുക</translation>
@@ -1388,7 +1389,6 @@
 <translation id="777637629667389858">സൈൻ ഇൻ ചെയ്തിരിക്കുമ്പോൾ, Google സേവനങ്ങളിലുടനീളം നിങ്ങളെ പരിരക്ഷിക്കുന്നു.</translation>
 <translation id="7778840695157240389">പുതിയ സ്‌റ്റോറികൾക്ക് പിന്നീട് വീണ്ടും പരിശോധിക്കൂ</translation>
 <translation id="7780645209293383778">Google ആപ്പുകളിലുടനീളം പരിരക്ഷിക്കുന്നതിന്, നിങ്ങൾ സൈൻ ഇൻ ചെയ്തിരിക്കുമ്പോൾ ഈ ഡാറ്റ നിങ്ങളുടെ Google അക്കൗണ്ടിലേക്ക് താൽക്കാലികമായി ലിങ്ക് ചെയ്യുന്നു</translation>
-<translation id="7786562169000598736">നിങ്ങളുടെ എല്ലാ ബുക്ക്‌മാർക്കുകളും നേടുക</translation>
 <translation id="7791543448312431591">ചേര്‍ക്കൂ</translation>
 <translation id="7798392620021911922"><ph name="TAB_COUNT" /> ടാബുകൾ പുനഃസ്ഥാപിച്ചു</translation>
 <translation id="780287761701992588">നിങ്ങളുടെ എല്ലാ ഉപകരണങ്ങളിലും ബുക്ക്‌മാർക്കുകൾ, പാസ്‌വേഡുകൾ എന്നിവയും മറ്റും നേടുക</translation>
