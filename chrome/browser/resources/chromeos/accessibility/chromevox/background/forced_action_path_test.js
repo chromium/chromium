@@ -225,7 +225,7 @@ AX_TEST_F('ChromeVoxForcedActionPathTest', 'SingleKey', async function() {
       [{type: 'key_sequence', value: {'keys': {'keyCode': [KeyCode.SPACE]}}}];
   const onFinished = () => finished = true;
 
-  ForcedActionPath.create(actions).then(onFinished);
+  ForcedActionPath.listenFor(actions).then(onFinished);
   let keyPressReceived = new Promise(
       resolve => ForcedActionPath.postKeyDownEventCallbackForTesting = resolve);
   keyboardHandler.onKeyDown(TestUtils.createMockKeyEvent(KeyCode.LEFT));
@@ -258,7 +258,7 @@ AX_TEST_F('ChromeVoxForcedActionPathTest', 'MultipleKeys', async function() {
   }];
   const onFinished = () => finished = true;
 
-  ForcedActionPath.create(actions).then(onFinished);
+  ForcedActionPath.listenFor(actions).then(onFinished);
 
   // To ensure we're getting an accurate sense of whether it's finished, we need to make sure
   // the key press has been processed before checking if onFinished was called.
@@ -378,7 +378,7 @@ AX_TEST_F('ChromeVoxForcedActionPathTest', 'BlockCommands', async function() {
   const previousLine =
       TestUtils.createMockKeyEvent(KeyCode.UP, {searchKeyHeld: true});
 
-  ForcedActionPath.create(actions).then(onFinished);
+  ForcedActionPath.listenFor(actions).then(onFinished);
   mockFeedback.expectSpeech('Start')
       .call(() => {
         assertEquals('Start', this.getRangeStart().name);
@@ -422,7 +422,7 @@ AX_TEST_F('ChromeVoxForcedActionPathTest', 'CloseChromeVox', async function() {
   const actions =
       [{type: 'key_sequence', value: {'keys': {'keyCode': [KeyCode.A]}}}];
   const onFinished = () => finished = true;
-  ForcedActionPath.create(actions).then(onFinished);
+  ForcedActionPath.listenFor(actions).then(onFinished);
   // Swap in the below function so we don't actually close ChromeVox.
   ForcedActionPath.closeChromeVox_ = () => {
     closed = true;
@@ -461,7 +461,7 @@ AX_TEST_F(
         shouldPropagate: false,
       }];
       const onFinished = () => finished = true;
-      ForcedActionPath.create(actions).then(onFinished);
+      ForcedActionPath.listenFor(actions).then(onFinished);
       ChromeVoxKbHandler.commandHandler = command => executedCommand = true;
       assertFalse(finished);
       assertFalse(executedCommand);
@@ -482,7 +482,7 @@ AX_TEST_F('ChromeVoxForcedActionPathTest', 'Gestures', async function() {
   const actions = [{type: 'gesture', value: Gesture.SWIPE_RIGHT1}];
   const onFinished = () => finished = true;
 
-  ForcedActionPath.create(actions).then(onFinished);
+  ForcedActionPath.listenFor(actions).then(onFinished);
 
   let gestureReceived = new Promise(
       resolve => ForcedActionPath.postGestureCallbackForTesting = resolve);
@@ -514,7 +514,7 @@ AX_TEST_F(
       // The test will not succeed until this callback is called.
       const onFinished = this.newCallback();
 
-      ForcedActionPath.create(actions).then(onFinished);
+      ForcedActionPath.listenFor(actions).then(onFinished);
       mockFeedback.call(doGesture(Gesture.SWIPE_RIGHT1))
           .expectSpeech(/Battery at [0-9]+ percent/);
       await mockFeedback.replay();

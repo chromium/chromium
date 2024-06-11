@@ -640,14 +640,16 @@ AX_TEST_F(
       this.getPanel().exportBackgroundBridgeForTesting();
       // Swap in functions below so we can track the number of times
       // ForcedActionPath is created and destroyed.
-      this.getPanelWindow().BackgroundBridge.ForcedActionPath.create = () => {
-        userActionMonitorCreatedCount += 1;
-        isForcedActionPathActive = true;
-      };
-      this.getPanelWindow().BackgroundBridge.ForcedActionPath.destroy = () => {
-        userActionMonitorDestroyedCount += 1;
-        isForcedActionPathActive = false;
-      };
+      this.getPanelWindow().BackgroundBridge.ForcedActionPath.listenFor =
+          () => {
+            userActionMonitorCreatedCount += 1;
+            isForcedActionPathActive = true;
+          };
+      this.getPanelWindow().BackgroundBridge.ForcedActionPath.stopListening =
+          () => {
+            userActionMonitorDestroyedCount += 1;
+            isForcedActionPathActive = false;
+          };
 
       // A helper to make assertions on four variables of interest.
       const makeAssertions = expectedVars => {

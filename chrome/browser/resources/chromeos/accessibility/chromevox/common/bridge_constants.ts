@@ -81,9 +81,9 @@ export const BridgeConstants = {
   ForcedActionPath: {
     TARGET: 'ForcedActionPath',
     Action: {
-      CREATE: 'create',
-      DESTROY: 'destroy',
+      LISTEN_FOR: 'listenFor',
       ON_KEY_DOWN: 'onKeyDown',
+      STOP_LISTENING: 'stopListening',
     },
   },
 

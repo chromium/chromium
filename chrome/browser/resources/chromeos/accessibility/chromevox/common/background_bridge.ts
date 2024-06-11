@@ -179,17 +179,17 @@ export const BackgroundBridge = {
      * Creates a new user action monitor.
      * Resolves after all actions in |actions| have been observed.
      */
-    create(actions: ForcedAction[]): Promise<void> {
+    listenFor(actions: ForcedAction[]): Promise<void> {
       return BridgeHelper.sendMessage(
           BridgeConstants.ForcedActionPath.TARGET,
-          BridgeConstants.ForcedActionPath.Action.CREATE, actions);
+          BridgeConstants.ForcedActionPath.Action.LISTEN_FOR, actions);
     },
 
     /** Destroys the user action monitor. */
-    destroy(): Promise<void> {
+    stopListening(): Promise<void> {
       return BridgeHelper.sendMessage(
           BridgeConstants.ForcedActionPath.TARGET,
-          BridgeConstants.ForcedActionPath.Action.DESTROY);
+          BridgeConstants.ForcedActionPath.Action.STOP_LISTENING);
     },
 
     onKeyDown(event: Object): Promise<boolean> {

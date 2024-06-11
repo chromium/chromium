@@ -69,7 +69,7 @@ export class ForcedActionPath {
     (new PanelCommand(PanelCommandType.CLOSE_CHROMEVOX)).send();
   }
 
-  static create(actions: ActionInfo[]): Promise<void> {
+  static listenFor(actions: ActionInfo[]): Promise<void> {
     if (ForcedActionPath.instance) {
       throw 'Error: trying to create a second ForcedActionPath';
     }
@@ -79,7 +79,7 @@ export class ForcedActionPath {
   }
 
   /** Destroys the forced action path. */
-  static destroy(): void {
+  static stopListening(): void {
     ForcedActionPath.instance = null;
   }
 
@@ -356,12 +356,12 @@ class StringAction extends Action {
 
 BridgeHelper.registerHandler(
     BridgeConstants.ForcedActionPath.TARGET,
-    BridgeConstants.ForcedActionPath.Action.CREATE,
-    (actions: ActionInfo[]) => ForcedActionPath.create(actions));
+    BridgeConstants.ForcedActionPath.Action.LISTEN_FOR,
+    (actions: ActionInfo[]) => ForcedActionPath.listenFor(actions));
 BridgeHelper.registerHandler(
     BridgeConstants.ForcedActionPath.TARGET,
-    BridgeConstants.ForcedActionPath.Action.DESTROY,
-    () => ForcedActionPath.destroy());
+    BridgeConstants.ForcedActionPath.Action.STOP_LISTENING,
+    () => ForcedActionPath.stopListening());
 BridgeHelper.registerHandler(
     BridgeConstants.ForcedActionPath.TARGET,
     BridgeConstants.ForcedActionPath.Action.ON_KEY_DOWN,

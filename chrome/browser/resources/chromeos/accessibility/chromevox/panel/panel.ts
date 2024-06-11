@@ -520,22 +520,21 @@ export class Panel implements PanelInterface {
 
     elementInPage.addEventListener('closetutorial', async _evt => {
       // Ensure ForcedActionPath is destroyed before closing tutorial.
-      await BackgroundBridge.ForcedActionPath.destroy();
+      await BackgroundBridge.ForcedActionPath.stopListening();
       this.onCloseTutorial_();
     });
     elementInPage.addEventListener('startinteractivemode', async evt => {
       const actions = (evt as CustomEvent).detail.actions;
-      await BackgroundBridge.ForcedActionPath.create(actions);
-      await BackgroundBridge.ForcedActionPath.destroy();
+      await BackgroundBridge.ForcedActionPath.listenFor(actions);
+      await BackgroundBridge.ForcedActionPath.stopListening();
       const tutorial = this.tutorial_ as {showNextLesson: VoidFunction};
       if (this.tutorial_ && tutorial.showNextLesson) {
         tutorial.showNextLesson();
       }
     });
-    elementInPage
-        .addEventListener('stopinteractivemode', async _evt => {
-          await BackgroundBridge.ForcedActionPath.destroy();
-        });
+    elementInPage.addEventListener('stopinteractivemode', async _evt => {
+      await BackgroundBridge.ForcedActionPath.stopListening();
+    });
     elementInPage.addEventListener('requestfullydescribe', _evt => {
       BackgroundBridge.CommandHandler.onCommand(Command.FULLY_DESCRIBE);
     });
@@ -553,7 +552,7 @@ export class Panel implements PanelInterface {
     elementInPage.addEventListener('openUrl', async evt => {
       const url = (evt as CustomEvent).detail.url;
       // Ensure ForcedActionPath is destroyed before closing tutorial.
-      await BackgroundBridge.ForcedActionPath.destroy();
+      await BackgroundBridge.ForcedActionPath.stopListening();
       this.onCloseTutorial_();
       BrowserUtil.openBrowserUrl(url);
     });
