@@ -3,8 +3,11 @@
 // found in the LICENSE file.
 
 #include <stdint.h>
+
+#include <string_view>
 #include <utility>
 
+#include "base/containers/span.h"
 #include "base/functional/bind.h"
 #include "base/memory/ptr_util.h"
 #include "base/run_loop.h"
@@ -117,15 +120,16 @@ class SampleFactoryImpl : public sample::Factory {
     ASSERT_EQ(MOJO_RESULT_OK,
               mojo::Wait(pipe.get(), MOJO_HANDLE_SIGNAL_READABLE, &state));
     ASSERT_TRUE(state.satisfied_signals & MOJO_HANDLE_SIGNAL_READABLE);
-    ASSERT_EQ(MOJO_RESULT_OK,
-              pipe->ReadData(nullptr, &data_size, MOJO_READ_DATA_FLAG_QUERY));
+    ASSERT_EQ(MOJO_RESULT_OK, pipe->ReadData(MOJO_READ_DATA_FLAG_QUERY,
+                                             base::span<uint8_t>(), data_size));
     ASSERT_NE(0u, data_size);
-    char data[64];
+    std::string data(data_size, '\0');
     ASSERT_LT(data_size, 64u);
-    ASSERT_EQ(MOJO_RESULT_OK, pipe->ReadData(data, &data_size,
-                                             MOJO_READ_DATA_FLAG_ALL_OR_NONE));
+    ASSERT_EQ(MOJO_RESULT_OK,
+              pipe->ReadData(MOJO_READ_DATA_FLAG_ALL_OR_NONE,
+                             base::as_writable_byte_span(data), data_size));
 
-    std::move(callback).Run(data);
+    std::move(callback).Run(data.substr(0, data_size));
   }
 
   void CreateNamedObject(
@@ -266,12 +270,13 @@ TEST_P(HandlePassingTest, DataPipe) {
                                        1024};
   ASSERT_EQ(MOJO_RESULT_OK,
             CreateDataPipe(&options, producer_handle, consumer_handle));
-  std::string expected_text_reply = "got it";
-  // +1 for \0.
-  size_t data_size = expected_text_reply.size() + 1;
+  std::string_view expected_text_reply = "got it";
+  size_t actually_written_bytes = 0;
   ASSERT_EQ(MOJO_RESULT_OK,
-            producer_handle->WriteData(expected_text_reply.c_str(), &data_size,
-                                       MOJO_WRITE_DATA_FLAG_ALL_OR_NONE));
+            producer_handle->WriteData(base::as_byte_span(expected_text_reply),
+                                       MOJO_WRITE_DATA_FLAG_ALL_OR_NONE,
+                                       actually_written_bytes));
+  EXPECT_EQ(actually_written_bytes, 6u);
 
   bool got_response = false;
   std::string got_text_reply;

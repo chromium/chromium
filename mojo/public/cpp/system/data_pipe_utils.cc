@@ -2,11 +2,13 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include "mojo/public/cpp/system/data_pipe_utils.h"
+
 #include <utility>
 
+#include "base/containers/span.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
-#include "mojo/public/cpp/system/data_pipe_utils.h"
 #include "mojo/public/cpp/system/wait.h"
 
 namespace mojo {
@@ -14,17 +16,16 @@ namespace {
 
 bool BlockingCopyHelper(
     ScopedDataPipeConsumerHandle source,
-    base::RepeatingCallback<size_t(const void*, size_t)> write_bytes) {
+    base::RepeatingCallback<size_t(base::span<const uint8_t>)> write_bytes) {
   for (;;) {
-    const void* buffer;
-    size_t num_bytes;
-    MojoResult result =
-        source->BeginReadData(&buffer, &num_bytes, MOJO_READ_DATA_FLAG_NONE);
+    base::span<const uint8_t> buffer;
+    MojoResult result = source->BeginReadData(MOJO_READ_DATA_FLAG_NONE, buffer);
     if (result == MOJO_RESULT_OK) {
-      size_t bytes_written = write_bytes.Run(buffer, num_bytes);
-      result = source->EndReadData(num_bytes);
-      if (bytes_written < num_bytes || result != MOJO_RESULT_OK)
+      size_t bytes_written = write_bytes.Run(buffer);
+      result = source->EndReadData(buffer.size());
+      if (bytes_written < buffer.size() || result != MOJO_RESULT_OK) {
         return false;
+      }
     } else if (result == MOJO_RESULT_SHOULD_WAIT) {
       result = Wait(source.get(), MOJO_HANDLE_SIGNAL_READABLE);
       if (result != MOJO_RESULT_OK) {
@@ -44,10 +45,9 @@ bool BlockingCopyHelper(
 }
 
 size_t CopyToStringHelper(std::string* result,
-                          const void* buffer,
-                          size_t num_bytes) {
-  result->append(static_cast<const char*>(buffer), num_bytes);
-  return num_bytes;
+                          base::span<const uint8_t> buffer) {
+  result->append(base::as_string_view(buffer));
+  return buffer.size();
 }
 
 }  // namespace
@@ -62,23 +62,19 @@ bool BlockingCopyToString(ScopedDataPipeConsumerHandle source,
 }
 
 bool MOJO_CPP_SYSTEM_EXPORT
-BlockingCopyFromString(const std::string& source,
+BlockingCopyFromString(const std::string& source_str,
                        const ScopedDataPipeProducerHandle& destination) {
-  auto it = source.begin();
-  for (;;) {
-    void* buffer = nullptr;
-    size_t buffer_num_bytes = source.end() - it;
-    MojoResult result = destination->BeginWriteData(&buffer, &buffer_num_bytes,
-                                                    MOJO_WRITE_DATA_FLAG_NONE);
+  base::span<const uint8_t> source = base::as_byte_span(source_str);
+  while (!source.empty()) {
+    base::span<uint8_t> dest;
+    size_t size_hint = source.size();
+    MojoResult result =
+        destination->BeginWriteData(size_hint, MOJO_WRITE_DATA_FLAG_NONE, dest);
     if (result == MOJO_RESULT_OK) {
-      char* char_buffer = static_cast<char*>(buffer);
-      size_t byte_index = 0;
-      while (it != source.end() && byte_index < buffer_num_bytes) {
-        char_buffer[byte_index++] = *it++;
-      }
-      destination->EndWriteData(byte_index);
-      if (it == source.end())
-        return true;
+      size_t copy_size = std::min(source.size(), dest.size());
+      dest.first(copy_size).copy_from(source.first(copy_size));
+      destination->EndWriteData(copy_size);
+      source = source.subspan(copy_size);
     } else if (result == MOJO_RESULT_SHOULD_WAIT) {
       result = Wait(destination.get(), MOJO_HANDLE_SIGNAL_WRITABLE);
       if (result != MOJO_RESULT_OK) {
@@ -90,6 +86,7 @@ BlockingCopyFromString(const std::string& source,
       return result == MOJO_RESULT_FAILED_PRECONDITION;
     }
   }
+  return true;
 }
 
 }  // namespace mojo

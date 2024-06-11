@@ -2,12 +2,15 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include "mojo/public/c/system/data_pipe.h"
+
 #include <stddef.h>
 #include <stdint.h>
 
 #include <memory>
 
 #include "base/check_op.h"
+#include "base/containers/span.h"
 #include "base/functional/bind.h"
 #include "base/location.h"
 #include "base/numerics/safe_conversions.h"
@@ -18,7 +21,6 @@
 #include "build/build_config.h"
 #include "mojo/core/embedder/embedder.h"
 #include "mojo/core/test/mojo_test_base.h"
-#include "mojo/public/c/system/data_pipe.h"
 #include "mojo/public/c/system/functions.h"
 #include "mojo/public/c/system/message_pipe.h"
 #include "mojo/public/cpp/system/data_pipe.h"
@@ -1785,7 +1787,7 @@ TEST_F(DataPipeTest, NoSpuriousEvents) {
 }
 
 DEFINE_TEST_CLIENT_TEST_WITH_PIPE(NoSpuriousEventsHost, DataPipeTest, parent) {
-  const char kData[1024] = {'x'};
+  const std::vector<uint8_t> kData(512, 'x');
 
   MojoHandle client;
   EXPECT_EQ("x", ReadMessageWithHandles(parent, &client, 1));
@@ -1800,8 +1802,9 @@ DEFINE_TEST_CLIENT_TEST_WITH_PIPE(NoSpuriousEventsHost, DataPipeTest, parent) {
 
     for (size_t i = 0; i < 9; ++i) {
       WaitForSignals(producer.get().value(), MOJO_HANDLE_SIGNAL_WRITABLE);
-      size_t size = 512;
-      producer->WriteData(kData, &size, MOJO_WRITE_DATA_FLAG_NONE);
+      size_t actually_written_bytes = 0;
+      producer->WriteData(base::as_byte_span(kData), MOJO_WRITE_DATA_FLAG_NONE,
+                          actually_written_bytes);
     }
   }
 
@@ -1837,10 +1840,9 @@ DEFINE_TEST_CLIENT_TEST_WITH_PIPE(NoSpuriousEventsClient,
                           }
 
                           // Drain everything.
-                          const void* buffer;
-                          size_t num_bytes;
-                          consumer->BeginReadData(&buffer, &num_bytes, 0);
-                          consumer->EndReadData(num_bytes);
+                          base::span<const uint8_t> buffer;
+                          consumer->BeginReadData(0, buffer);
+                          consumer->EndReadData(buffer.size());
                           watcher.ArmOrNotify();
                         } else {
                           CHECK(state.never_readable());
