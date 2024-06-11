@@ -296,7 +296,7 @@ TEST_P(FormSaverImplSaveTest, FormDataSanitized) {
   field.set_id_attribute(u"id");
   field.set_name_attribute(field.name());
   field.set_css_classes(u"css_classes");
-  pending.form_data.fields.push_back(field);
+  pending.form_data.set_fields({field});
 
   PasswordForm saved;
   switch (GetParam()) {

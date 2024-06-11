@@ -111,6 +111,7 @@ static_library("test_support") {
     ":ios",
     "//base",
     "//components/autofill/core/common",
+    "//components/autofill/core/common:test_support",
     "//url",
   ]
 }
@@ -133,6 +134,7 @@ source_set("unit_tests") {
     "//base",
     "//base/test:test_support",
     "//components/autofill/core/common",
+    "//components/autofill/core/common:test_support",
     "//components/autofill/ios/browser",
     "//components/autofill/ios/browser:test_support",
     "//components/autofill/ios/common",

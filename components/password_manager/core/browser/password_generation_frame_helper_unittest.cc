@@ -24,6 +24,7 @@
 #include "components/autofill/core/browser/proto/password_requirements.pb.h"
 #include "components/autofill/core/common/autofill_test_utils.h"
 #include "components/autofill/core/common/form_data.h"
+#include "components/autofill/core/common/form_data_test_api.h"
 #include "components/autofill/core/common/form_field_data.h"
 #include "components/autofill/core/common/password_form_generation_data.h"
 #include "components/autofill/core/common/signatures.h"
@@ -333,8 +334,7 @@ TEST_F(PasswordGenerationFrameHelperTest, ProcessPasswordRequirements) {
     account_creation_form.set_url(origin);
     account_creation_form.set_action(origin);
     account_creation_form.set_name(u"account_creation_form");
-    account_creation_form.fields.push_back(username);
-    account_creation_form.fields.push_back(password);
+    account_creation_form.set_fields({username, password});
 
     client_->SetLastCommittedEntryUrl(origin);
     GetGenerationHelper()->PrefetchSpec(origin.DeprecatedGetOriginAsURL());

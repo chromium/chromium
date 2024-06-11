@@ -23,6 +23,7 @@
 #include "components/autofill/core/browser/form_structure.h"
 #include "components/autofill/core/browser/test_utils/vote_uploads_test_matchers.h"
 #include "components/autofill/core/common/form_data.h"
+#include "components/autofill/core/common/form_data_test_api.h"
 #include "components/autofill/core/common/signatures.h"
 #include "components/autofill/core/common/unique_ids.h"
 #include "components/password_manager/core/browser/features/password_features.h"
@@ -134,8 +135,8 @@ class VotesUploaderTest : public testing::Test {
       FormFieldData field;
       field.set_name(GetFieldNameByIndex(i));
       field.set_renderer_id(FieldRendererId(i));
-      form_to_upload_.form_data.fields.push_back(field);
-      submitted_form_.form_data.fields.push_back(field);
+      test_api(form_to_upload_.form_data).fields().push_back(field);
+      test_api(submitted_form_.form_data).fields().push_back(field);
     }
     // Password attributes uploading requires a non-empty password value.
     form_to_upload_.password_value = u"password_value";
@@ -270,7 +271,7 @@ TEST_F(VotesUploaderTest, SendVotesOnSaveOverwrittenFlow) {
   for (size_t i = 0; i < 10; ++i) {
     FormFieldData field;
     field.set_name(GetFieldNameByIndex(i));
-    match_form.form_data.fields.push_back(field);
+    test_api(match_form.form_data).fields().push_back(field);
   }
 
   std::vector<PasswordForm> matches = {match_form};
@@ -330,7 +331,7 @@ TEST_F(VotesUploaderTest, SendVoteOnCredentialsReuseFlow) {
   PasswordForm pending;
   pending.times_used_in_html_form = 1;
   pending.username_element_renderer_id = FieldRendererId(6);
-  pending.form_data.fields.push_back(field);
+  test_api(pending.form_data).fields().push_back(field);
   pending.username_value = u"username_value";
 
   auto upload_contents_matcher = IsPasswordUpload(FieldsContain(UploadField(
@@ -423,7 +424,7 @@ TEST_F(VotesUploaderTest, InitialValueDetection) {
   VotesUploader votes_uploader(&client_, true);
   votes_uploader.StoreInitialFieldValues(form_data);
 
-  form_data.fields.at(1).set_value(u"user entered value");
+  test_api(form_data).fields()[1].set_value(u"user entered value");
   FormStructure form_structure(form_data);
 
   PasswordForm password_form;

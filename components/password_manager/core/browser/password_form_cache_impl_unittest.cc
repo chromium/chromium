@@ -6,6 +6,7 @@
 
 #include "base/test/task_environment.h"
 #include "components/autofill/core/common/autofill_test_utils.h"
+#include "components/autofill/core/common/form_data_test_api.h"
 #include "components/password_manager/core/browser/fake_form_fetcher.h"
 #include "components/password_manager/core/browser/password_form_digest.h"
 #include "components/password_manager/core/browser/password_manager_test_utils.h"
@@ -58,8 +59,8 @@ class PasswordFormCacheTest : public testing::Test {
     // Fill values into the fields to save the form.
     FormData filled_form = form;
     EXPECT_EQ(filled_form.fields.size(), 2u);
-    filled_form.fields[0].set_value(u"username");
-    filled_form.fields[1].set_value(u"password");
+    test_api(filled_form).fields()[0].set_value(u"username");
+    test_api(filled_form).fields()[1].set_value(u"password");
     form_manager->ProvisionallySave(
         filled_form, &driver(),
         base::LRUCache<PossibleUsernameFieldIdentifier, PossibleUsernameData>(

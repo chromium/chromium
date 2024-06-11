@@ -158,7 +158,7 @@ FormData MakePasswordFormData() {
   field.set_name_attribute(field.name());
   field.set_form_control_type(autofill::FormControlType::kInputPassword);
   field.set_renderer_id(FieldRendererId(123));
-  form_data.fields.push_back(field);
+  form_data.set_fields({field});
 
   return form_data;
 }

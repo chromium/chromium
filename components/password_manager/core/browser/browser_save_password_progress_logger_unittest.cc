@@ -12,6 +12,8 @@
 #include "components/autofill/core/browser/form_structure.h"
 #include "components/autofill/core/browser/logging/stub_log_manager.h"
 #include "components/autofill/core/browser/proto/server.pb.h"
+#include "components/autofill/core/common/form_data.h"
+#include "components/autofill/core/common/form_data_test_api.h"
 #include "components/autofill/core/common/save_password_progress_logger.h"
 #include "components/autofill/core/common/unique_ids.h"
 #include "components/password_manager/core/browser/password_form.h"
@@ -65,7 +67,7 @@ class BrowserSavePasswordProgressLoggerTest : public testing::Test {
     field.set_is_focusable(true);
     field.set_autocomplete_attribute("new-password");
     field.set_renderer_id(autofill::FieldRendererId(10));
-    form_.fields.push_back(field);
+    test_api(form_).fields().push_back(field);
 
     // Add a text field.
     field.set_name(u"email");
@@ -74,7 +76,7 @@ class BrowserSavePasswordProgressLoggerTest : public testing::Test {
     field.set_renderer_id(autofill::FieldRendererId(42));
     field.set_value(u"a@example.com");
     field.set_autocomplete_attribute({});
-    form_.fields.push_back(field);
+    test_api(form_).fields().push_back(field);
   }
 
  protected:

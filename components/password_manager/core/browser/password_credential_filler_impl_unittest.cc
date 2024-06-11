@@ -19,6 +19,7 @@
 namespace {
 
 using autofill::FormData;
+using autofill::FormFieldData;
 using autofill::mojom::SubmissionReadinessState;
 using ToShowVirtualKeyboard =
     password_manager::PasswordManagerDriver::ToShowVirtualKeyboard;
@@ -51,11 +52,11 @@ enum class FormFieldFocusabilityType {
 
 const FormData PrepareFormData(
     const std::vector<FormFieldFocusabilityType>& focusability_vector) {
-  FormData form;
+  std::vector<FormFieldData> fields;
   base::ranges::transform(
-      focusability_vector, std::back_inserter(form.fields),
+      focusability_vector, std::back_inserter(fields),
       [](FormFieldFocusabilityType type) {
-        autofill::FormFieldData field;
+        FormFieldData field;
         field.set_is_focusable(
             (type == FormFieldFocusabilityType::kFocusableInput ||
              type == FormFieldFocusabilityType::kFocusableCheckbox));
@@ -65,6 +66,8 @@ const FormData PrepareFormData(
                 : autofill::FormControlType::kInputText);
         return field;
       });
+  FormData form;
+  form.set_fields(std::move(fields));
   return form;
 }
 

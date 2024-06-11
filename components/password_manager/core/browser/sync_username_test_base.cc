@@ -6,6 +6,7 @@
 
 #include "base/strings/utf_string_conversions.h"
 #include "components/autofill/core/common/form_data.h"
+#include "components/autofill/core/common/form_data_test_api.h"
 #include "components/password_manager/core/browser/password_form.h"
 #include "components/signin/public/identity_manager/identity_test_utils.h"
 
@@ -24,12 +25,12 @@ FormData CreateSigninFormData(const GURL& url, const char* username) {
   field.set_name(u"username_element");
   field.set_form_control_type(autofill::FormControlType::kInputText);
   field.set_value(ASCIIToUTF16(username));
-  form.fields.push_back(field);
+  test_api(form).fields().push_back(field);
 
   field.set_name(u"password_element");
   field.set_form_control_type(autofill::FormControlType::kInputPassword);
   field.set_value(u"strong_pw");
-  form.fields.push_back(field);
+  test_api(form).fields().push_back(field);
   return form;
 }
 

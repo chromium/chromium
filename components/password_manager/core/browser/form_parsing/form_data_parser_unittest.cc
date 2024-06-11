@@ -21,6 +21,7 @@
 #include "components/autofill/core/browser/field_types.h"
 #include "components/autofill/core/common/autofill_test_utils.h"
 #include "components/autofill/core/common/form_data.h"
+#include "components/autofill/core/common/form_data_test_api.h"
 #include "components/autofill/core/common/form_field_data.h"
 #include "components/autofill/core/common/unique_ids.h"
 #include "components/password_manager/core/browser/features/password_features.h"
@@ -326,7 +327,7 @@ class FormParserTest : public testing::Test {
       if (!field_description.user_input.empty()) {
         field.set_user_input(field_description.user_input);
       }
-      form_data.fields.push_back(field);
+      test_api(form_data).fields().push_back(field);
       if (field_description.role == ElementRole::NONE) {
         UpdateResultWithIdByRole(fill_result, renderer_id,
                                  field_description.role_filling);
@@ -3320,11 +3321,9 @@ TEST_F(FormParserTest, BaseHeuristicsFindUsernameFieldWithStoredUsername) {
   const std::u16string kUsername = u"the_username";
   FormData form_data;
   form_data.set_url(GURL("https://www.example.com"));
-  form_data.fields.emplace_back(
-      CreateField(FormControlType::kInputText, kUsername));
-  form_data.fields.emplace_back(CreateField(FormControlType::kInputText, u""));
-  form_data.fields.emplace_back(
-      CreateField(FormControlType::kInputPassword, u""));
+  form_data.set_fields({CreateField(FormControlType::kInputText, kUsername),
+                        CreateField(FormControlType::kInputText, u""),
+                        CreateField(FormControlType::kInputPassword, u"")});
 
   FormDataParser parser;
   auto [password_form, username_detection_method] =

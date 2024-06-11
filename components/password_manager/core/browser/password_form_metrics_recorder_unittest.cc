@@ -17,6 +17,7 @@
 #include "base/test/task_environment.h"
 #include "build/build_config.h"
 #include "components/autofill/core/common/form_data.h"
+#include "components/autofill/core/common/form_data_test_api.h"
 #include "components/autofill/core/common/form_field_data.h"
 #include "components/password_manager/core/browser/password_manager.h"
 #include "components/password_manager/core/browser/password_manager_metrics_util.h"
@@ -650,7 +651,7 @@ PasswordForm ConvertToPasswordForm(
       password_form.username_value = value;
     }
 
-    password_form.form_data.fields.push_back(form_field);
+    test_api(password_form.form_data).fields().push_back(form_field);
   }
   return password_form;
 }

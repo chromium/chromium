@@ -13,6 +13,7 @@
 #include "components/autofill/core/browser/autofill_type.h"
 #include "components/autofill/core/browser/field_types.h"
 #include "components/autofill/core/common/form_data.h"
+#include "components/autofill/core/common/form_data_test_api.h"
 #include "components/autofill/core/common/signatures.h"
 #include "components/autofill/core/common/unique_ids.h"
 #include "components/password_manager/core/common/password_manager_features.h"
@@ -117,7 +118,7 @@ TEST(FormPredictionsTest, ConvertToFormPredictions) {
     prediction.may_use_prefilled_placeholder =
         test_fields[i].may_use_prefilled_placeholder;
     autofill_predictions.insert({field.global_id(), std::move(prediction)});
-    form_data.fields.push_back(std::move(field));
+    test_api(form_data).fields().push_back(std::move(field));
   }
 
   constexpr int driver_id = 1000;
@@ -188,7 +189,7 @@ TEST(FormPredictionsTest, ConvertToFormPredictions_SynthesiseConfirmation) {
       autofill_predictions.insert(
           {field.global_id(), std::move(new_prediction)});
 
-      form_data.fields.push_back(std::move(field));
+      test_api(form_data).fields().push_back(std::move(field));
     }
 
     FormPredictions actual_predictions = ConvertToFormPredictions(
@@ -245,7 +246,7 @@ TEST(FormPredictionsTest, ConvertToFormPredictions_OverrideFlagPropagated) {
   FormData form;
   FormFieldData single_username_field;
   single_username_field.set_renderer_id(autofill::FieldRendererId(1000));
-  form.fields.push_back(single_username_field);
+  form.set_fields({single_username_field});
 
   base::flat_map<FieldGlobalId, AutofillType::ServerPrediction>
       autofill_predictions;

@@ -67,6 +67,7 @@ source_set("unit_tests") {
   deps = [
     ":common",
     "//components/autofill/core/common",
+    "//components/autofill/core/common:test_support",
     "//testing/gtest",
   ]
 
