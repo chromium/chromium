@@ -234,20 +234,6 @@ TEST_F(BubbleViewControllerPresenterTest, BubbleViewGestureRecognizersPresent) {
   EXPECT_EQ([[parent_view_controller_.view gestureRecognizers] count], 3U);
 }
 
-// Tests that the gesture recognizers for outside the bubble are not attached in
-// the `ignoreOutsideInteractions` case.
-TEST_F(BubbleViewControllerPresenterTest, BubbleViewGestureRecognizersReduced) {
-  bubble_view_controller_presenter_.ignoreOutsideInteractions = YES;
-  [bubble_view_controller_presenter_
-      presentInViewController:parent_view_controller_
-                  anchorPoint:anchor_point_];
-  BubbleView* bubble_view = base::apple::ObjCCastStrict<BubbleView>(
-      bubble_view_controller_presenter_.bubbleViewController.view);
-  EXPECT_TRUE(bubble_view);
-  EXPECT_EQ([[bubble_view gestureRecognizers] count], 1U);
-  EXPECT_EQ([[parent_view_controller_.view gestureRecognizers] count], 1U);
-}
-
 // Tests that the default gesture recognizers have been removed after the Bubble
 // View Controller Presenter was dismissed.
 TEST_F(BubbleViewControllerPresenterTest, BubbleViewGestureRecognizersRemoved) {
@@ -261,26 +247,6 @@ TEST_F(BubbleViewControllerPresenterTest, BubbleViewGestureRecognizersRemoved) {
   EXPECT_EQ([[parent_view_controller_.view gestureRecognizers] count], 3U);
 
   [bubble_view_controller_presenter_ dismissAnimated:NO];
-  EXPECT_TRUE(bubble_view);
-  EXPECT_EQ([[bubble_view gestureRecognizers] count], 0U);
-  EXPECT_EQ([[parent_view_controller_.view gestureRecognizers] count], 0U);
-}
-
-// Tests that the reduced set of gesture recognizers have been removed after the
-// Bubble View Controller Presenter was dismissed.
-TEST_F(BubbleViewControllerPresenterTest,
-       BubbleViewGestureRecognizersReducedRemoved) {
-  bubble_view_controller_presenter_.ignoreOutsideInteractions = YES;
-  [bubble_view_controller_presenter_
-      presentInViewController:parent_view_controller_
-                  anchorPoint:anchor_point_];
-  BubbleView* bubble_view = base::apple::ObjCCastStrict<BubbleView>(
-      bubble_view_controller_presenter_.bubbleViewController.view);
-  EXPECT_TRUE(bubble_view);
-  EXPECT_EQ([[bubble_view gestureRecognizers] count], 1U);
-  EXPECT_EQ([[parent_view_controller_.view gestureRecognizers] count], 1U);
-
-  [bubble_view_controller_presenter_ dismissAnimated:YES];
   EXPECT_TRUE(bubble_view);
   EXPECT_EQ([[bubble_view gestureRecognizers] count], 0U);
   EXPECT_EQ([[parent_view_controller_.view gestureRecognizers] count], 0U);

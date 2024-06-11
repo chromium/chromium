@@ -50,12 +50,12 @@ using CallbackWithIPHDismissalReasonType =
 // Text to be announced with Voice Over when the bubble is presented.
 @property(nonatomic, copy) NSString* voiceOverAnnouncement;
 
-// Determines whether interactions outside the bubble should be ignored.
-// Defaults to NO (which means outside interactions are handled, i.e. triggering
-// a dismissal). Important note: If outside interactions should be ignored, this
-// property must be set before calling `presentInViewController`, otherwise the
-// value will be ignored.
-@property(nonatomic, assign) BOOL ignoreOutsideInteractions;
+// Determines whether interactions outside the bubble but inside the web content
+// area should be ignored. Defaults to NO (which means all outside interactions
+// are handled, i.e. triggering a dismissal). Important note: If web content
+// area interactions should be ignored, this property must be set before calling
+// `presentInViewController`, otherwise the value will be ignored.
+@property(nonatomic, assign) BOOL ignoreWebContentAreaInteractions;
 
 // Initializes the presenter. `text` is the text displayed by the bubble.
 // `titleString` is the title displayed by the bubble. `image` is the image
