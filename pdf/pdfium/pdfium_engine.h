@@ -368,23 +368,6 @@ class PDFiumEngine : public PDFEngine,
                         size_t page_index,
                         size_t num_of_pages) const;
 
-  // If two-up view is disabled, enlarges `page_size` with inset sizes for
-  // single-view. If two-up view is enabled, calls GetInsetSizes() with
-  // `page_index` and `num_of_pages`, and uses the returned inset sizes to
-  // enlarge `page_size`.
-  void EnlargePage(const DocumentLayout::Options& layout_options,
-                   size_t page_index,
-                   size_t num_of_pages,
-                   gfx::Size* page_size) const;
-
-  // Similar to EnlargePage(), but insets a `rect`. Also multiplies the inset
-  // sizes by `multiplier`, using the ceiling of the result.
-  void InsetPage(const DocumentLayout::Options& layout_options,
-                 size_t page_index,
-                 size_t num_of_pages,
-                 double multiplier,
-                 gfx::Rect& rect) const;
-
   // If two-up view is enabled, returns the index of the page beside
   // `page_index` page. Returns std::nullopt if there is no adjacent page or
   // if two-up view is disabled.

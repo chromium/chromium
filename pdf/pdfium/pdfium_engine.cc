@@ -2898,8 +2898,8 @@ std::vector<gfx::Size> PDFiumEngine::LoadPageSizes(
     // layout options, and handled in the layout code.
     gfx::Size size = page_available ? GetPageSizeForLayout(i, layout_options)
                                     : default_page_size_;
-    EnlargePage(layout_options, i, new_page_count, &size);
-    page_sizes.push_back(size);
+    page_sizes.push_back(size +
+                         GetInsets(layout_options, i, new_page_count).size());
   }
 
   // Add new pages. If `document_loaded_` == false, do not mark page as
@@ -3125,28 +3125,6 @@ gfx::Insets PDFiumEngine::GetInsets(
   return DocumentLayout::kSingleViewInsets;
 }
 
-void PDFiumEngine::EnlargePage(const DocumentLayout::Options& layout_options,
-                               size_t page_index,
-                               size_t num_of_pages,
-                               gfx::Size* page_size) const {
-  gfx::Insets insets = GetInsets(layout_options, page_index, num_of_pages);
-  page_size->Enlarge(insets.left() + insets.right(),
-                     insets.top() + insets.bottom());
-}
-
-void PDFiumEngine::InsetPage(const DocumentLayout::Options& layout_options,
-                             size_t page_index,
-                             size_t num_of_pages,
-                             double multiplier,
-                             gfx::Rect& rect) const {
-  gfx::Insets insets = GetInsets(layout_options, page_index, num_of_pages);
-  rect.Inset(
-      gfx::Insets::TLBR(static_cast<int>(ceil(insets.top() * multiplier)),
-                        static_cast<int>(ceil(insets.left() * multiplier)),
-                        static_cast<int>(ceil(insets.bottom() * multiplier)),
-                        static_cast<int>(ceil(insets.right() * multiplier))));
-}
-
 std::optional<size_t> PDFiumEngine::GetAdjacentPageIndexForTwoUpView(
     size_t page_index,
     size_t num_of_pages) const {
@@ -3318,20 +3296,18 @@ void PDFiumEngine::PaintPageShadow(int progressive_index,
 
   int page_index = progressive_paints_[progressive_index].page_index();
   gfx::Rect dirty_in_screen = progressive_paints_[progressive_index].rect();
-  gfx::Rect page_rect = pages_[page_index]->rect();
-  gfx::Rect shadow_rect(page_rect);
-  InsetPage(layout_.options(), page_index, pages_.size(), /*multiplier=*/-1,
-            shadow_rect);
+  gfx::Rect shadow_rect(pages_[page_index]->rect());
+  gfx::Insets insets = GetInsets(layout_.options(), page_index, pages_.size());
+  shadow_rect.Inset(ScaleToCeiledInsets(insets, -1));
 
-  // Due to the rounding errors of the GetScreenRect it is possible to get
+  // Due to the rounding errors of GetScreenRect(), it is possible to get
   // different size shadows on the left and right sides even they are defined
-  // the same. To fix this issue let's calculate shadow rect and then shrink
-  // it by the size of the shadows.
+  // the same. To fix this issue, calculate the shadow rect and then shrink it
+  // by the size of the shadows.
   shadow_rect = GetScreenRect(shadow_rect);
-  page_rect = shadow_rect;
-  InsetPage(layout_.options(), page_index, pages_.size(),
-            /*multiplier=*/current_zoom_, page_rect);
 
+  gfx::Rect page_rect = shadow_rect;
+  page_rect.Inset(ScaleToCeiledInsets(insets, current_zoom_));
   DrawPageShadow(page_rect, shadow_rect, dirty_in_screen, image_data);
 }
 
