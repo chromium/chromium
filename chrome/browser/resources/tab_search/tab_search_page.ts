@@ -3,12 +3,8 @@
 // found in the LICENSE file.
 
 import 'chrome://resources/cr_elements/cr_expand_button/cr_expand_button.js';
-import 'chrome://resources/cr_elements/cr_shared_vars.css.js';
-import 'chrome://resources/cr_elements/mwb_element_shared_style.css.js';
-import 'chrome://resources/cr_elements/mwb_shared_style.css.js';
-import 'chrome://resources/cr_elements/mwb_shared_vars.css.js';
-import 'chrome://resources/polymer/v3_0/iron-icon/iron-icon.js';
-import 'chrome://resources/polymer/v3_0/iron-iconset-svg/iron-iconset-svg.js';
+import 'chrome://resources/cr_elements/cr_icon/cr_icon.js';
+import 'chrome://resources/cr_elements/mwb_shared_icons.html.js';
 import './infinite_list.js';
 import './strings.m.js';
 import './tab_search_group_item.js';
@@ -17,15 +13,15 @@ import './title_item.js';
 
 import {ColorChangeUpdater} from '//resources/cr_components/color_change_listener/colors_css_updater.js';
 import {getInstance as getAnnouncerInstance} from 'chrome://resources/cr_elements/cr_a11y_announcer/cr_a11y_announcer.js';
-import {CrSearchFieldMixin} from 'chrome://resources/cr_elements/cr_search_field/cr_search_field_mixin.js';
+import {CrSearchFieldMixinLit} from 'chrome://resources/cr_elements/cr_search_field/cr_search_field_mixin_lit.js';
 import {assert} from 'chrome://resources/js/assert.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
 import type {MetricsReporter} from 'chrome://resources/js/metrics_reporter/metrics_reporter.js';
 import {MetricsReporterImpl} from 'chrome://resources/js/metrics_reporter/metrics_reporter.js';
 import {listenOnce} from 'chrome://resources/js/util.js';
+import {CrLitElement} from 'chrome://resources/lit/v3_0/lit.rollup.js';
+import type {PropertyValues} from 'chrome://resources/lit/v3_0/lit.rollup.js';
 import type {Token} from 'chrome://resources/mojo/mojo/public/mojom/base/token.mojom-webui.js';
-import type {DomRepeatEvent} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
-import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import type {SearchOptions} from './fuzzy_search.js';
 import {fuzzySearch} from './fuzzy_search.js';
@@ -35,7 +31,10 @@ import {ariaLabel, type ItemData, normalizeURL, TabData, TabGroupData, TabItemTy
 import type {ProfileData, RecentlyClosedTab, RecentlyClosedTabGroup, Tab, TabGroup, TabsRemovedInfo, TabUpdateInfo} from './tab_search.mojom-webui.js';
 import type {TabSearchApiProxy} from './tab_search_api_proxy.js';
 import {TabSearchApiProxyImpl} from './tab_search_api_proxy.js';
-import {getTemplate} from './tab_search_page.html.js';
+import type {TabSearchGroupItemElement} from './tab_search_group_item.js';
+import type {TabSearchItemElement} from './tab_search_item.js';
+import {getCss} from './tab_search_page.css.js';
+import {getHtml} from './tab_search_page.html.js';
 import {tabHasMediaAlerts} from './tab_search_utils.js';
 import {TitleItem} from './title_item.js';
 
@@ -43,7 +42,7 @@ import {TitleItem} from './title_item.js';
 // height. Includes a half row that hints to the user the capability to scroll.
 const MINIMUM_AVAILABLE_HEIGHT_LIST_ITEM_COUNT: number = 5.5;
 
-const TabSearchSearchFieldBase = CrSearchFieldMixin(PolymerElement);
+const TabSearchSearchFieldBase = CrSearchFieldMixinLit(CrLitElement);
 
 /**
  * These values are persisted to logs and should not be renumbered or re-used.
@@ -68,84 +67,63 @@ export class TabSearchPageElement extends TabSearchSearchFieldBase {
     return 'tab-search-page';
   }
 
-  static get properties() {
+  static override get properties() {
     return {
-      /**
-       * Text that describes the resulting tabs currently present in the list.
-       */
-      searchResultText_: {
-        type: String,
-        value: '',
-      },
-
-      shortcut_: {
-        type: String,
-        value: () => loadTimeData.getString('shortcutText'),
-      },
-
-      searchText_: {
-        type: String,
-        value: '',
-      },
-
-      availableHeight_: Number,
-
-      filteredItems_: {
-        type: Array,
-        value: [],
-      },
+      // Text that describes the resulting tabs currently present in the list.
+      searchResultText_: {type: String},
+      shortcut_: {type: String},
+      searchText_: {type: String},
+      availableHeight_: {type: Number},
+      filteredItems_: {type: Array},
+      listMaxHeight_: {type: Number},
 
       /**
        * Options for fuzzy search. Controls how heavily weighted fields are
        * relative to each other in the scoring via field weights.
        */
-      fuzzySearchOptions_: {
-        type: Object,
-        value: {
-          includeScore: true,
-          includeMatches: true,
-          ignoreLocation: false,
-          threshold: 0.0,
-          distance: 200,
-          keys: [
-            {
-              name: 'tab.title',
-              weight: 2,
-            },
-            {
-              name: 'hostname',
-              weight: 1,
-            },
-            {
-              name: 'tabGroup.title',
-              weight: 1.5,
-            },
-          ],
-        },
-      },
-
-      recentlyClosedDefaultItemDisplayCount_: {
-        type: Number,
-        value: () =>
-            loadTimeData.getValue('recentlyClosedDefaultItemDisplayCount'),
-      },
+      fuzzySearchOptions_: {type: Object},
+      recentlyClosedDefaultItemDisplayCount_: {type: Number},
 
       tabOrganizationEnabled: {
         type: Boolean,
-        reflectToAttribute: true,
-        value: () => loadTimeData.getBoolean('tabOrganizationEnabled'),
+        reflect: true,
       },
     };
   }
 
-  private searchText_: string;
-  private availableHeight_: number;
-  private filteredItems_: Array<TitleItem|TabData|TabGroupData>;
-  private fuzzySearchOptions_: SearchOptions;
-  private recentlyClosedDefaultItemDisplayCount_: number;
-  private searchResultText_: string;
-  private activeSelectionId_: string;
-  private shortcut_: string;
+  tabOrganizationEnabled: boolean =
+      loadTimeData.getBoolean('tabOrganizationEnabled');
+  private searchText_: string = '';
+  private availableHeight_?: number;
+  protected listMaxHeight_?: number;
+  protected filteredItems_: Array<TitleItem|TabData|TabGroupData> = [];
+  private fuzzySearchOptions_: SearchOptions = {
+    includeScore: true,
+    includeMatches: true,
+    ignoreLocation: false,
+    threshold: 0.0,
+    distance: 200,
+    keys:
+        [
+          {
+            name: 'tab.title',
+            weight: 2,
+          },
+          {
+            name: 'hostname',
+            weight: 1,
+          },
+          {
+            name: 'tabGroup.title',
+            weight: 1.5,
+          },
+        ],
+  };
+  private recentlyClosedDefaultItemDisplayCount_: number =
+      loadTimeData.getValue('recentlyClosedDefaultItemDisplayCount');
+  protected searchResultText_: string = '';
+  protected activeSelectionId_: string;
+  protected shortcut_: string = loadTimeData.getString('shortcutText');
   override autofocus: boolean;
 
   private apiProxy_: TabSearchApiProxy = TabSearchApiProxyImpl.getInstance();
@@ -235,6 +213,26 @@ export class TabSearchPageElement extends TabSearchSearchFieldBase {
     this.elementVisibilityChangedListener_.disconnect();
   }
 
+  override updated(changedProperties: PropertyValues<this>) {
+    super.updated(changedProperties);
+
+    const changedPrivateProperties =
+        changedProperties as Map<PropertyKey, unknown>;
+    if (changedPrivateProperties.has('availableHeight_')) {
+      assert(this.availableHeight_ !== undefined);
+
+      /**
+       * Calculate the list's available height by subtracting the height used by
+       * the search and feedback fields.
+       */
+      this.listMaxHeight_ = Math.max(
+          this.availableHeight_ - this.$.searchField.offsetHeight,
+          Math.round(
+              MINIMUM_AVAILABLE_HEIGHT_LIST_ITEM_COUNT *
+              this.getStylePropertyPixelValue_('--mwb-item-height')));
+    }
+  }
+
   override getSearchInput(): HTMLInputElement {
     return this.$.searchInput;
   }
@@ -249,7 +247,7 @@ export class TabSearchPageElement extends TabSearchSearchFieldBase {
     // Reset the selected item whenever a search query is provided.
     // updateFilteredTabs_ will set the correct tab index for initial selection.
     const tabsList = this.$.tabsList;
-    tabsList.selected = NO_SELECTION;
+    tabsList.resetSelected();
 
     this.updateFilteredTabs_();
 
@@ -267,18 +265,6 @@ export class TabSearchPageElement extends TabSearchSearchFieldBase {
     assert(pxValue);
 
     return Number.parseInt(pxValue.trim().slice(0, -2), 10);
-  }
-
-  /**
-   * Calculate the list's available height by subtracting the height used by
-   * the search and feedback fields.
-   */
-  private listMaxHeight_(height: number): number {
-    return Math.max(
-        height - this.$.searchField.offsetHeight,
-        Math.round(
-            MINIMUM_AVAILABLE_HEIGHT_LIST_ITEM_COUNT *
-            this.getStylePropertyPixelValue_('--mwb-item-height')));
   }
 
   private onDocumentHidden_() {
@@ -397,7 +383,7 @@ export class TabSearchPageElement extends TabSearchSearchFieldBase {
    * The selected item's index, or -1 if no item selected.
    */
   getSelectedIndex(): number {
-    return this.$.tabsList.selected;
+    return this.$.tabsList.getSelected();
   }
 
   private getA11ySearchResultText_(): string {
@@ -428,9 +414,12 @@ export class TabSearchPageElement extends TabSearchSearchFieldBase {
     }, 0);
   }
 
-  private onItemClick_(e: DomRepeatEvent<ItemData>) {
-    const tabItem = e.model.item;
-    this.tabItemAction_(tabItem, e.model.index);
+  protected onItemClick_(e: Event) {
+    const target =
+        e.currentTarget as TabSearchItemElement | TabSearchGroupItemElement;
+    const tabItem = target.data;
+    const tabIndex = target.index;
+    this.tabItemAction_(tabItem, tabIndex);
   }
 
   private recordMetricsForAction(action: string, tabIndex: number) {
@@ -488,10 +477,12 @@ export class TabSearchPageElement extends TabSearchSearchFieldBase {
         Math.round(Date.now() - this.windowShownTimestamp_));
   }
 
-  private onItemClose_(e: DomRepeatEvent<TabData>) {
+  protected onItemClose_(e: Event) {
     performance.mark('tab_search:close_tab:metric_begin');
-    const tabId = e.model.item.tab.tabId;
-    const tabIndex = e.model.index;
+    const target = e.currentTarget as TabSearchItemElement;
+    const tabItem = target.data;
+    const tabIndex = target.index;
+    const tabId = tabItem.tab.tabId;
     this.recordMetricsForAction('CloseTab', tabIndex);
     this.apiProxy_.closeTab(tabId);
     this.announceA11y_(loadTimeData.getString('a11yTabClosed'));
@@ -500,7 +491,7 @@ export class TabSearchPageElement extends TabSearchSearchFieldBase {
     });
   }
 
-  private onItemKeyDown_(e: DomRepeatEvent<ItemData, KeyboardEvent>) {
+  protected onItemKeyDown_(e: KeyboardEvent) {
     if (e.key !== 'Enter' && e.key !== ' ') {
       return;
     }
@@ -508,8 +499,11 @@ export class TabSearchPageElement extends TabSearchSearchFieldBase {
     e.stopPropagation();
     e.preventDefault();
 
-    const itemData = e.model.item;
-    this.tabItemAction_(itemData, e.model.index);
+    const target =
+        e.currentTarget as TabSearchItemElement | TabSearchGroupItemElement;
+    const itemData = target.data;
+    const tabIndex = Number(target.index);
+    this.tabItemAction_(itemData, tabIndex);
   }
 
   private tabsChanged_(profileData: ProfileData) {
@@ -535,36 +529,52 @@ export class TabSearchPageElement extends TabSearchSearchFieldBase {
     this.recentlyClosedTitleItem_.expanded =
         profileData.recentlyClosedSectionExpanded;
 
-    this.$.tabsList.setAttribute(
-        'expanded-list', profileData.recentlyClosedSectionExpanded.toString());
+    this.$.tabsList.toggleAttribute(
+        'expanded-list', profileData.recentlyClosedSectionExpanded);
 
     this.updateFilteredTabs_();
   }
 
-  private onItemFocus_(e: DomRepeatEvent<TabData|TabGroupData>) {
+  protected onItemFocus_(e: Event) {
     // Ensure that when a TabSearchItem receives focus, it becomes the selected
     // item in the list.
-    this.$.tabsList.selected = e.model.index;
+    const target =
+        e.currentTarget as TabSearchItemElement | TabSearchGroupItemElement;
+    const index = target.index;
+    this.$.tabsList.setSelected(index);
   }
 
-  private onTitleExpandChanged_(
-      e: DomRepeatEvent<TitleItem, CustomEvent<{value: boolean}>>) {
+  private getTitleItemFromTitle_(title: string): TitleItem {
+    const item = [
+      this.mediaTabsTitleItem_,
+      this.openTabsTitleItem_,
+      this.recentlyClosedTitleItem_,
+    ].find(item => item.title === title);
+    assert(item);
+    return item;
+  }
+
+  protected async onTitleExpandChanged_(e: CustomEvent<{value: boolean}>) {
     // Instead of relying on two-way binding to update the `expanded` property,
     // we update the value directly as the `expanded-changed` event takes place
     // before a two way bound property update and we need the TitleItem
     // instance to reflect the updated state prior to calling the
     // updateFilteredTabs_ function.
     const expanded = e.detail.value;
-    const titleItem = e.model.item;
+    const target = e.currentTarget as HTMLElement;
+    const title = target.dataset['title'];
+    assert(title);
+    const titleItem = this.getTitleItemFromTitle_(title);
     if (titleItem.expanded === expanded) {
       return;
     }
     titleItem.expanded = expanded;
     this.apiProxy_.saveRecentlyClosedExpandedPref(expanded);
 
-    this.$.tabsList.setAttribute('expanded-list', expanded.toString());
+    this.$.tabsList.toggleAttribute('expanded-list', expanded);
 
-    this.updateFilteredTabs_();
+    e.stopPropagation();
+    await this.updateFilteredTabs_();
 
     // If a section's title item is the last visible element in the list and the
     // list's height is at its maximum, it will not be evident to the user that
@@ -574,18 +584,17 @@ export class TabSearchPageElement extends TabSearchSearchFieldBase {
     if (expanded) {
       this.$.tabsList.scrollIndexIntoView(this.filteredOpenTabsCount_);
     }
-    e.stopPropagation();
   }
 
   /**
    * Handles key events when the search field has focus.
    */
-  private onSearchKeyDown_(e: KeyboardEvent) {
+  protected onSearchKeyDown_(e: KeyboardEvent) {
     // In the event the search field has focus and the first item in the list is
     // selected and we receive a Shift+Tab navigation event, ensure All DOM
     // items are available so that the focus can transfer to the last item in
     // the list.
-    if (e.shiftKey && e.key === 'Tab' && this.$.tabsList.selected === 0) {
+    if (e.shiftKey && e.key === 'Tab' && this.$.tabsList.getSelected() === 0) {
       this.$.tabsList.ensureAllDomItemsAvailable();
       return;
     }
@@ -618,7 +627,7 @@ export class TabSearchPageElement extends TabSearchSearchFieldBase {
     getAnnouncerInstance().announce(text);
   }
 
-  private ariaLabel_(tabData: TabData): string {
+  protected ariaLabel_(tabData: TabData): string {
     return ariaLabel(tabData);
   }
 
@@ -656,7 +665,7 @@ export class TabSearchPageElement extends TabSearchSearchFieldBase {
     throw new Error('ItemData provided is invalid.');
   }
 
-  private updateFilteredTabs_() {
+  private async updateFilteredTabs_() {
     this.openTabs_.sort((a, b) => {
       const tabA = a.tab as Tab;
       const tabB = b.tab as Tab;
@@ -770,30 +779,38 @@ export class TabSearchPageElement extends TabSearchSearchFieldBase {
     // selected index. If the list shrunk above the selected index, select the
     // last index in the list. If there are no matching results, set the
     // selected index value to none.
+    await this.updateComplete;
     const tabsList = this.$.tabsList;
+    await tabsList.updateComplete;
+    // Only update the selection after the tab list has a chance to render
+    // the newly filtered list.
     let selectedIndex = this.getSelectedIndex();
     if (selectedIndex === NO_SELECTION) {
       selectedIndex = this.initiallySelectedTabIndex_;
     }
-    tabsList.selected =
-        Math.min(Math.max(selectedIndex, 0), this.selectableItemCount_() - 1);
+    tabsList.setSelected(
+        Math.min(Math.max(selectedIndex, 0), this.selectableItemCount_() - 1));
   }
 
   getSearchTextForTesting(): string {
     return this.searchText_;
   }
 
-  getAvailableHeightForTesting(): number {
+  getAvailableHeightForTesting(): number|undefined {
     return this.availableHeight_;
   }
 
-  static get template() {
-    return getTemplate();
+  static override get styles() {
+    return getCss();
   }
 
-  private onSelectedItemChanged_() {
-    const item = this.$.tabsList.selectedItem;
+  override render() {
+    return getHtml.bind(this)();
+  }
 
+  protected onSelectedItemChanged_(
+      e: CustomEvent<{value: TabData | TabGroupData | null}>) {
+    const item = e.detail.value;
     this.activeSelectionId_ = item ? (item as any)?.tab?.tabId : null;
   }
 }

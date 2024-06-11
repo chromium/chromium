@@ -8,24 +8,27 @@
  * reasons, the DOM items are incrementally added to the view as the user
  * scrolls through the list. The component expects a `max-height` property to be
  * specified in order to determine how many HTML elements to render initially.
- * The templates inside this element are used to create each list item's
- * HTML element. In order to associate the templates and items, a `data-type`
- * attribute is used. The `items` property specifies an array of list item data.
- * The component leverages an <iron-selector> to manage item selection and
- * styling. Items that should selectable must be associated with a template that
- * has a `data-selectable` attribute.
+ * Each list item's HTML element is creating using the template property, which
+ * should be set to a function returning a TemplateResult corresponding to a
+ * passed in list item and selection index. The `items` property specifies an
+ * array of list item data. The component leverages an <iron-selector> to manage
+ * item selection and styling. Selectable items should be designated as follows:
+ * - The top level HTML element in the template result for such items should
+ *   should have a "selectable" CSS class.
+ * - The selectable property on infinite-list should be set to a function that
+ *   returns whether an item passed to it is selectable.
  */
 
 import 'chrome://resources/polymer/v3_0/iron-selector/iron-selector.js';
 
 import {assert} from 'chrome://resources/js/assert.js';
 import {getDeepActiveElement} from 'chrome://resources/js/util.js';
+import {CrLitElement, html, render} from 'chrome://resources/lit/v3_0/lit.rollup.js';
+import type {PropertyValues, TemplateResult} from 'chrome://resources/lit/v3_0/lit.rollup.js';
 import type {IronSelectorElement} from 'chrome://resources/polymer/v3_0/iron-selector/iron-selector.js';
-import type {TemplateInstanceBase} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
-import {calculateSplices, PolymerElement, templatize} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {BiMap} from './bimap.js';
-import {getTemplate} from './infinite_list.html.js';
+import {getCss} from './infinite_list.css.js';
 
 export const NO_SELECTION: number = -1;
 
@@ -44,106 +47,132 @@ export interface InfiniteList {
   };
 }
 
-export class InfiniteList extends PolymerElement {
+export class InfiniteList<T = object> extends CrLitElement {
   static get is() {
     return 'infinite-list';
   }
 
-  static get template() {
-    return getTemplate();
+  static override get styles() {
+    return getCss();
   }
 
-  static get properties() {
+  override render() {
+    // Render items into light DOM using the client provided template
+    render(
+        this.items.slice(0, this.numItemsDisplayed_).map((item, index) => {
+          const selectionIndex = this.selectable(item) ?
+              this.selectableIndexToItemIndex_.invGet(index)! :
+              -1;
+          return this.template(item, selectionIndex);
+        }),
+        this, {
+          host: (this.getRootNode() as ShadowRoot).host,
+        });
+
+    // Render container, selector + slot into shadow DOM
+    return html`<div id="container">
+      <iron-selector id="selector" @keydown="${this.onKeyDown_}"
+          @iron-select="${this.onSelectedChanged_}"
+          .selectable="${this.selectableSelector_()}" selected-class="selected"
+          @selected-item-changed="${this.onSelectedItemChanged_}">
+        <slot></slot>
+      </iron-selector>
+    </div>`;
+  }
+
+  static override get properties() {
     return {
-      maxHeight: {
-        type: Number,
-        observer: 'onMaxHeightChanged_',
-      },
-
-      items: {
-        type: Array,
-        observer: 'onItemsChanged_',
-        value: [],
-      },
-
+      maxHeight: {type: Number},
+      numItemsDisplayed_: {type: Number},
+      items: {type: Array},
+      selectable: {type: Object},
       selectedItem: {
         type: Object,
-        readonly: true,
         notify: true,
       },
+      template: {type: Object},
+      selectableIndexToItemIndex_: {type: Object},
     };
   }
 
-  maxHeight: number;
-  items: Object[];
-  selectedItem: Object|null;
-  private instanceConstructors_:
-      Map<string,
-          new(args: {item: Object, index?: number}) =>
-              TemplateInstanceBase & HTMLElement>;
-  private instances_: Array<TemplateInstanceBase&HTMLElement>;
-  private selectableTypes_: Set<string>;
-  private selectableIndexToItemIndex_: BiMap<number, number>|null;
+  maxHeight?: number;
+  items: T[] = [];
+  template: (item: T, index: number) => TemplateResult = () => html``;
+  selectedItem: T|null = null;
+  selectable: (item: T) => boolean = (_item) => false;
+  protected numItemsDisplayed_: number = 0;
 
-  constructor() {
-    super();
+  private selectableIndexToItemIndex_: BiMap<number, number> = new BiMap();
 
-    /**
-     * A map of type names associated with constructors used for creating list
-     * item template instances.
-     */
-    this.instanceConstructors_ = new Map();
-
-    /**
-     * An array of template instances each of which contain the HTMLElement
-     * associated with a given rendered item from the items array. The entries
-     * are ordered to match the item's index.
-     */
-    this.instances_ = [];
-
-    /**
-     * A set of class names for which the selectable style class should be
-     * applied.
-     */
-    this.selectableTypes_ = new Set();
-
-    /**
-     * Correlates the selectable item indexes to the `items` property indexes.
-     */
-    this.selectableIndexToItemIndex_ = null;
+  override firstUpdated(changedProperties: PropertyValues<this>) {
+    super.firstUpdated(changedProperties);
+    this.addEventListener('scroll', () => this.onScroll_());
   }
 
-  override ready() {
-    super.ready();
-    this.ensureTemplatized_();
-    this.addEventListener('scroll', () => this.onScroll_());
+  override willUpdate(changedProperties: PropertyValues<this>) {
+    super.willUpdate(changedProperties);
+
+    if (changedProperties.has('maxHeight')) {
+      this.style.maxHeight = `${this.maxHeight}px`;
+    }
+
+    if (changedProperties.has('items') || changedProperties.has('selectable')) {
+      // Perform state updates.
+      if (this.items.length === 0) {
+        this.selectableIndexToItemIndex_ = new BiMap();
+        this.numItemsDisplayed_ = 0;
+      } else {
+        this.selectableIndexToItemIndex_ = new BiMap();
+        this.items.forEach((item, index) => {
+          if (this.selectable(item)) {
+            this.selectableIndexToItemIndex_!.set(
+                this.selectableIndexToItemIndex_!.size(), index);
+          }
+        });
+        this.numItemsDisplayed_ =
+            Math.min(this.numItemsDisplayed_, this.items.length);
+      }
+    }
+  }
+
+  override updated(changedProperties: PropertyValues<this>) {
+    super.updated(changedProperties);
+
+    if (changedProperties.has('items') || changedProperties.has('maxHeight')) {
+      const previous = changedProperties.get('items');
+      if (previous !== undefined || this.items.length !== 0) {
+        this.onItemsChanged_(previous ? (previous as T[]).length : 0);
+      }
+    }
   }
 
   /**
    * Create and insert as many DOM items as necessary to ensure all items are
    * rendered.
    */
-  ensureAllDomItemsAvailable() {
-    if (this.items.length > 0) {
-      // Height may need to be updated when length has not changed, if previous
-      // height calculation was performed when this element was not visible.
-      const shouldUpdateHeight = this.instances_.length !== this.items.length ||
-          this.$.container.style.height === '0px';
-      for (let i = this.instances_.length; i < this.items.length; i++) {
-        this.createAndInsertDomItem_(i);
-      }
+  async ensureAllDomItemsAvailable() {
+    if (this.items.length === 0) {
+      return;
+    }
 
-      if (shouldUpdateHeight) {
-        this.updateHeight_();
-      }
+    // Height may need to be updated when length has not changed, if previous
+    // height calculation was performed when this element was not visible.
+    const shouldUpdateHeight = this.numItemsDisplayed_ !== this.items.length ||
+        this.$.container.style.height === '0px';
+    if (this.numItemsDisplayed_ !== this.items.length) {
+      await this.updateNumItemsDisplayed_(this.items.length);
+    }
+
+    if (shouldUpdateHeight) {
+      this.updateHeight_();
     }
   }
 
-  scrollIndexIntoView(index: number) {
+  async scrollIndexIntoView(index: number) {
     assert(
         index >= 0 && index < this.selectableIndexToItemIndex_!.size(),
         'Index is out of range.');
-    this.ensureSelectableDomItemAvailable_(index);
+    await this.ensureSelectableDomItemAvailable_(index);
     this.getSelectableDomItem_(index)!.scrollIntoView(
         {behavior: 'smooth', block: 'nearest'});
   }
@@ -152,11 +181,11 @@ export class InfiniteList extends PolymerElement {
    * @param key Keyboard event key value.
    * @param focusItem Whether to focus the selected item.
    */
-  navigate(key: string, focusItem?: boolean) {
+  async navigate(key: string, focusItem?: boolean) {
     const selector = this.$.selector;
 
     if ((key === 'ArrowUp' && selector.selected === 0) || key === 'End') {
-      this.ensureAllDomItemsAvailable();
+      await this.ensureAllDomItemsAvailable();
       selector.selected = this.selectableIndexToItemIndex_!.size() - 1;
     } else {
       switch (key) {
@@ -181,102 +210,38 @@ export class InfiniteList extends PolymerElement {
     }
   }
 
-  private ensureTemplatized_() {
-    // The user provided light-dom template(s) to use when stamping DOM items.
-    const templates = this.querySelectorAll('template');
-    assert(templates.length > 0, 'At least one template must be provided');
-
-    // Initialize a map of class names to template instance constructors. On
-    // inserting DOM nodes, a lookup will be performed against the map to
-    // determine the correct constructor to use for rendering a given class
-    // type.
-    templates.forEach(template => {
-      const type = template.dataset['type'];
-      assert(type);
-      const className = type;
-      if (template.dataset['selectable'] !== undefined) {
-        this.selectableTypes_.add(className);
-      }
-
-      const instanceProps = {
-        item: true,
-        // Selectable items require an `index` property to facilitate selection
-        // and navigation capabilities exposed through the `selected` and
-        // `selectedItem` properties, and the navigate method.
-        index: this.selectableTypes_.has(className),
-      };
-      this.instanceConstructors_.set(
-          className, templatize(template, this, {
-                       parentModel: true,
-                       instanceProps,
-                     }) as {new (): TemplateInstanceBase & HTMLElement});
-    });
-  }
-
-  /**
-   * Create a DOM item and immediately insert it in the DOM tree. A reference is
-   * stored in the instances_ array for future item lifecycle operations.
-   */
-  private createAndInsertDomItem_(index: number) {
-    const instance = this.createItemInstance_(index);
-    this.instances_[index] = instance;
-    this.insertBefore(instance.root, this.children[index]!);
-  }
-
-  private createItemInstance_(itemIndex: number): TemplateInstanceBase
-      &HTMLElement {
-    const item = this.items[itemIndex]!;
-    const instanceConstructor =
-        this.instanceConstructors_.get(item.constructor.name);
-    assert(instanceConstructor);
-    const itemSelectable = this.isItemSelectable_(item);
-    const args = itemSelectable ?
-        {item, index: this.selectableIndexToItemIndex_!.invGet(itemIndex)} :
-        {item};
-    const instance = new instanceConstructor(args);
-    instance.children[0]!.setAttribute('slot', 'items');
-
-    if (itemSelectable) {
-      instance.children[0]!.classList.add(SELECTABLE_CLASS_NAME);
-    }
-
-    return instance;
-  }
-
   /**
    * @return The average DOM item height.
    */
   private domItemAverageHeight_(): number {
-    // It must always be true that if this logic is invoked, there should be
-    // enough DOM items rendered to estimate an item average height. This is
-    // ensured by the logic that observes the items array.
-    const domItemCount = this.instances_.length;
-    assert(domItemCount);
-    const lastDomItem =
-        this.shadowRoot!.querySelector<HTMLSlotElement>('slot[name=\'items\']')!
-            .assignedElements()
-            .at(-1) as HTMLElement;
-    return (lastDomItem.offsetTop + lastDomItem.offsetHeight) / domItemCount;
+    // This logic should only be invoked if the list is non-empty and at least
+    // one DOM item has been rendered so that an item average height can be
+    // estimated. This is ensured by the callers.
+    assert(this.items.length > 0);
+    const slot = this.shadowRoot!.querySelector('slot');
+    assert(slot);
+    const domItems = slot.assignedElements();
+    assert(domItems.length > 0);
+    const lastDomItem = domItems.at(-1) as HTMLElement;
+    return (lastDomItem.offsetTop + lastDomItem.offsetHeight) / domItems.length;
   }
 
   /**
    * Create and insert as many DOM items as necessary to ensure the selectable
    * item at the specified index is present.
    */
-  private ensureSelectableDomItemAvailable_(selectableItemIndex: number) {
+  private async ensureSelectableDomItemAvailable_(selectableItemIndex: number) {
     const itemIndex =
         this.selectableIndexToItemIndex_!.get(selectableItemIndex)!;
-    for (let i = this.instances_.length; i < itemIndex + 1; i++) {
-      this.createAndInsertDomItem_(i);
+    if (itemIndex >= this.numItemsDisplayed_) {
+      await this.updateNumItemsDisplayed_(itemIndex + 1);
     }
   }
 
   private getDomItem_(index: number): HTMLElement|undefined {
-    const instance = this.instances_[index];
-    if (!instance) {
-      return undefined;
-    }
-    return instance!.children[0] as HTMLElement;
+    const slot = this.shadowRoot!.querySelector('slot');
+    assert(slot);
+    return slot.assignedElements()[index] as HTMLElement;
   }
 
   private getSelectableDomItem_(selectableItemIndex: number): HTMLElement
@@ -285,21 +250,14 @@ export class InfiniteList extends PolymerElement {
         this.selectableIndexToItemIndex_!.get(selectableItemIndex)!);
   }
 
-  /**
-   * @return The number of items required to fill the current viewport.
-   */
-  private viewportItemCount_(): number {
-    return Math.ceil(this.maxHeight / this.domItemAverageHeight_());
-  }
-
-  fillCurrentViewHeight() {
-    if (this.items.length === 0) {
+  async fillCurrentViewHeight() {
+    if (this.numItemsDisplayed_ === 0 || !this.maxHeight) {
       return;
     }
 
     // Update height if new items are added or previous height calculation was
     // performed when this element was not visible.
-    const added = this.fillViewHeight_(this.maxHeight + this.scrollTop);
+    const added = await this.fillViewHeight_(this.maxHeight + this.scrollTop);
     if (added || this.$.container.style.height === '0px') {
       this.updateHeight_();
     }
@@ -308,15 +266,15 @@ export class InfiniteList extends PolymerElement {
   /**
    * @return Whether DOM items were created or not.
    */
-  private fillViewHeight_(height: number): boolean {
+  private async fillViewHeight_(height: number): Promise<boolean> {
     const startTime = performance.now();
 
     // Ensure we have added enough DOM items so that we are able to estimate
     // item average height.
     assert(this.items.length);
-    const initialDomItemCount = this.instances_.length;
-    if (initialDomItemCount === 0) {
-      this.createAndInsertDomItem_(0);
+    const initialDomItemCount = this.numItemsDisplayed_;
+    if (this.numItemsDisplayed_ === 0) {
+      await this.updateNumItemsDisplayed_(1);
     }
 
     const itemHeight = this.domItemAverageHeight_();
@@ -328,12 +286,13 @@ export class InfiniteList extends PolymerElement {
 
     const desiredDomItemCount =
         Math.min(Math.ceil(height / itemHeight), this.items.length);
+    if (desiredDomItemCount > this.numItemsDisplayed_) {
+      await this.updateNumItemsDisplayed_(desiredDomItemCount);
+    }
+
     // TODO(romanarora): Re-evaluate the average dom item height at given item
     // insertion counts in order to determine more precisely the right number of
     // items to render.
-    for (let i = this.instances_.length; i < desiredDomItemCount; i++) {
-      this.createAndInsertDomItem_(i);
-    }
 
     // TODO(romanarora): Check if we have reached the desired height, and if not
     // keep adding items.
@@ -341,15 +300,15 @@ export class InfiniteList extends PolymerElement {
     if (initialDomItemCount !== desiredDomItemCount) {
       performance.mark(`tab_search:infinite_list_view_updated:${
           performance.now() - startTime}:metric_value`);
-
       return true;
     }
 
     return false;
   }
 
-  private isItemSelectable_(item: Object): boolean {
-    return this.selectableTypes_.has(item.constructor.name);
+  private async updateNumItemsDisplayed_(itemsToDisplay: number) {
+    this.numItemsDisplayed_ = itemsToDisplay;
+    await this.updateComplete;
   }
 
   /**
@@ -376,7 +335,7 @@ export class InfiniteList extends PolymerElement {
   /**
    * Handles key events when list item elements have focus.
    */
-  private onKeyDown_(e: KeyboardEvent) {
+  protected onKeyDown_(e: KeyboardEvent) {
     // Do not interfere with any parent component that manages 'shift' related
     // key events.
     if (e.shiftKey) {
@@ -401,39 +360,15 @@ export class InfiniteList extends PolymerElement {
    * needed to fill the current scroll position view are added to the DOM, thus
    * improving rendering performance.
    */
-  private onItemsChanged_(newItems: any[], oldItems: any[]) {
-    if (this.instanceConstructors_.size === 0) {
-      return;
-    }
-
-    if (newItems.length === 0) {
-      this.selectableIndexToItemIndex_ = new BiMap();
-      // If the new items array is empty, there is nothing to be rendered, so we
-      // remove any DOM items present.
-      this.removeDomItems_(0, this.instances_.length);
-      this.resetSelected_();
+  private async onItemsChanged_(previousLength: number) {
+    if (this.items.length === 0) {
+      this.resetSelected();
     } else {
-      const itemSelectedAndFocused = this.isItemSelectedAndFocused_();
-      this.selectableIndexToItemIndex_ = new BiMap();
-      newItems.forEach((item, index) => {
-        if (this.isItemSelectable_(item)) {
-          this.selectableIndexToItemIndex_!.set(
-              this.selectableIndexToItemIndex_!.size(), index);
-        }
-      });
-
-      // If we had previously rendered some DOM items, we perform a partial
-      // update on them.
-      if (oldItems.length !== 0) {
-        // Update no more items than currently rendered and no less than what is
-        // required to fill the viewport.
-        const count =
-            Math.max(this.instances_.length, this.viewportItemCount_());
-        this.updateDomItems_(
-            newItems.slice(0, count), oldItems.slice(0, count));
+      if (this.maxHeight === undefined || this.maxHeight === 0) {
+        return;
       }
-
-      this.fillViewHeight_(this.scrollTop + this.maxHeight);
+      const itemSelectedAndFocused = this.isItemSelectedAndFocused_();
+      await this.fillViewHeight_(this.scrollTop + this.maxHeight);
 
       // Since the new selectable items' length might be smaller than the old
       // selectable items' length, we need to check if the selected index is
@@ -450,93 +385,26 @@ export class InfiniteList extends PolymerElement {
       }
     }
 
-    if (newItems.length !== oldItems.length) {
+    if (this.items.length !== previousLength) {
       this.updateHeight_();
     }
 
-    this.dispatchEvent(
-        new CustomEvent('viewport-filled', {bubbles: true, composed: true}));
-  }
-
-  private onMaxHeightChanged_(height: number) {
-    this.style.maxHeight = height + 'px';
+    this.fire('viewport-filled');
   }
 
   /**
    * Adds additional DOM items as needed to fill the view based on user scroll
    * interactions.
    */
-  private onScroll_() {
+  private async onScroll_() {
     const scrollTop = this.scrollTop;
-    if (scrollTop > 0 && this.instances_.length !== this.items.length) {
-      if (this.fillViewHeight_(scrollTop + this.maxHeight)) {
+    if (scrollTop > 0 && this.numItemsDisplayed_ !== this.items.length) {
+      if (this.maxHeight === undefined) {
+        return;
+      }
+      const added = await this.fillViewHeight_(scrollTop + this.maxHeight);
+      if (added) {
         this.updateHeight_();
-      }
-    }
-  }
-
-  private updateDomItems_(newItems: any[], oldItems: any[]) {
-    // Identify the differences between the original and new list of items.
-    // These are represented as splice objects containing removed and added
-    // item information at a given index. We leverage these splices to change
-    // only the affected items.
-    const splices = calculateSplices(newItems, oldItems);
-    for (const splice of splices) {
-      // If the splice applies to indices for which there are no instances yet
-      // there is no need to update them yet.
-      if (splice.index >= this.instances_.length) {
-        continue;
-      }
-
-      if (splice.addedCount === splice.removed.length) {
-        // If the number of added and removed items are equal, reuse the
-        // existing DOM instances and simply update their item binding.
-        const indexOfLastInstance =
-            Math.min(splice.index + splice.addedCount, this.instances_.length);
-        for (let i = splice.index; i < indexOfLastInstance; i++) {
-          // If the types don't match, we need to replace the existing instance.
-          if (oldItems[i].constructor !== newItems[i].constructor) {
-            this.getDomItem_(i)!.remove();
-            this.createAndInsertDomItem_(i);
-            continue;
-          }
-
-          (this.instances_[i] as unknown as {item: any}).item = newItems[i];
-        }
-        continue;
-      }
-
-      // For simplicity, if new items have been added, we remove the no longer
-      // accurate template instances following the splice index and allow the
-      // component to ensure the viewport is full. If no items were added, we
-      // simply remove the no longer existing items and update any following
-      // template instances.
-      // TODO(romanarora): Introduce a DOM item reuse pool for a more
-      // efficient update.
-      const removeCount = splice.addedCount !== 0 ?
-          this.instances_.length - splice.index :
-          splice.removed.length;
-      this.removeDomItems_(splice.index, removeCount);
-    }
-
-    // Update the index property of the selectable item instances as it may no
-    // longer be accurate after the splices have taken place.
-    this.updateSelectableItemInstanceIndexes_();
-  }
-
-  private removeDomItems_(index: number, count: number) {
-    this.instances_.splice(index, count).forEach(instance => {
-      this.removeChild(instance.children[0]!);
-    });
-  }
-
-  private updateSelectableItemInstanceIndexes_() {
-    for (let itemIndex = 0; itemIndex < this.instances_.length; itemIndex++) {
-      const selectableItemIndex =
-          this.selectableIndexToItemIndex_!.invGet(itemIndex);
-      if (selectableItemIndex !== undefined) {
-        (this.instances_[itemIndex] as unknown as {index: number}).index =
-            selectableItemIndex;
       }
     }
   }
@@ -559,7 +427,7 @@ export class InfiniteList extends PolymerElement {
    * TODO(romanarora): Selection navigation behavior should be configurable. The
    * approach followed below might not be desired by all component users.
    */
-  private onSelectedChanged_() {
+  protected async onSelectedChanged_() {
     const selector = this.$.selector;
     if (selector.selected === undefined) {
       return;
@@ -586,7 +454,7 @@ export class InfiniteList extends PolymerElement {
 
     const nextItemIndex = (selector.selected as number) + 1;
     if (nextItemIndex < this.selectableIndexToItemIndex_!.size()) {
-      this.ensureSelectableDomItemAvailable_(nextItemIndex);
+      await this.ensureSelectableDomItemAvailable_(nextItemIndex);
 
       const nextItem = this.getSelectableDomItem_(nextItemIndex)!;
       if (nextItem.offsetTop + nextItem.offsetHeight >
@@ -601,17 +469,17 @@ export class InfiniteList extends PolymerElement {
    * suppresses a closure validation that would require modifying the
    * IronSelectableBehavior's annotations for the selected property.
    */
-  private resetSelected_() {
+  resetSelected() {
     this.$.selector.selected = undefined as unknown as string | number;
   }
 
-  private selectableSelector_(): string {
+  protected selectableSelector_(): string {
     return '.' + SELECTABLE_CLASS_NAME;
   }
 
-  set selected(index: number) {
+  async setSelected(index: number) {
     if (index === NO_SELECTION) {
-      this.resetSelected_();
+      this.resetSelected();
       return;
     }
 
@@ -620,19 +488,19 @@ export class InfiniteList extends PolymerElement {
       assert(
           index < this.selectableIndexToItemIndex_!.size(),
           'Selection index is out of range.');
-      this.ensureSelectableDomItemAvailable_(index);
+      await this.ensureSelectableDomItemAvailable_(index);
       selector.selected = index;
     }
   }
 
   /** @return The selected index or -1 if none selected. */
-  get selected(): number {
+  getSelected(): number {
     return this.$.selector.selected !== undefined ?
         this.$.selector.selected as number :
         NO_SELECTION;
   }
 
-  private onSelectedItemChanged_() {
+  protected onSelectedItemChanged_() {
     this.selectedItem = (this.$.selector.selectedItem as any)?.data;
   }
 }

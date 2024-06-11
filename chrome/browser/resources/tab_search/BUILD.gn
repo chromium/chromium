@@ -22,7 +22,6 @@ build_webui("build") {
   ]
 
   web_component_files = [
-    "infinite_list.ts",
     "tab_organization_failure.ts",
     "tab_organization_group.ts",
     "tab_organization_in_progress.ts",
@@ -34,7 +33,6 @@ build_webui("build") {
     "tab_organization_results_actions.ts",
     "tab_search_group_item.ts",
     "tab_search_item.ts",
-    "tab_search_page.ts",
   ]
 
   non_web_component_files = [
@@ -42,17 +40,22 @@ build_webui("build") {
     "app.ts",
     "bimap.ts",
     "fuzzy_search.ts",
+    "infinite_list.ts",
     "tab_data.ts",
     "tab_group_color_helper.ts",
     "tab_search_api_proxy.ts",
     "tab_search_sync_browser_proxy.ts",
     "tab_search.ts",
+    "tab_search_page.html.ts",
+    "tab_search_page.ts",
     "tab_search_utils.ts",
     "title_item.ts",
   ]
 
   css_files = [
     "app.css",
+    "infinite_list.css",
+    "tab_search_page.css",
     "tab_group_shared_vars.css",
     "tab_organization_failure.css",
     "tab_organization_group.css",

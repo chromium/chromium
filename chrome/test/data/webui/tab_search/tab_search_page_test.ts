@@ -8,7 +8,7 @@ import type {ProfileData, RecentlyClosedTab, Tab, TabSearchItemElement, TabSearc
 import {TabGroupColor, TabSearchApiProxyImpl} from 'chrome://tab-search.top-chrome/tab_search.js';
 import {assertEquals, assertFalse, assertGT, assertNotEquals, assertTrue} from 'chrome://webui-test/chai_assert.js';
 import {MockedMetricsReporter} from 'chrome://webui-test/mocked_metrics_reporter.js';
-import {flushTasks, waitAfterNextRender} from 'chrome://webui-test/polymer_test_util.js';
+import {eventToPromise, microtasksFinished} from 'chrome://webui-test/test_util.js';
 
 import {createProfileData, createTab, generateSampleDataFromSiteNames, generateSampleRecentlyClosedTabs, generateSampleRecentlyClosedTabsFromSiteNames, generateSampleTabsFromSiteNames, SAMPLE_RECENTLY_CLOSED_DATA, SAMPLE_WINDOW_HEIGHT, sampleToken} from './tab_search_test_data.js';
 import {initLoadTimeDataWithDefaults} from './tab_search_test_helper.js';
@@ -48,6 +48,7 @@ suite('TabSearchAppTest', () => {
   async function setupTest(
       sampleData: ProfileData,
       loadTimeOverriddenData?: {[key: string]: number|string|boolean}) {
+    document.body.innerHTML = window.trustedTypes!.emptyHTML;
     initLoadTimeDataWithDefaults(loadTimeOverriddenData);
 
     MetricsReporterImpl.setInstanceForTest(new MockedMetricsReporter());
@@ -58,9 +59,9 @@ suite('TabSearchAppTest', () => {
 
     tabSearchPage = document.createElement('tab-search-page');
 
-    document.body.innerHTML = window.trustedTypes!.emptyHTML;
     document.body.appendChild(tabSearchPage);
-    await flushTasks();
+    await eventToPromise('viewport-filled', tabSearchPage.$.tabsList);
+    await microtasksFinished();
   }
 
   test('return all tabs', async () => {
@@ -96,7 +97,7 @@ suite('TabSearchAppTest', () => {
           recentlyClosedDefaultItemDisplayCount: 5,
         });
 
-    tabSearchPage.$.tabsList.ensureAllDomItemsAvailable();
+    await tabSearchPage.$.tabsList.ensureAllDomItemsAvailable();
 
     // Assert the recently closed tab group is included in the recently closed
     // items section and that the recently closed tabs belonging to it are
@@ -109,7 +110,7 @@ suite('TabSearchAppTest', () => {
       recentlyClosedTabs: SAMPLE_RECENTLY_CLOSED_DATA,
       recentlyClosedSectionExpanded: true,
     }));
-    tabSearchPage.$.tabsList.ensureAllDomItemsAvailable();
+    await tabSearchPage.$.tabsList.ensureAllDomItemsAvailable();
 
     assertEquals(8, queryRows().length);
   });
@@ -130,7 +131,8 @@ suite('TabSearchAppTest', () => {
           recentlyClosedDefaultItemDisplayCount: 1,
         });
 
-    assertEquals(2, queryRows().length);
+    const rows = queryRows();
+    assertEquals(2, rows.length);
   });
 
   test('Default tab selection when data is present', async () => {
@@ -146,12 +148,12 @@ suite('TabSearchAppTest', () => {
       recentlyClosedSectionExpanded: true,
     }));
     setSearchText('bing');
-    await flushTasks();
+    await microtasksFinished();
     verifyTabIds(queryRows(), [2]);
     assertEquals(0, tabSearchPage.getSelectedIndex());
 
     setSearchText('paypal');
-    await flushTasks();
+    await microtasksFinished();
     verifyTabIds(queryRows(), [100]);
     assertEquals(0, tabSearchPage.getSelectedIndex());
   });
@@ -184,7 +186,7 @@ suite('TabSearchAppTest', () => {
         });
 
     setSearchText('sample');
-    await flushTasks();
+    await microtasksFinished();
 
     // Assert that the recently closed items associated to a recently closed
     // group as well as the open tabs are rendered when applying a search
@@ -195,7 +197,7 @@ suite('TabSearchAppTest', () => {
   test('No tab selected when there are no search matches', async () => {
     await setupTest(createProfileData());
     setSearchText('Twitter');
-    await flushTasks();
+    await microtasksFinished();
     assertEquals(0, queryRows().length);
     assertEquals(-1, tabSearchPage.getSelectedIndex());
   });
@@ -302,15 +304,19 @@ suite('TabSearchAppTest', () => {
     const searchField = tabSearchPage.$.searchField;
 
     keyDownOn(searchField, 0, [], 'ArrowUp');
+    await microtasksFinished();
     assertEquals(-1, tabSearchPage.getSelectedIndex());
 
     keyDownOn(searchField, 0, [], 'ArrowDown');
+    await microtasksFinished();
     assertEquals(-1, tabSearchPage.getSelectedIndex());
 
     keyDownOn(searchField, 0, [], 'Home');
+    await microtasksFinished();
     assertEquals(-1, tabSearchPage.getSelectedIndex());
 
     keyDownOn(searchField, 0, [], 'End');
+    await microtasksFinished();
     assertEquals(-1, tabSearchPage.getSelectedIndex());
   });
 
@@ -323,21 +329,27 @@ suite('TabSearchAppTest', () => {
     const searchField = tabSearchPage.$.searchField;
 
     keyDownOn(searchField, 0, [], 'ArrowUp');
+    await microtasksFinished();
     assertEquals(numTabs - 1, tabSearchPage.getSelectedIndex());
 
     keyDownOn(searchField, 0, [], 'ArrowDown');
+    await microtasksFinished();
     assertEquals(0, tabSearchPage.getSelectedIndex());
 
     keyDownOn(searchField, 0, [], 'ArrowDown');
+    await microtasksFinished();
     assertEquals(1, tabSearchPage.getSelectedIndex());
 
     keyDownOn(searchField, 0, [], 'ArrowUp');
+    await microtasksFinished();
     assertEquals(0, tabSearchPage.getSelectedIndex());
 
     keyDownOn(searchField, 0, [], 'End');
+    await microtasksFinished();
     assertEquals(numTabs - 1, tabSearchPage.getSelectedIndex());
 
     keyDownOn(searchField, 0, [], 'Home');
+    await microtasksFinished();
     assertEquals(0, tabSearchPage.getSelectedIndex());
   });
 
@@ -351,7 +363,7 @@ suite('TabSearchAppTest', () => {
         const searchField = tabSearchPage.$.searchField;
 
         keyDownOn(searchField, 0, ['shift'], 'Tab');
-        await waitAfterNextRender(tabSearchPage);
+        await microtasksFinished();
 
         // Since default actions are not triggered via simulated events we rely
         // on asserting the expected DOM item count necessary to focus the last
@@ -366,6 +378,7 @@ suite('TabSearchAppTest', () => {
 
     for (const key of ['ArrowUp', 'ArrowDown', 'Home', 'End']) {
       keyDownOn(searchField, 0, ['shift'], key);
+      await microtasksFinished();
       assertEquals(0, tabSearchPage.getSelectedIndex());
     }
   });
@@ -375,7 +388,7 @@ suite('TabSearchAppTest', () => {
     verifyTabIds(queryRows(), [1, 5, 6, 2, 3, 4]);
     testProxy.getCallbackRouterRemote().tabsChanged(
         createProfileData({windows: []}));
-    await flushTasks();
+    await microtasksFinished();
     verifyTabIds(queryRows(), []);
     assertEquals(-1, tabSearchPage.getSelectedIndex());
   });
@@ -391,7 +404,7 @@ suite('TabSearchAppTest', () => {
     testProxy.getCallbackRouterRemote().tabsChanged(createProfileData({
       windows: [testData.windows[0]!],
     }));
-    await flushTasks();
+    await microtasksFinished();
     assertEquals(1, tabSearchPage.getSelectedIndex());
 
     testProxy.getCallbackRouterRemote().tabsChanged(createProfileData({
@@ -401,7 +414,7 @@ suite('TabSearchAppTest', () => {
         tabs: [testData.windows[0]!.tabs[0]!],
       }],
     }));
-    await flushTasks();
+    await microtasksFinished();
     assertEquals(0, tabSearchPage.getSelectedIndex());
   });
 
@@ -421,7 +434,7 @@ suite('TabSearchAppTest', () => {
       tab: updatedTab,
     };
     testProxy.getCallbackRouterRemote().tabUpdated(tabUpdateInfo);
-    await flushTasks();
+    await microtasksFinished();
     // tabIds are not changed after tab updated.
     verifyTabIds(queryRows(), [1, 5, 6, 2, 3, 4]);
     tabSearchItem =
@@ -450,7 +463,7 @@ suite('TabSearchAppTest', () => {
       tab: updatedTab,
     };
     testProxy.getCallbackRouterRemote().tabUpdated(tabUpdateInfo);
-    await flushTasks();
+    await microtasksFinished();
     verifyTabIds(queryRows(), [2, 1]);
   });
 
@@ -465,13 +478,13 @@ suite('TabSearchAppTest', () => {
       tabIds: [1, 2],
       recentlyClosedTabs: [],
     });
-    await flushTasks();
+    await microtasksFinished();
     verifyTabIds(queryRows(), [5, 6, 3, 4]);
 
     // Assert that on removing all items, we display the no-results div.
     testProxy.getCallbackRouterRemote().tabsRemoved(
         {tabIds: [3, 4, 5, 6], recentlyClosedTabs: []});
-    await flushTasks();
+    await microtasksFinished();
     assertNotEquals(
         null, tabSearchPage.shadowRoot!.querySelector('#no-results'));
   });
@@ -499,7 +512,7 @@ suite('TabSearchAppTest', () => {
         lastActiveElapsedText: '',
       }],
     });
-    await flushTasks();
+    await microtasksFinished();
     verifyTabIds(queryRows(), [2, 3]);
   });
 
@@ -511,14 +524,14 @@ suite('TabSearchAppTest', () => {
     Object.defineProperty(
         document, 'visibilityState', {value: 'hidden', writable: true});
     document.dispatchEvent(new Event('visibilitychange'));
-    await flushTasks();
+    await microtasksFinished();
     assertEquals(1, testProxy.getCallCount('getProfileData'));
 
     // When visible visibilitychange should trigger the data callback.
     Object.defineProperty(
         document, 'visibilityState', {value: 'visible', writable: true});
     document.dispatchEvent(new Event('visibilitychange'));
-    await flushTasks();
+    await microtasksFinished();
     assertEquals(2, testProxy.getCallCount('getProfileData'));
   });
 
@@ -529,7 +542,7 @@ suite('TabSearchAppTest', () => {
     const searchField = tabSearchPage.$.searchField;
 
     setSearchText('Apple');
-    await flushTasks();
+    await microtasksFinished();
     verifyTabIds(queryRows(), [6, 4]);
     assertEquals(0, tabSearchPage.getSelectedIndex());
     keyDownOn(searchField, 0, [], 'ArrowDown');
@@ -540,7 +553,7 @@ suite('TabSearchAppTest', () => {
     Object.defineProperty(
         document, 'visibilityState', {value: 'hidden', writable: true});
     document.dispatchEvent(new Event('visibilitychange'));
-    await flushTasks();
+    await microtasksFinished();
     verifyTabIds(queryRows(), [1, 5, 6, 2, 3, 4]);
     assertEquals('', tabSearchPage.getSearchTextForTesting());
     assertEquals(0, tabSearchPage.getSelectedIndex());
@@ -549,7 +562,7 @@ suite('TabSearchAppTest', () => {
     Object.defineProperty(
         document, 'visibilityState', {value: 'visible', writable: true});
     document.dispatchEvent(new Event('visibilitychange'));
-    await flushTasks();
+    await microtasksFinished();
     verifyTabIds(queryRows(), [1, 5, 6, 2, 3, 4]);
     assertEquals('', tabSearchPage.getSearchTextForTesting());
     assertEquals(0, tabSearchPage.getSelectedIndex());
@@ -584,7 +597,7 @@ suite('TabSearchAppTest', () => {
     // Force a change to filtered tab data that would result in a
     // re-render.
     setSearchText('bing');
-    await flushTasks();
+    await microtasksFinished();
     verifyTabIds(queryRows(), [2]);
 
     testProxy.reset();
@@ -602,7 +615,6 @@ suite('TabSearchAppTest', () => {
 
   test('Verify notifySearchUiReadyToShow() is called correctly', async () => {
     await setupTest(createProfileData());
-    await waitAfterNextRender(tabSearchPage);
 
     // Make sure that tab data has been received.
     verifyTabIds(queryRows(), [1, 5, 6, 2, 3, 4]);
@@ -614,8 +626,7 @@ suite('TabSearchAppTest', () => {
     // Force a change to filtered tab data that would result in a
     // re-render.
     setSearchText('bing');
-    await flushTasks();
-    await waitAfterNextRender(tabSearchPage);
+    await microtasksFinished();
     verifyTabIds(queryRows(), [2]);
 
     // |notifySearchUiReadyToShow()| should still have only been called once.
@@ -707,6 +718,7 @@ suite('TabSearchAppTest', () => {
     const [expanded] =
         await testProxy.whenCalled('saveRecentlyClosedExpandedPref');
     assertFalse(expanded);
+    await microtasksFinished();
     assertEquals(1, queryRows().length);
 
     // Expand the `Recently Closed` section and assert item count.
@@ -714,6 +726,7 @@ suite('TabSearchAppTest', () => {
 
     await testProxy.whenCalled('saveRecentlyClosedExpandedPref');
     assertEquals(2, testProxy.getCallCount('saveRecentlyClosedExpandedPref'));
+    await microtasksFinished();
     assertEquals(3, queryRows().length);
   });
 
@@ -769,13 +782,13 @@ suite('TabSearchAppTest', () => {
             .value;
     tabSearchPage.style.display = 'none';
     await whenVisibilityChanged();
-    await waitAfterNextRender(tabSearchPage);
+    await microtasksFinished();
     assertEquals(numRows, queryListTitle().length + queryRows().length);
 
     // Re-activating the tabs list should not increase the number of items.
     tabSearchPage.style.display = displayStyle;
     await whenVisibilityChanged();
-    await waitAfterNextRender(tabSearchPage);
+    await microtasksFinished();
     assertEquals(numRows, queryListTitle().length + queryRows().length);
   });
 });
