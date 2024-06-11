@@ -2,6 +2,36 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+/**
+ * @fileoverview
+ * 'settings-dropdown-row' is a component which wraps a basic 'settings-row'
+ * with a slotted control component `settings-dropdown-v2`. This component can
+ * be used with or without prefs.
+ *
+ * - Usage: without pref
+ *   - `value` must be provided and `pref` must not be used.
+ *
+ *   <settings-dropdown-row
+ *       label="$i18n{rowLabel}"
+ *       sublabel="$i18n{rowDescription}"
+ *       icon="os-settings:display"
+ *       options="[[dropdownOptions_]]"
+ *       value="[[value]]"
+ *       on-change="onDropdownChange_">
+ *   <settings-dropdown-row>
+ *
+ * - Usage: with pref
+ *   - `pref` must be provided and `value` must not be used.
+ *
+ *   <settings-dropdown-row
+ *       label="$i18n{rowLabel}"
+ *       sublabel="$i18n{rowDescription}"
+ *       icon="os-settings:display"
+ *       options="[[dropdownOptions_]]"
+ *       pref="[[prefs.foo.bar]]">
+ *   <settings-dropdown-row>
+ */
+
 import './settings_dropdown_v2.js';
 import './settings_row.js';
 
