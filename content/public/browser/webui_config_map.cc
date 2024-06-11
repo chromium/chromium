@@ -4,6 +4,8 @@
 
 #include "content/public/browser/webui_config_map.h"
 
+#include <utility>
+
 #include "base/containers/contains.h"
 #include "base/memory/raw_ref.h"
 #include "base/no_destructor.h"
@@ -30,10 +32,7 @@ class WebUIConfigMapWebUIControllerFactory : public WebUIControllerFactory {
   WebUI::TypeID GetWebUIType(BrowserContext* browser_context,
                              const GURL& url) override {
     auto* config = config_map_->GetConfig(browser_context, url);
-    if (!config)
-      return WebUI::kNoWebUI;
-
-    return reinterpret_cast<WebUI::TypeID>(config);
+    return config ? reinterpret_cast<WebUI::TypeID>(config) : WebUI::kNoWebUI;
   }
 
   bool UseWebUIForURL(BrowserContext* browser_context,
@@ -46,10 +45,7 @@ class WebUIConfigMapWebUIControllerFactory : public WebUIControllerFactory {
       const GURL& url) override {
     auto* browser_context = web_ui->GetWebContents()->GetBrowserContext();
     auto* config = config_map_->GetConfig(browser_context, url);
-    if (!config)
-      return nullptr;
-
-    return config->CreateWebUIController(web_ui, url);
+    return config ? config->CreateWebUIController(web_ui, url) : nullptr;
   }
 
  private:
@@ -59,6 +55,7 @@ class WebUIConfigMapWebUIControllerFactory : public WebUIControllerFactory {
 };
 
 }  // namespace
+
 // static
 WebUIConfigMap& WebUIConfigMap::GetInstance() {
   static base::NoDestructor<WebUIConfigMap> instance;
@@ -104,10 +101,11 @@ WebUIConfig* WebUIConfigMap::GetConfig(BrowserContext* browser_context,
   }
 
   auto origin_and_config = configs_map_.find(url::Origin::Create(url));
-  if (origin_and_config == configs_map_.end())
+  if (origin_and_config == configs_map_.end()) {
     return nullptr;
-  auto& config = origin_and_config->second;
+  }
 
+  auto& config = origin_and_config->second;
   if (!config->IsWebUIEnabled(browser_context) ||
       !config->ShouldHandleURL(url)) {
     return nullptr;
@@ -121,8 +119,9 @@ std::unique_ptr<WebUIConfig> WebUIConfigMap::RemoveConfig(const GURL& url) {
         url.scheme() == kChromeUIUntrustedScheme);
 
   auto it = configs_map_.find(url::Origin::Create(url));
-  if (it == configs_map_.end())
+  if (it == configs_map_.end()) {
     return nullptr;
+  }
 
   auto webui_config = std::move(it->second);
   configs_map_.erase(it);
@@ -132,13 +131,13 @@ std::unique_ptr<WebUIConfig> WebUIConfigMap::RemoveConfig(const GURL& url) {
 std::vector<WebUIConfigInfo> WebUIConfigMap::GetWebUIConfigList(
     BrowserContext* browser_context) {
   std::vector<WebUIConfigInfo> origins;
+  origins.reserve(configs_map_.size());
   for (auto& it : configs_map_) {
     auto& webui_config = it.second;
     origins.push_back({
         .origin = it.first,
-        .enabled = browser_context == nullptr
-                       ? false
-                       : webui_config->IsWebUIEnabled(browser_context),
+        .enabled =
+            browser_context && webui_config->IsWebUIEnabled(browser_context),
     });
   }
   return origins;
