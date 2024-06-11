@@ -20,6 +20,7 @@ using std::optional;
 using syncer::ModelError;
 
 // Simplify checking for optional errors and returning only when present.
+#undef RETURN_IF_ERROR
 #define RETURN_IF_ERROR(x)              \
   if (optional<ModelError> error = x) { \
     return error;                       \

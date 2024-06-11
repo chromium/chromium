@@ -39,6 +39,7 @@ namespace autofill {
 namespace {
 
 // Simplify checking for optional errors and returning only when present.
+#undef RETURN_IF_ERROR
 #define RETURN_IF_ERROR(x)                \
   if (optional<ModelError> ret_val = x) { \
     return ret_val;                       \

@@ -48,6 +48,7 @@ const char kAutocompleteEntryNamespaceTag[] = "autofill_entry|";
 const char kAutocompleteTagDelimiter[] = "|";
 
 // Simplify checking for optional errors and returning only when present.
+#undef RETURN_IF_ERROR
 #define RETURN_IF_ERROR(x)                     \
   if (std::optional<ModelError> ret_val = x) { \
     return ret_val;                            \

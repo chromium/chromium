@@ -21,6 +21,7 @@
 namespace plus_addresses {
 
 // Macro to simplify reporting errors raised by ModelTypeStore operations.
+#undef RETURN_IF_ERROR
 #define RETURN_IF_ERROR(error)               \
   if (error) {                               \
     change_processor()->ReportError(*error); \
