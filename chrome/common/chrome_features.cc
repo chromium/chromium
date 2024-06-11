@@ -758,7 +758,7 @@ BASE_FEATURE(kHttpsFirstModeIncognitoNewSettings,
 // the titlebar. The tab strip and toolbar can auto hide and reveal.
 BASE_FEATURE(kImmersiveFullscreen,
              "ImmersiveFullscreen",
-             base::FEATURE_DISABLED_BY_DEFAULT);
+             base::FEATURE_ENABLED_BY_DEFAULT);
 
 // Moves the tab strip into the titlebar. kImmersiveFullscreen must be enabled
 // for this feature to have an effect.
