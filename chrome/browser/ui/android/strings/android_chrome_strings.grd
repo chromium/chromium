@@ -3746,15 +3746,6 @@ To change this setting, <ph name="BEGIN_LINK">BEGIN_LINK</ph>delete the Chrome d
       <message name="IDS_FEED_MANAGE_ACTIVITY_DESCRIPTION" desc="Content description to manage my activity from the feed header overflow menu.">
         Control your Google Account data
       </message>
-      <message name="IDS_FEED_MANAGE_INTERESTS" desc="Menu item to manage settings from the feed header overflow menu.">
-        Interests
-      </message>
-      <message name="IDS_FEED_MANAGE_INTERESTS_DESCRIPTION" desc="Content description to manage settings from the feed header overflow menu.">
-        Manage the topics you're interested in
-      </message>
-      <message name="IDS_FEED_MANAGE_INTERESTS_DESCRIPTION_UI_UPDATE" desc="Content description to manage settings from the feed header overflow menu.">
-        Manage the topics and searches you're interested in
-      </message>
       <message name="IDS_FEED_MANAGE_HIDDEN" desc="Menu item to manage hiding and unhiding topics.">
         Hidden
       </message>
@@ -3765,7 +3756,7 @@ To change this setting, <ph name="BEGIN_LINK">BEGIN_LINK</ph>delete the Chrome d
         Following
       </message>
       <message name="IDS_FEED_MANAGE_FOLLOWING_DESCRIPTION" desc="Content description to manage followed sites.">
-        Manage the sites you follow
+        Manage the topics and sites you're interested in
       </message>
       <message name="IDS_FOLLOW_MANAGE_FOLLOWING" desc="Header for Following Management activity.">
         Following

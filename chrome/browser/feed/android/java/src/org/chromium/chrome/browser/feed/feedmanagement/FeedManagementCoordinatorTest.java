@@ -50,8 +50,7 @@ public class FeedManagementCoordinatorTest {
         MockitoAnnotations.initMocks(this);
         mocker.mock(FeedServiceBridgeJni.TEST_HOOKS, mFeedServiceBridgeJniMock);
 
-        mFeedManagementCoordinator =
-                new FeedManagementCoordinator(mActivity, null, StreamKind.UNKNOWN);
+        mFeedManagementCoordinator = new FeedManagementCoordinator(mActivity, StreamKind.UNKNOWN);
     }
 
     @Test

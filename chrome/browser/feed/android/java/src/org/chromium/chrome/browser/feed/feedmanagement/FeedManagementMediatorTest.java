@@ -49,8 +49,6 @@ public class FeedManagementMediatorTest {
 
     @Mock private FeedServiceBridge.Natives mFeedServiceBridgeJniMock;
 
-    @Mock private FeedManagementMediator.FollowManagementLauncher mFollowManagementLauncher;
-
     @Before
     public void setUpTest() {
         mActivity = Robolectric.setupActivity(Activity.class);
@@ -60,8 +58,7 @@ public class FeedManagementMediatorTest {
         mocker.mock(FeedServiceBridgeJni.TEST_HOOKS, mFeedServiceBridgeJniMock);
 
         mFeedManagementMediator =
-                new FeedManagementMediator(
-                        mActivity, mModelList, mFollowManagementLauncher, TEST_STREAM_KIND);
+                new FeedManagementMediator(mActivity, mModelList, TEST_STREAM_KIND);
     }
 
     @Test
@@ -78,9 +75,9 @@ public class FeedManagementMediatorTest {
     }
 
     @Test
-    public void testHandleInterestsClick() {
+    public void testHandleFollowingClick() {
         // Act
-        mFeedManagementMediator.handleInterestsClick(null);
+        mFeedManagementMediator.handleFollowingClick(null);
 
         // Assert
         Intent intent = mShadowActivity.peekNextStartedActivityForResult().intent;
@@ -105,17 +102,5 @@ public class FeedManagementMediatorTest {
         verify(mFeedServiceBridgeJniMock)
                 .reportOtherUserAction(
                         TEST_STREAM_KIND, FeedUserActionType.TAPPED_MANAGE_INTERESTS);
-    }
-
-    @Test
-    public void testHandleFollowingClick() {
-        // Act
-        mFeedManagementMediator.handleFollowingClick(null);
-
-        // Assert
-        verify(mFollowManagementLauncher).launchFollowManagement(mActivity);
-        verify(mFeedServiceBridgeJniMock)
-                .reportOtherUserAction(
-                        TEST_STREAM_KIND, FeedUserActionType.TAPPED_MANAGE_FOLLOWING);
     }
 }
