@@ -127,7 +127,7 @@ LensPermissionBubbleController::CreateLensPermissionDialogModel() {
               weak_ptr_factory_.GetWeakPtr()),
           ui::DialogModel::Button::Params()
               .SetLabel(l10n_util::GetStringUTF16(
-                  IDS_LENS_PERMISSION_BUBBLE_DIALOG_CLOSE_BUTTON))
+                  IDS_LENS_PERMISSION_BUBBLE_DIALOG_CANCEL_BUTTON))
               .SetId(kLensPermissionDialogCancelButtonElementId)
               .SetStyle(ui::ButtonStyle::kTonal))
       .SetCloseActionCallback(base::BindOnce(

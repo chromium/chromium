@@ -17061,8 +17061,8 @@ Please help our engineers fix this problem. Tell us what happened right before y
       Send feedback for search with Lens
     </message>
     <!-- Lens Permission bubble dialog-->
-    <message name="IDS_LENS_PERMISSION_BUBBLE_DIALOG_CLOSE_BUTTON" desc="Text on the close button in the dialog for choosing not to allow the sending of the Lens screenshot to Google.">
-      Close
+    <message name="IDS_LENS_PERMISSION_BUBBLE_DIALOG_CANCEL_BUTTON" desc="Text on the cancel button in the dialog for choosing not to allow the sending of the Lens screenshot to Google.">
+      Cancel
     </message>
     <message name="IDS_LENS_PERMISSION_BUBBLE_DIALOG_CONTINUE_BUTTON" desc="Text on the continue button in the dialog for choosing to allow the sending of the Lens screenshot to Google.">
       Continue
