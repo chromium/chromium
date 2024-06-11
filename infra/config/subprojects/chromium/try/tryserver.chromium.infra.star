@@ -110,14 +110,24 @@ try_.builder(
     contact_team_email = "chrome-dev-infra-team@google.com",
     execution_timeout = 2 * time.hour,
     properties = {
-        "builder_suites": [{
-            "bucket": "try",
-            "builder_name": "linux-rel",
-            "test_names": [
-                "url_unittests",
-            ],
-            "build_dir": "out/linux-rel",
-        }],
+        "builder_suites": [
+            {
+                "bucket": "try",
+                "builder_name": "linux-rel",
+                "test_names": [
+                    "url_unittests",
+                ],
+                "build_dir": "out/linux-rel",
+            },
+            {
+                "bucket": "ci",
+                "builder_name": "Linux Tests",
+                "test_names": [
+                    "telemetry_gpu_unittests",
+                ],
+                "build_dir": "out/linux-rel",
+            },
+        ],
     },
     service_account = try_.DEFAULT_SERVICE_ACCOUNT,
     siso_project = siso.project.DEFAULT_UNTRUSTED,
