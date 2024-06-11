@@ -443,8 +443,6 @@ export class Panel implements PanelInterface {
     // Make sure we're not in full-screen mode.
     this.setMode(PanelMode.COLLAPSED);
 
-    this.menuManager_.activeMenu = null;
-
     await BackgroundBridge.PanelBackground.waitForPanelCollapse();
 
     if (pendingCallback) {
