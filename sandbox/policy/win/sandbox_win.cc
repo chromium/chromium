@@ -99,9 +99,6 @@ const wchar_t* const kTroublesomeDlls[] = {
 BASE_FEATURE(kEnableCsrssLockdownFeature,
              "EnableCsrssLockdown",
              base::FEATURE_DISABLED_BY_DEFAULT);
-BASE_FEATURE(GpuLockdownDefaultDacl,
-             "GpuLockdownDefaultDacl",
-             base::FEATURE_ENABLED_BY_DEFAULT);
 
 // Helper to recording timing information during process creation.
 class SandboxLaunchTimer {
@@ -629,8 +626,7 @@ ResultCode GenerateConfigForSandboxedProcess(const base::CommandLine& cmd_line,
   if (result != SBOX_ALL_OK)
     return result;
 
-  if (process_type == switches::kGpuProcess &&
-      base::FeatureList::IsEnabled(GpuLockdownDefaultDacl)) {
+  if (process_type == switches::kGpuProcess) {
     config->SetLockdownDefaultDacl();
     config->AddRestrictingRandomSid();
   }
