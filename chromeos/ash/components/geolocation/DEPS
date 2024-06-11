@@ -5,6 +5,7 @@ include_rules = [
   "+base",
   "+chromeos/ash/components/network",
   "+google_apis",
+  "+services/device/public/cpp/geolocation/network_location_request_source.h",
   "+services/network/public/cpp",
   "+services/network/public/mojom",
   "+third_party/cros_system_api",

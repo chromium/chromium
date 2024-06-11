@@ -13,6 +13,7 @@
 #include "services/device/geolocation/public_ip_address_geolocator.h"
 #include "services/device/geolocation/public_ip_address_location_notifier.h"
 #include "services/device/public/mojom/geolocation.mojom.h"
+#include "services/device/public/mojom/geolocation_client_id.mojom.h"
 #include "services/device/public/mojom/public_ip_address_geolocation_provider.mojom.h"
 
 namespace network {
@@ -56,7 +57,8 @@ class PublicIpAddressGeolocationProvider
   // Provides a Geolocation instance that performs IP-geolocation only.
   void CreateGeolocation(
       const net::MutablePartialNetworkTrafficAnnotationTag& tag,
-      mojo::PendingReceiver<mojom::Geolocation> receiver) override;
+      mojo::PendingReceiver<mojom::Geolocation> receiver,
+      mojom::GeolocationClientId client_id) override;
 
   // Central PublicIpAddressLocationNotifier for use by all implementations of
   // mojom::Geolocation provided by the CreateGeolocation method.

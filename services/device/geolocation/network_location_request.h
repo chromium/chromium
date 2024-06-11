@@ -13,6 +13,7 @@
 #include "base/time/time.h"
 #include "base/values.h"
 #include "services/device/geolocation/wifi_data_provider.h"
+#include "services/device/public/cpp/geolocation/network_location_request_source.h"
 #include "services/device/public/mojom/geolocation_internals.mojom.h"
 #include "services/device/public/mojom/geoposition.mojom.h"
 #include "url/gurl.h"
@@ -56,10 +57,11 @@ class NetworkLocationRequest {
   // are passed back to the client upon completion, via
   // LocationResponseCallback's |wifi_data| and |position.timestamp|
   // respectively.
-  void MakeRequest(const WifiData& wifi_data,
-                   const base::Time& wifi_timestamp,
-                   const net::PartialNetworkTrafficAnnotationTag&
-                       partial_traffic_annotation);
+  void MakeRequest(
+      const WifiData& wifi_data,
+      const base::Time& wifi_timestamp,
+      const net::PartialNetworkTrafficAnnotationTag& partial_traffic_annotation,
+      NetworkLocationRequestSource network_location_request_source);
 
   bool is_request_pending() const { return bool(url_loader_); }
 

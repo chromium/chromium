@@ -7,16 +7,26 @@
 #include <utility>
 
 #include "base/functional/bind.h"
+#include "base/metrics/histogram_functions.h"
 #include "services/device/geolocation/geolocation_context.h"
 #include "services/device/public/cpp/geolocation/geoposition.h"
 
 namespace device {
 
+namespace {
+void RecordUmaGeolocationImplClientId(mojom::GeolocationClientId client_id) {
+  base::UmaHistogramEnumeration("Geolocation.GeolocationImpl.ClientId",
+                                client_id);
+}
+}  // namespace
+
 GeolocationImpl::GeolocationImpl(mojo::PendingReceiver<Geolocation> receiver,
                                  const GURL& requesting_url,
+                                 mojom::GeolocationClientId client_id,
                                  GeolocationContext* context)
     : receiver_(this, std::move(receiver)),
       url_(requesting_url),
+      client_id_(client_id),
       context_(context),
       high_accuracy_(false) {
   DCHECK(context_);
@@ -81,6 +91,7 @@ void GeolocationImpl::QueryNextPosition(QueryNextPositionCallback callback) {
   if (current_result_) {
     ReportCurrentPosition();
   }
+  RecordUmaGeolocationImplClientId(client_id_);
 }
 
 void GeolocationImpl::SetOverride(const mojom::GeopositionResult& result) {

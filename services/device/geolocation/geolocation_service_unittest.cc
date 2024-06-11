@@ -21,6 +21,7 @@
 #include "services/device/geolocation/wifi_data_provider_handle.h"
 #include "services/device/public/cpp/device_features.h"
 #include "services/device/public/mojom/geolocation.mojom.h"
+#include "services/device/public/mojom/geolocation_client_id.mojom.h"
 #include "services/device/public/mojom/geolocation_config.mojom.h"
 #include "services/device/public/mojom/geolocation_context.mojom.h"
 #include "services/device/public/mojom/geolocation_control.mojom.h"
@@ -68,7 +69,8 @@ class GeolocationServiceUnitTest : public DeviceServiceTestBase {
     device_service()->BindGeolocationContext(
         geolocation_context_.BindNewPipeAndPassReceiver());
     geolocation_context_->BindGeolocation(
-        geolocation_.BindNewPipeAndPassReceiver(), GURL());
+        geolocation_.BindNewPipeAndPassReceiver(), GURL(),
+        mojom::GeolocationClientId::kForTesting);
   }
 
   void TearDown() override {

@@ -10,6 +10,7 @@
 
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "services/device/public/mojom/geolocation.mojom.h"
+#include "services/device/public/mojom/geolocation_client_id.mojom.h"
 #include "services/device/public/mojom/geolocation_context.mojom.h"
 #include "services/device/public/mojom/geoposition.mojom.h"
 #include "url/origin.h"
@@ -35,7 +36,8 @@ class GeolocationContext : public mojom::GeolocationContext {
 
   // mojom::GeolocationContext implementation:
   void BindGeolocation(mojo::PendingReceiver<mojom::Geolocation> receiver,
-                       const GURL& requesting_url) override;
+                       const GURL& requesting_url,
+                       mojom::GeolocationClientId client_id) override;
   void OnPermissionRevoked(const url::Origin& origin) override;
 
   void SetOverride(mojom::GeopositionResultPtr geoposition_result) override;

@@ -32,6 +32,17 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Geolocation.GeolocationImpl.ClientId"
+    enum="GeolocationClientId" expires_after="2024-09-01">
+  <owner>mattreynolds@chromium.org</owner>
+  <owner>deviceapi-team@google.com</owner>
+  <summary>
+    Records an enumeration value when a GeolocationImpl requests the next
+    location estimate. The recorded value identifies the client that created the
+    GeolocationImpl.
+  </summary>
+</histogram>
+
 <histogram name="Geolocation.IOS.ChangedAuthorizationState"
     enum="GeolocationIOSAuthorizationStatus" expires_after="2025-05-27">
   <owner>ajuma@chromium.org</owner>
@@ -83,6 +94,28 @@ chromium-metrics-reviews@google.com.
 
     Warning: this histogram was expired after M85 and brought back 2021-05-21;
     data may be missing.
+  </summary>
+</histogram>
+
+<histogram name="Geolocation.NetworkLocationRequest.Source"
+    enum="NetworkLocationRequestSource" expires_after="2024-09-01">
+  <owner>mattreynolds@chromium.org</owner>
+  <owner>deviceapi-team@google.com</owner>
+  <summary>
+    Records an enumeration value when a network request has been sent to the
+    network location service. The recorded value identifies the provider that
+    initiated the request.
+  </summary>
+</histogram>
+
+<histogram name="Geolocation.PublicIpAddressGeolocator.ClientId"
+    enum="GeolocationClientId" expires_after="2024-09-01">
+  <owner>mattreynolds@chromium.org</owner>
+  <owner>deviceapi-team@google.com</owner>
+  <summary>
+    Records an enumeration value when a PublicIpAddressGeolocator requests the
+    next location estimate. The recorded value identifies the client that
+    created the PublicIpAddressGeolocator.
   </summary>
 </histogram>
 

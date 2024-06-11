@@ -95,6 +95,12 @@ void RecordUmaRequestInterval(base::TimeDelta time_delta) {
       time_delta.InMinutes(), kMin, kMax, kBuckets);
 }
 
+void RecordUmaNetworkLocationRequestSource(
+    NetworkLocationRequestSource network_location_request_source) {
+  base::UmaHistogramEnumeration("Geolocation.NetworkLocationRequest.Source",
+                                network_location_request_source);
+}
+
 // Local functions
 
 // Returns a URL for a request to the Google Maps geolocation API. If the
@@ -189,7 +195,8 @@ NetworkLocationRequest::~NetworkLocationRequest() = default;
 void NetworkLocationRequest::MakeRequest(
     const WifiData& wifi_data,
     const base::Time& wifi_timestamp,
-    const net::PartialNetworkTrafficAnnotationTag& partial_traffic_annotation) {
+    const net::PartialNetworkTrafficAnnotationTag& partial_traffic_annotation,
+    NetworkLocationRequestSource network_location_request_source) {
   GEOLOCATION_LOG(DEBUG)
       << "Sending a network location request: Number of Wi-Fi APs="
       << wifi_data.access_point_data.size();
@@ -248,6 +255,7 @@ void NetworkLocationRequest::MakeRequest(
       base::BindOnce(&NetworkLocationRequest::OnRequestComplete,
                      base::Unretained(this)),
       1024 * 1024 /* 1 MiB */);
+  RecordUmaNetworkLocationRequestSource(network_location_request_source);
 }
 
 void NetworkLocationRequest::OnRequestComplete(

@@ -13,6 +13,7 @@ mojom("mojom") {
     "battery_status.mojom",
     "fingerprint.mojom",
     "geolocation.mojom",
+    "geolocation_client_id.mojom",
     "geolocation_config.mojom",
     "geolocation_context.mojom",
     "geolocation_control.mojom",

@@ -44,6 +44,7 @@
 #include "ppapi/buildflags/buildflags.h"
 #include "services/device/public/cpp/geolocation/geoposition.h"
 #include "services/device/public/mojom/geolocation.mojom.h"
+#include "services/device/public/mojom/geolocation_client_id.mojom.h"
 #include "services/device/public/mojom/geolocation_context.mojom.h"
 #include "services/device/public/mojom/geoposition.mojom.h"
 #include "ui/display/display.h"
@@ -315,7 +316,8 @@ FingerprintDataLoader::FingerprintDataLoader(
     content::GetDeviceService().BindGeolocationContext(
         geolocation_context_.BindNewPipeAndPassReceiver());
     geolocation_context_->BindGeolocation(
-        geolocation_.BindNewPipeAndPassReceiver(), GURL());
+        geolocation_.BindNewPipeAndPassReceiver(), GURL(),
+        device::mojom::GeolocationClientId::kFingerprintDataLoader);
     geolocation_->SetHighAccuracy(false);
     geolocation_->QueryNextPosition(
         base::BindOnce(&FingerprintDataLoader::OnGotGeoposition,

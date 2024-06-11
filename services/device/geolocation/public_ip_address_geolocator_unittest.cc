@@ -15,6 +15,7 @@
 #include "mojo/public/cpp/bindings/unique_receiver_set.h"
 #include "mojo/public/cpp/system/functions.h"
 #include "net/traffic_annotation/network_traffic_annotation_test_helper.h"
+#include "services/device/public/mojom/geolocation_client_id.mojom.h"
 #include "services/network/public/cpp/weak_wrapper_shared_url_loader_factory.h"
 #include "services/network/test/test_network_connection_tracker.h"
 #include "services/network/test/test_url_loader_factory.h"
@@ -55,6 +56,7 @@ class PublicIpAddressGeolocatorTest : public testing::Test {
     receiver_set_.Add(
         std::make_unique<PublicIpAddressGeolocator>(
             PARTIAL_TRAFFIC_ANNOTATION_FOR_TESTS, notifier_.get(),
+            mojom::GeolocationClientId::kForTesting,
             base::BindRepeating(
                 &PublicIpAddressGeolocatorTest::OnGeolocatorBadMessage,
                 base::Unretained(this))),

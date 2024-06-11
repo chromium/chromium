@@ -26,6 +26,7 @@
 #include "google_apis/google_api_keys.h"
 #include "net/base/load_flags.h"
 #include "net/http/http_status_code.h"
+#include "services/device/public/cpp/geolocation/network_location_request_source.h"
 #include "services/network/public/cpp/resource_request.h"
 #include "services/network/public/cpp/shared_url_loader_factory.h"
 #include "services/network/public/cpp/simple_url_loader.h"
@@ -139,6 +140,12 @@ void RecordUmaResult(SimpleGeolocationRequestResult result, size_t retries) {
                             SIMPLE_GEOLOCATION_REQUEST_RESULT_COUNT);
   base::UmaHistogramSparse("SimpleGeolocation.Request.Retries",
                            std::min(retries, kMaxRetriesValueInHistograms));
+}
+
+void RecordUmaNetworkLocationRequestSource() {
+  base::UmaHistogramEnumeration(
+      "Geolocation.NetworkLocationRequest.Source",
+      device::NetworkLocationRequestSource::kSimpleGeolocationProvider);
 }
 
 // Creates the request url to send to the server.
@@ -449,6 +456,7 @@ void SimpleGeolocationRequest::StartRequest() {
       shared_url_loader_factory_.get(),
       base::BindOnce(&SimpleGeolocationRequest::OnSimpleURLLoaderComplete,
                      base::Unretained(this)));
+  RecordUmaNetworkLocationRequestSource();
 }
 
 void SimpleGeolocationRequest::MakeRequest(ResponseCallback callback) {

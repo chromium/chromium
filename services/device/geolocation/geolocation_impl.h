@@ -9,6 +9,7 @@
 #include "mojo/public/cpp/bindings/receiver.h"
 #include "services/device/geolocation/geolocation_provider_impl.h"
 #include "services/device/public/mojom/geolocation.mojom.h"
+#include "services/device/public/mojom/geolocation_client_id.mojom.h"
 #include "url/gurl.h"
 
 namespace device {
@@ -22,6 +23,7 @@ class GeolocationImpl : public mojom::Geolocation {
   // |context| must outlive this object.
   GeolocationImpl(mojo::PendingReceiver<mojom::Geolocation> receiver,
                   const GURL& requesting_url,
+                  mojom::GeolocationClientId client_id,
                   GeolocationContext* context);
 
   GeolocationImpl(const GeolocationImpl&) = delete;
@@ -61,6 +63,8 @@ class GeolocationImpl : public mojom::Geolocation {
 
   // The requesting URL.
   const GURL url_;
+
+  const mojom::GeolocationClientId client_id_;
 
   // Owns this object.
   raw_ptr<GeolocationContext> context_;

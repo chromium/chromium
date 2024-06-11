@@ -10,6 +10,7 @@
 #include "base/task/sequenced_task_runner.h"
 #include "net/traffic_annotation/network_traffic_annotation.h"
 #include "services/device/geolocation/wifi_data.h"
+#include "services/device/public/cpp/geolocation/network_location_request_source.h"
 #include "services/network/public/cpp/shared_url_loader_factory.h"
 
 namespace device {
@@ -113,8 +114,9 @@ void PublicIpAddressLocationNotifier::MakeNetworkLocationRequest() {
           weak_ptr_factory_.GetWeakPtr()));
 
   DCHECK(network_traffic_annotation_tag_);
-  network_location_request_->MakeRequest(WifiData(), base::Time::Now(),
-                                         *network_traffic_annotation_tag_);
+  network_location_request_->MakeRequest(
+      WifiData(), base::Time::Now(), *network_traffic_annotation_tag_,
+      NetworkLocationRequestSource::kPublicIpAddressGeolocator);
 }
 
 void PublicIpAddressLocationNotifier::OnNetworkLocationResponse(

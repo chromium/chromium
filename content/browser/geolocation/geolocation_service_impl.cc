@@ -121,7 +121,9 @@ void GeolocationServiceImpl::CreateGeolocationWithPermissionStatus(
   auto requesting_url =
       render_frame_host_->GetMainFrame()->GetLastCommittedURL();
 
-  geolocation_context_->BindGeolocation(std::move(receiver), requesting_url);
+  geolocation_context_->BindGeolocation(
+      std::move(receiver), requesting_url,
+      device::mojom::GeolocationClientId::kGeolocationServiceImpl);
   subscription_id_ =
       PermissionControllerImpl::FromBrowserContext(
           render_frame_host_->GetBrowserContext())

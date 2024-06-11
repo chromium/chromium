@@ -1,0 +1,26 @@
+// Copyright 2024 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+module device.mojom;
+
+// An identifier for distinguishing geolocation clients.
+enum GeolocationClientId {
+  // A client created for testing.
+  kForTesting = 0,
+
+  // GeolocationServiceImpl accesses location data on behalf of a web origin.
+  kGeolocationServiceImpl = 1,
+
+  // GeoLanguageProvider uses location data to fetch a list of suitable
+  // languages.
+  kGeoLanguageProvider = 2,
+
+  // FingerprintDataLoader uses location data to compute a unique fingerprint
+  // of the host machine for the purpose of fraud prevention.
+  kFingerprintDataLoader = 3,
+
+  // NOTE: If you add any entries to this enum, you must also update the
+  // corresponding UMA GeolocationClientId at
+  // tools/metrics/histograms/metadata/geolocation/enums.xml
+};

@@ -15,6 +15,7 @@ component("geolocation") {
     "//chromeos/ash/components/network",
     "//google_apis",
     "//net",
+    "//services/device/public/cpp/geolocation",
     "//services/network/public/cpp",
   ]
   sources = [

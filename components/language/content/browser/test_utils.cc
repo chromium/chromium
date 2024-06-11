@@ -46,7 +46,8 @@ void MockIpGeoLocationProvider::Bind(
 
 void MockIpGeoLocationProvider::CreateGeolocation(
     const net::MutablePartialNetworkTrafficAnnotationTag& /* unused */,
-    mojo::PendingReceiver<device::mojom::Geolocation> receiver) {
+    mojo::PendingReceiver<device::mojom::Geolocation> receiver,
+    device::mojom::GeolocationClientId client_id) {
   mock_geo_location_->BindGeoLocation(std::move(receiver));
 }
 

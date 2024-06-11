@@ -36,6 +36,13 @@ chromium-metrics-reviews@google.com.
   </int>
 </enum>
 
+<enum name="GeolocationClientId">
+  <int value="0" label="kForTesting"/>
+  <int value="1" label="kGeolocationServiceImpl"/>
+  <int value="2" label="kGeoLanguageProvider"/>
+  <int value="3" label="kFingerprintDataLoader"/>
+</enum>
+
 <enum name="GeolocationIOSAuthorizationStatus">
   <int value="0" label="Not determined"/>
   <int value="1" label="Restricted (user cannot grant permission)"/>
@@ -52,6 +59,12 @@ chromium-metrics-reviews@google.com.
   <int value="4" label="RESPONSE_EMPTY"/>
   <int value="5" label="RESPONSE_MALFORMED"/>
   <int value="6" label="RESPONSE_INVALID_FIX"/>
+</enum>
+
+<enum name="NetworkLocationRequestSource">
+  <int value="0" label="kNetworkLocationProvider"/>
+  <int value="1" label="kPublicIpAddressGeolocator"/>
+  <int value="2" label="kSimpleGeolocationProvider"/>
 </enum>
 
 </enums>

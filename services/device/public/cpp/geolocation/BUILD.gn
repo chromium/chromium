@@ -17,6 +17,7 @@ component("geolocation") {
     "geoposition.h",
     "location_provider.h",
     "location_system_permission_status.h",
+    "network_location_request_source.h",
   ]
   defines = [ "IS_GEOLOCATION_IMPL=1" ]
   configs += [ "//build/config/compiler:wexit_time_destructors" ]

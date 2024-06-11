@@ -18,7 +18,8 @@ InstalledWebappGeolocationContext::~InstalledWebappGeolocationContext() =
 
 void InstalledWebappGeolocationContext::BindGeolocation(
     mojo::PendingReceiver<device::mojom::Geolocation> receiver,
-    const GURL& requesting_url) {
+    const GURL& requesting_url,
+    device::mojom::GeolocationClientId client_id) {
   impls_.push_back(std::make_unique<InstalledWebappGeolocationBridge>(
       std::move(receiver), requesting_url, this));
   if (geoposition_override_)

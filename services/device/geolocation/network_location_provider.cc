@@ -22,6 +22,7 @@
 #include "services/device/geolocation/position_cache.h"
 #include "services/device/public/cpp/device_features.h"
 #include "services/device/public/cpp/geolocation/geoposition.h"
+#include "services/device/public/cpp/geolocation/network_location_request_source.h"
 #include "services/network/public/cpp/shared_url_loader_factory.h"
 
 #if BUILDFLAG(IS_APPLE)
@@ -304,8 +305,8 @@ void NetworkLocationProvider::RequestPosition() {
           }
         }
       })");
-  request_->MakeRequest(wifi_data_, wifi_timestamp_,
-                        partial_traffic_annotation);
+  request_->MakeRequest(wifi_data_, wifi_timestamp_, partial_traffic_annotation,
+                        NetworkLocationRequestSource::kNetworkLocationProvider);
 
   if (base::FeatureList::IsEnabled(features::kGeolocationDiagnosticsObserver)) {
     network_request_callback_.Run(request_->GetRequestDataForDiagnostics());
