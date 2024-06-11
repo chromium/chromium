@@ -2121,6 +2121,17 @@ IN_PROC_BROWSER_TEST_F(WebAppBrowserTest, WebAppInternalsPage) {
   NavigateViaLinkClickToURLAndWait(
       browser(), https_server()->GetURL("/banners/no_manifest_test_page.html"));
 
+#if BUILDFLAG(IS_CHROMEOS)
+  // Install using Create Shortcut since DIY app installation flow is not
+  // available on CrOS.
+  SetAutoAcceptWebAppDialogForTesting(/*auto_accept=*/true,
+                                      /*auto_open_in_window=*/false);
+  WebAppTestInstallObserver observer(profile());
+  observer.BeginListening();
+  CHECK(chrome::ExecuteCommand(browser(), IDC_CREATE_SHORTCUT));
+  observer.Wait();
+  SetAutoAcceptWebAppDialogForTesting(false, false);
+#else
   // Install as DIY App.
   SetAutoAcceptDiyAppsInstallDialogForTesting(/*auto_accept=*/true);
   WebAppTestInstallObserver observer(profile());
@@ -2128,6 +2139,7 @@ IN_PROC_BROWSER_TEST_F(WebAppBrowserTest, WebAppInternalsPage) {
   CHECK(chrome::ExecuteCommand(browser(), IDC_INSTALL_PWA));
   observer.Wait();
   SetAutoAcceptDiyAppsInstallDialogForTesting(/*auto_accept=*/false);
+#endif  // BUILDFLAG(IS_CHROMEOS)
 
   // Loads with two apps.
   NavigateViaLinkClickToURLAndWait(browser(),
@@ -2146,6 +2158,17 @@ IN_PROC_BROWSER_TEST_F(WebAppBrowserTest, BrowserDisplayNotInstallable) {
           : kNotPresent;
   EXPECT_EQ(GetAppMenuCommandState(IDC_INSTALL_PWA, browser()), install_state);
 
+#if BUILDFLAG(IS_CHROMEOS)
+  // Install using Create Shortcut since DIY app installation flow is not
+  // available on CrOS.
+  SetAutoAcceptWebAppDialogForTesting(/*auto_accept=*/true,
+                                      /*auto_open_in_window=*/false);
+  WebAppTestInstallObserver observer(profile());
+  observer.BeginListening();
+  CHECK(chrome::ExecuteCommand(browser(), IDC_CREATE_SHORTCUT));
+  observer.Wait();
+  SetAutoAcceptWebAppDialogForTesting(false, false);
+#else
   // Install as DIY App.
   SetAutoAcceptDiyAppsInstallDialogForTesting(/*auto_accept=*/true);
   WebAppTestInstallObserver observer(profile());
@@ -2153,6 +2176,7 @@ IN_PROC_BROWSER_TEST_F(WebAppBrowserTest, BrowserDisplayNotInstallable) {
   CHECK(chrome::ExecuteCommand(browser(), IDC_INSTALL_PWA));
   observer.Wait();
   SetAutoAcceptDiyAppsInstallDialogForTesting(/*auto_accept=*/false);
+#endif  // BUILDFLAG(IS_CHROMEOS)
 
   // Navigate to this site again and install should now be disabled.
   Browser* new_browser = NavigateInNewWindowAndAwaitInstallabilityCheck(url);

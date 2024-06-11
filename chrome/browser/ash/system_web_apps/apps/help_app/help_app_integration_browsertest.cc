@@ -51,7 +51,6 @@
 #include "chrome/browser/ui/webui/ash/system_web_dialog_delegate.h"
 #include "chrome/browser/web_applications/web_app_provider.h"
 #include "chrome/browser/web_applications/web_app_utils.h"
-#include "chrome/common/chrome_features.h"
 #include "chrome/common/chrome_switches.h"
 #include "chrome/common/pref_names.h"
 #include "chrome/common/url_constants.h"
@@ -796,12 +795,8 @@ IN_PROC_BROWSER_TEST_P(HelpAppIntegrationTest,
   content::TestNavigationObserver navigation_observer(test_url);
   navigation_observer.StartWatchingNewWebContents();
 
-  std::string dialog_name =
-      base::FeatureList::IsEnabled(::features::kWebAppUniversalInstall)
-          ? "WebAppSimpleInstallDialog"
-          : "PWAConfirmationBubbleView";
   views::NamedWidgetShownWaiter waiter(views::test::AnyWidgetTestPasskey(),
-                                       dialog_name);
+                                       "PWAConfirmationBubbleView");
 
   // Script that tells the Help App to call the
   // OpenUrlInBrowserAndTriggerInstallDialog Mojo function.

@@ -703,13 +703,24 @@ IN_PROC_BROWSER_TEST_F(MLPromotionBrowserTest,
                        MLPipelineNoCrashForExistingTracker) {
   NavigateAndAwaitMetricsCollectionPending(GetInstallableAppURL());
 
+#if BUILDFLAG(IS_CHROMEOS)
+  // Maintain the old assertion on ChromeOS, until universal install is enabled
+  // on CrOS.
+  ExpectClasificationCallReturnResult(
+      /*site_url=*/GetInstallableAppURL(),
+      /*manifest_id=*/GetInstallableAppURL(),
+      MLInstallabilityPromoter::kShowInstallPromptLabel, TrainingRequestId(1ll),
+      web_contents());
+#else
   // The call to classify will happen twice, since a newly triggered navigation
-  // will close the dialog.
+  // will close the dialog. This use-case will never be hit, but the test is
+  // still needed since universal install doesn't exist yet on CrOS.
   ExpectClasificationCallReturnResult(
       /*site_url=*/GetInstallableAppURL(),
       /*manifest_id=*/GetInstallableAppURL(),
       MLInstallabilityPromoter::kShowInstallPromptLabel, TrainingRequestId(1ll),
       web_contents(), /*times_called=*/2);
+#endif  // BUILDFLAG(IS_CHROMEOS)
 
   auto GetSimpleInstallDialogNameBasedOnUniversalInstall = []() {
     if (base::FeatureList::IsEnabled(::features::kWebAppUniversalInstall)) {
