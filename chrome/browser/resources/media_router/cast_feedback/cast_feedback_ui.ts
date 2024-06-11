@@ -128,21 +128,21 @@ export class CastFeedbackUiElement extends CrLitElement {
 
   protected allowContactByEmail_: boolean = false;
   protected attachLogs_: boolean = false;
-  protected audioQuality_: string;
+  protected audioQuality_: string = '';
   protected comments_: string = '';
   protected feedbackType_: FeedbackType = FeedbackType.BUG;
-  protected hasNetworkSoftware_: string;
-  private networkDescription_: string;
+  protected hasNetworkSoftware_: string = '';
+  private networkDescription_: string = '';
   protected logData_: string = loadTimeData.getString('logData');
   private categoryTag_: string = loadTimeData.getString('categoryTag');
-  protected projectedContentUrl_: string;
-  protected sendDialogText_: string;
-  protected sendDialogIsInteractive_: boolean;
+  protected projectedContentUrl_: string = '';
+  protected sendDialogText_: string = '';
+  protected sendDialogIsInteractive_: boolean = false;
   protected sufficientFeedback_: boolean = false;
-  protected userEmail_: string;
-  protected videoQuality_: string;
-  protected videoSmoothness_: string;
-  protected visibleInSetup_: string;
+  protected userEmail_: string = '';
+  protected videoQuality_: string = '';
+  protected videoSmoothness_: string = '';
+  protected visibleInSetup_: string = '';
 
   private browserProxy_: FeedbackUiBrowserProxy =
       FeedbackUiBrowserProxyImpl.getInstance();

@@ -1,6 +1,15 @@
-<!-- #html_wrapper_imports_start
+// Copyright 2024 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+import {html} from '//resources/lit/v3_0/lit.rollup.js';
+
+import type {CastFeedbackUiElement} from './cast_feedback_ui.js';
 import {FeedbackType} from './cast_feedback_ui.js';
-#html_wrapper_imports_end -->
+
+export function getHtml(this: CastFeedbackUiElement) {
+  // clang-format off
+  return html`<!--_html_template_start_-->
 <div>
   <div id="header-banner"></div>
   <div id="form">
@@ -272,4 +281,6 @@ import {FeedbackType} from './cast_feedback_ui.js';
       <cr-button @click="${this.onLogsDialogOk_}">$i18n{ok}</cr-button>
     </div>
   </cr-dialog>
-</div>
+</div><!--_html_template_end_-->`;
+  // clang-format on
+}
