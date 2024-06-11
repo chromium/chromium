@@ -412,10 +412,6 @@ bool OmniboxViewIOS::OnWillChange(NSRange range, NSString* new_text) {
     // as if the pre-edit fake selection was real.
     [field_ exitPreEditState];
 
-    if (!base::FeatureList::IsEnabled(kIOSNewOmniboxImplementation)) {
-      field_.text = @"";
-    }
-
     // Reset `range` to be of zero-length at location zero, as the field will be
     // now cleared.
     range = NSMakeRange(0, 0);
@@ -443,20 +439,14 @@ bool OmniboxViewIOS::OnWillChange(NSRange range, NSString* new_text) {
       // or if the user pastes some text in.  Let's loosen this test to allow
       // multiple characters, as long as the "old range" ends at the end of the
       // permanent text.
-      NSString* userText = field_.text;
-      if (base::FeatureList::IsEnabled(kIOSNewOmniboxImplementation)) {
-        userText = field_.userText;
-      }
+      NSString* userText = field_.userText;
 
       if (new_text.length == 1 && range.location == userText.length) {
         old_range =
             NSMakeRange(userText.length, field_.autocompleteText.length);
       }
     } else if (deleting_text) {
-      NSString* userText = field_.text;
-      if (base::FeatureList::IsEnabled(kIOSNewOmniboxImplementation)) {
-        userText = field_.userText;
-      }
+      NSString* userText = field_.userText;
 
       if ([new_text length] == 0 && range.location == [userText length] - 1) {
         ok_to_change = false;
@@ -559,11 +549,7 @@ void OmniboxViewIOS::OnCopy() {
   NSString* selectedText = nil;
   NSInteger start_location = 0;
   if ([field_ isPreEditing]) {
-    if (base::FeatureList::IsEnabled(kIOSNewOmniboxImplementation)) {
-      selectedText = field_.text;
-    } else {
-      selectedText = field_.preEditText;
-    }
+    selectedText = field_.text;
     start_location = 0;
   } else {
     UITextRange* selected_range = [field_ selectedTextRange];
@@ -737,12 +723,10 @@ void OmniboxViewIOS::OnSelectedMatchForAppending(const std::u16string& str) {
   // trigger that manually.
   [field_ sendActionsForControlEvents:UIControlEventEditingChanged];
   this->FocusOmnibox();
-  if (base::FeatureList::IsEnabled(kIOSNewOmniboxImplementation)) {
     if (@available(iOS 17, *)) {
       // Set the caret pos to the end of the text (crbug.com/331622199).
       this->SetCaretPos(str.length());
     }
-  }
 }
 
 void OmniboxViewIOS::OnSelectedMatchForOpening(

@@ -20,8 +20,6 @@
     : UIView <OmniboxAdditionalTextConsumer, TextFieldViewContaining>
 
 /// The contained omnibox textfield.
-/// Depending on kIOSNewOmniboxImplementation flag, it's either a legacy or a
-/// new implementation.
 @property(nonatomic, strong, readonly) OmniboxTextFieldIOS* textField;
 
 /// The contained clear button. Hide with `setClearButtonHidden`.

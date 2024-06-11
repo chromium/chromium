@@ -1368,13 +1368,10 @@ void FocusFakebox() {
 }
 
 // Test inline autocomplete of legacy text field implementation.
-- (void)testLegacyInlineAutocompleteSuggestion {
-  // Relaunch the app with new textfield disabled, as autocomplete label exists
-  // only on legacy implementation.
-  AppLaunchConfiguration config = [self appConfigurationForTestCase];
-  config.features_disabled.push_back(kIOSNewOmniboxImplementation);
-
+// TODO(crbug.com/346292515): Re-enable with the new textfield implementation.
+- (void)DISABLED_testLegacyInlineAutocompleteSuggestion {
   // Disable all autocomplete providers except the history url provider.
+  AppLaunchConfiguration config = [self appConfigurationForTestCase];
   omnibox::DisableAutocompleteProviders(config, 524279);
 
   [[AppLaunchManager sharedManager] ensureAppLaunchedWithConfiguration:config];
@@ -1583,13 +1580,11 @@ void FocusFakebox() {
 }
 
 // Tests that pressing spacebar key when having an autocomplete, removes it.
-- (void)testHWspacebarKeyOnAutocomplete {
-  // Relaunch the app with new textfield disabled, as autocomplete label exists
-  // only on legacy implementation.
-  AppLaunchConfiguration config = [self appConfigurationForTestCase];
-  config.features_disabled.push_back(kIOSNewOmniboxImplementation);
-
+// TODO(crbug.com/346292515): Re-enable with the new textfield implementation.
+// (autocomplete label exists only on legacy implementation).
+- (void)DISABLED_testHWspacebarKeyOnAutocomplete {
   // Disable all autocomplete providers except the history url provider.
+  AppLaunchConfiguration config = [self appConfigurationForTestCase];
   omnibox::DisableAutocompleteProviders(config, 524279);
 
   [[AppLaunchManager sharedManager] ensureAppLaunchedWithConfiguration:config];

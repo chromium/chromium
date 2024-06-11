@@ -17,6 +17,10 @@ typedef enum {
 } OmniboxTextFieldFadeStyle;
 
 // UITextField subclass to allow for adjusting borders.
+// With inline autocomplete and pre-edit states.
+// Pre-edit: the state when the text is "selected" and will erase upon typing.
+// Unlike a normal iOS selection, no selection handles are displayed. Inline
+// autocomplete: there's an optional autocomplete text following the caret.
 @interface OmniboxTextFieldIOS : UITextField <OmniboxKeyboardDelegate>
 
 // Initialize the omnibox with the given frame, text color, and tint color.
@@ -74,10 +78,6 @@ typedef enum {
 // Checks if direction of the omnibox text changed, and updates the UITextField.
 // alignment if necessary.
 - (void)updateTextDirection;
-
-// The color of the displayed text. Does not return the UITextField's textColor
-// property.
-- (UIColor*)displayedTextColor;
 
 // Fade in/out the text and auxiliary views depending on `style`.
 - (void)animateFadeWithStyle:(OmniboxTextFieldFadeStyle)style;

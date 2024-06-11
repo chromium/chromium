@@ -156,9 +156,6 @@ bool IsSearchWithEnabled();
 // Feature flag to hide search web in the edit menu.
 BASE_DECLARE_FEATURE(kIOSEditMenuHideSearchWeb);
 
-// Feature flag that swaps the omnibox textfield implementation.
-BASE_DECLARE_FEATURE(kIOSNewOmniboxImplementation);
-
 // Feature flag to use direct upload for Lens searches.
 BASE_DECLARE_FEATURE(kIOSLensUseDirectUpload);
 

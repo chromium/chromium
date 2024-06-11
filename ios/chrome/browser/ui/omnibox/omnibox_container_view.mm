@@ -14,9 +14,7 @@
 #import "ios/chrome/browser/shared/ui/util/uikit_ui_util.h"
 #import "ios/chrome/browser/shared/ui/util/util_swift.h"
 #import "ios/chrome/browser/ui/omnibox/omnibox_constants.h"
-#import "ios/chrome/browser/ui/omnibox/omnibox_text_field_experimental.h"
 #import "ios/chrome/browser/ui/omnibox/omnibox_text_field_ios.h"
-#import "ios/chrome/browser/ui/omnibox/omnibox_text_field_legacy.h"
 #import "ios/chrome/browser/ui/omnibox/omnibox_ui_features.h"
 #import "ios/chrome/common/material_timing.h"
 #import "ios/chrome/common/ui/colors/semantic_color_names.h"
@@ -78,17 +76,9 @@ const CGFloat kClearButtonSize = 28.5f;
                      iconTint:(UIColor*)iconTint {
   self = [super initWithFrame:frame];
   if (self) {
-    // Text field.
-    if (base::FeatureList::IsEnabled(kIOSNewOmniboxImplementation)) {
-      _textField =
-          [[OmniboxTextFieldExperimental alloc] initWithFrame:frame
-                                                    textColor:textColor
-                                                    tintColor:textFieldTint];
-    } else {
-      _textField = [[OmniboxTextFieldLegacy alloc] initWithFrame:frame
-                                                       textColor:textColor
-                                                       tintColor:textFieldTint];
-    }
+    _textField = [[OmniboxTextFieldIOS alloc] initWithFrame:frame
+                                                  textColor:textColor
+                                                  tintColor:textFieldTint];
     _textField.translatesAutoresizingMaskIntoConstraints = NO;
 
     // Leading image view.

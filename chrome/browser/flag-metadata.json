@@ -6557,11 +6557,6 @@
     "expiry_milestone": 130
   },
   {
-      "name": "omnibox-new-textfield-implementation",
-      "owners": ["stkhapugin@chromium.org", "rkgibson@google.com", "chrome-omnibox-team@google.com"],
-      "expiry_milestone": 125
-  },
-  {
     "name": "omnibox-on-clobber-focus-type-on-content",
     "owners": [ "stkhapugin@chromium.org", "chrome-omnibox-team@google.com" ],
     "expiry_milestone": 130

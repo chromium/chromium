@@ -14309,21 +14309,6 @@
             ]
         }
     ],
-    "OmniboxImplementationChangeIOSV2": [
-        {
-            "platforms": [
-                "ios"
-            ],
-            "experiments": [
-                {
-                    "name": "Enabled",
-                    "enable_features": [
-                        "kIOSNewOmniboxImplementation"
-                    ]
-                }
-            ]
-        }
-    ],
     "OmniboxInspireMePhase2": [
         {
             "platforms": [
