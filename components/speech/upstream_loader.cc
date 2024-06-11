@@ -4,7 +4,6 @@
 
 #include "components/speech/upstream_loader.h"
 
-#include "base/containers/span.h"
 #include "components/speech/upstream_loader_client.h"
 #include "services/network/public/mojom/url_response_head.mojom.h"
 
@@ -47,13 +46,11 @@ void UpstreamLoader::SendData() {
     return;
 
   // Since kMaxUploadWrite is a uint32_t, no overflow occurs in this downcast.
-  base::span<const uint8_t> bytes_to_write =
-      base::as_byte_span(upload_body_).subspan(upload_position_);
-  bytes_to_write =
-      bytes_to_write.first(std::min(bytes_to_write.size(), kMaxUploadWrite));
-  size_t actually_written_bytes = 0;
-  MojoResult result = upload_pipe_->WriteData(
-      bytes_to_write, MOJO_WRITE_DATA_FLAG_NONE, actually_written_bytes);
+  size_t write_bytes =
+      std::min(upload_body_.length() - upload_position_, kMaxUploadWrite);
+  MojoResult result =
+      upload_pipe_->WriteData(upload_body_.data() + upload_position_,
+                              &write_bytes, MOJO_WRITE_DATA_FLAG_NONE);
 
   // Wait for the pipe to have more capacity available, if needed.
   if (result == MOJO_RESULT_SHOULD_WAIT) {
@@ -67,7 +64,7 @@ void UpstreamLoader::SendData() {
   if (result != MOJO_RESULT_OK)
     return;
 
-  upload_position_ += actually_written_bytes;
+  upload_position_ += write_bytes;
   // If more data is available, arm the watcher again. Don't write again in a
   // loop, even if WriteData would allow it, to avoid blocking the current
   // thread.
