@@ -44,14 +44,15 @@ bool UseSingleNV12() {
   // Mac + Windows have used this path for an extended period so no need for
   // kill switch.
   return true;
+#elif BUILDFLAG(IS_LINUX)
+  // Linux has run with the killswitch enabled for an extended period and hence
+  // now needs to gate only on multiplanarSI being used for software video
+  // decoding.
+  return media::IsMultiPlaneFormatForSoftwareVideoEnabled();
 #else
   static BASE_FEATURE(kUseSingleNV12ForSoftwareGMB,
                       "UseSingleNV12ForSoftwareGMB",
-#if BUILDFLAG(IS_LINUX)
-                      base::FEATURE_ENABLED_BY_DEFAULT);
-#else
                       base::FEATURE_DISABLED_BY_DEFAULT);
-#endif
 
   return media::IsMultiPlaneFormatForSoftwareVideoEnabled() &&
          base::FeatureList::IsEnabled(kUseSingleNV12ForSoftwareGMB);
