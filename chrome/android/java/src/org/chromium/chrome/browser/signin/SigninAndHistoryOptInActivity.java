@@ -191,12 +191,22 @@ public class SigninAndHistoryOptInActivity extends FirstRunActivityBase
         mNativeInitializationPromise.fulfill(null);
     }
 
+    /**
+     * Implements {@link SigninAndHistoryOptInCoordinator.Delegate} and {@link
+     * UpgradePromoCoordinator.Delegate}.
+     */
     @Override
     public void onFlowComplete() {
         finish();
         // Override activity animation to avoid visual glitches due to the semi-transparent
         // background.
         overridePendingTransition(0, R.anim.fast_fade_out);
+    }
+
+    /** Implements {@link SigninAndHistoryOptInCoordinator.Delegate}. */
+    @Override
+    public boolean isHistorySyncShownFullScreen() {
+        return !isTablet();
     }
 
     @Override
