@@ -5,6 +5,8 @@
 package org.chromium.chrome.browser.app.appmenu;
 
 import static org.junit.Assert.assertEquals;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.Mockito.when;
 
 import android.content.res.Configuration;
 import android.view.KeyEvent;
@@ -22,8 +24,9 @@ import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.mockito.Mock;
+import org.mockito.MockitoAnnotations;
 
-import org.chromium.base.Callback;
 import org.chromium.base.task.PostTask;
 import org.chromium.base.task.TaskTraits;
 import org.chromium.base.test.util.CommandLineFlags;
@@ -33,6 +36,7 @@ import org.chromium.base.test.util.Feature;
 import org.chromium.base.test.util.Features.DisableFeatures;
 import org.chromium.base.test.util.Features.EnableFeatures;
 import org.chromium.base.test.util.HistogramWatcher;
+import org.chromium.base.test.util.JniMocker;
 import org.chromium.base.test.util.Restriction;
 import org.chromium.base.test.util.UrlUtils;
 import org.chromium.chrome.browser.ChromeTabbedActivity;
@@ -42,6 +46,8 @@ import org.chromium.chrome.browser.flags.ChromeSwitches;
 import org.chromium.chrome.browser.layouts.LayoutTestUtils;
 import org.chromium.chrome.browser.layouts.LayoutType;
 import org.chromium.chrome.browser.layouts.animation.CompositorAnimationHandler;
+import org.chromium.chrome.browser.password_manager.PasswordManagerUtilBridge;
+import org.chromium.chrome.browser.password_manager.PasswordManagerUtilBridgeJni;
 import org.chromium.chrome.browser.profiles.ProfileManager;
 import org.chromium.chrome.browser.quick_delete.QuickDeleteMetricsDelegate;
 import org.chromium.chrome.browser.sync.FakeSyncServiceImpl;
@@ -74,32 +80,41 @@ import java.util.concurrent.TimeoutException;
 @RunWith(ChromeJUnit4ClassRunner.class)
 @CommandLineFlags.Add({ChromeSwitches.DISABLE_FIRST_RUN_EXPERIENCE})
 public class TabbedAppMenuTest {
-    @Rule
-    public ChromeTabbedActivityTestRule mActivityTestRule = new ChromeTabbedActivityTestRule();
-
-    @Rule public final SigninTestRule mSigninTestRule = new SigninTestRule();
-
     private static final int RENDER_TEST_REVISION = 2;
+
     private static final String RENDER_TEST_DESCRIPTION =
             "Badge on settings menu item icon on identity and sync errors.";
 
+    private static final String TEST_URL = UrlUtils.encodeHtmlDataUri("<html>foo</html>");
+
     @Rule
-    public ChromeRenderTestRule mRenderTestRule =
+    public final ChromeTabbedActivityTestRule mActivityTestRule =
+            new ChromeTabbedActivityTestRule();
+
+    @Rule public final SigninTestRule mSigninTestRule = new SigninTestRule();
+
+    @Rule
+    public final ChromeRenderTestRule mRenderTestRule =
             ChromeRenderTestRule.Builder.withPublicCorpus()
                     .setRevision(RENDER_TEST_REVISION)
                     .setDescription(RENDER_TEST_DESCRIPTION)
                     .setBugComponent(ChromeRenderTestRule.Component.UI_BROWSER_MOBILE_APP_MENU)
                     .build();
 
-    private static final String TEST_URL = UrlUtils.encodeHtmlDataUri("<html>foo</html>");
+    @Rule public final JniMocker mJniMocker = new JniMocker();
+
+    @Mock private PasswordManagerUtilBridge.Natives mPasswordManagerUtilBridgeJniMock;
 
     private AppMenuHandler mAppMenuHandler;
 
-    int mLastSelectedItemId = -1;
-    private Callback<Integer> mItemSelectedCallback = (itemId) -> mLastSelectedItemId = itemId;
-
     @Before
     public void setUp() {
+        MockitoAnnotations.initMocks(this);
+        // Prevent "GmsCore outdated" error from being exposed in bots with old version.
+        mJniMocker.mock(PasswordManagerUtilBridgeJni.TEST_HOOKS, mPasswordManagerUtilBridgeJniMock);
+        when(mPasswordManagerUtilBridgeJniMock.isGmsCoreUpdateRequired(any(), any()))
+                .thenReturn(false);
+
         PowerBookmarkUtils.setPriceTrackingEligibleForTesting(true);
 
         // We need list selection; ensure we are not in touch mode.
@@ -110,7 +125,7 @@ public class TabbedAppMenuTest {
         mActivityTestRule.startMainActivityWithURL(TEST_URL);
 
         AppMenuTestSupport.overrideOnOptionItemSelectedListener(
-                mActivityTestRule.getAppMenuCoordinator(), mItemSelectedCallback);
+                mActivityTestRule.getAppMenuCoordinator(), unused -> {});
         mAppMenuHandler = mActivityTestRule.getAppMenuCoordinator().getAppMenuHandler();
 
         showAppMenuAndAssertMenuShown();

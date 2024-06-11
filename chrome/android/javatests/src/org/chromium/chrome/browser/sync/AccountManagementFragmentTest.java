@@ -22,6 +22,7 @@ import static org.hamcrest.core.StringStartsWith.startsWith;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.doAnswer;
 import static org.mockito.Mockito.spy;
+import static org.mockito.Mockito.when;
 
 import static org.chromium.ui.test.util.ViewUtils.onViewWaiting;
 
@@ -36,10 +37,13 @@ import androidx.test.filters.MediumTest;
 import androidx.test.filters.SmallTest;
 
 import org.junit.Assert;
+import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.RuleChain;
 import org.junit.runner.RunWith;
+import org.mockito.Mock;
+import org.mockito.MockitoAnnotations;
 
 import org.chromium.base.FeatureList;
 import org.chromium.base.test.params.ParameterAnnotations;
@@ -51,8 +55,11 @@ import org.chromium.base.test.util.CriteriaHelper;
 import org.chromium.base.test.util.DoNotBatch;
 import org.chromium.base.test.util.Feature;
 import org.chromium.base.test.util.HistogramWatcher;
+import org.chromium.base.test.util.JniMocker;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
+import org.chromium.chrome.browser.password_manager.PasswordManagerUtilBridge;
+import org.chromium.chrome.browser.password_manager.PasswordManagerUtilBridgeJni;
 import org.chromium.chrome.browser.profiles.ProfileManager;
 import org.chromium.chrome.browser.settings.SettingsActivity;
 import org.chromium.chrome.browser.settings.SettingsActivityTestRule;
@@ -106,6 +113,10 @@ public class AccountManagementFragmentTest {
                     .setBugComponent(ChromeRenderTestRule.Component.SERVICES_SYNC)
                     .build();
 
+    @Rule public final JniMocker mJniMocker = new JniMocker();
+
+    @Mock private PasswordManagerUtilBridge.Natives mPasswordManagerUtilBridgeJniMock;
+
     public static class MigrateAccountManagementSettingsToCapabilitiesParams
             implements ParameterProvider {
 
@@ -122,6 +133,15 @@ public class AccountManagementFragmentTest {
         public List<ParameterSet> getParameters() {
             return sMigrateAccountManagementSettingsToCapabilities;
         }
+    }
+
+    @Before
+    public void setUp() {
+        MockitoAnnotations.initMocks(this);
+        // Prevent "GmsCore outdated" error from being exposed in bots with old version.
+        mJniMocker.mock(PasswordManagerUtilBridgeJni.TEST_HOOKS, mPasswordManagerUtilBridgeJniMock);
+        when(mPasswordManagerUtilBridgeJniMock.isGmsCoreUpdateRequired(any(), any()))
+                .thenReturn(false);
     }
 
     @ParameterAnnotations.UseMethodParameterBefore(
