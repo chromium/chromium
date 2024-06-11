@@ -23,6 +23,7 @@
 #include "components/variations/variations_seed_store.h"
 #include "components/variations/variations_switches.h"
 #include "content/public/common/content_switch_dependent_feature_overrides.h"
+#include "services/network/public/cpp/shared_url_loader_factory.h"
 
 namespace headless {
 
