@@ -125,6 +125,7 @@
 #include "chromeos/crosapi/mojom/login_state.mojom.h"
 #include "chromeos/crosapi/mojom/magic_boost.mojom.h"
 #include "chromeos/crosapi/mojom/mahi.mojom.h"
+#include "chromeos/crosapi/mojom/media_app.mojom.h"
 #include "chromeos/crosapi/mojom/media_ui.mojom.h"
 #include "chromeos/crosapi/mojom/message_center.mojom.h"
 #include "chromeos/crosapi/mojom/metrics.mojom.h"
@@ -428,7 +429,7 @@ constexpr InterfaceVersionEntry MakeInterfaceVersionEntry() {
   return {T::Uuid_, T::Version_};
 }
 
-static_assert(crosapi::mojom::Crosapi::Version_ == 143,
+static_assert(crosapi::mojom::Crosapi::Version_ == 144,
               "If you add a new crosapi, please add it to "
               "kInterfaceVersionEntries below.");
 
@@ -515,6 +516,7 @@ constexpr InterfaceVersionEntry kInterfaceVersionEntries[] = {
         chromeos::machine_learning::mojom::MachineLearningService>(),
     MakeInterfaceVersionEntry<crosapi::mojom::MagicBoostController>(),
     MakeInterfaceVersionEntry<crosapi::mojom::MahiBrowserDelegate>(),
+    MakeInterfaceVersionEntry<crosapi::mojom::MediaApp>(),
     MakeInterfaceVersionEntry<crosapi::mojom::MediaUI>(),
     MakeInterfaceVersionEntry<crosapi::mojom::MessageCenter>(),
     MakeInterfaceVersionEntry<crosapi::mojom::Metrics>(),

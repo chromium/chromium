@@ -5691,6 +5691,8 @@ static_library("browser") {
       "lacros/launcher_search/search_controller_factory_lacros.h",
       "lacros/launcher_search/search_controller_lacros.cc",
       "lacros/launcher_search/search_controller_lacros.h",
+      "lacros/media_app_lacros.cc",
+      "lacros/media_app_lacros.h",
       "lacros/metrics_reporting_observer.cc",
       "lacros/metrics_reporting_observer.h",
       "lacros/multitask_menu_nudge_delegate_lacros.cc",

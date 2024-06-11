@@ -33,6 +33,7 @@ copy("stage_generated") {
     "$root_gen_dir/skia/public/mojom/image_info.mojom-lite.js",
     "$root_gen_dir/third_party/blink/public/mojom/file_system_access/file_system_access_transfer_token.mojom-lite.js",
     "$root_gen_dir/ui/gfx/geometry/mojom/geometry.mojom-lite.js",
+    "$root_gen_dir/url/mojom/url.mojom-lite.js",
   ]
 
   outputs = [ stage_folder + "/{{source_file_part}}" ]
@@ -40,6 +41,7 @@ copy("stage_generated") {
   deps = [
     "//ash/webui/media_app_ui:mojo_bindings_js",
     "//third_party/blink/public/mojom:mojom_platform_js",
+    "//url/mojom:url_mojom_gurl_js",
   ]
 }
 
@@ -140,7 +142,10 @@ js_library("mojo_api_bootstrap") {
     "$target_gen_dir/../../media_app_ui.mojom-lite-for-compile.js",
   ]
 
-  deps = [ "//mojo/public/mojom/base:base_js_library_for_compile" ]
+  deps = [
+    "//mojo/public/mojom/base:base_js_library_for_compile",
+    "//url/mojom:url_mojom_gurl_js_library_for_compile",
+  ]
 
   extra_deps = [
     # We can't depend on the `_js_library_for_compile` target for the following

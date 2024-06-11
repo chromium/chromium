@@ -5,6 +5,7 @@
 module ash.media_app_ui.mojom;
 
 import "third_party/blink/public/mojom/file_system_access/file_system_access_transfer_token.mojom";
+import "url/mojom/url.mojom";
 
 // Browser interface for chrome://media-app to bootstrap a connection.
 interface PageHandlerFactory {
@@ -39,4 +40,14 @@ interface PageHandler {
   EditInPhotos(
       pending_remote<blink.mojom.FileSystemAccessTransferToken> token,
       string mime_type) => ();
+  // Requests a <form> submission. MediaApp (along with other SWAs) are still 
+  // running in Ash, so if the system is running LaCrOS, additional steps must
+  // be taken to make sure the submission is also in LaCrOS. This can be done
+  // without Mojo, but this specific API is still needed because LaCrOS form
+  // submissions only support GET and POST is required.
+  SubmitForm(
+    url.mojom.Url url,
+    array<int8> payload,
+    string header
+  ) => ();
 };

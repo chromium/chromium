@@ -5,6 +5,7 @@
 import './strings.m.js';
 import './unguessable_token.mojom-lite.js';
 import './file_system_access_transfer_token.mojom-lite.js';
+import './url.mojom-lite.js';
 
 import {assertCast, MessagePipe} from '//system_apps/message_pipe.js';
 import {loadTimeData} from 'chrome://resources/ash/common/load_time_data.m.js';
@@ -288,6 +289,14 @@ guestMessagePipe.registerHandler(
             originalHandle.name, e.name, overwrite);
       }
     });
+
+guestMessagePipe.registerHandler(
+    Message.SUBMIT_FORM,
+    async (message) => {
+      mediaAppPageHandler.submitForm(
+          {url: message.url}, message.payload, message.header);
+    },
+);
 
 /**
  * Shows a file picker and redirects a failed OverwriteFileMessage to the chosen

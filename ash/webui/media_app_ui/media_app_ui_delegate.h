@@ -12,6 +12,8 @@
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "third_party/blink/public/mojom/file_system_access/file_system_access_transfer_token.mojom.h"
 
+class GURL;
+
 namespace ash {
 
 // A delegate which exposes browser functionality from //chrome to the media app
@@ -43,6 +45,11 @@ class MediaAppUIDelegate {
       mojo::PendingRemote<blink::mojom::FileSystemAccessTransferToken> token,
       const std::string& mime_type,
       base::OnceCallback<void()> edit_in_photos_callback) = 0;
+
+  // Launches the designated URL with corresponding payload via HTTP post.
+  virtual void SubmitForm(const GURL& url,
+                          const std::vector<int8_t>& payload,
+                          const std::string& header) = 0;
 };
 
 }  // namespace ash

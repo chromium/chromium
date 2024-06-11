@@ -202,6 +202,8 @@ source_set("crosapi") {
     "login_screen_storage_ash.h",
     "login_state_ash.cc",
     "login_state_ash.h",
+    "media_app_ash.cc",
+    "media_app_ash.h",
     "media_ui_ash.cc",
     "media_ui_ash.h",
     "message_center_ash.cc",

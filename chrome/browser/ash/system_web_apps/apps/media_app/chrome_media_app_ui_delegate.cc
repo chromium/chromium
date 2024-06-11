@@ -16,14 +16,22 @@
 #include "chrome/browser/apps/app_service/app_service_proxy_factory.h"
 #include "chrome/browser/apps/app_service/launch_result_type.h"
 #include "chrome/browser/ash/app_list/arc/arc_app_utils.h"
+#include "chrome/browser/ash/crosapi/browser_util.h"
+#include "chrome/browser/ash/crosapi/crosapi_ash.h"
+#include "chrome/browser/ash/crosapi/crosapi_manager.h"
+#include "chrome/browser/ash/crosapi/media_app_ash.h"
 #include "chrome/browser/ash/file_manager/fileapi_util.h"
 #include "chrome/browser/ash/file_manager/volume_manager.h"
 #include "chrome/browser/ash/hats/hats_config.h"
 #include "chrome/browser/ash/hats/hats_notification_controller.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/profiles/profile.h"
+#include "chrome/browser/profiles/profile_manager.h"
+#include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_commands.h"
 #include "chrome/browser/ui/browser_finder.h"
+#include "chrome/browser/ui/browser_navigator.h"
+#include "chrome/browser/ui/browser_navigator_params.h"
 #include "chrome/browser/ui/chrome_pages.h"
 #include "chrome/common/channel_info.h"
 #include "components/services/app_service/public/cpp/app_launch_util.h"
@@ -184,4 +192,38 @@ void ChromeMediaAppUIDelegate::EditInPhotosImpl(
             std::move(callback).Run();
           },
           std::move(edit_in_photos_callback), web_contents->GetWeakPtr()));
+}
+
+void ChromeMediaAppUIDelegate::SubmitForm(const GURL& url,
+                                          const std::vector<int8_t>& payload,
+                                          const std::string& header) {
+  if (crosapi::browser_util::IsLacrosEnabled()) {
+    crosapi::CrosapiManager::Get()->crosapi_ash()->media_app_ash()->SubmitForm(
+        url, payload, header, base::DoNothing());
+    return;
+  }
+  // Keep this impl in sync with chrome/browser/lacros/media_app_lacros.cc
+  Profile* profile = Profile::FromWebUI(web_ui_);
+  NavigateParams navigate_params(
+      profile, url,
+      // The page transition is chosen to satisfy one of the conditions in
+      // lacros_url_handling::IsNavigationInterceptable.
+      ui::PageTransitionFromInt(ui::PAGE_TRANSITION_TYPED |
+                                ui::PAGE_TRANSITION_FROM_API |
+                                ui::PAGE_TRANSITION_FROM_ADDRESS_BAR));
+  navigate_params.window_action = NavigateParams::SHOW_WINDOW;
+  navigate_params.post_data = network::ResourceRequestBody::CreateFromBytes(
+      reinterpret_cast<const char*>(payload.data()), payload.size());
+  navigate_params.extra_headers = header;
+
+  navigate_params.browser = chrome::FindTabbedBrowser(profile, false);
+  if (!navigate_params.browser &&
+      Browser::GetCreationStatusForProfile(profile) ==
+          Browser::CreationStatus::kOk) {
+    Browser::CreateParams create_params(profile, navigate_params.user_gesture);
+    create_params.should_trigger_session_restore = false;
+    navigate_params.browser = Browser::Create(create_params);
+  }
+
+  Navigate(&navigate_params);
 }

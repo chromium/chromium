@@ -254,6 +254,9 @@ class COMPONENT_EXPORT(CHROMEOS_LACROS) LacrosService {
   void BindSensorHalClient(
       mojo::PendingRemote<chromeos::sensors::mojom::SensorHalClient> remote);
 
+  // This may be called on any thread.
+  void BindMediaApp(mojo::PendingRemote<crosapi::mojom::MediaApp> remote);
+
   // OnLacrosStartup method of Crosapi can only be called if this method
   // returns true.
   bool IsOnBrowserStartupAvailable() const;

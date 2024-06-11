@@ -88,6 +88,7 @@
 #include "chromeos/crosapi/mojom/login_state.mojom.h"
 #include "chromeos/crosapi/mojom/magic_boost.mojom.h"
 #include "chromeos/crosapi/mojom/mahi.mojom.h"
+#include "chromeos/crosapi/mojom/media_app.mojom.h"
 #include "chromeos/crosapi/mojom/media_ui.mojom.h"
 #include "chromeos/crosapi/mojom/message_center.mojom.h"
 #include "chromeos/crosapi/mojom/metrics.mojom.h"
@@ -889,6 +890,14 @@ void LacrosService::BindSensorHalClient(
   BindPendingReceiverOrRemote<
       mojo::PendingRemote<chromeos::sensors::mojom::SensorHalClient>,
       &crosapi::mojom::Crosapi::BindSensorHalClient>(std::move(remote));
+}
+
+void LacrosService::BindMediaApp(
+    mojo::PendingRemote<crosapi::mojom::MediaApp> remote) {
+  DCHECK(IsSupported<crosapi::mojom::MediaApp>());
+  BindPendingReceiverOrRemote<mojo::PendingRemote<crosapi::mojom::MediaApp>,
+                              &crosapi::mojom::Crosapi::BindMediaApp>(
+      std::move(remote));
 }
 
 bool LacrosService::IsOnBrowserStartupAvailable() const {

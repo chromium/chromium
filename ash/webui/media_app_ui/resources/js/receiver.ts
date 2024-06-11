@@ -8,6 +8,7 @@ import './sandboxed_load_time_data.js';
 
 import {COLOR_PROVIDER_CHANGED, ColorChangeUpdater} from '//resources/cr_components/color_change_listener/colors_css_updater.js';
 import type {RectF} from '//resources/mojo/ui/gfx/geometry/mojom/geometry.mojom-webui.js';
+import type {Url as MojoUrl} from '//resources/mojo/url/mojom/url.mojom-webui.js';
 import {assertCast, MessagePipe} from '//system_apps/message_pipe.js';
 
 import type {MahiUntrustedPageHandlerRemote, OcrUntrustedPageHandlerRemote, PageMetadata} from './media_app_ui_untrusted.mojom-webui.js';
@@ -325,6 +326,18 @@ const DELEGATE: ClientApiDelegate = {
     const response =
         await parentMessagePipe.sendMessage(Message.OPEN_FEEDBACK_DIALOG);
     return response['errorMessage'] as string;
+  },
+  async submitForm(
+      url: MojoUrl,
+      payload: number[],
+      header: string,
+  ) {
+    const msg = {
+      url,
+      payload,
+      header,
+    };
+    await parentMessagePipe.sendMessage(Message.SUBMIT_FORM, msg);
   },
   async toggleBrowserFullscreenMode() {
     await parentMessagePipe.sendMessage(Message.TOGGLE_BROWSER_FULLSCREEN_MODE);

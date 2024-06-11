@@ -51,6 +51,7 @@ namespace crosapi {
 class ClipboardHistoryLacros;
 class DebugInterfaceLacros;
 class DeskProfilesLacros;
+class MediaAppLacros;
 class SearchControllerLacros;
 class SearchControllerFactoryLacros;
 class TaskManagerLacros;
@@ -237,6 +238,9 @@ class ChromeBrowserMainExtraPartsLacros : public ChromeBrowserMainExtraParts {
 
   // Handles sending requested suggestions to ash.
   std::unique_ptr<SuggestionServiceLacros> suggestion_service_;
+
+  // Handles receiving requests from the Media App (which is in ash).
+  std::unique_ptr<crosapi::MediaAppLacros> media_app_;
 };
 
 #endif  // CHROME_BROWSER_LACROS_CHROME_BROWSER_MAIN_EXTRA_PARTS_LACROS_H_

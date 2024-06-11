@@ -49,6 +49,7 @@ static_library("media_app_ui") {
     "//ui/file_manager:resources",
     "//ui/gfx/geometry/mojom",
     "//ui/webui",
+    "//url/mojom:url_mojom_gurl",
   ]
 }
 
@@ -86,7 +87,10 @@ group("closure_compile") {
 
 mojom("mojo_bindings") {
   sources = [ "media_app_ui.mojom" ]
-  deps = [ "//third_party/blink/public/mojom:mojom_platform" ]
+  deps = [
+    "//third_party/blink/public/mojom:mojom_platform",
+    "//url/mojom:url_mojom_gurl",
+  ]
 }
 
 mojom("mojo_bindings_untrusted") {

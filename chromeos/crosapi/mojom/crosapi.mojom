@@ -79,6 +79,7 @@ import "chromeos/crosapi/mojom/policy_service.mojom";
 import "chromeos/crosapi/mojom/message_center.mojom";
 import "chromeos/crosapi/mojom/magic_boost.mojom";
 import "chromeos/crosapi/mojom/mahi.mojom";
+import "chromeos/crosapi/mojom/media_app.mojom";
 import "chromeos/crosapi/mojom/metrics.mojom";
 import "chromeos/crosapi/mojom/metrics_reporting.mojom";
 import "chromeos/crosapi/mojom/multi_capture_service.mojom";
@@ -169,8 +170,8 @@ struct BrowserInfo {
 // please note the milestone when you added it, to help us reason about
 // compatibility between the client applications and older ash-chrome binaries.
 //
-// Next version: 144
-// Next method id: 146
+// Next version: 145
+// Next method id: 147
 [Stable, Uuid="8b79c34f-2bf8-4499-979a-b17cac522c1e",
  RenamedFrom="crosapi.mojom.AshChromeService"]
 interface Crosapi {
@@ -743,6 +744,11 @@ interface Crosapi {
   // Added in M95.
   [MinVersion=46]
   BindFieldTrialService@51(pending_receiver<FieldTrialService> receiver);
+
+  // Binds the Media App interface for special functions of Media App
+  // Added in M128.
+  [MinVersion=144] BindMediaApp@146(
+      pending_remote<MediaApp> receiver);
 
   // Binds the Media Session service (controller) for enabling media playback
   // control.
