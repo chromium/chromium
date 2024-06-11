@@ -147,6 +147,7 @@ src/unittests/serialization.spec.ts
 src/unittests/test_group.spec.ts
 src/unittests/test_query.spec.ts
 src/unittests/texture_ok.spec.ts
+src/webgpu/error_test.ts
 src/webgpu/examples.spec.ts
 src/webgpu/listing.ts
 src/webgpu/multisample_info.ts
