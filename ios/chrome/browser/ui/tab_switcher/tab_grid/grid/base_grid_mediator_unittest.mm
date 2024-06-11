@@ -829,6 +829,44 @@ TEST_P(BaseGridMediatorTest, DropLocalTab) {
   EXPECT_EQ("| c a* b", builder.GetWebStateListDescription());
 }
 
+// Tests dropping a tabs from the tab group view in the grid.
+TEST_P(BaseGridMediatorTest, DropLocalTabFromTabGroup) {
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitWithFeatures(
+      {kTabGroupsInGrid, kTabGroupsIPad, kModernTabStrip}, {});
+
+  WebStateList* web_state_list = browser_->GetWebStateList();
+  CloseAllWebStates(*web_state_list, WebStateList::CLOSE_NO_FLAGS);
+
+  WebStateListBuilderFromDescription builder(web_state_list);
+  ASSERT_TRUE(builder.BuildWebStateListFromDescription(
+      "| a* b c [ 0 d e f ] g", browser_->GetBrowserState()));
+
+  // Drop "D" (in a group) after "A".
+  web::WebStateID web_state_id =
+      web_state_list->GetWebStateAt(3)->GetUniqueIdentifier();
+  id local_object = [[TabInfo alloc]
+      initWithTabID:web_state_id
+          incognito:browser_->GetBrowserState()->IsOffTheRecord()];
+  NSItemProvider* item_provider = [[NSItemProvider alloc] init];
+  UIDragItem* drag_item =
+      [[UIDragItem alloc] initWithItemProvider:item_provider];
+  drag_item.localObject = local_object;
+  [mediator_ dropItem:drag_item toIndex:1 fromSameCollection:NO];
+  EXPECT_EQ("| a* d b c [ 0 e f ] g", builder.GetWebStateListDescription());
+
+  // Drop "E" (in a group) before "G".
+  web_state_id = web_state_list->GetWebStateAt(4)->GetUniqueIdentifier();
+  local_object = [[TabInfo alloc]
+      initWithTabID:web_state_id
+          incognito:browser_->GetBrowserState()->IsOffTheRecord()];
+  item_provider = [[NSItemProvider alloc] init];
+  drag_item = [[UIDragItem alloc] initWithItemProvider:item_provider];
+  drag_item.localObject = local_object;
+  [mediator_ dropItem:drag_item toIndex:5 fromSameCollection:NO];
+  EXPECT_EQ("| a* d b c [ 0 f ] e g", builder.GetWebStateListDescription());
+}
+
 // Tests dropping a tab from another browser (e.g. drag from another window) in
 // the grid.
 TEST_P(BaseGridMediatorTest, DropCrossWindowTab) {
