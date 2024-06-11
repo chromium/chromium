@@ -292,6 +292,19 @@ export class InfiniteList extends PolymerElement {
     return Math.ceil(this.maxHeight / this.domItemAverageHeight_());
   }
 
+  fillCurrentViewHeight() {
+    if (this.items.length === 0) {
+      return;
+    }
+
+    // Update height if new items are added or previous height calculation was
+    // performed when this element was not visible.
+    const added = this.fillViewHeight_(this.maxHeight + this.scrollTop);
+    if (added || this.$.container.style.height === '0px') {
+      this.updateHeight_();
+    }
+  }
+
   /**
    * @return Whether DOM items were created or not.
    */
@@ -306,8 +319,15 @@ export class InfiniteList extends PolymerElement {
       this.createAndInsertDomItem_(0);
     }
 
-    const desiredDomItemCount = Math.min(
-        Math.ceil(height / this.domItemAverageHeight_()), this.items.length);
+    const itemHeight = this.domItemAverageHeight_();
+    // If this happens, the math below will be incorrect and we will render
+    // all items. So return early.
+    if (itemHeight === 0) {
+      return false;
+    }
+
+    const desiredDomItemCount =
+        Math.min(Math.ceil(height / itemHeight), this.items.length);
     // TODO(romanarora): Re-evaluate the average dom item height at given item
     // insertion counts in order to determine more precisely the right number of
     // items to render.

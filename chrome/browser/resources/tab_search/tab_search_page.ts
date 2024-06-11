@@ -164,6 +164,7 @@ export class TabSearchPageElement extends TabSearchSearchFieldBase {
   private initiallySelectedTabIndex_: number = NO_SELECTION;
   private documentVisibilityChangedListener_: () => void;
   private elementVisibilityChangedListener_: IntersectionObserver;
+  private wasInactive_: boolean = loadTimeData.getInteger('tabIndex') !== 0;
 
   constructor() {
     super();
@@ -288,8 +289,10 @@ export class TabSearchPageElement extends TabSearchSearchFieldBase {
   }
 
   private onElementVisibilityChanged_(visible: boolean) {
-    if (visible) {
-      this.$.tabsList.ensureAllDomItemsAvailable();
+    if (visible && this.wasInactive_) {
+      this.$.tabsList.fillCurrentViewHeight();
+    } else if (!visible) {
+      this.wasInactive_ = true;
     }
   }
 

@@ -4,8 +4,9 @@
 
 import {html, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 import {InfiniteList, TabData, TabItemType, TabSearchItemElement, TitleItem} from 'chrome://tab-search.top-chrome/tab_search.js';
-import {assertEquals, assertGT, assertNotEquals, assertTrue} from 'chrome://webui-test/chai_assert.js';
+import {assertEquals, assertFalse, assertGT, assertNotEquals, assertTrue} from 'chrome://webui-test/chai_assert.js';
 import {flushTasks, waitAfterNextRender} from 'chrome://webui-test/polymer_test_util.js';
+import {isVisible} from 'chrome://webui-test/test_util.js';
 
 import {generateSampleTabsFromSiteNames, sampleSiteNames} from './tab_search_test_data.js';
 import {assertTabItemAndNeighborsInViewBounds, disableAnimationBehavior} from './tab_search_test_helper.js';
@@ -233,5 +234,60 @@ suite('InfiniteListTest', () => {
     await waitAfterNextRender(infiniteList);
     assertEquals(0, queryClassElements(SAMPLE_SECTION_CLASS).length);
     assertEquals(0, queryRows().length);
+  });
+
+  test('FillCurrentViewHeightRendersOnlySomeItems', async () => {
+    const tabItems = sampleTabItems(sampleSiteNames(10));
+    await setupTest(tabItems);
+
+    // Assert that the tabs are in an overflowing state.
+    assertGT(infiniteList.scrollHeight, infiniteList.clientHeight);
+
+    // Assert that not all tab items are shown.
+    const initialRows = queryRows().length;
+    assertGT(tabItems.length, initialRows);
+
+    // fillCurrentViewHeight() should only render enough items to fill the
+    // view. Since the view height has not changed, no new items should
+    // render.
+    infiniteList.fillCurrentViewHeight();
+    await waitAfterNextRender(infiniteList);
+    assertEquals(initialRows, queryRows().length);
+
+    // ensureAllDomItemsAvailable() should render everything.
+    infiniteList.ensureAllDomItemsAvailable();
+    await waitAfterNextRender(infiniteList);
+    assertEquals(tabItems.length, queryRows().length);
+  });
+
+  test('HiddenWhenUpdated', async () => {
+    const testApp = document.createElement('test-app');
+    testApp.style.display = 'none';
+    document.body.innerHTML = window.trustedTypes!.emptyHTML;
+    document.body.appendChild(testApp);
+
+    infiniteList = testApp.shadowRoot!.querySelector('infinite-list')!;
+    infiniteList.items = sampleTabItems(sampleSiteNames(10));
+    await flushTasks();
+
+    // infinite-list will try to render one item, and then return early
+    // since the DOM item height cannot be estimated. List item and container
+    // are not visible.
+    assertEquals(1, queryRows().length);
+    let firstItem = queryRows()[0]!;
+    assertFalse(isVisible(infiniteList.$.container));
+    assertFalse(isVisible(firstItem));
+
+    testApp.style.display = '';
+    await waitAfterNextRender(testApp);
+
+    // After the client is rendered and calls fillCurrentViewHeight(), the
+    // container and item should be visible.
+    infiniteList.fillCurrentViewHeight();
+    await waitAfterNextRender(infiniteList);
+    assertGT(queryRows().length, 1);
+    firstItem = queryRows()[0]!;
+    assertTrue(isVisible(firstItem));
+    assertTrue(isVisible(infiniteList.$.container));
   });
 });

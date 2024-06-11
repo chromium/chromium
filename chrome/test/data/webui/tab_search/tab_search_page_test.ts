@@ -6,7 +6,7 @@ import {MetricsReporterImpl} from 'chrome://resources/js/metrics_reporter/metric
 import {keyDownOn} from 'chrome://resources/polymer/v3_0/iron-test-helpers/mock-interactions.js';
 import type {ProfileData, RecentlyClosedTab, Tab, TabSearchItemElement, TabSearchPageElement} from 'chrome://tab-search.top-chrome/tab_search.js';
 import {TabGroupColor, TabSearchApiProxyImpl} from 'chrome://tab-search.top-chrome/tab_search.js';
-import {assertEquals, assertFalse, assertNotEquals, assertTrue} from 'chrome://webui-test/chai_assert.js';
+import {assertEquals, assertFalse, assertGT, assertNotEquals, assertTrue} from 'chrome://webui-test/chai_assert.js';
 import {MockedMetricsReporter} from 'chrome://webui-test/mocked_metrics_reporter.js';
 import {flushTasks, waitAfterNextRender} from 'chrome://webui-test/polymer_test_util.js';
 
@@ -742,5 +742,40 @@ suite('TabSearchAppTest', () => {
               SAMPLE_WINDOW_HEIGHT,
               tabSearchPage.getAvailableHeightForTesting());
         });
+  });
+
+  test('Changing active does not render extra tabs', async () => {
+    const siteNames = Array.from({length: 20}, (_, i) => 'site' + (i + 1));
+    const testData = generateSampleDataFromSiteNames(siteNames);
+    await setupTest(testData);
+    const numRows = queryRows().length + queryListTitle().length;
+    const numItems = tabSearchPage.$.tabsList.items.length;
+    assertGT(numItems, numRows);
+
+    function whenVisibilityChanged(): Promise<void> {
+      return new Promise(resolve => {
+        const pageObserver = new IntersectionObserver((_entries, observer) => {
+          resolve();
+          observer.unobserve(tabSearchPage);
+        }, {root: document.documentElement});
+        pageObserver.observe(tabSearchPage);
+      });
+    }
+
+    // Simulate switching to another tab. This line imitates the CSS in
+    // cr-page-selector.
+    const displayStyle =
+        (tabSearchPage.computedStyleMap().get('display') as CSSKeywordValue)
+            .value;
+    tabSearchPage.style.display = 'none';
+    await whenVisibilityChanged();
+    await waitAfterNextRender(tabSearchPage);
+    assertEquals(numRows, queryListTitle().length + queryRows().length);
+
+    // Re-activating the tabs list should not increase the number of items.
+    tabSearchPage.style.display = displayStyle;
+    await whenVisibilityChanged();
+    await waitAfterNextRender(tabSearchPage);
+    assertEquals(numRows, queryListTitle().length + queryRows().length);
   });
 });
