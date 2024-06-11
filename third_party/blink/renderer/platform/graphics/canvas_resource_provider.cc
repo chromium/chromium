@@ -1313,10 +1313,11 @@ const base::FeatureParam<int> kMaxPinnedImageKB(&kCanvas2DAutoFlushParams,
                                                 "max_pinned_image_kb",
                                                 32 * 1024);
 
-// Feature only consulted if graphite is enabled.
-BASE_FEATURE(kUseLargerRecordedPaintOpBuffer,
-             "UseLargerRecordedPaintOpBuffer",
-             base::FEATURE_ENABLED_BY_DEFAULT);
+// Graphite can generally handle more ops, increase the size accordingly.
+const base::FeatureParam<int> kMaxRecordedOpGraphiteKB(
+    &kCanvas2DAutoFlushParams,
+    "max_recorded_op_graphite_kb",
+    6 * 1024);
 
 CanvasResourceProvider::CanvasResourceProvider(
     const ResourceProviderType& type,
@@ -1343,12 +1344,12 @@ CanvasResourceProvider::CanvasResourceProvider(
         context_provider_wrapper_->ContextProvider()->GetCapabilities();
     oopr_uses_dmsaa_ = !caps.msaa_is_slow && !caps.avoid_stencil_buffers;
     // Graphite can handle a large buffer size.
-    if (base::FeatureList::IsEnabled(kUseLargerRecordedPaintOpBuffer) &&
-        context_provider_wrapper_->ContextProvider()
-                ->GetGpuFeatureInfo()
-                .status_values[gpu::GPU_FEATURE_TYPE_SKIA_GRAPHITE] ==
-            gpu::kGpuFeatureStatusEnabled) {
-      max_recorded_op_bytes_ = 4 * 1024 * 1024;
+    if (context_provider_wrapper_->ContextProvider()
+            ->GetGpuFeatureInfo()
+            .status_values[gpu::GPU_FEATURE_TYPE_SKIA_GRAPHITE] ==
+        gpu::kGpuFeatureStatusEnabled) {
+      max_recorded_op_bytes_ =
+          static_cast<size_t>(kMaxRecordedOpGraphiteKB.Get()) * 1024;
     }
   }
 
