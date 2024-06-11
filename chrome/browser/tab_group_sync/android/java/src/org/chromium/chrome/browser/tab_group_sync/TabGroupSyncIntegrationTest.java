@@ -282,6 +282,7 @@ public class TabGroupSyncIntegrationTest {
     @Test
     @MediumTest
     @Feature({"Sync"})
+    @DisabledTest(message = "crbug.com/346550802")
     public void testLocal_CreateTabGroup() throws Exception {
         final ChromeTabbedActivity cta = mSyncTestRule.getActivity();
         createTabs(cta, false, 2);
