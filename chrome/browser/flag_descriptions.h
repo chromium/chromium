@@ -1848,6 +1848,10 @@ extern const char kScrollableTabStripFlagId[];
 extern const char kScrollableTabStripName[];
 extern const char kScrollableTabStripDescription[];
 
+extern const char kTabStripCollectionStorageFlagId[];
+extern const char kTabStripCollectionStorageName[];
+extern const char kTabStripCollectionStorageDescription[];
+
 extern const char kTabScrollingButtonPositionFlagId[];
 extern const char kTabScrollingButtonPositionName[];
 extern const char kTabScrollingButtonPositionDescription[];

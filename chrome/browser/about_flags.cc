@@ -6783,6 +6783,11 @@ const FeatureEntry kFeatureEntries[] = {
                                     kTabScrollingWithDraggingVariations,
                                     "TabScrollingWithDragging")},
 
+    {flag_descriptions::kTabStripCollectionStorageFlagId,
+     flag_descriptions::kTabStripCollectionStorageName,
+     flag_descriptions::kTabStripCollectionStorageDescription, kOsDesktop,
+     FEATURE_VALUE_TYPE(features::kTabStripCollectionStorage)},
+
     {flag_descriptions::kScrollableTabStripOverflowFlagId,
      flag_descriptions::kScrollableTabStripOverflowName,
      flag_descriptions::kScrollableTabStripOverflowDescription, kOsDesktop,
@@ -10199,6 +10204,7 @@ const FeatureEntry kFeatureEntries[] = {
      FEATURE_VALUE_TYPE(chrome::android::kTabStripLayoutOptimization)},
 
 #endif
+
     {"use-dmsaa-for-tiles", flag_descriptions::kUseDMSAAForTilesName,
      flag_descriptions::kUseDMSAAForTilesDescription, kOsAll,
      FEATURE_VALUE_TYPE(::features::kUseDMSAAForTiles)},
