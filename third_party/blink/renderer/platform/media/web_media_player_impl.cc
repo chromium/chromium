@@ -65,6 +65,7 @@
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "net/base/data_url.h"
+#include "net/http/http_request_headers.h"
 #include "net/url_request/url_request_job.h"
 #include "services/device/public/mojom/battery_monitor.mojom-blink.h"
 #include "third_party/blink/public/common/media/display_type.h"
@@ -2916,7 +2917,8 @@ void WebMediaPlayerImpl::StartPipeline() {
                      base::BindPostTaskToCurrentDefault(base::BindOnce(
                          &WebMediaPlayerImpl::OnFirstFrame, weak_this_))));
   base::flat_map<std::string, std::string> headers;
-  headers["Referrer"] =
+  // Referer is the right spelling of the HTTP header, not Referrer.
+  headers[net::HttpRequestHeaders::kReferer] =
       net::URLRequestJob::ComputeReferrerForPolicy(
           frame_->GetDocument().GetReferrerPolicy(),
           GURL(frame_->GetDocument().OutgoingReferrer().Utf8()),
