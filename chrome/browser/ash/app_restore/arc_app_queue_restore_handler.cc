@@ -379,6 +379,16 @@ void ArcAppQueueRestoreHandler::AddWindows(const std::string& app_id) {
 void ArcAppQueueRestoreHandler::PrepareLaunchApps() {
   is_shelf_ready_ = true;
 
+  // Explicit check if the root window controller initialized. b/321719023
+  if (RootWindowController::root_window_controllers().empty()) {
+    base::SingleThreadTaskRunner::GetCurrentDefault()->PostDelayedTask(
+        FROM_HERE,
+        base::BindOnce(&ArcAppQueueRestoreHandler::PrepareLaunchApps,
+                       weak_ptr_factory_.GetWeakPtr()),
+        kAppLaunchCheckingDelay);
+    return;
+  }
+
   if (app_ids_.empty())
     return;
 
