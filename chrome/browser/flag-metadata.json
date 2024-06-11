@@ -714,7 +714,7 @@
   {
     "name": "autofill-enable-local-iban",
     "owners": [ "qihuizhao@google.com", "averina@google.com", "payments-autofill-team@google.com" ],
-    "expiry_milestone": 130
+    "expiry_milestone": 136
   },
   {
     "name": "autofill-enable-manual-fallback-iph",
@@ -780,7 +780,7 @@
   {
     "name": "autofill-enable-server-iban",
     "owners": [ "qihuizhao@google.com", "jsaul@google.com" ],
-    "expiry_milestone": 128
+    "expiry_milestone": 136
   },
   {
     "name": "autofill-enable-sticky-manual-fallback-for-cards",
