@@ -1,0 +1,59 @@
+// Copyright 2024 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+import 'chrome://password-manager/password_manager.js';
+
+import {assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
+import {flush} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+import {isVisible} from 'chrome://webui-test/test_util.js';
+
+suite('FullDataResetTest', function() {
+  setup(function() {
+    document.body.innerHTML = window.trustedTypes!.emptyHTML;
+  });
+
+  test('confirmation dialog is closed by default', async function() {
+    const dataReset = document.createElement('full-data-reset');
+    document.body.appendChild(dataReset);
+    flush();
+
+    assertFalse(dataReset.$.dialog.open);
+  });
+
+  test('confirmation dialog is closed by clicking the cancel button', async function() {
+    const dataReset = document.createElement('full-data-reset');
+    document.body.appendChild(dataReset);
+    flush();
+
+    // Open the dialog.
+    dataReset.$.deleteAllButton.click();
+    flush();
+    assertTrue(dataReset.$.dialog.open);
+
+    // Should close the dialog.
+    assertTrue(isVisible(dataReset.$.cancelButton));
+    dataReset.$.cancelButton.click();
+    flush();
+
+    assertFalse(dataReset.$.dialog.open);
+  });
+
+  test('confirmation dialog is closed by clicking the action button', async function() {
+    const dataReset = document.createElement('full-data-reset');
+    document.body.appendChild(dataReset);
+    flush();
+
+    // Open the dialog.
+    dataReset.$.deleteAllButton.click();
+    flush();
+    assertTrue(dataReset.$.dialog.open);
+
+    // Should close the dialog.
+    assertTrue(isVisible(dataReset.$.confirmButton));
+    dataReset.$.confirmButton.click();
+    flush();
+
+    assertFalse(dataReset.$.dialog.open);
+  });
+});

@@ -12,6 +12,7 @@ build_webui_tests("build") {
     "checkup_details_section_test.ts",
     "checkup_section_test.ts",
     "delete_passkey_dialog_test.ts",
+    "full_data_reset_test.ts",
     "edit_password_dialog_test.ts",
     "edit_passkey_dialog_test.ts",
     "move_passwords_dialog_test.ts",

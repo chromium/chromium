@@ -146,6 +146,13 @@ export class SettingsSectionElement extends SettingsSectionElementBase {
         type: Boolean,
         value: false,
       },
+
+      isDeleteAllPasswordManagerDataRowAvailable_: {
+        type: Boolean,
+        value() {
+          return loadTimeData.getBoolean('enableWebAuthnGpmPin');
+        },
+      },
     };
   }
 
@@ -171,6 +178,7 @@ export class SettingsSectionElement extends SettingsSectionElementBase {
   private isDisconnectCloudAuthenticatorInProgress_: boolean = false;
   private toastMessage_: string = '';
   private showDisconnectCloudAuthenticatorDialog_: boolean = false;
+  private isDeleteAllPasswordManagerDataRowAvailable_: boolean;
 
   private setBlockedSitesListListener_: BlockedSitesListChangedListener|null =
       null;

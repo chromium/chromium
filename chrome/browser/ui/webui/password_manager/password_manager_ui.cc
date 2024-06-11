@@ -221,6 +221,8 @@ content::WebUIDataSource* CreateAndAddPasswordsUIHTMLSource(
       {"federatedCredentialProviderAriaLabel",
        IDS_PASSWORD_MANAGER_UI_FEDERATED_CREDENTIAL_ARIA_LABEL},
       {"federationLabel", IDS_PASSWORD_MANAGER_UI_FEDERATION_LABEL},
+      {"fullResetDeleteAll", IDS_PASSWORD_MANAGER_UI_FULL_RESET_DELETE_ALL},
+      {"fullResetConfirm", IDS_PASSWORD_MANAGER_UI_FULL_RESET_CONFIRM},
       {"gotIt", IDS_SETTINGS_GOT_IT},
       {"help", IDS_PASSWORD_MANAGER_UI_HELP},
       {"hidePassword", IDS_PASSWORD_MANAGER_UI_HIDE_PASSWORD},
@@ -487,6 +489,11 @@ content::WebUIDataSource* CreateAndAddPasswordsUIHTMLSource(
       "enableSendPasswords",
       base::FeatureList::IsEnabled(password_manager::features::kSendPasswords));
 
+  source->AddBoolean(
+      "enableWebAuthnGpmPin",
+      base::FeatureList::IsEnabled(device::kWebAuthnEnclaveAuthenticator) &&
+          device::kWebAuthnGpmPin.Get());
+
   source->AddBoolean("enableButterOnDesktopFollowup",
                      base::FeatureList::IsEnabled(
                          password_manager::features::kButterOnDesktopFollowup));
@@ -539,6 +546,17 @@ content::WebUIDataSource* CreateAndAddPasswordsUIHTMLSource(
   source->AddString("autosigninDescription",
                     InsertBrandedPasswordManager(
                         IDS_PASSWORD_MANAGER_UI_AUTOSIGNIN_TOGGLE_DESC));
+
+  source->AddString(
+      "fullResetTitle",
+      InsertBrandedPasswordManager(IDS_PASSWORD_MANAGER_UI_FULL_RESET_TITLE));
+  source->AddString("fullResetConfirmationTitle",
+                    InsertBrandedPasswordManager(
+                        IDS_PASSWORD_MANAGER_UI_FULL_RESET_CONFIRMATION_TITLE));
+  source->AddString(
+      "fullResetConfirmationDescription",
+      InsertBrandedPasswordManager(
+          IDS_PASSWORD_MANAGER_UI_FULL_RESET_CONFIRMATION_DESCIPTION));
 
   source->AddString(
       "emptyStateImportAccountStore",

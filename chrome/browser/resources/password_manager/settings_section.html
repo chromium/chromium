@@ -163,6 +163,10 @@
       </cr-link-row>
     </template>
   </if>
+  <template is="dom-if"
+      if="[[isDeleteAllPasswordManagerDataRowAvailable_]]" restamp>
+    <full-data-reset></full-data-reset>
+  </template>
 </div>
 <div hidden="[[!blockedSites_.length]]">
   <h3 id="blockedSitesTitle" class="page-title">$i18n{blockedSitesTitle}</h3>

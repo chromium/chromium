@@ -11,7 +11,6 @@ import {flush} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min
 import {assertDeepEquals, assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
 import {flushTasks} from 'chrome://webui-test/polymer_test_util.js';
 import {TestOpenWindowProxy} from 'chrome://webui-test/test_open_window_proxy.js';
-// import {isVisible} from 'chrome://webui-test/test_util.js';
 import {eventToPromise, isVisible} from 'chrome://webui-test/test_util.js';
 
 import {TestPasswordManagerProxy} from './test_password_manager_proxy.js';
@@ -770,4 +769,26 @@ suite('SettingsSectionTest', function() {
         loadTimeData.getString('disconnectCloudAuthenticatorToastMessage'),
         section.$.toast.textContent!.trim());
   });
+
+  test('enableWebAuthnGpmPin shows full-data-reset row', async function() {
+    loadTimeData.overrideValues({enableWebAuthnGpmPin: true});
+
+    const section = document.createElement('settings-section');
+    document.body.appendChild(section);
+    await flushTasks();
+
+    assertTrue(!!section.shadowRoot!.querySelector('full-data-reset'));
+  });
+
+  test(
+      'disabled enableWebAuthnGpmPin hides full-data-reset row',
+      async function() {
+        loadTimeData.overrideValues({enableWebAuthnGpmPin: false});
+
+        const section = document.createElement('settings-section');
+        document.body.appendChild(section);
+        await flushTasks();
+
+        assertFalse(!!section.shadowRoot!.querySelector('full-data-reset'));
+      });
 });

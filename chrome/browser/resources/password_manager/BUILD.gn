@@ -62,6 +62,7 @@ build_webui("build") {
     "dialogs/move_passwords_dialog.ts",
     "dialogs/move_single_password_dialog.ts",
     "dialogs/password_preview_item.ts",
+    "full_data_reset.ts",
     "credential_details/credential_note.ts",
     "credential_details/credential_field.ts",
     "credential_details/passkey_details_card.ts",

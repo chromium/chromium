@@ -1,0 +1,31 @@
+<style include="shared-style cr-shared-style">
+  /* Hide the default icon element.*/
+  cr-link-row[hide-icon]::part(icon) {
+    display: none;
+  }
+</style>
+
+<cr-link-row class="cr-row" non-clickable hide-icon
+    label="$i18n{fullResetTitle}">
+    <cr-button id="deleteAllButton" on-click="onDeleteAllClick_">
+        $i18n{fullResetDeleteAll}
+    </cr-button>
+</cr-link-row>
+
+<cr-dialog id="dialog">
+  <div slot="title" class="dialog-title">
+    $i18n{fullResetConfirmationTitle}
+  </div>
+  <div slot="body">
+    $i18n{fullResetConfirmationDescription}
+  </div>
+  <div slot="button-container">
+    <cr-button class="cancel-button" on-click="onCancel_" id="cancelButton"
+        autofocus>
+      $i18n{cancel}
+    </cr-button>
+    <cr-button class="action-button" on-click="onConfirm_" id="confirmButton">
+      $i18n{fullResetConfirm}
+    </cr-button>
+  </div>
+</cr-dialog>
