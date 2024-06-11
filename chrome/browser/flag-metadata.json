@@ -5630,6 +5630,16 @@
     "expiry_milestone": 129
   },
   {
+    "name": "lens-filters-ablation-mode-enabled",
+    "owners": ["cmyang@google.com", "ericappelbaum@google.com"],
+    "expiry_milestone": 135
+  },
+  {
+    "name": "lens-translate-toogle-mode-enabled",
+    "owners": ["cmyang@google.com", "ericappelbaum@google.com"],
+    "expiry_milestone": 135
+  },
+  {
     "name": "lens-web-page-early-transition-enabled",
     "owners": ["cmyang@google.com"],
     "expiry_milestone": 135

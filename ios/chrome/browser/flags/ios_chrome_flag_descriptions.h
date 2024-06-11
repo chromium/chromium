@@ -583,6 +583,14 @@ extern const char kIPHiOSSwipeBackForwardFeatureDescription[];
 extern const char kIPHiOSSwipeToolbarToChangeTabFeatureName[];
 extern const char kIPHiOSSwipeToolbarToChangeTabFeatureDescription[];
 
+// Title and description for the flag to enable the Lens filters ablation mode.
+extern const char kLensFiltersAblationModeEnabledName[];
+extern const char kLensFiltersAblationModeEnabledDescription[];
+
+// Title and description for the flag to enable the Lens translate toggle mode.
+extern const char kLensTranslateToggleModeEnabledName[];
+extern const char kLensTranslateToggleModeEnabledDescription[];
+
 // Title and description for the flag to enable the Lens web page early
 // transition.
 extern const char kLensWebPageEarlyTransitionEnabledName[];

@@ -17,4 +17,22 @@ extern const char kLoadingProgressThreshold[];
 // should be between 0.0 and 1.0.
 double LensWebPageEarlyTransitionLoadingProgressThreshold();
 
+// Whether to enable the filters ablation mode.
+BASE_DECLARE_FEATURE(kLensFiltersAblationModeEnabled);
+
+// The feature parameter that indicates the filters ablation mode.
+extern const char kLensFiltersAblationMode[];
+
+// Integer that maps to the filters ablation mode enum.
+int LensFiltersAblationMode();
+
+// Whether to enable the translate toggle mode.
+BASE_DECLARE_FEATURE(kLensTranslateToggleModeEnabled);
+
+// The feature parameter that indicates the translate toggle mode.
+extern const char kLensTranslateToggleMode[];
+
+// Integer that maps to the translate toggle mode enum.
+int LensTranslateToggleMode();
+
 #endif  // IOS_CHROME_BROWSER_UI_LENS_FEATURES_H_

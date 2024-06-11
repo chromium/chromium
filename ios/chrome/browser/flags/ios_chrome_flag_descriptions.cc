@@ -677,6 +677,16 @@ const char kIPHiOSSwipeToolbarToChangeTabFeatureDescription[] =
     "Enables displaying the gesture IPH instructing users to swipe the toolbar "
     "to navigate to the previous or next tab in the tab list.";
 
+const char kLensFiltersAblationModeEnabledName[] =
+    "Lens filters ablation mode enabled";
+const char kLensFiltersAblationModeEnabledDescription[] =
+    "Enables the filters ablation mode.";
+
+const char kLensTranslateToggleModeEnabledName[] =
+    "Lens translate toggle mode enabled";
+const char kLensTranslateToggleModeEnabledDescription[] =
+    "Enables the translate toggle mode.";
+
 const char kLensWebPageEarlyTransitionEnabledName[] =
     "Lens web page early transition";
 const char kLensWebPageEarlyTransitionEnabledDescription[] =

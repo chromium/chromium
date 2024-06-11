@@ -718,6 +718,45 @@ const FeatureEntry::FeatureVariation kTabResumption15Variations[] = {
     {"UI changes only", kTabResumption15UIChangeOnlyImages,
      std::size(kTabResumption15UIChangeOnlyImages), nullptr},
 };
+// Uses int values from Lens filters ablation mode enum.
+const FeatureEntry::FeatureParam kLensFiltersAblationModeDisabled[] = {
+    {kLensFiltersAblationMode, "0"}};
+const FeatureEntry::FeatureParam kLensFiltersAblationModePostCapture[] = {
+    {kLensFiltersAblationMode, "1"}};
+const FeatureEntry::FeatureParam kLensFiltersAblationModeLVF[] = {
+    {kLensFiltersAblationMode, "2"}};
+const FeatureEntry::FeatureParam kLensFiltersAblationModeAlways[] = {
+    {kLensFiltersAblationMode, "3"}};
+
+const FeatureEntry::FeatureVariation kLensFiltersAblationModeVariations[] = {
+    {"(Disabled)", kLensFiltersAblationModeDisabled,
+     std::size(kLensFiltersAblationModeDisabled), nullptr},
+    {"(Post Capture)", kLensFiltersAblationModePostCapture,
+     std::size(kLensFiltersAblationModePostCapture), nullptr},
+    {"(LVF)", kLensFiltersAblationModeLVF,
+     std::size(kLensFiltersAblationModeLVF), nullptr},
+    {"(Always)", kLensFiltersAblationModeAlways,
+     std::size(kLensFiltersAblationModeAlways), nullptr}};
+
+// Uses int values from Lens translate toggle mode enum.
+const FeatureEntry::FeatureParam kLensTranslateToggleModeDisabled[] = {
+    {kLensTranslateToggleMode, "0"}};
+const FeatureEntry::FeatureParam kLensTranslateToggleModePostCapture[] = {
+    {kLensTranslateToggleMode, "1"}};
+const FeatureEntry::FeatureParam kLensTranslateToggleModeLVF[] = {
+    {kLensTranslateToggleMode, "2"}};
+const FeatureEntry::FeatureParam kLensTranslateToggleModeAlways[] = {
+    {kLensTranslateToggleMode, "3"}};
+
+const FeatureEntry::FeatureVariation kLensTranslateToggleModeVariations[] = {
+    {"(Disabled)", kLensTranslateToggleModeDisabled,
+     std::size(kLensTranslateToggleModeDisabled), nullptr},
+    {"(Post Capture)", kLensTranslateToggleModePostCapture,
+     std::size(kLensTranslateToggleModePostCapture), nullptr},
+    {"(LVF)", kLensTranslateToggleModeLVF,
+     std::size(kLensTranslateToggleModeLVF), nullptr},
+    {"(Always)", kLensTranslateToggleModeAlways,
+     std::size(kLensTranslateToggleModeAlways), nullptr}};
 
 // To add a new entry, add to the end of kFeatureEntries. There are four
 // distinct types of entries:
@@ -1704,6 +1743,20 @@ const flags_ui::FeatureEntry kFeatureEntries[] = {
      flag_descriptions::kClearDeviceDataOnSignOutForManagedUsersDescription,
      flags_ui::kOsIos,
      FEATURE_VALUE_TYPE(kClearDeviceDataOnSignOutForManagedUsers)},
+    {"lens-filters-ablation-mode-enabled",
+     flag_descriptions::kLensFiltersAblationModeEnabledName,
+     flag_descriptions::kLensFiltersAblationModeEnabledDescription,
+     flags_ui::kOsIos,
+     FEATURE_WITH_PARAMS_VALUE_TYPE(kLensFiltersAblationModeEnabled,
+                                    kLensFiltersAblationModeVariations,
+                                    "LensFiltersAblationMode")},
+    {"lens-translate-toogle-mode-enabled",
+     flag_descriptions::kLensTranslateToggleModeEnabledName,
+     flag_descriptions::kLensTranslateToggleModeEnabledDescription,
+     flags_ui::kOsIos,
+     FEATURE_WITH_PARAMS_VALUE_TYPE(kLensTranslateToggleModeEnabled,
+                                    kLensTranslateToggleModeVariations,
+                                    "LensTranslateToggleMode")},
 };
 
 bool SkipConditionalFeatureEntry(const flags_ui::FeatureEntry& entry) {
