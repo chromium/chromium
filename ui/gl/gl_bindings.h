@@ -31,22 +31,6 @@
 #include "ui/gfx/extension_set.h"
 #include "ui/gl/gl_export.h"
 
-// The standard OpenGL native extension headers are also included.
-#if BUILDFLAG(IS_WIN)
-#include <GL/wglext.h>
-#elif BUILDFLAG(IS_MAC)
-#include <OpenGL/OpenGL.h>
-#elif BUILDFLAG(IS_LINUX)
-using Display = struct _XDisplay;
-using Bool = int;
-using Status = int;
-using XID = unsigned long;
-using Colormap = XID;
-using Font = XID;
-using Pixmap = XID;
-using Window = XID;
-#endif
-
 // GLES2 defines not part of Desktop GL
 // Shader Precision-Specified Types
 #define GL_LOW_FLOAT                                     0x8DF0
