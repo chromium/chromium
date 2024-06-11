@@ -11,6 +11,7 @@
 
 @protocol ContextualPanelEntrypointConsumer;
 @protocol ContextualPanelEntrypointMediatorDelegate;
+@protocol ContextualPanelEntrypointIPHCommands;
 class WebStateList;
 
 // Mediator for Contextual Panel Entrypoint.
@@ -20,6 +21,8 @@ class WebStateList;
 - (instancetype)init NS_UNAVAILABLE;
 
 - (instancetype)initWithWebStateList:(WebStateList*)webStateList
+               entrypointHelpHandler:(id<ContextualPanelEntrypointIPHCommands>)
+                                         entrypointHelpHandler
     NS_DESIGNATED_INITIALIZER;
 
 // The consumer for this mediator.

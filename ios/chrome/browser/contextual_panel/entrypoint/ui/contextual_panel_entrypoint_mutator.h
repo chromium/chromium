@@ -8,6 +8,9 @@
 // Mutator for ContextualPanelEntrypointViewController.
 @protocol ContextualPanelEntrypointMutator
 
+// Notify the mutator to dismiss the entrypoint's IPH.
+- (void)dismissIPHAnimated:(BOOL)animated;
+
 // Notify the mutator that the entrypoint was tapped.
 - (void)entrypointTapped;
 

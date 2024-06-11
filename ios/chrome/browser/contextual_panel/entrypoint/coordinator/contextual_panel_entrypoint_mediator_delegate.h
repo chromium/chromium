@@ -28,6 +28,12 @@
 // Re-enables fullscreen, no-op if fullscreen was not disabled beforehand.
 - (void)enableFullscreen;
 
+// Gets the current bottom omnibox state.
+- (BOOL)isBottomOmniboxActive;
+
+// Gets the in-product help anchor point in window coordinates.
+- (CGPoint)helpAnchorUsingBottomOmnibox:(BOOL)isBottomOmnibox;
+
 @end
 
 #endif  // IOS_CHROME_BROWSER_CONTEXTUAL_PANEL_ENTRYPOINT_COORDINATOR_CONTEXTUAL_PANEL_ENTRYPOINT_MEDIATOR_DELEGATE_H_

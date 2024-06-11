@@ -24,6 +24,13 @@
 // is YES, depending on whether it should currently be shown or not.
 - (void)displayEntrypointView:(BOOL)display;
 
+// Returns the anchor point in window coordinates for the entrypoint's IPH,
+// depending on if the omnibox is at the top or bottom. Since the entrypoint is
+// usually fairly close to the edge of the screen, this returns the MAX X
+// coordinate between the default bubble offset and the middle X of the
+// entrypoint.
+- (CGPoint)helpAnchorUsingBottomOmnibox:(BOOL)isBottomOmnibox;
+
 @end
 
 #endif  // IOS_CHROME_BROWSER_CONTEXTUAL_PANEL_ENTRYPOINT_UI_CONTEXTUAL_PANEL_ENTRYPOINT_VIEW_CONTROLLER_H_

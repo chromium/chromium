@@ -85,6 +85,7 @@
 #import "ios/chrome/browser/shared/public/commands/autofill_commands.h"
 #import "ios/chrome/browser/shared/public/commands/browser_coordinator_commands.h"
 #import "ios/chrome/browser/shared/public/commands/command_dispatcher.h"
+#import "ios/chrome/browser/shared/public/commands/contextual_panel_entrypoint_iph_commands.h"
 #import "ios/chrome/browser/shared/public/commands/contextual_sheet_commands.h"
 #import "ios/chrome/browser/shared/public/commands/country_code_picker_commands.h"
 #import "ios/chrome/browser/shared/public/commands/feed_commands.h"
@@ -157,6 +158,7 @@
 #import "ios/chrome/browser/ui/browser_view/tab_lifecycle_mediator.h"
 #import "ios/chrome/browser/ui/bubble/bubble_presenter.h"
 #import "ios/chrome/browser/ui/bubble/bubble_presenter_delegate.h"
+#import "ios/chrome/browser/ui/bubble/bubble_view_controller_presenter.h"
 #import "ios/chrome/browser/ui/context_menu/context_menu_configuration_provider.h"
 #import "ios/chrome/browser/ui/credential_provider_promo/credential_provider_promo_coordinator.h"
 #import "ios/chrome/browser/ui/default_promo/default_browser_promo_non_modal_commands.h"
@@ -285,6 +287,7 @@ enum class ToolbarKind {
     BrowserCoordinatorCommands,
     BrowserViewVisibilityConsumer,
     BubblePresenterDelegate,
+    ContextualPanelEntrypointIPHCommands,
     ContextualSheetCommands,
     CountryCodePickerCommands,
     DefaultBrowserGenericPromoCommands,
@@ -557,6 +560,7 @@ enum class ToolbarKind {
   BrowserViewControllerDependencies _viewControllerDependencies;
   KeyCommandsProvider* _keyCommandsProvider;
   BubblePresenter* _bubblePresenter;
+  BubbleViewControllerPresenter* _contextualPanelEntrypointHelpPresenter;
   ToolbarAccessoryPresenter* _toolbarAccessoryPresenter;
   LensCoordinator* _lensCoordinator;
   ToolbarCoordinator* _toolbarCoordinator;
@@ -901,6 +905,7 @@ enum class ToolbarKind {
     @protocol(ActivityServiceCommands),
     @protocol(AutofillCommands),
     @protocol(BrowserCoordinatorCommands),
+    @protocol(ContextualPanelEntrypointIPHCommands),
     @protocol(ContextualSheetCommands),
     @protocol(DefaultBrowserPromoNonModalCommands),
     @protocol(FeedCommands),
@@ -1187,6 +1192,9 @@ enum class ToolbarKind {
   [_bubblePresenter stop];
   _bubblePresenter = nil;
   _toolbarAccessoryPresenter = nil;
+
+  [_contextualPanelEntrypointHelpPresenter dismissAnimated:NO];
+  _contextualPanelEntrypointHelpPresenter = nil;
 
   _fullscreenController = nullptr;
 
@@ -2068,6 +2076,43 @@ enum class ToolbarKind {
   } else {
     tabBasedIPHBrowserAgent->RootViewForInProductHelpWillDisappear();
   }
+}
+
+#pragma mark - ContextualPanelEntrypointIPHCommands
+
+- (void)showContextualPanelEntrypointIPHWithText:(NSString*)text
+                                     anchorPoint:(CGPoint)anchorPoint
+                                 isBottomOmnibox:(BOOL)isBottomOmnibox {
+  _contextualPanelEntrypointHelpPresenter =
+      [[BubbleViewControllerPresenter alloc]
+          initDefaultBubbleWithText:text
+                     arrowDirection:isBottomOmnibox ? BubbleArrowDirectionDown
+                                                    : BubbleArrowDirectionUp
+                          alignment:BubbleAlignmentTopOrLeading
+               isLongDurationBubble:YES
+                  dismissalCallback:nil];
+
+  _contextualPanelEntrypointHelpPresenter.voiceOverAnnouncement = text;
+  _contextualPanelEntrypointHelpPresenter.ignoreWebContentAreaInteractions =
+      YES;
+
+  // Early return if the bubble doesn't fit in the view as it is currently
+  // shown.
+  if (![_contextualPanelEntrypointHelpPresenter
+          canPresentInView:self.viewController.view
+               anchorPoint:anchorPoint]) {
+    _contextualPanelEntrypointHelpPresenter = nil;
+    return;
+  }
+
+  [_contextualPanelEntrypointHelpPresenter
+      presentInViewController:self.viewController
+                  anchorPoint:anchorPoint];
+}
+
+- (void)dismissContextualPanelEntrypointIPHAnimated:(BOOL)animated {
+  [_contextualPanelEntrypointHelpPresenter dismissAnimated:animated];
+  _contextualPanelEntrypointHelpPresenter = nil;
 }
 
 #pragma mark - ContextualSheetCommands

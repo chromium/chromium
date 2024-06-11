@@ -4,11 +4,13 @@
 
 #import "ios/chrome/browser/contextual_panel/entrypoint/ui/contextual_panel_entrypoint_view_controller.h"
 
+#import "base/i18n/rtl.h"
 #import "base/memory/weak_ptr.h"
 #import "base/strings/sys_string_conversions.h"
 #import "ios/chrome/browser/contextual_panel/entrypoint/ui/contextual_panel_entrypoint_mutator.h"
 #import "ios/chrome/browser/contextual_panel/model/contextual_panel_item_configuration.h"
 #import "ios/chrome/browser/shared/ui/symbols/symbols.h"
+#import "ios/chrome/browser/ui/bubble/bubble_util.h"
 #import "ios/chrome/browser/ui/fullscreen/fullscreen_animator.h"
 #import "ios/chrome/browser/ui/location_bar/location_bar_constants.h"
 #import "ios/chrome/common/material_timing.h"
@@ -120,7 +122,32 @@ NSString* const kContextualPanelEntrypointLabelIdentifier =
 }
 
 - (void)displayEntrypointView:(BOOL)display {
+  if (!display) {
+    [self.mutator dismissIPHAnimated:NO];
+  }
   self.view.hidden = !display || !_entrypointDisplayed;
+}
+
+- (CGPoint)helpAnchorUsingBottomOmnibox:(BOOL)isBottomOmnibox {
+  CGPoint anchorPointInSuperview =
+      CGPointMake(CGRectGetMidX(_entrypointContainer.bounds),
+                  isBottomOmnibox ? CGRectGetMinY(_entrypointContainer.bounds)
+                                  : CGRectGetMaxY(_entrypointContainer.bounds));
+  CGPoint anchorPointInWindow =
+      [self.view.window convertPoint:anchorPointInSuperview
+                            fromView:_entrypointContainer];
+
+  // The default bubble alignment is the minimum distance from the edge of the
+  // window that the bubble can appear at, so use MAX (or MIN in RTL) between
+  // that and the MidX of the entrypoint container.
+  anchorPointInWindow.x =
+      base::i18n::IsRTL() ? MIN(self.view.window.bounds.size.width -
+                                    bubble_util::BubbleDefaultAlignmentOffset(),
+                                anchorPointInWindow.x)
+                          : MAX(bubble_util::BubbleDefaultAlignmentOffset(),
+                                anchorPointInWindow.x);
+
+  return anchorPointInWindow;
 }
 
 #pragma mark - private

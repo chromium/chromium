@@ -13,13 +13,14 @@
 #import "ios/chrome/browser/contextual_panel/model/contextual_panel_tab_helper_observer.h"
 #import "ios/chrome/browser/shared/model/web_state_list/test/fake_web_state_list_delegate.h"
 #import "ios/chrome/browser/shared/model/web_state_list/web_state_list.h"
-#import "ios/chrome/browser/shared/public/commands/contextual_sheet_commands.h"
+#import "ios/chrome/browser/shared/public/commands/contextual_panel_entrypoint_iph_commands.h"
 #import "ios/chrome/browser/shared/public/features/features.h"
 #import "ios/web/public/test/fakes/fake_web_state.h"
 #import "ios/web/public/test/web_task_environment.h"
 #import "testing/gtest/include/gtest/gtest.h"
 #import "testing/gtest_mac.h"
 #import "testing/platform_test.h"
+#import "third_party/ocmock/OCMock/OCMock.h"
 
 // A fake ContextualPanelEntrypointConsumer for use in tests.
 @interface FakeEntrypointConsumer : NSObject <ContextualPanelEntrypointConsumer>
@@ -93,6 +94,14 @@
   // No-op.
 }
 
+- (CGPoint)helpAnchorUsingBottomOmnibox:(BOOL)isBottomOmnibox {
+  return CGPointMake(0, 0);
+}
+
+- (BOOL)isBottomOmniboxActive {
+  return NO;
+}
+
 @end
 
 // Test fake to allow easier triggering of ContextualPanelTabHelperObserver
@@ -149,8 +158,12 @@ class ContextualPanelEntrypointMediatorTest : public PlatformTest {
         std::move(web_state),
         WebStateList::InsertionParams::Automatic().Activate(true));
 
+    mocked_entrypoint_help_handler_ =
+        OCMStrictProtocolMock(@protocol(ContextualPanelEntrypointIPHCommands));
+
     mediator_ = [[ContextualPanelEntrypointMediator alloc]
-        initWithWebStateList:&web_state_list_];
+         initWithWebStateList:&web_state_list_
+        entrypointHelpHandler:mocked_entrypoint_help_handler_];
 
     entrypoint_consumer_ = [[FakeEntrypointConsumer alloc] init];
     mediator_.consumer = entrypoint_consumer_;
@@ -167,18 +180,30 @@ class ContextualPanelEntrypointMediatorTest : public PlatformTest {
   ContextualPanelEntrypointMediator* mediator_;
   FakeEntrypointConsumer* entrypoint_consumer_;
   FakeContextualPanelEntrypointMediatorDelegate* delegate_;
+  id mocked_entrypoint_help_handler_;
 };
 
 // Tests that tapping the entrypoint opens and then closes the panel.
 TEST_F(ContextualPanelEntrypointMediatorTest, TestEntrypointTapped) {
+  [[mocked_entrypoint_help_handler_ expect]
+      dismissContextualPanelEntrypointIPHAnimated:YES];
+
   [mediator_ entrypointTapped];
   EXPECT_TRUE(entrypoint_consumer_.contextualPanelIsOpen);
 
+  [[mocked_entrypoint_help_handler_ expect]
+      dismissContextualPanelEntrypointIPHAnimated:YES];
+
   [mediator_ entrypointTapped];
   EXPECT_FALSE(entrypoint_consumer_.contextualPanelIsOpen);
+
+  [mocked_entrypoint_help_handler_ verify];
 }
 
 TEST_F(ContextualPanelEntrypointMediatorTest, TestTabHelperDestroyed) {
+  [[mocked_entrypoint_help_handler_ expect]
+      dismissContextualPanelEntrypointIPHAnimated:NO];
+
   // Start off with entrypoint showing.
   [entrypoint_consumer_ showEntrypoint];
 
@@ -189,10 +214,14 @@ TEST_F(ContextualPanelEntrypointMediatorTest, TestTabHelperDestroyed) {
   tab_helper->CallContextualPanelTabHelperDestroyed();
 
   EXPECT_FALSE(entrypoint_consumer_.entrypointIsShown);
+  [mocked_entrypoint_help_handler_ verify];
 }
 
 // Tests that if one configuration is provided, the entrypoint becomes shown.
 TEST_F(ContextualPanelEntrypointMediatorTest, TestOneConfiguration) {
+  [[mocked_entrypoint_help_handler_ expect]
+      dismissContextualPanelEntrypointIPHAnimated:NO];
+
   ContextualPanelItemConfiguration configuration(
       ContextualPanelItemType::SamplePanelItem);
 
@@ -212,6 +241,8 @@ TEST_F(ContextualPanelEntrypointMediatorTest, TestOneConfiguration) {
 
   ASSERT_TRUE(entrypoint_consumer_.currentConfiguration);
   EXPECT_EQ(&configuration, entrypoint_consumer_.currentConfiguration.get());
+
+  [mocked_entrypoint_help_handler_ verify];
 }
 
 // Tests that -disconnect doesn't crash and that nothing is observing the tab
@@ -227,7 +258,14 @@ TEST_F(ContextualPanelEntrypointMediatorTest, TestDisconnect) {
   EXPECT_TRUE(tab_helper->observers_.empty());
 }
 
+// TODO(crbug.com/335470692): Update this test to re-include entrypoint checks
+// when impression management is implemented (i.e. the entrypoint will be shown
+// after the IPH has been shown a couple times, temporarily only the IPH is ever
+// shown).
 TEST_F(ContextualPanelEntrypointMediatorTest, TestLargeEntrypointAppears) {
+  [[mocked_entrypoint_help_handler_ expect]
+      dismissContextualPanelEntrypointIPHAnimated:NO];
+
   ContextualPanelItemConfiguration configuration(
       ContextualPanelItemType::SamplePanelItem);
   configuration.relevance = ContextualPanelItemConfiguration::high_relevance;
@@ -246,19 +284,5 @@ TEST_F(ContextualPanelEntrypointMediatorTest, TestLargeEntrypointAppears) {
 
   tab_helper->CallContextualPanelHasNewData(item_configurations);
 
-  // At first, the small entrypoint should be displayed.
-  EXPECT_TRUE(entrypoint_consumer_.entrypointIsShown);
-  EXPECT_FALSE(entrypoint_consumer_.entrypointIsLarge);
-
-  // Advance time so that the large entrypoint is displayed.
-  task_environment_.FastForwardBy(
-      base::Seconds(LargeContextualPanelEntrypointDelayInSeconds()));
-  EXPECT_TRUE(entrypoint_consumer_.entrypointIsShown);
-  EXPECT_TRUE(entrypoint_consumer_.entrypointIsLarge);
-
-  // Advance time until the large entrypoint transitions back to small.
-  task_environment_.FastForwardBy(
-      base::Seconds(LargeContextualPanelEntrypointDisplayedInSeconds()));
-  EXPECT_TRUE(entrypoint_consumer_.entrypointIsShown);
-  EXPECT_FALSE(entrypoint_consumer_.entrypointIsLarge);
+  [mocked_entrypoint_help_handler_ verify];
 }

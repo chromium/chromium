@@ -14,7 +14,7 @@
 #import "ios/chrome/browser/contextual_panel/model/contextual_panel_tab_helper.h"
 #import "ios/chrome/browser/contextual_panel/model/contextual_panel_tab_helper_observer_bridge.h"
 #import "ios/chrome/browser/shared/model/web_state_list/web_state_list_observer_bridge.h"
-#import "ios/chrome/browser/shared/public/commands/contextual_sheet_commands.h"
+#import "ios/chrome/browser/shared/public/commands/contextual_panel_entrypoint_iph_commands.h"
 #import "ios/chrome/browser/shared/public/features/features.h"
 #import "ios/chrome/browser/shared/ui/symbols/symbols.h"
 
@@ -24,15 +24,19 @@
 @end
 
 @implementation ContextualPanelEntrypointMediator {
+  // The command handler for entrypoint in-product help commands.
+  id<ContextualPanelEntrypointIPHCommands> _entrypointHelpHandler;
+
   // WebStateList to use for observing ContextualPanelTabHelper events.
   raw_ptr<WebStateList> _webStateList;
 
-  // Timer keeping track of when to transition to a large entrypoint.
-  std::unique_ptr<base::OneShotTimer> _transitionToLargeEntrypointTimer;
+  // Timer keeping track of when to transition to a loud moment for the
+  // entrypoint (large entrypoint or IPH shown).
+  std::unique_ptr<base::OneShotTimer> _transitionToEntrypointLoudMomentTimer;
 
-  // Timer to keep track of when to return to a small entrypoint after having
-  // transitioned to a large entrypoint.
-  std::unique_ptr<base::OneShotTimer> _transitionToSmallEntrypointTimer;
+  // Timer to keep track of when to return to the normal small entrypoint after
+  // having transitioned to a loud moment.
+  std::unique_ptr<base::OneShotTimer> _transitionToDefaultEntrypointTimer;
 
   // Observer machinery for the web state list.
   std::unique_ptr<WebStateListObserverBridge> _webStateListObserver;
@@ -49,10 +53,13 @@
       _activeContextualPanelObservationForwarder;
 }
 
-- (instancetype)initWithWebStateList:(WebStateList*)webStateList {
+- (instancetype)initWithWebStateList:(WebStateList*)webStateList
+               entrypointHelpHandler:(id<ContextualPanelEntrypointIPHCommands>)
+                                         entrypointHelpHandler {
   self = [super init];
   if (self) {
     _webStateList = webStateList;
+    _entrypointHelpHandler = entrypointHelpHandler;
 
     // Set up web state list observation.
     _webStateListObserver = std::make_unique<WebStateListObserverBridge>(self);
@@ -81,10 +88,16 @@
 
 #pragma mark - ContextualPanelEntrypointMutator
 
+- (void)dismissIPHAnimated:(BOOL)animated {
+  [self dismissEntrypointIPHAnimated:animated];
+}
+
 - (void)entrypointTapped {
   // Cancel any pending transition timers since user interacted with entrypoint.
-  _transitionToLargeEntrypointTimer = nullptr;
-  _transitionToSmallEntrypointTimer = nullptr;
+  _transitionToEntrypointLoudMomentTimer = nullptr;
+  _transitionToDefaultEntrypointTimer = nullptr;
+
+  [self dismissEntrypointIPHAnimated:YES];
   [self.delegate enableFullscreen];
 
   ContextualPanelTabHelper* contextualPanelTabHelper =
@@ -109,11 +122,13 @@
              hasNewData:
                  (std::vector<base::WeakPtr<ContextualPanelItemConfiguration>>)
                      item_configurations {
-  [self activeTabHasNewData:item_configurations];
+  [self activeTabHasNewData:item_configurations.empty()
+                                ? nullptr
+                                : item_configurations[0]];
 }
 
 - (void)contextualPanelTabHelperDestroyed:(ContextualPanelTabHelper*)tabHelper {
-  [self activeTabHasNewData:{}];
+  [self activeTabHasNewData:nullptr];
 }
 
 - (void)contextualPanelOpened:(ContextualPanelTabHelper*)tabHelper {
@@ -140,8 +155,7 @@
   }
   ContextualPanelTabHelper* contextualPanelTabHelper =
       ContextualPanelTabHelper::FromWebState(status.new_active_web_state);
-  [self activeTabHasNewData:contextualPanelTabHelper
-                                ->GetCurrentCachedConfigurations()];
+  [self activeTabHasNewData:contextualPanelTabHelper->GetFirstCachedConfig()];
 }
 
 #pragma mark - private
@@ -149,20 +163,17 @@
 // Updates the entrypoint state whenever the active tab changes or new data is
 // provided.
 - (void)activeTabHasNewData:
-    (std::vector<base::WeakPtr<ContextualPanelItemConfiguration>>)
-        item_configurations {
-  _transitionToLargeEntrypointTimer = nullptr;
-  _transitionToSmallEntrypointTimer = nullptr;
+    (base::WeakPtr<ContextualPanelItemConfiguration>)config {
+  _transitionToEntrypointLoudMomentTimer = nullptr;
+  _transitionToDefaultEntrypointTimer = nullptr;
 
+  [self dismissEntrypointIPHAnimated:NO];
   [self.delegate enableFullscreen];
 
-  if (item_configurations.empty()) {
+  if (!config) {
     [self.consumer hideEntrypoint];
     return;
   }
-
-  base::WeakPtr<ContextualPanelItemConfiguration> config =
-      item_configurations[0];
 
   ContextualPanelTabHelper* contextualPanelTabHelper =
       ContextualPanelTabHelper::FromWebState(
@@ -176,19 +187,17 @@
       transitionToContextualPanelOpenedState:
           contextualPanelTabHelper->IsContextualPanelCurrentlyOpened()];
 
-  if (![self canShowLargeEntrypointWithConfig:config]) {
+  // Special case for first entrypoint appearances where an IPH is shown
+  // instead of the large entrypoint.
+  if ([self canShowLoudEntrypointMomentWithConfig:config]) {
+    [self startEntrypointIPHTimers];
     return;
   }
 
-  // Start timers since we can show the large entrypoint.
-  __weak ContextualPanelEntrypointMediator* weakSelf = self;
-
-  _transitionToLargeEntrypointTimer = std::make_unique<base::OneShotTimer>();
-  _transitionToLargeEntrypointTimer->Start(
-      FROM_HERE, base::Seconds(LargeContextualPanelEntrypointDelayInSeconds()),
-      base::BindOnce(^{
-        [weakSelf setupAndTransitionToLargeEntrypoint];
-      }));
+  if ([self canShowLoudEntrypointMomentWithConfig:config]) {
+    // Start timers since the large entrypoint can be shown.
+    [self startLargeEntrypointTimers];
+  }
 }
 
 // Changes the UI to the large entrypoint variation and starts the timers to
@@ -201,14 +210,15 @@
   ContextualPanelTabHelper* contextualPanelTabHelper =
       ContextualPanelTabHelper::FromWebState(
           _webStateList->GetActiveWebState());
+
   contextualPanelTabHelper->SetLargeEntrypointShown(true);
   [self.delegate disableFullscreen];
   [self.consumer transitionToLargeEntrypoint];
 
   __weak ContextualPanelEntrypointMediator* weakSelf = self;
 
-  _transitionToSmallEntrypointTimer = std::make_unique<base::OneShotTimer>();
-  _transitionToSmallEntrypointTimer->Start(
+  _transitionToDefaultEntrypointTimer = std::make_unique<base::OneShotTimer>();
+  _transitionToDefaultEntrypointTimer->Start(
       FROM_HERE,
       base::Seconds(LargeContextualPanelEntrypointDisplayedInSeconds()),
       base::BindOnce(^{
@@ -222,11 +232,78 @@
   [self.delegate enableFullscreen];
 }
 
-- (BOOL)canShowLargeEntrypointWithConfig:
+- (void)startLargeEntrypointTimers {
+  __weak ContextualPanelEntrypointMediator* weakSelf = self;
+  _transitionToEntrypointLoudMomentTimer =
+      std::make_unique<base::OneShotTimer>();
+  _transitionToEntrypointLoudMomentTimer->Start(
+      FROM_HERE, base::Seconds(LargeContextualPanelEntrypointDelayInSeconds()),
+      base::BindOnce(^{
+        [weakSelf setupAndTransitionToLargeEntrypoint];
+      }));
+}
+
+- (void)setupAndShowEntrypointIPH {
+  ContextualPanelTabHelper* contextualPanelTabHelper =
+      ContextualPanelTabHelper::FromWebState(
+          _webStateList->GetActiveWebState());
+  base::WeakPtr<ContextualPanelItemConfiguration> config =
+      contextualPanelTabHelper->GetFirstCachedConfig();
+
+  if (!config || ![self canShowLoudEntrypointMomentWithConfig:config]) {
+    return;
+  }
+
+  NSString* text = base::SysUTF8ToNSString(config->entrypoint_message);
+
+  contextualPanelTabHelper->SetLargeEntrypointShown(true);
+  [self.delegate disableFullscreen];
+  [self showEntrypointIPHWithText:text];
+
+  __weak ContextualPanelEntrypointMediator* weakSelf = self;
+  _transitionToDefaultEntrypointTimer = std::make_unique<base::OneShotTimer>();
+  _transitionToDefaultEntrypointTimer->Start(
+      FROM_HERE,
+      base::Seconds(LargeContextualPanelEntrypointDisplayedInSeconds()),
+      base::BindOnce(^{
+        [weakSelf dismissEntrypointIPHAnimated:YES];
+        [weakSelf.delegate enableFullscreen];
+      }));
+}
+
+- (void)startEntrypointIPHTimers {
+  __weak ContextualPanelEntrypointMediator* weakSelf = self;
+  _transitionToEntrypointLoudMomentTimer =
+      std::make_unique<base::OneShotTimer>();
+  _transitionToEntrypointLoudMomentTimer->Start(
+      FROM_HERE, base::Seconds(LargeContextualPanelEntrypointDelayInSeconds()),
+      base::BindOnce(^{
+        [weakSelf setupAndShowEntrypointIPH];
+      }));
+}
+
+- (void)showEntrypointIPHWithText:(NSString*)text {
+  BOOL isBottomOmnibox = [self.delegate isBottomOmniboxActive];
+
+  CGPoint anchorPoint =
+      [self.delegate helpAnchorUsingBottomOmnibox:isBottomOmnibox];
+
+  [_entrypointHelpHandler
+      showContextualPanelEntrypointIPHWithText:text
+                                   anchorPoint:anchorPoint
+                               isBottomOmnibox:isBottomOmnibox];
+}
+
+- (void)dismissEntrypointIPHAnimated:(BOOL)animated {
+  [_entrypointHelpHandler dismissContextualPanelEntrypointIPHAnimated:animated];
+}
+
+- (BOOL)canShowLoudEntrypointMomentWithConfig:
     (base::WeakPtr<ContextualPanelItemConfiguration>)config {
   ContextualPanelTabHelper* contextualPanelTabHelper =
       ContextualPanelTabHelper::FromWebState(
           _webStateList->GetActiveWebState());
+
   return !contextualPanelTabHelper->IsContextualPanelCurrentlyOpened() &&
          !contextualPanelTabHelper->WasLargeEntrypointShown() &&
          !config->entrypoint_message.empty() &&
