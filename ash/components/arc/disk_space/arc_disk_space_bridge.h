@@ -6,6 +6,7 @@
 #define ASH_COMPONENTS_ARC_DISK_SPACE_ARC_DISK_SPACE_BRIDGE_H_
 
 #include <optional>
+#include <vector>
 
 #include "ash/components/arc/mojom/disk_space.mojom.h"
 #include "ash/components/arc/session/connection_observer.h"
@@ -108,6 +109,11 @@ class ArcDiskSpaceBridge : public KeyedService,
   void GetQuotaCurrentSpaceForProjectId(
       uint32_t project_id,
       GetQuotaCurrentSpaceForProjectIdCallback callback) override;
+  void GetQuotaCurrentSpacesForIds(
+      const std::vector<uint32_t>& android_uids,
+      const std::vector<uint32_t>& android_gids,
+      const std::vector<uint32_t>& android_project_ids,
+      GetQuotaCurrentSpacesForIdsCallback callback) override;
   void GetFreeDiskSpace(GetFreeDiskSpaceCallback) override;
 
   using GetApplicationsSizeCallback =

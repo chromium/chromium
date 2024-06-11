@@ -4,7 +4,9 @@
 
 #include "ash/components/arc/disk_space/arc_disk_space_bridge.h"
 
+#include <map>
 #include <utility>
+#include <vector>
 
 #include "ash/components/arc/arc_browser_context_keyed_service_factory_base.h"
 #include "ash/components/arc/arc_util.h"
@@ -74,6 +76,44 @@ void IsQuotaSupportedOnArcDiskHome(
             std::move(callback).Run(reply.value_or(false));
           },
           std::move(callback)));
+}
+
+bool ValidateIds(const std::vector<uint32_t>& ids,
+                 base::RepeatingCallback<bool(uint32_t)> is_in_allowed_range,
+                 std::string_view id_type) {
+  for (const uint32_t id : ids) {
+    if (!is_in_allowed_range.Run(id)) {
+      LOG(ERROR) << "Android " << id_type << " " << id
+                 << " is outside the allowed query range";
+      return false;
+    }
+  }
+  return true;
+}
+
+std::vector<uint32_t> GetVecWithShiftedIds(const std::vector<uint32_t>& ids,
+                                           uint32_t shift_width) {
+  std::vector<uint32_t> shifted_ids(ids.size());
+  std::transform(ids.begin(), ids.end(), shifted_ids.begin(),
+                 [&shift_width](const auto& id) { return id + shift_width; });
+  return shifted_ids;
+}
+
+std::vector<int64_t> GetSpacesForIds(const std::map<uint32_t, int64_t>& map,
+                                     const std::vector<uint32_t>& ids,
+                                     std::string_view id_type) {
+  std::vector<int64_t> spaces;
+  for (uint32_t id : ids) {
+    auto iter = map.find(id);
+    if (iter == map.end()) {
+      LOG(ERROR) << "Space for " << id_type << " " << id << " is not found in "
+                 << "the map returned from spaced";
+      // Return an empty list if the result for any ID is missing.
+      return std::vector<int64_t>{};
+    }
+    spaces.push_back(iter->second);
+  }
+  return spaces;
 }
 
 }  // namespace
@@ -192,6 +232,47 @@ void ArcDiskSpaceBridge::GetQuotaCurrentSpaceForProjectId(
             std::move(callback).Run(reply.value_or(-1));
           },
           std::move(callback), project_id));
+}
+
+void ArcDiskSpaceBridge::GetQuotaCurrentSpacesForIds(
+    const std::vector<uint32_t>& android_uids,
+    const std::vector<uint32_t>& android_gids,
+    const std::vector<uint32_t>& android_project_ids,
+    GetQuotaCurrentSpacesForIdsCallback callback) {
+  if (!ValidateIds(android_uids, base::BindRepeating(&IsAndroidUid), "UID") ||
+      !ValidateIds(android_gids, base::BindRepeating(&IsAndroidGid), "GID") ||
+      !ValidateIds(android_project_ids,
+                   base::BindRepeating(&IsAndroidProjectId), "project ID")) {
+    std::move(callback).Run(nullptr);
+    return;
+  }
+  const std::vector<uint32_t> cros_uids =
+      GetVecWithShiftedIds(android_uids, kArcUidShift);
+  const std::vector<uint32_t> cros_gids =
+      GetVecWithShiftedIds(android_gids, kArcGidShift);
+  ash::SpacedClient::Get()->GetQuotaCurrentSpacesForIds(
+      kArcDiskHome, cros_uids, cros_gids, android_project_ids,
+      base::BindOnce(
+          [](GetQuotaCurrentSpacesForIdsCallback callback,
+             const std::vector<uint32_t>& cros_uids,
+             const std::vector<uint32_t>& cros_gids,
+             const std::vector<uint32_t>& project_ids,
+             std::optional<ash::SpacedClient::SpaceMaps> result) {
+            if (!result.has_value()) {
+              LOG(ERROR) << "SpacedClient::GetQuotaCurrentSpacesForIds failed";
+              std::move(callback).Run(nullptr);
+              return;
+            }
+            mojom::QuotaSpacesPtr quota_spaces = mojom::QuotaSpaces::New();
+            quota_spaces->curspaces_for_uids =
+                GetSpacesForIds(result->curspaces_for_uids, cros_uids, "UID");
+            quota_spaces->curspaces_for_gids =
+                GetSpacesForIds(result->curspaces_for_gids, cros_gids, "GID");
+            quota_spaces->curspaces_for_project_ids = GetSpacesForIds(
+                result->curspaces_for_project_ids, project_ids, "project ID");
+            std::move(callback).Run(std::move(quota_spaces));
+          },
+          std::move(callback), cros_uids, cros_gids, android_project_ids));
 }
 
 void ArcDiskSpaceBridge::GetFreeDiskSpace(GetFreeDiskSpaceCallback callback) {
