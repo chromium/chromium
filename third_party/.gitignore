@@ -161,7 +161,7 @@
 /swiftshader/
 /syzygy
 /syzygy/binaries
-/tfhub_models/.*
+/tfhub_models/*
 /tfhub_models/testdata/
 /tint/src
 /turbine/*.jar
