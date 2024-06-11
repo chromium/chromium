@@ -1391,7 +1391,9 @@ bool BrowserAccessibilityAndroid::Scroll(int direction,
   if (ui::IsPlatformDocument(GetRole()) && !PlatformGetParent()) {
     // If this is the root node, use the bounds of the view to determine how big
     // one page is.
-    bounds = manager()->delegate().AccessibilityGetViewBounds();
+    if (!manager()->delegate())
+      return false;
+    bounds = manager()->delegate()->AccessibilityGetViewBounds();
   } else if (ui::IsPlatformDocument(GetRole()) && PlatformGetParent()) {
     // If this is a web area inside of an iframe, try to use the bounds of
     // the containing element.

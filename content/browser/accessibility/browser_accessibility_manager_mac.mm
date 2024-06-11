@@ -32,19 +32,16 @@ const int kLiveRegionChangeIntervalMS = 20;
 namespace content {
 
 // static
-std::unique_ptr<BrowserAccessibilityManager>
-BrowserAccessibilityManager::Create(
+BrowserAccessibilityManager* BrowserAccessibilityManager::Create(
     const ui::AXTreeUpdate& initial_tree,
-    ui::AXPlatformTreeManagerDelegate& delegate) {
-  return std::make_unique<BrowserAccessibilityManagerMac>(initial_tree,
-                                                          delegate);
+    ui::AXPlatformTreeManagerDelegate* delegate) {
+  return new BrowserAccessibilityManagerMac(initial_tree, delegate);
 }
 
 // static
-std::unique_ptr<BrowserAccessibilityManager>
-BrowserAccessibilityManager::Create(
-    ui::AXPlatformTreeManagerDelegate& delegate) {
-  return std::make_unique<BrowserAccessibilityManagerMac>(
+BrowserAccessibilityManager* BrowserAccessibilityManager::Create(
+    ui::AXPlatformTreeManagerDelegate* delegate) {
+  return new BrowserAccessibilityManagerMac(
       BrowserAccessibilityManagerMac::GetEmptyDocument(), delegate);
 }
 
@@ -55,7 +52,7 @@ BrowserAccessibilityManager::ToBrowserAccessibilityManagerMac() {
 
 BrowserAccessibilityManagerMac::BrowserAccessibilityManagerMac(
     const ui::AXTreeUpdate& initial_tree,
-    ui::AXPlatformTreeManagerDelegate& delegate)
+    ui::AXPlatformTreeManagerDelegate* delegate)
     : BrowserAccessibilityManager(delegate) {
   Initialize(initial_tree);
 }
@@ -607,11 +604,11 @@ BrowserAccessibilityManagerMac::GetUserInfoForValueChangedNotification(
 }
 
 id BrowserAccessibilityManagerMac::GetParentView() {
-  return delegate().AccessibilityGetNativeViewAccessible();
+  return delegate()->AccessibilityGetNativeViewAccessible();
 }
 
 id BrowserAccessibilityManagerMac::GetWindow() {
-  return delegate().AccessibilityGetNativeViewAccessibleForWindow();
+  return delegate()->AccessibilityGetNativeViewAccessibleForWindow();
 }
 
 bool BrowserAccessibilityManagerMac::ShouldFireLoadCompleteNotification() {
@@ -633,7 +630,7 @@ bool BrowserAccessibilityManagerMac::ShouldFireLoadCompleteNotification() {
   // AXLoadComplete event. On Chrome's new tab page, focus should stay
   // in the omnibox, so we purposefully do not fire the AXLoadComplete
   // event in this case.
-  if (delegate().ShouldSuppressAXLoadComplete()) {
+  if (delegate()->ShouldSuppressAXLoadComplete()) {
     return false;
   }
 

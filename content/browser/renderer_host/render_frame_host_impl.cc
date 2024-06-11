@@ -11727,10 +11727,11 @@ RenderFrameHostImpl::GetOrCreateBrowserAccessibilityManager() {
     return browser_accessibility_manager_.get();
 
 #if BUILDFLAG(IS_ANDROID)
-  browser_accessibility_manager_ =
-      BrowserAccessibilityManagerAndroid::Create(*this);
+  browser_accessibility_manager_.reset(
+      BrowserAccessibilityManagerAndroid::Create(this));
 #else
-  browser_accessibility_manager_ = BrowserAccessibilityManager::Create(*this);
+  browser_accessibility_manager_.reset(
+      BrowserAccessibilityManager::Create(this));
 #endif
   return browser_accessibility_manager_.get();
 }

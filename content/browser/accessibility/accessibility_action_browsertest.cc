@@ -236,7 +236,7 @@ IN_PROC_BROWSER_TEST_F(AccessibilityActionBrowserTest,
   AccessibilityNotificationWaiter waiter1(
       shell()->web_contents(), ui::kAXModeComplete, ax::mojom::Event::kClicked);
   action_data.target_role = ax::mojom::Role::kButton;
-  GetManager()->delegate().AccessibilityPerformAction(action_data);
+  GetManager()->delegate()->AccessibilityPerformAction(action_data);
   ASSERT_TRUE(waiter1.WaitForNotification());
   WaitForAccessibilityTreeToContainNodeWithName(shell()->web_contents(),
                                                 "Success1");
@@ -244,7 +244,7 @@ IN_PROC_BROWSER_TEST_F(AccessibilityActionBrowserTest,
   AccessibilityNotificationWaiter waiter2(
       shell()->web_contents(), ui::kAXModeComplete, ax::mojom::Event::kClicked);
   action_data.target_role = ax::mojom::Role::kLink;
-  GetManager()->delegate().AccessibilityPerformAction(action_data);
+  GetManager()->delegate()->AccessibilityPerformAction(action_data);
   ASSERT_TRUE(waiter2.WaitForNotification());
   WaitForAccessibilityTreeToContainNodeWithName(shell()->web_contents(),
                                                 "Success2");

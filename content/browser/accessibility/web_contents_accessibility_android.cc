@@ -19,11 +19,9 @@
 #include "base/android/jni_android.h"
 #include "base/android/jni_array.h"
 #include "base/android/jni_string.h"
-#include "base/check_op.h"
 #include "base/debug/crash_logging.h"
 #include "base/feature_list.h"
 #include "base/hash/hash.h"
-#include "base/notreached.h"
 #include "content/browser/accessibility/accessibility_tree_snapshot_combiner.h"
 #include "content/browser/accessibility/browser_accessibility_android.h"
 #include "content/browser/accessibility/browser_accessibility_manager_android.h"
@@ -228,7 +226,7 @@ WebContentsAccessibilityAndroid::WebContentsAccessibilityAndroid(
   std::unique_ptr<ui::AXTreeUpdate> ax_tree_snapshot(
       reinterpret_cast<ui::AXTreeUpdate*>(ax_tree_update_ptr));
   snapshot_root_manager_ = std::make_unique<BrowserAccessibilityManagerAndroid>(
-      *ax_tree_snapshot, GetWeakPtr(), *this);
+      *ax_tree_snapshot, GetWeakPtr(), nullptr);
   snapshot_root_manager_->BuildAXTreeHitTestCache();
   connector_ = nullptr;
 }
@@ -1469,76 +1467,6 @@ jboolean WebContentsAccessibilityAndroid::GetImageData(
   return true;
 }
 
-void WebContentsAccessibilityAndroid::AccessibilityPerformAction(
-    const ui::AXActionData& data) {
-  NOTREACHED_NORETURN();
-}
-
-bool WebContentsAccessibilityAndroid::AccessibilityViewHasFocus() {
-  NOTREACHED_NORETURN();
-}
-
-void WebContentsAccessibilityAndroid::AccessibilityViewSetFocus() {
-  NOTREACHED_NORETURN();
-}
-
-gfx::Rect WebContentsAccessibilityAndroid::AccessibilityGetViewBounds() {
-  NOTREACHED_NORETURN();
-}
-
-float WebContentsAccessibilityAndroid::AccessibilityGetDeviceScaleFactor() {
-  NOTREACHED_NORETURN();
-}
-
-void WebContentsAccessibilityAndroid::UnrecoverableAccessibilityError() {
-  NOTREACHED_NORETURN();
-}
-
-gfx::AcceleratedWidget
-WebContentsAccessibilityAndroid::AccessibilityGetAcceleratedWidget() {
-  NOTREACHED_NORETURN();
-}
-
-gfx::NativeViewAccessible
-WebContentsAccessibilityAndroid::AccessibilityGetNativeViewAccessible() {
-  NOTREACHED_NORETURN();
-}
-
-gfx::NativeViewAccessible WebContentsAccessibilityAndroid::
-    AccessibilityGetNativeViewAccessibleForWindow() {
-  NOTREACHED_NORETURN();
-}
-
-void WebContentsAccessibilityAndroid::AccessibilityHitTest(
-    const gfx::Point& point_in_view_pixels,
-    const ax::mojom::Event& opt_event_to_fire,
-    int opt_request_id,
-    base::OnceCallback<void(ui::AXPlatformTreeManager* hit_manager,
-                            ui::AXNodeID hit_node_id)> opt_callback) {
-  NOTREACHED_NORETURN();
-}
-
-gfx::NativeWindow WebContentsAccessibilityAndroid::GetTopLevelNativeWindow() {
-  NOTREACHED_NORETURN();
-}
-
-bool WebContentsAccessibilityAndroid::CanFireAccessibilityEvents() const {
-  return true;
-}
-
-bool WebContentsAccessibilityAndroid::AccessibilityIsRootFrame() const {
-  return true;
-}
-
-bool WebContentsAccessibilityAndroid::ShouldSuppressAXLoadComplete() {
-  NOTREACHED_NORETURN();
-}
-
-WebContentsAccessibility*
-WebContentsAccessibilityAndroid::AccessibilityGetWebContentsAccessibility() {
-  NOTREACHED_NORETURN();
-}
-
 BrowserAccessibilityManagerAndroid*
 WebContentsAccessibilityAndroid::GetRootBrowserAccessibilityManager() {
   if (snapshot_root_manager_) {
@@ -1616,9 +1544,9 @@ void WebContentsAccessibilityAndroid::ProcessCompletedAccessibilityTreeSnapshot(
   ScopedJavaLocalRef<jobject> obj = java_adb_ref_.get(env);
   CHECK(obj);
 
-  // Construct a root manager using the snapshot result.
+  // Construct a root manager without a delegate using the snapshot result.
   snapshot_root_manager_ = std::make_unique<BrowserAccessibilityManagerAndroid>(
-      result, GetWeakPtr(), /*delegate=*/*this);
+      result, GetWeakPtr(), /* delegate= */ nullptr);
 
   auto* root = static_cast<BrowserAccessibilityAndroid*>(
       snapshot_root_manager_->GetBrowserAccessibilityRoot());

@@ -37,8 +37,6 @@ class BrowserAccessibilityStateImplTest : public ::testing::Test {
     // Set the initial time to something non-zero.
     task_environment_.FastForwardBy(base::Seconds(100));
     state_ = BrowserAccessibilityStateImpl::GetInstance();
-    test_browser_accessibility_delegate_ =
-        std::make_unique<ui::TestAXPlatformTreeManagerDelegate>();
   }
 
   void TearDown() override {
@@ -161,14 +159,18 @@ TEST_F(BrowserAccessibilityStateImplTest,
   ui::AXNodeData root;
   root.id = 1;
   root.role = ax::mojom::Role::kRootWebArea;
-  std::unique_ptr<BrowserAccessibilityManager> browser_accessibility_manager;
+  BrowserAccessibilityManager* manager;
 #if BUILDFLAG(IS_ANDROID)
-  browser_accessibility_manager = BrowserAccessibilityManagerAndroid::Create(
-      MakeAXTreeUpdateForTesting(root), *test_browser_accessibility_delegate_);
+  manager = BrowserAccessibilityManagerAndroid::Create(
+      MakeAXTreeUpdateForTesting(root),
+      test_browser_accessibility_delegate_.get());
 #else
-  browser_accessibility_manager = BrowserAccessibilityManager::Create(
-      MakeAXTreeUpdateForTesting(root), *test_browser_accessibility_delegate_);
+  manager = BrowserAccessibilityManager::Create(
+      MakeAXTreeUpdateForTesting(root),
+      test_browser_accessibility_delegate_.get());
 #endif
+  std::unique_ptr<BrowserAccessibilityManager> browser_accessibility_manager(
+      manager);
 
   BrowserAccessibility* ax_root =
       browser_accessibility_manager->GetBrowserAccessibilityRoot();

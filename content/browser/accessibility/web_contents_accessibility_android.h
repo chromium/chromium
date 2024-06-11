@@ -5,17 +5,17 @@
 #ifndef CONTENT_BROWSER_ACCESSIBILITY_WEB_CONTENTS_ACCESSIBILITY_ANDROID_H_
 #define CONTENT_BROWSER_ACCESSIBILITY_WEB_CONTENTS_ACCESSIBILITY_ANDROID_H_
 
+#include "base/memory/raw_ptr.h"
+#include "content/browser/accessibility/web_contents_accessibility.h"
+#include "content/common/content_export.h"
+
 #include <unordered_map>
 
 #include "base/android/jni_string.h"
 #include "base/android/jni_weak_ref.h"
 #include "base/android/scoped_java_ref.h"
-#include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/strings/utf_string_conversions.h"
-#include "content/browser/accessibility/web_contents_accessibility.h"
-#include "content/common/content_export.h"
-#include "ui/accessibility/platform/ax_platform_tree_manager_delegate.h"
 #include "ui/gfx/geometry/size.h"
 
 namespace ui {
@@ -52,8 +52,7 @@ class WebContentsImpl;
 // Owned by |Connector|, and destroyed together when the associated web contents
 // is destroyed.
 class CONTENT_EXPORT WebContentsAccessibilityAndroid
-    : public WebContentsAccessibility,
-      public ui::AXPlatformTreeManagerDelegate {
+    : public WebContentsAccessibility {
  public:
   WebContentsAccessibilityAndroid(
       JNIEnv* env,
@@ -383,31 +382,6 @@ class CONTENT_EXPORT WebContentsAccessibilityAndroid
   std::u16string GenerateAccessibilityNodeInfoString(int32_t unique_id);
 
   base::WeakPtr<WebContentsAccessibilityAndroid> GetWeakPtr();
-
-  // ui::AXPlatformTreeManagerDelegate:
-  // This WebContentsAccessibilityAndroid is the AXPlatformTreeManagerDelegate
-  // for the BrowserAccessibilityManager instance created to handle snapshots.
-  void AccessibilityPerformAction(const ui::AXActionData& data) override;
-  bool AccessibilityViewHasFocus() override;
-  void AccessibilityViewSetFocus() override;
-  gfx::Rect AccessibilityGetViewBounds() override;
-  float AccessibilityGetDeviceScaleFactor() override;
-  void UnrecoverableAccessibilityError() override;
-  gfx::AcceleratedWidget AccessibilityGetAcceleratedWidget() override;
-  gfx::NativeViewAccessible AccessibilityGetNativeViewAccessible() override;
-  gfx::NativeViewAccessible AccessibilityGetNativeViewAccessibleForWindow()
-      override;
-  void AccessibilityHitTest(
-      const gfx::Point& point_in_view_pixels,
-      const ax::mojom::Event& opt_event_to_fire,
-      int opt_request_id,
-      base::OnceCallback<void(ui::AXPlatformTreeManager* hit_manager,
-                              ui::AXNodeID hit_node_id)> opt_callback) override;
-  gfx::NativeWindow GetTopLevelNativeWindow() override;
-  bool CanFireAccessibilityEvents() const override;
-  bool AccessibilityIsRootFrame() const override;
-  bool ShouldSuppressAXLoadComplete() override;
-  WebContentsAccessibility* AccessibilityGetWebContentsAccessibility() override;
 
  private:
   BrowserAccessibilityManagerAndroid* GetRootBrowserAccessibilityManager();

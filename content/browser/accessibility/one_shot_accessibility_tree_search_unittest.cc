@@ -16,7 +16,6 @@
 #endif
 #include "content/public/test/browser_task_environment.h"
 #include "testing/gtest/include/gtest/gtest.h"
-#include "ui/accessibility/platform/test_ax_platform_tree_manager_delegate.h"
 
 namespace content {
 
@@ -26,27 +25,21 @@ namespace {
 class TestBrowserAccessibilityManager
     : public BrowserAccessibilityManagerAndroid {
  public:
-  explicit TestBrowserAccessibilityManager(
-      const ui::AXTreeUpdate& initial_tree,
-      ui::AXPlatformTreeManagerDelegate& delegate)
-      : BrowserAccessibilityManagerAndroid(initial_tree, nullptr, delegate) {}
+  explicit TestBrowserAccessibilityManager(const ui::AXTreeUpdate& initial_tree)
+      : BrowserAccessibilityManagerAndroid(initial_tree, nullptr, nullptr) {}
 };
 #elif OS_FUCHSIA
 class TestBrowserAccessibilityManager
     : public BrowserAccessibilityManagerFuchsia {
  public:
-  explicit TestBrowserAccessibilityManager(
-      const ui::AXTreeUpdate& initial_tree,
-      ui::AXPlatformTreeManagerDelegate& delegate)
-      : BrowserAccessibilityManagerFuchsia(initial_tree, delegate) {}
+  explicit TestBrowserAccessibilityManager(const ui::AXTreeUpdate& initial_tree)
+      : BrowserAccessibilityManagerFuchsia(initial_tree, nullptr) {}
 };
 #else
 class TestBrowserAccessibilityManager : public BrowserAccessibilityManager {
  public:
-  explicit TestBrowserAccessibilityManager(
-      const ui::AXTreeUpdate& initial_tree,
-      ui::AXPlatformTreeManagerDelegate& delegate)
-      : BrowserAccessibilityManager(delegate) {
+  explicit TestBrowserAccessibilityManager(const ui::AXTreeUpdate& initial_tree)
+      : BrowserAccessibilityManager(nullptr) {
     Initialize(initial_tree);
   }
 };
@@ -70,7 +63,6 @@ class OneShotAccessibilityTreeSearchTest : public testing::Test {
 
   BrowserTaskEnvironment task_environment_;
 
-  ui::TestAXPlatformTreeManagerDelegate tree_manager_delegate_;
   std::unique_ptr<BrowserAccessibilityManager> tree_;
 };
 
@@ -148,8 +140,7 @@ void OneShotAccessibilityTreeSearchTest::SetUp() {
   tree_ = std::make_unique<TestBrowserAccessibilityManager>(
       MakeAXTreeUpdateForTesting(root, heading, table, table_row,
                                  table_column_header_1, table_column_header_2,
-                                 list, list_item_1, list_item_2, footer),
-      tree_manager_delegate_);
+                                 list, list_item_1, list_item_2, footer));
 }
 
 TEST_F(OneShotAccessibilityTreeSearchTest, GetAll) {

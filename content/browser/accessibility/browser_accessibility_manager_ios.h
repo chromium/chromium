@@ -14,7 +14,7 @@ class CONTENT_EXPORT BrowserAccessibilityManagerIOS
     : public BrowserAccessibilityManager {
  public:
   BrowserAccessibilityManagerIOS(const ui::AXTreeUpdate& initial_tree,
-                                 ui::AXPlatformTreeManagerDelegate& delegate);
+                                 ui::AXPlatformTreeManagerDelegate* delegate);
 
   BrowserAccessibilityManagerIOS(const BrowserAccessibilityManagerIOS&) =
       delete;

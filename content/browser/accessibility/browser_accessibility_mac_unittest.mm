@@ -20,7 +20,6 @@
 #import "testing/gtest_mac.h"
 #include "ui/accessibility/ax_tree_update.h"
 #include "ui/accessibility/ax_updates_and_events.h"
-#include "ui/accessibility/platform/test_ax_platform_tree_manager_delegate.h"
 #import "ui/base/test/cocoa_helper.h"
 
 namespace content {
@@ -104,8 +103,8 @@ class BrowserAccessibilityMacTest : public ui::CocoaTest {
     child2.relative_bounds.bounds.set_height(100);
     child2.role = ax::mojom::Role::kHeading;
 
-    manager_ = BrowserAccessibilityManager::Create(
-        MakeAXTreeUpdateForTesting(root_, child1, child2), manager_delegate_);
+    manager_ = std::make_unique<BrowserAccessibilityManagerMac>(
+        MakeAXTreeUpdateForTesting(root_, child1, child2), nullptr);
     accessibility_ =
         manager_->GetBrowserAccessibilityRoot()->GetNativeViewAccessible();
   }
@@ -122,7 +121,6 @@ class BrowserAccessibilityMacTest : public ui::CocoaTest {
 
   ui::AXNodeData root_;
   BrowserAccessibilityCocoa* __strong accessibility_;
-  ui::TestAXPlatformTreeManagerDelegate manager_delegate_;
   std::unique_ptr<BrowserAccessibilityManager> manager_;
 
   const content::BrowserTaskEnvironment task_environment_;
@@ -175,8 +173,8 @@ TEST_F(BrowserAccessibilityMacTest, TestComputeTextEdit) {
   root_ = ui::AXNodeData();
   root_.id = 1;
   root_.role = ax::mojom::Role::kTextField;
-  manager_ = BrowserAccessibilityManager::Create(
-      MakeAXTreeUpdateForTesting(root_), manager_delegate_);
+  manager_ = std::make_unique<BrowserAccessibilityManagerMac>(
+      MakeAXTreeUpdateForTesting(root_), nullptr);
   accessibility_ =
       manager_->GetBrowserAccessibilityRoot()->GetNativeViewAccessible();
 
@@ -261,7 +259,7 @@ TEST_F(BrowserAccessibilityMacTest, TableAPIs) {
   MakeCell(&initial_state.nodes[6], 7, 1, 1);
 
   manager_ =
-      BrowserAccessibilityManager::Create(initial_state, manager_delegate_);
+      std::make_unique<BrowserAccessibilityManagerMac>(initial_state, nullptr);
   BrowserAccessibilityCocoa* ax_table =
       manager_->GetBrowserAccessibilityRoot()->GetNativeViewAccessible();
   NSArray* children = ax_table.children;
@@ -315,7 +313,7 @@ TEST_F(BrowserAccessibilityMacTest, TableColumnsAndDescendants) {
       ax::mojom::IntListAttribute::kFlowtoIds, {1});
 
   manager_ =
-      BrowserAccessibilityManager::Create(initial_state, manager_delegate_);
+      std::make_unique<BrowserAccessibilityManagerMac>(initial_state, nullptr);
 
   BrowserAccessibilityMac* root = static_cast<BrowserAccessibilityMac*>(
       manager_->GetBrowserAccessibilityRoot());

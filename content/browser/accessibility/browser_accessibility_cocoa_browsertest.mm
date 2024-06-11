@@ -25,7 +25,6 @@
 #include "testing/gtest_mac.h"
 #include "ui/accessibility/platform/ax_private_webkit_constants_mac.h"
 #include "ui/accessibility/platform/ax_utils_mac.h"
-#include "ui/accessibility/platform/test_ax_platform_tree_manager_delegate.h"
 #include "url/gurl.h"
 
 namespace content {
@@ -481,9 +480,8 @@ IN_PROC_BROWSER_TEST_F(BrowserAccessibilityCocoaBrowserTest,
   ASSERT_EQ(expected_descriptions.size(), tree.nodes[0].child_ids.size());
   int child_count = static_cast<int>(expected_descriptions.size());
 
-  ui::TestAXPlatformTreeManagerDelegate tree_manager_delegate;
-  std::unique_ptr<BrowserAccessibilityManager> manager(
-      BrowserAccessibilityManager::Create(tree, tree_manager_delegate));
+  std::unique_ptr<BrowserAccessibilityManagerMac> manager(
+      new BrowserAccessibilityManagerMac(tree, nullptr));
 
   for (int child_index = 0; child_index < child_count; child_index++) {
     BrowserAccessibility* child =
@@ -570,9 +568,8 @@ IN_PROC_BROWSER_TEST_F(BrowserAccessibilityCocoaBrowserTest,
   tree.nodes[11].AddStringAttribute(ax::mojom::StringAttribute::kName,
                                     "cell2_row3");
 
-  ui::TestAXPlatformTreeManagerDelegate tree_manager_delegate;
-  std::unique_ptr<BrowserAccessibilityManager> manager(
-      BrowserAccessibilityManager::Create(tree, tree_manager_delegate));
+  std::unique_ptr<BrowserAccessibilityManagerMac> manager(
+      new BrowserAccessibilityManagerMac(tree, nullptr));
 
   BrowserAccessibility* table =
       manager->GetBrowserAccessibilityRoot()->PlatformGetChild(0);
@@ -621,9 +618,8 @@ IN_PROC_BROWSER_TEST_F(BrowserAccessibilityCocoaBrowserTest,
   tree.nodes[3].role = ax::mojom::Role::kRow;
   tree.nodes[3].AddStringAttribute(ax::mojom::StringAttribute::kName, "row2");
 
-  ui::TestAXPlatformTreeManagerDelegate tree_manager_delegate;
-  std::unique_ptr<BrowserAccessibilityManager> manager(
-      BrowserAccessibilityManager::Create(tree, tree_manager_delegate));
+  std::unique_ptr<BrowserAccessibilityManagerMac> manager(
+      new BrowserAccessibilityManagerMac(tree, nullptr));
 
   BrowserAccessibility* column =
       manager->GetBrowserAccessibilityRoot()->PlatformGetChild(0);

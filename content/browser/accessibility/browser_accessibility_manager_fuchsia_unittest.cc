@@ -132,7 +132,7 @@ class BrowserAccessibilityManagerFuchsiaTest : public testing::Test {
     mock_accessibility_bridge_ = std::make_unique<MockAccessibilityBridge>();
     manager_ = std::unique_ptr<BrowserAccessibilityManager>(
         BrowserAccessibilityManager::Create(
-            *mock_browser_accessibility_delegate_));
+            mock_browser_accessibility_delegate_.get()));
     static_cast<BrowserAccessibilityManagerFuchsia*>(manager_.get())
         ->SetAccessibilityBridgeForTest(mock_accessibility_bridge_.get());
   }

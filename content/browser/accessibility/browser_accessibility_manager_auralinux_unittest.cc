@@ -69,7 +69,7 @@ TEST_F(BrowserAccessibilityManagerAuraLinuxTest, TestEmitChildrenChanged) {
 
   std::unique_ptr<BrowserAccessibilityManager> manager(
       BrowserAccessibilityManager::Create(
-          initial_state, *test_browser_accessibility_delegate_));
+          initial_state, test_browser_accessibility_delegate_.get()));
 
   AtkObject* atk_root =
       manager->GetBrowserAccessibilityRoot()->GetNativeViewAccessible();

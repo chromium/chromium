@@ -15,25 +15,22 @@
 namespace content {
 
 // static
-std::unique_ptr<BrowserAccessibilityManager>
-BrowserAccessibilityManager::Create(
+BrowserAccessibilityManager* BrowserAccessibilityManager::Create(
     const ui::AXTreeUpdate& initial_tree,
-    ui::AXPlatformTreeManagerDelegate& delegate) {
-  return std::make_unique<BrowserAccessibilityManagerFuchsia>(initial_tree,
-                                                              delegate);
+    ui::AXPlatformTreeManagerDelegate* delegate) {
+  return new BrowserAccessibilityManagerFuchsia(initial_tree, delegate);
 }
 
 // static
-std::unique_ptr<BrowserAccessibilityManager>
-BrowserAccessibilityManager::Create(
-    ui::AXPlatformTreeManagerDelegate& delegate) {
-  return std::make_unique<BrowserAccessibilityManagerFuchsia>(
+BrowserAccessibilityManager* BrowserAccessibilityManager::Create(
+    ui::AXPlatformTreeManagerDelegate* delegate) {
+  return new BrowserAccessibilityManagerFuchsia(
       BrowserAccessibilityManagerFuchsia::GetEmptyDocument(), delegate);
 }
 
 BrowserAccessibilityManagerFuchsia::BrowserAccessibilityManagerFuchsia(
     const ui::AXTreeUpdate& initial_tree,
-    ui::AXPlatformTreeManagerDelegate& delegate)
+    ui::AXPlatformTreeManagerDelegate* delegate)
     : BrowserAccessibilityManager(delegate) {
   Initialize(initial_tree);
 
@@ -71,7 +68,7 @@ BrowserAccessibilityManagerFuchsia::GetAccessibilityBridge() const {
     return accessibility_bridge_for_test_;
 
   gfx::NativeWindow top_level_native_window =
-      delegate_->GetTopLevelNativeWindow();
+      delegate_ ? delegate_->GetTopLevelNativeWindow() : gfx::NativeWindow();
 
   aura::Window* accessibility_bridge_key =
       top_level_native_window ? top_level_native_window->GetRootWindow()

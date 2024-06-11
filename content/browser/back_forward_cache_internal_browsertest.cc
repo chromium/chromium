@@ -3865,7 +3865,7 @@ IN_PROC_BROWSER_TEST_P(BackForwardCacheBrowserTestWithFlagForAXEvents,
 
     ASSERT_TRUE(waiter_start.WaitForNotification());
     auto* waiter_start_rfhi = static_cast<RenderFrameHostImpl*>(
-        &waiter_start.event_browser_accessibility_manager()->delegate());
+        waiter_start.event_browser_accessibility_manager()->delegate());
     EXPECT_EQ(waiter_start_rfhi, rfh_a.get());
   }
 }
@@ -3973,7 +3973,7 @@ IN_PROC_BROWSER_TEST_P(BackForwardCacheBrowserTestWithFlagForAXLocationChange,
 
     ASSERT_TRUE(waiter_start.WaitForNotification());
     auto* waiter_start_rfhi = static_cast<RenderFrameHostImpl*>(
-        &waiter_start.event_browser_accessibility_manager()->delegate());
+        waiter_start.event_browser_accessibility_manager()->delegate());
     EXPECT_EQ(waiter_start_rfhi, rfh_a.get());
   }
 }
