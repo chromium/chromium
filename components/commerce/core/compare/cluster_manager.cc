@@ -11,6 +11,7 @@
 
 #include "base/barrier_callback.h"
 #include "components/commerce/core/commerce_feature_list.h"
+#include "components/commerce/core/commerce_utils.h"
 #include "components/commerce/core/compare/candidate_product.h"
 #include "components/commerce/core/compare/cluster_server_proxy.h"
 #include "components/commerce/core/compare/product_group.h"
@@ -176,7 +177,8 @@ ClusterManager::~ClusterManager() {
 
 void ClusterManager::OnProductSpecificationsSetAdded(
     const ProductSpecificationsSet& product_specifications_set) {
-  if (!IsSetEligibleForClustering(product_specifications_set.update_time())) {
+  if (!IsSetEligibleForClustering(product_specifications_set.uuid(),
+                                  product_specifications_set.update_time())) {
     return;
   }
   base::Uuid uuid = product_specifications_set.uuid();
@@ -485,7 +487,15 @@ void ClusterManager::OnGetComparableUrls(
   std::move(callback).Run(std::move(open_urls));
 }
 
-bool ClusterManager::IsSetEligibleForClustering(const base::Time& update_time) {
+bool ClusterManager::IsSetEligibleForClustering(const base::Uuid& uuid,
+                                                const base::Time& update_time) {
+  // TODO(b/335724950): A set could become eligible again if it's opened,
+  // despite that it's last update time has passed the limit. We need to handle
+  // this case by checking if the product specifications page for a set is
+  // opened.
+  if (IsUrlOpen(GetProductSpecsTabUrlForID(uuid), get_open_url_infos_cb_)) {
+    return true;
+  }
   return base::Time::Now() - update_time <
          kProductSpecificationsSetValidForClusteringTime.Get();
 }
@@ -493,7 +503,8 @@ bool ClusterManager::IsSetEligibleForClustering(const base::Time& update_time) {
 void ClusterManager::RemoveIneligibleGroupsForClustering() {
   for (auto it = product_group_map_.begin(); it != product_group_map_.end();) {
     const auto& product_group = it->second;
-    if (!IsSetEligibleForClustering(product_group->update_time)) {
+    if (!IsSetEligibleForClustering(product_group->uuid,
+                                    product_group->update_time)) {
       // If the product URLs in the removing set are open, add them back to
       // candidate products.
       for (const GURL& product_url : product_group->member_products) {

@@ -140,10 +140,11 @@ class ClusterManager : public ProductSpecificationsSet::Observer {
       GetEntryPointInfoCallback callback,
       const std::vector<std::pair<GURL, const ProductInfo>>& product_infos);
 
-  // Check if product set is still eligible for clustering recommendations based
-  // on its last updated time. Please note that this method can be used for both
-  // `ProductSpecificationSet` and `ProductGroup`.
-  bool IsSetEligibleForClustering(const base::Time& update_time);
+  // Check if product set is still eligible for clustering recommendations given
+  // its uuid and last updated time. Please note that this method can be used
+  // for both `ProductSpecificationSet` and `ProductGroup`.
+  bool IsSetEligibleForClustering(const base::Uuid& uuid,
+                                  const base::Time& update_time);
 
   // A ProductGroup might become ineligible for clustering because it hasn't
   // been updated for a long time. This method will be scheduled to run every

@@ -15,6 +15,7 @@
 #include "base/test/task_environment.h"
 #include "components/commerce/core/commerce_feature_list.h"
 #include "components/commerce/core/commerce_types.h"
+#include "components/commerce/core/commerce_utils.h"
 #include "components/commerce/core/compare/candidate_product.h"
 #include "components/commerce/core/compare/cluster_server_proxy.h"
 #include "components/commerce/core/compare/product_group.h"
@@ -269,10 +270,19 @@ TEST_F(ClusterManagerTest, ClusterManagerInitialization_SkipInvalidSet) {
       kProduct1Url, (base::Time::Now() -
                      kProductSpecificationsSetValidForClusteringTime.Get())
                         .InMillisecondsSinceUnixEpoch());
-  ProductSpecificationsSet set2 = CreateProductSpecificationsSet(kProduct2Url);
+  // Mock that set2 is no longer valid for clustering but there is a product
+  // specifications page open for this set.
+  ProductSpecificationsSet set2 = CreateProductSpecificationsSet(
+      kProduct2Url, (base::Time::Now() -
+                     kProductSpecificationsSetValidForClusteringTime.Get())
+                        .InMillisecondsSinceUnixEpoch());
+  UpdateUrlInfos(
+      std::vector<GURL>{GURL(GetProductSpecsTabUrlForID(set2.uuid()))});
+
+  ProductSpecificationsSet set3 = CreateProductSpecificationsSet(kTestUrl3);
   ON_CALL(*product_specification_service_, GetAllProductSpecifications())
-      .WillByDefault(
-          testing::Return(std::vector<ProductSpecificationsSet>{set1, set2}));
+      .WillByDefault(testing::Return(
+          std::vector<ProductSpecificationsSet>{set1, set2, set3}));
   EXPECT_CALL(*product_specification_service_, GetAllProductSpecifications())
       .Times(1);
   cluster_manager_ = std::make_unique<ClusterManager>(
@@ -282,9 +292,12 @@ TEST_F(ClusterManagerTest, ClusterManagerInitialization_SkipInvalidSet) {
                           base::Unretained(this)),
       base::BindRepeating(&ClusterManagerTest::url_infos,
                           base::Unretained(this)));
-  ASSERT_EQ(GetProductGroupMap()->size(), 1u);
+  base::RunLoop().RunUntilIdle();
+
+  ASSERT_EQ(GetProductGroupMap()->size(), 2u);
   ASSERT_EQ(GetProductGroupMap()->count(set1.uuid()), 0u);
   ASSERT_EQ(GetProductGroupMap()->count(set2.uuid()), 1u);
+  ASSERT_EQ(GetProductGroupMap()->count(set3.uuid()), 1u);
 }
 
 TEST_F(ClusterManagerTest, ClusterManagerInitialization_KickOffRemoving) {
