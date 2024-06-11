@@ -373,6 +373,18 @@
       'ios_runtime_cache_17_5',
     ],
   },
+  'SIM_IPAD_10TH_GEN_18_0': {
+    'identifier': 'iPad (10th generation) 18.0',
+    'args': [
+      '--platform',
+      'iPad (10th generation)',
+      '--version',
+      '18.0',
+    ],
+    'mixins': [
+      'ios_runtime_cache_18_0',
+    ],
+  },
   'SIM_IPAD_AIR_5TH_GEN_16_4': {
     'identifier': 'iPad Air (5th generation) 16.4',
     'args': [
@@ -397,6 +409,18 @@
       'ios_runtime_cache_17_5',
     ],
   },
+  'SIM_IPAD_AIR_6TH_GEN_18_0': {
+    'identifier': 'iPad Air (6th generation) 18.0',
+    'args': [
+      '--platform',
+      'iPad Air 11-inch (M2)',
+      '--version',
+      '18.0',
+    ],
+    'mixins': [
+      'ios_runtime_cache_18_0',
+    ],
+  },
   'SIM_IPAD_PRO_6TH_GEN_16_4': {
     'identifier': 'iPad Pro (12.9-inch) (6th generation) 16.4',
     'args': [
@@ -419,6 +443,18 @@
     ],
     'mixins': [
       'ios_runtime_cache_17_5',
+    ],
+  },
+  'SIM_IPAD_PRO_7TH_GEN_18_0': {
+    'identifier': 'iPad Pro 13-inch (M4) 18.0',
+    'args': [
+      '--platform',
+      'iPad Pro 13-inch (M4)',
+      '--version',
+      '18.0',
+    ],
+    'mixins': [
+      'ios_runtime_cache_18_0',
     ],
   },
   'SIM_IPHONE_13_16_4': {
@@ -505,6 +541,30 @@
       'ios_runtime_cache_17_5',
     ],
   },
+  'SIM_IPHONE_15_18_0': {
+    'identifier': 'iPhone 15 18.0',
+    'args': [
+      '--platform',
+      'iPhone 15',
+      '--version',
+      '18.0',
+    ],
+    'mixins': [
+      'ios_runtime_cache_18_0',
+    ],
+  },
+  'SIM_IPHONE_15_PRO_MAX_18_0': {
+    'identifier': 'iPhone 15 Pro Max 18.0',
+    'args': [
+      '--platform',
+      'iPhone 15 Pro Max',
+      '--version',
+      '18.0',
+    ],
+    'mixins': [
+      'ios_runtime_cache_18_0',
+    ],
+  },
   'SIM_IPHONE_SE_3RD_GEN_16_4': {
     'identifier': 'iPhone SE (3rd generation) 16.4',
     'args': [
@@ -527,6 +587,18 @@
     ],
     'mixins': [
       'ios_runtime_cache_17_5',
+    ],
+  },
+  'SIM_IPHONE_SE_3RD_GEN_18_0': {
+    'identifier': 'iPhone SE (3rd generation) 18.0',
+    'args': [
+      '--platform',
+      'iPhone SE (3rd generation)',
+      '--version',
+      '18.0',
+    ],
+    'mixins': [
+      'ios_runtime_cache_18_0',
     ],
   },
   'SIM_IPHONE_X_16_4': {

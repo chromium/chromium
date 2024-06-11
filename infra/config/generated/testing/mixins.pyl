@@ -658,6 +658,16 @@
       ],
     },
   },
+  'ios_runtime_cache_18_0': {
+    'swarming': {
+      'named_caches': [
+        {
+          'name': 'runtime_ios_18_0',
+          'path': 'Runtime-ios-18.0',
+        },
+      ],
+    },
+  },
   'ioswpt-chromium-swarming-pool': {
     'swarming': {
       'dimensions': {
@@ -1464,6 +1474,20 @@
       'named_caches': [
         {
           'name': 'xcode_ios_15f31d',
+          'path': 'Xcode.app',
+        },
+      ],
+    },
+  },
+  'xcode_16_beta': {
+    'args': [
+      '--xcode-build-version',
+      '16a5171c',
+    ],
+    'swarming': {
+      'named_caches': [
+        {
+          'name': 'xcode_ios_16a5171c',
           'path': 'Xcode.app',
         },
       ],

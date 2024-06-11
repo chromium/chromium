@@ -788,7 +788,7 @@ targets.legacy_matrix_compound_suite(
     basic_suites = {
         "ios_common_tests": targets.legacy_matrix_config(
             variants = [
-                "SIM_IPHONE_14_16_4",
+                "SIM_IPHONE_15_18_0",
             ],
         ),
         "ios_eg2_tests": targets.legacy_matrix_config(
@@ -797,10 +797,10 @@ targets.legacy_matrix_compound_suite(
                 "record_failed_tests",
             ],
             variants = [
-                "SIM_IPHONE_14_16_4",
-                "SIM_IPAD_AIR_5TH_GEN_16_4",
-                "SIM_IPAD_10TH_GEN_16_4",
-                "SIM_IPAD_PRO_6TH_GEN_16_4",
+                "SIM_IPHONE_15_18_0",
+                "SIM_IPAD_AIR_6TH_GEN_18_0",
+                "SIM_IPAD_10TH_GEN_18_0",
+                "SIM_IPAD_PRO_7TH_GEN_18_0",
             ],
         ),
         "ios_eg2_cq_tests": targets.legacy_matrix_config(
@@ -809,17 +809,17 @@ targets.legacy_matrix_compound_suite(
                 "record_failed_tests",
             ],
             variants = [
-                "SIM_IPHONE_14_16_4",
-                "SIM_IPAD_10TH_GEN_16_4",
-                "SIM_IPAD_AIR_5TH_GEN_16_4",
+                "SIM_IPHONE_15_18_0",
+                "SIM_IPAD_10TH_GEN_18_0",
+                "SIM_IPAD_AIR_6TH_GEN_18_0",
             ],
         ),
         "ios_screen_size_dependent_tests": targets.legacy_matrix_config(
             variants = [
-                "SIM_IPHONE_14_16_4",
-                "SIM_IPHONE_14_PRO_MAX_16_4",
-                "SIM_IPAD_AIR_5TH_GEN_16_4",
-                "SIM_IPAD_PRO_6TH_GEN_16_4",
+                "SIM_IPHONE_15_18_0",
+                "SIM_IPHONE_15_PRO_MAX_18_0",
+                "SIM_IPAD_AIR_6TH_GEN_18_0",
+                "SIM_IPAD_PRO_7TH_GEN_18_0",
             ],
         ),
         "ios_crash_xcuitests": targets.legacy_matrix_config(
@@ -827,7 +827,7 @@ targets.legacy_matrix_compound_suite(
                 "xcodebuild_sim_runner",
             ],
             variants = [
-                "SIM_IPHONE_14_16_4",
+                "SIM_IPHONE_15_18_0",
             ],
         ),
     },
@@ -838,7 +838,7 @@ targets.legacy_matrix_compound_suite(
     basic_suites = {
         "ios_common_tests": targets.legacy_matrix_config(
             variants = [
-                "SIM_IPHONE_14_16_4",
+                "SIM_IPHONE_15_18_0",
             ],
         ),
         "ios_crash_xcuitests": targets.legacy_matrix_config(
@@ -846,7 +846,7 @@ targets.legacy_matrix_compound_suite(
                 "xcodebuild_sim_runner",
             ],
             variants = [
-                "SIM_IPHONE_14_16_4",
+                "SIM_IPHONE_15_18_0",
             ],
         ),
         "ios_eg2_tests": targets.legacy_matrix_config(
@@ -855,9 +855,9 @@ targets.legacy_matrix_compound_suite(
                 "record_failed_tests",
             ],
             variants = [
-                "SIM_IPHONE_14_16_4",
-                "SIM_IPAD_AIR_5TH_GEN_16_4",
-                "SIM_IPAD_PRO_6TH_GEN_16_4",
+                "SIM_IPHONE_15_18_0",
+                "SIM_IPAD_AIR_6TH_GEN_18_0",
+                "SIM_IPAD_PRO_7TH_GEN_18_0",
             ],
         ),
         "ios_eg2_cq_tests": targets.legacy_matrix_config(
@@ -866,17 +866,17 @@ targets.legacy_matrix_compound_suite(
                 "record_failed_tests",
             ],
             variants = [
-                "SIM_IPHONE_14_16_4",
-                "SIM_IPAD_AIR_5TH_GEN_16_4",
-                "SIM_IPAD_PRO_6TH_GEN_16_4",
+                "SIM_IPHONE_15_18_0",
+                "SIM_IPAD_AIR_6TH_GEN_18_0",
+                "SIM_IPAD_PRO_7TH_GEN_18_0",
             ],
         ),
         "ios_screen_size_dependent_tests": targets.legacy_matrix_config(
             variants = [
-                "SIM_IPHONE_14_16_4",
-                "SIM_IPHONE_SE_3RD_GEN_16_4",
-                "SIM_IPAD_AIR_5TH_GEN_16_4",
-                "SIM_IPAD_PRO_6TH_GEN_16_4",
+                "SIM_IPHONE_15_18_0",
+                "SIM_IPHONE_SE_3RD_GEN_18_0",
+                "SIM_IPAD_AIR_6TH_GEN_18_0",
+                "SIM_IPAD_PRO_7TH_GEN_18_0",
             ],
         ),
     },

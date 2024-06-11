@@ -2026,7 +2026,7 @@ fyi_ios_builder(
         category = "iOS|iOS18",
         short_name = "sdk18",
     ),
-    xcode = xcode.x15betabots,
+    xcode = xcode.x16betabots,
 )
 
 fyi_mac_builder(

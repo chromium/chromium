@@ -3762,10 +3762,10 @@
         ],
         'mixins': [
           'has_native_resultdb_integration',
-          'mac_default_arm64',
+          'mac_14_arm64',
           'mac_toolchain',
           'out_dir_arg',
-          'xcode_15_beta',
+          'xcode_16_beta',
           'xctest',
         ],
         'test_suites': {
@@ -3783,7 +3783,7 @@
           'mac_14_arm64',
           'mac_toolchain',
           'out_dir_arg',
-          'xcode_15_beta',
+          'xcode_16_beta',
           'xctest',
         ],
         'test_suites': {
