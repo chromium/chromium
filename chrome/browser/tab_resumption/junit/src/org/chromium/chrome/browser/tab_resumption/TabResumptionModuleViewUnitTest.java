@@ -5,6 +5,7 @@
 package org.chromium.chrome.browser.tab_resumption;
 
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyInt;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.atLeastOnce;
 import static org.mockito.Mockito.times;
@@ -12,6 +13,8 @@ import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 import android.content.Context;
+import android.content.pm.ApplicationInfo;
+import android.content.pm.PackageManager;
 import android.graphics.Bitmap;
 import android.graphics.drawable.BitmapDrawable;
 import android.graphics.drawable.Drawable;
@@ -49,6 +52,7 @@ import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tab_resumption.TabResumptionModuleUtils.SuggestionClickCallback;
 import org.chromium.chrome.browser.tab_resumption.UrlImageProvider.UrlImageCallback;
 import org.chromium.chrome.browser.tab_ui.TabThumbnailView;
+import org.chromium.components.browser_ui.widget.chips.ChipView;
 import org.chromium.components.embedder_support.util.UrlUtilities;
 import org.chromium.components.embedder_support.util.UrlUtilitiesJni;
 import org.chromium.url.GURL;
@@ -533,6 +537,140 @@ public class TabResumptionModuleViewUnitTest extends TestSupport {
         // Simulate click on a remote Tab.
         tile2.performClick();
         Assert.assertEquals(2, mClickCount);
+        Assert.assertEquals(JUnitTestGURLs.GOOGLE_URL_DOG, mLastClickEntry.url);
+    }
+
+    @Test
+    @SmallTest
+    public void testRenderSingleForHistoryData_Cct() throws Exception {
+        initModuleView();
+
+        final String appId = "com.google.android.youtube";
+        final String appLabel = "YouTube";
+        Drawable appIcon = new BitmapDrawable(mContext.getResources(), makeBitmap(32, 32));
+        PackageManager packageManager = Mockito.mock(PackageManager.class);
+        ApplicationInfo info = Mockito.mock(ApplicationInfo.class);
+        when(packageManager.getApplicationInfo(eq(appId), anyInt())).thenReturn(info);
+        when(packageManager.getApplicationIcon(any(ApplicationInfo.class))).thenReturn(appIcon);
+        when(packageManager.getApplicationLabel(any(ApplicationInfo.class))).thenReturn(appLabel);
+        mTileContainerView.setPackageManagerForTesting(packageManager);
+
+        SuggestionEntry entry1 =
+                new SuggestionEntry(
+                        SuggestionEntryType.HISTORY,
+                        "Source not to be shown",
+                        JUnitTestGURLs.GOOGLE_URL_DOG,
+                        "Google Dog",
+                        makeTimestamp(24 - 3, 0, 0),
+                        Tab.INVALID_TAB_ID,
+                        appId);
+        mSuggestionBundle.entries.add(entry1);
+
+        Assert.assertEquals(0, mTileContainerView.getChildCount());
+
+        mModuleView.setSuggestionBundle(mSuggestionBundle);
+        Assert.assertEquals(1, mTileContainerView.getChildCount());
+
+        // Capture call to fetch image.
+        verify(mUrlImageProvider, atLeastOnce())
+                .fetchImageForUrl(
+                        mFetchImagePageUrlCaptor.capture(), mFetchImageCallbackCaptor.capture());
+        Assert.assertEquals(1, mFetchImagePageUrlCaptor.getAllValues().size());
+        Assert.assertEquals(1, mFetchImageCallbackCaptor.getAllValues().size());
+        Assert.assertEquals(
+                JUnitTestGURLs.GOOGLE_URL_DOG, mFetchImagePageUrlCaptor.getAllValues().get(0));
+
+        // Chip view appears instead of the top title (From...).
+        TabResumptionTileView tile1 = (TabResumptionTileView) mTileContainerView.getChildAt(0);
+        Assert.assertEquals(View.GONE, tile1.findViewById(R.id.tile_pre_info_text).getVisibility());
+        ChipView chipView = (ChipView) tile1.findViewById(R.id.tile_app_chip);
+        var chipText =
+                mContext.getResources().getString(R.string.history_app_attribution, appLabel);
+        Assert.assertEquals("ChipView is not visible", View.VISIBLE, chipView.getVisibility());
+        Assert.assertEquals(chipText, chipView.getPrimaryTextView().getText());
+        Assert.assertEquals(
+                "Google Dog", ((TextView) tile1.findViewById(R.id.tile_display_text)).getText());
+        // Actual code would remove "www." prefix, but the test's JNI mock doesn't do so.
+        Assert.assertEquals(
+                "www.google.com \u2022 3 hr ago",
+                ((TextView) tile1.findViewById(R.id.tile_post_info_text)).getText());
+
+        // Image is not loaded yet.
+        Assert.assertNull(((ImageView) tile1.findViewById(R.id.tile_icon)).getDrawable());
+
+        // Provide test image, and check that it's shown as icon.
+        Bitmap bitmap1 = makeBitmap(64, 64);
+        mFetchImageCallbackCaptor.getAllValues().get(0).onBitmap(bitmap1);
+        BitmapDrawable drawable1 =
+                (BitmapDrawable) ((ImageView) tile1.findViewById(R.id.tile_icon)).getDrawable();
+        Assert.assertNotNull(drawable1);
+        Assert.assertEquals(bitmap1, drawable1.getBitmap());
+
+        // Simulate click.
+        Assert.assertEquals(0, mClickCount);
+        Assert.assertNull(mLastClickEntry);
+        tile1.performClick();
+        Assert.assertEquals(1, mClickCount);
+        Assert.assertEquals(JUnitTestGURLs.GOOGLE_URL_DOG, mLastClickEntry.url);
+    }
+
+    @Test
+    @SmallTest
+    public void testRenderSingleForHistoryData_BrApp() throws Exception {
+        initModuleView();
+
+        SuggestionEntry entry1 =
+                new SuggestionEntry(
+                        SuggestionEntryType.HISTORY,
+                        "Source not to be shown",
+                        JUnitTestGURLs.GOOGLE_URL_DOG,
+                        "Google Dog",
+                        makeTimestamp(24 - 3, 0, 0),
+                        Tab.INVALID_TAB_ID,
+                        null);
+        mSuggestionBundle.entries.add(entry1);
+
+        Assert.assertEquals(0, mTileContainerView.getChildCount());
+
+        mModuleView.setSuggestionBundle(mSuggestionBundle);
+        Assert.assertEquals(1, mTileContainerView.getChildCount());
+
+        // Capture call to fetch image.
+        verify(mUrlImageProvider, atLeastOnce())
+                .fetchImageForUrl(
+                        mFetchImagePageUrlCaptor.capture(), mFetchImageCallbackCaptor.capture());
+        Assert.assertEquals(1, mFetchImagePageUrlCaptor.getAllValues().size());
+        Assert.assertEquals(1, mFetchImageCallbackCaptor.getAllValues().size());
+        Assert.assertEquals(
+                JUnitTestGURLs.GOOGLE_URL_DOG, mFetchImagePageUrlCaptor.getAllValues().get(0));
+
+        // Neither pre_info/app chip is displayed.
+        TabResumptionTileView tile1 = (TabResumptionTileView) mTileContainerView.getChildAt(0);
+        Assert.assertEquals(View.GONE, tile1.findViewById(R.id.tile_pre_info_text).getVisibility());
+        Assert.assertEquals(View.GONE, tile1.findViewById(R.id.tile_app_chip).getVisibility());
+        Assert.assertEquals(
+                "Google Dog", ((TextView) tile1.findViewById(R.id.tile_display_text)).getText());
+        // Actual code would remove "www." prefix, but the test's JNI mock doesn't do so.
+        Assert.assertEquals(
+                "www.google.com \u2022 3 hr ago",
+                ((TextView) tile1.findViewById(R.id.tile_post_info_text)).getText());
+
+        // Image is not loaded yet.
+        Assert.assertNull(((ImageView) tile1.findViewById(R.id.tile_icon)).getDrawable());
+
+        // Provide test image, and check that it's shown as icon.
+        Bitmap bitmap1 = makeBitmap(64, 64);
+        mFetchImageCallbackCaptor.getAllValues().get(0).onBitmap(bitmap1);
+        BitmapDrawable drawable1 =
+                (BitmapDrawable) ((ImageView) tile1.findViewById(R.id.tile_icon)).getDrawable();
+        Assert.assertNotNull(drawable1);
+        Assert.assertEquals(bitmap1, drawable1.getBitmap());
+
+        // Simulate click.
+        Assert.assertEquals(0, mClickCount);
+        Assert.assertNull(mLastClickEntry);
+        tile1.performClick();
+        Assert.assertEquals(1, mClickCount);
         Assert.assertEquals(JUnitTestGURLs.GOOGLE_URL_DOG, mLastClickEntry.url);
     }
 

@@ -98,124 +98,130 @@ public class TabResumptionModuleSuggestionsUnitTest extends TestSupport {
     @After
     public void tearDown() {}
 
+    private static SuggestionEntry createSuggestionEntry(
+            String source, GURL url, String title, long time, int id) {
+        return new SuggestionEntry(
+                SuggestionEntryType.LOCAL_TAB, source, url, title, time, id, null);
+    }
+
     @Test
     @SmallTest
     public void testCompareSuggestions() {
         SuggestionEntry entry0 =
-                new SuggestionEntry(SOURCE_NAME_0, URL_0, TITLE_0, TIMESTAMP_0, ID_0);
+                createSuggestionEntry(SOURCE_NAME_0, URL_0, TITLE_0, TIMESTAMP_0, ID_0);
         Assert.assertEquals(
                 0,
                 entry0.compareTo(
-                        new SuggestionEntry(SOURCE_NAME_0, URL_0, TITLE_0, TIMESTAMP_0, ID_0)));
+                        createSuggestionEntry(SOURCE_NAME_0, URL_0, TITLE_0, TIMESTAMP_0, ID_0)));
 
         // Timestamps dominate source name.
         Assert.assertTrue(
                 entry0.compareTo(
-                                new SuggestionEntry(
+                                createSuggestionEntry(
                                         SOURCE_NAME_0, URL_0, TITLE_0, TIMESTAMP_LO, ID_0))
                         < 0);
         Assert.assertTrue(
                 entry0.compareTo(
-                                new SuggestionEntry(
+                                createSuggestionEntry(
                                         SOURCE_NAME_LO, URL_0, TITLE_0, TIMESTAMP_LO, ID_0))
                         < 0);
         Assert.assertTrue(
                 entry0.compareTo(
-                                new SuggestionEntry(
+                                createSuggestionEntry(
                                         SOURCE_NAME_HI, URL_0, TITLE_0, TIMESTAMP_LO, ID_0))
                         < 0);
 
         Assert.assertTrue(
                 entry0.compareTo(
-                                new SuggestionEntry(
+                                createSuggestionEntry(
                                         SOURCE_NAME_0, URL_0, TITLE_0, TIMESTAMP_HI, ID_0))
                         > 0);
         Assert.assertTrue(
                 entry0.compareTo(
-                                new SuggestionEntry(
+                                createSuggestionEntry(
                                         SOURCE_NAME_LO, URL_0, TITLE_0, TIMESTAMP_HI, ID_0))
                         > 0);
         Assert.assertTrue(
                 entry0.compareTo(
-                                new SuggestionEntry(
+                                createSuggestionEntry(
                                         SOURCE_NAME_HI, URL_0, TITLE_0, TIMESTAMP_HI, ID_0))
                         > 0);
 
         // Source name dominates title.
         Assert.assertTrue(
                 entry0.compareTo(
-                                new SuggestionEntry(
+                                createSuggestionEntry(
                                         SOURCE_NAME_LO, URL_0, TITLE_0, TIMESTAMP_0, ID_0))
                         > 0);
         Assert.assertTrue(
                 entry0.compareTo(
-                                new SuggestionEntry(
+                                createSuggestionEntry(
                                         SOURCE_NAME_LO, URL_0, TITLE_LO, TIMESTAMP_0, ID_0))
                         > 0);
         Assert.assertTrue(
                 entry0.compareTo(
-                                new SuggestionEntry(
+                                createSuggestionEntry(
                                         SOURCE_NAME_LO, URL_0, TITLE_HI, TIMESTAMP_0, ID_0))
                         > 0);
 
         Assert.assertTrue(
                 entry0.compareTo(
-                                new SuggestionEntry(
+                                createSuggestionEntry(
                                         SOURCE_NAME_HI, URL_0, TITLE_0, TIMESTAMP_0, ID_0))
                         < 0);
         Assert.assertTrue(
                 entry0.compareTo(
-                                new SuggestionEntry(
+                                createSuggestionEntry(
                                         SOURCE_NAME_HI, URL_0, TITLE_LO, TIMESTAMP_0, ID_0))
                         < 0);
         Assert.assertTrue(
                 entry0.compareTo(
-                                new SuggestionEntry(
+                                createSuggestionEntry(
                                         SOURCE_NAME_HI, URL_0, TITLE_HI, TIMESTAMP_0, ID_0))
                         < 0);
 
         // Title dominates id.
         Assert.assertTrue(
                 entry0.compareTo(
-                                new SuggestionEntry(
+                                createSuggestionEntry(
                                         SOURCE_NAME_0, URL_0, TITLE_LO, TIMESTAMP_0, ID_0))
                         > 0);
         Assert.assertTrue(
                 entry0.compareTo(
-                                new SuggestionEntry(
+                                createSuggestionEntry(
                                         SOURCE_NAME_0, URL_0, TITLE_LO, TIMESTAMP_0, ID_LO))
                         > 0);
         Assert.assertTrue(
                 entry0.compareTo(
-                                new SuggestionEntry(
+                                createSuggestionEntry(
                                         SOURCE_NAME_0, URL_0, TITLE_LO, TIMESTAMP_0, ID_HI))
                         > 0);
 
         Assert.assertTrue(
                 entry0.compareTo(
-                                new SuggestionEntry(
+                                createSuggestionEntry(
                                         SOURCE_NAME_0, URL_0, TITLE_HI, TIMESTAMP_0, ID_0))
                         < 0);
         Assert.assertTrue(
                 entry0.compareTo(
-                                new SuggestionEntry(
+                                createSuggestionEntry(
                                         SOURCE_NAME_0, URL_0, TITLE_HI, TIMESTAMP_0, ID_LO))
                         < 0);
         Assert.assertTrue(
                 entry0.compareTo(
-                                new SuggestionEntry(
+                                createSuggestionEntry(
                                         SOURCE_NAME_0, URL_0, TITLE_HI, TIMESTAMP_0, ID_HI))
                         < 0);
 
         // Id as final tie-breaker.
         Assert.assertTrue(
                 entry0.compareTo(
-                                new SuggestionEntry(
+                                createSuggestionEntry(
                                         SOURCE_NAME_0, URL_0, TITLE_0, TIMESTAMP_0, ID_LO))
                         > 0);
         Assert.assertTrue(
                 entry0.compareTo(
-                                new SuggestionEntry(
+                                createSuggestionEntry(
                                         SOURCE_NAME_0, URL_0, TITLE_0, TIMESTAMP_0, ID_HI))
                         < 0);
 
@@ -223,20 +229,20 @@ public class TabResumptionModuleSuggestionsUnitTest extends TestSupport {
         Assert.assertEquals(
                 0,
                 entry0.compareTo(
-                        new SuggestionEntry(SOURCE_NAME_0, URL_LO, TITLE_0, TIMESTAMP_0, ID_0)));
+                        createSuggestionEntry(SOURCE_NAME_0, URL_LO, TITLE_0, TIMESTAMP_0, ID_0)));
         Assert.assertEquals(
                 0,
                 entry0.compareTo(
-                        new SuggestionEntry(SOURCE_NAME_0, URL_HI, TITLE_0, TIMESTAMP_0, ID_0)));
+                        createSuggestionEntry(SOURCE_NAME_0, URL_HI, TITLE_0, TIMESTAMP_0, ID_0)));
     }
 
     @Test
     @SmallTest
     public void testCompareSuggestionsWithTraingIds() {
         SuggestionEntry entry =
-                new SuggestionEntry(SOURCE_NAME_0, URL_0, TITLE_0, TIMESTAMP_0, ID_0);
+                createSuggestionEntry(SOURCE_NAME_0, URL_0, TITLE_0, TIMESTAMP_0, ID_0);
         SuggestionEntry entryWithTrainingInfo =
-                new SuggestionEntry(SOURCE_NAME_0, URL_0, TITLE_0, TIMESTAMP_0, ID_0);
+                createSuggestionEntry(SOURCE_NAME_0, URL_0, TITLE_0, TIMESTAMP_0, ID_0);
         entryWithTrainingInfo.trainingInfo =
                 new TrainingInfo(
                         /* nativeVisitedUrlRankingBackend= */ 0L,

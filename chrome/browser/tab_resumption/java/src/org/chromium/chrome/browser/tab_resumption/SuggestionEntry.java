@@ -14,27 +14,40 @@ import org.chromium.url.GURL;
 /** A single suggestion entry in the tab resumption module. */
 public class SuggestionEntry implements Comparable<SuggestionEntry> {
 
+    public final int type;
     public final String sourceName;
     public final GURL url;
     public final String title;
     public final long lastActiveTime;
     public final int localTabId;
+    @Nullable public final String appId;
     @Nullable public TrainingInfo trainingInfo;
 
     /**
+     * @param type Type of the entry, one of the enum {@link SuggestionEntryType}.
      * @param sourceName Name of device where the tab originates.
      * @param url Tab URL,for navigated for foreign tabs.
      * @param title Tab title, for UI.
      * @param lastActiveTime The most recent time in which user interacted with tab.
      * @param localTabId For local tab only, the Tab ID. Defaults to INVALID_TAB_ID.
+     * @param appId The ID of the app that opened this entry. {@code null} if the type is not {@link
+     *     SuggestionEntryType.HISTORY} or it was opened by BrApp.
      */
     SuggestionEntry(
-            String sourceName, GURL url, String title, long lastActiveTime, int localTabId) {
+            int type,
+            String sourceName,
+            GURL url,
+            String title,
+            long lastActiveTime,
+            int localTabId,
+            String appId) {
+        this.type = type;
         this.sourceName = sourceName;
         this.url = url;
         this.title = title;
         this.lastActiveTime = lastActiveTime;
         this.localTabId = localTabId;
+        this.appId = appId;
         // this.trainingInfo defaults to null, and gets assigned separately.
     }
 
@@ -43,7 +56,13 @@ public class SuggestionEntry implements Comparable<SuggestionEntry> {
     static SuggestionEntry createFromForeignFields(
             String sourceName, GURL url, String title, long lastActiveTime) {
         return new SuggestionEntry(
-                sourceName, url, title, lastActiveTime, /* localTabId= */ Tab.INVALID_TAB_ID);
+                SuggestionEntryType.FOREIGN_TAB,
+                sourceName,
+                url,
+                title,
+                lastActiveTime,
+                Tab.INVALID_TAB_ID,
+                null);
     }
 
     /** Instantiates from `sourceName` and ForeignSessionTab. */
@@ -59,11 +78,13 @@ public class SuggestionEntry implements Comparable<SuggestionEntry> {
     /** Instantiates from Tab. */
     public static SuggestionEntry createFromLocalTab(Tab localTab) {
         return new SuggestionEntry(
+                /* type= */ SuggestionEntryType.LOCAL_TAB,
                 /* sourceName= */ "",
                 /* url= */ localTab.getUrl(),
                 /* title= */ localTab.getTitle(),
                 /* lastActiveTime= */ localTab.getTimestampMillis(),
-                /* localTabId= */ localTab.getId());
+                /* localTabId= */ localTab.getId(),
+                /* appId= */ null);
     }
 
     /** Suggestion comparator that favors recency, and uses other fields for tie-breaking. */
@@ -86,6 +107,6 @@ public class SuggestionEntry implements Comparable<SuggestionEntry> {
 
     /** Returns whether the entry represents a Local Tab suggestion. */
     public boolean isLocalTab() {
-        return this.localTabId != Tab.INVALID_TAB_ID;
+        return this.type == SuggestionEntryType.LOCAL_TAB && this.localTabId != Tab.INVALID_TAB_ID;
     }
 }

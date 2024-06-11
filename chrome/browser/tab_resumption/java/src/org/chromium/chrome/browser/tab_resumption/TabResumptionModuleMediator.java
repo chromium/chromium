@@ -440,6 +440,13 @@ public class TabResumptionModuleMediator {
             }
 
             if (isSuggestionValid(entry)) {
+                boolean isHistoryEntry = entry.type == SuggestionEntryType.HISTORY;
+                // The entry of type |HISTORY| will be in a single tile only.
+                if (isHistoryEntry) {
+                    if (!bundle.entries.isEmpty()) continue;
+                    bundle.entries.add(entry);
+                    break;
+                }
                 bundle.entries.add(entry);
                 hasLocalTab |= entry.isLocalTab();
                 if (bundle.entries.size() >= maxTilesNumber) {
