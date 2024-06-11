@@ -999,7 +999,7 @@
     {
       // crbug.com/40249572
       name: "CssRubyAlign",
-      status: "experimental",
+      status: "stable",
       depends_on: ["RubyLineBreakable"],
     },
     {
