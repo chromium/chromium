@@ -14,6 +14,7 @@
 #include <cstdlib>
 #include <limits>
 #include <ostream>
+#include <string_view>
 #include <type_traits>
 
 #include "base/bits.h"
@@ -165,7 +166,7 @@ bool PickleIterator::ReadString(std::string* result) {
   return true;
 }
 
-bool PickleIterator::ReadStringPiece(StringPiece* result) {
+bool PickleIterator::ReadStringPiece(std::string_view* result) {
   size_t len;
   if (!ReadLength(&len))
     return false;
@@ -173,7 +174,7 @@ bool PickleIterator::ReadStringPiece(StringPiece* result) {
   if (!read_from)
     return false;
 
-  *result = StringPiece(read_from, len);
+  *result = std::string_view(read_from, len);
   return true;
 }
 
@@ -189,7 +190,7 @@ bool PickleIterator::ReadString16(std::u16string* result) {
   return true;
 }
 
-bool PickleIterator::ReadStringPiece16(StringPiece16* result) {
+bool PickleIterator::ReadStringPiece16(std::u16string_view* result) {
   size_t len;
   if (!ReadLength(&len))
     return false;
@@ -197,7 +198,8 @@ bool PickleIterator::ReadStringPiece16(StringPiece16* result) {
   if (!read_from)
     return false;
 
-  *result = StringPiece16(reinterpret_cast<const char16_t*>(read_from), len);
+  *result =
+      std::u16string_view(reinterpret_cast<const char16_t*>(read_from), len);
   return true;
 }
 
@@ -332,11 +334,11 @@ Pickle& Pickle::operator=(const Pickle& other) {
   return *this;
 }
 
-void Pickle::WriteString(const StringPiece& value) {
+void Pickle::WriteString(std::string_view value) {
   WriteData(value.data(), value.size());
 }
 
-void Pickle::WriteString16(const StringPiece16& value) {
+void Pickle::WriteString16(std::u16string_view value) {
   WriteInt(checked_cast<int>(value.size()));
   WriteBytes(value.data(), value.size() * sizeof(char16_t));
 }

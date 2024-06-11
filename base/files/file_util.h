@@ -16,6 +16,7 @@
 #include <optional>
 #include <set>
 #include <string>
+#include <string_view>
 
 #include "base/base_export.h"
 #include "base/containers/span.h"
@@ -590,18 +591,18 @@ UNSAFE_BUFFER_USAGE BASE_EXPORT int WriteFile(const FilePath& filename,
 // exist, it gets created with read/write permissions for all.
 BASE_EXPORT bool WriteFile(const FilePath& filename, span<const uint8_t> data);
 
-// Another WriteFile() variant that takes a StringPiece so callers don't have to
-// do manual conversions from a char span to a uint8_t span.
-BASE_EXPORT bool WriteFile(const FilePath& filename, StringPiece data);
+// Another WriteFile() variant that takes a std::string_view so callers don't
+// have to do manual conversions from a char span to a uint8_t span.
+BASE_EXPORT bool WriteFile(const FilePath& filename, std::string_view data);
 
 #if BUILDFLAG(IS_POSIX) || BUILDFLAG(IS_FUCHSIA)
 // Appends |data| to |fd|. Does not close |fd| when done.  Returns true iff all
 // of |data| were written to |fd|.
 BASE_EXPORT bool WriteFileDescriptor(int fd, span<const uint8_t> data);
 
-// WriteFileDescriptor() variant that takes a StringPiece so callers don't have
-// to do manual conversions from a char span to a uint8_t span.
-BASE_EXPORT bool WriteFileDescriptor(int fd, StringPiece data);
+// WriteFileDescriptor() variant that takes a std::string_view so callers don't
+// have to do manual conversions from a char span to a uint8_t span.
+BASE_EXPORT bool WriteFileDescriptor(int fd, std::string_view data);
 
 // Allocates disk space for the file referred to by |fd| for the byte range
 // starting at |offset| and continuing for |size| bytes. The file size will be
@@ -617,9 +618,9 @@ BASE_EXPORT bool AllocateFileRegion(File* file, int64_t offset, size_t size);
 BASE_EXPORT bool AppendToFile(const FilePath& filename,
                               span<const uint8_t> data);
 
-// AppendToFile() variant that takes a StringPiece so callers don't have to do
-// manual conversions from a char span to a uint8_t span.
-BASE_EXPORT bool AppendToFile(const FilePath& filename, StringPiece data);
+// AppendToFile() variant that takes a std::string_view so callers don't have to
+// do manual conversions from a char span to a uint8_t span.
+BASE_EXPORT bool AppendToFile(const FilePath& filename, std::string_view data);
 
 // Gets the current working directory for the process.
 BASE_EXPORT bool GetCurrentDirectory(FilePath* path);

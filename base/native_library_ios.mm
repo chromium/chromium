@@ -4,9 +4,10 @@
 
 #include "base/native_library.h"
 
+#include <string_view>
+
 #include "base/check.h"
 #include "base/notimplemented.h"
-#include "base/strings/string_piece.h"
 #include "base/strings/string_util.h"
 
 namespace base {
@@ -35,12 +36,12 @@ void* GetFunctionPointerFromNativeLibrary(NativeLibrary library,
   return nullptr;
 }
 
-std::string GetNativeLibraryName(StringPiece name) {
+std::string GetNativeLibraryName(std::string_view name) {
   DCHECK(IsStringASCII(name));
   return std::string(name);
 }
 
-std::string GetLoadableModuleName(StringPiece name) {
+std::string GetLoadableModuleName(std::string_view name) {
   return GetNativeLibraryName(name);
 }
 

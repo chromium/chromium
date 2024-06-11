@@ -4,6 +4,8 @@
 
 #include "base/strings/escape.h"
 
+#include <string_view>
+
 // Prevent the optimizer from optimizing away a function call by "using" the
 // result.
 //
@@ -17,7 +19,7 @@ void UseResult(const std::string& input) {
 
 // Entry point for LibFuzzer.
 extern "C" int LLVMFuzzerTestOneInput(const uint8_t* data, size_t size) {
-  base::StringPiece data_string(reinterpret_cast<const char*>(data), size);
+  std::string_view data_string(reinterpret_cast<const char*>(data), size);
 
   UseResult(base::EscapeQueryParamValue(data_string, /*use_plus=*/false));
   UseResult(base::EscapeQueryParamValue(data_string, /*use_plus=*/true));

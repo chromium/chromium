@@ -15,10 +15,10 @@
 #include <compare>
 #include <optional>
 #include <string>
+#include <string_view>
 
 #include "base/base_export.h"
 #include "base/containers/span.h"
-#include "base/strings/string_piece.h"
 
 namespace base {
 
@@ -66,7 +66,8 @@ class BASE_EXPORT Token {
 
   // FromString is the opposite of ToString. It returns std::nullopt if the
   // |string_representation| is invalid.
-  static std::optional<Token> FromString(StringPiece string_representation);
+  static std::optional<Token> FromString(
+      std::string_view string_representation);
 
  private:
   // Note: Two uint64_t are used instead of uint8_t[16] in order to have a

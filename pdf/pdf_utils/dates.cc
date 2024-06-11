@@ -19,7 +19,7 @@ namespace {
 
 class DateDeserializer final {
  public:
-  // `parsing` must outlive `this` because `base::StringPiece` has reference
+  // `parsing` must outlive `this` because `std::string_view` has reference
   // semantics.
   explicit DateDeserializer(std::string_view parsing)
       : deserializing_(parsing) {}

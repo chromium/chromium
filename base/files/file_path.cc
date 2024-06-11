@@ -12,6 +12,7 @@
 #include <string.h>
 
 #include <algorithm>
+#include <string_view>
 
 #include "base/check_op.h"
 #include "base/files/safe_base_name.h"
@@ -19,7 +20,6 @@
 #include "base/pickle.h"
 #include "base/ranges/algorithm.h"
 #include "base/strings/strcat.h"
-#include "base/strings/string_piece.h"
 #include "base/strings/string_util.h"
 #include "base/strings/sys_string_conversions.h"
 #include "base/strings/utf_ostream_operators.h"
@@ -444,8 +444,7 @@ FilePath FilePath::InsertBeforeExtension(StringPieceType suffix) const {
       base::StrCat({RemoveExtension().value(), suffix, Extension()}));
 }
 
-FilePath FilePath::InsertBeforeExtensionASCII(StringPiece suffix)
-    const {
+FilePath FilePath::InsertBeforeExtensionASCII(std::string_view suffix) const {
   DCHECK(IsStringASCII(suffix));
 #if BUILDFLAG(IS_WIN)
   return InsertBeforeExtension(UTF8ToWide(suffix));
@@ -472,7 +471,7 @@ FilePath FilePath::AddExtension(StringPieceType extension) const {
   return FilePath(str);
 }
 
-FilePath FilePath::AddExtensionASCII(StringPiece extension) const {
+FilePath FilePath::AddExtensionASCII(std::string_view extension) const {
   DCHECK(IsStringASCII(extension));
 #if BUILDFLAG(IS_WIN)
   return AddExtension(UTF8ToWide(extension));
@@ -572,7 +571,7 @@ FilePath FilePath::Append(const SafeBaseName& component) const {
   return Append(component.path().value());
 }
 
-FilePath FilePath::AppendASCII(StringPiece component) const {
+FilePath FilePath::AppendASCII(std::string_view component) const {
   DCHECK(base::IsStringASCII(component));
 #if BUILDFLAG(IS_WIN)
   return Append(UTF8ToWide(component));
@@ -658,18 +657,18 @@ std::u16string FilePath::AsUTF16Unsafe() const {
 }
 
 // static
-FilePath FilePath::FromASCII(StringPiece ascii) {
+FilePath FilePath::FromASCII(std::string_view ascii) {
   DCHECK(base::IsStringASCII(ascii));
   return FilePath(ASCIIToWide(ascii));
 }
 
 // static
-FilePath FilePath::FromUTF8Unsafe(StringPiece utf8) {
+FilePath FilePath::FromUTF8Unsafe(std::string_view utf8) {
   return FilePath(UTF8ToWide(utf8));
 }
 
 // static
-FilePath FilePath::FromUTF16Unsafe(StringPiece16 utf16) {
+FilePath FilePath::FromUTF16Unsafe(std::u16string_view utf16) {
   return FilePath(AsWStringView(utf16));
 }
 
@@ -705,13 +704,13 @@ std::u16string FilePath::AsUTF16Unsafe() const {
 }
 
 // static
-FilePath FilePath::FromASCII(StringPiece ascii) {
+FilePath FilePath::FromASCII(std::string_view ascii) {
   DCHECK(base::IsStringASCII(ascii));
   return FilePath(ascii);
 }
 
 // static
-FilePath FilePath::FromUTF8Unsafe(StringPiece utf8) {
+FilePath FilePath::FromUTF8Unsafe(std::string_view utf8) {
 #if defined(SYSTEM_NATIVE_UTF8)
   return FilePath(utf8);
 #else
@@ -720,7 +719,7 @@ FilePath FilePath::FromUTF8Unsafe(StringPiece utf8) {
 }
 
 // static
-FilePath FilePath::FromUTF16Unsafe(StringPiece16 utf16) {
+FilePath FilePath::FromUTF16Unsafe(std::u16string_view utf16) {
 #if defined(SYSTEM_NATIVE_UTF8)
   return FilePath(UTF16ToUTF8(utf16));
 #else

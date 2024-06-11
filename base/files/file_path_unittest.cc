@@ -12,6 +12,7 @@
 #include <stddef.h>
 
 #include <sstream>
+#include <string_view>
 
 #include "base/files/safe_base_name.h"
 #include "base/strings/utf_ostream_operators.h"
@@ -67,7 +68,7 @@ struct BinaryIntTestData {
 
 struct UTF8TestData {
   FilePath::StringPieceType native;
-  StringPiece utf8;
+  std::string_view utf8;
 };
 
 // file_util winds up using autoreleased objects on the Mac, so this needs

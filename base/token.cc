@@ -12,12 +12,12 @@
 #include <inttypes.h>
 
 #include <optional>
+#include <string_view>
 
 #include "base/check.h"
 #include "base/hash/hash.h"
 #include "base/pickle.h"
 #include "base/rand_util.h"
-#include "base/strings/string_piece.h"
 #include "base/strings/stringprintf.h"
 
 namespace base {
@@ -40,7 +40,7 @@ std::string Token::ToString() const {
 }
 
 // static
-std::optional<Token> Token::FromString(StringPiece string_representation) {
+std::optional<Token> Token::FromString(std::string_view string_representation) {
   if (string_representation.size() != 32) {
     return std::nullopt;
   }

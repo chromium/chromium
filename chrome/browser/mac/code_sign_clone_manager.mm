@@ -14,6 +14,7 @@
 
 #include <iomanip>
 #include <string>
+#include <string_view>
 #include <vector>
 
 #include "base/apple/foundation_util.h"
@@ -250,7 +251,7 @@ bool GetCloneTempDir(base::FilePath* path) {
   if (!GetCleanupOnBootTempDir(&temp_dir)) {
     return false;
   }
-  base::StringPiece prefix = base::apple::BaseBundleID();
+  std::string_view prefix = base::apple::BaseBundleID();
   *path = base::MakeAbsoluteFilePath(temp_dir).Append(
       base::StrCat({prefix, ".", kCodeSignClone}));
   return true;

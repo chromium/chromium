@@ -15,6 +15,7 @@
 
 #include <memory>
 #include <string>
+#include <string_view>
 #include <tuple>
 
 #include "base/containers/heap_array.h"
@@ -96,11 +97,11 @@ void VerifyResult(const Pickle& pickle) {
   EXPECT_TRUE(iter.ReadString16(&outstring16));
   EXPECT_EQ(teststring16, outstring16);
 
-  StringPiece outstringpiece;
+  std::string_view outstringpiece;
   EXPECT_TRUE(iter.ReadStringPiece(&outstringpiece));
   EXPECT_EQ(testrawstring, outstringpiece);
 
-  StringPiece16 outstringpiece16;
+  std::u16string_view outstringpiece16;
   EXPECT_TRUE(iter.ReadStringPiece16(&outstringpiece16));
   EXPECT_EQ(testrawstring16, outstringpiece16);
 

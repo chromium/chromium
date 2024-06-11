@@ -9,11 +9,11 @@
 // a loadable module.
 
 #include <string>
+#include <string_view>
 
 #include "base/base_export.h"
 #include "base/files/file_path.h"
 #include "base/memory/raw_ptr_exclusion.h"
-#include "base/strings/string_piece.h"
 #include "build/build_config.h"
 
 #if BUILDFLAG(IS_WIN)
@@ -122,13 +122,13 @@ BASE_EXPORT void* GetFunctionPointerFromNativeLibrary(NativeLibrary library,
 // - "mylib.dll" on Windows
 // - "libmylib.so" on Linux
 // - "libmylib.dylib" on Mac
-BASE_EXPORT std::string GetNativeLibraryName(StringPiece name);
+BASE_EXPORT std::string GetNativeLibraryName(std::string_view name);
 
 // Returns the full platform-specific name for a gn |loadable_module| target.
 // See tools/gn/docs/reference.md#loadable_module
 // The returned name is the same as GetNativeLibraryName() on all platforms
 // except for Mac where for "mylib" it returns "mylib.so".
-BASE_EXPORT std::string GetLoadableModuleName(StringPiece name);
+BASE_EXPORT std::string GetLoadableModuleName(std::string_view name);
 
 }  // namespace base
 

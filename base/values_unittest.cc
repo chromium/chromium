@@ -141,7 +141,7 @@ TEST(ValuesTest, ConstructStringFromConstCharPtr) {
 
 TEST(ValuesTest, ConstructStringFromStringPiece) {
   std::string str = "foobar";
-  Value value{StringPiece(str)};
+  Value value{std::string_view(str)};
   EXPECT_EQ(Value::Type::STRING, value.type());
   EXPECT_THAT(value.GetIfString(), testing::Pointee(std::string("foobar")));
   EXPECT_EQ("foobar", value.GetString());
@@ -165,7 +165,7 @@ TEST(ValuesTest, ConstructStringFromConstChar16Ptr) {
 
 TEST(ValuesTest, ConstructStringFromStringPiece16) {
   std::u16string str = u"foobar";
-  Value value{StringPiece16(str)};
+  Value value{std::u16string_view(str)};
   EXPECT_EQ(Value::Type::STRING, value.type());
   EXPECT_THAT(value.GetIfString(), testing::Pointee(std::string("foobar")));
   EXPECT_EQ("foobar", value.GetString());
@@ -491,7 +491,7 @@ TEST(ValuesTest, Append) {
   list.Append(str.c_str());
   EXPECT_TRUE(list.back().is_string());
 
-  list.Append(StringPiece(str));
+  list.Append(std::string_view(str));
   EXPECT_TRUE(list.back().is_string());
 
   list.Append(std::move(str));
@@ -1047,8 +1047,8 @@ TEST(ValuesTest, SetKey) {
   dict.Set("dict", Value::Dict());
 
   Value::Dict dict2;
-  dict2.Set(StringPiece("null"), Value(Value::Type::NONE));
-  dict2.Set(StringPiece("bool"), Value(Value::Type::BOOLEAN));
+  dict2.Set(std::string_view("null"), Value(Value::Type::NONE));
+  dict2.Set(std::string_view("bool"), Value(Value::Type::BOOLEAN));
   dict2.Set(std::string("int"), Value(Value::Type::INTEGER));
   dict2.Set(std::string("double"), Value(Value::Type::DOUBLE));
   dict2.Set(std::string("string"), Value(Value::Type::STRING));
@@ -1305,7 +1305,7 @@ TEST(ValuesTest, SetStringPath) {
   ASSERT_TRUE(found->is_string());
   EXPECT_EQ("bonjour monde", found->GetString());
 
-  ASSERT_TRUE(root.SetByDottedPath("foo.bar", StringPiece("rah rah")));
+  ASSERT_TRUE(root.SetByDottedPath("foo.bar", std::string_view("rah rah")));
   ASSERT_TRUE(root.SetByDottedPath("foo.bar", std::string("temp string")));
   ASSERT_TRUE(root.SetByDottedPath("foo.bar", u"temp string"));
 
@@ -2158,17 +2158,20 @@ TEST(ValueViewTest, BasicConstruction) {
                                v.data_view_for_test()));
   }
   {
-    ValueView v = StringPiece("hello world");
-    EXPECT_EQ("hello world", absl::get<StringPiece>(v.data_view_for_test()));
+    ValueView v = std::string_view("hello world");
+    EXPECT_EQ("hello world",
+              absl::get<std::string_view>(v.data_view_for_test()));
   }
   {
     ValueView v = "hello world";
-    EXPECT_EQ("hello world", absl::get<StringPiece>(v.data_view_for_test()));
+    EXPECT_EQ("hello world",
+              absl::get<std::string_view>(v.data_view_for_test()));
   }
   {
     std::string str = "hello world";
     ValueView v = str;
-    EXPECT_EQ("hello world", absl::get<StringPiece>(v.data_view_for_test()));
+    EXPECT_EQ("hello world",
+              absl::get<std::string_view>(v.data_view_for_test()));
   }
   {
     Value::Dict dict;
@@ -2207,7 +2210,8 @@ TEST(ValueViewTest, ValueConstruction) {
   {
     Value val("hello world");
     ValueView v = val;
-    EXPECT_EQ("hello world", absl::get<StringPiece>(v.data_view_for_test()));
+    EXPECT_EQ("hello world",
+              absl::get<std::string_view>(v.data_view_for_test()));
   }
   {
     Value::Dict dict;

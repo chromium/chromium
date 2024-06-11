@@ -15,6 +15,7 @@
 
 #include <algorithm>
 #include <string>
+#include <string_view>
 #include <utility>
 
 #include "base/check.h"
@@ -57,7 +58,7 @@ constexpr auto kReplacePauseInterval = Milliseconds(100);
 #endif
 
 void UmaHistogramTimesWithSuffix(const char* histogram_name,
-                                 StringPiece histogram_suffix,
+                                 std::string_view histogram_suffix,
                                  base::TimeDelta sample) {
   DCHECK(histogram_name);
   std::string histogram_full_name(histogram_name);
@@ -109,9 +110,10 @@ void DeleteTmpFileWithRetry(File tmp_file,
 }  // namespace
 
 // static
-bool ImportantFileWriter::WriteFileAtomically(const FilePath& path,
-                                              StringPiece data,
-                                              StringPiece histogram_suffix) {
+bool ImportantFileWriter::WriteFileAtomically(
+    const FilePath& path,
+    std::string_view data,
+    std::string_view histogram_suffix) {
   // Calling the impl by way of the public WriteFileAtomically, so
   // |from_instance| is false.
   return WriteFileAtomicallyImpl(path, data, histogram_suffix,
@@ -147,10 +149,11 @@ void ImportantFileWriter::ProduceAndWriteStringToFileAtomically(
 }
 
 // static
-bool ImportantFileWriter::WriteFileAtomicallyImpl(const FilePath& path,
-                                                  StringPiece data,
-                                                  StringPiece histogram_suffix,
-                                                  bool from_instance) {
+bool ImportantFileWriter::WriteFileAtomicallyImpl(
+    const FilePath& path,
+    std::string_view data,
+    std::string_view histogram_suffix,
+    bool from_instance) {
   const TimeTicks write_start = TimeTicks::Now();
   if (!from_instance)
     ImportantFileWriterCleaner::AddDirectory(path.DirName());
@@ -275,7 +278,7 @@ bool ImportantFileWriter::WriteFileAtomicallyImpl(const FilePath& path,
 ImportantFileWriter::ImportantFileWriter(
     const FilePath& path,
     scoped_refptr<SequencedTaskRunner> task_runner,
-    StringPiece histogram_suffix)
+    std::string_view histogram_suffix)
     : ImportantFileWriter(path,
                           std::move(task_runner),
                           kDefaultCommitInterval,
@@ -285,7 +288,7 @@ ImportantFileWriter::ImportantFileWriter(
     const FilePath& path,
     scoped_refptr<SequencedTaskRunner> task_runner,
     TimeDelta interval,
-    StringPiece histogram_suffix)
+    std::string_view histogram_suffix)
     : path_(path),
       task_runner_(std::move(task_runner)),
       commit_interval_(interval),

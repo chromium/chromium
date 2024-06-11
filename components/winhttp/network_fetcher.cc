@@ -8,6 +8,7 @@
 #include <limits>
 #include <optional>
 #include <string>
+#include <string_view>
 #include <utility>
 #include <vector>
 
@@ -22,7 +23,6 @@
 #include "base/numerics/safe_math.h"
 #include "base/strings/strcat.h"
 #include "base/strings/string_number_conversions_win.h"
-#include "base/strings/string_piece.h"
 #include "base/strings/stringprintf.h"
 #include "base/strings/sys_string_conversions.h"
 #include "base/strings/utf_string_conversions.h"
@@ -511,7 +511,7 @@ void __stdcall NetworkFetcher::WinHttpStatusCallback(HINTERNET handle,
   CHECK(handle);
   CHECK(context);
 
-  base::StringPiece status_string;
+  std::string_view status_string;
   std::wstring info_string;
   switch (status) {
     case WINHTTP_CALLBACK_STATUS_HANDLE_CREATED:

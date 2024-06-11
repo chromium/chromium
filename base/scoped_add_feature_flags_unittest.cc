@@ -6,6 +6,7 @@
 
 #include <cstring>
 #include <string>
+#include <string_view>
 
 #include "base/base_switches.h"
 #include "base/command_line.h"
@@ -19,7 +20,7 @@ namespace {
 
 // Converts a string to CommandLine::StringType, which is std::wstring on
 // Windows and std::string on other platforms.
-CommandLine::StringType ToCommandLineStringType(StringPiece s) {
+CommandLine::StringType ToCommandLineStringType(std::string_view s) {
   return CommandLine::StringType(s.begin(), s.end());
 }
 

@@ -18,6 +18,8 @@
 #include <stdint.h>
 #include <stdio.h>
 
+#include <string_view>
+
 #include "base/command_line.h"
 #include "base/format_macros.h"
 #include "base/strings/string_number_conversions.h"
@@ -120,7 +122,7 @@ class Dimensions {
   // On failure, will set its state in such a way that IsValid will return
   // false.
   void FromString(const std::string& arg) {
-    std::vector<base::StringPiece> strings = base::SplitStringPiece(
+    std::vector<std::string_view> strings = base::SplitStringPiece(
         arg, "x", base::TRIM_WHITESPACE, base::SPLIT_WANT_ALL);
     if (strings.size() != 2 ||
         base::StringToInt(strings[0], &width_) == false ||

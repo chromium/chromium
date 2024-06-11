@@ -188,7 +188,7 @@ void SymbolMap::Populate() {
       // The "module" stack trace annotation doesn't allow for strings which
       // resemble paths, so extract the filename portion from |link_map_name|.
       size_t directory_prefix_idx = link_map_name.find_last_of("/");
-      if (directory_prefix_idx != StringPiece::npos) {
+      if (directory_prefix_idx != std::string_view::npos) {
         link_map_name = link_map_name.substr(
             directory_prefix_idx + 1,
             link_map_name.size() - directory_prefix_idx - 1);

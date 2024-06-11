@@ -75,6 +75,8 @@ You can include the above generated header in your sources in order to use the
 definitions therein:
 
 ``` cpp
+#include <string_view>
+
 #include "services/business/public/mojom/factory.mojom.h"
 
 class TableImpl : public db::mojom::Table {
@@ -1491,11 +1493,11 @@ returning a read-only view of the data in the accessor is recommended to
 avoid copying. It is safe because the input object is guaranteed to
 outlive the usage of the result returned by the accessor method.
 
-The following example uses `StringPiece` to return a view of the GURL's
+The following example uses `std::string_view` to return a view of the GURL's
 data (`//url/mojom/url_gurl_mojom_traits.h`):
 
 ``` cpp
-#include "base/strings/string_piece.h"
+
 #include "url/gurl.h"
 #include "url/mojom/url.mojom.h"
 #include "url/url_constants.h"
@@ -1645,7 +1647,7 @@ to valid getter return types:
 | `FooEnum`                    | Value of any type that has an appropriate `EnumTraits` specialization defined. By default this includes only the generated `FooEnum` type.
 | `FooStruct`                  | Value or reference to any type that has an appropriate `StructTraits` specialization defined. By default this includes only the generated `FooStructPtr` type.
 | `FooUnion`                   | Value of reference to any type that has an appropriate `UnionTraits` specialization defined. By default this includes only the generated `FooUnionPtr` type.
-| `Foo?`                       | `absl::optional<CppType>`, where `CppType` is the value type defined by the appropriate traits class specialization (e.g. `StructTraits`, `mojo::MapTraits`, etc.). This may be customized by the [typemapping](#Enabling-a-New-Type-Mapping).
+| `Foo?`                       | `std::optional<CppType>`, where `CppType` is the value type defined by the appropriate traits class specialization (e.g. `StructTraits`, `mojo::MapTraits`, etc.). This may be customized by the [typemapping](#Enabling-a-New-Type-Mapping).
 
 ### Using Generated DataView Types
 

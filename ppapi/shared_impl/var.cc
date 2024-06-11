@@ -7,6 +7,7 @@
 #include <stddef.h>
 
 #include <limits>
+#include <string_view>
 
 #include "base/check.h"
 #include "base/strings/string_number_conversions.h"
@@ -47,8 +48,8 @@ std::string Var::PPVarToLogString(PP_Var var) {
       else
         result = string->value();
 
-      base::ReplaceSubstringsAfterOffset(
-          &result, 0, base::StringPiece("\0", 1), "\\0");
+      base::ReplaceSubstringsAfterOffset(&result, 0, std::string_view("\0", 1),
+                                         "\\0");
       return result;
     }
     case PP_VARTYPE_OBJECT:

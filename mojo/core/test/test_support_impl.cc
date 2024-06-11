@@ -32,7 +32,7 @@ base::FilePath ResolveSourceRootRelativePath(const char* relative_path) {
     return base::FilePath();
   }
 
-  for (const std::string_view& component : base::SplitStringPiece(
+  for (std::string_view component : base::SplitStringPiece(
            relative_path, "/", base::TRIM_WHITESPACE, base::SPLIT_WANT_ALL)) {
     if (!component.empty())
       path = path.AppendASCII(component);

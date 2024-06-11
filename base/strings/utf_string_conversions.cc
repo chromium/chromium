@@ -17,7 +17,6 @@
 #include <string_view>
 #include <type_traits>
 
-#include "base/strings/string_piece.h"
 #include "base/strings/string_util.h"
 #include "base/strings/utf_ostream_operators.h"
 #include "base/strings/utf_string_conversion_utils.h"
@@ -229,10 +228,10 @@ bool UTFConversion(const InputString& src_str, DestString* dest_str) {
 // UTF16 <-> UTF8 --------------------------------------------------------------
 
 bool UTF8ToUTF16(const char* src, size_t src_len, std::u16string* output) {
-  return UTFConversion(StringPiece(src, src_len), output);
+  return UTFConversion(std::string_view(src, src_len), output);
 }
 
-std::u16string UTF8ToUTF16(StringPiece utf8) {
+std::u16string UTF8ToUTF16(std::string_view utf8) {
   std::u16string ret;
   // Ignore the success flag of this call, it will do the best it can for
   // invalid input, which is what we want here.
@@ -241,10 +240,10 @@ std::u16string UTF8ToUTF16(StringPiece utf8) {
 }
 
 bool UTF16ToUTF8(const char16_t* src, size_t src_len, std::string* output) {
-  return UTFConversion(StringPiece16(src, src_len), output);
+  return UTFConversion(std::u16string_view(src, src_len), output);
 }
 
-std::string UTF16ToUTF8(StringPiece16 utf16) {
+std::string UTF16ToUTF8(std::u16string_view utf16) {
   std::string ret;
   // Ignore the success flag of this call, it will do the best it can for
   // invalid input, which is what we want here.
@@ -271,7 +270,7 @@ bool UTF16ToWide(const char16_t* src, size_t src_len, std::wstring* output) {
   return true;
 }
 
-std::wstring UTF16ToWide(StringPiece16 utf16) {
+std::wstring UTF16ToWide(std::u16string_view utf16) {
   return std::wstring(utf16.begin(), utf16.end());
 }
 
@@ -290,10 +289,10 @@ std::u16string WideToUTF16(std::wstring_view wide) {
 }
 
 bool UTF16ToWide(const char16_t* src, size_t src_len, std::wstring* output) {
-  return UTFConversion(StringPiece16(src, src_len), output);
+  return UTFConversion(std::u16string_view(src, src_len), output);
 }
 
-std::wstring UTF16ToWide(StringPiece16 utf16) {
+std::wstring UTF16ToWide(std::u16string_view utf16) {
   std::wstring ret;
   // Ignore the success flag of this call, it will do the best it can for
   // invalid input, which is what we want here.
@@ -308,10 +307,10 @@ std::wstring UTF16ToWide(StringPiece16 utf16) {
 // UTF8ToWide is the same code, regardless of whether wide is 16 or 32 bits
 
 bool UTF8ToWide(const char* src, size_t src_len, std::wstring* output) {
-  return UTFConversion(StringPiece(src, src_len), output);
+  return UTFConversion(std::string_view(src, src_len), output);
 }
 
-std::wstring UTF8ToWide(StringPiece utf8) {
+std::wstring UTF8ToWide(std::string_view utf8) {
   std::wstring ret;
   // Ignore the success flag of this call, it will do the best it can for
   // invalid input, which is what we want here.
@@ -327,7 +326,7 @@ bool WideToUTF8(const wchar_t* src, size_t src_len, std::string* output) {
 }
 
 std::string WideToUTF8(std::wstring_view wide) {
-  return UTF16ToUTF8(StringPiece16(as_u16cstr(wide), wide.size()));
+  return UTF16ToUTF8(std::u16string_view(as_u16cstr(wide), wide.size()));
 }
 
 #elif defined(WCHAR_T_IS_32_BIT)
@@ -346,18 +345,18 @@ std::string WideToUTF8(std::wstring_view wide) {
 
 #endif  // defined(WCHAR_T_IS_32_BIT)
 
-std::u16string ASCIIToUTF16(StringPiece ascii) {
+std::u16string ASCIIToUTF16(std::string_view ascii) {
   DCHECK(IsStringASCII(ascii)) << ascii;
   return std::u16string(ascii.begin(), ascii.end());
 }
 
-std::string UTF16ToASCII(StringPiece16 utf16) {
+std::string UTF16ToASCII(std::u16string_view utf16) {
   DCHECK(IsStringASCII(utf16)) << UTF16ToUTF8(utf16);
   return std::string(utf16.begin(), utf16.end());
 }
 
 #if defined(WCHAR_T_IS_16_BIT)
-std::wstring ASCIIToWide(StringPiece ascii) {
+std::wstring ASCIIToWide(std::string_view ascii) {
   DCHECK(IsStringASCII(ascii)) << ascii;
   return std::wstring(ascii.begin(), ascii.end());
 }

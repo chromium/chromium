@@ -103,7 +103,7 @@ TEST(TracedValueSupportTest, WideString) {
   EXPECT_EQ(perfetto::TracedValueToString(std::wstring(L"wide")), "wide");
 }
 
-TEST(TracedValueSupportTest, StringPiece) {
+TEST(TracedValueSupportTest, StdString) {
   EXPECT_EQ(perfetto::TracedValueToString(std::string_view("string")),
             "string");
   EXPECT_EQ(perfetto::TracedValueToString(std::u16string_view(u"utf-16")),

@@ -14,7 +14,6 @@
 #include "base/apple/foundation_util.h"
 #include "base/apple/scoped_cftyperef.h"
 #include "base/numerics/safe_conversions.h"
-#include "base/strings/string_piece.h"
 
 namespace base {
 
@@ -96,8 +95,8 @@ OutStringType StringToStringWithEncodingsT(const InStringType& in,
                                                       out_encoding);
 }
 
-// Given a StringPiece `in` with an encoding specified by `in_encoding`, returns
-// it as a CFStringRef. Returns null on failure.
+// Given a std::string_view `in` with an encoding specified by `in_encoding`,
+// returns it as a CFStringRef. Returns null on failure.
 template <typename CharT>
 apple::ScopedCFTypeRef<CFStringRef> StringPieceToCFStringWithEncodingsT(
     std::basic_string_view<CharT> in,
@@ -126,8 +125,8 @@ std::string SysWideToUTF8(const std::wstring& wide) {
 }
 
 // Do not assert in this function since it is used by the assertion code!
-std::wstring SysUTF8ToWide(StringPiece utf8) {
-  return StringToStringWithEncodingsT<StringPiece, std::wstring>(
+std::wstring SysUTF8ToWide(std::string_view utf8) {
+  return StringToStringWithEncodingsT<std::string_view, std::wstring>(
       utf8, kCFStringEncodingUTF8, kCFStringEncodingUTF32LE);
 }
 
@@ -135,23 +134,25 @@ std::string SysWideToNativeMB(const std::wstring& wide) {
   return SysWideToUTF8(wide);
 }
 
-std::wstring SysNativeMBToWide(StringPiece native_mb) {
+std::wstring SysNativeMBToWide(std::string_view native_mb) {
   return SysUTF8ToWide(native_mb);
 }
 
-apple::ScopedCFTypeRef<CFStringRef> SysUTF8ToCFStringRef(StringPiece utf8) {
+apple::ScopedCFTypeRef<CFStringRef> SysUTF8ToCFStringRef(
+    std::string_view utf8) {
   return StringPieceToCFStringWithEncodingsT(utf8, kCFStringEncodingUTF8);
 }
 
-apple::ScopedCFTypeRef<CFStringRef> SysUTF16ToCFStringRef(StringPiece16 utf16) {
+apple::ScopedCFTypeRef<CFStringRef> SysUTF16ToCFStringRef(
+    std::u16string_view utf16) {
   return StringPieceToCFStringWithEncodingsT(utf16, kCFStringEncodingUTF16LE);
 }
 
-NSString* SysUTF8ToNSString(StringPiece utf8) {
+NSString* SysUTF8ToNSString(std::string_view utf8) {
   return base::apple::CFToNSOwnershipCast(SysUTF8ToCFStringRef(utf8).release());
 }
 
-NSString* SysUTF16ToNSString(StringPiece16 utf16) {
+NSString* SysUTF16ToNSString(std::u16string_view utf16) {
   return base::apple::CFToNSOwnershipCast(
       SysUTF16ToCFStringRef(utf16).release());
 }

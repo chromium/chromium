@@ -18,6 +18,7 @@
 #include <map>
 #include <optional>
 #include <string>
+#include <string_view>
 #include <vector>
 
 #include "base/allocator/partition_allocator/src/partition_alloc/partition_root.h"
@@ -101,7 +102,7 @@ std::map<base::PlatformThreadId, std::string> ThreadNames(pid_t pid) {
     buffer[bytes_read] = '\0';
     auto lines = SplitString(buffer, "\n", base::TRIM_WHITESPACE,
                              base::SPLIT_WANT_NONEMPTY);
-    for (base::StringPiece sp : lines) {
+    for (std::string_view sp : lines) {
       if (sp.rfind("NSpid:\t", 0) == 0) {
         auto line_parts = SplitString(sp, "\t", base::TRIM_WHITESPACE,
                                       base::SPLIT_WANT_NONEMPTY);

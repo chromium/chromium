@@ -19,6 +19,7 @@
 #include <array>
 #include <limits>
 #include <string>
+#include <string_view>
 #include <utility>
 #include <vector>
 
@@ -40,7 +41,6 @@
 #include "base/rand_util.h"
 #include "base/strings/strcat.h"
 #include "base/strings/string_number_conversions.h"
-#include "base/strings/string_piece.h"
 #include "base/strings/string_util.h"
 #include "base/strings/string_util_win.h"
 #include "base/strings/utf_string_conversions.h"
@@ -1074,7 +1074,7 @@ bool AppendToFile(const FilePath& filename, span<const uint8_t> data) {
   return false;
 }
 
-bool AppendToFile(const FilePath& filename, StringPiece data) {
+bool AppendToFile(const FilePath& filename, std::string_view data) {
   return AppendToFile(filename, as_bytes(make_span(data)));
 }
 

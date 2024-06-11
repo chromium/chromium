@@ -15,6 +15,7 @@
 #include <iostream>
 #include <limits>
 #include <string>
+#include <string_view>
 #include <unordered_map>
 #include <unordered_set>
 #include <utility>
@@ -57,7 +58,7 @@ class BitSet {
     while (end > 0 && data_[end - 1] == '\0')
       --end;
 
-    return base::Base64Encode(base::StringPiece(data_.data(), end));
+    return base::Base64Encode(std::string_view(data_.data(), end));
   }
 
  private:

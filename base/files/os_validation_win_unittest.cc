@@ -9,6 +9,7 @@
 #include <iterator>
 #include <memory>
 #include <string>
+#include <string_view>
 #include <tuple>
 
 #include "base/files/file_path.h"
@@ -211,7 +212,7 @@ class OpenFileTest : public OsValidationTest,
  private:
   struct BitAndName {
     DWORD bit;
-    StringPiece name;
+    std::string_view name;
   };
 
   // Appends the names of the bits present in |bitfield| to |result| based on

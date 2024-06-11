@@ -10,12 +10,12 @@
 #include "base/strings/escape.h"
 
 #include <ostream>
+#include <string_view>
 
 #include "base/check_op.h"
 #include "base/feature_list.h"
 #include "base/features.h"
 #include "base/strings/string_number_conversions.h"
-#include "base/strings/string_piece.h"
 #include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversion_utils.h"
 #include "base/strings/utf_string_conversions.h"
@@ -42,7 +42,7 @@ struct Charmap {
 // to +, otherwise, if spaces are in the charmap, they are converted to
 // %20. And if keep_escaped is true, %XX will be kept as it is, otherwise, if
 // '%' is in the charmap, it is converted to %25.
-std::string Escape(StringPiece text,
+std::string Escape(std::string_view text,
                    const Charmap& charmap,
                    bool use_plus,
                    bool keep_escaped = false) {
@@ -70,7 +70,7 @@ template <class str>
 void AppendEscapedCharForHTMLImpl(typename str::value_type c, str* output) {
   static constexpr struct {
     char key;
-    StringPiece replacement;
+    std::string_view replacement;
   } kCharsToEscape[] = {
       {'<', "&lt;"},   {'>', "&gt;"},   {'&', "&amp;"},
       {'"', "&quot;"}, {'\'', "&#39;"},
@@ -186,7 +186,7 @@ const char kUrlUnescape[128] = {
 // Attempts to unescape the sequence at |index| within |escaped_text|.  If
 // successful, sets |value| to the unescaped value.  Returns whether
 // unescaping succeeded.
-bool UnescapeUnsignedByteAtIndex(StringPiece escaped_text,
+bool UnescapeUnsignedByteAtIndex(std::string_view escaped_text,
                                  size_t index,
                                  unsigned char* value) {
   if ((index + 2) >= escaped_text.size())
@@ -208,7 +208,7 @@ bool UnescapeUnsignedByteAtIndex(StringPiece escaped_text,
 // the character's code point and |unescaped_out| to be the unescaped UTF-8
 // string. |unescaped_out| will always be 1/3rd the length of the substring of
 // |escaped_text| that corresponds to the unescaped character.
-bool UnescapeUTF8CharacterAtIndex(StringPiece escaped_text,
+bool UnescapeUTF8CharacterAtIndex(std::string_view escaped_text,
                                   size_t index,
                                   base_icu::UChar32* code_point_out,
                                   std::string* unescaped_out) {
@@ -387,7 +387,7 @@ bool ShouldUnescapeCodePoint(UnescapeRule::Type rules,
 // character.  The resulting |adjustments| will always be sorted by increasing
 // offset.
 std::string UnescapeURLWithAdjustmentsImpl(
-    StringPiece escaped_text,
+    std::string_view escaped_text,
     UnescapeRule::Type rules,
     OffsetAdjuster::Adjustments* adjustments) {
   if (adjustments)
@@ -461,37 +461,37 @@ std::string UnescapeURLWithAdjustmentsImpl(
 
 }  // namespace
 
-std::string EscapeAllExceptUnreserved(StringPiece text) {
+std::string EscapeAllExceptUnreserved(std::string_view text) {
   return Escape(text, kUnreservedCharmap, false);
 }
 
-std::string EscapeQueryParamValue(StringPiece text, bool use_plus) {
+std::string EscapeQueryParamValue(std::string_view text, bool use_plus) {
   return Escape(text, kQueryCharmap, use_plus);
 }
 
-std::string EscapePath(StringPiece path) {
+std::string EscapePath(std::string_view path) {
   return Escape(path, kPathCharmap, false);
 }
 
 #if BUILDFLAG(IS_APPLE)
-std::string EscapeNSURLPrecursor(StringPiece precursor) {
+std::string EscapeNSURLPrecursor(std::string_view precursor) {
   return Escape(precursor, kNSURLCharmap, false, true);
 }
 #endif  // BUILDFLAG(IS_APPLE)
 
-std::string EscapeUrlEncodedData(StringPiece path, bool use_plus) {
+std::string EscapeUrlEncodedData(std::string_view path, bool use_plus) {
   return Escape(path, kUrlEscape, use_plus);
 }
 
-std::string EscapeNonASCIIAndPercent(StringPiece input) {
+std::string EscapeNonASCIIAndPercent(std::string_view input) {
   return Escape(input, kNonASCIICharmapAndPercent, false);
 }
 
-std::string EscapeNonASCII(StringPiece input) {
+std::string EscapeNonASCII(std::string_view input) {
   return Escape(input, kNonASCIICharmap, false);
 }
 
-std::string EscapeExternalHandlerValue(StringPiece text) {
+std::string EscapeExternalHandlerValue(std::string_view text) {
   return Escape(text, kExternalHandlerCharmap, false, true);
 }
 
@@ -499,21 +499,21 @@ void AppendEscapedCharForHTML(char c, std::string* output) {
   AppendEscapedCharForHTMLImpl(c, output);
 }
 
-std::string EscapeForHTML(StringPiece input) {
+std::string EscapeForHTML(std::string_view input) {
   return EscapeForHTMLImpl(input);
 }
 
-std::u16string EscapeForHTML(StringPiece16 input) {
+std::u16string EscapeForHTML(std::u16string_view input) {
   return EscapeForHTMLImpl(input);
 }
 
-std::string UnescapeURLComponent(StringPiece escaped_text,
+std::string UnescapeURLComponent(std::string_view escaped_text,
                                  UnescapeRule::Type rules) {
   return UnescapeURLWithAdjustmentsImpl(escaped_text, rules, nullptr);
 }
 
 std::u16string UnescapeAndDecodeUTF8URLComponentWithAdjustments(
-    StringPiece text,
+    std::string_view text,
     UnescapeRule::Type rules,
     OffsetAdjuster::Adjustments* adjustments) {
   std::u16string result;
@@ -533,7 +533,7 @@ std::u16string UnescapeAndDecodeUTF8URLComponentWithAdjustments(
   return UTF8ToUTF16WithAdjustments(text, adjustments);
 }
 
-std::string UnescapeBinaryURLComponent(StringPiece escaped_text,
+std::string UnescapeBinaryURLComponent(std::string_view escaped_text,
                                        UnescapeRule::Type rules) {
   // Only NORMAL and REPLACE_PLUS_WITH_SPACE are supported.
   DCHECK(rules != UnescapeRule::NONE);
@@ -598,7 +598,7 @@ std::string UnescapeBinaryURLComponent(StringPiece escaped_text,
   return unescaped_text;
 }
 
-bool UnescapeBinaryURLComponentSafe(StringPiece escaped_text,
+bool UnescapeBinaryURLComponentSafe(std::string_view escaped_text,
                                     bool fail_on_path_separators,
                                     std::string* unescaped_text) {
   unescaped_text->clear();
@@ -618,7 +618,7 @@ bool UnescapeBinaryURLComponentSafe(StringPiece escaped_text,
   return true;
 }
 
-bool ContainsEncodedBytes(StringPiece escaped_text,
+bool ContainsEncodedBytes(std::string_view escaped_text,
                           const std::set<unsigned char>& bytes) {
   for (size_t i = 0, max = escaped_text.size(); i < max;) {
     unsigned char byte;
@@ -638,7 +638,7 @@ bool ContainsEncodedBytes(StringPiece escaped_text,
   return false;
 }
 
-std::u16string UnescapeForHTML(StringPiece16 input) {
+std::u16string UnescapeForHTML(std::u16string_view input) {
   static const struct {
     const char* ampersand_code;
     const char16_t replacement;

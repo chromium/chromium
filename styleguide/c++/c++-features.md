@@ -1798,7 +1798,7 @@ invocable type.
   conversion will trigger a `static_assert` requesting additional feedback for
   use cases where this conversion would be valuable.
 - *Important:* `base::FunctionRef` must not outlive the function call. Like
-  `base::StringPiece`, `base::FunctionRef` is a *non-owning* reference. Using a
+  `std::string_view`, `base::FunctionRef` is a *non-owning* reference. Using a
   `base::FunctionRef` as a return value or class field is dangerous and likely
   to result in lifetime bugs.
 

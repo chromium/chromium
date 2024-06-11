@@ -26,7 +26,6 @@
 #include "base/containers/flat_map.h"
 #include "base/containers/span.h"
 #include "base/memory/raw_ref.h"
-#include "base/strings/string_piece.h"
 #include "base/trace_event/base_tracing_forward.h"
 #include "base/value_iterators.h"
 #include "third_party/abseil-cpp/absl/types/variant.h"
@@ -837,11 +836,11 @@ class BASE_EXPORT GSL_OWNER Value {
   friend bool operator==(double lhs, const Value& rhs) { return rhs == lhs; }
   friend bool operator!=(const Value& lhs, double rhs) { return !(lhs == rhs); }
   friend bool operator!=(double lhs, const Value& rhs) { return !(lhs == rhs); }
-  // Note: StringPiece16 overload intentionally omitted: Value internally stores
-  // strings as UTF-8. While it is possible to implement a comparison operator
-  // that would not require first creating a new UTF-8 string from the UTF-16
-  // string argument, it is simpler to just not implement it at all for a rare
-  // use case.
+  // Note: std::u16string_view overload intentionally omitted: Value internally
+  // stores strings as UTF-8. While it is possible to implement a comparison
+  // operator that would not require first creating a new UTF-8 string from the
+  // UTF-16 string argument, it is simpler to just not implement it at all for a
+  // rare use case.
   BASE_EXPORT friend bool operator==(const Value& lhs, std::string_view rhs);
   friend bool operator==(std::string_view lhs, const Value& rhs) {
     return rhs == lhs;
@@ -999,10 +998,10 @@ class BASE_EXPORT GSL_OWNER Value {
 // serialization methods without having to clone the contents and transfer
 // ownership of the clone to a `Value` wrapper object.
 //
-// Like `StringPiece` and `span<T>`, this adapter does NOT retain ownership. Any
-// underlying object that is passed by reference (i.e. `std::string`,
-// `Value::BlobStorage`, `Value::Dict`, `Value::List`, or `Value`) MUST remain
-// live as long as there is a `ValueView` referencing it.
+// Like `std::string_view` and `span<T>`, this adapter does NOT retain
+// ownership. Any underlying object that is passed by reference (i.e.
+// `std::string`, `Value::BlobStorage`, `Value::Dict`, `Value::List`, or
+// `Value`) MUST remain live as long as there is a `ValueView` referencing it.
 //
 // While it might be nice to just use the `absl::variant` type directly, the
 // need to use `std::reference_wrapper` makes it clunky. `absl::variant` and

@@ -17,6 +17,7 @@
 
 #include <cmath>
 #include <limits>
+#include <string_view>
 
 #include "base/bit_cast.h"
 #include "base/format_macros.h"
@@ -952,7 +953,8 @@ TEST(StringNumberConversionsTest, HexEncode) {
 
   const std::string kString = "\x01\xff";
   EXPECT_EQ(HexEncode(kString.c_str(), kString.size()), "01FF");
-  EXPECT_EQ(HexEncode(kString), "01FF");  // Implicit StringPiece conversion.
+  EXPECT_EQ(HexEncode(kString),
+            "01FF");  // Implicit std::string_view conversion.
 }
 
 // Test cases of known-bad strtod conversions that motivated the use of dmg_fp.

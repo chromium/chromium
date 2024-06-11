@@ -9,13 +9,14 @@
 #include <stdlib.h>
 #include <string.h>
 
+#include <string_view>
+
 #include "base/logging.h"
 #include "base/posix/safe_strerror.h"
 #include "base/strings/string_number_conversions.h"
-#include "base/strings/string_piece.h"
 #include "tools/android/forwarder2/socket.h"
 
-using base::StringPiece;
+using std::string_view;
 
 namespace {
 
@@ -69,15 +70,15 @@ bool ReadCommandWithTimeout(Socket* socket,
     return false;
   }
 
-  StringPiece port_str(command_buffer, kPortStringSize);
+  std::string_view port_str(command_buffer, kPortStringSize);
   if (!base::StringToInt(port_str, port_out)) {
     LOG(ERROR) << "Could not parse the command port string: "
                << port_str;
     return false;
   }
 
-  StringPiece command_type_str(
-      &command_buffer[kPortStringSize + 1], kCommandTypeStringSize);
+  std::string_view command_type_str(&command_buffer[kPortStringSize + 1],
+                                    kCommandTypeStringSize);
   int command_type;
   if (!base::StringToInt(command_type_str, &command_type)) {
     LOG(ERROR) << "Could not parse the command type string: "

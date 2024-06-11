@@ -261,7 +261,7 @@ bool StringToDoubleImpl(STRING input, const CHAR* data, double& output) {
 }
 
 template <typename Char, typename OutIter>
-static bool HexStringToByteContainer(StringPiece input, OutIter output) {
+static bool HexStringToByteContainer(std::string_view input, OutIter output) {
   size_t count = input.size();
   if (count == 0 || (count % 2) != 0)
     return false;

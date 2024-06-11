@@ -24,6 +24,7 @@
 #include <iomanip>
 #include <memory>
 #include <optional>
+#include <string_view>
 
 #include "base/base_export.h"
 #include "base/base_switches.h"
@@ -45,7 +46,6 @@
 #include "base/posix/eintr_wrapper.h"
 #include "base/strings/cstring_view.h"
 #include "base/strings/strcat.h"
-#include "base/strings/string_piece.h"
 #include "base/strings/string_split.h"
 #include "base/strings/string_util.h"
 #include "base/strings/sys_string_conversions.h"
@@ -387,7 +387,7 @@ bool DoDeleteFile(const FilePath& path, bool recursive) {
 // Appends |mode_char| to |mode| before the optional character set encoding; see
 // https://www.gnu.org/software/libc/manual/html_node/Opening-Streams.html for
 // details.
-std::string AppendModeCharacter(StringPiece mode, char mode_char) {
+std::string AppendModeCharacter(std::string_view mode, char mode_char) {
   std::string result(mode);
   size_t comma_pos = result.find(',');
   result.insert(comma_pos == std::string::npos ? result.length() : comma_pos, 1,
@@ -744,7 +744,7 @@ bool ExecutableExistsInPath(Environment* env,
     return false;
   }
 
-  for (const StringPiece& cur_path :
+  for (std::string_view cur_path :
        SplitStringPiece(path, ":", KEEP_WHITESPACE, SPLIT_WANT_NONEMPTY)) {
     FilePath file(cur_path);
     int permissions;
@@ -821,11 +821,11 @@ bool CreateTemporaryFileInDir(const FilePath& dir, FilePath* temp_file) {
 
 FilePath FormatTemporaryFileName(FilePath::StringPieceType identifier) {
 #if BUILDFLAG(IS_APPLE)
-  StringPiece prefix = base::apple::BaseBundleID();
+  std::string_view prefix = base::apple::BaseBundleID();
 #elif BUILDFLAG(GOOGLE_CHROME_BRANDING)
-  StringPiece prefix = "com.google.Chrome";
+  std::string_view prefix = "com.google.Chrome";
 #else
-  StringPiece prefix = "org.chromium.Chromium";
+  std::string_view prefix = "org.chromium.Chromium";
 #endif
   return FilePath(StrCat({".", prefix, ".", identifier}));
 }
@@ -1088,7 +1088,7 @@ int WriteFile(const FilePath& filename, const char* data, int size) {
   }
 
   int bytes_written =
-      WriteFileDescriptor(fd, StringPiece(data, static_cast<size_t>(size)))
+      WriteFileDescriptor(fd, std::string_view(data, static_cast<size_t>(size)))
           ? size
           : -1;
   if (IGNORE_EINTR(close(fd)) < 0) {
@@ -1110,7 +1110,7 @@ bool WriteFileDescriptor(int fd, span<const uint8_t> data) {
   return true;
 }
 
-bool WriteFileDescriptor(int fd, StringPiece data) {
+bool WriteFileDescriptor(int fd, std::string_view data) {
   return WriteFileDescriptor(fd, as_bytes(make_span(data)));
 }
 
@@ -1219,7 +1219,7 @@ bool AppendToFile(const FilePath& filename, span<const uint8_t> data) {
   return ret;
 }
 
-bool AppendToFile(const FilePath& filename, StringPiece data) {
+bool AppendToFile(const FilePath& filename, std::string_view data) {
   return AppendToFile(filename, as_bytes(make_span(data)));
 }
 

@@ -4,6 +4,8 @@
 
 #include "ppapi/shared_impl/private/ppb_x509_util_shared.h"
 
+#include <string_view>
+
 #include "base/strings/string_util.h"
 #include "base/values.h"
 #include "net/cert/x509_certificate.h"
@@ -53,7 +55,7 @@ bool PPB_X509Util_Shared::GetCertificateFields(
                    base::Value(cert.valid_start().InSecondsFSinceUnixEpoch()));
   fields->SetField(PP_X509CERTIFICATE_PRIVATE_VALIDITY_NOT_AFTER,
                    base::Value(cert.valid_expiry().InSecondsFSinceUnixEpoch()));
-  base::StringPiece cert_der =
+  std::string_view cert_der =
       net::x509_util::CryptoBufferAsStringPiece(cert.cert_buffer());
   fields->SetField(PP_X509CERTIFICATE_PRIVATE_RAW,
                    base::Value(base::as_bytes(base::make_span(cert_der))));

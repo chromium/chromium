@@ -5,6 +5,7 @@
 #ifndef CRDTP_CHROMIUM_PROTOCOL_TYPE_TRAITS_H_
 #define CRDTP_CHROMIUM_PROTOCOL_TYPE_TRAITS_H_
 
+#include <string_view>
 #include <vector>
 
 #include "base/memory/ref_counted_memory.h"
@@ -107,7 +108,7 @@ class CRDTP_EXPORT Binary : public Serializable {
 
   std::string toBase64() const;
 
-  static Binary fromBase64(base::StringPiece base64, bool* success);
+  static Binary fromBase64(std::string_view base64, bool* success);
   static Binary fromRefCounted(scoped_refptr<base::RefCountedMemory> memory);
   static Binary fromVector(std::vector<uint8_t> data);
   static Binary fromString(std::string data);

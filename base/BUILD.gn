@@ -1112,7 +1112,7 @@ component("base") {
     ]
 
     # Base provides conversions between CXX types and base types (e.g.
-    # StringPiece).
+    # std::string_view).
     public_deps += [ "//build/rust:cxx_cppdeps" ]
   }
 

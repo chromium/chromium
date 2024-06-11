@@ -8,10 +8,10 @@
 #include <stddef.h>
 
 #include <string>
+#include <string_view>
 #include <vector>
 
 #include "base/base_export.h"
-#include "base/strings/string_piece.h"
 
 namespace base {
 
@@ -97,17 +97,17 @@ BASE_EXPORT bool UTF8ToUTF16WithAdjustments(
     std::u16string* output,
     base::OffsetAdjuster::Adjustments* adjustments);
 [[nodiscard]] BASE_EXPORT std::u16string UTF8ToUTF16WithAdjustments(
-    const base::StringPiece& utf8,
+    std::string_view utf8,
     base::OffsetAdjuster::Adjustments* adjustments);
 // As above, but instead internally examines the adjustments and applies them
 // to |offsets_for_adjustment|.  Input offsets greater than the length of the
 // input string will be set to std::u16string::npos.  See comments by
 // AdjustOffsets().
 BASE_EXPORT std::u16string UTF8ToUTF16AndAdjustOffsets(
-    const base::StringPiece& utf8,
+    std::string_view utf8,
     std::vector<size_t>* offsets_for_adjustment);
 BASE_EXPORT std::string UTF16ToUTF8AndAdjustOffsets(
-    const base::StringPiece16& utf16,
+    std::u16string_view utf16,
     std::vector<size_t>* offsets_for_adjustment);
 
 }  // namespace base

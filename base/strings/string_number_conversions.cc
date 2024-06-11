@@ -6,11 +6,11 @@
 
 #include <iterator>
 #include <string>
+#include <string_view>
 
 #include "base/containers/span.h"
 #include "base/logging.h"
 #include "base/strings/string_number_conversions_internal.h"
-#include "base/strings/string_piece.h"
 
 namespace base {
 
@@ -70,51 +70,51 @@ std::u16string NumberToString16(double value) {
   return internal::DoubleToStringT<std::u16string>(value);
 }
 
-bool StringToInt(StringPiece input, int* output) {
+bool StringToInt(std::string_view input, int* output) {
   return internal::StringToIntImpl(input, *output);
 }
 
-bool StringToInt(StringPiece16 input, int* output) {
+bool StringToInt(std::u16string_view input, int* output) {
   return internal::StringToIntImpl(input, *output);
 }
 
-bool StringToUint(StringPiece input, unsigned* output) {
+bool StringToUint(std::string_view input, unsigned* output) {
   return internal::StringToIntImpl(input, *output);
 }
 
-bool StringToUint(StringPiece16 input, unsigned* output) {
+bool StringToUint(std::u16string_view input, unsigned* output) {
   return internal::StringToIntImpl(input, *output);
 }
 
-bool StringToInt64(StringPiece input, int64_t* output) {
+bool StringToInt64(std::string_view input, int64_t* output) {
   return internal::StringToIntImpl(input, *output);
 }
 
-bool StringToInt64(StringPiece16 input, int64_t* output) {
+bool StringToInt64(std::u16string_view input, int64_t* output) {
   return internal::StringToIntImpl(input, *output);
 }
 
-bool StringToUint64(StringPiece input, uint64_t* output) {
+bool StringToUint64(std::string_view input, uint64_t* output) {
   return internal::StringToIntImpl(input, *output);
 }
 
-bool StringToUint64(StringPiece16 input, uint64_t* output) {
+bool StringToUint64(std::u16string_view input, uint64_t* output) {
   return internal::StringToIntImpl(input, *output);
 }
 
-bool StringToSizeT(StringPiece input, size_t* output) {
+bool StringToSizeT(std::string_view input, size_t* output) {
   return internal::StringToIntImpl(input, *output);
 }
 
-bool StringToSizeT(StringPiece16 input, size_t* output) {
+bool StringToSizeT(std::u16string_view input, size_t* output) {
   return internal::StringToIntImpl(input, *output);
 }
 
-bool StringToDouble(StringPiece input, double* output) {
+bool StringToDouble(std::string_view input, double* output) {
   return internal::StringToDoubleImpl(input, input.data(), *output);
 }
 
-bool StringToDouble(StringPiece16 input, double* output) {
+bool StringToDouble(std::u16string_view input, double* output) {
   return internal::StringToDoubleImpl(
       input, reinterpret_cast<const uint16_t*>(input.data()), *output);
 }
@@ -137,39 +137,39 @@ std::string HexEncode(span<const uint8_t> bytes) {
   return ret;
 }
 
-std::string HexEncode(StringPiece chars) {
+std::string HexEncode(std::string_view chars) {
   return HexEncode(base::as_byte_span(chars));
 }
 
-bool HexStringToInt(StringPiece input, int* output) {
+bool HexStringToInt(std::string_view input, int* output) {
   return internal::HexStringToIntImpl(input, *output);
 }
 
-bool HexStringToUInt(StringPiece input, uint32_t* output) {
+bool HexStringToUInt(std::string_view input, uint32_t* output) {
   return internal::HexStringToIntImpl(input, *output);
 }
 
-bool HexStringToInt64(StringPiece input, int64_t* output) {
+bool HexStringToInt64(std::string_view input, int64_t* output) {
   return internal::HexStringToIntImpl(input, *output);
 }
 
-bool HexStringToUInt64(StringPiece input, uint64_t* output) {
+bool HexStringToUInt64(std::string_view input, uint64_t* output) {
   return internal::HexStringToIntImpl(input, *output);
 }
 
-bool HexStringToBytes(StringPiece input, std::vector<uint8_t>* output) {
+bool HexStringToBytes(std::string_view input, std::vector<uint8_t>* output) {
   DCHECK(output->empty());
   return internal::HexStringToByteContainer<uint8_t>(
       input, std::back_inserter(*output));
 }
 
-bool HexStringToString(StringPiece input, std::string* output) {
+bool HexStringToString(std::string_view input, std::string* output) {
   DCHECK(output->empty());
   return internal::HexStringToByteContainer<char>(input,
                                                   std::back_inserter(*output));
 }
 
-bool HexStringToSpan(StringPiece input, span<uint8_t> output) {
+bool HexStringToSpan(std::string_view input, span<uint8_t> output) {
   if (input.size() / 2 != output.size())
     return false;
 

@@ -9,6 +9,7 @@
 #include <memory>
 #include <ostream>
 #include <string>
+#include <string_view>
 #include <vector>
 
 #include "base/command_line.h"
@@ -100,12 +101,12 @@ void GetPeakMemoryMetrics(size_t* peak_virtual_memory,
           .Append("status");
   std::string contents_string;
   base::ReadFileToString(status_path, &contents_string);
-  std::vector<base::StringPiece> lines = base::SplitStringPiece(
+  std::vector<std::string_view> lines = base::SplitStringPiece(
       contents_string, "\n", base::TRIM_WHITESPACE, base::SPLIT_WANT_NONEMPTY);
 
   for (const auto& line : lines) {
     // Tokens should generally be of the form "Metric: <val> kB"
-    std::vector<base::StringPiece> tokens = base::SplitStringPiece(
+    std::vector<std::string_view> tokens = base::SplitStringPiece(
         line, " ", base::TRIM_WHITESPACE, base::SPLIT_WANT_NONEMPTY);
     if (tokens.size() < 2)
       continue;

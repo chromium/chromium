@@ -6,6 +6,7 @@
 #define BASE_FUNCTIONAL_FUNCTION_REF_H_
 
 #include <concepts>
+#include <string_view>
 #include <type_traits>
 #include <utility>
 
@@ -33,7 +34,7 @@ class FunctionRef;
 // valid to invoke.
 //
 // The usual lifetime precautions for other non-owning references types (e.g.
-// `base::StringPiece`, `base::span`) also apply to `base::FunctionRef`.
+// `std::string_view`, `base::span`) also apply to `base::FunctionRef`.
 // `base::FunctionRef` should typically be used as an argument; returning a
 // `base::FunctionRef` or storing a `base::FunctionRef` as a field is dangerous
 // and likely to result in lifetime bugs.
