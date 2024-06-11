@@ -12218,6 +12218,23 @@
             ]
         }
     ],
+    "KidsProfile": [
+        {
+            "platforms": [
+                "linux",
+                "mac",
+                "windows"
+            ],
+            "experiments": [
+                {
+                    "name": "HideGuestMode_20240611",
+                    "enable_features": [
+                        "HideGuestModeForSupervisedUsers"
+                    ]
+                }
+            ]
+        }
+    ],
     "KioskHeartbeatsViaERP": [
         {
             "platforms": [
