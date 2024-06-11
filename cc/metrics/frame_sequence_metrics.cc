@@ -141,8 +141,8 @@ FrameSequenceMetrics::~FrameSequenceMetrics() {
   //
   // However we may not be merged before teardown, if so terminate the trace
   // now.
-  if (trace_data_v3_.trace_id) {
-    trace_data_v3_.TerminateV3(v3_, GetEffectiveThread());
+  if (trace_data_.trace_id) {
+    trace_data_.Terminate(v3_, GetEffectiveThread());
   }
 }
 
@@ -227,18 +227,15 @@ bool FrameSequenceMetrics::HasDataLeftForReporting() const {
 void FrameSequenceMetrics::AdoptTrace(FrameSequenceMetrics* adopt_from) {
   DCHECK(!trace_data_.trace_id);
   trace_data_.trace_id = adopt_from->trace_data_.trace_id;
-  trace_data_v3_.trace_id = adopt_from->trace_data_v3_.trace_id;
-  trace_data_v3_.last_presented_sequence_number =
-      adopt_from->trace_data_v3_.trace_id;
-  trace_data_v3_.last_timestamp = adopt_from->trace_data_v3_.last_timestamp;
-  trace_data_v3_.frame_count = adopt_from->trace_data_v3_.frame_count;
+  trace_data_.last_presented_sequence_number = adopt_from->trace_data_.trace_id;
+  trace_data_.last_timestamp = adopt_from->trace_data_.last_timestamp;
+  trace_data_.frame_count = adopt_from->trace_data_.frame_count;
   adopt_from->trace_data_.trace_id = 0u;
-  adopt_from->trace_data_v3_.trace_id = 0u;
 }
 
 void FrameSequenceMetrics::ReportMetrics() {
   // Terminates |trace_data_| for all types of FrameSequenceTracker.
-  trace_data_v3_.TerminateV3(v3_, GetEffectiveThread());
+  trace_data_.Terminate(v3_, GetEffectiveThread());
 
   if (type_ == FrameSequenceTrackerType::kCustom) {
     DCHECK(!custom_reporter_.is_null());
@@ -352,7 +349,7 @@ FrameSequenceMetrics::TraceData::TraceData(FrameSequenceMetrics* m)
 
 FrameSequenceMetrics::TraceData::~TraceData() = default;
 
-void FrameSequenceMetrics::TraceData::TerminateV3(
+void FrameSequenceMetrics::TraceData::Terminate(
     const V3& v3,
     FrameInfo::SmoothEffectDrivingThread effective_thread) {
   if (!enabled || !trace_id) {
@@ -508,7 +505,7 @@ void FrameSequenceMetrics::CalculateCheckerboardingAndJankV3(
       bool will_ignore_current_frame =
           v3_.no_update_count >= kMaxNoUpdateFrameCount;
       if (last_presented_termination_time.is_null()) {
-        last_presented_termination_time = trace_data_v3_.last_timestamp;
+        last_presented_termination_time = trace_data_.last_timestamp;
         will_ignore_current_frame = true;
       }
 
@@ -520,10 +517,10 @@ void FrameSequenceMetrics::CalculateCheckerboardingAndJankV3(
       // traces.
       if (!last_presented_termination_time.is_null() &&
           termination_time > last_presented_termination_time) {
-        trace_data_v3_.Advance(last_presented_termination_time,
-                               termination_time, v3_.frames_expected,
-                               v3_.frames_dropped, frame_info.sequence_number,
-                               "FrameSequenceTrackerV3");
+        trace_data_.Advance(last_presented_termination_time, termination_time,
+                            v3_.frames_expected, v3_.frames_dropped,
+                            frame_info.sequence_number,
+                            "FrameSequenceTrackerV3");
       }
 
       const base::TimeDelta zero_delta = base::Milliseconds(0);
@@ -592,7 +589,7 @@ void FrameSequenceMetrics::IncrementJankIdleTimeV3(
 void FrameSequenceMetrics::TraceJankV3(uint64_t sequence_number,
                                        base::TimeTicks last_termination_time,
                                        base::TimeTicks termination_time) {
-  if (!trace_data_v3_.enabled) {
+  if (!trace_data_.enabled) {
     return;
   }
   auto dict = std::make_unique<base::trace_event::TracedValue>();

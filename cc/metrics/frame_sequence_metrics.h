@@ -163,11 +163,9 @@ class CC_EXPORT FrameSequenceMetrics {
                  uint32_t dropped,
                  uint64_t sequence_number,
                  const char* histogram_name);
-    void TerminateV3(const V3& v3,
-                     FrameInfo::SmoothEffectDrivingThread effective_thread);
+    void Terminate(const V3& v3,
+                   FrameInfo::SmoothEffectDrivingThread effective_thread);
   } trace_data_{this};
-
-  TraceData trace_data_v3_{this};
 
   FrameInfo::SmoothEffectDrivingThread scrolling_thread_ =
       FrameInfo::SmoothEffectDrivingThread::kUnknown;
