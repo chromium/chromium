@@ -7,7 +7,7 @@
  */
 import {TestImportManager} from '/common/testing/test_import_manager.js';
 
-import {BrailleKeyEvent} from '../../common/braille/braille_key_types.js';
+import {BrailleDisplayState, BrailleKeyEvent} from '../../common/braille/braille_key_types.js';
 import {NavBraille} from '../../common/braille/nav_braille.js';
 import {ChromeVoxState} from '../chromevox_state.js';
 import {LogStore} from '../logging/log_store.js';
@@ -18,17 +18,17 @@ import {BrailleInterface} from './braille_interface.js';
 import {BrailleKeyEventRewriter} from './braille_key_event_rewriter.js';
 import {BrailleTranslatorManager} from './braille_translator_manager.js';
 
-/** @implements {BrailleInterface} */
-export class BrailleBackground {
-  constructor() {
-    /** @private {boolean} */
-    this.frozen_ = false;
+export class BrailleBackground implements BrailleInterface {
+  private frozen_ = false;
 
+  static instance: BrailleBackground;
+
+  constructor() {
     BrailleDisplayManager.instance.setCommandListener(
         (evt, content) => this.routeBrailleKeyEvent_(evt, content));
   }
 
-  static init() {
+  static init(): void {
     if (BrailleBackground.instance) {
       throw new Error('Cannot create two BrailleBackground instances');
     }
@@ -43,8 +43,8 @@ export class BrailleBackground {
     BrailleBackground.instance = new BrailleBackground();
   }
 
-  /** @override */
-  write(params) {
+  /** BrailleInterface implementation. */
+  write(params: NavBraille): void {
     if (this.frozen_) {
       return;
     }
@@ -53,56 +53,52 @@ export class BrailleBackground {
     this.setContent_(params, null);
   }
 
-  /** @override */
-  writeRawImage(imageDataUrl) {
+  /** BrailleInterface implementation. */
+  writeRawImage(imageDataUrl: string): void {
     if (this.frozen_) {
       return;
     }
     BrailleDisplayManager.instance.setImageContent(imageDataUrl);
   }
 
-  /** @override */
-  freeze() {
+  /** BrailleInterface implementation. */
+  freeze(): void {
     this.frozen_ = true;
   }
 
-  /** @override */
-  thaw() {
+  /** BrailleInterface implementation. */
+  thaw(): void {
     this.frozen_ = false;
   }
 
-  /** @override */
-  getDisplayState() {
+  /** BrailleInterface implementation. */
+  getDisplayState(): BrailleDisplayState {
     return BrailleDisplayManager.instance.getDisplayState();
   }
 
-  /** @override */
-  panLeft() {
+  /** BrailleInterface implementation. */
+  panLeft(): void {
     BrailleDisplayManager.instance.panLeft();
   }
 
-  /** @override */
-  panRight() {
+  /** BrailleInterface implementation. */
+  panRight(): void {
     BrailleDisplayManager.instance.panRight();
   }
 
-  /** @override */
-  route(displayPosition) {
+  /** BrailleInterface implementation. */
+  route(displayPosition: number | undefined): void {
     return BrailleDisplayManager.instance.route(displayPosition);
   }
 
-  /** @override */
-  async backTranslate(cells) {
+  /** BrailleInterface implementation. */
+  async backTranslate(cells: ArrayBuffer): Promise<string | null> {
     return await BrailleTranslatorManager.backTranslate(cells);
   }
 
-  /**
-   * @param {!NavBraille} newContent
-   * @param {?string} newContentId
-   * @private
-   */
-  setContent_(newContent, newContentId) {
-    const updateContent = () => BrailleDisplayManager.instance.setContent(
+  private setContent_(
+      newContent: NavBraille, _newContentId: string | null): void {
+    const updateContent = (): void => BrailleDisplayManager.instance.setContent(
         newContent, BrailleInputHandler.instance.getExpansionType());
     BrailleInputHandler.instance.onDisplayContentChanged(
         newContent.text, updateContent);
@@ -112,11 +108,10 @@ export class BrailleBackground {
   /**
    * Handles braille key events by dispatching either to the event rewriter,
    * input handler, or ChromeVox's background object.
-   * @param {!BrailleKeyEvent} brailleEvt The event.
-   * @param {!NavBraille} content Content of display when event fired.
-   * @private
+   * @param content Content of display when event fired.
    */
-  routeBrailleKeyEvent_(brailleEvt, content) {
+  private routeBrailleKeyEvent_(
+      brailleEvt: BrailleKeyEvent, content: NavBraille): void {
     if (BrailleKeyEventRewriter.instance.onBrailleKeyEvent(brailleEvt)) {
       return;
     }
@@ -129,8 +124,5 @@ export class BrailleBackground {
     }
   }
 }
-
-/** @type {BrailleBackground} */
-BrailleBackground.instance;
 
 TestImportManager.exportForTesting(BrailleBackground);
