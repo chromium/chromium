@@ -34,6 +34,8 @@ source_set("browser") {
     "observers/early_hints_page_load_metrics_observer.h",
     "observers/fenced_frames_page_load_metrics_observer.cc",
     "observers/fenced_frames_page_load_metrics_observer.h",
+    "observers/performance_manager_metrics_observer.cc",
+    "observers/performance_manager_metrics_observer.h",
     "observers/prerender_page_load_metrics_observer.cc",
     "observers/prerender_page_load_metrics_observer.h",
     "observers/privacy_sandbox_ads_page_load_metrics_observer.cc",
