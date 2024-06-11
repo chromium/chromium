@@ -130,6 +130,8 @@ class TabOrganizationRequest {
 
   BackendStartRequest backend_start_request_lambda_;
   BackendCancelRequest backend_cancel_request_lambda_;
+
+  base::WeakPtrFactory<TabOrganizationRequest> weak_ptr_factory_{this};
 };
 
 #endif  // CHROME_BROWSER_UI_TABS_ORGANIZATION_TAB_ORGANIZATION_REQUEST_H_
