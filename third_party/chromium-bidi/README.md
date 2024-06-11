@@ -8,8 +8,6 @@
 
 ![Pre-commit](https://github.com/GoogleChromeLabs/chromium-bidi/actions/workflows/pre-commit.yml/badge.svg)
 
-[![codecov](https://codecov.io/gh/GoogleChromeLabs/chromium-bidi/branch/main/graph/badge.svg?token=LJSXSC9L09)](https://codecov.io/gh/GoogleChromeLabs/chromium-bidi)
-
 This is an implementation of the
 [WebDriver BiDi](https://w3c.github.io/webdriver-bidi/) protocol with some
 extensions (**BiDi+**)

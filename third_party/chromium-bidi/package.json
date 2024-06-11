@@ -25,11 +25,6 @@
     "wpt:all": "wireit",
     "yapf": "yapf -i --parallel --recursive --exclude=wpt examples/ tests/"
   },
-  "nyc": {
-    "exclude": [
-      "**/*.spec.ts"
-    ]
-  },
   "wireit": {
     "build": {
       "dependencies": [
@@ -175,7 +170,6 @@
     "eslint-plugin-promise": "6.2.0",
     "gts": "5.3.0",
     "mocha": "10.4.0",
-    "nyc": "15.1.0",
     "pkg-dir": "8.0.0",
     "prettier": "3.3.0",
     "rimraf": "5.0.7",
