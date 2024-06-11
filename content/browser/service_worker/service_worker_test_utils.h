@@ -90,7 +90,8 @@ class CommittedServiceWorkerClient final {
   }
 
   ServiceWorkerContainerHost& container_host() const {
-    return service_worker_client_->container_host();
+    CHECK(service_worker_client_->container_host());
+    return *service_worker_client_->container_host();
   }
 
   // NOTE: These pipes are usable only for Window clients, because for workers

@@ -217,56 +217,29 @@ ServiceWorkerContainerHostForServiceWorker::
     ~ServiceWorkerContainerHostForServiceWorker() = default;
 
 ServiceWorkerContainerHostForClient::ServiceWorkerContainerHostForClient(
-    base::WeakPtr<ServiceWorkerClient> service_worker_client)
-    : service_worker_client_(std::move(service_worker_client)) {
-  CHECK(service_worker_client_);
-}
-
-void ServiceWorkerContainerHostForClient::CommitResponse(
     base::PassKey<ServiceWorkerClient>,
+    base::WeakPtr<ServiceWorkerClient> service_worker_client,
     blink::mojom::ServiceWorkerContainerInfoForClientPtr& container_info,
     const PolicyContainerPolicies& policy_container_policies,
     mojo::PendingRemote<network::mojom::CrossOriginEmbedderPolicyReporter>
         coep_reporter,
-    ukm::SourceId ukm_source_id) {
-  CHECK(!service_worker_client().is_response_committed());
+    ukm::SourceId ukm_source_id)
+    : service_worker_client_(std::move(service_worker_client)),
+      container_(
+          container_info->client_receiver.InitWithNewEndpointAndPassRemote()),
+      ukm_source_id_(std::move(ukm_source_id)),
+      policy_container_policies_(policy_container_policies.Clone()),
+      coep_reporter_(std::move(coep_reporter)) {
+  CHECK(container_.is_bound());
+  CHECK(service_worker_client_);
+  CHECK(!service_worker_client_->is_response_committed());
 
-  container_.Bind(
-      container_info->client_receiver.InitWithNewEndpointAndPassRemote());
   service_worker_client_->owner().BindHost(
       *this, container_info->host_remote.InitWithNewEndpointAndPassReceiver());
-
-  CHECK(!policy_container_policies_.has_value());
-  policy_container_policies_ = policy_container_policies.Clone();
-
-  if (coep_reporter) {
-    coep_reporter_.Bind(std::move(coep_reporter));
-  }
-
-  CHECK_EQ(ukm_source_id_, ukm::kInvalidSourceId);
-  ukm_source_id_ = ukm_source_id;
-}
-
-void ServiceWorkerContainerHostForClient::Create(
-    base::WeakPtr<ServiceWorkerClient> service_worker_client) {
-  service_worker_client->set_container_host(
-      std::make_unique<ServiceWorkerContainerHostForClient>(
-          service_worker_client));
-}
-
-bool ServiceWorkerContainerHostForClient::IsContainerRemoteBound() const {
-  return container_.is_bound();
 }
 
 bool ServiceWorkerContainerHostForClient::IsContainerRemoteConnected() const {
   return container_.is_connected();
-}
-
-void ServiceWorkerClient::set_container_host(
-    std::unique_ptr<ServiceWorkerContainerHostForClient> container_host) {
-  CHECK(!container_host_);
-  CHECK(container_host);
-  container_host_ = std::move(container_host);
 }
 
 void ServiceWorkerContainerHostForClient::Register(
@@ -360,7 +333,7 @@ void ServiceWorkerContainerHostForClient::Register(
                      base::AsWeakPtr(this), GURL(script_url),
                      GURL(options->scope), std::move(wrapped_callback),
                      trace_id, mojo::GetBadMessageCallback()),
-      global_frame_id, policy_container_policies_.value());
+      global_frame_id, policy_container_policies_);
 }
 
 void ServiceWorkerContainerHostForClient::GetRegistration(
@@ -553,7 +526,7 @@ void ServiceWorkerClient::OnExecutionReady() {
   // to false is_execution_ready().
   // TODO(leonhsl): Create some layout tests covering the above case 1), in
   // which case we may also need to set |notify_controllerchange| correctly.
-  container_host().SendSetController(false /* notify_controllerchange */);
+  container_host()->SendSetController(false /* notify_controllerchange */);
 
   SetExecutionReady();
 }
@@ -627,8 +600,10 @@ void ServiceWorkerClient::OnVersionAttributesChanged(
     blink::mojom::ChangedServiceWorkerObjectsMaskPtr changed_mask) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
-  container_host().OnVersionAttributesChanged(registration,
-                                              std::move(changed_mask));
+  if (container_host()) {
+    container_host()->OnVersionAttributesChanged(registration,
+                                                 std::move(changed_mask));
+  }
 }
 
 void ServiceWorkerContainerHostForClient::OnVersionAttributesChanged(
@@ -701,7 +676,9 @@ void ServiceWorkerClient::AddMatchingRegistration(
   registration->AddListener(this);
   matching_registrations_[key] = registration;
 
-  container_host().ReturnRegistrationForReadyIfNeeded();
+  if (container_host()) {
+    container_host()->ReturnRegistrationForReadyIfNeeded();
+  }
 }
 
 void ServiceWorkerClient::RemoveMatchingRegistration(
@@ -771,7 +748,7 @@ void ServiceWorkerClient::CountFeature(blink::mojom::WebFeature feature) {
     return;
   }
 
-  container_host().CountFeature(feature);
+  container_host()->CountFeature(feature);
 }
 
 void ServiceWorkerContainerHostForClient::CountFeature(
@@ -1097,13 +1074,14 @@ ServiceWorkerClient::CommitResponse(
     }
   }
 
+  CHECK(!container_host_);
+
   auto container_info =
       blink::mojom::ServiceWorkerContainerInfoForClient::New();
-  container_host().CommitResponse(base::PassKey<ServiceWorkerClient>(),
-                                  container_info, policy_container_policies,
-                                  std::move(coep_reporter),
-                                  std::move(ukm_source_id));
-  CHECK(container_host().IsContainerRemoteBound());
+  container_host_ = std::make_unique<ServiceWorkerContainerHostForClient>(
+      base::PassKey<ServiceWorkerClient>(), AsWeakPtr(), container_info,
+      policy_container_policies, std::move(coep_reporter),
+      std::move(ukm_source_id));
 
   TransitionToClientPhase(ClientPhase::kResponseCommitted);
 
@@ -1235,7 +1213,7 @@ void ServiceWorkerContainerHostForClient::CloneControllerServiceWorker(
 
   controller()->controller()->Clone(
       std::move(receiver),
-      policy_container_policies_->cross_origin_embedder_policy,
+      policy_container_policies_.cross_origin_embedder_policy,
       std::move(coep_reporter_to_be_passed));
 }
 
@@ -1685,7 +1663,7 @@ void ServiceWorkerClient::UpdateController(bool notify_controllerchange) {
     return;
   }
 
-  container_host().SendSetController(notify_controllerchange);
+  container_host()->SendSetController(notify_controllerchange);
 }
 
 #if DCHECK_IS_ON()
@@ -2062,8 +2040,7 @@ SubresourceLoaderParams ServiceWorkerClient::MaybeCreateSubresourceLoaderParams(
 void ServiceWorkerClient::SetContainerReady() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   TransitionToClientPhase(ClientPhase::kContainerReady);
-  CHECK(container_host().IsContainerRemoteBound());
-  CHECK(container_host().IsContainerRemoteConnected());
+  CHECK(container_host()->IsContainerRemoteConnected());
 
   FlushFeatures();
 }

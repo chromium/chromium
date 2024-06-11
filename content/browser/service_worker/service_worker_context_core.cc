@@ -508,7 +508,9 @@ void ServiceWorkerContextCore::OnClientDestroyed(
     ServiceWorkerClient& service_worker_client) {
   observer_list_->Notify(
       FROM_HERE, &ServiceWorkerContextCoreObserver::OnClientDestroyed,
-      service_worker_client.container_host().ukm_source_id(),
+      service_worker_client.container_host()
+          ? service_worker_client.container_host()->ukm_source_id()
+          : ukm::kInvalidSourceId,
       service_worker_client.url(), service_worker_client.GetClientType());
 }
 
@@ -689,10 +691,10 @@ int ServiceWorkerContextCore::GetNextEmbeddedWorkerId() {
 
 void ServiceWorkerContextCore::NotifyClientIsExecutionReady(
     const ServiceWorkerClient& service_worker_client) {
-  DCHECK(service_worker_client.is_execution_ready());
+  CHECK(service_worker_client.is_execution_ready());
   observer_list_->Notify(
       FROM_HERE, &ServiceWorkerContextCoreObserver::OnClientIsExecutionReady,
-      service_worker_client.container_host().ukm_source_id(),
+      service_worker_client.container_host()->ukm_source_id(),
       service_worker_client.url(), service_worker_client.GetClientType());
 }
 
@@ -1375,9 +1377,7 @@ void ServiceWorkerContextCore::DidGetRegisteredStorageKeys(
 
 ScopedServiceWorkerClient::ScopedServiceWorkerClient(
     base::WeakPtr<ServiceWorkerClient> service_worker_client)
-    : service_worker_client_(std::move(service_worker_client)) {
-  ServiceWorkerContainerHostForClient::Create(service_worker_client_);
-}
+    : service_worker_client_(std::move(service_worker_client)) {}
 
 ScopedServiceWorkerClient::~ScopedServiceWorkerClient() {
   if (!service_worker_client_) {
@@ -1387,11 +1387,9 @@ ScopedServiceWorkerClient::~ScopedServiceWorkerClient() {
   // Don't destroy the client if committed, because it means this is already
   // `Release()`d.
   if (service_worker_client_->is_response_committed()) {
-    CHECK(service_worker_client_->container_host().IsContainerRemoteBound());
     return;
   }
 
-  CHECK(!service_worker_client_->container_host().IsContainerRemoteBound());
   service_worker_client_->owner().DestroyServiceWorkerClient(
       std::move(service_worker_client_));
 }
