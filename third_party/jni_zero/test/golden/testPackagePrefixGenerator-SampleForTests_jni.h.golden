@@ -109,21 +109,6 @@ JNI_BOUNDARY_EXPORT jfloat Java_this_is_a_package_prefix_org_jni_1zero_GEN_1JNI_
 }
 
 // Forward declaration. To be implemented by the including .cc file.
-static jni_zero::ScopedJavaLocalRef<jobject> JNI_SampleForTests_GetMap(
-    JNIEnv* env,
-    const jni_zero::JavaParamRef<jobject>& arg0);
-
-JNI_BOUNDARY_EXPORT jobject Java_this_is_a_package_prefix_org_jni_1zero_GEN_1JNI_this_1is_1a_1package_1prefix_1org_1jni_11zero_1SampleForTests_1getMap(
-    JNIEnv* env,
-    jclass jcaller,
-    jobject arg0) {
-  auto _ret = JNI_SampleForTests_GetMap(
-      env,
-      jni_zero::JavaParamRef<jobject>(env, arg0));
-  return _ret.Release();
-}
-
-// Forward declaration. To be implemented by the including .cc file.
 static jni_zero::ScopedJavaLocalRef<jobject> JNI_SampleForTests_GetNonPODDatatype(
     JNIEnv* env,
     const jni_zero::JavaParamRef<jobject>& _jcaller);
@@ -213,6 +198,23 @@ JNI_BOUNDARY_EXPORT jobject Java_this_is_a_package_prefix_org_jni_1zero_GEN_1JNI
       jni_zero::JavaParamRef<jobject>(env, items));
   auto _ret = JNI_SampleForTests_ListTest2(env, items_converted);
   jobject converted_ret = jni_zero::ToJniList(env, _ret).Release();
+  return converted_ret;
+}
+
+// Forward declaration. To be implemented by the including .cc file.
+static std::map<std::string, std::string> JNI_SampleForTests_MapTest2(
+    JNIEnv* env,
+    std::map<std::string, std::string>& arg0);
+
+JNI_BOUNDARY_EXPORT jobject Java_this_is_a_package_prefix_org_jni_1zero_GEN_1JNI_this_1is_1a_1package_1prefix_1org_1jni_11zero_1SampleForTests_1mapTest2(
+    JNIEnv* env,
+    jclass jcaller,
+    jobject arg0) {
+  std::map<std::string, std::string> arg0_converted = jni_zero::FromJniType<std::map<std::string, std::string>>(
+      env,
+      jni_zero::JavaParamRef<jobject>(env, arg0));
+  auto _ret = JNI_SampleForTests_MapTest2(env, arg0_converted);
+  jobject converted_ret = jni_zero::ToJniType(env, _ret).Release();
   return converted_ret;
 }
 
@@ -569,13 +571,12 @@ static std::vector<int32_t> Java_SampleForTests_jniTypesAndAnnotations(
 
 static std::vector<jni_zero::ScopedJavaLocalRef<jobject>> Java_SampleForTests_listTest1(
     JNIEnv* env,
-    const jni_zero::JavaRef<jobject>& obj,
     std::vector<std::string> const& items) {
   static std::atomic<jmethodID> cached_method_id(nullptr);
   jclass clazz = this_is_a_package_prefix_org_jni_1zero_SampleForTests_clazz(env);
-  CHECK_CLAZZ(env, obj.obj(), clazz, nullptr);
+  CHECK_CLAZZ(env, clazz, clazz, nullptr);
   jni_zero::internal::JniJavaCallContext<true> call_context;
-  call_context.Init<jni_zero::MethodID::TYPE_INSTANCE>(
+  call_context.Init<jni_zero::MethodID::TYPE_STATIC>(
       env,
       clazz,
       "listTest1",
@@ -584,11 +585,36 @@ static std::vector<jni_zero::ScopedJavaLocalRef<jobject>> Java_SampleForTests_li
   jni_zero::ScopedJavaLocalRef<jobject> converted_items = jni_zero::ToJniList(
       env,
       items);
-  auto _ret = env->CallObjectMethod(
-      obj.obj(),
+  auto _ret = env->CallStaticObjectMethod(
+      clazz,
       call_context.method_id(),
       converted_items.obj());
   return jni_zero::FromJniCollection<std::vector<jni_zero::ScopedJavaLocalRef<jobject>>>(
+      env,
+      jni_zero::ScopedJavaLocalRef<jobject>(env, _ret));
+}
+
+static std::map<std::string, std::string> Java_SampleForTests_mapTest1(
+    JNIEnv* env,
+    std::map<std::string, std::string> const& arg0) {
+  static std::atomic<jmethodID> cached_method_id(nullptr);
+  jclass clazz = this_is_a_package_prefix_org_jni_1zero_SampleForTests_clazz(env);
+  CHECK_CLAZZ(env, clazz, clazz, nullptr);
+  jni_zero::internal::JniJavaCallContext<true> call_context;
+  call_context.Init<jni_zero::MethodID::TYPE_STATIC>(
+      env,
+      clazz,
+      "mapTest1",
+      "(Ljava/util/Map;)Ljava/util/Map;",
+      &cached_method_id);
+  jni_zero::ScopedJavaLocalRef<jobject> converted_arg0 = jni_zero::ToJniType(
+      env,
+      arg0);
+  auto _ret = env->CallStaticObjectMethod(
+      clazz,
+      call_context.method_id(),
+      converted_arg0.obj());
+  return jni_zero::FromJniType<std::map<std::string, std::string>>(
       env,
       jni_zero::ScopedJavaLocalRef<jobject>(env, _ret));
 }

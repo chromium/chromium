@@ -80,7 +80,7 @@ void CPPClass::IterateAndDoSomethingWithStructB(
 ScopedJavaLocalRef<jstring> CPPClass::ReturnAString(
     JNIEnv* env,
     const JavaParamRef<jobject>& caller) {
-  return ScopedJavaLocalRef<jstring>();
+  return nullptr;
 }
 
 // Static free functions declared and called directly from java.
@@ -106,7 +106,7 @@ static jfloat JNI_SampleForTests_GetFloatFunction(JNIEnv*) {
 
 static std::vector<jni_zero::ScopedJavaLocalRef<jobject>>
 JNI_SampleForTests_ListTest2(JNIEnv* env, std::vector<std::string>& items) {
-  return Java_SampleForTests_listTest1(env, nullptr, items);
+  return Java_SampleForTests_listTest1(env, items);
 }
 
 static void JNI_SampleForTests_SetNonPODDatatype(JNIEnv*,
@@ -117,37 +117,37 @@ static void JNI_SampleForTests_SetNonPODDatatype(JNIEnv*,
 static ScopedJavaLocalRef<jobject> JNI_SampleForTests_GetNonPODDatatype(
     JNIEnv*,
     const JavaParamRef<jobject>&) {
-  return ScopedJavaLocalRef<jobject>();
+  return nullptr;
 }
 
 static ScopedJavaLocalRef<jstring> JNI_SampleForTests_GetNonPODDatatype(
     JNIEnv*,
     const JavaParamRef<jstring>&) {
-  return ScopedJavaLocalRef<jstring>();
+  return nullptr;
 }
 
 static ScopedJavaLocalRef<jobjectArray> JNI_SampleForTests_GetNonPODDatatype(
     JNIEnv*,
     const JavaParamRef<jobjectArray>&) {
-  return ScopedJavaLocalRef<jobjectArray>();
+  return nullptr;
 }
 
 static ScopedJavaLocalRef<jclass> JNI_SampleForTests_GetClass(
     JNIEnv* env,
     const JavaParamRef<jclass>& arg0) {
-  return ScopedJavaLocalRef<jclass>();
+  return nullptr;
 }
 
 static ScopedJavaLocalRef<jthrowable> JNI_SampleForTests_GetThrowable(
     JNIEnv* env,
     const JavaParamRef<jthrowable>& arg0) {
-  return ScopedJavaLocalRef<jthrowable>();
+  return nullptr;
 }
 
-static ScopedJavaLocalRef<jobject> JNI_SampleForTests_GetMap(
+static std::map<std::string, std::string> JNI_SampleForTests_MapTest2(
     JNIEnv* env,
-    const JavaParamRef<jobject>& arg0) {
-  return ScopedJavaLocalRef<jobject>();
+    std::map<std::string, std::string>& arg0) {
+  return Java_SampleForTests_mapTest1(env, arg0);
 }
 
 static std::vector<bool> JNI_SampleForTests_PrimitiveArrays(
@@ -242,32 +242,32 @@ static void JNI_SampleForAnnotationProcessor_TestSpecialTypes(
 
 static ScopedJavaLocalRef<jthrowable>
 JNI_SampleForAnnotationProcessor_ReturnThrowable(JNIEnv* env) {
-  return ScopedJavaLocalRef<jthrowable>();
+  return nullptr;
 }
 
 static ScopedJavaLocalRef<jobjectArray>
 JNI_SampleForAnnotationProcessor_ReturnThrowables(JNIEnv* env) {
-  return ScopedJavaLocalRef<jobjectArray>();
+  return nullptr;
 }
 
 static ScopedJavaLocalRef<jclass> JNI_SampleForAnnotationProcessor_ReturnClass(
     JNIEnv* env) {
-  return ScopedJavaLocalRef<jclass>();
+  return nullptr;
 }
 
 static ScopedJavaLocalRef<jobjectArray>
 JNI_SampleForAnnotationProcessor_ReturnClasses(JNIEnv* env) {
-  return ScopedJavaLocalRef<jobjectArray>();
+  return nullptr;
 }
 
 static ScopedJavaLocalRef<jstring>
 JNI_SampleForAnnotationProcessor_ReturnString(JNIEnv* env) {
-  return {};
+  return nullptr;
 }
 
 static ScopedJavaLocalRef<jobjectArray>
 JNI_SampleForAnnotationProcessor_ReturnStrings(JNIEnv* env) {
-  return {};
+  return nullptr;
 }
 
 static std::string JNI_SampleForAnnotationProcessor_ReturnConvertedString(
@@ -292,22 +292,22 @@ static std::vector<jint> JNI_SampleForAnnotationProcessor_ReturnConvertedInts(
 
 static ScopedJavaLocalRef<jobject>
 JNI_SampleForAnnotationProcessor_ReturnStruct(JNIEnv* env) {
-  return ScopedJavaLocalRef<jobject>();
+  return nullptr;
 }
 
 static ScopedJavaLocalRef<jobjectArray>
 JNI_SampleForAnnotationProcessor_ReturnStructs(JNIEnv* env) {
-  return ScopedJavaLocalRef<jobjectArray>();
+  return nullptr;
 }
 
 static ScopedJavaLocalRef<jobject>
 JNI_SampleForAnnotationProcessor_ReturnObject(JNIEnv* env) {
-  return ScopedJavaLocalRef<jobject>();
+  return nullptr;
 }
 
 static ScopedJavaLocalRef<jobjectArray>
 JNI_SampleForAnnotationProcessor_ReturnObjects(JNIEnv* env) {
-  return ScopedJavaLocalRef<jobjectArray>();
+  return nullptr;
 }
 
 int main() {

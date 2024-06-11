@@ -34,8 +34,7 @@ std::unique_ptr<network::SimpleURLLoader> MakeLoader(
     const GURL& gurl,
     const std::string& request_type,
     std::vector<uint8_t>&& request_body,
-    std::vector<std::string>&& header_keys,
-    std::vector<std::string>&& header_values,
+    std::map<std::string, std::string>&& headers,
     const net::NetworkTrafficAnnotationTag& network_traffic_annotation) {
   auto resource_request = std::make_unique<network::ResourceRequest>();
   resource_request->url = gurl;
@@ -43,14 +42,14 @@ std::unique_ptr<network::SimpleURLLoader> MakeLoader(
   resource_request->method = request_type;
 
   std::string content_type;
-  for (size_t i = 0; i < header_keys.size(); ++i) {
+  for (auto const& [key, value] : headers) {
     if (0 == base::CompareCaseInsensitiveASCII(
-                 header_keys[i], net::HttpRequestHeaders::kContentType)) {
+                 key, net::HttpRequestHeaders::kContentType)) {
       // Content-Type will be populated in ::PopulateRequestBodyAndContentType.
-      content_type = header_values[i];
+      content_type = value;
       continue;
     }
-    resource_request->headers.SetHeader(header_keys[i], header_values[i]);
+    resource_request->headers.SetHeader(key, value);
   }
 
   auto simple_loader = network::SimpleURLLoader::Create(
@@ -79,17 +78,15 @@ void HttpClient::Send(
     const GURL& gurl,
     const std::string& request_type,
     std::vector<uint8_t>&& request_body,
-    std::vector<std::string>&& header_keys,
-    std::vector<std::string>&& header_values,
+    std::map<std::string, std::string>&& headers,
     const net::NetworkTrafficAnnotationTag& network_traffic_annotation,
     HttpClient::ResponseCallback callback) {
   // SimpleUrlLoader can only be called on the UI thread.
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
-  DCHECK(header_keys.size() == header_values.size());
 
-  std::unique_ptr<network::SimpleURLLoader> simple_loader = MakeLoader(
-      gurl, request_type, std::move(request_body), std::move(header_keys),
-      std::move(header_values), network_traffic_annotation);
+  std::unique_ptr<network::SimpleURLLoader> simple_loader =
+      MakeLoader(gurl, request_type, std::move(request_body),
+                 std::move(headers), network_traffic_annotation);
   simple_loader->SetAllowHttpErrorResults(true);
   // TODO(crbug.com/40169299): Use flag to control the max size limit.
   simple_loader->DownloadToString(
@@ -118,8 +115,7 @@ void HttpClient::OnSimpleLoaderComplete(
   int32_t response_code = 0;
   int32_t net_error_code = simple_loader->NetError();
 
-  std::vector<std::string> response_header_keys;
-  std::vector<std::string> response_header_values;
+  std::map<std::string, std::string> response_headers;
   auto* response_info = simple_loader->ResponseInfo();
   if (response_info && response_info->headers) {
     response_code = response_info->headers->response_code();
@@ -127,8 +123,13 @@ void HttpClient::OnSimpleLoaderComplete(
     size_t iter = 0;
     std::string name, value;
     while (response_info->headers->EnumerateHeaderLines(&iter, &name, &value)) {
-      response_header_keys.push_back(std::move(name));
-      response_header_values.push_back(std::move(value));
+      std::string& slot = response_headers[name];
+      if (slot.empty()) {
+        slot = std::move(value);
+      } else {
+        slot += '\n';
+        slot += value;
+      }
     }
   }
 
@@ -145,7 +146,7 @@ void HttpClient::OnSimpleLoaderComplete(
 
   std::move(response_callback)
       .Run(response_code, net_error_code, std::move(response_body),
-           std::move(response_header_keys), std::move(response_header_values));
+           std::move(response_headers));
 }
 
 }  // namespace httpclient
