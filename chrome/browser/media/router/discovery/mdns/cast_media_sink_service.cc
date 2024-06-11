@@ -33,7 +33,7 @@ CastMediaSinkService::~CastMediaSinkService() {
   local_state_change_registrar_.RemoveAll();
 }
 
-void CastMediaSinkService::Start(
+void CastMediaSinkService::Initialize(
     const OnSinksDiscoveredCallback& sinks_discovered_cb,
     MediaSinkServiceBase* dial_media_sink_service) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
@@ -57,9 +57,19 @@ void CastMediaSinkService::Start(
       FROM_HERE, base::BindOnce(&CastMediaSinkServiceImpl::Start,
                                 base::Unretained(impl_.get())));
 
-#if !BUILDFLAG(IS_WIN)
-  StartMdnsDiscovery();
-#endif
+  if (base::FeatureList::IsEnabled(media_router::kDelayMediaSinkDiscovery)) {
+    LoggerList::GetInstance()->Log(
+        LoggerImpl::Severity::kInfo, mojom::LogCategory::kDiscovery,
+        kLoggerComponent,
+        "The sink service is initialized. Device discovery will start "
+        "after user interaction.",
+        "", "", "");
+  } else {
+    LoggerList::GetInstance()->Log(
+        LoggerImpl::Severity::kInfo, mojom::LogCategory::kDiscovery,
+        kLoggerComponent, "The sink service is initialized.", "", "", "");
+    StartMdnsDiscovery();
+  }
 }
 
 std::unique_ptr<CastMediaSinkServiceImpl, base::OnTaskRunnerDeleter>
@@ -93,28 +103,36 @@ void CastMediaSinkService::SetCastAllowAllIPs() {
 }
 
 void CastMediaSinkService::StartMdnsDiscovery() {
-  // |dns_sd_registry_| is already set to a mock version in unit tests only.
-  // |impl_| must be initialized first because AddObserver might end up calling
-  // |OnDnsSdEvent| right away.
+  // `dns_sd_registry_ is already set to a mock version in unit tests only.
+  // `impl_` must be initialized first because AddObserver might end up
+  // calling `OnDnsSdEvent` right away.
   DCHECK(impl_);
-  if (!dns_sd_registry_) {
-    dns_sd_registry_ = DnsSdRegistry::GetInstance();
-    dns_sd_registry_->AddObserver(this);
-    dns_sd_registry_->RegisterDnsSdListener(kCastServiceType);
-    LoggerList::GetInstance()->Log(
-        LoggerImpl::Severity::kInfo, mojom::LogCategory::kDiscovery,
-        kLoggerComponent, "mDNS discovery started.", "", "", "");
+  if (MdnsDiscoveryStarted()) {
+    return;
   }
+
+  dns_sd_registry_ = DnsSdRegistry::GetInstance();
+  dns_sd_registry_->AddObserver(this);
+  dns_sd_registry_->RegisterDnsSdListener(kCastServiceType);
+  LoggerList::GetInstance()->Log(
+      LoggerImpl::Severity::kInfo, mojom::LogCategory::kDiscovery,
+      kLoggerComponent, "mDNS discovery started.", "", "", "");
 }
 
-bool CastMediaSinkService::MdnsDiscoveryStarted() {
+bool CastMediaSinkService::MdnsDiscoveryStarted() const {
   return dns_sd_registry_ != nullptr;
 }
 
 void CastMediaSinkService::DiscoverSinksNow() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  if (dns_sd_registry_)
+  if (dns_sd_registry_) {
     dns_sd_registry_->ResetAndDiscover();
+  } else {
+    LoggerList::GetInstance()->Log(
+        LoggerImpl::Severity::kInfo, mojom::LogCategory::kDiscovery,
+        kLoggerComponent,
+        "Failed to discover sinks. mDNS discovery hasn't started.", "", "", "");
+  }
 
   impl_->task_runner()->PostTask(
       FROM_HERE, base::BindOnce(&CastMediaSinkServiceImpl::OpenChannelsNow,

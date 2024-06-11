@@ -55,7 +55,9 @@ class DialMediaSinkServiceImpl : public MediaSinkServiceBase,
       const scoped_refptr<base::SequencedTaskRunner>& task_runner);
   ~DialMediaSinkServiceImpl() override;
 
-  virtual void Start();
+  virtual void Initialize();
+
+  void StartDiscovery();
 
   // MediaSinkServiceBase implementation.
   void DiscoverSinksNow() override;

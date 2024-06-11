@@ -223,6 +223,12 @@ class MediaRouterDesktopTest : public MediaRouterMojoTest {
     }
   }
 
+  void OnUserGesture() { router()->OnUserGesture(); }
+
+  void SetMockSinkServiceForTest(MockDualMediaSinkService* sink_service) {
+    router()->media_sink_service_ = sink_service;
+  }
+
  private:
   void ExpectBucketCount(const std::string& histogram_name,
                          mojom::RouteRequestResultCode result_code,
@@ -1006,6 +1012,32 @@ TEST_F(MediaRouterDesktopTest, GetMirroringMediaControllerHost) {
 
   // Expect that no host for kRouteId2 exists, as it is not a local source.
   EXPECT_EQ(nullptr, router()->GetMirroringMediaControllerHost(kRouteId2));
+}
+
+TEST_F(MediaRouterDesktopTest, OnUserGesture) {
+  auto media_sink_service = std::make_unique<MockDualMediaSinkService>();
+  SetMockSinkServiceForTest(media_sink_service.get());
+
+  // If Cast and DIAL discovery hasn't started yet, user gesture will start
+  // discovery.
+  EXPECT_CALL(*media_sink_service, StartDiscovery);
+  EXPECT_CALL(*media_sink_service, DiscoverSinksNow).Times(0);
+  OnUserGesture();
+
+  // If Cast and DIAL discovery has started, user gesture will not lead to
+  // starting discovery again. Instead, the sink service will request to start a
+  // new discovery cycle.
+  ON_CALL(*media_sink_service, MdnsDiscoveryStarted)
+      .WillByDefault(Return(true));
+  ON_CALL(*media_sink_service, DialDiscoveryStarted)
+      .WillByDefault(Return(true));
+
+  EXPECT_CALL(*media_sink_service, StartDiscovery).Times(0);
+  EXPECT_CALL(*media_sink_service, DiscoverSinksNow);
+  OnUserGesture();
+
+  // Clean up
+  SetMockSinkServiceForTest(nullptr);
 }
 
 }  // namespace media_router

@@ -51,39 +51,60 @@ base::CallbackListSubscription DualMediaSinkService::AddSinksDiscoveredCallback(
 void DualMediaSinkService::DiscoverSinksNow() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   // TODO(imcheng): Move this call into CastMediaRouteProvider.
-  if (cast_media_sink_service_)
+  if (cast_media_sink_service_) {
     cast_media_sink_service_->DiscoverSinksNow();
+  }
 
-  if (dial_media_sink_service_)
+  if (dial_media_sink_service_) {
     dial_media_sink_service_->DiscoverSinksNow();
+  }
 }
 
-#if BUILDFLAG(IS_WIN)
+void DualMediaSinkService::StartDiscovery() {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  StartMdnsDiscovery();
+  StartDialDiscovery();
+}
+
 void DualMediaSinkService::StartMdnsDiscovery() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-
-  if (cast_media_sink_service_)
+  if (cast_media_sink_service_ &&
+      !cast_media_sink_service_->MdnsDiscoveryStarted()) {
     cast_media_sink_service_->StartMdnsDiscovery();
+  }
 }
 
-bool DualMediaSinkService::MdnsDiscoveryStarted() {
+void DualMediaSinkService::StartDialDiscovery() {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  if (dial_media_sink_service_ &&
+      !dial_media_sink_service_->DiscoveryStarted()) {
+    dial_media_sink_service_->StartDiscovery();
+  }
+}
+
+bool DualMediaSinkService::MdnsDiscoveryStarted() const {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   return cast_media_sink_service_
              ? cast_media_sink_service_->MdnsDiscoveryStarted()
              : false;
 }
-#endif
+
+bool DualMediaSinkService::DialDiscoveryStarted() const {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  return dial_media_sink_service_ &&
+         dial_media_sink_service_->DiscoveryStarted();
+}
 
 DualMediaSinkService::DualMediaSinkService() {
   if (DialMediaRouteProviderEnabled()) {
     dial_media_sink_service_ = std::make_unique<DialMediaSinkService>();
-    dial_media_sink_service_->Start(
+    dial_media_sink_service_->Initialize(
         base::BindRepeating(&DualMediaSinkService::OnSinksDiscovered,
                             base::Unretained(this), "dial"));
   }
 
   cast_media_sink_service_ = std::make_unique<CastMediaSinkService>();
-  cast_media_sink_service_->Start(
+  cast_media_sink_service_->Initialize(
       base::BindRepeating(&DualMediaSinkService::OnSinksDiscovered,
                           base::Unretained(this), "cast"),
       dial_media_sink_service_ ? dial_media_sink_service_->impl() : nullptr);

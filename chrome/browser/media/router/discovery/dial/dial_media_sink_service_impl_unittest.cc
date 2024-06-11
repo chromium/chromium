@@ -9,8 +9,10 @@
 #include "base/memory/raw_ptr.h"
 #include "base/task/sequenced_task_runner.h"
 #include "base/test/mock_callback.h"
+#include "base/test/scoped_feature_list.h"
 #include "base/timer/mock_timer.h"
 #include "chrome/browser/media/router/discovery/dial/dial_device_data.h"
+#include "chrome/browser/media/router/media_router_feature.h"
 #include "chrome/browser/media/router/test/provider_test_helpers.h"
 #include "content/public/test/browser_task_environment.h"
 #include "services/data_decoder/public/cpp/test_support/in_process_data_decoder.h"
@@ -82,6 +84,10 @@ class DialMediaSinkServiceImplTest : public ::testing::Test {
     return DialAppInfoResult(
         CreateParsedDialAppInfoPtr(app_name, DialAppState::kRunning),
         DialAppInfoResultCode::kOk);
+  }
+
+  bool dial_discovery_started() {
+    return media_sink_service_->dial_registry_ != nullptr;
   }
 
  protected:
@@ -371,4 +377,42 @@ TEST_F(DialMediaSinkServiceImplTest, FetchDialAppInfoWithDiscoveryOnlySink) {
       StartMonitoringAvailableSinksForApp("YouTube");
 }
 
+// TODO(crbug.com/345056325): Remove this test class after the
+// kDelayMediaSinkDiscovery feature is enabled by default.
+class DialMediaSinkServiceImplStartDiscoveryTest
+    : public DialMediaSinkServiceImplTest {
+  // Override this function so that `media_sink_service_` isn't initialized for
+  // tests yet.
+  void SetUp() override {}
+};
+
+TEST_F(DialMediaSinkServiceImplStartDiscoveryTest, DiscoveryOnUserGesture) {
+  // When the `kDelayMediaSinkDiscovery` feature is enabled, DIAL discovery
+  // isn't started until `StartDiscovery()` is called explicitly on user
+  // gesture.
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitAndEnableFeature(
+      media_router::kDelayMediaSinkDiscovery);
+
+  media_sink_service_->Initialize();
+  base::RunLoop().RunUntilIdle();
+  EXPECT_FALSE(dial_discovery_started());
+
+  // Calling `DiscoverSinksNow()` won't start a new cycle of discovery.
+  media_sink_service_->DiscoverSinksNow();
+  base::RunLoop().RunUntilIdle();
+  EXPECT_FALSE(dial_discovery_started());
+
+  media_sink_service_->StartDiscovery();
+  base::RunLoop().RunUntilIdle();
+  EXPECT_TRUE(dial_discovery_started());
+}
+
+TEST_F(DialMediaSinkServiceImplStartDiscoveryTest, DiscoveryOnStart) {
+  // When the `kDelayMediaSinkDiscovery` feature is not enabled, DIAL discovery
+  // starts as soon as the service is initialized.
+  media_sink_service_->Initialize();
+  base::RunLoop().RunUntilIdle();
+  EXPECT_TRUE(dial_discovery_started());
+}
 }  // namespace media_router

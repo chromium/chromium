@@ -77,13 +77,17 @@ class DualMediaSinkService {
 
   virtual void DiscoverSinksNow();
 
-#if BUILDFLAG(IS_WIN)
-  // Starts mDNS discovery on |cast_media_sink_service_| if it is not already
+  // Starts both mDns and DIAL discovery, if they have not already started.
+  virtual void StartDiscovery();
+  // Starts mDNS discovery on `cast_media_sink_service_` if it has not already
   // started.
   virtual void StartMdnsDiscovery();
+  // Starts DIAL discovery on `dial_media_sink_service_` if it has not already
+  // started.
+  virtual void StartDialDiscovery();
 
-  bool MdnsDiscoveryStarted();
-#endif
+  virtual bool MdnsDiscoveryStarted() const;
+  virtual bool DialDiscoveryStarted() const;
 
  protected:
   // Used by tests.

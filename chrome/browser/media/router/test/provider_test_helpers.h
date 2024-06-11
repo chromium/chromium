@@ -19,6 +19,7 @@
 #include "chrome/browser/media/router/discovery/mdns/cast_media_sink_service.h"
 #include "chrome/browser/media/router/discovery/mdns/cast_media_sink_service_impl.h"
 #include "chrome/browser/media/router/providers/cast/cast_app_discovery_service.h"
+#include "chrome/browser/media/router/providers/cast/dual_media_sink_service.h"
 #include "chrome/browser/media/router/providers/dial/dial_activity_manager.h"
 #include "chrome/browser/media/router/providers/dial/dial_internal_message_util.h"
 #include "components/media_router/browser/issue_manager.h"
@@ -33,6 +34,19 @@
 #include "third_party/blink/public/mojom/presentation/presentation.mojom.h"
 
 namespace media_router {
+
+class MockDualMediaSinkService : public DualMediaSinkService {
+ public:
+  MockDualMediaSinkService();
+  MockDualMediaSinkService(const MockDualMediaSinkService&) = delete;
+  MockDualMediaSinkService& operator=(const MockDualMediaSinkService&) = delete;
+  ~MockDualMediaSinkService() override;
+
+  MOCK_METHOD(void, StartDiscovery, (), (override));
+  MOCK_METHOD(void, DiscoverSinksNow, (), (override));
+  MOCK_METHOD(bool, DialDiscoveryStarted, (), (override, const));
+  MOCK_METHOD(bool, MdnsDiscoveryStarted, (), (override, const));
+};
 
 class MockDialMediaSinkService : public DialMediaSinkService {
  public:

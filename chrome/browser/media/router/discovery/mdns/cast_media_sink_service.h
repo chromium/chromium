@@ -45,8 +45,8 @@ class CastMediaSinkService : public DnsSdRegistry::DnsSdObserver {
   // |dial_media_sink_service|: Optional pointer to DIAL MediaSinkService for
   // dual discovery.
   // Marked virtual for tests.
-  virtual void Start(const OnSinksDiscoveredCallback& sinks_discovered_cb,
-                     MediaSinkServiceBase* dial_media_sink_service);
+  virtual void Initialize(const OnSinksDiscoveredCallback& sinks_discovered_cb,
+                          MediaSinkServiceBase* dial_media_sink_service);
 
   virtual void DiscoverSinksNow();
 
@@ -57,16 +57,15 @@ class CastMediaSinkService : public DnsSdRegistry::DnsSdObserver {
 
   CastMediaSinkServiceImpl* impl() { return impl_.get(); }
 
-  // Registers with DnsSdRegistry to listen for Cast devices. Note that this is
-  // called on |Start()| on all platforms except for Windows. On Windows, this
-  // method should be invoked either if enabling mDNS will not trigger a
-  // firewall prompt, or if the resulting firewall prompt can be associated with
-  // a user gesture (e.g. opening the Media Router dialog).
+  // Registers with DnsSdRegistry to listen for Cast devices. Called when users
+  // make an explicit interaction with Cast (e.g. opening the Media Router
+  // dialog). On windows, this method is also called when the browser is
+  // informed that users have granted mDNS permission.
   // Subsequent invocations of this method are no-op.
   // Marked virtual for tests.
   virtual void StartMdnsDiscovery();
 
-  bool MdnsDiscoveryStarted();
+  bool MdnsDiscoveryStarted() const;
 
   void SetDnsSdRegistryForTest(DnsSdRegistry* registry);
 

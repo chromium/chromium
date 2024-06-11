@@ -22,13 +22,19 @@ using ::testing::NiceMock;
 
 namespace media_router {
 
+MockDualMediaSinkService::MockDualMediaSinkService()
+    : DualMediaSinkService(std::unique_ptr<CastMediaSinkService>(nullptr),
+                           std::unique_ptr<DialMediaSinkService>(nullptr),
+                           std::unique_ptr<CastAppDiscoveryService>(nullptr)) {}
+MockDualMediaSinkService::~MockDualMediaSinkService() = default;
+
 MockDialMediaSinkService::MockDialMediaSinkService() = default;
 MockDialMediaSinkService::~MockDialMediaSinkService() = default;
 
 MockCastMediaSinkService::MockCastMediaSinkService() : CastMediaSinkService() {}
 MockCastMediaSinkService::~MockCastMediaSinkService() = default;
 
-MockCastAppDiscoveryService::MockCastAppDiscoveryService() {}
+MockCastAppDiscoveryService::MockCastAppDiscoveryService() = default;
 MockCastAppDiscoveryService::~MockCastAppDiscoveryService() = default;
 
 base::CallbackListSubscription

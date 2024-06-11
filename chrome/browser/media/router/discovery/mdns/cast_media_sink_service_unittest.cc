@@ -86,8 +86,8 @@ class CastMediaSinkServiceTest : public ::testing::Test {
     EXPECT_CALL(test_dns_sd_registry_, AddObserver(media_sink_service_.get()));
     EXPECT_CALL(test_dns_sd_registry_, RegisterDnsSdListener(_));
     media_sink_service_->SetDnsSdRegistryForTest(&test_dns_sd_registry_);
-    media_sink_service_->Start(mock_sink_discovered_ui_cb_.Get(),
-                               &dial_media_sink_service_);
+    media_sink_service_->Initialize(mock_sink_discovered_ui_cb_.Get(),
+                                    &dial_media_sink_service_);
     mock_impl_ = media_sink_service_->mock_impl();
     ASSERT_TRUE(mock_impl_);
     EXPECT_CALL(*mock_impl_, DoStart()).WillOnce(InvokeWithoutArgs([this]() {

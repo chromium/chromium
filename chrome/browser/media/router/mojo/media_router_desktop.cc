@@ -5,6 +5,7 @@
 #include "chrome/browser/media/router/mojo/media_router_desktop.h"
 
 #include <stddef.h>
+
 #include <utility>
 #include <vector>
 
@@ -45,7 +46,6 @@
 #include "components/openscreen_platform/network_context.h"
 #include "content/public/browser/browser_task_traits.h"
 #include "content/public/browser/browser_thread.h"
-
 #include "content/public/browser/render_frame_host.h"
 #include "content/public/browser/render_process_host.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
@@ -65,9 +65,7 @@ namespace {
 
 const int kDefaultFrameTreeNodeId = -1;
 
-#if BUILDFLAG(IS_WIN)
 constexpr char kLoggerComponent[] = "MediaRouterDesktop";
-#endif
 
 DesktopMediaPickerController::Params MakeDesktopPickerParams(
     content::WebContents* web_contents) {
@@ -305,23 +303,23 @@ void MediaRouterDesktop::OnUserGesture() {
     return;
   }
 
-  DiscoverSinksNow();
-  media_sink_service_->DiscoverSinksNow();
+  if (media_sink_service_->MdnsDiscoveryStarted() &&
+      media_sink_service_->DialDiscoveryStarted()) {
+    DiscoverSinksNow();
+  } else {
+    GetLogger()->LogInfo(
+        mojom::LogCategory::kDiscovery, kLoggerComponent,
+        "The user interacted with MR. Starting dial and mDNS discovery.", "",
+        "", "");
+    media_sink_service_->StartDiscovery();
+  }
+
   if (!media_sink_service_subscription_) {
     media_sink_service_subscription_ =
         media_sink_service_->AddSinksDiscoveredCallback(
             base::BindRepeating(&MediaSinkServiceStatus::UpdateDiscoveredSinks,
                                 media_sink_service_status_.GetWeakPtr()));
   }
-
-#if BUILDFLAG(IS_WIN)
-  if (!media_sink_service_->MdnsDiscoveryStarted()) {
-    GetLogger()->LogInfo(
-        mojom::LogCategory::kDiscovery, kLoggerComponent,
-        "The user interacted with MR. mDNS discovery is enabled.", "", "", "");
-  }
-  EnsureMdnsDiscoveryEnabled();
-#endif
 }
 
 std::vector<MediaRoute> MediaRouterDesktop::GetCurrentRoutes() const {
@@ -395,6 +393,15 @@ MediaRouterDebugger& MediaRouterDesktop::GetDebugger() {
 bool MediaRouterDesktop::RegisterMediaSinksObserver(
     MediaSinksObserver* observer) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+
+  if (media_sink_service_) {
+    media_sink_service_->StartDiscovery();
+    GetLogger()->LogInfo(mojom::LogCategory::kDiscovery, kLoggerComponent,
+                         "Starting the DIAL and mDNS discovery because a media "
+                         "sink is registered for the first time.",
+                         "", "", "");
+  }
+
   // Create an observer list for the media source and add `observer`
   // to it. Fail if `observer` is already registered.
 
@@ -819,6 +826,7 @@ std::string MediaRouterDesktop::GetHashToken() {
 }
 
 void MediaRouterDesktop::DiscoverSinksNow() {
+  media_sink_service_->DiscoverSinksNow();
   for (const auto& provider : media_route_providers_) {
     provider.second->DiscoverSinksNow();
   }

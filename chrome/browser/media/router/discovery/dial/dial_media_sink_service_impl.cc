@@ -14,6 +14,7 @@
 #include "base/strings/stringprintf.h"
 #include "base/task/sequenced_task_runner.h"
 #include "chrome/browser/media/router/discovery/dial/dial_device_data.h"
+#include "chrome/browser/media/router/media_router_feature.h"
 #include "components/media_router/common/mojom/media_router.mojom.h"
 
 namespace media_router {
@@ -82,10 +83,11 @@ DialMediaSinkServiceImpl::~DialMediaSinkServiceImpl() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 }
 
-void DialMediaSinkServiceImpl::Start() {
+void DialMediaSinkServiceImpl::Initialize() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  if (dial_registry_)
+  if (description_service_) {
     return;
+  }
 
   description_service_ = std::make_unique<DeviceDescriptionService>(
       base::BindRepeating(
@@ -95,6 +97,28 @@ void DialMediaSinkServiceImpl::Start() {
                           base::Unretained(this)));
 
   app_discovery_service_ = std::make_unique<DialAppDiscoveryService>();
+
+  if (base::FeatureList::IsEnabled(media_router::kDelayMediaSinkDiscovery)) {
+    LoggerList::GetInstance()->Log(
+        LoggerImpl::Severity::kInfo, mojom::LogCategory::kDiscovery,
+        kLoggerComponent,
+        "The sink service is initialized. Device discovery will start "
+        "after user interaction.",
+        "", "", "");
+  } else {
+    LoggerList::GetInstance()->Log(
+        LoggerImpl::Severity::kInfo, mojom::LogCategory::kDiscovery,
+        kLoggerComponent, "The sink service is initialized.", "", "", "");
+    StartDiscovery();
+  }
+}
+
+void DialMediaSinkServiceImpl::StartDiscovery() {
+  DCHECK(description_service_);
+  DCHECK(app_discovery_service_);
+  if (dial_registry_) {
+    return;
+  }
 
   StartTimer();
 
@@ -108,7 +132,15 @@ void DialMediaSinkServiceImpl::Start() {
 
 void DialMediaSinkServiceImpl::DiscoverSinksNow() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  DCHECK(dial_registry_);
+  if (!dial_registry_) {
+    LoggerList::GetInstance()->Log(
+        LoggerImpl::Severity::kError, mojom::LogCategory::kDiscovery,
+        kLoggerComponent,
+        "Failed to discover sinks. Device discovery hasn't started.", "", "",
+        "");
+    return;
+  }
+
   dial_registry_->DiscoverNow();
   RescanAppInfo();
 }

@@ -251,8 +251,6 @@ if (!is_android) {
       "test/mock_dns_sd_registry.h",
       "test/mock_mojo_media_router.cc",
       "test/mock_mojo_media_router.h",
-      "test/noop_dual_media_sink_service.cc",
-      "test/noop_dual_media_sink_service.h",
       "test/provider_test_helpers.cc",
       "test/provider_test_helpers.h",
     ]
