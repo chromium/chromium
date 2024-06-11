@@ -207,17 +207,19 @@ views::Builder<views::BoxLayoutView> CreateCollapsedSummaryBuilder(
       .AddChild(
           views::Builder<views::Label>()
               .SetText(notification.title())
+              .SetHorizontalAlignment(gfx::HorizontalAlignment::ALIGN_LEFT)
               .SetFontList(gfx::FontList({kGoogleSansFont}, gfx::Font::NORMAL,
                                          ash::kNotificationTitleLabelSize,
                                          gfx::Font::Weight::MEDIUM)))
       .AddChild(
           views::Builder<views::Label>()
               .SetText(notification.message())
+              .SetHorizontalAlignment(gfx::HorizontalAlignment::ALIGN_LEFT)
               .SetTextContext(views::style::CONTEXT_DIALOG_BODY_TEXT)
               .SetTextStyle(views::style::STYLE_SECONDARY)
               .SetFontList(gfx::FontList({kGoogleSansFont}, gfx::Font::NORMAL,
                                          ash::kNotificationMessageLabelSize,
-                                         gfx::Font::Weight::MEDIUM)));
+                                         gfx::Font::Weight::NORMAL)));
 }
 
 views::Builder<ash::AshNotificationView::GroupedNotificationsContainer>
