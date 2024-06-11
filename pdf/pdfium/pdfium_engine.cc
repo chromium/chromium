@@ -3738,10 +3738,8 @@ std::optional<PDFiumEngine::RegionData> PDFiumEngine::GetRegion(
     return std::nullopt;
   }
 
-  gfx::Point offset_location = location + page_offset_;
   // TODO: update this when we support BIDI and scrollbars can be on the left.
-  if (!gfx::Rect(gfx::PointAtOffsetFromOrigin(page_offset_), plugin_size())
-           .Contains(offset_location)) {
+  if (!gfx::Rect(plugin_size()).Contains(location)) {
     return std::nullopt;
   }
 
