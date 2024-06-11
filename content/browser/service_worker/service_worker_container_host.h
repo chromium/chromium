@@ -252,9 +252,12 @@ class CONTENT_EXPORT ServiceWorkerClient final
 
   // Transitions to `kResponseCommitted`.
   // `rfh_id` is given only for window clients.
+  // Must be called from `ScopedServiceWorkerClient` to centralize the
+  // lifetime control there.
   // TODO(falken): Pass in an RenderFrameHostImpl instead of an ID. Some
   // tests use a fake id.
-  void CommitResponse(
+  blink::mojom::ServiceWorkerContainerInfoForClientPtr CommitResponse(
+      base::PassKey<ScopedServiceWorkerClient>,
       std::optional<GlobalRenderFrameHostId> rfh_id,
       const PolicyContainerPolicies& policy_container_policies,
       mojo::PendingRemote<network::mojom::CrossOriginEmbedderPolicyReporter>
@@ -763,16 +766,13 @@ class CONTENT_EXPORT ServiceWorkerContainerHost
 class CONTENT_EXPORT ServiceWorkerContainerHostForClient final
     : public ServiceWorkerContainerHost {
  public:
-  // Creates `ServiceWorkerContainerHostForClient`, binds mojo pipes of
-  // `container_info` and associates it with `service_worker_client`.
-  static void Create(
-      base::WeakPtr<ServiceWorkerClient> service_worker_client,
-      blink::mojom::ServiceWorkerContainerInfoForClientPtr& container_info);
+  // Creates `ServiceWorkerContainerHostForClient` and associates it with
+  // `service_worker_client`.
+  static void Create(base::WeakPtr<ServiceWorkerClient> service_worker_client);
 
   // Use Create() instead.
-  ServiceWorkerContainerHostForClient(
-      base::WeakPtr<ServiceWorkerClient> service_worker_client,
-      blink::mojom::ServiceWorkerContainerInfoForClientPtr& container_info);
+  explicit ServiceWorkerContainerHostForClient(
+      base::WeakPtr<ServiceWorkerClient> service_worker_client);
   ~ServiceWorkerContainerHostForClient() override;
 
   ServiceWorkerClient& service_worker_client() {
@@ -785,10 +785,14 @@ class CONTENT_EXPORT ServiceWorkerContainerHostForClient final
   // Must be called during `ServiceWorkerClient::CommitResponse()`.
   void CommitResponse(
       base::PassKey<ServiceWorkerClient>,
+      blink::mojom::ServiceWorkerContainerInfoForClientPtr& container_info,
       const PolicyContainerPolicies& policy_container_policies,
       mojo::PendingRemote<network::mojom::CrossOriginEmbedderPolicyReporter>
           coep_reporter,
       ukm::SourceId ukm_source_id);
+  // For assertion only.
+  bool IsContainerRemoteBound() const;
+  bool IsContainerRemoteConnected() const;
 
   // Should be called only when `controller()` is non-null.
   blink::mojom::ControllerServiceWorkerInfoPtr

@@ -61,12 +61,23 @@ class ServiceWorkerUsbDelegateObserver;
 //   semi-strong reference:
 //   - Keeps the underlying `ServiceWorkerClient` alive unless its
 //     `ServiceWorkerClientOwner` is destroyed.
-//   - Destroys the `ServiceWorkerClient` asynchronously from the
+//   - Destroys the `ServiceWorkerClient` synchronously in the
 //     `ScopedServiceWorkerClient` destructor.
+//   - Actually the `ServiceWorkerClient` is owned by `ServiceWorkerClientOwner`
+//     and `ServiceWorkerClientOwner::OnContainerHostReceiverDisconnected()` is
+//     never called until `ServiceWorkerClientOwner::BindHost()` is called (i.e.
+//     `ScopedServiceWorkerClient::CommitResponseAndRelease` is called),
+//     and thus there is nothing explicitly to do to keep-alive it by
+//     `ScopedServiceWorkerClient`, and the destructor of
+//     `ScopedServiceWorkerClient` explicitly destroys the client when
+//     `CommitResponseAndRelease()` hasn't been called.
 // - After `CommitResponseAndRelease()` is called, this works as a weak
 //   reference:
 //   - No longer keeps alive nor destroys the `ServiceWorkerClient`. Instead,
-//     the returned object from `CommitResponseAndRelease()` keeps it alive.
+//     the returned object from `CommitResponseAndRelease()` keeps it alive
+//     (i.e. until
+//     `ServiceWorkerClientOwner::OnContainerHostReceiverDisconnected()` is
+//     called)
 //   - `service_worker_client_` is NOT cleared and still can be used.
 class CONTENT_EXPORT ScopedServiceWorkerClient final {
  public:
@@ -104,13 +115,6 @@ class CONTENT_EXPORT ScopedServiceWorkerClient final {
 
  private:
   base::WeakPtr<ServiceWorkerClient> service_worker_client_;
-
-  // The `ServiceWorkerClient` is owned and kept alive by its
-  // `ServiceWorkerClientOwner` until its mojo pipe is closed (i.e. until
-  // `ServiceWorkerClientOwner::OnContainerHostReceiverDisconnected()` is
-  // called). So `container_info_` here keeps alive `ServiceWorkerClient` by
-  // keeping the mojo pipe.
-  blink::mojom::ServiceWorkerContainerInfoForClientPtr container_info_;
 };
 
 // A class responsible for `ServiceWorkerClient` management, including its
@@ -218,6 +222,9 @@ class CONTENT_EXPORT ServiceWorkerClientOwner final {
       ServiceWorkerContainerHostForClient& container_host,
       mojo::PendingAssociatedReceiver<blink::mojom::ServiceWorkerContainerHost>
           host_receiver);
+
+  void DestroyServiceWorkerClient(
+      base::WeakPtr<ServiceWorkerClient> service_worker_client);
 
   // Updates the client UUID of an existing service worker client.
   void UpdateServiceWorkerClientClientID(const std::string& current_client_uuid,

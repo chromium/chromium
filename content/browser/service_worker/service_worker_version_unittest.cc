@@ -192,7 +192,7 @@ class ServiceWorkerVersionTest
 
   // Make the client in a different process from the service worker when
   // |in_different_process| is true.
-  ScopedServiceWorkerClient ActivateWithControllee(
+  CommittedServiceWorkerClient ActivateWithControllee(
       bool in_different_process = false) {
     version_->SetStatus(ServiceWorkerVersion::ACTIVATED);
     registration_->SetActiveVersion(version_);
@@ -215,19 +215,16 @@ class ServiceWorkerVersionTest
                                       registration_->key());
 
     // Just to set `controllee_process_id`.
-    mojo::PendingReceiver<network::mojom::CrossOriginEmbedderPolicyReporter>
-        reporter;
-    service_worker_client->CommitResponse(
+    auto committed_service_worker_client = CommittedServiceWorkerClient(
+        std::move(service_worker_client),
         GlobalRenderFrameHostId(controllee_process_id,
-                                /*mock frame_routing_id=*/1),
-        PolicyContainerPolicies(), reporter.InitWithNewPipeAndPassRemote(),
-        ukm::kInvalidSourceId);
+                                /*mock frame_routing_id=*/1));
 
-    service_worker_client->SetControllerRegistration(
+    committed_service_worker_client->SetControllerRegistration(
         registration_, false /* notify_controllerchange */);
     EXPECT_TRUE(version_->HasControllee());
-    EXPECT_TRUE(service_worker_client->controller());
-    return service_worker_client;
+    EXPECT_TRUE(committed_service_worker_client->controller());
+    return committed_service_worker_client;
   }
 
   bool UseFirstPartyStorageKey() {
@@ -1470,7 +1467,7 @@ TEST_P(ServiceWorkerVersionTest,
   // Now begin the navigation commit with the same process id used by the
   // worker. This should cause the worker to stop being considered foreground
   // priority.
-  service_worker_client->CommitResponse(
+  auto container_info = service_worker_client.CommitResponseAndRelease(
       GlobalRenderFrameHostId(version_->embedded_worker()->process_id(),
                               /*frame_routing_id=*/1),
       PolicyContainerPolicies(), std::move(reporter),

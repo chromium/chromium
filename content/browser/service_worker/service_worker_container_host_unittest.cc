@@ -1270,12 +1270,7 @@ TEST_P(ServiceWorkerContainerHostTestByClientType,
   }
 
   // `ScopedServiceWorkerClient` is destroyed.
-  // The `ServiceWorkerClient` is still alive because it will be destroyed
-  // asynchronously.
-  EXPECT_TRUE(weak_service_worker_client.get());
-
-  base::RunLoop().RunUntilIdle();
-  // Destroyed asynchronously.
+  // The `ServiceWorkerClient` is destroyed synchronously.
   EXPECT_FALSE(weak_service_worker_client.get());
 }
 

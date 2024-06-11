@@ -217,24 +217,24 @@ ServiceWorkerContainerHostForServiceWorker::
     ~ServiceWorkerContainerHostForServiceWorker() = default;
 
 ServiceWorkerContainerHostForClient::ServiceWorkerContainerHostForClient(
-    base::WeakPtr<ServiceWorkerClient> service_worker_client,
-    blink::mojom::ServiceWorkerContainerInfoForClientPtr& container_info)
-    : service_worker_client_(std::move(service_worker_client)),
-      container_(
-          container_info->client_receiver.InitWithNewEndpointAndPassRemote()) {
+    base::WeakPtr<ServiceWorkerClient> service_worker_client)
+    : service_worker_client_(std::move(service_worker_client)) {
   CHECK(service_worker_client_);
-  DCHECK(container_.is_bound());
-  service_worker_client_->owner().BindHost(
-      *this, container_info->host_remote.InitWithNewEndpointAndPassReceiver());
 }
 
 void ServiceWorkerContainerHostForClient::CommitResponse(
     base::PassKey<ServiceWorkerClient>,
+    blink::mojom::ServiceWorkerContainerInfoForClientPtr& container_info,
     const PolicyContainerPolicies& policy_container_policies,
     mojo::PendingRemote<network::mojom::CrossOriginEmbedderPolicyReporter>
         coep_reporter,
     ukm::SourceId ukm_source_id) {
   CHECK(!service_worker_client().is_response_committed());
+
+  container_.Bind(
+      container_info->client_receiver.InitWithNewEndpointAndPassRemote());
+  service_worker_client_->owner().BindHost(
+      *this, container_info->host_remote.InitWithNewEndpointAndPassReceiver());
 
   CHECK(!policy_container_policies_.has_value());
   policy_container_policies_ = policy_container_policies.Clone();
@@ -248,11 +248,18 @@ void ServiceWorkerContainerHostForClient::CommitResponse(
 }
 
 void ServiceWorkerContainerHostForClient::Create(
-    base::WeakPtr<ServiceWorkerClient> service_worker_client,
-    blink::mojom::ServiceWorkerContainerInfoForClientPtr& container_info) {
+    base::WeakPtr<ServiceWorkerClient> service_worker_client) {
   service_worker_client->set_container_host(
       std::make_unique<ServiceWorkerContainerHostForClient>(
-          service_worker_client, container_info));
+          service_worker_client));
+}
+
+bool ServiceWorkerContainerHostForClient::IsContainerRemoteBound() const {
+  return container_.is_bound();
+}
+
+bool ServiceWorkerContainerHostForClient::IsContainerRemoteConnected() const {
+  return container_.is_connected();
 }
 
 void ServiceWorkerClient::set_container_host(
@@ -1060,7 +1067,9 @@ ServiceWorkerClientInfo ServiceWorkerClient::GetServiceWorkerClientInfo()
   return *client_info_;
 }
 
-void ServiceWorkerClient::CommitResponse(
+blink::mojom::ServiceWorkerContainerInfoForClientPtr
+ServiceWorkerClient::CommitResponse(
+    base::PassKey<ScopedServiceWorkerClient>,
     std::optional<GlobalRenderFrameHostId> rfh_id,
     const PolicyContainerPolicies& policy_container_policies,
     mojo::PendingRemote<network::mojom::CrossOriginEmbedderPolicyReporter>
@@ -1088,11 +1097,17 @@ void ServiceWorkerClient::CommitResponse(
     }
   }
 
-  container_host().CommitResponse(
-      base::PassKey<ServiceWorkerClient>(), policy_container_policies,
-      std::move(coep_reporter), std::move(ukm_source_id));
+  auto container_info =
+      blink::mojom::ServiceWorkerContainerInfoForClient::New();
+  container_host().CommitResponse(base::PassKey<ServiceWorkerClient>(),
+                                  container_info, policy_container_policies,
+                                  std::move(coep_reporter),
+                                  std::move(ukm_source_id));
+  CHECK(container_host().IsContainerRemoteBound());
 
   TransitionToClientPhase(ClientPhase::kResponseCommitted);
+
+  return container_info;
 }
 
 void ServiceWorkerClient::OnEndNavigationCommit() {
@@ -2047,6 +2062,9 @@ SubresourceLoaderParams ServiceWorkerClient::MaybeCreateSubresourceLoaderParams(
 void ServiceWorkerClient::SetContainerReady() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   TransitionToClientPhase(ClientPhase::kContainerReady);
+  CHECK(container_host().IsContainerRemoteBound());
+  CHECK(container_host().IsContainerRemoteConnected());
+
   FlushFeatures();
 }
 

@@ -499,14 +499,9 @@ ServiceWorkerClient* ServiceWorkerClientOwner::GetServiceWorkerClientByWindowId(
 }
 
 void ServiceWorkerClientOwner::OnContainerHostReceiverDisconnected() {
-  ServiceWorkerContainerHostForClient* container_host =
-      container_host_receivers_->current_context();
-
-  context_->OnClientDestroyed(container_host->service_worker_client());
-
-  size_t removed = service_worker_clients_by_uuid_.erase(
-      container_host->service_worker_client().client_uuid());
-  CHECK_EQ(removed, 1u);
+  DestroyServiceWorkerClient(container_host_receivers_->current_context()
+                                 ->service_worker_client()
+                                 .AsWeakPtr());
 }
 
 void ServiceWorkerContextCore::OnClientDestroyed(
@@ -515,6 +510,19 @@ void ServiceWorkerContextCore::OnClientDestroyed(
       FROM_HERE, &ServiceWorkerContextCoreObserver::OnClientDestroyed,
       service_worker_client.container_host().ukm_source_id(),
       service_worker_client.url(), service_worker_client.GetClientType());
+}
+
+void ServiceWorkerClientOwner::DestroyServiceWorkerClient(
+    base::WeakPtr<ServiceWorkerClient> service_worker_client) {
+  if (!service_worker_client) {
+    return;
+  }
+
+  context_->OnClientDestroyed(*service_worker_client);
+
+  size_t removed = service_worker_clients_by_uuid_.erase(
+      service_worker_client->client_uuid());
+  CHECK_EQ(removed, 1u);
 }
 
 void ServiceWorkerContextCore::RegisterServiceWorker(
@@ -1367,15 +1375,26 @@ void ServiceWorkerContextCore::DidGetRegisteredStorageKeys(
 
 ScopedServiceWorkerClient::ScopedServiceWorkerClient(
     base::WeakPtr<ServiceWorkerClient> service_worker_client)
-    : service_worker_client_(std::move(service_worker_client)),
-      container_info_(
-          blink::mojom::ServiceWorkerContainerInfoForClient::New()) {
-  ServiceWorkerContainerHostForClient::Create(service_worker_client_,
-                                              container_info_);
-  CHECK(container_info_->host_remote.is_valid());
-  CHECK(container_info_->client_receiver.is_valid());
+    : service_worker_client_(std::move(service_worker_client)) {
+  ServiceWorkerContainerHostForClient::Create(service_worker_client_);
 }
-ScopedServiceWorkerClient::~ScopedServiceWorkerClient() = default;
+
+ScopedServiceWorkerClient::~ScopedServiceWorkerClient() {
+  if (!service_worker_client_) {
+    return;
+  }
+
+  // Don't destroy the client if committed, because it means this is already
+  // `Release()`d.
+  if (service_worker_client_->is_response_committed()) {
+    CHECK(service_worker_client_->container_host().IsContainerRemoteBound());
+    return;
+  }
+
+  CHECK(!service_worker_client_->container_host().IsContainerRemoteBound());
+  service_worker_client_->owner().DestroyServiceWorkerClient(
+      std::move(service_worker_client_));
+}
 
 ScopedServiceWorkerClient::ScopedServiceWorkerClient(
     ScopedServiceWorkerClient&& other) = default;
@@ -1387,12 +1406,14 @@ ScopedServiceWorkerClient::CommitResponseAndRelease(
     mojo::PendingRemote<network::mojom::CrossOriginEmbedderPolicyReporter>
         coep_reporter,
     ukm::SourceId ukm_source_id) {
-  if (service_worker_client_) {
-    service_worker_client_->CommitResponse(
-        std::move(rfh_id), policy_container_policies, std::move(coep_reporter),
-        std::move(ukm_source_id));
+  if (!service_worker_client_) {
+    return {};
   }
-  return std::move(container_info_);
+
+  return service_worker_client_->CommitResponse(
+      base::PassKey<ScopedServiceWorkerClient>(), std::move(rfh_id),
+      policy_container_policies, std::move(coep_reporter),
+      std::move(ukm_source_id));
 }
 
 #if !BUILDFLAG(IS_ANDROID)

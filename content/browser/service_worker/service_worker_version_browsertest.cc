@@ -343,7 +343,10 @@ class ServiceWorkerVersionBrowserTest : public ContentBrowserTest {
         partition->GetServiceWorkerContext()));
   }
 
-  void TearDownOnMainThread() override { wrapper_.reset(); }
+  void TearDownOnMainThread() override {
+    wrapper_.reset();
+    service_worker_client_keep_alive_.clear();
+  }
 
   blink::ServiceWorkerStatusCode Install(
       const std::string& worker_url,

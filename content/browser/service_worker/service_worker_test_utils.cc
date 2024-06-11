@@ -316,7 +316,7 @@ CommittedServiceWorkerClient::CommittedServiceWorkerClient(
   blink::mojom::ServiceWorkerContainerInfoForClientPtr received_info =
       std::move(service_worker_client)
           .CommitResponseAndRelease(
-              /*render_frame_host_id*/ std::nullopt, PolicyContainerPolicies(),
+              /*render_frame_host_id=*/std::nullopt, PolicyContainerPolicies(),
               /*coep_reporter=*/{}, ukm::kInvalidSourceId);
 
   service_worker_client_->SetContainerReady();
