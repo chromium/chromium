@@ -7658,7 +7658,7 @@
   {
     "name": "reset-shortcut-customizations",
     "owners": [ "jimmyxgong@chromium.org", "zentaro@chromium.org", "cros-peripherals@google.com"],
-    "expiry_milestone": 130
+    "expiry_milestone": 140
   },
   {
     "name": "responsive-toolbar",
