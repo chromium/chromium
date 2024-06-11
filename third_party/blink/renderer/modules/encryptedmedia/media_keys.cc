@@ -308,7 +308,7 @@ MediaKeySession* MediaKeys::createSession(ScriptState* script_state,
     return nullptr;
   }
 
-  // From http://w3c.github.io/encrypted-media/#createSession
+  // From https://w3c.github.io/encrypted-media/#dom-mediakeys-createsession
 
   // When this method is invoked, the user agent must run the following steps:
   // 1. If this object's persistent state allowed value is false and
@@ -346,7 +346,9 @@ ScriptPromise<IDLBoolean> MediaKeys::setServerCertificate(
     return EmptyPromise();
   }
 
-  // From https://w3c.github.io/encrypted-media/#setServerCertificate
+  // From
+  // https://w3c.github.io/encrypted-media/#dom-mediakeys-setservercertificate
+
   // The setServerCertificate(serverCertificate) method provides a server
   // certificate to be used to encrypt messages to the license server.
   // It must run the following steps:
