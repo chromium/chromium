@@ -36,8 +36,6 @@ EventTriggerData::FromJSON(base::Value& value) {
 
   EventTriggerData out;
 
-  ASSIGN_OR_RETURN(out.filters, FilterPair::FromJSON(*dict));
-
   ASSIGN_OR_RETURN(
       out.data,
       ParseUint64(*dict, kTriggerData).transform(&ValueOrZero<uint64_t>),
@@ -52,6 +50,8 @@ EventTriggerData::FromJSON(base::Value& value) {
   ASSIGN_OR_RETURN(out.dedup_key, ParseDeduplicationKey(*dict), [](ParseError) {
     return TriggerRegistrationError::kEventDedupKeyValueInvalid;
   });
+
+  ASSIGN_OR_RETURN(out.filters, FilterPair::FromJSON(*dict));
 
   return out;
 }
@@ -80,7 +80,7 @@ base::Value::Dict EventTriggerData::ToJson() const {
 }
 
 // static
-base::expected<EventTriggerValue, mojom::TriggerRegistrationError>
+base::expected<EventTriggerValue, TriggerRegistrationError>
 EventTriggerValue::Parse(const base::Value::Dict& dict) {
   const base::Value* v = dict.Find(kValue);
   if (!v) {

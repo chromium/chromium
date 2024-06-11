@@ -34,7 +34,7 @@ bool IsValid(const AggregatableValues::Values& values) {
   });
 }
 
-base::expected<AggregatableValues::Values, mojom::TriggerRegistrationError>
+base::expected<AggregatableValues::Values, TriggerRegistrationError>
 ParseValues(const base::Value::Dict& dict,
             TriggerRegistrationError key_error,
             TriggerRegistrationError value_error) {
@@ -69,7 +69,7 @@ std::optional<AggregatableValues> AggregatableValues::Create(
 }
 
 // static
-base::expected<std::vector<AggregatableValues>, mojom::TriggerRegistrationError>
+base::expected<std::vector<AggregatableValues>, TriggerRegistrationError>
 AggregatableValues::FromJSON(base::Value* input_value) {
   std::vector<AggregatableValues> configs;
   if (!input_value) {

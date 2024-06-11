@@ -88,7 +88,7 @@ bool AreSpecsValid(const TriggerSpecs::TriggerDataIndices& trigger_data_indices,
          });
 }
 
-base::expected<void, mojom::SourceRegistrationError>
+base::expected<void, SourceRegistrationError>
 ValidateSpecsForTriggerDataMatching(
     const TriggerSpecs::TriggerDataIndices& trigger_data_indices,
     TriggerDataMatching trigger_data_matching) {

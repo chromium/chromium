@@ -35,11 +35,11 @@ AggregatableDedupKey::FromJSON(base::Value& value) {
 
   AggregatableDedupKey out;
 
-  ASSIGN_OR_RETURN(out.filters, FilterPair::FromJSON(*dict));
-
   ASSIGN_OR_RETURN(out.dedup_key, ParseDeduplicationKey(*dict), [](ParseError) {
     return TriggerRegistrationError::kAggregatableDedupKeyValueInvalid;
   });
+
+  ASSIGN_OR_RETURN(out.filters, FilterPair::FromJSON(*dict));
 
   return out;
 }

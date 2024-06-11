@@ -461,8 +461,8 @@ base::Value::List ToJson(const FiltersDisjunction& filters) {
 }  // namespace
 
 // static
-base::expected<FilterPair, mojom::TriggerRegistrationError>
-FilterPair::FromJSON(base::Value::Dict& dict) {
+base::expected<FilterPair, TriggerRegistrationError> FilterPair::FromJSON(
+    base::Value::Dict& dict) {
   ASSIGN_OR_RETURN(auto positive, FiltersFromJSON(dict.Find(kFilters)));
   ASSIGN_OR_RETURN(auto negative, FiltersFromJSON(dict.Find(kNotFilters)));
   return FilterPair(std::move(positive), std::move(negative));

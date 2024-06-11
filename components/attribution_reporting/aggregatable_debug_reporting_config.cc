@@ -37,8 +37,6 @@ namespace {
 
 using ::attribution_reporting::mojom::DebugDataType;
 
-struct Error {};
-
 constexpr char kAggregatableDebugReporting[] = "aggregatable_debug_reporting";
 constexpr char kBudget[] = "budget";
 constexpr char kDebugData[] = "debug_data";
@@ -54,11 +52,11 @@ bool IsValueInRange(int value, std::optional<int> max_value) {
   return value > 0 && value <= effective_max_value;
 }
 
-base::expected<int, Error> ParseValue(const base::Value::Dict& dict,
-                                      std::optional<int> max_value) {
+base::expected<int, ParseError> ParseValue(const base::Value::Dict& dict,
+                                           std::optional<int> max_value) {
   std::optional<int> int_value = dict.FindInt(kValue);
   if (!int_value.has_value() || !IsValueInRange(*int_value, max_value)) {
-    return base::unexpected(Error());
+    return base::unexpected(ParseError());
   }
   return *int_value;
 }
@@ -73,15 +71,14 @@ base::expected<int, AggregatableDebugReportingConfigError> ParseBudget(
   return *int_value;
 }
 
-base::expected<absl::uint128, Error> ParseKeyPiece(
+base::expected<absl::uint128, ParseError> ParseKeyPiece(
     const base::Value::Dict& dict) {
   const base::Value* v = dict.Find(kKeyPiece);
   if (!v) {
-    return base::unexpected(Error());
+    return base::unexpected(ParseError());
   }
 
-  return ParseAggregationKeyPiece(*v).transform_error(
-      [](ParseError) { return Error(); });
+  return ParseAggregationKeyPiece(*v);
 }
 
 base::expected<void, AggregatableDebugReportingConfigError>
@@ -99,12 +96,14 @@ ParseDebugDataElement(base::Value& elem,
   }
 
   ASSIGN_OR_RETURN(
-      absl::uint128 key_piece, ParseKeyPiece(*dict).transform_error([](Error) {
+      absl::uint128 key_piece,
+      ParseKeyPiece(*dict).transform_error([](ParseError) {
         return AggregatableDebugReportingConfigError::kDebugDataKeyPieceInvalid;
       }));
 
   ASSIGN_OR_RETURN(
-      int int_value, ParseValue(*dict, max_value).transform_error([](Error) {
+      int int_value,
+      ParseValue(*dict, max_value).transform_error([](ParseError) {
         return AggregatableDebugReportingConfigError::kDebugDataValueInvalid;
       }));
 
@@ -170,9 +169,8 @@ ParseDebugData(base::Value::Dict& dict,
   AggregatableDebugReportingConfig::DebugData data;
   std::optional<AggregatableDebugReportingContribution>
       unspecified_contribution;
-  std::set<std::string> unknown_types;
 
-  for (base::Value& v : *l) {
+  for (std::set<std::string> unknown_types; base::Value & v : *l) {
     RETURN_IF_ERROR(ParseDebugDataElement(v, data, unspecified_contribution,
                                           unknown_types, max_value,
                                           parse_debug_data_type));
@@ -230,7 +228,7 @@ ParseConfig(base::Value::Dict& dict,
             const DebugDataTypes& debug_data_types,
             ParseDebugDataTypeFunc parse_debug_data_type) {
   ASSIGN_OR_RETURN(
-      auto key_piece, ParseKeyPiece(dict).transform_error([](Error) {
+      auto key_piece, ParseKeyPiece(dict).transform_error([](ParseError) {
         return AggregatableDebugReportingConfigError::kKeyPieceInvalid;
       }));
   ASSIGN_OR_RETURN(

@@ -89,6 +89,15 @@ base::expected<TriggerRegistration, TriggerRegistrationError>
 TriggerRegistration::Parse(base::Value::Dict dict) {
   TriggerRegistration registration;
 
+  ASSIGN_OR_RETURN(
+      registration.aggregation_coordinator_origin,
+      ParseAggregationCoordinator(dict).transform_error([](ParseError) {
+        return TriggerRegistrationError::kAggregationCoordinatorValueInvalid;
+      }));
+
+  ASSIGN_OR_RETURN(registration.aggregatable_trigger_config,
+                   AggregatableTriggerConfig::Parse(dict));
+
   ASSIGN_OR_RETURN(registration.filters, FilterPair::FromJSON(dict));
 
   ASSIGN_OR_RETURN(registration.aggregatable_dedup_keys,
@@ -114,17 +123,8 @@ TriggerRegistration::Parse(base::Value::Dict dict) {
       registration.aggregatable_values,
       AggregatableValues::FromJSON(dict.Find(kAggregatableValues)));
 
-  ASSIGN_OR_RETURN(
-      registration.aggregation_coordinator_origin,
-      ParseAggregationCoordinator(dict).transform_error([](ParseError) {
-        return TriggerRegistrationError::kAggregationCoordinatorValueInvalid;
-      }));
-
   registration.debug_key = ParseDebugKey(dict);
   registration.debug_reporting = ParseDebugReporting(dict);
-
-  ASSIGN_OR_RETURN(registration.aggregatable_trigger_config,
-                   AggregatableTriggerConfig::Parse(dict));
 
   // Deliberately ignoring errors for now to avoid dropping the registration
   // from the optional debug reporting feature.

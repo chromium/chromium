@@ -15,7 +15,6 @@
 #include "base/component_export.h"
 #include "base/types/expected.h"
 #include "base/values.h"
-#include "components/attribution_reporting/source_registration_error.mojom-forward.h"
 #include "third_party/abseil-cpp/absl/numeric/int128.h"
 
 namespace base {
@@ -70,9 +69,8 @@ std::optional<uint64_t> ParseDebugKey(const base::Value::Dict& dict);
 base::expected<std::optional<uint64_t>, ParseError> ParseDeduplicationKey(
     const base::Value::Dict&);
 
-base::expected<base::TimeDelta, mojom::SourceRegistrationError>
-ParseLegacyDuration(const base::Value& value,
-                    mojom::SourceRegistrationError error);
+base::expected<base::TimeDelta, ParseError> ParseLegacyDuration(
+    const base::Value&);
 
 base::expected<std::optional<SuitableOrigin>, ParseError>
 ParseAggregationCoordinator(const base::Value::Dict&);

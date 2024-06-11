@@ -14,6 +14,7 @@
 #include <utility>
 
 #include "base/check.h"
+#include "base/functional/overloaded.h"
 #include "base/not_fatal_until.h"
 #include "base/numerics/safe_conversions.h"
 #include "base/strings/abseil_string_number_conversions.h"
@@ -24,7 +25,6 @@
 #include "base/values.h"
 #include "components/aggregation_service/parsing_utils.h"
 #include "components/attribution_reporting/constants.h"
-#include "components/attribution_reporting/source_registration_error.mojom-forward.h"
 #include "components/attribution_reporting/suitable_origin.h"
 #include "third_party/abseil-cpp/absl/numeric/int128.h"
 #include "url/origin.h"
@@ -115,31 +115,33 @@ bool ParseDebugReporting(const base::Value::Dict& dict) {
   return dict.FindBool(kDebugReporting).value_or(false);
 }
 
-base::expected<base::TimeDelta, mojom::SourceRegistrationError>
-ParseLegacyDuration(const base::Value& value,
-                    mojom::SourceRegistrationError error) {
+base::expected<base::TimeDelta, ParseError> ParseLegacyDuration(
+    const base::Value& value) {
   // Note: The full range of uint64 seconds cannot be represented in the
   // resulting `base::TimeDelta`, but this is fine because `base::Seconds()`
   // properly clamps out-of-bound values and because the Attribution
   // Reporting API itself clamps values to 30 days:
   // https://wicg.github.io/attribution-reporting-api/#valid-source-expiry-range
 
-  if (std::optional<int> int_value = value.GetIfInt()) {
-    if (*int_value < 0) {
-      return base::unexpected(error);
-    }
-    return base::Seconds(*int_value);
-  }
-
-  if (const std::string* str = value.GetIfString()) {
-    uint64_t seconds;
-    if (!base::StringToUint64(*str, &seconds)) {
-      return base::unexpected(error);
-    }
-    return base::Seconds(seconds);
-  }
-
-  return base::unexpected(error);
+  return value.Visit(base::Overloaded{
+      [](int int_value) -> base::expected<base::TimeDelta, ParseError> {
+        if (int_value < 0) {
+          return base::unexpected(ParseError());
+        }
+        return base::Seconds(int_value);
+      },
+      [](const std::string& str)
+          -> base::expected<base::TimeDelta, ParseError> {
+        uint64_t seconds;
+        if (!base::StringToUint64(str, &seconds)) {
+          return base::unexpected(ParseError());
+        }
+        return base::Seconds(seconds);
+      },
+      [](const auto&) -> base::expected<base::TimeDelta, ParseError> {
+        return base::unexpected(ParseError());
+      },
+  });
 }
 
 base::expected<std::optional<SuitableOrigin>, ParseError>

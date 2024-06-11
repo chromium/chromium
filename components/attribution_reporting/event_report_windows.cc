@@ -198,10 +198,10 @@ EventReportWindows::FromJSON(const base::Value::Dict& registration,
         SourceRegistrationError::kBothEventReportWindowFieldsFound);
   } else if (singular_window) {
     ASSIGN_OR_RETURN(
-        base::TimeDelta report_window,
-        ParseLegacyDuration(
-            *singular_window,
-            SourceRegistrationError::kEventReportWindowValueInvalid));
+        base::TimeDelta report_window, ParseLegacyDuration(*singular_window),
+        [](ParseError) {
+          return SourceRegistrationError::kEventReportWindowValueInvalid;
+        });
 
     report_window = std::clamp(report_window, kMinReportWindow, expiry);
 

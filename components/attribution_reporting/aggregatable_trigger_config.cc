@@ -25,7 +25,7 @@ namespace {
 using ::attribution_reporting::mojom::SourceRegistrationTimeConfig;
 using ::attribution_reporting::mojom::TriggerRegistrationError;
 
-base::expected<mojom::SourceRegistrationTimeConfig, TriggerRegistrationError>
+base::expected<SourceRegistrationTimeConfig, TriggerRegistrationError>
 ParseAggregatableSourceRegistrationTime(const base::Value* value) {
   if (!value) {
     return SourceRegistrationTimeConfig::kExclude;

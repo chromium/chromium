@@ -84,13 +84,6 @@ SourceRegistration::Parse(base::Value::Dict registration,
                    DestinationSet::FromJSON(registration.Find(kDestination)));
   SourceRegistration result(std::move(destination_set));
 
-  ASSIGN_OR_RETURN(result.filter_data,
-                   FilterData::FromJSON(registration.Find(kFilterData)));
-
-  ASSIGN_OR_RETURN(
-      result.aggregation_keys,
-      AggregationKeys::FromJSON(registration.Find(kAggregationKeys)));
-
   ASSIGN_OR_RETURN(result.source_event_id,
                    ParseUint64(registration, kSourceEventId)
                        .transform(&ValueOrZero<uint64_t>),
@@ -104,9 +97,10 @@ SourceRegistration::Parse(base::Value::Dict registration,
                    });
 
   if (const base::Value* value = registration.Find(kExpiry)) {
-    ASSIGN_OR_RETURN(result.expiry,
-                     ParseLegacyDuration(
-                         *value, SourceRegistrationError::kExpiryValueInvalid));
+    ASSIGN_OR_RETURN(result.expiry, ParseLegacyDuration(*value),
+                     [](ParseError) {
+                       return SourceRegistrationError::kExpiryValueInvalid;
+                     });
 
     result.expiry =
         std::clamp(result.expiry, kMinSourceExpiry, kMaxSourceExpiry);
@@ -116,10 +110,10 @@ SourceRegistration::Parse(base::Value::Dict registration,
 
   if (const base::Value* value = registration.Find(kAggregatableReportWindow)) {
     ASSIGN_OR_RETURN(
-        result.aggregatable_report_window,
-        ParseLegacyDuration(
-            *value,
-            SourceRegistrationError::kAggregatableReportWindowValueInvalid));
+        result.aggregatable_report_window, ParseLegacyDuration(*value),
+        [](ParseError) {
+          return SourceRegistrationError::kAggregatableReportWindowValueInvalid;
+        });
 
     result.aggregatable_report_window = std::clamp(
         result.aggregatable_report_window, kMinReportWindow, result.expiry);
@@ -127,15 +121,18 @@ SourceRegistration::Parse(base::Value::Dict registration,
     result.aggregatable_report_window = result.expiry;
   }
 
-  ASSIGN_OR_RETURN(
-      auto default_event_report_windows,
-      EventReportWindows::FromJSON(registration, result.expiry, source_type));
-
   ASSIGN_OR_RETURN(result.max_event_level_reports,
                    MaxEventLevelReports::Parse(registration, source_type));
 
   ASSIGN_OR_RETURN(result.trigger_data_matching,
                    ParseTriggerDataMatching(registration));
+
+  ASSIGN_OR_RETURN(result.event_level_epsilon,
+                   EventLevelEpsilon::Parse(registration));
+
+  ASSIGN_OR_RETURN(
+      auto default_event_report_windows,
+      EventReportWindows::FromJSON(registration, result.expiry, source_type));
 
   ASSIGN_OR_RETURN(
       result.trigger_specs,
@@ -143,8 +140,12 @@ SourceRegistration::Parse(base::Value::Dict registration,
           registration, source_type, std::move(default_event_report_windows),
           result.trigger_data_matching));
 
-  ASSIGN_OR_RETURN(result.event_level_epsilon,
-                   EventLevelEpsilon::Parse(registration));
+  ASSIGN_OR_RETURN(result.filter_data,
+                   FilterData::FromJSON(registration.Find(kFilterData)));
+
+  ASSIGN_OR_RETURN(
+      result.aggregation_keys,
+      AggregationKeys::FromJSON(registration.Find(kAggregationKeys)));
 
   result.debug_key = ParseDebugKey(registration);
 
