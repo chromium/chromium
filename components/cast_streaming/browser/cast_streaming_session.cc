@@ -165,7 +165,12 @@ void CastStreamingSession::ReceiverSessionClient::PreloadVideoBuffer(
   }
 }
 
-CastStreamingSession::ReceiverSessionClient::~ReceiverSessionClient() = default;
+CastStreamingSession::ReceiverSessionClient::~ReceiverSessionClient() {
+  // Teardown of the `receiver_session_` may trigger callbacks into `this`,
+  // so destroy it explicitly here, so that callbacks execute while all other
+  // members are still valid.
+  receiver_session_.reset();
+}
 
 void CastStreamingSession::ReceiverSessionClient::OnInitializationTimeout() {
   DVLOG(1) << __func__;
