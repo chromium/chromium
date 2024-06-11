@@ -78,7 +78,7 @@ def initial_settings(milestone, branch):
       platforms={
           p: {
               "description": "beta/stable",
-              "sheriff_rotation": "chrome_browser_release"
+              "gardener_rotation": "chrome_browser_release"
           }
           for p in (
               "android",
@@ -112,7 +112,7 @@ def enable_platform(
   platforms = settings.pop('platforms', {})
   platform_settings = {'description': description}
   if sheriff_rotation is not None:
-    platform_settings['sheriff_rotation'] = sheriff_rotation
+    platform_settings['gardener_rotation'] = sheriff_rotation
   platforms[platform] = platform_settings
   settings['platforms'] = dict(sorted(platforms.items()))
   return json.dumps(settings, indent=4) + '\n'
