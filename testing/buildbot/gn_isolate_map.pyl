@@ -1591,11 +1591,19 @@
   },
   "telemetry_gpu_integration_test": {
     "label": "//chrome/test:telemetry_gpu_integration_test",
-    "type": "generated_script",
+    "type": "script",
+    "script": "//testing/scripts/run_gpu_integration_test_as_googletest.py",
+    "args": [
+      "../../content/test/gpu/run_gpu_integration_test.py",
+    ],
   },
   "telemetry_gpu_integration_test_android_chrome": {
     "label": "//chrome/test:telemetry_gpu_integration_test_android_chrome",
-    "type": "generated_script",
+    "type": "script",
+    "script": "//testing/scripts/run_gpu_integration_test_as_googletest.py",
+    "args": [
+      "../../content/test/gpu/run_gpu_integration_test.py",
+    ],
   },
   "telemetry_gpu_integration_test_android_webview": {
     "label": "//chrome/test:telemetry_gpu_integration_test_android_webview",
