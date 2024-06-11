@@ -67,31 +67,31 @@ class BranchUnitTest(unittest.TestCase):
                 "platforms": {
                     "android": {
                         "description": "beta/stable",
-                        "sheriff_rotation": "chrome_browser_release"
+                        "gardener_rotation": "chrome_browser_release"
                     },
                     "cros": {
                         "description": "beta/stable",
-                        "sheriff_rotation": "chrome_browser_release"
+                        "gardener_rotation": "chrome_browser_release"
                     },
                     "fuchsia": {
                         "description": "beta/stable",
-                        "sheriff_rotation": "chrome_browser_release"
+                        "gardener_rotation": "chrome_browser_release"
                     },
                     "ios": {
                         "description": "beta/stable",
-                        "sheriff_rotation": "chrome_browser_release"
+                        "gardener_rotation": "chrome_browser_release"
                     },
                     "linux": {
                         "description": "beta/stable",
-                        "sheriff_rotation": "chrome_browser_release"
+                        "gardener_rotation": "chrome_browser_release"
                     },
                     "mac": {
                         "description": "beta/stable",
-                        "sheriff_rotation": "chrome_browser_release"
+                        "gardener_rotation": "chrome_browser_release"
                     },
                     "windows": {
                         "description": "beta/stable",
-                        "sheriff_rotation": "chrome_browser_release"
+                        "gardener_rotation": "chrome_browser_release"
                     }
                 }
             }
@@ -180,7 +180,7 @@ class BranchUnitTest(unittest.TestCase):
                 "platforms": {
                     "fake-platform": {
                         "description": "fake-description",
-                        "sheriff_rotation": "fake-sheriff-rotation"
+                        "gardener_rotation": "fake-sheriff-rotation"
                     }
                 }
             }
