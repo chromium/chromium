@@ -25,6 +25,7 @@
 #include "ui/compositor/layer_owner.h"
 #include "ui/views/cocoa/drag_drop_client_mac.h"
 #include "ui/views/cocoa/native_widget_mac_event_monitor.h"
+#include "ui/views/view_observer.h"
 #include "ui/views/views_export.h"
 #include "ui/views/widget/widget.h"
 #include "ui/views/window/dialog_observer.h"
@@ -60,7 +61,8 @@ class VIEWS_EXPORT NativeWidgetMacNSWindowHost
       public ui::AccessibilityFocusOverrider::Client,
       public ui::LayerDelegate,
       public ui::LayerOwner,
-      public ui::AcceleratedWidgetMacNSView {
+      public ui::AcceleratedWidgetMacNSView,
+      public ViewObserver {
  public:
   // Retrieves the bridge host associated with the given NativeWindow. Returns
   // null if the supplied handle has no associated Widget.
@@ -274,6 +276,8 @@ class VIEWS_EXPORT NativeWidgetMacNSWindowHost
   // for any native calls that may use it (e.g, for context menu positioning).
   void UpdateLocalWindowFrame(const gfx::Rect& frame);
 
+  void DropRootViewReferences();
+
   // NativeWidgetNSWindowHostHelper:
   id GetNativeViewAccessible() override;
   void DispatchKeyEvent(ui::KeyEvent* event) override;
@@ -432,6 +436,9 @@ class VIEWS_EXPORT NativeWidgetMacNSWindowHost
   // ui::AcceleratedWidgetMacNSView:
   void AcceleratedWidgetCALayerParamsUpdated() override;
 
+  // ViewObserver:
+  void OnViewIsDeleting(View* observed_view) override;
+
   // The id that this bridge may be looked up from.
   const uint64_t widget_id_;
   const raw_ptr<views::NativeWidgetMac>
@@ -528,6 +535,8 @@ class VIEWS_EXPORT NativeWidgetMacNSWindowHost
 
   mojo::AssociatedReceiver<remote_cocoa::mojom::NativeWidgetNSWindowHost>
       remote_ns_window_host_receiver_{this};
+
+  base::ScopedObservation<View, ViewObserver> root_view_observation_{this};
 
   base::WeakPtrFactory<NativeWidgetMacNSWindowHost>
       weak_factory_for_vsync_update_{this};

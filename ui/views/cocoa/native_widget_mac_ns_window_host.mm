@@ -587,15 +587,17 @@ void NativeWidgetMacNSWindowHost::SetFullscreen(bool fullscreen,
 }
 
 void NativeWidgetMacNSWindowHost::SetRootView(views::View* root_view) {
+  if (root_view_) {
+    DropRootViewReferences();
+  }
   root_view_ = root_view;
   if (root_view_) {
+    root_view_observation_.Observe(root_view);
     // TODO(ccameron): Drag-drop functionality does not yet run over mojo.
     if (in_process_ns_window_bridge_) {
       drag_drop_client_ = std::make_unique<DragDropClientMac>(
           in_process_ns_window_bridge_.get(), root_view_);
     }
-  } else {
-    drag_drop_client_.reset();
   }
 }
 
@@ -784,14 +786,13 @@ void NativeWidgetMacNSWindowHost::OnNativeViewHostDetach(const View* view) {
 }
 
 void NativeWidgetMacNSWindowHost::ReorderChildViews() {
-  Widget* widget = native_widget_mac_->GetWidget();
-  if (!widget->GetRootView())
+  if (!root_view_) {
     return;
+  }
 
   // Get the ordering for the NSViews in |attached_native_view_host_views_|.
   std::vector<NSView*> attached_subviews;
-  GetAttachedNativeViewHostViewsRecursive(widget->GetRootView(),
-                                          &attached_subviews);
+  GetAttachedNativeViewHostViewsRecursive(root_view_, &attached_subviews);
 
   // Convert to NSView ids that can go over mojo. If need be, create temporary
   // NSView ids.
@@ -844,6 +845,12 @@ void NativeWidgetMacNSWindowHost::UpdateLocalWindowFrame(
   [in_process_ns_window_ setFrame:gfx::ScreenRectToNSRect(frame)
                           display:NO
                           animate:NO];
+}
+
+void NativeWidgetMacNSWindowHost::DropRootViewReferences() {
+  root_view_ = nullptr;
+  root_view_observation_.Reset();
+  drag_drop_client_.reset();
 }
 
 std::unique_ptr<NativeWidgetMacEventMonitor>
@@ -899,8 +906,10 @@ id NativeWidgetMacNSWindowHost::GetNativeViewAccessible() {
 }
 
 void NativeWidgetMacNSWindowHost::DispatchKeyEvent(ui::KeyEvent* event) {
-  std::ignore =
-      root_view_->GetWidget()->GetInputMethod()->DispatchKeyEvent(event);
+  if (root_view_) {
+    std::ignore =
+        root_view_->GetWidget()->GetInputMethod()->DispatchKeyEvent(event);
+  }
 }
 
 bool NativeWidgetMacNSWindowHost::DispatchKeyEventToMenuController(
@@ -971,11 +980,16 @@ void NativeWidgetMacNSWindowHost::OnWindowNativeThemeChanged() {
 
 void NativeWidgetMacNSWindowHost::OnScrollEvent(
     std::unique_ptr<ui::Event> event) {
-  root_view_->GetWidget()->OnScrollEvent(event->AsScrollEvent());
+  if (root_view_) {
+    root_view_->GetWidget()->OnScrollEvent(event->AsScrollEvent());
+  }
 }
 
 void NativeWidgetMacNSWindowHost::OnMouseEvent(
     std::unique_ptr<ui::Event> event) {
+  if (!root_view_) {
+    return;
+  }
   ui::MouseEvent* mouse_event = event->AsMouseEvent();
   if (scoped_cg_window_id_) {
     scoped_cg_window_id_->OnMouseMoved(mouse_event->location_f(),
@@ -988,7 +1002,9 @@ void NativeWidgetMacNSWindowHost::OnMouseEvent(
 
 void NativeWidgetMacNSWindowHost::OnGestureEvent(
     std::unique_ptr<ui::Event> event) {
-  root_view_->GetWidget()->OnGestureEvent(event->AsGestureEvent());
+  if (root_view_) {
+    root_view_->GetWidget()->OnGestureEvent(event->AsGestureEvent());
+  }
 }
 
 bool NativeWidgetMacNSWindowHost::DispatchKeyEventRemote(
@@ -1044,7 +1060,9 @@ bool NativeWidgetMacNSWindowHost::GetHasMenuController(
 }
 
 void NativeWidgetMacNSWindowHost::OnViewSizeChanged(const gfx::Size& new_size) {
-  root_view_->SetSize(new_size);
+  if (root_view_) {
+    root_view_->SetSize(new_size);
+  }
 }
 
 bool NativeWidgetMacNSWindowHost::GetSheetOffsetY(int32_t* offset_y) {
@@ -1053,6 +1071,9 @@ bool NativeWidgetMacNSWindowHost::GetSheetOffsetY(int32_t* offset_y) {
 }
 
 void NativeWidgetMacNSWindowHost::SetKeyboardAccessible(bool enabled) {
+  if (!root_view_) {
+    return;
+  }
   views::FocusManager* focus_manager =
       root_view_->GetWidget()->GetFocusManager();
   if (focus_manager)
@@ -1061,6 +1082,9 @@ void NativeWidgetMacNSWindowHost::SetKeyboardAccessible(bool enabled) {
 
 void NativeWidgetMacNSWindowHost::OnIsFirstResponderChanged(
     bool is_first_responder) {
+  if (!root_view_) {
+    return;
+  }
   accessibility_focus_overrider_.SetViewIsFirstResponder(is_first_responder);
 
   FocusManager* focus_manager = root_view_->GetWidget()->GetFocusManager();
@@ -1091,6 +1115,9 @@ void NativeWidgetMacNSWindowHost::OnMouseCaptureActiveChanged(bool is_active) {
 bool NativeWidgetMacNSWindowHost::GetIsDraggableBackgroundAt(
     const gfx::Point& location_in_content,
     bool* is_draggable_background) {
+  if (!root_view_) {
+    return false;
+  }
   int component =
       root_view_->GetWidget()->GetNonClientComponent(location_in_content);
   *is_draggable_background = component == HTCAPTION;
@@ -1100,6 +1127,9 @@ bool NativeWidgetMacNSWindowHost::GetIsDraggableBackgroundAt(
 bool NativeWidgetMacNSWindowHost::GetTooltipTextAt(
     const gfx::Point& location_in_content,
     std::u16string* new_tooltip_text) {
+  if (!root_view_) {
+    return false;
+  }
   views::View* view =
       root_view_->GetTooltipHandlerForPoint(location_in_content);
   if (view) {
@@ -1117,7 +1147,9 @@ void NativeWidgetMacNSWindowHost::GetWordAt(
     gfx::DecoratedText* decorated_word,
     gfx::Point* baseline_point) {
   *found_word = false;
-
+  if (!root_view_) {
+    return;
+  }
   views::View* target =
       root_view_->GetEventHandlerForPoint(location_in_content);
   if (!target)
@@ -1335,6 +1367,9 @@ void NativeWidgetMacNSWindowHost::OnAutohidingMenuBarHeightChanged(
 
 void NativeWidgetMacNSWindowHost::DoDialogButtonAction(
     ui::DialogButton button) {
+  if (!root_view_) {
+    return;
+  }
   views::DialogDelegate* dialog =
       root_view_->GetWidget()->widget_delegate()->AsDialogDelegate();
   DCHECK(dialog);
@@ -1354,7 +1389,9 @@ bool NativeWidgetMacNSWindowHost::GetDialogButtonInfo(
     bool* is_button_default) {
   *button_exists = false;
   views::DialogDelegate* dialog =
-      root_view_->GetWidget()->widget_delegate()->AsDialogDelegate();
+      root_view_
+          ? root_view_->GetWidget()->widget_delegate()->AsDialogDelegate()
+          : nullptr;
   if (!dialog || !(dialog->GetDialogButtons() & button))
     return true;
   *button_exists = true;
@@ -1366,7 +1403,9 @@ bool NativeWidgetMacNSWindowHost::GetDialogButtonInfo(
 
 bool NativeWidgetMacNSWindowHost::GetDoDialogButtonsExist(bool* buttons_exist) {
   views::DialogDelegate* dialog =
-      root_view_->GetWidget()->widget_delegate()->AsDialogDelegate();
+      root_view_
+          ? root_view_->GetWidget()->widget_delegate()->AsDialogDelegate()
+          : nullptr;
   *buttons_exist = dialog && dialog->GetDialogButtons();
   return true;
 }
@@ -1703,6 +1742,14 @@ void NativeWidgetMacNSWindowHost::UpdateVisualState() {
 void NativeWidgetMacNSWindowHost::AcceleratedWidgetCALayerParamsUpdated() {
   if (const auto* ca_layer_params = compositor_->widget()->GetCALayerParams())
     GetNSWindowMojo()->SetCALayerParams(*ca_layer_params);
+}
+
+////////////////////////////////////////////////////////////////////////////////
+// NativeWidgetMacNSWindowHost, ViewObserver:
+
+void NativeWidgetMacNSWindowHost::OnViewIsDeleting(View* observed_view) {
+  CHECK_EQ(observed_view, root_view_);
+  DropRootViewReferences();
 }
 
 }  // namespace views
