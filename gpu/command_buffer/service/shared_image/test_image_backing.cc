@@ -19,16 +19,17 @@ namespace gpu {
 namespace {
 class TestGLTextureImageRepresentation : public GLTextureImageRepresentation {
  public:
-  TestGLTextureImageRepresentation(SharedImageManager* manager,
-                                   SharedImageBacking* backing,
-                                   MemoryTypeTracker* tracker,
-                                   gles2::Texture* texture)
+  TestGLTextureImageRepresentation(
+      SharedImageManager* manager,
+      SharedImageBacking* backing,
+      MemoryTypeTracker* tracker,
+      const std::vector<raw_ptr<gles2::Texture>>& textures)
       : GLTextureImageRepresentation(manager, backing, tracker),
-        texture_(texture) {}
+        textures_(std::move(textures)) {}
 
   gles2::Texture* GetTexture(int plane_index) override {
-    DCHECK_EQ(plane_index, 0);
-    return texture_;
+    DCHECK(backing()->format().IsValidPlaneIndex(plane_index));
+    return textures_[plane_index];
   }
   bool BeginAccess(GLenum mode) override {
     return static_cast<TestImageBacking*>(backing())->can_access();
@@ -36,7 +37,7 @@ class TestGLTextureImageRepresentation : public GLTextureImageRepresentation {
   void EndAccess() override {}
 
  private:
-  const raw_ptr<gles2::Texture> texture_;
+  std::vector<raw_ptr<gles2::Texture>> textures_;
 };
 
 class TestGLTexturePassthroughImageRepresentation
@@ -46,14 +47,14 @@ class TestGLTexturePassthroughImageRepresentation
       SharedImageManager* manager,
       SharedImageBacking* backing,
       MemoryTypeTracker* tracker,
-      scoped_refptr<gles2::TexturePassthrough> texture)
+      const std::vector<scoped_refptr<gles2::TexturePassthrough>>& textures)
       : GLTexturePassthroughImageRepresentation(manager, backing, tracker),
-        texture_(std::move(texture)) {}
+        textures_(std::move(textures)) {}
 
   const scoped_refptr<gles2::TexturePassthrough>& GetTexturePassthrough(
       int plane_index) override {
-    DCHECK_EQ(plane_index, 0);
-    return texture_;
+    DCHECK(backing()->format().IsValidPlaneIndex(plane_index));
+    return textures_[plane_index];
   }
   bool BeginAccess(GLenum mode) override {
     return static_cast<TestImageBacking*>(backing())->can_access();
@@ -61,16 +62,19 @@ class TestGLTexturePassthroughImageRepresentation
   void EndAccess() override {}
 
  private:
-  const scoped_refptr<gles2::TexturePassthrough> texture_;
+  std::vector<scoped_refptr<gles2::TexturePassthrough>> textures_;
 };
 
 class TestSkiaImageRepresentation : public SkiaGaneshImageRepresentation {
  public:
-  TestSkiaImageRepresentation(GrDirectContext* gr_context,
-                              SharedImageManager* manager,
-                              SharedImageBacking* backing,
-                              MemoryTypeTracker* tracker)
-      : SkiaGaneshImageRepresentation(gr_context, manager, backing, tracker) {}
+  TestSkiaImageRepresentation(
+      GrDirectContext* gr_context,
+      SharedImageManager* manager,
+      SharedImageBacking* backing,
+      MemoryTypeTracker* tracker,
+      std::vector<sk_sp<GrPromiseImageTexture>> promise_textures)
+      : SkiaGaneshImageRepresentation(gr_context, manager, backing, tracker),
+        promise_textures_(std::move(promise_textures)) {}
 
  protected:
   std::vector<sk_sp<SkSurface>> BeginWriteAccess(
@@ -97,11 +101,7 @@ class TestSkiaImageRepresentation : public SkiaGaneshImageRepresentation {
     if (!static_cast<TestImageBacking*>(backing())->can_access()) {
       return {};
     }
-
-    auto promise_texture = GrPromiseImageTexture::Make(backend_tex());
-    if (!promise_texture)
-      return {};
-    return {promise_texture};
+    return promise_textures_;
   }
   void EndWriteAccess() override {}
   std::vector<sk_sp<GrPromiseImageTexture>> BeginReadAccess(
@@ -111,25 +111,12 @@ class TestSkiaImageRepresentation : public SkiaGaneshImageRepresentation {
     if (!static_cast<TestImageBacking*>(backing())->can_access()) {
       return {};
     }
-
-    auto promise_texture = GrPromiseImageTexture::Make(backend_tex());
-    if (!promise_texture)
-      return {};
-    return {promise_texture};
+    return promise_textures_;
   }
   void EndReadAccess() override {}
 
  private:
-  GrBackendTexture backend_tex() {
-    auto format_desc =
-        GLFormatCaps().ToGLFormatDesc(format(), /*plane_index=*/0);
-    return GrBackendTextures::MakeGL(
-        size().width(), size().height(), skgpu::Mipmapped::kNo,
-        GrGLTextureInfo{
-            GL_TEXTURE_EXTERNAL_OES,
-            static_cast<TestImageBacking*>(backing())->service_id(),
-            static_cast<GrGLenum>(format_desc.storage_internal_format)});
-  }
+  std::vector<sk_sp<GrPromiseImageTexture>> promise_textures_;
 };
 
 class TestDawnImageRepresentation : public DawnImageRepresentation {
@@ -201,24 +188,34 @@ TestImageBacking::TestImageBacking(const Mailbox& mailbox,
                          usage,
                          "TestBacking",
                          estimated_size,
-                         /*is_thread_safe=*/false),
-      service_id_(texture_id) {
-  texture_ = new gles2::Texture(service_id_);
-  texture_->SetLightweightRef();
-  texture_->SetTarget(GL_TEXTURE_2D, 1);
-  texture_->set_min_filter(GL_LINEAR);
-  texture_->set_mag_filter(GL_LINEAR);
-  texture_->set_wrap_t(GL_CLAMP_TO_EDGE);
-  texture_->set_wrap_s(GL_CLAMP_TO_EDGE);
-  GLFormatDesc format_desc =
-      GLFormatCaps().ToGLFormatDesc(format, /*plane_index=*/0);
-  texture_->SetLevelInfo(GL_TEXTURE_2D, 0, format_desc.image_internal_format,
-                         size.width(), size.height(), 1, 0,
-                         format_desc.data_format, format_desc.data_type,
-                         gfx::Rect());
-  texture_->SetImmutable(true, true);
-  texture_passthrough_ = base::MakeRefCounted<gles2::TexturePassthrough>(
-      service_id_, GL_TEXTURE_2D);
+                         /*is_thread_safe=*/false) {
+  const int num_textures =
+      format.PrefersExternalSampler() ? 1 : format.NumberOfPlanes();
+  textures_.reserve(num_textures);
+  passthrough_textures_.reserve(num_textures);
+
+  const int num_planes = format.NumberOfPlanes();
+  for (int plane = 0; plane < num_planes; ++plane) {
+    auto* texture = new gles2::Texture(texture_id + plane);
+    texture->SetLightweightRef();
+    texture->SetTarget(GL_TEXTURE_2D, 1);
+    texture->set_min_filter(GL_LINEAR);
+    texture->set_mag_filter(GL_LINEAR);
+    texture->set_wrap_t(GL_CLAMP_TO_EDGE);
+    texture->set_wrap_s(GL_CLAMP_TO_EDGE);
+    GLFormatDesc format_desc =
+        GLFormatCaps().ToGLFormatDesc(format, /*plane_index=*/plane);
+    gfx::Size plane_size = format.GetPlaneSize(plane, size);
+    texture->SetLevelInfo(GL_TEXTURE_2D, 0, format_desc.image_internal_format,
+                          plane_size.width(), plane_size.height(), 1, 0,
+                          format_desc.data_format, format_desc.data_type,
+                          gfx::Rect());
+    texture->SetImmutable(true, true);
+    auto passthrough_texture = base::MakeRefCounted<gles2::TexturePassthrough>(
+        texture_id + plane, GL_TEXTURE_2D);
+    textures_.push_back(texture);
+    passthrough_textures_.push_back(std::move(passthrough_texture));
+  }
 }
 
 TestImageBacking::TestImageBacking(const Mailbox& mailbox,
@@ -244,14 +241,18 @@ TestImageBacking::TestImageBacking(const Mailbox& mailbox,
 }
 
 TestImageBacking::~TestImageBacking() {
-  // Pretend our context is lost to avoid actual cleanup in |texture_| or
-  // |passthrough_texture_|.
-  texture_.ExtractAsDangling()->RemoveLightweightRef(/*have_context=*/false);
-  texture_passthrough_->MarkContextLost();
-  texture_passthrough_.reset();
-
+  // Pretend our context is lost to avoid actual cleanup in |textures_| or
+  // |passthrough_textures_|.
+  GLuint texture_id = service_id();
+  for (auto& texture : textures_) {
+    texture.ExtractAsDangling()->RemoveLightweightRef(/*have_context=*/false);
+  }
+  for (auto& passthrough_texture : passthrough_textures_) {
+    passthrough_texture->MarkContextLost();
+    passthrough_texture.reset();
+  }
   if (have_context())
-    glDeleteTextures(1, &service_id_);
+    glDeleteTextures(1, &texture_id);
 }
 
 bool TestImageBacking::GetUploadFromMemoryCalledAndReset() {
@@ -267,11 +268,11 @@ SharedImageBackingType TestImageBacking::GetType() const {
 }
 
 gfx::Rect TestImageBacking::ClearedRect() const {
-  return texture_->GetLevelClearedRect(texture_->target(), 0);
+  return textures_[0]->GetLevelClearedRect(textures_[0]->target(), 0);
 }
 
 void TestImageBacking::SetClearedRect(const gfx::Rect& cleared_rect) {
-  texture_->SetLevelClearedRect(texture_->target(), 0, cleared_rect);
+  textures_[0]->SetLevelClearedRect(textures_[0]->target(), 0, cleared_rect);
 }
 
 void TestImageBacking::SetPurgeable(bool purgeable) {
@@ -300,14 +301,14 @@ std::unique_ptr<GLTextureImageRepresentation>
 TestImageBacking::ProduceGLTexture(SharedImageManager* manager,
                                    MemoryTypeTracker* tracker) {
   return std::make_unique<TestGLTextureImageRepresentation>(manager, this,
-                                                            tracker, texture_);
+                                                            tracker, textures_);
 }
 
 std::unique_ptr<GLTexturePassthroughImageRepresentation>
 TestImageBacking::ProduceGLTexturePassthrough(SharedImageManager* manager,
                                               MemoryTypeTracker* tracker) {
   return std::make_unique<TestGLTexturePassthroughImageRepresentation>(
-      manager, this, tracker, texture_passthrough_);
+      manager, this, tracker, passthrough_textures_);
 }
 
 std::unique_ptr<SkiaGaneshImageRepresentation>
@@ -315,9 +316,58 @@ TestImageBacking::ProduceSkiaGanesh(
     SharedImageManager* manager,
     MemoryTypeTracker* tracker,
     scoped_refptr<SharedContextState> context_state) {
+  DCHECK(!textures_.empty());
+  std::vector<sk_sp<GrPromiseImageTexture>> promise_textures;
+  const GLFormatCaps caps =
+      context_state ? context_state->GetGLFormatCaps() : GLFormatCaps();
+  if (format().is_single_plane() || format().PrefersExternalSampler()) {
+    GLFormatDesc format_desc =
+        format().PrefersExternalSampler()
+            ? caps.ToGLFormatDescExternalSampler(format())
+            : caps.ToGLFormatDesc(format(), /*plane_index=*/0);
+    // TODO(b/346406519): Investigate if possible to change target to
+    // GL_TEXTURE_2D.
+    auto backend_texture = GrBackendTextures::MakeGL(
+        size().width(), size().height(), skgpu::Mipmapped::kNo,
+        GrGLTextureInfo{
+            GL_TEXTURE_EXTERNAL_OES, textures_[0]->service_id(),
+            static_cast<GrGLenum>(format_desc.storage_internal_format)});
+    if (!backend_texture.isValid()) {
+      return nullptr;
+    }
+
+    auto promise_texture = GrPromiseImageTexture::Make(backend_texture);
+    if (!promise_texture) {
+      return nullptr;
+    }
+    promise_textures.push_back(std::move(promise_texture));
+  } else {
+    DCHECK_EQ(format().NumberOfPlanes(), static_cast<int>(textures_.size()));
+    for (int plane_index = 0; plane_index < format().NumberOfPlanes();
+         plane_index++) {
+      // Use the format and size per plane for multiplanar formats.
+      gfx::Size plane_size = format().GetPlaneSize(plane_index, size());
+      GLFormatDesc format_desc = caps.ToGLFormatDesc(format(), plane_index);
+      auto backend_texture = GrBackendTextures::MakeGL(
+          plane_size.width(), plane_size.height(), skgpu::Mipmapped::kNo,
+          GrGLTextureInfo{
+              GL_TEXTURE_2D, textures_[plane_index]->service_id(),
+              static_cast<GrGLenum>(format_desc.storage_internal_format)});
+
+      if (!backend_texture.isValid()) {
+        return nullptr;
+      }
+
+      auto promise_texture = GrPromiseImageTexture::Make(backend_texture);
+      if (!promise_texture) {
+        return nullptr;
+      }
+      promise_textures.push_back(std::move(promise_texture));
+    }
+  }
   return std::make_unique<TestSkiaImageRepresentation>(
       context_state ? context_state->gr_context() : nullptr, manager, this,
-      tracker);
+      tracker, std::move(promise_textures));
 }
 
 std::unique_ptr<DawnImageRepresentation> TestImageBacking::ProduceDawn(

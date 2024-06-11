@@ -55,7 +55,8 @@ class TestImageBacking : public SharedImageBacking {
   bool ReadbackToMemory(const std::vector<SkPixmap>& pixmaps) override;
 
   // Helper functions
-  GLuint service_id() const { return service_id_; }
+  // Return the service ID of the first texture in the backing.
+  GLuint service_id() const { return textures_[0]->service_id(); }
   void set_can_access(bool can_access) { can_access_ = can_access; }
   bool can_access() const { return can_access_; }
 
@@ -74,7 +75,7 @@ class TestImageBacking : public SharedImageBacking {
   ProduceGLTexturePassthrough(SharedImageManager* manager,
                               MemoryTypeTracker* tracker) override;
 
-  // ProduceSkiaGanesh creates a representation that is backed by |texture_|,
+  // ProduceSkiaGanesh creates a representation that is backed by |textures_|,
   // which allows for the creation of SkImages from the representation.
   std::unique_ptr<SkiaGaneshImageRepresentation> ProduceSkiaGanesh(
       SharedImageManager* manager,
@@ -98,9 +99,9 @@ class TestImageBacking : public SharedImageBacking {
       MemoryTypeTracker* tracker) override;
 
  private:
-  const GLuint service_id_ = 0;
-  raw_ptr<gles2::Texture> texture_ = nullptr;
-  scoped_refptr<gles2::TexturePassthrough> texture_passthrough_;
+  std::vector<raw_ptr<gles2::Texture>> textures_;
+  std::vector<scoped_refptr<gles2::TexturePassthrough>> passthrough_textures_;
+
   bool can_access_ = true;
 #if BUILDFLAG(IS_APPLE)
   bool in_use_by_window_server_ = false;
