@@ -70,6 +70,11 @@ def main():
     return 1
   (binary_filename, orderfile_filename) = argv[1:]
 
+  # A hack to check against WV orderfiles instead of the Clank ones
+  # without modifying the official builder recipe.
+  orderfile_filename = orderfile_filename.replace('clank/orderfiles/',
+                                                  'clank/orderfiles/webview/')
+
   symbol_infos = symbol_extractor.SymbolInfosFromBinary(binary_filename)
 
   if not _VerifySymbolOrder(
