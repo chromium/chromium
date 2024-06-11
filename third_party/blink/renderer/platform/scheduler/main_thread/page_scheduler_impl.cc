@@ -450,6 +450,10 @@ bool PageSchedulerImpl::OptedOutFromAggressiveThrottling() const {
 }
 
 bool PageSchedulerImpl::RequestBeginMainFrameNotExpected(bool new_state) {
+  REPLAY_ASSERT(
+      "[TT-1367-1371] "
+      "PageSchedulerImpl::RequestBeginMainFrameNotExpected %d",
+      !!delegate_);
   if (!delegate_)
     return false;
   return delegate_->RequestBeginMainFrameNotExpected(new_state);

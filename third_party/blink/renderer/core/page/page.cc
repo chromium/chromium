@@ -1084,14 +1084,14 @@ void Page::ReportIntervention(const String& text) {
 }
 
 bool Page::RequestBeginMainFrameNotExpected(bool new_state) {
-  // https://linear.app/replay/issue/RUN-827
-  recordreplay::Assert("Page::RequestBeginMainFrameNotExpected");
+  REPLAY_ASSERT(
+      "[TT-1367-1371] Page::RequestBeginMainFrameNotExpected %d %d %d",
+      RecordReplayId(),
+      !!main_frame_,
+      main_frame_ ? !!main_frame_->IsLocalFrame() : -1);
 
   if (!main_frame_ || !main_frame_->IsLocalFrame())
     return false;
-
-  // https://linear.app/replay/issue/RUN-827
-  recordreplay::Assert("Page::RequestBeginMainFrameNotExpected #1");
 
   chrome_client_->RequestBeginMainFrameNotExpected(*DeprecatedLocalMainFrame(),
                                                    new_state);

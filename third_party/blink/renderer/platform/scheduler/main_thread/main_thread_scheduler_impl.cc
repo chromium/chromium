@@ -972,7 +972,7 @@ void MainThreadSchedulerImpl::SetAllRenderWidgetsHidden(bool hidden) {
 void MainThreadSchedulerImpl::SetHasVisibleRenderWidgetWithTouchHandler(
     bool has_visible_render_widget_with_touch_handler) {
   helper_.CheckOnValidThread();
-  recordreplay::Assert(
+  REPLAY_ASSERT(
       "[RUN-2300] "
       "MainThreadSchedulerImpl::SetHasVisibleRenderWidgetWithTouchHandler %d",
       has_visible_render_widget_with_touch_handler);
@@ -1121,7 +1121,7 @@ void MainThreadSchedulerImpl::SetHaveSeenABlockingGestureForTesting(
 void MainThreadSchedulerImpl::PerformMicrotaskCheckpoint() {
   // This will fallback to execute the microtask checkpoint for the
   // default EventLoop for the isolate.
-  recordreplay::Assert(
+  REPLAY_ASSERT(
       "[RUN-2056-2298] MainThreadSchedulerImpl::PerformMicrotaskCheckpoint %d %d %u",
       recordreplay::PointerId(this), !!isolate(),
       main_thread_only().agent_group_schedulers.size());
@@ -1136,7 +1136,7 @@ void MainThreadSchedulerImpl::PerformMicrotaskCheckpoint() {
        main_thread_only().agent_group_schedulers) {
     agent_group_scheduler->PerformMicrotaskCheckpoint();
   }
-  recordreplay::Assert(
+  REPLAY_ASSERT(
       "[RUN-2056] MainThreadSchedulerImpl::PerformMicrotaskCheckpoint Done");
 }
 
@@ -1369,7 +1369,7 @@ bool MainThreadSchedulerImpl::IsHighPriorityWorkAnticipated() {
 bool MainThreadSchedulerImpl::ShouldYieldForHighPriorityWork() {
   helper_.CheckOnValidThread();
 
-  recordreplay::AssertMaybeEventsDisallowed(
+  REPLAY_ASSERT_MAYBE_EVENTS_DISALLOWED(
       "[RUN-1335-1336] MainThreadSchedulerImpl::ShouldYieldForHighPriorityWork "
       "A %d",
       helper_.IsShutdown());
@@ -1378,7 +1378,7 @@ bool MainThreadSchedulerImpl::ShouldYieldForHighPriorityWork() {
     return false;
   }
 
-  recordreplay::AssertMaybeEventsDisallowed(
+  REPLAY_ASSERT_MAYBE_EVENTS_DISALLOWED(
       "[RUN-1335-1336] MainThreadSchedulerImpl::ShouldYieldForHighPriorityWork "
       "B");
 
@@ -1956,9 +1956,9 @@ void MainThreadSchedulerImpl::OnIdlePeriodEnded() {
 
 void MainThreadSchedulerImpl::OnPendingTasksChanged(bool has_tasks) {
   // https://linear.app/replay/issue/RUN-827
-  recordreplay::Assert("MainThreadSchedulerImpl::OnPendingTasksChanged %d %d",
-                       has_tasks,
-                       main_thread_only().compositor_will_send_main_frame_not_expected.get());
+  REPLAY_ASSERT(
+      "MainThreadSchedulerImpl::OnPendingTasksChanged %d %d", has_tasks,
+      main_thread_only().compositor_will_send_main_frame_not_expected.get());
 
   if (has_tasks ==
       main_thread_only().compositor_will_send_main_frame_not_expected.get())
@@ -1978,17 +1978,15 @@ void MainThreadSchedulerImpl::OnPendingTasksChanged(bool has_tasks) {
 
 void MainThreadSchedulerImpl::DispatchRequestBeginMainFrameNotExpected(
     bool has_tasks) {
-  // https://linear.app/replay/issue/RUN-827
-  recordreplay::Assert("MainThreadSchedulerImpl::DispatchRequestBeginMainFrameNotExpected %d %d",
-                       has_tasks,
-                       main_thread_only().compositor_will_send_main_frame_not_expected.get());
-
   if (has_tasks ==
       main_thread_only().compositor_will_send_main_frame_not_expected.get()) {
-    // https://linear.app/replay/issue/RUN-827
-    recordreplay::Assert("MainThreadSchedulerImpl::DispatchRequestBeginMainFrameNotExpected #1");
     return;
   }
+  REPLAY_ASSERT(
+      "[TT-1367-1371] "
+      "MainThreadSchedulerImpl::DispatchRequestBeginMainFrameNotExpected A %d "
+      "%u",
+      recordreplay::PointerId(this), main_thread_only().page_schedulers.size());
 
   TRACE_EVENT1(
       TRACE_DISABLED_BY_DEFAULT("renderer.scheduler"),
@@ -2002,16 +2000,12 @@ void MainThreadSchedulerImpl::DispatchRequestBeginMainFrameNotExpected(
   std::sort(page_schedulers.begin(), page_schedulers.end(),
             recordreplay::CompareByPointerId());
   for (PageSchedulerImpl* page_scheduler : page_schedulers) {
-    // https://linear.app/replay/issue/RUN-827
-    recordreplay::Assert("MainThreadSchedulerImpl::DispatchRequestBeginMainFrameNotExpected #2 %d",
-                         recordreplay::PointerId(page_scheduler));
+    REPLAY_ASSERT(
+        "[TT-1367-1371] MainThreadSchedulerImpl::DispatchRequestBeginMainFrameNotExpected B %d",
+        recordreplay::PointerId(page_scheduler));
 
     success |= page_scheduler->RequestBeginMainFrameNotExpected(has_tasks);
   }
-
-  // https://linear.app/replay/issue/RUN-827
-  recordreplay::Assert("MainThreadSchedulerImpl::DispatchRequestBeginMainFrameNotExpected #3 %d %d",
-                       success, has_tasks);
 
   main_thread_only().compositor_will_send_main_frame_not_expected =
       success && has_tasks;
@@ -2165,7 +2159,7 @@ void MainThreadSchedulerImpl::RemoveAgentGroupScheduler(
     AgentGroupSchedulerImpl* agent_group_scheduler) {
   DCHECK(main_thread_only().agent_group_schedulers.Contains(
       agent_group_scheduler));
-  recordreplay::Assert(
+  REPLAY_ASSERT(
       "[RUN-2056-2316] MainThreadSchedulerImpl::RemoveAgentGroupScheduler %d",
       agent_group_scheduler->RecordReplayId());
   main_thread_only().agent_group_schedulers.erase(agent_group_scheduler);
@@ -2294,7 +2288,7 @@ void MainThreadSchedulerImpl::AddAgentGroupScheduler(
   bool is_new_entry = main_thread_only()
                           .agent_group_schedulers.insert(agent_group_scheduler)
                           .is_new_entry;
-  recordreplay::Assert(
+  REPLAY_ASSERT(
       "[RUN-2056-2316] MainThreadSchedulerImpl::AddAgentGroupScheduler %d %d",
       agent_group_scheduler->RecordReplayId(), is_new_entry);
   DCHECK(is_new_entry);
