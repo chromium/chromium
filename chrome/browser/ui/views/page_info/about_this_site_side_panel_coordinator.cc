@@ -7,14 +7,15 @@
 #include "base/functional/bind.h"
 #include "chrome/browser/page_info/page_info_features.h"
 #include "chrome/browser/ui/browser_finder.h"
+#include "chrome/browser/ui/browser_window/public/browser_window_features.h"
 #include "chrome/browser/ui/page_info/about_this_site_side_panel.h"
-#include "chrome/browser/ui/views/side_panel/side_panel_ui.h"
 #include "chrome/browser/ui/views/chrome_layout_provider.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
 #include "chrome/browser/ui/views/page_info/about_this_site_side_panel_view.h"
 #include "chrome/browser/ui/views/page_info/page_info_view_factory.h"
 #include "chrome/browser/ui/views/side_panel/side_panel_entry.h"
 #include "chrome/browser/ui/views/side_panel/side_panel_registry.h"
+#include "chrome/browser/ui/views/side_panel/side_panel_ui.h"
 #include "components/page_info/core/about_this_site_service.h"
 #include "components/strings/grit/components_strings.h"
 #include "content/public/browser/navigation_handle.h"
@@ -176,7 +177,7 @@ BrowserView* AboutThisSideSidePanelCoordinator::GetBrowserView() const {
 
 SidePanelUI* AboutThisSideSidePanelCoordinator::GetSidePanelUI() {
   auto* browser = chrome::FindBrowserWithTab(web_contents());
-  return browser ? SidePanelUI::GetSidePanelUIForBrowser(browser) : nullptr;
+  return browser ? browser->GetFeatures().side_panel_ui() : nullptr;
 }
 
 GURL AboutThisSideSidePanelCoordinator::GetOpenInNewTabUrl() {

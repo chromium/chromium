@@ -65,6 +65,8 @@ class SidePanelCoordinator final : public SidePanelRegistryObserver,
   SidePanelCoordinator& operator=(const SidePanelCoordinator&) = delete;
   ~SidePanelCoordinator() override;
 
+  void TearDownPreBrowserViewDestruction();
+
   static SidePanelRegistry* GetGlobalSidePanelRegistry(Browser* browser);
 
   // SidePanelUI:

@@ -831,6 +831,7 @@ source_set("extensions") {
     "//chrome/browser/search_engines",
     "//chrome/browser/sync",
     "//chrome/browser/themes",
+    "//chrome/browser/ui/browser_window",
     "//chrome/browser/ui/views/side_panel",
 
     # Only for allow_circular_includes_from

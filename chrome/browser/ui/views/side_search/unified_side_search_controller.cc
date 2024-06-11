@@ -11,6 +11,7 @@
 #include "chrome/browser/search_engines/template_url_service_factory.h"
 #include "chrome/browser/ui/browser_element_identifiers.h"
 #include "chrome/browser/ui/browser_finder.h"
+#include "chrome/browser/ui/browser_window/public/browser_window_features.h"
 #include "chrome/browser/ui/color/chrome_color_id.h"
 #include "chrome/browser/ui/side_search/side_search_utils.h"
 #include "chrome/browser/ui/ui_features.h"
@@ -245,7 +246,7 @@ Profile* UnifiedSideSearchController::GetProfile() const {
 
 SidePanelUI* UnifiedSideSearchController::GetSidePanelUI() {
   auto* browser = chrome::FindBrowserWithTab(web_contents());
-  return browser ? SidePanelUI::GetSidePanelUIForBrowser(browser) : nullptr;
+  return browser ? browser->GetFeatures().side_panel_ui() : nullptr;
 }
 
 void UnifiedSideSearchController::UpdateSidePanel() {

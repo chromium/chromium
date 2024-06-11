@@ -15,10 +15,10 @@
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_finder.h"
 #include "chrome/browser/ui/browser_window.h"
+#include "chrome/browser/ui/browser_window/public/browser_window_features.h"
 #include "chrome/browser/ui/commerce/commerce_page_action_controller.h"
 #include "chrome/browser/ui/commerce/price_tracking_page_action_controller.h"
 #include "chrome/browser/ui/commerce/product_specifications_page_action_controller.h"
-#include "chrome/browser/ui/views/side_panel/side_panel_ui.h"
 #include "chrome/browser/ui/views/chrome_layout_provider.h"
 #include "chrome/browser/ui/views/commerce/price_insights_icon_view.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
@@ -26,6 +26,7 @@
 #include "chrome/browser/ui/views/side_panel/side_panel_coordinator.h"
 #include "chrome/browser/ui/views/side_panel/side_panel_entry.h"
 #include "chrome/browser/ui/views/side_panel/side_panel_registry.h"
+#include "chrome/browser/ui/views/side_panel/side_panel_ui.h"
 #include "chrome/browser/ui/views/side_panel/side_panel_web_ui_view.h"
 #include "chrome/browser/ui/webui/commerce/shopping_insights_side_panel_ui.h"
 #include "chrome/common/pref_names.h"
@@ -511,7 +512,7 @@ CommerceUiTabHelper::CreateShoppingInsightsWebView() {
 
 SidePanelUI* CommerceUiTabHelper::GetSidePanelUI() const {
   auto* browser = chrome::FindBrowserWithTab(web_contents());
-  return browser ? SidePanelUI::GetSidePanelUIForBrowser(browser) : nullptr;
+  return browser ? browser->GetFeatures().side_panel_ui() : nullptr;
 }
 
 const std::optional<bool>&

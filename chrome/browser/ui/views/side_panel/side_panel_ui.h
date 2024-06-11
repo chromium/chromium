@@ -5,35 +5,18 @@
 #ifndef CHROME_BROWSER_UI_VIEWS_SIDE_PANEL_SIDE_PANEL_UI_H_
 #define CHROME_BROWSER_UI_VIEWS_SIDE_PANEL_SIDE_PANEL_UI_H_
 
-#include "base/supports_user_data.h"
 #include "chrome/browser/ui/views/side_panel/side_panel_entry_id.h"
 #include "chrome/browser/ui/views/side_panel/side_panel_entry_key.h"
 #include "chrome/browser/ui/views/side_panel/side_panel_enums.h"
-
-class Browser;
 
 namespace content {
 class WebContents;
 }  // namespace content
 
-// An abstract class of the side panel API.
-// The class is created in BrowserView for desktop Chrome. Get the instance of
-// this class by calling SidePanelUI::GetSidePanelUIForBrowser(browser);
-class SidePanelUI : public base::SupportsUserData::Data {
+// An abstract class of the side panel API. Get an instance of this class by
+// calling BrowserWindowInterface->GetFeatures().side_panel_ui()
+class SidePanelUI {
  public:
-  SidePanelUI() = default;
-  SidePanelUI(const SidePanelUI&) = delete;
-  SidePanelUI& operator=(const SidePanelUI&) = delete;
-  ~SidePanelUI() override = default;
-
-  static SidePanelUI* GetSidePanelUIForBrowser(Browser* browser);
-
-  static void SetSidePanelUIForBrowser(
-      Browser* browser,
-      std::unique_ptr<SidePanelUI> side_panel_ui);
-
-  static void RemoveSidePanelUIForBrowser(Browser* browser);
-
   // Open side panel with entry_id.
   virtual void Show(
       SidePanelEntryId entry_id,
@@ -79,9 +62,6 @@ class SidePanelUI : public base::SupportsUserData::Data {
   virtual content::WebContents* GetWebContentsForTest(SidePanelEntryId id) = 0;
 
   virtual void DisableAnimationsForTesting() = 0;
-
- private:
-  static const int kUserDataKey = 0;
 };
 
 #endif  // CHROME_BROWSER_UI_VIEWS_SIDE_PANEL_SIDE_PANEL_UI_H_

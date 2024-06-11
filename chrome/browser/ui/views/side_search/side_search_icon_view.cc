@@ -8,6 +8,7 @@
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_element_identifiers.h"
+#include "chrome/browser/ui/browser_window/public/browser_window_features.h"
 #include "chrome/browser/ui/side_search/side_search_config.h"
 #include "chrome/browser/ui/side_search/side_search_metrics.h"
 #include "chrome/browser/ui/side_search/side_search_tab_contents_helper.h"
@@ -124,7 +125,7 @@ void SideSearchIconView::OnExecuting(PageActionIconView::ExecuteSource source) {
   // Reset the slide animation if in progress.
   HidePageActionLabel();
 
-  SidePanelUI* side_panel_ui = SidePanelUI::GetSidePanelUIForBrowser(browser_);
+  SidePanelUI* side_panel_ui = browser_->GetFeatures().side_panel_ui();
 
   // TODO(crbug.com/40849924): BrowserView should never be null here,
   // investigate why GetBrowserViewForBrowser() is returning null in certain

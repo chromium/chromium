@@ -10,6 +10,7 @@
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/commerce/product_specifications_entry_point_controller.h"
+#include "chrome/browser/ui/views/side_panel/side_panel_coordinator.h"
 #include "components/commerce/core/commerce_feature_list.h"
 
 namespace {
@@ -58,6 +59,27 @@ void BrowserWindowFeatures::Init(Browser* browser) {
         std::make_unique<commerce::ProductSpecificationsEntryPointController>(
             browser);
   }
+}
+
+void BrowserWindowFeatures::InitPostBrowserViewConstruction(
+    BrowserView* browser_view) {
+  // TODO(crbug.com/346148093): Move SidePanelCoordinator construction to Init.
+  // TODO(crbug.com/346148554): Do not create a SidePanelCoordinator for most
+  // browser.h types
+  side_panel_coordinator_ =
+      std::make_unique<SidePanelCoordinator>(browser_view);
+}
+
+void BrowserWindowFeatures::TearDownPreBrowserViewDestruction() {
+  // TODO(crbug.com/346148093): This logic should not be gated behind a
+  // conditional.
+  if (side_panel_coordinator_) {
+    side_panel_coordinator_->TearDownPreBrowserViewDestruction();
+  }
+}
+
+SidePanelUI* BrowserWindowFeatures::side_panel_ui() {
+  return side_panel_coordinator_.get();
 }
 
 BrowserWindowFeatures::BrowserWindowFeatures() = default;

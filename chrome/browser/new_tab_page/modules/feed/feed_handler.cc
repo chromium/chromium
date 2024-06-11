@@ -7,7 +7,9 @@
 #include "base/functional/bind.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/signin/identity_manager_factory.h"
+#include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_finder.h"
+#include "chrome/browser/ui/browser_window/public/browser_window_features.h"
 #include "chrome/browser/ui/views/side_panel/side_panel_ui.h"
 #include "chrome/common/channel_info.h"
 #include "chrome/common/chrome_version.h"
@@ -93,7 +95,7 @@ void FeedHandler::ArticleOpened() {
   if (!browser)
     return;
 
-  SidePanelUI* side_panel_ui = SidePanelUI::GetSidePanelUIForBrowser(browser);
+  SidePanelUI* side_panel_ui = browser->GetFeatures().side_panel_ui();
   DCHECK(side_panel_ui);
   side_panel_ui->Show(SidePanelEntryId::kFeed);
 }

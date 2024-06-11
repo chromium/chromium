@@ -12,6 +12,7 @@
 #include "base/memory/raw_ptr.h"
 #include "chrome/browser/accessibility/embedded_a11y_extension_loader.h"
 #include "chrome/browser/companion/core/features.h"
+#include "chrome/browser/ui/browser_window/public/browser_window_features.h"
 #include "chrome/browser/ui/ui_features.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
 #include "chrome/browser/ui/views/frame/test_with_browser_view.h"
@@ -334,7 +335,7 @@ TEST_F(ReadAnythingCoordinatorScreen2xDataCollectionModeTest,
   OnBrowserSetLastActive(browser);
 
   EXPECT_TRUE(side_panel_coordinator_->IsSidePanelShowing());
-  EXPECT_EQ(SidePanelUI::GetSidePanelUIForBrowser(browser)->GetCurrentEntryId(),
+  EXPECT_EQ(browser->GetFeatures().side_panel_ui()->GetCurrentEntryId(),
             SidePanelEntryId::kReadAnything);
 }
 

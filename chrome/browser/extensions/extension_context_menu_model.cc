@@ -26,15 +26,16 @@
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_window.h"
+#include "chrome/browser/ui/browser_window/public/browser_window_features.h"
 #include "chrome/browser/ui/chrome_pages.h"
 #include "chrome/browser/ui/extensions/extension_side_panel_utils.h"
 #include "chrome/browser/ui/extensions/extensions_container.h"
-#include "chrome/browser/ui/views/side_panel/side_panel_entry_id.h"
-#include "chrome/browser/ui/views/side_panel/side_panel_entry_key.h"
-#include "chrome/browser/ui/views/side_panel/side_panel_ui.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/browser/ui/toolbar/toolbar_actions_model.h"
 #include "chrome/browser/ui/ui_features.h"
+#include "chrome/browser/ui/views/side_panel/side_panel_entry_id.h"
+#include "chrome/browser/ui/views/side_panel/side_panel_entry_key.h"
+#include "chrome/browser/ui/views/side_panel/side_panel_ui.h"
 #include "chrome/common/extensions/api/side_panel.h"
 #include "chrome/common/pref_names.h"
 #include "chrome/grit/branded_strings.h"
@@ -803,8 +804,7 @@ void ExtensionContextMenuModel::AddSidePanelEntryIfPresent(
   }
 
   AddSeparator(ui::NORMAL_SEPARATOR);
-  SidePanelUI* const side_panel_ui =
-      SidePanelUI::GetSidePanelUIForBrowser(browser_);
+  SidePanelUI* const side_panel_ui = browser_->GetFeatures().side_panel_ui();
   CHECK(side_panel_ui);
   bool is_side_panel_open = side_panel_ui->IsSidePanelEntryShowing(
       SidePanelEntryKey(SidePanelEntryId::kExtension, extension.id()));

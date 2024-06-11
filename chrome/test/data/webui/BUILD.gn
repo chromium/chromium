@@ -168,6 +168,7 @@ source_set("browser_tests") {
     "//chrome/browser/devtools:test_support",
     "//chrome/browser/media/router/discovery/access_code:access_code_cast_feature",
     "//chrome/browser/optimization_guide:test_support",
+    "//chrome/browser/ui/browser_window",
     "//chrome/browser/ui/lens",
     "//chrome/browser/ui/tabs",
     "//chrome/browser/ui/views/side_panel",

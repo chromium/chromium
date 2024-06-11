@@ -12,9 +12,10 @@
 #include "chrome/browser/history_clusters/history_clusters_service_factory.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/browser.h"
-#include "chrome/browser/ui/views/side_panel/history_clusters/history_clusters_side_panel_utils.h"
+#include "chrome/browser/ui/browser_window/public/browser_window_features.h"
 #include "chrome/browser/ui/ui_features.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
+#include "chrome/browser/ui/views/side_panel/history_clusters/history_clusters_side_panel_utils.h"
 #include "chrome/browser/ui/views/side_panel/side_panel_coordinator.h"
 #include "chrome/browser/ui/views/side_panel/side_panel_entry.h"
 #include "chrome/browser/ui/views/side_panel/side_panel_registry.h"
@@ -127,8 +128,7 @@ void HistoryClustersSidePanelCoordinator::OnHistoryClustersPreferenceChanged() {
 }
 
 bool HistoryClustersSidePanelCoordinator::Show(const std::string& query) {
-  SidePanelUI* side_panel_ui =
-      SidePanelUI::GetSidePanelUIForBrowser(&GetBrowser());
+  SidePanelUI* side_panel_ui = GetBrowser().GetFeatures().side_panel_ui();
   if (!side_panel_ui) {
     return false;
   }

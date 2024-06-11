@@ -14,12 +14,14 @@
 #include "chrome/browser/search_engines/template_url_service_factory.h"
 #include "chrome/browser/themes/theme_properties.h"
 #include "chrome/browser/ui/browser.h"
+#include "chrome/browser/ui/browser_window/public/browser_window_features.h"
 #include "chrome/browser/ui/color/chrome_color_id.h"
 #include "chrome/browser/ui/views/chrome_layout_provider.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
 #include "chrome/browser/ui/views/lens/lens_side_panel_helper.h"
 #include "chrome/browser/ui/views/lens/lens_side_panel_navigation_helper.h"
 #include "chrome/browser/ui/views/side_panel/side_panel_coordinator.h"
+#include "chrome/browser/ui/views/side_panel/side_panel_ui.h"
 #include "chrome/grit/generated_resources.h"
 #include "components/download/content/factory/navigation_monitor_factory.h"
 #include "components/download/content/public/download_navigation_observer.h"
@@ -180,7 +182,7 @@ void LensUnifiedSidePanelView::LoadResultsInNewTab() {
   browser_view_->browser()->OpenURL(params, /*navigation_handle_callback=*/{});
   base::RecordAction(
       base::UserMetricsAction("LensUnifiedSidePanel.LoadResultsInNewTab"));
-  SidePanelUI::GetSidePanelUIForBrowser(browser_view_->browser())->Close();
+  browser_view_->browser()->GetFeatures().side_panel_ui()->Close();
 }
 
 void LensUnifiedSidePanelView::DocumentOnLoadCompletedInPrimaryMainFrame() {

@@ -4,6 +4,8 @@
 
 #include "chrome/browser/ui/views/side_panel/side_panel_action_callback.h"
 
+#include "chrome/browser/ui/browser.h"
+#include "chrome/browser/ui/browser_window/public/browser_window_features.h"
 #include "chrome/browser/ui/views/side_panel/side_panel_ui.h"
 
 namespace {
@@ -27,8 +29,7 @@ actions::ActionItem::InvokeActionCallback CreateToggleSidePanelActionCallback(
                 context.GetProperty(kSidePanelOpenTriggerKey));
         CHECK_GE(open_trigger, SidePanelOpenTrigger::kMinValue);
         CHECK_LE(open_trigger, SidePanelOpenTrigger::kMaxValue);
-        SidePanelUI::GetSidePanelUIForBrowser(browser)->Toggle(key,
-                                                               open_trigger);
+        browser->GetFeatures().side_panel_ui()->Toggle(key, open_trigger);
       },
       key, browser);
 }

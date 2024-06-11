@@ -4,12 +4,14 @@
 
 #include "chrome/browser/ui/views/side_panel/read_anything/read_anything_side_panel_controller_utils.h"
 
-#include "chrome/browser/ui/views/side_panel/side_panel_ui.h"
+#include "chrome/browser/ui/browser.h"
+#include "chrome/browser/ui/browser_window/public/browser_window_features.h"
 #include "chrome/browser/ui/views/side_panel/read_anything/read_anything_side_panel_controller.h"
+#include "chrome/browser/ui/views/side_panel/side_panel_ui.h"
 
 void ShowReadAnythingSidePanel(Browser* browser,
                                SidePanelOpenTrigger open_trigger) {
-  SidePanelUI* side_panel_ui = SidePanelUI::GetSidePanelUIForBrowser(browser);
+  SidePanelUI* side_panel_ui = browser->GetFeatures().side_panel_ui();
   if (!side_panel_ui) {
     return;
   }
@@ -17,7 +19,7 @@ void ShowReadAnythingSidePanel(Browser* browser,
 }
 
 bool IsReadAnythingEntryShowing(Browser* browser) {
-  SidePanelUI* side_panel_ui = SidePanelUI::GetSidePanelUIForBrowser(browser);
+  SidePanelUI* side_panel_ui = browser->GetFeatures().side_panel_ui();
   if (!side_panel_ui) {
     return false;
   }
