@@ -137,6 +137,13 @@ class InteractiveAshTest
       WebContentsInteractionTestUtil::DeepQuery element,
       const std::string& attribute);
 
+  // Waits for a toggle element identified by `query` to both exist in the DOM
+  // of an instrumented WebUI identified by `element_id` and to be toggled .
+  ui::test::internal::InteractiveTestPrivate::MultiStep WaitForToggleState(
+      const ui::ElementIdentifier& element_id,
+      const WebContentsInteractionTestUtil::DeepQuery& query,
+      bool is_checked);
+
   // Waits for an element to render by using `getBoundingClientRect()` to verify
   // the element is visible and ready for interactions. Helps to prevent
   // `element_bounds.IsEmpty()` flakes.

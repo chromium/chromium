@@ -51,6 +51,11 @@ WebContentsInteractionTestUtil::DeepQuery CellularSummaryItem() {
          "div#networkSummaryItemRow";
 }
 
+WebContentsInteractionTestUtil::DeepQuery MobileDataToggle() {
+  return InternetPage() + "network-summary" + "network-summary-item#Cellular" +
+         "cr-toggle#deviceEnabledButton";
+}
+
 }  // namespace cellular
 
 namespace ethernet {

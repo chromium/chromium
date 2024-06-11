@@ -1,0 +1,4 @@
+include_rules = [
+  "+dbus",
+  "+third_party/cros_system_api",
+]

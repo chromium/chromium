@@ -17,6 +17,7 @@
 #include "base/test/test_switches.h"
 #include "chrome/browser/ui/chrome_pages.h"
 #include "chrome/browser/ui/settings_window_manager_chromeos.h"
+#include "chrome/test/base/ash/interactive/interactive_ash_test.h"
 #include "chrome/test/base/chromeos/crosier/annotations.h"
 #include "chrome/test/base/chromeos/crosier/ash_integration_test.h"
 #include "dbus/object_path.h"
@@ -65,12 +66,8 @@ class BluetoothPowerStateObserver : public ui::test::ObservationStateObserver<
 
 DEFINE_LOCAL_STATE_IDENTIFIER_VALUE(BluetoothPowerStateObserver,
                                     kBluetoothPowerState);
-DEFINE_LOCAL_CUSTOM_ELEMENT_EVENT_TYPE(kButtonToggled);
 
 constexpr char kBluetoothDevicesSubpagePath[] = "bluetoothDevices";
-constexpr char kCheckJsElementIsChecked[] = "(el) => { return el.checked; }";
-constexpr char kCheckJsElementIsNotChecked[] =
-    "(el) => { return !el.checked; }";
 
 class BluetoothIntegrationTest : public AshIntegrationTest {
  public:
@@ -106,21 +103,6 @@ class BluetoothIntegrationTest : public AshIntegrationTest {
     bluez_dbus_manager_ = nullptr;
 
     AshIntegrationTest::TearDownOnMainThread();
-  }
-
-  // Waits for a toggle element to be toggled (which is represented as "checked"
-  // in the DOM).
-  auto WaitForToggleState(const ui::ElementIdentifier& element_id,
-                          DeepQuery element,
-                          bool is_checked) {
-    StateChange toggle_selection_change;
-    toggle_selection_change.event = kButtonToggled;
-    toggle_selection_change.where = element;
-    toggle_selection_change.type = StateChange::Type::kExistsAndConditionTrue;
-    toggle_selection_change.test_function =
-        is_checked ? kCheckJsElementIsChecked : kCheckJsElementIsNotChecked;
-
-    return WaitForStateChange(element_id, toggle_selection_change);
   }
 
  protected:

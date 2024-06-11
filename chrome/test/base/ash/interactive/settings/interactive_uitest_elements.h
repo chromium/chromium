@@ -34,6 +34,9 @@ WebContentsInteractionTestUtil::DeepQuery EsimDialog();
 // The "add eSIM" button on the cellular page.
 WebContentsInteractionTestUtil::DeepQuery AddEsimButton();
 
+// The Mobile data toggle on the top-level internet page.
+WebContentsInteractionTestUtil::DeepQuery MobileDataToggle();
+
 // The cellular "row" on the top-level internet page.
 WebContentsInteractionTestUtil::DeepQuery CellularSummaryItem();
 

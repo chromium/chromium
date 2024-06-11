@@ -252,6 +252,22 @@ InteractiveAshTest::WaitForElementHasAttribute(
 }
 
 ui::test::internal::InteractiveTestPrivate::MultiStep
+InteractiveAshTest::WaitForToggleState(
+    const ui::ElementIdentifier& element_id,
+    const WebContentsInteractionTestUtil::DeepQuery& query,
+    bool is_checked) {
+  DEFINE_LOCAL_CUSTOM_ELEMENT_EVENT_TYPE(kToggleState);
+  StateChange toggle_state_change;
+  toggle_state_change.event = kToggleState;
+  toggle_state_change.where = query;
+  toggle_state_change.type = StateChange::Type::kExistsAndConditionTrue;
+  toggle_state_change.test_function = is_checked
+                                          ? "(el) => { return el.checked; }"
+                                          : "(el) => { return !el.checked; }";
+  return WaitForStateChange(element_id, toggle_state_change);
+}
+
+ui::test::internal::InteractiveTestPrivate::MultiStep
 InteractiveAshTest::WaitForElementToRender(
     const ui::ElementIdentifier& element_id,
     const DeepQuery& query) {

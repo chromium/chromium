@@ -8,6 +8,7 @@
 #include <string>
 
 #include "base/component_export.h"
+#include "base/scoped_observation_traits.h"
 #include "base/time/time.h"
 #include "base/values.h"
 #include "chromeos/ash/components/dbus/shill/fake_shill_simulated_result.h"
@@ -425,5 +426,22 @@ class COMPONENT_EXPORT(SHILL_CLIENT) ShillManagerClient {
 };
 
 }  // namespace ash
+
+namespace base {
+
+template <>
+struct ScopedObservationTraits<ash::ShillManagerClient,
+                               ash::ShillPropertyChangedObserver> {
+  static void AddObserver(ash::ShillManagerClient* source,
+                          ash::ShillPropertyChangedObserver* observer) {
+    source->AddPropertyChangedObserver(observer);
+  }
+  static void RemoveObserver(ash::ShillManagerClient* source,
+                             ash::ShillPropertyChangedObserver* observer) {
+    source->RemovePropertyChangedObserver(observer);
+  }
+};
+
+}  // namespace base
 
 #endif  // CHROMEOS_ASH_COMPONENTS_DBUS_SHILL_SHILL_MANAGER_CLIENT_H_
