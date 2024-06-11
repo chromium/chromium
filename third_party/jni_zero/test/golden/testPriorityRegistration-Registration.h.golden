@@ -76,137 +76,65 @@ JNI_BOUNDARY_EXPORT jboolean Java_J_N__1Z_1I(
     JNIEnv* env,
     jclass jcaller,
     jint switch_num, jint int_param1) {
-        switch (switch_num) {
-          
-          case 0:
-            return Java_J_N_MXKBD_1lj(env, jcaller, int_param1);
-          
-          default:
-            JNI_ZERO_ILOG("J_N__1Z_1I was called with an invalid switch number: %d", switch_num);
-            JNI_ZERO_DCHECK(false);
-            return {};
-        }
+        return Java_J_N_MXKBD_1lj(env, jcaller, int_param1);
 }
 JNI_BOUNDARY_EXPORT jboolean Java_J_N__1Z_1O(
     JNIEnv* env,
     jclass jcaller,
     jint switch_num, jobject object_param1) {
-        switch (switch_num) {
-          
-          case 0:
-            return Java_J_N_MWbFhvyA(env, jcaller, object_param1);
-          
-          default:
-            JNI_ZERO_ILOG("J_N__1Z_1O was called with an invalid switch number: %d", switch_num);
-            JNI_ZERO_DCHECK(false);
-            return {};
-        }
+        return Java_J_N_MWbFhvyA(env, jcaller, object_param1);
 }
 JNI_BOUNDARY_EXPORT jint Java_J_N__1I_1I(
     JNIEnv* env,
     jclass jcaller,
     jint switch_num, jint int_param1) {
-        switch (switch_num) {
-          
-          case 0:
-            return Java_J_N_MWbFhvyA(env, jcaller, int_param1);
-          
-          default:
-            JNI_ZERO_ILOG("J_N__1I_1I was called with an invalid switch number: %d", switch_num);
-            JNI_ZERO_DCHECK(false);
-            return {};
-        }
+        return Java_J_N_MWbFhvyA(env, jcaller, int_param1);
 }
 JNI_BOUNDARY_EXPORT void Java_J_N__1V_1OO(
     JNIEnv* env,
     jclass jcaller,
     jint switch_num, jobject object_param1, jobject object_param2) {
-        switch (switch_num) {
-          
-          case 0:
-            return Java_J_N_M0E4cldm(env, jcaller, object_param1, object_param2);
-          
-          default:
-            JNI_ZERO_ILOG("J_N__1V_1OO was called with an invalid switch number: %d", switch_num);
-            JNI_ZERO_DCHECK(false);
-            return;
-        }
+        return Java_J_N_M0E4cldm(env, jcaller, object_param1, object_param2);
 }
 JNI_BOUNDARY_EXPORT jobjectArray Java_J_N__1OA_1OA(
     JNIEnv* env,
     jclass jcaller,
     jint switch_num, jobjectArray object_array_param1) {
-        switch (switch_num) {
-          
-          case 0:
-            return Java_J_N_MalqUoB_1(env, jcaller, object_array_param1);
-          
-          default:
-            JNI_ZERO_ILOG("J_N__1OA_1OA was called with an invalid switch number: %d", switch_num);
-            JNI_ZERO_DCHECK(false);
-            return {};
-        }
+        return Java_J_N_MalqUoB_1(env, jcaller, object_array_param1);
 }
 JNI_BOUNDARY_EXPORT jintArray Java_J_N__1IA_1IATAA(
     JNIEnv* env,
     jclass jcaller,
     jint switch_num, jintArray int_array_param1, jobjectArray throwable_array_array_param1) {
-        switch (switch_num) {
-          
-          case 0:
-            return Java_J_N_MV9JEAYF(env, jcaller, int_array_param1, throwable_array_array_param1);
-          
-          default:
-            JNI_ZERO_ILOG("J_N__1IA_1IATAA was called with an invalid switch number: %d", switch_num);
-            JNI_ZERO_DCHECK(false);
-            return {};
-        }
+        return Java_J_N_MV9JEAYF(env, jcaller, int_array_param1, throwable_array_array_param1);
 }
 JNI_BOUNDARY_EXPORT jobjectArray Java_J_N__1RAA_1IAOAA(
     JNIEnv* env,
     jclass jcaller,
     jint switch_num, jintArray int_array_param1, jobjectArray object_array_array_param1) {
-        switch (switch_num) {
-          
-          case 0:
-            return Java_J_N_M3RUFTzC(env, jcaller, int_array_param1, object_array_array_param1);
-          
-          default:
-            JNI_ZERO_ILOG("J_N__1RAA_1IAOAA was called with an invalid switch number: %d", switch_num);
-            JNI_ZERO_DCHECK(false);
-            return {};
-        }
+        return Java_J_N_M3RUFTzC(env, jcaller, int_array_param1, object_array_array_param1);
 }
 JNI_BOUNDARY_EXPORT jint Java_J_N__1I_1OO(
     JNIEnv* env,
     jclass jcaller,
     jint switch_num, jobject object_param1, jobject object_param2) {
-        switch (switch_num) {
-          
-          case 0:
-            return Java_J_N_MYplquli(env, jcaller, object_param1, object_param2);
-          
-          default:
-            JNI_ZERO_ILOG("J_N__1I_1OO was called with an invalid switch number: %d", switch_num);
-            JNI_ZERO_DCHECK(false);
-            return {};
-        }
+        return Java_J_N_MYplquli(env, jcaller, object_param1, object_param2);
 }
 JNI_BOUNDARY_EXPORT void Java_J_N__1V(
     JNIEnv* env,
     jclass jcaller,
     jint switch_num) {
+
         switch (switch_num) {
           
           case 0:
-            return Java_J_N_M5bM_1xqb(env, jcaller);
-          
+             return Java_J_N_M5bM_1xqb(env, jcaller);
+
           case 1:
-            return Java_J_N_MKWEYRlq(env, jcaller);
-          
+             return Java_J_N_MKWEYRlq(env, jcaller);
+
           case 2:
-            return Java_J_N_MnQLCFmK(env, jcaller);
-          
+             return Java_J_N_MnQLCFmK(env, jcaller);
           default:
             JNI_ZERO_ILOG("J_N__1V was called with an invalid switch number: %d", switch_num);
             JNI_ZERO_DCHECK(false);
