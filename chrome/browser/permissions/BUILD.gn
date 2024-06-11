@@ -141,27 +141,6 @@ source_set("permissions") {
     sources += [ "system/system_permission_settings_default.cc" ]
   }
 
-  if (toolkit_views) {
-    sources += [
-      "default_system_permission_delegate.cc",
-      "default_system_permission_delegate.h",
-      "system_permission_delegate.h",
-      "system_permission_delegate_factory.cc",
-      "system_permission_delegate_factory.h",
-    ]
-
-    if (is_mac) {
-      sources += [
-        "camera_system_permission_delegate_mac.cc",
-        "camera_system_permission_delegate_mac.h",
-        "geolocation_system_permission_delegate_mac.cc",
-        "geolocation_system_permission_delegate_mac.h",
-        "microphone_system_permission_delegate_mac.cc",
-        "microphone_system_permission_delegate_mac.h",
-      ]
-    }
-  }
-
   if (build_with_tflite_lib) {
     sources += [
       "prediction_model_handler_provider_factory.cc",

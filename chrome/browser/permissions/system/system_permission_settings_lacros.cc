@@ -64,7 +64,9 @@ class SystemPermissionSettingsImpl : public SystemPermissionSettings {
     }
   }
 
-  bool IsPermissionDeniedImpl(ContentSettingsType type) const override {
+  bool CanPrompt(ContentSettingsType type) const override { return false; }
+
+  bool IsDeniedImpl(ContentSettingsType type) const override {
     switch (type) {
       case ContentSettingsType::MEDIASTREAM_CAMERA:  // fallthrough
       case ContentSettingsType::MEDIASTREAM_MIC: {
@@ -96,6 +98,10 @@ class SystemPermissionSettingsImpl : public SystemPermissionSettings {
     }
   }
 
+  bool IsAllowedImpl(ContentSettingsType type) const override {
+    return !IsDeniedImpl(type);
+  }
+
   void UpdateValue(std::optional<base::Value> value) {
     if (value.has_value()) {
       value_ = std::move(*value);
@@ -125,6 +131,12 @@ class SystemPermissionSettingsImpl : public SystemPermissionSettings {
         }
       }
     }
+  }
+
+  void Request(ContentSettingsType type,
+               SystemPermissionResponseCallback callback) override {
+    std::move(callback).Run();
+    NOTREACHED();
   }
 
  private:

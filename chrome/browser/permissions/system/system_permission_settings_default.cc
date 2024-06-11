@@ -6,13 +6,20 @@
 #include "components/content_settings/core/common/content_settings_types.h"
 
 class SystemPermissionSettingsImpl : public SystemPermissionSettings {
-  bool IsPermissionDeniedImpl(ContentSettingsType type) const override {
-    return false;
-  }
+  bool CanPrompt(ContentSettingsType type) const override { return false; }
+  bool IsDeniedImpl(ContentSettingsType type) const override { return false; }
+  bool IsAllowedImpl(ContentSettingsType type) const override { return true; }
 
   void OpenSystemSettings(content::WebContents*,
                           ContentSettingsType type) const override {
     // no-op
+    NOTREACHED();
+  }
+
+  void Request(ContentSettingsType type,
+               SystemPermissionResponseCallback callback) override {
+    std::move(callback).Run();
+    NOTREACHED();
   }
 };
 

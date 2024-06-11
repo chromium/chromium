@@ -18,24 +18,38 @@
 // https://chromium-review.googlesource.com/c/chromium/src/+/5424111/comment/5e007f7b_c2b9ff9f
 class SystemPermissionSettings {
  public:
+  using SystemPermissionResponseCallback = base::OnceCallback<void()>;
+
   SystemPermissionSettings() = default;
   virtual ~SystemPermissionSettings() = default;
+
   // Creates a new instance of SystemPermissionSettings that is OS-specific.
   static std::unique_ptr<SystemPermissionSettings> Create();
 
+  // Returns `true` if Chrome can request system-level permission. Returns
+  // `false` otherwise.
+  virtual bool CanPrompt(ContentSettingsType type) const = 0;
+
   // Check whether the system blocks the access to the specified content type /
   // permission.
-  bool IsPermissionDenied(ContentSettingsType type) const;
+  bool IsDenied(ContentSettingsType type) const;
+  // Check whether the system allows the access to the specified content type /
+  // permission.
+  bool IsAllowed(ContentSettingsType type) const;
 
   // Opens the OS page where the user can change the permission settings.
   // Implementation is OS specific.
   virtual void OpenSystemSettings(content::WebContents* web_contents,
                                   ContentSettingsType type) const = 0;
 
+  // Initiates a system permission request and invokes the provided callback
+  // once the user's decision is made.
+  virtual void Request(ContentSettingsType type,
+                       SystemPermissionResponseCallback callback) = 0;
+
  private:
-  // Checks whether a given permission is blocked by the OS. Implementation is
-  // OS specific.
-  virtual bool IsPermissionDeniedImpl(ContentSettingsType type) const = 0;
+  virtual bool IsDeniedImpl(ContentSettingsType type) const = 0;
+  virtual bool IsAllowedImpl(ContentSettingsType type) const = 0;
 };
 
 class ScopedSystemPermissionSettingsForTesting {
