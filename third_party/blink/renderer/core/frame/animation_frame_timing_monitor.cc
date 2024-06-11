@@ -307,9 +307,10 @@ void AnimationFrameTimingMonitor::ReportPresentationTimeToTrace(
     const viz::FrameTimingDetails& presentation_details) {
   auto track_id = perfetto::Track::ThreadScoped(this);
   auto flow_id = perfetto::Flow::ProcessScoped(trace_id);
-  TRACE_EVENT_INSTANT(
-      "devtools.timeline", "AnimationFrame::Presentation", track_id,
-      presentation_details.presentation_feedback.timestamp, flow_id);
+  TRACE_EVENT_INSTANT("devtools.timeline", "AnimationFrame::Presentation",
+                      track_id,
+                      presentation_details.presentation_feedback.timestamp,
+                      flow_id, "id", String::Format("%016" PRIx64, trace_id));
 }
 
 void AnimationFrameTimingMonitor::RecordLongAnimationFrameTrace(
@@ -330,7 +331,8 @@ void AnimationFrameTimingMonitor::RecordLongAnimationFrameTrace(
   }
   TRACE_EVENT_BEGIN(
       "devtools.timeline", "AnimationFrame", track_id, info.FrameStartTime(),
-      flow_id, [&](perfetto::EventContext ctx) {
+      flow_id, "id", String::Format("%016" PRIx64, trace_id),
+      [&](perfetto::EventContext ctx) {
         auto* event = ctx.event<perfetto::protos::pbzero::ChromeTrackEvent>();
         auto* data = event->set_animation_frame_timing_info();
         data->set_blocking_duration_ms(
