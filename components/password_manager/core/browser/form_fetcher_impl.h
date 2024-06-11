@@ -56,8 +56,7 @@ class FormFetcherImpl : public FormFetcher,
   bool IsMovingBlocked(const signin::GaiaIdHash& destination,
                        const std::u16string& username) const override;
 
-  const std::vector<raw_ptr<const PasswordForm, VectorExperimental>>&
-  GetAllRelevantMatches() const override;
+  base::span<const PasswordForm> GetAllRelevantMatches() const override;
   base::span<const PasswordForm> GetBestMatches() const override;
   const PasswordForm* GetPreferredMatch() const override;
   std::unique_ptr<FormFetcher> Clone() override;
@@ -132,8 +131,7 @@ class FormFetcherImpl : public FormFetcher,
       http_migrators_;
 
   // Non-federated credentials of the same scheme as the observed form.
-  std::vector<raw_ptr<const PasswordForm, VectorExperimental>>
-      non_federated_same_scheme_;
+  std::vector<PasswordForm> non_federated_same_scheme_;
 
   // Set of nonblocklisted PasswordForms from the password store that best match
   // the form being managed by |this|.

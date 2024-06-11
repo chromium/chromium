@@ -852,7 +852,7 @@ bool VotesUploader::FindUsernameInOtherAlternativeUsernames(
 }
 
 bool VotesUploader::FindCorrectedUsernameElement(
-    const std::vector<raw_ptr<const PasswordForm, VectorExperimental>>& matches,
+    base::span<const PasswordForm> matches,
     const std::u16string& username,
     const std::u16string& password) {
   // As the username may have changed, re-compute |username_correction_vote_|.
@@ -860,9 +860,9 @@ bool VotesUploader::FindCorrectedUsernameElement(
   if (username.empty()) {
     return false;
   }
-  for (const PasswordForm* match : matches) {
-    if ((match->password_value == password) &&
-        FindUsernameInOtherAlternativeUsernames(*match, username)) {
+  for (const PasswordForm& match : matches) {
+    if ((match.password_value == password) &&
+        FindUsernameInOtherAlternativeUsernames(match, username)) {
       return true;
     }
   }

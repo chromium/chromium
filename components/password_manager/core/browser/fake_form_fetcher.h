@@ -8,7 +8,6 @@
 #include <memory>
 #include <vector>
 
-#include "base/memory/raw_ptr.h"
 #include "base/observer_list.h"
 #include "components/password_manager/core/browser/form_fetcher.h"
 #include "components/password_manager/core/browser/password_form.h"
@@ -50,8 +49,7 @@ class FakeFormFetcher : public FormFetcher {
   bool IsBlocklisted() const override;
   bool IsMovingBlocked(const signin::GaiaIdHash& destination,
                        const std::u16string& username) const override;
-  const std::vector<raw_ptr<const PasswordForm, VectorExperimental>>&
-  GetAllRelevantMatches() const override;
+  base::span<const PasswordForm> GetAllRelevantMatches() const override;
   base::span<const PasswordForm> GetBestMatches() const override;
   const PasswordForm* GetPreferredMatch() const override;
   // Returns a new FakeFormFetcher.
@@ -97,8 +95,7 @@ class FakeFormFetcher : public FormFetcher {
   std::vector<InteractionsStats> stats_;
   std::vector<PasswordForm> non_federated_;
   std::vector<PasswordForm> federated_;
-  std::vector<raw_ptr<const PasswordForm, VectorExperimental>>
-      non_federated_same_scheme_;
+  std::vector<PasswordForm> non_federated_same_scheme_;
   std::vector<PasswordForm> best_matches_;
   std::vector<PasswordForm> insecure_credentials_;
   bool is_blocklisted_ = false;

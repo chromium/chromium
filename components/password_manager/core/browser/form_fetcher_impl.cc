@@ -197,8 +197,7 @@ bool FormFetcherImpl::IsMovingBlocked(const signin::GaiaIdHash& destination,
   return false;
 }
 
-const std::vector<raw_ptr<const PasswordForm, VectorExperimental>>&
-FormFetcherImpl::GetAllRelevantMatches() const {
+base::span<const PasswordForm> FormFetcherImpl::GetAllRelevantMatches() const {
   return non_federated_same_scheme_;
 }
 

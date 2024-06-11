@@ -178,11 +178,9 @@ class VotesUploader {
   // username value is found in |all_alternative_usernames| and the password
   // value of the match is equal to |password|, the match is saved to
   // |username_correction_vote_| and the method returns true.
-  bool FindCorrectedUsernameElement(
-      const std::vector<raw_ptr<const PasswordForm, VectorExperimental>>&
-          matches,
-      const std::u16string& username,
-      const std::u16string& password);
+  bool FindCorrectedUsernameElement(base::span<const PasswordForm> matches,
+                                    const std::u16string& username,
+                                    const std::u16string& password);
 
   // Returns a password attributes vote based on `password_value` . Declared as
   // public for testing.

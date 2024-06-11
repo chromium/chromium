@@ -61,17 +61,16 @@ namespace password_manager_util {
 namespace {
 
 std::tuple<int, base::Time, int> GetPriorityProperties(
-    const PasswordForm* form) {
-  return std::make_tuple(-static_cast<int>(GetMatchType(*form)),
-                         form->date_last_used,
-                         static_cast<int>(form->in_store));
+    const PasswordForm& form) {
+  return std::make_tuple(-static_cast<int>(GetMatchType(form)),
+                         form.date_last_used, static_cast<int>(form.in_store));
 }
 
 // Consider the following properties:
 // 1. Match strength for the original form (Exact > Affiliations > PSL).
 // 2. Last time used. Most recent is better.
 // 3. Account vs. profile store. Account is better.
-bool IsBetterMatch(const PasswordForm* lhs, const PasswordForm* rhs) {
+bool IsBetterMatch(const PasswordForm& lhs, const PasswordForm& rhs) {
   return GetPriorityProperties(lhs) > GetPriorityProperties(rhs);
 }
 
@@ -212,8 +211,7 @@ GetLoginMatchType GetMatchType(const password_manager::PasswordForm& form) {
 std::vector<PasswordForm> FindBestMatches(
     base::span<const PasswordForm> non_federated_matches,
     PasswordForm::Scheme scheme,
-    std::vector<raw_ptr<const PasswordForm, VectorExperimental>>&
-        non_federated_same_scheme) {
+    std::vector<PasswordForm>& non_federated_same_scheme) {
   CHECK(base::ranges::none_of(non_federated_matches,
                               &PasswordForm::blocked_by_user));
 
@@ -222,7 +220,7 @@ std::vector<PasswordForm> FindBestMatches(
 
   for (const password_manager::PasswordForm& match : non_federated_matches) {
     if (match.scheme == scheme) {
-      non_federated_same_scheme.push_back(&match);
+      non_federated_same_scheme.push_back(match);
     }
   }
 
@@ -234,35 +232,34 @@ std::vector<PasswordForm> FindBestMatches(
             IsBetterMatch);
 
   // Map from usernames to the best matching password forms.
-  std::map<std::u16string, std::vector<const PasswordForm*>>
-      matches_per_username;
-  for (const PasswordForm* match : non_federated_same_scheme) {
-    auto it = matches_per_username.find(match->username_value);
+  std::map<std::u16string, std::vector<PasswordForm>> matches_per_username;
+  for (const PasswordForm& match : non_federated_same_scheme) {
+    auto it = matches_per_username.find(match.username_value);
     // The first match for |username_value| in the sorted array is best
     // match.
     if (it == matches_per_username.end()) {
-      matches_per_username[match->username_value] = {match};
-      best_matches.push_back(*match);
+      matches_per_username[match.username_value] = {match};
+      best_matches.push_back(match);
     } else {
       // Insert another credential only if the store is different as well as the
       // password value.
-      if (base::Contains(it->second, match->in_store,
-                         [](const auto* form) { return form->in_store; })) {
+      if (base::Contains(it->second, match.in_store,
+                         [](const auto& form) { return form.in_store; })) {
         continue;
       };
       // If 2 credential have the same password and the same username, update
       // the in_store value in the best matches.
       auto duplicate_match_it = base::ranges::find_if(
           best_matches, [&match](const PasswordForm& form) {
-            return match->username_value == form.username_value &&
-                   match->password_value == form.password_value;
+            return match.username_value == form.username_value &&
+                   match.password_value == form.password_value;
           });
       if (duplicate_match_it != best_matches.end()) {
         duplicate_match_it->in_store =
-            duplicate_match_it->in_store | match->in_store;
+            duplicate_match_it->in_store | match.in_store;
         continue;
       }
-      best_matches.push_back(*match);
+      best_matches.push_back(match);
       it->second.push_back(match);
     }
   }

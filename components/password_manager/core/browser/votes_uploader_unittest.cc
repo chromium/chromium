@@ -274,13 +274,9 @@ TEST_F(VotesUploaderTest, SendVotesOnSaveOverwrittenFlow) {
   }
 
   std::vector<PasswordForm> matches = {match_form};
-  std::vector<raw_ptr<const PasswordForm, VectorExperimental>> matches_ptr(
-      matches.size());
-  base::ranges::transform(matches, matches_ptr.begin(),
-                          [](const PasswordForm& form) { return &form; });
 
   EXPECT_TRUE(votes_uploader.FindCorrectedUsernameElement(
-      matches_ptr, u"correct_username", u"password_value"));
+      matches, u"correct_username", u"password_value"));
 
   // SendVotesOnSave should call UploadPasswordVote and StartUploadRequest
   // twice. The first call is not the one that should be tested.

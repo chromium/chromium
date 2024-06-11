@@ -10,7 +10,6 @@
 #include <vector>
 
 #include "base/containers/span.h"
-#include "base/memory/raw_ptr.h"
 #include "base/observer_list_types.h"
 #include "components/password_manager/core/browser/password_form.h"
 #include "components/password_manager/core/browser/password_store/password_store_util.h"
@@ -91,8 +90,7 @@ class FormFetcher {
 
   // Non-federated matches obtained from the backend that have the same scheme
   // of this form.
-  virtual const std::vector<raw_ptr<const PasswordForm, VectorExperimental>>&
-  GetAllRelevantMatches() const = 0;
+  virtual base::span<const PasswordForm> GetAllRelevantMatches() const = 0;
 
   // Nonblocklisted matches obtained from the backend.
   virtual base::span<const PasswordForm> GetBestMatches() const = 0;
