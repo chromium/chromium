@@ -433,16 +433,21 @@ scoped_refptr<const SharedBuffer> ImageResource::ResourceBuffer() const {
   return GetContent()->ResourceBuffer();
 }
 
-void ImageResource::AppendData(base::span<const char> data) {
-  v8::Isolate::GetCurrent()->AdjustAmountOfExternalAllocatedMemory(data.size());
-  if (data.size() > 0) {
+void ImageResource::AppendData(
+    absl::variant<SegmentedBuffer, base::span<const char>> data) {
+  // We don't have a BackgroundResponseProcessor for ImageResources. So this
+  // method must be called with a `span<const char>` data.
+  CHECK(absl::holds_alternative<base::span<const char>>(data));
+  base::span<const char> span = absl::get<base::span<const char>>(data);
+  v8::Isolate::GetCurrent()->AdjustAmountOfExternalAllocatedMemory(span.size());
+  if (span.size() > 0) {
     GetContent()->SetAllocatedExternalMemory();
   }
   if (multipart_parser_) {
-    multipart_parser_->AppendData(data.data(),
-                                  base::checked_cast<wtf_size_t>(data.size()));
+    multipart_parser_->AppendData(span.data(),
+                                  base::checked_cast<wtf_size_t>(span.size()));
   } else {
-    Resource::AppendData(data);
+    Resource::AppendData(span);
 
     // Update the image immediately if needed.
     //

@@ -99,11 +99,12 @@ RawResource::RawResource(const ResourceRequest& resource_request,
                          const ResourceLoaderOptions& options)
     : Resource(resource_request, type, options) {}
 
-void RawResource::AppendData(base::span<const char> data) {
+void RawResource::AppendData(
+    absl::variant<SegmentedBuffer, base::span<const char>> data) {
   if (GetResourceRequest().UseStreamOnResponse())
     return;
 
-  Resource::AppendData(data);
+  Resource::AppendData(std::move(data));
 }
 
 class RawResource::PreloadBytesConsumerClient final

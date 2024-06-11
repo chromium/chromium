@@ -29,6 +29,7 @@
 #include <algorithm>
 #include <cassert>
 #include <memory>
+#include <utility>
 
 #include "base/task/single_thread_task_runner.h"
 #include "base/time/default_clock.h"
@@ -237,15 +238,39 @@ void Resource::MarkClientFinished(ResourceClient* client) {
   }
 }
 
-void Resource::AppendData(base::span<const char> data) {
-  TRACE_EVENT1("blink", "Resource::appendData", "length", data.size());
+void Resource::AppendData(
+    absl::variant<SegmentedBuffer, base::span<const char>> data) {
   DCHECK(!IsCacheValidator());
   DCHECK(!ErrorOccurred());
+  if (absl::holds_alternative<SegmentedBuffer>(data)) {
+    AppendDataImpl(std::move(absl::get<SegmentedBuffer>(data)));
+  } else {
+    CHECK(absl::holds_alternative<base::span<const char>>(data));
+    AppendDataImpl(absl::get<base::span<const char>>(data));
+  }
+}
+
+void Resource::AppendDataImpl(SegmentedBuffer&& buffer) {
+  TRACE_EVENT1("blink", "Resource::appendData", "length", buffer.size());
+  SegmentedBuffer* data_ptr = &buffer;
   if (options_.data_buffering_policy == kBufferData) {
-    if (data_)
-      data_->Append(data);
-    else
-      data_ = SharedBuffer::Create(data);
+    CHECK(!data_);
+    data_ = SharedBuffer::Create(std::move(buffer));
+    data_ptr = data_.get();
+    SetEncodedSize(data_->size());
+  }
+  for (const auto& span : *data_ptr) {
+    NotifyDataReceived(span);
+  }
+}
+
+void Resource::AppendDataImpl(base::span<const char> data) {
+  TRACE_EVENT1("blink", "Resource::appendData", "length", data.size());
+  if (options_.data_buffering_policy == kBufferData) {
+    if (!data_) {
+      data_ = SharedBuffer::Create();
+    }
+    data_->Append(data);
     SetEncodedSize(data_->size());
   }
   NotifyDataReceived(data);

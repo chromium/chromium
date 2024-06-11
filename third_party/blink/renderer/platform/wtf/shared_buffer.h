@@ -276,6 +276,10 @@ class WTF_EXPORT SharedBuffer : public SegmentedBuffer,
     return base::AdoptRef(new SharedBuffer(data));
   }
 
+  static scoped_refptr<SharedBuffer> Create(SegmentedBuffer&& data) {
+    return base::AdoptRef(new SharedBuffer(std::move(data)));
+  }
+
   HAS_STRICTLY_TYPED_ARG
   static scoped_refptr<SharedBuffer> Create(const char* data,
                                             STRICTLY_TYPED_ARG(size)) {
@@ -306,6 +310,7 @@ class WTF_EXPORT SharedBuffer : public SegmentedBuffer,
   explicit SharedBuffer(wtf_size_t);
   explicit SharedBuffer(base::span<const char>);
   explicit SharedBuffer(base::span<const unsigned char>);
+  explicit SharedBuffer(SegmentedBuffer&&);
 };
 
 }  // namespace WTF

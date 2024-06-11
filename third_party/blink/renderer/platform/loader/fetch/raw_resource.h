@@ -102,7 +102,8 @@ class PLATFORM_EXPORT RawResource final : public Resource {
 
   // Resource implementation
   void DidAddClient(ResourceClient*) override;
-  void AppendData(base::span<const char>) override;
+  void AppendData(
+      absl::variant<SegmentedBuffer, base::span<const char>>) override;
 
   bool ShouldIgnoreHTTPStatusCodeErrors() const override { return true; }
 

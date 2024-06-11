@@ -34,6 +34,7 @@
 #include "base/time/time.h"
 #include "mojo/public/cpp/base/big_buffer.h"
 #include "net/base/schemeful_site.h"
+#include "third_party/abseil-cpp/absl/types/variant.h"
 #include "third_party/blink/public/mojom/loader/code_cache.mojom-blink-forward.h"
 #include "third_party/blink/public/platform/scheduler/web_scoped_virtual_time_pauser.h"
 #include "third_party/blink/renderer/platform/allow_discouraged_type.h"
@@ -159,7 +160,11 @@ class PLATFORM_EXPORT Resource : public GarbageCollected<Resource>,
   void Trace(Visitor*) const override;
 
   virtual WTF::TextEncoding Encoding() const { return WTF::TextEncoding(); }
-  virtual void AppendData(base::span<const char>);
+  // If a BackgroundResponseProcessor consumed the body data on the background
+  // thread, this method is called with a SegmentedBuffer data. Otherwise, it is
+  // called with a span<const char> data several times.
+  virtual void AppendData(
+      absl::variant<SegmentedBuffer, base::span<const char>>);
   virtual void FinishAsError(const ResourceError&,
                              base::SingleThreadTaskRunner*);
 
@@ -535,6 +540,9 @@ class PLATFORM_EXPORT Resource : public GarbageCollected<Resource>,
   // Only call this from the MemoryCache. Calling it from anything else will
   // upset the MemoryCache's LRU.
   void UpdateMemoryCacheLastAccessedTime();
+
+  void AppendDataImpl(SegmentedBuffer&&);
+  void AppendDataImpl(base::span<const char>);
 
   ResourceType type_;
   ResourceStatus status_;

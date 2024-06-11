@@ -167,6 +167,9 @@ SharedBuffer::SharedBuffer(base::span<const char> data) {
 SharedBuffer::SharedBuffer(base::span<const unsigned char> data)
     : SharedBuffer(base::as_chars(data)) {}
 
+SharedBuffer::SharedBuffer(SegmentedBuffer&& data)
+    : SegmentedBuffer(std::move(data)) {}
+
 SharedBuffer::~SharedBuffer() = default;
 
 scoped_refptr<SharedBuffer> SharedBuffer::Create(Vector<char>&& vector) {

@@ -67,8 +67,9 @@ class FakeDecodedResource final : public Resource {
                       const ResourceLoaderOptions& options)
       : Resource(request, ResourceType::kMock, options) {}
 
-  void AppendData(base::span<const char> data) override {
-    Resource::AppendData(data);
+  void AppendData(
+      absl::variant<SegmentedBuffer, base::span<const char>> data) override {
+    Resource::AppendData(std::move(data));
     SetDecodedSize(this->size());
   }
 

@@ -792,11 +792,7 @@ void ResourceLoader::DidReceiveResponse(
     return;
   }
   if (absl::holds_alternative<SegmentedBuffer>(body)) {
-    // TODO(crbug.com/40244488): Consider passing the SegmentedBuffer to the
-    // Resource without copying.
-    for (const auto& span : absl::get<SegmentedBuffer>(body)) {
-      DidReceiveData(span);
-    }
+    DidReceiveDataImpl(std::move(absl::get<SegmentedBuffer>(body)));
     return;
   }
   mojo::ScopedDataPipeConsumerHandle body_handle =
@@ -831,7 +827,7 @@ void ResourceLoader::DidReceiveResponse(
 }
 
 void ResourceLoader::DidReceiveDataForTesting(base::span<const char> data) {
-  DidReceiveData(data);
+  DidReceiveDataImpl(data);
 }
 
 void ResourceLoader::DidReceiveResponseInternal(
@@ -1056,10 +1052,31 @@ void ResourceLoader::DidReceiveResponseInternal(
 }
 
 void ResourceLoader::DidReceiveData(base::span<const char> data) {
-  if (auto* observer = fetcher_->GetResourceLoadObserver()) {
-    observer->DidReceiveData(resource_->InspectorId(), data);
+  DidReceiveDataImpl(data);
+}
+
+void ResourceLoader::DidReceiveDataImpl(
+    absl::variant<SegmentedBuffer, base::span<const char>> data) {
+  size_t data_size = 0;
+  // If a BackgroundResponseProcessor consumed the body data on the background
+  // thread, this method is called with a SegmentedBuffer data. Otherwise, it is
+  // called with a span<const char> data several times.
+  if (absl::holds_alternative<SegmentedBuffer>(data)) {
+    data_size = absl::get<SegmentedBuffer>(data).size();
+    if (auto* observer = fetcher_->GetResourceLoadObserver()) {
+      for (const auto& span : absl::get<SegmentedBuffer>(data)) {
+        observer->DidReceiveData(resource_->InspectorId(), span);
+      }
+    }
+  } else {
+    CHECK(absl::holds_alternative<base::span<const char>>(data));
+    base::span<const char> span = absl::get<base::span<const char>>(data);
+    data_size = span.size();
+    if (auto* observer = fetcher_->GetResourceLoadObserver()) {
+      observer->DidReceiveData(resource_->InspectorId(), span);
+    }
   }
-  resource_->AppendData(data);
+  resource_->AppendData(std::move(data));
 
   // This value should not be exposed for opaque responses.
   if (resource_->response_.WasFetchedViaServiceWorker() &&
@@ -1072,7 +1089,7 @@ void ResourceLoader::DidReceiveData(base::span<const char> data) {
     // will always be >= 0, but the CheckAdd is used to enforce the second
     // constraint.
     received_body_length_from_service_worker_ =
-        base::CheckAdd(received_body_length_from_service_worker_, data.size())
+        base::CheckAdd(received_body_length_from_service_worker_, data_size)
             .ValueOrDie<int64_t>();
   }
 }
