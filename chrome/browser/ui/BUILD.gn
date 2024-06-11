@@ -3867,6 +3867,7 @@ static_library("ui") {
       "//chrome/browser/ash/crosapi:browser_util",
       "//chrome/browser/ash/crostini:crostini_installer_types_mojom",
       "//chrome/browser/ash/login/oobe_quick_start",
+      "//chrome/browser/ash/privacy_hub",
       "//chrome/browser/ash/system_web_apps",
       "//chrome/browser/ash/system_web_apps/types",
       "//chrome/browser/chromeos/extensions/vpn_provider",
@@ -4100,6 +4101,7 @@ static_library("ui") {
     allow_circular_includes_from += [
       "//chrome/browser/ash",
       "//chrome/browser/ash/crosapi",
+      "//chrome/browser/ash/privacy_hub",
       "//chrome/browser/chromeos/extensions/wm",
     ]
 
