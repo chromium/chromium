@@ -383,7 +383,7 @@ CSSIdentifierValue* ConsumeBorderImageRepeatKeyword(
 
 bool ConsumeCSSValueId(CSSParserTokenRange& range, CSSValueID& value) {
   CSSIdentifierValue* keyword = ConsumeIdent(range);
-  if (!keyword || !range.AtEnd()) {
+  if (!keyword) {
     return false;
   }
   value = keyword->GetValueID();
