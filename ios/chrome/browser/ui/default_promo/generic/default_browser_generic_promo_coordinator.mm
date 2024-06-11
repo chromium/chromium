@@ -38,6 +38,8 @@ using base::UserMetricsAction;
     defaultBrowserPromoHandler;
 // Feature engagement tracker reference.
 @property(nonatomic, assign) feature_engagement::Tracker* tracker;
+// Contains all the stats that needs to be recorded for all promo actions.
+@property(nonatomic, strong) PromoStatistics* promoStats;
 @end
 
 @implementation DefaultBrowserGenericPromoCoordinator
@@ -71,6 +73,7 @@ using base::UserMetricsAction;
   [self.baseViewController dismissViewControllerAnimated:YES completion:nil];
   self.viewController = nil;
   self.mediator = nil;
+  self.promoStats = nil;
 
   [super stop];
 }
@@ -87,6 +90,10 @@ using base::UserMetricsAction;
   RecordAction(UserMetricsAction(
       "IOS.DefaultBrowserVideoPromo.Fullscreen.OpenSettingsTapped"));
   [self.handler hidePromo];
+  if (IsDefaultBrowserTriggerCriteraExperimentEnabled()) {
+    RecordPromoStatsToUMAForAction(self.promoStats,
+                                   IOSDefaultBrowserPromoAction::kActionButton);
+  }
 }
 
 - (void)confirmationAlertSecondaryAction {
@@ -97,6 +104,10 @@ using base::UserMetricsAction;
   RecordAction(
       UserMetricsAction("IOS.DefaultBrowserVideoPromo.Fullscreen.Dismiss"));
   [self.handler hidePromo];
+  if (IsDefaultBrowserTriggerCriteraExperimentEnabled()) {
+    RecordPromoStatsToUMAForAction(self.promoStats,
+                                   IOSDefaultBrowserPromoAction::kCancel);
+  }
 }
 
 - (void)confirmationAlertTertiaryAction {
@@ -129,6 +140,10 @@ using base::UserMetricsAction;
   RecordAction(
       UserMetricsAction("IOS.DefaultBrowserVideoPromo.Fullscreen.Dismiss"));
   [self.handler hidePromo];
+  if (IsDefaultBrowserTriggerCriteraExperimentEnabled()) {
+    RecordPromoStatsToUMAForAction(self.promoStats,
+                                   IOSDefaultBrowserPromoAction::kDismiss);
+  }
 }
 
 #pragma mark - private
@@ -163,6 +178,14 @@ using base::UserMetricsAction;
 - (void)recordVideoDefaultBrowserPromoShown {
   // Record the current state before updating the local storage.
   RecordPromoDisplayStatsToUMA();
+
+  if (IsDefaultBrowserTriggerCriteraExperimentEnabled()) {
+    // `CalculatePromoStatistics` should be called before
+    // `LogFullscreenDefaultBrowserPromoDisplayed` which will modify storage
+    // data.
+    self.promoStats = CalculatePromoStatistics();
+    RecordPromoStatsToUMAForAppear(self.promoStats);
+  }
 
   LogFullscreenDefaultBrowserPromoDisplayed();
   RecordAction(UserMetricsAction("IOS.DefaultBrowserVideoPromo.Appear"));
