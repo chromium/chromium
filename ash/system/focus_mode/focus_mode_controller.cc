@@ -24,7 +24,7 @@
 #include "ash/system/focus_mode/focus_mode_tray.h"
 #include "ash/system/focus_mode/focus_mode_util.h"
 #include "ash/system/focus_mode/sounds/focus_mode_sounds_controller.h"
-#include "ash/system/focus_mode/youtube_music/youtube_music_controller.h"
+#include "ash/system/focus_mode/sounds/youtube_music/youtube_music_controller.h"
 #include "ash/system/status_area_widget.h"
 #include "ash/system/toast/anchored_nudge_manager_impl.h"
 #include "ash/system/unified/unified_system_tray.h"

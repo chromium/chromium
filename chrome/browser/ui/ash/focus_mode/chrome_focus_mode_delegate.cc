@@ -5,7 +5,7 @@
 #include "chrome/browser/ui/ash/focus_mode/chrome_focus_mode_delegate.h"
 
 #include "ash/shell.h"
-#include "ash/system/focus_mode/youtube_music/youtube_music_client.h"
+#include "ash/system/focus_mode/sounds/youtube_music/youtube_music_client.h"
 #include "base/functional/bind.h"
 #include "base/task/thread_pool.h"
 #include "chrome/browser/profiles/profile.h"

@@ -2,11 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef ASH_SYSTEM_FOCUS_MODE_YOUTUBE_MUSIC_YOUTUBE_MUSIC_CLIENT_H_
-#define ASH_SYSTEM_FOCUS_MODE_YOUTUBE_MUSIC_YOUTUBE_MUSIC_CLIENT_H_
+#ifndef ASH_SYSTEM_FOCUS_MODE_SOUNDS_YOUTUBE_MUSIC_YOUTUBE_MUSIC_CLIENT_H_
+#define ASH_SYSTEM_FOCUS_MODE_SOUNDS_YOUTUBE_MUSIC_YOUTUBE_MUSIC_CLIENT_H_
 
 #include "ash/ash_export.h"
-#include "ash/system/focus_mode/youtube_music/youtube_music_types.h"
+#include "ash/system/focus_mode/sounds/youtube_music/youtube_music_types.h"
 #include "base/containers/flat_map.h"
 #include "base/memory/weak_ptr.h"
 #include "base/types/expected.h"
@@ -106,4 +106,4 @@ class ASH_EXPORT YouTubeMusicClient {
 
 }  // namespace ash::youtube_music
 
-#endif  // ASH_SYSTEM_FOCUS_MODE_YOUTUBE_MUSIC_YOUTUBE_MUSIC_CLIENT_H_
+#endif  // ASH_SYSTEM_FOCUS_MODE_SOUNDS_YOUTUBE_MUSIC_YOUTUBE_MUSIC_CLIENT_H_

@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "ash/system/focus_mode/youtube_music/youtube_music_controller.h"
+#include "ash/system/focus_mode/sounds/youtube_music/youtube_music_controller.h"
 
 #include "ash/shell.h"
 #include "ash/system/focus_mode/focus_mode_controller.h"

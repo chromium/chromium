@@ -11,7 +11,7 @@
 #include <vector>
 
 #include "ash/system/focus_mode/focus_mode_controller.h"
-#include "ash/system/focus_mode/youtube_music/youtube_music_types.h"
+#include "ash/system/focus_mode/sounds/youtube_music/youtube_music_types.h"
 #include "base/check.h"
 #include "base/functional/callback.h"
 #include "base/functional/callback_helpers.h"

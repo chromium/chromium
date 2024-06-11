@@ -2,13 +2,13 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "ash/system/focus_mode/youtube_music/youtube_music_client.h"
+#include "ash/system/focus_mode/sounds/youtube_music/youtube_music_client.h"
 
 #include <algorithm>
 #include <memory>
 #include <optional>
 
-#include "ash/system/focus_mode/youtube_music/youtube_music_types.h"
+#include "ash/system/focus_mode/sounds/youtube_music/youtube_music_types.h"
 #include "base/functional/callback_helpers.h"
 #include "base/time/time.h"
 #include "google_apis/common/request_sender.h"

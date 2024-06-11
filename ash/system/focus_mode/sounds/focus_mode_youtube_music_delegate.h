@@ -12,8 +12,8 @@
 
 #include "ash/ash_export.h"
 #include "ash/system/focus_mode/sounds/focus_mode_sounds_delegate.h"
-#include "ash/system/focus_mode/youtube_music/youtube_music_controller.h"
-#include "ash/system/focus_mode/youtube_music/youtube_music_types.h"
+#include "ash/system/focus_mode/sounds/youtube_music/youtube_music_controller.h"
+#include "ash/system/focus_mode/sounds/youtube_music/youtube_music_types.h"
 #include "base/containers/flat_map.h"
 #include "base/functional/callback.h"
 #include "base/memory/weak_ptr.h"
