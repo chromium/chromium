@@ -37,6 +37,14 @@ base::span<const emoji::EmojiSearchEntry> FirstNOrLessElements(
   return container.subspan(0, std::min(container.size(), n));
 }
 
+const base::Value::Dict* LoadEmojiVariantsFromPrefs(PrefService* prefs) {
+  if (prefs == nullptr) {
+    return nullptr;
+  }
+  return prefs->GetDict(prefs::kEmojiPickerPreferences)
+      .FindDict("preferred_variants");
+}
+
 }  // namespace
 
 PickerSearchController::PickerSearchController(PickerClient* client,
@@ -76,7 +84,8 @@ void PickerSearchController::StartEmojiSearch(
   emoji_results.reserve(kMaxEmojiResults + kMaxSymbolResults +
                         kMaxEmoticonResults);
 
-  const base::Value::Dict* emoji_variants = LoadEmojiVariantsFromPrefs();
+  const base::Value::Dict* emoji_variants =
+      LoadEmojiVariantsFromPrefs(client_->GetPrefs());
 
   for (const emoji::EmojiSearchEntry& result :
        FirstNOrLessElements(results.emojis, kMaxEmojiResults)) {
@@ -110,15 +119,6 @@ void PickerSearchController::StartEmojiSearch(
       PickerSectionType::kExpressions, std::move(emoji_results),
       /*has_more_results=*/emoji_results.size() < full_results_count);
   std::move(callback).Run(std::move(sections));
-}
-
-const base::Value::Dict* PickerSearchController::LoadEmojiVariantsFromPrefs() {
-  if (client_->GetPrefs() == nullptr) {
-    return nullptr;
-  }
-  return client_->GetPrefs()
-      ->GetDict(prefs::kEmojiPickerPreferences)
-      .FindDict("preferred_variants");
 }
 
 }  // namespace ash

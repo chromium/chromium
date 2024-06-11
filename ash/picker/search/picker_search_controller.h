@@ -42,9 +42,6 @@ class ASH_EXPORT PickerSearchController {
                         PickerViewDelegate::SearchResultsCallback callback);
 
  private:
-  // TODO: b/327255023 - Move this to a function in the anonymous namespace.
-  const base::Value::Dict* LoadEmojiVariantsFromPrefs();
-
   const raw_ref<PickerClient> client_;
 
   base::TimeDelta burn_in_period_;
