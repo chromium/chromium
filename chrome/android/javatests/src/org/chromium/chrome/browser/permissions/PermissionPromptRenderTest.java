@@ -10,7 +10,6 @@ import org.junit.After;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
-import org.junit.rules.TestRule;
 import org.junit.runner.RunWith;
 
 import org.chromium.base.test.params.ParameterAnnotations;
@@ -59,8 +58,6 @@ public class PermissionPromptRenderTest {
                     .setRevision(1)
                     .setBugComponent(RenderTestRule.Component.UI_BROWSER_MOBILE_MESSAGES)
                     .build();
-
-    @Rule public TestRule mProcessor = new Features.JUnitProcessor();
 
     public PermissionPromptRenderTest(boolean nightModeEnabled) {
         mNightModeEnabled = nightModeEnabled;

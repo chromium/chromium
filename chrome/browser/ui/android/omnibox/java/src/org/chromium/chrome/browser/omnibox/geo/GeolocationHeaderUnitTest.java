@@ -27,7 +27,6 @@ import com.google.android.gms.location.LocationServices;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
-import org.junit.rules.TestRule;
 import org.junit.runner.RunWith;
 import org.mockito.ArgumentCaptor;
 import org.mockito.Captor;
@@ -39,7 +38,6 @@ import org.robolectric.annotation.Implements;
 import org.robolectric.annotation.LooperMode;
 
 import org.chromium.base.test.BaseRobolectricTestRunner;
-import org.chromium.base.test.util.Features;
 import org.chromium.base.test.util.Features.EnableFeatures;
 import org.chromium.base.test.util.JniMocker;
 import org.chromium.chrome.browser.omnibox.geo.VisibleNetworks.VisibleCell;
@@ -110,8 +108,6 @@ public class GeolocationHeaderUnitTest {
 
     private static int sRefreshVisibleNetworksRequests;
     private static int sRefreshLastKnownLocation;
-
-    @Rule public TestRule mFeatureProcessor = new Features.JUnitProcessor();
 
     @Rule public JniMocker mocker = new JniMocker();
 

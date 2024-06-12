@@ -18,9 +18,7 @@ import android.view.WindowManager.LayoutParams;
 import androidx.test.filters.SmallTest;
 
 import org.junit.Before;
-import org.junit.Rule;
 import org.junit.Test;
-import org.junit.rules.TestRule;
 import org.junit.runner.RunWith;
 import org.mockito.ArgumentCaptor;
 import org.mockito.Captor;
@@ -30,7 +28,6 @@ import org.robolectric.annotation.Config;
 
 import org.chromium.base.supplier.Supplier;
 import org.chromium.base.test.BaseRobolectricTestRunner;
-import org.chromium.base.test.util.Features;
 import org.chromium.base.test.util.Features.DisableFeatures;
 import org.chromium.base.test.util.Features.EnableFeatures;
 import org.chromium.chrome.browser.compositor.layouts.LayoutManagerChrome;
@@ -61,8 +58,6 @@ public class IncognitoTabbedSnapshotControllerTest {
 
     @Captor
     private ArgumentCaptor<TabModelSelectorObserver> mTabModelSelectorObserverArgumentCaptor;
-
-    @Rule public TestRule mJunitProcessor = new Features.JUnitProcessor();
 
     private IncognitoTabbedSnapshotController mController;
     private WindowManager.LayoutParams mParams;

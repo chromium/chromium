@@ -32,7 +32,6 @@ import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
-import org.junit.rules.TestRule;
 import org.junit.runner.RunWith;
 
 import org.chromium.base.metrics.RecordHistogram;
@@ -79,8 +78,6 @@ public class AccessibilitySettingsTest {
     @Rule
     public SettingsActivityTestRule<AccessibilitySettings> mSettingsActivityTestRule =
             new SettingsActivityTestRule<>(AccessibilitySettings.class);
-
-    @Rule public TestRule mProcessor = new Features.InstrumentationProcessor();
 
     @Before
     public void setUp() {

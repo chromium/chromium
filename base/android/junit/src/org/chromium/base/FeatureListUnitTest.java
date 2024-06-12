@@ -5,19 +5,16 @@
 package org.chromium.base;
 
 import org.junit.Assert;
-import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
 import org.chromium.base.FeatureList.TestValues;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.base.test.util.Features.EnableFeatures;
-import org.chromium.base.test.util.Features.JUnitProcessor;
 
 /** Unit tests for {@link FeatureList}. */
 @RunWith(BaseRobolectricTestRunner.class)
 public class FeatureListUnitTest {
-    @Rule public JUnitProcessor mFeaturesProcessor = new JUnitProcessor();
 
     private static final String FEATURE_A = "FeatureA";
     private static final String FEATURE_A_PARAM_1 = "Param1InFeatureA";

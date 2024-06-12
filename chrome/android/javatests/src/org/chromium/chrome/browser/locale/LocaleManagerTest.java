@@ -18,7 +18,6 @@ import org.junit.BeforeClass;
 import org.junit.ClassRule;
 import org.junit.Rule;
 import org.junit.Test;
-import org.junit.rules.TestRule;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnit;
@@ -54,8 +53,6 @@ public class LocaleManagerTest {
     public @Rule MockitoRule mockitoRule = MockitoJUnit.rule();
     public static @ClassRule ChromeTabbedActivityTestRule sActivityTestRule =
             new ChromeTabbedActivityTestRule();
-
-    public @Rule TestRule mProcessor = new Features.JUnitProcessor();
 
     private @Mock TemplateUrl mMockTemplateUrl;
 

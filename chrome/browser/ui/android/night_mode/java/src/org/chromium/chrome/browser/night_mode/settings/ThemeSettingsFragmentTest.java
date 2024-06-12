@@ -31,7 +31,6 @@ import org.mockito.MockitoAnnotations;
 import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.base.test.BaseJUnit4ClassRunner;
 import org.chromium.base.test.util.Feature;
-import org.chromium.base.test.util.Features;
 import org.chromium.base.test.util.Features.DisableFeatures;
 import org.chromium.base.test.util.Features.EnableFeatures;
 import org.chromium.base.test.util.JniMocker;
@@ -65,8 +64,6 @@ public class ThemeSettingsFragmentTest {
             new BlankUiTestActivitySettingsTestRule();
 
     @Rule public JniMocker mMocker = new JniMocker();
-
-    @Rule public Features.JUnitProcessor processor = new Features.JUnitProcessor();
 
     @Mock public WebsitePreferenceBridge.Natives mMockWebsitePreferenceBridgeJni;
     @Mock public Profile mProfile;

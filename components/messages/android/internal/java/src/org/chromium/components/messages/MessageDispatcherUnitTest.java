@@ -15,7 +15,6 @@ import androidx.test.filters.SmallTest;
 import org.junit.Assert;
 import org.junit.Rule;
 import org.junit.Test;
-import org.junit.rules.TestRule;
 import org.junit.runner.RunWith;
 import org.mockito.ArgumentCaptor;
 import org.mockito.Mock;
@@ -38,7 +37,6 @@ import org.chromium.ui.modelutil.PropertyModel;
 })
 public class MessageDispatcherUnitTest {
     @Rule public MockitoRule mMockitoRule = MockitoJUnit.rule();
-    @Rule public TestRule mFeaturesProcessorRule = new Features.JUnitProcessor();
 
     @Mock private MessageQueueManager mQueueManager;
     @Mock private MessageAnimationCoordinator mAnimationCoordinator;

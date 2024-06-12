@@ -16,13 +16,11 @@ import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
-import org.junit.rules.TestRule;
 import org.junit.runner.RunWith;
 
 import org.chromium.base.test.util.DisabledTest;
 import org.chromium.base.test.util.DoNotBatch;
 import org.chromium.base.test.util.Feature;
-import org.chromium.base.test.util.Features;
 import org.chromium.chrome.browser.common.ChromeUrlConstants;
 import org.chromium.chrome.browser.homepage.HomepageManager;
 import org.chromium.chrome.browser.homepage.HomepageTestRule;
@@ -36,7 +34,6 @@ import org.chromium.url.GURL;
 @DoNotBatch(reason = "Testing tests start up and homepage loading.")
 @RunWith(ChromeJUnit4ClassRunner.class)
 public class PartnerHomepageUnitTest {
-    @Rule public TestRule mFeaturesProcesser = new Features.JUnitProcessor();
 
     @Rule
     public BasePartnerBrowserCustomizationUnitTestRule mTestRule =

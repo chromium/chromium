@@ -42,7 +42,6 @@ import androidx.core.view.inputmethod.EditorInfoCompat;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
-import org.junit.rules.TestRule;
 import org.junit.runner.RunWith;
 import org.mockito.ArgumentCaptor;
 import org.mockito.Mock;
@@ -53,7 +52,6 @@ import org.robolectric.annotation.Config;
 import org.chromium.base.ContextUtils;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.base.test.util.Features.EnableFeatures;
-import org.chromium.base.test.util.Features.JUnitProcessor;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.omnibox.UrlBar.UrlBarDelegate;
 import org.chromium.chrome.browser.omnibox.test.R;
@@ -79,7 +77,6 @@ public class UrlBarUnitTest {
     private static final int MIN_LENGTH_FOR_TRUNCATION = 100;
 
     private UrlBar mUrlBar;
-    public @Rule TestRule mFeaturesProcessorRule = new JUnitProcessor();
     public @Rule MockitoRule mockitoRule = MockitoJUnit.rule();
     private @Mock UrlBarDelegate mUrlBarDelegate;
     private @Mock ViewStructure mViewStructure;

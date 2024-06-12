@@ -34,9 +34,7 @@ import androidx.test.core.app.ApplicationProvider;
 
 import org.junit.Assert;
 import org.junit.Before;
-import org.junit.Rule;
 import org.junit.Test;
-import org.junit.rules.TestRule;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
@@ -47,7 +45,6 @@ import org.chromium.base.ActivityState;
 import org.chromium.base.ApplicationStatus;
 import org.chromium.base.supplier.ObservableSupplierImpl;
 import org.chromium.base.test.BaseRobolectricTestRunner;
-import org.chromium.base.test.util.Features;
 import org.chromium.base.test.util.Features.DisableFeatures;
 import org.chromium.base.test.util.Features.EnableFeatures;
 import org.chromium.base.test.util.HistogramWatcher;
@@ -107,8 +104,6 @@ public class CompositorViewHolderUnitTest {
         IN_MOTION,
         TOUCH_EVENT_OBSERVER;
     }
-
-    @Rule public TestRule mProcessor = new Features.JUnitProcessor();
 
     @Mock private Activity mActivity;
     @Mock private Profile mProfile;

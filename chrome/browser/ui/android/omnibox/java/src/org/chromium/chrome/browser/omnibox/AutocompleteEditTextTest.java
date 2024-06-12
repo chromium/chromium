@@ -29,9 +29,7 @@ import android.widget.EditText;
 import android.widget.LinearLayout;
 
 import org.junit.Before;
-import org.junit.Rule;
 import org.junit.Test;
-import org.junit.rules.TestRule;
 import org.junit.runner.RunWith;
 import org.mockito.InOrder;
 import org.mockito.MockitoAnnotations;
@@ -44,7 +42,6 @@ import org.robolectric.shadows.ShadowLog;
 import org.chromium.base.ContextUtils;
 import org.chromium.base.Log;
 import org.chromium.base.test.BaseRobolectricTestRunner;
-import org.chromium.base.test.util.Features;
 import org.chromium.chrome.browser.omnibox.test.R;
 import org.chromium.components.browser_ui.styles.SemanticColorUtils;
 import org.chromium.components.omnibox.OmniboxFeatures;
@@ -64,8 +61,6 @@ public class AutocompleteEditTextTest {
     private static final String TAG = "AutocompleteTest";
 
     private static final boolean DEBUG = false;
-
-    @Rule public TestRule mProcessor = new Features.JUnitProcessor();
 
     private InOrder mInOrder;
     private TestAutocompleteEditText mAutocomplete;

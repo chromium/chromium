@@ -45,7 +45,6 @@ import org.robolectric.annotation.Config;
 import org.chromium.base.Callback;
 import org.chromium.base.ContextUtils;
 import org.chromium.base.test.BaseRobolectricTestRunner;
-import org.chromium.base.test.util.Features.JUnitProcessor;
 import org.chromium.base.test.util.JniMocker;
 import org.chromium.chrome.browser.magic_stack.ModuleDelegate;
 import org.chromium.chrome.browser.magic_stack.ModuleDelegate.ModuleType;
@@ -71,7 +70,6 @@ import org.chromium.url.JUnitTestGURLs;
 @RunWith(BaseRobolectricTestRunner.class)
 @Config(manifest = Config.NONE)
 public class SingleTabSwitcherMediatorUnitTest {
-    @Rule public JUnitProcessor mFeaturesProcessor = new JUnitProcessor();
     @Rule public JniMocker mocker = new JniMocker();
     @Mock UrlUtilities.Natives mUrlUtilitiesJniMock;
 

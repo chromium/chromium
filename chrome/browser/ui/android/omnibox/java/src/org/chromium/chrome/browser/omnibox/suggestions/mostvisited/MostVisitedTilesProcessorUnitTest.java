@@ -28,7 +28,6 @@ import org.junit.After;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
-import org.junit.rules.TestRule;
 import org.junit.runner.RunWith;
 import org.mockito.ArgumentCaptor;
 import org.mockito.InOrder;
@@ -40,7 +39,6 @@ import org.chromium.base.Callback;
 import org.chromium.base.ContextUtils;
 import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.base.test.BaseRobolectricTestRunner;
-import org.chromium.base.test.util.Features;
 import org.chromium.chrome.browser.omnibox.styles.OmniboxImageSupplier;
 import org.chromium.chrome.browser.omnibox.styles.OmniboxResourceProvider;
 import org.chromium.chrome.browser.omnibox.suggestions.SuggestionHost;
@@ -70,7 +68,6 @@ public final class MostVisitedTilesProcessorUnitTest {
     private static final GURL SEARCH_URL = JUnitTestGURLs.SEARCH_URL;
 
     public @Rule MockitoRule mockitoRule = MockitoJUnit.rule();
-    public @Rule TestRule mFeatures = new Features.JUnitProcessor();
 
     private Context mContext;
     private PropertyModel mPropertyModel;

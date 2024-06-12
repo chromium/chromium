@@ -14,13 +14,10 @@ import androidx.annotation.Nullable;
 
 import org.junit.Assert;
 import org.junit.Before;
-import org.junit.Rule;
 import org.junit.Test;
-import org.junit.rules.TestRule;
 import org.junit.runner.RunWith;
 
 import org.chromium.base.test.BaseRobolectricTestRunner;
-import org.chromium.base.test.util.Features;
 import org.chromium.base.test.util.Features.EnableFeatures;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.toolbar.ButtonData;
@@ -52,8 +49,6 @@ public class PhoneCaptureStateTokenTest {
         // Uses default equals impl, reference quality, to compare. Values do not matter.
         return new ButtonDataImpl(false, null, null, "", false, null, false, 0, 0, false);
     }
-
-    @Rule public TestRule mProcessor = new Features.JUnitProcessor();
 
     @Before
     public void before() {

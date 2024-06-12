@@ -41,9 +41,7 @@ import org.robolectric.shadows.ShadowLooper;
 
 import org.chromium.base.Callback;
 import org.chromium.base.test.BaseRobolectricTestRunner;
-import org.chromium.base.test.util.Features;
 import org.chromium.base.test.util.Features.DisableFeatures;
-import org.chromium.base.test.util.Features.JUnitProcessor;
 import org.chromium.base.test.util.HistogramWatcher;
 import org.chromium.cc.input.BrowserControlsState;
 import org.chromium.chrome.R;
@@ -80,8 +78,6 @@ public class TabStripTransitionCoordinatorUnitTest {
     @Rule
     public ActivityScenarioRule<TestActivity> mActivityScenario =
             new ActivityScenarioRule<>(TestActivity.class);
-
-    @Rule public Features.JUnitProcessor mFeatures = new JUnitProcessor();
 
     @Mock private BrowserControlsVisibilityManager mBrowserControlsVisibilityManager;
     @Mock private BrowserStateBrowserControlsVisibilityDelegate mVisibilityDelegate;

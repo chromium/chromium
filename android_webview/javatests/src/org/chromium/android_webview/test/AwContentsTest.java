@@ -38,7 +38,6 @@ import com.google.common.util.concurrent.SettableFuture;
 import org.junit.Assert;
 import org.junit.Rule;
 import org.junit.Test;
-import org.junit.rules.TestRule;
 import org.junit.runner.RunWith;
 import org.junit.runners.Parameterized;
 import org.junit.runners.Parameterized.UseParametersRunnerFactory;
@@ -106,7 +105,6 @@ public class AwContentsTest extends AwParameterizedTest {
     }
 
     @Rule public FakeTimeTestRule mFakeTimeTestRule = new FakeTimeTestRule();
-    @Rule public TestRule mProcessor = new Features.InstrumentationProcessor();
 
     private TestAwContentsClient mContentsClient = new TestAwContentsClient();
 

@@ -14,7 +14,6 @@ import androidx.test.filters.MediumTest;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
-import org.junit.rules.TestRule;
 import org.junit.runner.RunWith;
 import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
@@ -27,7 +26,6 @@ import org.chromium.base.test.params.ParameterSet;
 import org.chromium.base.test.params.ParameterizedRunner;
 import org.chromium.base.test.util.Batch;
 import org.chromium.base.test.util.Feature;
-import org.chromium.base.test.util.Features;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.bookmarks.ShoppingAccessoryViewProperties.PriceInfo;
 import org.chromium.chrome.test.ChromeJUnit4RunnerDelegate;
@@ -72,8 +70,6 @@ public class ShoppingAccessoryViewRenderTest {
                     .setBugComponent(ChromeRenderTestRule.Component.UI_BROWSER_BOOKMARKS)
                     .setRevision(1)
                     .build();
-
-    @Rule public TestRule mProcessor = new Features.JUnitProcessor();
 
     private CurrencyFormatter mFormatter;
     private ShoppingAccessoryView mShoppingAccessoryView;

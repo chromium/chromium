@@ -17,7 +17,6 @@ import android.content.Intent;
 
 import org.junit.After;
 import org.junit.Before;
-import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.ArgumentCaptor;
@@ -27,7 +26,6 @@ import org.mockito.MockitoAnnotations;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.base.test.util.Batch;
 import org.chromium.base.test.util.Features.EnableFeatures;
-import org.chromium.base.test.util.Features.JUnitProcessor;
 import org.chromium.base.test.util.HistogramWatcher;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.ui.default_browser_promo.DefaultBrowserPromoUtils.DefaultBrowserState;
@@ -39,7 +37,6 @@ import org.chromium.ui.base.WindowAndroid.IntentCallback;
 @Batch(Batch.UNIT_TESTS)
 @EnableFeatures(ChromeFeatureList.DEFAULT_BROWSER_PROMO_ANDROID)
 public class DefaultBrowserPromoManagerTest {
-    @Rule public JUnitProcessor mFeaturesProcessor = new JUnitProcessor();
 
     @Mock WindowAndroid mWindowAndroid;
     @Mock Activity mActivity;

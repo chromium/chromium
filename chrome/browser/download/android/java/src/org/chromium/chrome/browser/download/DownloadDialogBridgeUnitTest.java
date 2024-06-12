@@ -17,7 +17,6 @@ import org.junit.After;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
-import org.junit.rules.TestRule;
 import org.junit.runner.RunWith;
 import org.mockito.ArgumentCaptor;
 import org.mockito.Captor;
@@ -28,7 +27,6 @@ import org.robolectric.annotation.Config;
 import org.robolectric.shadows.ShadowLog;
 
 import org.chromium.base.test.BaseRobolectricTestRunner;
-import org.chromium.base.test.util.Features;
 import org.chromium.base.test.util.JniMocker;
 import org.chromium.chrome.browser.download.dialogs.DownloadLocationDialogCoordinator;
 import org.chromium.chrome.browser.profiles.Profile;
@@ -52,8 +50,6 @@ public class DownloadDialogBridgeUnitTest {
     private DownloadDialogBridge mBridge;
 
     @Rule public JniMocker mJniMocker = new JniMocker();
-
-    @Rule public TestRule mFeaturesProcessor = new Features.JUnitProcessor();
 
     @Mock private DownloadDialogBridge.Natives mNativeMock;
 

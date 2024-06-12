@@ -11,9 +11,7 @@ import androidx.annotation.NonNull;
 
 import org.junit.Assert;
 import org.junit.Before;
-import org.junit.Rule;
 import org.junit.Test;
-import org.junit.rules.TestRule;
 import org.junit.runner.RunWith;
 import org.mockito.Mockito;
 import org.robolectric.annotation.Config;
@@ -21,7 +19,6 @@ import org.robolectric.annotation.Config;
 import org.chromium.base.supplier.ObservableSupplierImpl;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.base.test.util.CallbackHelper;
-import org.chromium.base.test.util.Features;
 import org.chromium.base.test.util.Features.DisableFeatures;
 import org.chromium.base.test.util.Features.EnableFeatures;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
@@ -34,7 +31,6 @@ import java.util.concurrent.TimeoutException;
 @Config(manifest = Config.NONE)
 @EnableFeatures({ChromeFeatureList.BACK_TO_HOME_ANIMATION})
 public class BackPressManagerUnitTest {
-    @Rule public TestRule mProcessor = new Features.JUnitProcessor();
 
     private class EmptyBackPressHandler implements BackPressHandler {
         private ObservableSupplierImpl<Boolean> mSupplier = new ObservableSupplierImpl<>();

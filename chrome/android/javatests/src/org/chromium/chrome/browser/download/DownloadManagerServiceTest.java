@@ -16,15 +16,12 @@ import androidx.test.filters.MediumTest;
 import org.junit.After;
 import org.junit.Assert;
 import org.junit.ClassRule;
-import org.junit.Rule;
 import org.junit.Test;
-import org.junit.rules.TestRule;
 import org.junit.runner.RunWith;
 
 import org.chromium.base.test.util.Batch;
 import org.chromium.base.test.util.CriteriaHelper;
 import org.chromium.base.test.util.Feature;
-import org.chromium.base.test.util.Features;
 import org.chromium.base.test.util.UrlUtils;
 import org.chromium.chrome.browser.download.DownloadManagerServiceTest.MockDownloadNotifier.MethodID;
 import org.chromium.chrome.test.ChromeBrowserTestRule;
@@ -234,8 +231,6 @@ public class DownloadManagerServiceTest {
                     () -> DownloadManagerServiceForTest.super.scheduleUpdateIfNeeded());
         }
     }
-
-    @Rule public TestRule mProcessor = new Features.JUnitProcessor();
 
     private DownloadManagerServiceForTest mService;
 

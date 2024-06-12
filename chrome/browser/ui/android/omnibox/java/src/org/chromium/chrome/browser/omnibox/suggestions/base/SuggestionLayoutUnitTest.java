@@ -17,7 +17,6 @@ import android.view.View;
 
 import org.junit.Rule;
 import org.junit.Test;
-import org.junit.rules.TestRule;
 import org.junit.runner.RunWith;
 import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
@@ -25,7 +24,6 @@ import org.robolectric.annotation.Config;
 
 import org.chromium.base.ContextUtils;
 import org.chromium.base.test.BaseRobolectricTestRunner;
-import org.chromium.base.test.util.Features;
 import org.chromium.chrome.browser.omnibox.suggestions.base.SuggestionLayout.LayoutParams.SuggestionViewType;
 import org.chromium.chrome.browser.omnibox.test.R;
 
@@ -39,7 +37,6 @@ import org.chromium.chrome.browser.omnibox.test.R;
 public class SuggestionLayoutUnitTest {
 
     public @Rule MockitoRule mMockitoRule = MockitoJUnit.rule();
-    public @Rule TestRule mProcessor = new Features.JUnitProcessor();
 
     private Context mContext = ContextUtils.getApplicationContext();
     private View mDecorationView = new View(mContext);

@@ -17,9 +17,7 @@ import android.graphics.Color;
 import android.view.View;
 
 import org.junit.Before;
-import org.junit.Rule;
 import org.junit.Test;
-import org.junit.rules.TestRule;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
@@ -27,7 +25,6 @@ import org.mockito.MockitoAnnotations;
 import org.chromium.base.Callback;
 import org.chromium.base.supplier.Supplier;
 import org.chromium.base.test.BaseRobolectricTestRunner;
-import org.chromium.base.test.util.Features;
 import org.chromium.chrome.browser.browser_controls.BrowserControlsStateProvider;
 import org.chromium.chrome.browser.tab.TabObscuringHandler;
 import org.chromium.ui.modelutil.PropertyModel;
@@ -35,7 +32,6 @@ import org.chromium.ui.modelutil.PropertyModel;
 /** Unit tests for {@link StatusIndicatorMediator}. */
 @RunWith(BaseRobolectricTestRunner.class)
 public class StatusIndicatorMediatorTest {
-    @Rule public TestRule mProcessor = new Features.JUnitProcessor();
 
     @Mock BrowserControlsStateProvider mBrowserControlsStateProvider;
     @Mock TabObscuringHandler mTabObscuringHandler;

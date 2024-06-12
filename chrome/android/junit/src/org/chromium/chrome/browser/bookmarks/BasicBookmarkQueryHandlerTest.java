@@ -20,7 +20,6 @@ import org.robolectric.annotation.Config;
 
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.base.test.util.Batch;
-import org.chromium.base.test.util.Features;
 import org.chromium.base.test.util.Features.EnableFeatures;
 import org.chromium.chrome.browser.bookmarks.BookmarkListEntry.ViewType;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
@@ -36,7 +35,6 @@ import java.util.List;
 @Config(manifest = Config.NONE)
 @EnableFeatures(ChromeFeatureList.ANDROID_IMPROVED_BOOKMARKS)
 public class BasicBookmarkQueryHandlerTest {
-    @Rule public final Features.JUnitProcessor mFeaturesRule = new Features.JUnitProcessor();
     @Rule public MockitoRule mMockitoRule = MockitoJUnit.rule();
 
     private FakeBookmarkModel mBookmarkModel;

@@ -16,7 +16,6 @@ import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
-import org.junit.rules.TestRule;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
 import org.mockito.Mockito;
@@ -45,7 +44,6 @@ import org.chromium.components.user_prefs.UserPrefsJni;
 @Config(manifest = Config.NONE)
 @Features.EnableFeatures(ChromeFeatureList.ANDROID_HATS_REFACTOR)
 public class ChromeSurveyControllerTest {
-    @Rule public TestRule mFeaturesProcessorRule = new Features.JUnitProcessor();
     @Rule public MockitoRule mMockitoRule = MockitoJUnit.rule();
     @Rule public JniMocker mJniMocker = new JniMocker();
 

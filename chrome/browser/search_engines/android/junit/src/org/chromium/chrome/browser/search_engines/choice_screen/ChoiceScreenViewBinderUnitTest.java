@@ -16,7 +16,6 @@ import org.junit.After;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
-import org.junit.rules.TestRule;
 import org.junit.runner.RunWith;
 import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
@@ -35,7 +34,6 @@ import org.chromium.ui.widget.ButtonCompat;
 @RunWith(BaseRobolectricTestRunner.class)
 @Features.EnableFeatures({ChromeFeatureList.SEARCH_ENGINE_CHOICE})
 public class ChoiceScreenViewBinderUnitTest {
-    public @Rule TestRule mFeatureProcessor = new Features.JUnitProcessor();
     public @Rule MockitoRule mMockitoRule = MockitoJUnit.rule().strictness(Strictness.STRICT_STUBS);
 
     private final PropertyModel mModel = ChoiceScreenProperties.createPropertyModel();

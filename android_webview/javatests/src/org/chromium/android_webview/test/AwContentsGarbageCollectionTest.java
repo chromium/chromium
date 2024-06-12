@@ -25,7 +25,6 @@ import org.junit.After;
 import org.junit.Assert;
 import org.junit.Rule;
 import org.junit.Test;
-import org.junit.rules.TestRule;
 import org.junit.runner.RunWith;
 import org.junit.runners.Parameterized;
 import org.junit.runners.Parameterized.UseParametersRunnerFactory;
@@ -61,7 +60,6 @@ import java.util.concurrent.Callable;
 @DoNotBatch(reason = "GC tests require full restarts")
 public class AwContentsGarbageCollectionTest extends AwParameterizedTest {
     @Rule public AwActivityTestRule mActivityTestRule;
-    @Rule public TestRule mProcessor = new Features.InstrumentationProcessor();
 
     public AwContentsGarbageCollectionTest(AwSettingsMutation param) {
         mActivityTestRule =

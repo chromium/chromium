@@ -21,7 +21,6 @@ import android.os.Looper;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
-import org.junit.rules.TestRule;
 import org.junit.runner.RunWith;
 import org.mockito.ArgumentCaptor;
 import org.mockito.Captor;
@@ -37,7 +36,6 @@ import org.chromium.base.Token;
 import org.chromium.base.task.TaskTraits;
 import org.chromium.base.task.test.ShadowPostTask;
 import org.chromium.base.test.BaseRobolectricTestRunner;
-import org.chromium.base.test.util.Features;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.components.embedder_support.util.UrlConstants;
 import org.chromium.content_public.browser.NavigationHandle;
@@ -55,7 +53,6 @@ import java.util.concurrent.TimeUnit;
         manifest = Config.NONE,
         shadows = {ShadowLooper.class, ShadowPostTask.class})
 public class TabStateAttributesTest {
-    @Rule public TestRule mProcessor = new Features.JUnitProcessor();
     @Rule public final MockitoRule mockito = MockitoJUnit.rule();
 
     @Mock private Profile mProfile;

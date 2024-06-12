@@ -21,15 +21,12 @@ import android.widget.FrameLayout;
 import androidx.recyclerview.widget.GridLayoutManager;
 import androidx.test.filters.SmallTest;
 
-import org.junit.Rule;
 import org.junit.Test;
-import org.junit.rules.TestRule;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 
 import org.chromium.base.test.util.CriteriaHelper;
-import org.chromium.base.test.util.Features;
 import org.chromium.base.test.util.Features.DisableFeatures;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.profiles.Profile;
@@ -49,8 +46,6 @@ import java.util.concurrent.atomic.AtomicBoolean;
 @RunWith(ChromeJUnit4ClassRunner.class)
 public class MessageCardProviderTest extends BlankUiTestActivityTestCase {
     private static final int SUGGESTED_TAB_COUNT = 2;
-
-    @Rule public TestRule mProcessor = new Features.JUnitProcessor();
 
     private TabListRecyclerView mRecyclerView;
     private TabListRecyclerView.VisibilityListener mRecyclerViewVisibilityListener =

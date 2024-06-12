@@ -25,7 +25,6 @@ import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
-import org.junit.rules.TestRule;
 import org.junit.runner.RunWith;
 import org.mockito.ArgumentCaptor;
 import org.mockito.Captor;
@@ -35,7 +34,6 @@ import org.robolectric.annotation.Config;
 
 import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.base.test.BaseRobolectricTestRunner;
-import org.chromium.base.test.util.Features.JUnitProcessor;
 import org.chromium.base.test.util.JniMocker;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.ActivityTabProvider;
@@ -77,7 +75,6 @@ import java.util.List;
         manifest = Config.NONE,
         shadows = {ShadowUrlUtilities.class, ShadowSysUtils.class})
 public class DesktopSiteSettingsIPHControllerUnitTest {
-    @Rule public TestRule mFeaturesProcessor = new JUnitProcessor();
     @Rule public JniMocker mJniMocker = new JniMocker();
 
     @Mock private WebsitePreferenceBridge.Natives mWebsitePreferenceBridgeJniMock;

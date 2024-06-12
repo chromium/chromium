@@ -15,7 +15,6 @@ import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
-import org.junit.rules.TestRule;
 import org.junit.runner.RunWith;
 
 import org.chromium.base.test.util.CriteriaHelper;
@@ -48,8 +47,6 @@ import java.util.stream.Collectors;
 @RunWith(ChromeJUnit4ClassRunner.class)
 public class TemplateUrlServiceTest {
     @Rule public final ChromeBrowserTestRule mChromeBrowserTestRule = new ChromeBrowserTestRule();
-
-    @Rule public final TestRule mFeaturesProcessorRule = new Features.InstrumentationProcessor();
 
     private static final String QUERY_PARAMETER = "q";
     private static final String QUERY_VALUE = "cat";

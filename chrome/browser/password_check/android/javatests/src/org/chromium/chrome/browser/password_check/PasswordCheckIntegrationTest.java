@@ -15,14 +15,12 @@ import androidx.test.filters.MediumTest;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
-import org.junit.rules.TestRule;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 
 import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.base.test.util.CriteriaHelper;
-import org.chromium.base.test.util.Features;
 import org.chromium.base.test.util.JniMocker;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
 import org.chromium.chrome.browser.password_manager.PasswordCheckReferrer;
@@ -41,8 +39,6 @@ public class PasswordCheckIntegrationTest {
     @Rule
     public final SettingsActivityTestRule<PasswordCheckFragmentView> mTestRule =
             new SettingsActivityTestRule<>(PasswordCheckFragmentView.class);
-
-    @Rule public TestRule mProcessor = new Features.JUnitProcessor();
 
     @Rule public final JniMocker mJniMocker = new JniMocker();
 

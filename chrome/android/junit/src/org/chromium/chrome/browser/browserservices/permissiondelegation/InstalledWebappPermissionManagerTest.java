@@ -26,9 +26,7 @@ import android.os.Build;
 import dagger.Lazy;
 
 import org.junit.Before;
-import org.junit.Rule;
 import org.junit.Test;
-import org.junit.rules.TestRule;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
@@ -39,7 +37,6 @@ import org.robolectric.util.ReflectionHelpers;
 
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.base.test.util.Feature;
-import org.chromium.base.test.util.Features;
 import org.chromium.chrome.browser.browserservices.metrics.TrustedWebActivityUmaRecorder;
 import org.chromium.components.content_settings.ContentSettingValues;
 import org.chromium.components.content_settings.ContentSettingsType;
@@ -51,8 +48,6 @@ import org.chromium.components.embedder_support.util.Origin;
 public class InstalledWebappPermissionManagerTest {
     private static final Origin ORIGIN = Origin.create("https://www.website.com");
     private static final String PACKAGE_NAME = "com.package.name";
-
-    @Rule public TestRule mProcessor = new Features.JUnitProcessor();
 
     @Mock public InstalledWebappPermissionStore mStore;
     @Mock public Lazy<NotificationChannelPreserver> mPreserver;

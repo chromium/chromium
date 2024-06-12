@@ -10,7 +10,6 @@ import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
-import org.junit.rules.TestRule;
 import org.junit.runner.RunWith;
 import org.junit.runners.Parameterized;
 import org.junit.runners.Parameterized.UseParametersRunnerFactory;
@@ -18,8 +17,8 @@ import org.junit.runners.Parameterized.UseParametersRunnerFactory;
 import org.chromium.android_webview.AwCrashyClassUtils;
 import org.chromium.android_webview.common.AwFeatures;
 import org.chromium.android_webview.common.AwSwitches;
-import org.chromium.base.test.util.DoNotBatch;
 import org.chromium.base.test.util.CommandLineFlags;
+import org.chromium.base.test.util.DoNotBatch;
 import org.chromium.base.test.util.Feature;
 import org.chromium.base.test.util.Features;
 
@@ -33,7 +32,6 @@ import org.chromium.base.test.util.Features;
 public class AwCrashyClassUtilsTest extends AwParameterizedTest {
 
     @Rule public AwActivityTestRule mRule;
-    @Rule public TestRule mProcessor = new Features.InstrumentationProcessor();
 
     public AwCrashyClassUtilsTest(AwSettingsMutation param) {
         this.mRule =

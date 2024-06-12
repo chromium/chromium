@@ -23,7 +23,6 @@ import org.robolectric.annotation.Config;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.base.test.util.Feature;
 import org.chromium.base.test.util.Features.DisableFeatures;
-import org.chromium.base.test.util.Features.JUnitProcessor;
 import org.chromium.base.test.util.JniMocker;
 import org.chromium.components.payments.test_support.DefaultPaymentFeatureConfig;
 import org.chromium.components.payments.test_support.PaymentRequestServiceBuilder;
@@ -58,7 +57,6 @@ public class PaymentRequestServiceTest implements PaymentRequestClient {
     private List<PaymentApp> mNotifiedPendingApps;
 
     @Rule public MockitoRule mMockitoRule = MockitoJUnit.rule().strictness(Strictness.WARN);
-    @Rule public JUnitProcessor mFeaturesProcessor = new JUnitProcessor();
     @Rule public JniMocker mJniMocker = new JniMocker();
 
     @Mock private NavigationController mNavigationController;

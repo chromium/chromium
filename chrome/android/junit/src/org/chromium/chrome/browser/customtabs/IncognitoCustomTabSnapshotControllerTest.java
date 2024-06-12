@@ -14,9 +14,7 @@ import android.view.WindowManager;
 import androidx.test.filters.SmallTest;
 
 import org.junit.Before;
-import org.junit.Rule;
 import org.junit.Test;
-import org.junit.rules.TestRule;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
@@ -25,7 +23,6 @@ import org.robolectric.annotation.Config;
 import org.chromium.base.supplier.Supplier;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.base.test.util.Batch;
-import org.chromium.base.test.util.Features;
 import org.chromium.base.test.util.Features.DisableFeatures;
 import org.chromium.base.test.util.Features.EnableFeatures;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
@@ -40,8 +37,6 @@ public class IncognitoCustomTabSnapshotControllerTest {
     private boolean mIsIncognitoShowing;
     private WindowManager.LayoutParams mParams;
     private final Supplier<Boolean> mIsIncognitoShowingSupplier = () -> mIsIncognitoShowing;
-
-    @Rule public TestRule mJunitProcessor = new Features.JUnitProcessor();
 
     @Before
     public void setUp() {

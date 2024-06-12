@@ -15,9 +15,7 @@ import static org.mockito.Mockito.verify;
 
 import org.junit.Assert;
 import org.junit.Before;
-import org.junit.Rule;
 import org.junit.Test;
-import org.junit.rules.TestRule;
 import org.junit.runner.RunWith;
 import org.mockito.ArgumentMatcher;
 import org.mockito.Mock;
@@ -27,7 +25,6 @@ import org.robolectric.annotation.Config;
 import org.chromium.base.supplier.ObservableSupplier;
 import org.chromium.base.supplier.Supplier;
 import org.chromium.base.test.BaseRobolectricTestRunner;
-import org.chromium.base.test.util.Features;
 import org.chromium.base.test.util.Features.DisableFeatures;
 import org.chromium.base.test.util.Features.EnableFeatures;
 import org.chromium.chrome.browser.common.ChromeUrlConstants;
@@ -74,8 +71,6 @@ public class ToolbarTabControllerImplTest {
     @Mock private Profile mProfile;
     @Mock private NativePage mNativePage;
     @Mock private Supplier<Tab> mActivityTabProvider;
-
-    @Rule public TestRule mProcessor = new Features.JUnitProcessor();
 
     private ToolbarTabControllerImpl mToolbarTabController;
 

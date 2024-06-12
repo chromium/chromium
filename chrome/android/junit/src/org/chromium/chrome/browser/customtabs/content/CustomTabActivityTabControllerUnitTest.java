@@ -57,8 +57,6 @@ public class CustomTabActivityTabControllerUnitTest {
     public final CustomTabActivityContentTestEnvironment env =
             new CustomTabActivityContentTestEnvironment();
 
-    @Rule public Features.JUnitProcessor processor = new Features.JUnitProcessor();
-
     private CustomTabActivityTabController mTabController;
 
     @Mock private Profile mProfile;

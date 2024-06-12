@@ -20,13 +20,11 @@ import static org.chromium.chrome.browser.keyboard_accessory.all_passwords_botto
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
-import org.junit.rules.TestRule;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 
 import org.chromium.base.test.BaseRobolectricTestRunner;
-import org.chromium.base.test.util.Features;
 import org.chromium.base.test.util.Features.EnableFeatures;
 import org.chromium.base.test.util.JniMocker;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
@@ -53,7 +51,6 @@ public class AllPasswordsBottomSheetControllerTest {
     private static final String EXAMPLE_ORIGIN = "https://m.example.com/";
 
     @Rule public JniMocker mJniMocker = new JniMocker();
-    @Rule public TestRule mFeaturesProcessorRule = new Features.JUnitProcessor();
     @Mock private UrlUtilities.Natives mUrlUtilitiesJniMock;
     @Mock private AllPasswordsBottomSheetCoordinator.Delegate mMockDelegate;
 

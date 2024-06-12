@@ -20,7 +20,6 @@ import org.junit.BeforeClass;
 import org.junit.ClassRule;
 import org.junit.Rule;
 import org.junit.Test;
-import org.junit.rules.TestRule;
 import org.junit.runner.RunWith;
 import org.mockito.ArgumentCaptor;
 import org.mockito.Mock;
@@ -77,7 +76,6 @@ public class SingleActionMessageTest {
     }
 
     @Rule public MockitoRule mMockitoRule = MockitoJUnit.rule();
-    @Rule public TestRule mFeaturesProcessorRule = new Features.JUnitProcessor();
     @Rule public FakeTimeTestRule mFakeTime = new FakeTimeTestRule();
     @Mock private SwipeAnimationHandler mSwipeAnimationHandler;
     @Mock private MessageBannerCoordinator mMessageBanner;

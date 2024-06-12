@@ -29,9 +29,7 @@ import android.view.ViewGroup;
 import androidx.recyclerview.widget.RecyclerView;
 
 import org.junit.Before;
-import org.junit.Rule;
 import org.junit.Test;
-import org.junit.rules.TestRule;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
@@ -42,7 +40,6 @@ import org.robolectric.annotation.Implements;
 import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.base.task.test.CustomShadowAsyncTask;
 import org.chromium.base.test.BaseRobolectricTestRunner;
-import org.chromium.base.test.util.Features;
 import org.chromium.chrome.browser.keyboard_accessory.AccessorySheetTrigger;
 import org.chromium.chrome.browser.keyboard_accessory.AccessorySheetVisualStateProvider;
 import org.chromium.chrome.browser.keyboard_accessory.ManualFillingMetricsRecorder;
@@ -92,8 +89,6 @@ public class AccessorySheetControllerTest {
     private AccessorySheetCoordinator mCoordinator;
     private AccessorySheetMediator mMediator;
     private PropertyModel mModel;
-
-    @Rule public TestRule mFeaturesProcessor = new Features.JUnitProcessor();
 
     @Before
     public void setUp() {

@@ -9,13 +9,11 @@ import androidx.test.filters.SmallTest;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
-import org.junit.rules.TestRule;
 import org.junit.runner.RunWith;
 
 import org.chromium.base.test.BaseJUnit4ClassRunner;
 import org.chromium.base.test.util.CallbackHelper;
 import org.chromium.base.test.util.Feature;
-import org.chromium.base.test.util.Features;
 import org.chromium.chrome.test.ChromeBrowserTestRule;
 import org.chromium.components.autofill.SubKeyRequester;
 import org.chromium.content_public.browser.test.util.TestThreadUtils;
@@ -26,8 +24,6 @@ import java.util.concurrent.TimeoutException;
 @RunWith(BaseJUnit4ClassRunner.class)
 public class SubKeyRequesterIntegrationTest {
     @Rule public final ChromeBrowserTestRule mChromeBrowserTestRule = new ChromeBrowserTestRule();
-
-    @Rule public final TestRule mFeaturesProcessorRule = new Features.InstrumentationProcessor();
 
     private SubKeyRequester mSubKeyRequester;
 

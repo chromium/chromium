@@ -21,13 +21,11 @@ import static org.chromium.chrome.browser.customtabs.features.partialcustomtab.P
 
 import org.junit.Rule;
 import org.junit.Test;
-import org.junit.rules.TestRule;
 import org.junit.runner.RunWith;
 import org.robolectric.annotation.Config;
 import org.robolectric.annotation.LooperMode;
 
 import org.chromium.base.test.BaseRobolectricTestRunner;
-import org.chromium.base.test.util.Features;
 import org.chromium.chrome.browser.browserservices.intents.BrowserServicesIntentDataProvider;
 import org.chromium.chrome.browser.multiwindow.MultiWindowUtils;
 
@@ -37,8 +35,6 @@ import org.chromium.chrome.browser.multiwindow.MultiWindowUtils;
 @LooperMode(LooperMode.Mode.PAUSED)
 public class PartialCustomTabFullSizeStrategyTest {
     private boolean mFullscreen;
-
-    @Rule public TestRule mFeaturesProcessorRule = new Features.JUnitProcessor();
 
     @Rule public final PartialCustomTabTestRule mPCCTTestRule = new PartialCustomTabTestRule();
 

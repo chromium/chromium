@@ -59,7 +59,6 @@ import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.base.test.util.CriteriaHelper;
 import org.chromium.base.test.util.Features.DisableFeatures;
 import org.chromium.base.test.util.Features.EnableFeatures;
-import org.chromium.base.test.util.Features.JUnitProcessor;
 import org.chromium.base.test.util.JniMocker;
 import org.chromium.chrome.browser.firstrun.FirstRunStatus;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
@@ -111,7 +110,6 @@ import java.util.stream.Collectors;
 @EnableFeatures(SigninFeatures.UPDATE_METRICS_SERVICES_STATE_IN_RESTORE)
 public class ChromeBackupAgentTest {
     @Rule public TemporaryFolder mTempDir = new TemporaryFolder();
-    @Rule public JUnitProcessor mFeaturesProcessor = new JUnitProcessor();
 
     /** Shadow to allow counting of dataChanged calls. */
     @Implements(BackupManager.class)

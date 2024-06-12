@@ -68,8 +68,6 @@ public class CustomTabActivityUrlLoadingTest {
     public final CustomTabActivityContentTestEnvironment env =
             new CustomTabActivityContentTestEnvironment();
 
-    @Rule public Features.JUnitProcessor processor = new Features.JUnitProcessor();
-
     @Mock private Profile mProfile;
     @Mock private Profile mIncognitoProfile;
 

@@ -11,9 +11,7 @@ import android.view.autofill.VirtualViewFillInfo;
 import androidx.annotation.RequiresApi;
 
 import org.junit.Assert;
-import org.junit.Rule;
 import org.junit.Test;
-import org.junit.rules.TestRule;
 import org.junit.runner.RunWith;
 import org.robolectric.annotation.Config;
 
@@ -31,8 +29,6 @@ import java.util.Arrays;
     AndroidAutofillFeatures.ANDROID_AUTOFILL_BOTTOM_SHEET_WORKAROUND_NAME
 })
 public class PrefillRequestTest {
-
-    @Rule public TestRule mFeaturesProcessorRule = new Features.JUnitProcessor();
 
     @Test
     @RequiresApi(Build.VERSION_CODES.UPSIDE_DOWN_CAKE)

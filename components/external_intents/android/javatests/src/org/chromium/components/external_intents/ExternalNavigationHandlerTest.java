@@ -32,7 +32,6 @@ import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
-import org.junit.rules.TestRule;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
 import org.mockito.Mockito;
@@ -181,8 +180,6 @@ public class ExternalNavigationHandlerTest {
     private static final String SELF_SCHEME = "selfscheme";
 
     @Rule public MockitoRule mMockitoRule = MockitoJUnit.rule().strictness(Strictness.STRICT_STUBS);
-
-    @Rule public TestRule mFeaturesProcessorRule = new Features.JUnitProcessor();
 
     @Mock private IncognitoDialogDelegate mIncognitoDialogDelegateMock;
     @Mock private WindowAndroid mWindowAndroidMock;

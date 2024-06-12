@@ -35,19 +35,15 @@ import androidx.test.filters.MediumTest;
 
 import org.hamcrest.Matchers;
 import org.junit.BeforeClass;
-import org.junit.Rule;
 import org.junit.Test;
-import org.junit.rules.TestRule;
 import org.junit.runner.RunWith;
 import org.mockito.Spy;
 
-import org.chromium.base.CommandLine;
 import org.chromium.base.MathUtils;
 import org.chromium.base.test.util.Batch;
 import org.chromium.base.test.util.CallbackHelper;
 import org.chromium.base.test.util.Criteria;
 import org.chromium.base.test.util.CriteriaHelper;
-import org.chromium.base.test.util.Features;
 import org.chromium.base.test.util.Features.DisableFeatures;
 import org.chromium.base.test.util.Features.EnableFeatures;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
@@ -66,12 +62,6 @@ import org.chromium.ui.test.util.BlankUiTestActivityTestCase;
 @RunWith(ChromeJUnit4ClassRunner.class)
 @Batch(Batch.PER_CLASS)
 public class TabListContainerViewBinderTest extends BlankUiTestActivityTestCase {
-    /**
-     * BlankUiTestActivityTestCase also needs {@link ChromeFeatureList}'s internal test-only feature
-     * map, not the {@link CommandLine} provided by {@link Features.InstrumentationProcessor}.
-     */
-    @Rule public TestRule mProcessor = new Features.JUnitProcessor();
-
     private static final int CONTAINER_HEIGHT = 56;
     private static final int INCREASED_CONTAINER_HEIGHT = 76;
     private PropertyModel mContainerModel;

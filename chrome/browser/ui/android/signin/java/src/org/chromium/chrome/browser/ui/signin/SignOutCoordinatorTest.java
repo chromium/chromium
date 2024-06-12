@@ -39,7 +39,6 @@ import org.mockito.quality.Strictness;
 import org.chromium.base.Callback;
 import org.chromium.base.test.BaseActivityTestRule;
 import org.chromium.base.test.util.Batch;
-import org.chromium.base.test.util.Features;
 import org.chromium.base.test.util.Features.DisableFeatures;
 import org.chromium.base.test.util.Features.EnableFeatures;
 import org.chromium.base.test.util.JniMocker;
@@ -82,8 +81,6 @@ public class SignOutCoordinatorTest {
     public final MockitoRule mMockitoRule = MockitoJUnit.rule().strictness(Strictness.STRICT_STUBS);
 
     @Rule public final JniMocker mocker = new JniMocker();
-
-    @Rule public final Features.JUnitProcessor mFeaturesRule = new Features.JUnitProcessor();
 
     @Mock private Profile mProfile;
     @Mock private FragmentManager mFragmentManager;

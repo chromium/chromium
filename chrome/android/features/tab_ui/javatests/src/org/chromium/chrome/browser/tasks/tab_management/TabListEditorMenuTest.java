@@ -28,7 +28,6 @@ import androidx.test.filters.MediumTest;
 
 import org.junit.Rule;
 import org.junit.Test;
-import org.junit.rules.TestRule;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
@@ -39,7 +38,6 @@ import org.chromium.base.test.params.ParameterizedRunner;
 import org.chromium.base.test.util.Batch;
 import org.chromium.base.test.util.CallbackHelper;
 import org.chromium.base.test.util.Feature;
-import org.chromium.base.test.util.Features;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tabmodel.TabModel;
 import org.chromium.chrome.browser.tasks.tab_groups.TabGroupModelFilter;
@@ -93,8 +91,6 @@ public class TabListEditorMenuTest extends BlankUiTestActivityTestCase {
                     .setRevision(5)
                     .setDescription("New selection icons")
                     .build();
-
-    @Rule public TestRule mProcessor = new Features.JUnitProcessor();
 
     static class FakeTabListEditorAction extends TabListEditorAction {
         private boolean mShouldEnableAction = true;

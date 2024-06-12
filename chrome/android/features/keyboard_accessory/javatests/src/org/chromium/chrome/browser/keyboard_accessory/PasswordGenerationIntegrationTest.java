@@ -21,14 +21,12 @@ import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
-import org.junit.rules.TestRule;
 import org.junit.runner.RunWith;
 
 import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.base.test.util.Criteria;
 import org.chromium.base.test.util.CriteriaHelper;
 import org.chromium.base.test.util.DoNotBatch;
-import org.chromium.base.test.util.Features;
 import org.chromium.base.test.util.IntegrationTest;
 import org.chromium.base.test.util.Matchers;
 import org.chromium.base.test.util.Restriction;
@@ -75,8 +73,6 @@ public class PasswordGenerationIntegrationTest {
     public static final int KEYBOARD_ACCESSORY_BAR_ITEM_COUNT = 3;
 
     @Rule public SyncTestRule mSyncTestRule = new SyncTestRule();
-
-    @Rule public TestRule mProcessor = new Features.JUnitProcessor();
 
     private static final String PASSWORD_NODE_ID = "password_field";
     private static final String PASSWORD_NODE_ID_MANUAL = "password_field_manual";

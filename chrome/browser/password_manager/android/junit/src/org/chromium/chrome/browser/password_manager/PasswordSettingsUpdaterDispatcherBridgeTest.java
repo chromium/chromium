@@ -14,9 +14,7 @@ import static org.chromium.base.ThreadUtils.setThreadAssertsDisabledForTesting;
 import android.accounts.Account;
 
 import org.junit.Before;
-import org.junit.Rule;
 import org.junit.Test;
-import org.junit.rules.TestRule;
 import org.junit.runner.RunWith;
 import org.mockito.ArgumentCaptor;
 import org.mockito.Mock;
@@ -26,7 +24,6 @@ import org.robolectric.annotation.Config;
 import org.chromium.base.Callback;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.base.test.util.Batch;
-import org.chromium.base.test.util.Features;
 import org.chromium.components.signin.AccountUtils;
 
 import java.util.Optional;
@@ -36,7 +33,6 @@ import java.util.Optional;
 @Config(manifest = Config.NONE)
 @Batch(Batch.PER_CLASS)
 public class PasswordSettingsUpdaterDispatcherBridgeTest {
-    @Rule public TestRule mProcessor = new Features.JUnitProcessor();
 
     private static final String sTestAccountEmail = "test@email.com";
     private static final Optional<Account> sTestAccount =

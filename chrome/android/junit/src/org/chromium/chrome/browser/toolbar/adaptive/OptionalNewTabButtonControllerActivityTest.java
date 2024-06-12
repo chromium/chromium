@@ -20,9 +20,7 @@ import androidx.test.filters.MediumTest;
 
 import org.junit.After;
 import org.junit.Before;
-import org.junit.Rule;
 import org.junit.Test;
-import org.junit.rules.TestRule;
 import org.junit.runner.RunWith;
 import org.mockito.Mockito;
 import org.robolectric.RuntimeEnvironment;
@@ -31,7 +29,6 @@ import org.robolectric.annotation.Implementation;
 import org.robolectric.annotation.Implements;
 
 import org.chromium.base.test.util.CommandLineFlags;
-import org.chromium.base.test.util.Features;
 import org.chromium.base.test.util.Features.EnableFeatures;
 import org.chromium.chrome.browser.ChromeRobolectricTestRunner;
 import org.chromium.chrome.browser.ChromeTabbedActivity;
@@ -70,7 +67,6 @@ import java.util.NoSuchElementException;
     "force-fieldtrial-params=FakeStudyName.Enabled:min_version_adaptive/0"
 })
 public class OptionalNewTabButtonControllerActivityTest {
-    @Rule public TestRule mProcessor = new Features.JUnitProcessor();
 
     /**
      * Shadow of {@link OptionalNewTabButtonController.Delegate}. Injects testing values into every

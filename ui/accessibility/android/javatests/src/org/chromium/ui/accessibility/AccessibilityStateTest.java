@@ -24,14 +24,11 @@ import androidx.test.filters.SmallTest;
 import org.junit.After;
 import org.junit.Assert;
 import org.junit.Before;
-import org.junit.Rule;
 import org.junit.Test;
-import org.junit.rules.TestRule;
 import org.junit.runner.RunWith;
 import org.robolectric.RuntimeEnvironment;
 
 import org.chromium.base.test.BaseRobolectricTestRunner;
-import org.chromium.base.test.util.Features;
 import org.chromium.base.test.util.Features.EnableFeatures;
 
 import java.lang.reflect.Constructor;
@@ -62,8 +59,6 @@ public class AccessibilityStateTest {
 
     private static final int MOCK_CAPABILITY_TYPE_MASK =
             AccessibilityServiceInfo.CAPABILITY_CAN_RETRIEVE_WINDOW_CONTENT;
-
-    @Rule public TestRule mProcessor = new Features.JUnitProcessor();
 
     private Context mContext;
 

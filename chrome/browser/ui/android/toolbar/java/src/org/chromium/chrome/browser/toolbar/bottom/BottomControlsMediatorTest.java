@@ -16,9 +16,7 @@ import static org.chromium.chrome.browser.toolbar.bottom.BottomControlsPropertie
 import android.app.Activity;
 
 import org.junit.Before;
-import org.junit.Rule;
 import org.junit.Test;
-import org.junit.rules.TestRule;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
@@ -29,7 +27,6 @@ import org.chromium.base.supplier.ObservableSupplier;
 import org.chromium.base.supplier.ObservableSupplierImpl;
 import org.chromium.base.supplier.Supplier;
 import org.chromium.base.test.BaseRobolectricTestRunner;
-import org.chromium.base.test.util.Features;
 import org.chromium.base.test.util.Features.DisableFeatures;
 import org.chromium.base.test.util.Features.EnableFeatures;
 import org.chromium.chrome.browser.browser_controls.BottomControlsStacker;
@@ -51,7 +48,6 @@ import org.chromium.ui.modelutil.PropertyModel;
 @Config(manifest = Config.NONE)
 @DisableFeatures({ChromeFeatureList.TOTALLY_EDGE_TO_EDGE})
 public class BottomControlsMediatorTest {
-    @Rule public TestRule mProcessor = new Features.JUnitProcessor();
 
     private static final int DEFAULT_HEIGHT = 80;
     private static final int DEFAULT_INSET = 56;

@@ -13,14 +13,11 @@ import androidx.test.filters.SmallTest;
 
 import org.junit.Assert;
 import org.junit.Before;
-import org.junit.Rule;
 import org.junit.Test;
-import org.junit.rules.TestRule;
 import org.junit.runner.RunWith;
 import org.robolectric.Robolectric;
 
 import org.chromium.base.test.BaseRobolectricTestRunner;
-import org.chromium.base.test.util.Features;
 import org.chromium.base.test.util.Features.EnableFeatures;
 import org.chromium.chrome.R;
 import org.chromium.components.omnibox.AnswerDataProto.AnswerData;
@@ -35,7 +32,6 @@ import org.chromium.components.omnibox.RichAnswerTemplateProto.RichAnswerTemplat
 /** Tests for {@link RichAnswerText}. */
 @RunWith(BaseRobolectricTestRunner.class)
 public class RichAnswerTextTest {
-    @Rule public TestRule mFeaturesProcessorRule = new Features.JUnitProcessor();
     private Context mContext;
     private TextAppearanceSpan mGreenText;
     private TextAppearanceSpan mRedText;

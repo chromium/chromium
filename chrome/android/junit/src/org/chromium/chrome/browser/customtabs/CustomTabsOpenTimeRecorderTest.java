@@ -12,9 +12,7 @@ import android.content.Context;
 import android.text.TextUtils;
 
 import org.junit.Before;
-import org.junit.Rule;
 import org.junit.Test;
-import org.junit.rules.TestRule;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
@@ -22,7 +20,6 @@ import org.mockito.MockitoAnnotations;
 import org.chromium.base.ContextUtils;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.base.test.util.Batch;
-import org.chromium.base.test.util.Features;
 import org.chromium.chrome.browser.browserservices.intents.BrowserServicesIntentDataProvider;
 import org.chromium.chrome.browser.customtabs.content.CustomTabActivityNavigationController;
 import org.chromium.chrome.browser.lifecycle.ActivityLifecycleDispatcher;
@@ -34,8 +31,6 @@ import java.util.function.BooleanSupplier;
 @Batch(Batch.UNIT_TESTS)
 public class CustomTabsOpenTimeRecorderTest {
     private static final String CHROME_PACKAGE_NAME = "chrome.package.name";
-
-    @Rule public TestRule mProcessor = new Features.JUnitProcessor();
 
     @Mock private Context mAppContext;
     @Mock private ActivityLifecycleDispatcher mLifecycleDispatcher;

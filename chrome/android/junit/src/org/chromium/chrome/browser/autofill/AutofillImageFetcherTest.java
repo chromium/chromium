@@ -14,9 +14,7 @@ import androidx.test.filters.SmallTest;
 
 import org.junit.After;
 import org.junit.Before;
-import org.junit.Rule;
 import org.junit.Test;
-import org.junit.rules.TestRule;
 import org.junit.runner.RunWith;
 
 import org.chromium.base.ContextUtils;
@@ -37,8 +35,6 @@ import java.util.Map;
 public class AutofillImageFetcherTest {
     private static final Bitmap TEST_CARD_ART_IMAGE =
             Bitmap.createBitmap(100, 200, Bitmap.Config.ARGB_8888);
-
-    @Rule public TestRule mProcessor = new Features.JUnitProcessor();
 
     private AutofillImageFetcher mImageFetcher;
 
