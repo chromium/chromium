@@ -1026,18 +1026,6 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="Android.DeviceSize.LargestDisplaySize2" units="dp"
-    expires_after="2024-12-08">
-  <owner>twellington@chromium.org</owner>
-  <owner>shuyng@google.com</owner>
-  <owner>clank-app-team@google.com</owner>
-  <summary>
-    Records the largest display dimension in dp during deferred startup. The
-    display size is not affected by Android N multi-window mode. Clamped at
-    200dp to 2000dp. 20dp granularity.
-  </summary>
-</histogram>
-
 <histogram name="Android.DeviceSize.ScreenSizeInTensOfInches"
     units="10x inches" expires_after="2024-12-08">
   <owner>twellington@chromium.org</owner>
@@ -1047,18 +1035,6 @@ chromium-metrics-reviews@google.com.
     Records the primary display (screen) size in tens of inches with 0.2 inches
     (2 units) granularity, during deferred startup. The re-enabled size is not
     affected by Android N multi-window mode.
-  </summary>
-</histogram>
-
-<histogram name="Android.DeviceSize.SmallestDisplaySize2" units="dp"
-    expires_after="2024-07-21">
-  <owner>twellington@chromium.org</owner>
-  <owner>shuyng@google.com</owner>
-  <owner>clank-app-team@google.com</owner>
-  <summary>
-    Records the smallest display dimension in dp during deferred startup. The
-    display size is not affected by Android N multi-window mode. Clamped at 100
-    to 1000dp. 10dp granularity.
   </summary>
 </histogram>
 

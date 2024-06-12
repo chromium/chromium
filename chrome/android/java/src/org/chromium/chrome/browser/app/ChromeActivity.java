@@ -2801,19 +2801,6 @@ public abstract class ChromeActivity<C extends ChromeActivityComponent>
 
     /** Records histograms related to display dimensions. */
     private void recordDisplayDimensions() {
-        DisplayAndroid display = DisplayAndroid.getNonMultiDisplay(this);
-        int displayWidth = DisplayUtil.pxToDp(display, display.getDisplayWidth());
-        int displayHeight = DisplayUtil.pxToDp(display, display.getDisplayHeight());
-        int smallestDisplaySize = Math.min(displayWidth, displayHeight);
-        int largestDisplaySize = Math.max(displayWidth, displayHeight);
-
-        // 10dp granularity.
-        RecordHistogram.recordLinearCountHistogram(
-                "Android.DeviceSize.SmallestDisplaySize2", smallestDisplaySize, 100, 1000, 92);
-        // 20dp granularity.
-        RecordHistogram.recordLinearCountHistogram(
-                "Android.DeviceSize.LargestDisplaySize2", largestDisplaySize, 200, 2000, 92);
-
         double screenSizeInches = mRootUiCoordinator.getPrimaryDisplaySizeInInches();
         // A sample value 10 times the screen size in inches will be used to support a granularity
         // of 0.2" (or 2 units of the recorded value) for devices ranging from 4" to 15" (inclusive)
