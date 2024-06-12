@@ -37,6 +37,7 @@ schema:
   enum:
   - 0
   - 2
+  - 1
   type: integer
 supported_on:
 - chrome.*:125-
