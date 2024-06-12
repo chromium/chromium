@@ -21,7 +21,7 @@ class EncoderStateObserverImpl::EncoderState {
  public:
   struct CodecConfig {
     webrtc::VideoCodec codec;
-    WTF::Vector<bool> active_spatial_layers;
+    Vector<bool> active_spatial_layers;
   };
   struct EncodeStart {
     // RTIP timestamp that is the unique identifier for the frame to be encoded.
@@ -38,7 +38,7 @@ class EncoderStateObserverImpl::EncoderState {
   bool FirstFrameEncodeCalled() const { return first_frame_encode_called_; }
   void MarkFirstFrameEncodeCalled() { first_frame_encode_called_ = true; }
 
-  void SetActiveSpatialLayers(const WTF::Vector<bool>& active_spatial_layers) {
+  void SetActiveSpatialLayers(const Vector<bool>& active_spatial_layers) {
     codec_config_.active_spatial_layers = active_spatial_layers;
   }
 
@@ -142,7 +142,7 @@ void EncoderStateObserverImpl::OnEncoderCreated(
 
   // Initially, assume all layers active.
   // TODO(hiroh): Set the number of layers to the currently configured layers?
-  WTF::Vector<bool> active_spatial_layers(webrtc::kMaxSpatialLayers, true);
+  Vector<bool> active_spatial_layers(webrtc::kMaxSpatialLayers, true);
 
   CHECK(encoder_state_by_id_
             .insert_or_assign(
@@ -175,7 +175,7 @@ void EncoderStateObserverImpl::OnEncoderDestroyed(int encoder_id) {
 
 void EncoderStateObserverImpl::OnRatesUpdated(
     int encoder_id,
-    const WTF::Vector<bool>& active_spatial_layers) {
+    const Vector<bool>& active_spatial_layers) {
   EncoderState* encoder_state = GetEncoderState(encoder_id);
   if (!encoder_state) {
     return;

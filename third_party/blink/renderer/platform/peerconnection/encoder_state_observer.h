@@ -28,9 +28,8 @@ class PLATFORM_EXPORT EncoderStateObserver {
   virtual void OnEncoderDestroyed(int encoder_id) = 0;
   // The active spatial layers on the encoder with |encoder_id| is updated to
   // |active_spatial_layers|.
-  virtual void OnRatesUpdated(
-      int encoder_id,
-      const WTF::Vector<bool>& active_spatial_layers) = 0;
+  virtual void OnRatesUpdated(int encoder_id,
+                              const Vector<bool>& active_spatial_layers) = 0;
   // Encode() of the encoder with |encoder_id| is about to be performed for
   // the frame whose timestamp is |rtp_timestamp|.
   virtual void OnEncode(int encoder_id, uint32_t rtp_timestamp) = 0;

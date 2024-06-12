@@ -40,7 +40,7 @@ class PLATFORM_EXPORT EncoderStateObserverImpl : public EncoderStateObserver,
                         const webrtc::VideoCodec& config) override;
   void OnEncoderDestroyed(int encoder_id) override;
   void OnRatesUpdated(int encoder_id,
-                      const WTF::Vector<bool>& active_spatial_layers) override;
+                      const Vector<bool>& active_spatial_layers) override;
   void OnEncode(int encoder_id, uint32_t rtp_timestamp) override;
   void OnEncodedFrame(int encoder_id,
                       const webrtc::EncodedImage& frame,

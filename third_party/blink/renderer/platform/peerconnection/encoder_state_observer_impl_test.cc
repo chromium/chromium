@@ -198,7 +198,7 @@ webrtc::EncodedImage CreateEncodedImage(bool keyframe,
 }
 
 std::tuple<size_t, size_t, size_t> GetActiveIndexInfo(
-    const WTF::Vector<bool>& active_layers) {
+    const Vector<bool>& active_layers) {
   size_t num_active_layers = 0;
   int bottom_sid = -1;
   int top_sid = -1;
@@ -647,14 +647,14 @@ TEST_F(EncoderStateObserverImplTest,
   CreateObserver(media::VP9PROFILE_PROFILE0);
   observer_->OnEncoderCreated(kEncoderId, vp9);
 
-  const WTF::Vector<bool> active_layers_queries[] = {
+  const Vector<bool> active_layers_queries[] = {
       {true, false, false},  {false, false, true}, {false, true, true},
       {true, false, true},   {true, true, false},  {false, true, true},
       {false, false, false}, {true, true, true}};
   int rtp_timestamp = 100;
   size_t expected_processing_stats_size = 0;
-  for (const WTF::Vector<bool>& active_layers : active_layers_queries) {
-    observer_->OnRatesUpdated(kEncoderId, WTF::Vector<bool>(active_layers));
+  for (const Vector<bool>& active_layers : active_layers_queries) {
+    observer_->OnRatesUpdated(kEncoderId, Vector<bool>(active_layers));
     auto [num_active_layers, bottom_sid, top_sid] =
         GetActiveIndexInfo(active_layers);
     if (num_active_layers == 0) {
