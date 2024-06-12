@@ -21,6 +21,7 @@
 #include "base/numerics/safe_conversions.h"
 #include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversions.h"
+#include "base/time/time.h"
 #include "base/values.h"
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
@@ -540,9 +541,17 @@ void PrintPreviewUI::NotifyUIPreviewDocumentReady(
     base::TimeDelta display_time =
         base::TimeTicks::Now() - initial_preview_start_time_;
     base::UmaHistogramTimes("PrintPreview.InitialDisplayTime", display_time);
+    base::UmaHistogramCustomTimes("PrintPreview.InitialDisplayTime.LongTimes",
+                                  display_time,
+                                  /*min=*/base::Seconds(10),
+                                  /*max=*/base::Seconds(60), /*buckets=*/50);
     if (first_print_usage_since_startup_) {
       base::UmaHistogramTimes("PrintPreview.InitialDisplayTimeFirstPrint",
                               display_time);
+      base::UmaHistogramCustomTimes(
+          "PrintPreview.InitialDisplayTimeFirstPrint.LongTimes", display_time,
+          /*min=*/base::Seconds(10), /*max=*/base::Seconds(60),
+          /*buckets=*/50);
     }
     initial_preview_start_time_ = base::TimeTicks();
   }
