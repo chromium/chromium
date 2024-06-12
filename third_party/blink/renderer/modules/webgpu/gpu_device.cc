@@ -297,7 +297,6 @@ void GPUDevice::OnUncapturedError(WGPUErrorType cErrorType,
   DCHECK_NE(errorType, wgpu::ErrorType::NoError);
   DCHECK_NE(errorType, wgpu::ErrorType::DeviceLost);
   LOG(ERROR) << "GPUDevice: " << message;
-  AddConsoleWarning(message);
 
   GPUUncapturedErrorEventInit* init = GPUUncapturedErrorEventInit::Create();
   if (errorType == wgpu::ErrorType::Validation) {
@@ -312,8 +311,13 @@ void GPUDevice::OnUncapturedError(WGPUErrorType cErrorType,
   } else {
     return;
   }
-  DispatchEvent(*GPUUncapturedErrorEvent::Create(
-      event_type_names::kUncapturederror, init));
+
+  GPUUncapturedErrorEvent* event =
+      GPUUncapturedErrorEvent::Create(event_type_names::kUncapturederror, init);
+  DispatchEvent(*event);
+  if (!event->defaultPrevented()) {
+    AddConsoleWarning(message);
+  }
 }
 
 void GPUDevice::OnLogging(WGPULoggingType cLoggingType, const char* message) {
