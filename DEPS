@@ -1869,7 +1869,7 @@ deps = {
       'dep_type': 'cipd',
   },
 
-  'src/third_party/google-java-format': {
+  'src/third_party/google-java-format/cipd': {
       'packages': [
           {
               'package': 'chromium/third_party/google-java-format',
