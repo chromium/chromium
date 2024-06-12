@@ -4,7 +4,6 @@
 
 #include "chrome/browser/ui/qrcode_generator/qrcode_generator_bubble_controller.h"
 
-#include "chrome/browser/sharing/features.h"
 #include "chrome/browser/sharing_hub/sharing_hub_features.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_finder.h"
@@ -12,6 +11,7 @@
 #include "chrome/browser/ui/qrcode_generator/qrcode_generator_bubble_view.h"
 #include "chrome/browser/ui/sharing_hub/sharing_hub_bubble_controller.h"
 #include "chrome/grit/generated_resources.h"
+#include "components/sharing_message/features.h"
 #include "content/public/browser/web_contents.h"
 #include "url/gurl.h"
 

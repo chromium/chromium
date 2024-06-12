@@ -5,8 +5,8 @@
 #include "chrome/browser/sharing/vapid_key_manager.h"
 
 #include "base/feature_list.h"
-#include "chrome/browser/sharing/features.h"
 #include "chrome/browser/sharing/sharing_sync_preference.h"
+#include "components/sharing_message/features.h"
 #include "components/sync/service/sync_service.h"
 #include "crypto/ec_private_key.h"
 

@@ -6,9 +6,9 @@
 
 #include "base/test/scoped_feature_list.h"
 #include "chrome/browser/sharing/fake_device_info.h"
-#include "chrome/browser/sharing/features.h"
 #include "chrome/browser/sharing/proto/sharing_message.pb.h"
 #include "chrome/browser/sharing/sharing_constants.h"
+#include "components/sharing_message/features.h"
 #include "components/sync/protocol/device_info_specifics.pb.h"
 #include "components/sync/protocol/sync_enums.pb.h"
 #include "components/sync/test/test_sync_service.h"

@@ -653,6 +653,7 @@ static_library("ui") {
     "//components/segmentation_platform/public",
     "//components/send_tab_to_self",
     "//components/sessions",
+    "//components/sharing_message",
     "//components/signin/core/browser",
     "//components/signin/public/base:signin_buildflags",
     "//components/signin/public/identity_manager",

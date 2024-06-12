@@ -6,6 +6,7 @@
 
 #import "base/feature_list.h"
 #import "components/page_content_annotations/core/page_content_annotations_features.h"
+#import "components/send_tab_to_self/features.h"
 #import "ios/chrome/browser/affiliations/model/ios_chrome_affiliation_service_factory.h"
 #import "ios/chrome/browser/autocomplete/model/autocomplete_classifier_factory.h"
 #import "ios/chrome/browser/autocomplete/model/autocomplete_provider_client_impl.h"
@@ -114,6 +115,7 @@
 #import "ios/chrome/browser/share_extension/model/share_extension_service_factory.h"
 #import "ios/chrome/browser/shared/model/browser/browser_list_factory.h"
 #import "ios/chrome/browser/shared/public/features/features.h"
+#import "ios/chrome/browser/sharing_message/model/ios_sharing_message_bridge_factory.h"
 #import "ios/chrome/browser/signin/model/about_signin_internals_factory.h"
 #import "ios/chrome/browser/signin/model/account_consistency_service_factory.h"
 #import "ios/chrome/browser/signin/model/account_reconcilor_factory.h"
@@ -320,6 +322,11 @@ void EnsureBrowserStateKeyedServiceFactoriesBuilt() {
   if (page_content_annotations::features::
           ShouldEnablePageContentAnnotations()) {
     PageContentAnnotationsServiceFactory::GetInstance();
+  }
+
+  if (base::FeatureList::IsEnabled(
+          send_tab_to_self::kSendTabToSelfIOSPushNotifications)) {
+    IOSSharingMessageBridgeFactory::GetInstance();
   }
 
 #if BUILDFLAG(IOS_CREDENTIAL_PROVIDER_ENABLED)

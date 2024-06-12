@@ -1,0 +1,52 @@
+// Copyright 2024 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+#import "ios/chrome/browser/sharing_message/model/ios_sharing_message_bridge_factory.h"
+
+#import "components/keyed_service/ios/browser_state_dependency_manager.h"
+#import "components/sharing_message/sharing_message_bridge_impl.h"
+#import "components/sync/base/report_unrecoverable_error.h"
+#import "components/sync/model/client_tag_based_model_type_processor.h"
+#import "ios/chrome/browser/shared/model/browser_state/chrome_browser_state.h"
+#import "ios/chrome/common/channel_info.h"
+
+// static
+SharingMessageBridge* IOSSharingMessageBridgeFactory::GetForBrowserState(
+    ChromeBrowserState* browser_state) {
+  CHECK(!browser_state->IsOffTheRecord());
+  return static_cast<SharingMessageBridge*>(
+      GetInstance()->GetServiceForBrowserState(browser_state, true));
+}
+
+// static
+SharingMessageBridge*
+IOSSharingMessageBridgeFactory::GetForBrowserStateIfExists(
+    ChromeBrowserState* browser_state) {
+  return static_cast<SharingMessageBridge*>(
+      GetInstance()->GetServiceForBrowserState(browser_state, false));
+}
+
+// static
+IOSSharingMessageBridgeFactory* IOSSharingMessageBridgeFactory::GetInstance() {
+  static base::NoDestructor<IOSSharingMessageBridgeFactory> instance;
+  return instance.get();
+}
+
+IOSSharingMessageBridgeFactory::IOSSharingMessageBridgeFactory()
+    : BrowserStateKeyedServiceFactory(
+          "SharingMessageBridge",
+          BrowserStateDependencyManager::GetInstance()) {}
+
+IOSSharingMessageBridgeFactory::~IOSSharingMessageBridgeFactory() {}
+
+std::unique_ptr<KeyedService>
+IOSSharingMessageBridgeFactory::BuildServiceInstanceFor(
+    web::BrowserState* context) const {
+  auto change_processor =
+      std::make_unique<syncer::ClientTagBasedModelTypeProcessor>(
+          syncer::SHARING_MESSAGE,
+          base::BindRepeating(&syncer::ReportUnrecoverableError, GetChannel()));
+  return std::make_unique<SharingMessageBridgeImpl>(
+      std::move(change_processor));
+}

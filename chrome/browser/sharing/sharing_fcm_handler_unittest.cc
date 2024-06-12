@@ -8,7 +8,6 @@
 
 #include "chrome/browser/sharing/fake_device_info.h"
 #include "chrome/browser/sharing/fake_sharing_handler_registry.h"
-#include "chrome/browser/sharing/features.h"
 #include "chrome/browser/sharing/mock_sharing_message_handler.h"
 #include "chrome/browser/sharing/proto/sharing_message.pb.h"
 #include "chrome/browser/sharing/sharing_constants.h"
@@ -16,6 +15,7 @@
 #include "chrome/browser/sharing/sharing_fcm_sender.h"
 #include "chrome/browser/sharing/sharing_handler_registry.h"
 #include "components/gcm_driver/fake_gcm_driver.h"
+#include "components/sharing_message/features.h"
 #include "components/sync/protocol/device_info_specifics.pb.h"
 #include "components/sync_device_info/device_info.h"
 #include "components/sync_device_info/fake_device_info_sync_service.h"

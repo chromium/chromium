@@ -6573,7 +6573,6 @@ test("unit_tests") {
     "../browser/sharing/sharing_fcm_handler_unittest.cc",
     "../browser/sharing/sharing_fcm_sender_unittest.cc",
     "../browser/sharing/sharing_handler_registry_impl_unittest.cc",
-    "../browser/sharing/sharing_message_bridge_impl_unittest.cc",
     "../browser/sharing/sharing_message_sender_unittest.cc",
     "../browser/sharing/sharing_service_unittest.cc",
     "../browser/sharing/sharing_sync_preference_unittest.cc",

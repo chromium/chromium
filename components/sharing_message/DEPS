@@ -1,0 +1,5 @@
+include_rules = [
+  "+components/sync",
+  "+components/keyed_service/core",
+  "+net/base",
+]

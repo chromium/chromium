@@ -9,7 +9,6 @@
 #include "base/strings/strcat.h"
 #include "base/time/time.h"
 #include "base/trace_event/trace_event.h"
-#include "chrome/browser/sharing/features.h"
 #include "chrome/browser/sharing/sharing_constants.h"
 #include "chrome/browser/sharing/sharing_fcm_sender.h"
 #include "chrome/browser/sharing/sharing_handler_registry.h"
@@ -18,6 +17,7 @@
 #include "chrome/browser/sharing/sharing_service_factory.h"
 #include "chrome/browser/sharing/sharing_utils.h"
 #include "components/gcm_driver/gcm_driver.h"
+#include "components/sharing_message/features.h"
 #include "components/sync_device_info/device_info_tracker.h"
 #include "third_party/re2/src/re2/re2.h"
 

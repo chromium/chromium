@@ -1,0 +1,32 @@
+# Copyright 2024 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+source_set("model") {
+  sources = [
+    "ios_sharing_message_bridge_factory.h",
+    "ios_sharing_message_bridge_factory.mm",
+  ]
+  deps = [
+    "//base",
+    "//components/keyed_service/ios",
+    "//components/sharing_message",
+    "//components/sync/base",
+    "//components/sync/model",
+    "//ios/chrome/browser/shared/model/browser_state",
+    "//ios/chrome/common",
+  ]
+}
+
+source_set("unit_tests") {
+  testonly = true
+  sources = [ "ios_sharing_message_bridge_factory_unittest.mm" ]
+  deps = [
+    ":model",
+    "//base/test:test_support",
+    "//components/sharing_message",
+    "//ios/chrome/browser/shared/model/browser_state:test_support",
+    "//ios/web/public/test",
+    "//testing/gtest",
+  ]
+}

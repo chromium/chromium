@@ -333,6 +333,7 @@ include_rules = [
   "+components/session_manager",
   "+components/sessions/content",
   "+components/sessions/core",
+  "+components/sharing_message",
   "+components/signin/core/browser",
   "+components/signin/public",
   "+components/site_engagement",

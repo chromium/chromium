@@ -5,6 +5,7 @@
 #include "chrome/browser/sharing/sharing_device_registration.h"
 
 #include <stdint.h>
+
 #include <map>
 #include <memory>
 #include <string>
@@ -14,7 +15,6 @@
 #include "base/test/bind.h"
 #include "base/test/task_environment.h"
 #include "build/build_config.h"
-#include "chrome/browser/sharing/features.h"
 #include "chrome/browser/sharing/sharing_constants.h"
 #include "chrome/browser/sharing/sharing_device_registration_result.h"
 #include "chrome/browser/sharing/sharing_sync_preference.h"
@@ -23,6 +23,7 @@
 #include "components/gcm_driver/instance_id/instance_id_driver.h"
 #include "components/prefs/pref_registry.h"
 #include "components/prefs/pref_service_factory.h"
+#include "components/sharing_message/features.h"
 #include "components/sync/test/test_sync_service.h"
 #include "components/sync_device_info/device_info.h"
 #include "components/sync_device_info/fake_device_info_sync_service.h"

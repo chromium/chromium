@@ -4,8 +4,8 @@
 
 #include "chrome/browser/sharing/vapid_key_manager.h"
 
-#include "chrome/browser/sharing/features.h"
 #include "chrome/browser/sharing/sharing_sync_preference.h"
+#include "components/sharing_message/features.h"
 #include "components/sync/test/test_sync_service.h"
 #include "components/sync_device_info/fake_device_info_sync_service.h"
 #include "components/sync_preferences/testing_pref_service_syncable.h"

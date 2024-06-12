@@ -57,6 +57,7 @@ source_set("sync") {
     "//components/keyed_service/core",
     "//components/prefs",
     "//components/sessions:session_id",
+    "//components/sharing_message",
     "//components/sync/model",
     "//components/sync/service",
     "//components/sync_device_info",

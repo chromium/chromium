@@ -2,13 +2,13 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CHROME_BROWSER_SHARING_SHARING_MESSAGE_BRIDGE_IMPL_H_
-#define CHROME_BROWSER_SHARING_SHARING_MESSAGE_BRIDGE_IMPL_H_
+#ifndef COMPONENTS_SHARING_MESSAGE_SHARING_MESSAGE_BRIDGE_IMPL_H_
+#define COMPONENTS_SHARING_MESSAGE_SHARING_MESSAGE_BRIDGE_IMPL_H_
 
 #include <memory>
 
 #include "base/timer/timer.h"
-#include "chrome/browser/sharing/sharing_message_bridge.h"
+#include "components/sharing_message/sharing_message_bridge.h"
 #include "components/sync/model/model_type_change_processor.h"
 #include "components/sync/model/model_type_sync_bridge.h"
 
@@ -109,4 +109,4 @@ class SharingMessageBridgeImpl : public SharingMessageBridge,
   std::map<syncer::ClientTagHash, PendingCommit> pending_commits_;
 };
 
-#endif  // CHROME_BROWSER_SHARING_SHARING_MESSAGE_BRIDGE_IMPL_H_
+#endif  // COMPONENTS_SHARING_MESSAGE_SHARING_MESSAGE_BRIDGE_IMPL_H_

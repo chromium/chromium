@@ -1,0 +1,35 @@
+# Copyright 2024 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+source_set("sharing_message") {
+  sources = [
+    "features.cc",
+    "features.h",
+    "sharing_message_bridge.h",
+    "sharing_message_bridge_impl.cc",
+    "sharing_message_bridge_impl.h",
+  ]
+  deps = [
+    "//base",
+    "//components/keyed_service/core",
+    "//components/sync/model",
+    "//components/sync/protocol",
+    "//net",
+  ]
+}
+
+source_set("unit_tests") {
+  testonly = true
+  sources = [ "sharing_message_bridge_impl_unittest.cc" ]
+  deps = [
+    ":sharing_message",
+    "//base",
+    "//base/test:test_support",
+    "//components/sync:test_support",
+    "//components/sync/model",
+    "//net",
+    "//testing/gmock",
+    "//testing/gtest",
+  ]
+}
