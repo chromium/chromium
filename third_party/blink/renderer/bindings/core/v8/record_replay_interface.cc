@@ -100,6 +100,7 @@ extern "C" void V8RecordReplayRegisterBrowserEventCallback(
   void (*callback)(const char* name, const char* payload)
 );
 extern "C" bool V8RecordReplayCurrentReturnValue(v8::Local<v8::Value>* object);
+extern "C" uint64_t* V8RecordReplayGetProgressCounter();
 
 static const char REPLAY_CDT_PAUSE_OBJECT_GROUP[] =
     "REPLAY_CDT_PAUSE_OBJECT_GROUP";
@@ -1233,6 +1234,12 @@ static void fromJsGetPersistentId(const v8::FunctionCallbackInfo<v8::Value>& arg
     persistentId = GetPersistentId(args[0].As<v8::Object>());
   }
   args.GetReturnValue().Set(v8::Number::New(isolate, persistentId));
+}
+
+static void fromJsGetProgressCounter(const v8::FunctionCallbackInfo<v8::Value>& args) {
+  v8::Isolate* isolate = args.GetIsolate();
+  uint64_t progress = *V8RecordReplayGetProgressCounter();
+  args.GetReturnValue().Set(v8::Number::New(isolate, progress));
 }
 
 static void fromJsCheckPersistentId(const v8::FunctionCallbackInfo<v8::Value>& args) {
@@ -2669,6 +2676,7 @@ static void InitializeRecordReplayApiObjects(v8::Isolate* isolate, LocalFrame* l
                       GetRecordingFilePath);
   SetFunctionProperty(isolate, args, "getPersistentId", fromJsGetPersistentId);
   SetFunctionProperty(isolate, args, "checkPersistentId", fromJsCheckPersistentId);
+  SetFunctionProperty(isolate, args, "getProgressCounter", fromJsGetProgressCounter);
 
   // exported for tests
   SetFunctionProperty(
