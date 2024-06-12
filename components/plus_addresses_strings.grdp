@@ -110,7 +110,7 @@
 
     <!-- Settings strings -->
     <message name="IDS_PLUS_ADDRESS_SETTINGS_LABEL" desc="A button in settings for management of experimental enterprise plus addresses" translateable="false">
-      Lorem Ipsum
+      Plus Address
     </message>
 
     <!-- Suggestion strings -->
