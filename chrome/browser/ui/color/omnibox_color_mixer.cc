@@ -60,8 +60,9 @@ void ApplyCR2023OmniboxIconColors(ui::ColorMixer& mixer,
                                   const ui::ColorProviderKey& key) {
   mixer[kColorPageActionIconHover] = {ui::kColorSysStateHoverOnSubtle};
   mixer[kColorPageInfoBackground] = {ui::kColorSysBaseContainerElevated};
-  mixer[kColorPageInfoLensOverlayBackground] = {ui::kColorSysTonalContainer};
-  mixer[kColorPageInfoLensOverlayForeground] = {ui::kColorSysOnTonalContainer};
+  mixer[kColorPageInfoBackgroundTonal] = {ui::kColorSysTonalContainer};
+  mixer[kColorPageInfoForeground] = {ui::kColorSysOnSurface};
+  mixer[kColorPageInfoForegroundTonal] = {ui::kColorSysOnTonalContainer};
   mixer[kColorPageInfoIconHover] = {ui::kColorSysStateHoverDimBlendProtection};
   mixer[kColorPageInfoIconPressed] = {ui::kColorSysStateRippleNeutralOnSubtle};
   mixer[kColorPageActionIcon] = {ui::kColorSysOnSurfaceSubtle};
@@ -385,14 +386,14 @@ void AddOmniboxColorMixer(ui::ColorProvider* provider,
   mixer[kColorOmniboxAnswerIconGM3Background] = {ui::kColorSysTonalContainer};
   mixer[kColorOmniboxAnswerIconGM3Foreground] = {ui::kColorSysOnTonalContainer};
 
-  // location bar icon colors.
+  // Location bar icon colors for opaque page info elements. There is no
+  // distinction between regular and tonal page info backgrounds or foregrounds
+  // for CWS themes.
   mixer[kColorPageInfoBackground] = {kColorToolbar};
-  mixer[kColorPageInfoBackgroundTonal] = {ui::kColorSysTonalContainer};
-  // TODO(crbug.com/345521958): Remove these and fix the PageInfoBackground
-  // colors above. The definitions in this section need to handle CWS custom
-  // themes and the GM3 definitions above.
-  mixer[kColorPageInfoLensOverlayBackground] = {kColorToolbar};
-  mixer[kColorPageInfoLensOverlayForeground] = {kColorOmniboxText};
+  mixer[kColorPageInfoBackgroundTonal] = {kColorPageInfoBackground};
+  mixer[kColorPageInfoForeground] = {
+      ui::GetColorWithMaxContrast(kColorToolbar)};
+  mixer[kColorPageInfoForegroundTonal] = {kColorPageInfoForeground};
   // Literal constants are `kOmniboxOpacityHovered` and
   // `kOmniboxOpacitySelected`. This is so that we can more cleanly use the
   // colors in the inkdrop instead of handling themes and non-themes separately

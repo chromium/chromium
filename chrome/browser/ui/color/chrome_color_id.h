@@ -351,10 +351,10 @@
   E_CPONLY(kColorPageInfoBackgroundTonal) \
   E_CPONLY(kColorPageInfoChosenObjectDeleteButtonIcon) \
   E_CPONLY(kColorPageInfoChosenObjectDeleteButtonIconDisabled) \
+  E_CPONLY(kColorPageInfoForeground) \
+  E_CPONLY(kColorPageInfoForegroundTonal) \
   E_CPONLY(kColorPageInfoIconHover) \
   E_CPONLY(kColorPageInfoIconPressed) \
-  E_CPONLY(kColorPageInfoLensOverlayBackground) \
-  E_CPONLY(kColorPageInfoLensOverlayForeground) \
   E_CPONLY(kColorPageInfoPermissionBlockedOnSystemLevelDisabled) \
   E_CPONLY(kColorPageInfoPermissionForeground) \
   E_CPONLY(kColorPageInfoPermissionUsedIcon) \

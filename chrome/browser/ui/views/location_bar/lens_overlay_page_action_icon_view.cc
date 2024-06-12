@@ -62,10 +62,7 @@ LensOverlayPageActionIconView::LensOverlayPageActionIconView(
   SetProperty(views::kElementIdentifierKey,
               kLensOverlayPageActionIconElementId);
   SetLabel(l10n_util::GetStringUTF16(IDS_CONTENT_CONTEXT_LENS_OVERLAY));
-  // TODO(crbug.com/345521958): Remove these and return to requesting default
-  // expanded tonal colors once page action icon colors have been fixed.
-  SetCustomBackgroundColorId(kColorPageInfoLensOverlayBackground);
-  SetCustomForegroundColorId(kColorPageInfoLensOverlayForeground);
+  SetUseTonalColorsWhenExpanded(true);
   SetPaintLabelOverSolidBackground(true);
 }
 

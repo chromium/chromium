@@ -155,8 +155,11 @@ class IconLabelBubbleViewTest : public IconLabelBubbleViewTestBase {
     view_ = widget_->SetContentsView(
         std::make_unique<TestIconLabelBubbleView>(font_list, this));
     view_->SetBoundsRect(gfx::Rect(0, 0, 24, 24));
-
     widget_->Show();
+
+    // Attach the test inkdrop to avoid interference with the built-in inkdrop.
+    InkDropHostTestApi(views::InkDrop::Get(view_))
+        .SetInkDrop(std::make_unique<TestInkDrop>());
 
     generator_->MoveMouseTo(view_->GetBoundsInScreen().CenterPoint());
   }
@@ -177,17 +180,13 @@ class IconLabelBubbleViewTest : public IconLabelBubbleViewTestBase {
     view_->SetLabelVisible(false);
   }
 
-  TestInkDrop* ink_drop() { return ink_drop_; }
+  TestInkDrop* GetInkDrop() {
+    return static_cast<TestInkDrop*>(views::InkDrop::Get(view_)->GetInkDrop());
+  }
 
   TestIconLabelBubbleView* view() { return view_; }
 
   ui::test::EventGenerator* generator() { return generator_.get(); }
-
-  void AttachInkDrop() {
-    ink_drop_ = new TestInkDrop();
-    InkDropHostTestApi(views::InkDrop::Get(view_))
-        .SetInkDrop(base::WrapUnique(ink_drop_.get()));
-  }
 
  private:
   void Reset(bool icon_visible) {
@@ -323,27 +322,26 @@ TEST_F(IconLabelBubbleViewTest, SecondClick) {
 }
 
 TEST_F(IconLabelBubbleViewTest, MouseInkDropState) {
-  AttachInkDrop();
   generator()->PressLeftButton();
   EXPECT_EQ(views::InkDropState::ACTION_PENDING,
-            ink_drop()->GetTargetInkDropState());
+            GetInkDrop()->GetTargetInkDropState());
   generator()->ReleaseLeftButton();
   EXPECT_EQ(views::InkDropState::ACTIVATED,
-            ink_drop()->GetTargetInkDropState());
+            GetInkDrop()->GetTargetInkDropState());
   view()->HideBubble();
-  EXPECT_EQ(views::InkDropState::HIDDEN, ink_drop()->GetTargetInkDropState());
+  EXPECT_EQ(views::InkDropState::HIDDEN, GetInkDrop()->GetTargetInkDropState());
 
   // If the bubble is shown, the InkDropState should not change to
   // ACTION_PENDING.
   generator()->PressLeftButton();
   EXPECT_EQ(views::InkDropState::ACTION_PENDING,
-            ink_drop()->GetTargetInkDropState());
+            GetInkDrop()->GetTargetInkDropState());
   generator()->ReleaseLeftButton();
   EXPECT_EQ(views::InkDropState::ACTIVATED,
-            ink_drop()->GetTargetInkDropState());
+            GetInkDrop()->GetTargetInkDropState());
   generator()->PressLeftButton();
   EXPECT_NE(views::InkDropState::ACTION_PENDING,
-            ink_drop()->GetTargetInkDropState());
+            GetInkDrop()->GetTargetInkDropState());
 }
 
 // Tests the separator opacity. The separator should disappear when there's
@@ -354,41 +352,39 @@ TEST_F(IconLabelBubbleViewTest, SeparatorOpacity) {
   view()->SetLabel(u"x");
   EXPECT_EQ(1.0f, separator_view->layer()->opacity());
 
-  AttachInkDrop();
   generator()->PressLeftButton();
   view()->InkDropAnimationStarted();
   EXPECT_EQ(views::InkDropState::ACTION_PENDING,
-            ink_drop()->GetTargetInkDropState());
+            GetInkDrop()->GetTargetInkDropState());
   EXPECT_EQ(0.0f, separator_view->layer()->opacity());
 
   generator()->ReleaseLeftButton();
   EXPECT_EQ(views::InkDropState::ACTIVATED,
-            ink_drop()->GetTargetInkDropState());
+            GetInkDrop()->GetTargetInkDropState());
   EXPECT_EQ(0.0f, separator_view->layer()->opacity());
 
   view()->HideBubble();
   view()->InkDropAnimationStarted();
-  EXPECT_EQ(views::InkDropState::HIDDEN, ink_drop()->GetTargetInkDropState());
+  EXPECT_EQ(views::InkDropState::HIDDEN, GetInkDrop()->GetTargetInkDropState());
   EXPECT_EQ(1.0f, separator_view->layer()->opacity());
 }
 
 #if !BUILDFLAG(IS_MAC)
 TEST_F(IconLabelBubbleViewTest, GestureInkDropState) {
-  AttachInkDrop();
   generator()->GestureTapAt(gfx::Point());
   EXPECT_EQ(views::InkDropState::ACTIVATED,
-            ink_drop()->GetTargetInkDropState());
+            GetInkDrop()->GetTargetInkDropState());
   view()->HideBubble();
-  EXPECT_EQ(views::InkDropState::HIDDEN, ink_drop()->GetTargetInkDropState());
+  EXPECT_EQ(views::InkDropState::HIDDEN, GetInkDrop()->GetTargetInkDropState());
 
   // If the bubble is shown, the InkDropState should not change to
   // ACTIVATED.
   generator()->GestureTapAt(gfx::Point());
   EXPECT_EQ(views::InkDropState::ACTIVATED,
-            ink_drop()->GetTargetInkDropState());
+            GetInkDrop()->GetTargetInkDropState());
   generator()->GestureTapAt(gfx::Point());
   view()->HideBubble();
-  EXPECT_EQ(views::InkDropState::HIDDEN, ink_drop()->GetTargetInkDropState());
+  EXPECT_EQ(views::InkDropState::HIDDEN, GetInkDrop()->GetTargetInkDropState());
 }
 #endif
 

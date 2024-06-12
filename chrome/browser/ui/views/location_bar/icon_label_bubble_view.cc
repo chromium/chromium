@@ -239,17 +239,35 @@ void IconLabelBubbleView::SetFontList(const gfx::FontList& font_list) {
 }
 
 SkColor IconLabelBubbleView::GetBackgroundColor() const {
+  ui::ColorId background_color_id = ui::kUiColorsStart;
   if (background_color_id_.has_value()) {
-    return GetColorProvider()->GetColor(background_color_id_.value());
+    background_color_id = background_color_id_.value();
+  } else if (PaintedOnSolidBackground()) {
+    background_color_id = use_tonal_color_when_expanded_
+                              ? kColorPageInfoBackgroundTonal
+                              : kColorPageInfoBackground;
+  } else {
+    // If background is not explicitly specified or we are not painting over a
+    // solid background, seek the background color from the icon view's context.
+    return delegate_->GetIconLabelBubbleBackgroundColor();
   }
-  return delegate_->GetIconLabelBubbleBackgroundColor();
+  return GetColorProvider()->GetColor(background_color_id);
 }
 
 SkColor IconLabelBubbleView::GetForegroundColor() const {
+  ui::ColorId foreground_color_id = ui::kUiColorsStart;
   if (foreground_color_id_.has_value()) {
-    return GetColorProvider()->GetColor(foreground_color_id_.value());
+    foreground_color_id = foreground_color_id_.value();
+  } else if (PaintedOnSolidBackground()) {
+    foreground_color_id = use_tonal_color_when_expanded_
+                              ? kColorPageInfoForegroundTonal
+                              : kColorPageInfoForeground;
+  } else {
+    // If foreground is not explicitly specified or we are not painting over a
+    // solid background, seek the foreground color from the icon view's context.
+    return delegate_->GetIconLabelBubbleSurroundingForegroundColor();
   }
-  return delegate_->GetIconLabelBubbleSurroundingForegroundColor();
+  return GetColorProvider()->GetColor(foreground_color_id);
 }
 
 void IconLabelBubbleView::SetCustomForegroundColorId(
@@ -283,22 +301,10 @@ void IconLabelBubbleView::UpdateLabelColors() {
 void IconLabelBubbleView::UpdateBackground() {
   // If the label is showing we must ensure the icon label is painted over a
   // solid background.
-  const bool painted_on_solid_background =
-      (paint_label_over_solid_background_ && ShouldShowLabel()) ||
-      background_color_id_.has_value();
-
-  ui::ColorId background_color;
-  if (background_color_id_.has_value()) {
-    background_color = background_color_id_.value();
-  } else {
-    background_color = use_tonal_color_when_expanded_
-                           ? kColorPageInfoBackgroundTonal
-                           : kColorPageInfoBackground;
-  }
-
+  const bool painted_on_solid_background = PaintedOnSolidBackground();
   SetBackground(painted_on_solid_background
-                    ? views::CreateThemedRoundedRectBackground(
-                          background_color, GetPreferredSize().height())
+                    ? views::CreateRoundedRectBackground(
+                          GetBackgroundColor(), GetPreferredSize().height())
                     : nullptr);
   // TODO(pbos): Consider renaming kPageInfo/kPageAction color IDs to share the
   // same prefix. Here PageInfo assumes to have a background and PageAction
@@ -453,6 +459,7 @@ void IconLabelBubbleView::OnThemeChanged() {
   label()->SetBackground(nullptr);
 
   UpdateLabelColors();
+  UpdateBackground();
 }
 
 bool IconLabelBubbleView::IsTriggerableEvent(const ui::Event& event) {
@@ -722,6 +729,13 @@ SkPath IconLabelBubbleView::GetHighlightPath() const {
 
   return SkPath().addRoundRect(rect, corner_radius, corner_radius);
   // return SkPath().addCircle(12, radius, radius); // size / 2
+}
+
+bool IconLabelBubbleView::PaintedOnSolidBackground() const {
+  // If the label is showing we must ensure the icon label is painted over a
+  // solid background.
+  return (paint_label_over_solid_background_ && ShouldShowLabel()) ||
+         background_color_id_.has_value();
 }
 
 BEGIN_METADATA(IconLabelBubbleView)
