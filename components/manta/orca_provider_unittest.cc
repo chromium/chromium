@@ -16,6 +16,7 @@
 #include "components/manta/base_provider_test_helper.h"
 #include "components/manta/manta_status.h"
 #include "components/manta/proto/rpc_status.pb.h"
+#include "components/manta/provider_params.h"
 #include "components/signin/public/base/consent_level.h"
 #include "components/signin/public/identity_manager/identity_manager.h"
 #include "components/signin/public/identity_manager/identity_test_environment.h"
@@ -38,14 +39,10 @@ class FakeOrcaProvider : public OrcaProvider, public FakeBaseProvider {
   FakeOrcaProvider(
       scoped_refptr<network::SharedURLLoaderFactory> test_url_loader_factory,
       signin::IdentityManager* identity_manager)
-      : BaseProvider(test_url_loader_factory,
-                     identity_manager,
-                     /*is_demo_mode=*/false),
+      : BaseProvider(test_url_loader_factory, identity_manager),
         OrcaProvider(test_url_loader_factory,
                      identity_manager,
-                     /*is_demo_mode=*/false,
-                     /*chrome_version=*/std::string(),
-                     /*locale=*/std::string()),
+                     ProviderParams()),
         FakeBaseProvider(test_url_loader_factory, identity_manager) {}
 };
 

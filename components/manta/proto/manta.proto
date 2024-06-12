@@ -39,6 +39,16 @@ message ClientInfo {
 message ChromeClientInfo {
   optional string chrome_version = 1;
   optional string locale = 4;
+
+  // The channel of the Chrome client.
+  enum Channel {
+    UNKNOWN = 0;
+    CANARY = 1;
+    DEV = 2;
+    BETA = 3;
+    STABLE = 4;
+  }
+  optional Channel chrome_channel = 5;
   reserved 2, 3;
 }
 

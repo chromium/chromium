@@ -27,9 +27,7 @@ constexpr char kEmail[] = "mock_email@gmail.com";
 FakeBaseProvider::FakeBaseProvider(
     scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory,
     signin::IdentityManager* identity_manager)
-    : BaseProvider(url_loader_factory,
-                   identity_manager,
-                   /*is_demo_mode=*/false) {}
+    : BaseProvider(url_loader_factory, identity_manager) {}
 
 FakeBaseProvider::~FakeBaseProvider() = default;
 

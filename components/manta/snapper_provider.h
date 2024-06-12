@@ -13,6 +13,7 @@
 #include "components/manta/base_provider.h"
 #include "components/manta/manta_service_callbacks.h"
 #include "components/manta/proto/manta.pb.h"
+#include "components/manta/provider_params.h"
 #include "components/signin/public/identity_manager/identity_manager.h"
 #include "net/traffic_annotation/network_traffic_annotation.h"
 #include "services/network/public/cpp/shared_url_loader_factory.h"
@@ -33,8 +34,7 @@ class COMPONENT_EXPORT(MANTA) SnapperProvider : virtual public BaseProvider {
   SnapperProvider(
       scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory,
       signin::IdentityManager* identity_manager,
-      bool is_demo_mode,
-      const std::string& chrome_version);
+      const ProviderParams& provider_params);
 
   SnapperProvider(const SnapperProvider&) = delete;
   SnapperProvider& operator=(const SnapperProvider&) = delete;

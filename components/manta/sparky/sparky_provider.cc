@@ -76,14 +76,10 @@ void OnQAServerResponseOrErrorReceived(
 SparkyProvider::SparkyProvider(
     scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory,
     signin::IdentityManager* identity_manager,
-    bool is_demo_mode,
-    const std::string& chrome_version,
+    const ProviderParams& provider_params,
     std::unique_ptr<SparkyDelegate> sparky_delegate,
     std::unique_ptr<SystemInfoDelegate> system_info_delegate)
-    : BaseProvider(url_loader_factory,
-                   identity_manager,
-                   is_demo_mode,
-                   chrome_version),
+    : BaseProvider(url_loader_factory, identity_manager, provider_params),
       sparky_delegate_(std::move(sparky_delegate)),
       system_info_delegate_(std::move(system_info_delegate)) {}
 
@@ -92,12 +88,9 @@ SparkyProvider::SparkyProvider(
     signin::IdentityManager* identity_manager,
     std::unique_ptr<SparkyDelegate> sparky_delegate,
     std::unique_ptr<SystemInfoDelegate> system_info_delegate)
-    : SparkyProvider(url_loader_factory,
-                     identity_manager,
-                     false,
-                     std::string(),
-                     std::move(sparky_delegate),
-                     std::move(system_info_delegate)) {}
+    : BaseProvider(url_loader_factory, identity_manager),
+      sparky_delegate_(std::move(sparky_delegate)),
+      system_info_delegate_(std::move(system_info_delegate)) {}
 
 SparkyProvider::~SparkyProvider() = default;
 

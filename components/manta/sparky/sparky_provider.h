@@ -21,6 +21,7 @@
 #include "components/manta/manta_status.h"
 #include "components/manta/proto/manta.pb.h"
 #include "components/manta/proto/sparky.pb.h"
+#include "components/manta/provider_params.h"
 #include "components/manta/sparky/sparky_delegate.h"
 #include "components/manta/sparky/system_info_delegate.h"
 #include "components/signin/public/identity_manager/identity_manager.h"
@@ -41,8 +42,7 @@ class COMPONENT_EXPORT(MANTA) SparkyProvider : virtual public BaseProvider {
   SparkyProvider(
       scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory,
       signin::IdentityManager* identity_manager,
-      bool is_demo_mode,
-      const std::string& chrome_version,
+      const ProviderParams& provider_params,
       std::unique_ptr<SparkyDelegate> sparky_delegate,
       std::unique_ptr<SystemInfoDelegate> system_info_delegate);
 

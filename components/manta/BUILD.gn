@@ -19,6 +19,7 @@ component("manta") {
     "manta_service_callbacks.cc",
     "manta_service_callbacks.h",
     "manta_status.h",
+    "provider_params.h",
   ]
 
   defines = [ "IS_MANTA_IMPL" ]

@@ -10,6 +10,7 @@
 #include "base/component_export.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/scoped_refptr.h"
+#include "base/version_info/channel.h"
 #include "build/chromeos_buildflags.h"
 #include "components/keyed_service/core/keyed_service.h"
 #include "components/manta/sparky/sparky_delegate.h"
@@ -50,6 +51,7 @@ class COMPONENT_EXPORT(MANTA) MantaService : public KeyedService {
       bool is_demo_mode,
       bool is_otr_profile,
       const std::string& chrome_version,
+      version_info::Channel chrome_channel,
       const std::string& locale);
 
   MantaService(const MantaService&) = delete;
@@ -87,9 +89,21 @@ class COMPONENT_EXPORT(MANTA) MantaService : public KeyedService {
  private:
   scoped_refptr<network::SharedURLLoaderFactory> shared_url_loader_factory_;
   raw_ptr<signin::IdentityManager> identity_manager_;
+
+  // A particular provider needs some of these attributes as its
+  // ProviderParams, e.g. FooProvider may want to use API key for requests
+  // on demo mode, and doesn't need version and local info, its
+  // ProviderParams is created as
+  // {.use_api_key = is_demo_mode_,
+  //  .chrome_version = std::string(),
+  //  .chrome_channel = chrome_channel_,
+  //  .locale = std::string()};
+  // Fields like version, channel and locale passed to a provider can be sent to
+  // the server.
   const bool is_demo_mode_;
   const bool is_otr_profile_;
   const std::string chrome_version_;
+  const version_info::Channel chrome_channel_;
   const std::string locale_;
 };
 

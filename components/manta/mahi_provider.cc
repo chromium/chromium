@@ -13,6 +13,7 @@
 #include "base/strings/stringprintf.h"
 #include "base/time/time.h"
 #include "base/values.h"
+#include "base/version_info/channel.h"
 #include "components/endpoint_fetcher/endpoint_fetcher.h"
 #include "components/manta/base_provider.h"
 #include "components/manta/features.h"
@@ -69,18 +70,13 @@ void OnServerResponseOrErrorReceived(
 MahiProvider::MahiProvider(
     scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory,
     signin::IdentityManager* identity_manager,
-    bool is_demo_mode,
-    const std::string& chrome_version)
-    : BaseProvider(url_loader_factory,
-                   identity_manager,
-                   is_demo_mode,
-                   chrome_version) {}
+    const ProviderParams& provider_params)
+    : BaseProvider(url_loader_factory, identity_manager, provider_params) {}
 
 MahiProvider::MahiProvider(
     scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory,
     signin::IdentityManager* identity_manager)
-    : MahiProvider(url_loader_factory, identity_manager, false, std::string()) {
-}
+    : BaseProvider(url_loader_factory, identity_manager) {}
 
 MahiProvider::~MahiProvider() = default;
 

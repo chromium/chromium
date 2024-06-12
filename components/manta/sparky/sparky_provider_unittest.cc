@@ -105,9 +105,7 @@ class FakeSparkyProvider : public SparkyProvider, public FakeBaseProvider {
   FakeSparkyProvider(
       scoped_refptr<network::SharedURLLoaderFactory> test_url_loader_factory,
       signin::IdentityManager* identity_manager)
-      : BaseProvider(test_url_loader_factory,
-                     identity_manager,
-                     /*is_demo_mode=*/false),
+      : BaseProvider(test_url_loader_factory, identity_manager),
         SparkyProvider(test_url_loader_factory,
                        identity_manager,
                        std::make_unique<FakeSparkyDelegate>(),

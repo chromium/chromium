@@ -36,9 +36,7 @@ class FakeSnapperProvider : public SnapperProvider, public FakeBaseProvider {
   FakeSnapperProvider(
       scoped_refptr<network::SharedURLLoaderFactory> test_url_loader_factory,
       signin::IdentityManager* identity_manager)
-      : BaseProvider(test_url_loader_factory,
-                     identity_manager,
-                     /*is_demo_mode=*/false),
+      : BaseProvider(test_url_loader_factory, identity_manager),
         SnapperProvider(test_url_loader_factory, identity_manager),
         FakeBaseProvider(test_url_loader_factory, identity_manager) {}
 };

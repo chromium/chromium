@@ -117,14 +117,8 @@ void OnServerResponseOrErrorReceived(
 OrcaProvider::OrcaProvider(
     scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory,
     signin::IdentityManager* identity_manager,
-    bool is_demo_mode,
-    const std::string& chrome_version,
-    const std::string& locale)
-    : BaseProvider(url_loader_factory,
-                   identity_manager,
-                   is_demo_mode,
-                   chrome_version,
-                   locale) {}
+    const ProviderParams& provider_params)
+    : BaseProvider(url_loader_factory, identity_manager, provider_params) {}
 
 OrcaProvider::~OrcaProvider() = default;
 

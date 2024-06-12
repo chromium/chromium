@@ -9,6 +9,7 @@
 #include <vector>
 
 #include "base/component_export.h"
+#include "base/version_info/channel.h"
 #include "components/manta/anchovy/anchovy_requests.h"
 #include "components/manta/base_provider.h"
 #include "components/manta/manta_service_callbacks.h"
@@ -24,9 +25,7 @@ class COMPONENT_EXPORT(MANTA) AnchovyProvider : public BaseProvider {
   AnchovyProvider(
       scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory,
       signin::IdentityManager* identity_manager,
-      bool is_otr_profile_,
-      const std::string& chrome_version,
-      const std::string& locale);
+      const ProviderParams& provider_params);
   AnchovyProvider(const AnchovyProvider&) = delete;
   AnchovyProvider& operator=(const AnchovyProvider&) = delete;
   ~AnchovyProvider() override;

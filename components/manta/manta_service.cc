@@ -12,6 +12,7 @@
 #include "build/chromeos_buildflags.h"
 #include "components/account_id/account_id.h"
 #include "components/manta/anchovy/anchovy_provider.h"
+#include "components/manta/provider_params.h"
 #include "components/manta/sparky/system_info_delegate.h"
 #include "components/signin/public/identity_manager/account_capabilities.h"
 #include "components/signin/public/identity_manager/identity_manager.h"
@@ -62,12 +63,14 @@ MantaService::MantaService(
     bool is_demo_mode,
     bool is_otr_profile,
     const std::string& chrome_version,
+    const version_info::Channel chrome_channel,
     const std::string& locale)
     : shared_url_loader_factory_(shared_url_loader_factory),
       identity_manager_(identity_manager),
       is_demo_mode_(is_demo_mode),
       is_otr_profile_(is_otr_profile),
       chrome_version_(chrome_version),
+      chrome_channel_(chrome_channel),
       locale_(locale) {}
 
 MantaService::~MantaService() = default;
@@ -101,15 +104,14 @@ MantaService::CanAccessMantaFeaturesWithoutMinorRestrictions() {
 }
 
 std::unique_ptr<AnchovyProvider> MantaService::CreateAnchovyProvider() {
-  if (!identity_manager_) {
-    // Anchovy Provider supports API Key Requests.
-    return std::make_unique<AnchovyProvider>(shared_url_loader_factory_,
-                                             nullptr, is_otr_profile_,
-                                             chrome_version_, locale_);
-  }
+  // Anchovy Provider supports API Key Requests for OTR profiles and doesn't
+  // requires a valid identity_manager.
+  const ProviderParams provider_params = {/*use_api_key=*/is_otr_profile_,
+                                          chrome_version_, chrome_channel_,
+                                          locale_};
+
   return std::make_unique<AnchovyProvider>(shared_url_loader_factory_,
-                                           identity_manager_, is_otr_profile_,
-                                           chrome_version_, locale_);
+                                           identity_manager_, provider_params);
 }
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
@@ -118,29 +120,32 @@ std::unique_ptr<OrcaProvider> MantaService::CreateOrcaProvider() {
   if (!identity_manager_) {
     return nullptr;
   }
-  return std::make_unique<OrcaProvider>(
-      shared_url_loader_factory_, identity_manager_, is_demo_mode_,
-      chrome_version_,
+  const ProviderParams provider_params = {
+      /*use_api_key=*/is_demo_mode_, chrome_version_, chrome_channel_,
       /*locale=*/
-      ShouldIncludeLocaleInRequest(locale_) ? locale_ : std::string());
+      ShouldIncludeLocaleInRequest(locale_) ? locale_ : std::string()};
+  return std::make_unique<OrcaProvider>(shared_url_loader_factory_,
+                                        identity_manager_, provider_params);
 }
 
 std::unique_ptr<SnapperProvider> MantaService::CreateSnapperProvider() {
   if (!identity_manager_) {
     return nullptr;
   }
+  const ProviderParams provider_params = {/*use_api_key=*/is_demo_mode_,
+                                          chrome_version_, chrome_channel_};
   return std::make_unique<SnapperProvider>(shared_url_loader_factory_,
-                                           identity_manager_, is_demo_mode_,
-                                           chrome_version_);
+                                           identity_manager_, provider_params);
 }
 
 std::unique_ptr<MahiProvider> MantaService::CreateMahiProvider() {
   if (!identity_manager_) {
     return nullptr;
   }
+  const ProviderParams provider_params = {/*use_api_key=*/is_demo_mode_,
+                                          chrome_version_, chrome_channel_};
   return std::make_unique<MahiProvider>(shared_url_loader_factory_,
-                                        identity_manager_, is_demo_mode_,
-                                        chrome_version_);
+                                        identity_manager_, provider_params);
 }
 
 std::unique_ptr<SparkyProvider> MantaService::CreateSparkyProvider(
@@ -149,10 +154,11 @@ std::unique_ptr<SparkyProvider> MantaService::CreateSparkyProvider(
   if (!identity_manager_ || !sparky_delegate || !system_info_delegate) {
     return nullptr;
   }
+  const ProviderParams provider_params = {/*use_api_key=*/is_demo_mode_,
+                                          chrome_version_, chrome_channel_};
   return std::make_unique<SparkyProvider>(
-      shared_url_loader_factory_, identity_manager_, is_demo_mode_,
-      chrome_version_, std::move(sparky_delegate),
-      std::move(system_info_delegate));
+      shared_url_loader_factory_, identity_manager_, provider_params,
+      std::move(sparky_delegate), std::move(system_info_delegate));
 }
 
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)

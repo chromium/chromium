@@ -76,14 +76,8 @@ void HandleResponseOrError(MantaGenericCallback callback,
 AnchovyProvider::AnchovyProvider(
     scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory,
     signin::IdentityManager* identity_manager,
-    bool is_otr_profile_,
-    const std::string& chrome_version,
-    const std::string& locale)
-    : BaseProvider(url_loader_factory,
-                   identity_manager,
-                   /*use_api_key=*/is_otr_profile_,
-                   chrome_version,
-                   locale) {}
+    const ProviderParams& provider_params)
+    : BaseProvider(url_loader_factory, identity_manager, provider_params) {}
 
 AnchovyProvider::~AnchovyProvider() = default;
 

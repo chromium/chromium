@@ -7,9 +7,11 @@
 
 #include <string>
 
+#include "base/version_info/channel.h"
 #include "components/endpoint_fetcher/endpoint_fetcher.h"
 #include "components/manta/manta_service_callbacks.h"
 #include "components/manta/proto/manta.pb.h"
+#include "components/manta/provider_params.h"
 #include "components/signin/public/identity_manager/identity_manager.h"
 #include "net/traffic_annotation/network_traffic_annotation.h"
 #include "services/network/public/cpp/shared_url_loader_factory.h"
@@ -27,10 +29,11 @@ class COMPONENT_EXPORT(MANTA) BaseProvider
   BaseProvider();
   BaseProvider(
       scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory,
+      signin::IdentityManager* identity_manager);
+  BaseProvider(
+      scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory,
       signin::IdentityManager* identity_manager,
-      bool use_api_key,
-      const std::string& chrome_version = std::string(),
-      const std::string& locale = std::string());
+      const ProviderParams& provider_params);
 
   BaseProvider(const BaseProvider&) = delete;
   BaseProvider& operator=(const BaseProvider&) = delete;
@@ -80,9 +83,7 @@ class COMPONENT_EXPORT(MANTA) BaseProvider
       const std::string& post_data);
 
   // Useful client info for particular providers.
-  const bool use_api_key_;
-  const std::string chrome_version_;
-  const std::string locale_;
+  const ProviderParams provider_params_;
 };
 
 }  // namespace manta
