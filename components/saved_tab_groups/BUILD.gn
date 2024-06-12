@@ -203,7 +203,6 @@ source_set("unit_tests") {
     "//components/sync",
     "//components/sync:test_support",
     "//components/tab_groups",
-    "//testing/gmock",
     "//testing/gtest",
     "//url",
   ]
