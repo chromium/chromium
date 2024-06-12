@@ -133,7 +133,7 @@ public class AccountStorageNoticeCoordinatorIntegrationTest {
         verify(mJniMock).onClosed(NATIVE_OBSERVER_PTR);
     }
 
-    // TODO(crbug.com/338576301): Add test clicking on settings link. There seems to be some
+    // TODO(crbug.com/346747486): Add test clicking on settings link. There seems to be some
     // limitation on ViewUtils.clickOnClickableSpan().
 
     @Test

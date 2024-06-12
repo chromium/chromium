@@ -70,7 +70,7 @@ bool IsGmsCoreUpdateRequired(const PrefService* pref_service,
 
   // GMSCore supports account storage only, thus update is required if password
   // syncing is disabled.
-  // TODO(crbug.com/344609691): Re-arrange build targets so
+  // TODO(crbug.com/345791498): Re-arrange build targets so
   // password_manager::sync_util::HasChosenToSyncPasswords() can be called here
   // without causing a cyclic dependency.
   bool has_chosen_to_sync_passwords =

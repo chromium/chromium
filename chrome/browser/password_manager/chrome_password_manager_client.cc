@@ -522,7 +522,7 @@ void ChromePasswordManagerClient::
             weak_driver,
         const password_manager::PasswordFillingParams& password_filling_params,
         base::OnceCallback<void(bool)> shown_cb) {
-  // TODO(crbug.com/338576301): Maybe don't show TTF if there was a navigation.
+  // TODO(crbug.com/346748438): Maybe don't show TTF if there was a navigation.
   if (!weak_driver) {
     return std::move(shown_cb).Run(false);
   }
