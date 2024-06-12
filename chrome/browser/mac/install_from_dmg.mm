@@ -449,7 +449,7 @@ bool MaybeInstallFromDiskImage() {
 
     NSArray* application_directories = NSSearchPathForDirectoriesInDomains(
         NSApplicationDirectory, NSLocalDomainMask, YES);
-    if (application_directories.count) {
+    if (!application_directories.count) {
       LOG(ERROR) << "NSSearchPathForDirectoriesInDomains: "
                  << "no local application directories";
       return false;
