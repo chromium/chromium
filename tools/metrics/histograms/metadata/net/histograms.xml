@@ -1653,9 +1653,9 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Net.ErrorCodesForIsolatedAppScheme" enum="NetErrorCodes"
-    expires_after="2024-12-08">
-  <owner>cmfcmf@chromium.org</owner>
-  <owner>peletskyi@chromium.org</owner>
+    expires_after="2025-05-31">
+  <owner>giovax@chromium.org</owner>
+  <owner>pwa-commercial@google.com</owner>
   <summary>
     Positive net error codes that HTTP requests using the isolated-app: URL
     scheme end with, including net::OK and net::ERR_ABORTED.

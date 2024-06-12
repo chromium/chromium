@@ -907,21 +907,22 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="WebApp.Isolated.ReadResponseHeadError"
-    enum="IsolatedWebAppReadResponseHeadError" expires_after="2024-05-08">
-  <owner>cmfcmf@chromium.org</owner>
-  <owner>peletskyi@chromium.org</owner>
+    enum="IsolatedWebAppReadResponseHeadError" expires_after="2025-05-31">
+  <owner>giovax@chromium.org</owner>
+  <owner>pwa-commercial@google.com</owner>
   <summary>
     Records the exact error that occured during reading of a response head for a
     request to an Isolated Web App via the isolated-app: scheme. The error is
     logged together with WebApp.Isolated.ReadResponseHeadSuccess in case when an
-    error occurs.
+    error occurs. Warning: this histogram was expired from 2024-05-08 to
+    2024-06-12; data may be missing.
   </summary>
 </histogram>
 
 <histogram name="WebApp.Isolated.ReadResponseHeadSuccess" enum="BooleanSuccess"
-    expires_after="2024-05-08">
-  <owner>cmfcmf@chromium.org</owner>
-  <owner>peletskyi@chromium.org</owner>
+    expires_after="2025-05-31">
+  <owner>giovax@chromium.org</owner>
+  <owner>pwa-commercial@google.com</owner>
   <summary>
     Records whether reading the response head for a request to an Isolated Web
     App via the isolated-app: scheme was successful or resulted in an error. As
@@ -929,14 +930,15 @@ chromium-metrics-reviews@google.com.
     integrity block and metadata must have passed validation and its signatures
     must have been verified successfully. This metric is then logged for any
     resources loading for the Isolated Web App, so any usage could trigger this
-    metric.
+    metric. Warning: this histogram was expired from 2024-05-08 to 2024-06-12;
+    data may be missing.
   </summary>
 </histogram>
 
 <histogram name="WebApp.Isolated.ResponseReaderCacheState"
-    enum="IsolatedWebAppResponseReaderCacheState" expires_after="2024-11-08">
-  <owner>cmfcmf@chromium.org</owner>
-  <owner>peletskyi@chromium.org</owner>
+    enum="IsolatedWebAppResponseReaderCacheState" expires_after="2025-05-31">
+  <owner>giovax@chromium.org</owner>
+  <owner>pwa-commercial@google.com</owner>
   <summary>
     This histogram is logged whenever an HTTP request to read a response from a
     Signed Web Bundle used for Isolated Web Apps is made through the
@@ -951,9 +953,9 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="WebApp.Isolated.SignatureVerificationDuration" units="ms"
-    expires_after="2024-11-08">
-  <owner>cmfcmf@chromium.org</owner>
-  <owner>peletskyi@chromium.org</owner>
+    expires_after="2025-05-31">
+  <owner>giovax@chromium.org</owner>
+  <owner>pwa-commercial@google.com</owner>
   <summary>
     Records how long it takes to verify signatures of Signed Web Bundles used
     for Isolated Web Apps every time their signatures are verified. Signatures
@@ -963,9 +965,9 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="WebApp.Isolated.SignatureVerificationFileLength" units="MiB"
-    expires_after="2024-11-08">
-  <owner>cmfcmf@chromium.org</owner>
-  <owner>peletskyi@chromium.org</owner>
+    expires_after="2025-05-31">
+  <owner>giovax@chromium.org</owner>
+  <owner>pwa-commercial@google.com</owner>
   <summary>
     Records the file length of Signed Web Bundles used for Isolated Web Apps
     every time their signatures are verified. Signatures are verified during
@@ -975,21 +977,22 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="WebApp.Isolated.SwbnFileUsabilityError"
-    enum="IsolatedWebAppSwbnFileUsabilityError" expires_after="2024-05-08">
-  <owner>cmfcmf@chromium.org</owner>
-  <owner>peletskyi@chromium.org</owner>
+    enum="IsolatedWebAppSwbnFileUsabilityError" expires_after="2025-05-31">
+  <owner>giovax@chromium.org</owner>
+  <owner>pwa-commercial@google.com</owner>
   <summary>
     Records the exact error why a Signed Web Bundle is unusable. In particular
     integrity block or metadata parsing errors are recorded here. The error is
     logged together with WebApp.Isolated.SwbnFileUsabilitySuccess when an error
-    occurs.
+    occurs. Warning: this histogram was expired from 2024-05-08 to 2024-06-12;
+    data may be missing.
   </summary>
 </histogram>
 
 <histogram name="WebApp.Isolated.SwbnFileUsabilitySuccess" enum="BooleanValid"
-    expires_after="2024-05-08">
-  <owner>cmfcmf@chromium.org</owner>
-  <owner>peletskyi@chromium.org</owner>
+    expires_after="2025-05-31">
+  <owner>giovax@chromium.org</owner>
+  <owner>pwa-commercial@google.com</owner>
   <summary>
     Records whether a Signed Web Bundle file is usable. To be usable the file's
     integrity block and metadata should be read, parsed and validated
@@ -999,6 +1002,8 @@ chromium-metrics-reviews@google.com.
     approximately 10 minutes of not reading any responses from their
     corresponding Signed Web Bundle. Isolated Web Apps are parsed for any
     resources loading for the web app, so any usage could trigger this UMA.
+    Warning: this histogram was expired from 2024-05-08 to 2024-06-12; data may
+    be missing.
   </summary>
 </histogram>
 
