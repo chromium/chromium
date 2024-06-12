@@ -139,6 +139,16 @@ class TabGroupSyncServiceImpl : public TabGroupSyncService,
   // Wrapper function that calls all metric recording functions.
   void RecordMetrics();
 
+  // Helper function to update attributions for a group and optionally a tab.
+  void UpdateAttributions(
+      const LocalTabGroupID& group_id,
+      const std::optional<LocalTabID>& tab_id = std::nullopt);
+
+  // Helper function to log a tab group event in histograms.
+  void LogEvent(TabGroupEvent event,
+                LocalTabGroupID group_id,
+                const std::optional<LocalTabID>& tab_id = std::nullopt);
+
   // The in-memory model representing the currently present saved tab groups.
   std::unique_ptr<SavedTabGroupModel> model_;
 
