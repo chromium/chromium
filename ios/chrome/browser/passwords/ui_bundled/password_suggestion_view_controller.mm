@@ -2,13 +2,13 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#import "ios/chrome/browser/ui/passwords/password_suggestion_view_controller.h"
+#import "ios/chrome/browser/passwords/ui_bundled/password_suggestion_view_controller.h"
 
 #import "base/strings/sys_string_conversions.h"
 #import "base/strings/utf_string_conversions.h"
 #import "components/autofill/core/common/password_generation_util.h"
 #import "components/strings/grit/components_strings.h"
-#import "ios/chrome/browser/ui/passwords/password_constants.h"
+#import "ios/chrome/browser/passwords/ui_bundled/password_constants.h"
 #import "ios/chrome/grit/ios_branded_strings.h"
 #import "ios/chrome/grit/ios_strings.h"
 #import "ios/public/provider/chrome/browser/branded_images/branded_images_api.h"

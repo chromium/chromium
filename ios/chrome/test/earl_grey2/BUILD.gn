@@ -184,6 +184,8 @@ chrome_ios_eg2_test("ios_chrome_ui_eg2tests_module") {
 
   deps = [
     "//ios/chrome/browser/contextual_panel/ui:eg2_tests",
+    "//ios/chrome/browser/passwords/ui_bundled:eg2_tests",
+    "//ios/chrome/browser/passwords/ui_bundled/bottom_sheet:eg2_tests",
     "//ios/chrome/browser/plus_addresses/ui:eg2_tests",
     "//ios/chrome/browser/qr_scanner/ui_bundled:eg2_tests",
     "//ios/chrome/browser/settings/model/sync/utils:eg2_tests",
@@ -213,8 +215,6 @@ chrome_ios_eg2_test("ios_chrome_ui_eg2tests_module") {
     "//ios/chrome/browser/ui/omnibox/popup:eg2_tests",
     "//ios/chrome/browser/ui/omnibox/popup/carousel:eg2_tests",
     "//ios/chrome/browser/ui/page_info:eg2_tests",
-    "//ios/chrome/browser/ui/passwords:eg2_tests",
-    "//ios/chrome/browser/ui/passwords/bottom_sheet:eg2_tests",
     "//ios/chrome/browser/ui/permissions:eg2_tests",
     "//ios/chrome/browser/ui/phone_number:eg2_tests",
     "//ios/chrome/browser/ui/policy/idle:eg2_tests",

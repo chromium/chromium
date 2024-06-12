@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#import "ios/chrome/browser/ui/passwords/password_protection_coordinator.h"
+#import "ios/chrome/browser/passwords/ui_bundled/password_protection_coordinator.h"
 
 #import "base/check.h"
 #import "base/notreached.h"
@@ -10,8 +10,8 @@
 #import "ios/chrome/browser/shared/model/browser/browser.h"
 #import "ios/chrome/browser/shared/public/commands/command_dispatcher.h"
 #import "ios/chrome/browser/shared/public/commands/settings_commands.h"
-#import "ios/chrome/browser/ui/passwords/password_protection_coordinator_delegate.h"
-#import "ios/chrome/browser/ui/passwords/password_protection_view_controller.h"
+#import "ios/chrome/browser/passwords/ui_bundled/password_protection_coordinator_delegate.h"
+#import "ios/chrome/browser/passwords/ui_bundled/password_protection_view_controller.h"
 #import "ios/chrome/common/ui/confirmation_alert/confirmation_alert_action_handler.h"
 
 @interface PasswordProtectionCoordinator () <ConfirmationAlertActionHandler>

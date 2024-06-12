@@ -7,7 +7,7 @@
 
 #import "ios/chrome/common/ui/confirmation_alert/confirmation_alert_view_controller.h"
 
-#import "ios/chrome/browser/ui/passwords/password_breach_consumer.h"
+#import "ios/chrome/browser/passwords/ui_bundled/password_breach_consumer.h"
 
 @interface PasswordBreachViewController
     : ConfirmationAlertViewController <PasswordBreachConsumer>

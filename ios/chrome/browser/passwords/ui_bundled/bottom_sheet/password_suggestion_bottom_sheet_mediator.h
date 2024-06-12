@@ -9,8 +9,8 @@
 
 #import "base/ios/block_types.h"
 #import "base/memory/scoped_refptr.h"
-#import "ios/chrome/browser/ui/passwords/bottom_sheet/password_suggestion_bottom_sheet_delegate.h"
-#import "ios/chrome/browser/ui/passwords/bottom_sheet/password_suggestion_bottom_sheet_exit_reason.h"
+#import "ios/chrome/browser/passwords/ui_bundled/bottom_sheet/password_suggestion_bottom_sheet_delegate.h"
+#import "ios/chrome/browser/passwords/ui_bundled/bottom_sheet/password_suggestion_bottom_sheet_exit_reason.h"
 
 namespace autofill {
 struct FormActivityParams;

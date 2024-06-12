@@ -2,10 +2,10 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#import "ios/chrome/browser/ui/passwords/password_protection_view_controller.h"
+#import "ios/chrome/browser/passwords/ui_bundled/password_protection_view_controller.h"
 
 #import "components/strings/grit/components_strings.h"
-#import "ios/chrome/browser/ui/passwords/password_constants.h"
+#import "ios/chrome/browser/passwords/ui_bundled/password_constants.h"
 #import "ui/base/l10n/l10n_util.h"
 
 @implementation PasswordProtectionViewController

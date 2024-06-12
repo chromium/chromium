@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#import "ios/chrome/browser/ui/passwords/password_suggestion_coordinator.h"
+#import "ios/chrome/browser/passwords/ui_bundled/password_suggestion_coordinator.h"
 
 #import "base/check.h"
 #import "base/notreached.h"
@@ -16,7 +16,7 @@
 #import "ios/chrome/browser/shared/public/commands/command_dispatcher.h"
 #import "ios/chrome/browser/signin/model/authentication_service.h"
 #import "ios/chrome/browser/signin/model/authentication_service_factory.h"
-#import "ios/chrome/browser/ui/passwords/password_suggestion_view_controller.h"
+#import "ios/chrome/browser/passwords/ui_bundled/password_suggestion_view_controller.h"
 #import "ios/chrome/common/ui/confirmation_alert/confirmation_alert_action_handler.h"
 #import "ios/web/public/js_messaging/web_frame.h"
 #import "ios/web/public/js_messaging/web_frames_manager.h"
