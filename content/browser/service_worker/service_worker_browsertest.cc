@@ -5001,8 +5001,8 @@ IN_PROC_BROWSER_TEST_F(ServiceWorkerSkipEmptyFetchHandlerBrowserTest,
       ServiceWorkerVersion::FetchHandlerType::kNotSkippable, 1);
 }
 
-#if BUILDFLAG(IS_MAC)
-// TODO(crbug.com/332989700): Disabled due to flakiness on Mac.
+#if BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)
+// TODO(crbug.com/332989700): Disabled due to flakiness on Mac and Linux.
 #define MAYBE_HasSkippedForEmptyFetchHandlerMetrics \
   DISABLED_HasSkippedForEmptyFetchHandlerMetrics
 #else
