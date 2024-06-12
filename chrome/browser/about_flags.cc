@@ -3755,34 +3755,22 @@ const FeatureEntry::Choice kAccountBookmarksAndReadingListBehindOptInChoices[] =
          "ReadingListEnableSyncTransportModeUponSignIn"},
 };
 
+const char kReplaceSyncPromosWithSignInPromosFeatures[] =
+    "ReplaceSyncPromosWithSignInPromos,"
+    "ReadingListEnableSyncTransportModeUponSignIn,"
+    "SyncEnableContactInfoDataTypeInTransportMode,"
+    "SyncEnableContactInfoDataTypeForCustomPassphraseUsers,"
+    "SyncEnableWalletMetadataInTransportMode,"
+    "SyncEnableWalletOfferInTransportMode,"
+    "EnablePasswordsAccountStorageForNonSyncingUsers,"
+    "HideSettingsSignInPromo,"
+    "FeedBottomSyncStringRemoval";
+
 const FeatureEntry::Choice kReplaceSyncPromosWithSignInPromosChoices[] = {
     {"Default", "", ""},
     {"Disabled", "disable-features",
-     "ReplaceSyncPromosWithSignInPromos,"
-     "ReadingListEnableSyncTransportModeUponSignIn,"
-     "SyncEnableContactInfoDataTypeInTransportMode,"
-     "SyncEnableWalletOfferInTransportMode,"
-     "EnablePasswordsAccountStorageForNonSyncingUsers,"
-     "HideSettingsSignInPromo,"
-     "FeedBottomSyncStringRemoval"},
-    {"Base only", "enable-features", "ReplaceSyncPromosWithSignInPromos"},
-    {"Everything (bookmarks, reading list, etc)", "enable-features",
-     "ReplaceSyncPromosWithSignInPromos,"
-     "EnableBookmarkFoldersForAccountStorage,"
-     "ReadingListEnableSyncTransportModeUponSignIn,"
-     "SyncEnableContactInfoDataTypeInTransportMode,"
-     "SyncEnableContactInfoDataTypeForCustomPassphraseUsers,"
-     "SyncEnableWalletMetadataInTransportMode,"
-     "SyncEnableWalletOfferInTransportMode,"
-     "UnifiedPasswordManagerLocalPasswordsAndroidWithMigration,"
-     "UnifiedPasswordManagerSyncOnlyInGMSCore,"
-     "ClearLoginDatabaseForUPMUsers,"
-     "EnablePasswordsAccountStorageForNonSyncingUsers,"
-     "EnterprisePolicyOnSignin,"
-     "MinorModeRestrictionsForHistorySyncOptIn,"
-     "HideSettingsSignInPromo,"
-     "FeedBottomSyncStringRemoval,"
-     "SeedAccountsRevamp"},
+     kReplaceSyncPromosWithSignInPromosFeatures},
+    {"Enabled", "enable-features", kReplaceSyncPromosWithSignInPromosFeatures},
 };
 #endif  // BUILDFLAG(IS_ANDROID)
 
