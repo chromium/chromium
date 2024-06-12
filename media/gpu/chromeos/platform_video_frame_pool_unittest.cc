@@ -281,12 +281,12 @@ TEST_P(PlatformVideoFramePoolTest, GetOriginalFrame) {
   scoped_refptr<FrameResource> frame_2 = frame_1->CreateWrappingFrame();
   EXPECT_EQ(pool_->GetOriginalFrame(frame_1->GetSharedMemoryId()),
             pool_->GetOriginalFrame(frame_2->GetSharedMemoryId()));
-  EXPECT_EQ(frame_1->GetGpuMemoryBuffer(), frame_2->GetGpuMemoryBuffer());
+  EXPECT_EQ(frame_1->GetSharedMemoryId().id, frame_2->GetSharedMemoryId().id);
 
   scoped_refptr<FrameResource> frame_3 = GetFrame(20);
   EXPECT_NE(pool_->GetOriginalFrame(frame_1->GetSharedMemoryId()),
             pool_->GetOriginalFrame(frame_3->GetSharedMemoryId()));
-  EXPECT_NE(frame_1->GetGpuMemoryBuffer(), frame_3->GetGpuMemoryBuffer());
+  EXPECT_NE(frame_1->GetSharedMemoryId().id, frame_3->GetSharedMemoryId().id);
 }
 
 TEST_P(PlatformVideoFramePoolTest,
@@ -403,8 +403,7 @@ TEST_P(PlatformVideoFramePoolWithMediaCompressionTest,
   EXPECT_EQ(layout_->planes().size(), kExpectedNumberOfPlanes);
   scoped_refptr<FrameResource> frame = GetFrame(10);
   EXPECT_EQ(frame->layout().num_planes(), kExpectedNumberOfPlanes);
-  EXPECT_EQ(frame->GetGpuMemoryBuffer()
-                ->CloneHandle()
+  EXPECT_EQ(frame->GetGpuMemoryBufferHandleForTesting()
                 .native_pixmap_handle.planes.size(),
             kExpectedNumberOfPlanes);
 }

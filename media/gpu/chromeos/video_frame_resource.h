@@ -65,6 +65,8 @@ class VideoFrameResource : public FrameResource {
       const gfx::Rect& visible_rect,
       const gfx::Size& natural_size) override;
   std::string AsHumanReadableString() const override;
+  gfx::GpuMemoryBufferHandle GetGpuMemoryBufferHandleForTesting()
+      const override;
 
   // GetMutableVideoFrame() and GetVideoFrame() return a pointer to the
   // underlying VideoFrame. This lets VideoFrameResource be used to adapt code

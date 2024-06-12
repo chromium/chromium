@@ -177,6 +177,10 @@ class FrameResource : public base::RefCountedThreadSafe<FrameResource> {
   // Returns a human-readable string describing |this|.
   virtual std::string AsHumanReadableString() const = 0;
 
+  // Gets the GpuMemoryBufferHandle backing |this|.
+  virtual gfx::GpuMemoryBufferHandle GetGpuMemoryBufferHandleForTesting()
+      const = 0;
+
  protected:
   friend class base::RefCountedThreadSafe<FrameResource>;
 

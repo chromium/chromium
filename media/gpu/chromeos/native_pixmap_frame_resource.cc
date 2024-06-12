@@ -301,7 +301,7 @@ NativePixmapFrameResource::CreateGpuMemoryBufferHandle() const {
 
 gfx::GpuMemoryBuffer* NativePixmapFrameResource::GetGpuMemoryBuffer() const {
   // This accessor is used for frames with STORAGE_GPU_MEMORY_BUFFER. This class
-  // is coded to advertise STORAGE_DMABUFS, so this always returns false.
+  // is coded to advertise STORAGE_DMABUFS, so this always returns nullptr.
   return nullptr;
 }
 
@@ -448,6 +448,13 @@ std::string NativePixmapFrameResource::AsHumanReadableString() const {
     << ", timestamp:" << timestamp_.InMicroseconds()
     << ", planes:" << pixmap_->GetNumberOfPlanes();
   return s.str();
+}
+
+gfx::GpuMemoryBufferHandle
+NativePixmapFrameResource::GetGpuMemoryBufferHandleForTesting() const {
+  // This accessor is used for frames with STORAGE_GPU_MEMORY_BUFFER. This class
+  // is coded to advertise STORAGE_DMABUFS, so this always returns empty handle.
+  return gfx::GpuMemoryBufferHandle();
 }
 
 scoped_refptr<VideoFrame> NativePixmapFrameResource::CreateVideoFrame() const {

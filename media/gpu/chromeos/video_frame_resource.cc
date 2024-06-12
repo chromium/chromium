@@ -190,6 +190,11 @@ std::string VideoFrameResource::AsHumanReadableString() const {
   return frame_->AsHumanReadableString();
 }
 
+gfx::GpuMemoryBufferHandle
+VideoFrameResource::GetGpuMemoryBufferHandleForTesting() const {
+  return frame_->GetGpuMemoryBufferHandle();
+}
+
 scoped_refptr<VideoFrame> VideoFrameResource::GetMutableVideoFrame() {
   return const_cast<VideoFrame*>(frame_.get());
 }
