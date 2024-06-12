@@ -4367,6 +4367,7 @@ enum WebFeature {
   kV8InvalidatedNoUndetectableObjectsProtector = 4997,
   kV8DocumentAllLegacyCall = 4998,
   kV8DocumentAllLegacyConstruct = 4999,
+  kInsideListMarkerPositionQuirk = 5000,
 
   // Add new features immediately above this line. Don't change assigned
   // numbers of any item, and don't reuse removed slots. Also don't add extra

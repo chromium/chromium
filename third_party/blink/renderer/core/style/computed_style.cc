@@ -2744,11 +2744,21 @@ const AtomicString& ComputedStyle::ListStyleStringValue() const {
 bool ComputedStyle::MarkerShouldBeInside(const Element& parent) const {
   // https://w3c.github.io/csswg-drafts/css-lists/#list-style-position-outside
   // > If the list item is an inline box: this value is equivalent to inside.
-  if (Display() == EDisplay::kInlineListItem) {
+  if (Display() == EDisplay::kInlineListItem ||
+      ListStylePosition() == EListStylePosition::kInside) {
     return true;
   }
-  return ListStylePosition() == EListStylePosition::kInside ||
-         (IsA<HTMLLIElement>(parent) && !IsInsideListElement());
+  // Force the marker of <li> elements with no <ol> or <ul> ancestor to have
+  // an inside position.
+  // TODO(crbug.com/41241289): This quirk predates WebKit, it was added to match
+  // the behavior of the Internet Explorer from that time. However, Microsoft
+  // ended up removing it (before switching to Blink), and Firefox never had it,
+  // so it may be possible to get rid of it.
+  if (IsA<HTMLLIElement>(parent) && !IsInsideListElement()) {
+    parent.GetDocument().CountUse(WebFeature::kInsideListMarkerPositionQuirk);
+    return true;
+  }
+  return false;
 }
 
 std::optional<blink::Color> ComputedStyle::AccentColorResolved() const {

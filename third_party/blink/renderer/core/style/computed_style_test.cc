@@ -2121,4 +2121,24 @@ TEST_F(ComputedStyleTest, DynamicRangeLimitMixAllThree) {
                   limit.constrained_high_mix);
 }
 
+TEST_F(ComputedStyleTest, UseCountInsideListMarkerPositionQuirk) {
+  Document& document = GetDocument();
+  document.body()->setInnerHTML(R"HTML(
+    <ul><li></li></ul>
+    <ol><li></li</ol>
+    <ul><div><li></li></ul>
+    <ol><li><li></li></li></ol>
+    <div style="display: list-item"></div>
+    <li style="list-style-position: inside"></li>
+  )HTML");
+  document.View()->UpdateAllLifecyclePhasesForTest();
+  EXPECT_FALSE(
+      document.IsUseCounted(WebFeature::kInsideListMarkerPositionQuirk));
+
+  document.body()->setInnerHTML("<li></li>");
+  document.View()->UpdateAllLifecyclePhasesForTest();
+  EXPECT_TRUE(
+      document.IsUseCounted(WebFeature::kInsideListMarkerPositionQuirk));
+}
+
 }  // namespace blink
