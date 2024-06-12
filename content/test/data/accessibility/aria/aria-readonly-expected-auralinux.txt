@@ -12,7 +12,7 @@
 ++[entry] name='Readonly-false contenteditable textbox' enabled sensitive selectable-text
 ++[entry] name='Readonly-true contenteditable textbox' selectable-text
 ++[table] enabled sensitive cols=3 headers=(NONE); rows=1 headers=(NONE); caption=false; spans=(all: 1x1)
-++++[table row] enabled sensitive
+++++[table row] name='Readonly-false gridcell Readonly-true gridcell Readonly not specified gridcell' enabled sensitive
 ++++++[table cell] name='Readonly-false gridcell' enabled sensitive (row=0, col=0, row_span=1, col_span=1, n_row_headers=0, n_col_headers=0)
 ++++++[table cell] name='Readonly-true gridcell' (row=0, col=1, row_span=1, col_span=1, n_row_headers=0, n_col_headers=0)
 ++++++[table cell] name='Readonly not specified gridcell' enabled sensitive (row=0, col=2, row_span=1, col_span=1, n_row_headers=0, n_col_headers=0)

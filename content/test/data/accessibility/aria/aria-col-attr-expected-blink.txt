@@ -2,7 +2,7 @@ rootWebArea
 ++genericContainer ignored
 ++++genericContainer ignored
 ++++++grid ariaColumnCount=5
-++++++++row
+++++++++row name='cell 2cell 4cell 5'
 ++++++++++columnHeader name='cell 2' ariaCellColumnIndex=2 ariaCellColumnSpan=2
 ++++++++++++staticText name='cell 2'
 ++++++++++++++inlineTextBox name='cell 2'
@@ -12,7 +12,7 @@ rootWebArea
 ++++++++++columnHeader name='cell 5' ariaCellColumnIndex=5
 ++++++++++++staticText name='cell 5'
 ++++++++++++++inlineTextBox name='cell 5'
-++++++++row ariaCellColumnIndex=2
+++++++++row name='cell 2cell 3cell 4cell 5' ariaCellColumnIndex=2
 ++++++++++gridCell name='cell 2' ariaCellColumnIndex=2
 ++++++++++++staticText name='cell 2'
 ++++++++++++++inlineTextBox name='cell 2'

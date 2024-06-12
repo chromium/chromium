@@ -21,14 +21,14 @@ rootWebArea
 ++++++++++++++++++inlineTextBox name='B2'
 ++++++grid name='2: Single wrapper around all rows' tableRowCount=2 tableColumnCount=2
 ++++++++genericContainer
-++++++++++row tableRowIndex=0
+++++++++++row name='A1 A2' tableRowIndex=0
 ++++++++++++gridCell name='A1' tableCellColumnIndex=0 tableCellRowIndex=0
 ++++++++++++++staticText name='A1'
 ++++++++++++++++inlineTextBox name='A1'
 ++++++++++++gridCell name='A2' tableCellColumnIndex=1 tableCellRowIndex=0
 ++++++++++++++staticText name='A2'
 ++++++++++++++++inlineTextBox name='A2'
-++++++++++row tableRowIndex=1
+++++++++++row name='B1 B2' tableRowIndex=1
 ++++++++++++gridCell name='B1' tableCellColumnIndex=0 tableCellRowIndex=1
 ++++++++++++++staticText name='B1'
 ++++++++++++++++inlineTextBox name='B1'
@@ -36,7 +36,7 @@ rootWebArea
 ++++++++++++++staticText name='B2'
 ++++++++++++++++inlineTextBox name='B2'
 ++++++grid name='3: Individual cells get their own wrappers' tableRowCount=2 tableColumnCount=2
-++++++++row tableRowIndex=0
+++++++++row name='A1 A2' tableRowIndex=0
 ++++++++++genericContainer
 ++++++++++++gridCell name='A1' tableCellColumnIndex=0 tableCellRowIndex=0
 ++++++++++++++staticText name='A1'
@@ -45,7 +45,7 @@ rootWebArea
 ++++++++++++gridCell name='A2' tableCellColumnIndex=1 tableCellRowIndex=0
 ++++++++++++++staticText name='A2'
 ++++++++++++++++inlineTextBox name='A2'
-++++++++row tableRowIndex=1
+++++++++row name='B1 B2' tableRowIndex=1
 ++++++++++genericContainer
 ++++++++++++gridCell name='B1' tableCellColumnIndex=0 tableCellRowIndex=1
 ++++++++++++++staticText name='B1'
@@ -56,7 +56,7 @@ rootWebArea
 ++++++++++++++++staticText name='B2'
 ++++++++++++++++++inlineTextBox name='B2'
 ++++++grid name='4: Single wrapper around all cells in a row' tableRowCount=2 tableColumnCount=2
-++++++++row tableRowIndex=0
+++++++++row name='A1 A2' tableRowIndex=0
 ++++++++++genericContainer
 ++++++++++++gridCell name='A1' tableCellColumnIndex=0 tableCellRowIndex=0
 ++++++++++++++staticText name='A1'
@@ -64,7 +64,7 @@ rootWebArea
 ++++++++++++gridCell name='A2' tableCellColumnIndex=1 tableCellRowIndex=0
 ++++++++++++++staticText name='A2'
 ++++++++++++++++inlineTextBox name='A2'
-++++++++row tableRowIndex=1
+++++++++row name='B1 B2' tableRowIndex=1
 ++++++++++genericContainer
 ++++++++++++genericContainer
 ++++++++++++++gridCell name='B1' tableCellColumnIndex=0 tableCellRowIndex=1
@@ -78,7 +78,7 @@ rootWebArea
 ++++++++genericContainer
 ++++++++++genericContainer
 ++++++++++++genericContainer
-++++++++++++++row tableRowIndex=0
+++++++++++++++row name='A1 A2' tableRowIndex=0
 ++++++++++++++++genericContainer
 ++++++++++++++++++genericContainer
 ++++++++++++++++++++gridCell name='A1' tableCellColumnIndex=0 tableCellRowIndex=0
@@ -88,7 +88,7 @@ rootWebArea
 ++++++++++++++++++staticText name='A2'
 ++++++++++++++++++++inlineTextBox name='A2'
 ++++++++++genericContainer
-++++++++++++row tableRowIndex=1
+++++++++++++row name='B1 B2' tableRowIndex=1
 ++++++++++++++gridCell name='B1' tableCellColumnIndex=0 tableCellRowIndex=1
 ++++++++++++++++staticText name='B1'
 ++++++++++++++++++inlineTextBox name='B1'

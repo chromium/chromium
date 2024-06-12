@@ -1548,7 +1548,7 @@ AX_TEST_F('ChromeVoxOutputE2ETest', 'TreeGridLevel', async function() {
     <table id="treegrid" role="treegrid" aria-label="Inbox">
       <tbody>
         <tr role="row" aria-level="1" aria-posinset="1" aria-setsize="1"
-            aria-expanded="true">
+            aria-expanded="true" aria-label="Treegrid faq">
           <td role="gridcell">Treegrids are awesome</td>
           <td role="gridcell">Want to learn how to use them?</td>
         </tr>
@@ -1562,10 +1562,11 @@ AX_TEST_F('ChromeVoxOutputE2ETest', 'TreeGridLevel', async function() {
       new Output().withoutHints().withSpeechAndBraille(range, null, 'navigate');
 
   checkSpeechOutput(
-      ' level 1 |Expanded|Row',
+      ' level 1 |Treegrid faq|Expanded|Row',
       [
-        {value: 'state', start: 10, end: 18},
-        {value: 'role', start: 19, end: 22},
+        {value: 'name', 'start': 10, 'end': 22},
+        {value: 'state', start: 23, end: 31},
+        {value: 'role', start: 32, end: 35},
       ],
       o);
 

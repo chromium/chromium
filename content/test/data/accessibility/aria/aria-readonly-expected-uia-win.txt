@@ -12,7 +12,7 @@ Document
 ++Edit Name='Readonly-false contenteditable textbox'
 ++Edit Name='Readonly-true contenteditable textbox'
 ++DataGrid Grid.ColumnCount=3 Grid.RowCount=1 Selection.CanSelectMultiple=false Selection.IsSelectionRequired=false Table.RowOrColumnMajor='RowMajor'
-++++DataItem
+++++DataItem Name='Readonly-false gridcell Readonly-true gridcell Readonly not specified gridcell'
 ++++++DataItem Name='Readonly-false gridcell' GridItem.Column=0 GridItem.ColumnSpan=1 GridItem.Row=0 GridItem.RowSpan=1 SelectionItem.IsSelected=false
 ++++++DataItem Name='Readonly-true gridcell' GridItem.Column=1 GridItem.ColumnSpan=1 GridItem.Row=0 GridItem.RowSpan=1 SelectionItem.IsSelected=false
 ++++++DataItem Name='Readonly not specified gridcell' GridItem.Column=2 GridItem.ColumnSpan=1 GridItem.Row=0 GridItem.RowSpan=1 SelectionItem.IsSelected=false

@@ -12,7 +12,7 @@ AXWebArea
 ++AXTextField AXDescription='Readonly-false contenteditable textbox'
 ++AXTextField AXDescription='Readonly-true contenteditable textbox'
 ++AXTable
-++++AXRow
+++++AXRow AXTitle='Readonly-false gridcell Readonly-true gridcell Readonly not specified gridcell'
 ++++++AXCell AXDescription='Readonly-false gridcell'
 ++++++AXCell AXDescription='Readonly-true gridcell'
 ++++++AXCell AXDescription='Readonly not specified gridcell'

@@ -1,16 +1,16 @@
 AXWebArea
 ++AXTable AXColumnHeaderUIElements=[:4, :6] AXHeader=:32
-++++AXRow AXIndex=0
+++++AXRow AXIndex=0 AXTitle='Browser Rendering Engine'
 ++++++AXCell AXColumnIndexRange={loc: 0, len: 1} AXRowIndexRange={loc: 0, len: 1}
 ++++++++AXStaticText AXValue='Browser'
 ++++++AXCell AXColumnIndexRange={loc: 1, len: 1} AXRowIndexRange={loc: 0, len: 1}
 ++++++++AXStaticText AXValue='Rendering Engine'
-++++AXRow AXIndex=1
+++++AXRow AXIndex=1 AXTitle='ChromeBlink'
 ++++++AXCell AXColumnHeaderUIElements=[:4] AXColumnIndexRange={loc: 0, len: 1} AXRowIndexRange={loc: 1, len: 1}
 ++++++++AXStaticText AXValue='Chrome'
 ++++++AXCell AXColumnHeaderUIElements=[:6] AXColumnIndexRange={loc: 1, len: 1} AXRowIndexRange={loc: 1, len: 1}
 ++++++++AXStaticText AXValue='Blink'
-++++AXRow AXIndex=2
+++++AXRow AXIndex=2 AXTitle='SafariWebKit'
 ++++++AXCell AXColumnHeaderUIElements=[:4] AXColumnIndexRange={loc: 0, len: 1} AXRowIndexRange={loc: 2, len: 1}
 ++++++++AXStaticText AXValue='Safari'
 ++++++AXCell AXColumnHeaderUIElements=[:6] AXColumnIndexRange={loc: 1, len: 1} AXRowIndexRange={loc: 2, len: 1}

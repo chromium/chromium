@@ -12,7 +12,7 @@ ROLE_SYSTEM_DOCUMENT READONLY
 ++ROLE_SYSTEM_TEXT name='Readonly-false contenteditable textbox'
 ++ROLE_SYSTEM_TEXT name='Readonly-true contenteditable textbox' READONLY
 ++ROLE_SYSTEM_TABLE
-++++ROLE_SYSTEM_ROW
+++++ROLE_SYSTEM_ROW name='Readonly-false gridcell Readonly-true gridcell Readonly not specified gridcell'
 ++++++ROLE_SYSTEM_CELL name='Readonly-false gridcell'
 ++++++ROLE_SYSTEM_CELL name='Readonly-true gridcell' READONLY
 ++++++ROLE_SYSTEM_CELL name='Readonly not specified gridcell'

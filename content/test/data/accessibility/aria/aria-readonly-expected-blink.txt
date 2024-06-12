@@ -21,7 +21,7 @@ rootWebArea
 ++++++textField name='Readonly-true contenteditable textbox' restriction=readOnly
 ++++++grid
 ++++++++rowGroup ignored
-++++++++++row
+++++++++++row name='Readonly-false gridcell Readonly-true gridcell Readonly not specified gridcell'
 ++++++++++++gridCell name='Readonly-false gridcell'
 ++++++++++++gridCell name='Readonly-true gridcell' restriction=readOnly
 ++++++++++++gridCell name='Readonly not specified gridcell'

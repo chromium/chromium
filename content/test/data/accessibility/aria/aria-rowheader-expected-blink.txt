@@ -2,7 +2,7 @@ rootWebArea
 ++genericContainer ignored
 ++++genericContainer ignored
 ++++++grid
-++++++++row
+++++++++row name='Browser ChromeSafari'
 ++++++++++rowHeader name='Browser'
 ++++++++++++staticText name='Browser'
 ++++++++++++++inlineTextBox name='Browser'
@@ -12,7 +12,7 @@ rootWebArea
 ++++++++++gridCell name='Safari'
 ++++++++++++staticText name='Safari'
 ++++++++++++++inlineTextBox name='Safari'
-++++++++row
+++++++++row name='Rendering Engine BlinkWebKit'
 ++++++++++rowHeader name='Rendering Engine'
 ++++++++++++staticText name='Rendering Engine'
 ++++++++++++++inlineTextBox name='Rendering Engine'

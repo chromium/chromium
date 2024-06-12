@@ -7550,24 +7550,19 @@ bool AXObject::SupportsNameFromContents(bool recursive) const {
       break;
 
     // ----- role="row" -------
-    // Spec says we should always expose the name on rows,
-    // but for performance reasons we only do it
-    // if the row is potentially focusable and the descendant of a
-    // grid/treegrid.
+    // ARIA spec says to compute "name from content" on role="row" at
+    // https://w3c.github.io/aria/#row.
+    // However, for performance reasons we only do it if the row is the
+    // descendant of a grid/treegrid.
     case ax::mojom::blink::Role::kRow: {
-      if (IsVirtualObject()) {
-        return true;
-      }
-      Element* elem = GetElement();
-      DCHECK(elem);
-      if (!elem->SupportsFocus(
-              Element::UpdateBehavior::kNoneForAccessibility) &&
-          elem->GetIdAttribute().empty()) {
-        // The element is not directly focusable, and not the potential target
-        // of an aria-activedescendant relation.
+      if (GetDocument() == AXObjectCache().GetPopupDocumentIfShowing()) {
+        // role="row" is used in date pickers, but rows are not focusable
+        // there and don't need a name. If we do decide to use focusable
+        // rows in built-in HTML the name should be set manually, e.g. via
+        // aria-label, as the name-from-contents algorithm often leads to
+        // overly verbose names for rows.
         return false;
       }
-
       // Check for relevant ancestor.
       AXObject* ancestor = ParentObjectUnignored();
       while (ancestor) {

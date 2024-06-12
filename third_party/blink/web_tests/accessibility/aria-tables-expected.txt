@@ -12,7 +12,7 @@ End of test
 
 AXRole: AXGenericContainer
     AXRole: AXGrid
-        AXRole: AXRow
+        AXRole: AXRow "col head 1 col head 2 col head 3"
             AXRole: AXColumnHeader "col head 1"
                 AXRole: AXStaticText "col head 1"
                     AXRole: AXInlineTextBox "col head 1"
@@ -22,7 +22,7 @@ AXRole: AXGenericContainer
             AXRole: AXColumnHeader "col head 3"
                 AXRole: AXStaticText "col head 3"
                     AXRole: AXInlineTextBox "col head 3"
-        AXRole: AXRow
+        AXRole: AXRow "row head< 1/div> data row head 2"
             AXRole: AXRowHeader "row head< 1/div> data row head 2"
                 AXRole: AXStaticText "row head< 1/div>"
                     AXRole: AXInlineTextBox "row head< 1/div>"

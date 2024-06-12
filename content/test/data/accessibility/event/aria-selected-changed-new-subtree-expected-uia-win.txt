@@ -1,11 +1,12 @@
 AriaProperties changed on role=gridcell, name=Grid, GridCell1
 AriaProperties changed on role=gridcell, name=Grid, GridCell3
+Name changed on role=row, name=Grid, GridCell1 Grid, GridCell2 Grid, GridCell3
 SelectionItemIsSelected changed on role=gridcell, name=Grid, GridCell1
 SelectionItemIsSelected changed on role=gridcell, name=Grid, GridCell3
 SelectionItem_ElementRemovedFromSelection on role=gridcell, name=Grid, GridCell1
 SelectionItem_ElementSelected on role=gridcell, name=Grid, GridCell3
 StructureChanged/ChildAdded on role=gridcell, name=Grid, GridCell3
-StructureChanged/ChildrenReordered on role=row
+StructureChanged/ChildrenReordered on role=row, name=Grid, GridCell1 Grid, GridCell2 Grid, GridCell3
 === Start Continuation ===
 AriaProperties changed on role=combobox
 AriaProperties changed on role=combobox

@@ -1,18 +1,18 @@
 AXWebArea
 ++AXTable AXARIAColumnCount=3 AXARIARowCount=3
-++++AXRow
+++++AXRow AXTitle='Column 1 Column 2 Column 3'
 ++++++AXCell AXARIAColumnIndex=1 AXARIARowIndex=1
 ++++++++AXStaticText AXValue='Column 1'
 ++++++AXCell AXARIAColumnIndex=2 AXARIARowIndex=1
 ++++++++AXStaticText AXValue='Column 2'
 ++++++AXCell AXARIAColumnIndex=3 AXARIARowIndex=1
 ++++++++AXStaticText AXValue='Column 3'
-++++AXRow
+++++AXRow AXTitle='Cell A2 Cell A3'
 ++++++AXCell AXARIAColumnIndex=2 AXARIARowIndex=2
 ++++++++AXStaticText AXValue='Cell A2'
 ++++++AXCell AXARIAColumnIndex=3 AXARIARowIndex=2
 ++++++++AXStaticText AXValue='Cell A3'
-++++AXRow
+++++AXRow AXTitle='Cell B1 Cell B2'
 ++++++AXCell AXARIAColumnIndex=1 AXARIARowIndex=3
 ++++++++AXStaticText AXValue='Cell B1'
 ++++++AXCell AXARIAColumnIndex=2 AXARIARowIndex=3
