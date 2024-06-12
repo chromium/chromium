@@ -336,14 +336,9 @@ export class ProductSpecificationsElement extends PolymerElement {
   }
 
   private onSetRemoved_(id: Uuid) {
-    if (id.value !== this.id_?.value) {
-      return;
+    if (id.value === this.id_?.value) {
+      window.location.replace(window.location.origin);
     }
-    this.id_ = null;
-    this.specsTable_ = {
-      columns: [],
-      rows: [],
-    };
   }
 }
 
