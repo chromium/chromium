@@ -4,6 +4,8 @@
 
 #include "components/saved_tab_groups/shared_tab_group_data_sync_bridge.h"
 
+#include <map>
+
 #include "base/functional/callback_helpers.h"
 #include "base/logging.h"
 #include "base/notimplemented.h"
@@ -269,7 +271,47 @@ bool SharedTabGroupDataSyncBridge::SupportsIncrementalUpdates() const {
 void SharedTabGroupDataSyncBridge::ApplyDisableSyncChanges(
     std::unique_ptr<syncer::MetadataChangeList> delete_metadata_change_list) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  NOTIMPLEMENTED();
+
+  // When the sync is disabled, all the corresponding groups and their tabs
+  // should be closed. To do that, each of the tab needs to be closed
+  // explicitly, otherwise they would remain open.
+
+  // First, collect the GUIDs for all the shared tab groups and their tabs. This
+  // is required to delete them from the model in a separate loop, otherwise
+  // removing them from within the same loop would modify the same underlying
+  // storage.
+  std::map<base::Uuid, std::vector<base::Uuid>> group_and_tabs_to_close_locally;
+  for (const SavedTabGroup& group : model_->saved_tab_groups()) {
+    if (!group.is_shared_tab_group()) {
+      continue;
+    }
+
+    std::vector<base::Uuid> tabs_to_close_locally;
+    for (const SavedTabGroupTab& tab : group.saved_tabs()) {
+      tabs_to_close_locally.emplace_back(tab.saved_tab_guid());
+    }
+
+    // Normally, groups don't need to be closed explicitly because closing the
+    // last tab closes a corresponding group. However if a group is empty, it
+    // would left open. It's safer to explicitly close all the groups explicitly
+    // (the model will just ignore it if they don't exist anymore), hence keep
+    // an empty group as well.
+    group_and_tabs_to_close_locally[group.saved_guid()] =
+        std::move(tabs_to_close_locally);
+  }
+
+  for (const auto& [group_id, tabs_to_close_locally] :
+       group_and_tabs_to_close_locally) {
+    for (const base::Uuid& tab_id : tabs_to_close_locally) {
+      model_->RemoveTabFromGroupFromSync(group_id, tab_id);
+    }
+    model_->RemovedFromSync(group_id);
+  }
+
+  // Delete all shared tabs and sync metadata from the store.
+  // `delete_metadata_change_list` is not used because all the metadata is
+  // deleted anyway.
+  store_->DeleteAllDataAndMetadata(base::DoNothing());
 }
 
 sync_pb::EntitySpecifics

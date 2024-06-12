@@ -7,12 +7,16 @@
 #include <memory>
 
 #include "base/run_loop.h"
+#include "base/scoped_observation.h"
+#include "base/test/bind.h"
 #include "base/test/task_environment.h"
 #include "base/uuid.h"
 #include "components/prefs/testing_pref_service.h"
 #include "components/saved_tab_groups/saved_tab_group.h"
 #include "components/saved_tab_groups/saved_tab_group_model.h"
+#include "components/saved_tab_groups/saved_tab_group_model_observer.h"
 #include "components/saved_tab_groups/saved_tab_group_tab.h"
+#include "components/saved_tab_groups/saved_tab_group_test_utils.h"
 #include "components/sync/model/entity_change.h"
 #include "components/sync/protocol/entity_data.h"
 #include "components/sync/protocol/shared_tab_group_data_specifics.pb.h"
@@ -24,6 +28,7 @@
 namespace tab_groups {
 namespace {
 
+using testing::Eq;
 using testing::Invoke;
 using testing::Return;
 using testing::UnorderedElementsAre;
@@ -32,6 +37,22 @@ MATCHER_P3(HasSharedGroupMetadata, title, color, collaboration_id, "") {
   return base::UTF16ToUTF8(arg.title()) == title && arg.color() == color &&
          arg.collaboration_id() == collaboration_id;
 }
+
+class MockTabGroupModelObserver : public SavedTabGroupModelObserver {
+ public:
+  explicit MockTabGroupModelObserver(SavedTabGroupModel* model) {
+    observation_.Observe(model);
+  }
+
+  MOCK_METHOD(void, SavedTabGroupRemovedFromSync, (const SavedTabGroup*));
+  MOCK_METHOD(void,
+              SavedTabGroupUpdatedFromSync,
+              (const base::Uuid&, const std::optional<base::Uuid>&));
+
+ private:
+  base::ScopedObservation<SavedTabGroupModel, SavedTabGroupModelObserver>
+      observation_{this};
+};
 
 sync_pb::SharedTabGroupDataSpecifics MakeTabGroupSpecifics(
     const std::string& title,
@@ -73,7 +94,8 @@ std::unique_ptr<syncer::EntityChange> CreateUpdateEntityChange(
 class SharedTabGroupDataSyncBridgeTest : public testing::Test {
  public:
   SharedTabGroupDataSyncBridgeTest()
-      : store_(syncer::ModelTypeStoreTestUtil::CreateInMemoryStoreForTest()) {}
+      : mock_model_observer_(&saved_tab_group_model_),
+        store_(syncer::ModelTypeStoreTestUtil::CreateInMemoryStoreForTest()) {}
 
   void InitializeBridge() {
     ON_CALL(processor_, IsTrackingMetadata())
@@ -85,17 +107,35 @@ class SharedTabGroupDataSyncBridgeTest : public testing::Test {
     task_environment_.RunUntilIdle();
   }
 
+  size_t GetNumEntriesInStore() {
+    std::unique_ptr<syncer::ModelTypeStore::RecordList> entries;
+    base::RunLoop run_loop;
+    store_->ReadAllData(base::BindLambdaForTesting(
+        [&run_loop, &entries](
+            const std::optional<syncer::ModelError>& error,
+            std::unique_ptr<syncer::ModelTypeStore::RecordList> data) {
+          entries = std::move(data);
+          run_loop.Quit();
+        }));
+    run_loop.Run();
+    return entries->size();
+  }
+
   SharedTabGroupDataSyncBridge* bridge() { return bridge_.get(); }
   testing::NiceMock<syncer::MockModelTypeChangeProcessor>* mock_processor() {
     return &processor_;
   }
   SavedTabGroupModel* model() { return &saved_tab_group_model_; }
+  testing::NiceMock<MockTabGroupModelObserver>& mock_model_observer() {
+    return mock_model_observer_;
+  }
 
  private:
   // In memory model type store needs to be able to post tasks.
   base::test::TaskEnvironment task_environment_;
 
   SavedTabGroupModel saved_tab_group_model_;
+  testing::NiceMock<MockTabGroupModelObserver> mock_model_observer_;
   testing::NiceMock<syncer::MockModelTypeChangeProcessor> processor_;
   std::unique_ptr<syncer::ModelTypeStore> store_;
   TestingPrefServiceSimple pref_service_;
@@ -232,6 +272,60 @@ TEST_F(SharedTabGroupDataSyncBridgeTest, ShouldCheckValidEntities) {
   EXPECT_TRUE(bridge()->IsEntityDataValid(CreateEntityData(
       MakeTabGroupSpecifics("test title", sync_pb::SharedTabGroup::GREEN),
       "collaboration")));
+}
+
+TEST_F(SharedTabGroupDataSyncBridgeTest, ShouldRemoveLocalGroupsOnDisableSync) {
+  InitializeBridge();
+
+  // Initialize the model with some initial data. Create 2 entities to make it
+  // sure that each of them is being deleted.
+  syncer::EntityChangeList change_list;
+  change_list.push_back(CreateAddEntityChange(
+      MakeTabGroupSpecifics("title", sync_pb::SharedTabGroup::RED),
+      "collaboration"));
+  change_list.push_back(CreateAddEntityChange(
+      MakeTabGroupSpecifics("title 2", sync_pb::SharedTabGroup::GREEN),
+      "collaboration"));
+  bridge()->MergeFullSyncData(bridge()->CreateMetadataChangeList(),
+                              std::move(change_list));
+  ASSERT_EQ(model()->Count(), 2);
+  ASSERT_EQ(GetNumEntriesInStore(), 2u);
+  change_list.clear();
+
+  // Stop sync and verify that data is removed from the model.
+  bridge()->ApplyDisableSyncChanges(bridge()->CreateMetadataChangeList());
+  EXPECT_EQ(model()->Count(), 0);
+  EXPECT_EQ(GetNumEntriesInStore(), 0u);
+}
+
+TEST_F(SharedTabGroupDataSyncBridgeTest, ShouldNotifyObserversOnDisableSync) {
+  InitializeBridge();
+
+  SavedTabGroup group(u"title", tab_groups::TabGroupColorId::kGrey,
+                      /*urls=*/{}, /*position=*/std::nullopt);
+  group.SetCollaborationId("collaboration");
+  SavedTabGroupTab tab1 = test::CreateSavedTabGroupTab(
+      "http://google.com", u"tab 1", group.saved_guid(), /*position=*/0);
+  SavedTabGroupTab tab2 = test::CreateSavedTabGroupTab(
+      "http://google.com", u"tab 2", group.saved_guid(), /*position=*/1);
+
+  model()->Add(group);
+  model()->AddTabToGroupLocally(group.saved_guid(), tab1);
+  model()->AddTabToGroupLocally(group.saved_guid(), tab2);
+  ASSERT_TRUE(model()->Contains(group.saved_guid()));
+  ASSERT_EQ(model()->Get(group.saved_guid())->saved_tabs().size(), 2u);
+
+  // Observers must be notified for closed groups and tabs to make it sure that
+  // both will be closed.
+  EXPECT_CALL(mock_model_observer(), SavedTabGroupRemovedFromSync);
+  EXPECT_CALL(mock_model_observer(),
+              SavedTabGroupUpdatedFromSync(Eq(group.saved_guid()),
+                                           Eq(tab1.saved_tab_guid())));
+  // TODO(crbug.com/319521964): uncomment the following line once fixed.
+  // EXPECT_CALL(mock_model_observer(),
+  // SavedTabGroupUpdatedFromSync(Eq(group.saved_guid()),
+  // Eq(tab2.saved_tab_guid())));
+  bridge()->ApplyDisableSyncChanges(bridge()->CreateMetadataChangeList());
 }
 
 }  // namespace

@@ -276,6 +276,10 @@ void SavedTabGroupSyncBridge::ApplyDisableSyncChanges(
   write_batch->TakeMetadataChangesFrom(std::move(delete_metadata_change_list));
   std::vector<base::Uuid> groups_to_close_locally;
   for (const SavedTabGroup& group : model_->saved_tab_groups()) {
+    if (group.is_shared_tab_group()) {
+      // Shared tab groups are handled by SharedTabGroupDataSyncBridge.
+      continue;
+    }
     if (group.created_before_syncing_tab_groups()) {
       continue;
     }
