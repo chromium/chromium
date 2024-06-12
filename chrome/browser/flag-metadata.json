@@ -7253,12 +7253,12 @@
   {
     "name": "product-specifications",
     "owners": [ "mdjones@chromium.org", "chrome-shopping-eng@google.com" ],
-    "expiry_milestone": 127
+    "expiry_milestone": 130
   },
   {
     "name": "product-specifications-sync",
     "owners": [ "davidjm@chromium.org", "chrome-shopping-eng@google.com" ],
-    "expiry_milestone": 127
+    "expiry_milestone": 130
   },
   {
     "name": "productivity-launcher",
