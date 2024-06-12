@@ -51,7 +51,7 @@ URLVisitResumptionRanker::URLVisitResumptionRanker()
       use_random_score_(base::GetFieldTrialParamByFeatureAsBool(
           features::kSegmentationPlatformURLVisitResumptionRanker,
           "use_random_score",
-          true)) {}
+          false)) {}
 
 URLVisitResumptionRanker::~URLVisitResumptionRanker() = default;
 
