@@ -1514,8 +1514,11 @@ void Browser::SavedTabGroupAddedLocally(const base::Uuid& guid) {
     return;
   }
 
-  UpdateTabGroupSessionMetadata(this, added_group->local_group_id().value(),
-                                guid.AsLowercaseString());
+  if (tab_strip_model()->group_model()->ContainsTabGroup(
+          added_group->local_group_id().value())) {
+    UpdateTabGroupSessionMetadata(this, added_group->local_group_id().value(),
+                                  guid.AsLowercaseString());
+  }
 }
 
 void Browser::SavedTabGroupRemovedLocally(
@@ -1528,8 +1531,11 @@ void Browser::SavedTabGroupRemovedLocally(
     return;
   }
 
-  UpdateTabGroupSessionMetadata(this, removed_group->local_group_id().value(),
-                                std::nullopt);
+  if (tab_strip_model()->group_model()->ContainsTabGroup(
+          removed_group->local_group_id().value())) {
+    UpdateTabGroupSessionMetadata(this, removed_group->local_group_id().value(),
+                                  std::nullopt);
+  }
 }
 
 void Browser::SetTopControlsShownRatio(content::WebContents* web_contents,
