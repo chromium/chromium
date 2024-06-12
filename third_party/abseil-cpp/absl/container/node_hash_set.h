@@ -40,6 +40,7 @@
 #include <type_traits>
 
 #include "absl/algorithm/container.h"
+#include "absl/base/attributes.h"
 #include "absl/container/hash_container_defaults.h"
 #include "absl/container/internal/container_memory.h"
 #include "absl/container/internal/node_slot_policy.h"
@@ -111,7 +112,7 @@ struct NodeHashSetPolicy;
 //  }
 template <class T, class Hash = DefaultHashContainerHash<T>,
           class Eq = DefaultHashContainerEq<T>, class Alloc = std::allocator<T>>
-class node_hash_set
+class ABSL_INTERNAL_ATTRIBUTE_OWNER node_hash_set
     : public absl::container_internal::raw_hash_set<
           absl::container_internal::NodeHashSetPolicy<T>, Hash, Eq, Alloc> {
   using Base = typename node_hash_set::raw_hash_set;

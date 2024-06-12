@@ -197,9 +197,11 @@ absl_cc_library(
   HDRS
     "internal/demangle.h"
     "internal/demangle_rust.h"
+    "internal/utf8_for_code_point.h"
   SRCS
     "internal/demangle.cc"
     "internal/demangle_rust.cc"
+    "internal/utf8_for_code_point.cc"
   COPTS
     ${ABSL_DEFAULT_COPTS}
   DEPS
@@ -235,6 +237,19 @@ absl_cc_test(
     absl::core_headers
     absl::log
     absl::memory
+    GTest::gmock_main
+)
+
+absl_cc_test(
+  NAME
+    utf8_for_code_point_test
+  SRCS
+    "internal/utf8_for_code_point_test.cc"
+  COPTS
+    ${ABSL_TEST_COPTS}
+  DEPS
+    absl::demangle_internal
+    absl::config
     GTest::gmock_main
 )
 

@@ -306,8 +306,10 @@ absl_cc_test(
   DEPS
     absl::any
     absl::check
+    absl::config
     absl::flat_hash_map
     absl::hash_generator_testing
+    absl::hash_policy_testing
     absl::test_allocator
     absl::type_traits
     absl::unordered_map_constructor_test
@@ -781,10 +783,12 @@ absl_cc_test(
     absl::hashtablez_sampler
     absl::log
     absl::memory
+    absl::node_hash_set
     absl::prefetch
     absl::raw_hash_set
     absl::strings
     absl::test_allocator
+    absl::test_instance_tracker
     absl::type_traits
     GTest::gmock_main
 )
