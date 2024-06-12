@@ -74,15 +74,6 @@ constexpr char kSaveUIDismissalReasonHistogramName[] =
     "PasswordManager.SaveUIDismissalReason";
 constexpr char kUpdateUIDismissalReasonHistogramName[] =
     "PasswordManager.UpdateUIDismissalReason";
-constexpr char kSaveUpdatePasswordMessageDismissalReason[] =
-    "PasswordManager.SaveUpdateUIDismissalReasonAndroid";
-constexpr char kSavePasswordMessageDismissalReason[] =
-    "PasswordManager.SaveUpdateUIDismissalReasonAndroid.Save";
-constexpr char kUpdatePasswordMessageDismissalReason[] =
-    "PasswordManager.SaveUpdateUIDismissalReasonAndroid.Update";
-constexpr char kConfirmUsernameMessageDismissalReason[] =
-    "PasswordManager.SaveUpdateUIDismissalReasonAndroid."
-    "UpdateWithUsernameConfirmation";
 
 }  // namespace
 
@@ -1105,18 +1096,6 @@ TEST_F(SaveUpdatePasswordMessageDelegateTest,
   histogram_tester.ExpectUniqueSample(
       kUpdateUIDismissalReasonHistogramName,
       password_manager::metrics_util::CLICKED_ACCEPT, 1);
-  histogram_tester.ExpectUniqueSample(
-      kSaveUpdatePasswordMessageDismissalReason,
-      SaveUpdatePasswordMessageDelegate::
-          SaveUpdatePasswordMessageDismissReason::
-              kAcceptInUsernameConfirmDialog,
-      1);
-  histogram_tester.ExpectUniqueSample(
-      kConfirmUsernameMessageDismissalReason,
-      SaveUpdatePasswordMessageDelegate::
-          SaveUpdatePasswordMessageDismissReason::
-              kAcceptInUsernameConfirmDialog,
-      1);
 }
 // Verifies that:
 // 1. Save password dialog is shown after clicking on cog menu item
@@ -1155,16 +1134,6 @@ TEST_F(SaveUpdatePasswordMessageDelegateTest,
   histogram_tester.ExpectUniqueSample(
       kSaveUIDismissalReasonHistogramName,
       password_manager::metrics_util::CLICKED_ACCEPT, 1);
-  histogram_tester.ExpectUniqueSample(
-      kSaveUpdatePasswordMessageDismissalReason,
-      SaveUpdatePasswordMessageDelegate::
-          SaveUpdatePasswordMessageDismissReason::kAcceptInDialog,
-      1);
-  histogram_tester.ExpectUniqueSample(
-      kSavePasswordMessageDismissalReason,
-      SaveUpdatePasswordMessageDelegate::
-          SaveUpdatePasswordMessageDismissReason::kAcceptInDialog,
-      1);
 }
 
 // Verifies that the site is blocklisted after clicking on
@@ -1191,16 +1160,6 @@ TEST_F(SaveUpdatePasswordMessageDelegateTest,
   histogram_tester.ExpectUniqueSample(
       kSaveUIDismissalReasonHistogramName,
       password_manager::metrics_util::CLICKED_NEVER, 1);
-  histogram_tester.ExpectUniqueSample(
-      kSaveUpdatePasswordMessageDismissalReason,
-      SaveUpdatePasswordMessageDelegate::
-          SaveUpdatePasswordMessageDismissReason::kNeverSave,
-      1);
-  histogram_tester.ExpectUniqueSample(
-      kSavePasswordMessageDismissalReason,
-      SaveUpdatePasswordMessageDelegate::
-          SaveUpdatePasswordMessageDismissReason::kNeverSave,
-      1);
 }
 
 // Verifies that the password migration warning is not shown after selecting
@@ -1262,16 +1221,6 @@ TEST_F(SaveUpdatePasswordMessageDelegateTest,
   histogram_tester.ExpectUniqueSample(
       kUpdateUIDismissalReasonHistogramName,
       password_manager::metrics_util::CLICKED_ACCEPT, 1);
-  histogram_tester.ExpectUniqueSample(
-      kSaveUpdatePasswordMessageDismissalReason,
-      SaveUpdatePasswordMessageDelegate::
-          SaveUpdatePasswordMessageDismissReason::kAcceptInDialog,
-      1);
-  histogram_tester.ExpectUniqueSample(
-      kUpdatePasswordMessageDismissalReason,
-      SaveUpdatePasswordMessageDelegate::
-          SaveUpdatePasswordMessageDismissReason::kAcceptInDialog,
-      1);
 }
 
 // Verifies that:
@@ -1304,16 +1253,6 @@ TEST_F(SaveUpdatePasswordMessageDelegateTest,
   histogram_tester.ExpectUniqueSample(
       kSaveUIDismissalReasonHistogramName,
       password_manager::metrics_util::CLICKED_CANCEL, 1);
-  histogram_tester.ExpectUniqueSample(
-      kSaveUpdatePasswordMessageDismissalReason,
-      SaveUpdatePasswordMessageDelegate::
-          SaveUpdatePasswordMessageDismissReason::kCancelInDialog,
-      1);
-  histogram_tester.ExpectUniqueSample(
-      kSavePasswordMessageDismissalReason,
-      SaveUpdatePasswordMessageDelegate::
-          SaveUpdatePasswordMessageDismissReason::kCancelInDialog,
-      1);
 }
 
 // Tests that password is saved if device lock UI is shown and device lock is
