@@ -26,16 +26,27 @@
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace tab_groups {
+
+// PrintTo must be defined in the same namespace as the SavedTabGroupTab class.
+void PrintTo(const SavedTabGroupTab& tab, std::ostream* os) {
+  *os << "(title: " << tab.title() << ", url: " << tab.url() << ")";
+}
 namespace {
 
+using testing::ElementsAre;
 using testing::Eq;
 using testing::Invoke;
 using testing::Return;
+using testing::SizeIs;
 using testing::UnorderedElementsAre;
 
 MATCHER_P3(HasSharedGroupMetadata, title, color, collaboration_id, "") {
   return base::UTF16ToUTF8(arg.title()) == title && arg.color() == color &&
          arg.collaboration_id() == collaboration_id;
+}
+
+MATCHER_P2(HasTabMetadata, title, url, "") {
+  return base::UTF16ToUTF8(arg.title()) == title && arg.url() == GURL(url);
 }
 
 class MockTabGroupModelObserver : public SavedTabGroupModelObserver {
@@ -62,6 +73,19 @@ sync_pb::SharedTabGroupDataSpecifics MakeTabGroupSpecifics(
   sync_pb::SharedTabGroup* tab_group = specifics.mutable_tab_group();
   tab_group->set_title(title);
   tab_group->set_color(color);
+  return specifics;
+}
+
+sync_pb::SharedTabGroupDataSpecifics MakeTabSpecifics(
+    const std::string& title,
+    const GURL& url,
+    const base::Uuid& group_id) {
+  sync_pb::SharedTabGroupDataSpecifics specifics;
+  specifics.set_guid(base::Uuid::GenerateRandomV4().AsLowercaseString());
+  sync_pb::SharedTab* pb_tab = specifics.mutable_tab();
+  pb_tab->set_url(url.spec());
+  pb_tab->set_title(title);
+  pb_tab->set_shared_tab_group_guid(group_id.AsLowercaseString());
   return specifics;
 }
 
@@ -182,6 +206,41 @@ TEST_F(SharedTabGroupDataSyncBridgeTest, ShouldAddRemoteGroupsAtInitialSync) {
                                  "collaboration 2")));
 }
 
+TEST_F(SharedTabGroupDataSyncBridgeTest, ShouldAddRemoteTabsAtInitialSync) {
+  InitializeBridge();
+
+  sync_pb::SharedTabGroupDataSpecifics group_specifics =
+      MakeTabGroupSpecifics("title", sync_pb::SharedTabGroup::BLUE);
+  const std::string collaboration_id = "collaboration";
+  const base::Uuid group_id =
+      base::Uuid::ParseLowercase(group_specifics.guid());
+
+  syncer::EntityChangeList change_list;
+  change_list.push_back(
+      CreateAddEntityChange(group_specifics, collaboration_id));
+  change_list.push_back(CreateAddEntityChange(
+      MakeTabSpecifics("tab title 1", GURL("https://google.com/1"),
+                       /*group_id=*/group_id),
+      collaboration_id));
+  change_list.push_back(CreateAddEntityChange(
+      MakeTabSpecifics("tab title 2", GURL("https://google.com/2"),
+                       /*group_id=*/group_id),
+      collaboration_id));
+
+  bridge()->MergeFullSyncData(bridge()->CreateMetadataChangeList(),
+                              std::move(change_list));
+  ASSERT_THAT(
+      model()->saved_tab_groups(),
+      ElementsAre(HasSharedGroupMetadata(
+          "title", tab_groups::TabGroupColorId::kBlue, "collaboration")));
+
+  // Expect both tabs to be a part of the group.
+  EXPECT_THAT(model()->saved_tab_groups().front().saved_tabs(),
+              UnorderedElementsAre(
+                  HasTabMetadata("tab title 1", "https://google.com/1"),
+                  HasTabMetadata("tab title 2", "https://google.com/2")));
+}
+
 TEST_F(SharedTabGroupDataSyncBridgeTest,
        ShouldAddRemoteGroupsAtIncrementalUpdate) {
   InitializeBridge();
@@ -203,6 +262,42 @@ TEST_F(SharedTabGroupDataSyncBridgeTest,
                                  "collaboration"),
           HasSharedGroupMetadata("title 2", tab_groups::TabGroupColorId::kRed,
                                  "collaboration 2")));
+}
+
+TEST_F(SharedTabGroupDataSyncBridgeTest,
+       ShouldAddRemoteTabsAtIncrementalUpdate) {
+  InitializeBridge();
+
+  sync_pb::SharedTabGroupDataSpecifics group_specifics =
+      MakeTabGroupSpecifics("title", sync_pb::SharedTabGroup::BLUE);
+  const std::string collaboration_id = "collaboration";
+  const base::Uuid group_id =
+      base::Uuid::ParseLowercase(group_specifics.guid());
+
+  syncer::EntityChangeList change_list;
+  change_list.push_back(
+      CreateAddEntityChange(group_specifics, collaboration_id));
+  change_list.push_back(CreateAddEntityChange(
+      MakeTabSpecifics("tab title 1", GURL("https://google.com/1"),
+                       /*group_id=*/group_id),
+      collaboration_id));
+  change_list.push_back(CreateAddEntityChange(
+      MakeTabSpecifics("tab title 2", GURL("https://google.com/2"),
+                       /*group_id=*/group_id),
+      collaboration_id));
+
+  bridge()->ApplyIncrementalSyncChanges(bridge()->CreateMetadataChangeList(),
+                                        std::move(change_list));
+  ASSERT_THAT(
+      model()->saved_tab_groups(),
+      ElementsAre(HasSharedGroupMetadata(
+          "title", tab_groups::TabGroupColorId::kBlue, "collaboration")));
+
+  // Expect both tabs to be a part of the group.
+  EXPECT_THAT(model()->saved_tab_groups().front().saved_tabs(),
+              UnorderedElementsAre(
+                  HasTabMetadata("tab title 1", "https://google.com/1"),
+                  HasTabMetadata("tab title 2", "https://google.com/2")));
 }
 
 TEST_F(SharedTabGroupDataSyncBridgeTest, ShouldUpdateExistingGroup) {
@@ -239,6 +334,48 @@ TEST_F(SharedTabGroupDataSyncBridgeTest, ShouldUpdateExistingGroup) {
                                  "collaboration 2")));
 }
 
+TEST_F(SharedTabGroupDataSyncBridgeTest, ShouldUpdateExistingTab) {
+  InitializeBridge();
+
+  sync_pb::SharedTabGroupDataSpecifics group_specifics =
+      MakeTabGroupSpecifics("title", sync_pb::SharedTabGroup::BLUE);
+  const std::string collaboration_id = "collaboration";
+  const base::Uuid group_id =
+      base::Uuid::ParseLowercase(group_specifics.guid());
+
+  sync_pb::SharedTabGroupDataSpecifics tab_to_update_specifics =
+      MakeTabSpecifics("tab title 1", GURL("https://google.com/1"),
+                       /*group_id=*/group_id);
+
+  syncer::EntityChangeList change_list;
+  change_list.push_back(
+      CreateAddEntityChange(group_specifics, collaboration_id));
+  change_list.push_back(
+      CreateAddEntityChange(tab_to_update_specifics, collaboration_id));
+  change_list.push_back(CreateAddEntityChange(
+      MakeTabSpecifics("tab title 2", GURL("https://google.com/2"),
+                       /*group_id=*/group_id),
+      collaboration_id));
+
+  bridge()->MergeFullSyncData(bridge()->CreateMetadataChangeList(),
+                              std::move(change_list));
+  ASSERT_EQ(model()->Count(), 1);
+  ASSERT_THAT(model()->saved_tab_groups().front().saved_tabs(), SizeIs(2));
+  change_list.clear();
+
+  tab_to_update_specifics.mutable_tab()->set_title("updated title");
+  change_list.push_back(
+      CreateUpdateEntityChange(tab_to_update_specifics, collaboration_id));
+  bridge()->ApplyIncrementalSyncChanges(bridge()->CreateMetadataChangeList(),
+                                        std::move(change_list));
+
+  ASSERT_EQ(model()->Count(), 1);
+  EXPECT_THAT(model()->saved_tab_groups().front().saved_tabs(),
+              UnorderedElementsAre(
+                  HasTabMetadata("updated title", "https://google.com/1"),
+                  HasTabMetadata("tab title 2", "https://google.com/2")));
+}
+
 TEST_F(SharedTabGroupDataSyncBridgeTest, ShouldDeleteExistingGroup) {
   InitializeBridge();
 
@@ -264,6 +401,34 @@ TEST_F(SharedTabGroupDataSyncBridgeTest, ShouldDeleteExistingGroup) {
       model()->saved_tab_groups(),
       UnorderedElementsAre(HasSharedGroupMetadata(
           "title 2", tab_groups::TabGroupColorId::kGrey, "collaboration 2")));
+}
+
+TEST_F(SharedTabGroupDataSyncBridgeTest, ShouldDeleteExistingTab) {
+  InitializeBridge();
+
+  SavedTabGroup group(u"group title", tab_groups::TabGroupColorId::kBlue,
+                      /*urls=*/{}, /*position=*/std::nullopt);
+  group.SetCollaborationId("collaboration");
+  SavedTabGroupTab tab_to_delete(GURL("https://google.com/1"), u"title 1",
+                                 group.saved_guid(), /*position=*/std::nullopt);
+  group.AddTabLocally(tab_to_delete);
+  group.AddTabLocally(SavedTabGroupTab(GURL("https://google.com/2"), u"title 2",
+                                       group.saved_guid(),
+                                       /*position=*/std::nullopt));
+  model()->Add(group);
+  ASSERT_EQ(model()->Count(), 1);
+  ASSERT_THAT(model()->saved_tab_groups().front().saved_tabs(), SizeIs(2));
+
+  syncer::EntityChangeList change_list;
+  change_list.push_back(syncer::EntityChange::CreateDelete(
+      tab_to_delete.saved_tab_guid().AsLowercaseString()));
+  bridge()->ApplyIncrementalSyncChanges(bridge()->CreateMetadataChangeList(),
+                                        std::move(change_list));
+
+  ASSERT_EQ(model()->Count(), 1);
+  EXPECT_THAT(
+      model()->saved_tab_groups().front().saved_tabs(),
+      UnorderedElementsAre(HasTabMetadata("title 2", "https://google.com/2")));
 }
 
 TEST_F(SharedTabGroupDataSyncBridgeTest, ShouldCheckValidEntities) {

@@ -12,6 +12,7 @@
 #include "base/strings/utf_string_conversions.h"
 #include "base/uuid.h"
 #include "components/prefs/pref_service.h"
+#include "components/saved_tab_groups/saved_tab_group.h"
 #include "components/sync/base/model_type.h"
 #include "components/sync/model/in_memory_metadata_change_list.h"
 #include "components/sync/model/metadata_batch.h"
@@ -126,6 +127,47 @@ SavedTabGroup SpecificsToSharedTabGroup(
                       update_time);
   group.SetCollaborationId(collaboration_id);
   return group;
+}
+
+SavedTabGroupTab SpecificsToSharedTabGroupTab(
+    const sync_pb::SharedTabGroupDataSpecifics& specifics) {
+  CHECK(specifics.has_tab());
+
+  const base::Uuid guid = base::Uuid::ParseLowercase(specifics.guid());
+
+  // GUID must be checked before this method is called.
+  CHECK(guid.is_valid());
+
+  const base::Time update_time =
+      TimeFromWindowsEpochMicros(specifics.update_time_windows_epoch_micros());
+
+  // TODO(crbug.com/319521964): handle tab positions.
+  return SavedTabGroupTab(
+      GURL(specifics.tab().url()), base::UTF8ToUTF16(specifics.tab().title()),
+      base::Uuid::ParseLowercase(specifics.tab().shared_tab_group_guid()),
+      /*position=*/std::nullopt, guid,
+      /*local_tab_id=*/std::nullopt,
+      /*creation_time_windows_epoch_micros=*/std::nullopt, update_time);
+}
+
+sync_pb::SharedTabGroupDataSpecifics SharedTabGroupTabToSpecifics(
+    const SavedTabGroupTab& tab) {
+  sync_pb::SharedTabGroupDataSpecifics specifics;
+
+  specifics.set_guid(tab.saved_tab_guid().AsLowercaseString());
+  specifics.set_update_time_windows_epoch_micros(
+      tab.update_time_windows_epoch_micros()
+          .ToDeltaSinceWindowsEpoch()
+          .InMicroseconds());
+
+  sync_pb::SharedTab* pb_tab = specifics.mutable_tab();
+  pb_tab->set_url(tab.url().spec());
+  pb_tab->set_shared_tab_group_guid(tab.saved_group_guid().AsLowercaseString());
+  pb_tab->set_title(base::UTF16ToUTF8(tab.title()));
+
+  // TODO(crbug.com/319521964): handle tab positions.
+
+  return specifics;
 }
 
 }  // namespace
@@ -430,7 +472,45 @@ void SharedTabGroupDataSyncBridge::AddTabToLocalStorage(
     syncer::MetadataChangeList* metadata_change_list,
     syncer::ModelTypeStore::WriteBatch* write_batch) {
   CHECK(specifics.has_tab());
-  NOTIMPLEMENTED();
+
+  base::Uuid tab_guid = base::Uuid::ParseLowercase(specifics.guid());
+  base::Uuid group_guid =
+      base::Uuid::ParseLowercase(specifics.tab().shared_tab_group_guid());
+  if (!tab_guid.is_valid() || !group_guid.is_valid()) {
+    // Ignore tab with invalid data.
+    return;
+  }
+
+  const SavedTabGroup* existing_group = model_->Get(group_guid);
+  if (existing_group && existing_group->ContainsTab(tab_guid)) {
+    const SavedTabGroupTab* merged_tab =
+        model_->MergeRemoteTab(SpecificsToSharedTabGroupTab(specifics));
+    sync_pb::SharedTabGroupDataSpecifics merged_entry =
+        SharedTabGroupTabToSpecifics(*merged_tab);
+
+    // Write result to the store.
+    // TODO(crbug.com/319521964): use a different proto to store data locally.
+    write_batch->WriteData(merged_entry.guid(),
+                           merged_entry.SerializeAsString());
+    return;
+  }
+
+  // Tabs are stored to the local storage regardless of the existence of its
+  // group in order to recover the tabs in the event the group was not received
+  // and a crash / restart occurred.
+  // TODO(crbug.com/319521964): use a different proto to store data locally.
+  write_batch->WriteData(specifics.guid(), specifics.SerializeAsString());
+
+  if (existing_group) {
+    // This is a new tab for the group.
+    model_->AddTabToGroupFromSync(existing_group->saved_guid(),
+                                  SpecificsToSharedTabGroupTab(specifics));
+  } else {
+    // The tab does not have a corresponding group. This can happen when sync
+    // sends the tab data before the group data. In this case, the tab is stored
+    // in case the group comes in later.
+    // TODO(crbug.com/319521964): keep tabs with no groups.
+  }
 }
 
 void SharedTabGroupDataSyncBridge::DeleteDataFromLocalStorage(
