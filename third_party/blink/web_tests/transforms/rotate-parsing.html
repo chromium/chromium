@@ -28,7 +28,7 @@ expect('0 2 0 0.25turn').parsesAs('y 0.25turn').isComputedTo('y 90deg');
 
 expect('calc(1turn - 270deg)').parsesAs('calc(90deg)').isComputedTo('90deg');
 expect('0 calc(0.5 + 0.5) 1 calc(1turn - 270deg + 400grad)')
-    .parsesAs('0 1 1 calc(450deg)').isComputedTo('0 1 1 450deg');
+    .parsesAs('0 calc(1) 1 calc(450deg)').isComputedTo('0 1 1 450deg');
 
 expect('2').isInvalid();
 expect('1 2deg').isInvalid();

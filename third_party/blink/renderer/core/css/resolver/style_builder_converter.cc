@@ -2742,9 +2742,7 @@ Rotation StyleBuilderConverter::ConvertRotation(
     // axis angle
     const cssvalue::CSSAxisValue& axis =
         To<cssvalue::CSSAxisValue>(list.Item(0));
-    x = axis.X();
-    y = axis.Y();
-    z = axis.Z();
+    std::tie(x, y, z) = axis.ComputeAxis(length_resolver);
   }
   const CSSPrimitiveValue& angle =
       To<CSSPrimitiveValue>(list.Item(list.length() - 1));

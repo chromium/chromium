@@ -3678,10 +3678,9 @@ CSSValue* ConsumeAxis(CSSParserTokenStream& stream,
   if (!x_dimension || !y_dimension || !z_dimension) {
     return nullptr;
   }
-  double x = To<CSSPrimitiveValue>(x_dimension)->GetDoubleValue();
-  double y = To<CSSPrimitiveValue>(y_dimension)->GetDoubleValue();
-  double z = To<CSSPrimitiveValue>(z_dimension)->GetDoubleValue();
-  return MakeGarbageCollected<cssvalue::CSSAxisValue>(x, y, z);
+  return MakeGarbageCollected<cssvalue::CSSAxisValue>(
+      To<CSSPrimitiveValue>(x_dimension), To<CSSPrimitiveValue>(y_dimension),
+      To<CSSPrimitiveValue>(z_dimension));
 }
 
 CSSValue* ConsumeIntrinsicSizeLonghand(CSSParserTokenStream& stream,

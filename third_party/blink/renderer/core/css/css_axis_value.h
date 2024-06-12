@@ -14,21 +14,24 @@ class String;
 }  // namespace WTF
 
 namespace blink {
+
+class CSSLengthResolver;
+class CSSPrimitiveValue;
+
 namespace cssvalue {
 
 class CSSAxisValue : public CSSValueList {
  public:
+  struct Axis : std::tuple<double, double, double> {};
+
   explicit CSSAxisValue(CSSValueID axis_name);
-  CSSAxisValue(double x, double y, double z);
+  CSSAxisValue(const CSSPrimitiveValue* x,
+               const CSSPrimitiveValue* y,
+               const CSSPrimitiveValue* z);
 
   WTF::String CustomCSSText() const;
 
-  double X() const;
-
-  double Y() const;
-
-  double Z() const;
-
+  Axis ComputeAxis(const CSSLengthResolver&) const;
   CSSValueID AxisName() const { return axis_name_; }
 
   void TraceAfterDispatch(blink::Visitor* visitor) const {
