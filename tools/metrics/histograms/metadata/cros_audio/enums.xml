@@ -58,23 +58,103 @@ chromium-metrics-reviews@google.com.
 
 <enum name="AudioSelectionBeforeAndAfterDeviceSet">
   <int value="5" label="System boots with internal and 3.5mm"/>
+  <int value="6" label="System boots with two internal and 3.5mm"/>
+  <int value="17" label="System boots with internal and USB"/>
+  <int value="18" label="System boots with two internal and USB"/>
+  <int value="21" label="System boots with internal, 3.5mm and USB"/>
+  <int value="48" label="System boots with internal and two USB"/>
+  <int value="65" label="System boots with internal and bluetooth"/>
   <int value="257" label="System boots with internal and HDMI"/>
+  <int value="261" label="System boots with internal, 3.5mm and HDMI"/>
+  <int value="273" label="System boots with internal, USB and HDMI"/>
+  <int value="513" label="System boots with internal and two HDMI"/>
   <int value="16389" label="Internal PLUG 3.5mm"/>
   <int value="16401" label="Internal PLUG USB"/>
+  <int value="16417" label="Internal PLUG two USB"/>
   <int value="16449" label="Internal PLUG bluetooth"/>
   <int value="16641" label="Internal PLUG HDMI"/>
+  <int value="16897" label="Internal PLUG two HDMI"/>
   <int value="32774" label="Two internal PLUG 3.5mm"/>
   <int value="32786" label="Two internal PLUG USB"/>
+  <int value="32834" label="Two internal PLUG bluetooth"/>
+  <int value="65556" label="3.5mm PLUG USB"/>
   <int value="81941" label="Internal and 3.5mm PLUG USB"/>
   <int value="81989" label="Internal and 3.5mm PLUG bluetooth"/>
   <int value="82181" label="Internal and 3.5mm PLUG HDMI"/>
+  <int value="98326" label="Two internal and 3.5mm PLUG USB"/>
+  <int value="262161" label="USB PLUG internal"/>
+  <int value="262164" label="USB PLUG 3.5mm"/>
+  <int value="262165" label="USB PLUG 3.5mm and internal"/>
+  <int value="262224" label="USB PLUG bluetooth"/>
+  <int value="262416" label="USB PLUG HDMI"/>
+  <int value="262417" label="USB PLUG HDMI and internal"/>
+  <int value="262420" label="USB PLUG HDMI and 3.5mm"/>
+  <int value="262672" label="USB PLUG two HDMI"/>
   <int value="278549" label="Internal and USB PLUG 3.5mm"/>
   <int value="278561" label="Internal and USB PLUG USB"/>
   <int value="278609" label="Internal and USB PLUG bluetooth"/>
   <int value="278801" label="Internal and USB PLUG HDMI"/>
+  <int value="278805" label="Internal and USB PLUG HDMI and 3.5mm"/>
+  <int value="278817" label="Internal and USB PLUG HDMI and USB"/>
+  <int value="279057" label="Internal and USB PLUG two HDMI"/>
+  <int value="279313" label="Internal and USB PLUG three HDMI"/>
+  <int value="294934" label="Two internal and USB PLUG 3.5mm"/>
+  <int value="344069" label="Internal, USB and 3.5mm UNPLUG USB"/>
+  <int value="344081" label="Internal, USB and 3.5mm UNPLUG 3.5mm"/>
+  <int value="344149" label="Internal, USB and 3.5mm PLUG bluetooth"/>
+  <int value="344341" label="Internal, USB and 3.5mm PLUG HDMI"/>
+  <int value="524324" label="Two USB PLUG 3.5mm"/>
+  <int value="524384" label="Two USB PLUG bluetooth"/>
+  <int value="524832" label="Two USB PLUG two HDMI"/>
+  <int value="540689" label="Internal and two USB UNPLUG USB"/>
+  <int value="540721" label="Internal and two USB PLUG USB"/>
+  <int value="540769" label="Internal and two USB PLUG bluetooth"/>
+  <int value="540961" label="Internal and two USB PLUG HDMI"/>
+  <int value="606241" label="Internal, two USB and 3.5mm UNPLUG 3.5mm"/>
+  <int value="786736" label="Three USB PLUG HDMI"/>
+  <int value="803121" label="Internal and three USB PLUG HDMI"/>
+  <int value="803377" label="Internal and three USB PLUG two HDMI"/>
+  <int value="1048656" label="Bluetooth PLUG USB"/>
   <int value="1065029" label="Internal and bluetooth PLUG 3.5mm"/>
+  <int value="1065041" label="Internal and bluetooth PLUG USB"/>
+  <int value="1065281" label="Internal and bluetooth PLUG HDMI"/>
+  <int value="1130501" label="Internal, 3.5mm and bluetooth UNPLUG bluetooth"/>
+  <int value="1130561" label="Internal, 3.5mm and bluetooth UNPLUG 3.5mm"/>
+  <int value="1311056" label="Bluetooth and USB PLUG HDMI"/>
+  <int value="1327121" label="Internal, bluetooth and USB UNPLUG bluetooth"/>
+  <int value="1327169" label="Internal, bluetooth and USB UNPLUG USB"/>
+  <int value="1327441" label="Internal, bluetooth and USB PLUG HDMI"/>
+  <int value="4194624" label="HDMI PLUG bluetooth"/>
+  <int value="4194816" label="HDMI PLUG HDMI"/>
   <int value="4210949" label="Internal and HDMI PLUG 3.5mm"/>
+  <int value="4210961" label="Internal and HDMI PLUG USB"/>
   <int value="4211009" label="Internal and HDMI PLUG bluetooth"/>
+  <int value="4211201" label="Internal and HDMI PLUG HDMI"/>
+  <int value="4260164" label="3.5mm and HDMI PLUG HDMI"/>
+  <int value="4260356" label="3.5mm and HDMI PLUG bluetooth"/>
+  <int value="4276481" label="Internal, 3.5mm and HDMI UNPLUG 3.5mm"/>
+  <int value="4276501" label="Internal, 3.5mm and HDMI PLUG USB"/>
+  <int value="4276549" label="Internal, 3.5mm and HDMI PLUG bluetooth"/>
+  <int value="4456976" label="USB and HDMI PLUG HDMI"/>
+  <int value="4473089" label="Internal, USB and HDMI UNPLUG USB"/>
+  <int value="4473109" label="Internal, USB and HDMI PLUG 3.5mm"/>
+  <int value="4473121" label="Internal, USB and HDMI PLUG USB"/>
+  <int value="4473169" label="Internal, USB and HDMI PLUG bluetooth"/>
+  <int value="4473361" label="Internal, USB and HDMI PLUG HDMI"/>
+  <int value="4735249" label="Internal, two USB and HDMI UNPLUG USB"/>
+  <int value="4735329" label="Internal, two USB and HDMI PLUG bluetooth"/>
+  <int value="4735521" label="Internal, two USB and HDMI PLUG HDMI"/>
+  <int value="5521681"
+      label="Internal, USB, bluetooth and HDMI UNPLUG bluetooth"/>
+  <int value="8389124" label="Two HDMI PLUG 3.5mm"/>
+  <int value="8389136" label="Two HDMI PLUG USB"/>
+  <int value="8389184" label="Two HDMI PLUG bluetooth"/>
+  <int value="8405521" label="Internal and two HDMI PLUG USB"/>
+  <int value="8405569" label="Internal and two HDMI PLUG bluetooth"/>
+  <int value="8405761" label="Internal and two HDMI PLUG HDMI"/>
+  <int value="9175856" label="Three USB and two HDMI PLUG HDMI"/>
+  <int value="9454081"
+      label="Internal, bluetooth and two HDMI UNPLUG bluetooth"/>
 </enum>
 
 <enum name="AudioSelectionEvents">
