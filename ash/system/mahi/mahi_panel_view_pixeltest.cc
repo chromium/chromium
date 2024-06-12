@@ -202,7 +202,7 @@ TEST_F(MahiPanelViewPixelTest, QuestionAnswerViewLongText) {
   views::test::RunScheduledLayout(widget());
 
   EXPECT_TRUE(GetPixelDiffer()->CompareUiComponentsOnPrimaryScreen(
-      "question_answer_view_long_text", /*revision_number=*/6,
+      "question_answer_view_long_text", /*revision_number=*/5,
       panel_view()->GetViewByID(mahi_constants::ViewId::kScrollView)));
 }
 
@@ -252,7 +252,7 @@ TEST_F(MahiPanelViewPixelTest, QuestionAnswerViewScrollToBottom) {
   ScrollToBottom();
 
   EXPECT_TRUE(GetPixelDiffer()->CompareUiComponentsOnPrimaryScreen(
-      "question_answer_bottom", /*revision_number=*/3,
+      "question_answer_bottom", /*revision_number=*/2,
       panel_view()->GetViewByID(mahi_constants::ViewId::kScrollView)));
 }
 

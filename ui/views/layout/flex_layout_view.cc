@@ -145,6 +145,19 @@ FlexRule FlexLayoutView::GetDefaultFlexRule() const {
   return layout_->GetDefaultFlexRule();
 }
 
+gfx::Size FlexLayoutView::CalculatePreferredSize(
+    const SizeBounds& available_size) const {
+  // TODO(crbug.com/40232718): If the cross axis of the constraint space is
+  // constrained in FlexLayout, the cross axis of the host view will be
+  // stretched to the incoming constraint size by default. This results in
+  // unexpected calculations for some client code.
+  return layout_->GetPreferredSize(this, {});
+}
+
+int FlexLayoutView::GetHeightForWidth(int w) const {
+  return layout_->GetPreferredHeightForWidth(this, w);
+}
+
 BEGIN_METADATA(FlexLayoutView)
 ADD_PROPERTY_METADATA(LayoutOrientation, Orientation)
 ADD_PROPERTY_METADATA(LayoutAlignment, MainAxisAlignment)

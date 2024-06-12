@@ -69,6 +69,17 @@ class VIEWS_EXPORT FlexLayoutView : public View {
     InvalidateLayout();
   }
 
+ protected:
+  // View:
+  gfx::Size CalculatePreferredSize(
+      const SizeBounds& available_size) const override;
+
+  // TODO(crbug.com/40232718): Because FlexLayoutView ignores SizeBounds in
+  // CalculatePreferredSize(SizeBounds). So it needs to overload
+  // GetHeightForWidth to work properly. Remove the overload when we find a
+  // better way.
+  int GetHeightForWidth(int w) const override;
+
  private:
   raw_ptr<FlexLayout> layout_;
   LayoutOrientation orientation_;

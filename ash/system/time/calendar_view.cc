@@ -506,9 +506,16 @@ CalendarView::CalendarView(bool use_glanceables_container_style)
     CreateCalendarTitleRow();
   }
 
+  // Adds an empty view as a placeholder so that the views below won't move up
+  // when the `progress_bar_` becomes invisible.
+  auto buffer_view = std::make_unique<views::View>();
+  buffer_view->SetPreferredSize(gfx::Size(1, kTitleRowProgressBarHeight));
+  AddChildViewAt(std::move(buffer_view), kTitleRowProgressBarIndex);
+
   // Adds the progress bar to layout when initialization to avoid changing the
   // layout while reading the bounds of it.
-  progress_bar_ = AddChildView(std::make_unique<GlanceablesProgressBarView>());
+  progress_bar_ = AddChildViewAt(std::make_unique<GlanceablesProgressBarView>(),
+                                 kTitleRowProgressBarIndex + 1);
   progress_bar_->SetPreferredSize(gfx::Size(0, kTitleRowProgressBarHeight));
   progress_bar_->UpdateProgressBarVisibility(/*visible=*/false);
 
@@ -983,6 +990,10 @@ void CalendarView::MaybeUpdateLoadingBarVisibility() {
   }
   progress_bar_->UpdateProgressBarVisibility(
       /*visible=*/visible);
+
+  // Updates the visibility of the buffer view so that when `progress_bar_`s
+  // visibility changes, the following views won't move up.
+  children()[size_t{kTitleRowProgressBarIndex}]->SetVisible(!visible);
 }
 
 void CalendarView::FadeInCurrentMonth() {
