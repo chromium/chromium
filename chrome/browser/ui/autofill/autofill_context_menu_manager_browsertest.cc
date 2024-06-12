@@ -91,10 +91,10 @@ ACTION_P(QuitMessageLoop, loop) {
   loop->Quit();
 }
 
-// Checks if the context menu model contains any entries with address/payments
-// manual fallback labels or command id. `arg` must be of type
-// ui::SimpleMenuModel.
-MATCHER(ContainsAnyAddressAndPaymentsFallbackEntries, "") {
+// Checks if the context menu model contains any entries with
+// address/payments/plus address manual fallback labels or command ids. `arg`
+// must be of type `ui::SimpleMenuModel`.
+MATCHER(ContainsAnyAddressPaymentsOrPlusAddressFallbackEntries, "") {
   const auto kForbiddenLabels = base::MakeFlatSet<std::u16string>(
       std::array{IDS_CONTENT_CONTEXT_AUTOFILL_FALLBACK_TITLE,
                  IDS_CONTENT_CONTEXT_AUTOFILL_FALLBACK_ADDRESS,
@@ -116,8 +116,24 @@ MATCHER(ContainsAnyAddressAndPaymentsFallbackEntries, "") {
   return false;
 }
 
+// Checks if the context menu model contains any entries with plus address
+// manual fallback labels or command ids. `arg` must be of type
+// `ui::SimpleMenuModel`.
+MATCHER(ContainsAnyPlusAddressFallbackEntries, "") {
+  for (size_t i = 0; i < arg->GetItemCount(); i++) {
+    if (arg->GetCommandIdAt(i) ==
+            IDC_CONTENT_CONTEXT_AUTOFILL_FALLBACK_PLUS_ADDRESS ||
+        arg->GetLabelAt(i) ==
+            l10n_util::GetStringUTF16(
+                IDS_PLUS_ADDRESS_FALLBACK_LABEL_CONTEXT_MENU)) {
+      return true;
+    }
+  }
+  return false;
+}
+
 // Checks if the context menu model contains the address manual fallback
-// entries with correct UI strings. `arg` must be of type ui::SimpleMenuModel.
+// entries with correct UI strings. `arg` must be of type `ui::SimpleMenuModel`.
 MATCHER(OnlyAddressFallbackAdded, "") {
   EXPECT_EQ(arg->GetItemCount(), 3u);
   return arg->GetTypeAt(0) == ui::MenuModel::ItemType::TYPE_TITLE &&
@@ -131,22 +147,31 @@ MATCHER(OnlyAddressFallbackAdded, "") {
 }
 
 // Checks if the context menu model contains the plus address manual fallback
-// entries with correct UI strings. `arg` must be of type ui::SimpleMenuModel.
-MATCHER(OnlyPlusAddressFallbackAdded, "") {
-  EXPECT_EQ(arg->GetItemCount(), 3u);
-  return arg->GetTypeAt(0) == ui::MenuModel::ItemType::TYPE_TITLE &&
-         arg->GetLabelAt(0) ==
-             l10n_util::GetStringUTF16(
-                 IDS_CONTENT_CONTEXT_AUTOFILL_FALLBACK_TITLE) &&
-         arg->GetLabelAt(1) ==
-             l10n_util::GetStringUTF16(
-                 IDS_PLUS_ADDRESS_FALLBACK_LABEL_CONTEXT_MENU) &&
-         arg->GetTypeAt(2) == ui::MenuModel::ItemType::TYPE_SEPARATOR;
+// entries with correct UI strings. `arg` must be of type `ui::SimpleMenuModel`.
+MATCHER(PlusAddressFallbackAdded, "") {
+  // TODO(crbug.com/40285811): Remove "if feature enabled" from the comment,
+  // once the feature is rolled out.
+  // There can be more than 3 entries, because the address manual fallback is
+  // always present, on any field, if the autofill for unclassified fields
+  // feature is enabled.
+  EXPECT_GE(arg->GetItemCount(), 3u);
+  EXPECT_EQ(arg->GetTypeAt(0), ui::MenuModel::ItemType::TYPE_TITLE);
+  EXPECT_EQ(arg->GetTypeAt(arg->GetItemCount() - 1),
+            ui::MenuModel::ItemType::TYPE_SEPARATOR);
+
+  for (size_t i = 0; i < arg->GetItemCount(); i++) {
+    if (arg->GetLabelAt(i) ==
+        l10n_util::GetStringUTF16(
+            IDS_PLUS_ADDRESS_FALLBACK_LABEL_CONTEXT_MENU)) {
+      return true;
+    }
+  }
+  return false;
 }
 
 // Checks if the context menu model contains the address and payments manual
 // fallback entries with correct UI strings. `arg` must be of type
-// ui::SimpleMenuModel.
+// `ui::SimpleMenuModel`.
 MATCHER(AddressAndPaymentsFallbacksAdded, "") {
   EXPECT_EQ(arg->GetItemCount(), 4u);
   return arg->GetTypeAt(0) == ui::MenuModel::ItemType::TYPE_TITLE &&
@@ -164,7 +189,7 @@ MATCHER(AddressAndPaymentsFallbacksAdded, "") {
 
 // Checks if the context menu model contains the passwords manual fallback
 // entries with correct UI strings when the user is syncing. `arg` must be
-// of type ui::SimpleMenuModel, `has_passwords_saved` must be bool.
+// of type `ui::SimpleMenuModel`, `has_passwords_saved` must be bool.
 // `has_passwords_saved` is true if the user has any account or profile
 // passwords stored.
 MATCHER_P(OnlyPasswordsSyncingFallbackAdded, has_passwords_saved, "") {
@@ -195,7 +220,7 @@ MATCHER_P(OnlyPasswordsSyncingFallbackAdded, has_passwords_saved, "") {
 
 // Checks if the context menu model contains the passwords manual fallback
 // entries with correct UI strings when the user is not syncing. `arg` must be
-// of type ui::SimpleMenuModel, `has_passwords_saved` must be bool.
+// of type `ui::SimpleMenuModel`, `has_passwords_saved` must be bool.
 // `has_passwords_saved` is true if the user has any account or profile
 // passwords stored.
 MATCHER_P(OnlyPasswordsNotSyncingFallbackAdded, has_passwords_saved, "") {
@@ -437,7 +462,7 @@ IN_PROC_BROWSER_TEST_F(AutocompleteUnrecognizedFieldsTest,
   autofill_context_menu_manager()->AppendItems();
 
   EXPECT_THAT(menu_model(),
-              Not(ContainsAnyAddressAndPaymentsFallbackEntries()));
+              Not(ContainsAnyAddressPaymentsOrPlusAddressFallbackEntries()));
 }
 
 // Tests that when triggering the context menu on an ac=unrecognized field, the
@@ -453,7 +478,7 @@ IN_PROC_BROWSER_TEST_F(
   autofill_context_menu_manager()->AppendItems();
 
   EXPECT_THAT(menu_model(),
-              Not(ContainsAnyAddressAndPaymentsFallbackEntries()));
+              Not(ContainsAnyAddressPaymentsOrPlusAddressFallbackEntries()));
 }
 
 // Tests that when triggering the context menu on an ac=unrecognized field, the
@@ -472,7 +497,7 @@ IN_PROC_BROWSER_TEST_F(
   autofill_context_menu_manager()->AppendItems();
 
   EXPECT_THAT(menu_model(),
-              Not(ContainsAnyAddressAndPaymentsFallbackEntries()));
+              Not(ContainsAnyAddressPaymentsOrPlusAddressFallbackEntries()));
 }
 
 // Tests that when triggering the context menu on a classified field that
@@ -490,7 +515,7 @@ IN_PROC_BROWSER_TEST_F(
   autofill_context_menu_manager()->AppendItems();
 
   EXPECT_THAT(menu_model(),
-              Not(ContainsAnyAddressAndPaymentsFallbackEntries()));
+              Not(ContainsAnyAddressPaymentsOrPlusAddressFallbackEntries()));
 }
 
 // Tests that when triggering the context menu on a classified field, the
@@ -594,7 +619,7 @@ IN_PROC_BROWSER_TEST_F(UnclassifiedFieldsTest,
   autofill_context_menu_manager()->AppendItems();
 
   EXPECT_THAT(menu_model(),
-              Not(ContainsAnyAddressAndPaymentsFallbackEntries()));
+              Not(ContainsAnyAddressPaymentsOrPlusAddressFallbackEntries()));
 }
 
 // Tests that when triggering the context menu on an unclassified form the
@@ -609,7 +634,7 @@ IN_PROC_BROWSER_TEST_F(UnclassifiedFieldsTest,
   autofill_context_menu_manager()->AppendItems();
 
   EXPECT_THAT(menu_model(),
-              Not(ContainsAnyAddressAndPaymentsFallbackEntries()));
+              Not(ContainsAnyAddressPaymentsOrPlusAddressFallbackEntries()));
 }
 
 // Tests that even in incognito mode, when triggering the context menu on an
@@ -878,6 +903,12 @@ class PasswordsFallbackTest : public BaseAutofillContextMenuManagerTest {
 
   void SetUpOnMainThread() override {
     BaseAutofillContextMenuManagerTest::SetUpOnMainThread();
+    // Make sure address fallback is not shown, so that it doesn't interfere
+    // with tests which check for the presence of password fallback.
+    // Address fallbacks are not shown when no profile exists and the user is in
+    // incognito mode.
+    autofill_client()->set_is_off_the_record(true);
+
     form_ = CreateAndAttachPasswordForm();
     autofill_context_menu_manager()->set_params_for_testing(
         CreateContextMenuParams(form_.renderer_id(),
@@ -1446,7 +1477,7 @@ IN_PROC_BROWSER_TEST_F(PlusAddressContextMenuManagerTest, UnclassifiedForm) {
                               form.fields[0].renderer_id()));
   autofill_context_menu_manager()->AppendItems();
 
-  EXPECT_THAT(menu_model(), OnlyPlusAddressFallbackAdded());
+  EXPECT_THAT(menu_model(), PlusAddressFallbackAdded());
 }
 
 // Tests that Plus Address fallbacks are added to classified forms.
@@ -1457,7 +1488,7 @@ IN_PROC_BROWSER_TEST_F(PlusAddressContextMenuManagerTest, ClassifiedForm) {
                               form.fields[0].renderer_id()));
   autofill_context_menu_manager()->AppendItems();
 
-  EXPECT_THAT(menu_model(), OnlyPlusAddressFallbackAdded());
+  EXPECT_THAT(menu_model(), PlusAddressFallbackAdded());
 }
 
 // Tests that no Plus Address fallbacks are shown on password fields.
@@ -1467,8 +1498,7 @@ IN_PROC_BROWSER_TEST_F(PlusAddressContextMenuManagerTest, PasswordForm) {
       CreateContextMenuParams(form.renderer_id(), form.fields[0].renderer_id(),
                               blink::mojom::FormControlType::kInputPassword));
   autofill_context_menu_manager()->AppendItems();
-  EXPECT_THAT(menu_model(),
-              Not(ContainsAnyAddressAndPaymentsFallbackEntries()));
+  EXPECT_THAT(menu_model(), Not(ContainsAnyPlusAddressFallbackEntries()));
 }
 
 // Tests that Plus Address fallbacks are not added in incognito mode if the user
@@ -1482,8 +1512,7 @@ IN_PROC_BROWSER_TEST_F(PlusAddressContextMenuManagerTest,
                               form.fields[0].renderer_id()));
   autofill_context_menu_manager()->AppendItems();
 
-  EXPECT_THAT(menu_model(),
-              Not(ContainsAnyAddressAndPaymentsFallbackEntries()));
+  EXPECT_THAT(menu_model(), Not(ContainsAnyPlusAddressFallbackEntries()));
 }
 
 // Tests that Plus Address fallbacks are added in incognito mode if the user
@@ -1502,7 +1531,7 @@ IN_PROC_BROWSER_TEST_F(PlusAddressContextMenuManagerTest,
                               form.fields[0].renderer_id()));
   autofill_context_menu_manager()->AppendItems();
 
-  EXPECT_THAT(menu_model(), OnlyPlusAddressFallbackAdded());
+  EXPECT_THAT(menu_model(), PlusAddressFallbackAdded());
 }
 
 // Tests that no Plus Address fallbacks are added on excluded domains.
@@ -1516,21 +1545,27 @@ IN_PROC_BROWSER_TEST_F(PlusAddressContextMenuManagerTest, ExcludedDomain) {
   autofill_client()->set_last_committed_primary_main_frame_url(
       GURL(kExcludedDomainUrl));
   autofill_context_menu_manager()->AppendItems();
-  EXPECT_THAT(menu_model(),
-              Not(ContainsAnyAddressAndPaymentsFallbackEntries()));
+  EXPECT_THAT(menu_model(), Not(ContainsAnyPlusAddressFallbackEntries()));
 
   // That is also true for subdirectories on the domain.
   autofill_client()->set_last_committed_primary_main_frame_url(
       GURL(kExcludedDomainUrl).Resolve("sub/index.html"));
   autofill_context_menu_manager()->AppendItems();
-  EXPECT_THAT(menu_model(),
-              Not(ContainsAnyAddressAndPaymentsFallbackEntries()));
+  EXPECT_THAT(menu_model(), Not(ContainsAnyPlusAddressFallbackEntries()));
+}
+
+// Tests that Plus Address fallbacks are added on non-excluded domains.
+IN_PROC_BROWSER_TEST_F(PlusAddressContextMenuManagerTest, NonExcludedDomain) {
+  FormData form = CreateAndAttachClassifiedForm();
+  autofill_context_menu_manager()->set_params_for_testing(
+      CreateContextMenuParams(form.renderer_id(),
+                              form.fields[0].renderer_id()));
 
   // On non-excluded sites, the expected context menu entries are added.
   autofill_client()->set_last_committed_primary_main_frame_url(
       GURL("https://non-excluded-site.com"));
   autofill_context_menu_manager()->AppendItems();
-  EXPECT_THAT(menu_model(), OnlyPlusAddressFallbackAdded());
+  EXPECT_THAT(menu_model(), PlusAddressFallbackAdded());
 }
 
 // Tests that selecting the Plus Address manual fallback entry results in
