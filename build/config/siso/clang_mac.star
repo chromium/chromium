@@ -101,11 +101,11 @@ def __step_config(ctx, step_config):
 
         gn_logs_data = gn_logs.read(ctx)
         input_root_absolute_path = gn_logs_data.get("clang_need_input_root_absolute_path") == "true"
+        input_root_absolute_path_for_objc = gn_logs_data.get("clang_need_input_root_absolute_path_for_objc") == "true"
 
         # TODO(b/346425467): enable canonicalize_dir when not input_root_absolute_path
         canonicalize_dir = False
-
-        input_root_absolute_path_for_objc = gn_logs_data.get("clang_need_input_root_absolute_path_for_objc") == "true"
+        canonicalize_dir_for_objc = False
 
         step_config["rules"].extend([
             {
@@ -151,7 +151,7 @@ def __step_config(ctx, step_config):
                 "remote_wrapper": reproxy_config["remote_wrapper"],
                 "timeout": "2m",
                 "input_root_absolute_path": input_root_absolute_path_for_objc,
-                "canonicalize_dir": (not input_root_absolute_path_for_objc),
+                "canonicalize_dir": canonicalize_dir_for_objc,
             },
             {
                 "name": "clang/objc",
@@ -166,7 +166,7 @@ def __step_config(ctx, step_config):
                 "remote_wrapper": reproxy_config["remote_wrapper"],
                 "timeout": "2m",
                 "input_root_absolute_path": input_root_absolute_path_for_objc,
-                "canonicalize_dir": (not input_root_absolute_path_for_objc),
+                "canonicalize_dir": canonicalize_dir_for_objc,
             },
             {
                 "name": "clang-coverage/cxx",
@@ -214,7 +214,7 @@ def __step_config(ctx, step_config):
                 "remote_wrapper": reproxy_config["remote_wrapper"],
                 "timeout": "2m",
                 "input_root_absolute_path": input_root_absolute_path_for_objc,
-                "canonicalize_dir": (not input_root_absolute_path_for_objc),
+                "canonicalize_dir": canonicalize_dir_for_objc,
             },
             {
                 "name": "clang-coverage/objc",
@@ -230,7 +230,7 @@ def __step_config(ctx, step_config):
                 "remote_wrapper": reproxy_config["remote_wrapper"],
                 "timeout": "2m",
                 "input_root_absolute_path": input_root_absolute_path_for_objc,
-                "canonicalize_dir": (not input_root_absolute_path_for_objc),
+                "canonicalize_dir": canonicalize_dir_for_objc,
             },
         ])
     return step_config
