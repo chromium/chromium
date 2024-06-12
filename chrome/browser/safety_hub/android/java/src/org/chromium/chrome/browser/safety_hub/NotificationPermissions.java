@@ -4,6 +4,8 @@
 
 package org.chromium.chrome.browser.safety_hub;
 
+import androidx.annotation.VisibleForTesting;
+
 import org.jni_zero.CalledByNative;
 import org.jni_zero.JniType;
 
@@ -20,8 +22,9 @@ public class NotificationPermissions {
         mNotificationCount = notificationCount;
     }
 
+    @VisibleForTesting
     @CalledByNative
-    private static NotificationPermissions create(
+    static NotificationPermissions create(
             @JniType("std::string") String primaryPattern,
             @JniType("std::string") String secondaryPattern,
             @JniType("int32_t") int notificationCount) {

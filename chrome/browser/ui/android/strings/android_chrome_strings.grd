@@ -1700,6 +1700,18 @@ Your Google account may have other forms of browsing history like searches and a
       <message name="IDS_SAFETY_HUB_NOTIFICATIONS_PAGE_HEADER" translateable="false">
         You can review sites that send a lot of notifications and stop them from sending more in the future
       </message>
+      <message name="IDS_SAFETY_HUB_NOTIFICATIONS_SUBLABEL" translateable="false">
+        {NUM_SITES, plural, =1 {About 1 notification a day} other {About # notifications a day}}
+      </message>
+      <message name="IDS_SAFETY_HUB_BLOCK_NOTIFICATIONS_MENU_ITEM" translateable="false">
+        Block notifications from this site
+      </message>
+      <message name="IDS_SAFETY_HUB_ALLOW_NOTIFICATIONS_MENU_ITEM" translateable="false">
+        Always allow notifications from this site
+      </message>
+      <message name="IDS_SAFETY_HUB_ASK_NOTIFICATIONS_MENU_ITEM" translateable="false">
+        Don’t allow but ask later
+      </message>
 
        <!-- Safe Browsing preferences -->
       <message name="IDS_PREFS_SAFE_BROWSING_TITLE" desc="Title for the Safe Browsing preferences. [CHAR_LIMIT=32]">

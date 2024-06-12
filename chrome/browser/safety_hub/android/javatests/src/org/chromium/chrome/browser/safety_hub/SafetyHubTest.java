@@ -19,6 +19,8 @@ import static org.hamcrest.Matchers.allOf;
 
 import static org.chromium.ui.test.util.ViewUtils.onViewWaiting;
 
+import android.view.View;
+
 import androidx.test.filters.LargeTest;
 
 import org.junit.Before;
@@ -35,11 +37,11 @@ import org.chromium.base.test.util.Features;
 import org.chromium.base.test.util.JniMocker;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
-import org.chromium.chrome.browser.settings.SettingsActivity;
 import org.chromium.chrome.browser.settings.SettingsActivityTestRule;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
 import org.chromium.chrome.test.util.ChromeRenderTestRule;
 import org.chromium.components.content_settings.ContentSettingsType;
+import org.chromium.content_public.browser.test.util.TestThreadUtils;
 import org.chromium.ui.test.util.RenderTestRule;
 
 import java.io.IOException;
@@ -67,6 +69,10 @@ public final class SafetyHubTest {
                     },
                     0,
                     0);
+    private static final NotificationPermissions NOTIFICATION_PERMISSIONS_1 =
+            NotificationPermissions.create("http://example1.com", "*", 3);
+    private static final NotificationPermissions NOTIFICATION_PERMISSIONS_2 =
+            NotificationPermissions.create("http://example2.com", "*", 8);
 
     @Rule public MockitoRule mMockitoRule = MockitoJUnit.rule();
 
@@ -94,35 +100,46 @@ public final class SafetyHubTest {
     private FakeUnusedSitePermissionsBridge mUnusedPermissionsBridge =
             new FakeUnusedSitePermissionsBridge();
 
+    private FakeNotificationPermissionReviewBridge mNotificationPermissionReviewBridge =
+            new FakeNotificationPermissionReviewBridge();
+
     @Before
     public void setUp() {
         mJniMocker.mock(UnusedSitePermissionsBridgeJni.TEST_HOOKS, mUnusedPermissionsBridge);
+        mJniMocker.mock(
+                NotificationPermissionReviewBridgeJni.TEST_HOOKS,
+                mNotificationPermissionReviewBridge);
     }
 
     @Test
     @LargeTest
-    @Feature({"RenderTest"})
+    @Feature({"RenderTest", "SafetyHubPermissions"})
     public void testPermissionsSubpageAppearance() throws IOException {
         mUnusedPermissionsBridge.setPermissionsDataForReview(
                 new PermissionsData[] {PERMISSIONS_DATA_1, PERMISSIONS_DATA_2});
-        SettingsActivity settingsActivity = mPermissionsFragmentTestRule.startSettingsActivity();
+        mPermissionsFragmentTestRule.startSettingsActivity();
         mRenderTestRule.render(
-                settingsActivity.findViewById(android.R.id.content).getRootView(),
+                getRootViewSanitized(R.string.safety_hub_permissions_page_title),
                 "permissions_subpage");
     }
 
     @Test
     @LargeTest
-    @Feature({"RenderTest"})
+    @Feature({"RenderTest", "SafetyHubNotifications"})
     public void testNotificationsSubpageAppearance() throws IOException {
-        SettingsActivity settingsActivity = mPermissionsFragmentTestRule.startSettingsActivity();
+        mNotificationPermissionReviewBridge.setNotificationPermissionsForReview(
+                new NotificationPermissions[] {
+                    NOTIFICATION_PERMISSIONS_1, NOTIFICATION_PERMISSIONS_2
+                });
+        mNotificationsFragmentTestRule.startSettingsActivity();
         mRenderTestRule.render(
-                settingsActivity.findViewById(android.R.id.content).getRootView(),
+                getRootViewSanitized(R.string.safety_hub_notifications_page_title),
                 "notifications_subpage");
     }
 
     @Test
     @LargeTest
+    @Feature({"SafetyHubPermissions"})
     public void testPermissionRegrant() {
         mUnusedPermissionsBridge.setPermissionsDataForReview(
                 new PermissionsData[] {PERMISSIONS_DATA_1});
@@ -139,6 +156,7 @@ public final class SafetyHubTest {
 
     @Test
     @LargeTest
+    @Feature({"SafetyHubPermissions"})
     public void testClearPermissionsReviewList() {
         mUnusedPermissionsBridge.setPermissionsDataForReview(
                 new PermissionsData[] {PERMISSIONS_DATA_1, PERMISSIONS_DATA_2});
@@ -173,8 +191,57 @@ public final class SafetyHubTest {
         onViewWaiting(withText(permissionsTitle)).check(matches(isDisplayed()));
     }
 
+    @Test
+    @LargeTest
+    @Feature({"SafetyHubNotifications"})
+    public void testNotificationBlock() {
+        mNotificationPermissionReviewBridge.setNotificationPermissionsForReview(
+                new NotificationPermissions[] {NOTIFICATION_PERMISSIONS_1});
+        mNotificationsFragmentTestRule.startSettingsActivity();
+
+        // Block the notification by clicking the corresponding menu button.
+        clickOnButtonNextToText(NOTIFICATION_PERMISSIONS_1.getPrimaryPattern());
+        onViewWaiting(withText(R.string.safety_hub_block_notifications_menu_item)).perform(click());
+        onView(withText(NOTIFICATION_PERMISSIONS_1.getPrimaryPattern())).check(doesNotExist());
+    }
+
+    @Test
+    @LargeTest
+    @Feature({"SafetyHubNotifications"})
+    public void testNotificationAllow() {
+        mNotificationPermissionReviewBridge.setNotificationPermissionsForReview(
+                new NotificationPermissions[] {NOTIFICATION_PERMISSIONS_1});
+        mNotificationsFragmentTestRule.startSettingsActivity();
+
+        // Always allow the notification by clicking the corresponding menu button.
+        clickOnButtonNextToText(NOTIFICATION_PERMISSIONS_1.getPrimaryPattern());
+        onViewWaiting(withText(R.string.safety_hub_allow_notifications_menu_item)).perform(click());
+        onView(withText(NOTIFICATION_PERMISSIONS_1.getPrimaryPattern())).check(doesNotExist());
+    }
+
+    @Test
+    @LargeTest
+    @Feature({"SafetyHubNotifications"})
+    public void testNotificationAsk() {
+        mNotificationPermissionReviewBridge.setNotificationPermissionsForReview(
+                new NotificationPermissions[] {NOTIFICATION_PERMISSIONS_1});
+        mNotificationsFragmentTestRule.startSettingsActivity();
+
+        // Reset the notification by clicking the corresponding menu button.
+        clickOnButtonNextToText(NOTIFICATION_PERMISSIONS_1.getPrimaryPattern());
+        onViewWaiting(withText(R.string.safety_hub_ask_notifications_menu_item)).perform(click());
+        onView(withText(NOTIFICATION_PERMISSIONS_1.getPrimaryPattern())).check(doesNotExist());
+    }
+
     private void clickOnButtonNextToText(String text) {
-        onView(allOf(withId(R.id.button), withParent(hasSibling(withChild(withText(text))))))
+        onViewWaiting(allOf(withId(R.id.button), withParent(hasSibling(withChild(withText(text))))))
                 .perform(click());
+    }
+
+    static View getRootViewSanitized(int text) {
+        View[] view = {null};
+        onViewWaiting(withText(text)).check(((v, e) -> view[0] = v.getRootView()));
+        TestThreadUtils.runOnUiThreadBlocking(() -> RenderTestRule.sanitize(view[0]));
+        return view[0];
     }
 }
