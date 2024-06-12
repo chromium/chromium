@@ -6,6 +6,7 @@
 #define UI_OZONE_PLATFORM_WAYLAND_HOST_WAYLAND_CONNECTION_H_
 
 #include <time.h>
+
 #include <memory>
 #include <ostream>
 #include <string>
@@ -18,6 +19,7 @@
 #include "third_party/skia/include/core/SkBitmap.h"
 #include "ui/display/tablet_state.h"
 #include "ui/events/event.h"
+#include "ui/ozone/common/features.h"
 #include "ui/ozone/platform/wayland/common/wayland_object.h"
 #include "ui/ozone/platform/wayland/host/single_pixel_buffer.h"
 #include "ui/ozone/platform/wayland/host/wayland_buffer_manager_host.h"
@@ -326,9 +328,13 @@ class WaylandConnection {
     supports_viewporter_surface_scaling_ = enabled;
   }
 
-  bool UseViewporterSurfaceScaling() {
+  bool UseViewporterSurfaceScaling() const {
     return supports_viewporter_surface_scaling_ &&
            !surface_submission_in_pixel_coordinates_;
+  }
+
+  bool UsePerSurfaceScaling() const {
+    return IsWaylandPerSurfaceScaleEnabled() && UseViewporterSurfaceScaling();
   }
 
   bool ShouldUseOverlayDelegation() const;

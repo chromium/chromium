@@ -399,6 +399,8 @@ class OzonePlatformWayland : public OzonePlatform,
                     connection_->surface_augmenter()
                         ->SupportsCompositingOnlySurface()
               : true;
+      properties.supports_per_window_scaling =
+          connection_->UsePerSurfaceScaling();
 
       if (surface_factory_) {
         DCHECK(has_initialized_gpu());

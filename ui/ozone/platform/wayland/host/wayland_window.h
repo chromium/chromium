@@ -88,12 +88,16 @@ class WaylandWindow : public PlatformWindow,
 
   void OnWindowLostCapture();
 
-  // Updates the surface scale of the window.  Top level windows take
-  // scale from the output attached to either their current display or the
-  // primary one if their widget is not yet created, children inherit scale from
-  // their parent.  The method recalculates window bounds appropriately if asked
-  // to do so (this is not needed upon window initialization).
+  // Updates the scale of this window, which may be taken from entered outputs
+  // or from wp-fractional-scale-v1, depending on current setup and feature
+  // flags, eg: WaylandPerSurfaceScale. Children inherit scale from their
+  // parent. Recalculates window bounds appropriately if asked to do so via
+  // |update_bounds|.
   virtual void UpdateWindowScale(bool update_bounds);
+
+  // If per-surface scaling is disabled, this updates the window scale as per
+  // the currently entered output(s).
+  void OnEnteredOutputScaleChanged();
 
   // Propagates the buffer scale of the next commit to exo.
   virtual void PropagateBufferScale(float new_scale) = 0;
@@ -163,12 +167,19 @@ class WaylandWindow : public PlatformWindow,
   // display changes. This is not sent via a configure.
   void SetWindowScale(float new_scale);
 
+  // Tentatively determines and returns the scale factor for this window based
+  // on its currently entered wl_outputs, see GetPreferredEnteredOutputId()
+  // description for more details. Returns null when the outputs are not ready.
+  std::optional<float> GetScaleFactorFromEnteredOutputs();
+
   // Returns the preferred entered output id, if any. The preferred output is
   // the one with the largest scale. This is needed to properly render contents
   // as it seems like an expectation of Wayland. However, if all the entered
   // outputs have the same scale factor, the very first entered output is chosen
   // as there is no way to figure out what output the window occupies the most.
   std::optional<WaylandOutput::Id> GetPreferredEnteredOutputId();
+
+  std::optional<float> GetPreferredScaleFactor() const;
 
   // Returns current type of the window.
   PlatformWindowType type() const { return type_; }

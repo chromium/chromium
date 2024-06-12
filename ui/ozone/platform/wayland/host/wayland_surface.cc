@@ -996,7 +996,25 @@ void WaylandSurface::OnLeave(void* data,
 // static
 void WaylandSurface::OnPreferredScale(void* data,
                                       wp_fractional_scale_v1* fractional_scale,
-                                      uint32_t scale) {}
+                                      uint32_t scale) {
+  auto* self = static_cast<WaylandSurface*>(data);
+  DCHECK(self);
+
+  if (!self->connection_->UsePerSurfaceScaling()) {
+    VLOG(1) << "Per-surface scaling is disabled.";
+    return;
+  }
+
+  // Specified in fractional-scale-v1
+  constexpr float kFractionalScaleDenominator = 120.0f;
+  const float scale_factor =
+      scale == 0 ? 1.0f : (scale / kFractionalScaleDenominator);
+
+  self->preferred_scale_factor_ = scale_factor;
+  if (self->root_window_) {
+    self->root_window_->UpdateWindowScale(/*update_bounds=*/true);
+  }
+}
 
 void WaylandSurface::RemoveEnteredOutput(uint32_t output_id) {
   auto it = base::ranges::find(entered_outputs_, output_id);

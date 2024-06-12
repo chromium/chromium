@@ -183,8 +183,10 @@ void WaylandOutputManager::OnOutputHandleMetrics(
       metrics.display_id == wayland_screen_->GetPrimaryDisplay().id();
   for (auto* window : connection_->window_manager()->GetAllWindows()) {
     auto entered_output = window->GetPreferredEnteredOutputId();
-    if (entered_output == metrics.output_id || (!entered_output && is_primary))
-      window->UpdateWindowScale(true);
+    if (entered_output == metrics.output_id ||
+        (!entered_output && is_primary)) {
+      window->OnEnteredOutputScaleChanged();
+    }
   }
 }
 

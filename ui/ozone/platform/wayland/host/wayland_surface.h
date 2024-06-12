@@ -252,6 +252,10 @@ class WaylandSurface {
   // surface for a window.
   void EnableTrustedDamageIfPossible();
 
+  std::optional<float> preferred_scale_factor() const {
+    return preferred_scale_factor_;
+  }
+
  private:
   FRIEND_TEST_ALL_PREFIXES(WaylandWindowTest,
                            DoesNotCreateSurfaceSyncOnCommitWithoutBuffers);
@@ -422,6 +426,10 @@ class WaylandSurface {
   // been hidden at least once.  To determine which output the popup belongs to,
   // we ask its parent.
   std::vector<uint32_t> entered_outputs_;
+
+  // Holds the preferred buffer factor for this surface, if any was received
+  // through wp-fractional-scale-v1 protocol, when available.
+  std::optional<float> preferred_scale_factor_;
 
   void ExplicitRelease(zwp_linux_buffer_release_v1* linux_buffer_release,
                        base::ScopedFD fence);

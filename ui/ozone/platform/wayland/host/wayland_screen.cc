@@ -550,6 +550,14 @@ base::Value::List WaylandScreen::GetGpuExtraInfo(
   return values;
 }
 
+std::optional<float> WaylandScreen::GetPreferredScaleFactorForAcceleratedWidget(
+    gfx::AcceleratedWidget widget) const {
+  if (auto* window = connection_->window_manager()->GetWindow(widget)) {
+    return window->GetPreferredScaleFactor();
+  }
+  return std::nullopt;
+}
+
 #if BUILDFLAG(IS_CHROMEOS_LACROS)
 void WaylandScreen::OnTabletStateChanged(display::TabletState tablet_state) {
   tablet_state_ = tablet_state;
