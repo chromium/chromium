@@ -459,6 +459,19 @@ TEST_F(ArcMetricsServiceTest, ReportVpnServiceBuilderCompatApiUsage) {
       static_cast<int>(mojom::VpnServiceBuilderCompatApiId::kVpnAddRoute), 1);
 }
 
+// Tests that ReportApkCacheHit() actually records UMA stats.
+TEST_F(ArcMetricsServiceTest, ReportApkCacheHit) {
+  base::HistogramTester tester;
+
+  service()->ReportApkCacheHit(true /*hit*/);
+  tester.ExpectUniqueSample("Arc.AppInstall.CacheHit", 1, 1);
+
+  service()->ReportApkCacheHit(false /*hit*/);
+  tester.ExpectBucketCount("Arc.AppInstall.CacheHit", 0, 1);
+
+  tester.ExpectTotalCount("Arc.AppInstall.CacheHit", 2);
+}
+
 class ArcVmArcMetricsServiceTest
     : public ArcMetricsServiceTest,
       public testing::WithParamInterface<

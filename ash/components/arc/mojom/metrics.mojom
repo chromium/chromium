@@ -1,7 +1,7 @@
 // Copyright 2016 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
-// Next MinVersion: 34
+// Next MinVersion: 35
 module arc.mojom;
 
 import "mojo/public/mojom/base/time.mojom";
@@ -381,7 +381,7 @@ enum AppErrorDialogType {
 // This interface is implemented in ash by ArcMetricsService. It is called by
 // ARC side.
 // Deprecated method IDs: 8, 18, 25, 26, 27, 28, 29
-// Next method ID: 38
+// Next method ID: 39
 interface MetricsHost {
   // Reports boot progress events from ARC instance.
   ReportBootProgress@0(array<BootProgressEvent> events,
@@ -504,6 +504,9 @@ interface MetricsHost {
 
   // Reports the dialog type when Android throws an app error dialog.
   [MinVersion=33] ReportAppErrorDialogType@37(AppErrorDialogType type);
+
+  // Reports the result of apk cache lookup for an app install.
+  [MinVersion=34] ReportApkCacheHit@38(bool hit);
 };
 
 // Deprecated method IDs: 0

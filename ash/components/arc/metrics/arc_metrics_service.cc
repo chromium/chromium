@@ -827,6 +827,11 @@ void ArcMetricsService::ReportAppErrorDialogType(
   base::UmaHistogramEnumeration("Arc.WM.AppErrorDialog.Type", type);
 }
 
+void ArcMetricsService::ReportApkCacheHit(bool hit) {
+  DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
+  base::UmaHistogramBoolean("Arc.AppInstall.CacheHit", hit);
+}
+
 void ArcMetricsService::OnWindowActivated(
     wm::ActivationChangeObserver::ActivationReason reason,
     aura::Window* gained_active,

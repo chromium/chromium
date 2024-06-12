@@ -435,6 +435,17 @@ chromium-metrics-reviews@google.com.
   </token>
 </histogram>
 
+<histogram name="Arc.AppInstall.CacheHit" enum="BooleanCacheHit"
+    expires_after="2024-12-31">
+  <owner>mhasank@google.com</owner>
+  <owner>arc-commercial@google.com</owner>
+  <summary>
+    Records whether APK Cache had a hit or miss for an app install request. This
+    metric is recorded when app is being installed for an affiliated managed
+    user.
+  </summary>
+</histogram>
+
 <histogram name="Arc.AppInstall.PolicySuccessRate" units="%"
     expires_after="2025-01-30">
   <owner>batoon@google.com</owner>
