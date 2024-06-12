@@ -177,6 +177,11 @@ inline constexpr char kOobeMetricsReportedAsEnabled[] =
 inline constexpr char kOobeStatsReportingControllerReportedReset[] =
     "OobeStatsReportingControllerReportedReset";
 
+// Time interval by which the user's authentication flow should automatically be
+// reloaded. Policy name: `DeviceAuthenticationFlowAutoReloadInterval`.
+inline constexpr char kAuthenticationFlowAutoReloadInterval[] =
+    "AuthenticationFlowAutoReloadInterval";
+
 }  // namespace ash::prefs
 
 #endif  // CHROME_BROWSER_ASH_LOGIN_LOGIN_PREF_NAMES_H_

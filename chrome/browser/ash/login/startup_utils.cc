@@ -132,6 +132,9 @@ void StartupUtils::RegisterPrefs(PrefRegistrySimple* registry) {
       ash::quick_start::prefs::kShouldResumeQuickStartAfterReboot, false);
   registry->RegisterDictionaryPref(
       ash::quick_start::prefs::kResumeQuickStartAfterRebootInfo);
+
+  registry->RegisterIntegerPref(prefs::kAuthenticationFlowAutoReloadInterval,
+                                0);
 }
 
 // static

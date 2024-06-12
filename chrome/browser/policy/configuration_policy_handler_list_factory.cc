@@ -2212,6 +2212,12 @@ const PolicyToPreferenceMapEntry kSimplePolicyMap[] = {
     lens::prefs::kLensOverlaySettings,
     base::Value::Type::INTEGER},
 #endif
+
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+  { key::kDeviceAuthenticationFlowAutoReloadInterval,
+    ash::prefs::kAuthenticationFlowAutoReloadInterval,
+    base::Value::Type::INTEGER },
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 };
 // clang-format on
 
