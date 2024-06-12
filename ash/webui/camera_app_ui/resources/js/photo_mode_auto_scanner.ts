@@ -24,16 +24,6 @@ export const SLOWDOWN_DELAY = 3 * 60 * 1000;
 export const BARCODE_SCAN_INTERVAL_SLOW = 1000;
 export const OCR_SCAN_INTERVAL_SLOW = 1000;
 
-export interface ScanResult {
-  // The detected content.
-  value: string;
-  // The distance between the center of the detected content and the center of
-  // the image. The distance should be normalized by the dimensions of the
-  // source image, meaning it's a value between 0 (center) and `Math.hypot(0.5,
-  // 0.5)` (corner).
-  distance: number;
-}
-
 type OcrResultLine = PerformOcrResult['result']['lines'][number];
 
 interface DetectedResult {
@@ -81,7 +71,7 @@ export class PhotoModeAutoScanner {
   // `handleDetectedResult()` for more details.
   private closestContent: {
     source: scannerChip.Source|null,
-    distance: ScanResult['distance'],
+    distance: number,
   } = INITIAL_CLOSEST_CONTENT;
 
   /**
