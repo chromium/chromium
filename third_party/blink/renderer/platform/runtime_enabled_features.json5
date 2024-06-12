@@ -3540,6 +3540,13 @@
       status: "stable",
     },
     {
+      // Sets the minimum target size of <option> in <select> to 24x24 CSS
+      // pixels to meet Accessibility standards.
+      // https://www.w3.org/WAI/WCAG22/Understanding/target-size-minimum.html
+      name: "SelectOptionAccessibilityTargetSize",
+      status: "stable",
+    },
+    {
       name: "SendBeaconThrowForBlobWithNonSimpleType",
       public: true,
       status: "stable",

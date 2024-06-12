@@ -346,12 +346,25 @@ void InternalPopupMenu::WriteDocument(SegmentedBuffer& data) {
                                               "}\n"
                                               "option {"
                                               "padding-bottom: %dpx;"
-                                              "min-height: %dpx;"
+                                              "min-block-size: %dpx;"
                                               "display: flex;"
                                               "align-items: center;"
-                                              "}",
+                                              "}\n",
                                               padding, padding, min_height),
                                data);
+    // Sets the min target size of <option> to 24x24 CSS pixels to meet
+    // Accessibility standards.
+    if (RuntimeEnabledFeatures::SelectOptionAccessibilityTargetSizeEnabled()) {
+      PagePopupClient::AddString(
+          String::Format("option {"
+                         "display: block;"
+                         "align-content: center;"
+                         "min-inline-size: %dpx;"
+                         "min-block-size: %dpx;"
+                         "}\n",
+                         min_height, std::max(24, min_height)),
+          data);
+    }
   }
 
   PagePopupClient::AddString(
@@ -631,8 +644,10 @@ void InternalPopupMenu::Dispose() {
 
 void InternalPopupMenu::Show(PopupMenu::ShowEventType type) {
   DCHECK(!popup_);
-  taller_options_ = type == PopupMenu::kTouch ||
-                    RuntimeEnabledFeatures::ForceTallerSelectPopupEnabled();
+  taller_options_ =
+      type == PopupMenu::kTouch ||
+      RuntimeEnabledFeatures::ForceTallerSelectPopupEnabled() ||
+      RuntimeEnabledFeatures::SelectOptionAccessibilityTargetSizeEnabled();
   popup_ = chrome_client_->OpenPagePopup(this);
 }
 

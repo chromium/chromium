@@ -3138,6 +3138,50 @@
       "syg@chromium.org",
       "samuelmaddock@electronjs.org"
     ]
+  },{
+    "prefix": "select-option-accessibility-target-size-disabled",
+    "platforms": ["Linux", "Win"],
+    "bases": [
+      "fast/forms/select-popup/popup-menu-accessibility-minimum-target-size.html",
+      "fast/forms/select-popup/popup-menu-appearance.html",
+      "fast/forms/select-popup/popup-menu-appearance-single-option.html",
+      "fast/forms/select-popup/popup-menu-appearance-long.html",
+      "fast/forms/select-popup/popup-menu-appearance-zero-font-size.html",
+      "fast/forms/select-popup/popup-menu-appearance-transform.html"
+    ],
+    "args": ["--disable-features=SelectOptionAccessibilityTargetSize"],
+    "expires": "Jun 1, 2025",
+    "owners": ["masonf@chromium.org", "stephanie.zhang@microsoft.com", "sajos@microsoft.com"]
+  },
+  {
+    "prefix": "force-taller-select-popup-disabled",
+    "platforms": ["Linux", "Win"],
+    "bases": [
+      "fast/forms/select-popup/popup-menu-accessibility-minimum-target-size.html",
+      "fast/forms/select-popup/popup-menu-appearance.html",
+      "fast/forms/select-popup/popup-menu-appearance-single-option.html",
+      "fast/forms/select-popup/popup-menu-appearance-long.html",
+      "fast/forms/select-popup/popup-menu-appearance-zero-font-size.html",
+      "fast/forms/select-popup/popup-menu-appearance-transform.html"
+    ],
+    "args": ["--disable-features=ForceTallerSelectPopup"],
+    "expires": "Jun 1, 2025",
+    "owners": ["tkent@chromium.org", "stephanie.zhang@microsoft.com", "sajos@microsoft.com"]
+  },
+  {
+    "prefix": "both-taller-select-popup-options-disabled",
+    "platforms": ["Linux", "Win"],
+    "bases": [
+      "fast/forms/select-popup/popup-menu-accessibility-minimum-target-size.html",
+      "fast/forms/select-popup/popup-menu-appearance.html",
+      "fast/forms/select-popup/popup-menu-appearance-single-option.html",
+      "fast/forms/select-popup/popup-menu-appearance-long.html",
+      "fast/forms/select-popup/popup-menu-appearance-zero-font-size.html",
+      "fast/forms/select-popup/popup-menu-appearance-transform.html"
+    ],
+    "args": ["--disable-features=SelectOptionAccessibilityTargetSize,ForceTallerSelectPopup"],
+    "expires": "Jun 1, 2025",
+    "owners": ["masonf@chromium.org", "stephanie.zhang@microsoft.com", "sajos@microsoft.com"]
   },
   {
     "prefix": "document-isolation-policy",

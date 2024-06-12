@@ -7567,6 +7567,10 @@ crbug.com/345499788 [ Mac14 ] virtual/webnn-service-on-cpu/external/wpt/webnn/co
 crbug.com/345499788 [ Mac14 ] virtual/webnn-service-on-npu/external/wpt/webnn/conformance_tests/elementwise_binary.https.any.html?npu [ Skip Timeout ]
 crbug.com/345499788 [ Mac14 ] virtual/webnn-service-on-npu/external/wpt/webnn/conformance_tests/elementwise_binary.https.any.worker.html?npu [ Skip Timeout ]
 
+# Temporarily disable as it's failing due to increasing <option> height in <select>:
+crbug.com/341124482 fast/forms/select-popup/popup-menu-mouse-operations.html [ Failure Pass ]
+crbug.com/341124482 fast/forms/select-popup/popup-menu-scrollbar-button-scrolls.html [ Failure Pass ]
+
 # Gardener 2024-06-06
 crbug.com/325323464 [ Linux ] http/tests/navigation/back-to-redirect-with-frame.php [ Pass Timeout ]
 crbug.com/325323464 [ Mac ] http/tests/navigation/back-to-redirect-with-frame.php [ Pass Timeout ]
