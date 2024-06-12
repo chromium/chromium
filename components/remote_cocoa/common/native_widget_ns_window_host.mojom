@@ -105,8 +105,7 @@ interface NativeWidgetNSWindowHost {
   GetIsDraggableBackgroundAt(gfx.mojom.Point location_in_content) =>
       (bool is_draggable_background);
 
-  // Synchronously query the tooltip text for |location_in_content|.
-  [Sync]
+  // Asynchronously query the tooltip text for |location_in_content|.
   GetTooltipTextAt(gfx.mojom.Point location_in_content) =>
       (mojo_base.mojom.String16 new_tooltip_text);
 

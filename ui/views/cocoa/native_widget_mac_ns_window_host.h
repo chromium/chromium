@@ -315,8 +315,6 @@ class VIEWS_EXPORT NativeWidgetMacNSWindowHost
   bool GetHasMenuController(bool* has_menu_controller) override;
   bool GetIsDraggableBackgroundAt(const gfx::Point& location_in_content,
                                   bool* is_draggable_background) override;
-  bool GetTooltipTextAt(const gfx::Point& location_in_content,
-                        std::u16string* new_tooltip_text) override;
   bool GetWidgetIsModal(bool* widget_is_modal) override;
   bool GetIsFocusedViewTextual(bool* is_textual) override;
   void OnWindowGeometryChanged(

@@ -1124,23 +1124,6 @@ bool NativeWidgetMacNSWindowHost::GetIsDraggableBackgroundAt(
   return true;
 }
 
-bool NativeWidgetMacNSWindowHost::GetTooltipTextAt(
-    const gfx::Point& location_in_content,
-    std::u16string* new_tooltip_text) {
-  if (!root_view_) {
-    return false;
-  }
-  views::View* view =
-      root_view_->GetTooltipHandlerForPoint(location_in_content);
-  if (view) {
-    gfx::Point view_point = location_in_content;
-    views::View::ConvertPointToScreen(root_view_, &view_point);
-    views::View::ConvertPointFromScreen(view, &view_point);
-    *new_tooltip_text = view->GetTooltipText(view_point);
-  }
-  return true;
-}
-
 void NativeWidgetMacNSWindowHost::GetWordAt(
     const gfx::Point& location_in_content,
     bool* found_word,
@@ -1582,7 +1565,15 @@ void NativeWidgetMacNSWindowHost::GetTooltipTextAt(
     const gfx::Point& location_in_content,
     GetTooltipTextAtCallback callback) {
   std::u16string new_tooltip_text;
-  GetTooltipTextAt(location_in_content, &new_tooltip_text);
+  views::View* view =
+      root_view_ ? root_view_->GetTooltipHandlerForPoint(location_in_content)
+                 : nullptr;
+  if (view) {
+    gfx::Point view_point = location_in_content;
+    views::View::ConvertPointToScreen(root_view_, &view_point);
+    views::View::ConvertPointFromScreen(view, &view_point);
+    new_tooltip_text = view->GetTooltipText(view_point);
+  }
   std::move(callback).Run(new_tooltip_text);
 }
 
