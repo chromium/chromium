@@ -6902,11 +6902,6 @@
     "expiry_milestone": 130
   },
   {
-    "name": "password-generation-bottom-sheet",
-    "owners": ["atsvirchkova@google.com", "ioanap@chromium.org"],
-    "expiry_milestone": 123
-  },
-  {
     "name": "password-generation-experiment",
     "owners": ["rgod@google.com", "chrome-password-manager-team@google.com"],
     "expiry_milestone": 130
@@ -6942,7 +6937,7 @@
   {
     "name": "password-suggestion-bottom-sheet-v2",
     "owners": ["atsvirchkova@google.com", "vasilii@chromium.org", "derinel@google.com"],
-    "expiry_milestone": 128
+    "expiry_milestone": 130
   },
   {
     "name": "payment-link-detection",
