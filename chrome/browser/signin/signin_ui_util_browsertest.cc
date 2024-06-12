@@ -58,7 +58,7 @@ IN_PROC_BROWSER_TEST_F(DiceSigninUiUtilBrowserTest,
   // New profile should not have any browser windows.
   EXPECT_FALSE(chrome::FindBrowserWithProfile(new_profile));
 
-  ShowExtensionSigninPrompt(new_profile, /*enable_sync=*/true,
+  ShowExtensionSigninPrompt(new_profile, /*enable_sync=*/false,
                             /*email_hint=*/std::string());
   // `ShowExtensionSigninPrompt()` creates a new browser.
   Browser* browser = chrome::FindBrowserWithProfile(new_profile);
@@ -75,7 +75,7 @@ IN_PROC_BROWSER_TEST_F(DiceSigninUiUtilBrowserTest,
   EXPECT_FALSE(chrome::FindBrowserWithProfile(new_profile));
 
   // `ShowExtensionSigninPrompt()` does nothing for deleted profile.
-  ShowExtensionSigninPrompt(new_profile, /*enable_sync=*/true,
+  ShowExtensionSigninPrompt(new_profile, /*enable_sync=*/false,
                             /*email_hint=*/std::string());
   EXPECT_FALSE(chrome::FindBrowserWithProfile(new_profile));
 }
