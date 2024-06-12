@@ -60,6 +60,7 @@
 #include "gpu/command_buffer/common/swap_buffers_complete_params.h"
 #include "gpu/command_buffer/common/sync_token.h"
 #include "gpu/config/gpu_finch_features.h"
+#include "media/base/media_switches.h"
 #include "skia/ext/opacity_filter_canvas.h"
 #include "third_party/skia/include/core/SkCanvas.h"
 #include "third_party/skia/include/core/SkColor.h"
@@ -1213,8 +1214,10 @@ gpu::Mailbox SkiaRenderer::GetProtectedSharedImage(bool is_10bit) {
   protected_buffer_queue_->Reshape(
       gfx::Size(kMaxProtectedContentWidth, kMaxProtectedContentHeight),
       gfx::ColorSpace::CreateSRGB(),
-      is_10bit ? gfx::BufferFormat::BGRA_1010102
-               : gfx::BufferFormat::BGRA_8888);
+      (is_10bit &&
+       base::FeatureList::IsEnabled(media::kEnableArmHwdrm10bitOverlays))
+          ? gfx::BufferFormat::BGRA_1010102
+          : gfx::BufferFormat::BGRA_8888);
 
   return protected_buffer_queue_->GetCurrentBuffer();
 }
@@ -2995,8 +2998,10 @@ void SkiaRenderer::ScheduleOverlays() {
           static_cast<float>(overlay.display_rect.height() /
                              static_cast<float>(kMaxProtectedContentHeight)));
       overlay.mailbox = detiled_image;
-      overlay.format = is_10bit ? gfx::BufferFormat::BGRA_1010102
-                                : gfx::BufferFormat::BGRA_8888;
+      overlay.format = (is_10bit && base::FeatureList::IsEnabled(
+                                        media::kEnableArmHwdrm10bitOverlays))
+                           ? gfx::BufferFormat::BGRA_1010102
+                           : gfx::BufferFormat::BGRA_8888;
       overlay.transform = gfx::OVERLAY_TRANSFORM_NONE;
 
       continue;

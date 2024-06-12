@@ -4592,6 +4592,8 @@ extern const char kPreferSoftwareMT21Name[];
 extern const char kPreferSoftwareMT21Description[];
 extern const char kEnableProtectedVulkanDetilingName[];
 extern const char kEnableProtectedVulkanDetilingDescription[];
+extern const char kEnableArmHwdrm10bitOverlaysName[];
+extern const char kEnableArmHwdrm10bitOverlaysDescription[];
 #if BUILDFLAG(USE_CHROMEOS_PROTECTED_MEDIA)
 extern const char kEnableArmHwdrmName[];
 extern const char kEnableArmHwdrmDescription[];

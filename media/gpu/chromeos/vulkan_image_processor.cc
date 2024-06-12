@@ -10,6 +10,7 @@
 #include "base/task/thread_pool.h"
 #include "gpu/vulkan/init/vulkan_factory.h"
 #include "gpu/vulkan/vulkan_function_pointers.h"
+#include "media/base/media_switches.h"
 #include "media/gpu/chromeos/platform_video_frame_utils.h"
 #include "media/gpu/chromeos/shaders/shaders.h"
 #include "media/gpu/macros.h"
@@ -885,8 +886,15 @@ std::unique_ptr<VulkanImageProcessor> VulkanImageProcessor::Create(
     return nullptr;
   }
 
-  VkFormat out_format = format == kMM21 ? VK_FORMAT_B8G8R8A8_UNORM
-                                        : VK_FORMAT_A2R10G10B10_UNORM_PACK32;
+  VkFormat out_format =
+      (format == kMT2T
+#if BUILDFLAG(IS_CHROMEOS) && BUILDFLAG(USE_CHROMEOS_MEDIA_ACCELERATION) && \
+    defined(ARCH_CPU_ARM_FAMILY)
+       && base::FeatureList::IsEnabled(media::kEnableArmHwdrm10bitOverlays)
+#endif
+           )
+          ? VK_FORMAT_A2R10G10B10_UNORM_PACK32
+          : VK_FORMAT_B8G8R8A8_UNORM;
   auto convert_render_pass = VulkanRenderPass::Create(
       out_format, vulkan_device_queue->GetVulkanDevice());
   if (!convert_render_pass) {

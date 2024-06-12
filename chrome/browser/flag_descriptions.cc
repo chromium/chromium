@@ -7909,6 +7909,12 @@ const char kEnableProtectedVulkanDetilingName[] =
     "Enable Protected Vulkan Detiling";
 const char kEnableProtectedVulkanDetilingDescription[] =
     "Use a Vulkan shader for protected Vulkan detiling.";
+const char kEnableArmHwdrm10bitOverlaysName[] =
+    "Enable ARM HW DRM 10-bit Overlays";
+const char kEnableArmHwdrm10bitOverlaysDescription[] =
+    "Enable 10-bit overlays for ARM HW DRM content. If disabled, 10-bit "
+    "HW DRM content will be subsampled to 8-bit before scanout. This flag "
+    "has no effect on 8-bit content.";
 #if BUILDFLAG(USE_CHROMEOS_PROTECTED_MEDIA)
 const char kEnableArmHwdrmName[] = "Enable ARM HW DRM";
 const char kEnableArmHwdrmDescription[] = "Enable HW backed Widevine L1 DRM";
