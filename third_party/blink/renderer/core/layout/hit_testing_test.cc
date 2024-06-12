@@ -92,6 +92,31 @@ TEST_F(HitTestingTest, OcclusionHitTest) {
   EXPECT_EQ(result.InnerNode(), occluder);
 }
 
+TEST_F(HitTestingTest, OcclusionHitTestSVGTextWithFilterCrash) {
+  SetBodyInnerHTML(R"HTML(
+    <style>
+    div {
+      width: 100px;
+      height: 100px;
+    }
+    text {
+      filter: blur(10px);
+    }
+    </style>
+
+    <div id="target"></div>
+    <svg overflow="visible" display="block">
+      <text id="occluder" y="40" font-size="50px">M</text>
+    </svg>
+  )HTML");
+
+  Element* target = GetElementById("target");
+  Element* occluder = GetElementById("occluder");
+  HitTestResult result = target->GetLayoutObject()->HitTestForOcclusion();
+  // The intersection will be flagged on the text node.
+  EXPECT_EQ(result.InnerNode(), occluder->firstChild());
+}
+
 TEST_F(HitTestingTest, HitTestWithCallback) {
   SetBodyInnerHTML(R"HTML(
     <style>
