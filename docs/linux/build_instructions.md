@@ -12,7 +12,7 @@ Are you a Google employee? See
 
 ## System requirements
 
-* A 64-bit Intel machine with at least 8GB of RAM. More than 16GB is highly
+* An x86-64 machine with at least 8GB of RAM. More than 16GB is highly
     recommended. If your machine has an SSD, it is recommended to have
     \>=32GB/>=16GB of swap for machines with 8GB/16GB of RAM respectively.
 * At least 100GB of free disk space. It does not have to be on the same drive;

@@ -5,7 +5,7 @@ The short summary is that almost everything works, without needing Rosetta.
 
 There's a [main waterfall
 bot](https://ci.chromium.org/p/chromium/builders/ci/mac-arm64-rel)
-that builds for Arm. It cross-builds on an Intel machine.
+that builds for Arm. It cross-builds on an x86-64 machine.
 
 There's a [main waterfall
 bot](https://ci.chromium.org/p/chromium/builders/ci/mac-arm64-on-arm64-rel)
