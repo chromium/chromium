@@ -6,6 +6,7 @@ package org.chromium.chrome.browser.native_page;
 
 import androidx.annotation.Nullable;
 
+import org.chromium.chrome.browser.preloading.AndroidPrerenderManager;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.content_public.browser.LoadUrlParams;
 
@@ -36,8 +37,12 @@ public interface NativePageNavigationDelegate {
 
     /**
      * Opens an URL with the desired disposition in a tab in group.
+     *
      * @return The tab where the URL is being loaded.
      */
     @Nullable
     Tab openUrlInGroup(int windowOpenDisposition, LoadUrlParams loadUrlParams);
+
+    /** Initialize AndroidPrerenderManager JNI interface. */
+    void initAndroidPrerenderManager(AndroidPrerenderManager androidPrerenderManager);
 }

@@ -10,6 +10,7 @@ import org.chromium.base.metrics.RecordUserAction;
 import org.chromium.base.supplier.Supplier;
 import org.chromium.chrome.browser.incognito.IncognitoUtils;
 import org.chromium.chrome.browser.native_page.NativePageNavigationDelegate;
+import org.chromium.chrome.browser.preloading.AndroidPrerenderManager;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tasks.ReturnToChromeUtil;
@@ -55,5 +56,12 @@ class ExploreSurfaceNavigationDelegate implements NativePageNavigationDelegate {
         // method.
         assert false; // NOTREACHED.
         return null;
+    }
+
+    @Override
+    public void initAndroidPrerenderManager(AndroidPrerenderManager androidPrerenderManager) {
+        // ExploreSurfaceNavigationDelegate doesn't support AndroidPrerenderManager.
+        assert false; // NOTREACHED.
+        return;
     }
 }

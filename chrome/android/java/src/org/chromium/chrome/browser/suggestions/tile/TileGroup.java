@@ -14,16 +14,21 @@ import android.view.View.OnClickListener;
 import android.view.View.OnCreateContextMenuListener;
 
 import androidx.annotation.IntDef;
+import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.annotation.VisibleForTesting;
 
 import org.chromium.base.Callback;
 import org.chromium.base.TimeUtils;
 import org.chromium.base.metrics.RecordHistogram;
+import org.chromium.base.task.PostTask;
+import org.chromium.base.task.TaskTraits;
+import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.native_page.ContextMenuManager;
 import org.chromium.chrome.browser.native_page.ContextMenuManager.ContextMenuItemId;
 import org.chromium.chrome.browser.offlinepages.OfflinePageBridge;
 import org.chromium.chrome.browser.offlinepages.OfflinePageItem;
+import org.chromium.chrome.browser.preloading.AndroidPrerenderManager;
 import org.chromium.chrome.browser.suggestions.SiteSuggestion;
 import org.chromium.chrome.browser.suggestions.SuggestionsMetrics;
 import org.chromium.chrome.browser.suggestions.SuggestionsOfflineModelObserver;
@@ -65,9 +70,13 @@ public class TileGroup implements MostVisitedSites.Observer {
         /**
          * Called when the tile group has completely finished loading (all views will be inflated
          * and any dependent resources will have been loaded).
+         *
          * @param tiles The tiles owned by the {@link TileGroup}. Used to record metrics.
          */
         void onLoadingComplete(List<Tile> tiles);
+
+        /** Initialize AndroidPrerenderManager JNI interface. */
+        void initAndroidPrerenderManager(AndroidPrerenderManager androidPrerenderManager);
 
         /**
          * To be called before this instance is abandoned to the garbage collector so it can do any
@@ -168,11 +177,13 @@ public class TileGroup implements MostVisitedSites.Observer {
     private final Delegate mTileGroupDelegate;
     private final Observer mObserver;
     private final TileRenderer mTileRenderer;
+    // Used in TileInteractionDelegateImpl.
+    private final int mPrerenderDelay;
 
     /**
      * Tracks the tasks currently in flight.
      *
-     * We only care about which ones are pending, not their order, and we can have multiple tasks
+     * <p>We only care about which ones are pending, not their order, and we can have multiple tasks
      * pending of the same type. Hence exposing the type as Collection rather than List or Set.
      */
     private final Collection<Integer> mPendingTasks = new ArrayList<>();
@@ -252,6 +263,12 @@ public class TileGroup implements MostVisitedSites.Observer {
         mTileRenderer = tileRenderer;
         mOfflineModelObserver = new OfflineModelObserver(offlinePageBridge);
         mUiDelegate.addDestructionObserver(mOfflineModelObserver);
+
+        mPrerenderDelay =
+                ChromeFeatureList.getFieldTrialParamByFeatureAsInt(
+                        ChromeFeatureList.NEW_TAB_PAGE_ANDROID_TRIGGER_FOR_PRERENDER2,
+                        "prerender_new_tab_page_on_touch_trigger",
+                        0);
     }
 
     @Override
@@ -399,7 +416,7 @@ public class TileGroup implements MostVisitedSites.Observer {
         if (isInitialLoad) removeTask(TileTask.FETCH_DATA);
     }
 
-    private @Nullable Tile findTile(SiteSuggestion suggestion) {
+    protected @Nullable Tile findTile(SiteSuggestion suggestion) {
         if (mTileSections.get(suggestion.sectionType) == null) return null;
         for (Tile tile : mTileSections.get(suggestion.sectionType)) {
             if (tile.getData().equals(suggestion)) return tile;
@@ -495,10 +512,39 @@ public class TileGroup implements MostVisitedSites.Observer {
 
     private class TileInteractionDelegateImpl
             implements TileInteractionDelegate, ContextMenuManager.Delegate, View.OnTouchListener {
+
+        /**
+         * CancelableRunnable is a Runnable class can be canceled. It is created here instead of
+         * making CallbackController.CancelableRunnable reusable is that this class is expected to
+         * be used on UI thread only, so locking mechanism is not required.
+         */
+        private class CancelableRunnable implements Runnable {
+            private Runnable mRunnable;
+
+            private CancelableRunnable(@NonNull Runnable runnable) {
+                mRunnable = runnable;
+            }
+
+            public void cancel() {
+                mRunnable = null;
+            }
+
+            @Override
+            public void run() {
+                // This is run on UI thread only, so it is not necessary to guard this against
+                // another thread.
+                if (mRunnable != null) mRunnable.run();
+            }
+        }
+
         private final SiteSuggestion mSuggestion;
         private Runnable mOnClickRunnable;
         private Runnable mOnRemoveRunnable;
         private Long mTouchTimer;
+        private AndroidPrerenderManager mAndroidPrerenderManager;
+        private @Nullable CancelableRunnable mPrerenderRunnable;
+        private boolean mPrerenderStarted;
+        private Tile mPrerenderedTile;
 
         private void maybeRecordTouchDuration(boolean taken) {
             if (mTouchTimer == null) return;
@@ -515,6 +561,8 @@ public class TileGroup implements MostVisitedSites.Observer {
         public TileInteractionDelegateImpl(SiteSuggestion suggestion, View view) {
             mSuggestion = suggestion;
             view.setOnTouchListener(TileInteractionDelegateImpl.this);
+            mAndroidPrerenderManager = AndroidPrerenderManager.getAndroidPrerenderManager();
+            mTileGroupDelegate.initAndroidPrerenderManager(mAndroidPrerenderManager);
         }
 
         @Override
@@ -530,14 +578,65 @@ public class TileGroup implements MostVisitedSites.Observer {
             mTileGroupDelegate.openMostVisitedItem(WindowOpenDisposition.CURRENT_TAB, tile);
         }
 
+        private void maybePrerender(Tile tile) {
+            if (!ChromeFeatureList.isEnabled(
+                    ChromeFeatureList.NEW_TAB_PAGE_ANDROID_TRIGGER_FOR_PRERENDER2)) {
+                return;
+            }
+
+            if (mPrerenderedTile == tile) {
+                // Avoid resetting the delayed task if witness several MotionEvent.ACTION_DOWN in a
+                // row.
+                return;
+            }
+
+            assert !mPrerenderStarted;
+            mPrerenderedTile = tile;
+            mPrerenderRunnable =
+                    new CancelableRunnable(
+                            () -> {
+                                mPrerenderStarted =
+                                        mAndroidPrerenderManager.startPrerendering(tile.getUrl());
+                                mPrerenderedTile = null;
+                            });
+            PostTask.postDelayedTask(TaskTraits.UI_DEFAULT, mPrerenderRunnable, mPrerenderDelay);
+        }
+
+        // This function cancels scheduled prerendering or calls stopPrerendering to stop stale
+        // prerendering.
+        private void cancelPrerender() {
+            if (!ChromeFeatureList.isEnabled(
+                    ChromeFeatureList.NEW_TAB_PAGE_ANDROID_TRIGGER_FOR_PRERENDER2)) {
+                return;
+            }
+
+            if (mPrerenderRunnable != null) {
+                mPrerenderRunnable.cancel();
+                mPrerenderRunnable = null;
+            }
+
+            if (mPrerenderStarted) {
+                mAndroidPrerenderManager.stopPrerendering();
+                mPrerenderStarted = false;
+            }
+
+            mPrerenderedTile = null;
+        }
+
         @Override
         @SuppressLint("ClickableViewAccessibility")
         public boolean onTouch(View view, MotionEvent event) {
             if (event.getAction() == MotionEvent.ACTION_DOWN) {
                 mTouchTimer = TimeUtils.elapsedRealtimeMillis();
+
+                if (mSuggestion == null) return false;
+                Tile tile = findTile(mSuggestion);
+                if (tile == null) return false;
+                maybePrerender(tile);
             }
             if (event.getAction() == MotionEvent.ACTION_CANCEL) {
                 maybeRecordTouchDuration(false);
+                cancelPrerender();
             }
 
             return false;

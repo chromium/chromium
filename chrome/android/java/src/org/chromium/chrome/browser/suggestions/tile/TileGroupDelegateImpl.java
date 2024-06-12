@@ -10,6 +10,7 @@ import org.chromium.base.Callback;
 import org.chromium.base.metrics.RecordUserAction;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.ntp.NewTabPageUma;
+import org.chromium.chrome.browser.preloading.AndroidPrerenderManager;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.suggestions.SuggestionsDependencyFactory;
 import org.chromium.chrome.browser.suggestions.SuggestionsNavigationDelegate;
@@ -116,6 +117,13 @@ public class TileGroupDelegateImpl implements TileGroup.Delegate {
         }
 
         mMostVisitedSites.recordPageImpression(tiles.size());
+    }
+
+    @Override
+    public void initAndroidPrerenderManager(AndroidPrerenderManager androidPrerenderManager) {
+        if (mNavigationDelegate != null) {
+            mNavigationDelegate.initAndroidPrerenderManager(androidPrerenderManager);
+        }
     }
 
     @Override

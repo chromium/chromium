@@ -14,6 +14,7 @@ import org.chromium.chrome.browser.multiwindow.MultiWindowUtils;
 import org.chromium.chrome.browser.offlinepages.DownloadUiActionFlags;
 import org.chromium.chrome.browser.offlinepages.OfflinePageBridge;
 import org.chromium.chrome.browser.offlinepages.RequestCoordinatorBridge;
+import org.chromium.chrome.browser.preloading.AndroidPrerenderManager;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tab.TabLaunchType;
@@ -145,5 +146,13 @@ public class NativePageNavigationDelegateImpl implements NativePageNavigationDel
                             OfflinePageBridge.NTP_SUGGESTIONS_NAMESPACE,
                             /* userRequested= */ true);
         }
+    }
+
+    @Override
+    public void initAndroidPrerenderManager(AndroidPrerenderManager androidPrerenderManager) {
+        if (mTab != null) {
+            androidPrerenderManager.initializeWithTab(mTab);
+        }
+        return;
     }
 }

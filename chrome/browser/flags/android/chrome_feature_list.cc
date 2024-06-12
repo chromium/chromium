@@ -244,6 +244,7 @@ const base::Feature* const kFeaturesExposedToJava[] = {
     &kMultiInstanceApplicationStatusCleanup,
     &kNavBarColorMatchesTabBackground,
     &kNewTabSearchEngineUrlAndroid,
+    &kNewTabPageAndroidTriggerForPrerender2,
     &kNotificationPermissionVariant,
     &kNotificationPermissionBottomSheet,
     &kPageAnnotationsService,
@@ -736,6 +737,10 @@ BASE_FEATURE(kNavBarColorMatchesTabBackground,
 BASE_FEATURE(kNewTabSearchEngineUrlAndroid,
              "NewTabSearchEngineUrlAndroid",
              base::FEATURE_ENABLED_BY_DEFAULT);
+
+BASE_FEATURE(kNewTabPageAndroidTriggerForPrerender2,
+             "NewTabPageAndroidTriggerForPrerender2",
+             base::FEATURE_DISABLED_BY_DEFAULT);
 
 BASE_FEATURE(kNotificationPermissionVariant,
              "NotificationPermissionVariant",

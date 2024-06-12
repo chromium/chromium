@@ -353,6 +353,8 @@ public abstract class ChromeFeatureList {
     public static final String NAV_BAR_COLOR_MATCHES_TAB_BACKGROUND =
             "NavBarColorMatchesTabBackground";
     public static final String NEW_TAB_SEARCH_ENGINE_URL_ANDROID = "NewTabSearchEngineUrlAndroid";
+    public static final String NEW_TAB_PAGE_ANDROID_TRIGGER_FOR_PRERENDER2 =
+            "NewTabPageAndroidTriggerForPrerender2";
     public static final String NOTIFICATION_ONE_TAP_UNSUBSCRIBE = "NotificationOneTapUnsubscribe";
     public static final String NOTIFICATION_PERMISSION_VARIANT = "NotificationPermissionVariant";
     public static final String NOTIFICATION_PERMISSION_BOTTOM_SHEET =
@@ -622,6 +624,8 @@ public abstract class ChromeFeatureList {
             newCachedFlag(MUlTI_INSTANCE_APPLICATION_STATUS_CLEANUP, false);
     public static final CachedFlag sNavBarColorMatchesTabBackground =
             newCachedFlag(NAV_BAR_COLOR_MATCHES_TAB_BACKGROUND, false);
+    public static final CachedFlag sNewTabPageAndroidTriggerForPrerender2 =
+            newCachedFlag(NEW_TAB_PAGE_ANDROID_TRIGGER_FOR_PRERENDER2, false);
     public static final CachedFlag sPriceChangeModule = newCachedFlag(PRICE_CHANGE_MODULE, true);
     public static final CachedFlag sPriceInsights = newCachedFlag(PRICE_INSIGHTS, false);
     public static final CachedFlag sPrivacyGuideAndroid3 =
@@ -746,6 +750,7 @@ public abstract class ChromeFeatureList {
                     sMagicStackAndroid,
                     sMultiInstanceApplicationStatusCleanup,
                     sNavBarColorMatchesTabBackground,
+                    sNewTabPageAndroidTriggerForPrerender2,
                     sPriceChangeModule,
                     sPriceInsights,
                     sPrivacyGuideAndroid3,
