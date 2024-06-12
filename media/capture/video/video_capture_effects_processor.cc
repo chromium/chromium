@@ -20,33 +20,6 @@
 
 namespace media {
 namespace {
-std::pair<gpu::ExportedSharedImage, gpu::SyncToken> CreateSharedImage(
-    const VideoCaptureDevice::Client::Buffer& buffer,
-    const mojom::VideoFrameInfo& frame_info) {
-  CHECK_EQ(frame_info.pixel_format, VideoPixelFormat::PIXEL_FORMAT_NV12);
-
-  auto& gpu_channel_host = VideoCaptureGpuChannelHost::GetInstance();
-
-  auto* sii = gpu_channel_host.SharedImageInterface();
-  CHECK(sii);
-
-  // Create a single shared image to back a multiplanar video frame.
-  gpu::SharedImageInfo info(
-      viz::MultiPlaneFormat::kNV12, frame_info.coded_size,
-      frame_info.color_space,
-      gpu::SHARED_IMAGE_USAGE_RASTER_WRITE |
-          gpu::SHARED_IMAGE_USAGE_RASTER_READ,
-      "VideoCaptureEffectsProcessorMultiPlanarSharedImage");
-  scoped_refptr<gpu::ClientSharedImage> shared_image = sii->CreateSharedImage(
-      std::move(info), buffer.handle_provider->GetGpuMemoryBufferHandle());
-  CHECK(shared_image);
-
-  gpu::ExportedSharedImage result = shared_image->Export();
-
-  auto sync_token = sii->GenVerifiedSyncToken();
-  return std::make_pair(result, sync_token);
-}
-
 mojom::VideoBufferHandlePtr CreateBufferHandle(
     const VideoCaptureDevice::Client::Buffer& buffer,
     const mojom::VideoFrameInfo& frame_info,
@@ -59,9 +32,28 @@ mojom::VideoBufferHandlePtr CreateBufferHandle(
       return mojom::VideoBufferHandle::NewUnsafeShmemRegion(
           buffer.handle_provider->DuplicateAsUnsafeRegion());
     case VideoCaptureBufferType::kGpuMemoryBuffer: {
-      auto [shared_image, sync_token] = CreateSharedImage(buffer, frame_info);
+      CHECK_EQ(frame_info.pixel_format, VideoPixelFormat::PIXEL_FORMAT_NV12);
+
+      auto* sii =
+          VideoCaptureGpuChannelHost::GetInstance().SharedImageInterface();
+      CHECK(sii);
+
+      // Create a single shared image to back a multiplanar video frame.
+      gpu::SharedImageInfo info(
+          viz::MultiPlaneFormat::kNV12, frame_info.coded_size,
+          frame_info.color_space,
+          gpu::SHARED_IMAGE_USAGE_RASTER_WRITE |
+              gpu::SHARED_IMAGE_USAGE_RASTER_READ,
+          "VideoCaptureEffectsProcessorMultiPlanarSharedImage");
+      scoped_refptr<gpu::ClientSharedImage> shared_image =
+          sii->CreateSharedImage(
+              std::move(info),
+              buffer.handle_provider->GetGpuMemoryBufferHandle());
+      CHECK(shared_image);
+
+      auto sync_token = sii->GenVerifiedSyncToken();
       auto shared_image_set = mojom::SharedImageBufferHandleSet::New(
-          shared_image, sync_token, GL_TEXTURE_2D);
+          shared_image->Export(), sync_token, shared_image->GetTextureTarget());
 
       return mojom::VideoBufferHandle::NewSharedImageHandles(
           std::move(shared_image_set));
