@@ -81,10 +81,11 @@ export class DirectoryTreeContainer {
   private fileKeyToFocus_: FileKey|null = null;
 
   /**
-   * Deletion of the currently selected item can trigger the selection change
-   * from outside, if the deleted item is also the currently focused item, we
-   * need to wait for the next selected item to render and focus on that. This
-   * boolean value is used to control that.
+   * Sometimes the selected item can be changed from outside (e.g. currently
+   * selected directory item gets deleted, or operations from other place which
+   * triggers the active directory change), if the selected item is also focused
+   * before the change, we need to shift the focus to the newly selected item
+   * after it's rendered. This flag is used to control that.
    */
   private shouldFocusOnNextSelectedItem_: boolean = false;
 
@@ -923,6 +924,12 @@ export class DirectoryTreeContainer {
         // If Drive fake root is selected and it has Drive volume inside, we
         // expand it and go to the My Drive (1st child) directly.
         element.expanded = true;
+        // If "Google Drive" item is the currently focused item, we also need to
+        // set `shouldFocusOnNextSelectedItem_` flag to make sure the focus
+        // shifts to My Drive when it's rendered after expanding.
+        if (document.activeElement === element) {
+          this.shouldFocusOnNextSelectedItem_ = true;
+        }
         const myDriveKey = fileData.children[0]!;
         const isMyDriveActive = this.isCurrentDirectoryActive_(myDriveKey);
         // If My Drive is already active, dispatching the changeDirectory below
@@ -1133,6 +1140,10 @@ export class DirectoryTreeContainer {
         // represents current directory.
         this.fileKeyToSelect_ = null;
         element.selected = true;
+        // We only focus the element if shouldFocusOnNextSelectedItem_ is true.
+        // This is because current directory change can't be triggered from
+        // other parts of Files UI, e.g. "Go to file location" in Recents, where
+        // we shouldn't steal the focus from others.
         if (this.shouldFocusOnNextSelectedItem_) {
           this.shouldFocusOnNextSelectedItem_ = false;
           // Wait for the selected change finishes (e.g. expand all its parents)

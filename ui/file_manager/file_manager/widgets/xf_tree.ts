@@ -261,7 +261,14 @@ export class XfTree extends XfBase {
    * navigation and the selection with the keyboard.
    */
   private onHostKeyDown_(e: KeyboardEvent) {
-    if (e.ctrlKey || e.repeat) {
+    if (e.ctrlKey) {
+      return;
+    }
+    // We allow repeated keydown (e.g. hold the key without releasing to trigger
+    // event multiple times) only for ArrowUp/ArrowDown, so users can use hold
+    // arrow up/down to quickly navigate to the tree items far away.
+    const allowRepeat = e.key === 'ArrowUp' || e.key === 'ArrowDown';
+    if (e.repeat && !allowRepeat) {
       return;
     }
 
