@@ -474,8 +474,7 @@ CanvasResourceRasterSharedImage::CanvasResourceRasterSharedImage(
     CHECK(client_shared_image);
   }
 
-  texture_target_ =
-      client_shared_image->GetTextureTarget(gfx::BufferUsage::SCANOUT);
+  texture_target_ = client_shared_image->GetTextureTarget();
 
   // Wait for the mailbox to be ready to be used.
   WaitSyncToken(shared_image_interface->GenUnverifiedSyncToken());

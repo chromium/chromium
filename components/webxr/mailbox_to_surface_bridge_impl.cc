@@ -360,7 +360,7 @@ MailboxToSurfaceBridgeImpl::CreateSharedImage(
       std::move(buffer_handle));
   CHECK(client_shared_image);
   sync_token = sii->GenVerifiedSyncToken();
-  DCHECK(client_shared_image->GetTextureTarget(buffer_format) == GL_TEXTURE_2D);
+  DCHECK(client_shared_image->GetTextureTarget() == GL_TEXTURE_2D);
   return client_shared_image;
 }
 

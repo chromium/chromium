@@ -2026,8 +2026,7 @@ scoped_refptr<DrawingBuffer::ColorBuffer> DrawingBuffer::CreateColorBuffer(
           }
 #endif
           back_buffer_shared_image = std::move(client_shared_image);
-          texture_target =
-              back_buffer_shared_image->GetTextureTargetForOverlays();
+          texture_target = back_buffer_shared_image->GetTextureTarget();
         }
       }
     }

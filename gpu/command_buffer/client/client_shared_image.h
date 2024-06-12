@@ -131,38 +131,7 @@ class GPU_EXPORT ClientSharedImage
 #endif
 
   // Returns the GL texture target to use for this SharedImage.
-  // TODO(crbug.com/41494843): Eliminate all the below variants in favor of all
-  // clients using this function.
   uint32_t GetTextureTarget();
-
-  // Returns the texture target to use for overlays:
-  // * GL_TEXTURE_2D on platforms other than MacOS
-  // * The platform-specific texture target for MacOS
-  uint32_t GetTextureTargetForOverlays();
-
-  // Returns the texture target to be used for the given |format|. For usage
-  // when this SharedImage was created from a native buffer and the client knows
-  // that the usages of this SI would result in needing the platform-specific
-  // texture target for `format` if one exists on this platform. Returns
-  // GL_TEXTURE_2D if |format| does not require a platform-specific target and
-  // the relevant platform-specific target otherwise.
-  uint32_t GetTextureTarget(gfx::BufferFormat format);
-
-  // Returns the texture target to be used for the given |usage| and |format|
-  // based on the underlying SharedImageCapabilities. Requires that
-  // `HasHolder()` is true. For usage when this SharedImage was created from a
-  // native buffer. Returns GL_TEXTURE_2D if the `usage`/`format` pair does not
-  // require a platform-specific target and the relevant platform-specific
-  // target otherwise.
-  uint32_t GetTextureTarget(gfx::BufferUsage usage, gfx::BufferFormat format);
-
-  // Similar to the above, but for usage if the client did not explicitly create
-  // this SharedImage from a native buffer. Returns GL_TEXTURE_2D if the set of
-  // usages that the client specified do not result in this SharedImage being
-  // backed by a native buffer. Otherwise, uses this instance's
-  // SharedImageFormat (which must be a single-planar format) to compute the
-  // BufferFormat and returns the result of the above GetTextureTarget() call.
-  uint32_t GetTextureTarget(gfx::BufferUsage usage);
 
   base::trace_event::MemoryAllocatorDumpGuid GetGUIDForTracing() {
     return gpu::GetSharedImageGUIDForTracing(mailbox_);

@@ -302,15 +302,9 @@ bool WebGPUSwapBufferProvider::PrepareTransferableResource(
 
   ReleaseWGPUTextureAccessIfNeeded();
 
-  // Populate the output resource
-  // NOTE: This call is used to match the previous behavior of hardcoding
-  // GL_TEXTURE_2D for non-MacOS and using the platform-specific texture target
-  // for MacOS.
-  // TODO(crbug.com/41494843): Replace this with calling
-  // the universal ClientSharedImage::GetTextureTarget() once that rolls out
-  // safely.
+  // Populate the output resource.
   uint32_t texture_target =
-      current_swap_buffer_->shared_image->GetTextureTargetForOverlays();
+      current_swap_buffer_->shared_image->GetTextureTarget();
 
   // On macOS, shared images are backed by IOSurfaces, meaning that they are
   // overlay candidates.
@@ -360,14 +354,8 @@ bool WebGPUSwapBufferProvider::CopyToVideoFrame(
   // need to release WebGPU/Dawn's context's access to the texture.
   ReleaseWGPUTextureAccessIfNeeded();
 
-  // NOTE: This call is used to match the previous behavior of hardcoding
-  // GL_TEXTURE_2D for non-MacOS and using the platform-specific texture target
-  // for MacOS.
-  // TODO(crbug.com/41494843): Replace this with calling
-  // the universal ClientSharedImage::GetTextureTarget() once that rolls out
-  // safely.
   uint32_t texture_target =
-      current_swap_buffer_->shared_image->GetTextureTargetForOverlays();
+      current_swap_buffer_->shared_image->GetTextureTarget();
 
   gpu::MailboxHolder mailbox_holder(
       current_swap_buffer_->shared_image->mailbox(),

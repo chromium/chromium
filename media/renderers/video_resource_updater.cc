@@ -770,13 +770,8 @@ class VideoResourceUpdater::HardwarePlaneResource
         {format, size, color_space, shared_image_usage, "VideoResourceUpdater"},
         gpu::kNullSurfaceHandle);
     CHECK(shared_image_);
-    // Determine if a platform-specific target for overlays is needed if this SI
-    // is an overlay candidate (note that if this SI is *not* an overlay
-    // candidate, i.e., it does not have SCANOUT in its own usage, this call
-    // will return GL_TEXTURE_2D and hence will leave `texture_target_`
-    // unchanged).
-    texture_target_ =
-        shared_image_->GetTextureTarget(gfx::BufferUsage::SCANOUT);
+    // Determine if a platform-specific target is needed.
+    texture_target_ = shared_image_->GetTextureTarget();
     RasterInterface()->WaitSyncTokenCHROMIUM(
         sii->GenUnverifiedSyncToken().GetConstData());
   }

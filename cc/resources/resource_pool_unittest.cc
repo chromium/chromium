@@ -732,8 +732,7 @@ TEST_F(ResourcePoolTest, MetadataSentToDisplayCompositor) {
             resource.gpu_backing()->shared_image->mailbox());
   EXPECT_EQ(transfer[0].sync_token(), sync_token);
   EXPECT_EQ(transfer[0].texture_target(),
-            resource.gpu_backing()->shared_image->GetTextureTarget(
-                gfx::BufferUsage::SCANOUT));
+            resource.gpu_backing()->shared_image->GetTextureTarget());
   EXPECT_EQ(transfer[0].format, format);
   EXPECT_EQ(
       transfer[0].synchronization_type,

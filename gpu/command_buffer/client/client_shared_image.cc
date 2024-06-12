@@ -314,23 +314,6 @@ uint32_t ClientSharedImage::GetTextureTarget() {
   return texture_target_;
 }
 
-uint32_t ClientSharedImage::GetTextureTargetForOverlays() {
-  return GetTextureTarget();
-}
-
-uint32_t ClientSharedImage::GetTextureTarget(gfx::BufferFormat format) {
-  return GetTextureTarget();
-}
-
-uint32_t ClientSharedImage::GetTextureTarget(gfx::BufferUsage usage,
-                                             gfx::BufferFormat format) {
-  return GetTextureTarget();
-}
-
-uint32_t ClientSharedImage::GetTextureTarget(gfx::BufferUsage usage) {
-  return GetTextureTarget();
-}
-
 scoped_refptr<ClientSharedImage> ClientSharedImage::MakeUnowned() {
   return ClientSharedImage::ImportUnowned(Export());
 }

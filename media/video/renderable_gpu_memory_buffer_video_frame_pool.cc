@@ -296,8 +296,7 @@ FrameResources::CreateVideoFrameAndTakeGpuMemoryBuffer() {
   auto video_frame = VideoFrame::WrapExternalGpuMemoryBuffer(
       visible_rect, natural_size, std::move(gpu_memory_buffer_), shared_images_,
       sync_token_,
-      shared_images_[0] ? shared_images_[0]->GetTextureTargetForOverlays()
-                        : GL_TEXTURE_2D,
+      shared_images_[0] ? shared_images_[0]->GetTextureTarget() : GL_TEXTURE_2D,
       VideoFrame::ReleaseMailboxAndGpuMemoryBufferCB(), base::TimeDelta());
   if (!video_frame) {
     return nullptr;

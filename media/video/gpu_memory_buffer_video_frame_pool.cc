@@ -1393,10 +1393,7 @@ scoped_refptr<VideoFrame> GpuMemoryBufferVideoFramePool::PoolImpl::
   // mailboxes refer to will be used only after all the previous commands posted
   // in the SharedImageInterface have been processed.
   gpu::SyncToken sync_token = sii->GenUnverifiedSyncToken();
-  const gfx::BufferFormat buffer_format =
-      GpuMemoryBufferFormat(output_format_, 0);
-  auto texture_target = shared_images[0]->GetTextureTarget(
-      gfx::BufferUsage::SCANOUT_CPU_READ_WRITE, buffer_format);
+  auto texture_target = shared_images[0]->GetTextureTarget();
 
   VideoPixelFormat frame_format = VideoFormat(output_format_);
 

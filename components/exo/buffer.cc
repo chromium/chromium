@@ -848,7 +848,7 @@ bool Buffer::ProduceTransferableResource(
           contents_texture->UpdateSharedImage(std::move(acquire_fence)));
     }
     uint32_t texture_target =
-        contents_texture->shared_image()->GetTextureTarget(GetFormat());
+        contents_texture->shared_image()->GetTextureTarget();
     resource->set_mailbox(contents_texture->mailbox());
     resource->set_texture_target(texture_target);
     resource->is_overlay_candidate = is_overlay_candidate_;

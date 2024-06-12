@@ -4920,8 +4920,7 @@ void LayerTreeHostImpl::CreateUIResource(UIResourceId uid,
                                     ->SharedImageInterface()
                                     ->GenUnverifiedSyncToken();
 
-    GLenum texture_target =
-        client_shared_image->GetTextureTarget(gfx::BufferUsage::SCANOUT);
+    GLenum texture_target = client_shared_image->GetTextureTarget();
     transferable = viz::TransferableResource::MakeGpu(
         client_shared_image, texture_target, sync_token, upload_size, format,
         overlay_candidate, viz::TransferableResource::ResourceSource::kUI);

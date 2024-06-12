@@ -442,8 +442,7 @@ gpu::SyncToken OneCopyRasterBufferProvider::CopyOnWorkerThread(
     ri->BeginQueryEXT(query_target, staging_buffer->query_id);
   }
 
-  uint32_t texture_target =
-      shared_image->GetTextureTarget(gfx::BufferUsage::SCANOUT);
+  uint32_t texture_target = shared_image->GetTextureTarget();
 
   // Clear to ensure the resource is fully initialized and BeginAccess succeeds.
   if (needs_clear) {

@@ -332,8 +332,7 @@ bool ResourcePool::PrepareForExport(
       resource->mark_avoid_reuse();
       return false;
     }
-    uint32_t texture_target =
-        gpu_backing->shared_image->GetTextureTarget(gfx::BufferUsage::SCANOUT);
+    uint32_t texture_target = gpu_backing->shared_image->GetTextureTarget();
     transferable = viz::TransferableResource::MakeGpu(
         gpu_backing->shared_image->mailbox(), texture_target,
         gpu_backing->mailbox_sync_token, resource->size(), resource->format(),

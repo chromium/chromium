@@ -608,10 +608,8 @@ bool VideoCaptureImpl::BindVideoFrameOnMediaTaskRunner(
   }
 
   const unsigned texture_target =
-          video_frame_init_data.buffer_context->gmb_resources()
-              ->shared_image->GetTextureTarget(
-                  gfx::BufferUsage::SCANOUT_CPU_READ_WRITE,
-                  gpu_memory_buffer->GetFormat());
+      video_frame_init_data.buffer_context->gmb_resources()
+          ->shared_image->GetTextureTarget();
   const gpu::SyncToken sync_token = sii->GenVerifiedSyncToken();
 
   auto& shared_image =

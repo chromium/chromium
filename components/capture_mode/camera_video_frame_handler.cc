@@ -53,40 +53,6 @@ constexpr uint32_t kSharedImageUsage =
     gpu::SHARED_IMAGE_USAGE_GLES2_READ | gpu::SHARED_IMAGE_USAGE_RASTER_READ |
     gpu::SHARED_IMAGE_USAGE_DISPLAY_READ | gpu::SHARED_IMAGE_USAGE_SCANOUT;
 
-// The usage of the GpuMemoryBuffer that backs the video frames on an actual
-// device (of type `NATIVE_PIXMAP`). The buffer is going to be presented on the
-// screen for rendering, will be used as a texture, and can be read by CPU and
-// potentially a video encode accelerator.
-constexpr gfx::BufferUsage kGpuMemoryBufferUsage =
-    gfx::BufferUsage::SCANOUT_VEA_CPU_READ;
-
-// The usage of the GpuMemoryBuffer that backs the video frames in unittests,
-// since the type of that buffer will be `SHARED_MEMORY_BUFFER` which doesn't
-// support the above on-device usage.
-constexpr gfx::BufferUsage kGpuMemoryBufferUsageForTest =
-    gfx::BufferUsage::SCANOUT_CPU_READ_WRITE;
-
-// The only supported video pixel format used on devices is `PIXEL_FORMAT_NV12`.
-// This maps to a buffer format of `YUV_420_BIPLANAR`.
-constexpr gfx::BufferFormat kGpuMemoryBufferFormat =
-    gfx::BufferFormat::YUV_420_BIPLANAR;
-
-// In unittests, the video pixel format used is `PIXEL_FORMAT_ARGB`, since the
-// video frames are painted and verified manually using Skia. The buffer format
-// used for this is `BGRA_8888`.
-constexpr gfx::BufferFormat kGpuMemoryBufferFormatForTest =
-    gfx::BufferFormat::BGRA_8888;
-
-gfx::BufferUsage GetBufferUsage() {
-  return g_force_use_gpu_memory_buffer_for_test ? kGpuMemoryBufferUsageForTest
-                                                : kGpuMemoryBufferUsage;
-}
-
-gfx::BufferFormat GetBufferFormat() {
-  return g_force_use_gpu_memory_buffer_for_test ? kGpuMemoryBufferFormatForTest
-                                                : kGpuMemoryBufferFormat;
-}
-
 viz::SharedImageFormat GetSharedImageFormat() {
   return g_force_use_gpu_memory_buffer_for_test
              ? viz::SinglePlaneFormat::kBGRA_8888
@@ -379,8 +345,7 @@ class GpuMemoryBufferHandleHolder : public BufferHandleHolder,
 #endif
 
     CHECK(shared_image_);
-    auto buffer_texture_target =
-        shared_image_->GetTextureTarget(GetBufferUsage(), GetBufferFormat());
+    auto buffer_texture_target = shared_image_->GetTextureTarget();
 
     auto frame = media::VideoFrame::WrapSharedImage(
         frame_info->pixel_format, shared_image_, mailbox_holder_sync_token_,
