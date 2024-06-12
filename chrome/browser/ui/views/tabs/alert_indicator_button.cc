@@ -384,95 +384,47 @@ ui::ImageModel AlertIndicatorButton::GetTabAlertIndicatorImage(
     ui::ColorId button_color) {
   const gfx::VectorIcon* icon = nullptr;
   int image_width = GetLayoutConstant(TAB_ALERT_INDICATOR_ICON_WIDTH);
-  const bool touch_ui = ui::TouchUiController::Get()->touch_ui();
   switch (alert_state) {
     case TabAlertState::AUDIO_PLAYING:
-      if (features::IsChromeRefresh2023()) {
         icon = &vector_icons::kVolumeUpChromeRefreshIcon;
-      } else {
-        icon = touch_ui ? &kTabAudioRoundedIcon : &kTabAudioIcon;
-      }
       break;
     case TabAlertState::AUDIO_MUTING:
-      if (features::IsChromeRefresh2023()) {
         icon = &vector_icons::kVolumeOffChromeRefreshIcon;
-      } else {
-        icon = touch_ui ? &kTabAudioMutingRoundedIcon : &kTabAudioMutingIcon;
-      }
       break;
     case TabAlertState::MEDIA_RECORDING:
     case TabAlertState::AUDIO_RECORDING:
     case TabAlertState::VIDEO_RECORDING:
     case TabAlertState::DESKTOP_CAPTURING:
-      if (features::IsChromeRefresh2023()) {
         icon = &vector_icons::kRadioButtonCheckedIcon;
-      } else {
-        icon = &kTabMediaRecordingIcon;
-      }
       break;
     case TabAlertState::TAB_CAPTURING:
-      if (features::IsChromeRefresh2023()) {
         icon = &vector_icons::kCaptureIcon;
-      } else {
-        icon = touch_ui ? &kTabMediaCapturingWithArrowIcon
-                        : &kTabMediaCapturingIcon;
-      }
 
       // Tab capturing and presenting icon uses a different width compared to
       // the other tab alert indicator icons.
       image_width = GetLayoutConstant(TAB_ALERT_INDICATOR_CAPTURE_ICON_WIDTH);
       break;
     case TabAlertState::BLUETOOTH_CONNECTED:
-      if (features::IsChromeRefresh2023()) {
         icon = &vector_icons::kBluetoothConnectedIcon;
-      } else {
-        icon = &kTabBluetoothConnectedIcon;
-      }
       break;
     case TabAlertState::BLUETOOTH_SCAN_ACTIVE:
-      if (features::IsChromeRefresh2023()) {
         icon = &vector_icons::kBluetoothScanningChromeRefreshIcon;
-      } else {
-        icon = &kTabBluetoothScanActiveIcon;
-      }
       break;
     case TabAlertState::USB_CONNECTED:
-      if (features::IsChromeRefresh2023()) {
         icon = &vector_icons::kUsbChromeRefreshIcon;
-      } else {
-        icon = &kTabUsbConnectedIcon;
-      }
       icon = &kTabUsbConnectedIcon;
       break;
     case TabAlertState::HID_CONNECTED:
-      if (features::IsChromeRefresh2023()) {
         icon = &vector_icons::kVideogameAssetChromeRefreshIcon;
-      } else {
-        icon = &vector_icons::kVideogameAssetIcon;
-      }
       break;
     case TabAlertState::SERIAL_CONNECTED:
-      if (features::IsChromeRefresh2023()) {
         icon = &vector_icons::kSerialPortChromeRefreshIcon;
-      } else {
-        // TODO(crbug.com/40607459): This icon is too large to fit
-        // properly as a tab indicator and should be replaced.
-        icon = &vector_icons::kSerialPortIcon;
-      }
       break;
     case TabAlertState::PIP_PLAYING:
-      if (features::IsChromeRefresh2023()) {
         icon = &vector_icons::kPictureInPictureAltIcon;
-      } else {
-        icon = &kPictureInPictureAltIcon;
-      }
       break;
     case TabAlertState::VR_PRESENTING_IN_HEADSET:
-      if (features::IsChromeRefresh2023()) {
         icon = &vector_icons::kCardboardIcon;
-      } else {
-        icon = &vector_icons::kVrHeadsetIcon;
-      }
       break;
   }
   DCHECK(icon);
