@@ -3077,11 +3077,6 @@
     "expiry_milestone": 140
   },
   {
-    "name": "enable-federated-service",
-    "owners": [ "alanlxl@chromium.org", "amoylan@chromium.org"],
-    "expiry_milestone": 128
-  },
-  {
     "name": "enable-feed-ablation",
     "owners": [ "adamta@chromium.org", "chrome-feed-fundamentals@google.com" ],
     "expiry_milestone": 130
