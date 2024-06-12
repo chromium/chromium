@@ -118,6 +118,7 @@ import org.chromium.chrome.browser.tabmodel.TabCreator;
 import org.chromium.chrome.browser.tabmodel.TabModel;
 import org.chromium.chrome.browser.tasks.tab_groups.TabGroupColorUtils;
 import org.chromium.chrome.browser.tasks.tab_groups.TabGroupModelFilter;
+import org.chromium.chrome.browser.tasks.tab_management.TabProperties.UiType;
 import org.chromium.chrome.browser.ui.messages.snackbar.SnackbarManager;
 import org.chromium.chrome.browser.undo_tab_close_snackbar.UndoBarController;
 import org.chromium.chrome.browser.util.ChromeAccessibilityUtil;
@@ -1176,7 +1177,13 @@ public class TabSwitcherLayoutTest {
             if (noMatchException != null) throw noMatchException;
 
             RecyclerView.Adapter adapter = ((RecyclerView) view).getAdapter();
-            assertEquals(mExpectedCount, adapter.getItemCount());
+            int tabCount = 0;
+            for (int i = 0; i < adapter.getItemCount(); i++) {
+                if (adapter.getItemViewType(i) == UiType.TAB) {
+                    tabCount++;
+                }
+            }
+            assertEquals(mExpectedCount, tabCount);
         }
     }
 
