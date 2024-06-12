@@ -17,10 +17,8 @@ struct VideoCaptureFormat;
 
 namespace video_format_comparison {
 
-inline constexpr float kDefaultFrameRate = 24.0f;
+inline constexpr float kDefaultFrameRate = 30.0f;
 inline constexpr float kDefaultAspectRatio = 16.0 / 9.0;
-// Used to identify vertical video.
-inline constexpr float kMinAspectRatio = 0.99;
 
 float GetFrameAspectRatio(const gfx::Size& frame_size);
 
