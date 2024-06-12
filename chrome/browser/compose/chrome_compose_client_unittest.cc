@@ -815,10 +815,10 @@ TEST_F(ChromeComposeClientTest, TestProactiveNudgeEngagementIsRecorded) {
   autofill::FormData form_data;
   form_data.set_url(
       web_contents()->GetPrimaryMainFrame()->GetLastCommittedURL());
-  form_data.fields = {autofill::test::CreateTestFormField(
-      "label0", "name0", "value0", autofill::FormControlType::kTextArea)};
+  form_data.set_fields({autofill::test::CreateTestFormField(
+      "label0", "name0", "value0", autofill::FormControlType::kTextArea)});
 
-  autofill::FormFieldData selected_field_data = form_data.fields[0];
+  autofill::FormFieldData selected_field_data = form_data.fields()[0];
   selected_field_data.set_origin(
       web_contents()->GetPrimaryMainFrame()->GetLastCommittedOrigin());
   const autofill::AutofillSuggestionTriggerSource trigger_source =
@@ -870,10 +870,10 @@ TEST_F(ChromeComposeClientTest,
   autofill::FormData form_data;
   form_data.set_url(
       web_contents()->GetPrimaryMainFrame()->GetLastCommittedURL());
-  form_data.fields = {autofill::test::CreateTestFormField(
-      "label0", "name0", "value0", autofill::FormControlType::kTextArea)};
+  form_data.set_fields({autofill::test::CreateTestFormField(
+      "label0", "name0", "value0", autofill::FormControlType::kTextArea)});
 
-  autofill::FormFieldData selected_field_data = form_data.fields[0];
+  autofill::FormFieldData selected_field_data = form_data.fields()[0];
   selected_field_data.set_origin(
       web_contents()->GetPrimaryMainFrame()->GetLastCommittedOrigin());
 
@@ -948,10 +948,10 @@ TEST_F(ChromeComposeClientTest, TestShouldTriggerProactiveNudgeDisabledUKM) {
   autofill::FormData form_data;
   form_data.set_url(
       web_contents()->GetPrimaryMainFrame()->GetLastCommittedURL());
-  form_data.fields = {autofill::test::CreateTestFormField(
-      "label0", "name0", "value0", autofill::FormControlType::kTextArea)};
+  form_data.set_fields({autofill::test::CreateTestFormField(
+      "label0", "name0", "value0", autofill::FormControlType::kTextArea)});
 
-  autofill::FormFieldData selected_field_data = form_data.fields[0];
+  autofill::FormFieldData selected_field_data = form_data.fields()[0];
   selected_field_data.set_origin(
       web_contents()->GetPrimaryMainFrame()->GetLastCommittedOrigin());
   const autofill::AutofillSuggestionTriggerSource trigger_source =
@@ -999,10 +999,10 @@ TEST_F(ChromeComposeClientTest, TestShouldTriggerProactiveNudgeEnabled) {
   autofill::FormData form_data;
   form_data.set_url(
       web_contents()->GetPrimaryMainFrame()->GetLastCommittedURL());
-  form_data.fields = {autofill::test::CreateTestFormField(
-      "label0", "name0", "value0", autofill::FormControlType::kTextArea)};
+  form_data.set_fields({autofill::test::CreateTestFormField(
+      "label0", "name0", "value0", autofill::FormControlType::kTextArea)});
 
-  autofill::FormFieldData selected_field_data = form_data.fields[0];
+  autofill::FormFieldData selected_field_data = form_data.fields()[0];
   selected_field_data.set_origin(
       web_contents()->GetPrimaryMainFrame()->GetLastCommittedOrigin());
   const autofill::AutofillSuggestionTriggerSource trigger_source =
@@ -1048,10 +1048,10 @@ TEST_F(ChromeComposeClientTest,
        TestShouldTriggerProactiveNudgePageChecksFailUKM) {
   autofill::FormData form_data;
   form_data.set_url(GURL("www.example.com"));
-  form_data.fields = {autofill::test::CreateTestFormField(
-      "label0", "name0", "value0", autofill::FormControlType::kTextArea)};
+  form_data.set_fields({autofill::test::CreateTestFormField(
+      "label0", "name0", "value0", autofill::FormControlType::kTextArea)});
 
-  autofill::FormFieldData selected_field_data = form_data.fields[0];
+  autofill::FormFieldData selected_field_data = form_data.fields()[0];
   const autofill::AutofillSuggestionTriggerSource trigger_source =
       autofill::AutofillSuggestionTriggerSource::kTextFieldDidChange;
 
@@ -1075,10 +1075,10 @@ TEST_F(ChromeComposeClientTest, TestProactiveNudgeMSBBDisabled) {
   autofill::FormData form_data;
   form_data.set_url(
       web_contents()->GetPrimaryMainFrame()->GetLastCommittedURL());
-  form_data.fields = {autofill::test::CreateTestFormField(
-      "label0", "name0", "value0", autofill::FormControlType::kTextArea)};
+  form_data.set_fields({autofill::test::CreateTestFormField(
+      "label0", "name0", "value0", autofill::FormControlType::kTextArea)});
 
-  autofill::FormFieldData selected_field_data = form_data.fields[0];
+  autofill::FormFieldData selected_field_data = form_data.fields()[0];
   selected_field_data.set_origin(
       web_contents()->GetPrimaryMainFrame()->GetLastCommittedOrigin());
   const autofill::AutofillSuggestionTriggerSource trigger_source =
@@ -1105,10 +1105,10 @@ TEST_F(ChromeComposeClientTest, TestCaretMovementExtendsNudgeDelay) {
   autofill::FormData form_data;
   form_data.set_url(
       web_contents()->GetPrimaryMainFrame()->GetLastCommittedURL());
-  form_data.fields = {autofill::test::CreateTestFormField(
-      "label0", "name0", "value0", autofill::FormControlType::kTextArea)};
+  form_data.set_fields({autofill::test::CreateTestFormField(
+      "label0", "name0", "value0", autofill::FormControlType::kTextArea)});
 
-  autofill::FormFieldData field_data = form_data.fields[0];
+  autofill::FormFieldData field_data = form_data.fields()[0];
   field_data.set_origin(
       web_contents()->GetPrimaryMainFrame()->GetLastCommittedOrigin());
   field_data.set_host_frame(form_data.host_frame());
@@ -1173,10 +1173,10 @@ TEST_F(ChromeComposeClientTest, TestCaretMovementExtendsNudgeDelay) {
 TEST_F(ChromeComposeClientTest, TestComposeShouldTriggerSavedStateNudgeUKM) {
   autofill::FormData form_data;
   form_data.set_url(GetPageUrl());
-  form_data.fields = {autofill::test::CreateTestFormField(
-      "label0", "name0", "value0", autofill::FormControlType::kTextArea)};
+  form_data.set_fields({autofill::test::CreateTestFormField(
+      "label0", "name0", "value0", autofill::FormControlType::kTextArea)});
 
-  const autofill::FormFieldData selected_field_data = form_data.fields[0];
+  const autofill::FormFieldData selected_field_data = form_data.fields()[0];
   const autofill::AutofillSuggestionTriggerSource trigger_source =
       autofill::AutofillSuggestionTriggerSource::kTextFieldDidChange;
 
@@ -2657,10 +2657,10 @@ TEST_F(ChromeComposeClientTest,
 
   autofill::FormData form_data;
   form_data.set_url(test_url);
-  form_data.fields = {autofill::test::CreateTestFormField(
-      "label0", "name0", "value0", autofill::FormControlType::kTextArea)};
+  form_data.set_fields({autofill::test::CreateTestFormField(
+      "label0", "name0", "value0", autofill::FormControlType::kTextArea)});
 
-  autofill::FormFieldData selected_field_data = form_data.fields[0];
+  autofill::FormFieldData selected_field_data = form_data.fields()[0];
   selected_field_data.set_origin(test_origin);
   const autofill::AutofillSuggestionTriggerSource trigger_source =
       autofill::AutofillSuggestionTriggerSource::kTextFieldDidChange;
@@ -2690,8 +2690,8 @@ TEST_F(ChromeComposeClientTest, TextFieldChangeThresholdHidesProactiveNudge) {
   autofill::FormData form_data;
   form_data.set_url(
       web_contents()->GetPrimaryMainFrame()->GetLastCommittedURL());
-  form_data.fields = {autofill::test::CreateTestFormField(
-      "label0", "name0", "value0", autofill::FormControlType::kTextArea)};
+  form_data.set_fields({autofill::test::CreateTestFormField(
+      "label0", "name0", "value0", autofill::FormControlType::kTextArea)});
 
   // Simulate an Autofill popup being shown.
   autofill::AutofillClient::PopupOpenArgs args;
@@ -2706,7 +2706,7 @@ TEST_F(ChromeComposeClientTest, TextFieldChangeThresholdHidesProactiveNudge) {
   for (size_t i = 1; i < max; i++) {
     client().field_change_observer_.OnAfterTextFieldDidChange(
         *autofill_manager(), form_data.global_id(),
-        form_data.fields[0].global_id(), text_value);
+        form_data.fields()[0].global_id(), text_value);
     EXPECT_EQ(i,
               client().field_change_observer_.text_field_change_event_count_);
     text_value = text_value + u"a";
@@ -2716,7 +2716,7 @@ TEST_F(ChromeComposeClientTest, TextFieldChangeThresholdHidesProactiveNudge) {
   // popup.
   client().field_change_observer_.OnAfterTextFieldDidChange(
       *autofill_manager(), form_data.global_id(),
-      form_data.fields[0].global_id(), text_value);
+      form_data.fields()[0].global_id(), text_value);
   EXPECT_EQ(0U, client().field_change_observer_.text_field_change_event_count_);
   EXPECT_FALSE(autofill_client()->IsShowingAutofillPopup());
 }

@@ -253,7 +253,7 @@ TEST_F(AutofillOptimizationGuideTest,
 TEST_F(AutofillOptimizationGuideTest, OptimizationTypeToRegisterNotFound) {
   AutofillField field;
   FormData form_data;
-  form_data.fields = {field};
+  form_data.set_fields({field});
   FormStructure form_structure{form_data};
   test_api(form_structure)
       .SetFieldTypes({MERCHANT_PROMO_CODE}, {MERCHANT_PROMO_CODE});
@@ -271,7 +271,7 @@ TEST_F(AutofillOptimizationGuideTest,
        FormWithMultipleOptimizationTypesToRegisterFound) {
   FormData form_data = CreateTestCreditCardFormData(/*is_https=*/true,
                                                     /*use_month_type=*/false);
-  base::ranges::move(CreateTestIbanFormData().fields,
+  base::ranges::move(CreateTestIbanFormData().fields(),
                      std::back_inserter(test_api(form_data).fields()));
   FormStructure form_structure{form_data};
   const std::vector<FieldType> field_types = {

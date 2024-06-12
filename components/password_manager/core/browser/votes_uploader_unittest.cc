@@ -150,7 +150,7 @@ class VotesUploaderTest : public testing::Test {
 
   FieldSignature GetFieldSignatureByIndex(int index) {
     return autofill::CalculateFieldSignatureForField(
-        form_to_upload_.form_data.fields[index]);
+        form_to_upload_.form_data.fields()[index]);
   }
 
   // Creates a matcher for an `autofill::AutofillUploadContents::Field` that
@@ -419,7 +419,7 @@ TEST_F(VotesUploaderTest, InitialValueDetection) {
   other_field.set_value(u"some_field");
   other_field.set_renderer_id(FieldRendererId(3234));
 
-  form_data.fields = {other_field, username_field};
+  form_data.set_fields({other_field, username_field});
 
   VotesUploader votes_uploader(&client_, true);
   votes_uploader.StoreInitialFieldValues(form_data);

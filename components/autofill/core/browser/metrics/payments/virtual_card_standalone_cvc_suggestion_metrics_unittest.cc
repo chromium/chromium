@@ -67,7 +67,7 @@ TEST_F(VirtualCardStandaloneCvcMetricsTest, LogShownMetrics) {
 
   // Simulate activating the autofill popup for the CVC field.
   autofill_manager().OnAskForValuesToFillTest(
-      form(), form().fields.front().global_id());
+      form(), form().fields().front().global_id());
   DidShowAutofillSuggestions(form(), /*field_index=*/0,
                              SuggestionType::kCreditCardEntry);
   EXPECT_THAT(
@@ -85,7 +85,7 @@ TEST_F(VirtualCardStandaloneCvcMetricsTest, LogShownMetrics) {
 
   // Simulate activating the autofill popup for the CVC field again.
   autofill_manager().OnAskForValuesToFillTest(
-      form(), form().fields.front().global_id());
+      form(), form().fields().front().global_id());
   DidShowAutofillSuggestions(form(), /*field_index=*/0,
                              SuggestionType::kCreditCardEntry);
   EXPECT_THAT(
@@ -108,9 +108,9 @@ TEST_F(VirtualCardStandaloneCvcMetricsTest, LogSelectedMetrics) {
 
   // Simulate selecting the CVC suggestion.
   autofill_manager().OnAskForValuesToFillTest(
-      form(), form().fields.front().global_id());
+      form(), form().fields().front().global_id());
   autofill_manager().AuthenticateThenFillCreditCardForm(
-      form(), form().fields.front(),
+      form(), form().fields().front(),
       *personal_data().payments_data_manager().GetCreditCardByGUID(kCardGuid),
       {.trigger_source = AutofillTriggerSource::kPopup});
 
@@ -129,7 +129,7 @@ TEST_F(VirtualCardStandaloneCvcMetricsTest, LogSelectedMetrics) {
 
   // Simulate selecting the suggestion again.
   autofill_manager().AuthenticateThenFillCreditCardForm(
-      form(), form().fields.front(),
+      form(), form().fields().front(),
       *personal_data().payments_data_manager().GetCreditCardByGUID(kCardGuid),
       {.trigger_source = AutofillTriggerSource::kPopup});
 
@@ -153,9 +153,9 @@ TEST_F(VirtualCardStandaloneCvcMetricsTest, LogFilledMetrics) {
 
   // Simulate filling the CVC suggestion.
   autofill_manager().OnAskForValuesToFillTest(
-      form(), form().fields.front().global_id());
+      form(), form().fields().front().global_id());
   autofill_manager().AuthenticateThenFillCreditCardForm(
-      form(), form().fields.front(),
+      form(), form().fields().front(),
       *personal_data().payments_data_manager().GetCreditCardByGUID(kCardGuid),
       {.trigger_source = AutofillTriggerSource::kPopup});
   test_api(autofill_manager())
@@ -176,7 +176,7 @@ TEST_F(VirtualCardStandaloneCvcMetricsTest, LogFilledMetrics) {
 
   // Fill the suggestion again.
   autofill_manager().AuthenticateThenFillCreditCardForm(
-      form(), form().fields.front(),
+      form(), form().fields().front(),
       *personal_data().payments_data_manager().GetCreditCardByGUID(kCardGuid),
       {.trigger_source = AutofillTriggerSource::kPopup});
   test_api(autofill_manager())
@@ -201,9 +201,9 @@ TEST_F(VirtualCardStandaloneCvcMetricsTest, LogSubmitMetrics) {
 
   // Simulate filling and then submitting the card.
   autofill_manager().OnAskForValuesToFillTest(
-      form(), form().fields.front().global_id());
+      form(), form().fields().front().global_id());
   autofill_manager().AuthenticateThenFillCreditCardForm(
-      form(), form().fields.front(),
+      form(), form().fields().front(),
       *personal_data().payments_data_manager().GetCreditCardByGUID(kCardGuid),
       {.trigger_source = AutofillTriggerSource::kPopup});
   test_api(autofill_manager())

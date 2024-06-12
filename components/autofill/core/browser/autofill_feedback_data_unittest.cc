@@ -160,7 +160,7 @@ TEST_F(AutofillFeedbackDataUnitTest, CreatesCompleteReport) {
 
 TEST_F(AutofillFeedbackDataUnitTest, IncludesLastAutofillEventLogEntry) {
   FormData form = CreateFeedbackTestFormData();
-  FormFieldData field = form.fields[0];
+  FormFieldData field = form.fields()[0];
   browser_autofill_manager_->OnFormsSeen(
       /*updated_forms=*/{form},
       /*removed_forms=*/{});
@@ -192,7 +192,7 @@ TEST_F(AutofillFeedbackDataUnitTest,
        NotIncludeLastAutofillEventIfExceedTimeLimit) {
   TestAutofillClock clock(AutofillClock::Now());
   FormData form = CreateFeedbackTestFormData();
-  const FormFieldData& field = form.fields[0];
+  const FormFieldData& field = form.fields()[0];
   browser_autofill_manager_->OnFormsSeen(
       /*updated_forms=*/{form},
       /*removed_forms=*/{});

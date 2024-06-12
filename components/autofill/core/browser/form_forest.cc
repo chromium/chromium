@@ -174,10 +174,10 @@ void FormForest::UpdateTreeOfRendererForm(FormData* form,
   // simplicity, we do not move fields from |form|'s root back to the former
   // children. Instead, we rely on the forms in descendant frames being
   // re-extracted when they become visible again.
-  std::vector<FormFieldData> form_fields = std::move(form->fields);
+  std::vector<FormFieldData> form_fields = std::move(form->fields());
   bool child_frames_changed;
   if (FormData* old_form = GetFormData(form->global_id(), frame)) {
-    form->fields = std::move(old_form->fields);
+    form->set_fields(std::move(old_form->fields()));
     child_frames_changed = old_form->child_frames() != form->child_frames();
     for_each_in_set_difference(
         old_form->child_frames(), form->child_frames(),
@@ -195,7 +195,7 @@ void FormForest::UpdateTreeOfRendererForm(FormData* form,
   } else {
     DCHECK(!base::Contains(frame->child_forms, form->renderer_id(),
                            &FormData::renderer_id));
-    form->fields = {};
+    form->set_fields({});
     child_frames_changed = false;
     frame->child_forms.push_back(std::move(*form));
     form = &frame->child_forms.back();
@@ -224,7 +224,7 @@ void FormForest::UpdateTreeOfRendererForm(FormData* form,
   // an abbreviation and just move the fields.
   if (!frame->parent_form && form->child_frames().empty() &&
       !child_frames_changed) {
-    form->fields = std::move(form_fields);
+    form->set_fields(std::move(form_fields));
   } else {
     // Moves the first |max_number_of_fields_to_be_moved| fields that originated
     // from the renderer form |source_form| from |source| to |target|.
@@ -333,7 +333,7 @@ void FormForest::UpdateTreeOfRendererForm(FormData* form,
 
     // New fields of the root form. To be populated in the tree traversal.
     std::vector<FormFieldData> root_fields;
-    root_fields.reserve(root.form->fields.size() + form_fields.size());
+    root_fields.reserve(root.form->fields().size() + form_fields.size());
 
     // We bound the number of visited nodes. We want to visit the field ranges
     // of `root.form` plus up to 64 nodes from its descendant frames. (This
@@ -373,7 +373,7 @@ void FormForest::UpdateTreeOfRendererForm(FormData* form,
       // Pushes the current form on |roots_on_path| only if this is the first
       // time we encounter the form in the traversal (Node::next_frame == 0).
       if (n.next_frame == 0 &&
-          (n.form == root.form || !n.form->fields.empty())) {
+          (n.form == root.form || !n.form->fields().empty())) {
         roots_on_path.push(n.form);
       }
       CHECK(!roots_on_path.empty());
@@ -461,7 +461,7 @@ void FormForest::UpdateTreeOfRendererForm(FormData* form,
       }
     }
     CHECK_EQ(num_did_visit, num_will_visit);
-    root.form->fields = std::move(root_fields);
+    root.form->set_fields(std::move(root_fields));
     base::UmaHistogramCounts100(
         "Autofill.FormForest.UpdateTreeOfRendererForm.Visits", num_did_visit);
   }
@@ -604,7 +604,7 @@ FormForest::RendererForms FormForest::GetRendererFormsOfBrowserFields(
     };
 
     renderer_form->mutable_fields(/*pass_key=*/{}).push_back(browser_field);
-    if (!IsSafeToFill(renderer_form->fields.back())) {
+    if (!IsSafeToFill(renderer_form->fields().back())) {
       renderer_form->mutable_fields(/*pass_key=*/{}).back().set_value({});
     } else {
       result.safe_fields.insert(browser_field.global_id());

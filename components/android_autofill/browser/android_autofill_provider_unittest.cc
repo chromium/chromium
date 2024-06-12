@@ -120,22 +120,22 @@ FormData CreateTestBasicForm() {
 FormData CreateTestLoginForm() {
   FormData form = CreateTestBasicForm();
   form.set_name(u"login_form");
-  form.fields = {
-      CreateTestFormField(/*label=*/"Username", /*name=*/"username",
-                          /*value=*/"", FormControlType::kInputText),
-      CreateTestFormField(/*label=*/"Password", /*name=*/"password",
-                          /*value=*/"", FormControlType::kInputPassword)};
+  form.set_fields(
+      {CreateTestFormField(/*label=*/"Username", /*name=*/"username",
+                           /*value=*/"", FormControlType::kInputText),
+       CreateTestFormField(/*label=*/"Password", /*name=*/"password",
+                           /*value=*/"", FormControlType::kInputPassword)});
   return form;
 }
 
 FormData CreateTestChangePasswordForm() {
   FormData form = CreateTestBasicForm();
   form.set_name(u"change_password_form");
-  form.fields = {
-      CreateTestFormField(/*label=*/"Password", /*name=*/"password1",
-                          /*value=*/"", FormControlType::kInputPassword),
-      CreateTestFormField(/*label=*/"Password", /*name=*/"password2",
-                          /*value=*/"", FormControlType::kInputPassword)};
+  form.set_fields(
+      {CreateTestFormField(/*label=*/"Password", /*name=*/"password1",
+                           /*value=*/"", FormControlType::kInputPassword),
+       CreateTestFormField(/*label=*/"Password", /*name=*/"password2",
+                           /*value=*/"", FormControlType::kInputPassword)});
   return form;
 }
 
@@ -339,8 +339,8 @@ TEST_F(AndroidAutofillProviderTest, OnAskForValuesToFillStartsSession) {
       provider_bridge(),
       StartAutofillSession(EqualsFormData(form), EqualsFieldInfo(/*index=*/0),
                            /*has_server_predictions=*/false));
-  android_autofill_manager().SimulateOnAskForValuesToFill(form,
-                                                          form.fields.front());
+  android_autofill_manager().SimulateOnAskForValuesToFill(
+      form, form.fields().front());
 }
 
 // Tests that a focus change within the form of an ongoing autofill session
@@ -351,8 +351,8 @@ TEST_F(AndroidAutofillProviderTest, OnFocusChangeInsideCurrentAutofillForm) {
   FormData form = CreateFormDataForFrame(
       CreateTestPersonalInformationFormData(), main_frame_token());
   android_autofill_manager().OnFormsSeen({form}, /*removed_forms=*/{});
-  android_autofill_manager().SimulateOnAskForValuesToFill(form,
-                                                          form.fields.front());
+  android_autofill_manager().SimulateOnAskForValuesToFill(
+      form, form.fields().front());
 
   MockFunction<void(int)> check;
   {
@@ -364,7 +364,7 @@ TEST_F(AndroidAutofillProviderTest, OnFocusChangeInsideCurrentAutofillForm) {
     EXPECT_CALL(check, Call(2));
   }
 
-  android_autofill_manager().SimulateOnFocusOnFormField(form, form.fields[1]);
+  android_autofill_manager().SimulateOnFocusOnFormField(form, form.fields()[1]);
   check.Call(1);
   android_autofill_manager().OnFocusOnNonFormFieldImpl(
       /*had_interacted_form=*/true);
@@ -382,15 +382,17 @@ TEST_F(AndroidAutofillProviderTest, OnAskForValuesToFillFindsCorrectFieldId) {
       CreateFormDataForFrame(CreateTestLoginForm(), main_frame_token());
   android_autofill_manager().OnFormsSeen({form}, /*removed_forms=*/{});
 
-  android_autofill_manager().SimulateOnAskForValuesToFill(form, form.fields[0]);
+  android_autofill_manager().SimulateOnAskForValuesToFill(form,
+                                                          form.fields()[0]);
 
   EXPECT_EQ(test_api(autofill_provider()).last_focused_field_id(),
-            form.fields[0].global_id());
+            form.fields()[0].global_id());
 
-  android_autofill_manager().SimulateOnAskForValuesToFill(form, form.fields[1]);
+  android_autofill_manager().SimulateOnAskForValuesToFill(form,
+                                                          form.fields()[1]);
 
   EXPECT_EQ(test_api(autofill_provider()).last_focused_field_id(),
-            form.fields[1].global_id());
+            form.fields()[1].global_id());
 }
 
 // Tests that Java is informed about visibility changes of form fields connected
@@ -403,7 +405,8 @@ TEST_F(AndroidAutofillProviderTest, NotifyAboutVisibilityChangeOnFocus) {
   test_api(form).fields()[2].set_is_focusable(false);
 
   // Start an Autofill session.
-  android_autofill_manager().SimulateOnAskForValuesToFill(form, form.fields[1]);
+  android_autofill_manager().SimulateOnAskForValuesToFill(form,
+                                                          form.fields()[1]);
 
   test_api(form).fields()[0].set_is_focusable(true);
   test_api(form).fields()[2].set_is_focusable(true);
@@ -412,7 +415,7 @@ TEST_F(AndroidAutofillProviderTest, NotifyAboutVisibilityChangeOnFocus) {
                                      /*indices=*/UnorderedElementsAre(0, 2)));
   EXPECT_CALL(provider_bridge(),
               OnFocusChanged(Optional(EqualsFieldInfo(/*index=*/0))));
-  android_autofill_manager().SimulateOnFocusOnFormField(form, form.fields[0]);
+  android_autofill_manager().SimulateOnFocusOnFormField(form, form.fields()[0]);
 }
 
 // Tests that asking for values to fill for a different form than that of the
@@ -443,10 +446,10 @@ TEST_F(AndroidAutofillProviderTest, OnAskForValuesToFillOnOtherForm) {
   }
 
   android_autofill_manager().SimulateOnAskForValuesToFill(form1,
-                                                          form1.fields[1]);
+                                                          form1.fields()[1]);
   check.Call();
   android_autofill_manager().SimulateOnAskForValuesToFill(form2,
-                                                          form2.fields[0]);
+                                                          form2.fields()[0]);
   check.Call();
 }
 
@@ -477,11 +480,12 @@ TEST_F(AndroidAutofillProviderTest, OnAskForValuesToFillOnChangedForm) {
     EXPECT_CALL(check, Call);
   }
 
-  android_autofill_manager().SimulateOnAskForValuesToFill(form, form.fields[1]);
+  android_autofill_manager().SimulateOnAskForValuesToFill(form,
+                                                          form.fields()[1]);
   check.Call();
   android_autofill_manager().OnFormsSeen({form_changed}, /*removed_forms=*/{});
   android_autofill_manager().SimulateOnAskForValuesToFill(
-      form_changed, form_changed.fields[1]);
+      form_changed, form_changed.fields()[1]);
   check.Call();
 }
 
@@ -505,9 +509,11 @@ TEST_F(AndroidAutofillProviderTest, OnAskForValuesToFillOnSameForm) {
     EXPECT_CALL(check, Call);
   }
 
-  android_autofill_manager().SimulateOnAskForValuesToFill(form, form.fields[1]);
+  android_autofill_manager().SimulateOnAskForValuesToFill(form,
+                                                          form.fields()[1]);
   check.Call();
-  android_autofill_manager().SimulateOnAskForValuesToFill(form, form.fields[0]);
+  android_autofill_manager().SimulateOnAskForValuesToFill(form,
+                                                          form.fields()[0]);
 }
 
 // Tests that value changes in the form of the Autofill session are propagated
@@ -518,17 +524,19 @@ TEST_F(AndroidAutofillProviderTest, OnTextFieldDidChange) {
   android_autofill_manager().OnFormsSeen({form}, /*removed_forms=*/{});
 
   // Start Autofill session.
-  android_autofill_manager().SimulateOnAskForValuesToFill(form, form.fields[1]);
+  android_autofill_manager().SimulateOnAskForValuesToFill(form,
+                                                          form.fields()[1]);
 
   // Simulate a value change.
   EXPECT_CALL(provider_bridge(),
               OnFormFieldDidChange(EqualsFieldInfo(/*index=*/1)));
-  test_api(form).fields()[1].set_value(form.fields[1].value() + u"x");
-  android_autofill_manager().SimulateOnTextFieldDidChange(form, form.fields[1]);
+  test_api(form).fields()[1].set_value(form.fields()[1].value() + u"x");
+  android_autofill_manager().SimulateOnTextFieldDidChange(form,
+                                                          form.fields()[1]);
   // The `FormDataAndroid` object owned by the provider is also updated.
   ASSERT_TRUE(test_api(autofill_provider()).form());
-  EXPECT_EQ(test_api(autofill_provider()).form()->form().fields[1].value(),
-            form.fields[1].value());
+  EXPECT_EQ(test_api(autofill_provider()).form()->form().fields()[1].value(),
+            form.fields()[1].value());
 }
 
 // Tests that value changes in a form that is not part of the current Autofill
@@ -543,13 +551,13 @@ TEST_F(AndroidAutofillProviderTest, OnTextFieldDidChangeInUnrelatedForm) {
 
   // Start the Autofill session.
   android_autofill_manager().SimulateOnAskForValuesToFill(form1,
-                                                          form1.fields[1]);
+                                                          form1.fields()[1]);
 
   // Simulate a value change in a different form.
   EXPECT_CALL(provider_bridge(), OnFormFieldDidChange).Times(0);
-  test_api(form2).fields()[1].set_value(form2.fields[1].value() + u"x");
+  test_api(form2).fields()[1].set_value(form2.fields()[1].value() + u"x");
   android_autofill_manager().SimulateOnTextFieldDidChange(form2,
-                                                          form2.fields[1]);
+                                                          form2.fields()[1]);
 }
 
 // Tests that scrolling events in the form of the Autofill session are
@@ -560,12 +568,14 @@ TEST_F(AndroidAutofillProviderTest, OnTextFieldDidScroll) {
   android_autofill_manager().OnFormsSeen({form}, /*removed_forms=*/{});
 
   // Start the Autofill session.
-  android_autofill_manager().SimulateOnAskForValuesToFill(form, form.fields[2]);
+  android_autofill_manager().SimulateOnAskForValuesToFill(form,
+                                                          form.fields()[2]);
 
   // Simulate scrolling.
   EXPECT_CALL(provider_bridge(),
               OnTextFieldDidScroll(EqualsFieldInfo(/*index=*/2)));
-  android_autofill_manager().SimulateOnTextFieldDidScroll(form, form.fields[2]);
+  android_autofill_manager().SimulateOnTextFieldDidScroll(form,
+                                                          form.fields()[2]);
 }
 
 // Tests that scrolling envets in a form that is not part of the current
@@ -580,12 +590,12 @@ TEST_F(AndroidAutofillProviderTest, OnTextFieldDidScrollInUnrelatedForm) {
 
   // Start the Autofill session.
   android_autofill_manager().SimulateOnAskForValuesToFill(form1,
-                                                          form1.fields[1]);
+                                                          form1.fields()[1]);
 
   // Simulate a scroll event in a different form.
   EXPECT_CALL(provider_bridge(), OnFormFieldDidChange).Times(0);
   android_autofill_manager().SimulateOnTextFieldDidScroll(form2,
-                                                          form2.fields[1]);
+                                                          form2.fields()[1]);
 }
 
 // Tests that a form submission of an ongoing Autofill session is propagated to
@@ -596,7 +606,8 @@ TEST_F(AndroidAutofillProviderTest, OnFormSubmittedWithKnownSuccess) {
   android_autofill_manager().OnFormsSeen({form}, /*removed_forms=*/{});
 
   // Start an Autofill session.
-  android_autofill_manager().SimulateOnAskForValuesToFill(form, form.fields[0]);
+  android_autofill_manager().SimulateOnAskForValuesToFill(form,
+                                                          form.fields()[0]);
 
   EXPECT_CALL(provider_bridge(),
               OnFormSubmitted(mojom::SubmissionSource::FORM_SUBMISSION));
@@ -616,7 +627,8 @@ TEST_F(AndroidAutofillProviderTest, FormSubmissionHappensOnReset) {
   android_autofill_manager().OnFormsSeen({form}, /*removed_forms=*/{});
 
   // Start an Autofill session.
-  android_autofill_manager().SimulateOnAskForValuesToFill(form, form.fields[0]);
+  android_autofill_manager().SimulateOnAskForValuesToFill(form,
+                                                          form.fields()[0]);
 
   EXPECT_CALL(provider_bridge(), OnFormSubmitted).Times(0);
   android_autofill_manager().SimulateOnFormSubmitted(
@@ -641,7 +653,8 @@ TEST_F(AndroidAutofillProviderTest, FormSubmissionHappensDirectly) {
   android_autofill_manager().OnFormsSeen({form}, /*removed_forms=*/{});
 
   // Start an Autofill session.
-  android_autofill_manager().SimulateOnAskForValuesToFill(form, form.fields[0]);
+  android_autofill_manager().SimulateOnAskForValuesToFill(form,
+                                                          form.fields()[0]);
 
   EXPECT_CALL(
       provider_bridge(),
@@ -673,7 +686,7 @@ TEST_F(AndroidAutofillProviderTest, FormSubmissionHappensOnFrameDestruction) {
 
   // Start an Autofill session.
   android_autofill_manager(child_rfh).SimulateOnAskForValuesToFill(
-      form, form.fields[0]);
+      form, form.fields()[0]);
 
   EXPECT_CALL(provider_bridge(), OnFormSubmitted).Times(0);
   android_autofill_manager(child_rfh).SimulateOnFormSubmitted(
@@ -795,7 +808,7 @@ TEST_F(AndroidAutofillProviderTest,
   ASSERT_EQ(CalculateFormSignature(form), CalculateFormSignature(changed_form));
   android_autofill_manager().OnFormsSeen({changed_form}, /*removed_forms=*/{});
   android_autofill_manager().SimulateOnAskForValuesToFill(
-      changed_form, changed_form.fields.front());
+      changed_form, changed_form.fields().front());
 }
 
 // Tests that new document navigation (manager reset) cancels the ongoing
@@ -813,8 +826,8 @@ TEST_F(AndroidAutofillProviderTest, CancelSessionOnNavigation) {
       provider_bridge(),
       StartAutofillSession(EqualsFormData(form), EqualsFieldInfo(/*index=*/0),
                            /*has_server_predictions=*/false));
-  android_autofill_manager().SimulateOnAskForValuesToFill(form,
-                                                          form.fields.front());
+  android_autofill_manager().SimulateOnAskForValuesToFill(
+      form, form.fields().front());
 
   EXPECT_CALL(provider_bridge(), CancelSession());
   android_autofill_manager().Reset();
@@ -865,8 +878,8 @@ TEST_P(AndroidAutofillProviderPrefillRequestTest,
   android_autofill_manager().OnFormsSeen({form}, /*removed_forms=*/{});
   android_autofill_manager().SimulatePropagateAutofillPredictions(
       form.global_id());
-  android_autofill_manager().SimulateOnAskForValuesToFill(form,
-                                                          form.fields.front());
+  android_autofill_manager().SimulateOnAskForValuesToFill(
+      form, form.fields().front());
   android_autofill_manager().Reset();
   android_autofill_manager().OnFormsSeen({form}, /*removed_forms=*/{});
   android_autofill_manager().SimulatePropagateAutofillPredictions(
@@ -886,8 +899,8 @@ TEST_P(AndroidAutofillProviderPrefillRequestTest,
   FormData form =
       CreateFormDataForFrame(CreateTestLoginForm(), main_frame_token());
   android_autofill_manager().OnFormsSeen({form}, /*removed_forms=*/{});
-  android_autofill_manager().SimulateOnAskForValuesToFill(form,
-                                                          form.fields.front());
+  android_autofill_manager().SimulateOnAskForValuesToFill(
+      form, form.fields().front());
   histogram_tester.ExpectUniqueSample(
       AndroidAutofillProvider::kPrefillRequestStateUma,
       PrefillRequestState::kRequestNotSentNoTime, 1);
@@ -948,7 +961,7 @@ TEST_P(AndroidAutofillProviderPrefillRequestTest,
   android_autofill_manager().OnFormsSeen({login_form1}, /*removed_forms=*/{});
   EXPECT_CALL(provider_bridge(), StartAutofillSession);
   android_autofill_manager().SimulateOnAskForValuesToFill(
-      login_form1, login_form1.fields.front());
+      login_form1, login_form1.fields().front());
   histogram_tester.ExpectUniqueSample(
       AndroidAutofillProvider::kPrefillRequestStateUma,
       PrefillRequestState::kRequestNotSentNoTime, 1);
@@ -999,7 +1012,7 @@ TEST_P(AndroidAutofillProviderPrefillRequestTest, NoSecondPrefillRequest) {
       login_form2.global_id());
 
   android_autofill_manager().SimulateOnAskForValuesToFill(
-      login_form2, login_form2.fields.front());
+      login_form2, login_form2.fields().front());
   histogram_tester.ExpectUniqueSample(
       AndroidAutofillProvider::kPrefillRequestStateUma,
       PrefillRequestState::kRequestNotSentMaxNumberReached, 1);
@@ -1032,8 +1045,8 @@ TEST_P(AndroidAutofillProviderPrefillRequestTest,
       StartAutofillSession(EqualsFormDataWithSessionId(form, cache_session_id),
                            EqualsFieldInfo(/*index=*/0),
                            /*has_server_predictions=*/true));
-  android_autofill_manager().SimulateOnAskForValuesToFill(form,
-                                                          form.fields.front());
+  android_autofill_manager().SimulateOnAskForValuesToFill(
+      form, form.fields().front());
 }
 
 // Tests that the session id used in a prefill request is not reused when
@@ -1069,7 +1082,7 @@ TEST_P(AndroidAutofillProviderPrefillRequestTest,
                                    /*has_server_predictions=*/true))
       .WillOnce(WithArg<0>(SaveSessionId(&autofill_session_id)));
   android_autofill_manager().SimulateOnAskForValuesToFill(
-      changed_form, changed_form.fields.front());
+      changed_form, changed_form.fields().front());
   Mock::VerifyAndClearExpectations(&provider_bridge());
 
   // A new session id is used to start the Autofill session.
@@ -1110,7 +1123,7 @@ TEST_P(AndroidAutofillProviderPrefillRequestTest,
                   EqualsFieldInfo(/*index=*/0),
                   /*has_server_predictions=*/true));
   android_autofill_manager().SimulateOnAskForValuesToFill(
-      pw_form, pw_form.fields.front());
+      pw_form, pw_form.fields().front());
   Mock::VerifyAndClearExpectations(&provider_bridge());
 
   // Now focus on a different form.
@@ -1121,7 +1134,7 @@ TEST_P(AndroidAutofillProviderPrefillRequestTest,
                                    /*has_server_predictions=*/false))
       .WillOnce(WithArg<0>(SaveSessionId(&pi_form_session_id)));
   android_autofill_manager().SimulateOnAskForValuesToFill(
-      pi_form, pi_form.fields.front());
+      pi_form, pi_form.fields().front());
   Mock::VerifyAndClearExpectations(&provider_bridge());
 
   // Unrelated forms should have different session ids.
@@ -1135,7 +1148,7 @@ TEST_P(AndroidAutofillProviderPrefillRequestTest,
                                    /*has_server_predictions=*/true))
       .WillOnce(WithArg<0>(SaveSessionId(&pw_form_second_session_id)));
   android_autofill_manager().SimulateOnAskForValuesToFill(
-      pw_form, pw_form.fields.front());
+      pw_form, pw_form.fields().front());
   Mock::VerifyAndClearExpectations(&provider_bridge());
   // The session id used when focusing back should be different from both those
   // before.
@@ -1185,7 +1198,7 @@ TEST_P(AndroidAutofillProviderPrefillRequestTest,
 
   EXPECT_CALL(provider_bridge(), StartAutofillSession);
   android_autofill_manager().SimulateOnAskForValuesToFill(
-      login_form, login_form.fields.front());
+      login_form, login_form.fields().front());
 
   // Simulate a successfully shown bottom sheet.
   provider_bridge_delegate().OnShowBottomSheetResult(
@@ -1211,7 +1224,7 @@ TEST_P(AndroidAutofillProviderPrefillRequestTest,
   android_autofill_manager().SimulatePropagateAutofillPredictions(
       login_form.global_id());
   android_autofill_manager().SimulateOnAskForValuesToFill(
-      login_form, login_form.fields.front());
+      login_form, login_form.fields().front());
 
   // Simulate a successfully shown bottom sheet.
   provider_bridge_delegate().OnShowBottomSheetResult(
@@ -1241,7 +1254,7 @@ TEST_P(AndroidAutofillProviderPrefillRequestTest,
   android_autofill_manager().SimulatePropagateAutofillPredictions(
       login_form.global_id());
   android_autofill_manager().SimulateOnAskForValuesToFill(
-      login_form, login_form.fields.front());
+      login_form, login_form.fields().front());
 
   // Simulate a successfully shown bottom sheet.
   provider_bridge_delegate().OnShowBottomSheetResult(
@@ -1281,8 +1294,8 @@ class AndroidAutofillProviderTestHidingLogic
     android_autofill_manager(rfh).OnFormsSeen({form},
                                               /*removed_forms=*/{});
     // Start an Autofill session.
-    android_autofill_manager(rfh).SimulateOnAskForValuesToFill(form,
-                                                               form.fields[0]);
+    android_autofill_manager(rfh).SimulateOnAskForValuesToFill(
+        form, form.fields()[0]);
   }
 
  protected:

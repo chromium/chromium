@@ -418,7 +418,7 @@ void VotesUploader::SendVoteOnCredentialsReuse(
   // to PasswordForm. Even without this check, these FormStructure's won't
   // be uploaded, but it makes it hard to see if we are encountering
   // unexpected errors.
-  if (pending->form_data.fields.empty()) {
+  if (pending->form_data.fields().empty()) {
     return;
   }
 
@@ -471,7 +471,7 @@ bool VotesUploader::UploadPasswordVote(
     return false;
   }
 
-  if (form_to_upload.form_data.fields.empty()) {
+  if (form_to_upload.form_data.fields().empty()) {
     // List of fields may be empty in tests.
     return false;
   }
@@ -601,7 +601,7 @@ void VotesUploader::UploadFirstLoginVotes(
     return;
   }
 
-  if (form_to_upload.form_data.fields.empty()) {
+  if (form_to_upload.form_data.fields().empty()) {
     // List of fields may be empty in tests.
     return;
   }
@@ -927,7 +927,7 @@ VotesUploader::GeneratePasswordAttributesMetadata(
 
 void VotesUploader::StoreInitialFieldValues(
     const autofill::FormData& observed_form) {
-  for (const auto& field : observed_form.fields) {
+  for (const auto& field : observed_form.fields()) {
     if (!field.value().empty()) {
       initial_values_.insert(
           std::make_pair(field.renderer_id(), field.value()));

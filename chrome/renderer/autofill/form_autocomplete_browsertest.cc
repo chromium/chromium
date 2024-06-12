@@ -163,10 +163,10 @@ void VerifyReceivedRendererMessages(
 
   // The tuple also includes a timestamp, which is ignored.
   const FormData& submitted_form = *(fake_driver.form_submitted());
-  ASSERT_LE(2U, submitted_form.fields.size());
-  EXPECT_EQ(u"fname", submitted_form.fields[0].name());
-  EXPECT_EQ(base::UTF8ToUTF16(fname), submitted_form.fields[0].value());
-  EXPECT_EQ(u"lname", submitted_form.fields[1].name());
+  ASSERT_LE(2U, submitted_form.fields().size());
+  EXPECT_EQ(u"fname", submitted_form.fields()[0].name());
+  EXPECT_EQ(base::UTF8ToUTF16(fname), submitted_form.fields()[0].value());
+  EXPECT_EQ(u"lname", submitted_form.fields()[1].name());
   EXPECT_EQ(expect_known_success, fake_driver.known_success());
   EXPECT_EQ(expect_submission_source,
             mojo::ConvertTo<SubmissionSource>(fake_driver.submission_source()));
@@ -181,9 +181,9 @@ void VerifyReceivedAddressRendererMessages(
 
   // The tuple also includes a timestamp, which is ignored.
   const FormData& submitted_form = *(fake_driver.form_submitted());
-  ASSERT_LE(1U, submitted_form.fields.size());
-  EXPECT_EQ(u"address", submitted_form.fields[0].name());
-  EXPECT_EQ(base::UTF8ToUTF16(address), submitted_form.fields[0].value());
+  ASSERT_LE(1U, submitted_form.fields().size());
+  EXPECT_EQ(u"address", submitted_form.fields()[0].name());
+  EXPECT_EQ(base::UTF8ToUTF16(address), submitted_form.fields()[0].value());
   EXPECT_EQ(expect_known_success, fake_driver.known_success());
   EXPECT_EQ(expect_submission_source,
             mojo::ConvertTo<SubmissionSource>(fake_driver.submission_source()));
@@ -235,7 +235,7 @@ std::vector<FormFieldData::FillData> GetFieldsForFilling(
     const std::vector<FormData>& forms) {
   std::vector<FormFieldData::FillData> fields;
   for (const FormData& form : forms) {
-    for (const FormFieldData& field : form.fields) {
+    for (const FormFieldData& field : form.fields()) {
       fields.emplace_back(field);
     }
   }
@@ -728,9 +728,9 @@ TEST_F(FormAutocompleteTest, SelectControlChanged) {
 
   const FormData* form = fake_driver_.select_control_changed();
   ASSERT_TRUE(form);
-  ASSERT_EQ(form->fields.size(), 1u);
-  EXPECT_EQ(u"color", form->fields[0].name());
-  EXPECT_EQ(u"blue", form->fields[0].value());
+  ASSERT_EQ(form->fields().size(), 1u);
+  EXPECT_EQ(u"color", form->fields()[0].name());
+  EXPECT_EQ(u"blue", form->fields()[0].value());
 }
 
 // Parameterized test for submission detection. The parameter dictates whether

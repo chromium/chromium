@@ -216,7 +216,7 @@ class TouchToFillDelegateAndroidImplUnitTest : public testing::Test {
     OnFormsSeen();
     EXPECT_EQ(expected_success,
               touch_to_fill_delegate_->IntendsToShowTouchToFill(
-                  form_.global_id(), form_.fields[0].global_id(), form_));
+                  form_.global_id(), form_.fields()[0].global_id(), form_));
   }
 
   void TryToShowTouchToFill(bool expected_success) {
@@ -227,7 +227,7 @@ class TouchToFillDelegateAndroidImplUnitTest : public testing::Test {
 
     OnFormsSeen();
     EXPECT_EQ(expected_success, touch_to_fill_delegate_->TryToShowTouchToFill(
-                                    form_, form_.fields[0]));
+                                    form_, form_.fields()[0]));
     EXPECT_EQ(expected_success,
               touch_to_fill_delegate_->IsShowingTouchToFill());
   }
@@ -282,13 +282,13 @@ TEST_P(TouchToFillDelegateAndroidImplPaymentMethodUnitTest,
   browser_autofill_manager_->ClearFormStructures();
 
   EXPECT_EQ(false, touch_to_fill_delegate_->TryToShowTouchToFill(
-                       form_, form_.fields[0]));
+                       form_, form_.fields()[0]));
 }
 
 TEST_P(TouchToFillDelegateAndroidImplPaymentMethodUnitTest,
        TryToShowTouchToFillFailsIfNotSpecificField) {
   test_api(form_).fields().insert(
-      form_.fields.begin(),
+      form_.fields().begin(),
       test::CreateTestFormField("Arbitrary", "arbitrary", "",
                                 FormControlType::kInputText));
 
@@ -363,7 +363,7 @@ TEST_P(TouchToFillDelegateAndroidImplPaymentMethodUnitTest,
                   SuggestionHidingReason::kOverlappingWithTouchToFillSurface))
       .Times(0);
   EXPECT_FALSE(
-      touch_to_fill_delegate_->TryToShowTouchToFill(form_, form_.fields[0]));
+      touch_to_fill_delegate_->TryToShowTouchToFill(form_, form_.fields()[0]));
 }
 
 TEST_P(TouchToFillDelegateAndroidImplPaymentMethodUnitTest,
@@ -465,10 +465,10 @@ class TouchToFillDelegateAndroidImplCreditCardUnitTest
 TEST_F(TouchToFillDelegateAndroidImplCreditCardUnitTest,
        TryToShowTouchToFillFailsForIncompleteForm) {
   // Erase expiration month and expiration year fields.
-  ASSERT_EQ(form_.fields[2].name(), u"ccmonth");
-  test_api(form_).fields().erase(form_.fields.begin() + 2);
-  ASSERT_EQ(form_.fields[2].name(), u"ccyear");
-  test_api(form_).fields().erase(form_.fields.begin() + 2);
+  ASSERT_EQ(form_.fields()[2].name(), u"ccmonth");
+  test_api(form_).fields().erase(form_.fields().begin() + 2);
+  ASSERT_EQ(form_.fields()[2].name(), u"ccyear");
+  test_api(form_).fields().erase(form_.fields().begin() + 2);
   ASSERT_FALSE(touch_to_fill_delegate_->IsShowingTouchToFill());
 
   TryToShowTouchToFill(/*expected_success=*/false);
@@ -485,7 +485,7 @@ TEST_F(TouchToFillDelegateAndroidImplCreditCardUnitTest,
   browser_autofill_manager_->OnFormsSeen({form_}, {});
   // Set credit card value.
   // TODO(crbug.com/40900766): Retrieve the card number field by name here.
-  ASSERT_EQ(form_.fields[1].name(), u"cardnumber");
+  ASSERT_EQ(form_.fields()[1].name(), u"cardnumber");
   test_api(form_).fields()[1].set_value(u"411111111111");
   ASSERT_FALSE(touch_to_fill_delegate_->IsShowingTouchToFill());
 
@@ -503,7 +503,7 @@ TEST_F(TouchToFillDelegateAndroidImplCreditCardUnitTest,
   browser_autofill_manager_->OnFormsSeen({form_}, {});
   // Set card expiration year.
   // TODO(crbug.com/40900766): Retrieve the card expiry year field by name here.
-  ASSERT_EQ(form_.fields[3].name(), u"ccyear");
+  ASSERT_EQ(form_.fields()[3].name(), u"ccyear");
   test_api(form_).fields()[3].set_value(u"2023");
   ASSERT_FALSE(touch_to_fill_delegate_->IsShowingTouchToFill());
 

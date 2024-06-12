@@ -48,8 +48,8 @@ auto IsContentEditable() {
 
 template <typename... Args>
 auto FieldsAre(Args&&... matchers) {
-  return Field("FormData::fields", &FormData::fields,
-               ElementsAre(std::forward<Args>(matchers)...));
+  return Property("FormData::fields", &FormData::fields,
+                  ElementsAre(std::forward<Args>(matchers)...));
 }
 
 // TODO(crbug.com/40286775): Clean up these functions once

@@ -41,7 +41,7 @@ base::Value::Dict SerializeSignatureRelevantMembersInFormData(
   serialized_data.Set(kActionKey, form_data.action().spec());
 
   base::Value::List serialized_fields;
-  for (const auto& field : form_data.fields) {
+  for (const auto& field : form_data.fields()) {
     base::Value::Dict serialized_field;
     // Stored FormFieldData is used only for signature calculations, therefore
     // only members that are used for signature calculation are stored.

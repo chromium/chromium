@@ -314,8 +314,8 @@ TEST_P(FormSaverImplSaveTest, FormDataSanitized) {
     }
   }
 
-  ASSERT_EQ(1u, saved.form_data.fields.size());
-  const FormFieldData& saved_field = saved.form_data.fields[0];
+  ASSERT_EQ(1u, saved.form_data.fields().size());
+  const FormFieldData& saved_field = saved.form_data.fields()[0];
   EXPECT_EQ(u"name", saved_field.name());
   EXPECT_EQ(autofill::FormControlType::kInputPassword,
             saved_field.form_control_type());

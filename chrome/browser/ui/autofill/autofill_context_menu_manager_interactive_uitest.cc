@@ -236,7 +236,7 @@ IN_PROC_BROWSER_TEST_F(AutofillContextMenuManagerFeedbackUIBrowserTest,
   // Set up context menu params with the correct trigger form and field.
   autofill_context_menu_manager_->set_params_for_testing(
       CreateContextMenuParams(form.global_id().renderer_id,
-                              form.fields[0].global_id().renderer_id));
+                              form.fields()[0].global_id().renderer_id));
   // Display feedback dialog.
   autofill_context_menu_manager_->ExecuteCommand(
       IDC_CONTENT_CONTEXT_AUTOFILL_FEEDBACK);

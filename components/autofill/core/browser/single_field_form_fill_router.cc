@@ -25,11 +25,11 @@ void SingleFieldFormFillRouter::OnWillSubmitForm(
     const FormStructure* form_structure,
     bool is_autocomplete_enabled) {
   if (form_structure)
-    DCHECK(form.fields.size() == form_structure->field_count());
+    DCHECK(form.fields().size() == form_structure->field_count());
   std::vector<FormFieldData> autocomplete_fields;
   std::vector<FormFieldData> iban_fields;
   std::vector<FormFieldData> merchant_promo_code_fields;
-  for (size_t i = 0; i < form.fields.size(); i++) {
+  for (size_t i = 0; i < form.fields().size(); i++) {
     // If |form_structure| is present, then the fields in |form_structure| and
     // the fields in |form| should be 1:1. |form_structure| not being present
     // indicates we may have fields that were not able to be parsed, so we route
@@ -37,13 +37,13 @@ void SingleFieldFormFillRouter::OnWillSubmitForm(
     if (merchant_promo_code_manager_ && form_structure &&
         form_structure->field(i)->Type().GetStorableType() ==
             MERCHANT_PROMO_CODE) {
-      merchant_promo_code_fields.push_back(form.fields[i]);
+      merchant_promo_code_fields.push_back(form.fields()[i]);
     } else if (iban_manager_ && form_structure &&
                form_structure->field(i)->Type().GetStorableType() ==
                    IBAN_VALUE) {
-      iban_fields.push_back(form.fields[i]);
+      iban_fields.push_back(form.fields()[i]);
     } else {
-      autocomplete_fields.push_back(form.fields[i]);
+      autocomplete_fields.push_back(form.fields()[i]);
     }
   }
 

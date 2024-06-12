@@ -49,11 +49,11 @@ SubmissionReadinessState CalculateSubmissionReadiness(
   const autofill::FormData& form_data = params.form;
   uint64_t username_index = params.username_field_index;
   uint64_t password_index = params.password_field_index;
-  size_t number_of_elements = form_data.fields.size();
+  size_t number_of_elements = form_data.fields().size();
   CHECK(username_index <= number_of_elements &&
         password_index <= number_of_elements);
-  if (form_data.fields.empty() || ((username_index == number_of_elements) &&
-                                   (password_index == number_of_elements))) {
+  if (form_data.fields().empty() || ((username_index == number_of_elements) &&
+                                     (password_index == number_of_elements))) {
     // This is unexpected. |form| is supposed to contain username or
     // password elements.
     return SubmissionReadinessState::kError;
@@ -79,25 +79,25 @@ SubmissionReadinessState CalculateSubmissionReadiness(
   };
 
   for (size_t i = username_index + 1; i < password_index; ++i) {
-    if (!ShouldIgnoreField(form_data.fields[i])) {
+    if (!ShouldIgnoreField(form_data.fields()[i])) {
       return SubmissionReadinessState::kFieldBetweenUsernameAndPassword;
     }
   }
 
   for (size_t i = password_index + 1; i < number_of_elements; ++i) {
-    if (!ShouldIgnoreField(form_data.fields[i])) {
+    if (!ShouldIgnoreField(form_data.fields()[i])) {
       return SubmissionReadinessState::kFieldAfterPasswordField;
     }
   }
 
   size_t number_of_visible_elements = 0;
   for (size_t i = 0; i < number_of_elements; ++i) {
-    if (ShouldIgnoreField(form_data.fields[i])) {
+    if (ShouldIgnoreField(form_data.fields()[i])) {
       continue;
     }
 
     if (username_index != i && password_index != i &&
-        form_data.fields[i].value().empty()) {
+        form_data.fields()[i].value().empty()) {
       return SubmissionReadinessState::kEmptyFields;
     }
     number_of_visible_elements++;

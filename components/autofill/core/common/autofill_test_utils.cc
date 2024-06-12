@@ -265,14 +265,14 @@ FormFieldData CreateTestDatalistField(std::string_view label,
 
 FormData CreateTestPersonalInformationFormData() {
   FormData form = ConstructFormWithNameRenderIdAndProtocol(/*is_https=*/true);
-  form.fields = {
-      CreateTestFormField("First Name", "firstname", "",
-                          FormControlType::kInputText),
-      CreateTestFormField("Middle Name", "middlename", "",
-                          FormControlType::kInputText),
-      CreateTestFormField("Last Name", "lastname", "",
-                          FormControlType::kInputText),
-      CreateTestFormField("Email", "email", "", FormControlType::kInputEmail)};
+  form.set_fields({CreateTestFormField("First Name", "firstname", "",
+                                       FormControlType::kInputText),
+                   CreateTestFormField("Middle Name", "middlename", "",
+                                       FormControlType::kInputText),
+                   CreateTestFormField("Last Name", "lastname", "",
+                                       FormControlType::kInputText),
+                   CreateTestFormField("Email", "email", "",
+                                       FormControlType::kInputEmail)});
   return form;
 }
 
@@ -310,8 +310,8 @@ FormData CreateTestCreditCardFormData(bool is_https,
 
 FormData CreateTestIbanFormData(std::string_view value, bool is_https) {
   FormData form = ConstructFormWithNameRenderIdAndProtocol(is_https);
-  form.fields = {CreateTestFormField("IBAN Value:", "iban_value", value,
-                                     FormControlType::kInputText)};
+  form.set_fields({CreateTestFormField("IBAN Value:", "iban_value", value,
+                                       FormControlType::kInputText)});
   return form;
 }
 
@@ -332,9 +332,9 @@ FormData CreateTestPasswordFormData() {
 FormData CreateTestUnclassifiedFormData() {
   FormData form;
   form.set_url(GURL("https://www.foo.com"));
-  form.fields = {
-      CreateTestFormField("unclassifiable label", "unclassifiable name",
-                          "unclassifiable value", FormControlType::kInputText)};
+  form.set_fields({CreateTestFormField(
+      "unclassifiable label", "unclassifiable name", "unclassifiable value",
+      FormControlType::kInputText)});
   return form;
 }
 

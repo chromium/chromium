@@ -505,8 +505,8 @@ void ContentPasswordManagerDriver::ShowPasswordSuggestions(
           render_frame_host_))
     return;
 
-  if ((request.username_field_index > request.form_data.fields.size()) ||
-      (request.password_field_index > request.form_data.fields.size())) {
+  if ((request.username_field_index > request.form_data.fields().size()) ||
+      (request.password_field_index > request.form_data.fields().size())) {
     mojo::ReportBadMessage(
         "username_field_index or password_field_index cannot be greater than "
         "form.fields.size()!");

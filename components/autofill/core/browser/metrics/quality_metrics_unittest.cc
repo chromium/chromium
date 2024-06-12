@@ -729,7 +729,8 @@ TEST_F(QualityMetricsTest, NoSubmission) {
 
   autofill_manager().AddSeenForm(form, heuristic_types, server_types);
   // Changes the name field to match the full name.
-  SimulateUserChangedTextFieldTo(form, form.fields[0], u"Elvis Aaron Presley");
+  SimulateUserChangedTextFieldTo(form, form.fields()[0],
+                                 u"Elvis Aaron Presley");
 
   base::HistogramTester histogram_tester;
 
@@ -819,13 +820,13 @@ TEST_F(QualityMetricsTest, BasedOnAutocomplete) {
   AutofillQueryResponse response;
   auto* form_suggestion = response.add_form_suggestions();
   // Server response will match with autocomplete.
-  AddFieldPredictionToForm(form.fields[0], NAME_LAST, form_suggestion);
+  AddFieldPredictionToForm(form.fields()[0], NAME_LAST, form_suggestion);
   // Server response will NOT match with autocomplete.
-  AddFieldPredictionToForm(form.fields[1], NAME_FIRST, form_suggestion);
+  AddFieldPredictionToForm(form.fields()[1], NAME_FIRST, form_suggestion);
   // Server response will have no data.
-  AddFieldPredictionToForm(form.fields[2], NO_SERVER_DATA, form_suggestion);
+  AddFieldPredictionToForm(form.fields()[2], NO_SERVER_DATA, form_suggestion);
   // Not logged.
-  AddFieldPredictionToForm(form.fields[3], NAME_MIDDLE, form_suggestion);
+  AddFieldPredictionToForm(form.fields()[3], NAME_MIDDLE, form_suggestion);
 
   std::string response_string = SerializeAndEncode(response);
   base::HistogramTester histogram_tester;

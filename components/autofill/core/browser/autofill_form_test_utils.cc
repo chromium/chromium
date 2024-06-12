@@ -15,8 +15,8 @@ namespace test {
 
 testing::Message DescribeFormData(const FormData& form_data) {
   testing::Message result;
-  result << "Form contains " << form_data.fields.size() << " fields:\n";
-  for (const FormFieldData& field : form_data.fields) {
+  result << "Form contains " << form_data.fields().size() << " fields:\n";
+  for (const FormFieldData& field : form_data.fields()) {
     result << "type=" << FormControlTypeToString(field.form_control_type())
            << ", name=" << field.name() << ", label=" << field.label() << "\n";
   }

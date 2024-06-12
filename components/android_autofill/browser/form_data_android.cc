@@ -25,7 +25,7 @@ FormDataAndroid::FormDataAndroid(const FormData& form, SessionId session_id)
       form_(form),
       bridge_(AndroidAutofillBridgeFactory::GetInstance()
                   .CreateFormDataAndroidBridge()) {
-  fields_.reserve(form_.fields.size());
+  fields_.reserve(form_.fields().size());
   for (FormFieldData& field : form_.mutable_fields(/*pass_key=*/{})) {
     fields_.push_back(std::make_unique<FormFieldDataAndroid>(&field));
   }
@@ -48,8 +48,8 @@ void FormDataAndroid::OnFormFieldDidChange(size_t index,
 }
 
 bool FormDataAndroid::GetFieldIndex(const FormFieldData& field, size_t* index) {
-  for (size_t i = 0; i < form_.fields.size(); ++i) {
-    if (form_.fields[i].SameFieldAs(field)) {
+  for (size_t i = 0; i < form_.fields().size(); ++i) {
+    if (form_.fields()[i].SameFieldAs(field)) {
       *index = i;
       return true;
     }
@@ -59,7 +59,7 @@ bool FormDataAndroid::GetFieldIndex(const FormFieldData& field, size_t* index) {
 
 bool FormDataAndroid::GetSimilarFieldIndex(const FormFieldData& field,
                                            size_t* index) {
-  for (size_t i = 0; i < form_.fields.size(); ++i) {
+  for (size_t i = 0; i < form_.fields().size(); ++i) {
     if (fields_[i]->SimilarFieldAs(field)) {
       *index = i;
       return true;
@@ -69,11 +69,11 @@ bool FormDataAndroid::GetSimilarFieldIndex(const FormFieldData& field,
 }
 
 bool FormDataAndroid::SimilarFieldsAs(const FormData& form) const {
-  if (fields_.size() != form.fields.size()) {
+  if (fields_.size() != form.fields().size()) {
     return false;
   }
   for (size_t i = 0; i < fields_.size(); ++i) {
-    if (!fields_[i]->SimilarFieldAs(form.fields[i])) {
+    if (!fields_[i]->SimilarFieldAs(form.fields()[i])) {
       return false;
     }
   }
@@ -134,15 +134,15 @@ void FormDataAndroid::UpdateFieldTypes(
 
 std::vector<int> FormDataAndroid::UpdateFieldVisibilities(
     const FormData& form) {
-  CHECK_EQ(form_.fields.size(), form.fields.size());
-  CHECK_EQ(form_.fields.size(), fields_.size());
+  CHECK_EQ(form_.fields().size(), form.fields().size());
+  CHECK_EQ(form_.fields().size(), fields_.size());
 
   // We rarely expect to find any difference in visibility - therefore do not
   // reserve space in the vector.
   std::vector<int> indices;
-  for (size_t i = 0; i < form_.fields.size(); ++i) {
-    if (form_.fields[i].IsFocusable() != form.fields[i].IsFocusable()) {
-      fields_[i]->OnFormFieldVisibilityDidChange(form.fields[i]);
+  for (size_t i = 0; i < form_.fields().size(); ++i) {
+    if (form_.fields()[i].IsFocusable() != form.fields()[i].IsFocusable()) {
+      fields_[i]->OnFormFieldVisibilityDidChange(form.fields()[i]);
       indices.push_back(i);
     }
   }

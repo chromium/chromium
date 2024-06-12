@@ -1270,8 +1270,8 @@ IN_PROC_BROWSER_TEST_F(PasswordManagerOverwritePlaceholderTest,
            ->observed_form());
   driver->GetPasswordManager()->ProcessAutofillPredictions(
       driver, form_data,
-      {{form_data.fields[0].global_id(), std::move(username_prediction)},
-       {form_data.fields[1].global_id(), std::move(password_prediction)}});
+      {{form_data.fields()[0].global_id(), std::move(username_prediction)},
+       {form_data.fields()[1].global_id(), std::move(password_prediction)}});
 
   // Password Manager will not autofill on page load until user interacted with
   // the page.

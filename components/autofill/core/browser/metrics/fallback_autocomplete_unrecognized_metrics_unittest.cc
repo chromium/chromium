@@ -31,7 +31,7 @@ class AutocompleteUnrecognizedFallbackEventLoggerTest
     // the metric only cares about the autocomplete attribute, not the trigger
     // source.
     autofill_manager().OnAskForValuesToFillTest(
-        form, form.fields[0].global_id(),
+        form, form.fields()[0].global_id(),
         AutofillSuggestionTriggerSource::kFormControlElementClicked);
     DidShowAutofillSuggestions(form);
   }
@@ -68,7 +68,7 @@ TEST_F(AutocompleteUnrecognizedFallbackEventLoggerTest,
   ShowSuggestions(form);
   // Fill the suggestion.
   autofill_manager().FillOrPreviewProfileForm(
-      mojom::ActionPersistence::kFill, form, form.fields[0],
+      mojom::ActionPersistence::kFill, form, form.fields()[0],
       *personal_data().address_data_manager().GetProfileByGUID(kTestProfileId),
       {.trigger_source = AutofillTriggerSource::kPopup});
 
@@ -98,7 +98,7 @@ TEST_F(AutocompleteUnrecognizedFallbackEventLoggerTest,
       AutocompleteParsingResult{.field_type = HtmlFieldType::kUnrecognized});
   SeeForm(form);
   autofill_manager().FillOrPreviewProfileForm(
-      mojom::ActionPersistence::kFill, form, form.fields[0],
+      mojom::ActionPersistence::kFill, form, form.fields()[0],
       *personal_data().address_data_manager().GetProfileByGUID(kTestProfileId),
       {.trigger_source = AutofillTriggerSource::kPopup});
 

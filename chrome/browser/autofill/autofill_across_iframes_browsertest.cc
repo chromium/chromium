@@ -174,7 +174,7 @@ std::vector<std::string> AllFieldValues(content::WebContents* web_contents,
     frame_to_iters[frame] = frame_values.begin();
 
   std::vector<std::string> values;
-  for (const FormFieldData& field : form.fields) {
+  for (const FormFieldData& field : form.fields()) {
     LocalFrameToken frame = field.host_frame();
     if (frame_to_iters[frame] == frame_to_values[frame].end())
       return {};
@@ -535,7 +535,7 @@ class AutofillAcrossIframesTest_Dynamic : public AutofillAcrossIframesTest {
   std::vector<std::string> FillForm(const FormStructure& form_structure,
                                     const AutofillField& trigger_field) {
     FormData form = form_structure.ToFormData();
-    EXPECT_EQ(3u, form.fields.size());  // The CVC field doesn't exist yet.
+    EXPECT_EQ(3u, form.fields().size());  // The CVC field doesn't exist yet.
     TestAutofillManager& manager = main_autofill_manager();
     FillCard(main_frame(), form, trigger_field);
     // Now, after FillCard(), the form gets filled in the renderer (which
@@ -546,7 +546,7 @@ class AutofillAcrossIframesTest_Dynamic : public AutofillAcrossIframesTest {
     EXPECT_TRUE(manager.WaitForAutofill(3 + 1));
     form =
         manager.form_structures().find(form.global_id())->second->ToFormData();
-    EXPECT_EQ(4u, form.fields.size());  // The CVC field has now been seen.
+    EXPECT_EQ(4u, form.fields().size());  // The CVC field has now been seen.
     return AllFieldValues(web_contents(), form);
   }
 };
@@ -577,14 +577,14 @@ class AutofillAcrossIframesTest_DeletedFrame
   std::vector<std::string> FillForm(const FormStructure& form_structure,
                                     const AutofillField& trigger_field) {
     FormData form = form_structure.ToFormData();
-    EXPECT_EQ(4u, form.fields.size());
+    EXPECT_EQ(4u, form.fields().size());
     EXPECT_EQ(5u, num_frames());
     std::ignore = content::EvalJs(
         main_frame(),
         R"( document.getElementsByTagName('iframe')[1].remove(); )");
     EXPECT_EQ(4u, num_frames());
     FillCard(main_frame(), form, trigger_field);
-    test_api(form).fields().erase(form.fields.begin() + 1);
+    test_api(form).fields().erase(form.fields().begin() + 1);
     return AllFieldValues(web_contents(), form);
   }
 
@@ -741,9 +741,9 @@ IN_PROC_BROWSER_TEST_F(AutofillAcrossIframesTest_NestedAndLargeForm,
     // clang-format on
   }
   const FormData& form_data = form->ToFormData();
-  ASSERT_EQ("e.com", form_data.fields[4].origin().host());
-  ASSERT_EQ("cc-name", form_data.fields[4].autocomplete_attribute());
-  FillCard(main_frame(), form_data, form_data.fields[4]);
+  ASSERT_EQ("e.com", form_data.fields()[4].origin().host());
+  ASSERT_EQ("cc-name", form_data.fields()[4].autocomplete_attribute());
+  FillCard(main_frame(), form_data, form_data.fields()[4]);
   EXPECT_TRUE(main_autofill_manager().WaitForAutofill(5));
   {
     // `rat` represents a value that is not filled only due to rationalization.
@@ -802,7 +802,7 @@ IN_PROC_BROWSER_TEST_F(AutofillAcrossIframesTest_NestedAndLargeForm,
                                             m(name), m(num), m(exp), m(cvc)));
   }
   const FormData& form_data = form->ToFormData();
-  FillCard(main_frame(), form_data, form_data.fields[0]);
+  FillCard(main_frame(), form_data, form_data.fields()[0]);
   EXPECT_TRUE(main_autofill_manager().WaitForAutofill(4));
   {
     const auto* name = kNameFull;
@@ -898,10 +898,11 @@ IN_PROC_BROWSER_TEST_P(AutofillAcrossIframesTest_Submission,
               ElementsAre(kNameFull, kNumber, kExp, kCvc));
   ASSERT_TRUE(submission_happens_in_main_frame() ? SubmitInMainFrame()
                                                  : SubmitInArbitraryIframe());
-  EXPECT_THAT(main_autofill_manager().submitted_form(),
-              Optional(Field(&FormData::fields,
-                             ElementsAre(HasValue(kNameFull), HasValue(kNumber),
-                                         HasValue(kExp), HasValue(kCvc)))));
+  EXPECT_THAT(
+      main_autofill_manager().submitted_form(),
+      Optional(Property(&FormData::fields,
+                        ElementsAre(HasValue(kNameFull), HasValue(kNumber),
+                                    HasValue(kExp), HasValue(kCvc)))));
 }
 
 // Test fixture for a case where on load each iframe contains a full credit card
@@ -994,10 +995,11 @@ IN_PROC_BROWSER_TEST_F(AutofillAcrossIframesTest_FullIframes, Submit) {
   ASSERT_THAT(FillForm(*form, *form->field(0)),
               ElementsAre(kNameFull, kNumber, kExp, kCvc));
   ASSERT_TRUE(SubmitInMainFrame());
-  EXPECT_THAT(main_autofill_manager().submitted_form(),
-              Optional(Field(&FormData::fields,
-                             ElementsAre(HasValue(kNameFull), HasValue(kNumber),
-                                         HasValue(kExp), HasValue(kCvc)))));
+  EXPECT_THAT(
+      main_autofill_manager().submitted_form(),
+      Optional(Property(&FormData::fields,
+                        ElementsAre(HasValue(kNameFull), HasValue(kNumber),
+                                    HasValue(kExp), HasValue(kCvc)))));
 }
 
 // Tests that the Autofill Manager notices if an entire <form> is removed.

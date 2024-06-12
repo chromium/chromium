@@ -133,9 +133,9 @@ void InferUsernameFieldData(
     if (input_element.IsNull() || input_element.IsPasswordFieldForAutofill())
       continue;
     const std::u16string element_name = input_element.NameForAutofill().Utf16();
-    for (size_t i = next_element_range_begin; i < form_data.fields.size();
+    for (size_t i = next_element_range_begin; i < form_data.fields().size();
          ++i) {
-      const FormFieldData& field_data = form_data.fields[i];
+      const FormFieldData& field_data = form_data.fields()[i];
       if (input_element.NameForAutofill().IsEmpty())
         continue;
 

@@ -107,7 +107,7 @@ void AppendFieldFillStatusUkm(
     std::vector<std::vector<ExpectedUkmMetricsPair>>* expected_metrics) {
   FormSignature form_signature = Collapse(CalculateFormSignature(form));
   int64_t metric_type = static_cast<int64_t>(AutofillMetrics::TYPE_SUBMISSION);
-  for (const FormFieldData& field : form.fields) {
+  for (const FormFieldData& field : form.fields()) {
     FieldSignature field_signature =
         Collapse(CalculateFieldSignatureForField(field));
     expected_metrics->push_back(
@@ -127,17 +127,17 @@ void AppendFieldTypeUkm(
     const std::vector<FieldType>& server_types,
     const std::vector<FieldType>& actual_types,
     std::vector<std::vector<ExpectedUkmMetricsPair>>* expected_metrics) {
-  ASSERT_EQ(heuristic_types.size(), form.fields.size());
-  ASSERT_EQ(server_types.size(), form.fields.size());
-  ASSERT_EQ(actual_types.size(), form.fields.size());
+  ASSERT_EQ(heuristic_types.size(), form.fields().size());
+  ASSERT_EQ(server_types.size(), form.fields().size());
+  ASSERT_EQ(actual_types.size(), form.fields().size());
   FormSignature form_signature = Collapse(CalculateFormSignature(form));
   int64_t metric_type = static_cast<int64_t>(AutofillMetrics::TYPE_SUBMISSION);
   std::vector<int64_t> prediction_sources{
       AutofillMetrics::PREDICTION_SOURCE_HEURISTIC,
       AutofillMetrics::PREDICTION_SOURCE_SERVER,
       AutofillMetrics::PREDICTION_SOURCE_OVERALL};
-  for (size_t i = 0; i < form.fields.size(); ++i) {
-    const FormFieldData& field = form.fields[i];
+  for (size_t i = 0; i < form.fields().size(); ++i) {
+    const FormFieldData& field = form.fields()[i];
     FieldSignature field_signature =
         Collapse(CalculateFieldSignatureForField(field));
     for (int64_t source : prediction_sources) {

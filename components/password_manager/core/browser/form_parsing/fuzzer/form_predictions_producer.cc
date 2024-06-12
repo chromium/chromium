@@ -53,7 +53,7 @@ FormPredictions GenerateFormPredictions(const FormData& form_data,
   predictions.form_signature =
       autofill::FormSignature(provider.ConsumeIntegral<uint64_t>());
 
-  for (const auto& field : form_data.fields) {
+  for (const auto& field : form_data.fields()) {
     // Batch getting bits from the FuzzedDataProvider, because calling
     // `ConsumeBool` throws out 7 bits and we need multiple Booleans for each
     // iteration.

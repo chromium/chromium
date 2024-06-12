@@ -123,12 +123,12 @@ TEST_F(FormCacheBrowserTest, UpdatedForms) {
 
   const FormData* form1 = GetFormByName(forms.updated_forms, "form1");
   ASSERT_TRUE(form1);
-  EXPECT_EQ(3u, form1->fields.size());
+  EXPECT_EQ(3u, form1->fields().size());
   EXPECT_TRUE(form1->child_frames().empty());
 
   const FormData* unowned_form = GetFormByName(forms.updated_forms, "");
   ASSERT_TRUE(unowned_form);
-  EXPECT_EQ(1u, unowned_form->fields.size());
+  EXPECT_EQ(1u, unowned_form->fields().size());
   EXPECT_TRUE(unowned_form->child_frames().empty());
 }
 
@@ -255,12 +255,12 @@ TEST_F(FormCacheBrowserTest, ExtractFrames) {
 
   const FormData* form1 = GetFormByName(forms.updated_forms, "form1");
   ASSERT_TRUE(form1);
-  EXPECT_TRUE(form1->fields.empty());
+  EXPECT_TRUE(form1->fields().empty());
   EXPECT_THAT(form1->child_frames(), ElementsAre(IsToken(frame1_token, -1)));
 
   const FormData* unowned_form = GetFormByName(forms.updated_forms, "");
   ASSERT_TRUE(unowned_form);
-  EXPECT_TRUE(unowned_form->fields.empty());
+  EXPECT_TRUE(unowned_form->fields().empty());
   EXPECT_THAT(unowned_form->child_frames(),
               ElementsAre(AllOf(IsToken(frame2_token, -1))));
 }
@@ -400,11 +400,11 @@ TEST_F(FormCacheBrowserTest, ExtractFormsAfterModification) {
 
   const FormData* form1 = GetFormByName(forms.updated_forms, "form1");
   ASSERT_TRUE(form1);
-  EXPECT_EQ(4u, form1->fields.size());
+  EXPECT_EQ(4u, form1->fields().size());
 
   const FormData* unowned_form = GetFormByName(forms.updated_forms, "");
   ASSERT_TRUE(unowned_form);
-  EXPECT_EQ(2u, unowned_form->fields.size());
+  EXPECT_EQ(2u, unowned_form->fields().size());
 }
 
 struct FillElementData {
@@ -416,7 +416,7 @@ FormFieldData* FindFieldByName(FormData& form_data,
                                blink::WebString search_field_name) {
   auto it = base::ranges::find(test_api(form_data).fields(),
                                search_field_name.Utf16(), &FormFieldData::name);
-  return it != form_data.fields.end() ? &*it : nullptr;
+  return it != form_data.fields().end() ? &*it : nullptr;
 }
 
 // Fills the fields referenced in `form_fill_data`. Fills `checkbox_element`, if
@@ -447,8 +447,8 @@ void FillAndCheckState(
   }
 
   std::vector<FormFieldData::FillData> fields_to_fill;
-  fields_to_fill.reserve(values_to_fill.fields.size());
-  for (const FormFieldData& field : values_to_fill.fields) {
+  fields_to_fill.reserve(values_to_fill.fields().size());
+  for (const FormFieldData& field : values_to_fill.fields()) {
     fields_to_fill.emplace_back(field);
   }
   form_util::ApplyFieldsAction(
@@ -487,8 +487,8 @@ TEST_F(FormCacheBrowserTest,
   EXPECT_TRUE(forms.removed_forms.empty());
 
   std::vector<FormFieldData::FillData> values_to_fill;
-  values_to_fill.reserve(forms.updated_forms[0].fields.size());
-  for (const FormFieldData& field : forms.updated_forms[0].fields) {
+  values_to_fill.reserve(forms.updated_forms[0].fields().size());
+  for (const FormFieldData& field : forms.updated_forms[0].fields()) {
     values_to_fill.emplace_back(field);
   }
   values_to_fill[0].value = u"John";

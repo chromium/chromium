@@ -149,13 +149,14 @@ class ComposeManagerImplTest : public testing::Test {
   autofill::FormData CreateTestFormDataWith3TextAreaFields() {
     autofill::FormData form;
     form.set_url(GURL("https://www.foo.com"));
-    form.fields = {
-        autofill::test::CreateTestFormField(
-            "label0", "name0", "value0", autofill::FormControlType::kTextArea),
-        autofill::test::CreateTestFormField(
-            "label1", "name1", "value1", autofill::FormControlType::kTextArea),
-        autofill::test::CreateTestFormField(
-            "label2", "name2", "value2", autofill::FormControlType::kTextArea)};
+    form.set_fields(
+        {autofill::test::CreateTestFormField(
+             "label0", "name0", "value0", autofill::FormControlType::kTextArea),
+         autofill::test::CreateTestFormField(
+             "label1", "name1", "value1", autofill::FormControlType::kTextArea),
+         autofill::test::CreateTestFormField(
+             "label2", "name2", "value2",
+             autofill::FormControlType::kTextArea)});
     return form;
   }
 
@@ -288,7 +289,7 @@ TEST_F(ComposeManagerImplTest,
 TEST_F(ComposeManagerImplTest, TestOpenCompose_Success) {
   // Creates a test form and use the 2nd field as the selected one.
   const autofill::FormData form_data = CreateTestFormDataWith3TextAreaFields();
-  const autofill::FormFieldData selected_form_field = form_data.fields[1];
+  const autofill::FormFieldData selected_form_field = form_data.fields()[1];
 
   // Emulates the expected Autofill driver response.
   EXPECT_CALL(mock_autofill_driver(), ExtractForm(_, _))
@@ -342,7 +343,7 @@ TEST_F(ComposeManagerImplTest, TestOpenCompose_Success) {
 TEST_F(ComposeManagerImplTest, TestOpenCompose_FormDataMissing) {
   // Creates form and field data only for having valid IDs.
   const autofill::FormData form_data = CreateTestFormDataWith3TextAreaFields();
-  const autofill::FormFieldData selected_form_field = form_data.fields[1];
+  const autofill::FormFieldData selected_form_field = form_data.fields()[1];
 
   // Autofill driver returns no FormData.
   EXPECT_CALL(mock_autofill_driver(), ExtractForm(_, _))
@@ -390,7 +391,7 @@ TEST_F(ComposeManagerImplTest, TestOpenCompose_FormDataMissing) {
 TEST_F(ComposeManagerImplTest, TestOpenCompose_FormFieldDataMissing) {
   // Creates a form and removes the last element, whose now unlisted ID is used.
   autofill::FormData form_data = CreateTestFormDataWith3TextAreaFields();
-  const autofill::FormFieldData selected_form_field = form_data.fields.back();
+  const autofill::FormFieldData selected_form_field = form_data.fields().back();
   test_api(form_data).fields().pop_back();
 
   // Emulates the expected Autofill driver response.

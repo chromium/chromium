@@ -507,7 +507,7 @@ IN_PROC_BROWSER_TEST_F(DevToolsAutofillTest, AddressFormFilled) {
       std::move(form_structure);
 
   const std::vector<const FormFieldData*> filled_fields_by_autofill = {
-      {&form.fields[0], &form.fields[1]}};
+      {&form.fields()[0], &form.fields()[1]}};
 
   // Enable events and emit event about form being filled.
   SendCommandSync("Autofill.enable");
@@ -613,19 +613,19 @@ IN_PROC_BROWSER_TEST_F(DevToolsAutofillTest, AutofillInOOPIFs) {
   // frame `AutofillManager`.
   EXPECT_CALL(observer,
               OnBeforeAskForValuesToFill(_, form.global_id(),
-                                         form.fields[0].global_id(), _));
+                                         form.fields()[0].global_id(), _));
 
   const std::vector<const FormFieldData*> filled_fields_by_autofill = {
-      {&form.fields[0], &form.fields[1]}};
+      {&form.fields()[0], &form.fields()[1]}};
   web_contents()->ForEachRenderFrameHost([&](content::RenderFrameHost* rfh) {
     // Call the driver of the field host iframe.
     if (rfh->GetFrameToken().ToString() ==
-        form.fields[0].host_frame()->ToString()) {
+        form.fields()[0].host_frame()->ToString()) {
       ASSERT_NE(rfh->GetFrameToken(), main_frame()->GetFrameToken());
       auto* driver = static_cast<mojom::AutofillDriver*>(
           autofill::ContentAutofillDriver::GetForRenderFrameHost(rfh));
       driver->AskForValuesToFill(
-          form, form.fields[0].renderer_id(), gfx::Rect(0, 10),
+          form, form.fields()[0].renderer_id(), gfx::Rect(0, 10),
           ::autofill::mojom::AutofillSuggestionTriggerSource::kUnspecified);
     }
   });
@@ -663,7 +663,7 @@ IN_PROC_BROWSER_TEST_F(DevToolsAutofillTest, AddressFormFilledInOOPIFs) {
   FormData form =
       main_autofill_manager().form_structures().begin()->second->ToFormData();
   const std::vector<const FormFieldData*> filled_fields_by_autofill = {
-      {&form.fields[0], &form.fields[1]}};
+      {&form.fields()[0], &form.fields()[1]}};
   main_autofill_manager().NotifyObservers(
       &autofill::AutofillManager::Observer::OnFillOrPreviewDataModelForm,
       form.global_id(), autofill::mojom::ActionPersistence::kFill,
@@ -695,7 +695,7 @@ IN_PROC_BROWSER_TEST_F(DevToolsAutofillTest,
   FormData form_a =
       main_autofill_manager().form_structures().begin()->second->ToFormData();
   const std::vector<const FormFieldData*> filled_fields_by_autofill_a = {
-      {&form_a.fields[0], &form_a.fields[1]}};
+      {&form_a.fields()[0], &form_a.fields()[1]}};
   main_autofill_manager().NotifyObservers(
       &autofill::AutofillManager::Observer::OnFillOrPreviewDataModelForm,
       form_a.global_id(), autofill::mojom::ActionPersistence::kFill,
@@ -714,7 +714,7 @@ IN_PROC_BROWSER_TEST_F(DevToolsAutofillTest,
   FormData form_b =
       main_autofill_manager().form_structures().begin()->second->ToFormData();
   const std::vector<const FormFieldData*> filled_fields_by_autofill_b = {
-      {&form_b.fields[0], &form_b.fields[1]}};
+      {&form_b.fields()[0], &form_b.fields()[1]}};
   main_autofill_manager().NotifyObservers(
       &autofill::AutofillManager::Observer::OnFillOrPreviewDataModelForm,
       form_b.global_id(), autofill::mojom::ActionPersistence::kFill,

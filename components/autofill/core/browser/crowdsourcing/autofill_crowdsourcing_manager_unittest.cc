@@ -1504,7 +1504,7 @@ TEST_P(AutofillQueryTest, Metadata) {
 
   // There should be three fields, none of which have encoded metadata.
   ASSERT_EQ(3, query_form.fields_size());
-  ASSERT_EQ(static_cast<int>(form.fields.size()), query_form.fields_size());
+  ASSERT_EQ(static_cast<int>(form.fields().size()), query_form.fields_size());
   for (int i = 0; i < query_form.fields_size(); ++i) {
     const auto& query_field = query_form.fields(i);
     EXPECT_FALSE(query_field.has_metadata());

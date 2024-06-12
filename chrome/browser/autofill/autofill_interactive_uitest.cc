@@ -328,7 +328,7 @@ template <typename Arg, typename Fun>
 }
 
 [[nodiscard]] auto FieldsAre(auto matcher) {
-  return Field(&FormData::fields, ElementsAreArray(matcher));
+  return Property(&FormData::fields, ElementsAreArray(matcher));
 }
 
 // An object that waits for an observed form-control element to change its value

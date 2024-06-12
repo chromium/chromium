@@ -247,7 +247,7 @@ TEST_F(AutofillManagerTest, ObserverReceiveCalls) {
   std::vector<FormData> forms = CreateTestForms(2);
   FormData form = forms[0];
   FormData other_form = forms[1];
-  FormFieldData field = form.fields.front();
+  FormFieldData field = form.fields().front();
 
   // Shorthands for matchers to reduce visual noise.
   auto m = Ref(manager());
@@ -330,7 +330,7 @@ TEST_F(AutofillManagerTest, ObserverReceiveCalls) {
   EXPECT_CALL(observer, OnFieldTypesDetermined(m, g, heuristics));
   task_environment_.RunUntilIdle();
 
-  test_api(form).fields().push_back(form.fields.back());
+  test_api(form).fields().push_back(form.fields().back());
   test_api(form).fields().back().set_renderer_id(test::MakeFieldRendererId());
 
   // The form was just changed, which causes a reparse. The reparse is

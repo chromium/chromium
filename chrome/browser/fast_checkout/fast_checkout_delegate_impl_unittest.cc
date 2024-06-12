@@ -85,7 +85,7 @@ TEST_F(FastCheckoutDelegateImplTest, HideFastCheckoutWhenNotShowing) {
 
 TEST_F(FastCheckoutDelegateImplTest, IntendsToShowFastCheckout) {
   autofill::FormData form = CreateTestAddressFormData();
-  const autofill::FormFieldData& field = form.fields[0];
+  const autofill::FormFieldData& field = form.fields()[0];
   autofill::FormFieldData non_seen_field = autofill::test::CreateTestFormField(
       "First Name", "firstname", "", autofill::FormControlType::kInputText);
   autofill_manager()->OnFormsSeen(
@@ -106,7 +106,7 @@ TEST_F(FastCheckoutDelegateImplTest, IntendsToShowFastCheckout) {
 TEST_F(FastCheckoutDelegateImplTest,
        RecordsFastCheckoutTriggerOutcomeMetricIfNotSupported) {
   autofill::FormData form = CreateTestAddressFormData();
-  const autofill::FormFieldData& field = form.fields[0];
+  const autofill::FormFieldData& field = form.fields()[0];
   autofill_manager()->OnFormsSeen(
       /*updated_forms=*/{form},
       /*removed_forms=*/{});

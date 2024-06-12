@@ -81,15 +81,15 @@ PasswordForm PendingCredentialsForNewCredentials(
 // Copies field properties masks from the form |from| to the form |to|.
 void CopyFieldPropertiesMasks(const FormData& from, FormData* to) {
   // Skip copying if the number of fields is different.
-  if (from.fields.size() != to->fields.size()) {
+  if (from.fields().size() != to->fields().size()) {
     return;
   }
 
   std::vector<FormFieldData> fields = to->ExtractFields();
-  for (size_t i = 0; i < from.fields.size(); ++i) {
+  for (size_t i = 0; i < from.fields().size(); ++i) {
     fields[i].set_properties_mask(
-        fields[i].name() == from.fields[i].name()
-            ? from.fields[i].properties_mask()
+        fields[i].name() == from.fields()[i].name()
+            ? from.fields()[i].properties_mask()
             : autofill::FieldPropertiesFlags::kErrorOccurred);
   }
   to->set_fields(std::move(fields));

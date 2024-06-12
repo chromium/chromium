@@ -204,8 +204,8 @@ void CheckField(const std::vector<FormFieldData>& fields,
 // SCOPED_TRACE if other logging messages might refer to the form.
 testing::Message DescribeFormData(const FormData& form_data) {
   testing::Message result;
-  result << "Form contains " << form_data.fields.size() << " fields:\n";
-  for (const FormFieldData& field : form_data.fields) {
+  result << "Form contains " << form_data.fields().size() << " fields:\n";
+  for (const FormFieldData& field : form_data.fields()) {
     result << "type="
            << autofill::FormControlTypeToString(field.form_control_type())
            << ", name=" << field.name() << ", value=" << field.value()
@@ -220,23 +220,23 @@ void CheckPasswordFormFields(const PasswordForm& password_form,
                              const FormData& form_data,
                              const ParseResultIds& expectations) {
   SCOPED_TRACE(DescribeFormData(form_data));
-  CheckField(form_data.fields, expectations.username_id,
+  CheckField(form_data.fields(), expectations.username_id,
              password_form.username_element, &password_form.username_value,
              "username");
   EXPECT_EQ(expectations.username_id,
             password_form.username_element_renderer_id);
 
-  CheckField(form_data.fields, expectations.password_id,
+  CheckField(form_data.fields(), expectations.password_id,
              password_form.password_element, &password_form.password_value,
              "password");
   EXPECT_EQ(expectations.password_id,
             password_form.password_element_renderer_id);
 
-  CheckField(form_data.fields, expectations.new_password_id,
+  CheckField(form_data.fields(), expectations.new_password_id,
              password_form.new_password_element,
              &password_form.new_password_value, "new_password");
 
-  CheckField(form_data.fields, expectations.confirmation_password_id,
+  CheckField(form_data.fields(), expectations.confirmation_password_id,
              password_form.confirmation_password_element, nullptr,
              "confirmation_password");
 }
@@ -3026,7 +3026,7 @@ TEST_F(FormParserTest, FindUsernameInPredictions_SkipPrediction) {
   // should be ignored despite it is more reliable than prediction for
   // "id" field.
   std::vector<ProcessedField> processed_fields;
-  for (const auto& form_field_data : form_data.fields) {
+  for (const auto& form_field_data : form_data.fields()) {
     processed_fields.push_back(ProcessedField{.field = &form_field_data});
   }
 
@@ -3036,8 +3036,8 @@ TEST_F(FormParserTest, FindUsernameInPredictions_SkipPrediction) {
   // Add predictions for "email" and "id" fields. The "email" is in
   // front of "id", indicating "email" is more reliable.
   const std::vector<autofill::FieldRendererId> predictions = {
-      form_data.fields[1].renderer_id(),  // email
-      form_data.fields[2].renderer_id(),  // id
+      form_data.fields()[1].renderer_id(),  // email
+      form_data.fields()[2].renderer_id(),  // id
   };
 
   // Now search the username field. The username field is supposed to
@@ -3335,7 +3335,7 @@ TEST_F(FormParserTest, BaseHeuristicsFindUsernameFieldWithStoredUsername) {
   EXPECT_EQ(password_form->username_value, kUsername);
   EXPECT_TRUE(password_form->HasUsernameElement());
   EXPECT_EQ(password_form->username_element_renderer_id,
-            form_data.fields[0].renderer_id());
+            form_data.fields()[0].renderer_id());
 }
 
 }  // namespace

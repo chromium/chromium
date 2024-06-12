@@ -86,7 +86,7 @@ void PasswordGenerationFrameHelper::ProcessPasswordRequirements(
 
   // Store password requirements from the autofill server.
   FormSignature form_signature = autofill::CalculateFormSignature(form);
-  for (const FormFieldData& field : form.fields) {
+  for (const FormFieldData& field : form.fields()) {
     if (auto it = predictions.find(field.global_id());
         it != predictions.end() && it->second.password_requirements) {
       password_requirements_service->AddSpec(

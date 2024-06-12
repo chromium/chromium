@@ -438,7 +438,7 @@ struct StructTraits<autofill::mojom::FormDataDataView, autofill::FormData> {
 
   static const std::vector<autofill::FormFieldData>& fields(
       const autofill::FormData& r) {
-    return r.fields;
+    return r.fields();
   }
 
   static const std::vector<autofill::FieldRendererId>& username_predictions(

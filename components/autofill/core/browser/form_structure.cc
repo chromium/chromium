@@ -122,14 +122,14 @@ FormStructure::FormStructure(const FormData& form)
       full_source_url_(form.full_url()),
       target_url_(form.action()),
       main_frame_origin_(form.main_frame_origin()),
-      all_fields_are_passwords_(!form.fields.empty()),
+      all_fields_are_passwords_(!form.fields().empty()),
       form_parsed_timestamp_(base::TimeTicks::Now()),
       host_frame_(form.host_frame()),
       version_(form.version()),
       renderer_id_(form.renderer_id()),
       child_frames_(form.child_frames()) {
   // Copy the form fields.
-  for (const FormFieldData& field : form.fields) {
+  for (const FormFieldData& field : form.fields()) {
     if (!IsCheckable(field.check_status())) {
       ++active_field_count_;
     }

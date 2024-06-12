@@ -486,19 +486,19 @@ bool HasDocumentWithValidFrame(const WebInputElement& element) {
 size_t GetIndexOfElement(const FormData& form_data,
                          const WebInputElement& element) {
   if (element.IsNull()) {
-    return form_data.fields.size();
+    return form_data.fields().size();
   }
-  for (size_t i = 0; i < form_data.fields.size(); ++i) {
-    if (form_data.fields[i].renderer_id() ==
+  for (size_t i = 0; i < form_data.fields().size(); ++i) {
+    if (form_data.fields()[i].renderer_id() ==
         form_util::GetFieldRendererId(element)) {
       return i;
     }
   }
-  return form_data.fields.size();
+  return form_data.fields().size();
 }
 
 bool HasTextInputs(const FormData& form_data) {
-  return base::ranges::any_of(form_data.fields,
+  return base::ranges::any_of(form_data.fields(),
                               &FormFieldData::IsTextInputElement);
 }
 
@@ -507,7 +507,7 @@ bool IsWebAuthnForm(const FormData* form_data) {
     return field.parsed_autocomplete() && field.parsed_autocomplete()->webauthn;
   };
   return form_data &&
-         base::ranges::any_of(form_data->fields, has_webauthn_attribute);
+         base::ranges::any_of(form_data->fields(), has_webauthn_attribute);
 }
 
 #if BUILDFLAG(IS_ANDROID)
@@ -532,7 +532,7 @@ mojom::SubmissionReadinessState CalculateSubmissionReadiness(
 
   size_t username_index = GetIndexOfElement(form_data, username_element);
   size_t password_index = GetIndexOfElement(form_data, password_element);
-  size_t number_of_elements = form_data.fields.size();
+  size_t number_of_elements = form_data.fields().size();
   if (username_index == number_of_elements ||
       password_index == number_of_elements) {
     // This is unexpected. `form_data` is supposed to contain username and
@@ -551,8 +551,9 @@ mojom::SubmissionReadinessState CalculateSubmissionReadiness(
   };
 
   for (size_t i = username_index + 1; i < password_index; ++i) {
-    if (ShouldIgnoreField(form_data.fields[i]))
+    if (ShouldIgnoreField(form_data.fields()[i])) {
       continue;
+    }
     return mojom::SubmissionReadinessState::kFieldBetweenUsernameAndPassword;
   }
 
@@ -561,11 +562,12 @@ mojom::SubmissionReadinessState CalculateSubmissionReadiness(
 
   size_t number_of_visible_elements = 0;
   for (size_t i = 0; i < number_of_elements; ++i) {
-    if (ShouldIgnoreField(form_data.fields[i]))
+    if (ShouldIgnoreField(form_data.fields()[i])) {
       continue;
+    }
 
     if (username_index != i && password_index != i &&
-        form_data.fields[i].value().empty()) {
+        form_data.fields()[i].value().empty()) {
       return mojom::SubmissionReadinessState::kEmptyFields;
     }
     number_of_visible_elements++;
@@ -1800,11 +1802,11 @@ void PasswordAutofillAgent::ShowSuggestionPopup(
                              &password_info);
   size_t username_element_index = GetIndexOfElement(form, username_element);
   if (username_element.IsNull() || !IsElementEditable(username_element)) {
-    username_element_index = form.fields.size();
+    username_element_index = form.fields().size();
   }
   size_t password_element_index = GetIndexOfElement(form, password_element);
   if (password_element.IsNull() || !IsElementEditable(password_element)) {
-    password_element_index = form.fields.size();
+    password_element_index = form.fields().size();
   }
 
   const bool show_webauthn_credentials =
@@ -2217,10 +2219,10 @@ PasswordAutofillAgent::FormStructureInfo
 PasswordAutofillAgent::ExtractFormStructureInfo(const FormData& form_data) {
   FormStructureInfo result;
   result.renderer_id = form_data.renderer_id();
-  result.fields.resize(form_data.fields.size());
+  result.fields.resize(form_data.fields().size());
 
-  for (size_t i = 0; i < form_data.fields.size(); ++i) {
-    const FormFieldData& form_field = form_data.fields[i];
+  for (size_t i = 0; i < form_data.fields().size(); ++i) {
+    const FormFieldData& form_field = form_data.fields()[i];
 
     FormFieldInfo& field_info = result.fields[i];
     field_info.renderer_id = form_field.renderer_id();

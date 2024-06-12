@@ -277,16 +277,16 @@ class PasswordSaveManagerImplTestBase : public testing::Test {
     parsed_observed_form_ = saved_match_;
     parsed_observed_form_.form_data = observed_form_;
     parsed_observed_form_.username_element =
-        observed_form_.fields[kUsernameFieldIndex].name();
+        observed_form_.fields()[kUsernameFieldIndex].name();
     parsed_observed_form_.password_element =
-        observed_form_.fields[kPasswordFieldIndex].name();
+        observed_form_.fields()[kPasswordFieldIndex].name();
 
     parsed_submitted_form_ = parsed_observed_form_;
     parsed_submitted_form_.form_data = submitted_form_;
     parsed_submitted_form_.username_value =
-        submitted_form_.fields[kUsernameFieldIndex].value();
+        submitted_form_.fields()[kUsernameFieldIndex].value();
     parsed_submitted_form_.password_value =
-        submitted_form_.fields[kPasswordFieldIndex].value();
+        submitted_form_.fields()[kPasswordFieldIndex].value();
 
     fetcher_ = std::make_unique<FakeFormFetcher>();
     fetcher_->Fetch();
@@ -714,9 +714,9 @@ TEST_P(PasswordSaveManagerImplTest, SaveNewCredentials) {
   EXPECT_EQ(new_username, saved_form.username_value);
   EXPECT_EQ(new_password, saved_form.password_value);
 
-  EXPECT_EQ(submitted_form.fields[kUsernameFieldIndex].name(),
+  EXPECT_EQ(submitted_form.fields()[kUsernameFieldIndex].name(),
             saved_form.username_element);
-  EXPECT_EQ(submitted_form.fields[kPasswordFieldIndex].name(),
+  EXPECT_EQ(submitted_form.fields()[kPasswordFieldIndex].name(),
             saved_form.password_element);
   ASSERT_EQ(best_matches.size(), 1u);
   EXPECT_EQ(*best_matches[0], saved_match_);
@@ -1005,13 +1005,13 @@ TEST_P(PasswordSaveManagerImplTest, UpdatePasswordValueMultiplePasswordFields) {
   PasswordForm expected = password_save_manager_impl()->GetPendingCredentials();
   expected.password_value = password;
   expected.password_element_renderer_id =
-      submitted_form.fields[0].renderer_id();
-  expected.password_element = submitted_form.fields[0].name();
+      submitted_form.fields()[0].renderer_id();
+  expected.password_element = submitted_form.fields()[0].name();
 
   // Simulate that the user updates value to save for the first password field
   // using the update prompt.
   parsed_submitted_form.password_value = password;
-  parsed_submitted_form.password_element = submitted_form.fields[0].name();
+  parsed_submitted_form.password_element = submitted_form.fields()[0].name();
   parsed_submitted_form.new_password_value.clear();
   parsed_submitted_form.new_password_element.clear();
 
@@ -1028,7 +1028,7 @@ TEST_P(PasswordSaveManagerImplTest, UpdatePasswordValueMultiplePasswordFields) {
   // Check that a vote is sent for the field with the value which is chosen by
   // the user.
   auto upload_contents_matcher = IsPasswordUpload(FieldsContain(
-      UploadFieldIs(submitted_form.fields[0], FieldType::PASSWORD)));
+      UploadFieldIs(submitted_form.fields()[0], FieldType::PASSWORD)));
   EXPECT_CALL(*mock_autofill_crowdsourcing_manager(),
               StartUploadRequest(upload_contents_matcher, _, _));
 
@@ -1376,7 +1376,7 @@ TEST_P(PasswordSaveManagerImplTest, UsernameCorrectionVote) {
 
   // Check that a vote is sent for the password field.
   auto upload_contents_matcher = IsPasswordUpload(FieldsContain(UploadFieldIs(
-      submitted_form_.fields[kPasswordFieldIndex], FieldType::PASSWORD)));
+      submitted_form_.fields()[kPasswordFieldIndex], FieldType::PASSWORD)));
   EXPECT_CALL(*mock_autofill_crowdsourcing_manager(),
               StartUploadRequest(upload_contents_matcher, _, _));
 

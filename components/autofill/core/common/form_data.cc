@@ -100,12 +100,13 @@ bool FormData::SameFormAs(const FormData& form) const {
       name_attribute() != form.name_attribute() || url() != form.url() ||
       action() != form.action() ||
       renderer_id().is_null() != form.renderer_id().is_null() ||
-      fields.size() != form.fields.size()) {
+      fields_.size() != form.fields_.size()) {
     return false;
   }
-  for (size_t i = 0; i < fields.size(); ++i) {
-    if (!fields[i].SameFieldAs(form.fields[i]))
+  for (size_t i = 0; i < fields_.size(); ++i) {
+    if (!fields_[i].SameFieldAs(form.fields_[i])) {
       return false;
+    }
   }
   return true;
 }
@@ -116,7 +117,8 @@ bool FormData::DeepEqual(const FormData& a, const FormData& b) {
   // because we expect most inequalities to be due to them.
   if (a.renderer_id() != b.renderer_id() ||
       a.child_frames() != b.child_frames() ||
-      !base::ranges::equal(a.fields, b.fields, {}, &FormFieldData::renderer_id,
+      !base::ranges::equal(a.fields(), b.fields(), {},
+                           &FormFieldData::renderer_id,
                            &FormFieldData::renderer_id)) {
     return false;
   }
@@ -124,14 +126,14 @@ bool FormData::DeepEqual(const FormData& a, const FormData& b) {
   if (a.name() != b.name() || a.id_attribute() != b.id_attribute() ||
       a.name_attribute() != b.name_attribute() || a.url() != b.url() ||
       a.action() != b.action() ||
-      !base::ranges::equal(a.fields, b.fields, &FormFieldData::DeepEqual)) {
+      !base::ranges::equal(a.fields(), b.fields(), &FormFieldData::DeepEqual)) {
     return false;
   }
   return true;
 }
 
 bool FormHasNonEmptyPasswordField(const FormData& form) {
-  for (const auto& field : form.fields) {
+  for (const auto& field : form.fields()) {
     if (field.IsPasswordInputElement()) {
       if (!field.value().empty() || !field.user_input().empty()) {
         return true;
@@ -144,7 +146,7 @@ bool FormHasNonEmptyPasswordField(const FormData& form) {
 std::ostream& operator<<(std::ostream& os, const FormData& form) {
   os << base::UTF16ToUTF8(form.name()) << " " << form.url() << " "
      << form.action() << " " << form.main_frame_origin() << " " << "Fields:";
-  for (const FormFieldData& field : form.fields) {
+  for (const FormFieldData& field : form.fields()) {
     os << field << ",";
   }
   return os;
@@ -153,20 +155,21 @@ std::ostream& operator<<(std::ostream& os, const FormData& form) {
 const FormFieldData* FormData::FindFieldByGlobalId(
     const FieldGlobalId& global_id) const {
   auto fields_it =
-      base::ranges::find(fields, global_id, &FormFieldData::global_id);
+      base::ranges::find(fields(), global_id, &FormFieldData::global_id);
 
   // If the field is found, return a pointer to the field, otherwise return
   // nullptr.
-  return fields_it != fields.end() ? &*fields_it : nullptr;
+  return fields_it != fields().end() ? &*fields_it : nullptr;
 }
 
 FormFieldData* FormData::FindFieldByNameForTest(
     std::u16string_view name_or_id) {
-  auto fields_it = base::ranges::find(fields, name_or_id, &FormFieldData::name);
+  auto fields_it =
+      base::ranges::find(fields_, name_or_id, &FormFieldData::name);
 
   // If the field is found, return a pointer to the field, otherwise return
   // nullptr.
-  return fields_it != fields.end() ? &*fields_it : nullptr;
+  return fields_it != fields_.end() ? &*fields_it : nullptr;
 }
 
 void SerializeFormData(const FormData& form_data, base::Pickle* pickle) {
@@ -174,7 +177,7 @@ void SerializeFormData(const FormData& form_data, base::Pickle* pickle) {
   pickle->WriteString16(form_data.name());
   pickle->WriteString(form_data.url().spec());
   pickle->WriteString(form_data.action().spec());
-  SerializeFormFieldDataVector(form_data.fields, pickle);
+  SerializeFormFieldDataVector(form_data.fields(), pickle);
   pickle->WriteString(form_data.main_frame_origin().Serialize());
 }
 
@@ -267,11 +270,11 @@ LogBuffer& operator<<(LogBuffer& buffer, const FormData& form) {
   buffer << Tr{} << "URL:" << form.url();
   buffer << Tr{} << "Action:" << form.action();
   buffer << Tr{} << "Is action empty:" << form.is_action_empty();
-  for (size_t i = 0; i < form.fields.size(); ++i) {
+  for (size_t i = 0; i < form.fields().size(); ++i) {
     buffer << Tag{"tr"};
     buffer << Tag{"td"} << "Field " << i << ": " << CTag{};
     buffer << Tag{"td"};
-    buffer << Tag{"table"} << form.fields.at(i) << CTag{"table"};
+    buffer << Tag{"table"} << form.fields().at(i) << CTag{"table"};
     buffer << CTag{"td"};
     buffer << CTag{"tr"};
   }

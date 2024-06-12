@@ -85,8 +85,8 @@ class MockFormTracker : public FormTracker {
 
 template <typename... Args>
 auto FieldsAre(Args&&... matchers) {
-  return Field("FormData::fields", &FormData::fields,
-               ElementsAre(std::forward<Args>(matchers)...));
+  return Property("FormData::fields", &FormData::fields,
+                  ElementsAre(std::forward<Args>(matchers)...));
 }
 
 // Matches a `FormData` whose `FormData::fields`' `FormFieldData::id_attribute`
@@ -126,7 +126,7 @@ auto HasValue(std::u16string value) {
 
 // Matches a FormData with |num| FormData::fields.
 auto HasNumFields(size_t num) {
-  return Field("FormData::fields", &FormData::fields, SizeIs(num));
+  return Property("FormData::fields", &FormData::fields, SizeIs(num));
 }
 
 // Matches a FormData with |num| FormData::child_frames.
@@ -216,7 +216,7 @@ class AutofillAgentTest : public test::AutofillRendererTest {
       const std::vector<FormData>& forms) {
     std::vector<FormFieldData::FillData> fields;
     for (const FormData& form : forms) {
-      for (const FormFieldData& field : form.fields) {
+      for (const FormFieldData& field : form.fields()) {
         fields.emplace_back(field);
       }
     }
@@ -638,11 +638,11 @@ TEST_F(AutofillAgentTestWithFeatures,
   FormData form;
   EXPECT_CALL(autofill_driver(),
               AskForValuesToFill(
-                  Field(&FormData::fields,
-                        ElementsAre(Property(
-                            &FormFieldData::datalist_options,
-                            ElementsAre(SelectOption{.value = u"Strawberry"},
-                                        SelectOption{.value = u"Apple"})))),
+                  Property(&FormData::fields,
+                           ElementsAre(Property(
+                               &FormFieldData::datalist_options,
+                               ElementsAre(SelectOption{.value = u"Strawberry"},
+                                           SelectOption{.value = u"Apple"})))),
                   _, _, _));
   autofill_agent().TriggerSuggestions(
       GetFieldRendererIdById("ff"),
@@ -677,13 +677,14 @@ TEST_F(AutofillAgentTest, PreviewThenClear) {
       *form_util::ExtractFormData(forms[0].GetDocument(), forms[0],
                                   *base::MakeRefCounted<FieldDataManager>(),
                                   {form_util::ExtractOption::kValue});
-  ASSERT_EQ(form.fields.size(), 1u);
+  ASSERT_EQ(form.fields().size(), 1u);
   blink::WebFormControlElement field =
       GetWebElementById("text_id").DynamicTo<blink::WebFormControlElement>();
   ASSERT_FALSE(field.IsNull());
 
-  std::u16string prior_value = form.fields[0].value();
-  test_api(form).fields()[0].set_value(form.fields[0].value() + u"AUTOFILLED");
+  std::u16string prior_value = form.fields()[0].value();
+  test_api(form).fields()[0].set_value(form.fields()[0].value() +
+                                       u"AUTOFILLED");
   test_api(form).fields()[0].set_is_autofilled(true);
 
   ASSERT_EQ(field.GetAutofillState(), blink::WebAutofillState::kNotFilled);
@@ -803,8 +804,8 @@ TEST_P(AutofillAgentSubmissionTest,
       AutofillAgentTestApi(&autofill_agent()).provisionally_saved_form();
   ASSERT_TRUE(provisionally_saved_form.has_value());
   EXPECT_EQ(provisionally_saved_form->renderer_id(), form_id);
-  ASSERT_EQ(1u, provisionally_saved_form->fields.size());
-  EXPECT_EQ(u"user-set value", provisionally_saved_form->fields[0].value());
+  ASSERT_EQ(1u, provisionally_saved_form->fields().size());
+  EXPECT_EQ(u"user-set value", provisionally_saved_form->fields()[0].value());
 
   ExecuteJavaScriptForTests(
       R"(document.forms[0].elements[0].value = 'js-set value';)");
@@ -814,8 +815,8 @@ TEST_P(AutofillAgentSubmissionTest,
   // see the JS modification reflected in the last interacted saved form.
   ASSERT_TRUE(provisionally_saved_form.has_value());
   EXPECT_EQ(provisionally_saved_form->renderer_id(), form_id);
-  ASSERT_EQ(1u, provisionally_saved_form->fields.size());
-  EXPECT_EQ(u"js-set value", provisionally_saved_form->fields[0].value());
+  ASSERT_EQ(1u, provisionally_saved_form->fields().size());
+  EXPECT_EQ(u"js-set value", provisionally_saved_form->fields()[0].value());
 }
 
 // Test that AutofillAgent::ApplyFormAction(mojom::ActionPersistence::kFill)
@@ -841,7 +842,7 @@ TEST_P(AutofillAgentSubmissionTest,
 
   ASSERT_EQ(field.GetAutofillState(), blink::WebAutofillState::kNotFilled);
   FormData form;
-  form.fields = {form_field};
+  form.set_fields({form_field});
   autofill_agent().ApplyFieldsAction(mojom::FormActionType::kFill,
                                      mojom::ActionPersistence::kFill,
                                      GetFieldsForFilling({form}));
@@ -850,8 +851,8 @@ TEST_P(AutofillAgentSubmissionTest,
   std::optional<FormData> provisionally_saved_form =
       AutofillAgentTestApi(&autofill_agent()).provisionally_saved_form();
   ASSERT_TRUE(provisionally_saved_form.has_value());
-  ASSERT_EQ(1u, provisionally_saved_form->fields.size());
-  EXPECT_EQ(u"autofilled", provisionally_saved_form->fields[0].value());
+  ASSERT_EQ(1u, provisionally_saved_form->fields().size());
+  EXPECT_EQ(u"autofilled", provisionally_saved_form->fields()[0].value());
 }
 
 // Test that AutofillAgent::ApplyFormAction(mojom::ActionPersistence::kFill)
@@ -877,7 +878,7 @@ TEST_P(AutofillAgentSubmissionTest,
                                   *base::MakeRefCounted<FieldDataManager>(),
                                   {form_util::ExtractOption::kValue});
 
-  ASSERT_EQ(1u, form.fields.size());
+  ASSERT_EQ(1u, form.fields().size());
   test_api(form).fields()[0].set_value(u"autofilled");
   test_api(form).fields()[0].set_is_autofilled(true);
 
@@ -890,8 +891,8 @@ TEST_P(AutofillAgentSubmissionTest,
   std::optional<FormData> provisionally_saved_form =
       AutofillAgentTestApi(&autofill_agent()).provisionally_saved_form();
   ASSERT_TRUE(provisionally_saved_form.has_value());
-  ASSERT_EQ(1u, provisionally_saved_form->fields.size());
-  EXPECT_EQ(u"autofilled", provisionally_saved_form->fields[0].value());
+  ASSERT_EQ(1u, provisionally_saved_form->fields().size());
+  EXPECT_EQ(u"autofilled", provisionally_saved_form->fields()[0].value());
 }
 
 TEST_P(AutofillAgentSubmissionTest,
@@ -1371,10 +1372,10 @@ TEST_P(AutofillAgentTestCaret, AskForValuesToFillContainsCaret) {
       .WillOnce(DoAll(SaveArg<0>(&form), SaveArg<2>(&caret_bounds)));
   Focus("f");
   TriggerAskForValuesToFill();
-  EXPECT_FALSE(form.fields[0].bounds().IsEmpty());
+  EXPECT_FALSE(form.fields()[0].bounds().IsEmpty());
   EXPECT_FALSE(caret_bounds.origin().IsOrigin());
   EXPECT_GT(caret_bounds.height(), 0);
-  EXPECT_TRUE(form.fields[0].bounds().Contains(gfx::RectF(caret_bounds)));
+  EXPECT_TRUE(form.fields()[0].bounds().Contains(gfx::RectF(caret_bounds)));
 }
 
 // Tests that CaretMovedInFormField() is fired for each caret movement, provided
@@ -1404,11 +1405,11 @@ TEST_P(AutofillAgentTestCaret, MovingCaretSlowlyFiresEvent) {
   SetCaret(2, 2, /*pause_for=*/base::Seconds(1));
   checkpoint.Call("done");
   EXPECT_TRUE(
-      forms[0].fields[0].bounds().Contains(gfx::RectF(caret_bounds[0])));
+      forms[0].fields()[0].bounds().Contains(gfx::RectF(caret_bounds[0])));
   EXPECT_TRUE(
-      forms[1].fields[0].bounds().Contains(gfx::RectF(caret_bounds[1])));
+      forms[1].fields()[0].bounds().Contains(gfx::RectF(caret_bounds[1])));
   EXPECT_TRUE(
-      forms[2].fields[0].bounds().Contains(gfx::RectF(caret_bounds[2])));
+      forms[2].fields()[0].bounds().Contains(gfx::RectF(caret_bounds[2])));
   EXPECT_FALSE(caret_bounds[0].origin().IsOrigin());
   EXPECT_FALSE(caret_bounds[1].origin().IsOrigin());
   EXPECT_FALSE(caret_bounds[2].origin().IsOrigin());

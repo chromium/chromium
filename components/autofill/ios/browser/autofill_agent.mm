@@ -120,7 +120,7 @@ typedef void (^FetchFormsCompletionHandler)(BOOL, const FormDataVector&);
 void GetFormField(autofill::FormFieldData* field,
                   const autofill::FormData& form,
                   FieldRendererId fieldIdentifier) {
-  for (const auto& currentField : form.fields) {
+  for (const auto& currentField : form.fields()) {
     if (currentField.renderer_id() == fieldIdentifier &&
         currentField.is_focusable()) {
       *field = currentField;
@@ -522,9 +522,9 @@ constexpr CGFloat kSuggestionIconWidth = 32;
   base::Value::Dict predictionData;
   for (const auto& form : forms) {
     base::Value::Dict fieldData;
-    DCHECK(form.fields.size() == form.data.fields.size());
+    DCHECK(form.fields.size() == form.data.fields().size());
     for (size_t i = 0; i < form.fields.size(); i++) {
-      fieldData.Set(NumberToString(form.data.fields[i].renderer_id().value()),
+      fieldData.Set(NumberToString(form.data.fields()[i].renderer_id().value()),
                     base::Value(form.fields[i].overall_type));
     }
     predictionData.Set(base::UTF16ToUTF8(form.data.name()),

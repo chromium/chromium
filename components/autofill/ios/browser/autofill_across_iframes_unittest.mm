@@ -285,8 +285,8 @@ TEST_F(AutofillAcrossIframesTest, WithChildFrames) {
 
   FormSignature form_signature = CalculateFormSignature(form);
 
-  EXPECT_EQ(form.fields.size(), 2u);
-  for (const FormFieldData& field : form.fields) {
+  EXPECT_EQ(form.fields().size(), 2u);
+  for (const FormFieldData& field : form.fields()) {
     EXPECT_EQ(field.host_frame(), form.host_frame());
     EXPECT_EQ(field.host_form_id(), form.renderer_id());
     EXPECT_EQ(field.origin(), url::Origin::Create(form.url()));
@@ -448,7 +448,7 @@ TEST_F(AutofillAcrossIframesTest, FillForm) {
 
   main_frame_driver()->ApplyFormAction(
       mojom::FormActionType::kFill, mojom::ActionPersistence::kFill,
-      form.fields, form.main_frame_origin(), field_type_map);
+      form.fields(), form.main_frame_origin(), field_type_map);
 
   ASSERT_TRUE(main_frame_manager().WaitForFormsFilled(1));
   ASSERT_EQ(main_frame_manager().filled_forms().size(), 1u);
@@ -456,8 +456,8 @@ TEST_F(AutofillAcrossIframesTest, FillForm) {
   // Inspect the extracted, filled form, and ensure the expected data was
   // filled into the desired fields.
   const FormData& filled_form = main_frame_manager().filled_forms()[0];
-  ASSERT_EQ(filled_form.fields.size(), 2u);
-  for (const FormFieldData& field : filled_form.fields) {
+  ASSERT_EQ(filled_form.fields().size(), 2u);
+  for (const FormFieldData& field : filled_form.fields()) {
     if (field.placeholder() == kNamePlaceholder) {
       EXPECT_EQ(field.value(), kFakeName);
     } else if (field.placeholder() == kPhonePlaceholder) {

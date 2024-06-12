@@ -242,7 +242,7 @@ TEST_F(FormAutofillIssuesTest, FormLabelForNameError) {
 
   std::vector<FormIssue> form_issues =
       CheckForLabelsWithIncorrectForAttributeForTesting(
-          web_frame->GetDocument(), form_data.fields, {});
+          web_frame->GetDocument(), form_data.fields(), {});
 
   EXPECT_EQ(form_issues.size(), 2u);
   EXPECT_TRUE(FormIssuesContainIssueType(
@@ -266,7 +266,7 @@ TEST_F(FormAutofillIssuesTest, FormLabelForMatchesNonExistingIdError) {
 
   std::vector<FormIssue> form_issues =
       CheckForLabelsWithIncorrectForAttributeForTesting(
-          web_frame->GetDocument(), form_data.fields, {});
+          web_frame->GetDocument(), form_data.fields(), {});
 
   EXPECT_EQ(form_issues.size(), 1u);
   EXPECT_TRUE(FormIssuesContainIssueType(

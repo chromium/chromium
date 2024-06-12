@@ -20,7 +20,7 @@ class FormDataTestApi {
   // - `Push()` for `fields().push_back()`
   // - `Pop()` for `fields().pop_back()`
   // - `Erase(i)` for `fields().erase(fields().begin() + i)`
-  std::vector<FormFieldData>& fields() { return form_->fields; }
+  std::vector<FormFieldData>& fields() { return form_->fields_; }
 
  private:
   const raw_ref<FormData> form_;

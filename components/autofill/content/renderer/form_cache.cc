@@ -84,9 +84,10 @@ blink::FormElementPiiType MapTypePredictionToFormElementPiiType(
 // IsAutofillableInputElement()?
 bool IsFormInteresting(const FormData& form) {
   return !form.child_frames().empty() ||
-         base::ranges::any_of(form.fields, std::not_fn(&form_util::IsCheckable),
+         base::ranges::any_of(form.fields(),
+                              std::not_fn(&form_util::IsCheckable),
                               &FormFieldData::form_control_type) ||
-         base::ranges::any_of(form.fields, std::not_fn(&std::string::empty),
+         base::ranges::any_of(form.fields(), std::not_fn(&std::string::empty),
                               &FormFieldData::autocomplete_attribute);
 }
 
@@ -133,11 +134,11 @@ FormCache::UpdateFormCacheResult FormCache::UpdateFormCache(
   // Clears |form|'s FormData::child_frames if the total number of frames
   // exceeds |kMaxExtractableChildFrames|.
   auto ProcessForm = [&](FormData form) {
-    for (const auto& field : form.fields) {
+    for (const auto& field : form.fields()) {
       observed_renderer_ids.insert(field.renderer_id());
     }
 
-    num_fields_seen += form.fields.size();
+    num_fields_seen += form.fields().size();
     num_frames_seen += form.child_frames().size();
 
     // Enforce the kMaxExtractableFields limit: ignore all forms after this
@@ -199,7 +200,7 @@ FormCache::UpdateFormCacheResult FormCache::UpdateFormCache(
 
 bool FormCache::ShowPredictions(const FormDataPredictions& form,
                                 bool attach_predictions_to_dom) {
-  DCHECK_EQ(form.data.fields.size(), form.fields.size());
+  DCHECK_EQ(form.data.fields().size(), form.fields.size());
 
   WebDocument document = frame_->GetDocument();
   WebFormElement form_element =
@@ -216,7 +217,7 @@ bool FormCache::ShowPredictions(const FormDataPredictions& form,
   for (size_t i = 0; i < control_elements.size(); ++i) {
     WebFormControlElement& element = control_elements[i];
 
-    const FormFieldData& field_data = form.data.fields[i];
+    const FormFieldData& field_data = form.data.fields()[i];
     if (form_util::GetFieldRendererId(element) != field_data.renderer_id()) {
       continue;
     }

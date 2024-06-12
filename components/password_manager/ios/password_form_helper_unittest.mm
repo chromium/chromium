@@ -251,7 +251,7 @@ TEST_F(PasswordFormHelperTest, FindPasswordFormsInView) {
         }));
     if (data.expected_form_found) {
       ASSERT_EQ(1U, forms.size());
-      EXPECT_EQ(data.expected_number_of_fields, forms[0].fields.size());
+      EXPECT_EQ(data.expected_number_of_fields, forms[0].fields().size());
       EXPECT_EQ(data.expected_form_name, base::UTF16ToUTF8(forms[0].name()));
     } else {
       ASSERT_TRUE(forms.empty());

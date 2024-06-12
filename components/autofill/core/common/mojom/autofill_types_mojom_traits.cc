@@ -465,7 +465,7 @@ bool StructTraits<autofill::mojom::FormDataDataView, autofill::FormData>::Read(
     if (!data.ReadFields(&fields)) {
       return false;
     }
-    out->fields = std::move(fields);
+    out->set_fields(std::move(fields));
   }
   {
     std::vector<autofill::FieldRendererId> username_predictions;
@@ -480,7 +480,7 @@ bool StructTraits<autofill::mojom::FormDataDataView, autofill::FormData>::Read(
       out->child_frames(),
       [&](int predecessor) {
         return predecessor == -1 ||
-               base::checked_cast<size_t>(predecessor) < out->fields.size();
+               base::checked_cast<size_t>(predecessor) < out->fields().size();
       },
       &autofill::FrameTokenWithPredecessor::predecessor);
 }

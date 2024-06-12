@@ -189,7 +189,7 @@ class AutofillMetricsBaseTest {
       SuggestionType suggestion_type = SuggestionType::kAddressEntry) {
     autofill_manager().DidShowSuggestions(
         std::vector<SuggestionType>({suggestion_type}), form,
-        form.fields[field_index]);
+        form.fields()[field_index]);
   }
 
   void FillTestProfile(const FormData& form) {
@@ -199,14 +199,14 @@ class AutofillMetricsBaseTest {
   void FillProfileByGUID(const FormData& form,
                          const std::string& profile_guid) {
     autofill_manager().FillOrPreviewProfileForm(
-        mojom::ActionPersistence::kFill, form, form.fields.front(),
+        mojom::ActionPersistence::kFill, form, form.fields().front(),
         *personal_data().address_data_manager().GetProfileByGUID(profile_guid),
         {.trigger_source = AutofillTriggerSource::kPopup});
   }
 
   void UndoAutofill(const FormData& form) {
     autofill_manager().UndoAutofill(mojom::ActionPersistence::kFill, form,
-                                    form.fields.front());
+                                    form.fields().front());
   }
 
   [[nodiscard]] FormData CreateEmptyForm() {
@@ -223,7 +223,7 @@ class AutofillMetricsBaseTest {
 
   [[nodiscard]] FormData CreateForm(std::vector<FormFieldData> fields) {
     FormData form = CreateEmptyForm();
-    form.fields = std::move(fields);
+    form.set_fields(std::move(fields));
     return form;
   }
 

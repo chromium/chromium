@@ -459,7 +459,7 @@ IN_PROC_BROWSER_TEST_F(AutocompleteUnrecognizedFieldsTest,
   FormData form = CreateAndAttachUnclassifiedForm();
   autofill_context_menu_manager()->set_params_for_testing(
       CreateContextMenuParams(form.renderer_id(),
-                              form.fields[0].renderer_id()));
+                              form.fields()[0].renderer_id()));
   autofill_context_menu_manager()->AppendItems();
 
   EXPECT_THAT(menu_model(),
@@ -475,7 +475,7 @@ IN_PROC_BROWSER_TEST_F(
   FormData form = CreateAndAttachAutocompleteUnrecognizedForm();
   autofill_context_menu_manager()->set_params_for_testing(
       CreateContextMenuParams(form.renderer_id(),
-                              form.fields[0].renderer_id()));
+                              form.fields()[0].renderer_id()));
   autofill_context_menu_manager()->AppendItems();
 
   EXPECT_THAT(menu_model(),
@@ -494,7 +494,7 @@ IN_PROC_BROWSER_TEST_F(
   FormData form = CreateAndAttachAutocompleteUnrecognizedForm();
   autofill_context_menu_manager()->set_params_for_testing(
       CreateContextMenuParams(form.renderer_id(),
-                              form.fields[0].renderer_id()));
+                              form.fields()[0].renderer_id()));
   autofill_context_menu_manager()->AppendItems();
 
   EXPECT_THAT(menu_model(),
@@ -512,7 +512,7 @@ IN_PROC_BROWSER_TEST_F(
   FormData form = CreateAndAttachClassifiedForm();
   autofill_context_menu_manager()->set_params_for_testing(
       CreateContextMenuParams(form.renderer_id(),
-                              form.fields[0].renderer_id()));
+                              form.fields()[0].renderer_id()));
   autofill_context_menu_manager()->AppendItems();
 
   EXPECT_THAT(menu_model(),
@@ -527,7 +527,7 @@ IN_PROC_BROWSER_TEST_F(AutocompleteUnrecognizedFieldsTest,
   FormData form = CreateAndAttachClassifiedForm();
   autofill_context_menu_manager()->set_params_for_testing(
       CreateContextMenuParams(form.renderer_id(),
-                              form.fields[0].renderer_id()));
+                              form.fields()[0].renderer_id()));
   autofill_context_menu_manager()->AppendItems();
 
   EXPECT_THAT(menu_model(), OnlyAddressFallbackAdded());
@@ -542,7 +542,7 @@ IN_PROC_BROWSER_TEST_F(
   FormData form = CreateAndAttachAutocompleteUnrecognizedForm();
   autofill_context_menu_manager()->set_params_for_testing(
       CreateContextMenuParams(form.renderer_id(),
-                              form.fields[0].renderer_id()));
+                              form.fields()[0].renderer_id()));
   autofill_context_menu_manager()->AppendItems();
 
   EXPECT_THAT(menu_model(), OnlyAddressFallbackAdded());
@@ -557,7 +557,7 @@ IN_PROC_BROWSER_TEST_F(AutocompleteUnrecognizedFieldsTest,
   FormData form = CreateAndAttachAutocompleteUnrecognizedForm();
   autofill_context_menu_manager()->set_params_for_testing(
       CreateContextMenuParams(form.renderer_id(),
-                              form.fields[0].renderer_id()));
+                              form.fields()[0].renderer_id()));
   autofill_context_menu_manager()->AppendItems();
 
   // Expect that when the entry is selected, suggestions are triggered from that
@@ -566,7 +566,7 @@ IN_PROC_BROWSER_TEST_F(AutocompleteUnrecognizedFieldsTest,
       *driver(),
       RendererShouldTriggerSuggestions(
           FieldGlobalId{LocalFrameToken(main_rfh()->GetFrameToken().value()),
-                        form.fields[0].renderer_id()},
+                        form.fields()[0].renderer_id()},
           AutofillSuggestionTriggerSource::kManualFallbackAddress));
   autofill_context_menu_manager()->ExecuteCommand(
       IDC_CONTENT_CONTEXT_AUTOFILL_FALLBACK_ADDRESS);
@@ -585,7 +585,7 @@ IN_PROC_BROWSER_TEST_F(UnclassifiedFieldsTest,
   FormData form = CreateAndAttachUnclassifiedForm();
   autofill_context_menu_manager()->set_params_for_testing(
       CreateContextMenuParams(form.renderer_id(),
-                              form.fields[0].renderer_id()));
+                              form.fields()[0].renderer_id()));
   autofill_context_menu_manager()->AppendItems();
 
   EXPECT_THAT(menu_model(), OnlyAddressFallbackAdded());
@@ -600,7 +600,7 @@ IN_PROC_BROWSER_TEST_F(UnclassifiedFieldsTest,
   FormData form = CreateAndAttachUnclassifiedForm();
   autofill_context_menu_manager()->set_params_for_testing(
       CreateContextMenuParams(form.renderer_id(),
-                              form.fields[0].renderer_id()));
+                              form.fields()[0].renderer_id()));
   autofill_context_menu_manager()->AppendItems();
 
   EXPECT_THAT(menu_model(), OnlyAddressFallbackAdded());
@@ -616,7 +616,7 @@ IN_PROC_BROWSER_TEST_F(UnclassifiedFieldsTest,
   FormData form = CreateAndAttachUnclassifiedForm();
   autofill_context_menu_manager()->set_params_for_testing(
       CreateContextMenuParams(form.renderer_id(),
-                              form.fields[0].renderer_id()));
+                              form.fields()[0].renderer_id()));
   autofill_context_menu_manager()->AppendItems();
 
   EXPECT_THAT(menu_model(),
@@ -631,7 +631,7 @@ IN_PROC_BROWSER_TEST_F(UnclassifiedFieldsTest,
   FormData form = CreateAndAttachUnclassifiedForm();
   autofill_context_menu_manager()->set_params_for_testing(
       CreateContextMenuParams(form.renderer_id(),
-                              form.fields[0].renderer_id()));
+                              form.fields()[0].renderer_id()));
   autofill_context_menu_manager()->AppendItems();
 
   EXPECT_THAT(menu_model(),
@@ -649,7 +649,7 @@ IN_PROC_BROWSER_TEST_F(
   FormData form = CreateAndAttachUnclassifiedForm();
   autofill_context_menu_manager()->set_params_for_testing(
       CreateContextMenuParams(form.renderer_id(),
-                              form.fields[0].renderer_id()));
+                              form.fields()[0].renderer_id()));
   autofill_context_menu_manager()->AppendItems();
 
   EXPECT_THAT(menu_model(), OnlyAddressFallbackAdded());
@@ -665,7 +665,7 @@ IN_PROC_BROWSER_TEST_F(UnclassifiedFieldsTest,
   FormData form = CreateAndAttachUnclassifiedForm();
   autofill_context_menu_manager()->set_params_for_testing(
       CreateContextMenuParams(form.renderer_id(),
-                              form.fields[0].renderer_id()));
+                              form.fields()[0].renderer_id()));
   autofill_context_menu_manager()->AppendItems();
 
   EXPECT_THAT(menu_model(), AddressAndPaymentsFallbacksAdded());
@@ -680,7 +680,7 @@ IN_PROC_BROWSER_TEST_F(UnclassifiedFieldsTest,
   FormData form = CreateAndAttachUnclassifiedForm();
   autofill_context_menu_manager()->set_params_for_testing(
       CreateContextMenuParams(form.renderer_id(),
-                              form.fields[0].renderer_id()));
+                              form.fields()[0].renderer_id()));
   autofill_context_menu_manager()->AppendItems();
 
   EXPECT_THAT(menu_model(), OnlyAddressFallbackAdded());
@@ -695,7 +695,7 @@ IN_PROC_BROWSER_TEST_F(UnclassifiedFieldsTest,
   FormData form = CreateAndAttachUnclassifiedForm();
   autofill_context_menu_manager()->set_params_for_testing(
       CreateContextMenuParams(form.renderer_id(),
-                              form.fields[0].renderer_id()));
+                              form.fields()[0].renderer_id()));
   autofill_context_menu_manager()->AppendItems();
 
   EXPECT_THAT(menu_model(), AddressAndPaymentsFallbacksAdded());
@@ -711,7 +711,7 @@ IN_PROC_BROWSER_TEST_F(
   FormData form = CreateAndAttachAutocompleteUnrecognizedForm();
   autofill_context_menu_manager()->set_params_for_testing(
       CreateContextMenuParams(form.renderer_id(),
-                              form.fields[0].renderer_id()));
+                              form.fields()[0].renderer_id()));
   autofill_context_menu_manager()->AppendItems();
 
   EXPECT_THAT(menu_model(), AddressAndPaymentsFallbacksAdded());
@@ -726,7 +726,7 @@ IN_PROC_BROWSER_TEST_F(UnclassifiedFieldsTest,
   FormData form = CreateAndAttachClassifiedForm();
   autofill_context_menu_manager()->set_params_for_testing(
       CreateContextMenuParams(form.renderer_id(),
-                              form.fields[0].renderer_id()));
+                              form.fields()[0].renderer_id()));
   autofill_context_menu_manager()->AppendItems();
 
   EXPECT_THAT(menu_model(), AddressAndPaymentsFallbacksAdded());
@@ -741,7 +741,7 @@ IN_PROC_BROWSER_TEST_F(
   FormData form = CreateAndAttachUnclassifiedForm();
   autofill_context_menu_manager()->set_params_for_testing(
       CreateContextMenuParams(form.renderer_id(),
-                              form.fields[0].renderer_id()));
+                              form.fields()[0].renderer_id()));
   autofill_context_menu_manager()->AppendItems();
 
   // Expect that when the entry is selected, suggestions are triggered.
@@ -749,7 +749,7 @@ IN_PROC_BROWSER_TEST_F(
       *driver(),
       RendererShouldTriggerSuggestions(
           FieldGlobalId{LocalFrameToken(main_rfh()->GetFrameToken().value()),
-                        form.fields[0].renderer_id()},
+                        form.fields()[0].renderer_id()},
           AutofillSuggestionTriggerSource::kManualFallbackAddress));
   autofill_context_menu_manager()->ExecuteCommand(
       IDC_CONTENT_CONTEXT_AUTOFILL_FALLBACK_ADDRESS);
@@ -768,7 +768,7 @@ class AddNewAddressBubbleTest : public UnclassifiedFieldsTest {
     form_ = CreateAndAttachUnclassifiedForm();
     autofill_context_menu_manager()->set_params_for_testing(
         CreateContextMenuParams(form_.renderer_id(),
-                                form_.fields[0].renderer_id()));
+                                form_.fields()[0].renderer_id()));
     autofill_context_menu_manager()->AppendItems();
 
     ASSERT_EQ(AddressBubblesController::FromWebContents(web_contents()),
@@ -811,7 +811,7 @@ IN_PROC_BROWSER_TEST_F(AddNewAddressBubbleTest,
       *driver(),
       RendererShouldTriggerSuggestions(
           FieldGlobalId{LocalFrameToken(main_rfh()->GetFrameToken().value()),
-                        form().fields[0].renderer_id()},
+                        form().fields()[0].renderer_id()},
           AutofillSuggestionTriggerSource::kManualFallbackAddress));
 
   PersonalDataChangedWaiter waiter(*personal_data_);
@@ -864,7 +864,7 @@ IN_PROC_BROWSER_TEST_F(UnclassifiedFieldsTest,
   FormData form = CreateAndAttachUnclassifiedForm();
   autofill_context_menu_manager()->set_params_for_testing(
       CreateContextMenuParams(form.renderer_id(),
-                              form.fields[0].renderer_id()));
+                              form.fields()[0].renderer_id()));
   autofill_context_menu_manager()->AppendItems();
 
   // Expect that when the entry is selected, suggestions are triggered from that
@@ -873,7 +873,7 @@ IN_PROC_BROWSER_TEST_F(UnclassifiedFieldsTest,
       *driver(),
       RendererShouldTriggerSuggestions(
           FieldGlobalId{LocalFrameToken(main_rfh()->GetFrameToken().value()),
-                        form.fields[0].renderer_id()},
+                        form.fields()[0].renderer_id()},
           AutofillSuggestionTriggerSource::kManualFallbackPayments));
   autofill_context_menu_manager()->ExecuteCommand(
       IDC_CONTENT_CONTEXT_AUTOFILL_FALLBACK_PAYMENTS);
@@ -913,7 +913,7 @@ class PasswordsFallbackTest : public BaseAutofillContextMenuManagerTest {
     form_ = CreateAndAttachPasswordForm();
     autofill_context_menu_manager()->set_params_for_testing(
         CreateContextMenuParams(form_.renderer_id(),
-                                form_.fields[0].renderer_id(),
+                                form_.fields()[0].renderer_id(),
                                 blink::mojom::FormControlType::kInputPassword));
   }
 
@@ -964,7 +964,7 @@ IN_PROC_BROWSER_TEST_F(PasswordsFallbackTest,
       *driver(),
       RendererShouldTriggerSuggestions(
           FieldGlobalId{LocalFrameToken(main_rfh()->GetFrameToken().value()),
-                        form().fields[0].renderer_id()},
+                        form().fields()[0].renderer_id()},
           AutofillSuggestionTriggerSource::kManualFallbackPasswords));
   autofill_context_menu_manager()->ExecuteCommand(
       IDC_CONTENT_CONTEXT_AUTOFILL_FALLBACK_PASSWORDS_SELECT_PASSWORD);
@@ -1021,7 +1021,7 @@ class PasswordsFallbackWithUIInteractionsTest
     FormData form = CreateAndAttachPasswordForm();
     autofill_context_menu_manager()->set_params_for_testing(
         CreateContextMenuParams(form.renderer_id(),
-                                form.fields[0].renderer_id(),
+                                form.fields()[0].renderer_id(),
                                 blink::mojom::FormControlType::kInputPassword));
   }
 
@@ -1349,7 +1349,7 @@ IN_PROC_BROWSER_TEST_P(ManualFallbackMetricsTest,
                       : CreateAndAttachAutocompleteUnrecognizedForm();
   autofill_context_menu_manager()->set_params_for_testing(
       CreateContextMenuParams(form.renderer_id(),
-                              form.fields[0].renderer_id()));
+                              form.fields()[0].renderer_id()));
   autofill_context_menu_manager()->AppendItems();
 
   if (params.option_accepted) {
@@ -1475,7 +1475,7 @@ IN_PROC_BROWSER_TEST_F(PlusAddressContextMenuManagerTest, UnclassifiedForm) {
   FormData form = CreateAndAttachUnclassifiedForm();
   autofill_context_menu_manager()->set_params_for_testing(
       CreateContextMenuParams(form.renderer_id(),
-                              form.fields[0].renderer_id()));
+                              form.fields()[0].renderer_id()));
   autofill_context_menu_manager()->AppendItems();
 
   EXPECT_THAT(menu_model(), PlusAddressFallbackAdded());
@@ -1486,7 +1486,7 @@ IN_PROC_BROWSER_TEST_F(PlusAddressContextMenuManagerTest, ClassifiedForm) {
   FormData form = CreateAndAttachClassifiedForm();
   autofill_context_menu_manager()->set_params_for_testing(
       CreateContextMenuParams(form.renderer_id(),
-                              form.fields[0].renderer_id()));
+                              form.fields()[0].renderer_id()));
   autofill_context_menu_manager()->AppendItems();
 
   EXPECT_THAT(menu_model(), PlusAddressFallbackAdded());
@@ -1496,7 +1496,8 @@ IN_PROC_BROWSER_TEST_F(PlusAddressContextMenuManagerTest, ClassifiedForm) {
 IN_PROC_BROWSER_TEST_F(PlusAddressContextMenuManagerTest, PasswordForm) {
   FormData form = CreateAndAttachPasswordForm();
   autofill_context_menu_manager()->set_params_for_testing(
-      CreateContextMenuParams(form.renderer_id(), form.fields[0].renderer_id(),
+      CreateContextMenuParams(form.renderer_id(),
+                              form.fields()[0].renderer_id(),
                               blink::mojom::FormControlType::kInputPassword));
   autofill_context_menu_manager()->AppendItems();
   EXPECT_THAT(menu_model(), Not(ContainsAnyPlusAddressFallbackEntries()));
@@ -1510,7 +1511,7 @@ IN_PROC_BROWSER_TEST_F(PlusAddressContextMenuManagerTest,
   FormData form = CreateAndAttachClassifiedForm();
   autofill_context_menu_manager()->set_params_for_testing(
       CreateContextMenuParams(form.renderer_id(),
-                              form.fields[0].renderer_id()));
+                              form.fields()[0].renderer_id()));
   autofill_context_menu_manager()->AppendItems();
 
   EXPECT_THAT(menu_model(), Not(ContainsAnyPlusAddressFallbackEntries()));
@@ -1529,7 +1530,7 @@ IN_PROC_BROWSER_TEST_F(PlusAddressContextMenuManagerTest,
   FormData form = CreateAndAttachClassifiedForm();
   autofill_context_menu_manager()->set_params_for_testing(
       CreateContextMenuParams(form.renderer_id(),
-                              form.fields[0].renderer_id()));
+                              form.fields()[0].renderer_id()));
   autofill_context_menu_manager()->AppendItems();
 
   EXPECT_THAT(menu_model(), PlusAddressFallbackAdded());
@@ -1540,7 +1541,7 @@ IN_PROC_BROWSER_TEST_F(PlusAddressContextMenuManagerTest, ExcludedDomain) {
   FormData form = CreateAndAttachClassifiedForm();
   autofill_context_menu_manager()->set_params_for_testing(
       CreateContextMenuParams(form.renderer_id(),
-                              form.fields[0].renderer_id()));
+                              form.fields()[0].renderer_id()));
 
   // No entries are added on excluded domains.
   autofill_client()->set_last_committed_primary_main_frame_url(
@@ -1560,7 +1561,7 @@ IN_PROC_BROWSER_TEST_F(PlusAddressContextMenuManagerTest, NonExcludedDomain) {
   FormData form = CreateAndAttachClassifiedForm();
   autofill_context_menu_manager()->set_params_for_testing(
       CreateContextMenuParams(form.renderer_id(),
-                              form.fields[0].renderer_id()));
+                              form.fields()[0].renderer_id()));
 
   // On non-excluded sites, the expected context menu entries are added.
   autofill_client()->set_last_committed_primary_main_frame_url(
@@ -1576,14 +1577,14 @@ IN_PROC_BROWSER_TEST_F(PlusAddressContextMenuManagerTest,
   FormData form = CreateAndAttachUnclassifiedForm();
   autofill_context_menu_manager()->set_params_for_testing(
       CreateContextMenuParams(form.renderer_id(),
-                              form.fields[0].renderer_id()));
+                              form.fields()[0].renderer_id()));
   autofill_context_menu_manager()->AppendItems();
 
   EXPECT_CALL(
       *driver(),
       RendererShouldTriggerSuggestions(
           FieldGlobalId{LocalFrameToken(main_rfh()->GetFrameToken().value()),
-                        form.fields[0].renderer_id()},
+                        form.fields()[0].renderer_id()},
           AutofillSuggestionTriggerSource::kManualFallbackPlusAddresses));
 
   autofill_context_menu_manager()->ExecuteCommand(

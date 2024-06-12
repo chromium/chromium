@@ -92,7 +92,7 @@ FormSignature CalculateFormSignature(const FormData& form_data) {
 
   std::string form_signature_field_names;
 
-  for (const FormFieldData& field : form_data.fields) {
+  for (const FormFieldData& field : form_data.fields()) {
     if (!IsCheckable(field.check_status())) {
       // Add all supported form fields (including with empty names) to the
       // signature.  This is a requirement for Autofill servers.
@@ -120,7 +120,7 @@ FormSignature CalculateAlternativeFormSignature(const FormData& form_data) {
   }
 
   std::string form_signature_field_types;
-  for (const FormFieldData& field : form_data.fields) {
+  for (const FormFieldData& field : form_data.fields()) {
     if (!IsCheckable(field.check_status())) {
       // Add all supported form fields' form control types to the signature.
       // We use the string representation of the FormControlType because
@@ -139,7 +139,7 @@ FormSignature CalculateAlternativeFormSignature(const FormData& form_data) {
   // Add more non-empty elements (one of path, reference, or query ordered by
   // preference) for small forms with 1-2 fields in order to prevent signature
   // collisions.
-  if (form_data.fields.size() <= 2) {
+  if (form_data.fields().size() <= 2) {
     // Path piece includes the slash "/", so a non-empty path must have length
     // longer than 1.
     if (form_data.url().path_piece().length() > 1) {

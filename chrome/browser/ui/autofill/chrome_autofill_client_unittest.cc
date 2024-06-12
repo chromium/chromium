@@ -260,7 +260,7 @@ TEST_F(ChromeAutofillClientTest, ClassifiesLoginFormOnMainFrame) {
 
   EXPECT_EQ(client()->ClassifyAsPasswordForm(
                 autofill_driver->GetAutofillManager(), form.global_id(),
-                form.fields[0].global_id()),
+                form.fields()[0].global_id()),
             AutofillClient::PasswordFormType::kLoginForm);
 }
 
@@ -314,12 +314,12 @@ TEST_F(ChromeAutofillClientTest, ClassifiesLoginFormOnChildFrame) {
   // The form fields in the main frame do not form a valid password form.
   EXPECT_EQ(client()->ClassifyAsPasswordForm(main_driver->GetAutofillManager(),
                                              main_form.global_id(),
-                                             main_form.fields[0].global_id()),
+                                             main_form.fields()[0].global_id()),
             AutofillClient::PasswordFormType::kNoPasswordForm);
   // The form fields in the child frame form a login form.
-  EXPECT_EQ(client()->ClassifyAsPasswordForm(main_driver->GetAutofillManager(),
-                                             main_form.global_id(),
-                                             child_form.fields[0].global_id()),
+  EXPECT_EQ(client()->ClassifyAsPasswordForm(
+                main_driver->GetAutofillManager(), main_form.global_id(),
+                child_form.fields()[0].global_id()),
             AutofillClient::PasswordFormType::kLoginForm);
 }
 

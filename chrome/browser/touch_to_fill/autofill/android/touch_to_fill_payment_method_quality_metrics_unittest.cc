@@ -83,8 +83,8 @@ class TouchToFillForPaymentMethodsTest
       FormData& form,
       const std::vector<bool>& fields_have_autofilled_values,
       const std::vector<FieldType>& field_types) {
-    ASSERT_EQ(form.fields.size(), fields_have_autofilled_values.size());
-    ASSERT_EQ(form.fields.size(), field_types.size());
+    ASSERT_EQ(form.fields().size(), fields_have_autofilled_values.size());
+    ASSERT_EQ(form.fields().size(), field_types.size());
     for (size_t i = 0; i < fields_have_autofilled_values.size(); i++) {
       test_api(form).fields()[i].set_is_autofilled(
           fields_have_autofilled_values[i]);
@@ -124,7 +124,7 @@ TEST_P(TouchToFillForPaymentMethodsTest,
 
   SeeForm(form);
   autofill_manager().OnAskForValuesToFillTest(
-      form, form.fields[0].global_id(),
+      form, form.fields()[0].global_id(),
       AutofillSuggestionTriggerSource::kFormControlElementClicked);
 
   base::HistogramTester histogram_tester;
@@ -138,7 +138,7 @@ TEST_P(TouchToFillForPaymentMethodsTest,
                             test_case.field_types);
   // Simulate user made change to autofilled field.
   if (!test_case.is_all_accepted) {
-    SimulateUserChangedTextField(form, form.fields[0]);
+    SimulateUserChangedTextField(form, form.fields()[0]);
   }
 
   SubmitForm(form);

@@ -1059,7 +1059,7 @@ std::unique_ptr<PasswordForm> AssemblePasswordForm(
   result->accepts_webauthn_credentials =
       significant_fields.accepts_webauthn_credentials;
 
-  for (const FormFieldData& field : form_data.fields) {
+  for (const FormFieldData& field : form_data.fields()) {
     if (field.form_control_type() ==
             autofill::FormControlType::kInputPassword &&
         (field.properties_mask() & FieldPropertiesFlags::kAutofilled)) {
@@ -1088,7 +1088,7 @@ FormDataParser::ParseAndReturnUsernameDetection(
     const FormData& form_data,
     Mode mode,
     const base::flat_set<std::u16string>& stored_usernames) {
-  if (form_data.fields.size() > kMaxParseableFields) {
+  if (form_data.fields().size() > kMaxParseableFields) {
     return {nullptr, UsernameDetectionMethod::kNoUsernameDetected};
   }
   if (!form_data.url().is_valid()) {
@@ -1099,7 +1099,7 @@ FormDataParser::ParseAndReturnUsernameDetection(
   AlternativeElementVector all_alternative_passwords;
   AlternativeElementVector all_alternative_usernames;
   std::vector<ProcessedField> processed_fields =
-      ProcessFields(form_data.fields, &all_alternative_passwords,
+      ProcessFields(form_data.fields(), &all_alternative_passwords,
                     &all_alternative_usernames, mode);
 
   if (processed_fields.empty()) {

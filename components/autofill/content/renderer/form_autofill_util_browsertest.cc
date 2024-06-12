@@ -226,10 +226,10 @@ TEST_F(FormAutofillUtilsTest, WebFormElementToFormData_IdAndNames) {
   EXPECT_EQ(form_data.name(), u"form-name");
   EXPECT_EQ(form_data.id_attribute(), u"form-id");
   EXPECT_EQ(form_data.name_attribute(), u"form-name");
-  ASSERT_EQ(form_data.fields.size(), 1u);
-  EXPECT_EQ(form_data.fields[0].name(), u"input-name");
-  EXPECT_EQ(form_data.fields[0].id_attribute(), u"input-id");
-  EXPECT_EQ(form_data.fields[0].name_attribute(), u"input-name");
+  ASSERT_EQ(form_data.fields().size(), 1u);
+  EXPECT_EQ(form_data.fields()[0].name(), u"input-name");
+  EXPECT_EQ(form_data.fields()[0].id_attribute(), u"input-id");
+  EXPECT_EQ(form_data.fields()[0].name_attribute(), u"input-name");
 }
 
 // Tests that large option values/contents are truncated while building the
@@ -254,11 +254,11 @@ TEST_F(FormAutofillUtilsTest, TruncateLargeOptionValuesAndContents) {
   FormData form_data = *ExtractFormData(doc, web_form, field_data_manager(),
                                         {ExtractOption::kOptions});
 
-  ASSERT_EQ(form_data.fields.size(), 1u);
-  ASSERT_EQ(form_data.fields[0].options().size(), 1u);
-  EXPECT_EQ(form_data.fields[0].options()[0].value, trimmed_option);
-  EXPECT_EQ(form_data.fields[0].options()[0].content, trimmed_option);
-  EXPECT_TRUE(IsValidOption(form_data.fields[0].options()[0]));
+  ASSERT_EQ(form_data.fields().size(), 1u);
+  ASSERT_EQ(form_data.fields()[0].options().size(), 1u);
+  EXPECT_EQ(form_data.fields()[0].options()[0].value, trimmed_option);
+  EXPECT_EQ(form_data.fields()[0].options()[0].content, trimmed_option);
+  EXPECT_TRUE(IsValidOption(form_data.fields()[0].options()[0]));
 }
 
 TEST_F(FormAutofillUtilsTest, FindChildTextTest) {
@@ -571,7 +571,7 @@ TEST_F(FormAutofillUtilsTest, IsEnabled) {
       web_frame->GetDocument(), WebFormElement(), field_data_manager(),
       /*extract_options=*/{});
   EXPECT_THAT(
-      form, Optional(Field(
+      form, Optional(Property(
                 &FormData::fields,
                 ElementsAre(
                     AllOf(Property(&FormFieldData::name, u"name1"),
@@ -595,7 +595,7 @@ TEST_F(FormAutofillUtilsTest, IsReadonly) {
       web_frame->GetDocument(), WebFormElement(), field_data_manager(),
       /*extract_options=*/{});
   EXPECT_THAT(
-      form, Optional(Field(
+      form, Optional(Property(
                 &FormData::fields,
                 ElementsAre(
                     AllOf(Property(&FormFieldData::name, u"name1"),
@@ -618,7 +618,7 @@ TEST_F(FormAutofillUtilsTest, IsFocusable) {
       /*extract_options=*/{});
   EXPECT_THAT(
       form,
-      Optional(Field(
+      Optional(Property(
           &FormData::fields,
           ElementsAre(
               AllOf(Property(&FormFieldData::name, u"name1"),
@@ -858,7 +858,7 @@ TEST_F(FormAutofillUtilsTest, ExtractBounds) {
 
   ASSERT_TRUE(form_and_field);
   auto& [form, field] = *form_and_field;
-  EXPECT_FALSE(form.fields.back().bounds().IsEmpty());
+  EXPECT_FALSE(form.fields().back().bounds().IsEmpty());
 }
 
 TEST_F(FormAutofillUtilsTest, NotExtractBounds) {
@@ -872,7 +872,7 @@ TEST_F(FormAutofillUtilsTest, NotExtractBounds) {
 
   ASSERT_TRUE(form_and_field);
   auto& [form, field] = *form_and_field;
-  EXPECT_TRUE(form.fields.back().bounds().IsEmpty());
+  EXPECT_TRUE(form.fields().back().bounds().IsEmpty());
 }
 
 TEST_F(FormAutofillUtilsTest, ExtractUnownedBounds) {
@@ -885,7 +885,7 @@ TEST_F(FormAutofillUtilsTest, ExtractUnownedBounds) {
 
   ASSERT_TRUE(form_and_field);
   auto& [form, field] = *form_and_field;
-  EXPECT_FALSE(form.fields.back().bounds().IsEmpty());
+  EXPECT_FALSE(form.fields().back().bounds().IsEmpty());
 }
 
 TEST_F(FormAutofillUtilsTest, GetDataListSuggestions) {
@@ -933,7 +933,7 @@ TEST_F(FormAutofillUtilsTest, ExtractDataList) {
 
   ASSERT_TRUE(form_and_field);
   auto& [form, field] = *form_and_field;
-  auto& options = form.fields.back().datalist_options();
+  auto& options = form.fields().back().datalist_options();
   ASSERT_EQ(options.size(), 2u);
   EXPECT_EQ(options[0].value, u"1");
   EXPECT_EQ(options[1].value, u"2");
@@ -955,7 +955,7 @@ TEST_F(FormAutofillUtilsTest, NotExtractDataList) {
 
   ASSERT_TRUE(form_and_field);
   auto& [form, field] = *form_and_field;
-  EXPECT_TRUE(form.fields.back().datalist_options().empty());
+  EXPECT_TRUE(form.fields().back().datalist_options().empty());
 }
 
 // Tests the visibility detection of iframes.
@@ -1390,7 +1390,7 @@ TEST_P(FieldFramesTest, ExtractFieldsAndFrames) {
   ASSERT_TRUE(form_data);
 
   // Check that all fields and iframes were extracted.
-  EXPECT_EQ(form_data->fields.size() + form_data->child_frames().size(),
+  EXPECT_EQ(form_data->fields().size() + form_data->child_frames().size(),
             test_case.fields_and_frames.size());
 
   // Check that all fields were extracted. Do so by checking for each |field| in
@@ -1405,9 +1405,9 @@ TEST_P(FieldFramesTest, ExtractFieldsAndFrames) {
     WebElement element = GetElementById(doc, field.id);
     ASSERT_FALSE(element.IsNull());
     ASSERT_TRUE(element.IsFormControlElement());
-    EXPECT_EQ(form_data->fields[i].host_form_id(), host_form);
+    EXPECT_EQ(form_data->fields()[i].host_form_id(), host_form);
     EXPECT_TRUE(HaveSameFormControlId(element.To<WebFormControlElement>(),
-                                      form_data->fields[i]));
+                                      form_data->fields()[i]));
     ++i;
   }
 
@@ -1536,21 +1536,21 @@ TEST_F(FormAutofillUtilsTest, WebFormElementToFormData) {
   auto form_element = GetFormElementById(doc, "form");
   FormData form_data = *ExtractFormData(doc, form_element, field_data_manager(),
                                         /*extract_options=*/{});
-  EXPECT_EQ(form_data.fields.size(), 2u);
+  EXPECT_EQ(form_data.fields().size(), 2u);
 
   {
     WebElement element = GetElementById(doc, "input");
     ASSERT_FALSE(element.IsNull());
     ASSERT_TRUE(element.IsFormControlElement());
     EXPECT_TRUE(HaveSameFormControlId(element.To<WebFormControlElement>(),
-                                      form_data.fields[0]));
+                                      form_data.fields()[0]));
   }
 
   WebElement element = GetElementById(doc, "selectlist");
   ASSERT_FALSE(element.IsNull());
   ASSERT_TRUE(element.IsFormControlElement());
   EXPECT_TRUE(HaveSameFormControlId(element.To<WebFormControlElement>(),
-                                    form_data.fields[1]));
+                                    form_data.fields()[1]));
 }
 
 // Tests that if the number of iframes exceeds kMaxExtractableChildFrames,
@@ -1578,7 +1578,7 @@ TEST_F(FormAutofillUtilsTest, ExtractNoFramesIfTooManyIframes) {
   {
     FormData form_data = *ExtractFormData(doc, form, field_data_manager(),
                                           /*extract_options=*/{});
-    EXPECT_EQ(form_data.fields.size(), kMaxExtractableFields - 1);
+    EXPECT_EQ(form_data.fields().size(), kMaxExtractableFields - 1);
     EXPECT_EQ(form_data.child_frames().size(), kMaxExtractableChildFrames);
   }
 
@@ -1589,7 +1589,7 @@ TEST_F(FormAutofillUtilsTest, ExtractNoFramesIfTooManyIframes) {
     CreateFormElement("iframe");
     FormData form_data = *ExtractFormData(doc, form, field_data_manager(),
                                           /*extract_options=*/{});
-    EXPECT_EQ(form_data.fields.size(), kMaxExtractableFields - 1);
+    EXPECT_EQ(form_data.fields().size(), kMaxExtractableFields - 1);
     EXPECT_TRUE(form_data.child_frames().empty());
   }
 }
@@ -1619,7 +1619,7 @@ TEST_F(FormAutofillUtilsTest, ExtractNoFieldsOrFramesIfTooManyFields) {
   {
     FormData form_data = *ExtractFormData(doc, form, field_data_manager(),
                                           /*extract_options=*/{});
-    EXPECT_EQ(form_data.fields.size(), kMaxExtractableFields - 1);
+    EXPECT_EQ(form_data.fields().size(), kMaxExtractableFields - 1);
     EXPECT_EQ(form_data.child_frames().size(), kMaxExtractableChildFrames);
   }
 
@@ -1908,8 +1908,8 @@ TEST_F(FormAutofillUtilsTest, ContentEditableWritingSuggestionsFalseInherited) {
       GetMainFrame()->GetDocument().GetElementById("my-id");
   ASSERT_FALSE(content_editable.IsNull());
   std::optional<FormData> form = FindFormForContentEditable(content_editable);
-  ASSERT_EQ(form->fields.size(), 1u);
-  const FormFieldData& field = form->fields[0];
+  ASSERT_EQ(form->fields().size(), 1u);
+  const FormFieldData& field = form->fields()[0];
   EXPECT_FALSE(field.allows_writing_suggestions());
 }
 
@@ -1922,8 +1922,8 @@ TEST_F(FormAutofillUtilsTest, ContentEditableWritingSuggestionsFalse) {
       GetMainFrame()->GetDocument().GetElementById("my-id");
   ASSERT_FALSE(content_editable.IsNull());
   std::optional<FormData> form = FindFormForContentEditable(content_editable);
-  ASSERT_EQ(form->fields.size(), 1u);
-  const FormFieldData& field = form->fields[0];
+  ASSERT_EQ(form->fields().size(), 1u);
+  const FormFieldData& field = form->fields()[0];
   EXPECT_FALSE(field.allows_writing_suggestions());
 }
 
@@ -1942,8 +1942,8 @@ TEST_F(FormAutofillUtilsTest, FindFormForContentEditableSuccess) {
       GetMainFrame()->GetDocument().GetElementById("my-id");
   ASSERT_FALSE(content_editable.IsNull());
   std::optional<FormData> form = FindFormForContentEditable(content_editable);
-  ASSERT_EQ(form->fields.size(), 1u);
-  const FormFieldData& field = form->fields[0];
+  ASSERT_EQ(form->fields().size(), 1u);
+  const FormFieldData& field = form->fields()[0];
   EXPECT_TRUE(form->renderer_id());
   EXPECT_EQ(*form->renderer_id(), *field.renderer_id());
   EXPECT_EQ(form->renderer_id(), field.host_form_id());
@@ -1971,8 +1971,8 @@ TEST_F(FormAutofillUtilsTest, FindFormForContentEditableAbridgedSuccess) {
       GetMainFrame()->GetDocument().GetElementById("my-id");
   ASSERT_FALSE(content_editable.IsNull());
   std::optional<FormData> form = FindFormForContentEditable(content_editable);
-  ASSERT_EQ(form->fields.size(), 1u);
-  const FormFieldData& field = form->fields[0];
+  ASSERT_EQ(form->fields().size(), 1u);
+  const FormFieldData& field = form->fields()[0];
   EXPECT_TRUE(form->renderer_id());
   EXPECT_EQ(*form->renderer_id(), *field.renderer_id());
   EXPECT_EQ(form->renderer_id(), field.host_form_id());
@@ -2037,12 +2037,12 @@ TEST_F(FormAutofillUtilsTest, ExtractFormData_OwnedForm) {
   EXPECT_THAT(
       ExtractFormData(doc, GetFormElementById(doc, "form_of_interest"),
                       field_data_manager()),
-      Optional(
-          Field(&FormData::fields,
-                ElementsAre(Property(&FormFieldData::name, u"text_input"),
-                            Property(&FormFieldData::name, u"check_input"),
-                            Property(&FormFieldData::name, u"number_input"),
-                            Property(&FormFieldData::name, u"select_input")))));
+      Optional(Property(
+          &FormData::fields,
+          ElementsAre(Property(&FormFieldData::name, u"text_input"),
+                      Property(&FormFieldData::name, u"check_input"),
+                      Property(&FormFieldData::name, u"number_input"),
+                      Property(&FormFieldData::name, u"select_input")))));
   histogram_tester.ExpectTotalCount("Autofill.ExtractFormUnowned.FieldCount",
                                     0);
   histogram_tester.ExpectUniqueSample("Autofill.ExtractFormOwned.FieldCount", 4,
@@ -2065,12 +2065,12 @@ TEST_F(FormAutofillUtilsTest, ExtractFormData_UnownedForm) {
   WebDocument doc = GetMainFrame()->GetDocument();
   EXPECT_THAT(
       ExtractFormData(doc, WebFormElement(), field_data_manager()),
-      Optional(
-          Field(&FormData::fields,
-                ElementsAre(Property(&FormFieldData::name, u"text_input"),
-                            Property(&FormFieldData::name, u"check_input"),
-                            Property(&FormFieldData::name, u"number_input"),
-                            Property(&FormFieldData::name, u"select_input")))));
+      Optional(Property(
+          &FormData::fields,
+          ElementsAre(Property(&FormFieldData::name, u"text_input"),
+                      Property(&FormFieldData::name, u"check_input"),
+                      Property(&FormFieldData::name, u"number_input"),
+                      Property(&FormFieldData::name, u"select_input")))));
   histogram_tester.ExpectTotalCount("Autofill.ExtractFormOwned.FieldCount", 0);
   histogram_tester.ExpectUniqueSample("Autofill.ExtractFormUnowned.FieldCount",
                                       4, 1);

@@ -111,7 +111,7 @@ TEST_F(BrowserSavePasswordProgressLoggerTest,
   password_prediction.server_predictions = {
       CreateFieldPrediction(FieldType::NEW_PASSWORD)};
   base::flat_map<FieldGlobalId, AutofillType::ServerPrediction> predictions = {
-      {form_.fields[0].global_id(), std::move(password_prediction)}};
+      {form_.fields()[0].global_id(), std::move(password_prediction)}};
   logger.LogFormDataWithServerPredictions(Logger::STRING_SERVER_PREDICTIONS,
                                           form_, predictions);
 

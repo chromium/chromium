@@ -181,65 +181,65 @@ TEST_F(FormDataAndroidTest, SimilarFormAs) {
 // Tests that form similarity checks similarity of the fields.
 TEST_F(FormDataAndroidTest, SimilarFormAs_Fields) {
   FormData f = CreateTestForm();
-  f.fields = {CreateTestField()};
+  f.set_fields({CreateTestField()});
   FormDataAndroid af(f, kSampleSessionId);
 
   EXPECT_TRUE(af.SimilarFormAs(f));
 
   // Forms with different numbers of fields are not similar.
-  f.fields = {CreateTestField(), CreateTestField()};
+  f.set_fields({CreateTestField(), CreateTestField()});
   EXPECT_FALSE(af.SimilarFormAs(f));
 
   // Forms with similar fields are similar.
   f = af.form();
-  test_api(f).fields().front().set_value(f.fields.front().value() + u"x");
+  test_api(f).fields().front().set_value(f.fields().front().value() + u"x");
   EXPECT_TRUE(af.SimilarFormAs(f));
 
   // Forms with fields that are not similar, are not similar either.
   f = af.form();
-  test_api(f).fields().front().set_name(f.fields.front().name() + u"x");
+  test_api(f).fields().front().set_name(f.fields().front().name() + u"x");
   EXPECT_FALSE(af.SimilarFormAs(f));
 }
 
 TEST_F(FormDataAndroidTest, GetFieldIndex) {
   FormData f = CreateTestForm();
-  f.fields = {CreateTestField(u"name1"), CreateTestField(u"name2")};
+  f.set_fields({CreateTestField(u"name1"), CreateTestField(u"name2")});
   FormDataAndroid af(f, kSampleSessionId);
 
   size_t index = 100;
-  EXPECT_TRUE(af.GetFieldIndex(f.fields[1], &index));
+  EXPECT_TRUE(af.GetFieldIndex(f.fields()[1], &index));
   EXPECT_EQ(index, 1u);
 
   // As updates in `f` are not propagated to the Android version `af`, the
   // lookup fails.
   test_api(f).fields()[1].set_name(u"name3");
-  EXPECT_FALSE(af.GetFieldIndex(f.fields[1], &index));
+  EXPECT_FALSE(af.GetFieldIndex(f.fields()[1], &index));
 }
 
 // Tests that `GetSimilarFieldIndex` only checks field similarity.
 TEST_F(FormDataAndroidTest, GetSimilarFieldIndex) {
   FormData f = CreateTestForm();
-  f.fields = {CreateTestField(u"name1"), CreateTestField(u"name2")};
+  f.set_fields({CreateTestField(u"name1"), CreateTestField(u"name2")});
   FormDataAndroid af(f, kSampleSessionId);
 
   size_t index = 100;
   // Value is not part of a field similarity check, so this field is similar to
   // af.form().fields[1].
   test_api(f).fields()[1].set_value(u"some value");
-  EXPECT_TRUE(af.GetSimilarFieldIndex(f.fields[1], &index));
+  EXPECT_TRUE(af.GetSimilarFieldIndex(f.fields()[1], &index));
   EXPECT_EQ(index, 1u);
 
   // Name is a part of the field similarity check, so there is no field similar
   // to this one.
   test_api(f).fields()[1].set_name(u"name3");
-  EXPECT_FALSE(af.GetSimilarFieldIndex(f.fields[1], &index));
+  EXPECT_FALSE(af.GetSimilarFieldIndex(f.fields()[1], &index));
 }
 
 // Tests that calling `OnFormFieldDidChange` propagates the changes to the
 // affected field.
 TEST_F(FormDataAndroidTest, OnFormFieldDidChange) {
   FormData form = CreateTestForm();
-  form.fields = {CreateTestField(), CreateTestField()};
+  form.set_fields({CreateTestField(), CreateTestField()});
   FormDataAndroid form_android(form, kSampleSessionId);
 
   ASSERT_THAT(field_bridges(), SizeIs(2));
@@ -250,13 +250,13 @@ TEST_F(FormDataAndroidTest, OnFormFieldDidChange) {
   EXPECT_CALL(*field_bridges()[0], UpdateValue).Times(0);
   EXPECT_CALL(*field_bridges()[1], UpdateValue(kNewValue));
   form_android.OnFormFieldDidChange(1, kNewValue);
-  EXPECT_EQ(form_android.form().fields[1].value(), kNewValue);
+  EXPECT_EQ(form_android.form().fields()[1].value(), kNewValue);
 }
 
 // Tests that the calls to update field types are propagated to the fields.
 TEST_F(FormDataAndroidTest, UpdateFieldTypes) {
   FormData form = CreateTestForm();
-  form.fields = {CreateTestField(), CreateTestField()};
+  form.set_fields({CreateTestField(), CreateTestField()});
   FormDataAndroid form_android(form, kSampleSessionId);
 
   ASSERT_THAT(field_bridges(), SizeIs(2));
@@ -276,7 +276,7 @@ TEST_F(FormDataAndroidTest, UpdateFieldTypesWithExplicitType) {
   const AutofillType kPassword(FieldType::PASSWORD);
 
   FormData form = CreateTestForm();
-  form.fields = {CreateTestField(), CreateTestField()};
+  form.set_fields({CreateTestField(), CreateTestField()});
   FormDataAndroid form_android(form, kSampleSessionId);
   ASSERT_THAT(field_bridges(), SizeIs(2));
 
@@ -293,34 +293,34 @@ TEST_F(FormDataAndroidTest, UpdateFieldTypesWithExplicitType) {
   }
 
   // Update all the fields to new types.
-  form_android.UpdateFieldTypes({{form.fields[0].global_id(), kUsername},
-                                 {form.fields[1].global_id(), kPassword}});
+  form_android.UpdateFieldTypes({{form.fields()[0].global_id(), kUsername},
+                                 {form.fields()[1].global_id(), kPassword}});
   check.Call(1);
 
   // Update to the same type - this should not trigger calls to JNI.
-  form_android.UpdateFieldTypes({{form.fields[0].global_id(), kUsername},
-                                 {form.fields[1].global_id(), kPassword}});
+  form_android.UpdateFieldTypes({{form.fields()[0].global_id(), kUsername},
+                                 {form.fields()[1].global_id(), kPassword}});
   check.Call(2);
 
   // Update only one field.
   FieldGlobalId unknown_id = CreateTestField().global_id();
   form_android.UpdateFieldTypes(
-      {{form.fields[0].global_id(), kPassword}, {unknown_id, kUsername}});
+      {{form.fields()[0].global_id(), kPassword}, {unknown_id, kUsername}});
   check.Call(3);
 
   // Update both, but only the first one has changes.
-  form_android.UpdateFieldTypes({{form.fields[0].global_id(), kUsername},
-                                 {form.fields[1].global_id(), kPassword}});
+  form_android.UpdateFieldTypes({{form.fields()[0].global_id(), kUsername},
+                                 {form.fields()[1].global_id(), kPassword}});
 }
 
 // Tests that the calls to update field types are propagated to the fields.
 TEST_F(FormDataAndroidTest, UpdateFieldTypes_ChangedForm) {
   FormData form = CreateTestForm();
-  form.fields = {CreateTestField(), CreateTestField()};
+  form.set_fields({CreateTestField(), CreateTestField()});
   FormStructure form_structure(form);
   ASSERT_EQ(form_structure.field_count(), 2u);
 
-  form.set_fields({CreateTestField(), form.fields[1], form.fields[0]});
+  form.set_fields({CreateTestField(), form.fields()[1], form.fields()[0]});
 
   FormDataAndroid form_android(form, kSampleSessionId);
 
@@ -343,9 +343,9 @@ TEST_F(FormDataAndroidTest, UpdateFieldVisibilities) {
   test_api(form).fields()[0].set_role(
       FormFieldData::RoleAttribute::kPresentation);
   test_api(form).fields()[1].set_is_focusable(false);
-  EXPECT_FALSE(form.fields[0].IsFocusable());
-  EXPECT_FALSE(form.fields[1].IsFocusable());
-  EXPECT_TRUE(form.fields[2].IsFocusable());
+  EXPECT_FALSE(form.fields()[0].IsFocusable());
+  EXPECT_FALSE(form.fields()[1].IsFocusable());
+  EXPECT_TRUE(form.fields()[2].IsFocusable());
   FormDataAndroid form_android(form, kSampleSessionId);
 
   ASSERT_THAT(field_bridges(), SizeIs(3));
@@ -357,9 +357,9 @@ TEST_F(FormDataAndroidTest, UpdateFieldVisibilities) {
   // here does not change the values inside `form_android`.
   test_api(form).fields()[0].set_role(FormFieldData::RoleAttribute::kOther);
   test_api(form).fields()[1].set_is_focusable(true);
-  EXPECT_TRUE(form.fields[0].IsFocusable());
-  EXPECT_TRUE(form.fields[1].IsFocusable());
-  EXPECT_TRUE(form.fields[2].IsFocusable());
+  EXPECT_TRUE(form.fields()[0].IsFocusable());
+  EXPECT_TRUE(form.fields()[1].IsFocusable());
+  EXPECT_TRUE(form.fields()[2].IsFocusable());
 
   EXPECT_CALL(*field_bridges()[0], UpdateVisible(true));
   EXPECT_CALL(*field_bridges()[1], UpdateVisible(true));
@@ -376,7 +376,7 @@ TEST_F(FormDataAndroidTest, GetJavaPeer) {
   FormDataAndroid af(form, kSampleSessionId);
   EXPECT_CALL(form_bridge(),
               GetOrCreateJavaPeer(DeepEqualsFormData(form), kSampleSessionId,
-                                  Pointwise(SimilarFieldAs(), form.fields)));
+                                  Pointwise(SimilarFieldAs(), form.fields())));
   af.GetJavaPeer();
 }
 

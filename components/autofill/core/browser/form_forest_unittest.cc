@@ -91,14 +91,15 @@ auto Equals(const FormFieldData& exp) {
 // The relevant attributes are FormData::global_id(), FormData::fields.
 // We additionally compare a few more attributes just for safety.
 auto Equals(const FormData& exp) {
-  return AllOf(Property("global_id", &FormData::global_id, Eq(exp.global_id())),
-               Property("name", &FormData::name, exp.name()),
-               Property("main_frame_origin", &FormData::main_frame_origin,
-                        exp.main_frame_origin()),
-               Property("action", &FormData::action, exp.action()),
-               Property("full_url", &FormData::full_url, exp.full_url()),
-               Property("url", &FormData::url, exp.url()),
-               Field("fields", &FormData::fields, ArrayEquals(exp.fields)));
+  return AllOf(
+      Property("global_id", &FormData::global_id, Eq(exp.global_id())),
+      Property("name", &FormData::name, exp.name()),
+      Property("main_frame_origin", &FormData::main_frame_origin,
+               exp.main_frame_origin()),
+      Property("action", &FormData::action, exp.action()),
+      Property("full_url", &FormData::full_url, exp.full_url()),
+      Property("url", &FormData::url, exp.url()),
+      Property("fields", &FormData::fields, ArrayEquals(exp.fields())));
 }
 
 // Compares all attributes of FrameData.
@@ -131,23 +132,23 @@ auto Equals(const FormForest& exp) {
 // name, number, month, year, CVC.
 FormData CreateForm() {
   FormData form = test::CreateTestCreditCardFormData(true, false, true);
-  CHECK_EQ(form.fields.size(), 6u);
+  CHECK_EQ(form.fields().size(), 6u);
   return form;
 }
 
 // Creates a field type map for the form with N >= 0 repetitions of the fields
 // from CreateForm().
 auto CreateFieldTypeMap(const FormData& form) {
-  CHECK_EQ(form.fields.size() % 6, 0u);
-  CHECK_GT(form.fields.size() / 6, 0u);
+  CHECK_EQ(form.fields().size() % 6, 0u);
+  CHECK_GT(form.fields().size() / 6, 0u);
   base::flat_map<FieldGlobalId, FieldType> map;
-  for (size_t i = 0; i < form.fields.size() / 6; ++i) {
-    map[form.fields[6 * i + 0].global_id()] = CREDIT_CARD_NAME_FIRST;
-    map[form.fields[6 * i + 1].global_id()] = CREDIT_CARD_NAME_LAST;
-    map[form.fields[6 * i + 2].global_id()] = CREDIT_CARD_NUMBER;
-    map[form.fields[6 * i + 3].global_id()] = CREDIT_CARD_EXP_MONTH;
-    map[form.fields[6 * i + 4].global_id()] = CREDIT_CARD_EXP_4_DIGIT_YEAR;
-    map[form.fields[6 * i + 5].global_id()] = CREDIT_CARD_VERIFICATION_CODE;
+  for (size_t i = 0; i < form.fields().size() / 6; ++i) {
+    map[form.fields()[6 * i + 0].global_id()] = CREDIT_CARD_NAME_FIRST;
+    map[form.fields()[6 * i + 1].global_id()] = CREDIT_CARD_NAME_LAST;
+    map[form.fields()[6 * i + 2].global_id()] = CREDIT_CARD_NUMBER;
+    map[form.fields()[6 * i + 3].global_id()] = CREDIT_CARD_EXP_MONTH;
+    map[form.fields()[6 * i + 4].global_id()] = CREDIT_CARD_EXP_4_DIGIT_YEAR;
+    map[form.fields()[6 * i + 5].global_id()] = CREDIT_CARD_VERIFICATION_CODE;
   }
   return map;
 }
@@ -441,7 +442,7 @@ class FormForestTestWithMockedTree : public FormForestTest {
         child_frames.emplace_back();
         child_frames.back().token = child->GetFrameToken();
         child_frames.back().predecessor =
-            std::min(static_cast<int>(data.fields.size()),
+            std::min(static_cast<int>(data.fields().size()),
                      subframe_info.field_predecessor);
       }
       data.set_child_frames(std::move(child_frames));
@@ -484,14 +485,14 @@ class FormForestTestWithMockedTree : public FormForestTest {
     std::vector<FormFieldData> fields;
     for (FormSpan f : form_fields) {
       const FormData& source = GetMockedForm(f.form);
-      if (f.begin >= source.fields.size()) {
+      if (f.begin >= source.fields().size()) {
         continue;
       }
-      if (f.begin + f.count > source.fields.size()) {
+      if (f.begin + f.count > source.fields().size()) {
         f.count = base::dynamic_extent;
       }
       base::ranges::copy(
-          base::make_span(source.fields).subspan(f.begin, f.count),
+          base::make_span(source.fields()).subspan(f.begin, f.count),
           std::back_inserter(fields));
     }
 
@@ -521,7 +522,7 @@ class FormForestTestWithMockedTree : public FormForestTest {
     CHECK(base::ranges::all_of(form_fields, [&](FormSpan fs) {
       return !IsRoot(fs) || fs.form == it->form;
     }));
-    GetFlattenedForm(it->form).fields = fields;
+    GetFlattenedForm(it->form).set_fields(fields);
 
     // Validate flattening.
     CHECK_EQ(frame_datas(flattened_forms_).size(),
@@ -954,7 +955,7 @@ TEST_F(FormForestTestUpdateTree, EraseForm_FieldRemoval) {
       (*frame_datas(mocked_forms_).find(removed_form.frame_token))->child_forms,
       [&](const FormData& form) { return form.global_id() == removed_form; });
   MockFlattening({{"main"}, {"inner"}});
-  ASSERT_EQ(GetFlattenedForm("main").fields.size(), 12u);
+  ASSERT_EQ(GetFlattenedForm("main").fields().size(), 12u);
   EXPECT_THAT(ff, Equals(flattened_forms_));
 }
 
@@ -986,8 +987,8 @@ TEST_F(FormForestTestUpdateTree, EraseForm_ParentReset) {
       test_api(GetFlattenedForm("leaf")).fields(),
       std::back_inserter(test_api(GetFlattenedForm("main")).fields()));
   GetFlattenedForm("leaf").set_fields({});
-  ASSERT_EQ(GetFlattenedForm("main").fields.size(), 12u);
-  ASSERT_EQ(GetFlattenedForm("leaf").fields.size(), 0u);
+  ASSERT_EQ(GetFlattenedForm("main").fields().size(), 12u);
+  ASSERT_EQ(GetFlattenedForm("leaf").fields().size(), 0u);
   EXPECT_THAT(ff, Equals(flattened_forms_));
 }
 
@@ -1020,7 +1021,7 @@ TEST_P(FormForestTestUpdateEraseFrame, EraseFrame_FieldRemoval) {
         ->child_forms.clear();
   }
   MockFlattening({{"main"}, {"inner"}});
-  ASSERT_EQ(GetFlattenedForm("main").fields.size(), 12u);
+  ASSERT_EQ(GetFlattenedForm("main").fields().size(), 12u);
   EXPECT_THAT(ff, Equals(flattened_forms_));
 }
 
@@ -1051,11 +1052,11 @@ TEST_P(FormForestTestUpdateEraseFrame, EraseFrame_ParentReset) {
   MockFlattening({{"main"}});
   MockFlattening({{"leaf"}});
   base::ranges::copy(
-      GetFlattenedForm("leaf").fields,
+      GetFlattenedForm("leaf").fields(),
       std::back_inserter(test_api(GetFlattenedForm("main")).fields()));
   GetFlattenedForm("leaf").set_fields({});
-  ASSERT_EQ(GetFlattenedForm("main").fields.size(), 12u);
-  ASSERT_EQ(GetFlattenedForm("leaf").fields.size(), 0u);
+  ASSERT_EQ(GetFlattenedForm("main").fields().size(), 12u);
+  ASSERT_EQ(GetFlattenedForm("leaf").fields().size(), 0u);
   EXPECT_THAT(ff, Equals(flattened_forms_));
 }
 
@@ -1124,7 +1125,7 @@ class FormForestTestUpdateFieldRemove
     size_t source_index = GetParam().field_index;
     test_api(source_form)
         .fields()
-        .erase(source_form.fields.begin() + source_index);
+        .erase(source_form.fields().begin() + source_index);
   }
 };
 
@@ -1160,12 +1161,12 @@ class FormForestTestUpdateFieldAdd
   void DoAdd() {
     FormData& target_form = GetMockedForm(GetParam().form_name);
     size_t target_index = GetParam().field_index;
-    FormFieldData field = target_form.fields.front();
+    FormFieldData field = target_form.fields().front();
     field.set_name(base::StrCat({field.name(), u"_copy"}));
     field.set_renderer_id(test::MakeFieldRendererId());
     test_api(target_form)
         .fields()
-        .insert(target_form.fields.begin() + target_index, field);
+        .insert(target_form.fields().begin() + target_index, field);
   }
 };
 
@@ -1210,23 +1211,23 @@ class FormForestTestUpdateFieldMove
     FormData& target_form = GetMockedForm(p.target.form_name);
     size_t target_index = p.target.field_index;
 
-    FormFieldData field = source_form.fields[source_index];
+    FormFieldData field = source_form.fields()[source_index];
     field.set_host_form_id(target_form.renderer_id());
 
     if (source_index > target_index) {
       test_api(source_form)
           .fields()
-          .erase(source_form.fields.begin() + source_index);
+          .erase(source_form.fields().begin() + source_index);
       test_api(target_form)
           .fields()
-          .insert(target_form.fields.begin() + target_index, field);
+          .insert(target_form.fields().begin() + target_index, field);
     } else {
       test_api(target_form)
           .fields()
-          .insert(target_form.fields.begin() + target_index, field);
+          .insert(target_form.fields().begin() + target_index, field);
       test_api(source_form)
           .fields()
-          .erase(source_form.fields.begin() + source_index);
+          .erase(source_form.fields().begin() + source_index);
     }
   }
 };
@@ -1340,7 +1341,7 @@ TEST_F(FormForestTestUpdateTree, RemoveFrame) {
   UpdateTreeOfRendererForm(ff, "grandchild2");
   UpdateTreeOfRendererForm(ff, "greatgrandchild");
   EXPECT_THAT(ff, Equals(flattened_forms_));
-  ASSERT_EQ(GetFlattenedForm("main").fields.size(), 6u * 6u);
+  ASSERT_EQ(GetFlattenedForm("main").fields().size(), 6u * 6u);
 
   // Remove the last frame of "child1", which contains "grandchild2" and
   // indirectly "greatgrandchild".
@@ -1357,8 +1358,8 @@ TEST_F(FormForestTestUpdateTree, RemoveFrame) {
   MockFlattening({{"main"}, {"child1"}, {"grandchild1"}, {"child2"}},
                  ForceReset(true));
   MockFlattening({{"grandchild2"}, {"greatgrandchild"}});
-  ASSERT_EQ(GetFlattenedForm("main").fields.size(), 4u * 6u);
-  ASSERT_EQ(GetFlattenedForm("grandchild2").fields.size(), 0u);
+  ASSERT_EQ(GetFlattenedForm("main").fields().size(), 4u * 6u);
+  ASSERT_EQ(GetFlattenedForm("grandchild2").fields().size(), 0u);
 
   UpdateTreeOfRendererForm(ff, "child1");
 
@@ -1414,7 +1415,7 @@ class FormForestTestUnflatten : public FormForestTestWithMockedTree {
       const FormForest::SecurityOptions& security) {
     return flattened_forms_
         .GetRendererFormsOfBrowserFields(
-            WithValues(GetFlattenedForm(form_name)).fields, security)
+            WithValues(GetFlattenedForm(form_name)).fields(), security)
         .renderer_forms;
   }
 

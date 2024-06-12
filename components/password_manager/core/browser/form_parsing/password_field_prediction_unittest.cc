@@ -137,7 +137,7 @@ TEST(FormPredictionsTest, ConvertToFormPredictions) {
     EXPECT_EQ(test_fields[i].expected_type, actual_prediction.type);
     EXPECT_EQ(test_fields[i].may_use_prefilled_placeholder,
               actual_prediction.may_use_prefilled_placeholder);
-    EXPECT_EQ(CalculateFieldSignatureForField(form_data.fields[i]),
+    EXPECT_EQ(CalculateFieldSignatureForField(form_data.fields()[i]),
               actual_prediction.signature);
   }
 }
@@ -195,7 +195,7 @@ TEST(FormPredictionsTest, ConvertToFormPredictions_SynthesiseConfirmation) {
     FormPredictions actual_predictions = ConvertToFormPredictions(
         /*driver_id=*/0, form_data, autofill_predictions);
 
-    for (size_t i = 0; i < form_data.fields.size(); ++i) {
+    for (size_t i = 0; i < form_data.fields().size(); ++i) {
       SCOPED_TRACE(
           testing::Message()
           << "field description: name=" << test_form[i].name
@@ -203,7 +203,7 @@ TEST(FormPredictionsTest, ConvertToFormPredictions_SynthesiseConfirmation) {
           << autofill::FormControlTypeToString(test_form[i].form_control_type)
           << ", input type=" << test_form[i].input_type
           << ", expected type=" << test_form[i].expected_type
-          << ", synthesised FormFieldData=" << form_data.fields[i]);
+          << ", synthesised FormFieldData=" << form_data.fields()[i]);
       EXPECT_EQ(test_form[i].expected_type, actual_predictions.fields[i].type);
     }
   }

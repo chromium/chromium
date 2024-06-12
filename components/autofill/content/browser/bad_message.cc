@@ -21,7 +21,7 @@ bool CheckFrameNotPrerendering(content::RenderFrameHost* frame) {
 }
 
 bool CheckFieldInForm(const FormData& form, FieldRendererId field_id) {
-  if (!base::Contains(form.fields, field_id, &FormFieldData::renderer_id)) {
+  if (!base::Contains(form.fields(), field_id, &FormFieldData::renderer_id)) {
     mojo::ReportBadMessage("Unexpected FormData/FieldRendererId pair received");
     return false;
   }

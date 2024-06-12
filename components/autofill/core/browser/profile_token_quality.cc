@@ -128,7 +128,7 @@ bool ProfileTokenQuality::AddObservationsForFilledForm(
     const FormStructure& form_structure,
     const FormData& form_data,
     const PersonalDataManager& pdm) {
-  CHECK_EQ(form_structure.field_count(), form_data.fields.size());
+  CHECK_EQ(form_structure.field_count(), form_data.fields().size());
 
   std::vector<const AutofillProfile*> other_profiles =
       pdm.address_data_manager().GetProfiles();
@@ -170,7 +170,7 @@ bool ProfileTokenQuality::AddObservationsForFilledForm(
     possible_observations.emplace_back(
         stored_type,
         Observation{.type = base::to_underlying(GetObservationTypeFromField(
-                        field, form_data.fields[i].value(), other_profiles,
+                        field, form_data.fields()[i].value(), other_profiles,
                         pdm.app_locale())),
                     .form_hash = hash});
   }

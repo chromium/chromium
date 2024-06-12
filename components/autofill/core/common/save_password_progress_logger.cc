@@ -74,7 +74,7 @@ void SavePasswordProgressLogger::LogFormData(
 
   // Log fields.
   message += GetStringFromID(STRING_FIELDS) + ": " + "\n";
-  for (const auto& field : form_data.fields) {
+  for (const auto& field : form_data.fields()) {
     message += GetFormFieldDataLogString(field) + "\n";
   }
   message += "}";

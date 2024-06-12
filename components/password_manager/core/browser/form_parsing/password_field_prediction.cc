@@ -102,7 +102,7 @@ FormPredictions ConvertToFormPredictions(
   FieldSignature last_new_password;
 
   bool explicit_confirmation_hint_present = false;
-  for (const auto& field : form.fields) {
+  for (const auto& field : form.fields()) {
     if (auto it = predictions.find(field.global_id());
         it != predictions.end() &&
         it->second.server_type() == autofill::CONFIRMATION_PASSWORD) {
@@ -112,7 +112,7 @@ FormPredictions ConvertToFormPredictions(
   }
 
   std::vector<PasswordFieldPrediction> field_predictions;
-  for (const auto& field : form.fields) {
+  for (const auto& field : form.fields()) {
     auto it = predictions.find(field.global_id());
     CHECK(it != predictions.end());
     const AutofillType::ServerPrediction& autofill_prediction = it->second;

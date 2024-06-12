@@ -374,7 +374,8 @@ class AutofillExternalDelegateUnitTest : public testing::Test {
   // Returns the triggering `AutofillField`. This is the only field in the form
   // created in `IssueOnQuery()`.
   AutofillField* get_triggering_autofill_field() {
-    return manager().GetAutofillField(queried_form(), queried_form().fields[0]);
+    return manager().GetAutofillField(queried_form(),
+                                      queried_form().fields()[0]);
   }
 
   Matcher<const FormData&> HasQueriedFormId() {
@@ -413,11 +414,13 @@ class AutofillExternalDelegateUnitTest : public testing::Test {
   }
 
   const FormData& queried_form() {
-    CHECK(!queried_form_.fields.empty());
+    CHECK(!queried_form_.fields().empty());
     return queried_form_;
   }
 
-  const FormFieldData& queried_field() { return queried_form().fields.front(); }
+  const FormFieldData& queried_field() {
+    return queried_form().fields().front();
+  }
 
   MockPaymentsAutofillClient& payments_client() {
     return static_cast<MockPaymentsAutofillClient&>(
@@ -1806,7 +1809,7 @@ TEST_F(AutofillExternalDelegateUnitTest,
       CreateTestCreditCardFormData(/*is_https=*/true, /*use_month_type=*/false);
   manager().OnFormsSeen({form}, {});
   external_delegate().OnQuery(
-      form, form.fields[0],
+      form, form.fields()[0],
       /*caret_bounds=*/gfx::Rect(),
       AutofillSuggestionTriggerSource::kManualFallbackPayments);
 
@@ -1815,7 +1818,7 @@ TEST_F(AutofillExternalDelegateUnitTest,
                              mojom::ActionPersistence::kPreview,
                              Property(&FormData::global_id, form.global_id()),
                              Property(&FormFieldData::global_id,
-                                      form.fields[0].global_id()),
+                                      form.fields()[0].global_id()),
                              _, _, _));
   EXPECT_CALL(manager(), FillOrPreviewField).Times(0);
 
@@ -1853,7 +1856,7 @@ TEST_F(AutofillExternalDelegateUnitTest,
       CreateTestCreditCardFormData(/*is_https=*/true, /*use_month_type=*/false);
   manager().OnFormsSeen({form}, {});
   external_delegate().OnQuery(
-      form, form.fields[0],
+      form, form.fields()[0],
       /*caret_bounds=*/gfx::Rect(),
 
       AutofillSuggestionTriggerSource::kManualFallbackPayments);
@@ -1862,7 +1865,7 @@ TEST_F(AutofillExternalDelegateUnitTest,
   EXPECT_CALL(manager(), AuthenticateThenFillCreditCardForm(
                              Property(&FormData::global_id, form.global_id()),
                              Property(&FormFieldData::global_id,
-                                      form.fields[0].global_id()),
+                                      form.fields()[0].global_id()),
                              _, _));
   EXPECT_CALL(manager(), FillOrPreviewField).Times(0);
 

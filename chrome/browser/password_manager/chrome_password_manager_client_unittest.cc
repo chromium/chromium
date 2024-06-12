@@ -1345,7 +1345,7 @@ TEST_F(ChromePasswordManagerClientAndroidTest,
       RefreshSuggestionsForField(FocusedFieldType::kFillablePasswordField,
                                  /*is_manual_generation_available=*/false));
   GetClient()->FocusedInputChanged(driver.get(),
-                                   observed_form_data.fields[0].renderer_id(),
+                                   observed_form_data.fields()[0].renderer_id(),
                                    FocusedFieldType::kFillablePasswordField);
 }
 
@@ -1396,7 +1396,7 @@ TEST_F(ChromePasswordManagerClientAndroidTest,
       RefreshSuggestionsForField(FocusedFieldType::kFillablePasswordField,
                                  /*is_manual_generation_available=*/true));
   GetClient()->FocusedInputChanged(driver.get(),
-                                   observed_form_data.fields[0].renderer_id(),
+                                   observed_form_data.fields()[0].renderer_id(),
                                    FocusedFieldType::kFillablePasswordField);
 }
 
@@ -1437,7 +1437,7 @@ TEST_F(ChromePasswordManagerClientAndroidTest,
       RefreshSuggestionsForField(FocusedFieldType::kFillablePasswordField,
                                  /*is_manual_generation_available=*/true));
   GetClient()->FocusedInputChanged(driver.get(),
-                                   observed_form_data.fields[0].renderer_id(),
+                                   observed_form_data.fields()[0].renderer_id(),
                                    FocusedFieldType::kFillablePasswordField);
 }
 

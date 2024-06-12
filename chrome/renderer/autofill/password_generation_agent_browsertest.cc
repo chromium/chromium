@@ -62,9 +62,9 @@ namespace {
 // Utility method that tries to find a field in `form` whose `id_attribute`
 // matches `id`. Returns nullptr if no such field exists.
 const FormFieldData* FindFieldById(const FormData& form, std::string_view id) {
-  auto it = base::ranges::find(form.fields, base::UTF8ToUTF16(id),
+  auto it = base::ranges::find(form.fields(), base::UTF8ToUTF16(id),
                                &FormFieldData::id_attribute);
-  return it != form.fields.end() ? &*it : nullptr;
+  return it != form.fields().end() ? &*it : nullptr;
 }
 
 class FakeContentAutofillDriver : public mojom::AutofillDriver {

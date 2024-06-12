@@ -1006,9 +1006,9 @@ AutofillClient::PasswordFormType ChromeAutofillClient::ClassifyAsPasswordForm(
       [field_id](const std::pair<FormData, content::GlobalRenderFrameHostId>&
                      form_rfh_pair) {
         const FormData& form = form_rfh_pair.first;
-        return base::ranges::find(form.fields, field_id,
+        return base::ranges::find(form.fields(), field_id,
                                   &FormFieldData::global_id) !=
-               form.fields.end();
+               form.fields().end();
       });
   if (it == forms_and_predictions->renderer_forms.end()) {
     return PasswordFormType::kNoPasswordForm;

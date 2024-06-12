@@ -41,7 +41,7 @@ auto FormField(
 }
 
 auto FormWithFields(auto matcher) {
-  return ElementsAre(Field(&FormData::fields, matcher));
+  return ElementsAre(Property(&FormData::fields, matcher));
 }
 
 auto Nth(int index, auto matcher) {

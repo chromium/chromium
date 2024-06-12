@@ -415,7 +415,7 @@ FillingProduct FormFiller::UndoAutofill(
   // filling, it is okay to bypass the filling security checks and hence passing
   // dummy values for `triggered_origin` and `field_type_map`.
   manager_->driver().ApplyFormAction(mojom::FormActionType::kUndo,
-                                     action_persistence, form.fields,
+                                     action_persistence, form.fields(),
                                      url::Origin(),
                                      /*field_type_map=*/{});
 
@@ -502,9 +502,9 @@ void FormFiller::FillOrPreviewForm(
   if (action_persistence == mojom::ActionPersistence::kFill) {
     base::UmaHistogramBoolean(
         "Autofill.SkippingFormFillDueToChangedFieldCount",
-        form_structure->field_count() != form.fields.size());
+        form_structure->field_count() != form.fields().size());
   }
-  if (form_structure->field_count() != form.fields.size()) {
+  if (form_structure->field_count() != form.fields().size()) {
     LOG_AF(buffer)
         << Tr{} << "*"
         << "Skipped filling of form because the number of fields to be "
@@ -561,7 +561,7 @@ void FormFiller::FillOrPreviewForm(
     fill_event_id = trigger_fill_field_log_event.fill_event_id;
   }
 
-  std::vector<FormFieldData> result_fields = form.fields;
+  std::vector<FormFieldData> result_fields = form.fields();
   CHECK_EQ(result_fields.size(), form_structure->field_count());
   for (size_t i = 0; i < form_structure->field_count(); ++i) {
     // On the renderer, the section is used regardless of the autofill status.
@@ -678,20 +678,20 @@ void FormFiller::FillOrPreviewForm(
                   result_fields[i], should_notify, cvc.has_value() ? *cvc : u"",
                   action_persistence, &failure_to_fill);
     const bool autofilled_value_did_not_change =
-        form.fields[i].is_autofilled() && result_fields[i].is_autofilled() &&
-        form.fields[i].value() == result_fields[i].value();
+        form.fields()[i].is_autofilled() && result_fields[i].is_autofilled() &&
+        form.fields()[i].value() == result_fields[i].value();
     if (is_newly_autofilled && !autofilled_value_did_not_change) {
       newly_filled_field_ids.insert(result_fields[i].global_id());
     } else if (is_newly_autofilled) {
-      skip_reasons[form.fields[i].global_id()] =
+      skip_reasons[form.fields()[i].global_id()] =
           FieldFillingSkipReason::kAutofilledValueDidNotChange;
     } else {
-      skip_reasons[form.fields[i].global_id()] =
+      skip_reasons[form.fields()[i].global_id()] =
           FieldFillingSkipReason::kNoValueToFill;
     }
 
     const bool has_value_after = !result_fields[i].value().empty();
-    const bool is_autofilled_before = form.fields[i].is_autofilled();
+    const bool is_autofilled_before = form.fields()[i].is_autofilled();
     const bool is_autofilled_after = result_fields[i].is_autofilled();
 
     // Log when the suggestion is selected and log on non-checkable fields that

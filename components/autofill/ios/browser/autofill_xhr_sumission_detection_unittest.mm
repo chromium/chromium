@@ -165,7 +165,7 @@ TEST_F(AutofillXHRSubmissionDetectionTest,
   // Check that the submitted form has the values "typed" in each field.
   EXPECT_TRUE(
       FormData::DeepEqual(*autofill_manager.submitted_form(), form_data2));
-  EXPECT_THAT(autofill_manager.submitted_form()->fields,
+  EXPECT_THAT(autofill_manager.submitted_form()->fields(),
               ElementsAre(Property(&FormFieldData::value, u"value2"),
                           Property(&FormFieldData::value, u"value3")));
 
@@ -215,7 +215,7 @@ TEST_F(AutofillXHRSubmissionDetectionTest,
   ASSERT_TRUE(autofill_manager.submitted_form());
   EXPECT_TRUE(
       FormData::DeepEqual(*autofill_manager.submitted_form(), form_data));
-  EXPECT_THAT(autofill_manager.submitted_form()->fields,
+  EXPECT_THAT(autofill_manager.submitted_form()->fields(),
               ElementsAre(Property(&FormFieldData::value, u"value")));
 
   histogram_tester_->ExpectUniqueSample(
@@ -306,7 +306,7 @@ TEST_F(AutofillXHRSubmissionDetectionTest,
   ASSERT_TRUE(autofill_manager.submitted_form());
   EXPECT_TRUE(
       FormData::DeepEqual(*autofill_manager.submitted_form(), form_data));
-  EXPECT_THAT(autofill_manager.submitted_form()->fields,
+  EXPECT_THAT(autofill_manager.submitted_form()->fields(),
               ElementsAre(Property(&FormFieldData::value, u"value1"),
                           Property(&FormFieldData::value, u"value2")));
 
@@ -405,7 +405,7 @@ TEST_F(AutofillXHRSubmissionDetectionTest,
   ASSERT_TRUE(autofill_manager.submitted_form());
   EXPECT_TRUE(
       FormData::DeepEqual(form_data, *autofill_manager.submitted_form()));
-  EXPECT_THAT(autofill_manager.submitted_form()->fields,
+  EXPECT_THAT(autofill_manager.submitted_form()->fields(),
               ElementsAre(Property(&FormFieldData::value, u"value2")));
 }
 

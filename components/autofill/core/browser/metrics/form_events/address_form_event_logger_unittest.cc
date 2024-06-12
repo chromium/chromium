@@ -58,9 +58,9 @@ class CategoryResolvedKeyMetricsTest
     ASSERT_TRUE(personal_data().address_data_manager().GetProfileByGUID(
         profile.guid()));
     autofill_manager().OnAskForValuesToFillTest(
-        form, form.fields.front().global_id());
+        form, form.fields().front().global_id());
     autofill_manager().FillOrPreviewProfileForm(
-        mojom::ActionPersistence::kFill, form, form.fields.front(), profile,
+        mojom::ActionPersistence::kFill, form, form.fields().front(), profile,
         {.trigger_source = AutofillTriggerSource::kPopup});
   }
 
@@ -72,8 +72,8 @@ class CategoryResolvedKeyMetricsTest
 // kNone, but not the correctness metric is not.
 TEST_F(CategoryResolvedKeyMetricsTest, NoAutofill) {
   FormData form = CreateAndSeeForm();
-  autofill_manager().OnAskForValuesToFillTest(form,
-                                              form.fields.front().global_id());
+  autofill_manager().OnAskForValuesToFillTest(
+      form, form.fields().front().global_id());
   SubmitForm(form);
 
   ResetDriverToCommitMetrics();
@@ -112,7 +112,7 @@ TEST_P(CategoryResolvedKeyMetricsEditTest, kLocalOrSyncable) {
       form,
       CreateProfileOfCategory(AutofillProfileSourceCategory::kLocalOrSyncable));
   if (ShouldEditField()) {
-    SimulateUserChangedTextField(form, form.fields.front());
+    SimulateUserChangedTextField(form, form.fields().front());
   }
   SubmitForm(form);
 
@@ -135,7 +135,7 @@ TEST_P(CategoryResolvedKeyMetricsEditTest, kAccountChrome) {
   FillFormWithProfile(form, CreateProfileOfCategory(
                                 AutofillProfileSourceCategory::kAccountChrome));
   if (ShouldEditField()) {
-    SimulateUserChangedTextField(form, form.fields.front());
+    SimulateUserChangedTextField(form, form.fields().front());
   }
   SubmitForm(form);
 
@@ -160,7 +160,7 @@ TEST_P(CategoryResolvedKeyMetricsEditTest, kAccountNonChrome) {
                       CreateProfileOfCategory(
                           AutofillProfileSourceCategory::kAccountNonChrome));
   if (ShouldEditField()) {
-    SimulateUserChangedTextField(form, form.fields.front());
+    SimulateUserChangedTextField(form, form.fields().front());
   }
   SubmitForm(form);
 
@@ -200,7 +200,7 @@ TEST_P(CategoryResolvedKeyMetricsEditTest, Mixed) {
       CreateProfileOfCategory(AutofillProfileSourceCategory::kAccountChrome));
   SubmitForm(form2);
   if (ShouldEditField()) {
-    SimulateUserChangedTextField(form2, form2.fields.front());
+    SimulateUserChangedTextField(form2, form2.fields().front());
   }
 
   ResetDriverToCommitMetrics();

@@ -951,20 +951,21 @@ TEST_F(FormDataImporterTest, ImportStructuredNameProfile) {
   FormData form;
   form.set_url(GURL("https://www.foo.com"));
 
-  form.fields = {
-      CreateTestFormField("Name:", "name", "Pablo Diego Ruiz y Picasso",
-                          FormControlType::kInputText),
-      CreateTestFormField("Email:", "email", "theprez@gmail.com",
-                          FormControlType::kInputText),
-      CreateTestFormField("Address:", "address1", "21 Laussat St",
-                          FormControlType::kInputText),
-      CreateTestFormField("City:", "city", "San Francisco",
-                          FormControlType::kInputText),
-      CreateTestFormField("State:", "state", "California",
-                          FormControlType::kInputText),
-      CreateTestFormField("Country:", "country", "ES",
-                          FormControlType::kInputText),
-      CreateTestFormField("Zip:", "zip", "94102", FormControlType::kInputText)};
+  form.set_fields(
+      {CreateTestFormField("Name:", "name", "Pablo Diego Ruiz y Picasso",
+                           FormControlType::kInputText),
+       CreateTestFormField("Email:", "email", "theprez@gmail.com",
+                           FormControlType::kInputText),
+       CreateTestFormField("Address:", "address1", "21 Laussat St",
+                           FormControlType::kInputText),
+       CreateTestFormField("City:", "city", "San Francisco",
+                           FormControlType::kInputText),
+       CreateTestFormField("State:", "state", "California",
+                           FormControlType::kInputText),
+       CreateTestFormField("Country:", "country", "ES",
+                           FormControlType::kInputText),
+       CreateTestFormField("Zip:", "zip", "94102",
+                           FormControlType::kInputText)});
   FormStructure form_structure(form);
   form_structure.DetermineHeuristicTypes(GeoIpCountryCode(""), nullptr,
                                          nullptr);
@@ -991,24 +992,25 @@ TEST_F(FormDataImporterTest,
        ImportStructuredAddressProfile_StreetNameAndHouseNumber) {
   FormData form;
   form.set_url(GURL("https://www.foo.com"));
-  form.fields = {
-      CreateTestFormField("Name:", "name", "Pablo Diego Ruiz y Picasso",
-                          FormControlType::kInputText),
-      CreateTestFormField("Email:", "email", "theprez@gmail.com",
-                          FormControlType::kInputText),
-      CreateTestFormField("Email:", "email", "theprez@gmail.com",
-                          FormControlType::kInputText),
-      CreateTestFormField("Street name:", "street_name", "Laussat St",
-                          FormControlType::kInputText),
-      CreateTestFormField("House number:", "house_number", "21",
-                          FormControlType::kInputText),
-      CreateTestFormField("City:", "city", "San Francisco",
-                          FormControlType::kInputText),
-      CreateTestFormField("State:", "state", "California",
-                          FormControlType::kInputText),
-      CreateTestFormField("Country:", "country", "ES",
-                          FormControlType::kInputText),
-      CreateTestFormField("Zip:", "zip", "94102", FormControlType::kInputText)};
+  form.set_fields(
+      {CreateTestFormField("Name:", "name", "Pablo Diego Ruiz y Picasso",
+                           FormControlType::kInputText),
+       CreateTestFormField("Email:", "email", "theprez@gmail.com",
+                           FormControlType::kInputText),
+       CreateTestFormField("Email:", "email", "theprez@gmail.com",
+                           FormControlType::kInputText),
+       CreateTestFormField("Street name:", "street_name", "Laussat St",
+                           FormControlType::kInputText),
+       CreateTestFormField("House number:", "house_number", "21",
+                           FormControlType::kInputText),
+       CreateTestFormField("City:", "city", "San Francisco",
+                           FormControlType::kInputText),
+       CreateTestFormField("State:", "state", "California",
+                           FormControlType::kInputText),
+       CreateTestFormField("Country:", "country", "ES",
+                           FormControlType::kInputText),
+       CreateTestFormField("Zip:", "zip", "94102",
+                           FormControlType::kInputText)});
   FormStructure form_structure(form);
   form_structure.DetermineHeuristicTypes(GeoIpCountryCode(""), nullptr,
                                          nullptr);
@@ -1036,26 +1038,27 @@ TEST_F(
     ImportStructuredAddressProfile_StreetNameAndHouseNumberAndApartmentNumber) {
   FormData form;
   form.set_url(GURL("https://www.foo.com"));
-  form.fields = {
-      CreateTestFormField("Name:", "name", "Pablo Diego Ruiz y Picasso",
-                          FormControlType::kInputText),
-      CreateTestFormField("Email:", "email", "theprez@gmail.com",
-                          FormControlType::kInputText),
-      CreateTestFormField("Email:", "email", "theprez@gmail.com",
-                          FormControlType::kInputText),
-      CreateTestFormField("Street name:", "street_name", "Laussat St",
-                          FormControlType::kInputText),
-      CreateTestFormField("House number:", "house_number", "21",
-                          FormControlType::kInputText),
-      CreateTestFormField("Apartment", "apartment", "101",
-                          FormControlType::kInputText),
-      CreateTestFormField("City:", "city", "Oaxaca de Juárez",
-                          FormControlType::kInputText),
-      CreateTestFormField("State:", "state", "Oaxaca",
-                          FormControlType::kInputText),
-      CreateTestFormField("Country:", "country", "MX",
-                          FormControlType::kInputText),
-      CreateTestFormField("Zip:", "zip", "94102", FormControlType::kInputText)};
+  form.set_fields(
+      {CreateTestFormField("Name:", "name", "Pablo Diego Ruiz y Picasso",
+                           FormControlType::kInputText),
+       CreateTestFormField("Email:", "email", "theprez@gmail.com",
+                           FormControlType::kInputText),
+       CreateTestFormField("Email:", "email", "theprez@gmail.com",
+                           FormControlType::kInputText),
+       CreateTestFormField("Street name:", "street_name", "Laussat St",
+                           FormControlType::kInputText),
+       CreateTestFormField("House number:", "house_number", "21",
+                           FormControlType::kInputText),
+       CreateTestFormField("Apartment", "apartment", "101",
+                           FormControlType::kInputText),
+       CreateTestFormField("City:", "city", "Oaxaca de Juárez",
+                           FormControlType::kInputText),
+       CreateTestFormField("State:", "state", "Oaxaca",
+                           FormControlType::kInputText),
+       CreateTestFormField("Country:", "country", "MX",
+                           FormControlType::kInputText),
+       CreateTestFormField("Zip:", "zip", "94102",
+                           FormControlType::kInputText)});
   FormStructure form_structure(form);
   form_structure.DetermineHeuristicTypes(GeoIpCountryCode("MX"), nullptr,
                                          nullptr);
@@ -1082,22 +1085,23 @@ TEST_F(FormDataImporterTest,
        ImportStructuredAddressProfile_GermanStreetNameAndHouseNumber) {
   FormData form;
   form.set_url(GURL("https://www.foo.com"));
-  form.fields = {
-      CreateTestFormField("Name:", "name", "Pablo Diego Ruiz y Picasso",
-                          FormControlType::kInputText),
-      CreateTestFormField("Email:", "email", "theprez@gmail.com",
-                          FormControlType::kInputText),
-      CreateTestFormField("Email:", "email", "theprez@gmail.com",
-                          FormControlType::kInputText),
-      CreateTestFormField("Street name:", "street_name", "Hermann Strasse",
-                          FormControlType::kInputText),
-      CreateTestFormField("House number:", "house_number", "23",
-                          FormControlType::kInputText),
-      CreateTestFormField("City:", "city", "Munich",
-                          FormControlType::kInputText),
-      CreateTestFormField("Country:", "country", "Germany",
-                          FormControlType::kInputText),
-      CreateTestFormField("Zip:", "zip", "80992", FormControlType::kInputText)};
+  form.set_fields(
+      {CreateTestFormField("Name:", "name", "Pablo Diego Ruiz y Picasso",
+                           FormControlType::kInputText),
+       CreateTestFormField("Email:", "email", "theprez@gmail.com",
+                           FormControlType::kInputText),
+       CreateTestFormField("Email:", "email", "theprez@gmail.com",
+                           FormControlType::kInputText),
+       CreateTestFormField("Street name:", "street_name", "Hermann Strasse",
+                           FormControlType::kInputText),
+       CreateTestFormField("House number:", "house_number", "23",
+                           FormControlType::kInputText),
+       CreateTestFormField("City:", "city", "Munich",
+                           FormControlType::kInputText),
+       CreateTestFormField("Country:", "country", "Germany",
+                           FormControlType::kInputText),
+       CreateTestFormField("Zip:", "zip", "80992",
+                           FormControlType::kInputText)});
   FormStructure form_structure(form);
   form_structure.DetermineHeuristicTypes(GeoIpCountryCode(""), nullptr,
                                          nullptr);
@@ -1124,22 +1128,23 @@ TEST_F(FormDataImporterTest,
 TEST_F(FormDataImporterTest, ImportStructuredAddressProfile_I18nAddressFormMX) {
   FormData form;
   form.set_url(GURL("https://www.foo.com"));
-  form.fields = {
-      CreateTestFormField("Nombre y apellidos:", "name", "Pablo Ruiz",
-                          FormControlType::kInputText),
-      CreateTestFormField("Email:", "email", "theprez@gmail.com",
-                          FormControlType::kInputText),
-      CreateTestFormField("Ciudad:", "ciudad", "Guadalajara",
-                          FormControlType::kInputText),
-      CreateTestFormField("Country:", "country", "Mexico",
-                          FormControlType::kInputText),
-      CreateTestFormField("Calle y número", "street",
-                          "Avenida Álvaro Obregón 1234",
-                          FormControlType::kInputText),
-      CreateTestFormField("Referencia y entre calles:", "between_streets",
-                          "Entre Calles Tonalá y Monterrey",
-                          FormControlType::kInputText),
-      CreateTestFormField("Zip:", "zip", "80992", FormControlType::kInputText)};
+  form.set_fields(
+      {CreateTestFormField("Nombre y apellidos:", "name", "Pablo Ruiz",
+                           FormControlType::kInputText),
+       CreateTestFormField("Email:", "email", "theprez@gmail.com",
+                           FormControlType::kInputText),
+       CreateTestFormField("Ciudad:", "ciudad", "Guadalajara",
+                           FormControlType::kInputText),
+       CreateTestFormField("Country:", "country", "Mexico",
+                           FormControlType::kInputText),
+       CreateTestFormField("Calle y número", "street",
+                           "Avenida Álvaro Obregón 1234",
+                           FormControlType::kInputText),
+       CreateTestFormField("Referencia y entre calles:", "between_streets",
+                           "Entre Calles Tonalá y Monterrey",
+                           FormControlType::kInputText),
+       CreateTestFormField("Zip:", "zip", "80992",
+                           FormControlType::kInputText)});
 
   std::unique_ptr<FormStructure> form_structure =
       ConstructFormStructureFromFormData(form, GeoIpCountryCode("MX"));
@@ -1166,26 +1171,27 @@ TEST_F(FormDataImporterTest, ImportStructuredAddressProfile_I18nAddressFormMX) {
 TEST_F(FormDataImporterTest, ImportStructuredAddressProfile_I18nAddressFormBR) {
   FormData form;
   form.set_url(GURL("https://www.foo.com"));
-  form.fields = {
-      CreateTestFormField("Nome:", "nome", "Pablo Ruiz",
-                          FormControlType::kInputText),
-      CreateTestFormField("Email:", "email", "theprez@gmail.com",
-                          FormControlType::kInputText),
-      CreateTestFormField("Cidade:", "City", "Brasília",
-                          FormControlType::kInputText),
-      CreateTestFormField("Provincia:", "provincia", "Goiás",
-                          FormControlType::kInputText),
-      CreateTestFormField("Country:", "country", "Brasil",
-                          FormControlType::kInputText),
-      CreateTestFormField("Logradouro", "logradouro", "Avenida Mem de Sá",
-                          FormControlType::kInputText),
-      CreateTestFormField("Número da residência", "house_number", "1234",
-                          FormControlType::kInputText),
-      CreateTestFormField("Complemento", "complemento", "Andar 1, apto 12",
-                          FormControlType::kInputText),
-      CreateTestFormField("Referencia", "referencia", "Referencia example",
-                          FormControlType::kInputText),
-      CreateTestFormField("Zip:", "zip", "71725", FormControlType::kInputText)};
+  form.set_fields(
+      {CreateTestFormField("Nome:", "nome", "Pablo Ruiz",
+                           FormControlType::kInputText),
+       CreateTestFormField("Email:", "email", "theprez@gmail.com",
+                           FormControlType::kInputText),
+       CreateTestFormField("Cidade:", "City", "Brasília",
+                           FormControlType::kInputText),
+       CreateTestFormField("Provincia:", "provincia", "Goiás",
+                           FormControlType::kInputText),
+       CreateTestFormField("Country:", "country", "Brasil",
+                           FormControlType::kInputText),
+       CreateTestFormField("Logradouro", "logradouro", "Avenida Mem de Sá",
+                           FormControlType::kInputText),
+       CreateTestFormField("Número da residência", "house_number", "1234",
+                           FormControlType::kInputText),
+       CreateTestFormField("Complemento", "complemento", "Andar 1, apto 12",
+                           FormControlType::kInputText),
+       CreateTestFormField("Referencia", "referencia", "Referencia example",
+                           FormControlType::kInputText),
+       CreateTestFormField("Zip:", "zip", "71725",
+                           FormControlType::kInputText)});
 
   std::unique_ptr<FormStructure> form_structure =
       ConstructFormStructureFromFormData(form, GeoIpCountryCode("BR"));
@@ -1220,7 +1226,7 @@ TEST_F(FormDataImporterTest, ImportStructuredAddressProfile_I18nAddressFormBR) {
 TEST_F(FormDataImporterTest, ImportStructuredNameAddressProfile) {
   FormData form;
   form.set_url(GURL("https://www.foo.com"));
-  form.fields = {
+  form.set_fields({
 
       CreateTestFormField("Name:", "name", "Pablo Diego Ruiz y Picasso",
                           FormControlType::kInputText),
@@ -1232,7 +1238,8 @@ TEST_F(FormDataImporterTest, ImportStructuredNameAddressProfile) {
                           FormControlType::kInputText),
       CreateTestFormField("State:", "state", "California",
                           FormControlType::kInputText),
-      CreateTestFormField("Zip:", "zip", "94102", FormControlType::kInputText)};
+      CreateTestFormField("Zip:", "zip", "94102",
+                          FormControlType::kInputText)});
   FormStructure form_structure(form);
   form_structure.DetermineHeuristicTypes(GeoIpCountryCode(""), nullptr,
                                          nullptr);
@@ -1598,9 +1605,9 @@ TEST_F(FormDataImporterTest,
   }
 
   // Append the fields of the second form to the first form.
-  test_api(form_data).fields().insert(form_data.fields.end(),
-                                      hidden_second_form.fields.begin(),
-                                      hidden_second_form.fields.end());
+  test_api(form_data).fields().insert(form_data.fields().end(),
+                                      hidden_second_form.fields().begin(),
+                                      hidden_second_form.fields().end());
 
   std::unique_ptr<FormStructure> form_structure =
       ConstructFormStructureFromFormData(form_data);
@@ -1789,20 +1796,20 @@ TEST_F(FormDataImporterTest,
        ImportAddressProfiles_CompleteComposedCountryName) {
   FormData form;
   form.set_url(GURL("https://www.foo.com"));
-  form.fields = {
-      CreateTestFormField("First name:", "first_name", "George",
-                          FormControlType::kInputText),
-      CreateTestFormField("Last name:", "last_name", "Washington",
-                          FormControlType::kInputText),
-      CreateTestFormField("Email:", "email", "theprez@gmail.com",
-                          FormControlType::kInputText),
-      CreateTestFormField("Address:", "address1", "No. 43 Bo Aung Gyaw Street",
-                          FormControlType::kInputText),
-      CreateTestFormField("City:", "city", "Yangon",
-                          FormControlType::kInputText),
-      CreateTestFormField("Zip:", "zip", "11181", FormControlType::kInputText),
-      CreateTestFormField("Country:", "country", "Myanmar [Burma]",
-                          FormControlType::kInputText)};
+  form.set_fields(
+      {CreateTestFormField("First name:", "first_name", "George",
+                           FormControlType::kInputText),
+       CreateTestFormField("Last name:", "last_name", "Washington",
+                           FormControlType::kInputText),
+       CreateTestFormField("Email:", "email", "theprez@gmail.com",
+                           FormControlType::kInputText),
+       CreateTestFormField("Address:", "address1", "No. 43 Bo Aung Gyaw Street",
+                           FormControlType::kInputText),
+       CreateTestFormField("City:", "city", "Yangon",
+                           FormControlType::kInputText),
+       CreateTestFormField("Zip:", "zip", "11181", FormControlType::kInputText),
+       CreateTestFormField("Country:", "country", "Myanmar [Burma]",
+                           FormControlType::kInputText)});
   FormStructure form_structure(form);
   form_structure.DetermineHeuristicTypes(GeoIpCountryCode(""), nullptr,
                                          nullptr);
@@ -1953,7 +1960,7 @@ TEST_F(FormDataImporterTest, ExtractCreditCard_MonthSelectInvalidText) {
   FormData form = CreateFullCreditCardForm(
       "Biggie Smalls", "4111-1111-1111-1111", "Feb (2)", "2999");
   // Add option values and contents to the expiration month field.
-  ASSERT_EQ(u"exp_month", form.fields[2].name());
+  ASSERT_EQ(u"exp_month", form.fields()[2].name());
   test_api(form).fields()[2].set_options({
       {.value = u"1", .content = u"Jan (1)"},
       {.value = u"2", .content = u"Feb (2)"},
@@ -2025,13 +2032,13 @@ TEST_F(FormDataImporterTest, ExtractCreditCard_TwoValidCards) {
 TEST_F(FormDataImporterTest, ExtractCreditCard_Month2DigitYearCombination) {
   FormData form;
   form.set_url(GURL("https://www.foo.com"));
-  form.fields = {
-      CreateTestFormField("Name on card:", "name_on_card", "John MMYY",
-                          FormControlType::kInputText),
-      CreateTestFormField("Card Number:", "card_number", "4111111111111111",
-                          FormControlType::kInputText),
-      CreateTestFormField("Exp Date:", "exp_date", "05/45",
-                          FormControlType::kInputText, "cc-exp", 5)};
+  form.set_fields(
+      {CreateTestFormField("Name on card:", "name_on_card", "John MMYY",
+                           FormControlType::kInputText),
+       CreateTestFormField("Card Number:", "card_number", "4111111111111111",
+                           FormControlType::kInputText),
+       CreateTestFormField("Exp Date:", "exp_date", "05/45",
+                           FormControlType::kInputText, "cc-exp", 5)});
 
   SubmitFormAndExpectImportedCardWithData(form, "John MMYY", "4111111111111111",
                                           "05", "2045");
@@ -2041,13 +2048,13 @@ TEST_F(FormDataImporterTest, ExtractCreditCard_Month2DigitYearCombination) {
 TEST_F(FormDataImporterTest, ExtractCreditCard_Month4DigitYearCombination) {
   FormData form;
   form.set_url(GURL("https://www.foo.com"));
-  form.fields = {
-      CreateTestFormField("Name on card:", "name_on_card", "John MMYYYY",
-                          FormControlType::kInputText),
-      CreateTestFormField("Card Number:", "card_number", "4111111111111111",
-                          FormControlType::kInputText),
-      CreateTestFormField("Exp Date:", "exp_date", "05/2045",
-                          FormControlType::kInputText, "cc-exp", 7)};
+  form.set_fields(
+      {CreateTestFormField("Name on card:", "name_on_card", "John MMYYYY",
+                           FormControlType::kInputText),
+       CreateTestFormField("Card Number:", "card_number", "4111111111111111",
+                           FormControlType::kInputText),
+       CreateTestFormField("Exp Date:", "exp_date", "05/2045",
+                           FormControlType::kInputText, "cc-exp", 7)});
 
   SubmitFormAndExpectImportedCardWithData(form, "John MMYYYY",
                                           "4111111111111111", "05", "2045");
@@ -2057,13 +2064,13 @@ TEST_F(FormDataImporterTest, ExtractCreditCard_Month4DigitYearCombination) {
 TEST_F(FormDataImporterTest, ExtractCreditCard_1DigitMonth4DigitYear) {
   FormData form;
   form.set_url(GURL("https://www.foo.com"));
-  form.fields = {
-      CreateTestFormField("Name on card:", "name_on_card", "John MYYYY",
-                          FormControlType::kInputText),
-      CreateTestFormField("Card Number:", "card_number", "4111111111111111",
-                          FormControlType::kInputText),
-      CreateTestFormField("Exp Date:", "exp_date", "5/2045",
-                          FormControlType::kInputText, "cc-exp")};
+  form.set_fields(
+      {CreateTestFormField("Name on card:", "name_on_card", "John MYYYY",
+                           FormControlType::kInputText),
+       CreateTestFormField("Card Number:", "card_number", "4111111111111111",
+                           FormControlType::kInputText),
+       CreateTestFormField("Exp Date:", "exp_date", "5/2045",
+                           FormControlType::kInputText, "cc-exp")});
 
   SubmitFormAndExpectImportedCardWithData(form, "John MYYYY",
                                           "4111111111111111", "05", "2045");
@@ -2561,20 +2568,20 @@ TEST_F(FormDataImporterTest,
   // submission with no card.
   FormData form3;
   form3.set_url(GURL("https://wwww.foo.com"));
-  form3.fields = {
-      CreateTestFormField("First name:", "first_name", "George",
-                          FormControlType::kInputText),
-      CreateTestFormField("Last name:", "last_name", "Washington",
-                          FormControlType::kInputText),
-      CreateTestFormField("Email:", "email", "bogus@example.com",
-                          FormControlType::kInputText),
-      CreateTestFormField("Address:", "address1", "21 Laussat St",
-                          FormControlType::kInputText),
-      CreateTestFormField("City:", "city", "San Francisco",
-                          FormControlType::kInputText),
-      CreateTestFormField("State:", "state", "California",
-                          FormControlType::kInputText),
-      CreateTestFormField("Zip:", "zip", "94102", FormControlType::kInputText)};
+  form3.set_fields({CreateTestFormField("First name:", "first_name", "George",
+                                        FormControlType::kInputText),
+                    CreateTestFormField("Last name:", "last_name", "Washington",
+                                        FormControlType::kInputText),
+                    CreateTestFormField("Email:", "email", "bogus@example.com",
+                                        FormControlType::kInputText),
+                    CreateTestFormField("Address:", "address1", "21 Laussat St",
+                                        FormControlType::kInputText),
+                    CreateTestFormField("City:", "city", "San Francisco",
+                                        FormControlType::kInputText),
+                    CreateTestFormField("State:", "state", "California",
+                                        FormControlType::kInputText),
+                    CreateTestFormField("Zip:", "zip", "94102",
+                                        FormControlType::kInputText)});
   FormStructure form_structure3(form3);
   form_structure3.DetermineHeuristicTypes(GeoIpCountryCode(""), nullptr,
                                           nullptr);
@@ -2815,20 +2822,20 @@ TEST_F(FormDataImporterTest,
   // Simulate a form submission with no credit card on form.
   FormData form;
   form.set_url(GURL("https://www.foo.com"));
-  form.fields = {
-      CreateTestFormField("First name:", "first_name", "George",
-                          FormControlType::kInputText),
-      CreateTestFormField("Last name:", "last_name", "Washington",
-                          FormControlType::kInputText),
-      CreateTestFormField("Email:", "email", "bogus@example.com",
-                          FormControlType::kInputText),
-      CreateTestFormField("Address:", "address1", "21 Laussat St",
-                          FormControlType::kInputText),
-      CreateTestFormField("City:", "city", "San Francisco",
-                          FormControlType::kInputText),
-      CreateTestFormField("State:", "state", "California",
-                          FormControlType::kInputText),
-      CreateTestFormField("Zip:", "zip", "94102", FormControlType::kInputText)};
+  form.set_fields({CreateTestFormField("First name:", "first_name", "George",
+                                       FormControlType::kInputText),
+                   CreateTestFormField("Last name:", "last_name", "Washington",
+                                       FormControlType::kInputText),
+                   CreateTestFormField("Email:", "email", "bogus@example.com",
+                                       FormControlType::kInputText),
+                   CreateTestFormField("Address:", "address1", "21 Laussat St",
+                                       FormControlType::kInputText),
+                   CreateTestFormField("City:", "city", "San Francisco",
+                                       FormControlType::kInputText),
+                   CreateTestFormField("State:", "state", "California",
+                                       FormControlType::kInputText),
+                   CreateTestFormField("Zip:", "zip", "94102",
+                                       FormControlType::kInputText)});
   FormStructure form_structure(form);
   form_structure.DetermineHeuristicTypes(GeoIpCountryCode(""), nullptr,
                                          nullptr);
@@ -3305,15 +3312,15 @@ TEST_F(FormDataImporterTest, DuplicateMaskedServerCard) {
   // We should not offer to save locally.
   FormData form;
   form.set_url(GURL("https://www.foo.com"));
-  form.fields = {
-      CreateTestFormField("Name on card:", "name_on_card", "John Dillinger",
-                          FormControlType::kInputText),
-      CreateTestFormField("Card Number:", "card_number", "4012888888881881",
-                          FormControlType::kInputText),
-      CreateTestFormField("Exp Month:", "exp_month", "01",
-                          FormControlType::kInputText),
-      CreateTestFormField("Exp Year:", "exp_year", "2999",
-                          FormControlType::kInputText)};
+  form.set_fields(
+      {CreateTestFormField("Name on card:", "name_on_card", "John Dillinger",
+                           FormControlType::kInputText),
+       CreateTestFormField("Card Number:", "card_number", "4012888888881881",
+                           FormControlType::kInputText),
+       CreateTestFormField("Exp Month:", "exp_month", "01",
+                           FormControlType::kInputText),
+       CreateTestFormField("Exp Year:", "exp_year", "2999",
+                           FormControlType::kInputText)});
   FormStructure form_structure(form);
   form_structure.DetermineHeuristicTypes(GeoIpCountryCode(""), nullptr,
                                          nullptr);
@@ -3400,15 +3407,15 @@ TEST_F(FormDataImporterTest,
   // card.
   FormData form;
   form.set_url(GURL("https://www.foo.com"));
-  form.fields = {
-      CreateTestFormField("Name on card:", "name_on_card", "Clyde Barrow",
-                          FormControlType::kInputText),
-      CreateTestFormField("Card Number:", "card_number", "378282246310005",
-                          FormControlType::kInputText),
-      CreateTestFormField("Exp Month:", "exp_month", "04",
-                          FormControlType::kInputText),
-      CreateTestFormField("Exp Year:", "exp_year", "2999",
-                          FormControlType::kInputText)};
+  form.set_fields(
+      {CreateTestFormField("Name on card:", "name_on_card", "Clyde Barrow",
+                           FormControlType::kInputText),
+       CreateTestFormField("Card Number:", "card_number", "378282246310005",
+                           FormControlType::kInputText),
+       CreateTestFormField("Exp Month:", "exp_month", "04",
+                           FormControlType::kInputText),
+       CreateTestFormField("Exp Year:", "exp_year", "2999",
+                           FormControlType::kInputText)});
   FormStructure form_structure(form);
   form_structure.DetermineHeuristicTypes(GeoIpCountryCode(""), nullptr,
                                          nullptr);
@@ -3448,15 +3455,15 @@ TEST_F(FormDataImporterTest,
   // an expiration date match is recorded.
   FormData form;
   form.set_url(GURL("https://www.foo.com"));
-  form.fields = {
-      CreateTestFormField("Name on card:", "name_on_card", "Clyde Barrow",
-                          FormControlType::kInputText),
-      CreateTestFormField("Card Number:", "card_number", "4444333322221111",
-                          FormControlType::kInputText),
-      CreateTestFormField("Exp Month:", "exp_month", "04",
-                          FormControlType::kInputText),
-      CreateTestFormField("Exp Year:", "exp_year", "2111",
-                          FormControlType::kInputText)};
+  form.set_fields(
+      {CreateTestFormField("Name on card:", "name_on_card", "Clyde Barrow",
+                           FormControlType::kInputText),
+       CreateTestFormField("Card Number:", "card_number", "4444333322221111",
+                           FormControlType::kInputText),
+       CreateTestFormField("Exp Month:", "exp_month", "04",
+                           FormControlType::kInputText),
+       CreateTestFormField("Exp Year:", "exp_year", "2111",
+                           FormControlType::kInputText)});
   base::HistogramTester histogram_tester;
   FormStructure form_structure(form);
 
@@ -3488,15 +3495,15 @@ TEST_F(FormDataImporterTest,
   // expiration date.
   FormData form;
   form.set_url(GURL("https://www.foo.com"));
-  form.fields = {
-      CreateTestFormField("Name on card:", "name_on_card", "Clyde Barrow",
-                          FormControlType::kInputText),
-      CreateTestFormField("Card Number:", "card_number", "4444333322221111",
-                          FormControlType::kInputText),
-      CreateTestFormField("Exp Month:", "exp_month", "",
-                          FormControlType::kInputText),
-      CreateTestFormField("Exp Year:", "exp_year", "2111",
-                          FormControlType::kInputText)};
+  form.set_fields(
+      {CreateTestFormField("Name on card:", "name_on_card", "Clyde Barrow",
+                           FormControlType::kInputText),
+       CreateTestFormField("Card Number:", "card_number", "4444333322221111",
+                           FormControlType::kInputText),
+       CreateTestFormField("Exp Month:", "exp_month", "",
+                           FormControlType::kInputText),
+       CreateTestFormField("Exp Year:", "exp_year", "2111",
+                           FormControlType::kInputText)});
   FormStructure form_structure(form);
 
   form_structure.DetermineHeuristicTypes(GeoIpCountryCode(""), nullptr,
@@ -3524,15 +3531,15 @@ TEST_F(FormDataImporterTest,
   // expiration date.
   FormData form;
   form.set_url(GURL("https://www.foo.com"));
-  form.fields = {
-      CreateTestFormField("Name on card:", "name_on_card", "Clyde Barrow",
-                          FormControlType::kInputText),
-      CreateTestFormField("Card Number:", "card_number", "4444333322221111",
-                          FormControlType::kInputText),
-      CreateTestFormField("Exp Month:", "exp_month", "08",
-                          FormControlType::kInputText),
-      CreateTestFormField("Exp Year:", "exp_year", "",
-                          FormControlType::kInputText)};
+  form.set_fields(
+      {CreateTestFormField("Name on card:", "name_on_card", "Clyde Barrow",
+                           FormControlType::kInputText),
+       CreateTestFormField("Card Number:", "card_number", "4444333322221111",
+                           FormControlType::kInputText),
+       CreateTestFormField("Exp Month:", "exp_month", "08",
+                           FormControlType::kInputText),
+       CreateTestFormField("Exp Year:", "exp_year", "",
+                           FormControlType::kInputText)});
   FormStructure form_structure(form);
 
   form_structure.DetermineHeuristicTypes(GeoIpCountryCode(""), nullptr,
@@ -3561,15 +3568,15 @@ TEST_F(
   // expiration date.
   FormData form;
   form.set_url(GURL("https://www.foo.com"));
-  form.fields = {
-      CreateTestFormField("Name on card:", "name_on_card", "Clyde Barrow",
-                          FormControlType::kInputText),
-      CreateTestFormField("Card Number:", "card_number", "4444333322221111",
-                          FormControlType::kInputText),
-      CreateTestFormField("Exp Month:", "exp_month", "08",
-                          FormControlType::kInputText),
-      CreateTestFormField("Exp Year:", "exp_year", "",
-                          FormControlType::kInputText)};
+  form.set_fields(
+      {CreateTestFormField("Name on card:", "name_on_card", "Clyde Barrow",
+                           FormControlType::kInputText),
+       CreateTestFormField("Card Number:", "card_number", "4444333322221111",
+                           FormControlType::kInputText),
+       CreateTestFormField("Exp Month:", "exp_month", "08",
+                           FormControlType::kInputText),
+       CreateTestFormField("Exp Year:", "exp_year", "",
+                           FormControlType::kInputText)});
   FormStructure form_structure(form);
 
   form_structure.DetermineHeuristicTypes(GeoIpCountryCode(""), nullptr,
@@ -3596,15 +3603,15 @@ TEST_F(FormDataImporterTest,
   // is recorded.
   FormData form;
   form.set_url(GURL("https://www.foo.com"));
-  form.fields = {
-      CreateTestFormField("Name on card:", "name_on_card", "Clyde Barrow",
-                          FormControlType::kInputText),
-      CreateTestFormField("Card Number:", "card_number", "4444333322221111",
-                          FormControlType::kInputText),
-      CreateTestFormField("Exp Month:", "exp_month", "04",
-                          FormControlType::kInputText),
-      CreateTestFormField("Exp Year:", "exp_year", "2345",
-                          FormControlType::kInputText)};
+  form.set_fields(
+      {CreateTestFormField("Name on card:", "name_on_card", "Clyde Barrow",
+                           FormControlType::kInputText),
+       CreateTestFormField("Card Number:", "card_number", "4444333322221111",
+                           FormControlType::kInputText),
+       CreateTestFormField("Exp Month:", "exp_month", "04",
+                           FormControlType::kInputText),
+       CreateTestFormField("Exp Year:", "exp_year", "2345",
+                           FormControlType::kInputText)});
   FormStructure form_structure(form);
 
   base::HistogramTester histogram_tester;
@@ -3635,15 +3642,15 @@ TEST_F(FormDataImporterTest,
   // an expiration date match is recorded.
   FormData form;
   form.set_url(GURL("https://www.foo.com"));
-  form.fields = {
-      CreateTestFormField("Name on card:", "name_on_card", "Clyde Barrow",
-                          FormControlType::kInputText),
-      CreateTestFormField("Card Number:", "card_number", "4444333322221111",
-                          FormControlType::kInputText),
-      CreateTestFormField("Exp Month:", "exp_month", "01",
-                          FormControlType::kInputText),
-      CreateTestFormField("Exp Year:", "exp_year", "2111",
-                          FormControlType::kInputText)};
+  form.set_fields(
+      {CreateTestFormField("Name on card:", "name_on_card", "Clyde Barrow",
+                           FormControlType::kInputText),
+       CreateTestFormField("Card Number:", "card_number", "4444333322221111",
+                           FormControlType::kInputText),
+       CreateTestFormField("Exp Month:", "exp_month", "01",
+                           FormControlType::kInputText),
+       CreateTestFormField("Exp Year:", "exp_year", "2111",
+                           FormControlType::kInputText)});
   FormStructure form_structure(form);
 
   base::HistogramTester histogram_tester;
@@ -3675,15 +3682,15 @@ TEST_F(FormDataImporterTest,
   // is recorded.
   FormData form;
   form.set_url(GURL("https://www.foo.com"));
-  form.fields = {
-      CreateTestFormField("Name on card:", "name_on_card", "Clyde Barrow",
-                          FormControlType::kInputText),
-      CreateTestFormField("Card Number:", "card_number", "4444333322221111",
-                          FormControlType::kInputText),
-      CreateTestFormField("Exp Month:", "exp_month", "04",
-                          FormControlType::kInputText),
-      CreateTestFormField("Exp Year:", "exp_year", "2345",
-                          FormControlType::kInputText)};
+  form.set_fields(
+      {CreateTestFormField("Name on card:", "name_on_card", "Clyde Barrow",
+                           FormControlType::kInputText),
+       CreateTestFormField("Card Number:", "card_number", "4444333322221111",
+                           FormControlType::kInputText),
+       CreateTestFormField("Exp Month:", "exp_month", "04",
+                           FormControlType::kInputText),
+       CreateTestFormField("Exp Year:", "exp_year", "2345",
+                           FormControlType::kInputText)});
   FormStructure form_structure(form);
 
   base::HistogramTester histogram_tester;
@@ -3721,13 +3728,13 @@ TEST_F(FormDataImporterTest, SilentlyUpdateExistingProfileByIncompleteProfile) {
   // Simulate a form submission with conflicting info.
   FormData form;
   form.set_url(GURL("https://www.foo.com"));
-  form.fields = {
-      CreateTestFormField("First name:", "first_name", "Marion",
-                          FormControlType::kInputText),
-      CreateTestFormField("Middle name:", "middle_name", "",
-                          FormControlType::kInputText),
-      CreateTestFormField("Last name:", "last_name", "Mitchell Morrison",
-                          FormControlType::kInputText)};
+  form.set_fields(
+      {CreateTestFormField("First name:", "first_name", "Marion",
+                           FormControlType::kInputText),
+       CreateTestFormField("Middle name:", "middle_name", "",
+                           FormControlType::kInputText),
+       CreateTestFormField("Last name:", "last_name", "Mitchell Morrison",
+                           FormControlType::kInputText)});
   FormStructure form_structure(form);
 
   form_structure.DetermineHeuristicTypes(GeoIpCountryCode(""), nullptr,
@@ -3770,13 +3777,13 @@ TEST_F(
   // Simulate a form submission with conflicting info.
   FormData form;
   form.set_url(GURL("https://www.foo.com"));
-  form.fields = {
-      CreateTestFormField("First name:", "first_name", "Marion",
-                          FormControlType::kInputText),
-      CreateTestFormField("Middle name:", "middle_name", "",
-                          FormControlType::kInputText),
-      CreateTestFormField("Last name:", "last_name", "Mitchell Morrison",
-                          FormControlType::kInputText)};
+  form.set_fields(
+      {CreateTestFormField("First name:", "first_name", "Marion",
+                           FormControlType::kInputText),
+       CreateTestFormField("Middle name:", "middle_name", "",
+                           FormControlType::kInputText),
+       CreateTestFormField("Last name:", "last_name", "Mitchell Morrison",
+                           FormControlType::kInputText)});
   FormStructure form_structure(form);
 
   form_structure.DetermineHeuristicTypes(GeoIpCountryCode(""), nullptr,
@@ -3818,13 +3825,13 @@ TEST_F(FormDataImporterTest, UnusableIncompleteProfile) {
   // Simulate a form submission with conflicting info.
   FormData form;
   form.set_url(GURL("https://www.foo.com"));
-  form.fields = {
-      CreateTestFormField("First name:", "first_name", "Marion",
-                          FormControlType::kInputText),
-      CreateTestFormField("Middle name:", "middle_name", "",
-                          FormControlType::kInputText),
-      CreateTestFormField("Last name:", "last_name", "Mitch Morrison",
-                          FormControlType::kInputText)};
+  form.set_fields(
+      {CreateTestFormField("First name:", "first_name", "Marion",
+                           FormControlType::kInputText),
+       CreateTestFormField("Middle name:", "middle_name", "",
+                           FormControlType::kInputText),
+       CreateTestFormField("Last name:", "last_name", "Mitch Morrison",
+                           FormControlType::kInputText)});
   FormStructure form_structure(form);
 
   form_structure.DetermineHeuristicTypes(GeoIpCountryCode(""), nullptr,

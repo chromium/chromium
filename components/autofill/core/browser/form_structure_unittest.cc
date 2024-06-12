@@ -507,13 +507,13 @@ TEST_F(FormStructureTestImpl_ShouldBeParsed_Test,
 TEST_F(FormStructureTestImpl, ShouldBeParsed_BadScheme) {
   std::unique_ptr<FormStructure> form_structure;
   FormData form;
-  form.fields = {
-      CreateTestFormField("Name", "name", "", FormControlType::kInputText,
-                          "name"),
-      CreateTestFormField("Email", "email", "", FormControlType::kInputText,
-                          "email"),
-      CreateTestFormField("Address", "address", "", FormControlType::kInputText,
-                          "address-line1")};
+  form.set_fields(
+      {CreateTestFormField("Name", "name", "", FormControlType::kInputText,
+                           "name"),
+       CreateTestFormField("Email", "email", "", FormControlType::kInputText,
+                           "email"),
+       CreateTestFormField("Address", "address", "",
+                           FormControlType::kInputText, "address-line1")});
 
   // Baseline, HTTP should work.
   form.set_url(GURL("http://wwww.foo.com/myform"));
@@ -570,10 +570,10 @@ TEST_F(FormStructureTestImpl, ShouldBeParsed_TwoFields_HasAutocomplete) {
   std::unique_ptr<FormStructure> form_structure;
   FormData form;
   form.set_url(GURL("http://www.foo.com/"));
-  form.fields = {CreateTestFormField("Name", "name", "",
-                                     FormControlType::kInputText, "name"),
-                 CreateTestFormField("Address", "Address", "",
-                                     FormControlType::kSelectOne, "")};
+  form.set_fields({CreateTestFormField("Name", "name", "",
+                                       FormControlType::kInputText, "name"),
+                   CreateTestFormField("Address", "Address", "",
+                                       FormControlType::kSelectOne, "")});
   form_structure = std::make_unique<FormStructure>(form);
   EXPECT_TRUE(form_structure->ShouldBeParsed());
 }
@@ -906,10 +906,11 @@ TEST_F(FormStructureTestImpl,
   FormData form;
   form.set_url(GURL("http://www.foo.com/"));
   // Set a valid autocomplete attribute to the first field.
-  form.fields = {CreateTestFormField("First Name", "firstname", "",
-                                     FormControlType::kInputText, "given-name"),
-                 CreateTestFormField("Last Name", "lastname", "",
-                                     FormControlType::kInputText, "")};
+  form.set_fields(
+      {CreateTestFormField("First Name", "firstname", "",
+                           FormControlType::kInputText, "given-name"),
+       CreateTestFormField("Last Name", "lastname", "",
+                           FormControlType::kInputText, "")});
   EXPECT_FALSE(FormShouldRunHeuristics(form));
   EXPECT_TRUE(FormShouldBeQueried(form));
 
@@ -967,14 +968,14 @@ TEST_F(FormStructureTestImpl, PromoCodeHeuristics_SmallForm) {
 TEST_F(FormStructureTestImpl, PasswordFormShouldBeQueried) {
   FormData form;
   form.set_url(GURL("http://www.foo.com/"));
-  form.fields = {CreateTestFormField("First Name", "firstname", "",
-                                     FormControlType::kInputText),
-                 CreateTestFormField("Last Name", "lastname", "",
-                                     FormControlType::kInputText),
-                 CreateTestFormField("Email", "email", "",
-                                     FormControlType::kInputText, "username"),
-                 CreateTestFormField("Password", "Password", "",
-                                     FormControlType::kInputPassword)};
+  form.set_fields({CreateTestFormField("First Name", "firstname", "",
+                                       FormControlType::kInputText),
+                   CreateTestFormField("Last Name", "lastname", "",
+                                       FormControlType::kInputText),
+                   CreateTestFormField("Email", "email", "",
+                                       FormControlType::kInputText, "username"),
+                   CreateTestFormField("Password", "Password", "",
+                                       FormControlType::kInputPassword)});
   FormStructure form_structure(form);
   form_structure.DetermineHeuristicTypes(GeoIpCountryCode(""), nullptr,
                                          nullptr);
@@ -989,22 +990,22 @@ TEST_F(FormStructureTestImpl,
        HeuristicsAutocompleteAttributeWithSectionsDegenerate) {
   FormData form;
   form.set_url(GURL("http://www.foo.com/"));
-  form.fields = {
-      // Some fields will have no section specified.  These fall into the
-      // default section.
-      CreateTestFormField("", "", "", FormControlType::kInputText, "email"),
-      // Specifying "section-" is equivalent to not specifying a section.
-      CreateTestFormField("", "", "", FormControlType::kInputText,
-                          "section- email"),
-      // Invalid tokens should prevent us from setting a section name.
-      CreateTestFormField("", "", "", FormControlType::kInputText,
-                          "garbage section-foo email"),
-      CreateTestFormField("", "", "", FormControlType::kInputText,
-                          "garbage section-bar email"),
-      CreateTestFormField("", "", "", FormControlType::kInputText,
-                          "garbage shipping email"),
-      CreateTestFormField("", "", "", FormControlType::kInputText,
-                          "garbage billing email")};
+  form.set_fields(
+      {// Some fields will have no section specified.  These fall into the
+       // default section.
+       CreateTestFormField("", "", "", FormControlType::kInputText, "email"),
+       // Specifying "section-" is equivalent to not specifying a section.
+       CreateTestFormField("", "", "", FormControlType::kInputText,
+                           "section- email"),
+       // Invalid tokens should prevent us from setting a section name.
+       CreateTestFormField("", "", "", FormControlType::kInputText,
+                           "garbage section-foo email"),
+       CreateTestFormField("", "", "", FormControlType::kInputText,
+                           "garbage section-bar email"),
+       CreateTestFormField("", "", "", FormControlType::kInputText,
+                           "garbage shipping email"),
+       CreateTestFormField("", "", "", FormControlType::kInputText,
+                           "garbage billing email")});
   FormStructure form_structure(form);
   form_structure.DetermineHeuristicTypes(GeoIpCountryCode(""), nullptr,
                                          nullptr);
@@ -1028,10 +1029,10 @@ TEST_F(FormStructureTestImpl,
        HeuristicsAutocompleteAttributeWithSectionsRepeated) {
   FormData form;
   form.set_url(GURL("http://www.foo.com/"));
-  form.fields = {CreateTestFormField("", "", "", FormControlType::kInputText,
-                                     "section-foo email"),
-                 CreateTestFormField("", "", "", FormControlType::kInputText,
-                                     "section-foo address-line1")};
+  form.set_fields({CreateTestFormField("", "", "", FormControlType::kInputText,
+                                       "section-foo email"),
+                   CreateTestFormField("", "", "", FormControlType::kInputText,
+                                       "section-foo address-line1")});
   FormStructure form_structure(form);
   form_structure.DetermineHeuristicTypes(GeoIpCountryCode(""), nullptr,
                                          nullptr);
@@ -2280,18 +2281,18 @@ TEST_F(FormStructureTestImpl, NoAutocompleteSectionNames) {
 TEST_F(FormStructureTestImpl, NoSplitAdjacentNameFieldType) {
   FormData form;
   form.set_url(GURL("http://foo.com"));
-  form.fields = {CreateTestFormField("First Name", "firstname", "",
-                                     FormControlType::kInputText),
-                 CreateTestFormField("Last Name", "lastname", "",
-                                     FormControlType::kInputText),
-                 CreateTestFormField("Phonetic First Name", "firstname", "",
-                                     FormControlType::kInputText),
-                 CreateTestFormField("Phonetic Last Name", "lastname", "",
-                                     FormControlType::kInputText),
-                 CreateTestFormField("Country", "country", "",
-                                     FormControlType::kInputText),
-                 CreateTestFormField("First Name", "firstname", "",
-                                     FormControlType::kInputText)};
+  form.set_fields({CreateTestFormField("First Name", "firstname", "",
+                                       FormControlType::kInputText),
+                   CreateTestFormField("Last Name", "lastname", "",
+                                       FormControlType::kInputText),
+                   CreateTestFormField("Phonetic First Name", "firstname", "",
+                                       FormControlType::kInputText),
+                   CreateTestFormField("Phonetic Last Name", "lastname", "",
+                                       FormControlType::kInputText),
+                   CreateTestFormField("Country", "country", "",
+                                       FormControlType::kInputText),
+                   CreateTestFormField("First Name", "firstname", "",
+                                       FormControlType::kInputText)});
   FormStructure form_structure(form);
   test_api(form_structure)
       .SetFieldTypes({NAME_FIRST, NAME_LAST, NAME_FIRST, NAME_LAST,

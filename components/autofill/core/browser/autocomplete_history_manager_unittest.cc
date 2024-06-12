@@ -142,7 +142,7 @@ TEST_F(AutocompleteHistoryManagerTest, CreditCardNumberValue) {
 
   EXPECT_CALL(*(web_data_service_.get()), AddFormFields(_)).Times(0);
   autocomplete_manager_->OnWillSubmitFormWithFields(
-      form.fields,
+      form.fields(),
       /*is_autocomplete_enabled=*/true);
 }
 
@@ -166,7 +166,7 @@ TEST_F(AutocompleteHistoryManagerTest, NonCreditCardNumberValue) {
 
   EXPECT_CALL(*(web_data_service_.get()), AddFormFields(_));
   autocomplete_manager_->OnWillSubmitFormWithFields(
-      form.fields,
+      form.fields(),
       /*is_autocomplete_enabled=*/true);
 }
 
@@ -187,7 +187,7 @@ TEST_F(AutocompleteHistoryManagerTest, SSNValue) {
 
   EXPECT_CALL(*web_data_service_, AddFormFields(_)).Times(0);
   autocomplete_manager_->OnWillSubmitFormWithFields(
-      form.fields,
+      form.fields(),
       /*is_autocomplete_enabled=*/true);
 }
 
@@ -209,7 +209,7 @@ TEST_F(AutocompleteHistoryManagerTest, SearchField) {
 
   EXPECT_CALL(*(web_data_service_.get()), AddFormFields(_));
   autocomplete_manager_->OnWillSubmitFormWithFields(
-      form.fields,
+      form.fields(),
       /*is_autocomplete_enabled=*/true);
 }
 
@@ -230,7 +230,7 @@ TEST_F(AutocompleteHistoryManagerTest, AutocompleteFeatureOff) {
 
   EXPECT_CALL(*(web_data_service_.get()), AddFormFields(_)).Times(0);
   autocomplete_manager_->OnWillSubmitFormWithFields(
-      form.fields,
+      form.fields(),
       /*is_autocomplete_enabled=*/false);
 }
 
@@ -258,7 +258,7 @@ TEST_F(AutocompleteHistoryManagerTest, InvalidValues) {
 
   EXPECT_CALL(*(web_data_service_.get()), AddFormFields(_)).Times(0);
   autocomplete_manager_->OnWillSubmitFormWithFields(
-      form.fields,
+      form.fields(),
       /*is_autocomplete_enabled=*/true);
 }
 
@@ -284,7 +284,7 @@ TEST_F(AutocompleteHistoryManagerTest, FieldWithAutocompleteOff) {
 
   EXPECT_CALL(*web_data_service_, AddFormFields(_)).Times(0);
   autocomplete_manager_->OnWillSubmitFormWithFields(
-      form.fields,
+      form.fields(),
       /*is_autocomplete_enabled=*/true);
 }
 
@@ -308,7 +308,7 @@ TEST_F(AutocompleteHistoryManagerTest, Incognito) {
 
   EXPECT_CALL(*web_data_service_, AddFormFields(_)).Times(0);
   autocomplete_manager_->OnWillSubmitFormWithFields(
-      form.fields,
+      form.fields(),
       /*is_autocomplete_enabled=*/true);
 }
 
@@ -334,7 +334,7 @@ TEST_F(AutocompleteHistoryManagerTest, UserInputNotFocusable) {
 
   EXPECT_CALL(*(web_data_service_.get()), AddFormFields(_));
   autocomplete_manager_->OnWillSubmitFormWithFields(
-      form.fields,
+      form.fields(),
       /*is_autocomplete_enabled=*/true);
 }
 #endif
@@ -359,7 +359,7 @@ TEST_F(AutocompleteHistoryManagerTest, PresentationField) {
 
   EXPECT_CALL(*web_data_service_, AddFormFields(_)).Times(0);
   autocomplete_manager_->OnWillSubmitFormWithFields(
-      form.fields,
+      form.fields(),
       /*is_autocomplete_enabled=*/true);
 }
 

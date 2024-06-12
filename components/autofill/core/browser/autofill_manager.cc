@@ -127,12 +127,14 @@ bool CachedFormNeedsUpdate(const FormData& live_form,
     return false;
   }
 
-  if (live_form.fields.size() != cached_form.field_count())
+  if (live_form.fields().size() != cached_form.field_count()) {
     return true;
+  }
 
   for (size_t i = 0; i < cached_form.field_count(); ++i) {
-    if (!cached_form.field(i)->SameFieldAs(live_form.fields[i]))
+    if (!cached_form.field(i)->SameFieldAs(live_form.fields()[i])) {
       return true;
+    }
   }
 
   return false;

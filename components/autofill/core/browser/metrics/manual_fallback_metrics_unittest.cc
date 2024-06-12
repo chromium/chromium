@@ -36,7 +36,7 @@ class ManualFallbackEventLoggerTest
       const FormData& form,
       AutofillSuggestionTriggerSource fallback_trigger_source) {
     autofill_manager().OnAskForValuesToFillTest(
-        form, form.fields[0].global_id(), fallback_trigger_source);
+        form, form.fields()[0].global_id(), fallback_trigger_source);
     DidShowAutofillSuggestions(
         form, /*field_index=*/0,
         fallback_trigger_source ==
@@ -56,7 +56,7 @@ class ManualFallbackEventLoggerTest
     const ManualFallbackTestParams& params = GetParam();
     autofill_manager().FillOrPreviewField(
         mojom::ActionPersistence::kFill, mojom::FieldActionType::kReplaceAll,
-        form, form.fields[0], u"value to fill",
+        form, form.fields()[0], u"value to fill",
         params.manual_fallback_option ==
                 AutofillSuggestionTriggerSource::kManualFallbackAddress
             ? SuggestionType::kAddressFieldByFieldFilling

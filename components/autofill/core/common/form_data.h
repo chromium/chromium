@@ -314,8 +314,7 @@ struct FormData {
   //   come from subframes, they're flattened into the same FormData, which then
   //   contains two representations of F; that is, FormData::fields contains two
   //   fields with the same FormFieldData::global_id().
-  std::vector<FormFieldData> fields;
-
+  const std::vector<FormFieldData>& fields() const { return fields_; }
   class MutableFieldsPassKey {
     constexpr MutableFieldsPassKey() = default;
     friend class AutofillAgent;
@@ -324,13 +323,13 @@ struct FormData {
     friend class internal::FormForest;
   };
   std::vector<FormFieldData>& mutable_fields(MutableFieldsPassKey pass_key) {
-    return fields;
+    return fields_;
   }
   void set_fields(std::vector<FormFieldData> new_fields) {
-    fields = std::move(new_fields);
+    fields_ = std::move(new_fields);
   }
   [[nodiscard]] std::vector<FormFieldData> ExtractFields() {
-    return std::exchange(fields, std::vector<FormFieldData>());
+    return std::exchange(fields_, std::vector<FormFieldData>());
   }
 
   // Contains unique renderer IDs of text elements which are predicted to be
@@ -379,6 +378,7 @@ struct FormData {
   std::vector<FrameTokenWithPredecessor> child_frames_;
   mojom::SubmissionIndicatorEvent submission_event_ =
       mojom::SubmissionIndicatorEvent::NONE;
+  std::vector<FormFieldData> fields_;
   std::vector<FieldRendererId> username_predictions_;
   bool is_gaia_with_skip_save_password_form_ = false;
 #if BUILDFLAG(IS_IOS)

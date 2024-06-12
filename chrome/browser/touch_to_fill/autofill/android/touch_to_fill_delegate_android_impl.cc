@@ -394,7 +394,7 @@ bool TouchToFillDelegateAndroidImpl::IsFillingCorrect(
 }
 
 bool TouchToFillDelegateAndroidImpl::IsFormPrefilled(const FormData& form) {
-  return base::ranges::any_of(form.fields, [&](const FormFieldData& field) {
+  return base::ranges::any_of(form.fields(), [&](const FormFieldData& field) {
     AutofillField* autofill_field = manager_->GetAutofillField(form, field);
     if (autofill_field && autofill_field->Type().GetStorableType() !=
                               FieldType::CREDIT_CARD_NUMBER) {

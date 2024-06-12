@@ -334,7 +334,7 @@ void MaybeEmitFormIssuesToDevtools(blink::WebLocalFrame& web_local_frame,
   // used.
   for (const FormData& form : forms) {
     form_issues = form_issues::CheckForLabelsWithIncorrectForAttribute(
-        document, form.fields, std::move(form_issues));
+        document, form.fields(), std::move(form_issues));
   }
   if (form_issues.size() > kMaxNumberOfDevtoolsIssuesEmitted) {
     form_issues.erase(form_issues.begin() + kMaxNumberOfDevtoolsIssuesEmitted,

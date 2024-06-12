@@ -1368,18 +1368,18 @@ TEST_F(CreditCardSaveManagerTest, UploadCreditCard_MultipleCvcFields) {
   credit_card_form.set_action(GURL("https://myform.com/submit.html"));
   credit_card_form.set_main_frame_origin(
       url::Origin::Create(GURL("http://myform_root.com/form.html")));
-  credit_card_form.fields = {
-      CreateTestFormField("Card Name", "cardname", "",
-                          FormControlType::kInputText),
-      CreateTestFormField("Card Number", "cardnumber", "",
-                          FormControlType::kInputText),
-      CreateTestFormField("Expiration Month", "ccmonth", "",
-                          FormControlType::kInputText),
-      CreateTestFormField("Expiration Year", "ccyear", "",
-                          FormControlType::kInputText),
-      CreateTestFormField("CVC (hidden)", "cvc1", "",
-                          FormControlType::kInputText),
-      CreateTestFormField("CVC", "cvc2", "", FormControlType::kInputText)};
+  credit_card_form.set_fields(
+      {CreateTestFormField("Card Name", "cardname", "",
+                           FormControlType::kInputText),
+       CreateTestFormField("Card Number", "cardnumber", "",
+                           FormControlType::kInputText),
+       CreateTestFormField("Expiration Month", "ccmonth", "",
+                           FormControlType::kInputText),
+       CreateTestFormField("Expiration Year", "ccyear", "",
+                           FormControlType::kInputText),
+       CreateTestFormField("CVC (hidden)", "cvc1", "",
+                           FormControlType::kInputText),
+       CreateTestFormField("CVC", "cvc2", "", FormControlType::kInputText)});
 
   FormsSeen(std::vector<FormData>(1, credit_card_form));
 
@@ -1428,15 +1428,15 @@ TEST_F(CreditCardSaveManagerTest, UploadCreditCard_NoCvcFieldOnForm) {
   credit_card_form.set_action(GURL("https://myform.com/submit.html"));
   credit_card_form.set_main_frame_origin(
       url::Origin::Create(GURL("http://myform_root.com/form.html")));
-  credit_card_form.fields = {
-      CreateTestFormField("Card Name", "cardname", "",
-                          FormControlType::kInputText),
-      CreateTestFormField("Card Number", "cardnumber", "",
-                          FormControlType::kInputText),
-      CreateTestFormField("Expiration Month", "ccmonth", "",
-                          FormControlType::kInputText),
-      CreateTestFormField("Expiration Year", "ccyear", "",
-                          FormControlType::kInputText)};
+  credit_card_form.set_fields(
+      {CreateTestFormField("Card Name", "cardname", "",
+                           FormControlType::kInputText),
+       CreateTestFormField("Card Number", "cardnumber", "",
+                           FormControlType::kInputText),
+       CreateTestFormField("Expiration Month", "ccmonth", "",
+                           FormControlType::kInputText),
+       CreateTestFormField("Expiration Year", "ccyear", "",
+                           FormControlType::kInputText)});
 
   FormsSeen(std::vector<FormData>(1, credit_card_form));
 
@@ -1487,17 +1487,17 @@ TEST_F(CreditCardSaveManagerTest,
   credit_card_form.set_action(GURL("https://myform.com/submit.html"));
   credit_card_form.set_main_frame_origin(
       url::Origin::Create(GURL("http://myform_root.com/form.html")));
-  credit_card_form.fields = {
-      CreateTestFormField("Card Name", "cardname", "",
-                          FormControlType::kInputText),
-      CreateTestFormField("Card Number", "cardnumber", "",
-                          FormControlType::kInputText),
-      CreateTestFormField("Expiration Month", "ccmonth", "",
-                          FormControlType::kInputText),
-      CreateTestFormField("Expiration Year", "ccyear", "",
-                          FormControlType::kInputText),
-      CreateTestFormField("Random Field", "random", "",
-                          FormControlType::kInputText)};
+  credit_card_form.set_fields(
+      {CreateTestFormField("Card Name", "cardname", "",
+                           FormControlType::kInputText),
+       CreateTestFormField("Card Number", "cardnumber", "",
+                           FormControlType::kInputText),
+       CreateTestFormField("Expiration Month", "ccmonth", "",
+                           FormControlType::kInputText),
+       CreateTestFormField("Expiration Year", "ccyear", "",
+                           FormControlType::kInputText),
+       CreateTestFormField("Random Field", "random", "",
+                           FormControlType::kInputText)});
 
   FormsSeen({credit_card_form});
 
@@ -1549,17 +1549,17 @@ TEST_F(CreditCardSaveManagerTest,
   credit_card_form.set_action(GURL("https://myform.com/submit.html"));
   credit_card_form.set_main_frame_origin(
       url::Origin::Create(GURL("http://myform_root.com/form.html")));
-  credit_card_form.fields = {
-      CreateTestFormField("Card Name", "cardname", "",
-                          FormControlType::kInputText),
-      CreateTestFormField("Card Number", "cardnumber", "",
-                          FormControlType::kInputText),
-      CreateTestFormField("Expiration Month", "ccmonth", "",
-                          FormControlType::kInputText),
-      CreateTestFormField("Expiration Year", "ccyear", "",
-                          FormControlType::kInputText),
-      CreateTestFormField("Random Field", "random", "",
-                          FormControlType::kInputText)};
+  credit_card_form.set_fields(
+      {CreateTestFormField("Card Name", "cardname", "",
+                           FormControlType::kInputText),
+       CreateTestFormField("Card Number", "cardnumber", "",
+                           FormControlType::kInputText),
+       CreateTestFormField("Expiration Month", "ccmonth", "",
+                           FormControlType::kInputText),
+       CreateTestFormField("Expiration Year", "ccyear", "",
+                           FormControlType::kInputText),
+       CreateTestFormField("Random Field", "random", "",
+                           FormControlType::kInputText)});
 
   FormsSeen({credit_card_form});
 
@@ -1613,17 +1613,17 @@ TEST_F(CreditCardSaveManagerTest,
   credit_card_form.set_action(GURL("https://myform.com/submit.html"));
   credit_card_form.set_main_frame_origin(
       url::Origin::Create(GURL("http://myform_root.com/form.html")));
-  credit_card_form.fields = {
-      CreateTestFormField("Card Name", "cardname", "",
-                          FormControlType::kInputText),
-      CreateTestFormField("Card Number", "cardnumber", "",
-                          FormControlType::kInputText),
-      CreateTestFormField("Expiration Month", "ccmonth", "",
-                          FormControlType::kInputText),
-      CreateTestFormField("Expiration Year", "ccyear", "",
-                          FormControlType::kInputText),
-      CreateTestFormField("Address Line 1", "addr1", "",
-                          FormControlType::kInputText)};
+  credit_card_form.set_fields(
+      {CreateTestFormField("Card Name", "cardname", "",
+                           FormControlType::kInputText),
+       CreateTestFormField("Card Number", "cardnumber", "",
+                           FormControlType::kInputText),
+       CreateTestFormField("Expiration Month", "ccmonth", "",
+                           FormControlType::kInputText),
+       CreateTestFormField("Expiration Year", "ccyear", "",
+                           FormControlType::kInputText),
+       CreateTestFormField("Address Line 1", "addr1", "",
+                           FormControlType::kInputText)});
 
   FormsSeen({credit_card_form});
 
@@ -3114,11 +3114,15 @@ TEST_F(CreditCardSaveManagerTest,
   FormsSeen(std::vector<FormData>(1, credit_card_form));
 
   // Edit the data, and submit.
-  credit_card_form.fields[0].set_value(u"");
-  credit_card_form.fields[1].set_value(u"4111111111111111");
-  credit_card_form.fields[2].set_value(ASCIIToUTF16(test::NextMonth()));
-  credit_card_form.fields[3].set_value(ASCIIToUTF16(test::NextYear()));
-  credit_card_form.fields[4].set_value(u"123");
+  test_api(credit_card_form).fields()[0].set_value(u"");
+  test_api(credit_card_form).fields()[1].set_value(u"4111111111111111");
+  test_api(credit_card_form)
+      .fields()[2]
+      .set_value(ASCIIToUTF16(test::NextMonth()));
+  test_api(credit_card_form)
+      .fields()[3]
+      .set_value(ASCIIToUTF16(test::NextYear()));
+  test_api(credit_card_form).fields()[4].set_value(u"123");
 
   base::HistogramTester histogram_tester;
 

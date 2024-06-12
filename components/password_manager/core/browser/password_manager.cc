@@ -98,7 +98,7 @@ bool AreChangePasswordFieldsEmpty(const FormData& form_data,
   const std::u16string& new_password = parsed_form.new_password_element;
   const std::u16string& confirmation_password =
       parsed_form.confirmation_password_element;
-  for (const auto& field : form_data.fields) {
+  for (const auto& field : form_data.fields()) {
     if (!field.value().empty() &&
         (field.name() == new_password ||
          (!old_password.empty() && field.name() == old_password) ||
@@ -221,7 +221,7 @@ bool IsSingleUsernameSubmission(const PasswordForm& submitted_form) {
     return true;
   }
 
-  for (auto const& field : submitted_form.form_data.fields) {
+  for (auto const& field : submitted_form.form_data.fields()) {
     if (submitted_form.password_element_renderer_id == field.renderer_id() ||
         submitted_form.new_password_element_renderer_id ==
             field.renderer_id()) {
@@ -264,7 +264,7 @@ void MaybeNudgeToUpdateGMSCoreWhenSavingDisabled(
 #if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
 bool HasManuallyFilledFields(const PasswordForm& form) {
   return base::ranges::any_of(
-      form.form_data.fields, [&](const autofill::FormFieldData& field) {
+      form.form_data.fields(), [&](const autofill::FormFieldData& field) {
         return field.properties_mask() &
                autofill::FieldPropertiesFlags::kAutofilledOnUserTrigger;
       });
@@ -669,9 +669,9 @@ void PasswordManager::OnPasswordFormCleared(
   // verified that fields are relevant.
   FieldRendererId new_password_field_id =
       manager->GetSubmittedForm()->new_password_element_renderer_id;
-  auto it = base::ranges::find(form_data.fields, new_password_field_id,
+  auto it = base::ranges::find(form_data.fields(), new_password_field_id,
                                &autofill::FormFieldData::renderer_id);
-  if (it != form_data.fields.end() && it->value().empty()) {
+  if (it != form_data.fields().end() && it->value().empty()) {
     manager->UpdateSubmissionIndicatorEvent(
         SubmissionIndicatorEvent::CHANGE_PASSWORD_FORM_CLEARED);
     OnLoginSuccessful();
@@ -976,9 +976,9 @@ void PasswordManager::UpdateStateOnUserInput(
   }
 
   // Get the field that corresponds to `field_id`.
-  auto it = base::ranges::find(observed_form->fields, field_id,
+  auto it = base::ranges::find(observed_form->fields(), field_id,
                                &autofill::FormFieldData::renderer_id);
-  if (it == observed_form->fields.end()) {
+  if (it == observed_form->fields().end()) {
     return;
   }
   const autofill::FormFieldData& field = *it;

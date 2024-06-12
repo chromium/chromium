@@ -44,10 +44,10 @@ scoped_refptr<segmentation_platform::InputContext> PopulateInputContextForField(
                                      signals.field.form_control_type())));
   input_context->metadata_args.emplace(
       "total_field_count",
-      ProcessedValue::FromFloat(signals.form.fields.size()));
+      ProcessedValue::FromFloat(signals.form.fields().size()));
 
   int multiline_field_count = 0;
-  for (const auto& f : signals.form.fields) {
+  for (const auto& f : signals.form.fields()) {
     if (f.form_control_type() == autofill::FormControlType::kTextArea ||
         f.form_control_type() == autofill::FormControlType::kContentEditable) {
       ++multiline_field_count;

@@ -115,7 +115,7 @@ void WaitForPersonalDataManagerToBeLoaded(Profile* base_profile) {
                                    {AutofillManagerEvent::kAskForValuesToFill});
   gfx::PointF p = element_bounds.origin();
   driver.renderer_events().AskForValuesToFill(
-      form, form.fields.front().renderer_id(),
+      form, form.fields().front().renderer_id(),
       /*caret_bounds=*/gfx::Rect(gfx::Point(p.x(), p.y()), gfx::Size(0, 10)),
       AutofillSuggestionTriggerSource::kFormControlElementClicked);
   testing::AssertionResult waiter_assertion_result = waiter.Wait();

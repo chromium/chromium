@@ -550,11 +550,11 @@ void AutofillAgent::FocusedElementChanged(
   if (new_focused_element && new_focused_element.IsContentEditable()) {
     if (std::optional<FormData> form =
             form_util::FindFormForContentEditable(new_focused_element)) {
-      CHECK_EQ(form->fields.size(), 1u);
+      CHECK_EQ(form->fields().size(), 1u);
       if (auto* autofill_driver = unsafe_autofill_driver()) {
         last_queried_element_ = FieldRef(new_focused_element);
         autofill_driver->FocusOnFormField(*form,
-                                          form->fields.front().renderer_id());
+                                          form->fields().front().renderer_id());
         handle_focus_change();
         return;
       }
@@ -613,10 +613,10 @@ void AutofillAgent::HandleCaretMovedInFormField(WebElement element,
     if (element && element.IsContentEditable()) {
       if (std::optional<FormData> form =
               form_util::FindFormForContentEditable(element)) {
-        CHECK_EQ(form->fields.size(), 1u);
+        CHECK_EQ(form->fields().size(), 1u);
         if (auto* autofill_driver = self.unsafe_autofill_driver()) {
           autofill_driver->CaretMovedInFormField(
-              *form, form->fields.front().renderer_id(), caret_bounds);
+              *form, form->fields().front().renderer_id(), caret_bounds);
           return;
         }
       }
@@ -707,10 +707,10 @@ void AutofillAgent::ContentEditableDidChange(const WebElement& element) {
   // rapid changes.
   if (std::optional<FormData> form =
           form_util::FindFormForContentEditable(element)) {
-    CHECK_EQ(form->fields.size(), 1u);
+    CHECK_EQ(form->fields().size(), 1u);
     if (auto* autofill_driver = unsafe_autofill_driver()) {
       autofill_driver->TextFieldDidChange(
-          *form, form->fields.front().renderer_id(), base::TimeTicks::Now());
+          *form, form->fields().front().renderer_id(), base::TimeTicks::Now());
     }
   }
 }
@@ -1265,13 +1265,13 @@ void AutofillAgent::ShowSuggestionsForContentEditable(
   if (!form) {
     return;
   }
-  CHECK_EQ(form->fields.size(), 1u);
+  CHECK_EQ(form->fields().size(), 1u);
   if (auto* autofill_driver = unsafe_autofill_driver()) {
     is_popup_possibly_visible_ = true;
     if (auto* render_frame = unsafe_render_frame()) {
-      autofill_driver->AskForValuesToFill(*form, form->fields[0].renderer_id(),
-                                          GetCaretBounds(*render_frame),
-                                          trigger_source);
+      autofill_driver->AskForValuesToFill(
+          *form, form->fields()[0].renderer_id(), GetCaretBounds(*render_frame),
+          trigger_source);
     }
   }
 }
@@ -1314,7 +1314,7 @@ void AutofillAgent::QueryAutofillSuggestions(
         &field);
     form_for_single_field.set_fields({std::move(field)});
     form_and_field.emplace(std::move(form_for_single_field),
-                           raw_ref(form_for_single_field.fields.back()));
+                           raw_ref(form_for_single_field.fields().back()));
   }
   auto& [form, field] = *form_and_field;
 
@@ -1941,7 +1941,7 @@ std::optional<FormData> AutofillAgent::GetSubmittedForm() const {
       unsafe_render_frame()->GetWebFrame()->GetDocument(),
       last_interacted_form().GetForm(), field_data_manager());
   return !form || (user_edited_unowned_form &&
-                   base::ranges::none_of(form->fields, has_been_user_edited))
+                   base::ranges::none_of(form->fields(), has_been_user_edited))
              ? provisionally_saved_form()
              : form;
 }

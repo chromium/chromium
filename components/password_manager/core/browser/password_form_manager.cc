@@ -96,7 +96,7 @@ bool FormContainsFieldWithName(const FormData& form,
       [&element](const std::u16string& name) {
         return base::EqualsCaseInsensitiveASCII(name, element);
       };
-  return base::ranges::any_of(form.fields, equals_element_case_insensitive,
+  return base::ranges::any_of(form.fields(), equals_element_case_insensitive,
                               &FormFieldData::name);
 }
 
@@ -315,7 +315,7 @@ bool PasswordFormManager::DoesManage(
   }
   CHECK(observed_form());
   return base::ranges::any_of(
-      observed_form()->fields,
+      observed_form()->fields(),
       [field_renderer_id](const autofill::FormFieldData& field) {
         return field.renderer_id() == field_renderer_id;
       });
@@ -347,7 +347,7 @@ bool PasswordFormManager::IsEqualToSubmittedForm(
   // Match the form if the observed username field has the same value as in
   // the submitted form.
   if (!parsed_submitted_form_->username_value.empty()) {
-    for (const auto& field : form.fields) {
+    for (const auto& field : form.fields()) {
       if (field.value() == parsed_submitted_form_->username_value) {
         return true;
       }
@@ -699,14 +699,17 @@ void PasswordFormManager::UpdateStateOnUserInput(
     const std::u16string& field_value) {
   DCHECK(observed_form()->renderer_id() == form_id);
   // Update the observed field value.
-  auto modified_field = base::ranges::find_if(
-      mutable_observed_form()->fields, [&field_id](const FormFieldData& field) {
+  std::vector<FormFieldData> fields = mutable_observed_form()->ExtractFields();
+  auto modified_field =
+      base::ranges::find_if(fields, [&field_id](const FormFieldData& field) {
         return field.renderer_id() == field_id;
       });
-  if (modified_field == mutable_observed_form()->fields.end()) {
+  if (modified_field == fields.end()) {
+    mutable_observed_form()->set_fields(std::move(fields));
     return;
   }
   modified_field->set_value(field_value);
+  mutable_observed_form()->set_fields(std::move(fields));
 
   if (!HasGeneratedPassword()) {
     return;
@@ -734,7 +737,8 @@ void PasswordFormManager::ProvisionallySaveFieldDataManagerInfo(
     const base::LRUCache<PossibleUsernameFieldIdentifier, PossibleUsernameData>&
         possible_usernames) {
   bool data_found = false;
-  for (FormFieldData& field : mutable_observed_form()->fields) {
+  std::vector<FormFieldData> fields = mutable_observed_form()->ExtractFields();
+  for (FormFieldData& field : fields) {
     FieldRendererId field_id = field.renderer_id();
     if (!field_data_manager.HasFieldData(field_id)) {
       continue;
@@ -744,6 +748,7 @@ void PasswordFormManager::ProvisionallySaveFieldDataManagerInfo(
         field_data_manager.GetFieldPropertiesMask(field_id));
     data_found = true;
   }
+  mutable_observed_form()->set_fields(std::move(fields));
 
   // Provisionally save form and set the manager to be submitted if valid
   // data was recovered.
@@ -768,7 +773,7 @@ bool PasswordFormManager::AreRemovedUnownedFieldsValidForSubmissionDetection(
   };
 
   bool has_removed_passwords =
-      base::ranges::any_of(observed_form()->fields, is_removed_password);
+      base::ranges::any_of(observed_form()->fields(), is_removed_password);
   if (!has_removed_passwords) {
     return false;
   }
@@ -776,7 +781,7 @@ bool PasswordFormManager::AreRemovedUnownedFieldsValidForSubmissionDetection(
   // The formless form can be considered submitted if all removed password
   // fields had input and there was at least one removed password field.
   return base::ranges::all_of(
-      observed_form()->fields, [&](const FormFieldData& field_data) {
+      observed_form()->fields(), [&](const FormFieldData& field_data) {
         return !is_removed_password(field_data) ||
                field_data_manager.HasFieldData(field_data.renderer_id());
       });
@@ -1202,7 +1207,7 @@ bool PasswordFormManager::ObservedFormHasField(int driver_id,
     return false;
   }
   CHECK(observed_form());
-  for (const auto& field : observed_form()->fields) {
+  for (const auto& field : observed_form()->fields()) {
     if (field.renderer_id() == field_id) {
       LogUsingPossibleUsername(client_, /*is_used*/ false, "Same form");
       return true;
@@ -1714,15 +1719,15 @@ bool HasObservedFormChanged(const FormData& form_data,
   const FormData& lhs = form_data;
   const FormData& rhs = *form_manager.observed_form();
 
-  if (lhs.fields.size() != rhs.fields.size()) {
+  if (lhs.fields().size() != rhs.fields().size()) {
     form_manager.GetMetricsRecorder()->RecordFormChangeBitmask(
         PasswordFormMetricsRecorder::kFieldsNumber);
     return true;
   }
   size_t differences_bitmask = 0;
-  for (size_t i = 0; i < lhs.fields.size(); ++i) {
-    const FormFieldData& lhs_field = lhs.fields[i];
-    const FormFieldData& rhs_field = rhs.fields[i];
+  for (size_t i = 0; i < lhs.fields().size(); ++i) {
+    const FormFieldData& lhs_field = lhs.fields()[i];
+    const FormFieldData& rhs_field = rhs.fields()[i];
 
     if (lhs_field.renderer_id() != rhs_field.renderer_id()) {
       differences_bitmask |= PasswordFormMetricsRecorder::kRendererFieldIDs;

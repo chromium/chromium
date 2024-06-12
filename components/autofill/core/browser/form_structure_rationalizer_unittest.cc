@@ -122,7 +122,7 @@ std::pair<FormData, std::string> CreateFormAndServerClassification(
   for (size_t i = 0; i < fields.size(); ++i) {
     auto* field_suggestion = form_suggestion->add_field_suggestions();
     field_suggestion->set_field_signature(
-        CalculateFieldSignatureForField(form.fields[i]).value());
+        CalculateFieldSignatureForField(form.fields()[i]).value());
     *field_suggestion->add_predictions() =
         ::autofill::test::CreateFieldPrediction(
             fields[i].field_type, fields[i].field_type_is_override);

@@ -2161,9 +2161,10 @@ FindFormAndFieldForFormControlElement(
   std::optional<FormData> form = ExtractFormData(
       document, form_element, field_data_manager, extract_options);
   if (form) {
-    if (auto it = base::ranges::find(form->fields, GetFieldRendererId(element),
-                                     &FormFieldData::renderer_id);
-        it != form->fields.end()) {
+    if (auto it =
+            base::ranges::find(form->fields(), GetFieldRendererId(element),
+                               &FormFieldData::renderer_id);
+        it != form->fields().end()) {
       return std::make_optional(std::make_pair(std::move(*form), raw_ref(*it)));
     }
   }

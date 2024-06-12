@@ -92,19 +92,20 @@ class AutofillFieldFillingStatsAndScoreMetricsTest
   // Simulates user changes to the fields [1, 5] of `form_data_`. Used
   // to cover user correction metrics.
   void SimulationOfDefaultUserChangesOnAddedFormTextFields() {
-    ASSERT_GT(form_data_.fields.size(), 6u);
+    ASSERT_GT(form_data_.fields().size(), 6u);
     // Elvis is of type NAME_FIRST in the test profile.
-    SimulateUserChangedTextFieldTo(form_data_, form_data_.fields[1], u"Elvis");
+    SimulateUserChangedTextFieldTo(form_data_, form_data_.fields()[1],
+                                   u"Elvis");
     // Presley is of type NAME_LAST in the test profile
-    SimulateUserChangedTextFieldTo(form_data_, form_data_.fields[2],
+    SimulateUserChangedTextFieldTo(form_data_, form_data_.fields()[2],
                                    u"Presley");
     // Presley is of type NAME_LAST in the test profile
-    SimulateUserChangedTextFieldTo(form_data_, form_data_.fields[3],
+    SimulateUserChangedTextFieldTo(form_data_, form_data_.fields()[3],
                                    u"Presley");
     // This is a random string of UNKNOWN_TYPE.
-    SimulateUserChangedTextFieldTo(form_data_, form_data_.fields[4],
+    SimulateUserChangedTextFieldTo(form_data_, form_data_.fields()[4],
                                    u"something random");
-    SimulateUserChangedTextFieldTo(form_data_, form_data_.fields[5], u"");
+    SimulateUserChangedTextFieldTo(form_data_, form_data_.fields()[5], u"");
   }
 
   // Creates, adds and "sees" a form that contains `fields`.
@@ -332,13 +333,15 @@ TEST_F(AutocompleteUnrecognizedFieldFillingStatsTest, FieldFillingStats) {
             .autocomplete_attribute = "unrecognized"},
            {.role = EMAIL_ADDRESS, .autocomplete_attribute = "unrecognized"}}});
 
-  SimulateUserChangedTextFieldTo(form, form.fields[0], u"Corrected First Name");
-  SimulateUserChangedTextFieldTo(form, form.fields[1],
+  SimulateUserChangedTextFieldTo(form, form.fields()[0],
+                                 u"Corrected First Name");
+  SimulateUserChangedTextFieldTo(form, form.fields()[1],
                                  u"Corrected Middle Name");
-  SimulateUserChangedTextFieldTo(form, form.fields[2], u"Corrected Last Name");
-  SimulateUserChangedTextFieldTo(form, form.fields[8],
+  SimulateUserChangedTextFieldTo(form, form.fields()[2],
+                                 u"Corrected Last Name");
+  SimulateUserChangedTextFieldTo(form, form.fields()[8],
                                  u"Manually Filled Phone");
-  SimulateUserChangedTextFieldTo(form, form.fields[9],
+  SimulateUserChangedTextFieldTo(form, form.fields()[9],
                                  u"Manually Filled Email");
 
   base::HistogramTester histogram_tester;

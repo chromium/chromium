@@ -246,7 +246,7 @@ ValuePatternsMetric GetValuePattern(const std::u16string& value) {
 }
 
 void LogValuePatternsMetric(const FormData& form) {
-  for (const FormFieldData& field : form.fields) {
+  for (const FormFieldData& field : form.fields()) {
     if (!field.IsFocusable()) {
       continue;
     }
@@ -481,7 +481,7 @@ bool ShouldFetchCreditCard(const FormData& form,
                            const FormStructure& form_structure,
                            const AutofillField& autofill_field,
                            const CreditCard& credit_card) {
-  if (WillFillCreditCardNumber(form.fields, form_structure.fields(),
+  if (WillFillCreditCardNumber(form.fields(), form_structure.fields(),
                                autofill_field)) {
     return true;
   }
@@ -937,7 +937,7 @@ void BrowserAutofillManager::OnFormSubmittedImpl(const FormData& form,
 
   // TODO crbug.com/40100455 - Eliminate `form_for_autocomplete`.
   FormData form_for_autocomplete = submitted_form->ToFormData();
-  form_for_autocomplete.fields = std::move(fields_for_autocomplete);
+  form_for_autocomplete.set_fields(std::move(fields_for_autocomplete));
   single_field_form_fill_router_->OnWillSubmitForm(
       form_for_autocomplete, submitted_form.get(),
       client().IsAutocompleteEnabled());
@@ -2032,8 +2032,8 @@ void BrowserAutofillManager::OnJavaScriptChangedAutofilledValueImpl(
     return str;
   };
   auto GetFieldNumber = [&]() {
-    for (size_t i = 0; i < form.fields.size(); ++i) {
-      if (form.fields[i].global_id() == field_id) {
+    for (size_t i = 0; i < form.fields().size(); ++i) {
+      if (form.fields()[i].global_id() == field_id) {
         return base::StringPrintf("Field %zu", i);
       }
     }
@@ -2670,9 +2670,9 @@ std::vector<Suggestion> BrowserAutofillManager::GetProfileSuggestions(
     // as a fallback that all fields are fillable.
     base::flat_map<FieldGlobalId, FieldFillingSkipReason> skip_reasons;
     size_t num_fields = form_structure ? form_structure->field_count() : 0;
-    if (form_structure && form.fields.size() == num_fields) {
+    if (form_structure && form.fields().size() == num_fields) {
       skip_reasons = form_filler_->GetFieldFillingSkipReasons(
-          form.fields, *form_structure, *trigger_autofill_field,
+          form.fields(), *form_structure, *trigger_autofill_field,
           GetTargetFieldsForAddressFillingSuggestionType(
               current_suggestion_type, trigger_field_type),
           /*type_groups_originally_filled=*/std::nullopt,
@@ -2719,7 +2719,7 @@ std::vector<Suggestion> BrowserAutofillManager::GetCreditCardSuggestions(
     if (!cached_form) {
       return true;
     }
-    for (const FormFieldData& field : form.fields) {
+    for (const FormFieldData& field : form.fields()) {
       AutofillField* autofill_field =
           cached_form->GetFieldById(field.global_id());
       if (autofill_field && autofill_field->Type().GetStorableType() ==

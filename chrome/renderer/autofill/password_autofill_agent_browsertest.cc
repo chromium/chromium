@@ -358,7 +358,7 @@ void SetElementReadOnly(WebInputElement& element, bool read_only) {
 
 bool FormHasFieldWithValue(const autofill::FormData& form,
                            const std::u16string& value) {
-  for (const auto& field : form.fields) {
+  for (const auto& field : form.fields()) {
     if (field.value() == value) {
       return true;
     }
@@ -846,7 +846,7 @@ class PasswordAutofillAgentTest : public ChromeRenderViewTest {
     }
 
     size_t unchecked_masks = expected_properties_masks.size();
-    for (const FormFieldData& field : form_data.fields) {
+    for (const FormFieldData& field : form_data.fields()) {
       const auto& it = expected_properties_masks.find(field.name());
       if (it == expected_properties_masks.end())
         continue;
@@ -5072,9 +5072,9 @@ TEST_F(PasswordAutofillAgentTest, JSFieldModificationPasswordForm) {
   EXPECT_EQ(fake_driver_.called_inform_about_user_input_count(), 2);
   ASSERT_TRUE(fake_driver_.form_data_maybe_submitted().has_value());
   FormData form_data = fake_driver_.form_data_maybe_submitted().value();
-  ASSERT_EQ(form_data.fields.size(), 3u);
-  EXPECT_EQ(form_data.fields[1].value(), base::ASCIIToUTF16(kJsUsername));
-  EXPECT_EQ(form_data.fields[2].value(), base::ASCIIToUTF16(kJsPassword));
+  ASSERT_EQ(form_data.fields().size(), 3u);
+  EXPECT_EQ(form_data.fields()[1].value(), base::ASCIIToUTF16(kJsUsername));
+  EXPECT_EQ(form_data.fields()[2].value(), base::ASCIIToUTF16(kJsPassword));
 }
 
 // Test that password manager is not notified about JS inputs in non

@@ -58,7 +58,7 @@ class PasswordFormCacheTest : public testing::Test {
 
     // Fill values into the fields to save the form.
     FormData filled_form = form;
-    EXPECT_EQ(filled_form.fields.size(), 2u);
+    EXPECT_EQ(filled_form.fields().size(), 2u);
     test_api(filled_form).fields()[0].set_value(u"username");
     test_api(filled_form).fields()[1].set_value(u"password");
     form_manager->ProvisionallySave(
@@ -109,7 +109,7 @@ TEST_F(PasswordFormCacheTest, GetMatchedManager) {
       cache().GetMatchedManager(&driver(), form.renderer_id());
 
   ASSERT_TRUE(matched_manager->DoesManage(form.renderer_id(), &driver()));
-  for (const FormFieldData& field : form.fields) {
+  for (const FormFieldData& field : form.fields()) {
     ASSERT_TRUE(matched_manager->DoesManage(field.renderer_id(), &driver()));
     ASSERT_EQ(matched_manager,
               cache().GetMatchedManager(&driver(), field.renderer_id()));

@@ -130,7 +130,7 @@ class LocalCardMigrationManagerTest : public testing::Test {
                           std::string_view expiration_month,
                           std::string_view expiration_year,
                           std::string_view cvc) {
-    DCHECK(credit_card_form.fields.size() >= 5);
+    DCHECK(credit_card_form.fields().size() >= 5);
     test_api(credit_card_form)
         .fields()[0]
         .set_value(ASCIIToUTF16(name_on_card));

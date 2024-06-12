@@ -1414,8 +1414,9 @@ TEST_F(FieldFillingPaymentsUtilTest, WillFillCreditCardNumber_NoCCNumberField) {
   FormStructure form_structure(form_data);
   test_api(form_structure).SetFieldTypes({NAME_FIRST});
 
-  EXPECT_FALSE(WillFillCreditCardNumber(
-      form_data.fields, form_structure.fields(), *form_structure.fields()[0]));
+  EXPECT_FALSE(WillFillCreditCardNumber(form_data.fields(),
+                                        form_structure.fields(),
+                                        *form_structure.fields()[0]));
 }
 
 // Verify that `WillFillCreditCardNumber` return false on the form where the
@@ -1433,8 +1434,9 @@ TEST_F(FieldFillingPaymentsUtilTest,
   FormStructure form_structure(form_data);
   test_api(form_structure)
       .SetFieldTypes({CREDIT_CARD_NAME_FIRST, CREDIT_CARD_NUMBER});
-  EXPECT_FALSE(WillFillCreditCardNumber(
-      form_data.fields, form_structure.fields(), *form_structure.fields()[0]));
+  EXPECT_FALSE(WillFillCreditCardNumber(form_data.fields(),
+                                        form_structure.fields(),
+                                        *form_structure.fields()[0]));
 }
 
 // Verify that `WillFillCreditCardNumber` return false on the form where the
@@ -1452,8 +1454,9 @@ TEST_F(FieldFillingPaymentsUtilTest,
   FormStructure form_structure(form_data);
   test_api(form_structure)
       .SetFieldTypes({CREDIT_CARD_NAME_FIRST, CREDIT_CARD_NUMBER});
-  EXPECT_FALSE(WillFillCreditCardNumber(
-      form_data.fields, form_structure.fields(), *form_structure.fields()[0]));
+  EXPECT_FALSE(WillFillCreditCardNumber(form_data.fields(),
+                                        form_structure.fields(),
+                                        *form_structure.fields()[0]));
 }
 
 // Verify that `WillFillCreditCardNumber` return true on the form where the
@@ -1470,8 +1473,9 @@ TEST_F(FieldFillingPaymentsUtilTest,
   FormStructure form_structure(form_data);
   test_api(form_structure)
       .SetFieldTypes({CREDIT_CARD_NAME_FIRST, CREDIT_CARD_NUMBER});
-  EXPECT_TRUE(WillFillCreditCardNumber(
-      form_data.fields, form_structure.fields(), *form_structure.fields()[0]));
+  EXPECT_TRUE(WillFillCreditCardNumber(form_data.fields(),
+                                       form_structure.fields(),
+                                       *form_structure.fields()[0]));
 }
 
 // Verify that `WillFillCreditCardNumber` return true on the form where the
@@ -1490,8 +1494,9 @@ TEST_F(FieldFillingPaymentsUtilTest,
   FormStructure form_structure(form_data);
   test_api(form_structure)
       .SetFieldTypes({CREDIT_CARD_NAME_FIRST, CREDIT_CARD_NUMBER});
-  EXPECT_TRUE(WillFillCreditCardNumber(
-      form_data.fields, form_structure.fields(), *form_structure.fields()[0]));
+  EXPECT_TRUE(WillFillCreditCardNumber(form_data.fields(),
+                                       form_structure.fields(),
+                                       *form_structure.fields()[0]));
 }
 
 }  // namespace

@@ -50,14 +50,14 @@ FormData CreateForm(
     FormControlType control_type = FormControlType::kInputText) {
   FormData form;
   form.set_url(GURL("https://www.foo.com"));
-  form.fields = {
+  form.set_fields({
       CreateTestFormField("Field one:", "text_value", /*value=*/"",
                           control_type),
       CreateTestFormField("Field two:", "text_value_two",
                           /*value=*/"", control_type),
       CreateTestFormField("Field three:", "text_value_three",
                           /*value=*/"", control_type),
-  };
+  });
   return form;
 }
 
@@ -121,7 +121,7 @@ TEST_F(ComposeTextUsageLoggerTest, TextFieldEntry) {
   autofill_manager()->AddSeenFormStructure(
       std::make_unique<autofill::FormStructure>(form_data));
 
-  SimulateTyping(form_data.global_id(), form_data.fields[0].global_id(),
+  SimulateTyping(form_data.global_id(), form_data.fields()[0].global_id(),
                  u"Some text");
 
   DeleteContents();
@@ -148,7 +148,7 @@ TEST_F(ComposeTextUsageLoggerTest, TestEnableAdditionalTextMetricsIsOff) {
   autofill_manager()->AddSeenFormStructure(
       std::make_unique<autofill::FormStructure>(form_data));
 
-  SimulateTyping(form_data.global_id(), form_data.fields[0].global_id(),
+  SimulateTyping(form_data.global_id(), form_data.fields()[0].global_id(),
                  u"Some text");
 
   DeleteContents();
@@ -169,7 +169,7 @@ TEST_F(ComposeTextUsageLoggerTest, TextAreaEntry) {
   FormData form_data = CreateForm(FormControlType::kTextArea);
   autofill_manager()->AddSeenFormStructure(
       std::make_unique<autofill::FormStructure>(form_data));
-  SimulateTyping(form_data.global_id(), form_data.fields[0].global_id(),
+  SimulateTyping(form_data.global_id(), form_data.fields()[0].global_id(),
                  u"Some text");
 
   DeleteContents();
@@ -201,7 +201,7 @@ TEST_F(ComposeTextUsageLoggerTest, TextAreaEntry) {
 TEST_F(ComposeTextUsageLoggerTest, FormNotFound) {
   // Not calling AddSeenFormStructure(), so the form won't be found.
   FormData form_data = CreateForm(FormControlType::kInputText);
-  SimulateTyping(form_data.global_id(), form_data.fields[0].global_id(),
+  SimulateTyping(form_data.global_id(), form_data.fields()[0].global_id(),
                  u"Some text");
 
   DeleteContents();
@@ -223,7 +223,7 @@ TEST_F(ComposeTextUsageLoggerTest, SensitiveFieldEntry) {
       autofill::AutofillType(autofill::FieldType::CREDIT_CARD_NAME_FIRST));
   autofill_manager()->AddSeenFormStructure(std::move(form_structure));
 
-  SimulateTyping(form_data.global_id(), form_data.fields[0].global_id(),
+  SimulateTyping(form_data.global_id(), form_data.fields()[0].global_id(),
                  u"Some text");
 
   DeleteContents();
@@ -247,7 +247,7 @@ TEST_F(ComposeTextUsageLoggerTest, NonSensitiveAutofillFieldType) {
       autofill::AutofillType(autofill::FieldType::ADDRESS_HOME_ADDRESS));
   autofill_manager()->AddSeenFormStructure(std::move(form_structure));
 
-  SimulateTyping(form_data.global_id(), form_data.fields[0].global_id(),
+  SimulateTyping(form_data.global_id(), form_data.fields()[0].global_id(),
                  u"Some text");
 
   DeleteContents();
@@ -268,9 +268,9 @@ TEST_F(ComposeTextUsageLoggerTest, OnlyLastChangeIsLogged) {
   FormData form_data = CreateForm(FormControlType::kTextArea);
   autofill_manager()->AddSeenFormStructure(
       std::make_unique<autofill::FormStructure>(form_data));
-  SimulateTyping(form_data.global_id(), form_data.fields[0].global_id(),
+  SimulateTyping(form_data.global_id(), form_data.fields()[0].global_id(),
                  u"Some text");
-  SimulateTyping(form_data.global_id(), form_data.fields[0].global_id(),
+  SimulateTyping(form_data.global_id(), form_data.fields()[0].global_id(),
                  u"One two three four");
 
   DeleteContents();
@@ -291,11 +291,11 @@ TEST_F(ComposeTextUsageLoggerTest, LastChangeClearsField) {
   FormData form_data = CreateForm(FormControlType::kTextArea);
   autofill_manager()->AddSeenFormStructure(
       std::make_unique<autofill::FormStructure>(form_data));
-  SimulateTyping(form_data.global_id(), form_data.fields[0].global_id(),
+  SimulateTyping(form_data.global_id(), form_data.fields()[0].global_id(),
                  u"Some text");
   logger()->OnAfterTextFieldDidChange(*autofill_manager(),
                                       form_data.global_id(),
-                                      form_data.fields[0].global_id(), u"");
+                                      form_data.fields()[0].global_id(), u"");
 
   DeleteContents();
 
@@ -307,7 +307,7 @@ TEST_F(ComposeTextUsageLoggerTest, FieldNotEmptyAtStart) {
   FormData form_data = CreateForm(FormControlType::kTextArea);
   autofill_manager()->AddSeenFormStructure(
       std::make_unique<autofill::FormStructure>(form_data));
-  SimulateTyping(form_data.global_id(), form_data.fields[0].global_id(),
+  SimulateTyping(form_data.global_id(), form_data.fields()[0].global_id(),
                  u"This is some longer text that exists in the field. New text"
                  u" is now written here !!!!",
                  /*start_index=*/50);
@@ -333,11 +333,11 @@ TEST_F(ComposeTextUsageLoggerTest, CantWriteMoreCharactersThanExistInField) {
       std::make_unique<autofill::FormStructure>(form_data));
 
   // Types 0123456789 three times, replacing the field contents each time.
-  SimulateTyping(form_data.global_id(), form_data.fields[0].global_id(),
+  SimulateTyping(form_data.global_id(), form_data.fields()[0].global_id(),
                  u"0123456789");
-  SimulateTyping(form_data.global_id(), form_data.fields[0].global_id(),
+  SimulateTyping(form_data.global_id(), form_data.fields()[0].global_id(),
                  u"0123456789");
-  SimulateTyping(form_data.global_id(), form_data.fields[0].global_id(),
+  SimulateTyping(form_data.global_id(), form_data.fields()[0].global_id(),
                  u"0123456789");
   DeleteContents();
 
@@ -358,9 +358,9 @@ TEST_F(ComposeTextUsageLoggerTest, TwoFieldsModified) {
   FormData form_data = CreateForm(FormControlType::kTextArea);
   autofill_manager()->AddSeenFormStructure(
       std::make_unique<autofill::FormStructure>(form_data));
-  SimulateTyping(form_data.global_id(), form_data.fields[0].global_id(),
+  SimulateTyping(form_data.global_id(), form_data.fields()[0].global_id(),
                  u"Some text");
-  SimulateTyping(form_data.global_id(), form_data.fields[1].global_id(),
+  SimulateTyping(form_data.global_id(), form_data.fields()[1].global_id(),
                  u"One two three four");
 
   DeleteContents();
@@ -392,10 +392,11 @@ TEST_F(ComposeTextUsageLoggerTest, CountingWordsCorrectly) {
   autofill_manager()->AddSeenFormStructure(
       std::make_unique<autofill::FormStructure>(form_data));
 
-  SimulateTyping(form_data.global_id(), form_data.fields[0].global_id(), u" ");
-  SimulateTyping(form_data.global_id(), form_data.fields[1].global_id(),
+  SimulateTyping(form_data.global_id(), form_data.fields()[0].global_id(),
+                 u" ");
+  SimulateTyping(form_data.global_id(), form_data.fields()[1].global_id(),
                  u"\r\n hi\tmom\r");
-  SimulateTyping(form_data.global_id(), form_data.fields[2].global_id(),
+  SimulateTyping(form_data.global_id(), form_data.fields()[2].global_id(),
                  u" word");
 
   DeleteContents();
@@ -435,7 +436,7 @@ TEST_F(ComposeTextUsageLoggerTest, ContentEditableEntry) {
   FormData form_data = CreateForm(FormControlType::kContentEditable);
   autofill_manager()->AddSeenFormStructure(
       std::make_unique<autofill::FormStructure>(form_data));
-  SimulateTyping(form_data.global_id(), form_data.fields[0].global_id(),
+  SimulateTyping(form_data.global_id(), form_data.fields()[0].global_id(),
                  u"Some text");
 
   DeleteContents();
@@ -455,7 +456,7 @@ TEST_F(ComposeTextUsageLoggerTest, ContentEditableEntry) {
 TEST_F(ComposeTextUsageLoggerTest, ContentEditableFormNotFound) {
   // Not calling AddSeenFormStructure(), so the form won't be found.
   FormData form_data = CreateForm(FormControlType::kContentEditable);
-  SimulateTyping(form_data.global_id(), form_data.fields[0].global_id(),
+  SimulateTyping(form_data.global_id(), form_data.fields()[0].global_id(),
                  u"Some text");
 
   DeleteContents();
@@ -474,19 +475,19 @@ TEST_F(ComposeTextUsageLoggerTest, TwoTypesOfFormsModified) {
   FormData form_data = CreateForm(FormControlType::kTextArea);
   autofill_manager()->AddSeenFormStructure(
       std::make_unique<autofill::FormStructure>(form_data));
-  SimulateTyping(form_data.global_id(), form_data.fields[0].global_id(),
+  SimulateTyping(form_data.global_id(), form_data.fields()[0].global_id(),
                  u"Some text");
-  SimulateTyping(form_data.global_id(), form_data.fields[1].global_id(),
+  SimulateTyping(form_data.global_id(), form_data.fields()[1].global_id(),
                  u"One two three four");
   FormData content_editable_form_data =
       CreateForm(FormControlType::kContentEditable);
   autofill_manager()->AddSeenFormStructure(
       std::make_unique<autofill::FormStructure>(content_editable_form_data));
   SimulateTyping(content_editable_form_data.global_id(),
-                 content_editable_form_data.fields[0].global_id(),
+                 content_editable_form_data.fields()[0].global_id(),
                  u"Some text");
   SimulateTyping(content_editable_form_data.global_id(),
-                 content_editable_form_data.fields[1].global_id(),
+                 content_editable_form_data.fields()[1].global_id(),
                  u"One two three four");
   DeleteContents();
 
@@ -538,7 +539,7 @@ TEST_F(ComposeTextUsageLoggerTest, EditingTime) {
   autofill_manager()->AddSeenFormStructure(
       std::make_unique<autofill::FormStructure>(form_data));
   auto form_id = form_data.global_id();
-  auto field_id = form_data.fields[0].global_id();
+  auto field_id = form_data.fields()[0].global_id();
 
   SimulateTyping(form_id, field_id, u"h");
   task_environment()->FastForwardBy(base::Seconds(1));
@@ -571,7 +572,7 @@ TEST_F(ComposeTextUsageLoggerTest, NoLongFieldEditingTimeForShortFields) {
   autofill_manager()->AddSeenFormStructure(
       std::make_unique<autofill::FormStructure>(form_data));
   auto form_id = form_data.global_id();
-  auto field_id = form_data.fields[0].global_id();
+  auto field_id = form_data.fields()[0].global_id();
 
   SimulateTyping(form_id, field_id, u"h");
   task_environment()->FastForwardBy(base::Seconds(4));

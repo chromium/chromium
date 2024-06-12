@@ -152,7 +152,7 @@ std::string GetFormDataFieldsAndPredictionsLogString(
   result += BrowserSavePasswordProgressLogger::GetStringFromID(
                 BrowserSavePasswordProgressLogger::STRING_FIELDS) +
             ": " + "\n";
-  for (const FormFieldData& field : form.fields) {
+  for (const FormFieldData& field : form.fields()) {
     std::string field_info = GetFormFieldDataWithPropertiesMaskLogString(field);
 
     if (!predictions.contains(field.global_id())) {

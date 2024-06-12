@@ -41,7 +41,7 @@ using ::testing::NiceMock;
 
 void OnTextFieldDidChangeForAutofillManager(AutofillManager& autofill_manager) {
   FormData form = CreateTestAddressFormData();
-  autofill_manager.OnTextFieldDidChange(form, form.fields.front().global_id(),
+  autofill_manager.OnTextFieldDidChange(form, form.fields().front().global_id(),
                                         base::TimeTicks::Now());
 }
 

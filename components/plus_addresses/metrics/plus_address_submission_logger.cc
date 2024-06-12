@@ -173,7 +173,7 @@ void PlusAddressSubmissionLogger::OnFormSubmitted(
 
   bool gaia_email_submitted = false;
   bool plus_address_submitted = false;
-  for (const FormFieldData& field : form.fields) {
+  for (const FormFieldData& field : form.fields()) {
     // TODO: crbug.com/343124027 - Consider removing whitespace.
     const std::string normalized_value = base::UTF16ToUTF8(
         autofill::RemoveDiacriticsAndConvertToLowerCase(field.value()));
@@ -194,7 +194,7 @@ void PlusAddressSubmissionLogger::OnFormSubmitted(
   base::flat_map<FieldGlobalId, Record>& records_for_manager =
       records_[&manager];
   bool has_recorded_submission = false;
-  for (const FormFieldData& field : form.fields) {
+  for (const FormFieldData& field : form.fields()) {
     auto it = records_for_manager.find(field.global_id());
     if (it == records_for_manager.end()) {
       continue;
