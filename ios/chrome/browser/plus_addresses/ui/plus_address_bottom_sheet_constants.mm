@@ -30,7 +30,11 @@ const CGFloat kPlusAddressSheetCellImageSize = 16;
 
 const CGFloat kPlusAddressSheetBrandingIconContainerViewSize = 64;
 
-const CGFloat kPlusAddressSheetBrandingIconContainerViewCornerRadius = 15;
+const CGFloat kPlusAddressSheetBrandingIconContainerViewCornerRadius = 13;
+
+const CGFloat kPlusAddressSheetBrandingIconContainerViewShadowRadius = 6;
+
+const CGFloat kPlusAddressSheetBrandingIconContainerViewShadowOpacity = 0.1;
 
 const CGFloat kPlusAddressSheetBrandingIconSize = 32;
 

@@ -55,6 +55,12 @@ extern const CGFloat kPlusAddressSheetBrandingIconContainerViewSize;
 // Branding icon view corner radius.
 extern const CGFloat kPlusAddressSheetBrandingIconContainerViewCornerRadius;
 
+// Branding icon view shadow radius.
+extern const CGFloat kPlusAddressSheetBrandingIconContainerViewShadowRadius;
+
+// Branding icon view shadow opacity.
+extern const CGFloat kPlusAddressSheetBrandingIconContainerViewShadowOpacity;
+
 // Branding icon size that sits inside the entire view.
 extern const CGFloat kPlusAddressSheetBrandingIconSize;
 

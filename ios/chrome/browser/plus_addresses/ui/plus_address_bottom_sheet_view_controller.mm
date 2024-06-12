@@ -205,6 +205,7 @@ UIImage* PlusAddressesLogo() {
         l10n_util::GetNSString(IDS_PLUS_ADDRESS_BOTTOMSHEET_OK_TEXT_IOS);
     self.secondaryActionString =
         l10n_util::GetNSString(IDS_PLUS_ADDRESS_BOTTOMSHEET_CANCEL_TEXT_IOS);
+    self.customScrollViewBottomInsets = 0;
   } else {
     self.image = PlusAddressesLogo();
     self.imageHasFixedSize = YES;
@@ -569,8 +570,10 @@ UIImage* PlusAddressesLogo() {
   iconContainerView.translatesAutoresizingMaskIntoConstraints = NO;
   iconContainerView.layer.cornerRadius =
       kPlusAddressSheetBrandingIconContainerViewCornerRadius;
-  // TODO(crbug.com/343153116): Fix the shadow.
-  iconContainerView.layer.shadowOpacity = 0.3;
+  iconContainerView.layer.shadowRadius =
+      kPlusAddressSheetBrandingIconContainerViewShadowRadius;
+  iconContainerView.layer.shadowOpacity =
+      kPlusAddressSheetBrandingIconContainerViewShadowOpacity;
   iconContainerView.backgroundColor = [UIColor colorNamed:kSolidWhiteColor];
 
   UIImageView* icon = BrandingImageView();
