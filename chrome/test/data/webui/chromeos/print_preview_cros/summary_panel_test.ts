@@ -6,8 +6,9 @@ import 'chrome://os-print/js/summary_panel.js';
 
 import {CapabilitiesManager} from 'chrome://os-print/js/data/capabilities_manager.js';
 import {PreviewTicketManager} from 'chrome://os-print/js/data/preview_ticket_manager.js';
+import type {PrintPreviewPageHandlerComposite} from 'chrome://os-print/js/data/print_preview_page_handler_composite.js';
 import {PrintTicketManager} from 'chrome://os-print/js/data/print_ticket_manager.js';
-import {FAKE_PRINT_SESSION_CONTEXT_SUCCESSFUL, FakePrintPreviewPageHandler} from 'chrome://os-print/js/fakes/fake_print_preview_page_handler.js';
+import {FAKE_PRINT_SESSION_CONTEXT_SUCCESSFUL, type FakePrintPreviewPageHandler} from 'chrome://os-print/js/fakes/fake_print_preview_page_handler.js';
 import {SummaryPanelElement} from 'chrome://os-print/js/summary_panel.js';
 import {PRINT_BUTTON_DISABLED_CHANGED_EVENT, SHEETS_USED_CHANGED_EVENT, SummaryPanelController} from 'chrome://os-print/js/summary_panel_controller.js';
 import {createCustomEvent} from 'chrome://os-print/js/utils/event_utils.js';
@@ -42,7 +43,8 @@ suite('SummaryPanel', () => {
     mockTimer.install();
     resetDataManagersAndProviders();
     printPreviewPageHandler =
-        getPrintPreviewPageHandler() as FakePrintPreviewPageHandler;
+        (getPrintPreviewPageHandler() as PrintPreviewPageHandlerComposite)
+            .fakePageHandler;
     element =
         document.createElement(SummaryPanelElement.is) as SummaryPanelElement;
     assertTrue(!!element);

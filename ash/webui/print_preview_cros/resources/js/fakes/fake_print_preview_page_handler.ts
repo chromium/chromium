@@ -8,6 +8,7 @@ import {assert} from 'chrome://resources/js/assert.js';
 import {UnguessableToken} from 'chrome://resources/mojo/mojo/public/mojom/base/unguessable_token.mojom-webui.js';
 
 import {FakeGeneratePreviewObserver, PreviewTicket, type PrintPreviewPageHandler, type PrintRequestOutcome, SessionContext} from '../utils/print_preview_cros_app_types.js';
+import type {PrintTicket} from '../utils/print_preview_cros_app_types.js';
 
 /**
  * @fileoverview
@@ -96,7 +97,8 @@ export class FakePrintPreviewPageHandler implements PrintPreviewPageHandler {
   }
 
   // Mock implementation of print.
-  print(): Promise<{printRequestOutcome: PrintRequestOutcome}> {
+  print(_ticket: PrintTicket):
+      Promise<{printRequestOutcome: PrintRequestOutcome}> {
     this.incrementCallCount(PRINT_METHOD);
     return this.methods.resolveMethodWithDelay(PRINT_METHOD, this.testDelayMs);
   }

@@ -7,8 +7,9 @@ import 'chrome://os-print/js/print_preview_cros_app_controller.js';
 import {CAPABILITIES_MANAGER_SESSION_INITIALIZED, CapabilitiesManager} from 'chrome://os-print/js/data/capabilities_manager.js';
 import {DESTINATION_MANAGER_SESSION_INITIALIZED, DestinationManager} from 'chrome://os-print/js/data/destination_manager.js';
 import {PREVIEW_TICKET_MANAGER_SESSION_INITIALIZED, PreviewTicketManager} from 'chrome://os-print/js/data/preview_ticket_manager.js';
+import type {PrintPreviewPageHandlerComposite} from 'chrome://os-print/js/data/print_preview_page_handler_composite.js';
 import {PRINT_TICKET_MANAGER_SESSION_INITIALIZED, PrintTicketManager} from 'chrome://os-print/js/data/print_ticket_manager.js';
-import {FakePrintPreviewPageHandler} from 'chrome://os-print/js/fakes/fake_print_preview_page_handler.js';
+import type {FakePrintPreviewPageHandler} from 'chrome://os-print/js/fakes/fake_print_preview_page_handler.js';
 import {DIALOG_ARG_PROPERTY_KEY, PrintPreviewCrosAppController} from 'chrome://os-print/js/print_preview_cros_app_controller.js';
 import {getPrintPreviewPageHandler} from 'chrome://os-print/js/utils/mojo_data_providers.js';
 import {assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chromeos/chai_assert.js';
@@ -41,7 +42,8 @@ suite('PrintPreviewCrosAppController', () => {
 
     resetDataManagersAndProviders();
     printPreviewPageHandler =
-        getPrintPreviewPageHandler() as FakePrintPreviewPageHandler;
+        (getPrintPreviewPageHandler() as PrintPreviewPageHandlerComposite)
+            .fakePageHandler;
 
     controller = new PrintPreviewCrosAppController();
   });
@@ -67,7 +69,7 @@ suite('PrintPreviewCrosAppController', () => {
 
   // Verify `PrintPreviewPageHandler.startSession` is called when controller is
   // created.
-  test('triggers PrintPreviewPageHandler startSession', async () => {
+  test('triggers PrintPreviewPageHandlerComposite startSession', async () => {
     // Reset call counts before creating controller.
     printPreviewPageHandler.reset();
 

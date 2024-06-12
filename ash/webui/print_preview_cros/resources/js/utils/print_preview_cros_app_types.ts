@@ -543,3 +543,12 @@ export interface DestinationProvider {
 // implemented.
 export interface DestinationProviderCompositeInterface extends
     DestinationProviderInterface, DestinationProvider {}
+
+// This is a temporary interface with the purpose of combining methods from the
+// above fake PrintPreviewPageHandler interface and the actual
+// PrintPreviewPageHandlerInterface mojo implementation. All tests and classes
+// will use this interface until all methods are defined in mojom.
+// TODO(b/323421684): Remove the interface once all mojo methods are
+// implemented.
+export interface PrintPreviewPageHandlerCompositeInterface extends
+    PrintPreviewPageHandler {}

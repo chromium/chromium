@@ -8,7 +8,7 @@ import {EventTracker} from 'chrome://resources/js/event_tracker.js';
 import {getFakePreviewTicket} from '../fakes/fake_data.js';
 import {createCustomEvent} from '../utils/event_utils.js';
 import {getPrintPreviewPageHandler} from '../utils/mojo_data_providers.js';
-import {FakeGeneratePreviewObserver, type PrintPreviewPageHandler, SessionContext} from '../utils/print_preview_cros_app_types.js';
+import {FakeGeneratePreviewObserver, type PrintPreviewPageHandlerCompositeInterface, SessionContext} from '../utils/print_preview_cros_app_types.js';
 
 /**
  * @fileoverview
@@ -40,7 +40,8 @@ export class PreviewTicketManager extends EventTarget implements
   }
 
   // Non-static properties:
-  private printPreviewPageHandler: PrintPreviewPageHandler|null;
+  private printPreviewPageHandler: PrintPreviewPageHandlerCompositeInterface|
+      null;
   private previewLoaded = false;
   private sessionContext: SessionContext;
   private eventTracker = new EventTracker();

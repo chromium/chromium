@@ -20,6 +20,7 @@ build_webui("build") {
     "js/data/destination_constants.ts",
     "js/data/destination_manager.ts",
     "js/data/destination_provider_composite.ts",
+    "js/data/print_preview_page_handler_composite.ts",
     "js/data/preview_ticket_manager.ts",
     "js/data/print_ticket_manager.ts",
     "js/data/ticket_constants.ts",

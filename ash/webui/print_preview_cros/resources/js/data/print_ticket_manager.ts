@@ -7,7 +7,7 @@ import {EventTracker} from 'chrome://resources/js/event_tracker.js';
 
 import {createCustomEvent} from '../utils/event_utils.js';
 import {getPrintPreviewPageHandler} from '../utils/mojo_data_providers.js';
-import {type Destination, PrinterStatusReason, type PrintPreviewPageHandler, PrintTicket, SessionContext} from '../utils/print_preview_cros_app_types.js';
+import {type Destination, PrinterStatusReason, type PrintPreviewPageHandlerCompositeInterface, PrintTicket, SessionContext} from '../utils/print_preview_cros_app_types.js';
 import {isValidDestination} from '../utils/validation_utils.js';
 
 import {DESTINATION_MANAGER_ACTIVE_DESTINATION_CHANGED, DestinationManager} from './destination_manager.js';
@@ -45,7 +45,8 @@ export class PrintTicketManager extends EventTarget {
   }
 
   // Non-static properties:
-  private printPreviewPageHandler: PrintPreviewPageHandler|null;
+  private printPreviewPageHandler: PrintPreviewPageHandlerCompositeInterface|
+      null;
   private printRequestInProgress = false;
   private printTicket: PrintTicket|null = null;
   private sessionContext: SessionContext;
