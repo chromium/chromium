@@ -346,7 +346,9 @@ VariationsService::VariationsService(
       local_state_(local_state),
       synthetic_trial_registry_(synthetic_trial_registry),
       state_manager_(state_manager),
-      limited_entropy_synthetic_trial_(local_state),
+      limited_entropy_synthetic_trial_(
+          local_state,
+          client_.get()->GetChannelForVariations()),
       policy_pref_service_(local_state),
       resource_request_allowed_notifier_(std::move(notifier)),
       safe_seed_manager_(local_state),
