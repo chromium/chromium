@@ -78,11 +78,11 @@ class FocusModeChipCarouselTest : public AshTestBase {
   }
 
   views::ScrollView* GetScrollView() {
-    return focus_mode_chip_carousel_->scroll_view_;
+    return focus_mode_chip_carousel_->GetScrollViewForTesting();
   }
 
   views::View* GetScrollContents() {
-    return focus_mode_chip_carousel_->scroll_view_->contents();
+    return focus_mode_chip_carousel_->GetScrollViewForTesting()->contents();
   }
 
   views::ImageButton* GetLeftOverflowIcon() {

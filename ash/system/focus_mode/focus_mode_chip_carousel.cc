@@ -8,6 +8,7 @@
 #include "ash/resources/vector_icons/vector_icons.h"
 #include "base/containers/adapters.h"
 #include "base/i18n/rtl.h"
+#include "ui/base/metadata/metadata_header_macros.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/chromeos/styles/cros_tokens_color_mappings.h"
 #include "ui/compositor/layer.h"
@@ -20,6 +21,7 @@
 #include "ui/views/controls/highlight_path_generator.h"
 #include "ui/views/controls/scroll_view.h"
 #include "ui/views/layout/flex_layout_view.h"
+#include "ui/views/view_utils.h"
 
 namespace ash {
 
@@ -78,6 +80,24 @@ void SetupOverflowIcon(views::ImageButton* overflow_icon, bool left) {
   overflow_icon->layer()->SetFillsBoundsOpaquely(false);
 }
 
+class ChipCarouselScrollView : public views::ScrollView {
+  METADATA_HEADER(ChipCarouselScrollView, views::ScrollView)
+
+ public:
+  explicit ChipCarouselScrollView(ScrollWithLayers scroll_with_layers)
+      : views::ScrollView(scroll_with_layers) {}
+
+  // views::ScrollView:
+  bool OnMouseWheel(const ui::MouseWheelEvent& event) override {
+    // We want this scroll view to only handle the horizontal scroll events on
+    // it; if the user scrolls on it vertically, we want the outer scroll view
+    // to handle it.
+    return horizontal_scroll_bar()->OnScroll(event.x_offset(), 0);
+  }
+};
+BEGIN_METADATA(ChipCarouselScrollView)
+END_METADATA
+
 }  // namespace
 
 // `on_chip_pressed` will be called when a task chip is clicked, containing a
@@ -90,10 +110,12 @@ FocusModeChipCarousel::FocusModeChipCarousel(
   SetOrientation(views::BoxLayout::Orientation::kHorizontal);
   SetNotifyEnterExitOnChild(true);
 
-  scroll_view_ = AddChildView(std::make_unique<views::ScrollView>(
+  scroll_view_ = AddChildView(std::make_unique<ChipCarouselScrollView>(
       views::ScrollView::ScrollWithLayers::kEnabled));
   scroll_view_->SetHorizontalScrollBarMode(
       views::ScrollView::ScrollBarMode::kHiddenButEnabled);
+  scroll_view_->SetVerticalScrollBarMode(
+      views::ScrollView::ScrollBarMode::kDisabled);
   scroll_view_->SetDrawOverflowIndicator(false);
   scroll_view_->SetPaintToLayer();
   scroll_view_->SetBackgroundColor(std::nullopt);
@@ -300,6 +322,10 @@ bool FocusModeChipCarousel::HasTasks() const {
 
 int FocusModeChipCarousel::GetTaskCountForTesting() const {
   return scroll_contents_->GetChildrenInZOrder().size();
+}
+
+views::ScrollView* FocusModeChipCarousel::GetScrollViewForTesting() const {
+  return views::AsViewClass<views::ScrollView>(scroll_view_);
 }
 
 BEGIN_METADATA(FocusModeChipCarousel)

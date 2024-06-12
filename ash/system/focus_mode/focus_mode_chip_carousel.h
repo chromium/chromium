@@ -13,10 +13,13 @@
 namespace views {
 class FlexLayoutView;
 class ImageButton;
-class ScrollView;
 }  // namespace views
 
 namespace ash {
+
+namespace {
+class ChipCarouselScrollView;
+}
 
 // A horizontal scroll bar of chips for tasks. Selecting a task chip will save
 // it as the currently selected task for the focus session.
@@ -43,6 +46,8 @@ class ASH_EXPORT FocusModeChipCarousel : public views::BoxLayoutView {
   // Returns the number of tasks the carousel is currently showing.
   int GetTaskCountForTesting() const;
 
+  views::ScrollView* GetScrollViewForTesting() const;
+
   // views::View:
   void Layout(PassKey) override;
   void OnMouseEntered(const ui::MouseEvent& event) override;
@@ -65,7 +70,7 @@ class ASH_EXPORT FocusModeChipCarousel : public views::BoxLayoutView {
   // scroll past the end of the carousel.
   void ScrollToChip(views::View* chip);
 
-  raw_ptr<views::ScrollView> scroll_view_ = nullptr;
+  raw_ptr<ChipCarouselScrollView> scroll_view_ = nullptr;
   // This view contains the chips for the chip carousel.
   raw_ptr<views::FlexLayoutView> scroll_contents_ = nullptr;
   // The callback to run when a task chip is pressed.
