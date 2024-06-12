@@ -5,7 +5,10 @@
 #include "ui/base/models/image_model_utils.h"
 
 #include "ui/base/models/image_model.h"
+#include "ui/color/color_id.h"
 #include "ui/color/color_provider.h"
+#include "ui/gfx/color_palette.h"
+#include "ui/gfx/image/image.h"
 #include "ui/gfx/image/image_skia_operations.h"
 
 namespace ui {
@@ -24,7 +27,8 @@ ImageModel GetDefaultDisabledIconFromImageModel(ImageModel icon_model,
     VectorIconModel vector_model = icon_model.GetVectorIcon();
     const gfx::VectorIcon* vector_icon = vector_model.vector_icon();
     return ImageModel::FromVectorIcon(
-        *vector_icon, color_provider->GetColor(kColorIconDisabled));
+        *vector_icon, color_provider->GetColor(kColorIconDisabled),
+        vector_model.icon_size());
   }
 
   if (icon_model.IsImage()) {

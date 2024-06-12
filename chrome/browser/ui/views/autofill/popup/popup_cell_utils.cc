@@ -35,6 +35,7 @@
 #include "ui/base/models/image_model_utils.h"
 #include "ui/base/resource/resource_bundle.h"
 #include "ui/color/color_id.h"
+#include "ui/color/color_provider_manager.h"
 #include "ui/gfx/geometry/size.h"
 #include "ui/views/controls/throbber.h"
 #include "ui/views/layout/layout_types.h"
@@ -153,6 +154,24 @@ std::optional<ui::ImageModel> ImageModelFromImageSkia(
   }
   auto image_model = ui::ImageModel::FromImageSkia(image_skia);
   return image_model;
+}
+
+// Converts the `image_model` to an `ImageView`. If `apply_deactivated_style` is
+// true, the image will be converted to a disabled image.
+std::unique_ptr<views::ImageView> ConvertModelToImageView(
+    std::optional<ui::ImageModel> image_model,
+    bool apply_deactivated_style) {
+  if (!image_model) {
+    return nullptr;
+  }
+  if (apply_deactivated_style) {
+    image_model = ui::GetDefaultDisabledIconFromImageModel(
+        image_model.value(),
+        ui::ColorProviderManager::Get().GetColorProviderFor(
+            ui::NativeTheme::GetInstanceForNativeUi()->GetColorProviderKey(
+                nullptr)));
+  }
+  return std::make_unique<views::ImageView>(image_model.value());
 }
 
 }  // namespace
@@ -313,27 +332,17 @@ gfx::Insets GetMarginsForContentCell() {
 std::unique_ptr<views::ImageView> GetIconImageView(
     const Suggestion& suggestion) {
   base::TimeTicks start_time = base::TimeTicks::Now();
-  auto convert_to_image_view_lambda =
-      [&suggestion](std::optional<ui::ImageModel> image_model)
-      -> std::unique_ptr<views::ImageView> {
-    if (!image_model) {
-      return nullptr;
-    }
-    if (suggestion.apply_deactivated_style) {
-      image_model =
-          ui::GetDefaultDisabledIconFromImageModel(image_model.value());
-    }
-    return std::make_unique<views::ImageView>(image_model.value());
-  };
 
   if (auto* icon = absl::get_if<gfx::Image>(&suggestion.custom_icon);
       icon && !icon->IsEmpty()) {
     std::optional<ui::ImageModel> image_model =
         ImageModelFromImageSkia(icon->AsImageSkia());
-    return convert_to_image_view_lambda(image_model);
+    return ConvertModelToImageView(image_model,
+                                   suggestion.apply_deactivated_style);
   }
   std::unique_ptr<views::ImageView> icon_image_view =
-      convert_to_image_view_lambda(GetIconImageModelFromIcon(suggestion.icon));
+      ConvertModelToImageView(GetIconImageModelFromIcon(suggestion.icon),
+                              suggestion.apply_deactivated_style);
   base::UmaHistogramTimes(kHistogramGetImageViewByName,
                           base::TimeTicks::Now() - start_time);
 
@@ -358,9 +367,7 @@ std::unique_ptr<views::ImageView> GetTrailingIconImageView(
   std::optional<ui::ImageModel> image_model =
       GetIconImageModelFromIcon(suggestion.trailing_icon);
   std::unique_ptr<views::ImageView> icon_image_view =
-      image_model.has_value()
-          ? std::make_unique<views::ImageView>(image_model.value())
-          : nullptr;
+      ConvertModelToImageView(image_model, suggestion.apply_deactivated_style);
   base::UmaHistogramTimes(kHistogramGetImageViewByName,
                           base::TimeTicks::Now() - start_time);
 
