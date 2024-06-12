@@ -943,6 +943,53 @@ IN_PROC_BROWSER_TEST_P(FileSystemAccessObserverBrowserTest,
   EXPECT_FALSE(record_dict.FindList("relativePathMovedFrom"));
 }
 
+IN_PROC_BROWSER_TEST_P(FileSystemAccessObserverBrowserTest,
+                       IgnoreSwapFileChanges) {
+  base::FilePath dir_path = CreateDirectoryToBePicked();
+
+  // Set up the directory structure.
+  const std::string pre_script =
+      // clang-format off
+      "(async () => {"
+         GET_DIRECTORY(GetTestFileSystemType())
+         "await dir.getFileHandle('file.txt', { create: true });"
+      "})()";
+  // clang-format on
+  ASSERT_TRUE(ExecJs(shell(), pre_script));
+
+  const std::string script =
+      // clang-format off
+      "(async () => {"
+         CREATE_PROMISE_AND_RESOLVERS
+         START_OBSERVING_DIRECTORY(GetTestFileSystemType(), /*recursive=*/false)
+         "const file = await dir.getFileHandle('file.txt', { create: false });"
+         // Though we're writing to a swap file, the change which should be
+         // reported is to the target path on close().
+         WRITE_TO_FILE
+         SET_CHANGE_TIMEOUT
+      "})()";
+  // clang-format on
+  auto records = EvalJs(shell(), script).ExtractList();
+  ASSERT_THAT(records.GetList(), testing::Not(testing::IsEmpty()));
+  const auto relative_path_component_matcher = testing::Conditional(
+      SupportsReportingModifiedPath(), testing::ElementsAre("file.txt"),
+      testing::IsEmpty());
+  EXPECT_THAT(
+      *records.GetList().front().GetDict().FindList("relativePathComponents"),
+      relative_path_component_matcher);
+
+  // Check that none of the events are for swap files.
+  const auto relative_path_component_matcher_for_swap_file =
+      testing::Conditional(
+          SupportsReportingModifiedPath(),
+          testing::ElementsAre(testing::Not("file.txt.crswap")),
+          testing::IsEmpty());
+  for (const auto& record : records.GetList()) {
+    EXPECT_THAT(*record.GetDict().FindList("relativePathComponents"),
+                relative_path_component_matcher_for_swap_file);
+  }
+}
+
 INSTANTIATE_TEST_SUITE_P(
     /* no prefix */,
     FileSystemAccessObserverBrowserTest,

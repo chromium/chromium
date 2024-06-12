@@ -404,6 +404,77 @@ TEST_F(FileSystemAccessWatcherManagerTest, SourceFailsInitialization) {
   // initialize a source, then add better test coverage.
 }
 
+TEST_F(FileSystemAccessWatcherManagerTest, IgnoreSwapFileChanges) {
+  base::FilePath dir_path = dir_.GetPath().AppendASCII("dir");
+  auto dir_url = manager_->CreateFileSystemURLFromPath(
+      FileSystemAccessEntryFactory::PathType::kLocal, dir_path);
+
+  base::CreateDirectory(dir_path);
+  auto swap_file_path = dir_path.AppendASCII("foo.crswap");
+  base::WriteFile(swap_file_path, "watch me and then ignore me");
+
+  auto non_swap_file_path = dir_path.AppendASCII("bar.noncrswap");
+  base::WriteFile(non_swap_file_path, "watch me and then report me");
+
+  base::test::TestFuture<base::expected<std::unique_ptr<Observation>,
+                                        blink::mojom::FileSystemAccessErrorPtr>>
+      get_observation_future;
+  watcher_manager().GetDirectoryObservation(
+      dir_url,
+      /*is_recursive=*/false, get_observation_future.GetCallback());
+// Watching the local file system is not supported on Android, iOS, or Fuchsia.
+#if BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_IOS) || BUILDFLAG(IS_FUCHSIA)
+  ASSERT_FALSE(get_observation_future.Get().has_value());
+  EXPECT_EQ(get_observation_future.Get().error()->status,
+            blink::mojom::FileSystemAccessStatus::kNotSupportedError);
+#else
+  if (!ReportsChangeInfoForLocalObservations()) {
+    GTEST_SKIP();
+  }
+
+  ASSERT_TRUE(get_observation_future.Get().has_value());
+  // Constructing an observation registers it with the manager.
+  ChangeAccumulator accumulator(get_observation_future.Take().value());
+  EXPECT_TRUE(
+      watcher_manager().HasObservationForTesting(accumulator.observation()));
+
+  // Delete a file in the directory. This should be reported to `accumulator`.
+  // But it will be ignored because it is a swap file.
+  base::DeleteFile(swap_file_path);
+  SpinEventLoopForABit();
+
+  EXPECT_THAT(accumulator.changes(), testing::IsEmpty());
+
+  // Delete a non-swap file in the directory. This should be reported to
+  // `accumulator`.
+  base::DeleteFile(non_swap_file_path);
+  SpinEventLoopForABit();
+
+  FilePathType file_path_type = FilePathType::kFile;
+#if BUILDFLAG(IS_WIN)
+  // There is no way to know the correct handle type on Windows in this
+  // scenario.
+  //
+  // Window's content::FilePathWatcher uses base::GetFileInfo to figure out the
+  // file path type. Since `fileInDir` is deleted, there is nothing to call
+  // base::GetFileInfo on.
+  file_path_type = FilePathType::kUnknown;
+#endif  // BUILDFLAG(IS_WIN)
+
+  auto expected_url = manager_->CreateFileSystemURLFromPath(
+      FileSystemAccessEntryFactory::PathType::kLocal, non_swap_file_path);
+
+  const ChangeInfo change_info =
+      ChangeInfo(file_path_type, ChangeType::kDeleted, expected_url.path());
+
+  std::list<Change> expected_changes{{expected_url, change_info}};
+  EXPECT_TRUE(base::test::RunUntil([&]() {
+    return testing::Matches(testing::ContainerEq(expected_changes))(
+        accumulator.changes());
+  }));
+#endif  // BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_IOS) || BUILDFLAG(IS_FUCHSIA)
+}
+
 TEST_F(FileSystemAccessWatcherManagerTest, RemoveObservation) {
   base::FilePath file_path = dir_.GetPath().AppendASCII("foo");
   auto file_url = manager_->CreateFileSystemURLFromPath(

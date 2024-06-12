@@ -9,6 +9,7 @@
 #include <memory>
 
 #include "base/check.h"
+#include "base/files/file_path.h"
 #include "base/functional/bind.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/memory/weak_ptr.h"
@@ -140,10 +141,13 @@ void FileSystemAccessWatcherManager::OnRawChange(
     const FileSystemAccessChangeSource::ChangeInfo& change_info) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
-  // TODO(crbug.com/40283778): Ignore changes caused by API
-  // implementation details, such as writes to swap files.
-  //
   // TODO(crbug.com/40268906): Batch changes.
+
+  // Changes to swap files are implementation details and should be ignored.
+  if (changed_url.virtual_path().FinalExtension() ==
+      FILE_PATH_LITERAL(".crswap")) {
+    return;
+  }
 
   if (error) {
     // TODO(crbug.com/40105284): Instead of filtering an errored change,
