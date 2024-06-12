@@ -54,7 +54,7 @@ export class CrIconElement extends CrLitElement {
       assert(
           this.iconset_,
           `Could not find iconset for: '${this.iconsetName_}:${
-              this.iconName_}`);
+              this.iconName_}'`);
       this.iconset_.applyIcon(this, this.iconName_);
     }
   }

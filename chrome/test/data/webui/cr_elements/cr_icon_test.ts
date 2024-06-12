@@ -6,11 +6,12 @@ import '//resources/polymer/v3_0/iron-iconset-svg/iron-iconset-svg.js';
 import '//resources/cr_elements/cr_icon/cr_icon.js';
 import '//resources/cr_elements/cr_icon/cr_iconset.js';
 import '//resources/cr_elements/icons.html.js';
+import './cr_icon_instrumented.js';
 
 import type {CrIconElement} from '//resources/cr_elements/cr_icon/cr_icon.js';
 import {getTrustedHTML} from '//resources/js/static_types.js';
 import {html} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
-import {assertEquals, assertTrue} from 'chrome://webui-test/chai_assert.js';
+import {assertEquals, assertNotReached, assertTrue} from 'chrome://webui-test/chai_assert.js';
 import {microtasksFinished} from 'chrome://webui-test/test_util.js';
 
 suite('cr-icon', function() {
@@ -114,5 +115,37 @@ suite('cr-icon', function() {
 
     // Confirm the cr-iconset value.
     assertSvgPath(svg, 'M7 14l5-5 5 5z');
+  });
+
+  test('ThrowsErrorOnUnknownIconset', async () => {
+    // Using a subclass of cr-icon which is instrumented to report errors in the
+    // updated() lifecycle callback method, for the purposes of this test. It is
+    // still exercising the relevant codepath in cr-icon itself.
+    document.body.innerHTML = window.trustedTypes!.emptyHTML;
+    const element = document.createElement('cr-icon-instrumented');
+    document.body.appendChild(element);
+
+    async function assertThrows(icon: string) {
+      element.icon = icon;
+      await microtasksFinished();
+
+      try {
+        await element.updatedComplete;
+        assertNotReached('Should have thrown');
+      } catch (e: any) {
+        assertEquals(
+            `Assertion failed: Could not find iconset for: '${icon}'`,
+            (e as Error).message);
+      }
+    }
+
+    // Check that errors are repored as expected.
+    await assertThrows('does-not-exist:foo');
+    await assertThrows('does-not-exist:bar');
+
+    // Check that existing icons still work.
+    element.icon = 'cr:chevron-right';
+    await microtasksFinished();
+    await element.updatedComplete;
   });
 });
