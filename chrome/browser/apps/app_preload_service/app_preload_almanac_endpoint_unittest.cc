@@ -96,12 +96,17 @@ TEST_F(AppPreloadAlmanacEndpointTest, GetAppsForFirstLoginRequest) {
 }
 
 TEST_F(AppPreloadAlmanacEndpointTest, GetAppsForFirstLoginSuccessfulResponse) {
-  PackageId web_app1 = *PackageId::FromString("web::http://example.com/app1");
+  PackageId chrome_app =
+      *PackageId::FromString("chromeapp:mgndgikekgjfcpckkfioiadnlibdjbkf");
+  PackageId lacros_app = *PackageId::FromString("system:lacros-chrome");
+  PackageId web_app1 = *PackageId::FromString("web:http://example.com/app1");
   PackageId android_app1 = *PackageId::FromString("android:com.example.app1");
-  PackageId web_app2 = *PackageId::FromString("web::http://example.com/app2");
-  PackageId web_app3 = *PackageId::FromString("web::http://example.com/app3");
-  PackageId web_app4 = *PackageId::FromString("web::http://example.com/app4");
+  PackageId web_app2 = *PackageId::FromString("web:http://example.com/app2");
+  PackageId web_app3 = *PackageId::FromString("web:http://example.com/app3");
+  PackageId web_app4 = *PackageId::FromString("web:http://example.com/app4");
 
+  auto type_chrome =
+      proto::AppPreloadListResponse_LauncherType_LAUNCHER_TYPE_CHROME;
   auto type_app = proto::AppPreloadListResponse_LauncherType_LAUNCHER_TYPE_APP;
   auto type_folder =
       proto::AppPreloadListResponse_LauncherType_LAUNCHER_TYPE_FOLDER;
@@ -109,28 +114,33 @@ TEST_F(AppPreloadAlmanacEndpointTest, GetAppsForFirstLoginSuccessfulResponse) {
   auto* app = response.add_apps_to_install();
   app->set_name("Peanut Types");
 
+  // Add chrome with no package.
   auto* launcher_config_item = response.add_launcher_config();
-  launcher_config_item->set_type(type_app);
+  launcher_config_item->set_type(type_chrome);
   launcher_config_item->set_order(1);
+
+  launcher_config_item = response.add_launcher_config();
+  launcher_config_item->set_type(type_app);
+  launcher_config_item->set_order(2);
   launcher_config_item->add_package_id(web_app1.ToString());
   launcher_config_item->add_package_id(android_app1.ToString());
 
   launcher_config_item = response.add_launcher_config();
   launcher_config_item->set_type(type_app);
-  launcher_config_item->set_order(2);
+  launcher_config_item->set_order(3);
   launcher_config_item->set_feature_flag("unknown");
   launcher_config_item->add_package_id(web_app2.ToString());
 
   launcher_config_item = response.add_launcher_config();
   launcher_config_item->set_type(type_app);
-  launcher_config_item->set_order(3);
+  launcher_config_item->set_order(4);
   launcher_config_item->set_feature_flag("AppPreloadServiceEnableTestApps");
   launcher_config_item->add_package_id(web_app3.ToString());
 
   // Add folder with web_app4.
   launcher_config_item = response.add_launcher_config();
   launcher_config_item->set_type(type_folder);
-  launcher_config_item->set_order(4);
+  launcher_config_item->set_order(5);
   launcher_config_item->set_folder_name("other-folder");
   auto* folder_item = launcher_config_item->add_child_config();
   folder_item->set_type(type_app);
@@ -170,13 +180,17 @@ TEST_F(AppPreloadAlmanacEndpointTest, GetAppsForFirstLoginSuccessfulResponse) {
   auto launcher_ordering = std::get<1>(test_callback.Get());
   EXPECT_EQ(launcher_ordering.size(), 2u);
   auto root_folder = launcher_ordering[""];
-  EXPECT_EQ(root_folder.size(), 3u);
+  EXPECT_EQ(root_folder.size(), 5u);
+  EXPECT_EQ(root_folder[chrome_app].type, type_chrome);
+  EXPECT_EQ(root_folder[chrome_app].order, 1u);
+  EXPECT_EQ(root_folder[lacros_app].type, type_chrome);
+  EXPECT_EQ(root_folder[lacros_app].order, 1u);
   EXPECT_EQ(root_folder[web_app1].type, type_app);
-  EXPECT_EQ(root_folder[web_app1].order, 1u);
+  EXPECT_EQ(root_folder[web_app1].order, 2u);
   EXPECT_EQ(root_folder[android_app1].type, type_app);
-  EXPECT_EQ(root_folder[android_app1].order, 1u);
+  EXPECT_EQ(root_folder[android_app1].order, 2u);
   EXPECT_EQ(root_folder["other-folder"].type, type_folder);
-  EXPECT_EQ(root_folder["other-folder"].order, 4u);
+  EXPECT_EQ(root_folder["other-folder"].order, 5u);
   auto other_folder = launcher_ordering["other-folder"];
   EXPECT_EQ(other_folder.size(), 1u);
   EXPECT_EQ(other_folder[web_app4].type, type_app);

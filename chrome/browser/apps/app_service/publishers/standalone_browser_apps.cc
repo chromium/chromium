@@ -23,6 +23,8 @@
 #include "chrome/grit/chrome_unscaled_resources.h"
 #include "chrome/grit/generated_resources.h"
 #include "components/app_constants/constants.h"
+#include "components/services/app_service/public/cpp/app_types.h"
+#include "components/services/app_service/public/cpp/package_id.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/views/widget/widget.h"
 
@@ -90,6 +92,8 @@ AppPtr StandaloneBrowserApps::CreateStandaloneBrowserApp() {
       Readiness::kReady, full_name, InstallReason::kSystem,
       InstallSource::kSystem);
   app->short_name = short_name;
+  app->installer_package_id =
+      apps::PackageId(apps::PackageType::kSystem, app_constants::kLacrosChrome);
 
   if (crosapi::browser_util::IsAshWebBrowserEnabled()) {
     app->additional_search_terms.push_back("chrome");

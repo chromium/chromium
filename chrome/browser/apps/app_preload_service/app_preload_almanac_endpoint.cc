@@ -17,6 +17,7 @@
 #include "chrome/browser/apps/app_preload_service/app_preload_service.h"
 #include "chrome/browser/apps/app_preload_service/proto/app_preload.pb.h"
 #include "chromeos/constants/chromeos_features.h"
+#include "components/app_constants/constants.h"
 #include "net/base/net_errors.h"
 #include "services/network/public/cpp/shared_url_loader_factory.h"
 #include "services/network/public/cpp/simple_url_loader.h"
@@ -113,6 +114,15 @@ void ParseLauncherOrdering(
               apps::PackageId::FromString(package_id)) {
         item_map[*parsed] = LauncherItemData(item.type(), item.order());
       }
+    }
+    // Add packages for both chrome and lacros for TYPE_CHROME.
+    if (item.type() ==
+        proto::AppPreloadListResponse_LauncherType_LAUNCHER_TYPE_CHROME) {
+      item_map[PackageId(PackageType::kChromeApp,
+                         app_constants::kChromeAppId)] =
+          LauncherItemData(item.type(), item.order());
+      item_map[PackageId(PackageType::kSystem, app_constants::kLacrosChrome)] =
+          LauncherItemData(item.type(), item.order());
     }
     // Add nested child folder.
     if (allow_nested_folders && !item.folder_name().empty()) {

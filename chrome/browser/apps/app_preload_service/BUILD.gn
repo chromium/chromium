@@ -33,6 +33,7 @@ source_set("app_preload_service") {
     "//chrome/common:channel_info",
     "//chrome/common:chrome_features",
     "//chromeos/crosapi/mojom",
+    "//components/app_constants",
     "//components/keyed_service/core",
     "//components/pref_registry",
     "//components/prefs",

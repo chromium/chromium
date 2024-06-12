@@ -24,6 +24,9 @@ COMPONENT_EXPORT(APP_CONSTANTS) extern const char kAshDebugBrowserAppId[];
 // The ID of the Lacros Chrome browser application that runs outside of ash.
 COMPONENT_EXPORT(APP_CONSTANTS) extern const char kLacrosAppId[];
 
+// The PackageId identifier `lacros-chrome`.
+COMPONENT_EXPORT(APP_CONSTANTS) extern const char kLacrosChrome[];
+
 }  // namespace app_constants
 
 #endif  // COMPONENTS_APP_CONSTANTS_CONSTANTS_H_
