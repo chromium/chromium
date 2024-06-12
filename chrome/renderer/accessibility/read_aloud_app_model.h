@@ -5,6 +5,7 @@
 #ifndef CHROME_RENDERER_ACCESSIBILITY_READ_ALOUD_APP_MODEL_H_
 #define CHROME_RENDERER_ACCESSIBILITY_READ_ALOUD_APP_MODEL_H_
 
+#include "base/values.h"
 #include "chrome/common/accessibility/read_anything_constants.h"
 
 // A class that holds state related to Read Aloud for the
@@ -20,8 +21,14 @@ class ReadAloudAppModel {
   void set_speech_playing(bool is_playing) { speech_playing_ = is_playing; }
   double speech_rate() const { return speech_rate_; }
   void set_speech_rate(double rate) { speech_rate_ = rate; }
+  const base::Value::List& languages_enabled_in_pref() const {
+    return languages_enabled_in_pref_;
+  }
+  void SetLanguageEnabled(const std::string& lang, bool enabled);
 
-  void OnSettingsRestoredFromPrefs(double speech_rate);
+  void OnSettingsRestoredFromPrefs(
+      double speech_rate,
+      base::Value::List* languages_enabled_in_pref);
 
  private:
   // Whether Read Aloud speech is currently playing or not.
@@ -29,6 +36,9 @@ class ReadAloudAppModel {
 
   // The current speech rate for reading aloud.
   double speech_rate_ = kReadAnythingDefaultSpeechRate;
+
+  // The languages that the user has enabled for reading aloud.
+  base::Value::List languages_enabled_in_pref_;
 };
 
 #endif  // CHROME_RENDERER_ACCESSIBILITY_READ_ALOUD_APP_MODEL_H_

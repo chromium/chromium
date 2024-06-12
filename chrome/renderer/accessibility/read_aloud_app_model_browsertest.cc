@@ -33,6 +33,14 @@ class ReadAnythingReadAloudAppModelTest : public ChromeRenderViewTest {
     model_->set_speech_rate(speech_rate);
   }
 
+  const base::Value::List& EnabledLanguages() {
+    return model_->languages_enabled_in_pref();
+  }
+
+  void SetLanguageEnabled(const std::string& lang, bool enabled) {
+    model_->SetLanguageEnabled(lang, enabled);
+  }
+
  private:
   // ReadAloudAppModel constructor and destructor are private so it's
   // not accessible by std::make_unique.
@@ -59,4 +67,15 @@ TEST_F(ReadAnythingReadAloudAppModelTest, SpeechRate) {
   const double speech_rate2 = 1.2;
   SetSpeechRate(speech_rate2);
   EXPECT_EQ(SpeechRate(), speech_rate2);
+}
+
+TEST_F(ReadAnythingReadAloudAppModelTest, EnabledLanguages) {
+  EXPECT_TRUE(EnabledLanguages().empty());
+
+  const std::string enabled_lang = "fr";
+  SetLanguageEnabled(enabled_lang, true);
+  EXPECT_TRUE(base::Contains(EnabledLanguages(), enabled_lang));
+
+  SetLanguageEnabled(enabled_lang, false);
+  EXPECT_FALSE(base::Contains(EnabledLanguages(), enabled_lang));
 }

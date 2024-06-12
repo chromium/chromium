@@ -403,7 +403,15 @@ class ReadAnythingAppControllerTest : public ChromeRenderViewTest {
     controller_->OnSpeechRateChange(rate);
   }
 
+  void OnLanguagePrefChange(const std::string& lang, bool enabled) {
+    controller_->OnLanguagePrefChange(lang, enabled);
+  }
+
   double SpeechRate() { return controller_->read_aloud_model_.speech_rate(); }
+
+  const base::Value::List& EnabledLanguages() {
+    return controller_->read_aloud_model_.languages_enabled_in_pref();
+  }
 
   void OnCollapseSelection() { controller_->OnCollapseSelection(); }
 
@@ -465,6 +473,19 @@ TEST_F(ReadAnythingAppControllerTest, OnSpeechRateChange) {
 
   EXPECT_CALL(page_handler_, OnSpeechRateChange(expected_rate)).Times(1);
   ASSERT_EQ(SpeechRate(), expected_rate);
+}
+
+TEST_F(ReadAnythingAppControllerTest, OnLanguagePrefChange) {
+  std::string enabled_lang = "ja-jp";
+  std::string disabled_lang = "en-us";
+
+  OnLanguagePrefChange(enabled_lang, true);
+  OnLanguagePrefChange(disabled_lang, true);
+  OnLanguagePrefChange(disabled_lang, false);
+
+  EXPECT_CALL(page_handler_, OnLanguagePrefChange).Times(3);
+  ASSERT_TRUE(base::Contains(EnabledLanguages(), enabled_lang));
+  ASSERT_FALSE(base::Contains(EnabledLanguages(), disabled_lang));
 }
 
 TEST_F(ReadAnythingAppControllerTest,

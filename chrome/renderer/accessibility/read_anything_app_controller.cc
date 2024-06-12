@@ -741,11 +741,12 @@ void ReadAnythingAppController::OnSettingsRestoredFromPrefs(
     base::Value::Dict voices,
     base::Value::List languages_enabled_in_pref,
     read_anything::mojom::HighlightGranularity granularity) {
-  read_aloud_model_.OnSettingsRestoredFromPrefs(speech_rate);
+  read_aloud_model_.OnSettingsRestoredFromPrefs(speech_rate,
+                                                &languages_enabled_in_pref);
   bool needs_redraw_for_links = model_.links_enabled() != links_enabled;
-  model_.OnSettingsRestoredFromPrefs(
-      line_spacing, letter_spacing, font, font_size, links_enabled,
-      images_enabled, color, &voices, &languages_enabled_in_pref, granularity);
+  model_.OnSettingsRestoredFromPrefs(line_spacing, letter_spacing, font,
+                                     font_size, links_enabled, images_enabled,
+                                     color, &voices, granularity);
   ExecuteJavaScript("chrome.readingMode.restoreSettingsFromPrefs();");
   // Only redraw if there is an active tree.
   if (needs_redraw_for_links &&
@@ -1014,8 +1015,8 @@ std::string ReadAnythingAppController::GetStoredVoice() const {
 std::vector<std::string> ReadAnythingAppController::GetLanguagesEnabledInPref()
     const {
   std::vector<std::string> languages_enabled_in_pref;
-
-  for (const base::Value& value : model_.languages_enabled_in_pref()) {
+  for (const base::Value& value :
+       read_aloud_model_.languages_enabled_in_pref()) {
     languages_enabled_in_pref.push_back(value.GetString());
   }
   return languages_enabled_in_pref;
@@ -1504,6 +1505,7 @@ void ReadAnythingAppController::OnVoiceChange(const std::string& voice,
 void ReadAnythingAppController::OnLanguagePrefChange(const std::string& lang,
                                                      bool enabled) {
   page_handler_->OnLanguagePrefChange(lang, enabled);
+  read_aloud_model_.SetLanguageEnabled(lang, enabled);
 }
 
 void ReadAnythingAppController::TurnedHighlightOn() {

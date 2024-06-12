@@ -91,7 +91,6 @@ void ReadAnythingAppModel::OnSettingsRestoredFromPrefs(
     bool images_enabled,
     read_anything::mojom::Colors color,
     base::Value::Dict* voices,
-    base::Value::List* languages_enabled_in_pref,
     read_anything::mojom::HighlightGranularity granularity) {
   line_spacing_ = GetLineSpacingValue(line_spacing);
   letter_spacing_ = GetLetterSpacingValue(letter_spacing);
@@ -101,7 +100,6 @@ void ReadAnythingAppModel::OnSettingsRestoredFromPrefs(
   images_enabled_ = images_enabled;
   color_theme_ = static_cast<size_t>(color);
   voices_ = voices->Clone();
-  languages_enabled_in_pref_ = languages_enabled_in_pref->Clone();
   highlight_granularity_ = static_cast<size_t>(granularity);
 }
 

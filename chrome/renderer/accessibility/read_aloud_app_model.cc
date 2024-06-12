@@ -4,10 +4,24 @@
 
 #include "chrome/renderer/accessibility/read_aloud_app_model.h"
 
+#include "base/values.h"
+
 ReadAloudAppModel::ReadAloudAppModel() = default;
 
 ReadAloudAppModel::~ReadAloudAppModel() = default;
 
-void ReadAloudAppModel::OnSettingsRestoredFromPrefs(double speech_rate) {
+void ReadAloudAppModel::OnSettingsRestoredFromPrefs(
+    double speech_rate,
+    base::Value::List* languages_enabled_in_pref) {
   speech_rate_ = speech_rate;
+  languages_enabled_in_pref_ = languages_enabled_in_pref->Clone();
+}
+
+void ReadAloudAppModel::SetLanguageEnabled(const std::string& lang,
+                                           bool enabled) {
+  if (enabled) {
+    languages_enabled_in_pref_.Append(lang);
+  } else {
+    languages_enabled_in_pref_.EraseValue(base::Value(lang));
+  }
 }
