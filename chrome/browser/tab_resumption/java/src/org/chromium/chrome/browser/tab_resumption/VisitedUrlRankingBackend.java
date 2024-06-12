@@ -4,6 +4,8 @@
 
 package org.chromium.chrome.browser.tab_resumption;
 
+import android.os.Build;
+
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
@@ -23,6 +25,9 @@ import java.util.List;
 /** The glue code between Tab resumption module and the native fetch and rank services backend. */
 @JNINamespace("tab_resumption::jni")
 public class VisitedUrlRankingBackend implements SuggestionBackend {
+    private static final boolean sShowHistoryAppChip =
+            Build.VERSION.SDK_INT >= Build.VERSION_CODES.UPSIDE_DOWN_CAKE;
+
     private long mNativeVisitedUrlRankingBackend;
 
     @Nullable private Runnable mUpdateObserver;
@@ -58,12 +63,12 @@ public class VisitedUrlRankingBackend implements SuggestionBackend {
 
         // TODO(b/337858147): handles showing local Tabs if returned from
         // VisitedUrlRankingBackendJni.
-        // - Support TAB_RESUMPTION_FETCH_HISTORY_BACKEND.
         VisitedUrlRankingBackendJni.get()
                 .getRankedSuggestions(
                         mNativeVisitedUrlRankingBackend,
                         TabResumptionModuleUtils.getCurrentTimeMs(),
                         TabResumptionModuleUtils.TAB_RESUMPTION_FETCH_LOCAL_TABS_BACKEND.getValue(),
+                        TabResumptionModuleUtils.TAB_RESUMPTION_FETCH_HISTORY_BACKEND.getValue(),
                         suggestions,
                         callback);
     }
@@ -79,6 +84,7 @@ public class VisitedUrlRankingBackend implements SuggestionBackend {
     /** Helper to add new {@link SuggestionEntry} to list. */
     @CalledByNative
     private void addSuggestionEntry(
+            int type,
             @NonNull String sourceName,
             @NonNull GURL url,
             @NonNull String title,
@@ -86,9 +92,17 @@ public class VisitedUrlRankingBackend implements SuggestionBackend {
             int localTabId,
             @NonNull String visitId,
             long requestId,
+            String appId,
             @NonNull List<SuggestionEntry> suggestions) {
         SuggestionEntry entry =
-                new SuggestionEntry(sourceName, url, title, lastActiveTime, localTabId);
+                new SuggestionEntry(
+                        type,
+                        sourceName,
+                        url,
+                        title,
+                        lastActiveTime,
+                        localTabId,
+                        sShowHistoryAppChip ? appId : null);
         if (!visitId.isEmpty()) {
             entry.trainingInfo =
                     new TrainingInfo(mNativeVisitedUrlRankingBackend, visitId, requestId);
@@ -115,6 +129,7 @@ public class VisitedUrlRankingBackend implements SuggestionBackend {
                 long nativeVisitedUrlRankingBackend,
                 long beginTimeMs,
                 boolean fetchLocalTabs,
+                boolean fetchHistory,
                 List<SuggestionEntry> suggestions,
                 Callback<List<SuggestionEntry>> callback);
 

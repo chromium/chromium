@@ -6,8 +6,12 @@ import("//build/config/android/rules.gni")
 import("//third_party/jni_zero/jni_zero.gni")
 
 android_library("java") {
-  srcjar_deps = [ ":jni_headers" ]
+  srcjar_deps = [
+    ":chrome_browser_tab_resumption_enums_srcjar",
+    ":jni_headers",
+  ]
   sources = [
+    "java/src/org/chromium/chrome/browser/tab_resumption/AppInfo.java",
     "java/src/org/chromium/chrome/browser/tab_resumption/ForeignSessionSuggestionBackend.java",
     "java/src/org/chromium/chrome/browser/tab_resumption/LocalTabTabResumptionDataProvider.java",
     "java/src/org/chromium/chrome/browser/tab_resumption/LocalTileView.java",
@@ -71,6 +75,10 @@ android_library("java") {
 
 generate_jni("jni_headers") {
   sources = [ "java/src/org/chromium/chrome/browser/tab_resumption/VisitedUrlRankingBackend.java" ]
+}
+
+java_cpp_enum("chrome_browser_tab_resumption_enums_srcjar") {
+  sources = [ "visited_url_ranking_backend.h" ]
 }
 
 android_resources("java_resources") {

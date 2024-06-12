@@ -38,7 +38,7 @@ found in the LICENSE file.
         android:layout_marginStart="@dimen/tab_resumption_module_single_icon_sep"
         android:layout_alignTop="@id/tile_icon"
         android:layout_alignBottom="@id/tile_icon"
-        android:layout_toEndOf="@+id/tile_icon"
+        android:layout_toEndOf="@id/tile_icon"
         android:layout_centerVertical="true"
         android:orientation="vertical">
 
@@ -51,9 +51,18 @@ found in the LICENSE file.
             android:visibility="gone"
             android:textAppearance="@style/TextAppearance.TextSmall.Primary"/>
 
+        <org.chromium.components.browser_ui.widget.chips.ChipView
+            android:id="@+id/tile_app_chip"
+            android:layout_gravity="center_vertical|start"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignParentTop="true"
+            android:visibility="gone"
+            style="@style/TabResumptionAppChip" />
+
         <TextView
             android:id="@+id/tile_display_text"
-            android:layout_below="@+id/tile_pre_info_text"
+            android:layout_below="@id/tile_pre_info_text"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginTop="3dp"

@@ -5,6 +5,7 @@
 package org.chromium.chrome.browser.tab_resumption;
 
 import android.content.Context;
+import android.content.pm.PackageManager;
 import android.content.res.Resources;
 import android.graphics.Bitmap;
 import android.graphics.drawable.BitmapDrawable;
@@ -27,6 +28,7 @@ import org.chromium.chrome.browser.tab_resumption.TabResumptionModuleUtils.Sugge
 /** The view containing suggestion tiles on the tab resumption module. */
 public class TabResumptionTileContainerView extends LinearLayout {
     private final Size mThumbnailSize;
+    private PackageManager mPackageManager;
 
     public TabResumptionTileContainerView(Context context, @Nullable AttributeSet attrs) {
         super(context, attrs);
@@ -37,6 +39,7 @@ public class TabResumptionTileContainerView extends LinearLayout {
                                 org.chromium.chrome.browser.tab_ui.R.dimen
                                         .single_tab_module_tab_thumbnail_size_big);
         mThumbnailSize = new Size(size, size);
+        mPackageManager = context.getPackageManager();
     }
 
     @Override
@@ -119,7 +122,12 @@ public class TabResumptionTileContainerView extends LinearLayout {
                                 LayoutInflater.from(getContext()).inflate(layoutId, this, false);
                 allTilesTexts +=
                         loadTileTexts(entry, recencyMs, isSingle, tileView, useSalientImage);
-                loadTileUrlImage(entry, urlImageProvider, tileView, isSingle, useSalientImage);
+                loadTileUrlImage(
+                        entry,
+                        urlImageProvider,
+                        tileView,
+                        isSingle,
+                        entry.type != SuggestionEntryType.HISTORY ? useSalientImage : false);
                 bindSuggestionClickCallback(
                         tileView, suggestionClickCallbackWithLogging, entry, clickInfo);
                 addView(tileView);
@@ -137,21 +145,28 @@ public class TabResumptionTileContainerView extends LinearLayout {
             TabResumptionTileView tileView,
             boolean useSalientImage) {
         Resources res = getContext().getResources();
+        String domainUrl = TabResumptionModuleUtils.getDomainUrl(entry.url);
         String recencyString = TabResumptionModuleUtils.getRecencyString(getResources(), recencyMs);
         if (isSingle) {
             // Single Local Tab suggestion is handled by #loadLocalTabSingle().
             assert !entry.isLocalTab();
+            String appChipText =
+                    tileView.maybeShowAppChip(mPackageManager, entry.type, entry.appId);
             String postInfoText =
-                    res.getString(
-                            R.string.tab_resumption_module_multi_info_with_url,
-                            TabResumptionModuleUtils.getDomainUrl(entry.url),
-                            entry.sourceName,
-                            recencyString);
-            return tileView.setSuggestionTextsSingle(null, entry.title, postInfoText);
+                    entry.type == SuggestionEntryType.HISTORY
+                            ? res.getString(
+                                    R.string.tab_resumption_module_single_post_info,
+                                    domainUrl,
+                                    recencyString)
+                            : res.getString(
+                                    R.string.tab_resumption_module_multi_info_with_url,
+                                    domainUrl,
+                                    entry.sourceName,
+                                    recencyString);
+            return tileView.setSuggestionTextsSingle(null, appChipText, entry.title, postInfoText);
         }
 
         String infoText;
-        String domainUrl = TabResumptionModuleUtils.getDomainUrl(entry.url);
         if (entry.isLocalTab()) {
             infoText =
                     useSalientImage
@@ -300,5 +315,9 @@ public class TabResumptionTileContainerView extends LinearLayout {
                 });
         // Handle and return false to avoid obstructing long click handling of containing Views.
         tileView.setOnLongClickListener(v -> false);
+    }
+
+    void setPackageManagerForTesting(PackageManager pm) {
+        mPackageManager = pm;
     }
 }
