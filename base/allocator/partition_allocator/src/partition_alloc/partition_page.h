@@ -849,6 +849,18 @@ class PA_COMPONENT_EXPORT(PARTITION_ALLOC) SlotStart {
     return result;
   }
 
+  template <bool enforce = PA_CONFIG(ENFORCE_SLOT_STARTS)>
+  PA_ALWAYS_INLINE static SlotStart FromObject(void* tagged_object) {
+    uintptr_t untagged_slot_start =
+        internal::UntagAddr(reinterpret_cast<uintptr_t>(tagged_object));
+    return SlotStart::FromUntaggedAddr<enforce>(untagged_slot_start);
+  }
+
+  // Tagging objects is not free. Avoid calling this repeatedly.
+  PA_ALWAYS_INLINE void* ToObject() {
+    return internal::TagAddr(untagged_slot_start);
+  }
+
   PA_ALWAYS_INLINE
   void CheckIsSlotStart() {
     auto* slot_span_metadata = SlotSpanMetadata::FromAddr(untagged_slot_start);
