@@ -2306,31 +2306,10 @@ IN_PROC_BROWSER_TEST_F(WebAppBrowserTest_ManifestId, ManifestIdSpecified) {
       app_id);
 }
 
-#if BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN)
-class WebAppBrowserTest_FileHandler : public WebAppBrowserTest {
- public:
-  WebAppBrowserTest_FileHandler() {}
+#if !BUILDFLAG(IS_CHROMEOS)
+using WebAppBrowserTest_FileHandler = WebAppBrowserTest;
 
-#if BUILDFLAG(IS_WIN)
- protected:
-  void SetUp() override {
-    // Don't pollute Windows registry of machine running tests.
-    registry_override_manager_.OverrideRegistry(HKEY_CURRENT_USER);
-    WebAppBrowserTest::SetUp();
-  }
-
-  registry_util::RegistryOverrideManager registry_override_manager_;
-#endif  // BUILDFLAG(IS_WIN)
-};
-
-// TODO(crbug.com/40223463): Flaky on Mac.
-#if BUILDFLAG(IS_MAC)
-#define MAYBE_RegKeysFileExtension DISABLED_RegKeysFileExtension
-#else
-#define MAYBE_RegKeysFileExtension RegKeysFileExtension
-#endif
-IN_PROC_BROWSER_TEST_F(WebAppBrowserTest_FileHandler,
-                       MAYBE_RegKeysFileExtension) {
+IN_PROC_BROWSER_TEST_F(WebAppBrowserTest_FileHandler, FileAssociation) {
   base::ScopedAllowBlockingForTesting allow_blocking;
   base::HistogramTester tester;
   std::vector<std::string> expected_extensions{"bar", "baz", "foo", "foobar"};
@@ -2358,6 +2337,11 @@ IN_PROC_BROWSER_TEST_F(WebAppBrowserTest_FileHandler,
   content::RunAllTasksUntilIdle();
   SetAutoAcceptWebAppDialogForTesting(false, false);
 
+  for (auto extension : expected_extensions) {
+    EXPECT_TRUE(os_integration_override().IsFileExtensionHandled(
+        browser()->profile(), app_id, "Manifest with file handlers",
+        "." + extension));
+  }
 #if BUILDFLAG(IS_WIN)
   const std::wstring prog_id =
       GetProgIdForApp(browser()->profile()->GetPath(), app_id);
@@ -2382,20 +2366,6 @@ IN_PROC_BROWSER_TEST_F(WebAppBrowserTest_FileHandler,
       EXPECT_TRUE(key.HasValue(file_handler_prog_id.data()));
     }
   }
-#elif BUILDFLAG(IS_MAC)
-  for (auto extension : expected_extensions) {
-    const base::FilePath test_file_path =
-        os_integration_override().chrome_apps_folder().AppendASCII("test." +
-                                                                   extension);
-    const base::File test_file(test_file_path, base::File::FLAG_CREATE_ALWAYS |
-                                                   base::File::FLAG_WRITE);
-    const GURL test_file_url = net::FilePathToFileURL(test_file_path);
-    EXPECT_EQ(u"Manifest with file handlers",
-              shell_integration::GetApplicationNameForScheme(test_file_url))
-        << "The default app to open the file is wrong. "
-        << "File extension: " + extension;
-  }
-  ASSERT_TRUE(os_integration_override().DeleteChromeAppsDir());
 #endif
 
   // Uninstall the web app
@@ -2417,6 +2387,7 @@ IN_PROC_BROWSER_TEST_F(WebAppBrowserTest_FileHandler,
 #endif
 }
 
+#if BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN)
 // TODO(crbug.com/40805261): Disabled because it is flaky on Mac.
 #if BUILDFLAG(IS_MAC)
 #define MAYBE_UserDenyFileHandlingPermission \
@@ -2482,6 +2453,7 @@ IN_PROC_BROWSER_TEST_F(WebAppBrowserTest_FileHandler,
   EXPECT_TRUE(UninstallSucceeded(future.Get()));
 }
 #endif  // BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN)
+#endif  // !BUILDFLAG(IS_CHROMEOS)
 
 IN_PROC_BROWSER_TEST_F(WebAppBrowserTest, PRE_UninstallIncompleteUninstall) {
   auto* provider = WebAppProvider::GetForTest(profile());
