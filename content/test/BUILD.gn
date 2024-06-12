@@ -2080,6 +2080,7 @@ test("content_browsertests") {
       "//content/shell/android:content_shell_jni_headers",
       "//services/data_decoder/public/cpp/android:safe_json_java",
       "//testing/android/native_test:native_test_support",
+      "//ui/accessibility:ax_base_android",
       "//ui/android:android",
       "//ui/touch_selection:touch_selection",
     ]

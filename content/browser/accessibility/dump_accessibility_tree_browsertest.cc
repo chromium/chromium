@@ -2666,7 +2666,14 @@ IN_PROC_BROWSER_TEST_P(DumpAccessibilityTreeTest,
   RunHtmlTest(FILE_PATH_LITERAL("input-time.html"));
 }
 
-IN_PROC_BROWSER_TEST_P(DumpAccessibilityTreeTest, AccessibilityInputTypes) {
+#if BUILDFLAG(IS_ANDROID)
+// Blink flakes with datetime pickers on most platforms.
+#define MAYBE_AccessibilityInputTypes AccessibilityInputTypes
+#else
+#define MAYBE_AccessibilityInputTypes DISABLED_AccessibilityInputTypes
+#endif
+IN_PROC_BROWSER_TEST_P(DumpAccessibilityTreeTest,
+                       MAYBE_AccessibilityInputTypes) {
   RunHtmlTest(FILE_PATH_LITERAL("input-types.html"));
 }
 

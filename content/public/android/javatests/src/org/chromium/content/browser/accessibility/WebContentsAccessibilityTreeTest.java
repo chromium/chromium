@@ -1953,6 +1953,30 @@ public class WebContentsAccessibilityTreeTest {
 
     @Test
     @SmallTest
+    public void test_inputTypesWithPlaceholder() {
+        performHtmlTest("input-types-with-placeholder.html");
+    }
+
+    @Test
+    @SmallTest
+    public void test_inputTypesWithValueAndPlaceholder() {
+        performHtmlTest("input-types-with-value-and-placeholder.html");
+    }
+
+    @Test
+    @SmallTest
+    public void test_inputTypesWithValue() {
+        performHtmlTest("input-types-with-value.html");
+    }
+
+    @Test
+    @SmallTest
+    public void test_inputTypes() {
+        performHtmlTest("input-types.html");
+    }
+
+    @Test
+    @SmallTest
     public void test_inputUrl() {
         performHtmlTest("input-url.html");
     }

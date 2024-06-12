@@ -140,6 +140,13 @@ bool AccessibilityState::ShouldRespectDisplayedPasswordText() {
 }
 
 // static
+void AccessibilityState::ForceRespectDisplayedPasswordTextForTesting() {
+  JNIEnv* env = AttachCurrentThread();
+  Java_AccessibilityAutofillHelper_forceRespectDisplayedPasswordTextForTesting(
+      env);
+}
+
+// static
 bool AccessibilityState::ShouldExposePasswordText() {
   JNIEnv* env = AttachCurrentThread();
   return ui::Java_AccessibilityAutofillHelper_shouldExposePasswordText(env);

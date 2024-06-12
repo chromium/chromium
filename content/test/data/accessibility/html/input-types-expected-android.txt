@@ -11,8 +11,20 @@ android.webkit.WebView focusable focused
 ++++++android.widget.TextView name='Color: '
 ++++++android.widget.Spinner role_description='color picker' clickable focusable name='#000000'
 ++++android.view.View
+++++++android.widget.TextView name='Date: '
+++++++android.widget.Spinner role_description='date picker' clickable focusable hint='Date:' input_type=20
+++++android.view.View
+++++++android.widget.TextView name='Datetime: '
+++++++android.widget.EditText clickable editable_text focusable hint='Datetime:' input_type=4
+++++android.view.View
+++++++android.widget.TextView name='Datetime-local: '
+++++++android.widget.Spinner role_description='local date and time picker' clickable focusable hint='Datetime-local:' input_type=4
+++++android.view.View
 ++++++android.widget.TextView name='Email: '
 ++++++android.widget.EditText clickable editable_text focusable hint='Email:' input_type=209
+++++android.view.View
+++++++android.widget.TextView name='Empty: '
+++++++android.widget.EditText clickable editable_text focusable hint='Empty:' input_type=1
 ++++android.view.View
 ++++++android.widget.TextView name='File: '
 ++++++android.widget.Button role_description='button' clickable focusable name='File:: No file chosen'
@@ -20,6 +32,12 @@ android.webkit.WebView focusable focused
 ++++++android.widget.TextView name='Image: '
 ++++++android.widget.Button role_description='button' clickable focusable name='Image:'
 ++++android.widget.TextView name=' '
+++++android.view.View
+++++++android.widget.TextView name='Invalid: '
+++++++android.widget.EditText clickable editable_text focusable hint='Invalid:'
+++++android.view.View
+++++++android.widget.TextView name='Month: '
+++++++android.widget.Spinner role_description='month picker' clickable focusable hint='Month:' input_type=20
 ++++android.view.View
 ++++++android.widget.TextView name='Number: '
 ++++++android.widget.EditText role_description='spin button' clickable editable_text focusable range name='Number:' input_type=2
@@ -46,5 +64,11 @@ android.webkit.WebView focusable focused
 ++++++android.widget.TextView name='Text: '
 ++++++android.widget.EditText clickable editable_text focusable hint='Text:' input_type=1
 ++++android.view.View
+++++++android.widget.TextView name='Time: '
+++++++android.widget.Spinner role_description='time picker' clickable focusable hint='Time:' input_type=36
+++++android.view.View
 ++++++android.widget.TextView name='Url: '
 ++++++android.widget.EditText clickable editable_text focusable hint='Url:' input_type=17
+++++android.view.View
+++++++android.widget.TextView name='Week: '
+++++++android.widget.Spinner role_description='week picker' clickable focusable hint='Week:' input_type=4

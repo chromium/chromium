@@ -1,0 +1,29 @@
+android.webkit.WebView focusable focused
+++android.view.View
+++++android.widget.TextView name='Email: '
+++++android.widget.EditText clickable editable_text focusable has_non_empty_value name='email@example.com' hint='Email:' input_type=209 text_change_added_count=17
+++android.view.View
+++++android.widget.TextView name='Number: '
+++++android.widget.EditText role_description='spin button' clickable editable_text focusable has_non_empty_value range name='3, Number:' input_type=2 range_current_value=3 text_change_added_count=1
+++android.view.View
+++++android.widget.TextView name='Password: '
+++++android.widget.EditText clickable editable_text focusable has_non_empty_value password name='%E2%80%A2%E2%80%A2%E2%80%A2' hint='Password:' input_type=225 text_change_added_count=3
+++android.view.View
+++++android.widget.TextView name='Search: '
+++++android.widget.EditText role_description='search text field' clickable editable_text focusable has_non_empty_value name='search' hint='Search:' input_type=1 text_change_added_count=6
+++android.view.View
+++++android.widget.TextView name='Tel: '
+++++android.widget.EditText clickable editable_text focusable has_non_empty_value name='555-1212' hint='Tel:' input_type=3 text_change_added_count=8
+++android.view.View
+++++android.widget.TextView name='Text: '
+++++android.widget.EditText clickable editable_text focusable has_non_empty_value name='just text' hint='Text:' input_type=1 text_change_added_count=9
+++android.view.View
+++++android.widget.TextView name='Url: '
+++++android.widget.EditText clickable editable_text focusable has_non_empty_value name='https://www.example.com' hint='Url:' input_type=17 text_change_added_count=23
+++android.view.View
+++++android.widget.TextView name='Textarea: '
+++++android.widget.EditText clickable editable_text focusable has_non_empty_value multiline name='Sometext' hint='Textarea:' text_change_added_count=8
+++android.widget.EditText clickable editable_text focusable has_non_empty_value multiline name='Plain contenteditable' text_change_added_count=21
+++android.widget.EditText clickable editable_text focusable has_non_empty_value multiline name='Rich contenteditable' text_change_added_count=20
+++android.widget.EditText clickable editable_text focusable has_non_empty_value multiline name='Plain contenteditable' text_change_added_count=21
+++android.widget.EditText clickable editable_text focusable has_non_empty_value multiline name='Rich contenteditable' text_change_added_count=20

@@ -4081,6 +4081,7 @@ data/accessibility/html/input-time-with-popup-open-expected-uia-win.txt
 data/accessibility/html/input-time-with-popup-open-expected-win.txt
 data/accessibility/html/input-time-with-popup-open.html
 data/accessibility/html/input-time.html
+data/accessibility/html/input-types-expected-android-external.txt
 data/accessibility/html/input-types-expected-android.txt
 data/accessibility/html/input-types-expected-auralinux.txt
 data/accessibility/html/input-types-expected-blink.txt
@@ -4088,10 +4089,16 @@ data/accessibility/html/input-types-expected-fuchsia.txt
 data/accessibility/html/input-types-expected-mac.txt
 data/accessibility/html/input-types-expected-uia-win.txt
 data/accessibility/html/input-types-expected-win.txt
+data/accessibility/html/input-types-with-placeholder-expected-android-external.txt
+data/accessibility/html/input-types-with-placeholder-expected-android.txt
 data/accessibility/html/input-types-with-placeholder-expected-blink.txt
 data/accessibility/html/input-types-with-placeholder.html
+data/accessibility/html/input-types-with-value-and-placeholder-expected-android-external.txt
+data/accessibility/html/input-types-with-value-and-placeholder-expected-android.txt
 data/accessibility/html/input-types-with-value-and-placeholder-expected-blink.txt
 data/accessibility/html/input-types-with-value-and-placeholder.html
+data/accessibility/html/input-types-with-value-expected-android-external.txt
+data/accessibility/html/input-types-with-value-expected-android.txt
 data/accessibility/html/input-types-with-value-expected-blink.txt
 data/accessibility/html/input-types-with-value.html
 data/accessibility/html/input-types.html

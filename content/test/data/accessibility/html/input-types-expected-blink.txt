@@ -20,9 +20,76 @@ rootWebArea
 ++++++++++genericContainer ignored
 ++++++++++++genericContainer ignored
 ++++++labelText
+++++++++staticText name='Date: '
+++++++++++inlineTextBox name='Date: '
+++++++++date name='Date:'
+++++++++++genericContainer ignored
+++++++++++++genericContainer
+++++++++++++++genericContainer
+++++++++++++++++spinButton name='Month Date:' placeholder='mm' valueForRange=0.00 minValueForRange=1.00 maxValueForRange=12.00
+++++++++++++++++++staticText name='mm'
+++++++++++++++++++++inlineTextBox name='mm'
+++++++++++++++++staticText name='/'
+++++++++++++++++++inlineTextBox name='/'
+++++++++++++++++spinButton name='Day Date:' placeholder='dd' valueForRange=0.00 minValueForRange=1.00 maxValueForRange=31.00
+++++++++++++++++++staticText name='dd'
+++++++++++++++++++++inlineTextBox name='dd'
+++++++++++++++++staticText name='/'
+++++++++++++++++++inlineTextBox name='/'
+++++++++++++++++spinButton name='Year Date:' placeholder='yyyy' valueForRange=0.00 minValueForRange=1.00 maxValueForRange=275760.00
+++++++++++++++++++staticText name='yyyy'
+++++++++++++++++++++inlineTextBox name='yyyy'
+++++++++++++popUpButton description='Show date picker' name='Show date picker' descriptionFrom=title
+++++++labelText
+++++++++staticText name='Datetime: '
+++++++++++inlineTextBox name='Datetime: '
+++++++++textField editable name='Datetime:'
+++++++++++genericContainer editable
+++++++labelText
+++++++++staticText name='Datetime-local: '
+++++++++++inlineTextBox name='Datetime-local: '
+++++++++dateTime name='Datetime-local:'
+++++++++++genericContainer ignored
+++++++++++++genericContainer
+++++++++++++++genericContainer
+++++++++++++++++spinButton name='Month Datetime-local:' placeholder='mm' valueForRange=0.00 minValueForRange=1.00 maxValueForRange=12.00
+++++++++++++++++++staticText name='mm'
+++++++++++++++++++++inlineTextBox name='mm'
+++++++++++++++++staticText name='/'
+++++++++++++++++++inlineTextBox name='/'
+++++++++++++++++spinButton name='Day Datetime-local:' placeholder='dd' valueForRange=0.00 minValueForRange=1.00 maxValueForRange=31.00
+++++++++++++++++++staticText name='dd'
+++++++++++++++++++++inlineTextBox name='dd'
+++++++++++++++++staticText name='/'
+++++++++++++++++++inlineTextBox name='/'
+++++++++++++++++spinButton name='Year Datetime-local:' placeholder='yyyy' valueForRange=0.00 minValueForRange=1.00 maxValueForRange=275760.00
+++++++++++++++++++staticText name='yyyy'
+++++++++++++++++++++inlineTextBox name='yyyy'
+++++++++++++++++staticText name=' '
+++++++++++++++++++inlineTextBox name=' '
+++++++++++++++++spinButton name='Hours Datetime-local:' placeholder='--' valueForRange=0.00 minValueForRange=1.00 maxValueForRange=12.00
+++++++++++++++++++staticText name='--'
+++++++++++++++++++++inlineTextBox name='--'
+++++++++++++++++staticText name=':'
+++++++++++++++++++inlineTextBox name=':'
+++++++++++++++++spinButton name='Minutes Datetime-local:' placeholder='--' valueForRange=0.00 minValueForRange=0.00 maxValueForRange=59.00
+++++++++++++++++++staticText name='--'
+++++++++++++++++++++inlineTextBox name='--'
+++++++++++++++++staticText name=' '
+++++++++++++++++++inlineTextBox name=' '
+++++++++++++++++spinButton name='AM/PM Datetime-local:' placeholder='--' valueForRange=0.00 minValueForRange=1.00 maxValueForRange=2.00
+++++++++++++++++++staticText name='--'
+++++++++++++++++++++inlineTextBox name='--'
+++++++++++++popUpButton description='Show local date and time picker' name='Show local date and time picker' descriptionFrom=title
+++++++labelText
 ++++++++staticText name='Email: '
 ++++++++++inlineTextBox name='Email: '
 ++++++++textField editable name='Email:'
+++++++++++genericContainer editable
+++++++labelText
+++++++++staticText name='Empty: '
+++++++++++inlineTextBox name='Empty: '
+++++++++textField editable name='Empty:'
 ++++++++++genericContainer editable
 ++++++labelText
 ++++++++staticText name='File: '
@@ -38,6 +105,27 @@ rootWebArea
 ++++++++++++++inlineTextBox name='Submit'
 ++++++staticText name=' '
 ++++++++inlineTextBox name=' '
+++++++labelText
+++++++++staticText name='Invalid: '
+++++++++++inlineTextBox name='Invalid: '
+++++++++textField editable name='Invalid:'
+++++++++++genericContainer editable
+++++++labelText
+++++++++staticText name='Month: '
+++++++++++inlineTextBox name='Month: '
+++++++++dateTime name='Month:'
+++++++++++genericContainer ignored
+++++++++++++genericContainer
+++++++++++++++genericContainer
+++++++++++++++++spinButton name='Month Month:' placeholder='---------' valueForRange=0.00 minValueForRange=1.00 maxValueForRange=12.00
+++++++++++++++++++staticText name='---------'
+++++++++++++++++++++inlineTextBox name='---------'
+++++++++++++++++staticText name=' '
+++++++++++++++++++inlineTextBox name=' '
+++++++++++++++++spinButton name='Year Month:' placeholder='----' valueForRange=0.00 minValueForRange=1.00 maxValueForRange=275760.00
+++++++++++++++++++staticText name='----'
+++++++++++++++++++++inlineTextBox name='----'
+++++++++++++popUpButton description='Show month picker' name='Show month picker' descriptionFrom=title
 ++++++labelText
 ++++++++staticText name='Number: '
 ++++++++++inlineTextBox name='Number: '
@@ -89,7 +177,46 @@ rootWebArea
 ++++++++textField editable name='Text:'
 ++++++++++genericContainer editable
 ++++++labelText
+++++++++staticText name='Time: '
+++++++++++inlineTextBox name='Time: '
+++++++++inputTime name='Time:'
+++++++++++genericContainer ignored
+++++++++++++genericContainer
+++++++++++++++genericContainer
+++++++++++++++++spinButton name='Hours Time:' placeholder='--' valueForRange=0.00 minValueForRange=1.00 maxValueForRange=12.00
+++++++++++++++++++staticText name='--'
+++++++++++++++++++++inlineTextBox name='--'
+++++++++++++++++staticText name=':'
+++++++++++++++++++inlineTextBox name=':'
+++++++++++++++++spinButton name='Minutes Time:' placeholder='--' valueForRange=0.00 minValueForRange=0.00 maxValueForRange=59.00
+++++++++++++++++++staticText name='--'
+++++++++++++++++++++inlineTextBox name='--'
+++++++++++++++++staticText name=' '
+++++++++++++++++++inlineTextBox name=' '
+++++++++++++++++spinButton name='AM/PM Time:' placeholder='--' valueForRange=0.00 minValueForRange=1.00 maxValueForRange=2.00
+++++++++++++++++++staticText name='--'
+++++++++++++++++++++inlineTextBox name='--'
+++++++++++++popUpButton description='Show time picker' name='Show time picker' descriptionFrom=title
+++++++labelText
 ++++++++staticText name='Url: '
 ++++++++++inlineTextBox name='Url: '
 ++++++++textField editable name='Url:'
 ++++++++++genericContainer editable
+++++++labelText
+++++++++staticText name='Week: '
+++++++++++inlineTextBox name='Week: '
+++++++++dateTime name='Week:'
+++++++++++genericContainer ignored
+++++++++++++genericContainer
+++++++++++++++genericContainer
+++++++++++++++++staticText name='Week '
+++++++++++++++++++inlineTextBox name='Week '
+++++++++++++++++spinButton name='Week Week:' placeholder='--' valueForRange=0.00 minValueForRange=1.00 maxValueForRange=53.00
+++++++++++++++++++staticText name='--'
+++++++++++++++++++++inlineTextBox name='--'
+++++++++++++++++staticText name=', '
+++++++++++++++++++inlineTextBox name=', '
+++++++++++++++++spinButton name='Year Week:' placeholder='----' valueForRange=0.00 minValueForRange=1.00 maxValueForRange=275760.00
+++++++++++++++++++staticText name='----'
+++++++++++++++++++++inlineTextBox name='----'
+++++++++++++popUpButton description='Show week picker' name='Show week picker' descriptionFrom=title

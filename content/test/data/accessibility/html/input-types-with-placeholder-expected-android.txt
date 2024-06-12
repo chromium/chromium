@@ -1,0 +1,23 @@
+android.webkit.WebView focusable focused
+++android.view.View
+++++android.view.View
+++++++android.widget.TextView name='Email: '
+++++++android.widget.EditText clickable editable_text focusable hint='Email: email@example.com' input_type=209
+++++android.view.View
+++++++android.widget.TextView name='Number: '
+++++++android.widget.EditText role_description='spin button' clickable editable_text focusable range name='Number:' hint='3' input_type=2
+++++android.view.View
+++++++android.widget.TextView name='Password: '
+++++++android.widget.EditText clickable editable_text focusable password hint='Password: pwd' input_type=225
+++++android.view.View
+++++++android.widget.TextView name='Search: '
+++++++android.widget.EditText role_description='search text field' clickable editable_text focusable hint='Search: search' input_type=1
+++++android.view.View
+++++++android.widget.TextView name='Tel: '
+++++++android.widget.EditText clickable editable_text focusable hint='Tel: 555-1212' input_type=3
+++++android.view.View
+++++++android.widget.TextView name='Text: '
+++++++android.widget.EditText clickable editable_text focusable hint='Text: just text' input_type=1
+++++android.view.View
+++++++android.widget.TextView name='Url: '
+++++++android.widget.EditText clickable editable_text focusable hint='Url: https://www.example.com' input_type=17
