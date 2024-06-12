@@ -8,7 +8,7 @@ import {AcceleratorConfigurationProvider, AcceleratorConfigurationProviderRemote
 
 import {fakeAcceleratorConfig, fakeLayoutInfo} from './fake_data.js';
 import {FakeShortcutProvider} from './fake_shortcut_provider.js';
-import {Accelerator, AcceleratorCategory, AcceleratorSource, MojoAcceleratorConfig, MojoLayoutInfo, ShortcutProviderInterface} from './shortcut_types.js';
+import {Accelerator, AcceleratorCategory, AcceleratorSource, MetaKey, MojoAcceleratorConfig, MojoLayoutInfo, ShortcutProviderInterface} from './shortcut_types.js';
 
 /**
  * @fileoverview
@@ -83,8 +83,8 @@ export class ShortcutProviderWrapper implements ShortcutProviderInterface {
     return this.remote.isCustomizationAllowedByPolicy();
   }
 
-  hasLauncherButton(): Promise<{hasLauncherButton: boolean}> {
-    return this.remote.hasLauncherButton();
+  getMetaKeyToDisplay(): Promise<{metaKey: MetaKey}> {
+    return this.remote.getMetaKeyToDisplay();
   }
 
   addAccelerator(

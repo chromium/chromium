@@ -192,9 +192,9 @@ export class ShortcutCustomizationAppElement extends
     this.shortcutProvider.getAccelerators().then(
         ({config}) => this.onAcceleratorConfigFetched(config));
 
-    // Fetch the hasLauncherButton value.
-    this.shortcutProvider.hasLauncherButton().then(({hasLauncherButton}) => {
-      this.acceleratorlookupManager.setHasLauncherButton(hasLauncherButton);
+    // Fetch the MetaKey value to display.
+    this.shortcutProvider.getMetaKeyToDisplay().then(({metaKey}) => {
+      this.acceleratorlookupManager.setMetaKeyToDisplay(metaKey);
     });
   }
 
@@ -238,9 +238,9 @@ export class ShortcutCustomizationAppElement extends
       this.updateDialogAccelerators(this.dialogSource, this.dialogAction);
     }
 
-    // Update the hasLauncherButton value every time accelerators are updated.
-    this.shortcutProvider.hasLauncherButton().then(({hasLauncherButton}) => {
-      this.acceleratorlookupManager.setHasLauncherButton(hasLauncherButton);
+    // Update the getMetaKeyDisplay value every time accelerators are updated.
+    this.shortcutProvider.getMetaKeyToDisplay().then(({metaKey}) => {
+      this.acceleratorlookupManager.setMetaKeyToDisplay(metaKey);
     });
   }
 

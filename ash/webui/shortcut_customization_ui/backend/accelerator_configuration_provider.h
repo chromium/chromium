@@ -100,7 +100,7 @@ class AcceleratorConfigurationProvider
                  IsMutableCallback callback) override;
   void IsCustomizationAllowedByPolicy(
       IsCustomizationAllowedByPolicyCallback callback) override;
-  void HasLauncherButton(HasLauncherButtonCallback callback) override;
+  void GetMetaKeyToDisplay(GetMetaKeyToDisplayCallback callback) override;
   void GetConflictAccelerator(mojom::AcceleratorSource source,
                               uint32_t action_id,
                               const ui::Accelerator& accelerator,

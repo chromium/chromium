@@ -5,16 +5,16 @@
 import 'chrome://shortcut-customization/js/shortcut_customization_app.js';
 import 'chrome://webui-test/chromeos/mojo_webui_test_support.js';
 
-import {VKey} from 'chrome://resources/ash/common/shortcut_input_ui/accelerator_keys.mojom-webui.js';
-import {FakeShortcutInputProvider} from 'chrome://resources/ash/common/shortcut_input_ui/fake_shortcut_input_provider.js';
-import {KeyEvent} from 'chrome://resources/ash/common/shortcut_input_ui/input_device_settings.mojom-webui.js';
-import {Modifier as ModifierEnum} from 'chrome://resources/ash/common/shortcut_input_ui/shortcut_utils.js';
-import {strictQuery} from 'chrome://resources/ash/common/typescript_utils/strict_query.js';
 import {CrButtonElement} from 'chrome://resources/ash/common/cr_elements/cr_button/cr_button.js';
 import {CrDialogElement} from 'chrome://resources/ash/common/cr_elements/cr_dialog/cr_dialog.js';
 import {CrDrawerElement} from 'chrome://resources/ash/common/cr_elements/cr_drawer/cr_drawer.js';
 import {CrIconButtonElement} from 'chrome://resources/ash/common/cr_elements/cr_icon_button/cr_icon_button.js';
 import {CrToolbarSearchFieldElement} from 'chrome://resources/ash/common/cr_elements/cr_toolbar/cr_toolbar_search_field.js';
+import {VKey} from 'chrome://resources/ash/common/shortcut_input_ui/accelerator_keys.mojom-webui.js';
+import {FakeShortcutInputProvider} from 'chrome://resources/ash/common/shortcut_input_ui/fake_shortcut_input_provider.js';
+import {KeyEvent} from 'chrome://resources/ash/common/shortcut_input_ui/input_device_settings.mojom-webui.js';
+import {Modifier as ModifierEnum} from 'chrome://resources/ash/common/shortcut_input_ui/shortcut_utils.js';
+import {strictQuery} from 'chrome://resources/ash/common/typescript_utils/strict_query.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
 import {stringToMojoString16} from 'chrome://resources/js/mojo_type_util.js';
 import {IronIconElement} from 'chrome://resources/polymer/v3_0/iron-icon/iron-icon.js';
@@ -31,7 +31,7 @@ import {SearchBoxElement} from 'chrome://shortcut-customization/js/search/search
 import {setShortcutSearchHandlerForTesting} from 'chrome://shortcut-customization/js/search/shortcut_search_handler.js';
 import {ShortcutCustomizationAppElement} from 'chrome://shortcut-customization/js/shortcut_customization_app.js';
 import {setShortcutInputProviderForTesting} from 'chrome://shortcut-customization/js/shortcut_input_mojo_interface_provider.js';
-import {AcceleratorCategory, AcceleratorConfigResult, AcceleratorSource, AcceleratorState, AcceleratorSubcategory, AcceleratorType, LayoutInfo, LayoutStyle, Modifier, MojoAcceleratorConfig, MojoLayoutInfo, TextAcceleratorPartType} from 'chrome://shortcut-customization/js/shortcut_types.js';
+import {AcceleratorCategory, AcceleratorConfigResult, AcceleratorSource, AcceleratorState, AcceleratorSubcategory, AcceleratorType, LayoutInfo, LayoutStyle, MetaKey, Modifier, MojoAcceleratorConfig, MojoLayoutInfo, TextAcceleratorPartType} from 'chrome://shortcut-customization/js/shortcut_types.js';
 import {getSubcategoryNameStringId} from 'chrome://shortcut-customization/js/shortcut_utils.js';
 import {AcceleratorResultData, EditDialogCompletedActions, Subactions, UserAction} from 'chrome://shortcut-customization/mojom-webui/shortcut_customization.mojom-webui.js';
 import {assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
@@ -84,7 +84,7 @@ suite('shortcutCustomizationAppTest', function() {
     provider.setFakeGetDefaultAcceleratorsForId(fakeDefaultAccelerators);
     provider.setFakeIsCustomizationAllowedByPolicy(true);
     // The meta key is displayed as the launcher key in this test.
-    provider.setFakeHasLauncherButton(true);
+    provider.setFakeMetaKeyToDisplay(MetaKey.kLauncher);
 
     setShortcutProviderForTesting(provider);
     setShortcutInputProviderForTesting(shortcutInputProvider);
@@ -1189,7 +1189,7 @@ suite('shortcutCustomizationAppTest', function() {
 
     // Now simulate an update.
     provider.setFakeAcceleratorsUpdated([testAcceleratorConfig]);
-    provider.setFakeHasLauncherButton(true);
+    provider.setFakeMetaKeyToDisplay(MetaKey.kLauncher);
     await triggerOnAcceleratorUpdated();
     await provider.getAcceleratorsUpdatedPromiseForTesting();
 
@@ -1311,7 +1311,7 @@ suite('shortcutCustomizationAppTest', function() {
           acceleratorUpdateInProgress);
       // Simulate an update.
       provider.setFakeAcceleratorsUpdated([testUpdatedAcceleratorConfig]);
-      provider.setFakeHasLauncherButton(true);
+      provider.setFakeMetaKeyToDisplay(MetaKey.kLauncher);
       await triggerOnAcceleratorUpdated();
       await provider.getAcceleratorsUpdatedPromiseForTesting();
 

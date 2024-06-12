@@ -19,6 +19,7 @@ mojom("mojom") {
     "//ash/public/mojom:accelerator_info",
     "//ash/public/mojom:accelerator_keys",
     "//mojo/public/mojom/base",
+    "//ui/events/ash/mojom",
   ]
 
   cpp_typemaps = [

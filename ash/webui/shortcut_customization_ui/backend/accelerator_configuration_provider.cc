@@ -657,10 +657,10 @@ void AcceleratorConfigurationProvider::IsCustomizationAllowedByPolicy(
       Shell::Get()->accelerator_prefs()->IsCustomizationAllowedByPolicy());
 }
 
-void AcceleratorConfigurationProvider::HasLauncherButton(
-    HasLauncherButtonCallback callback) {
+void AcceleratorConfigurationProvider::GetMetaKeyToDisplay(
+    GetMetaKeyToDisplayCallback callback) {
   std::move(callback).Run(
-      Shell::Get()->keyboard_capability()->HasLauncherButtonOnAnyKeyboard());
+      Shell::Get()->keyboard_capability()->GetMetaKeyToDisplay());
 }
 
 void AcceleratorConfigurationProvider::GetConflictAccelerator(

@@ -23,7 +23,7 @@ import {getTemplate} from './accelerator_edit_view.html.js';
 import {AcceleratorLookupManager} from './accelerator_lookup_manager.js';
 import {AcceleratorViewElement, ViewState} from './accelerator_view.js';
 import {getShortcutProvider} from './mojo_interface_provider.js';
-import {Accelerator, AcceleratorConfigResult, AcceleratorKeyState, AcceleratorSource, AcceleratorState, AcceleratorType, EditAction, ShortcutProviderInterface, StandardAcceleratorInfo} from './shortcut_types.js';
+import {Accelerator, AcceleratorConfigResult, AcceleratorKeyState, AcceleratorSource, AcceleratorState, AcceleratorType, EditAction, MetaKey, ShortcutProviderInterface, StandardAcceleratorInfo} from './shortcut_types.js';
 import {getAccelerator, getAriaLabelForStandardAcceleratorInfo} from './shortcut_utils.js';
 
 export type RequestUpdateAcceleratorEvent =
@@ -269,9 +269,17 @@ export class AcceleratorEditViewElement extends AcceleratorEditViewElementBase {
   }
 
   private getMetaKeyDisplay(): string {
-    return this.lookupManager.getHasLauncherButton() ?
-        this.i18n('iconLabelOpenLauncher') :
-        this.i18n('iconLabelOpenSearch');
+    const metaKey = this.lookupManager.getMetaKeyToDisplay();
+    switch (metaKey) {
+      case MetaKey.kLauncherRefresh:
+        // TODO(b/338134189): Replace it with updated icon when finalized.
+        return this.i18n('iconLabelOpenLauncher');
+      case MetaKey.kSearch:
+        return this.i18n('iconLabelOpenSearch');
+      case MetaKey.kLauncher:
+      default:
+        return this.i18n('iconLabelOpenLauncher');
+    }
   }
 
   getStatusMessageForTesting(): string {

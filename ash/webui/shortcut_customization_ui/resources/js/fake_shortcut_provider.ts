@@ -8,7 +8,7 @@ import {assert} from 'chrome://resources/js/assert.js';
 
 import {AcceleratorResultData, AcceleratorsUpdatedObserverRemote, EditDialogCompletedActions, PolicyUpdatedObserverRemote, Subactions, UserAction} from '../mojom-webui/shortcut_customization.mojom-webui.js';
 
-import {Accelerator, AcceleratorCategory, AcceleratorConfigResult, AcceleratorSource, MojoAcceleratorConfig, MojoLayoutInfo, ShortcutProviderInterface} from './shortcut_types.js';
+import {Accelerator, AcceleratorCategory, AcceleratorConfigResult, AcceleratorSource, MetaKey, MojoAcceleratorConfig, MojoLayoutInfo, ShortcutProviderInterface} from './shortcut_types.js';
 
 
 /**
@@ -47,7 +47,7 @@ export class FakeShortcutProvider implements ShortcutProviderInterface {
     this.methods.register('getAcceleratorLayoutInfos');
     this.methods.register('isMutable');
     this.methods.register('isCustomizationAllowedByPolicy');
-    this.methods.register('hasLauncherButton');
+    this.methods.register('getMetaKeyToDisplay');
     this.methods.register('addAccelerator');
     this.methods.register('replaceAccelerator');
     this.methods.register('removeAccelerator');
@@ -103,8 +103,8 @@ export class FakeShortcutProvider implements ShortcutProviderInterface {
     return this.methods.resolveMethod('isCustomizationAllowedByPolicy');
   }
 
-  hasLauncherButton(): Promise<{hasLauncherButton: boolean}> {
-    return this.methods.resolveMethod('hasLauncherButton');
+  getMetaKeyToDisplay(): Promise<{metaKey: MetaKey}> {
+    return this.methods.resolveMethod('getMetaKeyToDisplay');
   }
 
   addObserver(observer: AcceleratorsUpdatedObserverRemote): void {
@@ -284,8 +284,8 @@ export class FakeShortcutProvider implements ShortcutProviderInterface {
     return this.removeAcceleratorCallCount;
   }
 
-  setFakeHasLauncherButton(hasLauncherButton: boolean): void {
-    this.methods.setResult('hasLauncherButton', {hasLauncherButton});
+  setFakeMetaKeyToDisplay(metaKey: MetaKey): void {
+    this.methods.setResult('getMetaKeyToDisplay', {metaKey});
   }
 
   setFakeAddAcceleratorResult(result: AcceleratorResultData): void {

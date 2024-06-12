@@ -17,7 +17,7 @@ import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bu
 
 import {AcceleratorLookupManager} from '../accelerator_lookup_manager.js';
 import {Router} from '../router.js';
-import {LayoutStyle, MojoAcceleratorInfo, MojoSearchResult, StandardAcceleratorInfo, TextAcceleratorInfo, TextAcceleratorPart} from '../shortcut_types.js';
+import {LayoutStyle, MetaKey, MojoAcceleratorInfo, MojoSearchResult, StandardAcceleratorInfo, TextAcceleratorInfo, TextAcceleratorPart} from '../shortcut_types.js';
 import {getAriaLabelForStandardAccelerators, getAriaLabelForTextAccelerators, getModifiersForAcceleratorInfo, getTextAcceleratorParts, getURLForSearchResult, isStandardAcceleratorInfo, isTextAcceleratorInfo} from '../shortcut_utils.js';
 
 import {getBoldedDescription} from './search_result_bolding.js';
@@ -84,7 +84,11 @@ export class SearchResultRowElement extends SearchResultRowElementBase {
   override connectedCallback(): void {
     super.connectedCallback();
 
-    this.hasLauncherButton = this.lookupManager.getHasLauncherButton();
+    // TODO(b/338134189): Replace this.hasLauncherButton with
+    // this.metaKeyToDisplay and update children components to use enum instead
+    // of boolean.
+    this.hasLauncherButton =
+        this.lookupManager.getMetaKeyToDisplay() !== MetaKey.kSearch;
   }
 
   private isNoShortcutAssigned(): boolean {

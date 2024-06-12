@@ -7,6 +7,7 @@ import * as AcceleratorTypes from 'chrome://resources/mojo/ui/base/accelerators/
 
 import * as AcceleratorConfigurationTypes from '../mojom-webui/accelerator_configuration.mojom-webui.js';
 import * as AcceleratorInfoTypes from '../mojom-webui/accelerator_info.mojom-webui.js';
+import * as MetaKeyTypes from '../mojom-webui/meta_key.mojom-webui.js';
 import {SearchHandler, SearchHandlerInterface, SearchResult, SearchResultsAvailabilityObserverRemote} from '../mojom-webui/search.mojom-webui.js';
 import {AcceleratorConfigurationProviderInterface, AcceleratorResultData, AcceleratorsUpdatedObserverRemote, UserAction} from '../mojom-webui/shortcut_customization.mojom-webui.js';
 
@@ -81,6 +82,14 @@ export type AcceleratorConfigResult =
     AcceleratorConfigurationTypes.AcceleratorConfigResult;
 export const AcceleratorConfigResult =
     AcceleratorConfigurationTypes.AcceleratorConfigResult;
+
+/**
+ * Enumeration of meta key denoting all the possible options deducable from
+ * the users keyboard. Used to show the correct key to the user in the settings
+ * UI.
+ */
+export type MetaKey = MetaKeyTypes.MetaKey;
+export const MetaKey = MetaKeyTypes.MetaKey;
 
 /**
  * Type alias for Accelerator.
@@ -216,7 +225,7 @@ export interface ShortcutProviderInterface extends
   getDefaultAcceleratorsForId(action: number):
       Promise<{accelerators: Accelerator[]}>;
   isMutable(source: AcceleratorSource): Promise<{isMutable: boolean}>;
-  hasLauncherButton(): Promise<{hasLauncherButton: boolean}>;
+  getMetaKeyToDisplay(): Promise<{metaKey: MetaKey}>;
   addAccelerator(
       source: AcceleratorSource, action: number,
       accelerator: Accelerator): Promise<{result: AcceleratorResultData}>;

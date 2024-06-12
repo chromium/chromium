@@ -7,7 +7,7 @@ import 'chrome://webui-test/chromeos/mojo_webui_test_support.js';
 import {AcceleratorLookupManager} from 'chrome://shortcut-customization/js/accelerator_lookup_manager.js';
 import {fakeAcceleratorConfig, fakeAmbientConfig, fakeLayoutInfo} from 'chrome://shortcut-customization/js/fake_data.js';
 import {FakeShortcutProvider} from 'chrome://shortcut-customization/js/fake_shortcut_provider.js';
-import {AcceleratorCategory, AcceleratorSource, AcceleratorSubcategory} from 'chrome://shortcut-customization/js/shortcut_types.js';
+import {AcceleratorCategory, AcceleratorSource, AcceleratorSubcategory, MetaKey} from 'chrome://shortcut-customization/js/shortcut_types.js';
 import {assertDeepEquals, assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
 
 suite('acceleratorLookupManagerTest', function() {
@@ -106,13 +106,14 @@ suite('acceleratorLookupManagerTest', function() {
     });
   });
 
-  test('SetAndGetHasLauncherButton', () => {
-    getProvider().setFakeHasLauncherButton(true);
-    return getProvider().hasLauncherButton().then((result) => {
-      assertEquals(true, result.hasLauncherButton);
+  test('SetAndGetMetaKeyToDisplay', () => {
+    getProvider().setFakeMetaKeyToDisplay(MetaKey.kLauncher);
+    return getProvider().getMetaKeyToDisplay().then(
+        (result: {metaKey: MetaKey}) => {
+          assertEquals(MetaKey.kLauncher, result.metaKey);
 
-      getManager().setHasLauncherButton(result.hasLauncherButton);
-      assertEquals(true, getManager().getHasLauncherButton());
-    });
+          getManager().setMetaKeyToDisplay(result.metaKey);
+          assertEquals(MetaKey.kLauncher, getManager().getMetaKeyToDisplay());
+        });
   });
 });
