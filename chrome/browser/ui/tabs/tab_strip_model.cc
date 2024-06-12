@@ -529,9 +529,9 @@ int TabStripModel::MoveWebContentsAt(
 
   CHECK(ContainsIndex(index));
 
-  to_position = ConstrainMoveIndex(to_position, IsTabPinned(index));
-  MoveTabToIndexImpl(index, to_position, group, IsTabPinned(index),
-                     select_after_move);
+  bool pinned = IsTabPinned(index);
+  to_position = ConstrainMoveIndex(to_position, pinned);
+  MoveTabToIndexImpl(index, to_position, group, pinned, select_after_move);
   return to_position;
 }
 
@@ -730,16 +730,17 @@ int TabStripModel::GetIndexOfLastWebContentsOpenedBy(const WebContents* opener,
   int last_index = kNoTab;
 
   for (int i = start_index + 1; i < count(); ++i) {
+    tabs::TabModel* tab = GetTabAtIndex(i);
     // Test opened by transitively, i.e. include tabs opened by tabs opened by
     // opener, etc. Stop when we find the first non-descendant.
-    if (!opener_and_descendants.count(GetTabAtIndex(i)->opener())) {
+    if (!opener_and_descendants.count(tab->opener())) {
       // Skip over pinned tabs as new tabs are added after pinned tabs.
-      if (GetTabAtIndex(i)->pinned()) {
+      if (tab->pinned()) {
         continue;
       }
       break;
     }
-    opener_and_descendants.insert(GetTabAtIndex(i)->contents());
+    opener_and_descendants.insert(tab->contents());
     last_index = i;
   }
   return last_index;
@@ -795,6 +796,9 @@ int TabStripModel::SetTabPinned(int index, bool pinned) {
 
 bool TabStripModel::IsTabPinned(int index) const {
   CHECK(ContainsIndex(index)) << index;
+  if (base::FeatureList::IsEnabled(features::kTabStripCollectionStorage)) {
+    return index < IndexOfFirstNonPinnedTab();
+  }
   return GetTabAtIndex(index)->pinned();
 }
 
@@ -848,13 +852,7 @@ std::optional<tab_groups::TabGroupId> TabStripModel::GetSurroundingTabGroup(
 }
 
 int TabStripModel::IndexOfFirstNonPinnedTab() const {
-  for (int i = 0; i < GetTabCount(); ++i) {
-    if (!IsTabPinned(i)) {
-      return i;
-    }
-  }
-  // No pinned tabs.
-  return count();
+  return contents_data_->IndexOfFirstNonPinnedTab();
 }
 
 void TabStripModel::ExtendSelectionTo(int index) {
@@ -2872,7 +2870,7 @@ void TabStripModel::SetTabsPinned(std::vector<int> indices, bool pinned) {
   }
 
   for (int index : indices) {
-    if (GetTabAtIndex(index)->pinned() == pinned) {
+    if (IsTabPinned(index) == pinned) {
       continue;
     }
 

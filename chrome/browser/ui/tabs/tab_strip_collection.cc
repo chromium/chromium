@@ -31,6 +31,10 @@ TabStripCollection::TabStripCollection() {
 
 TabStripCollection::~TabStripCollection() = default;
 
+size_t TabStripCollection::IndexOfFirstNonPinnedTab() const {
+  return pinned_collection_->TabCountRecursive();
+}
+
 bool TabStripCollection::ContainsTab(TabModel* tab_model) const {
   return false;
 }

@@ -30,6 +30,7 @@ class TabContentsData {
   TabContentsData& operator=(const TabContentsData&) = delete;
 
   virtual size_t TabCountRecursive() const = 0;
+  virtual size_t IndexOfFirstNonPinnedTab() const = 0;
 
   virtual tabs::TabModel* GetTabAtIndexRecursive(size_t index) const = 0;
 

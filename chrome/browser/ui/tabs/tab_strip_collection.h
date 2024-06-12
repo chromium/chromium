@@ -37,6 +37,8 @@ class TabStripCollection : public TabCollection, public TabContentsData {
   PinnedTabCollection* pinned_collection() { return pinned_collection_; }
   UnpinnedTabCollection* unpinned_collection() { return unpinned_collection_; }
 
+  size_t IndexOfFirstNonPinnedTab() const override;
+
   // Returns the tab at a particular index from the collection tree.
   // The index is a recursive index and if the index is invalid it returns
   // nullptr.
