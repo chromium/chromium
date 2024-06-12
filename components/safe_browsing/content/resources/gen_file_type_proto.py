@@ -31,6 +31,7 @@ from binary_proto_generator import BinaryProtoGenerator
 #   value: proto-platform_type (int)
 def PlatformTypes():
     return {
+        # LINT.IfChange(PlatformTypes)
         "android":
         download_file_types_pb2.DownloadFileType.PLATFORM_TYPE_ANDROID,
         "chromeos":
@@ -40,6 +41,7 @@ def PlatformTypes():
         "linux": download_file_types_pb2.DownloadFileType.PLATFORM_TYPE_LINUX,
         "mac": download_file_types_pb2.DownloadFileType.PLATFORM_TYPE_MAC,
         "win": download_file_types_pb2.DownloadFileType.PLATFORM_TYPE_WINDOWS,
+        # LINT.ThenChange(BUILD.gn:PlatformTypes)
     }
 
 
@@ -163,8 +165,8 @@ class DownloadFileTypeProtoGenerator(BinaryProtoGenerator):
         else:
             # Make a separate file for each platform
             for platform_type, platform_enum in PlatformTypes().items():
-                # e.g. .../all/77/chromeos/download_file_types.pb
-                outfile = os.path.join(opts.outdir, str(pb.version_id),
+                # e.g. .../all/chromeos/download_file_types.pb
+                outfile = os.path.join(opts.outdir,
                                        platform_type, opts.outbasename)
                 MakeSubDirs(outfile)
                 FilterForPlatformAndWrite(pb, platform_enum, outfile)
@@ -174,9 +176,7 @@ class DownloadFileTypeProtoGenerator(BinaryProtoGenerator):
                           '--all',
                           action="store_true",
                           default=False,
-                          help='Write a separate file for every platform. '
-                          'Outfile must have a %d for version and %s for '
-                          'platform.')
+                          help='Write a separate file for every platform.')
         parser.add_option(
             '-t',
             '--type',

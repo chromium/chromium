@@ -72,7 +72,16 @@ action("make_all_file_types_protobuf") {
 
   input_filename = "download_file_types.asciipb"
   output_dir = "$target_gen_dir/all"
-  output_basename = "download_file_types.pb"
+  outputs = [
+    # LINT.IfChange(PlatformTypes)
+    "$output_dir/android/download_file_types.pb",
+    "$output_dir/chromeos/download_file_types.pb",
+    "$output_dir/fuchsia/download_file_types.pb",
+    "$output_dir/linux/download_file_types.pb",
+    "$output_dir/mac/download_file_types.pb",
+    "$output_dir/win/download_file_types.pb",
+    # LINT.ThenChange(gen_file_type_proto.py:PlatformTypes)
+  ]
   python_path_root = "$root_build_dir/pyproto"
   python_path_safe_browsing =
       "$python_path_root/components/safe_browsing/content/common/proto"
@@ -84,9 +93,6 @@ action("make_all_file_types_protobuf") {
     "//third_party/protobuf:py_proto",
   ]
 
-  # A directory, since we can't derive the actual file names here.
-  outputs = [ output_dir ]
-
   args = [
     "-w",
     "-a",
@@ -95,7 +101,7 @@ action("make_all_file_types_protobuf") {
     "-d",
     rebase_path(output_dir, root_build_dir),
     "-o",
-    output_basename,
+    "download_file_types.pb",
     "-p",
     rebase_path(python_path_root, root_build_dir),
     "-p",
