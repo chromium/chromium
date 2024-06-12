@@ -80,6 +80,13 @@ constexpr char kFeedbackPlaceholder[] =
 // Constant determining the icon size in the context menu.
 constexpr int kContextMenuIconSize = 16;
 
+#if BUILDFLAG(GOOGLE_CHROME_BRANDING)
+const gfx::VectorIcon& kPlusAddressLogoIcon =
+    vector_icons::kPlusAddressLogoSmallIcon;
+#else
+const gfx::VectorIcon& kPlusAddressLogoIcon = vector_icons::kEmailIcon;
+#endif
+
 bool ShouldShowAutofillContextMenu(const content::ContextMenuParams& params) {
   if (!params.form_control_type) {
     return false;
@@ -379,11 +386,6 @@ void AutofillContextMenuManager::MaybeAddAutofillManualFallbackItems() {
   menu_model_->AddTitle(
       l10n_util::GetStringUTF16(IDS_CONTENT_CONTEXT_AUTOFILL_FALLBACK_TITLE));
 
-  if (add_plus_address_fallback) {
-    menu_model_->AddItemWithStringId(
-        IDC_CONTENT_CONTEXT_AUTOFILL_FALLBACK_PLUS_ADDRESS,
-        IDS_PLUS_ADDRESS_FALLBACK_LABEL_CONTEXT_MENU);
-  }
   if (add_address_fallback) {
     menu_model_->AddItemWithStringIdAndIcon(
         IDC_CONTENT_CONTEXT_AUTOFILL_FALLBACK_ADDRESS,
@@ -411,6 +413,13 @@ void AutofillContextMenuManager::MaybeAddAutofillManualFallbackItems() {
   }
   if (add_passwords_fallback) {
     AddPasswordsManualFallbackItems(*password_manager_driver);
+  }
+  if (add_plus_address_fallback) {
+    menu_model_->AddItemWithStringIdAndIcon(
+        IDC_CONTENT_CONTEXT_AUTOFILL_FALLBACK_PLUS_ADDRESS,
+        IDS_PLUS_ADDRESS_FALLBACK_LABEL_CONTEXT_MENU,
+        ui::ImageModel::FromVectorIcon(kPlusAddressLogoIcon, ui::kColorIcon,
+                                       kContextMenuIconSize));
   }
 
   const bool select_passwords_option_shown =
