@@ -192,8 +192,10 @@ struct HistoryGraph: View {
         AxisGridLine()
       }
     }
-    /// TODO(b/334988024): Polish chartXAxis y adding chartXAxis.
     .chartXScale(domain: axisXRange)
+    .chartXAxis {
+      AxisMarks(preset: .aligned, stroke: StrokeStyle(lineWidth: 0))
+    }
     .chartOverlay { proxy in
       /// Gesture for selecting date on the graph.
       GeometryReader { geometry in
