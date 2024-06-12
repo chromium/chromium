@@ -9,10 +9,13 @@
 
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
+#include "components/sync/base/deletion_origin.h"
 #include "components/sync/base/features.h"
 #include "components/sync/engine/data_type_activation_response.h"
 #include "components/sync/engine/forwarding_model_type_processor.h"
+#include "components/sync/model/conflict_resolution.h"
 #include "components/sync/model/metadata_batch.h"
+#include "components/sync/model/processor_entity.h"
 #include "components/sync/model/processor_entity_tracker.h"
 #include "components/sync/protocol/entity_metadata.pb.h"
 #include "components/sync/protocol/entity_specifics.pb.h"
@@ -131,6 +134,13 @@ class ClientTagBasedRemoteUpdateHandlerTest : public ::testing::Test {
     return worker()->GenerateUpdateData(client_tag_hash, specifics,
                                         version_offset,
                                         model_type_state.encryption_key_name());
+  }
+
+  std::unique_ptr<EntityData> GeneratePrefEntityData(const std::string& key,
+                                                     const std::string& value) {
+    auto entity_data = std::make_unique<EntityData>();
+    entity_data->specifics = GeneratePrefSpecifics(key, value);
+    return entity_data;
   }
 
   size_t ProcessorEntityCount() const {
@@ -328,14 +338,118 @@ TEST_F(ClientTagBasedRemoteUpdateHandlerTest,
   update = GeneratePrefUpdate(kKey1, kValue1);
   // Make sure to have the same specifics.
   update.entity.specifics = specifics;
-  // Changes match doesn't call ResolveConflict.
+
+  base::HistogramTester histogram_tester;
   ProcessSingleUpdate(std::move(update));
+  histogram_tester.ExpectUniqueSample(
+      "Sync.ModelTypeEntityConflictResolution.PREFERENCE",
+      ConflictResolution::kChangesMatch, /*expected_bucket_count=*/1);
 
   EXPECT_EQ(1U, db()->data_change_count());
   ASSERT_EQ(0U, bridge()->trimmed_specifics_change_count());
   EXPECT_EQ(2U, db()->GetMetadata(kKey1).server_version());
   EXPECT_EQ(1U, ProcessorEntityCount());
   EXPECT_FALSE(entity_tracker()->HasLocalChanges());
+}
+
+TEST_F(ClientTagBasedRemoteUpdateHandlerTest,
+       ShouldPreferRemoteNonDeletionOverLocalTombstoneOnConflict) {
+  UpdateResponseData update = GeneratePrefUpdate(kKey1, kValue1);
+  sync_pb::EntitySpecifics specifics = update.entity.specifics;
+  ProcessSingleUpdate(std::move(update));
+  ASSERT_EQ(1U, ProcessorEntityCount());
+  ASSERT_EQ(1U, db()->data_change_count());
+  ASSERT_EQ(1U, db()->metadata_change_count());
+  ASSERT_EQ(1U, db()->GetMetadata(kKey1).server_version());
+
+  // Mark local entity as deleted (tombstone).
+  db()->RemoveData(kKey1);
+  entity_tracker()->GetEntityForStorageKey(kKey1)->RecordLocalDeletion(
+      DeletionOrigin::Unspecified());
+  entity_tracker()->IncrementSequenceNumberForAllExcept({});
+  ASSERT_EQ(2U, db()->data_change_count());
+  ASSERT_TRUE(entity_tracker()->HasLocalChanges());
+
+  update = GeneratePrefUpdate(kKey1, kValue1);
+  // Make sure to have the same specifics.
+  update.entity.specifics = specifics;
+
+  base::HistogramTester histogram_tester;
+  ProcessSingleUpdate(std::move(update));
+  histogram_tester.ExpectUniqueSample(
+      "Sync.ModelTypeEntityConflictResolution.PREFERENCE",
+      ConflictResolution::kUseRemote, /*expected_bucket_count=*/1);
+
+  EXPECT_EQ(3U, db()->data_change_count());
+  EXPECT_EQ(2U, db()->GetMetadata(kKey1).server_version());
+  EXPECT_EQ(1U, ProcessorEntityCount());
+  EXPECT_FALSE(entity_tracker()->HasLocalChanges());
+}
+
+TEST_F(ClientTagBasedRemoteUpdateHandlerTest,
+       ShouldPreferRemoteNonDeletionOverLocalEncryptionOnConflict) {
+  UpdateResponseData update = GeneratePrefUpdate(kKey1, kValue1);
+  sync_pb::EntitySpecifics specifics = update.entity.specifics;
+  ProcessSingleUpdate(std::move(update));
+  ASSERT_EQ(1U, ProcessorEntityCount());
+  ASSERT_EQ(1U, db()->data_change_count());
+  ASSERT_EQ(1U, db()->metadata_change_count());
+  ASSERT_EQ(1U, db()->GetMetadata(kKey1).server_version());
+
+  // Mark local entity as updated but having the same specifics (local
+  // re-encryption).
+  entity_tracker()->IncrementSequenceNumberForAllExcept({});
+  ASSERT_TRUE(entity_tracker()->HasLocalChanges());
+  ASSERT_TRUE(
+      entity_tracker()->GetEntityForStorageKey(kKey1)->MatchesOwnBaseData());
+
+  // Remote update has different specifics so data does not match.
+  update = GeneratePrefUpdate(kKey1, kValue2);
+
+  base::HistogramTester histogram_tester;
+  ProcessSingleUpdate(std::move(update));
+  histogram_tester.ExpectUniqueSample(
+      "Sync.ModelTypeEntityConflictResolution.PREFERENCE",
+      ConflictResolution::kIgnoreLocalEncryption, /*expected_bucket_count=*/1);
+
+  EXPECT_EQ(2U, db()->data_change_count());
+  ASSERT_EQ(0U, bridge()->trimmed_specifics_change_count());
+  EXPECT_EQ(2U, db()->GetMetadata(kKey1).server_version());
+  EXPECT_EQ(1U, ProcessorEntityCount());
+  EXPECT_FALSE(entity_tracker()->HasLocalChanges());
+}
+
+TEST_F(ClientTagBasedRemoteUpdateHandlerTest,
+       ShouldPreferLocalChangeOverRemoteEncryptionOnConflict) {
+  UpdateResponseData update = GeneratePrefUpdate(kKey1, kValue1);
+  sync_pb::EntitySpecifics specifics = update.entity.specifics;
+  ProcessSingleUpdate(std::move(update));
+  ASSERT_EQ(1U, ProcessorEntityCount());
+  ASSERT_EQ(1U, db()->data_change_count());
+  ASSERT_EQ(1U, db()->metadata_change_count());
+  ASSERT_EQ(1U, db()->GetMetadata(kKey1).server_version());
+
+  // Update the local entity to not match the remote update.
+  entity_tracker()->GetEntityForStorageKey(kKey1)->RecordLocalUpdate(
+      GeneratePrefEntityData(kKey1, kValue2),
+      /*trimmed_specifics=*/sync_pb::EntitySpecifics());
+  ASSERT_TRUE(entity_tracker()->HasLocalChanges());
+
+  // Remote update has the same specifics to represent re-encryption.
+  update = GeneratePrefUpdate(kKey1, kValue1);
+  update.entity.specifics = specifics;
+
+  base::HistogramTester histogram_tester;
+  ProcessSingleUpdate(std::move(update));
+  histogram_tester.ExpectUniqueSample(
+      "Sync.ModelTypeEntityConflictResolution.PREFERENCE",
+      ConflictResolution::kIgnoreRemoteEncryption, /*expected_bucket_count=*/1);
+
+  EXPECT_EQ(1U, db()->data_change_count());
+  ASSERT_EQ(0U, bridge()->trimmed_specifics_change_count());
+  EXPECT_EQ(2U, db()->GetMetadata(kKey1).server_version());
+  EXPECT_EQ(1U, ProcessorEntityCount());
+  EXPECT_TRUE(entity_tracker()->HasLocalChanges());
 }
 
 // Test for the case from crbug.com/1046309. Tests that there is no redundant

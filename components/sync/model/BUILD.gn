@@ -11,6 +11,7 @@ static_library("model") {
     "client_tag_based_model_type_processor.h",
     "client_tag_based_remote_update_handler.cc",
     "client_tag_based_remote_update_handler.h",
+    "conflict_resolution.cc",
     "conflict_resolution.h",
     "data_batch.h",
     "data_type_activation_request.cc",

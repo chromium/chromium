@@ -19,6 +19,7 @@
 #include "base/uuid.h"
 #include "components/bookmarks/browser/bookmark_node.h"
 #include "components/bookmarks/common/bookmark_metrics.h"
+#include "components/sync/base/model_type.h"
 #include "components/sync/base/unique_position.h"
 #include "components/sync/engine/model_type_processor_metrics.h"
 #include "components/sync/model/conflict_resolution.h"
@@ -694,7 +695,8 @@ BookmarkRemoteUpdatesHandler::ProcessConflict(
   if (tracked_entity->metadata().is_deleted() && update_entity.is_deleted()) {
     // Both have been deleted, delete the corresponding entity from the tracker.
     bookmark_tracker_->Remove(tracked_entity);
-    DLOG(WARNING) << "Conflict: CHANGES_MATCH";
+    syncer::RecordModelTypeEntityConflictResolution(
+        syncer::BOOKMARKS, syncer::ConflictResolution::kChangesMatch);
     return nullptr;
   }
 
@@ -703,7 +705,8 @@ BookmarkRemoteUpdatesHandler::ProcessConflict(
     // update from the server but leave the pending commit intact.
     bookmark_tracker_->UpdateServerVersion(tracked_entity,
                                            update.response_version);
-    DLOG(WARNING) << "Conflict: USE_LOCAL";
+    syncer::RecordModelTypeEntityConflictResolution(
+        syncer::BOOKMARKS, syncer::ConflictResolution::kUseLocal);
     return tracked_entity;
   }
 
@@ -713,7 +716,8 @@ BookmarkRemoteUpdatesHandler::ProcessConflict(
     // Only local node has been deleted. It should be restored from the server
     // data as a remote creation.
     bookmark_tracker_->Remove(tracked_entity);
-    DLOG(WARNING) << "Conflict: USE_REMOTE";
+    syncer::RecordModelTypeEntityConflictResolution(
+        syncer::BOOKMARKS, syncer::ConflictResolution::kUseRemote);
     return ProcessCreate(update);
   }
 
@@ -734,6 +738,8 @@ BookmarkRemoteUpdatesHandler::ProcessConflict(
   if (!new_parent_entity) {
     LogProblematicBookmark(
         RemoteBookmarkUpdateError::kMissingParentEntityInConflict);
+    syncer::RecordModelTypeEntityConflictResolution(
+        syncer::BOOKMARKS, syncer::ConflictResolution::kUseLocal);
     return tracked_entity;
   }
   const bookmarks::BookmarkNode* new_parent =
@@ -745,6 +751,8 @@ BookmarkRemoteUpdatesHandler::ProcessConflict(
   if (!new_parent) {
     LogProblematicBookmark(
         RemoteBookmarkUpdateError::kMissingParentNodeInConflict);
+    syncer::RecordModelTypeEntityConflictResolution(
+        syncer::BOOKMARKS, syncer::ConflictResolution::kUseLocal);
     return tracked_entity;
   }
   // Either local and remote data match or server wins, and in both cases we
@@ -761,11 +769,13 @@ BookmarkRemoteUpdatesHandler::ProcessConflict(
                               update_entity.specifics);
 
     // The changes are identical so there isn't a real conflict.
-    DLOG(WARNING) << "Conflict: CHANGES_MATCH";
+    syncer::RecordModelTypeEntityConflictResolution(
+        syncer::BOOKMARKS, syncer::ConflictResolution::kChangesMatch);
   } else {
     // Conflict where data don't match and no remote deletion, and hence server
     // wins. Update the model from server data.
-    DLOG(WARNING) << "Conflict: USE_REMOTE";
+    syncer::RecordModelTypeEntityConflictResolution(
+        syncer::BOOKMARKS, syncer::ConflictResolution::kUseRemote);
     ApplyRemoteUpdate(update, tracked_entity, new_parent_entity,
                       bookmark_model_, bookmark_tracker_, favicon_service_);
   }

@@ -1623,8 +1623,12 @@ TEST_F(ClientTagBasedModelTypeProcessorTest,
   worker()->VerifyPendingCommits({{GetPrefHash(kKey1)}});
   worker()->VerifyNthPendingCommit(0, {GetPrefHash(kKey1)}, {specifics});
 
-  // Changes match doesn't call ResolveConflict.
+  // Changes match doesn't call ResolveConflict in the bridge.
+  base::HistogramTester histogram_tester;
   worker()->UpdateFromServer(GetPrefHash(kKey1), specifics);
+  histogram_tester.ExpectUniqueSample(
+      "Sync.ModelTypeEntityConflictResolution.PREFERENCE",
+      ConflictResolution::kChangesMatch, /*expected_bucket_count=*/1);
 
   // Updated metadata but not data; no new commit request.
   EXPECT_EQ(1U, db()->data_change_count());
@@ -1641,10 +1645,14 @@ TEST_F(ClientTagBasedModelTypeProcessorTest,
 
   // Change value locally and at the same time simulate conflicting update from
   // server.
+  base::HistogramTester histogram_tester;
   EntitySpecifics specifics2 = WritePrefItem(bridge(), kKey1, kValue2);
   worker()->UpdateFromServer(GetPrefHash(kKey1),
                              GeneratePrefSpecifics(kKey1, kValue3));
   OnCommitDataLoaded();
+  histogram_tester.ExpectUniqueSample(
+      "Sync.ModelTypeEntityConflictResolution.PREFERENCE",
+      ConflictResolution::kUseLocal, /*expected_bucket_count=*/1);
 
   // Updated metadata but not data; new commit request.
   EXPECT_EQ(2U, db()->data_change_count());
@@ -1722,8 +1730,12 @@ TEST_F(ClientTagBasedModelTypeProcessorTest,
   ASSERT_EQ(3U, db()->metadata_change_count());
   ASSERT_TRUE(type_processor()->IsTrackingEntityForTest(kKey1));
 
+  base::HistogramTester histogram_tester;
   worker()->UpdateFromServer(GetPrefHash(kKey1),
                              GeneratePrefSpecifics(kKey1, kValue2));
+  histogram_tester.ExpectUniqueSample(
+      "Sync.ModelTypeEntityConflictResolution.PREFERENCE",
+      ConflictResolution::kUseRemote, /*expected_bucket_count=*/1);
 
   // Updated client data and metadata; no new commit request.
   EXPECT_TRUE(type_processor()->IsTrackingEntityForTest(kKey1));

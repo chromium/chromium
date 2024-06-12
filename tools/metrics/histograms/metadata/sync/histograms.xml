@@ -948,6 +948,19 @@ chromium-metrics-reviews@google.com.
   <token key="SyncModelType" variants="SyncModelType"/>
 </histogram>
 
+<histogram name="Sync.ModelTypeEntityConflictResolution{SyncModelType}"
+    enum="SyncConflictResolution" expires_after="2025-06-11">
+  <owner>rushans@google.com</owner>
+  <owner>src/components/sync/OWNERS</owner>
+  <summary>
+    Records the resolution of a conflict per sync entity on incremental update.
+    This metric should be compared against Sync.ModelTypeEntityChange3 to
+    compare with the total number of incremental updates. Not recorded for
+    NIGORI.
+  </summary>
+  <token key="SyncModelType" variants="SyncModelType"/>
+</histogram>
+
 <histogram name="Sync.ModelTypeEntityMetadataWithoutInitialSync"
     enum="SyncModelTypes" expires_after="2024-12-08">
   <owner>mastiz@chromium.org</owner>

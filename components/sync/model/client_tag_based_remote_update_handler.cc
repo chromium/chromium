@@ -11,8 +11,10 @@
 #include "base/containers/flat_set.h"
 #include "base/logging.h"
 #include "components/sync/base/data_type_histogram.h"
+#include "components/sync/base/model_type.h"
 #include "components/sync/base/time.h"
 #include "components/sync/engine/model_type_processor_metrics.h"
+#include "components/sync/model/conflict_resolution.h"
 #include "components/sync/model/metadata_change_list.h"
 #include "components/sync/model/model_type_sync_bridge.h"
 #include "components/sync/model/processor_entity.h"
@@ -274,6 +276,7 @@ void ClientTagBasedRemoteUpdateHandler::ResolveConflict(
     resolution_type =
         bridge_->ResolveConflict(entity->storage_key(), remote_data);
   }
+  RecordModelTypeEntityConflictResolution(type_, resolution_type);
 
   // Apply the resolution.
   switch (resolution_type) {
