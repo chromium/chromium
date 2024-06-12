@@ -749,12 +749,18 @@ class GPMPasskeysAuthenticatorDialogTest : public AuthenticatorDialogTest {
     } else if (name == "gpm_onboarding") {
       controller_->SetCurrentStepForTesting(
           AuthenticatorRequestDialogModel::Step::kGPMOnboarding);
+    } else if (name == "gpm_change_pin") {
+      controller_->SetCurrentStepForTesting(
+          AuthenticatorRequestDialogModel::Step::kGPMChangePin);
     } else if (name == "gpm_create_pin") {
       controller_->SetCurrentStepForTesting(
           AuthenticatorRequestDialogModel::Step::kGPMCreatePin);
     } else if (name == "gpm_enter_pin") {
       controller_->SetCurrentStepForTesting(
           AuthenticatorRequestDialogModel::Step::kGPMEnterPin);
+    } else if (name == "gpm_change_arbitrary_pin") {
+      controller_->SetCurrentStepForTesting(
+          AuthenticatorRequestDialogModel::Step::kGPMChangeArbitraryPin);
     } else if (name == "gpm_create_arbitrary_pin") {
       controller_->SetCurrentStepForTesting(
           AuthenticatorRequestDialogModel::Step::kGPMCreateArbitraryPin);
@@ -862,12 +868,22 @@ IN_PROC_BROWSER_TEST_F(GPMPasskeysAuthenticatorDialogTest,
 }
 
 IN_PROC_BROWSER_TEST_F(GPMPasskeysAuthenticatorDialogTest,
+                       InvokeUi_gpm_change_pin) {
+  ShowAndVerifyUi();
+}
+
+IN_PROC_BROWSER_TEST_F(GPMPasskeysAuthenticatorDialogTest,
                        InvokeUi_gpm_create_pin) {
   ShowAndVerifyUi();
 }
 
 IN_PROC_BROWSER_TEST_F(GPMPasskeysAuthenticatorDialogTest,
                        InvokeUi_gpm_enter_pin) {
+  ShowAndVerifyUi();
+}
+
+IN_PROC_BROWSER_TEST_F(GPMPasskeysAuthenticatorDialogTest,
+                       InvokeUi_gpm_change_arbitrary_pin) {
   ShowAndVerifyUi();
 }
 

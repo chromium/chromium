@@ -42,7 +42,7 @@ class EnclaveManager;
 // │ OnReauthComplete ───────────────┼─────────────┼───────────┐           │
 // │                                 │             │           │           │
 // │                                 │ Cancelled   │           ▼           │
-// │ CancelAuthenticatorRequest ◄────┼─────────────┼── kGPMCreatePin*      │
+// │ CancelAuthenticatorRequest ◄────┼─────────────┼── kGPMChangePin*      │
 // │                                 │             │           │           │
 // │                                 │ PIN entered │           │           │
 // │        ┌────────────────────────┼─────────────┼───────────┘           │
@@ -61,7 +61,7 @@ class EnclaveManager;
 // │                                 │             │                │
 // └─────────────────────────────────┘             └────────────────┘
 //
-// *: this can also be kGPMCreateArbitraryPin when the user switches the step in
+// *: this can also be kGPMChangeArbitraryPin when the user switches the step in
 // the view.
 class ChangePinControllerImpl
     : public ChangePinController,

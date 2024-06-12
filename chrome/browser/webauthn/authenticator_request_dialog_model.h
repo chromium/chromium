@@ -210,21 +210,21 @@ class AuthenticatorRequestDialogController;
   /* The UX flow has not started yet, the dialog should still be hidden. */    \
   F(kNotStarted)                                                               \
                                                                                \
-  /* Conditionally mediated UI. No dialog is shown, instead credentials are    \
-   * offered to the user on the password autofill prompt. */                   \
+  /* Conditionally mediated UI. No dialog is shown, instead credentials are */ \
+  /* offered to the user on the password autofill prompt. */                   \
   F(kConditionalMediation)                                                     \
                                                                                \
   F(kMechanismSelection)                                                       \
                                                                                \
-  /* The request errored out before completing. Error will only be sent        \
-   * after user interaction. */                                                \
+  /* The request errored out before completing. Error will only be sent */     \
+  /* after user interaction. */                                                \
   F(kErrorNoAvailableTransports)                                               \
   F(kErrorNoPasskeys)                                                          \
   F(kErrorInternalUnrecognized)                                                \
   F(kErrorWindowsHelloNotEnabled)                                              \
                                                                                \
-  /* The request is already complete, but the error dialog should wait         \
-   * until user acknowledgement. */                                            \
+  /* The request is already complete, but the error dialog should wait */      \
+  /* until user acknowledgement. */                                            \
   F(kTimedOut)                                                                 \
   F(kKeyNotRegistered)                                                         \
   F(kKeyAlreadyRegistered)                                                     \
@@ -297,10 +297,12 @@ class AuthenticatorRequestDialogController;
   F(kEnterpriseAttestationPermissionRequest)                                   \
                                                                                \
   /* GPM Pin (6-digit). */                                                     \
+  F(kGPMChangePin)                                                             \
   F(kGPMCreatePin)                                                             \
   F(kGPMEnterPin)                                                              \
                                                                                \
   /* GPM Pin (alphanumeric). */                                                \
+  F(kGPMChangeArbitraryPin)                                                    \
   F(kGPMCreateArbitraryPin)                                                    \
   F(kGPMEnterArbitraryPin)                                                     \
                                                                                \
@@ -308,6 +310,7 @@ class AuthenticatorRequestDialogController;
   F(kGPMTouchID)                                                               \
                                                                                \
   /* GPM passkey creation. */                                                  \
+  /* TODO(enclave): Remove onboarding step and its views. */                   \
   F(kGPMOnboarding)                                                            \
   F(kGPMCreatePasskey)                                                         \
   F(kGPMConfirmOffTheRecordCreate)                                             \

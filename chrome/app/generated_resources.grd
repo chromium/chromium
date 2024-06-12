@@ -16445,6 +16445,27 @@ Please help our engineers fix this problem. Tell us what happened right before y
       <message name="IDS_WEBAUTHN_GPM_PIN_OPTION_ALPHANUMERIC" desc="A label on the pin options dropdown menu that allows to choose an alphanumeric Google Password Manager pin.">
         Letters &amp;&amp; Numbers
       </message>
+      <message name="IDS_WEBAUTHN_GPM_CHANGE_PIN_TITLE" desc="The title of a dialog that is shown when a user is changing their Google Password Manager PIN.">
+        Create a new PIN for Google Password Manager
+      </message>
+      <message name="IDS_WEBAUTHN_GPM_CREATE_PIN_TITLE" desc="The title of a dialog that is shown when a user is creating a Google Password Manager PIN for the first time. Refer to Glossary for the meaning of 'passkey'; do not translate it as 'password'">
+        Next, protect all your passkeys with a recovery PIN
+      </message>
+      <message name="IDS_WEBAUTHN_GPM_CREATE_PIN_DESC" desc="The description of a dialog that is shown when a user is creating a Google Password Manager PIN explaining that it will be used to access their passkeys on all devices. Refer to Glossary for the meaning of 'passkey'; do not translate it as 'password'">
+        A recovery PIN helps you access your saved passkeys on any device
+      </message>
+      <message name="IDS_WEBAUTHN_GPM_ENTER_PIN_TITLE" desc="The title of a dialog that is shown when a user has to verify their presence in passkey creation / sign-in flows by using their Google Password Manager PIN.">
+        Enter your PIN for Google Password Manager
+      </message>
+      <message name="IDS_WEBAUTHN_GPM_ENTER_PIN_DESC" desc="The description of a dialog that is shown when a user is verifying their presence in passkey creation / sign-in flows explaining that the website requires that.">
+        <ph name="SITE">$1<ex>example.com</ex></ph> wants to verify it's you
+      </message>
+      <message name="IDS_WEBAUTHN_FORGOT_GPM_PIN_BUTTON" desc="The label of a button that is displayed in a user verification dialog with a Google Password Manager PIN that allows to reset it.">
+        Forgot PIN
+      </message>
+      <message name="IDS_WEBAUTHN_GPM_PIN_OPTIONS_BUTTON" desc="The label of a button that is displayed in a dialog that is shown when a user is creating a Google Password Manager PIN that allows to choose different PIN options (numeric vs. alphanumeric).">
+        PIN options
+      </message>
 
       <!-- Web-modal dialog shown during Digital Credential request -->
       <message name="IDS_WEB_DIGITAL_CREDENTIALS_QR_TITLE" translateable="false">

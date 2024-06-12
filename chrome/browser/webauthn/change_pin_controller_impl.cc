@@ -79,7 +79,7 @@ void ChangePinControllerImpl::CancelAuthenticatorRequest() {
 void ChangePinControllerImpl::OnReauthComplete(std::string rapt) {
   CHECK_EQ(model_->step(), Step::kGPMReauthForPinReset);
   rapt_ = std::move(rapt);
-  model_->SetStep(Step::kGPMCreatePin);
+  model_->SetStep(Step::kGPMChangePin);
 }
 
 void ChangePinControllerImpl::OnRecoverSecurityDomainClosed() {
@@ -88,8 +88,8 @@ void ChangePinControllerImpl::OnRecoverSecurityDomainClosed() {
 }
 
 void ChangePinControllerImpl::OnGPMPinEntered(const std::u16string& pin) {
-  CHECK(rapt_.has_value() && (model_->step() == Step::kGPMCreatePin ||
-                              model_->step() == Step::kGPMCreateArbitraryPin));
+  CHECK(rapt_.has_value() && (model_->step() == Step::kGPMChangePin ||
+                              model_->step() == Step::kGPMChangeArbitraryPin));
   enclave_manager_->ChangePIN(
       base::UTF16ToUTF8(pin), std::move(rapt_),
       base::BindOnce(&ChangePinControllerImpl::OnGpmPinChanged,
@@ -97,10 +97,10 @@ void ChangePinControllerImpl::OnGPMPinEntered(const std::u16string& pin) {
 }
 
 void ChangePinControllerImpl::OnGPMPinOptionChanged(bool is_arbitrary) {
-  CHECK(model_->step() == Step::kGPMCreatePin ||
-        model_->step() == Step::kGPMCreateArbitraryPin);
-  model_->SetStep(is_arbitrary ? Step::kGPMCreateArbitraryPin
-                               : Step::kGPMCreatePin);
+  CHECK(model_->step() == Step::kGPMChangePin ||
+        model_->step() == Step::kGPMChangeArbitraryPin);
+  model_->SetStep(is_arbitrary ? Step::kGPMChangeArbitraryPin
+                               : Step::kGPMChangePin);
 }
 
 void ChangePinControllerImpl::Reset(bool success) {

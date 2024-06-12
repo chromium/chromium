@@ -102,8 +102,8 @@ using Step = AuthenticatorRequestDialogModel::Step;
 // create(), empty security domain
 //
 // digraph {
-//   OnGPMSelected -> kGPMOnboarding -> OnGPMOnboardingAccepted ->
-//     kGPMCreatePin -> OnGPMPinEntered -> OnDeviceAdded
+//   OnGPMSelected -> kGPMCreatePasskey -> kGPMCreatePin -> OnGPMPinEntered ->
+//     OnDeviceAdded
 //   OnDeviceAdded -> StartTransaction
 //   OnDeviceAdded -> kGPMTouchID -> OnTouchIDComplete -> StartTransaction
 // }
@@ -115,13 +115,7 @@ using Step = AuthenticatorRequestDialogModel::Step;
 //   |
 //   v
 // +-------------------------+
-// |     kGPMOnboarding      |
-// +-------------------------+
-//   |
-//   |
-//   v
-// +-------------------------+
-// | OnGPMOnboardingAccepted |
+// |    kGPMCreatePasskey    |
 // +-------------------------+
 //   |
 //   |
@@ -807,6 +801,7 @@ void GPMEnclaveController::SetAccountStateReady() {
 
 void GPMEnclaveController::OnGPMSelected() {
   switch (account_state_) {
+    case AccountState::kEmpty:
     case AccountState::kReady:
     case AccountState::kReadyWithPIN:
       model_->SetStep(Step::kGPMCreatePasskey);
@@ -842,10 +837,6 @@ void GPMEnclaveController::OnGPMSelected() {
     case AccountState::kIrrecoverable:
       // TODO(enclave): show the reset flow.
       NOTIMPLEMENTED();
-      break;
-
-    case AccountState::kEmpty:
-      model_->SetStep(Step::kGPMOnboarding);
       break;
   }
 }
@@ -964,10 +955,17 @@ void GPMEnclaveController::OnGPMOnboardingAccepted() {
 }
 
 void GPMEnclaveController::OnGPMPinOptionChanged(bool is_arbitrary) {
-  CHECK(model_->step() == Step::kGPMCreatePin ||
-        model_->step() == Step::kGPMCreateArbitraryPin);
-  model_->SetStep(is_arbitrary ? Step::kGPMCreateArbitraryPin
-                               : Step::kGPMCreatePin);
+  if (changing_gpm_pin_) {
+    CHECK(model_->step() == Step::kGPMChangePin ||
+          model_->step() == Step::kGPMChangeArbitraryPin);
+    model_->SetStep(is_arbitrary ? Step::kGPMChangeArbitraryPin
+                                 : Step::kGPMChangePin);
+  } else {
+    CHECK(model_->step() == Step::kGPMCreatePin ||
+          model_->step() == Step::kGPMCreateArbitraryPin);
+    model_->SetStep(is_arbitrary ? Step::kGPMCreateArbitraryPin
+                                 : Step::kGPMCreatePin);
+  }
 }
 
 void GPMEnclaveController::OnGPMCreatePasskey() {
@@ -992,10 +990,13 @@ void GPMEnclaveController::OnGPMConfirmOffTheRecordCreate() {
 }
 
 void GPMEnclaveController::ContinueGPMCreatePasskey() {
-  CHECK(account_state_ == AccountState::kReady ||
+  CHECK(account_state_ == AccountState::kEmpty ||
+        account_state_ == AccountState::kReady ||
         account_state_ == AccountState::kReadyWithPIN ||
         account_state_ == AccountState::kReadyWithBiometrics);
-  if (account_state_ == AccountState::kReady) {
+  if (account_state_ == AccountState::kEmpty) {
+    model_->SetStep(Step::kGPMCreatePin);
+  } else if (account_state_ == AccountState::kReady) {
     model_->SetStep(Step::kGPMConnecting);
     StartTransaction();
   } else if (account_state_ == AccountState::kReadyWithPIN) {
@@ -1008,10 +1009,12 @@ void GPMEnclaveController::ContinueGPMCreatePasskey() {
 }
 
 void GPMEnclaveController::OnGPMPinEntered(const std::u16string& pin) {
-  DCHECK(model_->step() == Step::kGPMCreateArbitraryPin ||
-         model_->step() == Step::kGPMCreatePin ||
-         model_->step() == Step::kGPMEnterArbitraryPin ||
-         model_->step() == Step::kGPMEnterPin);
+  CHECK(model_->step() == Step::kGPMChangeArbitraryPin ||
+        model_->step() == Step::kGPMChangePin ||
+        model_->step() == Step::kGPMCreateArbitraryPin ||
+        model_->step() == Step::kGPMCreatePin ||
+        model_->step() == Step::kGPMEnterArbitraryPin ||
+        model_->step() == Step::kGPMEnterPin);
   pin_ = base::UTF16ToUTF8(pin);
 
   // Disable the pin entry view while waiting for the response from enclave.
@@ -1030,8 +1033,8 @@ void GPMEnclaveController::OnGPMPinEntered(const std::u16string& pin) {
         *pin_, base::BindOnce(&GPMEnclaveController::OnDeviceAdded,
                               weak_ptr_factory_.GetWeakPtr()));
   } else if (changing_gpm_pin_) {
-    DCHECK(model_->step() == Step::kGPMCreatePin ||
-           model_->step() == Step::kGPMCreateArbitraryPin);
+    CHECK(model_->step() == Step::kGPMChangePin ||
+          model_->step() == Step::kGPMChangeArbitraryPin);
     enclave_manager_->ChangePIN(
         base::UTF16ToUTF8(pin), std::move(rapt_),
         base::BindOnce(&GPMEnclaveController::OnGpmPinChanged,
@@ -1058,7 +1061,7 @@ void GPMEnclaveController::OnForgotGPMPinPressed() {
 void GPMEnclaveController::OnReauthComplete(std::string rapt) {
   CHECK_EQ(model_->step(), Step::kGPMReauthForPinReset);
   rapt_ = std::move(rapt);
-  model_->SetStep(Step::kGPMCreatePin);
+  model_->SetStep(Step::kGPMChangePin);
 }
 
 void GPMEnclaveController::StartTransaction() {

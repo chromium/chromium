@@ -926,8 +926,8 @@ IN_PROC_BROWSER_TEST_F(EnclaveAuthenticatorWithPinBrowserTest,
    *       Platform UV unavailable
    * 1. Modal MakeCredential request invoked by RP
    * 2. Mechanism selection appears; test chooses enclave credential
-   * 3. UI for onboarding appears; test accepts it
-   * 4. Test selects a GPM PIN
+   * 3. UI for creating passkey appears; test chooses create
+   * 4. UI for creating GPM Pin appears; test selects pin
    * 5. Device registration with enclave succeeds
    * 6. MakeCredential succeeds
    */
@@ -944,12 +944,12 @@ IN_PROC_BROWSER_TEST_F(EnclaveAuthenticatorWithPinBrowserTest,
   delegate_observer()->WaitForUI();
 
   EXPECT_EQ(dialog_model()->step(),
-            AuthenticatorRequestDialogModel::Step::kGPMOnboarding);
+            AuthenticatorRequestDialogModel::Step::kGPMCreatePasskey);
   EXPECT_EQ(request_delegate()
                 ->enclave_controller_for_testing()
                 ->account_state_for_testing(),
             GPMEnclaveController::AccountState::kEmpty);
-  dialog_model()->OnGPMOnboardingAccepted();
+  dialog_model()->OnGPMCreatePasskey();
   EXPECT_EQ(dialog_model()->step(),
             AuthenticatorRequestDialogModel::Step::kGPMCreatePin);
   dialog_model()->OnGPMPinEntered(u"123456");
@@ -969,8 +969,8 @@ IN_PROC_BROWSER_TEST_F(EnclaveAuthenticatorWithPinBrowserTest,
    *       Platform UV unavailable
    * 1. Modal MakeCredential with PRF request invoked by RP
    * 2. Mechanism selection appears; test chooses enclave credential
-   * 3. UI for onboarding appears; test accepts it
-   * 4. Test selects a GPM PIN
+   * 3. UI for creating passkey appears; test chooses create
+   * 4. UI for creating GPM pin appears; test selects pin
    * 5. Device registration with enclave succeeds
    * 6. MakeCredential succeeds and evaluates PRF.
    * 7. Second MakeCredential is made, just enabling PRF.
@@ -995,8 +995,8 @@ IN_PROC_BROWSER_TEST_F(EnclaveAuthenticatorWithPinBrowserTest,
   delegate_observer()->WaitForUI();
 
   EXPECT_EQ(dialog_model()->step(),
-            AuthenticatorRequestDialogModel::Step::kGPMOnboarding);
-  dialog_model()->OnGPMOnboardingAccepted();
+            AuthenticatorRequestDialogModel::Step::kGPMCreatePasskey);
+  dialog_model()->OnGPMCreatePasskey();
   EXPECT_EQ(dialog_model()->step(),
             AuthenticatorRequestDialogModel::Step::kGPMCreatePin);
   dialog_model()->OnGPMPinEntered(u"123456");
@@ -1120,8 +1120,8 @@ IN_PROC_BROWSER_TEST_F(EnclaveAuthenticatorWithPinBrowserTest,
    *       Platform UV unavailable
    * 1. Modal MakeCredential request invoked by RP, requires UV.
    * 2. Mechanism selection appears; test chooses enclave.
-   * 3. UI for onboarding appears; test accepts it
-   * 4. Test selects a GPM PIN
+   * 3. UI for creating passkey appears; test chooses create
+   * 4. UI for creating GPM pin appears; test selects pin
    * 5. Device registration with enclave succeeds
    * 6. MakeCredential succeeds
    *
@@ -1140,12 +1140,12 @@ IN_PROC_BROWSER_TEST_F(EnclaveAuthenticatorWithPinBrowserTest,
   delegate_observer()->WaitForUI();
 
   EXPECT_EQ(dialog_model()->step(),
-            AuthenticatorRequestDialogModel::Step::kGPMOnboarding);
+            AuthenticatorRequestDialogModel::Step::kGPMCreatePasskey);
   EXPECT_EQ(request_delegate()
                 ->enclave_controller_for_testing()
                 ->account_state_for_testing(),
             GPMEnclaveController::AccountState::kEmpty);
-  dialog_model()->OnGPMOnboardingAccepted();
+  dialog_model()->OnGPMCreatePasskey();
   EXPECT_EQ(dialog_model()->step(),
             AuthenticatorRequestDialogModel::Step::kGPMCreatePin);
   dialog_model()->OnGPMPinEntered(u"123456");
@@ -1407,8 +1407,8 @@ IN_PROC_BROWSER_TEST_F(EnclaveAuthenticatorWithPinBrowserTest,
    *       Platform UV unavailable
    * 1.  Modal MakeCredential request invoked by RP, requires UV.
    * 2.  Mechanism selection appears; test chooses enclave.
-   * 3.  UI for onboarding appears; test accepts it
-   * 4.  Test selects a GPM PIN
+   * 3.  UI for creating passkey appears; test chooses create
+   * 4.  UI for creating GPM pin appears; test selects pin
    * 5.  Device registration with enclave succeeds
    * 6.  MakeCredential succeeds
    * 7.  Another modal MakeCredential request is invoked by RP, requiring UV
@@ -1433,12 +1433,12 @@ IN_PROC_BROWSER_TEST_F(EnclaveAuthenticatorWithPinBrowserTest,
   delegate_observer()->WaitForUI();
 
   EXPECT_EQ(dialog_model()->step(),
-            AuthenticatorRequestDialogModel::Step::kGPMOnboarding);
+            AuthenticatorRequestDialogModel::Step::kGPMCreatePasskey);
   EXPECT_EQ(request_delegate()
                 ->enclave_controller_for_testing()
                 ->account_state_for_testing(),
             GPMEnclaveController::AccountState::kEmpty);
-  dialog_model()->OnGPMOnboardingAccepted();
+  dialog_model()->OnGPMCreatePasskey();
   EXPECT_EQ(dialog_model()->step(),
             AuthenticatorRequestDialogModel::Step::kGPMCreatePin);
   dialog_model()->OnGPMPinEntered(u"123456");
@@ -1516,8 +1516,8 @@ IN_PROC_BROWSER_TEST_F(EnclaveAuthenticatorWithPinBrowserTest,
    *       Platform UV unavailable
    * 1. Modal MakeCredential request invoked by RP
    * 2. Mechanism selection appears; test chooses enclave credential
-   * 3. UI for onboarding appears; test accepts it
-   * 4. Test selects a GPM PIN
+   * 3. UI for creating passkey appears; test chooses create
+   * 4. UI for creating GPM pin appears; test selects pin
    * 5. Device registration with enclave succeeds
    * 6. MakeCredential succeeds
    * 7. Test clears the EnclaveManager state to force load from disk
@@ -1537,12 +1537,12 @@ IN_PROC_BROWSER_TEST_F(EnclaveAuthenticatorWithPinBrowserTest,
   delegate_observer()->WaitForUI();
 
   EXPECT_EQ(dialog_model()->step(),
-            AuthenticatorRequestDialogModel::Step::kGPMOnboarding);
+            AuthenticatorRequestDialogModel::Step::kGPMCreatePasskey);
   EXPECT_EQ(request_delegate()
                 ->enclave_controller_for_testing()
                 ->account_state_for_testing(),
             GPMEnclaveController::AccountState::kEmpty);
-  dialog_model()->OnGPMOnboardingAccepted();
+  dialog_model()->OnGPMCreatePasskey();
   EXPECT_EQ(dialog_model()->step(),
             AuthenticatorRequestDialogModel::Step::kGPMCreatePin);
   dialog_model()->OnGPMPinEntered(u"123456");
@@ -1585,12 +1585,12 @@ IN_PROC_BROWSER_TEST_F(EnclaveAuthenticatorWithPinBrowserTest, UserCancelsUV) {
   delegate_observer()->WaitForUI();
 
   EXPECT_EQ(dialog_model()->step(),
-            AuthenticatorRequestDialogModel::Step::kGPMOnboarding);
+            AuthenticatorRequestDialogModel::Step::kGPMCreatePasskey);
   EXPECT_EQ(request_delegate()
                 ->enclave_controller_for_testing()
                 ->account_state_for_testing(),
             GPMEnclaveController::AccountState::kEmpty);
-  dialog_model()->OnGPMOnboardingAccepted();
+  dialog_model()->OnGPMCreatePasskey();
   EXPECT_EQ(dialog_model()->step(),
             AuthenticatorRequestDialogModel::Step::kGPMCreatePin);
   dialog_model()->OnGPMPinEntered(u"123456");
@@ -1811,12 +1811,12 @@ IN_PROC_BROWSER_TEST_F(EnclaveAuthenticatorWithPinBrowserTest,
   delegate_observer()->WaitForUI();
 
   EXPECT_EQ(dialog_model()->step(),
-            AuthenticatorRequestDialogModel::Step::kGPMOnboarding);
+            AuthenticatorRequestDialogModel::Step::kGPMCreatePasskey);
   EXPECT_EQ(request_delegate()
                 ->enclave_controller_for_testing()
                 ->account_state_for_testing(),
             GPMEnclaveController::AccountState::kEmpty);
-  dialog_model()->OnGPMOnboardingAccepted();
+  dialog_model()->OnGPMCreatePasskey();
   EXPECT_EQ(dialog_model()->step(),
             AuthenticatorRequestDialogModel::Step::kGPMCreatePin);
   dialog_model()->OnGPMPinEntered(u"123456");
@@ -1839,8 +1839,8 @@ IN_PROC_BROWSER_TEST_F(EnclaveAuthenticatorWithPinBrowserTest,
   delegate_observer()->WaitForUI();
 
   EXPECT_EQ(dialog_model()->step(),
-            AuthenticatorRequestDialogModel::Step::kGPMOnboarding);
-  dialog_model()->OnGPMOnboardingAccepted();
+            AuthenticatorRequestDialogModel::Step::kGPMCreatePasskey);
+  dialog_model()->OnGPMCreatePasskey();
   EXPECT_EQ(dialog_model()->step(),
             AuthenticatorRequestDialogModel::Step::kGPMCreatePin);
 }
@@ -1863,12 +1863,12 @@ IN_PROC_BROWSER_TEST_F(EnclaveAuthenticatorWithPinBrowserTest,
   delegate_observer()->WaitForUI();
 
   EXPECT_EQ(dialog_model()->step(),
-            AuthenticatorRequestDialogModel::Step::kGPMOnboarding);
+            AuthenticatorRequestDialogModel::Step::kGPMCreatePasskey);
   EXPECT_EQ(request_delegate()
                 ->enclave_controller_for_testing()
                 ->account_state_for_testing(),
             GPMEnclaveController::AccountState::kEmpty);
-  dialog_model()->OnGPMOnboardingAccepted();
+  dialog_model()->OnGPMCreatePasskey();
   EXPECT_EQ(dialog_model()->step(),
             AuthenticatorRequestDialogModel::Step::kGPMCreatePin);
   dialog_model()->OnGPMPinEntered(u"123456");
@@ -2432,12 +2432,12 @@ IN_PROC_BROWSER_TEST_F(EnclaveICloudRecoveryKeyTest, Enroll) {
   delegate_observer()->WaitForUI();
 
   EXPECT_EQ(dialog_model()->step(),
-            AuthenticatorRequestDialogModel::Step::kGPMOnboarding);
+            AuthenticatorRequestDialogModel::Step::kGPMCreatePasskey);
   EXPECT_EQ(request_delegate()
                 ->enclave_controller_for_testing()
                 ->account_state_for_testing(),
             GPMEnclaveController::AccountState::kEmpty);
-  dialog_model()->OnGPMOnboardingAccepted();
+  dialog_model()->OnGPMCreatePasskey();
   EXPECT_EQ(dialog_model()->step(),
             AuthenticatorRequestDialogModel::Step::kGPMCreatePin);
   dialog_model()->OnGPMPinEntered(u"123456");
@@ -2504,12 +2504,12 @@ IN_PROC_BROWSER_TEST_F(EnclaveICloudRecoveryKeyTest,
   delegate_observer()->WaitForUI();
 
   EXPECT_EQ(dialog_model()->step(),
-            AuthenticatorRequestDialogModel::Step::kGPMOnboarding);
+            AuthenticatorRequestDialogModel::Step::kGPMCreatePasskey);
   EXPECT_EQ(request_delegate()
                 ->enclave_controller_for_testing()
                 ->account_state_for_testing(),
             GPMEnclaveController::AccountState::kEmpty);
-  dialog_model()->OnGPMOnboardingAccepted();
+  dialog_model()->OnGPMCreatePasskey();
   EXPECT_EQ(dialog_model()->step(),
             AuthenticatorRequestDialogModel::Step::kGPMCreatePin);
   dialog_model()->OnGPMPinEntered(u"123456");
@@ -2565,12 +2565,12 @@ IN_PROC_BROWSER_TEST_F(EnclaveICloudRecoveryKeyTest, Recovery) {
     delegate_observer()->WaitForUI();
 
     EXPECT_EQ(dialog_model()->step(),
-              AuthenticatorRequestDialogModel::Step::kGPMOnboarding);
+              AuthenticatorRequestDialogModel::Step::kGPMCreatePasskey);
     EXPECT_EQ(request_delegate()
                   ->enclave_controller_for_testing()
                   ->account_state_for_testing(),
               GPMEnclaveController::AccountState::kEmpty);
-    dialog_model()->OnGPMOnboardingAccepted();
+    dialog_model()->OnGPMCreatePasskey();
     EXPECT_EQ(dialog_model()->step(),
               AuthenticatorRequestDialogModel::Step::kGPMCreatePin);
     dialog_model()->OnGPMPinEntered(u"123456");
@@ -2749,12 +2749,12 @@ IN_PROC_BROWSER_TEST_F(EnclaveAuthenticatorWithPinBrowserTest,
   delegate_observer()->WaitForUI();
 
   EXPECT_EQ(dialog_model()->step(),
-            AuthenticatorRequestDialogModel::Step::kGPMOnboarding);
+            AuthenticatorRequestDialogModel::Step::kGPMCreatePasskey);
   EXPECT_EQ(request_delegate()
                 ->enclave_controller_for_testing()
                 ->account_state_for_testing(),
             GPMEnclaveController::AccountState::kEmpty);
-  dialog_model()->OnGPMOnboardingAccepted();
+  dialog_model()->OnGPMCreatePasskey();
   EXPECT_EQ(dialog_model()->step(),
             AuthenticatorRequestDialogModel::Step::kGPMCreatePin);
   dialog_model()->OnGPMPinEntered(u"123456");

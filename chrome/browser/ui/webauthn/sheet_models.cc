@@ -1705,7 +1705,7 @@ void AuthenticatorGPMPinSheetModel::SetPin(std::u16string pin) {
   // to confirm.
   if (mode_ == Mode::kPinEntry && full_pin_typed) {
     dialog_model()->OnGPMPinEntered(pin_);
-  } else if (mode_ == Mode::kPinCreate &&
+  } else if ((mode_ == Mode::kPinCreate || mode_ == Mode::kPinChange) &&
              full_pin_typed_before != full_pin_typed) {
     dialog_model()->OnButtonsStateChanged();
   }
@@ -1721,21 +1721,24 @@ bool AuthenticatorGPMPinSheetModel::FullPinTyped() const {
 
 std::u16string AuthenticatorGPMPinSheetModel::GetStepTitle() const {
   switch (mode_) {
+    case Mode::kPinChange:
+      return l10n_util::GetStringUTF16(IDS_WEBAUTHN_GPM_CHANGE_PIN_TITLE);
     case Mode::kPinCreate:
-      return u"Create a PIN for your Google Password Manager (UNTRANSLATED)";
+      return l10n_util::GetStringUTF16(IDS_WEBAUTHN_GPM_CREATE_PIN_TITLE);
     case Mode::kPinEntry:
-      return u"Enter your PIN for your Google Password Manager (UNTRANSLATED)";
+      return l10n_util::GetStringUTF16(IDS_WEBAUTHN_GPM_ENTER_PIN_TITLE);
   }
 }
 
 std::u16string AuthenticatorGPMPinSheetModel::GetStepDescription() const {
   switch (mode_) {
+    case Mode::kPinChange:
     case Mode::kPinCreate:
-      return u"Your PIN protects your data. You'll need it when you want to "
-             u"start using your passkeys on new devices. (UNTRANSLATED)";
+      return l10n_util::GetStringUTF16(IDS_WEBAUTHN_GPM_CREATE_PIN_DESC);
     case Mode::kPinEntry:
-      return u"Sign in with your passkey to example.com as example@gmail.com "
-             u"(UNTRANSLATED)";
+      return l10n_util::GetStringFUTF16(
+          IDS_WEBAUTHN_GPM_ENTER_PIN_DESC,
+          GetRelyingPartyIdString(dialog_model()));
   }
 }
 
@@ -1749,11 +1752,12 @@ std::u16string AuthenticatorGPMPinSheetModel::GetError() const {
 }
 
 bool AuthenticatorGPMPinSheetModel::IsAcceptButtonVisible() const {
-  return mode_ == Mode::kPinCreate;
+  return mode_ == Mode::kPinCreate || mode_ == Mode::kPinChange;
 }
 
 bool AuthenticatorGPMPinSheetModel::IsAcceptButtonEnabled() const {
-  return mode_ == Mode::kPinCreate && FullPinTyped() && !ui_disabled();
+  return (mode_ == Mode::kPinCreate || mode_ == Mode::kPinChange) &&
+         FullPinTyped() && !ui_disabled();
 }
 
 bool AuthenticatorGPMPinSheetModel::IsForgotGPMPinButtonVisible() const {
@@ -1761,7 +1765,7 @@ bool AuthenticatorGPMPinSheetModel::IsForgotGPMPinButtonVisible() const {
 }
 
 bool AuthenticatorGPMPinSheetModel::IsGPMPinOptionsButtonVisible() const {
-  return mode_ == Mode::kPinCreate;
+  return mode_ == Mode::kPinCreate || mode_ == Mode::kPinChange;
 }
 
 bool AuthenticatorGPMPinSheetModel::IsActivityIndicatorVisible() const {
@@ -1821,22 +1825,25 @@ bool AuthenticatorGPMArbitraryPinSheetModel::ui_disabled() const {
 
 std::u16string AuthenticatorGPMArbitraryPinSheetModel::GetStepTitle() const {
   switch (mode_) {
+    case Mode::kPinChange:
+      return l10n_util::GetStringUTF16(IDS_WEBAUTHN_GPM_CHANGE_PIN_TITLE);
     case Mode::kPinCreate:
-      return u"Create a PIN for your Google Password Manager (UNTRANSLATED)";
+      return l10n_util::GetStringUTF16(IDS_WEBAUTHN_GPM_CREATE_PIN_TITLE);
     case Mode::kPinEntry:
-      return u"Enter your PIN for your Google Password Manager (UNTRANSLATED)";
+      return l10n_util::GetStringUTF16(IDS_WEBAUTHN_GPM_ENTER_PIN_TITLE);
   }
 }
 
 std::u16string AuthenticatorGPMArbitraryPinSheetModel::GetStepDescription()
     const {
   switch (mode_) {
+    case Mode::kPinChange:
     case Mode::kPinCreate:
-      return u"Your PIN protects your data. You'll need it when you want to "
-             u"start using your passkeys on new devices. (UNTRANSLATED)";
+      return l10n_util::GetStringUTF16(IDS_WEBAUTHN_GPM_CREATE_PIN_DESC);
     case Mode::kPinEntry:
-      return u"Sign in with your passkey to example.com as example@gmail.com "
-             u"(UNTRANSLATED)";
+      return l10n_util::GetStringFUTF16(
+          IDS_WEBAUTHN_GPM_ENTER_PIN_DESC,
+          GetRelyingPartyIdString(dialog_model()));
   }
 }
 
@@ -1864,7 +1871,7 @@ bool AuthenticatorGPMArbitraryPinSheetModel::IsForgotGPMPinButtonVisible()
 
 bool AuthenticatorGPMArbitraryPinSheetModel::IsGPMPinOptionsButtonVisible()
     const {
-  return mode_ == Mode::kPinCreate;
+  return mode_ == Mode::kPinCreate || mode_ == Mode::kPinChange;
 }
 
 bool AuthenticatorGPMArbitraryPinSheetModel::IsActivityIndicatorVisible()

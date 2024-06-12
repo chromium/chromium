@@ -726,9 +726,9 @@ class AuthenticatorPriorityMechanismSheetModel
 // The sheet shown when the user is entering a digit-only GPM pin.
 class AuthenticatorGPMPinSheetModel : public AuthenticatorSheetModelBase {
  public:
-  // Indicates whether the view should accommodate creating a new pin or
-  // entering an existing one.
-  enum class Mode { kPinCreate, kPinEntry };
+  // Indicates whether the view should accommodate changing an existing pin,
+  // creating a new one or entering an existing one.
+  enum class Mode { kPinChange, kPinCreate, kPinEntry };
 
   explicit AuthenticatorGPMPinSheetModel(
       AuthenticatorRequestDialogModel* dialog_model,
@@ -771,9 +771,9 @@ class AuthenticatorGPMPinSheetModel : public AuthenticatorSheetModelBase {
 class AuthenticatorGPMArbitraryPinSheetModel
     : public AuthenticatorSheetModelBase {
  public:
-  // Indicates whether the view should accommodate creating a new pin or
-  // entering an existing one.
-  enum class Mode { kPinCreate, kPinEntry };
+  // Indicates whether the view should accommodate changing an existing pin,
+  // creating a new one or entering an existing one.
+  enum class Mode { kPinChange, kPinCreate, kPinEntry };
 
   explicit AuthenticatorGPMArbitraryPinSheetModel(
       AuthenticatorRequestDialogModel* dialog_model,

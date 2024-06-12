@@ -122,7 +122,7 @@ void AuthenticatorRequestDialogView::UpdateUIForCurrentSheet() {
         base::BindRepeating(
             &AuthenticatorRequestDialogView::ForgotGPMPinPressed,
             base::Unretained(this)),
-        u"Forgot PIN (UNTRANSLATED)");
+        l10n_util::GetStringUTF16(IDS_WEBAUTHN_FORGOT_GPM_PIN_BUTTON));
     forgot_pin_button->SetEnabled(!model_->ui_disabled_);
     SetExtraView(std::move(forgot_pin_button));
   } else if (sheet_->model()->IsGPMPinOptionsButtonVisible()) {
@@ -132,7 +132,8 @@ void AuthenticatorRequestDialogView::UpdateUIForCurrentSheet() {
             ? PinOptionsButton::CommandId::CHOOSE_ARBITRARY_PIN
             : PinOptionsButton::CommandId::CHOOSE_SIX_DIGIT_PIN;
     auto pin_options_button = std::make_unique<PinOptionsButton>(
-        u"PIN options (UT)", checked_command_id,
+        l10n_util::GetStringUTF16(IDS_WEBAUTHN_GPM_PIN_OPTIONS_BUTTON),
+        checked_command_id,
         base::BindRepeating(&AuthenticatorRequestDialogView::GPMPinOptionChosen,
                             base::Unretained(this)));
     pin_options_button->SetEnabled(!model_->ui_disabled_);
