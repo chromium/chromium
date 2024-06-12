@@ -216,6 +216,7 @@ class EGLImageBackingFactoryThreadSafeTest
   }
 
   void CheckDawnPixels(wgpu::Texture texture,
+                       const wgpu::Instance& instance,
                        const wgpu::Device& device,
                        const gfx::Size& size,
                        const std::vector<uint8_t>& expected_color) const {
@@ -239,22 +240,15 @@ class EGLImageBackingFactoryThreadSafeTest
     wgpu::Queue queue = device.GetQueue();
     queue.Submit(1, &commands);
 
-    WGPUBufferMapAsyncStatus map_status = WGPUBufferMapAsyncStatus_Unknown;
-    auto map_callback = [](WGPUBufferMapAsyncStatus status, void* userdata) {
-      WGPUBufferMapAsyncStatus* status_out =
-          reinterpret_cast<WGPUBufferMapAsyncStatus*>(userdata);
-      *status_out = status;
-    };
-    buffer.MapAsync(wgpu::MapMode::Read, 0, buffer_desc.size, map_callback,
-                    &map_status);
-    // Tick device until async map operation completes.
-    EXPECT_TRUE(base::test::RunUntil([&]() {
-      if (map_status != WGPUBufferMapAsyncStatus_Unknown) {
-        return true;
-      }
-      device.Tick();
-      return false;
-    }));
+    wgpu::FutureWaitInfo wait_info{
+        buffer.MapAsync(wgpu::MapMode::Read, 0, buffer_desc.size,
+                        wgpu::CallbackMode::WaitAnyOnly,
+                        [&](wgpu::MapAsyncStatus status, const char*) {
+                          ASSERT_EQ(status, wgpu::MapAsyncStatus::Success);
+                        })};
+    wgpu::WaitStatus status =
+        instance.WaitAny(1, &wait_info, std::numeric_limits<uint64_t>::max());
+    DCHECK(status == wgpu::WaitStatus::Success);
 
     const uint8_t* dst_pixels =
         reinterpret_cast<const uint8_t*>(buffer.GetConstMappedRange());
@@ -500,9 +494,15 @@ TEST_P(EGLImageBackingFactoryThreadSafeTest, Dawn_SampledTexture) {
   DawnProcTable procs = dawn::native::GetProcs();
   dawnProcSetProcs(&procs);
 
-  // Create a Dawm OpenGLES device.
-  dawn::native::Instance instance;
+  WGPUInstanceDescriptor instance_desc = {
+      .features =
+          {
+              .timedWaitAnyEnable = true,
+          },
+  };
+  dawn::native::Instance instance(&instance_desc);
 
+  // Create a Dawn OpenGLES device.
   wgpu::RequestAdapterOptions adapter_options;
   adapter_options.backendType = wgpu::BackendType::OpenGLES;
   adapter_options.compatibilityMode = true;
@@ -640,7 +640,7 @@ return textureSample(tex, smp, tex_coord);
     wgpu::Queue queue = device.GetQueue();
     queue.Submit(1, &commands);
 
-    CheckDawnPixels(attachment, device, size, pixel_data);
+    CheckDawnPixels(attachment, instance.Get(), device, size, pixel_data);
   }
 
   // Shut down Dawn

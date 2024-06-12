@@ -107,6 +107,7 @@ wgpu::TextureView CreateTextureView(const wgpu::Texture& texture,
 }
 
 void RunDawnVideoSamplingTest(
+    wgpu::Instance instance,
     wgpu::Device device,
     const std::unique_ptr<DawnImageRepresentation>& shared_image,
     uint8_t expected_y_value,
@@ -233,23 +234,16 @@ struct VertexOut {
     WGPUBufferMapAsyncStatus status;
   } map_callback_data;
 
-  readback_buffer.MapAsync(
+  wgpu::FutureWaitInfo wait_info{readback_buffer.MapAsync(
       wgpu::MapMode::Read, 0, wgpu::kWholeMapSize,
-      [](WGPUBufferMapAsyncStatus status, void* void_userdata) {
-        MapCallbackData* userdata =
-            static_cast<MapCallbackData*>(void_userdata);
-        userdata->status = status;
-        userdata->map_complete = true;
-      },
-      &map_callback_data);
+      wgpu::CallbackMode::WaitAnyOnly,
+      [](wgpu::MapAsyncStatus status, const char*) {
+        ASSERT_EQ(status, wgpu::MapAsyncStatus::Success);
+      })};
 
-  // Poll for the map to complete.
-  while (!map_callback_data.map_complete) {
-    base::PlatformThread::Sleep(base::Milliseconds(1));
-    device.Tick();
-  }
-
-  ASSERT_EQ(map_callback_data.status, WGPUBufferMapAsyncStatus_Success);
+  wgpu::WaitStatus status =
+      instance.WaitAny(1, &wait_info, std::numeric_limits<uint64_t>::max());
+  DCHECK(status == wgpu::WaitStatus::Success);
 
   uint8_t pixel_color[4];
 

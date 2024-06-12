@@ -106,20 +106,16 @@ class CmdBufFuzz : public base::TestSuite {
     gpu_service_holder_->ScheduleGpuMainTask(std::move(callback));
   }
 
-  void WaitForCompletion(wgpu::Device device) {
+  void WaitForCompletion(wgpu::Instance instance, wgpu::Device device) {
     // Wait for any work submitted to the queue to be finished. The guarantees
     // of Dawn are that all previous operations will have been completed and
     // more importantly the callbacks will have been called.
     wgpu::Queue queue = device.GetQueue();
-    bool done = false;
-    queue.OnSubmittedWorkDone(
-        [](WGPUQueueWorkDoneStatus, void* userdata) {
-          *static_cast<bool*>(userdata) = true;
-        },
-        &done);
+    wgpu::FutureWaitInfo wait_info = {queue.OnSubmittedWorkDone(
+        wgpu::CallbackMode::WaitAnyOnly, [](wgpu::QueueWorkDoneStatus) {})};
 
-    while (!done) {
-      device.Tick();
+    while (!wait_info.completed) {
+      instance.WaitAny(1, &wait_info, 0u);
       webgpu()->FlushCommands();
       RunPendingTasks();
       base::PlatformThread::Sleep(kTinyTimeout);

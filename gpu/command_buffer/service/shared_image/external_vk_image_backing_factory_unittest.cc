@@ -97,7 +97,14 @@ class ExternalVkImageBackingFactoryDawnTest
   }
 
  protected:
-  dawn::native::Instance dawn_instance_;
+  static constexpr WGPUInstanceDescriptor dawn_instance_desc_ = {
+      .features =
+          {
+              .timedWaitAnyEnable = true,
+          },
+  };
+  dawn::native::Instance dawn_instance_ =
+      dawn::native::Instance(&dawn_instance_desc_);
   wgpu::Device dawn_device_;
 };
 
@@ -316,19 +323,17 @@ TEST_F(ExternalVkImageBackingFactoryDawnTest, SkiaVulkanWrite_DawnRead) {
     queue.Submit(1, &commands);
 
     // Map the buffer to read back data
-    bool done = false;
-    dst_buffer.MapAsync(
-        wgpu::MapMode::Read, 0, 256 * size.height(),
-        [](WGPUBufferMapAsyncStatus status, void* userdata) {
-          EXPECT_EQ(status, WGPUBufferMapAsyncStatus_Success);
-          *static_cast<bool*>(userdata) = true;
-        },
-        &done);
+    wgpu::FutureWaitInfo wait_info{
+        dst_buffer.MapAsync(wgpu::MapMode::Read, 0, 256 * size.height(),
+                            wgpu::CallbackMode::WaitAnyOnly,
+                            [](wgpu::MapAsyncStatus status, const char*) {
+                              ASSERT_EQ(status, wgpu::MapAsyncStatus::Success);
+                            })};
 
-    while (!done) {
-      base::PlatformThread::Sleep(base::Microseconds(100));
-      dawn_device_.Tick();
-    }
+    wgpu::WaitStatus status =
+        wgpu::Instance(dawn_instance_.Get())
+            .WaitAny(1, &wait_info, std::numeric_limits<uint64_t>::max());
+    DCHECK(status == wgpu::WaitStatus::Success);
 
     // Check the pixel data
     const uint8_t* pixel_data =

@@ -86,7 +86,7 @@ void CmdBufFuzz::WebGPUDestroyDevice() {
   DVLOG(3) << "Destroying device";
   webgpu_device_.Destroy();
   webgpu()->FlushCommands();
-  WaitForCompletion(webgpu_device_);
+  WaitForCompletion(webgpu_instance_, webgpu_device_);
   DVLOG(3) << "Device destroyed? (see DeviceLostCallback log)";
 }
 
@@ -97,7 +97,7 @@ void CmdBufFuzz::WebGPUCreateBuffer() {
   buffer_desc.usage = wgpu::BufferUsage::MapRead | wgpu::BufferUsage::CopyDst;
   wgpu::Buffer buff = webgpu_device_.CreateBuffer(&buffer_desc);
   webgpu()->FlushCommands();
-  WaitForCompletion(webgpu_device_);
+  WaitForCompletion(webgpu_instance_, webgpu_device_);
   wgpu_buffers_.push_back(std::move(buff));
   DVLOG(3) << "Created WebGPU buffer";
 }

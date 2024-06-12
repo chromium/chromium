@@ -9,6 +9,7 @@
 
 namespace gpu {
 void RunDawnVideoSamplingTest(
+    wgpu::Instance instance,
     wgpu::Device device,
     const std::unique_ptr<DawnImageRepresentation>& shared_image,
     uint8_t expected_y_value,

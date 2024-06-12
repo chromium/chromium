@@ -536,6 +536,7 @@ class D3DImageBackingFactoryTest : public D3DImageBackingFactoryTestBase {
 
   void CheckDawnPixels(
       DawnImageRepresentation::ScopedAccess* scoped_read_access,
+      const wgpu::Instance& instance,
       const wgpu::Device& device,
       const gfx::Size& size,
       const std::vector<uint8_t>& expected_color) const;
@@ -543,6 +544,7 @@ class D3DImageBackingFactoryTest : public D3DImageBackingFactoryTestBase {
   // Helper for opening multiple Dawn and Skia scoped access on given mailbox,
   // and checking for the expected color using both APIs concurrently.
   void DawnConcurrentReadTestHelper(const Mailbox& mailbox,
+                                    const wgpu::Instance& instance,
                                     const wgpu::Device& device,
                                     const gfx::Size& size,
                                     const std::vector<uint8_t>& expected_color);
@@ -711,6 +713,7 @@ TEST_F(D3DImageBackingFactoryTest, Dawn_SkiaGL) {
 
 void D3DImageBackingFactoryTest::CheckDawnPixels(
     DawnImageRepresentation::ScopedAccess* scoped_read_access,
+    const wgpu::Instance& instance,
     const wgpu::Device& device,
     const gfx::Size& size,
     const std::vector<uint8_t>& expected_color) const {
@@ -736,18 +739,14 @@ void D3DImageBackingFactoryTest::CheckDawnPixels(
   wgpu::Queue queue = device.GetQueue();
   queue.Submit(1, &commands);
 
-  WGPUBufferMapAsyncStatus map_status = WGPUBufferMapAsyncStatus_Unknown;
-  auto map_callback = [](WGPUBufferMapAsyncStatus status, void* userdata) {
-    WGPUBufferMapAsyncStatus* status_out =
-        reinterpret_cast<WGPUBufferMapAsyncStatus*>(userdata);
-    *status_out = status;
-  };
-  buffer.MapAsync(wgpu::MapMode::Read, 0, buffer_desc.size, map_callback,
-                  &map_status);
-  // Tick device until async map operation completes.
-  while (dawn::native::DeviceTick(device.Get())) {
-    base::PlatformThread::Sleep(TestTimeouts::tiny_timeout());
-  }
+  wgpu::FutureWaitInfo wait_info{buffer.MapAsync(
+      wgpu::MapMode::Read, 0, buffer_desc.size, wgpu::CallbackMode::WaitAnyOnly,
+      [&](wgpu::MapAsyncStatus status, const char*) {
+        ASSERT_EQ(status, wgpu::MapAsyncStatus::Success);
+      })};
+  wgpu::WaitStatus status =
+      instance.WaitAny(1, &wait_info, std::numeric_limits<uint64_t>::max());
+  DCHECK(status == wgpu::WaitStatus::Success);
 
   const uint8_t* dst_pixels =
       reinterpret_cast<const uint8_t*>(buffer.GetConstMappedRange());
@@ -767,6 +766,7 @@ void D3DImageBackingFactoryTest::CheckDawnPixels(
 // using both APIs.
 void D3DImageBackingFactoryTest::DawnConcurrentReadTestHelper(
     const Mailbox& mailbox,
+    const wgpu::Instance& instance,
     const wgpu::Device& device,
     const gfx::Size& size,
     const std::vector<uint8_t>& expected_color) {
@@ -804,8 +804,8 @@ void D3DImageBackingFactoryTest::DawnConcurrentReadTestHelper(
       skia_representation2->BeginScopedReadAccess(nullptr, nullptr);
   EXPECT_TRUE(skia_access2);
 
-  CheckDawnPixels(dawn_access1.get(), device, size, expected_color);
-  CheckDawnPixels(dawn_access2.get(), device, size, expected_color);
+  CheckDawnPixels(dawn_access1.get(), instance, device, size, expected_color);
+  CheckDawnPixels(dawn_access2.get(), instance, device, size, expected_color);
   CheckSkiaPixels(skia_access1.get(), size, expected_color);
   CheckSkiaPixels(skia_access2.get(), size, expected_color);
 }
@@ -818,7 +818,13 @@ TEST_F(D3DImageBackingFactoryTest, Dawn_ConcurrentReads) {
   }
 
   // Find a Dawn D3D12 adapter
-  dawn::native::Instance instance;
+  WGPUInstanceDescriptor instance_desc = {
+      .features =
+          {
+              .timedWaitAnyEnable = true,
+          },
+  };
+  dawn::native::Instance instance(&instance_desc);
   wgpu::RequestAdapterOptions adapter_options;
   adapter_options.backendType = wgpu::BackendType::D3D12;
   std::vector<dawn::native::Adapter> adapters =
@@ -871,7 +877,8 @@ TEST_F(D3DImageBackingFactoryTest, Dawn_ConcurrentReads) {
   }
 
   // Check if pixels are red using concurrent reads.
-  DawnConcurrentReadTestHelper(mailbox, device, size, {255, 0, 0, 255});
+  DawnConcurrentReadTestHelper(mailbox, instance.Get(), device, size,
+                               {255, 0, 0, 255});
 
   // Clear the shared image to green using Dawn.
   {
@@ -909,7 +916,8 @@ TEST_F(D3DImageBackingFactoryTest, Dawn_ConcurrentReads) {
   }
 
   // Check if pixels are green using concurrent reads.
-  DawnConcurrentReadTestHelper(mailbox, device, size, {0, 255, 0, 255});
+  DawnConcurrentReadTestHelper(mailbox, instance.Get(), device, size,
+                               {0, 255, 0, 255});
 }
 
 // 1. Draw a color to texture through GL

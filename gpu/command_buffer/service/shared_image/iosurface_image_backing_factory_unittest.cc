@@ -341,7 +341,13 @@ class IOSurfaceImageBackingFactoryDawnTest
     return std::make_pair(std::move(src_rep), std::move(src_scoped_access));
   }
 
-  dawn::native::Instance instance_;
+  static constexpr WGPUInstanceDescriptor instance_desc_ = {
+      .features =
+          {
+              .timedWaitAnyEnable = true,
+          },
+  };
+  dawn::native::Instance instance_ = dawn::native::Instance(&instance_desc_);
   wgpu::Adapter adapter_;
 };
 
@@ -699,8 +705,8 @@ TEST_P(IOSurfaceImageBackingFactoryDawnTest, Dawn_SamplingVideoTexture) {
       mailbox, device, backend_type(), {}, context_state_);
   ASSERT_NE(dawn_image, nullptr);
 
-  RunDawnVideoSamplingTest(device, dawn_image, kYFillValue, kUFillValue,
-                           kVFillValue);
+  RunDawnVideoSamplingTest(instance_.Get(), device, dawn_image, kYFillValue,
+                           kUFillValue, kVFillValue);
 }
 
 // Test that Skia trying to access uninitialized SharedImage will fail
