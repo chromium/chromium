@@ -821,7 +821,7 @@ void LayerTreeHostImpl::UpdateSyncTreeAfterCommitOrImplSideInvalidation() {
   // request another invalidation if an input property was mutated on the active
   // tree.
   if (paint_worklet_tracker_.InvalidatePaintWorkletsOnPendingTree()) {
-    client_->NeedsImplSideInvalidation(
+    client_->SetNeedsImplSideInvalidation(
         true /* needs_first_draw_on_activation */);
   }
   PaintImageIdFlatSet dirty_paint_worklet_ids;
@@ -1985,7 +1985,7 @@ void LayerTreeHostImpl::RequestImplSideInvalidationForCheckerImagedTiles() {
   // When using impl-side invalidation for checker-imaging, a pending tree does
   // not need to be flushed as an independent update through the pipeline.
   bool needs_first_draw_on_activation = false;
-  client_->NeedsImplSideInvalidation(needs_first_draw_on_activation);
+  client_->SetNeedsImplSideInvalidation(needs_first_draw_on_activation);
 }
 
 size_t LayerTreeHostImpl::GetFrameIndexForImage(const PaintImage& paint_image,
@@ -5395,7 +5395,7 @@ void LayerTreeHostImpl::RequestInvalidationForAnimatedImages() {
   // If we are animating an image, we want at least one draw of the active tree
   // before a new tree is activated.
   bool needs_first_draw_on_activation = true;
-  client_->NeedsImplSideInvalidation(needs_first_draw_on_activation);
+  client_->SetNeedsImplSideInvalidation(needs_first_draw_on_activation);
 }
 
 bool LayerTreeHostImpl::IsReadyToActivate() const {
@@ -5404,7 +5404,7 @@ bool LayerTreeHostImpl::IsReadyToActivate() const {
 
 void LayerTreeHostImpl::RequestImplSideInvalidationForRerasterTiling() {
   bool needs_first_draw_on_activation = true;
-  client_->NeedsImplSideInvalidation(needs_first_draw_on_activation);
+  client_->SetNeedsImplSideInvalidation(needs_first_draw_on_activation);
 }
 
 base::WeakPtr<LayerTreeHostImpl> LayerTreeHostImpl::AsWeakPtr() {

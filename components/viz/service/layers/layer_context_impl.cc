@@ -325,7 +325,7 @@ void LayerContextImpl::OnDrawForLayerTreeFrameSink(
     bool resourceless_software_draw,
     bool skip_draw) {}
 
-void LayerContextImpl::NeedsImplSideInvalidation(
+void LayerContextImpl::SetNeedsImplSideInvalidation(
     bool needs_first_draw_on_activation) {}
 
 void LayerContextImpl::NotifyImageDecodeRequestFinished(int request_id,

@@ -606,7 +606,8 @@ void ProxyImpl::OnDrawForLayerTreeFrameSink(bool resourceless_software_draw,
                                           skip_draw);
 }
 
-void ProxyImpl::NeedsImplSideInvalidation(bool needs_first_draw_on_activation) {
+void ProxyImpl::SetNeedsImplSideInvalidation(
+    bool needs_first_draw_on_activation) {
   DCHECK(IsImplThread());
   scheduler_->SetNeedsImplSideInvalidation(needs_first_draw_on_activation);
 }

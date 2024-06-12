@@ -145,7 +145,7 @@ class LayerTreeHostImplClient {
   virtual void OnDrawForLayerTreeFrameSink(bool resourceless_software_draw,
                                            bool skip_draw) = 0;
 
-  virtual void NeedsImplSideInvalidation(
+  virtual void SetNeedsImplSideInvalidation(
       bool needs_first_draw_on_activation) = 0;
 
   virtual void NotifyImageDecodeRequestFinished(int request_id,
