@@ -642,26 +642,23 @@ TEST(VideoFrame, TextureNoLongerNeededCallbackIsCalled) {
 // (i.e. the compositor, webgl).
 TEST(VideoFrame,
      TexturesNoLongerNeededCallbackAfterTakingAndReleasingMailboxes) {
-  const int kPlanesNum = 3;
   const gpu::CommandBufferNamespace kNamespace =
       gpu::CommandBufferNamespace::GPU_IO;
   const gpu::CommandBufferId kCommandBufferId =
       gpu::CommandBufferId::FromUnsafeValue(0x123);
-  scoped_refptr<gpu::ClientSharedImage> shared_images[VideoFrame::kMaxPlanes];
-  for (int i = 0; i < kPlanesNum; ++i) {
-    shared_images[i] = gpu::ClientSharedImage::CreateForTesting();
-  };
+  scoped_refptr<gpu::ClientSharedImage> shared_image =
+      gpu::ClientSharedImage::CreateForTesting();
 
   gpu::SyncToken sync_token(kNamespace, kCommandBufferId, 7);
   sync_token.SetVerifyFlush();
-  uint32_t target = 9;
+  uint32_t target = shared_image->GetTextureTarget();
   gpu::SyncToken release_sync_token(kNamespace, kCommandBufferId, 111);
   release_sync_token.SetVerifyFlush();
 
   gpu::SyncToken called_sync_token;
   {
-    scoped_refptr<VideoFrame> frame = VideoFrame::WrapSharedImages(
-        PIXEL_FORMAT_I420, shared_images, sync_token, target,
+    scoped_refptr<VideoFrame> frame = VideoFrame::WrapSharedImage(
+        PIXEL_FORMAT_I420, shared_image, sync_token, target,
         base::BindOnce(&TextureCallback, &called_sync_token),
         gfx::Size(10, 10),   // coded_size
         gfx::Rect(10, 10),   // visible_rect
@@ -672,13 +669,10 @@ TEST(VideoFrame,
     EXPECT_EQ(PIXEL_FORMAT_I420, frame->format());
     EXPECT_EQ(3u, VideoFrame::NumPlanes(frame->format()));
     EXPECT_TRUE(frame->HasTextures());
-    for (size_t i = 0; i < VideoFrame::NumPlanes(frame->format()); ++i) {
-      const gpu::MailboxHolder& mailbox_holder = frame->mailbox_holder(i);
-      EXPECT_EQ(shared_images[i]->mailbox().name[0],
-                mailbox_holder.mailbox.name[0]);
-      EXPECT_EQ(target, mailbox_holder.texture_target);
-      EXPECT_EQ(sync_token, mailbox_holder.sync_token);
-    }
+    const gpu::MailboxHolder& mailbox_holder = frame->mailbox_holder(0);
+    EXPECT_EQ(shared_image->mailbox().name[0], mailbox_holder.mailbox.name[0]);
+    EXPECT_EQ(target, mailbox_holder.texture_target);
+    EXPECT_EQ(sync_token, mailbox_holder.sync_token);
 
     SimpleSyncTokenClient client(release_sync_token);
     frame->UpdateReleaseSyncToken(&client);
