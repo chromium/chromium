@@ -407,7 +407,7 @@ void ModelTypeWorker::ConnectSync(
   DCHECK(model_type_processor);
 
   model_type_processor_ = std::move(model_type_processor);
-  // TODO(victorvianna): CommitQueueProxy is only needed by the
+  // TODO(crbug.com/346777544): CommitQueueProxy is only needed by the
   // ModelTypeProcessorProxy implementation, so it could possibly be moved
   // there % changing ConnectSync() to take a raw pointer. This then allows
   // removing base::test::SingleThreadTaskEnvironment from the unit test.

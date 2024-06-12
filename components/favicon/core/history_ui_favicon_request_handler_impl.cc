@@ -48,7 +48,6 @@ void RecordFaviconAvailabilityAndLatencyMetric(
 // with the HTTPS URL and hence won't be found if we include the scheme in the
 // lookup. Set `fallback_to_host`=true so the favicon database will fall back to
 // matching only the hostname to have the best chance of finding a favicon.
-// TODO(victorvianna): Consider passing this as a parameter in the API.
 const bool kFallbackToHost = true;
 
 // Parameter used for local bitmap queries by page url.
