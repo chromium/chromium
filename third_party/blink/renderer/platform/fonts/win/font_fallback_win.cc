@@ -96,9 +96,27 @@ struct FontMapping {
   const UChar* family_name;
   base::span<const UChar* const> candidate_family_names;
 };
+
+struct ScriptToFontFamilies {
+  UScriptCode script;
+  base::span<const UChar* const> families;
+};
+
 // A simple mapping from UScriptCode to family name. This is a sparse array,
 // which works well since the range of UScriptCode values is small.
-typedef FontMapping ScriptToFontMap[USCRIPT_CODE_LIMIT];
+class ScriptToFontMap {
+ public:
+  FontMapping& operator[](UScriptCode script) { return mappings_[script]; }
+
+  void Set(base::span<const ScriptToFontFamilies> families) {
+    for (const auto& family : families) {
+      mappings_[family.script].candidate_family_names = family.families;
+    }
+  }
+
+ private:
+  FontMapping mappings_[USCRIPT_CODE_LIMIT];
+};
 
 const UChar* FindMonospaceFontForScript(UScriptCode script) {
   struct FontMap {
@@ -119,11 +137,6 @@ const UChar* FindMonospaceFontForScript(UScriptCode script) {
 }
 
 void InitializeScriptFontMap(ScriptToFontMap& script_font_map) {
-  struct ScriptToFontFamilies {
-    UScriptCode script;
-    base::span<const UChar* const> families;
-  };
-
   // For the following scripts, multiple fonts may be listed. They are tried
   // in order. The first slot is preferred but the font may not be available,
   // if so the remaining slots are tried in order.
@@ -309,18 +322,15 @@ void InitializeScriptFontMap(ScriptToFontMap& script_font_map) {
       {USCRIPT_TRADITIONAL_HAN, kTraditionalHanFonts},
       {USCRIPT_VAI, kVaiFonts},
       {USCRIPT_YI, kYiFonts}};
-
-  for (const auto& font_family : kScriptToFontFamilies) {
-    script_font_map[font_family.script].candidate_family_names =
-        font_family.families;
-  }
+  script_font_map.Set(kScriptToFontFamilies);
 
   // Initialize the locale-dependent mapping from system locale.
   UScriptCode han_script = LayoutLocale::GetSystem().GetScriptForHan();
   DCHECK_NE(han_script, USCRIPT_HAN);
-  if (!script_font_map[han_script].candidate_family_names.empty()) {
+  const FontMapping& han_mapping = script_font_map[han_script];
+  if (!han_mapping.candidate_family_names.empty()) {
     script_font_map[USCRIPT_HAN].candidate_family_names =
-        script_font_map[han_script].candidate_family_names;
+        han_mapping.candidate_family_names;
   }
 }
 
