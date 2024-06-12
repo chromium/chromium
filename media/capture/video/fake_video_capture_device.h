@@ -135,6 +135,7 @@ struct FakeDeviceState {
   VideoCaptureFormat format;
   bool background_blur = false;
   bool eye_gaze_correction = false;
+  bool face_framing = false;
 };
 
 // A dependency needed by FakeVideoCaptureDevice.
