@@ -60,6 +60,7 @@
       <div aria-checked$="[[getAriaChecked_(checked)]]"
           aria-disabled$="[[getAriaDisabled_(disabled)]]"
           aria-labelledby="label"
+          aria-describedby="sub-label"
           class="disc-wrapper"
           id="button"
           role="radio"
@@ -77,7 +78,7 @@
             [[label]]
             <slot name="label"></slot>
           </div>
-          <div hidden$="[[!subLabel]]" class="secondary">
+          <div hidden$="[[!subLabel]]" id="sub-label" class="secondary">
             [[subLabel]]
             <slot name="sub-label"></slot>
           </div>
