@@ -314,6 +314,7 @@ All changes to this list should go through Blink's feature review process: http:
     right
     rotate
     row-gap
+    ruby-align
     ruby-position
     rx
     ry
