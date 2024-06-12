@@ -7,11 +7,10 @@
 #include <optional>
 
 #include "base/command_line.h"
-#include "base/json/json_writer.h"
-#include "base/strings/string_number_conversions.h"
 #include "base/time/time.h"
 #include "base/values.h"
 #include "components/commerce/core/commerce_constants.h"
+#include "components/commerce/core/compare/compare_utils.h"
 #include "components/commerce/core/feature_utils.h"
 #include "components/endpoint_fetcher/endpoint_fetcher.h"
 #include "net/http/http_status_code.h"
@@ -26,7 +25,6 @@ namespace {
 const char kAltTextKey[] = "alternativeText";
 const char kDescriptionKey[] = "description";
 const char kGPCKey[] = "gpcId";
-const char kIdentifierKey[] = "identifier";
 const char kIdentifiersKey[] = "identifiers";
 const char kImageURLKey[] = "imageUrl";
 const char kKeyKey[] = "key";
@@ -36,16 +34,12 @@ const char kOptionsKey[] = "options";
 const char kProductSpecificationsKey[] = "productSpecifications";
 const char kProductSpecificationSectionsKey[] = "productSpecificationSections";
 const char kProductSpecificationValuesKey[] = "productSpecificationValues";
-const char kProductIdsKey[] = "productIds";
 const char kSpecificationDescriptionsKey[] = "specificationDescriptions";
 const char kSummaryKey[] = "summaryDescription";
 const char kTitleKey[] = "title";
-const char kTypeKey[] = "type";
 
 const char kTextKey[] = "text";
 const char kUrlKey[] = "url";
-
-const char kGPCTypeName[] = "GLOBAL_PRODUCT_CLUSTER_ID";
 
 const uint64_t kTimeoutMs = 5000;
 
@@ -203,23 +197,10 @@ void ProductSpecificationsServerProxy::GetProductSpecificationsForClusterIds(
     return;
   }
 
-  base::Value::List product_id_list;
-  for (uint64_t id : cluster_ids) {
-    base::Value::Dict id_definition;
-    id_definition.Set(kTypeKey, kGPCTypeName);
-    id_definition.Set(kIdentifierKey, base::NumberToString(id));
-    product_id_list.Append(std::move(id_definition));
-  }
-
-  base::Value::Dict json_dict;
-  json_dict.Set(kProductIdsKey, std::move(product_id_list));
-  std::string post_data;
-  base::JSONWriter::Write(json_dict, &post_data);
-
   auto fetcher = CreateEndpointFetcher(
       GURL(base::CommandLine::ForCurrentProcess()->GetSwitchValueASCII(
           kProductSpecificationsUrlKey)),
-      kPostHttpMethod, post_data);
+      kPostHttpMethod, GetJsonStringForProductClusterIds(cluster_ids));
 
   auto* const fetcher_ptr = fetcher.get();
   fetcher_ptr->Fetch(base::BindOnce(

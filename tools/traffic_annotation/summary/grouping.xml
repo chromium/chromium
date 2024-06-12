@@ -403,6 +403,7 @@ after discussions on the right group.
   </group>
   <group name="Chrome Commerce" hidden="true">
     <sender name="Compare">
+      <annotation id="chrome_commerce_comparable_products"/>
       <annotation id="product_specifications_fetcher"/>
     </sender>
     <sender name="Parcel Tracking">

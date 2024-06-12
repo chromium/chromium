@@ -10,6 +10,7 @@
 #include <vector>
 
 #include "base/barrier_callback.h"
+#include "base/containers/contains.h"
 #include "components/commerce/core/commerce_feature_list.h"
 #include "components/commerce/core/commerce_utils.h"
 #include "components/commerce/core/compare/candidate_product.h"
@@ -353,12 +354,18 @@ void ClusterManager::RemoveObserver(Observer* observer) {
   observers_.RemoveObserver(observer);
 }
 
-void ClusterManager::GetComparableUrls(const std::set<GURL>& product_urls,
-                                       GetComparableUrlsCallback callback) {
-  cluster_server_proxy_->GetComparableUrls(
-      product_urls,
-      base::BindOnce(&ClusterManager::OnGetComparableUrls,
-                     weak_ptr_factory_.GetWeakPtr(), std::move(callback)));
+void ClusterManager::GetComparableProducts(
+    const EntryPointInfo& entry_point_info,
+    GetEntryPointInfoCallback callback) {
+  std::vector<uint64_t> product_cluster_ids;
+  for (const auto& kv : entry_point_info.similar_candidate_products) {
+    product_cluster_ids.push_back(kv.second);
+  }
+  cluster_server_proxy_->GetComparableProducts(
+      std::move(product_cluster_ids),
+      base::BindOnce(&ClusterManager::OnGetComparableProducts,
+                     weak_ptr_factory_.GetWeakPtr(), entry_point_info,
+                     std::move(callback)));
 }
 
 std::set<GURL> ClusterManager::FindSimilarCandidateProducts(
@@ -464,27 +471,33 @@ void ClusterManager::OnProductInfoFetchedForSimilarUrls(
       title ? title.value() : "", std::move(map)));
 }
 
-void ClusterManager::OnGetComparableUrls(
-    GetComparableUrlsCallback callback,
-    bool success,
-    const std::set<GURL>& comparable_urls) {
-  if (!success) {
-    std::move(callback).Run(std::set<GURL>());
-    return;
-  }
-
-  std::set<GURL> open_urls;
+void ClusterManager::OnGetComparableProducts(
+    const EntryPointInfo& entry_point_info,
+    GetEntryPointInfoCallback callback,
+    const std::vector<uint64_t>& cluster_product_ids) {
+  std::map<GURL, uint64_t> product_cluster_id_map;
   const std::vector<UrlInfo> url_infos = get_open_url_infos_cb_.Run();
-  for (const auto& url : comparable_urls) {
-    for (const UrlInfo& url_info : url_infos) {
-      if (url == url_info.url) {
-        open_urls.emplace(url);
-        break;
+  for (const auto& kv : entry_point_info.similar_candidate_products) {
+    // If the product Id cannot be clustered, skip it.
+    if (!base::Contains(cluster_product_ids, kv.second)) {
+      continue;
+    }
+
+    // Only add URLs that are still open.
+    for (const auto& url_info : url_infos) {
+      if (kv.first == url_info.url) {
+        product_cluster_id_map.emplace(kv.first, kv.second);
       }
     }
   }
 
-  std::move(callback).Run(std::move(open_urls));
+  if (product_cluster_id_map.empty()) {
+    std::move(callback).Run(std::nullopt);
+    return;
+  }
+
+  std::move(callback).Run(EntryPointInfo(entry_point_info.title,
+                                         std::move(product_cluster_id_map)));
 }
 
 bool ClusterManager::IsSetEligibleForClustering(const base::Uuid& uuid,

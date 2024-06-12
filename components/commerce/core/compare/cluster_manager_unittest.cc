@@ -28,6 +28,8 @@
 #include "testing/gtest/include/gtest/gtest.h"
 #include "url/gurl.h"
 
+using testing::_;
+
 namespace commerce {
 namespace {
 static const uint64_t kProductID1 = 1;
@@ -45,7 +47,7 @@ const std::string kCategoryLamp = "Lamp";
 const std::string kCategoryChair = "Chair";
 const std::string kCategoryGamingChair = "GamingChair";
 const std::string kProductGroupName = "Furniture";
-}  // namespace
+const std::string kClusterTitle = "ClusteredProduct";
 
 class MockObserver : public ClusterManager::Observer {
  public:
@@ -54,6 +56,24 @@ class MockObserver : public ClusterManager::Observer {
               (const GURL& url),
               (override));
 };
+
+class MockClusterServerProxy : public ClusterServerProxy {
+ public:
+  MockClusterServerProxy(
+      signin::IdentityManager* identity_manager,
+      scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory)
+      : ClusterServerProxy(identity_manager, url_loader_factory) {}
+  MockClusterServerProxy(const MockClusterServerProxy&) = delete;
+  MockClusterServerProxy operator=(const MockClusterServerProxy&) = delete;
+  ~MockClusterServerProxy() override = default;
+
+  MOCK_METHOD(void,
+              GetComparableProducts,
+              (const std::vector<uint64_t>&,
+               ClusterServerProxy::GetComparableProductsCallback),
+              (override));
+};
+}  // namespace
 
 class ClusterManagerTest : public testing::Test {
  public:
@@ -66,9 +86,10 @@ class ClusterManagerTest : public testing::Test {
         std::make_unique<MockProductSpecificationsService>();
     EXPECT_CALL(*product_specification_service_, GetAllProductSpecifications())
         .Times(1);
+    auto proxy = std::make_unique<MockClusterServerProxy>(nullptr, nullptr);
+    server_proxy_ = proxy.get();
     cluster_manager_ = std::make_unique<ClusterManager>(
-        product_specification_service_.get(),
-        std::make_unique<ClusterServerProxy>(nullptr, nullptr),
+        product_specification_service_.get(), std::move(proxy),
         base::BindRepeating(&ClusterManagerTest::GetProductInfo,
                             base::Unretained(this)),
         base::BindRepeating(&ClusterManagerTest::url_infos,
@@ -193,14 +214,15 @@ class ClusterManagerTest : public testing::Test {
     run_loop.Run();
   }
 
-  void GetComparableUrls(const std::set<GURL> urls_to_compare,
-                         std::set<GURL>* result) {
+  void GetComparableProducts(const EntryPointInfo& entry_point_info,
+                             std::optional<EntryPointInfo>* result) {
     base::RunLoop run_loop;
-    cluster_manager_->GetComparableUrls(
-        urls_to_compare,
-        base::BindOnce([](std::set<GURL>* ret,
-                          std::set<GURL> urls) { *ret = std::move(urls); },
-                       result)
+    cluster_manager_->GetComparableProducts(
+        entry_point_info,
+        base::BindOnce(
+            [](std::optional<EntryPointInfo>* ret,
+               std::optional<EntryPointInfo> info) { *ret = std::move(info); },
+            result)
             .Then(run_loop.QuitClosure()));
     run_loop.Run();
   }
@@ -209,6 +231,7 @@ class ClusterManagerTest : public testing::Test {
   std::unique_ptr<MockProductSpecificationsService>
       product_specification_service_;
   std::unique_ptr<ClusterManager> cluster_manager_;
+  raw_ptr<MockClusterServerProxy> server_proxy_;
   std::map<GURL, ProductInfo> product_infos_;
   std::vector<UrlInfo> url_infos_;
 };
@@ -236,6 +259,7 @@ TEST_F(ClusterManagerTest,
           testing::Return(std::vector<ProductSpecificationsSet>{set1, set2}));
   EXPECT_CALL(*product_specification_service_, GetAllProductSpecifications())
       .Times(1);
+  server_proxy_ = nullptr;
   cluster_manager_ = std::make_unique<ClusterManager>(
       product_specification_service_.get(),
       std::make_unique<ClusterServerProxy>(nullptr, nullptr),
@@ -285,6 +309,7 @@ TEST_F(ClusterManagerTest, ClusterManagerInitialization_SkipInvalidSet) {
           std::vector<ProductSpecificationsSet>{set1, set2, set3}));
   EXPECT_CALL(*product_specification_service_, GetAllProductSpecifications())
       .Times(1);
+  server_proxy_ = nullptr;
   cluster_manager_ = std::make_unique<ClusterManager>(
       product_specification_service_.get(),
       std::make_unique<ClusterServerProxy>(nullptr, nullptr),
@@ -307,6 +332,7 @@ TEST_F(ClusterManagerTest, ClusterManagerInitialization_KickOffRemoving) {
           testing::Return(std::vector<ProductSpecificationsSet>{set1}));
   EXPECT_CALL(*product_specification_service_, GetAllProductSpecifications())
       .Times(1);
+  server_proxy_ = nullptr;
   cluster_manager_ = std::make_unique<ClusterManager>(
       product_specification_service_.get(),
       std::make_unique<ClusterServerProxy>(nullptr, nullptr),
@@ -853,22 +879,64 @@ TEST_F(ClusterManagerTest, ClusterManagerObserver) {
   base::RunLoop().RunUntilIdle();
 }
 
-TEST_F(ClusterManagerTest, TabClosedWhenGetComparableUrls) {
+TEST_F(ClusterManagerTest, TabClosedWhenGetComparableProducts) {
+  std::vector<uint64_t> product_ids{kProductID1, kProductID2, kProductID3};
+  EXPECT_CALL(*server_proxy_, GetComparableProducts(product_ids, _))
+      .WillRepeatedly(
+          [](std::vector<uint64_t> ids,
+             ClusterServerProxy::GetComparableProductsCallback callback) {
+            std::move(callback).Run(ids);
+          });
   GURL foo1(kTestUrl1);
   GURL foo2(kTestUrl2);
   GURL foo3(kTestUrl3);
-  std::set<GURL> comparable_urls{foo1, foo2, foo3};
-  UpdateUrlInfos(
-      std::vector<GURL>(comparable_urls.begin(), comparable_urls.end()));
-  std::set<GURL> result_urls;
-  GetComparableUrls(comparable_urls, &result_urls);
+  std::map<GURL, uint64_t> comparable_products;
+  comparable_products.emplace(foo1, kProductID1);
+  comparable_products.emplace(foo2, kProductID2);
+  comparable_products.emplace(foo3, kProductID3);
+  UpdateUrlInfos(std::vector<GURL>{foo1, foo2, foo3});
+  EntryPointInfo info(kClusterTitle, comparable_products);
+  std::optional<EntryPointInfo> result_info;
+  GetComparableProducts(info, &result_info);
   base::RunLoop().RunUntilIdle();
-  ASSERT_EQ(result_urls, comparable_urls);
+  ASSERT_EQ(result_info->similar_candidate_products, comparable_products);
+  ASSERT_EQ(result_info->title, kClusterTitle);
 
   UpdateUrlInfos(std::vector<GURL>{foo1, foo2});
-  GetComparableUrls(comparable_urls, &result_urls);
+  GetComparableProducts(info, &result_info);
   base::RunLoop().RunUntilIdle();
-  ASSERT_EQ(result_urls, (std::set<GURL>{foo1, foo2}));
+  ASSERT_EQ(result_info->similar_candidate_products.size(), 2u);
+  ASSERT_TRUE(base::Contains(result_info->similar_candidate_products, foo1));
+  ASSERT_TRUE(base::Contains(result_info->similar_candidate_products, foo2));
+  ASSERT_EQ(result_info->title, kClusterTitle);
+}
+
+TEST_F(ClusterManagerTest, GetComparableProductsWithPartialProductsComparable) {
+  std::vector<uint64_t> product_ids{kProductID1, kProductID2, kProductID3};
+  EXPECT_CALL(*server_proxy_, GetComparableProducts(product_ids, _))
+      .WillRepeatedly(
+          [](std::vector<uint64_t> ids,
+             ClusterServerProxy::GetComparableProductsCallback callback) {
+            std::move(callback).Run(
+                std::vector<uint64_t>{kProductID1, kProductID2});
+          });
+  GURL foo1(kTestUrl1);
+  GURL foo2(kTestUrl2);
+  GURL foo3(kTestUrl3);
+  std::map<GURL, uint64_t> comparable_products;
+  comparable_products.emplace(foo1, kProductID1);
+  comparable_products.emplace(foo2, kProductID2);
+  comparable_products.emplace(foo3, kProductID3);
+  UpdateUrlInfos(std::vector<GURL>{foo1, foo2, foo3});
+  EntryPointInfo info(kClusterTitle, comparable_products);
+  std::optional<EntryPointInfo> result_info;
+  GetComparableProducts(info, &result_info);
+  base::RunLoop().RunUntilIdle();
+
+  ASSERT_EQ(result_info->similar_candidate_products.size(), 2u);
+  ASSERT_TRUE(base::Contains(result_info->similar_candidate_products, foo1));
+  ASSERT_TRUE(base::Contains(result_info->similar_candidate_products, foo2));
+  ASSERT_EQ(result_info->title, kClusterTitle);
 }
 
 }  // namespace commerce

@@ -34,7 +34,6 @@ class ClusterManager : public ProductSpecificationsSet::Observer {
       base::RepeatingCallback<const std::vector<UrlInfo>()>;
   using GetEntryPointInfoCallback =
       base::OnceCallback<void(std::optional<EntryPointInfo>)>;
-  using GetComparableUrlsCallback = base::OnceCallback<void(std::set<GURL>)>;
 
   class Observer : public base::CheckedObserver {
    public:
@@ -95,9 +94,9 @@ class ClusterManager : public ProductSpecificationsSet::Observer {
   std::vector<GURL> FindSimilarCandidateProductsForProductGroup(
       const base::Uuid& uuid);
 
-  // Finds comparable URLs for a list of URLs.
-  void GetComparableUrls(const std::set<GURL>& product_urls,
-                         GetComparableUrlsCallback callback);
+  // Finds comparable products from an EntryPointInfo.
+  void GetComparableProducts(const EntryPointInfo& entry_point_info,
+                             GetEntryPointInfoCallback callback);
 
   // Registers an observer for cluster manager.
   void AddObserver(Observer* observer);
@@ -131,9 +130,10 @@ class ClusterManager : public ProductSpecificationsSet::Observer {
   // URLs doesn't include the `product_url`.
   std::set<GURL> FindSimilarCandidateProducts(const GURL& product_url);
 
-  void OnGetComparableUrls(GetComparableUrlsCallback callback,
-                           bool success,
-                           const std::set<GURL>& comparable_urls);
+  void OnGetComparableProducts(
+      const EntryPointInfo& entry_point_info,
+      GetEntryPointInfoCallback callback,
+      const std::vector<uint64_t>& cluster_product_ids);
 
   void OnProductInfoFetchedForSimilarUrls(
       std::optional<std::string> title,
