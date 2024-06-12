@@ -87,7 +87,7 @@ Falls neben "<ph name="SERVICE_SCRIPT_NAME" />" schon ein Haken gesetzt ist, ent
 <translation id="4812684235631257312">Host</translation>
 <translation id="4867841927763172006">Druck senden</translation>
 <translation id="4974476491460646149">Verbindung zwischen Client und <ph name="HOSTNAME" /> getrennt</translation>
-<translation id="4985296110227979402">Richte zuerst deinen Computer für den Remotezugriff ein</translation>
+<translation id="4985296110227979402">Richte zuerst deinen Computer für den Remote-Zugriff ein</translation>
 <translation id="4987330545941822761">Chrome Remote Desktop kann nicht ermitteln, welcher Browser zum lokalen Öffnen der Links verwendet werden soll. Wähle einen aus der folgenden Liste aus.</translation>
 <translation id="5064360042339518108"><ph name="HOSTNAME" /> (offline)</translation>
 <translation id="507204348399810022">Möchtest du die Remote-Verbindungen zu <ph name="HOSTNAME" /> wirklich deaktivieren?</translation>
@@ -106,7 +106,7 @@ Falls neben "<ph name="SERVICE_SCRIPT_NAME" />" schon ein Haken gesetzt ist, ent
 <translation id="579702532610384533">Erneut verbinden</translation>
 <translation id="5810269635982033450">Bildschirm funktioniert wie ein Touchpad</translation>
 <translation id="5823554426827907568"><ph name="CLIENT_USERNAME" /> hat Zugriff angefordert, um deinen Bildschirm zu sehen und deine Tastatur und Maus zu steuern. Falls du mit dieser Anfrage nicht gerechnet hast, drücke auf „<ph name="IDS_SHARE_CONFIRM_DIALOG_DECLINE" />“. Falls du den Zugriff zulassen möchtest, wenn du bereit bist, wähle „<ph name="IDS_SHARE_CONFIRM_DIALOG_CONFIRM" />“ aus.</translation>
-<translation id="5823658491130719298">Öffne Chrome auf dem Computer, für den du den Remotezugriff einrichten möchtest, und rufe <ph name="INSTALLATION_LINK" /> auf</translation>
+<translation id="5823658491130719298">Öffne Chrome auf dem Computer, für den du den Remote-Zugriff einrichten möchtest, und rufe <ph name="INSTALLATION_LINK" /> auf</translation>
 <translation id="5841343754884244200">Anzeigeoptionen</translation>
 <translation id="6033507038939587647">Tastaturoptionen</translation>
 <translation id="6040143037577758943">Schließen</translation>
@@ -129,7 +129,7 @@ Falls neben "<ph name="SERVICE_SCRIPT_NAME" />" schon ein Haken gesetzt ist, ent
 <translation id="6985691951107243942">Möchtest du die Remote-Verbindung zu <ph name="HOSTNAME" /> wirklich deaktivieren? Wenn du die Verbindung später erneut aktivieren möchtest, musst du dies von dem betreffenden Computer aus tun.</translation>
 <translation id="7019153418965365059">Nicht erkannter Hostfehler: <ph name="HOST_OFFLINE_REASON" /></translation>
 <translation id="701976023053394610">Remote-Unterstützung</translation>
-<translation id="7026930240735156896">Folge der Anleitung, um den Computer für den Remotezugriff einzurichten</translation>
+<translation id="7026930240735156896">Folge der Anleitung, um den Computer für den Remote-Zugriff einzurichten</translation>
 <translation id="7067321367069083429">Bildschirm funktioniert wie ein Touchscreen</translation>
 <translation id="7116737094673640201">Willkommen bei Chrome Remote Desktop</translation>
 <translation id="7144878232160441200">Wiederholen</translation>
