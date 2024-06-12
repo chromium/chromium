@@ -839,6 +839,9 @@ double RenderWidgetHostViewChildFrame::GetZoomLevel() const {
   if (adjusted_child_zoom) {
     return *adjusted_child_zoom;
   }
+  if (!frame_connector_) {
+    return RenderWidgetHostViewBase::GetZoomLevel();
+  }
   return frame_connector_->zoom_level();
 }
 

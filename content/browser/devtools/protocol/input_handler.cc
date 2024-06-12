@@ -1480,8 +1480,14 @@ void InputHandler::OnWidgetForDispatchDragEvent(
 
 float InputHandler::ScaleFactor() {
   DCHECK(web_contents_);
-  return blink::PageZoomLevelToZoomFactor(
-             web_contents_->GetPendingPageZoomLevel()) *
+  RenderWidgetHostImpl* widget_host =
+      host_ ? host_->GetRenderWidgetHost() : nullptr;
+  float page_zoom_level = 0.;
+  if (widget_host && widget_host->GetView()) {
+    page_zoom_level = widget_host->GetView()->GetZoomLevel();
+  }
+
+  return blink::PageZoomLevelToZoomFactor(page_zoom_level) *
          web_contents_->GetPrimaryPage().GetPageScaleFactor();
 }
 

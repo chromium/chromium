@@ -13,6 +13,7 @@
 #include <vector>
 
 #include "base/auto_reset.h"
+#include "base/check_deref.h"
 #include "base/command_line.h"
 #include "base/containers/contains.h"
 #include "base/containers/flat_map.h"
@@ -1179,11 +1180,6 @@ perfetto::protos::pbzero::FrameDeleteIntention FrameDeleteIntentionToProto(
   // All cases should've been handled by the switch case above.
   NOTREACHED_IN_MIGRATION();
   return ProtoLevel::FRAME_DELETE_INTENTION_NOT_MAIN_FRAME;
-}
-
-void PropagatePageZoomToNewlyAttachedFrame(blink::WebView* web_view,
-                                           float device_scale_factor) {
-  web_view->SetZoomFactorForDeviceScaleFactor(device_scale_factor);
 }
 
 void CallClientDeferMediaLoad(base::WeakPtr<RenderFrameImpl> frame,
@@ -5139,23 +5135,9 @@ void RenderFrameImpl::UpdateStateForCommit(
   }
 
   if (IsLocalRoot()) {
-    // This goes to WebViewImpl and sets the zoom factor which will be
-    // propagated down to this RenderFrameImpl's LocalFrame in blink.
-    // Non-local-roots are able to grab the value off their parents but local
-    // roots can not and this is a huge action-at-a-distance to make up for that
-    // flaw in how LocalFrame determines the zoom factor.
-    // TODO(danakj): This should not be needed if the zoom factor/device scale
-    // factor did not need to be propagated to each frame. Since they are a
-    // global that should be okay?? The test that fails without this, for
-    // child frames, is in content_browsertests:
-    //     SitePerProcessHighDPIBrowserTest.
-    //         SubframeLoadsWithCorrectDeviceScaleFactor
-    // And when UseZoomForDSF is disabled, in content_browsertests:
-    //     IFrameZoomBrowserTest.SubframesDontZoomIndependently (and the whole
-    //     suite).
-    PropagatePageZoomToNewlyAttachedFrame(
-        GetWebView(),
-        GetLocalRootWebFrameWidget()->GetScreenInfo().device_scale_factor);
+    // This forces zoom factor to be propagated to the blink core frame.
+    auto& widget = CHECK_DEREF(GetLocalRootWebFrameWidget());
+    widget.SetZoomLevel(widget.GetZoomLevel());
   }
 
   // If we are a top frame navigation to another document we should clear any

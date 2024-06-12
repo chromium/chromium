@@ -637,8 +637,8 @@ class CORE_EXPORT WebViewImpl final : public WebView,
   // Called when draggable regions in the page change.
   void DraggableRegionsChanged();
 
-  double ClampZoomLevel(double zoom_level);
-  double SetMainFrameZoomLevel(double zoom_level);
+  double ClampZoomLevel(double zoom_level) const;
+  double ZoomLevelToZoomFactor(double zoom_level, bool for_main_frame) const;
 
  private:
   FRIEND_TEST_ALL_PREFIXES(WebFrameTest, DivScrollIntoEditableTest);
@@ -784,7 +784,10 @@ class CORE_EXPORT WebViewImpl final : public WebView,
   // Called when mojo is disconnected.
   void MojoDisconnected();
 
-  void RecomputeMainFrameZoomFactor();
+  // Called when any input to zoom factor calculation changes on the WebView, to
+  // trigger recalculation of zoom factor for all affected widgets.
+  void UpdateWidgetZoomFactors();
+  void UpdateInspectorDeviceScaleFactorOverride();
 
   // A value provided by the browser to state that all Widgets in this
   // WebView's frame tree will never be user-visible and thus never need to

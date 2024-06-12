@@ -462,6 +462,21 @@ SkFontHinting RendererPreferencesToSkiaHinting(
 }
 #endif  // !BUILDFLAG(IS_MAC) && !BUILDFLAG(IS_WIN)
 
+void ForEachFrameWidgetControlledByView(
+    WebViewImpl& web_view,
+    base::FunctionRef<void(WebFrameWidgetImpl*)> callback) {
+  for (WebFrame* frame = web_view.MainFrame(); frame;
+       frame = frame->TraverseNext()) {
+    if (auto* frame_impl = DynamicTo<WebLocalFrameImpl>(frame)) {
+      if (frame_impl->GetFrame()->IsLocalRoot()) {
+        if (auto* widget = frame_impl->FrameWidgetImpl()) {
+          callback(widget);
+        }
+      }
+    }
+  }
+}
+
 }  // namespace
 
 // WebView ----------------------------------------------------------------
@@ -2274,31 +2289,17 @@ void WebViewImpl::AdvanceFocus(bool reverse) {
               : mojom::blink::FocusType::kForward);
 }
 
-double WebViewImpl::ClampZoomLevel(double zoom_level) {
-  if (zoom_level < minimum_zoom_level_) {
-    return minimum_zoom_level_;
-  }
-  if (zoom_level > maximum_zoom_level_) {
-    return maximum_zoom_level_;
-  }
-  return zoom_level;
+double WebViewImpl::ClampZoomLevel(double zoom_level) const {
+  return std::max(minimum_zoom_level_,
+                  std::min(maximum_zoom_level_, zoom_level));
 }
 
-double WebViewImpl::SetMainFrameZoomLevel(double zoom_level) {
-  if (zoom_factor_for_device_scale_factor_) {
-    if (compositor_device_scale_factor_override_) {
-      page_->SetInspectorDeviceScaleFactorOverride(
-          zoom_factor_for_device_scale_factor_ /
-          compositor_device_scale_factor_override_);
-    } else {
-      page_->SetInspectorDeviceScaleFactorOverride(1.0f);
-    }
+double WebViewImpl::ZoomLevelToZoomFactor(double zoom_level,
+                                          bool for_main_frame) const {
+  double zoom_factor = PageZoomLevelToZoomFactor(zoom_level);
+  if (for_main_frame && zoom_factor_override_) {
+    zoom_factor = zoom_factor_override_;
   }
-
-  float zoom_factor =
-      zoom_factor_override_
-          ? zoom_factor_override_
-          : static_cast<float>(PageZoomLevelToZoomFactor(zoom_level));
   if (zoom_factor_for_device_scale_factor_) {
     if (compositor_device_scale_factor_override_) {
       zoom_factor *= compositor_device_scale_factor_override_;
@@ -2309,10 +2310,20 @@ double WebViewImpl::SetMainFrameZoomLevel(double zoom_level) {
   return zoom_factor;
 }
 
-void WebViewImpl::RecomputeMainFrameZoomFactor() {
-  if (auto* main_frame = MainFrameImpl()) {
-    if (auto* widget = main_frame->FrameWidgetImpl()) {
-      widget->SetZoomLevel(widget->GetZoomLevel());
+void WebViewImpl::UpdateWidgetZoomFactors() {
+  ForEachFrameWidgetControlledByView(*this, [](WebFrameWidgetImpl* widget) {
+    widget->SetZoomLevel(widget->GetZoomLevel());
+  });
+}
+
+void WebViewImpl::UpdateInspectorDeviceScaleFactorOverride() {
+  if (zoom_factor_for_device_scale_factor_) {
+    if (compositor_device_scale_factor_override_) {
+      page_->SetInspectorDeviceScaleFactorOverride(
+          zoom_factor_for_device_scale_factor_ /
+          compositor_device_scale_factor_override_);
+    } else {
+      page_->SetInspectorDeviceScaleFactorOverride(1.0f);
     }
   }
 }
@@ -2366,10 +2377,12 @@ void WebViewImpl::SetPageScaleFactor(float scale_factor) {
 void WebViewImpl::SetZoomFactorForDeviceScaleFactor(
     float zoom_factor_for_device_scale_factor) {
   DCHECK(does_composite_);
-  // We can't early-return here if these are already equal, because we may
-  // need to propagate the correct zoom factor to newly navigated frames.
-  zoom_factor_for_device_scale_factor_ = zoom_factor_for_device_scale_factor;
-  RecomputeMainFrameZoomFactor();
+  if (zoom_factor_for_device_scale_factor_ !=
+      zoom_factor_for_device_scale_factor) {
+    zoom_factor_for_device_scale_factor_ = zoom_factor_for_device_scale_factor;
+    UpdateWidgetZoomFactors();
+    UpdateInspectorDeviceScaleFactorOverride();
+  }
 }
 
 void WebViewImpl::SetPageLifecycleStateFromNewPageCommit(
@@ -3213,12 +3226,12 @@ void WebViewImpl::ConfigureAutoResizeMode() {
 
 void WebViewImpl::SetCompositorDeviceScaleFactorOverride(
     float device_scale_factor) {
-  if (compositor_device_scale_factor_override_ == device_scale_factor)
-    return;
-  compositor_device_scale_factor_override_ = device_scale_factor;
-  if (zoom_factor_for_device_scale_factor_) {
-    RecomputeMainFrameZoomFactor();
-    return;
+  if (compositor_device_scale_factor_override_ != device_scale_factor) {
+    compositor_device_scale_factor_override_ = device_scale_factor;
+    if (zoom_factor_for_device_scale_factor_) {
+      UpdateWidgetZoomFactors();
+      UpdateInspectorDeviceScaleFactorOverride();
+    }
   }
 }
 
@@ -3763,7 +3776,11 @@ void WebViewImpl::SetBackgroundColorOverrideForFullscreenController(
 
 void WebViewImpl::SetZoomFactorOverride(float zoom_factor) {
   zoom_factor_override_ = zoom_factor;
-  RecomputeMainFrameZoomFactor();
+  // This only affects the local main frame, so no need to propagate to all
+  // frame widgets.
+  if (web_widget_) {
+    web_widget_->SetZoomLevel(web_widget_->GetZoomLevel());
+  }
 }
 
 Element* WebViewImpl::FocusedElement() const {

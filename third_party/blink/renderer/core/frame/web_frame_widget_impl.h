@@ -1016,8 +1016,6 @@ class CORE_EXPORT WebFrameWidgetImpl
   bool DidChangeFullscreenState(
       const VisualProperties& visual_properties) const;
 
-  void NotifyZoomLevelChanged(LocalFrame* root);
-
   // Satisfy the render blocking condition for cross-document view transitions.
   void NotifyViewTransitionRenderingHasBegun();
 

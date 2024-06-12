@@ -988,7 +988,7 @@ blink::VisualProperties RenderWidgetHostImpl::GetVisualProperties() {
   } else {
     visual_properties.display_mode = blink::mojom::DisplayMode::kBrowser;
   }
-  visual_properties.zoom_level = delegate_->GetPendingPageZoomLevel();
+  visual_properties.zoom_level = view_->GetZoomLevel();
 
   RenderViewHostDelegateView* rvh_delegate_view = delegate_->GetDelegateView();
   CHECK(rvh_delegate_view);
