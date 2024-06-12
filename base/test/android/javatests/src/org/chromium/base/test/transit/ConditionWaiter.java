@@ -13,7 +13,6 @@ import org.chromium.base.ThreadUtils;
 import org.chromium.base.TimeUtils;
 import org.chromium.base.test.transit.StatusStore.StatusRegion;
 import org.chromium.base.test.transit.Transition.TransitionOptions;
-import org.chromium.base.test.transit.Transition.Trigger;
 import org.chromium.base.test.util.CriteriaHelper;
 import org.chromium.base.test.util.CriteriaNotSatisfiedException;
 
@@ -177,8 +176,7 @@ public class ConditionWaiter {
      * <p>This also makes supplied values available for Conditions that implement Supplier before
      * {@link Condition#onStartMonitoring()} is called.
      */
-    static void preCheck(
-            List<ConditionWait> conditionWaits, TransitionOptions options, Trigger trigger) {
+    static void preCheck(List<ConditionWait> conditionWaits, boolean failOnAlreadyFulfilled) {
         if (conditionWaits.isEmpty()) {
             Log.i(TAG, "No conditions to fulfill.");
         }
@@ -192,13 +190,7 @@ public class ConditionWaiter {
             anyCriteriaMissing |= wait.update();
         }
 
-        // At least one Condition should be not fulfilled, or this is likely an incorrectly designed
-        // Transition. Exceptions to this rule:
-        //     1. null Trigger, for example when focusing on secondary elements of a screen that
-        //        aren't declared in Station#declareElements().
-        //     2. A explicit exception is made with TransitionOptions.mPossiblyAlreadyFulfilled.
-        //        E.g. when not possible to determine whether the trigger needs to be run.
-        if (!anyCriteriaMissing && !options.mPossiblyAlreadyFulfilled && trigger != null) {
+        if (!anyCriteriaMissing && failOnAlreadyFulfilled) {
             throw buildWaitConditionsException(
                     "All Conditions already fulfilled before running Trigger. If this is expected,"
                         + " use a null Trigger. If this is possible but not necessarily expected,"

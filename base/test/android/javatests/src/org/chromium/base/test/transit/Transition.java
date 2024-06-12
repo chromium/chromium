@@ -59,6 +59,16 @@ public abstract class Transition {
         PublicTransitConfig.maybePauseAfterTransition(this);
     }
 
+    private boolean shouldFailOnAlreadyFulfilled() {
+        // At least one Condition should be not fulfilled, or this is likely an incorrectly
+        // designed Transition. Exceptions to this rule:
+        //     1. null Trigger, for example when focusing on secondary elements of a screen that
+        //        aren't declared in Station#declareElements().
+        //     2. A explicit exception is made with TransitionOptions.mPossiblyAlreadyFulfilled.
+        //        E.g. when not possible to determine whether the trigger needs to be run.
+        return !mOptions.mPossiblyAlreadyFulfilled && mTrigger != null;
+    }
+
     protected void onBeforeTransition() {
         for (ConditionalState exited : mExitedStates) {
             exited.setStateTransitioningFrom();
@@ -69,7 +79,7 @@ public abstract class Transition {
 
         mWaits = createWaits();
         try {
-            ConditionWaiter.preCheck(mWaits, mOptions, mTrigger);
+            ConditionWaiter.preCheck(mWaits, shouldFailOnAlreadyFulfilled());
         } catch (Throwable e) {
             throw newTransitionException(e);
         }
