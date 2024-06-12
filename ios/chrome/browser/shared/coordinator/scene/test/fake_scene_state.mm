@@ -43,18 +43,18 @@
     self.browserProviderInterface = [[StubBrowserProviderInterface alloc] init];
     self.appState = appState;
 
-    _browser = std::make_unique<TestBrowser>(browserState);
+    _browser = std::make_unique<TestBrowser>(browserState, self);
     base::apple::ObjCCastStrict<StubBrowserProvider>(
         self.browserProviderInterface.mainBrowserProvider)
         .browser = _browser.get();
 
-    _inactive_browser = std::make_unique<TestBrowser>(browserState);
+    _inactive_browser = std::make_unique<TestBrowser>(browserState, self);
     base::apple::ObjCCastStrict<StubBrowserProvider>(
         self.browserProviderInterface.mainBrowserProvider)
         .inactiveBrowser = _inactive_browser.get();
 
     _incognito_browser = std::make_unique<TestBrowser>(
-        browserState->GetOffTheRecordChromeBrowserState());
+        browserState->GetOffTheRecordChromeBrowserState(), self);
     base::apple::ObjCCastStrict<StubBrowserProvider>(
         self.browserProviderInterface.incognitoBrowserProvider)
         .browser = _incognito_browser.get();
