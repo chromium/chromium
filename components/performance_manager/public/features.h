@@ -91,6 +91,10 @@ BASE_DECLARE_FEATURE(kPerformanceIntervention);
 // This enables the performance intervention UI
 BASE_DECLARE_FEATURE(kPerformanceInterventionUI);
 
+// This represents the version number for the string displayed on the
+// Performance Intervention Dialog.
+extern const base::FeatureParam<int> kInterventionDialogStringVersion;
+
 #if BUILDFLAG(IS_WIN)
 // Prefetch the main browser DLL when a new node is added to the PM graph
 // and no prefetch has been done within a reasonable timeframe.

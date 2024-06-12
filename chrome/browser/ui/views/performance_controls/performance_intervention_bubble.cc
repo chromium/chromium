@@ -10,12 +10,14 @@
 
 #include "base/functional/bind.h"
 #include "base/functional/callback_helpers.h"
+#include "base/notreached.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/performance_controls/performance_intervention_bubble_delegate.h"
 #include "chrome/browser/ui/performance_controls/performance_intervention_bubble_observer.h"
 #include "chrome/browser/ui/views/performance_controls/performance_intervention_button.h"
 #include "chrome/grit/branded_strings.h"
 #include "chrome/grit/generated_resources.h"
+#include "components/performance_manager/public/features.h"
 #include "components/strings/grit/components_strings.h"
 #include "ui/base/interaction/element_identifier.h"
 #include "ui/base/l10n/l10n_util.h"
@@ -46,28 +48,26 @@ views::BubbleDialogModelHost* PerformanceInterventionBubble::CreateBubble(
       std::make_unique<PerformanceInterventionBubbleDelegate>(browser,
                                                               observer);
 
+  const DialogStrings strings = GetStrings();
   PerformanceInterventionBubbleDelegate* const delegate = bubble_delegate.get();
   auto dialog_model =
       ui::DialogModel::Builder(std::move(bubble_delegate))
           .SetInternalName(kViewClassName)
-          .SetTitle(l10n_util::GetStringUTF16(
-              IDS_PERFORMANCE_INTERVENTION_DIALOG_TITLE))
+          .SetTitle(strings.title)
           .SetIsAlertDialog()
           .SetCloseActionCallback(base::BindOnce(
               &PerformanceInterventionBubbleDelegate::OnBubbleClosed,
               base::Unretained(delegate)))
-          .AddParagraph(
-              ui::DialogModelLabel(IDS_PERFORMANCE_INTERVENTION_DIALOG_BODY)
-                  .set_is_secondary()
-                  .set_allow_character_break(),
-              std::u16string(), kPerformanceInterventionDialogBody)
+          .AddParagraph(ui::DialogModelLabel(strings.body_text)
+                            .set_is_secondary()
+                            .set_allow_character_break(),
+                        std::u16string(), kPerformanceInterventionDialogBody)
           .AddOkButton(
               base::BindOnce(&PerformanceInterventionBubbleDelegate::
                                  OnDeactivateButtonClicked,
                              base::Unretained(delegate)),
               ui::DialogModel::Button::Params()
-                  .SetLabel(l10n_util::GetStringUTF16(
-                      IDS_PERFORMANCE_INTERVENTION_DEACTIVATE_TABS_BUTTON))
+                  .SetLabel(strings.deactivate_tabs_button)
                   .SetId(kPerformanceInterventionDialogDeactivateButton))
           .AddCancelButton(
               base::BindOnce(&PerformanceInterventionBubbleDelegate::
@@ -94,4 +94,33 @@ void PerformanceInterventionBubble::CloseBubble(
     views::BubbleDialogModelHost* bubble_dialog) {
   CHECK(bubble_dialog);
   bubble_dialog->Close();
+}
+
+DialogStrings PerformanceInterventionBubble::GetStrings() {
+  switch (
+      performance_manager::features::kInterventionDialogStringVersion.Get()) {
+    case 1:
+      return {l10n_util::GetStringUTF16(
+                  IDS_PERFORMANCE_INTERVENTION_DIALOG_TITLE_V1),
+              l10n_util::GetStringUTF16(
+                  IDS_PERFORMANCE_INTERVENTION_DIALOG_BODY_V1),
+              l10n_util::GetStringUTF16(
+                  IDS_PERFORMANCE_INTERVENTION_DEACTIVATE_TABS_BUTTON_V1)};
+    case 2:
+      return {l10n_util::GetStringUTF16(
+                  IDS_PERFORMANCE_INTERVENTION_DIALOG_TITLE_V2),
+              l10n_util::GetStringUTF16(
+                  IDS_PERFORMANCE_INTERVENTION_DIALOG_BODY_V2),
+              l10n_util::GetStringUTF16(
+                  IDS_PERFORMANCE_INTERVENTION_DEACTIVATE_TABS_BUTTON_V2)};
+    case 3:
+      return {l10n_util::GetStringUTF16(
+                  IDS_PERFORMANCE_INTERVENTION_DIALOG_TITLE_V3),
+              l10n_util::GetStringUTF16(
+                  IDS_PERFORMANCE_INTERVENTION_DIALOG_BODY_V3),
+              l10n_util::GetStringUTF16(
+                  IDS_PERFORMANCE_INTERVENTION_DEACTIVATE_TABS_BUTTON_V3)};
+    default:
+      NOTREACHED_NORETURN();
+  }
 }

@@ -16,6 +16,12 @@ namespace views {
 class BubbleDialogModelHost;
 }  // namespace views
 
+struct DialogStrings {
+  std::u16string title;
+  std::u16string body_text;
+  std::u16string deactivate_tabs_button;
+};
+
 // This class provides the view for the performance intervention bubble dialog
 // that is shown automatically when a performance issue is detected.
 class PerformanceInterventionBubble {
@@ -35,6 +41,9 @@ class PerformanceInterventionBubble {
 
   // Hides performance intervention bubble dialog.
   static void CloseBubble(views::BubbleDialogModelHost*);
+
+ private:
+  static DialogStrings GetStrings();
 };
 
 #endif  // CHROME_BROWSER_UI_VIEWS_PERFORMANCE_CONTROLS_PERFORMANCE_INTERVENTION_BUBBLE_H_

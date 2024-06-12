@@ -85,6 +85,9 @@ BASE_FEATURE(kPerformanceInterventionUI,
              "PerformanceInterventionUI",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
+const base::FeatureParam<int> kInterventionDialogStringVersion{
+    &kPerformanceInterventionUI, "intervention_dialog_version", 1};
+
 const base::FeatureParam<base::TimeDelta> kInterventionButtonTimeout{
     &kPerformanceInterventionUI, "intervention_button_timeout",
     base::Seconds(10)};

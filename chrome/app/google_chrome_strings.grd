@@ -2292,10 +2292,15 @@ Permissions you've already given to websites and apps may apply to this account.
       </if>
 
       <!-- Performance Intervention Dialog strings -->
-      <!-- TODO(crbug.com/341709409): Finalize the intervention strings and mark them as translateable -->
       <if expr="not is_android">
-        <message name="IDS_PERFORMANCE_INTERVENTION_DIALOG_BODY" desc="Body text for a dialog suggesting users to deactivate certain tabs to improve performance." translateable="false">
-          To improve your browsing experience, Chrome recommends deactivating these background tabs:
+        <message name="IDS_PERFORMANCE_INTERVENTION_DIALOG_BODY_V1" desc="Body text for a dialog suggesting users to deactivate certain tabs to improve performance.">
+          These tabs are using extra resources. To improve your performance, let Chrome make them inactive.
+        </message>
+        <message name="IDS_PERFORMANCE_INTERVENTION_DIALOG_BODY_V2" desc="Body text for a dialog suggesting users to deactivate certain tabs to improve performance.">
+          Chrome can make these tabs inactive to improve your browsing experience and free up resources.
+        </message>
+        <message name="IDS_PERFORMANCE_INTERVENTION_DIALOG_BODY_V3" desc="Body text for a dialog suggesting users to deactivate certain tabs to improve performance.">
+          Chrome can make these tabs inactive to improve your browsing experience and keep things fast.
         </message>
       </if>
 
