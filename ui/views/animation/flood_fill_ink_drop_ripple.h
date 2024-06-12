@@ -81,6 +81,65 @@ class VIEWS_EXPORT FloodFillInkDropRipple : public InkDropRipple {
  private:
   friend class test::FloodFillInkDropRippleTestApi;
 
+  // All the sub animations that are used to animate each of the InkDropStates.
+  // These are used to get time durations with
+  // GetAnimationDuration(InkDropSubAnimations). Note that in general a sub
+  // animation defines the duration for either a transformation animation or an
+  // opacity animation but there are some exceptions where an entire
+  // InkDropState animation consists of only 1 sub animation and it defines the
+  // duration for both the transformation and opacity animations.
+  enum AnimationSubState {
+    // HIDDEN sub animations.
+
+    // The HIDDEN sub animation that is fading out to a hidden opacity.
+    HIDDEN_FADE_OUT,
+
+    // The HIDDEN sub animation that transform the circle to a small one.
+    HIDDEN_TRANSFORM,
+
+    // ACTION_PENDING sub animations.
+
+    // The ACTION_PENDING sub animation that fades in to the visible opacity.
+    ACTION_PENDING_FADE_IN,
+
+    // The ACTION_PENDING sub animation that transforms the circle to fill the
+    // bounds.
+    ACTION_PENDING_TRANSFORM,
+
+    // ACTION_TRIGGERED sub animations.
+
+    // The ACTION_TRIGGERED sub animation that is fading out to a hidden
+    // opacity.
+    ACTION_TRIGGERED_FADE_OUT,
+
+    // ALTERNATE_ACTION_PENDING sub animations.
+
+    // The ALTERNATE_ACTION_PENDING animation has only one sub animation which
+    // animates
+    // the circleto fill the bounds at visible opacity.
+    ALTERNATE_ACTION_PENDING,
+
+    // ALTERNATE_ACTION_TRIGGERED sub animations.
+
+    // The ALTERNATE_ACTION_TRIGGERED sub animation that is fading out to a
+    // hidden opacity.
+    ALTERNATE_ACTION_TRIGGERED_FADE_OUT,
+
+    // ACTIVATED sub animations.
+
+    // The ACTIVATED sub animation that is fading in to the visible opacity.
+    ACTIVATED_FADE_IN,
+
+    // The ACTIVATED sub animation that transforms the circle to fill the entire
+    // bounds.
+    ACTIVATED_TRANSFORM,
+
+    // DEACTIVATED sub animations.
+
+    // The DEACTIVATED sub animation that is fading out to a hidden opacity.
+    DEACTIVATED_FADE_OUT,
+  };
+
   // InkDropRipple:
   void AnimateStateChange(InkDropState old_ink_drop_state,
                           InkDropState new_ink_drop_state) override;
@@ -104,7 +163,7 @@ class VIEWS_EXPORT FloodFillInkDropRipple : public InkDropRipple {
   float MaxDistanceToCorners(const gfx::Point& point) const;
 
   // Returns the InkDropState sub animation duration for the given |state|.
-  base::TimeDelta GetAnimationDuration(int state);
+  base::TimeDelta GetAnimationDuration(AnimationSubState state);
 
   // Called from LayerAnimator when a new LayerAnimationSequence is scheduled
   // which allows for assigning the observer to the sequence.

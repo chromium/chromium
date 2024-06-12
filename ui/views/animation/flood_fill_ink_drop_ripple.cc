@@ -2,12 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#if defined(UNSAFE_BUFFERS_BUILD)
-// TODO(https://crbug.com/344639839): fix the unsafe buffer errors in this file,
-// then remove this pragma.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "ui/views/animation/flood_fill_ink_drop_ripple.h"
 
 #include <algorithm>
@@ -32,79 +26,6 @@ namespace {
 // The minimum radius to use when scaling the painted layers. Smaller values
 // were causing visual anomalies.
 constexpr float kMinRadius = 1.f;
-
-// All the sub animations that are used to animate each of the InkDropStates.
-// These are used to get time durations with
-// GetAnimationDuration(InkDropSubAnimations). Note that in general a sub
-// animation defines the duration for either a transformation animation or an
-// opacity animation but there are some exceptions where an entire InkDropState
-// animation consists of only 1 sub animation and it defines the duration for
-// both the transformation and opacity animations.
-enum InkDropSubAnimations {
-  // HIDDEN sub animations.
-
-  // The HIDDEN sub animation that is fading out to a hidden opacity.
-  HIDDEN_FADE_OUT,
-
-  // The HIDDEN sub animation that transform the circle to a small one.
-  HIDDEN_TRANSFORM,
-
-  // ACTION_PENDING sub animations.
-
-  // The ACTION_PENDING sub animation that fades in to the visible opacity.
-  ACTION_PENDING_FADE_IN,
-
-  // The ACTION_PENDING sub animation that transforms the circle to fill the
-  // bounds.
-  ACTION_PENDING_TRANSFORM,
-
-  // ACTION_TRIGGERED sub animations.
-
-  // The ACTION_TRIGGERED sub animation that is fading out to a hidden opacity.
-  ACTION_TRIGGERED_FADE_OUT,
-
-  // ALTERNATE_ACTION_PENDING sub animations.
-
-  // The ALTERNATE_ACTION_PENDING animation has only one sub animation which
-  // animates
-  // the circleto fill the bounds at visible opacity.
-  ALTERNATE_ACTION_PENDING,
-
-  // ALTERNATE_ACTION_TRIGGERED sub animations.
-
-  // The ALTERNATE_ACTION_TRIGGERED sub animation that is fading out to a hidden
-  // opacity.
-  ALTERNATE_ACTION_TRIGGERED_FADE_OUT,
-
-  // ACTIVATED sub animations.
-
-  // The ACTIVATED sub animation that is fading in to the visible opacity.
-  ACTIVATED_FADE_IN,
-
-  // The ACTIVATED sub animation that transforms the circle to fill the entire
-  // bounds.
-  ACTIVATED_TRANSFORM,
-
-  // DEACTIVATED sub animations.
-
-  // The DEACTIVATED sub animation that is fading out to a hidden opacity.
-  DEACTIVATED_FADE_OUT,
-};
-
-// Duration constants for InkDropStateSubAnimations. See the
-// InkDropStateSubAnimations enum documentation for more info.
-int kAnimationDurationInMs[] = {
-    200,  // HIDDEN_FADE_OUT
-    300,  // HIDDEN_TRANSFORM
-    0,    // ACTION_PENDING_FADE_IN
-    240,  // ACTION_PENDING_TRANSFORM
-    300,  // ACTION_TRIGGERED_FADE_OUT
-    200,  // ALTERNATE_ACTION_PENDING
-    300,  // ALTERNATE_ACTION_TRIGGERED_FADE_OUT
-    150,  // ACTIVATED_FADE_IN
-    200,  // ACTIVATED_TRANSFORM
-    300,  // DEACTIVATED_FADE_OUT
-};
 
 gfx::Rect CalculateClipBounds(const gfx::Size& host_size,
                               const gfx::Insets& clip_insets) {
@@ -361,7 +282,8 @@ float FloodFillInkDropRipple::MaxDistanceToCorners(
 }
 
 // Returns the InkDropState sub animation duration for the given |state|.
-base::TimeDelta FloodFillInkDropRipple::GetAnimationDuration(int state) {
+base::TimeDelta FloodFillInkDropRipple::GetAnimationDuration(
+    AnimationSubState state) {
   if (!PlatformStyle::kUseRipples ||
       !gfx::Animation::ShouldRenderRichAnimation() ||
       (GetInkDropHost() && GetInkDropHost()->GetMode() ==
@@ -369,15 +291,28 @@ base::TimeDelta FloodFillInkDropRipple::GetAnimationDuration(int state) {
     return base::TimeDelta();
   }
 
-  int state_override = state;
   // Override the requested state if needed.
   if (use_hide_transform_duration_for_hide_fade_out_ &&
       state == HIDDEN_FADE_OUT) {
-    state_override = HIDDEN_TRANSFORM;
+    state = HIDDEN_TRANSFORM;
   }
 
-  return base::Milliseconds(kAnimationDurationInMs[state_override] *
-                            duration_factor_);
+  // Duration constants for InkDropSubAnimations. See the
+  // InkDropStateSubAnimations enum documentation for more info.
+  constexpr auto kAnimationDurationInMs = std::to_array<int>({
+      200,  // HIDDEN_FADE_OUT
+      300,  // HIDDEN_TRANSFORM
+      0,    // ACTION_PENDING_FADE_IN
+      240,  // ACTION_PENDING_TRANSFORM
+      300,  // ACTION_TRIGGERED_FADE_OUT
+      200,  // ALTERNATE_ACTION_PENDING
+      300,  // ALTERNATE_ACTION_TRIGGERED_FADE_OUT
+      150,  // ACTIVATED_FADE_IN
+      200,  // ACTIVATED_TRANSFORM
+      300,  // DEACTIVATED_FADE_OUT
+  });
+
+  return base::Milliseconds(kAnimationDurationInMs[state] * duration_factor_);
 }
 
 void FloodFillInkDropRipple::OnLayerAnimationSequenceScheduled(
