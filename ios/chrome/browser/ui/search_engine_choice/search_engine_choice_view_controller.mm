@@ -30,8 +30,6 @@
 
 namespace {
 
-// Chrome logo with 40pt size.
-NSString* const kChromeIcon40pt = @"chrome_icon_40";
 // Space between the Chrome logo and the top of the screen.
 constexpr CGFloat kLogoTopMargin = 24.;
 // Logo dimensions.
@@ -259,7 +257,11 @@ CGFloat ConvertVerticalCoordonateWithMainViewReference(UIView* mainView,
   // Add logo image.
   // Need to use a regular png instead of custom symbol to have a better control
   // on the size and the margin of the logo.
-  UIImage* logoImage = [UIImage imageNamed:kChromeIcon40pt];
+#if BUILDFLAG(IOS_USE_BRANDED_SYMBOLS)
+  UIImage* logoImage = [UIImage imageNamed:kChromeSearchEngineChoiceIcon];
+#else
+  UIImage* logoImage = [UIImage imageNamed:kChromiumSearchEngineChoiceIcon];
+#endif
   UIImageView* logoImageView = [[UIImageView alloc] initWithImage:logoImage];
   [scrollContentView addSubview:logoImageView];
   logoImageView.translatesAutoresizingMaskIntoConstraints = NO;

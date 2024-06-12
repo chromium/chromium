@@ -38,7 +38,6 @@ source_set("search_engine_choice") {
     "//ios/chrome/browser/shared/ui/util",
     "//ios/chrome/browser/ui/first_run:screen_delegate",
     "//ios/chrome/browser/ui/scoped_iphone_portrait_only",
-    "//ios/chrome/browser/ui/search_engine_choice/resources",
     "//ios/chrome/browser/ui/search_engine_choice/search_engine_choice_learn_more",
     "//ios/chrome/common/ui/colors:colors",
     "//ios/chrome/common/ui/promo_style:constants",
