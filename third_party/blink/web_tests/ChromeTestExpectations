@@ -80,6 +80,12 @@ crbug.com/626703 external/wpt/webdriver/tests/bidi/script/add_preload_script/inv
 crbug.com/626703 external/wpt/webdriver/tests/bidi/script/call_function/target.py [ Failure Pass ]
 crbug.com/626703 external/wpt/webdriver/tests/bidi/script/evaluate/target.py [ Failure Pass ]
 
+# Gardener 2024-06-12
+crbug.com/324436866 [ Debug ] external/wpt/webdriver/tests/bidi/input/perform_actions/key_events.py [ Failure Timeout ]
+crbug.com/324436866 [ Debug ] external/wpt/webdriver/tests/bidi/network/continue_request/invalid.py [ Failure Timeout ]
+crbug.com/324436866 [ Debug ] external/wpt/webdriver/tests/bidi/network/provide_response/invalid.py [ Failure Timeout ]
+crbug.com/324436866 [ Debug ] external/wpt/webdriver/tests/classic/perform_actions/key_events.py [ Failure Timeout ]
+
 # ====== New tests from wpt-importer added here ======
 crbug.com/626703 external/wpt/webdriver/tests/bidi/network/provide_response/request.py [ Timeout ]
 crbug.com/626703 external/wpt/webdriver/tests/bidi/network/continue_response/credentials.py [ Timeout ]
