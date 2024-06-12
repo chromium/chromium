@@ -4,6 +4,7 @@
 
 #include "net/first_party_sets/global_first_party_sets.h"
 
+#include <map>
 #include <optional>
 #include <set>
 #include <tuple>
@@ -12,6 +13,7 @@
 #include "base/containers/flat_map.h"
 #include "base/containers/flat_set.h"
 #include "base/functional/function_ref.h"
+#include "base/not_fatal_until.h"
 #include "base/ranges/algorithm.h"
 #include "base/types/optional_util.h"
 #include "net/base/schemeful_site.h"
@@ -98,7 +100,8 @@ GlobalFirstPartySets::GlobalFirstPartySets(
   CHECK(base::ranges::all_of(aliases_, [&](const auto& pair) {
     return entries_.contains(pair.second);
   }));
-  CHECK(!ContainsSingleton());
+  CHECK(!ContainsSingletonOrOrphan(), base::NotFatalUntil::M130)
+      << "Sets must not contain singleton or orphan";
 }
 
 GlobalFirstPartySets::GlobalFirstPartySets(GlobalFirstPartySets&&) = default;
@@ -208,7 +211,8 @@ void GlobalFirstPartySets::ApplyManuallySpecifiedSet(
       /*addition_sets=*/{}));
   manual_aliases_ = std::move(manual_aliases);
 
-  CHECK(!ContainsSingleton());
+  CHECK(!ContainsSingletonOrOrphan(), base::NotFatalUntil::M130)
+      << "Sets must not contain singleton or orphan";
 }
 
 void GlobalFirstPartySets::UnsafeSetManualConfig(
@@ -271,6 +275,20 @@ FirstPartySetsContextConfig GlobalFirstPartySets::ComputeConfig(
       potential_singletons[existing_entry->primary()].insert(member);
     }
   }
+  // Aliases might refer to a canonical site that's in the replacement sets, so
+  // we need to scan the aliases to find possibly-singleton primaries as well.
+  ForEachAlias([&](const SchemefulSite& alias, const SchemefulSite& canonical) {
+    if (!flattened_replacements.contains(canonical)) {
+      return;
+    }
+    const FirstPartySetEntry existing_entry =
+        FindEntry(canonical, /*config=*/nullptr).value();
+    if (!addition_intersected_primaries.contains(existing_entry.primary()) &&
+        !flattened_additions.contains(existing_entry.primary()) &&
+        !flattened_replacements.contains(existing_entry.primary())) {
+      potential_singletons[existing_entry.primary()].insert(alias);
+    }
+  });
 
   // Find the existing primary sites that have left their existing sets, and
   // whose existing members should be removed from their set (excluding any
@@ -344,7 +362,10 @@ FirstPartySetsContextConfig GlobalFirstPartySets::ComputeConfig(
     }
   });
 
-  return FirstPartySetsContextConfig(std::move(site_to_entry));
+  FirstPartySetsContextConfig config(std::move(site_to_entry));
+  CHECK(!ContainsSingletonOrOrphan(&config), base::NotFatalUntil::M130)
+      << "Sets must not contain singleton or orphan";
+  return config;
 }
 
 std::vector<base::flat_map<SchemefulSite, FirstPartySetEntry>>
@@ -480,26 +501,43 @@ void GlobalFirstPartySets::ForEachAlias(
   }
 }
 
-bool GlobalFirstPartySets::ContainsSingleton() const {
-  std::set<SchemefulSite> possible_singletons;
-  std::set<SchemefulSite> not_singletons;
+bool GlobalFirstPartySets::ContainsSingletonOrOrphan(
+    const FirstPartySetsContextConfig* config) const {
+  // A singleton: some primary site that names a set with no non-primary sites.
+  //
+  // An orphan: some non-primary site whose primary has no entry in any set.
+
+  struct PrimarySiteState {
+    // A primary site is a singleton iff it is never used as the primary in some
+    // other site's entry.
+    bool has_nonself_entry = false;
+    // A primary site induces orphaned non-primary sites iff it is used as the
+    // primary site in some other site's entry, but it has no entry itself.
+    bool has_self_entry = false;
+  };
+
+  std::map<SchemefulSite, PrimarySiteState> primary_states;
 
   ForEachEffectiveSetEntry(
-      nullptr,
+      config,
       [&](const SchemefulSite& site, const FirstPartySetEntry& entry) -> bool {
-        if (!not_singletons.contains(entry.primary())) {
-          if (site == entry.primary()) {
-            possible_singletons.insert(entry.primary());
-          } else {
-            not_singletons.insert(entry.primary());
-            possible_singletons.erase(entry.primary());
-          }
+        if (site == entry.primary()) {
+          primary_states[entry.primary()].has_self_entry = true;
+        } else {
+          primary_states[entry.primary()].has_nonself_entry = true;
         }
 
         return true;
       });
 
-  return !possible_singletons.empty();
+  // We should have seen the self-entry and non-self-entry-mentions for every
+  // entry's primary site, assuming there are no singletons and no orphans. If
+  // we didn't, then there's at least one singleton or orphan.
+  return base::ranges::any_of(
+      primary_states,
+      [](const std::pair<SchemefulSite, PrimarySiteState>& pair) -> bool {
+        return !pair.second.has_nonself_entry || !pair.second.has_self_entry;
+      });
 }
 
 std::ostream& operator<<(std::ostream& os, const GlobalFirstPartySets& sets) {

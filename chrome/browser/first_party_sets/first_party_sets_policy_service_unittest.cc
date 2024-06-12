@@ -332,9 +332,14 @@ TEST_P(FirstPartySetsPolicyServicePrefTest, FindEntry_FpsDisabledByPref) {
   // associatedSites: ["https://associate1.test"}
   SetGlobalSets(net::GlobalFirstPartySets(
       kVersion,
-      {{associate1_site,
-        {net::FirstPartySetEntry(primary_site, net::SiteType::kAssociated,
-                                 0)}}},
+      {
+          {associate1_site,
+           {net::FirstPartySetEntry(primary_site, net::SiteType::kAssociated,
+                                    0)}},
+          {primary_site,
+           {net::FirstPartySetEntry(primary_site, net::SiteType::kPrimary,
+                                    std::nullopt)}},
+      },
       {}));
 
   SetRwsEnabledViaPref(false);
@@ -350,6 +355,8 @@ TEST_P(FirstPartySetsPolicyServicePrefTest,
        FindEntry_FpsEnabled_ReturnsEmptyUntilAllSetsReady) {
   net::SchemefulSite primary_site(GURL("https://primary.test"));
   net::SchemefulSite associate1_site(GURL("https://associate1.test"));
+  net::FirstPartySetEntry primary_entry(net::FirstPartySetEntry(
+      primary_site, net::SiteType::kPrimary, std::nullopt));
   net::FirstPartySetEntry associate1_entry(
       net::FirstPartySetEntry(primary_site, net::SiteType::kAssociated, 0));
 
@@ -361,8 +368,13 @@ TEST_P(FirstPartySetsPolicyServicePrefTest,
   // Simulate the global First-Party Sets with the following set:
   // { primary: "https://primary.test",
   // associatedSites: ["https://associate1.test"}
-  SetGlobalSets(net::GlobalFirstPartySets(
-      kVersion, {{associate1_site, {associate1_entry}}}, {}));
+  SetGlobalSets(
+      net::GlobalFirstPartySets(kVersion,
+                                {
+                                    {primary_site, {primary_entry}},
+                                    {associate1_site, {associate1_entry}},
+                                },
+                                {}));
 
   // Verify that FindEntry returns empty if both sources of sets aren't ready
   // yet.
@@ -382,6 +394,8 @@ TEST_P(FirstPartySetsPolicyServicePrefTest,
 
   net::SchemefulSite primary_site(GURL("https://primary.test"));
   net::SchemefulSite associate_site(GURL("https://associate.test"));
+  net::FirstPartySetEntry primary_entry(net::FirstPartySetEntry(
+      primary_site, net::SiteType::kPrimary, std::nullopt));
   net::FirstPartySetEntry associate_entry(
       net::FirstPartySetEntry(primary_site, net::SiteType::kAssociated, 0));
 
@@ -395,8 +409,13 @@ TEST_P(FirstPartySetsPolicyServicePrefTest,
   // Simulate the global First-Party Sets with the following set:
   // { primary: "https://primary.test",
   // associatedSites: ["https://associate.test"}
-  SetGlobalSets(net::GlobalFirstPartySets(
-      kVersion, {{associate_site, {associate_entry}}}, {}));
+  SetGlobalSets(
+      net::GlobalFirstPartySets(kVersion,
+                                {
+                                    {primary_site, {primary_entry}},
+                                    {associate_site, {associate_entry}},
+                                },
+                                {}));
 
   // Simulate the profile set overrides are empty.
   service()->InitForTesting();
@@ -413,6 +432,8 @@ TEST_P(FirstPartySetsPolicyServicePrefTest,
 
   net::SchemefulSite primary_site(GURL("https://primary.test"));
   net::SchemefulSite associate_site(GURL("https://associate.test"));
+  net::FirstPartySetEntry primary_entry(net::FirstPartySetEntry(
+      primary_site, net::SiteType::kPrimary, std::nullopt));
   net::FirstPartySetEntry associate_entry(
       net::FirstPartySetEntry(primary_site, net::SiteType::kAssociated, 0));
 
@@ -421,8 +442,13 @@ TEST_P(FirstPartySetsPolicyServicePrefTest,
   // Simulate the global First-Party Sets with the following set:
   // { primary: "https://primary.test",
   // associatedSites: ["https://associate.test"}
-  SetGlobalSets(net::GlobalFirstPartySets(
-      kVersion, {{associate_site, {associate_entry}}}, {}));
+  SetGlobalSets(
+      net::GlobalFirstPartySets(kVersion,
+                                {
+                                    {primary_site, {primary_entry}},
+                                    {associate_site, {associate_entry}},
+                                },
+                                {}));
 
   // Simulate the profile set overrides are empty.
   service()->InitForTesting();
@@ -443,9 +469,14 @@ TEST_P(FirstPartySetsPolicyServicePrefTest,
   // associatedSites: ["https://associate.test"}
   SetGlobalSets(net::GlobalFirstPartySets(
       kVersion,
-      {{associate_site,
-        {net::FirstPartySetEntry(primary_site, net::SiteType::kAssociated,
-                                 0)}}},
+      {
+          {primary_site,
+           {net::FirstPartySetEntry(primary_site, net::SiteType::kPrimary,
+                                    std::nullopt)}},
+          {associate_site,
+           {net::FirstPartySetEntry(primary_site, net::SiteType::kAssociated,
+                                    0)}},
+      },
       {}));
 
   // Simulate First-Party Sets disabled by the user pref.

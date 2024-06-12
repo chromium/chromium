@@ -31,6 +31,7 @@ namespace {
 
 const base::Version kVersion("1.2.3");
 const SchemefulSite kPrimary(GURL("https://primary.test"));
+const SchemefulSite kPrimaryCctld(GURL("https://primary.ccltd"));
 const SchemefulSite kPrimary2(GURL("https://primary2.test"));
 const SchemefulSite kPrimary3(GURL("https://primary3.test"));
 const SchemefulSite kAssociated1(GURL("https://associated1.test"));
@@ -106,6 +107,27 @@ TEST_F(GlobalFirstPartySetsTest, Clone) {
       /*aliases=*/{}));
 
   EXPECT_EQ(sets, sets.Clone());
+}
+
+TEST_F(GlobalFirstPartySetsTest, Ctor_PrimaryWithAlias_Valid) {
+  GlobalFirstPartySets global_sets(
+      kVersion, /*entries=*/
+      {
+          {kPrimary,
+           FirstPartySetEntry(kPrimary, SiteType::kPrimary, std::nullopt)},
+      },
+      /*aliases=*/
+      {
+          {kPrimaryCctld, kPrimary},
+      });
+
+  EXPECT_THAT(
+      CollectEffectiveSetEntries(global_sets, FirstPartySetsContextConfig()),
+      UnorderedElementsAre(
+          Pair(kPrimaryCctld,
+               FirstPartySetEntry(kPrimary, SiteType::kPrimary, std::nullopt)),
+          Pair(kPrimary, FirstPartySetEntry(kPrimary, SiteType::kPrimary,
+                                            std::nullopt))));
 }
 
 TEST_F(GlobalFirstPartySetsTest, FindEntry_Nonexistent) {
@@ -809,8 +831,6 @@ TEST_F(
           Pair(kAssociated1,
                FirstPartySetEntry(kPrimary2, SiteType::kAssociated,
                                   std::nullopt)),
-          Pair(kPrimary,
-               FirstPartySetEntry(kPrimary, SiteType::kPrimary, std::nullopt)),
           Pair(kPrimary2, FirstPartySetEntry(kPrimary2, SiteType::kPrimary,
                                              std::nullopt))));
 }
