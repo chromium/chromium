@@ -44,8 +44,7 @@ suite('UpdateContent', () => {
         .addText(textNodeIds[3]!, /* parentId= */ 8, texts[3]!)
         .build(readingMode);
 
-    // @ts-ignore
-    app.enabledLanguagesInPref = ['en-US'];
+    app.enabledLangs = ['en-US'];
     // @ts-ignore
     app.selectedVoice = {lang: 'en', name: 'Kristi'} as SpeechSynthesisVoice;
     app.getSpeechSynthesisVoice();

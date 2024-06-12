@@ -14,7 +14,7 @@ import {assertEquals, assertFalse, assertTrue} from 'chrome-untrusted://webui-te
 suite('LanguageMenu', () => {
   let languageMenu: LanguageMenuElement;
   let availableVoices: SpeechSynthesisVoice[];
-  let enabledLanguagesInPref: string[];
+  let enabledLangs: string[];
   const languagesToNotificationMap:
       {[language: string]: VoiceClientSideStatusCode} = {};
 
@@ -31,7 +31,7 @@ suite('LanguageMenu', () => {
     // Bypass Typescript compiler to allow us to set a private readonly
     // property
     // @ts-ignore
-    languageMenu.enabledLanguagesInPref = enabledLanguagesInPref;
+    languageMenu.enabledLangs = enabledLangs;
     flush();
   };
 
@@ -236,7 +236,7 @@ suite('LanguageMenu', () => {
         {name: 'test voice 2', lang: 'en-UK'} as SpeechSynthesisVoice,
       ];
       setAvailableVoices();
-      enabledLanguagesInPref = ['Italian'];
+      enabledLangs = ['Italian'];
       setEnabledLanguages();
       languageMenu.showDialog();
     });
@@ -311,7 +311,7 @@ suite('LanguageMenu', () => {
       });
 
       test('it toggles switch when language pref changes', async () => {
-        enabledLanguagesInPref = ['Italian', 'English (United States)'];
+        enabledLangs = ['Italian', 'English (United States)'];
         setEnabledLanguages();
         assertTrue(isPositionedOnPage(languageMenu));
         assertEquals(getLanguageLineItems().length, 3);
@@ -321,7 +321,7 @@ suite('LanguageMenu', () => {
       });
 
       test('it shows no notification initially', async () => {
-        enabledLanguagesInPref = ['Italian', 'English (United States)'];
+        enabledLangs = ['Italian', 'English (United States)'];
         setEnabledLanguages();
         assertEquals(getNotificationItems().length, 3);
         assertLanguageNotification(getNotificationItems()[0]!, '');
@@ -332,7 +332,7 @@ suite('LanguageMenu', () => {
       test('it shows and hides downloading notification', async () => {
         // @ts-ignore
         languageMenu.baseLanguages = ['it-it'];
-        enabledLanguagesInPref = ['it-it', 'English (United States)'];
+        enabledLangs = ['it-it', 'English (United States)'];
         setEnabledLanguages();
         languagesToNotificationMap['it'] =
             VoiceClientSideStatusCode.SENT_INSTALL_REQUEST;
@@ -363,7 +363,7 @@ suite('LanguageMenu', () => {
       test('hides downloading notification after a reopen', async () => {
         // @ts-ignore
         languageMenu.baseLanguages = ['it-it'];
-        enabledLanguagesInPref = ['it-it', 'English (United States)'];
+        enabledLangs = ['it-it', 'English (United States)'];
         setEnabledLanguages();
         languagesToNotificationMap['it'] =
             VoiceClientSideStatusCode.SENT_INSTALL_REQUEST;
@@ -386,7 +386,7 @@ suite('LanguageMenu', () => {
       test('non-Google language does not show downloading notification', () => {
         // @ts-ignore
         languageMenu.baseLanguages = ['it', 'en-us'];
-        enabledLanguagesInPref = ['it', 'en-us', 'es'];
+        enabledLangs = ['it', 'en-us', 'es'];
         setEnabledLanguages();
 
         availableVoices = [
@@ -404,7 +404,7 @@ suite('LanguageMenu', () => {
       });
 
       test('shows generic error notification with internet', async () => {
-        enabledLanguagesInPref = ['Italian', 'English (United States)'];
+        enabledLangs = ['Italian', 'English (United States)'];
         setEnabledLanguages();
         languagesToNotificationMap['it'] =
             VoiceClientSideStatusCode.ERROR_INSTALLING;
@@ -420,7 +420,7 @@ suite('LanguageMenu', () => {
       test(
           'with other voices it shows high quality allocation notification',
           async () => {
-            enabledLanguagesInPref = ['Italian', 'English (United States)'];
+            enabledLangs = ['Italian', 'English (United States)'];
             setEnabledLanguages();
             languagesToNotificationMap['it'] =
                 VoiceClientSideStatusCode.INSTALL_ERROR_ALLOCATION;
@@ -436,7 +436,7 @@ suite('LanguageMenu', () => {
       test(
           'high quality allocation notification cleared after reopen',
           async () => {
-            enabledLanguagesInPref = ['Italian', 'English (United States)'];
+            enabledLangs = ['Italian', 'English (United States)'];
             setEnabledLanguages();
             languagesToNotificationMap['it'] =
                 VoiceClientSideStatusCode.INSTALL_ERROR_ALLOCATION;
@@ -460,7 +460,7 @@ suite('LanguageMenu', () => {
         // @ts-ignore
         languageMenu.baseLanguages = ['it', 'English (United States)'];
 
-        enabledLanguagesInPref = ['it', 'English (United States)'];
+        enabledLangs = ['it', 'English (United States)'];
         setEnabledLanguages();
 
         availableVoices =
@@ -496,7 +496,7 @@ suite('LanguageMenu', () => {
         // @ts-ignore
         languageMenu.baseLanguages = ['it', 'English (United States)'];
 
-        enabledLanguagesInPref = ['it', 'English (United States)'];
+        enabledLangs = ['it', 'English (United States)'];
         setEnabledLanguages();
 
         availableVoices =

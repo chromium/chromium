@@ -37,12 +37,6 @@ suite('PrefsTest', () => {
     suite('populates enabled languages', () => {
       const langs = ['si', 'km', 'th'];
 
-      function enabledLanguagesInPref(): string[] {
-        // Bypass Typescript compiler to allow us to get a private property.
-        // @ts-ignore
-        return app.enabledLanguagesInPref;
-      }
-
       setup(() => {
         // @ts-ignore
         app.availableVoices = [
@@ -59,7 +53,7 @@ suite('PrefsTest', () => {
 
         app.restoreSettingsFromPrefs();
 
-        assertArrayEquals(enabledLanguagesInPref(), langs);
+        assertArrayEquals(app.enabledLangs, langs);
       });
 
       test('with browser lang', () => {
@@ -67,7 +61,7 @@ suite('PrefsTest', () => {
 
         app.restoreSettingsFromPrefs();
 
-        assertArrayEquals(enabledLanguagesInPref(), [langs[1]!]);
+        assertArrayEquals(app.enabledLangs, [langs[1]!]);
       });
     });
 
@@ -124,8 +118,7 @@ suite('PrefsTest', () => {
       test('to a default voice if the stored voice is invalid', () => {
         // @ts-ignore
         chrome.readingMode.getStoredVoice = () => 'Matt';
-        // @ts-ignore
-        app.enabledLanguagesInPref = [langForDefaultVoice];
+        app.enabledLangs = [langForDefaultVoice];
         app.restoreSettingsFromPrefs();
         assertEquals(selectedVoice(), defaultVoice);
       });
@@ -143,23 +136,20 @@ suite('PrefsTest', () => {
           test('to the current voice if there is one', () => {
             // @ts-ignore
             app.selectedVoice = otherVoice;
-            // @ts-ignore
-            app.enabledLanguagesInPref = [otherVoice.lang];
+            app.enabledLangs = [otherVoice.lang];
             app.restoreSettingsFromPrefs();
             assertEquals(selectedVoice(), otherVoice);
           });
 
           test('to the device default if there\'s no current voice', () => {
-            // @ts-ignore
-            app.enabledLanguagesInPref = [langForDefaultVoice, otherVoice.lang];
+            app.enabledLangs = [langForDefaultVoice, otherVoice.lang];
             app.restoreSettingsFromPrefs();
             assertEquals(selectedVoice(), defaultVoice);
           });
         });
 
         test('to the default voice for this language', () => {
-          // @ts-ignore
-          app.enabledLanguagesInPref = [lang1];
+          app.enabledLangs = [lang1];
           app.speechSynthesisLanguage = lang1;
           app.restoreSettingsFromPrefs();
           assertEquals(selectedVoice(), defaultVoiceWithLang1);
@@ -168,8 +158,7 @@ suite('PrefsTest', () => {
         test(
             'to the first listed voice for this language if there\'s no default',
             () => {
-              // @ts-ignore
-              app.enabledLanguagesInPref = [lang2];
+              app.enabledLangs = [lang2];
               app.speechSynthesisLanguage = lang2;
               app.restoreSettingsFromPrefs();
               assertEquals(selectedVoice().name, firstVoiceWithLang2.name);

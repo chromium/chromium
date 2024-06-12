@@ -73,8 +73,7 @@ suite('WordBoundariesUsedForSpeech', () => {
     document.body.appendChild(app);
     // @ts-ignore
     app.firstUtteranceSpoken = true;
-    // @ts-ignore
-    app.enabledLanguagesInPref = ['en-US'];
+    app.enabledLangs = ['en-US'];
     // @ts-ignore
     app.selectedVoice = {lang: 'en', name: 'Kristi'} as SpeechSynthesisVoice;
     app.getSpeechSynthesisVoice();

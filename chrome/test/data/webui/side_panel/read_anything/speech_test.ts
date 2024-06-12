@@ -90,8 +90,7 @@ suite('Speech', () => {
     speechSynthesis = new FakeSpeechSynthesis();
     app.synth = speechSynthesis;
 
-    // @ts-ignore
-    app.enabledLanguagesInPref = ['en'];
+    app.enabledLangs = ['en'];
     app.getSpeechSynthesisVoice();
   });
 

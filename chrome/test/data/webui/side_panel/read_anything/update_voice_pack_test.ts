@@ -47,11 +47,6 @@ suite('UpdateVoicePack', () => {
     app.getVoices(true);
   }
 
-  function enabledLangs(): string[] {
-    // @ts-ignore
-    return app.enabledLanguagesInPref;
-  }
-
   setup(() => {
     BrowserProxy.setInstance(new TestColorUpdaterBrowserProxy());
     document.body.innerHTML = window.trustedTypes!.emptyHTML;
@@ -357,14 +352,14 @@ suite('UpdateVoicePack', () => {
       const lang = 'pt-br';
 
       setup(() => {
-        enabledLangs().push(lang);
-        assertTrue(enabledLangs().includes(lang));
+        app.enabledLangs.push(lang);
+        assertTrue(app.enabledLangs.includes(lang));
       });
 
       test('and no other voices for language, disables language', () => {
         setAvailableVoices([]);
         app.updateVoicePackStatusFromInstallResponse(lang, 'kOther');
-        assertFalse(enabledLangs().includes(lang));
+        assertFalse(app.enabledLangs.includes(lang));
       });
 
       test('and only eSpeak voices for language, disables language', () => {
@@ -374,33 +369,33 @@ suite('UpdateVoicePack', () => {
 
         app.updateVoicePackStatusFromInstallResponse(lang, 'kOther');
 
-        assertFalse(enabledLangs().includes(lang));
+        assertFalse(app.enabledLangs.includes(lang));
       });
 
       test(
           'and when language-pack lang does not match voice lang, ' +
               'still disables language',
           () => {
-            enabledLangs().push('it-it');
+            app.enabledLangs.push('it-it');
             setAvailableVoices([]);
 
             app.updateVoicePackStatusFromInstallResponse('it', 'kOther');
 
-            assertFalse(enabledLangs().includes('it-it'));
+            assertFalse(app.enabledLangs.includes('it-it'));
           });
 
       test(
           'and when language-pack lang does not match voice lang, with ' +
               'e-speak voices, still disables language',
           () => {
-            enabledLangs().push('it-it');
+            app.enabledLangs.push('it-it');
             setAvailableVoices([
               {lang: 'it', name: 'eSpeak Italian '} as SpeechSynthesisVoice,
             ]);
 
             app.updateVoicePackStatusFromInstallResponse('it', 'kOther');
 
-            assertFalse(enabledLangs().includes('it-it'));
+            assertFalse(app.enabledLangs.includes('it-it'));
           });
 
       test(
@@ -414,7 +409,7 @@ suite('UpdateVoicePack', () => {
             ]);
             app.updateVoicePackStatusFromInstallResponse(lang, 'kOther');
 
-            assertTrue(enabledLangs().includes(lang));
+            assertTrue(app.enabledLangs.includes(lang));
           });
     });
   });

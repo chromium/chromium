@@ -64,10 +64,8 @@ suite('LanguageChanged', () => {
 
   function enableLangs(...langs: string[]) {
     for (const l of langs) {
-      // @ts-ignore
-      if (!app.enabledLanguagesInPref.includes(l)) {
-        // @ts-ignore
-        app.enabledLanguagesInPref.push(l);
+      if (!app.enabledLangs.includes(l)) {
+        app.enabledLangs.push(l);
       }
     }
   }
@@ -195,30 +193,26 @@ suite('LanguageChanged', () => {
 
       suite('and this locale is disabled', () => {
         test('and it enables pack manager locale', () => {
-          // @ts-ignore
-          app.enabledLanguagesInPref = [];
+          app.enabledLangs = [];
           flush();
           chrome.readingMode.baseLanguageForSpeech = lang3;
 
           app.languageChanged();
 
-          // @ts-ignore
-          assertTrue(app.enabledLanguagesInPref.includes(lang3));
+          assertTrue(app.enabledLangs.includes(lang3));
           assertEquals(selectedVoice(), naturalVoiceWithLang3);
         });
 
         test(
             'and it enables other locale if not supported by pack manager',
             () => {
-              // @ts-ignore
-              app.enabledLanguagesInPref = [];
+              app.enabledLangs = [];
               flush();
               chrome.readingMode.baseLanguageForSpeech = lang1;
 
               app.languageChanged();
 
-              // @ts-ignore
-              assertTrue(app.enabledLanguagesInPref.includes(lang1));
+              assertTrue(app.enabledLangs.includes(lang1));
               assertEquals(selectedVoice(), defaultVoiceWithLang1);
             });
 
@@ -226,8 +220,7 @@ suite('LanguageChanged', () => {
         test('to voice in different locale and same language', () => {
           const voice = {lang: 'en-GB', name: 'British', default: true} as
               SpeechSynthesisVoice;
-          // @ts-ignore
-          app.enabledLanguagesInPref = ['en-gb'];
+          app.enabledLangs = ['en-gb'];
           // @ts-ignore
           app.availableVoices = [voice];
           setInstalled('en-gb');
@@ -241,8 +234,7 @@ suite('LanguageChanged', () => {
         });
 
         test('to natural enabled voice if no same locale', () => {
-          // @ts-ignore
-          app.enabledLanguagesInPref = [lang3];
+          app.enabledLangs = [lang3];
           // @ts-ignore
           app.availableVoices = [naturalVoiceWithLang3];
           flush();
@@ -254,8 +246,7 @@ suite('LanguageChanged', () => {
         });
 
         test('to default enabled voice if no natural voice', () => {
-          // @ts-ignore
-          app.enabledLanguagesInPref = [lang1];
+          app.enabledLangs = [lang1];
           // @ts-ignore
           app.availableVoices = [defaultVoiceWithLang1];
           flush();
@@ -267,8 +258,7 @@ suite('LanguageChanged', () => {
         });
 
         test('to undefined if no enabled languages', () => {
-          // @ts-ignore
-          app.enabledLanguagesInPref = [];
+          app.enabledLangs = [];
           flush();
           chrome.readingMode.baseLanguageForSpeech = lang2;
 

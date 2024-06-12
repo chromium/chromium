@@ -219,17 +219,13 @@ suite('AppReceivesToolbarChanges', () => {
     test('enabled languages are added', () => {
       const firstLanguage = 'English';
       emitLanguageToggle(firstLanguage);
-      // Bypass Typescript compiler to allow us to read a private property
-      // @ts-ignore
-      assertTrue(app.enabledLanguagesInPref.includes(firstLanguage));
+      assertTrue(app.enabledLangs.includes(firstLanguage));
       assertTrue(chrome.readingMode.getLanguagesEnabledInPref()
         .includes(firstLanguage));
 
       const secondLanguage = 'French';
       emitLanguageToggle(secondLanguage);
-      // Bypass Typescript compiler to allow us to read a private property
-      // @ts-ignore
-      assertTrue(app.enabledLanguagesInPref.includes(secondLanguage));
+      assertTrue(app.enabledLangs.includes(secondLanguage));
       assertTrue(chrome.readingMode.getLanguagesEnabledInPref()
         .includes(secondLanguage));
     });
@@ -237,16 +233,12 @@ suite('AppReceivesToolbarChanges', () => {
     test('disabled languages are removed', () => {
       const firstLanguage = 'English';
       emitLanguageToggle(firstLanguage);
-      // Bypass Typescript compiler to allow us to read a private property
-      // @ts-ignore
-      assertTrue(app.enabledLanguagesInPref.includes(firstLanguage));
+      assertTrue(app.enabledLangs.includes(firstLanguage));
       assertTrue(chrome.readingMode.getLanguagesEnabledInPref()
         .includes(firstLanguage));
 
       emitLanguageToggle(firstLanguage);
-      // Bypass Typescript compiler to allow us to read a private property
-      // @ts-ignore
-      assertFalse(app.enabledLanguagesInPref.includes(firstLanguage));
+      assertFalse(app.enabledLangs.includes(firstLanguage));
       assertFalse(chrome.readingMode.getLanguagesEnabledInPref()
         .includes(firstLanguage));
     });

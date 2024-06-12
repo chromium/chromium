@@ -34,11 +34,11 @@ suite('VoiceSelectionMenu', () => {
     voiceSelectionMenu.availableVoices = availableVoices;
     if (enabledLangs === undefined) {
       // @ts-ignore
-      voiceSelectionMenu.enabledLanguagesInPref =
+      voiceSelectionMenu.enabledLangs =
           [...new Set(availableVoices.map(({lang}) => lang))];
     } else {
       // @ts-ignore
-      voiceSelectionMenu.enabledLanguagesInPref = enabledLangs;
+      voiceSelectionMenu.enabledLangs = enabledLangs;
     }
     flush();
   };

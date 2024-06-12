@@ -59,7 +59,7 @@ export class LanguageMenuElement extends LanguageMenuElementBase {
 
   static get properties() {
     return {
-      enabledLanguagesInPref: Array,
+      enabledLangs: Array,
       availableVoices: Array,
       languageSearchValue_: String,
       localeToDisplayName: Object,
@@ -80,7 +80,7 @@ export class LanguageMenuElement extends LanguageMenuElementBase {
         computed:
             'computeAvailableLanguages_(availableVoices,localeToDisplayName,' +
             'currentNotifications_,selectedLang,languageSearchValue_,' +
-            'enabledLanguagesInPref)',
+            'enabledLangs)',
       },
     };
   }
@@ -212,7 +212,7 @@ export class LanguageMenuElement extends LanguageMenuElementBase {
       localeToDisplayName: {[lang: string]: string},
       voicePackInstallStatus: {[language: string]: VoiceClientSideStatusCode},
       selectedLang: string|undefined, languageSearchValue: string|undefined,
-      enabledLanguagesInPref: string[]): LanguageDropdownItem[] {
+      enabledLangs: string[]): LanguageDropdownItem[] {
     if (!availableVoices) {
       return [];
     }
@@ -270,15 +270,13 @@ export class LanguageMenuElement extends LanguageMenuElementBase {
         .map(
             ([lang, readableLang]) => ({
               readableLanguage: readableLang,
-              checked: enabledLanguagesInPref &&
-                  enabledLanguagesInPref.includes(lang),
+              checked: enabledLangs && enabledLangs.includes(lang),
               languageCode: lang,
               notification: {
                 isError: this.isNotificationError(lang, voicePackInstallStatus),
                 text: this.getNotificationText(lang, voicePackInstallStatus),
               },
-              disabled: enabledLanguagesInPref &&
-                  enabledLanguagesInPref.includes(lang) &&
+              disabled: enabledLangs && enabledLangs.includes(lang) &&
                   (lang.toLowerCase() === selectedLangLowerCase),
               callback: () =>
                   this.dispatchEvent(new CustomEvent(LANGUAGE_TOGGLE_EVENT, {

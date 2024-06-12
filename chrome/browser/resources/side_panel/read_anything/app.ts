@@ -363,8 +363,12 @@ export class ReadAnythingElement extends ReadAnythingElementBase {
   synth = window.speechSynthesis;
 
   private selectedVoice: SpeechSynthesisVoice|undefined;
-  private enabledLanguagesInPref: string[] = [];
+  // The set of languages currently enabled for use by Read Aloud. This
+  // includes user-enabled languages and auto-downloaded languages. The former
+  // are stored in preferences. The latter are not.
+  enabledLangs: string[] = [];
 
+  // All possible available voices for the current speech engine.
   private availableVoices: SpeechSynthesisVoice[];
   // A set of availableLangs derived from availableVoices
   private availableLangs: string[] = [];
@@ -955,7 +959,7 @@ export class ReadAnythingElement extends ReadAnythingElementBase {
           v => getVoicePackConvertedLangIfExists(v.lang) === lang);
       if (availableVoicesForLang.length === 0 ||
           availableVoicesForLang.every(v => isEspeak(v))) {
-        this.enabledLanguagesInPref = this.enabledLanguagesInPref.filter(
+        this.enabledLangs = this.enabledLangs.filter(
             enabledLang =>
                 getVoicePackConvertedLangIfExists(enabledLang) !== lang);
       }
@@ -1198,13 +1202,13 @@ export class ReadAnythingElement extends ReadAnythingElementBase {
     // First try to choose a voice only from currently enabled locales for this
     // language.
     const voicesForCurrentEnabledLocale = voicesForLanguage.filter(
-        v => this.enabledLanguagesInPref.includes(v.lang.toLowerCase()));
+        v => this.enabledLangs.includes(v.lang.toLowerCase()));
     if (!voicesForCurrentEnabledLocale ||
         !voicesForCurrentEnabledLocale.length) {
       // If there's no enabled locales for this language, check for any other
       // voices for enabled locales.
       const allVoicesForEnabledLocales = allPossibleVoices.filter(
-          v => this.enabledLanguagesInPref.includes(v.lang.toLowerCase()));
+          v => this.enabledLangs.includes(v.lang.toLowerCase()));
       if (!allVoicesForEnabledLocales.length) {
         // If there are no voices for the enabled locales, or no enabled
         // locales at all, we can't select a voice. So return undefined so we
@@ -2203,8 +2207,7 @@ export class ReadAnythingElement extends ReadAnythingElementBase {
     event.preventDefault();
     event.stopPropagation();
     const toggledLanguage = event.detail.language;
-    const currentlyEnabled =
-        this.enabledLanguagesInPref.includes(toggledLanguage);
+    const currentlyEnabled = this.enabledLangs.includes(toggledLanguage);
 
     if (!currentlyEnabled) {
       this.autoSwitchVoice_(toggledLanguage);
@@ -2220,9 +2223,9 @@ export class ReadAnythingElement extends ReadAnythingElementBase {
         this.languagesForVoiceDownloads.delete(langCodeForVoicePackManager);
       }
     }
-    this.enabledLanguagesInPref = currentlyEnabled ?
-        this.enabledLanguagesInPref.filter(lang => lang !== toggledLanguage) :
-        [...this.enabledLanguagesInPref, toggledLanguage];
+    this.enabledLangs = currentlyEnabled ?
+        this.enabledLangs.filter(lang => lang !== toggledLanguage) :
+        [...this.enabledLangs, toggledLanguage];
 
     chrome.readingMode.onLanguagePrefChange(toggledLanguage, !currentlyEnabled);
 
@@ -2371,13 +2374,12 @@ export class ReadAnythingElement extends ReadAnythingElementBase {
     const browserOrPageBaseLang = chrome.readingMode.baseLanguageForSpeech;
     this.speechSynthesisLanguage = browserOrPageBaseLang;
 
-    this.enabledLanguagesInPref = createInitialListOfEnabledLanguages(
+    this.enabledLangs = createInitialListOfEnabledLanguages(
         browserOrPageBaseLang, storedLanguagesPref, this.availableLangs,
         this.defaultVoice()?.lang);
 
     storedLanguagesPref.forEach(storedLanguage => {
-      if (!this.enabledLanguagesInPref.find(
-              language => language === storedLanguage)) {
+      if (!this.enabledLangs.find(language => language === storedLanguage)) {
         // If a stored language doesn't have a match in the enabled languages
         // list, disable the original preference. This can guard against issues
         // with preferences after bugs are fixed.
@@ -2391,7 +2393,7 @@ export class ReadAnythingElement extends ReadAnythingElementBase {
       }
     });
 
-    for (const lang of this.enabledLanguagesInPref) {
+    for (const lang of this.enabledLangs) {
       this.installVoicePackIfPossible(
           lang, /* onlyInstallExactGoogleLocaleMatch=*/ true,
           /* retryIfPreviousInstallFailed= */ false);
@@ -2672,9 +2674,8 @@ export class ReadAnythingElement extends ReadAnythingElementBase {
     // Enable the locales so we can select a voice for the given language and
     // show it in the voice menu.
     localesToEnable.forEach(langToEnable => {
-      if (!this.enabledLanguagesInPref.includes(langToEnable)) {
-        this.enabledLanguagesInPref =
-            [...this.enabledLanguagesInPref, langToEnable];
+      if (!this.enabledLangs.includes(langToEnable)) {
+        this.enabledLangs = [...this.enabledLangs, langToEnable];
       }
     });
     this.selectPreferredVoice_();

@@ -73,7 +73,7 @@ export class VoiceSelectionMenuElement extends VoiceSelectionMenuElementBase {
     return {
       selectedVoice: Object,
       availableVoices: Array,
-      enabledLanguagesInPref: Array,
+      enabledLangs: Array,
       previewVoicePlaying: Object,
       voicePackInstallStatus: Object,
       paused: Boolean,
@@ -85,8 +85,7 @@ export class VoiceSelectionMenuElement extends VoiceSelectionMenuElementBase {
       },
       enabledVoices_: {
         type: Object,
-        computed:
-            'computeEnabledVoices_(availableVoices, enabledLanguagesInPref)',
+        computed: 'computeEnabledVoices_(availableVoices, enabledLangs)',
       },
       voiceSelectionOptions_: {
         type: Object,
@@ -115,12 +114,12 @@ export class VoiceSelectionMenuElement extends VoiceSelectionMenuElementBase {
 
   private computeEnabledVoices_(
       availableVoices: SpeechSynthesisVoice[],
-      enabledLanguagesInPref: string[]): SpeechSynthesisVoice[] {
-    if (!availableVoices || !enabledLanguagesInPref) {
+      enabledLangs: string[]): SpeechSynthesisVoice[] {
+    if (!availableVoices || !enabledLangs) {
       return [];
     }
     const enablesLangsLowerCase: Set<string> =
-        new Set(enabledLanguagesInPref.map(lang => lang.toLowerCase()));
+        new Set(enabledLangs.map(lang => lang.toLowerCase()));
     return availableVoices.filter(
         ({lang}) => enablesLangsLowerCase.has(lang.toLowerCase()));
   }
