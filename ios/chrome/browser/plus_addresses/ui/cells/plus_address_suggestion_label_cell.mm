@@ -41,6 +41,7 @@ const CGFloat kImageViewSize = 20.0;
     _leadingImageView = [[UIImageView alloc] init];
     _leadingImageView.translatesAutoresizingMaskIntoConstraints = NO;
     _leadingImageView.tintColor = [UIColor colorNamed:kTextPrimaryColor];
+    _leadingImageView.contentMode = UIViewContentModeCenter;
     [contentView addSubview:_leadingImageView];
 
     // Text attributes.

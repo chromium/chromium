@@ -26,7 +26,7 @@ const CGFloat kPlusAddressSheetTableViewCellCornerRadius = 10;
 
 const CGFloat kPlusAddressSheetTableViewCellHeight = 64;
 
-const CGFloat kPlusAddressSheetCellImageSize = 24;
+const CGFloat kPlusAddressSheetCellImageSize = 16;
 
 const CGFloat kPlusAddressSheetBrandingIconContainerViewSize = 64;
 
