@@ -6,6 +6,7 @@
 #define CHROME_BROWSER_UI_VIEWS_AUTOFILL_POPUP_POPUP_CELL_UTILS_H_
 
 #include <memory>
+#include <optional>
 #include <string>
 #include <vector>
 
@@ -62,6 +63,8 @@ namespace autofill::popup_cell_utils {
 //  PopupRowView::GetHorizontalMargin()
 gfx::Insets GetMarginsForContentCell();
 
+std::optional<ui::ImageModel> GetIconImageModelFromIcon(Suggestion::Icon icon);
+
 std::u16string GetVoiceOverStringFromSuggestion(const Suggestion& suggestion);
 
 std::unique_ptr<views::ImageView> GetIconImageView(
@@ -92,8 +95,8 @@ void AddSuggestionContentTableToView(
 
 // Creates the content structure shared by autocomplete, address, credit card,
 // and password suggestions.
-// - `minor_text_label`, `description_label`, and `subtext_labels` may all be
-// null or empty.
+// - `main/minor_text_label`, `description_label`, `subtext_views` and
+// `icon` may all be null or empty.
 // - `content_view` is the (assumed to be empty) view to which the content
 // structure for the `suggestion` is added.
 void AddSuggestionContentToView(
@@ -102,6 +105,7 @@ void AddSuggestionContentToView(
     std::unique_ptr<views::Label> minor_text_label,
     std::unique_ptr<views::Label> description_label,
     std::vector<std::unique_ptr<views::View>> subtext_views,
+    std::unique_ptr<views::View> icon,
     PopupRowContentView& content_view);
 
 ui::ImageModel ImageModelFromVectorIcon(const gfx::VectorIcon& vector_icon,

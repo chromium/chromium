@@ -155,6 +155,8 @@ std::optional<ui::ImageModel> ImageModelFromImageSkia(
   return image_model;
 }
 
+}  // namespace
+
 std::optional<ui::ImageModel> GetIconImageModelFromIcon(Suggestion::Icon icon) {
   switch (icon) {
     case Suggestion::Icon::kNoIcon:
@@ -270,8 +272,6 @@ std::optional<ui::ImageModel> GetIconImageModelFromIcon(Suggestion::Icon icon) {
   }
   NOTREACHED_NORETURN();
 }
-
-}  // namespace
 
 std::u16string GetVoiceOverStringFromSuggestion(const Suggestion& suggestion) {
   if (suggestion.voice_over) {
@@ -449,18 +449,13 @@ void AddSuggestionContentTableToView(
   content_view.AddChildView(std::move(content_table));
 }
 
-// Creates the content structure shared by autocomplete, address, credit card,
-// and password suggestions.
-// - `minor_text_label`, `description_label`, and `subtext_labels` may all be
-// null or empty.
-// - `content_view` is the (assumed to be empty) view to which the content
-// structure for the `suggestion` is added.
 void AddSuggestionContentToView(
     const Suggestion& suggestion,
     std::unique_ptr<views::Label> main_text_label,
     std::unique_ptr<views::Label> minor_text_label,
     std::unique_ptr<views::Label> description_label,
     std::vector<std::unique_ptr<views::View>> subtext_views,
+    std::unique_ptr<views::View> icon,
     PopupRowContentView& content_view) {
   views::BoxLayout& layout =
       *content_view.SetLayoutManager(std::make_unique<views::BoxLayout>(
@@ -494,8 +489,7 @@ void AddSuggestionContentToView(
                       PopupBaseView::ArrowHorizontalMargin(),
                       /*resize=*/false);
     content_view.SetEnabled(false);
-  } else if (std::unique_ptr<views::ImageView> icon =
-                 GetIconImageView(suggestion)) {
+  } else if (icon) {
     content_view.AddChildView(std::move(icon));
     AddSpacerWithSize(content_view, layout,
                       PopupBaseView::ArrowHorizontalMargin(),

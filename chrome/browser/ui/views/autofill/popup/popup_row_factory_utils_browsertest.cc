@@ -213,9 +213,17 @@ IN_PROC_BROWSER_TEST_F(CreatePopupRowViewTest, FilterMatchHighlighting) {
   CreateRowView(
       Suggestion("Address_entry", "Minor text", "label",
                  Suggestion::Icon::kLocation, SuggestionType::kAddressEntry),
-      std::nullopt,
+      /*selected_cell=*/std::nullopt,
       AutofillPopupController::SuggestionFilterMatch{.main_text_match =
                                                          gfx::Range(1, 5)});
+  ShowAndVerifyUi();
+}
+
+IN_PROC_BROWSER_TEST_F(CreatePopupRowViewTest, PasswordWithFaviconPlaceholder) {
+  Suggestion suggestion = CreatePasswordSuggestion(u"Password_entry");
+  suggestion.custom_icon =
+      Suggestion::FaviconDomainUrl(GURL("https://google.com"));
+  CreateRowView(std::move(suggestion), /*selected_cell=*/std::nullopt);
   ShowAndVerifyUi();
 }
 

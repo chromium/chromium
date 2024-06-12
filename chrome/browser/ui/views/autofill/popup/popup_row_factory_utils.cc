@@ -21,8 +21,10 @@
 #include "base/notreached.h"
 #include "base/ranges/algorithm.h"
 #include "base/task/sequenced_task_runner.h"
+#include "chrome/app/vector_icons/vector_icons.h"
 #include "chrome/browser/ui/autofill/autofill_popup_controller.h"
 #include "chrome/browser/ui/autofill/autofill_suggestion_controller_utils.h"
+#include "chrome/browser/ui/views/autofill/popup/lazy_loading_image_view.h"
 #include "chrome/browser/ui/views/autofill/popup/popup_base_view.h"
 #include "chrome/browser/ui/views/autofill/popup/popup_cell_utils.h"
 #include "chrome/browser/ui/views/autofill/popup/popup_row_content_view.h"
@@ -44,6 +46,7 @@
 #include "components/user_education/common/new_badge_controller.h"
 #include "components/user_education/views/new_badge_label.h"
 #include "content/public/browser/web_contents.h"
+#include "third_party/abseil-cpp/absl/types/variant.h"
 #include "ui/accessibility/ax_enums.mojom.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/color/color_id.h"
@@ -66,6 +69,8 @@
 namespace autofill {
 
 namespace {
+
+constexpr int kCustomIconSize = 16;
 
 // The size of a close or delete icon.
 constexpr int kCloseIconSize = 16;
@@ -390,6 +395,29 @@ std::vector<std::unique_ptr<views::View>> CreateAndTrackPasswordSubtextViews(
   return result;
 }
 
+// If the `Suggestion::custom_icon` holds the `FaviconDomainUrl` alternative,
+// the icon should be loaded lazily. For this case, this method creates a
+// `LazyLoadingImageView` to be passed to `CreatePasswordPopupRowContentView()`
+// as the `icon`. Otherwise, it returns an icon created by `GetIconImageView()`.
+std::unique_ptr<views::View> GetPasswordIconView(const Suggestion& suggestion) {
+  if (!absl::holds_alternative<Suggestion::FaviconDomainUrl>(
+          suggestion.custom_icon)) {
+    return popup_cell_utils::GetIconImageView(suggestion);
+  }
+
+  std::optional<ui::ImageModel> suggestion_icon_model =
+      popup_cell_utils::GetIconImageModelFromIcon(suggestion.icon);
+  ui::ImageModel placeholder_icon =
+      suggestion_icon_model ? std::move(*suggestion_icon_model)
+                            : popup_cell_utils::ImageModelFromVectorIcon(
+                                  kGlobeIcon, kCustomIconSize);
+
+  return std::make_unique<LazyLoadingImageView>(
+      gfx::Size(kCustomIconSize, kCustomIconSize), std::move(placeholder_icon),
+      // TODO(crbug.com/325246516): Pass a real loader.
+      /*loader=*/base::DoNothing());
+}
+
 std::unique_ptr<PopupRowContentView> CreatePasswordPopupRowContentView(
     const Suggestion& suggestion,
     std::optional<AutofillPopupController::SuggestionFilterMatch>
@@ -408,7 +436,8 @@ std::unique_ptr<PopupRowContentView> CreatePasswordPopupRowContentView(
   popup_cell_utils::AddSuggestionContentToView(
       suggestion, std::move(main_text_label), CreateMinorTextLabel(suggestion),
       CreatePasswordDescriptionLabel(suggestion),
-      CreateAndTrackPasswordSubtextViews(suggestion, *view), *view);
+      CreateAndTrackPasswordSubtextViews(suggestion, *view),
+      GetPasswordIconView(suggestion), *view);
 
   return view;
 }
@@ -425,7 +454,8 @@ std::unique_ptr<PopupRowContentView> CreateComposePopupRowContentView(
       suggestion, std::move(main_text_label),
       /*minor_text_label=*/nullptr,
       /*description_label=*/nullptr, /*subtext_views=*/
-      CreateSubtextViews(*view, suggestion, FillingProduct::kCompose), *view);
+      CreateSubtextViews(*view, suggestion, FillingProduct::kCompose),
+      popup_cell_utils::GetIconImageView(suggestion), *view);
 
   return view;
 }
@@ -452,7 +482,8 @@ std::unique_ptr<PopupRowContentView> CreatePopupRowContentView(
   popup_cell_utils::AddSuggestionContentToView(
       suggestion, std::move(main_text_label), CreateMinorTextLabel(suggestion),
       /*description_label=*/nullptr,
-      CreateSubtextViews(*view, suggestion, main_filling_product), *view);
+      CreateSubtextViews(*view, suggestion, main_filling_product),
+      popup_cell_utils::GetIconImageView(suggestion), *view);
   return view;
 }
 
@@ -477,7 +508,7 @@ std::unique_ptr<PopupRowWithButtonView> CreateAutocompleteRowWithDeleteButton(
       /*description_label=*/nullptr,
       CreateSubtextViews(*view, kSuggestion,
                          controller->GetMainFillingProduct()),
-      *view);
+      popup_cell_utils::GetIconImageView(kSuggestion), *view);
 
   // Setup a layout of the delete button for Autocomplete entries.
   views::BoxLayout* layout =
