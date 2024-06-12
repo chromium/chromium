@@ -61,11 +61,16 @@ public class TabSwitcherActionMenuFacility extends Facility<PageStation> {
             if (tabModelSelector.isIncognitoSelected()) {
                 // No tabs left, so closing the last will either take us to a normal tab, or the tab
                 // switcher if no normal tabs exist.
-                if (tabModelSelector.getModel(false).getCount() == 0) {
+                if (tabModelSelector.getModel(/* incognito= */ false).getCount() == 0) {
                     if (HubFieldTrial.isHubEnabled()) {
                         destination = expectedDestination.cast(new HubTabSwitcherStation());
                     } else {
-                        destination = expectedDestination.cast(new RegularTabSwitcherStation());
+                        destination =
+                                expectedDestination.cast(
+                                        RegularTabSwitcherStation.newBuilder()
+                                                .withIncognitoTabs(false)
+                                                .withRegularTabs(false)
+                                                .build());
                     }
                 } else {
                     destination =
@@ -81,7 +86,14 @@ public class TabSwitcherActionMenuFacility extends Facility<PageStation> {
                 if (HubFieldTrial.isHubEnabled()) {
                     destination = expectedDestination.cast(new HubTabSwitcherStation());
                 } else {
-                    destination = expectedDestination.cast(new RegularTabSwitcherStation());
+                    boolean hasIncognitoTabs =
+                            tabModelSelector.getModel(/* incognito= */ true).getCount() > 0;
+                    destination =
+                            expectedDestination.cast(
+                                    RegularTabSwitcherStation.newBuilder()
+                                            .withIncognitoTabs(hasIncognitoTabs)
+                                            .withRegularTabs(false)
+                                            .build());
                 }
             }
         } else {

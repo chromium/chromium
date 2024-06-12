@@ -9,7 +9,6 @@ import static androidx.test.espresso.matcher.ViewMatchers.withText;
 
 import static org.chromium.base.test.transit.ViewElement.scopedViewElement;
 
-import org.chromium.base.test.transit.Condition;
 import org.chromium.base.test.transit.Elements;
 import org.chromium.base.test.transit.ViewElement;
 import org.chromium.chrome.test.R;
@@ -20,27 +19,32 @@ public class RegularTabSwitcherStation extends TabSwitcherStation {
     public static final ViewElement EMPTY_STATE_TEXT =
             scopedViewElement(withText(R.string.tabswitcher_no_tabs_empty_state));
 
-    public RegularTabSwitcherStation() {
-        super(/* incognito= */ false);
+    public <T extends RegularTabSwitcherStation> RegularTabSwitcherStation(Builder<T> builder) {
+        super(builder.withIncognito(false));
+    }
+
+    public static Builder<RegularTabSwitcherStation> newBuilder() {
+        return new Builder<>(RegularTabSwitcherStation::new);
     }
 
     @Override
     public void declareElements(Elements.Builder elements) {
         super.declareElements(elements);
 
-        Condition noRegularTabsExist =
-                TabModelConditions.noRegularTabsExist(mTabModelSelectorCondition);
-        elements.declareViewIf(EMPTY_STATE_TEXT, noRegularTabsExist);
+        if (!mHasRegularTabs) {
+            elements.declareView(EMPTY_STATE_TEXT);
+        }
 
-        Condition incognitoTabsExist =
-                TabModelConditions.anyIncognitoTabsExist(mTabModelSelectorCondition);
-        elements.declareViewIf(INCOGNITO_TOGGLE_TABS, incognitoTabsExist);
-        elements.declareViewIf(REGULAR_TOGGLE_TAB_BUTTON, incognitoTabsExist);
-        elements.declareViewIf(INCOGNITO_TOGGLE_TAB_BUTTON, incognitoTabsExist);
+        if (mHasIncognitoTabs) {
+            elements.declareView(INCOGNITO_TOGGLE_TABS);
+            elements.declareView(REGULAR_TOGGLE_TAB_BUTTON);
+            elements.declareView(INCOGNITO_TOGGLE_TAB_BUTTON);
+        }
     }
 
     public IncognitoTabSwitcherStation selectIncognitoTabList() {
-        IncognitoTabSwitcherStation tabSwitcher = new IncognitoTabSwitcherStation();
+        IncognitoTabSwitcherStation tabSwitcher =
+                IncognitoTabSwitcherStation.newBuilder().initFrom(this).build();
         return travelToSync(tabSwitcher, () -> INCOGNITO_TOGGLE_TAB_BUTTON.perform(click()));
     }
 }

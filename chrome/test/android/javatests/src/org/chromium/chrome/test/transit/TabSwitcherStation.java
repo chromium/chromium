@@ -33,12 +33,13 @@ import org.chromium.base.test.transit.Station;
 import org.chromium.base.test.transit.ViewElement;
 import org.chromium.base.test.util.ViewActionOnDescendant;
 import org.chromium.chrome.browser.ChromeTabbedActivity;
-import org.chromium.chrome.browser.hub.HubFieldTrial;
 import org.chromium.chrome.browser.layouts.LayoutType;
 import org.chromium.chrome.browser.tabmodel.TabModelSelector;
 import org.chromium.chrome.browser.tasks.tab_management.TabGridView;
 import org.chromium.chrome.test.R;
 import org.chromium.chrome.test.util.ToolbarTestUtils;
+
+import java.util.function.Function;
 
 /**
  * The tab switcher screen, with the tab grid and the tab management toolbar.
@@ -51,6 +52,48 @@ import org.chromium.chrome.test.util.ToolbarTestUtils;
  * </ul>
  */
 public abstract class TabSwitcherStation extends Station {
+    /**
+     * Builder for all TabSwitcherStation subclasses.
+     *
+     * @param <T> the subclass of PageStation to build.
+     */
+    public static class Builder<T extends TabSwitcherStation> {
+        private final Function<Builder<T>, T> mFactoryMethod;
+        private boolean mIncognito;
+        private boolean mHasIncognitoTabs;
+        private boolean mHasRegularTabs;
+
+        public Builder(Function<Builder<T>, T> factoryMethod) {
+            mFactoryMethod = factoryMethod;
+        }
+
+        public Builder<T> withIncognito(boolean incognito) {
+            mIncognito = incognito;
+            return this;
+        }
+
+        public Builder<T> withRegularTabs(boolean hasRegularTabs) {
+            mHasRegularTabs = hasRegularTabs;
+            return this;
+        }
+
+        public Builder<T> withIncognitoTabs(boolean hasIncognitoTabs) {
+            mHasIncognitoTabs = hasIncognitoTabs;
+            return this;
+        }
+
+        public Builder<T> initFrom(TabSwitcherStation previousStation) {
+            mIncognito = previousStation.mIsIncognito;
+            mHasIncognitoTabs = previousStation.mHasIncognitoTabs;
+            mHasRegularTabs = previousStation.mHasRegularTabs;
+            return this;
+        }
+
+        public T build() {
+            return mFactoryMethod.apply(this);
+        }
+    }
+
     public static final ViewElement TOOLBAR =
             scopedViewElement(withId(ToolbarTestUtils.TAB_SWITCHER_TOOLBAR));
     public static final ViewElement TOOLBAR_NEW_TAB_BUTTON =
@@ -94,15 +137,18 @@ public abstract class TabSwitcherStation extends Station {
                     isDisplayed());
 
     protected final boolean mIsIncognito;
+    protected final boolean mHasIncognitoTabs;
+    protected final boolean mHasRegularTabs;
     protected ActivityElement<ChromeTabbedActivity> mActivityElement;
     protected TabModelSelectorCondition mTabModelSelectorCondition;
 
-    /** Instantiate one of the subclasses instead. */
-    protected TabSwitcherStation(boolean incognito) {
-        super();
+    /** Use {@link #newBuilder()} or the TabSwitcherStation's subclass |newBuilder()|. */
+    protected <T extends TabSwitcherStation> TabSwitcherStation(Builder<T> builder) {
+        mIsIncognito = builder.mIncognito;
 
-        assert !HubFieldTrial.isHubEnabled();
-        mIsIncognito = incognito;
+        mHasIncognitoTabs = builder.mHasIncognitoTabs;
+
+        mHasRegularTabs = builder.mHasRegularTabs;
     }
 
     @Override
@@ -139,20 +185,36 @@ public abstract class TabSwitcherStation extends Station {
 
         TabModelSelector tabModelSelector = mActivityElement.get().getTabModelSelector();
 
-        // By default stay in the same tab switcher state, unless closing the last incognito tab.
-        boolean landInIncognitoSwitcher = mIsIncognito;
+        int regularTabCount = tabModelSelector.getModel(/* incognito= */ false).getCount();
+        int incognitoTabCount = tabModelSelector.getModel(/* incognito= */ true).getCount();
+
+        int newRegularTabCount = regularTabCount;
+        int newIncognitoTabCount = incognitoTabCount;
         if (mIsIncognito) {
             assertTrue(tabModelSelector.isIncognitoSelected());
-            if (tabModelSelector.getCurrentModel().getCount() <= 1) {
-                landInIncognitoSwitcher = false;
-            }
+            newIncognitoTabCount--;
+        } else {
+            newRegularTabCount--;
         }
+
+        // By default stay in the same tab switcher state, unless closing the last incognito tab.
+        boolean landInIncognitoSwitcher = mIsIncognito && newIncognitoTabCount > 0;
 
         T tabSwitcher;
         if (landInIncognitoSwitcher) {
-            tabSwitcher = expectedDestinationType.cast(new IncognitoTabSwitcherStation());
+            tabSwitcher =
+                    expectedDestinationType.cast(
+                            IncognitoTabSwitcherStation.newBuilder()
+                                    .withIncognitoTabs(true)
+                                    .withRegularTabs(newRegularTabCount > 0)
+                                    .build());
         } else {
-            tabSwitcher = expectedDestinationType.cast(new RegularTabSwitcherStation());
+            tabSwitcher =
+                    expectedDestinationType.cast(
+                            RegularTabSwitcherStation.newBuilder()
+                                    .withIncognitoTabs(newIncognitoTabCount > 0)
+                                    .withRegularTabs(newRegularTabCount > 0)
+                                    .build());
         }
 
         return travelToSync(

@@ -11,8 +11,12 @@ import org.chromium.base.test.transit.Elements;
 /** The tab switcher screen showing incognito tabs. */
 public class IncognitoTabSwitcherStation extends TabSwitcherStation {
 
-    public IncognitoTabSwitcherStation() {
-        super(/* incognito= */ true);
+    public <T extends IncognitoTabSwitcherStation> IncognitoTabSwitcherStation(Builder<T> builder) {
+        super(builder.withIncognito(true));
+    }
+
+    public static Builder<IncognitoTabSwitcherStation> newBuilder() {
+        return new Builder<>(IncognitoTabSwitcherStation::new);
     }
 
     @Override
@@ -25,7 +29,8 @@ public class IncognitoTabSwitcherStation extends TabSwitcherStation {
     }
 
     public RegularTabSwitcherStation selectRegularTabList() {
-        RegularTabSwitcherStation tabSwitcher = new RegularTabSwitcherStation();
+        RegularTabSwitcherStation tabSwitcher =
+                RegularTabSwitcherStation.newBuilder().initFrom(this).build();
         return travelToSync(tabSwitcher, () -> REGULAR_TOGGLE_TAB_BUTTON.perform(click()));
     }
 }
