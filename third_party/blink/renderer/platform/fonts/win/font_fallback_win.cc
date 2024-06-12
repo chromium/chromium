@@ -463,21 +463,19 @@ const UChar* GetFontFamilyForScript(UScriptCode script,
 //    and just return it.
 //  - All the characters (or characters up to the point a single
 //    font can cover) need to be taken into account
-const UChar* GetFallbackFamily(UChar32 character,
+AtomicString GetFallbackFamily(UChar32 character,
                                FontDescription::GenericFamilyType generic,
                                const LayoutLocale* content_locale,
-                               UScriptCode* script_checked,
                                FontFallbackPriority fallback_priority,
-                               const SkFontMgr& font_manager) {
+                               const SkFontMgr& font_manager,
+                               UScriptCode& script_out) {
   DCHECK(character);
   UBlockCode block = fallback_priority == FontFallbackPriority::kEmojiEmoji
                          ? UBLOCK_EMOTICONS
                          : ublock_getCode(character);
-  const UChar* family = GetFontBasedOnUnicodeBlock(block, font_manager);
-  if (family) {
-    if (script_checked)
-      *script_checked = USCRIPT_INVALID_CODE;
-    return family;
+  if (const UChar* family = GetFontBasedOnUnicodeBlock(block, font_manager)) {
+    script_out = USCRIPT_INVALID_CODE;
+    return AtomicString(family);
   }
 
   UScriptCode script = GetScript(character);
@@ -502,36 +500,39 @@ const UChar* GetFallbackFamily(UChar32 character,
     // See initializeScriptFontMap().
   }
 
-  family = GetFontFamilyForScript(script, generic, font_manager);
+  script_out = script;
+
+  // TODO(kojii): Limiting `GetFontFamilyForScript()` only to BMP may need
+  // review to match the modern environment. This was done in 2010 for
+  // https://bugs.webkit.org/show_bug.cgi?id=35605.
+  if (character <= 0xFFFF) {
+    if (const UChar* family =
+            GetFontFamilyForScript(script, generic, font_manager)) {
+      return AtomicString(family);
+    }
+  }
+
   // Another lame work-around to cover non-BMP characters.
   // If the font family for script is not found or the character is
   // not in BMP (> U+FFFF), we resort to the hard-coded list of
   // fallback fonts for now.
-  if (!family || character > 0xFFFF) {
-    int plane = character >> 16;
-    switch (plane) {
-      case 1:
-        family = u"code2001";
-        break;
-      case 2:
-        // Use a Traditional Chinese ExtB font if in Traditional Chinese locale.
-        // Otherwise, use a Simplified Chinese ExtB font. Windows Japanese
-        // fonts do support a small subset of ExtB (that are included in JIS X
-        // 0213), but its coverage is rather sparse.
-        // Eventually, this should be controlled by lang/xml:lang.
-        if (icu::Locale::getDefault() == icu::Locale::getTraditionalChinese())
-          family = u"pmingliu-extb";
-        else
-          family = u"simsun-extb";
-        break;
-      default:
-        family = u"lucida sans unicode";
-    }
+  int plane = character >> 16;
+  switch (plane) {
+    case 1:
+      return AtomicString("code2001");
+    case 2:
+      // Use a Traditional Chinese ExtB font if in Traditional Chinese locale.
+      // Otherwise, use a Simplified Chinese ExtB font. Windows Japanese
+      // fonts do support a small subset of ExtB (that are included in JIS X
+      // 0213), but its coverage is rather sparse.
+      // Eventually, this should be controlled by lang/xml:lang.
+      if (icu::Locale::getDefault() == icu::Locale::getTraditionalChinese()) {
+        return AtomicString("pmingliu-extb");
+      }
+      return AtomicString("simsun-extb");
+    default:
+      return AtomicString("lucida sans unicode");
   }
-
-  if (script_checked)
-    *script_checked = script;
-  return family;
 }
 
 }  // namespace blink
