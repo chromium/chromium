@@ -58,10 +58,7 @@ CastDialogView::CastDialogView(
     Profile* profile,
     const base::Time& start_time,
     MediaRouterDialogActivationLocation activation_location)
-    : BubbleDialogDelegateView(anchor_view,
-                               anchor_position,
-                               views::BubbleBorder::DIALOG_SHADOW,
-                               /*autosize=*/true),
+    : BubbleDialogDelegateView(anchor_view, anchor_position),
       controller_(controller),
       profile_(profile),
       metrics_(start_time, activation_location, profile) {
@@ -115,10 +112,7 @@ void CastDialogView::OnModelUpdated(const CastDialogModel& model) {
                                 IsAccessCodeCastingEnabled());
 
   dialog_title_ = model.dialog_header();
-
-  // Update title.
-  InvalidateLayout();
-
+  MaybeSizeToContents();
   // Update the main action button.
   DialogModelChanged();
   for (Observer& observer : observers_)
@@ -284,6 +278,9 @@ void CastDialogView::PopulateScrollView(const std::vector<UIMediaSink>& sinks) {
     sink_views_.push_back(sink_view);
   }
   scroll_view_->SetContents(std::move(sink_list_view));
+
+  MaybeSizeToContents();
+  DeprecatedLayoutImmediately();
 }
 
 void CastDialogView::InitializeSourcesButton() {
@@ -386,6 +383,12 @@ void CastDialogView::FreezePressed(size_t index) {
   } else { /* is_frozen == false */
     controller_->FreezeRoute(sink.route->media_route_id());
   }
+}
+
+void CastDialogView::MaybeSizeToContents() {
+  // The widget may be null if this is called while the dialog is opening.
+  if (GetWidget())
+    SizeToContents();
 }
 
 std::optional<MediaCastMode> CastDialogView::GetCastModeToUse(
