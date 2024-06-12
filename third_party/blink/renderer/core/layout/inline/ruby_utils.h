@@ -159,7 +159,7 @@ class CORE_EXPORT RubyBlockPositionCalculator {
     bool IsFirstUnderLevel() const {
       return level_.size() == 1u && level_[0] == -1;
     }
-    const Vector<wtf_size_t> BaseIndexList() const { return base_index_list_; }
+    const Vector<wtf_size_t>& BaseIndexList() const { return base_index_list_; }
     // This operator defines lines below are smaller than lines above.
     bool operator<(const RubyLine& another) const;
 

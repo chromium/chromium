@@ -1273,6 +1273,7 @@ void RubyBlockPositionCalculator::RubyLine::Append(
 void RubyBlockPositionCalculator::RubyLine::MaybeRecordBaseIndexes(
     const LogicalRubyColumn& logical_column) {
   if (IsFirstOverLevel() || IsFirstUnderLevel()) {
+    base_index_list_.reserve(base_index_list_.size() + logical_column.size);
     for (wtf_size_t item_index = logical_column.start_index;
          item_index < logical_column.EndIndex(); ++item_index) {
       base_index_list_.push_back(item_index);
