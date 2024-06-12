@@ -12,6 +12,13 @@ import("//build/buildflag_header.gni")
 import("//build/config/features.gni")
 import("//build/config/sanitizers/sanitizers.gni")
 
+declare_args() {
+  # Build individual_fuzztest_wrapper if use_fuzztest_wrapper is set.
+  # Some projects doesn't have //base and cannot build
+  # individual_fuzztest_wrapper.
+  use_fuzztest_wrapper = true
+}
+
 # Temporary target for legacy reasons. Some third party repos explicitly
 # refer to libfuzzer_main though they should refer to fuzzer_engine_main
 # instead, and so do some infrastructure repos. We should migrate them
@@ -144,15 +151,17 @@ buildflag_header("fuzztest_wrapper_buildflags") {
   flags = [ "USE_CENTIPEDE=$use_centipede" ]
 }
 
-# A wrapper that knows how to execute a single fuzztest within a binary
-# containing many fuzztests.
-# Unlike fuzztests themselves, this depends on :is_a_fuzz_target
-# so that the build jobs know to build all these.
-source_set("individual_fuzztest_wrapper") {
-  sources = [ "//testing/libfuzzer/fuzztest_wrapper.cpp" ]
-  deps = [
-    ":fuzztest_wrapper_buildflags",
-    ":is_a_fuzz_target",
-    "//base",
-  ]
+if (use_fuzztest_wrapper) {
+  # A wrapper that knows how to execute a single fuzztest within a binary
+  # containing many fuzztests.
+  # Unlike fuzztests themselves, this depends on :is_a_fuzz_target
+  # so that the build jobs know to build all these.
+  source_set("individual_fuzztest_wrapper") {
+    sources = [ "//testing/libfuzzer/fuzztest_wrapper.cpp" ]
+    deps = [
+      ":fuzztest_wrapper_buildflags",
+      ":is_a_fuzz_target",
+      "//base",
+    ]
+  }
 }
