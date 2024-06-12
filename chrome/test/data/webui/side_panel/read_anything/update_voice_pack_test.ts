@@ -29,6 +29,12 @@ suite('UpdateVoicePack', () => {
     return app.getVoicePackLocalStatus_(lang);
   }
 
+
+  function setAvailableVoices(voices: SpeechSynthesisVoice[]) {
+    // @ts-ignore
+    app.availableVoices = voices;
+  }
+
   function addNaturalVoicesForLang(lang: string) {
     const voices = app.synth.getVoices();
     app.synth.getVoices = () => {
@@ -195,6 +201,42 @@ suite('UpdateVoicePack', () => {
   });
 
   test(
+      'available if non-natural voices are unsupported this lang and voices available',
+      () => {
+        const lang = 'yue';
+        setAvailableVoices([
+          {lang: 'yue-hk', name: 'Cantonese'} as SpeechSynthesisVoice,
+        ]);
+
+        app.updateVoicePackStatus(lang, 'kInstalled');
+
+        assertEquals(
+            getVoicePackServerInstallStatus(lang).code,
+            VoicePackServerStatusSuccessCode.INSTALLED);
+        assertEquals(
+            getVoicePackServerInstallStatus(lang).id, 'Successful response');
+        assertEquals(
+            getVoicePackLocalStatus(lang), VoiceClientSideStatusCode.AVAILABLE);
+      });
+
+  test(
+      'installed if non-natural voices are unsupported this lang and voices unavailable',
+      () => {
+        const lang = 'yue';
+
+        app.updateVoicePackStatus(lang, 'kInstalled');
+
+        assertEquals(
+            getVoicePackServerInstallStatus(lang).code,
+            VoicePackServerStatusSuccessCode.INSTALLED);
+        assertEquals(
+            getVoicePackServerInstallStatus(lang).id, 'Successful response');
+        assertEquals(
+            getVoicePackLocalStatus(lang),
+            VoiceClientSideStatusCode.INSTALLED_AND_UNAVAILABLE);
+      });
+
+  test(
       'refreshes getVoices() and marks newly available voices as available',
       () => {
         const lang = 'en-us';
@@ -293,11 +335,6 @@ suite('UpdateVoicePack', () => {
   suite('updateVoicePackStatusFromInstallResponse', () => {
     suite('with error code', () => {
       const lang = 'pt-br';
-
-      function setAvailableVoices(voices: SpeechSynthesisVoice[]) {
-        // @ts-ignore
-        app.availableVoices = voices;
-      }
 
       setup(() => {
         enabledLangs().push(lang);

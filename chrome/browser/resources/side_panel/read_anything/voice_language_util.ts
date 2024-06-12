@@ -210,6 +210,8 @@ export function mojoVoicePackStatusToVoicePackStatusEnum(
   }
 }
 
+// TODO: b/40927698: Make this private and use getVoicePackConvertedLangIfExists
+// instead.
 // The ChromeOS VoicePackManager labels some voices by locale, and some by
 // base-language. The request for each needs to be exact, so this function
 // converts a locale or language into the code the VoicePackManager expects.
@@ -285,6 +287,25 @@ function extractBaseLang(langOrLocale: string): string {
   return langOrLocale.substring(0, langOrLocale.indexOf('-'));
 }
 
+export function doesLanguageHaveNaturalVoices(language: string): boolean {
+  const voicePackLanguage = getVoicePackConvertedLangIfExists(language);
+
+  return NATURAL_VOICES_SUPPORTED_LANGS_AND_LOCALES.has(voicePackLanguage);
+}
+
+export function getVoicePackConvertedLangIfExists(lang: string): string {
+  const voicePackLanguage = convertLangOrLocaleForVoicePackManager(lang);
+
+  // If the voice pack language wasn't converted, use the original string.
+  // This will enable us to set install statuses on invalid languages and
+  // locales.
+  if (!voicePackLanguage) {
+    return lang;
+  }
+
+  return voicePackLanguage;
+}
+
 // These are from the Pack Manager. Values should be kept in sync with the code
 // link above.
 export const PACK_MANAGER_SUPPORTED_LANGS_AND_LOCALES = new Set([
@@ -292,6 +313,20 @@ export const PACK_MANAGER_SUPPORTED_LANGS_AND_LOCALES = new Set([
   'es-us', 'fi', 'fil', 'fr', 'hi', 'hu',    'id',    'it',    'ja',
   'km',    'ko', 'nb',  'ne', 'nl', 'pl',    'pt-br', 'pt-pt', 'si',
   'sk',    'sv', 'th',  'tr', 'uk', 'vi',    'yue',
+]);
+
+// If there is a natural voice available for this language, based on
+// voices_list.csv. If there is a voice in
+// PACK_MANAGER_SUPPORTED_LANGS_AND_LOCALES but not in this list, it means
+// we still need to call to the pack manager to install the voice pack but
+// there are no natural voices associate with the language.
+// Currently, 'yue' and 'km' are the only two pack supported languages not
+// included in this list.
+const NATURAL_VOICES_SUPPORTED_LANGS_AND_LOCALES = new Set([
+  'bn',    'cs',    'da', 'de',  'el', 'en-au', 'en-gb', 'en-us',
+  'es-es', 'es-us', 'fi', 'fil', 'fr', 'hi',    'hu',    'id',
+  'it',    'ja',    'ko', 'nb',  'ne', 'nl',    'pl',    'pt-br',
+  'pt-pt', 'si',    'sk', 'sv',  'th', 'tr',    'uk',    'vi',
 ]);
 
 // These are the locales based on PACK_MANAGER_SUPPORTED_LANGS_AND_LOCALES, but

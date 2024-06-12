@@ -24,7 +24,7 @@ import {getTemplate} from './app.html.js';
 import {minOverflowLengthToScroll, playFromSelectionTimeout, validatedFontName} from './common.js';
 import type {ReadAnythingToolbarElement} from './read_anything_toolbar.js';
 import type {VoicePackStatus} from './voice_language_util.js';
-import {areVoicesEqual, AVAILABLE_GOOGLE_TTS_LOCALES, convertLangOrLocaleForVoicePackManager, convertLangOrLocaleToExactVoicePackLocale, convertLangToAnAvailableLangIfPresent, createInitialListOfEnabledLanguages, isEspeak, isNatural, isVoicePackStatusError, isVoicePackStatusSuccess, mojoVoicePackStatusToVoicePackStatusEnum, VoiceClientSideStatusCode, VoicePackServerStatusErrorCode, VoicePackServerStatusSuccessCode} from './voice_language_util.js';
+import {areVoicesEqual, AVAILABLE_GOOGLE_TTS_LOCALES, convertLangOrLocaleForVoicePackManager, convertLangOrLocaleToExactVoicePackLocale, convertLangToAnAvailableLangIfPresent, createInitialListOfEnabledLanguages, doesLanguageHaveNaturalVoices, getVoicePackConvertedLangIfExists, isEspeak, isNatural, isVoicePackStatusError, isVoicePackStatusSuccess, mojoVoicePackStatusToVoicePackStatusEnum, VoiceClientSideStatusCode, VoicePackServerStatusErrorCode, VoicePackServerStatusSuccessCode} from './voice_language_util.js';
 
 const ReadAnythingElementBase = WebUiListenerMixin(PolymerElement);
 
@@ -951,12 +951,12 @@ export class ReadAnythingElement extends ReadAnythingElementBase {
       // Disable the associated language if there are no other Google voices for
       // it.
       const availableVoicesForLang = this.getVoices().filter(
-          v => this.getVoicePackConvertedLangIfExists_(v.lang) === lang);
+          v => getVoicePackConvertedLangIfExists(v.lang) === lang);
       if (availableVoicesForLang.length === 0 ||
           availableVoicesForLang.every(v => isEspeak(v))) {
         this.enabledLanguagesInPref = this.enabledLanguagesInPref.filter(
             enabledLang =>
-                this.getVoicePackConvertedLangIfExists_(enabledLang) !== lang);
+                getVoicePackConvertedLangIfExists(enabledLang) !== lang);
       }
     } else {
       // Do not rely on the status from Install response. It has responded
@@ -1017,8 +1017,7 @@ export class ReadAnythingElement extends ReadAnythingElementBase {
           if (oldVoicePackStatus &&
               oldVoicePackStatus.code !==
                   VoicePackServerStatusSuccessCode.INSTALLED) {
-            this.lastDownloadedLang_ =
-                this.getVoicePackConvertedLangIfExists_(lang);
+            this.lastDownloadedLang_ = getVoicePackConvertedLangIfExists(lang);
             this.showToast_();
 
             // Force a refresh of the voices list since we might not get an
@@ -1028,15 +1027,24 @@ export class ReadAnythingElement extends ReadAnythingElementBase {
 
           this.autoSwitchVoice_(lang);
 
+          // Some languages may require a download from the voice pack
+          // but may not have associated natural voices.
+          const languageHasNaturalVoices = doesLanguageHaveNaturalVoices(lang);
+
           // Even though the voice may be installed on disk, it still may not be
           // available to the speechSynthesis API. Check whether to mark the
           // voice as AVAILABLE or INSTALLED_AND_UNAVAILABLE
-          const naturalVoicesForLangAreAvailable = this.availableVoices.some(
-              voice => isNatural(voice) &&
-                  this.getVoicePackConvertedLangIfExists_(voice.lang) === lang);
+          const voicesForLanguageAreAvailable = this.availableVoices.some(
+              voice =>
+                  ((isNatural(voice) || !languageHasNaturalVoices) &&
+                   getVoicePackConvertedLangIfExists(voice.lang) === lang));
+
+          // If natural voices are currently available for the language or the
+          // language does not support natural voices, set the status to
+          // available. Otherwise, set the status to install and unavailabled.
           this.setVoicePackLocalStatus_(
               lang,
-              naturalVoicesForLangAreAvailable ?
+              voicesForLanguageAreAvailable ?
                   VoiceClientSideStatusCode.AVAILABLE :
                   VoiceClientSideStatusCode.INSTALLED_AND_UNAVAILABLE);
           break;
@@ -2727,19 +2735,19 @@ export class ReadAnythingElement extends ReadAnythingElementBase {
   }
 
   private getVoicePackServerStatus_(lang: string): VoicePackStatus|undefined {
-    const voicePackLanguage = this.getVoicePackConvertedLangIfExists_(lang);
+    const voicePackLanguage = getVoicePackConvertedLangIfExists(lang);
     return this.voicePackInstallStatusServerResponses[voicePackLanguage];
   }
 
   private getVoicePackLocalStatus_(lang: string): VoiceClientSideStatusCode
       |undefined {
-    const voicePackLanguage = this.getVoicePackConvertedLangIfExists_(lang);
+    const voicePackLanguage = getVoicePackConvertedLangIfExists(lang);
     return this.voiceStatusLocalState[voicePackLanguage];
   }
 
   private setVoicePackLocalStatus_(
       lang: string, status: VoiceClientSideStatusCode) {
-    const voicePackLanguage = this.getVoicePackConvertedLangIfExists_(lang);
+    const voicePackLanguage = getVoicePackConvertedLangIfExists(lang);
     this.voiceStatusLocalState = {
       ...this.voiceStatusLocalState,
       [voicePackLanguage]: status,
@@ -2749,27 +2757,13 @@ export class ReadAnythingElement extends ReadAnythingElementBase {
   private setVoicePackServerStatus_(lang: string, status: VoicePackStatus) {
     // Convert the language string to ensure consistency across
     // languages and locales when setting the status.
-    const voicePackLanguage = this.getVoicePackConvertedLangIfExists_(lang);
+    const voicePackLanguage = getVoicePackConvertedLangIfExists(lang);
     this.voicePackInstallStatusServerResponses = {
       ...this.voicePackInstallStatusServerResponses,
       [voicePackLanguage]: status,
     };
   }
-
-  private getVoicePackConvertedLangIfExists_(lang: string): string {
-    const voicePackLanguage = convertLangOrLocaleForVoicePackManager(lang);
-
-    // If the voice pack language wasn't converted, use the original string.
-    // This will enable us to set install statuses on invalid languages and
-    // locales.
-    if (!voicePackLanguage) {
-      return lang;
-    }
-
-    return voicePackLanguage;
-  }
 }
-
 
 declare global {
   interface HTMLElementTagNameMap {
