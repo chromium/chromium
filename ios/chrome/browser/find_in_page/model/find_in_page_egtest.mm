@@ -220,12 +220,6 @@ constexpr char kFindInPagePreviousButtonID[] = "find.previousButton";
 
 // Test that there is no query persistence with this variant of Native Find in
 // Page i.e. with Find interaction.
-// TODO(crbug.com/40926974): Test is flaky on device. Re-enable the test.
-#if !TARGET_OS_SIMULATOR
-#define MAYBE_testFindInPageHistory FLAKY_testFindInPageHistory
-#else
-#define MAYBE_testFindInPageHistory testFindInPageHistory
-#endif
 - (void)testFindInPageHistory {
   [_helper helperTestFindInPageHistoryWithQueryPersistence:NO];
 }
