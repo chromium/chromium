@@ -1980,6 +1980,10 @@ export class ReadAnythingElement extends ReadAnythingElementBase {
 
   // TODO(b/301131238): Verify all edge cases.
   highlightNodesForWordBoundary() {
+    // Word highlights can be called quite frequently which can create some
+    // misordering, so just make sure we've cleared the previous word highlight
+    // before showing the next one.
+    this.removeCurrentHighlight();
     const index = this.wordBoundaryState.speechUtteranceStartIndex +
         this.wordBoundaryState.previouslySpokenIndex;
     const highlightNode: number =
@@ -2248,6 +2252,11 @@ export class ReadAnythingElement extends ReadAnythingElementBase {
   // chrome.readingMode.movePositionToPreviousGranularity so we can accurately
   // determine what's currently being highlighted.
   private resetPreviousHighlightAndRemoveCurrentHighlight() {
+    this.removeCurrentHighlight();
+    this.resetPreviousHighlight();
+  }
+
+  private removeCurrentHighlight() {
     // The most recent highlight could have been spread across multiple segments
     // so clear the formatting for all of the segments.
     for (let i = 0; i < chrome.readingMode.getCurrentText().length; i++) {
@@ -2256,8 +2265,6 @@ export class ReadAnythingElement extends ReadAnythingElementBase {
         lastElement.classList.remove(currentReadHighlightClass);
       }
     }
-
-    this.resetPreviousHighlight();
   }
 
   private resetPreviousHighlight() {
