@@ -337,7 +337,8 @@ MultiProfileSupportTest::SetUpOneWindowEachDeskForUser(AccountId account_id) {
   const int kActiveDeskIndex = 0;
   for (int i = 0; i < desks_controller->GetNumberOfDesks(); i++) {
     widgets.push_back(
-        CreateTestWidget(nullptr, container_ids[i], gfx::Rect(700, 0, 50, 50)));
+        CreateTestWidget(views::Widget::InitParams::WIDGET_OWNS_NATIVE_WIDGET,
+                         nullptr, container_ids[i], gfx::Rect(700, 0, 50, 50)));
     aura::Window* win = widgets[i]->GetNativeWindow();
     windows_.push_back(win);
     // `TargetVisibility` is the local visibility of the window

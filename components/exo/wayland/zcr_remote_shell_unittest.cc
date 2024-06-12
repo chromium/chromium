@@ -37,7 +37,8 @@ TEST_F(ZcrRemoteShellTest, GetWorkAreaInsetsInPixel) {
             secondary_insets.ToString());
 
   // Stable Insets
-  auto widget = CreateTestWidget();
+  auto widget =
+      CreateTestWidget(views::Widget::InitParams::WIDGET_OWNS_NATIVE_WIDGET);
   widget->SetFullscreen(true);
   display = display::Screen::GetScreen()->GetPrimaryDisplay();
   ASSERT_EQ(display.bounds(), display.work_area());

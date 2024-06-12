@@ -2287,7 +2287,8 @@ class AppPlatformInputMetricsTest : public AppPlatformMetricsServiceTest {
   void SetUp() override {
     PreSetUp();
     AppPlatformMetricsServiceTest::SetUp();
-    widget_ = ash::AshTestBase::CreateTestWidget();
+    widget_ = ash::AshTestBase::CreateTestWidget(
+        views::Widget::InitParams::WIDGET_OWNS_NATIVE_WIDGET);
   }
 
   // This function can be called before the `SetUp` function is called, then
