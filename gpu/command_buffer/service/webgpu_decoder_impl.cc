@@ -1975,6 +1975,13 @@ WebGPUDecoderImpl::AssociateMailboxDawn(
   }
 #endif
 
+  if ((internal_usage & kAllowedWritableMailboxTextureUsages) &&
+      (!(shared_image->usage() & SHARED_IMAGE_USAGE_WEBGPU_WRITE))) {
+    LOG(ERROR) << "AssociateMailbox: Passing writable internal usages requires "
+                  "WebGPU write access to the SharedImage";
+    return nullptr;
+  }
+
   if (flags & WEBGPU_MAILBOX_DISCARD) {
     if (!(shared_image->usage() & SHARED_IMAGE_USAGE_WEBGPU_WRITE)) {
       LOG(ERROR)
@@ -2046,6 +2053,13 @@ WebGPUDecoderImpl::AssociateMailboxUsingSkiaFallback(
 
   if (!shared_image) {
     DLOG(ERROR) << "AssociateMailbox: Couldn't produce shared image";
+    return nullptr;
+  }
+
+  if ((internal_usage & kAllowedWritableMailboxTextureUsages) &&
+      (!(shared_image->usage() & SHARED_IMAGE_USAGE_WEBGPU_WRITE))) {
+    LOG(ERROR) << "AssociateMailbox: Passing writable internal usages requires "
+                  "WebGPU write access to the SharedImage";
     return nullptr;
   }
 
