@@ -8,6 +8,7 @@
 #include "base/memory/raw_ptr.h"
 #include "base/scoped_observation.h"
 #include "base/values.h"
+#include "chrome/browser/ash/input_method/editor_mediator.h"
 #include "chrome/browser/ui/webui/ash/settings/pages/os_settings_section.h"
 #include "components/prefs/pref_change_registrar.h"
 #include "ui/base/ime/ash/input_method_manager.h"
@@ -28,7 +29,8 @@ class InputsSection : public OsSettingsSection,
  public:
   InputsSection(Profile* profile,
                 SearchTagRegistry* search_tag_registry,
-                PrefService* pref_service);
+                PrefService* pref_service,
+                input_method::EditorMediator* editor_mediator);
   ~InputsSection() override;
 
   // OsSettingsSection:
@@ -43,7 +45,7 @@ class InputsSection : public OsSettingsSection,
   void RegisterHierarchy(HierarchyGenerator* generator) const override;
 
  private:
-  bool IsEmojiSuggestionAllowed() const;
+  bool ShouldShowEmojiSuggestionsSettings() const;
   bool IsSpellCheckEnabled() const;
   void UpdateSpellCheckSearchTags();
 
@@ -55,6 +57,7 @@ class InputsSection : public OsSettingsSection,
   // Not owned by this class
   raw_ptr<Profile> profile_;
   raw_ptr<PrefService> pref_service_;
+  raw_ptr<input_method::EditorMediator> editor_mediator_;
 
   PrefChangeRegistrar pref_change_registrar_;
 

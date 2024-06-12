@@ -8,6 +8,7 @@
 #include "ash/webui/settings/public/constants/routes.mojom-forward.h"
 #include "base/no_destructor.h"
 #include "base/strings/utf_string_conversions.h"
+#include "chrome/browser/ash/input_method/editor_mediator_factory.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/ash/keyboard/chrome_keyboard_controller_client.h"
 #include "chrome/browser/ui/webui/ash/settings/os_settings_features_util.h"
@@ -18,6 +19,7 @@
 #include "chrome/common/url_constants.h"
 #include "chrome/grit/generated_resources.h"
 #include "chromeos/components/quick_answers/public/cpp/quick_answers_state.h"
+#include "chromeos/constants/chromeos_features.h"
 #include "components/prefs/pref_service.h"
 #include "content/public/browser/web_ui_data_source.h"
 #include "net/base/url_util.h"
@@ -167,9 +169,14 @@ LanguagesSection::LanguagesSection(Profile* profile,
     : OsSettingsSection(profile, search_tag_registry),
       inputs_subsection_(
           !ash::features::IsOsSettingsRevampWayfindingEnabled()
-              ? std::make_optional<InputsSection>(profile,
-                                                  search_tag_registry,
-                                                  pref_service)
+              ? std::make_optional<InputsSection>(
+                    profile,
+                    search_tag_registry,
+                    pref_service,
+                    chromeos::features::IsOrcaEnabled()
+                        ? input_method::EditorMediatorFactory::GetInstance()
+                              ->GetForProfile(profile)
+                        : nullptr)
               : std::nullopt) {
   SearchTagRegistry::ScopedTagUpdater updater = registry()->StartUpdate();
   updater.AddSearchTags(GetLanguagesPageSearchConceptsV2());

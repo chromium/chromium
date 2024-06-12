@@ -17,6 +17,7 @@
 #include "base/no_destructor.h"
 #include "base/strings/string_number_conversions.h"
 #include "chrome/browser/ash/drive/file_system_util.h"
+#include "chrome/browser/ash/input_method/editor_mediator_factory.h"
 #include "chrome/browser/ash/login/demo_mode/demo_session.h"
 #include "chrome/browser/ui/webui/ash/settings/pages/device/device_display_handler.h"
 #include "chrome/browser/ui/webui/ash/settings/pages/device/device_keyboard_handler.h"
@@ -30,6 +31,7 @@
 #include "chrome/common/url_constants.h"
 #include "chrome/common/webui_url_constants.h"
 #include "chrome/grit/generated_resources.h"
+#include "chromeos/constants/chromeos_features.h"
 #include "components/user_manager/user_manager.h"
 #include "content/public/browser/web_ui.h"
 #include "content/public/browser/web_ui_data_source.h"
@@ -1058,9 +1060,14 @@ DeviceSection::DeviceSection(Profile* profile,
     : OsSettingsSection(profile, search_tag_registry),
       inputs_subsection_(
           ash::features::IsOsSettingsRevampWayfindingEnabled()
-              ? std::make_optional<InputsSection>(profile,
-                                                  search_tag_registry,
-                                                  pref_service)
+              ? std::make_optional<InputsSection>(
+                    profile,
+                    search_tag_registry,
+                    pref_service,
+                    chromeos::features::IsOrcaEnabled()
+                        ? input_method::EditorMediatorFactory::GetInstance()
+                              ->GetForProfile(profile)
+                        : nullptr)
               : std::nullopt),
       power_subsection_(
           !ash::features::IsOsSettingsRevampWayfindingEnabled()

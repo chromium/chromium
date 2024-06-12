@@ -5220,6 +5220,7 @@ source_set("unit_tests") {
     "../ui/webui/ash/settings/pages/device/device_section_unittest.cc",
     "../ui/webui/ash/settings/pages/device/display_settings/display_settings_provider_unittest.cc",
     "../ui/webui/ash/settings/pages/device/input_device_settings/input_device_settings_provider_unittest.cc",
+    "../ui/webui/ash/settings/pages/device/inputs_section_unittest.cc",
     "../ui/webui/ash/settings/pages/internet/internet_handler_unittest.cc",
     "../ui/webui/ash/settings/pages/main/os_settings_hats_handler_unittest.cc",
     "../ui/webui/ash/settings/pages/main/send_search_feedback_handler_unittest.cc",
