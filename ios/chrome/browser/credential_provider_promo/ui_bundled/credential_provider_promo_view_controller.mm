@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#import "ios/chrome/browser/ui/credential_provider_promo/credential_provider_promo_view_controller.h"
+#import "ios/chrome/browser/credential_provider_promo/ui_bundled/credential_provider_promo_view_controller.h"
 
 #import "base/values.h"
 #import "ios/chrome/common/ui/colors/semantic_color_names.h"

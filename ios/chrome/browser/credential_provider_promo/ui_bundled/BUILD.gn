@@ -2,7 +2,7 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
-source_set("credential_provider_promo") {
+source_set("coordinator") {
   sources = [
     "credential_provider_promo_coordinator.h",
     "credential_provider_promo_coordinator.mm",
@@ -16,7 +16,7 @@ source_set("credential_provider_promo") {
     "credential_provider_promo_scene_agent.mm",
   ]
   deps = [
-    ":credential_provider_promo_ui",
+    ":ui",
     "//base",
     "//components/feature_engagement/public",
     "//components/prefs",
@@ -40,7 +40,7 @@ source_set("credential_provider_promo") {
   ]
 }
 
-source_set("credential_provider_promo_ui") {
+source_set("ui") {
   sources = [
     "credential_provider_promo_constants.h",
     "credential_provider_promo_consumer.h",
@@ -52,7 +52,7 @@ source_set("credential_provider_promo_ui") {
     "//components/password_manager/core/browser",
     "//ios/chrome/app/strings",
     "//ios/chrome/browser/shared/public/commands",
-    "//ios/chrome/browser/ui/credential_provider_promo/resources:animation_files",
+    "//ios/chrome/browser/credential_provider_promo/ui_bundled/resources:animation_files",
     "//ios/chrome/common/ui/colors",
     "//ios/chrome/common/ui/confirmation_alert",
     "//ios/public/provider/chrome/browser/lottie:lottie_animation_api",
@@ -74,8 +74,8 @@ source_set("unit_tests") {
     "credential_provider_promo_mediator_unittest.mm",
   ]
   deps = [
-    ":credential_provider_promo",
-    ":credential_provider_promo_ui",
+    ":coordinator",
+    ":ui",
     "//base",
     "//components/password_manager/core/common",
     "//components/prefs:test_support",

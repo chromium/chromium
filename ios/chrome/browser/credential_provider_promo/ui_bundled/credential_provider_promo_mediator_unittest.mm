@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#import "ios/chrome/browser/ui/credential_provider_promo/credential_provider_promo_mediator.h"
+#import "ios/chrome/browser/credential_provider_promo/ui_bundled/credential_provider_promo_mediator.h"
 
 #import "base/strings/sys_string_conversions.h"
 #import "components/password_manager/core/common/password_manager_pref_names.h"
@@ -11,8 +11,8 @@
 #import "ios/chrome/browser/promos_manager/model/mock_promos_manager.h"
 #import "ios/chrome/browser/shared/model/prefs/pref_names.h"
 #import "ios/chrome/browser/shared/public/commands/credential_provider_promo_commands.h"
-#import "ios/chrome/browser/ui/credential_provider_promo/credential_provider_promo_constants.h"
-#import "ios/chrome/browser/ui/credential_provider_promo/credential_provider_promo_consumer.h"
+#import "ios/chrome/browser/credential_provider_promo/ui_bundled/credential_provider_promo_constants.h"
+#import "ios/chrome/browser/credential_provider_promo/ui_bundled/credential_provider_promo_consumer.h"
 #import "ios/chrome/grit/ios_branded_strings.h"
 #import "ios/chrome/grit/ios_strings.h"
 #import "ios/chrome/test/ios_chrome_scoped_testing_local_state.h"

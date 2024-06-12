@@ -1,10 +1,10 @@
 // Copyright 2023 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
-#import "ios/chrome/browser/ui/credential_provider_promo/credential_provider_promo_constants.h"
+#import "ios/chrome/browser/credential_provider_promo/ui_bundled/credential_provider_promo_constants.h"
 
-#ifndef IOS_CHROME_BROWSER_UI_CREDENTIAL_PROVIDER_PROMO_CREDENTIAL_PROVIDER_PROMO_METRICS_H_
-#define IOS_CHROME_BROWSER_UI_CREDENTIAL_PROVIDER_PROMO_CREDENTIAL_PROVIDER_PROMO_METRICS_H_
+#ifndef IOS_CHROME_BROWSER_CREDENTIAL_PROVIDER_PROMO_UI_BUNDLED_CREDENTIAL_PROVIDER_PROMO_METRICS_H_
+#define IOS_CHROME_BROWSER_CREDENTIAL_PROVIDER_PROMO_UI_BUNDLED_CREDENTIAL_PROVIDER_PROMO_METRICS_H_
 
 extern const char kIOSCredentialProviderPromoImpressionHistogram[];
 extern const char kIOSCredentialProviderPromoImpressionIsReminderHistogram[];
@@ -38,4 +38,4 @@ void RecordAction(IOSCredentialProviderPromoSource source,
 
 }  // namespace credential_provider_promo
 
-#endif  // IOS_CHROME_BROWSER_UI_CREDENTIAL_PROVIDER_PROMO_CREDENTIAL_PROVIDER_PROMO_METRICS_H_
+#endif  // IOS_CHROME_BROWSER_CREDENTIAL_PROVIDER_PROMO_UI_BUNDLED_CREDENTIAL_PROVIDER_PROMO_METRICS_H_

@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#import "ios/chrome/browser/ui/credential_provider_promo/credential_provider_promo_coordinator.h"
+#import "ios/chrome/browser/credential_provider_promo/ui_bundled/credential_provider_promo_coordinator.h"
 
 #import "components/prefs/pref_service.h"
 #import "ios/chrome/browser/feature_engagement/model/tracker_factory.h"
@@ -15,10 +15,10 @@
 #import "ios/chrome/browser/shared/public/commands/credential_provider_promo_commands.h"
 #import "ios/chrome/browser/shared/public/commands/promos_manager_commands.h"
 #import "ios/chrome/browser/shared/ui/util/top_view_controller.h"
-#import "ios/chrome/browser/ui/credential_provider_promo/credential_provider_promo_constants.h"
-#import "ios/chrome/browser/ui/credential_provider_promo/credential_provider_promo_mediator.h"
-#import "ios/chrome/browser/ui/credential_provider_promo/credential_provider_promo_metrics.h"
-#import "ios/chrome/browser/ui/credential_provider_promo/credential_provider_promo_view_controller.h"
+#import "ios/chrome/browser/credential_provider_promo/ui_bundled/credential_provider_promo_constants.h"
+#import "ios/chrome/browser/credential_provider_promo/ui_bundled/credential_provider_promo_mediator.h"
+#import "ios/chrome/browser/credential_provider_promo/ui_bundled/credential_provider_promo_metrics.h"
+#import "ios/chrome/browser/credential_provider_promo/ui_bundled/credential_provider_promo_view_controller.h"
 #import "ios/chrome/browser/ui/promos_manager/promos_manager_ui_handler.h"
 #import "ios/chrome/common/ui/confirmation_alert/confirmation_alert_action_handler.h"
 #import "ios/public/provider/chrome/browser/password_auto_fill/password_auto_fill_api.h"
