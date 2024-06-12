@@ -16,6 +16,7 @@
 #include <vector>
 
 #include "base/command_line.h"
+#include "base/containers/heap_array.h"
 #include "base/cpu.h"
 #include "base/files/file.h"
 #include "base/functional/bind.h"
@@ -1192,20 +1193,20 @@ PP_Bool PPBNaClPrivate::GetPnaclResourceInfo(PP_Instance instance,
                               kFilename);
     }
 
-    std::unique_ptr<char[]> buffer(new char[file_size + 1]);
-    int rc = file.Read(0, buffer.get(), file_size);
+    auto buffer = base::HeapArray<char>::Uninit(file_size + 1);
+    int rc = file.Read(0, buffer.data(), file_size);
     if (rc < 0 || rc != file_size) {
       return base::unexpected("GetPnaclResourceInfo, reading failed for: " +
                               kFilename);
     }
 
     // Null-terminate the bytes we we read from the file.
-    buffer.get()[rc] = 0;
+    buffer[rc] = 0;
 
     // Expect the JSON file to contain a top-level object (dictionary).
     ASSIGN_OR_RETURN(
         auto parsed_json,
-        base::JSONReader::ReadAndReturnValueWithError(buffer.get()),
+        base::JSONReader::ReadAndReturnValueWithError(buffer.data()),
         [](base::JSONReader::Error error) {
           return "Parsing resource info failed: JSON parse error: " +
                  std::move(error).message;
