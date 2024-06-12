@@ -309,9 +309,6 @@ BASE_DECLARE_FEATURE(kThemeColorInTopToolbar);
 // fits the screen already).
 BASE_DECLARE_FEATURE(kTabGridAlwaysBounce);
 
-// Feature flag enabling tab grid refactoring.
-BASE_DECLARE_FEATURE(kTabGridRefactoring);
-
 // Whether the Safety Check module should be shown in the Magic Stack.
 bool IsSafetyCheckMagicStackEnabled();
 

@@ -309,10 +309,6 @@ BASE_FEATURE(kTabGridAlwaysBounce,
              "TabGridAlwaysBounce",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
-BASE_FEATURE(kTabGridRefactoring,
-             "TabGridRefactoring",
-             base::FEATURE_DISABLED_BY_DEFAULT);
-
 bool IsSafetyCheckMagicStackEnabled() {
   return base::FeatureList::IsEnabled(kSafetyCheckMagicStack);
 }

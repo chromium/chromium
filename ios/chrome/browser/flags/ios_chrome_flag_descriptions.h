@@ -970,10 +970,6 @@ extern const char kEnableSessionSerializationOptimizationsDescription[];
 extern const char kTabGridAlwaysBounceName[];
 extern const char kTabGridAlwaysBounceDescription[];
 
-// Title and description for the tab grid refactoring flag.
-extern const char kTabGridRefactoringName[];
-extern const char kTabGridRefactoringDescription[];
-
 // Title and description for the flag to enable the new transitions in the
 // TabGrid.
 extern const char kTabGridNewTransitionsName[];
