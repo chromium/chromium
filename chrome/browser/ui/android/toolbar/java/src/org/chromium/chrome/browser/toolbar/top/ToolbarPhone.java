@@ -2108,9 +2108,9 @@ public class ToolbarPhone extends ToolbarLayout
         updateProgressBarVisibility();
         updateShadowVisibility();
         updateTabSwitcherButtonRipple();
-        if (mIsShowingStartSurfaceHomepage || mIsShowingStartSurfaceTabSwitcher) {
+        if (mIsShowingStartSurfaceHomepage) {
             // Makes sure the loading phase from NTP to webpage is not turned on when showing Start
-            // Surface homepage or tab switcher.
+            // Surface homepage.
             mIsInLoadingPhaseFromNtpToWebpage = false;
         }
         // Url bar should be focusable. This will be set in UrlBar#onDraw but there's a delay which
@@ -2864,21 +2864,21 @@ public class ToolbarPhone extends ToolbarLayout
     /**
      * Initiates the loading phase when transitioning from the NTP to a webpage. When the old visual
      * state is either VisualState.NEW_TAB_NORMAL or VisualState.NEW_TAB_SEARCH_ENGINE_NO_LOGO, and
-     * the new visual state updates to VisualState.NORMAL, and the current page is neither the Start
-     * Surface nor the tab switcher, this indicates the beginning of the process of navigating from
-     * the New Tab Page to other webpages. This condition is unique because in other scenarios, the
-     * visual state does not change in this manner.
+     * the new visual state updates to VisualState.NORMAL, and the current page is NTP instead of
+     * Start Surface, this indicates the beginning of the process of navigating from the New Tab
+     * Page to other webpages. This condition is unique because in other scenarios, the visual state
+     * does not change in this manner.
      */
     private void startLoadingPhaseFromNtpToWebpage(@VisualState int newVisualState) {
-        boolean isShowingStartSurfaceOrTabSwitcher =
-                mIsShowingStartSurfaceHomepage || mIsShowingStartSurfaceTabSwitcher;
         boolean isStartLoadingPhaseFromNtpToWebpage =
                 (mVisualState == VisualState.NEW_TAB_NORMAL
                                 || mVisualState == VisualState.NEW_TAB_SEARCH_ENGINE_NO_LOGO)
                         && newVisualState == VisualState.NORMAL;
+        boolean hasVisibleNtp = getToolbarDataProvider().getNewTabPageDelegate().wasShowingNtp();
         if (ChromeFeatureList.sSurfacePolishForToolbarKillSwitch.isEnabled()
                 && isStartLoadingPhaseFromNtpToWebpage
-                && !isShowingStartSurfaceOrTabSwitcher) {
+                && !mIsShowingStartSurfaceHomepage
+                && hasVisibleNtp) {
             mIsInLoadingPhaseFromNtpToWebpage = true;
         }
     }
