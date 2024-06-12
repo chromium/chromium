@@ -4094,6 +4094,8 @@ static_library("ui") {
       "//ui/webui/resources/cr_components/color_change_listener:mojom",
     ]
     public_deps += [
+      "//chrome/browser/ash/accessibility",
+      "//chrome/browser/ash/accessibility/service",
       "//chrome/browser/ui/webui/ash/crostini_installer:mojo_bindings",
       "//chrome/browser/ui/webui/ash/emoji:mojo_bindings",
       "//chrome/browser/ui/webui/ash/emoji:seal_mojom",
@@ -4101,6 +4103,8 @@ static_library("ui") {
     ]
     allow_circular_includes_from += [
       "//chrome/browser/ash",
+      "//chrome/browser/ash/accessibility",
+      "//chrome/browser/ash/accessibility/service",
       "//chrome/browser/ash/crosapi",
       "//chrome/browser/ash/privacy_hub",
       "//chrome/browser/chromeos/extensions/wm",

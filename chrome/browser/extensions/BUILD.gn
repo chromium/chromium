@@ -1240,6 +1240,7 @@ source_set("extensions") {
       "//ash/webui/file_manager/untrusted_resources:file_manager_untrusted_resources",
       "//ash/webui/resources:media_app_bundle_resources_grit",
       "//ash/webui/settings/public/constants:mojom",
+      "//chrome/browser/ash/accessibility",
       "//chrome/browser/ash/crosapi",
       "//chrome/browser/ash/crostini:crostini_installer_types_mojom",
       "//chrome/browser/devtools",
@@ -1298,7 +1299,10 @@ source_set("extensions") {
       "//ui/views",
     ]
 
-    allow_circular_includes_from += [ "//chrome/browser/ash/crosapi" ]
+    allow_circular_includes_from += [
+      "//chrome/browser/ash/accessibility",
+      "//chrome/browser/ash/crosapi",
+    ]
 
     if (is_cfm) {
       deps += [ "//chromeos/ash/components/chromebox_for_meetings" ]

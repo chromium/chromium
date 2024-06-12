@@ -55,7 +55,7 @@ source_set("utils") {
   ]
 
   if (is_chromeos_ash) {
-    deps += [ "//chrome/browser/ash" ]
+    deps += [ "//chrome/browser/ash/accessibility" ]
   } else {
     deps += [ "//content/public/browser" ]
   }

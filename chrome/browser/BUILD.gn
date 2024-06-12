@@ -5320,6 +5320,9 @@ static_library("browser") {
       "//chrome/browser/apps/app_discovery_service",
       "//chrome/browser/apps/app_preload_service",
       "//chrome/browser/ash",
+      "//chrome/browser/ash/accessibility",
+      "//chrome/browser/ash/accessibility/live_caption",
+      "//chrome/browser/ash/accessibility/service",
       "//chrome/browser/ash/bluetooth",
       "//chrome/browser/ash/borealis:borealis_installer_types_mojom",
       "//chrome/browser/ash/crosapi",
@@ -5494,6 +5497,9 @@ static_library("browser") {
     ]
     allow_circular_includes_from += [
       "//chrome/browser/ash",
+      "//chrome/browser/ash/accessibility",
+      "//chrome/browser/ash/accessibility/live_caption",
+      "//chrome/browser/ash/accessibility/service",
       "//chrome/browser/ash/bluetooth",
       "//chrome/browser/ash/crosapi",
       "//chrome/browser/ash/cryptauth",

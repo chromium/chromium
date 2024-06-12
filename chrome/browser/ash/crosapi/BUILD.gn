@@ -336,6 +336,7 @@ source_set("crosapi") {
     "//chrome/browser:browser_process",
     "//chrome/browser/apps/app_service/app_icon",
     "//chrome/browser/ash:print_job_info_proto",
+    "//chrome/browser/ash/accessibility",
     "//chrome/browser/ash/magic_boost:magic_boost_ash",
     "//chrome/browser/ash/mahi:mahi_ash",
     "//chrome/browser/ash/privacy_hub",
@@ -473,6 +474,8 @@ source_set("crosapi") {
     "//media/gpu:buildflags",
     "//printing",
   ]
+
+  allow_circular_includes_from = [ "//chrome/browser/ash/accessibility" ]
 }
 
 source_set("test_support") {
@@ -507,6 +510,7 @@ source_set("test_support") {
     "//base",
     "//chrome/browser/apps/app_service",
     "//chrome/browser/ash:test_support",
+    "//chrome/browser/ash/accessibility",
     "//chrome/test:test_support",
     "//chromeos/ash/components/dbus/shill",
     "//chromeos/ash/components/standalone_browser:test_support",

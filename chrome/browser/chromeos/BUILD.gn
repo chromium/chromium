@@ -446,6 +446,7 @@ source_set("chromeos") {
       "//ash/webui/file_manager:constants",
       "//ash/webui/file_manager:file_manager_ui",
       "//ash/webui/file_manager:file_manager_untrusted_ui",
+      "//chrome/browser/ash/accessibility",
       "//chrome/browser/ash/mahi:mahi_ash",
       "//chrome/browser/ui/ash/system_web_apps:system_web_apps",
       "//chromeos/ash/components/browser_context_helper",

@@ -2155,6 +2155,8 @@ if (!is_android) {
       "//v8",
     ]
 
+    allow_circular_includes_from = []
+
     if (enterprise_watermark) {
       deps += [
         "//chrome/browser/enterprise/watermark:watermark_view_lib",
@@ -2173,8 +2175,14 @@ if (!is_android) {
     if (is_chromeos_ash) {
       deps += [
         "//chrome/browser/accessibility/media_app/test:test_support",
+        "//chrome/browser/ash/accessibility",
+        "//chrome/browser/ash/accessibility:test_support",
+        "//chrome/browser/ash/accessibility/service",
         "//remoting/host/chromeos:features",
       ]
+
+      allow_circular_includes_from +=
+          [ "//chrome/browser/ash/accessibility:browser_tests" ]
     }
 
     # Runtime dependencies
@@ -4496,31 +4504,6 @@ if (!is_android) {
         "../browser/apps/app_service/webapk/webapk_policy_browsertest.cc",
         "../browser/apps/platform_apps/app_window_interactive_uitest_base.cc",
         "../browser/apps/platform_apps/app_window_interactive_uitest_base.h",
-        "../browser/ash/accessibility/accessibility_common_browsertest.cc",
-        "../browser/ash/accessibility/accessibility_extension_api_browsertest.cc",
-        "../browser/ash/accessibility/accessibility_extension_channel_browsertest.cc",
-        "../browser/ash/accessibility/accessibility_highlights_browsertest.cc",
-        "../browser/ash/accessibility/accessibility_manager_browsertest.cc",
-        "../browser/ash/accessibility/accessibility_test_utils.cc",
-        "../browser/ash/accessibility/accessibility_test_utils.h",
-        "../browser/ash/accessibility/autoclick_browsertest.cc",
-        "../browser/ash/accessibility/dictation_browsertest.cc",
-        "../browser/ash/accessibility/dictation_bubble_test_helper.cc",
-        "../browser/ash/accessibility/dictation_bubble_test_helper.h",
-        "../browser/ash/accessibility/facegaze_browsertest.cc",
-        "../browser/ash/accessibility/live_caption/system_live_caption_service_browsertest.cc",
-        "../browser/ash/accessibility/magnification_controller_browsertest.cc",
-        "../browser/ash/accessibility/magnification_manager_browsertest.cc",
-        "../browser/ash/accessibility/select_to_speak_browsertest.cc",
-        "../browser/ash/accessibility/service/accessibility_service_client_browsertest.cc",
-        "../browser/ash/accessibility/service/accessibility_service_devtools_delegate_browsertest.cc",
-        "../browser/ash/accessibility/service/speech_recognition_impl_browsertest.cc",
-        "../browser/ash/accessibility/spoken_feedback_app_list_browsertest.cc",
-        "../browser/ash/accessibility/spoken_feedback_browsertest.cc",
-        "../browser/ash/accessibility/spoken_feedback_browsertest.h",
-        "../browser/ash/accessibility/sticky_keys_browsertest.cc",
-        "../browser/ash/accessibility/switch_access_browsertest.cc",
-        "../browser/ash/accessibility/touch_exploration_controller_browsertest.cc",
         "../browser/ash/account_manager/account_manager_policy_controller_browsertest.cc",
         "../browser/ash/app_list/app_list_client_impl_browsertest.cc",
         "../browser/ash/app_list/app_list_sort_browsertest.cc",
@@ -5217,6 +5200,7 @@ if (!is_android) {
         "//chrome/browser/ash:arc_test_support",
         "//chrome/browser/ash:login_logout_event_proto",
         "//chrome/browser/ash:test_support",
+        "//chrome/browser/ash/accessibility:browser_tests",
         "//chrome/browser/ash/bluetooth",
         "//chrome/browser/ash/crosapi",
         "//chrome/browser/ash/crosapi:test_support",
@@ -11032,6 +11016,8 @@ if (!is_android) {
         "//chrome/browser",
         "//chrome/browser/ash",
         "//chrome/browser/ash:test_support",
+        "//chrome/browser/ash/accessibility",
+        "//chrome/browser/ash/accessibility:test_support",
         "//chrome/browser/devtools",
         "//chrome/renderer",
         "//components/resources",
@@ -11630,6 +11616,8 @@ if (!is_android && !is_chromeos_device) {
           "//ash:interactive_ui_test_support",
           "//ash/webui/print_management:print_management",
           "//chrome/browser/apps/app_service",
+          "//chrome/browser/ash/accessibility",
+          "//chrome/browser/ash/accessibility:test_support",
           "//chrome/browser/ash/crosapi:crosapi",
           "//chrome/browser/ash/system_web_apps/test_support",
           "//chrome/browser/ash/system_web_apps/test_support:test_support_ui",
