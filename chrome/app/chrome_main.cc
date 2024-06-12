@@ -4,10 +4,12 @@
 
 #include <stdint.h>
 
+#include <iostream>
 #include <memory>
 
 #include "base/allocator/partition_allocator/src/partition_alloc/partition_alloc_buildflags.h"
 #include "base/command_line.h"
+#include "base/environment.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback_helpers.h"
 #include "base/sampling_heap_profiler/poisson_allocation_sampler.h"
@@ -51,7 +53,42 @@
 #include "chrome/install_static/install_details.h"
 
 #define DLLEXPORT __declspec(dllexport)
+#endif  // BUILDFLAG(IS_WIN)
 
+#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_MAC) || \
+    BUILDFLAG(IS_WIN)
+#define ENABLE_OLD_HEADLESS
+#endif
+
+#ifdef ENABLE_OLD_HEADLESS
+namespace {
+void ShowOldHeadlessWarningMaybe(const base::CommandLine* command_line) {
+  // Show warning only if in browser process.
+  if (!command_line->GetSwitchValueASCII(::switches::kProcessType).empty()) {
+    return;
+  }
+
+  constexpr char kChromeDisableOldHeadlessWarning[] =
+      "CHROME_DISABLE_OLD_HEADLESS_WARNING";
+  std::unique_ptr<base::Environment> env(base::Environment::Create());
+  if (env->HasVar(kChromeDisableOldHeadlessWarning)) {
+    return;
+  }
+
+  std::cerr
+      << "Old Headless mode will be removed from the Chrome binary soon. "
+         "Please use the new Headless mode "
+         "(https://developer.chrome.com/docs/chromium/new-headless) or the "
+         "chrome-headless-shell which is a standalone implementation of "
+         "the old Headless mode "
+         "(https://developer.chrome.com/blog/chrome-headless-shell)."
+      << std::endl
+      << std::endl;
+}
+}  // namespace
+#endif  // ENABLE_OLD_HEADLESS
+
+#if BUILDFLAG(IS_WIN)
 // We use extern C for the prototype DLLEXPORT to avoid C++ name mangling.
 extern "C" {
 DLLEXPORT int __cdecl ChromeMain(HINSTANCE instance,
@@ -169,16 +206,15 @@ int ChromeMain(int argc, const char** argv) {
     }
     headless_mode_handle = headless::InitHeadlessMode();
   } else {
-#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_MAC) || \
-    BUILDFLAG(IS_WIN)
+#ifdef ENABLE_OLD_HEADLESS
     if (headless::IsOldHeadlessMode()) {
+      ShowOldHeadlessWarningMaybe(command_line);
 #if BUILDFLAG(GOOGLE_CHROME_BRANDING)
       command_line->AppendSwitch(::headless::switches::kEnableCrashReporter);
 #endif
       return headless::HeadlessShellMain(std::move(params));
     }
-#endif  // BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_MAC) ||
-        // BUILDFLAG(IS_WIN)
+#endif  // ENABLE_OLD_HEADLESS
   }
 
 #if BUILDFLAG(IS_MAC)
