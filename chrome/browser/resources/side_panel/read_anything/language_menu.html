@@ -70,6 +70,28 @@
       color: var(--color-sys-error);
     }
 
+    #toast-in-dialog {
+      bottom: 0;
+      left: 0;
+      min-width: 245px;
+      width: 80%;
+    }
+
+    #toastDiv {
+      white-space: normal;
+      line-height: 1.2;
+    }
+
+    #toastTitle {
+      display:block;
+      font-size: 1em;
+    }
+
+    #toastMessage {
+      display:inline-block;
+      font-size: 0.8em;
+    }
+
   </style>
 
 <cr-dialog id="languageMenu" ignore-popstate on-close="onCloseDialog_">
@@ -118,5 +140,13 @@
               [[i18nWraper(item.notification.text)]]
         </span>
     </template>
+    <cr-toast id="toast-in-dialog" duration="[[toastDuration_]]">
+      <div id="toastDiv">
+        <span id="toastTitle">
+          [[toastTitle_]]
+        </span>
+        <span id="toastMessage">$i18n{readingModeVoiceDownloadedMessage}</span>
+      </div>
+    </cr-toast>
   </div>
 </cr-dialog>

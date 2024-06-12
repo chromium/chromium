@@ -107,7 +107,7 @@ suite('UpdateVoicePack', () => {
 
       // The first call to update status should be the existing status from
       // the server.
-      app.updateVoicePackStatus(lang, 'kInstalled');
+      app.updateVoicePackStatus(lang, 'kNotInstalled');
 
       assertFalse(toast.open);
     });
@@ -116,7 +116,7 @@ suite('UpdateVoicePack', () => {
       const lang = 'en';
 
       // existing status
-      app.updateVoicePackStatus(lang, 'kInstalled');
+      app.updateVoicePackStatus(lang, 'kNotInstalled');
       // then we request install
       app.updateVoicePackStatus(lang, 'kInstalling');
 
@@ -127,7 +127,7 @@ suite('UpdateVoicePack', () => {
       const lang = 'en';
 
       // existing status
-      app.updateVoicePackStatus(lang, 'kInstalled');
+      app.updateVoicePackStatus(lang, 'kNotInstalled');
       // then we request install
       app.updateVoicePackStatus(lang, 'kInstalling');
       // install error
@@ -140,7 +140,7 @@ suite('UpdateVoicePack', () => {
       const lang = 'en';
 
       // existing status
-      app.updateVoicePackStatus(lang, 'kInstalled');
+      app.updateVoicePackStatus(lang, 'kNotInstalled');
       // then we request install
       app.updateVoicePackStatus(lang, 'kInstalling');
       // install completes

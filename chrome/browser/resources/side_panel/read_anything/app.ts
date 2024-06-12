@@ -21,7 +21,7 @@ import type {SkColor} from '//resources/mojo/skia/public/mojom/skcolor.mojom-web
 import {PolymerElement} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {getTemplate} from './app.html.js';
-import {minOverflowLengthToScroll, playFromSelectionTimeout, validatedFontName} from './common.js';
+import {minOverflowLengthToScroll, playFromSelectionTimeout, toastDurationMs, validatedFontName} from './common.js';
 import type {ReadAnythingToolbarElement} from './read_anything_toolbar.js';
 import type {VoicePackStatus} from './voice_language_util.js';
 import {areVoicesEqual, AVAILABLE_GOOGLE_TTS_LOCALES, convertLangOrLocaleForVoicePackManager, convertLangOrLocaleToExactVoicePackLocale, convertLangToAnAvailableLangIfPresent, createInitialListOfEnabledLanguages, doesLanguageHaveNaturalVoices, getVoicePackConvertedLangIfExists, isEspeak, isNatural, isVoicePackStatusError, isVoicePackStatusSuccess, mojoVoicePackStatusToVoicePackStatusEnum, VoiceClientSideStatusCode, VoicePackServerStatusErrorCode, VoicePackServerStatusSuccessCode} from './voice_language_util.js';
@@ -329,7 +329,8 @@ export class ReadAnythingElement extends ReadAnythingElementBase {
   private emptyStateImagePath_: string;
   private emptyStateDarkImagePath_: string;
   private emptyStateHeading_: string;
-  private lastDownloadedLang_: string;
+  private lastDownloadedLang: string;
+  private toastDuration_: number = toastDurationMs;
   private emptyStateSubheading_: string;
 
   private previousHighlights_: HTMLElement[] = [];
@@ -1012,17 +1013,18 @@ export class ReadAnythingElement extends ReadAnythingElementBase {
           break;
         case VoicePackServerStatusSuccessCode.INSTALLED:
           // See if voice is newly downloaded and should have a toast notifying
-          // the user. If there is no old status, then we are opening for the
-          // first time and therefore should not be showing a notification.
+          // the user.
           if (oldVoicePackStatus &&
               oldVoicePackStatus.code !==
                   VoicePackServerStatusSuccessCode.INSTALLED) {
-            this.lastDownloadedLang_ = getVoicePackConvertedLangIfExists(lang);
-            this.showToast_();
+            // TODO (b/346619236): some language codes miss locale and are not
+            // translated into display names
+            this.lastDownloadedLang = getVoicePackConvertedLangIfExists(lang);
 
             // Force a refresh of the voices list since we might not get an
             // update the voices have changed.
             this.getVoices(true);
+            this.showToast_();
           }
 
           this.autoSwitchVoice_(lang);
@@ -1092,7 +1094,29 @@ export class ReadAnythingElement extends ReadAnythingElementBase {
 
   // TODO(b/325962407): replace toast with system notification
   private showToast_(): void {
-    const toast = document.querySelector<CrToastElement>('#toast')!;
+    let toast: CrToastElement;
+    // Tests don't have menus and dialogs set up, no need to check
+    if (this.$.toolbar.shadowRoot!.querySelector('voice-selection-menu')) {
+      const isLanguageMenuOpen =
+          this.$.toolbar.shadowRoot!.querySelector('voice-selection-menu')!
+              .shadowRoot!.querySelector('language-menu') ?
+          this.$.toolbar.shadowRoot!.querySelector('voice-selection-menu')!
+              .shadowRoot!.querySelector('language-menu')!.shadowRoot!
+              .querySelector('cr-dialog')!.open :
+          false;
+      toast = isLanguageMenuOpen ?
+          this.$.toolbar.shadowRoot!.querySelector('voice-selection-menu')!
+              .shadowRoot!.querySelector('language-menu')!.shadowRoot!
+              .querySelector('cr-dialog')!.querySelector<CrToastElement>(
+                  '#toast-in-dialog')! :
+          document.querySelector<CrToastElement>('#toast')!;
+    } else {
+      toast = document.querySelector<CrToastElement>('#toast')!;
+    }
+
+    if (toast.open) {
+      toast.hide();
+    }
     toast.show();
   }
 

@@ -10,6 +10,7 @@ import {AnchorAlignment} from '//resources/cr_elements/cr_action_menu/cr_action_
 export const minOverflowLengthToScroll = 75;
 export const spinnerDebounceTimeout = 150;
 export const playFromSelectionTimeout = spinnerDebounceTimeout + 25;
+export const toastDurationMs = 10000;
 
 export const defaultFontName: string = 'sans-serif';
 
