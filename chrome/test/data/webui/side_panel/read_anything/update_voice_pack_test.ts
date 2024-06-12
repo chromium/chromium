@@ -153,6 +153,21 @@ suite('UpdateVoicePack', () => {
 
       assertTrue(toast.open);
     });
+
+    test('shows after installed with complete language locale', () => {
+      const lang = 'ja';
+
+      // existing status
+      app.updateVoicePackStatus(lang, 'kNotInstalled');
+      // then we request install
+      app.updateVoicePackStatus(lang, 'kInstalling');
+      // install completes
+      app.updateVoicePackStatus(lang, 'kInstalled');
+
+      assertTrue(toast.open);
+      assertTrue(
+          toast.querySelector('#toastTitle')!.textContent!.includes('ja-jp'));
+    });
   });
 
   test(

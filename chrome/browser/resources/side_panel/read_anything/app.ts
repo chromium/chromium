@@ -1024,9 +1024,15 @@ export class ReadAnythingElement extends ReadAnythingElementBase {
               (oldVoicePackStatus &&
                oldVoicePackStatus.code !==
                    VoicePackServerStatusSuccessCode.INSTALLED)) {
-            // TODO (b/346619236): some language codes miss locale and are not
-            // translated into display names
-            this.lastDownloadedLang = getVoicePackConvertedLangIfExists(lang);
+            const genericVoicePackLanguage =
+                getVoicePackConvertedLangIfExists(lang);
+            const exactVoicePackLanguage =
+                convertLangOrLocaleToExactVoicePackLocale(
+                    genericVoicePackLanguage);
+
+            this.lastDownloadedLang = exactVoicePackLanguage ?
+                exactVoicePackLanguage :
+                genericVoicePackLanguage;
 
             // Force a refresh of the voices list since we might not get an
             // update the voices have changed.
