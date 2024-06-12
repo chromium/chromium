@@ -467,6 +467,11 @@ BaseRenderingContext2D::SaveLayerForState(
     const CanvasRenderingContext2DState& state,
     sk_sp<PaintFilter> filter,
     cc::PaintCanvas& canvas) const {
+  if (!IsTransformInvertible()) {
+    canvas.saveLayerAlphaf(1.0f);
+    return CanvasRenderingContext2DState::SaveType::kBeginEndLayerOneSave;
+  }
+
   const int initial_save_count = canvas.getSaveCount();
   bool needs_compositing = state.GlobalComposite() != SkBlendMode::kSrcOver;
 
@@ -1235,13 +1240,12 @@ void BaseRenderingContext2D::scale(double sx, double sy) {
   }
 
   SetTransform(new_transform);
-  if (UNLIKELY(!IsTransformInvertible())) {
-    return;
-  }
-
   c->scale(fsx, fsy);
-  GetModifiablePath().Transform(
-      AffineTransform().ScaleNonUniform(1.0 / fsx, 1.0 / fsy));
+
+  if (LIKELY(IsTransformInvertible())) {
+    GetModifiablePath().Transform(
+        AffineTransform().ScaleNonUniform(1.0 / fsx, 1.0 / fsy));
+  }
 }
 
 void BaseRenderingContext2D::rotate(double angle_in_radians) {
@@ -1264,12 +1268,12 @@ void BaseRenderingContext2D::rotate(double angle_in_radians) {
   }
 
   SetTransform(new_transform);
-  if (UNLIKELY(!IsTransformInvertible())) {
-    return;
-  }
   c->rotate(ClampTo<float>(angle_in_radians * (180.0 / kPiFloat)));
-  GetModifiablePath().Transform(
-      AffineTransform().RotateRadians(-angle_in_radians));
+
+  if (LIKELY(IsTransformInvertible())) {
+    GetModifiablePath().Transform(
+        AffineTransform().RotateRadians(-angle_in_radians));
+  }
 }
 
 void BaseRenderingContext2D::translate(double tx, double ty) {
@@ -1300,12 +1304,11 @@ void BaseRenderingContext2D::translate(double tx, double ty) {
   }
 
   SetTransform(new_transform);
-  if (UNLIKELY(!IsTransformInvertible())) {
-    return;
-  }
-
   c->translate(ftx, fty);
-  GetModifiablePath().Transform(AffineTransform().Translate(-ftx, -fty));
+
+  if (LIKELY(IsTransformInvertible())) {
+    GetModifiablePath().Transform(AffineTransform().Translate(-ftx, -fty));
+  }
 }
 
 void BaseRenderingContext2D::transform(double m11,
@@ -1342,12 +1345,11 @@ void BaseRenderingContext2D::transform(double m11,
   }
 
   SetTransform(new_transform);
-  if (UNLIKELY(!IsTransformInvertible())) {
-    return;
-  }
-
   c->concat(AffineTransformToSkM44(transform));
-  GetModifiablePath().Transform(transform.Inverse());
+
+  if (LIKELY(IsTransformInvertible())) {
+    GetModifiablePath().Transform(transform.Inverse());
+  }
 }
 
 void BaseRenderingContext2D::resetTransform() {

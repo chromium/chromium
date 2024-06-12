@@ -89,6 +89,7 @@ using ::cc::SaveLayerAlphaOp;
 using ::cc::SaveLayerFiltersOp;
 using ::cc::SaveLayerOp;
 using ::cc::SaveOp;
+using ::cc::ScaleOp;
 using ::cc::SetMatrixOp;
 using ::cc::TranslateOp;
 using ::cc::UsePaintCache;
@@ -1111,6 +1112,30 @@ TEST(BaseRenderingContextLayerGlobalStateTests, TransformsWithShadow) {
                                                0, 0, 1, 0,  //
                                                0, 0, 0, 1)),
                   PaintOpEq<RestoreOp>(), PaintOpEq<RestoreOp>())));
+}
+
+TEST(BaseRenderingContextLayerGlobalStateTests, NonInvertibleTransform) {
+  test::TaskEnvironment task_environment;
+  ScopedCanvas2dLayersForTest layer_feature(/*enabled=*/true);
+  V8TestingScope scope;
+  auto* context = MakeGarbageCollected<TestRenderingContext2D>(scope);
+  NonThrowableExceptionState exception_state;
+
+  context->scale(0, 5);
+  context->setGlobalAlpha(0.3f);
+  context->setGlobalCompositeOperation("source-in");
+  context->setShadowBlur(2.0);
+  context->setShadowColor("red");
+  context->beginLayer(scope.GetScriptState(),
+                      FilterOption(scope, "'blur(1px)'"), exception_state);
+  context->endLayer(exception_state);
+
+  // Because the layer is not rasterizable, the shadow, global alpha,
+  // composite op and filter are optimized away.
+  EXPECT_THAT(context->FlushRecorder(),
+              RecordedOpsAre(PaintOpEq<ScaleOp>(0, 5),
+                             DrawRecordOpEq(PaintOpEq<SaveLayerAlphaOp>(1.0f),
+                                            PaintOpEq<RestoreOp>())));
 }
 
 TEST(BaseRenderingContextLayerGlobalStateTests, CopyCompositeOp) {
