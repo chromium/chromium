@@ -5359,9 +5359,9 @@
     "expiry_milestone": 128
   },
   {
-      "name": "ip-protection-proxy-opt-out",
-      "owners": [ "awillia@chromium.org", "//chrome/browser/ip_protection/OWNERS" ],
-      "expiry_milestone": 128
+    "name": "ip-protection-proxy-opt-out",
+    "owners": [ "awillia@chromium.org", "//chrome/browser/ip_protection/OWNERS" ],
+    "expiry_milestone": 136
   },
   {
     "name": "iph-extensions-menu-feature",
