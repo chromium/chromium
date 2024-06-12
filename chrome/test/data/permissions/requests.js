@@ -10,18 +10,27 @@ function requestNotification() {
 }
 
 async function requestCamera() {
-  var constraints = { video: true };
-  cameraStream = await navigator.mediaDevices.getUserMedia(constraints);
+  try {
+    var constraints = {video: true};
+    cameraStream = await navigator.mediaDevices.getUserMedia(constraints);
+  } catch (error) {
+  }
 }
 
 async function requestMicrophone() {
-  var constraints = { audio: true };
-  micStream = await navigator.mediaDevices.getUserMedia(constraints);
+  try {
+    var constraints = {audio: true};
+    micStream = await navigator.mediaDevices.getUserMedia(constraints);
+  } catch (error) {
+  }
 }
 
 async function requestCameraAndMicrophone() {
-  var constraints = { audio: true, video: true };
-  await navigator.mediaDevices.getUserMedia(constraints);
+  try {
+    var constraints = {audio: true, video: true};
+    await navigator.mediaDevices.getUserMedia(constraints);
+  } catch (error) {
+  }
 }
 
 function stopCamera() {

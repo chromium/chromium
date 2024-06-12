@@ -29,48 +29,54 @@
 #include "url/gurl.h"
 
 namespace {
-constexpr char kRequestCamera[] = R"(
-    new Promise(async resolve => {
-      var constraints = { video: true };
-      window.focus();
-      try {
-        const stream = await navigator.mediaDevices.getUserMedia(constraints);
-        resolve('granted');
-      } catch(error) {
-        resolve('denied')
-      }
-    })
-    )";
+class ChipAnimationObserver : PermissionChipView::Observer {
+ public:
+  enum class QuitOnEvent {
+    kExpand,
+    kCollapse,
+    kVisibiltyTrue,
+    kVisibiltyFalse,
+  };
 
-constexpr char kRequestMic[] = R"(
-    new Promise(async resolve => {
-      var constraints = { audio: true };
-      window.focus();
-      try {
-        const stream = await navigator.mediaDevices.getUserMedia(constraints);
-        resolve('granted');
-      } catch(error) {
-        resolve('denied')
-      }
-    })
-    )";
+  explicit ChipAnimationObserver(PermissionChipView* chip) {
+    observation_.Observe(chip);
+  }
 
-constexpr char kRequestCameraAndMic[] = R"(
-    new Promise(async resolve => {
-      var constraints = { audio: true, video: true };
-      window.focus();
-      try {
-        const stream = await navigator.mediaDevices.getUserMedia(constraints);
-        resolve('granted');
-      } catch(error) {
-        resolve('denied')
-      }
-    })
-    )";
+  void WaitForChip() { loop_.Run(); }
+
+  void OnExpandAnimationEnded() override {
+    if (quiet_on_event == QuitOnEvent::kExpand) {
+      loop_.Quit();
+    }
+  }
+  void OnCollapseAnimationEnded() override {
+    if (quiet_on_event == QuitOnEvent::kCollapse) {
+      loop_.Quit();
+    }
+  }
+
+  void OnChipVisibilityChanged(bool is_visible) override {
+    if (quiet_on_event == QuitOnEvent::kVisibiltyTrue && is_visible) {
+      loop_.Quit();
+      return;
+    }
+
+    if (quiet_on_event == QuitOnEvent::kVisibiltyFalse && !is_visible) {
+      loop_.Quit();
+    }
+  }
+
+  base::ScopedObservation<PermissionChipView, PermissionChipView::Observer>
+      observation_{this};
+  base::RunLoop loop_;
+  QuitOnEvent quiet_on_event = QuitOnEvent::kExpand;
+};
 }  // namespace
 
 class LHSIndicatorsUiBrowserTest : public UiBrowserTest {
  public:
+  enum class TargetViewToVerify { kLhsIndicator, kPageInfo };
+
   LHSIndicatorsUiBrowserTest() {
     scoped_features_.InitAndEnableFeature(
         content_settings::features::kLeftHandSideActivityIndicators);
@@ -94,6 +100,8 @@ class LHSIndicatorsUiBrowserTest : public UiBrowserTest {
     // in the original url.
     std::u16string url_override(u"https://www.test.com/");
     OverrideVisibleUrlInLocationBar(url_override);
+
+    InitMainFrame();
 
     UiBrowserTest::SetUpOnMainThread();
   }
@@ -119,31 +127,15 @@ class LHSIndicatorsUiBrowserTest : public UiBrowserTest {
   void ShowUi(const std::string& name) override {}
 
   bool VerifyUi() override {
-    LocationBarView* const location_bar = GetLocationBarView(browser());
-    PermissionDashboardController* permission_dashboard_controller =
-        location_bar->permission_dashboard_controller();
-
-    if (!permission_dashboard_controller) {
-      return false;
-    }
-    PermissionDashboardView* permission_dashboard_view =
-        permission_dashboard_controller->permission_dashboard_view();
-
-    if (!permission_dashboard_view ||
-        !permission_dashboard_view->GetVisible()) {
-      return false;
-    }
-    PermissionChipView* lhs_indicators_chip =
-        permission_dashboard_view->GetIndicatorChip();
-
-    if (!lhs_indicators_chip || !lhs_indicators_chip->GetVisible()) {
-      return false;
+    views::View* view_to_verify = nullptr;
+    if (target_ == TargetViewToVerify::kLhsIndicator) {
+      view_to_verify = GetIndicatorChip();
+    } else if (target_ == TargetViewToVerify::kPageInfo) {
+      view_to_verify = GetDashboardController()->page_info_for_testing();
     }
 
     const auto* const test_info =
         testing::UnitTest::GetInstance()->current_test_info();
-    views::View* view_to_verify = view_to_verify_;
-    view_to_verify_ = nullptr;
     return VerifyPixelUi(view_to_verify, test_info->test_suite_name(),
                          test_info->name()) != ui::test::ActionResult::kFailed;
   }
@@ -173,46 +165,82 @@ class LHSIndicatorsUiBrowserTest : public UiBrowserTest {
   }
 
   content::RenderFrameHost* InitMainFrame() {
-    content::WebContents* embedder_contents =
-        browser()->tab_strip_model()->GetActiveWebContents();
     content::RenderFrameHost* main_rfh =
         ui_test_utils::NavigateToURLBlockUntilNavigationsComplete(browser(),
                                                                   GetURL(), 1);
-    embedder_contents->Focus();
+    web_contents()->Focus();
     return main_rfh;
   }
 
-  void SetIndicatorsViewToCheck() {
-    LocationBarView* const location_bar = GetLocationBarView(browser());
-    PermissionDashboardController* permission_dashboard_controller =
-        location_bar->permission_dashboard_controller();
-
-    ASSERT_TRUE(permission_dashboard_controller);
-
-    // Prevernt the LHS indicator to collapse from the verbose state.
-    permission_dashboard_controller->DoNotCollapseForTesting();
-
-    view_to_verify_ =
-        permission_dashboard_controller->permission_dashboard_view();
-  }
-
-  void SetPageInfoViewToCheck() {
-    LocationBarView* const location_bar = GetLocationBarView(browser());
-    PermissionDashboardController* permission_dashboard_controller =
-        location_bar->permission_dashboard_controller();
-
-    ASSERT_TRUE(permission_dashboard_controller);
-
-    permission_dashboard_controller->ShowPageInfoDialogForTesting();
-    view_to_verify_ = permission_dashboard_controller->page_info_for_testing();
+  void UpdatePageInfo() {
+    target_ = TargetViewToVerify::kPageInfo;
+    PermissionDashboardController* controller = GetDashboardController();
+    controller->ShowPageInfoDialogForTesting();
 
     // Override origin in PageInfo to avoid flakiness due to different port.
-    auto* bubble_view = static_cast<PageInfoBubbleView*>(view_to_verify_);
+    auto* bubble_view =
+        static_cast<PageInfoBubbleView*>(controller->page_info_for_testing());
     std::u16string site_name = u"test.com";
     bubble_view->presenter_for_testing()->SetSiteNameForTesting(site_name);
     ASSERT_EQ(bubble_view->presenter_for_testing()->GetSubjectNameForDisplay(),
               site_name);
   }
+
+  void ExpandIndicator(std::string js) {
+    ChipAnimationObserver chip_animation_observer(GetIndicatorChip());
+    chip_animation_observer.quiet_on_event =
+        ChipAnimationObserver::QuitOnEvent::kExpand;
+
+    EXPECT_TRUE(content::ExecJs(web_contents(), js));
+
+    // Wait until chip expands.
+    chip_animation_observer.WaitForChip();
+
+    EXPECT_TRUE(GetIndicatorChip()->GetVisible());
+    EXPECT_TRUE(GetDashboardController()->is_verbose());
+  }
+
+  void CollapseIndicator() {
+    ChipAnimationObserver chip_animation_observer(GetIndicatorChip());
+    chip_animation_observer.quiet_on_event =
+        ChipAnimationObserver::QuitOnEvent::kCollapse;
+    // Wait until chip collapses.
+    chip_animation_observer.WaitForChip();
+
+    EXPECT_TRUE(GetIndicatorChip()->GetVisible());
+    EXPECT_FALSE(GetDashboardController()->is_verbose());
+  }
+
+  void HideIndicator(std::string js) {
+    ChipAnimationObserver chip_animation_observer(GetIndicatorChip());
+    chip_animation_observer.quiet_on_event =
+        ChipAnimationObserver::QuitOnEvent::kVisibiltyFalse;
+
+    EXPECT_TRUE(content::ExecJs(web_contents(), js));
+
+    // Wait until chip hides.
+    chip_animation_observer.WaitForChip();
+
+    EXPECT_FALSE(GetIndicatorChip()->GetVisible());
+    EXPECT_FALSE(GetDashboardController()->is_verbose());
+  }
+
+  PermissionChipView* GetIndicatorChip() {
+    return GetLocationBarView(browser())
+        ->permission_dashboard_controller()
+        ->permission_dashboard_view()
+        ->GetIndicatorChip();
+  }
+
+  PermissionDashboardController* GetDashboardController() {
+    return GetLocationBarView(browser())->permission_dashboard_controller();
+  }
+
+  content::WebContents* web_contents() {
+    return browser()->tab_strip_model()->GetActiveWebContents();
+  }
+
+  TargetViewToVerify target_ = TargetViewToVerify::kLhsIndicator;
 
  private:
   // Disable the permission chip animation. This happens automatically in pixel
@@ -223,16 +251,15 @@ class LHSIndicatorsUiBrowserTest : public UiBrowserTest {
           gfx::Animation::RichAnimationRenderMode::FORCE_DISABLED);
   base::test::ScopedFeatureList scoped_features_;
   std::unique_ptr<net::EmbeddedTestServer> https_server_;
-  raw_ptr<views::View> view_to_verify_;
 };
 
 IN_PROC_BROWSER_TEST_F(LHSIndicatorsUiBrowserTest, InvokeUi_camera) {
   SetPermission(ContentSettingsType::MEDIASTREAM_CAMERA,
                 ContentSetting::CONTENT_SETTING_ALLOW);
 
-  content::RenderFrameHost* main_rfh = InitMainFrame();
-  SetIndicatorsViewToCheck();
-  EXPECT_TRUE(content::ExecJs(main_rfh, kRequestCamera));
+  GetDashboardController()->DoNotCollapseForTesting();
+
+  ExpandIndicator("requestCamera()");
 
   ShowAndVerifyUi();
 }
@@ -241,9 +268,9 @@ IN_PROC_BROWSER_TEST_F(LHSIndicatorsUiBrowserTest, InvokeUi_microphone) {
   SetPermission(ContentSettingsType::MEDIASTREAM_MIC,
                 ContentSetting::CONTENT_SETTING_ALLOW);
 
-  content::RenderFrameHost* main_rfh = InitMainFrame();
-  SetIndicatorsViewToCheck();
-  EXPECT_TRUE(content::ExecJs(main_rfh, kRequestMic));
+  GetDashboardController()->DoNotCollapseForTesting();
+
+  ExpandIndicator("requestMicrophone()");
 
   ShowAndVerifyUi();
 }
@@ -261,9 +288,9 @@ IN_PROC_BROWSER_TEST_F(LHSIndicatorsUiBrowserTest,
   SetPermission(ContentSettingsType::MEDIASTREAM_MIC,
                 ContentSetting::CONTENT_SETTING_ALLOW);
 
-  content::RenderFrameHost* main_rfh = InitMainFrame();
-  SetIndicatorsViewToCheck();
-  EXPECT_TRUE(content::ExecJs(main_rfh, kRequestCameraAndMic));
+  GetDashboardController()->DoNotCollapseForTesting();
+
+  ExpandIndicator("requestCameraAndMicrophone()");
 
   ShowAndVerifyUi();
 }
@@ -279,9 +306,9 @@ IN_PROC_BROWSER_TEST_F(LHSIndicatorsUiBrowserTest,
   SetPermission(ContentSettingsType::MEDIASTREAM_CAMERA,
                 ContentSetting::CONTENT_SETTING_BLOCK);
 
-  content::RenderFrameHost* main_rfh = InitMainFrame();
-  SetIndicatorsViewToCheck();
-  EXPECT_TRUE(content::ExecJs(main_rfh, kRequestCamera));
+  GetDashboardController()->DoNotCollapseForTesting();
+
+  ExpandIndicator("requestCamera()");
 
   ShowAndVerifyUi();
 }
@@ -291,9 +318,9 @@ IN_PROC_BROWSER_TEST_F(LHSIndicatorsUiBrowserTest,
   SetPermission(ContentSettingsType::MEDIASTREAM_MIC,
                 ContentSetting::CONTENT_SETTING_BLOCK);
 
-  content::RenderFrameHost* main_rfh = InitMainFrame();
-  SetIndicatorsViewToCheck();
-  EXPECT_TRUE(content::ExecJs(main_rfh, kRequestMic));
+  GetDashboardController()->DoNotCollapseForTesting();
+
+  ExpandIndicator("requestMicrophone()");
 
   ShowAndVerifyUi();
 }
@@ -305,9 +332,9 @@ IN_PROC_BROWSER_TEST_F(LHSIndicatorsUiBrowserTest,
   SetPermission(ContentSettingsType::MEDIASTREAM_MIC,
                 ContentSetting::CONTENT_SETTING_BLOCK);
 
-  content::RenderFrameHost* main_rfh = InitMainFrame();
-  SetIndicatorsViewToCheck();
-  EXPECT_TRUE(content::ExecJs(main_rfh, kRequestCameraAndMic));
+  GetDashboardController()->DoNotCollapseForTesting();
+
+  ExpandIndicator("requestCameraAndMicrophone()");
 
   ShowAndVerifyUi();
 }
@@ -316,9 +343,9 @@ IN_PROC_BROWSER_TEST_F(LHSIndicatorsUiBrowserTest, InvokeUi_PageInfo_camera) {
   SetPermission(ContentSettingsType::MEDIASTREAM_CAMERA,
                 ContentSetting::CONTENT_SETTING_ALLOW);
 
-  content::RenderFrameHost* main_rfh = InitMainFrame();
-  EXPECT_TRUE(content::ExecJs(main_rfh, kRequestCamera));
-  SetPageInfoViewToCheck();
+  ExpandIndicator("requestCamera()");
+
+  UpdatePageInfo();
 
   ShowAndVerifyUi();
 }
@@ -327,9 +354,9 @@ IN_PROC_BROWSER_TEST_F(LHSIndicatorsUiBrowserTest, InvokeUi_PageInfo_mic) {
   SetPermission(ContentSettingsType::MEDIASTREAM_MIC,
                 ContentSetting::CONTENT_SETTING_ALLOW);
 
-  content::RenderFrameHost* main_rfh = InitMainFrame();
-  EXPECT_TRUE(content::ExecJs(main_rfh, kRequestMic));
-  SetPageInfoViewToCheck();
+  ExpandIndicator("requestMicrophone()");
+
+  UpdatePageInfo();
 
   ShowAndVerifyUi();
 }
@@ -341,9 +368,9 @@ IN_PROC_BROWSER_TEST_F(LHSIndicatorsUiBrowserTest,
   SetPermission(ContentSettingsType::MEDIASTREAM_MIC,
                 ContentSetting::CONTENT_SETTING_ALLOW);
 
-  content::RenderFrameHost* main_rfh = InitMainFrame();
-  EXPECT_TRUE(content::ExecJs(main_rfh, kRequestCameraAndMic));
-  SetPageInfoViewToCheck();
+  ExpandIndicator("requestCameraAndMicrophone()");
+
+  UpdatePageInfo();
 
   ShowAndVerifyUi();
 }
@@ -353,9 +380,9 @@ IN_PROC_BROWSER_TEST_F(LHSIndicatorsUiBrowserTest,
   SetPermission(ContentSettingsType::MEDIASTREAM_CAMERA,
                 ContentSetting::CONTENT_SETTING_BLOCK);
 
-  content::RenderFrameHost* main_rfh = InitMainFrame();
-  EXPECT_TRUE(content::ExecJs(main_rfh, kRequestCamera));
-  SetPageInfoViewToCheck();
+  ExpandIndicator("requestCamera()");
+
+  UpdatePageInfo();
 
   ShowAndVerifyUi();
 }
@@ -365,9 +392,9 @@ IN_PROC_BROWSER_TEST_F(LHSIndicatorsUiBrowserTest,
   SetPermission(ContentSettingsType::MEDIASTREAM_MIC,
                 ContentSetting::CONTENT_SETTING_BLOCK);
 
-  content::RenderFrameHost* main_rfh = InitMainFrame();
-  EXPECT_TRUE(content::ExecJs(main_rfh, kRequestMic));
-  SetPageInfoViewToCheck();
+  ExpandIndicator("requestMicrophone()");
+
+  UpdatePageInfo();
 
   ShowAndVerifyUi();
 }
@@ -379,9 +406,39 @@ IN_PROC_BROWSER_TEST_F(LHSIndicatorsUiBrowserTest,
   SetPermission(ContentSettingsType::MEDIASTREAM_MIC,
                 ContentSetting::CONTENT_SETTING_BLOCK);
 
-  content::RenderFrameHost* main_rfh = InitMainFrame();
-  EXPECT_TRUE(content::ExecJs(main_rfh, kRequestCameraAndMic));
-  SetPageInfoViewToCheck();
+  ExpandIndicator("requestCameraAndMicrophone()");
+
+  UpdatePageInfo();
+
+  ShowAndVerifyUi();
+}
+
+IN_PROC_BROWSER_TEST_F(LHSIndicatorsUiBrowserTest, InvokeUi_Camera_twice) {
+  SetPermission(ContentSettingsType::MEDIASTREAM_CAMERA,
+                ContentSetting::CONTENT_SETTING_ALLOW);
+  InitMainFrame();
+
+  ExpandIndicator("requestCamera()");
+
+  CollapseIndicator();
+
+  HideIndicator("stopCamera()");
+
+  // Request Camera for the second time.
+  ChipAnimationObserver chip_animation_observer(GetIndicatorChip());
+  chip_animation_observer.quiet_on_event =
+      ChipAnimationObserver::QuitOnEvent::kVisibiltyTrue;
+
+  EXPECT_TRUE(content::ExecJs(web_contents(), "requestCamera()"));
+
+  // Wait until chip expands.
+  chip_animation_observer.WaitForChip();
+
+  EXPECT_TRUE(GetIndicatorChip()->GetVisible());
+  // Second camera request does not trigger verbose indicator.
+  EXPECT_FALSE(GetDashboardController()->is_verbose());
+
+  target_ = TargetViewToVerify::kLhsIndicator;
 
   ShowAndVerifyUi();
 }
