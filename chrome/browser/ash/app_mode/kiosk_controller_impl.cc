@@ -259,6 +259,8 @@ void KioskControllerImpl::OnLaunchComplete(
 }
 
 void KioskControllerImpl::DeleteLaunchControllerAsync() {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+
   // Deleted asynchronously since this method is invoked in a callback called by
   // the launcher itself, but don't use `DeleteSoon` to prevent the launcher
   // from outliving `this`.
