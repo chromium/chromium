@@ -216,7 +216,7 @@ class DesktopMediaPickerViewsTestBase : public testing::Test {
     picker_views_->Show(
         picker_params, std::move(source_lists),
         base::BindOnce(&DesktopMediaPickerViewsTestBase::OnPickerDone,
-                       base::Unretained(this)));
+                       weak_factory_.GetWeakPtr()));
     widget_destroyed_waiter_ =
         std::make_unique<views::test::WidgetDestroyedWaiter>(
             waiter.WaitIfNeededAndGet());
@@ -258,6 +258,8 @@ class DesktopMediaPickerViewsTestBase : public testing::Test {
   base::RunLoop run_loop_;
   std::optional<content::DesktopMediaID> picked_id_;
   std::unique_ptr<views::test::WidgetDestroyedWaiter> widget_destroyed_waiter_;
+
+  base::WeakPtrFactory<DesktopMediaPickerViewsTestBase> weak_factory_{this};
 };
 
 class DesktopMediaPickerViewsTest
