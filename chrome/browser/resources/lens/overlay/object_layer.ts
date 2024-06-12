@@ -27,6 +27,8 @@ import {toPercent} from './values_converter.js';
 // The percent of the selection layer width and height the object needs to take
 // up to be considered full page.
 const FULLSCREEN_OBJECT_THRESHOLD_PERCENT = 0.95;
+// The transition duration for the fade out animation into the cursor state.
+const CURSOR_FADE_OUT_TRANSITION_DURATION = 150;
 
 // Returns true if the object has a valid bounding box and is renderable by the
 // ObjectLayer.
@@ -131,6 +133,8 @@ export class ObjectLayerElement extends PolymerElement {
   private preciseHighlight: boolean;
   // The overlay theme.
   private theme: OverlayTheme;
+  private fadeOutAnimations: Animation[] = [];
+  private fadeOutTimeoutIds: number[] = [];
 
   private readonly router: LensPageCallbackRouter =
       BrowserProxyImpl.getInstance().callbackRouter;
@@ -194,6 +198,7 @@ export class ObjectLayerElement extends PolymerElement {
   }
 
   private onSegmentationHovered(object: OverlayObject) {
+    this.clearAndCancelAnimation();
     this.drawObject(this.context, object);
     this.focusShimmer(object);
     this.dispatchEvent(new CustomEvent<CursorData>('set-cursor', {
@@ -211,7 +216,6 @@ export class ObjectLayerElement extends PolymerElement {
       bubbles: true,
       composed: true,
     }));
-
     // Only show the pointer if the object has a segmentation mask.
     const hasSegmentationMask = object.geometry!.segmentationPolygon.length > 0;
     if (hasSegmentationMask) {
@@ -220,7 +224,14 @@ export class ObjectLayerElement extends PolymerElement {
   }
 
   private onSegmentationUnhovered() {
-    this.clearCanvas(this.context);
+    this.fadeOutAnimations.push(
+        this.$.objectSelectionCanvas.animate({opacity: 0}, {
+          duration: CURSOR_FADE_OUT_TRANSITION_DURATION,
+          fill: 'none',
+        }));
+    this.fadeOutTimeoutIds.push(setTimeout(() => {
+      this.clearCanvas(this.context);
+    }, CURSOR_FADE_OUT_TRANSITION_DURATION));
     unfocusShimmer(this, ShimmerControlRequester.SEGMENTATION);
     this.dispatchEvent(new CustomEvent<CursorData>('set-cursor', {
       bubbles: true,
@@ -497,6 +508,21 @@ export class ObjectLayerElement extends PolymerElement {
       }
     }
     return null;
+  }
+
+  // Clears any animation state currently present on the canvas.
+  private clearAndCancelAnimation() {
+    // Clear and cancel any animations.
+    for (let i = 0; i < this.fadeOutAnimations.length; i++) {
+      this.fadeOutAnimations[i].cancel();
+    }
+    this.fadeOutAnimations = [];
+
+    this.clearCanvas(this.context);
+    for (let i = 0; i < this.fadeOutTimeoutIds.length; i++) {
+      clearTimeout(this.fadeOutTimeoutIds[i]);
+    }
+    this.fadeOutTimeoutIds = [];
   }
 
   // Testing method to get the objects on the page.
