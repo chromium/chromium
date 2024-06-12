@@ -41,6 +41,12 @@ class ReadAnythingReadAloudAppModelTest : public ChromeRenderViewTest {
     model_->SetLanguageEnabled(lang, enabled);
   }
 
+  const base::Value::Dict& Voices() { return model_->voices(); }
+
+  void SetVoice(const std::string& voice, const std::string& lang) {
+    model_->SetVoice(voice, lang);
+  }
+
  private:
   // ReadAloudAppModel constructor and destructor are private so it's
   // not accessible by std::make_unique.
@@ -78,4 +84,25 @@ TEST_F(ReadAnythingReadAloudAppModelTest, EnabledLanguages) {
 
   SetLanguageEnabled(enabled_lang, false);
   EXPECT_FALSE(base::Contains(EnabledLanguages(), enabled_lang));
+}
+
+TEST_F(ReadAnythingReadAloudAppModelTest, Voices) {
+  EXPECT_TRUE(Voices().empty());
+
+  const char* lang1 = "pt-br";
+  const char* voice1 = "Mulan";
+  const char* lang2 = "yue";
+  const char* voice2 = "Shang";
+  SetVoice(voice1, lang1);
+  SetVoice(voice2, lang2);
+  EXPECT_TRUE(base::Contains(Voices(), lang1));
+  EXPECT_TRUE(base::Contains(Voices(), lang2));
+  EXPECT_STREQ(Voices().FindString(lang1)->c_str(), voice1);
+  EXPECT_STREQ(Voices().FindString(lang2)->c_str(), voice2);
+
+  const char* voice3 = "Mushu";
+  SetVoice(voice3, lang2);
+  EXPECT_TRUE(base::Contains(Voices(), lang1));
+  EXPECT_TRUE(base::Contains(Voices(), lang2));
+  EXPECT_STREQ(Voices().FindString(lang2)->c_str(), voice3);
 }

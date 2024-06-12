@@ -741,12 +741,12 @@ void ReadAnythingAppController::OnSettingsRestoredFromPrefs(
     base::Value::Dict voices,
     base::Value::List languages_enabled_in_pref,
     read_anything::mojom::HighlightGranularity granularity) {
-  read_aloud_model_.OnSettingsRestoredFromPrefs(speech_rate,
-                                                &languages_enabled_in_pref);
+  read_aloud_model_.OnSettingsRestoredFromPrefs(
+      speech_rate, &languages_enabled_in_pref, &voices);
   bool needs_redraw_for_links = model_.links_enabled() != links_enabled;
   model_.OnSettingsRestoredFromPrefs(line_spacing, letter_spacing, font,
                                      font_size, links_enabled, images_enabled,
-                                     color, &voices, granularity);
+                                     color, granularity);
   ExecuteJavaScript("chrome.readingMode.restoreSettingsFromPrefs();");
   // Only redraw if there is an active tree.
   if (needs_redraw_for_links &&
@@ -1000,12 +1000,12 @@ double ReadAnythingAppController::SpeechRate() const {
 std::string ReadAnythingAppController::GetStoredVoice() const {
   if (features::IsReadAloudAutoVoiceSwitchingEnabled()) {
     std::string lang = model_.base_language_code();
-    if (model_.voices().contains(lang)) {
-      return *model_.voices().FindString(lang);
+    if (read_aloud_model_.voices().contains(lang)) {
+      return *read_aloud_model_.voices().FindString(lang);
     }
   } else {
-    if (!model_.voices().empty()) {
-      return model_.voices().begin()->second.GetString();
+    if (!read_aloud_model_.voices().empty()) {
+      return read_aloud_model_.voices().begin()->second.GetString();
     }
   }
 
@@ -1499,7 +1499,7 @@ void ReadAnythingAppController::OnVoiceChange(const std::string& voice,
   // pages, use that voice even if the page is marked en-US.
   std::string base_lang = std::string(language::ExtractBaseLanguage(lang));
   page_handler_->OnVoiceChange(voice, base_lang);
-  model_.SetVoice(voice, base_lang);
+  read_aloud_model_.SetVoice(voice, base_lang);
 }
 
 void ReadAnythingAppController::OnLanguagePrefChange(const std::string& lang,

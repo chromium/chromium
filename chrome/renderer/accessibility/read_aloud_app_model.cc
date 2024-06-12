@@ -12,9 +12,11 @@ ReadAloudAppModel::~ReadAloudAppModel() = default;
 
 void ReadAloudAppModel::OnSettingsRestoredFromPrefs(
     double speech_rate,
-    base::Value::List* languages_enabled_in_pref) {
+    base::Value::List* languages_enabled_in_pref,
+    base::Value::Dict* voices) {
   speech_rate_ = speech_rate;
   languages_enabled_in_pref_ = languages_enabled_in_pref->Clone();
+  voices_ = voices->Clone();
 }
 
 void ReadAloudAppModel::SetLanguageEnabled(const std::string& lang,

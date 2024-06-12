@@ -185,10 +185,6 @@ class ReadAnythingAppModel {
   int highlight_granularity() const { return highlight_granularity_; }
   const SkColor& foreground_color() const { return foreground_color_; }
   const SkColor& background_color() const { return background_color_; }
-  const base::Value::Dict& voices() const { return voices_; }
-  void SetVoice(const std::string& voice, const std::string& lang) {
-    voices_.Set(lang, voice);
-  }
 
   // Selection.
   bool has_selection() const { return has_selection_; }
@@ -254,7 +250,6 @@ class ReadAnythingAppModel {
       bool links_enabled,
       bool images_enabled,
       read_anything::mojom::Colors color,
-      base::Value::Dict* voices,
       read_anything::mojom::HighlightGranularity granularity);
   void OnScroll(bool on_selection, bool from_reading_mode) const;
   void OnSelection(ax::mojom::EventFrom event_from);
@@ -564,7 +559,6 @@ class ReadAnythingAppModel {
   SkColor background_color_ = (int)read_anything::mojom::Colors::kDefaultValue;
   SkColor foreground_color_ = (int)read_anything::mojom::Colors::kDefaultValue;
   int color_theme_ = (int)read_anything::mojom::Colors::kDefaultValue;
-  base::Value::Dict voices_;
   int highlight_granularity_ =
       (int)read_anything::mojom::HighlightGranularity::kDefaultValue;
 
