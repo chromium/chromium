@@ -34,11 +34,9 @@ typedef std::vector<size_t> WordStarts;
 struct TermMatch {
   TermMatch() : term_num(0), offset(0), length(0) {}
   TermMatch(int term_num, size_t offset, size_t length)
-      : term_num(term_num),
-        offset(offset),
-        length(length) {}
+      : term_num(term_num), offset(offset), length(length) {}
 
-  int term_num;  // The index of the term in the original search string.
+  int term_num;   // The index of the term in the original search string.
   size_t offset;  // The starting offset of the substring match.
   size_t length;  // The length of the substring match.
 };
@@ -48,14 +46,13 @@ typedef std::vector<TermMatch> TermMatches;
 TermMatches MatchTermsInString(const String16Vector& terms,
                                const std::u16string& cleaned_string);
 
-// Returns a TermMatches which has an entry for each occurrence of the
-// string |term| found in the string |cleaned_string|. Use
-// CleanUpUrlForMatching() or CleanUpUrlTitleMatching() before passing
-// |cleaned_string| to this function. The function marks each match
-// with |term_num| so that the resulting TermMatches can be merged
-// with other TermMatches for other terms. Note that only the first
-// 2,048 characters of |string| are considered during the match
-// operation.
+// Returns a `TermMatches` which has an entry for each occurrence of the string
+// `term` found in the string `cleaned_string`. Use `CleanUpUrlForMatching()` or
+// CleanUpTitleForMatching() before passing `cleaned_string` to this function.
+// The function marks each match with `term_num` so that the resulting
+// `TermMatches` can be merged with other `TermMatches` for other terms. Note
+// that only the first 2,048 characters of `cleaned_string` are considered
+// during the match operation.
 TermMatches MatchTermInString(const std::u16string& term,
                               const std::u16string& cleaned_string,
                               int term_num);
@@ -82,27 +79,26 @@ TermMatches ReplaceOffsetsInTermMatches(const TermMatches& matches,
 
 // Utility Functions -----------------------------------------------------------
 
-// Breaks the string |cleaned_uni_string| down into individual words.
-// Use CleanUpUrlForMatching() or CleanUpUrlTitleMatching() before
-// passing |cleaned_uni_string| to this function. If |word_starts| is
-// not NULL then clears and pushes the offsets within
-// |cleaned_uni_string| at which each word starts onto
-// |word_starts|. These offsets are collected only up to the first
-// kMaxSignificantChars of |cleaned_uni_string|.
+// Breaks the string `cleaned_uni_string` down into individual words. Use
+// `CleanUpUrlForMatching()` or `CleanUpTitleForMatching()` before passing
+// `cleaned_uni_string` to this function. If `word_starts` is not NULL then
+// clears and pushes the offsets within `cleaned_uni_string` at which each word
+// starts onto `word_starts`. These offsets are collected only up to the first
+// `kMaxSignificantChars` of `cleaned_uni_string`.
 String16Set String16SetFromString16(const std::u16string& cleaned_uni_string,
                                     WordStarts* word_starts);
 
-// Breaks the |cleaned_uni_string| string down into individual words and
-// return a vector with the individual words in their original order. Use
-// CleanUpUrlForMatching() or CleanUpUrlTitleMatching() before passing
-// |cleaned_uni_string| to this function. The string is broken using
-// BreakIterator's BREAK_WORD detection logic, augmented so that it additionally
-// breaks words at underscores. The resulting list will contain only words
-// containing alpha-numeric characters. If |word_starts| is not NULL
-// then clears and pushes the word starts onto |word_starts|.
+// Breaks the `cleaned_uni_string` string down into individual words and return
+// a vector with the individual words in their original order. Use
+// `CleanUpUrlForMatching()` or `CleanUpTitleForMatching()` before passing
+// `cleaned_uni_string` to this function. The string is broken using
+// `BreakIterator`'s `BREAK_WORD` detection logic, augmented so that it
+// additionally breaks words at underscores. The resulting list will contain
+// only words containing alpha-numeric characters. If `word_starts` is not NULL
+// then clears and pushes the word starts onto `word_starts`.
 //
 // Example:
-//   Given: |cleaned_uni_string|: "http://www.google.com/ harry the_rabbit."
+//   Given: `cleaned_uni_string`: "http://www.google.com/ harry the_rabbit."
 //   Returns: "http", "www", "google", "com", "harry", "the", "rabbit"
 String16Vector String16VectorFromString16(
     const std::u16string& cleaned_uni_string,
@@ -136,7 +132,6 @@ typedef base::flat_set<HistoryID> HistoryIDSet;
 typedef std::vector<HistoryID> HistoryIDVector;
 typedef std::map<WordID, HistoryIDSet> WordIDHistoryMap;
 typedef std::map<HistoryID, WordIDSet> HistoryIDWordMap;
-
 
 // Information used in scoring a particular URL.
 typedef std::vector<history::VisitInfo> VisitInfoVector;
