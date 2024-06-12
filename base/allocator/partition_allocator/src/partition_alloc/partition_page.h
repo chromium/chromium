@@ -837,6 +837,11 @@ void IterateSlotSpans(uintptr_t super_page,
 // Helper class derived from the implementation of `SlotSpanMetadata`
 // that can (but does not _have_ to) enforce that it is in fact a slot
 // start.
+//
+// Behavior is not well-defined if this class is used outside
+// PartitionAlloc internals, e.g. if PA is deferring to sanitizers.
+// In such cases, the return value from PA's `Alloc()` may not be
+// a slot start - it might not be managed by PartitionAlloc at all.
 class PA_COMPONENT_EXPORT(PARTITION_ALLOC) SlotStart {
  public:
   template <bool enforce = PA_CONFIG(ENFORCE_SLOT_STARTS)>
@@ -875,31 +880,6 @@ class PA_COMPONENT_EXPORT(PARTITION_ALLOC) SlotStart {
   PA_ALWAYS_INLINE
   explicit SlotStart(uintptr_t untagged_slot_start)
       : untagged_slot_start(untagged_slot_start) {}
-};
-
-// Helper class analogous to `SlotStart` and implemented in terms of
-// the same.
-//
-// Notably, no untag-tag is incurred if `enforce` is false.
-class PA_COMPONENT_EXPORT(PARTITION_ALLOC) TaggedSlotStart {
- public:
-  template <bool enforce = PA_CONFIG(ENFORCE_SLOT_STARTS)>
-  PA_ALWAYS_INLINE static TaggedSlotStart FromTaggedAddr(
-      uintptr_t tagged_slot_start) {
-    TaggedSlotStart result = TaggedSlotStart(tagged_slot_start);
-    if constexpr (enforce) {
-      SlotStart::FromUntaggedAddr<enforce>(
-          internal::UntagAddr(tagged_slot_start));
-    }
-    return result;
-  }
-
-  uintptr_t tagged_slot_start;
-
- private:
-  PA_ALWAYS_INLINE
-  explicit TaggedSlotStart(uintptr_t tagged_slot_start)
-      : tagged_slot_start(tagged_slot_start) {}
 };
 
 }  // namespace partition_alloc::internal
