@@ -5,7 +5,7 @@
 #ifndef CHROMEOS_ASH_COMPONENTS_NETWORK_NETWORK_CONFIG_H_
 #define CHROMEOS_ASH_COMPONENTS_NETWORK_NETWORK_CONFIG_H_
 
-#include <optional>
+#include <memory>
 #include <string>
 #include <vector>
 
@@ -28,12 +28,15 @@ struct COMPONENT_EXPORT(CHROMEOS_NETWORK) NetworkConfig {
   // Parse the NetworkConfig from the D-Bus |value| for the "NetworkConfig"
   // property on Service. Returns nullptr if |value| is an empty dict, otherwise
   // parses |value| in a best-effort way and returns a valid object.
-  static std::optional<NetworkConfig> ParseFromServicePropertyValue(
+  static std::unique_ptr<NetworkConfig> ParseFromServicePropertyValue(
       const base::Value& value);
 
   NetworkConfig();
-  NetworkConfig(const NetworkConfig&);
   ~NetworkConfig();
+
+  // NetworkConfig is neither copyable nor movable.
+  NetworkConfig(const NetworkConfig&) = delete;
+  NetworkConfig& operator=(const NetworkConfig&) = delete;
 
   // Assigned IPv4 address on the device for this network.
   std::optional<IPCIDR> ipv4_address;

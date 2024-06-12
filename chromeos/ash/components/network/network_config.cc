@@ -4,7 +4,7 @@
 
 #include "chromeos/ash/components/network/network_config.h"
 
-#include <optional>
+#include <memory>
 #include <string>
 #include <string_view>
 #include <vector>
@@ -59,24 +59,24 @@ std::optional<net::IPAddress> ParseIPAddress(std::string_view key,
 
 }  // namespace
 
-std::optional<NetworkConfig> NetworkConfig::ParseFromServicePropertyValue(
+std::unique_ptr<NetworkConfig> NetworkConfig::ParseFromServicePropertyValue(
     const base::Value& value) {
   const base::Value::Dict* dict = value.GetIfDict();
   if (!dict || dict->empty()) {
-    return std::nullopt;
+    return nullptr;
   }
 
-  NetworkConfig network_config;
+  auto network_config = std::make_unique<NetworkConfig>();
 
   // IPv4 address and gateway.
   if (const auto* ipv4_address =
           dict->Find(shill::kNetworkConfigIPv4AddressProperty)) {
-    network_config.ipv4_address =
+    network_config->ipv4_address =
         ParseCIDR(shill::kNetworkConfigIPv4AddressProperty, *ipv4_address);
   }
   if (const auto* ipv4_gateway =
           dict->Find(shill::kNetworkConfigIPv4GatewayProperty)) {
-    network_config.ipv4_gateway =
+    network_config->ipv4_gateway =
         ParseIPAddress(shill::kNetworkConfigIPv4GatewayProperty, *ipv4_gateway);
   }
 
@@ -87,13 +87,13 @@ std::optional<NetworkConfig> NetworkConfig::ParseFromServicePropertyValue(
       std::optional<NetworkConfig::IPCIDR> cidr =
           ParseCIDR(shill::kNetworkConfigIPv6AddressesProperty, item);
       if (cidr) {
-        network_config.ipv6_addresses.push_back(*cidr);
+        network_config->ipv6_addresses.push_back(*cidr);
       }
     }
   }
   if (const auto* ipv6_gateway =
           dict->Find(shill::kNetworkConfigIPv6GatewayProperty)) {
-    network_config.ipv6_gateway =
+    network_config->ipv6_gateway =
         ParseIPAddress(shill::kNetworkConfigIPv6GatewayProperty, *ipv6_gateway);
   }
 
@@ -106,14 +106,14 @@ std::optional<NetworkConfig> NetworkConfig::ParseFromServicePropertyValue(
       // When manually setting DNS, up to 4 addresses can be specified in the
       // UI. Unspecified entries can show up as 0.0.0.0 and should be removed.
       if (name_server && !name_server->IsZero()) {
-        network_config.dns_servers.push_back(*name_server);
+        network_config->dns_servers.push_back(*name_server);
       }
     }
   }
   if (const auto* domains =
           dict->FindList(shill::kNetworkConfigSearchDomainsProperty)) {
     for (const auto& domain : *domains) {
-      network_config.search_domains.push_back(domain.GetString());
+      network_config->search_domains.push_back(domain.GetString());
     }
   }
 
@@ -124,7 +124,7 @@ std::optional<NetworkConfig> NetworkConfig::ParseFromServicePropertyValue(
       std::optional<NetworkConfig::IPCIDR> cidr =
           ParseCIDR(shill::kNetworkConfigIncludedRoutesProperty, item);
       if (cidr) {
-        network_config.included_routes.push_back(*cidr);
+        network_config->included_routes.push_back(*cidr);
       }
     }
   }
@@ -134,7 +134,7 @@ std::optional<NetworkConfig> NetworkConfig::ParseFromServicePropertyValue(
       std::optional<NetworkConfig::IPCIDR> cidr =
           ParseCIDR(shill::kNetworkConfigExcludedRoutesProperty, item);
       if (cidr) {
-        network_config.excluded_routes.push_back(*cidr);
+        network_config->excluded_routes.push_back(*cidr);
       }
     }
   }
@@ -142,15 +142,13 @@ std::optional<NetworkConfig> NetworkConfig::ParseFromServicePropertyValue(
   // MTU.
   if (int mtu = dict->FindInt(shill::kNetworkConfigMTUProperty).value_or(0);
       mtu > 0) {
-    network_config.mtu = mtu;
+    network_config->mtu = mtu;
   }
 
   return network_config;
 }
 
 NetworkConfig::NetworkConfig() = default;
-
-NetworkConfig::NetworkConfig(const NetworkConfig&) = default;
 
 NetworkConfig::~NetworkConfig() = default;
 

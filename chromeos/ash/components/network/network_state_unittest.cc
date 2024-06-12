@@ -548,8 +548,8 @@ TEST_F(NetworkStateTest, UpdateNetworkConfig) {
   network_state_->PropertyChanged(shill::kNetworkConfigProperty,
                                   base::Value(std::move(properties)));
 
-  const std::optional<NetworkConfig>& config = network_state_->network_config();
-  ASSERT_TRUE(config.has_value());
+  const NetworkConfig* config = network_state_->network_config();
+  ASSERT_TRUE(config);
   EXPECT_EQ(config->ipv4_address->addr.ToString(), "1.2.3.4");
   EXPECT_EQ(config->ipv4_address->prefix_len, 24);
 }

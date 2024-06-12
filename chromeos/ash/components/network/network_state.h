@@ -142,9 +142,7 @@ class COMPONENT_EXPORT(CHROMEOS_NETWORK) NetworkState : public ManagedState {
     return max_downlink_speed_kbps_;
   }
 
-  const std::optional<NetworkConfig>& network_config() const {
-    return network_config_;
-  }
+  const NetworkConfig* network_config() const { return network_config_.get(); }
 
   // Wireless property accessors
   bool connectable() const { return connectable_; }
@@ -355,7 +353,7 @@ class COMPONENT_EXPORT(CHROMEOS_NETWORK) NetworkState : public ManagedState {
   ::onc::ONCSource onc_source_ = ::onc::ONC_SOURCE_UNKNOWN;
   std::optional<uint32_t> max_uplink_speed_kbps_;
   std::optional<uint32_t> max_downlink_speed_kbps_;
-  std::optional<NetworkConfig> network_config_;
+  std::unique_ptr<NetworkConfig> network_config_;
 
   // Last non empty Service.Error property. Expected to be cleared via
   // ClearError() when a connection attempt is initiated and when an associated

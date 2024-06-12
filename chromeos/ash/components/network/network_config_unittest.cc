@@ -37,11 +37,11 @@ TEST(NetworkConfigTest, ParseValue) {
       shill::kNetworkConfigExcludedRoutesProperty,
       base::Value::List().Append("10.20.30.0/24").Append("fd02::/64"));
 
-  const std::optional<NetworkConfig> config =
+  std::unique_ptr<NetworkConfig> config =
       NetworkConfig::ParseFromServicePropertyValue(
           base::Value(std::move(properties)));
 
-  ASSERT_TRUE(config.has_value());
+  ASSERT_TRUE(config);
   EXPECT_EQ(config->ipv4_address->addr.ToString(), "1.2.3.4");
   EXPECT_EQ(config->ipv4_address->prefix_len, 24);
   EXPECT_EQ(config->ipv4_gateway->ToString(), "1.2.3.5");
@@ -71,10 +71,10 @@ TEST(NetworkConfigTest, ParseValue) {
 }
 
 TEST(NetworkConfigTest, ParseEmptyValue) {
-  const std::optional<NetworkConfig> config =
+  std::unique_ptr<NetworkConfig> config =
       NetworkConfig::ParseFromServicePropertyValue(
           base::Value(base::Value::Dict()));
-  EXPECT_FALSE(config.has_value());
+  EXPECT_FALSE(config);
 }
 
 }  // namespace
