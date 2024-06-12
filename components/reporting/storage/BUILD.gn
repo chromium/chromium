@@ -25,6 +25,7 @@ static_library("storage_uploader_interface") {
 
   deps = [
     "//base",
+    "//components/reporting/proto:configuration_file_proto",
     "//components/reporting/proto:record_constants",
     "//components/reporting/proto:record_proto",
     "//components/reporting/proto:status_proto",
