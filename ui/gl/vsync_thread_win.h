@@ -51,6 +51,9 @@ class GL_EXPORT VSyncThreadWin final : public base::PowerSuspendObserver {
 
   gfx::VSyncProvider* vsync_provider() { return &vsync_provider_; }
 
+  // Returns the vsync interval via the Vsync provider.
+  base::TimeDelta GetVsyncInterval();
+
  private:
   // Acquires `lock_` in a scope if not already held by the thread.
   class SCOPED_LOCKABLE AutoVSyncThreadLock;

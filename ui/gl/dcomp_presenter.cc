@@ -14,6 +14,7 @@
 #include "ui/gfx/swap_result.h"
 #include "ui/gl/dc_layer_tree.h"
 #include "ui/gl/direct_composition_support.h"
+#include "ui/gl/gl_features.h"
 #include "ui/gl/vsync_thread_win.h"
 
 namespace gl {
@@ -35,7 +36,8 @@ DCompPresenter::DCompPresenter(const Settings& settings)
           settings.disable_vp_scaling,
           settings.disable_vp_super_resolution,
           settings.force_dcomp_triple_buffer_video_swap_chain,
-          settings.no_downscaled_overlay_promotion)) {
+          settings.no_downscaled_overlay_promotion)),
+      use_gpu_vsync_(features::UseGpuVsync()) {
   CHECK(DirectCompositionSupported());
   d3d11_device_ = GetDirectCompositionD3D11Device();
   child_window_.Initialize();
@@ -212,7 +214,9 @@ void DCompPresenter::CheckPendingFrames() {
     pending_frames_.pop_front();
   }
 
-  StartOrStopVSyncThread();
+  if (use_gpu_vsync_) {
+    StartOrStopVSyncThread();
+  }
 }
 
 void DCompPresenter::EnqueuePendingFrame(PresentationCallback callback,
@@ -234,7 +238,17 @@ void DCompPresenter::EnqueuePendingFrame(PresentationCallback callback,
 
   pending_frames_.emplace_back(std::move(query), std::move(callback));
 
-  StartOrStopVSyncThread();
+  if (use_gpu_vsync_) {
+    StartOrStopVSyncThread();
+  } else {
+    last_vsync_time_ = base::TimeTicks::Now();
+    last_vsync_interval_ = VSyncThreadWin::GetInstance()->GetVsyncInterval();
+    // Handle pending frames asynchronously to avoid reentrancy issues in the
+    // caller.
+    task_runner_->PostTask(FROM_HERE,
+                           base::BindOnce(&DCompPresenter::CheckPendingFrames,
+                                          weak_factory_.GetWeakPtr()));
+  }
 }
 
 HWND DCompPresenter::GetWindow() const {

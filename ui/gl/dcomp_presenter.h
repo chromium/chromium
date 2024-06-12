@@ -149,6 +149,9 @@ class GL_EXPORT DCompPresenter : public Presenter,
   // rectangle.
   bool create_query_this_frame_ = false;
 
+  // Set in the ctor. Indicates whether vsync is enabled for the process.
+  bool use_gpu_vsync_ = false;
+
   base::WeakPtrFactory<DCompPresenter> weak_factory_{this};
 };
 

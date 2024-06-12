@@ -218,7 +218,7 @@ void VSyncThreadWin::OnResume() {
   PostTaskIfNeeded();
 }
 
-void VSyncThreadWin::WaitForVSync() {
+base::TimeDelta VSyncThreadWin::GetVsyncInterval() {
   base::TimeTicks vsync_timebase;
   base::TimeDelta vsync_interval;
 
@@ -242,6 +242,11 @@ void VSyncThreadWin::WaitForVSync() {
           : vsync_provider_.GetVSyncParametersIfAvailable(&vsync_timebase,
                                                           &vsync_interval);
   DCHECK(get_vsync_params_succeeded);
+  return vsync_interval;
+}
+
+void VSyncThreadWin::WaitForVSync() {
+  base::TimeDelta vsync_interval = GetVsyncInterval();
 
   if (!dxgi_adapter_ || !DXGIFactoryIsCurrent(dxgi_adapter_.Get())) {
     TRACE_EVENT("gpu", "DXGIFactoryIsCurrent non-current factory");

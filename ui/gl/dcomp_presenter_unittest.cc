@@ -199,16 +199,16 @@ std::unique_ptr<DCLayerOverlayParams> CreateParamsFromImage(
 
 }  // namespace
 
-class DCompPresenterTest : public testing::Test {
+class DCompPresenterTestBase : public testing::Test {
  public:
-  DCompPresenterTest() : parent_window_(ui::GetHiddenWindow()) {}
+  DCompPresenterTestBase() : parent_window_(ui::GetHiddenWindow()) {}
 
  protected:
   void SetUp() override {
-    // Without this, the following check always fails.
+    enabled_features_.InitWithFeatures(enabled_features_list_,
+                                       disabled_features_list_);
     display_ = gl::init::InitializeGLNoExtensionsOneOff(
         /*init_bindings=*/true, /*gpu_preference=*/gl::GpuPreference::kDefault);
-
     std::tie(gl_surface_, context_) =
         GLTestHelper::CreateOffscreenGLSurfaceAndContext();
 
@@ -244,8 +244,9 @@ class DCompPresenterTest : public testing::Test {
     // production code here. However, to remove dependency from
     // gpu/ipc/service/image_transport_presenter_delegate.h, here we directly
     // executes the required minimum code.
-    if (parent_window_)
+    if (parent_window_) {
       ::SetParent(presenter->GetWindow(), parent_window_);
+    }
 
     return presenter;
   }
@@ -281,6 +282,14 @@ class DCompPresenterTest : public testing::Test {
     wait_for_present.Run();
   }
 
+  void EnableFeature(const base::test::FeatureRef& feature) {
+    enabled_features_list_.push_back(feature);
+  }
+
+  void DisableFeature(const base::test::FeatureRef& feature) {
+    disabled_features_list_.push_back(feature);
+  }
+
   raw_ptr<GLDisplay> display_ = nullptr;
   scoped_refptr<GLSurface> gl_surface_;
   scoped_refptr<GLContext> context_;
@@ -288,10 +297,27 @@ class DCompPresenterTest : public testing::Test {
   base::test::ScopedPowerMonitorTestSource fake_power_monitor_source_;
   HWND parent_window_;
   scoped_refptr<DCompPresenter> presenter_;
+  base::test::ScopedFeatureList enabled_features_;
+  std::vector<base::test::FeatureRef> enabled_features_list_;
+  std::vector<base::test::FeatureRef> disabled_features_list_;
+};
+
+class DCompPresenterTest : public DCompPresenterTestBase,
+                           public testing::WithParamInterface<bool> {
+ public:
+  void SetUp() override {
+    if (GetParam()) {
+      EnableFeature(features::kGpuVsync);
+    } else {
+      DisableFeature(features::kGpuVsync);
+    }
+
+    DCompPresenterTestBase::SetUp();
+  }
 };
 
 // Ensure that the overlay image isn't presented again unless it changes.
-TEST_F(DCompPresenterTest, NoPresentTwice) {
+TEST_P(DCompPresenterTest, NoPresentTwice) {
   Microsoft::WRL::ComPtr<ID3D11Device> d3d11_device =
       GetDirectCompositionD3D11Device();
 
@@ -368,7 +394,7 @@ TEST_F(DCompPresenterTest, NoPresentTwice) {
 
 // Ensure the swapchain size is set to the correct size if HW overlay scaling
 // is support - swapchain should be set to the onscreen video size.
-TEST_F(DCompPresenterTest, SwapchainSizeWithScaledOverlays) {
+TEST_P(DCompPresenterTest, SwapchainSizeWithScaledOverlays) {
   Microsoft::WRL::ComPtr<ID3D11Device> d3d11_device =
       GetDirectCompositionD3D11Device();
 
@@ -433,7 +459,7 @@ TEST_F(DCompPresenterTest, SwapchainSizeWithScaledOverlays) {
 
 // Ensure the swapchain size is set to the correct size if HW overlay scaling
 // is not support - swapchain should be the onscreen video size.
-TEST_F(DCompPresenterTest, SwapchainSizeWithoutScaledOverlays) {
+TEST_P(DCompPresenterTest, SwapchainSizeWithoutScaledOverlays) {
   Microsoft::WRL::ComPtr<ID3D11Device> d3d11_device =
       GetDirectCompositionD3D11Device();
 
@@ -487,7 +513,7 @@ TEST_F(DCompPresenterTest, SwapchainSizeWithoutScaledOverlays) {
 }
 
 // Test protected video flags
-TEST_F(DCompPresenterTest, ProtectedVideos) {
+TEST_P(DCompPresenterTest, ProtectedVideos) {
   Microsoft::WRL::ComPtr<ID3D11Device> d3d11_device =
       GetDirectCompositionD3D11Device();
 
@@ -547,7 +573,7 @@ TEST_F(DCompPresenterTest, ProtectedVideos) {
   // video support is enabled by default in the Intel driver and Chrome
 }
 
-TEST_F(DCompPresenterTest, NoBackgroundColorSurfaceForNonColorOverlays) {
+TEST_P(DCompPresenterTest, NoBackgroundColorSurfaceForNonColorOverlays) {
   const gfx::Size window_size(100, 100);
   EXPECT_TRUE(presenter_->Resize(window_size, 1.0, gfx::ColorSpace(), true));
 
@@ -564,7 +590,7 @@ TEST_F(DCompPresenterTest, NoBackgroundColorSurfaceForNonColorOverlays) {
   EXPECT_EQ(0u, layer_tree->GetNumSurfacesInPoolForTesting());
 }
 
-TEST_F(DCompPresenterTest, BackgroundColorSurfaceTrim) {
+TEST_P(DCompPresenterTest, BackgroundColorSurfaceTrim) {
   const gfx::Size window_size(100, 100);
   EXPECT_TRUE(presenter_->Resize(window_size, 1.0, gfx::ColorSpace(), true));
 
@@ -605,7 +631,7 @@ TEST_F(DCompPresenterTest, BackgroundColorSurfaceTrim) {
 
 // Check that when there's multiple background color surfaces, the correct one
 // is reused even if the order they're requested in changes.
-TEST_F(DCompPresenterTest, BackgroundColorSurfaceMultipleReused) {
+TEST_P(DCompPresenterTest, BackgroundColorSurfaceMultipleReused) {
   const gfx::Size window_size(100, 100);
   EXPECT_TRUE(presenter_->Resize(window_size, 1.0, gfx::ColorSpace(), true));
 
@@ -663,7 +689,7 @@ TEST_F(DCompPresenterTest, BackgroundColorSurfaceMultipleReused) {
 
 // Check that the delegated ink visual gets added to the DC Layer tree
 // if there is no root surface.
-TEST_F(DCompPresenterTest, DelegatedInkVisualAddedWithRootSurfaceVisualNull) {
+TEST_P(DCompPresenterTest, DelegatedInkVisualAddedWithRootSurfaceVisualNull) {
   std::unique_ptr<gfx::DelegatedInkMetadata> metadata =
       std::make_unique<gfx::DelegatedInkMetadata>(
           gfx::PointF(12, 12), /*diameter=*/3, SK_ColorBLACK,
@@ -690,7 +716,7 @@ TEST_F(DCompPresenterTest, DelegatedInkVisualAddedWithRootSurfaceVisualNull) {
 // subsequent frames may cause flickering under certain conditions that include
 // specific Intel drivers, custom present duration etc.
 // See https://bugs.chromium.org/p/chromium/issues/detail?id=1421175.
-TEST_F(DCompPresenterTest, VisualsReused) {
+TEST_P(DCompPresenterTest, VisualsReused) {
   constexpr gfx::Size window_size(100, 100);
   EXPECT_TRUE(presenter_->Resize(window_size, 1.0, gfx::ColorSpace(), true));
 
@@ -775,7 +801,7 @@ void CreateSwapChain(IDXGIFactory2* dxgi_factory,
   ASSERT_TRUE(swap_chain);
 }
 
-TEST_F(DCompPresenterTest, MatchedAndUnmatchedVisualsReused) {
+TEST_P(DCompPresenterTest, MatchedAndUnmatchedVisualsReused) {
   if (context_ && context_->GetVersionInfo() &&
       context_->GetVersionInfo()->driver_vendor.find("AMD") !=
           std::string::npos) {
@@ -908,9 +934,13 @@ TEST_F(DCompPresenterTest, MatchedAndUnmatchedVisualsReused) {
 #endif  // DCHECK_IS_ON()
 }
 
-class DCompPresenterPixelTest : public DCompPresenterTest {
+INSTANTIATE_TEST_SUITE_P(DCompPresenterTest,
+                         DCompPresenterTest,
+                         testing::Bool());
+
+class DCompPresenterPixelTestBase : public DCompPresenterTestBase {
  public:
-  DCompPresenterPixelTest()
+  DCompPresenterPixelTestBase()
       : window_(&platform_delegate_, gfx::Rect(100, 100)) {
     parent_window_ = window_.hwnd();
   }
@@ -918,14 +948,15 @@ class DCompPresenterPixelTest : public DCompPresenterTest {
  protected:
   void SetUp() override {
     static_cast<ui::PlatformWindow*>(&window_)->Show();
-    DCompPresenterTest::SetUp();
+    DCompPresenterTestBase::SetUp();
   }
 
   void TearDown() override {
     // Test harness times out without DestroyWindow() here.
-    if (IsWindow(parent_window_))
+    if (IsWindow(parent_window_)) {
       DestroyWindow(parent_window_);
-    DCompPresenterTest::TearDown();
+    }
+    DCompPresenterTestBase::TearDown();
   }
 
   void InitializeForPixelTest(const gfx::Size& window_size,
@@ -1146,8 +1177,31 @@ class DCompPresenterPixelTest : public DCompPresenterTest {
   ui::WinWindow window_;
 };
 
-class DCompPresenterVideoPixelTest : public DCompPresenterPixelTest {
+class DCompPresenterPixelTest : public DCompPresenterPixelTestBase,
+                                public testing::WithParamInterface<bool> {
  protected:
+  void SetUp() override {
+    if (GetParam()) {
+      DCompPresenterTestBase::EnableFeature(features::kGpuVsync);
+    } else {
+      DCompPresenterTestBase::DisableFeature(features::kGpuVsync);
+    }
+    static_cast<ui::PlatformWindow*>(&window_)->Show();
+    DCompPresenterPixelTestBase::SetUp();
+  }
+};
+
+class DCompPresenterVideoPixelTest : public DCompPresenterPixelTestBase,
+                                     public testing::WithParamInterface<bool> {
+ protected:
+  void SetUp() override {
+    if (GetParam()) {
+      DCompPresenterTestBase::EnableFeature(features::kGpuVsync);
+    } else {
+      DCompPresenterTestBase::DisableFeature(features::kGpuVsync);
+    }
+    DCompPresenterPixelTestBase::SetUp();
+  }
   void TestVideo(const gfx::ColorSpace& color_space,
                  SkColor expected_color,
                  bool check_color) {
@@ -1198,32 +1252,40 @@ class DCompPresenterVideoPixelTest : public DCompPresenterPixelTest {
   }
 };
 
-TEST_F(DCompPresenterVideoPixelTest, BT601) {
+INSTANTIATE_TEST_SUITE_P(DCompPresenterVideoPixelTest,
+                         DCompPresenterVideoPixelTest,
+                         testing::Bool());
+
+TEST_P(DCompPresenterVideoPixelTest, BT601) {
   TestVideo(gfx::ColorSpace::CreateREC601(), SkColorSetRGB(0xdb, 0x81, 0xe8),
             true);
 }
 
-TEST_F(DCompPresenterVideoPixelTest, BT709) {
+TEST_P(DCompPresenterVideoPixelTest, BT709) {
   TestVideo(gfx::ColorSpace::CreateREC709(), SkColorSetRGB(0xe1, 0x90, 0xeb),
             true);
 }
 
-TEST_F(DCompPresenterVideoPixelTest, SRGB) {
+TEST_P(DCompPresenterVideoPixelTest, SRGB) {
   // SRGB doesn't make sense on an NV12 input, but don't crash.
   TestVideo(gfx::ColorSpace::CreateSRGB(), SK_ColorTRANSPARENT, false);
 }
 
-TEST_F(DCompPresenterVideoPixelTest, SCRGBLinear) {
+TEST_P(DCompPresenterVideoPixelTest, SCRGBLinear) {
   // SCRGB doesn't make sense on an NV12 input, but don't crash.
   TestVideo(gfx::ColorSpace::CreateSRGBLinear(), SK_ColorTRANSPARENT, false);
 }
 
-TEST_F(DCompPresenterVideoPixelTest, InvalidColorSpace) {
+TEST_P(DCompPresenterVideoPixelTest, InvalidColorSpace) {
   // Invalid color space should be treated as BT.709
   TestVideo(gfx::ColorSpace(), SkColorSetRGB(0xe1, 0x90, 0xeb), true);
 }
 
-TEST_F(DCompPresenterPixelTest, SoftwareVideoSwapchain) {
+INSTANTIATE_TEST_SUITE_P(DCompPresenterPixelTest,
+                         DCompPresenterPixelTest,
+                         testing::Bool());
+
+TEST_P(DCompPresenterPixelTest, SoftwareVideoSwapchain) {
   gfx::Size window_size(100, 100);
   EXPECT_TRUE(presenter_->Resize(window_size, 1.0, gfx::ColorSpace(), true));
 
@@ -1251,7 +1313,7 @@ TEST_F(DCompPresenterPixelTest, SoftwareVideoSwapchain) {
       kMaxColorChannelDeviation);
 }
 
-TEST_F(DCompPresenterPixelTest, VideoHandleSwapchain) {
+TEST_P(DCompPresenterPixelTest, VideoHandleSwapchain) {
   gfx::Size window_size(100, 100);
   gfx::Size texture_size(50, 50);
   gfx::Rect content_rect(texture_size);
@@ -1265,7 +1327,7 @@ TEST_F(DCompPresenterPixelTest, VideoHandleSwapchain) {
       kMaxColorChannelDeviation);
 }
 
-TEST_F(DCompPresenterPixelTest, SkipVideoLayerEmptyBoundsRect) {
+TEST_P(DCompPresenterPixelTest, SkipVideoLayerEmptyBoundsRect) {
   gfx::Size window_size(100, 100);
   gfx::Size texture_size(50, 50);
   gfx::Rect content_rect(texture_size);
@@ -1281,7 +1343,7 @@ TEST_F(DCompPresenterPixelTest, SkipVideoLayerEmptyBoundsRect) {
       kMaxColorChannelDeviation);
 }
 
-TEST_F(DCompPresenterPixelTest, SkipVideoLayerEmptyContentsRect) {
+TEST_P(DCompPresenterPixelTest, SkipVideoLayerEmptyContentsRect) {
   // Swap chain size is overridden to onscreen size only if scaled overlays
   // are supported.
   SetDirectCompositionScaledOverlaysSupportedForTesting(true);
@@ -1320,7 +1382,7 @@ TEST_F(DCompPresenterPixelTest, SkipVideoLayerEmptyContentsRect) {
       kMaxColorChannelDeviation);
 }
 
-TEST_F(DCompPresenterPixelTest, NV12SwapChain) {
+TEST_P(DCompPresenterPixelTest, NV12SwapChain) {
   // Swap chain size is overridden to onscreen rect size only if scaled overlays
   // are supported.
   SetDirectCompositionScaledOverlaysSupportedForTesting(true);
@@ -1351,7 +1413,7 @@ TEST_F(DCompPresenterPixelTest, NV12SwapChain) {
       kMaxColorChannelDeviation);
 }
 
-TEST_F(DCompPresenterPixelTest, YUY2SwapChain) {
+TEST_P(DCompPresenterPixelTest, YUY2SwapChain) {
   if (context_ && context_->GetVersionInfo() &&
       context_->GetVersionInfo()->driver_vendor.find("AMD") !=
           std::string::npos) {
@@ -1392,7 +1454,7 @@ TEST_F(DCompPresenterPixelTest, YUY2SwapChain) {
       kMaxColorChannelDeviation);
 }
 
-TEST_F(DCompPresenterPixelTest, NonZeroBoundsOffset) {
+TEST_P(DCompPresenterPixelTest, NonZeroBoundsOffset) {
   // Swap chain size is overridden to onscreen rect size only if scaled overlays
   // are supported.
   SetDirectCompositionScaledOverlaysSupportedForTesting(true);
@@ -1428,7 +1490,7 @@ TEST_F(DCompPresenterPixelTest, NonZeroBoundsOffset) {
   }
 }
 
-TEST_F(DCompPresenterPixelTest, ResizeVideoLayer) {
+TEST_P(DCompPresenterPixelTest, ResizeVideoLayer) {
   // Swap chain size is overridden to onscreen rect size only if scaled overlays
   // are supported.
   SetDirectCompositionScaledOverlaysSupportedForTesting(true);
@@ -1546,7 +1608,7 @@ TEST_F(DCompPresenterPixelTest, ResizeVideoLayer) {
   EXPECT_EQ(gfx::Rect(monitor_size), transform.MapRect(gfx::Rect(100, 100)));
 }
 
-TEST_F(DCompPresenterPixelTest, SwapChainImage) {
+TEST_P(DCompPresenterPixelTest, SwapChainImage) {
   if (context_ && context_->GetVersionInfo() &&
       context_->GetVersionInfo()->driver_vendor.find("AMD") !=
           std::string::npos) {
@@ -1647,7 +1709,7 @@ TEST_F(DCompPresenterPixelTest, SwapChainImage) {
 }
 
 // Test that the overlay quad rect's offset is affected by its transform.
-TEST_F(DCompPresenterPixelTest, QuadOffsetAppliedAfterTransform) {
+TEST_P(DCompPresenterPixelTest, QuadOffsetAppliedAfterTransform) {
   // Our overlay quad rect is at 0,50 50x50 and scaled down by 1/2. Since we
   // expect the transform to affect the quad rect offset, we expect the output
   // rect to be at 0,25 25x25.
@@ -1701,19 +1763,19 @@ TEST_F(DCompPresenterPixelTest, QuadOffsetAppliedAfterTransform) {
 
 // Test that scaling a (very) small texture up works with nearest neighbor
 // filtering using the content rect and quad rects.
-TEST_F(DCompPresenterPixelTest, NearestNeighborFilteringScaleViaBuffer) {
+TEST_P(DCompPresenterPixelTest, NearestNeighborFilteringScaleViaBuffer) {
   RunNearestNeighborTest(true);
 }
 
 // Test that scaling a (very) small texture up works with nearest neighbor
 // filtering using the overlay's transform.
-TEST_F(DCompPresenterPixelTest, NearestNeighborFilteringScaleViaTransform) {
+TEST_P(DCompPresenterPixelTest, NearestNeighborFilteringScaleViaTransform) {
   RunNearestNeighborTest(false);
 }
 
 // Test that the |content_rect| of an overlay scales the buffer to fit the
 // display rect, if needed.
-TEST_F(DCompPresenterPixelTest, ContentRectScalesUpBuffer) {
+TEST_P(DCompPresenterPixelTest, ContentRectScalesUpBuffer) {
   const gfx::Size window_size(100, 100);
   const gfx::Rect root_surface_hole = gfx::Rect(5, 10, 50, 75);
 
@@ -1728,7 +1790,7 @@ TEST_F(DCompPresenterPixelTest, ContentRectScalesUpBuffer) {
 
 // Test that the |content_rect| of an overlay scales the buffer to fit the
 // display rect, if needed.
-TEST_F(DCompPresenterPixelTest, ContentRectScalesDownBuffer) {
+TEST_P(DCompPresenterPixelTest, ContentRectScalesDownBuffer) {
   const gfx::Size window_size(100, 100);
   const gfx::Rect root_surface_hole = gfx::Rect(5, 10, 50, 75);
 
@@ -1742,7 +1804,7 @@ TEST_F(DCompPresenterPixelTest, ContentRectScalesDownBuffer) {
 }
 
 // Test that the |content_rect| of an overlay clips portions of the buffer.
-TEST_F(DCompPresenterPixelTest, ContentRectClipsBuffer) {
+TEST_P(DCompPresenterPixelTest, ContentRectClipsBuffer) {
   const gfx::Size window_size(100, 100);
   const gfx::Rect tex_coord = gfx::Rect(1, 2, 50, 60);
   const gfx::Rect root_surface_hole =
@@ -1766,7 +1828,7 @@ TEST_F(DCompPresenterPixelTest, ContentRectClipsBuffer) {
 
 // Test that the |content_rect| of an overlay can clip a buffer and scale it's
 // contents.
-TEST_F(DCompPresenterPixelTest, ContentRectClipsAndScalesBuffer) {
+TEST_P(DCompPresenterPixelTest, ContentRectClipsAndScalesBuffer) {
   const gfx::Size window_size(100, 100);
   const gfx::Rect tex_coord = gfx::Rect(5, 10, 15, 20);
   const gfx::Rect root_surface_hole =
@@ -1795,7 +1857,7 @@ TEST_F(DCompPresenterPixelTest, ContentRectClipsAndScalesBuffer) {
 
 // Check that the surface backing solid color overlays is reused across frames.
 // This can happen e.g. with a solid color draw quad animating its color.
-TEST_F(DCompPresenterPixelTest, BackgroundColorSurfaceReuse) {
+TEST_P(DCompPresenterPixelTest, BackgroundColorSurfaceReuse) {
   const gfx::Size window_size(100, 100);
   EXPECT_TRUE(presenter_->Resize(window_size, 1.0, gfx::ColorSpace(), true));
 
@@ -1879,6 +1941,38 @@ class DCompPresenterSkiaGoldTest : public DCompPresenterPixelTest {
     window_size_ = window_size;
   }
 
+  // Strips out the parameterization parts of the test case. This is to ensure
+  // that the golden test names match.
+  std::string GetGoldenTestName(const std::string& test_name) {
+    std::string golden_test_name = test_name;
+
+    // Find the position of the first '/'
+    size_t first_slash_pos = golden_test_name.find('/');
+
+    // If '/' exists, remove everything before it
+    if (first_slash_pos != std::string::npos) {
+      golden_test_name = golden_test_name.substr(first_slash_pos + 1);
+    }
+
+    return golden_test_name;
+  }
+
+  // Strips out the parameterization parts of the test case. This is to ensure
+  // that the golden test case names match.
+  std::string GetGoldenTestCaseName(const std::string& test_case_name) {
+    std::string golden_test_case_name = test_case_name;
+
+    // Find the position of the last '/'
+    size_t last_slash_pos = golden_test_case_name.find_last_of('/');
+
+    // If '/' exists, remove everything after it
+    if (last_slash_pos != std::string::npos) {
+      golden_test_case_name = golden_test_case_name.substr(0, last_slash_pos);
+    }
+
+    return golden_test_case_name;
+  }
+
   // |capture_name| identifies this screenshot and is appended to the skia gold
   // remote test name. Empty string is allowed, e.g. for tests that only have
   // one screenshot.
@@ -1903,9 +1997,16 @@ class DCompPresenterSkiaGoldTest : public DCompPresenterPixelTest {
     SkBitmap window_readback =
         GLTestHelper::ReadBackWindow(window_.hwnd(), window_size_);
     CHECK(pixel_diff_);
+
+    std::string test_name = GetGoldenTestName(::testing::UnitTest::GetInstance()
+                                                  ->current_test_info()
+                                                  ->test_suite_name());
+    std::string test_case_name = GetGoldenTestCaseName(
+        ::testing::UnitTest::GetInstance()->current_test_info()->name());
+
     if (!pixel_diff_->CompareScreenshot(
             ui::test::SkiaGoldPixelDiff::GetGoldenImageName(
-                ::testing::UnitTest::GetInstance()->current_test_info(),
+                test_name, test_case_name,
                 capture_name.empty() ? std::nullopt
                                      : std::make_optional(capture_name)),
             window_readback, matching_algorithm_.get())) {
@@ -1953,8 +2054,12 @@ class DCompPresenterSkiaGoldTest : public DCompPresenterPixelTest {
   base::flat_set<std::string> capture_names_in_test_;
 };
 
+INSTANTIATE_TEST_SUITE_P(DCompPresenterSkiaGoldTest,
+                         DCompPresenterSkiaGoldTest,
+                         testing::Bool());
+
 // Check that a translation transform works.
-TEST_F(DCompPresenterSkiaGoldTest, TransformTranslate) {
+TEST_P(DCompPresenterSkiaGoldTest, TransformTranslate) {
   InitializeTest(gfx::Size(100, 100));
 
   InitializeRootAndScheduleRootSurface(current_window_size(), SkColors::kBlack);
@@ -1972,7 +2077,7 @@ TEST_F(DCompPresenterSkiaGoldTest, TransformTranslate) {
 }
 
 // Check that a scaling transform works.
-TEST_F(DCompPresenterSkiaGoldTest, TransformScale) {
+TEST_P(DCompPresenterSkiaGoldTest, TransformScale) {
   InitializeTest(gfx::Size(100, 100));
 
   InitializeRootAndScheduleRootSurface(current_window_size(), SkColors::kBlack);
@@ -1992,7 +2097,7 @@ TEST_F(DCompPresenterSkiaGoldTest, TransformScale) {
 }
 
 // Check that a rotation transform works.
-TEST_F(DCompPresenterSkiaGoldTest, TransformRotation) {
+TEST_P(DCompPresenterSkiaGoldTest, TransformRotation) {
   InitializeTest(gfx::Size(100, 100));
 
   InitializeRootAndScheduleRootSurface(current_window_size(), SkColors::kBlack);
@@ -2013,7 +2118,7 @@ TEST_F(DCompPresenterSkiaGoldTest, TransformRotation) {
 }
 
 // Check that a complex transform (i.e. non-flat) works.
-TEST_F(DCompPresenterSkiaGoldTest, Transform3D) {
+TEST_P(DCompPresenterSkiaGoldTest, Transform3D) {
   InitializeTest(gfx::Size(100, 100));
 
   InitializeRootAndScheduleRootSurface(current_window_size(), SkColors::kBlack);
@@ -2039,7 +2144,7 @@ TEST_F(DCompPresenterSkiaGoldTest, Transform3D) {
 
 // This kind of transform is uncommon, but should be supported when rotations
 // are supported.
-TEST_F(DCompPresenterSkiaGoldTest, TransformShear) {
+TEST_P(DCompPresenterSkiaGoldTest, TransformShear) {
   InitializeTest(gfx::Size(100, 100));
 
   InitializeRootAndScheduleRootSurface(current_window_size(), SkColors::kBlack);
@@ -2057,7 +2162,7 @@ TEST_F(DCompPresenterSkiaGoldTest, TransformShear) {
 }
 
 // Test that solid color overlays completely fill their display rect.
-TEST_F(DCompPresenterSkiaGoldTest, SolidColorSimpleOpaque) {
+TEST_P(DCompPresenterSkiaGoldTest, SolidColorSimpleOpaque) {
   InitializeTest(gfx::Size(100, 100));
 
   const SkColor4f root_surface_color = SkColors::kBlack;
@@ -2085,7 +2190,7 @@ TEST_F(DCompPresenterSkiaGoldTest, SolidColorSimpleOpaque) {
 }
 
 // Test that opacity works when originating from DComp tree parameter.
-TEST_F(DCompPresenterSkiaGoldTest, OpacityFromOverlay) {
+TEST_P(DCompPresenterSkiaGoldTest, OpacityFromOverlay) {
   InitializeTest(gfx::Size(100, 100));
 
   InitializeRootAndScheduleRootSurface(current_window_size(), SkColors::kBlack);
@@ -2103,7 +2208,7 @@ TEST_F(DCompPresenterSkiaGoldTest, OpacityFromOverlay) {
 }
 
 // Test that opacity works when originating from the overlay image itself.
-TEST_F(DCompPresenterSkiaGoldTest, OpacityFromImage) {
+TEST_P(DCompPresenterSkiaGoldTest, OpacityFromImage) {
   InitializeTest(gfx::Size(100, 100));
 
   InitializeRootAndScheduleRootSurface(current_window_size(), SkColors::kBlack);
@@ -2123,7 +2228,7 @@ TEST_F(DCompPresenterSkiaGoldTest, OpacityFromImage) {
 }
 
 // Test that opacity works when originating from a solid color overlay.
-TEST_F(DCompPresenterSkiaGoldTest, OpacityFromSolidColor) {
+TEST_P(DCompPresenterSkiaGoldTest, OpacityFromSolidColor) {
   InitializeTest(gfx::Size(100, 100));
 
   InitializeRootAndScheduleRootSurface(current_window_size(), SkColors::kBlack);
@@ -2145,7 +2250,7 @@ TEST_F(DCompPresenterSkiaGoldTest, OpacityFromSolidColor) {
 // Check that an overlay with a DComp surface will visually reflect draws to the
 // surface if its dcomp_surface_serial changes. This requires DCLayerTree to
 // call Commit, even if no other tree properties change.
-TEST_F(DCompPresenterSkiaGoldTest, SurfaceSerialForcesCommit) {
+TEST_P(DCompPresenterSkiaGoldTest, SurfaceSerialForcesCommit) {
   InitializeTest(gfx::Size(100, 100));
 
   const std::vector<SkColor4f> colors = {SkColors::kRed, SkColors::kGreen,
@@ -2179,7 +2284,7 @@ TEST_F(DCompPresenterSkiaGoldTest, SurfaceSerialForcesCommit) {
 }
 
 // Check that we support simple rounded corners.
-TEST_F(DCompPresenterSkiaGoldTest, RoundedCornerSimple) {
+TEST_P(DCompPresenterSkiaGoldTest, RoundedCornerSimple) {
   InitializeTest(gfx::Size(100, 100));
 
   InitializeRootAndScheduleRootSurface(current_window_size(), SkColors::kBlack);
@@ -2197,7 +2302,7 @@ TEST_F(DCompPresenterSkiaGoldTest, RoundedCornerSimple) {
 }
 
 // Check that we support rounded corners with complex radii.
-TEST_F(DCompPresenterSkiaGoldTest, RoundedCornerNonUniformRadii) {
+TEST_P(DCompPresenterSkiaGoldTest, RoundedCornerNonUniformRadii) {
   InitializeTest(gfx::Size(100, 100));
 
   InitializeRootAndScheduleRootSurface(current_window_size(), SkColors::kBlack);
@@ -2227,7 +2332,7 @@ TEST_F(DCompPresenterSkiaGoldTest, RoundedCornerNonUniformRadii) {
 // uses a shared image that is scaled to fit the overlay. The combination of
 // scaling and soft borders implied by rounded corners can cause seams.
 // This is a common case in e.g. the omnibox.
-TEST_F(DCompPresenterSkiaGoldTest,
+TEST_P(DCompPresenterSkiaGoldTest,
        NoSeamsBetweenAdjacentSolidColorsWithSharedRoundedCorner) {
   // We specifically don't want to ignore anti-aliasing in this test
   InitializeTest(gfx::Size(100, 100));
@@ -2264,7 +2369,7 @@ TEST_F(DCompPresenterSkiaGoldTest,
 
 // Check that we get a soft border when we translate the overlay so that both
 // the right and left edges cover half a pixel.
-TEST_F(DCompPresenterSkiaGoldTest, SoftBordersFromNonIntegralTranslation) {
+TEST_P(DCompPresenterSkiaGoldTest, SoftBordersFromNonIntegralTranslation) {
   InitializeTest(gfx::Size(100, 100));
 
   InitializeRootAndScheduleRootSurface(current_window_size(), SkColors::kBlack);
@@ -2283,7 +2388,7 @@ TEST_F(DCompPresenterSkiaGoldTest, SoftBordersFromNonIntegralTranslation) {
 
 // Check that we get a soft border when we scale the overlay so the right edge
 // covers half a pixel.
-TEST_F(DCompPresenterSkiaGoldTest, SoftBordersFromNonIntegralScaling) {
+TEST_P(DCompPresenterSkiaGoldTest, SoftBordersFromNonIntegralScaling) {
   InitializeTest(gfx::Size(100, 100));
 
   InitializeRootAndScheduleRootSurface(current_window_size(), SkColors::kBlack);
@@ -2305,7 +2410,7 @@ TEST_F(DCompPresenterSkiaGoldTest, SoftBordersFromNonIntegralScaling) {
 
 // Check that we get a soft border when we create a non-integral rounded corner
 // bounds so the right edge covers half a pixel.
-TEST_F(DCompPresenterSkiaGoldTest,
+TEST_P(DCompPresenterSkiaGoldTest,
        SoftBordersFromNonIntegralRoundedCornerBounds) {
   InitializeTest(gfx::Size(100, 100));
 
@@ -2334,7 +2439,7 @@ TEST_F(DCompPresenterSkiaGoldTest,
 
 // Check that DCLayerTree sorts overlays by their z-order instead of using the
 // schedule order.
-TEST_F(DCompPresenterSkiaGoldTest, OverlaysAreSortedByZOrder) {
+TEST_P(DCompPresenterSkiaGoldTest, OverlaysAreSortedByZOrder) {
   InitializeTest(gfx::Size(100, 100));
 
   // Insert overlays out of order with respect to z-ordering
@@ -2375,7 +2480,7 @@ TEST_F(DCompPresenterSkiaGoldTest, OverlaysAreSortedByZOrder) {
 }
 
 // Check that an overlay with a non-opaque image can show a background color.
-TEST_F(DCompPresenterSkiaGoldTest, ImageWithBackgroundColor) {
+TEST_P(DCompPresenterSkiaGoldTest, ImageWithBackgroundColor) {
   InitializeTest(gfx::Size(100, 100));
 
   InitializeRootAndScheduleRootSurface(current_window_size(), SkColors::kBlack);
@@ -2399,7 +2504,7 @@ TEST_F(DCompPresenterSkiaGoldTest, ImageWithBackgroundColor) {
 
 // Test that we support sampling from overlay images with non-integral content
 // rects. This test should output a blue square with a faint green outline.
-TEST_F(DCompPresenterSkiaGoldTest, NonIntegralContentRectHalfCoverage) {
+TEST_P(DCompPresenterSkiaGoldTest, NonIntegralContentRectHalfCoverage) {
   InitializeTest(gfx::Size(100, 100));
 
   InitializeRootAndScheduleRootSurface(current_window_size(), SkColors::kBlack);
@@ -2450,6 +2555,10 @@ constexpr base::TimeTicks kEarliestTimestamp = base::TimeTicks();
 constexpr base::TimeDelta kMicrosecondsBetweenEachPoint =
     base::Microseconds(10);
 
+INSTANTIATE_TEST_SUITE_P(All,
+                         DCompPresenterDelegatedInkSkiaGoldTest,
+                         testing::Bool());
+
 // This test validates the following:
 // The presentation area with a non-zero and non-integer origin is
 // rendered correctly. An ink trail is drawn at the edge of the
@@ -2458,7 +2567,7 @@ constexpr base::TimeDelta kMicrosecondsBetweenEachPoint =
 // coordinates. Note that although the presentation area in the metadata
 // is a gfx::RectF, an integral enclosed rect size is used to build
 // the content rect and the quad rect of the overlay.
-TEST_F(DCompPresenterDelegatedInkSkiaGoldTest, NonIntegerPresentationArea) {
+TEST_P(DCompPresenterDelegatedInkSkiaGoldTest, NonIntegerPresentationArea) {
   gfx::Size window_size(200, 200);
   InitializeTest(window_size);
   InitializeRootAndScheduleRootSurface(window_size, SkColors::kWhite);
@@ -2480,7 +2589,7 @@ TEST_F(DCompPresenterDelegatedInkSkiaGoldTest, NonIntegerPresentationArea) {
 // This test checks whether the delegated ink trail is synchronized with the
 // root swap chain. The ink trail should be absent if the swap chain is
 // presented and no delegated ink visual subtree is added to the tree.
-TEST_F(DCompPresenterDelegatedInkSkiaGoldTest, TrailSyncedToSwapChainPresent) {
+TEST_P(DCompPresenterDelegatedInkSkiaGoldTest, TrailSyncedToSwapChainPresent) {
   // Initialize the swap chain that will be used as the root overlay
   // image.
   gfx::Size swap_chain_size(200, 200);
@@ -2530,7 +2639,7 @@ TEST_F(DCompPresenterDelegatedInkSkiaGoldTest, TrailSyncedToSwapChainPresent) {
 // This test checks whether a delegated ink trail renders correctly
 // for a root surface with a dcomp surface image, and is correctly removed
 // when no metadata is present for a frame.
-TEST_F(DCompPresenterDelegatedInkSkiaGoldTest, RootSurfaceIsDCompSurface) {
+TEST_P(DCompPresenterDelegatedInkSkiaGoldTest, RootSurfaceIsDCompSurface) {
   gfx::Size window_size(200, 200);
   InitializeTest(window_size);
 
@@ -2564,7 +2673,7 @@ TEST_F(DCompPresenterDelegatedInkSkiaGoldTest, RootSurfaceIsDCompSurface) {
 
 // This test verifies that the ink trail renders correctly when the delegated
 // ink metadata changes properties such as color and diameter.
-TEST_F(DCompPresenterDelegatedInkSkiaGoldTest, MetadataChangesProperties) {
+TEST_P(DCompPresenterDelegatedInkSkiaGoldTest, MetadataChangesProperties) {
   gfx::Size window_size(200, 200);
   InitializeTest(window_size);
 
@@ -2606,7 +2715,7 @@ TEST_F(DCompPresenterDelegatedInkSkiaGoldTest, MetadataChangesProperties) {
 // This test validates that the Ink trail does not render when metadata is
 // outside presentation area by a fraction. The metadata corresponds to
 // the first ink point in this case.
-TEST_F(DCompPresenterDelegatedInkSkiaGoldTest,
+TEST_P(DCompPresenterDelegatedInkSkiaGoldTest,
        MetadataOutsidePresentationArea) {
   gfx::Size window_size(200, 200);
   InitializeTest(window_size);
@@ -2633,7 +2742,7 @@ TEST_F(DCompPresenterDelegatedInkSkiaGoldTest,
 
 // The test verifies that the ink trail is correctly clipped when part of it is
 // outside the presentation area.
-TEST_F(DCompPresenterDelegatedInkSkiaGoldTest, InkTrailPortionClipped) {
+TEST_P(DCompPresenterDelegatedInkSkiaGoldTest, InkTrailPortionClipped) {
   gfx::Size window_size(200, 200);
   InitializeTest(window_size);
 
@@ -2664,7 +2773,7 @@ TEST_F(DCompPresenterDelegatedInkSkiaGoldTest, InkTrailPortionClipped) {
 // The test verifies that the ink trail is correctly clipped when the points are
 // within the presentation area but its thickness causes a portion of it to be
 // outside the bounds.
-TEST_F(DCompPresenterDelegatedInkSkiaGoldTest, InkTrailClippedDueToThickness) {
+TEST_P(DCompPresenterDelegatedInkSkiaGoldTest, InkTrailClippedDueToThickness) {
   gfx::Size window_size(200, 200);
   InitializeTest(window_size);
 
@@ -2690,28 +2799,35 @@ TEST_F(DCompPresenterDelegatedInkSkiaGoldTest, InkTrailClippedDueToThickness) {
   PresentAndCheckScreenshot("blue-ink-trail-40");
 }
 
-class DCompPresenterBufferCountTest : public DCompPresenterTest,
-                                      public testing::WithParamInterface<bool> {
+class DCompPresenterBufferCountTest
+    : public DCompPresenterTestBase,
+      public testing::WithParamInterface<std::tuple<bool, bool>> {
  public:
-  static const char* GetParamName(
+  static std::string GetParamName(
       const testing::TestParamInfo<ParamType>& info) {
-    return info.param ? "DCompTripleBufferVideoSwapChain" : "default";
+    return base::StringPrintf(
+        "%s_%s",
+        std::get<0>(info.param) ? "DCompTripleBufferVideoSwapChain"
+                                : "DcompTripleBufferVideoSwapChain_default",
+        std::get<1>(info.param) ? "UseGpuVsync_On" : "UseGpuVsync_off");
   }
 
  protected:
   void SetUp() override {
-    if (GetParam()) {
-      enabled_features_.InitWithFeatures(
-          {features::kDCompTripleBufferVideoSwapChain}, {});
+    if (std::get<0>(GetParam())) {
+      DCompPresenterTestBase::EnableFeature(
+          features::kDCompTripleBufferVideoSwapChain);
     } else {
-      enabled_features_.InitWithFeatures(
-          {}, {features::kDCompTripleBufferVideoSwapChain});
+      DCompPresenterTestBase::DisableFeature(
+          features::kDCompTripleBufferVideoSwapChain);
     }
-
-    DCompPresenterTest::SetUp();
+    if (std::get<1>(GetParam())) {
+      DCompPresenterTestBase::EnableFeature(features::kGpuVsync);
+    } else {
+      DCompPresenterTestBase::DisableFeature(features::kGpuVsync);
+    }
+    DCompPresenterTestBase::SetUp();
   }
-
-  base::test::ScopedFeatureList enabled_features_;
 };
 
 TEST_P(DCompPresenterBufferCountTest, VideoSwapChainBufferCount) {
@@ -2746,7 +2862,7 @@ TEST_P(DCompPresenterBufferCountTest, VideoSwapChainBufferCount) {
   // The expected size is window_size(100, 100).
   EXPECT_EQ(100u, desc.Width);
   EXPECT_EQ(100u, desc.Height);
-  if (GetParam()) {
+  if (std::get<0>(GetParam())) {
     EXPECT_EQ(3u, desc.BufferCount);
   } else {
     EXPECT_EQ(2u, desc.BufferCount);
@@ -2755,7 +2871,7 @@ TEST_P(DCompPresenterBufferCountTest, VideoSwapChainBufferCount) {
 
 INSTANTIATE_TEST_SUITE_P(All,
                          DCompPresenterBufferCountTest,
-                         testing::Bool(),
+                         testing::Combine(testing::Bool(), testing::Bool()),
                          &DCompPresenterBufferCountTest::GetParamName);
 
 struct LetterboxingTestParams {
@@ -2769,56 +2885,65 @@ struct LetterboxingTestParams {
 };
 
 class DCompPresenterLetterboxingTest
-    : public DCompPresenterTest,
-      public testing::WithParamInterface<LetterboxingTestParams> {
+    : public DCompPresenterTestBase,
+      public testing::WithParamInterface<
+          std::tuple<LetterboxingTestParams, bool>> {
  protected:
   void SetUp() override {
     SetupScopedFeatureList();
-
-    DCompPresenterTest::SetUp();
+    DCompPresenterTestBase::SetUp();
   }
 
   virtual void SetupScopedFeatureList() {
     std::vector<base::test::FeatureRef> enabled_features;
     std::vector<base::test::FeatureRef> disabled_features;
 
-    if (GetParam().use_letterbox_video_optimization) {
-      enabled_features.push_back(
+    if (std::get<0>(GetParam()).use_letterbox_video_optimization) {
+      DCompPresenterTestBase::EnableFeature(
           features::kDirectCompositionLetterboxVideoOptimization);
     } else {
-      disabled_features.push_back(
+      DCompPresenterTestBase::DisableFeature(
           features::kDirectCompositionLetterboxVideoOptimization);
     }
 
-    if (GetParam().use_float_rounding) {
-      enabled_features.push_back(
+    if (std::get<0>(GetParam()).use_float_rounding) {
+      DCompPresenterTestBase::EnableFeature(
           features::kUseSwapChainPresenterFloatingPointAdjustments);
     } else {
-      disabled_features.push_back(
+      DCompPresenterTestBase::DisableFeature(
           features::kUseSwapChainPresenterFloatingPointAdjustments);
     }
-
-    scoped_feature_list_.InitWithFeatures(enabled_features, disabled_features);
+    if (std::get<1>(GetParam())) {
+      DCompPresenterTestBase::EnableFeature(features::kGpuVsync);
+    } else {
+      DCompPresenterTestBase::DisableFeature(features::kGpuVsync);
+    }
   }
-
-  base::test::ScopedFeatureList scoped_feature_list_;
 };
 
-INSTANTIATE_TEST_SUITE_P(None,
-                         DCompPresenterLetterboxingTest,
-                         ::testing::Values(LetterboxingTestParams(false,
-                                                                  false)));
-INSTANTIATE_TEST_SUITE_P(LetterBoxOpt,
-                         DCompPresenterLetterboxingTest,
-                         ::testing::Values(LetterboxingTestParams(true,
-                                                                  false)));
-INSTANTIATE_TEST_SUITE_P(FloatRounding,
-                         DCompPresenterLetterboxingTest,
-                         ::testing::Values(LetterboxingTestParams(false,
-                                                                  true)));
-INSTANTIATE_TEST_SUITE_P(LetterBoxOptFloatRounding,
-                         DCompPresenterLetterboxingTest,
-                         ::testing::Values(LetterboxingTestParams(true, true)));
+INSTANTIATE_TEST_SUITE_P(
+    None,
+    DCompPresenterLetterboxingTest,
+    testing::Combine(::testing::Values(LetterboxingTestParams(false, false)),
+                     testing::Bool()));
+
+INSTANTIATE_TEST_SUITE_P(
+    LetterBoxOpt,
+    DCompPresenterLetterboxingTest,
+    testing::Combine(::testing::Values(LetterboxingTestParams(true, false)),
+                     testing::Bool()));
+
+INSTANTIATE_TEST_SUITE_P(
+    FloatRounding,
+    DCompPresenterLetterboxingTest,
+    testing::Combine(::testing::Values(LetterboxingTestParams(false, true)),
+                     testing::Bool()));
+
+INSTANTIATE_TEST_SUITE_P(
+    LetterBoxOptFloatRounding,
+    DCompPresenterLetterboxingTest,
+    testing::Combine(::testing::Values(LetterboxingTestParams(true, true)),
+                     testing::Bool()));
 
 TEST_P(DCompPresenterLetterboxingTest, FullScreenLetterboxingResizeVideoLayer) {
   // Define 1920x1200 monitor size.
@@ -2879,7 +3004,7 @@ TEST_P(DCompPresenterLetterboxingTest, FullScreenLetterboxingResizeVideoLayer) {
   presenter_->GetSwapChainVisualInfoForTesting(
       0, &visual_transform, &visual_offset, &visual_clip_rect);
 
-  if (GetParam().use_letterbox_video_optimization) {
+  if (std::get<0>(GetParam()).use_letterbox_video_optimization) {
     // In case DirectCompositionLetterboxVideoOptimization feature is enabled,
     // DWM will do the swap chain positioning in case of overlay. And visual
     // clip rect has been set to monitor rect.
@@ -2918,7 +3043,7 @@ TEST_P(DCompPresenterLetterboxingTest, FullScreenLetterboxingResizeVideoLayer) {
   ASSERT_TRUE(swap_chain2);
   EXPECT_HRESULT_SUCCEEDED(swap_chain2->GetDesc1(&desc2));
 
-  if (GetParam().use_letterbox_video_optimization) {
+  if (std::get<0>(GetParam()).use_letterbox_video_optimization) {
     // In case DirectCompositionLetterboxVideoOptimization feature is enabled,
     // there would be four pixels more to cover extra blank bar since the
     // adjustment is basically a padding without movedown.
@@ -2937,7 +3062,7 @@ TEST_P(DCompPresenterLetterboxingTest, FullScreenLetterboxingResizeVideoLayer) {
   presenter_->GetSwapChainVisualInfoForTesting(
       0, &visual_transform2, &visual_offset2, &visual_clip_rect2);
 
-  if (GetParam().use_letterbox_video_optimization) {
+  if (std::get<0>(GetParam()).use_letterbox_video_optimization) {
     // In case DirectCompositionLetterboxVideoOptimization feature is enabled,
     // DWM will do the swap chain positioning in case of overlay. And visual
     // clip rect has been set to monitor rect.
@@ -2975,7 +3100,7 @@ TEST_P(DCompPresenterLetterboxingTest, FullScreenLetterboxingResizeVideoLayer) {
       presenter_->GetLayerSwapChainForTesting(0);
   ASSERT_TRUE(swap_chain3);
   EXPECT_HRESULT_SUCCEEDED(swap_chain3->GetDesc1(&desc3));
-  if (GetParam().use_letterbox_video_optimization) {
+  if (std::get<0>(GetParam()).use_letterbox_video_optimization) {
     // In case DirectCompositionLetterboxVideoOptimization feature is enabled,
     // there would be two pixels more to cover extra blank bar since the
     // adjustment is basically a moveup.
@@ -2994,7 +3119,7 @@ TEST_P(DCompPresenterLetterboxingTest, FullScreenLetterboxingResizeVideoLayer) {
   presenter_->GetSwapChainVisualInfoForTesting(
       0, &visual_transform3, &visual_offset3, &visual_clip_rect3);
 
-  if (GetParam().use_letterbox_video_optimization) {
+  if (std::get<0>(GetParam()).use_letterbox_video_optimization) {
     // In case DirectCompositionLetterboxVideoOptimization feature is enabled,
     // DWM will do the swap chain positioning in case of overlay. And visual
     // clip rect has been set to monitor rect.
@@ -3059,7 +3184,7 @@ TEST_P(DCompPresenterLetterboxingTest,
   EXPECT_EQ(1920u, desc.Width);
   EXPECT_EQ(1080u, desc.Height);
 
-  if (GetParam().use_letterbox_video_optimization) {
+  if (std::get<0>(GetParam()).use_letterbox_video_optimization) {
     // Check desktop plane removal part 1.
     Microsoft::WRL::ComPtr<IDXGIDecodeSwapChain> decode_swap_chain;
     EXPECT_HRESULT_SUCCEEDED(
@@ -3083,7 +3208,7 @@ TEST_P(DCompPresenterLetterboxingTest,
   gfx::Rect visual_clip_rect;
   presenter_->GetSwapChainVisualInfoForTesting(
       0, &visual_transform, &visual_offset, &visual_clip_rect);
-  if (GetParam().use_letterbox_video_optimization) {
+  if (std::get<0>(GetParam()).use_letterbox_video_optimization) {
     // Check desktop plane removal part 2.
     // In case DirectCompositionLetterboxVideoOptimization feature is enabled,
     // DWM will do the swap chain positioning in case of overlay.
@@ -3280,7 +3405,7 @@ TEST_P(DCompPresenterLetterboxingTest, FullScreenPillarboxingResizeVideoLayer) {
   presenter_->GetSwapChainVisualInfoForTesting(
       0, &visual_transform, &visual_offset, &visual_clip_rect);
 
-  if (GetParam().use_letterbox_video_optimization) {
+  if (std::get<0>(GetParam()).use_letterbox_video_optimization) {
     // In case DirectCompositionLetterboxVideoOptimization feature is enabled,
     // DWM will do the swap chain positioning in case of overlay. And visual
     // clip rect has been set to monitor rect.
@@ -3319,7 +3444,7 @@ TEST_P(DCompPresenterLetterboxingTest, FullScreenPillarboxingResizeVideoLayer) {
   ASSERT_TRUE(swap_chain2);
   EXPECT_HRESULT_SUCCEEDED(swap_chain2->GetDesc1(&desc2));
 
-  if (GetParam().use_letterbox_video_optimization) {
+  if (std::get<0>(GetParam()).use_letterbox_video_optimization) {
     // In case DirectCompositionLetterboxVideoOptimization feature is enabled,
     // there would be four pixels more to cover extra blank bar since the
     // adjustment is basically a padding without move-right.
@@ -3338,7 +3463,7 @@ TEST_P(DCompPresenterLetterboxingTest, FullScreenPillarboxingResizeVideoLayer) {
   presenter_->GetSwapChainVisualInfoForTesting(
       0, &visual_transform2, &visual_offset2, &visual_clip_rect2);
 
-  if (GetParam().use_letterbox_video_optimization) {
+  if (std::get<0>(GetParam()).use_letterbox_video_optimization) {
     // In case DirectCompositionLetterboxVideoOptimization feature is enabled,
     // DWM will do the swap chain positioning in case of overlay. And visual
     // clip rect has been set to monitor rect.
@@ -3376,7 +3501,7 @@ TEST_P(DCompPresenterLetterboxingTest, FullScreenPillarboxingResizeVideoLayer) {
       presenter_->GetLayerSwapChainForTesting(0);
   ASSERT_TRUE(swap_chain3);
   EXPECT_HRESULT_SUCCEEDED(swap_chain3->GetDesc1(&desc3));
-  if (GetParam().use_letterbox_video_optimization) {
+  if (std::get<0>(GetParam()).use_letterbox_video_optimization) {
     // In case DirectCompositionLetterboxVideoOptimization feature is enabled,
     // there would be two pixels more to cover extra blank bar since the
     // adjustment is basically a move-left.
@@ -3395,7 +3520,7 @@ TEST_P(DCompPresenterLetterboxingTest, FullScreenPillarboxingResizeVideoLayer) {
   presenter_->GetSwapChainVisualInfoForTesting(
       0, &visual_transform3, &visual_offset3, &visual_clip_rect3);
 
-  if (GetParam().use_letterbox_video_optimization) {
+  if (std::get<0>(GetParam()).use_letterbox_video_optimization) {
     // In case DirectCompositionLetterboxVideoOptimization feature is enabled,
     // DWM will do the swap chain positioning in case of overlay. And visual
     // clip rect has been set to monitor rect.
@@ -3460,7 +3585,7 @@ TEST_P(DCompPresenterLetterboxingTest,
   EXPECT_EQ(1800u, desc.Width);
   EXPECT_EQ(1200u, desc.Height);
 
-  if (GetParam().use_letterbox_video_optimization) {
+  if (std::get<0>(GetParam()).use_letterbox_video_optimization) {
     // Check desktop plane removal part 1.
     Microsoft::WRL::ComPtr<IDXGIDecodeSwapChain> decode_swap_chain;
     EXPECT_HRESULT_SUCCEEDED(
@@ -3484,7 +3609,7 @@ TEST_P(DCompPresenterLetterboxingTest,
   gfx::Rect visual_clip_rect;
   presenter_->GetSwapChainVisualInfoForTesting(
       0, &visual_transform, &visual_offset, &visual_clip_rect);
-  if (GetParam().use_letterbox_video_optimization) {
+  if (std::get<0>(GetParam()).use_letterbox_video_optimization) {
     // Check desktop plane removal part 2.
     // In case DirectCompositionLetterboxVideoOptimization feature is enabled,
     // DWM will do the swap chain positioning in case of overlay.
@@ -3500,31 +3625,33 @@ TEST_P(DCompPresenterLetterboxingTest,
 }
 
 class DCompPresenterFullscreenRoundingTest
-    : public DCompPresenterTest,
-      public testing::WithParamInterface<bool> {
+    : public DCompPresenterTestBase,
+      public testing::WithParamInterface<std::tuple<bool, bool>> {
  protected:
   void SetUp() override {
     SetupScopedFeatureList();
-
-    DCompPresenterTest::SetUp();
+    DCompPresenterTestBase::SetUp();
   }
 
   virtual void SetupScopedFeatureList() {
-    if (GetParam()) {
-      scoped_feature_list_.InitAndEnableFeature(
+    if (std::get<0>(GetParam())) {
+      DCompPresenterTestBase::EnableFeature(
           features::kUseSwapChainPresenterFloatingPointAdjustments);
     } else {
-      scoped_feature_list_.InitAndDisableFeature(
+      DCompPresenterTestBase::DisableFeature(
           features::kUseSwapChainPresenterFloatingPointAdjustments);
     }
+    if (std::get<1>(GetParam())) {
+      DCompPresenterTestBase::EnableFeature(features::kGpuVsync);
+    } else {
+      DCompPresenterTestBase::DisableFeature(features::kGpuVsync);
+    }
   }
-
-  base::test::ScopedFeatureList scoped_feature_list_;
 };
 
 INSTANTIATE_TEST_SUITE_P(All,
                          DCompPresenterFullscreenRoundingTest,
-                         testing::Bool());
+                         testing::Combine(testing::Bool(), testing::Bool()));
 
 TEST_P(DCompPresenterFullscreenRoundingTest,
        FullScreenRoundingWithHalfPixelTranslation) {
@@ -3570,7 +3697,7 @@ TEST_P(DCompPresenterFullscreenRoundingTest,
   ASSERT_TRUE(swap_chain);
   EXPECT_HRESULT_SUCCEEDED(swap_chain->GetDesc1(&desc));
 
-  if (GetParam()) {
+  if (std::get<0>(GetParam())) {
     EXPECT_EQ(1920u, desc.Width);
     EXPECT_EQ(1080u, desc.Height);
   } else {
@@ -3588,7 +3715,7 @@ TEST_P(DCompPresenterFullscreenRoundingTest,
   EXPECT_HRESULT_SUCCEEDED(
       decode_swap_chain->GetDestSize(&dest_width, &dest_height));
 
-  if (GetParam()) {
+  if (std::get<0>(GetParam())) {
     EXPECT_EQ(1920u, dest_width);
     EXPECT_EQ(1080u, dest_height);
   } else {
@@ -3602,7 +3729,7 @@ TEST_P(DCompPresenterFullscreenRoundingTest,
   RECT target_rect;
   EXPECT_HRESULT_SUCCEEDED(decode_swap_chain->GetTargetRect(&target_rect));
 
-  if (GetParam()) {
+  if (std::get<0>(GetParam())) {
     EXPECT_EQ(clip_rect, gfx::Rect(target_rect));
   } else {
     // Without float based rounding we expect full screen
@@ -3618,7 +3745,7 @@ TEST_P(DCompPresenterFullscreenRoundingTest,
       0, &visual_transform, &visual_offset, &visual_clip_rect);
   DVLOG(1) << "visual_transform" << visual_transform.ToString();
 
-  if (GetParam()) {
+  if (std::get<0>(GetParam())) {
     EXPECT_TRUE(visual_transform.IsIdentity());
   } else {
     // Without float based rounding we expect full screen

@@ -26,12 +26,6 @@
 namespace features {
 namespace {
 
-#if BUILDFLAG(IS_APPLE)
-BASE_FEATURE(kGpuVsync, "GpuVsync", base::FEATURE_DISABLED_BY_DEFAULT);
-#else
-BASE_FEATURE(kGpuVsync, "GpuVsync", base::FEATURE_ENABLED_BY_DEFAULT);
-#endif
-
 #if BUILDFLAG(IS_ANDROID)
 const base::FeatureParam<std::string>
     kPassthroughCommandDecoderBlockListByBrand{
@@ -91,6 +85,12 @@ void SplitAndAppendANGLEFeatureList(const std::string& list,
 
 }  // namespace
 
+#if BUILDFLAG(IS_APPLE)
+BASE_FEATURE(kGpuVsync, "GpuVsync", base::FEATURE_DISABLED_BY_DEFAULT);
+#else
+BASE_FEATURE(kGpuVsync, "GpuVsync", base::FEATURE_ENABLED_BY_DEFAULT);
+#endif
+
 #if BUILDFLAG(ENABLE_VALIDATING_COMMAND_DECODER)
 // Use the passthrough command decoder by default.  This can be overridden with
 // the --use-cmd-decoder=passthrough or --use-cmd-decoder=validating flags.
@@ -132,7 +132,7 @@ BASE_FEATURE(kUsePrimaryMonitorVSyncIntervalOnSV3,
 bool UseGpuVsync() {
   return !base::CommandLine::ForCurrentProcess()->HasSwitch(
              switches::kDisableGpuVsync) &&
-         base::FeatureList::IsEnabled(kGpuVsync);
+         base::FeatureList::IsEnabled(features::kGpuVsync);
 }
 
 bool IsAndroidFrameDeadlineEnabled() {
