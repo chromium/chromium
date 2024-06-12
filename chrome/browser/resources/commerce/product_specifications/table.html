@@ -1,4 +1,8 @@
 <style include="cr-icons cr-hidden-style">
+  :host {
+    --column-width: 220px;
+  }
+
   table {
     border-collapse: collapse;
     font-size: 12px;
@@ -10,18 +14,21 @@
 
   .col {
     border-inline-end: 8px solid transparent;
-    width: 220px;
+    width: var(--column-width);
   }
 
   img {
     height: inherit;
-    object-fit: cover;
+    object-fit: contain;
+    width: var(--column-width);
   }
 
   #imgContainer {
+    border: 1px solid var(--color-sys-base-container);
     border-radius: 8px;
-    height: 123px;
+    height: 105px;
     margin-top: 6px;
+    padding: 8px 0;
     position: relative;
   }
 
