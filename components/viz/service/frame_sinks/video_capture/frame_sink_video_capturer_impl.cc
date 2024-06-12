@@ -130,15 +130,12 @@ std::unique_ptr<VideoFramePool> GetVideoFramePoolForFormat(
 }
 
 CopyOutputRequest::ResultFormat VideoPixelFormatToCopyOutputRequestFormat(
-    media::VideoPixelFormat format,
-    bool use_multiplane_for_nv12) {
+    media::VideoPixelFormat format) {
   switch (format) {
     case media::PIXEL_FORMAT_I420:
       return CopyOutputRequest::ResultFormat::I420_PLANES;
     case media::PIXEL_FORMAT_NV12:
-      return use_multiplane_for_nv12
-                 ? CopyOutputRequest::ResultFormat::NV12_MULTIPLANE
-                 : CopyOutputRequest::ResultFormat::NV12_PLANES;
+      return CopyOutputRequest::ResultFormat::NV12_MULTIPLANE;
     case media::PIXEL_FORMAT_ARGB:
       return CopyOutputRequest::ResultFormat::RGBA;
     default:
@@ -1093,41 +1090,24 @@ void FrameSinkVideoCapturerImpl::MaybeCaptureFrame(
                              content_version_, content_rect, *region_properties,
                              std::move(frame), capture_begin_time);
 
-  const bool use_nv12_with_textures =
+  // TODO(crbug.com/346799708): The condition to check `pixel_format_` shouldn't
+  // be necessary but video capture is started with I420+GMB in tests. That
+  // still captures software I420 frames and not textures.
+  const bool capture_texture_results =
       buffer_format_preference_ ==
           mojom::BufferFormatPreference::kPreferGpuMemoryBuffer &&
-      pixel_format_ == media::PIXEL_FORMAT_NV12;
-
-  const bool use_argb_with_textures =
-      buffer_format_preference_ ==
-          mojom::BufferFormatPreference::kPreferGpuMemoryBuffer &&
-      pixel_format_ == media::PIXEL_FORMAT_ARGB;
+      (pixel_format_ == media::PIXEL_FORMAT_NV12 ||
+       pixel_format_ == media::PIXEL_FORMAT_ARGB);
 
   std::optional<BlitRequest> blit_request;
-
-  if (use_argb_with_textures || use_nv12_with_textures) {
-    gpu::MailboxHolder first_mailbox = frame_capture.frame->mailbox_holder(0);
-    gpu::MailboxHolder second_mailbox;
-
-    if (use_nv12_with_textures &&
-        frame_capture.frame->shared_image_format_type() ==
-            media::SharedImageFormatType::kLegacy) {
-      // If this frame is using legacy SharedImages, the first mailbox holds the
-      // first plane and the second mailbox holds the second plane. Otherwise
-      // the first mailbox holds both planes via a multiplanar SharedImage.
-      second_mailbox = frame_capture.frame->mailbox_holder(1);
-    }
-
-    static_assert(CopyOutputResult::kMaxPlanes == 3u);
-    std::array<gpu::MailboxHolder, CopyOutputResult::kMaxPlanes>
-        mailbox_holders{first_mailbox, second_mailbox, gpu::MailboxHolder{}};
+  if (capture_texture_results) {
+    TRACE_EVENT("gpu.capture", "PopulateBlitRequest");
 
     // TODO(crbug.com/41350322): change the capturer to only request the
     // parts of the frame that have changed whenever possible.
     blit_request =
         BlitRequest(content_rect.origin(), LetterboxingBehavior::kLetterbox,
-                    mailbox_holders, true);
-    TRACE_EVENT("gpu.capture", "PopulateBlitRequest");
+                    frame_capture.frame->mailbox_holder(0), true);
 
     // We haven't captured the frame yet, but let's pretend that we did for
     // the sake of blend information computation. We will be asking for an
@@ -1154,30 +1134,16 @@ void FrameSinkVideoCapturerImpl::MaybeCaptureFrame(
     }
   }
 
-  // Request a copy of the next frame from the frame sink.
-
-  // Determine whether CopyOutputRequest should use NV12 multiplane format for
-  // importing/creating mailboxes (rather than one mailbox per plane). This is
-  // true if either:
-  // (1) We're importing a mailbox (i.e., `use_nv12_with_textures` is true) that
-  // was created with NV12 multiplane format.
-  // (2) We're creating mailboxes and usage of MultiplanarSharedImage for
-  // hardware video is enabled.
   // Note: Externally-sampled images are readonly and hence we should never be
   // creating VideoFrames with external sampling for this use case (and the
   // creation flow of `frame` will not do so).
   CHECK_NE(frame_capture.frame->shared_image_format_type(),
            media::SharedImageFormatType::kSharedImageFormatExternalSampler);
-  bool use_multiplane_for_nv12 =
-      use_nv12_with_textures
-          ? (frame_capture.frame->shared_image_format_type() ==
-             media::SharedImageFormatType::kSharedImageFormat)
-          : media::IsMultiPlaneFormatForHardwareVideoEnabled();
 
+  // Request a copy of the next frame from the frame sink.
   auto request = std::make_unique<CopyOutputRequest>(
-      VideoPixelFormatToCopyOutputRequestFormat(pixel_format_,
-                                                use_multiplane_for_nv12),
-      use_nv12_with_textures || use_argb_with_textures
+      VideoPixelFormatToCopyOutputRequestFormat(pixel_format_),
+      capture_texture_results
           ? CopyOutputRequest::ResultDestination::kNativeTextures
           : CopyOutputRequest::ResultDestination::kSystemMemory,
       base::BindOnce(&FrameSinkVideoCapturerImpl::DidCopyFrame,
