@@ -6,6 +6,7 @@ package org.chromium.base;
 
 import android.os.Handler;
 import android.os.HandlerThread;
+import android.os.IBinder;
 import android.os.Looper;
 import android.os.ParcelFileDescriptor;
 import android.os.RemoteException;
@@ -134,7 +135,8 @@ public final class MultiprocessTestClientLauncher {
     @GuardedBy("mMainReturnCodeLock")
     private Integer mMainReturnCode;
 
-    private MultiprocessTestClientLauncher(String[] commandLine, FileDescriptorInfo[] filesToMap) {
+    private MultiprocessTestClientLauncher(
+            String[] commandLine, FileDescriptorInfo[] filesToMap, IBinder binderBox) {
         assert isRunningOnLauncherThread();
 
         if (sConnectionAllocator == null) {
@@ -150,6 +152,7 @@ public final class MultiprocessTestClientLauncher {
                             /* bindAsExternalService= */ false,
                             /* useStrongBinding= */ false);
         }
+
         mLauncher =
                 new ChildProcessLauncher(
                         sLauncherHandler,
@@ -157,7 +160,7 @@ public final class MultiprocessTestClientLauncher {
                         commandLine,
                         filesToMap,
                         sConnectionAllocator,
-                        Arrays.asList(mCallback));
+                        Arrays.asList(mCallback, binderBox));
     }
 
     private boolean waitForConnection(long timeoutMs) {
@@ -205,22 +208,25 @@ public final class MultiprocessTestClientLauncher {
     }
 
     /**
-     * Spawns and connects to a child process.
-     * May not be called from the main thread.
+     * Spawns and connects to a child process. May not be called from the main thread.
      *
      * @param commandLine the child process command line argv.
      * @return the PID of the started process or 0 if the process could not be started.
      */
     @CalledByNative
     private static int launchClient(
-            final String[] commandLine, final FileDescriptorInfo[] filesToMap) {
+            final String[] commandLine,
+            final FileDescriptorInfo[] filesToMap,
+            final IBinder binderBox) {
         assert Looper.myLooper() != Looper.getMainLooper();
 
         initLauncherThread();
 
         final MultiprocessTestClientLauncher launcher =
                 runOnLauncherAndGetResult(
-                        () -> createAndStartLauncherOnLauncherThread(commandLine, filesToMap));
+                        () ->
+                                createAndStartLauncherOnLauncherThread(
+                                        commandLine, filesToMap, binderBox));
         if (launcher == null) {
             return 0;
         }
@@ -239,11 +245,11 @@ public final class MultiprocessTestClientLauncher {
     }
 
     private static MultiprocessTestClientLauncher createAndStartLauncherOnLauncherThread(
-            String[] commandLine, FileDescriptorInfo[] filesToMap) {
+            String[] commandLine, FileDescriptorInfo[] filesToMap, final IBinder binderBox) {
         assert isRunningOnLauncherThread();
 
         MultiprocessTestClientLauncher launcher =
-                new MultiprocessTestClientLauncher(commandLine, filesToMap);
+                new MultiprocessTestClientLauncher(commandLine, filesToMap, binderBox);
         if (!launcher.mLauncher.start(
                 /* setupConnection= */ true, /* queueIfNoFreeConnection= */ true)) {
             return null;

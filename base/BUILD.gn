@@ -1364,6 +1364,8 @@ component("base") {
     sources += [
       "android/binder.cc",
       "android/binder.h",
+      "android/binder_box.cc",
+      "android/binder_box.h",
     ]
   }
 

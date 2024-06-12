@@ -5,8 +5,10 @@
 #include "base/test/multiprocess_test.h"
 
 #include <string.h>
+
 #include <vector>
 
+#include "base/android/binder_box.h"
 #include "base/android/jni_android.h"
 #include "base/android/jni_array.h"
 #include "base/android/scoped_java_ref.h"
@@ -51,8 +53,9 @@ Process SpawnMultiProcessTestChild(const std::string& procname,
 
   android::ScopedJavaLocalRef<jobjectArray> j_argv =
       android::ToJavaArrayOfStrings(env, command_line.argv());
+
   jint pid = android::Java_MultiprocessTestClientLauncher_launchClient(
-      env, j_argv, fds);
+      env, j_argv, fds, base::android::PackBinderBox(env, options.binders));
   return Process(pid);
 }
 

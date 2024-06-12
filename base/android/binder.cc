@@ -138,6 +138,11 @@ static BinderApi* GetBinderApi() {
   return &api;
 }
 
+std::unique_ptr<std::vector<BinderRef>>& BindersFromParent() {
+  static NoDestructor<std::unique_ptr<std::vector<BinderRef>>> ptr;
+  return *ptr;
+}
+
 }  // namespace
 
 ParcelReader::ParcelReader(const AParcel* parcel) : parcel_(parcel) {}
@@ -174,6 +179,18 @@ BinderStatusOr<int32_t> ParcelReader::ReadInt32() const {
   return unexpected(STATUS_UNEXPECTED_NULL);
 }
 
+BinderStatusOr<uint32_t> ParcelReader::ReadUint32() const {
+  WITH_BINDER_API(api) {
+    uint32_t value;
+    const auto status = api.AParcel_readUint32(parcel_.get(), &value);
+    if (status != STATUS_OK) {
+      return unexpected(status);
+    }
+    return ok(value);
+  }
+  return unexpected(STATUS_UNEXPECTED_NULL);
+}
+
 ParcelWriter::ParcelWriter(AParcel* parcel) : parcel_(parcel) {}
 
 ParcelWriter::ParcelWriter(Parcel& parcel) : parcel_(parcel.get()) {}
@@ -199,6 +216,17 @@ BinderStatusOr<void> ParcelWriter::WriteInt32(int32_t value) const {
   binder_status_t status = STATUS_UNEXPECTED_NULL;
   WITH_BINDER_API(api) {
     status = api.AParcel_writeInt32(parcel_.get(), value);
+    if (status == STATUS_OK) {
+      return ok();
+    }
+  }
+  return unexpected(status);
+}
+
+BinderStatusOr<void> ParcelWriter::WriteUint32(uint32_t value) const {
+  binder_status_t status = STATUS_UNEXPECTED_NULL;
+  WITH_BINDER_API(api) {
+    status = api.AParcel_writeUint32(parcel_.get(), value);
     if (status == STATUS_OK) {
       return ok();
     }
@@ -273,10 +301,31 @@ void BinderRef::reset() {
   }
 }
 
-bool BinderRef::AssociateWithClass(AIBinder_Class* binder_class) {
+ScopedJavaLocalRef<jobject> BinderRef::ToJavaBinder(JNIEnv* env) const {
+  ScopedJavaLocalRef<jobject> object;
+  if (binder_) {
+    WITH_BINDER_API(api) {
+      object = ScopedJavaLocalRef<jobject>::Adopt(
+          env, api.AIBinder_toJavaBinder(env, binder_.get()));
+    }
+  }
+  return object;
+}
+
+BinderRef BinderRef::FromJavaBinder(JNIEnv* env, jobject java_binder) {
   WITH_BINDER_API(api) {
-    CHECK(binder_.get());
-    return api.AIBinder_associateClass(binder_.get(), binder_class);
+    if (AIBinder* binder = api.AIBinder_fromJavaBinder(env, java_binder)) {
+      return BinderRef(binder);
+    }
+  }
+  return BinderRef();
+}
+
+bool BinderRef::AssociateWithClass(AIBinder_Class* binder_class) {
+  if (binder_) {
+    WITH_BINDER_API(api) {
+      return api.AIBinder_associateClass(binder_.get(), binder_class);
+    }
   }
   return false;
 }
@@ -412,6 +461,21 @@ binder_status_t SupportsBinderBase::OnIBinderTransact(AIBinder* binder,
 
 bool IsNativeBinderAvailable() {
   return GetBinderApi();
+}
+
+void SetBindersFromParent(std::vector<BinderRef> binders) {
+  CHECK(!BindersFromParent());
+  BindersFromParent() =
+      std::make_unique<std::vector<BinderRef>>(std::move(binders));
+}
+
+BinderRef TakeBinderFromParent(size_t index) {
+  auto& binders = BindersFromParent();
+  CHECK(binders);
+  if (index >= binders->size()) {
+    return BinderRef();
+  }
+  return std::move(binders->at(index));
 }
 
 }  // namespace base::android

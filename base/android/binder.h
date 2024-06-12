@@ -8,11 +8,14 @@
 #include <android/binder_ibinder.h>
 #include <android/binder_parcel.h>
 #include <android/binder_status.h>
+#include <jni.h>
 
 #include <cstdint>
 #include <type_traits>
 #include <utility>
+#include <vector>
 
+#include "base/android/scoped_java_ref.h"
 #include "base/base_export.h"
 #include "base/check.h"
 #include "base/memory/raw_ptr.h"
@@ -69,6 +72,7 @@ class BASE_EXPORT ParcelReader {
   // may be exposed here as needed.
   BinderStatusOr<BinderRef> ReadBinder() const;
   BinderStatusOr<int32_t> ReadInt32() const;
+  BinderStatusOr<uint32_t> ReadUint32() const;
 
  private:
   raw_ptr<const AParcel> parcel_;
@@ -88,6 +92,7 @@ class BASE_EXPORT ParcelWriter {
   // be exposed here as needed.
   BinderStatusOr<void> WriteBinder(BinderRef binder) const;
   BinderStatusOr<void> WriteInt32(int32_t value) const;
+  BinderStatusOr<void> WriteUint32(uint32_t value) const;
 
  private:
   raw_ptr<AParcel> parcel_;
@@ -136,6 +141,13 @@ class BASE_EXPORT BinderRef {
   [[nodiscard]] AIBinder* release() { return std::exchange(binder_, nullptr); }
 
   void reset();
+
+  // Returns a new strong reference to this binder as a local Java object
+  // reference.
+  ScopedJavaLocalRef<jobject> ToJavaBinder(JNIEnv* env) const;
+
+  // Returns a new strong reference to an existing Java binder as a BinderRef.
+  static BinderRef FromJavaBinder(JNIEnv* env, jobject java_binder);
 
   // Attempts to associate this binder with `binder_class`. Generally should be
   // used via TypedBinderRef<T>::Adopt() or the equivalent T::AdoptBinderRef()
@@ -342,6 +354,19 @@ class BASE_EXPORT SupportsBinder : public internal::SupportsBinderBase {
 // SupportsBinder<T> implementations will never receive binder transactions; but
 // definitions within this header are otherwise still safe to reference and use.
 BASE_EXPORT bool IsNativeBinderAvailable();
+
+// Stashes a global collection of BinderRefs for later retrieval by
+// TakeBinderFromParent(). This is intended for use by generic multiprocess
+// support code to retain interfaces from the parent process so application-
+// specific logic in the child process can retrieve them later. It should be
+// called at most once per process, and as early as possible.
+BASE_EXPORT void SetBindersFromParent(std::vector<BinderRef> binders);
+
+// Retrieves (by index) a BinderRef which was stashed earlier by
+// SetBindersFromParent(). If there is no binder for the given index, the
+// returned BinderRef is null. This consumes the binder for that index, so
+// subsequent calls for the same index will always return null.
+BASE_EXPORT BinderRef TakeBinderFromParent(size_t index);
 
 }  // namespace base::android
 

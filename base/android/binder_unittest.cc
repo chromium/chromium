@@ -9,13 +9,18 @@
 #include <atomic>
 #include <utility>
 
-#include "base/functional/bind.h"
+#include "base/command_line.h"
 #include "base/functional/callback.h"
 #include "base/notreached.h"
+#include "base/process/launch.h"
+#include "base/process/process.h"
 #include "base/synchronization/waitable_event.h"
 #include "base/test/bind.h"
+#include "base/test/multiprocess_test.h"
+#include "base/test/test_timeouts.h"
 #include "base/types/expected_macros.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "testing/multiprocess_func_list.h"
 
 namespace base::android {
 namespace {
@@ -298,6 +303,104 @@ TEST_F(BinderTest, BindersInTransactions) {
   multiply3.reset();
 
   math_service->WaitForAllServicesToBeDestroyed();
+}
+
+class BinderMultiprocessTest : public BinderTest {
+ public:
+  template <typename... Binders>
+  Process LaunchChild(const char* name, Binders&&... binders) {
+    CommandLine cmd = GetMultiProcessTestChildBaseCommandLine();
+    LaunchOptions options;
+    options.binders =
+        std::vector<BinderRef>({std::forward<Binders>(binders)...});
+    return SpawnMultiProcessTestChild(name, cmd, options);
+  }
+
+  bool JoinChild(const Process& child) {
+    int child_exit_code = -1;
+    WaitForMultiprocessTestChildExit(child, TestTimeouts::action_timeout(),
+                                     &child_exit_code);
+    return child_exit_code == 0;
+  }
+};
+
+// Helper to define child process logic such that EXPECT* macro failures will
+// impact the process exit code and thereby percolate up to the parent test
+// process when joining the child.
+#define BINDER_TEST_CHILD_MAIN(name)              \
+  class name##_Child {                            \
+   public:                                        \
+    void Run();                                   \
+  };                                              \
+  MULTIPROCESS_TEST_MAIN(name) {                  \
+    name##_Child().Run();                         \
+    return ::testing::Test::HasFailure() ? 1 : 0; \
+  }                                               \
+  void name##_Child::Run()
+
+TEST_F(BinderMultiprocessTest, PassBinder) {
+  auto add42 = base::MakeRefCounted<AddService>(42);
+  Process child = LaunchChild("PassBinder_Child", add42->GetBinder());
+  EXPECT_TRUE(JoinChild(child));
+}
+
+BINDER_TEST_CHILD_MAIN(PassBinder_Child) {
+  AddInterface::Proxy add42(TakeBinderFromParent(0));
+  EXPECT_EQ(47, add42.Add(5));
+}
+
+TEST_F(BinderMultiprocessTest, PassMultipleBinders) {
+  auto add100 = base::MakeRefCounted<AddService>(100);
+  auto multiply7 = base::MakeRefCounted<MultiplyService>(7);
+  Process child = LaunchChild("PassMultipleBinders_Child", add100->GetBinder(),
+                              multiply7->GetBinder());
+  EXPECT_TRUE(JoinChild(child));
+}
+
+BINDER_TEST_CHILD_MAIN(PassMultipleBinders_Child) {
+  AddInterface::Proxy add100(TakeBinderFromParent(0));
+  MultiplyInterface::Proxy multiply7(TakeBinderFromParent(1));
+  EXPECT_EQ(105, add100.Add(5));
+  EXPECT_EQ(63, multiply7.Multiply(9));
+}
+
+TEST_F(BinderMultiprocessTest, BindersInTransactions) {
+  auto math = base::MakeRefCounted<MathService>();
+  Process child = LaunchChild("BindersInTransactions_Child", math->GetBinder());
+  math->WaitForAllServicesToBeDestroyed();
+  EXPECT_TRUE(JoinChild(child));
+}
+
+BINDER_TEST_CHILD_MAIN(BindersInTransactions_Child) {
+  MathInterface::Proxy math(TakeBinderFromParent(0));
+  auto add2 = math.GetAdd(2);
+  auto multiply3 = math.GetMultiply(3);
+  EXPECT_EQ(8002, add2.Add(8000));
+  EXPECT_EQ(27000, multiply3.Multiply(9000));
+}
+
+TEST_F(BinderMultiprocessTest, PassedBinderLifetime) {
+  auto service = base::MakeRefCounted<AddService>(15);
+  bool is_destroyed = false;
+  base::WaitableEvent destruction;
+  service->set_destruction_callback(base::BindLambdaForTesting([&] {
+    is_destroyed = true;
+    destruction.Signal();
+  }));
+
+  auto binder = service->GetBinder();
+  service.reset();
+
+  EXPECT_FALSE(is_destroyed);
+  Process child = LaunchChild("PassedBinderLifetime_Child", std::move(binder));
+  EXPECT_TRUE(JoinChild(child));
+  destruction.Wait();
+  EXPECT_TRUE(is_destroyed);
+}
+
+BINDER_TEST_CHILD_MAIN(PassedBinderLifetime_Child) {
+  AddInterface::Proxy add15(TakeBinderFromParent(0));
+  EXPECT_EQ(18, add15.Add(3));
 }
 
 }  // namespace

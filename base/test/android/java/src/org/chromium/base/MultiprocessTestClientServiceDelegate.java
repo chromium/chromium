@@ -22,6 +22,7 @@ public class MultiprocessTestClientServiceDelegate implements ChildProcessServic
     private static final String TAG = "MPTestCSDelegate";
 
     private ITestCallback mTestCallback;
+    private IBinder mBinderBox;
 
     private final ITestController.Stub mTestController =
             new ITestController.Stub() {
@@ -49,6 +50,7 @@ public class MultiprocessTestClientServiceDelegate implements ChildProcessServic
     @Override
     public void onConnectionSetup(Bundle connectionBundle, List<IBinder> callbacks) {
         mTestCallback = ITestCallback.Stub.asInterface(callbacks.get(0));
+        mBinderBox = callbacks.get(1);
     }
 
     @Override
@@ -77,7 +79,7 @@ public class MultiprocessTestClientServiceDelegate implements ChildProcessServic
 
     @Override
     public void runMain() {
-        int result = MainRunner.runMain(CommandLine.getJavaSwitchesForTesting());
+        int result = MainRunner.runMain(CommandLine.getJavaSwitchesForTesting(), mBinderBox);
         try {
             mTestCallback.mainReturned(result);
         } catch (RemoteException re) {
