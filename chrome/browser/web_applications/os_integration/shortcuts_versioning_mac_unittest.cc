@@ -69,11 +69,6 @@ class ShortcutsVersioningMacTest : public WebAppTest {
     OsIntegrationManager::SetUpdateShortcutsForAllAppsCallback(
         base::NullCallback());
 
-    // To prevent OS hooks from sticking around on bots, destroying the shortcut
-    // override DCHECK fails if the directories are not empty. To bypass this in
-    // this unittest, we manually delete it.
-    // TODO: If these unittests leave OS hook artifacts on bots, undo that here.
-    EXPECT_TRUE(override_registration_->test_override().DeleteChromeAppsDir());
     override_registration_.reset();
 
     WebAppTest::TearDown();
