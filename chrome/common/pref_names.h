@@ -1903,7 +1903,7 @@ inline constexpr char kSuppressDifferentOriginSubframeJSDialogs[] =
 // or disabled. Defaults to blink::features::kReduceUserAgent field trial.
 inline constexpr char kUserAgentReduction[] = "user_agent_reduction";
 
-#if (!BUILDFLAG(IS_ANDROID))
+#if !BUILDFLAG(IS_ANDROID)
 // Boolean determining the side the side panel will be appear on (left / right).
 // True when the side panel is aligned to the right.
 inline constexpr char kSidePanelHorizontalAlignment[] =
@@ -1915,7 +1915,11 @@ inline constexpr char kSidePanelCompanionEntryPinnedToToolbar[] =
 // Corresponds to the enterprise policy.
 inline constexpr char kGoogleSearchSidePanelEnabled[] =
     "side_panel.google_search_side_panel_enabled";
-#endif
+// Boolean determining the side the tab search will be appear on (left / right).
+// True when the tab search button is on the right side of the tab strip even in
+// RTL.
+inline constexpr char kTabSearchRightAligned[] = "tab_search.is_right_aligned";
+#endif  // !BUILDFLAG(IS_ANDROID)
 
 inline constexpr char kManagedPrivateNetworkAccessRestrictionsEnabled[] =
     "managed_private_network_access_restrictions_enabled";
