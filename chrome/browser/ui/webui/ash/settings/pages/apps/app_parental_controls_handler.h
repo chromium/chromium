@@ -17,11 +17,12 @@
 #include "mojo/public/cpp/bindings/receiver.h"
 #include "mojo/public/cpp/bindings/remote_set.h"
 
-class PrefService;
+class Profile;
 
 namespace ash {
 
 namespace on_device_controls {
+class AppControlsNotifier;
 class BlockedAppRegistry;
 }  // namespace on_device_controls
 
@@ -36,7 +37,7 @@ class AppParentalControlsHandler
       public apps::AppRegistryCache::Observer {
  public:
   AppParentalControlsHandler(apps::AppServiceProxy* app_service_proxy,
-                             PrefService* pref_service);
+                             Profile* profile);
   ~AppParentalControlsHandler() override;
 
   // app_parental_controls::mojom::AppParentalControlsHandler:
@@ -68,6 +69,9 @@ class AppParentalControlsHandler
   base::ScopedObservation<apps::AppRegistryCache,
                           apps::AppRegistryCache::Observer>
       app_registry_cache_observer_{this};
+
+  std::unique_ptr<on_device_controls::AppControlsNotifier>
+      app_controls_notifier_;
 
   std::unique_ptr<on_device_controls::BlockedAppRegistry> blocked_app_registry_;
 

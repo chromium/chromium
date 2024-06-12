@@ -27557,6 +27557,27 @@ should be able to be added at any place in this file.
   <description>Please enter the description of this user action.</description>
 </action>
 
+<action name="OnDeviceControls_NotificationClicked">
+  <owner>agawronska@chromium.org</owner>
+  <owner>courtneywong@chromium.org</owner>
+  <owner>amberhaynes@chromium.org</owner>
+  <owner>cros-families-eng@google.com</owner>
+  <description>
+    Recorded when a user clicks on the On-Device App Controls notification.
+  </description>
+</action>
+
+<action name="OnDeviceControls_NotificationShown">
+  <owner>agawronska@chromium.org</owner>
+  <owner>courtneywong@chromium.org</owner>
+  <owner>amberhaynes@chromium.org</owner>
+  <owner>cros-families-eng@google.com</owner>
+  <description>
+    Recorded when the On-Device App Controls notification is displayed to a
+    user.
+  </description>
+</action>
+
 <action name="Open_Sys_Internals">
   <owner>yuholong@google.com</owner>
   <owner>arcvm-eng@google.com</owner>

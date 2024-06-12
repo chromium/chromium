@@ -120,7 +120,7 @@ class AppParentalControlsHandlerTest
     on_device_controls::AppControlsTestBase::SetUp();
 
     handler_ = std::make_unique<AppParentalControlsHandler>(
-        app_service_test().proxy(), profile().GetPrefs());
+        app_service_test().proxy(), &profile());
     observer_ = std::make_unique<AppParentalControlsTestObserver>();
     handler_->AddObserver(observer_->GenerateRemote());
   }

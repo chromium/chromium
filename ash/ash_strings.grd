@@ -1602,6 +1602,17 @@ You can also use the keyboard shortcut. First, highlight text, then press <ph na
          This account is managed by Family Link
       </message>
 
+      <!-- Strings for On-Device App Controls notification -->
+      <message name="IDS_ON_DEVICE_APP_CONTROLS_NOTIFICATION_TITLE" desc="The title of the notification that informs the user that on-device app controls are available.">
+        Set up parental controls for apps
+      </message>
+      <message name="IDS_ON_DEVICE_APP_CONTROLS_NOTIFICATION_MESSAGE" desc="The notification message that informs the user that on-device app controls are available.">
+        You can now block apps installed on this <ph name="DEVICE_TYPE">$1<ex>Chromebook</ex></ph>
+      </message>
+      <message name="IDS_ON_DEVICE_APP_CONTROLS_NOTIFICATION_OPEN_SETTINGS_BUTTON_LABEL" desc="The label on the button that takes the user to the Apps Subpage of OS Settings.">
+        Open Settings
+      </message>
+
       <message name="IDS_ASH_STATUS_TRAY_PREVIOUS_MENU" desc="The accessible text for header entries for detailed versions of status tray items.">
         Previous menu
       </message>

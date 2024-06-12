@@ -9,7 +9,9 @@
 #include <vector>
 
 #include "chrome/browser/apps/app_service/app_service_proxy.h"
+#include "chrome/browser/ash/child_accounts/on_device_controls/app_controls_notifier.h"
 #include "chrome/browser/ash/child_accounts/on_device_controls/blocked_app_registry.h"
+#include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/webui/ash/settings/pages/apps/mojom/app_parental_controls_handler.mojom.h"
 #include "components/prefs/pref_service.h"
 #include "components/services/app_service/public/cpp/app_types.h"
@@ -38,16 +40,19 @@ bool ShouldIncludeApp(const apps::AppUpdate& update) {
 
 AppParentalControlsHandler::AppParentalControlsHandler(
     apps::AppServiceProxy* app_service_proxy,
-    PrefService* pref_service)
+    Profile* profile)
     : app_service_proxy_(app_service_proxy),
+      app_controls_notifier_(
+          std::make_unique<on_device_controls::AppControlsNotifier>(profile)),
       blocked_app_registry_(
           std::make_unique<on_device_controls::BlockedAppRegistry>(
               app_service_proxy,
-              pref_service)) {
+              profile->GetPrefs())) {
   CHECK(app_service_proxy_);
   CHECK(blocked_app_registry_);
 
   app_registry_cache_observer_.Observe(&app_service_proxy_->AppRegistryCache());
+  app_controls_notifier_->MaybeShowAppControlsNotification();
 }
 
 AppParentalControlsHandler::~AppParentalControlsHandler() = default;

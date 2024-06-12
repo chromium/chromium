@@ -219,6 +219,11 @@ inline constexpr char kEduCoexistenceToSVersion[] =
 inline constexpr char kEduCoexistenceToSAcceptedVersion[] =
     "family_link_user.edu_coexistence_tos_accepted_version";
 
+// A boolean pref indicating if a notification about On Device App Controls
+// has been shown to the user already.
+inline constexpr char kOnDeviceAppControlsNotificationShown[] =
+    "on_device_app_controls.notification_shown";
+
 // A string pref that stores the PIN used to unlock parental app controls.
 inline constexpr char kOnDeviceAppControlsPin[] = "on_device_app_controls.pin";
 
