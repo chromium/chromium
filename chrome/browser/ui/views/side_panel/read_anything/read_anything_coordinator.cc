@@ -174,25 +174,20 @@ ReadAnythingCoordinator::~ReadAnythingCoordinator() {
   // Deregister Read Anything from the global side panel registry. This removes
   // Read Anything as a side panel entry observer.
   Browser* browser = &GetBrowser();
+  BrowserView* browser_view = BrowserView::GetBrowserViewForBrowser(browser);
+  if (!browser_view) {
+    return;
+  }
 
   // Deregisters the Read Anything side panel if it is not local. When a side
   // panel entry is global, it has the same lifetime as the browser.
   if (!features::IsReadAnythingLocalSidePanelEnabled()) {
-    // TODO(dcheng): The SidePanelRegistry is *also* a BrowserUserData. During
-    // Browser destruction, no other BrowserUserData instances are available, so
-    // this may be null. In general, this is a bit of a code smell, and the code
-    // should be refactored to avoid this situation.
     SidePanelRegistry* global_registry =
         SidePanelCoordinator::GetGlobalSidePanelRegistry(browser);
-    if (global_registry) {
-      global_registry->Deregister(
-          SidePanelEntry::Key(SidePanelEntry::Id::kReadAnything));
-    }
+    global_registry->Deregister(
+        SidePanelEntry::Key(SidePanelEntry::Id::kReadAnything));
   }
 
-  if (features::IsDataCollectionModeForScreen2xEnabled()) {
-    BrowserList::GetInstance()->RemoveObserver(this);
-  }
   browser->tab_strip_model()->RemoveObserver(this);
   Observe(nullptr);
 }
