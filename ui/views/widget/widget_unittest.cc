@@ -1178,6 +1178,35 @@ TEST_F(ClientOwnsWidgetTest, Ownership) {
   EXPECT_TRUE(state()->native_widget_deleted);
 }
 
+TEST_F(ClientOwnsWidgetTest, DestructWithAsyncCloseFirst) {
+  auto widget = std::make_unique<OwnershipTestWidget>(state());
+  Widget::InitParams params =
+      CreateParamsForTestWidget(Widget::InitParams::CLIENT_OWNS_WIDGET,
+                                Widget::InitParams::TYPE_WINDOW_FRAMELESS);
+  params.native_widget = CreatePlatformNativeWidgetImpl(
+      widget.get(), kStubCapture, &state()->native_widget_deleted);
+  widget->Init(std::move(params));
+  widget->Close();
+  widget.reset();
+
+  base::RunLoop().RunUntilIdle();
+  EXPECT_TRUE(state()->native_widget_deleted);
+}
+
+TEST_F(ClientOwnsWidgetTest, DestructWithoutExplicitClose) {
+  auto widget = std::make_unique<OwnershipTestWidget>(state());
+  Widget::InitParams params =
+      CreateParamsForTestWidget(Widget::InitParams::CLIENT_OWNS_WIDGET,
+                                Widget::InitParams::TYPE_WINDOW_FRAMELESS);
+  params.native_widget = CreatePlatformNativeWidgetImpl(
+      widget.get(), kStubCapture, &state()->native_widget_deleted);
+  widget->Init(std::move(params));
+  widget.reset();
+
+  base::RunLoop().RunUntilIdle();
+  EXPECT_TRUE(state()->native_widget_deleted);
+}
+
 class WidgetDestroyCounter : public WidgetObserver {
  public:
   explicit WidgetDestroyCounter(Widget* widget)

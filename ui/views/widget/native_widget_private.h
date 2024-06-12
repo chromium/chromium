@@ -94,8 +94,10 @@ class VIEWS_EXPORT NativeWidgetPrivate : public NativeWidget {
   virtual bool ShouldWindowContentsBeTransparent() const = 0;
   virtual void FrameTypeChanged() = 0;
 
-  // Returns the Widget associated with this NativeWidget. This function is
-  // guaranteed to return non-NULL for the lifetime of the NativeWidget.
+  // Returns the Widget associated with this NativeWidget. May return nullptr
+  // for a brief period on shutdown between the `Widget`'s destruction and
+  // the native widget's destruction. The return value should be checked before
+  // use and nullptr should be gracefully handled in most cases.
   virtual Widget* GetWidget() = 0;
   virtual const Widget* GetWidget() const = 0;
 

@@ -249,7 +249,9 @@ class VIEWS_EXPORT NativeWidgetMac : public internal::NativeWidgetPrivate,
   // Optional hook for subclasses invoked by WindowDestroying().
   virtual void OnWindowDestroying(gfx::NativeWindow window) {}
 
-  internal::NativeWidgetDelegate* delegate() { return delegate_; }
+  internal::NativeWidgetDelegate* delegate_for_testing() {
+    return delegate_.get();
+  }
 
   // Return the mojo interface for the NSWindow. The interface may be
   // implemented in-process or out-of-process.
@@ -281,7 +283,10 @@ class VIEWS_EXPORT NativeWidgetMac : public internal::NativeWidgetPrivate,
   friend class views::test::NativeWidgetMacTest;
   class ZoomFocusMonitor;
 
-  raw_ptr<internal::NativeWidgetDelegate> delegate_;
+  // Applies to all `Widget::InitParams::Ownership` types.
+  const base::WeakPtr<internal::NativeWidgetDelegate> delegate_;
+  // Only applies to `Widget::InitParams::Ownership::NATIVE_WIDGET_OWNS_WIDGET`.
+  std::unique_ptr<internal::NativeWidgetDelegate> owned_delegate_;
   std::unique_ptr<NativeWidgetMacNSWindowHost> ns_window_host_;
 
   Widget::InitParams::Ownership ownership_ =
