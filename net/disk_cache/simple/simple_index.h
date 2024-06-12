@@ -111,8 +111,7 @@ class NET_EXPORT_PRIVATE EntryMetadata {
 static_assert(sizeof(EntryMetadata) == 8, "incorrect metadata size");
 
 // This class is not Thread-safe.
-class NET_EXPORT_PRIVATE SimpleIndex
-    : public base::SupportsWeakPtr<SimpleIndex> {
+class NET_EXPORT_PRIVATE SimpleIndex final {
  public:
   // Used in histograms. Please only add entries at the end.
   enum IndexInitMethod {
@@ -304,6 +303,8 @@ class NET_EXPORT_PRIVATE SimpleIndex
   // background we can write the index much more frequently, to insure fresh
   // index on next startup.
   bool app_on_background_ = false;
+
+  base::WeakPtrFactory<SimpleIndex> weak_ptr_factory_{this};
 };
 
 }  // namespace disk_cache

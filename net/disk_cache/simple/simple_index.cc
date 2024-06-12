@@ -183,12 +183,13 @@ SimpleIndex::SimpleIndex(
       delegate_(delegate),
       cache_type_(cache_type),
       index_file_(std::move(index_file)),
-      task_runner_(task_runner),
-      // Creating the callback once so it is reused every time
-      // write_to_disk_timer_.Start() is called.
-      write_to_disk_cb_(base::BindRepeating(&SimpleIndex::WriteToDisk,
-                                            AsWeakPtr(),
-                                            INDEX_WRITE_REASON_IDLE)) {}
+      task_runner_(task_runner) {
+  // Creating the callback once so it is reused every time
+  // write_to_disk_timer_.Start() is called.
+  write_to_disk_cb_ = base::BindRepeating(&SimpleIndex::WriteToDisk,
+                                          weak_ptr_factory_.GetWeakPtr(),
+                                          INDEX_WRITE_REASON_IDLE);
+}
 
 SimpleIndex::~SimpleIndex() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
@@ -207,17 +208,18 @@ void SimpleIndex::Initialize(base::Time cache_mtime) {
     base::android::ApplicationStatusListener* listener =
         app_status_listener_getter_.Run();
     if (listener) {
-      listener->SetCallback(base::BindRepeating(
-          &SimpleIndex::OnApplicationStateChange, AsWeakPtr()));
+      listener->SetCallback(
+          base::BindRepeating(&SimpleIndex::OnApplicationStateChange,
+                              weak_ptr_factory_.GetWeakPtr()));
     }
     // Not using the fallback on purpose here --- if the getter is set, we may
     // be in a process where the base::android::ApplicationStatusListener::New
     // impl is unavailable.
     // (See https://crbug.com/881572)
   } else if (base::android::IsVMInitialized()) {
-    owned_app_status_listener_ =
-        base::android::ApplicationStatusListener::New(base::BindRepeating(
-            &SimpleIndex::OnApplicationStateChange, AsWeakPtr()));
+    owned_app_status_listener_ = base::android::ApplicationStatusListener::New(
+        base::BindRepeating(&SimpleIndex::OnApplicationStateChange,
+                            weak_ptr_factory_.GetWeakPtr()));
   }
 #endif
 
@@ -225,8 +227,8 @@ void SimpleIndex::Initialize(base::Time cache_mtime) {
   auto* load_result_ptr = load_result.get();
   index_file_->LoadIndexEntries(
       cache_mtime,
-      base::BindOnce(&SimpleIndex::MergeInitializingSet, AsWeakPtr(),
-                     std::move(load_result)),
+      base::BindOnce(&SimpleIndex::MergeInitializingSet,
+                     weak_ptr_factory_.GetWeakPtr(), std::move(load_result)),
       load_result_ptr);
 }
 
@@ -452,8 +454,9 @@ void SimpleIndex::StartEvictionIfNeeded() {
                    "Eviction.TimeToSelectEntries", cache_type_,
                    base::TimeTicks::Now() - eviction_start_time_);
 
-  delegate_->DoomEntries(
-      &entry_hashes, base::BindOnce(&SimpleIndex::EvictionDone, AsWeakPtr()));
+  delegate_->DoomEntries(&entry_hashes,
+                         base::BindOnce(&SimpleIndex::EvictionDone,
+                                        weak_ptr_factory_.GetWeakPtr()));
 }
 
 int32_t SimpleIndex::GetTrailerPrefetchSize(uint64_t entry_hash) const {
