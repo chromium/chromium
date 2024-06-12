@@ -1311,13 +1311,6 @@ int BrowserAccessibilityAndroid::GetSelectedItemCount() const {
 
 bool BrowserAccessibilityAndroid::CanScrollForward() const {
   if (IsSlider()) {
-    // If it's not a native INPUT element, then increment and decrement
-    // won't work.
-    const std::string& html_tag =
-        GetStringAttribute(ax::mojom::StringAttribute::kHtmlTag);
-    if (html_tag != "input")
-      return false;
-
     float value = GetFloatAttribute(ax::mojom::FloatAttribute::kValueForRange);
     float max = GetFloatAttribute(ax::mojom::FloatAttribute::kMaxValueForRange);
     return value < max;
@@ -1328,13 +1321,6 @@ bool BrowserAccessibilityAndroid::CanScrollForward() const {
 
 bool BrowserAccessibilityAndroid::CanScrollBackward() const {
   if (IsSlider()) {
-    // If it's not a native INPUT element, then increment and decrement
-    // won't work.
-    const std::string& html_tag =
-        GetStringAttribute(ax::mojom::StringAttribute::kHtmlTag);
-    if (html_tag != "input")
-      return false;
-
     float value = GetFloatAttribute(ax::mojom::FloatAttribute::kValueForRange);
     float min = GetFloatAttribute(ax::mojom::FloatAttribute::kMinValueForRange);
     return value > min;
