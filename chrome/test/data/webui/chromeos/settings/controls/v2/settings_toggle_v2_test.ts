@@ -4,8 +4,8 @@
 
 import 'chrome://os-settings/os_settings.js';
 
-import {SettingsToggleV2Element} from 'chrome://os-settings/os_settings.js';
-import {CrToggleElement} from 'chrome://resources/ash/common/cr_elements/cr_toggle/cr_toggle.js';
+import {CrToggleElement, SettingsToggleV2Element} from 'chrome://os-settings/os_settings.js';
+import {strictQuery} from 'chrome://resources/ash/common/typescript_utils/strict_query.js';
 import {assertEquals, assertFalse, assertNotEquals, assertNotReached, assertThrows, assertTrue} from 'chrome://webui-test/chai_assert.js';
 import {flushTasks} from 'chrome://webui-test/polymer_test_util.js';
 import {eventToPromise, isVisible} from 'chrome://webui-test/test_util.js';
@@ -15,17 +15,24 @@ import {clearBody} from '../../utils.js';
 /** @fileoverview Suite of tests for settings-toggle-v2. */
 suite(SettingsToggleV2Element.is, () => {
   let toggleElement: SettingsToggleV2Element;
+  let internalToggleElement: CrToggleElement;
   let fakeTogglePref: chrome.settingsPrivate.PrefObject;
 
-  function init() {
+  async function init() {
     clearBody();
     toggleElement = document.createElement('settings-toggle-v2');
     document.body.appendChild(toggleElement);
+
+    await flushTasks();
+
+    internalToggleElement =
+        strictQuery('cr-toggle', toggleElement.shadowRoot, CrToggleElement);
+    assertTrue(isVisible(internalToggleElement));
   }
 
   async function initWithPref(
       prefValue: boolean = false, isInverted: boolean = false) {
-    init();
+    await init();
 
     toggleElement.inverted = isInverted;
 
@@ -44,16 +51,9 @@ suite(SettingsToggleV2Element.is, () => {
     await flushTasks();
   }
 
-  function getInternalToggle(): CrToggleElement {
-    const internalToggle = toggleElement.shadowRoot!.querySelector('cr-toggle');
-    assertTrue(!!internalToggle);
-    assertTrue(isVisible(internalToggle));
-    return internalToggle;
-  }
-
   suite('when disabled', () => {
-    setup(() => {
-      init();
+    setup(async () => {
+      await init();
       toggleElement.disabled = true;
     });
 
@@ -65,27 +65,25 @@ suite(SettingsToggleV2Element.is, () => {
     });
 
     test('internal cr-toggle is disabled', () => {
-      const internalToggle = getInternalToggle();
-      assertTrue(internalToggle.disabled);
+      assertTrue(internalToggleElement.disabled);
     });
 
     test('clicking does not change the toggle state', () => {
       assertFalse(toggleElement.checked);
-      const internalToggle = getInternalToggle();
-      assertFalse(internalToggle.checked);
+      assertFalse(internalToggleElement.checked);
 
-      toggleElement.click();
+      internalToggleElement.click();
       assertFalse(toggleElement.checked);
-      assertFalse(internalToggle.checked);
+      assertFalse(internalToggleElement.checked);
     });
   });
 
   test(
       'triggers a change event when the value of toggle changes.', async () => {
-        init();
+        await init();
         const checkedChangeEventPromise = eventToPromise('change', window);
 
-        toggleElement.click();
+        internalToggleElement.click();
 
         const event = await checkedChangeEventPromise;
         assertEquals(toggleElement.checked, event.detail);
@@ -93,28 +91,28 @@ suite(SettingsToggleV2Element.is, () => {
         assertFalse(event.composed);
       });
 
-  test('the internal cr-toggle control value changes on click', () => {
-    init();
+  test('the internal cr-toggle control value changes on click', async () => {
+    await init();
 
     assertFalse(toggleElement.checked);
-    const internalToggle = getInternalToggle();
 
-    toggleElement.click();
+    internalToggleElement.click();
     assertTrue(toggleElement.checked);
-    assertTrue(internalToggle.checked);
+    assertTrue(internalToggleElement.checked);
 
-    toggleElement.click();
+    internalToggleElement.click();
     assertFalse(toggleElement.checked);
-    assertFalse(internalToggle.checked);
+    assertFalse(internalToggleElement.checked);
   });
 
-  test('should focus the internal toggle', () => {
-    init();
-    const internalToggle = getInternalToggle();
+  test('should focus the internal toggle', async () => {
+    await init();
 
-    assertNotEquals(internalToggle, toggleElement.shadowRoot!.activeElement);
+    assertNotEquals(
+        internalToggleElement, toggleElement.shadowRoot!.activeElement);
     toggleElement.focus();
-    assertEquals(internalToggle, toggleElement.shadowRoot!.activeElement);
+    assertEquals(
+        internalToggleElement, toggleElement.shadowRoot!.activeElement);
   });
 
   suite('with pref object', () => {
@@ -190,8 +188,7 @@ suite(SettingsToggleV2Element.is, () => {
       assertTrue(toggleElement.pref!.value);
       assertTrue(toggleElement.checked);
 
-      const internalToggle = getInternalToggle();
-      assertTrue(internalToggle.checked);
+      assertTrue(internalToggleElement.checked);
     });
 
     test('checked property reflects the pref value when pref changes', () => {
@@ -206,10 +203,10 @@ suite(SettingsToggleV2Element.is, () => {
     test('checked property changes on click', () => {
       assertFalse(toggleElement.checked);
 
-      toggleElement.click();
+      internalToggleElement.click();
       assertTrue(toggleElement.checked);
 
-      toggleElement.click();
+      internalToggleElement.click();
       assertFalse(toggleElement.checked);
     });
 
@@ -232,7 +229,7 @@ suite(SettingsToggleV2Element.is, () => {
       const prefChangeEventPromise =
           eventToPromise('user-action-setting-pref-change', window);
 
-      toggleElement.click();
+      internalToggleElement.click();
       assertTrue(toggleElement.checked);
 
       const event = await prefChangeEventPromise;
@@ -245,7 +242,7 @@ suite(SettingsToggleV2Element.is, () => {
 
       const prefChangeEventPromise =
           eventToPromise('user-action-setting-pref-change', window);
-      toggleElement.click();
+      internalToggleElement.click();
       assertTrue(toggleElement.checked);
       await prefChangeEventPromise;
 
@@ -310,7 +307,7 @@ suite(SettingsToggleV2Element.is, () => {
 
         assertFalse(toggleElement.checked);
         assertFalse(toggleElement.pref!.value);
-        toggleElement.click();
+        internalToggleElement.click();
         assertTrue(toggleElement.checked);
 
         // eventPromise should never resolve, else it will fail this test.
@@ -325,7 +322,7 @@ suite(SettingsToggleV2Element.is, () => {
             assertFalse(toggleElement.checked);
             assertFalse(toggleElement.pref!.value);
 
-            toggleElement.click();
+            internalToggleElement.click();
             assertTrue(toggleElement.checked);
             assertFalse(toggleElement.pref!.value);
 
@@ -349,8 +346,7 @@ suite(SettingsToggleV2Element.is, () => {
             assertTrue(toggleElement.checked);
             assertFalse(toggleElement.pref!.value);
 
-            const internalToggle = getInternalToggle();
-            assertTrue(internalToggle.checked);
+            assertTrue(internalToggleElement.checked);
 
             toggleElement.resetToPrefValue();
             assertFalse(toggleElement.checked);
@@ -374,7 +370,7 @@ suite(SettingsToggleV2Element.is, () => {
             const prefChangeEventPromise =
                 eventToPromise('user-action-setting-pref-change', window);
 
-            toggleElement.click();
+            internalToggleElement.click();
             await flushTasks();
             assertFalse(toggleElement.checked);
 
@@ -397,8 +393,8 @@ suite(SettingsToggleV2Element.is, () => {
   });
 
   suite('without pref object', () => {
-    setup(() => {
-      init();
+    setup(async () => {
+      await init();
 
       // there is no pref set.
       assertEquals(toggleElement.pref, undefined);
@@ -407,24 +403,23 @@ suite(SettingsToggleV2Element.is, () => {
     test('value changes on click', () => {
       assertFalse(toggleElement.checked);
 
-      toggleElement.click();
+      internalToggleElement.click();
       assertTrue(toggleElement.checked);
 
-      toggleElement.click();
+      internalToggleElement.click();
       assertFalse(toggleElement.checked);
     });
 
     test('control value changes on toggle element change', () => {
       assertFalse(toggleElement.checked);
-      const internalToggle = getInternalToggle();
 
       toggleElement.checked = true;
       assertTrue(toggleElement.checked);
-      assertTrue(internalToggle.checked);
+      assertTrue(internalToggleElement.checked);
 
       toggleElement.checked = false;
       assertFalse(toggleElement.checked);
-      assertFalse(internalToggle.checked);
+      assertFalse(internalToggleElement.checked);
     });
 
     test('commitPrefChange has no effect when there is no pref', () => {
