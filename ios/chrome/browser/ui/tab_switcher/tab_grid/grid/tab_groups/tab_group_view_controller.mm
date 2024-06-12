@@ -267,6 +267,8 @@ constexpr CGFloat kSpace = 8;
                                       target:self
                                       action:@selector(didTapPlusButton)];
   plusItem.accessibilityIdentifier = kTabGroupNewTabButtonIdentifier;
+  plusItem.accessibilityLabel =
+      l10n_util::GetNSString(IDS_IOS_TAB_GRID_CREATE_NEW_TAB);
 
   UIImage* threeDotImage =
       DefaultSymbolWithPointSize(kMenuSymbol, kPlusImageSize);
@@ -274,6 +276,8 @@ constexpr CGFloat kSpace = 8;
       [[UIBarButtonItem alloc] initWithImage:threeDotImage
                                         menu:[self configuredTabGroupMenu]];
   dotsItem.accessibilityIdentifier = kTabGroupOverflowMenuButtonIdentifier;
+  dotsItem.accessibilityLabel = l10n_util::GetNSString(
+      IDS_IOS_MANUAL_FALLBACK_THREE_DOT_MENU_BUTTON_ACCESSIBILITY_LABEL);
 
   navigationItem.rightBarButtonItems = @[ dotsItem, plusItem ];
   return navigationItem;
