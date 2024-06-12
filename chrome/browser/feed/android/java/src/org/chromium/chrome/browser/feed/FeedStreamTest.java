@@ -1145,7 +1145,7 @@ public class FeedStreamTest {
                         .build();
         mBridgeRenderer.onStreamUpdated(update.toByteArray());
         assertEquals(2, mContentManager.getItemCount());
-        assertEquals("a", mContentManager.getContent(1).getKey());
+        assertEquals("LoadingSpinner", mContentManager.getContent(1).getKey());
         FeedListContentManager.FeedContent content = mContentManager.getContent(1);
         assertThat(content, instanceOf(FeedListContentManager.NativeViewContent.class));
         FeedListContentManager.NativeViewContent nativeViewContent =
@@ -1170,7 +1170,7 @@ public class FeedStreamTest {
                         .build();
         mBridgeRenderer.onStreamUpdated(update.toByteArray());
         assertEquals(2, mContentManager.getItemCount());
-        assertEquals("a", mContentManager.getContent(1).getKey());
+        assertEquals("LoadingSpinner", mContentManager.getContent(1).getKey());
         FeedListContentManager.FeedContent content = mContentManager.getContent(1);
         assertThat(content, instanceOf(FeedListContentManager.NativeViewContent.class));
         FeedListContentManager.NativeViewContent nativeViewContent =
