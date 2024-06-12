@@ -7633,7 +7633,7 @@
   {
     "name": "remove-old-web-state-restore",
     "owners": [ "michaeldo@chromium.org", "bling-flags@google.com" ],
-    "expiry_milestone": 127
+    "expiry_milestone": 128
   },
   {
     "name": "render-arc-notifications-by-chrome",
