@@ -1285,7 +1285,16 @@ FontHeight RubyBlockPositionCalculator::RubyLine::UpdateMetrics() {
   DCHECK(metrics_.IsEmpty());
   metrics_ = FontHeight();
   for (auto& column : column_list_) {
-    metrics_.Unite(ComputeLogicalLineEmHeight(*column->annotation_items));
+    const auto margins = column->state_stack.AnnotationBoxBlockAxisMargins();
+    if (!margins.has_value()) {
+      metrics_.Unite(ComputeLogicalLineEmHeight(*column->annotation_items));
+    } else {
+      DCHECK_GT(column->annotation_items->size(), 0u);
+      const LogicalLineItem& item = (*column->annotation_items)[0];
+      DCHECK(item.IsPlaceholder());
+      metrics_.Unite({-item.BlockOffset() + margins->first,
+                      item.BlockEndOffset() + margins->second});
+    }
   }
   return metrics_;
 }

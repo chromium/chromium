@@ -356,7 +356,7 @@ InlineBoxState* LogicalLineBuilder::PlaceAtomicInline(
 
   if (LIKELY(!IsA<LayoutTextCombine>(layout_object))) {
     PlaceLayoutResult(item_result, line_box, box,
-                      box->margin_inline_start + item_result->spacing_before);
+                      box->margins.inline_start + item_result->spacing_before);
   } else {
     // The metrics should be as text instead of atomic inline box.
     const auto& style = layout_object->Parent()->StyleRef();
@@ -365,7 +365,7 @@ InlineBoxState* LogicalLineBuilder::PlaceAtomicInline(
     // is |LayoutTextCombine| and after CJK character.
     // See "text-combine-justify.html".
     const LayoutUnit inline_offset =
-        box->margin_inline_start + item_result->spacing_before;
+        box->margins.inline_start + item_result->spacing_before;
     line_box->AddChild(std::move(item_result->layout_result),
                        LogicalOffset{inline_offset, box->text_top},
                        item_result->inline_size, /* children_count */ 0,

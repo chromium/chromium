@@ -70,8 +70,7 @@ InlineBoxState::InlineBoxState(const InlineBoxState&& state)
       alignment_type(state.alignment_type),
       has_start_edge(state.has_start_edge),
       has_end_edge(state.has_end_edge),
-      margin_inline_start(state.margin_inline_start),
-      margin_inline_end(state.margin_inline_end),
+      margins(state.margins),
       borders(state.borders),
       padding(state.padding),
       pending_descendants(std::move(state.pending_descendants)),
@@ -366,8 +365,7 @@ InlineBoxState* InlineLayoutStateStack::OnOpenTag(
   box->ResetStyle(style, is_svg_text_, *item.GetLayoutObject());
   box->item = &item;
   box->has_start_edge = true;
-  box->margin_inline_start = item_result.margins.inline_start;
-  box->margin_inline_end = item_result.margins.inline_end;
+  box->margins = item_result.margins;
   box->borders = item_result.borders;
   box->padding = item_result.padding;
   if (space.IsInsideRepeatableContent()) {
@@ -504,10 +502,12 @@ void InlineLayoutStateStack::AddBoxData(const ConstraintSpace& space,
       box->fragment_start, fragment_end, box->item, placeholder.Size());
   box_data.borders = box->borders;
   box_data.padding = box->padding;
+  box_data.margin_line_over = box->margins.line_over;
+  box_data.margin_line_under = box->margins.line_under;
   if (box->has_start_edge) {
     box_data.has_line_left_edge = true;
-    box_data.margin_line_left = box->margin_inline_start;
-    box_data.margin_border_padding_line_left = box->margin_inline_start +
+    box_data.margin_line_left = box->margins.inline_start;
+    box_data.margin_border_padding_line_left = box->margins.inline_start +
                                                box->borders.inline_start +
                                                box->padding.inline_start;
   } else {
@@ -516,8 +516,8 @@ void InlineLayoutStateStack::AddBoxData(const ConstraintSpace& space,
   }
   if (box->has_end_edge) {
     box_data.has_line_right_edge = true;
-    box_data.margin_line_right = box->margin_inline_end;
-    box_data.margin_border_padding_line_right = box->margin_inline_end +
+    box_data.margin_line_right = box->margins.inline_end;
+    box_data.margin_border_padding_line_right = box->margins.inline_end +
                                                 box->borders.inline_end +
                                                 box->padding.inline_end;
   } else {
@@ -565,6 +565,21 @@ void InlineLayoutStateStack::AddBoxData(const ConstraintSpace& space,
   placeholder.inline_size = advance;
   DCHECK(!placeholder.children_count);
   box_data_list_.pop_back();
+}
+
+std::optional<std::pair<LayoutUnit, LayoutUnit>>
+InlineLayoutStateStack::AnnotationBoxBlockAxisMargins() const {
+  if (!HasBoxFragments() || box_data_list_[0].fragment_start != 0) {
+    return std::nullopt;
+  }
+  const BoxData& data = box_data_list_[0];
+  if (data.padding.BlockSum() == LayoutUnit() &&
+      data.borders.BlockSum() == LayoutUnit() &&
+      data.margin_line_over == LayoutUnit() &&
+      data.margin_line_under == LayoutUnit()) {
+    return std::nullopt;
+  }
+  return std::make_pair(data.margin_line_over, data.margin_line_under);
 }
 
 void InlineLayoutStateStack::ChildInserted(unsigned index) {
@@ -1373,8 +1388,7 @@ void InlineBoxState::CheckSame(const InlineBoxState& other) const {
   DCHECK_EQ(has_start_edge, other.has_start_edge);
   // |has_end_edge| may not match because it will be computed in |OnCloseTag|.
 
-  DCHECK_EQ(margin_inline_start, other.margin_inline_start);
-  DCHECK_EQ(margin_inline_end, other.margin_inline_end);
+  DCHECK_EQ(margins, other.margins);
   DCHECK_EQ(borders, other.borders);
   DCHECK_EQ(padding, other.padding);
 

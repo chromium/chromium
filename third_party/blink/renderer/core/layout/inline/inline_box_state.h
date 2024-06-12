@@ -84,8 +84,7 @@ struct InlineBoxState {
   // is set.
   bool has_start_edge = false;
   bool has_end_edge = false;
-  LayoutUnit margin_inline_start;
-  LayoutUnit margin_inline_end;
+  LineBoxStrut margins;
   LineBoxStrut borders;
   LineBoxStrut padding;
 
@@ -213,6 +212,11 @@ class CORE_EXPORT InlineLayoutStateStack {
 
   bool HasBoxFragments() const { return !box_data_list_.empty(); }
 
+  // Returns a pair of line-over margin and line-under margin if the outermost
+  // element has non-zero block-axis margin, border, or padding.
+  std::optional<std::pair<LayoutUnit, LayoutUnit>>
+  AnnotationBoxBlockAxisMargins() const;
+
   // Notify when child is inserted at |index| to adjust child indexes.
   void ChildInserted(unsigned index);
 
@@ -327,6 +331,8 @@ class CORE_EXPORT InlineLayoutStateStack {
     bool has_line_right_edge = false;
     LineBoxStrut borders;
     LineBoxStrut padding;
+    LayoutUnit margin_line_over;
+    LayoutUnit margin_line_under;
     // |CreateBoxFragment()| needs margin, border+padding, and the sum of them.
     LayoutUnit margin_line_left;
     LayoutUnit margin_line_right;
