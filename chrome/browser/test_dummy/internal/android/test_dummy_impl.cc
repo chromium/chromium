@@ -10,7 +10,8 @@
 // Must come after all headers that specialize FromJniType() / ToJniType().
 #include "chrome/browser/test_dummy/internal/jni_headers/TestDummyImpl_jni.h"
 
-static int JNI_TestDummyImpl_Execute(JNIEnv* env) {
+static int JNI_TestDummyImpl_Execute(JNIEnv* env, jboolean arg) {
+  CHECK(arg);
   LOG(INFO) << "Running test dummy native library";
   return 123;
 }

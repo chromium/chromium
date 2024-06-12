@@ -469,6 +469,7 @@ class Tests(BaseTest):
   def testMultiplexing(self):
     self._TestEndToEndRegistration(['SampleForAnnotationProcessor.java'],
                                    enable_jni_multiplexing=True,
+                                   manual_jni_registration=True,
                                    use_proxy_hash=True)
 
   def testParseError_noPackage(self):

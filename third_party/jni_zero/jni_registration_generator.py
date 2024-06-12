@@ -532,6 +532,14 @@ def _GetRegistrationFunctionName(fully_qualified_class):
   return 'RegisterNative_' + common.escape_class_name(fully_qualified_class)
 
 
+def _CreateMultiplexedSignature(proxy_signature):
+  """Inserts an int parameter as the first parameter."""
+  new_param = java_types.JavaParam(java_types.INT, '_method_idx')
+  return java_types.JavaSignature.from_params(
+      proxy_signature.return_type,
+      java_types.JavaParamList((new_param, ) + proxy_signature.param_list))
+
+
 class DictionaryGenerator(object):
   """Generates an inline header file for JNI registration."""
   def __init__(self, jni_obj, options):
@@ -656,11 +664,9 @@ ${KMETHODS}
         class_name = common.escape_class_name(
             self.gen_jni_class.full_name_with_slashes)
         name = _GetMultiplexProxyName(native.proxy_signature)
-        proxy_signature = common.escape_class_name(name)
-        stub_name = 'Java_' + class_name + '_' + proxy_signature
-
-        multipliexed_signature = java_types.JavaSignature(
-            native.return_type, (java_types.INT, ), None)
+        stub_name = f'Java_{class_name}_' + common.escape_class_name(name)
+        multipliexed_signature = _CreateMultiplexedSignature(
+            native.proxy_signature)
         jni_descriptor = multipliexed_signature.to_descriptor()
       elif self.options.use_proxy_hash:
         name = native.hashed_proxy_name
