@@ -34,10 +34,7 @@ namespace {
 // lazily.
 class BlinkRootsHandler final : public v8::EmbedderRootsHandler {
  public:
-  explicit BlinkRootsHandler(v8::Isolate* isolate)
-      : v8::EmbedderRootsHandler(v8::EmbedderRootsHandler::RootHandling::
-                                     kDontQueryEmbedderForAnyReference),
-        isolate_(isolate) {}
+  explicit BlinkRootsHandler(v8::Isolate* isolate) : isolate_(isolate) {}
 
   bool IsRoot(const v8::TracedReference<v8::Value>& handle) final {
     NOTREACHED_NORETURN();
