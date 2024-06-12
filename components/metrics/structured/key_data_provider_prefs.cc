@@ -8,6 +8,7 @@
 #include <optional>
 #include <string_view>
 
+#include "base/time/time.h"
 #include "components/metrics/structured/key_data_prefs_delegate.h"
 #include "components/metrics/structured/structured_metrics_validator.h"
 
@@ -35,7 +36,7 @@ std::optional<uint64_t> KeyDataProviderPrefs::GetId(
     return std::nullopt;
   }
   return key_data_.Id(project_validator->project_hash(),
-                      project_validator->key_rotation_period());
+                      base::Days(project_validator->key_rotation_period()));
 }
 
 KeyData* KeyDataProviderPrefs::GetKeyData(const std::string& project_name) {

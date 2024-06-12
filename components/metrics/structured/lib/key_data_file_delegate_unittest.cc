@@ -19,6 +19,7 @@
 #include "base/strings/string_number_conversions.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/task_environment.h"
+#include "base/time/time.h"
 #include "base/values.h"
 #include "components/metrics/structured/lib/histogram_util.h"
 #include "components/metrics/structured/lib/proto/key.pb.h"
@@ -58,7 +59,7 @@ constexpr char kValueTwo[] = "value two";
 constexpr char kValueOneHash[] = "805B8790DC69B773";
 constexpr char kValueTwoHash[] = "87CEF12FB15E0B3A";
 
-constexpr int kKeyRotationPeriod = 90;
+constexpr base::TimeDelta kKeyRotationPeriod = base::Days(90);
 
 std::string HashToHex(const uint64_t hash) {
   return base::HexEncode(&hash, sizeof(uint64_t));
@@ -108,7 +109,9 @@ class KeyDataFileDelegateTest : public testing::Test {
     ASSERT_TRUE(base::PathExists(GetPath()));
   }
 
-  int Today() { return (base::Time::Now() - base::Time::UnixEpoch()).InDays(); }
+  base::TimeDelta Today() {
+    return base::Time::Now() - base::Time::UnixEpoch();
+  }
 
   // Read the on-disk file and return the information about the key for
   // |project_name_hash|. Fails if a key does not exist.
@@ -127,8 +130,8 @@ class KeyDataFileDelegateTest : public testing::Test {
   // arguments.
   void SetupKey(const uint64_t project_name_hash,
                 const std::string& key,
-                const int last_rotation,
-                const int rotation_period) {
+                const base::TimeDelta last_rotation,
+                const base::TimeDelta rotation_period) {
     // It's a test logic error for the key data to exist when calling SetupKey,
     // because it will desync the in-memory proto from the underlying storage.
     ASSERT_FALSE(key_data_);
@@ -136,8 +139,8 @@ class KeyDataFileDelegateTest : public testing::Test {
     KeyDataProto proto;
     KeyProto& key_proto = (*proto.mutable_keys())[project_name_hash];
     key_proto.set_key(key);
-    key_proto.set_last_rotation(last_rotation);
-    key_proto.set_rotation_period(rotation_period);
+    key_proto.set_last_rotation(last_rotation.InDays());
+    key_proto.set_rotation_period(rotation_period.InDays());
 
     ASSERT_TRUE(base::WriteFile(GetPath(), proto.SerializeAsString()));
   }
@@ -303,22 +306,24 @@ TEST_F(KeyDataFileDelegateTest, CheckHashes) {
 // Check that keys for a event are correctly rotated after a given rotation
 // period.
 TEST_F(KeyDataFileDelegateTest, KeysRotated) {
-  const int start_day = Today();
+  const base::TimeDelta start_day = Today();
   SetupKey(kProjectOneHash, kKey, start_day, kKeyRotationPeriod);
 
   MakeKeyDataFileDelegate();
   const uint64_t first_id = key_data_->Id(kProjectOneHash, kKeyRotationPeriod);
-  EXPECT_EQ(key_data_->LastKeyRotation(kProjectOneHash), start_day);
+  EXPECT_EQ(key_data_->LastKeyRotation(kProjectOneHash)->InDays(),
+            start_day.InDays());
   ExpectKeyValidation(/*valid=*/1, /*created=*/0, /*rotated=*/0);
 
   {
     // Advancing by |kKeyRotationPeriod|-1 days, the key should not be rotated.
-    task_environment_.AdvanceClock(base::Days(kKeyRotationPeriod - 1));
+    task_environment_.AdvanceClock(kKeyRotationPeriod - base::Days(1));
     EXPECT_EQ(key_data_->Id(kProjectOneHash, kKeyRotationPeriod), first_id);
-    EXPECT_EQ(key_data_->LastKeyRotation(kProjectOneHash), start_day);
+    EXPECT_EQ(key_data_->LastKeyRotation(kProjectOneHash)->InDays(),
+              start_day.InDays());
     SaveKeyData();
 
-    ASSERT_EQ(GetKey(kProjectOneHash).last_rotation(), start_day);
+    ASSERT_EQ(GetKey(kProjectOneHash).last_rotation(), start_day.InDays());
     ExpectKeyValidation(/*valid=*/2, /*created=*/0, /*rotated=*/0);
   }
 
@@ -326,65 +331,70 @@ TEST_F(KeyDataFileDelegateTest, KeysRotated) {
     // Advancing by another |key_rotation_period|+1 days, the key should be
     // rotated and the last rotation day should be incremented by
     // |key_rotation_period|.
-    task_environment_.AdvanceClock(base::Days(kKeyRotationPeriod + 1));
+    task_environment_.AdvanceClock(kKeyRotationPeriod + base::Days(1));
     EXPECT_NE(key_data_->Id(kProjectOneHash, kKeyRotationPeriod), first_id);
     SaveKeyData();
 
-    int expected_last_key_rotation = start_day + 2 * kKeyRotationPeriod;
+    const base::TimeDelta expected_last_key_rotation =
+        start_day + 2 * kKeyRotationPeriod;
     EXPECT_EQ(GetKey(kProjectOneHash).last_rotation(),
-              expected_last_key_rotation);
-    EXPECT_EQ(key_data_->LastKeyRotation(kProjectOneHash),
-              expected_last_key_rotation);
+              expected_last_key_rotation.InDays());
+    EXPECT_EQ(key_data_->LastKeyRotation(kProjectOneHash)->InDays(),
+              expected_last_key_rotation.InDays());
     ExpectKeyValidation(/*valid=*/2, /*created=*/0, /*rotated=*/1);
 
-    ASSERT_EQ(GetKey(kProjectOneHash).rotation_period(), kKeyRotationPeriod);
+    ASSERT_EQ(GetKey(kProjectOneHash).rotation_period(),
+              kKeyRotationPeriod.InDays());
   }
 
   {
     // Advancing by |2* kKeyRotationPeriod| days, the last rotation day should
     // now 4 periods of |kKeyRotationPeriod| days ahead.
-    task_environment_.AdvanceClock(base::Days(kKeyRotationPeriod * 2));
+    task_environment_.AdvanceClock(kKeyRotationPeriod * 2);
     key_data_->Id(kProjectOneHash, kKeyRotationPeriod);
     SaveKeyData();
 
-    int expected_last_key_rotation = start_day + 4 * kKeyRotationPeriod;
+    const base::TimeDelta expected_last_key_rotation =
+        start_day + 4 * kKeyRotationPeriod;
     EXPECT_EQ(GetKey(kProjectOneHash).last_rotation(),
-              expected_last_key_rotation);
-    EXPECT_EQ(key_data_->LastKeyRotation(kProjectOneHash),
-              expected_last_key_rotation);
+              expected_last_key_rotation.InDays());
+    EXPECT_EQ(key_data_->LastKeyRotation(kProjectOneHash)->InDays(),
+              expected_last_key_rotation.InDays());
     ExpectKeyValidation(/*valid=*/2, /*created=*/0, /*rotated=*/2);
   }
 }
 
 // Check that keys with updated rotations are correctly rotated.
 TEST_F(KeyDataFileDelegateTest, KeysWithUpdatedRotations) {
-  int first_key_rotation_period = 60;
+  const base::TimeDelta first_key_rotation_period = base::Days(60);
+  const base::TimeDelta start_day = Today();
 
-  const int start_day = Today();
   SetupKey(kProjectOneHash, kKey, start_day, first_key_rotation_period);
 
   MakeKeyDataFileDelegate();
   const uint64_t first_id =
       key_data_->Id(kProjectOneHash, first_key_rotation_period);
-  EXPECT_EQ(key_data_->LastKeyRotation(kProjectOneHash), start_day);
+  EXPECT_EQ(key_data_->LastKeyRotation(kProjectOneHash)->InDays(),
+            start_day.InDays());
   ExpectKeyValidation(/*valid=*/1, /*created=*/0, /*rotated=*/0);
 
   // Advance days by |new_key_rotation_period| + 1. This should fall within the
   // rotation of the |new_key_rotation_period| but outside
   // |first_key_rotation_period|.
-  int new_key_rotation_period = 50;
-  task_environment_.AdvanceClock(base::Days(new_key_rotation_period + 1));
+  const base::TimeDelta new_key_rotation_period = base::Days(50);
+  task_environment_.AdvanceClock(new_key_rotation_period + base::Days(1));
   const uint64_t second_id =
       key_data_->Id(kProjectOneHash, new_key_rotation_period);
   EXPECT_NE(first_id, second_id);
   SaveKeyData();
 
   // Key should have been rotated with new_key_rotation_period.
-  int expected_last_key_rotation = start_day + new_key_rotation_period;
+  const base::TimeDelta expected_last_key_rotation =
+      start_day + new_key_rotation_period;
   EXPECT_EQ(GetKey(kProjectOneHash).last_rotation(),
-            expected_last_key_rotation);
-  EXPECT_EQ(key_data_->LastKeyRotation(kProjectOneHash),
-            expected_last_key_rotation);
+            expected_last_key_rotation.InDays());
+  EXPECT_EQ(key_data_->LastKeyRotation(kProjectOneHash)->InDays(),
+            expected_last_key_rotation.InDays());
   ExpectKeyValidation(/*valid=*/1, /*created=*/0, /*rotated=*/1);
 }
 

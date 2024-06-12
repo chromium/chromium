@@ -7,7 +7,7 @@
 #include <memory>
 
 #include "base/functional/bind.h"
-#include "base/logging.h"
+#include "base/time/time.h"
 #include "components/metrics/structured/lib/key_data.h"
 #include "components/metrics/structured/lib/key_data_file_delegate.h"
 #include "components/metrics/structured/recorder.h"
@@ -43,7 +43,7 @@ std::optional<uint64_t> KeyDataProviderFile::GetId(
     return std::nullopt;
   }
   return key_data_->Id(project_validator->project_hash(),
-                       project_validator->key_rotation_period());
+                       base::Days(project_validator->key_rotation_period()));
 }
 
 std::optional<uint64_t> KeyDataProviderFile::GetSecondaryId(

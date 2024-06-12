@@ -310,7 +310,8 @@ void StructuredMetricsRecorder::AddMetricsToProto(
       case Event::MetricType::kHmac:
         metric_proto->set_value_hmac(key->HmacMetric(
             project_validator.project_hash(), metric_name_hash,
-            value.GetString(), project_validator.key_rotation_period()));
+            value.GetString(),
+            base::Days(project_validator.key_rotation_period())));
         break;
       case Event::MetricType::kLong:
         int64_t long_value;

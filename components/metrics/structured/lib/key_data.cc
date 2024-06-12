@@ -40,13 +40,13 @@ KeyData::KeyData(std::unique_ptr<StorageDelegate> storage_delegate)
 KeyData::~KeyData() = default;
 
 uint64_t KeyData::Id(const uint64_t project_name_hash,
-                     int key_rotation_period) {
+                     base::TimeDelta key_rotation_period) {
   if (!storage_delegate_->IsReady()) {
     return 0u;
   }
 
   // Retrieve the key for |project_name_hash|.
-  EnsureKeyUpdated(project_name_hash, base::Days(key_rotation_period));
+  EnsureKeyUpdated(project_name_hash, key_rotation_period);
   const std::optional<std::string_view> key = GetKeyBytes(project_name_hash);
   if (!key) {
     NOTREACHED_IN_MIGRATION();
@@ -62,13 +62,13 @@ uint64_t KeyData::Id(const uint64_t project_name_hash,
 uint64_t KeyData::HmacMetric(const uint64_t project_name_hash,
                              const uint64_t metric_name_hash,
                              const std::string& value,
-                             int key_rotation_period) {
+                             base::TimeDelta key_rotation_period) {
   if (!storage_delegate_->IsReady()) {
     return 0u;
   }
 
   // Retrieve the key for |project_name_hash|.
-  EnsureKeyUpdated(project_name_hash, base::Days(key_rotation_period));
+  EnsureKeyUpdated(project_name_hash, key_rotation_period);
   const std::optional<std::string_view> key = GetKeyBytes(project_name_hash);
   if (!key) {
     NOTREACHED_IN_MIGRATION();
@@ -88,22 +88,23 @@ uint64_t KeyData::HmacMetric(const uint64_t project_name_hash,
   return digest;
 }
 
-std::optional<int> KeyData::LastKeyRotation(
+std::optional<base::TimeDelta> KeyData::LastKeyRotation(
     const uint64_t project_name_hash) const {
   const KeyProto* key = storage_delegate_->GetKey(project_name_hash);
   if (!key) {
     return std::nullopt;
   }
-  return key->last_rotation();
+  return base::Days(key->last_rotation());
 }
 
 std::optional<int> KeyData::GetKeyAgeInWeeks(uint64_t project_name_hash) const {
-  std::optional<int> last_rotation = LastKeyRotation(project_name_hash);
+  std::optional<base::TimeDelta> last_rotation =
+      LastKeyRotation(project_name_hash);
   if (!last_rotation.has_value()) {
     return std::nullopt;
   }
   const int now = NowInDays();
-  const int days_since_rotation = now - *last_rotation;
+  const int days_since_rotation = now - last_rotation->InDays();
   return days_since_rotation / 7;
 }
 
