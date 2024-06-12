@@ -15,6 +15,7 @@
     *   See also: [Writing GN templates](../build/docs/writing_gn_templates.md)
         for Chromium best-practices.
 *   [Markdown style guide](markdown/markdown.md)
+*   [TODO style guide](todos.md)
 
 Chromium also uses these languages to a lesser degree:
 
