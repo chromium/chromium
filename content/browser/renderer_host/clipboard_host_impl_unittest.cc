@@ -51,9 +51,7 @@ namespace content {
 
 class ClipboardHostImplTest : public RenderViewHostTestHarness {
  protected:
-  ClipboardHostImplTest()
-      : clipboard_(ui::TestClipboard::CreateForCurrentThread()) {
-  }
+  ClipboardHostImplTest() { ui::TestClipboard::CreateForCurrentThread(); }
 
   ~ClipboardHostImplTest() override {
     ui::Clipboard::DestroyClipboardForCurrentThread();
@@ -76,17 +74,17 @@ class ClipboardHostImplTest : public RenderViewHostTestHarness {
     return remote_;
   }
 
-  // Re-creates the system clipboard and returns the previous clipboard.
-  std::unique_ptr<ui::Clipboard> DeleteAndRecreateClipboard() {
-    auto original_clipboard = ui::Clipboard::TakeForCurrentThread();
-    clipboard_ = ui::TestClipboard::CreateForCurrentThread();
-    return original_clipboard;
+  // Re-creates the system clipboard.
+  void DeleteAndRecreateClipboard() {
+    ui::Clipboard::DestroyClipboardForCurrentThread();
+    ui::TestClipboard::CreateForCurrentThread();
   }
 
-  ui::Clipboard* system_clipboard() { return clipboard_; }
+  static ui::Clipboard* system_clipboard() {
+    return ui::Clipboard::GetForCurrentThread();
+  }
 
  private:
-  raw_ptr<ui::Clipboard, DanglingUntriaged> clipboard_;
   mojo::Remote<blink::mojom::ClipboardHost> remote_;
 };
 
@@ -171,37 +169,50 @@ class ClipboardHostImplWriteTest : public RenderViewHostTestHarness {
  protected:
   ClipboardHostImplWriteTest()
       : RenderViewHostTestHarness(
-            base::test::TaskEnvironment::TimeSource::MOCK_TIME),
-        clipboard_(ui::TestClipboard::CreateForCurrentThread()) {}
+            base::test::TaskEnvironment::TimeSource::MOCK_TIME) {
+    ui::TestClipboard::CreateForCurrentThread();
+  }
 
   void SetUp() override {
     RenderViewHostTestHarness::SetUp();
     SetContents(CreateTestWebContents());
-    fake_clipboard_host_impl_ =
-        new ClipboardHostImpl(*web_contents()->GetPrimaryMainFrame(),
-                              remote_.BindNewPipeAndPassReceiver());
+  }
+
+  void TearDown() override {
+    fake_clipboard_host_impl_ = nullptr;
+    RenderViewHostTestHarness::TearDown();
   }
 
   ~ClipboardHostImplWriteTest() override {
     ui::Clipboard::DestroyClipboardForCurrentThread();
   }
 
-  ClipboardHostImpl* clipboard_host_impl() { return fake_clipboard_host_impl_; }
+  // Creates a fake clipboard host if it doesn't exist, or returns the already
+  // created pointer.
+  ClipboardHostImpl* clipboard_host_impl() {
+    if (!fake_clipboard_host_impl_) {
+      fake_clipboard_host_impl_ =
+          new ClipboardHostImpl(*web_contents()->GetPrimaryMainFrame(),
+                                remote_.BindNewPipeAndPassReceiver());
+    }
+    return fake_clipboard_host_impl_;
+  }
 
   mojo::Remote<blink::mojom::ClipboardHost>& mojo_clipboard() {
     return remote_;
   }
 
-  ui::Clipboard* system_clipboard() { return clipboard_; }
+  static ui::Clipboard* system_clipboard() {
+    return ui::Clipboard::GetForCurrentThread();
+  }
 
-  RenderFrameHost& rfh() { return clipboard_host_impl()->render_frame_host(); }
+  RenderFrameHost& rfh() { return *web_contents()->GetPrimaryMainFrame(); }
 
  private:
   mojo::Remote<blink::mojom::ClipboardHost> remote_;
-  const raw_ptr<ui::Clipboard, DanglingUntriaged> clipboard_;
   // `ClipboardHostImpl` is a `DocumentService` and manages its own
   // lifetime.
-  raw_ptr<ClipboardHostImpl, DanglingUntriaged> fake_clipboard_host_impl_;
+  raw_ptr<ClipboardHostImpl> fake_clipboard_host_impl_;
 };
 
 TEST_F(ClipboardHostImplWriteTest, MainFrameURL) {
