@@ -23,6 +23,7 @@
 #include "pdf/input_utils.h"
 #include "pdf/pdf_features.h"
 #include "pdf/pdf_ink_brush.h"
+#include "pdf/pdf_ink_transform.h"
 #include "third_party/blink/public/common/input/web_input_event.h"
 #include "third_party/blink/public/common/input/web_mouse_event.h"
 #include "third_party/skia/include/core/SkColor.h"
@@ -109,6 +110,26 @@ const PdfInkBrush* InkModule::GetPdfInkBrushForTesting() const {
   return is_drawing_stroke() ? drawing_stroke_state().ink_brush.get() : nullptr;
 }
 
+std::vector<InkModule::InkStrokeInputPoints>
+InkModule::GetInkStrokesInputPositionsForTesting() const {
+  std::vector<InkStrokeInputPoints> all_strokes_points;
+
+  all_strokes_points.reserve(ink_strokes_.size());
+  for (const auto& stroke : ink_strokes_) {
+    const InkStrokeInputBatch& input_batch = stroke->GetInputs();
+    InkModule::InkStrokeInputPoints stroke_points;
+    stroke_points.reserve(input_batch.Size());
+    for (size_t i = 0; i < input_batch.Size(); ++i) {
+      InkStrokeInput stroke_input = input_batch.Get(i);
+      stroke_points.emplace_back(stroke_input.position_x,
+                                 stroke_input.position_y);
+    }
+    all_strokes_points.push_back(std::move(stroke_points));
+  }
+
+  return all_strokes_points;
+}
+
 bool InkModule::OnMouseDown(const blink::WebMouseEvent& event) {
   CHECK(enabled());
 
@@ -117,7 +138,6 @@ bool InkModule::OnMouseDown(const blink::WebMouseEvent& event) {
     return false;
   }
 
-  // TODO(crbug.com/335517471): Adjust `position` if needed.
   gfx::PointF position = normalized_event.PositionInWidget();
   return is_drawing_stroke() ? StartInkStroke(position)
                              : StartEraseInkStroke(position);
@@ -136,27 +156,39 @@ bool InkModule::OnMouseUp(const blink::WebMouseEvent& event) {
 bool InkModule::OnMouseMove(const blink::WebMouseEvent& event) {
   CHECK(enabled());
 
-  // TODO(crbug.com/335517471): Adjust `position` if needed.
   gfx::PointF position = event.PositionInWidget();
   return is_drawing_stroke() ? ContinueInkStroke(position)
                              : ContinueEraseInkStroke(position);
 }
 
 bool InkModule::StartInkStroke(const gfx::PointF& position) {
-  if (client_->VisiblePageIndexFromPoint(position) < 0) {
+  int page_index = client_->VisiblePageIndexFromPoint(position);
+  if (page_index < 0) {
     // Do not draw when not on a page.
     return false;
   }
 
   CHECK(is_drawing_stroke());
   DrawingStrokeState& state = drawing_stroke_state();
+
+  // If the page is visible to the point then its area must not be empty.
+  auto page_contents_rect = client_->GetPageContentsRect(page_index);
+  CHECK(!page_contents_rect.IsEmpty());
+
+  gfx::PointF page_position =
+      EventPositionToCanonicalPosition(position, client_->GetOrientation(),
+                                       page_contents_rect, client_->GetZoom());
+
   CHECK(!state.ink_start_time.has_value());
   state.ink_start_time = base::Time::Now();
+  state.ink_page_index = page_index;
   state.ink_inputs.push_back({
-      .position_x = position.x(),
-      .position_y = position.y(),
+      .position_x = page_position.x(),
+      .position_y = page_position.y(),
       .elapsed_time_seconds = 0,
   });
+
+  // TODO(crbug.com/335517471): Invalidate the appropriate rect here.
   return true;
 }
 
@@ -168,10 +200,31 @@ bool InkModule::ContinueInkStroke(const gfx::PointF& position) {
     return false;
   }
 
+  int page_index = client_->VisiblePageIndexFromPoint(position);
+  if (page_index != state.ink_page_index) {
+    // Stroke has left the page.  Treat event as handled, but do not add an
+    // input point.
+    // TODO(crbug.com/335517469):  The stroke should be broken into segments,
+    // to avoid having an extra line connecting where this point to where a
+    // stroke might re-enter the page.
+    // TODO(crbug.com/335517471): Invalidate the appropriate rect here.
+    return true;
+  }
+
+  CHECK_GE(state.ink_page_index, 0);
+
+  // If inking was able to start on the page then its area must not be empty.
+  auto page_contents_rect = client_->GetPageContentsRect(state.ink_page_index);
+  CHECK(!page_contents_rect.IsEmpty());
+
+  gfx::PointF page_position =
+      EventPositionToCanonicalPosition(position, client_->GetOrientation(),
+                                       page_contents_rect, client_->GetZoom());
+
   base::TimeDelta time_diff = base::Time::Now() - state.ink_start_time.value();
   state.ink_inputs.push_back({
-      .position_x = position.x(),
-      .position_y = position.y(),
+      .position_x = page_position.x(),
+      .position_y = page_position.y(),
       .elapsed_time_seconds = static_cast<float>(time_diff.InSecondsF()),
   });
 
@@ -197,6 +250,7 @@ bool InkModule::FinishInkStroke() {
   // Reset input fields.
   state.ink_inputs.clear();
   state.ink_start_time = std::nullopt;
+  state.ink_page_index = -1;
 
   client_->InkStrokeFinished();
   return true;
@@ -205,12 +259,14 @@ bool InkModule::FinishInkStroke() {
 bool InkModule::StartEraseInkStroke(const gfx::PointF& position) {
   CHECK(is_erasing_stroke());
   // TODO(crbug.com/335524381): Implement.
+  // TODO(crbug.com/335517471): Adjust `position` if needed.
   return false;
 }
 
 bool InkModule::ContinueEraseInkStroke(const gfx::PointF& position) {
   CHECK(is_erasing_stroke());
   // TODO(crbug.com/335524381): Implement.
+  // TODO(crbug.com/335517471): Adjust `position` if needed.
   return false;
 }
 

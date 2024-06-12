@@ -3049,6 +3049,10 @@ bool PDFiumEngine::IsPageVisible(int index) const {
   return base::Contains(visible_pages_, index);
 }
 
+PageOrientation PDFiumEngine::GetCurrentOrientation() const {
+  return layout_.options().default_page_orientation();
+}
+
 void PDFiumEngine::ScrollToPage(int page) {
   if (!PageIndexInBounds(page))
     return;

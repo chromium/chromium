@@ -144,6 +144,7 @@ class PDFiumEngine : public PDFEngine,
       const std::string& destination) override;
   int GetMostVisiblePage() override;
   bool IsPageVisible(int index) const override;
+  PageOrientation GetCurrentOrientation() const override;
   gfx::Rect GetPageBoundsRect(int index) override;
   gfx::Rect GetPageContentsRect(int index) override;
   gfx::Rect GetPageScreenRect(int page_index) const override;

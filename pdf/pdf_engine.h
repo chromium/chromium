@@ -387,6 +387,8 @@ class PDFEngine {
   virtual int GetMostVisiblePage() = 0;
   // Returns whether the page at `index` is visible or not.
   virtual bool IsPageVisible(int index) const = 0;
+  // Gets the current layout orientation.
+  virtual PageOrientation GetCurrentOrientation() const = 0;
   // Gets the rectangle of the page not including the shadow.
   virtual gfx::Rect GetPageBoundsRect(int index) = 0;
   // Gets the rectangle of the page excluding any additional areas.

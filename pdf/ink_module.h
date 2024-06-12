@@ -14,7 +14,9 @@
 #include "base/values.h"
 #include "pdf/buildflags.h"
 #include "pdf/ink/ink_stroke_input.h"
+#include "pdf/page_orientation.h"
 #include "third_party/abseil-cpp/absl/types/variant.h"
+#include "ui/gfx/geometry/rect.h"
 
 static_assert(BUILDFLAG(ENABLE_PDF_INK2), "ENABLE_PDF_INK2 not set to true");
 
@@ -37,9 +39,22 @@ class PdfInkBrush;
 
 class InkModule {
  public:
+  using InkStrokeInputPoints = std::vector<gfx::PointF>;
+
   class Client {
    public:
     virtual ~Client() = default;
+
+    // Gets the current page orientation.
+    virtual PageOrientation GetOrientation() const = 0;
+
+    // Gets the current scaled and rotated rectangle area of the page in CSS
+    // screen coordinates for the 0-based page index.  Must be non-empty for any
+    // non-negative index returned from `VisiblePageIndexFromPoint()`.
+    virtual gfx::Rect GetPageContentsRect(int index) = 0;
+
+    // Gets current zoom factor.
+    virtual float GetZoom() const = 0;
 
     // Notifies the client that a stroke has finished drawing or erasing.
     virtual void InkStrokeFinished() {}
@@ -68,6 +83,10 @@ class InkModule {
   // For testing only. Returns the current PDF ink brush used to draw strokes.
   const PdfInkBrush* GetPdfInkBrushForTesting() const;
 
+  // For testing only. Returns the input positions used for the stroke.
+  std::vector<InkStrokeInputPoints> GetInkStrokesInputPositionsForTesting()
+      const;
+
  private:
   struct DrawingStrokeState {
     DrawingStrokeState();
@@ -79,6 +98,13 @@ class InkModule {
     std::unique_ptr<PdfInkBrush> ink_brush;
 
     std::optional<base::Time> ink_start_time;
+
+    // The 0-based page index which is currently being stroked.
+    int ink_page_index = -1;
+
+    // The points that make up the current stroke. Coordinates for each
+    // `InkStrokeInput` are stored in a canonical format specified in
+    // pdf_ink_transform.h.
     std::vector<InkStrokeInput> ink_inputs;
   };
 

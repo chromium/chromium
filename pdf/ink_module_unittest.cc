@@ -6,15 +6,21 @@
 
 #include <vector>
 
+#include "base/check_op.h"
+#include "base/test/bind.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/values.h"
 #include "pdf/ink/ink_brush.h"
 #include "pdf/pdf_features.h"
 #include "pdf/pdf_ink_brush.h"
+#include "pdf/pdf_ink_transform.h"
 #include "pdf/test/mouse_event_builder.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/public/common/input/web_mouse_event.h"
+#include "ui/gfx/geometry/point_f.h"
+#include "ui/gfx/geometry/rect.h"
+#include "ui/gfx/geometry/rect_conversions.h"
 #include "ui/gfx/geometry/rect_f.h"
 
 namespace chrome_pdf {
@@ -38,6 +44,16 @@ class FakeClient : public InkModule::Client {
   ~FakeClient() override = default;
 
   // InkModule::Client:
+  PageOrientation GetOrientation() const override { return orientation_; }
+
+  gfx::Rect GetPageContentsRect(int index) override {
+    CHECK_GE(index, 0);
+    CHECK_LT(static_cast<size_t>(index), pages_layout_.size());
+    return gfx::ToEnclosedRect(pages_layout_[index]);
+  }
+
+  float GetZoom() const override { return zoom_; }
+
   void InkStrokeFinished() override { ++ink_stroke_finished_count_; }
 
   int VisiblePageIndexFromPoint(const gfx::PointF& point) override {
@@ -61,9 +77,17 @@ class FakeClient : public InkModule::Client {
     pages_layout_ = pages_layout;
   }
 
+  void set_orientation(PageOrientation orientation) {
+    orientation_ = orientation;
+  }
+
+  void set_zoom(float zoom) { zoom_ = zoom; }
+
  private:
   int ink_stroke_finished_count_ = 0;
   std::vector<gfx::RectF> pages_layout_;
+  PageOrientation orientation_ = PageOrientation::kOriginal;
+  float zoom_ = 1.0f;
 };
 
 class InkModuleTest : public testing::Test {
@@ -299,6 +323,35 @@ TEST_F(InkModuleStrokeTest, NoAnnotationIfNotEnabled) {
 TEST_F(InkModuleStrokeTest, AnnotationIfEnabled) {
   InitializeSimpleSinglePageBasicLayout();
   RunStrokeCheckTest(/*annotation_mode_enabled=*/true);
+}
+
+TEST_F(InkModuleStrokeTest, CanonicalAnnotationPoints) {
+  // Setup to support examining the page stroke points for a layout that is
+  // more complicated than what is provide by
+  // `InitializeSimpleSinglePageBasicLayout()`.  Include viewport offset,
+  // scroll, rotation, and zoom.
+  constexpr gfx::SizeF kPageSize(100.0f, 120.0f);
+  constexpr gfx::PointF kPageOrigin(5.0f, -15.0f);
+  constexpr gfx::RectF kPageLayout(kPageOrigin, kPageSize);
+  client().set_pages_layout({kPageLayout});
+  client().set_orientation(PageOrientation::kClockwise180);
+  client().set_zoom(2.0f);
+
+  RunStrokeCheckTest(/*annotation_mode_enabled=*/true);
+
+  // There should be two points collected, for mouse down and a single mouse
+  // move.  Verify that the collected points match a canonical position for
+  // the InkModule::Client setup.
+  constexpr gfx::PointF kCanonicalMouseDownPosition(47.0f, 44.5f);
+  constexpr gfx::PointF kCanonicalMouseMovePosition(42.0f, 39.5f);
+  const std::vector<InkModule::InkStrokeInputPoints>& all_strokes_positions =
+      ink_module().GetInkStrokesInputPositionsForTesting();
+  // Only one stroke.
+  ASSERT_EQ(all_strokes_positions.size(), 1u);
+  // Check points within that stroke.
+  EXPECT_THAT(all_strokes_positions[0],
+              testing::ElementsAre(kCanonicalMouseDownPosition,
+                                   kCanonicalMouseMovePosition));
 }
 
 }  // namespace

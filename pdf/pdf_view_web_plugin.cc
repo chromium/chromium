@@ -1976,6 +1976,22 @@ SkBitmap PdfViewWebPlugin::GetImageForOcr(int32_t page_index,
 }
 
 #if BUILDFLAG(ENABLE_PDF_INK2)
+PageOrientation PdfViewWebPlugin::GetOrientation() const {
+  return engine_->GetCurrentOrientation();
+}
+
+gfx::Rect PdfViewWebPlugin::GetPageContentsRect(int index) {
+  if (index < 0 || index >= engine_->GetNumberOfPages()) {
+    return gfx::Rect();
+  }
+
+  return engine_->GetPageContentsRect(index);
+}
+
+float PdfViewWebPlugin::GetZoom() const {
+  return zoom_;
+}
+
 void PdfViewWebPlugin::InkStrokeFinished() {
   base::Value::Dict message;
   message.Set("type", "finishInkStroke");
