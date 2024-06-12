@@ -7581,3 +7581,5 @@ crbug.com/346387874 [ Win11 ] fast/backgrounds/size/contain-and-cover.html [ Fai
 
 # Gardener 2024-06-12
 crbug.com/346706682 [ Mac ] http/tests/devtools/indexeddb/resources-panel.js [ Failure ]
+
+crbug.com/40899458 [ Mac14 ] fast/canvas/OffscreenCanvas-copyImage.html [ Failure Pass ]
