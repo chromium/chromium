@@ -158,11 +158,6 @@ class CreditCard : public AutofillDataModel {
   // Converts icon_str to Suggestion::Icon and calls the method above.
   static int IconResourceId(std::string_view icon_str);
 
-  // TODO(b/281812289): Remove this static method when all dependencies switch
-  // to using credit_card_number_validation.h instead of relying on
-  // credit_card.h.
-  static const char* GetCardNetwork(const std::u16string& number);
-
   // Returns whether the nickname is valid. Note that empty nicknames are valid
   // because they are not required.
   static bool IsNicknameValid(const std::u16string& nickname);

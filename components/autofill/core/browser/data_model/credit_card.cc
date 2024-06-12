@@ -338,11 +338,6 @@ int CreditCard::IconResourceId(std::string_view icon_str) {
 }
 
 // static
-const char* CreditCard::GetCardNetwork(const std::u16string& number) {
-  return autofill::GetCardNetwork(number);
-}
-
-// static
 bool CreditCard::IsNicknameValid(const std::u16string& nickname) {
   // Must not exceed max length.
   if (nickname.size() > kMaxNicknameLength)

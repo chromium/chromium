@@ -18,6 +18,7 @@
 #import "components/autofill/core/browser/personal_data_manager.h"
 #import "components/autofill/core/common/autofill_payments_features.h"
 #import "components/autofill/core/common/credit_card_network_identifiers.h"
+#import "components/autofill/core/common/credit_card_number_validation.h"
 #import "components/autofill/ios/browser/credit_card_util.h"
 #import "components/strings/grit/components_strings.h"
 #import "ios/chrome/browser/shared/model/application_context/application_context.h"
@@ -190,7 +191,7 @@ typedef NS_ENUM(NSInteger, ItemType) {
     // If the user is typing in the credit card number field, update the card
     // type icon (e.g. "Visa") to reflect the number being typed.
     if (item.autofillCreditCardUIType == AutofillCreditCardUIType::kNumber) {
-      const char* network = autofill::CreditCard::GetCardNetwork(
+      const char* network = autofill::GetCardNetwork(
           base::SysNSStringToUTF16(item.textFieldValue));
       item.identifyingIcon = [self cardTypeIconFromNetwork:network];
       [self reconfigureCellsForItems:@[ item ]];
