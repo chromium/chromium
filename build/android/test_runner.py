@@ -601,6 +601,11 @@ def AddInstrumentationTestOptions(parser):
       action='append',
       help="Specifies command line arguments to add to WebView's flag file")
   parser.add_argument(
+      '--webview-process-mode',
+      choices=['single', 'multiple'],
+      help='Run WebView instrumentation tests only in the specified process '
+      'mode. If not set, both single and multiple process modes will execute.')
+  parser.add_argument(
       '--run-setup-command',
       default=[],
       action='append',

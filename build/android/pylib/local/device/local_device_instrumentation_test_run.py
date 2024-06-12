@@ -110,6 +110,8 @@ _EXTRA_TEST_IS_UNIT = 'BaseChromiumAndroidJUnitRunner.IsUnitTest'
 _EXTRA_PACKAGE_UNDER_TEST = ('org.chromium.chrome.test.pagecontroller.rules.'
                              'ChromeUiApplicationTestRule.PackageUnderTest')
 
+_EXTRA_WEBVIEW_PROCESS_MODE = 'AwJUnit4ClassRunner.ProcessMode'
+
 FEATURE_ANNOTATION = 'Feature'
 RENDER_TEST_FEATURE_ANNOTATION = 'RenderTest'
 WPR_ARCHIVE_FILE_PATH_ANNOTATION = 'WPRArchiveDirectory'
@@ -1393,6 +1395,9 @@ class LocalDeviceInstrumentationTestRun(
             # Workaround for https://github.com/mockito/mockito/issues/922
             'notPackage': 'net.bytebuddy',
         }
+        if self._test_instance.webview_process_mode:
+          extras[_EXTRA_WEBVIEW_PROCESS_MODE] = (
+              self._test_instance.webview_process_mode)
         if self._test_instance.timeout_scale != 1:
           extras[EXTRA_TIMEOUT_SCALE] = str(self._test_instance.timeout_scale)
 

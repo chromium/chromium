@@ -604,6 +604,8 @@ class InstrumentationTestInstance(test_instance.TestInstance):
     self._approve_app_links_package = None
     self._initializeApproveAppLinksAttributes(args)
 
+    self._webview_process_mode = args.webview_process_mode
+
     self._wpr_enable_record = args.wpr_enable_record
 
     self._external_shard_index = args.test_launcher_shard_index
@@ -1028,6 +1030,10 @@ class InstrumentationTestInstance(test_instance.TestInstance):
   @property
   def wpr_record_mode(self):
     return self._wpr_enable_record
+
+  @property
+  def webview_process_mode(self):
+    return self._webview_process_mode
 
   @property
   def wpr_replay_mode(self):

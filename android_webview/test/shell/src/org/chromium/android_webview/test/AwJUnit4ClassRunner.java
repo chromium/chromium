@@ -39,8 +39,10 @@ public class AwJUnit4ClassRunner extends BaseJUnit4ClassRunner {
     // This should match the definition in Android test runner scripts: bit.ly/3ynoREM
     private static final String MULTIPROCESS_TEST_NAME_SUFFIX = "__multiprocess_mode";
 
-    private static final String ONLY_RUN_MULTI_PROCESS_MODE_FLAG =
-            "AwJUnit4ClassRunner.MultiProcessOnly";
+    // Accepted choices are "single" or "multiple", indicating that only tests
+    // runnable in the specified process mode should run once in the specified mode.
+    // The argument works at listing test stage in `List(...)`.
+    private static final String PROCESS_MODE_FLAG = "AwJUnit4ClassRunner.ProcessMode";
 
     private final TestHook mWebViewMultiProcessHook =
             (targetContext, testMethod) -> {
@@ -87,31 +89,40 @@ public class AwJUnit4ClassRunner extends BaseJUnit4ClassRunner {
 
     @Override
     protected List<FrameworkMethod> getChildren() {
+        String processModeToExecute =
+                InstrumentationRegistry.getArguments().getString(PROCESS_MODE_FLAG);
         boolean runSingleProcess =
-                !"true"
-                        .equals(
-                                InstrumentationRegistry.getArguments()
-                                        .getString(ONLY_RUN_MULTI_PROCESS_MODE_FLAG));
-        List<FrameworkMethod> result = new ArrayList<>();
+                (processModeToExecute == null || "single".equals(processModeToExecute));
+        boolean runMultiProcess =
+                (processModeToExecute == null || "multiple".equals(processModeToExecute));
+        if (!runSingleProcess && !runMultiProcess) {
+            throw new IllegalArgumentException(
+                    "'AwJUnit4ClassRunner.ProcessMode' value should be 'single' or 'multiple'.");
+        }
+        List<FrameworkMethod> singleProcessResults = new ArrayList<>();
+        List<FrameworkMethod> multiProcessResults = new ArrayList<>();
         for (FrameworkMethod method : computeTestMethods()) {
             switch (processModeForMethod(method)) {
                 case SINGLE_PROCESS:
-                    if (runSingleProcess) {
-                        result.add(method);
-                    }
+                    singleProcessResults.add(method);
                     break;
                 case MULTI_PROCESS:
                 case EITHER_PROCESS:
-                    result.add(new WebViewMultiProcessFrameworkMethod(method));
+                    multiProcessResults.add(new WebViewMultiProcessFrameworkMethod(method));
                     break;
                 case SINGLE_AND_MULTI_PROCESS:
                 default:
-                    result.add(new WebViewMultiProcessFrameworkMethod(method));
-                    if (runSingleProcess) {
-                        result.add(method);
-                    }
+                    multiProcessResults.add(new WebViewMultiProcessFrameworkMethod(method));
+                    singleProcessResults.add(method);
                     break;
             }
+        }
+        List<FrameworkMethod> result = new ArrayList<>();
+        if (runSingleProcess) {
+            result.addAll(singleProcessResults);
+        }
+        if (runMultiProcess) {
+            result.addAll(multiProcessResults);
         }
         return result;
     }
