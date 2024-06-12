@@ -734,6 +734,30 @@ TEST_P(VersionArcInputOverlayManagerTest, TestFullscreen) {
   }
 }
 
+TEST_P(VersionArcInputOverlayManagerTest, TestFullscreenToFloating) {
+  auto arc_window_widget = CreateArcWindowSyncAndWait(
+      task_environment(), ash::Shell::GetPrimaryRootWindow(), window_bounds,
+      kEnabledPackageName);
+  auto* arc_window = arc_window_widget->GetNativeWindow();
+  EXPECT_EQ(arc_window, GetRegisteredWindow());
+
+  // Set it to fullscreen.
+  arc_window_widget->SetFullscreen(true);
+  EXPECT_TRUE(arc_window_widget->IsFullscreen());
+  EXPECT_EQ(arc_window, GetRegisteredWindow());
+
+  // Set it to floating.
+  arc_window_widget->SetZOrderLevel(ui::ZOrderLevel::kFloatingWindow);
+  EXPECT_EQ(arc_window_widget->GetZOrderLevel(),
+            ui::ZOrderLevel::kFloatingWindow);
+  EXPECT_EQ(arc_window, GetRegisteredWindow());
+
+  // Set it back to fullscreen.
+  arc_window_widget->SetFullscreen(true);
+  EXPECT_TRUE(arc_window_widget->IsFullscreen());
+  EXPECT_EQ(arc_window, GetRegisteredWindow());
+}
+
 TEST_P(VersionArcInputOverlayManagerTest, TestHistograms) {
   if (!IsBetaVersion()) {
     return;
