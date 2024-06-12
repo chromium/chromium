@@ -11,6 +11,7 @@
 
 namespace autofill {
 
+// TODO: crbug.com/40279821 - Rename this class, e.g. to `NextIdleBarrier`.
 class NextIdleTimeTicks {
  public:
   NextIdleTimeTicks();
@@ -23,10 +24,6 @@ class NextIdleTimeTicks {
   // Returns a `NextIdleTimeTicks` whose value is set to `delay` +
   // `base::TimeTicksNow()` once `delay` has passed on the UI thread and the UI
   // thread has become idle afterwards.
-  // Note that this is currently guarded behind the
-  // `autofill::features::kAutofillPopupImprovedTimingChecksV2` feature. If the
-  // feature is disabled, it defaults to measuring the time immediately once
-  // `delay` has passed.
   static NextIdleTimeTicks CaptureNextIdleTimeTicksWithDelay(
       base::TimeDelta delay);
 

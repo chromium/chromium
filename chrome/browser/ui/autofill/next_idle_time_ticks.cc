@@ -48,13 +48,10 @@ struct NextIdleTimeTicks::Data {
 
 void NextIdleTimeTicks::Data::SetValueToCurrentTimeTicks() {
   value = base::TimeTicks::Now();
-  if (base::FeatureList::IsEnabled(
-          features::kAutofillPopupImprovedTimingChecksV2)) {
-    CHECK(!start_time_measurement_attempt.is_null());
-    base::UmaHistogramTimes(
-        "Autofill.Popup.NextIdleTimeTicksDelay",
-        base::TimeTicks::Now() - start_time_measurement_attempt);
-  }
+  CHECK(!start_time_measurement_attempt.is_null());
+  base::UmaHistogramTimes(
+      "Autofill.Popup.NextIdleTimeTicksDelay",
+      base::TimeTicks::Now() - start_time_measurement_attempt);
 }
 
 void NextIdleTimeTicks::Data::StartTimerForMeasurementAttempt(
@@ -65,17 +62,12 @@ void NextIdleTimeTicks::Data::StartTimerForMeasurementAttempt(
 }
 
 void NextIdleTimeTicks::Data::AttemptMeasurement() {
-  if (base::FeatureList::IsEnabled(
-          features::kAutofillPopupImprovedTimingChecksV2)) {
-    start_time_measurement_attempt = base::TimeTicks::Now();
-    on_idle_callback_subscription =
-        base::CurrentUIThread::Get()->RegisterOnNextIdleCallback(
-            {},
-            base::BindOnce(&NextIdleTimeTicks::Data::SetValueToCurrentTimeTicks,
-                           base::Unretained(this)));
-  } else {
-    SetValueToCurrentTimeTicks();
-  }
+  start_time_measurement_attempt = base::TimeTicks::Now();
+  on_idle_callback_subscription =
+      base::CurrentUIThread::Get()->RegisterOnNextIdleCallback(
+          {},
+          base::BindOnce(&NextIdleTimeTicks::Data::SetValueToCurrentTimeTicks,
+                         base::Unretained(this)));
 }
 
 NextIdleTimeTicks::NextIdleTimeTicks() = default;

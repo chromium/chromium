@@ -540,17 +540,6 @@ BASE_FEATURE(kAutofillPopupDisablePaintChecks,
              "AutofillPopupDisablePaintChecks",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
-// If the feature is enabled, then the timing measurement of when the Autofill
-// popup is considered to have been shown only happens at a delay - 500 ms after
-// showing the popup. The same protection mechanisms as for
-// `kAutofillPopupImprovedTimingChecks` are used, but only after 500 ms have
-// passed. The intent is to ensure that events that the user triggered within
-// 500 ms of the popup are showing do not arrive delayed on the UI thread of the
-// browser process.
-BASE_FEATURE(kAutofillPopupImprovedTimingChecksV2,
-             "AutofillPopupImprovedTimingChecksV2",
-             base::FEATURE_ENABLED_BY_DEFAULT);
-
 // TODO(b/334909042): Remove after cleanup.
 // If the feature is enabled, the Autofill popup widget is initialized with
 // `Widget::InitParams::z_order` set to `ui::ZOrderLevel::kSecuritySurface`,
