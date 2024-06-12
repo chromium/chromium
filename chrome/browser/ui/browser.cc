@@ -600,10 +600,12 @@ Browser::Browser(const CreateParams& params)
 
   tab_strip_model_->AddObserver(this);
 
-  auto* saved_tab_group_keyed_service =
-      tab_groups::SavedTabGroupServiceFactory::GetForProfile(profile_);
-  if (saved_tab_group_keyed_service && tab_groups::IsTabGroupsSaveV2Enabled()) {
-    saved_tab_group_keyed_service->model()->AddObserver(this);
+  if (tab_groups::IsTabGroupsSaveV2Enabled()) {
+    auto* saved_tab_group_keyed_service =
+        tab_groups::SavedTabGroupServiceFactory::GetForProfile(profile_);
+    if (saved_tab_group_keyed_service) {
+      saved_tab_group_keyed_service->model()->AddObserver(this);
+    }
   }
 
   ThemeServiceFactory::GetForProfile(profile_)->AddObserver(this);
@@ -666,10 +668,12 @@ Browser::Browser(const CreateParams& params)
 }
 
 Browser::~Browser() {
-  auto* saved_tab_group_keyed_service =
-      tab_groups::SavedTabGroupServiceFactory::GetForProfile(profile_);
-  if (saved_tab_group_keyed_service && tab_groups::IsTabGroupsSaveV2Enabled()) {
-    saved_tab_group_keyed_service->model()->RemoveObserver(this);
+  if (tab_groups::IsTabGroupsSaveV2Enabled()) {
+    auto* saved_tab_group_keyed_service =
+        tab_groups::SavedTabGroupServiceFactory::GetForProfile(profile_);
+    if (saved_tab_group_keyed_service) {
+      saved_tab_group_keyed_service->model()->RemoveObserver(this);
+    }
   }
 
   // Stop observing notifications and destroy the tab monitor before continuing
