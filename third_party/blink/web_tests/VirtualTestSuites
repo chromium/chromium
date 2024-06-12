@@ -851,14 +851,6 @@
              "--disable-threaded-compositing", "--disable-threaded-animation"],
     "expires": "Aug 1, 2024"
   },
-  {
-    "prefix": "import-maps-disabled",
-    "platforms": ["Linux", "Mac", "Win"],
-    "bases": ["external/wpt/import-maps/not-as-classic-script.html"],
-    "args": ["--disable-blink-features=ImportMaps",
-             "--disable-threaded-compositing", "--disable-threaded-animation"],
-    "expires": "Jul 1, 2023"
-  },
   "The overlay-scrollbar virtual suite is testing a feature that is enabled",
   "or not based on platform and settings, so it should not expire.",
   {
