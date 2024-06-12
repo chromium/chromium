@@ -99,6 +99,18 @@ void NotificationCenterController::InitNotificationCenterView() {
                                   std::move(pinned_notification_list_view));
 }
 
+MessageViewContainer*
+NotificationCenterController::GetPinnedMessageViewContainerById(
+    const std::string& id) {
+  // TODO(b/322835713): This function should search both pinned and unpinned
+  // list views when they're all created by this controller.
+  auto* list_view = pinned_notification_list_view_.get();
+  const auto i = base::ranges::find(
+      list_view->children(), id,
+      [](const views::View* v) { return AsMVC(v)->GetNotificationId(); });
+  return (i == list_view->children().cend()) ? nullptr : AsMVC(*i);
+}
+
 void NotificationCenterController::OnNotificationAdded(const std::string& id) {
   if (!notification_center_view_) {
     return;
@@ -121,7 +133,7 @@ void NotificationCenterController::OnNotificationAdded(const std::string& id) {
     return;
   }
 
-  if (GetMessageViewContainerById(id, pinned_notification_list_view_)) {
+  if (GetPinnedMessageViewContainerById(id)) {
     OnNotificationUpdated(id);
     return;
   }
@@ -149,8 +161,7 @@ void NotificationCenterController::OnNotificationRemoved(const std::string& id,
     return;
   }
 
-  auto* message_view_container =
-      GetMessageViewContainerById(id, pinned_notification_list_view_);
+  auto* message_view_container = GetPinnedMessageViewContainerById(id);
   if (!message_view_container) {
     return;
   }
@@ -183,8 +194,7 @@ void NotificationCenterController::OnNotificationUpdated(
     return;
   }
 
-  auto* message_view_container =
-      GetMessageViewContainerById(id, pinned_notification_list_view_);
+  auto* message_view_container = GetPinnedMessageViewContainerById(id);
   if (!message_view_container) {
     return;
   }
@@ -252,16 +262,6 @@ const MessageViewContainer* NotificationCenterController::AsMVC(
 
 MessageViewContainer* NotificationCenterController::AsMVC(views::View* v) {
   return static_cast<MessageViewContainer*>(v);
-}
-
-// TODO(b/322835713): Use a `ViewModel` for `MessageViewContainer` lookups.
-MessageViewContainer* NotificationCenterController::GetMessageViewContainerById(
-    const std::string& id,
-    views::View* list_view) {
-  const auto i = base::ranges::find(
-      list_view->children(), id,
-      [](const views::View* v) { return AsMVC(v)->GetNotificationId(); });
-  return (i == list_view->children().cend()) ? nullptr : AsMVC(*i);
 }
 
 }  // namespace ash

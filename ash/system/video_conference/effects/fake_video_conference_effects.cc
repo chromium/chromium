@@ -37,7 +37,7 @@ SimpleToggleEffect::SimpleToggleEffect(
   // Use default `icon` and/or `accessible_name_id` if none was passed in.
   std::unique_ptr<VcEffectState> state = std::make_unique<VcEffectState>(
       icon.value_or(&ash::kPrivacyIndicatorsCameraIcon), label_text,
-      accessible_name_id.value_or(IDS_PRIVACY_NOTIFICATION_TITLE_CAMERA),
+      accessible_name_id.value_or(IDS_PRIVACY_INDICATORS_STATUS_CAMERA),
       base::BindRepeating(&SimpleToggleEffect::OnEffectControlActivated,
                           weak_factory_.GetWeakPtr(),
                           /*effect_id=*/VcEffectId::kTestEffect,
@@ -140,7 +140,7 @@ void ShaggyFurEffect::AddStateToEffect(VcHostedEffect* effect,
   effect->AddState(std::make_unique<VcEffectState>(
       /*icon=*/&ash::kPrivacyIndicatorsCameraIcon,
       /*label_text=*/label_text,
-      /*accessible_name_id=*/IDS_PRIVACY_NOTIFICATION_TITLE_CAMERA,
+      /*accessible_name_id=*/IDS_PRIVACY_INDICATORS_STATUS_CAMERA,
       /*button_callback=*/
       base::BindRepeating(&ShaggyFurEffect::OnEffectControlActivated,
                           weak_factory_.GetWeakPtr(),
@@ -204,7 +204,7 @@ void SuperCutnessEffect::AddStateToEffect(VcHostedEffect* effect,
   effect->AddState(std::make_unique<VcEffectState>(
       /*icon=*/&ash::kPrivacyIndicatorsCameraIcon,
       /*label_text=*/label_text,
-      /*accessible_name_id=*/IDS_PRIVACY_NOTIFICATION_TITLE_CAMERA,
+      /*accessible_name_id=*/IDS_PRIVACY_INDICATORS_STATUS_CAMERA,
       /*button_callback=*/
       base::BindRepeating(&SuperCutnessEffect::OnEffectControlActivated,
                           weak_factory_.GetWeakPtr(),

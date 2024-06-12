@@ -322,7 +322,7 @@ TEST_F(PrivacyIndicatorsTrayItemViewTest, TooltipText) {
       /*is_camera_used=*/true,
       /*is_microphone_used=*/false);
   EXPECT_EQ(GetExpectedTooltipText(/*cam_mic_status=*/l10n_util::GetStringUTF16(
-                                       IDS_PRIVACY_NOTIFICATION_TITLE_CAMERA),
+                                       IDS_PRIVACY_INDICATORS_STATUS_CAMERA),
                                    /*screen_share_status=*/std::u16string()),
             GetTooltipText());
 
@@ -330,7 +330,7 @@ TEST_F(PrivacyIndicatorsTrayItemViewTest, TooltipText) {
       /*is_camera_used=*/false,
       /*is_microphone_used=*/true);
   EXPECT_EQ(GetExpectedTooltipText(/*cam_mic_status=*/l10n_util::GetStringUTF16(
-                                       IDS_PRIVACY_NOTIFICATION_TITLE_MIC),
+                                       IDS_PRIVACY_INDICATORS_STATUS_MIC),
                                    /*screen_share_status=*/std::u16string()),
             GetTooltipText());
 
@@ -339,7 +339,7 @@ TEST_F(PrivacyIndicatorsTrayItemViewTest, TooltipText) {
       /*is_microphone_used=*/true);
   EXPECT_EQ(
       GetExpectedTooltipText(/*cam_mic_status=*/l10n_util::GetStringUTF16(
-                                 IDS_PRIVACY_NOTIFICATION_TITLE_CAMERA_AND_MIC),
+                                 IDS_PRIVACY_INDICATORS_STATUS_CAMERA_AND_MIC),
                              /*screen_share_status=*/std::u16string()),
       GetTooltipText());
 

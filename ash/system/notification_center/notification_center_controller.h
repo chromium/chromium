@@ -24,7 +24,10 @@ namespace ash {
 class MessageViewContainer;
 class NotificationCenterView;
 
-// Manages and updates `NotificationCenterView`.
+// Manages and updates `NotificationCenterView`. Currently only works for pinned
+// notifications when the feature `OngoingProcesses` is enabled.
+// TODO(b/322835713): Also create and manage unpinned notification views from
+// this controller instead of from `NotificationListView`.
 class ASH_EXPORT NotificationCenterController
     : public message_center::MessageCenterObserver {
  public:
@@ -46,6 +49,13 @@ class ASH_EXPORT NotificationCenterController
   // TODO(b/322835713): Also create and manage unpinned notification views from
   // this controller instead of from `NotificationListView`.
   void InitNotificationCenterView();
+
+  // Returns the `MessageViewContainer` object with the provided `id` that
+  // exists inside of `pinned_notification_list_view_`.
+  // TODO(b/322835713): Also search for unpinned notification views from
+  // this controller instead of from `NotificationListView`.
+  MessageViewContainer* GetPinnedMessageViewContainerById(
+      const std::string& id);
 
   // message_center::MessageCenterObserver:
   void OnNotificationAdded(const std::string& id) override;
@@ -75,10 +85,6 @@ class ASH_EXPORT NotificationCenterController
   // Syntactic sugar to downcast.
   static const MessageViewContainer* AsMVC(const views::View* v);
   static MessageViewContainer* AsMVC(views::View* v);
-
-  // Returns the `MessageViewContainer` object with the provided `id`.
-  MessageViewContainer* GetMessageViewContainerById(const std::string& id,
-                                                    views::View* list_view);
 
   // Owned by the views hierarchy.
   raw_ptr<NotificationCenterView> notification_center_view_ = nullptr;

@@ -5928,31 +5928,28 @@ Here are some things you can try to get started.
 
       <!-- For privacy indicators notification -->
       <message name="IDS_PRIVACY_NOTIFICATION_TITLE_CAMERA_AND_MIC" desc="Title for a notification shown when an app is using the camera and the microphone.">
-        Camera and microphone in use
+        <ph name="APP_NAME">$1<ex>Google meet</ex></ph> is currently using your camera and microphone
       </message>
       <message name="IDS_PRIVACY_NOTIFICATION_TITLE_CAMERA" desc="Title for a notification shown when an app is using the camera.">
-        Camera in use
+        <ph name="APP_NAME">$1<ex>Google meet</ex></ph> is currently using your camera
       </message>
       <message name="IDS_PRIVACY_NOTIFICATION_TITLE_MIC" desc="Title for a notification shown when an app is using the microphone.">
-        Microphone in use
+        <ph name="APP_NAME">$1<ex>Google meet</ex></ph> is currently using your microphone
       </message>
       <message name="IDS_PRIVACY_NOTIFICATION_MESSAGE_DEFAULT_APP_NAME" desc="A default value for app name in the message label for a notification shown when an app is using the camera/microphone. This is used when no app name is detected and we need to use a default value">
         An app
       </message>
-      <message name="IDS_PRIVACY_NOTIFICATION_MESSAGE_CAMERA_AND_MIC" desc="Message label for a notification shown when an app is using the camera and the microphone.">
-        <ph name="APP_NAME">$1<ex>Google meet</ex></ph> is currently using your camera and microphone
-      </message>
-      <message name="IDS_PRIVACY_NOTIFICATION_MESSAGE_CAMERA" desc="Message label for a notification shown when an app is using the camera.">
-        <ph name="APP_NAME">$1<ex>Google meet</ex></ph> is currently using your camera
-      </message>
-      <message name="IDS_PRIVACY_NOTIFICATION_MESSAGE_MIC" desc="Message label for a notification shown when an app is using the microphone.">
-        <ph name="APP_NAME">$1<ex>Google meet</ex></ph> is currently using your microphone
-      </message>
-      <message name="IDS_PRIVACY_NOTIFICATION_BUTTON_APP_LAUNCH" desc="Title for the launch app button of the notification shown when an app is using the camera/microphone.">
-        Go to app
-      </message>
-      <message name="IDS_PRIVACY_NOTIFICATION_BUTTON_APP_SETTINGS" desc="Title for the launch app button of the notification shown when an app is using the camera/microphone.">
+      <message name="IDS_PRIVACY_NOTIFICATION_BUTTON_APP_SETTINGS" desc="Tooltip for the app settings button of the notification shown when an app is using the camera/microphone.">
         App settings
+      </message>
+      <message name="IDS_PRIVACY_INDICATORS_STATUS_CAMERA_AND_MIC" desc="Status tooltip text for the privacy indicators tray item view.">
+        Camera and microphone in use
+      </message>
+      <message name="IDS_PRIVACY_INDICATORS_STATUS_CAMERA" desc="Status tooltip text for the privacy indicators tray item view.">
+        Camera in use
+      </message>
+      <message name="IDS_PRIVACY_INDICATORS_STATUS_MIC" desc="Status tooltip text for the privacy indicators tray item view.">
+        Microphone in use
       </message>
       <message name="IDS_PRIVACY_INDICATORS_VIEW_TOOLTIP" desc="Tooltip for the privacy indicators view in the status area.">
         <ph name="CAMERA_AND_MICROPHONE_ACCESS_STATUS">$1<ex>You're sharing your screen</ex></ph>,

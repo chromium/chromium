@@ -26,7 +26,6 @@ class ASH_EXPORT PrivacyIndicatorsNotificationDelegate
     : public message_center::NotificationDelegate {
  public:
   explicit PrivacyIndicatorsNotificationDelegate(
-      std::optional<base::RepeatingClosure> launch_app_callback = std::nullopt,
       std::optional<base::RepeatingClosure> launch_settings_callback =
           std::nullopt);
 
@@ -35,17 +34,11 @@ class ASH_EXPORT PrivacyIndicatorsNotificationDelegate
   PrivacyIndicatorsNotificationDelegate& operator=(
       const PrivacyIndicatorsNotificationDelegate&) = delete;
 
-  const std::optional<base::RepeatingClosure>& launch_app_callback() const {
-    return launch_app_callback_;
-  }
   const std::optional<base::RepeatingClosure>& launch_settings_callback()
       const {
     return launch_settings_callback_;
   }
 
-  // Sets the value for `launch_app_callback_`/`launch_settings_callback_`. Also
-  // update the button indices.
-  void SetLaunchAppCallback(const base::RepeatingClosure& launch_app_callback);
   void SetLaunchSettingsCallback(
       const base::RepeatingClosure& launch_settings_callback);
 
@@ -57,17 +50,8 @@ class ASH_EXPORT PrivacyIndicatorsNotificationDelegate
   ~PrivacyIndicatorsNotificationDelegate() override;
 
  private:
-  // Updates the indices of notification buttons.
-  void UpdateButtonIndices();
-
-  // Callbacks for clicking the launch app and launch settings buttons.
-  std::optional<base::RepeatingClosure> launch_app_callback_;
+  // Callback for clicking the launch settings button.
   std::optional<base::RepeatingClosure> launch_settings_callback_;
-
-  // Button indices in the notification for launch app/launch settings.
-  // Will be null if the particular button does not exist in the notification.
-  std::optional<int> launch_app_button_index_;
-  std::optional<int> launch_settings_button_index_;
 };
 
 // This enum contains all the sources that use privacy indicators. This enum is

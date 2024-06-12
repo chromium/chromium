@@ -47,20 +47,16 @@ CreatePrivacyIndicatorsNotification(
   std::u16string message;
   const gfx::VectorIcon* app_icon;
   if (is_camera_used && is_microphone_used) {
-    title = l10n_util::GetStringUTF16(
-        IDS_PRIVACY_NOTIFICATION_TITLE_CAMERA_AND_MIC);
-    message = l10n_util::GetStringFUTF16(
-        IDS_PRIVACY_NOTIFICATION_MESSAGE_CAMERA_AND_MIC, app_name_str);
+    title = l10n_util::GetStringFUTF16(
+        IDS_PRIVACY_NOTIFICATION_TITLE_CAMERA_AND_MIC, app_name_str);
     app_icon = &kPrivacyIndicatorsIcon;
   } else if (is_camera_used) {
-    title = l10n_util::GetStringUTF16(IDS_PRIVACY_NOTIFICATION_TITLE_CAMERA);
-    message = l10n_util::GetStringFUTF16(
-        IDS_PRIVACY_NOTIFICATION_MESSAGE_CAMERA, app_name_str);
+    title = l10n_util::GetStringFUTF16(IDS_PRIVACY_NOTIFICATION_TITLE_CAMERA,
+                                       app_name_str);
     app_icon = &kPrivacyIndicatorsCameraIcon;
   } else {
-    title = l10n_util::GetStringUTF16(IDS_PRIVACY_NOTIFICATION_TITLE_MIC);
-    message = l10n_util::GetStringFUTF16(IDS_PRIVACY_NOTIFICATION_MESSAGE_MIC,
-                                         app_name_str);
+    title = l10n_util::GetStringFUTF16(IDS_PRIVACY_NOTIFICATION_TITLE_MIC,
+                                       app_name_str);
     app_icon = &kPrivacyIndicatorsMicrophoneIcon;
   }
 
@@ -71,19 +67,20 @@ CreatePrivacyIndicatorsNotification(
 
   optional_fields.parent_vector_small_image = &kPrivacyIndicatorsIcon;
 
-  if (delegate->launch_app_callback()) {
-    optional_fields.buttons.emplace_back(
-        l10n_util::GetStringUTF16(IDS_PRIVACY_NOTIFICATION_BUTTON_APP_LAUNCH));
-  }
-
   if (delegate->launch_settings_callback()) {
-    optional_fields.buttons.emplace_back(l10n_util::GetStringUTF16(
-        IDS_PRIVACY_NOTIFICATION_BUTTON_APP_SETTINGS));
+    optional_fields.buttons.emplace_back(
+        features::AreOngoingProcessesEnabled()
+            ? message_center::ButtonInfo(
+                  /*vector_icon=*/&kSettingsIcon,
+                  /*accessible_name=*/l10n_util::GetStringUTF16(
+                      IDS_PRIVACY_NOTIFICATION_BUTTON_APP_SETTINGS))
+            : message_center::ButtonInfo(l10n_util::GetStringUTF16(
+                  IDS_PRIVACY_NOTIFICATION_BUTTON_APP_SETTINGS)));
   }
 
   auto notification = CreateSystemNotificationPtr(
       message_center::NotificationType::NOTIFICATION_TYPE_SIMPLE,
-      GetPrivacyIndicatorsNotificationId(app_id), title, message,
+      GetPrivacyIndicatorsNotificationId(app_id), title, std::u16string(),
       /*display_source=*/std::u16string(),
       /*origin_url=*/GURL(),
       message_center::NotifierId(message_center::NotifierType::SYSTEM_COMPONENT,
@@ -198,26 +195,15 @@ void UpdatePrivacyIndicatorsVisibility() {
 }  // namespace
 
 PrivacyIndicatorsNotificationDelegate::PrivacyIndicatorsNotificationDelegate(
-    std::optional<base::RepeatingClosure> launch_app_callback,
-    std::optional<base::RepeatingClosure> launch_settings_settings)
-    : launch_app_callback_(launch_app_callback),
-      launch_settings_callback_(launch_settings_settings) {
-  UpdateButtonIndices();
-}
+    std::optional<base::RepeatingClosure> launch_settings_callback)
+    : launch_settings_callback_(launch_settings_callback) {}
 
 PrivacyIndicatorsNotificationDelegate::
     ~PrivacyIndicatorsNotificationDelegate() = default;
 
-void PrivacyIndicatorsNotificationDelegate::SetLaunchAppCallback(
-    const base::RepeatingClosure& launch_app_callback) {
-  launch_app_callback_ = launch_app_callback;
-  UpdateButtonIndices();
-}
-
 void PrivacyIndicatorsNotificationDelegate::SetLaunchSettingsCallback(
-    const base::RepeatingClosure& launch_settings_settings) {
-  launch_settings_callback_ = launch_settings_settings;
-  UpdateButtonIndices();
+    const base::RepeatingClosure& launch_settings_callback) {
+  launch_settings_callback_ = launch_settings_callback;
 }
 
 void PrivacyIndicatorsNotificationDelegate::Click(
@@ -231,26 +217,9 @@ void PrivacyIndicatorsNotificationDelegate::Click(
     return;
   }
 
-  if (*button_index == launch_app_button_index_) {
-    DCHECK(launch_app_callback_);
-    launch_app_callback_->Run();
-    return;
-  }
-
-  if (*button_index == launch_settings_button_index_) {
-    DCHECK(launch_settings_callback_);
-    launch_settings_callback_->Run();
-  }
-}
-
-void PrivacyIndicatorsNotificationDelegate::UpdateButtonIndices() {
-  int current_index = 0;
-  if (launch_app_callback_) {
-    launch_app_button_index_ = current_index++;
-  }
-
+  CHECK(*button_index == 0);
   if (launch_settings_callback_) {
-    launch_settings_button_index_ = current_index;
+    launch_settings_callback_->Run();
   }
 }
 

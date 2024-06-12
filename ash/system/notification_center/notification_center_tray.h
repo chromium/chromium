@@ -105,6 +105,8 @@ class ASH_EXPORT NotificationCenterTray : public TrayBackgroundView,
     return popup_collection_.get();
   }
 
+  NotificationCenterBubble* bubble() { return bubble_.get(); }
+
  private:
   friend class NotificationCenterTestApi;
   friend class NotificationCounterViewTest;

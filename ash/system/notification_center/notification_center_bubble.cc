@@ -11,6 +11,7 @@
 #include "ash/system/notification_center/message_center_constants.h"
 #include "ash/system/notification_center/notification_center_controller.h"
 #include "ash/system/notification_center/notification_center_tray.h"
+#include "ash/system/notification_center/views/message_view_container.h"
 #include "ash/system/notification_center/views/notification_center_view.h"
 #include "ash/system/tray/tray_bubble_wrapper.h"
 #include "ash/system/tray/tray_utils.h"
@@ -86,6 +87,19 @@ NotificationCenterView* NotificationCenterBubble::GetNotificationCenterView() {
   return features::IsNotificationCenterControllerEnabled()
              ? notification_center_controller_->notification_center_view()
              : notification_center_view_.get();
+}
+
+const MessageViewContainer*
+NotificationCenterBubble::GetPinnedMessageViewContainerById(
+    const std::string& id) {
+  // The controller currently handles only pinned notifications. To access
+  // unpinned notifications use `NotificationListView`.
+  // TODO(b/322835713): Have the controller create unpinned notification views
+  // and deprecate `NotificationListView`.
+  return features::AreOngoingProcessesEnabled()
+             ? notification_center_controller_
+                   ->GetPinnedMessageViewContainerById(id)
+             : nullptr;
 }
 
 void NotificationCenterBubble::UpdateBubbleBounds() {

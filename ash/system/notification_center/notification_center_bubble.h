@@ -17,6 +17,7 @@ class Widget;
 
 namespace ash {
 
+class MessageViewContainer;
 class NotificationCenterController;
 class NotificationCenterTray;
 class NotificationCenterView;
@@ -49,6 +50,12 @@ class ASH_EXPORT NotificationCenterBubble : public ScreenLayoutObserver {
   // Returns `notification_center_view_` when the feature is disabled.
   // Returns the view cached in `notification_center_controller_` when enabled.
   NotificationCenterView* GetNotificationCenterView();
+
+  // Forwards call to `NotificationCenterController`. This currently only
+  // searches for notification views that are pinned.
+  // TODO(b/322835713): Have the controller create unpinned notification views.
+  const MessageViewContainer* GetPinnedMessageViewContainerById(
+      const std::string& id);
 
  private:
   friend class NotificationCenterTestApi;

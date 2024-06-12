@@ -158,7 +158,7 @@ TEST_P(ToggleEffectsViewTest, TooltipIsUpdated) {
       GetFirstToggleEffectButton()->GetTooltipText(),
       l10n_util::GetStringFUTF16(
           VIDEO_CONFERENCE_TOGGLE_BUTTON_TOOLTIP,
-          l10n_util::GetStringUTF16(IDS_PRIVACY_NOTIFICATION_TITLE_CAMERA),
+          l10n_util::GetStringUTF16(IDS_PRIVACY_INDICATORS_STATUS_CAMERA),
           l10n_util::GetStringUTF16(VIDEO_CONFERENCE_TOGGLE_BUTTON_STATE_OFF)));
 
   // Toggle it on, the tooltip should update.
@@ -168,7 +168,7 @@ TEST_P(ToggleEffectsViewTest, TooltipIsUpdated) {
       GetFirstToggleEffectButton()->GetTooltipText(),
       l10n_util::GetStringFUTF16(
           VIDEO_CONFERENCE_TOGGLE_BUTTON_TOOLTIP,
-          l10n_util::GetStringUTF16(IDS_PRIVACY_NOTIFICATION_TITLE_CAMERA),
+          l10n_util::GetStringUTF16(IDS_PRIVACY_INDICATORS_STATUS_CAMERA),
           l10n_util::GetStringUTF16(VIDEO_CONFERENCE_TOGGLE_BUTTON_STATE_ON)));
 
   // Cleanup.

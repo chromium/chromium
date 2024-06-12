@@ -271,14 +271,14 @@ std::u16string PrivacyIndicatorsTrayItemView::GetTooltipText(
   auto* controller = PrivacyIndicatorsController::Get();
   auto cam_and_mic_status = std::u16string();
   if (controller->IsCameraUsed() && controller->IsMicrophoneUsed()) {
-    cam_and_mic_status = l10n_util::GetStringUTF16(
-        IDS_PRIVACY_NOTIFICATION_TITLE_CAMERA_AND_MIC);
+    cam_and_mic_status =
+        l10n_util::GetStringUTF16(IDS_PRIVACY_INDICATORS_STATUS_CAMERA_AND_MIC);
   } else if (controller->IsCameraUsed()) {
     cam_and_mic_status =
-        l10n_util::GetStringUTF16(IDS_PRIVACY_NOTIFICATION_TITLE_CAMERA);
+        l10n_util::GetStringUTF16(IDS_PRIVACY_INDICATORS_STATUS_CAMERA);
   } else if (controller->IsMicrophoneUsed()) {
     cam_and_mic_status =
-        l10n_util::GetStringUTF16(IDS_PRIVACY_NOTIFICATION_TITLE_MIC);
+        l10n_util::GetStringUTF16(IDS_PRIVACY_INDICATORS_STATUS_MIC);
   }
 
   auto screen_share_status =

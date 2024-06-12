@@ -184,9 +184,6 @@ void AppAccessNotifier::OnCapabilityAccessUpdate(
 
   // Privacy indicators is only enabled when Video Conference is disabled.
   if (!ash::features::IsVideoConferenceEnabled()) {
-    // TODO(b/251686202): Finish Launch App functionality.
-    auto launch_app_callback = std::nullopt;
-
     auto* registry_cache = GetActiveUserAppRegistryCache();
     if (!registry_cache) {
       return;
@@ -207,7 +204,7 @@ void AppAccessNotifier::OnCapabilityAccessUpdate(
         app_id, /*app_name=*/GetAppShortNameFromAppId(app_id), is_camera_used,
         is_microphone_used, /*delegate=*/
         base::MakeRefCounted<ash::PrivacyIndicatorsNotificationDelegate>(
-            launch_app_callback, launch_settings_callback),
+            launch_settings_callback),
         ash::PrivacyIndicatorsSource::kApps);
 
     base::UmaHistogramEnumeration("Ash.PrivacyIndicators.AppAccessUpdate.Type",

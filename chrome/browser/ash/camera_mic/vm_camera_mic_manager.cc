@@ -222,7 +222,6 @@ class VmCameraMicManager::VmInfo : public message_center::NotificationObserver {
 
     auto app_name = l10n_util::GetStringUTF16(name_id_);
     auto delegate = base::MakeRefCounted<PrivacyIndicatorsNotificationDelegate>(
-        /*launch_app=*/std::nullopt,
         /*launch_settings=*/base::BindRepeating(
             &VmCameraMicManager::VmInfo::OpenSettings,
             weak_ptr_factory_.GetWeakPtr()));

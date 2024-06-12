@@ -57,7 +57,7 @@ class SquareCinnamonCereal : public VcEffectsDelegate {
 
     auto state = std::make_unique<VcEffectState>(
         &kVideoConferenceBackgroundBlurMaximumIcon, u"Square Cinnamon Cereal",
-        IDS_PRIVACY_NOTIFICATION_TITLE_CAMERA,
+        IDS_PRIVACY_INDICATORS_STATUS_CAMERA,
         base::BindRepeating(&SquareCinnamonCereal::OnEffectControlActivated,
                             base::Unretained(this),
                             /*effect_id=*/VcEffectId::kTestEffect,
@@ -89,7 +89,7 @@ class SnackNationForever : public VcEffectsDelegate {
         VcEffectId::kTestEffect);
     auto state = std::make_unique<VcEffectState>(
         &ash::kPrivacyIndicatorsCameraIcon, u"Snack Nation",
-        IDS_PRIVACY_NOTIFICATION_TITLE_CAMERA,
+        IDS_PRIVACY_INDICATORS_STATUS_CAMERA,
         base::BindRepeating(&SnackNationForever::OnEffectControlActivated,
                             base::Unretained(this),
                             /*effect_id=*/VcEffectId::kTestEffect,
