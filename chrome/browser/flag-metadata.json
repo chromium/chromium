@@ -7118,9 +7118,11 @@
   {
     "name": "print-preview-cros-app",
     "owners": [
-      "//ash/webui/print_management/OWNERS"
+      "jimmyxgong@chromium.org",
+      "gavinwill@chromium.org",
+      "cros-peripherals@google.com"
     ],
-    "expiry_milestone": 130
+    "expiry_milestone": 140
   },
   {
     "name": "print-preview-cros-primary",
