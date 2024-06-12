@@ -894,7 +894,8 @@ void ResourceFetcher::DidLoadResourceFromMemoryCache(
   // performance.
   // TODO(crbug.com/41496436): Explore skipping this in general for
   // `is_static_data`.
-  if (request.GetKnownTransparentPlaceholderImageIndex() == kNotFound) {
+  if (!blink::features::IsSimplifyLoadingTransparentPlaceholderImageEnabled() ||
+      (request.GetKnownTransparentPlaceholderImageIndex() == kNotFound)) {
     resource_load_observer_->WillSendRequest(
         request, ResourceResponse() /* redirects */, resource->GetType(),
         resource->Options(), render_blocking_behavior, resource);
@@ -1020,9 +1021,10 @@ Resource* ResourceFetcher::CreateResourceForStaticData(
     case ResourceStatus::kNotStarted:
       // We should not reach here on the transparent placeholder image
       // fast-path.
-      CHECK_EQ(params.GetResourceRequest()
-                   .GetKnownTransparentPlaceholderImageIndex(),
-               kNotFound);
+      CHECK(!blink::features::
+                IsSimplifyLoadingTransparentPlaceholderImageEnabled() ||
+            (params.GetResourceRequest()
+                 .GetKnownTransparentPlaceholderImageIndex() == kNotFound));
 
       // The below code, with the exception of `NotifyStartLoad()` and
       // `Finish()`, is the same as in
