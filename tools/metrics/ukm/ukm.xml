@@ -19482,7 +19482,8 @@ be describing additional metrics about the same event.
   <metric name="MainFrameResource.NavigationStartToReceiveHeadersStart">
     <summary>
       The duration from the start of the navigation to the start of the response
-      headers being received. In ms.
+      headers being received, in ms. The start of the response headers include
+      early hints. This is TTFB in CruX.
     </summary>
   </metric>
   <metric name="MainFrameResource.NavigationStartToRequestStart">
