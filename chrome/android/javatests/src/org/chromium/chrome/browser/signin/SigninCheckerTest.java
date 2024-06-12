@@ -165,14 +165,24 @@ public class SigninCheckerTest {
                 2,
                 SigninCheckerProvider.get(mActivityTestRule.getProfile(false))
                         .getNumOfChildAccountChecksDoneForTests());
-        Assert.assertTrue(
-                actionTester.getActions().contains("Signin_Signin_WipeDataOnChildAccountSignin2"));
+        if (!ChromeFeatureList.isEnabled(
+                ChromeFeatureList.REPLACE_SYNC_PROMOS_WITH_SIGN_IN_PROMOS)) {
+            // When REPLACE_SYNC_PROMOS_WITH_SIGN_IN_PROMOS is enabled - the data is no longer wiped
+            // on a supervised sign-in.
+            Assert.assertTrue(
+                    actionTester
+                            .getActions()
+                            .contains("Signin_Signin_WipeDataOnChildAccountSignin2"));
+        }
         Assert.assertFalse(SyncTestUtil.isSyncFeatureEnabled());
     }
 
     @Test
     @MediumTest
-    @Features.DisableFeatures(ChromeFeatureList.SEED_ACCOUNTS_REVAMP)
+    @Features.DisableFeatures({
+        ChromeFeatureList.SEED_ACCOUNTS_REVAMP,
+        ChromeFeatureList.REPLACE_SYNC_PROMOS_WITH_SIGN_IN_PROMOS
+    })
     public void signinWhenChildAccountIsTheOnlyAccount() {
         mActivityTestRule.startMainActivityOnBlankPage();
         UserActionTester actionTester = new UserActionTester();
@@ -218,7 +228,10 @@ public class SigninCheckerTest {
 
     @Test
     @MediumTest
-    @Features.DisableFeatures(ChromeFeatureList.SEED_ACCOUNTS_REVAMP)
+    @Features.DisableFeatures({
+        ChromeFeatureList.SEED_ACCOUNTS_REVAMP,
+        ChromeFeatureList.REPLACE_SYNC_PROMOS_WITH_SIGN_IN_PROMOS
+    })
     public void noSigninWhenChildAccountIsTheOnlyAccountButSigninIsNotAllowed() {
         mActivityTestRule.startMainActivityOnBlankPage();
         UserActionTester actionTester = new UserActionTester();
@@ -265,7 +278,10 @@ public class SigninCheckerTest {
 
     @Test
     @MediumTest
-    @Features.DisableFeatures(ChromeFeatureList.SEED_ACCOUNTS_REVAMP)
+    @Features.DisableFeatures({
+        ChromeFeatureList.SEED_ACCOUNTS_REVAMP,
+        ChromeFeatureList.REPLACE_SYNC_PROMOS_WITH_SIGN_IN_PROMOS
+    })
     public void noSigninWhenChildAccountIsTheSecondaryAccount() {
         // If a child account co-exists with another account on the device, then the child account
         // must be the first device (this is enforced by the Kids Module).  The behaviour in this
@@ -310,7 +326,14 @@ public class SigninCheckerTest {
                 3,
                 SigninCheckerProvider.get(mActivityTestRule.getProfile(false))
                         .getNumOfChildAccountChecksDoneForTests());
-        Assert.assertTrue(
-                actionTester.getActions().contains("Signin_Signin_WipeDataOnChildAccountSignin2"));
+        if (!ChromeFeatureList.isEnabled(
+                ChromeFeatureList.REPLACE_SYNC_PROMOS_WITH_SIGN_IN_PROMOS)) {
+            // When REPLACE_SYNC_PROMOS_WITH_SIGN_IN_PROMOS is enabled - the data is no longer wiped
+            // on a supervised sign-in.
+            Assert.assertTrue(
+                    actionTester
+                            .getActions()
+                            .contains("Signin_Signin_WipeDataOnChildAccountSignin2"));
+        }
     }
 }
