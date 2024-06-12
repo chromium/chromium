@@ -21,6 +21,7 @@ import androidx.annotation.Nullable;
 import androidx.annotation.VisibleForTesting;
 
 import org.chromium.base.Callback;
+import org.chromium.base.CallbackController;
 import org.chromium.chrome.browser.tab_resumption.TabResumptionModuleMetricsUtils.ClickInfo;
 import org.chromium.chrome.browser.tab_resumption.TabResumptionModuleMetricsUtils.ModuleShowConfig;
 import org.chromium.chrome.browser.tab_resumption.TabResumptionModuleUtils.SuggestionClickCallback;
@@ -29,6 +30,9 @@ import org.chromium.chrome.browser.tab_resumption.TabResumptionModuleUtils.Sugge
 public class TabResumptionTileContainerView extends LinearLayout {
     private final Size mThumbnailSize;
     private PackageManager mPackageManager;
+
+    // The mCallbackController could be null if not used or when all tiles are removed.
+    @Nullable private CallbackController mCallbackController;
 
     public TabResumptionTileContainerView(Context context, @Nullable AttributeSet attrs) {
         super(context, attrs);
@@ -55,7 +59,20 @@ public class TabResumptionTileContainerView extends LinearLayout {
     }
 
     public void destroy() {
+        reset();
+    }
+
+    public void cancelAllCallbacks() {
+        if (mCallbackController == null) return;
+
+        mCallbackController.destroy();
+        mCallbackController = null;
+    }
+
+    @VisibleForTesting
+    void reset() {
         removeAllViews();
+        cancelAllCallbacks();
     }
 
     /**
@@ -67,7 +84,7 @@ public class TabResumptionTileContainerView extends LinearLayout {
             UrlImageProvider urlImageProvider,
             SuggestionClickCallback suggestionClickCallback,
             boolean useSalientImage) {
-        removeAllViews();
+        reset();
 
         @ModuleShowConfig
         Integer moduleShowConfig = TabResumptionModuleMetricsUtils.computeModuleShowConfig(bundle);
@@ -247,31 +264,36 @@ public class TabResumptionTileContainerView extends LinearLayout {
             TabResumptionTileView tileView,
             boolean isSingle,
             boolean useSalientImage) {
+
         Runnable fetchRegularImage =
-                () -> {
-                    urlImageProvider.fetchImageForUrl(
-                            entry.url,
-                            (bitmap) -> {
-                                onImageAvailable(
-                                        bitmap,
-                                        tileView,
-                                        useSalientImage,
-                                        /* isSalientImage= */ false);
-                            });
-                };
+                getCallbackController()
+                        .makeCancelable(
+                                () -> {
+                                    urlImageProvider.fetchImageForUrl(
+                                            entry.url,
+                                            (bitmap) -> {
+                                                onImageAvailable(
+                                                        bitmap,
+                                                        tileView,
+                                                        useSalientImage,
+                                                        /* isSalientImage= */ false);
+                                            });
+                                });
         if (useSalientImage) {
             Callback<Bitmap> fetchSalientImageCallback =
-                    (bitmap) -> {
-                        if (bitmap != null) {
-                            onImageAvailable(
-                                    bitmap,
-                                    tileView,
-                                    /* useSalientImage= */ true,
-                                    /* isSalientImage= */ true);
-                        } else {
-                            fetchRegularImage.run();
-                        }
-                    };
+                    getCallbackController()
+                            .makeCancelable(
+                                    (bitmap) -> {
+                                        if (bitmap != null) {
+                                            onImageAvailable(
+                                                    bitmap,
+                                                    tileView,
+                                                    /* useSalientImage= */ true,
+                                                    /* isSalientImage= */ true);
+                                        } else {
+                                            fetchRegularImage.run();
+                                        }
+                                    });
             urlImageProvider.fetchSalientImage(entry.url, isSingle, fetchSalientImageCallback);
         } else {
             fetchRegularImage.run();
@@ -317,7 +339,18 @@ public class TabResumptionTileContainerView extends LinearLayout {
         tileView.setOnLongClickListener(v -> false);
     }
 
+    private CallbackController getCallbackController() {
+        if (mCallbackController == null) {
+            mCallbackController = new CallbackController();
+        }
+        return mCallbackController;
+    }
+
     void setPackageManagerForTesting(PackageManager pm) {
         mPackageManager = pm;
+    }
+
+    boolean isCallbackControllerNullForTesting() {
+        return mCallbackController == null;
     }
 }
