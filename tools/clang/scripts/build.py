@@ -947,6 +947,8 @@ def main():
         # Fails with a recent ld, crbug.com/332589870
         '^.*ContinuousSyncMode/darwin-proof-of-concept.c$',
         '^.*instrprof-darwin-exports.c$',
+        # Fails on our mac builds, crbug.com/346289767
+        '^.*Interpreter/pretty-print.c$',
     ]
   test_env = None
   if lit_excludes:
