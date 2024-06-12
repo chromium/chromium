@@ -6491,37 +6491,6 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram
-    name="Autofill.WebView.FormSimilarityCheck{FormSimilarityCheckOccasion}"
-    enum="AutofillWebViewFormSimilarityCheckResult" expires_after="2024-06-30">
-  <owner>jkeitel@google.com</owner>
-  <owner>jihadghanna@google.com</owner>
-  <owner>elabadysayed@google.com</owner>
-  <summary>
-    Records the result of a similarity check between FormDataAndroid and
-    FormData objects. These similarity checks are used to determine whether a
-    new Autofill session should be started, whether a previous cache request can
-    used for trigger a bottomsheet for a new form interaction, etc.
-  </summary>
-  <token key="FormSimilarityCheckOccasion">
-    <variant name=".AskForValuesToFill"
-        summary="Comparison between the form of the current session and the
-                 form for which AskForValuesToFill was just called. Emitted
-                 whenever AskForValuesToFill is called and there is an
-                 ongoing Autofill session"/>
-    <variant name=".CachedForm"
-        summary="Comparison between the cached form and the form that the
-                 user just interacted with. Emitted when the user interacts
-                 with a form and the cache result is rejected because the
-                 forms are not similar even though their ids match."/>
-    <variant name=".FocusOnFormField"
-        summary="Comparison between the form of the current session and the
-                 form for which FocusOnFormField was just called. Emitted
-                 whenever FocusOnFormField is called and there is an ongoing
-                 Autofill session."/>
-  </token>
-</histogram>
-
-<histogram
     name="Autofill.WebView.Funnel.FillAfterInteraction{AutofillFormType}"
     enum="BooleanAutofillFillAfterInteraction" expires_after="2024-12-12">
   <owner>pkotwicz@chromium.org</owner>

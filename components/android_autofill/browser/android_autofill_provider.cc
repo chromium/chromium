@@ -13,7 +13,6 @@
 #include "base/debug/crash_logging.h"
 #include "base/feature_list.h"
 #include "base/metrics/histogram_functions.h"
-#include "base/types/cxx23_to_underlying.h"
 #include "components/android_autofill/browser/android_autofill_bridge_factory.h"
 #include "components/android_autofill/browser/android_autofill_features.h"
 #include "components/android_autofill/browser/android_autofill_manager.h"
@@ -86,19 +85,6 @@ bool ShouldCachePasswordForm(const PasswordForm& pw_form) {
          (pw_form.IsLikelyChangePasswordForm() &&
           base::FeatureList::IsEnabled(
               features::kAndroidAutofillPrefillRequestsForChangePassword));
-}
-
-// Extracts the underlying value of `check_result` and eliminates all other bits
-// if the bit for `FormDataAndroid::SimilarityCheckComponent::kGlobalId` is set.
-// Otherwise, it returns the value as is.
-// The motivation behind this is to reduce the number of metrics entries: If the
-// global ids differ, it is not interesting which other components differ as
-// well.
-auto ProjectSimilarityCheckResultToMetricsValue(
-    FormDataAndroid::SimilarityCheckResult check_result) {
-  static constexpr auto kGlobalId =
-      base::to_underlying(FormDataAndroid::SimilarityCheckComponent::kGlobalId);
-  return check_result.value() & kGlobalId ? kGlobalId : check_result.value();
 }
 
 constexpr base::TimeDelta kWasBottomSheetShownFlipTimeout =
@@ -189,8 +175,7 @@ void AndroidAutofillProvider::OnAskForValuesToFill(
 
   // Focus or field value change will also trigger the query, so it should be
   // ignored if the form is same.
-  if (!IsLinkedForm(
-          form, /*similarity_metric=*/kSimilarityCheckAskForValuesToFillUma)) {
+  if (!IsLinkedForm(form)) {
     StartNewSession(manager, form, field);
   } else {
     last_focused_field_id_ = field.global_id();
@@ -284,14 +269,6 @@ void AndroidAutofillProvider::StartNewSession(AndroidAutofillManager* manager,
       base::UmaHistogramEnumeration(
           kPrefillRequestStateUma,
           PrefillRequestState::kRequestSentFormChanged);
-      if (!base::FeatureList::IsEnabled(
-              features::kAndroidAutofillUsePwmPredictionsForOverrides)) {
-        base::UmaHistogramExactLinear(
-            kSimilarityCheckCacheRequestUma,
-            ProjectSimilarityCheckResultToMetricsValue(
-                cached_form->SimilarFormAsWithDiagnosis(form)),
-            FormDataAndroid::kSimilaryCheckResultExclusiveMaximum);
-      }
       return;
     }
 
@@ -477,8 +454,7 @@ void AndroidAutofillProvider::OnFocusOnFormField(
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
 
   FieldInfo field_info;
-  if (!IsLinkedForm(form,
-                    /*similarity_metri=*/kSimilarityCheckFocusOnFormFieldUma) ||
+  if (!IsLinkedForm(form) ||
       !form_->GetSimilarFieldIndex(field, &field_info.index)) {
     return;
   }
@@ -630,23 +606,8 @@ bool AndroidAutofillProvider::IsIdOfLinkedForm(FormGlobalId form_id) const {
   return form_ && form_->form().global_id() == form_id;
 }
 
-bool AndroidAutofillProvider::IsLinkedForm(const FormData& form,
-                                           const char* similarity_metric) {
-  if (!form_) {
-    return false;
-  }
-
-  if (!similarity_metric) {
-    return form_->SimilarFormAs(form);
-  }
-
-  FormDataAndroid::SimilarityCheckResult similarity_result =
-      form_->SimilarFormAsWithDiagnosis(form);
-  base::UmaHistogramExactLinear(
-      similarity_metric,
-      ProjectSimilarityCheckResultToMetricsValue(similarity_result),
-      FormDataAndroid::kSimilaryCheckResultExclusiveMaximum);
-  return similarity_result == FormDataAndroid::kFormsAreSimilar;
+bool AndroidAutofillProvider::IsLinkedForm(const FormData& form) {
+  return form_ && form_->SimilarFormAs(form);
 }
 
 gfx::RectF AndroidAutofillProvider::ToClientAreaBound(

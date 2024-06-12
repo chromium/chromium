@@ -7,7 +7,6 @@
 #include <memory>
 #include <string>
 #include <string_view>
-#include <type_traits>
 #include <utility>
 #include <vector>
 
@@ -200,61 +199,6 @@ TEST_F(FormDataAndroidTest, SimilarFormAs_Fields) {
   f = af.form();
   test_api(f).fields().front().set_name(f.fields.front().name() + u"x");
   EXPECT_FALSE(af.SimilarFormAs(f));
-}
-
-// Tests that `SimilarFormAsWithDiagnosis` returns the correct reason why two
-// forms are not considered similar.
-TEST_F(FormDataAndroidTest, SimilarFormAsWithDiagnosis) {
-  using SimilarityCheckComponent = FormDataAndroid::SimilarityCheckComponent;
-  using SimilarityCheckResult = FormDataAndroid::SimilarityCheckResult;
-
-  // Returns the bitwise or of the underlying types of the passed enums.
-  auto to_check_result = [](auto... components) {
-    return SimilarityCheckResult((base::to_underlying(components) | ...));
-  };
-
-  FormData f = CreateTestForm();
-  FormDataAndroid af(f, kSampleSessionId);
-
-  EXPECT_EQ(af.SimilarFormAsWithDiagnosis(f),
-            FormDataAndroid::kFormsAreSimilar);
-
-  f = af.form();
-  f.set_renderer_id(FormRendererId(f.renderer_id().value() + 1));
-  EXPECT_EQ(af.SimilarFormAsWithDiagnosis(f),
-            to_check_result(SimilarityCheckComponent::kGlobalId));
-
-  f = af.form();
-  f.set_name(af.form().name() + u"x");
-  EXPECT_EQ(af.SimilarFormAsWithDiagnosis(f),
-            to_check_result(SimilarityCheckComponent::kName));
-
-  f = af.form();
-  f.set_name_attribute(af.form().name_attribute() + u"x");
-  EXPECT_EQ(af.SimilarFormAsWithDiagnosis(f),
-            to_check_result(SimilarityCheckComponent::kNameAttribute));
-
-  f = af.form();
-  f.set_id_attribute(af.form().id_attribute() + u"x");
-  EXPECT_EQ(af.SimilarFormAsWithDiagnosis(f),
-            to_check_result(SimilarityCheckComponent::kIdAttribute));
-
-  f = af.form();
-  f.set_url(GURL("https://other.com"));
-  EXPECT_EQ(af.SimilarFormAsWithDiagnosis(f),
-            to_check_result(SimilarityCheckComponent::kUrl));
-
-  f = af.form();
-  f.set_action(GURL("https://other.com"));
-  EXPECT_EQ(af.SimilarFormAsWithDiagnosis(f),
-            to_check_result(SimilarityCheckComponent::kAction));
-
-  f = af.form();
-  f.set_name_attribute(af.form().name_attribute() + u"x");
-  f.set_id_attribute(af.form().id_attribute() + u"x");
-  EXPECT_EQ(af.SimilarFormAsWithDiagnosis(f),
-            to_check_result(SimilarityCheckComponent::kIdAttribute,
-                            SimilarityCheckComponent::kNameAttribute));
 }
 
 TEST_F(FormDataAndroidTest, GetFieldIndex) {

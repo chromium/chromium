@@ -341,12 +341,6 @@ TEST_F(AndroidAutofillProviderTest, OnAskForValuesToFillStartsSession) {
                            /*has_server_predictions=*/false));
   android_autofill_manager().SimulateOnAskForValuesToFill(form,
                                                           form.fields.front());
-
-  // Since there was no previous Autofill session, no similarity check between
-  // the form of the previous session and the current session is executed and no
-  // metric is emitted.
-  histogram_tester.ExpectTotalCount(
-      AndroidAutofillProvider::kSimilarityCheckAskForValuesToFillUma, 0);
 }
 
 // Tests that a focus change within the form of an ongoing autofill session
@@ -375,10 +369,6 @@ TEST_F(AndroidAutofillProviderTest, OnFocusChangeInsideCurrentAutofillForm) {
   android_autofill_manager().OnFocusOnNonFormFieldImpl(
       /*had_interacted_form=*/true);
   check.Call(2);
-
-  histogram_tester.ExpectUniqueSample(
-      AndroidAutofillProvider::kSimilarityCheckFocusOnFormFieldUma,
-      FormDataAndroid::kFormsAreSimilar.value(), 1);
 }
 
 // Tests that triggering `OnAskForValuesToFill` with a field results in an
@@ -437,34 +427,27 @@ TEST_F(AndroidAutofillProviderTest, OnAskForValuesToFillOnOtherForm) {
       main_frame_token());
   android_autofill_manager().OnFormsSeen({form1, form2}, /*removed_forms=*/{});
 
-  MockFunction<void(int)> check;
+  MockFunction<void()> check;
   {
     InSequence s;
     EXPECT_CALL(provider_bridge(),
                 StartAutofillSession(EqualsFormData(form1),
                                      EqualsFieldInfo(/*index=*/1),
                                      /*has_server_predictions=*/false));
-    EXPECT_CALL(check, Call(1));
+    EXPECT_CALL(check, Call);
     EXPECT_CALL(provider_bridge(),
                 StartAutofillSession(EqualsFormData(form2),
                                      EqualsFieldInfo(/*index=*/0),
                                      /*has_server_predictions=*/false));
-    EXPECT_CALL(check, Call(2));
+    EXPECT_CALL(check, Call);
   }
 
   android_autofill_manager().SimulateOnAskForValuesToFill(form1,
                                                           form1.fields[1]);
-  check.Call(1);
+  check.Call();
   android_autofill_manager().SimulateOnAskForValuesToFill(form2,
                                                           form2.fields[0]);
-  check.Call(2);
-
-  // A metric was emitted that shows that the form similarity check between
-  // form1 and form2 failed due to differing ids.
-  histogram_tester.ExpectUniqueSample(
-      AndroidAutofillProvider::kSimilarityCheckAskForValuesToFillUma,
-      base::to_underlying(FormDataAndroid::SimilarityCheckComponent::kGlobalId),
-      1);
+  check.Call();
 }
 
 // Tests that asking for values to fill on the same form as that of the current
@@ -479,35 +462,27 @@ TEST_F(AndroidAutofillProviderTest, OnAskForValuesToFillOnChangedForm) {
   form_changed.set_name_attribute(u"changed_name");
   android_autofill_manager().OnFormsSeen({form}, /*removed_forms=*/{});
 
-  MockFunction<void(int)> check;
+  MockFunction<void()> check;
   {
     InSequence s;
     EXPECT_CALL(
         provider_bridge(),
         StartAutofillSession(EqualsFormData(form), EqualsFieldInfo(/*index=*/1),
                              /*has_server_predictions=*/false));
-    EXPECT_CALL(check, Call(1));
+    EXPECT_CALL(check, Call);
     EXPECT_CALL(provider_bridge(),
                 StartAutofillSession(EqualsFormData(form_changed),
                                      EqualsFieldInfo(/*index=*/1),
                                      /*has_server_predictions=*/false));
-    EXPECT_CALL(check, Call(2));
+    EXPECT_CALL(check, Call);
   }
 
   android_autofill_manager().SimulateOnAskForValuesToFill(form, form.fields[1]);
-  check.Call(1);
+  check.Call();
   android_autofill_manager().OnFormsSeen({form_changed}, /*removed_forms=*/{});
   android_autofill_manager().SimulateOnAskForValuesToFill(
       form_changed, form_changed.fields[1]);
-  check.Call(2);
-
-  // A metric was emitted that shows that the form similarity check between
-  // form and form_changed failed due to different name attributes.
-  histogram_tester.ExpectUniqueSample(
-      AndroidAutofillProvider::kSimilarityCheckAskForValuesToFillUma,
-      base::to_underlying(
-          FormDataAndroid::SimilarityCheckComponent::kNameAttribute),
-      1);
+  check.Call();
 }
 
 // Tests that asking for values to fill on the same form as that of the current
@@ -533,11 +508,6 @@ TEST_F(AndroidAutofillProviderTest, OnAskForValuesToFillOnSameForm) {
   android_autofill_manager().SimulateOnAskForValuesToFill(form, form.fields[1]);
   check.Call();
   android_autofill_manager().SimulateOnAskForValuesToFill(form, form.fields[0]);
-
-  // A metric was emitted that shows that the form similarity succeeded.
-  histogram_tester.ExpectUniqueSample(
-      AndroidAutofillProvider::kSimilarityCheckAskForValuesToFillUma,
-      FormDataAndroid::kFormsAreSimilar.value(), 1);
 }
 
 // Tests that value changes in the form of the Autofill session are propagated
@@ -1033,8 +1003,6 @@ TEST_P(AndroidAutofillProviderPrefillRequestTest, NoSecondPrefillRequest) {
   histogram_tester.ExpectUniqueSample(
       AndroidAutofillProvider::kPrefillRequestStateUma,
       PrefillRequestState::kRequestNotSentMaxNumberReached, 1);
-  histogram_tester.ExpectTotalCount(
-      AndroidAutofillProvider::kSimilarityCheckCacheRequestUma, 0);
 }
 
 // Tests that the session id used in a prefill request is also used for starting
@@ -1109,9 +1077,6 @@ TEST_P(AndroidAutofillProviderPrefillRequestTest,
   histogram_tester.ExpectUniqueSample(
       AndroidAutofillProvider::kPrefillRequestStateUma,
       PrefillRequestState::kRequestSentFormChanged, 1);
-  histogram_tester.ExpectTotalCount(
-      AndroidAutofillProvider::kSimilarityCheckCacheRequestUma,
-      GetParam() ? 0 : 1);
 }
 
 // Tests that the session id used in a prefill request is only used once to

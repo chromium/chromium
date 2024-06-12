@@ -4,13 +4,11 @@
 
 #include "components/android_autofill/browser/form_data_android.h"
 
-#include <functional>
 #include <memory>
 #include <string_view>
 #include <tuple>
 
 #include "base/containers/flat_map.h"
-#include "base/types/cxx23_to_underlying.h"
 #include "components/android_autofill/browser/android_autofill_bridge_factory.h"
 #include "components/android_autofill/browser/form_data_android_bridge.h"
 #include "components/android_autofill/browser/form_field_data_android.h"
@@ -92,33 +90,6 @@ bool FormDataAndroid::SimilarFormAs(const FormData& form) const {
   };
   return SimilarityTuple(form_) == SimilarityTuple(form) &&
          SimilarFieldsAs(form);
-}
-
-FormDataAndroid::SimilarityCheckResult
-FormDataAndroid::SimilarFormAsWithDiagnosis(const FormData& form) const {
-  SimilarityCheckResult result = kFormsAreSimilar;
-
-  // Helper function that sets the `component` bit in `result` if the
-  // `projection` of `form_` and `form` differs.
-  auto check_component = [&](auto projection,
-                             SimilarityCheckComponent component) {
-    if (std::invoke(projection, form_) != std::invoke(projection, form)) {
-      result.value() |= base::to_underlying(component);
-    }
-  };
-  check_component(&FormData::global_id, SimilarityCheckComponent::kGlobalId);
-  check_component(&FormData::name, SimilarityCheckComponent::kName);
-  check_component(&FormData::id_attribute,
-                  SimilarityCheckComponent::kIdAttribute);
-  check_component(&FormData::name_attribute,
-                  SimilarityCheckComponent::kNameAttribute);
-  check_component(&FormData::url, SimilarityCheckComponent::kUrl);
-  check_component(&FormData::action, SimilarityCheckComponent::kAction);
-
-  if (!SimilarFieldsAs(form)) {
-    result.value() |= base::to_underlying(SimilarityCheckComponent::kFields);
-  }
-  return result;
 }
 
 void FormDataAndroid::UpdateFieldTypes(const FormStructure& form_structure) {
