@@ -106,7 +106,7 @@ public class ContextualSearchInstrumentationBase {
                     null,
                     0,
                     null,
-                    0,
+                    true,
                     null,
                     sActivityTestRule.getActivity().getEdgeToEdgeControllerSupplierForTesting());
         }

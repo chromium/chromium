@@ -1043,10 +1043,7 @@ public class ChromeTabbedActivity extends ChromeActivity<ChromeActivityComponent
         try (TraceEvent e = TraceEvent.scoped("ChromeTabbedActivity.initializeCompositorContent")) {
             // TODO(yusufo): get rid of findViewById(R.id.url_bar).
             initializeCompositorContent(
-                    mLayoutManager,
-                    findViewById(R.id.url_bar),
-                    mContentContainer,
-                    mControlContainer);
+                    mLayoutManager, findViewById(R.id.url_bar), mControlContainer);
         }
     }
 
@@ -2213,7 +2210,6 @@ public class ChromeTabbedActivity extends ChromeActivity<ChromeActivityComponent
                 mTabModelProfileSupplier,
                 mBookmarkModelSupplier,
                 mTabBookmarkerSupplier,
-                getContextualSearchManagerSupplier(),
                 getTabModelSelectorSupplier(),
                 mStartSurfaceSupplier,
                 mTabSwitcherSupplier,
@@ -2222,6 +2218,7 @@ public class ChromeTabbedActivity extends ChromeActivity<ChromeActivityComponent
                 mIntentMetadataOneshotSupplier,
                 mLayoutStateProviderSupplier,
                 mStartSurfaceParentTabSupplier,
+                this::getLastUserInteractionTime,
                 getBrowserControlsManager(),
                 getWindowAndroid(),
                 getLifecycleDispatcher(),
@@ -2262,11 +2259,6 @@ public class ChromeTabbedActivity extends ChromeActivity<ChromeActivityComponent
     @Override
     protected int getControlContainerLayoutId() {
         return R.layout.control_container;
-    }
-
-    @Override
-    public int getControlContainerHeightResource() {
-        return R.dimen.control_container_height;
     }
 
     @Override
