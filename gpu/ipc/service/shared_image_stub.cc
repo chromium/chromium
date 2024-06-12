@@ -702,7 +702,7 @@ ContextResult SharedImageStub::Initialize() {
       /*is_for_display_compositor=*/false);
   gpu_channel_shared_image_interface_ =
       base::MakeRefCounted<GpuChannelSharedImageInterface>(
-          weak_factory_.GetWeakPtr(), command_buffer_id_);
+          weak_factory_.GetWeakPtr());
   return ContextResult::kSuccess;
 }
 

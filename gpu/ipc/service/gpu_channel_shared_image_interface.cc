@@ -20,11 +20,19 @@
 
 namespace gpu {
 
+namespace {
+
+// Generates unique IDs for GpuChannelSharedImageInterface.
+base::AtomicSequenceNumber g_next_id;
+
+}  // namespace
+
 GpuChannelSharedImageInterface::GpuChannelSharedImageInterface(
-    base::WeakPtr<SharedImageStub> shared_image_stub,
-    const CommandBufferId command_buffer_id)
+    base::WeakPtr<SharedImageStub> shared_image_stub)
     : shared_image_stub_(shared_image_stub),
-      command_buffer_id_(command_buffer_id),
+      command_buffer_id_(CommandBufferIdFromChannelAndRoute(
+          shared_image_stub->channel()->client_id(),
+          g_next_id.GetNext() + 1)),
       scheduler_(shared_image_stub->channel()->scheduler()),
       sequence_(scheduler_->CreateSequence(
           SchedulingPriority::kLow,
