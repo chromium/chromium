@@ -6,3 +6,10 @@ ffmpeg -re -i INPUT -b:v:0 1000k -b:v:1 256k -b:a:0 64k -b:a:1 32k -map 0:v -map
 
 ## Multivariant bitrate selection:
 ffmpeg -re -i INPUT -b:v:0 1000k -b:v:1 256k -b:a:0 64k -b:a:1 32k -map 0:v -map 0:a -map 0:v -map 0:a -f hls -var_stream_map "v:0,a:0 v:1,a:1" -master_pl_name playlist.m3u8 ./out_%v.m3u8
+
+
+# Generating HLS Support Matrix tests:
+Using `./generate_hls.py help`, it is possible to generate a multitude of HLS
+manifests for testing player implementations. This content can be hosted at
+https://storage.googleapis.com/videostack/testdata/hls/hls_support_matrix.html
+where it can be used to test each generated manifest.

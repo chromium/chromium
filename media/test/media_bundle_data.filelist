@@ -356,12 +356,12 @@ data/four-colors.mp4
 data/four-colors.png
 data/four-colors.y4m
 data/frame_size_change-av_enc-v.webm
-data/gbrp.html
-data/gbrp.png
 data/gbrp-av1.mp4
 data/gbrp-h264.mp4
 data/gbrp-h265.mp4
 data/gbrp-vp9.mp4
+data/gbrp.html
+data/gbrp.png
 data/glass-blowing2-dolby-vision-profile-5-frag.mp4
 data/glass-blowing2-dolby-vision-profile-8-1-frag.mp4
 data/green-a300hz.webm
@@ -372,6 +372,8 @@ data/h264-320x180-frame-3
 data/hls/README
 data/hls/bear0.mp4
 data/hls/bear0.ts
+data/hls/generate_hls.py
+data/hls/hls_support_matrix.html
 data/hls/init_0.mp4
 data/hls/mp_mp4_avc1.m3u8
 data/hls/mp_ts_avc1.m3u8

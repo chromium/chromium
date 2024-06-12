@@ -1,0 +1,107 @@
+<html>
+<head>
+  <style>
+    #player {
+      width:320px;
+      height:180px;
+      position:fixed;
+      top:0;
+      left:0;
+      overflow: hidden;
+    }
+    #support_list {
+      width:320px;
+      position:fixed;
+      top:180px;
+      left:0;
+      font-size:10px;
+      overflow:hidden;
+      white-space:nowrap;
+    }
+    ul {margin:0; padding:0;}
+    .green { background-color: green; }
+    .red { background-color: red; }
+  </style>
+</head>
+<body>
+  <div id="player"></div>
+  <ul id="support_list"></ul>
+  <template id="entry">
+    <li class="entry"></li>
+  </template>
+</body>
+<script>
+  const ok_event = "canplaythrough";
+
+  function attach_listener(element, event, fn) {
+    if (element.listeners === undefined) {
+      element.listeners = {};
+    }
+    element.listeners[event] = fn;
+    element.addEventListener(event, fn);
+  }
+
+  function detach_listener(element, event) {
+    if (element.listeners === undefined) return;
+    if (!(event in element.listeners)) return;
+    element.removeEventListener(event, element.listeners[event]);
+  }
+
+  function create_video_element(name, src, element, done) {
+    const video = document.createElement(element);
+    attach_listener(video, "error", add_entry.bind(null, video, name, "red", done));
+    var on_seek = add_entry.bind(null, video, name, "green", done);
+    if (navigator.userAgent.match(/Android/i)) {
+      on_seek = attach_listener.bind(null, video, "durationchange", on_seek);
+    }
+    attach_listener(video, "seeked", on_seek);
+    video.src = src;
+    video.currentTime = 0.1;
+    return video;
+  }
+
+  function add_entry(video, name, color, done, error) {
+    detach_listener(video, "error");
+    detach_listener(video, "seeked");
+    detach_listener(video, "durationchange");
+    const template = document.getElementById("entry");
+    const clone = template.cloneNode(true);
+    const entry = clone.content.querySelector("li");
+    entry.textContent = name;
+    entry.classList.add(color);
+    document.getElementById("support_list").appendChild(entry);
+    setTimeout(done, 10);
+  }
+
+  function load_video(name, src, element, done) {
+    const container = document.getElementById("player");
+    container.innerHTML = '';
+    container.appendChild(create_video_element(name, src, element, done));
+  }
+
+  function load_sequential_video(content, done) {
+    if (content.length === 0) return done();
+    const [name, src, element] = content.pop();
+    load_video(name, name+"/"+src, element, load_sequential_video.bind(null, content, done));
+  }
+
+  load_sequential_video([
+    ["vod_fmp4_0AAC", "playlist.m3u8", "video"],
+    ["vod_fmp4_0AC3", "playlist.m3u8", "video"],
+    ["vod_fmp4_0AV1", "playlist.m3u8", "video"],
+    ["vod_fmp4_0FLAC", "playlist.m3u8", "video"],
+    ["vod_fmp4_0H264", "playlist.m3u8", "video"],
+    ["vod_fmp4_0H265", "playlist.m3u8", "video"],
+    ["vod_fmp4_0VP9", "playlist.m3u8", "video"],
+    ["vod_mpegts_0AAC", "playlist.m3u8", "video"],
+    ["vod_mpegts_0AC3", "playlist.m3u8", "video"],
+    ["vod_mpegts_0FLAC", "playlist.m3u8", "video"],
+    ["vod_mpegts_0H264", "playlist.m3u8", "video"],
+    ["vod_mpegts_0H265", "playlist.m3u8", "video"],
+    ["vod_aac_0AAC", "chunklist.m3u8", "audio"],
+    ["enc_vod_mpegts_0H264+AAC", "playlist.m3u8", "video"],
+  ], () => {
+    console.log('DONE!');
+  });
+</script>
+</html>
