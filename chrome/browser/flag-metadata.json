@@ -8337,7 +8337,7 @@
   {
     "name": "tab-inactivity-threshold",
     "owners": [ "alionadangla@chromium.org", "lpromero@chromium.org", "bling-flags@google.com" ],
-    "expiry_milestone": 125
+    "expiry_milestone": 135
   },
   {
     "name": "tab-pickup-minimum-delay",
