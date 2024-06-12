@@ -316,7 +316,7 @@ const ui::AXNodeData& ViewAXPlatformNodeDelegate::GetData() const {
   // Clear the data, then populate it.
   data_ = ui::AXNodeData();
 
-  if (!view()->GetWidget()) {
+  if (!ignore_missing_widget_for_testing_ && !view()->GetWidget()) {
     // This is to be consistent with what Views expect and what is being done in
     // ViewAccessibility::GetAccessibleNodeData if the widget is null.
     data_.role = ax::mojom::Role::kUnknown;

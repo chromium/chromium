@@ -410,6 +410,8 @@ class VIEWS_EXPORT ViewAccessibility : public WidgetObserver {
   // Used for testing. Called every time an accessibility event is fired.
   AccessibilityEventsCallback accessibility_events_callback_;
 
+  bool ignore_missing_widget_for_testing_ = false;
+
  private:
   FRIEND_TEST_ALL_PREFIXES(ViewTest, PauseAccessibilityEvents);
   FRIEND_TEST_ALL_PREFIXES(ViewTest,
@@ -496,8 +498,6 @@ class VIEWS_EXPORT ViewAccessibility : public WidgetObserver {
   // Prevents accessibility events from being fired during initialization of
   // the owning View.
   bool pause_accessibility_events_ = false;
-
-  bool ignore_missing_widget_for_testing_ = false;
 
   bool is_widget_closed_ = false;
 
