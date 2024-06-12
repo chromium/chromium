@@ -559,6 +559,6 @@ public class ChipView extends LinearLayout {
         // At this time the Omnibox continues to retain focus, but Chip should be highlighted, as
         // pressing <Enter> on the keyboard will activate the Chip.
         // Make sure the highlight is properly reflected.
-        return super.isFocused() || (isSelected() && !isInTouchMode());
+        return super.isFocused() || isSelected();
     }
 }

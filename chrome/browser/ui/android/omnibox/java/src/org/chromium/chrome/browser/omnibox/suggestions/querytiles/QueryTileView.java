@@ -44,7 +44,7 @@ public class QueryTileView extends FrameLayout {
      */
     @Override
     public boolean isFocused() {
-        return super.isFocused() || (isSelected() && !isInTouchMode());
+        return super.isFocused() || isSelected();
     }
 
     /* package */ void setImage(Drawable d) {

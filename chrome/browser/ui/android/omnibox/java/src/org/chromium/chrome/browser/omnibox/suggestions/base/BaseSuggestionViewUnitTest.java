@@ -170,12 +170,9 @@ public class BaseSuggestionViewUnitTest {
         doReturn(false).when(mView).super_isFocused();
 
         mView.setSelected(true);
-        // In touch mode we do not assume focus.
-        doReturn(true).when(mView).isInTouchMode();
-        assertFalse(mView.isFocused());
-
-        // Otherwise, we assume selection comes keyboard navigation.
-        doReturn(false).when(mView).isInTouchMode();
         assertTrue(mView.isFocused());
+
+        mView.setSelected(false);
+        assertFalse(mView.isFocused());
     }
 }

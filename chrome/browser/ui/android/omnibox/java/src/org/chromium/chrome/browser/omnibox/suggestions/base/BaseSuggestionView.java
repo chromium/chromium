@@ -169,7 +169,7 @@ public class BaseSuggestionView<T extends View> extends SuggestionLayout {
 
     @Override
     public boolean isFocused() {
-        return super_isFocused() || (isSelected() && !isInTouchMode());
+        return super_isFocused() || isSelected();
     }
 
     @CheckDiscard("inlined")
