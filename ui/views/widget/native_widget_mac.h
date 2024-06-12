@@ -10,10 +10,12 @@
 
 #include "base/callback_list.h"
 #include "base/memory/raw_ptr.h"
+#include "base/scoped_observation.h"
 #include "ui/base/ime/ime_key_event_dispatcher.h"
 #include "ui/base/window_open_disposition.h"
 #include "ui/gfx/native_widget_types.h"
 #include "ui/views/widget/native_widget_private.h"
+#include "ui/views/widget/widget_observer.h"
 
 #if defined(__OBJC__)
 @class NativeWidgetMacNSWindow;
@@ -39,10 +41,12 @@ class NativeWidgetMacTest;
 }  // namespace test
 
 class NativeWidgetMacNSWindowHost;
+class Widget;
 
 class VIEWS_EXPORT NativeWidgetMac : public internal::NativeWidgetPrivate,
                                      public FocusChangeListener,
-                                     public ui::ImeKeyEventDispatcher {
+                                     public ui::ImeKeyEventDispatcher,
+                                     public WidgetObserver {
  public:
   explicit NativeWidgetMac(internal::NativeWidgetDelegate* delegate);
   NativeWidgetMac(const NativeWidgetMac&) = delete;
@@ -269,6 +273,9 @@ class VIEWS_EXPORT NativeWidgetMac : public internal::NativeWidgetPrivate,
   // ui::ImeKeyEventDispatcher:
   ui::EventDispatchDetails DispatchKeyEventPostIME(ui::KeyEvent* key) override;
 
+  // WidgetObserver:
+  void OnWidgetDestroyed(Widget* widget) override;
+
  private:
   friend class test::MockNativeWidgetMac;
   friend class views::test::NativeWidgetMacTest;
@@ -294,6 +301,7 @@ class VIEWS_EXPORT NativeWidgetMac : public internal::NativeWidgetPrivate,
   std::unique_ptr<ZoomFocusMonitor> zoom_focus_monitor_;
   // Held while this widget is active if it's a child.
   std::unique_ptr<Widget::PaintAsActiveLock> parent_key_lock_;
+  base::ScopedObservation<Widget, WidgetObserver> widget_observation_{this};
   // The following factory is used to provide references to the NativeWidgetMac
   // instance.
   base::WeakPtrFactory<NativeWidgetMac> weak_factory{this};

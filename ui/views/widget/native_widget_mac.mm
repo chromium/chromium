@@ -1007,6 +1007,11 @@ void NativeWidgetMac::SetFocusManager(FocusManager* new_focus_manager) {
     focus_manager_->AddFocusChangeListener(this);
     if (zoom_focus_monitor_)
       focus_manager_->AddFocusChangeListener(zoom_focus_monitor_.get());
+
+    if (!widget_observation_.IsObserving()) {
+      CHECK(GetWidget());
+      widget_observation_.Observe(GetWidget());
+    }
   }
 }
 
@@ -1039,6 +1044,15 @@ ui::EventDispatchDetails NativeWidgetMac::DispatchKeyEventPostIME(
   else
     GetWidget()->OnKeyEvent(key);
   return ui::EventDispatchDetails();
+}
+
+void NativeWidgetMac::OnWidgetDestroyed(Widget* widget) {
+  widget_observation_.Reset();
+  // The `widget` owns the `FocusManager`. As such, `NativeWidgetMac` must
+  // unregister itself as a focus change listener here if it hasn't done so
+  // already, or it may retain a dead focus manager pointer (risking
+  // use-after-free).
+  SetFocusManager(nullptr);
 }
 
 ////////////////////////////////////////////////////////////////////////////////
