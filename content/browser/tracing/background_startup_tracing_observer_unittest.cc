@@ -5,8 +5,8 @@
 #include "content/browser/tracing/background_startup_tracing_observer.h"
 
 #include "build/build_config.h"
-#include "components/tracing/common/trace_startup_config.h"
 #include "content/browser/tracing/background_tracing_rule.h"
+#include "services/tracing/public/cpp/trace_startup_config.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace content {

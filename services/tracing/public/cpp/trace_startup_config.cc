@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "components/tracing/common/trace_startup_config.h"
+#include "services/tracing/public/cpp/trace_startup_config.h"
 
 #include <stddef.h>
 
@@ -69,8 +69,8 @@ TraceStartupConfig& TraceStartupConfig::GetInstance() {
 // static
 base::trace_event::TraceConfig
 TraceStartupConfig::GetDefaultBrowserStartupConfig() {
-  return base::trace_event::TraceConfig(
-      kDefaultStartupCategories, base::trace_event::RECORD_UNTIL_FULL);
+  return base::trace_event::TraceConfig(kDefaultStartupCategories,
+                                        base::trace_event::RECORD_UNTIL_FULL);
 }
 
 TraceStartupConfig::TraceStartupConfig() {
@@ -161,7 +161,8 @@ bool TraceStartupConfig::EnableFromCommandLine() {
     std::string startup_duration_str =
         command_line->GetSwitchValueASCII(switches::kTraceStartupDuration);
     if (!startup_duration_str.empty() &&
-        !base::StringToInt(startup_duration_str, &startup_duration_in_seconds_)) {
+        !base::StringToInt(startup_duration_str,
+                           &startup_duration_in_seconds_)) {
       DLOG(WARNING) << "Could not parse --" << switches::kTraceStartupDuration
                     << "=" << startup_duration_str << " defaulting to 5 (secs)";
       startup_duration_in_seconds_ = kDefaultStartupDurationInSeconds;
@@ -188,8 +189,9 @@ bool TraceStartupConfig::EnableFromCommandLine() {
   // This check is intentionally performed after setting duration and output
   // format to ensure that setting them from the command-line takes effect for
   // config file-based tracing as well.
-  if (!tracing_enabled_from_command_line)
+  if (!tracing_enabled_from_command_line) {
     return false;
+  }
 
   std::string categories;
   if (command_line->HasSwitch(switches::kTraceStartup)) {
@@ -224,8 +226,9 @@ bool TraceStartupConfig::EnableFromConfigFile() {
   base::FilePath trace_config_file(kAndroidTraceConfigFile);
 #else
   auto* command_line = base::CommandLine::ForCurrentProcess();
-  if (!command_line->HasSwitch(switches::kTraceConfigFile))
+  if (!command_line->HasSwitch(switches::kTraceConfigFile)) {
     return false;
+  }
   base::FilePath trace_config_file =
       command_line->GetSwitchValuePath(switches::kTraceConfigFile);
 #endif
@@ -249,8 +252,9 @@ bool TraceStartupConfig::EnableFromConfigFile() {
     return false;
   }
   is_enabled_ = ParseTraceConfigFileContent(trace_config_file_content);
-  if (!is_enabled_)
+  if (!is_enabled_) {
     DLOG(WARNING) << "Cannot parse the trace config file correctly.";
+  }
   return is_enabled_;
 }
 
@@ -263,8 +267,9 @@ bool TraceStartupConfig::EnableFromBackgroundTracing() {
   // TODO(ssid): Implement saving setting to preference for next startup.
 #endif
   // Do not set the flag to false if it's not enabled unnecessarily.
-  if (!enabled)
+  if (!enabled) {
     return false;
+  }
 
   SetBackgroundStartupTracingEnabled(false);
   trace_config_ = GetDefaultBrowserStartupConfig();
@@ -281,22 +286,25 @@ bool TraceStartupConfig::EnableFromBackgroundTracing() {
 bool TraceStartupConfig::ParseTraceConfigFileContent(
     const std::string& content) {
   std::optional<base::Value> value(base::JSONReader::Read(content));
-  if (!value || !value->is_dict())
+  if (!value || !value->is_dict()) {
     return false;
+  }
 
   auto& dict = value->GetDict();
 
   auto* trace_config_dict = dict.FindDict(kTraceConfigParam);
-  if (!trace_config_dict)
+  if (!trace_config_dict) {
     return false;
+  }
 
   trace_config_ = base::trace_event::TraceConfig(std::move(*trace_config_dict));
 
   startup_duration_in_seconds_ =
       dict.FindInt(kStartupDurationParam).value_or(0);
 
-  if (startup_duration_in_seconds_ < 0)
+  if (startup_duration_in_seconds_ < 0) {
     startup_duration_in_seconds_ = 0;
+  }
 
   if (auto* result_file = dict.FindString(kResultFileParam)) {
     result_file_ = base::FilePath::FromUTF8Unsafe(*result_file);

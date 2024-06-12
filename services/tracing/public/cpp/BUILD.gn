@@ -102,6 +102,8 @@ target(tracing_lib_type, "cpp") {
       "trace_event_args_allowlist.h",
       "trace_startup.cc",
       "trace_startup.h",
+      "trace_startup_config.cc",
+      "trace_startup_config.h",
       "traced_process_impl.cc",
       "traced_process_impl.h",
       "tracing_features.cc",

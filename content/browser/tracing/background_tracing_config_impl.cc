@@ -13,9 +13,9 @@
 #include "base/system/sys_info.h"
 #include "base/values.h"
 #include "build/build_config.h"
-#include "components/tracing/common/trace_startup_config.h"
 #include "content/browser/tracing/background_tracing_rule.h"
 #include "net/base/network_change_notifier.h"
+#include "services/tracing/public/cpp/trace_startup_config.h"
 
 using base::trace_event::TraceConfig;
 

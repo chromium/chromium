@@ -7,10 +7,10 @@
 #include "base/functional/bind.h"
 #include "base/no_destructor.h"
 #include "base/trace_event/named_trigger.h"
-#include "components/tracing/common/trace_startup_config.h"
 #include "content/browser/tracing/background_tracing_rule.h"
 #include "content/public/browser/browser_task_traits.h"
 #include "content/public/browser/browser_thread.h"
+#include "services/tracing/public/cpp/trace_startup_config.h"
 
 namespace content {
 namespace {

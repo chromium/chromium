@@ -33,7 +33,6 @@
 #include "components/prefs/pref_service.h"
 #include "components/tracing/common/background_tracing_state_manager.h"
 #include "components/tracing/common/pref_names.h"
-#include "components/tracing/common/trace_startup_config.h"
 #include "components/variations/variations_params_manager.h"
 #include "content/public/browser/background_tracing_config.h"
 #include "content/public/browser/background_tracing_manager.h"
@@ -43,6 +42,7 @@
 #include "content/public/test/background_tracing_test_support.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/test_utils.h"
+#include "services/tracing/public/cpp/trace_startup_config.h"
 #include "services/tracing/public/cpp/tracing_features.h"
 
 namespace {

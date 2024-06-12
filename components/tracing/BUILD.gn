@@ -25,8 +25,6 @@ component("startup_tracing") {
     "common/background_tracing_state_manager.h",
     "common/pref_names.cc",
     "common/pref_names.h",
-    "common/trace_startup_config.cc",
-    "common/trace_startup_config.h",
     "common/trace_to_console.cc",
     "common/trace_to_console.h",
     "common/tracing_switches.cc",
@@ -92,24 +90,18 @@ source_set("unit_tests") {
     "//testing/gtest",
   ]
 
+  sources = [
+    "common/background_tracing_state_manager_unittest.cc",
+    "common/background_tracing_utils_unittest.cc",
+  ]
   if (is_android) {
-    sources = [ "common/graphics_memory_dump_provider_android_unittest.cc" ]
+    sources += [ "common/graphics_memory_dump_provider_android_unittest.cc" ]
     deps += [ ":graphics_provider" ]
-  }
-
-  if (!is_android) {
-    sources = [ "common/trace_startup_config_unittest.cc" ]
-    deps += [ ":startup_tracing" ]
   }
 
   if (is_win) {
     sources += [ "common/etw_system_data_source_win_unittest.cc" ]
   }
-
-  sources += [
-    "common/background_tracing_state_manager_unittest.cc",
-    "common/background_tracing_utils_unittest.cc",
-  ]
   deps += [
     ":background_tracing_utils",
     ":startup_tracing",

@@ -129,7 +129,10 @@ source_set("tests") {
   }
 
   if (!is_android) {
-    sources += [ "tracing_service_unittest.cc" ]
+    sources += [
+      "public/cpp/trace_startup_config_unittest.cc",
+      "tracing_service_unittest.cc",
+    ]
   }
 
   if (is_fuchsia) {

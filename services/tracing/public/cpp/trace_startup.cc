@@ -9,7 +9,7 @@
 #include "base/task/thread_pool/thread_pool_instance.h"
 #include "base/trace_event/trace_log.h"
 #include "build/build_config.h"
-#include "components/tracing/common/trace_startup_config.h"
+#include "components/tracing/common/etw_export_win.h"
 #include "components/tracing/common/trace_to_console.h"
 #include "components/tracing/common/tracing_switches.h"
 #include "services/tracing/public/cpp/perfetto/perfetto_config.h"
@@ -19,10 +19,9 @@
 #include "services/tracing/public/cpp/perfetto/traced_value_proto_writer.h"
 #include "services/tracing/public/cpp/trace_event_agent.h"
 #include "services/tracing/public/cpp/trace_event_args_allowlist.h"
+#include "services/tracing/public/cpp/trace_startup_config.h"
 #include "services/tracing/public/cpp/tracing_features.h"
 #include "third_party/perfetto/include/perfetto/tracing/track.h"
-
-#include "components/tracing/common/etw_export_win.h"
 
 namespace tracing {
 namespace {

@@ -30,7 +30,6 @@
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
 #include "components/metrics/histogram_controller.h"
-#include "components/tracing/common/trace_startup_config.h"
 #include "components/tracing/common/tracing_switches.h"
 #include "content/browser/browser_main_loop.h"
 #include "content/browser/child_process_host_impl.h"
@@ -52,6 +51,7 @@
 #include "mojo/public/cpp/bindings/scoped_message_error_crash_key.h"
 #include "mojo/public/cpp/system/platform_handle.h"
 #include "services/tracing/public/cpp/trace_startup.h"
+#include "services/tracing/public/cpp/trace_startup_config.h"
 
 #if BUILDFLAG(IS_APPLE)
 #include "content/browser/child_process_task_port_provider_mac.h"
