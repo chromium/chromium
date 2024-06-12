@@ -449,6 +449,11 @@ class TabStripModel : public TabGroupController {
       ui::PageTransition transition,
       int add_types,
       std::optional<tab_groups::TabGroupId> group = std::nullopt);
+  void AddTab(std::unique_ptr<tabs::TabModel> tab,
+              int index,
+              ui::PageTransition transition,
+              int add_types,
+              std::optional<tab_groups::TabGroupId> group = std::nullopt);
 
   // Closes the selected tabs.
   void CloseSelectedTabs();

@@ -932,6 +932,16 @@ void TabStripModel::AddWebContents(
     ui::PageTransition transition,
     int add_types,
     std::optional<tab_groups::TabGroupId> group) {
+  auto tab = std::make_unique<tabs::TabModel>(std::move(contents),
+                                              /*owning_model=*/this);
+  AddTab(std::move(tab), index, transition, add_types, group);
+}
+
+void TabStripModel::AddTab(std::unique_ptr<tabs::TabModel> tab,
+                           int index,
+                           ui::PageTransition transition,
+                           int add_types,
+                           std::optional<tab_groups::TabGroupId> group) {
   for (auto& observer : observers_)
     observer.OnTabWillBeAdded();
 
@@ -999,9 +1009,8 @@ void TabStripModel::AddWebContents(
     // is re-activated, not the next-adjacent.
     inherit_opener = true;
   }
-  WebContents* raw_contents = contents.get();
-  InsertTabAtImpl(index,
-                  std::make_unique<tabs::TabModel>(std::move(contents), this),
+  WebContents* raw_contents = tab->contents();
+  InsertTabAtImpl(index, std::move(tab),
                   add_types | (inherit_opener ? ADD_INHERIT_OPENER : 0), group);
   // Reset the index, just in case insert ended up moving it on us.
   index = GetIndexOfWebContents(raw_contents);

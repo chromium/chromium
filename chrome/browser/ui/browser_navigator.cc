@@ -830,11 +830,6 @@ base::WeakPtr<content::NavigationHandle> Navigate(NavigateParams* params) {
     shower.set_source_contents(params->source_contents);
   }
 
-  // Makes sure any WebContents created by this function is destroyed if
-  // not properly added to a tab strip.
-  std::unique_ptr<WebContents> contents_to_insert =
-      std::move(params->contents_to_insert);
-
   // Some dispositions need coercion to base types.
   NormalizeDisposition(params);
 
@@ -860,14 +855,23 @@ base::WeakPtr<content::NavigationHandle> Navigate(NavigateParams* params) {
 
   base::WeakPtr<content::NavigationHandle> navigation_handle;
 
+  std::unique_ptr<tabs::TabModel> tab_to_insert;
+  if (params->contents_to_insert) {
+    tab_to_insert =
+        std::make_unique<tabs::TabModel>(std::move(params->contents_to_insert),
+                                         params->browser->tab_strip_model());
+  }
+
   // If no target WebContents was specified (and we didn't seek and find a
   // singleton), we need to construct one if we are supposed to target a new
   // tab.
   if (!contents_to_navigate_or_insert) {
     DCHECK(!params->url.is_empty());
     if (params->disposition != WindowOpenDisposition::CURRENT_TAB) {
-      contents_to_insert = CreateTargetContents(*params, params->url);
-      contents_to_navigate_or_insert = contents_to_insert.get();
+      tab_to_insert = std::make_unique<tabs::TabModel>(
+          CreateTargetContents(*params, params->url),
+          params->browser->tab_strip_model());
+      contents_to_navigate_or_insert = tab_to_insert->contents();
     } else {
       // ... otherwise if we're loading in the current tab, the target is the
       // same as the source.
@@ -900,11 +904,11 @@ base::WeakPtr<content::NavigationHandle> Navigate(NavigateParams* params) {
     params->source_contents->Focus();
   }
 
-  if (contents_to_insert) {
+  if (tab_to_insert) {
     // Save data needed for link capturing into apps that cannot otherwise be
     // inferred later in the navigation. These are only needed when the
     // navigation happens in a different tab to the link click.
-    apps::SetLinkCapturingSourceDisposition(contents_to_insert.get(),
+    apps::SetLinkCapturingSourceDisposition(tab_to_insert->contents(),
                                             params->disposition);
   }
 
@@ -931,11 +935,11 @@ base::WeakPtr<content::NavigationHandle> Navigate(NavigateParams* params) {
       params->browser->window()->LinkOpeningFromGesture(params->disposition);
     }
 
-    DCHECK(contents_to_insert);
+    DCHECK(tab_to_insert);
     // The navigation should insert a new tab into the target Browser.
-    params->browser->tab_strip_model()->AddWebContents(
-        std::move(contents_to_insert), params->tabstrip_index,
-        params->transition, params->tabstrip_add_types, params->group);
+    params->browser->tab_strip_model()->AddTab(
+        std::move(tab_to_insert), params->tabstrip_index, params->transition,
+        params->tabstrip_add_types, params->group);
   }
 
   if (singleton_index >= 0) {
