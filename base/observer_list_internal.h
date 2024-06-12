@@ -24,7 +24,8 @@ namespace base {
 namespace internal {
 
 // Adapter for putting raw pointers into an ObserverList<Foo>::Unchecked.
-template <base::RawPtrTraits ptr_traits = RawPtrTraits::kEmpty>
+template <base::RawPtrTraits ptr_traits = RawPtrTraits::kEmpty,
+          bool use_raw_pointer = false>
 class BASE_EXPORT UncheckedObserverAdapter {
  public:
   explicit UncheckedObserverAdapter(const void* observer)
@@ -55,7 +56,9 @@ class BASE_EXPORT UncheckedObserverAdapter {
 #endif  // DCHECK_IS_ON()
 
  private:
-  raw_ptr<void, ptr_traits> ptr_;
+  using StorageType =
+      std::conditional_t<use_raw_pointer, void*, raw_ptr<void, ptr_traits>>;
+  StorageType ptr_;
 #if DCHECK_IS_ON()
   base::debug::StackTrace stack_;
 #endif  // DCHECK_IS_ON()

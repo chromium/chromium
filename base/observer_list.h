@@ -127,6 +127,16 @@ class ObserverList {
                    allow_reentrancy,
                    internal::UncheckedObserverAdapter<DanglingUntriaged>>;
 
+  // Allow declaring an ObserverList<...>::UncheckedAndRawPtrExcluded that
+  // holds raw pointers without raw_ptr<>. This is used to avoid performance
+  // regressions caused by ObserverList<T>::Unchecked's raw_ptr<> operations.
+  // Use of this alias is managed by chrome-memory-safety@google.com.
+  using UncheckedAndRawPtrExcluded = ObserverList<
+      ObserverType,
+      check_empty,
+      allow_reentrancy,
+      internal::UncheckedObserverAdapter<RawPtrTraits::kEmpty, true>>;
+
   // An iterator class that can be used to access the list of observers.
   class Iter {
    public:
