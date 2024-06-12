@@ -2161,7 +2161,8 @@ function DOM_getAllBoundingClientRects() {
         return [left, top, right, bottom];
       });
 
-      const clipBounds = shiftRect(elem.clipBounds, elem.offset);
+      const clipBounds =
+        shiftRect(elem.clipBounds, elem.offset, transformMatrix);
       // ignore elements that are completely outside their clipBounds
       if (
         clipBounds.left > right ||
