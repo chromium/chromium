@@ -1750,6 +1750,9 @@ const flags_ui::FeatureEntry kFeatureEntries[] = {
      FEATURE_WITH_PARAMS_VALUE_TYPE(kLensTranslateToggleModeEnabled,
                                     kLensTranslateToggleModeVariations,
                                     "LensTranslateToggleMode")},
+    {"ios-choose-from-drive", flag_descriptions::kIOSChooseFromDriveName,
+     flag_descriptions::kIOSChooseFromDriveDescription, flags_ui::kOsIos,
+     FEATURE_VALUE_TYPE(kIOSChooseFromDrive)},
 };
 
 bool SkipConditionalFeatureEntry(const flags_ui::FeatureEntry& entry) {

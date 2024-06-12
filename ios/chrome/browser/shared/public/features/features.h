@@ -312,6 +312,9 @@ BASE_DECLARE_FEATURE(kTabGridAlwaysBounce);
 // Whether the Safety Check module should be shown in the Magic Stack.
 bool IsSafetyCheckMagicStackEnabled();
 
+// Feature flag enabling Choose from Drive.
+BASE_DECLARE_FEATURE(kIOSChooseFromDrive);
+
 // Feature flag enabling Save to Drive.
 BASE_DECLARE_FEATURE(kIOSSaveToDrive);
 

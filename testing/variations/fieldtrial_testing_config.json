@@ -10944,6 +10944,21 @@
             ]
         }
     ],
+    "IOSChooseFromDrive": [
+        {
+            "platforms": [
+                "ios"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "enable_features": [
+                        "IOSChooseFromDrive"
+                    ]
+                }
+            ]
+        }
+    ],
     "IOSContentNotification": [
         {
             "platforms": [

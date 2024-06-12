@@ -534,6 +534,10 @@ extern const char kIOSPasswordSignInUffDescription[];
 extern const char kIOSQuickDeleteName[];
 extern const char kIOSQuickDeleteDescription[];
 
+// Title and description for the flag to enable the Choose from Drive feature.
+extern const char kIOSChooseFromDriveName[];
+extern const char kIOSChooseFromDriveDescription[];
+
 // Title and description for the flag to enable the Save to Drive feature.
 extern const char kIOSSaveToDriveName[];
 extern const char kIOSSaveToDriveDescription[];

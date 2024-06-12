@@ -313,6 +313,10 @@ bool IsSafetyCheckMagicStackEnabled() {
   return base::FeatureList::IsEnabled(kSafetyCheckMagicStack);
 }
 
+BASE_FEATURE(kIOSChooseFromDrive,
+             "IOSChooseFromDrive",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 BASE_FEATURE(kIOSSaveToDrive,
              "IOSSaveToDrive",
              base::FEATURE_DISABLED_BY_DEFAULT);
