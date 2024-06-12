@@ -100,6 +100,14 @@ void MockMediaSessionPlayerObserver::OnRequestMediaRemoting(int player_id) {
   EXPECT_GT(players_.size(), static_cast<size_t>(player_id));
 }
 
+void MockMediaSessionPlayerObserver::OnRequestVisibility(
+    int player_id,
+    RequestVisibilityCallback request_visibility_callback) {
+  EXPECT_GE(player_id, 0);
+  EXPECT_GT(players_.size(), static_cast<size_t>(player_id));
+  ++received_request_visibility_calls_;
+}
+
 std::optional<media_session::MediaPosition>
 MockMediaSessionPlayerObserver::GetPosition(int player_id) const {
   EXPECT_GE(player_id, 0);
@@ -202,6 +210,10 @@ int MockMediaSessionPlayerObserver::received_exit_picture_in_picture_calls()
 
 int MockMediaSessionPlayerObserver::received_set_audio_sink_id_calls() const {
   return received_set_audio_sink_id_calls_;
+}
+
+int MockMediaSessionPlayerObserver::received_request_visibility_calls() const {
+  return received_request_visibility_calls_;
 }
 
 bool MockMediaSessionPlayerObserver::HasAudio(int player_id) const {

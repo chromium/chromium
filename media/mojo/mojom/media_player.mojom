@@ -55,6 +55,11 @@ interface MediaPlayer {
   // Request the media player to start Media Remoting when there are available
   // sinks.
   RequestMediaRemoting();
+
+  // Request the media player to check if it has a video that meets the
+  // visibility threshold defined by |HTMLVideoElement| (kVisibilityThreshold).
+  // The answer is computed by the |MediaVideoVisibilityTracker|.
+  RequestVisibility() => (bool has_sufficiently_visible_video);
 };
 
 // Implemented by the MediaWebContentsObserver. The remote lives in the renderer

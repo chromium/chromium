@@ -68,6 +68,9 @@ class CONTENT_EXPORT MediaSessionController
                         const std::string& raw_device_id) override;
   void OnSetMute(int player_id, bool mute) override;
   void OnRequestMediaRemoting(int player_id) override;
+  void OnRequestVisibility(
+      int player_id,
+      RequestVisibilityCallback request_visibility_callback) override;
   RenderFrameHost* render_frame_host() const override;
   std::optional<media_session::MediaPosition> GetPosition(
       int player_id) const override;

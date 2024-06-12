@@ -160,6 +160,21 @@ class TestMediaPlayer : public media::mojom::MediaPlayer {
 
   void RequestMediaRemoting() override {}
 
+  void RequestVisibility(
+      RequestVisibilityCallback request_visibility_callback) override {
+    std::move(request_visibility_callback).Run(expected_visibility_);
+    if (run_loop_) {
+      run_loop_->Quit();
+    }
+  }
+
+  // Helper method to set expected video visibility, which is later used as an
+  // argument for the `RequestVisibility` method callback
+  // (`RequestVisibilityCallback`).
+  void SetExpectedVisibility(bool expected_visibility) {
+    expected_visibility_ = expected_visibility;
+  }
+
   // Getters used from MediaSessionControllerTest.
   bool received_play() const { return received_play_; }
 
@@ -197,6 +212,49 @@ class TestMediaPlayer : public media::mojom::MediaPlayer {
   base::TimeDelta received_seek_backward_time_;
   base::TimeDelta received_seek_to_time_;
   std::string received_set_audio_sink_id_;
+  bool expected_visibility_ = false;
+};
+
+// Helper class to mock `RequestVisibility` callbacks.
+class RequestVisibilityWaiter {
+ public:
+  RequestVisibilityWaiter() = default;
+
+  RequestVisibilityWaiter(const RequestVisibilityWaiter&) = delete;
+  RequestVisibilityWaiter(RequestVisibilityWaiter&&) = delete;
+  RequestVisibilityWaiter& operator=(const RequestVisibilityWaiter&) = delete;
+
+  TestMediaPlayer::RequestVisibilityCallback VisibilityCallback() {
+    meets_visibility_ = std::nullopt;
+    // base::Unretained() is safe since no further tasks can run after
+    // RunLoop::Run() returns.
+    return base::BindOnce(&RequestVisibilityWaiter::RequestVisibility,
+                          base::Unretained(this));
+  }
+
+  void WaitUntilDone() {
+    if (meets_visibility_) {
+      return;
+    }
+    run_loop_ = std::make_unique<base::RunLoop>();
+    run_loop_->Run();
+  }
+
+  bool MeetsVisibility() {
+    DCHECK(meets_visibility_);
+    return meets_visibility_.value();
+  }
+
+ private:
+  void RequestVisibility(bool meets_visibility) {
+    meets_visibility_ = meets_visibility;
+    if (run_loop_) {
+      run_loop_->Quit();
+    }
+  }
+
+  std::unique_ptr<base::RunLoop> run_loop_;
+  std::optional<bool> meets_visibility_;
 };
 
 class MediaSessionControllerTest : public RenderViewHostImplTestHarness {
@@ -277,6 +335,13 @@ class MediaSessionControllerTest : public RenderViewHostImplTestHarness {
     media_player_->WaitUntilVolumeChanged();
   }
 
+  void RequestVisibility(
+      TestMediaPlayer::RequestVisibilityCallback request_visibility_callback) {
+    controller_->OnRequestVisibility(controller_->get_player_id_for_testing(),
+                                     std::move(request_visibility_callback));
+    media_player_->WaitUntilReceivedMessage();
+  }
+
   // Helpers to check the results of using the basic controls.
   bool ReceivedMessagePlay() { return media_player_->received_play(); }
 
@@ -303,6 +368,12 @@ class MediaSessionControllerTest : public RenderViewHostImplTestHarness {
   bool ReceivedMessageVolume(double expected_volume_multiplier) {
     return expected_volume_multiplier ==
            media_player_->received_volume_multiplier();
+  }
+
+  // Helper method to set the expected visibility that will be used by the
+  // `RequestVisibilityCallback`.
+  void SetExpectedVisibility(bool expected_visibility) {
+    media_player_->SetExpectedVisibility(expected_visibility);
   }
 
   MediaPlayerId id_ = MediaPlayerId::CreateMediaPlayerIdForTests();
@@ -453,6 +524,19 @@ TEST_F(MediaSessionControllerTest, SufficientlyVisibleVideo) {
   controller_->OnVideoVisibilityChanged(true);
   EXPECT_TRUE(controller_->HasSufficientlyVisibleVideo(
       controller_->get_player_id_for_testing()));
+}
+
+TEST_F(MediaSessionControllerTest, RequestVisibility) {
+  media_player_->SetExpectedVisibility(true);
+  RequestVisibilityWaiter request_visibility_waiter;
+  RequestVisibility(request_visibility_waiter.VisibilityCallback());
+  request_visibility_waiter.WaitUntilDone();
+  EXPECT_TRUE(request_visibility_waiter.MeetsVisibility());
+
+  media_player_->SetExpectedVisibility(false);
+  RequestVisibility(request_visibility_waiter.VisibilityCallback());
+  request_visibility_waiter.WaitUntilDone();
+  EXPECT_FALSE(request_visibility_waiter.MeetsVisibility());
 }
 
 TEST_F(MediaSessionControllerTest, AudioOutputSinkIdChange) {

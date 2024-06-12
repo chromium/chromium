@@ -1946,6 +1946,14 @@ bool MediaSessionImpl::HasSufficientlyVisibleVideo() const {
   return false;
 }
 
+void MediaSessionImpl::GetVisibility(
+    GetVisibilityCallback get_visibility_callback) {
+  // TODO(crbug.com/40275580): Finish implementation (integrate with the
+  // `MediaPlayersCallbackAggregator` to ask players for their video
+  // visibility).
+  std::move(get_visibility_callback).Run(false);
+}
+
 std::string MediaSessionImpl::GetSharedAudioOutputDeviceId() const {
   if (normal_players_.empty())
     return media::AudioDeviceDescription::kDefaultDeviceId;

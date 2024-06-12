@@ -39,6 +39,9 @@ class MockMediaSessionPlayerObserver : public MediaSessionPlayerObserver {
                         const std::string& raw_device_id) override;
   void OnSetMute(int player_id, bool mute) override;
   void OnRequestMediaRemoting(int player_id) override;
+  void OnRequestVisibility(
+      int player_id,
+      RequestVisibilityCallback request_visibility_callback) override;
   std::optional<media_session::MediaPosition> GetPosition(
       int player_id) const override;
   bool IsPictureInPictureAvailable(int player_id) const override;
@@ -84,6 +87,7 @@ class MockMediaSessionPlayerObserver : public MediaSessionPlayerObserver {
   int received_enter_picture_in_picture_calls() const;
   int received_exit_picture_in_picture_calls() const;
   int received_set_audio_sink_id_calls() const;
+  int received_request_visibility_calls() const;
 
  private:
   // Internal representation of the players to keep track of their statuses.
@@ -118,6 +122,7 @@ class MockMediaSessionPlayerObserver : public MediaSessionPlayerObserver {
   int received_enter_picture_in_picture_calls_ = 0;
   int received_exit_picture_in_picture_calls_ = 0;
   int received_set_audio_sink_id_calls_ = 0;
+  int received_request_visibility_calls_ = 0;
 
   media::MediaContentType media_content_type_;
 };

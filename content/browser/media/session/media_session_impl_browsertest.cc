@@ -244,6 +244,11 @@ class MediaSessionImplBrowserTest : public ContentBrowserTest {
     media_session_->SetAudioSinkId(sink_id);
   }
 
+  void UIGetVisibility(
+      MediaSessionImpl::GetVisibilityCallback get_visibility_callback) {
+    media_session_->GetVisibility(std::move(get_visibility_callback));
+  }
+
   void SystemStartDucking() { media_session_->StartDucking(); }
 
   void SystemStopDucking() { media_session_->StopDucking(); }
@@ -3447,6 +3452,12 @@ IN_PROC_BROWSER_TEST_F(MediaSessionImplWithBackForwardCacheBrowserTest,
   // The page being removed from the back-forward cache should not affect the
   // play state of the current page.
   EXPECT_TRUE(player_observer->IsPlaying(1));
+}
+
+IN_PROC_BROWSER_TEST_F(MediaSessionImplBrowserTest,
+                       DISABLED_RequestVisibilityNotifiesObservers) {
+  // TODO(crbug.com/40275580): Implement once MediaSessionImpl::GetVisibility is
+  // implemented.
 }
 
 }  // namespace content

@@ -160,6 +160,15 @@ void MediaSessionController::OnRequestMediaRemoting(int player_id) {
       ->RequestMediaRemoting();
 }
 
+void MediaSessionController::OnRequestVisibility(
+    int player_id,
+    RequestVisibilityCallback request_visibility_callback) {
+  DCHECK_EQ(player_id_, player_id);
+  web_contents_->media_web_contents_observer()
+      ->GetMediaPlayerRemote(id_)
+      ->RequestVisibility(std::move(request_visibility_callback));
+}
+
 RenderFrameHost* MediaSessionController::render_frame_host() const {
   return RenderFrameHost::FromID(id_.frame_routing_id);
 }
