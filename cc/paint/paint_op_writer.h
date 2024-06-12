@@ -460,7 +460,7 @@ class CC_PAINT_EXPORT PaintOpWriter {
 
   // Indicates that the following security constraints must be applied during
   // serialization:
-  // 1) PaintRecords and SkDrawLoopers must be ignored.
+  // 1) PaintRecords and DrawLoopers must be ignored.
   // 2) Codec backed images must be decoded and only the bitmap should be
   // serialized.
   const bool enable_security_constraints_;

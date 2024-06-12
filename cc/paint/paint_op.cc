@@ -1665,7 +1665,7 @@ void DrawTextBlobOp::RasterWithFlags(const DrawTextBlobOp* op,
     op->extra_slugs.clear();
   }
 
-  // flags may contain SkDrawLooper for shadow effect, so we need to convert
+  // flags may contain DrawLooper for shadow effect, so we need to convert
   // SkTextBlob to slug for each run.
   size_t i = 0;
   flags->DrawToSk(canvas, [op, &params, &i](SkCanvas* c, const SkPaint& p) {

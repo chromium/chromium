@@ -220,7 +220,7 @@ class CC_PAINT_EXPORT PaintOpReader {
     kSharedImageOpenFailure = 35,  // Obsolete
     kSkColorFilterUnflattenFailure = 36,
     kSkColorSpaceDeserializeFailure = 37,
-    kSkDrawLooperUnflattenFailure = 38,
+    kSkDrawLooperUnflattenFailure = 38,  // Obsolete
     kSkMaskFilterUnflattenFailure = 39,
     kSkPathEffectUnflattenFailure = 40,
     kSkPathReadFromMemoryFailure = 41,

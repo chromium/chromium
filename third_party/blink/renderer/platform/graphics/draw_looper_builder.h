@@ -62,7 +62,7 @@ class PLATFORM_EXPORT DrawLooperBuilder final {
 
   ~DrawLooperBuilder();
 
-  // Creates the SkDrawLooper and passes ownership to the caller. The builder
+  // Creates the cc::DrawLooper and passes ownership to the caller. The builder
   // should not be used any more after calling this method.
   sk_sp<cc::DrawLooper> DetachDrawLooper();
 
