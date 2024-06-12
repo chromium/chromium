@@ -16,12 +16,6 @@ BASE_FEATURE(kEnableIFrameAdAuctionHeaders,
              "EnableIFrameAdAuctionHeaders",
              base::FEATURE_ENABLED_BY_DEFAULT);
 
-// Enable updating the executionMode to "frozen-context" when updating a user's
-// interests groups.
-BASE_FEATURE(kEnableUpdatingExecutionModeToFrozenContext,
-             "EnableUpdatingExecutionModeToFrozenContext",
-             base::FEATURE_ENABLED_BY_DEFAULT);
-
 // Enable write ahead logging for interest group storage.
 BASE_FEATURE(kFledgeEnableWALForInterestGroupStorage,
              "FledgeEnableWALForInterestGroupStorage",

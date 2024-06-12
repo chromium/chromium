@@ -270,9 +270,7 @@ constexpr net::NetworkTrafficAnnotationTag kTrafficAnnotation =
     base::UmaHistogramBoolean(
         "Ads.InterestGroup.EnumNaming.Update.WorkletExecutionMode",
         *maybe_execution_mode == "groupByOrigin");
-  } else if (base::FeatureList::IsEnabled(
-                 features::kEnableUpdatingExecutionModeToFrozenContext) &&
-             *maybe_execution_mode == "frozen-context") {
+  } else if (*maybe_execution_mode == "frozen-context") {
     interest_group_update.execution_mode =
         blink::InterestGroup::ExecutionMode::kFrozenContext;
   } else {
