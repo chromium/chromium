@@ -4231,6 +4231,7 @@ Dit kan inligting oor geïnstalleerde sagteware, lêers, jou blaaier en die toes
 <translation id="4066207411788646768">Gaan jou verbinding na om beskikbare drukkers in jou netwerk te sien</translation>
 <translation id="4067839975993712852">Merk huidige oortjie as gelees</translation>
 <translation id="4068776064906523561">Gestoorde vingerafdrukke</translation>
+<translation id="4070132839822635162">Moenie aanmeld nie</translation>
 <translation id="407173827865827707">Met klik</translation>
 <translation id="4072805772816336153">Probeer later weer</translation>
 <translation id="4074164314564067597">sleutelbord</translation>
@@ -7355,6 +7356,7 @@ Maak seker jy wys nie enige sensitiewe inligting nie.</translation>
 <translation id="6469702164109431067">Wagwoorde en toegangsleutels</translation>
 <translation id="6470823736074966819">Demp kennisgewings</translation>
 <translation id="6472893788822429178">Wys tuisknoppie</translation>
+<translation id="6473315466413288899">Kies ’n opsie</translation>
 <translation id="6474498546677193336">Kon nie ontdeel nie want 'n program gebruik tans hierdie vouer. Die vouer sal ontdeel word wanneer Linux weer afgeskakel word.</translation>
 <translation id="6474884162850599008">Ontkoppel Google Drive-rekening</translation>
 <translation id="6475294023568239942">Maak skyfspasie beskikbaar of verander die grootte van die Linux-skyf in Instellings</translation>
@@ -10818,6 +10820,7 @@ Toestemmings wat jy reeds aan webwerwe en apps gegee het, kan op hierdie rekenin
 <translation id="9031811691986152304">probeer weer</translation>
 <translation id="9032004780329249150">Gebruik jou wagwoorde op jou iOS-toestelle</translation>
 <translation id="9032097289595078011">Deaktiveer Kitsbind</translation>
+<translation id="9032513103438497286">Blokkeer apps wat op hierdie <ph name="DEVICE_TYPE" /> geïnstalleer is. Gaan na Google Play-instellings om die aflaai van apps of inhoud te beperk.</translation>
 <translation id="9033765790910064284">Gaan in elk geval voort</translation>
 <translation id="9033857511263905942">Plak</translation>
 <translation id="9034408118624208974">Nuut by Chromebook? Skakel sinkronisering aan sodat jou voorkeure gerugsteun sal word.</translation>

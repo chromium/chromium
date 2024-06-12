@@ -531,6 +531,7 @@
 <translation id="371398631992790800">"बुकमार्कहरू" लुकाउनुहोस्</translation>
 <translation id="37207012422556617">ट्रेन्डिङमा रहेका खोज</translation>
 <translation id="3725081662140949903">अन्य व्यक्तिहरूलाई तपाईंको पासवर्ड प्रयोग गर्न नदिन <ph name="APP" /> एप खोल्नुहोस् र आफ्नो पासवर्ड बदल्नुहोस्</translation>
+<translation id="372676576864368480">अन्तिमका अङ्क <ph name="LAST_DIGITS" /> भएको कार्ड नम्बर स्वतः भर्नुहोस्</translation>
 <translation id="3738428049780661523">बनाइएको मिति: <ph name="DATE" /></translation>
 <translation id="374357899112510277">"डाउनलोडहरू" लुकाउनुहोस्</translation>
 <translation id="3745190878148784130">"टेक्स्ट जुम गर्नुहोस्" लुकाउनुहोस्</translation>
@@ -850,6 +851,7 @@
 <translation id="5345660046352249607">{COUNT,plural, =1{यो प्याकेज ट्र्याक गर्ने हो?}other{{COUNT} वटा प्याकेज ट्र्याक गर्ने हो?}}</translation>
 <translation id="5348775987281903912">तपाईं सेयर बटनमा क्लिक गरेर यो पेज यहाँ सेयर गर्न सक्नुहुन्छ।</translation>
 <translation id="536067926684072644">बुकमार्कहरू देखाउनुहोस्</translation>
+<translation id="537853552771686272">आफूलाई रुचि लाग्ने विषय र साइटहरू व्यवस्थापन गर्नुहोस्</translation>
 <translation id="5379352933722332597">{count,plural, =1{यो बुकमार्क "{title}" मा सेभ गरिएको छ। यो बुकमार्क यो डिभाइसमा मात्र सेभ गरिएको छ।}other{"{title}" मा {count} वटा बुकमार्क सेभ गरिएका छन्। यी बुकमार्क यो डिभाइसमा मात्र सेभ गरिएका छन्।}}</translation>
 <translation id="5388358297987318779">छवि खोल्नुहोस्</translation>
 <translation id="5395707839134961196">सर्च इन्जिनसम्बन्धी विवरणहरू लुकाइऊन्</translation>
@@ -932,6 +934,7 @@
 <translation id="5758631781033351321">तपाईंको अध्ययन सूची यहाँ देखिने छ</translation>
 <translation id="5765456154762864099">मेनु → सेटिङहरू → डिफल्ट ब्राउजर</translation>
 <translation id="5777888488419460501">खातामा सेभ गर्नुहोस्</translation>
+<translation id="5778292857689789362">ट्याब समूह, <ph name="GROUP_TITLE" />, <ph name="TABS_NUMBER" /> वटा ट्याब।</translation>
 <translation id="5782227691023083829">अनुवाद गर्दै...</translation>
 <translation id="5791632441210678828">"फलो गरिराखिएका" फिड क्रमबद्ध गर्नुहोस् नामक बटन।</translation>
 <translation id="5793373065989412701">तपाईंका परिवारका सदस्यहरूको जाँच गरिँदै छ…</translation>
@@ -1094,6 +1097,7 @@
 <translation id="6476800141292307438">पृष्ठलाई <ph name="LANGUAGE" /> भाषामा अनुवाद गर्दै। विकल्पहरू स्क्रिनका पुछारमा उपलब्ध छन्।</translation>
 <translation id="648164694371393720">प्रमाणीकरणसम्बन्धी त्रुटि</translation>
 <translation id="6494931198667773526">सकिने मिति</translation>
+<translation id="6500795388871406244">सिफारिस गरिएको पासवर्ड प्रयोग गर्नुहोस्:</translation>
 <translation id="650279896687777322">थप जान्नुहोस्...</translation>
 <translation id="6507973708545996744">आफ्ना सबै डिभाइसहरूमा "पछि पढ्न सेभ गरिएका वेबपेजको सूची" प्राप्त गर्न साइन इन गर्नुहोस्।</translation>
 <translation id="6510072653668207258">मलाई पछि स्मरण गराइयोस्</translation>
@@ -1306,6 +1310,7 @@
 <translation id="7583004045319035904">आफ्ना इन्कोग्निटो ट्याबहरू अनलक गर्न <ph name="BIOMETRIC_AUTHENITCATION_TYPE" /> प्रयोग गर्नुहोस्।</translation>
 <translation id="7598439272585186139">थप सुरक्षा प्राप्त गर्नुहोस्</translation>
 <translation id="7600965453749440009"><ph name="LANGUAGE" /> कहिले पनि अनुवाद नगर्नुहोस्</translation>
+<translation id="7603308509262646847">कार्डवालाको नाम (<ph name="NAME" />) स्वतः भर्नुहोस्</translation>
 <translation id="7603852183842204213">पप-अपहरु ब्लक गरियो (<ph name="NUMBER_OF_BLOCKED_POPUPS" />)</translation>
 <translation id="7606639338662398635">ट्याब समूह</translation>
 <translation id="7607521702806708809">पासवर्ड मेट्नुहोस्</translation>
@@ -1338,6 +1343,7 @@
 <translation id="7749790401023484470">तपाईंले कुनै पनि टेक्स्ट चयन गर्नुभएको छैन।</translation>
 <translation id="7752405526771734448">लेन्सको भिजुअल सर्च</translation>
 <translation id="7756478488453921771">मेनु → सेटिङ → भुक्तानी विधि</translation>
+<translation id="775755486779745798">म्याद सकिने महिना (<ph name="MONTH" />) स्वतः भर्नुहोस्</translation>
 <translation id="7760127703945531263">इन्कोग्निटो ट्याब लक गर्ने सुविधा</translation>
 <translation id="7765158879357617694">सार्नुहोस्</translation>
 <translation id="7772032839648071052">पासफ्रेज पक्का</translation>
@@ -1514,6 +1520,7 @@
 <translation id="8556590991644167667">{count,plural, =1{तपाईंले {count} वटा चेतावनी खारेज गर्नुभएको छ}other{तपाईंले {count} वटा चेतावनी खारेज गर्नुभएको छ}}</translation>
 <translation id="8560253818350321773">बारम्बार प्रयोग गरिएका वस्तुहरू सुरुमा देखाउनुहोस्।</translation>
 <translation id="8569721750632860947">तपाईं कुन URL आफ्नो रिडिङ लिस्टमा हाल्न चाहनुहुन्छ?</translation>
+<translation id="8577056989960190117">म्याद सकिने वर्ष (<ph name="YEAR" />) स्वतः भर्नुहोस्</translation>
 <translation id="8588404856427128947">निष्क्रिय</translation>
 <translation id="8591976964826315682">इन्कोग्निटो मोडमा तेस्रो पक्षीय कुकीलाई रोक लगाउनुहोस्</translation>
 <translation id="8593565399399144771">तपाईं यहाँ नयाँ ट्याब खोल्न सक्नुहुन्छ।</translation>

@@ -64,7 +64,6 @@
 <translation id="1201402288615127009">التالي</translation>
 <translation id="1210557957257435379">تسجيل الشاشة</translation>
 <translation id="121097972571826261">نقل للأمام بمقدار كلمة واحدة</translation>
-<translation id="1217633719248931900">الانتقال إلى التطبيق</translation>
 <translation id="1218444235442067213">‏<ph name="APP_NAME" />، تطبيق من "متجر Play"</translation>
 <translation id="1225748608451425081">‏تم قفل جهاز Chromebook بسبب مشكلة معروفة. ستتمكّن من تسجيل الدخول بعد: <ph name="TIME_LEFT" />.</translation>
 <translation id="1229194443904279055">إيقاف التحديد</translation>
@@ -181,6 +180,7 @@
 <translation id="1611993646327628135">مُفعَّل</translation>
 <translation id="1620510694547887537">الكاميرا</translation>
 <translation id="1623768535032616219">‏تصغير Google Classroom</translation>
+<translation id="163032029566320584">ميزة "<ph name="UNAVAILABLE_DLC" />" غير متوفّرة.</translation>
 <translation id="1632985212731562677">يمكن إيقاف ميزة "الوصول عبر مفتاح التحويل" في "الإعدادات" &gt; "أدوات تمكين الوصول".</translation>
 <translation id="1637505162081889933"><ph name="NUM_DEVICES" /> جهاز</translation>
 <translation id="1639239467298939599">جارٍ التحميل</translation>
@@ -329,7 +329,6 @@
 <translation id="2293443480080733021">‏ما الذي تريد التركيز عليه؟ اضغط على مفتاح Enter لإضافة المهمة.</translation>
 <translation id="229397294990920565">جارٍ إيقاف بيانات الجوّال...</translation>
 <translation id="2295777434187870477">الميكروفون مفعّل، وسيؤدي التبديل إلى كتم صوته.</translation>
-<translation id="2298170939937364391">‏تم تفعيل ميزة "المكبِّر بملء الشاشة". يمكنك إيقافها بالضغط على Ctrl+Search+M مرة أخرى.</translation>
 <translation id="2302092602801625023">‏تتم إدارة هذا الحساب من خلال Family Link</translation>
 <translation id="2303600792989757991">نظرة عامة لنافذة التبديل</translation>
 <translation id="2305738328104302723">‏قائمة مهام Google: <ph name="GLANCEABLES_TASKS_LIST_NAME" /></translation>
@@ -514,7 +513,6 @@
 <translation id="2977598380246111477">الرقم التالي</translation>
 <translation id="2985148236010982088">عرض كل التطبيقات</translation>
 <translation id="2992327365391326550">زر ميكروفون الجهاز غير مفعَّل.</translation>
-<translation id="2996462380875591307">‏تم تفعيل المكبّر. يمكنك إيقافه بالضغط على Ctrl+Search+D مرة أخرى.</translation>
 <translation id="3000461861112256445">صوت أحادي</translation>
 <translation id="3001391739687111021">تعديل حجم الشاشة</translation>
 <translation id="3009178788565917040">الإخراج</translation>
@@ -724,6 +722,7 @@
 <translation id="3702846122927433391">تعداد السكان في نيجيريا</translation>
 <translation id="3705722231355495246">-</translation>
 <translation id="3706423975342040244">الترفيه</translation>
+<translation id="3707093869106077605">ميزتا "<ph name="UNAVAILABLE_DLC_ONE" />" و"<ph name="UNAVAILABLE_DLC_TWO" />" غير متوفّرتَين.</translation>
 <translation id="3708186454126126312">الأجهزة المتصلة سابقًا</translation>
 <translation id="3712143870407382523">اختَر نافذة لهذا الجانب.</translation>
 <translation id="371370241367527062">الميكروفون الأمامي</translation>
@@ -997,6 +996,7 @@
 <translation id="4733161265940833579">%<ph name="BATTERY_PERCENTAGE" /> (السماعة اليسرى)</translation>
 <translation id="4734965478015604180">أفقي</translation>
 <translation id="4735944890391795473">سطح المكتب 12</translation>
+<translation id="4736732123074402682">يُرجى التحقّق من الاتصال والمحاولة مجددًا.</translation>
 <translation id="473775607612524610">تحديث</translation>
 <translation id="4740516757091333363">هل تريد حذف سطح المكتب المحفوظ؟</translation>
 <translation id="4746798685375253449">{0,plural, =1{إعادة الجهاز إلى الإصدار السابق في غضون يوم واحد}zero{إعادة الجهاز إلى الإصدار السابق في غضون # يوم}two{إعادة الجهاز إلى الإصدار السابق في غضون يومَين}few{إعادة الجهاز إلى الإصدار السابق في غضون # أيام}many{إعادة الجهاز إلى الإصدار السابق في غضون # يومًا}other{إعادة الجهاز إلى الإصدار السابق في غضون # يوم}}</translation>
@@ -1330,6 +1330,7 @@
 <translation id="588258955323874662">ملء الشاشة</translation>
 <translation id="5887954372087850114">تم تخصيص النافذة <ph name="WINDOW_TITLE" /> لسطح المكتب <ph name="DESK_TITLE" /> وإلغاء تخصيصها من جميع أسطح المكتب الأخرى.</translation>
 <translation id="588817334757907802">‏فتح الملف في متصفِّح Chrome</translation>
+<translation id="5892014525522223653">جهازك غير متصل بالإنترنت.</translation>
 <translation id="5895138241574237353">إعادة التشغيل</translation>
 <translation id="589817443623831496">مسح النقاط</translation>
 <translation id="5901316534475909376">Shift+Esc</translation>
@@ -1389,6 +1390,7 @@
 <translation id="6095425951508823973">إضافة اتصال باستخدام "<ph name="PROVIDER" />"</translation>
 <translation id="6099678161144790572">تم تعديله الشهر الماضي.</translation>
 <translation id="6103838137565245112">النظام</translation>
+<translation id="610395411842312282">تجميع نافذتين جنبًا إلى جنب</translation>
 <translation id="6108952804512516814">الإنشاء باستخدام الذكاء الاصطناعي</translation>
 <translation id="6114505516289286752">تم تنزيل ملفات اللغة <ph name="LANGUAGE" /> في ميزة "التعرّف على الكلام"</translation>
 <translation id="6119360623251949462"><ph name="CHARGING_STATE" />. <ph name="BATTERY_SAVER_STATE" /></translation>
@@ -1396,6 +1398,7 @@
 <translation id="6121838516699723042">تأكيد تنزيل <ph name="FILENAME" /></translation>
 <translation id="612734058257491180">‏لا يتوفر "مساعد Google" في جلسة ضيف.</translation>
 <translation id="6127370444807669747">‏يمكنك تجربة YouTube Music Premium للاستماع إلى قوائم تشغيل مخصّصة وموسيقى تساعدك على التركيز</translation>
+<translation id="6127395413317891856">جهازك غير متصل بالإنترنت. يُرجى التحقّق من الاتصال والمحاولة مجددًا.</translation>
 <translation id="6129953537138746214">مسافة</translation>
 <translation id="6137566720514957455">فتح مربع الحوار لإزالة الحساب <ph name="USER_EMAIL_ADDRESS" /></translation>
 <translation id="6141205840878048728">ما الذي تريد التركيز عليه؟</translation>
@@ -1970,6 +1973,7 @@
 <translation id="8257510091797044096">ضبط إعدادات جهازك</translation>
 <translation id="8261506727792406068">حذف</translation>
 <translation id="8262312463845990408">استئناف التشغيل أو إيقافه مؤقتًا</translation>
+<translation id="8268302343625273732">‏الاطّلاع على كل المهام في Google Classroom</translation>
 <translation id="8277261673056602147">تمييز النص على الشاشة</translation>
 <translation id="8287009018010202411">تطبيقات الإنتاجية</translation>
 <translation id="828708037801473432">غير مُفعَّلة</translation>
@@ -2146,7 +2150,6 @@
 <translation id="8982906748181120328">مشاركة عن قرب</translation>
 <translation id="8983038754672563810">HSPA</translation>
 <translation id="8990809378771970590">استخدام <ph name="IME_NAME" /></translation>
-<translation id="8991617137207906966">‏تم تفعيل وضع "قلب الألوان". اضغط على "Ctrl + M + مفتاح البحث" مرة أخرى لإيقافه.</translation>
 <translation id="899350903320462459">فتح قفل الجهاز بواسطة <ph name="LOGIN_ID" /> لتنفيذ إجراء الإشعارات</translation>
 <translation id="8993733019280019776">هل تتحدث؟ الميكروفون غير مفعَّل. انقر على الميكروفون لتفعيله.</translation>
 <translation id="9000771174482730261">إدارة مساحة التخزين</translation>

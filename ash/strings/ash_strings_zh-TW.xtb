@@ -64,7 +64,6 @@
 <translation id="1201402288615127009">繼續</translation>
 <translation id="1210557957257435379">螢幕畫面錄製</translation>
 <translation id="121097972571826261">移至下一個字詞</translation>
-<translation id="1217633719248931900">前往應用程式</translation>
 <translation id="1218444235442067213"><ph name="APP_NAME" />，Play 商店應用程式</translation>
 <translation id="1225748608451425081">你的 Chromebook 因為已知問題遭到鎖定。你可以在 <ph name="TIME_LEFT" />後登入。</translation>
 <translation id="1229194443904279055">停止選取</translation>
@@ -180,6 +179,7 @@
 <translation id="1611993646327628135">開啟</translation>
 <translation id="1620510694547887537">攝影機</translation>
 <translation id="1623768535032616219">收合 Google Classroom</translation>
+<translation id="163032029566320584">目前無法使用「<ph name="UNAVAILABLE_DLC" />」。</translation>
 <translation id="1632985212731562677">你可以依序點選 [設定] &gt; [無障礙設定] 來停用切換控制功能。</translation>
 <translation id="1637505162081889933"><ph name="NUM_DEVICES" /> 部裝置</translation>
 <translation id="1639239467298939599">載入中</translation>
@@ -251,6 +251,7 @@
 <translation id="1915307458270490472">掛斷</translation>
 <translation id="1918022425394817322">攝影機已對齊右上角</translation>
 <translation id="1923539912171292317">自動點擊</translation>
+<translation id="1925320505152357008">還剩不到 1 分鐘</translation>
 <translation id="1928739107511554905">如要更新，請連接鍵盤並使用觸控螢幕重新啟動 Chromebook。</translation>
 <translation id="1948405482892809935">切換到下一位使用者</translation>
 <translation id="1951012854035635156">小幫手</translation>
@@ -327,7 +328,6 @@
 <translation id="2293443480080733021">你想專心處理什麼？按下 Enter 鍵即可新增工作。</translation>
 <translation id="229397294990920565">正在關閉行動數據...</translation>
 <translation id="2295777434187870477">麥克風已開啟；使用切換鈕可將麥克風設為靜音。</translation>
-<translation id="2298170939937364391">全螢幕放大鏡已啟用。再次按下 Ctrl 鍵 + 搜尋鍵 + M 鍵即可切換為停用。</translation>
 <translation id="2302092602801625023">這個帳戶是由 Family Link 所管理</translation>
 <translation id="2303600792989757991">切換視窗總覽</translation>
 <translation id="2305738328104302723">Google Tasks 清單：<ph name="GLANCEABLES_TASKS_LIST_NAME" /></translation>
@@ -512,7 +512,6 @@
 <translation id="2977598380246111477">下一個號碼</translation>
 <translation id="2985148236010982088">查看所有應用程式</translation>
 <translation id="2992327365391326550">裝置的麥克風按鈕已關閉。</translation>
-<translation id="2996462380875591307">停駐放大鏡已啟用。再次按下 Ctrl 鍵 + 搜尋鍵 + D 鍵即可停用。</translation>
 <translation id="3000461861112256445">單聲道音訊</translation>
 <translation id="3001391739687111021">編輯螢幕大小</translation>
 <translation id="3009178788565917040">輸出</translation>
@@ -606,6 +605,7 @@
 <translation id="334927402682780278">選取從游標到該行結尾之間的文字</translation>
 <translation id="3349345708646875009">開啟工作管理員</translation>
 <translation id="3364721542077212959">觸控筆工具</translation>
+<translation id="3365281428003534650">設定計時器、工作和音樂</translation>
 <translation id="3365977133351922112">你的手機距離太遠，請拿近一點。</translation>
 <translation id="3368922792935385530">已連線</translation>
 <translation id="3369111525500416043">即將截止</translation>
@@ -719,6 +719,7 @@
 <translation id="3702846122927433391">奈及利亞的人口</translation>
 <translation id="3705722231355495246">-</translation>
 <translation id="3706423975342040244">娛樂</translation>
+<translation id="3707093869106077605">目前無法使用「<ph name="UNAVAILABLE_DLC_ONE" />」和「<ph name="UNAVAILABLE_DLC_TWO" />」。</translation>
 <translation id="3708186454126126312">先前連線的裝置</translation>
 <translation id="3712143870407382523">選擇這側的視窗</translation>
 <translation id="371370241367527062">前置麥克風</translation>
@@ -905,6 +906,7 @@
 <translation id="4406883609789734330">即時字幕</translation>
 <translation id="4412698727486357573">說明中心</translation>
 <translation id="4412944820643904175"><ph name="FEATURE_NAME" />功能已關閉。</translation>
+<translation id="4417647906073317561">專注模式設定。你可以設定計時器、工作和音樂，讓工作更有效率。</translation>
 <translation id="4424159417645388645">桌面 5</translation>
 <translation id="4430019312045809116">音量</translation>
 <translation id="4441283832827406317">依名稱將應用程式排序</translation>
@@ -989,6 +991,7 @@
 <translation id="4733161265940833579"><ph name="BATTERY_PERCENTAGE" />% (左側)</translation>
 <translation id="4734965478015604180">橫向</translation>
 <translation id="4735944890391795473">桌面 12</translation>
+<translation id="4736732123074402682">請檢查連線狀態，然後再試一次。</translation>
 <translation id="473775607612524610">更新</translation>
 <translation id="4740516757091333363">要刪除已儲存的桌面嗎？</translation>
 <translation id="4746798685375253449">{0,plural, =1{在 1 天內將裝置復原為先前的版本}other{在 # 天內將裝置復原為先前的版本}}</translation>
@@ -1322,6 +1325,7 @@
 <translation id="588258955323874662">全螢幕</translation>
 <translation id="5887954372087850114">「<ph name="WINDOW_TITLE" />」視窗已指派給「<ph name="DESK_TITLE" />」，並取消指派給所有其他桌面</translation>
 <translation id="588817334757907802">在 Chrome 瀏覽器中開啟檔案</translation>
+<translation id="5892014525522223653">目前已離線。</translation>
 <translation id="5895138241574237353">重新啟動</translation>
 <translation id="589817443623831496">點掃描</translation>
 <translation id="5901316534475909376">Shift + Esc 鍵</translation>
@@ -1381,6 +1385,7 @@
 <translation id="6095425951508823973">新增「<ph name="PROVIDER" />」連線</translation>
 <translation id="6099678161144790572">過去一個月內編輯過</translation>
 <translation id="6103838137565245112">系統</translation>
+<translation id="610395411842312282">將兩個並排視窗設為同一組</translation>
 <translation id="6108952804512516814">使用 AI 製作</translation>
 <translation id="6114505516289286752">已下載<ph name="LANGUAGE" />語音檔案</translation>
 <translation id="6119360623251949462"><ph name="CHARGING_STATE" />。<ph name="BATTERY_SAVER_STATE" /></translation>
@@ -1388,6 +1393,7 @@
 <translation id="6121838516699723042">確認下載「<ph name="FILENAME" />」</translation>
 <translation id="612734058257491180">Google 助理不支援訪客工作階段。</translation>
 <translation id="6127370444807669747">如要聆聽個人化播放清單和其他專注模式音樂，請試試 YouTube Music Premium</translation>
+<translation id="6127395413317891856">目前已離線，請檢查連線狀態，然後再試一次。</translation>
 <translation id="6129953537138746214">空格</translation>
 <translation id="6137566720514957455">開啟移除 <ph name="USER_EMAIL_ADDRESS" /> 的對話方塊</translation>
 <translation id="6141205840878048728">你想專心處理什麼？</translation>
@@ -1855,6 +1861,7 @@
         <ph name="MANAGED" />
         <ph name="IME" />
         <ph name="LOCALE" /></translation>
+<translation id="7899977217122813285">專注模式已開啟，系統會在 <ph name="TIME" />前忽略通知</translation>
 <translation id="7901190436359881020">交換視窗</translation>
 <translation id="7901405293566323524">Phone Hub</translation>
 <translation id="7902625623987030061">請輕觸指紋感應器</translation>
@@ -1959,6 +1966,7 @@
 <translation id="8257510091797044096">設定裝置</translation>
 <translation id="8261506727792406068">刪除</translation>
 <translation id="8262312463845990408">切換播放</translation>
+<translation id="8268302343625273732">查看 Google Classroom 中的所有作業</translation>
 <translation id="8277261673056602147">醒目顯示畫面上的文字</translation>
 <translation id="8287009018010202411">效率提升</translation>
 <translation id="828708037801473432">關閉</translation>
@@ -2134,7 +2142,6 @@
 <translation id="8982906748181120328">鄰近分享瀏覽權限</translation>
 <translation id="8983038754672563810">HSPA</translation>
 <translation id="8990809378771970590">目前使用<ph name="IME_NAME" /></translation>
-<translation id="8991617137207906966">色彩反轉模式已啟用，再次按下 Ctrl 鍵 + 搜尋鍵 + H 鍵即可停用。</translation>
 <translation id="899350903320462459">以 <ph name="LOGIN_ID" /> 帳戶解鎖裝置，即可執行通知動作</translation>
 <translation id="8993733019280019776">你在說話嗎？你的麥克風已關閉，只要選取麥克風即可開啟。</translation>
 <translation id="9000771174482730261">管理儲存空間</translation>

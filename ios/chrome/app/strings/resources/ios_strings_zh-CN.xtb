@@ -148,6 +148,7 @@
 <translation id="1752547299766512813">保存密码</translation>
 <translation id="1753905327828125965">常去网站</translation>
 <translation id="1757699834933698436">{count,plural, =1{有 {count} 个安全系数低的密码}other{有 {count} 个安全系数低的密码}}</translation>
+<translation id="1764070164487214210">路线</translation>
 <translation id="1766411844240160513">自动填充表单</translation>
 <translation id="1767766085187034454">Google 翻译</translation>
 <translation id="1769106850515800431">个性化内容</translation>
@@ -539,12 +540,14 @@
 <translation id="3771033907050503522">无痕模式标签页</translation>
 <translation id="3775743491439407556">同步功能无法正常运行</translation>
 <translation id="3779810277399252432">无互联网连接。</translation>
+<translation id="3785672280731998727">显示名称</translation>
 <translation id="3789294999358192700">请按照以下步骤操作：</translation>
 <translation id="3789841737615482174">安装</translation>
 <translation id="380329542618494757">名称</translation>
 <translation id="3803696231112616155">主动询问是否翻译此网站</translation>
 <translation id="3808311849069021992">显示搜索引擎详细信息</translation>
 <translation id="3810973564298564668">管理</translation>
+<translation id="3812308602011798782">评价</translation>
 <translation id="3818045793209708987">已停止跟踪此包裹</translation>
 <translation id="3818293389945649617">查找下一个</translation>
 <translation id="3819183753496523827">您未联网。请检查您的互联网连接状况，然后重试。</translation>
@@ -591,6 +594,7 @@
 <translation id="4045648459118332842">在任意应用中点按一下即可获取您已保存的密码</translation>
 <translation id="4049507953662678203">请确保已连接到网络，然后重试。</translation>
 <translation id="4054572406751135230">随时掌握新闻、体育等方面的资讯。</translation>
+<translation id="4068959193278821990">开启增强型保护…</translation>
 <translation id="4092655288299341041">显示帮助</translation>
 <translation id="4105841739161771091">{count,plural, =1{删除这个地址}other{删除这些地址}}</translation>
 <translation id="4108998448622696017">检测危险事件并在此类事件发生时向您发出警告。</translation>
@@ -602,6 +606,7 @@
 <translation id="4121993058175073134">要发送净导出数据，请在“设置”应用中指定您的电子邮件账号。</translation>
 <translation id="4124987746317609294">时间范围</translation>
 <translation id="4133265950310064865">增强型保护</translation>
+<translation id="4145507240503767005"><ph name="SEARCH_ENGINE_NAME" />，<ph name="SEARCH_ENGINE_DOMAIN" /></translation>
 <translation id="4147897805161313378">Google 相册</translation>
 <translation id="4148023517926189160">此网站想下载文件并将其添加到您的日历中。</translation>
 <translation id="4152011295694446843">您的书签会显示在此处</translation>
@@ -1462,6 +1467,7 @@
 <translation id="834783239627985533">最常访问的网站</translation>
 <translation id="8358401059263985056">开启通知功能</translation>
 <translation id="8364841868226993049">正在将此图片保存到 <ph name="USER_EMAIL" /> 所用的 Google 相册…</translation>
+<translation id="8369246252708539904">删除通行密钥</translation>
 <translation id="8370406443343902172">前往“设置”…</translation>
 <translation id="8374977641764177587">开启通知？</translation>
 <translation id="8378714024927312812">由贵组织管理</translation>

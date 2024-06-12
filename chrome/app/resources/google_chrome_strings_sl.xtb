@@ -126,6 +126,7 @@ Nekatere funkcije morda niso na voljo in spremembe nastavitev ne bodo shranjene.
 <translation id="2765403129283291972">Chrome potrebuje dovoljenje za dostop do mikrofona za to spletno mesto</translation>
 <translation id="2770231113462710648">Spremeni privzeti brskalnik na:</translation>
 <translation id="2775140325783767197">Chrome ne more preveriti vaših gesel. Poskusite preveriti internetno povezavo.</translation>
+<translation id="2797864378188255696">Pri prijavi v Googlove storitve, kot je Gmail ali YouTube, z računom <ph name="USER_EMAIL" /> se lahko z istim računom samodejno prijavite v Chrome</translation>
 <translation id="2799223571221894425">Vnovičen zagon</translation>
 <translation id="2825024317344269723">Nevarno spletno mesto. Chrome je odstranil dovoljenje za obvestila.</translation>
 <translation id="2846251086934905009">Napaka pri namestitvi: Namestitveni program se ni dokončal. Namestitev je bila prekinjena.</translation>
@@ -300,6 +301,7 @@ Nekatere funkcije morda ne bodo na voljo. Navedite drug imenik profila ali upora
 <translation id="5334309298019785904">Chrome OS ni mogel sinhronizirati podatkov, ker sinhronizacija ni na voljo za vašo domeno.</translation>
 <translation id="5334487786912937552">Chrome potrebuje dovoljenje za dostop do shrambe za prenos datotek.</translation>
 <translation id="5337648990166757586">Izbirno: Pomagajte izboljšati funkcije sistema Chrome OS in njegovo delovanje s samodejnim pošiljanjem diagnostičnih podatkov in podatkov o uporabi Googlu.</translation>
+<translation id="5345497718959596593">Ko ste prijavljeni, lahko v Chromu uporabljate gesla in drugo iz računa Google</translation>
 <translation id="5357889879764279201">Pomoč za ChromeOS Flex</translation>
 <translation id="5368118228313795342">Dodatna koda: <ph name="EXTRA_CODE" />.</translation>
 <translation id="5386244825306882791">Določa tudi, katera stran je prikazana, ko zaženete Chrome ali iščete v naslovni vrstici.</translation>

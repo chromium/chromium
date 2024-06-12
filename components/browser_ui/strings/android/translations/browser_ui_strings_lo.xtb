@@ -278,6 +278,7 @@
 <translation id="5690795753582697420">ກ້ອງປິດຢູ່ໃນການຕັ້ງຄ່າ Android</translation>
 <translation id="5691080386278724773"><ph name="SITE" /> ສາມາດໃຊ້ຂໍ້ມູນຂອງທ່ານໄດ້ໃນເວລາທີ່ທ່ານເລືອກເບິ່ງ</translation>
 <translation id="5700761515355162635">ອະນຸຍາດຄຸກກີ້ພາກສ່ວນທີສາມແລ້ວ</translation>
+<translation id="5705383358494210886"><ph name="HOST_NAME" /> <ph name="SEPARATOR1" /> <ph name="RECENCY" /></translation>
 <translation id="5706552988683188916">ນີ້ຈະລຶບຄຸກກີ້ ແລະ ຂໍ້ມູນເວັບໄຊອື່ນສຳລັບ <ph name="WEBSITE" /> ອອກ</translation>
 <translation id="5723967018671998714">ບລັອກຄຸກກີ້ພາກສ່ວນທີສາມໃນໂໝດບໍ່ເປີດເຜີຍຕົວຕົນ</translation>
 <translation id="5740126560802162366">ເວັບໄຊສາມາດບັນທຶກຂໍ້ມູນຢູ່ໃນອຸປະກອນຂອງທ່ານໄດ້</translation>

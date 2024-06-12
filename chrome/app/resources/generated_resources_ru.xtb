@@ -1857,6 +1857,7 @@
 <translation id="233375395665273385">Удалить и выйти</translation>
 <translation id="233471714539944337">Конфиденциальные данные</translation>
 <translation id="2335111415680198280">{0,plural, =1{Закрыть # окно}one{Закрыть # окно}few{Закрыть # окна}many{Закрыть # окон}other{Закрыть # окна}}</translation>
+<translation id="2335758110242123814">Открыть группу</translation>
 <translation id="2336228925368920074">Добавить все вкладки в закладки…</translation>
 <translation id="2336258397628212480">Приложение "<ph name="APP_NAME" />" печатает одну страницу на принтере "<ph name="PRINTER_NAME" />".</translation>
 <translation id="2336381494582898602">Powerwash</translation>
@@ -1877,6 +1878,7 @@
 <translation id="2351923523007389195">Разрешено (<ph name="PERMISSION_DETAILS" />). Предоставьте <ph name="LINK_BEGIN" />доступ к геоданным на уровне системы<ph name="LINK_END" />.</translation>
 <translation id="2352662711729498748">&lt; 1 МБ</translation>
 <translation id="2352810082280059586">Заметки, созданные на заблокированном экране, автоматически сохраняются в приложении "<ph name="LOCK_SCREEN_APP_NAME" />". Самая последняя заметка остается на заблокированном экране.</translation>
+<translation id="2353168619378866466">Открыть группу</translation>
 <translation id="2353297238722298836">Доступ к камере и микрофону разрешен</translation>
 <translation id="2353910600995338714">Экспорт завершен.</translation>
 <translation id="2355314311311231464">Подготовка к использованию не выполнена, поскольку не удалось загрузить данные вашего аккаунта. Повторите попытку. Код ошибки: <ph name="ERROR_CODE" />.</translation>
@@ -2830,6 +2832,7 @@
 <translation id="3033348223765101500">Управление данными</translation>
 <translation id="3036327949511794916">Истек срок возврата устройства <ph name="DEVICE_TYPE" />.</translation>
 <translation id="3036546437875325427">Включить Flash</translation>
+<translation id="3037193115779933814">Буквы и цифры</translation>
 <translation id="3038272154009688107">Показать все сайты</translation>
 <translation id="3038612606416062604">Добавление принтера вручную</translation>
 <translation id="3039491566278747710">Не удалось применить к устройству политику работы в офлайн-режиме.</translation>
@@ -6029,6 +6032,7 @@
 <translation id="5469540749878136997">Освобождать память в зависимости от использования</translation>
 <translation id="5469852975082458401">Вы сможете использовать курсор для навигации по страницам. Нажмите F7, чтобы отключить эту функцию.</translation>
 <translation id="5470735824776589490">Перед сбросом настроек с помощью функции Powerwash необходимо перезагрузить устройство. <ph name="LINK_BEGIN" />Подробнее…<ph name="LINK_END" /></translation>
+<translation id="5470741195701938302">Цифры</translation>
 <translation id="5471768120198416576">Здравствуйте! Я буду озвучивать для вас текст.</translation>
 <translation id="5472627187093107397">Сохранять пароли для этого сайта</translation>
 <translation id="5473062644742711742">Другие инструменты специальных возможностей можно найти в интернет-магазине Chrome</translation>
@@ -6865,6 +6869,7 @@
 <translation id="6101226222197207147">Добавлено новое приложение (<ph name="EXTENSION_NAME" />)</translation>
 <translation id="6102043788063419338">Файл заблокирован Дополнительной защитой.</translation>
 <translation id="6103681770816982672">Внимание! Вы переходите на версию для разработчиков.</translation>
+<translation id="610395411842312282">Сгруппировать 2 параллельных окна</translation>
 <translation id="6104068876731806426">Аккаунты Google</translation>
 <translation id="6104667115274478616">Управление настройками аудио в ChromeOS</translation>
 <translation id="6104796831253957966">Очередь печати заполнена.</translation>

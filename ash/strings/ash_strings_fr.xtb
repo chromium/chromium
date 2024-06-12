@@ -64,7 +64,6 @@ Pour commencer, voici des exemples de ce que vous pouvez me demander.</translati
 <translation id="1201402288615127009">Suivant</translation>
 <translation id="1210557957257435379">enregistrement de l'écran en cours</translation>
 <translation id="121097972571826261">Avancer par mot</translation>
-<translation id="1217633719248931900">Accéder à l'appli</translation>
 <translation id="1218444235442067213"><ph name="APP_NAME" />, application Play Store</translation>
 <translation id="1225748608451425081">Votre Chromebook est verrouillé en raison d'un problème connu. Vous pourrez vous connecter dans <ph name="TIME_LEFT" />.</translation>
 <translation id="1229194443904279055">Arrêter la sélection</translation>
@@ -327,7 +326,6 @@ Pour commencer, voici des exemples de ce que vous pouvez me demander.</translati
 <translation id="2293443480080733021">À quoi souhaitez-vous donner la priorité ? Pour ajouter la tâche, appuyez sur Entrée.</translation>
 <translation id="229397294990920565">Désactivation des données mobiles…</translation>
 <translation id="2295777434187870477">Le son du micro est activé et peut être coupé si vous déplacez le curseur vers la gauche.</translation>
-<translation id="2298170939937364391">Le mode Loupe plein écran est activé. Appuyez de nouveau sur Ctrl+Recherche+M pour le désactiver.</translation>
 <translation id="2302092602801625023">Ce compte est géré par Family Link</translation>
 <translation id="2303600792989757991">Activer/Désactiver la vue d'ensemble des fenêtres</translation>
 <translation id="2305738328104302723">Liste de tâches Google : <ph name="GLANCEABLES_TASKS_LIST_NAME" /></translation>
@@ -512,7 +510,6 @@ Pour commencer, voici des exemples de ce que vous pouvez me demander.</translati
 <translation id="2977598380246111477">Chiffre suivant</translation>
 <translation id="2985148236010982088">Voir toutes les applis</translation>
 <translation id="2992327365391326550">Le bouton du micro de l'appareil est désactivé.</translation>
-<translation id="2996462380875591307">Le mode Loupe ancrée est activé. Appuyez de nouveau sur Ctrl+Recherche+D pour le désactiver.</translation>
 <translation id="3000461861112256445">Audio mono</translation>
 <translation id="3001391739687111021">Modifier la taille de l'écran</translation>
 <translation id="3009178788565917040">Sortie</translation>
@@ -2139,7 +2136,6 @@ Pour éteindre l'appareil, appuyez à nouveau de manière prolongée sur le bout
 <translation id="8982906748181120328">Visibilité à proximité</translation>
 <translation id="8983038754672563810">3G+</translation>
 <translation id="8990809378771970590"><ph name="IME_NAME" /> en cours d'utilisation</translation>
-<translation id="8991617137207906966">Le mode d'inversion des couleurs est activé. Appuyez de nouveau sur Ctrl+Recherche+H pour le désactiver.</translation>
 <translation id="899350903320462459">Déverrouiller l'appareil en tant que <ph name="LOGIN_ID" /> pour effectuer l'action de notification</translation>
 <translation id="8993733019280019776">Vous parlez ? Le micro est désactivé. Sélectionnez-le pour l'activer.</translation>
 <translation id="9000771174482730261">GÉRER L'ESPACE DE STOCKAGE</translation>

@@ -1868,6 +1868,7 @@ Anda dapat mengelola setelan akun ini dengan menginstal aplikasi Family Link di 
 <translation id="233375395665273385">Hapus dan logout</translation>
 <translation id="233471714539944337">Konten sensitif</translation>
 <translation id="2335111415680198280">{0,plural, =1{Tutup # jendela}other{Tutup # jendela}}</translation>
+<translation id="2335758110242123814">Buka grup</translation>
 <translation id="2336228925368920074">Bookmark Semua Tab...</translation>
 <translation id="2336258397628212480"><ph name="APP_NAME" /> sedang mencetak 1 halaman ke <ph name="PRINTER_NAME" /></translation>
 <translation id="2336381494582898602">Powerwash</translation>
@@ -1888,6 +1889,7 @@ Anda dapat mengelola setelan akun ini dengan menginstal aplikasi Family Link di 
 <translation id="2351923523007389195">Diizinkan – <ph name="PERMISSION_DETAILS" />. Aktifkan <ph name="LINK_BEGIN" />akses lokasi sistem<ph name="LINK_END" />.</translation>
 <translation id="2352662711729498748">&lt; 1 MB</translation>
 <translation id="2352810082280059586">Catatan layar kunci disimpan otomatis ke <ph name="LOCK_SCREEN_APP_NAME" />. Catatan terbaru akan tetap berada di layar kunci.</translation>
+<translation id="2353168619378866466">Buka Grup</translation>
 <translation id="2353297238722298836">Kamera dan mikrofon diizinkan</translation>
 <translation id="2353910600995338714">Ekspor berhasil</translation>
 <translation id="2355314311311231464">Penyediaan gagal karena detail akun Anda tidak dapat diambil. Coba lagi. Kode error: <ph name="ERROR_CODE" />.</translation>
@@ -2841,6 +2843,7 @@ Anda dapat mengelola setelan akun ini dengan menginstal aplikasi Family Link di 
 <translation id="3033348223765101500">Mengontrol data Anda</translation>
 <translation id="3036327949511794916">Batas waktu untuk mengembalikan <ph name="DEVICE_TYPE" /> ini telah habis.</translation>
 <translation id="3036546437875325427">Aktifkan Flash</translation>
+<translation id="3037193115779933814">Huruf &amp;&amp; Angka</translation>
 <translation id="3038272154009688107">Lihat semua situs</translation>
 <translation id="3038612606416062604">Tambahkan printer secara manual</translation>
 <translation id="3039491566278747710">Gagal menginstal kebijakan offline di perangkat.</translation>
@@ -4231,6 +4234,7 @@ Informasi ini dapat mencakup informasi tentang software yang diinstal, file, bro
 <translation id="4066207411788646768">Periksa koneksi untuk melihat printer yang tersedia dalam jaringan Anda</translation>
 <translation id="4067839975993712852">Tandai tab saat ini sebagai telah dibaca</translation>
 <translation id="4068776064906523561">Sidik jari yang disimpan</translation>
+<translation id="4070132839822635162">Jangan login</translation>
 <translation id="407173827865827707">Saat diklik</translation>
 <translation id="4072805772816336153">Coba lagi nanti</translation>
 <translation id="4074164314564067597">keyboard</translation>
@@ -6040,6 +6044,7 @@ Izin yang telah Anda berikan ke situs dan aplikasi dapat berlaku untuk akun ini.
 <translation id="5469540749878136997">Kosongkan memori menurut penggunaan</translation>
 <translation id="5469852975082458401">Anda dapat membuka halaman dengan kursor teks. Tekan F7 untuk menonaktifkan.</translation>
 <translation id="5470735824776589490">Mulai ulang diperlukan sebelum perangkat Anda dapat direset dengan Powerwash. <ph name="LINK_BEGIN" />Pelajari lebih lanjut<ph name="LINK_END" /></translation>
+<translation id="5470741195701938302">Angka</translation>
 <translation id="5471768120198416576">Halo! Saya suara text to speech Anda.</translation>
 <translation id="5472627187093107397">Simpan sandi untuk situs ini</translation>
 <translation id="5473062644742711742">Temukan alat aksesibilitas lainnya di Chrome Web Store</translation>
@@ -6876,6 +6881,7 @@ Izin yang telah Anda berikan ke situs dan aplikasi dapat berlaku untuk akun ini.
 <translation id="6101226222197207147">Aplikasi baru ditambahkan (<ph name="EXTENSION_NAME" />)</translation>
 <translation id="6102043788063419338">File ini diblokir oleh Perlindungan Lanjutan.</translation>
 <translation id="6103681770816982672">Perhatian: Anda beralih ke saluran pengembang</translation>
+<translation id="610395411842312282">Kelompokkan dua jendela yang berdampingan</translation>
 <translation id="6104068876731806426">Akun Google</translation>
 <translation id="6104667115274478616">Kelola setelan audio ChromeOS</translation>
 <translation id="6104796831253957966">Antrean printer penuh</translation>
@@ -7354,6 +7360,7 @@ Izin yang telah Anda berikan ke situs dan aplikasi dapat berlaku untuk akun ini.
 <translation id="6469702164109431067">Sandi dan kunci sandi</translation>
 <translation id="6470823736074966819">Bisukan Notifikasi</translation>
 <translation id="6472893788822429178">Tampilkan tombol Beranda</translation>
+<translation id="6473315466413288899">Pilih opsi</translation>
 <translation id="6474498546677193336">Tidak dapat mengurungkan berbagi karena ada aplikasi yang menggunakan folder ini. Berbagi folder akan diurungkan saat berikutnya Linux dimatikan.</translation>
 <translation id="6474884162850599008">Memutuskan hubungan akun Google Drive</translation>
 <translation id="6475294023568239942">Kosongkan ruang disk atau ubah ukuran disk Linux di Setelan</translation>
@@ -10818,6 +10825,7 @@ Izin yang telah Anda berikan ke situs dan aplikasi dapat berlaku untuk akun ini.
 <translation id="9031811691986152304">mencoba lagi</translation>
 <translation id="9032004780329249150">Gunakan sandi Anda di perangkat iOS</translation>
 <translation id="9032097289595078011">Nonaktifkan Sambungan Cepat</translation>
+<translation id="9032513103438497286">Blokir aplikasi yang diinstal di <ph name="DEVICE_TYPE" /> ini. Untuk membatasi download aplikasi atau konten, buka Setelan Google Play.</translation>
 <translation id="9033765790910064284">Tetap lanjutkan</translation>
 <translation id="9033857511263905942">&amp;Tempel</translation>
 <translation id="9034408118624208974">Baru menggunakan Chromebook? Aktifkan sinkronisasi agar preferensi Anda dicadangkan.</translation>

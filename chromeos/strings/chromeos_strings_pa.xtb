@@ -13,6 +13,7 @@
 <translation id="1049663189809099096">ਪੇਸਟਲ ਪੀਲਾ</translation>
 <translation id="1056898198331236512">ਚਿਤਾਵਨੀ</translation>
 <translation id="1059913517121127803">ਸਕੈਨ ਕਰਨਾ ਸ਼ੁਰੂ ਨਹੀਂ ਕੀਤਾ ਜਾ ਸਕਿਆ</translation>
+<translation id="1061864016440983342">ਟਿਕਾਣੇ ਤੋਂ ਬਿਨਾਂ ਵਰਤੋ</translation>
 <translation id="1062823486781306604"><ph name="COUNT" /> ਵਿੱਚੋਂ <ph name="INDEX" />, <ph name="NAME" />।</translation>
 <translation id="1070066693520972135">WEP</translation>
 <translation id="1071587090247825784">Firewall ਦਾ ਪਤਾ ਲੱਗਾ</translation>
@@ -217,6 +218,7 @@
 <translation id="2080070583977670716">ਹੋਰ ਸੈਟਿੰਗਾਂ</translation>
 <translation id="2082932131694554252">ਜਿੰਮੇ ਲਗਾਈ ਗਈ ਕੀ-ਬੋਰਡ ਕੁੰਜੀ</translation>
 <translation id="2085089206770112532">ਡਿਸਪਲੇ ਦੀ ਚਮਕ ਘਟਾਉਣ ਵਾਲੀ ਕੁੰਜੀ</translation>
+<translation id="2086091080968010660">ਸਮੇਂ ਦੇ ਆਧਾਰ 'ਤੇ ਕੀਤੀਆਂ ਗਈਆਂ ਤਬਦੀਲੀਆਂ ਸ਼ਾਇਦ ਸਟੀਕ ਨਾ ਹੋਣ। ਸੈਟਿੰਗਾਂ ਵਿੱਚ ਸਿਸਟਮ ਟਿਕਾਣਾ ਪਹੁੰਚ ਨੂੰ ਚਾਲੂ ਕਰੋ।</translation>
 <translation id="2102231663024125441">ਲਿਖਤ ਸੰਪਾਦਨ</translation>
 <translation id="2105810540595158374">ਡੀਵਾਈਸ ਇੱਕ ਗੇਮ ਕੰਟਰੋਲਰ ਹੈ।</translation>
 <translation id="2119172414412204879"><ph name="BOARD_NAME" />, ਵਰਜਨ <ph name="MILESTONE_VERSION" /></translation>
@@ -258,6 +260,7 @@
 <translation id="2279051792571591988">ਪੂਰਵ-ਨਿਰਧਾਰਿਤ ਸੈਟਿੰਗਾਂ ਨੂੰ ਮੁੜ-ਬਹਾਲ ਕਰੋ</translation>
 <translation id="2286454467119466181">ਸਧਾਰਨ</translation>
 <translation id="2287186687001756809">ਕੋਈ ਚਿੱਤਰ ਉਪਲਬਧ ਨਹੀਂ ਹੈ। ਫ਼ੋਟੋਆਂ ਸ਼ਾਮਲ ਕਰਨ ਲਈ, <ph name="LINK" /> ’ਤੇ ਜਾਓ</translation>
+<translation id="2294577623958216786">ਮੌਜਦਾ ਸਮਾਂ-ਸੂਚੀ <ph name="SUNRISE" />-<ph name="SUNSET" /> 'ਤੇ ਸੈੱਟ ਹੈ। ਸੂਰਜ ਡੁੱਬਣ ਅਤੇ ਸੂਰਜ ਚੜ੍ਹਨ ਦੀ ਸਮਾਂ-ਸੂਚੀ ਨੂੰ ਸਵੈਚਲਿਤ ਤੌਰ 'ਤੇ ਅੱਪਡੇਟ ਕਰਨ ਲਈ, ਸਿਸਟਮ ਟਿਕਾਣਾ ਪਹੁੰਚ ਨੂੰ ਚਾਲੂ ਕਰੋ।</translation>
 <translation id="2305172810646967500">ਕਾਲਾ</translation>
 <translation id="2307344026739914387">ਮੌਜੂਦਾ ਕੁੰਜੀਆਂ ਦਾ ਜੋੜਾ ਵਰਤੋ</translation>
 <translation id="2308243864813041101">ਅੱਪਡੇਟ ਦੀ ਪ੍ਰਕਿਰਿਆ ਜਾਰੀ ਰੱਖਣ ਲਈ <ph name="DEVICE_NAME" /> ਦੀ USB ਕੇਬਲ ਨੂੰ ਅਣਪਲੱਗ ਕਰੋ</translation>
@@ -961,6 +964,7 @@
 <translation id="6411934471898487866">ਕੀ-ਬੋਰਡ ਦੀ ਚਮਕ</translation>
 <translation id="6412715219990689313">ਬਿਲਟ-ਇਨ ਕੀ-ਬੋਰਡ</translation>
 <translation id="6417265370957905582">Google Assistant</translation>
+<translation id="6419454453018688975">ਸਿਸਟਮ ਟਿਕਾਣਾ ਪਹੁੰਚ ਨੂੰ ਚਾਲੂ ਕਰੋ</translation>
 <translation id="6423239382391657905">OpenVPN</translation>
 <translation id="6439505561246192797">ਕਮਜ਼ੋਰ (<ph name="SIGNAL_STRENGTH" />)</translation>
 <translation id="6447630859861661624">ਖਾਤਾ ਸੈਟਿੰਗਾਂ 'ਤੇ ਜਾਓ</translation>

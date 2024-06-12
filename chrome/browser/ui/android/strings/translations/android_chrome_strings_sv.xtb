@@ -376,7 +376,6 @@ Din krypterade data kan endast läsas av en person som har din lösenfras. Löse
 <translation id="2904414404539560095">Listan över enheter som fliken kan delas med öppnades och tar upp hela skärmen.</translation>
 <translation id="2908243544703713905">Det finns olästa artiklar</translation>
 <translation id="2909615210195135082">Googles aviseringsplattform</translation>
-<translation id="2912296070571964914">Hantera ämnen som du är intresserad av</translation>
 <translation id="2912345083818861431">Använd skärmlåset för att se öppna inkognitoflikar</translation>
 <translation id="2923908459366352541">Namnet är ogiltigt</translation>
 <translation id="2932150158123903946">Lagring för Google <ph name="APP_NAME" /></translation>
@@ -452,7 +451,6 @@ Din krypterade data kan endast läsas av en person som har din lösenfras. Löse
 <translation id="3259831549858767975">Gör allt på sidan mindre</translation>
 <translation id="3264259168916048410">Datorn vill använda den här enheten för att logga in på en webbplats</translation>
 <translation id="3265093782546847662">Alla sidor på <ph name="DOMAIN" /></translation>
-<translation id="3265534588625245297">Hantera de webbplatser du följer</translation>
 <translation id="3269093882174072735">Läs in bild</translation>
 <translation id="3280562213547448728">Röstsökning</translation>
 <translation id="3282568296779691940">Logga in i Chrome</translation>
@@ -625,7 +623,6 @@ Din krypterade data kan endast läsas av en person som har din lösenfras. Löse
 <translation id="4195643157523330669">Öppna i ny flik</translation>
 <translation id="4197828496439691735">{NUM_TABS,plural, =1{1 flik på den här enheten}other{# flikar på den här enheten}}</translation>
 <translation id="4198423547019359126">Det fins inga tillgängliga nedladdningsplatser</translation>
-<translation id="4198664641856813238">Logga in om du vill ha dina bokmärken, lösenord med mera på alla dina enheter</translation>
 <translation id="4202218894997543208">Ämnen som du har blockerat</translation>
 <translation id="4214315110991671325">Om du tillåter cookies kan Chrome använda dem för att läsa in innehåll i förväg.</translation>
 <translation id="4216511743389425832">Lyssna på sidan</translation>
@@ -825,7 +822,6 @@ Det kan finnas andra former av webbhistorik i Google-kontot på <ph name="BEGIN_
 <translation id="510275257476243843">1 timme kvar</translation>
 <translation id="5114895953710637392">Arbetsbladet för appfilter har stängts.</translation>
 <translation id="5115811374190515607">i <ph name="PRODUCT_NAME" /></translation>
-<translation id="5118713593561876160">Intressen</translation>
 <translation id="5122378528687922675">Prata med din förälder (<ph name="PARENT_NAME_1" /> eller <ph name="PARENT_NAME_2" />) om du behöver hjälp</translation>
 <translation id="5123685120097942451">Inkognitoflik</translation>
 <translation id="5132942445612118989">Synkronisera lösenord, historik med mera på alla dina enheter</translation>
@@ -839,7 +835,6 @@ Det kan finnas andra former av webbhistorik i Google-kontot på <ph name="BEGIN_
 <translation id="5171045022955879922">Sök eller ange webbadress</translation>
 <translation id="5174700554036517242">Fliken är tillbaka till ursprunglig höjd</translation>
 <translation id="5180063720319462041">Sidan har översatts till <ph name="TARGET_LANGUAGE" /></translation>
-<translation id="5186634140793586141">Hantera ämnen och sökningar som du är intresserad av</translation>
 <translation id="5191251636205085390">Läs mer om ny teknik som med tiden kan ersätta tredjepartscookies och hur du kan styra den</translation>
 <translation id="5204967432542742771">Ange lösenord</translation>
 <translation id="5206168361184759344">{FILE_COUNT,plural, =1{Filen laddas ned …}other{# filer laddas ned …}}</translation>
@@ -1087,7 +1082,6 @@ Vissa webbplatser kan till exempel svara på begäran genom att visa annonser so
 <translation id="6437478888915024427">Sidinformation</translation>
 <translation id="6440291723980579689">Sidor läses endast in när du har öppnat dem</translation>
 <translation id="6441734959916820584">Namnet är för långt</translation>
-<translation id="6447558397796644647">Det går inte att hitta det bokmärket. Kontrollera stavningen eller lägg till ett nytt bokmärke.</translation>
 <translation id="6459045781120991510">Enkäter</translation>
 <translation id="6461962085415701688">Det går inte att öppna filen</translation>
 <translation id="6464977750820128603">Du kan se vilka webbplatser du besökt i Chrome och ställa in en timer för dem.\n\nGoogle får information om vilka webbplatser du har ställt in en timer för och hur länge du har stannat på dem. Informationen används för att förbättra Digitalt välmående.</translation>

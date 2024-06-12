@@ -64,7 +64,6 @@
 <translation id="1201402288615127009">পরের</translation>
 <translation id="1210557957257435379">স্ক্রিন রেকর্ডিং</translation>
 <translation id="121097972571826261">শব্দ অনুসারে এগিয়ে যান</translation>
-<translation id="1217633719248931900">অ্যাপে যান</translation>
 <translation id="1218444235442067213"><ph name="APP_NAME" />, Play Store অ্যাপ</translation>
 <translation id="1225748608451425081">কোনও পরিচিত সমস্যার কারণে আপনার Chromebook লক হয়ে গেছে। আপনি এতক্ষণ পর আবার সাইন-ইন করতে পারবেন: <ph name="TIME_LEFT" />।</translation>
 <translation id="1229194443904279055">বেছে নেওয়ার কাজটি থামান</translation>
@@ -327,7 +326,6 @@
 <translation id="2293443480080733021">আপনি কীসের উপর ফোকাস করতে চান? টাস্ক যোগ করতে Enter 'কী' প্রেস করুন।</translation>
 <translation id="229397294990920565">মোবাইল ডেটা বন্ধ করা হচ্ছে...</translation>
 <translation id="2295777434187870477">মাইক্রোফোন চালু করা আছে, টগল করলে এটি মিউট হয়ে যাবে।</translation>
-<translation id="2298170939937364391">ফুল-স্ক্রিন ম্যাগনিফায়ার চালু করা আছে। আবার Ctrl+Search+M প্রেস করে সেটিকে বন্ধ করুন।</translation>
 <translation id="2302092602801625023">এই অ্যাকাউন্টটি Family Link দ্বারা ম্যানেজ করা</translation>
 <translation id="2303600792989757991">উইন্ডোর ওভারভিউ টগল করুন</translation>
 <translation id="2305738328104302723">Google Tasks-এর তালিকা: <ph name="GLANCEABLES_TASKS_LIST_NAME" /></translation>
@@ -512,7 +510,6 @@
 <translation id="2977598380246111477">পরবর্তী নম্বর</translation>
 <translation id="2985148236010982088">সব অ্যাপ দেখুন</translation>
 <translation id="2992327365391326550">ডিভাইসের মাইক্রোফোন বোতাম বন্ধ আছে।</translation>
-<translation id="2996462380875591307">ডক করা ম্যাগনিফায়ার চালু আছে। আবার Ctrl+Search+D প্রেস করে সেটিকে বন্ধ করুন।</translation>
 <translation id="3000461861112256445">মোনো অডিও</translation>
 <translation id="3001391739687111021">স্ক্রিনের সাইজ এডিট করুন</translation>
 <translation id="3009178788565917040">আউটপুট</translation>
@@ -1133,6 +1130,7 @@
 <translation id="5208059991603368177">চালু আছে</translation>
 <translation id="5216991270656129561"><ph name="TIME" /> পর্যন্ত বন্ধ আছে</translation>
 <translation id="5222676887888702881">সাইন-আউট করুন</translation>
+<translation id="5228195526683428788">স্প্লিট স্ক্রিন বিভাজক</translation>
 <translation id="5229343007215035173">প্রাইভেসি স্ক্রিন চালু/বন্ধ করুন</translation>
 <translation id="5230516054153933099">উইন্ডো</translation>
 <translation id="5234764350956374838">খারিজ</translation>
@@ -1519,6 +1517,7 @@
 <translation id="6613765291890844037"><ph name="STORAGE_TOTAL_SIZE" />-এর মধ্যে | <ph name="STORAGE_IN_USE_SIZE" /> স্টোরেজ ব্যবহার হচ্ছে</translation>
 <translation id="6614169507485700968">গোপনীয়তা স্ক্রিন চালু করা আছে</translation>
 <translation id="6622679827379792051">আপনার ফোনের অ্যাপ দেখা সংক্রান্ত পদ্ধতি সেট-আপ করুন</translation>
+<translation id="662279009180869175">স্প্লিট স্ক্রিনের সাইজ ছোট বড় করতে ডান বা বাঁদিকের তীরচিহ্ন ব্যবহার করুন</translation>
 <translation id="6624493541160101248">বর্তমান ডেস্ক: <ph name="DESK_NAME" />। <ph name="DESK_COUNT" />টির মধ্যে <ph name="DESK_INDEX" /> নম্বর ডেস্ক।</translation>
 <translation id="6625718907317144388">ভিউ সংক্রান্ত নিরাপত্তা চালু থাকার জন্য <ph name="APP_1_TITLE" />, <ph name="APP_2_TITLE" />-এর এবং অন্যান্য বিজ্ঞপ্তি লুকানো আছে</translation>
 <translation id="6627638273713273709">সার্চ+Shift+K</translation>
@@ -1537,6 +1536,7 @@
 <translation id="6670153871843998651">ডেস্ক ৩</translation>
 <translation id="6671495933530132209">ছবি কপি করুন</translation>
 <translation id="6671661918848783005">Chromebook আনলক করা যায়নি</translation>
+<translation id="6676552993057022464">স্প্লিট স্ক্রিনের সাইজ ছোট বড় করতে উর্ধ্বমুখী এবং নিম্নমুখী তীরচিহ্ন ব্যবহার করুন</translation>
 <translation id="6682029141988159141">ক্লিপবোর্ড থেকে কন্টেন্ট পেস্ট করুন</translation>
 <translation id="6683022854667115063">হেডফোন</translation>
 <translation id="6686023075541098243">আপনার ফোনের বিজ্ঞপ্তি দেখা সংক্রান্ত পদ্ধতি সেট-আপ করুন</translation>
@@ -2137,7 +2137,6 @@
 <translation id="8982906748181120328">'নিয়ারবাই শেয়ার'-এর ডিভাইস দৃশ্যমানতা</translation>
 <translation id="8983038754672563810">HSPA</translation>
 <translation id="8990809378771970590"><ph name="IME_NAME" /> ব্যবহার করা হচ্ছে</translation>
-<translation id="8991617137207906966">কালার ইনভার্সন মোড চালু করা আছে। আবার সেটিকে বন্ধ করার জন্য Ctrl+Search+H প্রেস করুন।</translation>
 <translation id="899350903320462459">বিজ্ঞপ্তি সম্পর্কিত অ্যাকশনের জন্য <ph name="LOGIN_ID" /> হিসেবে ডিভাইস আনলক করুন</translation>
 <translation id="8993733019280019776">আপনি কি কথা বলছেন? আপনার মাইক বন্ধ করা আছে। মাইকটি বেছে নিয়ে সেটি চালু করুন।</translation>
 <translation id="9000771174482730261">স্টোরেজ ম্যানেজ করুন</translation>

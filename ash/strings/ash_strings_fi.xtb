@@ -64,7 +64,6 @@ Pääset alkuun esimerkiksi näillä tavoilla.</translation>
 <translation id="1201402288615127009">Seuraava</translation>
 <translation id="1210557957257435379">Näytön tallentaja</translation>
 <translation id="121097972571826261">Yksi sana eteenpäin</translation>
-<translation id="1217633719248931900">Siirry sovellukseen</translation>
 <translation id="1218444235442067213"><ph name="APP_NAME" />, Play Kauppa ‑sovellus</translation>
 <translation id="1225748608451425081">Chromebook on lukittu tunnetun ongelman takia. Voit kirjautua sisään, kun on kulunut <ph name="TIME_LEFT" />.</translation>
 <translation id="1229194443904279055">Lopeta valitseminen</translation>
@@ -252,6 +251,7 @@ Pääset alkuun esimerkiksi näillä tavoilla.</translation>
 <translation id="1915307458270490472">Katkaise puhelu</translation>
 <translation id="1918022425394817322">Kamera kohdistettu oikeaan yläkulmaan</translation>
 <translation id="1923539912171292317">Automaattiset klikkaukset</translation>
+<translation id="1925320505152357008">alle 1 min</translation>
 <translation id="1928739107511554905">Voit asentaa päivityksen käynnistämällä Chromebookisi uudelleen kosketusnäytön avulla niin, että näppäimistö on kytkettynä.</translation>
 <translation id="1948405482892809935">Vaihda seuraavaan käyttäjään</translation>
 <translation id="1951012854035635156">Assistant</translation>
@@ -328,7 +328,6 @@ Pääset alkuun esimerkiksi näillä tavoilla.</translation>
 <translation id="2293443480080733021">Mihin asiaan haluaisit keskittyä? Lisää tehtävä painamalla Enter.</translation>
 <translation id="229397294990920565">Mobiilidataa laitetaan pois päältä…</translation>
 <translation id="2295777434187870477">Mikrofoni on päällä, asetuksen vaihtaminen mykistää äänitulon.</translation>
-<translation id="2298170939937364391">Koko näytön suurennus on käytössä. Poista se käytöstä painamalla uudelleen Ctrl + haku + M.</translation>
 <translation id="2302092602801625023">Tiliä ylläpidetään Family Linkissä</translation>
 <translation id="2303600792989757991">Vaihda ikkunan yleiskatsausta</translation>
 <translation id="2305738328104302723">Google-tehtävälista: <ph name="GLANCEABLES_TASKS_LIST_NAME" /></translation>
@@ -513,7 +512,6 @@ Pääset alkuun esimerkiksi näillä tavoilla.</translation>
 <translation id="2977598380246111477">Seuraava numero</translation>
 <translation id="2985148236010982088">Katso kaikki sovellukset</translation>
 <translation id="2992327365391326550">Laitteen mikrofonipainike ei ole päällä.</translation>
-<translation id="2996462380875591307">Kiinnitetty suurennus on käytössä. Poista se käytöstä painamalla uudelleen Ctrl + haku + D.</translation>
 <translation id="3000461861112256445">Monoääni</translation>
 <translation id="3001391739687111021">Muokkaa näytön kokoa</translation>
 <translation id="3009178788565917040">Äänentoisto</translation>
@@ -607,6 +605,7 @@ Pääset alkuun esimerkiksi näillä tavoilla.</translation>
 <translation id="334927402682780278">Valitse tekstiä kohdistimesta rivin loppuun</translation>
 <translation id="3349345708646875009">Avaa tehtävänhallinta</translation>
 <translation id="3364721542077212959">Näyttökynätyökalut</translation>
+<translation id="3365281428003534650">Ajastin, tehtävä ja musiikki</translation>
 <translation id="3365977133351922112">Puhelimesi on liian kaukana. Siirrä puhelin lähemmäs.</translation>
 <translation id="3368922792935385530">Yhdistetty</translation>
 <translation id="3369111525500416043">Määräaika pian</translation>
@@ -910,6 +909,7 @@ Joitakin ominaisuuksia on rajoitettu akunkeston parantamiseksi.</translation>
 <translation id="4406883609789734330">Livetekstitys</translation>
 <translation id="4412698727486357573">Ohjekeskus</translation>
 <translation id="4412944820643904175"><ph name="FEATURE_NAME" /> ei ole päällä.</translation>
+<translation id="4417647906073317561">Keskittymistilan asetukset. Aseta ajastin, tehtävä ja musiikki, niin pääset vauhtiin.</translation>
 <translation id="4424159417645388645">Työpöytä 5</translation>
 <translation id="4430019312045809116">Äänenvoimakkuus</translation>
 <translation id="4441283832827406317">Sovellukset on lajiteltu nimen perusteella</translation>
@@ -1865,6 +1865,7 @@ Sammuta laite painamalla sen virtapainiketta pitkään uudelleen.</translation>
         <ph name="MANAGED" />
         <ph name="IME" />
         <ph name="LOCALE" /></translation>
+<translation id="7899977217122813285">Ilmoitukset on mykistetty klo <ph name="TIME" /> asti keskittymisen aikana</translation>
 <translation id="7901190436359881020">Vaihda ikkunoita</translation>
 <translation id="7901405293566323524">Phone Hub</translation>
 <translation id="7902625623987030061">Kosketa sormenjälkitunnistinta</translation>
@@ -2145,7 +2146,6 @@ Sammuta laite painamalla sen virtapainiketta pitkään uudelleen.</translation>
 <translation id="8982906748181120328">Lähinäkyvyys</translation>
 <translation id="8983038754672563810">HSPA</translation>
 <translation id="8990809378771970590"><ph name="IME_NAME" /> käytössä</translation>
-<translation id="8991617137207906966">Käänteiset värit ‑tila on käytössä. Voit laittaa sen pois päältä painamalla uudelleen Ctrl + haku + H.</translation>
 <translation id="899350903320462459">Avaa laitteen lukitus tunnuksella <ph name="LOGIN_ID" />, niin voit käyttää ilmoitustoimintoa</translation>
 <translation id="8993733019280019776">Puhutko nyt? Mikrofoni on pois päältä. Laita mikrofoni päälle valitsemalla se.</translation>
 <translation id="9000771174482730261">HALLINNOI TALLENNUSTILAA</translation>

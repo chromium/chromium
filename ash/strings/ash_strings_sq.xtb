@@ -64,7 +64,6 @@ Ja disa gjëra që mund të provosh për të filluar.</translation>
 <translation id="1201402288615127009">Para</translation>
 <translation id="1210557957257435379">regjistrimi i ekranit</translation>
 <translation id="121097972571826261">Një fjalë përpara</translation>
-<translation id="1217633719248931900">Shko tek aplikacioni</translation>
 <translation id="1218444235442067213"><ph name="APP_NAME" />, aplikacioni "Dyqani i Play"</translation>
 <translation id="1225748608451425081">Pajisja jote Chromebook është kyçur për shkak të një problemi të njohur. Ti do të mund të identifikohesh pas: <ph name="TIME_LEFT" />.</translation>
 <translation id="1229194443904279055">Ndalo zgjedhjen</translation>
@@ -327,7 +326,6 @@ Ja disa gjëra që mund të provosh për të filluar.</translation>
 <translation id="2293443480080733021">Në çfarë dëshiron të fokusohesh? Shtyp "Enter" për të shtuar detyrën.</translation>
 <translation id="229397294990920565">Të dhënat celulare po çaktivizohen...</translation>
 <translation id="2295777434187870477">Mikrofoni është aktiv. Ndryshimi i tij do ta çaktivizojë hyrjen.</translation>
-<translation id="2298170939937364391">"Zmadhuesi i ekranit të plotë" u aktivizua. Shtyp përsëri Ctrl+Kërko+M për ta çaktivizuar.</translation>
 <translation id="2302092602801625023">Kjo llogari menaxhohet nga Family Link</translation>
 <translation id="2303600792989757991">Ndrysho përmbledhjen e dritares</translation>
 <translation id="2305738328104302723">Lista e detyrave të Google: <ph name="GLANCEABLES_TASKS_LIST_NAME" /></translation>
@@ -512,7 +510,6 @@ Ja disa gjëra që mund të provosh për të filluar.</translation>
 <translation id="2977598380246111477">Numri tjetër</translation>
 <translation id="2985148236010982088">Shiko të gjitha aplikacionet</translation>
 <translation id="2992327365391326550">Butoni i mikrofonit të pajisjes është i çaktivizuar.</translation>
-<translation id="2996462380875591307">"Zmadhuesi i stacionuar" u aktivizua. Shtyp sërish "Ctrl+Kërko+D" për ta çaktivizuar.</translation>
 <translation id="3000461861112256445">Audioja mono</translation>
 <translation id="3001391739687111021">Modifiko madhësinë e ekranit</translation>
 <translation id="3009178788565917040">Dalja</translation>
@@ -2139,7 +2136,6 @@ Për ta fikur pajisjen, shtyp dhe mbaj shtypur përsëri butonin e energjisë n�
 <translation id="8982906748181120328">Dukshmëria</translation>
 <translation id="8983038754672563810">HSPA</translation>
 <translation id="8990809378771970590">Po përdor <ph name="IME_NAME" /></translation>
-<translation id="8991617137207906966">Modaliteti i anasjelljes së ngjyrës u aktivizua. Shtyp përsëri Ctrl+Kërko+H për ta çaktivizuar.</translation>
 <translation id="899350903320462459">Shkyç pajisjen si <ph name="LOGIN_ID" /> për të kryer veprimin e njoftimit</translation>
 <translation id="8993733019280019776">Po flet? Mikrofoni yt është joaktiv. Zgjidh mikrofonin për ta aktivizuar.</translation>
 <translation id="9000771174482730261">MENAXHO HAPËSIRËN RUAJTËSE</translation>

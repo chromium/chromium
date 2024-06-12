@@ -64,7 +64,6 @@
 <translation id="1201402288615127009">Tovább</translation>
 <translation id="1210557957257435379">felvétel készítése a képernyőről</translation>
 <translation id="121097972571826261">Előrelépés szavanként</translation>
-<translation id="1217633719248931900">Ugrás az alkalmazásra</translation>
 <translation id="1218444235442067213"><ph name="APP_NAME" />, Play Áruház alkalmazás</translation>
 <translation id="1225748608451425081">Chromebookját ismert probléma miatt zároltuk. Ennyi idő után jelentkezhet be újra: <ph name="TIME_LEFT" />.</translation>
 <translation id="1229194443904279055">Kijelölés leállítása</translation>
@@ -327,7 +326,6 @@
 <translation id="2293443480080733021">Mire szeretne összpontosítani? A feladat hozzáadásához nyomja meg az Enter billentyűt.</translation>
 <translation id="229397294990920565">Mobiladat-kapcsolat kikapcsolása…</translation>
 <translation id="2295777434187870477">A mikrofon be van kapcsolva, a gombra kattintva elnémítja.</translation>
-<translation id="2298170939937364391">Teljes képernyős nagyító bekapcsolva. A kikapcsoláshoz nyomja le ismét a Ctrl + Keresés + M billentyűparancsot.</translation>
 <translation id="2302092602801625023">Ezt a fiókot a Family Linkkel kezelik</translation>
 <translation id="2303600792989757991">Ablakáttekintési mód váltása</translation>
 <translation id="2305738328104302723">Google-feladatlista: <ph name="GLANCEABLES_TASKS_LIST_NAME" /></translation>
@@ -512,7 +510,6 @@
 <translation id="2977598380246111477">Következő szám</translation>
 <translation id="2985148236010982088">Összes alkalmazás megjelenítése</translation>
 <translation id="2992327365391326550">Az eszköz mikrofongombját kikapcsolták.</translation>
-<translation id="2996462380875591307">Dokkolt nagyító bekapcsolva. A kikapcsoláshoz nyomja le ismét a Ctrl+Keresés+D billentyűparancsot.</translation>
 <translation id="3000461861112256445">Monó hang</translation>
 <translation id="3001391739687111021">Képernyőméret módosítása</translation>
 <translation id="3009178788565917040">Kimenet</translation>
@@ -2140,7 +2137,6 @@ Az eszköz leállításához tartsa ismét nyomva az eszköz bekapcsológombját
 <translation id="8982906748181120328">Közeli láthatóság</translation>
 <translation id="8983038754672563810">HSPA</translation>
 <translation id="8990809378771970590"><ph name="IME_NAME" /> használata</translation>
-<translation id="8991617137207906966">Színinvertálás mód engedélyezve. A funkció kikapcsolásához nyomja meg újra a Ctrl + Keresés + H billentyűparancsot.</translation>
 <translation id="899350903320462459">Az eszköz zárolásának feloldása az értesítési művelet végrehajtásához a következő felhasználó által: <ph name="LOGIN_ID" />.</translation>
 <translation id="8993733019280019776">Most beszél? A mikrofon ki van kapcsolva. Válassza ki a mikrofont a bekapcsolásához.</translation>
 <translation id="9000771174482730261">TÁRHELY KEZELÉSE</translation>

@@ -122,6 +122,7 @@
 <translation id="2765403129283291972">Chrome tarvitsee oikeuden käyttää mikrofoniasi tällä sivustolla.</translation>
 <translation id="2770231113462710648">Vaihda oletusselaimeksi:</translation>
 <translation id="2775140325783767197">Chrome ei voi tarkistaa salasanojasi. Tarkista internetyhteytesi.</translation>
+<translation id="2797864378188255696">Kun kirjaudut Googlen palveluihin (esim. Gmailiin tai YouTubeen) tilillä <ph name="USER_EMAIL" />, voit kirjautua Chromeen automaattisesti samalla tilillä</translation>
 <translation id="2799223571221894425">Käynnistä uudelleen</translation>
 <translation id="2825024317344269723">Vaarallinen sivusto. Chrome poisti ilmoitukset.</translation>
 <translation id="2846251086934905009">Asennusvirhe: Asennusohjelmaa ei suoritettu loppuun. Asennus on keskeytetty.</translation>
@@ -294,6 +295,7 @@
 <translation id="5334309298019785904">Chrome-käyttöjärjestelmä ei voinut synkronoida dataa, koska synkronointi ei ole käytettävissä verkkotunnuksessasi.</translation>
 <translation id="5334487786912937552">Chrome tarvitsee tallennustilan pääsyoikeudet tiedostojen lataamiseen</translation>
 <translation id="5337648990166757586">Valinnainen: Auta parantamaan Chrome-käyttöjärjestelmän ominaisuuksia ja suorituskykyä lähettämällä diagnostiikka- ja käyttödataa Googlelle automaattisesti.</translation>
+<translation id="5345497718959596593">Kun olet kirjautunut sisään, voit käyttää esimerkiksi Google-tilin salasanoja Chromessa</translation>
 <translation id="5357889879764279201">Apua ChromeOS Flexin kanssa</translation>
 <translation id="5368118228313795342">Lisäkoodi: <ph name="EXTRA_CODE" />.</translation>
 <translation id="5386244825306882791">Määrittää myös Chromen ja omnibox-hakujen aloitussivun.</translation>

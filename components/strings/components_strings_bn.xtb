@@ -47,6 +47,7 @@
 <translation id="1082026381988252344">আপনার শেয়ার করা ট্যাবের কন্টেন্ট স্ক্রল ও জুম করুন</translation>
 <translation id="1089439967362294234">পাসওয়ার্ড পরিবর্তন করুন</translation>
 <translation id="1090629319939036170">ভিআর (VR) মেনু</translation>
+<translation id="1091779689406092804">স্ক্রিনশট</translation>
 <translation id="1094777233105318927">আপনার ব্রাউজার, OS, ডিভাইস, ইনস্টল করা সফ্টওয়্যার এবং ফাইল সম্পর্কিত তথ্য</translation>
 <translation id="1096545575934602868">এই ফিল্ডে <ph name="MAX_ITEMS_LIMIT" />টির বেশি এন্ট্রি লেখা যাবে না। অন্য সব এন্ট্রি বাতিল করা হবে।</translation>
 <translation id="1097803577928227769">আঞ্চলিক পার্ক ও উদ্যান</translation>
@@ -472,6 +473,7 @@
 <translation id="1840009953725035797">হোম থিয়েটার সিস্টেম</translation>
 <translation id="1842969606798536927">পেমেন্ট করুন</translation>
 <translation id="1846432862466000825">প্লাস্টিক (আর্কাইভাল)</translation>
+<translation id="1848640291751752317">ডাউনলোড</translation>
 <translation id="1848982255014129637">ফটো (হাই-গ্লসি)</translation>
 <translation id="1853392626017747777">ভার্চুয়াল কার্ড এনরোলমেন্ট বন্ধ হয়ে গেছে</translation>
 <translation id="1854180393107901205">কাস্ট করা বন্ধ করুন</translation>
@@ -753,6 +755,7 @@
 <translation id="2366689192918515749">মাংস ও সিফুড</translation>
 <translation id="2367567093518048410">স্তর</translation>
 <translation id="23703388716193220">গলফ খেলার সরঞ্জাম</translation>
+<translation id="2370368710215137370">আপলোড করা ফাইলের ধরন</translation>
 <translation id="2374629208601905275">আপনার অঞ্চলের আইনের ভিত্তিতে, Chrome আপনাকে ডিফল্ট সার্চ ইঞ্জিন বেছে নিতে বলবে। এইসব সার্চ ইঞ্জিন আপনার অঞ্চলে জনপ্রিয় এবং র‍্যান্ডম অর্ডারে দেখানো হয়।</translation>
 <translation id="2377241607395428273">গ্রাফিক্স ও অ্যানিমেশন সফ্টওয়্যার</translation>
 <translation id="2378084239755710604">কার্ড সেভ করার সুবিধা বন্ধ করা হয়েছে।</translation>
@@ -1421,6 +1424,7 @@
 <translation id="3682094733650754138">ঠিকানা লিখুন বিকল্প বেছে নেওয়া হয়েছে</translation>
 <translation id="3687920599421452763">ভ্যান ও মিনিভ্যান</translation>
 <translation id="3693327506115126094">আপনার পরিচয় কীভাবে যাচাই করবেন তা বেছে নিন</translation>
+<translation id="3698353241727597930">আপনার অ্যাডমিনিস্ট্রেটর, আপনার এন্টারপ্রাইজ ম্যানেজ করা <ph name="CLOUD_STORAGE" /> স্টোরেজে <ph name="FILES" /> সেভ করতে কনফিগার করেছেন। আপনি এইসব ফাইল মুছে দিলেও, এগুলি মনিটর করা, অডিট করা এবং স্টোর করা হতে পারে।</translation>
 <translation id="3698629142018988477">'সাইট তৈরি করুন' বোতাম, Google Sites-এ চটপট নতুন সাইট তৈরি করতে এটি ব্যবহার করুন</translation>
 <translation id="3701325639446035885">ইভেন্টের টিকিট বিক্রি</translation>
 <translation id="3701427423622901115">সব এক্সপেরিমেন্ট রিসেট ভ্যালুতে সেট করা হয়েছে, Chrome রিস্টার্ট করার পর এই পরিবর্তনগুলি প্রয়োগ করা হবে।</translation>
@@ -1496,6 +1500,7 @@
 <translation id="3826050100957962900">থার্ড-পার্টির সাইন-ইন</translation>
 <translation id="3827112369919217609">অ্যাবসোলিউট</translation>
 <translation id="3828924085048779000">ফাঁকা পাসফ্রেজের অনুমতি নেই৷</translation>
+<translation id="3830139096297532361">এই পিডিএফ অ্যাক্সেস করা যাচ্ছে না। টেক্সট এক্সট্র্যাকশন ফাইল ডাউনলোড করা যায়নি। পরে আবার চেষ্টা করুন।</translation>
 <translation id="3830470485672984938">আলাদা পাসকী ব্যবহার করুন</translation>
 <translation id="3831065134033923230">আপনার সেভ করা পাসওয়ার্ড ঠিক আছে কিনা তা চেক করুন</translation>
 <translation id="3831915413245941253"><ph name="ENROLLMENT_DOMAIN" /> অতিরিক্ত ক্রিয়াকলাপের জন্য এক্সটেনশন ইনস্টল করেছে। এক্সটেনশন আপনার কিছু ডেটা অ্যাক্সেস করতে পারে।</translation>
@@ -1670,6 +1675,7 @@
 <translation id="4202554117186904723">Fifth Roll</translation>
 <translation id="4203769790323223880">ক্যামেরা ব্যবহারের অনুমতি নেই</translation>
 <translation id="4203896806696719780"><ph name="BEGIN_LINK" />ফায়ারওয়াল এবং অ্যান্টিভাইরাস কনফিগারেশন পরীক্ষা করে দেখুন<ph name="END_LINK" /></translation>
+<translation id="4207195957038009075">Google Drive</translation>
 <translation id="4209092469652827314">বৃহত্</translation>
 <translation id="4210602799576081649">যাচাইকরণ কোডের মেয়াদ শেষ হয়েছে, একটি নতুন কোডের জন্য অনুরোধ জানান</translation>
 <translation id="421066178035138955">ভার্চুয়াল রিয়েলিটি ডিভাইস ও ডেটা ব্যবহার করার অনুমতি</translation>
@@ -2729,6 +2735,7 @@
 <translation id="6270066318535733958">বোটিং</translation>
 <translation id="6272088941196661550">Chrome ইতিহাসে প্রাসঙ্গিক অ্যাক্টিভিটি দেখতে সার্চ করা আবার চালু করুন</translation>
 <translation id="6272383483618007430">Google আপডেট</translation>
+<translation id="6278015583149890680">Google Drive এবং OneDrive</translation>
 <translation id="6280223929691119688">এই ঠিকানায় ডেলিভারি করা যাবে না। অন্য ঠিকানা বেছে নিন।</translation>
 <translation id="6284292079994426700">২৬ x ৩৮ ইঞ্চি</translation>
 <translation id="6284449872909111707">টেক্সট ও ইনস্ট্যান্ট মেসেজিং</translation>
@@ -3167,6 +3174,7 @@
 <translation id="7119063404975271297">টিভিতে নাটক</translation>
 <translation id="7119371694555167493">কপি করার সময় শেষ হয়ে গেছে</translation>
 <translation id="7119414471315195487">অন্যান্য ট্যাব বা প্রোগ্রাম বন্ধ করুন</translation>
+<translation id="7120588595737538743">ডাউনলোড এবং স্ক্রিনশট</translation>
 <translation id="7124354851782353862">আপনার CVC লিখুন</translation>
 <translation id="7129409597930077180">এই ঠিকানায় শিপিং করা যাবে না। অন্য ঠিকানা বেছে নিন।</translation>
 <translation id="7129809579943936035"><ph name="VALUE_PROP" /> <ph name="DETAILS" /></translation>
@@ -3366,6 +3374,7 @@
 <translation id="7483863401933039889"><ph name="CHROME_TIP" />, Chrome সম্পর্কিত পরামর্শ বাতিল করতে Tab ও তারপরে Enter প্রেস করুন।</translation>
 <translation id="7485085230273446323">ব্যবসা ও শিল্প সংক্রান্ত</translation>
 <translation id="7485870689360869515">কোনো ডেটা পাওয়া যায়নি৷</translation>
+<translation id="7486880426035242089">OneDrive</translation>
 <translation id="7489392576326061356">শ্যাম্পু ও কন্ডিশনার</translation>
 <translation id="7495528107193238112">এই কন্টেন্ট ব্লক করা হয়েছে। এই সমস্যার সমাধান করতে সাইটের মালিকের সাথে যোগাযোগ করুন।</translation>
 <translation id="749865518782565832">প্লাম্বিং</translation>

@@ -90,6 +90,9 @@
 <translation id="1390418506739274310">คุณอาจเห็นประวัติการเข้าชมจากแอปอื่นๆ ที่เปิดลิงก์ใน Chrome บัญชี Google อาจมีประวัติการท่องเว็บรูปแบบอื่นๆ ที่ <ph name="BEGIN_LINK" />myactivity.google.com<ph name="END_LINK" /></translation>
 <translation id="13931502444227376">หากต้องการดำเนินการต่อ <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> จะแชร์ชื่อ อีเมล และรูปโปรไฟล์ของคุณกับเว็บไซต์นี้ โปรดอ่าน<ph name="BEGIN_LINK1" />ข้อกำหนดในการให้บริการ<ph name="END_LINK1" />ของเว็บไซต์</translation>
 <translation id="1397811292916898096">ค้นหาด้วย <ph name="PRODUCT_NAME" /></translation>
+<translation id="1398057416966591719">คุณ<ph name="BEGIN_LINK1" />จัดการข้อมูล Chrome ที่บันทึกไว้<ph name="END_LINK1" />ได้ในบัญชี Google
+
+หากต้องการการตั้งค่าเพิ่มเติมที่ใช้ข้อมูลเพื่อปรับปรุงประสบการณ์การใช้งาน Chrome ให้ไปที่<ph name="BEGIN_LINK2" />บริการของ Google<ph name="END_LINK2" /></translation>
 <translation id="1407069428457324124">ธีมมืด</translation>
 <translation id="1407135791313364759">เปิดทั้งหมด</translation>
 <translation id="1409879593029778104">ระบบป้องกันการดาวน์โหลด <ph name="FILE_NAME" /> เพราะมีไฟล์นี้อยู่แล้ว</translation>
@@ -248,6 +251,7 @@
 <translation id="2286841657746966508">ที่อยู่สำหรับเรียกเก็บเงิน</translation>
 <translation id="228704530595896923">รายการตัวเลือกการแชร์</translation>
 <translation id="2297822946037605517">แชร์หน้าเว็บนี้</translation>
+<translation id="22981027763501686">ซิงค์เพื่อดูบุ๊กมาร์ก ประวัติการเข้าชม และอื่นๆ บนอุปกรณ์อื่นๆ</translation>
 <translation id="230115972905494466">ไม่พบอุปกรณ์ที่เข้ากันได้</translation>
 <translation id="2318045970523081853">แตะเพื่อโทร</translation>
 <translation id="2321086116217818302">กำลังเตรียมรหัสผ่าน…</translation>
@@ -376,7 +380,6 @@
 <translation id="2904414404539560095">รายการอุปกรณ์ที่จะแชร์แท็บด้วยเปิดอยู่ที่ระดับความสูงเต็มหน้าจอ</translation>
 <translation id="2908243544703713905">เรื่องราวที่ยังไม่อ่านพร้อมแล้ว</translation>
 <translation id="2909615210195135082">แพลตฟอร์มการแจ้งเตือนของ Google</translation>
-<translation id="2912296070571964914">จัดการหัวข้อที่คุณสนใจ</translation>
 <translation id="2912345083818861431">ใช้การล็อกหน้าจอเพื่อดูแท็บที่ไม่ระบุตัวตนที่เปิดไว้</translation>
 <translation id="2923908459366352541">ชื่อไม่ถูกต้อง</translation>
 <translation id="2932150158123903946">พื้นที่เก็บข้อมูล Google <ph name="APP_NAME" /></translation>
@@ -452,7 +455,6 @@
 <translation id="3259831549858767975">ย่อรายละเอียดทั้งหมดบนหน้า</translation>
 <translation id="3264259168916048410">คอมพิวเตอร์ต้องการใช้อุปกรณ์นี้เพื่อลงชื่อเข้าใช้เว็บไซต์</translation>
 <translation id="3265093782546847662">ทุกหน้าของ <ph name="DOMAIN" /></translation>
-<translation id="3265534588625245297">จัดการเว็บไซต์ที่คุณติดตาม</translation>
 <translation id="3269093882174072735">โหลดภาพ</translation>
 <translation id="3280562213547448728">ค้นหาด้วยเสียง</translation>
 <translation id="3282568296779691940">ลงชื่อเข้าใช้ Chrome</translation>
@@ -624,7 +626,6 @@
 <translation id="4195643157523330669">เปิดในแท็บใหม่</translation>
 <translation id="4197828496439691735">{NUM_TABS,plural, =1{1 แท็บในอุปกรณ์นี้}other{# แท็บในอุปกรณ์นี้}}</translation>
 <translation id="4198423547019359126">ไม่มีตำแหน่งการดาวน์โหลดที่ใช้ได้</translation>
-<translation id="4198664641856813238">ลงชื่อเข้าใช้เพื่อรับบุ๊กมาร์ก รหัสผ่าน และอื่นๆ ในอุปกรณ์ทุกเครื่อง</translation>
 <translation id="4202218894997543208">หัวข้อที่คุณบล็อก</translation>
 <translation id="4214315110991671325">Chrome อาจใช้คุกกี้เพื่อโหลดล่วงหน้าหากคุณอนุญาต</translation>
 <translation id="4216511743389425832">ฟังหน้านี้</translation>
@@ -824,7 +825,6 @@
 <translation id="510275257476243843">เหลือ 1 ชั่วโมง</translation>
 <translation id="5114895953710637392">ชีตตัวกรองแอปปิดอยู่</translation>
 <translation id="5115811374190515607">ไปยัง<ph name="PRODUCT_NAME" /></translation>
-<translation id="5118713593561876160">ความสนใจ</translation>
 <translation id="5122378528687922675">โปรดขอความช่วยเหลือจากผู้ปกครอง (<ph name="PARENT_NAME_1" /> หรือ <ph name="PARENT_NAME_2" />) หากต้องการ</translation>
 <translation id="5123685120097942451">แท็บที่ไม่ระบุตัวตน</translation>
 <translation id="5132942445612118989">ซิงค์รหัสผ่าน ประวัติการเข้าชม และอื่นๆ ในอุปกรณ์ทุกเครื่อง</translation>
@@ -838,7 +838,6 @@
 <translation id="5171045022955879922">ค้นหาหรือพิมพ์ URL</translation>
 <translation id="5174700554036517242">แท็บกลับไปเป็นความสูงเริ่มต้น</translation>
 <translation id="5180063720319462041">หน้าเว็บได้รับการแปลเป็นภาษา<ph name="TARGET_LANGUAGE" /></translation>
-<translation id="5186634140793586141">จัดการหัวข้อและการค้นหาที่คุณสนใจ</translation>
 <translation id="5191251636205085390">ดูข้อมูลและควบคุมเทคโนโลยีใหม่ๆ ที่มีจุดประสงค์เพื่อมาแทนที่คุกกี้ของบุคคลที่สาม</translation>
 <translation id="5204967432542742771">ป้อนรหัสผ่าน</translation>
 <translation id="5206168361184759344">{FILE_COUNT,plural, =1{กำลังดาวน์โหลดไฟล์…}other{กำลังดาวน์โหลด # ไฟล์…}}</translation>
@@ -856,6 +855,7 @@
 <translation id="5292796745632149097">ส่งไปที่</translation>
 <translation id="5301876394151419436">คุณลงชื่อเข้าใช้ด้วย <ph name="EMAIL" /> คุณหยุดการซิงค์ได้ทุกเมื่อในการตั้งค่า Google อาจปรับเปลี่ยน Search และบริการอื่นๆ ให้เหมาะกับคุณโดยอิงจากประวัติการเข้าชม</translation>
 <translation id="5304593522240415983">ต้องกรอกข้อมูลในช่องนี้</translation>
+<translation id="5306014156308790439">"เพิ่มไปยังคอลเลกชัน" ปิดใช้อยู่</translation>
 <translation id="5308380583665731573">เชื่อมต่อ</translation>
 <translation id="5316947901395241499">ผู้ดูแลระบบของคุณปิดการบันทึกรหัสผ่าน</translation>
 <translation id="5317780077021120954">บันทึก</translation>
@@ -1086,7 +1086,6 @@
 <translation id="6437478888915024427">ข้อมูลหน้าเว็บ</translation>
 <translation id="6440291723980579689">หน้าเว็บจะโหลดหลังจากที่เปิดแล้วเท่านั้น</translation>
 <translation id="6441734959916820584">ชื่อยาวเกินไป</translation>
-<translation id="6447558397796644647">ไม่พบบุ๊กมาร์กดังกล่าว โปรดตรวจสอบตัวสะกดหรือเพิ่มบุ๊กมาร์กใหม่</translation>
 <translation id="6459045781120991510">แบบสำรวจ</translation>
 <translation id="6461962085415701688">เปิดไฟล์ไม่ได้</translation>
 <translation id="6464977750820128603">คุณดูเว็บไซต์ที่เข้าชมใน Chrome และตั้งตัวจับเวลาการใช้เว็บไซต์เหล่านั้นได้\n\nGoogle จะได้รับข้อมูลเกี่ยวกับเว็บไซต์ที่คุณตั้งตัวจับเวลาไว้และระยะเวลาที่คุณเข้าชมเว็บไซต์เหล่านั้น เราจะใช้ข้อมูลนี้เพื่อปรับปรุงไลฟ์สไตล์ดิจิทัลให้ดียิ่งขึ้น</translation>

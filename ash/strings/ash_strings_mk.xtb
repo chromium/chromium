@@ -64,7 +64,6 @@
 <translation id="1201402288615127009">Следно</translation>
 <translation id="1210557957257435379">снимка од екранот</translation>
 <translation id="121097972571826261">Напред за еден збор</translation>
-<translation id="1217633719248931900">Отворете ја апликацијата</translation>
 <translation id="1218444235442067213"><ph name="APP_NAME" />, апликација од Play Store</translation>
 <translation id="1225748608451425081">Вашиот Chromebook е заклучен поради познат проблем. Ќе може да се најавите по: <ph name="TIME_LEFT" />.</translation>
 <translation id="1229194443904279055">Сопрете со избирање</translation>
@@ -327,7 +326,6 @@
 <translation id="2293443480080733021">На што би сакале да се концентрирате? Притиснете го копчето Enter за да ја додадете задачата.</translation>
 <translation id="229397294990920565">Мобилниот интернет се исклучува...</translation>
 <translation id="2295777434187870477">Микрофонот е вклучен. Ако смените, ќе се исклучи звукот на влезот.</translation>
-<translation id="2298170939937364391">Овозможена е лупата за цел екран. Притиснете Ctrl+Search+M повторно за да ја исклучите.</translation>
 <translation id="2302092602801625023">Оваа сметка е управувана од Family Link</translation>
 <translation id="2303600792989757991">Префрли преглед во прозорец</translation>
 <translation id="2305738328104302723">Список со задачи на Google: <ph name="GLANCEABLES_TASKS_LIST_NAME" /></translation>
@@ -512,7 +510,6 @@
 <translation id="2977598380246111477">Следен број</translation>
 <translation id="2985148236010982088">Приказ на сите апликации</translation>
 <translation id="2992327365391326550">Копчето за микрофон на уредот е исклучено.</translation>
-<translation id="2996462380875591307">Овозможена е закотвената лупа. Притиснете Ctrl+Search+D повторно за да ја исклучите.</translation>
 <translation id="3000461861112256445">Моно аудио</translation>
 <translation id="3001391739687111021">Изменете ја големината на екранот</translation>
 <translation id="3009178788565917040">Излез</translation>
@@ -2140,7 +2137,6 @@
 <translation id="8982906748181120328">Видливост во близина</translation>
 <translation id="8983038754672563810">HSPA</translation>
 <translation id="8990809378771970590">Се користи <ph name="IME_NAME" /></translation>
-<translation id="8991617137207906966">Овозможен е режимот за инверзија на боите. Притиснете Ctrl+Search+H повторно за да го вклучите/исклучите.</translation>
 <translation id="899350903320462459">Отклучете го уредот како <ph name="LOGIN_ID" /> за да се изврши дејството од известувањето</translation>
 <translation id="8993733019280019776">Дали зборувате? Вашиот микрофон е исклучен. Изберете го микрофонот за да го вклучите.</translation>
 <translation id="9000771174482730261">УПРАВУВАЈТЕ СО КАПАЦИТЕТОТ</translation>

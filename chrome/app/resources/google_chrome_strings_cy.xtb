@@ -126,6 +126,7 @@ baru <ph name="IDS_BLUETOOTH_DEVICE_CHOOSER_AUTHORIZE_BLUETOOTH_LINK" /></transl
 <translation id="2765403129283291972">Mae angen caniatâd ar Chrome i gael mynediad at eich meicroffon ar gyfer y wefan hon</translation>
 <translation id="2770231113462710648">Newid y porwr diofyn i:</translation>
 <translation id="2775140325783767197">Ni all Chrome wirio'ch cyfrineiriau. Rhowch gynnig ar wirio'ch cysylltiad rhyngrwyd.</translation>
+<translation id="2797864378188255696">Wrth fewngofnodi i wasanaethau Google megis Gmail neu YouTube gyda <ph name="USER_EMAIL" />, gallwch fewngofnodi yn awtomatig i Chrome gyda'r un cyfrif</translation>
 <translation id="2799223571221894425">Ail-lansio</translation>
 <translation id="2825024317344269723">Gwefan beryglus. Mae Chrome wedi tynnu hysbysiadau.</translation>
 <translation id="2846251086934905009">Gwall gosod: Ni wnaeth y gosodwr orffen. Mae'r gosodiad wedi'i derfynu.</translation>
@@ -300,6 +301,7 @@ Mae'n bosib na fydd rhai nodweddion ar gael. Rhowch gyfeiriadur proffil gwahanol
 <translation id="5334309298019785904">Nid oedd ChromeOS yn gallu cysoni eich data gan nad yw Cysoni ar gael ar gyfer eich parth.</translation>
 <translation id="5334487786912937552">Mae angen caniatâd mynediad storfa ar Chrome i lawrlwytho ffeiliau</translation>
 <translation id="5337648990166757586">Dewisol: Helpu i wella nodweddion a pherfformiad ChromeOS drwy anfon data diagnostig a data defnydd yn awtomatig at Google.</translation>
+<translation id="5345497718959596593">Tra byddwch wedi mewngofnodi, gallwch ddefnyddio'ch cyfrineiriau a rhagor o'ch Cyfrif Google yn Chrome</translation>
 <translation id="5357889879764279201">Cael help gyda ChromeOS Flex</translation>
 <translation id="5368118228313795342">Cod ychwanegol: <ph name="EXTRA_CODE" />.</translation>
 <translation id="5386244825306882791">Mae hefyd yn rheoli pa dudalen sy'n cael ei dangos pan fyddwch yn cychwyn Chrome neu'n chwilio o'r Omniflwch.</translation>

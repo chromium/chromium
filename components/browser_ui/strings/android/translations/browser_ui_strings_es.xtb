@@ -278,6 +278,7 @@
 <translation id="5690795753582697420">La cámara está desactivada en los ajustes de Android</translation>
 <translation id="5691080386278724773"><ph name="SITE" /> puede usar tu información mientras navegas</translation>
 <translation id="5700761515355162635">Cookies de terceros permitidas</translation>
+<translation id="5705383358494210886"><ph name="HOST_NAME" /> <ph name="SEPARATOR1" /> <ph name="RECENCY" /></translation>
 <translation id="5706552988683188916">Esta acción eliminará las cookies y otros datos de sitios de <ph name="WEBSITE" /></translation>
 <translation id="5723967018671998714">Las cookies de terceros están bloqueadas en el modo Incógnito</translation>
 <translation id="5740126560802162366">Los sitios pueden guardar datos en tu dispositivo</translation>

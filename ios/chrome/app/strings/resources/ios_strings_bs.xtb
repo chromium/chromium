@@ -850,6 +850,7 @@ Ako je primjenjivo, pogledajte uputstva pretraživača da saznate kako izbrisati
 <translation id="5345660046352249607">{COUNT,plural, =1{Pratiti ovaj paket?}one{Pratiti {COUNT} paket?}few{Pratiti {COUNT} paketa?}other{Pratiti {COUNT} paketa?}}</translation>
 <translation id="5348775987281903912">Možete dijeliti stranicu ovdje putem dugmeta za dijeljenje.</translation>
 <translation id="536067926684072644">Prikazivanje oznaka</translation>
+<translation id="537853552771686272">Upravljajte temama i web-lokacijama koje vas zanimaju</translation>
 <translation id="5379352933722332597">{count,plural, =1{Oznaka je sačuvana na lokaciju "{title}". Sačuvana je samo na ovom uređaju.}one{{count} oznaka je sačuvana na lokaciju "{title}". Sačuvane su samo na ovom uređaju.}few{{count} oznake su sačuvane na lokaciju "{title}". Sačuvane su samo na ovom uređaju.}other{{count} oznaka je sačuvano na lokaciju "{title}". Sačuvane su samo na ovom uređaju.}}</translation>
 <translation id="5388358297987318779">Otvori sliku</translation>
 <translation id="5395707839134961196">Sakrivanje detalja o pretraživaču</translation>
@@ -932,6 +933,7 @@ Također, Handoff mora biti omogućen u odjeljku Opće u Postavkama, a vaši ure
 <translation id="5758631781033351321">Listu za čitanje ćete pronaći ovdje</translation>
 <translation id="5765456154762864099">Meni → Postavke → Zadani preglednik</translation>
 <translation id="5777888488419460501">Sačuvaj na računu</translation>
+<translation id="5778292857689789362">Grupa kartica, <ph name="GROUP_TITLE" />, broj kartica: <ph name="TABS_NUMBER" />.</translation>
 <translation id="5782227691023083829">Prevođenje...</translation>
 <translation id="5791632441210678828">Dugme za sortiranje za sažetak sadržaja Praćeno.</translation>
 <translation id="5793373065989412701">Provjeravanje vaših članova porodice…</translation>

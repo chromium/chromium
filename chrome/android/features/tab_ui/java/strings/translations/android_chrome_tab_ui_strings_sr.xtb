@@ -11,6 +11,7 @@
 <translation id="1273910660700874265">Опције групе картица <ph name="TITLE_OF_GROUP" /></translation>
 <translation id="1322824555808364080">Позовите људе</translation>
 <translation id="1419023007528516122">Овим ћете трајно избрисати групу са уређаја</translation>
+<translation id="1486715732399361704">Овде можете да пронађете све групе картица</translation>
 <translation id="149054111719651807">{NUM_MINS,plural, =1{Направљено је пре <ph name="NUM_MINS_ONE" /> минут}one{Направљено је пре <ph name="NUM_MINS_MANY" /> минут}few{Направљено је пре <ph name="NUM_MINS_MANY" /> минута}other{Направљено је пре <ph name="NUM_MINS_MANY" /> минута}}</translation>
 <translation id="1499635324672558517">Желите да затворите све картице без архивирања?</translation>
 <translation id="1501480321619201731">Избриши групу</translation>

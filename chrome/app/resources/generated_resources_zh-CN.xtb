@@ -408,6 +408,7 @@
 <translation id="1293264513303784526">USB-C 设备（左侧端口）</translation>
 <translation id="1293556467332435079">文件</translation>
 <translation id="1294807885394205587">此过程可能需要几分钟的时间。正在启动容器管理器。</translation>
+<translation id="12951065153783848">贵组织负责管理您的账号</translation>
 <translation id="1296911687402551044">固定所选标签页</translation>
 <translation id="1297175357211070620">目标打印机</translation>
 <translation id="129770436432446029">针对实验“<ph name="EXPERIMENT_NAME" />”发送反馈</translation>
@@ -957,6 +958,7 @@
 <translation id="1692118695553449118">同步功能已开启</translation>
 <translation id="1692210323591458290">深紫色</translation>
 <translation id="1692713444215319269">颜色反转、放大镜和显示设置</translation>
+<translation id="169341880170235617">您的标签页分组现在会自动保存</translation>
 <translation id="1695487653372841667">您可以控制与 Google 分享哪些数据。您随时可在“设置”中更改此设置。</translation>
 <translation id="1695510246756136088">无法连接到互联网。请重试。</translation>
 <translation id="1696555181932908973">您可以尝试在 <ph name="SITE_ETLD_PLUS_ONE" /> 上通过其他方法继续操作。</translation>
@@ -1312,6 +1314,7 @@
 <translation id="1949980990364952348">应用名称</translation>
 <translation id="1951012854035635156">智能助理</translation>
 <translation id="1951823516285577843">查找替代扩展程序</translation>
+<translation id="1953796913175502363">设置您的工作资料</translation>
 <translation id="1954597385941141174">网站可以请求连接到 USB 设备</translation>
 <translation id="1954813140452229842">装载共享资源时出错。请检查您的凭据，然后重试。</translation>
 <translation id="1955749740583837857">关闭建议</translation>
@@ -2724,6 +2727,7 @@
 <translation id="2979493931538961252">当 Chromebook 处于离线状态且热点可用时</translation>
 <translation id="2979639724566107830">在新窗口中打开</translation>
 <translation id="2979893796619951531">排除网站</translation>
+<translation id="2979966855249721010">系统可能会根据您的兴趣向您显示应用推荐、提示等</translation>
 <translation id="2981033191524548279">抱歉，出了点问题。请提交反馈并在说明中附上 #bruschetta。错误代码为 <ph name="ERROR" />，重新启动并重试或许可以解决此问题。</translation>
 <translation id="2981113813906970160">显示大号鼠标光标</translation>
 <translation id="2983102365694924129">根据您在网站上的活动。此设置已关闭。</translation>
@@ -2834,6 +2838,7 @@
 <translation id="3048742847101793553">由于扫描失败，贵组织已屏蔽此文件。</translation>
 <translation id="3048917188684939573">投放和设备日志</translation>
 <translation id="3051250416341590778">显示屏上的内容大小</translation>
+<translation id="3051968340259309715">这将允许系统服务使用“位置信息精确度”设置来确定您的位置。“位置信息精确度”设置会使用无线信号（例如 Wi-Fi 接入点、移动网络塔和 GPS）的相关信息以及设备传感器数据（例如加速度计和陀螺仪）来估算设备位置。您可依次前往“设置”&gt;“隐私和安全”&gt;“隐私控制”&gt;“位置信息使用权”，关闭位置信息服务。<ph name="LINK_BEGIN" />了解详情<ph name="LINK_END" /></translation>
 <translation id="3053013834507634016">证书密钥用法</translation>
 <translation id="3053273573829329829">启用用户 PIN 码</translation>
 <translation id="3053274730492362225">不闪烁</translation>
@@ -3753,6 +3758,7 @@
 <translation id="3753033997400164841">一次储存，随时随地使用</translation>
 <translation id="3753142252662437130">颜色滤镜</translation>
 <translation id="3753412199586870466">打开侧边栏</translation>
+<translation id="3753585830134123417">往左侧调整窗口大小</translation>
 <translation id="3755411799582650620">您的“<ph name="PHONE_NAME" />”现在也可用来为此 <ph name="DEVICE_TYPE" /> 解锁。</translation>
 <translation id="375636864092143889">该网站正在使用您的麦克风</translation>
 <translation id="3756485814916578707">正在投放屏幕</translation>
@@ -3781,6 +3787,7 @@
 <translation id="3766687283066842296">详细了解 Phone Hub</translation>
 <translation id="3766811143887729231"><ph name="REFRESH_RATE" /> 赫兹</translation>
 <translation id="3767835232661747729">目前，您只能向家庭成员分享密码。<ph name="BEGIN_LINK" />邀请家庭成员<ph name="END_LINK" />加入您的群组，与他们一起充分利用您所用的 Google 产品和订阅。</translation>
+<translation id="376841534249795524">您会将 <ph name="DEVICE_TYPE" /> 用于哪些用途？</translation>
 <translation id="377050016711188788">冰淇淋</translation>
 <translation id="3771290962915251154">此设置已被停用，因为开启了“家长控制”功能</translation>
 <translation id="3771294271822695279">视频文件</translation>
@@ -3935,6 +3942,7 @@
 <translation id="3873915545594852654">ARC++ 出问题了。</translation>
 <translation id="3874164307099183178">开启 Google 助理</translation>
 <translation id="3875815154304214043"><ph name="APP_NAME" />已设为在新的浏览器标签页中打开，所支持的链接也会在浏览器中打开。<ph name="BEGIN_LINK_LEARN_MORE" />了解详情<ph name="END_LINK_LEARN_MORE" /></translation>
+<translation id="3876219572815410515">往顶部调整窗口大小</translation>
 <translation id="3877075909000773256"><ph name="USER_NAME" />的设备的“附近分享”设置，通过账号 <ph name="USER_EMAIL" /> 进行分享。</translation>
 <translation id="3878445208930547646">不允许从该网站复制</translation>
 <translation id="3879748587602334249">下载管理器</translation>
@@ -4220,6 +4228,7 @@
 <translation id="4089817585533500276">Shift + <ph name="TOP_ROW_KEY" /></translation>
 <translation id="4090103403438682346">允许已通过验证的访问凭证</translation>
 <translation id="4090947011087001172">要重置 <ph name="SITE" /> 的网站权限吗？</translation>
+<translation id="4091307190120921067">所选应用将在设置完毕后安装。您稍后可以在“探索”应用中找到更多推荐内容。</translation>
 <translation id="4092636882861724179">您可在 <ph name="GOOGLE_PASSWORD_MANAGER" />中查看和管理您已保存的密码。</translation>
 <translation id="4092709865241032354">请添加您在此网站上使用的用户名，以便 Google 密码管理工具保存您的登录信息</translation>
 <translation id="4093865285251893588">个人资料图片</translation>
@@ -5998,6 +6007,7 @@
 <translation id="5463625433003343978">正在查找设备…</translation>
 <translation id="5463856536939868464">包含隐藏书签的菜单</translation>
 <translation id="5466374726908360271">粘贴并搜索“<ph name="SEARCH_TERMS" />”</translation>
+<translation id="5466721587278161554">您的标签页分组会保存在书签栏和应用菜单中，并在您所有已登录账号的设备上更新（如果同步功能已开启）</translation>
 <translation id="5467207440419968613">禁用了“<ph name="PERMISSION_1" />”和“<ph name="PERMISSION_2" />”权限</translation>
 <translation id="5468173180030470402">正在查找文件共享</translation>
 <translation id="5468330507528805311">网络共享状态：</translation>
@@ -7138,6 +7148,7 @@
 <translation id="6322559670748154781">此文件属于不常下载的内容，已被“高级保护”机制屏蔽</translation>
 <translation id="6324916366299863871">修改快捷方式</translation>
 <translation id="6325191661371220117">停用自动启动</translation>
+<translation id="632524945411480350">往底部调整窗口大小</translation>
 <translation id="6326175484149238433">从 Chrome 中移除</translation>
 <translation id="6326855256003666642">正在使用相应扩展程序的活动数</translation>
 <translation id="6327065839080961103">“<ph name="FEATURE_NAME" />”功能的流量使用设置</translation>
@@ -7735,6 +7746,7 @@
 <translation id="6798780071646309401">已开启大写锁定模式</translation>
 <translation id="6798954102094737107">插件：<ph name="PLUGIN_NAME" /></translation>
 <translation id="679905836499387150">隐藏的工具栏按钮</translation>
+<translation id="6800893479155997609">适合 <ph name="DEVICE_TYPE" /> 的热门应用</translation>
 <translation id="6801308659697002152">{NUM_EXTENSIONS,plural, =1{选择是否允许这款扩展程序读取或更改该网站的数据}other{选择是否允许这些扩展程序读取或更改该网站的数据}}</translation>
 <translation id="6801435275744557998">校准触摸屏</translation>
 <translation id="6802031077390104172"><ph name="USAGE" /> (<ph name="OID" />)</translation>
@@ -8108,6 +8120,7 @@
 <translation id="7067396782363924830">环境颜色</translation>
 <translation id="7067725467529581407">不再显示此气泡。</translation>
 <translation id="7068279399556423026">登录即可查看从其他设备打开的标签页</translation>
+<translation id="7068591156533195518"><ph name="APP_NAME" />和另外几款应用在您的 <ph name="DEVICE_TYPE" /> 上已被屏蔽</translation>
 <translation id="706949303827219454">在新标签页中打开安全设置页面</translation>
 <translation id="7069750557362084654">{NUM_PASSWORDS,plural, =1{用于登录此网站的新密码}other{用于登录此网站的新密码}}</translation>
 <translation id="7070484045139057854">可读取和更改网站数据</translation>
@@ -8504,6 +8517,7 @@
 <translation id="7392915005464253525">重新打开关闭的窗口(&amp;E)</translation>
 <translation id="7393073300870882456">{COUNT,plural, =1{已复制 1 个条目}other{已复制 {COUNT} 个条目}}</translation>
 <translation id="7393435859300249877">使用某些应用（例如视频聊天应用）时，如果对着处于静音状态的麦克风说话，您会收到通知。音频不会从您的设备发送出去。</translation>
+<translation id="7395163818609347230">往右侧调整窗口大小</translation>
 <translation id="7395774987022469191">整个屏幕</translation>
 <translation id="7396017167185131589">共享文件夹将会显示在此处</translation>
 <translation id="7396845648024431313"><ph name="APP_NAME" /> 会在系统启动时启动，即使您将其他所有 <ph name="PRODUCT_NAME" />窗口关闭，它也会继续在后台运行。</translation>
@@ -9569,6 +9583,7 @@
 <translation id="8148760431881541277">限制登录</translation>
 <translation id="8149564499626272569">通过使用 USB 线连接手机进行验证</translation>
 <translation id="8149870652370242480">如需在手机上使用您已保存的密码，请下载 iOS 版 Chrome 并登录您的 Google 账号。</translation>
+<translation id="8150396590017071059">更改密码管理工具 PIN 码</translation>
 <translation id="8151057139207656239">已复制版本详情</translation>
 <translation id="815114315010033526">改用二维码</translation>
 <translation id="8151638057146502721">配置</translation>
@@ -9655,6 +9670,7 @@
 <translation id="8217399928341212914">继续阻止自动下载多个文件</translation>
 <translation id="822050276545350872">从现在开始，无需再等待</translation>
 <translation id="8221491193165283816">您通常会屏蔽通知。要允许此网站向您发送通知，请点击此处。</translation>
+<translation id="8222112516148944758">您的标签页分组会自动保存，并在您的所有设备上更新</translation>
 <translation id="8222674561049363989">文件不是有效的文档</translation>
 <translation id="822347941086490485">正在查找 HID 设备…</translation>
 <translation id="8224427620313426549">您的 <ph name="DOMAIN_LINK" /> 账号不会被删除</translation>

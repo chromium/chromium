@@ -64,7 +64,6 @@ Tālāk ir norādīti daži ieteikumi darba sākšanai.</translation>
 <translation id="1201402288615127009">Tālāk</translation>
 <translation id="1210557957257435379">ekrāna ierakstīšana</translation>
 <translation id="121097972571826261">Pāriet uz priekšu pa vārdam</translation>
-<translation id="1217633719248931900">Pāriet uz lietotni</translation>
 <translation id="1218444235442067213"><ph name="APP_NAME" />, lietotne Play veikals</translation>
 <translation id="1225748608451425081">Jūsu Chromebook dators ir bloķēts zināmas problēmas dēļ. Jūs varēsiet pierakstīties pēc šāda laika perioda: <ph name="TIME_LEFT" />.</translation>
 <translation id="1229194443904279055">Apturēt atlasīšanu</translation>
@@ -327,7 +326,6 @@ Tālāk ir norādīti daži ieteikumi darba sākšanai.</translation>
 <translation id="2293443480080733021">Kam vēlaties lietot fokusa režīmu? Lai pievienotu uzdevumu, nospiediet taustiņu Enter.</translation>
 <translation id="229397294990920565">Notiek mobilo datu savienojuma izslēgšana...</translation>
 <translation id="2295777434187870477">Mikrofons ir ieslēgts. Pārslēdzot iestatījumu, tiks izslēgta ievade.</translation>
-<translation id="2298170939937364391">Pilnekrāna lupa ir iespējota. Lai to izslēgtu, vēlreiz nospiediet taustiņu kombināciju Ctrl+Search+M.</translation>
 <translation id="2302092602801625023">Šo kontu pārvalda lietotne Family Link.</translation>
 <translation id="2303600792989757991">Pārslēgt loga kopsavilkumu</translation>
 <translation id="2305738328104302723">Google uzdevumu saraksts: <ph name="GLANCEABLES_TASKS_LIST_NAME" /></translation>
@@ -512,7 +510,6 @@ Pievienoto ierīču skaits: <ph name="DEVICECOUNT" />.</translation>
 <translation id="2977598380246111477">Nākamais cipars</translation>
 <translation id="2985148236010982088">Skatīt visas lietotnes</translation>
 <translation id="2992327365391326550">Ierīces mikrofona poga ir izslēgta</translation>
-<translation id="2996462380875591307">Dokotās lupas režīms ir iespējots. Lai to izslēgtu, nospiediet taustiņu kombināciju Ctrl+Search+D.</translation>
 <translation id="3000461861112256445">Mono audio</translation>
 <translation id="3001391739687111021">Rediģēt ekrāna lielumu</translation>
 <translation id="3009178788565917040">Izvade</translation>
@@ -2139,7 +2136,6 @@ Lai izslēgtu ierīci, vēlreiz nospiediet un turiet ierīces barošanas pogu.</
 <translation id="8982906748181120328">Tuvumā: redzamība</translation>
 <translation id="8983038754672563810">HSPA</translation>
 <translation id="8990809378771970590">Izmantojot <ph name="IME_NAME" /></translation>
-<translation id="8991617137207906966">Krāsu inversijas režīms ir iespējots. Lai to izslēgtu, vēlreiz nospiediet taustiņu kombināciju Ctrl+Search+H.</translation>
 <translation id="899350903320462459">Atbloķēt ierīci kā <ph name="LOGIN_ID" />, lai veiktu paziņojuma darbību</translation>
 <translation id="8993733019280019776">Vai jūs runājat? Jūsu mikrofons ir izslēgts. Atlasiet mikrofonu, lai to ieslēgtu.</translation>
 <translation id="9000771174482730261">PĀRVALDĪT KRĀTUVI</translation>

@@ -90,6 +90,9 @@
 <translation id="1390418506739274310">Chrome でリンクを開く他のアプリの履歴が表示されることがあります。お使いの Google アカウントの <ph name="BEGIN_LINK" />myactivity.google.com<ph name="END_LINK" /> に、他の形式の閲覧履歴が記録されている場合があります。</translation>
 <translation id="13931502444227376">続行すると、<ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> からこのサイトに名前、メールアドレス、プロフィール画像が共有されます。このサイトの<ph name="BEGIN_LINK1" />利用規約<ph name="END_LINK1" />を確認してください。</translation>
 <translation id="1397811292916898096"><ph name="PRODUCT_NAME" /> で検索</translation>
+<translation id="1398057416966591719">Google アカウントに<ph name="BEGIN_LINK1" />保存する Chrome データを管理<ph name="END_LINK1" />できます。
+
+Chrome を使いやすくするためにデータを使用するその他の設定については、<ph name="BEGIN_LINK2" />Google サービス<ph name="END_LINK2" />をご覧ください。</translation>
 <translation id="1407069428457324124">ダークモード</translation>
 <translation id="1407135791313364759">すべて開く</translation>
 <translation id="1409879593029778104"><ph name="FILE_NAME" /> は既に存在しているためダウンロードできませんでした。</translation>
@@ -249,6 +252,7 @@
 <translation id="2286841657746966508">請求先住所</translation>
 <translation id="228704530595896923">共有オプションのリストです。</translation>
 <translation id="2297822946037605517">このページを共有</translation>
+<translation id="22981027763501686">同期すると、ブックマークや履歴などを他のデバイスで利用できるようになります</translation>
 <translation id="230115972905494466">対応デバイスが見つかりませんでした</translation>
 <translation id="2318045970523081853">タップして電話をかける</translation>
 <translation id="2321086116217818302">パスワードを準備しています…</translation>
@@ -377,7 +381,6 @@
 <translation id="2904414404539560095">タブを共有するデバイスのリストが画面全体に表示されました。</translation>
 <translation id="2908243544703713905">未読の記事があります</translation>
 <translation id="2909615210195135082">Google 通知プラットフォーム</translation>
-<translation id="2912296070571964914">興味のあるトピックを管理します</translation>
 <translation id="2912345083818861431">画面ロックを使用して、開いているシークレット タブを表示します</translation>
 <translation id="2923908459366352541">名前が無効です</translation>
 <translation id="2932150158123903946">Google <ph name="APP_NAME" /> ストレージ</translation>
@@ -453,7 +456,6 @@
 <translation id="3259831549858767975">ページ上のすべての要素を縮小する</translation>
 <translation id="3264259168916048410">パソコンからサイトへのログインにこのデバイスを使用するよう求められています</translation>
 <translation id="3265093782546847662"><ph name="DOMAIN" /> のすべてのページ</translation>
-<translation id="3265534588625245297">フォローするサイトを管理</translation>
 <translation id="3269093882174072735">画像を読み込む</translation>
 <translation id="3280562213547448728">音声検索</translation>
 <translation id="3282568296779691940">Chrome にログイン</translation>
@@ -625,7 +627,6 @@
 <translation id="4195643157523330669">新しいタブで開く</translation>
 <translation id="4197828496439691735">{NUM_TABS,plural, =1{このデバイスの 1 個のタブ}other{このデバイスの # 個のタブ}}</translation>
 <translation id="4198423547019359126">ダウンロードの保存先はありません</translation>
-<translation id="4198664641856813238">ログインすると、すべてのデバイスで同じブックマーク、パスワード、その他の設定を使用できます</translation>
 <translation id="4202218894997543208">ブロックしたトピック</translation>
 <translation id="4214315110991671325">Cookie を許可すると、Chrome がプリロードの際に Cookie を使用します。</translation>
 <translation id="4216511743389425832">このページを読み上げ</translation>
@@ -825,7 +826,6 @@
 <translation id="510275257476243843">残り 1 時間</translation>
 <translation id="5114895953710637392">アプリのフィルタシートが閉じています。</translation>
 <translation id="5115811374190515607"><ph name="PRODUCT_NAME" /> に移動</translation>
-<translation id="5118713593561876160">興味 / 関心</translation>
 <translation id="5122378528687922675">わからないことがあるときは、保護者の方（<ph name="PARENT_NAME_1" /> または <ph name="PARENT_NAME_2" />）に聞いてください</translation>
 <translation id="5123685120097942451">シークレット タブ</translation>
 <translation id="5132942445612118989">すべてのデバイスでパスワード、履歴、その他の設定を同期する</translation>
@@ -839,7 +839,6 @@
 <translation id="5171045022955879922">検索または URL を入力</translation>
 <translation id="5174700554036517242">タブが最初の高さに戻りました</translation>
 <translation id="5180063720319462041">ページが<ph name="TARGET_LANGUAGE" />に翻訳されました</translation>
-<translation id="5186634140793586141">関心のあるトピックと検索内容を管理する</translation>
 <translation id="5191251636205085390">サードパーティの Cookie に代わる新しい技術の詳細と管理方法について</translation>
 <translation id="5204967432542742771">パスワードを入力</translation>
 <translation id="5206168361184759344">{FILE_COUNT,plural, =1{ファイルをダウンロードしています…}other{# 件のファイルをダウンロードしています…}}</translation>
@@ -857,6 +856,7 @@
 <translation id="5292796745632149097">送信先</translation>
 <translation id="5301876394151419436"><ph name="EMAIL" /> でログインしています。同期は [設定] でいつでも停止できます。Google では、履歴に基づいて検索やその他のサービスをパーソナライズすることがあります。</translation>
 <translation id="5304593522240415983">この項目は必須です</translation>
+<translation id="5306014156308790439">コレクションへの追加を無効にしました</translation>
 <translation id="5308380583665731573">接続</translation>
 <translation id="5316947901395241499">パスワードの保存は管理者によって無効にされています</translation>
 <translation id="5317780077021120954">保存</translation>
@@ -1087,7 +1087,6 @@
 <translation id="6437478888915024427">ページ情報</translation>
 <translation id="6440291723980579689">ページは開いてから読み込まれます。</translation>
 <translation id="6441734959916820584">名前が長すぎます</translation>
-<translation id="6447558397796644647">お探しのブックマークが見つかりません。つづりを確認するか、新しいブックマークを追加してください。</translation>
 <translation id="6459045781120991510">アンケート</translation>
 <translation id="6461962085415701688">ファイルを開けません</translation>
 <translation id="6464977750820128603">Chrome でアクセスしたサイトを表示し、タイマーを設定できます。\n\nタイマーを設定したサイトの情報と、サイトでの滞在時間に関する情報が Google に送信されます。送信した情報は Digital Wellbeing の改善に役立てられます。</translation>

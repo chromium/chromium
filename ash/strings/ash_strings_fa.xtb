@@ -64,7 +64,6 @@
 <translation id="1201402288615127009">بعدی</translation>
 <translation id="1210557957257435379">ضبط صفحه‌نمایش</translation>
 <translation id="121097972571826261">جلو رفتن کلمه‌به‌کلمه</translation>
-<translation id="1217633719248931900">رفتن به برنامه</translation>
 <translation id="1218444235442067213">‏<ph name="APP_NAME" />، برنامه فروشگاه Play</translation>
 <translation id="1225748608451425081">‏Chromebook شما به‌دلیل مشکل شناخته‌شده‌ای قفل شده است. پس از <ph name="TIME_LEFT" /> می‌توانید به سیستم وارد شوید.</translation>
 <translation id="1229194443904279055">توقف انتخاب</translation>
@@ -180,6 +179,7 @@
 <translation id="1611993646327628135">روشن</translation>
 <translation id="1620510694547887537">دوربین</translation>
 <translation id="1623768535032616219">‏جمع کردن Google Classroom</translation>
+<translation id="163032029566320584"><ph name="UNAVAILABLE_DLC" /> دردسترس نیست.</translation>
 <translation id="1632985212731562677">می‌توانید «دسترسی کلیدی» را در «تنظیمات &gt; دسترس‌پذیری» غیرفعال کنید.</translation>
 <translation id="1637505162081889933"><ph name="NUM_DEVICES" /> دستگاه</translation>
 <translation id="1639239467298939599">در حال بارگیری</translation>
@@ -328,7 +328,6 @@
 <translation id="2293443480080733021">‏می‌خواهید روی چه چیزی تمرکز کنید؟ برای افزودن تکلیف، کلید Enter را فشار دهید؟</translation>
 <translation id="229397294990920565">داده تلفن همراه درحال خاموش شدن است...</translation>
 <translation id="2295777434187870477">میکروفون روشن است، با تغییر وضعیت صامت می‌شود.</translation>
-<translation id="2298170939937364391">‏«ذره‌بین تمام‌صفحه» فعال شد. برای خاموش کردن آن، Ctrl+Search+M را دوباره فشار دهید.</translation>
 <translation id="2302092602801625023">‏این حساب با Family Link مدیریت می‌شود</translation>
 <translation id="2303600792989757991">مروری کلی بر پنجره تغییر حالت</translation>
 <translation id="2305738328104302723">‏فهرست Google Tasks: <ph name="GLANCEABLES_TASKS_LIST_NAME" /></translation>
@@ -513,7 +512,6 @@
 <translation id="2977598380246111477">عدد بعدی</translation>
 <translation id="2985148236010982088">دیدن همه برنامه‌ها</translation>
 <translation id="2992327365391326550">دکمه میکروفون دستگاه خاموش است.</translation>
-<translation id="2996462380875591307">‏«ذره‌بین متصل» فعال شد. برای خاموش کردن آن، Ctrl+Search+D را دوباره فشار دهید.</translation>
 <translation id="3000461861112256445">صدای مونو</translation>
 <translation id="3001391739687111021">ویرایش اندازه صفحه</translation>
 <translation id="3009178788565917040">خروجی</translation>
@@ -723,6 +721,7 @@
 <translation id="3702846122927433391">‏Population in Nigeria (جمعیت نیجریه)</translation>
 <translation id="3705722231355495246">-</translation>
 <translation id="3706423975342040244">سرگرمی</translation>
+<translation id="3707093869106077605">‫<ph name="UNAVAILABLE_DLC_ONE" /> و <ph name="UNAVAILABLE_DLC_TWO" /> دردسترس نیستند</translation>
 <translation id="3708186454126126312">قبلاً متصل‌شده</translation>
 <translation id="3712143870407382523">پنجره‌ای برای این سمت انتخاب کنید</translation>
 <translation id="371370241367527062">میکروفون جلو</translation>
@@ -995,6 +994,7 @@
 <translation id="4733161265940833579"><ph name="BATTERY_PERCENTAGE" />% (چپ)</translation>
 <translation id="4734965478015604180">افقی</translation>
 <translation id="4735944890391795473">میزکار ۱۲</translation>
+<translation id="4736732123074402682">اتصالتان را بررسی کنید و دوباره امتحان کنید.</translation>
 <translation id="473775607612524610">به‌روزرسانی</translation>
 <translation id="4740516757091333363">میزکار ذخیره‌شده حذف شود؟</translation>
 <translation id="4746798685375253449">{0,plural, =1{ظرف یک روز آینده دستگاه را به نسخه قبلی به‌روزرسانی کنید}one{ظرف # روز آینده دستگاه را به نسخه قبلی به‌روزرسانی کنید}other{ظرف # روز آینده دستگاه را به نسخه قبلی به‌روزرسانی کنید}}</translation>
@@ -1328,6 +1328,7 @@
 <translation id="588258955323874662">تمام صفحه</translation>
 <translation id="5887954372087850114">پنجره <ph name="WINDOW_TITLE" /> به <ph name="DESK_TITLE" /> واگذار شد و از همه میزکارهای دیگر لغو واگذاری شد.</translation>
 <translation id="588817334757907802">‏باز کردن فایل در مرورگر Chrome</translation>
+<translation id="5892014525522223653">آفلاین هستید.</translation>
 <translation id="5895138241574237353">راه‌اندازی مجدد</translation>
 <translation id="589817443623831496">اسکن نقطه‌ای</translation>
 <translation id="5901316534475909376">Shift+Esc</translation>
@@ -1387,6 +1388,7 @@
 <translation id="6095425951508823973">افزودن اتصال با <ph name="PROVIDER" /></translation>
 <translation id="6099678161144790572">ماه گذشته ویرایش شده است</translation>
 <translation id="6103838137565245112">سیستم</translation>
+<translation id="610395411842312282">گروه‌بندی دو پنجره پهلو به پهلو</translation>
 <translation id="6108952804512516814">ساخت با هوش مصنوعی</translation>
 <translation id="6114505516289286752">فایل‌های گفتار <ph name="LANGUAGE" /> بارگیری شد</translation>
 <translation id="6119360623251949462"><ph name="CHARGING_STATE" />. <ph name="BATTERY_SAVER_STATE" /></translation>
@@ -1394,6 +1396,7 @@
 <translation id="6121838516699723042">تأیید بارگیری <ph name="FILENAME" /></translation>
 <translation id="612734058257491180">‏«دستیار Google» در جلسه مهمان دردسترس نیست.</translation>
 <translation id="6127370444807669747">‏برای فهرست‌های پخش شخصی‌سازی‌شده و موسیقی تمرکز بیشتر، YouTube Music Premium را امتحان کنید</translation>
+<translation id="6127395413317891856">آفلاین هستید. اتصالتان را بررسی کنید و دوباره امتحان کنید.</translation>
 <translation id="6129953537138746214">فاصله</translation>
 <translation id="6137566720514957455">باز کردن کادر گفتگوی برداشتن <ph name="USER_EMAIL_ADDRESS" /></translation>
 <translation id="6141205840878048728">می‌خواهید روی چه چیزی تمرکز کنید؟</translation>
@@ -1967,6 +1970,7 @@
 <translation id="8257510091797044096">راه‌اندازی دستگاه</translation>
 <translation id="8261506727792406068">حذف</translation>
 <translation id="8262312463845990408">فعال/ غیرفعال کردن بازپخش</translation>
+<translation id="8268302343625273732">‏دیدن همه تکالیف در Google Classroom</translation>
 <translation id="8277261673056602147">برجسته کردن نوشتار روی صفحه</translation>
 <translation id="8287009018010202411">بهره‌وری</translation>
 <translation id="828708037801473432">خاموش</translation>
@@ -2142,7 +2146,6 @@
 <translation id="8982906748181120328">نمایان برای اطراف</translation>
 <translation id="8983038754672563810">HSPA</translation>
 <translation id="8990809378771970590">درحال استفاده از <ph name="IME_NAME" /></translation>
-<translation id="8991617137207906966">‏حالت «وارونگی رنگ» فعال شد. برای خاموش کردن آن، Ctrl+Search+H را دوباره فشار دهید.</translation>
 <translation id="899350903320462459">به‌عنوان <ph name="LOGIN_ID" />، قفل دستگاه را باز کنید تا کنش اعلان اجرا شود</translation>
 <translation id="8993733019280019776">درحال صحبت کردن هستید؟ میکروفون شما خاموش است. برای روشن کردن آن، میکروفون را انتخاب کنید.</translation>
 <translation id="9000771174482730261">مدیریت فضای ذخیره‌سازی</translation>

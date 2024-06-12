@@ -64,7 +64,6 @@ Quyidagi narsalardan boshlashingiz mumkin.</translation>
 <translation id="1201402288615127009">Keyingisi</translation>
 <translation id="1210557957257435379">ekranni yozib olish</translation>
 <translation id="121097972571826261">Bitta soʻz oldinga</translation>
-<translation id="1217633719248931900">Ilovani ochish</translation>
 <translation id="1218444235442067213"><ph name="APP_NAME" />, Play Market ilovasi</translation>
 <translation id="1225748608451425081">Chromebook qurilmangiz tanish xatolik tufayli qulflanib qoldi. Hisobingizga vaqtincha kira olmaysiz: <ph name="TIME_LEFT" />.</translation>
 <translation id="1229194443904279055">Matnni tanlashni toʻxtatish</translation>
@@ -328,7 +327,6 @@ Quyidagi narsalardan boshlashingiz mumkin.</translation>
 <translation id="2293443480080733021">Nima maqsadda fokus qilishni istaysiz? Vazifa qoʻshish uchun enter tugmasini bosing.</translation>
 <translation id="229397294990920565">Mobil internet oʻchirilmoqda...</translation>
 <translation id="2295777434187870477">Mikrofon yoniq, uni oʻchirish uchun ustiga bosing.</translation>
-<translation id="2298170939937364391">Butun ekran rejimidagi lupa yoniq. Uni olib tashlash uchun Ctrl+Qidiruv+M tugmalarini bosing.</translation>
 <translation id="2302092602801625023">Ushbu hisob Family Link orqali boshqariladi</translation>
 <translation id="2303600792989757991">Ko‘rish rejimiga almashtirish</translation>
 <translation id="2305738328104302723">Google vazifalar roʻyxati: <ph name="GLANCEABLES_TASKS_LIST_NAME" /></translation>
@@ -513,7 +511,6 @@ Quyidagi narsalardan boshlashingiz mumkin.</translation>
 <translation id="2977598380246111477">Keyingi raqam</translation>
 <translation id="2985148236010982088">Barcha ilovalar</translation>
 <translation id="2992327365391326550">Qurilmaning mikrofon tugmasi faolsizlantirildi.</translation>
-<translation id="2996462380875591307">Mahkamlangan lupa yoniq. Uni olib tashlash uchun Ctrl+Qidiruv+D tugmalarini bosing.</translation>
 <translation id="3000461861112256445">Mono audio</translation>
 <translation id="3001391739687111021">Ekran oʻlchamini oʻzgartirish</translation>
 <translation id="3009178788565917040">Chiqarish</translation>
@@ -2146,7 +2143,6 @@ Qurilmani oʻchirish uchun uning quvvat tugmasini biroz bosib turing.</translati
 <translation id="8982906748181120328">Atrofga ochish</translation>
 <translation id="8983038754672563810">HSPA</translation>
 <translation id="8990809378771970590"><ph name="IME_NAME" /> ishlatilmoqda</translation>
-<translation id="8991617137207906966">Ranglarni akslantirish usuli yoqildi. Uni oʻchirish uchun yana Ctrl+Search+H tugmalarini bosing.</translation>
 <translation id="899350903320462459">Bildirishnomani amalga oshirish uchun <ph name="LOGIN_ID" /> sifatida qurilmani qulfdan chiqaring</translation>
 <translation id="8993733019280019776">Gapiryapsizmi? Mikrofon oʻchiq. Uni yoqish uchun mikrofon ustiga bosing.</translation>
 <translation id="9000771174482730261">XOTIRANI BOSHQARISH</translation>

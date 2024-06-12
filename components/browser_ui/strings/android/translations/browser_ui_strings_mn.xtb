@@ -278,6 +278,7 @@
 <translation id="5690795753582697420">Камерыг Android тохиргоо хэсэгт унтраасан байна</translation>
 <translation id="5691080386278724773"><ph name="SITE" /> таныг үзэх явцад мэдээллийг тань ашиглах боломжтой</translation>
 <translation id="5700761515355162635">Гуравдагч талын күүкинүүдийг зөвшөөрсөн</translation>
+<translation id="5705383358494210886"><ph name="HOST_NAME" /> <ph name="SEPARATOR1" /> <ph name="RECENCY" /></translation>
 <translation id="5706552988683188916">Энэ нь <ph name="WEBSITE" />-н күүки болон сайтын бусад өгөгдлийг устгана</translation>
 <translation id="5723967018671998714">Гуравдагч талын күүкиг нууцлалтай горимд блоклодог</translation>
 <translation id="5740126560802162366">Сайтууд таны төхөөрөмж дээр өгөгдөл хадгалах боломжтой</translation>

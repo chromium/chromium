@@ -278,6 +278,7 @@
 <translation id="5690795753582697420">已關閉 Android 設定中的攝影機</translation>
 <translation id="5691080386278724773"><ph name="SITE" /> 可以在你瀏覽時使用你的資訊</translation>
 <translation id="5700761515355162635">已允許使用第三方 Cookie</translation>
+<translation id="5705383358494210886"><ph name="HOST_NAME" /> <ph name="SEPARATOR1" /> <ph name="RECENCY" /></translation>
 <translation id="5706552988683188916">如果這麼做，系統將刪除 <ph name="WEBSITE" /> 的 Cookie 及其他網站資料</translation>
 <translation id="5723967018671998714">已封鎖無痕模式中的第三方 Cookie</translation>
 <translation id="5740126560802162366">網站可將資料儲存到裝置</translation>

@@ -486,7 +486,7 @@
 <translation id="1353980523955420967">‏يتعذّر العثور على ملف PPD. تأكد من اتصال Chromebook بالإنترنت وأعد المحاولة.</translation>
 <translation id="1354045473509304750">مواصلة السماح للمضيف <ph name="HOST" /> باستخدام الكاميرا وتحريكها</translation>
 <translation id="1355088139103479645">هل تريد حذف كلّ البيانات؟</translation>
-<translation id="1356376170199999104">تم منح إذن الوصول إلى الميكروفون: "<ph name="PERMISSION_DETAILS" />". شغِّل الميكروفون باستخدام الزر اليدوي.</translation>
+<translation id="1356376170199999104">تم منح إذن الوصول إلى الميكروفون: <ph name="PERMISSION_DETAILS" />. شغِّل الميكروفون باستخدام الزر اليدوي.</translation>
 <translation id="1356959069439783953">مظهر جديد لعلامات التبويب غير النشطة</translation>
 <translation id="1358741672408003399">التدقيق الإملائي والتدقيق النحوي</translation>
 <translation id="1359923111303110318">‏يمكن فتح قفل جهازك باستخدام Smart Lock. عليك الضغط على Enter لفتح القفل.</translation>
@@ -1860,6 +1860,7 @@
 <translation id="233375395665273385">الحذف وتسجيل الخروج</translation>
 <translation id="233471714539944337">يتضمّن الملف محتوى حسّاسًا.</translation>
 <translation id="2335111415680198280">{0,plural, =1{إغلاق نافذة واحدة}zero{عدم إغلاق أي نوافذ}two{إغلاق نافذتَين}few{إغلاق # نوافذ}many{إغلاق # نافذةً}other{إغلاق # نافذة}}</translation>
+<translation id="2335758110242123814">فتح المجموعة</translation>
 <translation id="2336228925368920074">وضع إشارة على جميع علامات التبويب...</translation>
 <translation id="2336258397628212480">يطبع "<ph name="APP_NAME" />" صفحة واحدة باستخدام "<ph name="PRINTER_NAME" />"</translation>
 <translation id="2336381494582898602">Powerwash</translation>
@@ -1877,9 +1878,10 @@
 <translation id="2350133097354918058">إعادة التحميل</translation>
 <translation id="2350182423316644347">جارٍ إعداد التطبيق...</translation>
 <translation id="235028206512346451">سيتم قفل الشاشة تلقائيًا عندما تكون بعيدًا عن الجهاز. وعند استخدامك للجهاز، ستظل الشاشة في الوضع النشط لفترة أطول. وفي حال عدم استخدام شاشة القفل، ينتقل الجهاز إلى وضع السكون بدلاً من قفل الشاشة.</translation>
-<translation id="2351923523007389195">تم منح إذن الوصول إلى الموقع الجغرافي: "<ph name="PERMISSION_DETAILS" />". فعِّل إذن <ph name="LINK_BEGIN" />الوصول إلى الموقع الجغرافي للنظام<ph name="LINK_END" />.</translation>
+<translation id="2351923523007389195">تم منح إذن الوصول إلى الموقع الجغرافي: <ph name="PERMISSION_DETAILS" />. فعِّل إذن <ph name="LINK_BEGIN" />الوصول إلى الموقع الجغرافي للنظام<ph name="LINK_END" />.</translation>
 <translation id="2352662711729498748">&lt; 1 ميغابايت</translation>
 <translation id="2352810082280059586">يتم حفظ ملاحظات شاشة القفل تلقائيًا إلى <ph name="LOCK_SCREEN_APP_NAME" />. ستظل أحدث ملاحظة في شاشة القفل.</translation>
+<translation id="2353168619378866466">فتح المجموعة</translation>
 <translation id="2353297238722298836">تم السماح باستخدام الكاميرا والميكروفون</translation>
 <translation id="2353910600995338714">تم التصدير بنجاح.</translation>
 <translation id="2355314311311231464">تعذَّرت عملية الإعداد بسبب عدم التمكّن من استرداد تفاصيل حسابك. يُرجى إعادة المحاولة. رمز الخطأ: <ph name="ERROR_CODE" /></translation>
@@ -2833,6 +2835,7 @@
 <translation id="3033348223765101500">التحكّم في بياناتك</translation>
 <translation id="3036327949511794916">لقد انتهت مهلة إرجاع جهاز <ph name="DEVICE_TYPE" /> هذا.</translation>
 <translation id="3036546437875325427">‏تفعيل Flash</translation>
+<translation id="3037193115779933814">أحرف وأرقام</translation>
 <translation id="3038272154009688107">عرض كل المواقع الإلكترونية</translation>
 <translation id="3038612606416062604">إضافة طابعة يدويًا</translation>
 <translation id="3039491566278747710">تعذّر تثبيت السياسة بلا إنترنت على الجهاز.</translation>
@@ -5085,7 +5088,7 @@
 <translation id="4742795653798179840">‏تم حذف بيانات Chrome</translation>
 <translation id="4742970037960872810">إزالة التمييز</translation>
 <translation id="4743260470722568160"><ph name="BEGIN_LINK" />التعرّف على كيفية تحديث التطبيقات<ph name="END_LINK" /></translation>
-<translation id="4743990041512863976">تم منح إذن الوصول إلى الميكروفون: "<ph name="PERMISSION_DETAILS" />". فعِّل إذن <ph name="LINK_BEGIN" />الوصول إلى ميكروفون النظام<ph name="LINK_END" />.</translation>
+<translation id="4743990041512863976">تم منح إذن الوصول إلى الميكروفون: <ph name="PERMISSION_DETAILS" />. فعِّل إذن <ph name="LINK_BEGIN" />الوصول إلى ميكروفون النظام<ph name="LINK_END" />.</translation>
 <translation id="4744268813103118742">زيارة الموقع الإلكتروني</translation>
 <translation id="4744571849207727284">Excel</translation>
 <translation id="4744981231093950366">{NUM_TABS,plural, =1{إعادة صوت الموقع الإلكتروني}zero{إعادة صوت المواقع الإلكترونية}two{إعادة صوت الموقعَين الإلكترونيين}few{إعادة صوت المواقع الإلكترونية}many{إعادة صوت المواقع الإلكترونية}other{إعادة صوت المواقع الإلكترونية}}</translation>
@@ -6031,6 +6034,7 @@
 <translation id="5469540749878136997">إخلاء مساحة من الذاكرة بناءً على استخدام علامات التبويب</translation>
 <translation id="5469852975082458401">‏يمكنك التنقُّل بين الصفحات باستخدام مؤشر النص، ويمكنك الضغط على F7 لإيقافه.</translation>
 <translation id="5470735824776589490">‏يلزم إعادة تشغيل الجهاز حتى يتسنى لك إعادة ضبطه باستخدام Powerwash. <ph name="LINK_BEGIN" />مزيد من المعلومات<ph name="LINK_END" /></translation>
+<translation id="5470741195701938302">أرقام</translation>
 <translation id="5471768120198416576">مرحبًا! هذا صوت ميزة تحويل النص إلى كلام.</translation>
 <translation id="5472627187093107397">حفظ كلمات المرور لهذا الموقع الإلكتروني</translation>
 <translation id="5473062644742711742">‏العثور على المزيد من أدوات تسهيل الاستخدام في "سوق Chrome الإلكتروني"</translation>
@@ -6867,6 +6871,7 @@
 <translation id="6101226222197207147">تمت إضافة تطبيق جديد (<ph name="EXTENSION_NAME" />)</translation>
 <translation id="6102043788063419338">تم حظر الملف من خلال برنامج "الحماية المتقدمة".</translation>
 <translation id="6103681770816982672">تحذير: أنت الآن تجري تحويلاً إلى قناة المطوّر</translation>
+<translation id="610395411842312282">تجميع نافذتين جنبًا إلى جنب</translation>
 <translation id="6104068876731806426">‏حسابات Google</translation>
 <translation id="6104667115274478616">‏إدارة إعدادات الصوت على ChromeOS</translation>
 <translation id="6104796831253957966">قائمة الانتظار في الطابعة ممتلئة</translation>
@@ -8313,7 +8318,7 @@
 <translation id="7210499381659830293">طابعات مُوصّلة</translation>
 <translation id="7211783048245131419">لم يتم تخصيص مفتاح تبديل بعد</translation>
 <translation id="7212097698621322584">يُرجى إدخال رقم التعريف الشخصي الحالي لتغييره. في حال كنت لا تعرف رقم التعريف الشخصي، عليك إعادة ضبط مفتاح الأمان، ثم إنشاء رقم تعريف شخصي جديد.</translation>
-<translation id="7214047272988222011">تم منح إذن الوصول إلى الكاميرا: "<ph name="PERMISSION_DETAILS" />". فعِّل إذن <ph name="LINK_BEGIN" />الوصول إلى كاميرا النظام<ph name="LINK_END" />.</translation>
+<translation id="7214047272988222011">تم منح إذن الوصول إلى الكاميرا: <ph name="PERMISSION_DETAILS" />. فعِّل إذن <ph name="LINK_BEGIN" />الوصول إلى كاميرا النظام<ph name="LINK_END" />.</translation>
 <translation id="721490496276866468">استيراد كلمات المرور</translation>
 <translation id="7218514093816577632">يجب تفعيل الإشعارات على جهاز "<ph name="DEVICE_NAME" />"</translation>
 <translation id="7219254577985949841">هل تريد حذف بيانات الموقع الإلكتروني؟</translation>
@@ -8794,7 +8799,7 @@
 <translation id="7573172247376861652">شحن البطارية</translation>
 <translation id="7573594921350120855">تستخدم المواقع الإلكترونية عادةً كاميرا الفيديو لتتيح ميزات التواصل، مثل محادثة الفيديو.</translation>
 <translation id="7575272930307342804">عناصر التحكّم في التنقّل</translation>
-<translation id="757660455834887988">تم منح إذن الوصول إلى الكاميرا: "<ph name="PERMISSION_DETAILS" />". عليك توصيل كاميرا بجهازك.</translation>
+<translation id="757660455834887988">تم منح إذن الوصول إلى الكاميرا: <ph name="PERMISSION_DETAILS" />. عليك توصيل كاميرا بجهازك.</translation>
 <translation id="7576690715254076113">تجميع</translation>
 <translation id="7576976045740938453">حدثت مشكلة في حساب الوضع التجريبي.</translation>
 <translation id="7578137152457315135">إعدادات بصمة الإصبع</translation>
@@ -9141,7 +9146,7 @@
 <translation id="7814458197256864873">&amp;نسخ</translation>
 <translation id="7814857791038398352">Microsoft OneDrive</translation>
 <translation id="7815583197273433531">تعديل الاختصار <ph name="SHORTCUT" /> للإضافة <ph name="EXTENSION_NAME" /></translation>
-<translation id="7815680994978050279">تم حظر تنزيل خطير</translation>
+<translation id="7815680994978050279">تم حظر عملية تنزيل خطيرة</translation>
 <translation id="7817361223956157679">‏لا تعمل لوحة المفاتيح على الشاشة على تطبيقات Linux بعد.</translation>
 <translation id="7818135753970109980">تمت إضافة مظهر جديد (<ph name="EXTENSION_NAME" />)</translation>
 <translation id="7819087895293765164">بعد إعادة التشغيل، يمكنك متابعة استخدام التطبيقات والمواقع الإلكترونية والنوافذ المفتوحة حيث توقفت</translation>
@@ -10915,7 +10920,7 @@
 <translation id="9096776523567481218">غير مثبَّت على الجهاز</translation>
 <translation id="9098860402274800697">‏إزالة تطبيقات Google Play وAndroid</translation>
 <translation id="9099220545925418560">تستند مواضيع الإعلانات إلى سجلّ التصفُّح الخاص بك. هذا الإعداد غير مفعَّل.</translation>
-<translation id="910000385680858937">تم منح إذن الوصول إلى الميكروفون: "<ph name="PERMISSION_DETAILS" />". عليك توصيل ميكروفون بجهازك.</translation>
+<translation id="910000385680858937">تم منح إذن الوصول إلى الميكروفون: <ph name="PERMISSION_DETAILS" />. عليك توصيل ميكروفون بجهازك.</translation>
 <translation id="9100416672768993722">‏للتبديل إلى آخر أسلوب إدخال تم استخدامه، يمكنك الضغط على <ph name="BEGIN_SHORTCUT" /><ph name="BEGIN_CTRL" />Ctrl<ph name="END_CTRL" /><ph name="SEPARATOR" /><ph name="BEGIN_SPACE" />مفتاح المسافة<ph name="END_SPACE" /><ph name="END_SHORTCUT" />.</translation>
 <translation id="9100765901046053179">الإعدادات المتقدمة</translation>
 <translation id="9101691533782776290">إطلاق التطبيق</translation>

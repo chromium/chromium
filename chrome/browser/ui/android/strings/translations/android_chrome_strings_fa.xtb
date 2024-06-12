@@ -380,7 +380,6 @@
 <translation id="2904414404539560095">فهرست دستگاه‌هایی که می‌توان با آن‌ها برگه هم‌رسانی کرد کاملاً باز است.</translation>
 <translation id="2908243544703713905">داستان‌های خوانده‌نشده آماده است</translation>
 <translation id="2909615210195135082">‏پلتفورم اعلان‌های Google</translation>
-<translation id="2912296070571964914">مدیریت موضوع‌هایی که به آن‌ها علاقه دارید</translation>
 <translation id="2912345083818861431">استفاده از قفل صفحه برای دیدن برگه‌های ناشناس باز</translation>
 <translation id="2923908459366352541">نام نامعتبر است</translation>
 <translation id="2932150158123903946">‏فضای ذخیره‌سازی Google <ph name="APP_NAME" /></translation>
@@ -456,7 +455,6 @@
 <translation id="3259831549858767975">کوچک‌تر کردن همه‌چیز در صفحه</translation>
 <translation id="3264259168916048410">رایانه‌تان می‌خواهد از این دستگاه برای ورود به سیستم سایتی استفاده کند</translation>
 <translation id="3265093782546847662">همه صفحه‌های <ph name="DOMAIN" /></translation>
-<translation id="3265534588625245297">مدیریت سایت‌هایی که دنبال می‌کنید</translation>
 <translation id="3269093882174072735">بارگیری تصویر</translation>
 <translation id="3280562213547448728">جستجوی گفتاری</translation>
 <translation id="3282568296779691940">‏ورود به Chrome</translation>
@@ -628,7 +626,6 @@
 <translation id="4195643157523330669">باز کردن در برگهٔ جدید</translation>
 <translation id="4197828496439691735">{NUM_TABS,plural, =1{یک برگه در این دستگاه}one{# برگه در این دستگاه}other{# برگه در این دستگاه}}</translation>
 <translation id="4198423547019359126">مکانی برای بارگیری دردسترس نیست</translation>
-<translation id="4198664641856813238">به سیستم وارد شوید تا نشانک‌ها، گذرواژه‌ها، و موارد دیگر را در همه دستگاه‌هایتان دریافت کنید</translation>
 <translation id="4202218894997543208">موضوع‌هایی که مسدود کرده‌اید</translation>
 <translation id="4214315110991671325">‏اگر کوکی‌ها را مجاز کنید، ممکن است Chrome از آن‌ها برای پیش‌بارگذاری استفاده کند.</translation>
 <translation id="4216511743389425832">خواندن این صفحه</translation>
@@ -828,7 +825,6 @@
 <translation id="510275257476243843">۱ ساعت باقی‌مانده است</translation>
 <translation id="5114895953710637392">برگ فیلتر کردن برنامه بسته شد.</translation>
 <translation id="5115811374190515607">به <ph name="PRODUCT_NAME" /></translation>
-<translation id="5118713593561876160">علایق</translation>
 <translation id="5122378528687922675">اگر به راهنمایی نیاز داشتید، از ولی خود کمک بگیرید (<ph name="PARENT_NAME_1" /> یا <ph name="PARENT_NAME_2" />)</translation>
 <translation id="5123685120097942451">برگه ناشناس</translation>
 <translation id="5132942445612118989">همگام‌سازی گذرواژه‌ها، سابقه و موارد دیگر در همه دستگاه‌ها</translation>
@@ -842,7 +838,6 @@
 <translation id="5171045022955879922">‏جستجو یا تایپ URL</translation>
 <translation id="5174700554036517242">برگه به ارتفاع اولیه‌اش برگردانده شد</translation>
 <translation id="5180063720319462041">صفحه به <ph name="TARGET_LANGUAGE" /> ترجمه شده است</translation>
-<translation id="5186634140793586141">موضوعات و جستجوهای موردعلاقه‌تان را مدیریت کنید</translation>
 <translation id="5191251636205085390">با فناوری‌های جدیدی که قرار است جایگزین کوکی‌های شخص ثالث شود آشنا شوید و آن‌ها را کنترل کنید</translation>
 <translation id="5204967432542742771">گذرواژه را وارد کنید</translation>
 <translation id="5206168361184759344">{FILE_COUNT,plural, =1{درحال بارگیری فایل…}one{درحال بارگیری # فایل…}other{درحال بارگیری # فایل…}}</translation>
@@ -1091,7 +1086,6 @@
 <translation id="6437478888915024427">اطلاعات صفحه</translation>
 <translation id="6440291723980579689">صفحه‌ها فقط بعداز باز شدن بارگیری می‌شوند</translation>
 <translation id="6441734959916820584">نام خیلی طولانی است</translation>
-<translation id="6447558397796644647">آن نشانک پیدا نشد. املای خود را بررسی کنید یا نشانک جدیدی را اضافه کنید.</translation>
 <translation id="6459045781120991510">نظرسنجی‌ها</translation>
 <translation id="6461962085415701688">فایل باز نمی‌شود</translation>
 <translation id="6464977750820128603">‏می‌توانید سایت‌هایی را که در Chrome بازدید می‌کنید مشاهده کنید و تایمرهایی را برای آن‌ها تنظیم کنید.\n\n‏Google اطلاعاتی درباره سایت‌هایی که برای آن‌ها تایمر تنظیم می‌کنید و مدت زمانی که از آن‌ها بازدید می‌کنید، دریافت می‌کند. از این اطلاعات برای بهبود «آسایش دیجیتالی» استفاده می‌شود.</translation>

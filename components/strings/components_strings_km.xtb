@@ -570,6 +570,7 @@
 <translation id="2036983605131262583">ដុំជំនួស</translation>
 <translation id="2040463897538655645">ឧបករណ៍ផ្ទុកចល័ត</translation>
 <translation id="2040894699575719559">បានទប់ស្កាត់​ទីតាំង</translation>
+<translation id="2041788246978549610">ប្រើប្រាស់​មីក្រូហ្វូន​ដែលអាច​ប្រើបាន (<ph name="MICS_COUNT" />)</translation>
 <translation id="2042213636306070719">ទម្រទី 7</translation>
 <translation id="204357726431741734">ចូលគណនី ដើម្បីប្រើ​ពាក្យសម្ងាត់​ដែលរក្សាទុក​នៅក្នុងគណនី Google របស់អ្នក</translation>
 <translation id="2045871135676061132">ស្រោមសំបុត្រផ្ទាល់ខ្លួន</translation>
@@ -892,6 +893,7 @@
 <translation id="2655752832536625875">បន្ទប់ទឹក</translation>
 <translation id="2657637947725373811">{0,plural, =1{ផ្ទេរ​ឯកសារ​សម្ងាត់​ឬ?}other{ផ្ទេរ​ឯកសារ​សម្ងាត់​ឬ?}}</translation>
 <translation id="2658843814961855121">ច្បាប់​ស្ដីពីការងារ</translation>
+<translation id="2658944305627908367">ប្រតិបត្តិការ​ដែលលើស​សមតុល្យ​របស់អ្នក​នឹងមិន​ត្រូវបាន​ដំណើរការទេ</translation>
 <translation id="2660779039299703961">ព្រឹត្តិការណ៍</translation>
 <translation id="2664887757054927933">{COUNT,plural, =0{គ្មាន}=1{ពាក្យ​សម្ងាត់ 1 (សម្រាប់ <ph name="DOMAIN_LIST" />)}=2{ពាក្យ​សម្ងាត់ 2 (សម្រាប់ <ph name="DOMAIN_LIST" />)}other{ពាក្យ​សម្ងាត់ # (សម្រាប់ <ph name="DOMAIN_LIST" />)}}</translation>
 <translation id="2666092431469916601">ខាងលើ</translation>
@@ -1089,6 +1091,7 @@
 <translation id="3090667236485488075">កញ្ចក់</translation>
 <translation id="3095940652251934233">Statement</translation>
 <translation id="3098513225387949945">មិនបាន​អើពើ ដោយសារ​បញ្ជីបិទ​មានតួអក្សរ​ជំនួស '*' ដែលស្មើនឹង​ការបិទ​គោលការណ៍។</translation>
+<translation id="3099619114405539473">ប្រើប្រាស់​កាមេរ៉ា​ដែលអាច​ប្រើបាន (<ph name="CAMERAS_COUNT" />)</translation>
 <translation id="3102312643185441063">គណនី​សន្សំ</translation>
 <translation id="3103188521861412364">ភាគហ៊ុន និង​សញ្ញាបណ្ណ</translation>
 <translation id="3105172416063519923">ID ទ្រព្យសកម្ម៖</translation>
@@ -1365,6 +1368,7 @@
 <translation id="3583757800736429874">ធ្វើការផ្លាស់ទីឡើងវិញ</translation>
 <translation id="3584299510153766161">ចោះ​ពីររន្ធ​ខាងក្រោម</translation>
 <translation id="3584755835709800788">ភាពយន្ត​ប្រឌិត​បែបវិទ្យាសាស្ត្រ និង​បែបស្រមើ​ស្រមៃ</translation>
+<translation id="3585455899094692781">ប្រើប្រាស់ និង​ផ្លាស់ទី​កាមេរ៉ា​ដែលអាច​ប្រើបាន (<ph name="CAMERAS_COUNT" />)</translation>
 <translation id="3586833803451155175">ហ្វ៊ីលសើម</translation>
 <translation id="3586931643579894722">លាក់ព័ត៌មានលំអិត</translation>
 <translation id="3587738293690942763">កណ្តាល</translation>

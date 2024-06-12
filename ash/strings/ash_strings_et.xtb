@@ -64,7 +64,6 @@ Alustamiseks võite proovida neid toiminguid.</translation>
 <translation id="1201402288615127009">Järgmine</translation>
 <translation id="1210557957257435379">ekraanikuva salvestamine</translation>
 <translation id="121097972571826261">Sõna võrra edasi</translation>
-<translation id="1217633719248931900">Ava rakendus</translation>
 <translation id="1218444235442067213"><ph name="APP_NAME" />, Play poe rakendus</translation>
 <translation id="1225748608451425081">Teie Chromebook on teadaoleva probleemi tõttu lukustatud. Saate sisse logida pärast <ph name="TIME_LEFT" /> möödumist.</translation>
 <translation id="1229194443904279055">Valimise peatamine</translation>
@@ -327,7 +326,6 @@ Alustamiseks võite proovida neid toiminguid.</translation>
 <translation id="2293443480080733021">Millele soovite keskenduda? Ülesande lisamiseks vajutage sisestusklahvi.</translation>
 <translation id="229397294990920565">Mobiilne andmeside lülitatakse välja …</translation>
 <translation id="2295777434187870477">Mikrofon on sees, lülitamisel sisend vaigistatakse.</translation>
-<translation id="2298170939937364391">Täisekraani suurendus on lubatud. Vajutage selle väljalülitamiseks uuesti klahvikombinatsiooni Ctrl + otsinguklahv + M.</translation>
 <translation id="2302092602801625023">Kontot haldab Family Link</translation>
 <translation id="2303600792989757991">Akna ülevaate sisse- ja väljalülitamine</translation>
 <translation id="2305738328104302723">Google'i ülesannete loend: <ph name="GLANCEABLES_TASKS_LIST_NAME" /></translation>
@@ -512,7 +510,6 @@ Alustamiseks võite proovida neid toiminguid.</translation>
 <translation id="2977598380246111477">Järgmine number</translation>
 <translation id="2985148236010982088">Vaadake kõiki rakendusi</translation>
 <translation id="2992327365391326550">Seadme mikrofoninupp on välja lülitatud.</translation>
-<translation id="2996462380875591307">Dokitud luup on lubatud. Vajutage selle väljalülitamiseks klahvikombinatsiooni Ctrl + otsinguklahv + D.</translation>
 <translation id="3000461861112256445">Monoheli</translation>
 <translation id="3001391739687111021">Muuda ekraani suurust</translation>
 <translation id="3009178788565917040">Väljund</translation>
@@ -2140,7 +2137,6 @@ Seadme väljalülitamiseks vajutage uuesti pikalt seadme toitenuppu.</translatio
 <translation id="8982906748181120328">Nähtavus läheduses</translation>
 <translation id="8983038754672563810">HSPA</translation>
 <translation id="8990809378771970590">Kasutusel: <ph name="IME_NAME" /></translation>
-<translation id="8991617137207906966">Värvide ümberpööramise režiim on lubatud. Vajutage selle väljalülitamiseks uuesti klahvikombinatsiooni Ctrl + Otsinguklahv + H.</translation>
 <translation id="899350903320462459">Märguandetoimingu tegemiseks avage seade kontoga <ph name="LOGIN_ID" /></translation>
 <translation id="8993733019280019776">Kas te räägite? Teie mikrofon on välja lülitatud. Mikrofoni sisselülitamiseks valige mikrofon.</translation>
 <translation id="9000771174482730261">HALLAKE SALVESTUSRUUMI</translation>

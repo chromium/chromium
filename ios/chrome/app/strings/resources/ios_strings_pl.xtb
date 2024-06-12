@@ -850,6 +850,7 @@ Jeśli chcesz usunąć historię wyszukiwania, zapoznaj się z instrukcjami wys
 <translation id="5345660046352249607">{COUNT,plural, =1{Śledzić tę przesyłkę?}few{Śledzić {COUNT} przesyłki?}many{Śledzić {COUNT} przesyłek?}other{Śledzić {COUNT} przesyłki?}}</translation>
 <translation id="5348775987281903912">Możesz udostępnić tę stronę tutaj, klikając przycisk udostępniania.</translation>
 <translation id="536067926684072644">Pokaż zakładki</translation>
+<translation id="537853552771686272">Zarządzaj tematami i witrynami, które Cię interesują</translation>
 <translation id="5379352933722332597">{count,plural, =1{Zakładka została zapisana w folderze „{title}” tylko na tym urządzeniu.}few{{count} zakładki zostały zapisane w folderze „{title}” tylko na tym urządzeniu.}many{{count} zakładek zostało zapisanych w folderze „{title}” tylko na tym urządzeniu.}other{{count} zakładki zostało zapisane w folderze „{title}” tylko na tym urządzeniu.}}</translation>
 <translation id="5388358297987318779">Otwórz obraz</translation>
 <translation id="5395707839134961196">Ukryj szczegóły wyszukiwarki</translation>
@@ -932,6 +933,7 @@ Funkcja Handoff musi być też włączona w sekcji Ogólne w Ustawieniach, a urz
 <translation id="5758631781033351321">Znajdziesz tu swoją listę Do przeczytania</translation>
 <translation id="5765456154762864099">Menu → Ustawienia → Domyślna przeglądarka</translation>
 <translation id="5777888488419460501">Zapisz na koncie</translation>
+<translation id="5778292857689789362">Grupa kart, <ph name="GROUP_TITLE" />, liczba kart: <ph name="TABS_NUMBER" />.</translation>
 <translation id="5782227691023083829">Trwa tłumaczenie...</translation>
 <translation id="5791632441210678828">Przycisk sortowania obserwowanych kanałów.</translation>
 <translation id="5793373065989412701">Sprawdzam członków Twojej grupy rodzinnej…</translation>

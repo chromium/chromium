@@ -16,6 +16,7 @@
 <translation id="1203500561924088507">Благодарим ви, че инсталирахте <ph name="BUNDLE_NAME" />. Трябва да рестартирате браузъра си, преди да използвате това приложение.</translation>
 <translation id="1262876892872089030">Докато този раздел бе неактивен, бе освободена памет, за да се запази бързината на Chromium. Този сайт може да бъде добавен към изключенията, така че разделите с него да не стават неактивни.</translation>
 <translation id="1265577313130862557">Chromium блокира това изтегляне, защото файлът е опасен</translation>
+<translation id="126567311906253476">Когато използвате <ph name="USER_EMAIL" /> за вход в услуги на Google, като например Gmail или YouTube, можете автоматично да влизате в Chromium със същия профил</translation>
 <translation id="1315551408014407711">Настройване на новия ви потребителски профил в Chromium</translation>
 <translation id="1342274909142618978">Изтриване на данните и от Chromium (<ph name="URL" />)</translation>
 <translation id="1414495520565016063">Влязохте в Chromium!</translation>
@@ -40,6 +41,7 @@
 <translation id="1749104137266986751">Когато HTTPS не е налице, Chromium ще използва незащитени връзки, без да ви предупреждава</translation>
 <translation id="1774152462503052664">Нека Chromium да се изпълнява на заден план</translation>
 <translation id="1779356040007214683">За да направим Chromium по-безопасен, деактивирахме някои разширения, които не са посочени в <ph name="IDS_EXTENSION_WEB_STORE_TITLE" /> и може да са били добавени без ваше знание.</translation>
+<translation id="1804128559285178512">Докато сте в профила си, можете да използвате в Chromium паролите си и др. от профила си в Google</translation>
 <translation id="1808667845054772817">Повторно инсталиране на Chromium</translation>
 <translation id="1820835682567584003">Chromium се опитва да <ph name="AUTHENTICATION_PURPOSE" /></translation>
 <translation id="18552579716432081">За да изтриете данните за сърфирането само от това устройство, но да ги запазите в профила си в Google, <ph name="BEGIN_LINK" />излезте от профила си в Chromium<ph name="END_LINK" />.</translation>

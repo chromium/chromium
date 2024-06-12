@@ -121,6 +121,7 @@
 <translation id="2765403129283291972">Chrome trenger tilgang til mikrofonen din for dette nettstedet</translation>
 <translation id="2770231113462710648">Endre standardnettleser til:</translation>
 <translation id="2775140325783767197">Chrome kan ikke sjekke passordene dine. Prøv å kontrollere internettilkoblingen.</translation>
+<translation id="2797864378188255696">Når du logger på Google-tjenester som Gmail eller YouTube med <ph name="USER_EMAIL" />, kan du automatisk logge på Chrome med den samme kontoen</translation>
 <translation id="2799223571221894425">Start på nytt</translation>
 <translation id="2825024317344269723">Farlig nettsted. Chrome har fjernet varsler.</translation>
 <translation id="2846251086934905009">Installasjonsfeil: Installasjonsprogrammet ble ikke fullført. Installasjonen er avbrutt.</translation>
@@ -293,6 +294,7 @@
 <translation id="5334309298019785904">ChromeOS kunne ikke synkronisere dataene dine, ettersom synkronisering ikke er tilgjengelig for domenet ditt.</translation>
 <translation id="5334487786912937552">Chrome må ha lagringstilgang for å kunne laste ned filer</translation>
 <translation id="5337648990166757586">Valgfritt: Bidra til å gjøre funksjonene og ytelsen til ChromeOS bedre ved å sende diagnostikk og bruksdata automatisk til Google.</translation>
+<translation id="5345497718959596593">Når du er logget på, kan du bruke passordene dine med mer fra Google-kontoen din i Chrome</translation>
 <translation id="5357889879764279201">Få hjelp med ChromeOS Flex</translation>
 <translation id="5368118228313795342">Ekstrakode: <ph name="EXTRA_CODE" />.</translation>
 <translation id="5386244825306882791">Den styrer også hvilken side som vises når du starter Chrome eller søker fra multifunksjonsfeltet.</translation>

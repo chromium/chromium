@@ -1855,6 +1855,7 @@ Voice Match-ekin, Google-ren Laguntzailea zerbitzuak <ph name="SUPERVISED_USER_N
 <translation id="233375395665273385">Ezabatu datuak eta amaitu saioa</translation>
 <translation id="233471714539944337">Kontuzko edukia</translation>
 <translation id="2335111415680198280">{0,plural, =1{Itxi # leiho}other{Itxi # leiho}}</translation>
+<translation id="2335758110242123814">Ireki taldea</translation>
 <translation id="2336228925368920074">Egin fitxa guztien laster-markak…</translation>
 <translation id="2336258397628212480"><ph name="APP_NAME" /> orri bat inprimatzen ari da <ph name="PRINTER_NAME" /> inprimagailuan</translation>
 <translation id="2336381494582898602">Berrezarri fabrikako ezarpenak Powerwash bidez</translation>
@@ -1875,6 +1876,7 @@ Voice Match-ekin, Google-ren Laguntzailea zerbitzuak <ph name="SUPERVISED_USER_N
 <translation id="2351923523007389195">Baimena dauka (<ph name="PERMISSION_DETAILS" />). Aktibatu <ph name="LINK_BEGIN" />sistemaren kokapena erabiltzeko baimena<ph name="LINK_END" />.</translation>
 <translation id="2352662711729498748">&lt; 1 MB</translation>
 <translation id="2352810082280059586">Pantaila blokeatuko oharrak <ph name="LOCK_SCREEN_APP_NAME" /> aplikazioan gordetzen dira automatikoki. Azken oharra geldituko da pantaila blokeatuan.</translation>
+<translation id="2353168619378866466">Ireki taldea</translation>
 <translation id="2353297238722298836">Kamera eta mikrofonoa erabil daitezke</translation>
 <translation id="2353910600995338714">Esportatu dira</translation>
 <translation id="2355314311311231464">Ezin izan da hornitu, ezin izan direlako berreskuratu kontuaren xehetasunak. Saiatu berriro. Errore-kodea: <ph name="ERROR_CODE" />.</translation>
@@ -2828,6 +2830,7 @@ Txartel adimenduna sartuta edukitzea eskatzen du <ph name="DOMAIN" /> domeinuak.
 <translation id="3033348223765101500">Kontrolatu datuak</translation>
 <translation id="3036327949511794916">Pasatu egin da <ph name="DEVICE_TYPE" /> hau itzultzeko epemuga.</translation>
 <translation id="3036546437875325427">Gaitu Flash</translation>
+<translation id="3037193115779933814">Hizkiak eta zenbakiak</translation>
 <translation id="3038272154009688107">Ikusi webgune guztiak</translation>
 <translation id="3038612606416062604">Gehitu inprimagailu bat eskuz</translation>
 <translation id="3039491566278747710">Ezin izan da instalatu konexiorik gabeko gidalerroa gailuan.</translation>
@@ -6024,6 +6027,7 @@ Baliteke webguneei eta aplikazioei emandako baimenak kontu honi aplikatzea. Goog
 <translation id="5469540749878136997">Egin tokia memorian erabileraren arabera</translation>
 <translation id="5469852975082458401">Nabigatu orrietatik testu-kurtsorea erabilita. Eginbidea desaktibatzeko, sakatu F7.</translation>
 <translation id="5470735824776589490">Berrabiarazi egin behar da gailuan fabrikako ezarpenak Powerwash bidez berrezarri ahal izateko. <ph name="LINK_BEGIN" />Lortu informazio gehiago<ph name="LINK_END" /></translation>
+<translation id="5470741195701938302">Zenbakiak</translation>
 <translation id="5471768120198416576">Kaixo! Testua ahots bihurtzeko eginbidearen ahotsa naiz.</translation>
 <translation id="5472627187093107397">Gorde webgune honetako pasahitzak</translation>
 <translation id="5473062644742711742">Erabilerraztasun-tresna gehiago dituzu Chrome Web Store-n</translation>
@@ -6857,6 +6861,7 @@ Baliteke webguneei eta aplikazioei emandako baimenak kontu honi aplikatzea. Goog
 <translation id="6101226222197207147">Aplikazio berria gaitu da (<ph name="EXTENSION_NAME" />)</translation>
 <translation id="6102043788063419338">Babes aurreratuak blokeatu du fitxategi hau.</translation>
 <translation id="6103681770816982672">Abisua: garatzaileentzako kanalera aldatzen ari zara</translation>
+<translation id="610395411842312282">Taldekatu bata bestearen alboan dauden bi leiho</translation>
 <translation id="6104068876731806426">Google Kontuak</translation>
 <translation id="6104667115274478616">Kudeatu ChromeOS-en audio-ezarpenak</translation>
 <translation id="6104796831253957966">Beteta dago inprimagailuaren ilara</translation>

@@ -47,6 +47,7 @@
 <translation id="1082026381988252344">滚动和缩放已分享的标签页中的内容</translation>
 <translation id="1089439967362294234">更改密码</translation>
 <translation id="1090629319939036170">VR 菜单</translation>
+<translation id="1091779689406092804">屏幕截图</translation>
 <translation id="1094777233105318927">您的浏览器、操作系统、设备、已安装的软件以及文件的相关信息</translation>
 <translation id="1096545575934602868">此字段最多仅能包含 <ph name="MAX_ITEMS_LIMIT" /> 个条目，超出的条目会被舍弃。</translation>
 <translation id="1097803577928227769">地区公园与园林</translation>
@@ -472,6 +473,7 @@
 <translation id="1840009953725035797">家庭影院系统</translation>
 <translation id="1842969606798536927">付款</translation>
 <translation id="1846432862466000825">塑料（存档用）</translation>
+<translation id="1848640291751752317">下载内容</translation>
 <translation id="1848982255014129637">相纸（高光）</translation>
 <translation id="1853392626017747777">虚拟卡注册对话框已关闭</translation>
 <translation id="1854180393107901205">停止投放</translation>
@@ -752,6 +754,7 @@
 <translation id="2366689192918515749">肉类与海鲜</translation>
 <translation id="2367567093518048410">级别</translation>
 <translation id="23703388716193220">高尔夫装备</translation>
+<translation id="2370368710215137370">文件上传</translation>
 <translation id="2374629208601905275">根据您所在地区的法律，Chrome 会要求您选择默认搜索引擎。这些是您所在地区最普遍使用的搜索引擎，按随机顺序显示。</translation>
 <translation id="2377241607395428273">图形与动画软件</translation>
 <translation id="2378084239755710604">保存的卡片已关闭。</translation>
@@ -1416,6 +1419,7 @@
 <translation id="3682094733650754138">已选择“填充地址”选项</translation>
 <translation id="3687920599421452763">货车与小型货车</translation>
 <translation id="3693327506115126094">选择您要使用的身份验证方式</translation>
+<translation id="3698353241727597930">您的管理员已将<ph name="FILES" />的保存位置配置为由企业管理的 <ph name="CLOUD_STORAGE" /> 存储空间。即使您删除这些文件，企业仍可能会监控、审核和保留这些文件。</translation>
 <translation id="3698629142018988477">“创建网站”按钮，激活它即可在 Google 协作平台中快速创建新网站</translation>
 <translation id="3701325639446035885">活动门票销售服务</translation>
 <translation id="3701427423622901115">已确认要重置。</translation>
@@ -1491,6 +1495,7 @@
 <translation id="3826050100957962900">第三方登录</translation>
 <translation id="3827112369919217609">绝对</translation>
 <translation id="3828924085048779000">密码输入字段不能留空。</translation>
+<translation id="3830139096297532361">无法访问此 PDF 文件。无法下载文本提取文件，请稍后再试。</translation>
 <translation id="3830470485672984938">换个通行密钥</translation>
 <translation id="3831065134033923230">检查已保存的所有密码</translation>
 <translation id="3831915413245941253"><ph name="ENROLLMENT_DOMAIN" /> 已安装了一些扩展程序来提供更多功能。这些扩展程序有权访问您的部分数据。</translation>
@@ -1665,6 +1670,7 @@
 <translation id="4202554117186904723">第 5 卷</translation>
 <translation id="4203769790323223880">已拒绝授予摄像头使用权限</translation>
 <translation id="4203896806696719780"><ph name="BEGIN_LINK" />检查防火墙和防病毒配置<ph name="END_LINK" /></translation>
+<translation id="4207195957038009075">Google 云端硬盘</translation>
 <translation id="4209092469652827314">大</translation>
 <translation id="4210602799576081649">验证码已失效，请申请新的验证码</translation>
 <translation id="421066178035138955">使用虚拟现实设备和数据</translation>
@@ -2724,6 +2730,7 @@
 <translation id="6270066318535733958">划船</translation>
 <translation id="6272088941196661550">继续您的历程，以查看您的 Chrome 历史记录中的相关活动记录</translation>
 <translation id="6272383483618007430">Google 更新</translation>
+<translation id="6278015583149890680">Google 云端硬盘和 OneDrive</translation>
 <translation id="6280223929691119688">无法递送到此地址。请另选一个地址。</translation>
 <translation id="6284292079994426700">26 x 38 英寸</translation>
 <translation id="6284449872909111707">短信与即时通讯</translation>
@@ -3162,6 +3169,7 @@
 <translation id="7119063404975271297">电视剧</translation>
 <translation id="7119371694555167493">复制超时</translation>
 <translation id="7119414471315195487">关闭其他标签页或程序</translation>
+<translation id="7120588595737538743">下载内容和屏幕截图</translation>
 <translation id="7124354851782353862">请输入您的 CVC</translation>
 <translation id="7129409597930077180">无法向此地址送货。请另选一个地址。</translation>
 <translation id="7129809579943936035"><ph name="VALUE_PROP" /><ph name="DETAILS" /></translation>
@@ -3361,6 +3369,7 @@
 <translation id="7483863401933039889"><ph name="CHROME_TIP" />，依次按 Tab 键和 Enter 键即可关闭 Chrome 提示。</translation>
 <translation id="7485085230273446323">工商业</translation>
 <translation id="7485870689360869515">找不到数据。</translation>
+<translation id="7486880426035242089">OneDrive</translation>
 <translation id="7489392576326061356">洗发水和护发素</translation>
 <translation id="7495528107193238112">该内容被屏蔽了。请联系网站所有者以解决此问题。</translation>
 <translation id="749865518782565832">管道维修</translation>

@@ -122,6 +122,7 @@
 <translation id="2765403129283291972">Chrome 需要相關權限，才能讓這個網站使用你的麥克風</translation>
 <translation id="2770231113462710648">將預設瀏覽器變更為：</translation>
 <translation id="2775140325783767197">Chrome 無法檢查你的密碼，請查看你的網際網路連線狀態。</translation>
+<translation id="2797864378188255696">使用 <ph name="USER_EMAIL" /> 登入 Gmail 或 YouTube 等 Google 服務時，可以用同一個帳戶自動登入 Chrome</translation>
 <translation id="2799223571221894425">重新啟動</translation>
 <translation id="2825024317344269723">危險網站。Chrome 已移除通知權限。</translation>
 <translation id="2846251086934905009">安裝錯誤：安裝程式未完整執行。安裝作業已取消。</translation>
@@ -294,6 +295,7 @@
 <translation id="5334309298019785904">你的網域無法使用「同步」功能，因此 Chrome OS 無法同步處理你的資料。</translation>
 <translation id="5334487786912937552">Chrome 需要儲存空間存取權才能下載檔案</translation>
 <translation id="5337648990166757586">選用：自動將診斷資訊和使用資料傳送給 Google，協助改善 Chrome OS 的功能與效能。</translation>
+<translation id="5345497718959596593">登入帳戶後，即可在 Chrome 中使用 Google 帳戶儲存的密碼和其他資訊</translation>
 <translation id="5357889879764279201">取得 ChromeOS Flex 的相關協助</translation>
 <translation id="5368118228313795342">額外代碼：<ph name="EXTRA_CODE" />。</translation>
 <translation id="5386244825306882791">這個擴充功能也會控管 Chrome 啟動時或你使用網址列搜尋時所顯示的網頁。</translation>

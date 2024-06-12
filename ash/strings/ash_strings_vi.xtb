@@ -64,7 +64,6 @@ Dưới đây là một số việc bạn có thể thử để bắt đầu.</t
 <translation id="1201402288615127009">Tiếp theo</translation>
 <translation id="1210557957257435379">ghi màn hình</translation>
 <translation id="121097972571826261">Tiến một từ</translation>
-<translation id="1217633719248931900">Chuyển tới ứng dụng</translation>
 <translation id="1218444235442067213"><ph name="APP_NAME" />, Ứng dụng Cửa hàng Play</translation>
 <translation id="1225748608451425081">Chromebook của bạn đã bị khóa do một vấn đề đã biết. Bạn có thể đăng nhập sau: <ph name="TIME_LEFT" />.</translation>
 <translation id="1229194443904279055">Dừng chọn</translation>
@@ -329,7 +328,6 @@ Dưới đây là một số việc bạn có thể thử để bắt đầu.</t
 <translation id="2293443480080733021">Bạn muốn tập trung vào việc gì? Nhấn phím Enter để thêm việc cần làm.</translation>
 <translation id="229397294990920565">Đang tắt dữ liệu di động...</translation>
 <translation id="2295777434187870477">Micrô đang bật. Nhấn vào nút bật tắt sẽ tắt micrô và không thu được tiếng.</translation>
-<translation id="2298170939937364391">Đã bật tính năng Phóng to toàn màn hình. Hãy nhấn lại tổ hợp phím Ctrl+Tìm kiếm+M để tắt tính năng này.</translation>
 <translation id="2302092602801625023">Tài khoản này do Family Link quản lý</translation>
 <translation id="2303600792989757991">Tổng quan về chuyển đổi cửa sổ</translation>
 <translation id="2305738328104302723">Danh sách việc cần làm trên Google: <ph name="GLANCEABLES_TASKS_LIST_NAME" /></translation>
@@ -514,7 +512,6 @@ Dưới đây là một số việc bạn có thể thử để bắt đầu.</t
 <translation id="2977598380246111477">Số tiếp theo</translation>
 <translation id="2985148236010982088">Xem tất cả ứng dụng</translation>
 <translation id="2992327365391326550">Nút micrô trên thiết bị đang tắt.</translation>
-<translation id="2996462380875591307">Đã bật tính năng Phóng to ở vị trí cố định. Hãy nhấn lại tổ hợp phím Ctrl+Search+D để tắt tính năng này.</translation>
 <translation id="3000461861112256445">Đơn âm</translation>
 <translation id="3001391739687111021">Chỉnh sửa kích thước màn hình</translation>
 <translation id="3009178788565917040">Thiết bị ra</translation>
@@ -2150,7 +2147,6 @@ Mới cài đặt</translation>
 <translation id="8982906748181120328">Chế độ hiển thị lân cận</translation>
 <translation id="8983038754672563810">HSPA</translation>
 <translation id="8990809378771970590">Đang dùng <ph name="IME_NAME" /></translation>
-<translation id="8991617137207906966">Đã bật Chế độ đảo màu. Nhấn tổ hợp phím Ctrl+Search+H một lần nữa để tắt chế độ này.</translation>
 <translation id="899350903320462459">Mở khóa thiết bị bằng <ph name="LOGIN_ID" /> để thực hiện hành động thông báo</translation>
 <translation id="8993733019280019776">Bạn có đang nói không? Micrô đang tắt. Hãy chọn micrô để bật.</translation>
 <translation id="9000771174482730261">QUẢN LÝ BỘ NHỚ</translation>

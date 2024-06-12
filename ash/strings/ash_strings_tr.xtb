@@ -64,7 +64,6 @@ Başlamak için şunları deneyebilirsin.</translation>
 <translation id="1201402288615127009">İleri</translation>
 <translation id="1210557957257435379">ekran kaydı</translation>
 <translation id="121097972571826261">Kelime bazında ilerle</translation>
-<translation id="1217633719248931900">Uygulamaya git</translation>
 <translation id="1218444235442067213"><ph name="APP_NAME" /> Play Store uygulaması</translation>
 <translation id="1225748608451425081">Chromebook'unuz, bilinen bir sorun yüzünden kilitlendi. Tekrar oturum açabilmenize <ph name="TIME_LEFT" /> kaldı.</translation>
 <translation id="1229194443904279055">Seçmeyi durdur</translation>
@@ -327,7 +326,6 @@ Başlamak için şunları deneyebilirsin.</translation>
 <translation id="2293443480080733021">Hangi göreve odaklanmak istersiniz? Görevi eklemek için Enter tuşuna basın.</translation>
 <translation id="229397294990920565">Mobil veriler kapanıyor...</translation>
 <translation id="2295777434187870477">Mikrofon açık, düğmeye basılırsa girişin sesi kapatılacak.</translation>
-<translation id="2298170939937364391">Tam Ekran Büyüteci etkinleştirildi. Kapatmak için tekrar Ctrl+Arama+M tuşlarına basın.</translation>
 <translation id="2302092602801625023">Bu hesap Family Link tarafından yönetiliyor</translation>
 <translation id="2303600792989757991">Pencere genel bakışını değiştir</translation>
 <translation id="2305738328104302723">Google Görevler listesi: <ph name="GLANCEABLES_TASKS_LIST_NAME" /></translation>
@@ -512,7 +510,6 @@ Başlamak için şunları deneyebilirsin.</translation>
 <translation id="2977598380246111477">Sonraki sayı</translation>
 <translation id="2985148236010982088">Tüm uygulamaları göster</translation>
 <translation id="2992327365391326550">Cihazın mikrofon düğmesi kapalı.</translation>
-<translation id="2996462380875591307">Yerleştirilmiş Büyüteç etkinleştirildi. Kapatmak için tekrar Ctrl+Arama+H tuşlarına basın.</translation>
 <translation id="3000461861112256445">Mono ses</translation>
 <translation id="3001391739687111021">Ekran boyutunu düzenleyin</translation>
 <translation id="3009178788565917040">Çıkış</translation>
@@ -2139,7 +2136,6 @@ Cihazı kapatmak için cihazın güç düğmesini tekrar basılı tutun.</transl
 <translation id="8982906748181120328">Yakındakiler görünürlüğü</translation>
 <translation id="8983038754672563810">HSPA</translation>
 <translation id="8990809378771970590"><ph name="IME_NAME" /> kullanılıyor</translation>
-<translation id="8991617137207906966">Rengi ters çevirme modu etkinleştirildi. Modu kapatmak için tekrar Ctrl+Ara+H tuşlarına basın.</translation>
 <translation id="899350903320462459">Bildirim işlemi gerçekleştirmek için <ph name="LOGIN_ID" /> olarak cihazın kilidini açın</translation>
 <translation id="8993733019280019776">Konuşuyor musunuz? Mikrofonunuz kapalı. Mikrofonu seçerek açın.</translation>
 <translation id="9000771174482730261">DEPOLAMA ALANINI YÖNET</translation>

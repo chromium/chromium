@@ -4226,6 +4226,7 @@
 <translation id="4066207411788646768">ሊገኙ የሚችል አታሚዎችን በእርስዎ አውታረ መረብ ውስጥ ለመመልከት እባክዎ የእርስዎን ግንኙነት ይፈትሹ</translation>
 <translation id="4067839975993712852">የአሁኑን ትር እንደ የተነበበ ምልክት አድርግበት</translation>
 <translation id="4068776064906523561">የተቀመጡ የጣት አሻራዎች</translation>
+<translation id="4070132839822635162">በመለያ አትግባ</translation>
 <translation id="407173827865827707">ጠቅ ሲደረግ</translation>
 <translation id="4072805772816336153">ቆይተው እንደገና ይሞክሩ</translation>
 <translation id="4074164314564067597">የቁልፍ ሰሌዳ</translation>
@@ -7347,6 +7348,7 @@
 <translation id="6469702164109431067">የይለፍ ቃሎች እና የይለፍ ቁልፎች</translation>
 <translation id="6470823736074966819">ማሳወቂያዎች ላይ ድምጸ-ከል አድርግ</translation>
 <translation id="6472893788822429178">መነሻ አዝራር አሳይ</translation>
+<translation id="6473315466413288899">አንድ አማራጭ ይምረጡ</translation>
 <translation id="6474498546677193336">አንድ መተግበሪያ ይህን አቃፊ እየተጠቀመበት ስለሆነ አለማጋራት አልተቻለም። Linux በሚዘጋበት ቀጣዩ ጊዜ ላይ አቃፊው እንዳይጋራ ይደረጋል።</translation>
 <translation id="6474884162850599008">የGoogle Drive መለያን አላቅቅ</translation>
 <translation id="6475294023568239942">የዲስክ ቦታን ያስለቅቁ ወይም በቅንብሮች ውስጥ የLinux ዲስክን መጠን ይቀይሩ</translation>
@@ -10820,6 +10822,7 @@ nil</translation>
 <translation id="9031811691986152304">እንደገና ይሞክሩ</translation>
 <translation id="9032004780329249150">የይለፍ ቃላትዎን በእርስዎ የiOS መሣሪያዎች ላይ ይጠቀሙ</translation>
 <translation id="9032097289595078011">ፈጣን ጥምረትን ያሰናክሉ</translation>
+<translation id="9032513103438497286">በዚህ <ph name="DEVICE_TYPE" /> ላይ የተጫኑ መተግበሪያዎችን ያግዱ። መተግበሪያዎችን ወይም ይዘትን ማውረድ ለመገደብ ወደ የGoogle Play ቅንብሮች ይሂዱ።</translation>
 <translation id="9033765790910064284">ለማንኛውም ቀጥል</translation>
 <translation id="9033857511263905942">&amp;ለጥፍ</translation>
 <translation id="9034408118624208974">ለChromebook አዲስ ነዎት? ምርጫዎችዎ ምትኬ እንዲቀመጥላቸው ስምረትን ያብሩ።</translation>

@@ -1870,6 +1870,7 @@
 <translation id="233375395665273385">ລຶບ ແລະ ອອກຈາກລະບົບ</translation>
 <translation id="233471714539944337">ເນື້ອຫາທີ່ລະອຽດອ່ອນ</translation>
 <translation id="2335111415680198280">{0,plural, =1{ປິດໜ້າຈໍ # ລາຍການ}other{ປິດໜ້າຈໍ # ລາຍການ}}</translation>
+<translation id="2335758110242123814">ເປີດກຸ່ມ</translation>
 <translation id="2336228925368920074">ໃສ່ບຸກມາກຄ໌ທຸກແຖບ...</translation>
 <translation id="2336258397628212480"><ph name="APP_NAME" /> ກຳລັງພິມ 1 ໜ້າຈາກ <ph name="PRINTER_NAME" /></translation>
 <translation id="2336381494582898602">Powerwash</translation>
@@ -1890,6 +1891,7 @@
 <translation id="2351923523007389195">ອະນຸຍາດ – <ph name="PERMISSION_DETAILS" />. ເປີດ <ph name="LINK_BEGIN" />ສິດເຂົ້າເຖິງສະຖານທີ່ຂອງລະບົບ<ph name="LINK_END" />.</translation>
 <translation id="2352662711729498748">&lt; 1 MB</translation>
 <translation id="2352810082280059586">ບັນທຶກໜ້າຈໍລັອກຖືກບັນທຶກໄວ້ໃນ <ph name="LOCK_SCREEN_APP_NAME" /> ໂດຍອັດຕະໂນມັດ. ບັນທຶກໃໝ່ຫຼ້າສຸດຂອງທ່ານຈະຍັງຄົງຢູ່ໜ້າຈໍລັອກ.</translation>
+<translation id="2353168619378866466">ເປີດກຸ່ມ</translation>
 <translation id="2353297238722298836">ອະນຸຍາດກ້ອງຖ່າຍຮູບ ແລະ ໄມໂຄຣໂຟນ</translation>
 <translation id="2353910600995338714">ສົ່ງອອກສຳເລັດແລ້ວ</translation>
 <translation id="2355314311311231464">ການກະກຽມນຳໃຊ້ບໍ່ສຳເລັດເພາະວ່າບໍ່ສາມາດກູ້ຄືນລາຍລະອຽດບນັຊີຂອງທ່ານໄດ້. ກະລຸນາລອງອີກເທື່ອໜຶ່ງ. ລະຫັດຂໍ້ຜິດພາດ: <ph name="ERROR_CODE" />.</translation>
@@ -2844,6 +2846,7 @@
 <translation id="3033348223765101500">ຄວບຄຸມຂໍ້ມູນຂອງທ່ານ</translation>
 <translation id="3036327949511794916">ກຳນົດເວລາສົ່ງ <ph name="DEVICE_TYPE" /> ນີ້ຄືນກາຍແລ້ວ.</translation>
 <translation id="3036546437875325427">ເປີດໃຊ້ແຟລດ</translation>
+<translation id="3037193115779933814">ຕົວອັກສອນ ແລະ ຕົວເລກ</translation>
 <translation id="3038272154009688107">ເບິ່ງເວັບໄຊທັງໝົດ</translation>
 <translation id="3038612606416062604">ເພີ່ມເຄື່ອງພິມດ້ວຍຕົນເອງ</translation>
 <translation id="3039491566278747710">ຕິດຕັ້ງນະໂຍບາຍອອບລາຍໃນອຸປະກອນບໍ່ສຳເລັດ.</translation>
@@ -4237,6 +4240,7 @@
 <translation id="4066207411788646768">ກະລຸນາກວດການເຊື່ອມຕໍ່ຂອງທ່ານເພື່ອເບິ່ງເຄື່ອງພິມທີ່ມີໃຫ້ນຳໃຊ້ໃນເຄືອຂ່າຍຂອງທ່ານ</translation>
 <translation id="4067839975993712852">ໝາຍແຖບປັດຈຸບັນວ່າອ່ານແລ້ວ</translation>
 <translation id="4068776064906523561">ລາຍນິ້ວມືທີ່ບັນທຶກໄວ້</translation>
+<translation id="4070132839822635162">ບໍ່ເຂົ້າສູ່ລະບົບ</translation>
 <translation id="407173827865827707">ເມື່ອຄລິກ</translation>
 <translation id="4072805772816336153">ລອງໃໝ່ໃນພາຍຫລັງ</translation>
 <translation id="4074164314564067597">ແປ້ນພິມ</translation>
@@ -6052,6 +6056,7 @@
 <translation id="5469540749878136997">ສ້າງໜ່ວຍຄວາມຈຳຫວ່າງໂດຍອ້າງອີງໃສ່ການນຳໃຊ້</translation>
 <translation id="5469852975082458401">ທ່ານສາມາດໄປຫາໜ້າຕ່າງໆດ້ວຍເຄີເຊີຂໍ້ຄວາມ. ກົດ F7 ເພື່ອປິດ.</translation>
 <translation id="5470735824776589490">ຈໍາເປັນຕ້ອງຣິສະຕາດກ່ອນທີ່ຈະສາມາດຣີເຊັດອຸປະກອນຂອງທ່ານດ້ວຍ Powerwash ໄດ້. <ph name="LINK_BEGIN" />ສຶກສາເພີ່ມເຕີມ<ph name="LINK_END" /></translation>
+<translation id="5470741195701938302">ຕົວເລກ</translation>
 <translation id="5471768120198416576">ສະບາຍດີ! ຂ້ອຍແມ່ນສຽງການປ່ຽນຂໍ້ຄວາມເປັນສຽງເວົ້າຂອງເຈົ້າ.</translation>
 <translation id="5472627187093107397">ບັນທຶກລະຫັດຜ່ານໄວ້ສຳລັບເວັບໄຊນີ້</translation>
 <translation id="5473062644742711742">ຊອກຫາເຄື່ອງມືການຊ່ວຍເຂົ້າເຖິງເພີ່ມເຕີມໃນ Chrome Web Store</translation>
@@ -6888,6 +6893,7 @@
 <translation id="6101226222197207147">ເພີ່ມແອັບໃໝ່ແລ້ວ ( <ph name="EXTENSION_NAME" /> )</translation>
 <translation id="6102043788063419338">ໄຟລ໌ນີ້ຖືກບລັອກໄວ້ໂດຍການປົກປ້ອງຂັ້ນສູງ.</translation>
 <translation id="6103681770816982672">ຄໍາ​ເຕືອນ​: ທ່ານ​ກໍາ​ລັງ​ປ່ຽນໄປຫາຊ່ອງຜູ້ພັດ​ທະ​ນາ</translation>
+<translation id="610395411842312282">ຈັດກຸ່ມໜ້າຈໍ 2 ອັນໄວ້ຂ້າງກັນ</translation>
 <translation id="6104068876731806426">ບັນຊີ Google</translation>
 <translation id="6104667115274478616">ຈັດການການຕັ້ງຄ່າສຽງຂອງ ChromeOS</translation>
 <translation id="6104796831253957966">ຄິວເຄື່ອງພິມເຕັມແລ້ວ</translation>
@@ -7366,6 +7372,7 @@
 <translation id="6469702164109431067">ລະຫັດຜ່ານ ແລະ ກະແຈຜ່ານ</translation>
 <translation id="6470823736074966819">ປິດສຽງການແຈ້ງເຕືອນ</translation>
 <translation id="6472893788822429178">ສະແດງປຸ່ມໜ້າ​ຫຼັກ</translation>
+<translation id="6473315466413288899">ເລືອກຕົວເລືອກ</translation>
 <translation id="6474498546677193336">ບໍ່ສາມາດເຊົາແບ່ງປັນໄດ້ເພາະວ່າແອັບພລິເຄຊັນກຳລັງໃຊ້ໂຟນເດີນີ້ຢູ່. ລະບົບຈະເຊົາແບ່ງປັນໂຟນເດີເມື່ອປິດ Linux ໃນຄັ້ງຕໍ່ໄປ.</translation>
 <translation id="6474884162850599008">ຕັດ​ເຊື່ອມ​ຕໍ່​ບັນ​ຊີ Google Drive</translation>
 <translation id="6475294023568239942">ກະລຸນາສ້າງພື້ນທີ່ຫວ່າງດິສກ໌ ຫຼື ປັບຂະໜາດດິສກ໌ Linux ໃນການຕັ້ງຄ່າ</translation>
@@ -10832,6 +10839,7 @@
 <translation id="9031811691986152304">ລອງໃໝ່</translation>
 <translation id="9032004780329249150">ໃຊ້ລະຫັດຜ່ານຂອງທ່ານຢູ່ອຸປະກອນ iOS ທ່ານ</translation>
 <translation id="9032097289595078011">ປິດການນຳໃຊ້ການຈັບຄູ່ດ່ວນ</translation>
+<translation id="9032513103438497286">ບລັອກແອັບທີ່ຕິດຕັ້ງໃນ <ph name="DEVICE_TYPE" /> ນີ້. ເພື່ອຈຳກັດການດາວໂຫຼດແອັບ ຫຼື ເນື້ອຫາ, ໃຫ້ເຂົ້າໄປການຕັ້ງຄ່າ Google Play.</translation>
 <translation id="9033765790910064284">ຢືນຢັນດຳເນີນການຕໍ່</translation>
 <translation id="9033857511263905942">ແປະໃສ່</translation>
 <translation id="9034408118624208974">ຍັງບໍ່ເຄີຍໃຊ້ Chromebook ບໍ? ເປີດການຊິ້ງເພື່ອໃຫ້ລະບົບສຳຮອງຂໍ້ມູນການຕັ້ງຄ່າຂອງທ່ານ.</translation>

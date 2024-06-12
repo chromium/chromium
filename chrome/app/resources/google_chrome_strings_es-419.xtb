@@ -122,6 +122,7 @@
 <translation id="2765403129283291972">Chrome necesita permiso para acceder a tu micrófono para este sitio</translation>
 <translation id="2770231113462710648">Cambiar el navegador predeterminado a:</translation>
 <translation id="2775140325783767197">Chrome no puede revisar las contraseñas. Revisa la conexión a Internet.</translation>
+<translation id="2797864378188255696">Cuando accedes a servicios de Google, como Gmail o YouTube, con <ph name="USER_EMAIL" />, puedes ingresar automáticamente a Chrome con la misma cuenta</translation>
 <translation id="2799223571221894425">Reiniciar</translation>
 <translation id="2825024317344269723">El sitio es peligroso. Chrome quitó las notificaciones.</translation>
 <translation id="2846251086934905009">Error de instalación: No se completó el instalador. Se anuló la instalación.</translation>
@@ -294,6 +295,7 @@
 <translation id="5334309298019785904">El ChromeOS no pudo sincronizar los datos porque la sincronización no está disponible para el dominio.</translation>
 <translation id="5334487786912937552">Chrome necesita permiso de acceso al almacenamiento para descargar archivos.</translation>
 <translation id="5337648990166757586">Opcional: Para ayudarnos a mejorar las funciones y el rendimiento de ChromeOS, envía automáticamente datos de uso y diagnóstico a Google.</translation>
+<translation id="5345497718959596593">Mientras tengas acceso, puedes usar las contraseñas y otras funciones de tu Cuenta de Google en Chrome</translation>
 <translation id="5357889879764279201">Obtener ayuda con ChromeOS Flex</translation>
 <translation id="5368118228313795342">Código adicional: <ph name="EXTRA_CODE" />.</translation>
 <translation id="5386244825306882791">También controla qué página se muestra al iniciar Chrome o al realizar búsquedas desde el cuadro multifunción.</translation>

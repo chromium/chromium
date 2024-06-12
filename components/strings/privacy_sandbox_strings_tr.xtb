@@ -6,4 +6,5 @@
 <translation id="4301151630239508244">Reklam konuları, bir sitenin reklamları kişiselleştirmek için kullanabileceği pek çok şeyden yalnızca biridir. Reklam konuları olmasa bile siteler size reklam göstermeye devam edebilir, ancak bu reklamlar daha az kişiselleştirilmiş olabilir. <ph name="BEGIN_LINK_1" />Reklam gizliliğinizi yönetme<ph name="END_LINK_1" /> hakkında daha fazla bilgi edinin.</translation>
 <translation id="4598427486995631491">IP adresinizi gizleyin</translation>
 <translation id="6371812158043974664">Chromium'da oturum açtığınızda bu ayar IP adresinizin gizli kalmasına yardımcı olur. Chromium bir sitenin sizi izlediğinden şüpheleniyorsa trafiğinizin bir kısmı gizlilik sunucuları aracılığıyla gönderilebilir. <ph name="LINK_BEGIN" />IP korumasının işleyiş şekli<ph name="LINK_END" /> hakkında daha fazla bilgi edinin.</translation>
+<translation id="7040031291654706261"><ph name="BEGIN_LINK" />IP korumasının nasıl çalıştığını<ph name="END_LINK" /> öğrenin</translation>
 </translationbundle>

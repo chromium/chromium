@@ -18,6 +18,7 @@
 <translation id="1203500561924088507">Суулгасанд баярлалаа. Та <ph name="BUNDLE_NAME" />-г ашиглахаасаа өмнө хөтчөө дахин эхлүүлэх ёстой.</translation>
 <translation id="1262876892872089030">Энэ табыг идэвхгүй үед Chromium-г хурдан байлгахын тулд санах ойг чөлөөлсөн. Та энэ сайтыг идэвхгүй болохоос үргэлж хасахаар сонгох боломжтой.</translation>
 <translation id="1265577313130862557">Энэ файл аюултай тул Chromium энэ таталтыг блоклосон</translation>
+<translation id="126567311906253476"><ph name="USER_EMAIL" />-р Gmail эсвэл YouTube зэрэг Google-н үйлчилгээнд нэвтрэх үед та тухайн бүртгэлээр Chromium-д автоматаар нэвтрэх боломжтой</translation>
 <translation id="1315551408014407711">Chromium-н шинэ профайлаа тохируулах</translation>
 <translation id="1342274909142618978">Мөн Chromium-с өгөгдөл устгах (<ph name="URL" />)</translation>
 <translation id="1414495520565016063">Та Chromium руу нэвтэрсэн байна!</translation>
@@ -42,6 +43,7 @@
 <translation id="1749104137266986751">HTTPS боломжгүй үед Chromium танд сануулалгүйгээр аюултай холболт ашиглана</translation>
 <translation id="1774152462503052664">Chromium-ыг арын орчинд ажиллуулах</translation>
 <translation id="1779356040007214683">Chromium аюулгүй байдлыг нэмэгдүүлэхийн тулд бид <ph name="IDS_EXTENSION_WEB_STORE_TITLE" />-ны жагсаалтад байхгүй бөгөөд танд мэдэгдэлгүйгээр нэмэгдсэн байж болзошгүй зарим өргөтгөлүүдийг идэвхгүй болгосон.</translation>
+<translation id="1804128559285178512">Та нэвтэрсэн байхдаа Chromium-д Google Бүртгэлээсээ нууц үг болон бусад зүйлээ ашиглах боломжтой</translation>
 <translation id="1808667845054772817">Chromium-ыг дахин суулгах</translation>
 <translation id="1820835682567584003">Chromium <ph name="AUTHENTICATION_PURPOSE" /> оролдож байна</translation>
 <translation id="18552579716432081">Интернэтээр үзсэн өгөгдлөө Google Бүртгэлдээ үлдээж, зөвхөн энэ төхөөрөмжөөс устгахын тулд <ph name="BEGIN_LINK" />Chromium-с гарна уу<ph name="END_LINK" />.</translation>

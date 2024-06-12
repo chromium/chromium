@@ -1870,6 +1870,7 @@
 <translation id="233375395665273385">삭제 및 로그아웃</translation>
 <translation id="233471714539944337">민감한 콘텐츠</translation>
 <translation id="2335111415680198280">{0,plural, =1{창 #개 닫기}other{창 #개 닫기}}</translation>
+<translation id="2335758110242123814">그룹 열기</translation>
 <translation id="2336228925368920074">모든 탭 북마크...</translation>
 <translation id="2336258397628212480"><ph name="APP_NAME" />에서 <ph name="PRINTER_NAME" /> 프린터로 1페이지를 인쇄하는 중입니다.</translation>
 <translation id="2336381494582898602">파워워시</translation>
@@ -1890,6 +1891,7 @@
 <translation id="2351923523007389195">허용됨 – <ph name="PERMISSION_DETAILS" />. <ph name="LINK_BEGIN" />시스템 위치 액세스<ph name="LINK_END" />를 사용 설정하세요.</translation>
 <translation id="2352662711729498748">1MB 미만</translation>
 <translation id="2352810082280059586">잠금 화면 메모는 자동으로 <ph name="LOCK_SCREEN_APP_NAME" />에 저장됩니다. 가장 최근 메모는 잠금 화면에 계속 표시됩니다.</translation>
+<translation id="2353168619378866466">그룹 열기</translation>
 <translation id="2353297238722298836">카메라 및 마이크 허용됨</translation>
 <translation id="2353910600995338714">내보내기 완료</translation>
 <translation id="2355314311311231464">계정 세부정보를 가져올 수 없으므로 프로비저닝할 수 없습니다. 다시 시도해 주세요. 오류 코드: <ph name="ERROR_CODE" /></translation>
@@ -2843,6 +2845,7 @@
 <translation id="3033348223765101500">데이터 관리</translation>
 <translation id="3036327949511794916"><ph name="DEVICE_TYPE" /> 반납 기한이 지났습니다.</translation>
 <translation id="3036546437875325427">Flash 사용</translation>
+<translation id="3037193115779933814">문자 및 숫자</translation>
 <translation id="3038272154009688107">모든 사이트 보기</translation>
 <translation id="3038612606416062604">수동으로 프린터 추가</translation>
 <translation id="3039491566278747710">기기에 오프라인 정책을 설치하지 못했습니다.</translation>
@@ -4233,6 +4236,7 @@
 <translation id="4066207411788646768">네트워크 내 사용 가능한 프린터를 보려면 인터넷 연결 상태를 확인하세요.</translation>
 <translation id="4067839975993712852">현재 탭을 읽음으로 표시</translation>
 <translation id="4068776064906523561">저장된 지문</translation>
+<translation id="4070132839822635162">로그인하지 않음</translation>
 <translation id="407173827865827707">클릭 시</translation>
 <translation id="4072805772816336153">나중에 다시 시도해 보세요.</translation>
 <translation id="4074164314564067597">키보드</translation>
@@ -6041,6 +6045,7 @@ https://support.google.com/chromebook/?p=tpm</translation>
 <translation id="5469540749878136997">사용량에 따라 메모리 확보</translation>
 <translation id="5469852975082458401">텍스트 커서로 페이지를 탐색할 수 있습니다. 사용 중지하려면 F7을 누르세요.</translation>
 <translation id="5470735824776589490">기기를 파워워시로 재설정하기 전에 다시 시작해야 합니다. <ph name="LINK_BEGIN" />자세히 알아보기<ph name="LINK_END" /></translation>
+<translation id="5470741195701938302">숫자</translation>
 <translation id="5471768120198416576">안녕하세요. 텍스트 음성 변환의 음성입니다.</translation>
 <translation id="5472627187093107397">이 사이트의 비밀번호 저장</translation>
 <translation id="5473062644742711742">Chrome 웹 스토어에서 더 많은 접근성 도구 찾기</translation>
@@ -6877,6 +6882,7 @@ https://support.google.com/chromebook/?p=tpm</translation>
 <translation id="6101226222197207147">새 앱이 추가됨(<ph name="EXTENSION_NAME" />)</translation>
 <translation id="6102043788063419338">고급 보호 기능이 이 파일을 차단했습니다.</translation>
 <translation id="6103681770816982672">경고: 개발자 채널로 전환</translation>
+<translation id="610395411842312282">두 개의 창을 나란히 그룹화</translation>
 <translation id="6104068876731806426">Google 계정</translation>
 <translation id="6104667115274478616">ChromeOS 오디오 설정 관리</translation>
 <translation id="6104796831253957966">프린터 대기열이 가득 참</translation>
@@ -7355,6 +7361,7 @@ https://support.google.com/chromebook/?p=tpm</translation>
 <translation id="6469702164109431067">비밀번호 및 패스키</translation>
 <translation id="6470823736074966819">알림 숨기기</translation>
 <translation id="6472893788822429178">홈 버튼 표시</translation>
+<translation id="6473315466413288899">옵션 선택</translation>
 <translation id="6474498546677193336">다른 애플리케이션에서 폴더를 사용 중이므로 공유를 취소할 수 없습니다. 다음번에 Linux가 종료되면 폴더 공유가 취소됩니다.</translation>
 <translation id="6474884162850599008">Google Drive 계정 연결 해제</translation>
 <translation id="6475294023568239942">디스크 저장 공간을 확보하거나 설정에서 Linux 디스크의 크기를 조정하세요.</translation>
@@ -10820,6 +10827,7 @@ https://support.google.com/chromebook/?p=sm</translation>
 <translation id="9031811691986152304">다시 시도</translation>
 <translation id="9032004780329249150">iOS 기기에서 비밀번호 사용</translation>
 <translation id="9032097289595078011">빠른 페어링 사용 안함</translation>
+<translation id="9032513103438497286">이 <ph name="DEVICE_TYPE" />에 설치된 앱을 차단합니다. 앱 또는 콘텐츠 다운로드를 제한하려면 Google Play 설정으로 이동하세요.</translation>
 <translation id="9033765790910064284">무시하고 계속</translation>
 <translation id="9033857511263905942">붙여넣기(&amp;P)</translation>
 <translation id="9034408118624208974">Chromebook을 처음 사용하시나요? 환경설정을 백업할 수 있도록 동기화를 사용 설정하세요.</translation>

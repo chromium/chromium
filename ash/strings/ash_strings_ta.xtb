@@ -64,7 +64,6 @@
 <translation id="1201402288615127009">அடுத்து</translation>
 <translation id="1210557957257435379">திரையைப் படமெடுக்கும்</translation>
 <translation id="121097972571826261">சொல் வாரியாக முன்செல்</translation>
-<translation id="1217633719248931900">ஆப்ஸுக்குச் செல்</translation>
 <translation id="1218444235442067213"><ph name="APP_NAME" />, Play Store ஆப்ஸ்</translation>
 <translation id="1225748608451425081">உங்கள் Chromebook பூட்டப்பட்டது, இதற்கான காரணத்தை அறிவோம். <ph name="TIME_LEFT" /> கடந்ததும் உங்களால் உள்நுழைய முடியும்.</translation>
 <translation id="1229194443904279055">தேர்ந்தெடுப்பதை நிறுத்து</translation>
@@ -326,7 +325,6 @@
 <translation id="2293443480080733021">எந்தப் பணியில் கவனம் செலுத்த விரும்புகிறீர்கள்? பணியைச் சேர்க்க enter பட்டனை அழுத்தவும்.</translation>
 <translation id="229397294990920565">மொபைல் டேட்டா முடக்கப்படுகிறது...</translation>
 <translation id="2295777434187870477">மைக் ஒலி இயக்கப்பட்டுள்ளது, நிலைமாற்றினால் அது ஒலியடக்கப்படும்.</translation>
-<translation id="2298170939937364391">முழுத்திரைப் பெரிதாக்கி இயக்கப்பட்டுள்ளது. அதை முடக்க Ctrl+Search+Mமை மீண்டும் அழுத்தவும்.</translation>
 <translation id="2302092602801625023">இந்தக் கணக்கு Family Linkகால் நிர்வகிக்கப்படுகிறது</translation>
 <translation id="2303600792989757991">சாளர மேலோட்டத்தை நிலைமாற்று</translation>
 <translation id="2305738328104302723">Google பணிகள் பட்டியல்: <ph name="GLANCEABLES_TASKS_LIST_NAME" /></translation>
@@ -511,7 +509,6 @@
 <translation id="2977598380246111477">அடுத்த எண்</translation>
 <translation id="2985148236010982088">அனைத்து ஆப்ஸையும் காட்டு</translation>
 <translation id="2992327365391326550">சாதனத்தின் மைக்ரோஃபோன் பட்டன் முடக்கப்பட்டுள்ளது.</translation>
-<translation id="2996462380875591307">டாக் செய்யப்பட்ட பெரிதாக்கி இயக்கப்பட்டது. அதை முடக்க, Ctrl+Search+Dயை மீண்டும் அழுத்தவும்.</translation>
 <translation id="3000461861112256445">மோனோ ஆடியோ</translation>
 <translation id="3001391739687111021">திரை அளவை மாற்றலாம்</translation>
 <translation id="3009178788565917040">வெளியீடு</translation>
@@ -2138,7 +2135,6 @@
 <translation id="8982906748181120328">‘அருகில் பகிர்தல்’ தெரிவுநிலை</translation>
 <translation id="8983038754672563810">HSPA</translation>
 <translation id="8990809378771970590"><ph name="IME_NAME" /> பயன்படுத்தப்படுகிறது</translation>
-<translation id="8991617137207906966">கலர் இன்வெர்ஷன் பயன்முறை இயக்கப்பட்டது. முடக்க Ctrl+Search+H பட்டன்களை மீண்டும் அழுத்தவும்.</translation>
 <translation id="899350903320462459">அறிவிப்பில் வந்த செயலைச் செய்வதற்கு, சாதனத்தை <ph name="LOGIN_ID" /> ஆக அன்லாக் செய்யவும்</translation>
 <translation id="8993733019280019776">பேசுகிறீர்களா? உங்கள் மைக் முடக்கப்பட்டுள்ளது. மைக்கை இயக்க அதைத் தேர்ந்தெடுக்கவும்.</translation>
 <translation id="9000771174482730261">சேமிப்பிடத்தை நிர்வகியுங்கள்</translation>

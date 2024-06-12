@@ -1869,6 +1869,7 @@ Du kan administrere indstillingerne for denne konto ved at installere Family Lin
 <translation id="233375395665273385">Slet, og log ud</translation>
 <translation id="233471714539944337">Følsomt indhold</translation>
 <translation id="2335111415680198280">{0,plural, =1{Luk # vindue}one{Luk # vindue}other{Luk # vinduer}}</translation>
+<translation id="2335758110242123814">Åbn gruppe</translation>
 <translation id="2336228925368920074">Tilføj alle faner som bogmærker...</translation>
 <translation id="2336258397628212480"><ph name="APP_NAME" /> udskriver 1 side til <ph name="PRINTER_NAME" /></translation>
 <translation id="2336381494582898602">Powerwash</translation>
@@ -1889,6 +1890,7 @@ Du kan administrere indstillingerne for denne konto ved at installere Family Lin
 <translation id="2351923523007389195">Tilladt – <ph name="PERMISSION_DETAILS" />. Aktivér <ph name="LINK_BEGIN" />systemets lokationsadgang<ph name="LINK_END" />.</translation>
 <translation id="2352662711729498748">&lt; 1 MB</translation>
 <translation id="2352810082280059586">Noter på låseskærmen gemmes automatisk i <ph name="LOCK_SCREEN_APP_NAME" />. Din seneste note forbliver på låseskærmen.</translation>
+<translation id="2353168619378866466">Åbn gruppe</translation>
 <translation id="2353297238722298836">Der er givet adgang til kameraet og mikrofonen</translation>
 <translation id="2353910600995338714">Eksporten er gennemført</translation>
 <translation id="2355314311311231464">Provisioneringen mislykkedes, fordi dine kontooplysninger ikke kunne hentes. Prøv igen. Fejlkode: <ph name="ERROR_CODE" />.</translation>
@@ -2842,6 +2844,7 @@ Du kan administrere indstillingerne for denne konto ved at installere Family Lin
 <translation id="3033348223765101500">Administrer dine data</translation>
 <translation id="3036327949511794916">Fristen for at returnere denne <ph name="DEVICE_TYPE" /> er overskredet.</translation>
 <translation id="3036546437875325427">Aktivér Flash</translation>
+<translation id="3037193115779933814">Bogstaver og tal</translation>
 <translation id="3038272154009688107">Se alle websites</translation>
 <translation id="3038612606416062604">Tilføj en printer manuelt</translation>
 <translation id="3039491566278747710">Offlinepolitikken kunne ikke installeres på enheden.</translation>
@@ -6041,6 +6044,7 @@ De tilladelser, du har givet til websites og apps, gælder muligvis for denne ko
 <translation id="5469540749878136997">Frigør hukommelse baseret på brug</translation>
 <translation id="5469852975082458401">Du kan navigere på sider med en tekstmarkør. Tryk på F7, eller deaktiver.</translation>
 <translation id="5470735824776589490">Enheden skal genstartes, før den kan nulstilles med Powerwash. <ph name="LINK_BEGIN" />Få flere oplysninger<ph name="LINK_END" /></translation>
+<translation id="5470741195701938302">Tal</translation>
 <translation id="5471768120198416576">Hej! Jeg er din stemme til oplæsning.</translation>
 <translation id="5472627187093107397">Gem adgangskoder for dette website</translation>
 <translation id="5473062644742711742">Find flere hjælpefunktioner i Chrome Webshop</translation>
@@ -6877,6 +6881,7 @@ De tilladelser, du har givet til websites og apps, gælder muligvis for denne ko
 <translation id="6101226222197207147">Ny app er tilføjet (<ph name="EXTENSION_NAME" />)</translation>
 <translation id="6102043788063419338">Denne fil blev blokeret af Avanceret beskyttelse.</translation>
 <translation id="6103681770816982672">Advarsel! Du er ved at skifte til udviklerkanal</translation>
+<translation id="610395411842312282">Gruppér to vinduer ved siden af hinanden</translation>
 <translation id="6104068876731806426">Google Konti</translation>
 <translation id="6104667115274478616">Administrer lydindstillinger for ChromeOS</translation>
 <translation id="6104796831253957966">Printerkøen er fuld</translation>

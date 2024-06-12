@@ -547,6 +547,7 @@ De lo contrario, la configuración de privacidad bloqueará esta acción. Esto p
 <translation id="2003709556000175978">Restablecer tu contraseña ahora</translation>
 <translation id="2003775180883135320">Perforación cuádruple en la parte superior</translation>
 <translation id="2004697686368036666">Es posible que algunas funciones no puedan utilizarse en algunos sitios.</translation>
+<translation id="2005042463110681802">Se muestra esta advertencia porque este sitio no admite HTTPS y estás en modo Incógnito. <ph name="BEGIN_LEARN_MORE_LINK" />Más información<ph name="END_LEARN_MORE_LINK" /></translation>
 <translation id="2009942480257059311">Botón Crear evento: actívalo para crear un evento nuevo en el Calendario de Google rápidamente</translation>
 <translation id="201174227998721785">En la configuración de Chrome, administra los permisos y datos almacenados en los sitios</translation>
 <translation id="2012276282211112603">No hay temas para mostrar en este momento</translation>
@@ -1483,6 +1484,7 @@ De lo contrario, la configuración de privacidad bloqueará esta acción. Esto p
 <translation id="3799805948399000906">Se necesita la fuente</translation>
 <translation id="3801265110651850478">Enviar una solicitud "Do Not Track" con el tráfico de navegación</translation>
 <translation id="380329542618494757">Nombre</translation>
+<translation id="3803801106042434208">Estos motores de búsqueda son populares en tu región</translation>
 <translation id="3806932344025766608">Los atacantes del sitio que intentas visitar podrían engañarte para que instales software o reveles información como tu contraseña, teléfono o número de tarjeta de crédito. Chrome recomienda que regreses a un sitio seguro. <ph name="BEGIN_LEARN_MORE_LINK" />Más información<ph name="END_LEARN_MORE_LINK" /></translation>
 <translation id="3807366285948165054">Cambio en el eje X de la imagen</translation>
 <translation id="3807709094043295184">Rock clásico y éxitos de ayer</translation>

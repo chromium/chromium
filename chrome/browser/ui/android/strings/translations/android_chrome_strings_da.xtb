@@ -376,7 +376,6 @@ Kun personer med din adgangssætning kan læse dine krypterede data. Adgangssæt
 <translation id="2904414404539560095">Åben liste i fuld højde over enheder, der skal deles en fane med.</translation>
 <translation id="2908243544703713905">Ulæste historier er tilgængelige</translation>
 <translation id="2909615210195135082">Google Notifications Platform</translation>
-<translation id="2912296070571964914">Administrer de emner, du er interesseret i</translation>
 <translation id="2912345083818861431">Brug skærmlåsen til at se åbne inkognitofaner</translation>
 <translation id="2923908459366352541">Navnet er ugyldigt</translation>
 <translation id="2932150158123903946">Google <ph name="APP_NAME" />-lagerplads</translation>
@@ -452,7 +451,6 @@ Kun personer med din adgangssætning kan læse dine krypterede data. Adgangssæt
 <translation id="3259831549858767975">Gør alting på siden mindre</translation>
 <translation id="3264259168916048410">Din computer anmoder om at anvende denne enhed til login på et website</translation>
 <translation id="3265093782546847662">Alle sider på <ph name="DOMAIN" /></translation>
-<translation id="3265534588625245297">Administrer de websites, du følger</translation>
 <translation id="3269093882174072735">Indlæs billede</translation>
 <translation id="3280562213547448728">Stemmesøgning</translation>
 <translation id="3282568296779691940">Log ind i Chrome</translation>
@@ -624,7 +622,6 @@ Kun personer med din adgangssætning kan læse dine krypterede data. Adgangssæt
 <translation id="4195643157523330669">Åbn på ny fane</translation>
 <translation id="4197828496439691735">{NUM_TABS,plural, =1{1 fane på denne enhed}one{# fane på denne enhed}other{# faner på denne enhed}}</translation>
 <translation id="4198423547019359126">Der er ingen tilgængelige downloadplaceringer</translation>
-<translation id="4198664641856813238">Log ind for at få adgang til dine bogmærker, adgangskoder og meget mere på alle dine enheder</translation>
 <translation id="4202218894997543208">Emner, du har blokeret</translation>
 <translation id="4214315110991671325">Hvis du tillader cookies, kan Chrome bruge dem til forudindlæsning.</translation>
 <translation id="4216511743389425832">Få oplæst denne side</translation>
@@ -824,7 +821,6 @@ Din Google-konto kan have andre former for browserhistorik, f.eks. søgninger og
 <translation id="510275257476243843">1 time tilbage</translation>
 <translation id="5114895953710637392">Oversigten over filtrering efter app er lukket.</translation>
 <translation id="5115811374190515607">til <ph name="PRODUCT_NAME" /></translation>
-<translation id="5118713593561876160">Interesser</translation>
 <translation id="5122378528687922675">Spørg en af dine forældre, (<ph name="PARENT_NAME_1" /> eller <ph name="PARENT_NAME_2" />), hvis du har brug for hjælp</translation>
 <translation id="5123685120097942451">Inkognitofane</translation>
 <translation id="5132942445612118989">Synkroniser dine adgangskoder, din historik og meget mere på alle enheder</translation>
@@ -838,7 +834,6 @@ Din Google-konto kan have andre former for browserhistorik, f.eks. søgninger og
 <translation id="5171045022955879922">Søg, eller angiv webadresse</translation>
 <translation id="5174700554036517242">Fanen er tilbage til den oprindelige højde</translation>
 <translation id="5180063720319462041">Siden er oversat til <ph name="TARGET_LANGUAGE" /></translation>
-<translation id="5186634140793586141">Administrer de emner og søgninger, du er interesseret i</translation>
 <translation id="5191251636205085390">Få indblik i og styr nye teknologier, der har til formål at erstatte tredjepartscookies</translation>
 <translation id="5204967432542742771">Angiv adgangskode</translation>
 <translation id="5206168361184759344">{FILE_COUNT,plural, =1{Downloader fil…}one{Downloader # fil…}other{Downloader # filer…}}</translation>
@@ -1086,7 +1081,6 @@ Nogle websites kan f.eks. reagere på denne anmodning ved at vise dig annoncer, 
 <translation id="6437478888915024427">Sideoplysninger</translation>
 <translation id="6440291723980579689">Sider indlæses først, efter du har åbnet dem</translation>
 <translation id="6441734959916820584">Navnet er for langt</translation>
-<translation id="6447558397796644647">Bogmærket blev ikke fundet. Kontrollér din stavning, eller tilføj et nyt bogmærker.</translation>
 <translation id="6459045781120991510">Undersøgelser</translation>
 <translation id="6461962085415701688">Filen kan ikke åbnes</translation>
 <translation id="6464977750820128603">Du kan se websites, du har besøgt i Chrome, og indstille timere for dem.\n\nGoogle får oplysninger om de websites, du indstiller timere for, og hvor længe du er på dem. Disse oplysninger bruges til at forbedre Digital balance.</translation>

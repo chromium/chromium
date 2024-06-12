@@ -850,6 +850,7 @@ Bekijk de instructies van je zoekmachine voor het verwijderen van je zoekgeschie
 <translation id="5345660046352249607">{COUNT,plural, =1{Dit pakket volgen?}other{{COUNT} pakketten volgen?}}</translation>
 <translation id="5348775987281903912">Je kunt deze pagina hier delen via de knop Delen.</translation>
 <translation id="536067926684072644">Bookmarks tonen</translation>
+<translation id="537853552771686272">Beheer de onderwerpen en sites waarin je geïnteresseerd bent</translation>
 <translation id="5379352933722332597">{count,plural, =1{Bookmark opgeslagen in {title}. Deze wordt alleen op dit apparaat opgeslagen.}other{{count} bookmarks opgeslagen in {title}. Deze worden alleen op dit apparaat opgeslagen.}}</translation>
 <translation id="5388358297987318779">Afbeelding openen</translation>
 <translation id="5395707839134961196">Zoekmachinegegevens verbergen</translation>
@@ -932,6 +933,7 @@ Handoff moet ook aanstaan in het gedeelte Algemeen van Instellingen en je appara
 <translation id="5758631781033351321">Hier vind je je leeslijst</translation>
 <translation id="5765456154762864099">Menu → Instellingen → Standaardbrowser</translation>
 <translation id="5777888488419460501">Opslaan in account</translation>
+<translation id="5778292857689789362">Tabbladgroep, <ph name="GROUP_TITLE" />, <ph name="TABS_NUMBER" /> tabbladen.</translation>
 <translation id="5782227691023083829">Vertalen...</translation>
 <translation id="5791632441210678828">Knop Sorteren voor de feed Je volgt.</translation>
 <translation id="5793373065989412701">Je gezinsleden checken…</translation>

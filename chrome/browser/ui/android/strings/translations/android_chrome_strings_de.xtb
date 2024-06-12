@@ -376,7 +376,6 @@ Nur Personen, die deine Passphrase kennen, können deine verschlüsselten Daten 
 <translation id="2904414404539560095">Die Liste von Geräten, mit denen ein Tab geteilt werden kann, ist ganz geöffnet.</translation>
 <translation id="2908243544703713905">Ungelesene Inhalte verfügbar</translation>
 <translation id="2909615210195135082">Google-Benachrichtigungsplattform</translation>
-<translation id="2912296070571964914">Themen verwalten, an denen du interessiert bist</translation>
 <translation id="2912345083818861431">Displaysperre verwenden, um geöffnete Inkognitotabs zu sehen</translation>
 <translation id="2923908459366352541">Der Name ist ungültig</translation>
 <translation id="2932150158123903946">Google <ph name="APP_NAME" />-Speicher</translation>
@@ -452,7 +451,6 @@ Nur Personen, die deine Passphrase kennen, können deine verschlüsselten Daten 
 <translation id="3259831549858767975">Gesamten Seiteninhalt verkleinern</translation>
 <translation id="3264259168916048410">Dein Computer möchte dieses Gerät für die Anmeldung bei einer Website verwenden</translation>
 <translation id="3265093782546847662">Alle Seiten von <ph name="DOMAIN" /></translation>
-<translation id="3265534588625245297">Websites verwalten, denen du folgst</translation>
 <translation id="3269093882174072735">Bild laden</translation>
 <translation id="3280562213547448728">Sprachsuche</translation>
 <translation id="3282568296779691940">In Chrome anmelden</translation>
@@ -624,7 +622,6 @@ Nur Personen, die deine Passphrase kennen, können deine verschlüsselten Daten 
 <translation id="4195643157523330669">In neuem Tab öffnen</translation>
 <translation id="4197828496439691735">{NUM_TABS,plural, =1{1 Tab auf diesem Gerät}other{# Tabs auf diesem Gerät}}</translation>
 <translation id="4198423547019359126">Keine verfügbaren Speicherorte für Downloads</translation>
-<translation id="4198664641856813238">Melde dich an, damit du deine Lesezeichen, Passwörter und andere Daten auf allen deinen Geräten abrufen kannst</translation>
 <translation id="4202218894997543208">Blockierte Themen</translation>
 <translation id="4214315110991671325">Wenn du Cookies erlaubst, kann Chrome diese beim Vorabladen verwenden.</translation>
 <translation id="4216511743389425832">Diese Seite anhören</translation>
@@ -824,7 +821,6 @@ Eventuell findest du unter <ph name="BEGIN_LINK" />history.google.com<ph name="E
 <translation id="510275257476243843">1 Stunde übrig</translation>
 <translation id="5114895953710637392">Die App-Filtertabelle ist geschlossen.</translation>
 <translation id="5115811374190515607">zu <ph name="PRODUCT_NAME" /></translation>
-<translation id="5118713593561876160">Interessen</translation>
 <translation id="5122378528687922675">Wenn du Hilfe benötigst, sprich mit deinen Eltern (<ph name="PARENT_NAME_1" /> oder <ph name="PARENT_NAME_2" />)</translation>
 <translation id="5123685120097942451">Inkognitotab</translation>
 <translation id="5132942445612118989">Passwörter, Verlauf und mehr auf allen Geräten synchronisieren</translation>
@@ -838,7 +834,6 @@ Eventuell findest du unter <ph name="BEGIN_LINK" />history.google.com<ph name="E
 <translation id="5171045022955879922">Suchen oder URL eingeben</translation>
 <translation id="5174700554036517242">Tab hat wieder die ursprüngliche Höhe</translation>
 <translation id="5180063720319462041">Seite wurde in folgende Sprache übersetzt: <ph name="TARGET_LANGUAGE" /></translation>
-<translation id="5186634140793586141">Hier kannst du Themen und Suchanfragen verwalten, die dich interessieren</translation>
 <translation id="5191251636205085390">Weitere Informationen zu neuen Technologien als Ersatz für Drittanbieter-Cookies und ihrer Nutzung</translation>
 <translation id="5204967432542742771">Passwort eingeben</translation>
 <translation id="5206168361184759344">{FILE_COUNT,plural, =1{Datei wird heruntergeladen…}other{# Dateien werden heruntergeladen…}}</translation>
@@ -1086,7 +1081,6 @@ Einige Websites schalten möglicherweise Werbeanzeigen, deren Auswahl nicht dara
 <translation id="6437478888915024427">Seiteninfo</translation>
 <translation id="6440291723980579689">Seiten werden erst geladen, nachdem du sie öffnest</translation>
 <translation id="6441734959916820584">Name ist zu lang</translation>
-<translation id="6447558397796644647">Das Lesezeichen wurde nicht gefunden. Prüfe die Schreibweise oder füge ein neues Lesezeichen hinzu.</translation>
 <translation id="6459045781120991510">Umfragen</translation>
 <translation id="6461962085415701688">Datei kann nicht geöffnet werden</translation>
 <translation id="6464977750820128603">Du siehst in Chrome besuchte Websites und kannst Timer einstellen.\n\nGoogle erhält Informationen zu den Websites, für die du Timer einstellst, sowie zur Dauer des Besuchs. Anhand dieser Informationen wird Digital Wellbeing optimiert.</translation>

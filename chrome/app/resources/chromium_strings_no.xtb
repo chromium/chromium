@@ -16,6 +16,7 @@
 <translation id="1203500561924088507">Installasjonen er fullført. Start nettleseren på nytt før du tar i bruk <ph name="BUNDLE_NAME" />.</translation>
 <translation id="1262876892872089030">Mens denne fanen var inaktiv, ble minnet frigjort for å holde Chromium rask. Du kan velge å alltid ekskludere dette nettstedet fra å gjøres inaktivt.</translation>
 <translation id="1265577313130862557">Chromium har blokkert denne nedlastingen fordi filen er farlig</translation>
+<translation id="126567311906253476">Når du logger på Google-tjenester som Gmail eller YouTube med <ph name="USER_EMAIL" />, kan du automatisk logge på Chromium med den samme kontoen</translation>
 <translation id="1315551408014407711">Konfigurer den nye Chromium-profilen din</translation>
 <translation id="1342274909142618978">Slett også data fra Chromium (<ph name="URL" />)</translation>
 <translation id="1414495520565016063">Du er logget på Chromium.</translation>
@@ -40,6 +41,7 @@ Tillatelser du allerede har gitt nettsteder og apper, kan gjelde for denne konto
 <translation id="1749104137266986751">Når HTTPS ikke er tilgjengelig, bruker Chromium usikre tilkoblinger uten å advare deg</translation>
 <translation id="1774152462503052664">La Chromium kjøre i bakgrunnen</translation>
 <translation id="1779356040007214683">For å gjøre Chromium tryggere, har vi deaktivert noen utvidelser som ikke er oppført i <ph name="IDS_EXTENSION_WEB_STORE_TITLE" />, og som kan ha blitt lagt uten at du har vært klar over det.</translation>
+<translation id="1804128559285178512">Når du er logget på, kan du bruke passordene dine med mer fra Google-kontoen din i Chromium</translation>
 <translation id="1808667845054772817">Installer Chromium på nytt</translation>
 <translation id="1820835682567584003">Chromium prøver å <ph name="AUTHENTICATION_PURPOSE" /></translation>
 <translation id="18552579716432081">For å slette nettlesingsdata kun på denne enheten og beholde dem i Google-kontoen, <ph name="BEGIN_LINK" />logg av Chrome<ph name="END_LINK" />.</translation>

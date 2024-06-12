@@ -1853,6 +1853,7 @@
 <translation id="233375395665273385">ડિલીટ કરો અને સાઇન આઉટ કરો</translation>
 <translation id="233471714539944337">સંવેદનશીલ કન્ટેન્ટ</translation>
 <translation id="2335111415680198280">{0,plural, =1{# વિન્ડો બંધ કરો}one{# વિન્ડો બંધ કરો}other{# વિન્ડો બંધ કરો}}</translation>
+<translation id="2335758110242123814">ગ્રૂપ ખોલો</translation>
 <translation id="2336228925368920074">બધા ટૅબ્સ બુકમાર્ક  કરો...</translation>
 <translation id="2336258397628212480"><ph name="APP_NAME" />, <ph name="PRINTER_NAME" /> પર 1 પેજ પ્રિન્ટ કરી રહી છે</translation>
 <translation id="2336381494582898602">Powerwash</translation>
@@ -1873,6 +1874,7 @@
 <translation id="2351923523007389195">મંજૂરી છે – <ph name="PERMISSION_DETAILS" />. <ph name="LINK_BEGIN" />સિસ્ટમનો લોકેશનનો ઍક્સેસ<ph name="LINK_END" /> ચાલુ કરો.</translation>
 <translation id="2352662711729498748">&lt; 1 MB</translation>
 <translation id="2352810082280059586">લૉક સ્ક્રીન નોંધ ઑટોમૅટિક રીતે <ph name="LOCK_SCREEN_APP_NAME" /> પર સાચવવામાં આવે છે. તમારી સૌથી તાજેતરની નોંધ લૉક સ્ક્રીન પર રહેશે.</translation>
+<translation id="2353168619378866466">ગ્રૂપ ખોલો</translation>
 <translation id="2353297238722298836">કૅમેરા અને માઇક્રોફોનની મંજૂરી</translation>
 <translation id="2353910600995338714">નિકાસ કરવાનું સફળ થયું</translation>
 <translation id="2355314311311231464">તમારા એકાઉન્ટની વિગતો ફરી મેળવી શકાઈ ન હોવાને કારણે સેટઅપ કરવું નિષ્ફળ રહ્યું. કૃપા કરીને ફરી પ્રયાસ કરો. ભૂલનો કોડ: <ph name="ERROR_CODE" />.</translation>
@@ -2826,6 +2828,7 @@
 <translation id="3033348223765101500">તમારો ડેટા નિયંત્રિત કરો</translation>
 <translation id="3036327949511794916">આ <ph name="DEVICE_TYPE" />ને પરત કરવાની સમયસીમા સમાપ્ત થઈ ગઈ છે.</translation>
 <translation id="3036546437875325427">ફ્લૅશ ચાલુ કરો</translation>
+<translation id="3037193115779933814">અક્ષરો અને અંકો</translation>
 <translation id="3038272154009688107">બધી સાઇટ જુઓ</translation>
 <translation id="3038612606416062604">પ્રિન્ટરને મેન્યુઅલી ઉમેરો</translation>
 <translation id="3039491566278747710">ડિવાઇસ પર ઑફલાઇન પૉલિસી ઇન્સ્ટૉલ કરવામાં નિષ્ફળ ગયું.</translation>
@@ -4216,6 +4219,7 @@
 <translation id="4066207411788646768">તમારા નેટવર્કમાં ઉપલબ્ધ હોય એવા પ્રિન્ટર જોવા માટે, કૃપા કરીને તમારું નેટવર્ક ચેક કરો</translation>
 <translation id="4067839975993712852">વર્તમાન ટૅબને 'વાંચેલા' તરીકે માર્ક કરો</translation>
 <translation id="4068776064906523561">સાચવેલ ફિંગરપ્રિન્ટ</translation>
+<translation id="4070132839822635162">સાઇન ઇન કરશો નહીં</translation>
 <translation id="407173827865827707">ક્લિક કરવા પર</translation>
 <translation id="4072805772816336153">થોડા સમય પછી ફરી પ્રયાસ કરો</translation>
 <translation id="4074164314564067597">કીબોર્ડ</translation>
@@ -6025,6 +6029,7 @@
 <translation id="5469540749878136997">વપરાશના આધારે મેમરી ખાલી કરો</translation>
 <translation id="5469852975082458401">તમે ટેક્સ્ટ કર્સર વડે કોઈપણ પેજ પર નૅવિગેટ કરી શકશો. બંધ કરવા માટે, F7 દબાવો.</translation>
 <translation id="5470735824776589490">તમારું ડિવાઇસ Powerwash સાથે રીસેટ થઈ શકે તે પહેલાં એકવાર ફરી શરૂ કરવું આવશ્યક છે. <ph name="LINK_BEGIN" />વધુ જાણો<ph name="LINK_END" /></translation>
+<translation id="5470741195701938302">અંકો</translation>
 <translation id="5471768120198416576">કેમ છો! હું તમારો ટેક્સ્ટ-ટૂ-સ્પીચ વૉઇસ છું.</translation>
 <translation id="5472627187093107397">આ સાઇટ માટેનો પાસવર્ડ સાચવો</translation>
 <translation id="5473062644742711742">Chrome વેબ સ્ટોરમાં વધુ ઍક્સેસિબિલિટી ટૂલ શોધો</translation>
@@ -6863,6 +6868,7 @@ USB ડિવાઇસ</translation>
 <translation id="6101226222197207147">નવી ઍપ્લિકેશન ઉમેરાઈ (<ph name="EXTENSION_NAME" />)</translation>
 <translation id="6102043788063419338">આ ફાઇલને વિગતવાર સુરક્ષા દ્વારા બ્લૉક કરી હતી.</translation>
 <translation id="6103681770816982672">ચેતવણી: તમે વિકાસકર્તાની ચેનલ પર સ્વિચ કરી રહ્યાં છો</translation>
+<translation id="610395411842312282">ગ્રૂપ બે આજુ-બાજુમાં વિન્ડો</translation>
 <translation id="6104068876731806426">Google એકાઉન્ટ</translation>
 <translation id="6104667115274478616">ChromeOS ઑડિયો સેટિંગ મેનેજ કરો</translation>
 <translation id="6104796831253957966">પ્રિન્ટરની કતારમાં ઘણી બધી ફાઇલો છે</translation>
@@ -7341,6 +7347,7 @@ USB ડિવાઇસ</translation>
 <translation id="6469702164109431067">પાસવર્ડ અને પાસકી</translation>
 <translation id="6470823736074966819">નોટિફિકેશનને મ્યૂટ કરો</translation>
 <translation id="6472893788822429178">હોમ બટન બતાવો</translation>
+<translation id="6473315466413288899">વિકલ્પ પસંદ કરો</translation>
 <translation id="6474498546677193336">કોઈ ઍપ્લિકેશન આ ફોલ્ડરનો ઉપયોગ કરી રહી હોવાને કારણે આને અનશેર કરી શકાતું નથી. જ્યારે આગલી વાર Linux શટ ડાઉન થશે, ત્યારે ફોલ્ડરને અનશેર કરવામાં આવશે.</translation>
 <translation id="6474884162850599008">Google ડ્રાઇવ એકાઉન્ટ ડિસ્કનેક્ટ કરો</translation>
 <translation id="6475294023568239942">ડિસ્કમાં સ્પેસ ખાલી કરો અથવા સેટિંગમાં Linux ડિસ્કનું કદ બદલો</translation>
@@ -10803,6 +10810,7 @@ USB ડિવાઇસ</translation>
 <translation id="9031811691986152304">ફરી પ્રયાસ કરો</translation>
 <translation id="9032004780329249150">તમારા iOS ડિવાઇસ પર તમારા પાસવર્ડનો ઉપયોગ કરો</translation>
 <translation id="9032097289595078011">ઝડપી જોડાણની સુવિધા બંધ કરો</translation>
+<translation id="9032513103438497286">આ <ph name="DEVICE_TYPE" /> પર ઇન્સ્ટૉલ કરેલી ઍપને બ્લૉક કરો. ઍપ અથવા કન્ટેન્ટ ડાઉનલોડ કરવા પર પ્રતિબંધ મૂકવા માટે, Google Playના સેટિંગ પર જાઓ.</translation>
 <translation id="9033765790910064284">તો પણ ચાલુ રાખો</translation>
 <translation id="9033857511263905942">&amp;પેસ્ટ કરો</translation>
 <translation id="9034408118624208974">Chromebook પર નવા છો? સિંક કરવાનું ચાલુ કરો જેથી કરીને તમારી પસંદગીઓનું બૅકઅપ લેવામાં આવશે.</translation>

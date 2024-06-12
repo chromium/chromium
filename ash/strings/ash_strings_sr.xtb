@@ -64,7 +64,6 @@
 <translation id="1201402288615127009">Даље</translation>
 <translation id="1210557957257435379">снимање екрана</translation>
 <translation id="121097972571826261">Реч унапред</translation>
-<translation id="1217633719248931900">Иди на апликацију</translation>
 <translation id="1218444235442067213"><ph name="APP_NAME" />, апликација из Play продавнице</translation>
 <translation id="1225748608451425081">Chromebook је закључан због познатог проблема. Моћи ћете да се пријавите за: <ph name="TIME_LEFT" />.</translation>
 <translation id="1229194443904279055">Изађи из режима бирања</translation>
@@ -329,7 +328,6 @@
 <translation id="2293443480080733021">На шта желите да се фокусирате? Притисните Enter да бисте додали задатак.</translation>
 <translation id="229397294990920565">Пренос података преко мобилног оператера се искључује...</translation>
 <translation id="2295777434187870477">Микрофон је укључен. Можете да га искључите померањем прекидача.</translation>
-<translation id="2298170939937364391">Лупа за цео екран је омогућена. Поново притисните Ctrl + тастер за претрагу + M да бисте је искључили.</translation>
 <translation id="2302092602801625023">Овим налогом управља Family Link</translation>
 <translation id="2303600792989757991">Укључи/искључи преглед прозора</translation>
 <translation id="2305738328104302723">Листа Google задатака: <ph name="GLANCEABLES_TASKS_LIST_NAME" /></translation>
@@ -514,7 +512,6 @@
 <translation id="2977598380246111477">Следећи број</translation>
 <translation id="2985148236010982088">Прикажи све апликације</translation>
 <translation id="2992327365391326550">Дугме за микрофон на уређају је искључено.</translation>
-<translation id="2996462380875591307">Монтирана лупа екрана је омогућена. Притисните Ctrl + тастер за претрагу + D поново да бисте је искључили.</translation>
 <translation id="3000461861112256445">Моно звук</translation>
 <translation id="3001391739687111021">Измените величину екрана</translation>
 <translation id="3009178788565917040">Излаз</translation>
@@ -2152,7 +2149,6 @@
 <translation id="8982906748181120328">Видљиво у близини</translation>
 <translation id="8983038754672563810">HSPA</translation>
 <translation id="8990809378771970590">Користи се <ph name="IME_NAME" /></translation>
-<translation id="8991617137207906966">Режим инверзије боја је омогућен. Поново притисните Ctrl + тастер за претрагу + H да бисте га искључили.</translation>
 <translation id="899350903320462459">Откључајте уређај помоћу ИД-а пријављивања <ph name="LOGIN_ID" /> да бисте добили обавештење</translation>
 <translation id="8993733019280019776">Да ли причате? Микрофон је искључен. Изаберите микрофон да бисте га укључили.</translation>
 <translation id="9000771174482730261">УПРАВЉАЈТЕ МЕМОРИЈСКИМ ПРОСТОРОМ</translation>

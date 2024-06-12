@@ -64,7 +64,6 @@ Hér eru nokkrir hlutir sem þú getur prófað til að byrja með.</translation
 <translation id="1201402288615127009">Áfram</translation>
 <translation id="1210557957257435379">skjáupptaka</translation>
 <translation id="121097972571826261">Áfram um orð</translation>
-<translation id="1217633719248931900">Fara í forrit</translation>
 <translation id="1218444235442067213"><ph name="APP_NAME" />, forrit úr Play Store</translation>
 <translation id="1225748608451425081">Chromebook er læst vegna þekkts vandamáls. Þú getur skráð þig aftur inn eftir: <ph name="TIME_LEFT" />.</translation>
 <translation id="1229194443904279055">Hætta að velja</translation>
@@ -328,7 +327,6 @@ Hér eru nokkrir hlutir sem þú getur prófað til að byrja með.</translation
 <translation id="2293443480080733021">Hverju viltu einbeita þér að? Ýttu á Enter til að bæta verkefni við.</translation>
 <translation id="229397294990920565">Slekkur á farsímagögnum...</translation>
 <translation id="2295777434187870477">Kveikt er á hljóðnemanum, ef hnappurinn er valinn verður slökkt á hljóðinntaki.</translation>
-<translation id="2298170939937364391">Kveikt er á stækkunargleri á öllum skjánum. Ýttu aftur á Ctrl+leitarhnappinn+M til að loka því.</translation>
 <translation id="2302092602801625023">Þessum reikningi er stjórnað með Family Link</translation>
 <translation id="2303600792989757991">Víxla gluggayfirliti</translation>
 <translation id="2305738328104302723">Google-verkefnalisti: <ph name="GLANCEABLES_TASKS_LIST_NAME" /></translation>
@@ -513,7 +511,6 @@ Hér eru nokkrir hlutir sem þú getur prófað til að byrja með.</translation
 <translation id="2977598380246111477">Næsta tala</translation>
 <translation id="2985148236010982088">Sjá öll forrit</translation>
 <translation id="2992327365391326550">Slökkt er á hljóðnemahnappi tækisins.</translation>
-<translation id="2996462380875591307">Kveikt á stækkunargleri í föstum glugga. Ýttu aftur á Ctrl+leitarhnappinn+D til að loka því.</translation>
 <translation id="3000461861112256445">Einóma hljóð</translation>
 <translation id="3001391739687111021">Breyta skjástærð</translation>
 <translation id="3009178788565917040">Úttak</translation>
@@ -2146,7 +2143,6 @@ Til að slökkva á tækinu skaltu halda aflrofa tækisins inni aftur.</translat
 <translation id="8982906748181120328">Nærsýnileiki</translation>
 <translation id="8983038754672563810">HSPA</translation>
 <translation id="8990809378771970590">Notar <ph name="IME_NAME" /></translation>
-<translation id="8991617137207906966">Kveikt á umsnúningi lita. Ýttu aftur á Ctrl+leitarhnappinn+H til að slökkva á þessu.</translation>
 <translation id="899350903320462459">Opnaðu tækið sem <ph name="LOGIN_ID" /> til að framkvæma aðgerð tilkynningarinnar</translation>
 <translation id="8993733019280019776">Ertu að tala? Slökkt er á hljóðnemanum þínum. Veldu hljóðnemann til að kveikja á honum.</translation>
 <translation id="9000771174482730261">STJÓRNA GEYMSLURÝMI</translation>

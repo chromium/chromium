@@ -64,7 +64,6 @@ Here are some things that you can try to get started.</translation>
 <translation id="1201402288615127009">Next</translation>
 <translation id="1210557957257435379">screen recording</translation>
 <translation id="121097972571826261">Forward by word</translation>
-<translation id="1217633719248931900">Go to app</translation>
 <translation id="1218444235442067213"><ph name="APP_NAME" />, Play Store app</translation>
 <translation id="1225748608451425081">Your Chromebook is locked due to a known issue. You will be able to sign in after: <ph name="TIME_LEFT" />.</translation>
 <translation id="1229194443904279055">Stop selecting</translation>
@@ -329,7 +328,6 @@ Here are some things that you can try to get started.</translation>
 <translation id="2293443480080733021">What would you like to focus on? Press enter to add the task.</translation>
 <translation id="229397294990920565">Mobile data is turning off…</translation>
 <translation id="2295777434187870477">Mic is on, toggling will mute input.</translation>
-<translation id="2298170939937364391">Full-screen Magnifier enabled. Press Ctrl+Search+M again to toggle it off.</translation>
 <translation id="2302092602801625023">This account is managed by Family Link</translation>
 <translation id="2303600792989757991">Toggle window overview</translation>
 <translation id="2305738328104302723">Google tasks list: <ph name="GLANCEABLES_TASKS_LIST_NAME" /></translation>
@@ -514,7 +512,6 @@ Here are some things that you can try to get started.</translation>
 <translation id="2977598380246111477">Next number</translation>
 <translation id="2985148236010982088">See all apps</translation>
 <translation id="2992327365391326550">Device's microphone button is turned off.</translation>
-<translation id="2996462380875591307">Docked Magnifier enabled. Press Ctrl+Search+D again to toggle it off.</translation>
 <translation id="3000461861112256445">Mono audio</translation>
 <translation id="3001391739687111021">Edit screen size</translation>
 <translation id="3009178788565917040">Output</translation>
@@ -2150,7 +2147,6 @@ To shut down the device, press and hold the power button on the device again.</t
 <translation id="8982906748181120328">Nearby visibility</translation>
 <translation id="8983038754672563810">HSPA</translation>
 <translation id="8990809378771970590">Using <ph name="IME_NAME" /></translation>
-<translation id="8991617137207906966">Colour inversion mode enabled. Press Ctrl+Search+H again to toggle it off.</translation>
 <translation id="899350903320462459">Unlock device as <ph name="LOGIN_ID" /> to perform the notification action</translation>
 <translation id="8993733019280019776">Are you talking? Your mic is off. Select the mic to turn it on.</translation>
 <translation id="9000771174482730261">MANAGE STORAGE</translation>

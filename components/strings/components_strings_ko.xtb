@@ -547,6 +547,7 @@
 <translation id="2003709556000175978">지금 비밀번호 재설정</translation>
 <translation id="2003775180883135320">상단 4공 펀칭</translation>
 <translation id="2004697686368036666">일부 사이트에서 기능이 작동하지 않을 수 있음</translation>
+<translation id="2005042463110681802">HTTPS를 지원하지 않는 사이트이며 현재 시크릿 모드를 사용하고 있기 때문에 이 경고가 표시되었습니다. <ph name="BEGIN_LEARN_MORE_LINK" />자세히 알아보기<ph name="END_LEARN_MORE_LINK" /></translation>
 <translation id="2009942480257059311">일정 만들기 버튼, Google Calendar에서 새 일정을 빠르게 만들려면 활성화하세요.</translation>
 <translation id="201174227998721785">Chrome 설정에서 여러 사이트의 권한 및 저장된 데이터 관리</translation>
 <translation id="2012276282211112603">현재 표시할 주제 없음</translation>
@@ -1482,6 +1483,7 @@
 <translation id="3799805948399000906">글꼴 요청됨</translation>
 <translation id="3801265110651850478">탐색 트래픽과 함께 ‘추적 안함’ 요청 전송</translation>
 <translation id="380329542618494757">이름</translation>
+<translation id="3803801106042434208">거주 지역에서 인기 있는 검색엔진입니다.</translation>
 <translation id="3806932344025766608">방문하려는 사이트의 공격자가 속임수를 써서 소프트웨어를 설치하거나 비밀번호, 전화번호, 신용카드 번호 등을 공개하도록 유도할 수 있습니다. Chrome에서는 안전한 위치로 돌아갈 것을 적극 권장합니다. <ph name="BEGIN_LEARN_MORE_LINK" />자세히 알아보기<ph name="END_LEARN_MORE_LINK" /></translation>
 <translation id="3807366285948165054">이미지 X 시프트</translation>
 <translation id="3807709094043295184">클래식 록 및 고전 록</translation>

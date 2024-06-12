@@ -28,6 +28,7 @@
 <translation id="1407223320754252908">U Chrome je ugrađen Google prevoditelj, stoga možete prevoditi kad trebate</translation>
 <translation id="1425903838053942728">{COUNT,plural, =0{Chrome je ažuriran. Možete upotrijebiti najnoviju verziju čim ponovno pokrenete preglednik. Nakon toga vaše će se trenutačne kartice ponovno otvoriti.}=1{Chrome je ažuriran. Možete upotrijebiti najnoviju verziju čim ponovno pokrenete preglednik. Nakon toga vaše će se trenutačne kartice ponovno otvoriti. Anonimni se prozor neće ponovno otvoriti.}one{Chrome je ažuriran. Možete upotrijebiti najnoviju verziju čim ponovno pokrenete preglednik. Nakon toga vaše će se trenutačne kartice ponovno otvoriti. Vaš # anonimni prozor neće se ponovno otvoriti.}few{Chrome je ažuriran. Možete upotrijebiti najnoviju verziju čim ponovno pokrenete preglednik. Nakon toga vaše će se trenutačne kartice ponovno otvoriti. Vaša # anonimna prozora neće se ponovno otvoriti.}other{Chrome je ažuriran. Možete upotrijebiti najnoviju verziju čim ponovno pokrenete preglednik. Nakon toga vaše će se trenutačne kartice ponovno otvoriti. Vaših # anonimnih prozora neće se ponovno otvoriti.}}</translation>
 <translation id="1434626383986940139">Aplikacije kanala Chrome Canary</translation>
+<translation id="1438479496118074429">Proširenje <ph name="EXTENSION_NAME" /> traži da se prijavite na Chrome</translation>
 <translation id="146866447420868597">Želite li se prijaviti u Chrome?</translation>
 <translation id="1492280395845991349">Ponovno pokrenite da biste dovršili ažuriranje Chromea</translation>
 <translation id="1497802159252041924">Instalacijska pogreška: <ph name="INSTALL_ERROR" /></translation>
@@ -461,6 +462,7 @@ Dopuštenja koja ste već dali web-lokacijama i aplikacijama mogu se primijeniti
 <translation id="7802622118583152311">Chrome vam donosi najnoviju tehnologiju koja omogućuje bolje pregledavanje</translation>
 <translation id="7808348361785373670">Ukloni iz Chromea...</translation>
 <translation id="7825851276765848807">Instalacija nije uspjela zbog neodređene pogreške. Ponovo preuzmite Google Chrome.</translation>
+<translation id="7828063580843052643">Da biste koristili ovo proširenje kao <ph name="USER_EMAIL_ADDRESS" />, prijavite se na Chrome.\nMoći ćete i koristiti te spremati svoje zaporke i druge podatke sa svojeg Google računa.</translation>
 <translation id="7836610565365456468">Preoblikujte svoj preglednik živopisnim temama nadahnutim umjetnicima, prirodom i drugim sadržajima</translation>
 <translation id="7845233973568007926">Zahvaljujemo što ste izvršili instaliranje. Da biste mogli koristiti <ph name="BUNDLE_NAME" />, morate ponovno pokrenuti računalo.</translation>
 <translation id="7852254990718225089">AI u Chromeu čini web bržim, sigurnijim i pristupačnijim</translation>
@@ -480,6 +482,7 @@ Dopuštenja koja ste već dali web-lokacijama i aplikacijama mogu se primijeniti
 <translation id="8009904340233602924">Koristi Chrome bez računa</translation>
 <translation id="8013993649590906847">Ako slika nema koristan opis, Chrome će ga pokušati pružiti. Da bi se izradili opisi, slike se šalju Googleu.</translation>
 <translation id="8019103195866286235">Razvojni programer poništio je objavljivanje tog proširenja i možda nije sigurno. Uklonite ga iz Chromea kako više ne bi moglo vidjeti i mijenjati vaše podatke na web-lokacijama koje posjećujete, uključujući vaše osobne podatke.</translation>
+<translation id="8040768861829554732">Proširenje traži da se prijavite na Chrome</translation>
 <translation id="80471789339884597">Zahvaljujemo što ste izvršili instaliranje. Da biste mogli koristiti <ph name="BUNDLE_NAME" />, morate ponovno pokrenuti sve preglednike.</translation>
 <translation id="8064015041956107954">Možete otvoriti oznake, čitački način rada i druge značajke putem izbornika preglednika Chrome u gornjem desnom kutu</translation>
 <translation id="8064015586118426197">ChromeOS Flex</translation>

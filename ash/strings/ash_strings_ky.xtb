@@ -64,7 +64,6 @@
 <translation id="1201402288615127009">Кийинки</translation>
 <translation id="1210557957257435379">Экрандан видео жаздырып алуу</translation>
 <translation id="121097972571826261">Бир сөз алдыга өтүү</translation>
-<translation id="1217633719248931900">Колдонмого өтүү</translation>
 <translation id="1218444235442067213"><ph name="APP_NAME" />, Play Store колдонмосу</translation>
 <translation id="1225748608451425081">Белгилүү бир себептен улам сиздин Chromebook кулпуланды. Төмөнкү убакыттан кийин кире аласыз: <ph name="TIME_LEFT" />.</translation>
 <translation id="1229194443904279055">Тандоону токтотуу</translation>
@@ -251,6 +250,7 @@
 <translation id="1915307458270490472">Жогоруда кадоо</translation>
 <translation id="1918022425394817322">Камера жогорку оң бурчка кадалды</translation>
 <translation id="1923539912171292317">Автоматтык чыкылдатуулар</translation>
+<translation id="1925320505152357008">1 мүнөткө жетпейт</translation>
 <translation id="1928739107511554905">Жаңыртуу үчүн, туташкан баскычтопту үзбөй туруп, сенсордук экрандын жардамы менен, Chromebook'ту өчүрүп-күйгүзүңүз.</translation>
 <translation id="1948405482892809935">Кийинки колдонуучуга которуу</translation>
 <translation id="1951012854035635156">Жардамчы</translation>
@@ -327,7 +327,6 @@
 <translation id="2293443480080733021">Кайсы жасалчу иштин үстүнөн иштейсиз? Ишти кошуу үчүн Enter баскычын басыңыз.</translation>
 <translation id="229397294990920565">Мобилдик Интернет өчүрүлүүдө...</translation>
 <translation id="2295777434187870477">Микрофон күйүк, өчүрүү менен микрофондун үнү басылат.</translation>
-<translation id="2298170939937364391">Толук экран лупасы иштетилди. Өчүрүү үчүн Ctrl+Search+M баскычтарын кайра басыңыз.</translation>
 <translation id="2302092602801625023">Бул аккаунт Family Link аркылуу башкарылат</translation>
 <translation id="2303600792989757991">Терезеге ыкчам көз чаптырууга которуу</translation>
 <translation id="2305738328104302723">Google'да жасалчу иштер тизмеси: <ph name="GLANCEABLES_TASKS_LIST_NAME" /></translation>
@@ -512,7 +511,6 @@
 <translation id="2977598380246111477">Кийинки номер</translation>
 <translation id="2985148236010982088">Бардык колдонмолорду көрүү</translation>
 <translation id="2992327365391326550">Түзмөктүн микрофон баскычы өчүк.</translation>
-<translation id="2996462380875591307">Жалгаштырылган лупа иштетилди. Өчүрүү үчүн Ctrl+Search+D баскычтарын кайра басыңыз.</translation>
 <translation id="3000461861112256445">Моно аудио</translation>
 <translation id="3001391739687111021">Экран өлчөмүн түзөтүү</translation>
 <translation id="3009178788565917040">Чыгаруу</translation>
@@ -606,6 +604,7 @@
 <translation id="334927402682780278">Текстти курсордон баштап саптын аягына чейин тандоо</translation>
 <translation id="3349345708646875009">Маселелерди башкаргычты ачуу</translation>
 <translation id="3364721542077212959">Стилус куралдары</translation>
+<translation id="3365281428003534650">Таймер, иш жана музыканы коюу</translation>
 <translation id="3365977133351922112">Телефонуңуз өтө алыс жерде. Аны жакыныраак алып келиңиз.</translation>
 <translation id="3368922792935385530">Туташты</translation>
 <translation id="3369111525500416043">Тапшыруу мөөнөтү жакындап калды</translation>
@@ -908,6 +907,7 @@
 <translation id="4406883609789734330">Ыкчам коштомо жазуулар</translation>
 <translation id="4412698727486357573">Жардам борбору</translation>
 <translation id="4412944820643904175"><ph name="FEATURE_NAME" /> өчүк.</translation>
+<translation id="4417647906073317561">Ынтаа коюу режиминин параметрлери. Ишке киришүү үчүн таймерди, ишти жана музыканы коюңуз.</translation>
 <translation id="4424159417645388645">5-иш такта</translation>
 <translation id="4430019312045809116">Үндүн катуулугу</translation>
 <translation id="4441283832827406317">Колдонмолор аталышы боюнча иргелет</translation>
@@ -1859,6 +1859,7 @@
         <ph name="MANAGED" />
         <ph name="IME" />
         <ph name="LOCALE" /></translation>
+<translation id="7899977217122813285">Ынтаа коюу режиминде билдирмелер <ph name="TIME" /> чейин өчүрүлөт</translation>
 <translation id="7901190436359881020">Терезелерди алмаштыруу</translation>
 <translation id="7901405293566323524">Phone Hub</translation>
 <translation id="7902625623987030061">Манжа изинин сенсорун басыңыз</translation>
@@ -2139,7 +2140,6 @@
 <translation id="8982906748181120328">Nearby'да көрүнүү</translation>
 <translation id="8983038754672563810">HSPA</translation>
 <translation id="8990809378771970590"><ph name="IME_NAME" /> колдонулууда</translation>
-<translation id="8991617137207906966">Түстөрдү инверсиялоо режими иштетилди. Өчүрүү үчүн Ctrl+Search+H баскычтарын кайра басыңыз.</translation>
 <translation id="899350903320462459">Билдирмедеги аракетти аткаруу үчүн түзмөктүн кулпусун <ph name="LOGIN_ID" /> катары ачыңыз</translation>
 <translation id="8993733019280019776">Сүйлөп жатасызбы? Микрофонуңуз өчүк. Аны күйгүзүү үчүн микрофонду тандаңыз.</translation>
 <translation id="9000771174482730261">САКТАГЫЧТЫ БАШКАРУУ</translation>

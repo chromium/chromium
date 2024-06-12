@@ -547,6 +547,7 @@
 <translation id="2003709556000175978">Resetează parola acum</translation>
 <translation id="2003775180883135320">Perforare cvadruplă în partea de sus</translation>
 <translation id="2004697686368036666">Este posibil ca funcțiile din anumite site-uri să nu funcționeze</translation>
+<translation id="2005042463110681802">Avertismentul se afișează deoarece acest site nu acceptă HTTPS, iar tu ești în modul incognito. <ph name="BEGIN_LEARN_MORE_LINK" />Află mai multe<ph name="END_LEARN_MORE_LINK" /></translation>
 <translation id="2009942480257059311">Butonul Creează un eveniment, activează pentru a crea rapid un eveniment în Google Calendar</translation>
 <translation id="201174227998721785">Gestionează permisiunile și datele stocate pe toate site-urile din setările Chrome</translation>
 <translation id="2012276282211112603">Momentan, nu există subiecte de afișat</translation>
@@ -1482,6 +1483,7 @@
 <translation id="3799805948399000906">Font solicitat</translation>
 <translation id="3801265110651850478">Trimite o solicitare Nu urmări odată cu traficul de navigare</translation>
 <translation id="380329542618494757">Nume</translation>
+<translation id="3803801106042434208">Aceste motoare de căutare sunt populare în regiunea ta</translation>
 <translation id="3806932344025766608">Atacatorii de pe site-ul pe care încerci să-l accesezi te pot păcăli să instalezi software sau să dezvălui informații cum ar fi parola, numărul de telefon sau numărul cardului de credit. Chrome recomandă insistent să închizi pagina. <ph name="BEGIN_LEARN_MORE_LINK" />Află mai multe<ph name="END_LEARN_MORE_LINK" /></translation>
 <translation id="3807366285948165054">Deplasarea poziției X a imaginii</translation>
 <translation id="3807709094043295184">Rock clasic și melodii vechi</translation>

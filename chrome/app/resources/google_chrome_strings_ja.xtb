@@ -121,6 +121,7 @@
 <translation id="2765403129283291972">このサイトを利用するには、Chrome でマイクの使用を許可する必要があります</translation>
 <translation id="2770231113462710648">既定のブラウザを変更:</translation>
 <translation id="2775140325783767197">Chrome がパスワードを確認できません。インターネット接続を確認してみてください。</translation>
+<translation id="2797864378188255696"><ph name="USER_EMAIL" /> で Gmail や YouTube などの Google サービスにログインするときに、同じアカウントで Chrome に自動的にログインできます</translation>
 <translation id="2799223571221894425">再起動</translation>
 <translation id="2825024317344269723">危険なサイトのため、Chrome で通知の権限を削除しました。</translation>
 <translation id="2846251086934905009">インストール エラー: インストーラが完了しませんでした。インストールは中止されました。</translation>
@@ -293,6 +294,7 @@
 <translation id="5334309298019785904">ご使用のドメインでは同期を利用できないため、Chrome OS はデータを同期できませんでした。</translation>
 <translation id="5334487786912937552">ファイルをダウンロードするには、Chrome でストレージへのアクセスを許可する必要があります</translation>
 <translation id="5337648990166757586">任意: 診断と使用状況のデータを Google に自動送信して、Chrome OS の機能とパフォーマンスの改善に協力する。</translation>
+<translation id="5345497718959596593">ログイン中は、Chrome で Google アカウントのパスワードなどを使用できます</translation>
 <translation id="5357889879764279201">ChromeOS Flex のヘルプを見る</translation>
 <translation id="5368118228313795342">他のコード: <ph name="EXTRA_CODE" />。</translation>
 <translation id="5386244825306882791">この拡張機能では、Chrome の起動時、またはアドレスバーからの検索時に表示されるページも制御されます。</translation>

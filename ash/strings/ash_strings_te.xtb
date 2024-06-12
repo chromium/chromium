@@ -64,7 +64,6 @@
 <translation id="1201402288615127009">తర్వాత</translation>
 <translation id="1210557957257435379">స్క్రీన్ రికార్డింగ్</translation>
 <translation id="121097972571826261">ఒక పదం ముందుకు</translation>
-<translation id="1217633719248931900">యాప్‌నకు వెళ్లండి</translation>
 <translation id="1218444235442067213"><ph name="APP_NAME" />, Play Store యాప్</translation>
 <translation id="1225748608451425081">తెలిసిన సమస్య కారణంగా మీ Chromebook లాక్ చేయబడింది. మీరు ఈ సమయం తర్వాత సైన్ ఇన్ చేయగలరు: <ph name="TIME_LEFT" />.</translation>
 <translation id="1229194443904279055">ఎంచుకోవడం ఆపివేయండి</translation>
@@ -251,6 +250,7 @@
 <translation id="1915307458270490472">కాల్‌ను ముగించు</translation>
 <translation id="1918022425394817322">కెమెరా ఎగువ కుడి మూలకు స్నాప్ చేయబడింది</translation>
 <translation id="1923539912171292317">ఆటోమేటిక్‌ క్లిక్‌లు</translation>
+<translation id="1925320505152357008">1 నిమి. కంటే తక్కువ</translation>
 <translation id="1928739107511554905">అప్‌డేట్‌ను పొందడానికి, కీబోర్డ్‌ను అలానే జోడించి ఉంచి మీ Chromebookను పునఃప్రారంభించడం కోసం టచ్‌స్క్రీన్‌ను ఉపయోగించండి.</translation>
 <translation id="1948405482892809935">తర్వాతి యూజర్‌కు మారండి</translation>
 <translation id="1951012854035635156">Assistant</translation>
@@ -327,7 +327,6 @@
 <translation id="2293443480080733021">మీరు దేనిపై ఫోకస్ చేయాలనుకుంటున్నారు? టాస్క్‌ను జోడించడానికి ఎంటర్‌ను నొక్కండి.</translation>
 <translation id="229397294990920565">మొబైల్ డేటా ఆఫ్ చేయబడుతోంది...</translation>
 <translation id="2295777434187870477">మైక్ ఆన్‌లో ఉంది, టోగుల్ చేయడం వలన ఇన్‌పుట్ మ్యూట్ అవుతుంది.</translation>
-<translation id="2298170939937364391">పూర్తి-స్క్రీన్ మాగ్నిఫైయర్ ఎనేబుల్ చేయబడింది. దాన్ని ఆఫ్‌కు టోగుల్ చేయడానికి మళ్లీ Ctrl+Search+Mని నొక్కండి.</translation>
 <translation id="2302092602801625023">ఈ ఖాతా Family Link ద్వారా నిర్వహించబడుతుంది</translation>
 <translation id="2303600792989757991">విండో స్థూలదృష్టిని టోగుల్ చేయి</translation>
 <translation id="2305738328104302723">Google టాస్క్ లిస్ట్: <ph name="GLANCEABLES_TASKS_LIST_NAME" /></translation>
@@ -512,7 +511,6 @@
 <translation id="2977598380246111477">తర్వాతి నంబర్</translation>
 <translation id="2985148236010982088">అన్ని యాప్‌లను చూడండి</translation>
 <translation id="2992327365391326550">పరికర మైక్రోఫోన్ బటన్ ఆఫ్ చేయబడింది.</translation>
-<translation id="2996462380875591307">డాక్ చేయబడిన మాగ్నిఫైయర్ ప్రారంభించబడింది. దాన్ని టోగుల్ ఆఫ్ చేయడానికి మళ్లీ Ctrl+Search+Dని నొక్కండి.</translation>
 <translation id="3000461861112256445">మోనో ఆడియో</translation>
 <translation id="3001391739687111021">స్క్రీన్ సైజ్‌ను ఎడిట్ చేయండి</translation>
 <translation id="3009178788565917040">అవుట్‌పుట్</translation>
@@ -606,6 +604,7 @@
 <translation id="334927402682780278">కర్సర్ నుండి లైన్ చివరి వరకు ఉన్న టెక్స్ట్‌ను ఎంచుకోండి</translation>
 <translation id="3349345708646875009">టాస్క్ మేనేజర్‌ను తెరవండి</translation>
 <translation id="3364721542077212959">స్టైలస్ సాధనాలు</translation>
+<translation id="3365281428003534650">టైమర్, టాస్క్, మ్యూజిక్‌ను సెట్ చేయండి</translation>
 <translation id="3365977133351922112">మీ ఫోన్ చాలా దూరంగా ఉంది. మీ ఫోన్‌ను దగ్గరగా పట్టుకోండి.</translation>
 <translation id="3368922792935385530">కనెక్ట్ అయింది</translation>
 <translation id="3369111525500416043">గడువు తేదీ త్వరలో రానుంది</translation>
@@ -909,6 +908,7 @@
 <translation id="4406883609789734330">లైవ్ క్యాప్షన్</translation>
 <translation id="4412698727486357573">సహాయ కేంద్రం</translation>
 <translation id="4412944820643904175"><ph name="FEATURE_NAME" /> ఆఫ్‌లో ఉంది.</translation>
+<translation id="4417647906073317561">సెట్టింగ్‌లను ఫోకస్ చేయండి. ఫ్లోలో పొందడానికి టైమర్, టాస్క్, అలాగే మ్యూజిక్‌ను సెట్ చేయండి.</translation>
 <translation id="4424159417645388645">డెస్క్ 5</translation>
 <translation id="4430019312045809116">వాల్యూమ్</translation>
 <translation id="4441283832827406317">పేరు ఆధారంగా యాప్‌లు క్రమపద్ధతిలో అమర్చబడ్డాయి</translation>
@@ -1860,6 +1860,7 @@
         <ph name="MANAGED" />
         <ph name="IME" />
         <ph name="LOCALE" /></translation>
+<translation id="7899977217122813285">ఫోకస్ చేస్తున్నప్పుడు <ph name="TIME" /> వరకు నోటిఫికేషన్‌లు మ్యూట్ చేయబడతాయి</translation>
 <translation id="7901190436359881020">విండోలను స్వాప్ చేయండి</translation>
 <translation id="7901405293566323524">ఫోన్ హబ్</translation>
 <translation id="7902625623987030061">వేలిముద్ర సెన్సార్‌ను తాకండి</translation>
@@ -2140,7 +2141,6 @@
 <translation id="8982906748181120328">సమీప విజిబిలిటీ</translation>
 <translation id="8983038754672563810">HSPA</translation>
 <translation id="8990809378771970590"><ph name="IME_NAME" /> ఉపయోగిస్తోంది</translation>
-<translation id="8991617137207906966">కలర్ మార్పిడి మోడ్ ఎనేబుల్ చేయబడింది. Ctrl+Search+Hను నొక్కి, దాన్ని టోగుల్ ఆఫ్ చేయండి.</translation>
 <translation id="899350903320462459">నోటిఫికేషన్ చర్యను మేనేజ్ చేయడానికి <ph name="LOGIN_ID" />గా పరికరాన్ని అన్‌లాక్ చేయండి</translation>
 <translation id="8993733019280019776">మీరు మాట్లాడుతున్నారా? మీ మైక్ ఆఫ్‌లో ఉంది. మైక్‌ను ఎంచుకొని దానిని ఆన్ చేయండి.</translation>
 <translation id="9000771174482730261">స్టోరేజ్‌ను మేనేజ్ చేయండి</translation>

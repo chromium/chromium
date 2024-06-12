@@ -64,7 +64,6 @@
 <translation id="1201402288615127009">הבא</translation>
 <translation id="1210557957257435379">הקלטת מסך</translation>
 <translation id="121097972571826261">מילה אחת קדימה</translation>
-<translation id="1217633719248931900">פתיחת האפליקציה</translation>
 <translation id="1218444235442067213">‏<ph name="APP_NAME" />, אפליקציה מחנות Play</translation>
 <translation id="1225748608451425081">‏ה-Chromebook שלך נעול עקב בעיה ידועה. ניתן יהיה להיכנס בעוד: <ph name="TIME_LEFT" />.</translation>
 <translation id="1229194443904279055">סיום הבחירה</translation>
@@ -328,7 +327,6 @@
 <translation id="2293443480080733021">‏במה היית רוצה להתרכז? כדי להוסיף את המשימה, צריך להקיש על Enter.</translation>
 <translation id="229397294990920565">מתבצע כיבוי של הנתונים הסלולריים…</translation>
 <translation id="2295777434187870477">המיקרופון פועל. החלפת המצב תשתיק אותו.</translation>
-<translation id="2298170939937364391">‏הגדלה של כל המסך הופעלה. כדי להשבית אותה יש להקיש שוב על Ctrl+Search+M.</translation>
 <translation id="2302092602801625023">‏החשבון הזה מנוהל באמצעות Family Link</translation>
 <translation id="2303600792989757991">החלפת סקירת חלון</translation>
 <translation id="2305738328104302723">‏רשימת המשימות של Google: <ph name="GLANCEABLES_TASKS_LIST_NAME" /></translation>
@@ -513,7 +511,6 @@
 <translation id="2977598380246111477">המספר הבא</translation>
 <translation id="2985148236010982088">הצגת כל האפליקציות</translation>
 <translation id="2992327365391326550">לחצן המיקרופן של המכשיר כבוי.</translation>
-<translation id="2996462380875591307">‏הזכוכית המגדלת במצב עגינה הופעלה. כדי לכבות אותה, יש להקיש שוב על Ctrl+Search+D.</translation>
 <translation id="3000461861112256445">אודיו במונו</translation>
 <translation id="3001391739687111021">עריכת גודל המסך</translation>
 <translation id="3009178788565917040">פלט</translation>
@@ -2148,7 +2145,6 @@
 <translation id="8982906748181120328">גישה בסביבה</translation>
 <translation id="8983038754672563810">HSPA</translation>
 <translation id="8990809378771970590">מקלדת בשימוש: <ph name="IME_NAME" /></translation>
-<translation id="8991617137207906966">‏מצב היפוך הצבעים מופעל. יש להקיש שוב על Ctrl+Search+H כדי להשבית אותו.</translation>
 <translation id="899350903320462459">יש לבטל את נעילת המכשיר כ-<ph name="LOGIN_ID" /> על מנת לבצע את פעולת ההודעה</translation>
 <translation id="8993733019280019776">ניסית לדבר? המיקרופון שלך כבוי. עליך לבחור במיקרופון כדי להפעיל אותו.</translation>
 <translation id="9000771174482730261">ניהול האחסון</translation>

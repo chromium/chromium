@@ -1855,6 +1855,7 @@ Pots gestionar la configuració d'aquest compte instal·lant l'aplicació Family
 <translation id="233375395665273385">Suprimeix i tanca la sessió</translation>
 <translation id="233471714539944337">Contingut sensible</translation>
 <translation id="2335111415680198280">{0,plural, =1{Tanca # finestra}other{Tanca # finestres}}</translation>
+<translation id="2335758110242123814">Obre el grup</translation>
 <translation id="2336228925368920074">Afegeix totes les pestanyes a les adreces d'interès...</translation>
 <translation id="2336258397628212480"><ph name="APP_NAME" /> està imprimint 1 pàgina a <ph name="PRINTER_NAME" /></translation>
 <translation id="2336381494582898602">Powerwash</translation>
@@ -1875,6 +1876,7 @@ Pots gestionar la configuració d'aquest compte instal·lant l'aplicació Family
 <translation id="2351923523007389195">Concedit: <ph name="PERMISSION_DETAILS" />. Activa l'<ph name="LINK_BEGIN" />accés a la ubicació del sistema<ph name="LINK_END" />.</translation>
 <translation id="2352662711729498748">&lt; 1 MB</translation>
 <translation id="2352810082280059586">Les notes de la pantalla de bloqueig es desen automàticament a <ph name="LOCK_SCREEN_APP_NAME" />. La nota més recent romandrà a la pantalla de bloqueig.</translation>
+<translation id="2353168619378866466">Obre el grup</translation>
 <translation id="2353297238722298836">La càmera i el micròfon es poden utilitzar</translation>
 <translation id="2353910600995338714">L'exportació s'ha completat correctament</translation>
 <translation id="2355314311311231464">S'ha produït un problema amb el proveïment perquè no s'ha pogut recuperar la informació del compte. Torna-ho a provar. Codi d'error: <ph name="ERROR_CODE" />.</translation>
@@ -2828,6 +2830,7 @@ Pots gestionar la configuració d'aquest compte instal·lant l'aplicació Family
 <translation id="3033348223765101500">Controla les teves dades</translation>
 <translation id="3036327949511794916">El termini per tornar aquest dispositiu <ph name="DEVICE_TYPE" /> ha finalitzat.</translation>
 <translation id="3036546437875325427">Activa Flash</translation>
+<translation id="3037193115779933814">Lletres i números</translation>
 <translation id="3038272154009688107">Mostra tots els llocs web</translation>
 <translation id="3038612606416062604">Afegeix una impressora manualment</translation>
 <translation id="3039491566278747710">No s'ha pogut instal·lar la política sense connexió al dispositiu.</translation>
@@ -6024,6 +6027,7 @@ Pots assignar diferents interruptors a aquesta acció.</translation>
 <translation id="5469540749878136997">Allibera memòria en funció de l'ús</translation>
 <translation id="5469852975082458401">Pots navegar per les pàgines amb un cursor de text. Prem F7 per desactivar aquesta funció.</translation>
 <translation id="5470735824776589490">Cal reiniciar el dispositiu per poder restablir-lo amb Powerwash. <ph name="LINK_BEGIN" />Més informació<ph name="LINK_END" /></translation>
+<translation id="5470741195701938302">Números</translation>
 <translation id="5471768120198416576">Hola! Soc la teva veu per a la conversió de text a parla.</translation>
 <translation id="5472627187093107397">Desa les contrasenyes d'aquest lloc web</translation>
 <translation id="5473062644742711742">Troba més eines d'accessibilitat a Chrome Web Store</translation>
@@ -6858,6 +6862,7 @@ Assegureu-vos que no es pugui accedir a informació sensible.</translation>
 <translation id="6101226222197207147">S'ha afegit una aplicació nova (<ph name="EXTENSION_NAME" />)</translation>
 <translation id="6102043788063419338">La Protecció avançada ha bloquejat aquest fitxer.</translation>
 <translation id="6103681770816982672">Advertiment: esteu canviant al canal per a desenvolupadors</translation>
+<translation id="610395411842312282">Agrupa dues finestres l'una al costat de l'altra</translation>
 <translation id="6104068876731806426">Comptes de Google</translation>
 <translation id="6104667115274478616">Gestiona la configuració d'àudio de ChromeOS</translation>
 <translation id="6104796831253957966">La impressora té la cua plena</translation>

@@ -18,6 +18,7 @@
 <translation id="1203500561924088507">Дзякуй, што ўсталявалі <ph name="BUNDLE_NAME" />. Каб завяршыць усталяванне, перазапусціце браўзер.</translation>
 <translation id="1262876892872089030">Гэта ўкладка была неактыўнай, і памяць была вызвалена, каб забяспечыць хуткую работу Chromium. Вы можаце дадаць гэты сайт да выключэнняў, каб ён ніколі не адзначаўся як неактыўны.</translation>
 <translation id="1265577313130862557">Браўзер Chromium заблакіраваў спампоўку, бо гэты файл небяспечны</translation>
+<translation id="126567311906253476">Калі вы ўваходзіце ў сэрвісы Google (напрыклад, Gmail ці YouTube) праз уліковы запіс <ph name="USER_EMAIL" />, то можаце аўтаматычна ўвайсці ў Chromium пад тым жа ўліковым запісам</translation>
 <translation id="1315551408014407711">Наладзьце свой профіль Chromium</translation>
 <translation id="1342274909142618978">Выдаліць таксама даныя з Chromium (<ph name="URL" />)</translation>
 <translation id="1414495520565016063">Вы ўвайшлі ў Chromium!</translation>
@@ -42,6 +43,7 @@
 <translation id="1749104137266986751">Калі пратакол HTTPS недаступны, Chromium без папярэджання будзе выкарыстоўваць неабароненае падключэнне</translation>
 <translation id="1774152462503052664">Дазволіць Chromium выконвацца ў фонавым рэжыме</translation>
 <translation id="1779356040007214683">У мэтах бяспекі Chromium мы выключылі некаторыя пашырэнні, якія не значацца ў спісе <ph name="IDS_EXTENSION_WEB_STORE_TITLE" /> і маглі быць дададзены без вашага ведама.</translation>
+<translation id="1804128559285178512">Пакуль выкананы ўваход, вы можаце выкарыстоўваць у Chromium свае паролі і іншыя даныя Уліковага запісу Google</translation>
 <translation id="1808667845054772817">Пераўсталяваць Chromium</translation>
 <translation id="1820835682567584003">Chromium спрабуе <ph name="AUTHENTICATION_PURPOSE" /></translation>
 <translation id="18552579716432081">Каб выдаліць даныя пра работу ў браўзеры толькі з гэтай прылады, але захаваць іх ва Уліковым запісе Google, <ph name="BEGIN_LINK" />выйдзіце з Chromium<ph name="END_LINK" />.</translation>

@@ -64,7 +64,6 @@ Det här är några saker du kan testa för att komma igång.</translation>
 <translation id="1201402288615127009">Nästa</translation>
 <translation id="1210557957257435379">skärminspelning</translation>
 <translation id="121097972571826261">Framåt ord för ord</translation>
-<translation id="1217633719248931900">Öppna app</translation>
 <translation id="1218444235442067213"><ph name="APP_NAME" />, app från Play Butik</translation>
 <translation id="1225748608451425081">Chromebook har låsts på grund av ett känt problem. Du kan logga in om <ph name="TIME_LEFT" />.</translation>
 <translation id="1229194443904279055">Sluta markera</translation>
@@ -180,6 +179,7 @@ Det här är några saker du kan testa för att komma igång.</translation>
 <translation id="1611993646327628135">På</translation>
 <translation id="1620510694547887537">Kamera</translation>
 <translation id="1623768535032616219">Komprimera Google Classroom</translation>
+<translation id="163032029566320584"><ph name="UNAVAILABLE_DLC" /> är inte tillgängligt.</translation>
 <translation id="1632985212731562677">Brytarstyrning kan inaktiveras under Inställningar &gt; Tillgänglighet</translation>
 <translation id="1637505162081889933"><ph name="NUM_DEVICES" /> enheter</translation>
 <translation id="1639239467298939599">Profilen läses in</translation>
@@ -327,7 +327,6 @@ Det här är några saker du kan testa för att komma igång.</translation>
 <translation id="2293443480080733021">Vad vill du fokusera på? Tryck på Retur för att lägga till en uppgift.</translation>
 <translation id="229397294990920565">Mobildata stängs av …</translation>
 <translation id="2295777434187870477">Mikrofonen är på. Om du ändrar läge stängs indata av.</translation>
-<translation id="2298170939937364391">Helskärmsförstoring har aktiverats. Tryck på Ctrl + Sök + M igen om du vill inaktivera funktionen.</translation>
 <translation id="2302092602801625023">Det här kontot hanteras av Family Link</translation>
 <translation id="2303600792989757991">Växla fönsteröversikt</translation>
 <translation id="2305738328104302723">Google Tasks-list: <ph name="GLANCEABLES_TASKS_LIST_NAME" /></translation>
@@ -512,7 +511,6 @@ Det här är några saker du kan testa för att komma igång.</translation>
 <translation id="2977598380246111477">Nästa nummer</translation>
 <translation id="2985148236010982088">Visa alla appar</translation>
 <translation id="2992327365391326550">Enhetens mikrofon är avstängd.</translation>
-<translation id="2996462380875591307">Dockad skärmförstoring har aktiverats. Tryck på Ctrl + Sök + D igen om du vill inaktivera funktionen.</translation>
 <translation id="3000461861112256445">Monoljud</translation>
 <translation id="3001391739687111021">Redigera skärmstorlek</translation>
 <translation id="3009178788565917040">Utgång</translation>
@@ -721,6 +719,7 @@ Anslut enheten till en strömkälla.</translation>
 <translation id="3702846122927433391">Befolkning i Nigeria</translation>
 <translation id="3705722231355495246">-</translation>
 <translation id="3706423975342040244">Nöje</translation>
+<translation id="3707093869106077605"><ph name="UNAVAILABLE_DLC_ONE" /> och <ph name="UNAVAILABLE_DLC_TWO" /> är inte tillgängliga.</translation>
 <translation id="3708186454126126312">Tidigare anslutna enheter</translation>
 <translation id="3712143870407382523">Välj ett fönster för den här sidan</translation>
 <translation id="371370241367527062">Mikrofonen på framsidan</translation>
@@ -992,6 +991,7 @@ Vissa funktioner är begränsade för att förlänga batteritiden.</translation>
 <translation id="4733161265940833579"><ph name="BATTERY_PERCENTAGE" /> % (vänster)</translation>
 <translation id="4734965478015604180">Horisontell</translation>
 <translation id="4735944890391795473">Skrivbord 12</translation>
+<translation id="4736732123074402682">Kontrollera anslutningen och försök igen.</translation>
 <translation id="473775607612524610">Uppdatera</translation>
 <translation id="4740516757091333363">Vill du radera det sparade skrivbordet?</translation>
 <translation id="4746798685375253449">{0,plural, =1{Uppdatera till en tidigare version av enheten inom en dag}other{Uppdatera till en tidigare version av enheten inom # dagar}}</translation>
@@ -1325,6 +1325,7 @@ Inga enheter är anslutna.</translation>
 <translation id="588258955323874662">Helskärm</translation>
 <translation id="5887954372087850114">Fönstret <ph name="WINDOW_TITLE" /> tilldelades <ph name="DESK_TITLE" /> och tilldelningen har tagits bort från alla andra skrivbord</translation>
 <translation id="588817334757907802">Öppna filen i webbläsaren Chrome</translation>
+<translation id="5892014525522223653">Du är offline.</translation>
 <translation id="5895138241574237353">Starta om</translation>
 <translation id="589817443623831496">Punktgenomsökning</translation>
 <translation id="5901316534475909376">Skift+Escape</translation>
@@ -1384,6 +1385,7 @@ Inga enheter är anslutna.</translation>
 <translation id="6095425951508823973">Lägg till anslutning med <ph name="PROVIDER" /></translation>
 <translation id="6099678161144790572">Redigerades under den senaste månaden</translation>
 <translation id="6103838137565245112">system</translation>
+<translation id="610395411842312282">Gruppera två fönster sida vid sida</translation>
 <translation id="6108952804512516814">Skapa med AI</translation>
 <translation id="6114505516289286752">Filerna för taligenkänning på <ph name="LANGUAGE" /> har laddats ned</translation>
 <translation id="6119360623251949462"><ph name="CHARGING_STATE" />. <ph name="BATTERY_SAVER_STATE" /></translation>
@@ -1391,6 +1393,7 @@ Inga enheter är anslutna.</translation>
 <translation id="6121838516699723042">Bekräfta nedladdning <ph name="FILENAME" /></translation>
 <translation id="612734058257491180">Google-assistenten är inte tillgänglig i en gästsession.</translation>
 <translation id="6127370444807669747">Prova YouTube Music Premium för personliga spellistor och mer fokuseringsmusik</translation>
+<translation id="6127395413317891856">Du är offline. Kontrollera anslutningen och försök igen.</translation>
 <translation id="6129953537138746214">Blanksteg</translation>
 <translation id="6137566720514957455">Öppna dialogrutan för borttagning av <ph name="USER_EMAIL_ADDRESS" /></translation>
 <translation id="6141205840878048728">Vad vill du fokusera på?</translation>
@@ -1963,6 +1966,7 @@ Stäng av enheten genom att hålla av/på-knappen nedtryckt igen.</translation>
 <translation id="8257510091797044096">Konfigurera enheten</translation>
 <translation id="8261506727792406068">Radera</translation>
 <translation id="8262312463845990408">Aktivera och inaktivera uppspelning</translation>
+<translation id="8268302343625273732">Visa alla uppgifter i Google Classroom</translation>
 <translation id="8277261673056602147">Markera text på skärmen</translation>
 <translation id="8287009018010202411">Produktivitet</translation>
 <translation id="828708037801473432">Av</translation>
@@ -2139,7 +2143,6 @@ Stäng av enheten genom att hålla av/på-knappen nedtryckt igen.</translation>
 <translation id="8982906748181120328">Synl. i närheten</translation>
 <translation id="8983038754672563810">HSPA</translation>
 <translation id="8990809378771970590">Använder <ph name="IME_NAME" /></translation>
-<translation id="8991617137207906966">Läget för inverterade färger har aktiverats. Tryck på Ctrl + Sök + H igen för att inaktivera det.</translation>
 <translation id="899350903320462459">Lås upp enheten som <ph name="LOGIN_ID" /> så att aviseringen kan göras</translation>
 <translation id="8993733019280019776">Pratar du? Mikrofonen är inaktiverad. Välj mikrofonen för att aktivera den.</translation>
 <translation id="9000771174482730261">HANTERA LAGRING</translation>

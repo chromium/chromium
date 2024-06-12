@@ -64,7 +64,6 @@
 <translation id="1201402288615127009">다음</translation>
 <translation id="1210557957257435379">화면 녹화</translation>
 <translation id="121097972571826261">한 단어 앞으로 이동</translation>
-<translation id="1217633719248931900">앱으로 이동</translation>
 <translation id="1218444235442067213"><ph name="APP_NAME" />, Play 스토어 앱</translation>
 <translation id="1225748608451425081">알려진 문제로 인해 Chromebook이 잠겼습니다. <ph name="TIME_LEFT" /> 후에 다시 로그인할 수 있습니다.</translation>
 <translation id="1229194443904279055">선택 중지</translation>
@@ -180,6 +179,7 @@
 <translation id="1611993646327628135">켜짐</translation>
 <translation id="1620510694547887537">카메라</translation>
 <translation id="1623768535032616219">Google 클래스룸 접기</translation>
+<translation id="163032029566320584"><ph name="UNAVAILABLE_DLC" /> 기능을 사용할 수 없습니다.</translation>
 <translation id="1632985212731562677">설정 &gt; 접근성에서 스위치 제어를 사용 중지할 수 있습니다.</translation>
 <translation id="1637505162081889933">기기 <ph name="NUM_DEVICES" />대</translation>
 <translation id="1639239467298939599">로드 중</translation>
@@ -251,6 +251,7 @@
 <translation id="1915307458270490472">종료</translation>
 <translation id="1918022425394817322">카메라 미리보기가 오른쪽 상단으로 맞춰졌습니다</translation>
 <translation id="1923539912171292317">자동 클릭</translation>
+<translation id="1925320505152357008">1분 미만</translation>
 <translation id="1928739107511554905">업데이트하려면 키보드가 연결된 상태로 터치스크린을 사용하여 Chromebook을 다시 시작하세요.</translation>
 <translation id="1948405482892809935">다음 사용자로 전환</translation>
 <translation id="1951012854035635156">어시스턴트</translation>
@@ -327,7 +328,6 @@
 <translation id="2293443480080733021">무엇에 집중하고 싶으신가요? 할 일을 추가하려면 Enter 키를 누르세요.</translation>
 <translation id="229397294990920565">모바일 데이터를 사용 중지하는 중입니다.</translation>
 <translation id="2295777434187870477">마이크가 켜져 있으며 전환하면 음소거됩니다.</translation>
-<translation id="2298170939937364391">전체 화면 돋보기가 사용 설정되었습니다. 사용 중지하려면 Ctrl+Search+M을 다시 누르세요.</translation>
 <translation id="2302092602801625023">Family Link에서 관리되는 계정입니다.</translation>
 <translation id="2303600792989757991">창 전환 개요</translation>
 <translation id="2305738328104302723">Google 할 일 목록: <ph name="GLANCEABLES_TASKS_LIST_NAME" /></translation>
@@ -512,7 +512,6 @@
 <translation id="2977598380246111477">다음 번호</translation>
 <translation id="2985148236010982088">앱 모두 보기</translation>
 <translation id="2992327365391326550">기기의 마이크 버튼이 사용 중지되어 있습니다.</translation>
-<translation id="2996462380875591307">고정 돋보기가 사용 설정되었습니다. 사용 중지하려면 다시 Ctrl+Search+D를 누르세요.</translation>
 <translation id="3000461861112256445">모노 오디오</translation>
 <translation id="3001391739687111021">화면 크기 수정</translation>
 <translation id="3009178788565917040">출력</translation>
@@ -606,6 +605,7 @@
 <translation id="334927402682780278">커서부터 마지막 줄까지 텍스트 선택</translation>
 <translation id="3349345708646875009">작업 관리자 열기</translation>
 <translation id="3364721542077212959">스타일러스 도구</translation>
+<translation id="3365281428003534650">타이머, 할 일, 음악 설정</translation>
 <translation id="3365977133351922112">휴대전화가 너무 멀리 있습니다. 휴대전화를 가까이 가져오세요.</translation>
 <translation id="3368922792935385530">연결됨</translation>
 <translation id="3369111525500416043">곧 마감</translation>
@@ -721,6 +721,7 @@
 <translation id="3702846122927433391">나이지리아의 인구</translation>
 <translation id="3705722231355495246">-</translation>
 <translation id="3706423975342040244">엔터테인먼트</translation>
+<translation id="3707093869106077605"><ph name="UNAVAILABLE_DLC_ONE" /> 및 <ph name="UNAVAILABLE_DLC_TWO" /> 기능을 사용할 수 없습니다.</translation>
 <translation id="3708186454126126312">이전에 연결된 기기</translation>
 <translation id="3712143870407382523">이쪽 창을 선택하세요</translation>
 <translation id="371370241367527062">전면 마이크</translation>
@@ -908,6 +909,7 @@
 <translation id="4406883609789734330">실시간 자막</translation>
 <translation id="4412698727486357573">고객센터</translation>
 <translation id="4412944820643904175"><ph name="FEATURE_NAME" /> 기능이 꺼져 있습니다.</translation>
+<translation id="4417647906073317561">집중 모드 설정. 타이머, 할 일, 음악을 설정하여 집중해 보세요.</translation>
 <translation id="4424159417645388645">데스크 5</translation>
 <translation id="4430019312045809116">볼륨</translation>
 <translation id="4441283832827406317">앱이 이름별로 정렬됩니다.</translation>
@@ -992,6 +994,7 @@
 <translation id="4733161265940833579"><ph name="BATTERY_PERCENTAGE" />%(왼쪽)</translation>
 <translation id="4734965478015604180">가로</translation>
 <translation id="4735944890391795473">데스크 12</translation>
+<translation id="4736732123074402682">연결 상태를 확인한 후 다시 시도하세요.</translation>
 <translation id="473775607612524610">업데이트</translation>
 <translation id="4740516757091333363">저장된 데스크를 삭제하시겠습니까?</translation>
 <translation id="4746798685375253449">{0,plural, =1{하루 안에 기기를 이전 버전으로 업데이트하세요}other{#일 이내에 기기를 이전 버전으로 업데이트하세요}}</translation>
@@ -1325,6 +1328,7 @@
 <translation id="588258955323874662">전체화면</translation>
 <translation id="5887954372087850114"><ph name="WINDOW_TITLE" /> 창이 <ph name="DESK_TITLE" />에 할당되고 다른 모든 데스크에서 할당 취소되었습니다.</translation>
 <translation id="588817334757907802">Chrome 브라우저에서 파일 열기</translation>
+<translation id="5892014525522223653">오프라인 상태입니다.</translation>
 <translation id="5895138241574237353">다시 시작</translation>
 <translation id="589817443623831496">지점 스캔</translation>
 <translation id="5901316534475909376">Shift+Esc</translation>
@@ -1384,6 +1388,7 @@
 <translation id="6095425951508823973"><ph name="PROVIDER" /> 제공업체를 통해 연결 추가</translation>
 <translation id="6099678161144790572">지난달에 수정됨</translation>
 <translation id="6103838137565245112">시스템</translation>
+<translation id="610395411842312282">두 개의 창을 나란히 그룹화</translation>
 <translation id="6108952804512516814">AI로 만들기</translation>
 <translation id="6114505516289286752">음성 파일 <ph name="LANGUAGE" />개 다운로드됨</translation>
 <translation id="6119360623251949462"><ph name="CHARGING_STATE" />, <ph name="BATTERY_SAVER_STATE" /></translation>
@@ -1391,6 +1396,7 @@
 <translation id="6121838516699723042"><ph name="FILENAME" /> 다운로드 확인</translation>
 <translation id="612734058257491180">게스트 세션에서는 Google 어시스턴트를 사용할 수 없습니다.</translation>
 <translation id="6127370444807669747">맞춤 재생목록과 집중에 도움이 되는 더 많은 음악을 들으려면 YouTube Music Premium을 사용해 보세요</translation>
+<translation id="6127395413317891856">오프라인 상태입니다. 연결 상태를 확인한 후 다시 시도하세요.</translation>
 <translation id="6129953537138746214">Space</translation>
 <translation id="6137566720514957455"><ph name="USER_EMAIL_ADDRESS" /> 삭제 대화상자 열기</translation>
 <translation id="6141205840878048728">무엇에 집중하고 싶으신가요?</translation>
@@ -1859,6 +1865,7 @@
         <ph name="MANAGED" />
         <ph name="IME" />
         <ph name="LOCALE" /></translation>
+<translation id="7899977217122813285">집중 모드를 사용하는 <ph name="TIME" />까지 알림이 음소거됩니다.</translation>
 <translation id="7901190436359881020">창 교체</translation>
 <translation id="7901405293566323524">휴대전화 허브</translation>
 <translation id="7902625623987030061">지문 센서를 터치하세요.</translation>
@@ -1963,6 +1970,7 @@
 <translation id="8257510091797044096">기기 설정하기</translation>
 <translation id="8261506727792406068">삭제</translation>
 <translation id="8262312463845990408">재생/일시중지 전환</translation>
+<translation id="8268302343625273732">Google 클래스룸의 모든 과제 보기</translation>
 <translation id="8277261673056602147">화면에서 텍스트 강조표시</translation>
 <translation id="8287009018010202411">생산성</translation>
 <translation id="828708037801473432">사용 안함</translation>
@@ -2139,7 +2147,6 @@
 <translation id="8982906748181120328">Nearby 전체 공개</translation>
 <translation id="8983038754672563810">HSPA</translation>
 <translation id="8990809378771970590"><ph name="IME_NAME" /> 사용 중</translation>
-<translation id="8991617137207906966">색상 반전 모드가 사용 설정되었습니다. 사용 중지하려면 Ctrl+Search+H를 다시 누르세요.</translation>
 <translation id="899350903320462459">알림 작업을 실행하려면 <ph name="LOGIN_ID" />(으)로 기기의 잠금을 해제하세요.</translation>
 <translation id="8993733019280019776">말씀하셨나요? 마이크가 꺼져 있습니다. 켤 마이크를 선택하세요.</translation>
 <translation id="9000771174482730261">저장용량 관리</translation>

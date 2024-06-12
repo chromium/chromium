@@ -850,6 +850,7 @@ Peržiūrėkite paieškos variklio instrukcijas, kaip ištrinti paieškos istori
 <translation id="5345660046352249607">{COUNT,plural, =1{Stebėti šį paketą?}one{Stebėti {COUNT} paketą?}few{Stebėti {COUNT} paketus?}many{Stebėti {COUNT} paketo?}other{Stebėti {COUNT} paketų?}}</translation>
 <translation id="5348775987281903912">Čia galite bendrinti šį puslapį naudodami bendrinimo mygtuką.</translation>
 <translation id="536067926684072644">Rodyti žymes</translation>
+<translation id="537853552771686272">Tvarkykite jus dominančias temas ir svetaines</translation>
 <translation id="5379352933722332597">{count,plural, =1{Žymė išsaugota skiltyje „{title}“. Ji išsaugoma tik šiame įrenginyje.}one{{count} žymė išsaugota skiltyje „{title}“. Jos išsaugomos tik šiame įrenginyje.}few{{count} žymės išsaugotos skiltyje „{title}“. Jos išsaugomos tik šiame įrenginyje.}many{{count} žymės išsaugota skiltyje „{title}“. Jos išsaugomos tik šiame įrenginyje.}other{{count} žymių išsaugota skiltyje „{title}“. Jos išsaugomos tik šiame įrenginyje.}}</translation>
 <translation id="5388358297987318779">Atidaryti vaizdą</translation>
 <translation id="5395707839134961196">Slėpti išsamią paieškos variklio informaciją</translation>
@@ -932,6 +933,7 @@ Be to, reikia įgalinti „Handoff“ nustatymų skiltyje „Bendrieji“, o įr
 <translation id="5758631781033351321">Čia rasite skaitymo sąrašą</translation>
 <translation id="5765456154762864099">Meniu → Nustatymai → Numatytoji naršyklė</translation>
 <translation id="5777888488419460501">Išsaugoti paskyroje</translation>
+<translation id="5778292857689789362">Skirtukų grupė „<ph name="GROUP_TITLE" />“ – skirtukų: <ph name="TABS_NUMBER" />.</translation>
 <translation id="5782227691023083829">Verčiama...</translation>
 <translation id="5791632441210678828">Sklaidos kanalo „Stebima“ rūšiavimo mygtukas.</translation>
 <translation id="5793373065989412701">Tikrinami jūsų šeimos grupės nariai…</translation>

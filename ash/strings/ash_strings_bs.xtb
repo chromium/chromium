@@ -64,7 +64,6 @@ Možete isprobati ovih nekoliko stvari da započnete.</translation>
 <translation id="1201402288615127009">Naprijed</translation>
 <translation id="1210557957257435379">snimanje ekrana</translation>
 <translation id="121097972571826261">Riječ unaprijed</translation>
-<translation id="1217633719248931900">Idi u aplikaciju</translation>
 <translation id="1218444235442067213"><ph name="APP_NAME" />, aplikacija u Play trgovini</translation>
 <translation id="1225748608451425081">Vaš Chromebook je zaključan zbog poznatog problema. Moći ćete se ponovo prijaviti nakon: <ph name="TIME_LEFT" />.</translation>
 <translation id="1229194443904279055">Zaustavi odabir</translation>
@@ -329,7 +328,6 @@ Možete isprobati ovih nekoliko stvari da započnete.</translation>
 <translation id="2293443480080733021">Na šta se želite fokusirati? Dodavanje zadatka pritiskanjem Entera.</translation>
 <translation id="229397294990920565">Isključivanje prijenosa podataka na mobilnoj mreži...</translation>
 <translation id="2295777434187870477">Mikrofon je uključen. Deaktiviranjem će se isključiti unos govora.</translation>
-<translation id="2298170939937364391">Omogućeno je povećalo cijelog ekrana. Ponovo pritisnite Ctrl+Search+M da ga isključite.</translation>
 <translation id="2302092602801625023">Ovim računom upravlja Family Link</translation>
 <translation id="2303600792989757991">Uključivanje/isključivanje pregleda prozora</translation>
 <translation id="2305738328104302723">Lista Google Zadataka: <ph name="GLANCEABLES_TASKS_LIST_NAME" /></translation>
@@ -514,7 +512,6 @@ Povezano je više uređaja (ukupno <ph name="DEVICECOUNT" />).</translation>
 <translation id="2977598380246111477">Sljedeći broj</translation>
 <translation id="2985148236010982088">Pogledajte sve aplikacije</translation>
 <translation id="2992327365391326550">Dugme za mikrofon uređaja je isključeno.</translation>
-<translation id="2996462380875591307">Omogućeno je priključeno uvećalo. Pritisnite ponovo Ctrl + tipku za pretraživanje + D da ga isključite.</translation>
 <translation id="3000461861112256445">Mono zvuk</translation>
 <translation id="3001391739687111021">Uređivanje veličine ekrana</translation>
 <translation id="3009178788565917040">Izlaz</translation>
@@ -2150,7 +2147,6 @@ Da isključite uređaj, ponovo pritisnite i zadržite dugme za uključivanje na 
 <translation id="8982906748181120328">Vid. u blizini</translation>
 <translation id="8983038754672563810">HSPA</translation>
 <translation id="8990809378771970590">Koristi se <ph name="IME_NAME" /></translation>
-<translation id="8991617137207906966">Način rada s inverzijom boja je omogućen. Pritisnite ponovo Ctrl + tipku za pretraživanje + H da ga onemogućite.</translation>
 <translation id="899350903320462459">Otključajte uređaj kao <ph name="LOGIN_ID" /> da izvršite radnju obavještenja</translation>
 <translation id="8993733019280019776">Pričate li? Mikrofon je isključen. Odaberite mikrofon da ga uključite.</translation>
 <translation id="9000771174482730261">UPRAVLJAJTE POHRANOM</translation>

@@ -4230,6 +4230,7 @@ Tällaisia tietoja voivat olla esimerkiksi asennetut ohjelmistot, tiedostot, sel
 <translation id="4066207411788646768">Tarkista yhteys, jotta näet verkossasi saatavilla olevat tulostimet</translation>
 <translation id="4067839975993712852">Merkitse nykyinen välilehti luetuksi</translation>
 <translation id="4068776064906523561">Tallennetut sormenjäljet</translation>
+<translation id="4070132839822635162">Älä kirjaudu sisään</translation>
 <translation id="407173827865827707">Klikkaamalla</translation>
 <translation id="4072805772816336153">Yritä myöhemmin uudelleen</translation>
 <translation id="4074164314564067597">näppäimistö</translation>
@@ -7355,6 +7356,7 @@ Julkinen eksponentti (<ph name="PUBLIC_EXPONENT_NUM_BITS" /> bittiä):
 <translation id="6469702164109431067">Salasanat ja avainkoodit</translation>
 <translation id="6470823736074966819">Mykistä ilmoitukset</translation>
 <translation id="6472893788822429178">Näytä Etusivu-painike</translation>
+<translation id="6473315466413288899">Valitse vaihtoehto</translation>
 <translation id="6474498546677193336">Jakamista ei voitu peruuttaa, koska sovellus käyttää tätä kansiota. Kansion jakaminen perutaan seuraavan kerran, kun Linux sammutetaan.</translation>
 <translation id="6474884162850599008">Katkaise yhteys Google Drive -tiliin.</translation>
 <translation id="6475294023568239942">Vapauta levytilaa tai muuta Linux-levyn kokoa asetuksista</translation>
@@ -10819,6 +10821,7 @@ Sivustoille ja sovelluksille myöntämäsi luvat saattavat koskea tätä tiliä.
 <translation id="9031811691986152304">Yritä uudelleen</translation>
 <translation id="9032004780329249150">Käytä salasanojasi iOS-laitteilla</translation>
 <translation id="9032097289595078011">Poista Pikapari käytöstä</translation>
+<translation id="9032513103438497286">Estä laitteelle (<ph name="DEVICE_TYPE" />) asennetut sovellukset. Voit rajoittaa sovellusten tai sisällön lataamista Google Playn asetuksissa.</translation>
 <translation id="9033765790910064284">Jatka silti</translation>
 <translation id="9033857511263905942">&amp;Liitä</translation>
 <translation id="9034408118624208974">Oletko uusi Chromebookin käyttäjä? Laita synkronointi päälle, niin asetuksesi varmuuskopioidaan.</translation>

@@ -18,6 +18,7 @@
 <translation id="1203500561924088507">ຂໍຂອບໃຈສຳລັບການຕິດຕັ້ງ. ທ່ານຈະຕ້ອງຣີສະຕາດໂປຣແກຣມທ່ອງເວັບຂອງທ່ານກ່ອນການໃຊ້ <ph name="BUNDLE_NAME" />.</translation>
 <translation id="1262876892872089030">ໃນຂະນະທີ່ແຖບນີ້ບໍ່ມີການນຳໃຊ້, ລະບົບຈະເພີ່ມພື້ນທີ່ຫວ່າງໃນໜ່ວຍຄວາມຈຳເພື່ອໃຫ້ໃຊ້ Chromium ໄດ້ຢ່າງວ່ອງໄວຢູ່ຕະຫຼອດ. ທ່ານສາມາດເລືອກຍົກເວັ້ນໃຫ້ເວັບໄຊນີ້ເຮັດວຽກຕະຫຼອດເວລາໄດ້.</translation>
 <translation id="1265577313130862557">Chromium ບລັອກການດາວໂຫຼດນີ້ ເນື່ອງຈາກໄຟລ໌ເປັນອັນຕະລາຍ</translation>
+<translation id="126567311906253476">ເມື່ອເຂົ້າສູ່ລະບົບບໍລິການຕ່າງໆຂອງ Google ເຊັ່ນ: Gmail ຫຼື YouTube ດ້ວຍ <ph name="USER_EMAIL" />, ທ່ານສາມາດເຂົ້າສູ່ລະບົບ Chromium ດ້ວຍບັນຊີດຽວກັນໄດ້ໂດຍອັດຕະໂນມັດ</translation>
 <translation id="1315551408014407711">ຕັ້ງຄ່າໂປຣໄຟລ໌ Chromium ໃໝ່ຂອງທ່ານ</translation>
 <translation id="1342274909142618978">ລຶບຂໍ້ມູນອອກຈາກ Chromium (<ph name="URL" />) ນຳ</translation>
 <translation id="1414495520565016063">ທ່ານ​ລົງຊື່ເຂົ້າ​ໃຊ້ Chromium ແລ້ວ​!</translation>
@@ -42,6 +43,7 @@
 <translation id="1749104137266986751">ເມື່ອບໍ່ສາມາດໃຊ້ HTTPS ໄດ້, Chromium ຈະໃຊ້ການເຊື່ອມຕໍ່ທີ່ບໍ່ປອດໄພໂດຍບໍ່ເຕືອນທ່ານ</translation>
 <translation id="1774152462503052664">ປ່ອຍໃຫ້ Chromium ແລ່ນຢູ່ໃນພື້ນຫຼັງ</translation>
 <translation id="1779356040007214683">ເພື່ອເຮັດໃຫ້ Chromium ປອດໄພຂຶ້ນ, ພວກເຮົາປິດໃຊ້ງານບາງສ່ວນຂະຫຍາຍທີ່ບໍ່ໄດ້ມີລາຍຊື່ຢູ່ໃນ <ph name="IDS_EXTENSION_WEB_STORE_TITLE" /> ແລະອາດຈະຖືກເພີ່ມເຂົ້າໂດຍທີ່ທ່ານບໍ່ຮູ້ຈັກ.</translation>
+<translation id="1804128559285178512">ໃນລະຫວ່າງທີ່ທ່ານເຂົ້າສູ່ລະບົບ, ທ່ານສາມາດໃຊ້ລະຫັດຜ່ານ ແລະ ຂໍ້ມູນອື່ນໆຂອງທ່ານໄດ້ຈາກບັນຊີ Google ຂອງທ່ານໃນ Chromium</translation>
 <translation id="1808667845054772817">ຕິດຕັ້ງ Chromium ຄືນໃໝ່</translation>
 <translation id="1820835682567584003">Chromium ກຳລັງພະຍາຍາມໃຊ້ <ph name="AUTHENTICATION_PURPOSE" /></translation>
 <translation id="18552579716432081">ເພື່ອລຶບຂໍ້ມູນການທ່ອງເວັບໃນອຸປະກອນນີ້ເທົ່ານັ້ນ, ແຕ່ຍັງຮັກສາຂໍ້ມູນດັ່ງກ່າວໄວ້ໃນບັນຊີ Google ຂອງທ່ານ, ໃຫ້ <ph name="BEGIN_LINK" />ອອກຈາກລະບົບ Chromium<ph name="END_LINK" />.</translation>

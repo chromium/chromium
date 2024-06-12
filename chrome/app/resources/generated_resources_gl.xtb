@@ -1854,6 +1854,7 @@ Se máis tarde decides que prefires que o teu fillo ou filla non utilice Voice M
 <translation id="233375395665273385">Eliminar e pechar sesión</translation>
 <translation id="233471714539944337">Contido confidencial</translation>
 <translation id="2335111415680198280">{0,plural, =1{Pechar # ventá}other{Pechar # ventás}}</translation>
+<translation id="2335758110242123814">Abrir grupo</translation>
 <translation id="2336228925368920074">Engadir todas as pestanas a marcadores...</translation>
 <translation id="2336258397628212480"><ph name="APP_NAME" /> está imprimindo unha páxina con: <ph name="PRINTER_NAME" /></translation>
 <translation id="2336381494582898602">Powerwash</translation>
@@ -1874,6 +1875,7 @@ Se máis tarde decides que prefires que o teu fillo ou filla non utilice Voice M
 <translation id="2351923523007389195">Permiso concedido: <ph name="PERMISSION_DETAILS" />. Activa o <ph name="LINK_BEGIN" />acceso á localización do sistema<ph name="LINK_END" />.</translation>
 <translation id="2352662711729498748">&lt; 1 MB</translation>
 <translation id="2352810082280059586">As notas da pantalla de bloqueo gárdanse automaticamente na aplicación <ph name="LOCK_SCREEN_APP_NAME" />. A túa nota máis recente permanecerá na pantalla de bloqueo.</translation>
+<translation id="2353168619378866466">Abrir grupo</translation>
 <translation id="2353297238722298836">Permítense a cámara e o micrófono</translation>
 <translation id="2353910600995338714">Completouse a exportación</translation>
 <translation id="2355314311311231464">Produciuse un erro no abastecemento porque non se puideron recuperar os detalles da túa conta. Téntao de novo. Código de erro: <ph name="ERROR_CODE" />.</translation>
@@ -2827,6 +2829,7 @@ Podes xestionar a configuración desde o menú da tarxeta ou ver máis opcións 
 <translation id="3033348223765101500">Controla os teus datos</translation>
 <translation id="3036327949511794916">Expirou o prazo para devolver este <ph name="DEVICE_TYPE" />.</translation>
 <translation id="3036546437875325427">Activar o flash</translation>
+<translation id="3037193115779933814">Letras e números</translation>
 <translation id="3038272154009688107">Ver todos os sitios</translation>
 <translation id="3038612606416062604">Engadir unha impresora manualmente</translation>
 <translation id="3039491566278747710">Non se puido instalar a política sen conexión no dispositivo.</translation>
@@ -4220,6 +4223,7 @@ Pode tratarse de información sobre o software instalado, os ficheiros, o explor
 <translation id="4066207411788646768">Comproba a conexión para ver as impresoras dispoñibles na túa rede.</translation>
 <translation id="4067839975993712852">Marcar pestana actual como lida</translation>
 <translation id="4068776064906523561">Impresións dixitais gardadas</translation>
+<translation id="4070132839822635162">Non iniciar sesión</translation>
 <translation id="407173827865827707">Ao facer clic</translation>
 <translation id="4072805772816336153">Téntao de novo máis tarde</translation>
 <translation id="4074164314564067597">teclado</translation>
@@ -6029,6 +6033,7 @@ Pódense aplicar a esta conta os permisos que xa lles concedeses aos sitios web 
 <translation id="5469540749878136997">Liberar memoria en función do uso</translation>
 <translation id="5469852975082458401">Podes navegar polas páxinas cun cursor de texto. Preme F7 para desactivar esta función.</translation>
 <translation id="5470735824776589490">É necesario reiniciar o dispositivo para poder restablecelo cun Powerwash. <ph name="LINK_BEGIN" />Máis información<ph name="LINK_END" /></translation>
+<translation id="5470741195701938302">Números</translation>
 <translation id="5471768120198416576">Ola! Son a túa voz de conversión de texto a voz.</translation>
 <translation id="5472627187093107397">Gardar os contrasinais deste sitio</translation>
 <translation id="5473062644742711742">Atopa máis ferramentas de accesibilidade en Chrome Web Store</translation>
@@ -6862,6 +6867,7 @@ Pódense aplicar a esta conta os permisos que xa lles concedeses aos sitios web 
 <translation id="6101226222197207147">Nova aplicación engadida (<ph name="EXTENSION_NAME" />)</translation>
 <translation id="6102043788063419338">A función Protección avanzada bloqueou este ficheiro.</translation>
 <translation id="6103681770816982672">Advertencia: Estás cambiando á canle do programador</translation>
+<translation id="610395411842312282">Agrupar dúas ventás en paralelo</translation>
 <translation id="6104068876731806426">Contas de Google</translation>
 <translation id="6104667115274478616">Xestionar a configuración de audio de ChromeOS</translation>
 <translation id="6104796831253957966">A cola da impresora está chea</translation>
@@ -7340,6 +7346,7 @@ Podes xestionar a configuración desde o menú da tarxeta ou ver máis opcións 
 <translation id="6469702164109431067">Contrasinais e claves de acceso</translation>
 <translation id="6470823736074966819">Silenciar notificacións</translation>
 <translation id="6472893788822429178">Mostrar botón de inicio</translation>
+<translation id="6473315466413288899">Selecciona unha opción</translation>
 <translation id="6474498546677193336">Non se puido deixar de compartir este cartafol porque había unha aplicación usándoo. O cartafol deixará de compartirse cando Linux se apague.</translation>
 <translation id="6474884162850599008">Desconectar a conta de Google Drive</translation>
 <translation id="6475294023568239942">Libera espazo ou cambia o tamaño do disco de Linux en Configuración</translation>
@@ -10803,6 +10810,7 @@ Pódense aplicar a esta conta os permisos que xa lles concedeses aos sitios web 
 <translation id="9031811691986152304">tentalo de novo</translation>
 <translation id="9032004780329249150">Usa os teus contrasinais nos dispositivos iOS</translation>
 <translation id="9032097289595078011">Deshabilitar Vinculación rápida</translation>
+<translation id="9032513103438497286">Bloquea as aplicacións instaladas neste dispositivo (<ph name="DEVICE_TYPE" />). Para restrinxir a descarga de aplicacións ou contido, vai á configuración de Google Play.</translation>
 <translation id="9033765790910064284">Continuar igualmente</translation>
 <translation id="9033857511263905942">&amp;Pegar</translation>
 <translation id="9034408118624208974">Acabas de empezar a usar Chromebook? Activa a sincronización para facer unha copia de seguranza das túas preferencias.</translation>

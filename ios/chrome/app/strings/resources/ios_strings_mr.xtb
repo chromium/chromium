@@ -850,6 +850,7 @@
 <translation id="5345660046352249607">{COUNT,plural, =1{या पॅकेजचा माग ठेवायचा आहे का?}other{{COUNT} पॅकेजचा माग ठेवायचा आहे का?}}</translation>
 <translation id="5348775987281903912">शेअर करा बटण वापरून तुम्ही हे पेज इथे शेअर करू शकता.</translation>
 <translation id="536067926684072644">बुकमार्क दाखवा</translation>
+<translation id="537853552771686272">तुम्हाला स्वारस्य असलेले विषय आणि साइट व्यवस्थापित करा</translation>
 <translation id="5379352933722332597">{count,plural, =1{बुकमार्क "{title}" मध्ये सेव्ह केला आहे. तो फक्त या डिव्हाइसवर सेव्ह केला आहे.}other{{count} बुकमार्क "{title}" मध्ये सेव्ह केले आहेत. ते फक्त या डिव्हाइसवर सेव्ह केले आहेत.}}</translation>
 <translation id="5388358297987318779">इमेज उघडा</translation>
 <translation id="5395707839134961196">शोध इंजीनशी संबंधित तपशील लपवा</translation>
@@ -932,6 +933,7 @@
 <translation id="5758631781033351321">तुमची वाचन सूची तुम्हाला येथे सापडेल</translation>
 <translation id="5765456154762864099">मेनू → सेटिंग्ज → डीफॉल्ट ब्राउझर</translation>
 <translation id="5777888488419460501">खाते मध्ये सेव्ह करा</translation>
+<translation id="5778292857689789362">टॅब गट, <ph name="GROUP_TITLE" />, <ph name="TABS_NUMBER" /> टॅब.</translation>
 <translation id="5782227691023083829">भाषांतर करीत आहे...</translation>
 <translation id="5791632441210678828">फॉलो करत आहे या फीडसाठी क्रमाने लावा बटण.</translation>
 <translation id="5793373065989412701">तुमचे कुटुंब सदस्य तपासत आहे…</translation>

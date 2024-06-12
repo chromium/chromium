@@ -18,6 +18,7 @@
 <translation id="1203500561924088507">ଇନଷ୍ଟଲ କରିଥିବା ଯୋଗୁଁ ଧନ୍ୟବାଦ। ଆପଣ <ph name="BUNDLE_NAME" /> ବ୍ୟବହାର କରିବା ପୂର୍ବରୁ ଆପଣଙ୍କ ବ୍ରାଉଜରକୁ ରିଷ୍ଟାର୍ଟ କରିବା ଆବଶ୍ୟକ।</translation>
 <translation id="1262876892872089030">ଏହି ଟାବ ନିଷ୍କ୍ରିୟ ଥିବା ସମୟରେ Chromiumକୁ ଦ୍ରୁତ ରଖିବା ପାଇଁ ମେମୋରୀକୁ ଖାଲି କରାଯାଇଛି। ଆପଣ ଏହି ସାଇଟକୁ ନିଷ୍କ୍ରିୟ ହେବାରୁ ସର୍ବଦା ବାଦ ଦେବା ପାଇଁ ବାଛିପାରିବେ।</translation>
 <translation id="1265577313130862557">ଏହି ଫାଇଲଟି ବିପଦଜନକ ହୋଇଥିବା ଯୋଗୁଁ Chromium ଏହି ଡାଉନଲୋଡକୁ ବ୍ଲକ କରିଛି</translation>
+<translation id="126567311906253476"><ph name="USER_EMAIL" /> ମାଧ୍ୟମରେ Gmail କିମ୍ବା YouTube ପରି Google ସେବାଗୁଡ଼ିକରେ ସାଇନ ଇନ କରିବା ସମୟରେ, ଆପଣ ସମାନ ଆକାଉଣ୍ଟ ମାଧ୍ୟମରେ ସ୍ୱତଃ Chromiumରେ ସାଇନ ଇନ କରିପାରିବେ</translation>
 <translation id="1315551408014407711">ଆପଣଙ୍କର ନୂଆ Chromium ପ୍ରୋଫାଇଲ୍ ସେଟ୍ ଅପ୍ କରନ୍ତୁ</translation>
 <translation id="1342274909142618978">Chromium (<ph name="URL" />)ରୁ ମଧ୍ୟ ଡାଟା ଡିଲିଟ କରନ୍ତୁ</translation>
 <translation id="1414495520565016063">ଆପଣ Chromium‍ରେ ସାଇନ୍-ଇନ୍ କରିଛନ୍ତି!</translation>
@@ -42,6 +43,7 @@
 <translation id="1749104137266986751">ଯେତେବେଳେ HTTPS ଉପଲବ୍ଧ ନଥାଏ, Chromium ଆପଣଙ୍କୁ ଚେତାବନୀ ନଦେଇ ଏକ ଅସୁରକ୍ଷିତ କନେକ୍ସନ ବ୍ୟବହାର କରିବ</translation>
 <translation id="1774152462503052664">ପୃଷ୍ଠପଟରେ Chromium ଚାଲିବାକୁ ଦିଅନ୍ତୁ</translation>
 <translation id="1779356040007214683">Chromiumକୁ ଆହୁରି ସୁରକ୍ଷିତ କରିବା ପାଇଁ, ଆମେ <ph name="IDS_EXTENSION_WEB_STORE_TITLE" /> ରେ ତାଲିକାଭୁକ୍ତ ହୋଇନଥିବା ଏବଂ ଆପଣଙ୍କର ଅଜାଣତରେ ଯୋଗ କରାଯାଇଥିବା କିଛି ଏକ୍ସଟେନ୍‌ସନ୍‌କୁ ଅକ୍ଷମ କରିଦେଇଛୁ।</translation>
+<translation id="1804128559285178512">ଆପଣ ସାଇନ ଇନ କରିଥିବା ସମୟରେ Chromiumରେ ଆପଣଙ୍କ Google ଆକାଉଣ୍ଟରୁ ଆପଣଙ୍କ ପାସୱାର୍ଡ ଏବଂ ଆହୁରି ଅନେକ କିଛି ବ୍ୟବହାର କରିପାରିବେ</translation>
 <translation id="1808667845054772817">Chromiumକୁ ପୁଣି ଇନ୍‍ଷ୍ଟଲ୍ କରନ୍ତୁ</translation>
 <translation id="1820835682567584003">Chromium <ph name="AUTHENTICATION_PURPOSE" /> କରିବାକୁ ଚେଷ୍ଟା କରୁଛି</translation>
 <translation id="18552579716432081">ଆପଣଙ୍କ Google ଆକାଉଣ୍ଟରେ ବ୍ରାଉଜିଂ ଡାଟା ରଖି କେବଳ ଏହି ଡିଭାଇସରୁ ସେହି ଡାଟା ଡିଲିଟ କରିବାକୁ <ph name="BEGIN_LINK" />Chromiumରୁ ସାଇନ ଆଉଟ କରନ୍ତୁ<ph name="END_LINK" />।</translation>

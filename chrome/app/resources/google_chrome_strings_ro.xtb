@@ -121,6 +121,7 @@
 <translation id="2765403129283291972">Chrome are nevoie de permisiune ca să acceseze microfonul pentru acest site</translation>
 <translation id="2770231113462710648">Schimbă browserul prestabilit la:</translation>
 <translation id="2775140325783767197">Chrome nu îți poate verifica parolele. Verifică-ți conexiunea la internet.</translation>
+<translation id="2797864378188255696">Când te conectezi la Servicii Google, cum ar fi Gmail sau YouTube, cu <ph name="USER_EMAIL" />, te poți conecta automat la Chrome cu același cont</translation>
 <translation id="2799223571221894425">Repornește</translation>
 <translation id="2825024317344269723">Site periculos. Chrome a eliminat notificările.</translation>
 <translation id="2846251086934905009">Eroare la instalare: programul de instalare nu a finalizat procesul. Instalarea a fost anulată.</translation>
@@ -293,6 +294,7 @@
 <translation id="5334309298019785904">ChromeOS nu a putut sincroniza datele, deoarece sincronizarea nu este disponibilă pentru domeniu.</translation>
 <translation id="5334487786912937552">Pentru a descărca fișiere, Chrome necesită permisiunea de acces la stocare</translation>
 <translation id="5337648990166757586">Opțional: contribuie la îmbunătățirea funcțiilor și a performanței sistemului de operare Chrome, trimițând automat la Google date de diagnosticare și de utilizare.</translation>
+<translation id="5345497718959596593">Când te conectezi, poți folosi parolele și multe altele din Contul tău Google în Chrome</translation>
 <translation id="5357889879764279201">Solicită ajutor privind sistemul de operare Chrome Flex</translation>
 <translation id="5368118228313795342">Cod suplimentar: <ph name="EXTRA_CODE" />.</translation>
 <translation id="5386244825306882791">Stabilește și ce pagină se afișează când porniți Chrome sau când căutați din caseta polivalentă.</translation>

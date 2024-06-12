@@ -1852,6 +1852,7 @@ Para administrar la configuración de esta cuenta, instala la app de Family Lin
 <translation id="233375395665273385">Borrar y salir</translation>
 <translation id="233471714539944337">Incluye contenido sensible.</translation>
 <translation id="2335111415680198280">{0,plural, =1{Cerrar # ventana}other{Cerrar # ventanas}}</translation>
+<translation id="2335758110242123814">Abrir grupo</translation>
 <translation id="2336228925368920074">Agregar a favoritos todas las pestañas...</translation>
 <translation id="2336258397628212480"><ph name="APP_NAME" /> está imprimiendo 1 página en <ph name="PRINTER_NAME" /></translation>
 <translation id="2336381494582898602">Powerwash</translation>
@@ -1872,6 +1873,7 @@ Para administrar la configuración de esta cuenta, instala la app de Family Lin
 <translation id="2351923523007389195">Permiso habilitado: <ph name="PERMISSION_DETAILS" />. Activa el <ph name="LINK_BEGIN" />acceso a la ubicación del sistema<ph name="LINK_END" />.</translation>
 <translation id="2352662711729498748">Menos de 1 MB</translation>
 <translation id="2352810082280059586">Las notas de la pantalla bloqueada se guardan automáticamente en <ph name="LOCK_SCREEN_APP_NAME" />. La nota más reciente permanecerá en la pantalla bloqueada.</translation>
+<translation id="2353168619378866466">Abrir grupo</translation>
 <translation id="2353297238722298836">Cámara y micrófono permitidos</translation>
 <translation id="2353910600995338714">Exportación correcta</translation>
 <translation id="2355314311311231464">No es posible completar el aprovisionamiento porque no se pudieron recuperar los detalles de tu cuenta. Vuelve a intentarlo. Código de error: <ph name="ERROR_CODE" />.</translation>
@@ -2825,6 +2827,7 @@ Para administrar la configuración de esta cuenta, instala la app de Family Lin
 <translation id="3033348223765101500">Controla tus datos</translation>
 <translation id="3036327949511794916">Ya pasó la fecha límite para devolver este dispositivo <ph name="DEVICE_TYPE" />.</translation>
 <translation id="3036546437875325427">Habilitar Flash</translation>
+<translation id="3037193115779933814">Letras y números</translation>
 <translation id="3038272154009688107">Ver todos los sitios</translation>
 <translation id="3038612606416062604">Agregar una impresora manualmente</translation>
 <translation id="3039491566278747710">No se pudo instalar la política sin conexión en el dispositivo.</translation>
@@ -4215,6 +4218,7 @@ Esto puede incluir información sobre el software instalado, los archivos, el na
 <translation id="4066207411788646768">Revisa la conexión para ver las impresoras disponibles en tu red</translation>
 <translation id="4067839975993712852">Marcar la pestaña actual como leída</translation>
 <translation id="4068776064906523561">Huellas digitales guardadas</translation>
+<translation id="4070132839822635162">No acceder</translation>
 <translation id="407173827865827707">Al hacer clic</translation>
 <translation id="4072805772816336153">Vuelve a intentarlo más tarde</translation>
 <translation id="4074164314564067597">teclado</translation>
@@ -6024,6 +6028,7 @@ Es posible que se apliquen a esta cuenta los permisos que otorgaste a sitios web
 <translation id="5469540749878136997">Liberar memoria según el uso</translation>
 <translation id="5469852975082458401">Puedes navegar páginas con un cursor de texto. Presiona F7 para desactivar esta función.</translation>
 <translation id="5470735824776589490">Debes reiniciar tu dispositivo para poder restablecerlo con Powerwash. <ph name="LINK_BEGIN" />Más información<ph name="LINK_END" /></translation>
+<translation id="5470741195701938302">Números</translation>
 <translation id="5471768120198416576">Hola, soy la voz que leerá tus textos.</translation>
 <translation id="5472627187093107397">Guardar contraseñas para este sitio</translation>
 <translation id="5473062644742711742">Encontrar más herramientas de accesibilidad en Chrome Web Store</translation>
@@ -6860,6 +6865,7 @@ Es posible que se apliquen a esta cuenta los permisos que otorgaste a sitios web
 <translation id="6101226222197207147">Se agregó una aplicación nueva (<ph name="EXTENSION_NAME" />).</translation>
 <translation id="6102043788063419338">La "Protección avanzada" bloqueó este archivo.</translation>
 <translation id="6103681770816982672">Advertencia: vas a cambiar al canal de programadores</translation>
+<translation id="610395411842312282">Agrupar dos ventanas contiguas</translation>
 <translation id="6104068876731806426">Cuentas de Google</translation>
 <translation id="6104667115274478616">Administrar la configuración de audio de ChromeOS</translation>
 <translation id="6104796831253957966">La cola de la impresora está completa</translation>
@@ -7338,6 +7344,7 @@ Es posible que se apliquen a esta cuenta los permisos que otorgaste a sitios web
 <translation id="6469702164109431067">Contraseñas y llaves de acceso</translation>
 <translation id="6470823736074966819">Silenciar notificaciones</translation>
 <translation id="6472893788822429178">Mostrar el botón de la Página principal</translation>
+<translation id="6473315466413288899">Selecciona una opción</translation>
 <translation id="6474498546677193336">No se puede dejar de compartir esta carpeta porque una app la está usando. Dejará de compartirse la próxima vez que se cierre Linux.</translation>
 <translation id="6474884162850599008">Desconectar la cuenta de Google Drive</translation>
 <translation id="6475294023568239942">Libera espacio en el disco o cambia el tamaño del disco de Linux en Configuración.</translation>
@@ -10803,6 +10810,7 @@ Es posible que se apliquen a esta cuenta los permisos que otorgaste a sitios web
 <translation id="9031811691986152304">volver a intentarlo</translation>
 <translation id="9032004780329249150">Usa tus contraseñas en tus dispositivos iOS</translation>
 <translation id="9032097289595078011">Inhabilitar Vinculación rápida</translation>
+<translation id="9032513103438497286">Bloquea las apps instaladas en tu <ph name="DEVICE_TYPE" />. Para restringir la descarga de apps o contenido, ve a la configuración de Google Play.</translation>
 <translation id="9033765790910064284">Continuar de todos modos</translation>
 <translation id="9033857511263905942">&amp;Pegar</translation>
 <translation id="9034408118624208974">¿Es la primera vez que usas una Chromebook? Activa la sincronización para que se cree una copia de seguridad de tus preferencias.</translation>

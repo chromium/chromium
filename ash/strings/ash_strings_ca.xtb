@@ -64,7 +64,6 @@ A continuació t'indico algunes coses que pots provar per començar.</translatio
 <translation id="1201402288615127009">Següent</translation>
 <translation id="1210557957257435379">gravació de pantalla</translation>
 <translation id="121097972571826261">Endavant per paraula</translation>
-<translation id="1217633719248931900">Ves a l'aplicació</translation>
 <translation id="1218444235442067213"><ph name="APP_NAME" />, aplicació de Play Store</translation>
 <translation id="1225748608451425081">El Chromebook està bloquejat a causa d'un problema conegut. Podràs iniciar-hi la sessió d'aquí a: <ph name="TIME_LEFT" />.</translation>
 <translation id="1229194443904279055">Deixa de seleccionar</translation>
@@ -180,6 +179,7 @@ A continuació t'indico algunes coses que pots provar per començar.</translatio
 <translation id="1611993646327628135">Activat</translation>
 <translation id="1620510694547887537">Càmera</translation>
 <translation id="1623768535032616219">Replega Google Classroom</translation>
+<translation id="163032029566320584"><ph name="UNAVAILABLE_DLC" /> no està disponible.</translation>
 <translation id="1632985212731562677">L'accés amb interruptors es pot desactivar a Configuració &gt; Accessibilitat.</translation>
 <translation id="1637505162081889933"><ph name="NUM_DEVICES" /> dispositius</translation>
 <translation id="1639239467298939599">S'està carregant</translation>
@@ -327,7 +327,6 @@ A continuació t'indico algunes coses que pots provar per començar.</translatio
 <translation id="2293443480080733021">En què et vols concentrar? Prem Retorn per afegir la tasca.</translation>
 <translation id="229397294990920565">S'estan desactivant les dades mòbils...</translation>
 <translation id="2295777434187870477">El micròfon està activat. Utilitza el commutador per silenciar l'entrada.</translation>
-<translation id="2298170939937364391">La lupa de pantalla completa està activada. Torna a prémer Ctrl+Cerca+M per desactivar-la.</translation>
 <translation id="2302092602801625023">Family Link gestiona aquest compte</translation>
 <translation id="2303600792989757991">Commuta la visió general de la finestra</translation>
 <translation id="2305738328104302723">Llista de tasques de Google: <ph name="GLANCEABLES_TASKS_LIST_NAME" /></translation>
@@ -512,7 +511,6 @@ Hi ha <ph name="DEVICECOUNT" /> dispositius connectats.</translation>
 <translation id="2977598380246111477">Número següent</translation>
 <translation id="2985148236010982088">Mostra totes les aplicacions</translation>
 <translation id="2992327365391326550">El botó del micròfon del dispositiu està desactivat.</translation>
-<translation id="2996462380875591307">La lupa acoblada està activada. Torna a prémer Ctrl+Cerca+D per desactivar-la.</translation>
 <translation id="3000461861112256445">Àudio mono</translation>
 <translation id="3001391739687111021">Edita la mida de la pantalla</translation>
 <translation id="3009178788565917040">Sortida</translation>
@@ -721,6 +719,7 @@ Connecta el dispositiu a l'alimentació.</translation>
 <translation id="3702846122927433391">Quants habitants té Nigèria?</translation>
 <translation id="3705722231355495246">-</translation>
 <translation id="3706423975342040244">Entreteniment</translation>
+<translation id="3707093869106077605"><ph name="UNAVAILABLE_DLC_ONE" /> i <ph name="UNAVAILABLE_DLC_TWO" /> no estan disponibles.</translation>
 <translation id="3708186454126126312">Connectats anteriorment</translation>
 <translation id="3712143870407382523">Tria una finestra per a aquest costat</translation>
 <translation id="371370241367527062">Micròfon frontal</translation>
@@ -992,6 +991,7 @@ Hi ha 1 dispositiu connectat.</translation>
 <translation id="4733161265940833579"><ph name="BATTERY_PERCENTAGE" />% (auricular esquerre)</translation>
 <translation id="4734965478015604180">Horitzontal</translation>
 <translation id="4735944890391795473">Escriptori 12</translation>
+<translation id="4736732123074402682">Comprova la connexió i torna-ho a provar.</translation>
 <translation id="473775607612524610">Actualitza</translation>
 <translation id="4740516757091333363">Vols suprimir l'escriptori desat?</translation>
 <translation id="4746798685375253449">{0,plural, =1{Actualitza el dispositiu a la versió anterior en el termini d'1 dia}other{Actualitza el dispositiu a la versió anterior en el termini de # dies}}</translation>
@@ -1325,6 +1325,7 @@ No hi ha cap dispositiu connectat.</translation>
 <translation id="588258955323874662">Pantalla completa</translation>
 <translation id="5887954372087850114">La finestra <ph name="WINDOW_TITLE" /> s'ha assignat a l'escriptori <ph name="DESK_TITLE" /> i s'ha deixat d'assignar a tota la resta d'escriptoris</translation>
 <translation id="588817334757907802">Obre un fitxer al navegador Chrome</translation>
+<translation id="5892014525522223653">No tens connexió.</translation>
 <translation id="5895138241574237353">Reinicia</translation>
 <translation id="589817443623831496">Cerca per punt</translation>
 <translation id="5901316534475909376">Maj + Esc</translation>
@@ -1384,6 +1385,7 @@ No hi ha cap dispositiu connectat.</translation>
 <translation id="6095425951508823973">Afegeix una connexió amb <ph name="PROVIDER" /></translation>
 <translation id="6099678161144790572">Editat durant el darrer mes</translation>
 <translation id="6103838137565245112">sistema</translation>
+<translation id="610395411842312282">Agrupa dues finestres l'una al costat de l'altra</translation>
 <translation id="6108952804512516814">Crea amb IA</translation>
 <translation id="6114505516289286752">S'han baixat fitxers de veu en <ph name="LANGUAGE" /></translation>
 <translation id="6119360623251949462"><ph name="CHARGING_STATE" />. <ph name="BATTERY_SAVER_STATE" />.</translation>
@@ -1391,6 +1393,7 @@ No hi ha cap dispositiu connectat.</translation>
 <translation id="6121838516699723042">Confirma la baixada del fitxer <ph name="FILENAME" /></translation>
 <translation id="612734058257491180">L'Assistent de Google no està disponible a les sessions de convidat.</translation>
 <translation id="6127370444807669747">Per gaudir de llistes de reproducció personalitzades i de més música per concentrar-se, prova YouTube Music Premium</translation>
+<translation id="6127395413317891856">No tens connexió. Comprova la connexió i torna-ho a provar.</translation>
 <translation id="6129953537138746214">Espai</translation>
 <translation id="6137566720514957455">Obre el quadre de diàleg per suprimir <ph name="USER_EMAIL_ADDRESS" /></translation>
 <translation id="6141205840878048728">En què et vols concentrar?</translation>
@@ -1963,6 +1966,7 @@ Per apagar el dispositiu, torna a mantenir premut el botó d'engegada.</translat
 <translation id="8257510091797044096">Configura el dispositiu</translation>
 <translation id="8261506727792406068">Suprimeix</translation>
 <translation id="8262312463845990408">Commuta la reproducció</translation>
+<translation id="8268302343625273732">Mostra totes les tasques a Google Classroom</translation>
 <translation id="8277261673056602147">Marca el text en pantalla</translation>
 <translation id="8287009018010202411">Productivitat</translation>
 <translation id="828708037801473432">Desactivada</translation>
@@ -2139,7 +2143,6 @@ Per apagar el dispositiu, torna a mantenir premut el botó d'engegada.</translat
 <translation id="8982906748181120328">Visibilitat Nearby</translation>
 <translation id="8983038754672563810">HSPA</translation>
 <translation id="8990809378771970590">S'està utilitzant <ph name="IME_NAME" /></translation>
-<translation id="8991617137207906966">Mode d'inversió de colors activat. Torna a prémer Ctrl+Cerca+H per desactivar-lo.</translation>
 <translation id="899350903320462459">Desbloqueja el dispositiu com a <ph name="LOGIN_ID" /> per dur a terme l'acció que indica la notificació</translation>
 <translation id="8993733019280019776">Estàs parlant? El teu micròfon està desactivat. Selecciona'l per activar-lo.</translation>
 <translation id="9000771174482730261">GESTIONA L'EMMAGATZEMATGE</translation>

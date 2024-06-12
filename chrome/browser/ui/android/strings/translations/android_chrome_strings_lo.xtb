@@ -90,6 +90,9 @@
 <translation id="1390418506739274310">ທ່ານອາດເຫັນປະຫວັດຈາກແອັບອື່ນໆທີ່ເປີດລິ້ງໃນ Chrome. ບັນຊີ Google ຂອງທ່ານອາດມີປະຫວັດການທ່ອງເວັບຮູບແບບອື່ນໆຢູ່ <ph name="BEGIN_LINK" />myactivity.google.com<ph name="END_LINK" />.</translation>
 <translation id="13931502444227376">ເພື່ອສືບຕໍ່, <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> ຈະແບ່ງປັນຊື່, ທີ່ຢູ່ອີເມວ ແລະ ຮູບໂປຣໄຟລ໌ຂອງທ່ານໃຫ້ກັບເວັບໄຊນີ້. ເບິ່ງ <ph name="BEGIN_LINK1" />ຂໍ້ກຳນົດບໍລິການ<ph name="END_LINK1" /> ຂອງເວັບໄຊນີ້.</translation>
 <translation id="1397811292916898096">ຊອກຫາດ້ວຍ <ph name="PRODUCT_NAME" /></translation>
+<translation id="1398057416966591719">ທ່ານສາມາດ <ph name="BEGIN_LINK1" />ຈັດການວ່າຈະບັນທຶກຂໍ້ມູນ Chrome ໃດ<ph name="END_LINK1" /> ໃສ່ໃນບັນຊີ Google ຂອງທ່ານໄດ້.
+
+ສຳລັບການຕັ້ງຄ່າເພີ່ມເຕີມທີ່ໃຊ້ຂໍ້ມູນເພື່ອປັບປຸງປະສົບການ Chrome ຂອງທ່ານ, ໃຫ້ເຂົ້າໄປ <ph name="BEGIN_LINK2" />ບໍລິການ Google<ph name="END_LINK2" />.</translation>
 <translation id="1407069428457324124">ຮູບແບບສີສັນມືດ</translation>
 <translation id="1407135791313364759">ເປີດ​ທັງ​ຫມົດ</translation>
 <translation id="1409879593029778104">ການ​ດາວ​ໂຫຼ​ດ <ph name="FILE_NAME" /> ຖືກ​ຂັດຂວາງ ເນື່ອງຈາກ​ມີໄຟລ໌​ຢູ່​ແລ້ວ.</translation>
@@ -249,6 +252,7 @@
 <translation id="2286841657746966508">ທີ່ຢູ່ການຮຽກເກັບເງິນ</translation>
 <translation id="228704530595896923">ລາຍຊື່ຂອງຕົວເລືອກການແບ່ງປັນ.</translation>
 <translation id="2297822946037605517">ແບ່ງປັນໜ້ານີ້</translation>
+<translation id="22981027763501686">ຊິ້ງເພື່ອຮັບບຸກມາກ, ປະຫວັດ ແລະ ອື່ນໆອີກໃນອຸປະກອນອື່ນໆຂອງທ່ານ</translation>
 <translation id="230115972905494466">ບໍ່ພົບອຸປະກອນທີ່ເຂົ້າກັນໄດ້</translation>
 <translation id="2318045970523081853">ແຕະເພື່ອໂທອອກ</translation>
 <translation id="2321086116217818302">ກຳລັງກະກຽມລະຫັດຜ່ານ…</translation>
@@ -377,7 +381,6 @@
 <translation id="2904414404539560095">ລາຍການອຸປະກອນທີ່ຈະແບ່ງປັນແຖບນຳໂດຍເປີດຢູ່ທີ່ລະດັບລວງສູງເຕັມຈໍ.</translation>
 <translation id="2908243544703713905">ຂ່າວທີ່ຍັງບໍ່ໄດ້ອ່ານພ້ອມແລ້ວ</translation>
 <translation id="2909615210195135082">ແພລດຟອມການແຈ້ງເຕືອນຂອງ Google</translation>
-<translation id="2912296070571964914">ຈັດການຫົວຂໍ້ທີ່ທ່ານສົນໃຈ</translation>
 <translation id="2912345083818861431">ໃຊ້ການລັອກໜ້າຈໍເພື່ອເບິ່ງແຖບ​ບໍ່ເປີດເຜີຍຕົວຕົນ</translation>
 <translation id="2923908459366352541">ຊື່ໃຊ້ບໍ່ໄດ້</translation>
 <translation id="2932150158123903946">ບ່ອນເກັບຂໍ້ມູນ Google <ph name="APP_NAME" /></translation>
@@ -453,7 +456,6 @@
 <translation id="3259831549858767975">ເຮັດໃຫ້ທຸກຢ່າງໃນໜ້ານ້ອຍລົງ</translation>
 <translation id="3264259168916048410">ຄອມພິວເຕີຂອງທ່ານຕ້ອງການໃຊ້ອຸປະກອນນີ້ເພື່ອເຂົ້າສູ່ລະບົບຫາເວັບໄຊ</translation>
 <translation id="3265093782546847662">ໜ້າທັງໝົດຂອງ <ph name="DOMAIN" /></translation>
-<translation id="3265534588625245297">ຈັດການເວັບໄຊທີ່ທ່ານຕິດຕາມ</translation>
 <translation id="3269093882174072735">ໂຫຼດ​ຮູບ</translation>
 <translation id="3280562213547448728">ຊອກຫາດ້ວຍສຽງ</translation>
 <translation id="3282568296779691940">ລົງຊື່ເຂົ້າ​ໃຊ້ Chrome</translation>
@@ -625,7 +627,6 @@
 <translation id="4195643157523330669">ເປີດຢູ່ໃນແຖບໃໝ່</translation>
 <translation id="4197828496439691735">{NUM_TABS,plural, =1{1 ແຖບຢູ່ອຸປະກອນນີ້}other{# ແຖບຢູ່ອຸປະກອນນີ້}}</translation>
 <translation id="4198423547019359126">ບໍ່ມີບ່ອນບັນທຶກການດາວໂຫຼດທີ່ສາມາດໃຊ້ໄດ້</translation>
-<translation id="4198664641856813238">ເຂົ້າສູ່ລະບົບເພື່ອຮັບເອົາບຸກມາກ, ລະຫັດຜ່ານ ແລະ ອື່ນໆຢູ່ອຸປະກອນທັງໝົດຂອງທ່ານ</translation>
 <translation id="4202218894997543208">ຫົວຂໍ້ທີ່ທ່ານບລັອກ</translation>
 <translation id="4214315110991671325">ຫາກທ່ານອະນຸຍາດໃຫ້ໃຊ້ຄຸກກີ້ໄດ້, Chrome ອາດໃຊ້ພວກມັນສຳລັບການໂຫຼດກ່ອນລ່ວງໜ້າ.</translation>
 <translation id="4216511743389425832">ຟັງໜ້ານີ້</translation>
@@ -826,7 +827,6 @@
 <translation id="510275257476243843">ຍັງເຫຼືອ 1 ຊົ່ວໂມງ</translation>
 <translation id="5114895953710637392">ປິດຊີດຕົວກັ່ນຕອງແອັບແລ້ວ.</translation>
 <translation id="5115811374190515607">ຫາ <ph name="PRODUCT_NAME" /></translation>
-<translation id="5118713593561876160">ຄວາມສົນໃຈ</translation>
 <translation id="5122378528687922675">ກະລຸນາຂໍຄວາມຊ່ວຍເຫຼືອຈາກຜູ້ປົກຄອງ (<ph name="PARENT_NAME_1" /> ຫຼື <ph name="PARENT_NAME_2" />) ຂອງທ່ານ, ຫາກທ່ານຕ້ອງການ</translation>
 <translation id="5123685120097942451">ແຖບທີ່ບໍ່ເຜີຍຕົວຕົນ</translation>
 <translation id="5132942445612118989">ຊິ້ງຂໍ້ມູນລະຫັດຜ່ານ, ປະຫວັດຂອງທ່ານ ແລະ ອື່ນໆອີກຢູ່ໃນທຸກອຸປະກອນ</translation>
@@ -840,7 +840,6 @@
 <translation id="5171045022955879922">ຊອກຫາ ຫຼື ພິມ URL</translation>
 <translation id="5174700554036517242">ແຖບກັບໄປເປັນຄວາມສູງເລີ່ມຕົ້ນ</translation>
 <translation id="5180063720319462041">ແປພາສາຂອງໜ້າເປັນ <ph name="TARGET_LANGUAGE" /> ແລ້ວ</translation>
-<translation id="5186634140793586141">ຈັດການຫົວຂໍ້ ແລະ ການຊອກຫາທີ່ທ່ານສົນໃຈ</translation>
 <translation id="5191251636205085390">ສຶກສາກ່ຽວກັບ ແລະ ຄວບຄຸມເທັກໂນໂລຢີໃໝ່ທີ່ມີຈຸດປະສົງປ່ຽນແທນຄຸກກີ້ພາກສ່ວນທີສາມ</translation>
 <translation id="5204967432542742771">ໃສ່​ລະ​ຫັດ​ຜ່ານ</translation>
 <translation id="5206168361184759344">{FILE_COUNT,plural, =1{ກຳລັງດາວໂຫຼດໄຟລ໌…}other{ກຳລັງດາວໂຫຼດ # ໄຟລ໌…}}</translation>
@@ -858,6 +857,7 @@
 <translation id="5292796745632149097">ສົ່ງຫາ</translation>
 <translation id="5301876394151419436">ທ່ານເຂົ້າສູ່ລະບົບດ້ວຍ <ph name="EMAIL" />. ທ່ານສາມາດຢຸດການຊິ້ງໄດ້ທຸກເວລາໃນການຕັ້ງຄ່າ. Google ອາດປັບແຕ່ງການຊອກຫາ ແລະ ບໍລິການອື່ນໆໃຫ້ເປັນແບບສ່ວນຕົວໂດຍອ້າງອີງໃສ່ປະຫວັດຂອງທ່ານ.</translation>
 <translation id="5304593522240415983">ບ່ອນໃສ່ຂໍ້ມູນນີ້​ບໍ່​ສາ​ມາດ​ໃຫ້ຫວ່າງ​ເປົ່າໄດ້</translation>
+<translation id="5306014156308790439">ປຸ່ມເພີ່ມໃສ່ໃນຄໍເລັກຊັນປິດການນຳໃຊ້ຢູ່</translation>
 <translation id="5308380583665731573">​ເຊື່ອມ​ຕໍ່</translation>
 <translation id="5316947901395241499">ຜູ້ເບິ່ງແຍງລະບົບຂອງທ່ານປິດການບັນທຶກລະຫັດຜ່ານ</translation>
 <translation id="5317780077021120954">ບັນທຶກ</translation>
@@ -1090,7 +1090,6 @@
 <translation id="6437478888915024427">ຂໍ້ມູນໜ້າ</translation>
 <translation id="6440291723980579689">ໜ້າຈະໂຫຼດຫຼັງຈາກທີ່ທ່ານເປີດພວກມັນເທົ່ານັ້ນ</translation>
 <translation id="6441734959916820584">ຊື່ຍາວເກີນໄປ</translation>
-<translation id="6447558397796644647">ບໍ່ສາມາດຊອກເຫັນບຸກມາກນັ້ນ. ກວດການສະກົດຄຳຂອງທ່ານ ຫຼື ເພີ່ມບຸກມາກໃໝ່.</translation>
 <translation id="6459045781120991510">ແບບສຳຫຼວດ</translation>
 <translation id="6461962085415701688">ບໍ່ສາມາດເປີດໄຟລ໌ໄດ້</translation>
 <translation id="6464977750820128603">ທ່ານສາມາດເຫັນເວັບໄຊທີ່ທ່ານເຂົ້າເຖິງໃນ Chrome ແລະ ຕັ້ງຄ່າໂມງນັບຖອຍຫຼັງສຳລັບພວກມັນໄດ້.\n\nGoogle ຮັບເອົາຂໍ້ມູນກ່ຽວກັບເວັບໄຊທີ່ທ່ານຕັ້ງຄ່າໂມງນັບຖອຍຫຼັງສຳລັບ ແລະ ທ່ານເຂົ້າເບິ່ງພວກມັນດົນປານໃດ. ຂໍ້ມູນນີ້ຖືກໃຊ້ເພື່ອເຮັດໃຫ້ Digital Wellbeing ດີຂຶ້ນ.</translation>

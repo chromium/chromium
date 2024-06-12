@@ -64,7 +64,6 @@ Jei norite pradėti, pabandykite atlikti nurodytus veiksmus.</translation>
 <translation id="1201402288615127009">Kitas</translation>
 <translation id="1210557957257435379">ekrano vaizdo įrašymas</translation>
 <translation id="121097972571826261">Eiti pirmyn per vieną žodį</translation>
-<translation id="1217633719248931900">Eiti į programą</translation>
 <translation id="1218444235442067213">„<ph name="APP_NAME" />“, „Play“ parduotuvės programa</translation>
 <translation id="1225748608451425081">„Chromebook“ įrenginys užrakintas dėl nežinomos problemos. Prisijungti galėsite po: <ph name="TIME_LEFT" />.</translation>
 <translation id="1229194443904279055">Nebesirinkti</translation>
@@ -251,6 +250,7 @@ Jei norite pradėti, pabandykite atlikti nurodytus veiksmus.</translation>
 <translation id="1915307458270490472">Baigti</translation>
 <translation id="1918022425394817322">Fotoaparato peržiūra pridėta viršutiniame dešiniajame kampe</translation>
 <translation id="1923539912171292317">Automatiniai paspaudimai</translation>
+<translation id="1925320505152357008">mažiau nei 1 min.</translation>
 <translation id="1928739107511554905">Kad gautumėte naujinį, naudodami jutiklinį ekraną iš naujo paleiskite „Chromebook“ su prijungta klaviatūra.</translation>
 <translation id="1948405482892809935">Perjungti į kitą naudotoją</translation>
 <translation id="1951012854035635156">Padėjėjas</translation>
@@ -327,7 +327,6 @@ Jei norite pradėti, pabandykite atlikti nurodytus veiksmus.</translation>
 <translation id="2293443480080733021">Į ką norite sutelkti dėmesį? Paspauskite klavišą „Enter“, kad pridėtumėte užduotį.</translation>
 <translation id="229397294990920565">Mobiliojo ryšio duomenys išjungiami...</translation>
 <translation id="2295777434187870477">Mikrofonas įjungtas; perjungiant įvestis bus nutildyta.</translation>
-<translation id="2298170939937364391">Viso ekrano didinimas įgalintas. Dar kartą paspauskite „Ctrl“ + paieškos klavišą + M, kad išjungtumėte režimą.</translation>
 <translation id="2302092602801625023">Ši paskyra tvarkoma naudojant „Family Link“</translation>
 <translation id="2303600792989757991">Perjungti lango apžvalgą</translation>
 <translation id="2305738328104302723">„Google“ užduočių sąrašas: <ph name="GLANCEABLES_TASKS_LIST_NAME" /></translation>
@@ -512,7 +511,6 @@ Prijungtų įrenginių: <ph name="DEVICECOUNT" />.</translation>
 <translation id="2977598380246111477">Kitas skaičius</translation>
 <translation id="2985148236010982088">Žr. visas programas</translation>
 <translation id="2992327365391326550">Įrenginio mikrofono mygtukas išjungtas.</translation>
-<translation id="2996462380875591307">Prie doko prijungtas didintuvas įgalintas. Dar kartą paspauskite „Ctrl“ + paieškos klavišą + D, kad išjungtumėte režimą.</translation>
 <translation id="3000461861112256445">Monofoninis garsas</translation>
 <translation id="3001391739687111021">Redaguoti ekrano dydį</translation>
 <translation id="3009178788565917040">Išvestis</translation>
@@ -606,6 +604,7 @@ Prijungtų įrenginių: <ph name="DEVICECOUNT" />.</translation>
 <translation id="334927402682780278">Pasirinkti tekstą nuo žymeklio iki eilutės pabaigos</translation>
 <translation id="3349345708646875009">Atidaryti užduočių tvarkytuvę</translation>
 <translation id="3364721542077212959">Rašiklio įrankiai</translation>
+<translation id="3365281428003534650">Nustatykite laikmatį, užduotį ir muziką</translation>
 <translation id="3365977133351922112">Jūsų telefonas yra per toli. Atneškite jį arčiau.</translation>
 <translation id="3368922792935385530">Prijungta</translation>
 <translation id="3369111525500416043">Terminas netrukus</translation>
@@ -908,6 +907,7 @@ Kai kurios funkcijos ribojamos, kad būtų galima pailginti akumuliatoriaus veik
 <translation id="4406883609789734330">Subtitrai realiuoju laiku</translation>
 <translation id="4412698727486357573">Pagalbos centras</translation>
 <translation id="4412944820643904175">„<ph name="FEATURE_NAME" />“ išjungta.</translation>
+<translation id="4417647906073317561">Fokusavimo nustatymai. Nustatykite laikmatį, užduotį ir muziką, kad įsitrauktumėte į srautą.</translation>
 <translation id="4424159417645388645">5 darbalaukis</translation>
 <translation id="4430019312045809116">Apimtis</translation>
 <translation id="4441283832827406317">Programos rūšiuojamos pagal pavadinimą</translation>
@@ -1859,6 +1859,7 @@ Jei norite išjungti įrenginį, dar kartą paspauskite ir palaikykite įrengini
         <ph name="MANAGED" />
         <ph name="IME" />
         <ph name="LOCALE" /></translation>
+<translation id="7899977217122813285">Fokusuojant pranešimai nutildomi iki <ph name="TIME" /></translation>
 <translation id="7901190436359881020">Sukeisti langus</translation>
 <translation id="7901405293566323524">Phone Hub</translation>
 <translation id="7902625623987030061">Palieskite kontrolinio kodo jutiklį</translation>
@@ -2139,7 +2140,6 @@ Jei norite išjungti įrenginį, dar kartą paspauskite ir palaikykite įrengini
 <translation id="8982906748181120328">Matomumas netoliese</translation>
 <translation id="8983038754672563810">HSPA</translation>
 <translation id="8990809378771970590">Naudojama <ph name="IME_NAME" /></translation>
-<translation id="8991617137207906966">Spalvų inversijos režimas įgalintas. Jei norite jį išjungti, dar kartą paspauskite „Ctrl“ + paieškos klavišą + H.</translation>
 <translation id="899350903320462459">Atrakinkite įrenginį su <ph name="LOGIN_ID" />, kad galėtumėte įvykdyti pranešimo veiksmą</translation>
 <translation id="8993733019280019776">Ar kalbate? Mikrofonas išjungtas. Pasirinkite mikrofoną, kad jį įjungtumėte.</translation>
 <translation id="9000771174482730261">TVARKYKITE SAUGYKLĄ</translation>

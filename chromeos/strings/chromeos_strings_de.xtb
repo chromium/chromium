@@ -98,7 +98,7 @@
 <translation id="1483493594462132177">Senden</translation>
 <translation id="1488850966314959671">Mit den aktivierten benutzerdefinierten APNs kann keine Verbindung zu diesem Netzwerk hergestellt werden. Wende dich für weitere Informationen an deinen Mobilfunkanbieter.</translation>
 <translation id="1499041187027566160">Lautstärke erhöhen</translation>
-<translation id="1499900233129743732"><ph name="MANAGER" /> verwaltet diesen Nutzer und kann per Remotezugriff Einstellungen ändern und die Nutzeraktivität überwachen.</translation>
+<translation id="1499900233129743732"><ph name="MANAGER" /> verwaltet diesen Nutzer und kann per Remote-Zugriff Einstellungen ändern und die Nutzeraktivität überwachen.</translation>
 <translation id="150962533380566081">Ungültiger PUK.</translation>
 <translation id="1510238584712386396">Launcher</translation>
 <translation id="1515129336378114413">Browser-Startseite</translation>
@@ -1108,7 +1108,7 @@
 <translation id="7170236477717446850">Profilbild</translation>
 <translation id="7171919371520438592">Fenster an kleinerem Teil des Bildschirms fixieren (<ph name="DIRECTION" />)</translation>
 <translation id="7172721935181587524">1 Bild</translation>
-<translation id="7177485034254901881">Dieses <ph name="DEVICE_TYPE" /> wird von <ph name="MANAGER" /> verwaltet. Administratoren können das Gerät per Remotezugriff konfigurieren.</translation>
+<translation id="7177485034254901881">Dieses <ph name="DEVICE_TYPE" /> wird von <ph name="MANAGER" /> verwaltet. Administratoren können das Gerät per Remote-Zugriff konfigurieren.</translation>
 <translation id="7180611975245234373">Aktualisieren</translation>
 <translation id="7180865173735832675">Anpassen</translation>
 <translation id="7182063559013288142">Instant-Hotspot</translation>

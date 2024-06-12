@@ -547,6 +547,7 @@ Annars blockeras detta av integritetsinställningarna. Om du tillåter detta kan
 <translation id="2003709556000175978">Återställ lösenordet nu</translation>
 <translation id="2003775180883135320">Fyra hål högst upp</translation>
 <translation id="2004697686368036666">Vissa webbplatsers funktioner kanske inte fungerar</translation>
+<translation id="2005042463110681802">Den här varningen visas därför att webbplatsen inte stöder HTTPS, och du är i inkognitoläge. <ph name="BEGIN_LEARN_MORE_LINK" />Läs mer<ph name="END_LEARN_MORE_LINK" /></translation>
 <translation id="2009942480257059311">Knappen Skapa händelse: aktivera om du snabbt vill skapa en ny händelse i Google Kalender</translation>
 <translation id="201174227998721785">Hantera behörigheter och data som lagras på olika webbplatser i inställningarna för Chrome</translation>
 <translation id="2012276282211112603">Det finns inga ämnen att visa just nu</translation>
@@ -900,7 +901,7 @@ Annars blockeras detta av integritetsinställningarna. Om du tillåter detta kan
 <translation id="2674804415323431591">Dölj förslag</translation>
 <translation id="2677748264148917807">Lämna</translation>
 <translation id="2683195745483370038">Andra resultat hittades</translation>
-<translation id="2686919536310834199">Skicka feedback för Hjälp mig att skriva.</translation>
+<translation id="2686919536310834199">Skicka feedback för Hjälp mig skriva.</translation>
 <translation id="2687555958734450033">Bästa passning</translation>
 <translation id="2688186765492306706">500 x 760 mm</translation>
 <translation id="2688969097326701645">Ja, fortsätt</translation>
@@ -1390,7 +1391,7 @@ Annars blockeras detta av integritetsinställningarna. Om du tillåter detta kan
 <translation id="3632892046558972264">Skärmdelningen pausades</translation>
 <translation id="3634530185120165534">Fack 5</translation>
 <translation id="3634567936866541746">Du angav just ditt lösenord på en bedräglig webbplats. Du rekommenderas att kontrollera dina sparade lösenord i Chrome nu för att skydda dina konton.</translation>
-<translation id="3638102297696182302">Återuppta Hjälp mig att skriva. Tryck på Tabb och på Retur för att öppna</translation>
+<translation id="3638102297696182302">Återuppta Hjälp mig skriva. Tryck på Tabb och på Retur för att öppna</translation>
 <translation id="3641116835972736297">Amerikansk fotboll</translation>
 <translation id="3642196846309122856">Testa att ladda ned filerna igen</translation>
 <translation id="3642638418806704195">Program:</translation>
@@ -2554,7 +2555,7 @@ Annars blockeras detta av integritetsinställningarna. Om du tillåter detta kan
 <translation id="5924782825030413055">Källa till senaste samtyckesuppdateringen:</translation>
 <translation id="5925040402342933574">Optisk skiva (halvblank)</translation>
 <translation id="5926982310317673627">Gym och hälsocenter</translation>
-<translation id="5930147475897662863">Aktivera den här inställningen för att använda Hjälp mig att skriva</translation>
+<translation id="5930147475897662863">Aktivera den här inställningen för att använda Hjälp mig skriva</translation>
 <translation id="593102073240001326">Gör så här, gör det själv och expertinnehåll</translation>
 <translation id="5932224571077948991">Påträngande eller vilseledande annonser visas på webbplatsen</translation>
 <translation id="5937560539988385583">Sidan har översatts</translation>
@@ -3339,7 +3340,7 @@ Mer information.
 <translation id="7423283032694727565">Knappen Hantera cookies: aktivera om du vill hantera cookies i inställningarna för Chrome</translation>
 <translation id="742435751935045381">Installerade appar och tillägg i jobbprofilen</translation>
 <translation id="7424421098814895617">Alternativet för att radera adress har valts</translation>
-<translation id="7425037327577270384">Hjälp mig att skriva</translation>
+<translation id="7425037327577270384">Hjälp mig skriva</translation>
 <translation id="7425878584435172632">Visuell konst och design</translation>
 <translation id="7427079287360774240">Språkstudier</translation>
 <translation id="7429429656042611765">Executive</translation>
@@ -3513,7 +3514,7 @@ Mer information.
 <translation id="7701486038694690341">Countrymusik</translation>
 <translation id="7701544340847569275">Uppdateringen slutfördes med fel</translation>
 <translation id="7704050614460855821"><ph name="BEGIN_LINK" />Fortsätt till <ph name="SITE" /> (osäkert)<ph name="END_LINK" /></translation>
-<translation id="7705085181312584869">Hjälp mig att skriva</translation>
+<translation id="7705085181312584869">Hjälp mig skriva</translation>
 <translation id="7705992072972338699">Optisk skiva (högblank)</translation>
 <translation id="7706689436519265630">Filer som du kopierar eller flyttar skickas till Google Cloud eller tredje part för analys. De kan till exempel genomsökas i syfte att upptäcka känsliga uppgifter eller skadlig kod, och de kan lagras i enlighet med företagspolicyer.</translation>
 <translation id="7709911732293795808">Försäkring</translation>

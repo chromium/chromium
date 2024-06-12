@@ -16,6 +16,7 @@
 <translation id="1203500561924088507">インストールいただきありがとうございます。<ph name="BUNDLE_NAME" /> を使用するにはブラウザを再起動してください。</translation>
 <translation id="1262876892872089030">Chromium を高速に保つため、このタブがアクティブでないときにメモリを解放しました。このサイトを常にアクティブにするよう選択できます。</translation>
 <translation id="1265577313130862557">危険なファイルであるため、このダウンロードは Chromium でブロックされました</translation>
+<translation id="126567311906253476"><ph name="USER_EMAIL" /> で Gmail や YouTube などの Google サービスにログインするときに、同じアカウントで Chromium に自動的にログインできます</translation>
 <translation id="1315551408014407711">新しい Chromium プロファイルの設定</translation>
 <translation id="1342274909142618978">Chromium（<ph name="URL" />）からもデータを削除する</translation>
 <translation id="1414495520565016063">Chromium にログインしました</translation>
@@ -40,6 +41,7 @@
 <translation id="1749104137266986751">HTTPS を使用できない場合、Chromium で警告を表示せずに安全でない接続を使用します</translation>
 <translation id="1774152462503052664">Chromium をバックグラウンドで実行する</translation>
 <translation id="1779356040007214683">Chromium をより安全にご利用いただくため、<ph name="IDS_EXTENSION_WEB_STORE_TITLE" />で提供していない一部の拡張機能を無効にしました。これらは知らないうちに追加された可能性があります。</translation>
+<translation id="1804128559285178512">ログイン中は、Chromium で Google アカウントのパスワードなどを使用できます</translation>
 <translation id="1808667845054772817">Chromium を再インストール</translation>
 <translation id="1820835682567584003">Chromium が <ph name="AUTHENTICATION_PURPOSE" /></translation>
 <translation id="18552579716432081">閲覧履歴データをこのデバイスからのみ削除して、Google アカウントに残すには、<ph name="BEGIN_LINK" />Chromium からログアウト<ph name="END_LINK" />します。</translation>

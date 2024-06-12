@@ -18,6 +18,7 @@
 <translation id="1203500561924088507">설치해 주셔서 감사합니다. <ph name="BUNDLE_NAME" />을(를) 사용하려면 브라우저를 다시 시작해야 합니다.</translation>
 <translation id="1262876892872089030">이 탭이 비활성 상태인 동안 Chromium의 속도를 빠르게 유지하기 위해 메모리를 확보했습니다. 이 사이트가 비활성 상태가 되지 않도록 항상 제외할 수 있습니다.</translation>
 <translation id="1265577313130862557">위험한 파일이므로 Chromium에서 이 다운로드를 차단했습니다.</translation>
+<translation id="126567311906253476"><ph name="USER_EMAIL" /> 계정으로 Gmail 또는 YouTube와 같은 Google 서비스에 로그인하면 동일한 계정으로 Chromium에 자동으로 로그인할 수 있습니다.</translation>
 <translation id="1315551408014407711">새 Chromium 프로필 설정</translation>
 <translation id="1342274909142618978">Chromium(<ph name="URL" />)에서도 데이터 삭제</translation>
 <translation id="1414495520565016063">Chromium에 로그인했습니다.</translation>
@@ -42,6 +43,7 @@
 <translation id="1749104137266986751">HTTPS를 사용할 수 없는 경우, Chromium에서 경고 없이 안전하지 않은 연결을 사용합니다.</translation>
 <translation id="1774152462503052664">백그라운드에서 Chromium을 실행</translation>
 <translation id="1779356040007214683">Google에서는 Chromium의 보안을 강화하기 위해 <ph name="IDS_EXTENSION_WEB_STORE_TITLE" />에 표시되지 않고 사용자 모르게 추가되었을 수 있는 일부 확장 프로그램의 사용을 중지했습니다.</translation>
+<translation id="1804128559285178512">로그인한 상태로 Chromium에서 Google 계정의 비밀번호 등을 사용할 수 있습니다.</translation>
 <translation id="1808667845054772817">Chromium 재설치</translation>
 <translation id="1820835682567584003">Chromium에서 <ph name="AUTHENTICATION_PURPOSE" />을(를) 시도하는 중입니다.</translation>
 <translation id="18552579716432081">인터넷 사용 기록을 이 기기에서만 삭제하고 Google 계정에서는 유지하려면 <ph name="BEGIN_LINK" />Chromium에서 로그아웃<ph name="END_LINK" />하세요.</translation>

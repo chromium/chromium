@@ -18,6 +18,7 @@ Sommige kenmerke kan dalk nie beskikbaar wees nie en veranderings aan voorkeure 
 <translation id="1203500561924088507">Dankie dat jy geïnstalleer het. Jy moet jou blaaier herbegin voordat jy <ph name="BUNDLE_NAME" /> gebruik.</translation>
 <translation id="1262876892872089030">Geheue is beskikbaar gemaak terwyl hierdie oortjie onaktief was om Chromium vinnig te hou. Jy kan kies om hierdie werf altyd daarvan uit te sluit om onaktief te wees.</translation>
 <translation id="1265577313130862557">Chromium het hierdie aflaai geblokkeer omdat die lêer gevaarlik is</translation>
+<translation id="126567311906253476">Wanneer jy by Google-dienste soos Gmail of YouTube met <ph name="USER_EMAIL" /> aanmeld, kan jy met dieselfde rekening outomaties by Chromium aanmeld</translation>
 <translation id="1315551408014407711">Stel jou nuwe Chromium-profiel op</translation>
 <translation id="1342274909142618978">Vee ook data uit Chromium uit (<ph name="URL" />)</translation>
 <translation id="1414495520565016063">Jy is by Chromium aangemeld!</translation>
@@ -42,6 +43,7 @@ Toestemmings wat jy reeds aan webwerwe en apps gegee het, kan op hierdie rekenin
 <translation id="1749104137266986751">Chromium sal ’n onveilige verbinding gebruik sonder om jou te waarsku wanneer HTTPS nie beskikbaar is nie</translation>
 <translation id="1774152462503052664">Laat Chromium in die agtergrond loop</translation>
 <translation id="1779356040007214683">Om Chromium veiliger te maak, het ons sekere uitbreidings wat nie in die <ph name="IDS_EXTENSION_WEB_STORE_TITLE" /> gelys is nie, gedeaktiveer en kon dit sonder jou medewete bygevoeg gewees het.</translation>
+<translation id="1804128559285178512">Terwyl jy aangemeld is, kan jy jou wagwoorde en meer van jou Google-rekening in Chromium gebruik</translation>
 <translation id="1808667845054772817">Herinstalleer Chromium</translation>
 <translation id="1820835682567584003">Chromium probeer tans om <ph name="AUTHENTICATION_PURPOSE" /></translation>
 <translation id="18552579716432081"><ph name="BEGIN_LINK" />Meld by Chromium af<ph name="END_LINK" /> om blaaierdata net van hierdie toestel af uit te vee terwyl jy dit in jou Google-rekening hou.</translation>

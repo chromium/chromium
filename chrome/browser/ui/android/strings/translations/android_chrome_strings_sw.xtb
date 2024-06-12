@@ -376,7 +376,6 @@ Mtu aliye na kauli yako ya siri pekee ndiye anaweza kusoma data yako iliyosimbwa
 <translation id="2904414404539560095">Orodha ya vifaa vinavyoweza kutumia kichupo pamoja imefunguliwa kwenye skrini nzima.</translation>
 <translation id="2908243544703713905">Hadithi ambazo hujazisoma ziko tayari</translation>
 <translation id="2909615210195135082">Mfumo wa Arifa za Google</translation>
-<translation id="2912296070571964914">Dhibiti mada zinazokuvutia</translation>
 <translation id="2912345083818861431">Tumia kipengele cha kufunga skrini ili uone vichupo fiche vilivyofunguliwa</translation>
 <translation id="2923908459366352541">Jina si sahihi</translation>
 <translation id="2932150158123903946">Hifadhi ya Google <ph name="APP_NAME" /></translation>
@@ -452,7 +451,6 @@ Mtu aliye na kauli yako ya siri pekee ndiye anaweza kusoma data yako iliyosimbwa
 <translation id="3259831549858767975">Fanya kila kitu kwenye ukurasa kiwe kidogo zaidi</translation>
 <translation id="3264259168916048410">Kompyuta yako inataka kutumia kifaa hiki kuingia katika akaunti kwenye tovuti</translation>
 <translation id="3265093782546847662">Kurasa zote za <ph name="DOMAIN" /></translation>
-<translation id="3265534588625245297">Dhibiti tovuti unazofuatilia</translation>
 <translation id="3269093882174072735">Pakia picha</translation>
 <translation id="3280562213547448728">Kutafuta kwa kutamka</translation>
 <translation id="3282568296779691940">Ingia katika Chrome</translation>
@@ -624,7 +622,6 @@ Mtu aliye na kauli yako ya siri pekee ndiye anaweza kusoma data yako iliyosimbwa
 <translation id="4195643157523330669">Fungua katika kichupo kipya</translation>
 <translation id="4197828496439691735">{NUM_TABS,plural, =1{Kichupo 1 kwenye kifaa hiki}other{Vichupo # kwenye kifaa hiki}}</translation>
 <translation id="4198423547019359126">Hakuna maeneno ya upakuaji</translation>
-<translation id="4198664641856813238">Ingia katika akaunti ili upate alamisho, manenosiri na zaidi kwenye vifaa vyako vyote</translation>
 <translation id="4202218894997543208">Mada ulizozuia</translation>
 <translation id="4214315110991671325">Ukiruhusu vidakuzi, huenda Chrome ikavitumia wakati wa kupakia mapema.</translation>
 <translation id="4216511743389425832">Sikiliza maandishi ya ukurasa huu</translation>
@@ -824,7 +821,6 @@ Huenda akaunti yako ya Google ina aina nyingine za historia ya kuvinjari kama vi
 <translation id="510275257476243843">Imesalia saa 1</translation>
 <translation id="5114895953710637392">Laha ya kichujio cha programu imefungwa.</translation>
 <translation id="5115811374190515607">kwenye <ph name="PRODUCT_NAME" /></translation>
-<translation id="5118713593561876160">Mambo yanayokuvutia</translation>
 <translation id="5122378528687922675">Ukihitaji usaidizi, mwombe mzazi wako (<ph name="PARENT_NAME_1" /> au <ph name="PARENT_NAME_2" />)</translation>
 <translation id="5123685120097942451">Kichupo fiche</translation>
 <translation id="5132942445612118989">Sawazisha historia, manenosiri na mambo yako mengine kwenye vifaa vyote</translation>
@@ -838,7 +834,6 @@ Huenda akaunti yako ya Google ina aina nyingine za historia ya kuvinjari kama vi
 <translation id="5171045022955879922">Tafuta au charaza URL</translation>
 <translation id="5174700554036517242">Kichupo kimekunjwa kiwe katika kimo cha awali</translation>
 <translation id="5180063720319462041">Ukurasa umetafsiriwa kwa <ph name="TARGET_LANGUAGE" /></translation>
-<translation id="5186634140793586141">Dhibiti mada na utafutaji unaokuvutia</translation>
 <translation id="5191251636205085390">Pata maelezo na udhibiti teknolojia mpya zinazokusudia kuchukua nafasi ya vidakuzi vya wengine</translation>
 <translation id="5204967432542742771">Weka nenosiri</translation>
 <translation id="5206168361184759344">{FILE_COUNT,plural, =1{Inapakua faili…}other{Inapakua faili #…}}</translation>
@@ -1086,7 +1081,6 @@ Kwa mfano, baadhi ya tovuti zinaweza kujibu ombi hili kwa kukuonyesha matangazo 
 <translation id="6437478888915024427">Maelezo ya ukurasa</translation>
 <translation id="6440291723980579689">Kurasa hupakiwa tu ukishazifungua</translation>
 <translation id="6441734959916820584">Jina ni ndefu mno</translation>
-<translation id="6447558397796644647">Imeshindwa kupata alamisho hilo. Angalia maendelezo au uweke alamisho jipya.</translation>
 <translation id="6459045781120991510">Tafiti</translation>
 <translation id="6461962085415701688">Imeshindwa kufungua faili</translation>
 <translation id="6464977750820128603">Unaweza kuona tovuti ambazo ulitembelea katika Chrome na kuziwekea vipima muda.\n\nGoogle inapata maelezo kuhusu tovuti ulizowekea vipima muda na muda unaozitembelea. Tunatumia maelezo haya kuboresha mpango wa Nidhamu Dijitali.</translation>

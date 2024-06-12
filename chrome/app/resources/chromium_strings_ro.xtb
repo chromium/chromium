@@ -16,6 +16,7 @@
 <translation id="1203500561924088507">Mulțumim pentru instalare. Înainte să folosești <ph name="BUNDLE_NAME" /> trebuie să repornești browserul.</translation>
 <translation id="1262876892872089030">Cât timp fila a fost inactivă, memoria a fost eliberată pentru a menține viteza ridicată a browserului Chromium. Poți alege ca acest site să nu fie mereu inactiv.</translation>
 <translation id="1265577313130862557">Chromium a blocat descărcarea, deoarece fișierul este periculos</translation>
+<translation id="126567311906253476">Când te conectezi la Servicii Google, cum ar fi Gmail sau YouTube, cu <ph name="USER_EMAIL" />, te poți conecta automat la Chromium cu același cont</translation>
 <translation id="1315551408014407711">Configurează noul profil Chromium</translation>
 <translation id="1342274909142618978">Șterge și datele din Chromium (<ph name="URL" />)</translation>
 <translation id="1414495520565016063">V-ați conectat la Chromium!</translation>
@@ -40,6 +41,7 @@ Permisiunile pe care le-ai acordat deja site-urilor și aplicațiilor se pot apl
 <translation id="1749104137266986751">Când protocolul HTTPS nu este disponibil, Chromium va folosi o conexiune nesecurizată fără să te avertizeze</translation>
 <translation id="1774152462503052664">Permiteți Chromium să ruleze în fundal</translation>
 <translation id="1779356040007214683">Pentru mai multă siguranță în Chromium, am dezactivat câteva extensii care nu sunt incluse în <ph name="IDS_EXTENSION_WEB_STORE_TITLE" /> și care este posibil să fi fost adăugate fără știrea dvs.</translation>
+<translation id="1804128559285178512">După ce te conectezi, poți folosi parolele și alte date din Contul Google în Chromium</translation>
 <translation id="1808667845054772817">Reinstalați Chromium</translation>
 <translation id="1820835682567584003">Chromium încearcă să <ph name="AUTHENTICATION_PURPOSE" /></translation>
 <translation id="18552579716432081">Pentru a șterge datele de navigare doar de pe acest dispozitiv, dar nu și din Contul Google, <ph name="BEGIN_LINK" />deconectează-te de la Chromium<ph name="END_LINK" />.</translation>

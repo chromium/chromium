@@ -153,6 +153,7 @@
 <translation id="1755203724116202818">जाहिरातीच्या परफॉर्मन्सचे मापन करण्यासाठी, साइटला भेट दिल्यावर तुम्ही खरेदी केली की नाही यासारखा मर्यादित प्रकारचा डेटा साइटदरम्यान शेअर केला जातो.</translation>
 <translation id="1757620656501361327">Google Password Manager संबंधित अपडेट</translation>
 <translation id="1760873718737761808">{FILE_COUNT,plural, =1{पेज, सूचीमध्ये १ पेज आहे}other{पेज, सूचीमध्ये # पेज आहेत}}</translation>
+<translation id="1771929606532798550">तुमच्या Chrome च्या वापराबद्दलची माहिती Google ला पाठवली जाते, पण ती तुमच्याशी जोडलेली नसते\n\nChrome क्रॅश झाल्यास, क्रॅशबद्दलच्या तपशिलांमध्ये काही वैयक्तिक माहितीचा समावेश असू शकतो\n\nतुम्ही तुमचा इतिहास तुमच्या Google खाते शी शिंक केल्यास, मेट्रिकमध्ये तुम्ही भेट दिलेल्या URLs च्या माहितीचादेखील समावेश असू शकतो</translation>
 <translation id="1778457539567749232">न वाचलेली म्हणून मार्क करा</translation>
 <translation id="1779766957982586368">विंडो बंद करा</translation>
 <translation id="1780023393214832643"><ph name="USERNAME" /> मध्ये सेव्ह केलेले पासवर्ड</translation>
@@ -376,7 +377,6 @@
 <translation id="2904414404539560095">पूर्ण उंचीवर उघडलेल्या टॅबसह शेअर करण्यासाठी डिव्हाइसची सूची.</translation>
 <translation id="2908243544703713905">न वाचलेल्या बातम्या तयार आहेत</translation>
 <translation id="2909615210195135082">Google सूचना प्लॅटफॉर्म</translation>
-<translation id="2912296070571964914">तुम्हाला स्वारस्य असलेले विषय व्यवस्थापित करा</translation>
 <translation id="2912345083818861431">उघडे असलेले गुप्त टॅब पाहण्यासाठी स्क्रीन लॉक वापरा</translation>
 <translation id="2923908459366352541">नाव अवैध आहे</translation>
 <translation id="2932150158123903946">Google <ph name="APP_NAME" /> स्टोरेज</translation>
@@ -452,7 +452,6 @@
 <translation id="3259831549858767975">पृष्ठावरील प्रत्येकगोष्ट आणखी लहान बनवा</translation>
 <translation id="3264259168916048410">साइटवर साइन इन करण्यासाठी तुमच्या कॉंप्युटरला हे डिव्हाइस वापरायचे आहे</translation>
 <translation id="3265093782546847662"><ph name="DOMAIN" /> ची सर्व पेज</translation>
-<translation id="3265534588625245297">तुम्ही फॉलो करत असलेल्या साइट व्यवस्थापित करा</translation>
 <translation id="3269093882174072735">इमेज लोड करा</translation>
 <translation id="3280562213547448728">व्हॉइस शोध</translation>
 <translation id="3282568296779691940">Chrome वर साइन इन करा</translation>
@@ -624,7 +623,6 @@
 <translation id="4195643157523330669">नवीन टॅबमध्ये उघडा</translation>
 <translation id="4197828496439691735">{NUM_TABS,plural, =1{या डिव्हाइसवर १ टॅब आहे}other{या डिव्हाइसवर # टॅब आहेत}}</translation>
 <translation id="4198423547019359126">कोणतीही डाउनलोड स्थाने उपलब्ध नाहीत</translation>
-<translation id="4198664641856813238">तुमच्या सर्व डिव्हाइसवर तुमचे बुकमार्क, पासवर्ड आणि आणखी बरेच काही मिळवण्यासाठी साइन इन करा</translation>
 <translation id="4202218894997543208">तुम्ही ब्लॉक केलेले विषय</translation>
 <translation id="4214315110991671325">तुम्ही कुकीना अनुमती दिल्यास, Chrome प्रीलोडिंगसाठी त्यांचा वापर करू शकते.</translation>
 <translation id="4216511743389425832">हे पेज ऐका</translation>
@@ -798,6 +796,7 @@
 <translation id="4987271110129728827">ते पेज सापडले नाही. तुमचे शब्दलेखन तपासा किंवा वेब शोध वापरून पहा.</translation>
 <translation id="4988526792673242964">पेज</translation>
 <translation id="4991110219272367918">वेबसाइटला मंजुरी द्यायची की नाही यासाठीचा पर्याय बंद आहे</translation>
+<translation id="4996095658297597226">सुचवलेला पासवर्ड वापरायचा आहे का?</translation>
 <translation id="499724277181351974">नेव्हिगेट करा: <ph name="WEBSITE_TITLE" />: <ph name="WEBSITE_URL" /></translation>
 <translation id="5001388021414335527">या साइटला येथे फॉलो करा</translation>
 <translation id="5004416275253351869">Google ॲक्टिव्हिटी नियंत्रणे</translation>
@@ -824,7 +823,6 @@
 <translation id="510275257476243843">1 तास शिल्लक</translation>
 <translation id="5114895953710637392">अ‍ॅप फिल्टर शीट बंद केली आहे.</translation>
 <translation id="5115811374190515607"><ph name="PRODUCT_NAME" /> वर</translation>
-<translation id="5118713593561876160">स्वारस्ये</translation>
 <translation id="5122378528687922675">तुम्हाला मदत हवी असल्यास, तुमचे पालक (<ph name="PARENT_NAME_1" /> किंवा <ph name="PARENT_NAME_2" />) यांना विचारा</translation>
 <translation id="5123685120097942451">गुप्त टॅब</translation>
 <translation id="5132942445612118989">सर्व डिव्हाइसवर तुमचे पासवर्ड, इतिहास आणि बरेच काही सिंक करा</translation>
@@ -838,7 +836,6 @@
 <translation id="5171045022955879922">URL शोधा किंवा टाइप करा</translation>
 <translation id="5174700554036517242">टॅब सुरुवातीच्या उंचीवर परत आला आहे</translation>
 <translation id="5180063720319462041"><ph name="TARGET_LANGUAGE" /> मध्ये पेजचे भाषांतर केले आहे</translation>
-<translation id="5186634140793586141">तुम्हाला स्वारस्य असलेले विषय आणि शोध व्यवस्थापित करा</translation>
 <translation id="5191251636205085390">तृतीय पक्षाच्या कुकी बदलण्याचा उद्देश असलेल्या नवीन तंत्रज्ञान आणि ते कसे नियंत्रित करायचे याविषयी जाणून घ्या</translation>
 <translation id="5204967432542742771">पासवर्ड एंटर करा</translation>
 <translation id="5206168361184759344">{FILE_COUNT,plural, =1{फाइल डाउनलोड होत आहे…}other{# फाइल डाउनलोड होत आहेत…}}</translation>
@@ -1042,6 +1039,7 @@
 <translation id="6233974827872475843">सिंक सुरू करून या डिव्हाइसवरील पासवर्ड तुमच्या Google खाते मध्ये सेव्ह करा</translation>
 <translation id="6247557882553405851">Google Password Manager</translation>
 <translation id="6251449557817521191">तुमचा Chrome इतिहास इथे पहा</translation>
+<translation id="6254139308321626268">तुम्ही PDF फाइल पाहत आहात</translation>
 <translation id="6255794742848779505">आम्ही या डिव्हाइसवर पासवर्ड कसे सेव्ह केले जातात ते बदलत आहोत</translation>
 <translation id="6264376385120300461">तरीही डाउनलोड करा</translation>
 <translation id="6277522088822131679">पेज प्रिंट करताना एक समस्या आली. कृपया पुन्‍हा प्रयत्न करा.</translation>
@@ -1083,10 +1081,10 @@
 <translation id="641643625718530986">प्रिंट करा...</translation>
 <translation id="6433501201775827830">तुमचे शोध इंजीन निवडा</translation>
 <translation id="6434309073475700221">टाकून द्या</translation>
+<translation id="6437162790453527153">तुमच्या सर्व डिव्हाइसवर तुमचे बुकमार्क आणि आणखी बरेच काही मिळवण्यासाठी साइन इन करा</translation>
 <translation id="6437478888915024427">पेज माहिती</translation>
 <translation id="6440291723980579689">तुम्ही पेज उघडल्यानंतरच ती लोड होतात</translation>
 <translation id="6441734959916820584">नाव खूपच मोठे आहे</translation>
-<translation id="6447558397796644647">तो बुकमार्क सापडत नाही. तुमचे शब्दलेखन तपासा किंवा नवीन बुकमार्क जोडा.</translation>
 <translation id="6459045781120991510">सर्वेक्षणे</translation>
 <translation id="6461962085415701688">फाइल उघडू शकत नाही</translation>
 <translation id="6464977750820128603">तुम्ही Chrome मध्ये भेट दिलेल्या साइट पाहू शकता आणि त्यांच्यासाठी टायमर सेट करू शकता.\n\nGoogle ला तुम्ही ज्या साइटसाठी टायमर सेट केला आणि त्यांना किती वेळ भेट दिली याबद्दलची माहिती मिळते. ही माहिती Digital wellbeing चांगले करण्यास वापरली जाते.</translation>
@@ -1438,6 +1436,7 @@
 <translation id="7986497153528221272">पासवर्ड पाहण्यासाठी, प्रथम तुमच्या डिव्हाइसवर स्क्रीन लॉक सेट करा</translation>
 <translation id="7995059495660416932">आशय उपलब्ध झाल्यावर तुम्हाला दिसेल</translation>
 <translation id="799576009106109668">तुम्हाला आणखी जलद ब्राउझ करता येईल कारण तुमच्या सध्याच्या वेबपेज भेटीच्या आधारावर आशय प्रोॲक्टिव्हपणे लोड केला जातो</translation>
+<translation id="8001245658307297681">तुम्ही स्थानिक फाइल पाहत आहात</translation>
 <translation id="8004582292198964060">ब्राउझर</translation>
 <translation id="8015452622527143194">पेजवरील प्रत्येक गोष्ट डीफॉल्ट आकारमानावर परत करा</translation>
 <translation id="8026238112629815203">या डिव्हाइसवर पासवर्ड कसे सेव्ह केले जातात ते आम्ही बदलले आहे</translation>

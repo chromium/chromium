@@ -64,7 +64,6 @@
 <translation id="1201402288615127009">अर्को</translation>
 <translation id="1210557957257435379">स्क्रिन रेकर्डिङ</translation>
 <translation id="121097972571826261">कर्सरलाई एक शब्द अगाडि लैजानुहोस्</translation>
-<translation id="1217633719248931900">एपमा जानुहोस्</translation>
 <translation id="1218444235442067213"><ph name="APP_NAME" />, Play Store एप</translation>
 <translation id="1225748608451425081">कुनै ज्ञात समस्याका कारण तपाईंको Chromebook लक गरिएको छ। तपाईं यति समयपछि साइन इन गर्न सक्नु हुने छ: <ph name="TIME_LEFT" />।</translation>
 <translation id="1229194443904279055">पाठ चयन गर्न छाड्नुहोस्</translation>
@@ -121,6 +120,7 @@
 <translation id="1383876407941801731">खोज्नुहोस्</translation>
 <translation id="1391102559483454063">अन</translation>
 <translation id="1394698770495054737">पूरा ब्लर</translation>
+<translation id="1395878931462960119">{DAYS,plural, =1{१ दिनअघि}other{# दिनअघि}}</translation>
 <translation id="1404963891829069586">फोकस साउन्डहरू</translation>
 <translation id="1407069428457324124">अँध्यारो थिम</translation>
 <translation id="1410568680128842168"><ph name="DATE_CELL_TOOL_TIP" />। एउटा मितिबाट अर्को मितिमा जान एरो कीहरू प्रयोग गर्नुहोस्।</translation>
@@ -210,6 +210,7 @@
 <translation id="174102739345480129">मार्कर अफ छ।</translation>
 <translation id="1743570585616704562">पहिचान भएन</translation>
 <translation id="1743927604032653654"><ph name="NOTIFICATION_TITLE" /> सूचना कोल्याप्स गर्नुहोस्</translation>
+<translation id="1744435831291625602">{HOURS,plural, =0{१ घण्टाभित्र}=1{१ घण्टाअघि}other{# घण्टाअघि}}</translation>
 <translation id="1746730358044914197">तपाईंको प्रशासकले इनपुट विधिहरूको कन्फिगर गर्नुभएको हो।</translation>
 <translation id="1747336645387973286">पूरा गर्नु पर्ने मिति: <ph name="DUE_DATE" /></translation>
 <translation id="1747827819627189109">अन-स्क्रिन किबोर्ड सक्षम गरियो</translation>
@@ -328,7 +329,6 @@
 <translation id="2293443480080733021">तपाईं कुन कार्यमा फोकस गर्न चाहनुहुन्छ? कार्य हाल्न इन्टर की थिच्नुहोस्।</translation>
 <translation id="229397294990920565">मोबाइल डेटा अफ गरिँदै छ...</translation>
 <translation id="2295777434187870477">माइक सक्रिय छ, टगल गर्नुले माइक म्युट गर्ने छ।</translation>
-<translation id="2298170939937364391">फुल स्क्रिन म्याग्निफायर सक्षम पारियो। यसलाई निष्क्रिय पार्न फेरि Ctrl+Search+M थिच्नुहोस्।</translation>
 <translation id="2302092602801625023">यो खाता Family Link मार्फत व्यवस्थित गरिन्छ</translation>
 <translation id="2303600792989757991">सञ्झ्याल सिंहावलोकन टगल गर्नुहोस्</translation>
 <translation id="2305738328104302723">Google Tasks मा भएका कार्यहरूको सूची: <ph name="GLANCEABLES_TASKS_LIST_NAME" /></translation>
@@ -347,6 +347,7 @@
 <translation id="2359808026110333948">जारी राख्नुहोस्</translation>
 <translation id="2360398059912971776">ब्याट्री</translation>
 <translation id="2361210043495191221">Wi-Fi टगल गर्नुहोस्। <ph name="STATE" />।</translation>
+<translation id="236574664504281623"><ph name="SESSION_NAME" /> बाट पठाइएको</translation>
 <translation id="2367186422933365202">तपाईंको Chromebook मा साइन इन गर्न सकिएन</translation>
 <translation id="2367972762794486313">एप्स देखाउनुहोस्</translation>
 <translation id="2368828502825385061">पत्ता लगाउनुहोस्</translation>
@@ -509,11 +510,11 @@
 <translation id="2963773877003373896">मोड3</translation>
 <translation id="2965227184985674128">माइक्रोफोन प्रयोग गर्ने अनुमति अन गर्ने हो?</translation>
 <translation id="296762781903199866"><ph name="LANGUAGE" /> भाषाका वाक् पहिचानसम्बन्धी फाइलहरू डाउनलोड गर्न सकिएन</translation>
+<translation id="2968761508099987738">तपाईंको हालको लोकेसन अहिले प्रयोग गर्न मिल्दैन।</translation>
 <translation id="2970920913501714344">एप, विस्तार र विषयवस्तुहरू स्थापना गर्नुहोस्</translation>
 <translation id="2977598380246111477">अर्को नम्बर</translation>
 <translation id="2985148236010982088">सबै एपहरू हेर्नुहोस्</translation>
 <translation id="2992327365391326550">डिभाइसको माइक्रोफोन बटन अफ गरिएको छ।</translation>
-<translation id="2996462380875591307">डक गरिएको म्याग्निफायर सक्षम पारियो। यसलाई निष्क्रिय पार्न फेरि Ctrl+खोज+D कुञ्जी थिच्नुहोस्।</translation>
 <translation id="3000461861112256445">मोनो अडियो</translation>
 <translation id="3001391739687111021">स्क्रिनको आकार परिवर्तन गर्नुहोस्</translation>
 <translation id="3009178788565917040">निर्गत</translation>
@@ -984,6 +985,7 @@
 <translation id="468293128311738995">तपाईंको फोनमा भएका एपहरू</translation>
 <translation id="4690510401873698237">सेल्फ पुछारमा छ</translation>
 <translation id="4696813013609194136">अभिभावकको कोडमार्फत डिभाइस अनलक गर्नुहोस्</translation>
+<translation id="4697357603686181098">यो अनुरोधका सम्बन्धमा मद्दत गर्न सकिँदैन। अर्को अनुरोध गरी हेर्नुहोस्।</translation>
 <translation id="4702647871202761252">गोपनीयताको स्क्रिन निष्क्रिय छ</translation>
 <translation id="4706121060329443414">डाउनलोड गर्ने प्रयास पछि गरिने छ। बोलिएको कुरा प्रोसेस गर्नका निम्ति Google मा पठाइने छ।</translation>
 <translation id="470644585772471629">कलर इन्भर्सन</translation>
@@ -1896,6 +1898,7 @@
 <translation id="7982878511129296052">अफ गरिँदै छ...</translation>
 <translation id="7984197416080286869">फिंगरप्रिन्टमार्फत अनलक गर्ने अत्यधिक प्रयासहरू गरिए</translation>
 <translation id="798779949890829624">तपाईंका प्रशासक यो सेटिङ व्यवस्थापन गर्नुहुन्छ</translation>
+<translation id="7989206653429884947">प्रायः खोलिने</translation>
 <translation id="799296642788192631">तपाईं महत्त्वपूर्ण फाइलहरू पिन गर्न सक्नुहुन्छ। पिन गर्न कुनै फाइलमाथि होभर गर्नुहोस् वा "फाइलहरू" खोल्नुहोस् र कुनै फाइलमा दायाँ क्लिक गर्नुहोस्।</translation>
 <translation id="7994370417837006925">बहु साइन-इन</translation>
 <translation id="7995804128062002838">स्क्रिन क्याप्चर गर्न सकिएन</translation>
@@ -2081,6 +2084,7 @@
 <translation id="8747464587821437069"><ph name="CAMERA_AND_MICROPHONE_ACCESS_STATUS" />,
         <ph name="SCREEN_SHARE_STATUS" /></translation>
 <translation id="8749787185286745219">समय सकियो। अद्भुत! 🎉</translation>
+<translation id="8753368202781196133">यो भाषा अहिले प्रयोग गर्न मिल्दैन।</translation>
 <translation id="8755498163081687682">आफ्नो पहिचान पुष्टि गर्नुहोस्: <ph name="ORIGIN_NAME" /> तपाईंको पहिचान पुष्टि गर्न चाहन्छ</translation>
 <translation id="875593634123171288">VPN सेटिङहरू देखाउनुहोस्</translation>
 <translation id="8756799553341497810">तपाईं यो भ्यूबाट बाहिरिएपछि एपको लेआउट कस्टमाइज गर्न सुरु गर्न सक्नुहुन्छ।</translation>
@@ -2143,7 +2147,6 @@
 <translation id="8982906748181120328">नजिकैका यन्त्रमा फेला पर्ने</translation>
 <translation id="8983038754672563810">HSPA</translation>
 <translation id="8990809378771970590"><ph name="IME_NAME" /> प्रयोग गरिँदै</translation>
-<translation id="8991617137207906966">कलर इन्भर्सन मोड अन गरियो। उक्त मोड अफ गर्न फेरि Ctrl+Search+H थिच्नुहोस्।</translation>
 <translation id="899350903320462459">सूचनासम्बन्धी कारबाही गर्न यन्त्रलाई <ph name="LOGIN_ID" /> का रूपमा अनलक गर्नुहोस्</translation>
 <translation id="8993733019280019776">तपाईं बोल्दै हुनुहुन्छ? तपाईंको माइक अफ छ। माइक चयन गरेर सो माइक अन गर्नुहोस्।</translation>
 <translation id="9000771174482730261">भण्डारण व्यवस्थापन गर्नुहोस्</translation>

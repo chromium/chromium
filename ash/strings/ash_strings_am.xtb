@@ -64,7 +64,6 @@
 <translation id="1201402288615127009">ቀጣይ</translation>
 <translation id="1210557957257435379">የማያ ገፅ ቀረጻ</translation>
 <translation id="121097972571826261">በየቃሉ ወደፊት</translation>
-<translation id="1217633719248931900">ወደ መተግበሪያ ይሂዱ</translation>
 <translation id="1218444235442067213"><ph name="APP_NAME" />፣ የPlay መደብር መተግበሪያ</translation>
 <translation id="1225748608451425081">የእርስዎ Chromebook በአንድ የታወቀ ችግር ምክንያት ተቆልፏል። ከሚከተለው ያህል ጊዜ በኋላ ወደ መለያ መግባት ይችላሉ፦ <ph name="TIME_LEFT" />።</translation>
 <translation id="1229194443904279055">መምረጥ ያቁሙ</translation>
@@ -251,6 +250,7 @@
 <translation id="1915307458270490472">ዝጋ</translation>
 <translation id="1918022425394817322">ካሜራ ላይኛው ቀኝ ጥግ ላይ ገጥሟል</translation>
 <translation id="1923539912171292317">ራስ-ሰር ጠቅታዎች</translation>
+<translation id="1925320505152357008">ከ1 ደቂቃ ያነሰ</translation>
 <translation id="1928739107511554905">ዝማኔውን ለማግኘት የእርስዎን Chromebook ከተያያዘው የቁልፍ ሰሌዳ ጋር እንደገና ለማስጀመር የንኪ ማያ ገጹን ይጠቀሙ።</translation>
 <translation id="1948405482892809935">ወደ ቀጣይ ተጠቃሚ ቀይር</translation>
 <translation id="1951012854035635156">ረዳት</translation>
@@ -327,7 +327,6 @@
 <translation id="2293443480080733021">ምን ላይ ትኩረት ማድረግ ይፈልጋሉ? ተግባሩን ለማከል አስገባን ይጫኑ።</translation>
 <translation id="229397294990920565">የተንቀሳቃሽ ስልክ ውሂብ እየጠፋ ነው...</translation>
 <translation id="2295777434187870477">ማይክሮፎን በርቷል፣ መቀያየር ግቤትን ድምጹን ይዘጋል</translation>
-<translation id="2298170939937364391">የሙሉ ማያ ገፅ ማጉያ ነቅቷል። እንዲጠፋ አድርጎ እንደገና ለመቀያየር Ctrl+ፍለጋ+M ይጫኑ።</translation>
 <translation id="2302092602801625023">ይህ መለያ በFamily Link የሚተዳደር ነው</translation>
 <translation id="2303600792989757991">የመስኮት አጠቃላይ እይታን ቀያይር</translation>
 <translation id="2305738328104302723">የGoogle ተግባሮች ዝርዝር፦ <ph name="GLANCEABLES_TASKS_LIST_NAME" /></translation>
@@ -512,7 +511,6 @@
 <translation id="2977598380246111477">ቀጣይ ቁጥር</translation>
 <translation id="2985148236010982088">ሁሉንም መተግበሪያዎች ይመልከቱ</translation>
 <translation id="2992327365391326550">የመሣሪያው ማይክሮፎን አዝራር ጠፍቷል።</translation>
-<translation id="2996462380875591307">የተተከለ ማጉያ ነቅቷል። እንደገና እንዲጠፋ አድርጎ ለመቀያየር Ctrl+ፍለጋ+D ይጫኑ።</translation>
 <translation id="3000461861112256445">ሞኖ ኦዲዮ</translation>
 <translation id="3001391739687111021">የማያ ገጽ መጠንን አርትዕ</translation>
 <translation id="3009178788565917040">ውጽዓት</translation>
@@ -606,6 +604,7 @@
 <translation id="334927402682780278">ጽሁፍን ከጠቋሚ ጀምሮ እስከ መስመሩ መጨረሻ ድረስ ይምረጡ</translation>
 <translation id="3349345708646875009">ተግባር መሪን ክፈት</translation>
 <translation id="3364721542077212959">የስቲለስ መሣሪያዎች</translation>
+<translation id="3365281428003534650">ጊዜ ቆጣሪ፣ ተግባር እና ሙዚቃ ያቀናብሩ</translation>
 <translation id="3365977133351922112">የእርስዎ ስልክ በጣም ርቋል። ስልክዎን ያስጠጉት።</translation>
 <translation id="3368922792935385530">ተያይዟል</translation>
 <translation id="3369111525500416043">በቅርብ ጊዜ ያበቃል</translation>
@@ -908,6 +907,7 @@
 <translation id="4406883609789734330">የቀጥታ ስርጭት መግለጫ ጽሁፍ</translation>
 <translation id="4412698727486357573">የእገዛ ማዕከል</translation>
 <translation id="4412944820643904175"><ph name="FEATURE_NAME" /> ጠፍቷል</translation>
+<translation id="4417647906073317561">የትኩረት ቅንብሮች። ለመመሰጥ ጊዜ ቆጣሪ፣ ተግባር እና ሙዚቃ ያቀናብሩ።</translation>
 <translation id="4424159417645388645">ዴስክ 5</translation>
 <translation id="4430019312045809116">ድምፅ</translation>
 <translation id="4441283832827406317">መተግበሪያዎች በስም ይደረደራሉ</translation>
@@ -1860,6 +1860,7 @@
         <ph name="MANAGED" />፣
         <ph name="IME" />፣
         <ph name="LOCALE" /></translation>
+<translation id="7899977217122813285">እያተኮሩ ሳሉ ማሳወቂያዎች እስከ <ph name="TIME" /> ድረስ ድምጸ-ከል ይደረግባቸዋል።</translation>
 <translation id="7901190436359881020">መስኮቶቹን ይለዋውጡ</translation>
 <translation id="7901405293566323524">የስልክ መገናኛ</translation>
 <translation id="7902625623987030061">የጣት አሻራ ዳሳሹን ይንኩ</translation>
@@ -2141,7 +2142,6 @@
 <translation id="8982906748181120328">በአቅራቢያ ያለ ታይነት</translation>
 <translation id="8983038754672563810">ኤችኤስፒኤ</translation>
 <translation id="8990809378771970590"><ph name="IME_NAME" />ን በመጠቀም ላይ</translation>
-<translation id="8991617137207906966">የተቃራኒ ቀለም ሁነታ ነቅቷል። መቀያየሪያውን ለማጥፋት Ctrl+Search+Hን እንደገና ይጫኑ።</translation>
 <translation id="899350903320462459">የማሳወቅ እርምጃውን ለማከናወን መሣሪያን እንደ <ph name="LOGIN_ID" /> ይክፈቱ</translation>
 <translation id="8993733019280019776">እያወሩ ነው? የእርስዎ ማይክሮፎን ጠፍቷል። እሱን ለማብራት ማይክሮፎኑን ይምረጡት።</translation>
 <translation id="9000771174482730261">ማከማቻን ያቀናብሩ</translation>

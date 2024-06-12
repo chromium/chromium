@@ -64,7 +64,6 @@
 <translation id="1201402288615127009">次へ</translation>
 <translation id="1210557957257435379">画面の録画</translation>
 <translation id="121097972571826261">1 語進む</translation>
-<translation id="1217633719248931900">アプリに移動</translation>
 <translation id="1218444235442067213"><ph name="APP_NAME" />、Play ストア アプリ</translation>
 <translation id="1225748608451425081">既知の問題により、Chromebook はロックされています。<ph name="TIME_LEFT" /> 後にログインできるようになります。</translation>
 <translation id="1229194443904279055">選択を終了</translation>
@@ -252,6 +251,7 @@
 <translation id="1915307458270490472">通話を終了</translation>
 <translation id="1918022425394817322">カメラは右上にスナップされています</translation>
 <translation id="1923539912171292317">自動クリック</translation>
+<translation id="1925320505152357008">1 分未満</translation>
 <translation id="1928739107511554905">アップデートを取得するには、キーボードが接続された状態で、タッチスクリーンを使って Chromebook を再起動してください。</translation>
 <translation id="1948405482892809935">次のユーザーに切り替えます</translation>
 <translation id="1951012854035635156">アシスタント</translation>
@@ -328,7 +328,6 @@
 <translation id="2293443480080733021">何の作業に集中しますか？Enter キーを押してタスクを追加してください。</translation>
 <translation id="229397294990920565">モバイルデータ通信は無効になっています...</translation>
 <translation id="2295777434187870477">マイクはオンです。切り替えるとミュートになります。</translation>
-<translation id="2298170939937364391">全画面拡大鏡がオンになっています。オフにするには Ctrl+検索+M キーをもう一度押します。</translation>
 <translation id="2302092602801625023">このアカウントはファミリー リンクによって管理されています</translation>
 <translation id="2303600792989757991">ウィンドウ切り替えの概要</translation>
 <translation id="2305738328104302723">Google ToDo リストのタスク一覧: <ph name="GLANCEABLES_TASKS_LIST_NAME" /></translation>
@@ -513,7 +512,6 @@
 <translation id="2977598380246111477">次の番号</translation>
 <translation id="2985148236010982088">アプリをすべて表示</translation>
 <translation id="2992327365391326550">デバイスのマイクボタンはオフになっています。</translation>
-<translation id="2996462380875591307">ドッキング拡大鏡がオンになっています。オフにするには Ctrl+検索+D キーをもう一度押します。</translation>
 <translation id="3000461861112256445">モノラル音声</translation>
 <translation id="3001391739687111021">画面サイズを編集</translation>
 <translation id="3009178788565917040">出力</translation>
@@ -607,6 +605,7 @@
 <translation id="334927402682780278">カーソル位置から行末までのテキストを選択する</translation>
 <translation id="3349345708646875009">タスク マネージャーを開きます</translation>
 <translation id="3364721542077212959">タッチペン ツール</translation>
+<translation id="3365281428003534650">タイマー、タスク、音楽を設定する</translation>
 <translation id="3365977133351922112">スマートフォンが遠すぎます。近づけてください。</translation>
 <translation id="3368922792935385530">接続済み</translation>
 <translation id="3369111525500416043">期限間近</translation>
@@ -910,6 +909,7 @@
 <translation id="4406883609789734330">自動字幕起こし</translation>
 <translation id="4412698727486357573">ヘルプセンター</translation>
 <translation id="4412944820643904175"><ph name="FEATURE_NAME" /> はオフになっています。</translation>
+<translation id="4417647906073317561">フォーカス モードの設定。タイマー、タスク、音楽を設定して、作業に集中できます。</translation>
 <translation id="4424159417645388645">デスク 5</translation>
 <translation id="4430019312045809116">音量</translation>
 <translation id="4441283832827406317">アプリは名前順で並べ替えられています</translation>
@@ -1866,6 +1866,7 @@
         <ph name="MANAGED" />
         <ph name="IME" />
         <ph name="LOCALE" /></translation>
+<translation id="7899977217122813285">フォーカス モードが終わる <ph name="TIME" /> まで通知はミュートされます</translation>
 <translation id="7901190436359881020">ウィンドウを入れ替える</translation>
 <translation id="7901405293566323524">スマートフォン ハブ</translation>
 <translation id="7902625623987030061">指紋認証センサーをタッチ</translation>
@@ -2146,7 +2147,6 @@
 <translation id="8982906748181120328">周辺ユーザーによる検出</translation>
 <translation id="8983038754672563810">HSPA</translation>
 <translation id="8990809378771970590"><ph name="IME_NAME" /> を使用しています</translation>
-<translation id="8991617137207906966">色反転モードをオンにしました。オフにするには Ctrl+検索+H キーをもう一度押します。</translation>
 <translation id="899350903320462459">通知に関する操作を行うには、<ph name="LOGIN_ID" /> でデバイスのロックを解除してください</translation>
 <translation id="8993733019280019776">話していますか？マイクがオフになっています。オンにするにはマイクを選択してください。</translation>
 <translation id="9000771174482730261">ストレージを管理</translation>

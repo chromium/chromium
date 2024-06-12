@@ -7,4 +7,5 @@
 <translation id="4301151630239508244">Annonsämnen är bara en av många saker som en webbplats kan använda för att anpassa annonser. Webbplatser kan visa annonser även utan annonsämnen, men de kanske är mindre anpassade. Läs mer om hur du <ph name="BEGIN_LINK_1" />hanterar annonsintegritet<ph name="END_LINK_1" />.</translation>
 <translation id="4598427486995631491">Dölj din IP-adress</translation>
 <translation id="6371812158043974664">När du är inloggad i Chromium bidrar den här inställningen till att hålla din IP-adress privat. Om Chromium misstänker att en webbplats spårar dig kan en del av din trafik skickas via integritetsservrar. Läs mer om <ph name="LINK_BEGIN" />hur IP-skydd fungerar<ph name="LINK_END" />.</translation>
+<translation id="7040031291654706261">Läs mer om <ph name="BEGIN_LINK" />hur IP-skydd fungerar<ph name="END_LINK" /></translation>
 </translationbundle>

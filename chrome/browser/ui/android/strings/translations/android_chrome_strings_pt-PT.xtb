@@ -380,7 +380,6 @@ Só alguém com a sua frase de acesso pode ler os dados encriptados. A Google n�
 <translation id="2904414404539560095">Lista de dispositivos com os quais quer partilhar um separador aberta à altura total.</translation>
 <translation id="2908243544703713905">Notícias não lidas disponíveis</translation>
 <translation id="2909615210195135082">Plataforma de notificações da Google</translation>
-<translation id="2912296070571964914">Faça a gestão dos tópicos que lhe interessam</translation>
 <translation id="2912345083818861431">Use o bloqueio de ecrã para ver os separadores anónimos abertos</translation>
 <translation id="2923908459366352541">O nome é inválido</translation>
 <translation id="2932150158123903946">Armazenamento do Google <ph name="APP_NAME" /></translation>
@@ -456,7 +455,6 @@ Só alguém com a sua frase de acesso pode ler os dados encriptados. A Google n�
 <translation id="3259831549858767975">Reduzir o tamanho de todos os itens na página</translation>
 <translation id="3264259168916048410">O seu computador quer utilizar este dispositivo para iniciar sessão num site</translation>
 <translation id="3265093782546847662">Todas as páginas de <ph name="DOMAIN" /></translation>
-<translation id="3265534588625245297">Faça a gestão dos sites que conhece</translation>
 <translation id="3269093882174072735">Carregar imagem</translation>
 <translation id="3280562213547448728">Pesquisa por voz</translation>
 <translation id="3282568296779691940">Iniciar sessão no Chrome</translation>
@@ -628,7 +626,6 @@ Só alguém com a sua frase de acesso pode ler os dados encriptados. A Google n�
 <translation id="4195643157523330669">Abrir num novo separador</translation>
 <translation id="4197828496439691735">{NUM_TABS,plural, =1{1 separador neste dispositivo}other{# separadores neste dispositivo}}</translation>
 <translation id="4198423547019359126">Não existem localizações de transferência disponíveis.</translation>
-<translation id="4198664641856813238">Inicie sessão para obter marcadores, palavras-passe e muito mais em todos os seus dispositivos</translation>
 <translation id="4202218894997543208">Tópicos que bloqueou</translation>
 <translation id="4214315110991671325">Se permitir cookies, o Chrome pode utilizá-los para o pré-carregamento.</translation>
 <translation id="4216511743389425832">Ouvir esta página</translation>
@@ -828,7 +825,6 @@ A sua Conta Google pode ter outras formas do histórico de navegação, como pes
 <translation id="510275257476243843">Falta 1 hora</translation>
 <translation id="5114895953710637392">A página para filtrar por app está fechada.</translation>
 <translation id="5115811374190515607">para <ph name="PRODUCT_NAME" /></translation>
-<translation id="5118713593561876160">Interesses</translation>
 <translation id="5122378528687922675">Se precisares de ajuda, pede à pessoa adulta responsável (<ph name="PARENT_NAME_1" /> ou <ph name="PARENT_NAME_2" />)</translation>
 <translation id="5123685120097942451">Separador de navegação anónima</translation>
 <translation id="5132942445612118989">Sincronize as suas palavras-passe, o histórico e muito mais em todos os dispositivos</translation>
@@ -842,7 +838,6 @@ A sua Conta Google pode ter outras formas do histórico de navegação, como pes
 <translation id="5171045022955879922">Pesquise ou escreva URL</translation>
 <translation id="5174700554036517242">O separador está de novo na altura inicial</translation>
 <translation id="5180063720319462041">Página traduzida para <ph name="TARGET_LANGUAGE" /></translation>
-<translation id="5186634140793586141">Faça a gestão dos tópicos e das pesquisas que lhe interessam</translation>
 <translation id="5191251636205085390">Saiba mais e controle novas tecnologias que visam substituir cookies de terceiros.</translation>
 <translation id="5204967432542742771">Introduzir palavra-passe</translation>
 <translation id="5206168361184759344">{FILE_COUNT,plural, =1{A transferir o ficheiro…}other{A transferir # ficheiros…}}</translation>
@@ -1091,7 +1086,6 @@ Por exemplo, alguns Sites podem responder a este pedido ao mostrar-lhe anúncios
 <translation id="6437478888915024427">Informações da página</translation>
 <translation id="6440291723980579689">As páginas só são carregadas depois de as abrir</translation>
 <translation id="6441734959916820584">O nome é demasiado longo</translation>
-<translation id="6447558397796644647">Não é possível encontrar esse marcador. Verifique a ortografia ou adicione um novo marcador.</translation>
 <translation id="6459045781120991510">Inquéritos</translation>
 <translation id="6461962085415701688">Não é possível abrir o ficheiro</translation>
 <translation id="6464977750820128603">Pode ver os sites que visita no Chrome e definir temporizadores para os mesmos.\n\nA Google obtém informações sobre os sites para os quais define temporizadores e durante quanto tempo os visita. Estas informações são utilizadas para melhorar o Bem-estar digital.</translation>

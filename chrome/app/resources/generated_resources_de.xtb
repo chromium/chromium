@@ -1852,6 +1852,7 @@ Wenn du die Family Link App auf deinem Gerät installierst, kannst du die Einste
 <translation id="233375395665273385">Löschen und abmelden</translation>
 <translation id="233471714539944337">Sensible Inhalte</translation>
 <translation id="2335111415680198280">{0,plural, =1{# Fenster schließen}other{# Fenster schließen}}</translation>
+<translation id="2335758110242123814">Gruppe öffnen</translation>
 <translation id="2336228925368920074">Alle Tabs als Lesezeichen speichern...</translation>
 <translation id="2336258397628212480">„<ph name="APP_NAME" />“ druckt 1 Seite über „<ph name="PRINTER_NAME" />“ aus</translation>
 <translation id="2336381494582898602">Powerwash</translation>
@@ -1872,6 +1873,7 @@ Wenn du die Family Link App auf deinem Gerät installierst, kannst du die Einste
 <translation id="2351923523007389195">Zugelassen – <ph name="PERMISSION_DETAILS" />. Aktiviere den <ph name="LINK_BEGIN" />Standortzugriff für Systemdienste<ph name="LINK_END" />.</translation>
 <translation id="2352662711729498748">&lt; 1 MB</translation>
 <translation id="2352810082280059586">Notizen auf dem Sperrbildschirm werden automatisch in <ph name="LOCK_SCREEN_APP_NAME" /> gespeichert. Deine letzte Notiz wird weiterhin auf dem Sperrbildschirm angezeigt.</translation>
+<translation id="2353168619378866466">Gruppe öffnen</translation>
 <translation id="2353297238722298836">Kamera- und Mikrofonnutzung zulässig</translation>
 <translation id="2353910600995338714">Export erfolgreich</translation>
 <translation id="2355314311311231464">Die Bereitstellung ist nicht möglich, weil die Kontodetails nicht abgerufen werden konnten. Bitte noch einmal versuchen. Fehlercode: <ph name="ERROR_CODE" />.</translation>
@@ -2825,6 +2827,7 @@ Servernachricht: <ph name="SERVER_MSG" /></translation>
 <translation id="3033348223765101500">Du bestimmst über deine Daten</translation>
 <translation id="3036327949511794916">Die Rückgabefrist für dieses <ph name="DEVICE_TYPE" /> ist abgelaufen.</translation>
 <translation id="3036546437875325427">Flash aktivieren</translation>
+<translation id="3037193115779933814">Buchstaben und Ziffern</translation>
 <translation id="3038272154009688107">Alle Websites anzeigen</translation>
 <translation id="3038612606416062604">Drucker manuell hinzufügen</translation>
 <translation id="3039491566278747710">Fehler beim Installieren der Offlinerichtlinie auf dem Gerät.</translation>
@@ -6021,6 +6024,7 @@ Berechtigungen, die du Websites und Apps bereits gewährt hast, gelten mögliche
 <translation id="5469540749878136997">Arbeitsspeicher auf Grundlage der Nutzung freigeben</translation>
 <translation id="5469852975082458401">Du kannst dich mit einem Textcursor auf den Seiten bewegen. Wenn du die Tastaturnavigation deaktivieren möchtest, drücke F7.</translation>
 <translation id="5470735824776589490">Für das Zurücksetzen deines Geräts mit Powerwash ist ein Neustart erforderlich. <ph name="LINK_BEGIN" />Weitere Informationen<ph name="LINK_END" /></translation>
+<translation id="5470741195701938302">Ziffern</translation>
 <translation id="5471768120198416576">Hallo! Ich bin die Stimme deiner Sprachausgabe.</translation>
 <translation id="5472627187093107397">Passwörter für diese Website speichern</translation>
 <translation id="5473062644742711742">Weitere Bedienungshilfen findest du im Chrome Web Store</translation>
@@ -6854,6 +6858,7 @@ Berechtigungen, die du Websites und Apps bereits gewährt hast, gelten mögliche
 <translation id="6101226222197207147">Neue App hinzugefügt (<ph name="EXTENSION_NAME" />)</translation>
 <translation id="6102043788063419338">Diese Datei wurde vom Erweiterten Sicherheitsprogramm blockiert.</translation>
 <translation id="6103681770816982672">Achtung: Du wechselst zum Entwicklerkanal</translation>
+<translation id="610395411842312282">Zwei nebeneinander liegende Fenster gruppieren</translation>
 <translation id="6104068876731806426">Google Konten</translation>
 <translation id="6104667115274478616">Audioeinstellungen für ChromeOS verwalten</translation>
 <translation id="6104796831253957966">Druckerwarteschlange voll</translation>
@@ -7737,7 +7742,7 @@ Du hast # weitere kompromittierte Passwörter. Der Google Passwortmanager empfi
 <translation id="6789592661892473991">Horizontal teilen</translation>
 <translation id="6789834167207639931">Gib das Passwort für dein Google-Konto auf dem nächsten Bildschirm noch einmal ein, um die Wiederherstellung abzuschließen</translation>
 <translation id="6790428901817661496">Wiedergabe</translation>
-<translation id="6790497603648687708"><ph name="EXTENSION_NAME" /> wurde per Remotezugriff hinzugefügt</translation>
+<translation id="6790497603648687708"><ph name="EXTENSION_NAME" /> wurde per Remote-Zugriff hinzugefügt</translation>
 <translation id="6790820461102226165">Person hinzufügen...</translation>
 <translation id="6793879402816827484">↓ <ph name="STATUS" /></translation>
 <translation id="6794511157503068">Wenn sich dein Passkey für <ph name="APP_NAME" /> auf einem USB-Sicherheitsschlüssel befindet, steck ihn jetzt an und berühre ihn</translation>

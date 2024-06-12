@@ -64,7 +64,6 @@
 <translation id="1201402288615127009">Дараагийнх</translation>
 <translation id="1210557957257435379">дэлгэцийн үйлдэл бичих</translation>
 <translation id="121097972571826261">Нэг үгээр урагшлуулах</translation>
-<translation id="1217633719248931900">Апп руу очих</translation>
 <translation id="1218444235442067213"><ph name="APP_NAME" />, Play Store-н апп</translation>
 <translation id="1225748608451425081">Тодорхой асуудлаас болоод таны Chromebook-г түгжлээ. Та <ph name="TIME_LEFT" />-н дараа нэвтрэх боломжтой.</translation>
 <translation id="1229194443904279055">Сонголтыг зогсоох</translation>
@@ -180,6 +179,7 @@
 <translation id="1611993646327628135">Асаалттай</translation>
 <translation id="1620510694547887537">Камер</translation>
 <translation id="1623768535032616219">Google Classroom-г хураах</translation>
+<translation id="163032029566320584"><ph name="UNAVAILABLE_DLC" /> боломжгүй байна.</translation>
 <translation id="1632985212731562677">Сэлгүүрийг Тохиргоо &gt; Хандалт хэсэгт идэвхгүй болгох боломжтой.</translation>
 <translation id="1637505162081889933"><ph name="NUM_DEVICES" /> төхөөрөмж</translation>
 <translation id="1639239467298939599">Ачаалж байна</translation>
@@ -251,6 +251,7 @@
 <translation id="1915307458270490472">Таслах</translation>
 <translation id="1918022425394817322">Камерыг баруун дээд булан руу зэрэгцүүлсэн</translation>
 <translation id="1923539912171292317">Автомат даралтууд</translation>
+<translation id="1925320505152357008">1 минутаас бага</translation>
 <translation id="1928739107511554905">Хавсаргасан гараар Chromebook ээ дахин эхлүүлэхийн тулд мэдрэгч дэлгэцийг ашиглан шинэчлэлт авна уу.</translation>
 <translation id="1948405482892809935">Дараагийн хэрэглэгч рүү сэлгэх</translation>
 <translation id="1951012854035635156">Туслах</translation>
@@ -327,7 +328,6 @@
 <translation id="2293443480080733021">Та юунд төвлөрөхийг хүсэж байна вэ? Ажил нэмэхийн тулд enter дээр дарна уу.</translation>
 <translation id="229397294990920565">Мобайл датаг унтрааж байна...</translation>
 <translation id="2295777434187870477">Микрофон асаалттай байна. Унтраах нь оролтын дууг хаана.</translation>
-<translation id="2298170939937364391">Бүтэн дэлгэц томруулагчийг идэвхжүүлсэн. Үүнийг унтраахын тулд Ctrl+Хайх+M-г дахин дарна уу.</translation>
 <translation id="2302092602801625023">Энэ бүртгэлийг Family Link-р удирддаг</translation>
 <translation id="2303600792989757991">Цонхыг тоймлож харах</translation>
 <translation id="2305738328104302723">Google-н ажлын жагсаалт: <ph name="GLANCEABLES_TASKS_LIST_NAME" /></translation>
@@ -512,7 +512,6 @@
 <translation id="2977598380246111477">Дараагийн тоо</translation>
 <translation id="2985148236010982088">Бүх аппыг харах</translation>
 <translation id="2992327365391326550">Төхөөрөмжийн микрофоны товчлуур унтраалттай байна.</translation>
-<translation id="2996462380875591307">Суурилуулсан томруулагчийг идэвхжүүлсэн. Үүнийг асаах/унтраахын тулд Ctrl+Search+D-г дахин дарна уу.</translation>
 <translation id="3000461861112256445">Моно аудио</translation>
 <translation id="3001391739687111021">Дэлгэцийн хэмжээг засах</translation>
 <translation id="3009178788565917040">Гаралт</translation>
@@ -606,6 +605,7 @@
 <translation id="334927402682780278">Курсороос мөрийн төгсгөл хүртэлх текстийг сонгох</translation>
 <translation id="3349345708646875009">Ажлын менежерийг нээх</translation>
 <translation id="3364721542077212959">Мэдрэгч үзэгний хэрэгсэл</translation>
+<translation id="3365281428003534650">Цаг хэмжигч ба ажил тохируул</translation>
 <translation id="3365977133351922112">Таны утас хэтэрхий хол байна. Утсаа илүү ойртуулна уу.</translation>
 <translation id="3368922792935385530">Холбогдсон</translation>
 <translation id="3369111525500416043">Эцсийн хугацаа нь удахгүй болох</translation>
@@ -721,6 +721,7 @@
 <translation id="3702846122927433391">Нигери улсын хүн ам</translation>
 <translation id="3705722231355495246">-</translation>
 <translation id="3706423975342040244">Энтертайнмент</translation>
+<translation id="3707093869106077605"><ph name="UNAVAILABLE_DLC_ONE" /> болон <ph name="UNAVAILABLE_DLC_TWO" /> боломжгүй байна.</translation>
 <translation id="3708186454126126312">Өмнө нь холбогдсон</translation>
 <translation id="3712143870407382523">Энэ талд цонх сонгоно уу</translation>
 <translation id="371370241367527062">Урд талын микрофон</translation>
@@ -909,6 +910,7 @@
 <translation id="4406883609789734330">Шууд тайлбар</translation>
 <translation id="4412698727486357573">Тусламжийн төв</translation>
 <translation id="4412944820643904175"><ph name="FEATURE_NAME" /> унтраалттай байна.</translation>
+<translation id="4417647906073317561">Төвлөрөх горимын тохиргоо. Төвлөрч эхлэхийн тулд цаг хэмжигч, ажил, хөгжим тохируулна уу.</translation>
 <translation id="4424159417645388645">Дэлгэц 5</translation>
 <translation id="4430019312045809116">Хэмжээ</translation>
 <translation id="4441283832827406317">Аппуудыг нэрээр эрэмбэлсэн</translation>
@@ -993,6 +995,7 @@
 <translation id="4733161265940833579"><ph name="BATTERY_PERCENTAGE" />% (Зүүн)</translation>
 <translation id="4734965478015604180">Хөндлөн</translation>
 <translation id="4735944890391795473">12-р дэлгэц</translation>
+<translation id="4736732123074402682">Холболтоо шалгаад, дахин оролдоно уу.</translation>
 <translation id="473775607612524610">Шинэчлэх</translation>
 <translation id="4740516757091333363">Хадгалсан дэлгэцийг устгах уу?</translation>
 <translation id="4746798685375253449">{0,plural, =1{Төхөөрөмжийг 1 хоногийн дотор өмнөх хувилбар луу нь шинэчилнэ үү}other{Төхөөрөмжийг # хоногийн дотор өмнөх хувилбар луу нь шинэчилнэ үү}}</translation>
@@ -1326,6 +1329,7 @@
 <translation id="588258955323874662">Дэлгэц дүүрэн</translation>
 <translation id="5887954372087850114"><ph name="WINDOW_TITLE" /> цонхыг <ph name="DESK_TITLE" />-д оноосон бөгөөд бусад бүх дэлгэцэд оноохоо больсон</translation>
 <translation id="588817334757907802">Файлыг Chrome хөтчид нээх</translation>
+<translation id="5892014525522223653">Та офлайн байна.</translation>
 <translation id="5895138241574237353">Дахин асаах</translation>
 <translation id="589817443623831496">Цэгээр скан хийх</translation>
 <translation id="5901316534475909376">Shift+Esc</translation>
@@ -1385,6 +1389,7 @@
 <translation id="6095425951508823973"><ph name="PROVIDER" />-тай холболт нэмэх</translation>
 <translation id="6099678161144790572">Өнгөрсөн сард зассан</translation>
 <translation id="6103838137565245112">систем</translation>
+<translation id="610395411842312282">Зэрэгцүүлсэн хоёр цонхоор бүлэглэх</translation>
 <translation id="6108952804512516814">ХОУ-аар үүсгэх</translation>
 <translation id="6114505516289286752"><ph name="LANGUAGE" /> дээрх ярианы файлуудыг татсан</translation>
 <translation id="6119360623251949462"><ph name="CHARGING_STATE" />. <ph name="BATTERY_SAVER_STATE" /></translation>
@@ -1392,6 +1397,7 @@
 <translation id="6121838516699723042"><ph name="FILENAME" />-н таталтыг баталгаажуулах</translation>
 <translation id="612734058257491180">Зочны сургалтад Google Туслах боломжгүй байна.</translation>
 <translation id="6127370444807669747">Хувийн болгосон тоглуулах жагсаалт, төвлөрөх горимын илүү их хөгжмийг авах бол YouTube Music Premium-г туршиж үзнэ үү</translation>
+<translation id="6127395413317891856">Та офлайн байна. Холболтоо шалгаад, дахин оролдоно уу.</translation>
 <translation id="6129953537138746214">Space</translation>
 <translation id="6137566720514957455"><ph name="USER_EMAIL_ADDRESS" />-н хасах харилцах цонхыг нээнэ үү</translation>
 <translation id="6141205840878048728">Та юунд төвлөрөхийг хүсэж байна вэ?</translation>
@@ -1860,6 +1866,7 @@
         <ph name="MANAGED" />
         <ph name="IME" />
         <ph name="LOCALE" /></translation>
+<translation id="7899977217122813285">Төвлөрч байхад мэдэгдлийн дууг <ph name="TIME" /> хүртэл хаасан</translation>
 <translation id="7901190436359881020">Цонхнуудыг солих</translation>
 <translation id="7901405293566323524">Утасны Hub</translation>
 <translation id="7902625623987030061">Хурууны хээ мэдрэгчид хүрнэ үү</translation>
@@ -1964,6 +1971,7 @@
 <translation id="8257510091797044096">Төхөөрөмжөө тохируулах</translation>
 <translation id="8261506727792406068">Устгах</translation>
 <translation id="8262312463845990408">Дахин тоглуулахыг асаах/унтраах</translation>
+<translation id="8268302343625273732">Google Classroom-н бүх даалгаврыг харах</translation>
 <translation id="8277261673056602147">Дэлгэц дээрээ текст тодруулах</translation>
 <translation id="8287009018010202411">Бүтээмж</translation>
 <translation id="828708037801473432">Унтраалттай</translation>
@@ -2141,7 +2149,6 @@
 <translation id="8982906748181120328">Ойролцоо харагдац</translation>
 <translation id="8983038754672563810">HSPA</translation>
 <translation id="8990809378771970590"><ph name="IME_NAME" />-г ашиглаж байна</translation>
-<translation id="8991617137207906966">Өнгө урвуулах горимыг идэвхжүүлсэн. Үүнийг унтраахын тулд Ctrl+Search+H дээр дахин дарна уу.</translation>
 <translation id="899350903320462459">Мэдэгдлийн үйлдлийг гүйцэтгэхийн тулд төхөөрөмжийн түгжээг <ph name="LOGIN_ID" />-р тайлна уу</translation>
 <translation id="8993733019280019776">Та ярьж байна уу? Таны микрофон унтраалттай байна. Асаах микрофоноо сонгоно уу.</translation>
 <translation id="9000771174482730261">ХАДГАЛАХ САНГ УДИРДАХ</translation>

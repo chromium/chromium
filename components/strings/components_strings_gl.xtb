@@ -547,6 +547,7 @@ En caso contrario, a configuración de privacidade impedirao. Se o permites, o c
 <translation id="2003709556000175978">Restablecer o teu contrasinal agora</translation>
 <translation id="2003775180883135320">Catro perforacións na parte superior</translation>
 <translation id="2004697686368036666">As funcións dalgúns sitios poden deixar de funcionar</translation>
+<translation id="2005042463110681802">Móstrase esta advertencia porque o sitio non é compatible con HTTPS e estás no modo de incógnito. <ph name="BEGIN_LEARN_MORE_LINK" />Máis información<ph name="END_LEARN_MORE_LINK" /></translation>
 <translation id="2009942480257059311">Botón para crear un evento. Actívao para crear rapidamente un evento en Google Calendar</translation>
 <translation id="201174227998721785">Xestionar na configuración de Chrome os permisos e os datos almacenados dos sitios</translation>
 <translation id="2012276282211112603">Neste momento non hai ningún tema para mostrar</translation>
@@ -1482,6 +1483,7 @@ En caso contrario, a configuración de privacidade impedirao. Se o permites, o c
 <translation id="3799805948399000906">Solicitouse a fonte</translation>
 <translation id="3801265110651850478">Enviar unha solicitude Do Not Track co teu tráfico de navegación</translation>
 <translation id="380329542618494757">Nome</translation>
+<translation id="3803801106042434208">Estes buscadores son populares na túa rexión</translation>
 <translation id="3806932344025766608">Os atacantes do sitio que tentas visitar poderían enganarte para que instales software ou reveles datos como o teu contrasinal, teléfono ou número de tarxeta de crédito. Chrome recoméndache encarecidamente volver a un sitio seguro. <ph name="BEGIN_LEARN_MORE_LINK" />Máis información<ph name="END_LEARN_MORE_LINK" /></translation>
 <translation id="3807366285948165054">Desprazamento da imaxe no eixe X</translation>
 <translation id="3807709094043295184">Rock clásico e éxitos antigos</translation>

@@ -64,7 +64,6 @@
 <translation id="1201402288615127009">Келесі</translation>
 <translation id="1210557957257435379">экранды жазу</translation>
 <translation id="121097972571826261">Бір сөзге алға жүру</translation>
-<translation id="1217633719248931900">Қолданбаға өту</translation>
 <translation id="1218444235442067213"><ph name="APP_NAME" />, Play Store қолданбасы</translation>
 <translation id="1225748608451425081">Белгілі мәселеге байланысты Chromebook құлыпталды. Келесі уақыттан кейін аккаунтқа кіре аласыз: <ph name="TIME_LEFT" />.</translation>
 <translation id="1229194443904279055">Таңдауды тоқтату</translation>
@@ -328,7 +327,6 @@
 <translation id="2293443480080733021">Не нәрсеге зейін қойғыңыз келеді? Тапсырма қосу үшін Enter пернесін басыңыз.</translation>
 <translation id="229397294990920565">Мобильдік интернет өшірілуде...</translation>
 <translation id="2295777434187870477">Микрофон қосулы. Егер түймені бассаңыз, кіріс дыбыс өшеді.</translation>
-<translation id="2298170939937364391">Толық экран ұлғайтқышы қосулы. Оны өшіру үшін Ctrl+Search+M пернелер тіркесімін қайта басыңыз.</translation>
 <translation id="2302092602801625023">Бұл аккаунт Family Link арқылы басқарылады</translation>
 <translation id="2303600792989757991">Терезеде шолу режимін ауыстыру</translation>
 <translation id="2305738328104302723">Google тапсырмалар тізімі: <ph name="GLANCEABLES_TASKS_LIST_NAME" /></translation>
@@ -513,7 +511,6 @@
 <translation id="2977598380246111477">Келесі сан</translation>
 <translation id="2985148236010982088">Барлық қолданбаны қарау</translation>
 <translation id="2992327365391326550">Құрылғы микрофоны өшірулі.</translation>
-<translation id="2996462380875591307">Бекітілген ұлғайтқыш қосылды. Оны өшіру үшін Ctrl+Search+D пернелер тіркесімін қайта басыңыз.</translation>
 <translation id="3000461861112256445">Моно аудио</translation>
 <translation id="3001391739687111021">Экран өлшемін өзгерту</translation>
 <translation id="3009178788565917040">Шығыс</translation>
@@ -2143,7 +2140,6 @@
 <translation id="8982906748181120328">Nearby көрсетілуі</translation>
 <translation id="8983038754672563810">HSPA</translation>
 <translation id="8990809378771970590"><ph name="IME_NAME" /> пайдалану</translation>
-<translation id="8991617137207906966">Түс инверсиясы режимі қосылды. Оны өшіру үшін Ctrl+Search+H пернелер тіркесімін қайта басыңыз.</translation>
 <translation id="899350903320462459">Хабарландыруда ұсынылған әрекетті орындау үшін <ph name="LOGIN_ID" /> арқылы құрылғының құлпын ашыңыз</translation>
 <translation id="8993733019280019776">Сөйлеп жатырсыз ба? Микрофоныңыз өшірулі. Қосу үшін оны таңдаңыз.</translation>
 <translation id="9000771174482730261">ЖАДТЫ БАСҚАРУ</translation>

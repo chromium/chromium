@@ -64,7 +64,6 @@
 <translation id="1201402288615127009">ପରବର୍ତ୍ତୀ</translation>
 <translation id="1210557957257435379">ସ୍କ୍ରିନ୍ ରେକର୍ଡିଂ</translation>
 <translation id="121097972571826261">ଗୋଟିଏ ଶବ୍ଦ ଆଗକୁ ଯାଆନ୍ତୁ</translation>
-<translation id="1217633719248931900">ଆପକୁ ଯାଆନ୍ତୁ</translation>
 <translation id="1218444235442067213"><ph name="APP_NAME" />, Play Store ଆପ୍‌</translation>
 <translation id="1225748608451425081">ଏକ ଜଣାଶୁଣା ସମସ୍ୟା ଯୋଗୁଁ ଆପଣଙ୍କ Chromebook ଲକ୍ ହୋଇଯାଇଛି। ଆପଣ ଏତିକି ସମୟ ପରେ ସାଇନ୍ ଇନ୍ କରିବାକୁ ସକ୍ଷମ ହେବେ: <ph name="TIME_LEFT" />।</translation>
 <translation id="1229194443904279055">ଚୟନ କରିବା ବନ୍ଦ କରନ୍ତୁ</translation>
@@ -250,6 +249,7 @@
 <translation id="1915307458270490472">ସମାପ୍ତ କରନ୍ତୁ</translation>
 <translation id="1918022425394817322">କ୍ୟାମେରାକୁ ଉପର ଡାହାଣପାର୍ଶ୍ୱ କୋଣକୁ ସ୍ନାପ କରାଯାଇଛି</translation>
 <translation id="1923539912171292317">ସ୍ଵଚାଳିତ କ୍ଲିକ୍</translation>
+<translation id="1925320505152357008">15 ମିନିଟରୁ କମ</translation>
 <translation id="1928739107511554905">ଅପ୍‌ଡେଟ୍ ପ୍ରାପ୍ତ କରିବା ପାଇଁ, କୀବୋର୍ଡ ସଂଲଗ୍ନ ଥିବା ଆପଣଙ୍କର Chromebook ରିଷ୍ଟାର୍ଟ କରିବାକୁ ଟଚ୍‍ସ୍କ୍ରିନ୍‍ର ବ୍ୟବହାର କରନ୍ତୁ।</translation>
 <translation id="1948405482892809935">ପରବର୍ତ୍ତୀ ୟୁଜରଙ୍କୁ ସ୍ୱିଚ କରନ୍ତୁ</translation>
 <translation id="1951012854035635156">Assistant</translation>
@@ -326,7 +326,6 @@
 <translation id="2293443480080733021">ଆପଣ କାହା ଉପରେ ଫୋକସ କରିବାକୁ ପସନ୍ଦ କରିବେ? ଟାସ୍କ ଯୋଗ କରିବା ପାଇଁ ଏଣ୍ଟର କୀ'କୁ ଦବାନ୍ତୁ।</translation>
 <translation id="229397294990920565">ମୋବାଇଲ୍ ଡାଟା ବନ୍ଦ କରାଯାଉଛି...</translation>
 <translation id="2295777434187870477">ମାଇକ୍ ଚାଲୁ ଅଛି, ଟୋଗଲ୍ କରିବା ଦ୍ୱାରା ଇନପୁଟ୍ ମ୍ୟୁଟ୍ ହୋଇଯିବ।</translation>
-<translation id="2298170939937364391">ପୂର୍ଣ୍ଣ ସ୍କ୍ରିନ ମ୍ୟାଗ୍ନିଫାୟର ସକ୍ଷମ କରାଯାଇଛି। ଟୋଗଲ କରି ଏହାକୁ ବନ୍ଦ କରିବା ପାଇଁ ପୁଣି Ctrl+Search+M ଦବାନ୍ତୁ।</translation>
 <translation id="2302092602801625023">Family Link ଦ୍ୱାରା ଏହି ଆକାଉଣ୍ଟ ପରିଚାଳିତ ହେଉଛି</translation>
 <translation id="2303600792989757991">ୱିଣ୍ଡୋର ସାରାଂଶ ଟୋଗଲ୍ କରନ୍ତୁ</translation>
 <translation id="2305738328104302723">Google ଟାସ୍କଗୁଡ଼ିକର ତାଲିକା: <ph name="GLANCEABLES_TASKS_LIST_NAME" /></translation>
@@ -511,7 +510,6 @@
 <translation id="2977598380246111477">ପରବର୍ତ୍ତୀ ନମ୍ବର</translation>
 <translation id="2985148236010982088">ସମସ୍ତ ଆପ ଦେଖନ୍ତୁ</translation>
 <translation id="2992327365391326550">ଡିଭାଇସର ମାଇକ୍ରୋଫୋନ୍ ବଟନ୍ ବନ୍ଦ କରାଯାଇଛି।</translation>
-<translation id="2996462380875591307">ଡକ ହୋଇଥିବା ମେଗ୍ନିଫାୟରକୁ ସକ୍ଷମ କରାଯାଇଛି। ଏହାକୁ ଟୋଗଲ କରି ବନ୍ଦ କରିବାକୁ ପୁଣି Ctrl+Search+D ଦବାନ୍ତୁ।</translation>
 <translation id="3000461861112256445">ମୋନୋ ଅଡିଓ</translation>
 <translation id="3001391739687111021">ସ୍କ୍ରିନ ସାଇଜ ଏଡିଟ କରନ୍ତୁ</translation>
 <translation id="3009178788565917040">ଆଉଟ୍‌ପୁଟ୍</translation>
@@ -605,6 +603,7 @@
 <translation id="334927402682780278">କର୍ସରରୁ ଲାଇନର ଶେଷ ପର୍ଯ୍ୟନ୍ତ ଟେକ୍ସଟ ଚୟନ କରନ୍ତୁ</translation>
 <translation id="3349345708646875009">ଟାସ୍କ ମେନେଜର ଖୋଲନ୍ତୁ</translation>
 <translation id="3364721542077212959">ଷ୍ଟାଇଲସ୍‌ ଟୁଲ୍ସ</translation>
+<translation id="3365281428003534650">ଏକ ଟାଇମର, ଟାସ୍କ ଓ ମ୍ୟୁଜିକ ସେଟ କର</translation>
 <translation id="3365977133351922112">ଆପଣଙ୍କ ଫୋନଟି ବହୁତ ଦୂରରେ ଅଛି। ଆପଣଙ୍କ ଫୋନକୁ ପାଖକୁ ଆଣନ୍ତୁ।</translation>
 <translation id="3368922792935385530">ସଂଯୁକ୍ତ ହୋଇଛି</translation>
 <translation id="3369111525500416043">ଧାର୍ଯ୍ୟ ତାରିଖ ଶୀଘ୍ର ଆସୁଅଛି</translation>
@@ -907,6 +906,7 @@
 <translation id="4406883609789734330">ଲାଇଭ୍ କ୍ୟାପସନ୍</translation>
 <translation id="4412698727486357573">ସହାୟତା କେନ୍ଦ୍ର</translation>
 <translation id="4412944820643904175"><ph name="FEATURE_NAME" /> ବନ୍ଦ ଅଛି।</translation>
+<translation id="4417647906073317561">ଫୋକସ ସେଟିଂସ। ବ୍ୟବହାର କରିବା ଆରମ୍ଭ କରିବା ପାଇଁ ଏକ ଟାଇମର, ଟାସ୍କ ଓ ମ୍ୟୁଜିକ ସେଟ କରନ୍ତୁ।</translation>
 <translation id="4424159417645388645">ଡେସ୍କ 5</translation>
 <translation id="4430019312045809116">ଭଲ୍ୟୁମ୍</translation>
 <translation id="4441283832827406317">ଆପଗୁଡ଼ିକୁ ନାମ ଅନୁସାରେ ସର୍ଟ କରାଯାଇଛି</translation>
@@ -1857,6 +1857,7 @@
         <ph name="MANAGED" />
         <ph name="IME" />
         <ph name="LOCALE" /></translation>
+<translation id="7899977217122813285">ଫୋକସ କରିବା ସମୟରେ <ph name="TIME" /> ପର୍ଯ୍ୟନ୍ତ ବିଜ୍ଞପ୍ତିଗୁଡ଼ିକୁ ମ୍ୟୁଟ କରାଯାଇଛି</translation>
 <translation id="7901190436359881020">ୱିଣ୍ଡୋଗୁଡ଼ିକୁ ସ୍ୱାପ କରନ୍ତୁ</translation>
 <translation id="7901405293566323524">ଫୋନ୍ ହବ୍</translation>
 <translation id="7902625623987030061">ଟିପଚିହ୍ନ ସେନ୍ସରକୁ ଛୁଅଁନ୍ତୁ</translation>
@@ -2137,7 +2138,6 @@
 <translation id="8982906748181120328">Nearby ଭିଜିବିଲିଟୀ</translation>
 <translation id="8983038754672563810">HSPA</translation>
 <translation id="8990809378771970590"><ph name="IME_NAME" /> ବ୍ୟବହାର କରି</translation>
-<translation id="8991617137207906966">କଲର ଇନଭର୍ସନ ମୋଡକୁ ସକ୍ଷମ କରାଯାଇଛି। ଏହାକୁ ଟୋଗଲ କରି ବନ୍ଦ କରିବା ପାଇଁ ପୁଣି Ctrl+Search+H ଦବାନ୍ତୁ।</translation>
 <translation id="899350903320462459">ବିଜ୍ଞପ୍ତି କାର୍ଯ୍ୟ ସମ୍ପାଦନ କରିବାକୁ ଡିଭାଇସ୍‌କୁ <ph name="LOGIN_ID" /> ଭାବେ ଅନ୍‌ଲକ୍‌ କରନ୍ତୁ</translation>
 <translation id="8993733019280019776">ଆପଣ କିଛି କହୁଛନ୍ତି? ଆପଣଙ୍କ ମାଇକ ବନ୍ଦ ଅଛି। ମାଇକକୁ ଚାଲୁ କରିବା ପାଇଁ ଏହାକୁ ଚୟନ କରନ୍ତୁ।</translation>
 <translation id="9000771174482730261">ଷ୍ଟୋରେଜ ପରିଚାଳନା କରନ୍ତୁ</translation>

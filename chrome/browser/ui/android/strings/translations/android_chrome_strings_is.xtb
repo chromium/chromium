@@ -376,7 +376,6 @@ Aðeins einstaklingar sem eru með aðgangsorðið þitt geta lesið dulkóðuð
 <translation id="2904414404539560095">Tækjalisti fyrir deilingu flipa sem er opinn á öllum skjánum.</translation>
 <translation id="2908243544703713905">Ólesnar sögur tilbúnar</translation>
 <translation id="2909615210195135082">Tilkynningakerfi Google</translation>
-<translation id="2912296070571964914">Stjórna umfjöllunarefnum sem þú hefur áhuga á</translation>
 <translation id="2912345083818861431">Nota skjálás til að sjá opna huliðsflipa</translation>
 <translation id="2923908459366352541">Nafnið er ógilt</translation>
 <translation id="2932150158123903946">Google <ph name="APP_NAME" /> geymslurými</translation>
@@ -452,7 +451,6 @@ Aðeins einstaklingar sem eru með aðgangsorðið þitt geta lesið dulkóðuð
 <translation id="3259831549858767975">Minnka allt á síðunni</translation>
 <translation id="3264259168916048410">Tölvan vill nota þetta tæki til að skrá inn á vefsvæði</translation>
 <translation id="3265093782546847662">Allar síður á <ph name="DOMAIN" /></translation>
-<translation id="3265534588625245297">Stjórna vefsvæðunum sem þú fylgir</translation>
 <translation id="3269093882174072735">Hlaða mynd</translation>
 <translation id="3280562213547448728">Raddleit</translation>
 <translation id="3282568296779691940">Skráðu þig inn á Chrome</translation>
@@ -624,7 +622,6 @@ Aðeins einstaklingar sem eru með aðgangsorðið þitt geta lesið dulkóðuð
 <translation id="4195643157523330669">Opna í nýjum flipa</translation>
 <translation id="4197828496439691735">{NUM_TABS,plural, =1{1 flipi í þessu tæki}one{# flipi í þessu tæki}other{# flipar í þessu tæki}}</translation>
 <translation id="4198423547019359126">Engar tiltækar niðurhalsstaðsetningar</translation>
-<translation id="4198664641856813238">Skráðu þig inn til að sjá bókamerkin þín, aðgangsorð og fleira í öllum tækjunum þínum</translation>
 <translation id="4202218894997543208">Umfjöllunarefni sem þú hefur sett á bannlista</translation>
 <translation id="4214315110991671325">Chrome kann að nota fótspor við forhleðslu ef þú leyfir fótspor.</translation>
 <translation id="4216511743389425832">Hlusta á þessa síðu</translation>
@@ -824,7 +821,6 @@ Google reikningurinn þinn kann að vera með annars konar vefskoðunarferil, sv
 <translation id="510275257476243843">Ein klst. eftir</translation>
 <translation id="5114895953710637392">Síublað forrita er lokað.</translation>
 <translation id="5115811374190515607"><ph name="PRODUCT_NAME" /></translation>
-<translation id="5118713593561876160">Áhugasvið</translation>
 <translation id="5122378528687922675">Ef þú þarft aðstoð skaltu biðja foreldri um hjálp (<ph name="PARENT_NAME_1" /> eða <ph name="PARENT_NAME_2" />)</translation>
 <translation id="5123685120097942451">Huliðsflipi</translation>
 <translation id="5132942445612118989">Samstilltu aðgangsorðin, ferilinn og fleira í öllum tækjum</translation>
@@ -838,7 +834,6 @@ Google reikningurinn þinn kann að vera með annars konar vefskoðunarferil, sv
 <translation id="5171045022955879922">Leitaðu eða sláðu inn vefslóð</translation>
 <translation id="5174700554036517242">Flipi er kominn aftur í upprunalega hæð</translation>
 <translation id="5180063720319462041">Síða þýdd yfir á <ph name="TARGET_LANGUAGE" /></translation>
-<translation id="5186634140793586141">Stjórnaðu umfjöllunarefnum og leitum sem þú hefur áhuga á</translation>
 <translation id="5191251636205085390">Kynntu þér og hafðu umsjón með nýrri tækni sem er ætlað að koma í stað fótspora þriðja aðila</translation>
 <translation id="5204967432542742771">Sláðu inn aðgangsorð</translation>
 <translation id="5206168361184759344">{FILE_COUNT,plural, =1{Sækir skrá…}one{Sækir # skrá…}other{Sækir # skrár…}}</translation>
@@ -1086,7 +1081,6 @@ Sum vefsvæði kunna til dæmis að bregðast við beiðninni með því að bir
 <translation id="6437478888915024427">Upplýsingar um síðu</translation>
 <translation id="6440291723980579689">Síður hlaðast eingöngu eftir að þú opnar þær</translation>
 <translation id="6441734959916820584">Heitið er of langt</translation>
-<translation id="6447558397796644647">Bókamerki finnst ekki. Athugaðu stafsetninguna eða bættu við nýju bókamerki.</translation>
 <translation id="6459045781120991510">Kannanir</translation>
 <translation id="6461962085415701688">Ekki hægt að opna skrá</translation>
 <translation id="6464977750820128603">Þú sérð vefsvæðin sem þú opnar í Chrome og velur teljara fyrir þau.\n\nGoogle fær upplýsingar um þau vefsvæði sem þú velur teljara fyrir og hversu lengi þú ert á þeim. Þessar upplýsingar eru notaðar til að bæta virkni stafrænnar vellíðunar.</translation>

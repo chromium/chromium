@@ -64,7 +64,6 @@ Vifuatavyo ni vitu unavyoweza kujaribu ili uanze.</translation>
 <translation id="1201402288615127009">Endelea</translation>
 <translation id="1210557957257435379">kurekodi skrini</translation>
 <translation id="121097972571826261">Sogeza mbele kwa neno moja</translation>
-<translation id="1217633719248931900">Nenda kwenye programu</translation>
 <translation id="1218444235442067213"><ph name="APP_NAME" />, Programu ya Duka la Google Play</translation>
 <translation id="1225748608451425081">Tumefunga Chromebook yako kwa sababu ya tatizo linalojulikana. Utaweza kuingia katika akaunti baada ya: <ph name="TIME_LEFT" />.</translation>
 <translation id="1229194443904279055">Acha kuchagua</translation>
@@ -327,7 +326,6 @@ Vifuatavyo ni vitu unavyoweza kujaribu ili uanze.</translation>
 <translation id="2293443480080733021">Je, ungependa kuangazia nini? Bonyeza "Enter" ili uweke jukumu.</translation>
 <translation id="229397294990920565">Data ya mtandao wa simu inazima...</translation>
 <translation id="2295777434187870477">Maikrofoni imewasha, ukigeuza swichi utaizima.</translation>
-<translation id="2298170939937364391">Umewasha Kikuza Skrini Nzima. Bonyeza Ctrl+Search+M tena ili ukizime.</translation>
 <translation id="2302092602801625023">Akaunti hii inasimamiwa na Family Link</translation>
 <translation id="2303600792989757991">Geuza muhtasari wa dirisha</translation>
 <translation id="2305738328104302723">Orodha ya majukumu kwenye Google: <ph name="GLANCEABLES_TASKS_LIST_NAME" /></translation>
@@ -512,7 +510,6 @@ Vifaa <ph name="DEVICECOUNT" /> vimeunganishwa.</translation>
 <translation id="2977598380246111477">Nambari inayofuata</translation>
 <translation id="2985148236010982088">Angalia programu zote</translation>
 <translation id="2992327365391326550">Kitufe cha maikrofoni ya kifaa kimezimwa.</translation>
-<translation id="2996462380875591307">Umewasha Kikuzaji Kilichoambatishwa. Bonyeza Ctrl+Search+D tena ili ukizime.</translation>
 <translation id="3000461861112256445">Kipengele cha sauti moja</translation>
 <translation id="3001391739687111021">Badilisha ukubwa wa skrini</translation>
 <translation id="3009178788565917040">Towe</translation>
@@ -2140,7 +2137,6 @@ Arifa, madirisha na vidirisha vya baadaye vitagawanywa kati ya maeneo-kazi.</tra
 <translation id="8982906748181120328">Kuonekana</translation>
 <translation id="8983038754672563810">HSPA</translation>
 <translation id="8990809378771970590">Unatumia <ph name="IME_NAME" /></translation>
-<translation id="8991617137207906966">Umewasha Hali ya Ugeuzaji Rangi. Bonyeza tena kitufe cha "Ctrl", "Tafuta" na "H" kwa wakati mmoja ili uzime ugeuzaji rangi.</translation>
 <translation id="899350903320462459">Fungua kifaa kwa kuingia katika akaunti ukitumia <ph name="LOGIN_ID" /> ili utekeleze kitendo cha arifa</translation>
 <translation id="8993733019280019776">Je, unazungumza? Maikrofoni yako imezimwa. Chagua maikrofoni ili uiwashe.</translation>
 <translation id="9000771174482730261">DHIBITI NAFASI YA HIFADHI</translation>

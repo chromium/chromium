@@ -851,6 +851,7 @@
 <translation id="5345660046352249607">{COUNT,plural, =1{මෙම පැකේජය නිරීක්ෂණය කරන්න ද?}one{පැකේජ {COUNT}ක් නිරීක්ෂණය කරන්න ද?}other{පැකේජ {COUNT}ක් නිරීක්ෂණය කරන්න ද?}}</translation>
 <translation id="5348775987281903912">ඔබට මෙම පිටුව බෙදා ගැනීමේ බොත්තමෙන් මෙහි බෙදා ගත හැක.</translation>
 <translation id="536067926684072644">පිටුසන් පෙන්වන්න</translation>
+<translation id="537853552771686272">ඔබ උනන්දුවක් දක්වන මාතෘකා සහ අඩවි කළමනාකරණය කරන්න</translation>
 <translation id="5379352933722332597">{count,plural, =1{පිටුසන "{title}" වෙත සුරකින ලදි. එය සුරැකෙන්නේ මෙම උපාංගයට පමණි.}one{පිටුසන් {count} ක් "{title}" වෙත සුරකින ලදි. ඒවා සුරැකෙන්නේ මෙම උපාංගයට පමණි.}other{පිටුසන් {count} ක් "{title}" වෙත සුරකින ලදි. ඒවා සුරැකෙන්නේ මෙම උපාංගයට පමණි.}}</translation>
 <translation id="5388358297987318779">රූපය විවෘත කරන්න</translation>
 <translation id="5395707839134961196">සෙවුම් යන්ත්‍ර විස්තර සඟවන්න</translation>
@@ -933,6 +934,7 @@
 <translation id="5758631781033351321">ඔබට ඔබේ කියවීමේ ලැයිස්තුව මෙහි හමුවනු ඇත</translation>
 <translation id="5765456154762864099">මෙනුව → සැකසීම් → පෙරනිමි බ්‍රවුසරය</translation>
 <translation id="5777888488419460501">ගිණුමේ සුරකින්න</translation>
+<translation id="5778292857689789362">පටිති සමූහය, <ph name="GROUP_TITLE" />, පටිති <ph name="TABS_NUMBER" />.</translation>
 <translation id="5782227691023083829">පරිවර්තනය කරමින්...</translation>
 <translation id="5791632441210678828">අනුගමනය කරන සංග්‍රහය සඳහා වන අනුපිළිවෙලට සැකසීමේ බොත්තම.</translation>
 <translation id="5793373065989412701">ඔබේ පවුලේ සාමාජිකයින් පරීක්‍ෂා කෙරේ…</translation>

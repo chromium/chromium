@@ -547,6 +547,7 @@ Ellers vil det blive blokeret af dine privatlivsindstillinger. Det giver det ind
 <translation id="2003709556000175978">Nulstil din adgangskode nu</translation>
 <translation id="2003775180883135320">Fire huller øverst</translation>
 <translation id="2004697686368036666">Funktionerne på visse websites virker muligvis ikke</translation>
+<translation id="2005042463110681802">Du ser denne advarsel, fordi dette website ikke understøtter HTTPS, og du er i inkognitotilstand. <ph name="BEGIN_LEARN_MORE_LINK" />Få flere oplysninger<ph name="END_LEARN_MORE_LINK" /></translation>
 <translation id="2009942480257059311">Knappen Opret begivenhed, aktivér for hurtigt at oprette en ny begivenhed i Google Kalender</translation>
 <translation id="201174227998721785">Administrer tilladelser og data, der gemmes på websites, i Chrome-indstillingerne</translation>
 <translation id="2012276282211112603">Der er ingen emner at vise lige nu</translation>

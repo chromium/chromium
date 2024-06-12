@@ -16,6 +16,7 @@
 <translation id="1203500561924088507">ขอขอบคุณที่ติดตั้ง คุณต้องรีสตาร์ทเบราว์เซอร์ก่อนใช้ <ph name="BUNDLE_NAME" /></translation>
 <translation id="1262876892872089030">ขณะที่แท็บนี้ไม่มีการใช้งาน ระบบจะเพิ่มพื้นที่ว่างในหน่วยความจำเพื่อให้ใช้ Chromium ได้อย่างรวดเร็วอยู่เสมอ ทั้งนี้คุณจะเลือกยกเว้นให้เว็บไซต์นี้ทำงานตลอดเวลาได้</translation>
 <translation id="1265577313130862557">Chromium บล็อกการดาวน์โหลดนี้เนื่องจากไฟล์เป็นอันตราย</translation>
+<translation id="126567311906253476">เมื่อลงชื่อเข้าใช้บริการของ Google อย่าง Gmail หรือ YouTube ด้วย <ph name="USER_EMAIL" /> คุณจะลงชื่อเข้าใช้ Chromium ด้วยบัญชีเดียวกันได้โดยอัตโนมัติ</translation>
 <translation id="1315551408014407711">ตั้งค่าโปรไฟล์ Chromium ใหม่</translation>
 <translation id="1342274909142618978">ลบข้อมูลออกจาก Chromium (<ph name="URL" />) ด้วย</translation>
 <translation id="1414495520565016063">คุณลงชื่อเข้าใช้ Chromium แล้ว!</translation>
@@ -40,6 +41,7 @@
 <translation id="1749104137266986751">เมื่อ HTTPS ไม่พร้อมใช้งาน Chromium จะใช้การเชื่อมต่อที่ไม่ปลอดภัยโดยไม่แจ้งเตือนคุณ</translation>
 <translation id="1774152462503052664">ให้ Chromium ทำงานในพื้นหลัง</translation>
 <translation id="1779356040007214683">เพื่อให้ Chromium ปลอดภัยขึ้น เราได้ปิดส่วนขยายบางรายการที่ไม่ได้ระบุไว้ใน <ph name="IDS_EXTENSION_WEB_STORE_TITLE" /> และอาจถูกเพิ่มเข้ามาโดยที่คุณไม่รู้ตัว</translation>
+<translation id="1804128559285178512">คุณใช้รหัสผ่านและข้อมูลอื่นๆ จากบัญชี Google ใน Chromium ได้เมื่อลงชื่อเข้าใช้</translation>
 <translation id="1808667845054772817">ติดตั้ง Chromium ใหม่</translation>
 <translation id="1820835682567584003">Chromium กำลังพยายาม<ph name="AUTHENTICATION_PURPOSE" /></translation>
 <translation id="18552579716432081">หากต้องการลบข้อมูลการท่องเว็บออกจากอุปกรณ์นี้เท่านั้น แต่ยังเก็บข้อมูลดังกล่าวไว้ในบัญชี Google ให้<ph name="BEGIN_LINK" />ออกจากระบบ Chromium<ph name="END_LINK" /></translation>

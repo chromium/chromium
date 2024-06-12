@@ -64,7 +64,6 @@ Hier is 'n paar dinge wat jy kan probeer om aan die gang te kom.</translation>
 <translation id="1201402288615127009">Volgende</translation>
 <translation id="1210557957257435379">skermopname</translation>
 <translation id="121097972571826261">Vorentoe per woord</translation>
-<translation id="1217633719248931900">Gaan na program</translation>
 <translation id="1218444235442067213"><ph name="APP_NAME" />, Play Winkel-program</translation>
 <translation id="1225748608451425081">Jou Chromebook is gesluit weens 'n bekende probleem. Jy sal kan aanmeld ná: <ph name="TIME_LEFT" />.</translation>
 <translation id="1229194443904279055">Hou op kies</translation>
@@ -251,6 +250,7 @@ Hier is 'n paar dinge wat jy kan probeer om aan die gang te kom.</translation>
 <translation id="1915307458270490472">Sit neer</translation>
 <translation id="1918022425394817322">Kamera is geglip na hoek bo regs</translation>
 <translation id="1923539912171292317">Outomatiese klikke</translation>
+<translation id="1925320505152357008">minder as 1 min.</translation>
 <translation id="1928739107511554905">Vir 'n opdatering van jou sleutelbord moet jy die raakskerm gebruik om jou Chromebook met die sleutelbord aangeheg, te herbegin.</translation>
 <translation id="1948405482892809935">Skakel oor na volgende gebruiker</translation>
 <translation id="1951012854035635156">Assistent</translation>
@@ -327,7 +327,6 @@ Hier is 'n paar dinge wat jy kan probeer om aan die gang te kom.</translation>
 <translation id="2293443480080733021">Waarop wil jy graag fokus? Druk Enter om die taak by te voeg.</translation>
 <translation id="229397294990920565">Mobiele data skakel tans af …</translation>
 <translation id="2295777434187870477">Mikrofoon is aan. Wissel om invoer te demp.</translation>
-<translation id="2298170939937364391">Volskermvergrootglas is geaktiveer. Druk weer Ctrl+Search+M om dit af te skakel.</translation>
 <translation id="2302092602801625023">Hierdie rekening word deur Family Link bestuur</translation>
 <translation id="2303600792989757991">Wissel tussen vensteroorsig</translation>
 <translation id="2305738328104302723">Lys Google Take: <ph name="GLANCEABLES_TASKS_LIST_NAME" /></translation>
@@ -512,7 +511,6 @@ Hier is 'n paar dinge wat jy kan probeer om aan die gang te kom.</translation>
 <translation id="2977598380246111477">Volgende syfer</translation>
 <translation id="2985148236010982088">Sien alle programme</translation>
 <translation id="2992327365391326550">Toestel se mikrofoonknoppie is afgeskakel.</translation>
-<translation id="2996462380875591307">Gedokte vergrootglas is geaktiveer. Druk weer Ctrl+Search+D om dit af te skakel.</translation>
 <translation id="3000461861112256445">Mono-oudio</translation>
 <translation id="3001391739687111021">Wysig skermgrootte</translation>
 <translation id="3009178788565917040">Uitvoer</translation>
@@ -606,6 +604,7 @@ Hier is 'n paar dinge wat jy kan probeer om aan die gang te kom.</translation>
 <translation id="334927402682780278">Kies teks van skermpyltjie af tot by einde van reël</translation>
 <translation id="3349345708646875009">Maak taakbestuurder oop</translation>
 <translation id="3364721542077212959">Stilusnutsgoed</translation>
+<translation id="3365281428003534650">Stel ’n afteller, taak en musiek</translation>
 <translation id="3365977133351922112">Jou foon is te ver weg. Bring jou foon nader.</translation>
 <translation id="3368922792935385530">Gekoppel</translation>
 <translation id="3369111525500416043">Binnekort verskuldig</translation>
@@ -909,6 +908,7 @@ Sommige kenmerke is beperk om die batterylewe te verleng.</translation>
 <translation id="4406883609789734330">Intydse Onderskrifte</translation>
 <translation id="4412698727486357573">Hulpsentrum</translation>
 <translation id="4412944820643904175"><ph name="FEATURE_NAME" /> is af.</translation>
+<translation id="4417647906073317561">Fokusinstellings Stel ’n afteller, taak en musiek om aan die gang te kom.</translation>
 <translation id="4424159417645388645">Lessenaar 5</translation>
 <translation id="4430019312045809116">Volume</translation>
 <translation id="4441283832827406317">Programme word volgens naam gerangskik</translation>
@@ -1860,6 +1860,7 @@ Druk en hou weer die aan/af-skakelaar op die toestel om dit af te skakel.</trans
         <ph name="MANAGED" />
         <ph name="IME" />
         <ph name="LOCALE" /></translation>
+<translation id="7899977217122813285">Kennisgewings is tot <ph name="TIME" /> gedemp terwyl daar gefokus word</translation>
 <translation id="7901190436359881020">Ruil die vensters</translation>
 <translation id="7901405293566323524">Foonspil</translation>
 <translation id="7902625623987030061">Raak die vingerafdruksensor</translation>
@@ -2140,7 +2141,6 @@ Druk en hou weer die aan/af-skakelaar op die toestel om dit af te skakel.</trans
 <translation id="8982906748181120328">Naby-sigbaarheid</translation>
 <translation id="8983038754672563810">HSPA</translation>
 <translation id="8990809378771970590">Gebruik tans <ph name="IME_NAME" /></translation>
-<translation id="8991617137207906966">Kleuromkeringmodus is geaktiveer. Druk weer Ctrl+Search+H om dit af te skakel.</translation>
 <translation id="899350903320462459">Ontsluit toestel as <ph name="LOGIN_ID" /> om die kennisgewinghandeling uit te voer</translation>
 <translation id="8993733019280019776">Praat jy tans? Jou mikrofoon is af. Kies die mikrofoon om dit aan te skakel.</translation>
 <translation id="9000771174482730261">BESTUUR BERGING</translation>

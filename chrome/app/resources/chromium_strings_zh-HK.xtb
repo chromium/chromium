@@ -18,6 +18,7 @@
 <translation id="1203500561924088507">多謝安裝。您必須先重新啟動瀏覽器，才能使用 <ph name="BUNDLE_NAME" />。</translation>
 <translation id="1262876892872089030">當此分頁處於閒置狀態時，系統會釋出記憶體，加快 Chromium 的運作速度。您可選擇一律不讓此網站進入閒置狀態。</translation>
 <translation id="1265577313130862557">由於此檔案有危險，因此 Chromium 已禁止下載</translation>
+<translation id="126567311906253476">使用 <ph name="USER_EMAIL" /> 登入 Gmail 或 YouTube 等 Google 服務時，可以用同一個帳戶自動登入 Chromium</translation>
 <translation id="1315551408014407711">設定新的 Chromium 設定檔</translation>
 <translation id="1342274909142618978">一併刪除 Chromium 中的資料 (<ph name="URL" />)</translation>
 <translation id="1414495520565016063">您已登入 Chromium！</translation>
@@ -42,6 +43,7 @@
 <translation id="1749104137266986751">無法使用 HTTPS 時，Chromium 會在不顯示警告的情況下使用不安全的連線</translation>
 <translation id="1774152462503052664">讓 Chromium 在背景執行</translation>
 <translation id="1779356040007214683">為了讓 Chromium 的安全性更有保障，我們已將部分未列在 <ph name="IDS_EXTENSION_WEB_STORE_TITLE" /> 中的擴充功能停用，它們可能在您不知情的情況下加入瀏覽器。</translation>
+<translation id="1804128559285178512">登入帳戶後，即可在 Chromium 中使用 Google 帳戶儲存的密碼和其他資訊</translation>
 <translation id="1808667845054772817">重新安裝 Chromium</translation>
 <translation id="1820835682567584003">Chromium 正在嘗試<ph name="AUTHENTICATION_PURPOSE" /></translation>
 <translation id="18552579716432081">如果只刪除此裝置上的瀏覽資料，並保留 Google 帳戶中的資料，請<ph name="BEGIN_LINK" />登出 Chromium<ph name="END_LINK" />。</translation>

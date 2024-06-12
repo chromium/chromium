@@ -376,7 +376,6 @@ Só uma pessoa com sua senha longa pode ler seus dados criptografados. Essa senh
 <translation id="2904414404539560095">Lista de dispositivos com os quais é possível compartilhar uma guia aberta no tamanho máximo.</translation>
 <translation id="2908243544703713905">Stories ainda não lidos estão disponíveis</translation>
 <translation id="2909615210195135082">Plataforma de notificações do Google</translation>
-<translation id="2912296070571964914">Gerencie os temas relevantes para você</translation>
 <translation id="2912345083818861431">Usar o bloqueio de tela para ver guias anônimas abertas</translation>
 <translation id="2923908459366352541">O nome é inválido</translation>
 <translation id="2932150158123903946">Armazenamento do Google <ph name="APP_NAME" /></translation>
@@ -452,7 +451,6 @@ Só uma pessoa com sua senha longa pode ler seus dados criptografados. Essa senh
 <translation id="3259831549858767975">Diminuir tudo na página.</translation>
 <translation id="3264259168916048410">O computador quer usar este dispositivo para fazer login em um site</translation>
 <translation id="3265093782546847662">Todas as páginas <ph name="DOMAIN" /></translation>
-<translation id="3265534588625245297">Gerenciar os sites seguidos</translation>
 <translation id="3269093882174072735">Carregar imagem</translation>
 <translation id="3280562213547448728">Pesquisa por voz</translation>
 <translation id="3282568296779691940">Fazer login no Google Chrome</translation>
@@ -624,7 +622,6 @@ Só uma pessoa com sua senha longa pode ler seus dados criptografados. Essa senh
 <translation id="4195643157523330669">Abrir em uma nova guia</translation>
 <translation id="4197828496439691735">{NUM_TABS,plural, =1{1 guia neste dispositivo}one{# guia neste dispositivo}other{# guias neste dispositivo}}</translation>
 <translation id="4198423547019359126">Não há locais de download disponíveis</translation>
-<translation id="4198664641856813238">Faça login para ter acesso a favoritos, senhas e muito mais em todos os seus dispositivos</translation>
 <translation id="4202218894997543208">Temas bloqueados</translation>
 <translation id="4214315110991671325">Se você autorizar, o Chrome pode usar cookies no pré-carregamento.</translation>
 <translation id="4216511743389425832">Ouvir esta página</translation>
@@ -825,7 +822,6 @@ Só uma pessoa com sua senha longa pode ler seus dados criptografados. Essa senh
 <translation id="510275257476243843">Uma hora restante</translation>
 <translation id="5114895953710637392">A página de filtro de apps está fechada.</translation>
 <translation id="5115811374190515607">para <ph name="PRODUCT_NAME" /></translation>
-<translation id="5118713593561876160">Interesses</translation>
 <translation id="5122378528687922675">Se precisar de ajuda, entre em contato com seu familiar responsável (<ph name="PARENT_NAME_1" /> ou <ph name="PARENT_NAME_2" />)</translation>
 <translation id="5123685120097942451">Guia anônima</translation>
 <translation id="5132942445612118989">Sincronize suas senhas, seu histórico e muito mais em todos os dispositivos</translation>
@@ -839,7 +835,6 @@ Só uma pessoa com sua senha longa pode ler seus dados criptografados. Essa senh
 <translation id="5171045022955879922">Pesquisar ou digitar URL</translation>
 <translation id="5174700554036517242">A guia voltou à altura inicial</translation>
 <translation id="5180063720319462041">Página traduzida para o <ph name="TARGET_LANGUAGE" /></translation>
-<translation id="5186634140793586141">Gerencie os tópicos e as pesquisas do seu interesse</translation>
 <translation id="5191251636205085390">Descubra e controle novas tecnologias para substituir cookies de terceiros</translation>
 <translation id="5204967432542742771">Insira a senha</translation>
 <translation id="5206168361184759344">{FILE_COUNT,plural, =1{Fazendo o download do arquivo…}one{Fazendo o download de # arquivo…}other{Fazendo o download de # arquivos…}}</translation>
@@ -1087,7 +1082,6 @@ Por exemplo, alguns sites podem responder a esse pedido mostrando anúncios que 
 <translation id="6437478888915024427">Informações sobre a página</translation>
 <translation id="6440291723980579689">As páginas carregam apenas depois de abertas</translation>
 <translation id="6441734959916820584">O nome é muito longo</translation>
-<translation id="6447558397796644647">Não foi possível encontrar esse favorito. Verifique se há erros de ortografia ou adicione um novo.</translation>
 <translation id="6459045781120991510">Pesquisas</translation>
 <translation id="6461962085415701688">Não é possível abrir o arquivo</translation>
 <translation id="6464977750820128603">Você pode ver os sites que visita no Chrome e definir timers para eles.\n\nO Google recebe informações sobre os sites para os quais você definiu timers e sobre o tempo que você passa neles. Essas informações são usadas para melhorar o Bem-estar digital.</translation>

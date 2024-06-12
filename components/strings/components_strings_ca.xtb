@@ -547,6 +547,7 @@ En cas contrari, la configuració de privadesa el bloquejarà. Això permetrà q
 <translation id="2003709556000175978">Restableix la contrasenya ara</translation>
 <translation id="2003775180883135320">Encunyació quàdruple a la part superior</translation>
 <translation id="2004697686368036666">Pot ser que les funcions d'alguns llocs web no funcionin</translation>
+<translation id="2005042463110681802">Estàs veient aquest advertiment perquè aquest lloc web no admet HTTPS i estàs en mode d'incògnit. <ph name="BEGIN_LEARN_MORE_LINK" />Més informació<ph name="END_LEARN_MORE_LINK" /></translation>
 <translation id="2009942480257059311">Botó Crea un esdeveniment: activa'l per crear ràpidament un esdeveniment nou a Google Calendar</translation>
 <translation id="201174227998721785">Gestiona els permisos i les dades emmagatzemades als llocs web des de la configuració de Chrome</translation>
 <translation id="2012276282211112603">Ara mateix, no hi ha cap tema per mostrar</translation>

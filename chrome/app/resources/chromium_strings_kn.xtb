@@ -16,6 +16,7 @@
 <translation id="1203500561924088507">ಇನ್‌ಸ್ಟಾಲ್ ಮಾಡಿದಕ್ಕಾಗಿ ಧನ್ಯವಾದಗಳು. <ph name="BUNDLE_NAME" /> ಅನ್ನು ಬಳಸುವ ಮೊದಲು ನೀವು ನಿಮ್ಮ ಬ್ರೌಸರ್ ಅನ್ನು ಮರುಪ್ರಾರಂಭಿಸಬೇಕು.</translation>
 <translation id="1262876892872089030">ಈ ಟ್ಯಾಬ್ ನಿಷ್ಕ್ರಿಯವಾಗಿದ್ದಾಗ, Chromium ವೇಗವಾಗಿ ಕಾರ್ಯನಿರ್ವಹಿಸಲು ಮೆಮೊರಿಯನ್ನು ಮುಕ್ತಗೊಳಿಸಿದೆ. ಈ ಸೈಟ್ ಅನ್ನು ನಿಷ್ಕ್ರಿಯವಾಗಿರದಂತೆ ಎಲ್ಲಾ ಸಮಯದಲ್ಲೂ ಹೊರಗಿಡಲು ನೀವು ಆಯ್ಕೆ ಮಾಡಬಹುದು.</translation>
 <translation id="1265577313130862557">ಈ ಫೈಲ್ ಅಪಾಯಕಾರಿಯಾಗಿರುವ ಕಾರಣ Chromium ಈ ಡೌನ್‌ಲೋಡ್ ಅನ್ನು ನಿರ್ಬಂಧಿಸಿದೆ</translation>
+<translation id="126567311906253476"><ph name="USER_EMAIL" /> ಬಳಸಿಕೊಂಡು Gmail ಅಥವಾ YouTube ನಂತಹ Google ಸೇವೆಗಳಿಗೆ ನೀವು ಸೈನ್ ಇನ್ ಮಾಡಿದರೆ, ನೀವು ಅದೇ ಖಾತೆಯೊಂದಿಗೆ Chromium ಗೆ ಸ್ವಯಂಚಾಲಿತವಾಗಿ ಸೈನ್ ಇನ್ ಮಾಡಬಹುದು</translation>
 <translation id="1315551408014407711">ನಿಮ್ಮ ಹೊಸ Chromium ಪ್ರೊಫೈಲ್ ಅನ್ನು ಸೆಟಪ್ ಮಾಡಿ</translation>
 <translation id="1342274909142618978">Chromium (<ph name="URL" />) ನಿಂದ ಡೇಟಾವನ್ನು ಸಹ ಅಳಿಸಿ</translation>
 <translation id="1414495520565016063">ನೀವು Chromium ಗೆ ಸೈನ್ ಇನ್ ಮಾಡಿರುವಿರಿ!</translation>
@@ -40,6 +41,7 @@
 <translation id="1749104137266986751">HTTPS ಲಭ್ಯವಿಲ್ಲದಿದ್ದಾಗ, Chromium ನಿಮಗೆ ಎಚ್ಚರಿಕೆ ನೀಡದೆ ಅಸುರಕ್ಷಿತ ಕನೆಕ್ಷನ್ ಅನ್ನು ಬಳಸುತ್ತದೆ</translation>
 <translation id="1774152462503052664">Chromium ಹಿನ್ನೆಲೆಯಲ್ಲಿ ಚಾಲನೆಗೊಳ್ಳಲು ಅನುಮತಿಸಿ</translation>
 <translation id="1779356040007214683">Chromium  ಅನ್ನು ಸುರಕ್ಷಿತವಾಗಿರಿಸಲು, <ph name="IDS_EXTENSION_WEB_STORE_TITLE" /> ನಲ್ಲಿ ನಾವು ಪಟ್ಟಿ ಮಾಡಲಾದ ಕೆಲವು ವಿಸ್ತರಣೆಗಳನ್ನು ನಿಷ್ಕ್ರಿಯಗೊಳಿಸಿದ್ದೇವೆ ಮತ್ತು ಇದು ಗಮನಕ್ಕೆ ಬಾರದೇ ಸೇರಿಸಿರಬಹುದು.</translation>
+<translation id="1804128559285178512">ನೀವು ಸೈನ್ ಇನ್ ಆಗಿರುವಾಗ, Chromium ನಲ್ಲಿ ನಿಮ್ಮ Google ಖಾತೆಯಲ್ಲಿನ ಪಾಸ್‌ವರ್ಡ್‌ಗಳು ಹಾಗೂ ಮುಂತಾದವುಗಳನ್ನು ನೀವು ಬಳಸಬಹುದು</translation>
 <translation id="1808667845054772817">Chromium ಅನ್ನು ಮರುಸ್ಥಾಪಿಸು</translation>
 <translation id="1820835682567584003">Chromium <ph name="AUTHENTICATION_PURPOSE" /> ಅನ್ನು ಮಾಡಲು ಪ್ರಯತ್ನಿಸುತ್ತಿದೆ</translation>
 <translation id="18552579716432081">ನಿಮ್ಮ ಬ್ರೌಸಿಂಗ್ ಡೇಟಾವನ್ನು Google ಖಾತೆಯಲ್ಲಿ ಇರಿಸಿಕೊಂಡು, ಅದನ್ನು ಈ ಸಾಧನದಿಂದ ಮಾತ್ರ ಅಳಿಸಲು, <ph name="BEGIN_LINK" />Chromium ನಿಂದ ಸೈನ್ ಔಟ್ ಮಾಡಿ<ph name="END_LINK" />.</translation>

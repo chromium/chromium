@@ -90,6 +90,9 @@
 <translation id="1390418506739274310">Môžete si zobraziť históriu z iných aplikácií, ktoré otvárajú odkazy v Chrome. Váš účet Google môže mať ďalšie formy histórie prehliadania na <ph name="BEGIN_LINK" />myactivity.google.com<ph name="END_LINK" />.</translation>
 <translation id="13931502444227376">Ak chcete pokračovať, <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> bude s týmto webom zdieľať vaše meno, e‑mailovú adresu a profilovú fotku. Pozrite si <ph name="BEGIN_LINK1" />zmluvné podmienky<ph name="END_LINK1" /> tohto webu.</translation>
 <translation id="1397811292916898096">Hľadať pomocou vyhľadávača <ph name="PRODUCT_NAME" /></translation>
+<translation id="1398057416966591719">Vo svojom účte Google môžete <ph name="BEGIN_LINK1" />spravovať, ktoré údaje Chromu sa majú ukladať<ph name="END_LINK1" />.
+
+Ďalšie nastavenia, ktoré zlepšujú prostredie Chromu pomocou údajov, nájdete v <ph name="BEGIN_LINK2" />službách Googlu<ph name="END_LINK2" />.</translation>
 <translation id="1407069428457324124">Tmavý motív</translation>
 <translation id="1407135791313364759">Otvoriť všetko</translation>
 <translation id="1409879593029778104">Sťahovanie súboru <ph name="FILE_NAME" /> bolo zrušené, pretože daný súbor už existuje.</translation>
@@ -248,6 +251,7 @@
 <translation id="2286841657746966508">Fakturačná adresa</translation>
 <translation id="228704530595896923">Zoznam možností zdieľania.</translation>
 <translation id="2297822946037605517">Zdieľať túto stránku</translation>
+<translation id="22981027763501686">Zapnite synchronizáciu, aby ste mali záložky, históriu a ďalšie položky k dispozícii vo svojich ostatných zariadeniach</translation>
 <translation id="230115972905494466">Nenašli sa žiadne kompatibilné zariadenia</translation>
 <translation id="2318045970523081853">Zavolajte klepnutím</translation>
 <translation id="2321086116217818302">Pripravujú sa heslá…</translation>
@@ -376,7 +380,6 @@
 <translation id="2904414404539560095">Zoznam zariadení, s ktorými sa má zdieľať karta, je otvorený na plnú výšku.</translation>
 <translation id="2908243544703713905">K dispozícii sú neprečítané správy</translation>
 <translation id="2909615210195135082">Google Notifications Platform</translation>
-<translation id="2912296070571964914">Spravujte témy, ktoré vás zaujímajú</translation>
 <translation id="2912345083818861431">Zobrazte si otvorené karty inkognito pomocou zámky obrazovky</translation>
 <translation id="2923908459366352541">Názov je neplatný</translation>
 <translation id="2932150158123903946">Úložisko Google <ph name="APP_NAME" /></translation>
@@ -452,7 +455,6 @@
 <translation id="3259831549858767975">Zmenšenie obsahu na stránke</translation>
 <translation id="3264259168916048410">Počítač vyžaduje, aby sa na prihlásenie na danom webe použilo toto zariadenie</translation>
 <translation id="3265093782546847662">Všetky stránky domény <ph name="DOMAIN" /></translation>
-<translation id="3265534588625245297">Spravujte weby, ktoré sledujete</translation>
 <translation id="3269093882174072735">Načítať obrázok</translation>
 <translation id="3280562213547448728">Hlasové vyhľadávanie</translation>
 <translation id="3282568296779691940">Prihlásiť sa do Chromu</translation>
@@ -624,7 +626,6 @@
 <translation id="4195643157523330669">Otvoriť na novej karte</translation>
 <translation id="4197828496439691735">{NUM_TABS,plural, =1{1 karta v tomto zariadení}few{# karty v tomto zariadení}many{# tabs on this device}other{# kariet v tomto zariadení}}</translation>
 <translation id="4198423547019359126">Nie sú k dispozícii žiadne umiestnenia stiahnutých súborov</translation>
-<translation id="4198664641856813238">Prihláste sa a používajte záložky, heslá a ďalší obsah vo všetkých svojich zariadeniach</translation>
 <translation id="4202218894997543208">Blokované témy</translation>
 <translation id="4214315110991671325">Keď povolíte súbory cookies, Chrome môže pomocou nich prednačítavať.</translation>
 <translation id="4216511743389425832">Vypočuť obsah tejto stránky</translation>
@@ -824,7 +825,6 @@ Váš účet Google môže mať na adrese <ph name="BEGIN_LINK" />myactivity.goo
 <translation id="510275257476243843">Zostáva: 1 h</translation>
 <translation id="5114895953710637392">Hárok filtrov aplikácií je zavretý.</translation>
 <translation id="5115811374190515607">do služby <ph name="PRODUCT_NAME" /></translation>
-<translation id="5118713593561876160">Záujmy</translation>
 <translation id="5122378528687922675">Ak potrebuješ pomoc, požiadaj rodiča (<ph name="PARENT_NAME_1" /> alebo <ph name="PARENT_NAME_2" />)</translation>
 <translation id="5123685120097942451">Karta inkognito</translation>
 <translation id="5132942445612118989">Synchronizujte svoje heslá, históriu a ďalší obsah vo všetkých zariadeniach</translation>
@@ -838,7 +838,6 @@ Váš účet Google môže mať na adrese <ph name="BEGIN_LINK" />myactivity.goo
 <translation id="5171045022955879922">Vyhľadajte alebo zadajte webovú adresu</translation>
 <translation id="5174700554036517242">Karta je späť na počiatočnej výške</translation>
 <translation id="5180063720319462041">Stránka bola preložená do jazyka <ph name="TARGET_LANGUAGE" /></translation>
-<translation id="5186634140793586141">Spravujte témy a vyhľadávania, ktoré vás zaujímajú</translation>
 <translation id="5191251636205085390">Prečítajte si o nových technológiách, ktoré majú nahradiť súbory cookie tretej strany, a naučte sa ich ovládať</translation>
 <translation id="5204967432542742771">Zadajte heslo</translation>
 <translation id="5206168361184759344">{FILE_COUNT,plural, =1{Súbor sa sťahuje…}few{Sťahujú sa # súbory…}many{Downloading # files…}other{Sťahuje sa # súborov…}}</translation>
@@ -856,6 +855,7 @@ Váš účet Google môže mať na adrese <ph name="BEGIN_LINK" />myactivity.goo
 <translation id="5292796745632149097">Odoslanie do zariadení</translation>
 <translation id="5301876394151419436">Máte prihlásený účet <ph name="EMAIL" />. Synchronizáciu môžete kedykoľvek zastaviť v nastaveniach. Google môže prispôsobovať Vyhľadávanie a ďalšie služby na základe vašej histórie.</translation>
 <translation id="5304593522240415983">Toto pole nesmie byť prázdne</translation>
+<translation id="5306014156308790439">Tlačidlo Pridať do zbierky je deaktivované</translation>
 <translation id="5308380583665731573">Pripojiť</translation>
 <translation id="5316947901395241499">Ukladanie hesiel vypol váš správca</translation>
 <translation id="5317780077021120954">Uložiť</translation>
@@ -1086,7 +1086,6 @@ Niektoré weby môžu napríklad na túto žiadosť reagovať tak, že vám zobr
 <translation id="6437478888915024427">Informácie o stránke</translation>
 <translation id="6440291723980579689">Stránky sa načítavajú až po otvorení</translation>
 <translation id="6441734959916820584">Názov je príliš dlhý</translation>
-<translation id="6447558397796644647">Príslušnú záložku sa nepodarilo nájsť. Skontrolujte pravopis alebo pridajte novú.</translation>
 <translation id="6459045781120991510">Prieskumy</translation>
 <translation id="6461962085415701688">Súbor sa nedá otvoriť</translation>
 <translation id="6464977750820128603">Môžete si zobraziť weby, ktoré navštevujete v Chrome, a nastaviť pre ne časovače.\n\nGoogle získa informácie o weboch, pre ktoré nastavíte časovače, a údaje o tom, koľko času na nich strávite. Tieto informácie sa použijú na zlepšenie digitálnej rovnováhy.</translation>

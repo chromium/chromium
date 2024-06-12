@@ -64,7 +64,6 @@
 <translation id="1201402288615127009">下一步</translation>
 <translation id="1210557957257435379">屏幕录制</translation>
 <translation id="121097972571826261">前进一个字词</translation>
-<translation id="1217633719248931900">前往应用</translation>
 <translation id="1218444235442067213"><ph name="APP_NAME" />，Play 商店应用</translation>
 <translation id="1225748608451425081">由于发生了一个已知问题，您的 Chromebook 已被锁定。您可以在 <ph name="TIME_LEFT" />后重新登录。</translation>
 <translation id="1229194443904279055">停止选择</translation>
@@ -327,7 +326,6 @@
 <translation id="2293443480080733021">您打算专注于什么任务？按 Enter 键即可添加任务。</translation>
 <translation id="229397294990920565">移动数据网络正在关闭…</translation>
 <translation id="2295777434187870477">麦克风已开启，使用切换开关可将麦克风静音。</translation>
-<translation id="2298170939937364391">已启用全屏放大镜。再按一次 Ctrl+搜索键+M 组合键即可将其停用。</translation>
 <translation id="2302092602801625023">该账号由 Family Link 管理</translation>
 <translation id="2303600792989757991">“切换窗口”概述</translation>
 <translation id="2305738328104302723">Google 任务列表：<ph name="GLANCEABLES_TASKS_LIST_NAME" /></translation>
@@ -512,7 +510,6 @@
 <translation id="2977598380246111477">下一个代码</translation>
 <translation id="2985148236010982088">查看所有应用</translation>
 <translation id="2992327365391326550">设备的麦克风按钮已关闭。</translation>
-<translation id="2996462380875591307">已启用停靠的放大镜。再按一次 Ctrl+搜索键+D 组合键即可将其停用。</translation>
 <translation id="3000461861112256445">单声道音频</translation>
 <translation id="3001391739687111021">修改屏幕尺寸</translation>
 <translation id="3009178788565917040">输出</translation>
@@ -1132,6 +1129,7 @@
 <translation id="5208059991603368177">开启</translation>
 <translation id="5216991270656129561">保持关闭状态，直到<ph name="TIME" /></translation>
 <translation id="5222676887888702881">退出</translation>
+<translation id="5228195526683428788">分屏分隔线</translation>
 <translation id="5229343007215035173">开启/关闭隐私保护屏幕</translation>
 <translation id="5230516054153933099">窗口</translation>
 <translation id="5234764350956374838">关闭</translation>
@@ -1517,6 +1515,7 @@
 <translation id="6613765291890844037">存储空间：已用 <ph name="STORAGE_IN_USE_SIZE" /> | 总共 <ph name="STORAGE_TOTAL_SIZE" /></translation>
 <translation id="6614169507485700968">已开启隐私保护屏</translation>
 <translation id="6622679827379792051">设置查看手机中的应用</translation>
+<translation id="662279009180869175">使用向左键和向右键可调整分屏大小</translation>
 <translation id="6624493541160101248">当前桌面：<ph name="DESK_NAME" />。第 <ph name="DESK_INDEX" /> 个桌面（共 <ph name="DESK_COUNT" /> 个）。</translation>
 <translation id="6625718907317144388">由于防窥探功能已开启，因此系统隐藏了<ph name="APP_1_TITLE" />、<ph name="APP_2_TITLE" />和其他通知</translation>
 <translation id="6627638273713273709">搜索键+Shift+K</translation>
@@ -1535,6 +1534,7 @@
 <translation id="6670153871843998651">桌面 3</translation>
 <translation id="6671495933530132209">复制图片</translation>
 <translation id="6671661918848783005">无法解锁 Chromebook</translation>
+<translation id="6676552993057022464">使用向上键和向下键可调整分屏大小</translation>
 <translation id="6682029141988159141">粘贴剪贴板中的内容</translation>
 <translation id="6683022854667115063">头戴式耳机</translation>
 <translation id="6686023075541098243">设置查看手机中的通知</translation>
@@ -2134,7 +2134,6 @@
 <translation id="8982906748181120328">“附近分享”的高可见度模式</translation>
 <translation id="8983038754672563810">HSPA</translation>
 <translation id="8990809378771970590">目前使用的是“<ph name="IME_NAME" />”</translation>
-<translation id="8991617137207906966">已启用颜色反转模式。再按一次 Ctrl+搜索键+H 可将其停用。</translation>
 <translation id="899350903320462459">以 <ph name="LOGIN_ID" /> 身份解锁设备即可执行通知操作</translation>
 <translation id="8993733019280019776">您正在说话吗？您的麦克风处于关闭状态。选择麦克风即可开启它。</translation>
 <translation id="9000771174482730261">管理存储空间</translation>

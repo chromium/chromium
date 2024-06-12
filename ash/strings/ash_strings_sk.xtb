@@ -64,7 +64,6 @@ Na začiatok môžete vyskúšať niektoré z týchto vecí.</translation>
 <translation id="1201402288615127009">Ďalej</translation>
 <translation id="1210557957257435379">nahrávanie obrazovky</translation>
 <translation id="121097972571826261">Dopredu o slovo</translation>
-<translation id="1217633719248931900">Prejsť do aplikácie</translation>
 <translation id="1218444235442067213"><ph name="APP_NAME" />, aplikácia Obchodu Play</translation>
 <translation id="1225748608451425081">Váš Chromebook je uzamknutý pre známy problém. Prihlásiť sa budete môcť po uplynutí tohto času: <ph name="TIME_LEFT" />.</translation>
 <translation id="1229194443904279055">Ukončiť výber</translation>
@@ -251,6 +250,7 @@ Na začiatok môžete vyskúšať niektoré z týchto vecí.</translation>
 <translation id="1915307458270490472">Zložiť</translation>
 <translation id="1918022425394817322">Kamera bola prichytená do pravého horného rohu</translation>
 <translation id="1923539912171292317">Automatické kliknutia</translation>
+<translation id="1925320505152357008">menej ako 1 minúta</translation>
 <translation id="1928739107511554905">Ak chcete získať aktualizáciu, reštartuje Chromebook s pripojenou klávesnicou pomocou dotykovej obrazovky.</translation>
 <translation id="1948405482892809935">Prepnutie na ďalšieho používateľa</translation>
 <translation id="1951012854035635156">Asistent</translation>
@@ -327,7 +327,6 @@ Na začiatok môžete vyskúšať niektoré z týchto vecí.</translation>
 <translation id="2293443480080733021">Na čo by ste sa chceli zamerať? Ak chcete pridať úlohu, stlačte Enter.</translation>
 <translation id="229397294990920565">Vypínajú sa mobilné dáta…</translation>
 <translation id="2295777434187870477">Mikrofón je zapnutý. Prepnutím vypnete zvuk vstupu.</translation>
-<translation id="2298170939937364391">Bola zapnutá lupa na celú obrazovku. Vypnete ju opätovným stlačením kombinácie klávesov Ctrl+Hľadať+M.</translation>
 <translation id="2302092602801625023">Tento účet spravuje aplikácia Family Link</translation>
 <translation id="2303600792989757991">Prepnúť prehľad okien</translation>
 <translation id="2305738328104302723">Zoznam úloh Google: <ph name="GLANCEABLES_TASKS_LIST_NAME" /></translation>
@@ -512,7 +511,6 @@ Pripojených je viacero zariadení (<ph name="DEVICECOUNT" />).</translation>
 <translation id="2977598380246111477">Ďalšie číslo</translation>
 <translation id="2985148236010982088">Zobraziť všetky aplikácie</translation>
 <translation id="2992327365391326550">Tlačidlo mikrofónu zariadenia je vypnuté.</translation>
-<translation id="2996462380875591307">Bola zapnutá ukotvená lupa. Vypnete ju opätovným stlačením kombinácie klávesov Ctrl+Hľadať+D.</translation>
 <translation id="3000461861112256445">Zvuk mono</translation>
 <translation id="3001391739687111021">Upraviť veľkosť obrazovky</translation>
 <translation id="3009178788565917040">Výstup</translation>
@@ -606,6 +604,7 @@ Pripojených je viacero zariadení (<ph name="DEVICECOUNT" />).</translation>
 <translation id="334927402682780278">Výber textu od kurzora po koniec riadka</translation>
 <translation id="3349345708646875009">Otvorenie správcu úloh</translation>
 <translation id="3364721542077212959">Nástroje pre dotykové pero</translation>
+<translation id="3365281428003534650">Nastavte časovač, úlohu, hudbu</translation>
 <translation id="3365977133351922112">Telefón je príliš ďaleko, prineste ho bližšie.</translation>
 <translation id="3368922792935385530">Pripojené</translation>
 <translation id="3369111525500416043">Termín je čoskoro</translation>
@@ -908,6 +907,7 @@ Niektoré funkcie sú obmedzené, aby sa predĺžila výdrž batérie.</translat
 <translation id="4406883609789734330">Živý prepis</translation>
 <translation id="4412698727486357573">Centrum pomoci</translation>
 <translation id="4412944820643904175">Funkcia <ph name="FEATURE_NAME" /> je vypnutá.</translation>
+<translation id="4417647906073317561">Nastavenia zamerania. Nastavte časovač, úlohu a hudbu, aby ste sa dostali do tej správnej nálady.</translation>
 <translation id="4424159417645388645">5. plocha</translation>
 <translation id="4430019312045809116">Hlasitosť</translation>
 <translation id="4441283832827406317">Aplikácie sú zoradené podľa názvu</translation>
@@ -1859,6 +1859,7 @@ Ak chcete zariadenie vypnúť, znova pridržte jeho vypínač.</translation>
         <ph name="MANAGED" />
         <ph name="IME" />
         <ph name="LOCALE" /></translation>
+<translation id="7899977217122813285">V čase na sústredenie sú upozornenia stlmené do <ph name="TIME" /></translation>
 <translation id="7901190436359881020">Vymeniť okná</translation>
 <translation id="7901405293566323524">Telefónne centrum</translation>
 <translation id="7902625623987030061">Dotknite sa senzora odtlačkov prstov</translation>
@@ -2138,7 +2139,6 @@ Ak chcete zariadenie vypnúť, znova pridržte jeho vypínač.</translation>
 <translation id="8982906748181120328">Viditeľnosť nablízku</translation>
 <translation id="8983038754672563810">HSPA</translation>
 <translation id="8990809378771970590">Práve sa používa <ph name="IME_NAME" /></translation>
-<translation id="8991617137207906966">Režim inverzie farieb je zapnutý. Vypnete ho opätovným stlačením kombinácie klávesov Ctrl + Hľadať + H.</translation>
 <translation id="899350903320462459">Ak chcete vykonať akciu s upozornením, odomknite zariadenie ako <ph name="LOGIN_ID" /></translation>
 <translation id="8993733019280019776">Rozprávate? Váš mikrofón je vypnutý. Vyberte mikrofón a tak ho zapnite.</translation>
 <translation id="9000771174482730261">SPRAVOVAŤ PRIESTOR</translation>

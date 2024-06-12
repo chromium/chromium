@@ -64,7 +64,6 @@
 <translation id="1201402288615127009">ถัดไป</translation>
 <translation id="1210557957257435379">การบันทึกหน้าจอ</translation>
 <translation id="121097972571826261">ไปข้างหน้าทีละคำ</translation>
-<translation id="1217633719248931900">ไปที่แอป</translation>
 <translation id="1218444235442067213"><ph name="APP_NAME" />, แอป Play Store</translation>
 <translation id="1225748608451425081">Chromebook ของคุณถูกล็อกเนื่องจากปัญหาที่ทราบแล้ว คุณจะลงชื่อเข้าใช้ได้ในอีก <ph name="TIME_LEFT" /></translation>
 <translation id="1229194443904279055">หยุดเลือก</translation>
@@ -180,6 +179,7 @@
 <translation id="1611993646327628135">เปิด</translation>
 <translation id="1620510694547887537">กล้องถ่ายรูป</translation>
 <translation id="1623768535032616219">ยุบ Google Classroom</translation>
+<translation id="163032029566320584"><ph name="UNAVAILABLE_DLC" /> ไม่พร้อมใช้งาน</translation>
 <translation id="1632985212731562677">ปิดใช้ "การเข้าถึงด้วยสวิตช์" ได้ในการตั้งค่า &gt; การช่วยเหลือพิเศษ</translation>
 <translation id="1637505162081889933"><ph name="NUM_DEVICES" /> อุปกรณ์</translation>
 <translation id="1639239467298939599">กำลังโหลด</translation>
@@ -251,6 +251,7 @@
 <translation id="1915307458270490472">วางซ้อนไว้ด้านบน</translation>
 <translation id="1918022425394817322">จัดกล้องพอดีกับมุมขวาบนแล้ว</translation>
 <translation id="1923539912171292317">การคลิกอัตโนมัติ</translation>
+<translation id="1925320505152357008">น้อยกว่า 1 นาที</translation>
 <translation id="1928739107511554905">หากต้องการรับอัปเดต ให้ใช้หน้าจอสัมผัสเพื่อรีสตาร์ท Chromebook ในขณะที่ยังเชื่อมต่อกับแป้นพิมพ์</translation>
 <translation id="1948405482892809935">เปลี่ยนเป็นผู้ใช้ถัดไป</translation>
 <translation id="1951012854035635156">ผู้ช่วย</translation>
@@ -327,7 +328,6 @@
 <translation id="2293443480080733021">คุณต้องการโฟกัสสิ่งใด กด Enter เพื่อเพิ่มงาน</translation>
 <translation id="229397294990920565">กำลังปิดอินเทอร์เน็ตมือถือ...</translation>
 <translation id="2295777434187870477">ไมค์เปิดอยู่ การปิดไมค์จะปิดเสียงการป้อนข้อมูล</translation>
-<translation id="2298170939937364391">เปิดใช้แว่นขยายทั้งหน้าจอแล้ว กด Ctrl+Search+M อีกครั้งเพื่อสลับเป็นปิด</translation>
 <translation id="2302092602801625023">บัญชีนี้จัดการโดย Family Link</translation>
 <translation id="2303600792989757991">ภาพรวมการสลับหน้าต่าง</translation>
 <translation id="2305738328104302723">รายการงานของ Google: <ph name="GLANCEABLES_TASKS_LIST_NAME" /></translation>
@@ -512,7 +512,6 @@
 <translation id="2977598380246111477">ตัวเลขถัดไป</translation>
 <translation id="2985148236010982088">ดูแอปทั้งหมด</translation>
 <translation id="2992327365391326550">ปุ่มไมโครโฟนของอุปกรณ์ปิดอยู่</translation>
-<translation id="2996462380875591307">เปิดใช้แว่นขยายหน้าจอบางส่วนแล้ว กด Ctrl+Search+D อีกครั้งเพื่อสลับเป็นปิด</translation>
 <translation id="3000461861112256445">เสียงแบบโมโน</translation>
 <translation id="3001391739687111021">แก้ไขขนาดหน้าจอ</translation>
 <translation id="3009178788565917040">เอาต์พุต</translation>
@@ -606,6 +605,7 @@
 <translation id="334927402682780278">เลือกข้อความจากเคอร์เซอร์ไปจนถึงท้ายบรรทัด</translation>
 <translation id="3349345708646875009">เปิดตัวจัดการงาน</translation>
 <translation id="3364721542077212959">เครื่องมือสไตลัส</translation>
+<translation id="3365281428003534650">ตั้งตัวจับเวลา งาน และเพลง</translation>
 <translation id="3365977133351922112">โทรศัพท์อยู่ไกลเกินไป โปรดนำโทรศัพท์เข้ามาใกล้มากขึ้น</translation>
 <translation id="3368922792935385530">เชื่อมต่อแล้ว</translation>
 <translation id="3369111525500416043">ครบกำหนดเร็วๆ นี้</translation>
@@ -717,6 +717,7 @@
 <translation id="3702846122927433391">ประชากรในประเทศไนจีเรีย</translation>
 <translation id="3705722231355495246">-</translation>
 <translation id="3706423975342040244">ความบันเทิง</translation>
+<translation id="3707093869106077605"><ph name="UNAVAILABLE_DLC_ONE" /> และ <ph name="UNAVAILABLE_DLC_TWO" /> ไม่พร้อมใช้งาน</translation>
 <translation id="3708186454126126312">อุปกรณ์ที่เคยเชื่อมต่อ</translation>
 <translation id="3712143870407382523">เลือกหน้าต่างสำหรับด้านนี้</translation>
 <translation id="371370241367527062">ไมโครโฟนด้านหน้า</translation>
@@ -903,6 +904,7 @@
 <translation id="4406883609789734330">คำบรรยายสด</translation>
 <translation id="4412698727486357573">ศูนย์ช่วยเหลือ</translation>
 <translation id="4412944820643904175"><ph name="FEATURE_NAME" /> ปิดอยู่</translation>
+<translation id="4417647906073317561">การตั้งค่าโหมดโฟกัส ตั้งตัวจับเวลา งาน และเพลงเพื่อโฟกัสกับงาน</translation>
 <translation id="4424159417645388645">เดสก์ 5</translation>
 <translation id="4430019312045809116">ระดับเสียง</translation>
 <translation id="4441283832827406317">จัดเรียงแอปตามชื่อแล้ว</translation>
@@ -987,6 +989,7 @@
 <translation id="4733161265940833579"><ph name="BATTERY_PERCENTAGE" />% (ซ้าย)</translation>
 <translation id="4734965478015604180">แนวนอน</translation>
 <translation id="4735944890391795473">เดสก์ที่ 12</translation>
+<translation id="4736732123074402682">โปรดตรวจสอบการเชื่อมต่อแล้วลองอีกครั้ง</translation>
 <translation id="473775607612524610">อัปเดต</translation>
 <translation id="4740516757091333363">ลบเดสก์ที่บันทึกไว้ใช่ไหม</translation>
 <translation id="4746798685375253449">{0,plural, =1{อัปเดตอุปกรณ์เป็นเวอร์ชันก่อนหน้าภายใน 1 วัน}other{อัปเดตอุปกรณ์เป็นเวอร์ชันก่อนหน้าภายใน # วัน}}</translation>
@@ -1320,6 +1323,7 @@
 <translation id="588258955323874662">เต็มหน้าจอ</translation>
 <translation id="5887954372087850114">กำหนดหน้าต่าง <ph name="WINDOW_TITLE" /> ให้กับ <ph name="DESK_TITLE" /> และยกเลิกการกำหนดจากเดสก์อื่นๆ ทั้งหมดแล้ว</translation>
 <translation id="588817334757907802">เปิดไฟล์ในเบราว์เซอร์ Chrome</translation>
+<translation id="5892014525522223653">คุณออฟไลน์อยู่</translation>
 <translation id="5895138241574237353">ปิดแล้วเปิดอีกครั้ง</translation>
 <translation id="589817443623831496">การสแกนจุด</translation>
 <translation id="5901316534475909376">Shift+Esc</translation>
@@ -1379,6 +1383,7 @@
 <translation id="6095425951508823973">เพิ่มการเชื่อมต่อกับ <ph name="PROVIDER" /></translation>
 <translation id="6099678161144790572">แก้ไขในเดือนที่ผ่านมา</translation>
 <translation id="6103838137565245112">ระบบ</translation>
+<translation id="610395411842312282">จัดกลุ่มหน้าต่าง 2 บานไว้ข้างกัน</translation>
 <translation id="6108952804512516814">สร้างด้วย AI</translation>
 <translation id="6114505516289286752">ดาวน์โหลดไฟล์คำพูดภาษา<ph name="LANGUAGE" />แล้ว</translation>
 <translation id="6119360623251949462"><ph name="CHARGING_STATE" /> <ph name="BATTERY_SAVER_STATE" /></translation>
@@ -1386,6 +1391,7 @@
 <translation id="6121838516699723042">ยืนยันการดาวน์โหลด <ph name="FILENAME" /></translation>
 <translation id="612734058257491180">ใช้ Google Assistant ในเซสชันผู้เยี่ยมชมไม่ได้</translation>
 <translation id="6127370444807669747">ลองใช้ YouTube Music Premium เพื่อรับเพลย์ลิสต์ที่ปรับเปลี่ยนในแบบของคุณและเพลงที่ช่วยให้โฟกัสได้มากขึ้น</translation>
+<translation id="6127395413317891856">คุณออฟไลน์อยู่ โปรดตรวจสอบการเชื่อมต่อแล้วลองอีกครั้ง</translation>
 <translation id="6129953537138746214">ช่องว่าง</translation>
 <translation id="6137566720514957455">เปิดกล่องโต้ตอบการนำออกของ <ph name="USER_EMAIL_ADDRESS" /></translation>
 <translation id="6141205840878048728">คุณต้องการโฟกัสสิ่งใด</translation>
@@ -1854,6 +1860,7 @@
         <ph name="MANAGED" />,
         <ph name="IME" />,
         <ph name="LOCALE" /></translation>
+<translation id="7899977217122813285">ปิดเสียงการแจ้งเตือนจนถึง <ph name="TIME" /> ขณะโฟกัส</translation>
 <translation id="7901190436359881020">สลับหน้าต่าง</translation>
 <translation id="7901405293566323524">ฮับโทรศัพท์</translation>
 <translation id="7902625623987030061">แตะเซ็นเซอร์ลายนิ้วมือ</translation>
@@ -1958,6 +1965,7 @@
 <translation id="8257510091797044096">ตั้งค่าอุปกรณ์</translation>
 <translation id="8261506727792406068">ลบ</translation>
 <translation id="8262312463845990408">สลับการเล่น</translation>
+<translation id="8268302343625273732">ดูงานทั้งหมดใน Google Classroom</translation>
 <translation id="8277261673056602147">ไฮไลต์ข้อความในหน้าจอ</translation>
 <translation id="8287009018010202411">ประสิทธิภาพการทำงาน</translation>
 <translation id="828708037801473432">ปิด</translation>
@@ -2134,7 +2142,6 @@
 <translation id="8982906748181120328">การมองเห็นใกล้เคียง</translation>
 <translation id="8983038754672563810">HSPA</translation>
 <translation id="8990809378771970590">กำลังใช้<ph name="IME_NAME" /></translation>
-<translation id="8991617137207906966">เปิดใช้โหมดการกลับสีแล้ว กด Ctrl+Search+H อีกครั้งเพื่อสลับเป็นปิด</translation>
 <translation id="899350903320462459">ปลดล็อกอุปกรณ์โดยใช้ <ph name="LOGIN_ID" /> เพื่อดำเนินการแจ้งเตือน</translation>
 <translation id="8993733019280019776">คุณพูดอยู่ใช่ไหม ดูเหมือนว่าไมค์จะปิดอยู่ โปรดเลือกไมโครโฟนเพื่อเปิด</translation>
 <translation id="9000771174482730261">จัดการพื้นที่เก็บข้อมูล</translation>

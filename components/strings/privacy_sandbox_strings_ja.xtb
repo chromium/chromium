@@ -1,6 +1,7 @@
 <?xml version="1.0" ?>
 <!DOCTYPE translationbundle>
 <translationbundle lang="ja">
+<translation id="2252052615723281030">Chrome にログインしている間は、この設定により IP アドレスの秘匿性が守られます。サイトによるトラッキングの可能性が Chrome で検出された場合は、一部のトラフィックがプライバシー サーバーを経由して送信されることがあります。</translation>
 <translation id="33479675708419823">Chrome にログイン中は、この設定により IP アドレスの秘匿性が守られます。サイトによるトラッキングの可能性が Chrome で検出された場合は、一部のトラフィックがプライバシー サーバーを通じて送信されることがあります。詳しくは、<ph name="LINK_BEGIN" />IP 保護の仕組み<ph name="LINK_END" />に関する記事をご覧ください、</translation>
 <translation id="3529311220178827364">IP アドレス秘匿の詳細</translation>
 <translation id="4301151630239508244">広告のトピックは、サイトが広告をパーソナライズするために使用できることの 1 つにすぎません。広告のトピックをオフにしても、サイトでは引き続き広告が表示されますが、パーソナライズされたものでない可能性があります。<ph name="BEGIN_LINK_1" />広告のプライバシー管理について<ph name="END_LINK_1" /></translation>

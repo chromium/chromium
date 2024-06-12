@@ -1868,6 +1868,7 @@ Du kan hantera inställningarna för det här kontot genom att installera Family
 <translation id="233375395665273385">Radera och logga ut</translation>
 <translation id="233471714539944337">Känsligt innehåll</translation>
 <translation id="2335111415680198280">{0,plural, =1{Stäng # fönster}other{Stäng # fönster}}</translation>
+<translation id="2335758110242123814">Öppna gruppen</translation>
 <translation id="2336228925368920074">Skapa bokmärken för alla flikar ...</translation>
 <translation id="2336258397628212480"><ph name="APP_NAME" /> skriver ut 1 sida på <ph name="PRINTER_NAME" /></translation>
 <translation id="2336381494582898602">Powerwash</translation>
@@ -1888,6 +1889,7 @@ Du kan hantera inställningarna för det här kontot genom att installera Family
 <translation id="2351923523007389195">Tillåts – <ph name="PERMISSION_DETAILS" />. Aktivera <ph name="LINK_BEGIN" />systemets platsåtkomst<ph name="LINK_END" />.</translation>
 <translation id="2352662711729498748">&lt; 1 MB</translation>
 <translation id="2352810082280059586">Anteckningar på låsskärmen sparas automatiskt i <ph name="LOCK_SCREEN_APP_NAME" />. Den senaste anteckningen visas på låsskärmen.</translation>
+<translation id="2353168619378866466">Öppna gruppen</translation>
 <translation id="2353297238722298836">Kamera och mikrofon är tillåtna</translation>
 <translation id="2353910600995338714">Exporten har slutförts</translation>
 <translation id="2355314311311231464">Administration misslyckades eftersom det inte gick att hämta dina kontouppgifter. Försök igen. Felkod: <ph name="ERROR_CODE" />.</translation>
@@ -2841,6 +2843,7 @@ Du kan hantera inställningarna för det här kontot genom att installera Family
 <translation id="3033348223765101500">Få kontroll över din data</translation>
 <translation id="3036327949511794916">Sista dagen för att returnera denna <ph name="DEVICE_TYPE" /> har passerat.</translation>
 <translation id="3036546437875325427">Aktivera blixt</translation>
+<translation id="3037193115779933814">Bokstäver och siffor</translation>
 <translation id="3038272154009688107">Visa alla webbplatser</translation>
 <translation id="3038612606416062604">Lägg till en skrivare manuellt</translation>
 <translation id="3039491566278747710">Det gick inte att installera offlinepolicyn på enheten.</translation>
@@ -6040,6 +6043,7 @@ Behörigheter som du redan har gett webbplatser och appar kan gälla för det h�
 <translation id="5469540749878136997">Frigör minne utifrån användning</translation>
 <translation id="5469852975082458401">Du kan navigera på sidor med en textmarkör. Tryck på F7 om du vill inaktivera detta.</translation>
 <translation id="5470735824776589490">En omstart krävs innan enheten kan återställas med Powerwash. <ph name="LINK_BEGIN" />Läs mer<ph name="LINK_END" /></translation>
+<translation id="5470741195701938302">Siffror</translation>
 <translation id="5471768120198416576">Hejsan! Nu används min röst för text till tal.</translation>
 <translation id="5472627187093107397">Spara lösenord för den här webbplatsen</translation>
 <translation id="5473062644742711742">Hitta fler tillgänglighetsverktyg i Chrome Web Store</translation>
@@ -6876,6 +6880,7 @@ Behörigheter som du redan har gett webbplatser och appar kan gälla för det h�
 <translation id="6101226222197207147">En ny app har lagts till (<ph name="EXTENSION_NAME" />)</translation>
 <translation id="6102043788063419338">Den här filen blockerades av Avancerat skydd.</translation>
 <translation id="6103681770816982672">Varning: du byter till utvecklingskanalen</translation>
+<translation id="610395411842312282">Gruppera två fönster sida vid sida</translation>
 <translation id="6104068876731806426">Google Konton</translation>
 <translation id="6104667115274478616">Hantera ljudinställningar i ChromeOS</translation>
 <translation id="6104796831253957966">Utskriftskön är full</translation>
@@ -7709,7 +7714,7 @@ Det finns # utsatta lösenord till. Du rekommenderas av Google Lösenordshanteri
 <translation id="6758056191028427665">Berätta hur vi sköter oss.</translation>
 <translation id="6759193508432371551">Återställ standardinställningar</translation>
 <translation id="6760354150216532978">Varning! Den här webbplatsen kan se ändringar du gör</translation>
-<translation id="6761209758867628753">Verktyg: Hjälp mig att skriva</translation>
+<translation id="6761209758867628753">Verktyg: Hjälp mig skriva</translation>
 <translation id="676158322851696513"><ph name="EXTENSION_NAME" /></translation>
 <translation id="6761623907967804682">Webbplatsdata på enheten tillåts inte</translation>
 <translation id="6762833852331690540">På</translation>
@@ -8598,7 +8603,7 @@ Det finns # utsatta lösenord till. Du rekommenderas av Google Lösenordshanteri
 <translation id="7423807071740419372">Behörighet krävs för att köra <ph name="APP_NAME" /></translation>
 <translation id="7424153922653300265">Energisparläget har aktiverats</translation>
 <translation id="7424818322350938336">Nätverket har lagts till</translation>
-<translation id="7425037327577270384">Hjälp mig att skriva</translation>
+<translation id="7425037327577270384">Hjälp mig skriva</translation>
 <translation id="7427315069950454694">dina minnen i dag</translation>
 <translation id="7427348830195639090">Bakgrundssida: <ph name="BACKGROUND_PAGE_URL" /></translation>
 <translation id="7427798576651127129">Ring från <ph name="DEVICE_NAME" /></translation>

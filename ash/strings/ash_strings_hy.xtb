@@ -64,7 +64,6 @@
 <translation id="1201402288615127009">Հաջորդը</translation>
 <translation id="1210557957257435379">էկրանի տեսագրում</translation>
 <translation id="121097972571826261">Մեկ բառով առաջ</translation>
-<translation id="1217633719248931900">Բացել հավելվածը</translation>
 <translation id="1218444235442067213"><ph name="APP_NAME" />, Play Խանութի հավելված</translation>
 <translation id="1225748608451425081">Ձեր Chromebook-ը կողպվել է խնդրի պատճառով։ Դուք կկարողանաք մուտք գործել <ph name="TIME_LEFT" />ից։</translation>
 <translation id="1229194443904279055">Դադարեցնել տեքստի ընտրությունը</translation>
@@ -328,7 +327,6 @@
 <translation id="2293443480080733021">Ինչի՞ վրա եք ուզում կենտրոնանալ։ Սեղմեք Enter՝ առաջադրանքն ավելացնելու համար։</translation>
 <translation id="229397294990920565">Բջջային ինտերնետն անջատվում է…</translation>
 <translation id="2295777434187870477">Խոսափողը միացված է։ Անջատելու համար սեղմեք այս կոճակը։</translation>
-<translation id="2298170939937364391">Լիաէկրան խոշորացույցը միացավ: Այն անջատելու համար նորից սեղմեք Ctrl+Search+M:</translation>
 <translation id="2302092602801625023">Այս հաշիվը կառավարվում է Family Link-ի կողմից</translation>
 <translation id="2303600792989757991">Փոխարկել պատուհանի համատեսքը</translation>
 <translation id="2305738328104302723">Google առաջադրանքների ցուցակ՝ <ph name="GLANCEABLES_TASKS_LIST_NAME" /></translation>
@@ -513,7 +511,6 @@
 <translation id="2977598380246111477">Հաջորդ համարը</translation>
 <translation id="2985148236010982088">Տեսնել բոլոր հավելվածները</translation>
 <translation id="2992327365391326550">Սարքի խոսափողի կոճակն անջատված է։</translation>
-<translation id="2996462380875591307">Ամրացված խոշորացույցը միացավ: Այն անջատելու համար նորից սեղմեք Ctrl+Search+D:</translation>
 <translation id="3000461861112256445">Մոնո</translation>
 <translation id="3001391739687111021">Փոփոխել էկրանի չափսը</translation>
 <translation id="3009178788565917040">Ելք</translation>
@@ -2143,7 +2140,6 @@
 <translation id="8982906748181120328">Մոտակա սարքերի հասանելիություն</translation>
 <translation id="8983038754672563810">HSPA</translation>
 <translation id="8990809378771970590">Օգտագործվում է՝ <ph name="IME_NAME" /></translation>
-<translation id="8991617137207906966">Գունաշրջման ռեժիմը միացված է։ Նորից սեղմեք Ctrl+Search+H՝ անջատելու համար։</translation>
 <translation id="899350903320462459">Ծանուցման հետ գործողություն կատարելու համար ապակողպեք սարքը որպես <ph name="LOGIN_ID" /></translation>
 <translation id="8993733019280019776">Դուք խոսո՞ւմ եք։ Ձեր խոսափողն անջատված է։ Ընտրեք խոսափողը՝ այն միացնելու համար։</translation>
 <translation id="9000771174482730261">ԿԱՌԱՎԱՐԵԼ ՏԱՐԱԾՔԸ</translation>

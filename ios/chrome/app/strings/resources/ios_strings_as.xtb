@@ -851,6 +851,7 @@
 <translation id="5345660046352249607">{COUNT,plural, =1{এই পেকেজটো ট্ৰেক কৰিবনে?}one{{COUNT} টা পেকেজ ট্ৰেক কৰিবনে?}other{{COUNT} টা পেকেজ ট্ৰেক কৰিবনে?}}</translation>
 <translation id="5348775987281903912">আপুনি ইয়াত এই পৃষ্ঠাখন শ্বেয়াৰ কৰাৰ বুটামটোৰ পৰা শ্বেয়াৰ কৰিব পাৰে।</translation>
 <translation id="536067926684072644">বুকমাৰ্ক দেখুৱাওক</translation>
+<translation id="537853552771686272">আপোনাৰ আগ্ৰহ থকা বিষয় আৰু ছাইটসমূহ পৰিচালনা কৰক</translation>
 <translation id="5379352933722332597">{count,plural, =1{"{title}"ত বুকমাৰ্ক ছেভ কৰা হৈছে। সেয়া কেৱল এই ডিভাইচটোত ছেভ কৰা হৈছে।}one{"{title}"ত {count} টা বুকমাৰ্ক ছেভ কৰা হৈছে। সেইসমূহ কেৱল এই ডিভাইচটোত ছেভ কৰা হৈছে।}other{"{title}"ত {count} টা বুকমাৰ্ক ছেভ কৰা হৈছে। সেইসমূহ কেৱল এই ডিভাইচটোত ছেভ কৰা হৈছে।}}</translation>
 <translation id="5388358297987318779">প্ৰতিচ্ছবি খোলক</translation>
 <translation id="5395707839134961196">সন্ধান ইঞ্জিনৰ সবিশেষ লুকুৱাওক</translation>
@@ -933,6 +934,7 @@
 <translation id="5758631781033351321">ইয়াত আপুনি নিজৰ পঢ়াৰ সূচীখন বিচাৰি পাব</translation>
 <translation id="5765456154762864099">মেনু → ছেটিং → ডিফ’ল্ট ব্ৰাউজাৰ</translation>
 <translation id="5777888488419460501">একাউণ্টত ছেভ কৰক</translation>
+<translation id="5778292857689789362">টেবৰ গোট, <ph name="GROUP_TITLE" />, <ph name="TABS_NUMBER" /> টা টেব।</translation>
 <translation id="5782227691023083829">অনুবাদ কাৰ্য্য চলি আছে...</translation>
 <translation id="5791632441210678828">ফ’ল’ কৰাৰ ফীড সজোৱাৰ বুটাম</translation>
 <translation id="5793373065989412701">আপোনাৰ পৰিয়ালৰ সদস্যসকলক পৰীক্ষা কৰি থকা হৈছে…</translation>

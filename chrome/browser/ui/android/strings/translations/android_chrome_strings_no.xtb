@@ -90,6 +90,9 @@
 <translation id="1390418506739274310">Du kan se loggen fra andre apper som åpner linker i Chrome. Det kan hende Google-kontoen din har andre typer nettleserlogger på <ph name="BEGIN_LINK" />myactivity.google.com<ph name="END_LINK" />.</translation>
 <translation id="13931502444227376">For at du skal kunne fortsette, må <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> dele navnet ditt, e-postadressen din og profilbildet ditt med dette nettstedet. Se <ph name="BEGIN_LINK1" />vilkårene for bruk<ph name="END_LINK1" /> av dette nettstedet.</translation>
 <translation id="1397811292916898096">Søk med <ph name="PRODUCT_NAME" /></translation>
+<translation id="1398057416966591719">Du kan <ph name="BEGIN_LINK1" />administrere hvilke Chrome-data som lagres<ph name="END_LINK1" /> i Google-kontoen din.
+
+For å se flere innstillinger som bruker data for å forbedre Chrome-opplevelsen din, gå til <ph name="BEGIN_LINK2" />Google-tjenester<ph name="END_LINK2" />.</translation>
 <translation id="1407069428457324124">Mørkt tema</translation>
 <translation id="1407135791313364759">Åpne alle</translation>
 <translation id="1409879593029778104">Nedlastingen av <ph name="FILE_NAME" /> ble avbrutt fordi filen finnes allerede.</translation>
@@ -248,6 +251,7 @@ Bare personer som har passordfrasen din, kan lese de krypterte dataene. Passordf
 <translation id="2286841657746966508">Faktureringsadresse</translation>
 <translation id="228704530595896923">Liste over delingsalternativer.</translation>
 <translation id="2297822946037605517">Del denne siden</translation>
+<translation id="22981027763501686">Synkroniser for å få blant annet bokmerkene og loggen din på andre enheter</translation>
 <translation id="230115972905494466">Fant ingen kompatible enheter</translation>
 <translation id="2318045970523081853">Trykk for å ringe</translation>
 <translation id="2321086116217818302">Klargjør passordene …</translation>
@@ -376,7 +380,6 @@ Bare personer som har passordfrasen din, kan lese de krypterte dataene. Passordf
 <translation id="2904414404539560095">Listen over enheter du kan dele faner med, er åpnet i full høyde.</translation>
 <translation id="2908243544703713905">Uleste historier er klare</translation>
 <translation id="2909615210195135082">Google Notifications Platform</translation>
-<translation id="2912296070571964914">Administrer emnene du er interessert i</translation>
 <translation id="2912345083818861431">Bruk skjermlås for å se åpne inkognitofaner</translation>
 <translation id="2923908459366352541">Navnet er ugyldig</translation>
 <translation id="2932150158123903946">Google <ph name="APP_NAME" />-lagring</translation>
@@ -452,7 +455,6 @@ Bare personer som har passordfrasen din, kan lese de krypterte dataene. Passordf
 <translation id="3259831549858767975">Gjør alt på siden mindre</translation>
 <translation id="3264259168916048410">Datamaskinen din vil bruke denne enheten til å logge på et nettsted</translation>
 <translation id="3265093782546847662">Alle sider på <ph name="DOMAIN" /></translation>
-<translation id="3265534588625245297">Administrer hvilke nettsteder du følger</translation>
 <translation id="3269093882174072735">Last inn bildet</translation>
 <translation id="3280562213547448728">Talesøk</translation>
 <translation id="3282568296779691940">Logg på Chrome</translation>
@@ -624,7 +626,6 @@ Bare personer som har passordfrasen din, kan lese de krypterte dataene. Passordf
 <translation id="4195643157523330669">Åpne i ny fane</translation>
 <translation id="4197828496439691735">{NUM_TABS,plural, =1{1 fane på denne enheten}other{# faner på denne enheten}}</translation>
 <translation id="4198423547019359126">Ingen tilgjengelige nedlastingssteder</translation>
-<translation id="4198664641856813238">Logg på for å få blant annet bokmerkene og passordene dine på alle enhetene dine</translation>
 <translation id="4202218894997543208">Emner du har blokkert</translation>
 <translation id="4214315110991671325">Hvis du tillater informasjonskapsler, kan Chrome bruke dem ved forhåndslasting.</translation>
 <translation id="4216511743389425832">Lytt til denne siden</translation>
@@ -824,7 +825,6 @@ Google-kontoen din kan ha andre former for nettleserlogger, for eksempel søk og
 <translation id="510275257476243843">1 time igjen</translation>
 <translation id="5114895953710637392">Arket for appfiltrering er lukket.</translation>
 <translation id="5115811374190515607">til <ph name="PRODUCT_NAME" /></translation>
-<translation id="5118713593561876160">Interesser</translation>
 <translation id="5122378528687922675">Spør forelderen din (<ph name="PARENT_NAME_1" /> eller <ph name="PARENT_NAME_2" />) hvis du trenger hjelp</translation>
 <translation id="5123685120097942451">Inkognitofane</translation>
 <translation id="5132942445612118989">Synkroniser passordene dine, loggen din med mer på alle enheter</translation>
@@ -838,7 +838,6 @@ Google-kontoen din kan ha andre former for nettleserlogger, for eksempel søk og
 <translation id="5171045022955879922">Søk, eller skriv inn en nettadresse</translation>
 <translation id="5174700554036517242">Fanen er tilbake i opprinnelig høyde</translation>
 <translation id="5180063720319462041">Siden er oversatt til <ph name="TARGET_LANGUAGE" /></translation>
-<translation id="5186634140793586141">Administrer emnene og søkene du er interessert i</translation>
 <translation id="5191251636205085390">Finn ut om og kontroller nye teknologier som tar sikte på å erstatte tredjeparts informasjonskapsler</translation>
 <translation id="5204967432542742771">Skriv inn passordet</translation>
 <translation id="5206168361184759344">{FILE_COUNT,plural, =1{Laster ned filen …}other{Laster ned # filer …}}</translation>
@@ -856,6 +855,7 @@ Google-kontoen din kan ha andre former for nettleserlogger, for eksempel søk og
 <translation id="5292796745632149097">Send til</translation>
 <translation id="5301876394151419436">Du er pålogget som <ph name="EMAIL" />. Du kan når som helst stoppe synkroniseringen i innstillingene. Google kan gi Søk og andre tjenester personlig preg basert på loggen din.</translation>
 <translation id="5304593522240415983">Dette feltet må fylles ut</translation>
+<translation id="5306014156308790439">Deaktiverte Legg til i samling</translation>
 <translation id="5308380583665731573">Koble til</translation>
 <translation id="5316947901395241499">Administratoren din har slått av lagring av passord</translation>
 <translation id="5317780077021120954">Lagre</translation>
@@ -1086,7 +1086,6 @@ Noen nettsteder kan for eksempel svare på denne forespørselen ved å vise deg 
 <translation id="6437478888915024427">Sideinformasjon</translation>
 <translation id="6440291723980579689">Sider lastes bare inn etter at du har åpnet dem</translation>
 <translation id="6441734959916820584">Navnet er for langt</translation>
-<translation id="6447558397796644647">Finner ikke dette bokmerket. Kontroller stavemåten, eller legg til et nytt bokmerke.</translation>
 <translation id="6459045781120991510">Undersøkelser</translation>
 <translation id="6461962085415701688">Kan ikke åpne filen</translation>
 <translation id="6464977750820128603">Du kan se nettstedene du besøker i Chrome, og angi tidtakere for dem.\n\nGoogle får informasjon om nettstedene du angir tidtakere for, og hvor lenge du besøker dem. Denne informasjonen brukes til å gjøre Digital balanse bedre.</translation>

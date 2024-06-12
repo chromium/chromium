@@ -1854,6 +1854,7 @@ Cihazda Family Link tətbiqini quraşdırmaqla bu hesabın ayarlarını idarə e
 <translation id="233375395665273385">Silin və çıxın</translation>
 <translation id="233471714539944337">Həssas məzmun</translation>
 <translation id="2335111415680198280">{0,plural, =1{# pəncərəni qapadın}other{# pəncərəni qapadın}}</translation>
+<translation id="2335758110242123814">Qrupu açın</translation>
 <translation id="2336228925368920074">Bütün Panelləri Əlfəcinləyin...</translation>
 <translation id="2336258397628212480"><ph name="APP_NAME" /> 1 səhifəni <ph name="PRINTER_NAME" /> printerində çap edir</translation>
 <translation id="2336381494582898602">Sıfırlama</translation>
@@ -1874,6 +1875,7 @@ Cihazda Family Link tətbiqini quraşdırmaqla bu hesabın ayarlarını idarə e
 <translation id="2351923523007389195">İcazə verilib – <ph name="PERMISSION_DETAILS" />. <ph name="LINK_BEGIN" />Sistem məkan girişini<ph name="LINK_END" /> yandırın.</translation>
 <translation id="2352662711729498748">&lt; 1 MB</translation>
 <translation id="2352810082280059586">Ekran kilidi qeydləri avtomatik olaraq <ph name="LOCK_SCREEN_APP_NAME" /> tətbiqində yadda saxlanılır. Ən son edilən qeydlər ekran kilidində qalacaq.</translation>
+<translation id="2353168619378866466">Qrupu açın</translation>
 <translation id="2353297238722298836">Kamera və mikrofona icazə verildi</translation>
 <translation id="2353910600995338714">Eksport uğurlu oldu</translation>
 <translation id="2355314311311231464">Təchizat uğursuz oldu, çünki hesab məlumatlarınız əldə olunmadı. Yenidən cəhd edin. Xəta kodu: <ph name="ERROR_CODE" />.</translation>
@@ -2827,6 +2829,7 @@ Cihazda Family Link tətbiqini quraşdırmaqla bu hesabın ayarlarını idarə e
 <translation id="3033348223765101500">Datanıza nəzarət edin</translation>
 <translation id="3036327949511794916">Bu <ph name="DEVICE_TYPE" /> cihazını qaytarmaq üçün son tarix keçib.</translation>
 <translation id="3036546437875325427">Fleşi aktiv edin</translation>
+<translation id="3037193115779933814">Hərflər və rəqəmlər</translation>
 <translation id="3038272154009688107">Bütün saytlara baxın</translation>
 <translation id="3038612606416062604">Printeri mexaniki yolla əlavə edin</translation>
 <translation id="3039491566278747710">Cihazda oflayn siyasət quraşdırılmadı.</translation>
@@ -6024,6 +6027,7 @@ Artıq veb-sayt və tətbiqlərə verdiyiniz icazələr bu hesaba tətbiq oluna 
 <translation id="5469540749878136997">İstifadə əsasında yaddaş boşaldın</translation>
 <translation id="5469852975082458401">Səhifələri mətn kursoru ilə vərəqləyə bilərsiniz. Deaktiv etmək üçün F7 düyməsini basın.</translation>
 <translation id="5470735824776589490">Cihazınız fabrik sıfırlaması etmədən öncə yenidən başladılmalıdır. <ph name="LINK_BEGIN" />Ətraflı məlumat<ph name="LINK_END" /></translation>
+<translation id="5470741195701938302">Rəqəmlər</translation>
 <translation id="5471768120198416576">Salam! Mən Sizin mətndən-nitqə səsinizəm.</translation>
 <translation id="5472627187093107397">Bu sayt üçün parolları yadda saxlayın</translation>
 <translation id="5473062644742711742">Chrome Veb Marketdə digər əlçatımlılıq alətlərini tapın</translation>
@@ -6858,6 +6862,7 @@ Artıq veb-sayt və tətbiqlərə verdiyiniz icazələr bu hesaba tətbiq oluna 
 <translation id="6101226222197207147">Yeni tətbiq əlavə edildi (<ph name="EXTENSION_NAME" />)</translation>
 <translation id="6102043788063419338">Bu fayl Qabaqcıl Qorunma tərəfindən blok edilib</translation>
 <translation id="6103681770816982672">Xəbərdarlıq: developer kanalına keçid edirsiniz</translation>
+<translation id="610395411842312282">İki yan-yana pəncərəni qruplaşdırın</translation>
 <translation id="6104068876731806426">Google Hesabları</translation>
 <translation id="6104667115274478616">ChromeOS audio ayarlarını idarə edin</translation>
 <translation id="6104796831253957966">Printerdə növbə dolub</translation>

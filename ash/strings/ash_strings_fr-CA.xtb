@@ -64,7 +64,6 @@ Voici quelques exemples de choses que vous pouvez essayer pour commencer.</trans
 <translation id="1201402288615127009">Suivant</translation>
 <translation id="1210557957257435379">Enregistrement de l'écran</translation>
 <translation id="121097972571826261">Avancer mot par mot</translation>
-<translation id="1217633719248931900">Ouvrir l'application</translation>
 <translation id="1218444235442067213"><ph name="APP_NAME" />, application Play Store</translation>
 <translation id="1225748608451425081">Votre Chromebook est verrouillé en raison d'un problème connu. Vous pourrez vous connecter dans <ph name="TIME_LEFT" />.</translation>
 <translation id="1229194443904279055">Arrêter la sélection</translation>
@@ -327,7 +326,6 @@ Voici quelques exemples de choses que vous pouvez essayer pour commencer.</trans
 <translation id="2293443480080733021">Sur quoi aimeriez-vous vous concentrer? Appuyez sur Entrée pour ajouter la tâche.</translation>
 <translation id="229397294990920565">Désactivation des données cellulaires en cours…</translation>
 <translation id="2295777434187870477">Le microphone est activé. Si vous le désactivez, l'entrée sonore sera aussi désactivée.</translation>
-<translation id="2298170939937364391">La loupe en mode plein écran a été activée. Appuyez à nouveau sur Ctrl+Recherche+M pour la désactiver.</translation>
 <translation id="2302092602801625023">Ce compte est géré par Family Link</translation>
 <translation id="2303600792989757991">Activer ou désactiver la vue d'ensemble des fenêtres</translation>
 <translation id="2305738328104302723">Liste Google Tâches : <ph name="GLANCEABLES_TASKS_LIST_NAME" /></translation>
@@ -512,7 +510,6 @@ Voici quelques exemples de choses que vous pouvez essayer pour commencer.</trans
 <translation id="2977598380246111477">Prochain numéro</translation>
 <translation id="2985148236010982088">Afficher toutes les applis</translation>
 <translation id="2992327365391326550">Le bouton du microphone de l'appareil est désactivé.</translation>
-<translation id="2996462380875591307">Loupe en mode ancré activée. Appuyez à nouveau sur Ctrl+Recherche+D pour la désactiver.</translation>
 <translation id="3000461861112256445">Audio mono</translation>
 <translation id="3001391739687111021">Modifier la taille de l'écran</translation>
 <translation id="3009178788565917040">Sortie</translation>
@@ -2137,7 +2134,6 @@ Pour éteindre l'appareil, appuyez à nouveau sur le bouton d'alimentation de l'
 <translation id="8982906748181120328">Partage à proximité</translation>
 <translation id="8983038754672563810">HSPA</translation>
 <translation id="8990809378771970590">Mode de saisie utilisé : <ph name="IME_NAME" /></translation>
-<translation id="8991617137207906966">Mode d'inversion des couleurs activé. Appuyez à nouveau sur Ctrl+Rechercher+H pour le désactiver.</translation>
 <translation id="899350903320462459">Déverrouillez l'appareil en tant que <ph name="LOGIN_ID" /> pour effectuer l'action de la notification</translation>
 <translation id="8993733019280019776">Êtes-vous en train de parler? Votre micro est éteint. Sélectionnez le micro pour l'activer.</translation>
 <translation id="9000771174482730261">GÉRER L'ESPACE DE STOCKAGE</translation>

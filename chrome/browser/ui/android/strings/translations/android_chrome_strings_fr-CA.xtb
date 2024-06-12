@@ -376,7 +376,6 @@ Seule une personne connaissant votre phrase de passe peut lire vos données chif
 <translation id="2904414404539560095">La liste d'appareils avec lesquels partager un onglet est ouverte à la hauteur maximale.</translation>
 <translation id="2908243544703713905">Articles non lus prêts</translation>
 <translation id="2909615210195135082">Plateforme des notifications Google</translation>
-<translation id="2912296070571964914">Gérez les sujets qui vous intéressent</translation>
 <translation id="2912345083818861431">Utilisez le verrouillage de l'écran pour consulter les onglets de navigation privée ouverts</translation>
 <translation id="2923908459366352541">Le nom est incorrect</translation>
 <translation id="2932150158123903946">Stockage de Google <ph name="APP_NAME" /></translation>
@@ -452,7 +451,6 @@ Seule une personne connaissant votre phrase de passe peut lire vos données chif
 <translation id="3259831549858767975">Réduire la taille de tout le contenu de la page</translation>
 <translation id="3264259168916048410">Votre ordinateur demande à utiliser cet appareil pour se connecter à un site</translation>
 <translation id="3265093782546847662">Toutes les pages de <ph name="DOMAIN" /></translation>
-<translation id="3265534588625245297">Gérez les sites auxquels vous êtes abonnés</translation>
 <translation id="3269093882174072735">Charger l'image</translation>
 <translation id="3280562213547448728">Recherche vocale</translation>
 <translation id="3282568296779691940">Connexion à Chrome</translation>
@@ -624,7 +622,6 @@ Seule une personne connaissant votre phrase de passe peut lire vos données chif
 <translation id="4195643157523330669">Ouvrir dans un nouvel onglet</translation>
 <translation id="4197828496439691735">{NUM_TABS,plural, =1{Un onglet sur cet appareil}one{# onglets sur cet appareil}other{# onglets sur cet appareil}}</translation>
 <translation id="4198423547019359126">Aucun dossier de téléchargement n'est disponible</translation>
-<translation id="4198664641856813238">Connectez-vous pour accéder à vos favoris, vos mots de passe et plus encore sur tous vos appareils</translation>
 <translation id="4202218894997543208">Les sujets que vous avez bloqués</translation>
 <translation id="4214315110991671325">Si vous autorisez les témoins, Chrome peut les utiliser pour procéder au préchargement.</translation>
 <translation id="4216511743389425832">Écouter cette page</translation>
@@ -824,7 +821,6 @@ D'autres formes d'historique de navigation, telles que les recherches et l'activ
 <translation id="510275257476243843">Il reste 1 heure</translation>
 <translation id="5114895953710637392">La feuille de filtrage des applis est fermée.</translation>
 <translation id="5115811374190515607">à <ph name="PRODUCT_NAME" /></translation>
-<translation id="5118713593561876160">Centres d'intérêt</translation>
 <translation id="5122378528687922675">Si tu as besoin d'aide, demande à tes parents (<ph name="PARENT_NAME_1" /> ou <ph name="PARENT_NAME_2" />)</translation>
 <translation id="5123685120097942451">Onglet de navigation privée</translation>
 <translation id="5132942445612118989">Synchronisez vos mots de passe, votre historique et plus encore sur tous vos appareils</translation>
@@ -838,7 +834,6 @@ D'autres formes d'historique de navigation, telles que les recherches et l'activ
 <translation id="5171045022955879922">Effectuez une recherche ou entrez une adresse URL</translation>
 <translation id="5174700554036517242">L'onglet est revenu à la hauteur initiale</translation>
 <translation id="5180063720319462041">Page traduite en <ph name="TARGET_LANGUAGE" /></translation>
-<translation id="5186634140793586141">Gérez les sujets et les recherches qui vous intéressent</translation>
 <translation id="5191251636205085390">Découvrez les nouvelles technologies qui visent à remplacer les témoins tiers et apprenez à les utiliser.</translation>
 <translation id="5204967432542742771">Entrez le mot de passe</translation>
 <translation id="5206168361184759344">{FILE_COUNT,plural, =1{Téléchargement du fichier en cours…}one{Téléchargement de # fichier en cours…}other{Téléchargement de # fichiers en cours…}}</translation>
@@ -1086,7 +1081,6 @@ Par exemple, certains sites Web peuvent répondre à cette demande en diffusant 
 <translation id="6437478888915024427">Renseignements sur la page</translation>
 <translation id="6440291723980579689">Les pages se chargent uniquement lorsque vous les ouvrez</translation>
 <translation id="6441734959916820584">Le nom est trop long</translation>
-<translation id="6447558397796644647">Impossible de trouver ce favori. Vérifiez l'orthographe ou ajoutez un signet.</translation>
 <translation id="6459045781120991510">Sondages</translation>
 <translation id="6461962085415701688">Impossible d'ouvrir le fichier</translation>
 <translation id="6464977750820128603">Vous pouvez afficher les sites que vous avez visités dans Chrome et définir des minuteries pour ceux-ci.\n\nGoogle collecte des renseignements sur les sites pour lesquels vous définissez des minuteries et peut déterminer le temps que vous passez sur ces derniers. Ces données sont utilisées pour améliorer Bien-être numérique.</translation>

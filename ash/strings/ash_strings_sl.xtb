@@ -64,7 +64,6 @@ Tu je nekaj stvari, ki jih lahko poskusite za začetek.</translation>
 <translation id="1201402288615127009">Naprej</translation>
 <translation id="1210557957257435379">snemanje zaslona</translation>
 <translation id="121097972571826261">Naprej po besedo</translation>
-<translation id="1217633719248931900">Odpri aplikacijo</translation>
 <translation id="1218444235442067213"><ph name="APP_NAME" />, aplikacija Trgovina Play</translation>
 <translation id="1225748608451425081">Chromebook je zaklenjen zaradi znane težave. Prijavili se boste lahko čez toliko časa: <ph name="TIME_LEFT" />.</translation>
 <translation id="1229194443904279055">Ustavi izbiranje</translation>
@@ -252,6 +251,7 @@ Tu je nekaj stvari, ki jih lahko poskusite za začetek.</translation>
 <translation id="1915307458270490472">Prekini</translation>
 <translation id="1918022425394817322">Fotoaparat je pripet v zgornji desni kot</translation>
 <translation id="1923539912171292317">Samodejni kliki</translation>
+<translation id="1925320505152357008">manj kot 1 min</translation>
 <translation id="1928739107511554905">Če želite prejeti posodobitev, uporabite zaslon na dotik, da znova zaženete Chromebook s priklopljeno tipkovnico.</translation>
 <translation id="1948405482892809935">Preklop na naslednjega uporabnika</translation>
 <translation id="1951012854035635156">Pomočnik</translation>
@@ -328,7 +328,6 @@ Tu je nekaj stvari, ki jih lahko poskusite za začetek.</translation>
 <translation id="2293443480080733021">Na kaj se želite osredotočiti? Pritisnite tipko Enter, če želite dodati opravilo.</translation>
 <translation id="229397294990920565">Prenos podatkov v mobilnem omrežju se izklaplja …</translation>
 <translation id="2295777434187870477">Mikrofon je vklopljen; če ga preklopite, bo izklopljen vhodni zvok.</translation>
-<translation id="2298170939937364391">Celozaslonska lupa je omogočena. Če jo želite izklopiti, znova pritisnite Ctrl + tipko za iskanje + M.</translation>
 <translation id="2302092602801625023">Ta račun upravlja Family Link</translation>
 <translation id="2303600792989757991">Preklop pregleda okna</translation>
 <translation id="2305738328104302723">Seznam Googlovih opravil: <ph name="GLANCEABLES_TASKS_LIST_NAME" /></translation>
@@ -513,7 +512,6 @@ Povezanih je toliko naprav: <ph name="DEVICECOUNT" />.</translation>
 <translation id="2977598380246111477">Naslednja številka</translation>
 <translation id="2985148236010982088">Prikaz vseh aplikacij</translation>
 <translation id="2992327365391326550">Gumb naprave za mikrofon je izklopljen.</translation>
-<translation id="2996462380875591307">Zasidrana lupa je omogočena. Če jo želite izklopiti, znova pritisnite Ctrl + tipko za iskanje + D.</translation>
 <translation id="3000461861112256445">Mono zvok</translation>
 <translation id="3001391739687111021">Urejanje velikosti zaslona</translation>
 <translation id="3009178788565917040">Izhod</translation>
@@ -607,6 +605,7 @@ Povezanih je toliko naprav: <ph name="DEVICECOUNT" />.</translation>
 <translation id="334927402682780278">Izbira besedila od kazalca do konca vrstice</translation>
 <translation id="3349345708646875009">Odpiranje upravitelja opravil</translation>
 <translation id="3364721542077212959">Orodja pisala</translation>
+<translation id="3365281428003534650">Nastavite časovnik, opravilo, glasbo</translation>
 <translation id="3365977133351922112">Telefon je predaleč. Približajte ga.</translation>
 <translation id="3368922792935385530">Povezano</translation>
 <translation id="3369111525500416043">Rok se bliža</translation>
@@ -910,6 +909,7 @@ Nekatere funkcije so omejene za podaljšanje časa delovanja baterije.</translat
 <translation id="4406883609789734330">Samodejni podnapisi</translation>
 <translation id="4412698727486357573">Center za pomoč</translation>
 <translation id="4412944820643904175">Funkcija <ph name="FEATURE_NAME" /> je izklopljena.</translation>
+<translation id="4417647906073317561">Nastavitve Osredotočenosti. Nastavite časovnik, opravilo in glasbo za boljšo koncentracijo.</translation>
 <translation id="4424159417645388645">Namizje 5</translation>
 <translation id="4430019312045809116">Glasnost</translation>
 <translation id="4441283832827406317">Aplikacije so razvrščene po imenu</translation>
@@ -1865,6 +1865,7 @@ Nova namestitev</translation>
         <ph name="MANAGED" />,
         <ph name="IME" />,
         <ph name="LOCALE" /></translation>
+<translation id="7899977217122813285">Obvestila so med osredotočanjem utišana do <ph name="TIME" /></translation>
 <translation id="7901190436359881020">Zamenjava oken</translation>
 <translation id="7901405293566323524">Središče za telefone</translation>
 <translation id="7902625623987030061">Dotaknite se tipala prstnih odtisov.</translation>
@@ -2146,7 +2147,6 @@ Nova namestitev</translation>
 <translation id="8982906748181120328">Vidnost v bližini</translation>
 <translation id="8983038754672563810">HSPA</translation>
 <translation id="8990809378771970590">Uporaba tega: <ph name="IME_NAME" /></translation>
-<translation id="8991617137207906966">Način inverzije barv je omogočen. Če ga želite izklopiti, znova pritisnite Ctrl + tipko za iskanje + H.</translation>
 <translation id="899350903320462459">Odklenite napravo kot <ph name="LOGIN_ID" />, da izvedete dejanje v obvestilu</translation>
 <translation id="8993733019280019776">Ali govorite? Mikrofon je izklopljen. Izberite mikrofon, če ga želite vklopiti.</translation>
 <translation id="9000771174482730261">UPRAVLJANJE PROSTORA ZA SHRANJEVANJE</translation>

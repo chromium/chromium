@@ -64,7 +64,6 @@ Estas son algunas de las cosas que puedes probar para comenzar.</translation>
 <translation id="1201402288615127009">Siguiente</translation>
 <translation id="1210557957257435379">grabación de pantalla</translation>
 <translation id="121097972571826261">Avanzar palabra por palabra</translation>
-<translation id="1217633719248931900">Ir a la app</translation>
 <translation id="1218444235442067213"><ph name="APP_NAME" />, app de Play Store</translation>
 <translation id="1225748608451425081">Tu Chromebook está bloqueada debido a un problema conocido. Tiempo restante para volver a acceder: <ph name="TIME_LEFT" />.</translation>
 <translation id="1229194443904279055">Dejar de seleccionar</translation>
@@ -180,6 +179,7 @@ Estas son algunas de las cosas que puedes probar para comenzar.</translation>
 <translation id="1611993646327628135">Sí</translation>
 <translation id="1620510694547887537">Cámara</translation>
 <translation id="1623768535032616219">Contraer Google Classroom</translation>
+<translation id="163032029566320584"><ph name="UNAVAILABLE_DLC" /> no está disponible.</translation>
 <translation id="1632985212731562677">Accesibilidad con interruptores se puede inhabilitar en Configuración &gt; Accesibilidad.</translation>
 <translation id="1637505162081889933"><ph name="NUM_DEVICES" /> dispositivos</translation>
 <translation id="1639239467298939599">Cargando</translation>
@@ -251,6 +251,7 @@ Estas son algunas de las cosas que puedes probar para comenzar.</translation>
 <translation id="1915307458270490472">Colgar</translation>
 <translation id="1918022425394817322">Se ajustó la cámara a la esquina superior derecha</translation>
 <translation id="1923539912171292317">Clics automáticos</translation>
+<translation id="1925320505152357008">menos de 1 min</translation>
 <translation id="1928739107511554905">Para obtener la actualización, usa la pantalla táctil para reiniciar tu Chromebook con el teclado conectado.</translation>
 <translation id="1948405482892809935">Cambiar al usuario siguiente</translation>
 <translation id="1951012854035635156">Asistente</translation>
@@ -327,7 +328,6 @@ Estas son algunas de las cosas que puedes probar para comenzar.</translation>
 <translation id="2293443480080733021">¿En qué te gustaría concentrarte? Presiona Intro para agregar la tarea.</translation>
 <translation id="229397294990920565">Desactivando los datos móviles…</translation>
 <translation id="2295777434187870477">El micrófono está activado. Si lo seleccionas, se silenciará.</translation>
-<translation id="2298170939937364391">Se habilitó la lupa de pantalla completa. Presiona Ctrl+Buscar+M de nuevo para desactivarla.</translation>
 <translation id="2302092602801625023">Esta cuenta está administrada por Family Link</translation>
 <translation id="2303600792989757991">Activar vista general de ventanas</translation>
 <translation id="2305738328104302723">Lista de Google Tasks: <ph name="GLANCEABLES_TASKS_LIST_NAME" /></translation>
@@ -512,7 +512,6 @@ Se conectaron <ph name="DEVICECOUNT" /> dispositivos.</translation>
 <translation id="2977598380246111477">Próximo número</translation>
 <translation id="2985148236010982088">Ver todas las apps</translation>
 <translation id="2992327365391326550">El botón del micrófono del dispositivo está desactivado.</translation>
-<translation id="2996462380875591307">Se habilitó la lupa con vista acoplada. Presiona Ctrl+Buscar+D de nuevo para desactivarla.</translation>
 <translation id="3000461861112256445">Audio mono</translation>
 <translation id="3001391739687111021">Editar tamaño de pantalla</translation>
 <translation id="3009178788565917040">Salida</translation>
@@ -606,6 +605,7 @@ Se conectaron <ph name="DEVICECOUNT" /> dispositivos.</translation>
 <translation id="334927402682780278">Seleccionar texto desde el cursor hasta el final del renglón</translation>
 <translation id="3349345708646875009">Abrir el Administrador de tareas</translation>
 <translation id="3364721542077212959">Herramientas de la pluma stylus</translation>
+<translation id="3365281428003534650">Establece un temp. y una tarea</translation>
 <translation id="3365977133351922112">Tu teléfono está demasiado lejos. Acércalo.</translation>
 <translation id="3368922792935385530">Conectado</translation>
 <translation id="3369111525500416043">Vence pronto</translation>
@@ -721,6 +721,7 @@ Conecta tu dispositivo a la corriente.</translation>
 <translation id="3702846122927433391">Población de Nigeria</translation>
 <translation id="3705722231355495246">-</translation>
 <translation id="3706423975342040244">Entretenimiento</translation>
+<translation id="3707093869106077605"><ph name="UNAVAILABLE_DLC_ONE" /> y <ph name="UNAVAILABLE_DLC_TWO" /> no están disponibles.</translation>
 <translation id="3708186454126126312">Conectados anteriormente</translation>
 <translation id="3712143870407382523">Elige una ventana para este lado</translation>
 <translation id="371370241367527062">Micrófono delantero</translation>
@@ -842,7 +843,7 @@ Algunas funciones están limitadas para aumentar la duración de la batería.</t
 <translation id="4190143678693626113">Responde rápidamente los mensajes de texto del teléfono desde tu Chromebook y ahorra tiempo</translation>
 <translation id="4190780880566297084">Descartar la configuración de la visualización de las fotos, el contenido multimedia y las apps recientes de tu teléfono</translation>
 <translation id="4192112279662688596">O bien</translation>
-<translation id="4193857202545160520">Mostrar los clics y las claves</translation>
+<translation id="4193857202545160520">Mostrar clics y combinaciones de teclas</translation>
 <translation id="4193969623755915875">Abre "Ayuda" en la app Explorar con "<ph name="NEW_SHORTCUT" />".</translation>
 <translation id="4195579532193195633">Versión actual <ph name="VERSION_NAME" /> (<ph name="OFFICIAL_STATUS" />) <ph name="CHANNEL_NAME" /> <ph name="PROCESSOR_VARIATION" /></translation>
 <translation id="4195814663415092787">Continuar la sesión desde donde la dejaste</translation>
@@ -909,6 +910,7 @@ Algunas funciones están limitadas para aumentar la duración de la batería.</t
 <translation id="4406883609789734330">Subtitulado instantáneo</translation>
 <translation id="4412698727486357573">Centro de ayuda</translation>
 <translation id="4412944820643904175">La función <ph name="FEATURE_NAME" /> está desactivada.</translation>
+<translation id="4417647906073317561">Configuración del Modo sin distracciones. Establece un temporizador, una tarea y música para concentrarte.</translation>
 <translation id="4424159417645388645">Escritorio 5</translation>
 <translation id="4430019312045809116">Volumen</translation>
 <translation id="4441283832827406317">Las apps están ordenadas por nombre</translation>
@@ -993,6 +995,7 @@ Se conectó un dispositivo.</translation>
 <translation id="4733161265940833579"><ph name="BATTERY_PERCENTAGE" />% (izquierdo)</translation>
 <translation id="4734965478015604180">Horizontal</translation>
 <translation id="4735944890391795473">Escritorio 12</translation>
+<translation id="4736732123074402682">Verifica la conexión y vuelve a intentarlo.</translation>
 <translation id="473775607612524610">Actualizar</translation>
 <translation id="4740516757091333363">¿Deseas borrar el escritorio guardado?</translation>
 <translation id="4746798685375253449">{0,plural, =1{Cambia el dispositivo a la versión anterior en el transcurso de un día}other{Cambia el dispositivo a la versión anterior en el transcurso de # días}}</translation>
@@ -1326,6 +1329,7 @@ No hay dispositivos conectados.</translation>
 <translation id="588258955323874662">Pantalla completa</translation>
 <translation id="5887954372087850114">Se asignó la ventana <ph name="WINDOW_TITLE" /> al escritorio <ph name="DESK_TITLE" /> y se anuló la asignación al resto de los escritorios</translation>
 <translation id="588817334757907802">Abrir el archivo en el navegador Chrome</translation>
+<translation id="5892014525522223653">No tienes conexión.</translation>
 <translation id="5895138241574237353">Reiniciar</translation>
 <translation id="589817443623831496">Búsqueda puntual</translation>
 <translation id="5901316534475909376">Mayúscula + Esc</translation>
@@ -1385,6 +1389,7 @@ No hay dispositivos conectados.</translation>
 <translation id="6095425951508823973">Agregar conexión con <ph name="PROVIDER" /></translation>
 <translation id="6099678161144790572">Se editó el mes pasado</translation>
 <translation id="6103838137565245112">sistema</translation>
+<translation id="610395411842312282">Agrupar dos ventanas contiguas</translation>
 <translation id="6108952804512516814">Crear con IA</translation>
 <translation id="6114505516289286752">Se descargaron los archivos de voz en <ph name="LANGUAGE" /></translation>
 <translation id="6119360623251949462"><ph name="CHARGING_STATE" />. <ph name="BATTERY_SAVER_STATE" />.</translation>
@@ -1392,6 +1397,7 @@ No hay dispositivos conectados.</translation>
 <translation id="6121838516699723042">Confirmar la descarga de <ph name="FILENAME" /></translation>
 <translation id="612734058257491180">El Asistente de Google no está disponible en las sesiones de invitado.</translation>
 <translation id="6127370444807669747">Para obtener playlists personalizadas y más música para concentrarse, prueba YouTube Music Premium</translation>
+<translation id="6127395413317891856">No tienes conexión. Verifica la conexión y vuelve a intentarlo.</translation>
 <translation id="6129953537138746214">Espacio</translation>
 <translation id="6137566720514957455">Abrir el diálogo para quitar la cuenta <ph name="USER_EMAIL_ADDRESS" /></translation>
 <translation id="6141205840878048728">¿En qué te gustaría concentrarte?</translation>
@@ -1860,6 +1866,7 @@ Para apagarlo, vuelve a mantener presionado el botón de encendido.</translation
         <ph name="MANAGED" />
         <ph name="IME" />
         <ph name="LOCALE" /></translation>
+<translation id="7899977217122813285">Las notificaciones están silenciadas hasta las <ph name="TIME" /> mientras te enfocas</translation>
 <translation id="7901190436359881020">Intercambiar las ventanas</translation>
 <translation id="7901405293566323524">Phone Hub</translation>
 <translation id="7902625623987030061">Toca el sensor de huellas dactilares</translation>
@@ -1964,6 +1971,7 @@ Para apagarlo, vuelve a mantener presionado el botón de encendido.</translation
 <translation id="8257510091797044096">Configura el dispositivo</translation>
 <translation id="8261506727792406068">Borrar</translation>
 <translation id="8262312463845990408">Activar o desactivar la reproducción</translation>
+<translation id="8268302343625273732">Ver todas las tareas en Google Classroom</translation>
 <translation id="8277261673056602147">Destacar texto en la pantalla</translation>
 <translation id="8287009018010202411">Productividad</translation>
 <translation id="828708037801473432">No</translation>
@@ -2140,7 +2148,6 @@ Para apagarlo, vuelve a mantener presionado el botón de encendido.</translation
 <translation id="8982906748181120328">Visibilidad de Nearby</translation>
 <translation id="8983038754672563810">HSPA</translation>
 <translation id="8990809378771970590"><ph name="IME_NAME" /> en uso</translation>
-<translation id="8991617137207906966">Se habilitó el modo de inversión de colores. Presiona Ctrl+Búsqueda+H nuevamente para desactivarlo.</translation>
 <translation id="899350903320462459">Desbloquea el dispositivo como <ph name="LOGIN_ID" /> para realizar la acción con las notificaciones</translation>
 <translation id="8993733019280019776">¿Estás hablando? Tu micrófono está desactivado. Selecciónalo para activarlo.</translation>
 <translation id="9000771174482730261">ADMINISTRAR EL ALMACENAMIENTO</translation>

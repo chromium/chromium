@@ -547,6 +547,7 @@
 <translation id="2003709556000175978">გადააყენეთ პაროლი ახლავე</translation>
 <translation id="2003775180883135320">ოთხმაგად გახვრეტა ზემოთ</translation>
 <translation id="2004697686368036666">ფუნქციებმა, შესაძლოა, არ იმუშაოს ზოგიერთ საიტზე</translation>
+<translation id="2005042463110681802">ამ გაფრთხილებას ხედავთ იმიტომ, რომ ამ საიტის მიერ HTTPS მხარდაუჭერელია, თქვენ კი ინკოგნიტო რეჟიმში ხართ. <ph name="BEGIN_LEARN_MORE_LINK" />შეიტყვეთ მეტი<ph name="END_LEARN_MORE_LINK" /></translation>
 <translation id="2009942480257059311">მოვლენის შექმნის ღილაკი, Google Calendar-ში ახალი მოვლენის სწრაფად შესაქმნელად გაააქტიურეთ ის</translation>
 <translation id="201174227998721785">ნებართვებისა და სხვადასხვა საიტზე შენახული მონაცემების მართვა Chrome-ის პარამეტრებიდან</translation>
 <translation id="2012276282211112603">ამჟამად საჩვენებელი თემები არ არის</translation>
@@ -567,6 +568,7 @@
 <translation id="2036983605131262583">ალტერნატიული რულონი</translation>
 <translation id="2040463897538655645">ამოღებადი მეხსიერება</translation>
 <translation id="2040894699575719559">მდებარეობა დაბლოკილია</translation>
+<translation id="2041788246978549610">ხელმისაწვდომი მიკროფონების გამოყენება (<ph name="MICS_COUNT" />)</translation>
 <translation id="2042213636306070719">ლანგარი 7</translation>
 <translation id="204357726431741734">თქვენს Google ანგარიშში შენახული პაროლების გამოსაყენებლად შედით სისტემაში</translation>
 <translation id="2045871135676061132">კონვერტი Personal</translation>
@@ -888,6 +890,7 @@
 <translation id="2655752832536625875">სააბაზანო</translation>
 <translation id="2657637947725373811">{0,plural, =1{გსურთ კონფიდენციალური ფაილის გადაცემა?}other{გსურთ კონფიდენციალური ფაილების გადაცემა?}}</translation>
 <translation id="2658843814961855121">შრომა და შრომითი სამართალი</translation>
+<translation id="2658944305627908367">ტრანზაქციები, რომლებიც აჭარბებს თქვენს ბალანსს, არ დამუშავდება</translation>
 <translation id="2660779039299703961">მოვლენა</translation>
 <translation id="2664887757054927933">{COUNT,plural, =0{არცერთი}=1{1 პაროლი (<ph name="DOMAIN_LIST" />-ისთვის)}=2{2 პაროლი (<ph name="DOMAIN_LIST" />-ისთვის)}other{# პაროლი (<ph name="DOMAIN_LIST" />-ისთვის)}}</translation>
 <translation id="2666092431469916601">ზედა</translation>
@@ -1085,6 +1088,7 @@
 <translation id="3090667236485488075">შუშა</translation>
 <translation id="3095940652251934233">Statement</translation>
 <translation id="3098513225387949945">იგნორირებულია, ვინაიდან გათიშვის სია შეიცავს '*'-ის ტოლ ნიმუშს, რომელიც წესების მთლიანად გათიშვის ეკვივალენტურია.</translation>
+<translation id="3099619114405539473">ხელმისაწვდომი კამერების გამოყენება (<ph name="CAMERAS_COUNT" />)</translation>
 <translation id="3102312643185441063">შემნახველი</translation>
 <translation id="3103188521861412364">ფასიანი ქაღალდები და ობლიგაციები</translation>
 <translation id="3105172416063519923">საინვენტარო ID:</translation>
@@ -1361,6 +1365,7 @@
 <translation id="3583757800736429874">&amp;და გადატანის მოძრაობა</translation>
 <translation id="3584299510153766161">ორმაგად გახვრეტა ქვემოთ</translation>
 <translation id="3584755835709800788">სამეცნიერო ფანტასტიკა და ფანტასტიკური ჟანრის ფილმები</translation>
+<translation id="3585455899094692781">ხელმისაწვდომი კამერების გამოყენება და მოძრაობა (<ph name="CAMERAS_COUNT" />)</translation>
 <translation id="3586833803451155175">სველი აფსკი</translation>
 <translation id="3586931643579894722">დეტალების დამალვა</translation>
 <translation id="3587738293690942763">შუა</translation>

@@ -1869,6 +1869,7 @@ Puwede mong pamahalaan ang mga setting ng account na ito sa pamamagitan ng pag-i
 <translation id="233375395665273385">I-delete at mag-sign out</translation>
 <translation id="233471714539944337">Sensitibong content</translation>
 <translation id="2335111415680198280">{0,plural, =1{Isara ang # window}one{Isara ang # window}other{Isara ang # na window}}</translation>
+<translation id="2335758110242123814">Buksan ang grupo</translation>
 <translation id="2336228925368920074">I-bookmark ang Lahat ng Mga Tab...</translation>
 <translation id="2336258397628212480">Nagpi-print ang <ph name="APP_NAME" /> ng 1 page sa <ph name="PRINTER_NAME" /></translation>
 <translation id="2336381494582898602">Powerwash</translation>
@@ -1889,6 +1890,7 @@ Puwede mong pamahalaan ang mga setting ng account na ito sa pamamagitan ng pag-i
 <translation id="2351923523007389195">Pinapayagan – <ph name="PERMISSION_DETAILS" />. I-on ang <ph name="LINK_BEGIN" />access sa lokasyon ng system<ph name="LINK_END" />.</translation>
 <translation id="2352662711729498748">&lt; 1 MB</translation>
 <translation id="2352810082280059586">Awtomatikong nase-save sa <ph name="LOCK_SCREEN_APP_NAME" /> ang mga tala sa lock screen. Mananatili ang iyong pinakabagong tala sa lock screen.</translation>
+<translation id="2353168619378866466">Buksan ang Grupo</translation>
 <translation id="2353297238722298836">Pinapayagan ang camera at mikropono</translation>
 <translation id="2353910600995338714">Na-export na</translation>
 <translation id="2355314311311231464">Hindi naisagawa ang pag-provision dahil hindi makuha ang mga detalye ng iyong account. Pakisubukan ulit. Code ng error: <ph name="ERROR_CODE" />.</translation>
@@ -2842,6 +2844,7 @@ Inaatasan ka ng <ph name="DOMAIN" /> na panatilihing nakalagay ang iyong smart c
 <translation id="3033348223765101500">Kontrolin ang iyong data</translation>
 <translation id="3036327949511794916">Lumipas na ang deadline para ibalik ang <ph name="DEVICE_TYPE" /> na ito.</translation>
 <translation id="3036546437875325427">I-enable ang Flash</translation>
+<translation id="3037193115779933814">Mga Titik at Numero</translation>
 <translation id="3038272154009688107">Tingnan ang lahat ng site</translation>
 <translation id="3038612606416062604">Manual na magdagdag ng printer</translation>
 <translation id="3039491566278747710">Hindi na-install ang offline na patakaran sa device.</translation>
@@ -4232,6 +4235,7 @@ Puwedeng kasama rito ang impormasyon tungkol sa naka-install na software, mga fi
 <translation id="4066207411788646768">Pakisuri ang iyong koneksyon para makita ang mga available na printer sa network mo</translation>
 <translation id="4067839975993712852">Markahan ang kasalukuyang tab bilang nabasa na</translation>
 <translation id="4068776064906523561">Mga naka-save na fingerprint</translation>
+<translation id="4070132839822635162">Huwag mag-sign in</translation>
 <translation id="407173827865827707">Sa pag-click</translation>
 <translation id="4072805772816336153">Subukan ulit sa ibang pagkakataon</translation>
 <translation id="4074164314564067597">keyboard</translation>
@@ -6041,6 +6045,7 @@ Posibleng malapat sa account na ito ang mga pahintulot na naibigay mo na sa mga 
 <translation id="5469540749878136997">Magbakante ng memory batay sa paggamit</translation>
 <translation id="5469852975082458401">Puwede kang mag-navigate sa mga page gamit ang text cursor. Pindutin ang F7 para i-off.</translation>
 <translation id="5470735824776589490">Kinakailangang mag-restart bago ma-reset ang iyong device gamit ang Powerwash. <ph name="LINK_BEGIN" />Matuto pa<ph name="LINK_END" /></translation>
+<translation id="5470741195701938302">Mga Numero</translation>
 <translation id="5471768120198416576">Kumusta! Ako ang iyong boses ng text-to-speech.</translation>
 <translation id="5472627187093107397">Mag-save ng mga password para sa site na ito</translation>
 <translation id="5473062644742711742">Makakita ng higit pang tool sa accessibility sa Chrome Web Store</translation>
@@ -6877,6 +6882,7 @@ Posibleng malapat sa account na ito ang mga pahintulot na naibigay mo na sa mga 
 <translation id="6101226222197207147">Nagdagdag ng bagong app (<ph name="EXTENSION_NAME" />)</translation>
 <translation id="6102043788063419338">Na-block ng Advanced Protection ang file na ito.</translation>
 <translation id="6103681770816982672">Babala: lumilipat ka sa channel ng developer</translation>
+<translation id="610395411842312282">Igrupo ang dalawang magkatabing window</translation>
 <translation id="6104068876731806426">Mga Google Account</translation>
 <translation id="6104667115274478616">Pamahalaan ang mga setting ng audio ng ChromeOS</translation>
 <translation id="6104796831253957966">Puno ang queue ng printer</translation>
@@ -7355,6 +7361,7 @@ Inaatasan ka ng <ph name="DOMAIN" /> na panatilihing nakalagay ang iyong smart c
 <translation id="6469702164109431067">Mga password at passkey</translation>
 <translation id="6470823736074966819">I-mute ang Mga Notification</translation>
 <translation id="6472893788822429178">Ipakita ang button na Home</translation>
+<translation id="6473315466413288899">Pumili ng opsyon</translation>
 <translation id="6474498546677193336">Hindi ma-unshare dahil ginagamit ng isang application ang folder na ito. Ia-unshare ang folder kapag na-shut down ang Linux.</translation>
 <translation id="6474884162850599008">Alisin sa pagkakakonekta ang Google Drive account</translation>
 <translation id="6475294023568239942">Magbakante ng espasyo sa disk o i-resize ang Linux disk sa Mga Setting</translation>
@@ -10825,6 +10832,7 @@ Posibleng malapat sa account na ito ang mga pahintulot na naibigay mo na sa mga 
 <translation id="9031811691986152304">subukan ulit</translation>
 <translation id="9032004780329249150">Gamitin ang mga password mo sa iyong mga iOS device</translation>
 <translation id="9032097289595078011">I-disable ang Mabilis na Pagpares</translation>
+<translation id="9032513103438497286">I-block ang mga naka-install na app sa <ph name="DEVICE_TYPE" /> na ito. Para paghigpitan ang pag-download ng mga app o content, pumunta sa Mga Setting ng Google Play.</translation>
 <translation id="9033765790910064284">Magpatuloy pa rin</translation>
 <translation id="9033857511263905942">I-&amp;paste</translation>
 <translation id="9034408118624208974">Bago ka sa Chromebook? I-on ang pag-sync para ma-back up ang iyong mga preference.</translation>

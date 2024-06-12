@@ -64,7 +64,6 @@
 <translation id="1201402288615127009">पुढील</translation>
 <translation id="1210557957257435379">स्क्रीन रेकॉर्डिंग</translation>
 <translation id="121097972571826261">एक शब्द पुढे जा</translation>
-<translation id="1217633719248931900">अ‍ॅपवर जा</translation>
 <translation id="1218444235442067213"><ph name="APP_NAME" />, Play स्टोअर अ‍ॅप</translation>
 <translation id="1225748608451425081">एका माहीत असलेल्या समस्येमुळे तुमचे Chromebook लॉक झाले आहे. तुम्हाला या वेळेनंतर साइन इन करता येईल: <ph name="TIME_LEFT" />.</translation>
 <translation id="1229194443904279055">निवडणे थांबवा</translation>
@@ -327,7 +326,6 @@
 <translation id="2293443480080733021">तुम्हाला कोणत्या गोष्टीवर फोकस करायचा आहे? टास्क जोडण्यासाठी एंटर प्रेस करा.</translation>
 <translation id="229397294990920565">मोबाइल डेटा बंद करत आहे...</translation>
 <translation id="2295777434187870477">माइक सुरू आहे, टॉगल केल्याने इनपुट म्यूट होईल.</translation>
-<translation id="2298170939937364391">फुल-स्क्रीन मॅग्निफायर सुरू केला आहे. तो टॉगल करून बंद करण्यासाठी पुन्हा Ctrl+Search+M प्रेस करा.</translation>
 <translation id="2302092602801625023">हे खाते Family Link द्वारे व्यवस्थापित केले जाते</translation>
 <translation id="2303600792989757991">विंडो विहंगावलोकन टॉगल करा</translation>
 <translation id="2305738328104302723">Google टास्क सूची: <ph name="GLANCEABLES_TASKS_LIST_NAME" /></translation>
@@ -512,7 +510,6 @@
 <translation id="2977598380246111477">पुढील नंबर</translation>
 <translation id="2985148236010982088">सर्व अ‍ॅप्स पहा</translation>
 <translation id="2992327365391326550">डिव्हाइसच्या मायक्रोफोनचे बटण बंद केले आहे.</translation>
-<translation id="2996462380875591307">डॉक केलेले मॅग्निफायर सुरू केले. ते टॉगल करून बंद करण्यासाठी पुन्हा Ctrl+Search+D प्रेस करा.</translation>
 <translation id="3000461861112256445">मोनो ऑडिओ</translation>
 <translation id="3001391739687111021">स्क्रीनचा आकार संपादित करा</translation>
 <translation id="3009178788565917040">आउटपुट</translation>
@@ -2139,7 +2136,6 @@
 <translation id="8982906748181120328">Nearby असलेले</translation>
 <translation id="8983038754672563810">HSPA</translation>
 <translation id="8990809378771970590"><ph name="IME_NAME" /> वापरत आहे</translation>
-<translation id="8991617137207906966">कलर इन्व्हर्जन मोड सुरू केला आहे. तो बंद वर टॉगल करण्यासाठी पुन्हा Ctrl+Search+H प्रेस करा.</translation>
 <translation id="899350903320462459">सूचनेशी संबंधित क्रिया पार पाडण्यासाठी डिव्हाइस <ph name="LOGIN_ID" /> म्हणून अनलॉक करा</translation>
 <translation id="8993733019280019776">तुम्ही बोलत आहात का? तुमचा माइक बंद आहे. माइक सुरू करण्यासाठी तो निवडा.</translation>
 <translation id="9000771174482730261">स्टोरेज व्यवस्थापित करा</translation>

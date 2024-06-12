@@ -547,6 +547,7 @@
 <translation id="2003709556000175978">立即重設您的密碼</translation>
 <translation id="2003775180883135320">四孔 (頂端)</translation>
 <translation id="2004697686368036666">部分網站的功能可能會無法正常運作</translation>
+<translation id="2005042463110681802">這個網站不支援 HTTPS，而且你目前處於無痕模式，因此系統顯示這則警告訊息。<ph name="BEGIN_LEARN_MORE_LINK" />瞭解詳情<ph name="END_LEARN_MORE_LINK" /></translation>
 <translation id="2009942480257059311">建立活動按鈕，啟動之後就可以喺 Google 日曆度快速建立新活動</translation>
 <translation id="201174227998721785">在 Chrome 設定中管理所有網站的權限和儲存的資料</translation>
 <translation id="2012276282211112603">目前沒有可顯示的主題</translation>
@@ -1481,6 +1482,7 @@
 <translation id="3799805948399000906">要求的字型</translation>
 <translation id="3801265110651850478">將「不追蹤」要求與瀏覽流量一併傳送</translation>
 <translation id="380329542618494757">名稱</translation>
+<translation id="3803801106042434208">以下是你所在地區的熱門搜尋引擎</translation>
 <translation id="3806932344025766608">如果你嘗試瀏覽的網站被攻擊，攻擊者可能會誘騙你安裝軟件或提供資料，例如密碼、電話號碼或信用卡號碼等資料。Chrome 強烈建議你不要瀏覽這個網站。<ph name="BEGIN_LEARN_MORE_LINK" />瞭解詳情<ph name="END_LEARN_MORE_LINK" /></translation>
 <translation id="3807366285948165054">圖片 X 軸移動</translation>
 <translation id="3807709094043295184">經典搖滾和懷舊音樂</translation>

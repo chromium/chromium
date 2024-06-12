@@ -547,6 +547,7 @@ I motsatt fall blir dette blokkert av personverninnstillingene. Dette gjør at i
 <translation id="2003709556000175978">Tilbakestill passordet ditt nå</translation>
 <translation id="2003775180883135320">Fire hull topp</translation>
 <translation id="2004697686368036666">Det kan hende at funksjoner på noen nettsteder ikke fungerer</translation>
+<translation id="2005042463110681802">Du ser denne advarselen fordi dette nettstedet ikke støtter HTTPS og du er i inkognitomodus. <ph name="BEGIN_LEARN_MORE_LINK" />Finn ut mer<ph name="END_LEARN_MORE_LINK" /></translation>
 <translation id="2009942480257059311">Knappen «Opprett hendelse» – aktiver for å opprette en ny hendelse i Google Kalender raskt</translation>
 <translation id="201174227998721785">Administrer tillatelser og data som er lagret på nettsteder, i Chrome-innstillingene</translation>
 <translation id="2012276282211112603">Ingen emner å vise akkurat nå</translation>
@@ -1482,6 +1483,7 @@ I motsatt fall blir dette blokkert av personverninnstillingene. Dette gjør at i
 <translation id="3799805948399000906">Forespurt skrifttype</translation>
 <translation id="3801265110651850478">Send en «Ikke spor»-forespørsel med nettlesertrafikken din</translation>
 <translation id="380329542618494757">Navn</translation>
+<translation id="3803801106042434208">Disse søkemotorene er populære i din region</translation>
 <translation id="3806932344025766608">Angripere på nettstedet du prøver å besøke, kan lure deg til å installere programvare eller oppgi ting som passordet, telefonnummeret eller kredittkortnummeret ditt. Chrome anbefaler på det sterkeste at du går tilbake til trygg grunn. <ph name="BEGIN_LEARN_MORE_LINK" />Finn ut mer<ph name="END_LEARN_MORE_LINK" /></translation>
 <translation id="3807366285948165054">X-forskyvning av bilde</translation>
 <translation id="3807709094043295184">Klassisk rock og slagere</translation>

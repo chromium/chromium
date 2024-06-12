@@ -1855,6 +1855,7 @@
 <translation id="233375395665273385">刪除並登出</translation>
 <translation id="233471714539944337">敏感內容</translation>
 <translation id="2335111415680198280">{0,plural, =1{關閉 # 個視窗}other{關閉 # 個視窗}}</translation>
+<translation id="2335758110242123814">開啟群組</translation>
 <translation id="2336228925368920074">將所有分頁加入書籤...</translation>
 <translation id="2336258397628212480">「<ph name="APP_NAME" />」正在透過「<ph name="PRINTER_NAME" />」列印 1 頁內容</translation>
 <translation id="2336381494582898602">Powerwash</translation>
@@ -1875,6 +1876,7 @@
 <translation id="2351923523007389195">已允許 – <ph name="PERMISSION_DETAILS" />。開啟<ph name="LINK_BEGIN" />系統位置資訊存取權<ph name="LINK_END" />。</translation>
 <translation id="2352662711729498748">&lt; 1 MB</translation>
 <translation id="2352810082280059586">螢幕鎖定記事內容會自動儲存到「<ph name="LOCK_SCREEN_APP_NAME" />」。你最近的記事仍會保留在鎖定畫面上。</translation>
+<translation id="2353168619378866466">開啟群組</translation>
 <translation id="2353297238722298836">可使用攝影機和麥克風</translation>
 <translation id="2353910600995338714">匯出成功</translation>
 <translation id="2355314311311231464">無法擷取你的帳戶詳細資料，因此佈建失敗。請再試一次。錯誤代碼：<ph name="ERROR_CODE" />。</translation>
@@ -2828,6 +2830,7 @@
 <translation id="3033348223765101500">控管資料</translation>
 <translation id="3036327949511794916">這部「<ph name="DEVICE_TYPE" />」的退貨期限已過。</translation>
 <translation id="3036546437875325427">啟用 Flash</translation>
+<translation id="3037193115779933814">英文字母和數字</translation>
 <translation id="3038272154009688107">查看所有網站</translation>
 <translation id="3038612606416062604">手動新增印表機</translation>
 <translation id="3039491566278747710">無法在裝置上安裝離線政策。</translation>
@@ -4214,6 +4217,7 @@
 <translation id="4066207411788646768">如要查看網路中的可用印表機，請檢查你的連線狀態</translation>
 <translation id="4067839975993712852">將目前的分頁標示為已讀取</translation>
 <translation id="4068776064906523561">已儲存的指紋</translation>
+<translation id="4070132839822635162">不登入</translation>
 <translation id="407173827865827707">點擊時</translation>
 <translation id="4072805772816336153">請稍後再試</translation>
 <translation id="4074164314564067597">鍵盤</translation>
@@ -6022,6 +6026,7 @@
 <translation id="5469540749878136997">依據使用情形釋出記憶體</translation>
 <translation id="5469852975082458401">你可以透過文字游標瀏覽頁面。按下 F7 鍵即可關閉這項功能。</translation>
 <translation id="5470735824776589490">你必須先重新啟動裝置，才能透過 Powerwash 重設裝置。<ph name="LINK_BEGIN" />瞭解詳情<ph name="LINK_END" /></translation>
+<translation id="5470741195701938302">數字</translation>
 <translation id="5471768120198416576">你好！這是文字轉語音的語音。</translation>
 <translation id="5472627187093107397">儲存這個網站的密碼</translation>
 <translation id="5473062644742711742">前往 Chrome 線上應用程式商店尋找更多無障礙工具</translation>
@@ -6854,6 +6859,7 @@
 <translation id="6101226222197207147">已新增以下應用程式：<ph name="EXTENSION_NAME" /></translation>
 <translation id="6102043788063419338">進階保護功能已封鎖這個檔案。</translation>
 <translation id="6103681770816982672">警告：你即將切換為開發人員版</translation>
+<translation id="610395411842312282">將兩個並排視窗設為同一組</translation>
 <translation id="6104068876731806426">Google 帳戶</translation>
 <translation id="6104667115274478616">管理 ChromeOS 音訊設定</translation>
 <translation id="6104796831253957966">印表機佇列已滿</translation>
@@ -7332,6 +7338,7 @@
 <translation id="6469702164109431067">密碼和密碼金鑰</translation>
 <translation id="6470823736074966819">忽略通知</translation>
 <translation id="6472893788822429178">顯示 [首頁] 按鈕</translation>
+<translation id="6473315466413288899">選取所需選項</translation>
 <translation id="6474498546677193336">某個應用程式正在使用這個資料夾，因此無法取消分享。系統會在下次關閉 Linux 時取消分享這個資料夾。</translation>
 <translation id="6474884162850599008">取消連結 Google 雲端硬碟帳戶</translation>
 <translation id="6475294023568239942">請前往「設定」釋出磁碟空間或調整 Linux 磁碟大小</translation>
@@ -10797,6 +10804,7 @@
 <translation id="9031811691986152304">再試一次</translation>
 <translation id="9032004780329249150">在 iOS 裝置上使用密碼</translation>
 <translation id="9032097289595078011">停用快速配對</translation>
+<translation id="9032513103438497286">禁止在這部 <ph name="DEVICE_TYPE" /> 上安裝應用程式。如要限制下載應用程式或內容，請前往 Google Play 設定。</translation>
 <translation id="9033765790910064284">仍要繼續</translation>
 <translation id="9033857511263905942">貼上(&amp;P)</translation>
 <translation id="9034408118624208974">第一次使用 Chromebook 嗎？開啟同步功能，即可備份你的偏好設定。</translation>

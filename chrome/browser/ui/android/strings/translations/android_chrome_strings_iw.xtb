@@ -376,7 +376,6 @@
 <translation id="2904414404539560095">רשימת המכשירים שאפשר לשתף איתם כרטיסייה נפתחה בגובה המלא של המסך.</translation>
 <translation id="2908243544703713905">הסיפורים שלא נקראו מוכנים</translation>
 <translation id="2909615210195135082">‏פלטפורמת ההתראות של Google</translation>
-<translation id="2912296070571964914">ניהול הנושאים שמעניינים אותך</translation>
 <translation id="2912345083818861431">שימוש בנעילת המסך כדי לראות כרטיסיות פתוחות במצב אנונימי</translation>
 <translation id="2923908459366352541">השם לא חוקי</translation>
 <translation id="2932150158123903946">‏נפח אחסון של <ph name="APP_NAME" />‏ Google</translation>
@@ -452,7 +451,6 @@
 <translation id="3259831549858767975">הקטנת כל מה שמופיע בדף</translation>
 <translation id="3264259168916048410">התקבלה מהמחשב בקשה להשתמש במכשיר הזה לצורך כניסה לאתר</translation>
 <translation id="3265093782546847662">כל הדפים של <ph name="DOMAIN" /></translation>
-<translation id="3265534588625245297">ניהול האתרים שבמעקב</translation>
 <translation id="3269093882174072735">טעינת תמונה</translation>
 <translation id="3280562213547448728">חיפוש קולי</translation>
 <translation id="3282568296779691940">‏כניסה ל-Chrome</translation>
@@ -624,7 +622,6 @@
 <translation id="4195643157523330669">פתיחה בכרטיסייה חדשה</translation>
 <translation id="4197828496439691735">{NUM_TABS,plural, =1{כרטיסייה אחת במכשיר הזה}one{# כרטיסיות במכשיר הזה}two{# כרטיסיות במכשיר הזה}other{# כרטיסיות במכשיר הזה}}</translation>
 <translation id="4198423547019359126">אין מיקומים זמינים להורדה</translation>
-<translation id="4198664641856813238">לאחר הכניסה לחשבון הסימניות, הסיסמאות ונתונים נוספים יופיעו בכל המכשירים שלך</translation>
 <translation id="4202218894997543208">נושאים שחסמת</translation>
 <translation id="4214315110991671325">‏אם מאפשרים שימוש בקובצי Cookie, יכול להיות שמערכת Chrome תשתמש בהם בטעינה מראש.</translation>
 <translation id="4216511743389425832">האזנה לדף הזה</translation>
@@ -824,7 +821,6 @@
 <translation id="510275257476243843">נותרה שעה אחת</translation>
 <translation id="5114895953710637392">גיליון הסינון לפי אפליקציות סגור.</translation>
 <translation id="5115811374190515607">אל <ph name="PRODUCT_NAME" /></translation>
-<translation id="5118713593561876160">תחומי עניין</translation>
 <translation id="5122378528687922675">אם צריך עזרה, אפשר לבקש עזרה מהורה (<ph name="PARENT_NAME_1" /> או <ph name="PARENT_NAME_2" />)</translation>
 <translation id="5123685120097942451">כרטיסייה אנונימית</translation>
 <translation id="5132942445612118989">סנכרון הסיסמאות, ההיסטוריה ונתונים נוספים בכל המכשירים</translation>
@@ -838,7 +834,6 @@
 <translation id="5171045022955879922">טקסט או כתובת אתר לחיפוש</translation>
 <translation id="5174700554036517242">הכרטיסייה חזרה לגובה ההתחלתי</translation>
 <translation id="5180063720319462041">הדף תורגם ל<ph name="TARGET_LANGUAGE" /></translation>
-<translation id="5186634140793586141">ניהול הנושאים והחיפושים שמעניינים אותך</translation>
 <translation id="5191251636205085390">‏מידע על טכנולוגיות חדשות שמיועדות להחליף קובצי cookie של צד שלישי והוראות לשליטה בהן.</translation>
 <translation id="5204967432542742771">הזנת סיסמה</translation>
 <translation id="5206168361184759344">{FILE_COUNT,plural, =1{מתבצעת הורדה של קובץ…}one{מתבצעת הורדה של # קבצים…}two{מתבצעת הורדה של # קבצים…}other{מתבצעת הורדה של # קבצים…}}</translation>
@@ -1086,7 +1081,6 @@
 <translation id="6437478888915024427">פרטי דף</translation>
 <translation id="6440291723980579689">דפים נטענים רק אחרי שפותחים אותם</translation>
 <translation id="6441734959916820584">השם ארוך מדי</translation>
-<translation id="6447558397796644647">לא ניתן למצוא את הסימנייה הזו. יש לוודא שהאיות נכון או להוסיף סימנייה חדשה.</translation>
 <translation id="6459045781120991510">סקרים</translation>
 <translation id="6461962085415701688">לא ניתן לפתוח את הקובץ</translation>
 <translation id="6464977750820128603">‏אפשר לראות אתרים שמבקרים בהם ב-Chrome ולהגדיר טיימרים בשבילם.\n\n‏Google מקבלת מידע על האתרים שמוגדרים בשבילם טיימרים ומשך השהייה שלך באתרים האלה. המידע עוזר לשפר את 'שימוש חכם בדיגיטל'.</translation>

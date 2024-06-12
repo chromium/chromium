@@ -850,6 +850,7 @@ Consulta las instrucciones del buscador para eliminar tu historial de búsqueda 
 <translation id="5345660046352249607">{COUNT,plural, =1{¿Seguir este paquete?}other{¿Seguir {COUNT} paquetes?}}</translation>
 <translation id="5348775987281903912">Puedes compartir esta página usando el botón de compartir.</translation>
 <translation id="536067926684072644">Mostrar marcadores</translation>
+<translation id="537853552771686272">Gestiona los temas y los sitios que te interesan</translation>
 <translation id="5379352933722332597">{count,plural, =1{Marcador guardado en {title}. Solo se guarda en este dispositivo.}other{{count} marcadores guardados en {title}. Solo se guardan en este dispositivo.}}</translation>
 <translation id="5388358297987318779">Abrir imagen</translation>
 <translation id="5395707839134961196">Ocultar detalles del buscador</translation>
@@ -932,6 +933,7 @@ Handoff también debe estar habilitado en la sección General de Configuración,
 <translation id="5758631781033351321">Aquí verás tu lista de lectura</translation>
 <translation id="5765456154762864099">Menú → Configuración → Navegador predeterminado</translation>
 <translation id="5777888488419460501">Guardar en la cuenta</translation>
+<translation id="5778292857689789362">Grupo de pestañas: <ph name="GROUP_TITLE" />, <ph name="TABS_NUMBER" /> pestañas</translation>
 <translation id="5782227691023083829">Traduciendo...</translation>
 <translation id="5791632441210678828">Botón para ordenar el feed Siguiendo</translation>
 <translation id="5793373065989412701">Comprobando los miembros de tu familia…</translation>

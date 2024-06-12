@@ -850,6 +850,7 @@ Pogledajte uputstva pretraživača za brisanje istorije pretrage ako je to prime
 <translation id="5345660046352249607">{COUNT,plural, =1{Želite da pratite ovaj paket?}one{Želite da pratite {COUNT} paket?}few{Želite da pratite {COUNT} paketa?}other{Želite da pratite {COUNT} paketa?}}</translation>
 <translation id="5348775987281903912">Ovu stranicu možete da delite ovde pomoću dugmeta za deljenje.</translation>
 <translation id="536067926684072644">Prikaži obeleživače</translation>
+<translation id="537853552771686272">Upravljajte temama i sajtovima koji vas interesuju</translation>
 <translation id="5379352933722332597">{count,plural, =1{Obeleživač je sačuvan u: {title}. Čuva se samo na ovom uređaju.}one{{count} obeleživač je sačuvan u: {title}. Čuvaju se samo na ovom uređaju.}few{{count} obeleživača su sačuvana u: {title}. Čuvaju se samo na ovom uređaju.}other{{count} obeleživača je sačuvano u: {title}. Čuvaju se samo na ovom uređaju.}}</translation>
 <translation id="5388358297987318779">Otvori sliku</translation>
 <translation id="5395707839134961196">Sakrijte detalje o pretraživaču</translation>
@@ -932,6 +933,7 @@ Handoff treba da se omogući u odeljku General (Opšte) u meniju Settings (Pode
 <translation id="5758631781033351321">Ovde ćete pronaći listu za čitanje</translation>
 <translation id="5765456154762864099">Meni → Podešavanja → Podrazumevani pregledač</translation>
 <translation id="5777888488419460501">Sačuvaj na nalogu</translation>
+<translation id="5778292857689789362">Grupa kartica, <ph name="GROUP_TITLE" />, kartica: <ph name="TABS_NUMBER" />.</translation>
 <translation id="5782227691023083829">Prevođenje je u toku...</translation>
 <translation id="5791632441210678828">Dugme Sortiraj za fid Pratite.</translation>
 <translation id="5793373065989412701">Proveravaju se članovi porodice…</translation>

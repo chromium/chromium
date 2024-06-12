@@ -1,9 +1,11 @@
 <?xml version="1.0" ?>
 <!DOCTYPE translationbundle>
 <translationbundle lang="pt-BR">
+<translation id="2252052615723281030">Essa configuração ajuda a proteger seu endereço IP quando sua conta está conectada ao Chrome. Se o navegador suspeitar que um site pode estar rastreando você, parte do seu tráfego poderá ser enviada pelos servidores de privacidade.</translation>
 <translation id="33479675708419823">Essa configuração ajuda a proteger seu endereço IP quando sua conta está conectada ao Chrome. Se o navegador suspeitar que um site pode estar rastreando você, parte do seu tráfego poderá ser enviada pelos servidores de privacidade. Saiba mais sobre <ph name="LINK_BEGIN" />como a proteção de IP funciona<ph name="LINK_END" /></translation>
 <translation id="3529311220178827364">Saiba mais sobre como ocultar seu endereço IP</translation>
 <translation id="4301151630239508244">Os temas são apenas um dos vários recursos que um site pode usar para personalizar anúncios. Os sites ainda podem mostrar anúncios mesmo sem esse recurso, mas talvez eles não sejam tão personalizados. Aprenda a <ph name="BEGIN_LINK_1" />gerenciar a privacidade de anúncios<ph name="END_LINK_1" />.</translation>
 <translation id="4598427486995631491">Ocultar seu endereço IP</translation>
 <translation id="6371812158043974664">Essa configuração ajuda a proteger seu endereço IP quando sua conta está conectada ao Chromium. Se o navegador suspeitar que um site pode estar rastreando você, parte do seu tráfego poderá ser enviada pelos servidores de privacidade. Saiba mais sobre <ph name="LINK_BEGIN" />como a proteção de IP funciona<ph name="LINK_END" /></translation>
+<translation id="7040031291654706261">Saiba <ph name="BEGIN_LINK" />como a proteção de IP funciona<ph name="END_LINK" /></translation>
 </translationbundle>

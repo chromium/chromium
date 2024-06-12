@@ -64,7 +64,6 @@ Berikut ialah beberapa perkara yang boleh anda cuba untuk bermula.</translation>
 <translation id="1201402288615127009">Seterusnya</translation>
 <translation id="1210557957257435379">rakaman skrin</translation>
 <translation id="121097972571826261">Maju satu perkataan</translation>
-<translation id="1217633719248931900">Pergi ke apl</translation>
 <translation id="1218444235442067213"><ph name="APP_NAME" />, Apl Gedung Play</translation>
 <translation id="1225748608451425081">Chromebook anda dikunci kerana isu yang diketahui. Anda akan dapat log masuk selepas: <ph name="TIME_LEFT" />.</translation>
 <translation id="1229194443904279055">Berhenti memilih</translation>
@@ -180,6 +179,7 @@ Berikut ialah beberapa perkara yang boleh anda cuba untuk bermula.</translation>
 <translation id="1611993646327628135">Hidup</translation>
 <translation id="1620510694547887537">Kamera</translation>
 <translation id="1623768535032616219">Kuncupkan Google Classroom</translation>
+<translation id="163032029566320584"><ph name="UNAVAILABLE_DLC" /> tidak tersedia.</translation>
 <translation id="1632985212731562677">Akses Suis boleh dilumpuhkan dalam Tetapan &gt; Kebolehaksesan.</translation>
 <translation id="1637505162081889933"><ph name="NUM_DEVICES" /> peranti</translation>
 <translation id="1639239467298939599">Memuatkan</translation>
@@ -328,7 +328,6 @@ Berikut ialah beberapa perkara yang boleh anda cuba untuk bermula.</translation>
 <translation id="2293443480080733021">Apakah yang mahu anda fokuskan? Tekan kekunci Enter untuk menambahkan tugasan.</translation>
 <translation id="229397294990920565">Data mudah alih sedang dimatikan...</translation>
 <translation id="2295777434187870477">Mikrofon dihidupkan, tindakan menogol akan meredamkan input.</translation>
-<translation id="2298170939937364391">Penggadang Skrin Penuh didayakan. Tekan Ctrl+Cari+M semula untuk mematikannya.</translation>
 <translation id="2302092602801625023">Akaun ini diurus oleh Family Link</translation>
 <translation id="2303600792989757991">Togol gambaran keseluruhan tetingkap</translation>
 <translation id="2305738328104302723">Senarai tugas Google: <ph name="GLANCEABLES_TASKS_LIST_NAME" /></translation>
@@ -513,7 +512,6 @@ Berikut ialah beberapa perkara yang boleh anda cuba untuk bermula.</translation>
 <translation id="2977598380246111477">Nombor seterusnya</translation>
 <translation id="2985148236010982088">Lihat semua apl</translation>
 <translation id="2992327365391326550">Butang mikrofon peranti dimatikan.</translation>
-<translation id="2996462380875591307">Penggadang Didok didayakan. Tekan Ctrl+Cari+D semula untuk mematikannya.</translation>
 <translation id="3000461861112256445">Audio mono</translation>
 <translation id="3001391739687111021">Edit saiz skrin</translation>
 <translation id="3009178788565917040">Output</translation>
@@ -723,6 +721,7 @@ Sambungkan peranti anda kepada sumber kuasa.</translation>
 <translation id="3702846122927433391">Populasi di Nigeria</translation>
 <translation id="3705722231355495246">-</translation>
 <translation id="3706423975342040244">Hiburan</translation>
+<translation id="3707093869106077605"><ph name="UNAVAILABLE_DLC_ONE" /> dan <ph name="UNAVAILABLE_DLC_TWO" /> tidak tersedia.</translation>
 <translation id="3708186454126126312">Disambungkan sebelum ini</translation>
 <translation id="3712143870407382523">Pilih tetingkap untuk sisi ini</translation>
 <translation id="371370241367527062">Mikrofon depan</translation>
@@ -995,6 +994,7 @@ Semua pengguna mesti log keluar untuk meneruskan.</translation>
 <translation id="4733161265940833579"><ph name="BATTERY_PERCENTAGE" />% (Kiri)</translation>
 <translation id="4734965478015604180">Mendatar</translation>
 <translation id="4735944890391795473">Meja 12</translation>
+<translation id="4736732123074402682">Periksa sambungan anda, kemudian cuba lagi.</translation>
 <translation id="473775607612524610">Kemas kini</translation>
 <translation id="4740516757091333363">Padamkan meja yang disimpan?</translation>
 <translation id="4746798685375253449">{0,plural, =1{Kemas kinikan peranti kepada versi terdahulu dalam masa sehari}other{Kemas kinikan peranti kepada versi terdahulu dalam masa # hari}}</translation>
@@ -1328,6 +1328,7 @@ Tiada peranti disambungkan.</translation>
 <translation id="588258955323874662">Skrin penuh</translation>
 <translation id="5887954372087850114">Window <ph name="WINDOW_TITLE" /> ditetapkan kepada <ph name="DESK_TITLE" /> dan tidak ditetapkan daripada semua meja.</translation>
 <translation id="588817334757907802">Buka fail dalam penyemak imbas Chrome</translation>
+<translation id="5892014525522223653">Anda luar talian.</translation>
 <translation id="5895138241574237353">Mulakan Semula</translation>
 <translation id="589817443623831496">Pengimbasan titik</translation>
 <translation id="5901316534475909376">Shift+Esc</translation>
@@ -1387,6 +1388,7 @@ Tiada peranti disambungkan.</translation>
 <translation id="6095425951508823973">Tambahkan sambungan dengan <ph name="PROVIDER" /></translation>
 <translation id="6099678161144790572">Diedit dalam bulan lepas</translation>
 <translation id="6103838137565245112">sistem</translation>
+<translation id="610395411842312282">Kumpulkan dua tetingkap bersebelahan</translation>
 <translation id="6108952804512516814">Buat dengan AI</translation>
 <translation id="6114505516289286752">Fail pertuturan <ph name="LANGUAGE" /> dimuat turun</translation>
 <translation id="6119360623251949462"><ph name="CHARGING_STATE" />. <ph name="BATTERY_SAVER_STATE" /></translation>
@@ -1394,6 +1396,7 @@ Tiada peranti disambungkan.</translation>
 <translation id="6121838516699723042">Sahkan muat turun <ph name="FILENAME" /></translation>
 <translation id="612734058257491180">Google Assistant tidak tersedia dalam sesi tetamu.</translation>
 <translation id="6127370444807669747">Untuk senarai main yang diperibadikan dan lebih banyak muzik untuk fokus, cubalah YouTube Music Premium</translation>
+<translation id="6127395413317891856">Anda luar talian. Periksa sambungan anda, kemudian cuba lagi.</translation>
 <translation id="6129953537138746214">Ruang</translation>
 <translation id="6137566720514957455">Buka dialog alih keluar untuk <ph name="USER_EMAIL_ADDRESS" /></translation>
 <translation id="6141205840878048728">Apakah yang mahu anda fokuskan?</translation>
@@ -1967,6 +1970,7 @@ Untuk mematikan peranti, tekan dan tahan butang kuasa pada peranti sekali lagi.<
 <translation id="8257510091797044096">Sediakan peranti anda</translation>
 <translation id="8261506727792406068">Padam</translation>
 <translation id="8262312463845990408">Togol main balik</translation>
+<translation id="8268302343625273732">Lihat semua tugasan dalam Google Classroom</translation>
 <translation id="8277261673056602147">Serlahkan teks pada skrin anda</translation>
 <translation id="8287009018010202411">Produktiviti</translation>
 <translation id="828708037801473432">Dimatikan</translation>
@@ -2143,7 +2147,6 @@ Untuk mematikan peranti, tekan dan tahan butang kuasa pada peranti sekali lagi.<
 <translation id="8982906748181120328">Keterlihatan berdekatan</translation>
 <translation id="8983038754672563810">HSPA</translation>
 <translation id="8990809378771970590">Menggunakan <ph name="IME_NAME" /></translation>
-<translation id="8991617137207906966">Mod Penyongsangan Warna didayakan. Tekan Ctrl+Search+H sekali lagi untuk mematikan mod itu.</translation>
 <translation id="899350903320462459">Buka kunci peranti sebagai <ph name="LOGIN_ID" /> untuk melaksanakan tindakan pemberitahuan</translation>
 <translation id="8993733019280019776">Adakah anda sedang bercakap? Mikrofon anda dimatikan. Pilih mikrofon untuk menghidupkan mikrofon anda.</translation>
 <translation id="9000771174482730261">URUS STORAN</translation>

@@ -90,6 +90,9 @@
 <translation id="1390418506739274310">Chrome에서 링크를 열어 다른 앱의 방문 기록을 볼 수 있습니다. Google 계정의 내 활동(<ph name="BEGIN_LINK" />myactivity.google.com<ph name="END_LINK" />)에는 방문 기록이 다른 형식으로 남아 있을 수도 있습니다.</translation>
 <translation id="13931502444227376">계속하려면 <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" />에서 내 이름, 이메일 주소, 프로필 사진을 이 사이트와 공유해야 합니다. 사이트의 <ph name="BEGIN_LINK1" />서비스 약관<ph name="END_LINK1" />을 확인하세요.</translation>
 <translation id="1397811292916898096"><ph name="PRODUCT_NAME" />에서 검색</translation>
+<translation id="1398057416966591719">Google 계정에 <ph name="BEGIN_LINK1" />저장되는 Chrome 데이터를 관리<ph name="END_LINK1" />할 수 있습니다.
+
+Chrome 환경을 개선하는 데 데이터를 사용하는 설정을 더 보려면 <ph name="BEGIN_LINK2" />Google 서비스<ph name="END_LINK2" />로 이동하세요.</translation>
 <translation id="1407069428457324124">어두운 테마</translation>
 <translation id="1407135791313364759">모두 열기</translation>
 <translation id="1409879593029778104">파일이 이미 존재하여 <ph name="FILE_NAME" /> 다운로드가 중지되었습니다.</translation>
@@ -248,6 +251,7 @@
 <translation id="2286841657746966508">청구서 수신 주소</translation>
 <translation id="228704530595896923">공유 옵션 목록입니다.</translation>
 <translation id="2297822946037605517">이 페이지 공유</translation>
+<translation id="22981027763501686">동기화하여 다른 기기에서 북마크, 방문 기록 등을 가져오세요.</translation>
 <translation id="230115972905494466">호환되는 기기 없음</translation>
 <translation id="2318045970523081853">탭하여 전화 걸기</translation>
 <translation id="2321086116217818302">비밀번호 준비 중…</translation>
@@ -376,7 +380,6 @@
 <translation id="2904414404539560095">탭을 공유할 기기 목록이 전체 높이로 열렸습니다.</translation>
 <translation id="2908243544703713905">읽지 않은 스토리 있음</translation>
 <translation id="2909615210195135082">Google 알림 플랫폼</translation>
-<translation id="2912296070571964914">관심 주제 관리</translation>
 <translation id="2912345083818861431">화면 잠금을 사용해 열려 있는 시크릿 탭을 봅니다.</translation>
 <translation id="2923908459366352541">잘못된 이름</translation>
 <translation id="2932150158123903946">Google <ph name="APP_NAME" /> 저장공간</translation>
@@ -452,7 +455,6 @@
 <translation id="3259831549858767975">페이지의 모든 항목 축소</translation>
 <translation id="3264259168916048410">컴퓨터가 사이트에 로그인하기 위해 기기를 사용하려고 합니다.</translation>
 <translation id="3265093782546847662"><ph name="DOMAIN" />의 모든 페이지</translation>
-<translation id="3265534588625245297">팔로우하는 사이트 관리</translation>
 <translation id="3269093882174072735">이미지 로드</translation>
 <translation id="3280562213547448728">음성 검색</translation>
 <translation id="3282568296779691940">Chrome에 로그인</translation>
@@ -624,7 +626,6 @@
 <translation id="4195643157523330669">새 탭에서 열기</translation>
 <translation id="4197828496439691735">{NUM_TABS,plural, =1{이 기기의 탭 1개}other{이 기기의 탭 #개}}</translation>
 <translation id="4198423547019359126">사용할 수 있는 다운로드 위치가 없음</translation>
-<translation id="4198664641856813238">모든 기기에서 내 북마크, 비밀번호 등을 사용하려면 로그인하세요</translation>
 <translation id="4202218894997543208">차단한 주제</translation>
 <translation id="4214315110991671325">사용자가 쿠키를 허용하면 Chrome에서 미리 로드할 때 쿠키를 사용할 수 있습니다.</translation>
 <translation id="4216511743389425832">이 페이지의 내용 듣기</translation>
@@ -824,7 +825,6 @@
 <translation id="510275257476243843">1시간 남음</translation>
 <translation id="5114895953710637392">앱 필터 시트가 닫혔습니다.</translation>
 <translation id="5115811374190515607">이동 위치: <ph name="PRODUCT_NAME" /></translation>
-<translation id="5118713593561876160">관심분야</translation>
 <translation id="5122378528687922675">도움이 필요하면 부모님(<ph name="PARENT_NAME_1" /> 또는 <ph name="PARENT_NAME_2" />)께 요청하세요</translation>
 <translation id="5123685120097942451">시크릿 탭</translation>
 <translation id="5132942445612118989">모든 기기의 비밀번호, 방문 기록 등 동기화</translation>
@@ -838,7 +838,6 @@
 <translation id="5171045022955879922">검색 또는 URL 입력</translation>
 <translation id="5174700554036517242">탭이 초기 높이로 복구됨</translation>
 <translation id="5180063720319462041">페이지가 <ph name="TARGET_LANGUAGE" />로 번역됨</translation>
-<translation id="5186634140793586141">관심 있는 주제 및 검색어 관리</translation>
 <translation id="5191251636205085390">타사 쿠키를 대체하는 것을 목표로 하는 새로운 기술을 알아보고 관리하세요.</translation>
 <translation id="5204967432542742771">비밀번호 입력</translation>
 <translation id="5206168361184759344">{FILE_COUNT,plural, =1{파일 1개 다운로드 중…}other{파일 #개 다운로드 중…}}</translation>
@@ -856,6 +855,7 @@
 <translation id="5292796745632149097">전송할 기기</translation>
 <translation id="5301876394151419436"><ph name="EMAIL" /> 계정으로 로그인했습니다. 언제든지 설정에서 동기화를 중지할 수 있습니다. Google에서는 사용자의 방문 기록을 기반으로 Google 검색 및 기타 서비스를 맞춤설정할 수 있습니다.</translation>
 <translation id="5304593522240415983">필수 입력란입니다.</translation>
+<translation id="5306014156308790439">컬렉션에 추가 사용 중지됨</translation>
 <translation id="5308380583665731573">연결</translation>
 <translation id="5316947901395241499">관리자가 비밀번호 저장을 사용 중지했습니다</translation>
 <translation id="5317780077021120954">저장</translation>
@@ -1086,7 +1086,6 @@
 <translation id="6437478888915024427">페이지 정보</translation>
 <translation id="6440291723980579689">사용자가 페이지를 열어야 페이지가 로드됩니다.</translation>
 <translation id="6441734959916820584">이름이 너무 깁니다.</translation>
-<translation id="6447558397796644647">북마크를 찾을 수 없습니다. 철자를 확인하거나 새로운 북마크를 추가하세요.</translation>
 <translation id="6459045781120991510">설문조사</translation>
 <translation id="6461962085415701688">파일을 열 수 없습니다</translation>
 <translation id="6464977750820128603">Chrome에서 내가 방문한 사이트를 보고 사이트에 타이머를 설정할 수 있습니다.\n\nGoogle에서는 타이머가 설정된 사이트와 사이트 방문 시간 정보를 수집합니다. 이 정보는 디지털 웰빙을 개선하는 데 사용됩니다.</translation>

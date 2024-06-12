@@ -125,6 +125,7 @@
 <translation id="2765403129283291972">Chrome necesita permiso para acceder ao micrófono neste sitio</translation>
 <translation id="2770231113462710648">Cambiar o navegador predeterminado a:</translation>
 <translation id="2775140325783767197">Chrome non puido comprobar os teus contrasinais. Verifica a conexión a Internet.</translation>
+<translation id="2797864378188255696">Cando accedas aos servizos de Google, como Gmail ou YouTube, con <ph name="USER_EMAIL" />, poderás iniciar sesión automaticamente en Chrome coa mesma conta</translation>
 <translation id="2799223571221894425">Iniciar de novo</translation>
 <translation id="2825024317344269723">Este sitio é perigoso. Chrome quitou os permisos de notificación.</translation>
 <translation id="2846251086934905009">Erro de instalación: O instalador non completou o proceso. Abortouse a instalación.</translation>
@@ -299,6 +300,7 @@
 <translation id="5334309298019785904">Chrome OS non puido sincronizar os teus datos porque a función de sincronización non está dispoñible para o teu dominio.</translation>
 <translation id="5334487786912937552">Chrome necesita permiso de acceso ao almacenamento para descargar ficheiros</translation>
 <translation id="5337648990166757586">Opcional: Axuda a mellorar as funcións e o rendemento de Chrome OS enviando automaticamente datos de uso e diagnóstico a Google.</translation>
+<translation id="5345497718959596593">Mentres teñas a sesión iniciada, poderás usar os teus contrasinais, ademais doutros datos da túa Conta de Google, en Chrome</translation>
 <translation id="5357889879764279201">Obter axuda con Chrome OS Flex</translation>
 <translation id="5368118228313795342">Código adicional: <ph name="EXTRA_CODE" />.</translation>
 <translation id="5386244825306882791">Tamén controla a páxina que se mostra ao iniciar Chrome ou ao realizar unha busca desde Omnibox.</translation>

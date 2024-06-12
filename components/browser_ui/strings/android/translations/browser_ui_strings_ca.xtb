@@ -278,6 +278,7 @@
 <translation id="5690795753582697420">La càmera està desactivada a la configuració d'Android</translation>
 <translation id="5691080386278724773"><ph name="SITE" /> pot utilitzar la teva informació mentre navegues</translation>
 <translation id="5700761515355162635">Galetes de tercers permeses</translation>
+<translation id="5705383358494210886"><ph name="HOST_NAME" /> <ph name="SEPARATOR1" /> <ph name="RECENCY" /></translation>
 <translation id="5706552988683188916">Aquesta acció suprimeix les galetes i altres dades de llocs web per a <ph name="WEBSITE" /></translation>
 <translation id="5723967018671998714">Les galetes de tercers estan bloquejades en mode d'incògnit</translation>
 <translation id="5740126560802162366">Els llocs web poden desar dades al teu dispositiu</translation>

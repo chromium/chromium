@@ -64,7 +64,6 @@
 <translation id="1201402288615127009">Далее</translation>
 <translation id="1210557957257435379">запись видео с экрана</translation>
 <translation id="121097972571826261">Вперед на одно слово</translation>
-<translation id="1217633719248931900">Открыть приложение</translation>
 <translation id="1218444235442067213"><ph name="APP_NAME" />, приложение из Play Маркета</translation>
 <translation id="1225748608451425081">Устройство Chromebook заблокировано в связи с известной проблемой. Время, по истечении которого можно будет выполнить вход: <ph name="TIME_LEFT" />.</translation>
 <translation id="1229194443904279055">Остановить выбор текста</translation>
@@ -180,6 +179,7 @@
 <translation id="1611993646327628135">Включено</translation>
 <translation id="1620510694547887537">Камера</translation>
 <translation id="1623768535032616219">Скрыть информацию из Google Класса</translation>
+<translation id="163032029566320584">Функция "<ph name="UNAVAILABLE_DLC" />" недоступна.</translation>
 <translation id="1632985212731562677">Функцию Switch Access можно отключить в разделе "Настройки &gt; Специальные возможности".</translation>
 <translation id="1637505162081889933">Устройств: <ph name="NUM_DEVICES" /></translation>
 <translation id="1639239467298939599">Загрузка…</translation>
@@ -327,7 +327,6 @@
 <translation id="2293443480080733021">На чем вы хотите сфокусироваться? Нажмите Ввод, чтобы добавить задачу.</translation>
 <translation id="229397294990920565">Отключение мобильного Интернета…</translation>
 <translation id="2295777434187870477">Микрофон включен. Нажмите, чтобы отключить его.</translation>
-<translation id="2298170939937364391">Полноэкранная лупа включена. Чтобы отключить ее, ещё раз нажмите Ctrl + Поиск + M.</translation>
 <translation id="2302092602801625023">Аккаунт находится под управлением Family Link</translation>
 <translation id="2303600792989757991">Переключить режим обзора</translation>
 <translation id="2305738328104302723">Список задач Google: <ph name="GLANCEABLES_TASKS_LIST_NAME" /></translation>
@@ -512,7 +511,6 @@
 <translation id="2977598380246111477">Следующая цифра</translation>
 <translation id="2985148236010982088">Посмотреть все приложения</translation>
 <translation id="2992327365391326550">Кнопка микрофона на устройстве отключена</translation>
-<translation id="2996462380875591307">Закрепленная лупа включена. Чтобы отключить ее, нажмите Ctrl + Поиск + D.</translation>
 <translation id="3000461861112256445">Монофо­нический звук</translation>
 <translation id="3001391739687111021">Изменить размер экрана</translation>
 <translation id="3009178788565917040">Выход</translation>
@@ -721,6 +719,7 @@
 <translation id="3702846122927433391">Население Нигерии</translation>
 <translation id="3705722231355495246">-</translation>
 <translation id="3706423975342040244">Развлечения</translation>
+<translation id="3707093869106077605"><ph name="UNAVAILABLE_DLC_ONE" /> и <ph name="UNAVAILABLE_DLC_TWO" /> недоступны.</translation>
 <translation id="3708186454126126312">Ранее подключенные устройства</translation>
 <translation id="3712143870407382523">Выберите окно для этой стороны.</translation>
 <translation id="371370241367527062">Фронтальный микрофон</translation>
@@ -992,6 +991,7 @@
 <translation id="4733161265940833579"><ph name="BATTERY_PERCENTAGE" /> % (левый)</translation>
 <translation id="4734965478015604180">Горизонтально</translation>
 <translation id="4735944890391795473">Рабочий стол 12</translation>
+<translation id="4736732123074402682">Проверьте подключение и повторите попытку.</translation>
 <translation id="473775607612524610">Обновить</translation>
 <translation id="4740516757091333363">Удалить сохраненный рабочий стол?</translation>
 <translation id="4746798685375253449">{0,plural, =1{Вернитесь к предыдущей версии ОС в течение 1 дня}one{Вернитесь к предыдущей версии ОС в течение # дня}few{Вернитесь к предыдущей версии ОС в течение # дней}many{Вернитесь к предыдущей версии ОС в течение # дней}other{Вернитесь к предыдущей версии ОС в течение # дня}}</translation>
@@ -1325,6 +1325,7 @@
 <translation id="588258955323874662">Полноэкранный режим</translation>
 <translation id="5887954372087850114">Окно "<ph name="WINDOW_TITLE" />" назначено рабочему столу "<ph name="DESK_TITLE" />". Назначение для других рабочих столов отменено.</translation>
 <translation id="588817334757907802">Открыть файл в браузере Chrome</translation>
+<translation id="5892014525522223653">Нет интернета.</translation>
 <translation id="5895138241574237353">Перезапустить</translation>
 <translation id="589817443623831496">Точечное сканирование</translation>
 <translation id="5901316534475909376">Shift + Esc</translation>
@@ -1384,6 +1385,7 @@
 <translation id="6095425951508823973">Добавить подключение от поставщика "<ph name="PROVIDER" />"</translation>
 <translation id="6099678161144790572">Изменено за последний месяц</translation>
 <translation id="6103838137565245112">система</translation>
+<translation id="610395411842312282">Сгруппировать 2 параллельных окна</translation>
 <translation id="6108952804512516814">Создать с помощью ИИ</translation>
 <translation id="6114505516289286752">Скачаны файлы распознавания речи для языка: <ph name="LANGUAGE" /></translation>
 <translation id="6119360623251949462"><ph name="CHARGING_STATE" />. <ph name="BATTERY_SAVER_STATE" />.</translation>
@@ -1391,6 +1393,7 @@
 <translation id="6121838516699723042">Подтвердите скачивание файла <ph name="FILENAME" /></translation>
 <translation id="612734058257491180">В рамках гостевого сеанса Google Ассистент недоступен.</translation>
 <translation id="6127370444807669747">Слушайте персональные плейлисты и музыку для концентрации внимания с YouTube Music Premium.</translation>
+<translation id="6127395413317891856">Нет интернета. Проверьте подключение и повторите попытку.</translation>
 <translation id="6129953537138746214">Пробел</translation>
 <translation id="6137566720514957455">Открыть диалоговое окно удаления аккаунта <ph name="USER_EMAIL_ADDRESS" /></translation>
 <translation id="6141205840878048728">На чем вы хотите сфокусироваться?</translation>
@@ -1963,6 +1966,7 @@
 <translation id="8257510091797044096">Настроить устройство</translation>
 <translation id="8261506727792406068">Удалить</translation>
 <translation id="8262312463845990408">Воспроизвести/приостановить</translation>
+<translation id="8268302343625273732">Посмотреть все задания в Google Классе</translation>
 <translation id="8277261673056602147">Выделите текст на экране</translation>
 <translation id="8287009018010202411">Работа</translation>
 <translation id="828708037801473432">Отключено</translation>
@@ -2139,7 +2143,6 @@
 <translation id="8982906748181120328">Широкий доступ</translation>
 <translation id="8983038754672563810">HSPA</translation>
 <translation id="8990809378771970590">Используется <ph name="IME_NAME" /></translation>
-<translation id="8991617137207906966">Режим инверсии цветов включен. Чтобы отключить его, снова нажмите Ctrl + Поиск + H.</translation>
 <translation id="899350903320462459">Чтобы выполнить действие, предложенное в уведомлении, разблокируйте устройство с помощью аккаунта <ph name="LOGIN_ID" />.</translation>
 <translation id="8993733019280019776">Микрофон отключен. Выберите микрофон, чтобы включить его.</translation>
 <translation id="9000771174482730261">ОЧИСТИТЬ ХРАНИЛИЩЕ</translation>

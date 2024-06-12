@@ -64,7 +64,6 @@
 <translation id="1201402288615127009">បន្ទាប់</translation>
 <translation id="1210557957257435379">ការថតវីដេអូអេក្រង់</translation>
 <translation id="121097972571826261">ទៅមុខមួយពាក្យ</translation>
-<translation id="1217633719248931900">ចូលទៅកាន់​កម្មវិធី</translation>
 <translation id="1218444235442067213"><ph name="APP_NAME" />, កម្មវិធី​នៅលើ Play Store</translation>
 <translation id="1225748608451425081">Chromebook របស់អ្នក​ជាប់សោ ដោយសារបញ្ហាដែលស្គាល់។ អ្នកនឹងអាចចូលគណនី បន្ទាប់ពីរយៈពេល៖ <ph name="TIME_LEFT" /> ទៀត។</translation>
 <translation id="1229194443904279055">ឈប់​ជ្រើសរើស</translation>
@@ -81,6 +80,7 @@
 <translation id="1247519845643687288">កម្មវិធី​ថ្មីៗ</translation>
 <translation id="1252999807265626933">កំពុងសាកពី <ph name="POWER_SOURCE" /></translation>
 <translation id="1255033239764210633">តើអាកាសធាតុ​យ៉ាងម៉េចដែរ?</translation>
+<translation id="1256734167083229794">អ្នក​បានចុច​ផ្លូវកាត់​ក្ដារចុច​សម្រាប់​កែវពង្រីក​ពេញអេក្រង់។ ប្រើ <ph name="ZOOM_IN_ACCELERATOR" /> ដើម្បី​ពង្រីក និង <ph name="ZOOM_OUT_ACCELERATOR" /> ដើម្បី​បង្រួម។ ប្រើ ctrl+alt+ព្រួញ ដើម្បី​ផ្លាស់ទីក្នុងទិដ្ឋភាព​ដែលបាន​ពង្រីក។</translation>
 <translation id="1269405891096105529">មិនអាចប្រើ​ឧបករណ៍​ខាងក្រៅ​នៅក្នុង​មុខងារភ្ញៀវ​បានទេ</translation>
 <translation id="1270290102613614947">ក្តារចុចលើអេក្រង់បានបិទដំណើរការ</translation>
 <translation id="1272079795634619415">ឈប់</translation>
@@ -267,6 +267,7 @@
 <translation id="1969011864782743497"><ph name="DEVICE_NAME" /> (USB)</translation>
 <translation id="1971815855639997522">តុ និង​វិនដូ​ត្រូវបាន​ដកចេញ។ សូមចុច Control + Z ដើម្បី​ត្រឡប់​សកម្មភាពវិញ។</translation>
 <translation id="1972950159383891558">សួស្តី <ph name="USERNAME" /></translation>
+<translation id="1977686871076551563">បាន​បើក​មុខងារ​បញ្ច្រាស​ពណ៌។ ចុច <ph name="ACCELERATOR" /> ម្ដងទៀត ដើម្បីបិទ​មុខងារនេះ។</translation>
 <translation id="1978498689038657292">ការ​បញ្ចូល​អក្សរ</translation>
 <translation id="1980808257969311265">ចូលរួម <ph name="EVENT_SUMMARY" /></translation>
 <translation id="1982717156487272186">បង្ហាញ​សប្ដាហ៍​មុន</translation>
@@ -331,7 +332,6 @@
 <translation id="2293443480080733021">តើអ្នកចង់ផ្ដោតអារម្មណ៍លើអ្វី? ចុច enter ដើម្បី​បញ្ចូលកិច្ចការ។</translation>
 <translation id="229397294990920565">កំពុងបិទទិន្នន័យទូរសព្ទចល័ត...</translation>
 <translation id="2295777434187870477">បានបើកមីក្រូហ្វូន ការបិទ/បើកនឹង​បិទសំឡេងរបស់ឧបករណ៍បញ្ចូលសំឡេង។</translation>
-<translation id="2298170939937364391">បានបើក​កម្មវិធី​ពង្រីក​ពេញ​អេក្រង់។ សូមចុច Ctrl+Search+M ម្ដងទៀត​ដើម្បី​បិទ​វា​។</translation>
 <translation id="2302092602801625023">គណនីនេះ​ត្រូវបាន​គ្រប់គ្រង​ដោយ Family Link</translation>
 <translation id="2303600792989757991">បិទបើកផ្ទាំងសង្ខេប</translation>
 <translation id="2305738328104302723">បញ្ជី Google កិច្ចការ៖ <ph name="GLANCEABLES_TASKS_LIST_NAME" /></translation>
@@ -518,7 +518,6 @@
 <translation id="2977598380246111477">លេខបន្ទាប់</translation>
 <translation id="2985148236010982088">មើលកម្មវិធីទាំងអស់</translation>
 <translation id="2992327365391326550">ប៊ូតុងមីក្រូហ្វូនរបស់ឧបករណ៍ត្រូវបានបិទ។</translation>
-<translation id="2996462380875591307">បានបើក​កែវ​ពង្រីក​ដាក់​ខាង​លើ​បំផុត។ សូមចុច Ctrl+Search+D ម្តងទៀត​ដើម្បី​បិទវា។</translation>
 <translation id="3000461861112256445">សំឡេង​ម៉ូណូ</translation>
 <translation id="3001391739687111021">កែ​ទំហំ​អេក្រង់</translation>
 <translation id="3009178788565917040">ទិន្នផល</translation>
@@ -1193,6 +1192,7 @@
 <translation id="5377367976106153749">បើក​សិទ្ធិ​ចូលប្រើប្រាស់​កាមេរ៉ាឬ?</translation>
 <translation id="5379115545237091094">ព្យាយាម​ច្រើនដងពេក</translation>
 <translation id="5391307769715781764">ជំនួស​តុ​ដែលបានរក្សាទុក​ឬ?</translation>
+<translation id="5392327145184648521">កំពុង​គណនា​ថ្ម %...</translation>
 <translation id="5393156353051693207">ចុចឱ្យជាប់​ត្រង់ណាក៏បាន ដើម្បីតម្រៀប​កម្មវិធីរបស់អ្នកឡើងវិញ</translation>
 <translation id="5395308026110844773"><ph name="DRAGGED_APP_NAME" /> នៅលើ <ph name="IN_PLACE_APP" /> សូម​ព្រលែង ដើម្បីបង្កើត​ថត។</translation>
 <translation id="5397578532367286026">ការប្រើប្រាស់ និងប្រើ (<ph name="MANAGER_EMAIL" />) នៅលើ chrome.com។</translation>
@@ -1247,6 +1247,7 @@
 <translation id="5577281275355252094">​ពិនិត្យមើលថា​បានបើក​ប៊្លូធូស​នៅលើ​ទូរសព្ទរបស់អ្នក ដើម្បីប្រើមណ្ឌលទូរសព្ទ</translation>
 <translation id="5578188167649348993">អង្គចងចាំ</translation>
 <translation id="5580000943347215299">បណ្ណាល័យ</translation>
+<translation id="5586388332127302891">បានបើក​កែវ​ពង្រីក​ដាក់ពីលើ។ ចុច <ph name="ACCELERATOR" /> ម្ដងទៀត ដើម្បីបិទ​មុខងារនេះ។</translation>
 <translation id="5587506661873751671">កំពុងទាញយក <ph name="DOWNLOAD_PERCENT" />%</translation>
 <translation id="558849140439112033">អូសដើម្បីជ្រើសរើសផ្នែកណាមួយ ដើម្បីថត</translation>
 <translation id="5590609058453685222">ការរំលឹកប្រាប់ថាបិទសំឡេង​ត្រូវ​បានបើក។ អ្នកនឹង​ទទួលបាន​ការជូនដំណឹង ប្រសិនបើ​អ្នកនិយាយ នៅពេល​បិទសំឡេង។</translation>
@@ -1457,6 +1458,7 @@
 <translation id="6319503618073410818">មើលព័ត៌មានលម្អិតនៅក្នុងកម្មវិធីរុករកតាមអ៊ីនធឺណិត</translation>
 <translation id="6324916366299863871">កែសម្រួលផ្លូវកាត់</translation>
 <translation id="6330012934079202188">កំពុងបង្ហាញ​វិនដូពីតុ​ទាំងអស់ សូមចុច​គ្រាប់ចុច​ព្រួញឡើងលើ ដើម្បីបង្ហាញ​វិនដូពី​តុបច្ចុប្បន្ន</translation>
+<translation id="6337159624125741244">កែវពង្រីក​ពេញអេក្រង់​ត្រូវបាន​បើក</translation>
 <translation id="6338485349199627913"><ph name="DISPLAY_NAME" /> គឺជា​រយៈពេល​ចូលប្រើ​ដែល​ស្ថិតក្រោមការគ្រប់គ្រងរបស់ <ph name="MANAGER" /></translation>
 <translation id="6344138931392227467">បានភ្ជាប់ <ph name="DEVICE_NAME" /></translation>
 <translation id="6348449481487610270"><ph name="MODIFIER_ONE" /><ph name="MODIFIER_TWO" /><ph name="KEY_ONE" /> បន្ទាប់មក <ph name="MODIFIER_THREE" /><ph name="KEY_TWO" /> ឬ <ph name="KEY_THREE" /></translation>
@@ -1524,6 +1526,7 @@
 <translation id="6574587113394758819">ការជូនដំណឹងអំពី <ph name="APP_TITLE" /> ​ត្រូវបានលាក់ ដោយសារ​ការការពារ​ការមើលត្រូវបានបើក</translation>
 <translation id="6574622320167699133">បានដោះសោដោយទូរសព្ទរបស់អ្នក។ ប៉ះ ឬចុចដើម្បីចូល។</translation>
 <translation id="6578407462441924264">គ្មាន​ឈ្មោះ</translation>
+<translation id="6582034443359256692">កំពុង​គណនា​កម្រិត​សាកថ្ម។</translation>
 <translation id="6585808820553845416">វេនបញ្ចប់ក្នុង <ph name="SESSION_TIME_REMAINING" />។</translation>
 <translation id="6593850935013518327"><ph name="PRIMARY_TEXT" />, <ph name="SECONDARY_TEXT" /></translation>
 <translation id="6597278316891651699">បានតម្រៀប​កាមេរ៉ាទៅ​ជ្រុងខាងឆ្វេង​ផ្នែកខាងក្រោម។ ខុសគ្នា​ជាមួយនឹង​ផ្ទៃប្រព័ន្ធ។</translation>
@@ -1585,6 +1588,7 @@
 <translation id="6790428901817661496">លេង</translation>
 <translation id="679368458793552943">ពង្រីក​នៅ​ពេល​កែវពង្រីក​ត្រូ​វបានបើក</translation>
 <translation id="6794287755901682422">ធាតុ​នេះ​មាន៖ <ph name="GLANCEABLES_TASK_ITEM_METADATA" />។</translation>
+<translation id="6797745268063125932">រក្សាឱ្យ​នៅបើក</translation>
 <translation id="6801878137098616817">បានកែ​ថ្មីៗនេះ</translation>
 <translation id="6802687695197837794">ការ​ធ្វើ​បែប​នេះ​ផ្ដល់​សិទ្ធិ​ចូលប្រើប្រាស់​ដល់ <ph name="APP1_NAME" />, <ph name="APP2_NAME" /> ព្រមទាំង​​គ្រប់កម្មវិធី និង​គេហទំព័រ​ដែល​មាន​ការ​អនុញ្ញាត​ឱ្យ​ប្រើ​កាមេរ៉ា និង​មីក្រូហ្វូន</translation>
 <translation id="6803622936009808957">មិនអាចឆ្លុះអេក្រង់ទេ ដោយសារមិនមានកម្រិតច្បាស់ដែលគាំទ្រត្រូវបានរកឃើញទេ។</translation>
@@ -1895,6 +1899,7 @@
 <translation id="7947798320695032612"><ph name="APP_NAME" /> ចង់​ប្រើ<ph name="DEVICE_NAME" />របស់​អ្នក</translation>
 <translation id="7951630946012935453">បន្ថយ​ពន្លឺ​ក្ដារចុច</translation>
 <translation id="7953994493035617347">បញ្ជាក់​កម្រិតគុណភាព​ថ្មីឬ?</translation>
+<translation id="795958884516058160">បានបើក​កែវពង្រីក​ពេញអេក្រង់។ ចុច <ph name="ACCELERATOR" /> ម្ដងទៀត ដើម្បីបិទ​មុខងារនេះ។</translation>
 <translation id="7963689218131240420">មុខងារ​កុំរំខាន​ត្រូវបាន​បិទ។</translation>
 <translation id="7963992254934562106">ពី <ph name="PHONE_NAME" /></translation>
 <translation id="7968693143708939792">ជ្រើសរើស​ថត...</translation>
@@ -2150,13 +2155,13 @@
 <translation id="894774083269346314">ប្រអប់​ធីក <ph name="PROFILE_NAME" /> <ph name="EMAIL" /> មិនត្រូវបាន​ធីកទេ។</translation>
 <translation id="8949925099261528566">បាន​ភ្ជាប់ ប៉ុន្តែ​គ្មាន​អ៊ីនធឺណិត​</translation>
 <translation id="8951539504029375108">មានតែ​ឧបករណ៍ Thunderbolt មានការអនុញ្ញាតប៉ុណ្ណោះ ដែលត្រូវគ្នា​ជាមួយ Chromebook របស់អ្នក</translation>
+<translation id="8959380109429710384">អ្នក​បានចុច​ផ្លូវកាត់​ក្ដារចុច​សម្រាប់​កែវពង្រីក​ពេញអេក្រង់។ ប្រើ ctrl + alt + ព្រួញ ដើម្បី​ផ្លាស់ទី​ក្នុងទិដ្ឋភាព​ដែលបាន​ពង្រីក។</translation>
 <translation id="8964525410783593407">1 ម៉</translation>
 <translation id="8973885907461690937">ដាក់​កា​រផ្ដោត​លើ​រូប​​ម៉ឺនុយ</translation>
 <translation id="8980862970816311842">ផ្លាស់ទីរូបកម្មវិធីចូល/ចេញពី​ថតនៅក្នុង​ក្រឡាកម្មវិធី</translation>
 <translation id="8982906748181120328">លទ្ធភាពមើលឃើញនៅជិត</translation>
 <translation id="8983038754672563810">HSPA</translation>
 <translation id="8990809378771970590">កំពុងប្រើ <ph name="IME_NAME" /></translation>
-<translation id="8991617137207906966">បាន​បើក​មុខងារ​បញ្ច្រាស​ពណ៌។ ចុចគ្រាប់ចុច Ctrl+ស្វែងរក+H ម្ដងទៀត ដើម្បីបិទ​មុខងារនេះ។</translation>
 <translation id="899350903320462459">ដោះសោ​ឧបករណ៍ជា <ph name="LOGIN_ID" /> ដើម្បី​ធ្វើសកម្មភាព​ជូន​ដំណឹង</translation>
 <translation id="8993733019280019776">តើអ្នក​កំពុង​និយាយ​មែនទេ? មីក្រូហ្វូន​របស់អ្នក​ត្រូវបានបិទ។ សូមជ្រើសរើស​មីក្រូហ្វូន ដើម្បីបើកវា។</translation>
 <translation id="9000771174482730261">គ្រប់គ្រងទំហំផ្ទុក</translation>

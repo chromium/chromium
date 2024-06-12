@@ -122,6 +122,7 @@
 <translation id="2765403129283291972">Chrome memerlukan izin akses ke mikrofon untuk situs ini</translation>
 <translation id="2770231113462710648">Ubah browser default ke:</translation>
 <translation id="2775140325783767197">Chrome tidak dapat memeriksa sandi Anda. Coba periksa koneksi internet Anda.</translation>
+<translation id="2797864378188255696">Saat login ke layanan Google seperti Gmail atau YouTube dengan <ph name="USER_EMAIL" />, Anda dapat login otomatis ke Chrome dengan akun yang sama</translation>
 <translation id="2799223571221894425">Luncurkan Ulang</translation>
 <translation id="2825024317344269723">Situs berbahaya. Chrome menghapus izin notifikasi.</translation>
 <translation id="2846251086934905009">Error penginstalan: Penginstal tidak selesai. Penginstalan telah dibatalkan.</translation>
@@ -294,6 +295,7 @@
 <translation id="5334309298019785904">ChromeOS tidak dapat menyinkronkan data Anda karena Sinkronisasi tidak tersedia untuk domain Anda.</translation>
 <translation id="5334487786912937552">Chrome memerlukan izin akses penyimpanan untuk mendownload file</translation>
 <translation id="5337648990166757586">Opsional: Bantu tingkatkan fitur dan performa ChromeOS dengan mengirimkan data penggunaan dan diagnostik secara otomatis ke Google.</translation>
+<translation id="5345497718959596593">Saat Anda login, Anda dapat menggunakan sandi Anda dan lainnya dari Akun Google Anda di Chrome</translation>
 <translation id="5357889879764279201">Dapatkan bantuan ChromeOS Flex</translation>
 <translation id="5368118228313795342">Kode tambahan: <ph name="EXTRA_CODE" />.</translation>
 <translation id="5386244825306882791">Juga mengontrol halaman apa yang ditampilkan saat Anda memulai Chrome atau menelusuri dari Omnibox.</translation>

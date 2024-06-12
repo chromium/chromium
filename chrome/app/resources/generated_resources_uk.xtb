@@ -1871,6 +1871,7 @@
 <translation id="233375395665273385">Видалити й вийти</translation>
 <translation id="233471714539944337">Контент делікатного характеру</translation>
 <translation id="2335111415680198280">{0,plural, =1{Закрити # вікно}one{Закрити # вікно}few{Закрити # вікна}many{Закрити # вікон}other{Закрити # вікна}}</translation>
+<translation id="2335758110242123814">Відкрити групу</translation>
 <translation id="2336228925368920074">Додати всі вкладки в закладки…</translation>
 <translation id="2336258397628212480">Додаток <ph name="APP_NAME" /> друкує 1 сторінку на принтері "<ph name="PRINTER_NAME" />"</translation>
 <translation id="2336381494582898602">Відновлення заводських налаштувань</translation>
@@ -1891,6 +1892,7 @@
 <translation id="2351923523007389195">Дозволено: <ph name="PERMISSION_DETAILS" />. Надайте <ph name="LINK_BEGIN" />доступ до геоданих системи<ph name="LINK_END" />.</translation>
 <translation id="2352662711729498748">&lt; 1 МБ</translation>
 <translation id="2352810082280059586">Сповіщення на заблокованому екрані автоматично зберігаються в додатку <ph name="LOCK_SCREEN_APP_NAME" />. Останнє сповіщення залишатиметься на заблокованому екрані.</translation>
+<translation id="2353168619378866466">Відкрити групу</translation>
 <translation id="2353297238722298836">Дозволено використовувати камеру та мікрофон</translation>
 <translation id="2353910600995338714">Експортовано</translation>
 <translation id="2355314311311231464">Сталася помилка налаштувань, оскільки не вдалось отримати дані вашого облікового запису. Повторіть спробу. Код помилки: <ph name="ERROR_CODE" />.</translation>
@@ -2844,6 +2846,7 @@
 <translation id="3033348223765101500">Керуйте своїми даними</translation>
 <translation id="3036327949511794916">Кінцевий термін повернення пристрою <ph name="DEVICE_TYPE" /> минув.</translation>
 <translation id="3036546437875325427">Увімкнути Flash</translation>
+<translation id="3037193115779933814">Букви й цифри</translation>
 <translation id="3038272154009688107">Переглянути всі сайти</translation>
 <translation id="3038612606416062604">Додати принтер вручну</translation>
 <translation id="3039491566278747710">Не вдалося встановити на пристрій політику щодо використання в режимі офлайн.</translation>
@@ -6042,6 +6045,7 @@
 <translation id="5469540749878136997">Звільняти пам’ять залежно від використання</translation>
 <translation id="5469852975082458401">Ви можете оглядати сторінки за допомогою текстового курсора. Щоб вимкнути цей режим, натисніть F7.</translation>
 <translation id="5470735824776589490">Перш ніж скинути налаштування за допомогою функції Powerwash, потрібно перезапустити пристрій. <ph name="LINK_BEGIN" />Докладніше<ph name="LINK_END" /></translation>
+<translation id="5470741195701938302">Цифри</translation>
 <translation id="5471768120198416576">Вітаю! Я – голос для синтезу мовлення.</translation>
 <translation id="5472627187093107397">Зберігати паролі для цього сайту</translation>
 <translation id="5473062644742711742">Знайти інші інструменти спеціальних можливостей у Веб-магазині Chrome</translation>
@@ -6875,6 +6879,7 @@
 <translation id="6101226222197207147">Додано нову програму (<ph name="EXTENSION_NAME" />)</translation>
 <translation id="6102043788063419338">Цей файл заблоковано Додатковим захистом.</translation>
 <translation id="6103681770816982672">Застереження. Ви переходите на версію для розробників</translation>
+<translation id="610395411842312282">Групувати два вікна поруч</translation>
 <translation id="6104068876731806426">Облікові записи Google</translation>
 <translation id="6104667115274478616">Керувати налаштуваннями звуку в ChromeOS</translation>
 <translation id="6104796831253957966">Черга принтера заповнена</translation>

@@ -376,7 +376,6 @@ Només les persones que sàpiguen la teva frase de contrasenya podran llegir les
 <translation id="2904414404539560095">La llista de dispositius amb què es compartirà una pestanya s'ha obert a alçada completa.</translation>
 <translation id="2908243544703713905">Les notícies sense llegir estan preparades</translation>
 <translation id="2909615210195135082">Plataforma de notificacions de Google</translation>
-<translation id="2912296070571964914">Gestiona els temes que t'interessen</translation>
 <translation id="2912345083818861431">Fes servir el bloqueig de pantalla per veure les pestanyes d'incògnit obertes</translation>
 <translation id="2923908459366352541">El nom no és vàlid</translation>
 <translation id="2932150158123903946">Emmagatzematge de Google <ph name="APP_NAME" /></translation>
@@ -452,7 +451,6 @@ Només les persones que sàpiguen la teva frase de contrasenya podran llegir les
 <translation id="3259831549858767975">Redueix la mida de tots els elements de la pàgina</translation>
 <translation id="3264259168916048410">L'ordinador vol utilitzar aquest dispositiu per iniciar la sessió en un lloc web</translation>
 <translation id="3265093782546847662">Totes les pàgines de <ph name="DOMAIN" /></translation>
-<translation id="3265534588625245297">Gestiona els llocs web que segueixes</translation>
 <translation id="3269093882174072735">Carrega la imatge</translation>
 <translation id="3280562213547448728">Cerca per veu</translation>
 <translation id="3282568296779691940">Inicia la sessió a Chrome</translation>
@@ -624,7 +622,6 @@ Només les persones que sàpiguen la teva frase de contrasenya podran llegir les
 <translation id="4195643157523330669">Obre en una pestanya nova</translation>
 <translation id="4197828496439691735">{NUM_TABS,plural, =1{1 pestanya en aquest dispositiu}other{# pestanyes en aquest dispositiu}}</translation>
 <translation id="4198423547019359126">No hi ha cap ubicació de baixada disponible</translation>
-<translation id="4198664641856813238">Inicia la sessió per obtenir les teves adreces d'interès, contrasenyes i més en tots els dispositius</translation>
 <translation id="4202218894997543208">Temes que has bloquejat</translation>
 <translation id="4214315110991671325">Si permets les galetes, Chrome pot utilitzar-les per a la precàrrega.</translation>
 <translation id="4216511743389425832">Escolta aquesta pàgina</translation>
@@ -824,7 +821,6 @@ Només les persones que sàpiguen la teva frase de contrasenya podran llegir les
 <translation id="510275257476243843">Queda 1 hora</translation>
 <translation id="5114895953710637392">El full de filtratge per aplicació està tancat.</translation>
 <translation id="5115811374190515607">a <ph name="PRODUCT_NAME" /></translation>
-<translation id="5118713593561876160">Interessos</translation>
 <translation id="5122378528687922675">Si necessites ajuda, demana-la al teu pare o mare (<ph name="PARENT_NAME_1" /> o <ph name="PARENT_NAME_2" />)</translation>
 <translation id="5123685120097942451">Pestanya d'incògnit</translation>
 <translation id="5132942445612118989">Sincronitza les contrasenyes, l'historial i altres elements en tots els dispositius</translation>
@@ -838,7 +834,6 @@ Només les persones que sàpiguen la teva frase de contrasenya podran llegir les
 <translation id="5171045022955879922">Cerqueu o escriviu l'URL</translation>
 <translation id="5174700554036517242">La pestanya ha tornat a l'alçada inicial</translation>
 <translation id="5180063720319462041">Pàgina traduïda a <ph name="TARGET_LANGUAGE" /></translation>
-<translation id="5186634140793586141">Gestiona els temes i les cerques que t'interessen</translation>
 <translation id="5191251636205085390">Obtén informació sobre les noves tecnologies per substituir les galetes de tercers i controla-les</translation>
 <translation id="5204967432542742771">Escriviu la contrasenya</translation>
 <translation id="5206168361184759344">{FILE_COUNT,plural, =1{S'està baixant el fitxer…}other{S'estan baixant # fitxers…}}</translation>
@@ -1086,7 +1081,6 @@ Per exemple, és possible que alguns llocs web responguin a aquesta sol·licitud
 <translation id="6437478888915024427">Informació de la pàgina</translation>
 <translation id="6440291723980579689">Les pàgines només es carreguen després d'obrir-les</translation>
 <translation id="6441734959916820584">El nom és massa llarg</translation>
-<translation id="6447558397796644647">No s'ha trobat aquesta adreça d'interès. Comprova'n l'ortografia o afegeix-ne una de nova.</translation>
 <translation id="6459045781120991510">Enquestes</translation>
 <translation id="6461962085415701688">El fitxer no es pot obrir</translation>
 <translation id="6464977750820128603">Pots veure els llocs web que visites a Chrome i establir-hi temporitzadors.\n\nGoogle obté informació sobre els llocs web en què estableixes temporitzadors i sobre el temps que hi passes. Aquesta informació s'utilitza per millorar Benestar digital.</translation>

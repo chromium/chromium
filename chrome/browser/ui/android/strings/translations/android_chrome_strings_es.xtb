@@ -90,6 +90,9 @@
 <translation id="1390418506739274310">Es posible que veas el historial de otras aplicaciones que abren enlaces en Chrome. Además, tu cuenta de Google podría tener otros tipos de historial de navegación en <ph name="BEGIN_LINK" />myactivity.google.com<ph name="END_LINK" />.</translation>
 <translation id="13931502444227376">Para continuar, <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> compartirá tu nombre, dirección de correo e imagen de perfil con este sitio. Consulta los <ph name="BEGIN_LINK1" />términos del servicio<ph name="END_LINK1" /> de este sitio.</translation>
 <translation id="1397811292916898096">Buscar con <ph name="PRODUCT_NAME" /></translation>
+<translation id="1398057416966591719">Puedes <ph name="BEGIN_LINK1" />gestionar qué datos de Chrome se guardan<ph name="END_LINK1" /> en tu cuenta de Google.
+
+Si quieres ver más ajustes que usan datos para mejorar tu experiencia con Chrome, ve a los <ph name="BEGIN_LINK2" />servicios de Google<ph name="END_LINK2" />.</translation>
 <translation id="1407069428457324124">Tema oscuro</translation>
 <translation id="1407135791313364759">Abrir todas</translation>
 <translation id="1409879593029778104">No se ha descargado <ph name="FILE_NAME" /> porque este archivo ya existe.</translation>
@@ -153,6 +156,7 @@
 <translation id="1755203724116202818">Para medir el rendimiento de los anuncios, algunos tipos de datos se comparten entre los sitios (como si has hecho una compra después de visitar un sitio).</translation>
 <translation id="1757620656501361327">Actualización del Gestor de contraseñas de Google</translation>
 <translation id="1760873718737761808">{FILE_COUNT,plural, =1{Páginas, 1 página en la lista}other{Páginas, # páginas en la lista}}</translation>
+<translation id="1771929606532798550">Se envía información a Google sobre el uso que haces de Chrome, pero no está vinculada a ti\n\nSi Chrome falla, puede que los detalles sobre el fallo incluyan alguna información personal\n\nSi sincronizas tu historial con tu cuenta de Google, las métricas también pueden incluir información sobre las URLs que visitas</translation>
 <translation id="1778457539567749232">Marcar como no leída</translation>
 <translation id="1779766957982586368">Cerrar ventana</translation>
 <translation id="1780023393214832643">Contraseñas guardadas en <ph name="USERNAME" /></translation>
@@ -248,6 +252,7 @@ Solo las personas que tengan tu frase de contraseña podrán leer tus datos cifr
 <translation id="2286841657746966508">Dirección de facturación</translation>
 <translation id="228704530595896923">Lista de opciones para compartir.</translation>
 <translation id="2297822946037605517">Compartir esta página</translation>
+<translation id="22981027763501686">Sincroniza para acceder a tus marcadores, tu historial y otras opciones en tus otros dispositivos</translation>
 <translation id="230115972905494466">No se han podido encontrar dispositivos compatibles</translation>
 <translation id="2318045970523081853">Toca para llamar</translation>
 <translation id="2321086116217818302">Preparando contraseñas…</translation>
@@ -376,7 +381,6 @@ Solo las personas que tengan tu frase de contraseña podrán leer tus datos cifr
 <translation id="2904414404539560095">La lista de dispositivos con los que puedes compartir una pestaña está abierta a altura completa.</translation>
 <translation id="2908243544703713905">Historias no leídas listas</translation>
 <translation id="2909615210195135082">Plataforma de notificaciones de Google</translation>
-<translation id="2912296070571964914">Gestiona los temas que te interesan</translation>
 <translation id="2912345083818861431">Usa el bloqueo de pantalla para ver las pestañas de Incógnito abiertas</translation>
 <translation id="2923908459366352541">El nombre no es válido</translation>
 <translation id="2932150158123903946">Almacenamiento de Google <ph name="APP_NAME" /></translation>
@@ -452,7 +456,6 @@ Solo las personas que tengan tu frase de contraseña podrán leer tus datos cifr
 <translation id="3259831549858767975">Reduce todo el contenido de la página</translation>
 <translation id="3264259168916048410">Tu ordenador quiere usar este dispositivo para iniciar sesión en un sitio.</translation>
 <translation id="3265093782546847662">Todas las páginas de <ph name="DOMAIN" /></translation>
-<translation id="3265534588625245297">Gestiona los sitios que sigues</translation>
 <translation id="3269093882174072735">Cargar imagen</translation>
 <translation id="3280562213547448728">Búsqueda por voz</translation>
 <translation id="3282568296779691940">Iniciar sesión en Chrome</translation>
@@ -624,7 +627,6 @@ Solo las personas que tengan tu frase de contraseña podrán leer tus datos cifr
 <translation id="4195643157523330669">Abrir en una pestaña nueva</translation>
 <translation id="4197828496439691735">{NUM_TABS,plural, =1{1 pestaña en este dispositivo}other{# pestañas en este dispositivo}}</translation>
 <translation id="4198423547019359126">No hay ubicaciones de descarga disponibles</translation>
-<translation id="4198664641856813238">Inicia sesión para acceder a tus marcadores, contraseñas y más en todos tus dispositivos</translation>
 <translation id="4202218894997543208">Temas que has bloqueado</translation>
 <translation id="4214315110991671325">Si permites las cookies, es posible que Chrome las use para la precarga.</translation>
 <translation id="4216511743389425832">Escuchar esta página</translation>
@@ -798,6 +800,7 @@ Es posible que tu cuenta de Google tenga otros tipos de historial de navegación
 <translation id="4987271110129728827">No se puede encontrar la página. Comprueba que la hayas escrito bien o prueba a hacer una búsqueda web.</translation>
 <translation id="4988526792673242964">Páginas</translation>
 <translation id="4991110219272367918">Opción para aprobar o no un sitio web cerrado</translation>
+<translation id="4996095658297597226">¿Usar contraseña sugerida?</translation>
 <translation id="499724277181351974">Ir a: <ph name="WEBSITE_TITLE" />: <ph name="WEBSITE_URL" /></translation>
 <translation id="5001388021414335527">Seguir a este sitio aquí</translation>
 <translation id="5004416275253351869">Controles de actividad de Google</translation>
@@ -824,7 +827,6 @@ Es posible que tu cuenta de Google tenga otros tipos de historial de navegación
 <translation id="510275257476243843">Queda 1 hora</translation>
 <translation id="5114895953710637392">La hoja de filtros de aplicaciones está cerrada.</translation>
 <translation id="5115811374190515607">a <ph name="PRODUCT_NAME" /></translation>
-<translation id="5118713593561876160">Intereses</translation>
 <translation id="5122378528687922675">Si necesitas ayuda, pídesela a tu padre o madre (<ph name="PARENT_NAME_1" /> o <ph name="PARENT_NAME_2" />)</translation>
 <translation id="5123685120097942451">Pestaña de Incógnito</translation>
 <translation id="5132942445612118989">Sincroniza tus contraseñas, tu historial y más en todos tus dispositivos</translation>
@@ -838,7 +840,6 @@ Es posible que tu cuenta de Google tenga otros tipos de historial de navegación
 <translation id="5171045022955879922">Busca o escribe una URL</translation>
 <translation id="5174700554036517242">La pestaña ha vuelto a su altura inicial</translation>
 <translation id="5180063720319462041">Página traducida al <ph name="TARGET_LANGUAGE" /></translation>
-<translation id="5186634140793586141">Gestiona los temas y las búsquedas que te interesan</translation>
 <translation id="5191251636205085390">Más información sobre las nuevas tecnologías que aspiran a reemplazar las cookies de terceros y cómo controlarlas</translation>
 <translation id="5204967432542742771">Escribe tu contraseña</translation>
 <translation id="5206168361184759344">{FILE_COUNT,plural, =1{Descargando archivo…}other{Descargando # archivos…}}</translation>
@@ -856,6 +857,7 @@ Es posible que tu cuenta de Google tenga otros tipos de historial de navegación
 <translation id="5292796745632149097">Enviar a</translation>
 <translation id="5301876394151419436">Has iniciado sesión como <ph name="EMAIL" />. Puedes detener la sincronización en cualquier momento desde la configuración. Google puede personalizar la Búsqueda y otros servicios en función de tu historial.</translation>
 <translation id="5304593522240415983">Este campo no puede estar vacío</translation>
+<translation id="5306014156308790439">Añadir a colección inhabilitado</translation>
 <translation id="5308380583665731573">Conectar</translation>
 <translation id="5316947901395241499">Tu administrador ha desactivado la función de guardar contraseñas</translation>
 <translation id="5317780077021120954">Guardar</translation>
@@ -1042,6 +1044,7 @@ Por ejemplo, algunos sitios web pueden responder a la solicitud mostrándote anu
 <translation id="6233974827872475843">Guarda las contraseñas de este dispositivo en tu cuenta de Google activando la sincronización</translation>
 <translation id="6247557882553405851">Gestor de contraseñas de Google</translation>
 <translation id="6251449557817521191">Consulta tu historial de Chrome aquí</translation>
+<translation id="6254139308321626268">Estás viendo un archivo PDF</translation>
 <translation id="6255794742848779505">Vamos a cambiar la forma de guardar contraseñas en este dispositivo</translation>
 <translation id="6264376385120300461">Descargar de todos modos</translation>
 <translation id="6277522088822131679">Se ha producido un problema al imprimir la página. Vuelve a intentarlo.</translation>
@@ -1083,10 +1086,10 @@ Por ejemplo, algunos sitios web pueden responder a la solicitud mostrándote anu
 <translation id="641643625718530986">Imprimir…</translation>
 <translation id="6433501201775827830">Elige tu buscador</translation>
 <translation id="6434309073475700221">Descartar</translation>
+<translation id="6437162790453527153">Inicia sesión para acceder a tus marcadores y más en todos tus dispositivos</translation>
 <translation id="6437478888915024427">Información de la página</translation>
 <translation id="6440291723980579689">Las páginas se cargan solo después de que las abras</translation>
 <translation id="6441734959916820584">El nombre es demasiado largo</translation>
-<translation id="6447558397796644647">No se ha podido encontrar el marcador. Comprueba que esté bien escrito o añade un nuevo marcador.</translation>
 <translation id="6459045781120991510">Encuestas</translation>
 <translation id="6461962085415701688">No se puede abrir el archivo</translation>
 <translation id="6464977750820128603">Puedes ver los sitios que visitas en Chrome y ponerles temporizadores.\n\nGoogle obtiene información sobre estos sitios y sobre la duración de la visita. La información se usa para mejorar Bienestar digital.</translation>
@@ -1438,6 +1441,7 @@ Para cambiar este ajuste, <ph name="BEGIN_LINK" />elimina los datos de Chrome de
 <translation id="7986497153528221272">Para ver las contraseñas, primero debes establecer un bloqueo de pantalla en tu dispositivo</translation>
 <translation id="7995059495660416932">Verás contenido cuando esté disponible</translation>
 <translation id="799576009106109668">Navegarás más rápido porque el contenido se cargará de forma proactiva en función de la página web en la que estés</translation>
+<translation id="8001245658307297681">Estás viendo un archivo local</translation>
 <translation id="8004582292198964060">Navegador</translation>
 <translation id="8015452622527143194">Restaura el tamaño predeterminado del contenido</translation>
 <translation id="8026238112629815203">Hemos cambiado la forma de guardar contraseñas en este dispositivo</translation>
