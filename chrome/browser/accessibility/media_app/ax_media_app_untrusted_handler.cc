@@ -29,8 +29,6 @@
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_finder.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
-#include "chrome/common/pref_names.h"
-#include "components/prefs/pref_service.h"
 #include "components/strings/grit/components_strings.h"
 #include "content/public/browser/web_contents.h"
 #include "mojo/public/cpp/bindings/message.h"
@@ -125,11 +123,7 @@ AXMediaAppUntrustedHandler::~AXMediaAppUntrustedHandler() {
 }
 
 void AXMediaAppUntrustedHandler::SetPdfOcrEnabledState() {
-  if (IsAccessibilityEnabled() == pdf_ocr_enabled_) {
-    return;
-  }
-  pdf_ocr_enabled_ = !pdf_ocr_enabled_;
-  media_app_page_->SetPdfOcrEnabled(pdf_ocr_enabled_);
+  media_app_page_->SetPdfOcrEnabled(IsAccessibilityEnabled());
 }
 
 bool AXMediaAppUntrustedHandler::IsOcrServiceEnabled() const {

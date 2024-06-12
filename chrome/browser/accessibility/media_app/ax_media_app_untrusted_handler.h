@@ -98,8 +98,7 @@ class AXMediaAppUntrustedHandler
   ~AXMediaAppUntrustedHandler() override;
 
   // Informs the MediaApp whether the PDF OCR feature is enabled, i.e. the user
-  // has enabled PDF OCR in the Settings app and an accessibility service such
-  // as ChromeVox is running.
+  // has an accessibility service such as ChromeVox activated.
   void SetPdfOcrEnabledState();
 
   virtual bool IsOcrServiceEnabled() const;
@@ -187,7 +186,6 @@ class AXMediaAppUntrustedHandler
   float scale_factor_ = 0.0f;
   base::circular_deque<std::string> dirty_page_ids_;
   bool text_extracted_ = false;
-  bool pdf_ocr_enabled_ = false;
   ui::AXTreeID document_tree_id_ = ui::AXTreeID::CreateNewAXTreeID();
   SEQUENCE_CHECKER(sequence_checker_);
   std::optional<mojo::ReportBadMessageCallback> bad_message_callback_ =
