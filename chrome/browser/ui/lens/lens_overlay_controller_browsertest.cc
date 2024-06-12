@@ -1934,8 +1934,9 @@ IN_PROC_BROWSER_TEST_F(LensOverlayControllerBrowserTest,
   EXPECT_TRUE(controller->get_search_query_history_for_testing().empty());
 }
 
+// TODO(346840584): Disabled due to flakiness
 IN_PROC_BROWSER_TEST_F(LensOverlayControllerBrowserTest,
-                       RecordHistogramsShowAndClose) {
+                       DISABLED_RecordHistogramsShowAndClose) {
   base::HistogramTester histogram_tester;
   WaitForPaint();
 
