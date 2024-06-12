@@ -265,10 +265,6 @@ class DiscardableImageMap::Generator {
       const auto image_color_usage = paint_image.GetContentColorUsage();
       map_.content_color_usage_ =
           std::max(map_.content_color_usage_, image_color_usage);
-
-      if (paint_image.is_high_bit_depth()) {
-        map_.contains_hbd_images_ = true;
-      }
     }
 
     auto& rects = map_.image_id_to_rects_[paint_image.stable_id()];

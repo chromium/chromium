@@ -42,6 +42,7 @@ TEST(RecordingSourceTest, DiscardableImagesWithTransform) {
 
   scoped_refptr<RasterSource> raster_source =
       recording_source.CreateRasterSource();
+  raster_source->GenerateDiscardableImageMap();
 
   // Tile sized iterators. These should find only one pixel ref.
   {
@@ -109,6 +110,7 @@ TEST(RecordingSourceTest, EmptyImages) {
 
   scoped_refptr<RasterSource> raster_source =
       recording_source.CreateRasterSource();
+  raster_source->GenerateDiscardableImageMap();
 
   // Tile sized iterators.
   {
@@ -156,6 +158,7 @@ TEST(RecordingSourceTest, NoDiscardableImages) {
 
   scoped_refptr<RasterSource> raster_source =
       recording_source.CreateRasterSource();
+  raster_source->GenerateDiscardableImageMap();
 
   // Tile sized iterators.
   {
@@ -202,6 +205,7 @@ TEST(RecordingSourceTest, DiscardableImages) {
 
   scoped_refptr<RasterSource> raster_source =
       recording_source.CreateRasterSource();
+  raster_source->GenerateDiscardableImageMap();
 
   // Tile sized iterators. These should find only one image.
   {
@@ -272,6 +276,7 @@ TEST(RecordingSourceTest, DiscardableImagesBaseNonDiscardable) {
 
   scoped_refptr<RasterSource> raster_source =
       recording_source.CreateRasterSource();
+  raster_source->GenerateDiscardableImageMap();
 
   // Tile sized iterators. These should find only one image.
   {

@@ -1703,6 +1703,7 @@ TEST_F(TileManagerTilePriorityQueueTest, NoRasterTasksforSolidColorTiles) {
 
   scoped_refptr<RasterSource> raster_source =
       recording_source.CreateRasterSource();
+  raster_source->GenerateDiscardableImageMap();
 
   FakePictureLayerTilingClient tiling_client;
   tiling_client.SetTileSize(size);
@@ -2087,6 +2088,7 @@ TEST_F(PixelInspectTileManagerTest, LowResHasNoImage) {
     recording_source.add_draw_image(std::move(blue_image), gfx::Point());
     recording_source.Rerecord();
     scoped_refptr<RasterSource> raster = recording_source.CreateRasterSource();
+    raster->GenerateDiscardableImageMap();
 
     FakePictureLayerTilingClient tiling_client;
     tiling_client.SetTileSize(size);
@@ -2538,8 +2540,10 @@ TEST_F(InvalidResourceTileManagerTest, InvalidResource) {
       PictureLayerImpl::Create(host_impl()->active_tree(), 1);
   layer->set_contributes_to_drawn_render_surface(true);
 
+  auto raster = FakeRasterSource::CreateFilled(size);
+  raster->GenerateDiscardableImageMap();
   auto* tiling = layer->picture_layer_tiling_set()->AddTiling(
-      gfx::AxisTransform2d(), FakeRasterSource::CreateFilled(size));
+      gfx::AxisTransform2d(), std::move(raster));
   tiling->set_resolution(HIGH_RESOLUTION);
   tiling->CreateAllTilesForTesting();
   tiling->SetTilePriorityRectsForTesting(gfx::Rect(size),   // Visible rect.

@@ -65,7 +65,6 @@ class CC_PAINT_EXPORT DiscardableImageMap {
   gfx::ContentColorUsage content_color_usage() const {
     return content_color_usage_;
   }
-  bool contains_hbd_images() const { return contains_hbd_images_; }
   const std::vector<AnimatedImageMetadata>& animated_images_metadata() const {
     return animated_images_metadata_;
   }
@@ -97,7 +96,6 @@ class CC_PAINT_EXPORT DiscardableImageMap {
       GUARDED_BY_CONTEXT(images_rtree_sequence_checker_);
   base::flat_map<PaintImage::Id, PaintImage::DecodingMode> decoding_mode_map_;
   gfx::ContentColorUsage content_color_usage_ = gfx::ContentColorUsage::kSRGB;
-  bool contains_hbd_images_ = false;
 
   SEQUENCE_CHECKER(images_rtree_sequence_checker_);
 

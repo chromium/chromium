@@ -108,8 +108,15 @@ class CC_EXPORT RasterSource : public base::RefCountedThreadSafe<RasterSource> {
   // Returns the content size of this raster source at a particular scale.
   gfx::Size GetContentSize(const gfx::Vector2dF& content_scale) const;
 
-  // Populate the given list with all images that may overlap the given
-  // rect in layer space.
+  // Should be called during commit.
+  void GenerateDiscardableImageMap();
+
+  // This can only be called once after GenerateDiscardableImageMap().
+  base::flat_map<PaintImage::Id, PaintImage::DecodingMode>
+  TakeDecodingModeMap();
+
+  // Populate the given list with all images that may overlap the given rect in
+  // layer space. Can only be called after GenerateDiscardableImageMap().
   void GetDiscardableImagesInRect(const gfx::Rect& layer_rect,
                                   std::vector<const DrawImage*>* images) const;
 
@@ -141,9 +148,6 @@ class CC_EXPORT RasterSource : public base::RefCountedThreadSafe<RasterSource> {
   SkColor4f background_color() const { return background_color_; }
 
   bool requires_clear() const { return requires_clear_; }
-
-  base::flat_map<PaintImage::Id, PaintImage::DecodingMode>
-  TakeDecodingModeMap();
 
   size_t* max_op_size_hint() { return &max_op_size_hint_; }
 

@@ -145,6 +145,12 @@ bool RasterSource::PerformSolidColorAnalysis(gfx::Rect layer_rect,
                                               max_ops_to_analyze);
 }
 
+void RasterSource::GenerateDiscardableImageMap() {
+  if (display_list_) {
+    display_list_->GenerateDiscardableImageMap();
+  }
+}
+
 void RasterSource::GetDiscardableImagesInRect(
     const gfx::Rect& layer_rect,
     std::vector<const DrawImage*>* images) const {

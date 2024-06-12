@@ -195,6 +195,7 @@ class SolidColorEmptyMaskContentLayerClient : public ContentLayerClient {
     // Intentionally return a solid color, empty mask display list. This
     // is a situation where all content should be masked out.
     auto display_list = base::MakeRefCounted<DisplayItemList>();
+    display_list->Finalize();
     return display_list;
   }
 

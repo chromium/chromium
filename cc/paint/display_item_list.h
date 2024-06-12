@@ -151,28 +151,30 @@ class CC_PAINT_EXPORT DisplayItemList
   }
   size_t OpBytesUsed() const { return paint_op_buffer_.paint_ops_size(); }
 
-  DiscardableImageMap& discardable_image_map() {
-    base::AutoLock lock(image_generation_lock_);
-    if (!image_map_) {
-      GenerateDiscardableImagesMetadata();
-    }
-    return *image_map_;
-  }
+  // Should be called before any usage of discardable_image_map() or
+  // TakeDecodingModeMap(). There are two scenarios:
+  // 1. Called during commit from the compositor thread, then all usages of
+  //    the map from the compositor thread will be safe;
+  // 2. Called from the main thread in rare cases (e.g. from
+  //    PictureLayer::RequiresSetNeedsDisplayOnHdrHeadroomChange()) before
+  //    usage of the map.
+  void GenerateDiscardableImageMap() const;
 
+  // This can only be called after GenerateDiscardableImageMap().
   const DiscardableImageMap& discardable_image_map() const {
     base::AutoLock lock(image_generation_lock_);
-    if (!image_map_) {
-      GenerateDiscardableImagesMetadata();
-    }
+    CHECK(image_map_);
     return *image_map_;
   }
+  // This can only be called after GenerateDiscardableImageMap().
   base::flat_map<PaintImage::Id, PaintImage::DecodingMode>
   TakeDecodingModeMap() {
-    return discardable_image_map().TakeDecodingModeMap();
+    base::AutoLock lock(image_generation_lock_);
+    CHECK(image_map_);
+    return image_map_->TakeDecodingModeMap();
   }
 
   void EmitTraceSnapshot() const;
-  void GenerateDiscardableImagesMetadataForTesting() const;
 
   gfx::Rect VisualRectForTesting(int index) {
     return visual_rects_[static_cast<size_t>(index)];
@@ -239,13 +241,11 @@ class CC_PAINT_EXPORT DisplayItemList
       visual_rects_[paired_begin_stack_.back().first_index].Union(visual_rect);
   }
 
-  void GenerateDiscardableImagesMetadata() const;
-
   void ProcessNewOp(const PaintOp& op) {}
   void ProcessNewOp(const DrawScrollingContentsOp& op);
 
   mutable std::optional<DiscardableImageMap> image_map_
-      GUARDED_BY_CONTEXT(image_generation_lock_);
+      GUARDED_BY(image_generation_lock_);
   mutable base::Lock image_generation_lock_;
 
   base::flat_set<ElementId> raster_inducing_scrolls_;
@@ -271,10 +271,16 @@ class CC_PAINT_EXPORT DisplayItemList
   std::vector<PairedBeginInfo> paired_begin_stack_;
 
 #if DCHECK_IS_ON()
+  bool IsPainting() const {
+    DCHECK(!IsFinalized());
+    return current_range_start_ != kNotPainting;
+  }
+  // paint_op_buffer_ is not mutable once Finalize() is called.
+  bool IsFinalized() const { return current_range_start_ == kFinalized; }
+  static constexpr size_t kNotPainting = static_cast<size_t>(-1);
+  static constexpr size_t kFinalized = static_cast<size_t>(-2);
   // While recording a range of ops, this is the position in the PaintOpBuffer
   // where the recording started.
-  bool IsPainting() const { return current_range_start_ != kNotPainting; }
-  const size_t kNotPainting = static_cast<size_t>(-1);
   size_t current_range_start_ = kNotPainting;
 #endif
 

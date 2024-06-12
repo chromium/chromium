@@ -88,6 +88,10 @@ void DisplayItemList::Raster(SkCanvas* canvas,
 
 void DisplayItemList::Raster(SkCanvas* canvas,
                              const PlaybackParams& params) const {
+#if DCHECK_IS_ON()
+  DCHECK(IsFinalized());
+#endif
+
   TRACE_EVENT_BEGIN1("cc", "DisplayItemList::Raster", "total_op_count",
                      TotalOpCount());
   std::vector<size_t> offsets = OffsetsOfOpsToRaster(canvas);
@@ -121,6 +125,10 @@ std::vector<size_t> DisplayItemList::OffsetsOfOpsToRaster(
 
 void DisplayItemList::CaptureContent(const gfx::Rect& rect,
                                      std::vector<NodeInfo>* content) const {
+#if DCHECK_IS_ON()
+  DCHECK(IsFinalized());
+#endif
+
   if (!paint_op_buffer_.has_draw_text_ops())
     return;
   std::vector<size_t> offsets;
@@ -200,6 +208,7 @@ void DisplayItemList::Finalize() {
   // to EndPaintOfPairedEnd().
   DCHECK(paired_begin_stack_.empty());
   DCHECK_EQ(visual_rects_.size(), offsets_.size());
+  current_range_start_ = kFinalized;
 #endif
 
   rtree_.Build(
@@ -298,17 +307,15 @@ void DisplayItemList::AddToValue(base::trace_event::TracedValue* state,
   }
 }
 
-void DisplayItemList::GenerateDiscardableImagesMetadataForTesting() const {
+void DisplayItemList::GenerateDiscardableImageMap() const {
+#if DCHECK_IS_ON()
+  DCHECK(IsFinalized());
+#endif
+
   base::AutoLock lock(image_generation_lock_);
   if (image_map_) {
     return;
   }
-  GenerateDiscardableImagesMetadata();
-}
-
-void DisplayItemList::GenerateDiscardableImagesMetadata() const {
-  image_generation_lock_.AssertAcquired();
-  CHECK(!image_map_);
 
   image_map_.emplace();
   // Bounds are only used to size an SkNoDrawCanvas.
@@ -318,6 +325,10 @@ void DisplayItemList::GenerateDiscardableImagesMetadata() const {
 bool DisplayItemList::GetColorIfSolidInRect(const gfx::Rect& rect,
                                             SkColor4f* color,
                                             int max_ops_to_analyze) {
+#if DCHECK_IS_ON()
+  DCHECK(IsFinalized());
+#endif
+
   std::vector<size_t>* offsets_to_use = nullptr;
   std::vector<size_t> offsets;
   if (rtree_.has_valid_bounds() && !rect.Contains(*bounds())) {
@@ -426,6 +437,9 @@ DirectlyCompositedImageInfoForPaintOpBuffer(const PaintOpBuffer& op_buffer) {
 
 std::optional<DirectlyCompositedImageInfo>
 DisplayItemList::GetDirectlyCompositedImageInfo() const {
+#if DCHECK_IS_ON()
+  DCHECK(IsFinalized());
+#endif
   return DirectlyCompositedImageInfoForPaintOpBuffer(paint_op_buffer_);
 }
 

@@ -723,9 +723,13 @@ void PictureLayerImpl::UpdateRasterSource(
       !raster_source_ || raster_source_->GetDisplayItemList() !=
                              raster_source->GetDisplayItemList();
 
-  // Unregister for all images on the current raster source, if the recording
-  // was updated.
   if (recording_updated) {
+    if (!pending_set) {
+      // We're in a commit, make sure the discardable image map is ready.
+      raster_source->GenerateDiscardableImageMap();
+    }
+
+    // Unregister for animated images on the current raster source.
     UnregisterAnimatedImages();
 
     // When the display list changes, the set of PaintWorklets may also change.
