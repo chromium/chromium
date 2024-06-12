@@ -35,6 +35,7 @@
 #include "content/public/browser/federated_identity_api_permission_context_delegate.h"
 #include "content/public/browser/federated_identity_auto_reauthn_permission_context_delegate.h"
 #include "content/public/browser/federated_identity_permission_context_delegate.h"
+#include "content/public/browser/identity_request_account.h"
 #include "content/public/browser/render_frame_host.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/common/content_client.h"
@@ -1565,24 +1566,32 @@ void FederatedAuthRequestImpl::MaybeShowAccountsDialog() {
   std::optional<IdentityProviderData> new_account_idp;
   for (const auto& idp : idp_order_) {
     auto idp_info_it = idp_infos_.find(idp);
-    if (idp_info_it != idp_infos_.end() && idp_info_it->second->data) {
-      idp_data_for_display_.push_back(*idp_info_it->second->data);
-    }
     if (idp_infos_.size() > 1u ||
         IsFedCmUseOtherAccountEnabled(rp_mode_ == RpMode::kButton)) {
       if (!login_url_.is_empty() &&
           login_url_ == idp_info_it->second->metadata.idp_login_url) {
+        std::vector<IdentityRequestAccount> reordered_accounts_list;
         for (const auto& account : idp_info_it->second->data->accounts) {
           if (!account_ids_before_login_.contains(account.id)) {
             // Even though it is theoretically possible for more than one
             // account to be new, just show the first one we encounter.
+            // TODO(crbug.com/342194490): Consider case when there's more than
+            // one newly signed in account.
             new_account_idp = idp_info_it->second->data;
             new_account_idp->accounts = {account};
-            break;
+            reordered_accounts_list.emplace(reordered_accounts_list.begin(),
+                                            account);
+          } else {
+            reordered_accounts_list.emplace_back(account);
           }
         }
         account_ids_before_login_.clear();
+        idp_info_it->second->data->accounts =
+            std::move(reordered_accounts_list);
       }
+    }
+    if (idp_info_it != idp_infos_.end() && idp_info_it->second->data) {
+      idp_data_for_display_.push_back(*idp_info_it->second->data);
     }
   }
 

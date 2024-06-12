@@ -174,15 +174,17 @@ class FedCmAccountSelectionView : public AccountSelectionView,
     IDP_SIGNIN_STATUS_MISMATCH,
 
     // User is shown a single account they have with IDP and is prompted to
-    // continue with the account.
+    // select or continue with the account. On a widget flow bubble, this may
+    // contain disclosure text which prompts the user to grant permission for
+    // this account they have with IDP to communicate with RP.
     SINGLE_ACCOUNT_PICKER,
 
     // User is shown list of accounts they have with IDP and is prompted to
     // select an account.
     MULTI_ACCOUNT_PICKER,
 
-    // User is prompted to grant permission for specific account they have with
-    // IDP to communicate with RP.
+    // User is prompted to grant permission for a specific account they have
+    // with IDP to communicate with RP on the button flow modal.
     REQUEST_PERMISSION,
 
     // Shown after the user has granted permission while the id token is being
@@ -201,7 +203,8 @@ class FedCmAccountSelectionView : public AccountSelectionView,
     // are being fetched.
     LOADING,
 
-    // Shown when we wish to display only a single returning account.
+    // Shown when we wish to display only a single returning account. Used when
+    // there are multiple IDPs and exactly one returning account.
     SINGLE_RETURNING_ACCOUNT_PICKER
   };
 

@@ -14,6 +14,7 @@
 #include "chrome/browser/ui/views/webid/account_selection_modal_view.h"
 #include "chrome/browser/ui/views/webid/account_selection_view_base.h"
 #include "chrome/browser/ui/views/webid/fedcm_modal_dialog_view.h"
+#include "chrome/browser/ui/views/webid/identity_provider_display_data.h"
 #include "chrome/browser/ui/webid/account_selection_view.h"
 #include "chrome/grit/generated_resources.h"
 #include "components/constrained_window/constrained_window_views.h"
@@ -171,6 +172,8 @@ bool FedCmAccountSelectionView::Show(
   }
 
   if (sign_in_mode == Account::SignInMode::kAuto) {
+    // Auto re-authn is currently only supported on widget flows.
+    CHECK(GetDialogType() == DialogType::BUBBLE);
     state_ = State::AUTO_REAUTHN;
 
     // When auto re-authn flow is triggered, the parameter
@@ -185,41 +188,61 @@ bool FedCmAccountSelectionView::Show(
       return false;
     }
   } else if (new_account_idp) {
-    // When we just logged in to an account, show that account right away.
+    // When we just logged in to an account that is not a single returning
+    // account: on the modal, we'd show all the accounts and on the bubble, we'd
+    // show only that account.
     new_account_idp_display_data_ = IdentityProviderDisplayData(
         base::UTF8ToUTF16(new_account_idp->idp_for_display),
         new_account_idp->idp_metadata, new_account_idp->client_metadata,
         new_account_idp->accounts, new_account_idp->request_permission,
         new_account_idp->has_login_status_mismatch);
 
-    // We use the browser trusted login state because this boolean controls
-    // whether we'd skip the permission modal entirely whereas "login_state"
-    // only controls whether to show the disclosure text.
-    bool is_returning_account_on_modal =
-        GetDialogType() == DialogType::MODAL &&
-        new_account_idp_display_data_->accounts[0]
-                .browser_trusted_login_state != Account::LoginState::kSignUp;
+    if (GetDialogType() == DialogType::MODAL) {
+      // TODO(crbug.com/342194490): Consider case when there's more than one
+      // newly signed in account.
 
-    if (is_returning_account_on_modal) {
-      state_ = State::VERIFYING;
-      // ShowVerifyingSheet will call delegate_->OnAccountSelected to proceed.
-      if (!ShowVerifyingSheet(new_account_idp_display_data_->accounts[0],
-                              *new_account_idp_display_data_)) {
-        return false;
-      }
-    } else {
-      state_ = State::REQUEST_PERMISSION;
-      if (GetDialogType() == DialogType::MODAL) {
+      // The browser trusted login state controls whether we'd skip the next
+      // dialog.
+      bool should_skip_dialog =
+          new_account_idp_display_data_->accounts[0]
+              .browser_trusted_login_state == Account::LoginState::kSignIn;
+      // The IDP claimed login state controls whether we show disclosure text,
+      // if we do not skip the next dialog.
+      bool should_hide_disclosure_text =
+          new_account_idp_display_data_->accounts[0].login_state ==
+          Account::LoginState::kSignIn;
+
+      if (should_skip_dialog) {
+        state_ = State::VERIFYING;
+        // ShowVerifyingSheet will call delegate_->OnAccountSelected to proceed.
+        if (!ShowVerifyingSheet(new_account_idp_display_data_->accounts[0],
+                                *new_account_idp_display_data_)) {
+          return false;
+        }
+      } else if (should_hide_disclosure_text) {
+        // Normally we'd show the request permission dialog but without the
+        // disclosure text, there is no material difference between the account
+        // picker and the request permission dialog. We show the account picker
+        // with most recently signed in accounts at the top to reduce the
+        // exposure of extra UI surfaces and to work around the account picker
+        // not having a back button.
+        state_ = State::MULTI_ACCOUNT_PICKER;
+        account_selection_view_->ShowMultiAccountPicker(
+            idp_display_data_list_,
+            /*show_back_button=*/false);
+      } else {
+        state_ = State::REQUEST_PERMISSION;
         account_selection_view_->ShowRequestPermissionDialog(
             top_frame_for_display_, new_account_idp_display_data_->accounts[0],
             *new_account_idp_display_data_);
-      } else {
-        account_selection_view_->ShowSingleAccountConfirmDialog(
-            top_frame_for_display_, iframe_for_display_,
-            new_account_idp_display_data_->accounts[0],
-            *new_account_idp_display_data_,
-            /*show_back_button=*/accounts_size > 1u);
       }
+    } else {
+      state_ = State::SINGLE_ACCOUNT_PICKER;
+      account_selection_view_->ShowSingleAccountConfirmDialog(
+          top_frame_for_display_, iframe_for_display_,
+          new_account_idp_display_data_->accounts[0],
+          *new_account_idp_display_data_,
+          /*show_back_button=*/accounts_size > 1u);
     }
   } else if (idp_display_data_list_.size() == 1u && accounts_size == 1u) {
     if (GetDialogType() == DialogType::MODAL) {
@@ -235,7 +258,7 @@ bool FedCmAccountSelectionView::Show(
       account_selection_view_->ShowMultiAccountPicker(
           idp_display_data_list_, /*show_back_button=*/false);
     } else {
-      state_ = State::REQUEST_PERMISSION;
+      state_ = State::SINGLE_ACCOUNT_PICKER;
       account_selection_view_->ShowSingleAccountConfirmDialog(
           top_frame_for_display_, iframe_for_display_,
           idp_display_data_list_[0].accounts[0], idp_display_data_list_[0],
@@ -664,6 +687,8 @@ void FedCmAccountSelectionView::OnAccountSelected(
   // verifying sheet.
   if (account.login_state != Account::LoginState::kSignUp ||
       state_ == State::REQUEST_PERMISSION ||
+      (state_ == State::SINGLE_ACCOUNT_PICKER &&
+       GetDialogType() == DialogType::BUBBLE) ||
       !idp_display_data.request_permission) {
     state_ = State::VERIFYING;
     ShowVerifyingSheet(account, idp_display_data);
@@ -682,7 +707,7 @@ void FedCmAccountSelectionView::OnAccountSelected(
   // At this point, the account is a non-returning user, the dialog is a bubble
   // and it is a multi account picker, there is no disclosure text on the dialog
   // so we'd request permission through a single account dialog.
-  state_ = State::REQUEST_PERMISSION;
+  state_ = State::SINGLE_ACCOUNT_PICKER;
   account_selection_view_->ShowSingleAccountConfirmDialog(
       top_frame_for_display_, iframe_for_display_, account, idp_display_data,
       /*show_back_button=*/true);

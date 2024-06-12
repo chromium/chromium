@@ -254,8 +254,9 @@ class AccountSelectionViewBase {
       const IdentityProviderDisplayData& idp_data,
       const std::u16string& title) = 0;
 
-  // Updates to show single account plus a confirm dialog. Used when showing the
+  // Updates to show a single account. On widget mode, used when showing the
   // account confirmation dialog after the user picks one of multiple accounts.
+  // On button mode, used for the user to pick the single account.
   virtual void ShowSingleAccountConfirmDialog(
       const std::u16string& top_frame_for_display,
       const std::optional<std::u16string>& iframe_for_display,

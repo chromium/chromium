@@ -157,6 +157,30 @@ static const std::vector<IdentityRequestAccount> kSingleAccountWithDomainHint{{
     std::vector<std::string>()   // labels
 }};
 
+static const std::vector<IdentityRequestAccount> kTwoAccounts{
+    {
+        kAccountIdNicolas,           // id
+        kAccountEmailNicolas,        // email
+        "Nicolas P",                 // name
+        "Nicolas",                   // given_name
+        GURL(),                      // picture
+        std::vector<std::string>(),  // login_hints
+        std::vector<std::string>(),  // domain_hints
+        std::vector<std::string>(),  // labels
+        LoginState::kSignUp          // login_state
+    },
+    {
+        kAccountIdZach,              // id
+        "zach@email.com",            // email
+        "Zachary T",                 // name
+        "Zach",                      // given_name
+        GURL(),                      // picture
+        std::vector<std::string>(),  // login_hints
+        std::vector<std::string>(),  // domain_hints
+        std::vector<std::string>(),  // labels
+        LoginState::kSignUp          // login_state
+    }};
+
 static const std::vector<IdentityRequestAccount> kMultipleAccounts{
     {
         kAccountIdNicolas,           // id
@@ -546,7 +570,8 @@ class TestIdpNetworkRequestManager : public MockIdpNetworkRequestManager {
 
     base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
         FROM_HERE, base::BindOnce(std::move(callback), info.accounts_response,
-                                  info.accounts));
+                                  accounts_list_.empty() ? info.accounts
+                                                         : accounts_list_));
   }
 
   void SendTokenRequest(
@@ -617,6 +642,10 @@ class TestIdpNetworkRequestManager : public MockIdpNetworkRequestManager {
   }
 
   std::map<FetchedEndpoint, size_t> num_fetched_;
+
+  // If non-empty, the accounts endpoint will return this accounts list instead
+  // of the accounts list in the `config_`.
+  AccountList accounts_list_;
 
  protected:
   MockConfiguration config_{kConfigurationValid};
@@ -779,6 +808,9 @@ class TestDialogController
                 std::move(on_add_account),
                 identity_provider_data.data()->idp_metadata.config_url,
                 identity_provider_data.data()->idp_metadata.idp_login_url));
+        // Set `accounts_dialog_action_` such that subsequent calls will select
+        // the first account.
+        accounts_dialog_action_ = AccountsDialogAction::kSelectFirstAccount;
         break;
       case AccountsDialogAction::kNone:
         break;
@@ -7425,6 +7457,45 @@ TEST_F(FederatedAuthRequestImplTest, FailureDialogImmediateDismiss) {
       /*standalone_console_message=*/std::nullopt,
       /*selected_idp_config_url=*/std::nullopt};
   RunAuthTest(kDefaultRequestParameters, expectations, configuration);
+}
+
+TEST_F(FederatedAuthRequestImplTest, UseOtherAccountAccountOrder) {
+  base::test::ScopedFeatureList list;
+  list.InitAndEnableFeature(features::kFedCmUseOtherAccount);
+
+  MockConfiguration configuration = kConfigurationValid;
+  configuration.accounts_dialog_action = AccountsDialogAction::kAddAccount;
+
+  // User has accounts, kAccountIdNicolas and kAccountIdZach, in that order.
+  configuration.idp_info[kProviderUrlFull].accounts = kTwoAccounts;
+
+  auto dialog_controller =
+      std::make_unique<TestDialogController>(configuration);
+  base::WeakPtr<TestDialogController> weak_dialog_controller =
+      dialog_controller->AsWeakPtr();
+  SetDialogController(std::move(dialog_controller));
+
+  std::unique_ptr<WebContents> modal(CreateTestWebContents());
+  EXPECT_CALL(*weak_dialog_controller, ShowModalDialog(_, _))
+      .WillOnce(::testing::WithArg<0>([&modal, this](const GURL& url) {
+        // The user signs in with account, kAccountIdPeter. User now has
+        // accounts, kAccountIdNicolas, kAccountIdPeter and kAccountIdZach,
+        // in that order.
+        test_network_request_manager_->accounts_list_ = kMultipleAccounts;
+        federated_auth_request_impl_->OnIdpSigninStatusReceived(
+            OriginFromString(kProviderUrlFull), true);
+        return modal.get();
+      }));
+
+  RunAuthDontWaitForCallback(kDefaultRequestParameters, configuration);
+
+  ASSERT_EQ(displayed_accounts().size(), 3u);
+
+  // Accounts are reordered to have the most recently signed in account,
+  // kAccountIdPeter, displayed first.
+  EXPECT_EQ(displayed_accounts()[0].id, kAccountIdPeter);
+  EXPECT_EQ(displayed_accounts()[1].id, kAccountIdNicolas);
+  EXPECT_EQ(displayed_accounts()[2].id, kAccountIdZach);
 }
 
 }  // namespace content
