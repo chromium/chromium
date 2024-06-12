@@ -22,11 +22,13 @@ struct CONTENT_EXPORT IndexedDBValue {
   static blink::mojom::IDBValuePtr ConvertAndEraseValue(IndexedDBValue* value);
 
   IndexedDBValue();
-  IndexedDBValue(const std::string& input_bits,
-                 const std::vector<IndexedDBExternalObject>& external_objects);
   IndexedDBValue(const IndexedDBValue& other);
   ~IndexedDBValue();
   IndexedDBValue& operator=(const IndexedDBValue& other);
+
+  // Only used for test.
+  IndexedDBValue(const std::string& input_bits,
+                 const std::vector<IndexedDBExternalObject>& external_objects);
 
   void swap(IndexedDBValue& value) {
     bits.swap(value.bits);
@@ -44,7 +46,7 @@ struct CONTENT_EXPORT IndexedDBValue {
            external_objects.size() * sizeof(IndexedDBExternalObject);
   }
 
-  std::string bits;
+  std::vector<uint8_t> bits;
   std::vector<IndexedDBExternalObject> external_objects;
 };
 

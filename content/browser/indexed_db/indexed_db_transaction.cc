@@ -435,12 +435,7 @@ void IndexedDBTransaction::Put(
       std::make_unique<IndexedDBDatabase::PutOperationParams>());
   IndexedDBValue& output_value = params->value;
 
-  // TODO(crbug.com/41424769): Use mojom traits to map directly to
-  // std::string.
-  output_value.bits =
-      std::string(input_value->bits.begin(), input_value->bits.end());
-  // Release value->bits std::vector.
-  input_value->bits.clear();
+  output_value.bits = std::move(input_value->bits);
   swap(output_value.external_objects, external_objects);
 
   blink::mojom::IDBTransaction::PutCallback aborting_callback =

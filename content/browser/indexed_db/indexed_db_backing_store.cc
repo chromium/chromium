@@ -1851,7 +1851,7 @@ Status IndexedDBBackingStore::GetRecord(Transaction* transaction,
     return InternalInconsistencyStatus();
   }
 
-  record->bits = std::string(slice);
+  record->bits.assign(slice.begin(), slice.end());
   return transaction->GetExternalObjectsForRecord(database_id, leveldb_key,
                                                   record);
 }
@@ -1909,7 +1909,7 @@ Status IndexedDBBackingStore::PutRecord(
 
   std::string v;
   EncodeVarInt(version, &v);
-  v.append(value->bits);
+  v.append(value->bits.begin(), value->bits.end());
 
   s = leveldb_transaction->Put(object_store_data_key, &v);
   if (!s.ok())
@@ -3334,7 +3334,7 @@ bool ObjectStoreCursorImpl::LoadCurrentRow(Status* s) {
   if (!s->ok())
     return false;
 
-  current_value_.bits = std::string(value_slice);
+  current_value_.bits.assign(value_slice.begin(), value_slice.end());
   return true;
 }
 
@@ -3616,7 +3616,7 @@ bool IndexCursorImpl::LoadCurrentRow(Status* s) {
     return false;
   }
 
-  current_value_.bits = std::string(slice);
+  current_value_.bits.assign(slice.begin(), slice.end());
   *s = transaction_->GetExternalObjectsForRecord(
       database_id_, primary_leveldb_key_, &current_value_);
   return s->ok();
