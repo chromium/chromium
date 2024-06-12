@@ -283,7 +283,7 @@ void CreditCardOtpAuthenticator::OnDidGetRealPan(
 
   if (result == AutofillClient::PaymentsRpcResult::kSuccess) {
     if (response_details.card_type !=
-        AutofillClient::PaymentsRpcCardType::kVirtualCard) {
+        payments::PaymentsAutofillClient::PaymentsRpcCardType::kVirtualCard) {
       // Currently we offer OTP authentication only for virtual cards.
       NOTREACHED_IN_MIGRATION();
       if (requester_) {

@@ -47,6 +47,7 @@
 #include "components/autofill/core/browser/metrics/payments/credit_card_save_metrics.h"
 #include "components/autofill/core/browser/metrics/ukm_metrics_test_utils.h"
 #include "components/autofill/core/browser/payments/credit_card_access_manager.h"
+#include "components/autofill/core/browser/payments/payments_autofill_client.h"
 #include "components/autofill/core/browser/payments/test_credit_card_save_manager.h"
 #include "components/autofill/core/browser/payments_data_manager.h"
 #include "components/autofill/core/browser/personal_data_manager.h"
@@ -2734,7 +2735,7 @@ TEST_F(AutofillMetricsTest, CreditCardGetRealPanResult_ServerCard) {
     base::HistogramTester histogram_tester;
     AutofillMetrics::LogRealPanResult(
         AutofillClient::PaymentsRpcResult::kTryAgainFailure,
-        AutofillClient::PaymentsRpcCardType::kServerCard);
+        payments::PaymentsAutofillClient::PaymentsRpcCardType::kServerCard);
 
     histogram_tester.ExpectBucketCount(
         "Autofill.UnmaskPrompt.GetRealPanResult",
@@ -2748,7 +2749,7 @@ TEST_F(AutofillMetricsTest, CreditCardGetRealPanResult_ServerCard) {
     base::HistogramTester histogram_tester;
     AutofillMetrics::LogRealPanResult(
         AutofillClient::PaymentsRpcResult::kPermanentFailure,
-        AutofillClient::PaymentsRpcCardType::kServerCard);
+        payments::PaymentsAutofillClient::PaymentsRpcCardType::kServerCard);
 
     histogram_tester.ExpectBucketCount(
         "Autofill.UnmaskPrompt.GetRealPanResult",
@@ -2762,7 +2763,7 @@ TEST_F(AutofillMetricsTest, CreditCardGetRealPanResult_ServerCard) {
     base::HistogramTester histogram_tester;
     AutofillMetrics::LogRealPanResult(
         AutofillClient::PaymentsRpcResult::kSuccess,
-        AutofillClient::PaymentsRpcCardType::kServerCard);
+        payments::PaymentsAutofillClient::PaymentsRpcCardType::kServerCard);
 
     histogram_tester.ExpectBucketCount("Autofill.UnmaskPrompt.GetRealPanResult",
                                        AutofillMetrics::PAYMENTS_RESULT_SUCCESS,
@@ -2778,7 +2779,7 @@ TEST_F(AutofillMetricsTest, CreditCardGetRealPanResult_VirtualCard) {
   {
     AutofillMetrics::LogRealPanResult(
         AutofillClient::PaymentsRpcResult::kTryAgainFailure,
-        AutofillClient::PaymentsRpcCardType::kVirtualCard);
+        payments::PaymentsAutofillClient::PaymentsRpcCardType::kVirtualCard);
 
     histogram_tester.ExpectBucketCount(
         "Autofill.UnmaskPrompt.GetRealPanResult",
@@ -2791,7 +2792,7 @@ TEST_F(AutofillMetricsTest, CreditCardGetRealPanResult_VirtualCard) {
   {
     AutofillMetrics::LogRealPanResult(
         AutofillClient::PaymentsRpcResult::kVcnRetrievalPermanentFailure,
-        AutofillClient::PaymentsRpcCardType::kVirtualCard);
+        payments::PaymentsAutofillClient::PaymentsRpcCardType::kVirtualCard);
 
     histogram_tester.ExpectBucketCount(
         "Autofill.UnmaskPrompt.GetRealPanResult",
@@ -2804,7 +2805,7 @@ TEST_F(AutofillMetricsTest, CreditCardGetRealPanResult_VirtualCard) {
   {
     AutofillMetrics::LogRealPanResult(
         AutofillClient::PaymentsRpcResult::kSuccess,
-        AutofillClient::PaymentsRpcCardType::kVirtualCard);
+        payments::PaymentsAutofillClient::PaymentsRpcCardType::kVirtualCard);
 
     histogram_tester.ExpectBucketCount("Autofill.UnmaskPrompt.GetRealPanResult",
                                        AutofillMetrics::PAYMENTS_RESULT_SUCCESS,

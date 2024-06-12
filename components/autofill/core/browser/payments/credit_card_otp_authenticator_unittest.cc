@@ -11,6 +11,7 @@
 #include "components/autofill/core/browser/data_model/credit_card.h"
 #include "components/autofill/core/browser/metrics/payments/card_unmask_authentication_metrics.h"
 #include "components/autofill/core/browser/payments/autofill_error_dialog_context.h"
+#include "components/autofill/core/browser/payments/payments_autofill_client.h"
 #include "components/autofill/core/browser/payments/test_authentication_requester.h"
 #include "components/autofill/core/browser/payments/test_payments_autofill_client.h"
 #include "components/autofill/core/browser/payments/test_payments_network_interface.h"
@@ -90,7 +91,8 @@ class CreditCardOtpAuthenticatorTestBase : public testing::Test {
     response.dcvv = "123";
     response.expiration_month = test::NextMonth();
     response.expiration_year = test::NextYear();
-    response.card_type = AutofillClient::PaymentsRpcCardType::kVirtualCard;
+    response.card_type =
+        payments::PaymentsAutofillClient::PaymentsRpcCardType::kVirtualCard;
     authenticator_->OnDidGetRealPan(result, response);
   }
 
@@ -99,7 +101,8 @@ class CreditCardOtpAuthenticatorTestBase : public testing::Test {
     payments::PaymentsNetworkInterface::UnmaskResponseDetails response;
     response.flow_status = flow_status;
     response.context_token = context_token;
-    response.card_type = AutofillClient::PaymentsRpcCardType::kVirtualCard;
+    response.card_type =
+        payments::PaymentsAutofillClient::PaymentsRpcCardType::kVirtualCard;
     authenticator_->OnDidGetRealPan(AutofillClient::PaymentsRpcResult::kSuccess,
                                     response);
   }

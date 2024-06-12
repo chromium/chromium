@@ -6,6 +6,7 @@
 #define COMPONENTS_AUTOFILL_CORE_BROWSER_METRICS_PAYMENTS_BETTER_AUTH_METRICS_H_
 
 #include "components/autofill/core/browser/metrics/autofill_metrics.h"
+#include "components/autofill/core/browser/payments/payments_autofill_client.h"
 
 namespace autofill::autofill_metrics {
 
@@ -133,7 +134,7 @@ enum class WebauthnResultMetric {
 void LogCardUnmaskDurationAfterWebauthn(
     const base::TimeDelta& duration,
     AutofillClient::PaymentsRpcResult result,
-    AutofillClient::PaymentsRpcCardType card_type);
+    payments::PaymentsAutofillClient::PaymentsRpcCardType card_type);
 
 // Logs the number of times that we initiate the card unmask preflight flow.
 // This will log both when the user is verifiable as well as when the user is

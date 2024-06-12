@@ -33,6 +33,7 @@
 #include "components/autofill/core/browser/metrics/form_events/form_events.h"
 #include "components/autofill/core/browser/metrics/payments/card_unmask_authentication_metrics.h"
 #include "components/autofill/core/browser/payments/full_card_request.h"
+#include "components/autofill/core/browser/payments/payments_autofill_client.h"
 #include "components/autofill/core/browser/payments/test_authentication_requester.h"
 #include "components/autofill/core/browser/payments/test_payments_network_interface.h"
 #include "components/autofill/core/browser/personal_data_manager.h"
@@ -131,9 +132,10 @@ class CreditCardCvcAuthenticatorTest : public testing::Test {
 
     // Mock payments response.
     payments::PaymentsNetworkInterface::UnmaskResponseDetails response;
-    response.card_type = is_virtual_card
-                             ? AutofillClient::PaymentsRpcCardType::kVirtualCard
-                             : AutofillClient::PaymentsRpcCardType::kServerCard;
+    response.card_type = is_virtual_card ? payments::PaymentsAutofillClient::
+                                               PaymentsRpcCardType::kVirtualCard
+                                         : payments::PaymentsAutofillClient::
+                                               PaymentsRpcCardType::kServerCard;
     full_card_request->OnDidGetRealPan(result,
                                        response.with_real_pan(real_pan));
   }

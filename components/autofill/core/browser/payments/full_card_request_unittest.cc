@@ -39,6 +39,7 @@ namespace payments {
 
 using testing::_;
 using testing::NiceMock;
+using PaymentsRpcCardType = PaymentsAutofillClient::PaymentsRpcCardType;
 
 // The consumer of the full card request API.
 class MockResultDelegate : public FullCardRequest::ResultDelegate {
@@ -181,9 +182,8 @@ class FullCardRequestTest : public testing::Test {
                        const std::string& real_pan,
                        bool is_virtual_card = false) {
     payments::PaymentsNetworkInterface::UnmaskResponseDetails response;
-    response.card_type = is_virtual_card
-                             ? AutofillClient::PaymentsRpcCardType::kVirtualCard
-                             : AutofillClient::PaymentsRpcCardType::kServerCard;
+    response.card_type = is_virtual_card ? PaymentsRpcCardType::kVirtualCard
+                                         : PaymentsRpcCardType::kServerCard;
     request_->OnDidGetRealPan(result, response.with_real_pan(real_pan));
   }
 
@@ -192,9 +192,8 @@ class FullCardRequestTest : public testing::Test {
                                const std::string& dcvv,
                                bool is_virtual_card = false) {
     payments::PaymentsNetworkInterface::UnmaskResponseDetails response;
-    response.card_type = is_virtual_card
-                             ? AutofillClient::PaymentsRpcCardType::kVirtualCard
-                             : AutofillClient::PaymentsRpcCardType::kServerCard;
+    response.card_type = is_virtual_card ? PaymentsRpcCardType::kVirtualCard
+                                         : PaymentsRpcCardType::kServerCard;
     request_->OnDidGetRealPan(result,
                               response.with_real_pan(real_pan).with_dcvv(dcvv));
   }
@@ -461,7 +460,7 @@ TEST_F(FullCardRequestTest,
   response.dcvv = "123";
   response.expiration_month = "12";
   response.expiration_year = test::NextYear();
-  response.card_type = AutofillClient::PaymentsRpcCardType::kVirtualCard;
+  response.card_type = PaymentsRpcCardType::kVirtualCard;
   request()->OnDidGetRealPan(AutofillClient::PaymentsRpcResult::kSuccess,
                              response);
 }
@@ -755,8 +754,7 @@ TEST_F(FullCardRequestTest, VirtualCardTryAgainFailure) {
   user_provided_details.cvc = u"321";
   card_unmask_delegate()->OnUnmaskPromptAccepted(user_provided_details);
   PaymentsNetworkInterface::UnmaskResponseDetails response_details;
-  response_details.card_type =
-      AutofillClient::PaymentsRpcCardType::kVirtualCard;
+  response_details.card_type = PaymentsRpcCardType::kVirtualCard;
   response_details.context_token = "test_context_token";
   request()->OnDidGetRealPan(
       AutofillClient::PaymentsRpcResult::kTryAgainFailure, response_details);

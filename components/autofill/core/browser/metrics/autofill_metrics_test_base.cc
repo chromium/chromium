@@ -12,6 +12,7 @@
 #include "components/autofill/core/browser/payments/credit_card_access_manager_test_api.h"
 #include "components/autofill/core/browser/payments/credit_card_cvc_authenticator.h"
 #include "components/autofill/core/browser/payments/iban_save_manager.h"
+#include "components/autofill/core/browser/payments/payments_autofill_client.h"
 #include "components/autofill/core/browser/payments/test_payments_autofill_client.h"
 #include "components/autofill/core/browser/payments/test_payments_network_interface.h"
 #include "components/autofill/core/browser/payments_data_manager.h"
@@ -173,9 +174,10 @@ void AutofillMetricsBaseTest::OnDidGetRealPan(
   full_card_request->OnUnmaskPromptAccepted(details);
 
   payments::PaymentsNetworkInterface::UnmaskResponseDetails response;
-  response.card_type = is_virtual_card
-                           ? AutofillClient::PaymentsRpcCardType::kVirtualCard
-                           : AutofillClient::PaymentsRpcCardType::kServerCard;
+  response.card_type =
+      is_virtual_card
+          ? payments::PaymentsAutofillClient::PaymentsRpcCardType::kVirtualCard
+          : payments::PaymentsAutofillClient::PaymentsRpcCardType::kServerCard;
   full_card_request->OnDidGetRealPan(result, response.with_real_pan(real_pan));
 }
 

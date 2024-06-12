@@ -184,8 +184,8 @@ class PaymentsNetworkInterface : public PaymentsNetworkInterfaceBase {
     std::string flow_status;
 
     // The type of the returned credit card.
-    AutofillClient::PaymentsRpcCardType card_type =
-        AutofillClient::PaymentsRpcCardType::kUnknown;
+    PaymentsAutofillClient::PaymentsRpcCardType card_type =
+        PaymentsAutofillClient::PaymentsRpcCardType::kUnknown;
 
     // Context for the error dialog that is returned from the Payments server.
     // If present, that means this response was an error, and these fields

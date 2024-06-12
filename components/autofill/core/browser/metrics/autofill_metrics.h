@@ -28,6 +28,7 @@
 #include "components/autofill/core/browser/form_types.h"
 #include "components/autofill/core/browser/metrics/form_events/form_events.h"
 #include "components/autofill/core/browser/metrics/log_event.h"
+#include "components/autofill/core/browser/payments/payments_autofill_client.h"
 #include "components/autofill/core/browser/ui/popup_interaction.h"
 #include "components/autofill/core/browser/ui/suggestion_hiding_reason.h"
 #include "components/autofill/core/common/dense_set.h"
@@ -896,21 +897,23 @@ class AutofillMetrics {
 
   // Logs |result| to the get real pan result histogram. |card_type| indicates
   // the type of the credit card that the request fetched.
-  static void LogRealPanResult(AutofillClient::PaymentsRpcResult result,
-                               AutofillClient::PaymentsRpcCardType card_type);
+  static void LogRealPanResult(
+      AutofillClient::PaymentsRpcResult result,
+      payments::PaymentsAutofillClient::PaymentsRpcCardType card_type);
 
   // Logs |result| to duration of the GetRealPan RPC. |card_type| indicates the
   // type of the credit card that the request fetched.
-  static void LogRealPanDuration(const base::TimeDelta& duration,
-                                 AutofillClient::PaymentsRpcResult result,
-                                 AutofillClient::PaymentsRpcCardType card_type);
+  static void LogRealPanDuration(
+      const base::TimeDelta& duration,
+      AutofillClient::PaymentsRpcResult result,
+      payments::PaymentsAutofillClient::PaymentsRpcCardType card_type);
 
   // Logs |result| to the get real pan result histogram. |card_type| indicates
   // the type of the credit card that the request fetched.
   static void LogUnmaskingDuration(
       const base::TimeDelta& duration,
       AutofillClient::PaymentsRpcResult result,
-      AutofillClient::PaymentsRpcCardType card_type);
+      payments::PaymentsAutofillClient::PaymentsRpcCardType card_type);
 
   // This should be called when a form that has been Autofilled is submitted.
   // |duration| should be the time elapsed between form load and submission.
@@ -1143,11 +1146,11 @@ class AutofillMetrics {
       bool accepted);
 
   // Returns the histogram string for the passed in
-  // `AutofillClient::PaymentsRpcCardType` or `CreditCard::RecordType`, starting
-  // with a period.
+  // `payments::PaymentsAutofillClient::PaymentsRpcCardType` or
+  // `CreditCard::RecordType`, starting with a period.
   static std::string GetHistogramStringForCardType(
-      absl::variant<AutofillClient::PaymentsRpcCardType, CreditCard::RecordType>
-          card_type);
+      absl::variant<payments::PaymentsAutofillClient::PaymentsRpcCardType,
+                    CreditCard::RecordType> card_type);
 
   // Returns 64-bit hash of the string of form global id, which consists of
   // |frame_token| and |renderer_id|.
@@ -1186,7 +1189,7 @@ int GetFieldTypeUserEditStatusMetric(
 #endif
 
 std::string GetCreditCardTypeSuffix(
-    AutofillClient::PaymentsRpcCardType card_type);
+    payments::PaymentsAutofillClient::PaymentsRpcCardType card_type);
 
 const std::string PaymentsRpcResultToMetricsSuffix(
     AutofillClient::PaymentsRpcResult result);

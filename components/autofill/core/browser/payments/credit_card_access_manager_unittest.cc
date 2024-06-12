@@ -35,6 +35,7 @@
 #include "components/autofill/core/browser/payments/credit_card_cvc_authenticator.h"
 #include "components/autofill/core/browser/payments/credit_card_risk_based_authenticator.h"
 #include "components/autofill/core/browser/payments/mandatory_reauth_manager.h"
+#include "components/autofill/core/browser/payments/payments_autofill_client.h"
 #include "components/autofill/core/browser/payments/test/mock_payments_window_manager.h"
 #include "components/autofill/core/browser/payments/test/test_credit_card_otp_authenticator.h"
 #include "components/autofill/core/browser/payments/test_payments_autofill_client.h"
@@ -71,6 +72,9 @@ using testing::NiceMock;
 
 namespace autofill {
 namespace {
+
+using PaymentsRpcCardType =
+    payments::PaymentsAutofillClient::PaymentsRpcCardType;
 
 constexpr char kTestGUID[] = "00000000-0000-0000-0000-000000000001";
 constexpr char kTestGUID2[] = "00000000-0000-0000-0000-000000000002";
@@ -304,7 +308,7 @@ class CreditCardAccessManagerTest : public testing::Test {
           GetTestRequestOptions(/*return_invalid_request_options=*/true);
     }
 #endif
-    response.card_type = AutofillClient::PaymentsRpcCardType::kServerCard;
+    response.card_type = PaymentsRpcCardType::kServerCard;
     full_card_request->OnDidGetRealPan(result,
                                        response.with_real_pan(real_pan));
     return true;
@@ -370,9 +374,8 @@ class CreditCardAccessManagerTest : public testing::Test {
       return false;
 
     payments::PaymentsNetworkInterface::UnmaskResponseDetails response;
-    response.card_type = is_virtual_card
-                             ? AutofillClient::PaymentsRpcCardType::kVirtualCard
-                             : AutofillClient::PaymentsRpcCardType::kServerCard;
+    response.card_type = is_virtual_card ? PaymentsRpcCardType::kVirtualCard
+                                         : PaymentsRpcCardType::kServerCard;
     full_card_request->OnDidGetRealPan(
         result, response.with_real_pan(real_pan).with_dcvv(dcvv));
     return true;
@@ -851,7 +854,7 @@ TEST_P(CreditCardAccessManagerMandatoryReauthFunctionalTest,
   response.dcvv = "321";
   response.expiration_month = test::NextMonth();
   response.expiration_year = test::NextYear();
-  response.card_type = AutofillClient::PaymentsRpcCardType::kVirtualCard;
+  response.card_type = PaymentsRpcCardType::kVirtualCard;
 
   // TODO(crbug.com/40935048): Extract shared boilerplate code out for
   // CreditCardAccessManagerMandatoryReauthFunctionalTest tests.
@@ -3765,7 +3768,7 @@ TEST_F(CreditCardAccessManagerTest,
   response.dcvv = "321";
   response.expiration_month = test::NextMonth();
   response.expiration_year = test::NextYear();
-  response.card_type = AutofillClient::PaymentsRpcCardType::kVirtualCard;
+  response.card_type = PaymentsRpcCardType::kVirtualCard;
   credit_card_access_manager()
       .OnVirtualCardRiskBasedAuthenticationResponseReceived(
           AutofillClient::PaymentsRpcResult::kSuccess, response);
@@ -3829,7 +3832,7 @@ TEST_F(CreditCardAccessManagerTest,
   response.dcvv = "321";
   response.expiration_month = test::NextMonth();
   response.expiration_year = test::NextYear();
-  response.card_type = AutofillClient::PaymentsRpcCardType::kVirtualCard;
+  response.card_type = PaymentsRpcCardType::kVirtualCard;
   credit_card_access_manager()
       .OnVirtualCardRiskBasedAuthenticationResponseReceived(
           AutofillClient::PaymentsRpcResult::kSuccess, response);

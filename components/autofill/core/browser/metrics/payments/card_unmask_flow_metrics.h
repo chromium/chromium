@@ -7,6 +7,7 @@
 
 #include "components/autofill/core/browser/autofill_client.h"
 #include "components/autofill/core/browser/data_model/credit_card.h"
+#include "components/autofill/core/browser/payments/payments_autofill_client.h"
 
 namespace autofill::autofill_metrics {
 
@@ -72,15 +73,17 @@ enum class ServerCardUnmaskFlowType {
   kMaxValue = kDeviceUnlock,
 };
 
-void LogServerCardUnmaskAttempt(AutofillClient::PaymentsRpcCardType card_type);
+void LogServerCardUnmaskAttempt(
+    payments::PaymentsAutofillClient::PaymentsRpcCardType card_type);
 void LogCvcFilling(CvcFillingFlowType flow_type,
                    CreditCard::RecordType record_type);
 void LogServerCardUnmaskResult(
     ServerCardUnmaskResult unmask_result,
-    absl::variant<AutofillClient::PaymentsRpcCardType, CreditCard::RecordType>,
+    absl::variant<payments::PaymentsAutofillClient::PaymentsRpcCardType,
+                  CreditCard::RecordType>,
     ServerCardUnmaskFlowType flow_type);
 void LogServerCardUnmaskFormSubmission(
-    AutofillClient::PaymentsRpcCardType card_type);
+    payments::PaymentsAutofillClient::PaymentsRpcCardType card_type);
 
 }  // namespace autofill::autofill_metrics
 

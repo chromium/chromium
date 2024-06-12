@@ -137,16 +137,6 @@ class AutofillClient {
     kVcnRetrievalPermanentFailure,
   };
 
-  // The type of the credit card the Payments RPC fetches.
-  enum class PaymentsRpcCardType {
-    // Unknown type.
-    kUnknown = 0,
-    // Server card.
-    kServerCard = 1,
-    // Virtual card.
-    kVirtualCard = 2,
-  };
-
   enum class SaveCardOfferUserDecision {
     // The user accepted credit card save.
     kAccepted,

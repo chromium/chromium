@@ -295,7 +295,8 @@ void FullCardRequest::OnDidGetRealPan(
   // together, such as in the case of virtual cards.
   request_->context_token = response_details.context_token;
 
-  AutofillClient::PaymentsRpcCardType card_type = response_details.card_type;
+  PaymentsAutofillClient::PaymentsRpcCardType card_type =
+      response_details.card_type;
   if (!request_->user_response.cvc.empty()) {
     AutofillMetrics::LogRealPanDuration(
         base::TimeTicks::Now() - real_pan_request_timestamp_, result,
@@ -361,7 +362,7 @@ void FullCardRequest::OnDidGetRealPan(
       request_->card.SetNumber(base::UTF8ToUTF16(response_details.real_pan));
 
       if (response_details.card_type ==
-          AutofillClient::PaymentsRpcCardType::kVirtualCard) {
+          PaymentsAutofillClient::PaymentsRpcCardType::kVirtualCard) {
         request_->card.set_record_type(CreditCard::RecordType::kVirtualCard);
         request_->card.SetExpirationMonthFromString(
             base::UTF8ToUTF16(response_details.expiration_month),
@@ -373,7 +374,7 @@ void FullCardRequest::OnDidGetRealPan(
         // response in the virtual card case.
         request_->card.set_cvc(base::UTF8ToUTF16(response_details.dcvv));
       } else if (response_details.card_type ==
-                 AutofillClient::PaymentsRpcCardType::kServerCard) {
+                 PaymentsAutofillClient::PaymentsRpcCardType::kServerCard) {
         request_->card.set_record_type(CreditCard::RecordType::kFullServerCard);
       } else {
         NOTREACHED_IN_MIGRATION();

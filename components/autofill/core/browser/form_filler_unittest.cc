@@ -267,9 +267,10 @@ class FormFillerTest : public testing::Test {
 
     // Mock payments response.
     payments::PaymentsNetworkInterface::UnmaskResponseDetails response;
-    response.card_type = is_virtual_card
-                             ? AutofillClient::PaymentsRpcCardType::kVirtualCard
-                             : AutofillClient::PaymentsRpcCardType::kServerCard;
+    response.card_type = is_virtual_card ? payments::PaymentsAutofillClient::
+                                               PaymentsRpcCardType::kVirtualCard
+                                         : payments::PaymentsAutofillClient::
+                                               PaymentsRpcCardType::kServerCard;
     full_card_request->OnDidGetRealPan(result,
                                        response.with_real_pan(real_pan));
   }

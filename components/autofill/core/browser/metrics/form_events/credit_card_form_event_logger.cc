@@ -21,6 +21,7 @@
 #include "components/autofill/core/browser/metrics/payments/virtual_card_standalone_cvc_suggestion_metrics.h"
 #include "components/autofill/core/browser/payments/autofill_offer_manager.h"
 #include "components/autofill/core/browser/payments/credit_card_access_manager.h"
+#include "components/autofill/core/browser/payments/payments_autofill_client.h"
 #include "components/autofill/core/browser/payments_data_manager.h"
 #include "components/autofill/core/common/autofill_internals/log_message.h"
 #include "components/autofill/core/common/autofill_internals/logging_scope.h"
@@ -591,7 +592,7 @@ void CreditCardFormEventLogger::LogFormSubmitted(const FormStructure& form) {
     RecordCardUnmaskFlowEvent(current_authentication_flow_,
                               UnmaskAuthFlowEvent::kFormSubmitted);
     autofill_metrics::LogServerCardUnmaskFormSubmission(
-        AutofillClient::PaymentsRpcCardType::kVirtualCard);
+        payments::PaymentsAutofillClient::PaymentsRpcCardType::kVirtualCard);
   } else if (logged_suggestion_filled_was_server_data_) {
     Log(FORM_EVENT_SERVER_SUGGESTION_SUBMITTED_ONCE, form);
   } else {

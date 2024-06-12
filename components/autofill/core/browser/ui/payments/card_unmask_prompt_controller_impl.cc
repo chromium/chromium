@@ -136,9 +136,10 @@ void CardUnmaskPromptControllerImpl::OnVerificationResult(
       result != AutofillClient::PaymentsRpcResult::kTryAgainFailure;
 
   unmasking_result_ = result;
-  AutofillClient::PaymentsRpcCardType card_type =
-      IsVirtualCard() ? AutofillClient::PaymentsRpcCardType::kVirtualCard
-                      : AutofillClient::PaymentsRpcCardType::kServerCard;
+  payments::PaymentsAutofillClient::PaymentsRpcCardType card_type =
+      IsVirtualCard()
+          ? payments::PaymentsAutofillClient::PaymentsRpcCardType::kVirtualCard
+          : payments::PaymentsAutofillClient::PaymentsRpcCardType::kServerCard;
 
   AutofillMetrics::LogRealPanResult(result, card_type);
   AutofillMetrics::LogUnmaskingDuration(

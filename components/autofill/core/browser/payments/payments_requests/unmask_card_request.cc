@@ -15,6 +15,7 @@
 #include "components/autofill/core/browser/payments/autofill_error_dialog_context.h"
 #include "components/autofill/core/browser/payments/autofill_payments_feature_availability.h"
 #include "components/autofill/core/browser/payments/card_unmask_challenge_option.h"
+#include "components/autofill/core/browser/payments/payments_autofill_client.h"
 #include "components/autofill/core/common/autofill_payments_features.h"
 #include "components/strings/grit/components_strings.h"
 #include "ui/base/l10n/l10n_util.h"
@@ -446,11 +447,11 @@ void UnmaskCardRequest::ParseResponse(const base::Value::Dict& response) {
   if (request_details_.card.record_type() ==
       CreditCard::RecordType::kVirtualCard) {
     response_details_.card_type =
-        AutofillClient::PaymentsRpcCardType::kVirtualCard;
+        PaymentsAutofillClient::PaymentsRpcCardType::kVirtualCard;
   } else if (request_details_.card.record_type() ==
              CreditCard::RecordType::kMaskedServerCard) {
     response_details_.card_type =
-        AutofillClient::PaymentsRpcCardType::kServerCard;
+        PaymentsAutofillClient::PaymentsRpcCardType::kServerCard;
   } else {
     NOTREACHED_IN_MIGRATION();
   }
@@ -485,15 +486,15 @@ void UnmaskCardRequest::ParseResponse(const base::Value::Dict& response) {
 
 bool UnmaskCardRequest::IsResponseComplete() {
   switch (response_details_.card_type) {
-    case AutofillClient::PaymentsRpcCardType::kUnknown:
+    case PaymentsAutofillClient::PaymentsRpcCardType::kUnknown:
       return false;
-    case AutofillClient::PaymentsRpcCardType::kServerCard:
+    case PaymentsAutofillClient::PaymentsRpcCardType::kServerCard:
       // When PAN is returned, the response is complete and no further
       // authentication is needed. When PAN is not returned, the response has to
       // contain context token in order to be considered a success.
       return !response_details_.real_pan.empty() ||
              !response_details_.context_token.empty();
-    case AutofillClient::PaymentsRpcCardType::kVirtualCard:
+    case PaymentsAutofillClient::PaymentsRpcCardType::kVirtualCard:
       // When the response contains a PAN, it must also contain expiration and
       // CVV to be considered a success. When the response does not contain PAN,
       // it must contain a context token instead.
