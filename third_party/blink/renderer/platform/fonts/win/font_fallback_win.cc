@@ -72,7 +72,27 @@ inline bool IsFontPresent(const UChar* font_name,
   return matches_requested_family;
 }
 
+const UChar* FirstAvailableFont(
+    base::span<const UChar* const> candidate_family_names,
+    const SkFontMgr& font_manager) {
+  for (const UChar* family : candidate_family_names) {
+    if (IsFontPresent(family, font_manager)) {
+      return family;
+    }
+  }
+  return nullptr;
+}
+
 struct FontMapping {
+  const UChar* FirstAvailableFont(const SkFontMgr& font_manager) {
+    if (!candidate_family_names.empty()) {
+      family_name =
+          blink::FirstAvailableFont(candidate_family_names, font_manager);
+      candidate_family_names = {};
+    }
+    return family_name;
+  }
+
   const UChar* family_name;
   base::span<const UChar* const> candidate_family_names;
 };
@@ -304,17 +324,6 @@ void InitializeScriptFontMap(ScriptToFontMap& script_font_map) {
   }
 }
 
-void FindFirstExistingCandidateFont(FontMapping& script_font_mapping,
-                                    const SkFontMgr& font_manager) {
-  for (const UChar* family : script_font_mapping.candidate_family_names) {
-    if (IsFontPresent(family, font_manager)) {
-      script_font_mapping.family_name = family;
-      break;
-    }
-  }
-  script_font_mapping.candidate_family_names = {};
-}
-
 // There are a lot of characters in USCRIPT_COMMON that can be covered
 // by fonts for scripts closely related to them. See
 // http://unicode.org/cldr/utility/list-unicodeset.jsp?a=[:Script=Common:]
@@ -368,22 +377,12 @@ const UChar* GetFontBasedOnUnicodeBlock(UBlockCode block_code,
   static const UChar* const kMathFonts[] = {u"Cambria Math", u"Segoe UI Symbol",
                                             u"Code2000"};
   static const UChar* const kSymbolFont = u"Segoe UI Symbol";
-  static const UChar* emoji_font = 0;
-  static const UChar* math_font = 0;
+  static const UChar* emoji_font = nullptr;
+  static const UChar* math_font = nullptr;
   static bool initialized = false;
   if (!initialized) {
-    for (const UChar* font : kEmojiFonts) {
-      if (IsFontPresent(font, font_manager)) {
-        emoji_font = font;
-        break;
-      }
-    }
-    for (const UChar* font : kMathFonts) {
-      if (IsFontPresent(font, font_manager)) {
-        math_font = font;
-        break;
-      }
-    }
+    emoji_font = FirstAvailableFont(kEmojiFonts, font_manager);
+    math_font = FirstAvailableFont(kMathFonts, font_manager);
     initialized = true;
   }
 
@@ -453,9 +452,7 @@ const UChar* GetFontFamilyForScript(UScriptCode script,
     if (monospace_family)
       return monospace_family;
   }
-  if (!script_font_map[script].candidate_family_names.empty())
-    FindFirstExistingCandidateFont(script_font_map[script], font_manager);
-  return script_font_map[script].family_name;
+  return script_font_map[script].FirstAvailableFont(font_manager);
 }
 
 // FIXME:
