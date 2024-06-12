@@ -1318,8 +1318,9 @@ class BASE_EXPORT LiveTicks : public time_internal::TimeBase<LiveTicks> {
 
 // ThreadTicks ----------------------------------------------------------------
 
-// Represents a clock, specific to a particular thread, than runs only while the
-// thread is running.
+// Represents a thread-specific clock that runs only while the thread is scheduled.
+// This has the effect of counting time spent actually executing code, but not
+// time spent blocked (e.g. on I/O), or ready and waiting to be run.
 class BASE_EXPORT ThreadTicks : public time_internal::TimeBase<ThreadTicks> {
  public:
   constexpr ThreadTicks() : TimeBase(0) {}
