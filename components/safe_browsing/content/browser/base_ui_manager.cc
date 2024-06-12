@@ -196,10 +196,8 @@ BaseUIManager::BaseUIManager() = default;
 BaseUIManager::~BaseUIManager() = default;
 
 bool BaseUIManager::IsAllowlisted(const UnsafeResource& resource) {
-  NavigationEntry* entry = nullptr;
-  if (resource.is_subresource) {
-    entry = unsafe_resource_util::GetNavigationEntryForResource(resource);
-  }
+  NavigationEntry* entry =
+      unsafe_resource_util::GetNavigationEntryForResource(resource);
 
   content::WebContents* web_contents =
       unsafe_resource_util::GetWebContentsForResource(resource);

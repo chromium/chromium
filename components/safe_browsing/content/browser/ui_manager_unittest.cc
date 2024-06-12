@@ -403,6 +403,31 @@ TEST_F(SafeBrowsingUIManagerTest, AllowlistRemembersThreatType) {
   EXPECT_EQ(resource.threat_type, threat_type);
 }
 
+TEST_F(SafeBrowsingUIManagerTest, Allowlisted_RedirectChain) {
+  security_interstitials::UnsafeResource resource =
+      MakeUnsafeResource(kBadURL, false /* is_subresource */,
+                         SBThreatType::SB_THREAT_TYPE_URL_CLIENT_SIDE_PHISHING);
+  AddToAllowlist(resource, /*pending=*/false);
+
+  auto navigation = content::NavigationSimulator::CreateBrowserInitiated(
+      GURL(kGoodURL), web_contents());
+  navigation->Start();
+  navigation->Redirect(GURL(kBadURL));
+  navigation->Redirect(GURL(kAnotherRedirectURL));
+  navigation->Commit();
+
+  content::NavigationEntry* entry =
+      web_contents()->GetController().GetVisibleEntry();
+
+  ASSERT_TRUE(entry);
+  EXPECT_EQ(entry->GetRedirectChain().size(), 3u);
+  resource.url = GURL(kAnotherRedirectURL);
+  // Although kAnotherRedirectURL is not directly allowlisted, IsAllowlisted
+  // should return true because one of the URLs on its redirect chain is
+  // allowlisted.
+  EXPECT_TRUE(IsAllowlisted(resource));
+}
+
 TEST_F(SafeBrowsingUIManagerTest, AllowlistIgnoresPath) {
   security_interstitials::UnsafeResource resource =
       MakeUnsafeResourceAndStartNavigation(kBadURL);
