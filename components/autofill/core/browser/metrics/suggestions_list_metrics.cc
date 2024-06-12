@@ -11,28 +11,6 @@
 #include "components/autofill/core/browser/metrics/autofill_metrics.h"
 
 namespace autofill::autofill_metrics {
-namespace {
-
-ManageSuggestionType ToManageSuggestionType(FillingProduct popup_type) {
-  switch (popup_type) {
-    case FillingProduct::kAddress:
-      return ManageSuggestionType::kAddresses;
-    case FillingProduct::kCreditCard:
-      return ManageSuggestionType::kPaymentMethodsCreditCards;
-    case FillingProduct::kIban:
-      return ManageSuggestionType::kPaymentMethodsIbans;
-    case FillingProduct::kAutocomplete:
-    case FillingProduct::kCompose:
-    case FillingProduct::kMerchantPromoCode:
-    case FillingProduct::kPassword:
-    case FillingProduct::kPlusAddresses:
-    case FillingProduct::kStandaloneCvc:
-    case FillingProduct::kNone:
-      return ManageSuggestionType::kOther;
-  }
-}
-
-}  // anonymous namespace
 
 void LogSuggestionsCount(size_t num_suggestions,
                          FillingProduct filling_product) {
@@ -94,12 +72,6 @@ void LogSuggestionAcceptedIndex(int index,
 
   base::UmaHistogramBoolean("Autofill.SuggestionAccepted.OffTheRecord",
                             off_the_record);
-}
-
-void LogAutofillSelectedManageEntry(FillingProduct filling_product) {
-  const ManageSuggestionType uma_type = ToManageSuggestionType(filling_product);
-  base::UmaHistogramEnumeration("Autofill.SuggestionsListManageClicked",
-                                uma_type);
 }
 
 void LogAutofillShowCardsFromGoogleAccountButtonEventMetric(

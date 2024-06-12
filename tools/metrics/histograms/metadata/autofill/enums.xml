@@ -3923,14 +3923,6 @@ Called by update_autofill_enums.py.-->
              only to Compose suggestions."/>
 </enum>
 
-<enum name="AutofillSuggestionManageType">
-  <int value="0" label="Other"/>
-  <int value="1" label="(Obsolete) Personal Information. Deprecated in M122"/>
-  <int value="2" label="Addresses"/>
-  <int value="3" label="Payment Methods: Credit Cards"/>
-  <int value="4" label="Payment Methods: IBANs"/>
-</enum>
-
 <enum name="AutofillSyncState">
   <int value="0" label="Signed Out"/>
   <int value="1" label="Signed In"/>

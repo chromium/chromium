@@ -5495,17 +5495,6 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="Autofill.SuggestionsListManageClicked"
-    enum="AutofillSuggestionManageType" expires_after="2024-11-03">
-  <owner>pkotwicz@chromium.org</owner>
-  <owner>chrome-autofill-alerts@google.com</owner>
-  <summary>
-    Recorded when a &quot;Manage...&quot; suggestion is selected from autofill
-    popup. Records the type of the &quot;Manage...&quot; suggestion (ex
-    &quot;Manage Credit Cards&quot;).
-  </summary>
-</histogram>
-
 <histogram name="Autofill.TestAddressesEvent"
     enum="AutofillInDevtoolsTestAddressesEvents" expires_after="2024-12-12">
   <owner>brunobraga@google.com</owner>
