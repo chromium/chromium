@@ -199,20 +199,28 @@ bool PermissionsPolicy::IsFeatureEnabledForSubresourceRequest(
 }
 
 // Implements Permissions Policy 9.8: Get feature value for origin.
-// Version https://www.w3.org/TR/2023/WD-permissions-policy-1-20230717/
+// Version https://www.w3.org/TR/2023/WD-permissions-policy-1-20231218/
 bool PermissionsPolicy::GetFeatureValueForOrigin(
     mojom::PermissionsPolicyFeature feature,
     const url::Origin& origin) const {
   DCHECK(base::Contains(*feature_list_, feature));
 
+  // 9.8.2 If policy’s inherited policy for feature is "Disabled", return
+  // "Disabled".
   if (!IsFeatureEnabledByInheritedPolicy(feature)) {
     return false;
   }
+
+  // 9.8.3 If feature is present in policy’s declared policy:
+  //   1 If the allowlist for feature in policy’s declared policy matches
+  //     origin, then return "Enabled".
+  //   2 Otherwise return "Disabled".
   auto allowlist = allowlists_.find(feature);
   if (allowlist != allowlists_.end()) {
     return allowlist->second.Contains(origin);
   }
 
+  // 9.8.4 Return "Enabled".
   return true;
 }
 
