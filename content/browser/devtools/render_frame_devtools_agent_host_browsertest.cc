@@ -72,13 +72,8 @@ class StubDevToolsAgentHostClient : public content::DevToolsAgentHostClient {
 // the ReadyToCommit stage.
 // See https://crbug.com/695203.
 // TODO(crbug.com/40916125): Re-enable this test
-#if BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)
 #define MAYBE_CancelCrossOriginNavigationAfterReadyToCommit \
   DISABLED_CancelCrossOriginNavigationAfterReadyToCommit
-#else
-#define MAYBE_CancelCrossOriginNavigationAfterReadyToCommit \
-  CancelCrossOriginNavigationAfterReadyToCommit
-#endif
 IN_PROC_BROWSER_TEST_F(RenderFrameDevToolsAgentHostBrowserTest,
                        MAYBE_CancelCrossOriginNavigationAfterReadyToCommit) {
   net::test_server::ControllableHttpResponse response_b(embedded_test_server(),
