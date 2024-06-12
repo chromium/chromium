@@ -100,6 +100,9 @@ BirchDataProvider* BirchKeyedService::GetReleaseNotesProvider() {
 }
 
 BirchDataProvider* BirchKeyedService::GetSelfShareProvider() {
+  if (self_share_provider_for_test_) {
+    return self_share_provider_for_test_;
+  }
   return self_share_provider_.get();
 }
 

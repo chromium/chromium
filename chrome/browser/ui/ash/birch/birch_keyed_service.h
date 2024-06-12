@@ -75,6 +75,9 @@ class BirchKeyedService : public KeyedService,
   void set_most_visited_provider_for_test(BirchDataProvider* provider) {
     most_visited_provider_for_test_ = provider;
   }
+  void set_self_share_provider_for_test(BirchDataProvider* provider) {
+    self_share_provider_for_test_ = provider;
+  }
 
  private:
   void ShutdownBirch();
@@ -113,6 +116,7 @@ class BirchKeyedService : public KeyedService,
   raw_ptr<BirchDataProvider> file_suggest_provider_for_test_;
   raw_ptr<BirchDataProvider> last_active_provider_for_test_;
   raw_ptr<BirchDataProvider> most_visited_provider_for_test_;
+  raw_ptr<BirchDataProvider> self_share_provider_for_test_;
 };
 
 }  // namespace ash

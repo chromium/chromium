@@ -26,7 +26,6 @@
 #include "chrome/test/base/in_process_browser_test.h"
 #include "components/prefs/pref_service.h"
 #include "content/public/test/browser_test.h"
-#include "content/public/test/test_navigation_observer.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/events/test/event_generator.h"
 #include "ui/views/widget/widget.h"
@@ -117,6 +116,21 @@ class TestMostVisitedProvider : public BirchDataProvider {
   }
 };
 
+class TestSelfShareProvider : public BirchDataProvider {
+ public:
+  TestSelfShareProvider() = default;
+  ~TestSelfShareProvider() override = default;
+
+  // BirchDataProvider:
+  void RequestBirchDataFetch() override {
+    std::vector<BirchSelfShareItem> items;
+    items.emplace_back(u"guid", u"tab", GURL("http://example.com/"),
+                       base::Time::Now(), u"my device",
+                       GURL("https://favicon.com/"), base::DoNothing());
+    Shell::Get()->birch_model()->SetSelfShareItems(std::move(items));
+  }
+};
+
 // A new window delegate that records opened files and URLs.
 class MockNewWindowDelegate : public TestNewWindowDelegate {
  public:
@@ -187,6 +201,24 @@ class BirchBrowserTest : public InProcessBrowserTest {
     switches::SetIgnoreForestSecretKeyForTest(false);
   }
 
+  void SetUpOnMainThread() override {
+    InProcessBrowserTest::SetUpOnMainThread();
+    // Clear out the existing NewWindowDelegateProvider so we can replace it
+    // with a mock (there are CHECKs that prevent doing this without the reset).
+    ChromeBrowserMainExtraPartsAsh::Get()
+        ->ResetNewWindowDelegateProviderForTest();
+    auto window_delegate = std::make_unique<MockNewWindowDelegate>();
+    mock_new_window_delegate_ = window_delegate.get();
+    window_delegate_provider_ = std::make_unique<TestNewWindowDelegateProvider>(
+        std::move(window_delegate));
+  }
+
+  void TearDownOnMainThread() override {
+    mock_new_window_delegate_ = nullptr;  // Avoid dangling pointer.
+    window_delegate_provider_.reset();
+    InProcessBrowserTest::TearDownOnMainThread();
+  }
+
   BirchKeyedService* GetBirchKeyedService() {
     return BirchKeyedServiceFactory::GetInstance()->GetService(
         browser()->profile());
@@ -194,6 +226,8 @@ class BirchBrowserTest : public InProcessBrowserTest {
 
  protected:
   base::test::ScopedFeatureList feature_list_;
+  raw_ptr<MockNewWindowDelegate> mock_new_window_delegate_;
+  std::unique_ptr<TestNewWindowDelegateProvider> window_delegate_provider_;
 };
 
 // Test that no crash occurs on shutdown with an instantiated BirchKeyedService.
@@ -239,14 +273,13 @@ IN_PROC_BROWSER_TEST_F(BirchBrowserTest, WeatherChip) {
   BirchChipButtonBase* button = GetBirchChipButton();
   EXPECT_EQ(button->GetItem()->GetType(), BirchItemType::kWeather);
 
-  // Clicking on the chip opens a browser with a Google search for weather.
-  content::TestNavigationObserver navigation_observer(
-      GURL("https://google.com/search?q=weather"));
-  navigation_observer.StartWatchingNewWebContents();
   // Clicking the button closes overview and destroys the button, so avoid a
   // dangling pointer with std::exchange.
   ClickOnView(std::exchange(button, nullptr));
-  navigation_observer.Wait();
+
+  // Clicking on the chip opens a browser with a Google search for weather.
+  EXPECT_EQ(mock_new_window_delegate_->opened_url_,
+            GURL("https://google.com/search?q=weather"));
 }
 
 IN_PROC_BROWSER_TEST_F(BirchBrowserTest, CalendarChip) {
@@ -287,14 +320,12 @@ IN_PROC_BROWSER_TEST_F(BirchBrowserTest, CalendarChip) {
   BirchChipButtonBase* button = GetBirchChipButton();
   EXPECT_EQ(button->GetItem()->GetType(), BirchItemType::kCalendar);
 
-  // Clicking on the chip opens a browser with a Google search for weather.
-  content::TestNavigationObserver navigation_observer(
-      GURL("http://example.com/"));
-  navigation_observer.StartWatchingNewWebContents();
   // Clicking the button closes overview and destroys the button, so avoid a
   // dangling pointer with std::exchange.
   ClickOnView(std::exchange(button, nullptr));
-  navigation_observer.Wait();
+
+  EXPECT_EQ(mock_new_window_delegate_->opened_url_,
+            GURL("http://example.com/"));
 }
 
 IN_PROC_BROWSER_TEST_F(BirchBrowserTest, FileSuggestChip) {
@@ -335,24 +366,13 @@ IN_PROC_BROWSER_TEST_F(BirchBrowserTest, FileSuggestChip) {
   BirchChipButtonBase* button = GetBirchChipButton();
   EXPECT_EQ(button->GetItem()->GetType(), BirchItemType::kFile);
 
-  // Clear out the existing NewWindowDelegateProvider so we can replace it with
-  // a mock (there are CHECKs that prevent doing this without the reset).
-  ChromeBrowserMainExtraPartsAsh::Get()
-      ->ResetNewWindowDelegateProviderForTest();
-  auto window_delegate = std::make_unique<MockNewWindowDelegate>();
-  auto* window_delegate_ptr = window_delegate.get();
-  TestNewWindowDelegateProvider window_delegate_provider(
-      std::move(window_delegate));
-
   // Clicking the button closes overview and destroys the button, so avoid a
   // dangling pointer with std::exchange.
   ClickOnView(std::exchange(button, nullptr));
 
   // Clicking the button should attempt to open the file.
-  EXPECT_EQ(window_delegate_ptr->opened_file_, base::FilePath("test-path"));
-
-  // Avoid dangling pointers.
-  window_delegate_ptr = nullptr;
+  EXPECT_EQ(mock_new_window_delegate_->opened_file_,
+            base::FilePath("test-path"));
 }
 
 IN_PROC_BROWSER_TEST_F(BirchBrowserTest, LastActiveChip) {
@@ -397,24 +417,13 @@ IN_PROC_BROWSER_TEST_F(BirchBrowserTest, LastActiveChip) {
   BirchChipButtonBase* button = GetBirchChipButton();
   EXPECT_EQ(button->GetItem()->GetType(), BirchItemType::kLastActive);
 
-  // Clear out the existing NewWindowDelegateProvider so we can replace it with
-  // a mock (there are CHECKs that prevent doing this without the reset).
-  ChromeBrowserMainExtraPartsAsh::Get()
-      ->ResetNewWindowDelegateProviderForTest();
-  auto window_delegate = std::make_unique<MockNewWindowDelegate>();
-  auto* window_delegate_ptr = window_delegate.get();
-  TestNewWindowDelegateProvider window_delegate_provider(
-      std::move(window_delegate));
-
   // Clicking the button closes overview and destroys the button, so avoid a
   // dangling pointer with std::exchange.
   ClickOnView(std::exchange(button, nullptr));
 
   // Clicking the button should attempt to open the URL.
-  EXPECT_EQ(window_delegate_ptr->opened_url_, GURL("http://example.com/"));
-
-  // Avoid dangling pointers.
-  window_delegate_ptr = nullptr;
+  EXPECT_EQ(mock_new_window_delegate_->opened_url_,
+            GURL("http://example.com/"));
 }
 
 IN_PROC_BROWSER_TEST_F(BirchBrowserTest, MostVisitedChip) {
@@ -461,24 +470,61 @@ IN_PROC_BROWSER_TEST_F(BirchBrowserTest, MostVisitedChip) {
   BirchChipButtonBase* button = GetBirchChipButton();
   EXPECT_EQ(button->GetItem()->GetType(), BirchItemType::kMostVisited);
 
-  // Clear out the existing NewWindowDelegateProvider so we can replace it with
-  // a mock (there are CHECKs that prevent doing this without the reset).
-  ChromeBrowserMainExtraPartsAsh::Get()
-      ->ResetNewWindowDelegateProviderForTest();
-  auto window_delegate = std::make_unique<MockNewWindowDelegate>();
-  auto* window_delegate_ptr = window_delegate.get();
-  TestNewWindowDelegateProvider window_delegate_provider(
-      std::move(window_delegate));
+  // Clicking the button closes overview and destroys the button, so avoid a
+  // dangling pointer with std::exchange.
+  ClickOnView(std::exchange(button, nullptr));
+
+  // Clicking the button should attempt to open the URL.
+  EXPECT_EQ(mock_new_window_delegate_->opened_url_,
+            GURL("http://example.com/"));
+}
+
+IN_PROC_BROWSER_TEST_F(BirchBrowserTest, SelfShareChip) {
+  // Set up a self share provider that provides a single chip.
+  auto* birch_keyed_service = GetBirchKeyedService();
+  TestSelfShareProvider self_share_provider;
+  birch_keyed_service->set_self_share_provider_for_test(&self_share_provider);
+
+  // Disable the prefs for data providers other than self share. This ensures
+  // the data is fresh once the self share provider replies.
+  PrefService* prefs =
+      Shell::Get()->session_controller()->GetPrimaryUserPrefService();
+  ASSERT_TRUE(prefs);
+  prefs->SetBoolean(prefs::kBirchUseCalendar, false);
+  prefs->SetBoolean(prefs::kBirchUseFileSuggest, false);
+  prefs->SetBoolean(prefs::kBirchUseRecentTabs, false);
+  prefs->SetBoolean(prefs::kBirchUseLastActive, false);
+  prefs->SetBoolean(prefs::kBirchUseMostVisited, false);
+  prefs->SetBoolean(prefs::kBirchUseReleaseNotes, false);
+  prefs->SetBoolean(prefs::kBirchUseWeather, false);
+
+  // Ensure the item remover is initialized, otherwise data fetches won't
+  // complete.
+  EnsureItemRemoverInitialized();
+
+  // Set up a callback for a birch data fetch.
+  base::RunLoop birch_data_fetch_waiter;
+  Shell::Get()->birch_model()->SetDataFetchCallbackForTest(
+      birch_data_fetch_waiter.QuitClosure());
+
+  // Enter overview, which triggers a birch data fetch.
+  ToggleOverview();
+  WaitForOverviewEntered();
+
+  // Wait for fetch callback to complete.
+  birch_data_fetch_waiter.Run();
+
+  // The birch bar is created with a single chip.
+  BirchChipButtonBase* button = GetBirchChipButton();
+  EXPECT_EQ(button->GetItem()->GetType(), BirchItemType::kSelfShare);
 
   // Clicking the button closes overview and destroys the button, so avoid a
   // dangling pointer with std::exchange.
   ClickOnView(std::exchange(button, nullptr));
 
   // Clicking the button should attempt to open the URL.
-  EXPECT_EQ(window_delegate_ptr->opened_url_, GURL("http://example.com/"));
-
-  // Avoid dangling pointers.
-  window_delegate_ptr = nullptr;
+  EXPECT_EQ(mock_new_window_delegate_->opened_url_,
+            GURL("http://example.com/"));
 }
 
 }  // namespace
