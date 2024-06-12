@@ -97,7 +97,8 @@ class CONTENT_EXPORT ScopedServiceWorkerClient final {
   // initialization/transitions, and Releases the keep-aliveness from `this`.
   // The caller should keep alive `ServiceWorkerClient` by keeping the returned
   // `ServiceWorkerContainerInfoForClientPtr`'s `host_remote`.
-  [[nodiscard]] blink::mojom::ServiceWorkerContainerInfoForClientPtr
+  [[nodiscard]] std::tuple<blink::mojom::ServiceWorkerContainerInfoForClientPtr,
+                           blink::mojom::ControllerServiceWorkerInfoPtr>
   CommitResponseAndRelease(
       std::optional<GlobalRenderFrameHostId> rfh_id,
       const PolicyContainerPolicies& policy_container_policies,

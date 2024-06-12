@@ -251,7 +251,7 @@ CommittedServiceWorkerClient::CommittedServiceWorkerClient(
 
   // In production code this is called from NavigationRequest in the browser
   // process right before navigation commit.
-  blink::mojom::ServiceWorkerContainerInfoForClientPtr container_info =
+  auto [container_info, controller_info] =
       std::move(service_worker_client)
           .CommitResponseAndRelease(render_frame_host_id,
                                     PolicyContainerPolicies(),
@@ -284,7 +284,8 @@ CommittedServiceWorkerClient::CommittedServiceWorkerClient(
       /*url_loader_client_endpoints=*/nullptr,
       /*subresource_loader_factories=*/nullptr,
       /*subresource_overrides=*/std::nullopt,
-      /*controller_service_worker_info=*/nullptr, std::move(container_info),
+      /*controller_service_worker_info=*/std::move(controller_info),
+      std::move(container_info),
       /*subresource_proxying_loader_factory=*/mojo::NullRemote(),
       /*keep_alive_loader_factory=*/mojo::NullRemote(),
       /*fetch_later_loader_factory=*/mojo::NullAssociatedRemote(),
@@ -313,7 +314,7 @@ CommittedServiceWorkerClient::CommittedServiceWorkerClient(
     ScopedServiceWorkerClient service_worker_client)
     : service_worker_client_(std::move(service_worker_client.AsWeakPtr())) {
   // For worker cases the mojo call is not emulated (just not implemented).
-  blink::mojom::ServiceWorkerContainerInfoForClientPtr received_info =
+  auto [received_info, controller_info] =
       std::move(service_worker_client)
           .CommitResponseAndRelease(
               /*render_frame_host_id=*/std::nullopt, PolicyContainerPolicies(),

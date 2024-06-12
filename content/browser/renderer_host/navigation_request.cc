@@ -6105,29 +6105,23 @@ void NavigationRequest::CommitNavigation() {
   SubresourceLoaderParams::CheckWithMainResourceHandle(
       service_worker_handle_.get(),
       subresource_loader_params_.service_worker_client.get());
-  if (service_worker_handle_) {
+
+  // Notify the service worker navigation handle that navigation commit is
+  // about to go.
+  if (service_worker_handle_ &&
+      service_worker_handle_->service_worker_client()) {
     DCHECK(coep_reporter());
     mojo::PendingRemote<network::mojom::CrossOriginEmbedderPolicyReporter>
         reporter_remote;
     coep_reporter()->Clone(reporter_remote.InitWithNewPipeAndPassReceiver());
 
-    // Notify the service worker navigation handle that navigation commit is
-    // about to go.
-    if (service_worker_handle_->service_worker_client()) {
-      service_worker_container_info =
-          service_worker_handle_->scoped_service_worker_client()
-              ->CommitResponseAndRelease(
-                  GetRenderFrameHost()->GetGlobalId(),
-                  policy_container_builder_->FinalPolicies(),
-                  std::move(reporter_remote),
-                  commit_params_->document_ukm_source_id);
-
-      if (service_worker_handle_->service_worker_client()->controller()) {
-        controller = service_worker_handle_->service_worker_client()
-                         ->container_host()
-                         ->CreateControllerServiceWorkerInfo();
-      }
-    }
+    std::tie(service_worker_container_info, controller) =
+        service_worker_handle_->scoped_service_worker_client()
+            ->CommitResponseAndRelease(
+                GetRenderFrameHost()->GetGlobalId(),
+                policy_container_builder_->FinalPolicies(),
+                std::move(reporter_remote),
+                commit_params_->document_ukm_source_id);
   }
 
   // Determine if top-level navigation is allowed without sticky user

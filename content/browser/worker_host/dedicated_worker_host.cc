@@ -475,21 +475,12 @@ void DedicatedWorkerHost::DidStartScriptLoad(
     // TODO(crbug.com/41478971): Plumb the COEP reporter.
     // TODO(crbug.com/40153087): Propagate dedicated worker ukm::SourceId
     // here.
-    container_info = service_worker_handle_->scoped_service_worker_client()
-                         ->CommitResponseAndRelease(
-                             /*rfh_id=*/std::nullopt,
-                             std::move(result->policy_container_policies),
-                             /*coep_reporter=*/{}, ukm::kInvalidSourceId);
-
-    // Prepare the controller service worker info to pass to the renderer.
-    // `controller()` can be nullptr when the client isn't controlled in the
-    // first place, or the service worker context or the service worker version
-    // is gone during dedicated worker startup.
-    if (service_worker_handle_->service_worker_client()->controller()) {
-      controller = service_worker_handle_->service_worker_client()
-                       ->container_host()
-                       ->CreateControllerServiceWorkerInfo();
-    }
+    std::tie(container_info, controller) =
+        service_worker_handle_->scoped_service_worker_client()
+            ->CommitResponseAndRelease(
+                /*rfh_id=*/std::nullopt,
+                std::move(result->policy_container_policies),
+                /*coep_reporter=*/{}, ukm::kInvalidSourceId);
   }
 
   client_->OnScriptLoadStarted(

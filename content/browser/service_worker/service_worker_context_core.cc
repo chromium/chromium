@@ -1397,7 +1397,8 @@ ScopedServiceWorkerClient::~ScopedServiceWorkerClient() {
 ScopedServiceWorkerClient::ScopedServiceWorkerClient(
     ScopedServiceWorkerClient&& other) = default;
 
-blink::mojom::ServiceWorkerContainerInfoForClientPtr
+std::tuple<blink::mojom::ServiceWorkerContainerInfoForClientPtr,
+           blink::mojom::ControllerServiceWorkerInfoPtr>
 ScopedServiceWorkerClient::CommitResponseAndRelease(
     std::optional<GlobalRenderFrameHostId> rfh_id,
     const PolicyContainerPolicies& policy_container_policies,
@@ -1408,10 +1409,18 @@ ScopedServiceWorkerClient::CommitResponseAndRelease(
     return {};
   }
 
-  return service_worker_client_->CommitResponse(
-      base::PassKey<ScopedServiceWorkerClient>(), std::move(rfh_id),
-      policy_container_policies, std::move(coep_reporter),
-      std::move(ukm_source_id));
+  blink::mojom::ServiceWorkerContainerInfoForClientPtr container_info =
+      service_worker_client_->CommitResponse(
+          base::PassKey<ScopedServiceWorkerClient>(), std::move(rfh_id),
+          policy_container_policies, std::move(coep_reporter),
+          std::move(ukm_source_id));
+
+  blink::mojom::ControllerServiceWorkerInfoPtr controller;
+  if (service_worker_client_->controller()) {
+    controller = service_worker_client_->container_host()
+                     ->CreateControllerServiceWorkerInfo();
+  }
+  return std::make_tuple(std::move(container_info), std::move(controller));
 }
 
 #if !BUILDFLAG(IS_ANDROID)
