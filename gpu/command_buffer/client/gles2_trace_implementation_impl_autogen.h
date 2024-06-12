@@ -2234,11 +2234,6 @@ void GLES2TraceImplementation::DrawBuffersEXT(GLsizei count,
   gl_->DrawBuffersEXT(count, bufs);
 }
 
-void GLES2TraceImplementation::DiscardBackbufferCHROMIUM() {
-  TRACE_EVENT_BINARY_EFFICIENT0("gpu", "GLES2Trace::DiscardBackbufferCHROMIUM");
-  gl_->DiscardBackbufferCHROMIUM();
-}
-
 void GLES2TraceImplementation::FlushDriverCachesCHROMIUM() {
   TRACE_EVENT_BINARY_EFFICIENT0("gpu", "GLES2Trace::FlushDriverCachesCHROMIUM");
   gl_->FlushDriverCachesCHROMIUM();

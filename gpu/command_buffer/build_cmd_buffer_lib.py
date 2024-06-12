@@ -1057,7 +1057,6 @@ static_assert(offsetof(%(cmd_name)s::Result, %(field_name)s) == %(offset)d,
     if func.IsES31():
       return
     self.WriteHandlerExtensionCheck(func, f)
-    self.WriteHandlerDeferReadWrite(func, f);
     self.WriteServiceHandlerArgGetCode(func, f)
     func.WriteHandlerValidation(f)
     func.WriteQueueTraceEvent(f)
@@ -1072,7 +1071,6 @@ static_assert(offsetof(%(cmd_name)s::Result, %(field_name)s) == %(offset)d,
     if func.IsES31():
       return
     self.WriteHandlerExtensionCheck(func, f)
-    self.WriteHandlerDeferReadWrite(func, f);
     self.WriteImmediateServiceHandlerArgGetCode(func, f)
     func.WriteHandlerValidation(f)
     func.WriteQueueTraceEvent(f)
@@ -1087,7 +1085,6 @@ static_assert(offsetof(%(cmd_name)s::Result, %(field_name)s) == %(offset)d,
     if func.IsES31():
       return
     self.WriteHandlerExtensionCheck(func, f)
-    self.WriteHandlerDeferReadWrite(func, f);
     self.WriteBucketServiceHandlerArgGetCode(func, f)
     func.WriteHandlerValidation(f)
     func.WriteQueueTraceEvent(f)
@@ -1160,21 +1157,6 @@ static_assert(offsetof(%(cmd_name)s::Result, %(field_name)s) == %(offset)d,
       f.write("  if (!features().%s) {\n" % func.GetInfo('extension_flag'))
       f.write("    return error::kUnknownCommand;")
       f.write("  }\n\n")
-
-  def WriteHandlerDeferReadWrite(self, func, f):
-    """Writes the code to handle deferring reads or writes."""
-    defer_draws = func.GetInfo('defer_draws')
-    defer_reads = func.GetInfo('defer_reads')
-    if defer_draws or defer_reads:
-      f.write("  error::Error error;\n")
-    if defer_draws:
-      f.write("  error = WillAccessBoundFramebufferForDraw();\n")
-      f.write("  if (error != error::kNoError)\n")
-      f.write("    return error;\n")
-    if defer_reads:
-      f.write("  error = WillAccessBoundFramebufferForRead();\n")
-      f.write("  if (error != error::kNoError)\n")
-      f.write("    return error;\n")
 
   def WriteValidUnitTest(self, func, f, test, *extras):
     """Writes a valid unit test for the service implementation."""

@@ -3441,14 +3441,6 @@ void GLES2Implementation::DrawBuffersEXT(GLsizei count, const GLenum* bufs) {
   CheckGLError();
 }
 
-void GLES2Implementation::DiscardBackbufferCHROMIUM() {
-  GPU_CLIENT_SINGLE_THREAD_CHECK();
-  GPU_CLIENT_LOG("[" << GetLogPrefix() << "] glDiscardBackbufferCHROMIUM("
-                     << ")");
-  helper_->DiscardBackbufferCHROMIUM();
-  CheckGLError();
-}
-
 void GLES2Implementation::FlushDriverCachesCHROMIUM() {
   GPU_CLIENT_SINGLE_THREAD_CHECK();
   GPU_CLIENT_LOG("[" << GetLogPrefix() << "] glFlushDriverCachesCHROMIUM("

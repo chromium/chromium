@@ -78,11 +78,6 @@ class GL_EXPORT GLSurface : public base::RefCounted<GLSurface>,
   // failed, it is possible that the context is no longer current.
   virtual bool Recreate();
 
-  // Unschedule the CommandExecutor and return true to abort the processing of
-  // a GL draw call to this surface and defer it until the CommandExecutor is
-  // rescheduled.
-  virtual bool DeferDraws();
-
   // Returns true if this surface is offscreen.
   virtual bool IsOffscreen() = 0;
 
@@ -158,10 +153,6 @@ class GL_EXPORT GLSurface : public base::RefCounted<GLSurface>,
   // Called after a context is made current with this surface. Returns false
   // on error.
   virtual bool OnMakeCurrent(GLContext* context);
-
-  // Used for explicit buffer management.
-  virtual bool SetBackbufferAllocation(bool allocated);
-  virtual void SetFrontbufferAllocation(bool allocated);
 
   // Get a handle used to share the surface with another process. Returns null
   // if this is not possible.

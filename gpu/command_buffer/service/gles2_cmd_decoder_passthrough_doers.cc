@@ -4891,11 +4891,6 @@ error::Error GLES2DecoderPassthroughImpl::DoDrawBuffersEXT(
   return error::kNoError;
 }
 
-error::Error GLES2DecoderPassthroughImpl::DoDiscardBackbufferCHROMIUM() {
-  NOTIMPLEMENTED();
-  return error::kNoError;
-}
-
 error::Error GLES2DecoderPassthroughImpl::DoFlushDriverCachesCHROMIUM() {
   // On Adreno Android devices we need to use a workaround to force caches to
   // clear.

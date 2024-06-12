@@ -47,8 +47,6 @@ class SkiaOutputDeviceGL final : public SkiaOutputDevice {
   void Present(const std::optional<gfx::Rect>& update_rect,
                BufferPresentedCallback feedback,
                OutputSurfaceFrame frame) override;
-  void EnsureBackbuffer() override;
-  void DiscardBackbuffer() override;
   SkSurface* BeginPaint(
       std::vector<GrBackendSemaphore>* end_semaphores) override;
   void EndPaint() override;

@@ -2301,38 +2301,6 @@ class GLES2DecoderImpl : public GLES2Decoder,
     return feature_info_->workarounds();
   }
 
-  bool ShouldDeferDraws() {
-    return !offscreen_target_frame_buffer_.get() &&
-           framebuffer_state_.bound_draw_framebuffer.get() == nullptr &&
-           surface_->DeferDraws();
-  }
-
-  bool ShouldDeferReads() {
-    return !offscreen_target_frame_buffer_.get() &&
-           framebuffer_state_.bound_read_framebuffer.get() == nullptr &&
-           surface_->DeferDraws();
-  }
-
-  error::Error WillAccessBoundFramebufferForDraw() {
-    if (ShouldDeferDraws())
-      return error::kDeferCommandUntilLater;
-    if (!offscreen_target_frame_buffer_.get() &&
-        !framebuffer_state_.bound_draw_framebuffer.get() &&
-        !surface_->SetBackbufferAllocation(true))
-      return error::kLostContext;
-    return error::kNoError;
-  }
-
-  error::Error WillAccessBoundFramebufferForRead() {
-    if (ShouldDeferReads())
-      return error::kDeferCommandUntilLater;
-    if (!offscreen_target_frame_buffer_.get() &&
-        !framebuffer_state_.bound_read_framebuffer.get() &&
-        !surface_->SetBackbufferAllocation(true))
-      return error::kLostContext;
-    return error::kNoError;
-  }
-
   // Whether the back buffer exposed to the client has an alpha channel. Note
   // that this is potentially different from whether the implementation of the
   // back buffer has an alpha channel.
@@ -4948,8 +4916,6 @@ error::Error GLES2DecoderImpl::HandleResizeCHROMIUM(
     const volatile void* cmd_data) {
   const volatile gles2::cmds::ResizeCHROMIUM& c =
       *static_cast<const volatile gles2::cmds::ResizeCHROMIUM*>(cmd_data);
-  if (!offscreen_target_frame_buffer_.get() && surface_->DeferDraws())
-    return error::kDeferCommandUntilLater;
 
   GLuint width = static_cast<GLuint>(c.width);
   GLuint height = static_cast<GLuint>(c.height);
@@ -7253,7 +7219,6 @@ error::Error GLES2DecoderImpl::HandleDeleteProgram(
 
 error::Error GLES2DecoderImpl::DoClear(GLbitfield mask) {
   const char* func_name = "glClear";
-  DCHECK(!ShouldDeferDraws());
   if (mask &
       ~(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT | GL_STENCIL_BUFFER_BIT)) {
     LOCAL_SET_GL_ERROR(GL_INVALID_VALUE, func_name, "invalid mask");
@@ -7930,7 +7895,6 @@ void GLES2DecoderImpl::DoBlitFramebufferCHROMIUM(
     GLint dstX0, GLint dstY0, GLint dstX1, GLint dstY1,
     GLbitfield mask, GLenum filter) {
   const char* func_name = "glBlitFramebufferCHROMIUM";
-  DCHECK(!ShouldDeferReads() && !ShouldDeferDraws());
 
   if (!CheckFramebufferValid(GetBoundDrawFramebuffer(),
                              GetDrawFramebufferTarget(),
@@ -10121,9 +10085,6 @@ ALWAYS_INLINE error::Error GLES2DecoderImpl::DoMultiDrawArrays(
   if (option == DrawArraysOption::Default) {
     DCHECK_EQ(baseinstances, nullptr);
   }
-  error::Error error = WillAccessBoundFramebufferForDraw();
-  if (error != error::kNoError)
-    return error;
 
   if (!validators_->draw_mode.IsValid(mode)) {
     LOCAL_SET_GL_ERROR_INVALID_ENUM(function_name, mode, "mode");
@@ -10389,10 +10350,6 @@ ALWAYS_INLINE error::Error GLES2DecoderImpl::DoMultiDrawElements(
     DCHECK_EQ(basevertices, nullptr);
     DCHECK_EQ(baseinstances, nullptr);
   }
-
-  error::Error error = WillAccessBoundFramebufferForDraw();
-  if (error != error::kNoError)
-    return error;
 
   if (!validators_->draw_mode.IsValid(mode)) {
     LOCAL_SET_GL_ERROR_INVALID_ENUM(function_name, mode, "mode");
@@ -11987,9 +11944,6 @@ error::Error GLES2DecoderImpl::HandleReadPixels(uint32_t immediate_data_size,
   const volatile gles2::cmds::ReadPixels& c =
       *static_cast<const volatile gles2::cmds::ReadPixels*>(cmd_data);
   TRACE_EVENT0("gpu", "GLES2DecoderImpl::HandleReadPixels");
-  error::Error fbo_error = WillAccessBoundFramebufferForRead();
-  if (fbo_error != error::kNoError)
-    return fbo_error;
   GLint x = c.x;
   GLint y = c.y;
   GLsizei width = c.width;
@@ -14092,7 +14046,6 @@ void GLES2DecoderImpl::DoCopyTexImage2D(
     GLsizei height,
     GLint border) {
   const char* func_name = "glCopyTexImage2D";
-  DCHECK(!ShouldDeferReads());
   TextureRef* texture_ref = texture_manager()->GetTextureInfoForTarget(
       &state_, target);
   if (!texture_ref) {
@@ -14353,7 +14306,6 @@ void GLES2DecoderImpl::DoCopyTexSubImage2D(
     GLsizei width,
     GLsizei height) {
   const char* func_name = "glCopyTexSubImage2D";
-  DCHECK(!ShouldDeferReads());
   TextureRef* texture_ref = texture_manager()->GetTextureInfoForTarget(
       &state_, target);
   if (!texture_ref) {
@@ -14468,7 +14420,6 @@ void GLES2DecoderImpl::DoCopyTexSubImage3D(
     GLsizei width,
     GLsizei height) {
   const char* func_name = "glCopyTexSubImage3D";
-  DCHECK(!ShouldDeferReads());
   TextureRef* texture_ref = texture_manager()->GetTextureInfoForTarget(
       &state_, target);
   if (!texture_ref) {
@@ -15814,19 +15765,6 @@ error::Error GLES2DecoderImpl::HandleDescheduleUntilFinishedCHROMIUM(
       "cc", "GLES2DecoderImpl::DescheduleUntilFinished", TRACE_ID_LOCAL(this));
   client()->OnDescheduleUntilFinished();
   return error::kDeferLaterCommands;
-}
-
-error::Error GLES2DecoderImpl::HandleDiscardBackbufferCHROMIUM(
-    uint32_t immediate_data_size,
-    const volatile void* cmd_data) {
-  if (surface_->DeferDraws())
-    return error::kDeferCommandUntilLater;
-  if (!surface_->SetBackbufferAllocation(false))
-    return error::kLostContext;
-  backbuffer_needs_clear_bits_ |= GL_COLOR_BUFFER_BIT;
-  backbuffer_needs_clear_bits_ |= GL_DEPTH_BUFFER_BIT;
-  backbuffer_needs_clear_bits_ |= GL_STENCIL_BUFFER_BIT;
-  return error::kNoError;
 }
 
 bool GLES2DecoderImpl::GenQueriesEXTHelper(

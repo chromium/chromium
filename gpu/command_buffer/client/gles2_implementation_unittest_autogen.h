@@ -2922,17 +2922,6 @@ TEST_F(GLES2ImplementationTest, DrawBuffersEXT) {
   EXPECT_EQ(0, memcmp(&expected, commands_, sizeof(expected)));
 }
 
-TEST_F(GLES2ImplementationTest, DiscardBackbufferCHROMIUM) {
-  struct Cmds {
-    cmds::DiscardBackbufferCHROMIUM cmd;
-  };
-  Cmds expected;
-  expected.cmd.Init();
-
-  gl_->DiscardBackbufferCHROMIUM();
-  EXPECT_EQ(0, memcmp(&expected, commands_, sizeof(expected)));
-}
-
 TEST_F(GLES2ImplementationTest, FlushDriverCachesCHROMIUM) {
   struct Cmds {
     cmds::FlushDriverCachesCHROMIUM cmd;

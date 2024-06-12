@@ -1061,7 +1061,6 @@ void GLES2InterfaceStub::LoseContextCHROMIUM(GLenum /* current */,
                                              GLenum /* other */) {}
 void GLES2InterfaceStub::DrawBuffersEXT(GLsizei /* count */,
                                         const GLenum* /* bufs */) {}
-void GLES2InterfaceStub::DiscardBackbufferCHROMIUM() {}
 void GLES2InterfaceStub::FlushDriverCachesCHROMIUM() {}
 GLuint GLES2InterfaceStub::GetLastFlushIdCHROMIUM() {
   return 0;

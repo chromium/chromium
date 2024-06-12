@@ -14647,33 +14647,6 @@ static_assert(offsetof(DrawBuffersEXTImmediate, header) == 0,
 static_assert(offsetof(DrawBuffersEXTImmediate, count) == 4,
               "offset of DrawBuffersEXTImmediate count should be 4");
 
-struct DiscardBackbufferCHROMIUM {
-  typedef DiscardBackbufferCHROMIUM ValueType;
-  static const CommandId kCmdId = kDiscardBackbufferCHROMIUM;
-  static const cmd::ArgFlags kArgFlags = cmd::kFixed;
-  static const uint8_t cmd_flags = CMD_FLAG_SET_TRACE_LEVEL(2);
-
-  static uint32_t ComputeSize() {
-    return static_cast<uint32_t>(sizeof(ValueType));  // NOLINT
-  }
-
-  void SetHeader() { header.SetCmd<ValueType>(); }
-
-  void Init() { SetHeader(); }
-
-  void* Set(void* cmd) {
-    static_cast<ValueType*>(cmd)->Init();
-    return NextCmdAddress<ValueType>(cmd);
-  }
-
-  gpu::CommandHeader header;
-};
-
-static_assert(sizeof(DiscardBackbufferCHROMIUM) == 4,
-              "size of DiscardBackbufferCHROMIUM should be 4");
-static_assert(offsetof(DiscardBackbufferCHROMIUM, header) == 0,
-              "offset of DiscardBackbufferCHROMIUM header should be 0");
-
 struct FlushDriverCachesCHROMIUM {
   typedef FlushDriverCachesCHROMIUM ValueType;
   static const CommandId kCmdId = kFlushDriverCachesCHROMIUM;

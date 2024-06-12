@@ -909,7 +909,6 @@ error::Error DoWaitSyncTokenCHROMIUM(CommandBufferNamespace namespace_id,
                                      CommandBufferId command_buffer_id,
                                      GLuint64 release_count);
 error::Error DoDrawBuffersEXT(GLsizei count, const volatile GLenum* bufs);
-error::Error DoDiscardBackbufferCHROMIUM();
 
 error::Error DoFlushDriverCachesCHROMIUM();
 error::Error DoMatrixLoadfCHROMIUM(GLenum matrixMode,

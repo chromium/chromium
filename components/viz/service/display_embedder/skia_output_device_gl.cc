@@ -325,14 +325,6 @@ void SkiaOutputDeviceGL::DoFinishSwapBuffers(const gfx::Size& size,
   FinishSwapBuffers(std::move(result), size, std::move(frame));
 }
 
-void SkiaOutputDeviceGL::EnsureBackbuffer() {
-  gl_surface_->SetBackbufferAllocation(true);
-}
-
-void SkiaOutputDeviceGL::DiscardBackbuffer() {
-  gl_surface_->SetBackbufferAllocation(false);
-}
-
 SkSurface* SkiaOutputDeviceGL::BeginPaint(
     std::vector<GrBackendSemaphore>* end_semaphores) {
   DCHECK(sk_surface_);

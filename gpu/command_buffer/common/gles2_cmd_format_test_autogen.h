@@ -4803,16 +4803,6 @@ TEST_F(GLES2FormatTest, DrawBuffersEXTImmediate) {
       next_cmd, sizeof(cmd) + RoundSizeToMultipleOfEntries(sizeof(data)));
 }
 
-TEST_F(GLES2FormatTest, DiscardBackbufferCHROMIUM) {
-  cmds::DiscardBackbufferCHROMIUM& cmd =
-      *GetBufferAs<cmds::DiscardBackbufferCHROMIUM>();
-  void* next_cmd = cmd.Set(&cmd);
-  EXPECT_EQ(static_cast<uint32_t>(cmds::DiscardBackbufferCHROMIUM::kCmdId),
-            cmd.header.command);
-  EXPECT_EQ(sizeof(cmd), cmd.header.size * 4u);
-  CheckBytesWrittenMatchesExpectedSize(next_cmd, sizeof(cmd));
-}
-
 TEST_F(GLES2FormatTest, FlushDriverCachesCHROMIUM) {
   cmds::FlushDriverCachesCHROMIUM& cmd =
       *GetBufferAs<cmds::FlushDriverCachesCHROMIUM>();

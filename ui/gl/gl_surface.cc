@@ -45,10 +45,6 @@ bool GLSurface::Recreate() {
   return false;
 }
 
-bool GLSurface::DeferDraws() {
-  return false;
-}
-
 bool GLSurface::SupportsPostSubBuffer() {
   return false;
 }
@@ -88,13 +84,6 @@ void GLSurface::PostSubBufferAsync(int x,
 
 bool GLSurface::OnMakeCurrent(GLContext* context) {
   return true;
-}
-
-bool GLSurface::SetBackbufferAllocation(bool allocated) {
-  return true;
-}
-
-void GLSurface::SetFrontbufferAllocation(bool allocated) {
 }
 
 void* GLSurface::GetShareHandle() {

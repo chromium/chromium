@@ -331,7 +331,6 @@
 #define glDiscardFramebufferEXT GLES2_GET_FUN(DiscardFramebufferEXT)
 #define glLoseContextCHROMIUM GLES2_GET_FUN(LoseContextCHROMIUM)
 #define glDrawBuffersEXT GLES2_GET_FUN(DrawBuffersEXT)
-#define glDiscardBackbufferCHROMIUM GLES2_GET_FUN(DiscardBackbufferCHROMIUM)
 #define glFlushDriverCachesCHROMIUM GLES2_GET_FUN(FlushDriverCachesCHROMIUM)
 #define glGetLastFlushIdCHROMIUM GLES2_GET_FUN(GetLastFlushIdCHROMIUM)
 #define glSetActiveURLCHROMIUM GLES2_GET_FUN(SetActiveURLCHROMIUM)

@@ -2947,14 +2947,6 @@ void DrawBuffersEXTImmediate(GLsizei count, const GLenum* bufs) {
   }
 }
 
-void DiscardBackbufferCHROMIUM() {
-  gles2::cmds::DiscardBackbufferCHROMIUM* c =
-      GetCmdSpace<gles2::cmds::DiscardBackbufferCHROMIUM>();
-  if (c) {
-    c->Init();
-  }
-}
-
 void FlushDriverCachesCHROMIUM() {
   gles2::cmds::FlushDriverCachesCHROMIUM* c =
       GetCmdSpace<gles2::cmds::FlushDriverCachesCHROMIUM>();

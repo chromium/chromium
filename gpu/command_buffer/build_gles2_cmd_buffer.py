@@ -1736,8 +1736,6 @@ _FUNCTION_INFO = {
     'extension_flag': 'chromium_framebuffer_multisample',
     'pepper_interface': 'FramebufferBlit',
     'pepper_name': 'BlitFramebufferEXT',
-    'defer_reads': True,
-    'defer_draws': True,
     'trace_level': 1,
   },
   'BufferData': {
@@ -1767,7 +1765,6 @@ _FUNCTION_INFO = {
   },
   'Clear': {
     'decoder_func': 'DoClear',
-    'defer_draws': True,
     'trace_level': 2,
     'valid_args': {
       '0': 'GL_COLOR_BUFFER_BIT'
@@ -1883,12 +1880,10 @@ _FUNCTION_INFO = {
   'CopyTexImage2D': {
     'decoder_func': 'DoCopyTexImage2D',
     'unit_test': False,
-    'defer_reads': True,
     'trace_level': 1,
   },
   'CopyTexSubImage2D': {
     'decoder_func': 'DoCopyTexSubImage2D',
-    'defer_reads': True,
     'trace_level': 1,
   },
   'CompressedTexImage3D': {
@@ -1906,7 +1901,6 @@ _FUNCTION_INFO = {
   'CopyTexSubImage3D': {
     'decoder_func': 'DoCopyTexSubImage3D',
     'unit_test': False,
-    'defer_reads': True,
     'es3': True,
     'trace_level': 1,
   },
@@ -2126,7 +2120,6 @@ _FUNCTION_INFO = {
     'type': 'Custom',
     'impl_func': False,
     'cmd_args': 'GLenumDrawMode mode, GLint first, GLsizei count',
-    'defer_draws': True,
     'trace_level': 2,
   },
   'DrawArraysIndirect': {
@@ -2144,7 +2137,6 @@ _FUNCTION_INFO = {
     'cmd_args': 'GLenumDrawMode mode, GLsizei count, '
                 'GLenumIndexType type, GLuint index_offset',
     'client_test': False,
-    'defer_draws': True,
     'trace_level': 2,
   },
   'DrawElementsIndirect': {
@@ -2188,7 +2180,6 @@ _FUNCTION_INFO = {
     'impl_func': False,
     'client_test': False,
     'decoder_func': 'DoFinish',
-    'defer_reads': True,
     'trace_level': 1,
   },
   'Flush': {
@@ -2900,7 +2891,6 @@ _FUNCTION_INFO = {
     'size_args': {
       'firsts': 'drawcount * sizeof(GLint)',
       'counts': 'drawcount * sizeof(GLsizei)', },
-    'defer_draws': True,
     'impl_func': False,
     'client_test': False,
     'internal': True,
@@ -2920,7 +2910,6 @@ _FUNCTION_INFO = {
       'firsts': 'drawcount * sizeof(GLint)',
       'counts': 'drawcount * sizeof(GLsizei)',
       'instance_counts': 'drawcount * sizeof(GLsizei)', },
-    'defer_draws': True,
     'impl_func': False,
     'client_test': False,
     'internal': True,
@@ -2945,7 +2934,6 @@ _FUNCTION_INFO = {
       'instance_counts': 'drawcount * sizeof(GLsizei)',
       'baseinstances': 'drawcount * sizeof(GLuint)',
     },
-    'defer_draws': True,
     'impl_func': False,
     'client_test': False,
     'internal': True,
@@ -2964,7 +2952,6 @@ _FUNCTION_INFO = {
     'size_args': {
       'counts': 'drawcount * sizeof(GLsizei)',
       'offsets': 'drawcount * sizeof(GLsizei)', },
-    'defer_draws': True,
     'impl_func': False,
     'client_test': False,
     'internal': True,
@@ -2985,7 +2972,6 @@ _FUNCTION_INFO = {
       'counts': 'drawcount * sizeof(GLsizei)',
       'offsets': 'drawcount * sizeof(GLsizei)',
       'instance_counts': 'drawcount * sizeof(GLsizei)', },
-    'defer_draws': True,
     'impl_func': False,
     'client_test': False,
     'internal': True,
@@ -3014,7 +3000,6 @@ _FUNCTION_INFO = {
       'basevertices': 'drawcount * sizeof(GLint)',
       'baseinstances': 'drawcount * sizeof(GLuint)',
     },
-    'defer_draws': True,
     'impl_func': False,
     'client_test': False,
     'internal': True,
@@ -3128,7 +3113,6 @@ _FUNCTION_INFO = {
       'int32_t row_length',
       'int32_t num_rows',
     ],
-    'defer_reads': True,
     'trace_level': 1,
   },
   'ReleaseShaderCompiler': {
@@ -3605,7 +3589,6 @@ _FUNCTION_INFO = {
                 'GLsizei primcount',
     'extension': 'ANGLE_instanced_arrays',
     'pepper_interface': 'InstancedArrays',
-    'defer_draws': True,
     'trace_level': 2,
   },
   'DrawArraysInstancedBaseInstanceANGLE': {
@@ -3614,7 +3597,6 @@ _FUNCTION_INFO = {
     'cmd_args': 'GLenumDrawMode mode, GLint first, GLsizei count, '
                 'GLsizei primcount, GLuint baseinstance',
     'extension': 'ANGLE_base_vertex_base_instance',
-    'defer_draws': True,
     'trace_level': 2,
   },
   'DrawBuffersEXT': {
@@ -3636,7 +3618,6 @@ _FUNCTION_INFO = {
     'extension': 'ANGLE_instanced_arrays',
     'client_test': False,
     'pepper_interface': 'InstancedArrays',
-    'defer_draws': True,
     'trace_level': 2,
   },
   'DrawElementsInstancedBaseVertexBaseInstanceANGLE': {
@@ -3647,7 +3628,6 @@ _FUNCTION_INFO = {
                 'GLint basevertex, GLuint baseinstance',
     'extension': 'ANGLE_base_vertex_base_instance',
     'client_test': False,
-    'defer_draws': True,
     'trace_level': 2,
   },
   'VertexAttribDivisorANGLE': {
@@ -3882,11 +3862,6 @@ _FUNCTION_INFO = {
     'unit_test': False,
     'extension': 'CHROMIUM_lose_context',
     'trace_level': 1,
-  },
-  'DiscardBackbufferCHROMIUM': {
-    'type': 'Custom',
-    'extension': True,
-    'trace_level': 2,
   },
   'InitializeDiscardableTextureCHROMIUM': {
     'type': 'Custom',
