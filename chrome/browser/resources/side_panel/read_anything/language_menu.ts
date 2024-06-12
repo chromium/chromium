@@ -197,8 +197,6 @@ export class LanguageMenuElement extends LanguageMenuElementBase {
         lang;
   }
 
-  // TODO(b/40927698): Investigate removing voicePackInstallStatus as a
-  // dependency.
   private getLanguageDownloadedTitle_(
       localeToDisplayName: {[lang: string]: string}, lang: string) {
     const langDisplayName = this.getDisplayName(localeToDisplayName, lang);
@@ -207,10 +205,12 @@ export class LanguageMenuElement extends LanguageMenuElementBase {
         'readingModeVoiceDownloadedTitle', langDisplayName);
   }
 
+  // TODO(b/40927698): Investigate removing currentNotifications as a
+  // dependency.
   private computeAvailableLanguages_(
       availableVoices: SpeechSynthesisVoice[],
       localeToDisplayName: {[lang: string]: string},
-      voicePackInstallStatus: {[language: string]: VoiceClientSideStatusCode},
+      currentNotifications: {[language: string]: VoiceClientSideStatusCode},
       selectedLang: string|undefined, languageSearchValue: string|undefined,
       enabledLangs: string[]): LanguageDropdownItem[] {
     if (!availableVoices) {
@@ -267,31 +267,30 @@ export class LanguageMenuElement extends LanguageMenuElementBase {
             return true;
           }
         })
-        .map(
-            ([lang, readableLang]) => ({
-              readableLanguage: readableLang,
-              checked: enabledLangs && enabledLangs.includes(lang),
-              languageCode: lang,
-              notification: {
-                isError: this.isNotificationError(lang, voicePackInstallStatus),
-                text: this.getNotificationText(lang, voicePackInstallStatus),
-              },
-              disabled: enabledLangs && enabledLangs.includes(lang) &&
-                  (lang.toLowerCase() === selectedLangLowerCase),
-              callback: () =>
-                  this.dispatchEvent(new CustomEvent(LANGUAGE_TOGGLE_EVENT, {
-                    bubbles: true,
-                    composed: true,
-                    detail: {
-                      language: lang,
-                    },
-                  })),
-            }));
+        .map(([lang, readableLang]) => ({
+               readableLanguage: readableLang,
+               checked: enabledLangs && enabledLangs.includes(lang),
+               languageCode: lang,
+               notification: {
+                 isError: this.isNotificationError(lang, currentNotifications),
+                 text: this.getNotificationText(lang, currentNotifications),
+               },
+               disabled: enabledLangs && enabledLangs.includes(lang) &&
+                   (lang.toLowerCase() === selectedLangLowerCase),
+               callback: () =>
+                   this.dispatchEvent(new CustomEvent(LANGUAGE_TOGGLE_EVENT, {
+                     bubbles: true,
+                     composed: true,
+                     detail: {
+                       language: lang,
+                     },
+                   })),
+             }));
   }
 
   private isNotificationError(
       lang: string,
-      voicePackInstallStatus: {[language: string]: VoiceClientSideStatusCode},
+      currentNotifications: {[language: string]: VoiceClientSideStatusCode},
       ): boolean {
     // Don't show notification text for a non-Google TTS language, as we're
     // not attempting a download.
@@ -308,7 +307,7 @@ export class LanguageMenuElement extends LanguageMenuElementBase {
     }
 
     const notification: VoiceClientSideStatusCode|undefined =
-        voicePackInstallStatus[voicePackLanguage];
+        currentNotifications[voicePackLanguage];
 
     if (notification === undefined) {
       return false;
@@ -323,7 +322,7 @@ export class LanguageMenuElement extends LanguageMenuElementBase {
 
   private getNotificationText(
       lang: string,
-      voicePackInstallStatus: {[language: string]: VoiceClientSideStatusCode}):
+      currentNotifications: {[language: string]: VoiceClientSideStatusCode}):
       string {
     // Don't show notification text for a non-Google TTS language, as we're
     // not attempting a download.
@@ -341,7 +340,7 @@ export class LanguageMenuElement extends LanguageMenuElementBase {
       return '';
     }
     const notification: VoiceClientSideStatusCode|undefined =
-        voicePackInstallStatus[voicePackLanguage];
+        currentNotifications[voicePackLanguage];
 
     if (notification === undefined) {
       return '';
