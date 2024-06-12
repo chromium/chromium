@@ -164,7 +164,6 @@ void AddMaterialChromeColorMixer(ui::ColorProvider* provider,
   mixer[kColorComposeDialogResultForegroundWhileLoading] = {
       ui::kColorSysPrimary};
   mixer[kColorComposeDialogResultIcon] = {ui::kColorSysOnSurfaceSubtle};
-  mixer[kColorComposeDialogResultButtonsDivider] = {ui::kColorSysTonalOutline};
   mixer[kColorComposeDialogResultContainerScrollbarThumb] = {
       ui::kColorSysTonalOutline};
   mixer[kColorComposeDialogTitle] = {ui::kColorSysOnSurface};

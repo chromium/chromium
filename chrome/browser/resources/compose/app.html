@@ -174,11 +174,6 @@
     border-top-color: var(--scrollable-border-color);
   }
 
-  :host([enable-ui-refinements])
-       #resultTextContainer.can-scroll:not(.scrolled-to-bottom) {
-    border-bottom-color: var(--scrollable-border-color);
-  }
-
   /* Different elements are made scrollable depending on whether UI refinements
    * are enabled */
   #body::-webkit-scrollbar, #resultTextContainer::-webkit-scrollbar {
@@ -191,6 +186,7 @@
   }
 
   #resultTextContainer::-webkit-scrollbar-thumb {
+    border-radius: 10px;
     background: var(--color-compose-dialog-result-container-scrollbar-thumb);
   }
 
@@ -261,6 +257,7 @@
     scrollbar-gutter: stable;
   }
 
+  /* Border separating result container text and actions bar */
   :host([enable-ui-refinements]) #resultOptionsContainer {
     border-top: 1px solid var(--color-compose-dialog-divider);
   }
@@ -301,7 +298,6 @@
   }
 
   :host([enable-ui-refinements]) #resultOptions .md-select {
-    --md-select-side-padding: 8px;
     min-height: 24px;
     min-width: 60px;
     line-height: 16px;
@@ -310,6 +306,25 @@
     font-family: Roboto, "Noto Sans", Arial, sans-serif;
     font-weight: 500;
     color: var(--cr-secondary-text-color);
+
+    /* Custom drop-down arrow */
+    background: url(//resources/images/chevron_down.svg)
+      calc(100% - var(--md-select-side-padding) + var(--md-arrow-width))
+      center no-repeat;
+  }
+
+  @media (prefers-color-scheme: dark) {
+    :host([enable-ui-refinements]) #resultOptions .md-select {
+      /* Separate svg required for dark mode as color is hard-coded into file */
+      background-image: url(//resources/images/dark/chevron_down.svg)
+    }
+  }
+
+  /* Re-define hover style for md-select, as replacing the background overwrites
+  the default style. */
+  :host([enable-ui-refinements]) #resultOptions .md-select:hover {
+    background-color: var(--color-comboxbox-ink-drop-hovered,
+      var(--cr-hover-on-subtle-background-color));
   }
 
   .icon-buttons-row {
@@ -325,6 +340,7 @@
 
   :host([enable-ui-refinements]) .icon-buttons-row {
     grid-auto-columns: auto;
+    grid-auto-rows: auto;
     gap: 10px;
   }
 
@@ -337,19 +353,44 @@
   /* cr-button is only used when UI refinements is enabled */
   .icon-buttons-row cr-button {
     --cr-button-text-color: var(--color-compose-dialog-result-icon);
+    --cr-icon-size: 16px;
     margin: 0;
-    padding: 0;
+    padding-inline-start: 8px;
+    padding-inline-end: 4px;
+    padding-top: 4px;
+    padding-bottom: 4px;
     min-height: 24px;
     height: auto;
     border: 0;
     gap: 4px;
   }
 
-  /* Vertical divider between buttons */
+  .icon-buttons-row cr-button div {
+    margin-top: 2px;
+    line-height: 14px;
+    font-size: 11px;
+  }
+
+  .icon-buttons-row cr-button iron-icon {
+    width: var(--cr-icon-size);
+    height: var(--cr-icon-size);
+  }
+
   :host([enable-ui-refinements]) .icon-buttons-row
       .button-container:last-child {
     padding-left: 10px;
-    border-left: 1px solid var(--color-compose-dialog-result-buttons-divider);
+    position: relative
+  }
+
+  /* Vertical divider between undo and redo buttons */
+  :host([enable-ui-refinements]) .icon-buttons-row > div:last-child:before {
+    content: "";
+    background: var(--color-compose-dialog-divider);
+    position: absolute;
+    top: 25%;
+    left: 0px;
+    height: 50%;
+    width: 1px;
   }
 
   .footer {
@@ -602,7 +643,7 @@
                 </template>
               </select>
               <div class="icon-buttons-row">
-                <cr-icon-button id="undoButton" iron-icon="compose:mvpUndo"
+                <cr-icon-button id="undoButton" iron-icon="compose:undo"
                   title="$i18n{undo}" disabled="[[!undoEnabled_]]"
                   on-click="onUndoClick_" hidden="[[enableUiRefinements]]">
                 </cr-icon-button>
