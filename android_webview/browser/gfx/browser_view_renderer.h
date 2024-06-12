@@ -227,8 +227,7 @@ class BrowserViewRenderer : public content::SynchronousCompositorClient,
   // view renderer's state.
   std::string ToString() const;
 
-  // Must be called on the Browser IO thread.
-  void InitBrowserIOThreadId();
+  void SetBrowserIOThreadId(base::PlatformThreadId thread_id);
 
   const raw_ptr<BrowserViewRendererClient> client_;
   const scoped_refptr<base::SingleThreadTaskRunner> ui_task_runner_;

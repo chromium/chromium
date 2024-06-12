@@ -20,6 +20,7 @@
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/stringprintf.h"
 #include "base/supports_user_data.h"
+#include "base/task/bind_post_task.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/trace_event/traced_value.h"
 #include "cc/base/math_util.h"
@@ -123,9 +124,14 @@ BrowserViewRenderer::BrowserViewRenderer(
   root_frame_sink_proxy_ = std::make_unique<RootFrameSinkProxy>(
       ui_task_runner_, this, begin_frame_source_.get());
   UpdateBeginFrameSource();
+
+  base::OnceCallback<base::PlatformThreadId()> compute_current_thread_id =
+      base::BindOnce([]() { return base::PlatformThread::CurrentId(); });
   io_task_runner->PostTask(
-      FROM_HERE, base::BindOnce(&BrowserViewRenderer::InitBrowserIOThreadId,
-                                weak_ptr_factory_.GetWeakPtr()));
+      FROM_HERE, std::move(compute_current_thread_id)
+                     .Then(base::BindPostTaskToCurrentDefault(base::BindOnce(
+                         &BrowserViewRenderer::SetBrowserIOThreadId,
+                         weak_ptr_factory_.GetWeakPtr()))));
 }
 
 BrowserViewRenderer::~BrowserViewRenderer() {
@@ -995,8 +1001,9 @@ std::string BrowserViewRenderer::ToString() const {
   return str;
 }
 
-void BrowserViewRenderer::InitBrowserIOThreadId() {
-  browser_io_thread_id_ = base::PlatformThread::CurrentId();
+void BrowserViewRenderer::SetBrowserIOThreadId(
+    base::PlatformThreadId thread_id) {
+  browser_io_thread_id_ = thread_id;
 }
 
 }  // namespace android_webview
