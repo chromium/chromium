@@ -29,16 +29,16 @@ JNI_BOUNDARY_EXPORT jint Java_J_N_MYplquli(
     jclass jcaller,
     jobject caller,
     jobject b);
-JNI_BOUNDARY_EXPORT jobjectArray Java_J_N_M3RUFTzC(
+JNI_BOUNDARY_EXPORT jobject Java_J_N_M3RUFTzC(
     JNIEnv* env,
     jclass jcaller,
-    jintArray a,
-    jobjectArray b);
-JNI_BOUNDARY_EXPORT jintArray Java_J_N_MV9JEAYF(
+    jobject a,
+    jobject b);
+JNI_BOUNDARY_EXPORT jobject Java_J_N_MV9JEAYF(
     JNIEnv* env,
     jclass jcaller,
-    jintArray a,
-    jobjectArray b);
+    jobject a,
+    jobject b);
 JNI_BOUNDARY_EXPORT void Java_J_N_M3noEmrf_1ForTesting(
     JNIEnv* env,
     jclass jcaller);
@@ -49,10 +49,10 @@ JNI_BOUNDARY_EXPORT void Java_J_N_M0ykt7m_1_1ForTesting(
     JNIEnv* env,
     jclass jcaller);
 JNI_BOUNDARY_EXPORT void Java_J_N_MKWEYRlq(JNIEnv* env, jclass jcaller);
-JNI_BOUNDARY_EXPORT jobjectArray Java_J_N_MalqUoB_1(
+JNI_BOUNDARY_EXPORT jobject Java_J_N_MalqUoB_1(
     JNIEnv* env,
     jclass jcaller,
-    jobjectArray arg);
+    jobject arg);
 JNI_BOUNDARY_EXPORT void Java_J_N_M0E4cldm(
     JNIEnv* env,
     jclass jcaller,

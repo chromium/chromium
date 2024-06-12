@@ -20,107 +20,79 @@ JNI_BOUNDARY_EXPORT jobject Java_J_N_M_00024zHpGqF(
     jobject sample);
 JNI_BOUNDARY_EXPORT void Java_J_N_MFxD5gzE(JNIEnv* env, jclass jcaller);
 JNI_BOUNDARY_EXPORT jboolean Java_J_N_Mts1shVs(JNIEnv* env, jclass jcaller);
-JNI_BOUNDARY_EXPORT jclass Java_J_N_MHC2XaYW(JNIEnv* env, jclass jcaller);
-JNI_BOUNDARY_EXPORT jobjectArray Java_J_N_MPl4TY3m(
-    JNIEnv* env,
-    jclass jcaller);
-JNI_BOUNDARY_EXPORT jobjectArray Java_J_N_MbcaLfAT(
+JNI_BOUNDARY_EXPORT jobject Java_J_N_MHC2XaYW(JNIEnv* env, jclass jcaller);
+JNI_BOUNDARY_EXPORT jobject Java_J_N_MPl4TY3m(JNIEnv* env, jclass jcaller);
+JNI_BOUNDARY_EXPORT jobject Java_J_N_MbcaLfAT(
     JNIEnv* env,
     jclass jcaller,
     jclass __arrayClazz);
-JNI_BOUNDARY_EXPORT jintArray Java_J_N_MrxydxEH(JNIEnv* env, jclass jcaller);
-JNI_BOUNDARY_EXPORT jstring Java_J_N_MaQxW6t6(JNIEnv* env, jclass jcaller);
-JNI_BOUNDARY_EXPORT jobjectArray Java_J_N_M8wEusw1(
-    JNIEnv* env,
-    jclass jcaller);
+JNI_BOUNDARY_EXPORT jobject Java_J_N_MrxydxEH(JNIEnv* env, jclass jcaller);
+JNI_BOUNDARY_EXPORT jobject Java_J_N_MaQxW6t6(JNIEnv* env, jclass jcaller);
+JNI_BOUNDARY_EXPORT jobject Java_J_N_M8wEusw1(JNIEnv* env, jclass jcaller);
 JNI_BOUNDARY_EXPORT jobject Java_J_N_MpVxNDSC(JNIEnv* env, jclass jcaller);
-JNI_BOUNDARY_EXPORT jobjectArray Java_J_N_M7jE3q3_00024(
+JNI_BOUNDARY_EXPORT jobject Java_J_N_M7jE3q3_00024(
     JNIEnv* env,
     jclass jcaller);
-JNI_BOUNDARY_EXPORT jstring Java_J_N_MHY_1jLL4(JNIEnv* env, jclass jcaller);
-JNI_BOUNDARY_EXPORT jobjectArray Java_J_N_MF8oFFVb(
-    JNIEnv* env,
-    jclass jcaller);
+JNI_BOUNDARY_EXPORT jobject Java_J_N_MHY_1jLL4(JNIEnv* env, jclass jcaller);
+JNI_BOUNDARY_EXPORT jobject Java_J_N_MF8oFFVb(JNIEnv* env, jclass jcaller);
 JNI_BOUNDARY_EXPORT jobject Java_J_N_Mq7V3oMs(JNIEnv* env, jclass jcaller);
-JNI_BOUNDARY_EXPORT jobjectArray Java_J_N_MRdQpdMz(
-    JNIEnv* env,
-    jclass jcaller);
-JNI_BOUNDARY_EXPORT jthrowable Java_J_N_M6SdcGCv(JNIEnv* env, jclass jcaller);
-JNI_BOUNDARY_EXPORT jobjectArray Java_J_N_Mnt3ot24(
-    JNIEnv* env,
-    jclass jcaller);
-JNI_BOUNDARY_EXPORT jstring Java_J_N_Mepwik1_1(
+JNI_BOUNDARY_EXPORT jobject Java_J_N_MRdQpdMz(JNIEnv* env, jclass jcaller);
+JNI_BOUNDARY_EXPORT jobject Java_J_N_M6SdcGCv(JNIEnv* env, jclass jcaller);
+JNI_BOUNDARY_EXPORT jobject Java_J_N_Mnt3ot24(JNIEnv* env, jclass jcaller);
+JNI_BOUNDARY_EXPORT jobject Java_J_N_Mepwik1_1(
     JNIEnv* env,
     jclass jcaller,
-    jstring stringToReverse);
-JNI_BOUNDARY_EXPORT jobjectArray Java_J_N_M5Naw4MO(
+    jobject stringToReverse);
+JNI_BOUNDARY_EXPORT jobject Java_J_N_M5Naw4MO(
     JNIEnv* env,
     jclass jcaller,
-    jobjectArray strs);
-JNI_BOUNDARY_EXPORT jobjectArray Java_J_N_M3btId9A(
+    jobject strs);
+JNI_BOUNDARY_EXPORT jobject Java_J_N_M3btId9A(
     JNIEnv* env,
     jclass jcaller,
-    jobjectArray strs);
-JNI_BOUNDARY_EXPORT jintArray Java_J_N_M3dkhKZM(
+    jobject strs);
+JNI_BOUNDARY_EXPORT jobject Java_J_N_M3dkhKZM(
     JNIEnv* env,
     jclass jcaller,
     jint zint,
-    jintArray ints,
+    jobject ints,
     jlong zlong,
-    jlongArray longs,
+    jobject longs,
     jshort zshort,
-    jshortArray shorts,
+    jobject shorts,
     jchar zchar,
-    jcharArray chars,
+    jobject chars,
     jbyte zbyte,
-    jbyteArray bytes,
+    jobject bytes,
     jdouble zdouble,
-    jdoubleArray doubles,
+    jobject doubles,
     jfloat zfloat,
-    jfloatArray floats,
+    jobject floats,
     jboolean zbool,
-    jbooleanArray bools);
+    jobject bools);
 JNI_BOUNDARY_EXPORT void Java_J_N_MomokuWo(
     JNIEnv* env,
     jclass jcaller,
-    jclass clazz,
-    jobjectArray classes,
-    jthrowable throwable,
-    jobjectArray throwables,
-    jstring string,
-    jobjectArray strings,
-    jstring convertedString,
-    jobjectArray convertedStrings,
-    jstring optionalString,
+    jobject clazz,
+    jobject classes,
+    jobject throwable,
+    jobject throwables,
+    jobject string,
+    jobject strings,
+    jobject convertedString,
+    jobject convertedStrings,
+    jobject optionalString,
     jobject tStruct,
-    jobjectArray structs,
+    jobject structs,
     jobject obj,
     jobject convertedObj,
-    jobjectArray objects,
+    jobject objects,
     jobject nestedInterface,
     jobject view,
     jobject context,
-    jobjectArray convertedObjects);
+    jobject convertedObjects);
 
 
-JNI_BOUNDARY_EXPORT void Java_J_N__1V_1LLATTARRARRAROOAOOOAOOOOA(
-    JNIEnv* env,
-    jclass jcaller,
-    jint switch_num, jclass class_param1, jobjectArray class_array_param1, jthrowable throwable_param1, jobjectArray throwable_array_param1, jstring string_param1, jobjectArray string_array_param1, jstring string_param2, jobjectArray string_array_param2, jstring string_param3, jobject object_param1, jobjectArray object_array_param1, jobject object_param2, jobject object_param3, jobjectArray object_array_param2, jobject object_param4, jobject object_param5, jobject object_param6, jobjectArray object_array_param3) {
-        return Java_J_N_MomokuWo(env, jcaller, class_param1, class_array_param1, throwable_param1, throwable_array_param1, string_param1, string_array_param1, string_param2, string_array_param2, string_param3, object_param1, object_array_param1, object_param2, object_param3, object_array_param2, object_param4, object_param5, object_param6, object_array_param3);
-}
-JNI_BOUNDARY_EXPORT jintArray Java_J_N__1IA_1IIAJJASSACCABBADDAFFAZZA(
-    JNIEnv* env,
-    jclass jcaller,
-    jint switch_num, jint int_param1, jintArray int_array_param1, jlong long_param1, jlongArray long_array_param1, jshort short_param1, jshortArray short_array_param1, jchar char_param1, jcharArray char_array_param1, jbyte byte_param1, jbyteArray byte_array_param1, jdouble double_param1, jdoubleArray double_array_param1, jfloat float_param1, jfloatArray float_array_param1, jboolean boolean_param1, jbooleanArray boolean_array_param1) {
-        return Java_J_N_M3dkhKZM(env, jcaller, int_param1, int_array_param1, long_param1, long_array_param1, short_param1, short_array_param1, char_param1, char_array_param1, byte_param1, byte_array_param1, double_param1, double_array_param1, float_param1, float_array_param1, boolean_param1, boolean_array_param1);
-}
-JNI_BOUNDARY_EXPORT jclass Java_J_N__1L(
-    JNIEnv* env,
-    jclass jcaller,
-    jint switch_num) {
-        return Java_J_N_MHC2XaYW(env, jcaller);
-}
 JNI_BOUNDARY_EXPORT jobject Java_J_N__1O(
     JNIEnv* env,
     jclass jcaller,
@@ -129,111 +101,60 @@ JNI_BOUNDARY_EXPORT jobject Java_J_N__1O(
         switch (switch_num) {
           
           case 0:
-             return Java_J_N_MpVxNDSC(env, jcaller);
+             return Java_J_N_MHC2XaYW(env, jcaller);
 
           case 1:
+             return Java_J_N_MPl4TY3m(env, jcaller);
+
+          case 2:
+             return Java_J_N_MrxydxEH(env, jcaller);
+
+          case 3:
+             return Java_J_N_MaQxW6t6(env, jcaller);
+
+          case 4:
+             return Java_J_N_M8wEusw1(env, jcaller);
+
+          case 5:
+             return Java_J_N_MpVxNDSC(env, jcaller);
+
+          case 6:
+             return Java_J_N_M7jE3q3_00024(env, jcaller);
+
+          case 7:
+             return Java_J_N_MHY_1jLL4(env, jcaller);
+
+          case 8:
+             return Java_J_N_MF8oFFVb(env, jcaller);
+
+          case 9:
              return Java_J_N_Mq7V3oMs(env, jcaller);
+
+          case 10:
+             return Java_J_N_MRdQpdMz(env, jcaller);
+
+          case 11:
+             return Java_J_N_M6SdcGCv(env, jcaller);
+
+          case 12:
+             return Java_J_N_Mnt3ot24(env, jcaller);
           default:
             JNI_ZERO_ILOG("J_N__1O was called with an invalid switch number: %d", switch_num);
             JNI_ZERO_DCHECK(false);
             return {};
         }
 }
-JNI_BOUNDARY_EXPORT jstring Java_J_N__1R(
+JNI_BOUNDARY_EXPORT jobject Java_J_N__1O_1IOJOSOCOBODOFOZO(
     JNIEnv* env,
     jclass jcaller,
-    jint switch_num) {
-
-        switch (switch_num) {
-          
-          case 0:
-             return Java_J_N_MaQxW6t6(env, jcaller);
-
-          case 1:
-             return Java_J_N_MHY_1jLL4(env, jcaller);
-          default:
-            JNI_ZERO_ILOG("J_N__1R was called with an invalid switch number: %d", switch_num);
-            JNI_ZERO_DCHECK(false);
-            return {};
-        }
+    jint switch_num, jint int_param1, jobject object_param1, jlong long_param1, jobject object_param2, jshort short_param1, jobject object_param3, jchar char_param1, jobject object_param4, jbyte byte_param1, jobject object_param5, jdouble double_param1, jobject object_param6, jfloat float_param1, jobject object_param7, jboolean boolean_param1, jobject object_param8) {
+        return Java_J_N_M3dkhKZM(env, jcaller, int_param1, object_param1, long_param1, object_param2, short_param1, object_param3, char_param1, object_param4, byte_param1, object_param5, double_param1, object_param6, float_param1, object_param7, boolean_param1, object_param8);
 }
-JNI_BOUNDARY_EXPORT jstring Java_J_N__1R_1R(
-    JNIEnv* env,
-    jclass jcaller,
-    jint switch_num, jstring string_param1) {
-        return Java_J_N_Mepwik1_1(env, jcaller, string_param1);
-}
-JNI_BOUNDARY_EXPORT jthrowable Java_J_N__1T(
-    JNIEnv* env,
-    jclass jcaller,
-    jint switch_num) {
-        return Java_J_N_M6SdcGCv(env, jcaller);
-}
-JNI_BOUNDARY_EXPORT jobjectArray Java_J_N__1LA(
-    JNIEnv* env,
-    jclass jcaller,
-    jint switch_num) {
-        return Java_J_N_MPl4TY3m(env, jcaller);
-}
-JNI_BOUNDARY_EXPORT jobjectArray Java_J_N__1OA(
-    JNIEnv* env,
-    jclass jcaller,
-    jint switch_num) {
-
-        switch (switch_num) {
-          
-          case 0:
-             return Java_J_N_M7jE3q3_00024(env, jcaller);
-
-          case 1:
-             return Java_J_N_MRdQpdMz(env, jcaller);
-          default:
-            JNI_ZERO_ILOG("J_N__1OA was called with an invalid switch number: %d", switch_num);
-            JNI_ZERO_DCHECK(false);
-            return {};
-        }
-}
-JNI_BOUNDARY_EXPORT jobjectArray Java_J_N__1OA_1L(
+JNI_BOUNDARY_EXPORT jobject Java_J_N__1O_1L(
     JNIEnv* env,
     jclass jcaller,
     jint switch_num, jclass class_param1) {
         return Java_J_N_MbcaLfAT(env, jcaller, class_param1);
-}
-JNI_BOUNDARY_EXPORT jobjectArray Java_J_N__1OA_1OA(
-    JNIEnv* env,
-    jclass jcaller,
-    jint switch_num, jobjectArray object_array_param1) {
-        return Java_J_N_M5Naw4MO(env, jcaller, object_array_param1);
-}
-JNI_BOUNDARY_EXPORT jobjectArray Java_J_N__1RA(
-    JNIEnv* env,
-    jclass jcaller,
-    jint switch_num) {
-
-        switch (switch_num) {
-          
-          case 0:
-             return Java_J_N_M8wEusw1(env, jcaller);
-
-          case 1:
-             return Java_J_N_MF8oFFVb(env, jcaller);
-          default:
-            JNI_ZERO_ILOG("J_N__1RA was called with an invalid switch number: %d", switch_num);
-            JNI_ZERO_DCHECK(false);
-            return {};
-        }
-}
-JNI_BOUNDARY_EXPORT jobjectArray Java_J_N__1RA_1RA(
-    JNIEnv* env,
-    jclass jcaller,
-    jint switch_num, jobjectArray string_array_param1) {
-        return Java_J_N_M3btId9A(env, jcaller, string_array_param1);
-}
-JNI_BOUNDARY_EXPORT jobjectArray Java_J_N__1TA(
-    JNIEnv* env,
-    jclass jcaller,
-    jint switch_num) {
-        return Java_J_N_Mnt3ot24(env, jcaller);
 }
 JNI_BOUNDARY_EXPORT jboolean Java_J_N__1Z(
     JNIEnv* env,
@@ -247,45 +168,50 @@ JNI_BOUNDARY_EXPORT void Java_J_N__1V(
     jint switch_num) {
         return Java_J_N_MFxD5gzE(env, jcaller);
 }
-JNI_BOUNDARY_EXPORT jintArray Java_J_N__1IA(
+JNI_BOUNDARY_EXPORT void Java_J_N__1V_1OOOOOOOOOOOOOOOOOO(
     JNIEnv* env,
     jclass jcaller,
-    jint switch_num) {
-        return Java_J_N_MrxydxEH(env, jcaller);
+    jint switch_num, jobject object_param1, jobject object_param2, jobject object_param3, jobject object_param4, jobject object_param5, jobject object_param6, jobject object_param7, jobject object_param8, jobject object_param9, jobject object_param10, jobject object_param11, jobject object_param12, jobject object_param13, jobject object_param14, jobject object_param15, jobject object_param16, jobject object_param17, jobject object_param18) {
+        return Java_J_N_MomokuWo(env, jcaller, object_param1, object_param2, object_param3, object_param4, object_param5, object_param6, object_param7, object_param8, object_param9, object_param10, object_param11, object_param12, object_param13, object_param14, object_param15, object_param16, object_param17, object_param18);
 }
 JNI_BOUNDARY_EXPORT jobject Java_J_N__1O_1O(
     JNIEnv* env,
     jclass jcaller,
     jint switch_num, jobject object_param1) {
-        return Java_J_N_M_00024zHpGqF(env, jcaller, object_param1);
+
+        switch (switch_num) {
+          
+          case 0:
+             return Java_J_N_M_00024zHpGqF(env, jcaller, object_param1);
+
+          case 1:
+             return Java_J_N_Mepwik1_1(env, jcaller, object_param1);
+
+          case 2:
+             return Java_J_N_M5Naw4MO(env, jcaller, object_param1);
+
+          case 3:
+             return Java_J_N_M3btId9A(env, jcaller, object_param1);
+          default:
+            JNI_ZERO_ILOG("J_N__1O_1O was called with an invalid switch number: %d", switch_num);
+            JNI_ZERO_DCHECK(false);
+            return {};
+        }
 }
 // Method declarations.
 
 
 static const JNINativeMethod kMethods_J_N[] = {
-    { "_IA", "(I)[I", reinterpret_cast<void*>(Java_J_N__1IA) },
-    { "_IA_IIAJJASSACCABBADDAFFAZZA", "(II[IJ[JS[SC[CB[BD[DF[FZ[Z)[I",
-        reinterpret_cast<void*>(Java_J_N__1IA_1IIAJJASSACCABBADDAFFAZZA) },
-    { "_L", "(I)Ljava/lang/Class;", reinterpret_cast<void*>(Java_J_N__1L) },
-    { "_LA", "(I)[Ljava/lang/Class;", reinterpret_cast<void*>(Java_J_N__1LA) },
     { "_O", "(I)Ljava/lang/Object;", reinterpret_cast<void*>(Java_J_N__1O) },
-    { "_OA", "(I)[Ljava/lang/Object;", reinterpret_cast<void*>(Java_J_N__1OA) },
-    { "_OA_L", "(ILjava/lang/Class;)[Ljava/lang/Object;", reinterpret_cast<void*>(Java_J_N__1OA_1L)
-        },
-    { "_OA_OA", "(I[Ljava/lang/Object;)[Ljava/lang/Object;",
-        reinterpret_cast<void*>(Java_J_N__1OA_1OA) },
+    { "_O_IOJOSOCOBODOFOZO",
+        "(IILjava/lang/Object;JLjava/lang/Object;SLjava/lang/Object;CLjava/lang/Object;BLjava/lang/Object;DLjava/lang/Object;FLjava/lang/Object;ZLjava/lang/Object;)Ljava/lang/Object;",
+        reinterpret_cast<void*>(Java_J_N__1O_1IOJOSOCOBODOFOZO) },
+    { "_O_L", "(ILjava/lang/Class;)Ljava/lang/Object;", reinterpret_cast<void*>(Java_J_N__1O_1L) },
     { "_O_O", "(ILjava/lang/Object;)Ljava/lang/Object;", reinterpret_cast<void*>(Java_J_N__1O_1O) },
-    { "_R", "(I)Ljava/lang/String;", reinterpret_cast<void*>(Java_J_N__1R) },
-    { "_RA", "(I)[Ljava/lang/String;", reinterpret_cast<void*>(Java_J_N__1RA) },
-    { "_RA_RA", "(I[Ljava/lang/String;)[Ljava/lang/String;",
-        reinterpret_cast<void*>(Java_J_N__1RA_1RA) },
-    { "_R_R", "(ILjava/lang/String;)Ljava/lang/String;", reinterpret_cast<void*>(Java_J_N__1R_1R) },
-    { "_T", "(I)Ljava/lang/Throwable;", reinterpret_cast<void*>(Java_J_N__1T) },
-    { "_TA", "(I)[Ljava/lang/Throwable;", reinterpret_cast<void*>(Java_J_N__1TA) },
     { "_V", "(I)V", reinterpret_cast<void*>(Java_J_N__1V) },
-    { "_V_LLATTARRARRAROOAOOOAOOOOA",
-        "(ILjava/lang/Class;[Ljava/lang/Class;Ljava/lang/Throwable;[Ljava/lang/Throwable;Ljava/lang/String;[Ljava/lang/String;Ljava/lang/String;[Ljava/lang/String;Ljava/lang/String;Ljava/lang/Object;[Ljava/lang/Object;Ljava/lang/Object;Ljava/lang/Object;[Ljava/lang/Object;Ljava/lang/Object;Ljava/lang/Object;Ljava/lang/Object;[Ljava/lang/Object;)V",
-        reinterpret_cast<void*>(Java_J_N__1V_1LLATTARRARRAROOAOOOAOOOOA) },
+    { "_V_OOOOOOOOOOOOOOOOOO",
+        "(ILjava/lang/Object;Ljava/lang/Object;Ljava/lang/Object;Ljava/lang/Object;Ljava/lang/Object;Ljava/lang/Object;Ljava/lang/Object;Ljava/lang/Object;Ljava/lang/Object;Ljava/lang/Object;Ljava/lang/Object;Ljava/lang/Object;Ljava/lang/Object;Ljava/lang/Object;Ljava/lang/Object;Ljava/lang/Object;Ljava/lang/Object;Ljava/lang/Object;)V",
+        reinterpret_cast<void*>(Java_J_N__1V_1OOOOOOOOOOOOOOOOOO) },
     { "_Z", "(I)Z", reinterpret_cast<void*>(Java_J_N__1Z) }
 };
 

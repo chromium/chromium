@@ -11,13 +11,12 @@ package J;
 public class N {
 
 
-    public static native Object[] _OA_OA(int switch_num, Object[] object_array_param1);
-    public static native String[][] _RAA_IAOAA(int switch_num, int[] int_array_param1, Object[][] object_array_array_param1);
+    public static native Object _O_O(int switch_num, Object object_param1);
+    public static native Object _O_OO(int switch_num, Object object_param1, Object object_param2);
     public static native boolean _Z_I(int switch_num, int int_param1);
     public static native boolean _Z_O(int switch_num, Object object_param1);
     public static native int _I_I(int switch_num, int int_param1);
     public static native int _I_OO(int switch_num, Object object_param1, Object object_param2);
-    public static native int[] _IA_IATAA(int switch_num, int[] int_array_param1, Throwable[][] throwable_array_array_param1);
     public static native void _V(int switch_num);
     public static native void _V_OO(int switch_num, Object object_param1, Object object_param2);
 }

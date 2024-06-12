@@ -35,15 +35,15 @@ static jni_zero::ScopedJavaLocalRef<jobjectArray> JNI_SampleProxyEdgeCases_Array
     const jni_zero::JavaParamRef<jintArray>& a,
     const jni_zero::JavaParamRef<jobjectArray>& b);
 
-JNI_BOUNDARY_EXPORT jobjectArray Java_org_jni_1zero_GEN_1JNI_org_1jni_11zero_1SampleProxyEdgeCases_1arrayTypes1(
+JNI_BOUNDARY_EXPORT jobject Java_org_jni_1zero_GEN_1JNI_org_1jni_11zero_1SampleProxyEdgeCases_1arrayTypes1(
     JNIEnv* env,
     jclass jcaller,
-    jintArray a,
-    jobjectArray b) {
+    jobject a,
+    jobject b) {
   auto _ret = JNI_SampleProxyEdgeCases_ArrayTypes1(
       env,
-      jni_zero::JavaParamRef<jintArray>(env, a),
-      jni_zero::JavaParamRef<jobjectArray>(env, b));
+      jni_zero::JavaParamRef<jintArray>(env, static_cast<jintArray>(a)),
+      jni_zero::JavaParamRef<jobjectArray>(env, static_cast<jobjectArray>(b)));
   return _ret.Release();
 }
 
@@ -53,15 +53,15 @@ static jni_zero::ScopedJavaLocalRef<jintArray> JNI_SampleProxyEdgeCases_ArrayTyp
     const jni_zero::JavaParamRef<jintArray>& a,
     const jni_zero::JavaParamRef<jobjectArray>& b);
 
-JNI_BOUNDARY_EXPORT jintArray Java_org_jni_1zero_GEN_1JNI_org_1jni_11zero_1SampleProxyEdgeCases_1arrayTypes2(
+JNI_BOUNDARY_EXPORT jobject Java_org_jni_1zero_GEN_1JNI_org_1jni_11zero_1SampleProxyEdgeCases_1arrayTypes2(
     JNIEnv* env,
     jclass jcaller,
-    jintArray a,
-    jobjectArray b) {
+    jobject a,
+    jobject b) {
   auto _ret = JNI_SampleProxyEdgeCases_ArrayTypes2(
       env,
-      jni_zero::JavaParamRef<jintArray>(env, a),
-      jni_zero::JavaParamRef<jobjectArray>(env, b));
+      jni_zero::JavaParamRef<jintArray>(env, static_cast<jintArray>(a)),
+      jni_zero::JavaParamRef<jobjectArray>(env, static_cast<jobjectArray>(b)));
   return _ret.Release();
 }
 
@@ -106,13 +106,13 @@ static jni_zero::ScopedJavaLocalRef<jobjectArray> JNI_SampleProxyEdgeCases_Gener
     JNIEnv* env,
     const jni_zero::JavaParamRef<jobjectArray>& arg);
 
-JNI_BOUNDARY_EXPORT jobjectArray Java_org_jni_1zero_GEN_1JNI_org_1jni_11zero_1SampleProxyEdgeCases_1genericsWithNestedClassArray(
+JNI_BOUNDARY_EXPORT jobject Java_org_jni_1zero_GEN_1JNI_org_1jni_11zero_1SampleProxyEdgeCases_1genericsWithNestedClassArray(
     JNIEnv* env,
     jclass jcaller,
-    jobjectArray arg) {
+    jobject arg) {
   auto _ret = JNI_SampleProxyEdgeCases_GenericsWithNestedClassArray(
       env,
-      jni_zero::JavaParamRef<jobjectArray>(env, arg));
+      jni_zero::JavaParamRef<jobjectArray>(env, static_cast<jobjectArray>(arg)));
   return _ret.Release();
 }
 

@@ -30,21 +30,21 @@ JNI_BOUNDARY_EXPORT jint Java_J_N_MYplquli(
     jclass jcaller,
     jobject caller,
     jobject b);
-JNI_BOUNDARY_EXPORT jobjectArray Java_J_N_M3RUFTzC(
+JNI_BOUNDARY_EXPORT jobject Java_J_N_M3RUFTzC(
     JNIEnv* env,
     jclass jcaller,
-    jintArray a,
-    jobjectArray b);
-JNI_BOUNDARY_EXPORT jintArray Java_J_N_MV9JEAYF(
+    jobject a,
+    jobject b);
+JNI_BOUNDARY_EXPORT jobject Java_J_N_MV9JEAYF(
     JNIEnv* env,
     jclass jcaller,
-    jintArray a,
-    jobjectArray b);
+    jobject a,
+    jobject b);
 JNI_BOUNDARY_EXPORT void Java_J_N_MKWEYRlq(JNIEnv* env, jclass jcaller);
-JNI_BOUNDARY_EXPORT jobjectArray Java_J_N_MalqUoB_1(
+JNI_BOUNDARY_EXPORT jobject Java_J_N_MalqUoB_1(
     JNIEnv* env,
     jclass jcaller,
-    jobjectArray arg);
+    jobject arg);
 JNI_BOUNDARY_EXPORT void Java_J_N_M0E4cldm(
     JNIEnv* env,
     jclass jcaller,
@@ -96,23 +96,29 @@ JNI_BOUNDARY_EXPORT void Java_J_N__1V_1OO(
     jint switch_num, jobject object_param1, jobject object_param2) {
         return Java_J_N_M0E4cldm(env, jcaller, object_param1, object_param2);
 }
-JNI_BOUNDARY_EXPORT jobjectArray Java_J_N__1OA_1OA(
+JNI_BOUNDARY_EXPORT jobject Java_J_N__1O_1O(
     JNIEnv* env,
     jclass jcaller,
-    jint switch_num, jobjectArray object_array_param1) {
-        return Java_J_N_MalqUoB_1(env, jcaller, object_array_param1);
+    jint switch_num, jobject object_param1) {
+        return Java_J_N_MalqUoB_1(env, jcaller, object_param1);
 }
-JNI_BOUNDARY_EXPORT jintArray Java_J_N__1IA_1IATAA(
+JNI_BOUNDARY_EXPORT jobject Java_J_N__1O_1OO(
     JNIEnv* env,
     jclass jcaller,
-    jint switch_num, jintArray int_array_param1, jobjectArray throwable_array_array_param1) {
-        return Java_J_N_MV9JEAYF(env, jcaller, int_array_param1, throwable_array_array_param1);
-}
-JNI_BOUNDARY_EXPORT jobjectArray Java_J_N__1RAA_1IAOAA(
-    JNIEnv* env,
-    jclass jcaller,
-    jint switch_num, jintArray int_array_param1, jobjectArray object_array_array_param1) {
-        return Java_J_N_M3RUFTzC(env, jcaller, int_array_param1, object_array_array_param1);
+    jint switch_num, jobject object_param1, jobject object_param2) {
+
+        switch (switch_num) {
+          
+          case 0:
+             return Java_J_N_M3RUFTzC(env, jcaller, object_param1, object_param2);
+
+          case 1:
+             return Java_J_N_MV9JEAYF(env, jcaller, object_param1, object_param2);
+          default:
+            JNI_ZERO_ILOG("J_N__1O_1OO was called with an invalid switch number: %d", switch_num);
+            JNI_ZERO_DCHECK(false);
+            return {};
+        }
 }
 JNI_BOUNDARY_EXPORT jint Java_J_N__1I_1OO(
     JNIEnv* env,

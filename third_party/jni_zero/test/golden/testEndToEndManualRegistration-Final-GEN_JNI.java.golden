@@ -20,41 +20,41 @@ public class GEN_JNI {
       // Hashed name: Java_J_N_Mts1shVs
     public static native boolean org_jni_1zero_SampleForAnnotationProcessor_hasPhalange();
       // Hashed name: Java_J_N_MHC2XaYW
-    public static native Class org_jni_1zero_SampleForAnnotationProcessor_returnClass();
+    public static native Object org_jni_1zero_SampleForAnnotationProcessor_returnClass();
       // Hashed name: Java_J_N_MPl4TY3m
-    public static native Class[] org_jni_1zero_SampleForAnnotationProcessor_returnClasses();
+    public static native Object org_jni_1zero_SampleForAnnotationProcessor_returnClasses();
       // Hashed name: Java_J_N_MbcaLfAT
-    public static native Object[] org_jni_1zero_SampleForAnnotationProcessor_returnConvertedAppObjects(Class __arrayClazz);
+    public static native Object org_jni_1zero_SampleForAnnotationProcessor_returnConvertedAppObjects(Class __arrayClazz);
       // Hashed name: Java_J_N_MrxydxEH
-    public static native int[] org_jni_1zero_SampleForAnnotationProcessor_returnConvertedInts();
+    public static native Object org_jni_1zero_SampleForAnnotationProcessor_returnConvertedInts();
       // Hashed name: Java_J_N_MaQxW6t6
-    public static native String org_jni_1zero_SampleForAnnotationProcessor_returnConvertedString();
+    public static native Object org_jni_1zero_SampleForAnnotationProcessor_returnConvertedString();
       // Hashed name: Java_J_N_M8wEusw1
-    public static native String[] org_jni_1zero_SampleForAnnotationProcessor_returnConvertedStrings();
+    public static native Object org_jni_1zero_SampleForAnnotationProcessor_returnConvertedStrings();
       // Hashed name: Java_J_N_MpVxNDSC
     public static native Object org_jni_1zero_SampleForAnnotationProcessor_returnObject();
       // Hashed name: Java_J_N_M7jE3q3$
-    public static native Object[] org_jni_1zero_SampleForAnnotationProcessor_returnObjects();
+    public static native Object org_jni_1zero_SampleForAnnotationProcessor_returnObjects();
       // Hashed name: Java_J_N_MHY_jLL4
-    public static native String org_jni_1zero_SampleForAnnotationProcessor_returnString();
+    public static native Object org_jni_1zero_SampleForAnnotationProcessor_returnString();
       // Hashed name: Java_J_N_MF8oFFVb
-    public static native String[] org_jni_1zero_SampleForAnnotationProcessor_returnStrings();
+    public static native Object org_jni_1zero_SampleForAnnotationProcessor_returnStrings();
       // Hashed name: Java_J_N_Mq7V3oMs
     public static native Object org_jni_1zero_SampleForAnnotationProcessor_returnStruct();
       // Hashed name: Java_J_N_MRdQpdMz
-    public static native Object[] org_jni_1zero_SampleForAnnotationProcessor_returnStructs();
+    public static native Object org_jni_1zero_SampleForAnnotationProcessor_returnStructs();
       // Hashed name: Java_J_N_M6SdcGCv
-    public static native Throwable org_jni_1zero_SampleForAnnotationProcessor_returnThrowable();
+    public static native Object org_jni_1zero_SampleForAnnotationProcessor_returnThrowable();
       // Hashed name: Java_J_N_Mnt3ot24
-    public static native Throwable[] org_jni_1zero_SampleForAnnotationProcessor_returnThrowables();
+    public static native Object org_jni_1zero_SampleForAnnotationProcessor_returnThrowables();
       // Hashed name: Java_J_N_Mepwik1_
-    public static native String org_jni_1zero_SampleForAnnotationProcessor_revString(String stringToReverse);
+    public static native Object org_jni_1zero_SampleForAnnotationProcessor_revString(Object stringToReverse);
       // Hashed name: Java_J_N_M5Naw4MO
-    public static native Object[] org_jni_1zero_SampleForAnnotationProcessor_sendSamplesToNative(Object[] strs);
+    public static native Object org_jni_1zero_SampleForAnnotationProcessor_sendSamplesToNative(Object strs);
       // Hashed name: Java_J_N_M3btId9A
-    public static native String[] org_jni_1zero_SampleForAnnotationProcessor_sendToNative(String[] strs);
+    public static native Object org_jni_1zero_SampleForAnnotationProcessor_sendToNative(Object strs);
       // Hashed name: Java_J_N_M3dkhKZM
-    public static native int[] org_jni_1zero_SampleForAnnotationProcessor_testAllPrimitives(int zint, int[] ints, long zlong, long[] longs, short zshort, short[] shorts, char zchar, char[] chars, byte zbyte, byte[] bytes, double zdouble, double[] doubles, float zfloat, float[] floats, boolean zbool, boolean[] bools);
+    public static native Object org_jni_1zero_SampleForAnnotationProcessor_testAllPrimitives(int zint, Object ints, long zlong, Object longs, short zshort, Object shorts, char zchar, Object chars, byte zbyte, Object bytes, double zdouble, Object doubles, float zfloat, Object floats, boolean zbool, Object bools);
       // Hashed name: Java_J_N_MomokuWo
-    public static native void org_jni_1zero_SampleForAnnotationProcessor_testSpecialTypes(Class clazz, Class[] classes, Throwable throwable, Throwable[] throwables, String string, String[] strings, String convertedString, String[] convertedStrings, String optionalString, Object tStruct, Object[] structs, Object obj, Object convertedObj, Object[] objects, Object nestedInterface, Object view, Object context, Object[] convertedObjects);
+    public static native void org_jni_1zero_SampleForAnnotationProcessor_testSpecialTypes(Object clazz, Object classes, Object throwable, Object throwables, Object string, Object strings, Object convertedString, Object convertedStrings, Object optionalString, Object tStruct, Object structs, Object obj, Object convertedObj, Object objects, Object nestedInterface, Object view, Object context, Object convertedObjects);
 }

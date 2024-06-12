@@ -37,7 +37,7 @@ JNI_BOUNDARY_EXPORT void Java_org_jni_1zero_GEN_1JNI_org_1jni_11zero_1SampleUniq
     JNIEnv* env,
     jclass jcaller,
     jlong nativePtr,
-    jstring arg) {
+    jobject arg) {
   std::string arg_converted = jni_zero::FromJniType<std::string>(
       env,
       jni_zero::JavaParamRef<jobject>(env, arg));

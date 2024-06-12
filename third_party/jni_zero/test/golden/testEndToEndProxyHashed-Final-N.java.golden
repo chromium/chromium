@@ -18,41 +18,41 @@ public class N {
       // Original name: org_jni_1zero_SampleForAnnotationProcessor_hasPhalange
     public static native boolean Mts1shVs();
       // Original name: org_jni_1zero_SampleForAnnotationProcessor_returnClass
-    public static native Class MHC2XaYW();
+    public static native Object MHC2XaYW();
       // Original name: org_jni_1zero_SampleForAnnotationProcessor_returnClasses
-    public static native Class[] MPl4TY3m();
+    public static native Object MPl4TY3m();
       // Original name: org_jni_1zero_SampleForAnnotationProcessor_returnConvertedAppObjects
-    public static native Object[] MbcaLfAT(Class __arrayClazz);
+    public static native Object MbcaLfAT(Class __arrayClazz);
       // Original name: org_jni_1zero_SampleForAnnotationProcessor_returnConvertedInts
-    public static native int[] MrxydxEH();
+    public static native Object MrxydxEH();
       // Original name: org_jni_1zero_SampleForAnnotationProcessor_returnConvertedString
-    public static native String MaQxW6t6();
+    public static native Object MaQxW6t6();
       // Original name: org_jni_1zero_SampleForAnnotationProcessor_returnConvertedStrings
-    public static native String[] M8wEusw1();
+    public static native Object M8wEusw1();
       // Original name: org_jni_1zero_SampleForAnnotationProcessor_returnObject
     public static native Object MpVxNDSC();
       // Original name: org_jni_1zero_SampleForAnnotationProcessor_returnObjects
-    public static native Object[] M7jE3q3$();
+    public static native Object M7jE3q3$();
       // Original name: org_jni_1zero_SampleForAnnotationProcessor_returnString
-    public static native String MHY_jLL4();
+    public static native Object MHY_jLL4();
       // Original name: org_jni_1zero_SampleForAnnotationProcessor_returnStrings
-    public static native String[] MF8oFFVb();
+    public static native Object MF8oFFVb();
       // Original name: org_jni_1zero_SampleForAnnotationProcessor_returnStruct
     public static native Object Mq7V3oMs();
       // Original name: org_jni_1zero_SampleForAnnotationProcessor_returnStructs
-    public static native Object[] MRdQpdMz();
+    public static native Object MRdQpdMz();
       // Original name: org_jni_1zero_SampleForAnnotationProcessor_returnThrowable
-    public static native Throwable M6SdcGCv();
+    public static native Object M6SdcGCv();
       // Original name: org_jni_1zero_SampleForAnnotationProcessor_returnThrowables
-    public static native Throwable[] Mnt3ot24();
+    public static native Object Mnt3ot24();
       // Original name: org_jni_1zero_SampleForAnnotationProcessor_revString
-    public static native String Mepwik1_(String stringToReverse);
+    public static native Object Mepwik1_(Object stringToReverse);
       // Original name: org_jni_1zero_SampleForAnnotationProcessor_sendSamplesToNative
-    public static native Object[] M5Naw4MO(Object[] strs);
+    public static native Object M5Naw4MO(Object strs);
       // Original name: org_jni_1zero_SampleForAnnotationProcessor_sendToNative
-    public static native String[] M3btId9A(String[] strs);
+    public static native Object M3btId9A(Object strs);
       // Original name: org_jni_1zero_SampleForAnnotationProcessor_testAllPrimitives
-    public static native int[] M3dkhKZM(int zint, int[] ints, long zlong, long[] longs, short zshort, short[] shorts, char zchar, char[] chars, byte zbyte, byte[] bytes, double zdouble, double[] doubles, float zfloat, float[] floats, boolean zbool, boolean[] bools);
+    public static native Object M3dkhKZM(int zint, Object ints, long zlong, Object longs, short zshort, Object shorts, char zchar, Object chars, byte zbyte, Object bytes, double zdouble, Object doubles, float zfloat, Object floats, boolean zbool, Object bools);
       // Original name: org_jni_1zero_SampleForAnnotationProcessor_testSpecialTypes
-    public static native void MomokuWo(Class clazz, Class[] classes, Throwable throwable, Throwable[] throwables, String string, String[] strings, String convertedString, String[] convertedStrings, String optionalString, Object tStruct, Object[] structs, Object obj, Object convertedObj, Object[] objects, Object nestedInterface, Object view, Object context, Object[] convertedObjects);
+    public static native void MomokuWo(Object clazz, Object classes, Object throwable, Object throwables, Object string, Object strings, Object convertedString, Object convertedStrings, Object optionalString, Object tStruct, Object structs, Object obj, Object convertedObj, Object objects, Object nestedInterface, Object view, Object context, Object convertedObjects);
 }

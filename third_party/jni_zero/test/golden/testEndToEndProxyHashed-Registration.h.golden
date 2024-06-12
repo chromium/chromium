@@ -20,87 +20,77 @@ JNI_BOUNDARY_EXPORT jobject Java_J_N_M_00024zHpGqF(
     jobject sample);
 JNI_BOUNDARY_EXPORT void Java_J_N_MFxD5gzE(JNIEnv* env, jclass jcaller);
 JNI_BOUNDARY_EXPORT jboolean Java_J_N_Mts1shVs(JNIEnv* env, jclass jcaller);
-JNI_BOUNDARY_EXPORT jclass Java_J_N_MHC2XaYW(JNIEnv* env, jclass jcaller);
-JNI_BOUNDARY_EXPORT jobjectArray Java_J_N_MPl4TY3m(
-    JNIEnv* env,
-    jclass jcaller);
-JNI_BOUNDARY_EXPORT jobjectArray Java_J_N_MbcaLfAT(
+JNI_BOUNDARY_EXPORT jobject Java_J_N_MHC2XaYW(JNIEnv* env, jclass jcaller);
+JNI_BOUNDARY_EXPORT jobject Java_J_N_MPl4TY3m(JNIEnv* env, jclass jcaller);
+JNI_BOUNDARY_EXPORT jobject Java_J_N_MbcaLfAT(
     JNIEnv* env,
     jclass jcaller,
     jclass __arrayClazz);
-JNI_BOUNDARY_EXPORT jintArray Java_J_N_MrxydxEH(JNIEnv* env, jclass jcaller);
-JNI_BOUNDARY_EXPORT jstring Java_J_N_MaQxW6t6(JNIEnv* env, jclass jcaller);
-JNI_BOUNDARY_EXPORT jobjectArray Java_J_N_M8wEusw1(
-    JNIEnv* env,
-    jclass jcaller);
+JNI_BOUNDARY_EXPORT jobject Java_J_N_MrxydxEH(JNIEnv* env, jclass jcaller);
+JNI_BOUNDARY_EXPORT jobject Java_J_N_MaQxW6t6(JNIEnv* env, jclass jcaller);
+JNI_BOUNDARY_EXPORT jobject Java_J_N_M8wEusw1(JNIEnv* env, jclass jcaller);
 JNI_BOUNDARY_EXPORT jobject Java_J_N_MpVxNDSC(JNIEnv* env, jclass jcaller);
-JNI_BOUNDARY_EXPORT jobjectArray Java_J_N_M7jE3q3_00024(
+JNI_BOUNDARY_EXPORT jobject Java_J_N_M7jE3q3_00024(
     JNIEnv* env,
     jclass jcaller);
-JNI_BOUNDARY_EXPORT jstring Java_J_N_MHY_1jLL4(JNIEnv* env, jclass jcaller);
-JNI_BOUNDARY_EXPORT jobjectArray Java_J_N_MF8oFFVb(
-    JNIEnv* env,
-    jclass jcaller);
+JNI_BOUNDARY_EXPORT jobject Java_J_N_MHY_1jLL4(JNIEnv* env, jclass jcaller);
+JNI_BOUNDARY_EXPORT jobject Java_J_N_MF8oFFVb(JNIEnv* env, jclass jcaller);
 JNI_BOUNDARY_EXPORT jobject Java_J_N_Mq7V3oMs(JNIEnv* env, jclass jcaller);
-JNI_BOUNDARY_EXPORT jobjectArray Java_J_N_MRdQpdMz(
-    JNIEnv* env,
-    jclass jcaller);
-JNI_BOUNDARY_EXPORT jthrowable Java_J_N_M6SdcGCv(JNIEnv* env, jclass jcaller);
-JNI_BOUNDARY_EXPORT jobjectArray Java_J_N_Mnt3ot24(
-    JNIEnv* env,
-    jclass jcaller);
-JNI_BOUNDARY_EXPORT jstring Java_J_N_Mepwik1_1(
+JNI_BOUNDARY_EXPORT jobject Java_J_N_MRdQpdMz(JNIEnv* env, jclass jcaller);
+JNI_BOUNDARY_EXPORT jobject Java_J_N_M6SdcGCv(JNIEnv* env, jclass jcaller);
+JNI_BOUNDARY_EXPORT jobject Java_J_N_Mnt3ot24(JNIEnv* env, jclass jcaller);
+JNI_BOUNDARY_EXPORT jobject Java_J_N_Mepwik1_1(
     JNIEnv* env,
     jclass jcaller,
-    jstring stringToReverse);
-JNI_BOUNDARY_EXPORT jobjectArray Java_J_N_M5Naw4MO(
+    jobject stringToReverse);
+JNI_BOUNDARY_EXPORT jobject Java_J_N_M5Naw4MO(
     JNIEnv* env,
     jclass jcaller,
-    jobjectArray strs);
-JNI_BOUNDARY_EXPORT jobjectArray Java_J_N_M3btId9A(
+    jobject strs);
+JNI_BOUNDARY_EXPORT jobject Java_J_N_M3btId9A(
     JNIEnv* env,
     jclass jcaller,
-    jobjectArray strs);
-JNI_BOUNDARY_EXPORT jintArray Java_J_N_M3dkhKZM(
+    jobject strs);
+JNI_BOUNDARY_EXPORT jobject Java_J_N_M3dkhKZM(
     JNIEnv* env,
     jclass jcaller,
     jint zint,
-    jintArray ints,
+    jobject ints,
     jlong zlong,
-    jlongArray longs,
+    jobject longs,
     jshort zshort,
-    jshortArray shorts,
+    jobject shorts,
     jchar zchar,
-    jcharArray chars,
+    jobject chars,
     jbyte zbyte,
-    jbyteArray bytes,
+    jobject bytes,
     jdouble zdouble,
-    jdoubleArray doubles,
+    jobject doubles,
     jfloat zfloat,
-    jfloatArray floats,
+    jobject floats,
     jboolean zbool,
-    jbooleanArray bools);
+    jobject bools);
 JNI_BOUNDARY_EXPORT void Java_J_N_MomokuWo(
     JNIEnv* env,
     jclass jcaller,
-    jclass clazz,
-    jobjectArray classes,
-    jthrowable throwable,
-    jobjectArray throwables,
-    jstring string,
-    jobjectArray strings,
-    jstring convertedString,
-    jobjectArray convertedStrings,
-    jstring optionalString,
+    jobject clazz,
+    jobject classes,
+    jobject throwable,
+    jobject throwables,
+    jobject string,
+    jobject strings,
+    jobject convertedString,
+    jobject convertedStrings,
+    jobject optionalString,
     jobject tStruct,
-    jobjectArray structs,
+    jobject structs,
     jobject obj,
     jobject convertedObj,
-    jobjectArray objects,
+    jobject objects,
     jobject nestedInterface,
     jobject view,
     jobject context,
-    jobjectArray convertedObjects);
+    jobject convertedObjects);
 
 
 

@@ -25,27 +25,27 @@ public class GEN_JNI {
         return J.N.Mts1shVs();
     }
 
-    public static Class org_jni_1zero_SampleForAnnotationProcessor_returnClass() {
+    public static Object org_jni_1zero_SampleForAnnotationProcessor_returnClass() {
         return J.N.MHC2XaYW();
     }
 
-    public static Class[] org_jni_1zero_SampleForAnnotationProcessor_returnClasses() {
+    public static Object org_jni_1zero_SampleForAnnotationProcessor_returnClasses() {
         return J.N.MPl4TY3m();
     }
 
-    public static Object[] org_jni_1zero_SampleForAnnotationProcessor_returnConvertedAppObjects(Class __arrayClazz) {
+    public static Object org_jni_1zero_SampleForAnnotationProcessor_returnConvertedAppObjects(Class __arrayClazz) {
         return J.N.MbcaLfAT(__arrayClazz);
     }
 
-    public static int[] org_jni_1zero_SampleForAnnotationProcessor_returnConvertedInts() {
+    public static Object org_jni_1zero_SampleForAnnotationProcessor_returnConvertedInts() {
         return J.N.MrxydxEH();
     }
 
-    public static String org_jni_1zero_SampleForAnnotationProcessor_returnConvertedString() {
+    public static Object org_jni_1zero_SampleForAnnotationProcessor_returnConvertedString() {
         return J.N.MaQxW6t6();
     }
 
-    public static String[] org_jni_1zero_SampleForAnnotationProcessor_returnConvertedStrings() {
+    public static Object org_jni_1zero_SampleForAnnotationProcessor_returnConvertedStrings() {
         return J.N.M8wEusw1();
     }
 
@@ -53,15 +53,15 @@ public class GEN_JNI {
         return J.N.MpVxNDSC();
     }
 
-    public static Object[] org_jni_1zero_SampleForAnnotationProcessor_returnObjects() {
+    public static Object org_jni_1zero_SampleForAnnotationProcessor_returnObjects() {
         return J.N.M7jE3q3$();
     }
 
-    public static String org_jni_1zero_SampleForAnnotationProcessor_returnString() {
+    public static Object org_jni_1zero_SampleForAnnotationProcessor_returnString() {
         return J.N.MHY_jLL4();
     }
 
-    public static String[] org_jni_1zero_SampleForAnnotationProcessor_returnStrings() {
+    public static Object org_jni_1zero_SampleForAnnotationProcessor_returnStrings() {
         return J.N.MF8oFFVb();
     }
 
@@ -69,35 +69,35 @@ public class GEN_JNI {
         return J.N.Mq7V3oMs();
     }
 
-    public static Object[] org_jni_1zero_SampleForAnnotationProcessor_returnStructs() {
+    public static Object org_jni_1zero_SampleForAnnotationProcessor_returnStructs() {
         return J.N.MRdQpdMz();
     }
 
-    public static Throwable org_jni_1zero_SampleForAnnotationProcessor_returnThrowable() {
+    public static Object org_jni_1zero_SampleForAnnotationProcessor_returnThrowable() {
         return J.N.M6SdcGCv();
     }
 
-    public static Throwable[] org_jni_1zero_SampleForAnnotationProcessor_returnThrowables() {
+    public static Object org_jni_1zero_SampleForAnnotationProcessor_returnThrowables() {
         return J.N.Mnt3ot24();
     }
 
-    public static String org_jni_1zero_SampleForAnnotationProcessor_revString(String stringToReverse) {
+    public static Object org_jni_1zero_SampleForAnnotationProcessor_revString(Object stringToReverse) {
         return J.N.Mepwik1_(stringToReverse);
     }
 
-    public static Object[] org_jni_1zero_SampleForAnnotationProcessor_sendSamplesToNative(Object[] strs) {
+    public static Object org_jni_1zero_SampleForAnnotationProcessor_sendSamplesToNative(Object strs) {
         return J.N.M5Naw4MO(strs);
     }
 
-    public static String[] org_jni_1zero_SampleForAnnotationProcessor_sendToNative(String[] strs) {
+    public static Object org_jni_1zero_SampleForAnnotationProcessor_sendToNative(Object strs) {
         return J.N.M3btId9A(strs);
     }
 
-    public static int[] org_jni_1zero_SampleForAnnotationProcessor_testAllPrimitives(int zint, int[] ints, long zlong, long[] longs, short zshort, short[] shorts, char zchar, char[] chars, byte zbyte, byte[] bytes, double zdouble, double[] doubles, float zfloat, float[] floats, boolean zbool, boolean[] bools) {
+    public static Object org_jni_1zero_SampleForAnnotationProcessor_testAllPrimitives(int zint, Object ints, long zlong, Object longs, short zshort, Object shorts, char zchar, Object chars, byte zbyte, Object bytes, double zdouble, Object doubles, float zfloat, Object floats, boolean zbool, Object bools) {
         return J.N.M3dkhKZM(zint, ints, zlong, longs, zshort, shorts, zchar, chars, zbyte, bytes, zdouble, doubles, zfloat, floats, zbool, bools);
     }
 
-    public static void org_jni_1zero_SampleForAnnotationProcessor_testSpecialTypes(Class clazz, Class[] classes, Throwable throwable, Throwable[] throwables, String string, String[] strings, String convertedString, String[] convertedStrings, String optionalString, Object tStruct, Object[] structs, Object obj, Object convertedObj, Object[] objects, Object nestedInterface, Object view, Object context, Object[] convertedObjects) {
+    public static void org_jni_1zero_SampleForAnnotationProcessor_testSpecialTypes(Object clazz, Object classes, Object throwable, Object throwables, Object string, Object strings, Object convertedString, Object convertedStrings, Object optionalString, Object tStruct, Object structs, Object obj, Object convertedObj, Object objects, Object nestedInterface, Object view, Object context, Object convertedObjects) {
         J.N.MomokuWo(clazz, classes, throwable, throwables, string, strings, convertedString, convertedStrings, optionalString, tStruct, structs, obj, convertedObj, objects, nestedInterface, view, context, convertedObjects);
     }
 }

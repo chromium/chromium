@@ -17,11 +17,11 @@ public class GEN_JNI {
         return J.N.MYplquli(caller, b);
     }
 
-    public static String[][] org_jni_1zero_SampleProxyEdgeCases_arrayTypes1(int[] a, Object[][] b) {
+    public static Object org_jni_1zero_SampleProxyEdgeCases_arrayTypes1(Object a, Object b) {
         return J.N.M3RUFTzC(a, b);
     }
 
-    public static int[] org_jni_1zero_SampleProxyEdgeCases_arrayTypes2(int[] a, Throwable[][] b) {
+    public static Object org_jni_1zero_SampleProxyEdgeCases_arrayTypes2(Object a, Object b) {
         return J.N.MV9JEAYF(a, b);
     }
 
@@ -41,7 +41,7 @@ public class GEN_JNI {
         J.N.MKWEYRlq();
     }
 
-    public static Object[] org_jni_1zero_SampleProxyEdgeCases_genericsWithNestedClassArray(Object[] arg) {
+    public static Object org_jni_1zero_SampleProxyEdgeCases_genericsWithNestedClassArray(Object arg) {
         return J.N.MalqUoB_(arg);
     }
 

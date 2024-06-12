@@ -24,101 +24,101 @@ JNI_BOUNDARY_EXPORT void Java_this_is_a_package_prefix_J_N_MKW06IKB(
 JNI_BOUNDARY_EXPORT jboolean Java_this_is_a_package_prefix_J_N_Mh9RSlnn(
     JNIEnv* env,
     jclass jcaller);
-JNI_BOUNDARY_EXPORT jclass Java_this_is_a_package_prefix_J_N_M5NcWmhA(
+JNI_BOUNDARY_EXPORT jobject Java_this_is_a_package_prefix_J_N_M5NcWmhA(
     JNIEnv* env,
     jclass jcaller);
-JNI_BOUNDARY_EXPORT jobjectArray Java_this_is_a_package_prefix_J_N_M_00024EEymCX(
+JNI_BOUNDARY_EXPORT jobject Java_this_is_a_package_prefix_J_N_M_00024EEymCX(
     JNIEnv* env,
     jclass jcaller);
-JNI_BOUNDARY_EXPORT jobjectArray Java_this_is_a_package_prefix_J_N_Muqa_000243wC(
+JNI_BOUNDARY_EXPORT jobject Java_this_is_a_package_prefix_J_N_Muqa_000243wC(
     JNIEnv* env,
     jclass jcaller,
     jclass __arrayClazz);
-JNI_BOUNDARY_EXPORT jintArray Java_this_is_a_package_prefix_J_N_Mfi3Z8u7(
+JNI_BOUNDARY_EXPORT jobject Java_this_is_a_package_prefix_J_N_Mfi3Z8u7(
     JNIEnv* env,
     jclass jcaller);
-JNI_BOUNDARY_EXPORT jstring Java_this_is_a_package_prefix_J_N_MtTvCTtu(
+JNI_BOUNDARY_EXPORT jobject Java_this_is_a_package_prefix_J_N_MtTvCTtu(
     JNIEnv* env,
     jclass jcaller);
-JNI_BOUNDARY_EXPORT jobjectArray Java_this_is_a_package_prefix_J_N_MJOq1186(
+JNI_BOUNDARY_EXPORT jobject Java_this_is_a_package_prefix_J_N_MJOq1186(
     JNIEnv* env,
     jclass jcaller);
 JNI_BOUNDARY_EXPORT jobject Java_this_is_a_package_prefix_J_N_McVHjA4P(
     JNIEnv* env,
     jclass jcaller);
-JNI_BOUNDARY_EXPORT jobjectArray Java_this_is_a_package_prefix_J_N_MJYxRKSI(
+JNI_BOUNDARY_EXPORT jobject Java_this_is_a_package_prefix_J_N_MJYxRKSI(
     JNIEnv* env,
     jclass jcaller);
-JNI_BOUNDARY_EXPORT jstring Java_this_is_a_package_prefix_J_N_MQC2SQ1M(
+JNI_BOUNDARY_EXPORT jobject Java_this_is_a_package_prefix_J_N_MQC2SQ1M(
     JNIEnv* env,
     jclass jcaller);
-JNI_BOUNDARY_EXPORT jobjectArray Java_this_is_a_package_prefix_J_N_M78FHdkG(
+JNI_BOUNDARY_EXPORT jobject Java_this_is_a_package_prefix_J_N_M78FHdkG(
     JNIEnv* env,
     jclass jcaller);
 JNI_BOUNDARY_EXPORT jobject Java_this_is_a_package_prefix_J_N_MXyTtXdi(
     JNIEnv* env,
     jclass jcaller);
-JNI_BOUNDARY_EXPORT jobjectArray Java_this_is_a_package_prefix_J_N_M_000242EuNt4(
+JNI_BOUNDARY_EXPORT jobject Java_this_is_a_package_prefix_J_N_M_000242EuNt4(
     JNIEnv* env,
     jclass jcaller);
-JNI_BOUNDARY_EXPORT jthrowable Java_this_is_a_package_prefix_J_N_MXtSG9x7(
+JNI_BOUNDARY_EXPORT jobject Java_this_is_a_package_prefix_J_N_MXtSG9x7(
     JNIEnv* env,
     jclass jcaller);
-JNI_BOUNDARY_EXPORT jobjectArray Java_this_is_a_package_prefix_J_N_MJglTojO(
+JNI_BOUNDARY_EXPORT jobject Java_this_is_a_package_prefix_J_N_MJglTojO(
     JNIEnv* env,
     jclass jcaller);
-JNI_BOUNDARY_EXPORT jstring Java_this_is_a_package_prefix_J_N_MOHBXcmk(
+JNI_BOUNDARY_EXPORT jobject Java_this_is_a_package_prefix_J_N_MOHBXcmk(
     JNIEnv* env,
     jclass jcaller,
-    jstring stringToReverse);
-JNI_BOUNDARY_EXPORT jobjectArray Java_this_is_a_package_prefix_J_N_MgJ2ddya(
+    jobject stringToReverse);
+JNI_BOUNDARY_EXPORT jobject Java_this_is_a_package_prefix_J_N_MgJ2ddya(
     JNIEnv* env,
     jclass jcaller,
-    jobjectArray strs);
-JNI_BOUNDARY_EXPORT jobjectArray Java_this_is_a_package_prefix_J_N_MVsHG97A(
+    jobject strs);
+JNI_BOUNDARY_EXPORT jobject Java_this_is_a_package_prefix_J_N_MVsHG97A(
     JNIEnv* env,
     jclass jcaller,
-    jobjectArray strs);
-JNI_BOUNDARY_EXPORT jintArray Java_this_is_a_package_prefix_J_N_MtvkX0TV(
+    jobject strs);
+JNI_BOUNDARY_EXPORT jobject Java_this_is_a_package_prefix_J_N_MtvkX0TV(
     JNIEnv* env,
     jclass jcaller,
     jint zint,
-    jintArray ints,
+    jobject ints,
     jlong zlong,
-    jlongArray longs,
+    jobject longs,
     jshort zshort,
-    jshortArray shorts,
+    jobject shorts,
     jchar zchar,
-    jcharArray chars,
+    jobject chars,
     jbyte zbyte,
-    jbyteArray bytes,
+    jobject bytes,
     jdouble zdouble,
-    jdoubleArray doubles,
+    jobject doubles,
     jfloat zfloat,
-    jfloatArray floats,
+    jobject floats,
     jboolean zbool,
-    jbooleanArray bools);
+    jobject bools);
 JNI_BOUNDARY_EXPORT void Java_this_is_a_package_prefix_J_N_MI36SGcd(
     JNIEnv* env,
     jclass jcaller,
-    jclass clazz,
-    jobjectArray classes,
-    jthrowable throwable,
-    jobjectArray throwables,
-    jstring string,
-    jobjectArray strings,
-    jstring convertedString,
-    jobjectArray convertedStrings,
-    jstring optionalString,
+    jobject clazz,
+    jobject classes,
+    jobject throwable,
+    jobject throwables,
+    jobject string,
+    jobject strings,
+    jobject convertedString,
+    jobject convertedStrings,
+    jobject optionalString,
     jobject tStruct,
-    jobjectArray structs,
+    jobject structs,
     jobject obj,
     jobject convertedObj,
-    jobjectArray objects,
+    jobject objects,
     jobject nestedInterface,
     jobject view,
     jobject context,
-    jobjectArray convertedObjects);
+    jobject convertedObjects);
 
 
 // Method declarations.
@@ -129,43 +129,45 @@ static const JNINativeMethod kMethods_this_is_a_package_prefix_J_N[] = {
         reinterpret_cast<void*>(Java_this_is_a_package_prefix_J_N_M6zE1ofi) },
     { "MKW06IKB", "()V", reinterpret_cast<void*>(Java_this_is_a_package_prefix_J_N_MKW06IKB) },
     { "Mh9RSlnn", "()Z", reinterpret_cast<void*>(Java_this_is_a_package_prefix_J_N_Mh9RSlnn) },
-    { "M5NcWmhA", "()Ljava/lang/Class;",
+    { "M5NcWmhA", "()Ljava/lang/Object;",
         reinterpret_cast<void*>(Java_this_is_a_package_prefix_J_N_M5NcWmhA) },
-    { "M$EEymCX", "()[Ljava/lang/Class;",
+    { "M$EEymCX", "()Ljava/lang/Object;",
         reinterpret_cast<void*>(Java_this_is_a_package_prefix_J_N_M_00024EEymCX) },
-    { "Muqa$3wC", "(Ljava/lang/Class;)[Ljava/lang/Object;",
+    { "Muqa$3wC", "(Ljava/lang/Class;)Ljava/lang/Object;",
         reinterpret_cast<void*>(Java_this_is_a_package_prefix_J_N_Muqa_000243wC) },
-    { "Mfi3Z8u7", "()[I", reinterpret_cast<void*>(Java_this_is_a_package_prefix_J_N_Mfi3Z8u7) },
-    { "MtTvCTtu", "()Ljava/lang/String;",
+    { "Mfi3Z8u7", "()Ljava/lang/Object;",
+        reinterpret_cast<void*>(Java_this_is_a_package_prefix_J_N_Mfi3Z8u7) },
+    { "MtTvCTtu", "()Ljava/lang/Object;",
         reinterpret_cast<void*>(Java_this_is_a_package_prefix_J_N_MtTvCTtu) },
-    { "MJOq1186", "()[Ljava/lang/String;",
+    { "MJOq1186", "()Ljava/lang/Object;",
         reinterpret_cast<void*>(Java_this_is_a_package_prefix_J_N_MJOq1186) },
     { "McVHjA4P", "()Ljava/lang/Object;",
         reinterpret_cast<void*>(Java_this_is_a_package_prefix_J_N_McVHjA4P) },
-    { "MJYxRKSI", "()[Ljava/lang/Object;",
+    { "MJYxRKSI", "()Ljava/lang/Object;",
         reinterpret_cast<void*>(Java_this_is_a_package_prefix_J_N_MJYxRKSI) },
-    { "MQC2SQ1M", "()Ljava/lang/String;",
+    { "MQC2SQ1M", "()Ljava/lang/Object;",
         reinterpret_cast<void*>(Java_this_is_a_package_prefix_J_N_MQC2SQ1M) },
-    { "M78FHdkG", "()[Ljava/lang/String;",
+    { "M78FHdkG", "()Ljava/lang/Object;",
         reinterpret_cast<void*>(Java_this_is_a_package_prefix_J_N_M78FHdkG) },
     { "MXyTtXdi", "()Ljava/lang/Object;",
         reinterpret_cast<void*>(Java_this_is_a_package_prefix_J_N_MXyTtXdi) },
-    { "M$2EuNt4", "()[Ljava/lang/Object;",
+    { "M$2EuNt4", "()Ljava/lang/Object;",
         reinterpret_cast<void*>(Java_this_is_a_package_prefix_J_N_M_000242EuNt4) },
-    { "MXtSG9x7", "()Ljava/lang/Throwable;",
+    { "MXtSG9x7", "()Ljava/lang/Object;",
         reinterpret_cast<void*>(Java_this_is_a_package_prefix_J_N_MXtSG9x7) },
-    { "MJglTojO", "()[Ljava/lang/Throwable;",
+    { "MJglTojO", "()Ljava/lang/Object;",
         reinterpret_cast<void*>(Java_this_is_a_package_prefix_J_N_MJglTojO) },
-    { "MOHBXcmk", "(Ljava/lang/String;)Ljava/lang/String;",
+    { "MOHBXcmk", "(Ljava/lang/Object;)Ljava/lang/Object;",
         reinterpret_cast<void*>(Java_this_is_a_package_prefix_J_N_MOHBXcmk) },
-    { "MgJ2ddya", "([Ljava/lang/Object;)[Ljava/lang/Object;",
+    { "MgJ2ddya", "(Ljava/lang/Object;)Ljava/lang/Object;",
         reinterpret_cast<void*>(Java_this_is_a_package_prefix_J_N_MgJ2ddya) },
-    { "MVsHG97A", "([Ljava/lang/String;)[Ljava/lang/String;",
+    { "MVsHG97A", "(Ljava/lang/Object;)Ljava/lang/Object;",
         reinterpret_cast<void*>(Java_this_is_a_package_prefix_J_N_MVsHG97A) },
-    { "MtvkX0TV", "(I[IJ[JS[SC[CB[BD[DF[FZ[Z)[I",
+    { "MtvkX0TV",
+        "(ILjava/lang/Object;JLjava/lang/Object;SLjava/lang/Object;CLjava/lang/Object;BLjava/lang/Object;DLjava/lang/Object;FLjava/lang/Object;ZLjava/lang/Object;)Ljava/lang/Object;",
         reinterpret_cast<void*>(Java_this_is_a_package_prefix_J_N_MtvkX0TV) },
     { "MI36SGcd",
-        "(Ljava/lang/Class;[Ljava/lang/Class;Ljava/lang/Throwable;[Ljava/lang/Throwable;Ljava/lang/String;[Ljava/lang/String;Ljava/lang/String;[Ljava/lang/String;Ljava/lang/String;Ljava/lang/Object;[Ljava/lang/Object;Ljava/lang/Object;Ljava/lang/Object;[Ljava/lang/Object;Ljava/lang/Object;Ljava/lang/Object;Ljava/lang/Object;[Ljava/lang/Object;)V",
+        "(Ljava/lang/Object;Ljava/lang/Object;Ljava/lang/Object;Ljava/lang/Object;Ljava/lang/Object;Ljava/lang/Object;Ljava/lang/Object;Ljava/lang/Object;Ljava/lang/Object;Ljava/lang/Object;Ljava/lang/Object;Ljava/lang/Object;Ljava/lang/Object;Ljava/lang/Object;Ljava/lang/Object;Ljava/lang/Object;Ljava/lang/Object;Ljava/lang/Object;)V",
         reinterpret_cast<void*>(Java_this_is_a_package_prefix_J_N_MI36SGcd) },
 
 };

@@ -18,41 +18,41 @@ public class N {
       // Original name: this_is_a_package_prefix_org_jni_1zero_SampleForAnnotationProcessor_hasPhalange
     public static native boolean Mh9RSlnn();
       // Original name: this_is_a_package_prefix_org_jni_1zero_SampleForAnnotationProcessor_returnClass
-    public static native Class M5NcWmhA();
+    public static native Object M5NcWmhA();
       // Original name: this_is_a_package_prefix_org_jni_1zero_SampleForAnnotationProcessor_returnClasses
-    public static native Class[] M$EEymCX();
+    public static native Object M$EEymCX();
       // Original name: this_is_a_package_prefix_org_jni_1zero_SampleForAnnotationProcessor_returnConvertedAppObjects
-    public static native Object[] Muqa$3wC(Class __arrayClazz);
+    public static native Object Muqa$3wC(Class __arrayClazz);
       // Original name: this_is_a_package_prefix_org_jni_1zero_SampleForAnnotationProcessor_returnConvertedInts
-    public static native int[] Mfi3Z8u7();
+    public static native Object Mfi3Z8u7();
       // Original name: this_is_a_package_prefix_org_jni_1zero_SampleForAnnotationProcessor_returnConvertedString
-    public static native String MtTvCTtu();
+    public static native Object MtTvCTtu();
       // Original name: this_is_a_package_prefix_org_jni_1zero_SampleForAnnotationProcessor_returnConvertedStrings
-    public static native String[] MJOq1186();
+    public static native Object MJOq1186();
       // Original name: this_is_a_package_prefix_org_jni_1zero_SampleForAnnotationProcessor_returnObject
     public static native Object McVHjA4P();
       // Original name: this_is_a_package_prefix_org_jni_1zero_SampleForAnnotationProcessor_returnObjects
-    public static native Object[] MJYxRKSI();
+    public static native Object MJYxRKSI();
       // Original name: this_is_a_package_prefix_org_jni_1zero_SampleForAnnotationProcessor_returnString
-    public static native String MQC2SQ1M();
+    public static native Object MQC2SQ1M();
       // Original name: this_is_a_package_prefix_org_jni_1zero_SampleForAnnotationProcessor_returnStrings
-    public static native String[] M78FHdkG();
+    public static native Object M78FHdkG();
       // Original name: this_is_a_package_prefix_org_jni_1zero_SampleForAnnotationProcessor_returnStruct
     public static native Object MXyTtXdi();
       // Original name: this_is_a_package_prefix_org_jni_1zero_SampleForAnnotationProcessor_returnStructs
-    public static native Object[] M$2EuNt4();
+    public static native Object M$2EuNt4();
       // Original name: this_is_a_package_prefix_org_jni_1zero_SampleForAnnotationProcessor_returnThrowable
-    public static native Throwable MXtSG9x7();
+    public static native Object MXtSG9x7();
       // Original name: this_is_a_package_prefix_org_jni_1zero_SampleForAnnotationProcessor_returnThrowables
-    public static native Throwable[] MJglTojO();
+    public static native Object MJglTojO();
       // Original name: this_is_a_package_prefix_org_jni_1zero_SampleForAnnotationProcessor_revString
-    public static native String MOHBXcmk(String stringToReverse);
+    public static native Object MOHBXcmk(Object stringToReverse);
       // Original name: this_is_a_package_prefix_org_jni_1zero_SampleForAnnotationProcessor_sendSamplesToNative
-    public static native Object[] MgJ2ddya(Object[] strs);
+    public static native Object MgJ2ddya(Object strs);
       // Original name: this_is_a_package_prefix_org_jni_1zero_SampleForAnnotationProcessor_sendToNative
-    public static native String[] MVsHG97A(String[] strs);
+    public static native Object MVsHG97A(Object strs);
       // Original name: this_is_a_package_prefix_org_jni_1zero_SampleForAnnotationProcessor_testAllPrimitives
-    public static native int[] MtvkX0TV(int zint, int[] ints, long zlong, long[] longs, short zshort, short[] shorts, char zchar, char[] chars, byte zbyte, byte[] bytes, double zdouble, double[] doubles, float zfloat, float[] floats, boolean zbool, boolean[] bools);
+    public static native Object MtvkX0TV(int zint, Object ints, long zlong, Object longs, short zshort, Object shorts, char zchar, Object chars, byte zbyte, Object bytes, double zdouble, Object doubles, float zfloat, Object floats, boolean zbool, Object bools);
       // Original name: this_is_a_package_prefix_org_jni_1zero_SampleForAnnotationProcessor_testSpecialTypes
-    public static native void MI36SGcd(Class clazz, Class[] classes, Throwable throwable, Throwable[] throwables, String string, String[] strings, String convertedString, String[] convertedStrings, String optionalString, Object tStruct, Object[] structs, Object obj, Object convertedObj, Object[] objects, Object nestedInterface, Object view, Object context, Object[] convertedObjects);
+    public static native void MI36SGcd(Object clazz, Object classes, Object throwable, Object throwables, Object string, Object strings, Object convertedString, Object convertedStrings, Object optionalString, Object tStruct, Object structs, Object obj, Object convertedObj, Object objects, Object nestedInterface, Object view, Object context, Object convertedObjects);
 }

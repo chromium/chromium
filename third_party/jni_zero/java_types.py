@@ -231,13 +231,7 @@ class JavaType:
 
   def to_proxy(self):
     """Converts to types used over JNI boundary."""
-    # All object array types of become jobjectArray in native, but need to be
-    # passed as the original type on the java side.
-    if self.non_array_full_name_with_slashes in _CPP_TYPE_BY_JAVA_TYPE:
-      return self
-
-    # All other types should just be passed as Objects or Object arrays.
-    return dataclasses.replace(self, java_class=OBJECT_CLASS)
+    return self if self.is_primitive() else OBJECT
 
 
 @dataclasses.dataclass(frozen=True)
@@ -408,6 +402,7 @@ COLLECTION_CLASSES = (
     JavaClass('java/util/Set'),
 )
 
+OBJECT = JavaType(java_class=OBJECT_CLASS)
 CLASS = JavaType(java_class=CLASS_CLASS)
 LIST = JavaType(java_class=_LIST_CLASS)
 INT = JavaType(primitive_name='int')

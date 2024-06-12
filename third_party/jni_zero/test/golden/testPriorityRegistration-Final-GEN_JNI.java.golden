@@ -20,20 +20,20 @@ public class GEN_JNI {
         return J.N._I_OO(0, caller, b);
     }
 
-    public static String[][] org_jni_1zero_SampleProxyEdgeCases_arrayTypes1(int[] a, Object[][] b) {
-        return J.N._RAA_IAOAA(0, a, b);
+    public static Object org_jni_1zero_SampleProxyEdgeCases_arrayTypes1(Object a, Object b) {
+        return J.N._O_OO(0, a, b);
     }
 
-    public static int[] org_jni_1zero_SampleProxyEdgeCases_arrayTypes2(int[] a, Throwable[][] b) {
-        return J.N._IA_IATAA(0, a, b);
+    public static Object org_jni_1zero_SampleProxyEdgeCases_arrayTypes2(Object a, Object b) {
+        return J.N._O_OO(1, a, b);
     }
 
     public static void org_jni_1zero_SampleProxyEdgeCases_foo_1_1weirdly_1_1escaped_1name1() {
         J.N._V(1);
     }
 
-    public static Object[] org_jni_1zero_SampleProxyEdgeCases_genericsWithNestedClassArray(Object[] arg) {
-        return J.N._OA_OA(0, arg);
+    public static Object org_jni_1zero_SampleProxyEdgeCases_genericsWithNestedClassArray(Object arg) {
+        return J.N._O_O(0, arg);
     }
 
     public static void org_jni_1zero_SampleProxyEdgeCases_setBool(Object b, Object i) {
