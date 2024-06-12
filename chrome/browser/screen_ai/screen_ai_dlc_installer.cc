@@ -13,6 +13,7 @@
 #include "base/task/thread_pool.h"
 #include "chrome/browser/screen_ai/screen_ai_install_state.h"
 #include "chromeos/ash/components/dbus/dlcservice/dlcservice.pb.h"
+#include "chromeos/ash/components/dbus/dlcservice/dlcservice_client.h"
 #include "services/screen_ai/public/cpp/utilities.h"
 
 namespace {
@@ -30,6 +31,46 @@ struct InstallMetadata {
   int install_retries = 0;
   int retry_delay_in_seconds = kBaseRetryDelayInSeconds;
 };
+
+// These values are persisted to logs. Entries should not be renumbered and
+// numeric values should never be reused.
+// If any value is added, please update `DlcInstallResult` in `enums.xml`.
+enum class DlcInstallResult {
+  kSuccess = 0,
+  kErrorInternal = 1,
+  kErrorBusy = 2,
+  kErrorNeedReboot = 3,
+  kErrorInvalidDlc = 4,
+  kErrorAllocation = 5,
+  kErrorNoImageFound = 6,
+
+  kMaxValue = kErrorNoImageFound,
+};
+
+void RecordDlcInstallResult(std::string_view result_string) {
+  DlcInstallResult result_enum = DlcInstallResult::kSuccess;
+
+  if (result_string == dlcservice::kErrorNone) {
+    result_enum = DlcInstallResult::kSuccess;
+  } else if (result_string == dlcservice::kErrorInternal) {
+    result_enum = DlcInstallResult::kErrorInternal;
+  } else if (result_string == dlcservice::kErrorBusy) {
+    result_enum = DlcInstallResult::kErrorBusy;
+  } else if (result_string == dlcservice::kErrorNeedReboot) {
+    result_enum = DlcInstallResult::kErrorNeedReboot;
+  } else if (result_string == dlcservice::kErrorInvalidDlc) {
+    result_enum = DlcInstallResult::kErrorInvalidDlc;
+  } else if (result_string == dlcservice::kErrorAllocation) {
+    result_enum = DlcInstallResult::kErrorAllocation;
+  } else if (result_string == dlcservice::kErrorNoImageFound) {
+    result_enum = DlcInstallResult::kErrorNoImageFound;
+  } else {
+    NOTREACHED_NORETURN() << "Unexpected error: " << result_string;
+  }
+
+  base::UmaHistogramEnumeration("Accessibility.ScreenAI.DlcInstallResult",
+                                result_enum);
+}
 
 void InstallInternal(InstallMetadata metadata);
 
@@ -61,6 +102,8 @@ void OnInstallCompleted(
         /*install=*/true,
         /*successful=*/install_result.error == dlcservice::kErrorNone);
   }
+
+  RecordDlcInstallResult(install_result.error);
 
   if (install_result.error != dlcservice::kErrorNone) {
     VLOG(0) << "ScreenAI installation failed: " << install_result.error;

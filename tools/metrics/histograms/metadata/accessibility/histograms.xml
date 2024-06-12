@@ -2645,6 +2645,13 @@ even if they fit the naming pattern. -->
   </token>
 </histogram>
 
+<histogram name="Accessibility.ScreenAI.DlcInstallResult"
+    enum="DlcInstallResult" expires_after="2024-12-13">
+  <owner>rhalavati@chromium.org</owner>
+  <owner>chrome-a11y-core@google.com</owner>
+  <summary>Records the result of Screen AI DLC installation.</summary>
+</histogram>
+
 <histogram name="Accessibility.ScreenAI.LibraryLoadDetailedResultOnWindows"
     enum="WinGetLastError" expires_after="2025-02-28">
   <owner>rhalavati@chromium.org</owner>

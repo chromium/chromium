@@ -4771,6 +4771,16 @@ to ensure that the crash string is shown properly on the user-facing crash UI.
   <int value="1" label="Mixed mirror mode"/>
 </enum>
 
+<enum name="DlcInstallResult">
+  <int value="0" label="Success"/>
+  <int value="1" label="Internal error"/>
+  <int value="2" label="Failed because Update Engine is busy"/>
+  <int value="3" label="Failed because a reboot is needed"/>
+  <int value="4" label="Invalid DLC submitted"/>
+  <int value="5" label="Failed to create directory"/>
+  <int value="6" label="Failed to find image"/>
+</enum>
+
 <enum name="DocumentPolicyFeature">
 <!-- Generated from third_party/blink/public/mojom/permissions_policy/document_policy_feature.mojom.
 Called by update_document_policy_enum.py.-->
