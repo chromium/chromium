@@ -28,6 +28,7 @@
 #include "components/autofill/core/browser/payments/client_behavior_constants.h"
 #include "components/autofill/core/browser/payments/credit_card_save_manager.h"
 #include "components/autofill/core/browser/payments/local_card_migration_manager.h"
+#include "components/autofill/core/browser/payments/payments_autofill_client.h"
 #include "components/autofill/core/browser/payments/payments_network_interface_test_base.h"
 #include "components/autofill/core/browser/payments/virtual_card_enrollment_flow.h"
 #include "components/autofill/core/browser/test_personal_data_manager.h"
@@ -540,7 +541,7 @@ TEST_F(PaymentsNetworkInterfaceTest, GetUnmaskDetailsSuccess) {
                  "\"authentication_method\": \"CVC\" }");
   EXPECT_EQ(AutofillClient::PaymentsRpcResult::kSuccess, result_);
   EXPECT_EQ(false, unmask_details()->offer_fido_opt_in);
-  EXPECT_EQ(AutofillClient::UnmaskAuthMethod::kCvc,
+  EXPECT_EQ(PaymentsAutofillClient::UnmaskAuthMethod::kCvc,
             unmask_details()->unmask_auth_method);
 }
 

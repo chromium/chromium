@@ -939,7 +939,7 @@ bool CreditCardAccessManager::IsSelectedCardFidoAuthorized() {
     return !risk_based_authentication_response_.fido_request_options.empty();
   }
   DCHECK_NE(unmask_details_.unmask_auth_method,
-            AutofillClient::UnmaskAuthMethod::kUnknown);
+            payments::PaymentsAutofillClient::UnmaskAuthMethod::kUnknown);
   return unmask_details_.fido_eligible_card_ids.find(card_->server_id()) !=
          unmask_details_.fido_eligible_card_ids.end();
 }
@@ -1204,10 +1204,10 @@ void CreditCardAccessManager::FetchMaskedServerCard() {
                        GetWeakPtr()),
         kUnmaskDetailsResponseTimeout);
   } else {
-    StartAuthenticationFlow(
-        IsFidoAuthEnabled(get_unmask_details_returned &&
-                          unmask_details_.unmask_auth_method ==
-                              AutofillClient::UnmaskAuthMethod::kFido));
+    StartAuthenticationFlow(IsFidoAuthEnabled(
+        get_unmask_details_returned &&
+        unmask_details_.unmask_auth_method ==
+            payments::PaymentsAutofillClient::UnmaskAuthMethod::kFido));
   }
 }
 
@@ -1300,7 +1300,7 @@ void CreditCardAccessManager::OnRiskBasedAuthenticationResponseReceived(
       StartAuthenticationFlow(IsFidoAuthEnabled(
           /*fido_auth_offered=*/!response.fido_request_options.empty() ||
           unmask_details_.unmask_auth_method ==
-              AutofillClient::UnmaskAuthMethod::kFido));
+              payments::PaymentsAutofillClient::UnmaskAuthMethod::kFido));
       break;
     case CreditCardRiskBasedAuthenticator::RiskBasedAuthenticationResponse::
         Result::kAuthenticationCancelled:
@@ -1493,10 +1493,10 @@ void CreditCardAccessManager::OnStopWaitingForUnmaskDetails(
   }
 
   // Start the authentication after the wait ends.
-  StartAuthenticationFlow(
-      IsFidoAuthEnabled(get_unmask_details_returned &&
-                        unmask_details_.unmask_auth_method ==
-                            AutofillClient::UnmaskAuthMethod::kFido));
+  StartAuthenticationFlow(IsFidoAuthEnabled(
+      get_unmask_details_returned &&
+      unmask_details_.unmask_auth_method ==
+          payments::PaymentsAutofillClient::UnmaskAuthMethod::kFido));
 }
 
 void CreditCardAccessManager::OnUserAcceptedAuthenticationSelectionDialog(

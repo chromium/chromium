@@ -33,6 +33,7 @@
 #include "components/autofill/core/browser/data_model/credit_card.h"
 #include "components/autofill/core/browser/metrics/form_events/form_events.h"
 #include "components/autofill/core/browser/metrics/payments/better_auth_metrics.h"
+#include "components/autofill/core/browser/payments/payments_autofill_client.h"
 #include "components/autofill/core/browser/payments/payments_service_url.h"
 #include "components/autofill/core/browser/payments/test_authentication_requester.h"
 #include "components/autofill/core/browser/payments/test_credit_card_fido_authenticator.h"
@@ -278,7 +279,8 @@ TEST_F(CreditCardFidoAuthenticatorTest, GetUserOptInIntention_IntentToOptOut) {
   // If payments is requesting a FIDO auth, then that means user is opted in
   // from payments.
   payments::PaymentsNetworkInterface::UnmaskDetails unmask_details;
-  unmask_details.unmask_auth_method = AutofillClient::UnmaskAuthMethod::kFido;
+  unmask_details.unmask_auth_method =
+      payments::PaymentsAutofillClient::UnmaskAuthMethod::kFido;
   // Set the local preference to be disabled, which denotes user manually opted
   // out from settings page, and Payments did not update the status in time.
   SetUserOptInPreference(false);

@@ -13,6 +13,7 @@
 #include "base/values.h"
 #include "build/build_config.h"
 #include "components/autofill/core/browser/autofill_client.h"
+#include "components/autofill/core/browser/payments/payments_autofill_client.h"
 #include "components/autofill/core/browser/personal_data_manager.h"
 #include "services/network/public/cpp/shared_url_loader_factory.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -36,7 +37,8 @@ TestPaymentsNetworkInterface::TestPaymentsNetworkInterface(
               ? &personal_data_manager->payments_data_manager()
               : nullptr) {
   // Default value should be CVC.
-  unmask_details_.unmask_auth_method = AutofillClient::UnmaskAuthMethod::kCvc;
+  unmask_details_.unmask_auth_method =
+      PaymentsAutofillClient::UnmaskAuthMethod::kCvc;
 }
 
 TestPaymentsNetworkInterface::~TestPaymentsNetworkInterface() = default;
@@ -154,7 +156,8 @@ void TestPaymentsNetworkInterface::AddFidoEligibleCard(std::string server_id,
                                              std::string relying_party_id) {
   should_return_unmask_details_ = true;
   unmask_details_.offer_fido_opt_in = false;
-  unmask_details_.unmask_auth_method = AutofillClient::UnmaskAuthMethod::kFido;
+  unmask_details_.unmask_auth_method =
+      PaymentsAutofillClient::UnmaskAuthMethod::kFido;
   unmask_details_.fido_eligible_card_ids.insert(server_id);
 
   SetFidoRequestOptionsInUnmaskDetails(credential_id, relying_party_id);

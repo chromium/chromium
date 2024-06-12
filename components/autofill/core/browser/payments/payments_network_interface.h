@@ -26,6 +26,7 @@
 #include "components/autofill/core/browser/payments/card_unmask_challenge_option.h"
 #include "components/autofill/core/browser/payments/card_unmask_delegate.h"
 #include "components/autofill/core/browser/payments/client_behavior_constants.h"
+#include "components/autofill/core/browser/payments/payments_autofill_client.h"
 #include "components/autofill/core/browser/payments/payments_network_interface_base.h"
 #include "components/autofill/core/browser/payments/payments_window_manager.h"
 #include "components/autofill/core/browser/payments/virtual_card_enrollment_flow.h"
@@ -91,8 +92,8 @@ class PaymentsNetworkInterface : public PaymentsNetworkInterfaceBase {
     ~UnmaskDetails();
 
     // The type of authentication method suggested for card unmask.
-    AutofillClient::UnmaskAuthMethod unmask_auth_method =
-        AutofillClient::UnmaskAuthMethod::kUnknown;
+    PaymentsAutofillClient::UnmaskAuthMethod unmask_auth_method =
+        PaymentsAutofillClient::UnmaskAuthMethod::kUnknown;
     // Set to true if the user should be offered opt-in for FIDO Authentication.
     bool offer_fido_opt_in = false;
     // Public Key Credential Request Options required for authentication.

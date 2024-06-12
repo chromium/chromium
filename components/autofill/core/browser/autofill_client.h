@@ -158,15 +158,6 @@ class AutofillClient {
     kIgnored,
   };
 
-  // Authentication methods for card unmasking.
-  enum class UnmaskAuthMethod {
-    kUnknown = 0,
-    // Require user to unmask via CVC.
-    kCvc = 1,
-    // Suggest use of FIDO authenticator for card unmasking.
-    kFido = 2,
-  };
-
   // Represents the user's possible decisions or outcomes in response to a
   // prompt related to address saving, updating, or migrating.
   // These values are persisted to logs. Entries should not be renumbered and

@@ -71,6 +71,15 @@ class PaymentsAutofillClient : public RiskDataLoader {
     kAutofill,
   };
 
+  // Authentication methods for card unmasking.
+  enum class UnmaskAuthMethod {
+    kUnknown = 0,
+    // Require user to unmask via CVC.
+    kCvc = 1,
+    // Suggest use of FIDO authenticator for card unmasking.
+    kFido = 2,
+  };
+
   // Callback to run if user presses the Save button in the migration dialog.
   // Will pass a vector of GUIDs of cards that the user selected to upload to
   // LocalCardMigrationManager.

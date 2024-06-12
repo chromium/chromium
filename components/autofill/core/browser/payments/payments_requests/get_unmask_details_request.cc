@@ -7,6 +7,7 @@
 #include <string>
 
 #include "base/json/json_writer.h"
+#include "components/autofill/core/browser/payments/payments_autofill_client.h"
 
 namespace autofill::payments {
 
@@ -56,10 +57,10 @@ void GetUnmaskDetailsRequest::ParseResponse(const base::Value::Dict& response) {
   if (method) {
     if (*method == "CVC") {
       unmask_details_.unmask_auth_method =
-          AutofillClient::UnmaskAuthMethod::kCvc;
+          PaymentsAutofillClient::UnmaskAuthMethod::kCvc;
     } else if (*method == "FIDO") {
       unmask_details_.unmask_auth_method =
-          AutofillClient::UnmaskAuthMethod::kFido;
+          PaymentsAutofillClient::UnmaskAuthMethod::kFido;
     }
   }
 
@@ -83,7 +84,7 @@ void GetUnmaskDetailsRequest::ParseResponse(const base::Value::Dict& response) {
 
 bool GetUnmaskDetailsRequest::IsResponseComplete() {
   return unmask_details_.unmask_auth_method !=
-         AutofillClient::UnmaskAuthMethod::kUnknown;
+         PaymentsAutofillClient::UnmaskAuthMethod::kUnknown;
 }
 
 void GetUnmaskDetailsRequest::RespondToDelegate(
