@@ -8,12 +8,10 @@
 #include <string>
 
 #include "ash/picker/model/picker_action_type.h"
-#include "ash/picker/model/picker_search_results_section.h"
 #include "ash/picker/picker_test_util.h"
+#include "ash/picker/views/picker_emoji_bar_view_delegate.h"
 #include "ash/picker/views/picker_emoji_item_view.h"
 #include "ash/picker/views/picker_pseudo_focus_handler.h"
-#include "ash/picker/views/picker_search_results_view_delegate.h"
-#include "ash/picker/views/picker_section_view.h"
 #include "ash/picker/views/picker_symbol_item_view.h"
 #include "ash/public/cpp/picker/picker_search_result.h"
 #include "ash/style/ash_color_provider.h"
@@ -21,6 +19,7 @@
 #include "ash/test/view_drawn_waiter.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "ui/base/emoji/emoji_panel_helper.h"
 #include "ui/views/test/views_test_base.h"
 #include "ui/views/view_utils.h"
 #include "ui/views/widget/widget.h"
@@ -35,19 +34,14 @@ using ::testing::Truly;
 
 constexpr int kPickerWidth = 320;
 
-class MockSearchResultsViewDelegate : public PickerSearchResultsViewDelegate {
+class MockEmojiBarViewDelegate : public PickerEmojiBarViewDelegate {
  public:
-  MOCK_METHOD(void, SelectMoreResults, (PickerSectionType), (override));
   MOCK_METHOD(void,
               SelectSearchResult,
               (const PickerSearchResult&),
               (override));
-  MOCK_METHOD(void, OpenGifs, (), (override));
+  MOCK_METHOD(void, ShowEmojiPicker, (ui::EmojiPickerCategory), (override));
   MOCK_METHOD(void, NotifyPseudoFocusChanged, (views::View*), (override));
-  MOCK_METHOD(PickerActionType,
-              GetActionForResult,
-              (const PickerSearchResult&),
-              (override));
 };
 
 class PickerEmojiBarViewTest : public views::ViewsTestBase {
@@ -57,7 +51,7 @@ class PickerEmojiBarViewTest : public views::ViewsTestBase {
 };
 
 TEST_F(PickerEmojiBarViewTest, CreatesSearchResultItems) {
-  MockSearchResultsViewDelegate mock_delegate;
+  MockEmojiBarViewDelegate mock_delegate;
   PickerEmojiBarView emoji_bar(&mock_delegate, kPickerWidth);
 
   emoji_bar.SetSearchResults(
@@ -69,7 +63,7 @@ TEST_F(PickerEmojiBarViewTest, CreatesSearchResultItems) {
 }
 
 TEST_F(PickerEmojiBarViewTest, ClearsSearchResults) {
-  MockSearchResultsViewDelegate mock_delegate;
+  MockEmojiBarViewDelegate mock_delegate;
   PickerEmojiBarView emoji_bar(&mock_delegate, kPickerWidth);
   emoji_bar.SetSearchResults(
       {PickerSearchResult::Emoji(u"😊"), PickerSearchResult::Symbol(u"♬")});
@@ -80,7 +74,7 @@ TEST_F(PickerEmojiBarViewTest, ClearsSearchResults) {
 }
 
 TEST_F(PickerEmojiBarViewTest, ClickingMoreEmojisButton) {
-  MockSearchResultsViewDelegate mock_delegate;
+  MockEmojiBarViewDelegate mock_delegate;
   std::unique_ptr<views::Widget> widget =
       CreateTestWidget(views::Widget::InitParams::WIDGET_OWNS_NATIVE_WIDGET);
   widget->SetFullscreen(true);
@@ -88,7 +82,7 @@ TEST_F(PickerEmojiBarViewTest, ClickingMoreEmojisButton) {
       std::make_unique<PickerEmojiBarView>(&mock_delegate, kPickerWidth));
   widget->Show();
 
-  EXPECT_CALL(mock_delegate, SelectMoreResults(PickerSectionType::kExpressions))
+  EXPECT_CALL(mock_delegate, ShowEmojiPicker(ui::EmojiPickerCategory::kEmojis))
       .Times(1);
 
   ViewDrawnWaiter().Wait(emoji_bar->more_emojis_button_for_testing());
@@ -96,7 +90,7 @@ TEST_F(PickerEmojiBarViewTest, ClickingMoreEmojisButton) {
 }
 
 TEST_F(PickerEmojiBarViewTest, ClickingGifsButton) {
-  MockSearchResultsViewDelegate mock_delegate;
+  MockEmojiBarViewDelegate mock_delegate;
   std::unique_ptr<views::Widget> widget =
       CreateTestWidget(views::Widget::InitParams::CLIENT_OWNS_WIDGET);
   widget->SetFullscreen(true);
@@ -104,14 +98,15 @@ TEST_F(PickerEmojiBarViewTest, ClickingGifsButton) {
       std::make_unique<PickerEmojiBarView>(&mock_delegate, kPickerWidth));
   widget->Show();
 
-  EXPECT_CALL(mock_delegate, OpenGifs()).Times(1);
+  EXPECT_CALL(mock_delegate, ShowEmojiPicker(ui::EmojiPickerCategory::kGifs))
+      .Times(1);
 
   ViewDrawnWaiter().Wait(emoji_bar->gifs_button_for_testing());
   LeftClickOn(*emoji_bar->gifs_button_for_testing());
 }
 
 TEST_F(PickerEmojiBarViewTest, GainsPseudoFocus) {
-  MockSearchResultsViewDelegate mock_delegate;
+  MockEmojiBarViewDelegate mock_delegate;
   std::unique_ptr<views::Widget> widget =
       CreateTestWidget(views::Widget::InitParams::CLIENT_OWNS_WIDGET);
   widget->SetFullscreen(true);
@@ -132,7 +127,7 @@ TEST_F(PickerEmojiBarViewTest, GainsPseudoFocus) {
 }
 
 TEST_F(PickerEmojiBarViewTest, AdvancesPseudoFocus) {
-  MockSearchResultsViewDelegate mock_delegate;
+  MockEmojiBarViewDelegate mock_delegate;
   std::unique_ptr<views::Widget> widget =
       CreateTestWidget(views::Widget::InitParams::CLIENT_OWNS_WIDGET);
   widget->SetFullscreen(true);

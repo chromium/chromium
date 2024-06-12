@@ -285,7 +285,7 @@ void PickerView::SelectMoreResults(PickerSectionType type) {
                           search_field_view_->GetQueryText());
 }
 
-void PickerView::OpenGifs() {
+void PickerView::ShowEmojiPicker(ui::EmojiPickerCategory category) {
   PickerSessionMetrics& session_metrics = delegate_->GetSessionMetrics();
   session_metrics.SetAction(PickerCategory::kExpressions);
 
@@ -294,8 +294,7 @@ void PickerView::OpenGifs() {
   }
 
   session_metrics.SetOutcome(PickerSessionMetrics::SessionOutcome::kRedirected);
-  delegate_->ShowEmojiPicker(ui::EmojiPickerCategory::kGifs,
-                             search_field_view_->GetQueryText());
+  delegate_->ShowEmojiPicker(category, search_field_view_->GetQueryText());
 }
 
 bool PickerView::DoPseudoFocusedAction() {

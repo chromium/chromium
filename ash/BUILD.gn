@@ -1044,6 +1044,7 @@ component("ash") {
     "picker/views/picker_contents_view.h",
     "picker/views/picker_emoji_bar_view.cc",
     "picker/views/picker_emoji_bar_view.h",
+    "picker/views/picker_emoji_bar_view_delegate.h",
     "picker/views/picker_emoji_item_view.cc",
     "picker/views/picker_emoji_item_view.h",
     "picker/views/picker_emoticon_item_view.cc",

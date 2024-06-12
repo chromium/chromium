@@ -11,6 +11,7 @@
 #include "ash/ash_export.h"
 #include "ash/picker/metrics/picker_performance_metrics.h"
 #include "ash/picker/model/picker_search_results_section.h"
+#include "ash/picker/views/picker_emoji_bar_view_delegate.h"
 #include "ash/picker/views/picker_key_event_handler.h"
 #include "ash/picker/views/picker_pseudo_focus_handler.h"
 #include "ash/picker/views/picker_search_results_view_delegate.h"
@@ -48,6 +49,7 @@ class PickerCategoryView;
 class ASH_EXPORT PickerView : public views::WidgetDelegateView,
                               public PickerZeroStateViewDelegate,
                               public PickerSearchResultsViewDelegate,
+                              public PickerEmojiBarViewDelegate,
                               public PickerPseudoFocusHandler {
   METADATA_HEADER(PickerView, views::WidgetDelegateView)
 
@@ -79,9 +81,11 @@ class ASH_EXPORT PickerView : public views::WidgetDelegateView,
   // PickerSearchResultsViewDelegate:
   void SelectSearchResult(const PickerSearchResult& result) override;
   void SelectMoreResults(PickerSectionType type) override;
-  void OpenGifs() override;
   PickerActionType GetActionForResult(
       const PickerSearchResult& result) override;
+
+  // PickerEmojiBarViewDelegate:
+  void ShowEmojiPicker(ui::EmojiPickerCategory category) override;
 
   // PickerPseudoFocusHandler:
   bool DoPseudoFocusedAction() override;

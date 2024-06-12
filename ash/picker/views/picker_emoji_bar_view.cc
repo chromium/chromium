@@ -9,13 +9,12 @@
 #include <variant>
 
 #include "ash/ash_element_identifiers.h"
-#include "ash/picker/model/picker_search_results_section.h"
+#include "ash/picker/views/picker_emoji_bar_view_delegate.h"
 #include "ash/picker/views/picker_emoji_item_view.h"
 #include "ash/picker/views/picker_emoticon_item_view.h"
 #include "ash/picker/views/picker_item_view.h"
 #include "ash/picker/views/picker_pseudo_focus.h"
 #include "ash/picker/views/picker_pseudo_focus_handler.h"
-#include "ash/picker/views/picker_search_results_view_delegate.h"
 #include "ash/picker/views/picker_style.h"
 #include "ash/picker/views/picker_symbol_item_view.h"
 #include "ash/public/cpp/picker/picker_search_result.h"
@@ -29,6 +28,7 @@
 #include "base/functional/callback_forward.h"
 #include "base/functional/overloaded.h"
 #include "base/notreached.h"
+#include "ui/base/emoji/emoji_panel_helper.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/metadata/metadata_header_macros.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
@@ -144,9 +144,8 @@ END_METADATA
 
 }  // namespace
 
-PickerEmojiBarView::PickerEmojiBarView(
-    PickerSearchResultsViewDelegate* delegate,
-    int picker_view_width)
+PickerEmojiBarView::PickerEmojiBarView(PickerEmojiBarViewDelegate* delegate,
+                                       int picker_view_width)
     : delegate_(delegate), picker_view_width_(picker_view_width) {
   SetProperty(views::kElementIdentifierKey, kPickerEmojiBarElementId);
 
@@ -278,11 +277,11 @@ void PickerEmojiBarView::SelectSearchResult(const PickerSearchResult& result) {
 }
 
 void PickerEmojiBarView::OpenMoreEmojis() {
-  delegate_->SelectMoreResults(PickerSectionType::kExpressions);
+  delegate_->ShowEmojiPicker(ui::EmojiPickerCategory::kEmojis);
 }
 
 void PickerEmojiBarView::OpenGifs() {
-  delegate_->OpenGifs();
+  delegate_->ShowEmojiPicker(ui::EmojiPickerCategory::kGifs);
 }
 
 int PickerEmojiBarView::CalculateAvailableWidthForItemRow() {

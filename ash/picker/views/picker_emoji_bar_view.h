@@ -8,7 +8,6 @@
 #include <memory>
 
 #include "ash/ash_export.h"
-#include "ash/picker/model/picker_search_results_section.h"
 #include "ash/picker/views/picker_pseudo_focus_handler.h"
 #include "base/memory/raw_ptr.h"
 #include "ui/base/metadata/metadata_header_macros.h"
@@ -22,7 +21,7 @@ namespace ash {
 
 class IconButton;
 class PickerSearchResult;
-class PickerSearchResultsViewDelegate;
+class PickerEmojiBarViewDelegate;
 class SystemShadow;
 
 // View for the Picker emoji bar, which is a small bar above the main Picker
@@ -34,7 +33,7 @@ class ASH_EXPORT PickerEmojiBarView : public views::View,
 
  public:
   // `delegate` must remain valid for the lifetime of this class.
-  PickerEmojiBarView(PickerSearchResultsViewDelegate* delegate,
+  PickerEmojiBarView(PickerEmojiBarViewDelegate* delegate,
                      int picker_view_width);
   PickerEmojiBarView(const PickerEmojiBarView&) = delete;
   PickerEmojiBarView& operator=(const PickerEmojiBarView&) = delete;
@@ -80,7 +79,7 @@ class ASH_EXPORT PickerEmojiBarView : public views::View,
   std::unique_ptr<SystemShadow> shadow_;
 
   // `delegate_` outlives `this`.
-  raw_ptr<PickerSearchResultsViewDelegate> delegate_;
+  raw_ptr<PickerEmojiBarViewDelegate> delegate_;
 
   // The width of the PickerView that contains this emoji bar.
   int picker_view_width_ = 0;
