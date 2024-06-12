@@ -1,0 +1,33 @@
+<!DOCTYPE html>
+<html hidden>
+<script>
+function clickOn() {
+  return new Promise((resolve) => {
+    chrome.gpuBenchmarking.pointerActionSequence([
+        {source: 'mouse',
+         actions: [
+             {name: 'pointerUp', button: 0}]
+        }], resolve);
+  });
+}
+async function runTests() {
+  await clickOn();
+  const details = document.querySelector('details');
+  const oldSummary = document.querySelector('summary');
+  const newSummary = document.createElement('summary');
+  document.querySelector('details').insertBefore(newSummary, oldSummary);
+  document.body.click();
+  requestAnimationFrame(() => {
+    requestAnimationFrame(() => {
+      testRunner.notifyDone();
+    });
+  });
+}
+testRunner.waitUntilDone();
+testRunner.dumpAsText();
+</script>
+<body onload="runTests()">
+<details id="dt5"><summary id="summary5"></summary></details>
+<p>No crash means PASS</p>
+</body>
+</html>
