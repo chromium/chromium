@@ -224,10 +224,13 @@ source_set("unit_tests") {
 source_set("test_support") {
   testonly = true
   sources = [
+    "mock_tab_group_sync_service.cc",
+    "mock_tab_group_sync_service.h",
     "saved_tab_group_test_utils.cc",
     "saved_tab_group_test_utils.h",
   ]
   deps = [
+    ":core",
     ":model",
     "//base",
     "//base/test:test_support",
