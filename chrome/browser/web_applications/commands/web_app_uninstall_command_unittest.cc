@@ -11,7 +11,6 @@
 #include "base/memory/scoped_refptr.h"
 #include "base/test/bind.h"
 #include "base/test/gmock_callback_support.h"
-#include "base/test/metrics/histogram_tester.h"
 #include "base/test/task_environment.h"
 #include "base/test/test_future.h"
 #include "build/buildflag.h"
@@ -65,7 +64,6 @@ class WebAppUninstallCommandTest : public WebAppTest {
   WebAppProvider* provider() { return WebAppProvider::GetForTest(profile()); }
 
   scoped_refptr<testing::StrictMock<MockFileUtilsWrapper>> file_utils_wrapper_;
-  base::HistogramTester histogram_tester_;
 };
 
 TEST_F(WebAppUninstallCommandTest, SimpleUninstallInternal) {
@@ -219,35 +217,6 @@ TEST_F(WebAppUninstallCommandTest, UserUninstalledPrefsFilled) {
   EXPECT_EQ(provider()->registrar_unsafe().GetAppById(app_id), nullptr);
   EXPECT_TRUE(UserUninstalledPreinstalledWebAppPrefs(profile()->GetPrefs())
                   .DoesAppIdExist(app_id));
-}
-
-TEST_F(WebAppUninstallCommandTest, ExternalConfigMapMissing) {
-  auto web_app = test::CreateWebApp(GURL("https://www.example.com"),
-                                    WebAppManagement::kDefault);
-  webapps::AppId app_id = web_app->app_id();
-  {
-    ScopedRegistryUpdate update =
-        provider()->sync_bridge_unsafe().BeginUpdate();
-    update->CreateApp(std::move(web_app));
-  }
-  EXPECT_TRUE(provider()->registrar_unsafe().IsLocallyInstalled(app_id));
-
-  base::FilePath deletion_path = GetManifestResourcesDirectoryForApp(
-      GetWebAppsRootDirectory(profile()), app_id);
-
-  EXPECT_CALL(*file_utils_wrapper_, DeleteFileRecursively(deletion_path))
-      .WillOnce(testing::Return(true));
-
-  base::test::TestFuture<webapps::UninstallResultCode> future;
-  provider()->scheduler().RemoveUserUninstallableManagements(
-      app_id, webapps::WebappUninstallSource::kAppMenu, future.GetCallback());
-  ASSERT_TRUE(future.Wait());
-  EXPECT_EQ(webapps::UninstallResultCode::kAppRemoved, future.Get());
-  EXPECT_EQ(provider()->registrar_unsafe().GetAppById(app_id), nullptr);
-
-  EXPECT_THAT(histogram_tester_.GetAllSamples(
-                  "WebApp.Preinstalled.ExternalConfigMapAbsentDuringUninstall"),
-              BucketsAre(base::Bucket(true, 1)));
 }
 
 TEST_F(WebAppUninstallCommandTest, RemoveSourceAndTriggerOSUninstallation) {

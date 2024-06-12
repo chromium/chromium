@@ -1284,17 +1284,6 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="WebApp.Preinstalled.ExternalConfigMapAbsentDuringUninstall"
-    units="bool" expires_after="2024-04-28">
-  <owner>phillis@chromium.org</owner>
-  <owner>pwa-team@google.com</owner>
-  <summary>
-    Records whether the ExternalConfigMap data for an preinstalled app is
-    missing in web_app DB. This is recorded when an preinstalled web app is
-    getting uninstalled by user.
-  </summary>
-</histogram>
-
 <histogram name="WebApp.Preinstalled.InstallCount" units="apps"
     expires_after="2025-06-07">
   <owner>joelhockey@chromium.org</owner>

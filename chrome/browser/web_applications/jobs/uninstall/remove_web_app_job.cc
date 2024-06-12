@@ -89,9 +89,6 @@ void RemoveWebAppJob::Start(AllAppsLock& lock, Callback callback) {
       if (it != config_map.end()) {
         UserUninstalledPreinstalledWebAppPrefs(profile_->GetPrefs())
             .Add(app_id_, it->second.install_urls);
-      } else {
-        base::UmaHistogramBoolean(
-            "WebApp.Preinstalled.ExternalConfigMapAbsentDuringUninstall", true);
       }
     }
   }
