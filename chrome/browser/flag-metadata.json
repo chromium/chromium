@@ -5025,6 +5025,14 @@
     "expiry_milestone": 130
   },
   {
+    "name": "https-first-mode-incognito-new-settings",
+    "owners": [
+      "cthomp@chromium.org",
+      "trusty-transport@chromium.org"
+    ],
+    "expiry_milestone": 133
+  },
+  {
     "name": "https-first-mode-v2",
     "owners": [
       "cthomp@chromium.org",

@@ -1182,6 +1182,9 @@ extern const char kHistoryEmbeddingsDescription[];
 extern const char kHttpsFirstModeIncognitoName[];
 extern const char kHttpsFirstModeIncognitoDescription[];
 
+extern const char kHttpsFirstModeIncognitoNewSettingsName[];
+extern const char kHttpsFirstModeIncognitoNewSettingsDescription[];
+
 extern const char kHttpsFirstModeV2Name[];
 extern const char kHttpsFirstModeV2Description[];
 

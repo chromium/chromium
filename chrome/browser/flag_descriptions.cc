@@ -2076,8 +2076,13 @@ const char kStartSurfaceReturnTimeDescription[] =
 
 const char kHttpsFirstModeIncognitoName[] = "HTTPS-First Mode in Incognito";
 const char kHttpsFirstModeIncognitoDescription[] =
-    "Enable HTTPS-First Mode in Incognito as default setting and add as new "
-    "option in settings.";
+    "Enable HTTPS-First Mode in Incognito as default setting.";
+
+const char kHttpsFirstModeIncognitoNewSettingsName[] =
+    "HTTPS-First Mode in Incognito new Settings UI";
+const char kHttpsFirstModeIncognitoNewSettingsDescription[] =
+    "Enable new HTTPS-First Mode settings UI for HTTPS-First Mode in "
+    "Incognito. Must also enable #https-first-mode-incognito.";
 
 const char kHttpsFirstModeV2Name[] = "HTTPS-First Mode V2";
 const char kHttpsFirstModeV2Description[] =
