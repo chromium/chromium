@@ -4009,6 +4009,10 @@ const char kAndroidElegantTextHeightName[] = "Android Elegant Text Height";
 const char kAndroidElegantTextHeightDescription[] =
     "Enables elegant text height in core BrowserUI theme.";
 
+const char kAndroidGoogleSansTextName[] = "Android Google Sans Text";
+const char kAndroidGoogleSansTextDescription[] =
+    "Enables Google Sans Text as the default font family.";
+
 const char kAndroidHatsRefactorName[] = "Android Hats Refactor";
 const char kAndroidHatsRefactorDescription[] =
     "Enables survey structure refactor.";

@@ -163,6 +163,7 @@ public abstract class ChromeFeatureList {
     public static final String ALLOW_NEW_INCOGNITO_TAB_INTENTS = "AllowNewIncognitoTabIntents";
     public static final String ANDROID_APP_INTEGRATION = "AndroidAppIntegration";
     public static final String ANDROID_ELEGANT_TEXT_HEIGHT = "AndroidElegantTextHeight";
+    public static final String ANDROID_GOOGLE_SANS_TEXT = "AndroidGoogleSansText";
     public static final String ANDROID_HATS_REFACTOR = "AndroidHatsRefactor";
     public static final String ANDROID_HUB = "AndroidHub";
     public static final String ANDROID_HUB_FLOATING_ACTION_BUTTON =
@@ -535,6 +536,8 @@ public abstract class ChromeFeatureList {
             newCachedFlag(ANDROID_APP_INTEGRATION, false);
     public static final CachedFlag sAndroidElegantTextHeight =
             newCachedFlag(ANDROID_ELEGANT_TEXT_HEIGHT, false);
+    public static final CachedFlag sAndroidGoogleSansText =
+            newCachedFlag(ANDROID_GOOGLE_SANS_TEXT, false);
     public static final CachedFlag sAndroidHub = newCachedFlag(ANDROID_HUB, true);
     public static final CachedFlag sAndroidHubFloatingActionButton =
             newCachedFlag(
@@ -700,6 +703,7 @@ public abstract class ChromeFeatureList {
                     sAccountReauthenticationRecentTimeWindow,
                     sAndroidAppIntegration,
                     sAndroidElegantTextHeight,
+                    sAndroidGoogleSansText,
                     sAndroidHub,
                     sAndroidHubFloatingActionButton,
                     sAndroidHubV2,

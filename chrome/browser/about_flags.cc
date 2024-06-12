@@ -7690,6 +7690,10 @@ const FeatureEntry kFeatureEntries[] = {
      flag_descriptions::kAndroidElegantTextHeightName,
      flag_descriptions::kAndroidElegantTextHeightDescription, kOsAndroid,
      FEATURE_VALUE_TYPE(chrome::android::kAndroidElegantTextHeight)},
+
+    {"android-google-sans-text", flag_descriptions::kAndroidGoogleSansTextName,
+     flag_descriptions::kAndroidGoogleSansTextDescription, kOsAndroid,
+     FEATURE_VALUE_TYPE(chrome::android::kAndroidGoogleSansText)},
 #endif  // BUILDFLAG(IS_ANDROID)
 
 #if BUILDFLAG(IS_WIN)

@@ -161,6 +161,7 @@ const base::Feature* const kFeaturesExposedToJava[] = {
     &kAllowNewIncognitoTabIntents,
     &kAndroidAppIntegration,
     &kAndroidElegantTextHeight,
+    &kAndroidGoogleSansText,
     &kAndroidHatsRefactor,
     &kAndroidHub,
     &kAndroidHubFloatingActionButton,
@@ -431,6 +432,10 @@ BASE_FEATURE(kAndroidAppIntegration,
 
 BASE_FEATURE(kAndroidElegantTextHeight,
              "AndroidElegantTextHeight",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
+BASE_FEATURE(kAndroidGoogleSansText,
+             "AndroidGoogleSansText",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
 BASE_FEATURE(kAndroidHatsRefactor,

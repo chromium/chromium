@@ -20187,6 +20187,7 @@ from previous Chrome versions.
   <int value="-108468535" label="ChromeColorsCustomColorPicker:disabled"/>
   <int value="-107856449"
       label="RequestDesktopSiteExceptionsDowngrade:enabled"/>
+  <int value="-107735009" label="AndroidGoogleSansText:disabled"/>
   <int value="-106631643" label="TurnOffStreamingMediaCachingAlways:disabled"/>
   <int value="-106373261" label="PaintPreviewDemo:enabled"/>
   <int value="-106128305" label="DragDropTabTearing:disabled"/>
@@ -21738,6 +21739,7 @@ from previous Chrome versions.
   <int value="562185887" label="PasswordSuggestionBottomSheetV2:enabled"/>
   <int value="562635337" label="EcheSWACheckAndroidNetworkInfo:disabled"/>
   <int value="562979188" label="DesktopIOSPromotion:enabled"/>
+  <int value="563646930" label="AndroidGoogleSansText:enabled"/>
   <int value="564355877" label="OopRasterizationDDL:disabled"/>
   <int value="564452531" label="SystemEmojiPickerExtension:enabled"/>
   <int value="564522013" label="Av1Decoder:disabled"/>

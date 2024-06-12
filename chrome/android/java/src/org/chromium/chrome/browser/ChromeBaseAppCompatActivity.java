@@ -13,6 +13,7 @@ import android.content.Context;
 import android.content.SharedPreferences;
 import android.content.res.Configuration;
 import android.os.Build;
+import android.os.Build.VERSION_CODES;
 import android.os.Bundle;
 import android.view.MenuItem;
 import android.view.View;
@@ -338,6 +339,14 @@ public class ChromeBaseAppCompatActivity extends AppCompatActivity
             int elegantTextHeightOverlay = R.style.ThemeOverlay_BrowserUI_ElegantTextHeight;
             getTheme().applyStyle(elegantTextHeightOverlay, true);
             mThemeResIds.add(elegantTextHeightOverlay);
+        }
+
+        if (Build.VERSION.SDK_INT >= VERSION_CODES.TIRAMISU
+                && ChromeFeatureList.sAndroidGoogleSansText.isEnabled()) {
+            int defaultFontFamilyOverlay =
+                    R.style.ThemeOverlay_BrowserUI_DefaultFontFamilyThemeOverlay;
+            getTheme().applyStyle(defaultFontFamilyOverlay, true);
+            mThemeResIds.add(defaultFontFamilyOverlay);
         }
     }
 

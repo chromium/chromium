@@ -2355,6 +2355,9 @@ extern const char kAndroidImprovedBookmarksDescription[];
 extern const char kAndroidElegantTextHeightName[];
 extern const char kAndroidElegantTextHeightDescription[];
 
+extern const char kAndroidGoogleSansTextName[];
+extern const char kAndroidGoogleSansTextDescription[];
+
 extern const char kAndroidHatsRefactorName[];
 extern const char kAndroidHatsRefactorDescription[];
 
