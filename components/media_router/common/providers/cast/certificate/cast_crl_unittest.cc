@@ -14,8 +14,8 @@
 #include "third_party/boringssl/src/pki/trust_store_in_memory.h"
 #include "third_party/openscreen/src/cast/common/certificate/proto/test_suite.pb.h"
 
-using cast::certificate::DeviceCertTest;
-using cast::certificate::DeviceCertTestSuite;
+using openscreen::cast::proto::DeviceCertTest;
+using openscreen::cast::proto::DeviceCertTestSuite;
 
 namespace cast_certificate {
 namespace {
@@ -120,13 +120,13 @@ bool RunTest(const DeviceCertTest& test_case) {
 
   std::string crl_bundle = test_case.crl_bundle();
   switch (test_case.expected_result()) {
-    case cast::certificate::PATH_VERIFICATION_FAILED:
+    case openscreen::cast::proto::PATH_VERIFICATION_FAILED:
       return TestVerifyCertificate(RESULT_FAIL, certificate_chain,
                                    cert_verification_time);
-    case cast::certificate::CRL_VERIFICATION_FAILED:
+    case openscreen::cast::proto::CRL_VERIFICATION_FAILED:
       return TestVerifyCRL(RESULT_FAIL, crl_bundle, crl_verification_time,
                            crl_trust_store.get());
-    case cast::certificate::REVOCATION_CHECK_FAILED_WITHOUT_CRL:
+    case openscreen::cast::proto::REVOCATION_CHECK_FAILED_WITHOUT_CRL:
       return TestVerifyCertificate(RESULT_SUCCESS, certificate_chain,
                                    cert_verification_time) &&
              TestVerifyCRL(RESULT_FAIL, crl_bundle, crl_verification_time,
@@ -135,9 +135,9 @@ bool RunTest(const DeviceCertTest& test_case) {
                  CastCertError::ERR_CRL_INVALID, certificate_chain, crl_bundle,
                  crl_verification_time, cert_verification_time,
                  CRLPolicy::CRL_REQUIRED, crl_trust_store.get());
-    case cast::certificate::CRL_EXPIRED_AFTER_INITIAL_VERIFICATION:
+    case openscreen::cast::proto::CRL_EXPIRED_AFTER_INITIAL_VERIFICATION:
     // Fall-through intended.
-    case cast::certificate::REVOCATION_CHECK_FAILED:
+    case openscreen::cast::proto::REVOCATION_CHECK_FAILED:
       return TestVerifyCertificate(RESULT_SUCCESS, certificate_chain,
                                    cert_verification_time) &&
              TestVerifyCRL(RESULT_SUCCESS, crl_bundle, crl_verification_time,
@@ -146,7 +146,7 @@ bool RunTest(const DeviceCertTest& test_case) {
                  CastCertError::ERR_CERTS_REVOKED, certificate_chain,
                  crl_bundle, crl_verification_time, cert_verification_time,
                  CRLPolicy::CRL_OPTIONAL, crl_trust_store.get());
-    case cast::certificate::SUCCESS:
+    case openscreen::cast::proto::SUCCESS:
       return (crl_bundle.empty() ||
               TestVerifyCRL(RESULT_SUCCESS, crl_bundle, crl_verification_time,
                             crl_trust_store.get())) &&
@@ -158,7 +158,7 @@ bool RunTest(const DeviceCertTest& test_case) {
                                   !crl_bundle.empty() ? CRLPolicy::CRL_REQUIRED
                                                       : CRLPolicy::CRL_OPTIONAL,
                                   crl_trust_store.get());
-    case cast::certificate::UNSPECIFIED:
+    case openscreen::cast::proto::UNKNOWN:
       return false;
   }
   return false;

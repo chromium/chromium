@@ -39,7 +39,7 @@ message CastAuthUtilInputs {
   message AuthenticateChallengeReplyInput {
     // The actual input to the function, parts of which may be
     // overridden based on the additional fields below.
-    required cast.channel.CastMessage cast_message = 1;
+    required openscreen.cast.proto.CastMessage cast_message = 1;
     required string nonce = 2;
 
     // Values used to set the start and end times.
@@ -49,11 +49,11 @@ message CastAuthUtilInputs {
     // Value used to replace the payload of |cast_message| with data
     // that is more likely to be valid (and thus exercise more code
     // paths).
-    optional cast.channel.DeviceAuthMessage auth_message = 5;
+    optional openscreen.cast.proto.DeviceAuthMessage auth_message = 5;
 
     // Values used to replace the |crl| field of
     // |auth_message.response|.
-    repeated cast.certificate.TbsCrl tbs_crls = 7;
+    repeated openscreen.cast.proto.TbsCrl tbs_crls = 7;
 
     // Flags that force certain fields to have correct values.
     required bool nonce_ok = 8;
@@ -155,7 +155,7 @@ message CastMessageUtilInputs {
     CreateSetVolumeRequestInput create_set_volume_request_input = 6;
     int32 int_input = 7;
     string string_input = 8;
-    cast.channel.CastMessage cast_message = 9;
+    openscreen.cast.proto.CastMessage cast_message = 9;
     CreateVirtualConnectionRequestInput
         create_virtual_connection_request_input = 10;
     CreateGetAppAvailabilityRequestInput

@@ -15,7 +15,7 @@ namespace cast_channel {
 class CastSocket;
 class Logger;
 
-using ::cast::channel::CastMessage;
+using ::openscreen::cast::proto::CastMessage;
 
 // Decorator delegate which provides keep-alive functionality.
 // Keep-alive messages are handled by this object; all other messages and

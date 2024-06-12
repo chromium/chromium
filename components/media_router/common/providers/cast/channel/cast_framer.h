@@ -17,7 +17,7 @@
 #include "third_party/openscreen/src/cast/common/channel/proto/cast_channel.pb.h"
 
 namespace cast_channel {
-using ::cast::channel::CastMessage;
+using ::openscreen::cast::proto::CastMessage;
 
 // Class for constructing and parsing CastMessage packet data.
 class MessageFramer {

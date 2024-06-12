@@ -27,7 +27,7 @@ class IOBuffer;
 
 namespace cast_channel {
 
-using ::cast::channel::CastMessage;
+using ::openscreen::cast::proto::CastMessage;
 class MessageFramer;
 
 class CastTransport {

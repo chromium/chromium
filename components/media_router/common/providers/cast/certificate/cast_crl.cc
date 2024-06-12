@@ -34,9 +34,9 @@
 
 namespace cast_certificate {
 
-using cast::certificate::Crl;
-using cast::certificate::CrlBundle;
-using cast::certificate::TbsCrl;
+using openscreen::cast::proto::Crl;
+using openscreen::cast::proto::CrlBundle;
+using openscreen::cast::proto::TbsCrl;
 
 namespace {
 

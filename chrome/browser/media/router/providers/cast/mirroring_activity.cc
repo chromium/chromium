@@ -620,7 +620,7 @@ void MirroringActivity::OnMessage(mirroring::mojom::CastMessagePtr message) {
 }
 
 void MirroringActivity::OnAppMessage(
-    const cast::channel::CastMessage& message) {
+    const openscreen::cast::proto::CastMessage& message) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(io_sequence_checker_);
   if (!route_.is_local()) {
     return;
@@ -657,7 +657,7 @@ void MirroringActivity::OnAppMessage(
   DVLOG(2) << "Relaying app message from receiver: " << message.DebugString();
   DCHECK(message.has_payload_utf8());
   DCHECK_EQ(message.protocol_version(),
-            cast::channel::CastMessage_ProtocolVersion_CASTV2_1_0);
+            openscreen::cast::proto::CastMessage_ProtocolVersion_CASTV2_1_0);
   if (message.namespace_() == mirroring::mojom::kWebRtcNamespace) {
     logger_->LogInfo(media_router::mojom::LogCategory::kMirroring,
                      kLoggerComponent,
@@ -755,9 +755,10 @@ void MirroringActivity::HandleParseJsonResult(
         route().presentation_id());
   }
 
-  cast::channel::CastMessage cast_message = cast_channel::CreateCastMessage(
-      message_namespace, std::move(*result), message_handler_->source_id(),
-      session->destination_id());
+  openscreen::cast::proto::CastMessage cast_message =
+      cast_channel::CreateCastMessage(message_namespace, std::move(*result),
+                                      message_handler_->source_id(),
+                                      session->destination_id());
   if (message_handler_->SendCastMessage(cast_data_.cast_channel_id,
                                         cast_message) == Result::kFailed) {
     logger_->LogError(

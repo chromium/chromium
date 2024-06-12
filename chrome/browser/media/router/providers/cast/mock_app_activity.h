@@ -56,7 +56,8 @@ class MockAppActivity : public AppActivity {
       ClosePresentationConnections,
       void(blink::mojom::PresentationConnectionCloseReason close_reason));
   MOCK_METHOD0(TerminatePresentationConnections, void());
-  MOCK_METHOD1(OnAppMessage, void(const cast::channel::CastMessage& message));
+  MOCK_METHOD1(OnAppMessage,
+               void(const openscreen::cast::proto::CastMessage& message));
   MOCK_METHOD1(OnInternalMessage,
                void(const cast_channel::InternalMessage& message));
   MOCK_METHOD2(

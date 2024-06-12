@@ -105,8 +105,9 @@ class CastActivityManager : public CastActivityManagerBase,
   CastSessionTracker* GetCastSessionTracker() const { return session_tracker_; }
 
   // cast_channel::CastMessageHandler::Observer overrides.
-  void OnAppMessage(int channel_id,
-                    const cast::channel::CastMessage& message) override;
+  void OnAppMessage(
+      int channel_id,
+      const openscreen::cast::proto::CastMessage& message) override;
   void OnInternalMessage(int channel_id,
                          const cast_channel::InternalMessage& message) override;
 

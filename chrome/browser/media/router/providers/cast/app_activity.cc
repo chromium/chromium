@@ -138,7 +138,8 @@ void AppActivity::BindMediaController(
   }
 }
 
-void AppActivity::OnAppMessage(const cast::channel::CastMessage& message) {
+void AppActivity::OnAppMessage(
+    const openscreen::cast::proto::CastMessage& message) {
   if (!session_id_) {
     DVLOG(2) << "No session associated with activity!";
     return;

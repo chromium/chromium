@@ -14,7 +14,7 @@
 
 namespace media_router {
 
-using cast::channel::CastMessage;
+using openscreen::cast::proto::CastMessage;
 
 class MediaSinkInternal;
 

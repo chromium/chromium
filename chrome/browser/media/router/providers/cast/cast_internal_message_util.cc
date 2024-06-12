@@ -212,7 +212,7 @@ blink::mojom::PresentationConnectionMessagePtr CreateReceiverActionMessage(
 
 base::Value::Dict CreateAppMessageBody(
     const std::string& session_id,
-    const cast::channel::CastMessage& cast_message) {
+    const openscreen::cast::proto::CastMessage& cast_message) {
   // TODO(crbug.com/41400942): Investigate whether it is possible to move
   // instead of copying the contents of |cast_message|. Right now copying is
   // done because the message is passed as a const ref at the
@@ -221,10 +221,10 @@ base::Value::Dict CreateAppMessageBody(
   message.Set("sessionId", base::Value(session_id));
   message.Set("namespaceName", base::Value(cast_message.namespace_()));
   switch (cast_message.payload_type()) {
-    case cast::channel::CastMessage_PayloadType_STRING:
+    case openscreen::cast::proto::CastMessage_PayloadType_STRING:
       message.Set("message", base::Value(cast_message.payload_utf8()));
       break;
-    case cast::channel::CastMessage_PayloadType_BINARY: {
+    case openscreen::cast::proto::CastMessage_PayloadType_BINARY: {
       const auto& payload = cast_message.payload_binary();
       message.Set("message",
                   base::Value(base::Value::BlobStorage(
@@ -504,7 +504,7 @@ blink::mojom::PresentationConnectionMessagePtr CreateAppMessageAck(
 blink::mojom::PresentationConnectionMessagePtr CreateAppMessage(
     const std::string& session_id,
     const std::string& client_id,
-    const cast::channel::CastMessage& cast_message) {
+    const openscreen::cast::proto::CastMessage& cast_message) {
   return CreateMessageCommon(CastInternalMessage::Type::kAppMessage,
                              CreateAppMessageBody(session_id, cast_message),
                              client_id);

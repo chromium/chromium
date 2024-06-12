@@ -527,7 +527,7 @@ CastActivity* CastActivityManager::AddMirroringActivity(
 
 void CastActivityManager::OnAppMessage(
     int channel_id,
-    const cast::channel::CastMessage& message) {
+    const openscreen::cast::proto::CastMessage& message) {
   // Note: app messages are received only after session is created.
   DVLOG(2) << "Received app message on cast channel " << channel_id;
   auto it = FindActivityByChannelId(channel_id);

@@ -23,10 +23,10 @@ using cast_util::StringToEnum;
 
 namespace cast_util {
 
-using ::cast::channel::AuthChallenge;
-using ::cast::channel::CastMessage;
 using cast_channel::CastMessageType;
 using cast_channel::GetAppAvailabilityResult;
+using ::openscreen::cast::proto::AuthChallenge;
+using ::openscreen::cast::proto::CastMessage;
 
 template <>
 const EnumTable<CastMessageType>& EnumTable<CastMessageType>::GetInstance() {
@@ -232,10 +232,10 @@ bool IsCastMessageValid(const CastMessage& message_proto) {
     return false;
   }
   return (message_proto.payload_type() ==
-              cast::channel::CastMessage_PayloadType_STRING &&
+              openscreen::cast::proto::CastMessage_PayloadType_STRING &&
           message_proto.has_payload_utf8()) ||
          (message_proto.payload_type() ==
-              cast::channel::CastMessage_PayloadType_BINARY &&
+              openscreen::cast::proto::CastMessage_PayloadType_BINARY &&
           message_proto.has_payload_binary());
 }
 
@@ -321,10 +321,11 @@ void CreateAuthChallengeMessage(CastMessage* message_proto,
   CHECK(message_proto);
   DeviceAuthMessage auth_message;
 
-  cast::channel::AuthChallenge* challenge = auth_message.mutable_challenge();
+  openscreen::cast::proto::AuthChallenge* challenge =
+      auth_message.mutable_challenge();
   DCHECK(challenge);
   challenge->set_sender_nonce(auth_context.nonce());
-  challenge->set_hash_algorithm(cast::channel::SHA256);
+  challenge->set_hash_algorithm(openscreen::cast::proto::SHA256);
 
   std::string auth_message_string;
   auth_message.SerializeToString(&auth_message_string);
@@ -332,7 +333,7 @@ void CreateAuthChallengeMessage(CastMessage* message_proto,
   FillCommonCastMessageFields(message_proto, kPlatformSenderId,
                               kPlatformReceiverId, kAuthNamespace);
   message_proto->set_payload_type(
-      cast::channel::CastMessage_PayloadType_BINARY);
+      openscreen::cast::proto::CastMessage_PayloadType_BINARY);
   message_proto->set_payload_binary(auth_message_string);
 }
 

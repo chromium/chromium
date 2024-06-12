@@ -386,7 +386,7 @@ void CastMediaSinkServiceImpl::OnError(const cast_channel::CastSocket& socket,
 
 void CastMediaSinkServiceImpl::OnMessage(
     const cast_channel::CastSocket& socket,
-    const cast::channel::CastMessage& message) {}
+    const openscreen::cast::proto::CastMessage& message) {}
 
 void CastMediaSinkServiceImpl::OnReadyStateChanged(
     const cast_channel::CastSocket& socket) {}

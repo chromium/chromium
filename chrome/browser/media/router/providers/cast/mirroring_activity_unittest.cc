@@ -350,8 +350,8 @@ TEST_F(MirroringActivityTest, SendWebRtc) {
   MakeActivity();
   static constexpr char kPayload[] = R"({"foo": "bar"})";
   EXPECT_CALL(message_handler_, SendCastMessage(kChannelId, _))
-      .WillOnce(
-          WithArg<1>([this](const cast::channel::CastMessage& cast_message) {
+      .WillOnce(WithArg<1>(
+          [this](const openscreen::cast::proto::CastMessage& cast_message) {
             EXPECT_EQ(message_handler_.source_id(), cast_message.source_id());
             EXPECT_EQ(kDestinationId, cast_message.destination_id());
             EXPECT_EQ(mirroring::mojom::kWebRtcNamespace,
@@ -371,11 +371,12 @@ TEST_F(MirroringActivityTest, SendRemoting) {
   MakeActivity();
   static constexpr char kPayload[] = R"({"type": "RPC"})";
   EXPECT_CALL(message_handler_, SendCastMessage(kChannelId, _))
-      .WillOnce(WithArg<1>([](const cast::channel::CastMessage& cast_message) {
-        EXPECT_EQ(mirroring::mojom::kRemotingNamespace,
-                  cast_message.namespace_());
-        return cast_channel::Result::kOk;
-      }));
+      .WillOnce(WithArg<1>(
+          [](const openscreen::cast::proto::CastMessage& cast_message) {
+            EXPECT_EQ(mirroring::mojom::kRemotingNamespace,
+                      cast_message.namespace_());
+            return cast_channel::Result::kOk;
+          }));
 
   activity_->OnMessage(
       mirroring::mojom::CastMessage::New(kNamespace, kPayload));
@@ -385,7 +386,7 @@ TEST_F(MirroringActivityTest, SendRemoting) {
 TEST_F(MirroringActivityTest, OnAppMessageWrongNamespace) {
   MakeActivity();
   EXPECT_CALL(*channel_to_service_, OnMessage).Times(0);
-  cast::channel::CastMessage message;
+  openscreen::cast::proto::CastMessage message;
   message.set_namespace_("wrong_namespace");
   message.set_destination_id(kDestinationId);
   message.set_source_id(MessageSourceId());
@@ -395,7 +396,7 @@ TEST_F(MirroringActivityTest, OnAppMessageWrongNamespace) {
 TEST_P(MirroringActivityTest, OnAppMessageWrongDestination) {
   MakeActivity();
   EXPECT_CALL(*channel_to_service_, OnMessage).Times(0);
-  cast::channel::CastMessage message;
+  openscreen::cast::proto::CastMessage message;
   message.set_namespace_(GetParam());
   message.set_destination_id("someOtherDestination");
   message.set_source_id(MessageSourceId());
@@ -405,7 +406,7 @@ TEST_P(MirroringActivityTest, OnAppMessageWrongDestination) {
 TEST_P(MirroringActivityTest, OnAppMessageWrongSource) {
   MakeActivity();
   EXPECT_CALL(*channel_to_service_, OnMessage).Times(0);
-  cast::channel::CastMessage message;
+  openscreen::cast::proto::CastMessage message;
   message.set_namespace_(GetParam());
   message.set_destination_id(kDestinationId);
   message.set_source_id("someRandomStranger");
@@ -416,7 +417,7 @@ TEST_P(MirroringActivityTest, OnAppMessageWrongNonlocal) {
   route_is_local_ = false;
   MakeActivity();
   ASSERT_FALSE(channel_to_service_);
-  cast::channel::CastMessage message;
+  openscreen::cast::proto::CastMessage message;
   message.set_namespace_(GetParam());
   message.set_destination_id(kDestinationId);
   message.set_source_id(MessageSourceId());
@@ -434,12 +435,12 @@ TEST_P(MirroringActivityTest, OnAppMessage) {
         EXPECT_EQ(kPayload, message->json_format_data);
       });
 
-  cast::channel::CastMessage message;
+  openscreen::cast::proto::CastMessage message;
   message.set_namespace_(GetParam());
   message.set_destination_id(kDestinationId);
   message.set_source_id(MessageSourceId());
   message.set_protocol_version(
-      cast::channel::CastMessage_ProtocolVersion_CASTV2_1_0);
+      openscreen::cast::proto::CastMessage_ProtocolVersion_CASTV2_1_0);
   message.set_payload_utf8(kPayload);
   activity_->OnAppMessage(message);
 }

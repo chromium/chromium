@@ -78,7 +78,7 @@ namespace cast_crypto = ::cast_certificate;
 AuthResult ParseAuthMessage(const CastMessage& challenge_reply,
                             DeviceAuthMessage* auth_message) {
   if (challenge_reply.payload_type() !=
-      cast::channel::CastMessage_PayloadType_BINARY) {
+      openscreen::cast::proto::CastMessage_PayloadType_BINARY) {
     return AuthResult::CreateWithParseError(
         "Wrong payload type in challenge reply",
         AuthResult::ERROR_WRONG_PAYLOAD_TYPE);
@@ -298,11 +298,11 @@ AuthResult AuthContext::VerifySenderNonce(
 }
 
 AuthResult VerifyAndMapDigestAlgorithm(
-    cast::channel::HashAlgorithm response_digest_algorithm,
+    openscreen::cast::proto::HashAlgorithm response_digest_algorithm,
     cast_certificate::CastDigestAlgorithm* digest_algorithm) {
   AuthResult success;
   switch (response_digest_algorithm) {
-    case cast::channel::SHA1:
+    case openscreen::cast::proto::SHA1:
       RecordSignatureStatus(CastSignatureStatus::kAlgorithmUnsupported);
       *digest_algorithm = cast_certificate::CastDigestAlgorithm::SHA1;
       if (base::FeatureList::IsEnabled(kEnforceSHA256Checking)) {
@@ -313,7 +313,7 @@ AuthResult VerifyAndMapDigestAlgorithm(
         success.set_flag(CastChannelFlag::kSha1DigestAlgorithm);
       }
       break;
-    case cast::channel::SHA256:
+    case openscreen::cast::proto::SHA256:
       *digest_algorithm = cast_certificate::CastDigestAlgorithm::SHA256;
       break;
   }

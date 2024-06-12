@@ -15,8 +15,8 @@
 namespace cast_channel {
 
 class AuthContext;
-using ::cast::channel::CastMessage;
-using ::cast::channel::DeviceAuthMessage;
+using ::openscreen::cast::proto::CastMessage;
+using ::openscreen::cast::proto::DeviceAuthMessage;
 
 // Reserved message namespaces for internal messages.
 static constexpr char kAuthNamespace[] =

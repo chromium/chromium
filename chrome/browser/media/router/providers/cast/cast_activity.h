@@ -97,7 +97,8 @@ class CastActivity {
                                         std::optional<int> request_id);
 
   // Handles a message forwarded by CastActivityManager.
-  virtual void OnAppMessage(const cast::channel::CastMessage& message) = 0;
+  virtual void OnAppMessage(
+      const openscreen::cast::proto::CastMessage& message) = 0;
   virtual void OnInternalMessage(
       const cast_channel::InternalMessage& message) = 0;
 

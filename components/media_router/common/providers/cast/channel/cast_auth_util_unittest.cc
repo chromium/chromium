@@ -22,8 +22,8 @@
 #include "third_party/openscreen/src/cast/common/certificate/proto/test_suite.pb.h"
 #include "third_party/openscreen/src/cast/common/channel/proto/cast_channel.pb.h"
 
-using cast::channel::SHA1;
-using cast::channel::SHA256;
+using openscreen::cast::proto::SHA1;
+using openscreen::cast::proto::SHA256;
 
 namespace cast_channel {
 namespace {
@@ -57,7 +57,7 @@ class CastAuthUtilTest : public testing::Test {
  protected:
   static AuthResponse CreateAuthResponse(
       std::string* signed_data,
-      cast::channel::HashAlgorithm digest_algorithm) {
+      openscreen::cast::proto::HashAlgorithm digest_algorithm) {
     auto chain = cast_certificate::ReadCertificateChainFromFile(
         cast_certificate::testing::GetCastCertificatesSubDirectory()
             .AppendASCII("chromecast_gen1.pem"));
@@ -458,7 +458,7 @@ AuthResult TestVerifyRevocation(
 }
 
 // Runs a single test case.
-bool RunTest(const cast::certificate::DeviceCertTest& test_case) {
+bool RunTest(const openscreen::cast::proto::DeviceCertTest& test_case) {
   std::unique_ptr<cast_certificate::testing::ScopedCastTrustStoreConfig>
       scoped_cast_trust_store =
           test_case.use_test_trust_anchors()
@@ -492,7 +492,7 @@ bool RunTest(const cast::certificate::DeviceCertTest& test_case) {
   std::string crl_bundle = test_case.crl_bundle();
   AuthResult result;
   switch (test_case.expected_result()) {
-    case cast::certificate::PATH_VERIFICATION_FAILED:
+    case openscreen::cast::proto::PATH_VERIFICATION_FAILED:
       result =
           TestVerifyRevocation(certificate_chain, crl_bundle, verification_time,
                                false, crl_trust_store.get());
@@ -500,31 +500,31 @@ bool RunTest(const cast::certificate::DeviceCertTest& test_case) {
                 AuthResult::ERROR_CERT_NOT_SIGNED_BY_TRUSTED_CA);
       return result.error_type ==
              AuthResult::ERROR_CERT_NOT_SIGNED_BY_TRUSTED_CA;
-    case cast::certificate::CRL_VERIFICATION_FAILED:
+    case openscreen::cast::proto::CRL_VERIFICATION_FAILED:
     // Fall-through intended.
-    case cast::certificate::REVOCATION_CHECK_FAILED_WITHOUT_CRL:
+    case openscreen::cast::proto::REVOCATION_CHECK_FAILED_WITHOUT_CRL:
       result =
           TestVerifyRevocation(certificate_chain, crl_bundle, verification_time,
                                true, crl_trust_store.get());
       EXPECT_EQ(result.error_type, AuthResult::ERROR_CRL_INVALID);
       return result.error_type == AuthResult::ERROR_CRL_INVALID;
-    case cast::certificate::CRL_EXPIRED_AFTER_INITIAL_VERIFICATION:
+    case openscreen::cast::proto::CRL_EXPIRED_AFTER_INITIAL_VERIFICATION:
       // By-pass this test because CRL is always verified at the time the
       // certificate is verified.
       return true;
-    case cast::certificate::REVOCATION_CHECK_FAILED:
+    case openscreen::cast::proto::REVOCATION_CHECK_FAILED:
       result =
           TestVerifyRevocation(certificate_chain, crl_bundle, verification_time,
                                true, crl_trust_store.get());
       EXPECT_EQ(result.error_type, AuthResult::ERROR_CERT_REVOKED);
       return result.error_type == AuthResult::ERROR_CERT_REVOKED;
-    case cast::certificate::SUCCESS:
+    case openscreen::cast::proto::SUCCESS:
       result =
           TestVerifyRevocation(certificate_chain, crl_bundle, verification_time,
                                false, crl_trust_store.get());
       EXPECT_EQ(result.error_type, AuthResult::ERROR_SIGNED_BLOBS_MISMATCH);
       return result.error_type == AuthResult::ERROR_SIGNED_BLOBS_MISMATCH;
-    case cast::certificate::UNSPECIFIED:
+    case openscreen::cast::proto::UNKNOWN:
       return false;
   }
   return false;
@@ -541,7 +541,7 @@ void RunTestSuite(const std::string& test_suite_file_name) {
           test_suite_file_name),
       &testsuite_raw);
 
-  cast::certificate::DeviceCertTestSuite test_suite;
+  openscreen::cast::proto::DeviceCertTestSuite test_suite;
   EXPECT_TRUE(test_suite.ParseFromString(testsuite_raw));
   uint16_t success = 0;
   uint16_t failed = 0;

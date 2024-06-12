@@ -357,7 +357,7 @@ void CastMessageHandler::OnMessage(const CastSocket& socket,
   // OnAppMessage and OnInternalMessage methods).
   if (IsCastReservedNamespace(message.namespace_())) {
     if (message.payload_type() ==
-        cast::channel::CastMessage_PayloadType_STRING) {
+        openscreen::cast::proto::CastMessage_PayloadType_STRING) {
       VLOG(1) << __func__ << ": channel_id: " << socket.id()
               << ", message: " << message;
       parse_json_.Run(

@@ -13,7 +13,7 @@
 namespace cast_channel {
 namespace fuzz {
 
-DEFINE_PROTO_FUZZER(const cast::channel::CastMessage& input) {
+DEFINE_PROTO_FUZZER(const openscreen::cast::proto::CastMessage& input) {
   std::string native_input;
   MessageFramer::Serialize(input, &native_input);
   if (::getenv("LPM_DUMP_NATIVE_INPUT"))

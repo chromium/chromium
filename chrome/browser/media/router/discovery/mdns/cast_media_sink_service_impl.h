@@ -247,7 +247,7 @@ class CastMediaSinkServiceImpl : public MediaSinkServiceBase,
   void OnError(const cast_channel::CastSocket& socket,
                cast_channel::ChannelError error_state) override;
   void OnMessage(const cast_channel::CastSocket& socket,
-                 const cast::channel::CastMessage& message) override;
+                 const openscreen::cast::proto::CastMessage& message) override;
   void OnReadyStateChanged(const cast_channel::CastSocket& socket) override;
 
   // DiscoveryNetworkMonitor::Observer implementation

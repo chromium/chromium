@@ -832,9 +832,10 @@ TEST_F(CastActivityManagerTest, AppMessageFromReceiver) {
   LaunchAppSession();
 
   // Destination ID matches client ID.
-  cast::channel::CastMessage message = cast_channel::CreateCastMessage(
-      "urn:x-cast:com.google.foo", base::Value(base::Value::Dict()), "sourceId",
-      "theClientId");
+  openscreen::cast::proto::CastMessage message =
+      cast_channel::CreateCastMessage("urn:x-cast:com.google.foo",
+                                      base::Value(base::Value::Dict()),
+                                      "sourceId", "theClientId");
 
   EXPECT_CALL(*app_activity_, OnAppMessage(IsCastChannelMessage(message)));
   manager_->OnAppMessage(kChannelId, message);

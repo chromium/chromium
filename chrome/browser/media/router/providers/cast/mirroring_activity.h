@@ -83,7 +83,8 @@ class MirroringActivity : public CastActivity,
   void OnMessage(mirroring::mojom::CastMessagePtr message) override;
 
   // CastActivity implementation
-  void OnAppMessage(const cast::channel::CastMessage& message) override;
+  void OnAppMessage(
+      const openscreen::cast::proto::CastMessage& message) override;
   void OnInternalMessage(const cast_channel::InternalMessage& message) override;
 
   // mojom::MediaController implementation

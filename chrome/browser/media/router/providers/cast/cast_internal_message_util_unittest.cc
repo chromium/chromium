@@ -516,9 +516,10 @@ TEST(CastInternalMessageUtilTest, CreateAppMessage) {
   std::string client_id = "clientId";
   base::Value::Dict message_body;
   message_body.Set("foo", base::Value("bar"));
-  cast::channel::CastMessage cast_message = cast_channel::CreateCastMessage(
-      "urn:x-cast:com.google.foo", base::Value(std::move(message_body)),
-      "sourceId", "transportId");
+  openscreen::cast::proto::CastMessage cast_message =
+      cast_channel::CreateCastMessage("urn:x-cast:com.google.foo",
+                                      base::Value(std::move(message_body)),
+                                      "sourceId", "transportId");
 
   auto message = CreateAppMessage(session_id, client_id, cast_message);
   EXPECT_THAT(message, IsPresentationConnectionMessage(R"({

@@ -12,7 +12,7 @@
 namespace cast_channel {
 namespace fuzz {
 
-DEFINE_PROTO_FUZZER(const cast::channel::CastMessage& input) {
+DEFINE_PROTO_FUZZER(const openscreen::cast::proto::CastMessage& input) {
   openscreen::ErrorOr<std::vector<uint8_t>> result =
       openscreen::cast::message_serialization::Serialize(input);
 }
