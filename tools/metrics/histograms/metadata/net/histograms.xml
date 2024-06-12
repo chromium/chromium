@@ -2319,7 +2319,7 @@ chromium-metrics-reviews@google.com.
 <histogram
     name="Net.QuicChromiumClientStream.Http3DatagramDroppedOnWriteConnectUdpPayload"
     enum="BooleanSuccess" expires_after="2024-12-04">
-  <owner>ciaramcmullin@chromium.org</owner>
+  <owner>ciaramcmullin@google.com</owner>
   <owner>src/net/OWNERS</owner>
   <summary>
     Records whether an HTTP Datagram was dropped when trying to send a UDP
@@ -2691,7 +2691,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="Net.QuicProxyDatagramClientSocket.MaxQueueSizeReached"
     enum="BooleanSuccess" expires_after="2024-12-04">
-  <owner>ciaramcmullin@chromium.org</owner>
+  <owner>ciaramcmullin@google.com</owner>
   <owner>src/net/quic/OWNERS</owner>
   <summary>
     Records whether queue is at maximum capacity when an HTTP/3 datagram arrives
