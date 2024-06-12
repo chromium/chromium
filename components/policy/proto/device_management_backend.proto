@@ -4377,6 +4377,13 @@ message ClientCertificateProvisioningRequest {
 // (see existing usage of HTTP error codes described in the
 // `DeviceManagementResponse` comment).
 message CertProvBackendError {
+  // If a new error code is added to the enum and used by the DM Server to
+  // propagate an error, ChromeOS clients running older versions
+  // will not be aware of the new error code. As proto2 is using closed enums,
+  // accessing such an unknown enum field returns the enum's default value
+  // which is the first defined enum value, i.e., `ERROR_UNSPECIFIED`. ChromeOS
+  // clients treat this error by marking the associated certificate provisioning
+  // process as failing.
   enum Error {
     ERROR_UNSPECIFIED = 0;
     // The attempted request is invalid in the current state of the certificate
