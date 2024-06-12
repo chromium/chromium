@@ -28,6 +28,7 @@
     "switches": [
       "-cultures:en-us",
       "-sw1076",
+      "-sice:ICE61",
       "-sice:ICE80"
     ]
   }
