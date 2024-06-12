@@ -240,10 +240,7 @@ std::unique_ptr<FormFetcher> FormFetcherImpl::Clone() {
   result->federated_ = federated_;
   result->is_blocklisted_in_account_store_ = is_blocklisted_in_account_store_;
   result->is_blocklisted_in_profile_store_ = is_blocklisted_in_profile_store_;
-  result->best_matches_ =
-      password_manager_util::FindBestMatches(NonFederatedSameSchemeMatches(
-          base::span(result->non_federated_), result->form_digest_.scheme));
-
+  result->best_matches_ = best_matches_;
   result->interactions_stats_ = interactions_stats_;
   result->insecure_credentials_ = insecure_credentials_;
   result->state_ = state_;
