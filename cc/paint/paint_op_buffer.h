@@ -317,6 +317,8 @@ class CC_PAINT_EXPORT PaintOpBuffer : public SkRefCnt {
 
   const char* DataBufferForTesting() const { return data_.get(); }
 
+  const PaintOp& GetOpAtForTesting(size_t index) const;
+
   class Iterator;
   class OffsetIterator;
   class CompositeIterator;

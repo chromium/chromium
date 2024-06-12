@@ -129,6 +129,10 @@ class CC_PAINT_EXPORT DisplayItemList
   // For testing only, to examine the painted result.
   PaintRecord FinalizeAndReleaseAsRecordForTesting();
 
+  const PaintOpBuffer& GetPaintOpBufferForTesting() const {
+    return paint_op_buffer_;
+  }
+
   // If this list represents an image that should be directly composited (i.e.
   // rasterized at the intrinsic size of the image), return the intrinsic size
   // of the image and whether or not to use nearest neighbor filtering when

@@ -69,6 +69,7 @@
 #include "third_party/blink/renderer/core/testing/core_unit_test_helper.h"
 #include "third_party/blink/renderer/platform/animation/compositor_animation.h"
 #include "third_party/blink/renderer/platform/bindings/v8_per_isolate_data.h"
+#include "third_party/blink/renderer/platform/graphics/compositing/paint_artifact_compositor.h"
 #include "third_party/blink/renderer/platform/heap/garbage_collected.h"
 #include "third_party/blink/renderer/platform/heap/thread_state.h"
 #include "third_party/blink/renderer/platform/scheduler/public/event_loop.h"
@@ -253,6 +254,16 @@ class AnimationAnimationTestNoCompositing : public PaintTestConfigurations,
         ->GetAsCSSNumericValue()
         ->to(CSSPrimitiveValue::UnitType::kPercentage)
         ->value();
+  }
+
+  bool UsesCompositedScrolling(const LayoutBox& box) const {
+    auto* pac = GetDocument().GetFrame()->View()->GetPaintArtifactCompositor();
+    auto* property_trees =
+        pac->RootLayer()->layer_tree_host()->property_trees();
+    const auto* cc_scroll = property_trees->scroll_tree().Node(
+        box.FirstFragment().PaintProperties()->Scroll()->CcNodeId(
+            property_trees->sequence_number()));
+    return cc_scroll && cc_scroll->is_composited;
   }
 
 #define EXPECT_TIME(expected, observed) \
@@ -1918,7 +1929,7 @@ TEST_P(AnimationAnimationTestCompositing,
   )HTML");
 
   auto* scroller = GetLayoutBoxByElementId("scroller");
-  ASSERT_TRUE(scroller->UsesCompositedScrolling());
+  ASSERT_TRUE(UsesCompositedScrolling(*scroller));
 
   // Create ScrollTimeline
   ScrollTimelineOptions* options = ScrollTimelineOptions::Create();
@@ -2279,7 +2290,7 @@ TEST_P(AnimationAnimationTestCompositing,
   // Create ScrollTimeline
   auto* scroller = GetLayoutBoxByElementId("scroller");
   PaintLayerScrollableArea* scrollable_area = scroller->GetScrollableArea();
-  ASSERT_FALSE(scroller->UsesCompositedScrolling());
+  ASSERT_FALSE(UsesCompositedScrolling(*scroller));
   scrollable_area->SetScrollOffset(ScrollOffset(0, 20),
                                    mojom::blink::ScrollType::kProgrammatic);
   ScrollTimelineOptions* options = ScrollTimelineOptions::Create();

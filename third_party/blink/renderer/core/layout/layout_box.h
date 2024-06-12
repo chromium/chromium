@@ -214,6 +214,8 @@ class CORE_EXPORT LayoutBox : public LayoutBoxModelObject {
 
   // Returns true if this LayoutBox has a scroll paint property node and the
   // node is currently composited in cc.
+  // TODO(crbug.com/40517276): Remove this function after launching
+  // RasterInducingScroll.
   bool UsesCompositedScrolling() const;
 
   // Use this with caution! No type checking is done!

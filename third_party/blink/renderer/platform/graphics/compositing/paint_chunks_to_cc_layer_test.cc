@@ -68,11 +68,16 @@ class TestChunks {
       const EffectPaintPropertyNodeOrAlias& e,
       const gfx::Rect& bounds = gfx::Rect(0, 0, 100, 100),
       const std::optional<gfx::Rect>& drawable_bounds = std::nullopt) {
+    AddChunk(PropertyTreeStateOrAlias(t, c, e), bounds, drawable_bounds);
+  }
+  void AddChunk(
+      const PropertyTreeStateOrAlias& state,
+      const gfx::Rect& bounds = gfx::Rect(0, 0, 100, 100),
+      const std::optional<gfx::Rect>& drawable_bounds = std::nullopt) {
     cc::PaintOpBuffer buffer;
     buffer.push<cc::DrawRectOp>(
-        gfx::RectToSkRect(drawable_bounds ? *drawable_bounds : bounds),
-        cc::PaintFlags());
-    AddChunk(buffer.ReleaseAsRecord(), t, c, e, bounds, drawable_bounds);
+        gfx::RectToSkRect(drawable_bounds.value_or(bounds)), cc::PaintFlags());
+    AddChunk(buffer.ReleaseAsRecord(), state, bounds, drawable_bounds);
   }
 
   // Add a paint chunk with a given paint record and property nodes.
@@ -83,6 +88,14 @@ class TestChunks {
       const EffectPaintPropertyNodeOrAlias& e,
       const gfx::Rect& bounds = gfx::Rect(0, 0, 100, 100),
       const std::optional<gfx::Rect>& drawable_bounds = std::nullopt) {
+    AddChunk(record, PropertyTreeStateOrAlias(t, c, e), bounds,
+             drawable_bounds);
+  }
+  void AddChunk(
+      PaintRecord record,
+      const PropertyTreeStateOrAlias& state,
+      const gfx::Rect& bounds = gfx::Rect(0, 0, 100, 100),
+      const std::optional<gfx::Rect>& drawable_bounds = std::nullopt) {
     auto& items = paint_artifact_->GetDisplayItemList();
     auto i = items.size();
     items.AllocateAndConstruct<DrawingDisplayItem>(
@@ -91,20 +104,22 @@ class TestChunks {
         RasterEffectOutset::kNone);
 
     auto& chunks = paint_artifact_->GetPaintChunks();
-    chunks.emplace_back(i, i + 1, DefaultClient(), DefaultId(),
-                        PropertyTreeStateOrAlias(t, c, e));
+    chunks.emplace_back(i, i + 1, DefaultClient(), DefaultId(), state);
     chunks.back().bounds = bounds;
     chunks.back().drawable_bounds = drawable_bounds ? *drawable_bounds : bounds;
   }
 
-  void AddEmptyChunk(const TransformPaintPropertyNode& t,
-                     const ClipPaintPropertyNode& c,
-                     const EffectPaintPropertyNode& e,
+  void AddEmptyChunk(const TransformPaintPropertyNodeOrAlias& t,
+                     const ClipPaintPropertyNodeOrAlias& c,
+                     const EffectPaintPropertyNodeOrAlias& e,
+                     const gfx::Rect& bounds = gfx::Rect(0, 0, 100, 100)) {
+    AddEmptyChunk(PropertyTreeStateOrAlias(t, c, e), bounds);
+  }
+  void AddEmptyChunk(const PropertyTreeStateOrAlias& state,
                      const gfx::Rect& bounds = gfx::Rect(0, 0, 100, 100)) {
     auto& chunks = paint_artifact_->GetPaintChunks();
     auto i = paint_artifact_->GetDisplayItemList().size();
-    chunks.emplace_back(i, i, DefaultClient(), DefaultId(),
-                        PropertyTreeState(t, c, e));
+    chunks.emplace_back(i, i, DefaultClient(), DefaultId(), state);
     chunks.back().bounds = bounds;
   }
 
@@ -1168,6 +1183,395 @@ TEST_P(PaintChunksToCcLayerTest, FilterClipExpanderUnderClip) {
                   PaintOpIs<cc::DrawRecordOp>(),  // the DrawingDisplayItem
                   PaintOpIs<cc::RestoreOp>(),     // </c1>
                   PaintOpIs<cc::RestoreOp>()));   // </e1>
+}
+
+TEST_P(PaintChunksToCcLayerTest, ScrollingContentsToPaintRecord) {
+  auto scroll_state = CreateScrollTranslationState(
+      PropertyTreeState::Root(), -50, -60, gfx::Rect(5, 5, 20, 30),
+      gfx::Size(100, 200));
+  TestChunks chunks;
+  chunks.AddChunk(t0(), c0(), e0());
+  chunks.AddChunk(scroll_state.GetPropertyTreeState());
+  chunks.AddChunk(t0(), c0(), e0());
+
+  // Should not emit DrawScrollingContents when converting to PaintRecord.
+  auto output =
+      PaintChunksToCcLayer::Convert(chunks.Build(), PropertyTreeState::Root());
+  EXPECT_THAT(
+      output,
+      ElementsAre(PaintOpIs<cc::DrawRecordOp>(),  // chunk 0
+                  PaintOpIs<cc::SaveOp>(),
+                  PaintOpEq<cc::ClipRectOp>(
+                      SkRect::MakeXYWH(5, 5, 20, 30), SkClipOp::kIntersect,
+                      /*antialias=*/true),  // <overflow-clip>
+                  PaintOpIs<cc::SaveOp>(),
+                  PaintOpEq<cc::TranslateOp>(-50, -60),  // <scroll-translation>
+                  PaintOpIs<cc::DrawRecordOp>(),         // chuck 1
+                  PaintOpIs<cc::RestoreOp>(),       // </scroll-translation>
+                  PaintOpIs<cc::RestoreOp>(),       // </overflow-clip>
+                  PaintOpIs<cc::DrawRecordOp>()));  // chuck 2
+}
+
+TEST_P(PaintChunksToCcLayerTest, ScrollingContentsIntoDisplayItemList) {
+  auto scroll_state = CreateScrollTranslationState(
+      PropertyTreeState::Root(), -50, -60, gfx::Rect(5, 5, 20, 30),
+      gfx::Size(100, 200));
+  TestChunks chunks;
+  chunks.AddChunk(t0(), c0(), e0());
+  chunks.AddChunk(scroll_state.GetPropertyTreeState());
+  chunks.AddChunk(t0(), c0(), e0());
+
+  auto cc_list = base::MakeRefCounted<cc::DisplayItemList>();
+  PaintChunksToCcLayer::ConvertInto(chunks.Build(), PropertyTreeState::Root(),
+                                    gfx::Vector2dF(), nullptr, *cc_list);
+
+  if (RuntimeEnabledFeatures::RasterInducingScrollEnabled()) {
+    EXPECT_THAT(
+        cc_list->GetPaintOpBufferForTesting(),
+        ElementsAre(PaintOpIs<cc::DrawRecordOp>(),  // chunk 0
+                    PaintOpIs<cc::SaveOp>(),
+                    PaintOpEq<cc::ClipRectOp>(
+                        SkRect::MakeXYWH(5, 5, 20, 30), SkClipOp::kIntersect,
+                        /*antialias=*/true),  // <overflow-clip>
+                    PaintOpIs<cc::DrawScrollingContentsOp>(),
+                    PaintOpIs<cc::RestoreOp>(),       // </overflow-clip>
+                    PaintOpIs<cc::DrawRecordOp>()));  // chunk 2
+    const auto& scrolling_contents_op =
+        static_cast<const cc::DrawScrollingContentsOp&>(
+            cc_list->GetPaintOpBufferForTesting().GetOpAtForTesting(3));
+    ASSERT_EQ(cc::PaintOpType::kDrawScrollingContents,
+              scrolling_contents_op.GetType());
+    EXPECT_EQ(gfx::PointF(50, 60), scrolling_contents_op.main_scroll_offset);
+    EXPECT_THAT(
+        scrolling_contents_op.display_item_list->GetPaintOpBufferForTesting(),
+        ElementsAre(PaintOpIs<cc::DrawRecordOp>()));  // chunk 1
+  } else {
+    EXPECT_THAT(
+        cc_list->GetPaintOpBufferForTesting(),
+        ElementsAre(
+            PaintOpIs<cc::DrawRecordOp>(),  // chunk 0
+            PaintOpIs<cc::SaveOp>(),
+            PaintOpEq<cc::ClipRectOp>(SkRect::MakeXYWH(5, 5, 20, 30),
+                                      SkClipOp::kIntersect,
+                                      /*antialias=*/true),  // <overflow-clip>
+            PaintOpIs<cc::SaveOp>(),
+            PaintOpEq<cc::TranslateOp>(-50, -60),  // <scroll-translation>
+            PaintOpIs<cc::DrawRecordOp>(),         // chunk 1
+            PaintOpIs<cc::RestoreOp>(),            // </scroll-translation>
+            PaintOpIs<cc::RestoreOp>(),            // </overflow-clip>
+            PaintOpIs<cc::DrawRecordOp>()));       // chunk 2
+  }
+}
+
+TEST_P(PaintChunksToCcLayerTest,
+       ScrollingContentsIntoDisplayItemListStartingFromNestedState) {
+  if (!RuntimeEnabledFeatures::RasterInducingScrollEnabled()) {
+    return;
+  }
+
+  auto scroll_state = CreateScrollTranslationState(
+      PropertyTreeState::Root(), -50, -60, gfx::Rect(5, 5, 20, 30),
+      gfx::Size(100, 200));
+  auto transform_under_scroll =
+      CreateTransform(scroll_state.Transform(), MakeScaleMatrix(2));
+  auto effect_under_scroll =
+      CreateOpacityEffect(scroll_state.Effect(), *transform_under_scroll,
+                          &scroll_state.Clip(), 0.5f);
+  auto clip_under_scroll =
+      CreateClip(scroll_state.Clip(), *transform_under_scroll,
+                 FloatRoundedRect(0.f, 0.f, 1.f, 1.f));
+
+  TestChunks chunks;
+  chunks.AddChunk(t0(), c0(), e0());
+  chunks.AddChunk(*transform_under_scroll, *clip_under_scroll,
+                  *effect_under_scroll);
+  chunks.AddChunk(scroll_state.GetPropertyTreeState());
+  chunks.AddChunk(t0(), c0(), e0());
+
+  auto cc_list = base::MakeRefCounted<cc::DisplayItemList>();
+  PaintChunksToCcLayer::ConvertInto(chunks.Build(), PropertyTreeState::Root(),
+                                    gfx::Vector2dF(), nullptr, *cc_list);
+
+  EXPECT_THAT(
+      cc_list->GetPaintOpBufferForTesting(),
+      ElementsAre(PaintOpIs<cc::DrawRecordOp>(),  // chunk 0
+                  PaintOpIs<cc::SaveOp>(),
+                  PaintOpEq<cc::ClipRectOp>(
+                      SkRect::MakeXYWH(5, 5, 20, 30), SkClipOp::kIntersect,
+                      /*antialias=*/true),  // <overflow-clip>
+                  PaintOpIs<cc::DrawScrollingContentsOp>(),
+                  PaintOpIs<cc::RestoreOp>(),       // </overflow-clip>
+                  PaintOpIs<cc::DrawRecordOp>()));  // chunk 3
+  const auto& scrolling_contents_op =
+      static_cast<const cc::DrawScrollingContentsOp&>(
+          cc_list->GetPaintOpBufferForTesting().GetOpAtForTesting(3));
+  ASSERT_EQ(cc::PaintOpType::kDrawScrollingContents,
+            scrolling_contents_op.GetType());
+  EXPECT_EQ(gfx::PointF(50, 60), scrolling_contents_op.main_scroll_offset);
+  EXPECT_THAT(
+      scrolling_contents_op.display_item_list->GetPaintOpBufferForTesting(),
+      ElementsAre(PaintOpIs<cc::SaveOp>(),
+                  PaintOpEq<cc::ConcatOp>(
+                      SkM44::Scale(2, 2)),  // <transform_under_scroll>
+                  PaintOpIs<cc::SaveLayerAlphaOp>(),  // <effect_under_scroll>
+                  PaintOpIs<cc::SaveOp>(),
+                  PaintOpEq<cc::ClipRectOp>(
+                      SkRect::MakeXYWH(0, 0, 1, 1), SkClipOp::kIntersect,
+                      /*antialias=*/true),          // <clip_under_scroll>
+                  PaintOpIs<cc::DrawRecordOp>(),    // chunk 1
+                  PaintOpIs<cc::RestoreOp>(),       // </clip_under_scroll>
+                  PaintOpIs<cc::RestoreOp>(),       // </effect_under_scroll>
+                  PaintOpIs<cc::RestoreOp>(),       // </transform_under_scroll>
+                  PaintOpIs<cc::DrawRecordOp>()));  // chunk 2
+}
+
+TEST_P(PaintChunksToCcLayerTest,
+       DISABLED_ScrollingContentsInterlacingNonScrollingIntoDisplayItemList) {
+  if (!RuntimeEnabledFeatures::RasterInducingScrollEnabled()) {
+    return;
+  }
+
+  auto scroll_state = CreateScrollTranslationState(
+      PropertyTreeState::Root(), -50, -60, gfx::Rect(5, 5, 20, 30),
+      gfx::Size(100, 200));
+  auto transform_under_scroll =
+      CreateTransform(scroll_state.Transform(), MakeScaleMatrix(2));
+  auto clip_under_scroll =
+      CreateClip(scroll_state.Clip(), *transform_under_scroll,
+                 FloatRoundedRect(0.f, 0.f, 1.f, 1.f));
+  // The effect has null OutputClip because some contents need to escape the
+  // clip. This happens when an absolute-positioned element not contained by
+  // the scroller is under an effect under the scroller.
+  auto effect_under_scroll =
+      CreateOpacityEffect(e0(), *transform_under_scroll, nullptr, 0.5f);
+
+  TestChunks chunks;
+  chunks.AddChunk(t0(), c0(), e0());
+  chunks.AddChunk(*transform_under_scroll, *clip_under_scroll,
+                  *effect_under_scroll);
+  chunks.AddChunk(t0(), c0(), *effect_under_scroll);
+  chunks.AddChunk(*transform_under_scroll, *clip_under_scroll,
+                  *effect_under_scroll);
+  chunks.AddChunk(t0(), c0(), e0());
+
+  auto cc_list = base::MakeRefCounted<cc::DisplayItemList>();
+  PaintChunksToCcLayer::ConvertInto(chunks.Build(), PropertyTreeState::Root(),
+                                    gfx::Vector2dF(), nullptr, *cc_list);
+
+  EXPECT_THAT(
+      cc_list->GetPaintOpBufferForTesting(),
+      ElementsAre(
+          PaintOpIs<cc::DrawRecordOp>(),      // chunk 0
+                                              // The effect is applied above the
+                                              // DrawScrollingContentsOp.
+          PaintOpIs<cc::SaveLayerAlphaOp>(),  // <effect>
+          PaintOpIs<cc::SaveOp>(),
+          PaintOpEq<cc::ClipRectOp>(SkRect::MakeXYWH(5, 5, 20, 30),
+                                    SkClipOp::kIntersect,
+                                    /*antialias=*/true),  // <overflow-clip>
+          PaintOpIs<cc::DrawScrollingContentsOp>(),
+          PaintOpIs<cc::RestoreOp>(),  // </overflow-clip>
+          PaintOpIs<cc::RestoreOp>(),  // </effect>
+          // The rest of the scrolling contents not under the effect
+          // needs another DrawScrollingContentsOp.
+          PaintOpIs<cc::SaveOp>(),
+          PaintOpEq<cc::ClipRectOp>(SkRect::MakeXYWH(5, 5, 20, 30),
+                                    SkClipOp::kIntersect,
+                                    /*antialias=*/true),  // <overflow-clip>
+          PaintOpIs<cc::DrawScrollingContentsOp>(),
+          PaintOpIs<cc::RestoreOp>(),       // </overflow-clip>
+          PaintOpIs<cc::DrawRecordOp>()));  // chunk 3
+
+  const auto& scrolling_contents_op1 =
+      static_cast<const cc::DrawScrollingContentsOp&>(
+          cc_list->GetPaintOpBufferForTesting().GetOpAtForTesting(4));
+  ASSERT_EQ(cc::PaintOpType::kDrawScrollingContents,
+            scrolling_contents_op1.GetType());
+  EXPECT_EQ(gfx::PointF(50, 60), scrolling_contents_op1.main_scroll_offset);
+  EXPECT_THAT(
+      scrolling_contents_op1.display_item_list->GetPaintOpBufferForTesting(),
+      ElementsAre(PaintOpIs<cc::SaveOp>(),
+                  PaintOpEq<cc::ConcatOp>(
+                      SkM44::Scale(2, 2)),  // <transform_under_scroll>
+                  PaintOpEq<cc::ClipRectOp>(
+                      SkRect::MakeXYWH(0, 0, 1, 1), SkClipOp::kIntersect,
+                      /*antialias=*/true),        // <clip_under_scroll>
+                  PaintOpIs<cc::DrawRecordOp>(),  // chunk 1
+                  PaintOpIs<cc::RestoreOp>()));   // </clip_under_scroll>
+                                                  // </transform_under_scroll>
+
+  const auto& scrolling_contents_op2 =
+      static_cast<const cc::DrawScrollingContentsOp&>(
+          cc_list->GetPaintOpBufferForTesting().GetOpAtForTesting(9));
+  ASSERT_EQ(cc::PaintOpType::kDrawScrollingContents,
+            scrolling_contents_op2.GetType());
+  EXPECT_EQ(gfx::PointF(50, 60), scrolling_contents_op2.main_scroll_offset);
+  EXPECT_THAT(
+      scrolling_contents_op2.display_item_list->GetPaintOpBufferForTesting(),
+      ElementsAre(PaintOpIs<cc::DrawRecordOp>()));  // chunk 2
+}
+
+TEST_P(PaintChunksToCcLayerTest, NestedScrollingContentsIntoDisplayItemList) {
+  if (!RuntimeEnabledFeatures::RasterInducingScrollEnabled()) {
+    return;
+  }
+
+  auto scroll_state1 = CreateScrollTranslationState(
+      PropertyTreeState::Root(), -50, -60, gfx::Rect(5, 5, 20, 30),
+      gfx::Size(100, 200));
+  auto scroll_state2 = CreateScrollTranslationState(
+      scroll_state1.GetPropertyTreeState(), -70, -80, gfx::Rect(10, 20, 30, 40),
+      gfx::Size(200, 300));
+
+  TestChunks chunks;
+  chunks.AddChunk(t0(), c0(), e0());
+  chunks.AddChunk(scroll_state1.GetPropertyTreeState());
+  chunks.AddChunk(scroll_state2.GetPropertyTreeState());
+  chunks.AddChunk(t0(), c0(), e0());
+
+  auto cc_list = base::MakeRefCounted<cc::DisplayItemList>();
+  PaintChunksToCcLayer::ConvertInto(chunks.Build(), PropertyTreeState::Root(),
+                                    gfx::Vector2dF(), nullptr, *cc_list);
+
+  if (RuntimeEnabledFeatures::RasterInducingScrollEnabled()) {
+    EXPECT_THAT(
+        cc_list->GetPaintOpBufferForTesting(),
+        ElementsAre(PaintOpIs<cc::DrawRecordOp>(),  // chunk 0
+                    PaintOpIs<cc::SaveOp>(),
+                    PaintOpEq<cc::ClipRectOp>(
+                        SkRect::MakeXYWH(5, 5, 20, 30), SkClipOp::kIntersect,
+                        /*antialias=*/true),  // <overflow-clip1>
+                    PaintOpIs<cc::DrawScrollingContentsOp>(),
+                    PaintOpIs<cc::RestoreOp>(),       // </overflow-clip1>
+                    PaintOpIs<cc::DrawRecordOp>()));  // chunk 3
+    const auto& scrolling_contents_op1 =
+        static_cast<const cc::DrawScrollingContentsOp&>(
+            cc_list->GetPaintOpBufferForTesting().GetOpAtForTesting(3));
+    ASSERT_EQ(cc::PaintOpType::kDrawScrollingContents,
+              scrolling_contents_op1.GetType());
+    EXPECT_EQ(gfx::PointF(50, 60), scrolling_contents_op1.main_scroll_offset);
+    EXPECT_THAT(
+        scrolling_contents_op1.display_item_list->GetPaintOpBufferForTesting(),
+        ElementsAre(PaintOpIs<cc::DrawRecordOp>(),  // chunk 1
+                    PaintOpIs<cc::SaveOp>(),
+                    PaintOpEq<cc::ClipRectOp>(
+                        SkRect::MakeXYWH(10, 20, 30, 40), SkClipOp::kIntersect,
+                        /*antialias=*/true),  // <overflow-clip2>
+                    PaintOpIs<cc::DrawScrollingContentsOp>(),
+                    PaintOpIs<cc::RestoreOp>()));  // </overflow-clip2>
+    const auto& scrolling_contents_op2 =
+        static_cast<const cc::DrawScrollingContentsOp&>(
+            scrolling_contents_op1.display_item_list
+                ->GetPaintOpBufferForTesting()
+                .GetOpAtForTesting(3));
+    ASSERT_EQ(cc::PaintOpType::kDrawScrollingContents,
+              scrolling_contents_op2.GetType());
+    EXPECT_EQ(gfx::PointF(70, 80), scrolling_contents_op2.main_scroll_offset);
+    EXPECT_THAT(
+        scrolling_contents_op2.display_item_list->GetPaintOpBufferForTesting(),
+        ElementsAre(PaintOpIs<cc::DrawRecordOp>()));  // chunk 2
+  } else {
+    EXPECT_THAT(
+        cc_list->GetPaintOpBufferForTesting(),
+        ElementsAre(
+            PaintOpIs<cc::DrawRecordOp>(),  // chunk 0
+            PaintOpIs<cc::SaveOp>(),
+            PaintOpEq<cc::ClipRectOp>(SkRect::MakeXYWH(5, 5, 20, 30),
+                                      SkClipOp::kIntersect,
+                                      /*antialias=*/true),  // <overflow-clip1>
+            PaintOpIs<cc::SaveOp>(),
+            PaintOpEq<cc::TranslateOp>(-50, -60),  // <scroll-translation1>
+            PaintOpIs<cc::DrawRecordOp>(),         // chunk 1
+            PaintOpIs<cc::SaveOp>(),
+            PaintOpEq<cc::ClipRectOp>(SkRect::MakeXYWH(10, 20, 30, 40),
+                                      SkClipOp::kIntersect,
+                                      /*antialias=*/true),  // <overflow-clip1>
+            PaintOpIs<cc::SaveOp>(),
+            PaintOpEq<cc::TranslateOp>(-70, -80),  // <scroll-translation2>
+            PaintOpIs<cc::DrawRecordOp>(),         // chunk 2
+            PaintOpIs<cc::RestoreOp>(),            // </scroll-translation2>
+            PaintOpIs<cc::RestoreOp>(),            // </overflow-clip2>
+            PaintOpIs<cc::RestoreOp>(),            // </scroll-translation1>
+            PaintOpIs<cc::RestoreOp>(),            // </overflow-clip1>
+            PaintOpIs<cc::DrawRecordOp>()));       // chunk 3
+  }
+}
+
+TEST_P(PaintChunksToCcLayerTest,
+       NestedScrollingContentsIntoDisplayItemListStartingFromNestedState) {
+  if (!RuntimeEnabledFeatures::RasterInducingScrollEnabled()) {
+    return;
+  }
+
+  auto scroll_state1 = CreateScrollTranslationState(
+      PropertyTreeState::Root(), -50, -60, gfx::Rect(5, 5, 20, 30),
+      gfx::Size(100, 200));
+  auto scroll_state2 = CreateScrollTranslationState(
+      scroll_state1.GetPropertyTreeState(), -70, -80, gfx::Rect(10, 20, 30, 40),
+      gfx::Size(200, 300));
+  auto transform_under_scroll =
+      CreateTransform(scroll_state2.Transform(), MakeScaleMatrix(2));
+  auto clip_under_scroll =
+      CreateClip(scroll_state2.Clip(), *transform_under_scroll,
+                 FloatRoundedRect(0.f, 0.f, 1.f, 1.f));
+  auto effect_under_scroll =
+      CreateOpacityEffect(scroll_state2.Effect(), *transform_under_scroll,
+                          clip_under_scroll.get(), 0.5f);
+
+  TestChunks chunks;
+  chunks.AddChunk(t0(), c0(), e0());
+  chunks.AddChunk(*transform_under_scroll, *clip_under_scroll,
+                  *effect_under_scroll, gfx::Rect(1, 2, 67, 82));
+  chunks.AddChunk(scroll_state1.GetPropertyTreeState());
+
+  auto cc_list = base::MakeRefCounted<cc::DisplayItemList>();
+  PaintChunksToCcLayer::ConvertInto(chunks.Build(), PropertyTreeState::Root(),
+                                    gfx::Vector2dF(), nullptr, *cc_list);
+
+  EXPECT_THAT(
+      cc_list->GetPaintOpBufferForTesting(),
+      ElementsAre(PaintOpIs<cc::DrawRecordOp>(),  // chunk 0
+                  PaintOpIs<cc::SaveOp>(),
+                  PaintOpEq<cc::ClipRectOp>(
+                      SkRect::MakeXYWH(5, 5, 20, 30), SkClipOp::kIntersect,
+                      /*antialias=*/true),  // <overflow-clip>
+                  PaintOpIs<cc::DrawScrollingContentsOp>(),
+                  PaintOpIs<cc::RestoreOp>()));  // </overflow-clip>
+  const auto& scrolling_contents_op1 =
+      static_cast<const cc::DrawScrollingContentsOp&>(
+          cc_list->GetPaintOpBufferForTesting().GetOpAtForTesting(3));
+  ASSERT_EQ(cc::PaintOpType::kDrawScrollingContents,
+            scrolling_contents_op1.GetType());
+  EXPECT_EQ(gfx::PointF(50, 60), scrolling_contents_op1.main_scroll_offset);
+  EXPECT_THAT(
+      scrolling_contents_op1.display_item_list->GetPaintOpBufferForTesting(),
+      ElementsAre(PaintOpIs<cc::SaveOp>(),
+                  PaintOpEq<cc::ClipRectOp>(
+                      SkRect::MakeXYWH(10, 20, 30, 40), SkClipOp::kIntersect,
+                      /*antialias=*/true),  // <overflow-clip2>
+                  PaintOpIs<cc::DrawScrollingContentsOp>(),
+                  PaintOpIs<cc::RestoreOp>(),       // </overflow-clip2>
+                  PaintOpIs<cc::DrawRecordOp>()));  // chunk 2
+  const auto& scrolling_contents_op2 =
+      static_cast<const cc::DrawScrollingContentsOp&>(
+          scrolling_contents_op1.display_item_list->GetPaintOpBufferForTesting()
+              .GetOpAtForTesting(2));
+  ASSERT_EQ(cc::PaintOpType::kDrawScrollingContents,
+            scrolling_contents_op2.GetType());
+  EXPECT_EQ(gfx::PointF(70, 80), scrolling_contents_op2.main_scroll_offset);
+  EXPECT_THAT(
+      scrolling_contents_op2.display_item_list->GetPaintOpBufferForTesting(),
+      ElementsAre(PaintOpIs<cc::SaveOp>(),
+                  PaintOpEq<cc::ConcatOp>(
+                      SkM44::Scale(2, 2)),  // <transform_under_scroll>
+                  PaintOpEq<cc::ClipRectOp>(
+                      SkRect::MakeXYWH(0, 0, 1, 1), SkClipOp::kIntersect,
+                      /*antialias=*/true),            // <clip_under_scroll>
+                  PaintOpIs<cc::SaveLayerAlphaOp>(),  // <effect_under_scroll>
+                  PaintOpIs<cc::DrawRecordOp>(),      // chunk 1
+                  PaintOpIs<cc::RestoreOp>(),         // </effect_under_scroll>
+                  PaintOpIs<cc::RestoreOp>()));       // </clip_under_scroll>
+                                                 // </transform_under_scroll>
 }
 
 TEST_P(PaintChunksToCcLayerTest,

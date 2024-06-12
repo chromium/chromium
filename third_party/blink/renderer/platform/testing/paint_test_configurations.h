@@ -20,15 +20,17 @@ namespace blink {
 inline constexpr unsigned kUnderInvalidationChecking = 1 << 0;
 inline constexpr unsigned kUsedColorSchemeRootScrollbars = 1 << 1;
 inline constexpr unsigned kFluentScrollbar = 1 << 2;
-inline constexpr unsigned kHitTestOpaqueness = 1 << 4;
-inline constexpr unsigned kElementCapture = 1 << 5;
+inline constexpr unsigned kHitTestOpaqueness = 1 << 3;
+inline constexpr unsigned kElementCapture = 1 << 4;
+inline constexpr unsigned kRasterInducingScroll = 1 << 5;
 
 class PaintTestConfigurations
     : public testing::WithParamInterface<unsigned>,
       private ScopedPaintUnderInvalidationCheckingForTest,
       private ScopedUsedColorSchemeRootScrollbarsForTest,
       private ScopedHitTestOpaquenessForTest,
-      private ScopedElementCaptureForTest {
+      private ScopedElementCaptureForTest,
+      private ScopedRasterInducingScrollForTest {
  public:
   PaintTestConfigurations()
       : ScopedPaintUnderInvalidationCheckingForTest(GetParam() &
@@ -36,7 +38,8 @@ class PaintTestConfigurations
         ScopedUsedColorSchemeRootScrollbarsForTest(
             GetParam() & kUsedColorSchemeRootScrollbars),
         ScopedHitTestOpaquenessForTest(GetParam() & kHitTestOpaqueness),
-        ScopedElementCaptureForTest(GetParam() & kElementCapture) {
+        ScopedElementCaptureForTest(GetParam() & kElementCapture),
+        ScopedRasterInducingScrollForTest(GetParam() & kRasterInducingScroll) {
     std::vector<base::test::FeatureRef> enabled_features = {};
     std::vector<base::test::FeatureRef> disabled_features = {};
     if (GetParam() & kFluentScrollbar) {
@@ -61,8 +64,9 @@ class PaintTestConfigurations
   base::test::ScopedFeatureList feature_list_;
 };
 
-#define PAINT_TEST_SUITE_P_VALUES \
-  0, kUsedColorSchemeRootScrollbars, kFluentScrollbar, kHitTestOpaqueness
+#define PAINT_TEST_SUITE_P_VALUES                                          \
+  0, kUsedColorSchemeRootScrollbars, kFluentScrollbar, kHitTestOpaqueness, \
+      kRasterInducingScroll
 
 #define INSTANTIATE_PAINT_TEST_SUITE_P(test_class) \
   INSTANTIATE_TEST_SUITE_P(All, test_class,        \

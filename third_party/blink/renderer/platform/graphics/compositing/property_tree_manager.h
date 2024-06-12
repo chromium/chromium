@@ -177,6 +177,8 @@ class PropertyTreeManager {
 
   static uint32_t GetMainThreadScrollingReasons(const cc::LayerTreeHost&,
                                                 const ScrollPaintPropertyNode&);
+  // TODO(crbug.com/40517276): Remove this function after launching
+  // RasterInducingScroll.
   static bool UsesCompositedScrolling(const cc::LayerTreeHost&,
                                       const ScrollPaintPropertyNode&);
 

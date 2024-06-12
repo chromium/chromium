@@ -172,6 +172,8 @@ class PLATFORM_EXPORT PaintArtifactCompositor final
 
   uint32_t GetMainThreadScrollingReasons(const ScrollPaintPropertyNode&) const;
   // Returns true if the scroll node is currently composited in cc.
+  // TODO(crbug.com/40517276): Remove this function after launching
+  // RasterInducingScroll.
   bool UsesCompositedScrolling(const ScrollPaintPropertyNode&) const;
 
   // The root layer of the tree managed by this object.

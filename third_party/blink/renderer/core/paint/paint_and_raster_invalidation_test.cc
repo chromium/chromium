@@ -1160,6 +1160,12 @@ TEST_P(PaintAndRasterInvalidationTest,
 }
 
 TEST_P(PaintAndRasterInvalidationTest, RepaintScrollbarThumbOnHover) {
+  // In RasterInducingScroll the scrollbar is composited, not using blink
+  // raster invalidation.
+  if (RuntimeEnabledFeatures::RasterInducingScrollEnabled()) {
+    return;
+  }
+
   USE_NON_OVERLAY_SCROLLBARS_OR_QUIT();
   SetBodyInnerHTML(R"HTML(
     <style>body {margin: 0}</style>

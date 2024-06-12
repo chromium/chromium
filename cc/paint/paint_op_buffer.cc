@@ -416,4 +416,14 @@ PaintOpBuffer::Iterator PaintOpBuffer::end() const {
   return Iterator(*this).end();
 }
 
+const PaintOp& PaintOpBuffer::GetOpAtForTesting(size_t index) const {
+  for (const auto& op : *this) {
+    if (!index) {
+      return op;
+    }
+    --index;
+  }
+  NOTREACHED_NORETURN();
+}
+
 }  // namespace cc

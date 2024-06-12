@@ -1142,6 +1142,11 @@ TEST_P(PaintLayerScrollableAreaTest, HitTestOverlayScrollbars) {
 
 TEST_P(PaintLayerScrollableAreaTest,
        ShowNonCompositedScrollbarOnCompositorScroll) {
+  // Scrollbars are always composited in RasterInducingScroll.
+  if (RuntimeEnabledFeatures::RasterInducingScrollEnabled()) {
+    return;
+  }
+
   SetBodyInnerHTML(R"HTML(
     <style>
     html, body {

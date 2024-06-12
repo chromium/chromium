@@ -2123,8 +2123,10 @@ TEST_P(PaintLayerTest, HitTestObscuredOverlayScrollbar) {
                            width: 200px; height: 200px"></div>
   )HTML");
 
-  EXPECT_EQ(GetDocument().getElementById(AtomicString("scroll")),
-            HitTest(199, 1));
+  auto* scroller = GetDocument().getElementById(AtomicString("scroll"));
+  scroller->GetLayoutBox()->GetScrollableArea()->SetScrollbarsHiddenForTesting(
+      false);
+  EXPECT_EQ(scroller, HitTest(199, 1));
   EXPECT_EQ(GetDocument().getElementById(AtomicString("above")),
             HitTest(199, 101));
 }
