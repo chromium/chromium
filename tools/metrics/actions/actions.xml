@@ -24023,6 +24023,17 @@ should be able to be added at any place in this file.
   </description>
 </action>
 
+<action
+    name="MobileSettingsEnhancedSafeBrowsingInlinePromoImpressionLimitReached"
+    not_user_triggered="true">
+  <owner>danieltwhite@google.com</owner>
+  <owner>ajuma@google.com</owner>
+  <description>
+    User has viewed the Enhanced Safe Browsing inline promo ten times without
+    interacting with it.
+  </description>
+</action>
+
 <action name="MobileSettingsEnhancedSafeBrowsingInlinePromoProceed">
   <owner>danieltwhite@google.com</owner>
   <owner>ajuma@google.com</owner>
