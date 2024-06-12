@@ -29,9 +29,9 @@ source_set("eg2_tests") {
     "//components/translate/core/browser:translate_pref_names",
     "//components/translate/core/common",
     "//ios/chrome/app/strings",
+    "//ios/chrome/browser/badges/ui_bundled:public",
     "//ios/chrome/browser/shared/model/url:constants",
     "//ios/chrome/browser/translate/model:eg_test_support+eg2",
-    "//ios/chrome/browser/ui/badges:public",
     "//ios/chrome/browser/ui/infobars:constants",
     "//ios/chrome/browser/ui/infobars/banners:public",
     "//ios/chrome/browser/ui/infobars/modals:public",
@@ -59,10 +59,10 @@ source_set("test_support") {
   deps = [
     "//base",
     "//components/infobars/core",
+    "//ios/chrome/browser/badges/ui_bundled",
     "//ios/chrome/browser/infobars/model",
     "//ios/chrome/browser/infobars/model:badge",
     "//ios/chrome/browser/infobars/model:public",
-    "//ios/chrome/browser/ui/badges",
   ]
 }
 

@@ -12,10 +12,10 @@ source_set("infobars") {
 
   deps = [
     "//components/infobars/core",
+    "//ios/chrome/browser/badges/ui_bundled:util",
     "//ios/chrome/browser/infobars/model",
     "//ios/chrome/browser/infobars/model:public",
     "//ios/chrome/browser/infobars/model/overlays:overlay_type",
     "//ios/chrome/browser/overlays/model",
-    "//ios/chrome/browser/ui/badges:util",
   ]
 }

@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef IOS_CHROME_BROWSER_UI_BADGES_BADGES_HISTOGRAMS_H_
-#define IOS_CHROME_BROWSER_UI_BADGES_BADGES_HISTOGRAMS_H_
+#ifndef IOS_CHROME_BROWSER_BADGES_UI_BUNDLED_BADGES_HISTOGRAMS_H_
+#define IOS_CHROME_BROWSER_BADGES_UI_BUNDLED_BADGES_HISTOGRAMS_H_
 
 // Histogram name for tapping on a row in the Badge overflow menu.
 extern const char kInfobarOverflowMenuTappedHistogram[];
@@ -24,4 +24,4 @@ enum class MobileMessagesInfobarType {
   kMaxValue = AutofillSaveAddressProfile,
 };
 
-#endif  // IOS_CHROME_BROWSER_UI_BADGES_BADGES_HISTOGRAMS_H_
+#endif  // IOS_CHROME_BROWSER_BADGES_UI_BUNDLED_BADGES_HISTOGRAMS_H_

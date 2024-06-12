@@ -7,6 +7,8 @@ source_set("browser_agent") {
   sources = [ "infobar_overlay_browser_agent.mm" ]
   deps = [
     "//base",
+    "//ios/chrome/browser/badges/ui_bundled:public",
+    "//ios/chrome/browser/badges/ui_bundled:util",
     "//ios/chrome/browser/infobars/model:public",
     "//ios/chrome/browser/infobars/model/overlays",
     "//ios/chrome/browser/infobars/model/overlays:util",
@@ -16,8 +18,6 @@ source_set("browser_agent") {
     "//ios/chrome/browser/overlays/model/public/common/infobars",
     "//ios/chrome/browser/overlays/model/public/infobar_banner",
     "//ios/chrome/browser/shared/model/browser",
-    "//ios/chrome/browser/ui/badges:public",
-    "//ios/chrome/browser/ui/badges:util",
   ]
 }
 

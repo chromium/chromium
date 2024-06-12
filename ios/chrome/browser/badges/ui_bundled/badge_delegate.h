@@ -2,10 +2,10 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef IOS_CHROME_BROWSER_UI_BADGES_BADGE_DELEGATE_H_
-#define IOS_CHROME_BROWSER_UI_BADGES_BADGE_DELEGATE_H_
+#ifndef IOS_CHROME_BROWSER_BADGES_UI_BUNDLED_BADGE_DELEGATE_H_
+#define IOS_CHROME_BROWSER_BADGES_UI_BUNDLED_BADGE_DELEGATE_H_
 
-#include "ios/chrome/browser/ui/badges/badge_type.h"
+#include "ios/chrome/browser/badges/ui_bundled/badge_type.h"
 
 // Protocol to communicate Badge actions to the mediator.
 @protocol BadgeDelegate
@@ -41,4 +41,4 @@
 
 @end
 
-#endif  // IOS_CHROME_BROWSER_UI_BADGES_BADGE_DELEGATE_H_
+#endif  // IOS_CHROME_BROWSER_BADGES_UI_BUNDLED_BADGE_DELEGATE_H_

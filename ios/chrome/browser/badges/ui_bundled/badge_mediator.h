@@ -2,12 +2,12 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef IOS_CHROME_BROWSER_UI_BADGES_BADGE_MEDIATOR_H_
-#define IOS_CHROME_BROWSER_UI_BADGES_BADGE_MEDIATOR_H_
+#ifndef IOS_CHROME_BROWSER_BADGES_UI_BUNDLED_BADGE_MEDIATOR_H_
+#define IOS_CHROME_BROWSER_BADGES_UI_BUNDLED_BADGE_MEDIATOR_H_
 
 #import <UIKit/UIKit.h>
 
-#import "ios/chrome/browser/ui/badges/badge_delegate.h"
+#import "ios/chrome/browser/badges/ui_bundled/badge_delegate.h"
 
 @protocol BadgeConsumer;
 @protocol BrowserCoordinatorCommands;
@@ -36,4 +36,4 @@ class WebStateList;
 
 @end
 
-#endif  // IOS_CHROME_BROWSER_UI_BADGES_BADGE_MEDIATOR_H_
+#endif  // IOS_CHROME_BROWSER_BADGES_UI_BUNDLED_BADGE_MEDIATOR_H_

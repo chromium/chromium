@@ -1,13 +1,13 @@
 specific_include_rules = {
   # TODO(crbug.com/40820398): Remove these dependencies.
   "^ios_add_to_reading_list_infobar_delegate.h": [
-    "+ios/chrome/browser/ui/badges/badge_type.h",
+    "+ios/chrome/browser/badges/ui_bundled/badge_type.h",
   ],
   "^fake_infobar_badge_tab_helper_delegate.h": [
-    "+ios/chrome/browser/ui/badges/badge_type.h",
+    "+ios/chrome/browser/badges/ui_bundled/badge_type.h",
   ],
   "^fake_infobar_badge_tab_helper_delegate.mm": [
-    "+ios/chrome/browser/ui/badges/badge_item.h",
+    "+ios/chrome/browser/badges/ui_bundled/badge_item.h",
   ],
 
 }

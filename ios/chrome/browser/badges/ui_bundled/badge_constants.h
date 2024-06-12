@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef IOS_CHROME_BROWSER_UI_BADGES_BADGE_CONSTANTS_H_
-#define IOS_CHROME_BROWSER_UI_BADGES_BADGE_CONSTANTS_H_
+#ifndef IOS_CHROME_BROWSER_BADGES_UI_BUNDLED_BADGE_CONSTANTS_H_
+#define IOS_CHROME_BROWSER_BADGES_UI_BUNDLED_BADGE_CONSTANTS_H_
 
 #import <Foundation/Foundation.h>
 
@@ -44,4 +44,4 @@ extern NSString* const kBadgeButtonTranslateActionIdentifier;
 extern NSString* const kBadgeButtonPermissionsActionIdentifier;
 extern NSString* const kBadgeButtonParcelTrackingActionIdentifier;
 
-#endif  // IOS_CHROME_BROWSER_UI_BADGES_BADGE_CONSTANTS_H_
+#endif  // IOS_CHROME_BROWSER_BADGES_UI_BUNDLED_BADGE_CONSTANTS_H_

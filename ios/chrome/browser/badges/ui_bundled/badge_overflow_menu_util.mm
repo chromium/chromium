@@ -2,14 +2,14 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#import "ios/chrome/browser/ui/badges/badge_overflow_menu_util.h"
+#import "ios/chrome/browser/badges/ui_bundled/badge_overflow_menu_util.h"
 
 #import "base/metrics/histogram_functions.h"
 #import "base/notreached.h"
 #import "components/strings/grit/components_strings.h"
 #import "ios/chrome/browser/shared/ui/symbols/symbols.h"
-#import "ios/chrome/browser/ui/badges/badge_constants.h"
-#import "ios/chrome/browser/ui/badges/badges_histograms.h"
+#import "ios/chrome/browser/badges/ui_bundled/badge_constants.h"
+#import "ios/chrome/browser/badges/ui_bundled/badges_histograms.h"
 #import "ios/chrome/grit/ios_strings.h"
 #import "ui/base/l10n/l10n_util.h"
 

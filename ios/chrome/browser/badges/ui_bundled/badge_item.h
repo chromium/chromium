@@ -2,13 +2,13 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef IOS_CHROME_BROWSER_UI_BADGES_BADGE_ITEM_H_
-#define IOS_CHROME_BROWSER_UI_BADGES_BADGE_ITEM_H_
+#ifndef IOS_CHROME_BROWSER_BADGES_UI_BUNDLED_BADGE_ITEM_H_
+#define IOS_CHROME_BROWSER_BADGES_UI_BUNDLED_BADGE_ITEM_H_
 
 #import <UIKit/UIKit.h>
 
 #import "ios/chrome/browser/infobars/model/badge_state.h"
-#import "ios/chrome/browser/ui/badges/badge_type.h"
+#import "ios/chrome/browser/badges/ui_bundled/badge_type.h"
 
 // Holds properties and values the UI needs to configure a badge button.
 @protocol BadgeItem
@@ -25,4 +25,4 @@
 
 @end
 
-#endif  // IOS_CHROME_BROWSER_UI_BADGES_BADGE_ITEM_H_
+#endif  // IOS_CHROME_BROWSER_BADGES_UI_BUNDLED_BADGE_ITEM_H_

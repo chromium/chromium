@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#import "ios/chrome/browser/ui/badges/badge_mediator.h"
+#import "ios/chrome/browser/badges/ui_bundled/badge_mediator.h"
 
 #import <map>
 
@@ -26,12 +26,12 @@
 #import "ios/chrome/browser/shared/public/commands/browser_coordinator_commands.h"
 #import "ios/chrome/browser/shared/ui/list_model/list_model.h"
 #import "ios/chrome/browser/shared/ui/symbols/symbols.h"
-#import "ios/chrome/browser/ui/badges/badge_button.h"
-#import "ios/chrome/browser/ui/badges/badge_consumer.h"
-#import "ios/chrome/browser/ui/badges/badge_item.h"
-#import "ios/chrome/browser/ui/badges/badge_static_item.h"
-#import "ios/chrome/browser/ui/badges/badge_tappable_item.h"
-#import "ios/chrome/browser/ui/badges/badge_type_util.h"
+#import "ios/chrome/browser/badges/ui_bundled/badge_button.h"
+#import "ios/chrome/browser/badges/ui_bundled/badge_consumer.h"
+#import "ios/chrome/browser/badges/ui_bundled/badge_item.h"
+#import "ios/chrome/browser/badges/ui_bundled/badge_static_item.h"
+#import "ios/chrome/browser/badges/ui_bundled/badge_tappable_item.h"
+#import "ios/chrome/browser/badges/ui_bundled/badge_type_util.h"
 #import "ios/web/public/permissions/permissions.h"
 #import "ios/web/public/web_state_observer_bridge.h"
 

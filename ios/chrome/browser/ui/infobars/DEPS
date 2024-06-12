@@ -1,5 +1,5 @@
 include_rules = [
-  "+ios/chrome/browser/ui/badges/badge_tappable_item.h",
+  "+ios/chrome/browser/badges/ui_bundled/badge_tappable_item.h",
   "+ios/chrome/browser/ui/overlays",
 ]
 

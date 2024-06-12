@@ -33,7 +33,7 @@ source_set("util") {
   ]
 }
 
-source_set("badges") {
+source_set("ui_bundled") {
   sources = [
     "badge_button.h",
     "badge_button.mm",
@@ -90,7 +90,7 @@ source_set("unit_tests") {
   testonly = true
   sources = [ "badge_mediator_unittest.mm" ]
   deps = [
-    ":badges",
+    ":ui_bundled",
     ":public",
     ":util",
     "//base/test:test_support",

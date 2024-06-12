@@ -2,12 +2,12 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef IOS_CHROME_BROWSER_UI_BADGES_BADGE_BUTTON_H_
-#define IOS_CHROME_BROWSER_UI_BADGES_BADGE_BUTTON_H_
+#ifndef IOS_CHROME_BROWSER_BADGES_UI_BUNDLED_BADGE_BUTTON_H_
+#define IOS_CHROME_BROWSER_BADGES_UI_BUNDLED_BADGE_BUTTON_H_
 
 #import "ios/chrome/browser/shared/ui/elements/extended_touch_target_button.h"
 
-#import "ios/chrome/browser/ui/badges/badge_type.h"
+#import "ios/chrome/browser/badges/ui_bundled/badge_type.h"
 
 // A button that contains a badge icon image.
 @interface BadgeButton : ExtendedTouchTargetButton
@@ -39,4 +39,4 @@
 
 @end
 
-#endif  // IOS_CHROME_BROWSER_UI_BADGES_BADGE_BUTTON_H_
+#endif  // IOS_CHROME_BROWSER_BADGES_UI_BUNDLED_BADGE_BUTTON_H_
