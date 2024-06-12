@@ -4,6 +4,7 @@
 
 #include "chrome/browser/ui/views/desktop_capture/desktop_media_permission_pane_view.h"
 
+#include "base/mac/mac_util.h"
 #include "base/metrics/user_metrics.h"
 #include "base/task/thread_pool.h"
 #include "chrome/browser/ui/views/chrome_layout_provider.h"
@@ -14,15 +15,10 @@
 #include "ui/base/ui_base_features.h"
 #include "ui/compositor/layer.h"
 #include "ui/views/background.h"
-#include "ui/views/controls/button/md_text_button.h"
 #include "ui/views/controls/label.h"
 #include "ui/views/controls/scroll_view.h"
 #include "ui/views/controls/separator.h"
 #include "ui/views/layout/box_layout.h"
-
-#if BUILDFLAG(IS_MAC)
-#include "base/mac/mac_util.h"
-#endif
 
 namespace {
 
@@ -65,8 +61,16 @@ std::u16string GetLabelText(DesktopMediaList::Type type) {
 }  // namespace
 
 DesktopMediaPermissionPaneView::DesktopMediaPermissionPaneView(
-    DesktopMediaList::Type type)
-    : type_(type) {
+    DesktopMediaList::Type type,
+    base::RepeatingCallback<void()> open_screen_recording_settings_callback)
+    : type_(type),
+      open_screen_recording_settings_callback_(
+          open_screen_recording_settings_callback
+              ? open_screen_recording_settings_callback
+              : base::BindRepeating(&base::mac::OpenSystemSettingsPane,
+                                    base::mac::SystemSettingsPane::
+                                        kPrivacySecurity_ScreenRecording,
+                                    /*id_param=*/"")) {
   SetBackground(
       views::CreateThemedRoundedRectBackground(ui::kColorSysSurface4,
                                                /*top_radius=*/0.0f,
@@ -90,20 +94,24 @@ DesktopMediaPermissionPaneView::DesktopMediaPermissionPaneView(
   button_layout->set_main_axis_alignment(
       views::BoxLayout::MainAxisAlignment::kCenter);
   // Unretained safe because button is (transitively) owned by `this`.
-  views::MdTextButton* button =
+  button_ =
       button_container->AddChildView(std::make_unique<views::MdTextButton>(
           base::BindRepeating(
               &DesktopMediaPermissionPaneView::OpenScreenRecordingSettingsPane,
               base::Unretained(this)),
           l10n_util::GetStringUTF16(
               IDS_DESKTOP_MEDIA_PICKER_PERMISSION_BUTTON_MAC)));
-  button->SetStyle(ui::ButtonStyle::kProminent);
+  button_->SetStyle(ui::ButtonStyle::kProminent);
 }
 
 DesktopMediaPermissionPaneView::~DesktopMediaPermissionPaneView() = default;
 
 bool DesktopMediaPermissionPaneView::WasPermissionButtonClicked() const {
   return clicked_;
+}
+
+void DesktopMediaPermissionPaneView::SimulateClickForTesting() {
+  button_->AcceleratorPressed(ui::Accelerator());
 }
 
 void DesktopMediaPermissionPaneView::OpenScreenRecordingSettingsPane() {
@@ -115,12 +123,8 @@ void DesktopMediaPermissionPaneView::OpenScreenRecordingSettingsPane() {
           type_ == DesktopMediaList::Type::kScreen
               ? "GetDisplayMedia.PermissionPane.Screen.ClickedButton"
               : "GetDisplayMedia.PermissionPane.Window.ClickedButton"));
-      base::ThreadPool::PostTask(
-          FROM_HERE,
-          base::BindOnce(
-              &base::mac::OpenSystemSettingsPane,
-              base::mac::SystemSettingsPane::kPrivacySecurity_ScreenRecording,
-              ""));
+      base::ThreadPool::PostTask(FROM_HERE,
+                                 open_screen_recording_settings_callback_);
       return;
 
     case DesktopMediaList::Type::kNone:
