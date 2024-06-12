@@ -49,7 +49,6 @@ const char* const BOOL_ATTRIBUTES[] = {
     "multiselectable",
     "password",
     "range",
-    "scrollable",
     "selected",
     "interesting",
     "table_header"
@@ -80,12 +79,6 @@ const char* const INT_ATTRIBUTES[] = {
 };
 
 const char* const ACTION_ATTRIBUTES[] = {
-    "action_scroll_forward",
-    "action_scroll_backward",
-    "action_scroll_up",
-    "action_scroll_down",
-    "action_scroll_left",
-    "action_scroll_right",
     "action_expand",
     "action_collapse",
 };
@@ -191,7 +184,6 @@ void AccessibilityTreeFormatterAndroid::AddProperties(
   dict->Set("multiselectable", android_node->IsMultiselectable());
   dict->Set("range", android_node->GetData().IsRangeValueSupported());
   dict->Set("password", android_node->IsPasswordField());
-  dict->Set("scrollable", android_node->IsScrollable());
   dict->Set("selected", android_node->IsSelected());
   dict->Set("interesting", android_node->IsInterestingOnAndroid());
   dict->Set("table_header", android_node->IsTableHeader());
@@ -222,12 +214,6 @@ void AccessibilityTreeFormatterAndroid::AddProperties(
             android_node->GetTextChangeRemovedCount());
 
   // Actions.
-  dict->Set("action_scroll_forward", android_node->CanScrollForward());
-  dict->Set("action_scroll_backward", android_node->CanScrollBackward());
-  dict->Set("action_scroll_up", android_node->CanScrollUp());
-  dict->Set("action_scroll_down", android_node->CanScrollDown());
-  dict->Set("action_scroll_left", android_node->CanScrollLeft());
-  dict->Set("action_scroll_right", android_node->CanScrollRight());
   dict->Set("action_expand", android_node->IsCollapsed());
   dict->Set("action_collapse", android_node->IsExpanded());
 }

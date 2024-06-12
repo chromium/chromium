@@ -1,19 +1,19 @@
 android.webkit.WebView focusable focused
 ++android.widget.TextView name='no overflow'
 ++android.widget.TextView name='clipped large lots of text more text'
-++android.widget.EditText clickable editable_text focusable has_non_empty_value multiline scrollable name='ab cd' text_change_added_count=5
+++android.widget.EditText clickable editable_text focusable has_non_empty_value multiline name='ab cd' text_change_added_count=5
 ++android.widget.TextView name='tiny'
 ++android.view.View
 ++++android.view.View
 ++++++android.widget.TextView name='x=hidden'
-++++android.view.View focusable scrollable name='x=hidden'
-++++android.view.View focusable scrollable name='x=auto'
-++++android.view.View focusable scrollable name='x=scroll'
+++++android.view.View focusable name='x=hidden'
+++++android.view.View focusable name='x=auto'
+++++android.view.View focusable name='x=scroll'
 ++++android.widget.TextView name='x=visible'
 ++android.view.View
 ++++android.view.View
 ++++++android.widget.TextView name='y=hidden'
-++++android.view.View focusable scrollable name='y=hidden'
-++++android.view.View focusable scrollable name='y=auto'
-++++android.view.View focusable scrollable name='y=scroll'
+++++android.view.View focusable name='y=hidden'
+++++android.view.View focusable name='y=auto'
+++++android.view.View focusable name='y=scroll'
 ++++android.widget.TextView name='y=visible'

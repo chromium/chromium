@@ -10,6 +10,6 @@ android.webkit.WebView focusable focused
 ++++++++++android.widget.Button role_description='button' clickable focusable name='Ordinary Button'
 ++android.view.View
 ++++android.view.View
-++++++android.view.View scrollable
+++++++android.view.View
 ++++++++android.view.View
 ++++++++++android.widget.Button role_description='button' clickable focusable name='Scrolled Button'
