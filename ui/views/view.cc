@@ -2,12 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#if defined(UNSAFE_BUFFERS_BUILD)
-// TODO(https://crbug.com/344639839): fix the unsafe buffer errors in this file,
-// then remove this pragma.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "ui/views/view.h"
 
 #include <algorithm>
@@ -487,16 +481,24 @@ void View::SetBoundsRect(const gfx::Rect& bounds) {
   // The property effects have already been taken into account above. No need to
   // redo them here.
   if (prev.x() != bounds_.x()) {
-    OnPropertyChanged(&bounds_ + kXChangedKey, kPropertyEffectsNone);
+    OnPropertyChanged(
+        ui::metadata::MakeUniquePropertyKey(&bounds_, kXChangedKey),
+        kPropertyEffectsNone);
   }
   if (prev.y() != bounds_.y()) {
-    OnPropertyChanged(&bounds_ + kYChangedKey, kPropertyEffectsNone);
+    OnPropertyChanged(
+        ui::metadata::MakeUniquePropertyKey(&bounds_, kYChangedKey),
+        kPropertyEffectsNone);
   }
   if (prev.width() != bounds_.width()) {
-    OnPropertyChanged(&bounds_ + kWidthChangedKey, kPropertyEffectsNone);
+    OnPropertyChanged(
+        ui::metadata::MakeUniquePropertyKey(&bounds_, kWidthChangedKey),
+        kPropertyEffectsNone);
   }
   if (prev.height() != bounds_.height()) {
-    OnPropertyChanged(&bounds_ + kHeightChangedKey, kPropertyEffectsNone);
+    OnPropertyChanged(
+        ui::metadata::MakeUniquePropertyKey(&bounds_, kHeightChangedKey),
+        kPropertyEffectsNone);
   }
 }
 

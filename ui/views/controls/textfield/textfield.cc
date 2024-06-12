@@ -2,12 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#if defined(UNSAFE_BUFFERS_BUILD)
-// TODO(https://crbug.com/344639839): fix the unsafe buffer errors in this file,
-// then remove this pragma.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "ui/views/controls/textfield/textfield.h"
 
 #include <algorithm>
@@ -467,7 +461,9 @@ void Textfield::SetCursorEnabled(bool enabled) {
 
   GetRenderText()->SetCursorEnabled(enabled);
   UpdateAfterChange(TextChangeType::kNone, true, false);
-  OnPropertyChanged(&model_ + kTextfieldCursorEnabled, kPropertyEffectsPaint);
+  OnPropertyChanged(
+      ui::metadata::MakeUniquePropertyKey(&model_, kTextfieldCursorEnabled),
+      kPropertyEffectsPaint);
 }
 
 const gfx::FontList& Textfield::GetFontList() const {
@@ -509,7 +505,8 @@ gfx::HorizontalAlignment Textfield::GetHorizontalAlignment() const {
 void Textfield::SetHorizontalAlignment(gfx::HorizontalAlignment alignment) {
   GetRenderText()->SetHorizontalAlignment(alignment);
 
-  OnPropertyChanged(&model_ + kTextfieldHorizontalAlignment,
+  OnPropertyChanged(ui::metadata::MakeUniquePropertyKey(
+                        &model_, kTextfieldHorizontalAlignment),
                     kPropertyEffectsNone);
 }
 
@@ -530,12 +527,16 @@ const gfx::Range& Textfield::GetSelectedRange() const {
 void Textfield::SetSelectedRange(const gfx::Range& range) {
   model_->SelectRange(range);
   UpdateAfterChange(TextChangeType::kNone, true);
-  OnPropertyChanged(&model_ + kTextfieldSelectedRange, kPropertyEffectsPaint);
+  OnPropertyChanged(
+      ui::metadata::MakeUniquePropertyKey(&model_, kTextfieldSelectedRange),
+      kPropertyEffectsPaint);
 }
 
 void Textfield::AddSecondarySelectedRange(const gfx::Range& range) {
   model_->SelectRange(range, false);
-  OnPropertyChanged(&model_ + kTextfieldSelectedRange, kPropertyEffectsPaint);
+  OnPropertyChanged(
+      ui::metadata::MakeUniquePropertyKey(&model_, kTextfieldSelectedRange),
+      kPropertyEffectsPaint);
 }
 
 const gfx::SelectionModel& Textfield::GetSelectionModel() const {
@@ -554,7 +555,9 @@ size_t Textfield::GetCursorPosition() const {
 void Textfield::SetColor(SkColor value) {
   GetRenderText()->SetColor(value);
   cursor_view_->layer()->SetColor(value);
-  OnPropertyChanged(&model_ + kTextfieldTextColor, kPropertyEffectsPaint);
+  OnPropertyChanged(
+      ui::metadata::MakeUniquePropertyKey(&model_, kTextfieldTextColor),
+      kPropertyEffectsPaint);
 }
 
 void Textfield::ApplyColor(SkColor value, const gfx::Range& range) {
@@ -1225,7 +1228,9 @@ void Textfield::OnCompositionTextConfirmedOrCleared() {
 }
 
 void Textfield::OnTextChanged() {
-  OnPropertyChanged(&model_ + kTextfieldText, kPropertyEffectsPaint);
+  OnPropertyChanged(
+      ui::metadata::MakeUniquePropertyKey(&model_, kTextfieldText),
+      kPropertyEffectsPaint);
   drop_weak_ptr_factory_.InvalidateWeakPtrs();
 }
 
@@ -2384,8 +2389,9 @@ void Textfield::RequestFocusForGesture(const ui::GestureEventDetails& details) {
 
 base::CallbackListSubscription Textfield::AddTextChangedCallback(
     views::PropertyChangedCallback callback) {
-  return AddPropertyChangedCallback(&model_ + kTextfieldText,
-                                    std::move(callback));
+  return AddPropertyChangedCallback(
+      ui::metadata::MakeUniquePropertyKey(&model_, kTextfieldText),
+      std::move(callback));
 }
 
 bool Textfield::PreHandleKeyPressed(const ui::KeyEvent& event) {
@@ -2634,7 +2640,9 @@ void Textfield::UpdateBackgroundColor() {
   // See crbug.com/115198
   GetRenderText()->set_subpixel_rendering_suppressed(SkColorGetA(color) !=
                                                      SK_AlphaOPAQUE);
-  OnPropertyChanged(&model_ + kTextfieldBackgroundColor, kPropertyEffectsPaint);
+  OnPropertyChanged(
+      ui::metadata::MakeUniquePropertyKey(&model_, kTextfieldBackgroundColor),
+      kPropertyEffectsPaint);
 }
 
 void Textfield::UpdateDefaultBorder() {
@@ -2669,7 +2677,8 @@ void Textfield::UpdateSelectionTextColor() {
     return;
   }
   GetRenderText()->set_selection_color(GetSelectionTextColor());
-  OnPropertyChanged(&model_ + kTextfieldSelectionTextColor,
+  OnPropertyChanged(ui::metadata::MakeUniquePropertyKey(
+                        &model_, kTextfieldSelectionTextColor),
                     kPropertyEffectsPaint);
 }
 
@@ -2679,7 +2688,8 @@ void Textfield::UpdateSelectionBackgroundColor() {
   }
   GetRenderText()->set_selection_background_focused_color(
       GetSelectionBackgroundColor());
-  OnPropertyChanged(&model_ + kTextfieldSelectionBackgroundColor,
+  OnPropertyChanged(ui::metadata::MakeUniquePropertyKey(
+                        &model_, kTextfieldSelectionBackgroundColor),
                     kPropertyEffectsPaint);
 }
 
