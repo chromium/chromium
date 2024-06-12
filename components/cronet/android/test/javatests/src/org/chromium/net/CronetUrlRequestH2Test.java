@@ -19,6 +19,7 @@ import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
+import org.chromium.base.test.util.DoNotBatch;
 import org.chromium.net.CronetTestRule.CronetImplementation;
 import org.chromium.net.CronetTestRule.IgnoreFor;
 
@@ -33,6 +34,7 @@ import org.chromium.net.CronetTestRule.IgnoreFor;
 @IgnoreFor(
         implementations = {CronetImplementation.FALLBACK},
         reason = "Fallback does not support H2")
+@DoNotBatch(reason = "crbug/1459563")
 public class CronetUrlRequestH2Test {
     private static final String TAG = CronetUrlRequestH2Test.class.getSimpleName();
 

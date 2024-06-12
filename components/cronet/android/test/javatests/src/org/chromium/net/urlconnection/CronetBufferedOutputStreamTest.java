@@ -17,7 +17,7 @@ import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
-import org.chromium.base.test.util.Batch;
+import org.chromium.base.test.util.DoNotBatch;
 import org.chromium.base.test.util.RequiresRestart;
 import org.chromium.net.CronetEngine;
 import org.chromium.net.CronetTestRule;
@@ -32,7 +32,7 @@ import java.net.ProtocolException;
 import java.net.URL;
 
 /** Tests the CronetBufferedOutputStream implementation. */
-@Batch(Batch.UNIT_TESTS)
+@DoNotBatch(reason = "crbug/1459563")
 @IgnoreFor(
         implementations = {CronetImplementation.FALLBACK},
         reason = "See crrev.com/c/4590329")
