@@ -55,8 +55,12 @@ import org.chromium.ui.modaldialog.ModalDialogManager.ModalDialogType;
 public class SigninAndHistoryOptInActivity extends FirstRunActivityBase
         implements SigninAndHistoryOptInCoordinator.Delegate, UpgradePromoCoordinator.Delegate {
     private static final String ARGUMENT_ACCESS_POINT = "SigninAndHistoryOptInActivity.AccessPoint";
-    private static final String ARGUMENT_BOTTOM_SHEET_STRINGS =
-            "SigninAndHistoryOptInActivity.BottomSheetStrings";
+    private static final String ARGUMENT_BOTTOM_SHEET_STRINGS_TITLE =
+            "SigninAndHistoryOptInActivity.BottomSheetStringsTitle";
+    private static final String ARGUMENT_BOTTOM_SHEET_STRINGS_SUBTITLE =
+            "SigninAndHistoryOptInActivity.BottomSheetStringsSubtitle";
+    private static final String ARGUMENT_BOTTOM_SHEET_STRINGS_DISMISS =
+            "SigninAndHistoryOptInActivity.BottomSheetStringsDismiss";
     private static final String ARGUMENT_NO_ACCOUNT_SIGNIN_MODE =
             "SigninAndHistoryOptInActivity.NoAccountSigninMode";
     private static final String ARGUMENT_WITH_ACCOUNT_SIGNIN_MODE =
@@ -112,9 +116,18 @@ public class SigninAndHistoryOptInActivity extends FirstRunActivityBase
 
         int signinAccessPoint = intent.getIntExtra(ARGUMENT_ACCESS_POINT, SigninAccessPoint.MAX);
         assert signinAccessPoint != SigninAccessPoint.MAX : "Cannot find SigninAccessPoint!";
+
+        // TODO(crbug.com/346709145): Get Parcelable extra instead of parsing individual properties
+        // when the classloader issue will be fixed.
+        int titleStringId = intent.getIntExtra(ARGUMENT_BOTTOM_SHEET_STRINGS_TITLE, 0);
+        int subtitleStringId = intent.getIntExtra(ARGUMENT_BOTTOM_SHEET_STRINGS_SUBTITLE, 0);
+        int dismissStringId = intent.getIntExtra(ARGUMENT_BOTTOM_SHEET_STRINGS_DISMISS, 0);
         AccountPickerBottomSheetStrings bottomSheetStrings =
-                (AccountPickerBottomSheetStrings)
-                        intent.getParcelableExtra(ARGUMENT_BOTTOM_SHEET_STRINGS);
+                new AccountPickerBottomSheetStrings.Builder(titleStringId)
+                        .setSubtitleStringId(subtitleStringId)
+                        .setDismissButtonStringId(dismissStringId)
+                        .build();
+
         @NoAccountSigninMode
         int noAccountSigninMode =
                 intent.getIntExtra(
@@ -256,7 +269,15 @@ public class SigninAndHistoryOptInActivity extends FirstRunActivityBase
         assert bottomSheetStrings != null;
 
         Intent intent = new Intent(context, SigninAndHistoryOptInActivity.class);
-        intent.putExtra(ARGUMENT_BOTTOM_SHEET_STRINGS, bottomSheetStrings);
+
+        // TODO(crbug.com/346709145): Get Parcelable extra instead of parsing individual properties
+        // when the classloader issue will be fixed.
+        intent.putExtra(ARGUMENT_BOTTOM_SHEET_STRINGS_TITLE, bottomSheetStrings.titleStringId);
+        intent.putExtra(
+                ARGUMENT_BOTTOM_SHEET_STRINGS_SUBTITLE, bottomSheetStrings.subtitleStringId);
+        intent.putExtra(
+                ARGUMENT_BOTTOM_SHEET_STRINGS_DISMISS, bottomSheetStrings.dismissButtonStringId);
+
         intent.putExtra(ARGUMENT_NO_ACCOUNT_SIGNIN_MODE, noAccountSigninMode);
         intent.putExtra(ARGUMENT_WITH_ACCOUNT_SIGNIN_MODE, withAccountSigninMode);
         intent.putExtra(ARGUMENT_HISTORY_OPT_IN_MODE, historyOptInMode);
