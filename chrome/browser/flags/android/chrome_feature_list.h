@@ -34,7 +34,6 @@ BASE_DECLARE_FEATURE(kAndroidTabDeclutterRescueKillswitch);
 BASE_DECLARE_FEATURE(kAndroidToolbarScrollAblation);
 BASE_DECLARE_FEATURE(kAnimatedImageDragShadow);
 BASE_DECLARE_FEATURE(kAppSpecificHistory);
-BASE_DECLARE_FEATURE(kAppInfoTabResumptionModule);
 BASE_DECLARE_FEATURE(kArchiveTabService);
 BASE_DECLARE_FEATURE(kAsyncNotificationManager);
 BASE_DECLARE_FEATURE(kAuxiliarySearchDonation);

@@ -172,7 +172,6 @@ const base::Feature* const kFeaturesExposedToJava[] = {
     &kAndroidTabDeclutterRescueKillswitch,
     &kAndroidToolbarScrollAblation,
     &kAnimatedImageDragShadow,
-    &kAppInfoTabResumptionModule,
     &kAppSpecificHistory,
     &kArchiveTabService,
     &kAsyncNotificationManager,
@@ -472,10 +471,6 @@ BASE_FEATURE(kAndroidToolbarScrollAblation,
 
 BASE_FEATURE(kAnimatedImageDragShadow,
              "AnimatedImageDragShadow",
-             base::FEATURE_DISABLED_BY_DEFAULT);
-
-BASE_FEATURE(kAppInfoTabResumptionModule,
-             "AppInfoTabResumptionModule",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
 BASE_FEATURE(kAppSpecificHistory,

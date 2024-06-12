@@ -16612,7 +16612,6 @@ from previous Chrome versions.
   <int value="-1646653199" label="WallpaperGooglePhotosIntegration:enabled"/>
   <int value="-1646196271" label="WebRtcStatsReportIdl:disabled"/>
   <int value="-1646016597" label="IsolatePrerenders:disabled"/>
-  <int value="-1645737335" label="AppInfoTabResumptionModule:enabled"/>
   <int value="-1645071473" label="ChromeColors:disabled"/>
   <int value="-1644308778" label="WASAPIRawAudioCapture:disabled"/>
   <int value="-1643933608" label="SyncAutofillWalletOfferData:enabled"/>
@@ -24132,7 +24131,6 @@ from previous Chrome versions.
   <int value="1596843821" label="NtpRealboxCr23Theming:disabled"/>
   <int value="1597516564" label="kDiagnosticsAppJelly:enabled"/>
   <int value="1597880096" label="FocusMode:disabled"/>
-  <int value="1599380625" label="AppInfoTabResumptionModule:disabled"/>
   <int value="1599431665" label="WebRtcApmDownmixCaptureAudioMethod:enabled"/>
   <int value="1599757259" label="DrawWebEdgeToEdge:enabled"/>
   <int value="1600850069" label="MobileIdentityConsistency:disabled"/>

@@ -4072,12 +4072,6 @@ const char kAnimateSuggestionsListAppearanceDescription[] =
     "Animate the omnibox suggestions list when it appears instead of "
     "immediately setting it to visible";
 
-const char kAppInfoTabResumptionModuleName[] =
-    "Show app information in Tab Resumption module";
-const char kAppInfoTabResumptionModuleNameDescription[] =
-    "Show the information of the app that opened history via Custom Tabs "
-    "in Tab Resumption module.";
-
 const char kAppSpecificHistoryName[] = "Allow app specific history";
 const char kAppSpecificHistoryDescription[] =
     "If enabled, history results will also be categorized by application.";

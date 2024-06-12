@@ -254,11 +254,6 @@
     "expiry_milestone": 125
   },
   {
-    "name": "app-info-tab-resumption-module",
-    "owners": [ "chrome-connective-tissue@google.com", "jinsukkim@chromium.org" ],
-    "expiry_milestone": 140
-  },
-  {
     "name": "app-install-service-uri",
     "owners": [
       "tsergeant@chromium.org",

@@ -2391,9 +2391,6 @@ extern const char kAndroidTabDeclutterDescription[];
 extern const char kAndroidTabGroupStableIdsName[];
 extern const char kAndroidTabGroupStableIdsDescription[];
 
-extern const char kAppInfoTabResumptionModuleName[];
-extern const char kAppInfoTabResumptionModuleNameDescription[];
-
 extern const char kAppSpecificHistoryName[];
 extern const char kAppSpecificHistoryDescription[];
 

@@ -7508,13 +7508,6 @@ const FeatureEntry kFeatureEntries[] = {
      FEATURE_VALUE_TYPE(features::kImageDescriptionsAlternateRouting)},
 
 #if BUILDFLAG(IS_ANDROID)
-    {"app-info-tab-resumption-module",
-     flag_descriptions::kAppInfoTabResumptionModuleName,
-     flag_descriptions::kAppInfoTabResumptionModuleNameDescription, kOsAndroid,
-     FEATURE_VALUE_TYPE(chrome::android::kAppInfoTabResumptionModule)},
-#endif
-
-#if BUILDFLAG(IS_ANDROID)
     {"app-specific-history", flag_descriptions::kAppSpecificHistoryName,
      flag_descriptions::kAppSpecificHistoryDescription, kOsAndroid,
      FEATURE_VALUE_TYPE(chrome::android::kAppSpecificHistory)},
