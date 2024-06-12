@@ -834,9 +834,6 @@ const char kUtilityStartupDialog[] = "utility-startup-dialog";
 // debugging and profiling purposes.
 const char kUtilitySubType[] = "utility-sub-type";
 
-// In debug builds, asserts that the stream of input events is valid.
-const char kValidateInputEventStream[] = "validate-input-event-stream";
-
 // Causes tests to attempt to verify pixel output.
 const char kVerifyPixels[] = "browser-ui-tests-verify-pixels";
 

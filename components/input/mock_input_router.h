@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CONTENT_BROWSER_RENDERER_HOST_INPUT_MOCK_INPUT_ROUTER_H_
-#define CONTENT_BROWSER_RENDERER_HOST_INPUT_MOCK_INPUT_ROUTER_H_
+#ifndef COMPONENTS_INPUT_MOCK_INPUT_ROUTER_H_
+#define COMPONENTS_INPUT_MOCK_INPUT_ROUTER_H_
 
 #include <optional>
 
@@ -11,10 +11,10 @@
 #include "base/task/sequenced_task_runner.h"
 #include "cc/input/touch_action.h"
 #include "components/input/event_with_latency_info.h"
-#include "content/common/input/input_router.h"
+#include "components/input/input_router.h"
 #include "third_party/blink/public/mojom/input/touch_event.mojom.h"
 
-namespace content {
+namespace input {
 class InputRouterClient;
 
 class MockInputRouter : public InputRouter {
@@ -26,7 +26,8 @@ class MockInputRouter : public InputRouter {
         sent_gesture_event_(false),
         send_touch_event_not_cancelled_(false),
         has_handlers_(false),
-        client_(client) {}
+        client_(client)
+  {}
 
   MockInputRouter(const MockInputRouter&) = delete;
   MockInputRouter& operator=(const MockInputRouter&) = delete;
@@ -34,17 +35,17 @@ class MockInputRouter : public InputRouter {
   ~MockInputRouter() override {}
 
   // InputRouter:
-  void SendMouseEvent(const input::MouseEventWithLatencyInfo& mouse_event,
+  void SendMouseEvent(const MouseEventWithLatencyInfo& mouse_event,
                       MouseEventCallback event_result_callback) override;
   void SendWheelEvent(
-      const input::MouseWheelEventWithLatencyInfo& wheel_event) override;
+      const MouseWheelEventWithLatencyInfo& wheel_event) override;
   void SendKeyboardEvent(
-      const input::NativeWebKeyboardEventWithLatencyInfo& key_event,
+      const NativeWebKeyboardEventWithLatencyInfo& key_event,
       KeyboardEventCallback event_result_callback) override;
   void SendGestureEvent(
-      const input::GestureEventWithLatencyInfo& gesture_event) override;
+      const GestureEventWithLatencyInfo& gesture_event) override;
   void SendTouchEvent(
-      const input::TouchEventWithLatencyInfo& touch_event) override;
+      const TouchEventWithLatencyInfo& touch_event) override;
   void NotifySiteIsMobileOptimized(bool is_mobile_optimized) override {}
   bool HasPendingEvents() const override;
   void SetDeviceScaleFactor(float device_scale_factor) override {}
@@ -71,6 +72,6 @@ class MockInputRouter : public InputRouter {
   raw_ptr<InputRouterClient> client_;
 };
 
-}  // namespace content
+}  // namespace input
 
-#endif  // CONTENT_BROWSER_RENDERER_HOST_INPUT_MOCK_INPUT_ROUTER_H_
+#endif  // COMPONENTS_INPUT_MOCK_INPUT_ROUTER_H_

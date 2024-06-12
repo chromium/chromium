@@ -11,21 +11,19 @@
 #include <utility>
 
 #include "base/memory/raw_ptr.h"
+#include "components/input/input_disposition_handler.h"
+#include "components/input/input_router.h"
 #include "content/browser/scheduler/browser_ui_thread_scheduler.h"
-#include "content/common/input/input_disposition_handler.h"
-#include "content/common/input/input_router.h"
 
 namespace content {
 
-class InputRouter;
-
-class MockInputDispositionHandler : public InputDispositionHandler {
+class MockInputDispositionHandler : public input::InputDispositionHandler {
  public:
   MockInputDispositionHandler();
   ~MockInputDispositionHandler() override;
 
-  InputRouter::KeyboardEventCallback CreateKeyboardEventCallback();
-  InputRouter::MouseEventCallback CreateMouseEventCallback();
+  input::InputRouter::KeyboardEventCallback CreateKeyboardEventCallback();
+  input::InputRouter::MouseEventCallback CreateMouseEventCallback();
 
   // InputDispositionHandler
   void OnWheelEventAck(const input::MouseWheelEventWithLatencyInfo& event,
@@ -41,7 +39,7 @@ class MockInputDispositionHandler : public InputDispositionHandler {
 
   size_t GetAndResetAckCount();
 
-  void set_input_router(InputRouter* input_router) {
+  void set_input_router(input::InputRouter* input_router) {
     input_router_ = input_router;
   }
 
@@ -88,7 +86,7 @@ class MockInputDispositionHandler : public InputDispositionHandler {
                        blink::mojom::InputEventResultSource ack_source,
                        blink::mojom::InputEventResultState ack_result);
 
-  raw_ptr<InputRouter, DanglingUntriaged> input_router_;
+  raw_ptr<input::InputRouter, DanglingUntriaged> input_router_;
 
   size_t ack_count_;
   blink::WebInputEvent::Type ack_event_type_;

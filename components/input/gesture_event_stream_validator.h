@@ -2,21 +2,21 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CONTENT_COMMON_INPUT_GESTURE_EVENT_STREAM_VALIDATOR_H_
-#define CONTENT_COMMON_INPUT_GESTURE_EVENT_STREAM_VALIDATOR_H_
+#ifndef COMPONENTS_INPUT_GESTURE_EVENT_STREAM_VALIDATOR_H_
+#define COMPONENTS_INPUT_GESTURE_EVENT_STREAM_VALIDATOR_H_
 
 #include <string>
 
-#include "content/common/content_export.h"
+#include "base/component_export.h"
 
 namespace blink {
 class WebGestureEvent;
 }
 
-namespace content {
+namespace input {
 
 // Utility class for validating a stream of WebGestureEvents.
-class CONTENT_EXPORT GestureEventStreamValidator {
+class COMPONENT_EXPORT(INPUT) GestureEventStreamValidator {
  public:
   GestureEventStreamValidator();
 
@@ -36,6 +36,6 @@ class CONTENT_EXPORT GestureEventStreamValidator {
   bool waiting_for_tap_end_;
 };
 
-}  // namespace content
+}  // namespace input
 
-#endif  // CONTENT_COMMON_INPUT_GESTURE_EVENT_STREAM_VALIDATOR_H_
+#endif  // COMPONENTS_INPUT_GESTURE_EVENT_STREAM_VALIDATOR_H_

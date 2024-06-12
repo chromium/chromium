@@ -11,15 +11,14 @@
 
 #include "base/memory/raw_ptr.h"
 #include "components/input/fling_controller.h"
+#include "components/input/input_router.h"
+#include "components/input/input_router_client.h"
 #include "content/browser/scheduler/browser_ui_thread_scheduler.h"
-#include "content/common/input/input_router_client.h"
 #include "ui/events/blink/did_overscroll_params.h"
 
 namespace content {
 
-class InputRouter;
-
-class MockInputRouterClient : public InputRouterClient,
+class MockInputRouterClient : public input::InputRouterClient,
                               public input::FlingControllerSchedulerClient {
  public:
   MockInputRouterClient();
@@ -60,7 +59,7 @@ class MockInputRouterClient : public InputRouterClient,
   ui::DidOverscrollParams GetAndResetOverscroll();
   cc::TouchAction GetAndResetCompositorAllowedTouchAction();
 
-  void set_input_router(InputRouter* input_router) {
+  void set_input_router(input::InputRouter* input_router) {
     input_router_ = input_router;
   }
 
@@ -91,8 +90,8 @@ class MockInputRouterClient : public InputRouterClient,
       const gfx::PointF& position_in_screen) override;
 
  private:
-  raw_ptr<InputRouter, DanglingUntriaged> input_router_;
-  int in_flight_event_count_;
+  raw_ptr<input::InputRouter, DanglingUntriaged> input_router_;
+  int in_flight_event_count_ = 0;
 
   blink::mojom::InputEventResultState filter_state_;
 

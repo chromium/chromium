@@ -1,4 +1,7 @@
 include_rules = [
+  "+cc/input",
+  "+mojo/public/cpp",
+  "+services/tracing/public/cpp",
   "+third_party/blink/public",
   "+ui/base",
   "+ui/events",

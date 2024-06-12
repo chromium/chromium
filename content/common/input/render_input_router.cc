@@ -13,7 +13,7 @@
 #include "base/location.h"
 #include "base/memory/ptr_util.h"
 #include "cc/input/browser_controls_offset_tags_info.h"
-#include "content/common/input/input_router_config_helper.h"
+#include "components/input/input_router_config_helper.h"
 #include "content/common/input/render_widget_host_input_event_router.h"
 #include "content/common/input/render_widget_host_view_input.h"
 #include "content/common/input/touch_emulator.h"
@@ -113,7 +113,7 @@ base::LazyInstance<UnboundWidgetInputHandler>::Leaky g_unbound_input_handler =
 RenderInputRouter::~RenderInputRouter() = default;
 
 RenderInputRouter::RenderInputRouter(
-    InputRouterImplClient* host,
+    input::InputRouterImplClient* host,
     std::unique_ptr<input::FlingSchedulerBase> fling_scheduler,
     RenderInputRouterDelegate* delegate,
     scoped_refptr<base::SingleThreadTaskRunner> task_runner)
@@ -127,9 +127,9 @@ RenderInputRouter::RenderInputRouter(
 void RenderInputRouter::SetupInputRouter(float device_scale_factor) {
   TRACE_EVENT("toplevel.flow", "RenderInputRouter::SetupInputRouter");
 
-  input_router_ = std::make_unique<InputRouterImpl>(
+  input_router_ = std::make_unique<input::InputRouterImpl>(
       this, this, fling_scheduler_.get(),
-      GetInputRouterConfigForPlatform(task_runner_));
+      input::GetInputRouterConfigForPlatform(task_runner_));
 
   // input_router_ recreated, need to update the force_enable_zoom_ state.
   input_router_->SetForceEnableZoom(force_enable_zoom_);
@@ -202,7 +202,7 @@ void RenderInputRouter::OnImeCancelComposition() {
   input_router_impl_client_->OnImeCancelComposition();
 }
 
-StylusInterface* RenderInputRouter::GetStylusInterface() {
+input::StylusInterface* RenderInputRouter::GetStylusInterface() {
   return input_router_impl_client_->GetStylusInterface();
 }
 
@@ -232,7 +232,7 @@ void RenderInputRouter::SetAutoscrollSelectionActiveInMainFrame(
 void RenderInputRouter::RequestMouseLock(
     bool from_user_gesture,
     bool unadjusted_movement,
-    InputRouterImpl::RequestMouseLockCallback response) {
+    input::InputRouterImpl::RequestMouseLockCallback response) {
   input_router_impl_client_->RequestMouseLock(
       from_user_gesture, unadjusted_movement, std::move(response));
 }

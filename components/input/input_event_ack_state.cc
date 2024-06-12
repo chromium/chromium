@@ -6,7 +6,7 @@
 
 #include "base/logging.h"
 
-namespace content {
+namespace input {
 
 const char* InputEventResultStateToString(
     blink::mojom::InputEventResultState ack_state) {
@@ -31,4 +31,4 @@ const char* InputEventResultStateToString(
   return "";
 }
 
-}  // namespace content
+}  // namespace input

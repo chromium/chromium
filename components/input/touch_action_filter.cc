@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "content/common/input/touch_action_filter.h"
+#include "components/input/touch_action_filter.h"
 
 #include <math.h>
 
@@ -19,7 +19,7 @@
 using blink::WebInputEvent;
 using blink::WebGestureEvent;
 
-namespace content {
+namespace input {
 namespace {
 
 // Actions on an axis are disallowed if the perpendicular axis has a filter set
@@ -504,4 +504,4 @@ void TouchActionFilter::OnHasTouchEventHandlers(bool has_handlers) {
   }
 }
 
-}  // namespace content
+}  // namespace input

@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "content/common/input/touch_event_stream_validator.h"
+#include "components/input/touch_event_stream_validator.h"
 
 #include "base/check.h"
 #include "base/strings/stringprintf.h"
@@ -14,7 +14,7 @@ using blink::WebInputEvent;
 using blink::WebTouchEvent;
 using blink::WebTouchPoint;
 
-namespace content {
+namespace input {
 namespace {
 
 const WebTouchPoint* FindTouchPoint(const WebTouchEvent& event, int id) {
@@ -167,4 +167,4 @@ bool TouchEventStreamValidator::Validate(const WebTouchEvent& event,
   return error_msg->empty();
 }
 
-}  // namespace content
+}  // namespace input

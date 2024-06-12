@@ -2,21 +2,20 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "content/common/input/input_router_config_helper.h"
+#include "components/input/input_router_config_helper.h"
 
 #include "base/command_line.h"
 #include "base/task/single_thread_task_runner.h"
 #include "build/build_config.h"
-#include "content/public/common/content_switches.h"
 #include "ui/events/gesture_detection/gesture_configuration.h"
 #include "ui/events/gesture_detection/gesture_detector.h"
 
-namespace content {
+namespace input {
 namespace {
 
-input::PassthroughTouchEventQueue::Config CreateTouchEventQueueConfig(
+PassthroughTouchEventQueue::Config CreateTouchEventQueueConfig(
     scoped_refptr<base::SingleThreadTaskRunner> task_runner) {
-  input::PassthroughTouchEventQueue::Config config;
+  PassthroughTouchEventQueue::Config config;
 
 #if BUILDFLAG(IS_ANDROID)
   // For historical reasons only Android enables the touch ack timeout.
@@ -28,8 +27,8 @@ input::PassthroughTouchEventQueue::Config CreateTouchEventQueueConfig(
   return config;
 }
 
-input::GestureEventQueue::Config GetGestureEventQueueConfig() {
-  input::GestureEventQueue::Config config;
+GestureEventQueue::Config GetGestureEventQueueConfig() {
+  GestureEventQueue::Config config;
   ui::GestureConfiguration* gesture_config =
       ui::GestureConfiguration::GetInstance();
   config.debounce_interval =
@@ -61,4 +60,4 @@ InputRouter::Config GetInputRouterConfigForPlatform(
   return config;
 }
 
-}  // namespace content
+}  // namespace input

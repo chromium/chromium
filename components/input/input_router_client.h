@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CONTENT_COMMON_INPUT_INPUT_ROUTER_CLIENT_H_
-#define CONTENT_COMMON_INPUT_INPUT_ROUTER_CLIENT_H_
+#ifndef COMPONENTS_INPUT_INPUT_ROUTER_CLIENT_H_
+#define COMPONENTS_INPUT_INPUT_ROUTER_CLIENT_H_
 
 #include "cc/input/touch_action.h"
 #include "components/input/event_with_latency_info.h"
@@ -17,7 +17,7 @@ class LatencyInfo;
 struct DidOverscrollParams;
 }  // namespace ui
 
-namespace content {
+namespace input {
 
 class InputRouterClient {
  public:
@@ -99,6 +99,6 @@ class InputRouterClient {
   virtual void OnInvalidInputEventSource() = 0;
 };
 
-}  // namespace content
+}  // namespace input
 
-#endif  // CONTENT_COMMON_INPUT_INPUT_ROUTER_CLIENT_H_
+#endif  // COMPONENTS_INPUT_INPUT_ROUTER_CLIENT_H_

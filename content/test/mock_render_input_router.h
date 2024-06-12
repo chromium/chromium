@@ -9,7 +9,6 @@
 #include <memory>
 #include <utility>
 
-#include "content/browser/renderer_host/input/mock_input_router.h"
 #include "content/common/input/render_input_router.h"
 #include "content/test/mock_widget_input_handler.h"
 
@@ -22,7 +21,7 @@ class MockRenderInputRouter : public RenderInputRouter {
   using RenderInputRouter::input_router_;
 
   explicit MockRenderInputRouter(
-      InputRouterImplClient* host,
+      input::InputRouterImplClient* host,
       std::unique_ptr<input::FlingSchedulerBase> fling_scheduler,
       RenderInputRouterDelegate* delegate,
       scoped_refptr<base::SingleThreadTaskRunner> task_runner);

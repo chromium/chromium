@@ -17,8 +17,8 @@ MockRenderWidgetHost::~MockRenderWidgetHost() {}
 void MockRenderWidgetHost::ExpectForceEnableZoom(bool enable) {
   EXPECT_EQ(enable, render_input_router_->GetForceEnableZoom());
 
-  InputRouterImpl* input_router_impl =
-      static_cast<InputRouterImpl*>(input_router());
+  input::InputRouterImpl* input_router_impl =
+      static_cast<input::InputRouterImpl*>(input_router());
   EXPECT_EQ(enable, input_router_impl->touch_action_filter_.force_enable_zoom_);
 }
 

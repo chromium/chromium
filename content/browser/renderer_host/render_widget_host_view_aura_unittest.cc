@@ -30,6 +30,7 @@
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
 #include "cc/trees/render_frame_metadata.h"
+#include "components/input/input_router.h"
 #include "components/input/mouse_wheel_event_queue.h"
 #include "components/viz/common/features.h"
 #include "components/viz/common/frame_sinks/begin_frame_args.h"
@@ -57,7 +58,6 @@
 #include "content/browser/web_contents/web_contents_impl.h"
 #include "content/browser/web_contents/web_contents_view_aura.h"
 #include "content/common/features.h"
-#include "content/common/input/input_router.h"
 #include "content/public/browser/context_menu_params.h"
 #include "content/public/browser/keyboard_event_processing_result.h"
 #include "content/public/browser/render_widget_host_view.h"
@@ -2456,7 +2456,8 @@ TEST_F(RenderWidgetHostViewAuraTest, MultiTouchPointsStates) {
                         ui::PointerDetails(ui::EventPointerType::kTouch, 0));
 
   view_->OnTouchEvent(&press0);
-  static_cast<InputRouterImpl*>(view_->GetFocusedWidget()->input_router())
+  static_cast<input::InputRouterImpl*>(
+      view_->GetFocusedWidget()->input_router())
       ->SetTouchActionFromMain(cc::TouchAction::kAuto);
   base::RunLoop().RunUntilIdle();
 

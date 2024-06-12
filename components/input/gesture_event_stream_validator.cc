@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "content/common/input/gesture_event_stream_validator.h"
+#include "components/input/gesture_event_stream_validator.h"
 
 #include "base/check.h"
 #include "base/strings/stringprintf.h"
@@ -12,7 +12,7 @@
 
 using blink::WebInputEvent;
 
-namespace content {
+namespace input {
 
 GestureEventStreamValidator::GestureEventStreamValidator()
     : scrolling_(false), pinching_(false), waiting_for_tap_end_(false) {
@@ -113,4 +113,4 @@ bool GestureEventStreamValidator::Validate(
   return error_msg->empty();
 }
 
-}  // namespace content
+}  // namespace input

@@ -17,15 +17,34 @@ component("input") {
     "fling_scheduler_base.h",
     "gesture_event_queue.cc",
     "gesture_event_queue.h",
+    "gesture_event_stream_validator.cc",
+    "gesture_event_stream_validator.h",
+    "input_disposition_handler.h",
+    "input_event_ack_state.cc",
+    "input_event_ack_state.h",
+    "input_event_stream_validator.cc",
+    "input_event_stream_validator.h",
+    "input_router.h",
+    "input_router_client.h",
+    "input_router_config_helper.cc",
+    "input_router_config_helper.h",
+    "input_router_impl.cc",
+    "input_router_impl.h",
     "mouse_wheel_event_queue.cc",
     "mouse_wheel_event_queue.h",
     "native_web_keyboard_event.h",
     "passthrough_touch_event_queue.cc",
     "passthrough_touch_event_queue.h",
+    "switches.cc",
+    "switches.h",
     "tap_suppression_controller.cc",
     "tap_suppression_controller.h",
     "timeout_monitor.cc",
     "timeout_monitor.h",
+    "touch_action_filter.cc",
+    "touch_action_filter.h",
+    "touch_event_stream_validator.cc",
+    "touch_event_stream_validator.h",
     "touch_timeout_handler.cc",
     "touch_timeout_handler.h",
     "touchpad_pinch_event_queue.cc",
@@ -39,10 +58,12 @@ component("input") {
   ]
   deps = [
     "//base",
+    "//cc",
     "//third_party/blink/public/common:headers",
     "//ui/base",
     "//ui/events:events",
     "//ui/events:events_base",
+    "//ui/events:gesture_detection",
     "//ui/events/blink:blink",
     "//ui/events/gestures/blink",
   ]
@@ -83,9 +104,12 @@ source_set("unit_tests") {
     "event_with_latency_info_unittest.cc",
     "fling_controller_unittest.cc",
     "gesture_event_queue_unittest.cc",
+    "gesture_event_stream_validator_unittest.cc",
     "mouse_wheel_event_queue_unittest.cc",
     "passthrough_touch_event_queue_unittest.cc",
     "tap_suppression_controller_unittest.cc",
+    "touch_action_filter_unittest.cc",
+    "touch_event_stream_validator_unittest.cc",
     "touchpad_pinch_event_queue_unittest.cc",
   ]
   deps = [
@@ -110,4 +134,18 @@ source_set("unit_tests") {
       "web_input_event_builders_mac_unittest.mm",
     ]
   }
+}
+
+source_set("test_support") {
+  testonly = true
+  sources = [
+    "mock_input_router.cc",
+    "mock_input_router.h",
+  ]
+  deps = [
+    ":input",
+    "//base",
+    "//cc",
+    "//third_party/blink/public/common:headers",
+  ]
 }

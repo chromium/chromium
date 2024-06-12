@@ -2,33 +2,33 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "content/browser/renderer_host/input/mock_input_router.h"
+#include "components/input/mock_input_router.h"
 
 #include "base/task/sequenced_task_runner.h"
-#include "content/common/input/input_router_client.h"
+#include "components/input/input_router_client.h"
 
-namespace content {
+namespace input {
 
 void MockInputRouter::SendMouseEvent(
-    const input::MouseEventWithLatencyInfo& mouse_event,
+    const MouseEventWithLatencyInfo& mouse_event,
     MouseEventCallback event_result_callback) {
   sent_mouse_event_ = true;
 }
 void MockInputRouter::SendWheelEvent(
-    const input::MouseWheelEventWithLatencyInfo& wheel_event) {
+    const MouseWheelEventWithLatencyInfo& wheel_event) {
   sent_wheel_event_ = true;
 }
 void MockInputRouter::SendKeyboardEvent(
-    const input::NativeWebKeyboardEventWithLatencyInfo& key_event,
+    const NativeWebKeyboardEventWithLatencyInfo& key_event,
     KeyboardEventCallback event_result_callback) {
   sent_keyboard_event_ = true;
 }
 void MockInputRouter::SendGestureEvent(
-    const input::GestureEventWithLatencyInfo& gesture_event) {
+    const GestureEventWithLatencyInfo& gesture_event) {
   sent_gesture_event_ = true;
 }
 void MockInputRouter::SendTouchEvent(
-    const input::TouchEventWithLatencyInfo& touch_event) {
+    const TouchEventWithLatencyInfo& touch_event) {
   send_touch_event_not_cancelled_ =
       client_->FilterInputEvent(touch_event.event, touch_event.latency) ==
       blink::mojom::InputEventResultState::kNotConsumed;
@@ -56,4 +56,4 @@ void MockInputRouter::OnHasTouchEventConsumers(
   has_handlers_ = consumers->has_touch_event_handlers;
 }
 
-}  // namespace content
+}  // namespace input

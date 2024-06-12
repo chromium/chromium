@@ -52,6 +52,8 @@
 #include "build/chromeos_buildflags.h"
 #include "cc/base/math_util.h"
 #include "cc/input/touch_action.h"
+#include "components/input/input_router.h"
+#include "components/input/switches.h"
 #include "content/browser/child_process_security_policy_impl.h"
 #include "content/browser/gpu/compositor_util.h"
 #include "content/browser/process_lock.h"
@@ -76,7 +78,6 @@
 #include "content/common/content_navigation_policy.h"
 #include "content/common/frame.mojom-test-utils.h"
 #include "content/common/input/actions_parser.h"
-#include "content/common/input/input_router.h"
 #include "content/common/input/render_widget_host_input_event_router.h"
 #include "content/common/input/synthetic_gesture.h"
 #include "content/common/input/synthetic_gesture_target.h"
@@ -476,7 +477,7 @@ void SitePerProcessBrowserTestBase::SetUpCommandLine(
   ContentBrowserTest::SetUpCommandLine(command_line);
   IsolateAllSitesForTesting(command_line);
 
-  command_line->AppendSwitch(switches::kValidateInputEventStream);
+  command_line->AppendSwitch(input::switches::kValidateInputEventStream);
   // Without this, FocusFrame can be flaky. It depends on dispatching input
   // events which can inadventently get dropped.
   command_line->AppendSwitch(blink::switches::kAllowPreCommitInput);
@@ -11233,7 +11234,7 @@ class SitePerProcessBrowserTouchActionTest : public SitePerProcessBrowserTest {
   SitePerProcessBrowserTouchActionTest() = default;
 
   bool GetTouchActionForceEnableZoom(RenderWidgetHost* rwh) {
-    InputRouterImpl* input_router = static_cast<InputRouterImpl*>(
+    input::InputRouterImpl* input_router = static_cast<input::InputRouterImpl*>(
         static_cast<RenderWidgetHostImpl*>(rwh)->input_router());
     return input_router->touch_action_filter_.force_enable_zoom_;
   }
@@ -11260,7 +11261,7 @@ class SitePerProcessBrowserTouchActionTest : public SitePerProcessBrowserTest {
                  event.GetType() == blink::WebGestureEvent::Type::kTouchEnd;
         }));
 
-    InputRouterImpl* input_router = static_cast<InputRouterImpl*>(
+    input::InputRouterImpl* input_router = static_cast<input::InputRouterImpl*>(
         static_cast<RenderWidgetHostImpl*>(rwhv_child->GetRenderWidgetHost())
             ->input_router());
     // Clear the touch actions that were set by previous touches.

@@ -5,7 +5,7 @@
 #include "content/browser/renderer_host/input/mock_input_disposition_handler.h"
 
 #include "base/functional/bind.h"
-#include "content/common/input/input_router.h"
+#include "components/input/input_router.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 using blink::WebInputEvent;
@@ -20,13 +20,13 @@ MockInputDispositionHandler::MockInputDispositionHandler()
 
 MockInputDispositionHandler::~MockInputDispositionHandler() {}
 
-InputRouter::KeyboardEventCallback
+input::InputRouter::KeyboardEventCallback
 MockInputDispositionHandler::CreateKeyboardEventCallback() {
   return base::BindOnce(&MockInputDispositionHandler::OnKeyboardEventAck,
                         base::Unretained(this));
 }
 
-InputRouter::MouseEventCallback
+input::InputRouter::MouseEventCallback
 MockInputDispositionHandler::CreateMouseEventCallback() {
   return base::BindOnce(&MockInputDispositionHandler::OnMouseEventAck,
                         base::Unretained(this));

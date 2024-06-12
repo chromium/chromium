@@ -11,10 +11,10 @@
 #include <vector>
 
 #include "components/input/event_with_latency_info.h"
+#include "components/input/input_router_impl.h"
 #include "components/viz/common/hit_test/aggregated_hit_test_region.h"
 #include "components/viz/common/surfaces/surface_id.h"
 #include "content/common/content_export.h"
-#include "content/common/input/input_router_impl.h"
 #include "third_party/blink/public/mojom/input/input_event_result.mojom-shared.h"
 #include "ui/events/blink/did_overscroll_params.h"
 #include "ui/events/event.h"
@@ -48,7 +48,7 @@ class RenderWidgetHostViewInputObserver;
 // The lifetime of RenderWidgetHostViewInput is tied to the lifetime of the
 // renderer process. If the render process dies, the RenderWidgetHostViewInput
 // goes away and all references to it must become nullptr.
-class CONTENT_EXPORT RenderWidgetHostViewInput : public StylusInterface {
+class CONTENT_EXPORT RenderWidgetHostViewInput : public input::StylusInterface {
  public:
   virtual base::WeakPtr<RenderWidgetHostViewInput> GetInputWeakPtr() = 0;
 

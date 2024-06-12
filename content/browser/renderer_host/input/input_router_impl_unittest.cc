@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "content/common/input/input_router_impl.h"
+#include "components/input/input_router_impl.h"
 
 #include <math.h>
 #include <stddef.h>
@@ -22,13 +22,13 @@
 #include "build/build_config.h"
 #include "cc/input/touch_action.h"
 #include "components/input/gesture_event_queue.h"
+#include "components/input/switches.h"
 #include "content/browser/renderer_host/input/mock_input_disposition_handler.h"
 #include "content/browser/renderer_host/input/mock_input_router_client.h"
 #include "content/browser/renderer_host/mock_render_widget_host.h"
 #include "content/browser/scheduler/browser_ui_thread_scheduler.h"
 #include "content/browser/site_instance_group.h"
 #include "content/common/content_constants_internal.h"
-#include "content/public/common/content_switches.h"
 #include "content/public/test/browser_task_environment.h"
 #include "content/public/test/mock_render_process_host.h"
 #include "content/public/test/test_browser_context.h"
@@ -124,7 +124,7 @@ class MockRenderWidgetHostViewForStylusWriting
 
 // TODO(dtapuska): Remove this class when we don't have multiple implementations
 // of InputRouters.
-class MockInputRouterImplClient : public InputRouterImplClient {
+class MockInputRouterImplClient : public input::InputRouterImplClient {
  public:
   blink::mojom::WidgetInputHandler* GetWidgetInputHandler() override {
     return &widget_input_handler_;
@@ -137,7 +137,7 @@ class MockInputRouterImplClient : public InputRouterImplClient {
 
   void OnImeCancelComposition() override {}
 
-  StylusInterface* GetStylusInterface() override {
+  input::StylusInterface* GetStylusInterface() override {
     return render_widget_host_view_;
   }
 
@@ -231,7 +231,7 @@ class MockInputRouterImplClient : public InputRouterImplClient {
     return input_router_client_.GetAndResetCompositorAllowedTouchAction();
   }
 
-  void set_input_router(InputRouter* input_router) {
+  void set_input_router(input::InputRouter* input_router) {
     input_router_client_.set_input_router(input_router);
   }
 
@@ -277,10 +277,10 @@ class InputRouterImplTestBase : public testing::Test {
   // testing::Test
   void SetUp() override {
     base::CommandLine* command_line = base::CommandLine::ForCurrentProcess();
-    command_line->AppendSwitch(switches::kValidateInputEventStream);
+    command_line->AppendSwitch(input::switches::kValidateInputEventStream);
     client_ = std::make_unique<MockInputRouterImplClient>();
     disposition_handler_ = std::make_unique<MockInputDispositionHandler>();
-    input_router_ = std::make_unique<InputRouterImpl>(
+    input_router_ = std::make_unique<input::InputRouterImpl>(
         client_.get(), disposition_handler_.get(),
         &client_->input_router_client_, config_);
 
@@ -473,7 +473,7 @@ class InputRouterImplTestBase : public testing::Test {
 
   void CancelTouchPoint(int index) { touch_event_.CancelPoint(index); }
 
-  InputRouterImpl* input_router() const { return input_router_.get(); }
+  input::InputRouterImpl* input_router() const { return input_router_.get(); }
 
   bool TouchEventQueueEmpty() const {
     return input_router()->touch_event_queue_.Empty();
@@ -603,9 +603,9 @@ class InputRouterImplTestBase : public testing::Test {
 
   const float radius_x_ = 20.0f;
   const float radius_y_ = 20.0f;
-  InputRouter::Config config_;
+  input::InputRouter::Config config_;
   std::unique_ptr<MockInputRouterImplClient> client_;
-  std::unique_ptr<InputRouterImpl> input_router_;
+  std::unique_ptr<input::InputRouterImpl> input_router_;
   std::unique_ptr<MockInputDispositionHandler> disposition_handler_;
   raw_ptr<MockRenderWidgetHostViewForStylusWriting, DanglingUntriaged>
       mock_view_;

@@ -4,10 +4,12 @@
 
 #include "content/test/mock_render_input_router.h"
 
+#include "components/input/mock_input_router.h"
+
 namespace content {
 
 MockRenderInputRouter::MockRenderInputRouter(
-    InputRouterImplClient* host,
+    input::InputRouterImplClient* host,
     std::unique_ptr<input::FlingSchedulerBase> fling_scheduler,
     RenderInputRouterDelegate* delegate,
     scoped_refptr<base::SingleThreadTaskRunner> task_runner)
@@ -31,7 +33,7 @@ void MockRenderInputRouter::OnTouchEventAck(
 }
 
 void MockRenderInputRouter::SetupForInputRouterTest() {
-  input_router_ = std::make_unique<MockInputRouter>(this);
+  input_router_ = std::make_unique<input::MockInputRouter>(this);
 }
 
 void MockRenderInputRouter::ForwardTouchEventWithLatencyInfo(

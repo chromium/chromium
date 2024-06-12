@@ -2,22 +2,27 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CONTENT_COMMON_INPUT_TOUCH_ACTION_FILTER_H_
-#define CONTENT_COMMON_INPUT_TOUCH_ACTION_FILTER_H_
+#ifndef COMPONENTS_INPUT_TOUCH_ACTION_FILTER_H_
+#define COMPONENTS_INPUT_TOUCH_ACTION_FILTER_H_
 
 #include <optional>
 #include <string>
 
 #include "cc/input/touch_action.h"
-#include "content/common/content_export.h"
+#include "base/component_export.h"
 
 namespace blink {
 class WebGestureEvent;
 }
 
 namespace content {
-
+class InputRouterImplTest;
+class InputRouterImplTestBase;
 class MockRenderWidgetHost;
+class SitePerProcessBrowserTouchActionTest;
+} // namespace content
+
+namespace input {
 
 enum class FilterGestureEventResult {
   kFilterGestureEventAllowed,
@@ -29,7 +34,7 @@ enum class FilterGestureEventResult {
 // events according to the CSS touch-action values the renderer has sent for
 // each touch point.
 // For details see the touch-action design doc at http://goo.gl/KcKbxQ.
-class CONTENT_EXPORT TouchActionFilter {
+class COMPONENT_EXPORT(INPUT) TouchActionFilter {
  public:
   TouchActionFilter();
 
@@ -89,12 +94,12 @@ class CONTENT_EXPORT TouchActionFilter {
   void AppendToGestureSequenceForDebugging(const char* str);
 
  private:
-  friend class InputRouterImplTest;
-  friend class InputRouterImplTestBase;
-  friend class MockRenderWidgetHost;
+  friend class content::InputRouterImplTest;
+  friend class content::InputRouterImplTestBase;
+  friend class content::MockRenderWidgetHost;
   friend class TouchActionFilterTest;
   friend class TouchActionFilterPinchTest;
-  friend class SitePerProcessBrowserTouchActionTest;
+  friend class content::SitePerProcessBrowserTouchActionTest;
 
   bool ShouldSuppressScrolling(const blink::WebGestureEvent&,
                                cc::TouchAction touch_action,
@@ -162,6 +167,6 @@ class CONTENT_EXPORT TouchActionFilter {
   std::string gesture_sequence_;
 };
 
-}  // namespace content
+}  // namespace input
 
-#endif  // CONTENT_COMMON_INPUT_TOUCH_ACTION_FILTER_H_
+#endif  // COMPONENTS_INPUT_TOUCH_ACTION_FILTER_H_

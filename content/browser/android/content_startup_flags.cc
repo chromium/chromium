@@ -9,6 +9,7 @@
 #include "base/command_line.h"
 #include "base/system/sys_info.h"
 #include "cc/base/switches.h"
+#include "components/input/switches.h"
 #include "content/public/browser/android/compositor.h"
 #include "content/public/common/content_switches.h"
 #include "gpu/command_buffer/service/gpu_switches.h"
@@ -35,7 +36,7 @@ void SetContentCommandLineFlags(bool single_process) {
   }
 
   parsed_command_line->AppendSwitch(switches::kEnableViewport);
-  parsed_command_line->AppendSwitch(switches::kValidateInputEventStream);
+  parsed_command_line->AppendSwitch(input::switches::kValidateInputEventStream);
 
   if (base::android::BuildInfo::GetInstance()->sdk_int() >=
       base::android::SDK_VERSION_MARSHMALLOW) {

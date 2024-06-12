@@ -555,8 +555,9 @@ IN_PROC_BROWSER_TEST_F(BrowserSideFlingBrowserTest,
   SimulateTouchscreenFling(GetWidgetHost());
 
   // As the view is destroyed, there shouldn't be any active fling.
-  EXPECT_FALSE(static_cast<InputRouterImpl*>(GetWidgetHost()->input_router())
-                   ->IsFlingActiveForTest());
+  EXPECT_FALSE(
+      static_cast<input::InputRouterImpl*>(GetWidgetHost()->input_router())
+          ->IsFlingActiveForTest());
 
   EXPECT_EQ(
       0, EvalJs(root->current_frame_host(), "window.scrollY").ExtractDouble());

@@ -6,7 +6,7 @@
 #define CONTENT_BROWSER_RENDERER_HOST_MOCK_RENDER_WIDGET_HOST_H_
 
 #include "components/input/event_with_latency_info.h"
-#include "content/browser/renderer_host/input/mock_input_router.h"
+#include "components/input/mock_input_router.h"
 #include "content/browser/renderer_host/render_view_host_impl.h"
 #include "content/test/mock_render_input_router.h"
 #include "content/test/mock_widget_input_handler.h"
@@ -50,8 +50,8 @@ class MockRenderWidgetHost : public RenderWidgetHostImpl {
 
   void SetupForInputRouterTest();
 
-  MockInputRouter* mock_input_router() {
-    return static_cast<MockInputRouter*>(input_router());
+  input::MockInputRouter* mock_input_router() {
+    return static_cast<input::MockInputRouter*>(input_router());
   }
 
   MockRenderInputRouter* mock_render_input_router() {

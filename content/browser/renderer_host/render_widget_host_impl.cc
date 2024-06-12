@@ -44,6 +44,8 @@
 #include "cc/input/browser_controls_offset_tags_info.h"
 #include "cc/trees/browser_controls_params.h"
 #include "cc/trees/render_frame_metadata.h"
+#include "components/input/input_router_config_helper.h"
+#include "components/input/input_router_impl.h"
 #include "components/input/native_web_keyboard_event.h"
 #include "components/input/timeout_monitor.h"
 #include "components/viz/common/features.h"
@@ -79,8 +81,6 @@
 #include "content/browser/storage_partition_impl.h"
 #include "content/common/content_constants_internal.h"
 #include "content/common/frame.mojom.h"
-#include "content/common/input/input_router_config_helper.h"
-#include "content/common/input/input_router_impl.h"
 #include "content/common/input/render_widget_host_input_event_router.h"
 #include "content/common/input/synthetic_gesture.h"
 #include "content/common/input/synthetic_gesture_controller.h"
@@ -1772,7 +1772,7 @@ void RenderWidgetHostImpl::DisableResizeAckCheckForTesting() {
   g_check_for_pending_visual_properties_ack = false;
 }
 
-InputRouter* RenderWidgetHostImpl::input_router() {
+input::InputRouter* RenderWidgetHostImpl::input_router() {
   return GetRenderInputRouter()->input_router();
 }
 
@@ -2940,8 +2940,8 @@ RenderWidgetHostViewBase* RenderWidgetHostImpl::GetRenderWidgetHostViewBase() {
   return GetView();
 }
 
-StylusInterface* RenderWidgetHostImpl::GetStylusInterface() {
-  return static_cast<StylusInterface*>(GetView());
+input::StylusInterface* RenderWidgetHostImpl::GetStylusInterface() {
+  return static_cast<input::StylusInterface*>(GetView());
 }
 
 void RenderWidgetHostImpl::OnStartStylusWriting() {
@@ -2998,7 +2998,7 @@ void RenderWidgetHostImpl::SetAutoscrollSelectionActiveInMainFrame(
 void RenderWidgetHostImpl::RequestMouseLock(
     bool from_user_gesture,
     bool unadjusted_movement,
-    InputRouterImpl::RequestMouseLockCallback response) {
+    input::InputRouterImpl::RequestMouseLockCallback response) {
   if (pending_pointer_lock_request_ || IsPointerLocked()) {
     std::move(response).Run(blink::mojom::PointerLockResult::kAlreadyLocked,
                             /*context=*/mojo::NullRemote());

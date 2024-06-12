@@ -2,18 +2,19 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CONTENT_COMMON_INPUT_INPUT_ROUTER_CONFIG_HELPER_H_
-#define CONTENT_COMMON_INPUT_INPUT_ROUTER_CONFIG_HELPER_H_
+#ifndef COMPONENTS_INPUT_INPUT_ROUTER_CONFIG_HELPER_H_
+#define COMPONENTS_INPUT_INPUT_ROUTER_CONFIG_HELPER_H_
 
-#include "content/common/input/input_router.h"
+#include "components/input/input_router.h"
 
-namespace content {
+namespace input {
 
 // Return an InputRouter configuration with parameters tailored to the current
 // platform.
+COMPONENT_EXPORT(INPUT)
 InputRouter::Config GetInputRouterConfigForPlatform(
     scoped_refptr<base::SingleThreadTaskRunner> task_runner);
 
-}  // namespace content
+}  // namespace input
 
-#endif  // CONTENT_COMMON_INPUT_INPUT_ROUTER_CONFIG_HELPER_H_
+#endif  // COMPONENTS_INPUT_INPUT_ROUTER_CONFIG_HELPER_H_

@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "content/common/input/touch_action_filter.h"
+#include "components/input/touch_action_filter.h"
 
 #include "components/input/event_with_latency_info.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -15,7 +15,7 @@ using blink::SyntheticWebGestureEventBuilder;
 using blink::WebGestureEvent;
 using blink::WebInputEvent;
 
-namespace content {
+namespace input {
 namespace {
 
 const blink::WebGestureDevice kSourceDevice =
@@ -1525,4 +1525,4 @@ TEST_F(TouchActionFilterTest, TouchpadScroll) {
             FilterGestureEventResult::kFilterGestureEventAllowed);
 }
 
-}  // namespace content
+}  // namespace input

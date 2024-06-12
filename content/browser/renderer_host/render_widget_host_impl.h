@@ -34,6 +34,8 @@
 #include "cc/input/browser_controls_offset_tags_info.h"
 #include "cc/mojom/render_frame_metadata.mojom.h"
 #include "components/input/event_with_latency_info.h"
+#include "components/input/input_disposition_handler.h"
+#include "components/input/input_router_impl.h"
 #include "components/viz/common/surfaces/frame_sink_id.h"
 #include "content/browser/renderer_host/agent_scheduling_group_host.h"
 #include "content/browser/renderer_host/frame_token_message_queue.h"
@@ -44,8 +46,6 @@
 #include "content/browser/scheduler/browser_ui_thread_scheduler.h"
 #include "content/common/content_export.h"
 #include "content/common/frame.mojom-forward.h"
-#include "content/common/input/input_disposition_handler.h"
-#include "content/common/input/input_router_impl.h"
 #include "content/common/input/render_input_router.h"
 #include "content/common/input/render_input_router_delegate.h"
 #include "content/common/input/synthetic_gesture.h"
@@ -97,6 +97,7 @@ class Vector2dF;
 }  // namespace gfx
 
 namespace input {
+class InputRouter;
 class TimeoutMonitor;
 class FlingSchedulerBase;
 }  // namespace input
@@ -108,7 +109,6 @@ enum class DomCode : uint32_t;
 namespace content {
 class BrowserAccessibilityManager;
 class FrameTree;
-class InputRouter;
 class MockRenderWidgetHost;
 class MockRenderWidgetHostImpl;
 class RenderWidgetHostOwnerDelegate;
@@ -148,7 +148,7 @@ class VisibleTimeRequestTrigger;
 class CONTENT_EXPORT RenderWidgetHostImpl
     : public RenderWidgetHost,
       public FrameTokenMessageQueue::Client,
-      public InputRouterImplClient,
+      public input::InputRouterImplClient,
       public RenderProcessHostObserver,
       public RenderProcessHostPriorityClient,
       public SyntheticGestureController::Delegate,
@@ -694,7 +694,7 @@ class CONTENT_EXPORT RenderWidgetHostImpl
   // Don't check whether we expected a resize ack during web tests.
   static void DisableResizeAckCheckForTesting();
 
-  InputRouter* input_router();
+  input::InputRouter* input_router();
 
   void SetForceEnableZoom(bool);
 
@@ -799,7 +799,7 @@ class CONTENT_EXPORT RenderWidgetHostImpl
       const std::optional<std::vector<gfx::Rect>>& character_bounds,
       const std::optional<std::vector<gfx::Rect>>& line_bounds) override;
   void OnImeCancelComposition() override;
-  StylusInterface* GetStylusInterface() override;
+  input::StylusInterface* GetStylusInterface() override;
   void OnStartStylusWriting() override;
   bool IsWheelScrollInProgress() override;
   bool IsAutoscrollInProgress() override;
@@ -809,7 +809,7 @@ class CONTENT_EXPORT RenderWidgetHostImpl
   void RequestMouseLock(
       bool from_user_gesture,
       bool unadjusted_movement,
-      InputRouterImpl::RequestMouseLockCallback response) override;
+      input::InputRouterImpl::RequestMouseLockCallback response) override;
   gfx::Size GetRootWidgetViewportSize() override;
 
   // PointerLockContext overrides
@@ -1511,7 +1511,7 @@ class CONTENT_EXPORT RenderWidgetHostImpl
   // See comments on Add/ClearPendingUserActivation().
   base::OneShotTimer pending_user_activation_timer_;
 
-  InputRouterImpl::RequestMouseLockCallback request_pointer_lock_callback_;
+  input::InputRouterImpl::RequestMouseLockCallback request_pointer_lock_callback_;
 
   // Parameters to pass to blink::mojom::Widget::WasShown after
   // `waiting_for_init_` becomes true. These are stored in a struct instead of

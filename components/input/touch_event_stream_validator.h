@@ -2,18 +2,18 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CONTENT_COMMON_INPUT_TOUCH_EVENT_STREAM_VALIDATOR_H_
-#define CONTENT_COMMON_INPUT_TOUCH_EVENT_STREAM_VALIDATOR_H_
+#ifndef COMPONENTS_INPUT_TOUCH_EVENT_STREAM_VALIDATOR_H_
+#define COMPONENTS_INPUT_TOUCH_EVENT_STREAM_VALIDATOR_H_
 
 #include <string>
 
-#include "content/common/content_export.h"
+#include "base/component_export.h"
 #include "third_party/blink/public/common/input/web_touch_event.h"
 
-namespace content {
+namespace input {
 
 // Utility class for validating a stream of WebTouchEvents.
-class CONTENT_EXPORT TouchEventStreamValidator {
+class COMPONENT_EXPORT(INPUT) TouchEventStreamValidator {
  public:
   TouchEventStreamValidator();
 
@@ -31,6 +31,6 @@ class CONTENT_EXPORT TouchEventStreamValidator {
   blink::WebTouchEvent previous_event_;
 };
 
-}  // namespace content
+}  // namespace input
 
-#endif  // CONTENT_COMMON_INPUT_TOUCH_EVENT_STREAM_VALIDATOR_H_
+#endif  // COMPONENTS_INPUT_TOUCH_EVENT_STREAM_VALIDATOR_H_

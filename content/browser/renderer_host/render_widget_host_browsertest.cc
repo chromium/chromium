@@ -15,16 +15,16 @@
 #include "base/test/test_timeouts.h"
 #include "base/time/time.h"
 #include "build/build_config.h"
+#include "components/input/input_router_impl.h"
+#include "components/input/touch_action_filter.h"
 #include "content/browser/permissions/permission_controller_impl.h"
 #include "content/browser/renderer_host/input/touch_emulator_impl.h"
 #include "content/browser/renderer_host/render_widget_host_impl.h"
 #include "content/browser/renderer_host/render_widget_host_view_base.h"
 #include "content/browser/web_contents/web_contents_impl.h"
 #include "content/common/content_navigation_policy.h"
-#include "content/common/input/input_router_impl.h"
 #include "content/common/input/render_widget_host_input_event_router.h"
 #include "content/common/input/synthetic_smooth_drag_gesture.h"
-#include "content/common/input/touch_action_filter.h"
 #include "content/public/browser/render_widget_host_observer.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/browser/web_contents_observer.h"
@@ -133,8 +133,9 @@ class RenderWidgetHostSitePerProcessTest : public ContentBrowserTest {
     return static_cast<WebContentsImpl*>(shell()->web_contents());
   }
 
-  TouchActionFilter* GetTouchActionFilterForWidget(RenderWidgetHostImpl* rwhi) {
-    return &static_cast<InputRouterImpl*>(rwhi->input_router())
+  input::TouchActionFilter* GetTouchActionFilterForWidget(
+      RenderWidgetHostImpl* rwhi) {
+    return &static_cast<input::InputRouterImpl*>(rwhi->input_router())
                 ->touch_action_filter_;
   }
 };

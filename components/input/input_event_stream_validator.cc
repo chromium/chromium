@@ -2,20 +2,20 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "content/common/input/input_event_stream_validator.h"
+#include "components/input/input_event_stream_validator.h"
 
 #include "base/check.h"
 #include "base/command_line.h"
-#include "content/public/common/content_switches.h"
 #include "third_party/blink/public/common/input/web_gesture_event.h"
 #include "third_party/blink/public/common/input/web_input_event.h"
 #include "ui/events/blink/web_input_event_traits.h"
+#include "components/input/switches.h"
 
 using blink::WebInputEvent;
 using blink::WebGestureEvent;
 using blink::WebTouchEvent;
 
-namespace content {
+namespace input {
 
 InputEventStreamValidator::InputEventStreamValidator()
     : enabled_(base::CommandLine::ForCurrentProcess()->HasSwitch(
@@ -50,4 +50,4 @@ bool InputEventStreamValidator::ValidateImpl(
   return true;
 }
 
-}  // namespace content
+}  // namespace input

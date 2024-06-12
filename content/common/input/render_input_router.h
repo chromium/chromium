@@ -12,10 +12,10 @@
 #include <vector>
 
 #include "components/input/fling_scheduler_base.h"
+#include "components/input/input_disposition_handler.h"
+#include "components/input/input_router_impl.h"
 #include "content/common/content_export.h"
-#include "content/common/input/input_disposition_handler.h"
 #include "content/common/input/input_injector.mojom-shared.h"
-#include "content/common/input/input_router_impl.h"
 #include "content/common/input/render_input_router_delegate.h"
 #include "content/common/input/render_input_router_iterator.h"
 #include "content/common/input/render_input_router_latency_tracker.h"
@@ -41,15 +41,15 @@ class PeakGpuMemoryTracker;
 // (https://docs.google.com/document/d/1mcydbkgFCO_TT9NuFE962L8PLJWT2XOfXUAPO88VuKE),
 // this will also be used to handle input events on VizCompositorThread (GPU
 // process).
-class CONTENT_EXPORT RenderInputRouter : public InputRouterImplClient,
-                                         public InputDispositionHandler {
+class CONTENT_EXPORT RenderInputRouter : public input::InputRouterImplClient,
+                                         public input::InputDispositionHandler {
  public:
   RenderInputRouter(const RenderInputRouter&) = delete;
   RenderInputRouter& operator=(const RenderInputRouter&) = delete;
 
   ~RenderInputRouter() override;
 
-  RenderInputRouter(InputRouterImplClient* host,
+  RenderInputRouter(input::InputRouterImplClient* host,
                     std::unique_ptr<input::FlingSchedulerBase> fling_scheduler,
                     RenderInputRouterDelegate* delegate,
                     scoped_refptr<base::SingleThreadTaskRunner> task_runner);
@@ -61,7 +61,7 @@ class CONTENT_EXPORT RenderInputRouter : public InputRouterImplClient,
 
   void RendererWidgetCreated(bool for_frame_widget);
 
-  InputRouter* input_router() { return input_router_.get(); }
+  input::InputRouter* input_router() { return input_router_.get(); }
   RenderInputRouterDelegate* delegate() { return delegate_; }
 
   void SetForceEnableZoom(bool);
@@ -81,7 +81,7 @@ class CONTENT_EXPORT RenderInputRouter : public InputRouterImplClient,
       const std::optional<std::vector<gfx::Rect>>& character_bounds,
       const std::optional<std::vector<gfx::Rect>>& line_bounds) override;
   void OnImeCancelComposition() override;
-  StylusInterface* GetStylusInterface() override;
+  input::StylusInterface* GetStylusInterface() override;
   void OnStartStylusWriting() override;
   bool IsWheelScrollInProgress() override;
   bool IsAutoscrollInProgress() override;
@@ -91,7 +91,7 @@ class CONTENT_EXPORT RenderInputRouter : public InputRouterImplClient,
   void RequestMouseLock(
       bool from_user_gesture,
       bool unadjusted_movement,
-      InputRouterImpl::RequestMouseLockCallback response) override;
+      input::InputRouterImpl::RequestMouseLockCallback response) override;
   gfx::Size GetRootWidgetViewportSize() override;
 
   // InputRouterClient overrides.
@@ -197,7 +197,7 @@ class CONTENT_EXPORT RenderInputRouter : public InputRouterImplClient,
   // Must be declared before `input_router_`. The latter is constructed by
   // borrowing a reference to this object, so it must be deleted first.
   std::unique_ptr<input::FlingSchedulerBase> fling_scheduler_;
-  std::unique_ptr<InputRouter> input_router_;
+  std::unique_ptr<input::InputRouter> input_router_;
 
   // TODO(wjmaclean) Remove the code for supporting resending gesture events
   // when WebView transitions to OOPIF and BrowserPlugin is removed.
@@ -210,7 +210,7 @@ class CONTENT_EXPORT RenderInputRouter : public InputRouterImplClient,
 
   std::unique_ptr<PeakGpuMemoryTracker> scroll_peak_gpu_mem_tracker_;
 
-  raw_ptr<InputRouterImplClient> input_router_impl_client_;
+  raw_ptr<input::InputRouterImplClient> input_router_impl_client_;
   raw_ptr<RenderInputRouterDelegate> delegate_;
 
   mojo::Remote<viz::mojom::InputTargetClient> input_target_client_;

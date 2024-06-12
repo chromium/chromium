@@ -7,7 +7,7 @@
 #pragma allow_unsafe_buffers
 #endif
 
-#include "content/common/input/touch_event_stream_validator.h"
+#include "components/input/touch_event_stream_validator.h"
 
 #include <stddef.h>
 
@@ -19,7 +19,7 @@ using blink::WebInputEvent;
 using blink::WebTouchEvent;
 using blink::WebTouchPoint;
 
-namespace content {
+namespace input {
 
 TEST(TouchEventStreamValidator, ValidTouchStream) {
   TouchEventStreamValidator validator;
@@ -181,4 +181,4 @@ TEST(TouchEventStreamValidator, InvalidPointStates) {
   }
 }
 
-}  // namespace content
+}  // namespace input

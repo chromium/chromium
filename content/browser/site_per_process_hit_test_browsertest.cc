@@ -747,7 +747,7 @@ class SetMouseCaptureInterceptor
   ~SetMouseCaptureInterceptor() override = default;
 
   mojo::Receiver<blink::mojom::WidgetInputHandlerHost>& receiver() {
-    return static_cast<InputRouterImpl*>(host_->input_router())
+    return static_cast<input::InputRouterImpl*>(host_->input_router())
         ->host_receiver_for_testing();
   }
 
@@ -6490,7 +6490,7 @@ class SitePerProcessGestureHitTestBrowserTest
     // The pinch gesture will always sent to the root frame even if the fingers
     // are targeting the iframe. In this case, the test should not crash.
     if (reset_root_touch_action) {
-      static_cast<InputRouterImpl*>(
+      static_cast<input::InputRouterImpl*>(
           static_cast<RenderWidgetHostImpl*>(rwhva_root_->GetRenderWidgetHost())
               ->input_router())
           ->ForceResetTouchActionForTest();

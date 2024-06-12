@@ -23,6 +23,7 @@
 #include "build/build_config.h"
 #include "cc/mojom/render_frame_metadata.mojom.h"
 #include "cc/trees/render_frame_metadata.h"
+#include "components/input/switches.h"
 #include "components/viz/common/surfaces/local_surface_id.h"
 #include "components/viz/common/surfaces/parent_local_surface_id_allocator.h"
 #include "components/viz/test/begin_frame_args_test.h"
@@ -31,7 +32,6 @@
 #include "content/browser/renderer_host/data_transfer_util.h"
 #include "content/browser/renderer_host/display_feature.h"
 #include "content/browser/renderer_host/frame_token_message_queue.h"
-#include "content/browser/renderer_host/input/mock_input_router.h"
 #include "content/browser/renderer_host/input/touch_emulator_impl.h"
 #include "content/browser/renderer_host/mock_render_widget_host.h"
 #include "content/browser/renderer_host/render_view_host_delegate_view.h"
@@ -563,7 +563,7 @@ class RenderWidgetHostTest : public testing::Test {
   // testing::Test
   void SetUp() override {
     base::CommandLine* command_line = base::CommandLine::ForCurrentProcess();
-    command_line->AppendSwitch(switches::kValidateInputEventStream);
+    command_line->AppendSwitch(input::switches::kValidateInputEventStream);
     browser_context_ = std::make_unique<TestBrowserContext>();
     delegate_ = std::make_unique<MockRenderWidgetHostDelegate>();
     process_ =

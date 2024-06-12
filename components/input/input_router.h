@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CONTENT_COMMON_INPUT_INPUT_ROUTER_H_
-#define CONTENT_COMMON_INPUT_INPUT_ROUTER_H_
+#ifndef COMPONENTS_INPUT_INPUT_ROUTER_H_
+#define COMPONENTS_INPUT_INPUT_ROUTER_H_
 
 #include <optional>
 
@@ -14,14 +14,14 @@
 #include "components/input/gesture_event_queue.h"
 #include "components/input/native_web_keyboard_event.h"
 #include "components/input/passthrough_touch_event_queue.h"
-#include "content/common/content_export.h"
+#include "base/component_export.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "third_party/blink/public/common/input/web_input_event.h"
 #include "third_party/blink/public/mojom/input/input_event_result.mojom-shared.h"
 #include "third_party/blink/public/mojom/input/input_handler.mojom.h"
 #include "third_party/blink/public/mojom/input/touch_event.mojom.h"
 
-namespace content {
+namespace input {
 
 // The InputRouter allows the embedder to customize how input events are
 // sent to the renderer, and how responses are dispatched to the browser.
@@ -29,10 +29,10 @@ namespace content {
 // received, it is free to customize when those events are dispatched.
 class InputRouter {
  public:
-  struct CONTENT_EXPORT Config {
+  struct COMPONENT_EXPORT(INPUT) Config {
     Config();
-    input::GestureEventQueue::Config gesture_config;
-    input::PassthroughTouchEventQueue::Config touch_config;
+    GestureEventQueue::Config gesture_config;
+    PassthroughTouchEventQueue::Config touch_config;
   };
 
   virtual ~InputRouter() = default;
@@ -41,29 +41,29 @@ class InputRouter {
   // *synchronously*. If |this| is destroyed while waiting on a result from
   // the renderer, then callbacks are *not* run.
   using MouseEventCallback =
-      base::OnceCallback<void(const input::MouseEventWithLatencyInfo& event,
+      base::OnceCallback<void(const MouseEventWithLatencyInfo& event,
                               blink::mojom::InputEventResultSource ack_source,
                               blink::mojom::InputEventResultState ack_result)>;
   virtual void SendMouseEvent(
-      const input::MouseEventWithLatencyInfo& mouse_event,
+      const MouseEventWithLatencyInfo& mouse_event,
       MouseEventCallback event_result_callback) = 0;
 
   virtual void SendWheelEvent(
-      const input::MouseWheelEventWithLatencyInfo& wheel_event) = 0;
+      const MouseWheelEventWithLatencyInfo& wheel_event) = 0;
 
   using KeyboardEventCallback = base::OnceCallback<void(
-      const input::NativeWebKeyboardEventWithLatencyInfo& event,
+      const NativeWebKeyboardEventWithLatencyInfo& event,
       blink::mojom::InputEventResultSource ack_source,
       blink::mojom::InputEventResultState ack_result)>;
   virtual void SendKeyboardEvent(
-      const input::NativeWebKeyboardEventWithLatencyInfo& key_event,
+      const NativeWebKeyboardEventWithLatencyInfo& key_event,
       KeyboardEventCallback event_result_callback) = 0;
 
   virtual void SendGestureEvent(
-      const input::GestureEventWithLatencyInfo& gesture_event) = 0;
+      const GestureEventWithLatencyInfo& gesture_event) = 0;
 
   virtual void SendTouchEvent(
-      const input::TouchEventWithLatencyInfo& touch_event) = 0;
+      const TouchEventWithLatencyInfo& touch_event) = 0;
 
   // Notify the router about whether the current page is mobile-optimized (i.e.,
   // the site has a mobile-friendly viewport).
@@ -113,6 +113,6 @@ class InputRouter {
   virtual void FlushTouchEventQueue() = 0;
 };
 
-}  // namespace content
+}  // namespace input
 
-#endif  // CONTENT_COMMON_INPUT_INPUT_ROUTER_H_
+#endif  // COMPONENTS_INPUT_INPUT_ROUTER_H_
