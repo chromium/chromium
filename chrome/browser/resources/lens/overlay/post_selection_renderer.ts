@@ -10,6 +10,7 @@ import {PolymerElement} from '//resources/polymer/v3_0/polymer/polymer_bundled.m
 import {BrowserProxyImpl} from './browser_proxy.js';
 import {CenterRotatedBox_CoordinateType} from './geometry.mojom-webui.js';
 import type {CenterRotatedBox} from './geometry.mojom-webui.js';
+import {INVOCATION_SOURCE} from './lens_overlay_app.js';
 import {recordLensOverlayInteraction, UserAction} from './metrics_utils.js';
 import {getTemplate} from './post_selection_renderer.html.js';
 import {focusShimmerOnRegion, ShimmerControlRequester, unfocusShimmer} from './selection_utils.js';
@@ -306,7 +307,8 @@ export class PostSelectionRendererElement extends PolymerElement {
         detail: this.getNormalizedCenterRotatedBox(),
       }));
 
-      recordLensOverlayInteraction(UserAction.REGION_SELECTION_CHANGE);
+      recordLensOverlayInteraction(
+          INVOCATION_SOURCE, UserAction.REGION_SELECTION_CHANGE);
     }
 
     this.originalBounds = {left: 0, top: 0, width: 0, height: 0};

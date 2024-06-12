@@ -1514,6 +1514,11 @@ void LensOverlayController::FeedbackRequestedByOverlay() {
       /*extra_diagnostics=*/std::string());
 }
 
+void LensOverlayController::GetOverlayInvocationSource(
+    GetOverlayInvocationSourceCallback callback) {
+  std::move(callback).Run(GetInvocationSourceString());
+}
+
 void LensOverlayController::InfoRequestedByOverlay(
     ui::mojom::ClickModifiersPtr click_modifiers) {
   // The tab is expected to be in the foreground.

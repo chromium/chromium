@@ -19,7 +19,7 @@ suite('OverlayFeedbackButton', () => {
   let lensOverlayElement: LensOverlayAppElement;
   let metrics: MetricsTracker;
 
-  setup(() => {
+  setup(async () => {
     // Resetting the HTML needs to be the first thing we do in setup to
     // guarantee that any singleton instances don't change while any UI is still
     // attached to the DOM.
@@ -29,6 +29,7 @@ suite('OverlayFeedbackButton', () => {
     BrowserProxyImpl.setInstance(testBrowserProxy);
 
     lensOverlayElement = document.createElement('lens-overlay-app');
+    await testBrowserProxy.handler.whenCalled('getOverlayInvocationSource');
     document.body.appendChild(lensOverlayElement);
     metrics = fakeMetricsPrivate();
     return waitBeforeNextRender(lensOverlayElement);
@@ -71,6 +72,11 @@ suite('OverlayFeedbackButton', () => {
         1,
         metrics.count(
             'Lens.Overlay.Overlay.UserAction', UserAction.MY_ACTIVITY));
+    assertEquals(
+        1,
+        metrics.count(
+            'Lens.Overlay.Overlay.ByEntryPoint.AppMenu.UserAction',
+            UserAction.MY_ACTIVITY));
   });
 
   test('verify clicking learn more calls browser proxy', async () => {
@@ -96,6 +102,11 @@ suite('OverlayFeedbackButton', () => {
         1,
         metrics.count(
             'Lens.Overlay.Overlay.UserAction', UserAction.LEARN_MORE));
+    assertEquals(
+        1,
+        metrics.count(
+            'Lens.Overlay.Overlay.ByEntryPoint.AppMenu.UserAction',
+            UserAction.LEARN_MORE));
   });
 
   test('verify clicking send feedback calls browser proxy', () => {
@@ -107,6 +118,11 @@ suite('OverlayFeedbackButton', () => {
         1,
         metrics.count(
             'Lens.Overlay.Overlay.UserAction', UserAction.SEND_FEEDBACK));
+    assertEquals(
+        1,
+        metrics.count(
+            'Lens.Overlay.Overlay.ByEntryPoint.AppMenu.UserAction',
+            UserAction.SEND_FEEDBACK));
     return testBrowserProxy.handler.whenCalled('feedbackRequestedByOverlay');
   });
 });

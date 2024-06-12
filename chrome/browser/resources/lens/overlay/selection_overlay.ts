@@ -21,6 +21,7 @@ import {PolymerElement} from '//resources/polymer/v3_0/polymer/polymer_bundled.m
 import {BrowserProxyImpl} from './browser_proxy.js';
 import {getFallbackTheme} from './color_utils.js';
 import {type CursorTooltipData, CursorTooltipType} from './cursor_tooltip.js';
+import {INVOCATION_SOURCE} from './lens_overlay_app.js';
 import {recordLensOverlayInteraction, UserAction} from './metrics_utils.js';
 import type {ObjectLayerElement} from './object_layer.js';
 import type {OverlayShimmerElement} from './overlay_shimmer.js';
@@ -647,7 +648,7 @@ export class SelectionOverlayElement extends SelectionOverlayElementBase {
 
   private async handleCopy() {
     navigator.clipboard.writeText(this.highlightedText);
-    recordLensOverlayInteraction(UserAction.COPY_TEXT);
+    recordLensOverlayInteraction(INVOCATION_SOURCE, UserAction.COPY_TEXT);
     this.dispatchEvent(new CustomEvent('text-copied', {
       bubbles: true,
       composed: true,
@@ -664,7 +665,7 @@ export class SelectionOverlayElement extends SelectionOverlayElementBase {
     BrowserProxyImpl.getInstance().handler.issueTranslateSelectionRequest(
         this.highlightedText, this.contentLanguage,
         this.textSelectionStartIndex, this.textSelectionEndIndex);
-    recordLensOverlayInteraction(UserAction.TRANSLATE_TEXT);
+    recordLensOverlayInteraction(INVOCATION_SOURCE, UserAction.TRANSLATE_TEXT);
   }
 
   // Make the cursor disappear over the context menu, as if leaving the overlay.

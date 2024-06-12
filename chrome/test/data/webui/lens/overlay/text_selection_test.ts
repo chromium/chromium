@@ -163,6 +163,11 @@ suite('TextSelection', function() {
         1,
         metrics.count(
             'Lens.Overlay.Overlay.UserAction', UserAction.TEXT_SELECTION));
+    assertEquals(
+        1,
+        metrics.count(
+            'Lens.Overlay.Overlay.ByEntryPoint.AppMenu.UserAction',
+            UserAction.TEXT_SELECTION));
     assertEquals('hello', textQuery);
   });
 
@@ -322,9 +327,17 @@ suite('TextSelection', function() {
         0, testBrowserProxy.handler.getCallCount('issueTextSelectionRequest'));
     assertEquals(1, metrics.count('Lens.Overlay.Overlay.UserAction'));
     assertEquals(
+        1,
+        metrics.count('Lens.Overlay.Overlay.ByEntryPoint.AppMenu.UserAction'));
+    assertEquals(
         0,
         metrics.count(
             'Lens.Overlay.Overlay.UserAction', UserAction.TEXT_SELECTION));
+    assertEquals(
+        0,
+        metrics.count(
+            'Lens.Overlay.Overlay.ByEntryPoint.AppMenu.UserAction',
+            UserAction.TEXT_SELECTION));
   });
 
   test(

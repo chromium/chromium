@@ -608,6 +608,8 @@ class LensOverlayController : public LensSearchboxClient,
   void CloseRequestedByOverlayBackgroundClick() override;
   void CloseRequestedByOverlayEscapeKeyPress() override;
   void FeedbackRequestedByOverlay() override;
+  void GetOverlayInvocationSource(
+      GetOverlayInvocationSourceCallback callback) override;
   void InfoRequestedByOverlay(
       ui::mojom::ClickModifiersPtr click_modifiers) override;
   // TODO: rename this to IssueRegionSearchRequest.

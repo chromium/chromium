@@ -98,6 +98,11 @@ suite('ManualRegionSelection', function() {
         1,
         metrics.count(
             'Lens.Overlay.Overlay.UserAction', UserAction.REGION_SELECTION));
+    assertEquals(
+        1,
+        metrics.count(
+            'Lens.Overlay.Overlay.ByEntryPoint.AppMenu.UserAction',
+            UserAction.REGION_SELECTION));
   }
 
   // Does a click and verifies that expectedRect is sent via mojo.
@@ -115,6 +120,11 @@ suite('ManualRegionSelection', function() {
         1,
         metrics.count(
             'Lens.Overlay.Overlay.UserAction', UserAction.REGION_SELECTION));
+    assertEquals(
+        1,
+        metrics.count(
+            'Lens.Overlay.Overlay.ByEntryPoint.AppMenu.UserAction',
+            UserAction.REGION_SELECTION));
   }
 
   test('ClickShowsRegion', async () => {

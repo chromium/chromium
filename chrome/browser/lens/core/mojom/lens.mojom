@@ -63,6 +63,11 @@ interface LensPageHandler {
   // dialog.
   FeedbackRequestedByOverlay();
 
+  // Returns the Lens Overlay entry point, used in the WebUI for metrics
+  // sliced by entry point. Requested by WebUI to eliminate need to wait
+  // for page to be bound on browser side.
+  GetOverlayInvocationSource() => (string invocation_source);
+
   // When this method is called, the C++ coordinator will open the link to the
   // Help Center article in a new tab.
   InfoRequestedByOverlay(ui.mojom.ClickModifiers click_modifiers);

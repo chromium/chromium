@@ -104,6 +104,11 @@ suite('ObjectSelection', function() {
             1,
             metrics.count(
                 'Lens.Overlay.Overlay.UserAction', UserAction.OBJECT_CLICK));
+        assertEquals(
+            1,
+            metrics.count(
+                'Lens.Overlay.Overlay.ByEntryPoint.AppMenu.UserAction',
+                UserAction.OBJECT_CLICK));
       });
 
   test(

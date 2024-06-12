@@ -10,6 +10,7 @@ import {getFallbackTheme, getShaderLayerColorHexes} from './color_utils.js';
 import {CenterRotatedBox_CoordinateType} from './geometry.mojom-webui.js';
 import type {CenterRotatedBox} from './geometry.mojom-webui.js';
 import type {OverlayTheme} from './lens.mojom-webui.js';
+import {INVOCATION_SOURCE} from './lens_overlay_app.js';
 import {recordLensOverlayInteraction, UserAction} from './metrics_utils.js';
 import type {PostSelectionBoundingBox} from './post_selection_renderer.js';
 import {getTemplate} from './region_selection.html.js';
@@ -110,7 +111,8 @@ export class RegionSelectionElement extends PolymerElement {
       detail: this.getNormalizedCenterRotatedBoxFromGesture(event),
     }));
 
-    recordLensOverlayInteraction(UserAction.REGION_SELECTION);
+    recordLensOverlayInteraction(
+        INVOCATION_SOURCE, UserAction.REGION_SELECTION);
 
     this.clearCanvas();
     return true;

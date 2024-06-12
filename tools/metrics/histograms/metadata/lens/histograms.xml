@@ -29,6 +29,7 @@ chromium-metrics-reviews@google.com.
   <variant name="FindInPage"/>
   <variant name="Omnibox"/>
   <variant name="Toolbar"/>
+  <variant name="Unknown"/>
 </variants>
 
 <histogram name="Lens.ImageClassification.ClassificationTime.EarlyTerminatedMs"
@@ -115,6 +116,18 @@ chromium-metrics-reviews@google.com.
     This UMA histogram is used to track feature usage and retention, and thus
     should never expire.
   </summary>
+</histogram>
+
+<histogram
+    name="Lens.Overlay.Overlay.ByInvocationSource.{InvocationSource}.UserAction"
+    enum="LensOverlayUserAction" expires_after="2025-05-06">
+  <owner>jdonnelly@chromium.org</owner>
+  <owner>mercerd@google.com</owner>
+  <summary>
+    Recorded each time the user interacts with the Lens Overlay, enumerated by
+    those actions and sliced by invocation source.
+  </summary>
+  <token key="InvocationSource" variants="InvocationSources"/>
 </histogram>
 
 <histogram name="Lens.Overlay.Overlay.UserAction" enum="LensOverlayUserAction"
