@@ -121,6 +121,12 @@ base::RepeatingClosure CreateExecuteSoonWrapper(base::RepeatingClosure task) {
       std::move(task));
 }
 
+bool IsDeactivatedPasswordOrPasskey(const Suggestion& suggestion) {
+  return suggestion.apply_deactivated_style &&
+         GetFillingProductFromSuggestionType(suggestion.type) ==
+             FillingProduct::kPassword;
+}
+
 void FormatLabel(views::Label& label,
                  const Suggestion::Text& text,
                  FillingProduct main_filling_product,
@@ -263,8 +269,11 @@ std::vector<std::unique_ptr<views::View>> CreateSubtextViews(
           label_row_container_view->AddChildView(std::make_unique<views::Label>(
               label_text.value,
               ChromeTextContext::CONTEXT_DIALOG_BODY_TEXT_SMALL,
-              kMinorTextStyle));
-      label->SetEnabledColorId(ui::kColorLabelForegroundSecondary);
+              IsDeactivatedPasswordOrPasskey(suggestion) ? kDisabledTextStyle
+                                                         : kMinorTextStyle));
+      if (!IsDeactivatedPasswordOrPasskey(suggestion)) {
+        label->SetEnabledColorId(ui::kColorLabelForegroundSecondary);
+      }
       // To make sure the popup width will not exceed its maximum value,
       // divide the maximum label width by the number of labels.
       // TODO(crbug.com/40274514): Keep new behaviour where the max
@@ -374,7 +383,9 @@ std::vector<std::unique_ptr<views::View>> CreateAndTrackPasswordSubtextViews(
   const auto& label = suggestion.labels[0][0].value;
   auto label_view = std::make_unique<views::Label>(
       label, views::style::CONTEXT_DIALOG_BODY_TEXT,
-      views::style::STYLE_SECONDARY);
+      IsDeactivatedPasswordOrPasskey(suggestion)
+          ? kDisabledTextStyle
+          : views::style::STYLE_SECONDARY);
   // Password labels are obfuscated using password replacement character. Manual
   // fallback suggestions display credential username, which is not obfuscated
   // and should not be truncated.
