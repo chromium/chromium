@@ -4,6 +4,7 @@
 
 package org.chromium.chrome.browser.facilitated_payments;
 
+import static org.chromium.chrome.browser.facilitated_payments.FacilitatedPaymentsPaymentMethodsProperties.DISMISS_HANDLER;
 import static org.chromium.chrome.browser.facilitated_payments.FacilitatedPaymentsPaymentMethodsProperties.ItemType.ADDITIONAL_INFO;
 import static org.chromium.chrome.browser.facilitated_payments.FacilitatedPaymentsPaymentMethodsProperties.ItemType.BANK_ACCOUNT;
 import static org.chromium.chrome.browser.facilitated_payments.FacilitatedPaymentsPaymentMethodsProperties.ItemType.HEADER;
@@ -36,7 +37,7 @@ public class FacilitatedPaymentsPaymentMethodsCoordinator
     @Override
     public void initialize(
             Context context, BottomSheetController bottomSheetController, Delegate delegate) {
-        mFacilitatedPaymentsPaymentMethodsModel = createModel();
+        mFacilitatedPaymentsPaymentMethodsModel = createModel(mMediator);
         mMediator.initialize(context, mFacilitatedPaymentsPaymentMethodsModel, delegate);
         setUpModelChangeProcessors(
                 mFacilitatedPaymentsPaymentMethodsModel,
@@ -89,10 +90,15 @@ public class FacilitatedPaymentsPaymentMethodsCoordinator
         view.getSheetItemListView().setAdapter(adapter);
     }
 
-    PropertyModel createModel() {
+    PropertyModel createModel(FacilitatedPaymentsPaymentMethodsMediator mediator) {
         return new PropertyModel.Builder(FacilitatedPaymentsPaymentMethodsProperties.ALL_KEYS)
                 .with(VISIBLE, false)
                 .with(SHEET_ITEMS, new ModelList())
+                .with(DISMISS_HANDLER, mediator::onDismissed)
                 .build();
+    }
+
+    PropertyModel getModelForTesting() {
+        return mFacilitatedPaymentsPaymentMethodsModel;
     }
 }

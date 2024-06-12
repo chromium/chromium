@@ -16,7 +16,14 @@ import java.util.List;
  * sheet).
  */
 interface FacilitatedPaymentsPaymentMethodsComponent {
-    interface Delegate {}
+    /**
+     * This delegate is called when the FacilitatedPaymentsPaymentMethods component is interacted
+     * with.
+     */
+    interface Delegate {
+        /** Called whenever the sheet is dismissed. */
+        void onDismissed();
+    }
 
     /** Initializes the component. */
     void initialize(

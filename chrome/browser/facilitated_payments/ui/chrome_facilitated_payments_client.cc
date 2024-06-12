@@ -80,9 +80,11 @@ bool ChromeFacilitatedPaymentsClient::ShowPixPaymentPrompt(
     base::OnceCallback<void(bool, int64_t)> on_user_decision_callback) {
 #if BUILDFLAG(IS_ANDROID)
   return facilitated_payments_controller_->Show(
+      &GetWebContents(),
       std::make_unique<
           payments::facilitated::FacilitatedPaymentsBottomSheetBridge>(),
-      std::move(bank_account_suggestions), &GetWebContents());
+      std::move(bank_account_suggestions),
+      std::move(on_user_decision_callback));
 #else
   // Facilitated Payments is not supported on Desktop.
   NOTREACHED_NORETURN();

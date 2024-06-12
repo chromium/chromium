@@ -27,20 +27,29 @@ class FacilitatedPaymentsController {
   // Shows the facilitated payments `view`. Returns whether the surface was
   // successfully shown.
   virtual bool Show(
+      content::WebContents* web_contents,
       std::unique_ptr<
           payments::facilitated::FacilitatedPaymentsBottomSheetBridge> view,
       base::span<const autofill::BankAccount> bank_account_suggestions,
-      content::WebContents* web_contents);
+      base::OnceCallback<void(bool, int64_t)> on_user_decision_callback);
+
+  // Called whenever the surface gets hidden (regardless of the cause).
+  virtual void OnDismissed(JNIEnv* env);
 
   base::android::ScopedJavaLocalRef<jobject> GetJavaObject();
 
  private:
+  FRIEND_TEST_ALL_PREFIXES(FacilitatedPaymentsControllerTest, OnDismissed);
+
   // View that displays the surface, owned by `this`.
   std::unique_ptr<payments::facilitated::FacilitatedPaymentsBottomSheetBridge>
       view_;
   // The corresponding Java FacilitatedPaymentsControllerBridge. This bridge is
   // used to delegate user actions from Java to native.
   base::android::ScopedJavaGlobalRef<jobject> java_object_;
+
+  // Called after showing the PIX the payment prompt.
+  base::OnceCallback<void(bool, int64_t)> on_user_decision_callback_;
 };
 
 #endif  // CHROME_BROWSER_FACILITATED_PAYMENTS_UI_ANDROID_FACILITATED_PAYMENTS_CONTROLLER_H_

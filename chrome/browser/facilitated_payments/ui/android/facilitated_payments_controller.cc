@@ -14,11 +14,16 @@
 FacilitatedPaymentsController::FacilitatedPaymentsController() = default;
 FacilitatedPaymentsController::~FacilitatedPaymentsController() = default;
 
+namespace {
+const int64_t kFakeInstrumentId = -1L;
+}  // namespace
+
 bool FacilitatedPaymentsController::Show(
+    content::WebContents* web_contents,
     std::unique_ptr<payments::facilitated::FacilitatedPaymentsBottomSheetBridge>
         view,
     base::span<const autofill::BankAccount> bank_account_suggestions,
-    content::WebContents* web_contents) {
+    base::OnceCallback<void(bool, int64_t)> on_user_decision_callback) {
   // Abort if facilitated payments surface is already shown or no bank accounts.
   if (view_ || bank_account_suggestions.empty()) {
     return false;
@@ -31,7 +36,17 @@ bool FacilitatedPaymentsController::Show(
   }
 
   view_ = std::move(view);
+  on_user_decision_callback_ = std::move(on_user_decision_callback);
   return true;
+}
+
+void FacilitatedPaymentsController::OnDismissed(JNIEnv* env) {
+  view_.reset();
+  java_object_.Reset();
+
+  if (on_user_decision_callback_) {
+    std::move(on_user_decision_callback_).Run(false, kFakeInstrumentId);
+  }
 }
 
 base::android::ScopedJavaLocalRef<jobject>

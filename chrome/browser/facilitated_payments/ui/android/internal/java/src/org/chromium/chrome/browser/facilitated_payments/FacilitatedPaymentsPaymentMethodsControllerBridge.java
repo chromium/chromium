@@ -6,6 +6,7 @@ package org.chromium.chrome.browser.facilitated_payments;
 
 import org.jni_zero.CalledByNative;
 import org.jni_zero.JNINamespace;
+import org.jni_zero.NativeMethods;
 
 /** JNI wrapper for C++ FacilitatedPaymentsController. */
 @JNINamespace("payments::facilitated")
@@ -23,5 +24,19 @@ class FacilitatedPaymentsPaymentMethodsControllerBridge
             long nativeFacilitatedPaymentsController) {
         return new FacilitatedPaymentsPaymentMethodsControllerBridge(
                 nativeFacilitatedPaymentsController);
+    }
+
+    // FacilitatedPaymentsPaymentMethodsComponent.Delegate
+    @Override
+    public void onDismissed() {
+        if (mNativeFacilitatedPaymentsController != 0) {
+            FacilitatedPaymentsPaymentMethodsControllerBridgeJni.get()
+                    .onDismissed(mNativeFacilitatedPaymentsController);
+        }
+    }
+
+    @NativeMethods
+    interface Natives {
+        void onDismissed(long nativeFacilitatedPaymentsController);
     }
 }

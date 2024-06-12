@@ -25,6 +25,7 @@ import org.chromium.chrome.browser.facilitated_payments.FacilitatedPaymentsPayme
 import org.chromium.chrome.browser.facilitated_payments.FacilitatedPaymentsPaymentMethodsProperties.HeaderProperties;
 import org.chromium.components.autofill.payments.AccountType;
 import org.chromium.components.autofill.payments.BankAccount;
+import org.chromium.components.browser_ui.bottomsheet.BottomSheetController.StateChangeReason;
 import org.chromium.ui.modelutil.MVCListAdapter.ListItem;
 import org.chromium.ui.modelutil.MVCListAdapter.ModelList;
 import org.chromium.ui.modelutil.PropertyModel;
@@ -66,6 +67,12 @@ class FacilitatedPaymentsPaymentMethodsMediator {
         mModel.set(VISIBLE, true);
 
         return true;
+    }
+
+    public void onDismissed(@StateChangeReason int reason) {
+        if (!mModel.get(VISIBLE)) return; // Dismiss only if not dismissed yet.
+        mModel.set(VISIBLE, false);
+        mDelegate.onDismissed();
     }
 
     private ListItem buildHeader() {

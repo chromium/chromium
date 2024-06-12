@@ -5,6 +5,7 @@
 package org.chromium.chrome.browser.facilitated_payments;
 
 import static org.chromium.chrome.browser.facilitated_payments.FacilitatedPaymentsPaymentMethodsProperties.AdditionalInfoProperties.DESCRIPTION_1_ID;
+import static org.chromium.chrome.browser.facilitated_payments.FacilitatedPaymentsPaymentMethodsProperties.DISMISS_HANDLER;
 import static org.chromium.chrome.browser.facilitated_payments.FacilitatedPaymentsPaymentMethodsProperties.HeaderProperties.DESCRIPTION_ID;
 import static org.chromium.chrome.browser.facilitated_payments.FacilitatedPaymentsPaymentMethodsProperties.HeaderProperties.IMAGE_DRAWABLE_ID;
 import static org.chromium.chrome.browser.facilitated_payments.FacilitatedPaymentsPaymentMethodsProperties.HeaderProperties.TITLE_ID;
@@ -38,7 +39,9 @@ class FacilitatedPaymentsPaymentMethodsViewBinder {
             PropertyModel model,
             FacilitatedPaymentsPaymentMethodsView view,
             PropertyKey propertyKey) {
-        if (propertyKey == VISIBLE) {
+        if (propertyKey == DISMISS_HANDLER) {
+            view.setDismissHandler(model.get(DISMISS_HANDLER));
+        } else if (propertyKey == VISIBLE) {
             view.setVisible(model.get(VISIBLE));
         } else if (propertyKey == SHEET_ITEMS) {
             FacilitatedPaymentsPaymentMethodsCoordinator.setUpPaymentMethodsItems(model, view);

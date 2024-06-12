@@ -4,6 +4,7 @@
 
 package org.chromium.chrome.browser.facilitated_payments;
 
+import org.chromium.base.Callback;
 import org.chromium.ui.modelutil.MVCListAdapter.ModelList;
 import org.chromium.ui.modelutil.PropertyKey;
 import org.chromium.ui.modelutil.PropertyModel.ReadableIntPropertyKey;
@@ -18,8 +19,10 @@ class FacilitatedPaymentsPaymentMethodsProperties {
     static final WritableBooleanPropertyKey VISIBLE = new WritableBooleanPropertyKey("visible");
     static final ReadableObjectPropertyKey<ModelList> SHEET_ITEMS =
             new ReadableObjectPropertyKey("sheet_items");
+    static final ReadableObjectPropertyKey<Callback<Integer>> DISMISS_HANDLER =
+            new ReadableObjectPropertyKey<>("dismiss_handler");
 
-    static final PropertyKey[] ALL_KEYS = {VISIBLE, SHEET_ITEMS};
+    static final PropertyKey[] ALL_KEYS = {VISIBLE, SHEET_ITEMS, DISMISS_HANDLER};
 
     @interface ItemType {
         // The header at the top of the FacilitatedPayments bottom sheet.

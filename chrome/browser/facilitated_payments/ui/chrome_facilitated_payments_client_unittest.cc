@@ -52,10 +52,11 @@ class MockFacilitatedPaymentsController : public FacilitatedPaymentsController {
   MOCK_METHOD(
       bool,
       Show,
-      (std::unique_ptr<
+      (content::WebContents * web_contents,
+       std::unique_ptr<
            payments::facilitated::FacilitatedPaymentsBottomSheetBridge> view,
        base::span<const autofill::BankAccount> bank_account_suggestions,
-       content::WebContents* web_contents),
+       base::OnceCallback<void(bool, int64_t)> on_user_decision_callback),
       (override));
 };
 
