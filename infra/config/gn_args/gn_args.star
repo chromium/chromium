@@ -335,6 +335,9 @@ gn_args.config(
 
 gn_args.config(
     name = "chromeos_device",
+    configs = [
+        "chromeos",
+    ],
     args = {
         "is_chromeos_device": True,
     },
@@ -787,7 +790,17 @@ gn_args.config(
 )
 
 gn_args.config(
+    name = "linux",
+    args = {
+        "target_os": "linux",
+    },
+)
+
+gn_args.config(
     name = "linux_wayland",
+    configs = [
+        "linux",
+    ],
     args = {
         "ozone_auto_platforms": False,
         "ozone_platform_wayland": True,
@@ -1362,6 +1375,13 @@ gn_args.config(
     name = "webview_trichrome",
     args = {
         "system_webview_package_name": "com.google.android.webview.debug",
+    },
+)
+
+gn_args.config(
+    name = "win",
+    args = {
+        "target_os": "win",
     },
 )
 
