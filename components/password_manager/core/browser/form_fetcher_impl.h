@@ -110,7 +110,9 @@ class FormFetcherImpl : public FormFetcher,
   // password store returning results in the meantime.
   bool need_to_refetch_ = false;
 
-  // Results obtained from PasswordStore:
+  // Results obtained from PasswordStore. Matches with the same schema as the
+  // observed form are always at the beginning of the vector, sorted by their
+  // priority.
   std::vector<PasswordForm> non_federated_;
 
   // Federated credentials relevant to the observed form. They are neither
@@ -129,9 +131,6 @@ class FormFetcherImpl : public FormFetcher,
   base::flat_map<PasswordStoreInterface*,
                  std::unique_ptr<HttpPasswordStoreMigrator>>
       http_migrators_;
-
-  // Non-federated credentials of the same scheme as the observed form.
-  std::vector<PasswordForm> non_federated_same_scheme_;
 
   // Set of nonblocklisted PasswordForms from the password store that best match
   // the form being managed by |this|.

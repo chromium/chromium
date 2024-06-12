@@ -4,6 +4,7 @@
 
 #include "components/password_manager/core/browser/fake_form_fetcher.h"
 
+#include <algorithm>
 #include <memory>
 
 #include "base/containers/contains.h"
@@ -105,9 +106,18 @@ std::unique_ptr<FormFetcher> FakeFormFetcher::Clone() {
 
 void FakeFormFetcher::SetNonFederated(
     const std::vector<PasswordForm>& non_federated) {
+  CHECK(base::ranges::all_of(
+      non_federated, [this](auto& form) { return form.scheme == scheme_; }));
+  SetNonFederated(non_federated, non_federated);
+}
+
+void FakeFormFetcher::SetNonFederated(
+    const std::vector<PasswordForm>& non_federated,
+    const std::vector<PasswordForm>& non_federated_same_scheme) {
   non_federated_ = non_federated;
-  best_matches_ = password_manager_util::FindBestMatches(
-      non_federated_, scheme_, non_federated_same_scheme_);
+  non_federated_same_scheme_ = non_federated_same_scheme;
+  best_matches_ =
+      password_manager_util::FindBestMatches(non_federated_same_scheme_);
 }
 
 void FakeFormFetcher::SetBlocklisted(bool is_blocklisted) {

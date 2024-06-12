@@ -76,7 +76,13 @@ class FakeFormFetcher : public FormFetcher {
     insecure_credentials_ = credentials;
   }
 
+  // Set non-federated matches. All matches must have the same scheme
+  // as |scheme_| as this is the standard case.
   void SetNonFederated(const std::vector<PasswordForm>& non_federated);
+
+  void SetNonFederated(
+      const std::vector<PasswordForm>& non_federated,
+      const std::vector<PasswordForm>& non_federated_same_scheme);
 
   void SetBlocklisted(bool is_blocklisted);
 

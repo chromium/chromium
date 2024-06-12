@@ -2470,7 +2470,9 @@ TEST_P(PasswordFormManagerTest, SaveHttpAuthNoHttpAuthStored) {
     if (html_credentials_saved) {
       saved_matches.push_back(saved_match_);
     }
-    SetNonFederatedAndNotifyFetchCompleted(saved_matches);
+
+    fetcher_->SetNonFederated(saved_matches, {});
+    fetcher_->NotifyFetchCompleted();
 
     std::u16string username = u"user1";
     std::u16string password = u"pass1";
@@ -4978,7 +4980,8 @@ TEST_F(PasswordFormManagerTestWithMockedSaver, SaveHttpAuthNoHttpAuthStored) {
     if (html_credentials_saved) {
       saved_matches.push_back(saved_match_);
     }
-    SetNonFederatedAndNotifyFetchCompleted(saved_matches);
+    fetcher_->SetNonFederated(saved_matches, {});
+    fetcher_->NotifyFetchCompleted();
     std::u16string username = u"user1";
     std::u16string password = u"pass1";
     http_auth_form.username_value = username;

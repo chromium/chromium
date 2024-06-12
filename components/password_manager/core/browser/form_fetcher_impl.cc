@@ -4,6 +4,7 @@
 
 #include "components/password_manager/core/browser/form_fetcher_impl.h"
 
+#include <algorithm>
 #include <iterator>
 #include <memory>
 #include <utility>
@@ -47,6 +48,17 @@ std::vector<std::unique_ptr<PasswordForm>> ConvertToUniquePtr(
   return result;
 }
 
+// Given |non_federated| matches where all matches with the |scheme| are in the
+// beginning of the vector, returns a span with those matches.
+// |Form| is either a const PasswordForm or PasswordForm depending on the
+// context.
+template <typename Form>
+base::span<Form> NonFederatedSameSchemeMatches(base::span<Form> non_federated,
+                                               PasswordForm::Scheme scheme) {
+  auto same_scheme_count = base::ranges::count_if(
+      non_federated, [scheme](auto& form) { return form.scheme == scheme; });
+  return non_federated.subspan(0, same_scheme_count);
+}
 }  // namespace
 
 FormFetcherImpl::FormFetcherImpl(PasswordFormDigest form_digest,
@@ -198,7 +210,8 @@ bool FormFetcherImpl::IsMovingBlocked(const signin::GaiaIdHash& destination,
 }
 
 base::span<const PasswordForm> FormFetcherImpl::GetAllRelevantMatches() const {
-  return non_federated_same_scheme_;
+  return NonFederatedSameSchemeMatches(base::span(non_federated_),
+                                       form_digest_.scheme);
 }
 
 base::span<const PasswordForm> FormFetcherImpl::GetBestMatches() const {
@@ -227,9 +240,9 @@ std::unique_ptr<FormFetcher> FormFetcherImpl::Clone() {
   result->federated_ = federated_;
   result->is_blocklisted_in_account_store_ = is_blocklisted_in_account_store_;
   result->is_blocklisted_in_profile_store_ = is_blocklisted_in_profile_store_;
-  result->best_matches_ = password_manager_util::FindBestMatches(
-      result->non_federated_, form_digest_.scheme,
-      result->non_federated_same_scheme_);
+  result->best_matches_ =
+      password_manager_util::FindBestMatches(NonFederatedSameSchemeMatches(
+          base::span(result->non_federated_), result->form_digest_.scheme));
 
   result->interactions_stats_ = interactions_stats_;
   result->insecure_credentials_ = insecure_credentials_;
@@ -259,8 +272,9 @@ void FormFetcherImpl::FindMatchesAndNotifyConsumers(
   DCHECK_EQ(State::WAITING, state_);
   SplitResults(std::move(results));
 
-  best_matches_ = password_manager_util::FindBestMatches(
-      non_federated_, form_digest_.scheme, non_federated_same_scheme_);
+  best_matches_ =
+      password_manager_util::FindBestMatches(NonFederatedSameSchemeMatches(
+          base::span(non_federated_), form_digest_.scheme));
 
   state_ = State::NOT_WAITING;
   for (auto& consumer : consumers_) {
@@ -275,6 +289,8 @@ void FormFetcherImpl::SplitResults(
   non_federated_.clear();
   federated_.clear();
   insecure_credentials_.clear();
+  std::vector<PasswordForm> non_federated_other_schemas;
+
   for (auto& form : forms) {
     if (form->blocked_by_user) {
       // Ignore non-exact matches for blocklisted entries. PLS, affiliated and
@@ -294,11 +310,18 @@ void FormFetcherImpl::SplitResults(
       }
       if (form->IsFederatedCredential()) {
         federated_.push_back(*form);
-      } else {
+      } else if (form->scheme == form_digest_.scheme) {
         non_federated_.push_back(*form);
+      } else {
+        non_federated_other_schemas.push_back(*form);
       }
     }
   }
+
+  non_federated_.insert(
+      non_federated_.end(),
+      std::make_move_iterator(non_federated_other_schemas.begin()),
+      std::make_move_iterator(non_federated_other_schemas.end()));
 }
 
 void FormFetcherImpl::OnGetPasswordStoreResults(

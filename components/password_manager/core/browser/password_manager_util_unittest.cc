@@ -365,11 +365,15 @@ TEST(PasswordManagerUtil, FindBestMatches) {
       matches.push_back(form);
     }
 
-    const PasswordForm* preferred_match = nullptr;
+    // TODO(crbug.com/343879843) Copy is needed as FindBestMatches mutates its
+    // parameter. This is okay for FormFetcher logic, but not good for a
+    // standalone function. To be fixed with moving FindBestMatches into
+    // FormFetcher.
+    auto copy_matches = matches;
 
-    std::vector<PasswordForm> same_scheme_matches;
-    std::vector<PasswordForm> best_matches = FindBestMatches(
-        matches, PasswordForm::Scheme::kHtml, same_scheme_matches);
+    std::vector<PasswordForm> best_matches = FindBestMatches(copy_matches);
+
+    const PasswordForm* preferred_match = nullptr;
     if (!best_matches.empty()) {
       preferred_match = &best_matches[0];
     }
@@ -433,12 +437,10 @@ TEST(PasswordManagerUtil, FindBestMatchesInProfileAndAccountStores) {
   profile_form2.password_value = kPassword2;
   profile_form2.in_store = PasswordForm::Store::kProfileStore;
 
-  std::vector<const PasswordForm> matches{account_form1, profile_form1,
-                                          account_form2, profile_form2};
+  std::vector<PasswordForm> matches{account_form1, profile_form1, account_form2,
+                                    profile_form2};
 
-  std::vector<PasswordForm> same_scheme_matches;
-  std::vector<PasswordForm> best_matches = FindBestMatches(
-      matches, PasswordForm::Scheme::kHtml, same_scheme_matches);
+  std::vector<PasswordForm> best_matches = FindBestMatches(matches);
   EXPECT_EQ(best_matches.size(), 3U);
   account_form1.in_store =
       password_manager::PasswordForm::Store::kProfileStore |
