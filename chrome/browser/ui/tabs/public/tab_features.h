@@ -11,6 +11,9 @@
 
 class LensOverlayController;
 class Profile;
+namespace permissions {
+class PermissionIndicatorsTabData;
+}
 
 namespace tabs {
 
@@ -35,6 +38,10 @@ class TabFeatures {
     return lens_overlay_controller_.get();
   }
 
+  permissions::PermissionIndicatorsTabData* permission_indicators_tab_data() {
+    return permission_indicators_tab_data_.get();
+  }
+
   // Called exactly once to initialize features.
   void Init(TabInterface* tab, Profile* profile);
 
@@ -52,6 +59,9 @@ class TabFeatures {
 
   // Features that are per-tab will each have a controller.
   std::unique_ptr<LensOverlayController> lens_overlay_controller_;
+
+  std::unique_ptr<permissions::PermissionIndicatorsTabData>
+      permission_indicators_tab_data_;
 };
 
 }  // namespace tabs

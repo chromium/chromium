@@ -8,12 +8,15 @@
 
 #include "base/check.h"
 #include "base/time/time.h"
+#include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/content_settings/content_setting_image_model.h"
+#include "chrome/browser/ui/tabs/public/tab_features.h"
 #include "chrome/browser/ui/views/location_bar/location_bar_view.h"
 #include "chrome/browser/ui/views/page_info/page_info_bubble_view.h"
 #include "chrome/browser/ui/views/permissions/chip/permission_prompt_chip_model.h"
 #include "components/content_settings/browser/page_specific_content_settings.h"
 #include "components/dom_distiller/core/url_constants.h"
+#include "components/permissions/permission_indicators_tab_data.h"
 #include "components/permissions/permission_request_manager.h"
 #include "components/permissions/permission_uma_util.h"
 #include "content/public/browser/navigation_entry.h"
@@ -243,13 +246,27 @@ bool PermissionDashboardController::Update(
   if (ShouldExpandChipIndicator(content_settings)) {
     is_verbose_ = false;
     if (SuppressVerboseState(request_chip_controller())) {
-      // Permission request chip is visible it was drawn without a divider. Add
-      // the divider between an indicator and the request chip.
+      // Permission request chip is visible it was drawn without a divider.
+      // Add the divider between an indicator and the request chip.
       permission_dashboard_view_->UpdateDividerViewVisibility();
     } else {
-      indicator_chip->ResetAnimation();
-      indicator_chip->AnimateExpand(
-          GetAnimationDuration(kExpandAnimationDuration));
+      // Suppress LHS indicator's verbose animation if it was already displayed.
+      // Blocked on the system level is an error case and should always be
+      // animated.
+      permissions::PermissionIndicatorsTabData* permission_indicators_tab_data =
+          location_bar_view_->browser()
+              ->tab_strip_model()
+              ->GetActiveTab()
+              ->tab_features()
+              ->permission_indicators_tab_data();
+      if (permission_indicators_tab_data &&
+          permission_indicators_tab_data->IsVerboseIndicatorAllowed(
+              permissions::PermissionIndicatorsTabData::IndicatorsType::
+                  kMediaStream)) {
+        indicator_chip->ResetAnimation();
+        indicator_chip->AnimateExpand(
+            GetAnimationDuration(kExpandAnimationDuration));
+      }
     }
   }
 
@@ -299,6 +316,18 @@ void PermissionDashboardController::OnCollapseAnimationEnded() {
   if (!location_bar_view_->GetWebContents()) {
     HideIndicators();
     return;
+  }
+
+  permissions::PermissionIndicatorsTabData* permission_indicators_tab_data =
+      location_bar_view_->browser()
+          ->tab_strip_model()
+          ->GetActiveTab()
+          ->tab_features()
+          ->permission_indicators_tab_data();
+
+  if (permission_indicators_tab_data) {
+    permission_indicators_tab_data->SetVerboseIndicatorDisplayed(
+        permissions::PermissionIndicatorsTabData::IndicatorsType::kMediaStream);
   }
 
   is_verbose_ = false;
