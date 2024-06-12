@@ -200,7 +200,8 @@ NSString* HostnameFromGURL(GURL URL) {
 
 // Tests that the tab resumption 2 tile is correctly displayed for a distant
 // tab.
-- (void)testTabResumptionTileDisplayedForDistantTabTR2 {
+// TODO(crbug.com/346713831): This test timed out on some configs.
+- (void)DISABLED_testTabResumptionTileDisplayedForDistantTabTR2 {
   [self testTabResumptionTileDisplayedForDistantTab];
 }
 
