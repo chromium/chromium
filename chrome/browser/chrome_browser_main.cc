@@ -78,6 +78,7 @@
 #include "chrome/browser/metrics/shutdown_watcher_helper.h"
 #include "chrome/browser/nacl_host/nacl_browser_delegate_impl.h"
 #include "chrome/browser/net/system_network_context_manager.h"
+#include "chrome/browser/permissions/system/system_permission_settings.h"
 #include "chrome/browser/policy/chrome_browser_policy_connector.h"
 #include "chrome/browser/policy/messaging_layer/public/report_client.h"
 #include "chrome/browser/prefs/chrome_command_line_pref_store.h"
@@ -1390,6 +1391,8 @@ void ChromeBrowserMainParts::PostProfileInit(Profile* profile,
     headless::ReportHeadlessActionMetrics();
   }
 #endif  // BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC)
+
+  SystemPermissionSettings::Create(profile);
 }
 
 void ChromeBrowserMainParts::PreBrowserStart() {

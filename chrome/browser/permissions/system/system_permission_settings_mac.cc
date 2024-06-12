@@ -191,6 +191,7 @@ class SystemPermissionSettingsImpl
       observation_{this};
 };
 
-std::unique_ptr<SystemPermissionSettings> SystemPermissionSettings::Create() {
+std::unique_ptr<SystemPermissionSettings>
+SystemPermissionSettings::CreateImpl() {
   return std::make_unique<SystemPermissionSettingsImpl>();
 }

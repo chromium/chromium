@@ -7,6 +7,8 @@
 
 #include <memory>
 
+#include "base/supports_user_data.h"
+#include "chrome/browser/profiles/profile.h"
 #include "components/content_settings/core/common/content_settings_types.h"
 #include "content/public/browser/web_contents.h"
 
@@ -16,15 +18,20 @@
 // https://source.chromium.org/chromium/chromium/src/+/main:chrome/browser/permissions/system_permission_delegate.h
 // this is intentional as explained in
 // https://chromium-review.googlesource.com/c/chromium/src/+/5424111/comment/5e007f7b_c2b9ff9f
-class SystemPermissionSettings {
+class SystemPermissionSettings : public base::SupportsUserData::Data {
  public:
   using SystemPermissionResponseCallback = base::OnceCallback<void()>;
 
-  SystemPermissionSettings() = default;
-  virtual ~SystemPermissionSettings() = default;
+  // base::SupportsUserData::Data:
+  std::unique_ptr<base::SupportsUserData::Data> Clone() override;
 
-  // Creates a new instance of SystemPermissionSettings that is OS-specific.
-  static std::unique_ptr<SystemPermissionSettings> Create();
+  // Creates a new instance of SystemPermissionSettings that is OS-specific and
+  // saves it within the profile. Should be only used when initializing the
+  // Profile.
+  static void Create(Profile*);
+
+  // Gets a cached instance of SystemPermissionSettings from Profile.
+  static SystemPermissionSettings* GetInstance();
 
   // Returns `true` if Chrome can request system-level permission. Returns
   // `false` otherwise.
@@ -50,6 +57,7 @@ class SystemPermissionSettings {
  private:
   virtual bool IsDeniedImpl(ContentSettingsType type) const = 0;
   virtual bool IsAllowedImpl(ContentSettingsType type) const = 0;
+  static std::unique_ptr<SystemPermissionSettings> CreateImpl();
 };
 
 class ScopedSystemPermissionSettingsForTesting {

@@ -136,9 +136,6 @@ class EmbeddedPermissionPrompt
       requests_;
   int prompt_screen_counter_for_metrics_ = 0;
 
-  std::unique_ptr<SystemPermissionSettings> system_permission_settings_ =
-      SystemPermissionSettings::Create();
-
   base::WeakPtrFactory<EmbeddedPermissionPrompt> weak_factory_{this};
 };
 

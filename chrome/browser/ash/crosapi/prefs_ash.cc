@@ -74,6 +74,9 @@ std::string_view GetProfilePrefNameForPref(mojom::PrefPath path) {
           {mojom::PrefPath::kIsolatedWebAppsEnabled,
            ash::prefs::kIsolatedWebAppsEnabled},
           {mojom::PrefPath::kMahiEnabled, ash::prefs::kMahiEnabled},
+          {mojom::PrefPath::kUserCameraAllowed, ash::prefs::kUserCameraAllowed},
+          {mojom::PrefPath::kUserMicrophoneAllowed,
+           ash::prefs::kUserMicrophoneAllowed},
       });
   auto pref_name = kProfilePrefPathToName.find(path);
   DCHECK(pref_name != kProfilePrefPathToName.end());
@@ -301,7 +304,9 @@ std::optional<PrefsAsh::State> PrefsAsh::GetState(mojom::PrefPath path) {
     case mojom::PrefPath::kDefaultSearchProviderDataPrefName:
     case mojom::PrefPath::kIsolatedWebAppsEnabled:
     case mojom::PrefPath::kAccessibilityReducedAnimationsEnabled:
-    case mojom::PrefPath::kMahiEnabled: {
+    case mojom::PrefPath::kMahiEnabled:
+    case mojom::PrefPath::kUserCameraAllowed:
+    case mojom::PrefPath::kUserMicrophoneAllowed: {
       if (!profile_prefs_registrar_) {
         LOG(WARNING) << "Primary profile is not yet initialized";
         return std::nullopt;

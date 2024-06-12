@@ -2,18 +2,27 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include <map>
 #include <memory>
+#include <optional>
 
 #include "ash/constants/geolocation_access_level.h"
 #include "base/feature_list.h"
 #include "base/functional/bind.h"
+#include "base/functional/callback_forward.h"
+#include "base/notreached.h"
 #include "base/values.h"
+#include "build/buildflag.h"
 #include "chrome/browser/permissions/system/system_permission_settings.h"
+#include "chromeos/crosapi/mojom/prefs.mojom-shared.h"
 #include "chromeos/crosapi/mojom/prefs.mojom.h"
 #include "chromeos/crosapi/mojom/url_handler.mojom.h"
+#include "chromeos/lacros/crosapi_pref_observer.h"
 #include "chromeos/lacros/lacros_service.h"
 #include "components/content_settings/core/common/content_settings_types.h"
 #include "components/content_settings/core/common/features.h"
+
+static_assert(BUILDFLAG(IS_CHROMEOS_LACROS));
 
 namespace {
 
@@ -34,52 +43,45 @@ void OpenURLInAsh(const std::string& url) {
     service->OpenUrl(GURL(url));
   }
 }
+
 }  // namespace
 
 class SystemPermissionSettingsImpl : public SystemPermissionSettings {
  public:
-  SystemPermissionSettingsImpl()
-      : value_(static_cast<int>(ash::GeolocationAccessLevel::kAllowed)) {
+  SystemPermissionSettingsImpl() {
     if (base::FeatureList::IsEnabled(
             content_settings::features::
                 kCrosSystemLevelPermissionBlockedWarnings)) {
-      auto* lacros_service = chromeos::LacrosService::Get();
-      CHECK(lacros_service);
-
-      if (!lacros_service->IsRegistered<crosapi::mojom::Prefs>()) {
-        return;
-      }
-      if (!lacros_service->IsAvailable<crosapi::mojom::Prefs>()) {
-        return;
-      }
-      mojo::Remote<crosapi::mojom::Prefs>& service =
-          lacros_service->GetRemote<crosapi::mojom::Prefs>();
-      if (!service.is_connected()) {
-        return;
-      }
-      service->GetPref(
+      camera_pref_observer_ = std::make_unique<CrosapiPrefObserver>(
+          crosapi::mojom::PrefPath::kUserCameraAllowed,
+          base::BindRepeating(&SystemPermissionSettingsImpl::OnPrefChanged,
+                              base::Unretained(this),
+                              ContentSettingsType::MEDIASTREAM_CAMERA));
+      mic_pref_observer_ = std::make_unique<CrosapiPrefObserver>(
+          crosapi::mojom::PrefPath::kUserMicrophoneAllowed,
+          base::BindRepeating(&SystemPermissionSettingsImpl::OnPrefChanged,
+                              base::Unretained(this),
+                              ContentSettingsType::MEDIASTREAM_MIC));
+      geolocation_pref_observer_ = std::make_unique<CrosapiPrefObserver>(
           crosapi::mojom::PrefPath::kUserGeolocationAccessLevel,
-          base::BindOnce(&SystemPermissionSettingsImpl::UpdateValue,
-                         base::Unretained(this)));
+          base::BindRepeating(&SystemPermissionSettingsImpl::OnPrefChanged,
+                              base::Unretained(this),
+                              ContentSettingsType::GEOLOCATION));
     }
   }
 
   bool CanPrompt(ContentSettingsType type) const override { return false; }
 
-  bool IsDeniedImpl(ContentSettingsType type) const override {
+  bool ConvertQueryResult(ContentSettingsType type, base::Value value) {
     switch (type) {
       case ContentSettingsType::MEDIASTREAM_CAMERA:  // fallthrough
       case ContentSettingsType::MEDIASTREAM_MIC: {
-        if (!value_.is_bool()) {
-          return false;
-        }
-        return !value_.GetBool();
+        CHECK(value.is_bool());
+        return !value.GetBool();
       }
       case ContentSettingsType::GEOLOCATION: {
-        if (!value_.is_int()) {
-          return false;
-        }
-        switch (static_cast<ash::GeolocationAccessLevel>(value_.GetInt())) {
+        CHECK(value.is_int());
+        switch (static_cast<ash::GeolocationAccessLevel>(value.GetInt())) {
           case ash::GeolocationAccessLevel::kDisallowed:
             return true;
           case ash::GeolocationAccessLevel::kAllowed:
@@ -88,12 +90,14 @@ class SystemPermissionSettingsImpl : public SystemPermissionSettings {
             return true;
           default:
             LOG(ERROR) << "Incorrect GeolocationAccessLevel: "
-                       << value_.GetInt();
+                       << value.GetInt();
             return false;
         }
       }
       default: {
-        return false;
+        LOG(ERROR) << "This ContentSettingsType is not controlled by the OS: "
+                   << type;
+        NOTREACHED();
       }
     }
   }
@@ -102,10 +106,16 @@ class SystemPermissionSettingsImpl : public SystemPermissionSettings {
     return !IsDeniedImpl(type);
   }
 
-  void UpdateValue(std::optional<base::Value> value) {
-    if (value.has_value()) {
-      value_ = std::move(*value);
+  void OnPrefChanged(ContentSettingsType type, base::Value value) {
+    if (ConvertQueryResult(type, std::move(value))) {
+      blocked_permissions_.insert(type);
+    } else {
+      blocked_permissions_.erase(type);
     }
+  }
+
+  bool IsDeniedImpl(ContentSettingsType type) const override {
+    return blocked_permissions_.contains(type);
   }
 
   void OpenSystemSettings(content::WebContents*,
@@ -140,10 +150,14 @@ class SystemPermissionSettingsImpl : public SystemPermissionSettings {
   }
 
  private:
-  base::Value value_;
+  std::unique_ptr<CrosapiPrefObserver> camera_pref_observer_;
+  std::unique_ptr<CrosapiPrefObserver> mic_pref_observer_;
+  std::unique_ptr<CrosapiPrefObserver> geolocation_pref_observer_;
+  std::set<ContentSettingsType> blocked_permissions_;
   base::WeakPtrFactory<SystemPermissionSettingsImpl> weak_ptr_factory_{this};
 };
 
-std::unique_ptr<SystemPermissionSettings> SystemPermissionSettings::Create() {
+std::unique_ptr<SystemPermissionSettings>
+SystemPermissionSettings::CreateImpl() {
   return std::make_unique<SystemPermissionSettingsImpl>();
 }

@@ -5,12 +5,12 @@
 #ifndef CHROME_BROWSER_LACROS_CHROME_BROWSER_MAIN_EXTRA_PARTS_LACROS_H_
 #define CHROME_BROWSER_LACROS_CHROME_BROWSER_MAIN_EXTRA_PARTS_LACROS_H_
 
-#include "chrome/browser/chrome_browser_main_extra_parts.h"
-
 #include <memory>
 
+#include "chrome/browser/chrome_browser_main_extra_parts.h"
 #include "chrome/browser/chromeos/smart_reader/smart_reader_client_impl.h"
 #include "chrome/browser/lacros/sync/sync_crosapi_manager_lacros.h"
+#include "chrome/browser/permissions/system/system_permission_settings.h"
 
 class ArcIconCache;
 class AutomationManagerLacros;
@@ -241,6 +241,9 @@ class ChromeBrowserMainExtraPartsLacros : public ChromeBrowserMainExtraParts {
 
   // Handles receiving requests from the Media App (which is in ash).
   std::unique_ptr<crosapi::MediaAppLacros> media_app_;
+
+  // Retrieves and caces the state of the system permissions on the device.
+  std::unique_ptr<SystemPermissionSettings> system_permission_settings_;
 };
 
 #endif  // CHROME_BROWSER_LACROS_CHROME_BROWSER_MAIN_EXTRA_PARTS_LACROS_H_
