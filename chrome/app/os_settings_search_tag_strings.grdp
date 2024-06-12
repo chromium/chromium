@@ -1435,6 +1435,12 @@
   <message name="IDS_OS_SETTINGS_TAG_A11Y_HIGHLIGHT_TEXT_CARET_ALT1" desc="Text for search result item which, when clicked, navigates the user to accessibility settings, with a toggle to enable/disable highlighting the text caret when it appears or moves. Alternate phrase for: 'Highlight text caret'">
     Text cursor highlighter
   </message>
+  <message name="IDS_OS_SETTINGS_TAG_A11Y_CARET_BROWSING" desc="Text for search result item which, when clicked, navigates the user to accessibility settings, with a toggle to enable/disable browsing using the text caret.">
+    Caret browsing
+  </message>
+  <message name="IDS_OS_SETTINGS_TAG_A11Y_CARET_BROWSING_ALT1" desc="Text for search result item which, when clicked, navigates the user to accessibility settings, with a toggle to enable/disable browsing using the text caret. Alternate phrase for 'Caret browsing'">
+    Navigate with text cursor
+  </message>
   <message name="IDS_OS_SETTINGS_TAG_A11Y_CURSOR_AND_TOUCHPAD_PAGE" desc="Text for search result item which, when clicked, navigates the user to cursor and touchpad accessibility settings. Alternate phrase for: 'Mouse accessibility settings'">
     Cursor and touchpad
   </message>

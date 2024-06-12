@@ -325,6 +325,7 @@ enum Setting {
   kAccessibilityMagnifierFollowsSts = 1545,
   // [Deprecated] kPdfOcrOnOff = 1546,
   kOverscrollEnabled = 1547,
+  kCaretBrowsing = 1548,
 
   // Reset section.
   kPowerwash = 1600,

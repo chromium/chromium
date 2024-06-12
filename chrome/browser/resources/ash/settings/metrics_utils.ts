@@ -158,6 +158,10 @@ const PREF_TO_SETTING_MAP: Record<string, SettingAndType> = {
     setting: Setting.kCaretBlinkInterval,
     type: PrefType.NUMBER,
   },
+  'settings.a11y.caretbrowsing.enabled': {
+    setting: Setting.kCaretBrowsing,
+    type: PrefType.BOOLEAN,
+  },
   'settings.a11y.caret_highlight': {
     setting: Setting.kHighlightTextCaret,
     type: PrefType.BOOLEAN,

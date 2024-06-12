@@ -229,6 +229,14 @@ const std::vector<SearchConcept>& GetA11ySearchConcepts() {
        {.setting = mojom::Setting::kHighlightTextCaret},
        {IDS_OS_SETTINGS_TAG_A11Y_HIGHLIGHT_TEXT_CARET_ALT1,
         SearchConcept::kAltTagEnd}},
+      {IDS_OS_SETTINGS_TAG_A11Y_CARET_BROWSING,
+       mojom::kKeyboardAndTextInputSubpagePath,
+       mojom::SearchResultIcon::kA11y,
+       mojom::SearchResultDefaultRank::kMedium,
+       mojom::SearchResultType::kSetting,
+       {.setting = mojom::Setting::kCaretBrowsing},
+       {IDS_OS_SETTINGS_TAG_A11Y_CARET_BROWSING_ALT1,
+        SearchConcept::kAltTagEnd}},
       {IDS_OS_SETTINGS_TAG_A11Y_DICTATION,
        mojom::kKeyboardAndTextInputSubpagePath,
        mojom::SearchResultIcon::kDictation,
@@ -1398,6 +1406,11 @@ bool AccessibilitySection::LogMetric(mojom::Setting setting,
           "ChromeOS.Settings.Accessibility.CaretHighlight.Enabled",
           value.GetBool());
       return true;
+    case mojom::Setting::kCaretBrowsing:
+      base::UmaHistogramBoolean(
+          "ChromeOS.Settings.Accessibility.CaretBrowsing.Enabled",
+          value.GetBool());
+      return true;
     case mojom::Setting::kHighContrastMode:
       base::UmaHistogramBoolean(
           "ChromeOS.Settings.Accessibility.HighContrast.Enabled",
@@ -1519,6 +1532,7 @@ void AccessibilitySection::RegisterHierarchy(
       mojom::Setting::kHighlightKeyboardFocus,
       mojom::Setting::kEnableSwitchAccess,
       mojom::Setting::kHighlightTextCaret,
+      mojom::Setting::kCaretBrowsing,
       mojom::Setting::kAutoClickWhenCursorStops,
       mojom::Setting::kMouseKeysEnabled,
       mojom::Setting::kMouseKeysShortcutToPauseEnabled,

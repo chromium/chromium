@@ -126,13 +126,14 @@ export class SettingsKeyboardAndTextInputPageElement extends
       supportedSettingIds: {
         type: Object,
         value: () => new Set<Setting>([
-          Setting.kStickyKeys,
-          Setting.kOnScreenKeyboard,
+          Setting.kCaretBlinkInterval,
+          Setting.kCaretBrowsing,
           Setting.kDictation,
+          Setting.kEnableSwitchAccess,
           Setting.kHighlightKeyboardFocus,
           Setting.kHighlightTextCaret,
-          Setting.kEnableSwitchAccess,
-          Setting.kCaretBlinkInterval,
+          Setting.kOnScreenKeyboard,
+          Setting.kStickyKeys,
         ]),
       },
 

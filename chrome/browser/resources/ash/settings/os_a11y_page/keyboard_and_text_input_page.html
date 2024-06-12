@@ -157,7 +157,8 @@
     pref="{{prefs.settings.a11y.caretbrowsing.enabled}}"
     on-change="onA11yCaretBrowsingChange_"
     label="$i18n{caretBrowsingLabel}"
-    sub-label="$i18n{caretBrowsingLabelSubtext}">
+    sub-label="$i18n{caretBrowsingLabelSubtext}"
+    deep-link-focus-id$="[[Setting.kCaretBrowsing]]">
 </settings-toggle-button>
 <template is="dom-if" if="[[!isKioskModeActive_]]">
   <cr-link-row id="keyboardSubpageButton" class="hr"
