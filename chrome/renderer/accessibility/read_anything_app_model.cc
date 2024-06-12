@@ -556,7 +556,8 @@ void ReadAnythingAppModel::UnserializeUpdates(
 void ReadAnythingAppModel::AccessibilityEventReceived(
     const ui::AXTreeID& tree_id,
     std::vector<ui::AXTreeUpdate>& updates,
-    std::vector<ui::AXEvent>& events) {
+    std::vector<ui::AXEvent>& events,
+    const bool speech_playing) {
   DCHECK_NE(tree_id, ui::AXTreeIDUnknown());
   // Create a new tree if an event is received for a tree that is not yet in
   // the tree list.
@@ -572,7 +573,7 @@ void ReadAnythingAppModel::AccessibilityEventReceived(
   // so it’s critical that updates are not unserialized until drawing is
   // complete.
   if (tree_id == active_tree_id_) {
-    if (distillation_in_progress_ || speech_playing_) {
+    if (distillation_in_progress_ || speech_playing) {
       AddPendingUpdates(tree_id, updates);
       ProcessNonGeneratedEvents(events);
       return;

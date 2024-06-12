@@ -455,7 +455,8 @@ void ReadAnythingAppController::AccessibilityEventReceived(
   // the data.
   model_.AccessibilityEventReceived(
       tree_id, const_cast<std::vector<ui::AXTreeUpdate>&>(updates),
-      const_cast<std::vector<ui::AXEvent>&>(events));
+      const_cast<std::vector<ui::AXEvent>&>(events),
+      read_aloud_model_.speech_playing());
   // From this point onward, `updates` and `events` should not be accessed.
 
   if (tree_id != model_.active_tree_id()) {
@@ -559,7 +560,7 @@ void ReadAnythingAppController::OnAXTreeDestroyed(const ui::AXTreeID& tree_id) {
 }
 
 void ReadAnythingAppController::Distill() {
-  if (model_.distillation_in_progress() || model_.speech_playing()) {
+  if (model_.distillation_in_progress() || read_aloud_model_.speech_playing()) {
     // When distillation is in progress, the model may have queued up tree
     // updates. In those cases, assume we eventually get to `OnAXTreeDistilled`,
     // where we re-request `Distill`. When speech is playing, assume it will
@@ -601,7 +602,7 @@ void ReadAnythingAppController::OnAXTreeDistilled(
     const std::vector<ui::AXNodeID>& content_node_ids) {
   // If speech is playing, we don't want to redraw and disrupt speech. We will
   // re-distill once speech pauses.
-  if (model_.speech_playing()) {
+  if (read_aloud_model_.speech_playing()) {
     model_.set_requires_distillation(true);
     model_.SetDistillationInProgress(false);
     return;
@@ -1704,7 +1705,7 @@ void ReadAnythingAppController::ShouldShowUI() {
 }
 
 void ReadAnythingAppController::OnSpeechPlayingStateChanged(bool paused) {
-  model_.set_speech_playing(!paused);
+  read_aloud_model_.set_speech_playing(!paused);
   if (paused && model_.requires_distillation()) {
     // TODO: b/40927698 - Do something smarter than completely re-distilling
     // when the update is small. Right now this resets the speech position to

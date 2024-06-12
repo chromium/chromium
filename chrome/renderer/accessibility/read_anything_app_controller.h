@@ -14,6 +14,7 @@
 #include "base/memory/raw_ptr.h"
 #include "base/memory/safe_ref.h"
 #include "chrome/common/accessibility/read_anything.mojom.h"
+#include "chrome/renderer/accessibility/read_aloud_app_model.h"
 #include "chrome/renderer/accessibility/read_anything_app_model.h"
 #include "content/public/renderer/render_frame_observer.h"
 #include "gin/wrappable.h"
@@ -357,8 +358,11 @@ class ReadAnythingAppController
   mojo::Remote<read_anything::mojom::UntrustedPageHandler> page_handler_;
   mojo::Receiver<read_anything::mojom::UntrustedPage> receiver_{this};
 
-  // Model that holds state for this controller.
+  // Model that holds Reading mode state for this controller.
   ReadAnythingAppModel model_;
+
+  // Model that holds Read Aloud state for this controller.
+  ReadAloudAppModel read_aloud_model_;
 
   // Set of nodes that will be deleted that are also displayed. A draw will
   // occur when the set becomes empty.

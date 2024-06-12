@@ -62,10 +62,6 @@ class ReadAnythingAppModelTest : public ChromeRenderViewTest {
     model_->SetDistillationInProgress(distillation);
   }
 
-  void SetSpeechPlaying(bool speech_playing) {
-    model_->set_speech_playing(speech_playing);
-  }
-
   void SetLastExpandedNodeId(ui::AXNodeID id) {
     model_->set_last_expanded_node_id(id);
   }
@@ -113,25 +109,28 @@ class ReadAnythingAppModelTest : public ChromeRenderViewTest {
         SkColorSetRGB(0xDF, 0xD2, 0x63), line_spacing, letter_spacing));
   }
 
-  void AccessibilityEventReceived(
-      const std::vector<ui::AXTreeUpdate>& updates) {
-    AccessibilityEventReceived(updates[0].tree_data.tree_id, updates);
-  }
-
-  void AccessibilityEventReceived(
-      const ui::AXTreeID& tree_id,
-      const std::vector<ui::AXTreeUpdate>& updates) {
-    std::vector<ui::AXEvent> events;
-    model_->AccessibilityEventReceived(
-        tree_id, const_cast<std::vector<ui::AXTreeUpdate>&>(updates), events);
+  void AccessibilityEventReceived(const std::vector<ui::AXTreeUpdate>& updates,
+                                  bool speech_playing = false) {
+    AccessibilityEventReceived(updates[0].tree_data.tree_id, updates,
+                               speech_playing);
   }
 
   void AccessibilityEventReceived(const ui::AXTreeID& tree_id,
                                   const std::vector<ui::AXTreeUpdate>& updates,
-                                  const std::vector<ui::AXEvent>& events) {
+                                  bool speech_playing = false) {
+    std::vector<ui::AXEvent> events;
+    model_->AccessibilityEventReceived(
+        tree_id, const_cast<std::vector<ui::AXTreeUpdate>&>(updates), events,
+        speech_playing);
+  }
+
+  void AccessibilityEventReceived(const ui::AXTreeID& tree_id,
+                                  const std::vector<ui::AXTreeUpdate>& updates,
+                                  const std::vector<ui::AXEvent>& events,
+                                  bool speech_playing = false) {
     model_->AccessibilityEventReceived(
         tree_id, const_cast<std::vector<ui::AXTreeUpdate>&>(updates),
-        const_cast<std::vector<ui::AXEvent>&>(events));
+        const_cast<std::vector<ui::AXEvent>&>(events), speech_playing);
   }
 
   void set_active_tree_id(ui::AXTreeID tree_id) {
@@ -755,14 +754,13 @@ TEST_F(ReadAnythingAppModelTest, SpeechPlaying_TreeUpdateReceivedOnActiveTree) {
   EXPECT_EQ(0u, GetNumPendingUpdates(tree_id_));
   ASSERT_TRUE(AreAllPendingUpdatesEmpty());
 
-  // Send update 1. Since distillation is in progress, this will not be
+  // Send update 1. Since speech is in progress, this will not be
   // unserialized yet.
-  SetSpeechPlaying(true);
-  AccessibilityEventReceived({updates[1]});
+  AccessibilityEventReceived({updates[1]}, /*speech_playing=*/true);
   EXPECT_EQ(1u, GetNumPendingUpdates(tree_id_));
 
   // Send update 2. This is still not unserialized yet.
-  AccessibilityEventReceived({updates[2]});
+  AccessibilityEventReceived({updates[2]}, /*speech_playing=*/true);
   EXPECT_EQ(2u, GetNumPendingUpdates(tree_id_));
 
   // Complete distillation which unserializes the pending updates and distills
