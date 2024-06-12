@@ -70,7 +70,7 @@ namespace content {
 namespace {
 
 std::vector<blink::mojom::IDBReturnValuePtr> CreateMojoValues(
-    std::vector<IndexedDBReturnValue>& found_values,
+    std::vector<IndexedDBReturnValue>&& found_values,
     IndexedDBBucketContext& bucket_context) {
   std::vector<blink::mojom::IDBReturnValuePtr> mojo_values;
   mojo_values.reserve(found_values.size());
@@ -852,10 +852,53 @@ Status IndexedDBDatabase::GetOperation(
   return s;
 }
 
+IndexedDBTransaction::Operation IndexedDBDatabase::CreateGetAllOperation(
+    int64_t object_store_id,
+    int64_t index_id,
+    std::unique_ptr<blink::IndexedDBKeyRange> key_range,
+    indexed_db::CursorType cursor_type,
+    int64_t max_count,
+    blink::mojom::IDBDatabase::GetAllCallback callback,
+    IndexedDBTransaction* transaction) {
+  return BindWeakOperation(&IndexedDBDatabase::GetAllOperation, AsWeakPtr(),
+                           object_store_id, index_id, std::move(key_range),
+                           cursor_type, max_count,
+                           std::make_unique<GetAllResultSinkWrapper>(
+                               transaction->AsWeakPtr(), std::move(callback)));
+}
+
 static_assert(sizeof(size_t) >= sizeof(int32_t),
               "Size of size_t is less than size of int32");
 static_assert(blink::mojom::kIDBMaxMessageOverhead <= INT32_MAX,
               "kIDBMaxMessageOverhead is more than INT32_MAX");
+
+IndexedDBDatabase::GetAllResultSinkWrapper::GetAllResultSinkWrapper(
+    base::WeakPtr<IndexedDBTransaction> transaction,
+    blink::mojom::IDBDatabase::GetAllCallback callback)
+    : transaction_(transaction), callback_(std::move(callback)) {}
+
+IndexedDBDatabase::GetAllResultSinkWrapper::~GetAllResultSinkWrapper() {
+  if (!callback_) {
+    return;
+  }
+
+  if (transaction_) {
+    transaction_->IncrementNumErrorsSent();
+  }
+
+  IndexedDBDatabaseError error(blink::mojom::IDBException::kIgnorableAbortError,
+                               "Backend aborted error");
+  Get()->OnError(blink::mojom::IDBError::New(error.code(), error.message()));
+}
+
+mojo::AssociatedRemote<blink::mojom::IDBDatabaseGetAllResultSink>&
+IndexedDBDatabase::GetAllResultSinkWrapper::Get() {
+  if (!result_sink_) {
+    auto receiver = result_sink_.BindNewEndpointAndPassReceiver();
+    std::move(callback_).Run(std::move(receiver));
+  }
+  return result_sink_;
+}
 
 Status IndexedDBDatabase::GetAllOperation(
     int64_t object_store_id,
@@ -863,16 +906,13 @@ Status IndexedDBDatabase::GetAllOperation(
     std::unique_ptr<IndexedDBKeyRange> key_range,
     indexed_db::CursorType cursor_type,
     int64_t max_count,
-    blink::mojom::IDBDatabase::GetAllCallback callback,
+    std::unique_ptr<GetAllResultSinkWrapper> result_sink,
     IndexedDBTransaction* transaction) {
   TRACE_EVENT1("IndexedDB", "IndexedDBDatabase::GetAllOperation", "txn.id",
                transaction->id());
 
-  mojo::Remote<blink::mojom::IDBDatabaseGetAllResultSink> result_sink;
-  std::move(callback).Run(result_sink.BindNewPipeAndPassReceiver());
-
   if (!IsObjectStoreIdAndMaybeIndexIdInMetadata(object_store_id, index_id)) {
-    result_sink->OnError(CreateIDBErrorPtr(
+    result_sink->Get()->OnError(CreateIDBErrorPtr(
         blink::mojom::IDBException::kUnknownError, "Bad request", transaction));
     return leveldb::Status::InvalidArgument("Invalid object_store_id.");
   }
@@ -917,7 +957,7 @@ Status IndexedDBDatabase::GetAllOperation(
 
   if (!s.ok()) {
     DLOG(ERROR) << "Unable to open cursor operation: " << s.ToString();
-    result_sink->OnError(CreateIDBErrorPtr(
+    result_sink->Get()->OnError(CreateIDBErrorPtr(
         blink::mojom::IDBException::kUnknownError,
         "Corruption detected, unable to continue", transaction));
     return s;
@@ -925,8 +965,22 @@ Status IndexedDBDatabase::GetAllOperation(
 
   std::vector<IndexedDBKey> found_keys;
   std::vector<IndexedDBReturnValue> found_values;
+
+  auto send_values = [&](bool done) {
+    if (cursor_type == indexed_db::CursorType::kKeyOnly) {
+      result_sink->Get()->ReceiveKeys(std::move(found_keys), done);
+      found_keys.clear();
+    } else {
+      result_sink->Get()->ReceiveValues(
+          CreateMojoValues(std::move(found_values), bucket_context_.get()),
+          done);
+      found_values.clear();
+    }
+  };
+
+  // No values or keys found.
   if (!cursor) {
-    // No values or keys found.
+    send_values(/*done=*/true);
     return s;
   }
 
@@ -954,14 +1008,15 @@ Status IndexedDBDatabase::GetAllOperation(
       did_first_seek = true;
     }
     if (!s.ok()) {
-      result_sink->OnError(
+      result_sink->Get()->OnError(
           CreateIDBErrorPtr(blink::mojom::IDBException::kUnknownError,
                             "Seek failure, unable to continue", transaction));
       return s;
     }
 
-    if (!cursor_valid)
+    if (!cursor_valid) {
       break;
+    }
 
     IndexedDBReturnValue return_value;
     IndexedDBKey return_key;
@@ -984,30 +1039,14 @@ Status IndexedDBDatabase::GetAllOperation(
     }
 
     // Periodically stream values and keys if we have too many.
-    if (cursor_type == indexed_db::CursorType::kKeyOnly) {
-      if (found_keys.size() >= max_values_before_sending) {
-        result_sink->ReceiveKeys(std::move(found_keys));
-        found_keys.clear();
-      }
-    } else {
-      if (found_values.size() >= max_values_before_sending) {
-        result_sink->ReceiveValues(
-            CreateMojoValues(found_values, bucket_context_.get()));
-        found_values.clear();
-      }
+    if (found_keys.size() >= max_values_before_sending ||
+        found_values.size() >= max_values_before_sending) {
+      send_values(/*done=*/false);
     }
   }
 
-  if (cursor_type == indexed_db::CursorType::kKeyOnly) {
-    if (!found_keys.empty()) {
-      result_sink->ReceiveKeys(std::move(found_keys));
-    }
-  } else {
-    if (!found_values.empty()) {
-      result_sink->ReceiveValues(
-          CreateMojoValues(found_values, bucket_context_.get()));
-    }
-  }
+  send_values(/*done=*/true);
+
   return s;
 }
 
@@ -1065,8 +1104,9 @@ Status IndexedDBDatabase::PutOperation(
     Status found_status = backing_store()->KeyExistsInObjectStore(
         transaction->BackingStoreTransaction(), id(), params->object_store_id,
         *key, &record_identifier, &found);
-    if (!found_status.ok())
+    if (!found_status.ok()) {
       return found_status;
+    }
     if (found) {
       std::move(params->callback)
           .Run(blink::mojom::IDBTransactionPutResult::NewErrorResult(
@@ -1105,8 +1145,9 @@ Status IndexedDBDatabase::PutOperation(
   s = backing_store()->PutRecord(transaction->BackingStoreTransaction(), id(),
                                  params->object_store_id, *key, &params->value,
                                  &record_identifier);
-  if (!s.ok())
+  if (!s.ok()) {
     return s;
+  }
 
   {
     TRACE_EVENT1("IndexedDB", "IndexedDBDatabase::PutOperation.UpdateIndexes",
@@ -1125,8 +1166,9 @@ Status IndexedDBDatabase::PutOperation(
                  "txn.id", transaction->id());
     s = UpdateKeyGenerator(backing_store(), transaction, id(),
                            params->object_store_id, *key, !key_was_generated);
-    if (!s.ok())
+    if (!s.ok()) {
       return s;
+    }
   }
   {
     TRACE_EVENT1("IndexedDB", "IndexedDBDatabase::PutOperation.Callbacks",
@@ -1187,8 +1229,9 @@ Status IndexedDBDatabase::SetIndexKeysOperation(
     s = writer->WriteIndexKeys(record_identifier, backing_store(),
                                transaction->BackingStoreTransaction(), id(),
                                object_store_id);
-    if (!s.ok())
+    if (!s.ok()) {
       return s;
+    }
   }
   return leveldb::Status::OK();
 }
@@ -1198,8 +1241,9 @@ Status IndexedDBDatabase::SetIndexesReadyOperation(
     IndexedDBTransaction* transaction) {
   // TODO(dmurph): This method should be refactored out for something more
   // reliable.
-  for (size_t i = 0; i < index_count; ++i)
+  for (size_t i = 0; i < index_count; ++i) {
     transaction->DidCompletePreemptiveEvent();
+  }
   return Status::OK();
 }
 
@@ -1220,8 +1264,9 @@ Status IndexedDBDatabase::OpenCursorOperation(
   // until the indexing is complete. This can't happen any earlier
   // because we don't want to switch to early mode in case multiple
   // indexes are being created in a row, with Put()'s in between.
-  if (params->task_type == blink::mojom::IDBTaskType::Preemptive)
+  if (params->task_type == blink::mojom::IDBTaskType::Preemptive) {
     transaction->AddPreemptiveEvent();
+  }
 
   Status s;
   std::unique_ptr<IndexedDBBackingStore::Cursor> backing_store_cursor;
@@ -1413,8 +1458,9 @@ bool IndexedDBDatabase::IsObjectStoreIdInMetadata(
 bool IndexedDBDatabase::IsObjectStoreIdAndIndexIdInMetadata(
     int64_t object_store_id,
     int64_t index_id) const {
-  if (!IsObjectStoreIdInMetadata(object_store_id))
+  if (!IsObjectStoreIdInMetadata(object_store_id)) {
     return false;
+  }
   const IndexedDBObjectStoreMetadata& object_store_metadata =
       metadata_.object_stores.find(object_store_id)->second;
   if (!base::Contains(object_store_metadata.indexes, index_id)) {
@@ -1427,8 +1473,9 @@ bool IndexedDBDatabase::IsObjectStoreIdAndIndexIdInMetadata(
 bool IndexedDBDatabase::IsObjectStoreIdAndMaybeIndexIdInMetadata(
     int64_t object_store_id,
     int64_t index_id) const {
-  if (!IsObjectStoreIdInMetadata(object_store_id))
+  if (!IsObjectStoreIdInMetadata(object_store_id)) {
     return false;
+  }
   const IndexedDBObjectStoreMetadata& object_store_metadata =
       metadata_.object_stores.find(object_store_id)->second;
   if (index_id != IndexedDBIndexMetadata::kInvalidId &&
@@ -1442,8 +1489,9 @@ bool IndexedDBDatabase::IsObjectStoreIdAndMaybeIndexIdInMetadata(
 bool IndexedDBDatabase::IsObjectStoreIdInMetadataAndIndexNotInMetadata(
     int64_t object_store_id,
     int64_t index_id) const {
-  if (!IsObjectStoreIdInMetadata(object_store_id))
+  if (!IsObjectStoreIdInMetadata(object_store_id)) {
     return false;
+  }
   const IndexedDBObjectStoreMetadata& object_store_metadata =
       metadata_.object_stores.find(object_store_id)->second;
   if (base::Contains(object_store_metadata.indexes, index_id)) {
@@ -1475,10 +1523,11 @@ void IndexedDBDatabase::NotifyOfIdbInternalsRelevantChange() {
 }
 
 // kIDBMaxMessageSize is defined based on the original
-// IPC::Channel::kMaximumMessageSize value.  We use kIDBMaxMessageSize to limit
-// the size of arguments we pass into our Mojo calls.  We want to ensure this
-// value is always no bigger than the current kMaximumMessageSize value which
-// also ensures it is always no bigger than the current Mojo message size limit.
+// IPC::Channel::kMaximumMessageSize value.  We use kIDBMaxMessageSize to
+// limit the size of arguments we pass into our Mojo calls.  We want to ensure
+// this value is always no bigger than the current kMaximumMessageSize value
+// which also ensures it is always no bigger than the current Mojo message
+// size limit.
 static_assert(
     blink::mojom::kIDBMaxMessageSize <= IPC::Channel::kMaximumMessageSize,
     "kIDBMaxMessageSize is bigger than IPC::Channel::kMaximumMessageSize");
@@ -1494,8 +1543,9 @@ Status IndexedDBDatabase::OpenInternal() {
                                                           &metadata_, &found);
   DCHECK(found == (metadata_.id != kInvalidId))
       << "found = " << found << " id = " << metadata_.id;
-  if (!s.ok() || found)
+  if (!s.ok() || found) {
     return s;
+  }
 
   return backing_store()->CreateDatabase(metadata_);
 }
@@ -1527,28 +1577,29 @@ bool IndexedDBDatabase::HasNoConnections() const {
 
 void IndexedDBDatabase::SendVersionChangeToAllConnections(int64_t old_version,
                                                           int64_t new_version) {
-  if (force_closing_)
+  if (force_closing_) {
     return;
+  }
   for (auto* connection : connections()) {
-    // Before invoking this method, the `IndexedDBConnectionCoordinator` had set
-    // the request state to `kPendingNoConnections`. Now the request will be
-    // blocked until all the existing connections to this database is closed.
-    // There are three possible ways for the connection to be closed:
-    // 1. If the client is already pending close, then the `VersionChange` event
-    // will be ignored and the open request will be deemed blocked until the
-    // pending close completes.
+    // Before invoking this method, the `IndexedDBConnectionCoordinator` had
+    // set the request state to `kPendingNoConnections`. Now the request will
+    // be blocked until all the existing connections to this database is
+    // closed. There are three possible ways for the connection to be closed:
+    // 1. If the client is already pending close, then the `VersionChange`
+    // event will be ignored and the open request will be deemed blocked until
+    // the pending close completes.
     // 2. If the client is active, the `VersionChange` event will be enqueued
-    // and the registered event listener will be fired asynchronously. The event
-    // listener should be responsible for actively closing the IndexedDB
+    // and the registered event listener will be fired asynchronously. The
+    // event listener should be responsible for actively closing the IndexedDB
     // connection. The document won't be eligible for BFCache before the
     // connection is closed if it receives the `versionchange` event.
     // 3. While the above two cases rely on the `VersionChange` event to be
-    // delivered to the renderer process, the third case happens purely from the
-    // IndexedDB/browser context. If the client is inactive, the `VersionChange`
-    // event will not be delivered, instead, a mojo call is sent to the browser
-    // process to disallow the activation of the inactive client, which will
-    // close the connection as part of the destruction.
-    // No matter which path it follows, the `SendVersionChangeToAllConnections`
+    // delivered to the renderer process, the third case happens purely from
+    // the IndexedDB/browser context. If the client is inactive, the
+    // `VersionChange` event will not be delivered, instead, a mojo call is
+    // sent to the browser process to disallow the activation of the inactive
+    // client, which will close the connection as part of the destruction. No
+    // matter which path it follows, the `SendVersionChangeToAllConnections`
     // method is executed asynchronously.
     connection->DisallowInactiveClient(
         storage::mojom::DisallowInactiveClientReason::kVersionChangeEvent,
@@ -1569,14 +1620,17 @@ void IndexedDBDatabase::SendVersionChangeToAllConnections(int64_t old_version,
 void IndexedDBDatabase::ConnectionClosed(IndexedDBConnection* connection) {
   TRACE_EVENT0("IndexedDB", "IndexedDBDatabase::ConnectionClosed");
   // Ignore connection closes during force close to prevent re-entry.
-  if (force_closing_)
+  if (force_closing_) {
     return;
+  }
   connections_.erase(connection);
   connection_coordinator_.OnConnectionClosed(connection);
-  if (connections_.empty())
+  if (connections_.empty()) {
     connection_coordinator_.OnNoConnections();
-  if (CanBeDestroyed())
+  }
+  if (CanBeDestroyed()) {
     bucket_context_->QueueRunTasks();
+  }
 }
 
 bool IndexedDBDatabase::CanBeDestroyed() {

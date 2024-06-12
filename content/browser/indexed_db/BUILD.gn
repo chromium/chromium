@@ -20,7 +20,6 @@ source_set("indexed_db") {
     "indexed_db_bucket_context.h",
     "indexed_db_bucket_context_handle.cc",
     "indexed_db_bucket_context_handle.h",
-    "indexed_db_callback_helpers.cc",
     "indexed_db_callback_helpers.h",
     "indexed_db_compaction_task.cc",
     "indexed_db_compaction_task.h",

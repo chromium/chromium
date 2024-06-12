@@ -485,7 +485,8 @@ void IDBRequest::OnClear(bool success) {
 
 void IDBRequest::OnGetAll(
     bool key_only,
-    mojo::PendingReceiver<mojom::blink::IDBDatabaseGetAllResultSink> receiver) {
+    mojo::PendingAssociatedReceiver<mojom::blink::IDBDatabaseGetAllResultSink>
+        receiver) {
   probe::AsyncTask async_task(GetExecutionContext(), &async_task_context_,
                               "success");
   DCHECK(transit_blob_handles_.empty());

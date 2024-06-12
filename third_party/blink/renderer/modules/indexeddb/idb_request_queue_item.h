@@ -82,7 +82,8 @@ class MODULES_EXPORT IDBRequestQueueItem {
   IDBRequestQueueItem(
       IDBRequest*,
       bool key_only,
-      mojo::PendingReceiver<mojom::blink::IDBDatabaseGetAllResultSink> receiver,
+      mojo::PendingAssociatedReceiver<mojom::blink::IDBDatabaseGetAllResultSink>
+          receiver,
       base::OnceClosure on_result_ready);
 
   ~IDBRequestQueueItem();

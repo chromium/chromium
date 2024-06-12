@@ -311,14 +311,15 @@ union IDBDatabaseGetResult {
 };
 
 // Result receiver type for GetAll to incrementally receive chunks of results.
-// When the mojo connection disconnects, this signals that all of the results
-// have been sent.
 interface IDBDatabaseGetAllResultSink {
-  // Incrementally receive some values.
-  ReceiveValues(array<IDBReturnValue> values);
+  // Incrementally receive some values. If `done` is true, then all keys have
+  // been sent. Otherwise, `ReceiveValues` or `OnError` will be called again
+  // later.
+  ReceiveValues(array<IDBReturnValue> values, bool done);
 
-  // Incrementally receive some keys.
-  ReceiveKeys(array<IDBKey> keys);
+  // Incrementally receive some keys. If `done` is true, then all keys have been
+  // sent. Otherwise, `ReceiveValues` or `OnError` will be called again later.
+  ReceiveKeys(array<IDBKey> keys, bool done);
 
   // If any error occurs, call this function.  Once this function has been
   // called, ReceiveValues/ReceiveKeys should not be called again and
@@ -364,7 +365,7 @@ interface IDBDatabase {
          IDBKeyRange key_range,
          bool key_only,
          int64 max_count)
-    => (pending_receiver<IDBDatabaseGetAllResultSink> receiver);
+    => (pending_associated_receiver<IDBDatabaseGetAllResultSink> receiver);
   SetIndexKeys(int64 transaction_id,
                int64 object_store_id,
                IDBKey primary_key,

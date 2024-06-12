@@ -40,10 +40,6 @@ R AbortCallback(base::WeakPtr<IndexedDBTransaction> transaction) {
       blink::mojom::IDBError::New(error.code(), error.message()));
 }
 
-template <>
-mojo::PendingReceiver<blink::mojom::IDBDatabaseGetAllResultSink> AbortCallback(
-    base::WeakPtr<IndexedDBTransaction> transaction);
-
 template <typename R>
 base::OnceCallback<R()> CreateAbortCallback(
     base::WeakPtr<IndexedDBTransaction> transaction) {

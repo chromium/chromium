@@ -296,9 +296,10 @@ class MODULES_EXPORT IDBRequest : public EventTarget,
   void OnCount(bool success, uint32_t count);
   void OnPut(mojom::blink::IDBTransactionPutResultPtr result);
   void OnGet(mojom::blink::IDBDatabaseGetResultPtr result);
-  void OnGetAll(bool key_only,
-                mojo::PendingReceiver<mojom::blink::IDBDatabaseGetAllResultSink>
-                    receiver);
+  void OnGetAll(
+      bool key_only,
+      mojo::PendingAssociatedReceiver<mojom::blink::IDBDatabaseGetAllResultSink>
+          receiver);
   void OnOpenCursor(mojom::blink::IDBDatabaseOpenCursorResultPtr result);
   void OnAdvanceCursor(mojom::blink::IDBCursorResultPtr result);
   void OnGotKeyGeneratorCurrentNumber(int64_t number,
