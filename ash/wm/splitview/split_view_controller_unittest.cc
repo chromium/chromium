@@ -195,7 +195,6 @@ class SplitViewControllerTest : public AshTestBase {
   SplitViewControllerTest() {
     scoped_feature_list_.InitWithFeatures(
         /*enabled_features=*/{features::kSnapGroup,
-                              features::kFasterSplitScreenSetup,
                               features::kOsSettingsRevampWayfinding},
         /*disabled_features=*/{});
   }

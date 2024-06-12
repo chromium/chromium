@@ -57,21 +57,7 @@ const GURL& GetActiveUrl(Browser* browser) {
 
 }  // namespace
 
-class FasterSplitScreenBrowserTest : public InProcessBrowserTest {
- public:
-  FasterSplitScreenBrowserTest() {
-    scoped_feature_list_.InitWithFeatures(
-        /*enabled_features=*/{ash::features::kFasterSplitScreenSetup},
-        /*disabled_features=*/{});
-  }
-  FasterSplitScreenBrowserTest(const FasterSplitScreenBrowserTest&) = delete;
-  FasterSplitScreenBrowserTest& operator=(const FasterSplitScreenBrowserTest&) =
-      delete;
-  ~FasterSplitScreenBrowserTest() override = default;
-
- private:
-  base::test::ScopedFeatureList scoped_feature_list_;
-};
+using FasterSplitScreenBrowserTest = InProcessBrowserTest;
 
 // Tests that if partial overview is active, and a window gets session
 // restore'd, partial overview auto-snaps the window. See b/314816288.
@@ -227,8 +213,7 @@ class SnapGroupBrowserTest : public InProcessBrowserTest {
  public:
   SnapGroupBrowserTest() {
     scoped_feature_list_.InitWithFeatures(
-        /*enabled_features=*/{ash::features::kFasterSplitScreenSetup,
-                              ash::features::kSnapGroup},
+        /*enabled_features=*/{ash::features::kSnapGroup},
         /*disabled_features=*/{});
   }
   SnapGroupBrowserTest(const SnapGroupBrowserTest&) = delete;

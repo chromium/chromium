@@ -73,13 +73,11 @@ bool IsPerAppLanguageEnabled(const Profile* profile) {
 }
 
 bool ShouldShowMultitasking() {
-  return ash::features::IsOsSettingsRevampWayfindingEnabled() &&
-         ash::features::IsFasterSplitScreenSetupEnabled();
+  return ash::features::IsOsSettingsRevampWayfindingEnabled();
 }
 
 bool ShouldShowMultitaskingInPersonalization() {
-  return !ash::features::IsOsSettingsRevampWayfindingEnabled() &&
-         ash::features::IsFasterSplitScreenSetupEnabled();
+  return !ash::features::IsOsSettingsRevampWayfindingEnabled();
 }
 
 }  // namespace ash::settings

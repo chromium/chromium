@@ -33,7 +33,6 @@ class OverviewGridTest : public AshTestBase {
   OverviewGridTest() {
     scoped_feature_list_.InitWithFeatures(
         /*enabled_features=*/{features::kSnapGroup,
-                              features::kFasterSplitScreenSetup,
                               features::kOsSettingsRevampWayfinding},
         /*disabled_features=*/{features::kForestFeature});
   }
@@ -326,8 +325,7 @@ class OverviewGridForestTest : public OverviewTestBase {
  public:
   OverviewGridForestTest() {
     scoped_feature_list_.InitWithFeatures(
-        /*enabled_features=*/{features::kFasterSplitScreenSetup,
-                              features::kOsSettingsRevampWayfinding,
+        /*enabled_features=*/{features::kOsSettingsRevampWayfinding,
                               features::kForestFeature},
         /*disabled_features=*/{});
   }

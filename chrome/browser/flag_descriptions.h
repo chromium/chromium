@@ -3669,9 +3669,6 @@ extern const char kDisableExplicitDmaFencesDescription[];
 extern const char kDisplayAlignmentAssistanceName[];
 extern const char kDisplayAlignmentAssistanceDescription[];
 
-extern const char kFasterSplitScreenSetupName[];
-extern const char kFasterSplitScreenSetupDescription[];
-
 extern const char kFastPairDebugMetadataName[];
 extern const char kFastPairDebugMetadataDescription[];
 

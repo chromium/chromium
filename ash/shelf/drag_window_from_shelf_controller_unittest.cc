@@ -36,7 +36,6 @@
 #include "ash/wm/work_area_insets.h"
 #include "base/memory/raw_ptr.h"
 #include "base/test/metrics/histogram_tester.h"
-#include "base/test/scoped_feature_list.h"
 #include "chromeos/constants/chromeos_features.h"
 #include "ui/aura/client/aura_constants.h"
 #include "ui/aura/client/window_parenting_client.h"
@@ -277,9 +276,6 @@ TEST_F(DragWindowFromShelfControllerTest, HideHomeLauncherDuringDraggingTest) {
 // Test that the "No recent items" label is not visible (not created) while
 // dragging from shelf. Regression test for http://b/326091611.
 TEST_F(DragWindowFromShelfControllerTest, NoWindowsWidget) {
-  base::test::ScopedFeatureList scoped_feature_list(
-      features::kFasterSplitScreenSetup);
-
   const gfx::Rect shelf_bounds = GetShelfBounds();
   auto window = CreateTestWindow();
   StartDrag(window.get(), shelf_bounds.CenterPoint());

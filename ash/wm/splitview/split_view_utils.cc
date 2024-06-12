@@ -917,7 +917,7 @@ aura::Window* GetOppositeVisibleSnappedWindow(aura::Window* window) {
 bool ShouldConsiderWindowForFasterSplitView(
     aura::Window* window,
     WindowSnapActionSource snap_action_source) {
-  if (!window_util::IsFasterSplitScreenOrSnapGroupEnabledInClamshell()) {
+  if (!window_util::IsSnapGroupEnabledInClamshell()) {
     return false;
   }
 
@@ -942,30 +942,15 @@ bool ShouldConsiderWindowForFasterSplitView(
 bool CanStartSplitViewOverviewSessionInClamshell(
     aura::Window* window,
     WindowSnapActionSource snap_action_source) {
-  // If kFasterSplitScreenSetup is disabled, only allow split view overview if
-  // the window is being dragged to snap while in overview. Note this is
-  // different from `IsFasterSplitScreenOrSnapGroupEnabledInClamshell()` which
-  // checks if kFasterSplitScreenSetup *or* kSnapGroup is enabled.
-  const bool is_overview_drag_to_snap =
-      snap_action_source ==
-      WindowSnapActionSource::kDragOrSelectOverviewWindowToSnap;
-  if (!Shell::Get()->IsInTabletMode() &&
-      !features::IsFasterSplitScreenSetupEnabled()) {
-    // TODO(b/344958499): Temporary fix. Investigate why `OnWindowSnapped()` is
-    // called multiple times.
-    return is_overview_drag_to_snap && !GetOppositeVisibleSnappedWindow(window);
-  }
-
   if (IsInOverviewSession() && WindowState::Get(window)->IsSnapped()) {
     return !RootWindowController::ForWindow(window)
                 ->split_view_overview_session();
   }
 
   // Skip starting `SplitViewOverviewSession` if a fully visible window snapped
-  // on the opposite side. Exception: If dragging in Overview, skip checking
-  // opposite-side snapped windows, as they're not visually snapped for the
-  // user in Overview.
-  if (!is_overview_drag_to_snap && GetOppositeVisibleSnappedWindow(window)) {
+  // on the opposite side. `GetOppositeVisibleSnappedWindow()` will exclude
+  // windows that are *in* overview.
+  if (GetOppositeVisibleSnappedWindow(window)) {
     return false;
   }
 

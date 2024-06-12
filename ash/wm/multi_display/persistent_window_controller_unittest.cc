@@ -30,7 +30,6 @@ class PersistentWindowControllerTest : public AshTestBase {
   PersistentWindowControllerTest() {
     scoped_feature_list_.InitWithFeatures(
         /*enabled_features=*/{features::kSnapGroup,
-                              features::kFasterSplitScreenSetup,
                               features::kOsSettingsRevampWayfinding},
         /*disabled_features=*/{});
   }

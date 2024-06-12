@@ -237,7 +237,7 @@ void RegisterProfilePrefs(PrefRegistrySimple* registry);
 // Returns true if either `kFasterSplitScreenSetup` or `kSnapGroup` is enabled.
 // When this is true, snapping one window will automatically start
 // SplitViewOverviewSession.
-bool IsFasterSplitScreenOrSnapGroupEnabledInClamshell();
+bool IsSnapGroupEnabledInClamshell();
 
 // Returns true if `SplitViewOverviewSession` is created through faster split
 // screen setup, i.e. partial overview is started on the other side of the

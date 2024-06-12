@@ -503,7 +503,6 @@ class DesksTest : public AshTestBase,
          {features::kPerDeskShelf, GetParam().per_desk_shelf},
          {features::kOverviewNewFocus, GetParam().overview_new_focus},
          {features::kSnapGroup, true},
-         {features::kFasterSplitScreenSetup, true},
          {features::kOsSettingsRevampWayfinding, true}});
 
     AshTestBase::SetUp();

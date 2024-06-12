@@ -6338,11 +6338,6 @@ const char kEnableRuntimeCountersTelemetryName[] =
 const char kEnableRuntimeCountersTelemetryDescription[] =
     "Allow admins to collect runtime counters telemetry (Intel Gen 14+ only).";
 
-const char kFasterSplitScreenSetupName[] = "Enable Faster Split Screen Setup";
-const char kFasterSplitScreenSetupDescription[] =
-    "Enables faster split screen setup process by showing partial overview on "
-    "window snapped";
-
 const char kFastPairDebugMetadataName[] = "Enable Fast Pair Debug Metadata";
 const char kFastPairDebugMetadataDescription[] =
     "Enables Fast Pair to use Debug metadata when checking device "

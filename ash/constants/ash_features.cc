@@ -1066,12 +1066,6 @@ BASE_FEATURE(kFastPairDevicesBluetoothSettings,
              "FastPairDevicesBluetoothSettings",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
-// Accelerates the split screen setup process by showing partial overview on
-// window snapped.
-BASE_FEATURE(kFasterSplitScreenSetup,
-             "FasterSplitScreenSetup",
-             base::FEATURE_ENABLED_BY_DEFAULT);
-
 // If enabled, allows the creation of up to 16 desks (default is 8). This flag
 // is intended to be controlled by the feature management module.
 BASE_FEATURE(kFeatureManagement16Desks,
@@ -3620,10 +3614,6 @@ bool IsFastPairSavedDevicesEnabled() {
 
 bool IsFastPairSavedDevicesStrictOptInEnabled() {
   return base::FeatureList::IsEnabled(kFastPairSavedDevicesStrictOptIn);
-}
-
-bool IsFasterSplitScreenSetupEnabled() {
-  return base::FeatureList::IsEnabled(kFasterSplitScreenSetup);
 }
 
 bool IsFederatedServiceEnabled() {

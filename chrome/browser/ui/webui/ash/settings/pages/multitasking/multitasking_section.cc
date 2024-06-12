@@ -51,11 +51,9 @@ MultitaskingSection::MultitaskingSection(Profile* profile,
   CHECK(profile);
   CHECK(search_tag_registry);
 
-  if (ash::features::IsFasterSplitScreenSetupEnabled()) {
-    SearchTagRegistry::ScopedTagUpdater updater = registry()->StartUpdate();
-    updater.AddSearchTags(
-        GetSnapWindowSuggestionsSearchConcepts(GetSectionPath()));
-  }
+  SearchTagRegistry::ScopedTagUpdater updater = registry()->StartUpdate();
+  updater.AddSearchTags(
+      GetSnapWindowSuggestionsSearchConcepts(GetSectionPath()));
 }
 
 MultitaskingSection::~MultitaskingSection() = default;

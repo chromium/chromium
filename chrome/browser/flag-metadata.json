@@ -472,11 +472,6 @@
     "expiry_milestone": -1
   },
   {
-    "name": "ash-faster-split-screen-setup",
-    "owners": [ "michelefan@chromium.org", "sophiewen@chromium.org", "xdai@chromium.org" ],
-    "expiry_milestone": 129
-  },
-  {
     "name": "ash-forest-feature",
     "owners": [ "sammiequon@chromium.org", "cros-forest@google.com"],
     "expiry_milestone": 129

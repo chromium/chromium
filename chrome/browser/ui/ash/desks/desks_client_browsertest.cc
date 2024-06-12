@@ -530,8 +530,7 @@ class DesksClientTest : public extensions::PlatformAppBrowserTest {
     std::vector<base::test::FeatureRef> enabled_features = {
         ash::features::kDesksTemplates};
     std::vector<base::test::FeatureRef> disabled_features = {
-        ash::features::kDeskTemplateSync,
-        ash::features::kFasterSplitScreenSetup};
+        ash::features::kDeskTemplateSync};
     scoped_feature_list_.InitWithFeatures(enabled_features, disabled_features);
 
     // Suppress the multitask menu nudge as we'll be checking the stacking order
@@ -3340,8 +3339,7 @@ class SnapGroupDesksClientTest : public DesksClientTest {
  public:
   SnapGroupDesksClientTest() {
     scoped_feature_list_.InitWithFeatures(
-        /*enabled_features=*/{ash::features::kFasterSplitScreenSetup,
-                              ash::features::kSnapGroup},
+        /*enabled_features=*/{ash::features::kSnapGroup},
         /*disabled_features=*/{});
   }
   SnapGroupDesksClientTest(const SnapGroupDesksClientTest&) = delete;

@@ -79,9 +79,7 @@ class OSSettingsMochaTestRevampEnabled : public OSSettingsMochaTest {
  protected:
   OSSettingsMochaTestRevampEnabled() {
     scoped_feature_list_.InitWithFeatures(
-        {ash::features::kOsSettingsRevampWayfinding,
-         ash::features::kFasterSplitScreenSetup},
-        {});
+        {ash::features::kOsSettingsRevampWayfinding}, {});
   }
 
  private:
@@ -613,38 +611,6 @@ INSTANTIATE_TEST_SUITE_P(RevampParameterized,
                          OSSettingsTestSearchBox,
                          testing::Bool(),
                          OSSettingsTestSearchBox::DescribeParams);
-
-class OSSettingsRevampMochaTestFasterSplitScreenEnabled
-    : public OSSettingsRevampMochaTest {
- private:
-  base::test::ScopedFeatureList scoped_feature_list_{
-      ash::features::kFasterSplitScreenSetup};
-};
-
-INSTANTIATE_TEST_SUITE_P(
-    RevampParameterized,
-    OSSettingsRevampMochaTestFasterSplitScreenEnabled,
-    testing::Bool(),
-    OSSettingsRevampMochaTestFasterSplitScreenEnabled::DescribeParams);
-
-class OSSettingsRevampMochaTestFasterSplitScreenDisabled
-    : public OSSettingsRevampMochaTest {
- public:
-  OSSettingsRevampMochaTestFasterSplitScreenDisabled() {
-    scoped_feature_list_.InitWithFeatures(
-        /*enabled=*/{},
-        /*disabled=*/{ash::features::kFasterSplitScreenSetup});
-  }
-
- private:
-  base::test::ScopedFeatureList scoped_feature_list_;
-};
-
-INSTANTIATE_TEST_SUITE_P(
-    RevampParameterized,
-    OSSettingsRevampMochaTestFasterSplitScreenDisabled,
-    testing::Bool(),
-    OSSettingsRevampMochaTestFasterSplitScreenDisabled::DescribeParams);
 
 using OSSettingsRevampTestOsAboutPage = OSSettingsRevampMochaTest;
 
@@ -1976,20 +1942,6 @@ IN_PROC_BROWSER_TEST_P(OSSettingsRevampMochaTest,
                        ParentalControlsSettingsCard) {
   RunSettingsTest(
       "parental_controls_page/parental_controls_settings_card_test.js");
-}
-
-IN_PROC_BROWSER_TEST_P(OSSettingsRevampMochaTestFasterSplitScreenEnabled,
-                       PersonalizationPageWithPersonalizationHub) {
-  RunSettingsTest(
-      "personalization_page/"
-      "personalization_page_with_personalization_hub_test.js");
-}
-
-IN_PROC_BROWSER_TEST_P(OSSettingsRevampMochaTestFasterSplitScreenDisabled,
-                       PersonalizationPageWithPersonalizationHub) {
-  RunSettingsTest(
-      "personalization_page/"
-      "personalization_page_with_personalization_hub_test.js");
 }
 
 IN_PROC_BROWSER_TEST_F(OSSettingsMochaTest,
