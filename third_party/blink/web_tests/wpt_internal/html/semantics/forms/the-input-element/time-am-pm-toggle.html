@@ -1,0 +1,67 @@
+<!DOCTYPE html>
+
+<link rel="help" href="http://crbug.com/41429476">
+
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+
+<script src="/resources/testdriver.js"></script>
+<script src="/resources/testdriver-vendor.js"></script>
+
+<input id="target" type="time" value="12:13">
+
+<script>
+promise_test(async () => {
+  target.focus();
+  assert_equals(
+    document.activeElement.id,
+    'target',
+    'target should be active'
+  );
+
+  assert_equals(
+    target.value,
+   '12:13',
+   'initial value should be 12:13'
+  );
+
+  await pressTab(); // hours -> minutes
+  await pressTab(); // minutes -> AM/PM
+
+  // Toggle to AM
+  await pressKey('a');
+  assert_equals(
+    target.value,
+    '00:13',
+    'pressing [a] should toggle to AM'
+  );
+
+  // Toggle to PM
+  await pressKey('p');
+  assert_equals(
+    target.value,
+    '12:13',
+    'pressing [p] should toggle to PM'
+  );
+
+  // Toggle quickly between PM->AM
+  await pressKey('a');
+  await pressKey('p');
+  await pressKey('a');
+  assert_equals(
+    target.value,
+    '00:13',
+    'pressing [a]->[p]->[a] should end on AM'
+  );
+
+}, "Check that AM/PM toggles");
+
+async function pressTab() {
+  const TAB = '\uE004';
+  return pressKey(TAB);
+}
+
+async function pressKey(key) {
+  return test_driver.send_keys(target, key);
+}
+</script>
