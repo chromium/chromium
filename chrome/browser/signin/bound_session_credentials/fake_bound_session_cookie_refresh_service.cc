@@ -19,6 +19,7 @@ FakeBoundSessionCookieRefreshService::GetBoundSessionThrottlerParams() const {
 }
 
 void FakeBoundSessionCookieRefreshService::HandleRequestBlockedOnCookie(
+    const GURL& untrusted_request_url,
     HandleRequestBlockedOnCookieCallback resume_blocked_request) {
   resume_blocked_request_ = std::move(resume_blocked_request);
 }

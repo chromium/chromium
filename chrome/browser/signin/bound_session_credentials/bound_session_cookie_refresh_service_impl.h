@@ -34,6 +34,7 @@ namespace content {
 class StoragePartition;
 }
 
+class GURL;
 class BoundSessionParamsStorage;
 
 BASE_DECLARE_FEATURE(kMultipleBoundSessionsEnabled);
@@ -83,6 +84,7 @@ class BoundSessionCookieRefreshServiceImpl
 
   // chrome::mojom::BoundSessionRequestThrottledHandler:
   void HandleRequestBlockedOnCookie(
+      const GURL& untrusted_request_url,
       HandleRequestBlockedOnCookieCallback resume_blocked_request) override;
 
  private:

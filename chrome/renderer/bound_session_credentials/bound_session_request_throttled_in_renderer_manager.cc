@@ -67,12 +67,14 @@ void BoundSessionRequestThrottledInRendererManager::Initialize(
 
 void BoundSessionRequestThrottledInRendererManager::
     HandleRequestBlockedOnCookie(
+        const GURL& untrusted_request_url,
         ResumeOrCancelThrottledRequestCallback callback) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(my_sequence_checker_);
   CHECK(remote_.is_bound());
   CHECK(!callback.is_null());
 
   remote_->HandleRequestBlockedOnCookie(
+      untrusted_request_url,
       mojo::WrapCallbackWithDefaultInvokeIfNotRun(
           base::BindOnce(&OnHandleRequestBlockedOnCookie, std::move(callback)),
           chrome::mojom::ResumeBlockedRequestsTrigger::kRendererDisconnected));

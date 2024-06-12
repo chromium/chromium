@@ -47,6 +47,7 @@ class BoundSessionRequestThrottledInRendererManager
   // should run.
   // Marked virtual for testing.
   virtual void HandleRequestBlockedOnCookie(
+      const GURL& untrusted_request_url,
       BoundSessionRequestThrottledHandler::
           ResumeOrCancelThrottledRequestCallback callback);
 

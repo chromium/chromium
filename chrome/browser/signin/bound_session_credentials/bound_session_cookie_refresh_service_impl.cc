@@ -217,6 +217,7 @@ void BoundSessionCookieRefreshServiceImpl::
 }
 
 void BoundSessionCookieRefreshServiceImpl::HandleRequestBlockedOnCookie(
+    const GURL& untrusted_request_url,
     HandleRequestBlockedOnCookieCallback resume_blocked_request) {
   if (cookie_controllers_.empty()) {
     // Session has been terminated.
