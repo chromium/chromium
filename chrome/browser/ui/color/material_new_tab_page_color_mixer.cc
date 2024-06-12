@@ -68,9 +68,7 @@ void AddMaterialNewTabPageColorMixer(ui::ColorProvider* provider,
   mixer[kColorNewTabPageModuleContextMenuDivider] = {ui::kColorSysDivider};
 
   mixer[kColorNewTabPageModuleCalendarEventCollapsedBackground] = {
-      ui::kColorSysSurface1};
-  mixer[kColorNewTabPageModuleCalendarEventExpandedBackground] = {
-      ui::kColorSysSurface};
+      ui::kColorSysSecondaryContainer};
   mixer[kColorNewTabPageModuleCalendarEventTimeStatusBackground] = {
       ui::kColorSysNeutralContainer};
 
