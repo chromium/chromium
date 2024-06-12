@@ -6,6 +6,7 @@
 
 #include <cstdint>
 #include <string>
+#include <string_view>
 #include <vector>
 
 #include "base/containers/span.h"
@@ -80,9 +81,30 @@ TEST(HashTest, PersistentHashFromSpan) {
   // Empty span (should hash to 0).
   EXPECT_EQ(0u, PersistentHash(base::span<const uint8_t>()));
 
-  // Simple test.
-  const char* str = "hello world";
-  EXPECT_EQ(2794219650u, PersistentHash(as_byte_span(std::string(str))));
+  // The hash loads four bytes at a time, and is sensitive to the high bit of
+  // the last few bytes. Test hashes of various lengths, and with and without
+  // the high bit set, to confirm the persistent hash remains persistent.
+  const std::string_view str1 = "hello world";
+  const std::array<uint32_t, 12> kHashesByLength1 = {
+      0u,          1213478405u, 2371107848u, 2412215855u,
+      2296013106u, 2963130491u, 342812795u,  1345887711u,
+      2394271580u, 2806845956u, 2484860346u, 2794219650u};
+  for (size_t i = 0; i <= str1.size(); i++) {
+    SCOPED_TRACE(i);
+    EXPECT_EQ(kHashesByLength1[i],
+              PersistentHash(as_byte_span(str1.substr(0, i))));
+  }
+
+  const std::string_view str2 = "\xf0\xf1\xf2\xf3\xf4\xf5\xf6\xf7\xf8\xf9\xfa";
+  const std::array<uint32_t, 12> kHashesByLength2 = {
+      0u,          2524495555u, 901867827u,  52332316u,
+      1053305007u, 4170027104u, 1891345481u, 2246421829u,
+      1241531838u, 4191939542u, 4100345281u, 896950651u};
+  for (size_t i = 0; i <= str2.size(); i++) {
+    SCOPED_TRACE(i);
+    EXPECT_EQ(kHashesByLength2[i],
+              PersistentHash(as_byte_span(str2.substr(0, i))));
+  }
 }
 
 TEST(HashTest, FastHash) {
