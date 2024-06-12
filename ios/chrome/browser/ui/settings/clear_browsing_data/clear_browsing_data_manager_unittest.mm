@@ -105,7 +105,8 @@ class ClearBrowsingDataManagerTest : public PlatformTest {
                       initWithBrowserState:browser_state_.get()
                        browsingDataRemover:remover_.get()
         browsingDataCounterWrapperProducer:
-            [[FakeBrowsingDataCounterWrapperProducer alloc] init]];
+            [[FakeBrowsingDataCounterWrapperProducer alloc]
+                initWithBrowserState:browser_state_.get()]];
     [manager_ prepare];
 
     test_sync_service_ = static_cast<syncer::TestSyncService*>(

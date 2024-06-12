@@ -10,8 +10,6 @@
 
 - (std::unique_ptr<BrowsingDataCounterWrapper>)
     createCounterWrapperWithPrefName:(std::string_view)prefName
-                        browserState:(ChromeBrowserState*)browserState
-                         prefService:(PrefService*)prefService
                     updateUiCallback:
                         (BrowsingDataCounterWrapper::UpdateUICallback)
                             updateUiCallback {
