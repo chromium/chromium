@@ -1337,6 +1337,15 @@ class CONTENT_EXPORT NavigationRequest
     return did_encounter_cross_origin_redirect_;
   }
 
+  // Determines whether this navigation request was initiated by an animated
+  // transition.
+  void set_was_initiated_by_animated_transition() {
+    was_initiated_by_animated_transition_ = true;
+  }
+  bool was_initiated_by_animated_transition() const {
+    return was_initiated_by_animated_transition_;
+  }
+
  private:
   friend class NavigationRequestTest;
 
@@ -2869,6 +2878,10 @@ class CONTENT_EXPORT NavigationRequest
   // transferred to the new Document's view. If the navigation finishes without
   // committing, the resources are destroyed with this request.
   std::unique_ptr<ScopedViewTransitionResources> view_transition_resources_;
+
+  // If true, this means that this navigaiton request was initiated by an
+  // animated transition.
+  bool was_initiated_by_animated_transition_ = false;
 
   base::WeakPtrFactory<NavigationRequest> weak_factory_{this};
 };

@@ -1110,6 +1110,8 @@ bool BackForwardTransitionAnimator::StartNavigationAndTrackRequest() {
     CHECK(primary_main_frame_request->IsWaitingForBeforeUnload());
     navigation_state_ = NavigationState::kBeforeUnloadDispatched;
   }
+
+  primary_main_frame_request->set_was_initiated_by_animated_transition();
   return true;
 }
 

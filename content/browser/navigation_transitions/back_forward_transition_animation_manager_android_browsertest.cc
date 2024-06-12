@@ -858,6 +858,46 @@ IN_PROC_BROWSER_TEST_P(BackForwardTransitionAnimationManagerBrowserTest,
       NavigationEntryScreenshot::kUserDataKey));
 }
 
+// Runs a transition in a ViewTransition enabled page. Ensures view transition
+// does not run.
+IN_PROC_BROWSER_TEST_P(BackForwardTransitionAnimationManagerBrowserTest,
+                       DefaultTransitionSupersedesViewTransition) {
+  GURL test_url(
+      embedded_test_server()->GetURL("/view_transitions/basic-vt-opt-in.html"));
+  ASSERT_TRUE(NavigateToURL(web_contents(), test_url));
+  WaitForCopyableViewInWebContents(web_contents());
+
+  GURL test_url_next(embedded_test_server()->GetURL(
+      "/view_transitions/basic-vt-opt-in.html?next"));
+  ASSERT_TRUE(NavigateToURL(web_contents(), test_url_next));
+  WaitForCopyableViewInWebContents(web_contents());
+
+  // Back nav from the green page to the red page. The live page (green) is on
+  // top and slides towards right. The red page (screenshot) is on the bottom
+  // and appears on the left of screen.
+  std::vector<GestureAndScreenChanged> expected;
+  expected.push_back({.gesture = GestureType::kStart});
+  expected.push_back({.gesture = GestureType::k30ViewportWidth});
+  expected.push_back({.gesture = GestureType::k60ViewportWidth});
+  expected.push_back({.gesture = GestureType::k90ViewportWidth});
+  HistoryBackNavAndAssertAnimatedTransition(expected);
+
+  // Manually trigger the back navigation.
+  TestFrameNavigationObserver back_navigation(web_contents());
+  base::RunLoop destroyed;
+  GetAnimatorForTesting()->set_on_impl_destroyed(destroyed.QuitClosure());
+  GetAnimationManager(web_contents())->OnGestureInvoked();
+  destroyed.Run();
+  back_navigation.Wait();
+
+  // Ensure the new Document has produced a frame, otherwise `pagereveal` which
+  // sets had_incoming_transition might not have been fired yet.
+  WaitForCopyableViewInWebContents(web_contents());
+
+  ASSERT_EQ(back_navigation.last_committed_url(), test_url);
+  EXPECT_EQ(false, EvalJs(web_contents(), "had_incoming_transition"));
+}
+
 // Simulates the gesture sequence: start, 30%, 60%, 90%, 60%, 30% and finally
 // cancels.
 IN_PROC_BROWSER_TEST_P(BackForwardTransitionAnimationManagerBrowserTest,

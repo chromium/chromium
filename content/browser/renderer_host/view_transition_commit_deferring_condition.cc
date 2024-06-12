@@ -24,6 +24,12 @@ ViewTransitionCommitDeferringCondition::MaybeCreate(
     return nullptr;
   }
 
+  // If we already have a transition animation, we should skip the view
+  // transition.
+  if (navigation_request.was_initiated_by_animated_transition()) {
+    return nullptr;
+  }
+
   switch (navigation_request.frame_tree_node()->frame_tree().type()) {
     case FrameTree::Type::kPrerender:
       // Pre-rendered frame trees don't render any frames until activation. It's
