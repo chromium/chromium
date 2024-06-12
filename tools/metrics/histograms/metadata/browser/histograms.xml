@@ -392,6 +392,17 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Browser.ERP.RetryEnqueueRecordStatus"
+    enum="EnterpriseCloudReportingStatusCode" expires_after="2025-04-01">
+  <owner>jrhilke@google.com</owner>
+  <owner>src/components/reporting/OWNERS</owner>
+  <summary>
+    Success or failure status of enqueuing a record to Missive after failing to
+    enqueue at least once due to Missive unavailablity. Recorded once the
+    enqueue succeeds or times out.
+  </summary>
+</histogram>
+
 <histogram name="Browser.ERP.SingleRequestPayloadSize" units="bytes"
     expires_after="2024-10-09">
   <owner>xuhong@chromium.org</owner>
@@ -400,6 +411,17 @@ chromium-metrics-reviews@google.com.
   <summary>
     The size of ERP's request payload as a JSON string when upload is
     successful. Updated every time when an upload succeeds.
+  </summary>
+</histogram>
+
+<histogram name="Browser.ERP.TimeSpentRetryingEnqueueRecord" units="ms"
+    expires_after="2025-04-01">
+  <owner>jrhilke@google.com</owner>
+  <owner>src/components/reporting/OWNERS</owner>
+  <summary>
+    Amount of time spent re-trying to enqueue a record to Missive after failing
+    to enqueue at least once due to Missive unavailablity. Recorded once the
+    enqueue succeeds or times out.
   </summary>
 </histogram>
 

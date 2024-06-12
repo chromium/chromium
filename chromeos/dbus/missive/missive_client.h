@@ -8,6 +8,7 @@
 #include <vector>
 
 #include "base/component_export.h"
+#include "base/feature_list.h"
 #include "base/functional/callback.h"
 #include "base/memory/weak_ptr.h"
 #include "base/observer_list_types.h"
@@ -23,6 +24,8 @@ class Bus;
 }
 
 namespace chromeos {
+
+BASE_DECLARE_FEATURE(kEnableRetryEnqueueRecord);
 
 // D-Bus client for Missive service.
 // Missive service provides a method for enterprise customers to locally encrypt
