@@ -236,6 +236,43 @@ TEST_F(FrameSinkHolderTest, ObserveBeginFrameSourceOnDemand) {
   frame_sink_holder_->SetBeginFrameSource(nullptr);
 }
 
+TEST_F(FrameSinkHolderTest, ObserveBeginFrameSourceOnDemand_AutoUpdate) {
+  FrameSinkHolderTestApi test_api(frame_sink_holder_.get());
+
+  frame_sink_holder_->SetAutoUpdateMode(true);
+
+  StubBeginFrameSource source;
+  frame_sink_holder_->SetBeginFrameSource(&source);
+
+  // FrameSinkHolder should be observing BeginFrameSource when it is set.
+  EXPECT_TRUE(test_api.IsObservingBeginFrameSource());
+
+  // When auto update mode is on, we should not stop observation of
+  // BeginFrameSource.
+  for (int i = 0; i < 10; i++) {
+    frame_sink_holder_->OnBeginFrame(CreateValidBeginFrameArgsForTesting());
+  }
+
+  EXPECT_TRUE(test_api.IsObservingBeginFrameSource());
+
+  // However once the auto update mode is turned off, we should stop observing
+  // the BeginFrameSource as needed.
+  frame_sink_holder_->SetAutoUpdateMode(false);
+
+  for (int i = 0; i < 5; i++) {
+    frame_sink_holder_->OnBeginFrame(CreateValidBeginFrameArgsForTesting());
+  }
+
+  EXPECT_FALSE(test_api.IsObservingBeginFrameSource());
+
+  // Renablending the auto update mode should start the observation of
+  // BeginFrameSource.
+  frame_sink_holder_->SetAutoUpdateMode(true);
+  EXPECT_TRUE(test_api.IsObservingBeginFrameSource());
+
+  frame_sink_holder_->SetBeginFrameSource(nullptr);
+}
+
 TEST_F(FrameSinkHolderTest, SubmitFrameSynchronouslyWhilePendingFrameAck) {
   FrameSinkHolderTestApi test_api(frame_sink_holder_.get());
 

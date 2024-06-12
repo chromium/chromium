@@ -84,7 +84,7 @@ class ASH_EXPORT FrameSinkHolder final : public cc::LayerTreeFrameSinkClient,
   // When auto-update mode is on, we keep on submitting frames asynchronously to
   // display compositor without a request to submit a frame via
   // `SubmitCompositorFrame()`.
-  void SetAutoUpdateMode(bool mode) { auto_update_ = mode; }
+  void SetAutoUpdateMode(bool mode);
 
   UiResourceManager& resource_manager() { return resources_manager_; }
 
