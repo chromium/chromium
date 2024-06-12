@@ -39,6 +39,7 @@ import android.graphics.drawable.Drawable;
 import android.widget.ProgressBar;
 
 import androidx.annotation.Nullable;
+import androidx.annotation.StringRes;
 import androidx.appcompat.app.AppCompatDelegate;
 import androidx.test.espresso.ViewAction;
 import androidx.test.filters.MediumTest;
@@ -1323,11 +1324,9 @@ public class SigninFirstRunFragmentTest {
         verify(mFirstRunPageDelegateMock).advanceToNextPage();
     }
 
-
-
     @Test
     @MediumTest
-    public void testFragment_WelcomeToChrome_EasierAcrossDevices() {
+    public void testShowsTitleAndSubtitleWhenNativeInitializationFinished() {
         TestThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     mNativeInitializationPromise = new Promise<>();
@@ -1340,8 +1339,20 @@ public class SigninFirstRunFragmentTest {
 
         TestThreadUtils.runOnUiThreadBlocking(() -> mNativeInitializationPromise.fulfill(null));
 
-        onView(withText(R.string.fre_welcome)).check(matches(isDisplayed()));
-        onView(withText(R.string.signin_fre_subtitle_legacy)).check(matches(isDisplayed()));
+        @StringRes
+        int titleStrId =
+                ChromeFeatureList.isEnabled(
+                                ChromeFeatureList.REPLACE_SYNC_PROMOS_WITH_SIGN_IN_PROMOS)
+                        ? R.string.signin_fre_title
+                        : R.string.fre_welcome;
+        onView(allOf(withId(R.id.title), withText(titleStrId))).check(matches(isDisplayed()));
+        @StringRes
+        int subtitleStrId =
+                ChromeFeatureList.isEnabled(
+                                ChromeFeatureList.REPLACE_SYNC_PROMOS_WITH_SIGN_IN_PROMOS)
+                        ? R.string.signin_fre_subtitle
+                        : R.string.signin_fre_subtitle_legacy;
+        onView(allOf(withId(R.id.subtitle), withText(subtitleStrId))).check(matches(isDisplayed()));
     }
 
     @Test
@@ -1409,9 +1420,22 @@ public class SigninFirstRunFragmentTest {
         verify(mFirstRunPageDelegateMock).recordNativePolicyAndChildStatusLoadedHistogram();
         final DisplayableProfileData profileData =
                 new DisplayableProfileData(email, mock(Drawable.class), fullName, givenName, true);
-        onView(withText(R.string.fre_welcome)).check(matches(isDisplayed()));
+        @StringRes
+        int titleStrId =
+                ChromeFeatureList.isEnabled(
+                                ChromeFeatureList.REPLACE_SYNC_PROMOS_WITH_SIGN_IN_PROMOS)
+                        ? R.string.signin_fre_title
+                        : R.string.fre_welcome;
+        onView(allOf(withId(R.id.title), withText(titleStrId))).check(matches(isDisplayed()));
         if (shouldShowSubtitle) {
-            onView(withText(R.string.signin_fre_subtitle_legacy)).check(matches(isDisplayed()));
+            @StringRes
+            int subtitleStrId =
+                    ChromeFeatureList.isEnabled(
+                                    ChromeFeatureList.REPLACE_SYNC_PROMOS_WITH_SIGN_IN_PROMOS)
+                            ? R.string.signin_fre_subtitle
+                            : R.string.signin_fre_subtitle_legacy;
+            onView(allOf(withId(R.id.subtitle), withText(subtitleStrId)))
+                    .check(matches(isDisplayed()));
         } else {
             onView(withId(R.id.subtitle)).check(matches(not(isDisplayed())));
         }
@@ -1436,7 +1460,7 @@ public class SigninFirstRunFragmentTest {
     private void checkFragmentWhenLoadingNativeAndPolicy() {
         onView(withId(R.id.fre_native_and_policy_load_progress_spinner))
                 .check(matches(isDisplayed()));
-        onView(withText(R.string.fre_welcome)).check(matches(not(isDisplayed())));
+        onView(withId(R.id.title)).check(matches(not(isDisplayed())));
         onView(withId(R.id.subtitle)).check(matches(not(isDisplayed())));
         onView(withText(TEST_EMAIL1)).check(matches(not(isDisplayed())));
         onView(withText(FULL_NAME1)).check(matches(not(isDisplayed())));
@@ -1457,7 +1481,13 @@ public class SigninFirstRunFragmentTest {
         CriteriaHelper.pollUiThread(
                 mFragment.getView().findViewById(R.id.signin_fre_selected_account)::isShown);
         verify(mFirstRunPageDelegateMock).recordNativePolicyAndChildStatusLoadedHistogram();
-        onView(withText(R.string.fre_welcome)).check(matches(isDisplayed()));
+        @StringRes
+        int titleStrId =
+                ChromeFeatureList.isEnabled(
+                                ChromeFeatureList.REPLACE_SYNC_PROMOS_WITH_SIGN_IN_PROMOS)
+                        ? R.string.signin_fre_title
+                        : R.string.fre_welcome;
+        onView(allOf(withId(R.id.title), withText(titleStrId))).check(matches(isDisplayed()));
         onView(withId(R.id.subtitle)).check(matches(not(isDisplayed())));
         Assert.assertFalse(
                 mFragment.getView().findViewById(R.id.signin_fre_selected_account).isEnabled());
@@ -1538,8 +1568,21 @@ public class SigninFirstRunFragmentTest {
             onView(withId(R.id.fre_browser_managed_by)).check(matches(isDisplayed()));
             onView(withText(R.string.fre_browser_managed_by_parent)).check(matches(isDisplayed()));
         } else {
-            onView(withText(R.string.fre_welcome)).check(matches(isDisplayed()));
-            onView(withText(R.string.signin_fre_subtitle_legacy)).check(matches(isDisplayed()));
+            @StringRes
+            int titleStrId =
+                    ChromeFeatureList.isEnabled(
+                                    ChromeFeatureList.REPLACE_SYNC_PROMOS_WITH_SIGN_IN_PROMOS)
+                            ? R.string.signin_fre_title
+                            : R.string.fre_welcome;
+            onView(allOf(withId(R.id.title), withText(titleStrId))).check(matches(isDisplayed()));
+            @StringRes
+            int subtitleStrId =
+                    ChromeFeatureList.isEnabled(
+                                    ChromeFeatureList.REPLACE_SYNC_PROMOS_WITH_SIGN_IN_PROMOS)
+                            ? R.string.signin_fre_subtitle
+                            : R.string.signin_fre_subtitle_legacy;
+            onView(allOf(withId(R.id.subtitle), withText(subtitleStrId)))
+                    .check(matches(isDisplayed()));
             onView(withText(email)).check(matches(not(isDisplayed())));
         }
         if (fullName != null) {

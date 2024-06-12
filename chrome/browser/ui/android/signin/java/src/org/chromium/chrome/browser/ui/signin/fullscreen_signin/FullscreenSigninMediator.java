@@ -121,8 +121,7 @@ public class FullscreenSigninMediator
                         ExternalAuthUtils.getInstance().canUseGooglePlayServices()
                                 && !disableSignInForAutomotiveDevice(),
                         R.string.fre_welcome,
-                        R.string.signin_fre_subtitle_legacy,
-                        getFooterString(false));
+                        R.string.signin_fre_subtitle_legacy);
 
         mDelegate
                 .getNativeInitializationPromise()

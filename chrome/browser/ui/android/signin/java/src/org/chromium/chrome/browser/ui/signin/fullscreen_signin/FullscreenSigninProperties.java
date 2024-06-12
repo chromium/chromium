@@ -4,7 +4,6 @@
 
 package org.chromium.chrome.browser.ui.signin.fullscreen_signin;
 
-import android.text.SpannableString;
 import android.view.View.OnClickListener;
 
 import androidx.annotation.StringRes;
@@ -85,8 +84,7 @@ class FullscreenSigninProperties {
             Runnable onDismissClicked,
             boolean isSigninSupported,
             @StringRes int titleStringId,
-            @StringRes int subtitleStringId,
-            SpannableString footerString) {
+            @StringRes int subtitleStringId) {
         return new PropertyModel.Builder(ALL_KEYS)
                 .with(ON_SELECTED_ACCOUNT_CLICKED, v -> onSelectedAccountClicked.run())
                 .with(SELECTED_ACCOUNT_DATA, null)
@@ -98,7 +96,7 @@ class FullscreenSigninProperties {
                 .with(IS_SIGNIN_SUPPORTED, isSigninSupported)
                 .with(TITLE_STRING_ID, titleStringId)
                 .with(SUBTITLE_STRING_ID, subtitleStringId)
-                .with(FOOTER_STRING, footerString)
+                .with(FOOTER_STRING, null)
                 .build();
     }
 
