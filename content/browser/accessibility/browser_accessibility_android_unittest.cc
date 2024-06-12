@@ -191,11 +191,11 @@ TEST_F(BrowserAccessibilityAndroidTest, TestRetargetFocusable) {
   EXPECT_FALSE(root_obj->IsLeaf());
   EXPECT_TRUE(root_obj->CanFireEvents());
   BrowserAccessibility* para_obj = root_obj->PlatformGetChild(0);
-  EXPECT_TRUE(para_obj->IsLeaf());
+  EXPECT_FALSE(para_obj->IsLeaf());
   EXPECT_TRUE(para_obj->CanFireEvents());
   BrowserAccessibility* text_obj = manager->GetFromID(111);
   EXPECT_TRUE(text_obj->IsLeaf());
-  EXPECT_FALSE(text_obj->CanFireEvents());
+  EXPECT_TRUE(text_obj->CanFireEvents());
   BrowserAccessibility* updated =
       manager->RetargetBrowserAccessibilityForEvents(
           text_obj, RetargetEventType::RetargetEventTypeBlinkHover);

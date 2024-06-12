@@ -575,6 +575,17 @@ bool BrowserAccessibilityAndroid::IsLeaf() const {
     return false;
   }
 
+  // Focusable nodes with name from attribute should never drop children.
+  if (HasState(ax::mojom::State::kFocusable) &&
+      HasIntAttribute(ax::mojom::IntAttribute::kNameFrom) &&
+      GetNameFrom() == ax::mojom::NameFrom::kAttribute) {
+    // We exclude menuItems and comboBoxMenuButtons to prevent double utterance.
+    if (GetRole() != ax::mojom::Role::kMenuItem &&
+        GetRole() != ax::mojom::Role::kComboBoxMenuButton) {
+      return false;
+    }
+  }
+
   BrowserAccessibilityManagerAndroid* manager_android =
       static_cast<BrowserAccessibilityManagerAndroid*>(manager());
   if (manager_android->prune_tree_for_screen_reader()) {
