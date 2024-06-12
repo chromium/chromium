@@ -214,8 +214,8 @@ class XcodeLogParser(object):
       if test_case_id in excluded:
         continue
       error_line = _sanitize_str(
-          failure_summary['documentLocationInCreatingWorkspace']['url']
-          ['_value'])
+          failure_summary['documentLocationInCreatingWorkspace'].get(
+              'url', {}).get('_value', ''))
       fail_message = error_line + '\n' + _sanitize_str(
           failure_summary['message']['_value'])
       result.add_test_result(
