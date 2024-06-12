@@ -3094,6 +3094,8 @@
     "bases": [
       "external/wpt/css/css-fonts/font-shorthand-subproperties-reset.html",
       "external/wpt/css/css-fonts/font-shorthand-serialization-prevention.html",
+      "external/wpt/css/css-fonts/font-variant-emoji-003.html",
+      "external/wpt/css/css-fonts/font-variant-emoji-004.html",
       "external/wpt/css/css-fonts/inheritance.html",
       "external/wpt/css/css-fonts/parsing/font-variant-emoji-computed.html",
       "external/wpt/css/css-fonts/parsing/font-variant-emoji-invalid.html",
@@ -3102,6 +3104,10 @@
       "external/wpt/css/cssom/font-variant-shorthand-serialization.html",
       "fast/css/font-shorthand.html",
       "fast/css/font-variant-shorthand-from-longhands.html"
+    ],
+    "exclusive_tests": [
+      "external/wpt/css/css-fonts/font-variant-emoji-003.html",
+      "external/wpt/css/css-fonts/font-variant-emoji-004.html"
     ],
     "args": [
       "--enable-blink-features=FontVariantEmoji"

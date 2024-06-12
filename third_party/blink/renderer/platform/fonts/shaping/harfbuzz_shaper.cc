@@ -867,6 +867,16 @@ void HarfBuzzShaper::ShapeSegment(
   }
   FontDataForRangeSet* current_font_data_for_range_set = nullptr;
   FallbackFontStage fallback_stage = kIntermediate;
+  // Variation selector mode should be always set to default at the
+  // beginning of the segment shaping run.
+  DCHECK(HarfBuzzFace::GetVariationSelectorMode() ==
+         kUseSpecifiedVariationSelector);
+  if (RuntimeEnabledFeatures::FontVariantEmojiEnabled() &&
+      font_description.VariantEmoji() != kNormalVariantEmoji) {
+    HarfBuzzFace::SetVariationSelectorMode(
+        GetVariationSelectorModeFromFontVariantEmoji(
+            font_description.VariantEmoji()));
+  }
   while (!range_data->reshape_queue.empty()) {
     ReshapeQueueItem current_queue_item = range_data->reshape_queue.TakeFirst();
 
@@ -992,7 +1002,7 @@ void HarfBuzzShaper::ShapeSegment(
     hb_buffer_reset(range_data->buffer);
   }
 
-  // Ignore variation selectors flag should be only changed after when the
+  // Ignore variation selectors flag should be only changed when the
   // FontVariationSequences runtime flag is enabled.
   DCHECK(
       RuntimeEnabledFeatures::FontVariationSequencesEnabled() ||
