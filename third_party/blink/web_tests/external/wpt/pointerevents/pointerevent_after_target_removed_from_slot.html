@@ -17,7 +17,7 @@
     }
   </style>
   <div id="parent">
-    <slot>slot</slot>
+    <slot id="slot">slot</slot>
   </div>
 </template>
 
@@ -83,7 +83,7 @@
   function setup() {
     const events = ["pointerover", "pointerout",
           "pointerenter", "pointerleave", "pointerdown", "pointerup"];
-    let targets = [parent, slotted_child];
+    let targets = [shadow_host, parent, slot, slotted_child];
     for (let i = 0; i < targets.length; i++) {
       events.forEach(event => targets[i].addEventListener(event, logEvent));
     }
@@ -138,37 +138,49 @@
   addPromiseTest(
     "pointerdown",
     "slot",
-    ["pointerover@child", "pointerenter@parent", "pointerenter@child",
+    [
+      "pointerover@child",
+      "pointerenter@host", "pointerenter@parent", "pointerenter@slot", "pointerenter@child",
       "pointerdown@child", "(child-removed)",
       "pointerout@child", "pointerleave@child",
       "pointerover@parent", "pointerup@parent",
       "pointerdown@parent", "pointerup@parent",
-      "pointerout@parent", "pointerleave@parent"]
+      "pointerout@parent", "pointerleave@parent"
+    ]
   );
   addPromiseTest(
     "pointerdown",
     "slotted-child",
-    ["pointerover@child", "pointerenter@parent", "pointerenter@child",
+    [
+      "pointerover@child",
+      "pointerenter@host", "pointerenter@parent", "pointerenter@slot", "pointerenter@child",
       "pointerdown@child", "(child-removed)",
-      "pointerover@parent", "pointerup@parent",
+      "pointerleave@slot", "pointerover@parent", "pointerup@parent",
       "pointerdown@parent", "pointerup@parent",
-      "pointerout@parent", "pointerleave@parent"]
+      "pointerout@parent", "pointerleave@parent"
+    ]
   );
   addPromiseTest(
     "pointerup",
     "slot",
-    ["pointerover@child", "pointerenter@parent", "pointerenter@child",
+    [
+      "pointerover@child",
+      "pointerenter@host", "pointerenter@parent", "pointerenter@slot", "pointerenter@child",
       "pointerdown@child", "pointerup@child", "(child-removed)",
       "pointerout@child", "pointerleave@child",
       "pointerover@parent", "pointerdown@parent", "pointerup@parent",
-      "pointerout@parent", "pointerleave@parent"]
+      "pointerout@parent", "pointerleave@parent"
+    ]
   );
   addPromiseTest(
     "pointerup",
     "slotted-child",
-    ["pointerover@child", "pointerenter@parent", "pointerenter@child",
+    [
+      "pointerover@child",
+      "pointerenter@host", "pointerenter@parent", "pointerenter@slot", "pointerenter@child",
       "pointerdown@child", "pointerup@child", "(child-removed)",
-      "pointerover@parent", "pointerdown@parent", "pointerup@parent",
-      "pointerout@parent", "pointerleave@parent"]
+      "pointerleave@slot", "pointerover@parent", "pointerdown@parent", "pointerup@parent",
+      "pointerout@parent", "pointerleave@parent"
+    ]
   );
 </script>
