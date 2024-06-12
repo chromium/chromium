@@ -106,16 +106,6 @@ const base::FeatureParam<double> kDevToolsConsoleInsightsDogfoodTemperature{
 const base::FeatureParam<bool> kDevToolsConsoleInsightsDogfoodOptIn{
     &kDevToolsConsoleInsightsDogfood, "opt_in", /*default*/ true};
 
-// Whether DevTools shows the setting for console insights. The setting can be
-// shown in a disabled state, even if the feature itself is not available.
-BASE_FEATURE(kDevToolsConsoleInsightsSettingVisible,
-             "DevToolsConsoleInsightsSettingVisible",
-             base::FEATURE_DISABLED_BY_DEFAULT);
-const base::FeatureParam<std::string>
-    kDevToolsConsoleInsightsSettingVisibleBlockedReason{
-        &kDevToolsConsoleInsightsSettingVisible, "blocked_reason",
-        /*default*/ ""};
-
 // Whether the DevTools styling assistant dogfood is enabled.
 BASE_FEATURE(kDevToolsFreestylerDogfood,
              "DevToolsFreestylerDogfood",

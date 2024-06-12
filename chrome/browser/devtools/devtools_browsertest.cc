@@ -3992,8 +3992,7 @@ class DevToolsConsoleInsightsTest : public DevToolsTest {
  public:
   DevToolsConsoleInsightsTest() {
     scoped_feature_list_.InitWithFeatures(
-        /*enabled_features=*/{features::kDevToolsConsoleInsights,
-                              features::kDevToolsConsoleInsightsSettingVisible},
+        /*enabled_features=*/{features::kDevToolsConsoleInsights},
         /*disabled_features=*/{});
     policy_provider_.SetDefaultReturns(
         /*is_initialization_complete_return=*/true,
@@ -4053,6 +4052,35 @@ IN_PROC_BROWSER_TEST_F(DevToolsConsoleInsightsTest,
   EXPECT_FALSE(configConsoleInsights->FindBool("blockedByAge").value());
   EXPECT_FALSE(configConsoleInsights->FindBool("blockedByGeo").value());
   EXPECT_TRUE(configConsoleInsights->FindBool("optIn").value());
+  CloseDevToolsWindow();
+}
+
+IN_PROC_BROWSER_TEST_F(DevToolsConsoleInsightsTest, IsBlockedByGeo) {
+  g_browser_process->variations_service()->OverrideStoredPermanentCountry("cn");
+  SetupAccountCapabilities();
+  OpenDevToolsWindow(kDebuggerTestPage, false);
+  LoadLegacyFilesInFrontend(window_);
+  WebContents* wc = DevToolsWindowTesting::Get(window_)->main_web_contents();
+  const auto result = content::EvalJs(wc, content::JsReplace(R"(
+    (async function() {
+      return new Promise(resolve => {
+        Host.InspectorFrontendHost.getHostConfig(resolve);
+      });
+    })();
+  )"));
+  ASSERT_TRUE(result.value.is_dict());
+  auto* configConsoleInsights =
+      result.value.GetDict().FindDict("devToolsConsoleInsights");
+#if BUILDFLAG(GOOGLE_CHROME_BRANDING)
+  EXPECT_FALSE(configConsoleInsights->FindBool("blockedByFeatureFlag").value());
+  EXPECT_TRUE(configConsoleInsights->FindBool("blockedByGeo").value());
+#else
+  EXPECT_TRUE(configConsoleInsights->FindBool("blockedByFeatureFlag").value());
+  EXPECT_FALSE(configConsoleInsights->FindBool("blockedByGeo").value());
+#endif
+  EXPECT_FALSE(
+      configConsoleInsights->FindBool("blockedByEnterprisePolicy").value());
+  EXPECT_FALSE(configConsoleInsights->FindBool("blockedByAge").value());
   CloseDevToolsWindow();
 }
 
@@ -4187,92 +4215,6 @@ IN_PROC_BROWSER_TEST_F(DevToolsConsoleInsightsTest,
 #endif
   EXPECT_FALSE(
       configConsoleInsights->FindBool("blockedByEnterprisePolicy").value());
-  CloseDevToolsWindow();
-}
-
-class DevToolsConsoleInsightsBlockedByRegionTest : public DevToolsTest {
- public:
-  DevToolsConsoleInsightsBlockedByRegionTest() {
-    scoped_feature_list_.InitAndEnableFeatureWithParameters(
-        features::kDevToolsConsoleInsightsSettingVisible,
-        {{"blocked_reason", "region"}});
-  }
-
-  ~DevToolsConsoleInsightsBlockedByRegionTest() override = default;
-
- private:
-  base::test::ScopedFeatureList scoped_feature_list_;
-};
-
-IN_PROC_BROWSER_TEST_F(DevToolsConsoleInsightsBlockedByRegionTest,
-                       IsBlockedByGeo) {
-  OpenDevToolsWindow(kDebuggerTestPage, false);
-  LoadLegacyFilesInFrontend(window_);
-  WebContents* wc = DevToolsWindowTesting::Get(window_)->main_web_contents();
-  const auto result = content::EvalJs(wc, content::JsReplace(R"(
-    (async function() {
-      return new Promise(resolve => {
-        Host.InspectorFrontendHost.getHostConfig(resolve);
-      });
-    })();
-  )"));
-  ASSERT_TRUE(result.value.is_dict());
-  auto* configConsoleInsights =
-      result.value.GetDict().FindDict("devToolsConsoleInsights");
-#if BUILDFLAG(GOOGLE_CHROME_BRANDING)
-  EXPECT_FALSE(configConsoleInsights->FindBool("blockedByFeatureFlag").value());
-  EXPECT_TRUE(configConsoleInsights->FindBool("blockedByGeo").value());
-#else
-  EXPECT_TRUE(configConsoleInsights->FindBool("blockedByFeatureFlag").value());
-  EXPECT_FALSE(configConsoleInsights->FindBool("blockedByGeo").value());
-#endif
-  EXPECT_FALSE(configConsoleInsights->FindBool("blockedByAge").value());
-  EXPECT_FALSE(
-      configConsoleInsights->FindBool("blockedByEnterprisePolicy").value());
-  EXPECT_FALSE(configConsoleInsights->FindBool("blockedByRollout").value());
-  CloseDevToolsWindow();
-}
-
-class DevToolsConsoleInsightsBlockedByRolloutTest : public DevToolsTest {
- public:
-  DevToolsConsoleInsightsBlockedByRolloutTest() {
-    scoped_feature_list_.InitAndEnableFeatureWithParameters(
-        features::kDevToolsConsoleInsightsSettingVisible,
-        {{"blocked_reason", "rollout"}});
-  }
-
-  ~DevToolsConsoleInsightsBlockedByRolloutTest() override = default;
-
- private:
-  base::test::ScopedFeatureList scoped_feature_list_;
-};
-
-IN_PROC_BROWSER_TEST_F(DevToolsConsoleInsightsBlockedByRolloutTest,
-                       IsBlockedByRollout) {
-  OpenDevToolsWindow(kDebuggerTestPage, false);
-  LoadLegacyFilesInFrontend(window_);
-  WebContents* wc = DevToolsWindowTesting::Get(window_)->main_web_contents();
-  const auto result = content::EvalJs(wc, content::JsReplace(R"(
-    (async function() {
-      return new Promise(resolve => {
-        Host.InspectorFrontendHost.getHostConfig(resolve);
-      });
-    })();
-  )"));
-  ASSERT_TRUE(result.value.is_dict());
-  auto* configConsoleInsights =
-      result.value.GetDict().FindDict("devToolsConsoleInsights");
-#if BUILDFLAG(GOOGLE_CHROME_BRANDING)
-  EXPECT_FALSE(configConsoleInsights->FindBool("blockedByFeatureFlag").value());
-  EXPECT_TRUE(configConsoleInsights->FindBool("blockedByRollout").value());
-#else
-  EXPECT_TRUE(configConsoleInsights->FindBool("blockedByFeatureFlag").value());
-  EXPECT_FALSE(configConsoleInsights->FindBool("blockedByRollout").value());
-#endif
-  EXPECT_FALSE(configConsoleInsights->FindBool("blockedByAge").value());
-  EXPECT_FALSE(
-      configConsoleInsights->FindBool("blockedByEnterprisePolicy").value());
-  EXPECT_FALSE(configConsoleInsights->FindBool("blockedByGeo").value());
   CloseDevToolsWindow();
 }
 
