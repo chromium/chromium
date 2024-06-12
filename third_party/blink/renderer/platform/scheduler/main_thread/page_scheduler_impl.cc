@@ -177,6 +177,8 @@ PageSchedulerImpl::PageSchedulerImpl(
   // Pointer registration is needed for sorting in MainThreadSchedulerImpl.
   recordreplay::RegisterPointer("PageSchedulerImpl", this);
 
+  REPLAY_ASSERT("[TT-1367-1386] PageSchedulerImpl::PageSchedulerImpl %d", !!delegate_);
+
   current_lifecycle_state_ =
       (kDefaultPageVisibility == PageVisibilityState::kVisible
            ? PageLifecycleState::kActive
@@ -208,6 +210,7 @@ PageSchedulerImpl::~PageSchedulerImpl() {
 
 void
 PageSchedulerImpl::BreakLinkages() {
+  REPLAY_ASSERT("[TT-1367-1386] PageSchedulerImpl::BreakLinkages %d", !!delegate_);
   delegate_ = nullptr;
 }
 
