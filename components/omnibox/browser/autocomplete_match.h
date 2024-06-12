@@ -806,6 +806,10 @@ struct AutocompleteMatch {
 
   std::optional<omnibox::RichAnswerTemplate> answer_template;
 
+  // AnswerType for answer verticals, including rich answers.
+  SuggestionAnswer::AnswerType answer_type{
+      SuggestionAnswer::ANSWER_TYPE_INVALID};
+
   // The transition type to use when the user opens this match.  By default,
   // this is TYPED.  Providers whose matches do not look like URLs should set
   // it to GENERATED.

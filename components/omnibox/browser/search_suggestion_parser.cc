@@ -393,6 +393,11 @@ void SearchSuggestionParser::SuggestResult::SetRichAnswerTemplate(
   answer_template_ = answer_template;
 }
 
+void SearchSuggestionParser::SuggestResult::SetAnswerType(
+    const SuggestionAnswer::AnswerType& answer_type) {
+  answer_type_ = answer_type;
+}
+
 void SearchSuggestionParser::SuggestResult::SetEntityInfo(
     const omnibox::EntityInfo& entity_info) {
   entity_info_ = entity_info;
@@ -840,6 +845,8 @@ bool SearchSuggestionParser::ParseSuggestResults(
       std::optional<int> suggestion_group_id;
       omnibox::EntityInfo entity_info;
       omnibox::RichAnswerTemplate answer_template;
+      SuggestionAnswer::AnswerType answer_type =
+          SuggestionAnswer::ANSWER_TYPE_INVALID;
 
       if (suggestion_details && (*suggestion_details)[index].is_dict() &&
           !(*suggestion_details)[index].GetDict().empty()) {
@@ -866,14 +873,24 @@ bool SearchSuggestionParser::ParseSuggestResults(
         // Extract the Answer, if provided.
         const base::Value::Dict* answer_json =
             suggestion_detail.FindDict("ansa");
-        const std::string* answer_type = suggestion_detail.FindString("ansb");
-        if (answer_type) {
+        const std::string* answer_type_str =
+            suggestion_detail.FindString("ansb");
+        if (answer_type_str) {
           // TemplateInfo should only exist if the server-side flag enabling
           // its creation is enabled.
           const auto* answer_template_string =
               suggestion_detail.FindString("google:templateInfo");
           bool template_parsed_successfully = false;
-          if (answer_template_string) {
+          // Check that answer type string can be mapped to
+          // SuggestionAnswer::AnswerType.
+          int numeric_answer_type = 0;
+          if (base::StringToInt(base::UTF8ToUTF16(*answer_type_str),
+                                &numeric_answer_type)) {
+            answer_type =
+                static_cast<SuggestionAnswer::AnswerType>(numeric_answer_type);
+          }
+          if (answer_template_string &&
+              answer_type != SuggestionAnswer::ANSWER_TYPE_INVALID) {
             omnibox::RichSuggestTemplate suggest_template;
             template_parsed_successfully =
                 DecodeProtoFromBase64<omnibox::RichSuggestTemplate>(
@@ -888,11 +905,12 @@ bool SearchSuggestionParser::ParseSuggestResults(
           if (!template_parsed_successfully && answer_json) {
             if (omnibox_feature_configs::SuggestionAnswerMigration::Get()
                     .enabled &&
+                answer_type != SuggestionAnswer::ANSWER_TYPE_INVALID &&
                 omnibox::answer_data_parser::ParseJsonToAnswerData(
-                    *answer_json, base::UTF8ToUTF16(*answer_type),
+                    *answer_json, base::UTF8ToUTF16(*answer_type_str),
                     &answer_template)) {
             } else if (SuggestionAnswer::ParseAnswer(
-                           *answer_json, base::UTF8ToUTF16(*answer_type),
+                           *answer_json, base::UTF8ToUTF16(*answer_type_str),
                            &answer)) {
               base::UmaHistogramSparse("Omnibox.AnswerParseType",
                                        answer.type());
@@ -914,6 +932,7 @@ bool SearchSuggestionParser::ParseSuggestResults(
                         nav_intent, relevance, relevances != nullptr,
                         should_prefetch, should_prerender, trimmed_input));
 
+      results->suggest_results.back().SetAnswerType(answer_type);
       // TODO(b/327497146) Fix rendering of answers outside of Desktop Omnibox
       // when kOmniboxSuggestionAnswerMigration is enabled.
       // Ensure `answer_template` has an answer.

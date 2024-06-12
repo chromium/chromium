@@ -139,6 +139,7 @@ AutocompleteMatch BaseSearchProvider::CreateSearchSuggestion(
       suggestion.answer_template()->answers_size() > 0) {
     match.answer_template = suggestion.answer_template();
   }
+  match.answer_type = suggestion.answer_type();
   match.suggest_type = suggestion.suggest_type();
   for (const int subtype : suggestion.subtypes()) {
     match.subtypes.insert(SuggestSubtypeForNumber(subtype));
