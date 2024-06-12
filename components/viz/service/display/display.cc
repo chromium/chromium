@@ -968,22 +968,6 @@ bool Display::DrawAndSwap(const DrawAndSwapParams& params) {
         "Compositing.Display.Draw.Occlusion.Calculation.Time",
         draw_occlusion_timer.Elapsed().InMicroseconds());
 
-    // TODO(vmpstr): This used to set to
-    // frame.metadata.is_resourceless_software_draw_with_scroll_or_animation
-    // from CompositedFrame. However, after changing this to AggregatedFrame, it
-    // seems that the value is never changed from the default false (i.e.
-    // SurfaceAggregator has no reference to
-    // is_resourceless_software_draw_with_scroll_or_animation). The TODO here is
-    // to clean up the code below or to figure out if this value is important.
-    bool disable_image_filtering = false;
-    if (software_renderer_) {
-      software_renderer_->SetDisablePictureQuadImageFiltering(
-          disable_image_filtering);
-    } else {
-      // This should only be set for software draws in synchronous compositor.
-      DCHECK(!disable_image_filtering);
-    }
-
     DBG_LOG("renderer.ptr", "renderer = %p%s", this,
             renderer_.get() == software_renderer_ ? " (software)" : "");
 

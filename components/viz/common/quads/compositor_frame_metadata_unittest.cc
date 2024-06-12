@@ -61,7 +61,6 @@ TEST(CompositorFrameMetadata, Clone) {
   metadata.scrollable_viewport_size = gfx::SizeF(89.0f, 12.3f);
   metadata.content_color_usage = gfx::ContentColorUsage::kHDR;
   metadata.may_contain_video = true;
-  metadata.is_resourceless_software_draw_with_scroll_or_animation = true;
   metadata.is_handling_interaction = true;
   metadata.root_background_color = SkColors::kBlue;
   metadata.latency_info.emplace_back(ui::SourceEventType::KEY_PRESS);
@@ -93,8 +92,6 @@ TEST(CompositorFrameMetadata, Clone) {
   EXPECT_EQ(clone.scrollable_viewport_size, metadata.scrollable_viewport_size);
   EXPECT_EQ(clone.content_color_usage, metadata.content_color_usage);
   EXPECT_EQ(clone.may_contain_video, metadata.may_contain_video);
-  EXPECT_EQ(clone.is_resourceless_software_draw_with_scroll_or_animation,
-            metadata.is_resourceless_software_draw_with_scroll_or_animation);
   EXPECT_EQ(clone.is_handling_interaction, metadata.is_handling_interaction);
   EXPECT_EQ(clone.root_background_color, metadata.root_background_color);
 

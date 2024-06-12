@@ -119,7 +119,6 @@ class PixelTest : public testing::Test {
   gfx::Size device_viewport_size_;
   gfx::DisplayColorSpaces display_color_spaces_;
   viz::SurfaceDamageRectList surface_damage_rect_list_;
-  bool disable_picture_quad_image_filtering_;
   std::unique_ptr<viz::DisplayCompositorMemoryAndTaskController>
       display_controller_;
   std::unique_ptr<FakeOutputSurfaceClient> output_surface_client_;

@@ -68,11 +68,6 @@ struct StructTraits<viz::mojom::CompositorFrameMetadataDataView,
     return metadata.has_shared_element_resources;
   }
 
-  static bool is_resourceless_software_draw_with_scroll_or_animation(
-      const viz::CompositorFrameMetadata& metadata) {
-    return metadata.is_resourceless_software_draw_with_scroll_or_animation;
-  }
-
   static bool is_handling_interaction(
       const viz::CompositorFrameMetadata& metadata) {
     return metadata.is_handling_interaction;

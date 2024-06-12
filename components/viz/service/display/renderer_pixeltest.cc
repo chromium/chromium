@@ -4471,55 +4471,6 @@ void draw_point_color(SkCanvas* canvas,
   canvas->drawPoint(x, y, paint);
 }
 
-// If we disable image filtering, then a 2x2 bitmap should appear as four
-// huge sharp squares.
-TEST_F(SoftwareRendererPixelTest, PictureDrawQuadDisableImageFiltering) {
-  gfx::Rect viewport(this->device_viewport_size_);
-  bool needs_blending = true;
-  bool nearest_neighbor = false;
-
-  AggregatedRenderPassId id{1};
-  gfx::Transform transform_to_root;
-  auto pass = CreateTestRenderPass(id, viewport, transform_to_root);
-
-  sk_sp<SkSurface> surface =
-      SkSurfaces::Raster(SkImageInfo::MakeN32Premul(2, 2));
-  ASSERT_NE(surface, nullptr);
-  SkCanvas* canvas = surface->getCanvas();
-  draw_point_color(canvas, 0, 0, SkColors::kGreen);
-  draw_point_color(canvas, 0, 1, SkColors::kBlue);
-  draw_point_color(canvas, 1, 0, SkColors::kBlue);
-  draw_point_color(canvas, 1, 1, SkColors::kGreen);
-
-  cc::FakeRecordingSource recording(viewport.size());
-  recording.add_draw_image_with_flags(
-      surface->makeImageSnapshot(), gfx::Point(),
-      SkSamplingOptions(SkFilterMode::kLinear), cc::PaintFlags());
-  recording.Rerecord();
-  scoped_refptr<cc::RasterSource> raster_source =
-      recording.CreateRasterSource();
-
-  gfx::Transform quad_to_target_transform;
-  SharedQuadState* shared_state =
-      CreateTestSharedQuadState(quad_to_target_transform, viewport, pass.get(),
-                                gfx::MaskFilterInfo());
-
-  auto* quad = pass->CreateAndAppendDrawQuad<PictureDrawQuad>();
-  quad->SetNew(shared_state, viewport, viewport, needs_blending,
-               gfx::RectF(0, 0, 2, 2), viewport.size(), nearest_neighbor,
-               viewport, 1.f, {}, raster_source->GetDisplayItemList());
-
-  AggregatedRenderPassList pass_list;
-  pass_list.push_back(std::move(pass));
-
-  this->disable_picture_quad_image_filtering_ = true;
-
-  EXPECT_TRUE(this->RunPixelTest(
-      &pass_list,
-      base::FilePath(FILE_PATH_LITERAL("four_blue_green_checkers.png")),
-      cc::AlphaDiscardingExactPixelComparator()));
-}
-
 // This disables filtering by setting |nearest_neighbor| on the
 // PictureDrawQuad.
 TEST_F(SoftwareRendererPixelTest, PictureDrawQuadNearestNeighbor) {

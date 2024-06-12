@@ -67,10 +67,6 @@ class VIZ_SERVICE_EXPORT SkiaRenderer : public DirectRenderer {
   void DidReceiveReleasedOverlays(
       const std::vector<gpu::Mailbox>& released_overlays) override;
 
-  void SetDisablePictureQuadImageFiltering(bool disable) {
-    disable_picture_quad_image_filtering_ = disable;
-  }
-
   DelegatedInkPointRendererBase* GetDelegatedInkPointRenderer(
       bool create_if_necessary) override;
   void SetDelegatedInkMetadata(
@@ -365,8 +361,6 @@ class VIZ_SERVICE_EXPORT SkiaRenderer : public DirectRenderer {
       current_gpu_commands_completed_fence_;
   class FrameResourceReleaseFence;
   scoped_refptr<FrameResourceReleaseFence> current_release_fence_;
-
-  bool disable_picture_quad_image_filtering_ = false;
 
   // The rect for the current render pass containing pixels that we intend to
   // update this frame.

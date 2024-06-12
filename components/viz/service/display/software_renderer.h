@@ -40,10 +40,6 @@ class VIZ_SERVICE_EXPORT SoftwareRenderer : public DirectRenderer {
 
   void SwapBuffers(SwapFrameData swap_frame_data) override;
 
-  void SetDisablePictureQuadImageFiltering(bool disable) {
-    disable_picture_quad_image_filtering_ = disable;
-  }
-
  protected:
   bool CanPartialSwap() override;
   void UpdateRenderPassTextures(
@@ -112,8 +108,6 @@ class VIZ_SERVICE_EXPORT SoftwareRenderer : public DirectRenderer {
 
   // A map from RenderPass id to the bitmap used to draw the RenderPass from.
   base::flat_map<AggregatedRenderPassId, SkBitmap> render_pass_bitmaps_;
-
-  bool disable_picture_quad_image_filtering_ = false;
 
   bool is_scissor_enabled_ = false;
   gfx::Rect scissor_rect_;

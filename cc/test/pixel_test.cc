@@ -49,7 +49,6 @@ namespace cc {
 
 PixelTest::PixelTest(GraphicsBackend backend)
     : device_viewport_size_(gfx::Size(200, 200)),
-      disable_picture_quad_image_filtering_(false),
       output_surface_client_(std::make_unique<FakeOutputSurfaceClient>()),
       graphics_backend_(backend) {
   // Keep texture sizes exactly matching the bounds of the RenderPass to avoid
@@ -126,11 +125,6 @@ void PixelTest::RenderReadbackTargetAndAreaToResultBitmap(
     request->set_area(*copy_rect);
   }
   target->copy_requests.push_back(std::move(request));
-
-  if (software_renderer_) {
-    software_renderer_->SetDisablePictureQuadImageFiltering(
-        disable_picture_quad_image_filtering_);
-  }
 
   float device_scale_factor = 1.f;
   renderer_->DrawFrame(pass_list, device_scale_factor, device_viewport_size_,

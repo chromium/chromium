@@ -103,12 +103,6 @@ class VIZ_COMMON_EXPORT CompositorFrameMetadata {
 
   bool may_throttle_if_undrawn_frames = true;
 
-  // WebView makes quality decisions for rastering resourceless software frames
-  // based on information that a scroll or animation is active.
-  // TODO(aelias): Remove this and always enable filtering if there aren't apps
-  // depending on this anymore.
-  bool is_resourceless_software_draw_with_scroll_or_animation = false;
-
   // True if this compositor frame is related to an animated or precise scroll.
   // This includes during the touch interaction just prior to the initiation of
   // gesture scroll events.

@@ -2376,14 +2376,6 @@ viz::CompositorFrameMetadata LayerTreeHostImpl::MakeCompositorFrameMetadata() {
       metadata.frame_token,
       active_tree_->TakeSuccessfulPresentationCallbacks());
 
-  if (GetDrawMode() == DRAW_MODE_RESOURCELESS_SOFTWARE) {
-    // TODO(savella) : Change to check for ActivelyScrollingType::kNone
-    const bool actively_scrolling =
-        GetActivelyScrollingType() == ActivelyScrollingType::kPrecise;
-    metadata.is_resourceless_software_draw_with_scroll_or_animation =
-        actively_scrolling || mutator_host_->NeedsTickAnimations();
-  }
-
   if (input_delegate_) {
     metadata.is_handling_interaction =
         GetActivelyScrollingType() != ActivelyScrollingType::kNone ||

@@ -29,8 +29,6 @@ CompositorFrameMetadata::CompositorFrameMetadata(
       scrollable_viewport_size(other.scrollable_viewport_size),
       content_color_usage(other.content_color_usage),
       may_contain_video(other.may_contain_video),
-      is_resourceless_software_draw_with_scroll_or_animation(
-          other.is_resourceless_software_draw_with_scroll_or_animation),
       is_handling_interaction(other.is_handling_interaction),
       root_background_color(other.root_background_color),
       latency_info(other.latency_info),
