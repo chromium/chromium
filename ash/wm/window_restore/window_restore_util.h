@@ -45,12 +45,13 @@ std::unique_ptr<app_restore::WindowInfo> BuildWindowInfo(
 
 bool IsBrowserAppId(const std::string& id);
 
-// Gets the path for the pine image being taken on shutdown. It will be written
-// to /home/chronos/u-<hash>/pine_image.png.
-ASH_EXPORT base::FilePath GetShutdownPineImagePath();
+// Gets the path of the informed restore image being taken on the session state
+// changes. It will be written to
+// /home/chronos/u-<hash>/informed_restore_image.png.
+ASH_EXPORT base::FilePath GetInformedRestoreImagePath();
 
-// Sets the pine image path for tests.
-ASH_EXPORT void SetPineImagePathForTest(const base::FilePath& path);
+// Sets the informed restore image path for tests.
+ASH_EXPORT void SetInformedRestoreImagePathForTest(const base::FilePath& path);
 
 }  // namespace ash
 

@@ -40,8 +40,9 @@ class LockStateControllerTestApi {
     controller_->session_state_change_timer_.FireNow();
   }
 
-  void set_pine_image_callback(base::OnceClosure callback) {
-    controller_->pine_image_callback_for_test_ = std::move(callback);
+  void set_informed_restore_image_callback(base::OnceClosure callback) {
+    controller_->informed_restore_image_callback_for_test_ =
+        std::move(callback);
   }
 
   void disable_screenshot_timeout_for_test(bool value) {

@@ -111,14 +111,15 @@ class ASH_EXPORT LockStateController : public aura::WindowTreeHostObserver,
   bool MaybeCancelShutdownAnimation();
 
   // Requests restart with the same animation as `RequestShutdown` and take the
-  // pine image if forest feature is enabled, restart directly otherwise.
-  // `description` is a human-readable string describing the source of request
-  // the restart.
+  // informed restore image if forest feature is enabled, restart directly
+  // otherwise. `description` is a human-readable string describing the source
+  // of request the restart.
   void RequestRestart(power_manager::RequestRestartReason reason,
                       const std::string& description);
 
   // Requests sign out with the same animation as `RequestShutdown` and take the
-  // pine image if forest feature is enabled, sign out directly otherwise.
+  // informed restore image if forest feature is enabled, sign out directly
+  // otherwise.
   void RequestSignOut();
 
   // aura::WindowTreeHostObserver override:
@@ -216,9 +217,11 @@ class ASH_EXPORT LockStateController : public aura::WindowTreeHostObserver,
   void OnSessionStateChangeTimeout(
       RequestedSessionState requested_session_state);
 
-  // Takes a pine image first and then starts the session state change process.
-  // `requested_session_state` indicates the requested session state.
-  void SessionStateChangeOnPine(RequestedSessionState requested_session_state);
+  // Takes a screenshot for the informed restore dialog first and then starts
+  // the session state change process. `requested_session_state` indicates the
+  // requested session state.
+  void SessionStateChangeWithInformedRestore(
+      RequestedSessionState requested_session_state);
 
   // Binds to a callback that will be called by the DLP manager to let us know
   // whether capturing the screenshot should `proceed` or abort due to some
@@ -241,17 +244,18 @@ class ASH_EXPORT LockStateController : public aura::WindowTreeHostObserver,
 
   // Callback invoked once the image is taken. `requested_session_state`
   // indicates the requested session state after the image had been taken.
-  // `file_path` indicates the path to save the pine image. Note: `gfx::Image`
-  // is cheap to pass by value.
-  void OnPineImageTaken(RequestedSessionState requested_session_state,
-                        const base::FilePath& file_path,
-                        base::TimeTicks start_time,
-                        gfx::Image pine_image);
+  // `file_path` indicates the path to save the informed restore image. Note:
+  // `gfx::Image` is cheap to pass by value.
+  void OnInformedRestoreImageTaken(
+      RequestedSessionState requested_session_state,
+      const base::FilePath& file_path,
+      base::TimeTicks start_time,
+      gfx::Image informed_restore_image);
 
-  // Callback invoked when the pine image was encoded and saved. `file_path` is
-  // the file path to save the pine image.
-  void OnPineImageSaved(base::TimeTicks start_time,
-                        const base::FilePath& file_path);
+  // Callback invoked when the informed restore image was encoded and saved.
+  // `file_path` is the file path to save the informed restore image.
+  void OnInformedRestoreImageSaved(base::TimeTicks start_time,
+                                   const base::FilePath& file_path);
 
   // Called when `session_state_change_timer_` times out with `kRestart`
   // requested.
@@ -324,14 +328,15 @@ class ASH_EXPORT LockStateController : public aura::WindowTreeHostObserver,
   base::OnceCallback<void(bool)> start_unlock_callback_;
 
   // A new layer that mirrors the wallpaper layer, which will be added to the
-  // layer hierarchy and help include the wallpaper into the pine screenshot.
+  // layer hierarchy and help include the wallpaper into the informed restore
+  // screenshot.
   std::unique_ptr<ui::Layer> mirror_wallpaper_layer_;
 
-  // A timer tracks the time duration it takes to take the pine image. If this
-  // timer timeouts before taking the screenshot completes, the shutdown
-  // process will be triggered immediately without the pine image. This is done
-  // to avoid the shutdown process being blocked too long to be noticed by the
-  // users.
+  // A timer tracks the time duration it takes to take the informed restore
+  // image. If this timer timeouts before taking the screenshot completes, the
+  // shutdown process will be triggered immediately without the informed restore
+  // image. This is done to avoid the shutdown process being blocked too long to
+  // be noticed by the users.
   base::OneShotTimer take_screenshot_fail_timer_;
 
   ScopedSessionObserver scoped_session_observer_;
@@ -345,9 +350,9 @@ class ASH_EXPORT LockStateController : public aura::WindowTreeHostObserver,
   // To access the pref kLoginShutdownTimestampPrefName
   raw_ptr<PrefService> local_state_;
 
-  // If set, it will be called once the operation on the pine image is
-  // completed, either it was deleted or saved to the disk.
-  base::OnceClosure pine_image_callback_for_test_;
+  // If set, it will be called once the operation on the informed restore image
+  // is completed, either it was deleted or saved to the disk.
+  base::OnceClosure informed_restore_image_callback_for_test_;
 
   // Disables the `take_screenshot_fail_timer_` for test, which means the timer
   // will never start if this is set to true.

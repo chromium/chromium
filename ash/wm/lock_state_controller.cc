@@ -105,15 +105,16 @@ constexpr base::TimeDelta kPostLockFailTimeout =
 // before actually requesting shutdown, to give the animation time to finish.
 constexpr base::TimeDelta kShutdownRequestDelay = base::Milliseconds(50);
 
-// Amount of time to wait after starting to take the pine screenshot. The task
-// will be stopped if it takes longer than this time duration.
+// Amount of time to wait after starting to take the informed restore
+// screenshot. The task will be stopped if it takes longer than this time
+// duration.
 constexpr base::TimeDelta kTakeScreenshotFailTimeout = base::Milliseconds(800);
 
 // Records the given `duration` to the given `pref_name` so it can be recorded
 // as an UMA metric on the next startup.
-void SavePineScreenshotDuration(PrefService* local_state,
-                                const std::string& pref_name,
-                                base::TimeDelta duration) {
+void SaveInformedRestoreScreenshotDuration(PrefService* local_state,
+                                           const std::string& pref_name,
+                                           base::TimeDelta duration) {
   if (!local_state) {
     return;
   }
@@ -122,17 +123,18 @@ void SavePineScreenshotDuration(PrefService* local_state,
 }
 
 // Encodes and saves the given `image` to `file_path`.
-void EncodeAndSavePineImage(const base::FilePath& file_path, gfx::Image image) {
+void EncodeAndSaveImage(const base::FilePath& file_path, gfx::Image image) {
   CHECK(!base::CurrentUIThread::IsSet());
   if (image.IsEmpty()) {
     base::DeleteFile(file_path);
     return;
   }
 
-  // The width of the resized pine image will be fixed and then the height of it
-  // will be calculated based on the aspect ratio of the original pine image.
-  // The resized pine image will be saved to disk, decoded and shown with this
-  // size directly inside the pine dialog later as well.
+  // The width of the resized informed restore image will be fixed and then the
+  // height of it will be calculated based on the aspect ratio of the original
+  // informed restore image. The resized informed restore image will be saved to
+  // disk, decoded and shown with this size directly inside the informed restore
+  // dialog later as well.
   const float aspect_ratio = static_cast<float>(image.Height()) / image.Width();
   const int resized_image_height = aspect_ratio * pine::kPreviewContainerWidth;
   const auto resized_image = gfx::ResizedImage(
@@ -140,7 +142,8 @@ void EncodeAndSavePineImage(const base::FilePath& file_path, gfx::Image image) {
   auto png_bytes = resized_image.As1xPNGBytes();
   auto raw_data = base::make_span(png_bytes->data(), png_bytes->size());
   if (!base::WriteFile(file_path, raw_data)) {
-    LOG(ERROR) << "Failed to write pine image to " << file_path.MaybeAsASCII();
+    LOG(ERROR) << "Failed to write informed restore image to "
+               << file_path.MaybeAsASCII();
   }
 }
 
@@ -161,10 +164,11 @@ void MaybeAppendTestCallback(Callback& callback,
   }
 }
 
-// Deletes any existing pine image if we should shutdown without taking the
-// screenshot, then no stale screenshot will be shown on next startup.
-void DeletePineImage(base::OnceClosure& for_test_callback,
-                     const base::FilePath& file_path) {
+// Deletes any existing informed restore image if we should change the session
+// state without taking the screenshot, then no stale screenshot will be shown
+// after the session state changes.
+void DeleteInformedRestoreImage(base::OnceClosure& for_test_callback,
+                                const base::FilePath& file_path) {
   auto delete_image_cb =
       base::BindOnce(base::IgnoreResult(&base::DeleteFile), file_path);
   MaybeAppendTestCallback(delete_image_cb, for_test_callback);
@@ -175,11 +179,12 @@ void DeletePineImage(base::OnceClosure& for_test_callback,
 }
 
 // TODO(minch): Check whether the screenshot should be taken in kiosk mode.
-// Returns true if the pine screenshot should be taken on shutdown.
-bool ShouldTakePineScreenshot() {
+// Returns true if the informed restore screenshot should be taken on session
+// state changes.
+bool ShouldTakeInformedRestoreScreenshot() {
   auto* shell = Shell::Get();
-  // Do not take the pine screenshot if it is in overview mode, lock screen,
-  // home launcher or pinned mode.
+  // Do not take the informed restore screenshot if it is in overview mode, lock
+  // screen, home launcher or pinned mode.
   if (shell->overview_controller()->InOverviewSession()) {
     RecordScreenshotOnShutdownStatus(
         ScreenshotOnShutdownStatus::kFailedInOverview);
@@ -445,7 +450,7 @@ void LockStateController::RequestShutdown(ShutdownReason reason) {
 
   HideAndMaybeLockCursor(/*lock=*/true);
   if (IsForestFeatureEnabled()) {
-    SessionStateChangeOnPine(RequestedSessionState::kShutdown);
+    SessionStateChangeWithInformedRestore(RequestedSessionState::kShutdown);
   } else {
     StartSessionStateChange(RequestedSessionState::kShutdown);
   }
@@ -457,7 +462,8 @@ void LockStateController::RequestCancelableShutdown(ShutdownReason reason) {
 
   HideAndMaybeLockCursor(/*lock=*/false);
   if (IsForestFeatureEnabled()) {
-    SessionStateChangeOnPine(RequestedSessionState::kCancelableShutdown);
+    SessionStateChangeWithInformedRestore(
+        RequestedSessionState::kCancelableShutdown);
   } else {
     StartSessionStateChange(RequestedSessionState::kCancelableShutdown);
   }
@@ -480,7 +486,8 @@ bool LockStateController::MaybeCancelShutdownAnimation() {
   if (IsForestFeatureEnabled()) {
     // Shutdown maybe canceled before or after image saved. So we need to delete
     // both here and `OnImageSaved`.
-    DeletePineImage(pine_image_callback_for_test_, GetShutdownPineImagePath());
+    DeleteInformedRestoreImage(informed_restore_image_callback_for_test_,
+                               GetInformedRestoreImagePath());
   }
   cancelable_shutdown_timer_.Stop();
   return true;
@@ -494,7 +501,7 @@ void LockStateController::RequestRestart(
     restart_callback_ =
         base::BindOnce(&LockStateController::DoRestart, base::Unretained(this),
                        reason, description);
-    SessionStateChangeOnPine(RequestedSessionState::kRestart);
+    SessionStateChangeWithInformedRestore(RequestedSessionState::kRestart);
   } else {
     chromeos::PowerManagerClient::Get()->RequestRestart(reason, description);
   }
@@ -502,7 +509,7 @@ void LockStateController::RequestRestart(
 
 void LockStateController::RequestSignOut() {
   if (IsForestFeatureEnabled()) {
-    SessionStateChangeOnPine(RequestedSessionState::kSignOut);
+    SessionStateChangeWithInformedRestore(RequestedSessionState::kSignOut);
   } else {
     Shell::Get()->session_controller()->RequestSignOut();
   }
@@ -855,12 +862,13 @@ void LockStateController::OnSessionStateChangeTimeout(
   }
 }
 
-void LockStateController::SessionStateChangeOnPine(
+void LockStateController::SessionStateChangeWithInformedRestore(
     RequestedSessionState requested_session_state) {
-  const base::FilePath file_path = GetShutdownPineImagePath();
+  const base::FilePath file_path = GetInformedRestoreImagePath();
 
-  if (!ShouldTakePineScreenshot()) {
-    DeletePineImage(pine_image_callback_for_test_, file_path);
+  if (!ShouldTakeInformedRestoreScreenshot()) {
+    DeleteInformedRestoreImage(informed_restore_image_callback_for_test_,
+                               file_path);
     StartSessionStateChange(requested_session_state);
   }
 
@@ -888,7 +896,7 @@ void LockStateController::OnDlpRestrictionCheckedAtScreenCapture(
   // Create a new layer that mirrors the painted wallpaper view layer. Adds it
   // to be the bottom-most child of the shutdown screenshot container layer,
   // which is the parent of the active desk container also the container that we
-  // are going to take the pine screenshot. With this,
+  // are going to take the informed restore screenshot. With this,
   // 1) wallpaper will be included in the screenshot besides the content of the
   //    active desk.
   // 2) screenshot will be taken on the whole desktop instead of the specific
@@ -901,9 +909,10 @@ void LockStateController::OnDlpRestrictionCheckedAtScreenCapture(
   CHECK(wallpaper_layer && wallpaper_layer->children().empty());
   mirror_wallpaper_layer_ = wallpaper_layer->Mirror();
 
-  auto* pine_screenshot_container =
+  auto* informed_restore_screenshot_container =
       root->GetChildById(kShellWindowId_ShutdownScreenshotContainer);
-  auto* shutdown_screenshot_layer = pine_screenshot_container->layer();
+  auto* shutdown_screenshot_layer =
+      informed_restore_screenshot_container->layer();
   shutdown_screenshot_layer->Add(mirror_wallpaper_layer_.get());
   shutdown_screenshot_layer->StackAtBottom(mirror_wallpaper_layer_.get());
 
@@ -921,16 +930,17 @@ void LockStateController::OnDlpRestrictionCheckedAtScreenCapture(
           desks_util::GetActiveDeskContainerForRoot(root))) {
     if (BackdropController* backdrop_controller =
             workspace_controller->layout_manager()->backdrop_controller()) {
-      backdrop_controller->HideOnTakingPineScreenshot();
+      backdrop_controller->HideOnTakingInformedRestoreScreenshot();
     }
   }
 
   // Take the screenshot on the shutdown screenshot container, thus the float
   // and the always on top windows will be included in the screenshot as well.
   ui::GrabWindowSnapshot(
-      pine_screenshot_container,
-      /*source_rect=*/gfx::Rect(pine_screenshot_container->bounds().size()),
-      base::BindOnce(&LockStateController::OnPineImageTaken,
+      informed_restore_screenshot_container,
+      /*source_rect=*/
+      gfx::Rect(informed_restore_screenshot_container->bounds().size()),
+      base::BindOnce(&LockStateController::OnInformedRestoreImageTaken,
                      weak_ptr_factory_.GetWeakPtr(), requested_session_state,
                      file_path, base::TimeTicks::Now()));
 }
@@ -957,31 +967,34 @@ void LockStateController::StartSessionStateChange(
 
 void LockStateController::OnTakeScreenshotFailTimeout(
     RequestedSessionState requested_session_state) {
-  SavePineScreenshotDuration(local_state_, prefs::kPineScreenshotTakenDuration,
-                             kTakeScreenshotFailTimeout);
+  SaveInformedRestoreScreenshotDuration(local_state_,
+                                        prefs::kPineScreenshotTakenDuration,
+                                        kTakeScreenshotFailTimeout);
   RecordScreenshotOnShutdownStatus(
       ScreenshotOnShutdownStatus::kFailedOnTakingScreenshotTimeout);
   mirror_wallpaper_layer_.reset();
-  DeletePineImage(pine_image_callback_for_test_, GetShutdownPineImagePath());
+  DeleteInformedRestoreImage(informed_restore_image_callback_for_test_,
+                             GetInformedRestoreImagePath());
   StartSessionStateChange(requested_session_state);
 }
 
-void LockStateController::OnPineImageTaken(
+void LockStateController::OnInformedRestoreImageTaken(
     RequestedSessionState requested_session_state,
     const base::FilePath& file_path,
     base::TimeTicks start_time,
-    gfx::Image pine_image) {
+    gfx::Image informed_restore_image) {
   // Do not proceed if the `take_screenshot_fail_timer_` is stopped, which means
   // taking screenshot process took too long and the shutdown process has been
-  // triggered without the pine image.
+  // triggered without the informed restore image.
   if (!disable_screenshot_timeout_for_test_ &&
       !take_screenshot_fail_timer_.IsRunning()) {
     return;
   }
 
   take_screenshot_fail_timer_.Stop();
-  SavePineScreenshotDuration(local_state_, prefs::kPineScreenshotTakenDuration,
-                             base::TimeTicks::Now() - start_time);
+  SaveInformedRestoreScreenshotDuration(local_state_,
+                                        prefs::kPineScreenshotTakenDuration,
+                                        base::TimeTicks::Now() - start_time);
 
   mirror_wallpaper_layer_.reset();
 
@@ -989,29 +1002,32 @@ void LockStateController::OnPineImageTaken(
       FROM_HERE,
       {base::MayBlock(), base::TaskPriority::HIGHEST,
        base::TaskShutdownBehavior::BLOCK_SHUTDOWN},
-      base::BindOnce(&EncodeAndSavePineImage, file_path, std::move(pine_image)),
-      base::BindOnce(&LockStateController::OnPineImageSaved,
+      base::BindOnce(&EncodeAndSaveImage, file_path,
+                     std::move(informed_restore_image)),
+      base::BindOnce(&LockStateController::OnInformedRestoreImageSaved,
                      weak_ptr_factory_.GetWeakPtr(), base::TimeTicks::Now(),
                      file_path));
 
   StartSessionStateChange(requested_session_state);
 }
 
-void LockStateController::OnPineImageSaved(base::TimeTicks start_time,
-                                           const base::FilePath& file_path) {
-  SavePineScreenshotDuration(local_state_,
-                             prefs::kPineScreenshotEncodeAndSaveDuration,
-                             // This duration includes the time waiting for the
-                             // `ThreadPool` to start running the task, also the
-                             // time that the UI thread waits to get the reply
-                             // from the `ThreadPool`.
-                             base::TimeTicks::Now() - start_time);
+void LockStateController::OnInformedRestoreImageSaved(
+    base::TimeTicks start_time,
+    const base::FilePath& file_path) {
+  SaveInformedRestoreScreenshotDuration(
+      local_state_, prefs::kPineScreenshotEncodeAndSaveDuration,
+      // This duration includes the time waiting for the
+      // `ThreadPool` to start running the task, also the
+      // time that the UI thread waits to get the reply
+      // from the `ThreadPool`.
+      base::TimeTicks::Now() - start_time);
   RecordScreenshotOnShutdownStatus(ScreenshotOnShutdownStatus::kSucceeded);
   if (shutdown_canceled_) {
-    DeletePineImage(pine_image_callback_for_test_, file_path);
+    DeleteInformedRestoreImage(informed_restore_image_callback_for_test_,
+                               file_path);
   }
-  if (pine_image_callback_for_test_) {
-    std::move(pine_image_callback_for_test_).Run();
+  if (informed_restore_image_callback_for_test_) {
+    std::move(informed_restore_image_callback_for_test_).Run();
   }
 }
 

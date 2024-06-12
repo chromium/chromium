@@ -67,9 +67,9 @@ class ASH_EXPORT PineController : public OverviewObserver,
   friend class InformedRestoreTestApi;
   FRIEND_TEST_ALL_PREFIXES(PineTest, OnboardingMetrics);
 
-  // Callback function for when the pine image is finished decoding.
-  void OnPineImageDecoded(base::TimeTicks start_time,
-                          const gfx::ImageSkia& pine_image);
+  // Callback function for when the informed restore image is finished decoding.
+  void OnInformedRestoreImageDecoded(base::TimeTicks start_time,
+                                     const gfx::ImageSkia& image);
 
   void StartPineOverviewSession();
 

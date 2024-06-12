@@ -58,12 +58,12 @@ namespace {
 constexpr int kNudgeMaxShownCount = 3;
 constexpr base::TimeDelta kNudgeTimeBetweenShown = base::Hours(24);
 
-bool ShouldShowPineImage(const gfx::ImageSkia& pine_image) {
-  if (pine_image.isNull()) {
+bool ShouldShowInformedRestoreImage(const gfx::ImageSkia& image) {
+  if (image.isNull()) {
     return false;
   }
 
-  const gfx::Size image_size = pine_image.size();
+  const gfx::Size image_size = image.size();
   const bool is_image_landscape = image_size.width() > image_size.height();
 
   // TODO(minch|sammiequon): The pine dialog will only be shown inside the
@@ -245,9 +245,9 @@ void PineController::MaybeStartPineOverviewSession(
 
   RecordPineScreenshotDurations(Shell::Get()->local_state());
   image_util::DecodeImageFile(
-      base::BindOnce(&PineController::OnPineImageDecoded,
+      base::BindOnce(&PineController::OnInformedRestoreImageDecoded,
                      weak_ptr_factory_.GetWeakPtr(), base::TimeTicks::Now()),
-      GetShutdownPineImagePath(), data_decoder::mojom::ImageCodec::kPng);
+      GetInformedRestoreImagePath(), data_decoder::mojom::ImageCodec::kPng);
 }
 
 void PineController::MaybeEndPineOverviewSession() {
@@ -328,13 +328,14 @@ void PineController::OnWindowActivated(ActivationReason reason,
   }
 }
 
-void PineController::OnPineImageDecoded(base::TimeTicks start_time,
-                                        const gfx::ImageSkia& pine_image) {
+void PineController::OnInformedRestoreImageDecoded(
+    base::TimeTicks start_time,
+    const gfx::ImageSkia& image) {
   CHECK(contents_data_);
   RecordScreenshotDecodeDuration(base::TimeTicks::Now() - start_time);
 
-  if (ShouldShowPineImage(pine_image)) {
-    contents_data_->image = pine_image;
+  if (ShouldShowInformedRestoreImage(image)) {
+    contents_data_->image = image;
   } else {
     RecordScreenshotOnShutdownStatus(
         ScreenshotOnShutdownStatus::kFailedOnDifferentOrientations);
@@ -344,7 +345,7 @@ void PineController::OnPineImageDecoded(base::TimeTicks start_time,
   base::ThreadPool::PostTask(
       FROM_HERE, {base::MayBlock(), base::TaskPriority::HIGHEST},
       base::BindOnce(base::IgnoreResult(&base::DeleteFile),
-                     GetShutdownPineImagePath()));
+                     GetInformedRestoreImagePath()));
 
   StartPineOverviewSession();
 }

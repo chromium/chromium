@@ -27,7 +27,7 @@ namespace ash {
 
 namespace {
 
-base::FilePath pine_image_path_for_test_;
+base::FilePath informed_restore_image_path_for_test_;
 
 // If `use_screen` is true we convert to screen coordinates, otherwise we
 // convert to root window coordinates.
@@ -164,17 +164,17 @@ bool IsBrowserAppId(const std::string& id) {
   return id == app_constants::kChromeAppId || id == app_constants::kLacrosAppId;
 }
 
-base::FilePath GetShutdownPineImagePath() {
-  if (!pine_image_path_for_test_.empty()) {
-    return pine_image_path_for_test_;
+base::FilePath GetInformedRestoreImagePath() {
+  if (!informed_restore_image_path_for_test_.empty()) {
+    return informed_restore_image_path_for_test_;
   }
   base::FilePath home_dir;
   CHECK(base::PathService::Get(base::DIR_HOME, &home_dir));
-  return home_dir.AppendASCII("pine_image.png");
+  return home_dir.AppendASCII("informed_restore_image.png");
 }
 
-void SetPineImagePathForTest(const base::FilePath& path) {
-  pine_image_path_for_test_ = path;
+void SetInformedRestoreImagePathForTest(const base::FilePath& path) {
+  informed_restore_image_path_for_test_ = path;
 }
 
 }  // namespace ash

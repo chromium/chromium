@@ -335,7 +335,7 @@ aura::Window* BackdropController::GetTopmostWindowWithBackdrop() {
   return nullptr;
 }
 
-void BackdropController::HideOnTakingPineScreenshot() {
+void BackdropController::HideOnTakingInformedRestoreScreenshot() {
   Hide(/*destroy=*/false, /*animate=*/false);
 }
 

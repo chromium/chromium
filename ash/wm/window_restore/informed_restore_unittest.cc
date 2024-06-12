@@ -166,9 +166,10 @@ class InformedRestoreTest : public InformedRestoreTestBase {
   // TODO(minch): Make contents_data->image can be altered, for example,
   // some dummy image to make the test more unit-testy.
   // Takes a screenshot of the entire display and save it to the given
-  // `file_path`, which is also set as the path to store the pine screenshot.
-  void TakeAndSavePineScreenshot(const base::FilePath& file_path) {
-    SetPineImagePathForTest(file_path);
+  // `file_path`, which is also set as the path to store the informed restore
+  // screenshot.
+  void TakeAndSaveInformedRestoreScreenshot(const base::FilePath& file_path) {
+    SetInformedRestoreImagePathForTest(file_path);
 
     TakePrimaryDisplayScreenshotAndSave(file_path);
     int64_t file_size = 0;
@@ -292,7 +293,7 @@ TEST_F(InformedRestoreTest, NoScreenshotWithDifferentDisplayOrientation) {
   ASSERT_TRUE(temp_dir.CreateUniqueTempDir());
   const base::FilePath file_path =
       temp_dir.GetPath().AppendASCII("test_pine.png");
-  TakeAndSavePineScreenshot(file_path);
+  TakeAndSaveInformedRestoreScreenshot(file_path);
   ASSERT_TRUE(base::PathExists(file_path));
 
   // Rotate the display and show the pine dialog.
@@ -325,7 +326,7 @@ TEST_F(InformedRestoreTest, ScreenshotIconRowMaxElements) {
   ASSERT_TRUE(temp_dir.CreateUniqueTempDir());
   const base::FilePath file_path =
       temp_dir.GetPath().AppendASCII("test_pine.png");
-  TakeAndSavePineScreenshot(file_path);
+  TakeAndSaveInformedRestoreScreenshot(file_path);
   ASSERT_TRUE(base::PathExists(file_path));
 
   // Starts the session with the maximum number of elements that can be shown
@@ -361,7 +362,8 @@ TEST_F(InformedRestoreTest, ScreenshotIconRowExceedMaxElements) {
   base::ScopedTempDir temp_dir;
   base::ScopedAllowBlockingForTesting allow_blocking;
   ASSERT_TRUE(temp_dir.CreateUniqueTempDir());
-  TakeAndSavePineScreenshot(temp_dir.GetPath().AppendASCII("test_pine.png"));
+  TakeAndSaveInformedRestoreScreenshot(
+      temp_dir.GetPath().AppendASCII("test_pine.png"));
 
   // Starts the session with more elements that can be shown inside the icon
   // row.
