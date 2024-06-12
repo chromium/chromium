@@ -45,6 +45,11 @@ proto::SavedTabGroupData SavedTabGroupTabToData(const SavedTabGroupTab& tab);
 std::optional<size_t> GroupPositionFromSpecifics(
     const sync_pb::SavedTabGroupSpecifics& specifics);
 
+std::optional<std::string> GetCreatorCacheGuidFromSpecifics(
+    const sync_pb::SavedTabGroupSpecifics& specific);
+std::optional<std::string> GetLastUpdaterCacheGuidFromSpecifics(
+    const sync_pb::SavedTabGroupSpecifics& specific);
+
 }  // namespace tab_groups
 
 #endif  // COMPONENTS_SAVED_TAB_GROUPS_SAVED_TAB_GROUP_PROTO_CONVERSIONS_H_

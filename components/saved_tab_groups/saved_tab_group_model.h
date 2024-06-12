@@ -135,7 +135,8 @@ class SavedTabGroupModel {
       const std::u16string& title,
       TabGroupColorId color,
       std::optional<size_t> position,
-      std::optional<std::string> originator_cache_guid,
+      std::optional<std::string> creator_cache_guid,
+      std::optional<std::string> last_updater_cache_guid,
       base::Time update_time);
   const SavedTabGroupTab* MergeRemoteTab(const SavedTabGroupTab& remote_tab);
 
@@ -146,7 +147,7 @@ class SavedTabGroupModel {
   void ReorderGroupLocally(const base::Uuid& id, int new_index);
   void ReorderGroupFromSync(const base::Uuid& id, int new_index);
 
-  // Update the originator cache guid for all saved groups that have
+  // Update the creator cache guid for all saved groups that have
   // `old_cache_guid`, to `new_cache_guid`.
   std::set<base::Uuid> UpdateLocalCacheGuid(
       std::optional<std::string> old_cache_guid,

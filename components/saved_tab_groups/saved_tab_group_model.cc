@@ -432,7 +432,8 @@ const SavedTabGroup* SavedTabGroupModel::MergeRemoteGroupMetadata(
     const std::u16string& title,
     TabGroupColorId color,
     std::optional<size_t> position,
-    std::optional<std::string> originator_cache_guid,
+    std::optional<std::string> creator_cache_guid,
+    std::optional<std::string> last_updater_cache_guid,
     base::Time update_time) {
   CHECK(Contains(guid));
 
@@ -445,7 +446,8 @@ const SavedTabGroup* SavedTabGroupModel::MergeRemoteGroupMetadata(
 
   // Merge group and get `preferred_pinned_index`.
   saved_tab_groups_[index].MergeRemoteGroupMetadata(
-      title, color, position, originator_cache_guid, update_time);
+      title, color, position, creator_cache_guid, last_updater_cache_guid,
+      update_time);
   std::optional<size_t> preferred_pinned_index =
       saved_tab_groups_[index].position();
 
@@ -526,11 +528,11 @@ std::set<base::Uuid> SavedTabGroupModel::UpdateLocalCacheGuid(
     std::optional<std::string> new_cache_guid) {
   std::set<base::Uuid> updated_group_ids;
   for (auto& saved_group : saved_tab_groups_) {
-    if (saved_group.originator_cache_guid() != old_cache_guid) {
+    if (saved_group.creator_cache_guid() != old_cache_guid) {
       continue;
     }
 
-    saved_group.SetOriginatorCacheGuid(new_cache_guid);
+    saved_group.SetCreatorCacheGuid(new_cache_guid);
     updated_group_ids.insert(saved_group.saved_guid());
   }
 

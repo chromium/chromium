@@ -119,7 +119,8 @@ SavedTabGroup SpecificsToSharedTabGroup(
 
   SavedTabGroup group(title, color, /*urls=*/{}, /*position=*/std::nullopt,
                       guid, /*local_group_id=*/std::nullopt,
-                      /*originator_cache_guid=*/std::nullopt,
+                      /*creator_cache_guid=*/std::nullopt,
+                      /*last_updater_cache_guid=*/std::nullopt,
                       /*created_before_syncing_tab_groups=*/false,
                       /*creation_time_windows_epoch_micros=*/std::nullopt,
                       update_time);
@@ -404,7 +405,8 @@ void SharedTabGroupDataSyncBridge::AddGroupToLocalStorage(
       group_guid, base::UTF8ToUTF16(specifics.tab_group().title()),
       SyncColorToTabGroupColor(specifics.tab_group().color()),
       /*position=*/std::nullopt,
-      /*originator_cache_guid=*/std::nullopt,
+      /*creator_cache_guid=*/std::nullopt,
+      /*last_updater_cache_guid=*/std::nullopt,
       TimeFromWindowsEpochMicros(specifics.update_time_windows_epoch_micros()));
   CHECK(existing_group);
 

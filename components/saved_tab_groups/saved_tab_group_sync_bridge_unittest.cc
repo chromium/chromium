@@ -333,7 +333,7 @@ TEST_F(SavedTabGroupSyncBridgeTest, ConflictResolutionForTab) {
 // elements.
 TEST_F(SavedTabGroupSyncBridgeTest, MergeFullSyncDataWithExistingData) {
   // Force the cache guid to return the same value as the groups, reflecting
-  // that the processor cache guid is the "originator".
+  // that the processor cache guid is the "creator".
   std::string cache_guid = "cache_guid";
   ON_CALL(processor_, TrackedCacheGuid())
       .WillByDefault(testing::Return(cache_guid));
@@ -341,7 +341,7 @@ TEST_F(SavedTabGroupSyncBridgeTest, MergeFullSyncDataWithExistingData) {
   SavedTabGroup group(u"Test Title", tab_groups::TabGroupColorId::kBlue, {},
                       /*position=*/std::nullopt, /*saved_guid=*/std::nullopt,
                       /*local_group_guid=*/std::nullopt,
-                      /*originator_cache_guid=*/cache_guid);
+                      /*creator_cache_guid=*/cache_guid);
   SavedTabGroupTab tab_1(GURL("https://website.com"), u"Website Title",
                          group.saved_guid(), /*position=*/std::nullopt);
   SavedTabGroupTab tab_2(GURL("https://google.com"), u"Google",
@@ -362,14 +362,15 @@ TEST_F(SavedTabGroupSyncBridgeTest, MergeFullSyncDataWithExistingData) {
 
   // Create an updated version of `group` using the same creation time and 1
   // less tab.
-  SavedTabGroup updated_group(u"New Title", tab_groups::TabGroupColorId::kPink,
-                              {}, /*position=*/0, /*saved_guid=*/group_guid,
-                              /*local_group_guid=*/std::nullopt, cache_guid,
-                              /*created_before_syncing_tab_groups=*/false,
-                              group_creation_time);
+  SavedTabGroup updated_group(
+      u"New Title", tab_groups::TabGroupColorId::kPink, {}, /*position=*/0,
+      /*saved_guid=*/group_guid,
+      /*local_group_guid=*/std::nullopt, cache_guid, cache_guid,
+      /*created_before_syncing_tab_groups=*/false, group_creation_time);
   SavedTabGroupTab updated_tab_1(GURL("https://support.google.com"), u"Support",
                                  group_guid, /*position=*/0, tab_1_guid,
-                                 std::nullopt, tab_1_creation_time);
+                                 std::nullopt, cache_guid, cache_guid,
+                                 tab_1_creation_time);
   updated_group.AddTabLocally(updated_tab_1);
 
   syncer::EntityChangeList entity_change_list = CreateEntityChangeListFromGroup(
@@ -391,9 +392,9 @@ TEST_F(SavedTabGroupSyncBridgeTest, MergeFullSyncDataWithExistingData) {
   EXPECT_TRUE(group_from_model->ContainsTab(tab_2_guid));
 
   // Ensure tab_2 was left untouched.
-  SavedTabGroupTab tab_2_replica(GURL("https://google.com"), u"Google",
-                                 group_guid, /*position=*/1, tab_2_guid,
-                                 std::nullopt, tab_2_creation_time);
+  SavedTabGroupTab tab_2_replica(
+      GURL("https://google.com"), u"Google", group_guid, /*position=*/1,
+      tab_2_guid, std::nullopt, cache_guid, cache_guid, tab_2_creation_time);
   EXPECT_TRUE(AreSavedTabGroupTabsEqual(tab_2_replica,
                                         *group_from_model->GetTab(tab_2_guid)));
 
@@ -413,6 +414,7 @@ TEST_F(SavedTabGroupSyncBridgeTest,
   // Create two groups: group1 before sign in and group2 after sign in.
   SavedTabGroup group1(u"Test Title1", tab_groups::TabGroupColorId::kBlue, {},
                        0, std::nullopt, std::nullopt, std::nullopt,
+                       std::nullopt,
                        /*created_before_syncing_tab_groups=*/true);
   SavedTabGroupTab tab_1(GURL("https://website1.com"), u"Website Title1",
                          group1.saved_guid(), /*position=*/std::nullopt);
@@ -420,6 +422,7 @@ TEST_F(SavedTabGroupSyncBridgeTest,
 
   SavedTabGroup group2(u"Test Title2", tab_groups::TabGroupColorId::kCyan, {},
                        1, std::nullopt, std::nullopt, std::nullopt,
+                       std::nullopt,
                        /*created_before_syncing_tab_groups=*/false);
   SavedTabGroupTab tab_2(GURL("https://website2.com"), u"Website Title2",
                          group2.saved_guid(), /*position=*/std::nullopt);
@@ -456,7 +459,7 @@ TEST_F(SavedTabGroupSyncBridgeTest,
   VerifyEntriesCount(2u);
 
   group1_from_model = saved_tab_group_model_.Get(group_id1);
-  EXPECT_EQ(std::nullopt, group1_from_model->originator_cache_guid());
+  EXPECT_EQ(std::nullopt, group1_from_model->creator_cache_guid());
 }
 
 // Verify orphaned tabs (tabs missing their group) are added into the correct

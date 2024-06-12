@@ -517,7 +517,8 @@ TEST_P(SavedTabGroupModelTest, MergeGroupsFromModel) {
   const SavedTabGroup* merged_group =
       saved_tab_group_model_->MergeRemoteGroupMetadata(
           group2.saved_guid(), group2.title(), group2.color(),
-          group2.position(), group2.originator_cache_guid(),
+          group2.position(), group2.creator_cache_guid(),
+          group2.last_updater_cache_guid(),
           group2.update_time_windows_epoch_micros());
 
   EXPECT_EQ(group2.title(), merged_group->title());
@@ -563,7 +564,8 @@ TEST_P(SavedTabGroupModelTest, MergePinnedGroupRetainPosition) {
       saved_tab_group_model_->MergeRemoteGroupMetadata(
           updated_group2.saved_guid(), updated_group2.title(),
           updated_group2.color(), updated_group2.position(),
-          updated_group2.originator_cache_guid(),
+          updated_group2.creator_cache_guid(),
+          updated_group2.last_updater_cache_guid(),
           updated_group2.update_time_windows_epoch_micros());
   EXPECT_EQ(1, merged_group->position());
 
@@ -610,7 +612,8 @@ TEST_P(SavedTabGroupModelTest, MergeUnpinnedGroupRetainUnpinned) {
       saved_tab_group_model_->MergeRemoteGroupMetadata(
           updated_group2.saved_guid(), updated_group2.title(),
           updated_group2.color(), updated_group2.position(),
-          updated_group2.originator_cache_guid(),
+          updated_group2.creator_cache_guid(),
+          updated_group2.last_updater_cache_guid(),
           updated_group2.update_time_windows_epoch_micros());
   EXPECT_EQ(std::nullopt, merged_group->position());
 
@@ -1282,44 +1285,48 @@ TEST_P(SavedTabGroupModelObserverTest, UpdateLocalCacheGuid) {
   SavedTabGroup group1(u"Tab Group 1", tab_groups::TabGroupColorId::kRed, {},
                        std::nullopt /*position*/, group_1_id /*saved_guid*/,
                        std::nullopt /*local_group_id*/,
-                       std::nullopt /*originator_cache_guid*/);
+                       std::nullopt /*creator_cache_guid*/,
+                       std::nullopt /*last_updater_cache_guid*/);
   saved_tab_group_model_->Add(std::move(group1));
   SavedTabGroup group2(u"Tab Group 2", tab_groups::TabGroupColorId::kRed, {},
                        std::nullopt /*position*/, group_2_id /*saved_guid*/,
                        std::nullopt /*local_group_id*/,
-                       std::nullopt /*originator_cache_guid*/);
+                       std::nullopt /*creator_cache_guid*/,
+                       std::nullopt /*last_updater_cache_guid*/);
   saved_tab_group_model_->Add(group2);
   SavedTabGroup group3(u"Tab Group 3", tab_groups::TabGroupColorId::kRed, {},
                        std::nullopt /*position*/, group_3_id /*saved_guid*/,
                        std::nullopt /*local_group_id*/,
-                       dont_edit_cache_guid /*originator_cache_guid*/);
+                       dont_edit_cache_guid /*creator_cache_guid*/,
+                       std::nullopt /*last_updater_cache_guid*/);
   saved_tab_group_model_->Add(group3);
   SavedTabGroup group4(u"Tab Group 4", tab_groups::TabGroupColorId::kRed, {},
                        std::nullopt /*position*/, group_4_id /*saved_guid*/,
                        std::nullopt /*local_group_id*/,
-                       second_edit_cache_guid /*originator_cache_guid*/);
+                       second_edit_cache_guid /*creator_cache_guid*/,
+                       std::nullopt /*last_updater_cache_guid*/);
   saved_tab_group_model_->Add(group4);
 
   saved_tab_group_model_->UpdateLocalCacheGuid(std::nullopt,
                                                edit_to_cache_guid);
-  EXPECT_EQ(saved_tab_group_model_->Get(group_1_id)->originator_cache_guid(),
+  EXPECT_EQ(saved_tab_group_model_->Get(group_1_id)->creator_cache_guid(),
             edit_to_cache_guid);
-  EXPECT_EQ(saved_tab_group_model_->Get(group_2_id)->originator_cache_guid(),
+  EXPECT_EQ(saved_tab_group_model_->Get(group_2_id)->creator_cache_guid(),
             edit_to_cache_guid);
-  EXPECT_EQ(saved_tab_group_model_->Get(group_3_id)->originator_cache_guid(),
+  EXPECT_EQ(saved_tab_group_model_->Get(group_3_id)->creator_cache_guid(),
             dont_edit_cache_guid);
-  EXPECT_EQ(saved_tab_group_model_->Get(group_4_id)->originator_cache_guid(),
+  EXPECT_EQ(saved_tab_group_model_->Get(group_4_id)->creator_cache_guid(),
             second_edit_cache_guid);
 
   saved_tab_group_model_->UpdateLocalCacheGuid(second_edit_cache_guid,
                                                edit_to_cache_guid);
-  EXPECT_EQ(saved_tab_group_model_->Get(group_1_id)->originator_cache_guid(),
+  EXPECT_EQ(saved_tab_group_model_->Get(group_1_id)->creator_cache_guid(),
             edit_to_cache_guid);
-  EXPECT_EQ(saved_tab_group_model_->Get(group_2_id)->originator_cache_guid(),
+  EXPECT_EQ(saved_tab_group_model_->Get(group_2_id)->creator_cache_guid(),
             edit_to_cache_guid);
-  EXPECT_EQ(saved_tab_group_model_->Get(group_3_id)->originator_cache_guid(),
+  EXPECT_EQ(saved_tab_group_model_->Get(group_3_id)->creator_cache_guid(),
             dont_edit_cache_guid);
-  EXPECT_EQ(saved_tab_group_model_->Get(group_4_id)->originator_cache_guid(),
+  EXPECT_EQ(saved_tab_group_model_->Get(group_4_id)->creator_cache_guid(),
             edit_to_cache_guid);
 }
 

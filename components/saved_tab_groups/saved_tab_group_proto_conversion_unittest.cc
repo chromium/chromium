@@ -28,8 +28,10 @@ class SavedTabGroupConversionTest : public testing::Test {
     EXPECT_EQ(sp1.guid(), sp2.guid());
     EXPECT_EQ(sp1.group().title(), sp2.group().title());
     EXPECT_EQ(sp1.group().color(), sp2.group().color());
-    EXPECT_EQ(sp1.group().originator_cache_guid(),
-              sp2.group().originator_cache_guid());
+    EXPECT_EQ(sp1.attribution_metadata().created().device_info().cache_guid(),
+              sp2.attribution_metadata().created().device_info().cache_guid());
+    EXPECT_EQ(sp1.attribution_metadata().updated().device_info().cache_guid(),
+              sp2.attribution_metadata().updated().device_info().cache_guid());
     EXPECT_EQ(sp1.creation_time_windows_epoch_micros(),
               sp2.creation_time_windows_epoch_micros());
     EXPECT_EQ(sp1.update_time_windows_epoch_micros(),
@@ -42,6 +44,10 @@ class SavedTabGroupConversionTest : public testing::Test {
     EXPECT_EQ(sp1.tab().url(), sp2.tab().url());
     EXPECT_EQ(sp1.tab().title(), sp2.tab().title());
     EXPECT_EQ(sp1.tab().group_guid(), sp2.tab().group_guid());
+    EXPECT_EQ(sp1.attribution_metadata().created().device_info().cache_guid(),
+              sp2.attribution_metadata().created().device_info().cache_guid());
+    EXPECT_EQ(sp1.attribution_metadata().updated().device_info().cache_guid(),
+              sp2.attribution_metadata().updated().device_info().cache_guid());
     EXPECT_EQ(sp1.creation_time_windows_epoch_micros(),
               sp2.creation_time_windows_epoch_micros());
     EXPECT_EQ(sp1.update_time_windows_epoch_micros(),
@@ -68,7 +74,9 @@ class SavedTabGroupConversionTest : public testing::Test {
               group2.creation_time_windows_epoch_micros());
     EXPECT_EQ(group1.update_time_windows_epoch_micros(),
               group2.update_time_windows_epoch_micros());
-    EXPECT_EQ(group1.originator_cache_guid(), group2.originator_cache_guid());
+    EXPECT_EQ(group1.creator_cache_guid(), group2.creator_cache_guid());
+    EXPECT_EQ(group1.last_updater_cache_guid(),
+              group2.last_updater_cache_guid());
     EXPECT_EQ(group1.created_before_syncing_tab_groups(),
               group2.created_before_syncing_tab_groups());
   }
@@ -78,6 +86,8 @@ class SavedTabGroupConversionTest : public testing::Test {
     EXPECT_EQ(tab1.saved_tab_guid(), tab2.saved_tab_guid());
     EXPECT_EQ(tab1.title(), tab2.title());
     EXPECT_EQ(tab1.saved_group_guid(), tab2.saved_group_guid());
+    EXPECT_EQ(tab1.creator_cache_guid(), tab2.creator_cache_guid());
+    EXPECT_EQ(tab1.last_updater_cache_guid(), tab2.last_updater_cache_guid());
     EXPECT_EQ(tab1.creation_time_windows_epoch_micros(),
               tab2.creation_time_windows_epoch_micros());
     EXPECT_EQ(tab1.update_time_windows_epoch_micros(),
@@ -95,7 +105,8 @@ TEST_F(SavedTabGroupConversionTest, GroupToDataRetainsData) {
   std::optional<base::Time> update_time_windows_epoch_micros = time_;
   SavedTabGroup group(
       title, color, {}, 0, saved_guid, test::GenerateRandomTabGroupID(),
-      "originator_cache_guid_1",  // originator_cache_guid
+      "creator_cache_guid_1",       // creator_cache_guid
+      "last_updater_cache_guid_1",  // last_updater_cache_guid
       /*created_before_syncing_tab_groups=*/true,
       creation_time_windows_epoch_micros, update_time_windows_epoch_micros);
 
@@ -110,8 +121,8 @@ TEST_F(SavedTabGroupConversionTest, GroupToDataRetainsData) {
 TEST_F(SavedTabGroupConversionTest, TabToDataRetainsData) {
   SavedTabGroupTab tab(GURL("chrome://hidden_link"), u"Hidden Title",
                        base::Uuid::GenerateRandomV4(), /*position=*/0,
-                       base::Uuid::GenerateRandomV4(), std::nullopt, time_,
-                       time_);
+                       base::Uuid::GenerateRandomV4(), std::nullopt,
+                       std::nullopt, std::nullopt, time_, time_);
 
   proto::SavedTabGroupData proto =
       SavedTabGroupSyncBridge::SavedTabGroupTabToDataForTest(tab);
@@ -209,10 +220,11 @@ TEST_F(SavedTabGroupConversionTest, MergedGroupHoldsCorrectData) {
   std::optional<base::Uuid> saved_guid = base::Uuid::GenerateRandomV4();
   std::optional<base::Time> creation_time_windows_epoch_micros = time_;
   std::optional<base::Time> update_time_windows_epoch_micros = time_;
-  SavedTabGroup group1(
-      title, color, {}, 0, saved_guid, std::nullopt, "originator_cache_guid",
-      /*created_before_syncing_tab_groups=*/false,
-      creation_time_windows_epoch_micros, update_time_windows_epoch_micros);
+  SavedTabGroup group1(title, color, {}, 0, saved_guid, std::nullopt,
+                       "creator_cache_guid", "last_updater_cache_guid",
+                       /*created_before_syncing_tab_groups=*/false,
+                       creation_time_windows_epoch_micros,
+                       update_time_windows_epoch_micros);
 
   // Create a new group with the same data and update it. Calling set functions
   // should internally update update_time_windows_epoch_micros.
@@ -224,10 +236,10 @@ TEST_F(SavedTabGroupConversionTest, MergedGroupHoldsCorrectData) {
   // same data after the merge.
   EXPECT_TRUE(group1.RemoteGroupHasMoreRecentUpdates(
       group2.update_time_windows_epoch_micros()));
-  group1.MergeRemoteGroupMetadata(group2.title(), group2.color(),
-                                  group2.position(),
-                                  group2.originator_cache_guid(),
-                                  group2.update_time_windows_epoch_micros());
+  group1.MergeRemoteGroupMetadata(
+      group2.title(), group2.color(), group2.position(),
+      group2.creator_cache_guid(), group2.last_updater_cache_guid(),
+      group2.update_time_windows_epoch_micros());
   CompareGroups(group1, group2);
 
   // Expect that group2 is not a valid group to merge. No merging should be
@@ -252,6 +264,8 @@ TEST_F(SavedTabGroupConversionTest, MergedTabHoldsCorrectData) {
   SavedTabGroupTab tab2(tab1);
   tab2.SetURL(GURL("new url"));
   tab2.SetTitle(u"New Title");
+  tab2.SetCreatorCacheGuid("creator_cache_guid");
+  tab2.SetLastUpdaterCacheGuid("last_updater_cache_guid");
 
   // Expect that tab2 is a valid group to merge with and that the tab1 holds the
   // same data after the merge.
