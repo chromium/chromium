@@ -8,6 +8,7 @@
 #include <string>
 #include <vector>
 
+#include "ash/public/cpp/new_window_delegate.h"
 #include "ash/public/cpp/resources/grit/ash_public_unscaled_resources.h"
 #include "ash/shell.h"
 #include "ash/style/typography.h"
@@ -78,7 +79,9 @@ constexpr char kTestURL[] = "https://www.google.com";
 
 // Opens the passed in `url` in a new tab.
 void OnLinkClick(const std::string& url) {
-  // TODO(b/339044721): open the url in a new tab.
+  NewWindowDelegate::GetPrimary()->OpenUrl(
+      GURL(url), NewWindowDelegate::OpenUrlFrom::kUserInteraction,
+      NewWindowDelegate::Disposition::kNewForegroundTab);
 }
 
 views::StyledLabel::RangeStyleInfo GetLinkTextStyle() {
