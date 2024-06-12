@@ -45,7 +45,14 @@ ENUM(AppType,
 //
 // Used by PackageId mapping closely to corresponding values in AppType but
 // can contain other non-app values e.g. app shortcuts.
-ENUM(PackageType, kUnknown, kArc, kBorealis, kChromeApp, kGeForceNow, kWeb)
+ENUM(PackageType,
+     kUnknown,
+     kArc,
+     kBorealis,
+     kChromeApp,
+     kGeForceNow,
+     kSystem,
+     kWeb)
 
 // Whether an app is ready to launch, i.e. installed.
 // Note the enumeration is used in UMA histogram so entries should not be

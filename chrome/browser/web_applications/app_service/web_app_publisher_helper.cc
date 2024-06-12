@@ -694,8 +694,7 @@ apps::AppPtr WebAppPublisherHelper::CreateWebApp(const WebApp* web_app) {
 
   // Web App's publisher_id the start url.
   app->publisher_id = web_app->start_url().spec();
-  app->installer_package_id =
-      apps::PackageId(apps::PackageType::kWeb, web_app->manifest_id().spec());
+  app->installer_package_id = GetPackageId(*web_app);
 
   app->icon_key = apps::IconKey(GetIconEffects(web_app));
 
@@ -1785,6 +1784,21 @@ std::vector<std::string> WebAppPublisherHelper::GetPolicyIds(
   }
 
   return policy_ids;
+}
+
+apps::PackageId WebAppPublisherHelper::GetPackageId(
+    const WebApp& web_app) const {
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+  if (web_app.client_data().system_web_app_data) {
+    const std::optional<std::string_view> policy_id =
+        apps_util::GetPolicyIdForSystemWebAppType(
+            web_app.client_data().system_web_app_data->system_app_type);
+    if (policy_id) {
+      return apps::PackageId(apps::PackageType::kSystem, *policy_id);
+    }
+  }
+#endif
+  return apps::PackageId(apps::PackageType::kWeb, web_app.manifest_id().spec());
 }
 
 #if BUILDFLAG(IS_CHROMEOS)

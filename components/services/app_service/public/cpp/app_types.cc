@@ -28,6 +28,7 @@ APP_ENUM_TO_STRING(PackageType,
                    kBorealis,
                    kChromeApp,
                    kGeForceNow,
+                   kSystem,
                    kWeb)
 APP_ENUM_TO_STRING(Readiness,
                    kUnknown,
@@ -106,6 +107,8 @@ std::optional<AppType> ConvertPackageTypeToAppType(PackageType package_type) {
     case PackageType::kChromeApp:
       return AppType::kChromeApp;
     case PackageType::kGeForceNow:
+      return std::nullopt;
+    case PackageType::kSystem:
       return std::nullopt;
     case PackageType::kWeb:
       return AppType::kWeb;

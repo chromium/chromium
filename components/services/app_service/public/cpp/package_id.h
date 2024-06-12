@@ -32,6 +32,7 @@ namespace apps {
 // kBorealis   | "steam"     | Steam Game ID         | "steam:123456"
 // kChromeApp  | "chromeapp" | Extension ID          | "chromeapp:mmfbcljfglbok"
 // kGeForceNow | "gfn"       | GeForce Game ID       | "gfn:123456"
+// kSystem     | "system"    | policy ID             | "system:file_manager"
 // kWeb        | "web"       | processed manifest ID | "web:https://app.com/id"
 class COMPONENT_EXPORT(APP_TYPES) PackageId {
  public:

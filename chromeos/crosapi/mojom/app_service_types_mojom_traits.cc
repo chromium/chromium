@@ -1391,6 +1391,7 @@ StructTraits<crosapi::mojom::PackageIdDataView, apps::PackageId>::package_type(
     case apps::PackageType::kBorealis:
     case apps::PackageType::kChromeApp:
     case apps::PackageType::kGeForceNow:
+    case apps::PackageType::kSystem:
       return crosapi::mojom::PackageIdType::kUnknown;
   }
 }

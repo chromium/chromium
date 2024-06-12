@@ -380,6 +380,8 @@ class WebAppPublisherHelper : public WebAppRegistrarObserver,
   // controls, such as force-installation and pinning. May be empty.
   std::vector<std::string> GetPolicyIds(const WebApp& web_app) const;
 
+  apps::PackageId GetPackageId(const WebApp& web_app) const;
+
 #if BUILDFLAG(IS_CHROMEOS)
   // Updates app visibility.
   void UpdateAppDisabledMode(apps::App& app);

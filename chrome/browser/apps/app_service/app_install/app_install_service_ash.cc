@@ -233,6 +233,7 @@ void AppInstallServiceAsh::InstallApp(
       return;
     }
     case PackageType::kChromeApp:
+    case PackageType::kSystem:
     case PackageType::kUnknown:
       // TODO(b/303350800): Generalize to work with all app types.
       std::move(result_callback).Run(AppInstallResult::kAppTypeNotSupported);
