@@ -45,7 +45,6 @@ struct ReadyBuffer {
 struct SharedImageBufferHandleSet {
   gpu.mojom.ExportedSharedImage shared_image;
   gpu.mojom.SyncToken sync_token;
-  uint32 texture_target;
 };
 
 union VideoBufferHandle {

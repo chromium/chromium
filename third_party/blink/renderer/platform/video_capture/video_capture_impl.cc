@@ -129,9 +129,6 @@ struct VideoCaptureImpl::BufferContext
   const gpu::SyncToken& shared_image_sync_token() const {
     return shared_image_sync_token_;
   }
-  uint32_t shared_image_texture_target() const {
-    return shared_image_texture_target_;
-  }
   media::GpuVideoAcceleratorFactories* gpu_factories() const {
     return gpu_factories_;
   }
@@ -218,7 +215,6 @@ struct VideoCaptureImpl::BufferContext
     shared_image_ = gpu::ClientSharedImage::ImportUnowned(
         shared_image_handles->shared_image);
     shared_image_sync_token_ = shared_image_handles->sync_token;
-    shared_image_texture_target_ = shared_image_handles->texture_target;
   }
 
   void InitializeFromGpuMemoryBufferHandle(
@@ -263,7 +259,6 @@ struct VideoCaptureImpl::BufferContext
   // Only valid for |buffer_type_ == SHARED_IMAGE_HANDLES|.
   scoped_refptr<gpu::ClientSharedImage> shared_image_;
   gpu::SyncToken shared_image_sync_token_;
-  uint32_t shared_image_texture_target_;
 
   // The following is for |buffer_type == GPU_MEMORY_BUFFER_HANDLE|.
 
@@ -378,7 +373,7 @@ VideoCaptureImpl::CreateVideoFrameInitData(
               video_frame_init_data.ready_buffer->info->pixel_format,
               buffer_context->shared_image(),
               buffer_context->shared_image_sync_token(),
-              buffer_context->shared_image_texture_target(),
+              buffer_context->shared_image()->GetTextureTarget(),
               media::VideoFrame::ReleaseMailboxCB(),
               gfx::Size(video_frame_init_data.ready_buffer->info->coded_size),
               gfx::Rect(video_frame_init_data.ready_buffer->info->visible_rect),

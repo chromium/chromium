@@ -53,7 +53,7 @@ mojom::VideoBufferHandlePtr CreateBufferHandle(
 
       auto sync_token = sii->GenVerifiedSyncToken();
       auto shared_image_set = mojom::SharedImageBufferHandleSet::New(
-          shared_image->Export(), sync_token, shared_image->GetTextureTarget());
+          shared_image->Export(), sync_token);
 
       return mojom::VideoBufferHandle::NewSharedImageHandles(
           std::move(shared_image_set));

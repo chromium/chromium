@@ -137,11 +137,11 @@ class TextureDeviceExerciser : public VirtualDeviceExerciser {
     virtual_device_->OnNewSharedImageBufferHandle(
         0, media::mojom::SharedImageBufferHandleSet::New(
                std::move(dummy_frame_0_exported_shared_image),
-               dummy_frame_0_sync_token_, GL_TEXTURE_2D));
+               dummy_frame_0_sync_token_));
     virtual_device_->OnNewSharedImageBufferHandle(
         1, media::mojom::SharedImageBufferHandleSet::New(
                std::move(dummy_frame_1_exported_shared_image),
-               dummy_frame_1_sync_token_, GL_TEXTURE_2D));
+               dummy_frame_1_sync_token_));
     frame_being_consumed_[0] = false;
     frame_being_consumed_[1] = false;
   }
