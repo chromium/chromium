@@ -1544,6 +1544,13 @@ void DevToolsUIBindings::GetHostConfig(DispatchCallback callback) {
   response_dict.Set("devToolsConsoleInsightsDogfood",
                     std::move(console_insights_dogfood_dict));
 
+  base::Value::Dict freestyler_dogfood_dict;
+  freestyler_dogfood_dict.Set(
+      "enabled",
+      base::FeatureList::IsEnabled(::features::kDevToolsFreestylerDogfood));
+  response_dict.Set("devToolsFreestylerDogfood",
+                    std::move(freestyler_dogfood_dict));
+
   base::Value response = base::Value(std::move(response_dict));
   std::move(callback).Run(&response);
 }
