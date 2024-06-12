@@ -16915,6 +16915,12 @@
             ],
             "experiments": [
                 {
+                    "name": "Local_Notice_Confirmation_Disabled",
+                    "disable_features": [
+                        "PrivacySandboxLocalNoticeConfirmation"
+                    ]
+                },
+                {
                     "name": "Default_To_OS_Country_Enabled",
                     "params": {
                         "default-to-os-country": "true"
@@ -16929,12 +16935,6 @@
                         "default-to-os-country": "false"
                     },
                     "enable_features": [
-                        "PrivacySandboxLocalNoticeConfirmation"
-                    ]
-                },
-                {
-                    "name": "Local_Notice_Confirmation_Disabled",
-                    "disable_features": [
                         "PrivacySandboxLocalNoticeConfirmation"
                     ]
                 }
