@@ -431,6 +431,9 @@ void ExpectHistogramEmittedForIPHDismissal(IPHDismissalReasonType reason) {
 
 // Tests that the swipe back/forward IPH would NOT show if the page load fails.
 - (void)testSwipeBackForwardDoesNotShowWhenPageFails {
+  [self relaunchWithIPHFeatureForSafariSwitcher:@"IPH_iOSSwipeBackForward"];
+  [BaseEarlGreyTestCaseAppInterface disableFastAnimation];
+
   GREYAssertTrue(self.testServer->Start(), @"Server did not start.");
   const GURL destinationUrl1 = self.testServer->GetURL("/pony.html");
   const GURL destinationUrl2 =
