@@ -982,52 +982,6 @@ TEST_F(SyncPrefsMigrationTest,
       SyncPrefs::GetPrefNameForTypeForTesting(UserSelectableType::kPayments)));
 }
 
-#if BUILDFLAG(IS_IOS)
-TEST_F(SyncPrefsMigrationTest, DisablesPasswordsIfUserDisabledGlobalPref) {
-  // One day, before per-account prefs were used, the user disabled the
-  // temporary passwords toggle, writing to the global pref.
-  SetBooleanUserPrefValue(kGlobalPasswordsPref, BooleanPrefState::PREF_FALSE);
-
-  // Without the migration, the per-account passwords pref would be enabled.
-  SyncPrefs prefs(&pref_service_);
-  ASSERT_TRUE(prefs.GetSelectedTypesForAccount(gaia_id_hash_)
-                  .Has(UserSelectableType::kPasswords));
-
-  prefs.MaybeMigratePasswordsToPerAccountPref(
-      SyncPrefs::SyncAccountState::kSignedInNotSyncing, gaia_id_hash_);
-
-  // After the migration, passwords is disabled.
-  EXPECT_FALSE(prefs.GetSelectedTypesForAccount(gaia_id_hash_)
-                   .Has(UserSelectableType::kPasswords));
-}
-
-TEST_F(SyncPrefsMigrationTest, LeavesPasswordsAloneIfDisabledByPolicy) {
-  // One day, before per-account prefs were used, passwords were disabled by a
-  // policy.
-  pref_service_.SetManagedPref(kGlobalPasswordsPref, base::Value(false));
-
-  // Passwords is disabled by the policy, even before the migration.
-  SyncPrefs prefs(&pref_service_);
-  ASSERT_FALSE(prefs.GetSelectedTypesForAccount(gaia_id_hash_)
-                   .Has(UserSelectableType::kPasswords));
-
-  prefs.MaybeMigratePasswordsToPerAccountPref(
-      SyncPrefs::SyncAccountState::kSignedInNotSyncing, gaia_id_hash_);
-
-  // The policy is still in place, so passwords is still disabled for the
-  // moment.
-  ASSERT_FALSE(prefs.GetSelectedTypesForAccount(gaia_id_hash_)
-                   .Has(UserSelectableType::kPasswords));
-
-  // The policy is lifted.
-  pref_service_.RemoveManagedPref(kGlobalPasswordsPref);
-
-  // Passwords should now be enabled.
-  EXPECT_TRUE(prefs.GetSelectedTypesForAccount(gaia_id_hash_)
-                  .Has(UserSelectableType::kPasswords));
-}
-#endif  // BUILDFLAG(IS_IOS)
-
 TEST_F(SyncPrefsMigrationTest, NoPassphraseMigrationForSignoutUsers) {
   SyncPrefs prefs(&pref_service_);
   // Passphrase is not set.
@@ -1112,21 +1066,7 @@ TEST_F(SyncPrefsMigrationTest, PassphraseMigrationOnlyOnceWithBrowserRestart) {
   }
 }
 
-class SyncPrefsSyncToSigninMigrationTest : public SyncPrefsMigrationTest {
- public:
-  SyncPrefsSyncToSigninMigrationTest() {
-#if BUILDFLAG(IS_IOS)
-    // MaybeMigratePrefsForSyncToSigninPart1() CHECKs this migration was already
-    // done. The state passed here doesn't matter and can be different from the
-    // one in the tests.
-    SyncPrefs(&pref_service_)
-        .MaybeMigratePasswordsToPerAccountPref(
-            SyncPrefs::SyncAccountState::kNotSignedIn, signin::GaiaIdHash());
-#endif
-  }
-};
-
-TEST_F(SyncPrefsSyncToSigninMigrationTest, NoMigrationForSignedOutUser) {
+TEST_F(SyncPrefsMigrationTest, NoMigrationForSignedOutUser) {
   base::test::ScopedFeatureList enable_sync_to_signin(
       kReplaceSyncPromosWithSignInPromos);
 
@@ -1137,7 +1077,7 @@ TEST_F(SyncPrefsSyncToSigninMigrationTest, NoMigrationForSignedOutUser) {
   // Part 2 isn't called because the engine isn't initialized.
 }
 
-TEST_F(SyncPrefsSyncToSigninMigrationTest, NoMigrationForSyncingUser) {
+TEST_F(SyncPrefsMigrationTest, NoMigrationForSyncingUser) {
   base::test::ScopedFeatureList enable_sync_to_signin(
       kReplaceSyncPromosWithSignInPromos);
 
@@ -1149,7 +1089,7 @@ TEST_F(SyncPrefsSyncToSigninMigrationTest, NoMigrationForSyncingUser) {
       /*is_using_explicit_passphrase=*/true));
 }
 
-TEST_F(SyncPrefsSyncToSigninMigrationTest, RunsOnlyOnce) {
+TEST_F(SyncPrefsMigrationTest, RunsOnlyOnce) {
   base::test::ScopedFeatureList enable_sync_to_signin(
       kReplaceSyncPromosWithSignInPromos);
 
@@ -1183,7 +1123,7 @@ TEST_F(SyncPrefsSyncToSigninMigrationTest, RunsOnlyOnce) {
   }
 }
 
-TEST_F(SyncPrefsSyncToSigninMigrationTest, RunsAgainAfterFeatureReenabled) {
+TEST_F(SyncPrefsMigrationTest, RunsAgainAfterFeatureReenabled) {
   // The feature gets enabled for the first time.
   {
     base::test::ScopedFeatureList enable_sync_to_signin(
@@ -1232,7 +1172,7 @@ TEST_F(SyncPrefsSyncToSigninMigrationTest, RunsAgainAfterFeatureReenabled) {
   }
 }
 
-TEST_F(SyncPrefsSyncToSigninMigrationTest, GlobalPrefsAreUnchanged) {
+TEST_F(SyncPrefsMigrationTest, GlobalPrefsAreUnchanged) {
   base::test::ScopedFeatureList enable_sync_to_signin(
       kReplaceSyncPromosWithSignInPromos);
 
@@ -1257,7 +1197,7 @@ TEST_F(SyncPrefsSyncToSigninMigrationTest, GlobalPrefsAreUnchanged) {
   }
 }
 
-TEST_F(SyncPrefsSyncToSigninMigrationTest, TurnsPreferencesOff) {
+TEST_F(SyncPrefsMigrationTest, TurnsPreferencesOff) {
   base::test::ScopedFeatureList enable_sync_to_signin(
       kReplaceSyncPromosWithSignInPromos);
 
@@ -1276,7 +1216,7 @@ TEST_F(SyncPrefsSyncToSigninMigrationTest, TurnsPreferencesOff) {
                    .Has(UserSelectableType::kPreferences));
 }
 
-TEST_F(SyncPrefsSyncToSigninMigrationTest, MigratesBookmarksOptedIn) {
+TEST_F(SyncPrefsMigrationTest, MigratesBookmarksOptedIn) {
   {
     // The SyncToSignin feature starts disabled.
     base::test::ScopedFeatureList disable_sync_to_signin;
@@ -1327,7 +1267,7 @@ TEST_F(SyncPrefsSyncToSigninMigrationTest, MigratesBookmarksOptedIn) {
   }
 }
 
-TEST_F(SyncPrefsSyncToSigninMigrationTest, MigratesBookmarksNotOptedIn) {
+TEST_F(SyncPrefsMigrationTest, MigratesBookmarksNotOptedIn) {
   {
     // The SyncToSignin feature starts disabled.
     base::test::ScopedFeatureList disable_sync_to_signin;
@@ -1378,8 +1318,7 @@ TEST_F(SyncPrefsSyncToSigninMigrationTest, MigratesBookmarksNotOptedIn) {
   }
 }
 
-TEST_F(SyncPrefsSyncToSigninMigrationTest,
-       TurnsAutofillOffForCustomPassphraseUser) {
+TEST_F(SyncPrefsMigrationTest, TurnsAutofillOffForCustomPassphraseUser) {
   base::test::ScopedFeatureList enable_sync_to_signin(
       kReplaceSyncPromosWithSignInPromos);
 
@@ -1409,7 +1348,7 @@ TEST_F(SyncPrefsSyncToSigninMigrationTest,
                    .Has(UserSelectableType::kAutofill));
 }
 
-TEST_F(SyncPrefsSyncToSigninMigrationTest,
+TEST_F(SyncPrefsMigrationTest,
        LeavesAutofillAloneForUserWithoutExplicitPassphrase) {
   base::test::ScopedFeatureList enable_sync_to_signin(
       kReplaceSyncPromosWithSignInPromos);
@@ -1447,7 +1386,7 @@ TEST_F(SyncPrefsSyncToSigninMigrationTest,
                   .Has(UserSelectableType::kPayments));
 }
 
-TEST_F(SyncPrefsSyncToSigninMigrationTest, Part2RunsOnSecondAttempt) {
+TEST_F(SyncPrefsMigrationTest, Part2RunsOnSecondAttempt) {
   base::test::ScopedFeatureList enable_sync_to_signin(
       kReplaceSyncPromosWithSignInPromos);
 
@@ -1666,13 +1605,10 @@ TEST_F(SyncPrefsMigrationTest,
 
   // After the GlobalToAccount migration has run, the SyncToSignin migration
   // should not have any effect anymore.
-  SyncPrefs prefs(&pref_service_);
-#if BUILDFLAG(IS_IOS)
-  prefs.MaybeMigratePasswordsToPerAccountPref(
-      SyncPrefs::SyncAccountState::kSignedInNotSyncing, gaia_id_hash_);
-#endif  // BUILDFLAG(IS_IOS)
-  EXPECT_FALSE(prefs.MaybeMigratePrefsForSyncToSigninPart1(
-      SyncPrefs::SyncAccountState::kSignedInNotSyncing, gaia_id_hash_));
+  EXPECT_FALSE(
+      SyncPrefs(&pref_service_)
+          .MaybeMigratePrefsForSyncToSigninPart1(
+              SyncPrefs::SyncAccountState::kSignedInNotSyncing, gaia_id_hash_));
 }
 
 TEST_F(SyncPrefsTest, IsTypeDisabledByUserForAccount) {
