@@ -63,8 +63,7 @@ class PageNodeImpl
                const std::string& browser_context_id,
                const GURL& visible_url,
                PagePropertyFlags initial_properties,
-               base::TimeTicks visibility_change_time,
-               PageState page_state);
+               base::TimeTicks visibility_change_time);
 
   PageNodeImpl(const PageNodeImpl&) = delete;
   PageNodeImpl& operator=(const PageNodeImpl&) = delete;
@@ -97,7 +96,6 @@ class PageNodeImpl
   bool HadFormInteraction() const override;
   bool HadUserEdits() const override;
   base::WeakPtr<content::WebContents> GetWebContents() const override;
-  PageState GetPageState() const override;
   uint64_t EstimateResidentSetSize() const override;
   uint64_t EstimatePrivateFootprintSize() const override;
 
@@ -145,7 +143,6 @@ class PageNodeImpl
   void ClearEmbedderFrameNodeAndEmbeddingType();
 
   void set_has_nonempty_beforeunload(bool has_nonempty_beforeunload);
-  void set_page_state(PageState page_state);
 
   void SetLifecycleStateForTesting(LifecycleState lifecycle_state) {
     SetLifecycleState(lifecycle_state);
@@ -379,12 +376,6 @@ class PageNodeImpl
   ObservedProperty::
       NotifiesOnlyOnChanges<bool, &PageNodeObserver::OnHadUserEditsChanged>
           had_user_edits_ GUARDED_BY_CONTEXT(sequence_checker_){false};
-  // The state of this page.
-  ObservedProperty::NotifiesOnlyOnChangesWithPreviousValue<
-      PageState,
-      PageState,
-      &PageNodeObserver::OnPageStateChanged>
-      page_state_ GUARDED_BY_CONTEXT(sequence_checker_){PageState::kActive};
 
   // Storage for PageLoadTracker user data.
   std::unique_ptr<NodeAttachedData> page_load_tracker_data_

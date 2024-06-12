@@ -251,12 +251,11 @@ std::unique_ptr<PageNodeImpl> PerformanceManagerImpl::CreatePageNode(
     const std::string& browser_context_id,
     const GURL& visible_url,
     PagePropertyFlags initial_property_flags,
-    base::TimeTicks visibility_change_time,
-    PageNode::PageState page_state) {
+    base::TimeTicks visibility_change_time) {
   return CreateNodeImpl<PageNodeImpl>(
       base::OnceCallback<void(PageNodeImpl*)>(), std::move(web_contents),
       browser_context_id, visible_url, initial_property_flags,
-      visibility_change_time, page_state);
+      visibility_change_time);
 }
 
 // static

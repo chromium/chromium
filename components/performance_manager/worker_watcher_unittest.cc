@@ -621,13 +621,12 @@ class TestFrameNodeSource : public FrameNodeSource {
 };
 
 TestFrameNodeSource::TestFrameNodeSource()
-    : page_node_(PerformanceManagerImpl::CreatePageNode(
-          nullptr,
-          "page_node_context_id",
-          GURL(),
-          PagePropertyFlags{},
-          base::TimeTicks::Now(),
-          PageNode::PageState::kActive)) {}
+    : page_node_(
+          PerformanceManagerImpl::CreatePageNode(nullptr,
+                                                 "page_node_context_id",
+                                                 GURL(),
+                                                 PagePropertyFlags{},
+                                                 base::TimeTicks::Now())) {}
 
 TestFrameNodeSource::~TestFrameNodeSource() {
   std::vector<std::unique_ptr<NodeBase>> nodes;

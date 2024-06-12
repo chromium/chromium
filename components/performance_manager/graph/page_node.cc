@@ -51,19 +51,6 @@ const char* PageNode::ToString(PageNode::LoadingState loading_state) {
   NOTREACHED_IN_MIGRATION();
 }
 
-// static
-const char* PageNode::ToString(PageNode::PageState page_state) {
-  switch (page_state) {
-    case PageState::kActive:
-      return "kActive";
-    case PageState::kPrerendering:
-      return "kPrerendering";
-    case PageState::kBackForwardCache:
-      return "kBackForwardCache";
-  }
-  NOTREACHED_IN_MIGRATION();
-}
-
 PageNode::PageNode() = default;
 PageNode::~PageNode() = default;
 

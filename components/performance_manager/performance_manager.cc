@@ -76,21 +76,6 @@ base::WeakPtr<PageNode> PerformanceManager::GetPrimaryPageNodeForWebContents(
 }
 
 // static
-base::WeakPtr<PageNode> PerformanceManager::GetPageNodeForRenderFrameHost(
-    content::RenderFrameHost* rfh) {
-  auto* wc = content::WebContents::FromRenderFrameHost(rfh);
-  DCHECK(wc);
-  PerformanceManagerTabHelper* helper =
-      PerformanceManagerTabHelper::FromWebContents(wc);
-  if (!helper)
-    return nullptr;
-  auto* page_node = helper->GetPageNodeForRenderFrameHost(rfh);
-  if (!page_node)
-    return nullptr;
-  return page_node->GetWeakPtrOnUIThread();
-}
-
-// static
 base::WeakPtr<FrameNode> PerformanceManager::GetFrameNodeForRenderFrameHost(
     content::RenderFrameHost* rfh) {
   DCHECK(rfh);

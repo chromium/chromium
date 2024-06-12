@@ -271,7 +271,6 @@ class LenientMockObserver : public PageNodeImpl::Observer {
   MOCK_METHOD1(OnFaviconUpdated, void(const PageNode*));
   MOCK_METHOD1(OnHadFormInteractionChanged, void(const PageNode*));
   MOCK_METHOD1(OnHadUserEditsChanged, void(const PageNode*));
-  MOCK_METHOD2(OnPageStateChanged, void(const PageNode*, PageNode::PageState));
   MOCK_METHOD2(OnAboutToBeDiscarded, void(const PageNode*, const PageNode*));
 
   void SetNotifiedPageNode(const PageNode* page_node) {
@@ -451,42 +450,6 @@ TEST_F(PageNodeImplTest, GetMainFrameNodes) {
   auto frames = ToPublic(page.get())->GetMainFrameNodes();
   EXPECT_THAT(frames, testing::UnorderedElementsAre(ToPublic(frame1.get()),
                                                     ToPublic(frame2.get())));
-}
-
-TEST_F(PageNodeImplTest, BackForwardCache) {
-  auto process = CreateNode<ProcessNodeImpl>();
-  auto page = CreateNode<PageNodeImpl>();
-  EXPECT_EQ(PageNode::PageState::kActive, page->GetPageState());
-
-  MockObserver obs;
-  graph()->AddPageNodeObserver(&obs);
-
-  EXPECT_CALL(obs, OnPageStateChanged(_, PageNode::PageState::kActive));
-  page->set_page_state(PageNode::PageState::kBackForwardCache);
-  EXPECT_EQ(PageNode::PageState::kBackForwardCache, page->GetPageState());
-
-  graph()->RemovePageNodeObserver(&obs);
-}
-
-TEST_F(PageNodeImplTest, Prerendering) {
-  auto process = CreateNode<ProcessNodeImpl>();
-  auto page = CreateNode<PageNodeImpl>(
-      nullptr,                              // web_contents
-      std::string(),                        // browser_context_id
-      GURL(),                               // url
-      PagePropertyFlags{},                  // initial_property_flags
-      base::TimeTicks::Now(),               // visibility_change_time
-      PageNode::PageState::kPrerendering);  // page_state
-  EXPECT_EQ(PageNode::PageState::kPrerendering, page->GetPageState());
-
-  MockObserver obs;
-  graph()->AddPageNodeObserver(&obs);
-
-  EXPECT_CALL(obs, OnPageStateChanged(_, PageNode::PageState::kPrerendering));
-  page->set_page_state(PageNode::PageState::kActive);
-  EXPECT_EQ(PageNode::PageState::kActive, page->GetPageState());
-
-  graph()->RemovePageNodeObserver(&obs);
 }
 
 }  // namespace performance_manager

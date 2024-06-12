@@ -182,11 +182,10 @@ struct TestNodeWrapper<PageNodeImpl>::Factory {
       const std::string& browser_context_id = std::string(),
       const GURL& url = GURL(),
       PagePropertyFlags initial_property_flags = {},
-      base::TimeTicks visibility_change_time = base::TimeTicks::Now(),
-      PageNode::PageState page_state = PageNode::PageState::kActive) {
+      base::TimeTicks visibility_change_time = base::TimeTicks::Now()) {
     return std::make_unique<PageNodeImpl>(
         std::move(web_contents), browser_context_id, url,
-        initial_property_flags, visibility_change_time, page_state);
+        initial_property_flags, visibility_change_time);
   }
 };
 

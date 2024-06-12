@@ -142,8 +142,7 @@ void BFCachePolicy::OnMemoryPressure(MemoryPressureLevel new_level) {
 
   // Apply the cache limit to all pages.
   for (const PageNode* page_node : graph_->GetAllPageNodes()) {
-    if (page_node->GetPageState() == PageNode::PageState::kActive &&
-        PageMightHaveFramesInBFCache(page_node)) {
+    if (PageMightHaveFramesInBFCache(page_node)) {
       MaybeFlushBFCache(page_node, new_level);
     }
   }

@@ -119,8 +119,7 @@ class PerformanceManagerImpl : public PerformanceManager {
       const std::string& browser_context_id,
       const GURL& visible_url,
       PagePropertyFlags initial_properties,
-      base::TimeTicks visibility_change_time,
-      PageNode::PageState page_state);
+      base::TimeTicks visibility_change_time);
   static std::unique_ptr<ProcessNodeImpl> CreateProcessNode(
       BrowserProcessNodeTag tag);
   static std::unique_ptr<ProcessNodeImpl> CreateProcessNode(
