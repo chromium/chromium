@@ -77,4 +77,27 @@ optimization_guide::testing::TestHintsComponentCreator
                                 metadata);
 }
 
++ (void)addHintForTesting:(NSString*)url
+                     type:(optimization_guide::proto::OptimizationType)type
+           serialized_any:(NSData*)serialized_any
+                 type_url:(NSString*)type_url
+
+{
+  std::string serialized = std::string(
+      static_cast<const char*>(serialized_any.bytes), serialized_any.length);
+
+  optimization_guide::proto::Any any_metadata;
+  any_metadata.set_type_url(base::SysNSStringToUTF8(type_url).c_str());
+  any_metadata.set_value(serialized);
+  optimization_guide::OptimizationMetadata metadata;
+  metadata.set_any_metadata(any_metadata);
+
+  OptimizationGuideService* service =
+      OptimizationGuideServiceFactory::GetForBrowserState(
+          chrome_test_util::GetOriginalBrowserState());
+  DCHECK(service);
+  service->AddHintForTesting(GURL(base::SysNSStringToUTF8(url)), type,
+                             metadata);
+}
+
 @end

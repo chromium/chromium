@@ -12,8 +12,12 @@
 #import "base/test/ios/wait_util.h"
 #import "base/time/time.h"
 #import "components/bookmarks/common/bookmark_pref_names.h"
+#import "components/commerce/core/proto/price_tracking.pb.h"
+#import "components/unified_consent/pref_names.h"
 #import "ios/chrome/browser/bookmarks/model/bookmark_model_type.h"
 #import "ios/chrome/browser/metrics/model/metrics_app_interface.h"
+#import "ios/chrome/browser/optimization_guide/model/optimization_guide_test_app_interface.h"
+#import "ios/chrome/browser/shared/model/prefs/pref_names.h"
 #import "ios/chrome/browser/shared/public/features/features.h"
 #import "ios/chrome/browser/signin/model/fake_system_identity.h"
 #import "ios/chrome/browser/tabs/model/inactive_tabs/features.h"
@@ -88,6 +92,14 @@ char kResponse1[] = "Test Page 1 content";
 char kResponse2[] = "Test Page 2 content";
 char kResponse3[] = "Test Page 3 content";
 char kResponse4[] = "Test Page 4 content";
+NSString* const kTypeURL =
+    @"type.googleapis.com/optimization_guide.proto.PriceTrackingData";
+const int64_t kCurrentPriceMicros = 5'000'000;
+const int64_t kPreviousPriceMicros = 10'000'000;
+const int64_t kOfferId = 50;
+const char kCurrencyCode[] = "USD";
+NSString* const kExpectedCurrentPrice = @"$5.00";
+NSString* const kExpectedPreviousPrice = @"$10";
 
 id<GREYMatcher> RecentlyClosedTabWithTitle(NSString* title) {
   return grey_allOf(grey_ancestor(grey_accessibilityID(
@@ -538,6 +550,52 @@ void EchoURLDefaultSearchEngineResponseProvider::GetResponseHeadersAndBody(
                   @"Expected no tab in regular tab grid.");
   GREYAssertEqual(4, [ChromeEarlGrey inactiveTabCount],
                   @"Expected 4 inactive tabs.");
+}
+
+- (void)testPriceDrops {
+  commerce::PriceTrackingData price_tracking_data;
+  price_tracking_data.mutable_product_update()->set_offer_id(kOfferId);
+  price_tracking_data.mutable_product_update()
+      ->mutable_old_price()
+      ->set_currency_code(kCurrencyCode);
+  price_tracking_data.mutable_product_update()
+      ->mutable_new_price()
+      ->set_currency_code(kCurrencyCode);
+  price_tracking_data.mutable_product_update()
+      ->mutable_new_price()
+      ->set_amount_micros(kCurrentPriceMicros);
+  price_tracking_data.mutable_product_update()
+      ->mutable_old_price()
+      ->set_amount_micros(kPreviousPriceMicros);
+
+  std::string serialized_price_tracking_data;
+  price_tracking_data.SerializeToString(&serialized_price_tracking_data);
+  [OptimizationGuideTestAppInterface
+      addHintForTesting:base::SysUTF8ToNSString(_URL1.spec())
+                   type:optimization_guide::proto::OptimizationType::
+                            PRICE_TRACKING
+         serialized_any:[[NSData alloc]
+                            initWithBytes:serialized_price_tracking_data.c_str()
+                                   length:serialized_price_tracking_data.size()]
+               type_url:kTypeURL];
+  [ChromeEarlGrey setBoolValue:YES
+                   forUserPref:unified_consent::prefs::
+                                   kUrlKeyedAnonymizedDataCollectionEnabled];
+  [ChromeEarlGrey setBoolValue:YES
+                   forUserPref:prefs::kTrackPricesOnTabsEnabled];
+
+  FakeSystemIdentity* fakeIdentity = [FakeSystemIdentity fakeIdentity1];
+  [SigninEarlGrey addFakeIdentity:fakeIdentity];
+  [SigninEarlGreyUI signinWithFakeIdentity:fakeIdentity];
+
+  [ChromeEarlGrey openNewTab];
+  [ChromeEarlGrey loadURL:_URL1];
+  [ChromeEarlGrey waitForWebStateContainingText:kResponse1];
+  [ChromeEarlGreyUI openTabGrid];
+  id<GREYMatcher> new_price = grey_text(kExpectedCurrentPrice);
+  [ChromeEarlGrey waitForUIElementToAppearWithMatcher:new_price];
+  id<GREYMatcher> prev_price = grey_text(kExpectedPreviousPrice);
+  [ChromeEarlGrey waitForUIElementToAppearWithMatcher:prev_price];
 }
 
 // Tests that tapping Close All from the incognito grid shows no tabs and does
