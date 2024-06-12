@@ -12,6 +12,9 @@
 // Set the virtual card enrollment bottom sheet data.
 - (void)setCardData:(VirtualCardEnrollmentBottomSheetData*)data;
 
+// Shows the loading stating indicating that enrollment is in progress.
+- (void)showLoadingState;
+
 @end
 
 #endif  // IOS_CHROME_BROWSER_UI_AUTOFILL_BOTTOM_SHEET_VIRTUAL_CARD_ENROLLMENT_BOTTOM_SHEET_CONSUMER_H_

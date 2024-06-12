@@ -12,6 +12,7 @@
 #import "components/autofill/core/browser/payments/test_legal_message_line.h"
 #import "components/autofill/core/browser/payments/virtual_card_enrollment_manager.h"
 #import "components/autofill/core/browser/ui/payments/virtual_card_enroll_ui_model.h"
+#import "components/autofill/core/common/autofill_payments_features.h"
 #import "ios/chrome/browser/shared/public/commands/browser_coordinator_commands.h"
 #import "ios/chrome/browser/ui/autofill/bottom_sheet/virtual_card_enrollment_bottom_sheet_consumer.h"
 #import "testing/gmock/include/gmock/gmock.h"
@@ -29,6 +30,9 @@
 @end
 
 @implementation TestVirtualCardEnrollmentBottomSheetConsumer
+
+- (void)showLoadingState {
+}
 
 @end
 
@@ -187,6 +191,9 @@ TEST_F(VirtualCardEnrollmentBottomSheetMediatorTest,
 // card enrollment.
 TEST_F(VirtualCardEnrollmentBottomSheetMediatorTest,
        AcceptButtonPushedDismissesVirtualCardEnrollment) {
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitAndDisableFeature(
+      autofill::features::kAutofillEnableVcnEnrollLoadingAndConfirmation);
   VirtualCardEnrollmentBottomSheetMediator* mediator =
       MakeMediator(MakeModel());
 
@@ -195,6 +202,23 @@ TEST_F(VirtualCardEnrollmentBottomSheetMediatorTest,
   [mediator didAccept];
 
   EXPECT_OCMOCK_VERIFY((id)mock_commands_);
+}
+
+TEST_F(VirtualCardEnrollmentBottomSheetMediatorTest,
+       AcceptButtonPushedEntersLoadingState) {
+  base::test::ScopedFeatureList scoped_feature_list(
+      autofill::features::kAutofillEnableVcnEnrollLoadingAndConfirmation);
+  id<VirtualCardEnrollmentBottomSheetConsumer> mock_consumer =
+      OCMProtocolMock(@protocol(VirtualCardEnrollmentBottomSheetConsumer));
+  VirtualCardEnrollmentBottomSheetMediator* mediator =
+      MakeMediator(MakeModel());
+  mediator.consumer = mock_consumer;
+
+  OCMExpect([mock_consumer showLoadingState]);
+
+  [mediator didAccept];
+
+  EXPECT_OCMOCK_VERIFY((id)mock_consumer);
 }
 
 // Test that the result metric is logged when the prompt is accepted.

@@ -6,9 +6,11 @@
 
 #import <optional>
 
+#import "base/feature_list.h"
 #import "base/strings/sys_string_conversions.h"
 #import "components/autofill/core/browser/payments/virtual_card_enroll_metrics_logger.h"
 #import "components/autofill/core/browser/ui/payments/virtual_card_enroll_ui_model.h"
+#import "components/autofill/core/common/autofill_payments_features.h"
 #import "ios/chrome/browser/autofill/model/credit_card/credit_card_data.h"
 #import "ios/chrome/browser/shared/public/commands/browser_coordinator_commands.h"
 #import "ios/chrome/browser/ui/autofill/bottom_sheet/virtual_card_enrollment_bottom_sheet_data.h"
@@ -87,6 +89,11 @@
   _callbacks.reset();
   [self logResultMetric:autofill::VirtualCardEnrollmentBubbleResult::
                             VIRTUAL_CARD_ENROLLMENT_BUBBLE_ACCEPTED];
+  if (base::FeatureList::IsEnabled(
+          autofill::features::kAutofillEnableVcnEnrollLoadingAndConfirmation)) {
+    [_consumer showLoadingState];
+    return;
+  }
   [_browserCoordinatorCommands dismissVirtualCardEnrollmentBottomSheet];
 }
 

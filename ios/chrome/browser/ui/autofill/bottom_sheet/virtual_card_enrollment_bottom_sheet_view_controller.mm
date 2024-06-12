@@ -86,6 +86,11 @@ CGFloat const kCreditCardCellHeight = 64;
   self.secondaryActionString = data.cancelActionText;
 }
 
+- (void)showLoadingState {
+  // TODO(crbug.com/339887700): Implement an activity indicator for the loading
+  // state.
+}
+
 #pragma mark - ConfirmationAlertActionHandler
 
 - (void)confirmationAlertPrimaryAction {
