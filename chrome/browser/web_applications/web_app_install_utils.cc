@@ -731,20 +731,18 @@ void PopulateHomeTabIconsFromHomeTabManifestParams(
 void UpdateWebAppInfoFromManifest(const blink::mojom::Manifest& manifest,
                                   const GURL& manifest_url,
                                   WebAppInstallInfo* web_app_info) {
-  // Give the full length name priority if it's not empty.
-  std::u16string name = manifest.name.value_or(std::u16string());
-  if (!name.empty())
-    web_app_info->title = name;
-  else if (manifest.short_name)
-    web_app_info->title = *manifest.short_name;
-
-  if (manifest.id.is_valid()) {
-    web_app_info->SetManifestId(manifest.id);
+  // The manifest parser guarantees these are valid/invalid together and
+  // same-origin.
+  if (manifest.id.is_valid() && manifest.start_url.is_valid()) {
+    web_app_info->SetManifestIdAndStartUrl(manifest.id, manifest.start_url);
   }
 
-  // Set the url based on the manifest value, if any.
-  if (manifest.start_url.is_valid()) {
-    web_app_info->SetStartUrl(manifest.start_url);
+  // Give the full length name priority if it's not empty.
+  std::u16string name = manifest.name.value_or(std::u16string());
+  if (!name.empty()) {
+    web_app_info->title = name;
+  } else if (manifest.short_name) {
+    web_app_info->title = *manifest.short_name;
   }
 
   if (manifest.scope.is_valid())
@@ -783,10 +781,9 @@ void UpdateWebAppInfoFromManifest(const blink::mojom::Manifest& manifest,
   web_app_info->scope_extensions =
       ToWebAppScopeExtensions(manifest.scope_extensions);
 
-  GURL inferred_scope = web_app_info->scope.is_valid() ? web_app_info->scope
-                        : web_app_info->start_url().is_valid()
-                            ? web_app_info->start_url().GetWithoutFilename()
-                            : GURL();
+  GURL inferred_scope = web_app_info->scope.is_valid()
+                            ? web_app_info->scope
+                            : web_app_info->start_url().GetWithoutFilename();
   if (base::FeatureList::IsEnabled(
           blink::features::kWebAppManifestLockScreen) &&
       manifest.lock_screen && manifest.lock_screen->start_url.is_valid() &&
@@ -1104,17 +1101,15 @@ void CreateWebAppInstallTabHelpers(content::WebContents* web_contents) {
 void SetWebAppManifestFields(const WebAppInstallInfo& web_app_info,
                              WebApp& web_app,
                              bool skip_icons_on_download_failure) {
+  // TODO(crbug.com/344718166): ManifestId should already be set the same,
+  // otherwise setting it here would be changing the app's ID. This should be a
+  // CHECK_EQ instead of a set.
+  web_app.SetManifestId(web_app_info.manifest_id());
+
   DCHECK(!web_app_info.title.empty());
   web_app.SetName(base::UTF16ToUTF8(web_app_info.title));
 
   web_app.SetStartUrl(web_app_info.start_url());
-
-  // TODO(b/280862254): CHECK that the manifest_id isn't empty after the empty
-  // constructor is removed. Currently, `SetStartUrl` sets a default manifest_id
-  // based on the start_url.
-  if (web_app_info.manifest_id().is_valid()) {
-    web_app.SetManifestId(web_app_info.manifest_id());
-  }
 
   web_app.SetDisplayMode(web_app_info.display_mode);
   web_app.SetDisplayModeOverride(web_app_info.display_override);

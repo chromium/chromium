@@ -415,6 +415,8 @@ webapps::AppId FakeWebContentsManager::CreateBasicInstallPageState(
 
   install_page_state.manifest_before_default_processing =
       blink::mojom::Manifest::New();
+  install_page_state.manifest_before_default_processing->id =
+      start_url.GetWithoutRef();
   install_page_state.manifest_before_default_processing->start_url = start_url;
   install_page_state.manifest_before_default_processing->display =
       blink::mojom::DisplayMode::kStandalone;

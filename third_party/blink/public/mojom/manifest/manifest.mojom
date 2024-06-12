@@ -29,7 +29,7 @@ struct Manifest {
 
   mojo_base.mojom.String16? description;
 
-  // This is empty if the start_url is empty.
+  // This is empty or invalid iff the start_url is empty or invalid.
   url.mojom.Url id;
 
   // Set to true if the json specified a specific value for the id.

@@ -181,7 +181,6 @@ void ManifestUpdateCheckCommand::StashNewManifestJson(
 
   new_install_info_ = std::make_unique<WebAppInstallInfo>(
       CreateWebAppInfoFromManifest(*opt_manifest, manifest_url));
-  CHECK(new_install_info_->manifest_id().is_valid());
 
   if (app_id_ !=
       GenerateAppIdFromManifestId(new_install_info_->manifest_id())) {
@@ -245,7 +244,6 @@ void ManifestUpdateCheckCommand::ValidateNewScopeExtensions(
   }
 
   CHECK(new_install_info_);
-  CHECK(new_install_info_->manifest_id().is_valid());
   ScopeExtensions new_scope_extensions = new_install_info_->scope_extensions;
 
   lock_->origin_association_manager().GetWebAppOriginAssociations(

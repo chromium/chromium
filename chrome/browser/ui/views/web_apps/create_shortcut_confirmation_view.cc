@@ -289,7 +289,6 @@ void ShowCreateShortcutDialog(
     std::unique_ptr<webapps::MlInstallOperationTracker> install_tracker,
     AppInstallationAcceptanceCallback callback) {
   CHECK(web_app_info);
-  CHECK(web_app_info->manifest_id().is_valid());
   CHECK(install_tracker);
   auto* dialog = new CreateShortcutConfirmationView(
       std::move(web_app_info), std::move(install_tracker), std::move(callback));

@@ -261,7 +261,6 @@ class WebAppBrowserTest : public WebAppBrowserTestBase {
         base::StringPrintf("/web_apps/basic.html?index=%d", index++));
     auto web_app_info =
         WebAppInstallInfo::CreateWithStartUrlForTesting(app_url);
-    web_app_info->SetStartUrl(app_url);
     web_app_info->scope = app_url;
     web_app_info->display_mode = display_mode;
     web_app_info->user_display_mode = open_as_window

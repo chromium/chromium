@@ -132,7 +132,6 @@ void FetchInstallInfoFromInstallUrlCommand::OnGetWebAppInstallInfo(
     return;
   }
 
-  install_info->SetStartUrl(install_url_);
   install_info->install_url = install_url_;
   install_info->parent_app_manifest_id = parent_manifest_id_;
 

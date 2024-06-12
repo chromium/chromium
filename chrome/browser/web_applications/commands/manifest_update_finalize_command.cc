@@ -46,8 +46,6 @@ ManifestUpdateFinalizeCommand::ManifestUpdateFinalizeCommand(
       keep_alive_(std::move(keep_alive)),
       profile_keep_alive_(std::move(profile_keep_alive)) {
   CHECK(install_info_);
-  CHECK(install_info_->manifest_id().is_valid());
-  CHECK(install_info_->start_url().is_valid());
   GetMutableDebugValue().Set("url", url_.spec());
   GetMutableDebugValue().Set("app_id", app_id_);
   GetMutableDebugValue().Set("install_info_->manifest_id",

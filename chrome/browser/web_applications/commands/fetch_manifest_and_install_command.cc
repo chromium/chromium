@@ -332,7 +332,6 @@ void FetchManifestAndInstallCommand::OnGetWebAppInstallInfo(
     return;
   }
   web_app_info_ = std::move(fallback_web_app_info);
-  CHECK(web_app_info_->manifest_id().is_valid());
   LogInstallInfo(*GetMutableDebugValue().EnsureDict("fallback_web_app_info"),
                  *web_app_info_);
 

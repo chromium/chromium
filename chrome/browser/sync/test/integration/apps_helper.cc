@@ -247,8 +247,6 @@ bool AwaitWebAppQuiescence(
 
 webapps::AppId InstallWebApp(Profile* profile,
                              std::unique_ptr<web_app::WebAppInstallInfo> info) {
-  DCHECK(info->start_url().is_valid());
-
   return web_app::test::InstallWebApp(
       profile, std::move(info),
       /*overwrite_existing_manifest_fields=*/true);

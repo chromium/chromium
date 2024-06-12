@@ -22,15 +22,9 @@
 
 namespace web_app {
 namespace {
-webapps::ManifestId GetManifestIdWithBackup(
-    const WebAppInstallInfo& install_info) {
-  return install_info.manifest_id().is_empty()
-             ? GenerateManifestIdFromStartUrlOnly(install_info.start_url())
-             : install_info.manifest_id();
-}
 
-webapps::AppId GetAppIdWithBackup(const WebAppInstallInfo& install_info) {
-  return GenerateAppIdFromManifestId(GetManifestIdWithBackup(install_info),
+webapps::AppId GetAppId(const WebAppInstallInfo& install_info) {
+  return GenerateAppIdFromManifestId(install_info.manifest_id(),
                                      install_info.parent_app_manifest_id);
 }
 }  // namespace
@@ -44,17 +38,16 @@ InstallFromInfoCommand::InstallFromInfoCommand(
     std::optional<WebAppInstallParams> install_params)
     : WebAppCommand<AppLock, const webapps::AppId&, webapps::InstallResultCode>(
           "InstallFromInfoCommand",
-          AppLockDescription(GetAppIdWithBackup(*install_info)),
+          AppLockDescription(GetAppId(*install_info)),
           std::move(install_callback),
           /*args_for_shutdown=*/
           std::make_tuple(/*app_id=*/
-                          GetAppIdWithBackup(*install_info),
+                          GetAppId(*install_info),
                           webapps::InstallResultCode::
                               kCancelledOnWebAppProviderShuttingDown)),
       profile_(*profile),
-      app_id_(GetAppIdWithBackup(*install_info)) {
-  GetMutableDebugValue().Set("manifest_id",
-                             GetManifestIdWithBackup(*install_info).spec());
+      app_id_(GetAppId(*install_info)) {
+  GetMutableDebugValue().Set("manifest_id", install_info->manifest_id().spec());
   GetMutableDebugValue().Set("app_id", app_id_);
   install_from_info_job_ = std::make_unique<InstallFromInfoJob>(
       profile, *GetMutableDebugValue().EnsureDict("install_from_info_job"),

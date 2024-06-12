@@ -245,14 +245,6 @@ void WebAppInstallFinalizer::FinalizeInstall(
   }
 
   webapps::ManifestId manifest_id = web_app_info.manifest_id();
-  if (manifest_id.is_valid()) {
-    CHECK(url::Origin::Create(manifest_id)
-              .IsSameOriginWith(url::Origin::Create(web_app_info.start_url())));
-  } else {
-    // TODO(b/280862254): After the manifest id constructor is required, this
-    // can be removed.
-    manifest_id = GenerateManifestIdFromStartUrlOnly(web_app_info.start_url());
-  }
 
   // parent_app_manifest_id can only exist if installing as a sub-app.
   CHECK((options.install_surface == webapps::WebappInstallSource::SUB_APP &&
@@ -291,16 +283,12 @@ void WebAppInstallFinalizer::OnOriginAssociationValidated(
   if (existing_web_app) {
     web_app = std::make_unique<WebApp>(*existing_web_app);
   } else {
+    // TODO(b/344718166): Ensure that manifest_id corresponds to app_id here.
     web_app = std::make_unique<WebApp>(app_id);
     // Ensure `web_app` has a start_url and manifest_id set before other calls
     // that depend on state being complete, eg. `WebApp::sync_proto()`.
     web_app->SetStartUrl(web_app_info.start_url());
-    // TODO(b/280862254): CHECK that the manifest_id isn't empty after the
-    // no-arg `WebAppInstallInfo` constructor is removed. Currently,
-    // `SetStartUrl` sets a default manifest_id based on the start_url.
-    if (web_app_info.manifest_id().is_valid()) {
-      web_app->SetManifestId(web_app_info.manifest_id());
-    }
+    web_app->SetManifestId(web_app_info.manifest_id());
   }
 
   web_app->SetValidatedScopeExtensions(validated_scope_extensions);
@@ -427,19 +415,7 @@ void WebAppInstallFinalizer::FinalizeUpdate(
     const WebAppInstallInfo& web_app_info,
     InstallFinalizedCallback callback) {
   CHECK(started_);
-  CHECK(web_app_info.start_url().is_valid());
   webapps::ManifestId manifest_id = web_app_info.manifest_id();
-  if (manifest_id.is_valid()) {
-    CHECK(url::Origin::Create(manifest_id)
-              .IsSameOriginWith(url::Origin::Create(web_app_info.start_url())));
-  } else {
-    // TODO(b/280862254): After the manifest id constructor is required, this
-    // can be removed.
-    CHECK_IS_TEST();
-    manifest_id = GenerateManifestIdFromStartUrlOnly(web_app_info.start_url());
-  }
-  CHECK(manifest_id.is_valid());
-
   const webapps::AppId app_id = GenerateAppIdFromManifestId(manifest_id);
   const WebApp* existing_web_app =
       provider_->registrar_unsafe().GetAppById(app_id);

@@ -82,7 +82,6 @@ WebAppInstallDialogDelegate::WebAppInstallDialogDelegate(
       tracker_(tracker),
       dialog_type_(dialog_type) {
   CHECK(install_info_);
-  CHECK(install_info_->manifest_id().is_valid());
   CHECK(install_tracker_);
   CHECK(prefs_);
 }

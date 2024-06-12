@@ -350,17 +350,22 @@ WebAppInstallInfo::CreateWithStartUrlForTesting(const GURL& start_url) {
   return info;
 }
 
-WebAppInstallInfo::WebAppInstallInfo(const webapps::ManifestId& manifest_id,
-                                     const GURL& start_url)
-    : manifest_id_(manifest_id), start_url_(start_url) {
-  // TODO(b/280862254): Ideally move this validation logic into a creator
-  // function that can return error messages.
-  CHECK(manifest_id.is_valid());
-  CHECK(!manifest_id.has_ref());
-  CHECK(start_url.is_valid());
+namespace {
+void CheckValidManifestIdAndStartUrl(const webapps::ManifestId& manifest_id,
+                                     const GURL& start_url) {
+  CHECK(manifest_id.is_valid(), base::NotFatalUntil::M129);
+  CHECK(!manifest_id.has_ref(), base::NotFatalUntil::M129);
+  CHECK(start_url.is_valid(), base::NotFatalUntil::M129);
   CHECK(url::Origin::Create(start_url).IsSameOriginWith(
             url::Origin::Create(manifest_id)),
         base::NotFatalUntil::M129);
+}
+}  // namespace
+
+WebAppInstallInfo::WebAppInstallInfo(const webapps::ManifestId& manifest_id,
+                                     const GURL& start_url)
+    : manifest_id_(manifest_id), start_url_(start_url) {
+  CheckValidManifestIdAndStartUrl(manifest_id_, start_url_);
 }
 
 WebAppInstallInfo::WebAppInstallInfo(const WebAppInstallInfo& other) = default;
@@ -373,6 +378,14 @@ WebAppInstallInfo::~WebAppInstallInfo() = default;
 
 WebAppInstallInfo WebAppInstallInfo::Clone() const {
   return WebAppInstallInfo(*this);
+}
+
+void WebAppInstallInfo::SetManifestIdAndStartUrl(
+    const webapps::ManifestId& manifest_id,
+    const GURL& start_url) {
+  CheckValidManifestIdAndStartUrl(manifest_id, start_url);
+  manifest_id_ = manifest_id;
+  start_url_ = start_url;
 }
 
 bool operator==(const IconSizes& icon_sizes1, const IconSizes& icon_sizes2) {

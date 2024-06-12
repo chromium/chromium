@@ -227,10 +227,10 @@ void ExternalAppResolutionCommand::OnGetWebAppInstallInfoInCommand(
   // Write values from install_params_ to web_app_info.
   // Set start_url to fallback_start_url as web_contents may have been
   // redirected. Will be overridden by manifest values if present.
-  CHECK(install_params_->fallback_start_url.is_valid());
-  web_app_info_->SetStartUrl(install_params_->fallback_start_url);
-  web_app_info_->SetManifestId(
-      GenerateManifestIdFromStartUrlOnly(web_app_info_->start_url()));
+  const GURL& start_url = install_params_->fallback_start_url;
+  CHECK(start_url.is_valid());
+  web_app_info_->SetManifestIdAndStartUrl(
+      GenerateManifestIdFromStartUrlOnly(start_url), start_url);
 
   if (install_params_->fallback_app_name.has_value()) {
     web_app_info_->title = install_params_->fallback_app_name.value();
@@ -609,12 +609,6 @@ void ExternalAppResolutionCommand::InstallFromInfo() {
   base::Extend(web_app_info_->additional_search_terms,
                std::move(install_params_->additional_search_terms));
   web_app_info_->install_url = install_params_->install_url;
-
-  if (web_app_info_->manifest_id().is_empty() ||
-      !web_app_info_->manifest_id().is_valid()) {
-    web_app_info_->SetManifestId(
-        GenerateManifestIdFromStartUrlOnly(web_app_info_->start_url()));
-  }
 
   if (!apps_lock_) {
     command_manager()->lock_manager().UpgradeAndAcquireLock(

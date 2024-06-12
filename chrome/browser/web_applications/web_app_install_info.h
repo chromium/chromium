@@ -240,8 +240,8 @@ struct WebAppInstallInfo {
   static std::unique_ptr<WebAppInstallInfo> CreateWithStartUrlForTesting(
       const GURL& start_url);
 
-  // The `manifest_id` and the `start_url` MUST be valid. The `manifest_id` MUST
-  // be created properly, and cannot contain refs (e.g. '#refs').
+  // The `manifest_id` and the `start_url` MUST be valid and same-origin. The
+  // `manifest_id` MUST NOT contain refs (e.g. '#refs').
   WebAppInstallInfo(const webapps::ManifestId& manifest_id,
                     const GURL& start_url);
 
@@ -266,13 +266,11 @@ struct WebAppInstallInfo {
   // https://www.w3.org/TR/appmanifest/#start_url-member
   const GURL& start_url() const { return start_url_; }
 
-  // TODO(b/280862254): Replace this method with a safe alternative.
-  void SetManifestId(const webapps::ManifestId& manifest_id) {
-    manifest_id_ = manifest_id;
-  }
-
-  // TODO(b/280862254): Replace this method with a safe alternative.
-  void SetStartUrl(const GURL& start_url) { start_url_ = start_url; }
+  // Set the `manifest_id` and `start_url` fields. Both are set at once to allow
+  // origin changes if necessary. The `manifest_id` and the `start_url` have the
+  // same requirements as in the WebAppInstallInfo constructor.
+  void SetManifestIdAndStartUrl(const webapps::ManifestId& manifest_id,
+                                const GURL& start_url);
 
   // Title of the application.
   std::u16string title;

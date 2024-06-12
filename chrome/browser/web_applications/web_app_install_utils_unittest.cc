@@ -122,6 +122,7 @@ TEST(WebAppInstallUtils, UpdateWebAppInfoFromManifest) {
   blink::mojom::Manifest manifest;
   const GURL kAppUrl("http://www.chromium.org/index.html");
   manifest.start_url = kAppUrl;
+  manifest.id = kAppUrl;
   manifest.scope = kAppUrl.GetWithoutFilename();
   manifest.short_name = kAppTestShortName;
 
@@ -446,6 +447,7 @@ TEST(WebAppInstallUtils, UpdateWebAppInfoFromManifestWithShortcuts) {
   blink::mojom::Manifest manifest;
   const GURL kAppUrl("http://www.chromium.org/index.html");
   manifest.start_url = kAppUrl;
+  manifest.id = kAppUrl;
   manifest.scope = kAppUrl.GetWithoutFilename();
   manifest.short_name = kAppTestShortName;
 
@@ -759,6 +761,7 @@ TEST(WebAppInstallUtils,
   blink::mojom::Manifest manifest;
   const GURL kAppUrl("http://www.chromium.org/index.html");
   manifest.start_url = kAppUrl;
+  manifest.id = kAppUrl;
   manifest.scope = kAppUrl.GetWithoutFilename();
 
   {
@@ -794,6 +797,7 @@ TEST(WebAppInstallUtils,
   blink::mojom::Manifest manifest;
   const GURL kAppUrl("http://www.chromium.org/index.html");
   manifest.start_url = kAppUrl;
+  manifest.id = kAppUrl;
   manifest.scope = kAppUrl.GetWithoutFilename();
 
   {

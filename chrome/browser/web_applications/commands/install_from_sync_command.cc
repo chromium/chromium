@@ -205,13 +205,13 @@ void InstallFromSyncCommand::OnDidPerformInstallableCheck(
     const GURL& manifest_url,
     bool valid_manifest_for_web_app,
     webapps::InstallableStatusCode error_code) {
-  if (opt_manifest) {
-    UpdateWebAppInfoFromManifest(*opt_manifest, manifest_url,
-                                 install_info_.get());
-  } else {
-    // If there is no manifest, set the manifest id from the parameters.
-    install_info_->SetManifestId(params_.manifest_id);
+  if (!opt_manifest) {
+    InstallFallback(webapps::InstallResultCode::kExpectedAppIdCheckFailed);
+    return;
   }
+
+  UpdateWebAppInfoFromManifest(*opt_manifest, manifest_url,
+                               install_info_.get());
 
   // Ensure that the manifest linked is the right one.
   webapps::AppId generated_app_id =
