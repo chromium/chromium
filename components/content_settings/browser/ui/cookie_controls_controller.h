@@ -159,13 +159,14 @@ class CookieControlsController final
 
   std::vector<TrackingProtectionFeature> CreateTrackingProtectionFeatureList(
       CookieControlsEnforcement enforcement,
-      bool are_3pcs_allowed);
+      bool cookies_allowed,
+      bool protections_on);
 
   CookieControlsEnforcement GetEnforcementForThirdPartyCookieBlocking(
       CookieBlocking3pcdStatus status,
       const GURL url,
       SettingInfo info,
-      bool is_allowed);
+      bool cookies_allowed);
 
   bool HasOriginSandboxedTopLevelDocument() const;
 

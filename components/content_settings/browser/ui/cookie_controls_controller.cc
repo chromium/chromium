@@ -215,6 +215,9 @@ CookieControlsController::Status CookieControlsController::GetStatus(
 
   SettingInfo info;
   bool is_allowed = cookie_settings_->IsThirdPartyAccessAllowed(url, &info);
+  bool protections_on =
+      tracking_protection_settings_->GetTrackingProtectionSetting(url) ==
+      CONTENT_SETTING_BLOCK;
 
   CookieControlsEnforcement enforcement =
       GetEnforcementForThirdPartyCookieBlocking(blocking_status, url, info,
@@ -226,22 +229,47 @@ CookieControlsController::Status CookieControlsController::GetStatus(
           enforcement,
           blocking_status,
           info.metadata.expiration(),
-          CreateTrackingProtectionFeatureList(enforcement, is_allowed)};
+          CreateTrackingProtectionFeatureList(enforcement, is_allowed,
+                                              protections_on)};
 }
 
 std::vector<TrackingProtectionFeature>
 CookieControlsController::CreateTrackingProtectionFeatureList(
     CookieControlsEnforcement enforcement,
-    bool are_3pcs_allowed) {
+    bool cookies_allowed,
+    bool protections_on) {
   auto status_label =
-      are_3pcs_allowed ? BlockingStatus::kAllowed : BlockingStatus::kBlocked;
-  if (!are_3pcs_allowed && tracking_protection_settings_ &&
+      cookies_allowed ? BlockingStatus::kAllowed : BlockingStatus::kBlocked;
+  if (!cookies_allowed && tracking_protection_settings_ &&
       tracking_protection_settings_->IsTrackingProtection3pcdEnabled() &&
       !tracking_protection_settings_->AreAllThirdPartyCookiesBlocked()) {
     status_label = BlockingStatus::kLimited;
   }
 
-  return {{FeatureType::kThirdPartyCookies, enforcement, status_label}};
+  std::vector<TrackingProtectionFeature> features = {
+      {FeatureType::kThirdPartyCookies, enforcement, status_label}};
+
+  // TODO(http://b/5605065): Update to a UB tracking protection specific feature
+  // flag.
+  if (base::FeatureList::IsEnabled(
+          privacy_sandbox::kTrackingProtectionSettingsLaunch)) {
+    if (tracking_protection_settings_->IsIpProtectionEnabled()) {
+      features.push_back({FeatureType::kIpProtection,
+                          CookieControlsEnforcement::kNoEnforcement,
+                          protections_on
+                              ? TrackingProtectionBlockingStatus::kHidden
+                              : TrackingProtectionBlockingStatus::kVisible});
+    }
+    if (tracking_protection_settings_->IsFingerprintingProtectionEnabled()) {
+      features.push_back({FeatureType::kFingerprintingProtection,
+                          CookieControlsEnforcement::kNoEnforcement,
+                          protections_on
+                              ? TrackingProtectionBlockingStatus::kLimited
+                              : TrackingProtectionBlockingStatus::kAllowed});
+    }
+  }
+
+  return features;
 }
 
 CookieControlsEnforcement
@@ -249,7 +277,7 @@ CookieControlsController::GetEnforcementForThirdPartyCookieBlocking(
     CookieBlocking3pcdStatus status,
     const GURL url,
     SettingInfo info,
-    bool is_allowed) {
+    bool cookies_allowed) {
   const bool is_default_setting =
       info.primary_pattern == ContentSettingsPattern::Wildcard() &&
       info.secondary_pattern == ContentSettingsPattern::Wildcard();
@@ -263,7 +291,7 @@ CookieControlsController::GetEnforcementForThirdPartyCookieBlocking(
 
   // Rules from regular mode can't be temporarily overridden in incognito.
   bool exception_exists_in_regular_profile = false;
-  if (is_allowed && original_cookie_settings_) {
+  if (cookies_allowed && original_cookie_settings_) {
     SettingInfo original_info;
     original_cookie_settings_->IsThirdPartyAccessAllowed(url, &original_info);
 

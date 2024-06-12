@@ -26,6 +26,8 @@
 #include "components/fingerprinting_protection_filter/browser/fingerprinting_protection_filter_features.h"
 #include "components/fingerprinting_protection_filter/browser/fingerprinting_protection_web_contents_helper.h"
 #include "components/prefs/pref_service.h"
+#include "components/privacy_sandbox/privacy_sandbox_features.h"
+#include "components/privacy_sandbox/tracking_protection_prefs.h"
 #include "components/privacy_sandbox/tracking_protection_settings.h"
 #include "components/site_engagement/content/site_engagement_service.h"
 #include "components/strings/grit/privacy_sandbox_strings.h"
@@ -126,11 +128,13 @@ class CookieControlsUserBypassTest : public ChromeRenderViewHostTestHarness {
     NavigateAndCommit(GURL("chrome://newtab"));
 
     cookie_settings_ = CookieSettingsFactory::GetForProfile(profile());
+    tracking_protection_settings_ =
+        TrackingProtectionSettingsFactory::GetForProfile(profile());
     cookie_controls_ =
         std::make_unique<content_settings::CookieControlsController>(
             cookie_settings_, nullptr,
             HostContentSettingsMapFactory::GetForProfile(profile()),
-            TrackingProtectionSettingsFactory::GetForProfile(profile()));
+            tracking_protection_settings_);
     cookie_controls_->AddObserver(mock());
     testing::Mock::VerifyAndClearExpectations(mock());
 
@@ -140,6 +144,7 @@ class CookieControlsUserBypassTest : public ChromeRenderViewHostTestHarness {
   void TearDown() override {
     cookie_controls_->RemoveObserver(mock());
     cookie_controls_.reset();
+    tracking_protection_settings_ = nullptr;
     ChromeRenderViewHostTestHarness::TearDown();
   }
 
@@ -197,6 +202,10 @@ class CookieControlsUserBypassTest : public ChromeRenderViewHostTestHarness {
     return cookie_settings_.get();
   }
 
+  privacy_sandbox::TrackingProtectionSettings* tracking_protection_settings() {
+    return tracking_protection_settings_;
+  }
+
   content_settings::PageSpecificContentSettings*
   page_specific_content_settings() {
     return content_settings::PageSpecificContentSettings::GetForFrame(
@@ -224,6 +233,8 @@ class CookieControlsUserBypassTest : public ChromeRenderViewHostTestHarness {
   std::unique_ptr<ukm::TestAutoSetUkmRecorder> ukm_recorder_;
   std::unique_ptr<content_settings::CookieControlsController> cookie_controls_;
   scoped_refptr<content_settings::CookieSettings> cookie_settings_;
+  raw_ptr<privacy_sandbox::TrackingProtectionSettings>
+      tracking_protection_settings_;
 };
 
 TEST_F(CookieControlsUserBypassTest, CookieBlockingChanged) {
@@ -1575,3 +1586,78 @@ TEST_F(CookieControlsUserBypassTest,
   EXPECT_TRUE(stored_value.is_none());
   testing::Mock::VerifyAndClearExpectations(mock());
 }
+
+class CookieControlsUserBypassTrackingProtectionUiTest
+    : public CookieControlsUserBypassTest,
+      public testing::WithParamInterface<testing::tuple<bool, bool, bool>> {
+ public:
+  CookieControlsUserBypassTrackingProtectionUiTest() {
+    feature_list_.InitWithFeatures(
+        {privacy_sandbox::kTrackingProtectionSettingsLaunch,
+         privacy_sandbox::kIpProtectionV1,
+         privacy_sandbox::kFingerprintingProtectionSetting},
+        {});
+  }
+  ~CookieControlsUserBypassTrackingProtectionUiTest() override = default;
+
+  std::vector<TrackingProtectionFeature> GetFeatureVector() {
+    std::vector<TrackingProtectionFeature> features_list;
+    bool protections_on = std::get<0>(GetParam());
+    features_list.push_back(
+        {FeatureType::kThirdPartyCookies,
+         CookieControlsEnforcement::kNoEnforcement,
+         protections_on ? BlockingStatus::kBlocked : BlockingStatus::kAllowed});
+    if (tracking_protection_settings()->IsIpProtectionEnabled()) {
+      features_list.push_back({FeatureType::kIpProtection,
+                               CookieControlsEnforcement::kNoEnforcement,
+                               protections_on ? BlockingStatus::kHidden
+                                              : BlockingStatus::kVisible});
+    }
+    if (tracking_protection_settings()->IsFingerprintingProtectionEnabled()) {
+      features_list.push_back({FeatureType::kFingerprintingProtection,
+                               CookieControlsEnforcement::kNoEnforcement,
+                               protections_on ? BlockingStatus::kLimited
+                                              : BlockingStatus::kAllowed});
+    }
+    return features_list;
+  }
+
+ private:
+  base::test::ScopedFeatureList feature_list_;
+};
+
+TEST_P(CookieControlsUserBypassTrackingProtectionUiTest,
+       AddsActFeaturesToVectorBasedOnFeatureAndExceptionStatus) {
+  bool protections_on = std::get<0>(GetParam());
+  if (protections_on) {
+    cookie_settings()->SetThirdPartyCookieSetting(
+        GURL("https://example.com"), ContentSetting::CONTENT_SETTING_BLOCK);
+  } else {
+    tracking_protection_settings()->AddTrackingProtectionException(
+        GURL("https://example.com"));
+    cookie_settings()->SetThirdPartyCookieSetting(
+        GURL("https://example.com"), ContentSetting::CONTENT_SETTING_ALLOW);
+  }
+
+  profile()->GetPrefs()->SetBoolean(prefs::kFingerprintingProtectionEnabled,
+                                    std::get<1>(GetParam()));
+  profile()->GetPrefs()->SetBoolean(prefs::kIpProtectionEnabled,
+                                    std::get<2>(GetParam()));
+
+  NavigateAndCommit(GURL("https://example.com"));
+  EXPECT_CALL(*mock(), OnStatusChanged(
+                           /*controls_visible=*/true, protections_on,
+                           CookieControlsEnforcement::kNoEnforcement,
+                           CookieBlocking3pcdStatus::kNotIn3pcd,
+                           zero_expiration(), GetFeatureVector()));
+
+  cookie_controls()->Update(web_contents());
+  testing::Mock::VerifyAndClearExpectations(mock());
+}
+
+INSTANTIATE_TEST_SUITE_P(
+    All,
+    CookieControlsUserBypassTrackingProtectionUiTest,
+    testing::Combine(/*protections_on*/ testing::Bool(),
+                     /*kFingerprintingProtectionEnabled*/ testing::Bool(),
+                     /*kIpProtectionEnabled*/ testing::Bool()));
