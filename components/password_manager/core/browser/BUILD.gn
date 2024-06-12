@@ -188,6 +188,7 @@ static_library("browser") {
     "//components/autofill/core/common:credit_card_number_validation",
     "//components/device_reauth",
     "//components/favicon/core",
+    "//components/favicon_base",
     "//components/os_crypt/sync:os_crypt",
     "//components/password_manager/core/browser:password_switches",
     "//components/password_manager/core/browser/affiliation:affiliation_match_helper",

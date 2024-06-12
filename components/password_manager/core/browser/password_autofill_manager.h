@@ -5,23 +5,26 @@
 #ifndef COMPONENTS_PASSWORD_MANAGER_CORE_BROWSER_PASSWORD_AUTOFILL_MANAGER_H_
 #define COMPONENTS_PASSWORD_MANAGER_CORE_BROWSER_PASSWORD_AUTOFILL_MANAGER_H_
 
-#include <map>
 #include <memory>
+#include <string>
+#include <vector>
 
-#include "base/functional/callback.h"
 #include "base/i18n/rtl.h"
 #include "base/memory/raw_ptr.h"
+#include "base/memory/weak_ptr.h"
 #include "base/task/cancelable_task_tracker.h"
-#include "base/types/strong_alias.h"
 #include "components/autofill/core/browser/autofill_client.h"
+#include "components/autofill/core/browser/filling_product.h"
 #include "components/autofill/core/browser/ui/autofill_suggestion_delegate.h"
 #include "components/autofill/core/browser/ui/suggestion.h"
 #include "components/autofill/core/browser/ui/suggestion_type.h"
+#include "components/autofill/core/common/aliases.h"
 #include "components/autofill/core/common/password_form_fill_data.h"
+#include "components/autofill/core/common/unique_ids.h"
 #include "components/password_manager/core/browser/password_manager_client.h"
-#include "components/password_manager/core/browser/password_manager_metrics_util.h"
 #include "components/password_manager/core/browser/password_suggestion_flow.h"
 #include "components/password_manager/core/browser/password_suggestion_generator.h"
+#include "third_party/abseil-cpp/absl/types/variant.h"
 #include "ui/gfx/image/image.h"
 
 namespace favicon_base {
