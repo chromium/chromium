@@ -8,6 +8,5 @@ public interface IpProtectionByteArrayCallback {
     // Result contains a serialized com.google.privacy.ppn.proto protobuf.
     public void onResult(byte[] result);
 
-    // TODO(b/328780742): update callback error arguments when updating AIDL files
-    public void onError(byte[] error);
+    public void onError(int error);
 }

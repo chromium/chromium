@@ -6,14 +6,14 @@
 
 #include <utility>
 
+#include "base/android/jni_android.h"
 #include "base/android/jni_array.h"
 #include "components/ip_protection/android_auth_client_lib/cpp/jni_headers/ByteArrayCallbackListener_jni.h"
 
 namespace ip_protection::android {
 
 base::android::ScopedJavaLocalRef<jobject> ByteArrayCallbackListener::Create(
-    base::OnceCallback<void(base::expected<std::string, std::string>)>
-        callback) {
+    base::OnceCallback<void(base::expected<std::string, int>)> callback) {
   return Java_ByteArrayCallbackListener_Constructor(
       base::android::AttachCurrentThread(),
       reinterpret_cast<jlong>(
@@ -30,19 +30,14 @@ void ByteArrayCallbackListener::OnResult(
   delete this;
 }
 
-void ByteArrayCallbackListener::OnError(
-    JNIEnv* env,
-    jni_zero::JavaParamRef<jbyteArray> error) {
-  // Convert error to string.
-  std::string error_str;
-  base::android::JavaByteArrayToString(base::android::AttachCurrentThread(),
-                                       error, &error_str);
-  std::move(callback_).Run(base::unexpected(std::move(error_str)));
+void ByteArrayCallbackListener::OnError(JNIEnv* env, jint errorCode) {
+  std::move(callback_).Run(
+      base::unexpected(std::move(static_cast<int>(errorCode))));
   delete this;
 }
 
 ByteArrayCallbackListener::ByteArrayCallbackListener(
-    base::OnceCallback<void(base::expected<std::string, std::string>)> callback)
+    base::OnceCallback<void(base::expected<std::string, int>)> callback)
     : callback_(std::move(callback)) {}
 
 ByteArrayCallbackListener::~ByteArrayCallbackListener() = default;

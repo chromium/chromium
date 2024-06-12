@@ -10,6 +10,6 @@ package org.chromium.components.ip_protection_auth.common;
 oneway interface IIpProtectionAuthAndSignCallback {
     // Parameter is the serialized form of AuthAndSignResponse proto
     void reportResult(in byte[] response) = 0;
-    // Parameter is the serialized form of AuthAndSignError proto
-    void reportError(in byte[] error) = 1;
+    // errorCode is one of the error constants in IErrorCode.
+    void reportError(in int errorCode) = 1;
 }

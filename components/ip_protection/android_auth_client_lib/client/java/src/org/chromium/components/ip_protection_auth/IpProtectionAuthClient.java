@@ -14,7 +14,6 @@ import android.os.RemoteException;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
-import androidx.annotation.VisibleForTesting;
 
 import org.jni_zero.CalledByNative;
 import org.jni_zero.CalledByNativeForTesting;
@@ -34,13 +33,6 @@ import org.chromium.components.ip_protection_auth.common.IIpProtectionGetInitial
  */
 @JNINamespace("ip_protection::android")
 public final class IpProtectionAuthClient implements AutoCloseable {
-    // For testing only
-    private static final String IP_PROTECTION_AUTH_MOCK_CLASS_NAME =
-            "org.chromium.components.ip_protection_auth.mock_service.IpProtectionAuthServiceMock";
-    // For testing only
-    private static final String IP_PROTECTION_AUTH_MOCK_PACKAGE_NAME =
-            "org.chromium.components.ip_protection_auth";
-
     private static final String IP_PROTECTION_AUTH_ACTION =
             "android.net.http.IpProtectionAuthService";
 
@@ -98,8 +90,8 @@ public final class IpProtectionAuthClient implements AutoCloseable {
         }
 
         @Override
-        public void reportError(byte[] bytes) {
-            mCallback.onError(bytes);
+        public void reportError(int errorCode) {
+            mCallback.onError(errorCode);
         }
     }
 
@@ -117,8 +109,8 @@ public final class IpProtectionAuthClient implements AutoCloseable {
         }
 
         @Override
-        public void reportError(byte[] bytes) {
-            mCallback.onError(bytes);
+        public void reportError(int errorCode) {
+            mCallback.onError(errorCode);
         }
     }
 
@@ -129,19 +121,13 @@ public final class IpProtectionAuthClient implements AutoCloseable {
         mService = ipProtectionAuthService;
     }
 
-    @VisibleForTesting
     @CalledByNativeForTesting
-    public static void createConnectedInstanceForTestingAsync(
+    public static void createConnectedInstanceForTesting(
+            @NonNull String mockServicePackageName,
+            @NonNull String mockServiceClassName,
             @NonNull IpProtectionAuthServiceCallback callback) {
-        Intent intent = new Intent();
-        intent.setClassName(
-                IP_PROTECTION_AUTH_MOCK_PACKAGE_NAME, IP_PROTECTION_AUTH_MOCK_CLASS_NAME);
-        createConnectedInstanceForTestingAsync(intent, callback);
-    }
-
-    @VisibleForTesting
-    public static void createConnectedInstanceForTestingAsync(
-            @NonNull Intent intent, @NonNull IpProtectionAuthServiceCallback callback) {
+        Intent intent = new Intent(IP_PROTECTION_AUTH_ACTION);
+        intent.setClassName(mockServicePackageName, mockServiceClassName);
         createConnectedInstanceCommon(intent, PackageManager.MATCH_DISABLED_COMPONENTS, callback);
     }
 

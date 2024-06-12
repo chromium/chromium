@@ -21,9 +21,9 @@ final class ByteArrayCallbackListener implements IpProtectionByteArrayCallback {
     }
 
     @Override
-    public void onError(byte[] error) {
+    public void onError(int errorCode) {
         assert mNativeListener != 0;
-        ByteArrayCallbackListenerJni.get().onError(mNativeListener, error);
+        ByteArrayCallbackListenerJni.get().onError(mNativeListener, errorCode);
         mNativeListener = 0;
     }
 
@@ -36,6 +36,6 @@ final class ByteArrayCallbackListener implements IpProtectionByteArrayCallback {
     interface Natives {
         void onResult(long nativeByteArrayCallbackListener, byte[] response);
 
-        void onError(long nativeByteArrayCallbackListener, byte[] error);
+        void onError(long nativeByteArrayCallbackListener, int error);
     }
 }

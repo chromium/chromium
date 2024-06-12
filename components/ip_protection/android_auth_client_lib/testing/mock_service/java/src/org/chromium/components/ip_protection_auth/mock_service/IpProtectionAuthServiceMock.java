@@ -19,6 +19,7 @@ import com.google.protobuf.ByteString;
 import com.google.protobuf.InvalidProtocolBufferException;
 
 import org.chromium.base.Log;
+import org.chromium.components.ip_protection_auth.common.IErrorCode;
 import org.chromium.components.ip_protection_auth.common.IIpProtectionAuthAndSignCallback;
 import org.chromium.components.ip_protection_auth.common.IIpProtectionAuthService;
 import org.chromium.components.ip_protection_auth.common.IIpProtectionGetInitialDataCallback;
@@ -39,12 +40,13 @@ public final class IpProtectionAuthServiceMock extends Service {
                         GetInitialDataRequest request =
                                 GetInitialDataRequest.parser().parseFrom(bytes);
                         if (!request.getServiceType().equals(EXPECTED_SERVICE_TYPE)) {
-                            String errorMessage =
-                                    "expected service type "
-                                            + EXPECTED_SERVICE_TYPE
-                                            + ", got: "
-                                            + request.getServiceType();
-                            callback.reportError(errorMessage.getBytes());
+                            Log.e(
+                                    TAG,
+                                    "expected service type %s, got: %s",
+                                    EXPECTED_SERVICE_TYPE,
+                                    request.getServiceType());
+                            callback.reportError(
+                                    IErrorCode.IP_PROTECTION_AUTH_SERVICE_TRANSIENT_ERROR);
                             return;
                         }
                         GetInitialDataResponse.PrivacyPassData privacyPassData =
@@ -71,12 +73,13 @@ public final class IpProtectionAuthServiceMock extends Service {
                     try {
                         AuthAndSignRequest request = AuthAndSignRequest.parser().parseFrom(bytes);
                         if (!request.getOauthToken().equals(TEST_STRING)) {
-                            String errorMessage =
-                                    "expected oauth token "
-                                            + TEST_STRING
-                                            + ", got: "
-                                            + request.getOauthToken();
-                            callback.reportError(errorMessage.getBytes());
+                            Log.e(
+                                    TAG,
+                                    "expected oauth token %s, got: %s",
+                                    TEST_STRING,
+                                    request.getOauthToken());
+                            callback.reportError(
+                                    IErrorCode.IP_PROTECTION_AUTH_SERVICE_TRANSIENT_ERROR);
                             return;
                         }
                         AuthAndSignResponse response =

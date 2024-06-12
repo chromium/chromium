@@ -19,21 +19,20 @@ namespace ip_protection::android {
 class ByteArrayCallbackListener {
  public:
   static base::android::ScopedJavaLocalRef<jobject> Create(
-      base::OnceCallback<void(base::expected<std::string, std::string>)>
-          callback);
+      base::OnceCallback<void(base::expected<std::string, int>)> callback);
 
   // Called by Java.
   void OnResult(JNIEnv* env, jni_zero::JavaParamRef<jbyteArray> response);
 
   // Called by Java.
-  void OnError(JNIEnv* env, jni_zero::JavaParamRef<jbyteArray> error);
+  void OnError(JNIEnv* env, jint errorCode);
 
  private:
   explicit ByteArrayCallbackListener(
-      base::OnceCallback<void(base::expected<std::string, std::string>)>
-          callback);
+      base::OnceCallback<void(base::expected<std::string, int>)> callback);
   ~ByteArrayCallbackListener();
-  base::OnceCallback<void(base::expected<std::string, std::string>)> callback_;
+
+  base::OnceCallback<void(base::expected<std::string, int>)> callback_;
 };
 
 }  // namespace ip_protection::android

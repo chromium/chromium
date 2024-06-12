@@ -10,6 +10,6 @@ package org.chromium.components.ip_protection_auth.common;
 oneway interface IIpProtectionGetInitialDataCallback {
     // Parameter is the serialized form of GetInitialDataResponse proto
     void reportResult(in byte[] response) = 0;
-    // Parameter is the serialized form of GetInitialDataError proto
-    void reportError(in byte[] error) = 1;
+    // errorCode is one of the error constants in IErrorCode.
+    void reportError(in int errorCode) = 1;
 }

@@ -118,8 +118,8 @@ void BlindSignMessageAndroidImpl::SendRequest(
 // TODO(b/328780742): Add support for persistent and transient error handling.
 void BlindSignMessageAndroidImpl::OnGetInitialDataComplete(
     quiche::BlindSignMessageCallback callback,
-    base::expected<privacy::ppn::GetInitialDataResponse, std::string>
-        response) {
+    base::expected<privacy::ppn::GetInitialDataResponse,
+                   ip_protection::android::AuthRequestError> response) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   if (!response.has_value()) {
     std::move(callback)(absl::InternalError(
@@ -133,7 +133,8 @@ void BlindSignMessageAndroidImpl::OnGetInitialDataComplete(
 // TODO(b/328780742): Add support for persistent and transient error handling.
 void BlindSignMessageAndroidImpl::OnAuthAndSignComplete(
     quiche::BlindSignMessageCallback callback,
-    base::expected<privacy::ppn::AuthAndSignResponse, std::string> response) {
+    base::expected<privacy::ppn::AuthAndSignResponse,
+                   ip_protection::android::AuthRequestError> response) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   if (!response.has_value()) {
     std::move(callback)(absl::InternalError(

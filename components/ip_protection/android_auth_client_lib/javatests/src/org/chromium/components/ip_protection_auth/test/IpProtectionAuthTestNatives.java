@@ -20,6 +20,10 @@ public final class IpProtectionAuthTestNatives {
         void testGetInitialData();
 
         void testAuthAndSign();
+
+        void testTransientError();
+
+        void testPersistentError();
     }
 
     public static void createConnectedInstanceForTesting() {
@@ -32,5 +36,13 @@ public final class IpProtectionAuthTestNatives {
 
     public static void testAuthAndSign() {
         IpProtectionAuthTestNativesJni.get().testAuthAndSign();
+    }
+
+    public static void testTransientError() {
+        IpProtectionAuthTestNativesJni.get().testTransientError();
+    }
+
+    public static void testPersistentError() {
+        IpProtectionAuthTestNativesJni.get().testPersistentError();
     }
 }

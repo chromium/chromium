@@ -26,19 +26,8 @@ using CreateIpProtectionAuthClientCallback = base::OnceCallback<void(
     base::expected<std::unique_ptr<IpProtectionAuthClientInterface>,
                    std::string>)>;
 
-// Used to return a GetInitialDataResponse or error to the user.
-// Expected type won't change, error type will be updated.
-using GetInitialDataResponseCallback = base::OnceCallback<void(
-    base::expected<privacy::ppn::GetInitialDataResponse, std::string>)>;
-
-// Used to return an AuthAndSignResponse or error to the user.
-// Expected type won't change, error type will be updated.
-using AuthAndSignResponseCallback = base::OnceCallback<void(
-    base::expected<privacy::ppn::AuthAndSignResponse, std::string>)>;
-
 // Wrapper around the Java IpProtectionAuthClient that translates native
 // function calls into IPCs to the Android service implementing IP Protection.
-// TODO(b/328781171): replace std::string error messages with an ErrorCode enum
 class IpProtectionAuthClient : public IpProtectionAuthClientInterface {
  public:
   ~IpProtectionAuthClient() override;
@@ -46,15 +35,19 @@ class IpProtectionAuthClient : public IpProtectionAuthClientInterface {
   IpProtectionAuthClient& operator=(const IpProtectionAuthClient& other) =
       delete;
 
-  // Asynchronously request to bind to the Android IP Protection service.
+  // Asynchronously request to bind to the Android IP Protection auth service.
   // Callback will be invoked on the calling process's main thread.
   static void CreateConnectedInstance(
       CreateIpProtectionAuthClientCallback callback);
 
-  // Request to bind to the mock Android IP Protection service.
-  // This function should only be called in tests.
-  // Callback will be invoked on the calling process's main thread.
-  static void CreateMockConnectedInstance(
+  // Request to bind to an alternative or mock Android IP Protection auth
+  // service specified by |packageName| and |className|, which identify the
+  // component of the service to bind to. The service does not need to be
+  // system-installed. Callback will be invoked on the calling process's main
+  // thread.
+  static void CreateConnectedInstanceForTesting(
+      const std::string_view packageName,
+      const std::string_view className,
       CreateIpProtectionAuthClientCallback callback);
 
   // Asynchronously send a GetInitialDataRequest to the signing server.
@@ -72,11 +65,6 @@ class IpProtectionAuthClient : public IpProtectionAuthClientInterface {
   friend class BindCallbackListener;
   explicit IpProtectionAuthClient(
       const jni_zero::JavaRef<jobject>& ip_protection_auth_client);
-
-  template <typename T>
-  base::OnceCallback<void(base::expected<std::string, std::string>)>
-  ConvertProtoCallback(
-      base::OnceCallback<void(base::expected<T, std::string>)> callback) const;
 
   // Reference to the Java IpProtectionAuthClient object.
   jni_zero::ScopedJavaGlobalRef<jobject> ip_protection_auth_client_;

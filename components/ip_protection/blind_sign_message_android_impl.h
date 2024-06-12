@@ -64,12 +64,13 @@ class BlindSignMessageAndroidImpl : public quiche::BlindSignMessageInterface {
 
   void OnGetInitialDataComplete(
       quiche::BlindSignMessageCallback callback,
-      base::expected<privacy::ppn::GetInitialDataResponse, std::string>
-          response);
+      base::expected<privacy::ppn::GetInitialDataResponse,
+                     ip_protection::android::AuthRequestError> response);
 
   void OnAuthAndSignComplete(
       quiche::BlindSignMessageCallback callback,
-      base::expected<privacy::ppn::AuthAndSignResponse, std::string> response);
+      base::expected<privacy::ppn::AuthAndSignResponse,
+                     ip_protection::android::AuthRequestError> response);
 
   void OnSendRequestComplete(quiche::BlindSignMessageCallback callback,
                              std::string response);

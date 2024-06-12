@@ -33,22 +33,17 @@ namespace {
 class MockIpProtectionAuthClient
     : public ip_protection::android::IpProtectionAuthClientInterface {
  public:
-  MOCK_METHOD(
-      void,
-      GetInitialData,
-      (const privacy::ppn::GetInitialDataRequest& request,
-       base::OnceCallback<void(
-           base::expected<privacy::ppn::GetInitialDataResponse, std::string>)>
-           callback),
-      (const, override));
+  MOCK_METHOD(void,
+              GetInitialData,
+              (const privacy::ppn::GetInitialDataRequest& request,
+               ip_protection::android::GetInitialDataResponseCallback callback),
+              (const, override));
 
-  MOCK_METHOD(
-      void,
-      AuthAndSign,
-      (const privacy::ppn::AuthAndSignRequest& request,
-       base::OnceCallback<void(base::expected<privacy::ppn::AuthAndSignResponse,
-                                              std::string>)> callback),
-      (const override));
+  MOCK_METHOD(void,
+              AuthAndSign,
+              (const privacy::ppn::AuthAndSignRequest& request,
+               ip_protection::android::AuthAndSignResponseCallback callback),
+              (const override));
 };
 }  // anonymous namespace
 
@@ -111,7 +106,8 @@ TEST_F(BlindSignMessageAndroidImplTest,
       .Times(1)
       .WillOnce([this](const privacy::ppn::GetInitialDataRequest& request,
                        auto&& callback) {
-        base::expected<privacy::ppn::GetInitialDataResponse, std::string>
+        base::expected<privacy::ppn::GetInitialDataResponse,
+                       ip_protection::android::AuthRequestError>
             response(get_initial_data_response);
         std::move(callback).Run(std::move(response));
       });
@@ -145,8 +141,9 @@ TEST_F(BlindSignMessageAndroidImplTest,
       .Times(1)
       .WillOnce([this](const privacy::ppn::AuthAndSignRequest& request,
                        auto&& callback) {
-        base::expected<privacy::ppn::AuthAndSignResponse, std::string> response(
-            auth_and_sign_response);
+        base::expected<privacy::ppn::AuthAndSignResponse,
+                       ip_protection::android::AuthRequestError>
+            response(auth_and_sign_response);
         std::move(callback).Run(std::move(response));
       });
 
@@ -209,7 +206,8 @@ TEST_F(BlindSignMessageAndroidImplTest,
       .Times(1)
       .WillOnce([this](const privacy::ppn::GetInitialDataRequest& request,
                        auto&& callback) {
-        base::expected<privacy::ppn::GetInitialDataResponse, std::string>
+        base::expected<privacy::ppn::GetInitialDataResponse,
+                       ip_protection::android::AuthRequestError>
             response(get_initial_data_response);
         std::move(callback).Run(std::move(response));
       });
@@ -218,8 +216,9 @@ TEST_F(BlindSignMessageAndroidImplTest,
       .Times(1)
       .WillOnce([this](const privacy::ppn::AuthAndSignRequest& request,
                        auto&& callback) {
-        base::expected<privacy::ppn::AuthAndSignResponse, std::string> response(
-            auth_and_sign_response);
+        base::expected<privacy::ppn::AuthAndSignResponse,
+                       ip_protection::android::AuthRequestError>
+            response(auth_and_sign_response);
         std::move(callback).Run(std::move(response));
       });
 
