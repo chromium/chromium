@@ -2,22 +2,16 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "build/build_config.h"
-
-#if defined(USE_EGL)
-#include <EGL/egl.h>
-#endif
-
 #include "ui/gl/gl_bindings.h"
 
-#if defined(USE_EGL)
+#include <EGL/egl.h>
+
+#include "build/build_config.h"
 #include "ui/gl/gl_display.h"
 #include "ui/gl/gl_surface_egl.h"
-#endif
 
 namespace gl {
 
-#if defined(USE_EGL)
 void DisplayExtensionsEGL::UpdateConditionalExtensionSettings(
     EGLDisplay display) {
   // For the moment, only two extensions can be conditionally disabled
@@ -50,6 +44,5 @@ std::string ClientExtensionsEGL::GetClientExtensions() {
   const char* str = eglQueryString(EGL_NO_DISPLAY, EGL_EXTENSIONS);
   return str ? std::string(str) : "";
 }
-#endif
 
 }  // namespace gl

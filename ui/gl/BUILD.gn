@@ -38,11 +38,9 @@ buildflag_header("buildflags") {
   ]
 }
 
+# TODO(344606399): Remove once no longer referenced in
+# //components/exo/wayland/BUILD.gn
 config("gl_config") {
-  defines = []
-  if (use_egl) {
-    defines += [ "USE_EGL" ]
-  }
 }
 
 component("gl") {
@@ -152,8 +150,6 @@ component("gl") {
   }
 
   include_dirs = [ "//third_party/mesa_headers" ]
-
-  all_dependent_configs = [ ":gl_config" ]
 
   public_configs = [ "//third_party/khronos:khronos_headers" ]
 

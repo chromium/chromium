@@ -124,9 +124,7 @@ class GLDisplayManager {
 
  private:
   friend class base::NoDestructor<GLDisplayManager<GLDisplayPlatform>>;
-#if defined(USE_EGL)
   friend class GLDisplayManagerEGLTest;
-#endif
 
   // Don't delete these functions for testing purpose.
   // Each test constructs a scoped GLDisplayManager directly.
@@ -157,12 +155,10 @@ class GLDisplayManager {
   bool override_egl_dual_gpu_rendering_support_for_tests_ = false;
 };
 
-#if defined(USE_EGL)
 using GLDisplayManagerEGL = GLDisplayManager<GLDisplayEGL>;
 
 extern template class EXPORT_TEMPLATE_DECLARE(GL_EXPORT)
     GLDisplayManager<GLDisplayEGL>;
-#endif
 
 }  // namespace gl
 

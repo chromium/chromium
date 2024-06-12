@@ -127,6 +127,7 @@ struct GL_EXPORT GLContextAttribs {
 };
 
 // Encapsulates an OpenGL context, hiding platform specific management.
+// TODO(344606399): Consider folding GLContextEGL into this class.
 class GL_EXPORT GLContext : public base::RefCounted<GLContext>,
                             public base::SupportsWeakPtr<GLContext> {
  public:
@@ -265,13 +266,11 @@ class GL_EXPORT GLContext : public base::RefCounted<GLContext>,
   // context is made current.
   void DirtyVirtualContextState();
 
-#if defined(USE_EGL)
   // Returns GLDisplayEGL this context belongs to if this context is a
   // GLContextEGL; returns nullptr otherwise.
   virtual GLDisplayEGL* GetGLDisplayEGL();
 
   virtual GLContextEGL* AsGLContextEGL();
-#endif  // USE_EGL
 
 #if BUILDFLAG(IS_APPLE)
   virtual void AddMetalSharedEventsForBackpressure(

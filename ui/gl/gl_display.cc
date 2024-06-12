@@ -540,9 +540,7 @@ GLDisplayPlatform* GLDisplay::GetAs() {
       break;
 
     case EGL:
-#if defined(USE_EGL)
       type_checked = std::is_same<GLDisplayPlatform, GLDisplayEGL>::value;
-#endif  // defined(USE_EGL)
       break;
   }
   if (type_checked)
@@ -551,12 +549,9 @@ GLDisplayPlatform* GLDisplay::GetAs() {
   return nullptr;
 }
 
-#if defined(USE_EGL)
 template EXPORT_TEMPLATE_DEFINE(GL_EXPORT)
     GLDisplayEGL* GLDisplay::GetAs<GLDisplayEGL>();
-#endif  // defined(USE_EGL)
 
-#if defined(USE_EGL)
 GLDisplayEGL::EGLGpuSwitchingObserver::EGLGpuSwitchingObserver(
     EGLDisplay display)
     : display_(display) {
@@ -899,6 +894,5 @@ void GLDisplayEGL::InitializeCommon(bool for_testing) {
   InitMetalSharedEventStorage();
 #endif
 }
-#endif  // defined(USE_EGL)
 
 }  // namespace gl

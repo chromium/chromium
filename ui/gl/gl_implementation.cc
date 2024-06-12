@@ -229,9 +229,7 @@ gfx::ExtensionSet GetGLExtensionsFromCurrentContext(
 
 }  // namespace
 
-#if defined(USE_EGL)
 EGLApi* g_current_egl_context;
-#endif
 
 GLImplementationParts GetNamedGLImplementation(const std::string& gl_name,
                                                const std::string& angle_name) {

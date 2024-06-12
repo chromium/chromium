@@ -356,11 +356,11 @@ BASE_FEATURE(kUseSwapChainPresenterFloatingPointAdjustments,
              base::FEATURE_ENABLED_BY_DEFAULT);
 
 bool SupportsEGLDualGPURendering() {
-#if defined(USE_EGL) && (BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC))
+#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC)
   return base::FeatureList::IsEnabled(kEGLDualGPURendering);
 #else
   return false;
-#endif  // USE_EGL && (IS_WIN || IS_MAC)
+#endif  // IS_WIN || IS_MAC
 }
 
 }  // namespace features

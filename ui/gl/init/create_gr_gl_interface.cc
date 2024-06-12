@@ -730,28 +730,15 @@ sk_sp<GrGLInterface> CreateGrGLInterface(
   BIND(WaitSync);
   BIND(DeleteSync);
 
-  if (!gl->glFenceSyncFn) {
-    // NOTE: Skia uses the same function pointers without APPLE suffix
-#if !defined(USE_EGL)
-    if (extensions.has("GL_APPLE_sync")) {
-      BIND_EXTENSION(FenceSync, FenceSyncAPPLE);
-      BIND_EXTENSION(IsSync, IsSyncAPPLE);
-      BIND_EXTENSION(ClientWaitSync, ClientWaitSyncAPPLE);
-      BIND_EXTENSION(WaitSync, WaitSyncAPPLE);
-      BIND_EXTENSION(DeleteSync, DeleteSyncAPPLE);
-    }
-#else
-    if (GetDefaultDisplayEGL()->ext->b_EGL_KHR_fence_sync) {
-      // Emulate APPLE_sync via egl
-      extensions.add("GL_APPLE_sync");
+  if (!gl->glFenceSyncFn && GetDefaultDisplayEGL()->ext->b_EGL_KHR_fence_sync) {
+    // Emulate APPLE_sync via egl
+    extensions.add("GL_APPLE_sync");
 
-      functions->fFenceSync = glFenceSyncEmulateEGL;
-      functions->fIsSync = glIsSyncEmulateEGL;
-      functions->fClientWaitSync = glClientWaitSyncEmulateEGL;
-      functions->fWaitSync = glWaitSyncEmulateEGL;
-      functions->fDeleteSync = glDeleteSyncEmulateEGL;
-    }
-#endif  // USE_EGL
+    functions->fFenceSync = glFenceSyncEmulateEGL;
+    functions->fIsSync = glIsSyncEmulateEGL;
+    functions->fClientWaitSync = glClientWaitSyncEmulateEGL;
+    functions->fWaitSync = glWaitSyncEmulateEGL;
+    functions->fDeleteSync = glDeleteSyncEmulateEGL;
   }
 
   // Skia can fall back to GL_NV_fence if GLsync objects are not available.
