@@ -13,7 +13,7 @@
 set -e  # makes the script quit on any command failure
 set -u  # unset variables are quit-worthy errors
 
-PLATFORMS="${1:-win,android}"
+PLATFORMS="${1:-linux,android,chromeos-ash,chromeos-lacros,win,mac}"
 
 COMPILE_DIRS=.
 EDIT_DIRS=.
@@ -48,6 +48,7 @@ is_official_build = true
 symbol_level = 1
 use_remoteexec = false
 enable_remoting = true
+enable_webview_bundles = true
 ffmpeg_branding = "Chrome"
 proprietary_codecs = true
 force_enable_raw_ptr_exclusion = true
