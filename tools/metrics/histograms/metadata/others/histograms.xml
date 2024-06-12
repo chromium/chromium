@@ -9812,14 +9812,6 @@ should be kept until we remove incident reporting. -->
   </summary>
 </histogram>
 
-<histogram name="SpecialLocale.PromotionDialog" enum="SpecialLocalePromoAction"
-    expires_after="M81">
-  <owner>ianwen@chromium.org</owner>
-  <summary>
-    Records how users interact with the special locale promotion dialog.
-  </summary>
-</histogram>
-
 <histogram name="SpellCheck.api.async" units="code units"
     expires_after="2024-12-01">
   <owner>basiaz@google.com</owner>

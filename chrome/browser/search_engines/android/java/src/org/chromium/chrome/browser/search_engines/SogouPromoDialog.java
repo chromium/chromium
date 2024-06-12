@@ -19,7 +19,6 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
 import org.chromium.base.Callback;
-import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.chrome.browser.preferences.ChromePreferenceKeys;
 import org.chromium.chrome.browser.preferences.ChromeSharedPreferences;
 import org.chromium.chrome.browser.search_engines.settings.SearchEngineSettings;
@@ -34,8 +33,6 @@ import java.lang.annotation.RetentionPolicy;
 
 /** A promotion dialog showing that the default search provider will be set to Sogou. */
 public class SogouPromoDialog extends PromoDialog {
-    // These constants are here to back a uma histogram. Append new constants at the end of this
-    // list (do not rearrange) and don't forget to update NUM_ENTRIES.
     @IntDef({
         UserChoice.USE_SOGOU,
         UserChoice.KEEP_GOOGLE,
@@ -48,7 +45,6 @@ public class SogouPromoDialog extends PromoDialog {
         int KEEP_GOOGLE = 1;
         int SETTINGS = 2;
         int BACK_KEY = 3;
-        int NUM_ENTRIES = 4;
     }
 
     /** Run when the dialog is dismissed. */
@@ -143,8 +139,6 @@ public class SogouPromoDialog extends PromoDialog {
         }
         ChromeSharedPreferences.getInstance()
                 .writeBoolean(ChromePreferenceKeys.LOCALE_MANAGER_PROMO_SHOWN, true);
-        RecordHistogram.recordEnumeratedHistogram(
-                "SpecialLocale.PromotionDialog", mChoice, UserChoice.NUM_ENTRIES);
 
         if (mOnDismissedCallback != null) mOnDismissedCallback.onResult(true);
     }
