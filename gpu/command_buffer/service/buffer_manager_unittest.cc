@@ -9,6 +9,7 @@
 
 #include <memory>
 
+#include "base/containers/heap_array.h"
 #include "gpu/command_buffer/service/error_state_mock.h"
 #include "gpu/command_buffer/service/feature_info.h"
 #include "gpu/command_buffer/service/gpu_service_test.h"
@@ -362,9 +363,9 @@ TEST_F(BufferManagerTest, DoBufferSubData) {
   EXPECT_FALSE(DoBufferSubData(buffer, kTarget, 0, -1, data));
   DoBufferData(buffer, kTarget, 1, GL_STATIC_DRAW, nullptr, GL_NO_ERROR);
   const int size = 0x20000;
-  std::unique_ptr<uint8_t[]> temp(new uint8_t[size]);
-  EXPECT_FALSE(DoBufferSubData(buffer, kTarget, 0 - size, size, temp.get()));
-  EXPECT_FALSE(DoBufferSubData(buffer, kTarget, 1, size / 2, temp.get()));
+  auto temp = base::HeapArray<uint8_t>::Uninit(size);
+  EXPECT_FALSE(DoBufferSubData(buffer, kTarget, 0 - size, size, temp.data()));
+  EXPECT_FALSE(DoBufferSubData(buffer, kTarget, 1, size / 2, temp.data()));
 }
 
 TEST_F(BufferManagerTest, GetRange) {

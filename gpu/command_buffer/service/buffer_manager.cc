@@ -10,6 +10,7 @@
 #include <memory>
 
 #include "base/check_op.h"
+#include "base/containers/heap_array.h"
 #include "base/format_macros.h"
 #include "base/notreached.h"
 #include "base/numerics/checked_math.h"
@@ -494,9 +495,8 @@ void BufferManager::DoBufferData(
     if (data || !size) {
       glBufferData(target, size, data, usage);
     } else {
-      std::unique_ptr<char[]> zero(new char[size]);
-      memset(zero.get(), 0, size);
-      glBufferData(target, size, zero.get(), usage);
+      auto zero = base::HeapArray<char>::WithSize(size);
+      glBufferData(target, size, zero.data(), usage);
     }
   }
   GLenum error = ERRORSTATE_PEEK_GL_ERROR(error_state, "glBufferData");
