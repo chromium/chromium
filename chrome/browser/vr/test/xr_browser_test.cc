@@ -146,6 +146,17 @@ void XrBrowserTestBase::SetUp() {
     cmd_line->AppendSwitchASCII(switches::kEnableBlinkFeatures, blink_feature);
   }
 
+#if defined(MEMORY_SANITIZER)
+  // Surprisingly enough, there is no constant for this.
+  // TODO(crbug.com/40564748): Once generic wrapper scripts for tests are
+  // supported, move the logic to avoid passing --enable-gpu to GN.
+  if (cmd_line->HasSwitch("enable-gpu")) {
+    LOG(WARNING) << "Ignoring --enable-gpu switch, which is incompatible with "
+                    "MSan builds.";
+    cmd_line->RemoveSwitch("enable-gpu");
+  }
+#endif
+
   scoped_feature_list_.InitWithFeatures(enable_features_, disable_features_);
 
   PlatformBrowserTest::SetUp();
