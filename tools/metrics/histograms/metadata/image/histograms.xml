@@ -100,7 +100,7 @@ chromium-metrics-reviews@google.com.
 </variants>
 
 <histogram name="ImageAnnotationService.AccessibilityV1.CacheHit"
-    enum="BooleanCacheHit" expires_after="2024-11-24">
+    enum="BooleanCacheHit" expires_after="2025-01-20">
   <owner>dtseng@chromium.org</owner>
   <owner>amoylan@chromium.org</owner>
   <owner>mschillaci@google.com</owner>
@@ -116,7 +116,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="ImageAnnotationService.AccessibilityV1.ClientResult"
-    enum="ImageAnnotationServiceClientResult" expires_after="2024-12-08">
+    enum="ImageAnnotationServiceClientResult" expires_after="2025-01-20">
   <owner>dtseng@chromium.org</owner>
   <owner>amoylan@chromium.org</owner>
   <owner>mschillaci@google.com</owner>
@@ -131,7 +131,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="ImageAnnotationService.AccessibilityV1.DescFailure"
-    enum="DescFailureReason" expires_after="2024-12-08">
+    enum="DescFailureReason" expires_after="2025-01-20">
   <owner>dtseng@chromium.org</owner>
   <owner>amoylan@chromium.org</owner>
   <owner>mschillaci@google.com</owner>
@@ -143,7 +143,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="ImageAnnotationService.AccessibilityV1.DescType"
-    enum="ImageAnnotationServiceDescType" expires_after="2024-12-08">
+    enum="ImageAnnotationServiceDescType" expires_after="2025-01-20">
   <owner>dtseng@chromium.org</owner>
   <owner>amoylan@chromium.org</owner>
   <owner>mschillaci@google.com</owner>
@@ -158,7 +158,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="ImageAnnotationService.AccessibilityV1.EncodedJpegSizeKB"
-    units="KB" expires_after="2024-07-21">
+    units="KB" expires_after="2025-01-20">
   <owner>dtseng@chromium.org</owner>
   <owner>amoylan@chromium.org</owner>
   <owner>mschillaci@google.com</owner>
@@ -173,7 +173,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="ImageAnnotationService.AccessibilityV1.EngineKnown"
-    enum="BooleanKnown" expires_after="2024-11-24">
+    enum="BooleanKnown" expires_after="2025-01-20">
   <owner>dtseng@chromium.org</owner>
   <owner>amoylan@chromium.org</owner>
   <owner>mschillaci@google.com</owner>
@@ -189,7 +189,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram
     name="ImageAnnotationService.AccessibilityV1.ImageRequestIncludesDesc"
-    enum="BooleanIncluded" expires_after="2024-07-21">
+    enum="BooleanIncluded" expires_after="2025-01-20">
   <owner>dtseng@chromium.org</owner>
   <owner>amoylan@chromium.org</owner>
   <owner>mschillaci@google.com</owner>
@@ -209,7 +209,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram
     name="ImageAnnotationService.AccessibilityV1.ImageRequestIncludesIcon"
-    enum="BooleanIncluded" expires_after="2024-09-22">
+    enum="BooleanIncluded" expires_after="2025-01-20">
   <owner>dtseng@chromium.org</owner>
   <owner>amoylan@chromium.org</owner>
   <owner>mschillaci@google.com</owner>
@@ -227,7 +227,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="ImageAnnotationService.AccessibilityV1.JsonParseSuccess"
-    enum="BooleanSuccess" expires_after="2024-07-21">
+    enum="BooleanSuccess" expires_after="2025-01-20">
   <owner>dtseng@chromium.org</owner>
   <owner>amoylan@chromium.org</owner>
   <owner>mschillaci@google.com</owner>
@@ -242,7 +242,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="ImageAnnotationService.AccessibilityV1.PixelFetchSuccess"
-    enum="BooleanSuccess" expires_after="2024-07-21">
+    enum="BooleanSuccess" expires_after="2025-01-20">
   <owner>dtseng@chromium.org</owner>
   <owner>amoylan@chromium.org</owner>
   <owner>mschillaci@google.com</owner>
@@ -258,7 +258,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="ImageAnnotationService.AccessibilityV1.ServerHttpResponseCode"
-    enum="HttpResponseCode" expires_after="2024-11-24">
+    enum="HttpResponseCode" expires_after="2025-01-20">
   <owner>dtseng@chromium.org</owner>
   <owner>amoylan@chromium.org</owner>
   <owner>mschillaci@google.com</owner>
@@ -273,7 +273,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="ImageAnnotationService.AccessibilityV1.ServerLatencyMs"
-    units="ms" expires_after="2024-12-08">
+    units="ms" expires_after="2025-01-20">
   <owner>dtseng@chromium.org</owner>
   <owner>amoylan@chromium.org</owner>
   <owner>mschillaci@google.com</owner>
@@ -288,7 +288,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="ImageAnnotationService.AccessibilityV1.ServerNetError"
-    enum="NetErrorCodes" expires_after="2024-12-08">
+    enum="NetErrorCodes" expires_after="2025-01-20">
   <owner>dtseng@chromium.org</owner>
   <owner>amoylan@chromium.org</owner>
   <owner>mschillaci@google.com</owner>
@@ -303,7 +303,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="ImageAnnotationService.AccessibilityV1.ServerRequestSizeKB"
-    units="KB" expires_after="2024-12-08">
+    units="KB" expires_after="2025-01-20">
   <owner>dtseng@chromium.org</owner>
   <owner>amoylan@chromium.org</owner>
   <owner>mschillaci@google.com</owner>
@@ -320,7 +320,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram
     name="ImageAnnotationService.AccessibilityV1.ServerResponseSizeBytes"
-    units="bytes" expires_after="2024-07-21">
+    units="bytes" expires_after="2025-01-20">
   <owner>dtseng@chromium.org</owner>
   <owner>amoylan@chromium.org</owner>
   <owner>mschillaci@google.com</owner>
@@ -335,7 +335,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="ImageAnnotationService.AccessibilityV1.SourcePixelCount"
-    units="pixels" expires_after="2024-07-21">
+    units="pixels" expires_after="2025-01-20">
   <owner>dtseng@chromium.org</owner>
   <owner>amoylan@chromium.org</owner>
   <owner>mschillaci@google.com</owner>
@@ -352,7 +352,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram
     name="ImageAnnotationService.{ImageAnnotationServiceAnnotationType}AccessibilityV1.Confidence"
-    units="%" expires_after="M132">
+    units="%" expires_after="2025-01-20">
   <owner>dtseng@chromium.org</owner>
   <owner>amoylan@chromium.org</owner>
   <owner>mschillaci@google.com</owner>
@@ -371,7 +371,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram
     name="ImageAnnotationService.{ImageAnnotationServiceAnnotationType}AccessibilityV1.Empty"
-    enum="BooleanEmpty" expires_after="M132">
+    enum="BooleanEmpty" expires_after="2025-01-20">
   <owner>dtseng@chromium.org</owner>
   <owner>amoylan@chromium.org</owner>
   <owner>mschillaci@google.com</owner>
@@ -391,7 +391,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram
     name="ImageAnnotationService.{ImageAnnotationServiceAnnotationType}AccessibilityV1.Status"
-    enum="GoogleRpcCode" expires_after="M132">
+    enum="GoogleRpcCode" expires_after="2025-01-20">
   <owner>dtseng@chromium.org</owner>
   <owner>amoylan@chromium.org</owner>
   <owner>mschillaci@google.com</owner>
@@ -408,7 +408,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="ImageDecoder.Png.UiGfxIntoSkBitmap" units="microseconds"
-    expires_after="2024-09-15">
+    expires_after="2025-01-20">
   <owner>lukasza@chromium.org</owner>
   <owner>chrome-rust-experiments@google.com</owner>
   <summary>
@@ -426,7 +426,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="ImageDecoder.Png.UiGfxIntoVector" units="microseconds"
-    expires_after="2024-09-15">
+    expires_after="2025-01-20">
   <owner>lukasza@chromium.org</owner>
   <owner>chrome-rust-experiments@google.com</owner>
   <summary>
@@ -557,7 +557,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="ImageFetcher.RequestStatusCode{ImageFetcherClients}"
-    enum="CombinedHttpResponseAndNetErrorCode" expires_after="2024-09-01">
+    enum="CombinedHttpResponseAndNetErrorCode" expires_after="2025-01-20">
   <owner>fgorski@chromium.org</owner>
   <owner>wylieb@chromium.org</owner>
   <summary>
