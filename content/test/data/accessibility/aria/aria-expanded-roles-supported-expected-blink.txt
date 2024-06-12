@@ -23,11 +23,11 @@ rootWebArea
 ++++++figure
 ++++++form name='Name required for form'
 ++++++grid
-++++++++columnHeader expanded
 ++++++++gridCell expanded
 ++++++++row expanded
+++++++++++columnHeader expanded
+++++++++++rowHeader expanded
 ++++++++rowGroup
-++++++++rowHeader expanded
 ++++++group
 ++++++heading
 ++++++image

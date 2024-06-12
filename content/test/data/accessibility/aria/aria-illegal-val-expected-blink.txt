@@ -22,4 +22,5 @@ rootWebArea
 ++++++tree multiselectable vertical
 ++++++++treeItem name='Selected illegal' selected=true
 ++++++grid
-++++++++columnHeader name='Sort illegal' sortDirection=other
+++++++++row
+++++++++++columnHeader name='Sort illegal' sortDirection=other

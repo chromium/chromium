@@ -53,7 +53,9 @@ The results should be indentical to the results for aria-undefined.html.
   <div role="treeitem" aria-selected="undefined" aria-label="Selected undefined"></div>
 </div>
 <div role="grid">
-  <div aria-sort="undefined" role="columnheader" aria-label="Sort undefined"></div>
+  <div role="row">
+    <div aria-sort="undefined" role="columnheader" aria-label="Sort undefined"></div>
+  </div>
 </div>
 <!-- Test aria-hidden at end because a broken test can have extra object,
      and ruin the rest of the test. -->
