@@ -32,6 +32,11 @@ chromium-metrics-reviews@google.com.
                server."/>
 </variants>
 
+<variants name="FinalSessionStatus">
+  <variant name="Accepted" summary="the Compose response was inserted"/>
+  <variant name="Ignored" summary="the Compose response was ignored"/>
+</variants>
+
 <histogram name="Compose.ContextMenu.CTR" enum="ComposeContextMenuCtrEvent"
     expires_after="2024-11-01">
   <owner>sophey@chromium.org</owner>
@@ -289,7 +294,7 @@ chromium-metrics-reviews@google.com.
   <summary>
     Records the reason a Compose request is started. This includes the first
     request from the input state, retries, updates and modifications made by the
-    user for a reuqest. {ComposeEvalLocation}
+    user for a request. {ComposeEvalLocation}
   </summary>
   <token key="ComposeEvalLocation">
     <variant name=""
@@ -360,11 +365,8 @@ chromium-metrics-reviews@google.com.
     {ComposeEvalLocation} If a mix of Server and OnDevice requests were used for
     this session, neither Server or OnDevice variants are recorded.
   </summary>
-  <token key="FinalStatus">
-    <variant name="Accepted" summary="the Compose response was inserted"/>
-    <variant name="Ignored" summary="the Compose response was ignored"/>
-  </token>
   <token key="ComposeEvalLocation" variants="ComposeEvalLocation"/>
+  <token key="FinalStatus" variants="FinalSessionStatus"/>
 </histogram>
 
 <histogram
@@ -375,15 +377,12 @@ chromium-metrics-reviews@google.com.
   <summary>
     Count of the number of times the Compose dialog was shown in a session where
     {FinalStatus}. Recorded once per session when it is closed or destroyed.
-    {ComposeEvalLocation} if a mix of Server and OnDevice requests were used for
+    {ComposeEvalLocation} If a mix of Server and OnDevice requests were used for
     this session, or no requests were made, then neither Server nor OnDevice
     variant is recorded.
   </summary>
   <token key="ComposeEvalLocation" variants="ComposeEvalLocation"/>
-  <token key="FinalStatus">
-    <variant name="Accepted" summary="the Compose response was inserted"/>
-    <variant name="Ignored" summary="the Compose response was ignored"/>
-  </token>
+  <token key="FinalStatus" variants="FinalSessionStatus"/>
 </histogram>
 
 <histogram name="Compose.{ComposeEvalLocation}Session.Duration.{SessionType}"
@@ -436,11 +435,8 @@ chromium-metrics-reviews@google.com.
     requests were used for this session, neither Server or OnDevice variants are
     recorded.
   </summary>
-  <token key="FinalStatus">
-    <variant name="Accepted" summary="the Compose response was inserted"/>
-    <variant name="Ignored" summary="the Compose response was ignored"/>
-  </token>
   <token key="ComposeEvalLocation" variants="ComposeEvalLocation"/>
+  <token key="FinalStatus" variants="FinalSessionStatus"/>
 </histogram>
 
 <histogram name="Compose.{ComposeEvalLocation}Session.UndoCount.{FinalStatus}"
@@ -453,11 +449,8 @@ chromium-metrics-reviews@google.com.
     {ComposeEvalLocation} If a mix of Server and OnDevice requests were used for
     this session, neither Server or OnDevice variants are recorded.
   </summary>
-  <token key="FinalStatus">
-    <variant name="Accepted" summary="the Compose response was inserted"/>
-    <variant name="Ignored" summary="the Compose response was ignored"/>
-  </token>
   <token key="ComposeEvalLocation" variants="ComposeEvalLocation"/>
+  <token key="FinalStatus" variants="FinalSessionStatus"/>
 </histogram>
 
 </histograms>

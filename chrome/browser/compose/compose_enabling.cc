@@ -291,14 +291,14 @@ ComposeEnabling::ShouldTriggerNoStatePopup(
       if (!compose::GetComposeConfig()
                .proactive_nudge_bypass_optimization_guide) {
         return base::unexpected(
-            compose::ComposeShowStatus::kPractiveNudgeDisabledByServerConfig);
+            compose::ComposeShowStatus::kProactiveNudgeDisabledByServerConfig);
       }
       break;
     case compose::ComposeHintDecision::COMPOSE_HINT_DECISION_UNSPECIFIED:
       if (!base::FeatureList::IsEnabled(
               compose::features::kEnableNudgeForUnspecifiedHint)) {
         return base::unexpected(
-            compose::ComposeShowStatus::kPractiveNudgeUnknownServerConfig);
+            compose::ComposeShowStatus::kProactiveNudgeUnknownServerConfig);
       }
       break;
     case compose::ComposeHintDecision::COMPOSE_HINT_DECISION_ENABLED:

@@ -84,8 +84,9 @@ bool ComposeNudgeShowStatusDisabledByConfig(compose::ComposeShowStatus status) {
     case compose::ComposeShowStatus::
         kProactiveNudgeDisabledForSiteByUserPreference:
     case compose::ComposeShowStatus::kProactiveNudgeFeatureDisabled:
-    case compose::ComposeShowStatus::kRandomlyBlocked:
     case compose::ComposeShowStatus::kProactiveNudgeDisabledByMSBB:
+    case compose::ComposeShowStatus::
+        kProactiveNudgeBlockedBySegmentationPlatform:
       return true;
     default:
       return false;
@@ -620,7 +621,7 @@ bool ChromeComposeClient::ShouldTriggerPopup(
   nudge_signals.form = form_data;
   nudge_signals.field = form_field_data;
   nudge_signals.page_change_time = page_change_time_;
-  // PractiveNudgeRequestForFormField logs metrics for showing the nudge.
+  // ProactiveNudgeRequestedForFormField logs metrics for showing the nudge.
   return nudge_tracker_.ProactiveNudgeRequestedForFormField(
       std::move(nudge_signals));
 }

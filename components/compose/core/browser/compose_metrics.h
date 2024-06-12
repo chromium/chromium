@@ -138,8 +138,8 @@ enum class ComposeShowStatus {
   kShouldShow = 0,
   kGenericBlocked = 1,
   kIncompatibleFieldType = 2,
-  // kDisabledMsbb is no longer used now that we have a MSBB dialog.
-  kDisabledMsbb = 3,  // obsolete
+  // DEPRECATED: there is a MSBB dialog now.
+  // kDisabledMsbb = 3,
   kSignedOut = 4,
   kUnsupportedLanguage = 5,
   kFormFieldInCrossOriginFrame = 6,
@@ -155,9 +155,10 @@ enum class ComposeShowStatus {
   kProactiveNudgeFeatureDisabled = 16,
   kProactiveNudgeDisabledGloballyByUserPreference = 17,
   kProactiveNudgeDisabledForSiteByUserPreference = 18,
-  kPractiveNudgeDisabledByServerConfig = 19,
-  kPractiveNudgeUnknownServerConfig = 20,
-  kRandomlyBlocked = 21,
+  kProactiveNudgeDisabledByServerConfig = 19,
+  kProactiveNudgeUnknownServerConfig = 20,
+  // DEPRECATED: now using the segmentation platform.
+  // kRandomlyBlocked = 21,
   kProactiveNudgeDisabledByMSBB = 22,
   kProactiveNudgeBlockedBySegmentationPlatform = 23,
   kComposeNotEnabledInCountry = 24,
