@@ -435,7 +435,7 @@ void AppIconLoader::ApplyBadges(IconEffects icon_effects,
   }
 #endif
 
-  const bool from_bookmark = icon_effects & apps::IconEffects::kRoundCorners;
+  const bool rounded_corners = icon_effects & apps::IconEffects::kRoundCorners;
 
   bool app_launchable = true;
   // Only one badge can be visible at a time.
@@ -456,7 +456,7 @@ void AppIconLoader::ApplyBadges(IconEffects icon_effects,
 
   extensions::ChromeAppIcon::ApplyEffects(
       size_hint_in_dip_, extensions::ChromeAppIcon::ResizeFunction(),
-      app_launchable, from_bookmark, badge_type, &iv->uncompressed);
+      app_launchable, rounded_corners, badge_type, &iv->uncompressed);
 
   std::move(callback_).Run(std::move(iv));
 }

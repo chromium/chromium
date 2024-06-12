@@ -378,7 +378,7 @@ class WebAppBuilderTest : public AppServiceAppModelBuilderTest {
 
     extensions::ChromeAppIcon::ApplyEffects(
         size_in_dip, extensions::ChromeAppIcon::ResizeFunction(),
-        true /* app_launchable */, true /* from_bookmark */,
+        /*app_launchable=*/true, /*rounded_corners=*/true,
         extensions::ChromeAppIcon::Badge::kNone, &output_image_skia);
     for (const auto scale_factor : ui::GetSupportedResourceScaleFactors()) {
       // Force the icon to be loaded.

@@ -245,7 +245,7 @@ TEST_F(AppServiceArcAppIconTest, GetCompressedIconDataForStandardIcon) {
   // Apply the paused app badge.
   extensions::ChromeAppIcon::ApplyEffects(
       kSizeInDip, extensions::ChromeAppIcon::ResizeFunction(),
-      /*app_launchable=*/false, /*from_bookmark=*/false,
+      /*app_launchable=*/false, /*rounded_corners=*/false,
       extensions::ChromeAppIcon::Badge::kPaused, &src_image_skia);
   src_image_skia.MakeThreadSafe();
 
