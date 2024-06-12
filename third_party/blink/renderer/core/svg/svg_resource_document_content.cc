@@ -149,11 +149,6 @@ SVGResourceDocumentContent::UpdateDocument(scoped_refptr<SharedBuffer> data,
   if (!document_host_->IsLoaded()) {
     return UpdateResult::kAsync;
   }
-  // Report an error if the document doesn't have an <svg> document root.
-  if (!document_host_->RootElement()) {
-    ClearDocument();
-    return UpdateResult::kError;
-  }
   LoadingFinished();
   return UpdateResult::kCompleted;
 }
