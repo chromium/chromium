@@ -7,8 +7,8 @@
 #import "base/ios/ios_util.h"
 #import "ios/chrome/app/application_delegate/app_state.h"
 #import "ios/chrome/app/blocking_scene_commands.h"
+#import "ios/chrome/browser/blocking_overlay/ui_bundled/blocking_overlay_view_controller.h"
 #import "ios/chrome/browser/shared/public/commands/command_dispatcher.h"
-#import "ios/chrome/browser/ui/blocking_overlay/blocking_overlay_view_controller.h"
 
 @interface UIBlockerSceneAgent ()
 
