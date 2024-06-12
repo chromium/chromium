@@ -308,6 +308,7 @@ test("gl_tests") {
 
   sources = [
     "command_buffer/service/gles2_external_framebuffer_unittest.cc",
+    "command_buffer/service/shared_image/egl_image_backing_factory_unittest.cc",
     "command_buffer/service/shared_image/gl_texture_image_backing_factory_unittest.cc",
     "command_buffer/service/shared_image/shared_image_factory_unittest.cc",
     "command_buffer/service/shared_image/shared_image_manager_unittest.cc",
@@ -367,10 +368,6 @@ test("gl_tests") {
     "ipc/client/gpu_in_process_context_tests.cc",
     "ipc/client/raster_in_process_context_tests.cc",
   ]
-
-  if (use_egl) {
-    sources += [ "command_buffer/service/shared_image/egl_image_backing_factory_unittest.cc" ]
-  }
 
   if (is_android) {
     sources += [ "command_buffer/tests/gl_unittests_android.cc" ]
