@@ -630,6 +630,7 @@ aom_dsp_encoder_intrin_ssse3 = [
   "//third_party/libaom/source/libaom/aom_dsp/x86/masked_variance_intrin_ssse3.c",
   "//third_party/libaom/source/libaom/aom_dsp/x86/quantize_ssse3.c",
   "//third_party/libaom/source/libaom/aom_dsp/x86/variance_impl_ssse3.c",
+  "//third_party/libaom/source/libaom/aom_dsp/x86/variance_ssse3.c",
   "//third_party/libaom/source/libaom/aom_dsp/x86/jnt_variance_ssse3.c",
 ]
 
