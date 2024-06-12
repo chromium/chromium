@@ -6373,7 +6373,6 @@ crbug.com/1446039 [ Debug Mac13 ] external/wpt/webtransport/streams-close.https.
 [ Debug Mac13 ] virtual/threaded-preload-scanner/external/wpt/html/semantics/scripting-1/the-script-element/module/dynamic-import/microtasks/basic.any.sharedworker.html [ Skip Timeout ]
 [ Debug Mac13 ] external/wpt/preload/preload-dynamic-csp.html [ Skip Timeout ]
 [ Debug Mac13 ] virtual/threaded-no-composited-antialiasing/animations/svg-attribute-composition/svg-y-composition.html [ Skip Timeout ]
-[ Debug Mac13 ] http/tests/devtools/indexeddb/resources-panel.js [ Skip Timeout ]
 [ Debug Mac13 ] http/tests/devtools/runtime/runtime-es6-setSymbolPropertyValue.js [ Skip Timeout ]
 [ Debug Mac13 ] external/wpt/IndexedDB/idb-partitioned-coverage.tentative.sub.html [ Skip Timeout ]
 [ Debug Mac13 ] http/tests/devtools/network/network-initiator.js [ Failure ]
@@ -7047,7 +7046,6 @@ crbug.com/330207209 external/wpt/html/browsers/browsing-the-web/history-traversa
 [ Mac14 ] fast/forms/datetimelocal/datetimelocal-appearance-l10n.html [ Failure ]
 [ Mac14 ] fullscreen/anonymous-block-merge-crash.html [ Failure ]
 [ Mac14 ] http/tests/devtools/csp/csp-inline-warning-contains-stacktrace.js [ Failure ]
-[ Mac14 ] http/tests/devtools/indexeddb/resources-panel.js [ Failure ]
 [ Mac14 ] http/tests/devtools/oopif/oopif-console-preserves-log-on-frame-navigation.js [ Failure ]
 [ Mac14 ] http/tests/devtools/sources/debugger-breakpoints/breakpoint-manager-listeners-count.js [ Failure ]
 [ Mac14 ] http/tests/devtools/sources/debugger/debugger-scope-resolve-identifiers.js [ Failure ]
@@ -7153,7 +7151,6 @@ crbug.com/330207209 external/wpt/html/browsers/browsing-the-web/history-traversa
 [ Mac14-arm64 ] http/tests/devtools/console/console-format-collections.js [ Failure Pass ]
 [ Mac14-arm64 ] http/tests/devtools/console/console-linkify-relative-links.js [ Failure Pass ]
 [ Mac14-arm64 ] http/tests/devtools/csp/csp-inline-warning-contains-stacktrace.js [ Failure ]
-[ Mac14-arm64 ] http/tests/devtools/indexeddb/resources-panel.js [ Failure ]
 [ Mac14-arm64 ] http/tests/devtools/oopif/oopif-console-preserves-log-on-frame-navigation.js [ Failure ]
 [ Mac14-arm64 ] http/tests/devtools/sources/debugger-breakpoints/breakpoint-manager-listeners-count.js [ Failure ]
 [ Mac14-arm64 ] http/tests/devtools/sources/debugger/debugger-scope-resolve-identifiers.js [ Failure ]
@@ -7581,3 +7578,6 @@ crbug.com/346219035 [ Linux ] http/tests/loading/preload-image-src.html [ Failur
 
 # Flaky output
 crbug.com/346387874 [ Win11 ] fast/backgrounds/size/contain-and-cover.html [ Failure ]
+
+# Gardener 2024-06-12
+crbug.com/346706682 [ Mac ] http/tests/devtools/indexeddb/resources-panel.js [ Failure ]
