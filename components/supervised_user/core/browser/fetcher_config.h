@@ -32,6 +32,19 @@ net::NetworkTrafficAnnotationTag CreatePermissionRequestTag();
 }  // namespace annotations
 
 struct AccessTokenConfig {
+  enum class CredentialsRequirement {
+    // This endpoint requires user credentials. If an access token cannot be
+    // obtained, the request will be failed (with no request sent to the
+    // server).
+    kStrict,
+
+    // End user credentials are preferred, but not required, for this endpoint.
+    // If an access token cannot be obtained, the request will be sent to the
+    // server with no credentials.
+    kBestEffort
+  };
+  CredentialsRequirement credentials_requirement;
+
   // Must be set in actual configs. See
   // signin::PrimaryAccountAccessTokenFetcher::Mode docs.
   std::optional<signin::PrimaryAccountAccessTokenFetcher::Mode> mode;
@@ -112,6 +125,8 @@ constexpr FetcherConfig kClassifyUrlConfig = {
     .traffic_annotation = annotations::ClassifyUrlTag,
     .access_token_config =
         {
+            .credentials_requirement =
+                AccessTokenConfig::CredentialsRequirement::kStrict,
             // Fail the fetch right away when access token is not immediately
             // available.
             // TODO(b/301931929): consider using `kWaitUntilAvailable` to
@@ -130,6 +145,8 @@ constexpr FetcherConfig kClassifyUrlConfigWaitUntilAccessTokenAvailable = {
     .traffic_annotation = annotations::ClassifyUrlTag,
     .access_token_config =
         {
+            .credentials_requirement =
+                AccessTokenConfig::CredentialsRequirement::kStrict,
             .mode = signin::PrimaryAccountAccessTokenFetcher::Mode::
                 kWaitUntilAvailable,
             // TODO(b/284523446): Refer to GaiaConstants rather than literal.
@@ -171,6 +188,8 @@ constexpr FetcherConfig kListFamilyMembersConfig{
             .always_use_initial_delay = false,
         },
     .access_token_config{
+        .credentials_requirement =
+            AccessTokenConfig::CredentialsRequirement::kStrict,
         // Wait for the token to be issued. This fetch is asynchronous and not
         // latency sensitive.
         .mode =
@@ -188,6 +207,8 @@ constexpr FetcherConfig kCreatePermissionRequestConfig = {
     .histogram_basename = "FamilyLinkUser.CreatePermissionRequest",
     .traffic_annotation = annotations::CreatePermissionRequestTag,
     .access_token_config{
+        .credentials_requirement =
+            AccessTokenConfig::CredentialsRequirement::kStrict,
         // Fail the fetch right away when access token is not immediately
         // available.
         .mode = signin::PrimaryAccountAccessTokenFetcher::Mode::kImmediate,

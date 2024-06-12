@@ -22,6 +22,7 @@
 #include "base/time/time.h"
 #include "base/timer/elapsed_timer.h"
 #include "base/types/expected.h"
+#include "base/types/optional_util.h"
 #include "components/signin/public/identity_manager/access_token_info.h"
 #include "components/signin/public/identity_manager/identity_manager.h"
 #include "components/supervised_user/core/browser/fetcher_config.h"
@@ -94,7 +95,7 @@ GURL CreateRequestUrl(const FetcherConfig& config,
 }
 
 std::unique_ptr<network::SimpleURLLoader> InitializeSimpleUrlLoader(
-    const signin::AccessTokenInfo access_token_info,
+    const std::optional<signin::AccessTokenInfo> access_token_info,
     const FetcherConfig& fetcher_config,
     const FetcherConfig::PathArgs& args,
     const std::optional<std::string>& payload) {
@@ -104,9 +105,11 @@ std::unique_ptr<network::SimpleURLLoader> InitializeSimpleUrlLoader(
   resource_request->method = fetcher_config.GetHttpMethod();
   resource_request->credentials_mode = network::mojom::CredentialsMode::kOmit;
   resource_request->priority = fetcher_config.request_priority;
-  resource_request->headers.SetHeader(
-      net::HttpRequestHeaders::kAuthorization,
-      CreateAuthorizationHeader(access_token_info));
+  if (access_token_info) {
+    resource_request->headers.SetHeader(
+        net::HttpRequestHeaders::kAuthorization,
+        CreateAuthorizationHeader(access_token_info.value()));
+  }
   std::unique_ptr<network::SimpleURLLoader> simple_url_loader =
       network::SimpleURLLoader::Create(std::move(resource_request),
                                        fetcher_config.traffic_annotation());
@@ -441,7 +444,9 @@ void AbstractProtoFetcher::OnAccessTokenFetchComplete(
     scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory,
     base::expected<signin::AccessTokenInfo, GoogleServiceAuthError>
         access_token) {
-  if (!access_token.has_value()) {
+  if (!access_token.has_value() &&
+      config_.access_token_config.credentials_requirement ==
+          AccessTokenConfig::CredentialsRequirement::kStrict) {
     OnError(ProtoFetcherStatus::GoogleServiceAuthError(access_token.error()));
     return;
   }
@@ -450,8 +455,9 @@ void AbstractProtoFetcher::OnAccessTokenFetchComplete(
     metrics_->RecordAccessTokenLatency(GoogleServiceAuthError::State::NONE);
   }
 
-  simple_url_loader_ = InitializeSimpleUrlLoader(access_token.value(), config_,
-                                                 args_, GetRequestPayload());
+  simple_url_loader_ =
+      InitializeSimpleUrlLoader(base::OptionalFromExpected(access_token),
+                                config_, args_, GetRequestPayload());
   simple_url_loader_->DownloadToStringOfUnboundedSizeUntilCrashAndDie(
       url_loader_factory.get(),
       base::BindOnce(
