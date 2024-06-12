@@ -28,6 +28,9 @@ class URLVisitResumptionRanker : public DefaultModelProvider {
 
   void ExecuteModelWithInput(const ModelProvider::Request& inputs,
                              ExecutionCallback callback) override;
+
+ private:
+  const bool use_random_score_;
 };
 
 }  // namespace segmentation_platform

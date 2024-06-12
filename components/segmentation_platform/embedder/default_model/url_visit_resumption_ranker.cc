@@ -6,6 +6,8 @@
 
 #include <memory>
 
+#include "base/metrics/field_trial_params.h"
+#include "base/rand_util.h"
 #include "base/task/sequenced_task_runner.h"
 #include "components/segmentation_platform/internal/metadata/metadata_writer.h"
 #include "components/segmentation_platform/public/features.h"
@@ -45,7 +47,11 @@ std::unique_ptr<Config> URLVisitResumptionRanker::GetConfig() {
 }
 
 URLVisitResumptionRanker::URLVisitResumptionRanker()
-    : DefaultModelProvider(kSegmentId) {}
+    : DefaultModelProvider(kSegmentId),
+      use_random_score_(base::GetFieldTrialParamByFeatureAsBool(
+          features::kSegmentationPlatformURLVisitResumptionRanker,
+          "use_random_score",
+          true)) {}
 
 URLVisitResumptionRanker::~URLVisitResumptionRanker() = default;
 
@@ -70,7 +76,7 @@ URLVisitResumptionRanker::GetModelConfig() {
       ->mutable_generic_predictor()
       ->add_output_labels(kURLVisitResumptionRankerKey);
 
-  // TODO(crbug.com/330577142): metadata.set_upload_tensors(true);
+  metadata.set_upload_tensors(true);
   auto* outputs = metadata.mutable_training_outputs();
   outputs->mutable_trigger_config()->set_decision_type(
       proto::TrainingOutputs::TriggerConfig::ONDEMAND);
@@ -92,7 +98,12 @@ void URLVisitResumptionRanker::ExecuteModelWithInput(
   float time_since_modified_sec =
       inputs[visited_url_ranking::URLVisitAggregateRankingModelInputSignals::
                  kTimeSinceLastModifiedSec];
-  float resumption_score = 1.0 / (time_since_modified_sec + 1);
+  float resumption_score = 0;
+  if (use_random_score_) {
+    resumption_score = base::RandFloat();
+  } else {
+    resumption_score = 1.0 / (time_since_modified_sec + 1);
+  }
   base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
       FROM_HERE, base::BindOnce(std::move(callback),
                                 ModelProvider::Response(1, resumption_score)));
