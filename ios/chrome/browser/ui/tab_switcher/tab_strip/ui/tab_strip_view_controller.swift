@@ -810,7 +810,7 @@ extension TabStripViewController: UICollectionViewDelegateFlowLayout {
     switch itemIdentifier.item {
     case .tab(let tabSwitcherItem):
       mutator?.activate(tabSwitcherItem)
-    case .group(let tabGroupItem):
+    case .group(_):
       collapseOrExpandGroup(at: indexPath)
     }
   }
