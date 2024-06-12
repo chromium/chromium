@@ -5,6 +5,8 @@
 #ifndef PDF_INK_INK_STROKE_INPUT_BATCH_H_
 #define PDF_INK_INK_STROKE_INPUT_BATCH_H_
 
+#include <stddef.h>
+
 #include <memory>
 #include <vector>
 
@@ -17,10 +19,11 @@ class InkStrokeInputBatch {
   static std::unique_ptr<InkStrokeInputBatch> Create(
       const std::vector<InkStrokeInput>& inputs);
 
-  ~InkStrokeInputBatch() = default;
+  virtual ~InkStrokeInputBatch() = default;
 
- protected:
-  InkStrokeInputBatch() = default;
+  virtual size_t Size() const = 0;
+
+  virtual InkStrokeInput Get(size_t i) const = 0;
 };
 
 }  // namespace chrome_pdf

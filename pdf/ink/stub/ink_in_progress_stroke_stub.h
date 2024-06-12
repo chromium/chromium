@@ -6,11 +6,13 @@
 #define PDF_INK_STUB_INK_IN_PROGRESS_STROKE_STUB_H_
 
 #include "pdf/ink/ink_in_progress_stroke.h"
+#include "pdf/ink/stub/ink_stroke_input_batch_stub.h"
 
 namespace chrome_pdf {
 
 class InkInProgressStrokeStub : public InkInProgressStroke {
  public:
+  InkInProgressStrokeStub();
   ~InkInProgressStrokeStub() override;
 
   // InkInProgressStroke:
@@ -20,6 +22,9 @@ class InkInProgressStrokeStub : public InkInProgressStroke {
   void FinishInputs() override;
   bool UpdateShape(float current_elapsed_time_seconds) override;
   std::unique_ptr<InkStroke> CopyToStroke() const override;
+
+ private:
+  InkStrokeInputBatchStub inputs_;
 };
 
 }  // namespace chrome_pdf

@@ -10,10 +10,14 @@
 
 namespace chrome_pdf {
 
-InkStrokeStub::InkStrokeStub()
-    : shape_(std::make_unique<InkModeledShapeStub>()) {}
+InkStrokeStub::InkStrokeStub(const InkStrokeInputBatchStub& inputs)
+    : shape_(std::make_unique<InkModeledShapeStub>()), inputs_(inputs) {}
 
 InkStrokeStub::~InkStrokeStub() = default;
+
+const InkStrokeInputBatch& InkStrokeStub::GetInputs() const {
+  return inputs_;
+}
 
 const InkModeledShape* InkStrokeStub::GetShape() const {
   return shape_.get();

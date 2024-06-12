@@ -8,10 +8,13 @@
 namespace chrome_pdf {
 
 class InkModeledShape;
+class InkStrokeInputBatch;
 
 class InkStroke {
  public:
   virtual ~InkStroke() = default;
+
+  virtual const InkStrokeInputBatch& GetInputs() const = 0;
 
   virtual const InkModeledShape* GetShape() const = 0;
 };

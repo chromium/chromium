@@ -8,6 +8,7 @@
 #include <memory>
 
 #include "pdf/ink/ink_stroke.h"
+#include "pdf/ink/stub/ink_stroke_input_batch_stub.h"
 
 namespace chrome_pdf {
 
@@ -16,14 +17,16 @@ class InkModeledShapeStub;
 
 class InkStrokeStub : public InkStroke {
  public:
-  InkStrokeStub();
+  explicit InkStrokeStub(const InkStrokeInputBatchStub& inputs);
   ~InkStrokeStub() override;
 
   // InkStroke:
+  const InkStrokeInputBatch& GetInputs() const override;
   const InkModeledShape* GetShape() const override;
 
  private:
   const std::unique_ptr<InkModeledShapeStub> shape_;
+  const InkStrokeInputBatchStub inputs_;
 };
 
 }  // namespace chrome_pdf

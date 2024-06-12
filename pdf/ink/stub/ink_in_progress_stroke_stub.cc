@@ -15,6 +15,8 @@ std::unique_ptr<InkInProgressStroke> InkInProgressStroke::Create() {
   return std::make_unique<InkInProgressStrokeStub>();
 }
 
+InkInProgressStrokeStub::InkInProgressStrokeStub() = default;
+
 InkInProgressStrokeStub::~InkInProgressStrokeStub() = default;
 
 void InkInProgressStrokeStub::Start(const InkBrush& brush) {}
@@ -22,7 +24,12 @@ void InkInProgressStrokeStub::Start(const InkBrush& brush) {}
 bool InkInProgressStrokeStub::EnqueueInputs(
     const InkStrokeInputBatch* real_inputs,
     const InkStrokeInputBatch* predicted_inputs) {
-  // Pretend enqueuing succeeded, even though nothing is done here.
+  if (!real_inputs) {
+    return false;
+  }
+
+  // Capture copy of input.
+  inputs_ = *static_cast<const InkStrokeInputBatchStub*>(real_inputs);
   return true;
 }
 
@@ -34,7 +41,7 @@ bool InkInProgressStrokeStub::UpdateShape(float current_elapsed_time_seconds) {
 }
 
 std::unique_ptr<InkStroke> InkInProgressStrokeStub::CopyToStroke() const {
-  return std::make_unique<InkStrokeStub>();
+  return std::make_unique<InkStrokeStub>(inputs_);
 }
 
 }  // namespace chrome_pdf
