@@ -263,7 +263,6 @@ ClipboardHistoryItemView::ClipboardHistoryItemView(
     : item_id_(item_id),
       clipboard_history_(clipboard_history),
       container_(container) {
-  GetViewAccessibility().SetRole(ax::mojom::Role::kMenuItem);
 }
 
 bool ClipboardHistoryItemView::AdvancePseudoFocus(bool reverse) {
@@ -418,6 +417,7 @@ gfx::Size ClipboardHistoryItemView::CalculatePreferredSize(
 void ClipboardHistoryItemView::GetAccessibleNodeData(ui::AXNodeData* data) {
   // A valid role must be set in the AXNodeData prior to setting the name
   // via AXNodeData::SetName.
+  View::GetAccessibleNodeData(data);
   data->role = ax::mojom::Role::kMenuItem;
 
   // TODO(crbug.com/325137417): Instead of retrieving the accessible name from
