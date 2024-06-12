@@ -175,7 +175,7 @@ class HttpStreamFactory::JobController
   };
 
   void OnIOComplete(int result);
-  void OnResolveProxyError(int error);
+
   void RunLoop(int result);
   int DoLoop(int result);
   int DoResolveProxy();
