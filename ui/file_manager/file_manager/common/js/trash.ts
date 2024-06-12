@@ -230,8 +230,11 @@ export class TrashDirs {
         }
       }
     }
-    const files = await TrashDirs.getDirectory(trashRoot, 'files', create);
-    const info = await TrashDirs.getDirectory(trashRoot, 'info', create);
+
+    const [files, info] = await Promise.all([
+      TrashDirs.getDirectory(trashRoot, 'files', create),
+      TrashDirs.getDirectory(trashRoot, 'info', create)
+    ]);
     return files && info ? new TrashDirs(files, info) : null;
   }
 }

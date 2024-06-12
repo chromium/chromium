@@ -199,9 +199,9 @@ export class CameraManager implements EventListener {
   }
 
   async onUpdateConfig(config: CameraConfig): Promise<void> {
-    for (const ui of this.cameraUIs) {
-      await ui.onUpdateConfig?.(config);
-    }
+    await Promise.all(this.cameraUIs.map((ui) => {
+      return ui.onUpdateConfig?.(config)
+    }));
   }
 
   onTryingNewConfig(config: CameraConfig): void {

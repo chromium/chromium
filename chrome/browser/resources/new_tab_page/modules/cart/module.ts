@@ -524,12 +524,11 @@ async function createCartElement(): Promise<HTMLElement|null> {
   // whether welcome surface should show or not. Anything whose visibility
   // dependes on welcome surface (e.g. RBD consent) should check before
   // getWarmWelcomeVisible.
-  const {consentVisible} =
-      await ChromeCartProxy.getHandler().getDiscountConsentCardVisible();
-
-  const {welcomeVisible} =
-      await ChromeCartProxy.getHandler().getWarmWelcomeVisible();
-  const {carts} = await ChromeCartProxy.getHandler().getMerchantCarts();
+  const [{ consentVisible, welcomeVisible, carts }] = await Promise.all([
+    ChromeCartProxy.getHandler().getDiscountConsentCardVisible(),
+    ChromeCartProxy.getHandler().getWarmWelcomeVisible(),
+    ChromeCartProxy.getHandler().getMerchantCarts(),
+  ]);
   chrome.metricsPrivate.recordSmallCount(
       'NewTabPage.Carts.CartCount', carts.length);
 
