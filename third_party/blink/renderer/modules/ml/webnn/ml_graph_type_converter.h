@@ -38,7 +38,7 @@ struct TypeConverter<webnn::mojom::blink::OperandPtr, blink::MLOperand*> {
       const blink::MLOperand* ml_operand);
 };
 
-MODULES_EXPORT webnn::mojom::blink::Operand::DataType BlinkOperandTypeToMojo(
+MODULES_EXPORT webnn::mojom::blink::DataType BlinkOperandTypeToMojo(
     blink::V8MLOperandDataType::Enum data_type);
 
 }  // namespace mojo

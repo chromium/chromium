@@ -85,7 +85,7 @@ class GraphBuilderCoreml {
     InputOperandInfo();
     InputOperandInfo(std::string name,
                      std::vector<uint32_t> dimensions,
-                     mojom::Operand::DataType data_type);
+                     mojom::DataType data_type);
     InputOperandInfo(InputOperandInfo&);
     InputOperandInfo(InputOperandInfo&&);
     ~InputOperandInfo();
@@ -93,7 +93,7 @@ class GraphBuilderCoreml {
     // Identifier for this operand in coreml model file.
     std::string coreml_name;
     std::vector<uint32_t> dimensions;
-    mojom::Operand::DataType data_type;
+    mojom::DataType data_type;
   };
 
   struct Result {

@@ -68,10 +68,10 @@ TEST_F(WebNNContextDMLImplTest, CreateGraphImplTest) {
 
   // Build a simple graph with relu operator.
   GraphInfoBuilder builder;
-  uint64_t input_operand_id = builder.BuildInput(
-      "input", {1, 2, 3, 4}, mojom::Operand::DataType::kFloat32);
-  uint64_t output_operand_id = builder.BuildOutput(
-      "output", {1, 2, 3, 4}, mojom::Operand::DataType::kFloat32);
+  uint64_t input_operand_id =
+      builder.BuildInput("input", {1, 2, 3, 4}, mojom::DataType::kFloat32);
+  uint64_t output_operand_id =
+      builder.BuildOutput("output", {1, 2, 3, 4}, mojom::DataType::kFloat32);
   builder.BuildRelu(input_operand_id, output_operand_id);
 
   // The GraphImplDml should be built successfully.

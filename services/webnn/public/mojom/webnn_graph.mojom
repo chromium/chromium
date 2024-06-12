@@ -8,21 +8,21 @@ import "mojo/public/mojom/base/big_buffer.mojom";
 import "mojo/public/mojom/base/unguessable_token.mojom";
 import "services/webnn/public/mojom/webnn_error.mojom";
 
+// Represents the `MLOperandType` in the WebIDL definition.
+enum DataType {
+  kFloat32,
+  kFloat16,
+  kInt32,
+  kUint32,
+  kInt64,
+  kUint64,
+  kInt8,
+  kUint8,
+};
+
 // Represents the `MLOperand` which describes not only input and constant
 // operand, but also the output operand of operator.
 struct Operand {
-  // Represents the `MLOperandType` in the WebIDL definition.
-  enum DataType {
-    kFloat32,
-    kFloat16,
-    kInt32,
-    kUint32,
-    kInt64,
-    kUint64,
-    kInt8,
-    kUint8,
-  };
-
   enum Kind {
     kInput,
     kConstant,

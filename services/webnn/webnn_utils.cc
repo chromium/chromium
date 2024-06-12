@@ -248,23 +248,23 @@ std::string OpKindToString(mojom::Reduce::Kind kind) {
   }
 }
 
-std::string DataTypeToString(mojom::Operand::DataType type) {
+std::string DataTypeToString(mojom::DataType type) {
   switch (type) {
-    case mojom::Operand::DataType::kFloat32:
+    case mojom::DataType::kFloat32:
       return "float32";
-    case mojom::Operand::DataType::kFloat16:
+    case mojom::DataType::kFloat16:
       return "float16";
-    case mojom::Operand::DataType::kInt32:
+    case mojom::DataType::kInt32:
       return "int32";
-    case mojom::Operand::DataType::kUint32:
+    case mojom::DataType::kUint32:
       return "uint32";
-    case mojom::Operand::DataType::kInt8:
+    case mojom::DataType::kInt8:
       return "int8";
-    case mojom::Operand::DataType::kUint8:
+    case mojom::DataType::kUint8:
       return "uint8";
-    case mojom::Operand::DataType::kInt64:
+    case mojom::DataType::kInt64:
       return "int64";
-    case mojom::Operand::DataType::kUint64:
+    case mojom::DataType::kUint64:
       return "uint64";
   }
 }
@@ -299,31 +299,31 @@ std::string NotSupportedOperatorError(const mojom::ElementWiseUnary& op) {
 
 std::string NotSupportedArgumentTypeError(std::string_view op_name,
                                           std::string_view argument_name,
-                                          mojom::Operand::DataType type) {
+                                          mojom::DataType type) {
   return base::StrCat({"Unsupported data type ", DataTypeToString(type),
                        " for ", op_name, " argument ", argument_name, "."});
 }
 
-std::string NotSupportedConstantTypeError(mojom::Operand::DataType type) {
+std::string NotSupportedConstantTypeError(mojom::DataType type) {
   return base::StrCat(
       {"Unsupported data type ", DataTypeToString(type), " for constant."});
 }
 
 std::string NotSupportedInputArgumentTypeError(std::string_view op_name,
-                                               mojom::Operand::DataType type) {
+                                               mojom::DataType type) {
   return base::StrCat({"Unsupported data type ", DataTypeToString(type),
                        " for ", op_name, " argument input."});
 }
 
 std::string NotSupportedInputTypeError(std::string_view input_name,
-                                       mojom::Operand::DataType type) {
+                                       mojom::DataType type) {
   return base::StrCat({"Unsupported data type ", DataTypeToString(type),
                        " for input operand ", input_name});
 }
 
 std::string NotSupportedOptionTypeError(std::string_view op_name,
                                         std::string_view option_name,
-                                        mojom::Operand::DataType type) {
+                                        mojom::DataType type) {
   return base::StrCat({"Unsupported data type ", DataTypeToString(type),
                        " for ", op_name, " option ", option_name});
 }

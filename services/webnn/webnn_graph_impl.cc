@@ -33,46 +33,45 @@ namespace {
 // Maps the id to its `mojo::Operand`.
 using IdToOperandMap = base::flat_map<uint64_t, mojom::OperandPtr>;
 
-size_t GetBytesPerElement(mojom::Operand::DataType operand_type) {
+size_t GetBytesPerElement(mojom::DataType operand_type) {
   switch (operand_type) {
-    case mojom::Operand::DataType::kFloat32:
+    case mojom::DataType::kFloat32:
       return sizeof(float);
-    case mojom::Operand::DataType::kFloat16:
+    case mojom::DataType::kFloat16:
       return sizeof(uint16_t);
-    case mojom::Operand::DataType::kInt32:
+    case mojom::DataType::kInt32:
       return sizeof(int32_t);
-    case mojom::Operand::DataType::kUint32:
+    case mojom::DataType::kUint32:
       return sizeof(uint32_t);
-    case mojom::Operand::DataType::kInt64:
+    case mojom::DataType::kInt64:
       return sizeof(int64_t);
-    case mojom::Operand::DataType::kUint64:
+    case mojom::DataType::kUint64:
       return sizeof(uint64_t);
-    case mojom::Operand::DataType::kInt8:
+    case mojom::DataType::kInt8:
       return sizeof(int8_t);
-    case mojom::Operand::DataType::kUint8:
+    case mojom::DataType::kUint8:
       return sizeof(uint8_t);
   }
   NOTREACHED_IN_MIGRATION();
 }
 
-webnn::Operand::DataType MojoOperandTypeToComponent(
-    mojom::Operand::DataType data_type) {
+webnn::Operand::DataType MojoOperandTypeToComponent(mojom::DataType data_type) {
   switch (data_type) {
-    case mojom::Operand::DataType::kFloat32:
+    case mojom::DataType::kFloat32:
       return webnn::Operand::DataType::kFloat32;
-    case mojom::Operand::DataType::kFloat16:
+    case mojom::DataType::kFloat16:
       return webnn::Operand::DataType::kFloat16;
-    case mojom::Operand::DataType::kInt32:
+    case mojom::DataType::kInt32:
       return webnn::Operand::DataType::kInt32;
-    case mojom::Operand::DataType::kUint32:
+    case mojom::DataType::kUint32:
       return webnn::Operand::DataType::kUint32;
-    case mojom::Operand::DataType::kInt64:
+    case mojom::DataType::kInt64:
       return webnn::Operand::DataType::kInt64;
-    case mojom::Operand::DataType::kUint64:
+    case mojom::DataType::kUint64:
       return webnn::Operand::DataType::kUint64;
-    case mojom::Operand::DataType::kInt8:
+    case mojom::DataType::kInt8:
       return webnn::Operand::DataType::kInt8;
-    case mojom::Operand::DataType::kUint8:
+    case mojom::DataType::kUint8:
       return webnn::Operand::DataType::kUint8;
   }
   NOTREACHED_NORETURN();
@@ -835,7 +834,7 @@ bool ValidateElementWiseBinaryDataTypes(
   }
 
   if (IsLogicalElementWiseBinary(operation->kind)) {
-    if (output->data_type != mojom::Operand::DataType::kUint8) {
+    if (output->data_type != mojom::DataType::kUint8) {
       // For logical operations, the output data type must be uint8.
       return false;
     }
@@ -1586,8 +1585,8 @@ bool ValidatePool2d(const IdToOperandMap& id_to_operand_map,
 
   if (pool2d->kind == mojom::Pool2d::Kind::kAveragePool2d ||
       pool2d->kind == mojom::Pool2d::Kind::kL2Pool2d) {
-    if (!(input->data_type == mojom::Operand::DataType::kFloat32 ||
-          input->data_type == mojom::Operand::DataType::kFloat16)) {
+    if (!(input->data_type == mojom::DataType::kFloat32 ||
+          input->data_type == mojom::DataType::kFloat16)) {
       return false;
     }
   }

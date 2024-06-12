@@ -101,7 +101,7 @@ struct OperandInfo {
 };
 
 struct OperandInfoMojo {
-  blink_mojom::Operand::DataType data_type;
+  blink_mojom::DataType data_type;
   Vector<uint32_t> dimensions;
 };
 
@@ -1461,20 +1461,18 @@ TEST_F(MLGraphTest, SoftmaxTest) {
   ASSERT_THAT(builder, testing::NotNull());
   {
     // Test building softmax with float32 input.
-    SoftmaxTester{
-        .input = {.data_type = V8MLOperandDataType::Enum::kFloat32,
-                  .dimensions = {2, 4}},
-        .expected = {.data_type = blink_mojom::Operand::DataType::kFloat32,
-                     .dimensions = {2, 4}}}
+    SoftmaxTester{.input = {.data_type = V8MLOperandDataType::Enum::kFloat32,
+                            .dimensions = {2, 4}},
+                  .expected = {.data_type = blink_mojom::DataType::kFloat32,
+                               .dimensions = {2, 4}}}
         .Test(*this, scope, builder);
   }
   {
     // Test building softmax with float16 input.
-    SoftmaxTester{
-        .input = {.data_type = V8MLOperandDataType::Enum::kFloat16,
-                  .dimensions = {1, 5}},
-        .expected = {.data_type = blink_mojom::Operand::DataType::kFloat16,
-                     .dimensions = {1, 5}}}
+    SoftmaxTester{.input = {.data_type = V8MLOperandDataType::Enum::kFloat16,
+                            .dimensions = {1, 5}},
+                  .expected = {.data_type = blink_mojom::DataType::kFloat16,
+                               .dimensions = {1, 5}}}
         .Test(*this, scope, builder);
   }
 }
@@ -1540,7 +1538,7 @@ TEST_F(MLGraphTest, ConstantTest) {
         .constant = {.data_type = V8MLOperandDataType::Enum::kFloat32,
                      .dimensions = {},
                      .values = {1.0}},
-        .expected = {.data_type = blink_mojom::Operand::DataType::kFloat32,
+        .expected = {.data_type = blink_mojom::DataType::kFloat32,
                      .dimensions = {}},
         .expected_constant_data = {1.0}}
         .Test(*this, scope, builder);
@@ -1551,7 +1549,7 @@ TEST_F(MLGraphTest, ConstantTest) {
         .constant = {.data_type = V8MLOperandDataType::Enum::kFloat32,
                      .dimensions = {2, 3},
                      .values = {1.0, 2.0, 3.0, 4.0, 5.0, 6.0}},
-        .expected = {.data_type = blink_mojom::Operand::DataType::kFloat32,
+        .expected = {.data_type = blink_mojom::DataType::kFloat32,
                      .dimensions = {2, 3}},
         .expected_constant_data = {1.0, 2.0, 3.0, 4.0, 5.0, 6.0}}
         .Test(*this, scope, builder);
@@ -1562,7 +1560,7 @@ TEST_F(MLGraphTest, ConstantTest) {
         .constant = {.data_type = V8MLOperandDataType::Enum::kFloat16,
                      .dimensions = {2, 3},
                      .values = {1, 2, 3, 4, 5, 6}},
-        .expected = {.data_type = blink_mojom::Operand::DataType::kFloat16,
+        .expected = {.data_type = blink_mojom::DataType::kFloat16,
                      .dimensions = {2, 3}},
         .expected_constant_data = {1, 2, 3, 4, 5, 6}}
         .Test(*this, scope, builder);
@@ -1573,7 +1571,7 @@ TEST_F(MLGraphTest, ConstantTest) {
         .constant = {.data_type = V8MLOperandDataType::Enum::kInt32,
                      .dimensions = {2, 3},
                      .values = {1, 2, 3, 4, 5, 6}},
-        .expected = {.data_type = blink_mojom::Operand::DataType::kInt32,
+        .expected = {.data_type = blink_mojom::DataType::kInt32,
                      .dimensions = {2, 3}},
         .expected_constant_data = {1, 2, 3, 4, 5, 6}}
         .Test(*this, scope, builder);
@@ -1584,7 +1582,7 @@ TEST_F(MLGraphTest, ConstantTest) {
         .constant = {.data_type = V8MLOperandDataType::Enum::kInt8,
                      .dimensions = {2, 3},
                      .values = {1, 2, 3, 4, 5, 6}},
-        .expected = {.data_type = blink_mojom::Operand::DataType::kInt8,
+        .expected = {.data_type = blink_mojom::DataType::kInt8,
                      .dimensions = {2, 3}},
         .expected_constant_data = {1, 2, 3, 4, 5, 6}}
         .Test(*this, scope, builder);
@@ -1644,221 +1642,191 @@ TEST_F(MLGraphTest, CastTester) {
     CastTester{.input = {.data_type = V8MLOperandDataType::Enum::kFloat32,
                          .dimensions = {2, 2}},
                .output_data_type = V8MLOperandDataType::Enum::kInt32,
-               .expected_operand = {.data_type =
-                                        blink_mojom::Operand::DataType::kInt32,
+               .expected_operand = {.data_type = blink_mojom::DataType::kInt32,
                                     .dimensions = {2, 2}}}
         .Test(*this, scope, builder);
     CastTester{
         .input = {.data_type = V8MLOperandDataType::Enum::kFloat32,
                   .dimensions = {2, 2}},
         .output_data_type = V8MLOperandDataType::Enum::kFloat16,
-        .expected_operand = {.data_type =
-                                 blink_mojom::Operand::DataType::kFloat16,
+        .expected_operand = {.data_type = blink_mojom::DataType::kFloat16,
                              .dimensions = {2, 2}}}
         .Test(*this, scope, builder);
     CastTester{.input = {.data_type = V8MLOperandDataType::Enum::kFloat32,
                          .dimensions = {2, 2}},
                .output_data_type = V8MLOperandDataType::Enum::kUint32,
-               .expected_operand = {.data_type =
-                                        blink_mojom::Operand::DataType::kUint32,
+               .expected_operand = {.data_type = blink_mojom::DataType::kUint32,
                                     .dimensions = {2, 2}}}
         .Test(*this, scope, builder);
-    CastTester{
-        .input = {.data_type = V8MLOperandDataType::Enum::kFloat32,
-                  .dimensions = {2, 2}},
-        .output_data_type = V8MLOperandDataType::Enum::kInt8,
-        .expected_operand = {.data_type = blink_mojom::Operand::DataType::kInt8,
-                             .dimensions = {2, 2}}}
+    CastTester{.input = {.data_type = V8MLOperandDataType::Enum::kFloat32,
+                         .dimensions = {2, 2}},
+               .output_data_type = V8MLOperandDataType::Enum::kInt8,
+               .expected_operand = {.data_type = blink_mojom::DataType::kInt8,
+                                    .dimensions = {2, 2}}}
         .Test(*this, scope, builder);
     CastTester{.input = {.data_type = V8MLOperandDataType::Enum::kFloat32,
                          .dimensions = {2, 2}},
                .output_data_type = V8MLOperandDataType::Enum::kUint8,
-               .expected_operand = {.data_type =
-                                        blink_mojom::Operand::DataType::kUint8,
+               .expected_operand = {.data_type = blink_mojom::DataType::kUint8,
                                     .dimensions = {2, 2}}}
         .Test(*this, scope, builder);
     CastTester{
         .input = {.data_type = V8MLOperandDataType::Enum::kFloat16,
                   .dimensions = {2, 2}},
         .output_data_type = V8MLOperandDataType::Enum::kFloat32,
-        .expected_operand = {.data_type =
-                                 blink_mojom::Operand::DataType::kFloat32,
+        .expected_operand = {.data_type = blink_mojom::DataType::kFloat32,
                              .dimensions = {2, 2}}}
         .Test(*this, scope, builder);
     CastTester{.input = {.data_type = V8MLOperandDataType::Enum::kFloat16,
                          .dimensions = {2, 2}},
                .output_data_type = V8MLOperandDataType::Enum::kInt32,
-               .expected_operand = {.data_type =
-                                        blink_mojom::Operand::DataType::kInt32,
+               .expected_operand = {.data_type = blink_mojom::DataType::kInt32,
                                     .dimensions = {2, 2}}}
         .Test(*this, scope, builder);
     CastTester{.input = {.data_type = V8MLOperandDataType::Enum::kFloat16,
                          .dimensions = {2, 2}},
                .output_data_type = V8MLOperandDataType::Enum::kUint32,
-               .expected_operand = {.data_type =
-                                        blink_mojom::Operand::DataType::kUint32,
+               .expected_operand = {.data_type = blink_mojom::DataType::kUint32,
                                     .dimensions = {2, 2}}}
         .Test(*this, scope, builder);
-    CastTester{
-        .input = {.data_type = V8MLOperandDataType::Enum::kFloat16,
-                  .dimensions = {2, 2}},
-        .output_data_type = V8MLOperandDataType::Enum::kInt8,
-        .expected_operand = {.data_type = blink_mojom::Operand::DataType::kInt8,
-                             .dimensions = {2, 2}}}
+    CastTester{.input = {.data_type = V8MLOperandDataType::Enum::kFloat16,
+                         .dimensions = {2, 2}},
+               .output_data_type = V8MLOperandDataType::Enum::kInt8,
+               .expected_operand = {.data_type = blink_mojom::DataType::kInt8,
+                                    .dimensions = {2, 2}}}
         .Test(*this, scope, builder);
     CastTester{.input = {.data_type = V8MLOperandDataType::Enum::kFloat16,
                          .dimensions = {2, 2}},
                .output_data_type = V8MLOperandDataType::Enum::kUint8,
-               .expected_operand = {.data_type =
-                                        blink_mojom::Operand::DataType::kUint8,
+               .expected_operand = {.data_type = blink_mojom::DataType::kUint8,
                                     .dimensions = {2, 2}}}
         .Test(*this, scope, builder);
     CastTester{
         .input = {.data_type = V8MLOperandDataType::Enum::kInt32,
                   .dimensions = {2, 2}},
         .output_data_type = V8MLOperandDataType::Enum::kFloat32,
-        .expected_operand = {.data_type =
-                                 blink_mojom::Operand::DataType::kFloat32,
+        .expected_operand = {.data_type = blink_mojom::DataType::kFloat32,
                              .dimensions = {2, 2}}}
         .Test(*this, scope, builder);
     CastTester{
         .input = {.data_type = V8MLOperandDataType::Enum::kInt32,
                   .dimensions = {2, 2}},
         .output_data_type = V8MLOperandDataType::Enum::kFloat16,
-        .expected_operand = {.data_type =
-                                 blink_mojom::Operand::DataType::kFloat16,
+        .expected_operand = {.data_type = blink_mojom::DataType::kFloat16,
                              .dimensions = {2, 2}}}
         .Test(*this, scope, builder);
     CastTester{.input = {.data_type = V8MLOperandDataType::Enum::kInt32,
                          .dimensions = {2, 2}},
                .output_data_type = V8MLOperandDataType::Enum::kUint32,
-               .expected_operand = {.data_type =
-                                        blink_mojom::Operand::DataType::kUint32,
+               .expected_operand = {.data_type = blink_mojom::DataType::kUint32,
                                     .dimensions = {2, 2}}}
         .Test(*this, scope, builder);
-    CastTester{
-        .input = {.data_type = V8MLOperandDataType::Enum::kInt32,
-                  .dimensions = {2, 2}},
-        .output_data_type = V8MLOperandDataType::Enum::kInt8,
-        .expected_operand = {.data_type = blink_mojom::Operand::DataType::kInt8,
-                             .dimensions = {2, 2}}}
+    CastTester{.input = {.data_type = V8MLOperandDataType::Enum::kInt32,
+                         .dimensions = {2, 2}},
+               .output_data_type = V8MLOperandDataType::Enum::kInt8,
+               .expected_operand = {.data_type = blink_mojom::DataType::kInt8,
+                                    .dimensions = {2, 2}}}
         .Test(*this, scope, builder);
     CastTester{.input = {.data_type = V8MLOperandDataType::Enum::kInt32,
                          .dimensions = {2, 2}},
                .output_data_type = V8MLOperandDataType::Enum::kUint8,
-               .expected_operand = {.data_type =
-                                        blink_mojom::Operand::DataType::kUint8,
+               .expected_operand = {.data_type = blink_mojom::DataType::kUint8,
                                     .dimensions = {2, 2}}}
         .Test(*this, scope, builder);
     CastTester{
         .input = {.data_type = V8MLOperandDataType::Enum::kUint32,
                   .dimensions = {2, 2}},
         .output_data_type = V8MLOperandDataType::Enum::kFloat32,
-        .expected_operand = {.data_type =
-                                 blink_mojom::Operand::DataType::kFloat32,
+        .expected_operand = {.data_type = blink_mojom::DataType::kFloat32,
                              .dimensions = {2, 2}}}
         .Test(*this, scope, builder);
     CastTester{
         .input = {.data_type = V8MLOperandDataType::Enum::kUint32,
                   .dimensions = {2, 2}},
         .output_data_type = V8MLOperandDataType::Enum::kFloat16,
-        .expected_operand = {.data_type =
-                                 blink_mojom::Operand::DataType::kFloat16,
+        .expected_operand = {.data_type = blink_mojom::DataType::kFloat16,
                              .dimensions = {2, 2}}}
         .Test(*this, scope, builder);
     CastTester{.input = {.data_type = V8MLOperandDataType::Enum::kUint32,
                          .dimensions = {2, 2}},
                .output_data_type = V8MLOperandDataType::Enum::kInt32,
-               .expected_operand = {.data_type =
-                                        blink_mojom::Operand::DataType::kInt32,
+               .expected_operand = {.data_type = blink_mojom::DataType::kInt32,
                                     .dimensions = {2, 2}}}
         .Test(*this, scope, builder);
-    CastTester{
-        .input = {.data_type = V8MLOperandDataType::Enum::kUint32,
-                  .dimensions = {2, 2}},
-        .output_data_type = V8MLOperandDataType::Enum::kInt8,
-        .expected_operand = {.data_type = blink_mojom::Operand::DataType::kInt8,
-                             .dimensions = {2, 2}}}
+    CastTester{.input = {.data_type = V8MLOperandDataType::Enum::kUint32,
+                         .dimensions = {2, 2}},
+               .output_data_type = V8MLOperandDataType::Enum::kInt8,
+               .expected_operand = {.data_type = blink_mojom::DataType::kInt8,
+                                    .dimensions = {2, 2}}}
         .Test(*this, scope, builder);
     CastTester{.input = {.data_type = V8MLOperandDataType::Enum::kUint32,
                          .dimensions = {2, 2}},
                .output_data_type = V8MLOperandDataType::Enum::kUint8,
-               .expected_operand = {.data_type =
-                                        blink_mojom::Operand::DataType::kUint8,
+               .expected_operand = {.data_type = blink_mojom::DataType::kUint8,
                                     .dimensions = {2, 2}}}
         .Test(*this, scope, builder);
     CastTester{
         .input = {.data_type = V8MLOperandDataType::Enum::kInt8,
                   .dimensions = {2, 2}},
         .output_data_type = V8MLOperandDataType::Enum::kFloat32,
-        .expected_operand = {.data_type =
-                                 blink_mojom::Operand::DataType::kFloat32,
+        .expected_operand = {.data_type = blink_mojom::DataType::kFloat32,
                              .dimensions = {2, 2}}}
         .Test(*this, scope, builder);
     CastTester{
         .input = {.data_type = V8MLOperandDataType::Enum::kInt8,
                   .dimensions = {2, 2}},
         .output_data_type = V8MLOperandDataType::Enum::kFloat16,
-        .expected_operand = {.data_type =
-                                 blink_mojom::Operand::DataType::kFloat16,
+        .expected_operand = {.data_type = blink_mojom::DataType::kFloat16,
                              .dimensions = {2, 2}}}
         .Test(*this, scope, builder);
     CastTester{.input = {.data_type = V8MLOperandDataType::Enum::kInt8,
                          .dimensions = {2, 2}},
                .output_data_type = V8MLOperandDataType::Enum::kUint32,
-               .expected_operand = {.data_type =
-                                        blink_mojom::Operand::DataType::kUint32,
+               .expected_operand = {.data_type = blink_mojom::DataType::kUint32,
                                     .dimensions = {2, 2}}}
         .Test(*this, scope, builder);
     CastTester{.input = {.data_type = V8MLOperandDataType::Enum::kInt8,
                          .dimensions = {2, 2}},
                .output_data_type = V8MLOperandDataType::Enum::kUint8,
-               .expected_operand = {.data_type =
-                                        blink_mojom::Operand::DataType::kUint8,
+               .expected_operand = {.data_type = blink_mojom::DataType::kUint8,
                                     .dimensions = {2, 2}}}
         .Test(*this, scope, builder);
     CastTester{.input = {.data_type = V8MLOperandDataType::Enum::kInt8,
                          .dimensions = {2, 2}},
                .output_data_type = V8MLOperandDataType::Enum::kInt32,
-               .expected_operand = {.data_type =
-                                        blink_mojom::Operand::DataType::kInt32,
+               .expected_operand = {.data_type = blink_mojom::DataType::kInt32,
                                     .dimensions = {2, 2}}}
         .Test(*this, scope, builder);
     CastTester{
         .input = {.data_type = V8MLOperandDataType::Enum::kUint8,
                   .dimensions = {2, 2}},
         .output_data_type = V8MLOperandDataType::Enum::kFloat32,
-        .expected_operand = {.data_type =
-                                 blink_mojom::Operand::DataType::kFloat32,
+        .expected_operand = {.data_type = blink_mojom::DataType::kFloat32,
                              .dimensions = {2, 2}}}
         .Test(*this, scope, builder);
     CastTester{
         .input = {.data_type = V8MLOperandDataType::Enum::kUint8,
                   .dimensions = {2, 2}},
         .output_data_type = V8MLOperandDataType::Enum::kFloat16,
-        .expected_operand = {.data_type =
-                                 blink_mojom::Operand::DataType::kFloat16,
+        .expected_operand = {.data_type = blink_mojom::DataType::kFloat16,
                              .dimensions = {2, 2}}}
         .Test(*this, scope, builder);
     CastTester{.input = {.data_type = V8MLOperandDataType::Enum::kUint8,
                          .dimensions = {2, 2}},
                .output_data_type = V8MLOperandDataType::Enum::kInt32,
-               .expected_operand = {.data_type =
-                                        blink_mojom::Operand::DataType::kInt32,
+               .expected_operand = {.data_type = blink_mojom::DataType::kInt32,
                                     .dimensions = {2, 2}}}
         .Test(*this, scope, builder);
-    CastTester{
-        .input = {.data_type = V8MLOperandDataType::Enum::kUint8,
-                  .dimensions = {2, 2}},
-        .output_data_type = V8MLOperandDataType::Enum::kInt8,
-        .expected_operand = {.data_type = blink_mojom::Operand::DataType::kInt8,
-                             .dimensions = {2, 2}}}
+    CastTester{.input = {.data_type = V8MLOperandDataType::Enum::kUint8,
+                         .dimensions = {2, 2}},
+               .output_data_type = V8MLOperandDataType::Enum::kInt8,
+               .expected_operand = {.data_type = blink_mojom::DataType::kInt8,
+                                    .dimensions = {2, 2}}}
         .Test(*this, scope, builder);
     CastTester{.input = {.data_type = V8MLOperandDataType::Enum::kUint8,
                          .dimensions = {2, 2}},
                .output_data_type = V8MLOperandDataType::Enum::kInt32,
-               .expected_operand = {.data_type =
-                                        blink_mojom::Operand::DataType::kInt32,
+               .expected_operand = {.data_type = blink_mojom::DataType::kInt32,
                                     .dimensions = {2, 2}}}
         .Test(*this, scope, builder);
   }

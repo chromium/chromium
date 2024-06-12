@@ -263,67 +263,67 @@ struct WeightMetadata {
 static_assert(sizeof(WeightMetadata) == 64, "WeightMetadata must be 64 bytes");
 
 std::optional<BlobDataType> OperandTypeToDataTypeInWeightFile(
-    mojom::Operand::DataType data_type) {
+    mojom::DataType data_type) {
   switch (data_type) {
-    case mojom::Operand::DataType::kFloat16:
+    case mojom::DataType::kFloat16:
       return BlobDataType::Float16;
-    case mojom::Operand::DataType::kFloat32:
+    case mojom::DataType::kFloat32:
       return BlobDataType::Float32;
-    case mojom::Operand::DataType::kUint8:
+    case mojom::DataType::kUint8:
       return BlobDataType::UInt8;
-    case mojom::Operand::DataType::kInt8:
+    case mojom::DataType::kInt8:
       return BlobDataType::Int8;
-    case mojom::Operand::DataType::kInt32:
-    case mojom::Operand::DataType::kUint32:
-    case mojom::Operand::DataType::kInt64:
-    case mojom::Operand::DataType::kUint64:
+    case mojom::DataType::kInt32:
+    case mojom::DataType::kUint32:
+    case mojom::DataType::kInt64:
+    case mojom::DataType::kUint64:
       return std::nullopt;
   }
 }
 
 CoreML::Specification::MILSpec::DataType OperandTypeToMILDataType(
-    mojom::Operand::DataType data_type) {
+    mojom::DataType data_type) {
   switch (data_type) {
-    case mojom::Operand::DataType::kFloat32:
+    case mojom::DataType::kFloat32:
       return CoreML::Specification::MILSpec::DataType::FLOAT32;
-    case mojom::Operand::DataType::kFloat16:
+    case mojom::DataType::kFloat16:
       return CoreML::Specification::MILSpec::DataType::FLOAT16;
-    case mojom::Operand::DataType::kInt32:
+    case mojom::DataType::kInt32:
       return CoreML::Specification::MILSpec::DataType::INT32;
-    case mojom::Operand::DataType::kUint32:
+    case mojom::DataType::kUint32:
       return CoreML::Specification::MILSpec::DataType::UINT32;
-    case mojom::Operand::DataType::kInt64:
+    case mojom::DataType::kInt64:
       return CoreML::Specification::MILSpec::DataType::INT64;
-    case mojom::Operand::DataType::kUint64:
+    case mojom::DataType::kUint64:
       return CoreML::Specification::MILSpec::DataType::UINT64;
-    case mojom::Operand::DataType::kInt8:
+    case mojom::DataType::kInt8:
       return CoreML::Specification::MILSpec::DataType::INT8;
-    case mojom::Operand::DataType::kUint8:
+    case mojom::DataType::kUint8:
       return CoreML::Specification::MILSpec::DataType::UINT8;
   }
 }
 
 // CoreML has more data types than WebNN. This should only be called with valid
 // WebNN mapped types.
-mojom::Operand::DataType MILDataTypeToOperandType(
+mojom::DataType MILDataTypeToOperandType(
     CoreML::Specification::MILSpec::DataType mil_data_type) {
   switch (mil_data_type) {
     case CoreML::Specification::MILSpec::DataType::FLOAT32:
-      return mojom::Operand::DataType::kFloat32;
+      return mojom::DataType::kFloat32;
     case CoreML::Specification::MILSpec::DataType::FLOAT16:
-      return mojom::Operand::DataType::kFloat16;
+      return mojom::DataType::kFloat16;
     case CoreML::Specification::MILSpec::DataType::INT32:
-      return mojom::Operand::DataType::kInt32;
+      return mojom::DataType::kInt32;
     case CoreML::Specification::MILSpec::DataType::UINT32:
-      return mojom::Operand::DataType::kUint32;
+      return mojom::DataType::kUint32;
     case CoreML::Specification::MILSpec::DataType::INT64:
-      return mojom::Operand::DataType::kInt64;
+      return mojom::DataType::kInt64;
     case CoreML::Specification::MILSpec::DataType::UINT64:
-      return mojom::Operand::DataType::kUint64;
+      return mojom::DataType::kUint64;
     case CoreML::Specification::MILSpec::DataType::INT8:
-      return mojom::Operand::DataType::kInt8;
+      return mojom::DataType::kInt8;
     case CoreML::Specification::MILSpec::DataType::UINT8:
-      return mojom::Operand::DataType::kUint8;
+      return mojom::DataType::kUint8;
     default:
       NOTREACHED_NORETURN() << "Unsupported data type.";
   }
@@ -2355,7 +2355,7 @@ GraphBuilderCoreml::AddConstantImmediateValue(
       graph_info_->constant_id_to_buffer_map.at(constant_id));
   const mojom::Operand& operand = GetOperand(constant_id);
   switch (operand.data_type) {
-    case mojom::Operand::DataType::kFloat32: {
+    case mojom::DataType::kFloat32: {
       std::vector<float> floats(value.size() / sizeof(float));
       for (size_t i = 0u; i < floats.size(); ++i) {
         floats[i] = base::FloatFromNativeEndian(
@@ -2365,7 +2365,7 @@ GraphBuilderCoreml::AddConstantImmediateValue(
           CreateTensorImmediateValue<float>(operand.dimensions, floats);
       break;
     }
-    case mojom::Operand::DataType::kFloat16: {
+    case mojom::DataType::kFloat16: {
       std::vector<Float16> float16s(value.size() / sizeof(Float16));
       for (size_t i = 0u; i < float16s.size(); ++i) {
         float16s[i].data = base::U16FromNativeEndian(
@@ -2375,7 +2375,7 @@ GraphBuilderCoreml::AddConstantImmediateValue(
           CreateTensorImmediateValue<Float16>(operand.dimensions, float16s);
       break;
     }
-    case mojom::Operand::DataType::kInt32: {
+    case mojom::DataType::kInt32: {
       std::vector<int32_t> ints(value.size() / sizeof(int32_t));
       for (size_t i = 0u; i < ints.size(); ++i) {
         ints[i] = base::I32FromNativeEndian(
@@ -2385,11 +2385,11 @@ GraphBuilderCoreml::AddConstantImmediateValue(
           CreateTensorImmediateValue<int32_t>(operand.dimensions, ints);
       break;
     }
-    case mojom::Operand::DataType::kUint32:
-    case mojom::Operand::DataType::kInt64:
-    case mojom::Operand::DataType::kUint64:
-    case mojom::Operand::DataType::kInt8:
-    case mojom::Operand::DataType::kUint8: {
+    case mojom::DataType::kUint32:
+    case mojom::DataType::kInt64:
+    case mojom::DataType::kUint64:
+    case mojom::DataType::kInt8:
+    case mojom::DataType::kUint8: {
       NOTREACHED_NORETURN() << "Unsupported data type.";
     }
   }
@@ -2468,26 +2468,26 @@ GraphBuilderCoreml::PopulateFeatureDescription(
   auto* feature_type = feature_description.mutable_type();
   auto* array_feature_type = feature_type->mutable_multiarraytype();
   switch (operand.data_type) {
-    case mojom::Operand::DataType::kFloat32:
+    case mojom::DataType::kFloat32:
       array_feature_type->set_datatype(
           CoreML::Specification::ArrayFeatureType_ArrayDataType::
               ArrayFeatureType_ArrayDataType_FLOAT32);
       break;
-    case mojom::Operand::DataType::kFloat16:
+    case mojom::DataType::kFloat16:
       array_feature_type->set_datatype(
           CoreML::Specification::ArrayFeatureType_ArrayDataType::
               ArrayFeatureType_ArrayDataType_FLOAT16);
       break;
-    case mojom::Operand::DataType::kInt32:
+    case mojom::DataType::kInt32:
       array_feature_type->set_datatype(
           CoreML::Specification::ArrayFeatureType_ArrayDataType::
               ArrayFeatureType_ArrayDataType_INT32);
       break;
-    case mojom::Operand::DataType::kUint32:
-    case mojom::Operand::DataType::kInt64:
-    case mojom::Operand::DataType::kUint64:
-    case mojom::Operand::DataType::kInt8:
-    case mojom::Operand::DataType::kUint8:
+    case mojom::DataType::kUint32:
+    case mojom::DataType::kInt64:
+    case mojom::DataType::kUint64:
+    case mojom::DataType::kInt8:
+    case mojom::DataType::kUint8:
       CHECK(operand.name);
       // CoreML only supports limited data types as input/output for a
       // model. Within the model wider set of data types are supported.
@@ -2675,7 +2675,7 @@ GraphBuilderCoreml::OperandInfo::OperandInfo(OperandInfo&&) = default;
 GraphBuilderCoreml::InputOperandInfo::InputOperandInfo(
     std::string name,
     std::vector<uint32_t> dimensions,
-    mojom::Operand::DataType data_type)
+    mojom::DataType data_type)
     : coreml_name(std::move(name)),
       dimensions(std::move(dimensions)),
       data_type(data_type) {}

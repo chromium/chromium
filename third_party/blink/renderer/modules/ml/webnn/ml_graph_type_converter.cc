@@ -46,25 +46,25 @@ namespace blink_mojom = webnn::mojom::blink;
 
 namespace mojo {
 
-blink_mojom::Operand::DataType BlinkOperandTypeToMojo(
+blink_mojom::DataType BlinkDataTypeToMojo(
     blink::V8MLOperandDataType::Enum data_type) {
   switch (data_type) {
     case blink::V8MLOperandDataType::Enum::kFloat32:
-      return blink_mojom::Operand::DataType::kFloat32;
+      return blink_mojom::DataType::kFloat32;
     case blink::V8MLOperandDataType::Enum::kFloat16:
-      return blink_mojom::Operand::DataType::kFloat16;
+      return blink_mojom::DataType::kFloat16;
     case blink::V8MLOperandDataType::Enum::kInt32:
-      return blink_mojom::Operand::DataType::kInt32;
+      return blink_mojom::DataType::kInt32;
     case blink::V8MLOperandDataType::Enum::kUint32:
-      return blink_mojom::Operand::DataType::kUint32;
+      return blink_mojom::DataType::kUint32;
     case blink::V8MLOperandDataType::Enum::kInt64:
-      return blink_mojom::Operand::DataType::kInt64;
+      return blink_mojom::DataType::kInt64;
     case blink::V8MLOperandDataType::Enum::kUint64:
-      return blink_mojom::Operand::DataType::kUint64;
+      return blink_mojom::DataType::kUint64;
     case blink::V8MLOperandDataType::Enum::kInt8:
-      return blink_mojom::Operand::DataType::kInt8;
+      return blink_mojom::DataType::kInt8;
     case blink::V8MLOperandDataType::Enum::kUint8:
-      return blink_mojom::Operand::DataType::kUint8;
+      return blink_mojom::DataType::kUint8;
   }
   NOTREACHED_NORETURN();
 }
@@ -121,7 +121,7 @@ TypeConverter<blink_mojom::OperandPtr, blink::MLOperand*>::Convert(
       mojo_operand->kind = blink_mojom::Operand::Kind::kOutput;
       break;
   }
-  mojo_operand->data_type = BlinkOperandTypeToMojo(ml_operand->DataType());
+  mojo_operand->data_type = BlinkDataTypeToMojo(ml_operand->DataType());
   mojo_operand->dimensions = ml_operand->Dimensions();
   return mojo_operand;
 }
@@ -191,7 +191,7 @@ uint64_t InsertTemporaryOperand(const OperandToIdMap& operand_to_id_map,
   uint64_t operand_id = NextOperandId(*graph_info);
   auto mojo_operand = blink_mojom::Operand::New();
   mojo_operand->kind = blink_mojom::Operand::Kind::kOutput;
-  mojo_operand->data_type = mojo::BlinkOperandTypeToMojo(data_type.AsEnum());
+  mojo_operand->data_type = mojo::BlinkDataTypeToMojo(data_type.AsEnum());
   mojo_operand->dimensions = Vector<uint32_t>(dimensions);
   graph_info->id_to_operand_map.insert(operand_id, std::move(mojo_operand));
   return operand_id;

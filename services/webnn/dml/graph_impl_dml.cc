@@ -82,23 +82,23 @@ static constexpr auto kDml64BitIntegerDataTypes =
 constexpr const uint32_t kNhwcToNchwPermutation[] = {0, 3, 1, 2};
 constexpr const uint32_t kNchwToNhwcPermutation[] = {0, 2, 3, 1};
 
-DML_TENSOR_DATA_TYPE GetTensorDataType(Operand::DataType type) {
+DML_TENSOR_DATA_TYPE GetTensorDataType(mojom::DataType type) {
   switch (type) {
-    case Operand::DataType::kFloat32:
+    case mojom::DataType::kFloat32:
       return DML_TENSOR_DATA_TYPE_FLOAT32;
-    case Operand::DataType::kFloat16:
+    case mojom::DataType::kFloat16:
       return DML_TENSOR_DATA_TYPE_FLOAT16;
-    case Operand::DataType::kInt8:
+    case mojom::DataType::kInt8:
       return DML_TENSOR_DATA_TYPE_INT8;
-    case Operand::DataType::kUint8:
+    case mojom::DataType::kUint8:
       return DML_TENSOR_DATA_TYPE_UINT8;
-    case Operand::DataType::kInt64:
+    case mojom::DataType::kInt64:
       return DML_TENSOR_DATA_TYPE_INT64;
-    case Operand::DataType::kUint64:
+    case mojom::DataType::kUint64:
       return DML_TENSOR_DATA_TYPE_UINT64;
-    case Operand::DataType::kInt32:
+    case mojom::DataType::kInt32:
       return DML_TENSOR_DATA_TYPE_INT32;
-    case Operand::DataType::kUint32:
+    case mojom::DataType::kUint32:
       return DML_TENSOR_DATA_TYPE_UINT32;
     default:
       DLOG(ERROR) << "This data type is not supported.";
@@ -364,7 +364,7 @@ const DML_TENSOR_DESC* GetOptionalDmlTensorDescPtr(
 // dimensions would be {1, 1, 1}.
 uint64_t BuildConstantOperandForFloatValue(mojom::GraphInfoPtr& graph_info,
                                            uint64_t& next_operand_id,
-                                           Operand::DataType data_type,
+                                           mojom::DataType data_type,
                                            size_t rank,
                                            float value) {
   OperandPtr constant_operand = Operand::New();
@@ -380,12 +380,12 @@ uint64_t BuildConstantOperandForFloatValue(mojom::GraphInfoPtr& graph_info,
   mojo_base::BigBuffer buffer;
 
   switch (data_type) {
-    case Operand::DataType::kFloat32: {
+    case mojom::DataType::kFloat32: {
       buffer = mojo_base::BigBuffer(base::make_span(
           reinterpret_cast<const uint8_t*>(&value), sizeof(value)));
       break;
     }
-    case Operand::DataType::kFloat16: {
+    case mojom::DataType::kFloat16: {
       uint16_t fp16_value = fp16_ieee_from_fp32_value(value);
       buffer = mojo_base::BigBuffer(base::make_span(
           reinterpret_cast<const uint8_t*>(&fp16_value), sizeof(fp16_value)));
@@ -615,10 +615,10 @@ bool CanElementWiseBinarySupportFusion(
     const IdToOperandMap& id_to_operand_map) {
   const OperandPtr& output_operand =
       id_to_operand_map.at(binary->output_operand_id);
-  Operand::DataType output_data_type = output_operand->data_type;
+  mojom::DataType output_data_type = output_operand->data_type;
   return binary->kind == mojom::ElementWiseBinary::Kind::kAdd &&
-         (output_data_type == Operand::DataType::kFloat32 ||
-          output_data_type == Operand::DataType::kFloat16);
+         (output_data_type == mojom::DataType::kFloat32 ||
+          output_data_type == mojom::DataType::kFloat16);
 }
 
 // Return true if the operation can be fused with any of the following
@@ -1279,7 +1279,7 @@ base::expected<void, mojom::ErrorPtr> CreateOperatorNodeForBatchNormalization(
   auto& id_to_operand_map = graph_info->id_to_operand_map;
   uint64_t output_id = batch_normalization->output_operand_id;
   const OperandPtr& output_operand = id_to_operand_map.at(output_id);
-  Operand::DataType data_type = output_operand->data_type;
+  mojom::DataType data_type = output_operand->data_type;
   const TensorDesc output_tensor_desc(GetTensorDataType(data_type),
                                       output_operand->dimensions);
 
@@ -2936,7 +2936,7 @@ base::expected<void, mojom::ErrorPtr> CreateOperatorNodeForGru(
   std::vector<const NodeOutput*> inputs{input, weight, recurrent_weight};
 
   const OperandPtr& input_operand = id_to_operand_map.at(gru->input_operand_id);
-  const Operand::DataType data_type = input_operand->data_type;
+  const mojom::DataType data_type = input_operand->data_type;
 
   std::optional<TensorDesc> concatenated_bias_tensor_desc;
   if (!gru->bias_operand_id.has_value() &&
@@ -3296,7 +3296,7 @@ CreateOperatorNodeForMeanVarianceNormalization(
   auto& id_to_operand_map = graph_info->id_to_operand_map;
   uint64_t output_id = normalization->output_operand_id;
   const OperandPtr& output_operand = id_to_operand_map.at(output_id);
-  Operand::DataType data_type = output_operand->data_type;
+  mojom::DataType data_type = output_operand->data_type;
   const TensorDesc output_tensor_desc(GetTensorDataType(data_type),
                                       output_operand->dimensions);
 
@@ -3591,7 +3591,7 @@ base::expected<void, mojom::ErrorPtr> CreateOperatorNodeForLstm(
   const uint64_t output_hidden_state_id = output_ids[0];
   const OperandPtr& output_hidden_state_operand =
       id_to_operand_map.at(output_hidden_state_id);
-  const Operand::DataType output_data_type =
+  const mojom::DataType output_data_type =
       output_hidden_state_operand->data_type;
   TensorDesc output_hidden_state_tensor_desc(
       GetTensorDataType(output_data_type),
@@ -4228,7 +4228,7 @@ base::expected<void, mojom::ErrorPtr> CreateOperatorNodeForTriangular(
   // For DirectML feature levels before 5.1, we need to compose triangular
   // from smaller operators: identity, slice, bitwise and.
   const OperandPtr& output_operand = id_to_operand_map.at(output_id);
-  Operand::DataType data_type = output_operand->data_type;
+  mojom::DataType data_type = output_operand->data_type;
   const uint32_t height = input_dimensions[input_rank - 2];
   const uint32_t width = input_dimensions[input_rank - 1];
   uint32_t longest_dimension_length = std::max(height, width);
@@ -4321,31 +4321,31 @@ base::expected<void, mojom::ErrorPtr> CreateOperatorNodeForTriangular(
     std::swap(lower_mask, upper_mask);
   }
 
-  Operand::DataType webnn_mask_data_type;
+  mojom::DataType webnn_mask_data_type;
   DML_TENSOR_DATA_TYPE dml_mask_data_type;
   mojo_base::BigBuffer buffer;
   switch (data_type) {
-    case Operand::DataType::kInt8:
-    case Operand::DataType::kUint8: {
-      webnn_mask_data_type = Operand::DataType::kUint8;
+    case mojom::DataType::kInt8:
+    case mojom::DataType::kUint8: {
+      webnn_mask_data_type = mojom::DataType::kUint8;
       dml_mask_data_type = DML_TENSOR_DATA_TYPE_UINT8;
       std::array<uint8_t, 2> values = {static_cast<uint8_t>(lower_mask),
                                        static_cast<uint8_t>(upper_mask)};
       buffer = mojo_base::BigBuffer(base::as_bytes(base::make_span(values)));
       break;
     }
-    case Operand::DataType::kFloat16: {
-      webnn_mask_data_type = Operand::DataType::kFloat16;
+    case mojom::DataType::kFloat16: {
+      webnn_mask_data_type = mojom::DataType::kFloat16;
       dml_mask_data_type = DML_TENSOR_DATA_TYPE_UINT16;
       std::array<uint16_t, 2> values = {static_cast<uint16_t>(lower_mask),
                                         static_cast<uint16_t>(upper_mask)};
       buffer = mojo_base::BigBuffer(base::as_bytes(base::make_span(values)));
       break;
     }
-    case Operand::DataType::kFloat32:
-    case Operand::DataType::kInt32:
-    case Operand::DataType::kUint32: {
-      webnn_mask_data_type = Operand::DataType::kUint32;
+    case mojom::DataType::kFloat32:
+    case mojom::DataType::kInt32:
+    case mojom::DataType::kUint32: {
+      webnn_mask_data_type = mojom::DataType::kUint32;
       dml_mask_data_type = DML_TENSOR_DATA_TYPE_UINT32;
       std::array<uint32_t, 2> values = {static_cast<uint32_t>(lower_mask),
                                         static_cast<uint32_t>(upper_mask)};
@@ -4357,8 +4357,8 @@ base::expected<void, mojom::ErrorPtr> CreateOperatorNodeForTriangular(
     // https://github.com/webmachinelearning/webnn/issues/654.
     // TODO(crbug.com/336841827): Delete the cases of uint64 and int64 after
     // the spec drops the support of int64 and uint64 for triangular.
-    case Operand::DataType::kInt64:
-    case Operand::DataType::kUint64: {
+    case mojom::DataType::kInt64:
+    case mojom::DataType::kUint64: {
       // DML_ELEMENT_WISE_BIT_AND_OPERATOR_DESC can't support uint64 when
       // DML_FEATURE_LEVEL is less than DML_FEATURE_LEVEL_4_1:
       // https://learn.microsoft.com/en-us/windows/win32/api/directml/ns-directml-dml_element_wise_bit_and_operator_desc#dml_feature_level_4_1-and-above

@@ -116,7 +116,7 @@ std::string COMPONENT_EXPORT(WEBNN_UTILS)
 std::string COMPONENT_EXPORT(WEBNN_UTILS)
     OpKindToString(mojom::Reduce::Kind kind);
 std::string COMPONENT_EXPORT(WEBNN_UTILS)
-    DataTypeToString(mojom::Operand::DataType type);
+    DataTypeToString(mojom::DataType type);
 std::string COMPONENT_EXPORT(WEBNN_UTILS) GetOpName(const mojom::Operation& op);
 std::string COMPONENT_EXPORT(WEBNN_UTILS)
     NotSupportedOperatorError(const mojom::Operation& op);
@@ -125,19 +125,19 @@ std::string COMPONENT_EXPORT(WEBNN_UTILS)
 std::string COMPONENT_EXPORT(WEBNN_UTILS)
     NotSupportedArgumentTypeError(std::string_view op_name,
                                   std::string_view argument_name,
-                                  mojom::Operand::DataType type);
+                                  mojom::DataType type);
 std::string COMPONENT_EXPORT(WEBNN_UTILS)
-    NotSupportedConstantTypeError(mojom::Operand::DataType type);
+    NotSupportedConstantTypeError(mojom::DataType type);
 std::string COMPONENT_EXPORT(WEBNN_UTILS)
     NotSupportedInputArgumentTypeError(std::string_view op_name,
-                                       mojom::Operand::DataType type);
+                                       mojom::DataType type);
 std::string COMPONENT_EXPORT(WEBNN_UTILS)
     NotSupportedInputTypeError(std::string_view input_name,
-                               mojom::Operand::DataType type);
+                               mojom::DataType type);
 std::string COMPONENT_EXPORT(WEBNN_UTILS)
     NotSupportedOptionTypeError(std::string_view op_name,
                                 std::string_view option_name,
-                                mojom::Operand::DataType type);
+                                mojom::DataType type);
 
 // The length of `permutation` must be the same as `array`. The values in
 // `permutation` must be within the range [0, N-1] where N is the length of

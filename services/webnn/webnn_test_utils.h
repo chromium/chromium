@@ -25,21 +25,21 @@ class GraphInfoBuilder final {
   ~GraphInfoBuilder();
 
   uint64_t BuildIntermediateOperand(const std::vector<uint32_t>& dimensions,
-                                    mojom::Operand::DataType type);
+                                    mojom::DataType type);
 
   uint64_t BuildInput(const std::string& name,
                       const std::vector<uint32_t>& dimensions,
-                      mojom::Operand::DataType type);
+                      mojom::DataType type);
 
   uint64_t BuildConstant(const std::vector<uint32_t>& dimensions,
-                         mojom::Operand::DataType type,
+                         mojom::DataType type,
                          base::span<const uint8_t> values);
 
   void AddOutput(const std::string& name, uint64_t operand_id);
 
   uint64_t BuildOutput(const std::string& name,
                        const std::vector<uint32_t>& dimensions,
-                       mojom::Operand::DataType type);
+                       mojom::DataType type);
 
   // An `Activation` type should have the following members:
   // struct Activation {
@@ -592,7 +592,7 @@ class GraphInfoBuilder final {
  private:
   uint64_t BuildOperand(
       const std::vector<uint32_t>& dimensions,
-      mojom::Operand::DataType type,
+      mojom::DataType type,
       mojom::Operand::Kind kind = mojom::Operand::Kind::kOutput);
 
   mojom::GraphInfoPtr graph_info_;

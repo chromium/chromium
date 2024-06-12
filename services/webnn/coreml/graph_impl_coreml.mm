@@ -337,20 +337,20 @@ GraphImplCoreml::GetCoreMLFeatureInfo(
     const GraphBuilderCoreml::InputOperandInfo& operand_info) {
   enum MLMultiArrayDataType data_type;
   switch (operand_info.data_type) {
-    case webnn::mojom::Operand_DataType::kFloat32:
+    case webnn::mojom::DataType::kFloat32:
       data_type = MLMultiArrayDataTypeFloat32;
       break;
-    case webnn::mojom::Operand_DataType::kFloat16:
+    case webnn::mojom::DataType::kFloat16:
       data_type = MLMultiArrayDataTypeFloat16;
       break;
-    case webnn::mojom::Operand_DataType::kInt32:
+    case webnn::mojom::DataType::kInt32:
       data_type = MLMultiArrayDataTypeInt32;
       break;
-    case webnn::mojom::Operand_DataType::kUint32:
-    case webnn::mojom::Operand_DataType::kInt64:
-    case webnn::mojom::Operand_DataType::kUint64:
-    case webnn::mojom::Operand_DataType::kInt8:
-    case webnn::mojom::Operand_DataType::kUint8:
+    case webnn::mojom::DataType::kUint32:
+    case webnn::mojom::DataType::kInt64:
+    case webnn::mojom::DataType::kUint64:
+    case webnn::mojom::DataType::kInt8:
+    case webnn::mojom::DataType::kUint8:
       // Unsupported data types in coreml.
       return std::nullopt;
   }

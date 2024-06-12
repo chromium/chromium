@@ -55,18 +55,16 @@ struct TensorTypeMap<uint32_t> {
       ::tflite::TensorType::TensorType_UINT32;
 };
 
-static constexpr auto kFloatDataTypes =
-    base::MakeFixedFlatSet<mojom::Operand::DataType>(
-        {mojom::Operand::DataType::kFloat16,
-         mojom::Operand::DataType::kFloat32});
+static constexpr auto kFloatDataTypes = base::MakeFixedFlatSet<mojom::DataType>(
+    {mojom::DataType::kFloat16, mojom::DataType::kFloat32});
 
 static constexpr auto k32BitIntegerDataTypes =
-    base::MakeFixedFlatSet<mojom::Operand::DataType>(
-        {mojom::Operand::DataType::kInt32, mojom::Operand::DataType::kUint32});
+    base::MakeFixedFlatSet<mojom::DataType>(
+        {mojom::DataType::kInt32, mojom::DataType::kUint32});
 
 static constexpr auto k64BitIntegerDataTypes =
-    base::MakeFixedFlatSet<mojom::Operand::DataType>(
-        {mojom::Operand::DataType::kInt64, mojom::Operand::DataType::kUint64});
+    base::MakeFixedFlatSet<mojom::DataType>(
+        {mojom::DataType::kInt64, mojom::DataType::kUint64});
 
 // Useful for converting dimension arrays coming from mojo as uint32 to the
 // int32 vectors used by TFLite.
@@ -84,24 +82,23 @@ base::expected<std::vector<int32_t>, std::string> ToSignedDimensions(
   return output_dimensions;
 }
 
-::tflite::TensorType MojoOperandTypeToTFLite(
-    mojom::Operand::DataType data_type) {
+::tflite::TensorType MojoOperandTypeToTFLite(mojom::DataType data_type) {
   switch (data_type) {
-    case mojom::Operand::DataType::kFloat32:
+    case mojom::DataType::kFloat32:
       return ::tflite::TensorType_FLOAT32;
-    case mojom::Operand::DataType::kFloat16:
+    case mojom::DataType::kFloat16:
       return ::tflite::TensorType_FLOAT16;
-    case mojom::Operand::DataType::kInt32:
+    case mojom::DataType::kInt32:
       return ::tflite::TensorType_INT32;
-    case mojom::Operand::DataType::kUint32:
+    case mojom::DataType::kUint32:
       return ::tflite::TensorType_UINT32;
-    case mojom::Operand::DataType::kInt64:
+    case mojom::DataType::kInt64:
       return ::tflite::TensorType_INT64;
-    case mojom::Operand::DataType::kUint64:
+    case mojom::DataType::kUint64:
       return ::tflite::TensorType_UINT64;
-    case mojom::Operand::DataType::kInt8:
+    case mojom::DataType::kInt8:
       return ::tflite::TensorType_INT8;
-    case mojom::Operand::DataType::kUint8:
+    case mojom::DataType::kUint8:
       return ::tflite::TensorType_UINT8;
   }
 }
@@ -905,10 +902,10 @@ auto GraphBuilderTflite::SerializeBatchNormalization(
       GetOperand(batch_normalization.input_operand_id);
   // TODO(crbug.com/339654398): Support 16-bit float with dequantize operator
   // https://www.tensorflow.org/mlir/tfl_ops#tfldequantize_tfldequantizeop.
-  if (input_operand.data_type == mojom::Operand::DataType::kFloat16) {
+  if (input_operand.data_type == mojom::DataType::kFloat16) {
     return base::unexpected("The 16-bit float data type is not supported.");
   }
-  CHECK_EQ(input_operand.data_type, mojom::Operand::DataType::kFloat32);
+  CHECK_EQ(input_operand.data_type, mojom::DataType::kFloat32);
   // The input shape has been validated to not overflow before creating tensor.
   const auto signed_input_dimensions =
       ToSignedDimensions(input_operand.dimensions);
@@ -1032,7 +1029,7 @@ auto GraphBuilderTflite::SerializeConv2d(const mojom::Conv2d& conv2d)
 
   const mojom::Operand& input_operand = GetOperand(conv2d.input_operand_id);
   // TODO(crbug.com/328733319): Support other tensor data types.
-  if (input_operand.data_type != mojom::Operand::DataType::kFloat32) {
+  if (input_operand.data_type != mojom::DataType::kFloat32) {
     return base::unexpected("The data type of input is not supported.");
   }
 
@@ -1179,13 +1176,13 @@ auto GraphBuilderTflite::SerializeElementWiseUnary(
       operand_to_index_map_.at(op.input_operand_id);
   const int32_t output_tensor_index =
       operand_to_index_map_.at(op.output_operand_id);
-  const mojom::Operand::DataType input_data_type =
+  const mojom::DataType input_data_type =
       GetOperand(op.input_operand_id).data_type;
   switch (op.kind) {
     case mojom::ElementWiseUnary::Kind::kAbs:
       CHECK(kFloatDataTypes.contains(input_data_type) ||
-            input_data_type == mojom::Operand::DataType::kInt32 ||
-            input_data_type == mojom::Operand::DataType::kInt8);
+            input_data_type == mojom::DataType::kInt32 ||
+            input_data_type == mojom::DataType::kInt8);
       return SerializeUnaryOperation(::tflite::BuiltinOperator_ABS,
                                      input_tensor_index, output_tensor_index);
     case mojom::ElementWiseUnary::Kind::kCeil:
@@ -1210,8 +1207,8 @@ auto GraphBuilderTflite::SerializeElementWiseUnary(
                                      input_tensor_index, output_tensor_index);
     case mojom::ElementWiseUnary::Kind::kNeg:
       CHECK(kFloatDataTypes.contains(input_data_type) ||
-            input_data_type == mojom::Operand::DataType::kInt32 ||
-            input_data_type == mojom::Operand::DataType::kInt8);
+            input_data_type == mojom::DataType::kInt32 ||
+            input_data_type == mojom::DataType::kInt8);
       return SerializeUnaryOperation(::tflite::BuiltinOperator_NEG,
                                      input_tensor_index, output_tensor_index);
     case mojom::ElementWiseUnary::Kind::kSin:
@@ -1229,7 +1226,7 @@ auto GraphBuilderTflite::SerializeElementWiseUnary(
           output_tensor_index,
           MojoOperandTypeToTFLite(GetOperand(op.output_operand_id).data_type));
     case mojom::ElementWiseUnary::Kind::kLogicalNot:
-      CHECK_EQ(input_data_type, mojom::Operand::DataType::kUint8);
+      CHECK_EQ(input_data_type, mojom::DataType::kUint8);
       return SerializeLogicalNot(op);
     case mojom::ElementWiseUnary::Kind::kIdentity:
       // Implement WebNN identity operation with TFLite reshape operator, the
@@ -1271,7 +1268,7 @@ auto GraphBuilderTflite::SerializeGather(const mojom::Gather& gather)
   int32_t indices_tensor_index =
       operand_to_index_map_.at(gather.indices_operand_id);
   const mojom::Operand& indices_operand = GetOperand(gather.indices_operand_id);
-  if (indices_operand.data_type == mojom::Operand::DataType::kUint32) {
+  if (indices_operand.data_type == mojom::DataType::kUint32) {
     ASSIGN_OR_RETURN(const std::vector<int32_t> signed_indices_dimensions,
                      ToSignedDimensions(indices_operand.dimensions));
     indices_tensor_index = SerializeTemporaryTensor(signed_indices_dimensions,
@@ -1282,8 +1279,8 @@ auto GraphBuilderTflite::SerializeGather(const mojom::Gather& gather)
         /*input_tensor_type=*/::tflite::TensorType_UINT32, indices_tensor_index,
         /*output_tensor_type=*/::tflite::TensorType_INT64));
   } else {
-    CHECK(indices_operand.data_type == mojom::Operand::DataType::kInt64 ||
-          indices_operand.data_type == mojom::Operand::DataType::kInt32);
+    CHECK(indices_operand.data_type == mojom::DataType::kInt64 ||
+          indices_operand.data_type == mojom::DataType::kInt32);
   }
 
   // The WebNN axis option is uint32 data type, but TFLite axis needs int32
@@ -1390,8 +1387,8 @@ auto GraphBuilderTflite::SerializeHardSigmoid(
   // The subset expression `alpha * x + beta` is considered a linear operation.
   const mojom::Operand& input_operand =
       GetOperand(hard_sigmoid.input_operand_id);
-  CHECK(input_operand.data_type == mojom::Operand::DataType::kFloat16 ||
-        input_operand.data_type == mojom::Operand::DataType::kFloat32);
+  CHECK(input_operand.data_type == mojom::DataType::kFloat16 ||
+        input_operand.data_type == mojom::DataType::kFloat32);
   // The input shape has been validated to not overflow before creating tensor.
   const auto signed_input_dimensions =
       ToSignedDimensions(input_operand.dimensions);
@@ -1514,10 +1511,10 @@ auto GraphBuilderTflite::SerializeInstanceNormalization(
       GetOperand(instance_normalization.input_operand_id);
   // TODO(crbug.com/339654398): Support 16-bit float with dequantize operator
   // https://www.tensorflow.org/mlir/tfl_ops#tfldequantize_tfldequantizeop.
-  if (input_operand.data_type == mojom::Operand::DataType::kFloat16) {
+  if (input_operand.data_type == mojom::DataType::kFloat16) {
     return base::unexpected("The 16-bit float data type is not supported.");
   }
-  CHECK_EQ(input_operand.data_type, mojom::Operand::DataType::kFloat32);
+  CHECK_EQ(input_operand.data_type, mojom::DataType::kFloat32);
   // The input shape has been validated to not overflow before creating tensor.
   const auto signed_input_dimensions =
       ToSignedDimensions(input_operand.dimensions);
@@ -1588,10 +1585,10 @@ auto GraphBuilderTflite::SerializeLayerNormalization(
       GetOperand(layer_normalization.input_operand_id);
   // TODO(crbug.com/339654398): Support 16-bit float with dequantize operator
   // https://www.tensorflow.org/mlir/tfl_ops#tfldequantize_tfldequantizeop.
-  if (input_operand.data_type == mojom::Operand::DataType::kFloat16) {
+  if (input_operand.data_type == mojom::DataType::kFloat16) {
     return base::unexpected("The 16-bit float data type is not supported.");
   }
-  CHECK_EQ(input_operand.data_type, mojom::Operand::DataType::kFloat32);
+  CHECK_EQ(input_operand.data_type, mojom::DataType::kFloat32);
   // The input shape has been validated to not overflow before creating tensor.
   const auto signed_input_dimensions =
       ToSignedDimensions(input_operand.dimensions);
@@ -1677,7 +1674,7 @@ auto GraphBuilderTflite::SerializeLogicalNot(
                                                  ::tflite::TensorType_BOOL);
   }
 
-  CHECK_EQ(input_operand.data_type, mojom::Operand::DataType::kUint8);
+  CHECK_EQ(input_operand.data_type, mojom::DataType::kUint8);
   operators_.emplace_back(SerializeCastOperation(
       operand_to_index_map_.at(logical_not.input_operand_id),
       /*input_tensor_type=*/::tflite::TensorType_UINT8, bool_tensor_indexes[0],
@@ -1701,7 +1698,7 @@ auto GraphBuilderTflite::SerializeLogicalNot(
 
 auto GraphBuilderTflite::SerializeMatmul(const mojom::Matmul& matmul)
     -> OperatorOffset {
-  const mojom::Operand::DataType a_operand_data_type =
+  const mojom::DataType a_operand_data_type =
       GetOperand(matmul.a_operand_id).data_type;
   CHECK(kFloatDataTypes.contains(a_operand_data_type));
 
@@ -1877,10 +1874,10 @@ auto GraphBuilderTflite::SerializePool2d(const mojom::Pool2d& pool2d)
 auto GraphBuilderTflite::SerializePrelu(const mojom::Prelu& prelu)
     -> base::expected<OperatorOffset, std::string> {
   const mojom::Operand& input_operand = GetOperand(prelu.input_operand_id);
-  CHECK(input_operand.data_type == mojom::Operand::DataType::kFloat32 ||
-        input_operand.data_type == mojom::Operand::DataType::kFloat16 ||
-        input_operand.data_type == mojom::Operand::DataType::kInt32 ||
-        input_operand.data_type == mojom::Operand::DataType::kInt8);
+  CHECK(input_operand.data_type == mojom::DataType::kFloat32 ||
+        input_operand.data_type == mojom::DataType::kFloat16 ||
+        input_operand.data_type == mojom::DataType::kInt32 ||
+        input_operand.data_type == mojom::DataType::kInt8);
   const mojom::Operand& slope_operand = GetOperand(prelu.slope_operand_id);
   // `ValidatePreluAndInferOutput` function has checked broadcastable shapes
   // between input and slope operand, but TFLite XNNPACK delegate doesn't
@@ -1913,10 +1910,10 @@ auto GraphBuilderTflite::SerializeReciprocal(
   // TODO(crbug.com/339654398): Support 16-bit float with dequantize operator
   // https://www.tensorflow.org/mlir/tfl_ops#tfldequantize_tfldequantizeop.
   const mojom::Operand& input_operand = GetOperand(reciprocal.input_operand_id);
-  if (input_operand.data_type == mojom::Operand::DataType::kFloat16) {
+  if (input_operand.data_type == mojom::DataType::kFloat16) {
     return base::unexpected("The 16-bit float data type isn't supported.");
   }
-  CHECK_EQ(input_operand.data_type, mojom::Operand::DataType::kFloat32);
+  CHECK_EQ(input_operand.data_type, mojom::DataType::kFloat32);
   const int32_t constant_tensor_index = SerializeTensorWithBuffer<float>(
       /*buffer=*/std::array<float, 1>{1.0},
       /*dimensions=*/{});
@@ -1932,7 +1929,7 @@ auto GraphBuilderTflite::SerializeReduce(const mojom::Reduce& reduce)
   // TODO(crbug.com/339654398): Support 16-bit float with dequantize operator
   // https://www.tensorflow.org/mlir/tfl_ops#tfldequantize_tfldequantizeop.
   const mojom::Operand& input_operand = GetOperand(reduce.input_operand_id);
-  if (input_operand.data_type == mojom::Operand::DataType::kFloat16) {
+  if (input_operand.data_type == mojom::DataType::kFloat16) {
     return base::unexpected("The 16-bit float data type isn't supported.");
   }
 
@@ -2003,11 +2000,11 @@ auto GraphBuilderTflite::SerializeReduce(const mojom::Reduce& reduce)
             k32BitIntegerDataTypes.contains(input_operand.data_type) ||
             k64BitIntegerDataTypes.contains(input_operand.data_type));
       int32_t pow_constant_tensor_index;
-      if (input_operand.data_type == mojom::Operand::DataType::kFloat32) {
+      if (input_operand.data_type == mojom::DataType::kFloat32) {
         pow_constant_tensor_index = SerializeTensorWithBuffer<float>(
             /*buffer=*/std::array<float, 1>{2.0},
             /*dimensions=*/{});
-      } else if (input_operand.data_type == mojom::Operand::DataType::kInt32) {
+      } else if (input_operand.data_type == mojom::DataType::kInt32) {
         pow_constant_tensor_index = SerializeTensorWithBuffer<int32_t>(
             /*buffer=*/std::array<int32_t, 1>{2},
             /*dimensions=*/{});
@@ -2052,11 +2049,11 @@ auto GraphBuilderTflite::SerializeReduce(const mojom::Reduce& reduce)
 
 auto GraphBuilderTflite::SerializeRelu(const mojom::Relu& relu)
     -> OperatorOffset {
-  const mojom::Operand::DataType input_data_type =
+  const mojom::DataType input_data_type =
       GetOperand(relu.input_operand_id).data_type;
   CHECK(kFloatDataTypes.contains(input_data_type) ||
-        input_data_type == mojom::Operand::DataType::kInt32 ||
-        input_data_type == mojom::Operand::DataType::kInt8);
+        input_data_type == mojom::DataType::kInt32 ||
+        input_data_type == mojom::DataType::kInt8);
 
   return SerializeUnaryOperation(
       ::tflite::BuiltinOperator::BuiltinOperator_RELU,
@@ -2217,7 +2214,7 @@ auto GraphBuilderTflite::SerializeSoftplus(const mojom::Softplus& softplus)
   // TODO(crbug.com/339654398): Support 16-bit float with dequantize operator
   // https://www.tensorflow.org/mlir/tfl_ops#tfldequantize_tfldequantizeop.
   const mojom::Operand& input_operand = GetOperand(softplus.input_operand_id);
-  if (input_operand.data_type == mojom::Operand::DataType::kFloat16) {
+  if (input_operand.data_type == mojom::DataType::kFloat16) {
     return base::unexpected("The 16-bit float data type isn't supported.");
   }
 
@@ -2240,7 +2237,7 @@ auto GraphBuilderTflite::SerializeSoftplus(const mojom::Softplus& softplus)
   // TODO(crbug.com/339654398): Convert the 32-bit floating-point data to 16-bit
   // floating-point data with fp16_ieee_from_fp32_value function if some
   // delegates support 16-bit float inference.
-  CHECK_EQ(input_operand.data_type, mojom::Operand::DataType::kFloat32);
+  CHECK_EQ(input_operand.data_type, mojom::DataType::kFloat32);
   const int32_t constant_tensor_index = SerializeTensorWithBuffer<float>(
       /*buffer=*/std::array<float, 1>{1},
       /*dimensions=*/{});
@@ -2260,7 +2257,7 @@ auto GraphBuilderTflite::SerializeSoftsign(const mojom::Softsign& softsign)
   // TODO(crbug.com/339654398): Support 16-bit float with dequantize operator
   // https://www.tensorflow.org/mlir/tfl_ops#tfldequantize_tfldequantizeop.
   const mojom::Operand& input_operand = GetOperand(softsign.input_operand_id);
-  if (input_operand.data_type == mojom::Operand::DataType::kFloat16) {
+  if (input_operand.data_type == mojom::DataType::kFloat16) {
     return base::unexpected("The 16-bit float data type isn't supported.");
   }
 
@@ -2284,7 +2281,7 @@ auto GraphBuilderTflite::SerializeSoftsign(const mojom::Softsign& softsign)
   // TODO(crbug.com/339654398): Convert the 32-bit floating-point data to 16-bit
   // floating-point data with fp16_ieee_from_fp32_value function if some
   // delegates support 16-bit float inference.
-  CHECK_EQ(input_operand.data_type, mojom::Operand::DataType::kFloat32);
+  CHECK_EQ(input_operand.data_type, mojom::DataType::kFloat32);
   const int32_t constant_tensor_index = SerializeTensorWithBuffer<float>(
       /*buffer=*/std::array<float, 1>{1},
       /*dimensions=*/{});
@@ -2419,7 +2416,7 @@ auto GraphBuilderTflite::SerializeWhere(const mojom::Where& where)
   const int32_t condition_bool_tensor_index = SerializeTemporaryTensor(
       *signed_condition_dimensions, ::tflite::TensorType_BOOL);
 
-  CHECK_EQ(condition_operand.data_type, mojom::Operand::DataType::kUint8);
+  CHECK_EQ(condition_operand.data_type, mojom::DataType::kUint8);
   operators_.emplace_back(SerializeCastOperation(
       operand_to_index_map_.at(where.condition_operand_id),
       /*input_tensor_type=*/::tflite::TensorType_UINT8,
