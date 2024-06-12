@@ -1006,8 +1006,7 @@ BASE_FEATURE(kFledgeSplitTrustedSignalsFetchingURL,
              base::FEATURE_ENABLED_BY_DEFAULT);
 
 const base::FeatureParam<int> kFledgeCustomMaxAuctionAdComponentsValue{
-    &kFledgeCustomMaxAuctionAdComponents, "FledgeAdComponentLimit",
-    kMaxAdAuctionAdComponentsDefault};
+    &kFledgeCustomMaxAuctionAdComponents, "FledgeAdComponentLimit", 40};
 
 BASE_FEATURE(kFledgeNumberBidderWorkletGroupByOriginContextsToKeep,
              "FledgeBidderWorkletGroupByOriginContextsToKeep",

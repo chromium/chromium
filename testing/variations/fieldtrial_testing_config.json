@@ -17367,30 +17367,6 @@
             ]
         }
     ],
-    "ProtectedAudiences40ComponentAds": [
-        {
-            "platforms": [
-                "android",
-                "chromeos",
-                "chromeos_lacros",
-                "fuchsia",
-                "linux",
-                "mac",
-                "windows"
-            ],
-            "experiments": [
-                {
-                    "name": "Enabled",
-                    "params": {
-                        "FledgeAdComponentLimit": "40"
-                    },
-                    "enable_features": [
-                        "FledgeCustomMaxAuctionAdComponents"
-                    ]
-                }
-            ]
-        }
-    ],
     "ProtectedAudiencesHeaderDirectFromSellerSignalsStudy": [
         {
             "platforms": [

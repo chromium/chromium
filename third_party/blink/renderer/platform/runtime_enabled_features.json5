@@ -1752,6 +1752,7 @@
     },
     {
       name: "FledgeCustomMaxAuctionAdComponents",
+      status: "stable",
     },
     {
       // Enables using a 'deprecatedRenderURLReplacements' field within the
