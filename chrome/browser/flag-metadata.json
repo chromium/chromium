@@ -4239,7 +4239,7 @@
   {
     "name": "enable-webusb-device-detection",
     "owners": [ "reillyg@chromium.org", "deviceapi-team@google.com" ],
-    "expiry_milestone": 128
+    "expiry_milestone": 140
   },
   {
     "name": "enable-welcome-experience",
