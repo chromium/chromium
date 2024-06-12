@@ -1587,10 +1587,9 @@ int BrowserAccessibilityAndroid::GetEditableTextLength() const {
 }
 
 int BrowserAccessibilityAndroid::AndroidInputType() const {
-  const std::string& html_tag =
-      GetStringAttribute(ax::mojom::StringAttribute::kHtmlTag);
-  if (html_tag != "input")
+  if (!HasStringAttribute(ax::mojom::StringAttribute::kInputType)) {
     return ANDROID_TEXT_INPUTTYPE_TYPE_NULL;
+  }
 
   std::string type;
   if (!node()->GetStringAttribute(ax::mojom::StringAttribute::kInputType,
