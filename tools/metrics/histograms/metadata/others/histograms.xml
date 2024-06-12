@@ -10139,8 +10139,8 @@ should be kept until we remove incident reporting. -->
 </histogram>
 
 <histogram name="SubresourceWebBundles.ContentLength" units="bytes"
-    expires_after="2024-07-24">
-  <owner>horo@chromium.org</owner>
+    expires_after="2024-11-24">
+  <owner>hayato@chromium.org</owner>
   <owner>webpackage-dev@chromium.org</owner>
   <summary>
     The value of content length header of a subresource web bundle, or zero if
@@ -10149,15 +10149,15 @@ should be kept until we remove incident reporting. -->
 </histogram>
 
 <histogram name="SubresourceWebBundles.LoadResult"
-    enum="SubresourceWebBundleLoadResult" expires_after="2024-09-07">
-  <owner>horo@chromium.org</owner>
+    enum="SubresourceWebBundleLoadResult" expires_after="2024-11-24">
+  <owner>hayato@chromium.org</owner>
   <owner>webpackage-dev@chromium.org</owner>
   <summary>The result of loading subresource web bundles.</summary>
 </histogram>
 
 <histogram name="SubresourceWebBundles.MaxMemoryUsagePerProcess" units="bytes"
-    expires_after="2024-07-24">
-  <owner>horo@chromium.org</owner>
+    expires_after="2024-11-24">
+  <owner>hayato@chromium.org</owner>
   <owner>webpackage-dev@chromium.org</owner>
   <summary>
     The max memory usage per renderer process for subresource web bundles which
@@ -10178,8 +10178,8 @@ should be kept until we remove incident reporting. -->
 </histogram>
 
 <histogram name="SubresourceWebBundles.ReceivedSize" units="bytes"
-    expires_after="2024-07-24">
-  <owner>horo@chromium.org</owner>
+    expires_after="2024-11-24">
+  <owner>hayato@chromium.org</owner>
   <owner>webpackage-dev@chromium.org</owner>
   <summary>
     The received data size of a subresource web bundle. Recorded when received
