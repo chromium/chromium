@@ -65,8 +65,10 @@ component("display") {
 
   if (is_mac) {
     sources += [
-      "mac/display_link_mac.cc",
+      "mac/ca_display_link_mac.h",
+      "mac/ca_display_link_mac.mm",
       "mac/display_link_mac.h",
+      "mac/display_link_mac.mm",
       "mac/screen_mac.mm",
     ]
   }

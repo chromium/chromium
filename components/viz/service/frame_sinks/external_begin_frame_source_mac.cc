@@ -110,8 +110,7 @@ void ExternalBeginFrameSourceMac::SetVSyncDisplayID(int64_t display_id) {
 
   // Get DisplayLinkMac with the new CGDirectDisplayID.
   if (display_id != display::kInvalidDisplayId) {
-    display_link_mac_ = ui::DisplayLinkMac::GetForDisplay(
-        base::checked_cast<CGDirectDisplayID>(display_id));
+    display_link_mac_ = ui::DisplayLinkMac::GetForDisplay(display_id);
   }
 
   // For debugging only. Use the timer for BeginFrameSource.
@@ -422,8 +421,7 @@ void DelayBasedBeginFrameSourceMac::SetVSyncDisplayID(int64_t display_id) {
   }
 
   display_id_ = display_id;
-  display_link_ = ui::DisplayLinkMac::GetForDisplay(
-      base::checked_cast<CGDirectDisplayID>(display_id_));
+  display_link_ = ui::DisplayLinkMac::GetForDisplay(display_id_);
   time_source_next_update_time_ = base::TimeTicks();
   RequestTimeSourceParamsUpdate();
 }

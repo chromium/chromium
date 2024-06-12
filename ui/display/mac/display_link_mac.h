@@ -5,8 +5,6 @@
 #ifndef UI_DISPLAY_MAC_DISPLAY_LINK_MAC_H_
 #define UI_DISPLAY_MAC_DISPLAY_LINK_MAC_H_
 
-#include <QuartzCore/CVDisplayLink.h>
-
 #include <memory>
 #include <set>
 #include <vector>
@@ -68,8 +66,7 @@ class DISPLAY_EXPORT VSyncCallbackMac {
 class DISPLAY_EXPORT DisplayLinkMac : public base::RefCounted<DisplayLinkMac> {
  public:
   // Create a DisplayLinkMac for the specified display.
-  static scoped_refptr<DisplayLinkMac> GetForDisplay(
-      CGDirectDisplayID display_id);
+  static scoped_refptr<DisplayLinkMac> GetForDisplay(int64_t display_id);
 
   // Register an observer callback.
   // * The specified callback will be called at every VSync tick, until the

@@ -149,7 +149,7 @@ class VIZ_COMMON_EXPORT DelayBasedBeginFrameSourceMac
   // Used for recording histogram Viz.BeginFrameSource.Accuracy.AverageDelta.
   bool just_started_begin_frame_ = false;
 
-  // The frame interval received from VCDisplayLinkCallback.
+  // The frame interval received from DisplayLinkCallback.
   base::TimeDelta last_hw_interval_;
 
   UpdateVSyncParametersCallback update_vsync_params_callback_;
