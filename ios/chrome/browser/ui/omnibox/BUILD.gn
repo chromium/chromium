@@ -222,6 +222,7 @@ source_set("eg_app_support+eg2") {
     "//ios/chrome/browser/shared/model/browser_state",
     "//ios/chrome/browser/ui/omnibox/popup:popup_ui",
     "//ios/chrome/test/app:test_support",
+    "//ios/testing:nserror_support",
     "//ios/testing/earl_grey:eg_app_support+eg2",
     "//ios/third_party/earl_grey2:app_framework+link",
     "//ios/web/public",

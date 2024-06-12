@@ -19,6 +19,7 @@
 #import "ios/chrome/browser/shared/public/features/features.h"
 #import "ios/chrome/browser/ui/content_suggestions/ntp_home_constant.h"
 #import "ios/chrome/browser/ui/omnibox/omnibox_app_interface.h"
+#import "ios/chrome/browser/ui/omnibox/omnibox_earl_grey.h"
 #import "ios/chrome/browser/ui/omnibox/omnibox_test_util.h"
 #import "ios/chrome/browser/ui/omnibox/omnibox_ui_features.h"
 #import "ios/chrome/browser/ui/omnibox/popup/omnibox_popup_accessibility_identifier_constants.h"
@@ -1367,9 +1368,8 @@ void FocusFakebox() {
       assertWithMatcher:grey_notNil()];
 }
 
-// Test inline autocomplete of legacy text field implementation.
-// TODO(crbug.com/346292515): Re-enable with the new textfield implementation.
-- (void)DISABLED_testLegacyInlineAutocompleteSuggestion {
+// Tests inline autocomplete is shown.
+- (void)testInlineAutocompleteSuggestion {
   // Disable all autocomplete providers except the history url provider.
   AppLaunchConfiguration config = [self appConfigurationForTestCase];
   omnibox::DisableAutocompleteProviders(config, 524279);
@@ -1386,8 +1386,8 @@ void FocusFakebox() {
       performAction:grey_replaceText(@"127")];
 
   // We expect to have an autocomplete.
-  [ChromeEarlGrey waitForUIElementToAppearWithMatcher:
-                      chrome_test_util::OmniboxAutocompleteLabel()];
+  [[EarlGrey selectElementWithMatcher:chrome_test_util::Omnibox()]
+      assert:[OmniboxAppInterface displaysInlineAutocompleteText:YES]];
 }
 
 #pragma mark - Helpers
@@ -1580,9 +1580,7 @@ void FocusFakebox() {
 }
 
 // Tests that pressing spacebar key when having an autocomplete, removes it.
-// TODO(crbug.com/346292515): Re-enable with the new textfield implementation.
-// (autocomplete label exists only on legacy implementation).
-- (void)DISABLED_testHWspacebarKeyOnAutocomplete {
+- (void)testHWspacebarKeyOnAutocomplete {
   // Disable all autocomplete providers except the history url provider.
   AppLaunchConfiguration config = [self appConfigurationForTestCase];
   omnibox::DisableAutocompleteProviders(config, 524279);
@@ -1598,17 +1596,17 @@ void FocusFakebox() {
   [[EarlGrey selectElementWithMatcher:chrome_test_util::Omnibox()]
       performAction:grey_replaceText(@"127")];
 
-  // We expect to have an autocomplete.
-  [ChromeEarlGrey waitForUIElementToAppearWithMatcher:
-                      chrome_test_util::OmniboxAutocompleteLabel()];
+  // Autocomplete is present.
+  [[EarlGrey selectElementWithMatcher:chrome_test_util::Omnibox()]
+      assert:[OmniboxAppInterface displaysInlineAutocompleteText:YES]];
 
   // Pressing spacebar.
   // TODO(crbug.com/40916974): This should use grey_typeText when fixed.
   [ChromeEarlGrey simulatePhysicalKeyboardEvent:@" " flags:0];
 
   // Autocomplete removed.
-  [ChromeEarlGrey waitForUIElementToDisappearWithMatcher:
-                      chrome_test_util::OmniboxAutocompleteLabel()];
+  [[EarlGrey selectElementWithMatcher:chrome_test_util::Omnibox()]
+      assert:[OmniboxAppInterface displaysInlineAutocompleteText:NO]];
 }
 
 #pragma mark - Helpers

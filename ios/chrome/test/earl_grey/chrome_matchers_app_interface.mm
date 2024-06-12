@@ -509,12 +509,6 @@ UIWindow* WindowWithAccessibilityIdentifier(NSString* accessibility_id) {
   return matcher;
 }
 
-+ (id<GREYMatcher>)omniboxAutocompleteLabel {
-  return grey_allOf(
-      grey_accessibilityID(kOmniboxAutocompleteLabelAccessibilityIdentifier),
-      grey_sufficientlyVisible(), nil);
-}
-
 + (id<GREYMatcher>)locationViewContainingText:(NSString*)text {
   GREYElementMatcherBlock* matcher = [GREYElementMatcherBlock
       matcherWithMatchesBlock:^BOOL(LocationBarSteadyView* element) {

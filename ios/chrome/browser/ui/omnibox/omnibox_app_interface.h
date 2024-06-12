@@ -7,6 +7,8 @@
 
 #import <Foundation/Foundation.h>
 
+@protocol GREYAssertion;
+
 // Contains the app-side implementation of helpers.
 @interface OmniboxAppInterface : NSObject
 
@@ -39,6 +41,10 @@
 
 // Returns YES if `element` or `element.text` is a valid URL.
 + (BOOL)isElementURL:(id)element;
+
+/// Asserts the omnibox text field `shouldHaveAutocompleteText`.
++ (id<GREYAssertion>)displaysInlineAutocompleteText:
+    (BOOL)shouldHaveAutocompleteText;
 
 @end
 

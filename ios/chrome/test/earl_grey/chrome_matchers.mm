@@ -208,10 +208,6 @@ id<GREYMatcher> OmniboxContainingAutocompleteText(NSString* text) {
   return [ChromeMatchersAppInterface omniboxContainingAutocompleteText:text];
 }
 
-id<GREYMatcher> OmniboxAutocompleteLabel() {
-  return [ChromeMatchersAppInterface omniboxAutocompleteLabel];
-}
-
 id<GREYMatcher> LocationViewContainingText(const std::string& text) {
   return [ChromeMatchersAppInterface
       locationViewContainingText:base::SysUTF8ToNSString(text)];

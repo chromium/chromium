@@ -20,9 +20,12 @@
 #import "ios/chrome/browser/history/model/top_sites_factory.h"
 #import "ios/chrome/browser/search_engines/model/template_url_service_factory.h"
 #import "ios/chrome/browser/shared/model/browser_state/chrome_browser_state.h"
+#import "ios/chrome/browser/ui/omnibox/omnibox_text_field_ios.h"
 #import "ios/chrome/browser/ui/omnibox/test_fake_suggestions_service.h"
 #import "ios/chrome/test/app/chrome_test_util.h"
 #import "ios/chrome/test/app/tab_test_util.h"
+#import "ios/testing/earl_grey/earl_grey_app.h"
+#import "ios/testing/nserror_util.h"
 #import "ios/web/public/navigation/navigation_manager.h"
 #import "ios/web/public/web_state.h"
 
@@ -145,6 +148,26 @@ const base::FilePath& GetTestDataDir() {
 
   std::string UTFString = base::SysNSStringToUTF8(string);
   return GURL(UTFString).is_valid() || GURL("http://" + UTFString).is_valid();
+}
+
++ (id<GREYAssertion>)displaysInlineAutocompleteText:
+    (BOOL)shouldHaveAutocompleteText {
+  NSString* name =
+      [NSString stringWithFormat:@"Omnibox hasAutocompleteText == %d",
+                                 shouldHaveAutocompleteText];
+
+  return [[GREYAssertionBlock alloc]
+                 initWithName:name
+      assertionBlockWithError:^BOOL(id element, __strong NSError** errorOrNil) {
+        if (![element isKindOfClass:OmniboxTextFieldIOS.class]) {
+          *errorOrNil = testing::NSErrorWithLocalizedDescription(
+              @"Element should be of class OmniboxTextFieldIOS.");
+          return NO;
+        }
+        OmniboxTextFieldIOS* textField =
+            base::apple::ObjCCastStrict<OmniboxTextFieldIOS>(element);
+        return textField.hasAutocompleteText == shouldHaveAutocompleteText;
+      }];
 }
 
 @end
