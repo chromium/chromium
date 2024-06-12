@@ -1,4 +1,29 @@
-<cr-checkbox></cr-checkbox>
-<cr-icon icon="history:table-chart-organize"></cr-icon>
-Compare: [[productSet.name]], [[productSet.urls.length]] items,
-[[productSet.uuid.value]]
+<style include="shared-style cr-icons">
+  #link {
+    cursor: pointer;
+  }
+
+  #item-container {
+    margin: 0 20px;
+  }
+
+  #item-container {
+    align-items: center;
+    display: flex;
+    min-height: var(--item-height);
+    padding-inline-start: 10px;
+    pointer-events: auto;
+  }
+</style>
+
+<div role="row" on-pointerdown="onRowPointerDown_">
+  <div id="item-container">
+    <cr-checkbox id="checkbox" checked="{{checked_}}"
+        on-change="onCheckboxChange_">
+    </cr-checkbox>
+    <div id="link">
+      <cr-icon icon="history:table-chart-organize"></cr-icon>
+      [[getItemTitle_(productSet)]] [[productSet.uuid.value]]
+    </div>
+  </div>
+</div>

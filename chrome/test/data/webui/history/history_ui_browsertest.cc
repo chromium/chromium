@@ -176,7 +176,23 @@ class HistoryProductSpecificationsListTest : public WebUIMochaBrowserTest {
 };
 
 IN_PROC_BROWSER_TEST_F(HistoryProductSpecificationsListTest, Load) {
-  RunTest("history/history_product_specifications_tab_test.js", "mocha.run()");
+  RunTest("history/history_product_specifications_list_test.js", "mocha.run()");
+}
+
+class HistoryProductSpecificationsItemTest : public WebUIMochaBrowserTest {
+ protected:
+  HistoryProductSpecificationsItemTest() {
+    set_test_loader_host(chrome::kChromeUIHistoryHost);
+    scoped_feature_list_.InitWithFeatures({commerce::kProductSpecifications},
+                                          {});
+  }
+
+ private:
+  base::test::ScopedFeatureList scoped_feature_list_;
+};
+
+IN_PROC_BROWSER_TEST_F(HistoryProductSpecificationsItemTest, Load) {
+  RunTest("history/history_product_specifications_item_test.js", "mocha.run()");
 }
 
 class HistoryWithHistoryEmbeddingsTest : public WebUIMochaBrowserTest {

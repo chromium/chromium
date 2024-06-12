@@ -12,6 +12,7 @@ export {HistoryEmbeddingsBrowserProxyImpl} from 'chrome://resources/cr_component
 export {HistoryEmbeddingsMoreActionsClickEvent} from 'chrome://resources/cr_components/history_embeddings/history_embeddings.js';
 export {PageHandlerRemote as HistoryEmbeddingsPageHandlerRemote} from 'chrome://resources/cr_components/history_embeddings/history_embeddings.mojom-webui.js';
 export {CrActionMenuElement} from 'chrome://resources/cr_elements/cr_action_menu/cr_action_menu.js';
+export {CrCheckboxElement} from 'chrome://resources/cr_elements/cr_checkbox/cr_checkbox.js';
 export {CrDialogElement} from 'chrome://resources/cr_elements/cr_dialog/cr_dialog.js';
 export {CrRouter} from 'chrome://resources/js/cr_router.js';
 export {getTrustedHTML} from 'chrome://resources/js/static_types.js';
@@ -23,6 +24,7 @@ export {HISTORY_EMBEDDINGS_PROMO_SHOWN_KEY, HistoryEmbeddingsPromoElement} from 
 export {HistoryItemElement} from './history_item.js';
 export {ActionMenuModel, HistoryListElement} from './history_list.js';
 export {HistoryToolbarElement} from './history_toolbar.js';
+export {ProductSpecificationsItemElement} from './product_specifications_item.js';
 export {ProductSpecificationsListsElement} from './product_specifications_lists.js';
 export {HistorySearchedLabelElement} from './searched_label.js';
 export {HistorySideBarElement} from './side_bar.js';

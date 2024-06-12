@@ -1,0 +1,130 @@
+// Copyright 2024 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+import 'chrome://history/history.js';
+
+import {ShoppingBrowserProxyImpl} from 'chrome://history/history.js';
+import type {CrCheckboxElement, ProductSpecificationsListsElement} from 'chrome://history/history.js';
+import {getDeepActiveElement} from 'chrome://resources/js/util.js';
+import {pressAndReleaseKeyOn} from 'chrome://resources/polymer/v3_0/iron-test-helpers/mock-interactions.js';
+import {assertDeepEquals, assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
+import {flushTasks} from 'chrome://webui-test/polymer_test_util.js';
+import {TestMock} from 'chrome://webui-test/test_mock.js';
+
+suite('ProductSpecificationsListTest', () => {
+  const shoppingServiceApi = TestMock.fromClass(ShoppingBrowserProxyImpl);
+  let productSpecificationsList: ProductSpecificationsListsElement;
+
+  function createProductSpecsList(): ProductSpecificationsListsElement {
+    productSpecificationsList =
+        document.createElement('product-specifications-lists');
+    document.body.appendChild(productSpecificationsList);
+    return productSpecificationsList;
+  }
+
+  function initProductSets() {
+    shoppingServiceApi.setResultFor(
+        'getAllProductSpecificationsSets', Promise.resolve({
+          sets: [
+            {
+              name: 'example1',
+              uuid: {value: 'ex1'},
+              urls: ['dot com 1'],
+            },
+            {
+              name: 'example2',
+              uuid: {value: 'ex2'},
+              urls: ['dot com 2a', 'dot com 2b'],
+            },
+          ],
+        }));
+  }
+
+  setup(function() {
+    shoppingServiceApi.reset();
+    ShoppingBrowserProxyImpl.setInstance(shoppingServiceApi);
+    document.body.innerHTML = window.trustedTypes!.emptyHTML;
+    initProductSets();
+    createProductSpecsList();
+    return flushTasks();
+  });
+
+  test('load', async () => {
+    await shoppingServiceApi.whenCalled('getAllProductSpecificationsSets');
+    const items = productSpecificationsList.shadowRoot!.querySelectorAll(
+        'product-specifications-item');
+    assertEquals(2, items.length);
+    const firstSet = items[0]!.productSet;
+    assertEquals('example1', firstSet.name);
+    assertEquals('ex1', firstSet.uuid.value);
+    assertEquals('dot com 1', firstSet.urls[0]);
+
+    const secondSet = items[1]!.productSet;
+    assertEquals('example2', secondSet.name);
+    assertEquals('ex2', secondSet.uuid.value);
+    assertEquals('dot com 2a', secondSet.urls[0]);
+    assertEquals('dot com 2b', secondSet.urls[1]);
+  });
+
+  test('displays correct header', async () => {
+    await shoppingServiceApi.whenCalled('getAllProductSpecificationsSets');
+    const items = productSpecificationsList.shadowRoot!.querySelectorAll(
+        'product-specifications-item');
+    assertEquals(2, items.length);
+
+    const cardTitleHeader = productSpecificationsList.shadowRoot!.querySelector(
+        '#card-title-header');
+    assertTrue(!!cardTitleHeader);
+    const heading = cardTitleHeader!.textContent;
+    assertTrue(!!heading);
+    assertEquals('Product Specifications lists', heading.trim());
+  });
+
+
+  test(
+      'selecting product set adds uuid to selected items list',
+      async function() {
+        await shoppingServiceApi.whenCalled('getAllProductSpecificationsSets');
+        const items = productSpecificationsList.shadowRoot!.querySelectorAll(
+            'product-specifications-item');
+        assertDeepEquals(new Set(), productSpecificationsList.selectedItems);
+
+        const secondSet = items[1]!;
+        const checkbox = secondSet.$['checkbox'] as CrCheckboxElement;
+        checkbox.click();
+
+        await checkbox.updateComplete;
+        assertDeepEquals(
+            new Set(['ex2']), productSpecificationsList.selectedItems);
+      });
+
+  test('focus with arrow keys', async () => {
+    await shoppingServiceApi.whenCalled('getAllProductSpecificationsSets');
+    const items = productSpecificationsList.shadowRoot!.querySelectorAll(
+        'product-specifications-item');
+
+    const focusGrid = productSpecificationsList.getFocusGridForTesting();
+    assertTrue(!!focusGrid);
+    assertEquals(2, focusGrid.rows.length);
+
+    const focusedCheckbox = items[0]!.$.checkbox.getFocusableElement();
+    focusedCheckbox.focus();
+    assertEquals(focusedCheckbox, getDeepActiveElement());
+    assertTrue(focusGrid.rows[0]!.isActive());
+
+    // Press the down arrow to focus on the checkbox in the row below.
+    pressAndReleaseKeyOn(focusedCheckbox, 40, [], 'ArrowDown');
+    const nextFocusedCheckbox = items[1]!.$.checkbox.getFocusableElement();
+    assertEquals(nextFocusedCheckbox, getDeepActiveElement());
+    assertTrue(focusGrid.rows[1]!.isActive());
+    assertFalse(focusGrid.rows[0]!.isActive());
+
+    // Press the right arrow to focus on the link in the same row.
+    pressAndReleaseKeyOn(nextFocusedCheckbox, 39, [], 'ArrowRight');
+    const focusedLink = items[1]!.$.link;
+    assertEquals(focusedLink, getDeepActiveElement());
+    assertTrue(focusGrid.rows[1]!.isActive());
+    assertFalse(focusGrid.rows[0]!.isActive());
+  });
+});

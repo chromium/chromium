@@ -1,5 +1,41 @@
-<template is="dom-repeat"
-    items="[[allProductSpecificationsSet_]]" as="item">
-  <product-specifications-item product-set="[[item]]">
-  </product-specifications-item>
-</template>
+<style include="shared-style cr-shared-style">
+  .history-cards {
+    margin-block-start: var(--first-card-padding-top);
+  }
+
+  #history-item-container {
+    background-color: var(--cr-card-background-color);
+    border-radius: var(--cr-card-border-radius);
+    box-shadow: var(--cr-card-shadow);
+    padding-left: 0;
+    padding-right: 0;
+    padding-bottom: var(--card-first-last-item-padding);
+    margin-bottom: var(--card-padding-between);
+  }
+
+  #card-title-header {
+    display: block;
+    font-size: 16px;
+    font-weight: 400;
+    letter-spacing: .25px;
+    padding-bottom: 4px;
+    padding-top: 8px;
+    margin: 0 20px;
+    margin-bottom: var(--card-first-last-item-padding);
+  }
+</style>
+<div class="history-cards" id="history-item-container">
+  <div id="card-title-header" class="card-title" role="row">
+    <div role="rowheader">
+      <div role="heading" aria-level="2">
+        $i18n{productSpecificationsHeader}
+      </div>
+    </div>
+  </div>
+  <template is="dom-repeat" items="[[allProductSpecificationsSets_]]" as="set"
+      on-dom-change="updateFocusGrid_">
+    <product-specifications-item product-set="[[set]]"
+        on-item-checkbox-select="onItemSelected_">
+    </product-specifications-item>
+  </template>
+</div>

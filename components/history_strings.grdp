@@ -170,4 +170,12 @@
   <message name="IDS_HISTORY_EMBEDDINGS_THUMBS_DOWN" desc="Alternative text to the thumbs up icon under history embeddings results." translateable="false">
     Thumbs down
   </message>
+
+  <!-- For Product Specifications -->
+  <message name="IDS_PRODUCT_SPECIFICATIONS_HEADER" desc="Header text for product specifications tab in history." translateable="false">
+    Product Specifications lists
+  </message>
+  <message name="IDS_PRODUCT_SPECIFICATIONS_ROW" desc="Text for a single row in Product Specifications" translateable="false">
+    Analyze <ph name="PRODUCT_SPECIFICATIONS_SET_NAME"><ex>e-bikes</ex>$1</ph> &#183; <ph name="ITEMS"><ex>3</ex>$2</ph> items
+  </message>
 </grit-part>
