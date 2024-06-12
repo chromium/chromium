@@ -1,5 +1,4 @@
-<style include="cr-icons cr-hidden-style cr-nav-menu-item-style
-    cr-shared-style">
+<style include="cr-icons cr-hidden-style cr-nav-menu-item-style">
   :host {
     --sidebar-inactive-color: #5a5a5a;
     color: var(--sidebar-inactive-color);
@@ -19,7 +18,6 @@
 
   #sectionMenu {
     padding-top: 8px;
-    user-select: none;
   }
 
   .separator {
@@ -45,40 +43,39 @@
     margin-inline-end: 10px;
   }
 </style>
-<iron-selector id="sectionMenu"
+<cr-menu-selector id="sectionMenu"
     selected-attribute="selected"
     attr-for-selected="data-path"
-    selected="[[selectedPath_]]">
+    selected="[[selectedPath_]]"
+    selectable="a">
   <!-- Values for "data-path" attribute must match the "Page" enum. -->
-  <a class="cr-nav-menu-item" id="sectionsExtensions" href="/"
+  <a role="menuitem" class="cr-nav-menu-item" id="sectionsExtensions" href="/"
       on-click="onLinkClick_" data-path="items-list">
     <iron-icon icon="extensions-icons:my_extensions"></iron-icon>
     $i18n{sidebarExtensions}
     <cr-ripple></cr-ripple>
   </a>
-  <a class="cr-nav-menu-item" id="sectionsSitePermissions"
-      hidden="[[!enableEnhancedSiteControls]]"
-      href="/sitePermissions" on-click="onLinkClick_"
-      data-path="site-permissions">
+  <a role="menuitem" class="cr-nav-menu-item" id="sectionsSitePermissions"
+      hidden="[[!enableEnhancedSiteControls]]" href="/sitePermissions"
+      on-click="onLinkClick_" data-path="site-permissions">
     <iron-icon icon="extensions-icons:site_permissions"></iron-icon>
     $i18n{sitePermissions}
     <cr-ripple></cr-ripple>
   </a>
-  <a class="cr-nav-menu-item" id="sectionsShortcuts" href="/shortcuts"
-      on-click="onLinkClick_" data-path="keyboard-shortcuts">
-      <iron-icon icon="extensions-icons:keyboard_shortcuts"></iron-icon>
+  <a role="menuitem" class="cr-nav-menu-item" id="sectionsShortcuts"
+      href="/shortcuts" on-click="onLinkClick_"
+      data-path="keyboard-shortcuts">
+    <iron-icon icon="extensions-icons:keyboard_shortcuts"></iron-icon>
     $i18n{keyboardShortcuts}
     <cr-ripple></cr-ripple>
   </a>
-</iron-selector>
-<div>
-  <div class="separator"></div>
-  <div class="cr-nav-menu-item" id="moreExtensions">
-    <iron-icon id="web-store-icon" icon="extensions-icons:web_store">
-    </iron-icon>
-    <span id="discover-more-text" class="cr-secondary-text"
-        on-click="onMoreExtensionsClick_"
-        inner-h-t-m-l="[[discoverMoreText_]]"></span>
-    <cr-ripple></cr-ripple>
-  </div>
+</cr-menu-selector>
+<div class="separator"></div>
+<div class="cr-nav-menu-item" id="moreExtensions">
+  <iron-icon id="web-store-icon" icon="extensions-icons:web_store">
+  </iron-icon>
+  <span id="discover-more-text" class="cr-secondary-text"
+      on-click="onMoreExtensionsClick_"
+      inner-h-t-m-l="[[discoverMoreText_]]"></span>
+  <cr-ripple></cr-ripple>
 </div>
