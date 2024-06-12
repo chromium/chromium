@@ -65,9 +65,13 @@ public class RecyclerViewSelectionController
         setSelectedItem(RecyclerView.NO_POSITION);
     }
 
-    /** Move selection to the next element on the list. */
-    public void selectNextItem() {
-        if (mLayoutManager == null || mLayoutManager.getItemCount() == 0) return;
+    /**
+     * Move selection to the next element on the list.
+     *
+     * @return true, if change resulted in an item being highlighted
+     */
+    public boolean selectNextItem() {
+        if (mLayoutManager == null || mLayoutManager.getItemCount() == 0) return false;
 
         // Note: this is also the index selected if there are no more selectable views after the
         // current one.
@@ -92,11 +96,16 @@ public class RecyclerViewSelectionController
         }
 
         setSelectedItem(nextSelectableItemIndex);
+        return mSelectedItemIndex != RecyclerView.NO_POSITION;
     }
 
-    /** Move selection to the previous element on the list. */
-    public void selectPreviousItem() {
-        if (mLayoutManager == null || mLayoutManager.getItemCount() == 0) return;
+    /**
+     * Move selection to the previous element on the list.
+     *
+     * @return true, if change resulted in an item being highlighted
+     */
+    public boolean selectPreviousItem() {
+        if (mLayoutManager == null || mLayoutManager.getItemCount() == 0) return false;
 
         // Note: this is also the index selected if there are no more selectable views after the
         // current one.
@@ -123,6 +132,7 @@ public class RecyclerViewSelectionController
         }
 
         setSelectedItem(nextSelectableItemIndex);
+        return mSelectedItemIndex != RecyclerView.NO_POSITION;
     }
 
     /** Retrieve currently selected element. */

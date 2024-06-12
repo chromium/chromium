@@ -415,13 +415,18 @@ public class AutocompleteCoordinator
         }
 
         boolean isShowingList = mDropdown != null && mDropdown.getViewGroup().isShown();
-        boolean isAnyDirection = KeyNavigationUtil.isGoAnyDirection(event);
+
+        // List of keys used to navigate the suggestions list.
+        boolean isSelectionKey =
+                (keyCode == KeyEvent.KEYCODE_DPAD_UP)
+                        || (keyCode == KeyEvent.KEYCODE_DPAD_DOWN)
+                        || (keyCode == KeyEvent.KEYCODE_TAB);
 
         if (isShowingList && event.getKeyCode() == KeyEvent.KEYCODE_ESCAPE) {
             mMediator.finishInteraction();
             return true;
         }
-        if (isShowingList && mMediator.getSuggestionCount() > 0 && isAnyDirection) {
+        if (isShowingList && isSelectionKey) {
             mMediator.allowPendingItemSelection();
         }
         if (isShowingList && mDropdown.getViewGroup().onKeyDown(keyCode, event)) {

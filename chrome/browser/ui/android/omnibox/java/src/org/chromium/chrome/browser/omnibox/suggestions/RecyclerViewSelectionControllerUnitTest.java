@@ -80,13 +80,17 @@ public class RecyclerViewSelectionControllerUnitTest {
         mSelectionController.setSelectedItem(2);
         Assert.assertEquals(2, mSelectionController.getSelectedItemForTest());
         Assert.assertEquals(mChildView3, mSelectionController.getSelectedView());
-        mSelectionController.selectNextItem();
+
+        // Selecting next item should result in item being highlighted.
+        Assert.assertTrue(mSelectionController.selectNextItem());
         Assert.assertEquals(2, mSelectionController.getSelectedItemForTest());
         Assert.assertEquals(mChildView3, mSelectionController.getSelectedView());
 
-        // Permit cycling through.
+        // Permit cycling through to no selection.
         mSelectionController.setCycleThroughNoSelection(true);
-        mSelectionController.selectNextItem();
+
+        // Cycling should result in no item being selected.
+        Assert.assertFalse(mSelectionController.selectNextItem());
         Assert.assertEquals(
                 RecyclerView.NO_POSITION, mSelectionController.getSelectedItemForTest());
         Assert.assertEquals(null, mSelectionController.getSelectedView());
@@ -117,13 +121,16 @@ public class RecyclerViewSelectionControllerUnitTest {
         mSelectionController.setSelectedItem(0);
         Assert.assertEquals(0, mSelectionController.getSelectedItemForTest());
         Assert.assertEquals(mChildView1, mSelectionController.getSelectedView());
-        mSelectionController.selectPreviousItem();
+
+        // Selecting previous item should result in item being highlighted.
+        Assert.assertTrue(mSelectionController.selectPreviousItem());
         Assert.assertEquals(0, mSelectionController.getSelectedItemForTest());
         Assert.assertEquals(mChildView1, mSelectionController.getSelectedView());
 
-        // Permit cycling through.
+        // Permit cycling through no selection.
         mSelectionController.setCycleThroughNoSelection(true);
-        mSelectionController.selectPreviousItem();
+        // Cycling should result in no item being selected.
+        Assert.assertFalse(mSelectionController.selectPreviousItem());
         Assert.assertEquals(
                 RecyclerView.NO_POSITION, mSelectionController.getSelectedItemForTest());
         Assert.assertEquals(null, mSelectionController.getSelectedView());
@@ -268,11 +275,21 @@ public class RecyclerViewSelectionControllerUnitTest {
         Assert.assertEquals(
                 RecyclerView.NO_POSITION, mSelectionController.getSelectedItemForTest());
         mSelectionController.setSelectedItem(1);
+        Assert.assertEquals(1, mSelectionController.getSelectedItemForTest());
 
-        verify(mChildView1, times(0)).setSelected(anyBoolean());
-        verify(mChildView3, times(0)).setSelected(anyBoolean());
         verify(mChildView2, times(1)).setSelected(true);
-        verify(mChildView2, times(0)).setSelected(false);
+        verify(mChildView2, times(1)).setSelected(anyBoolean());
+        verifyNoMoreInteractions(mChildView1, mChildView2, mChildView3);
+
+        // Reset selection back to none.
+
+        mSelectionController.resetSelection();
+        verify(mChildView2, times(1)).setSelected(false);
+        verify(mChildView2, times(2)).setSelected(anyBoolean());
+        verifyNoMoreInteractions(mChildView1, mChildView2, mChildView3);
+
+        Assert.assertEquals(
+                RecyclerView.NO_POSITION, mSelectionController.getSelectedItemForTest());
     }
 
     @Test

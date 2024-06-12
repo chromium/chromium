@@ -40,6 +40,7 @@ public class BaseCarouselSuggestionView extends RecyclerView {
         setLayoutManager(new LinearLayoutManager(context, LinearLayoutManager.HORIZONTAL, false));
 
         mSelectionController = new RecyclerViewSelectionController(getLayoutManager());
+        mSelectionController.setCycleThroughNoSelection(true);
         addOnChildAttachStateChangeListener(mSelectionController);
 
         setAdapter(adapter);
@@ -47,15 +48,10 @@ public class BaseCarouselSuggestionView extends RecyclerView {
 
     @Override
     public boolean onKeyDown(int keyCode, KeyEvent event) {
-        boolean isRtl = getLayoutDirection() == LAYOUT_DIRECTION_RTL;
-        if ((!isRtl && KeyNavigationUtil.isGoRight(event))
-                || (isRtl && KeyNavigationUtil.isGoLeft(event))) {
-            mSelectionController.selectNextItem();
-            return true;
-        } else if ((isRtl && KeyNavigationUtil.isGoRight(event))
-                || (!isRtl && KeyNavigationUtil.isGoLeft(event))) {
-            mSelectionController.selectPreviousItem();
-            return true;
+        if (keyCode == KeyEvent.KEYCODE_TAB && event.isShiftPressed()) {
+            return mSelectionController.selectPreviousItem();
+        } else if (keyCode == KeyEvent.KEYCODE_TAB) {
+            return mSelectionController.selectNextItem();
         } else if (KeyNavigationUtil.isEnter(event)) {
             var tile = mSelectionController.getSelectedView();
             if (tile != null) return tile.performClick();

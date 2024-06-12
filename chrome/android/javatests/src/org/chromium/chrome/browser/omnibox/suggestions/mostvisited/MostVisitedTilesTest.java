@@ -233,14 +233,14 @@ public class MostVisitedTilesTest {
         mOmnibox.sendKey(KeyEvent.KEYCODE_DPAD_DOWN);
         mOmnibox.checkText(equalTo(mMatch1.getUrl().getSpec()), null);
 
-        mOmnibox.sendKey(KeyEvent.KEYCODE_DPAD_RIGHT);
+        mOmnibox.sendKey(KeyEvent.KEYCODE_TAB);
         mOmnibox.checkText(equalTo(mMatch2.getUrl().getSpec()), null);
 
-        mOmnibox.sendKey(KeyEvent.KEYCODE_DPAD_RIGHT);
+        mOmnibox.sendKey(KeyEvent.KEYCODE_TAB);
         mOmnibox.checkText(equalTo(mMatch3.getUrl().getSpec()), null);
 
         // Note: the carousel does not wrap around.
-        mOmnibox.sendKey(KeyEvent.KEYCODE_DPAD_RIGHT);
+        mOmnibox.sendKey(KeyEvent.KEYCODE_TAB);
         mOmnibox.checkText(equalTo(mMatch3.getUrl().getSpec()), null);
     }
 
@@ -253,14 +253,14 @@ public class MostVisitedTilesTest {
         mOmnibox.sendKey(KeyEvent.KEYCODE_DPAD_DOWN);
         mOmnibox.checkText(equalTo(mMatch1.getUrl().getSpec()), null);
 
-        mOmnibox.sendKey(KeyEvent.KEYCODE_DPAD_RIGHT);
+        mOmnibox.sendKey(KeyEvent.KEYCODE_TAB);
         mOmnibox.checkText(equalTo(mMatch2.getUrl().getSpec()), null);
 
-        mOmnibox.sendKey(KeyEvent.KEYCODE_DPAD_LEFT);
+        mOmnibox.sendKey(KeyEvent.KEYCODE_TAB, KeyEvent.META_SHIFT_ON);
         mOmnibox.checkText(equalTo(mMatch1.getUrl().getSpec()), null);
 
         // Note: the carousel does not wrap around.
-        mOmnibox.sendKey(KeyEvent.KEYCODE_DPAD_LEFT);
+        mOmnibox.sendKey(KeyEvent.KEYCODE_TAB, KeyEvent.META_SHIFT_ON);
         mOmnibox.checkText(equalTo(mMatch1.getUrl().getSpec()), null);
     }
 
@@ -273,10 +273,10 @@ public class MostVisitedTilesTest {
         mOmnibox.sendKey(KeyEvent.KEYCODE_DPAD_DOWN);
         mOmnibox.checkText(equalTo(mMatch1.getUrl().getSpec()), null);
 
-        mOmnibox.sendKey(KeyEvent.KEYCODE_DPAD_RIGHT);
+        mOmnibox.sendKey(KeyEvent.KEYCODE_TAB);
         mOmnibox.checkText(equalTo(mMatch2.getUrl().getSpec()), null);
 
-        mOmnibox.sendKey(KeyEvent.KEYCODE_DPAD_RIGHT);
+        mOmnibox.sendKey(KeyEvent.KEYCODE_TAB);
         mOmnibox.checkText(equalTo(mMatch3.getUrl().getSpec()), null);
 
         // Move to the search suggestion skipping the header.

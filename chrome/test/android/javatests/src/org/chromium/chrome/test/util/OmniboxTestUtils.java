@@ -12,6 +12,7 @@ import static androidx.test.espresso.matcher.ViewMatchers.withId;
 import android.app.Activity;
 import android.app.Instrumentation;
 import android.content.Context;
+import android.os.SystemClock;
 import android.text.Editable;
 import android.view.KeyEvent;
 import android.view.View;
@@ -417,21 +418,51 @@ public class OmniboxTestUtils {
     }
 
     /**
-     * Send key event to the Omnibox.
-     * Requires that the Omnibox is focused.
+     * Send key event to the Omnibox. Requires that the Omnibox is focused.
      *
      * @param keyCode The Key code to send to the Omnibox.
      */
-    public void sendKey(final int keyCode) {
-        checkFocus(true);
-        TestThreadUtils.runOnUiThreadBlocking(
-                () -> KeyUtils.singleKeyEventView(mInstrumentation, mUrlBar, keyCode));
+    public void sendKey(int keyCode) {
+        sendKey(keyCode, 0);
     }
 
     /**
-     * Specify the text to be shown in the Omnibox. Cancels all autocompletion.
-     * Use this to initialize the state of the Omnibox, but avoid using this to validate any
-     * behavior.
+     * Send key event to the Omnibox. Requires that the Omnibox is focused.
+     *
+     * @param keyCode The Key code to send to the Omnibox.
+     * @param modifiers Additional modifiers pressed with the key (shift, alt, ...).
+     */
+    public void sendKey(int keyCode, int modifiers) {
+        checkFocus(true);
+        TestThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    var currentTime = SystemClock.uptimeMillis();
+                    var event =
+                            new KeyEvent(
+                                    /* downTime= */ currentTime,
+                                    /* eventTime= */ currentTime,
+                                    KeyEvent.ACTION_DOWN,
+                                    keyCode,
+                                    /* repeat= */ 0,
+                                    modifiers);
+                    if (!mUrlBar.dispatchKeyEventPreIme(event)) mUrlBar.dispatchKeyEvent(event);
+
+                    event =
+                            new KeyEvent(
+                                    /* downTime= */ currentTime,
+                                    /* eventTime= */ currentTime,
+                                    KeyEvent.ACTION_UP,
+                                    keyCode,
+                                    /* repeat= */ 0,
+                                    modifiers);
+
+                    if (!mUrlBar.dispatchKeyEventPreIme(event)) mUrlBar.dispatchKeyEvent(event);
+                });
+    }
+
+    /**
+     * Specify the text to be shown in the Omnibox. Cancels all autocompletion. Use this to
+     * initialize the state of the Omnibox, but avoid using this to validate any behavior.
      *
      * @param userText The text to be shown in the Omnibox.
      */
