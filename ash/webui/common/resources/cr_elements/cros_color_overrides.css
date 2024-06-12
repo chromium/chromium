@@ -318,16 +318,6 @@
   --cr-input-padding-top: 10px;
 }
 
-/* Searchable Dropdown */
-:host-context(body.jelly-enabled) cr-searchable-drop-down {
-  --cr-searchable-drop-down-bg-color: var(--cros-sys-base_elevated);
-  --cr-searchable-drop-down-icon-color-focus: var(--cros-sys-primary);
-  --cr-searchable-drop-down-list-bg-color-selected:
-      var(--cros-sys-base_highlight);
-  --cr-searchable-drop-down-list-item-color: var(--cros-sys-on_surface);
-  --cr-searchable-drop-down-shadow: var(--cros-elevation-3-shadow);
-}
-
 /* Slider */
 :host-context(body.jelly-enabled) cr-slider {
   --cr-slider-active-color: var(--cros-sys-primary);
