@@ -2387,16 +2387,8 @@ IN_PROC_BROWSER_TEST_F(WebAppBrowserTest_FileHandler, FileAssociation) {
 #endif
 }
 
-#if BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN)
-// TODO(crbug.com/40805261): Disabled because it is flaky on Mac.
-#if BUILDFLAG(IS_MAC)
-#define MAYBE_UserDenyFileHandlingPermission \
-  DISABLED_UserDenyFileHandlingPermission
-#else
-#define MAYBE_UserDenyFileHandlingPermission UserDenyFileHandlingPermission
-#endif
 IN_PROC_BROWSER_TEST_F(WebAppBrowserTest_FileHandler,
-                       MAYBE_UserDenyFileHandlingPermission) {
+                       UserDenyFileHandlingPermission) {
   base::ScopedAllowBlockingForTesting allow_blocking;
   std::vector<std::string> expected_extensions{"bar", "baz", "foo", "foobar"};
 
@@ -2420,6 +2412,15 @@ IN_PROC_BROWSER_TEST_F(WebAppBrowserTest_FileHandler,
   content::RunAllTasksUntilIdle();
   SetAutoAcceptWebAppDialogForTesting(false, false);
 
+  auto is_handling_extension = [&](const std::string& extension) {
+    return os_integration_override().IsFileExtensionHandled(
+        browser()->profile(), app_id, "Manifest with file handlers",
+        "." + extension);
+  };
+  // Sanity check that the app is in fact currently handling a file type,
+  // and is_handling_extension doesn't already return false.
+  ASSERT_TRUE(is_handling_extension(expected_extensions[0]));
+
   // Simulate the user permanently denying file handling permission. Regression
   // test for crbug.com/1269387
   base::RunLoop run_loop_remove_file_handlers;
@@ -2427,32 +2428,20 @@ IN_PROC_BROWSER_TEST_F(WebAppBrowserTest_FileHandler,
       app_id, /*allowed=*/false, run_loop_remove_file_handlers.QuitClosure());
   run_loop_remove_file_handlers.Run();
 
-  // temp_dir for creating test files so it works on both Mac and Win.
-  // This folder will be cleaned up.
-  base::ScopedTempDir temp_dir;
-  ASSERT_TRUE(temp_dir.CreateUniqueTempDir());
   for (auto extension : expected_extensions) {
-    const base::FilePath test_file_path =
-        temp_dir.GetPath().AppendASCII("test." + extension);
-    const base::File test_file(test_file_path, base::File::FLAG_CREATE_ALWAYS |
-                                                   base::File::FLAG_WRITE);
-    const GURL test_file_url = net::FilePathToFileURL(test_file_path);
-    while (u"Manifest with file handlers" ==
-           shell_integration::GetApplicationNameForScheme(test_file_url)) {
+    while (is_handling_extension(extension)) {
       base::RunLoop delay_loop;
       base::SequencedTaskRunner::GetCurrentDefault()->PostDelayedTask(
           FROM_HERE, delay_loop.QuitClosure(), base::Milliseconds(100));
       delay_loop.Run();
     }
   }
-  ASSERT_TRUE(temp_dir.Delete());
   // Uninstall the web app
   base::test::TestFuture<webapps::UninstallResultCode> future;
   provider().scheduler().RemoveUserUninstallableManagements(
       app_id, webapps::WebappUninstallSource::kAppsPage, future.GetCallback());
   EXPECT_TRUE(UninstallSucceeded(future.Get()));
 }
-#endif  // BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN)
 #endif  // !BUILDFLAG(IS_CHROMEOS)
 
 IN_PROC_BROWSER_TEST_F(WebAppBrowserTest, PRE_UninstallIncompleteUninstall) {
