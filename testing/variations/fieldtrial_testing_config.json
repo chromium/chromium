@@ -5002,6 +5002,9 @@
                     },
                     "enable_features": [
                         "LensOverlay"
+                    ],
+                    "disable_features": [
+                        "ContextMenuSearchForVideoFrame"
                     ]
                 }
             ]
@@ -12998,25 +13001,6 @@
                     },
                     "enable_features": [
                         "MaxNumDelayableRequestsPerHostPerClientFeature"
-                    ]
-                }
-            ]
-        }
-    ],
-    "MediaContextMenuSearchForVideoFrame": [
-        {
-            "platforms": [
-                "chromeos",
-                "chromeos_lacros",
-                "linux",
-                "mac",
-                "windows"
-            ],
-            "experiments": [
-                {
-                    "name": "Enabled",
-                    "enable_features": [
-                        "ContextMenuSearchForVideoFrame"
                     ]
                 }
             ]
