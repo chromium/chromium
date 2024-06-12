@@ -91,7 +91,6 @@ source_set("clear_browsing_data") {
 source_set("unit_tests") {
   testonly = true
   sources = [
-    "browsing_data_mediator_unittest.mm",
     "clear_browsing_data_manager_unittest.mm",
     "time_range_selector_table_view_controller_unittest.mm",
   ]
@@ -102,8 +101,6 @@ source_set("unit_tests") {
     "//base/test:test_support",
     "//components/browsing_data/core",
     "//components/feature_engagement/public",
-    "//components/history/core/browser",
-    "//components/password_manager/core/browser/password_store:test_support",
     "//components/pref_registry",
     "//components/prefs",
     "//components/search_engines",
@@ -116,7 +113,6 @@ source_set("unit_tests") {
     "//ios/chrome/browser/browsing_data/model:counters",
     "//ios/chrome/browser/browsing_data/model:feature_flags",
     "//ios/chrome/browser/browsing_data/model:test_support",
-    "//ios/chrome/browser/history/model",
     "//ios/chrome/browser/net/model:crurl",
     "//ios/chrome/browser/search_engines/model",
     "//ios/chrome/browser/shared/model/application_context",
@@ -165,21 +161,16 @@ source_set("eg2_tests") {
     ":features",
     "//base/test:test_support",
     "//components/browsing_data/core",
-    "//components/strings",
-    "//components/sync/base",
     "//ios/chrome/app/strings",
     "//ios/chrome/browser/shared/ui/elements:constants",
     "//ios/chrome/browser/shared/ui/elements:eg_test_support+eg2",
     "//ios/chrome/browser/signin/model:fake_system_identity",
     "//ios/chrome/browser/ui/authentication:eg_test_support+eg2",
-    "//ios/chrome/browser/ui/autofill:eg_test_support+eg2",
     "//ios/chrome/browser/ui/popup_menu:constants",
     "//ios/chrome/browser/ui/settings/cells:clear_browsing_data_constants",
-    "//ios/chrome/browser/ui/settings/password:eg_test_support+eg2",
     "//ios/chrome/common/ui/confirmation_alert:constants",
     "//ios/chrome/test/earl_grey:eg_test_support+eg2",
     "//ios/testing/earl_grey:eg_test_support+eg2",
-    "//net",
     "//ui/base",
   ]
   frameworks = [ "UIKit.framework" ]

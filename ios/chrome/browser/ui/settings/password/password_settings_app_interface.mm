@@ -182,7 +182,6 @@ PasswordForm CreateSampleFormWithIndex(int index) {
       base::ASCIIToUTF16(base::StringPrintf("concrete password %02d", index));
   form.url = GURL(base::StringPrintf("https://www%02d.example.com", index));
   form.signon_realm = form.url.spec();
-  form.date_created = base::Time::Now();
   return form;
 }
 

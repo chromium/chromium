@@ -11,8 +11,6 @@
 
 class PrefService;
 
-@class BrowsingDataCounterWrapperProducer;
-
 @protocol BrowsingDataConsumer;
 
 // Mediator for Browsing Data. Used by the Quick Delete UI.
@@ -20,10 +18,7 @@ class PrefService;
 
 @property(nonatomic, weak) id<BrowsingDataConsumer> consumer;
 
-- (instancetype)initWithPrefs:(PrefService*)prefs
-    browsingDataCounterWrapperProducer:
-        (BrowsingDataCounterWrapperProducer*)counterWrapperProducer
-    NS_DESIGNATED_INITIALIZER;
+- (instancetype)initWithPrefs:(PrefService*)prefs NS_DESIGNATED_INITIALIZER;
 
 - (instancetype)init NS_UNAVAILABLE;
 
