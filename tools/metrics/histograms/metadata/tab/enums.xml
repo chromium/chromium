@@ -41,6 +41,23 @@ chromium-metrics-reviews@google.com.
   <int value="1" label="Protected"/>
 </enum>
 
+<!-- LINT.IfChange(DeviceType) -->
+
+<enum name="DeviceType">
+  <int value="0" label="Unknown"/>
+  <int value="1" label="Local"/>
+  <int value="2" label="Windows"/>
+  <int value="3" label="Mac"/>
+  <int value="4" label="Linux"/>
+  <int value="5" label="Chrome OS"/>
+  <int value="6" label="Android Phone"/>
+  <int value="7" label="Android Tablet"/>
+  <int value="8" label="IOS Phone"/>
+  <int value="9" label="IOS Tablet"/>
+</enum>
+
+<!-- LINT.ThenChange(//components/saved_tab_groups/tab_group_sync_metrics_logger.h:DeviceType) -->
+
 <enum name="ExternalLauncherOption">
   <int value="0" label="Cancel"/>
   <int value="1" label="Open"/>
@@ -140,6 +157,22 @@ chromium-metrics-reviews@google.com.
   <int value="1" label="Loaded on creation and lost"/>
   <int value="2" label="Not loaded on creation"/>
 </enum>
+
+<!-- LINT.IfChange(TabGroupEvent) -->
+
+<enum name="TabGroupEvent">
+  <int value="0" label="Tab group created"/>
+  <int value="1" label="Tab group removed"/>
+  <int value="2" label="Tab group opened"/>
+  <int value="3" label="Tab group closed"/>
+  <int value="4" label="Tab group visuals changed"/>
+  <int value="5" label="Tab group tabs reordered"/>
+  <int value="6" label="Tab added"/>
+  <int value="7" label="Tab removed"/>
+  <int value="8" label="Tab navigated"/>
+</enum>
+
+<!-- LINT.ThenChange(//components/saved_tab_groups/tab_group_sync_metrics_logger.h:TabGroupEvent) -->
 
 <enum name="TabManagerTabRankerResult">
   <int value="0" label="Success">Tab score was calculated successfully.</int>

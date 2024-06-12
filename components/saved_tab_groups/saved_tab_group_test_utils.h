@@ -14,6 +14,7 @@
 #include "components/saved_tab_groups/saved_tab_group.h"
 #include "components/saved_tab_groups/saved_tab_group_tab.h"
 #include "components/saved_tab_groups/types.h"
+#include "components/sync_device_info/device_info.h"
 #include "components/tab_groups/tab_group_visual_data.h"
 
 namespace tab_groups::test {
@@ -38,6 +39,12 @@ SavedTabGroupTab CreateSavedTabGroupTab(
 SavedTabGroup CreateTestSavedTabGroup();
 SavedTabGroup CreateTestSavedTabGroupWithNoTabs();
 TabGroupVisualData CreateTabGroupVisualData();
+
+// Helper method to create a device info.
+std::unique_ptr<syncer::DeviceInfo> CreateDeviceInfo(
+    const std::string& guid,
+    syncer::DeviceInfo::OsType os_type,
+    syncer::DeviceInfo::FormFactor form_factor);
 
 }  // namespace tab_groups::test
 

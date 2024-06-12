@@ -6,4 +6,5 @@
 *SavedTabGroupTest.*
 *SharedTabGroupDataSyncBridgeTest.*
 *TabGroupStoreMigrationUtilsTest.*
+*TabGroupSyncMetricsLoggerTest.*
 *TabGroupSyncServiceTest.*

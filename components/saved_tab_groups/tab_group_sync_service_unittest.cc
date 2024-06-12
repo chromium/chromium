@@ -14,6 +14,7 @@
 #include "components/saved_tab_groups/saved_tab_group_test_utils.h"
 #include "components/saved_tab_groups/tab_group_store.h"
 #include "components/saved_tab_groups/tab_group_store_id.h"
+#include "components/saved_tab_groups/tab_group_sync_metrics_logger.h"
 #include "components/saved_tab_groups/tab_group_sync_service_impl.h"
 #include "components/sync/base/model_type.h"
 #include "components/sync/model/model_type_controller_delegate.h"
@@ -21,6 +22,8 @@
 #include "components/sync/test/mock_model_type_change_processor.h"
 #include "components/sync/test/model_type_store_test_util.h"
 #include "components/sync/test/test_matchers.h"
+#include "components/sync_device_info/device_info_tracker.h"
+#include "components/sync_device_info/fake_device_info_tracker.h"
 #include "components/tab_groups/tab_group_visual_data.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -32,6 +35,8 @@ using testing::Return;
 
 namespace tab_groups {
 namespace {
+
+const char kTestCacheGuid[] = "test_cache_guid";
 
 class MockTabGroupSyncServiceObserver : public TabGroupSyncService::Observer {
  public:
@@ -94,6 +99,9 @@ class TabGroupSyncServiceTest : public testing::Test {
         prefs::kSavedTabGroupSpecificsToDataMigration, false);
 
     std::map<base::Uuid, LocalTabGroupID> migrated_android_local_ids;
+    auto metrics_logger =
+        std::make_unique<TabGroupSyncMetricsLogger>(&device_info_tracker_);
+
     tab_group_sync_service_ = std::make_unique<TabGroupSyncServiceImpl>(
         std::move(model),
         std::make_unique<TabGroupSyncServiceImpl::SyncDataTypeConfiguration>(
@@ -101,9 +109,11 @@ class TabGroupSyncServiceTest : public testing::Test {
             syncer::ModelTypeStoreTestUtil::FactoryForForwardingStore(
                 store_.get())),
         nullptr, std::move(tab_group_store), &pref_service_,
-        migrated_android_local_ids);
+        migrated_android_local_ids, std::move(metrics_logger));
     ON_CALL(processor_, IsTrackingMetadata())
         .WillByDefault(testing::Return(true));
+    ON_CALL(processor_, TrackedCacheGuid())
+        .WillByDefault(testing::Return(kTestCacheGuid));
     ON_CALL(processor_, GetControllerDelegate())
         .WillByDefault(testing::Return(fake_controller_delegate_.GetWeakPtr()));
     observer_ = std::make_unique<MockTabGroupSyncServiceObserver>();
@@ -207,6 +217,7 @@ class TabGroupSyncServiceTest : public testing::Test {
   testing::NiceMock<syncer::MockModelTypeChangeProcessor> processor_;
   std::unique_ptr<syncer::ModelTypeStore> store_;
   std::unique_ptr<MockTabGroupSyncServiceObserver> observer_;
+  syncer::FakeDeviceInfoTracker device_info_tracker_;
   std::unique_ptr<TabGroupSyncServiceImpl> tab_group_sync_service_;
   syncer::FakeModelTypeControllerDelegate fake_controller_delegate_;
   raw_ptr<MockTabGroupStore> tab_group_store_;

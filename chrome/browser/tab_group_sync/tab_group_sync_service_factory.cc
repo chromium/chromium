@@ -11,6 +11,7 @@
 #include "build/build_config.h"
 #include "chrome/browser/profiles/incognito_helpers.h"
 #include "chrome/browser/profiles/profile.h"
+#include "chrome/browser/sync/device_info_sync_service_factory.h"
 #include "chrome/browser/sync/model_type_store_service_factory.h"
 #include "chrome/common/channel_info.h"
 #include "components/data_sharing/public/features.h"
@@ -19,12 +20,14 @@
 #include "components/saved_tab_groups/saved_tab_group_model.h"
 #include "components/saved_tab_groups/tab_group_store.h"
 #include "components/saved_tab_groups/tab_group_store_delegate.h"
+#include "components/saved_tab_groups/tab_group_sync_metrics_logger.h"
 #include "components/saved_tab_groups/tab_group_sync_service.h"
 #include "components/saved_tab_groups/tab_group_sync_service_impl.h"
 #include "components/sync/base/model_type.h"
 #include "components/sync/base/report_unrecoverable_error.h"
 #include "components/sync/model/client_tag_based_model_type_processor.h"
 #include "components/sync/model/model_type_store_service.h"
+#include "components/sync_device_info/device_info_sync_service.h"
 
 #if BUILDFLAG(IS_ANDROID)
 #include "components/saved_tab_groups/android/tab_group_store_delegate_android.h"
@@ -81,6 +84,7 @@ TabGroupSyncServiceFactory::TabGroupSyncServiceFactory()
               .WithRegular(ProfileSelection::kOriginalOnly)
               .Build()) {
   DependsOn(ModelTypeStoreServiceFactory::GetInstance());
+  DependsOn(DeviceInfoSyncServiceFactory::GetInstance());
 }
 
 TabGroupSyncServiceFactory::~TabGroupSyncServiceFactory() = default;
@@ -91,6 +95,11 @@ TabGroupSyncServiceFactory::BuildServiceInstanceForBrowserContext(
   DCHECK(context);
   Profile* profile = static_cast<Profile*>(context);
 
+  syncer::DeviceInfoTracker* device_info_tracker =
+      DeviceInfoSyncServiceFactory::GetForProfile(profile)
+          ->GetDeviceInfoTracker();
+  auto metrics_logger =
+      std::make_unique<TabGroupSyncMetricsLogger>(device_info_tracker);
   auto model = std::make_unique<SavedTabGroupModel>();
   auto saved_config = CreateSavedTabGroupDataTypeConfiguration(profile);
   auto shared_config = MaybeCreateSharedTabGroupDataTypeConfiguration(profile);
@@ -120,7 +129,7 @@ TabGroupSyncServiceFactory::BuildServiceInstanceForBrowserContext(
   return std::make_unique<TabGroupSyncServiceImpl>(
       std::move(model), std::move(saved_config), std::move(shared_config),
       std::move(tab_group_store), profile->GetPrefs(),
-      std::move(migrated_android_local_ids));
+      std::move(migrated_android_local_ids), std::move(metrics_logger));
 }
 
 }  // namespace tab_groups
