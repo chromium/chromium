@@ -63,6 +63,7 @@ class ColorChooserTest : public views::ViewsTestBase {
 
   void TearDown() override {
     generator_.reset();
+    chooser_.reset();
     widget_.reset();
     ViewsTestBase::TearDown();
   }

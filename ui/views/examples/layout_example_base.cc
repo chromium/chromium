@@ -216,6 +216,7 @@ END_METADATA
 LayoutExampleBase::LayoutExampleBase(const char* title) : ExampleBase(title) {}
 
 LayoutExampleBase::~LayoutExampleBase() {
+  layout_panel_->RemoveAllChildViews();
   preferred_width_view_->set_controller(nullptr);
   preferred_height_view_->set_controller(nullptr);
 }

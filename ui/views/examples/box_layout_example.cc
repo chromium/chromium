@@ -97,6 +97,7 @@ void BoxLayoutExample::UpdateLayoutManager() {
   View* const panel = layout_panel();
   int child_spacing;
   base::StringToInt(between_child_spacing_->GetText(), &child_spacing);
+  layout_ = nullptr;
   layout_ = panel->SetLayoutManager(std::make_unique<BoxLayout>(
       orientation_->GetSelectedIndex() == 0u
           ? BoxLayout::Orientation::kHorizontal

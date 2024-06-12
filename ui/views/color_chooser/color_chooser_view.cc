@@ -563,7 +563,9 @@ std::unique_ptr<WidgetDelegate> ColorChooser::MakeWidgetDelegate() {
 ColorChooser::ColorChooser(ColorChooserListener* listener, SkColor initial)
     : listener_(listener), initial_color_(initial) {}
 
-ColorChooser::~ColorChooser() = default;
+ColorChooser::~ColorChooser() {
+  textfield_->set_controller(nullptr);
+}
 
 void ColorChooser::SetColor(SkColor color) {
   SkColorToHSV(color, hsv_);
