@@ -1567,6 +1567,8 @@ IOSurfaceImageBacking::ProduceSkiaGraphite(
         std::move(dawn_representation), context_state,
         context_state->gpu_main_graphite_recorder(), manager, this, tracker,
         is_yuv_plane, static_cast<int>(io_surface_plane_));
+#else
+  NOTREACHED_NORETURN();
 #endif
   } else {
     CHECK_EQ(context_state->gr_context_type(), GrContextType::kGraphiteMetal);
@@ -1592,9 +1594,10 @@ IOSurfaceImageBacking::ProduceSkiaGraphite(
     return std::make_unique<SkiaGraphiteRepresentation>(
         manager, this, tracker, context_state->gpu_main_graphite_recorder(),
         std::move(mtl_textures));
+#else
+  NOTREACHED_NORETURN();
 #endif
   }
-  NOTREACHED_NORETURN();
 }
 
 void IOSurfaceImageBacking::SetPurgeable(bool purgeable) {

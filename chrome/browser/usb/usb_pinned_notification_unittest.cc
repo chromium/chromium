@@ -39,8 +39,9 @@ class UsbPinnedNotificationTest : public DevicePinnedNotificationTestBase {
     // the expected string.
     return l10n_util::GetPluralStringFUTF16(IDS_WEBUSB_SYSTEM_TRAY_ICON_TITLE,
                                             static_cast<int>(num_connections));
-#endif  // BUILDFLAG(ENABLE_EXTENSIONS)
+#else
     NOTREACHED_NORETURN();
+#endif  // BUILDFLAG(ENABLE_EXTENSIONS)
   }
 
   void SetDeviceConnectionTrackerTestingFactory(Profile* profile) override {
@@ -100,8 +101,9 @@ class UsbPinnedNotificationTest : public DevicePinnedNotificationTestBase {
         "Extensions accessing devices: %s, %s +%zu more",
         extension_names[0].c_str(), extension_names[1].c_str(),
         extension_names.size() - 2));
-#endif  // BUILDFLAG(ENABLE_EXTENSIONS)
+#else
     NOTREACHED_NORETURN();
+#endif  // BUILDFLAG(ENABLE_EXTENSIONS)
   }
 };
 
