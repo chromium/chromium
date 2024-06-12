@@ -255,6 +255,12 @@ export function convertLangOrLocaleToExactVoicePackLocale(langOrLocale: string):
       locale => locale.startsWith(possibleConvertedLang.toLowerCase()));
 }
 
+export function isWaitingForInstallLocally(status: VoiceClientSideStatusCode|
+                                           undefined) {
+  return status === VoiceClientSideStatusCode.SENT_INSTALL_REQUEST ||
+      status === VoiceClientSideStatusCode.SENT_INSTALL_REQUEST_ERROR_RETRY;
+}
+
 function convertUnsupportedBaseLangToSupportedLocale(baseLang: string): string|
     undefined {
   // Check if it's a base lang that supports a locale. These are the only

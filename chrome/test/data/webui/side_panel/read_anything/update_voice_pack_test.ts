@@ -107,7 +107,7 @@ suite('UpdateVoicePack', () => {
 
       // The first call to update status should be the existing status from
       // the server.
-      app.updateVoicePackStatus(lang, 'kNotInstalled');
+      app.updateVoicePackStatus(lang, 'kInstalled');
 
       assertFalse(toast.open);
     });
@@ -140,8 +140,13 @@ suite('UpdateVoicePack', () => {
       const lang = 'en';
 
       // existing status
-      app.updateVoicePackStatus(lang, 'kNotInstalled');
+      app.updateVoicePackStatus(lang, 'kInstalled');
       // then we request install
+      // Bypass Typescript compiler to allow us to set a private readonly
+      // property
+      // @ts-ignore
+      app.setVoicePackLocalStatus_(
+          lang, VoiceClientSideStatusCode.SENT_INSTALL_REQUEST);
       app.updateVoicePackStatus(lang, 'kInstalling');
       // install completes
       app.updateVoicePackStatus(lang, 'kInstalled');

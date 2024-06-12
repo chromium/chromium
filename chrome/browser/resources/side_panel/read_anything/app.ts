@@ -24,7 +24,7 @@ import {getTemplate} from './app.html.js';
 import {minOverflowLengthToScroll, playFromSelectionTimeout, toastDurationMs, validatedFontName} from './common.js';
 import type {ReadAnythingToolbarElement} from './read_anything_toolbar.js';
 import type {VoicePackStatus} from './voice_language_util.js';
-import {areVoicesEqual, AVAILABLE_GOOGLE_TTS_LOCALES, convertLangOrLocaleForVoicePackManager, convertLangOrLocaleToExactVoicePackLocale, convertLangToAnAvailableLangIfPresent, createInitialListOfEnabledLanguages, doesLanguageHaveNaturalVoices, getVoicePackConvertedLangIfExists, isEspeak, isNatural, isVoicePackStatusError, isVoicePackStatusSuccess, mojoVoicePackStatusToVoicePackStatusEnum, VoiceClientSideStatusCode, VoicePackServerStatusErrorCode, VoicePackServerStatusSuccessCode} from './voice_language_util.js';
+import {areVoicesEqual, AVAILABLE_GOOGLE_TTS_LOCALES, convertLangOrLocaleForVoicePackManager, convertLangOrLocaleToExactVoicePackLocale, convertLangToAnAvailableLangIfPresent, createInitialListOfEnabledLanguages, doesLanguageHaveNaturalVoices, getVoicePackConvertedLangIfExists, isEspeak, isNatural, isVoicePackStatusError, isVoicePackStatusSuccess, isWaitingForInstallLocally, mojoVoicePackStatusToVoicePackStatusEnum, VoiceClientSideStatusCode, VoicePackServerStatusErrorCode, VoicePackServerStatusSuccessCode} from './voice_language_util.js';
 
 const ReadAnythingElementBase = WebUiListenerMixin(PolymerElement);
 
@@ -1014,9 +1014,16 @@ export class ReadAnythingElement extends ReadAnythingElementBase {
         case VoicePackServerStatusSuccessCode.INSTALLED:
           // See if voice is newly downloaded and should have a toast notifying
           // the user.
-          if (oldVoicePackStatus &&
-              oldVoicePackStatus.code !==
-                  VoicePackServerStatusSuccessCode.INSTALLED) {
+          // If the old voice pack status is undefined, it means we haven't
+          // received a server status yet. If we are now receiving an installed
+          // status, and we were locally waiting for an install, then we know
+          // the language is newly downloaded.
+          if ((!oldVoicePackStatus &&
+               isWaitingForInstallLocally(
+                   this.getVoicePackLocalStatus_(lang))) ||
+              (oldVoicePackStatus &&
+               oldVoicePackStatus.code !==
+                   VoicePackServerStatusSuccessCode.INSTALLED)) {
             // TODO (b/346619236): some language codes miss locale and are not
             // translated into display names
             this.lastDownloadedLang = getVoicePackConvertedLangIfExists(lang);
