@@ -1033,7 +1033,7 @@ chromium-metrics-reviews@google.com.
   <owner>clank-app-team@google.com</owner>
   <summary>
     Records the primary display (screen) size in tens of inches with 0.2 inches
-    (2 units) granularity, during deferred startup. The re-enabled size is not
+    (2 units) granularity, during deferred startup. The display size is not
     affected by Android N multi-window mode.
   </summary>
 </histogram>
