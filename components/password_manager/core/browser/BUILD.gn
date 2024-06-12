@@ -185,6 +185,7 @@ static_library("browser") {
     "//build:branding_buildflags",
     "//components/autofill/core/browser",
     "//components/autofill/core/common:autofill_regex",
+    "//components/autofill/core/common:credit_card_number_validation",
     "//components/device_reauth",
     "//components/favicon/core",
     "//components/os_crypt/sync:os_crypt",
