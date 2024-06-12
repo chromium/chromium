@@ -115,7 +115,6 @@ std::vector<uint8_t> BuildEncodedResponseData(
 class QuickStartDecoderTest : public testing::Test {
  public:
   QuickStartDecoderTest() {
-    QuickStartMessage::DisableSandboxCheckForTesting();
     decoder_ = std::make_unique<QuickStartDecoder>(
         remote_.BindNewPipeAndPassReceiver(), base::DoNothing());
   }

@@ -29,11 +29,6 @@ class QuickStartMessageTest : public testing::Test {
   QuickStartMessageTest(QuickStartMessageTest&) = delete;
   QuickStartMessageTest& operator=(QuickStartMessageTest&) = delete;
   ~QuickStartMessageTest() override = default;
-
- protected:
-  void SetUp() override {
-    ash::quick_start::QuickStartMessage::DisableSandboxCheckForTesting();
-  }
 };
 
 TEST_F(QuickStartMessageTest, ReadMessageSucceedsForNonBase64Message) {
