@@ -413,8 +413,7 @@ void NetworkConnectionHandlerImpl::ConnectToNetwork(
           // If device is carrier locked, it could be unlocked only by the
           // carrier, so notification to the user is different from the case
           // where where SIM is locked using PIN/PUK code.
-          if (features::IsCellularCarrierLockEnabled() &&
-              cellular_device->IsSimCarrierLocked()) {
+          if (cellular_device->IsSimCarrierLocked()) {
             InvokeConnectErrorCallback(service_path, std::move(error_callback),
                                        kErrorSimCarrierLocked);
             return;

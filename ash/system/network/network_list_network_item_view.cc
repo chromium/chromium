@@ -102,7 +102,6 @@ bool IsCellularNetworkSimLocked(
 
 bool IsCellularNetworkCarrierLocked(
     const NetworkStatePropertiesPtr& network_properties) {
-  CHECK(features::IsCellularCarrierLockEnabled());
   CHECK(
       NetworkTypeMatchesType(network_properties->type, NetworkType::kCellular));
   return network_properties->type_state->get_cellular()->sim_locked &&
@@ -186,7 +185,6 @@ gfx::ImageSkia GetNetworkImageForNetwork(
 
   if (NetworkTypeMatchesType(network_properties->type,
                              NetworkType::kCellular) &&
-      features::IsCellularCarrierLockEnabled() &&
       IsCellularNetworkCarrierLocked(network_properties)) {
     network_image = network_icon::GetImageForCarrierLockedNetwork(
         color_provider, network_icon::ICON_TYPE_LIST);
@@ -231,10 +229,8 @@ gfx::ImageSkia GetNetworkImageForNetwork(
 
 int GetCellularNetworkSubText(
     const NetworkStatePropertiesPtr& network_properties) {
-  if (features::IsCellularCarrierLockEnabled()) {
-    if (IsCellularNetworkCarrierLocked(network_properties)) {
-      return IDS_ASH_STATUS_TRAY_NETWORK_STATUS_CARRIER_LOCKED;
-    }
+  if (IsCellularNetworkCarrierLocked(network_properties)) {
+    return IDS_ASH_STATUS_TRAY_NETWORK_STATUS_CARRIER_LOCKED;
   }
 
   if (IsCellularNetworkUnActivated(network_properties)) {
@@ -543,11 +539,9 @@ std::u16string
 NetworkListNetworkItemView::GenerateAccessibilityDescriptionForCellular(
     const std::u16string& connection_status,
     int signal_strength) {
-  if (features::IsCellularCarrierLockEnabled()) {
-    if (IsCellularNetworkCarrierLocked(network_properties())) {
-      return l10n_util::GetStringUTF16(
-          IDS_ASH_STATUS_TRAY_NETWORK_STATUS_CARRIER_LOCKED);
-    }
+  if (IsCellularNetworkCarrierLocked(network_properties())) {
+    return l10n_util::GetStringUTF16(
+        IDS_ASH_STATUS_TRAY_NETWORK_STATUS_CARRIER_LOCKED);
   }
   if (IsCellularNetworkUnActivated(network_properties())) {
     if (Shell::Get()->session_controller()->login_status() ==

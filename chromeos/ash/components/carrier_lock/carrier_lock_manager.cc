@@ -51,11 +51,6 @@ const char kModelNamePath[] = "/run/chromeos-config/v1/name";
 const char kMachineModelName[] = "model_name";
 const char kMachineOemName[] = "oem_name";
 
-// values of feature parameter LastConfigDateDelta
-const int kLastConfigDefault = -2;
-const int kLastConfigSetToday = -1;
-const int kLastConfigKeepDate = 0;
-
 constexpr net::BackoffEntry::Policy kRetryBackoffPolicy = {
     0,               // Number of initial errors before using exponential delay.
     60 * 1000,       // Initial delay of 60 seconds in ms.
@@ -260,9 +255,6 @@ void CarrierLockManager::RegisterLocalPrefs(PrefRegistrySimple* registry) {
 
 // static
 ModemLockStatus CarrierLockManager::GetModemLockStatus() {
-  if (!ash::features::IsCellularCarrierLockEnabled()) {
-    return ModemLockStatus::kNotLocked;
-  }
   if (!g_instance || !g_instance->local_state_) {
     return ModemLockStatus::kUnknown;
   }
@@ -312,20 +304,6 @@ void CarrierLockManager::OnSessionStateChanged() {
 }
 
 void CarrierLockManager::Initialize() {
-  const int last_config = features::kCellularCarrierLockLastConfig.Get();
-
-  if (last_config > kLastConfigDefault) {
-    VLOG(2) << "Last config option is set to " << last_config;
-    if (last_config == kLastConfigSetToday) {
-      local_state_->SetTime(kLastConfigTimePref, base::Time());
-    }
-    if (last_config > kLastConfigKeepDate) {
-      local_state_->SetTime(kLastConfigTimePref,
-                            base::Time::Now() - base::Days(last_config));
-    }
-    local_state_->SetBoolean(kDisableManagerPref, false);
-  }
-
   configuration_state_ = ConfigurationState::kNone;
   error_counter_ = local_state_->GetInteger(kErrorCounterPref);
 
@@ -461,8 +439,7 @@ void CarrierLockManager::DevicePropertiesUpdated(const DeviceState* device) {
     return;
   }
 
-  bool is_manager_enabled = (ash::features::IsCellularCarrierLockEnabled() &&
-                             !local_state_->GetBoolean(kDisableManagerPref));
+  bool is_manager_enabled = !local_state_->GetBoolean(kDisableManagerPref);
   bool is_modem_configured =
       !local_state_->GetTime(kLastConfigTimePref).is_null();
 

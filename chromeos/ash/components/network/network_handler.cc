@@ -109,9 +109,7 @@ NetworkHandler::NetworkHandler()
   network_sms_handler_.reset(new NetworkSmsHandler());
   text_message_provider_.reset(new TextMessageProvider());
   geolocation_handler_.reset(new GeolocationHandler());
-  if (ash::features::IsCellularCarrierLockEnabled()) {
-    network_3gpp_handler_.reset(new Network3gppHandler());
-  }
+  network_3gpp_handler_.reset(new Network3gppHandler());
 
   // Only watch ephemeral network policies enablement if ephemeral network
   // policies should be enabled by the feature or if the device policy to enable
@@ -223,9 +221,7 @@ void NetworkHandler::Init() {
     text_message_provider_->Init(network_sms_handler_.get(),
                                  managed_network_configuration_handler_.get());
   geolocation_handler_->Init();
-  if (ash::features::IsCellularCarrierLockEnabled()) {
-    network_3gpp_handler_->Init();
-  }
+  network_3gpp_handler_->Init();
 }
 
 // static
@@ -419,7 +415,6 @@ GeolocationHandler* NetworkHandler::geolocation_handler() {
 }
 
 Network3gppHandler* NetworkHandler::network_3gpp_handler() {
-  DCHECK(ash::features::IsCellularCarrierLockEnabled());
   return network_3gpp_handler_.get();
 }
 

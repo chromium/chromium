@@ -1263,7 +1263,6 @@ class CrosNetworkConfigTest : public testing::Test {
 
  protected:
   sync_preferences::TestingPrefServiceSyncable user_prefs_;
-  base::test::ScopedFeatureList feature_list;
 
  private:
   base::test::SingleThreadTaskEnvironment task_environment_;
@@ -1616,7 +1615,6 @@ TEST_F(CrosNetworkConfigTest, GetDeviceStateList) {
 }
 
 TEST_F(CrosNetworkConfigTest, GetDeviceStateListSerial) {
-  feature_list.InitAndEnableFeature(features::kCellularCarrierLock);
   SetSerialNumber(kCellularTestSerial);
   NetworkHandler* network_handler = NetworkHandler::Get();
   SetupNetworkConfig(network_handler);
@@ -1635,28 +1633,7 @@ TEST_F(CrosNetworkConfigTest, GetDeviceStateListSerial) {
   EXPECT_EQ(kCellularTestSerial, cellular->serial);
 }
 
-TEST_F(CrosNetworkConfigTest, GetDeviceStateListSerialFeatureDisable) {
-  feature_list.InitAndDisableFeature(features::kCellularCarrierLock);
-  SetSerialNumber(kCellularTestSerial);
-  NetworkHandler* network_handler = NetworkHandler::Get();
-  SetupNetworkConfig(network_handler);
-
-  std::vector<mojom::DeviceStatePropertiesPtr> devices = GetDeviceStateList();
-  ASSERT_EQ(4u, devices.size());
-  mojom::DeviceStateProperties* cellular = devices[2].get();
-  EXPECT_EQ(mojom::NetworkType::kCellular, cellular->type);
-  EXPECT_EQ(mojom::DeviceStateType::kEnabled, cellular->device_state);
-  EXPECT_FALSE(cellular->sim_absent);
-  ASSERT_TRUE(cellular->sim_lock_status);
-  EXPECT_TRUE(cellular->sim_lock_status->lock_enabled);
-  EXPECT_EQ(shill::kSIMLockPin, cellular->sim_lock_status->lock_type);
-  EXPECT_EQ(3, cellular->sim_lock_status->retries_left);
-  EXPECT_EQ(kCellularTestImei, cellular->imei);
-  EXPECT_EQ(std::nullopt, cellular->serial);
-}
-
 TEST_F(CrosNetworkConfigTest, GetDeviceStateListCarrierLocked) {
-  feature_list.InitAndEnableFeature(features::kCellularCarrierLock);
   SetupCarrierLock(true);
 
   std::vector<mojom::DeviceStatePropertiesPtr> devices = GetDeviceStateList();
@@ -1675,7 +1652,6 @@ TEST_F(CrosNetworkConfigTest, GetDeviceStateListCarrierLocked) {
 }
 
 TEST_F(CrosNetworkConfigTest, GetDeviceStateListCarrierUnlocked) {
-  feature_list.InitAndEnableFeature(features::kCellularCarrierLock);
   SetupCarrierLock(false);
 
   std::vector<mojom::DeviceStatePropertiesPtr> devices = GetDeviceStateList();
@@ -1740,7 +1716,6 @@ TEST_F(CrosNetworkConfigTest, GetManagedPropertiesCellularProvider) {
 }
 
 TEST_F(CrosNetworkConfigTest, GetManagedPropertiesCarrierLocked) {
-  feature_list.InitAndEnableFeature(features::kCellularCarrierLock);
   /* Lock the SIM using network-pin */
   base::Value::Dict sim_value;
   sim_value.Set(shill::kSIMLockEnabledProperty, true);
@@ -1767,7 +1742,6 @@ TEST_F(CrosNetworkConfigTest, GetManagedPropertiesCarrierLocked) {
 }
 
 TEST_F(CrosNetworkConfigTest, GetManagedPropertiesCarrierLockedDisabled) {
-  feature_list.InitAndDisableFeature(features::kCellularCarrierLock);
   /* Lock the SIM using network-pin */
   base::Value::Dict sim_value;
   sim_value.Set(shill::kSIMLockEnabledProperty, true);
@@ -1790,7 +1764,7 @@ TEST_F(CrosNetworkConfigTest, GetManagedPropertiesCarrierLockedDisabled) {
       properties->type_properties->get_cellular();
   ASSERT_TRUE(cellular);
   EXPECT_TRUE(cellular->sim_locked);
-  EXPECT_EQ("", cellular->sim_lock_type);
+  EXPECT_EQ(shill::kSIMLockPin, cellular->sim_lock_type);
 }
 
 TEST_F(CrosNetworkConfigTest, SimStateCarrierLocked) {

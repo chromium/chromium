@@ -157,8 +157,7 @@ void NetworkConnectImpl::HandleUnconfiguredNetwork(
     if (network->GetError() == shill::kErrorSimLocked) {
       return;
     }
-    if (features::IsCellularCarrierLockEnabled() &&
-        network->GetError() == shill::kErrorSimCarrierLocked) {
+    if (network->GetError() == shill::kErrorSimCarrierLocked) {
       return;
     }
 
@@ -441,7 +440,6 @@ void NetworkConnectImpl::ShowCarrierAccountDetail(
 }
 
 void NetworkConnectImpl::ShowCarrierUnlockNotification() {
-  CHECK(features::IsCellularCarrierLockEnabled());
   delegate_->ShowCarrierUnlockNotification();
 }
 

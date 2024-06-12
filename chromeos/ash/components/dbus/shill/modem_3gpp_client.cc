@@ -152,7 +152,6 @@ class COMPONENT_EXPORT(CHROMEOS_DBUS) Modem3gppClientImpl
 // Modem3gppClient
 
 Modem3gppClient::Modem3gppClient() {
-  DCHECK(features::IsCellularCarrierLockEnabled());
   DCHECK(!g_instance);
   g_instance = this;
 }

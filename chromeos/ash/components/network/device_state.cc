@@ -232,8 +232,7 @@ bool DeviceState::IsSimLocked() const {
       sim_lock_type_ == shill::kSIMLockPuk) {
     return true;
   }
-  return features::IsCellularCarrierLockEnabled() &&
-         sim_lock_type_ == shill::kSIMLockNetworkPin;
+  return sim_lock_type_ == shill::kSIMLockNetworkPin;
 }
 
 bool DeviceState::IsSimCarrierLocked() const {

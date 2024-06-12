@@ -82,9 +82,7 @@ void Network3gppHandler::Network3gppDeviceHandlerImpl::SetCarrierLock(
 ///////////////////////////////////////////////////////////////////////////////
 // Network3gppHandler
 
-Network3gppHandler::Network3gppHandler() {
-  DCHECK(features::IsCellularCarrierLockEnabled());
-}
+Network3gppHandler::Network3gppHandler() {}
 
 Network3gppHandler::~Network3gppHandler() {
   if (!ShillManagerClient::Get()) {

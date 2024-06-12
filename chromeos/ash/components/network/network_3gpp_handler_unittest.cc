@@ -42,9 +42,6 @@ class Network3gppHandlerTest : public testing::Test {
   ~Network3gppHandlerTest() override = default;
 
   void SetUp() override {
-    // Enable Carrier Lock feature flag.
-    scoped_feature_list_.InitAndEnableFeature(features::kCellularCarrierLock);
-
     // Initialize fake clients.
     shill_clients::InitializeFakes();
     Modem3gppClient::InitializeFake();

@@ -75,9 +75,6 @@ class Modem3gppClientTest : public testing::Test {
     // ShutdownAndBlock() will be called in TearDown().
     EXPECT_CALL(*mock_bus_.get(), ShutdownAndBlock()).WillOnce(Return());
 
-    // Enable Carrier Lock feature flag.
-    scoped_feature_list_.InitAndEnableFeature(features::kCellularCarrierLock);
-
     // Create a client with the mock bus.
     Modem3gppClient::Initialize(mock_bus_.get());
     client_ = Modem3gppClient::Get();
@@ -118,7 +115,6 @@ class Modem3gppClientTest : public testing::Test {
   base::test::SingleThreadTaskEnvironment task_environment_;
   scoped_refptr<dbus::MockBus> mock_bus_;
   scoped_refptr<dbus::MockObjectProxy> mock_proxy_;
-  base::test::ScopedFeatureList scoped_feature_list_;
 
   // The 3gppReceived signal handler given by the tested client.
   dbus::ObjectProxy::SignalCallback received_callback_;

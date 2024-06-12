@@ -1251,8 +1251,6 @@ TEST_F(NetworkConnectionHandlerImplTest, SimLocked) {
 }
 
 TEST_F(NetworkConnectionHandlerImplTest, SimCarrierLocked) {
-  base::test::ScopedFeatureList scoped_feature_list;
-  scoped_feature_list.InitAndEnableFeature(features::kCellularCarrierLock);
   Init();
   AddNonConnectablePSimService();
   SetCellularSimCarrierLocked();

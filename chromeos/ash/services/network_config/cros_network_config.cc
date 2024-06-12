@@ -661,16 +661,13 @@ mojom::DeviceStatePropertiesPtr DeviceStateToMojo(
     result->inhibit_reason =
         GetInhibitReason(network_state_handler, cellular_inhibitor);
     result->imei = device->imei();
-    if (features::IsCellularCarrierLockEnabled() && serial_number &&
-        !serial_number->empty()) {
+    if (serial_number && !serial_number->empty()) {
       result->serial = serial_number.value();
     }
-    if (features::IsCellularCarrierLockEnabled()) {
-      carrier_lock::ModemLockStatus status =
-          carrier_lock::CarrierLockManager::GetModemLockStatus();
-      if (status == carrier_lock::ModemLockStatus::kCarrierLocked) {
-        result->is_carrier_locked = true;
-      }
+    carrier_lock::ModemLockStatus status =
+        carrier_lock::CarrierLockManager::GetModemLockStatus();
+    if (status == carrier_lock::ModemLockStatus::kCarrierLocked) {
+      result->is_carrier_locked = true;
     }
   }
   return result;
@@ -1694,10 +1691,8 @@ mojom::ManagedPropertiesPtr ManagedPropertiesToMojo(
       cellular->sim_locked = cellular_device &&
                              cellular_device->iccid() == cellular->iccid &&
                              cellular_device->IsSimLocked();
-      if (features::IsCellularCarrierLockEnabled()) {
-        if (cellular->sim_locked) {
-          cellular->sim_lock_type = cellular_device->sim_lock_type();
-        }
+      if (cellular->sim_locked) {
+        cellular->sim_lock_type = cellular_device->sim_lock_type();
       }
         UserTextMessageSuppressionState state =
             NetworkHandler::Get()
@@ -2398,14 +2393,13 @@ CrosNetworkConfig::CrosNetworkConfig(
   if (network_configuration_handler_) {
     network_configuration_handler_->AddObserver(this);
   }
-  if (features::IsCellularCarrierLockEnabled()) {
-    const std::optional<std::string_view> serial_number =
-        system::StatisticsProvider::GetInstance()->GetMachineID();
-    if (!serial_number || serial_number->empty()) {
-      LOG(WARNING) << "Serial number not set.";
-    } else {
-      serial_number_ = std::string(serial_number.value());
-    }
+
+  const std::optional<std::string_view> serial_number =
+      system::StatisticsProvider::GetInstance()->GetMachineID();
+  if (!serial_number || serial_number->empty()) {
+    LOG(WARNING) << "Serial number not set.";
+  } else {
+    serial_number_ = std::string(serial_number.value());
   }
 }
 
