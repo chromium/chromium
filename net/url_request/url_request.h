@@ -287,7 +287,7 @@ class NET_EXPORT URLRequest : public base::SupportsUserData {
   // changed before Start() is called. Setting this value causes the
   // cookie_partition_key_ to be recalculated.
   //
-  // TODO(crbug.com/40122112): This isn't actually used yet for SameSite
+  // TODO(crbug.com/40093296): This isn't actually used yet for SameSite
   // cookies. Update consumers and fix that.
   void set_isolation_info(const IsolationInfo& isolation_info);
 

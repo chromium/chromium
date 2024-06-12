@@ -218,11 +218,6 @@ const std::optional<url::Origin>& IsolationInfo::frame_origin() const {
   return frame_origin_;
 }
 
-const std::optional<url::Origin>& IsolationInfo::frame_origin_for_testing()
-    const {
-  return frame_origin_;
-}
-
 bool IsolationInfo::IsEqualForTesting(const IsolationInfo& other) const {
   return (request_type_ == other.request_type_ &&
           top_frame_origin_ == other.top_frame_origin_ &&
@@ -300,21 +295,6 @@ std::string IsolationInfo::DebugString() const {
   return s;
 }
 
-NetworkAnonymizationKey
-IsolationInfo::CreateNetworkAnonymizationKeyForIsolationInfo(
-    const std::optional<url::Origin>& top_frame_origin,
-    const std::optional<url::Origin>& frame_origin,
-    const std::optional<base::UnguessableToken>& nonce) const {
-  if (!top_frame_origin) {
-    return NetworkAnonymizationKey();
-  }
-  SchemefulSite top_frame_site(*top_frame_origin);
-  SchemefulSite frame_site(*frame_origin);
-
-  return NetworkAnonymizationKey::CreateFromFrameSite(top_frame_site,
-                                                      frame_site, nonce);
-}
-
 IsolationInfo::IsolationInfo(RequestType request_type,
                              const std::optional<url::Origin>& top_frame_origin,
                              const std::optional<url::Origin>& frame_origin,
@@ -330,9 +310,11 @@ IsolationInfo::IsolationInfo(RequestType request_type,
                                     SchemefulSite(*frame_origin),
                                     nonce)),
       network_anonymization_key_(
-          CreateNetworkAnonymizationKeyForIsolationInfo(top_frame_origin,
-                                                        frame_origin,
-                                                        nonce)),
+          !top_frame_origin ? NetworkAnonymizationKey()
+                            : NetworkAnonymizationKey::CreateFromFrameSite(
+                                  SchemefulSite(*top_frame_origin),
+                                  SchemefulSite(*frame_origin),
+                                  nonce)),
       site_for_cookies_(site_for_cookies),
       nonce_(nonce) {
   DCHECK(IsConsistent(request_type_, top_frame_origin_, frame_origin_,

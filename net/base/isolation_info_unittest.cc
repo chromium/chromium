@@ -118,58 +118,6 @@ TEST_P(IsolationInfoTest, DebugString) {
   EXPECT_EQ(isolation_info.DebugString(), base::StrCat(parts));
 }
 
-TEST_P(IsolationInfoTest, CreateNetworkAnonymizationKeyForIsolationInfo) {
-  IsolationInfo isolation_info = IsolationInfo::Create(
-      IsolationInfo::RequestType::kMainFrame, kOrigin1, kOrigin2,
-      SiteForCookies::FromOrigin(kOrigin1), kNonce1);
-  NetworkAnonymizationKey nak =
-      isolation_info.CreateNetworkAnonymizationKeyForIsolationInfo(
-          kOrigin1, kOrigin2, kNonce1);
-
-  IsolationInfo same_site_isolation_info = IsolationInfo::Create(
-      IsolationInfo::RequestType::kMainFrame, kOrigin1, kOrigin1,
-      SiteForCookies::FromOrigin(kOrigin1), kNonce1);
-
-  // Top frame should be populated regardless of scheme.
-  EXPECT_EQ(nak.GetTopFrameSite(), SchemefulSite(kOrigin1));
-  EXPECT_EQ(isolation_info.top_frame_origin(), kOrigin1);
-  EXPECT_EQ(isolation_info.network_anonymization_key().GetTopFrameSite(),
-            SchemefulSite(kOrigin1));
-
-  // Nonce should be empty regardless of scheme
-  EXPECT_EQ(nak.GetNonce().value(), kNonce1);
-  EXPECT_EQ(isolation_info.network_anonymization_key().GetNonce().value(),
-            kNonce1);
-  EXPECT_EQ(isolation_info.nonce().value(), kNonce1);
-
-  // Triple-keyed IsolationInfo + double-keyed + cross site bit
-  // NetworkAnonymizationKey case.
-  EXPECT_EQ(isolation_info.frame_origin(), kOrigin2);
-  EXPECT_TRUE(isolation_info.network_anonymization_key().IsCrossSite());
-  EXPECT_TRUE(
-      same_site_isolation_info.network_anonymization_key().IsSameSite());
-}
-
-// A 2.5-keyed NAK created with two identical opaque origins should be
-// same-site.
-TEST_P(IsolationInfoTest, CreateNetworkAnonymizationKeyForIsolationInfoOpaque) {
-  url::Origin opaque;
-  IsolationInfo isolation_info = IsolationInfo::Create(
-      IsolationInfo::RequestType::kMainFrame, opaque, opaque,
-      SiteForCookies::FromOrigin(opaque), kNonce1);
-  NetworkAnonymizationKey nak =
-      isolation_info.CreateNetworkAnonymizationKeyForIsolationInfo(
-          opaque, opaque, kNonce1);
-
-  EXPECT_TRUE(nak.IsSameSite());
-
-  url::Origin opaque2;
-  nak = isolation_info.CreateNetworkAnonymizationKeyForIsolationInfo(
-      opaque, opaque2, kNonce1);
-
-  EXPECT_TRUE(nak.IsCrossSite());
-}
-
 TEST_P(IsolationInfoTest, RequestTypeMainFrame) {
   IsolationInfo isolation_info =
       IsolationInfo::Create(IsolationInfo::RequestType::kMainFrame, kOrigin1,

@@ -160,7 +160,8 @@ TEST_F(NetworkAnonymizationKeyTest, CreateCrossSite) {
 TEST_F(NetworkAnonymizationKeyTest, CreateFromFrameSite) {
   SchemefulSite site_a = SchemefulSite(GURL("http://a.test/"));
   SchemefulSite site_b = SchemefulSite(GURL("http://b.test/"));
-  SchemefulSite opaque = SchemefulSite(url::Origin());
+  SchemefulSite opaque_1 = SchemefulSite(url::Origin());
+  SchemefulSite opaque_2 = SchemefulSite(url::Origin());
   base::UnguessableToken nonce = base::UnguessableToken::Create();
 
   NetworkAnonymizationKey nak_from_same_site =
@@ -168,26 +169,32 @@ TEST_F(NetworkAnonymizationKeyTest, CreateFromFrameSite) {
   NetworkAnonymizationKey nak_from_cross_site =
       NetworkAnonymizationKey::CreateFromFrameSite(site_a, site_b, nonce);
   NetworkAnonymizationKey nak_from_same_site_opaque =
-      NetworkAnonymizationKey::CreateFromFrameSite(opaque, opaque, nonce);
+      NetworkAnonymizationKey::CreateFromFrameSite(opaque_1, opaque_1, nonce);
+  NetworkAnonymizationKey nak_from_cross_site_opaque =
+      NetworkAnonymizationKey::CreateFromFrameSite(opaque_1, opaque_2, nonce);
 
   // Top site should be populated correctly.
   EXPECT_EQ(nak_from_same_site.GetTopFrameSite(), site_a);
   EXPECT_EQ(nak_from_cross_site.GetTopFrameSite(), site_a);
-  EXPECT_EQ(nak_from_same_site_opaque.GetTopFrameSite(), opaque);
+  EXPECT_EQ(nak_from_same_site_opaque.GetTopFrameSite(), opaque_1);
+  EXPECT_EQ(nak_from_cross_site_opaque.GetTopFrameSite(), opaque_1);
 
   // Nonce should be populated correctly.
   EXPECT_EQ(nak_from_same_site.GetNonce(), nonce);
   EXPECT_EQ(nak_from_cross_site.GetNonce(), nonce);
   EXPECT_EQ(nak_from_same_site_opaque.GetNonce(), nonce);
+  EXPECT_EQ(nak_from_cross_site_opaque.GetNonce(), nonce);
 
   // Is cross site boolean should be populated correctly.
   EXPECT_TRUE(nak_from_same_site.IsSameSite());
   EXPECT_TRUE(nak_from_cross_site.IsCrossSite());
   EXPECT_TRUE(nak_from_same_site_opaque.IsSameSite());
+  EXPECT_TRUE(nak_from_cross_site_opaque.IsCrossSite());
 
-  // Double-keyed + cross site bit NAKs created from different third party
-  // cross site contexts should be the different.
-  EXPECT_FALSE(nak_from_same_site == nak_from_cross_site);
+  // NAKs created from different third party cross site contexts should be
+  // different.
+  EXPECT_NE(nak_from_same_site, nak_from_cross_site);
+  EXPECT_NE(nak_from_same_site_opaque, nak_from_cross_site_opaque);
 }
 
 TEST_F(NetworkAnonymizationKeyTest, IsEmpty) {

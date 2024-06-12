@@ -28,7 +28,7 @@ class NetworkAnonymizationKey;
 
 namespace net {
 
-// NetworkIsolationKey (NIK) is used to partition shared netork state based on
+// NetworkIsolationKey (NIK) is used to partition shared network state based on
 // the context in which the requests were made. It is used to divide the HTTP
 // cache, while the NetworkAnonymizationKey is used for most other network
 // state.
