@@ -17,10 +17,6 @@
 
 namespace gpu {
 
-#if BUILDFLAG(IS_MAC)
-static uint32_t macos_specific_texture_target = GL_TEXTURE_RECTANGLE_ARB;
-#endif  // BUILDFLAG(IS_MAC)
-
 bool IsImageFromGpuMemoryBufferFormatSupported(
     gfx::BufferFormat format,
     const gpu::Capabilities& capabilities) {
@@ -177,33 +173,6 @@ gfx::Size GetPlaneSize(gfx::BufferPlane plane, const gfx::Size& size) {
       return gfx::ScaleToCeiledSize(size, 0.5);
   }
 }
-
-uint32_t GetPlatformSpecificTextureTarget() {
-#if BUILDFLAG(IS_MAC)
-  return macos_specific_texture_target;
-#elif BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_LINUX) || \
-    BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_WIN)
-  return GL_TEXTURE_EXTERNAL_OES;
-#elif BUILDFLAG(IS_IOS)
-  return GL_TEXTURE_2D;
-#elif BUILDFLAG(IS_FUCHSIA)
-  // Fuchsia uses Vulkan.
-  return 0;
-#elif BUILDFLAG(IS_NACL)
-  NOTREACHED_IN_MIGRATION();
-  return 0;
-#else
-#error Unsupported OS
-#endif
-}
-
-#if BUILDFLAG(IS_MAC)
-GPU_EXPORT void SetMacOSSpecificTextureTarget(uint32_t texture_target) {
-  DCHECK(texture_target == GL_TEXTURE_2D ||
-         texture_target == GL_TEXTURE_RECTANGLE_ARB);
-  macos_specific_texture_target = texture_target;
-}
-#endif  // BUILDFLAG(IS_MAC)
 
 GPU_EXPORT bool NativeBufferNeedsPlatformSpecificTextureTarget(
     gfx::BufferFormat format,

@@ -454,12 +454,6 @@ struct GPU_EXPORT GPUInfo {
   uint32_t target_cpu_bits = 31;
 #endif
 
-#if BUILDFLAG(IS_MAC)
-  // Enum describing which texture target is used for native GpuMemoryBuffers on
-  // MacOS. Valid values are GL_TEXTURE_2D and GL_TEXTURE_RECTANGLE_ARB.
-  uint32_t macos_specific_texture_target;
-#endif  // BUILDFLAG(IS_MAC)
-
 #if BUILDFLAG(IS_WIN)
   // The supported DirectML feature level in the gpu driver;
   uint32_t directml_feature_level = 0;

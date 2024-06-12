@@ -53,14 +53,6 @@ GPU_EXPORT int32_t GetPlaneIndex(gfx::BufferPlane plane,
 GPU_EXPORT gfx::Size GetPlaneSize(gfx::BufferPlane plane,
                                   const gfx::Size& size);
 
-// Returns the texture target to use with native GpuMemoryBuffers.
-GPU_EXPORT uint32_t GetPlatformSpecificTextureTarget();
-
-#if BUILDFLAG(IS_MAC)
-// Set the texture target to use with MacOS native GpuMemoryBuffers.
-GPU_EXPORT void SetMacOSSpecificTextureTarget(uint32_t texture_target);
-#endif  // BUILDFLAG(IS_MAC)
-
 // Returns whether a native GMB with the given format and plane needs to be
 // bound to the platform-specfic texture target or GL_TEXTURE_2D.
 GPU_EXPORT bool NativeBufferNeedsPlatformSpecificTextureTarget(

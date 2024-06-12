@@ -86,10 +86,6 @@ class GLES2ExternalFrameBufferTest
     CreateSharedContext(preferences, workarounds, surface_, context_,
                         context_state_, feature_info);
 
-#if BUILDFLAG(IS_MAC)
-    SetMacOSSpecificTextureTargetFromCurrentGLImplementation();
-#endif  // BUILDFLAG(IS_MAC)
-
     backing_factory_ = std::make_unique<SharedImageFactory>(
         preferences, workarounds, GpuFeatureInfo(), context_state_.get(),
         shared_image_manager_.get(), context_state_->memory_tracker(),

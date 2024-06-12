@@ -368,12 +368,6 @@ struct GPU_EXPORT StructTraits<gpu::mojom::GpuInfoDataView, gpu::GPUInfo> {
     return input.can_support_threaded_texture_mailbox;
   }
 
-#if BUILDFLAG(IS_MAC)
-  static uint32_t macos_specific_texture_target(const gpu::GPUInfo& input) {
-    return input.macos_specific_texture_target;
-  }
-#endif  // BUILDFLAG(IS_MAC)
-
 #if BUILDFLAG(IS_WIN)
   static uint32_t directml_feature_level(const gpu::GPUInfo& input) {
     return input.directml_feature_level;

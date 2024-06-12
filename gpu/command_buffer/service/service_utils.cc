@@ -370,11 +370,6 @@ uint32_t GetMacOSSpecificTextureTargetForCurrentGLImplementation() {
   }
   return GL_TEXTURE_RECTANGLE_ARB;
 }
-
-void SetMacOSSpecificTextureTargetFromCurrentGLImplementation() {
-  SetMacOSSpecificTextureTarget(
-      GetMacOSSpecificTextureTargetForCurrentGLImplementation());
-}
 #endif  // BUILDFLAG(IS_MAC)
 
 }  // namespace gpu

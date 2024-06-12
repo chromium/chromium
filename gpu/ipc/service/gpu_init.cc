@@ -679,11 +679,6 @@ bool GpuInit::InitializeAndStartSandbox(base::CommandLine* command_line,
     }
   }
 
-#if BUILDFLAG(IS_MAC)
-  SetMacOSSpecificTextureTargetFromCurrentGLImplementation();
-  gpu_info_.macos_specific_texture_target = GetPlatformSpecificTextureTarget();
-#endif  // BUILDFLAG(IS_MAC)
-
 #if BUILDFLAG(IS_WIN)
   {
     // On Windows, MITIGATION_FORCE_MS_SIGNED_BINS is used which disallows
@@ -1054,11 +1049,6 @@ void GpuInit::InitializeInProcess(base::CommandLine* command_line,
       }
     }
   }
-
-#if BUILDFLAG(IS_MAC)
-  SetMacOSSpecificTextureTargetFromCurrentGLImplementation();
-  gpu_info_.macos_specific_texture_target = GetPlatformSpecificTextureTarget();
-#endif  // BUILDFLAG(IS_MAC)
 
   if (!gl_disabled) {
     if (!gpu_feature_info_.disabled_extensions.empty()) {

@@ -184,9 +184,6 @@ struct GpuInfo {
   bool passthrough_cmd_decoder;
   bool can_support_threaded_texture_mailbox;
 
-  [EnableIf=is_mac]
-  uint32 macos_specific_texture_target;
-
   [EnableIf=is_win]
   uint32 directml_feature_level;
   [EnableIf=is_win]

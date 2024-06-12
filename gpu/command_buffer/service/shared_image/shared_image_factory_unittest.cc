@@ -37,10 +37,6 @@ class SharedImageFactoryTest : public testing::Test {
     bool result = context_->MakeCurrent(surface_.get());
     ASSERT_TRUE(result);
 
-#if BUILDFLAG(IS_MAC)
-    SetMacOSSpecificTextureTargetFromCurrentGLImplementation();
-#endif  // BUILDFLAG(IS_MAC)
-
     context_state_ = base::MakeRefCounted<SharedContextState>(
         base::MakeRefCounted<gl::GLShareGroup>(), surface_, context_,
         /*use_virtualized_gl_contexts=*/false, base::DoNothing(),

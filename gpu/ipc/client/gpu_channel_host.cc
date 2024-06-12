@@ -65,10 +65,6 @@ GpuChannelHost::GpuChannelHost(
   for (int32_t i = 0;
        i <= static_cast<int32_t>(GpuChannelReservedRoutes::kMaxValue); ++i)
     next_route_id_.GetNext();
-
-#if BUILDFLAG(IS_MAC)
-  gpu::SetMacOSSpecificTextureTarget(gpu_info.macos_specific_texture_target);
-#endif  // BUILDFLAG(IS_MAC)
 }
 
 mojom::GpuChannel& GpuChannelHost::GetGpuChannel() {

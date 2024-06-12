@@ -57,10 +57,6 @@ class IOSurfaceImageBackingFactoryTest : public SharedImageTestBase {
 
     ASSERT_NO_FATAL_FAILURE(InitializeContext(GrContextType::kGL));
 
-#if BUILDFLAG(IS_MAC)
-    SetMacOSSpecificTextureTargetFromCurrentGLImplementation();
-#endif  // BUILDFLAG(IS_MAC)
-
     backing_factory_ = std::make_unique<IOSurfaceImageBackingFactory>(
         context_state_->gr_context_type(), context_state_->GetMaxTextureSize(),
         context_state_->feature_info(), /*progress_reporter=*/nullptr,
@@ -771,10 +767,6 @@ class IOSurfaceImageBackingFactoryParameterizedTestBase
 
     auto gr_context_type = get_gr_context_type();
     ASSERT_NO_FATAL_FAILURE(InitializeContext(gr_context_type));
-
-#if BUILDFLAG(IS_MAC)
-    SetMacOSSpecificTextureTargetFromCurrentGLImplementation();
-#endif  // BUILDFLAG(IS_MAC)
 
     auto format = get_format();
     // Dawn does not support BGRA_1010102.

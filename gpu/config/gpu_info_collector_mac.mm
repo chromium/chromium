@@ -68,9 +68,6 @@ bool CollectContextGraphicsInfo(GPUInfo* gpu_info) {
 
   TRACE_EVENT0("gpu", "gpu_info_collector::CollectGraphicsInfo");
 
-  gpu_info->macos_specific_texture_target =
-      gpu::GetPlatformSpecificTextureTarget();
-
   RecordReadWriteMetalTexturesSupportedHistogram();
 
   return CollectGraphicsInfoGL(gpu_info, gl::GetDefaultDisplayEGL());
