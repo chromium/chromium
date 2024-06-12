@@ -921,7 +921,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="Settings.TrackedPreferenceChanged" enum="TrackedPreference"
     expires_after="2024-11-24">
-  <owner>proberge@chromium.org</owner>
+  <owner>drubery@chromium.org</owner>
   <owner>junhao.huang@microsoft.com</owner>
   <summary>
     The id of a tracked preference whose value has been changed since the last
@@ -936,7 +936,7 @@ chromium-metrics-reviews@google.com.
     Kept as test chrome/browser/prefs/tracked/pref_hash_browsertest.cc depends
     on this histogram.
   </expired_intentionally>
-  <owner>proberge@chromium.org</owner>
+  <owner>drubery@chromium.org</owner>
   <owner>junhao.huang@microsoft.com</owner>
   <summary>
     The id of a tracked preference whose value has been cleared since the last
@@ -951,7 +951,7 @@ chromium-metrics-reviews@google.com.
     Kept as test chrome/browser/prefs/tracked/pref_hash_browsertest.cc depends
     on this histogram.
   </expired_intentionally>
-  <owner>proberge@chromium.org</owner>
+  <owner>drubery@chromium.org</owner>
   <owner>junhao.huang@microsoft.com</owner>
   <summary>
     The id of a tracked preference whose last value isn't known. We may be just
@@ -968,7 +968,7 @@ chromium-metrics-reviews@google.com.
     Kept as test chrome/browser/prefs/tracked/pref_hash_browsertest.cc depends
     on this histogram.
   </expired_intentionally>
-  <owner>proberge@chromium.org</owner>
+  <owner>drubery@chromium.org</owner>
   <owner>junhao.huang@microsoft.com</owner>
   <summary>
     The id of a tracked preference whose value has not changed since the last
@@ -985,7 +985,7 @@ chromium-metrics-reviews@google.com.
     Kept as test chrome/browser/prefs/tracked/pref_hash_browsertest.cc depends
     on this histogram.
   </expired_intentionally>
-  <owner>proberge@chromium.org</owner>
+  <owner>drubery@chromium.org</owner>
   <owner>junhao.huang@microsoft.com</owner>
   <summary>
     The id of a tracked preference which was initialized despite the absence of
@@ -996,7 +996,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="Settings.TrackedPreferenceReset" enum="TrackedPreference"
     expires_after="2024-12-08">
-  <owner>proberge@chromium.org</owner>
+  <owner>drubery@chromium.org</owner>
   <owner>junhao.huang@microsoft.com</owner>
   <summary>The id of a tracked preference which was reset by Chrome.</summary>
 </histogram>
@@ -1017,7 +1017,7 @@ chromium-metrics-reviews@google.com.
     Kept as test chrome/browser/prefs/tracked/pref_hash_browsertest.cc depends
     on this histogram.
   </expired_intentionally>
-  <owner>proberge@chromium.org</owner>
+  <owner>drubery@chromium.org</owner>
   <owner>junhao.huang@microsoft.com</owner>
   <summary>
     The id of a tracked preference which was initialized despite the absence of
@@ -1033,7 +1033,7 @@ chromium-metrics-reviews@google.com.
     Kept as test chrome/browser/prefs/tracked/pref_hash_browsertest.cc depends
     on this histogram.
   </expired_intentionally>
-  <owner>proberge@chromium.org</owner>
+  <owner>drubery@chromium.org</owner>
   <owner>junhao.huang@microsoft.com</owner>
   <summary>
     The id of a tracked preference whose value has not changed since the last
@@ -1044,7 +1044,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="Settings.TrackedPreferenceWantedReset"
     enum="TrackedPreference" expires_after="2024-12-08">
-  <owner>proberge@chromium.org</owner>
+  <owner>drubery@chromium.org</owner>
   <owner>junhao.huang@microsoft.com</owner>
   <summary>
     The id of a tracked preference which Chrome would have reset had the config
