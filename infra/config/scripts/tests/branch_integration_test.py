@@ -88,6 +88,58 @@ class BranchIntegrationTest(unittest.TestCase):
         }
         """))
 
+  def test_initialize_test_config_rewrites_settings_json(self):
+    result = self._execute_branch_py([
+        'initialize', '--milestone', 'XX', '--branch', 'YYYY', '--test-config'
+    ])
+    self.assertEqual(result.returncode, 0,
+                     (f'subprocess failed\n***COMMAND***\n{result.args}\n'
+                      f'***STDERR***\n{result.stderr}\n'))
+
+    with open(self._settings_json) as f:
+      settings = f.read()
+    self.assertEqual(
+        settings,
+        textwrap.dedent("""\
+        {
+            "project": "chromium",
+            "project_title": "Chromium MXX",
+            "ref": "refs/branch-heads/YYYY",
+            "chrome_project": "chrome-mXX",
+            "is_main": false,
+            "platforms": {
+                "android": {
+                    "description": "beta/stable",
+                    "gardener_rotation": "chrome_browser_release"
+                },
+                "cros": {
+                    "description": "beta/stable",
+                    "gardener_rotation": "chrome_browser_release"
+                },
+                "fuchsia": {
+                    "description": "beta/stable",
+                    "gardener_rotation": "chrome_browser_release"
+                },
+                "ios": {
+                    "description": "beta/stable",
+                    "gardener_rotation": "chrome_browser_release"
+                },
+                "linux": {
+                    "description": "beta/stable",
+                    "gardener_rotation": "chrome_browser_release"
+                },
+                "mac": {
+                    "description": "beta/stable",
+                    "gardener_rotation": "chrome_browser_release"
+                },
+                "windows": {
+                    "description": "beta/stable",
+                    "gardener_rotation": "chrome_browser_release"
+                }
+            }
+        }
+        """))
+
   def test_enable_platform_parse_args_fails_when_missing_required_args(self):
     result = self._execute_branch_py(['enable-platform'])
     self.assertNotEqual(result.returncode, 0)

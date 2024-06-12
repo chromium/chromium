@@ -54,12 +54,12 @@ class BranchUnitTest(unittest.TestCase):
     self.assertEqual(args.branch, 'BBBB')
 
   def test_initial_settings(self):
-    output = branch.initial_settings(milestone='MM', branch='BBBB')
+    output = branch.initial_settings(project='P', milestone='MM', branch='BBBB')
     self.assertEqual(
         output,
         textwrap.dedent("""\
             {
-                "project": "chromium-mMM",
+                "project": "P",
                 "project_title": "Chromium MMM",
                 "ref": "refs/branch-heads/BBBB",
                 "chrome_project": "chrome-mMM",

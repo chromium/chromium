@@ -21,7 +21,7 @@ import argparse
 import json
 import os
 
-from typing import Optional
+from typing import Any, Optional
 
 INFRA_CONFIG_DIR = os.path.abspath(os.path.join(__file__, '..', '..'))
 
@@ -48,6 +48,14 @@ def parse_args(args=None, *, parser_type=None):
       '--branch',
       required=True,
       help='The branch name, must correspond to a ref in refs/branch-heads')
+  # Executing "lucicfg validate" fails if the project name is not the name of a
+  # project known to luci-config. This flag allows for an initial branch config
+  # to be created that can be checked with "lucicfg validate".
+  init_parser.add_argument(
+      '--test-config',
+      action='store_true',
+      help=argparse.SUPPRESS,
+  )
 
   enable_platform_parser = subparsers.add_parser(
       'enable-platform', help='Enable builders for an additional platform')
@@ -71,9 +79,14 @@ def parse_args(args=None, *, parser_type=None):
     parser.error('no sub-command specified')
   return args
 
-def initial_settings(milestone, branch):
+
+def initial_settings(
+    project: str,
+    milestone: str,
+    branch: str,
+) -> dict[str, Any]:
   settings = dict(
-      project=f'chromium-m{milestone}',
+      project=project,
       project_title=f'Chromium M{milestone}',
       ref=f'refs/branch-heads/{branch}',
       chrome_project=f'chrome-m{milestone}',
@@ -98,7 +111,8 @@ def initial_settings(milestone, branch):
   return json.dumps(settings, indent=4) + '\n'
 
 def initialize_cmd(args):
-  settings = initial_settings(args.milestone, args.branch)
+  project = 'chromium' if args.test_config else f'chromium-m{args.milestone}'
+  settings = initial_settings(project, args.milestone, args.branch)
 
   with open(args.settings_json, 'w') as f:
     f.write(settings)

@@ -54,11 +54,17 @@ def _project_settings(
     channel).
 
     Args:
-      * project - The name of the LUCI project.
+      * project - The name of the LUCI project. No logic should depend on this
+        value, it should only be used where the name of a project is required.
       * project_title - A string identifying the project in title contexts (e.g.
-        titles of consoles).
+        titles of consoles). No conditional logic should depend on this value,
+        it should only be used where the title of a project is required.
       * ref - The git ref containing the code for this branch.
-      * chrome_project - The name of the corresponding chrome project.
+      * chrome_project - The name of the corresponding chrome project. No logic
+        should depend on this value, it should only be used where the name of a
+        project is required.
+      * ref - The git ref containing the code for this branch. No logic should
+        depend on this value, it should only be used where a ref is required.
       * is_main - Whether or not this is the project for the main ref.
       * platforms - A mapping from a platform ID value to the settings for the
         platform. The valid platform ID values are the members of the platform
