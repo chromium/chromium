@@ -280,13 +280,16 @@ base::WeakPtr<HistoryEmbeddingsService> HistoryEmbeddingsService::AsWeakPtr() {
   return weak_ptr_factory_.GetWeakPtr();
 }
 
-void HistoryEmbeddingsService::SendQualityLog(const SearchResult& result,
-                                              size_t selection,
-                                              size_t num_entered_characters,
-                                              bool from_omnibox_history_scope) {
-  // TODO: b/343548121 - Decide on semantics and fill num_days using
-  //  `result.time_range_start`.
-  size_t num_days = 0;
+void HistoryEmbeddingsService::SendQualityLog(
+    const SearchResult& result,
+    optimization_guide::proto::UserFeedback user_feedback,
+    size_t selection,
+    size_t num_entered_characters,
+    bool from_omnibox_history_scope) {
+  size_t num_days =
+      result.time_range_start.has_value()
+          ? (base::Time::Now() - result.time_range_start.value()).InDays() + 1
+          : 0;
 
   // Exit early if logging is not enabled.
   if (!kSendQualityLog.Get() || !embedder_metadata_.has_value()) {
@@ -314,6 +317,7 @@ void HistoryEmbeddingsService::SendQualityLog(const SearchResult& result,
   }
 
   // Fill the quality proto with data.
+  quality_proto->set_user_feedback(user_feedback);
   quality_proto->set_embedding_model_version(
       embedder_metadata_.value().model_version);
   quality_proto->set_query(result.query);

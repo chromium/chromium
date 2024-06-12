@@ -27,6 +27,7 @@
 #include "components/history_embeddings/vector_database.h"
 #include "components/keyed_service/core/keyed_service.h"
 #include "components/optimization_guide/core/model_quality/model_quality_log_entry.h"
+#include "components/optimization_guide/proto/features/common_quality_data.pb.h"
 #include "content/public/browser/render_frame_host.h"
 #include "content/public/browser/weak_document_ptr.h"
 
@@ -118,6 +119,7 @@ class HistoryEmbeddingsService : public KeyedService,
 
   // Submit quality logging data after user selects an item from search result.
   void SendQualityLog(const SearchResult& result,
+                      optimization_guide::proto::UserFeedback user_feedback,
                       size_t selection,
                       size_t num_entered_characters,
                       bool from_omnibox_history_scope);

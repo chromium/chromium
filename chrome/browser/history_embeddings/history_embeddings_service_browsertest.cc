@@ -197,7 +197,10 @@ IN_PROC_BROWSER_TEST_F(HistoryEmbeddingsBrowserTest, LogDataIsPrepared) {
   result.scored_url_rows = {
       ScoredUrlRow(ScoredUrl(0, 0, base::Time::Now(), 0.5f, 0, {})),
   };
-  service()->SendQualityLog(result, 1, 3, false);
+  service()->SendQualityLog(
+      result,
+      optimization_guide::proto::UserFeedback::USER_FEEDBACK_UNSPECIFIED, 1, 3,
+      false);
   histogram_tester.ExpectUniqueSample(
       "History.Embeddings.Quality.LogEntryPrepared", true, 1);
 }

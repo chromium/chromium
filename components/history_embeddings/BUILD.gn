@@ -36,6 +36,7 @@ static_library("history_embeddings") {
     "//components/history_embeddings/proto:history_embeddings_proto",
     "//components/keyed_service/core",
     "//components/optimization_guide/core",
+    "//components/optimization_guide/proto:optimization_guide_proto",
     "//components/os_crypt/sync",
     "//components/page_content_annotations/core",
     "//content/public/browser",
