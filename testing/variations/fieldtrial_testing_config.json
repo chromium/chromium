@@ -7266,61 +7266,6 @@
             ]
         }
     ],
-    "DesktopOmniboxMLScoringWithLinearMapping": [
-        {
-            "platforms": [
-                "chromeos",
-                "chromeos_lacros",
-                "linux",
-                "mac",
-                "windows"
-            ],
-            "experiments": [
-                {
-                    "name": "Enabled_Moderate",
-                    "params": {
-                        "MlUrlScoringShortcutDocumentSignals": "true",
-                        "MlUrlSearchBlending_MappedSearchBlendingGroupingThreshold": "1400",
-                        "MlUrlSearchBlending_MappedSearchBlendingMax": "2800",
-                        "MlUrlSearchBlending_MappedSearchBlendingMin": "600",
-                        "enable_scoring_signals_annotators_for_ml_scoring": "true"
-                    },
-                    "enable_features": [
-                        "MlUrlScoring",
-                        "UrlScoringModel"
-                    ]
-                },
-                {
-                    "name": "Enabled_Conservative",
-                    "params": {
-                        "MlUrlScoringShortcutDocumentSignals": "true",
-                        "MlUrlSearchBlending_MappedSearchBlendingGroupingThreshold": "1000",
-                        "MlUrlSearchBlending_MappedSearchBlendingMax": "2000",
-                        "MlUrlSearchBlending_MappedSearchBlendingMin": "0",
-                        "enable_scoring_signals_annotators_for_ml_scoring": "true"
-                    },
-                    "enable_features": [
-                        "MlUrlScoring",
-                        "UrlScoringModel"
-                    ]
-                },
-                {
-                    "name": "Enabled_Aggressive",
-                    "params": {
-                        "MlUrlScoringShortcutDocumentSignals": "true",
-                        "MlUrlSearchBlending_MappedSearchBlendingGroupingThreshold": "1500",
-                        "MlUrlSearchBlending_MappedSearchBlendingMax": "4000",
-                        "MlUrlSearchBlending_MappedSearchBlendingMin": "1000",
-                        "enable_scoring_signals_annotators_for_ml_scoring": "true"
-                    },
-                    "enable_features": [
-                        "MlUrlScoring",
-                        "UrlScoringModel"
-                    ]
-                }
-            ]
-        }
-    ],
     "DesktopOmniboxShortcutBoost": [
         {
             "platforms": [
@@ -14361,6 +14306,83 @@
                     "name": "Enabled",
                     "enable_features": [
                         "MlUrlScoreCaching"
+                    ]
+                }
+            ]
+        }
+    ],
+    "OmniboxMlUrlPiecewiseMappedScoringDesktop": [
+        {
+            "platforms": [
+                "chromeos",
+                "chromeos_lacros",
+                "linux",
+                "mac",
+                "windows"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled_AdjustedBy0",
+                    "params": {
+                        "MlUrlPiecewiseMappedSearchBlending": "true",
+                        "MlUrlPiecewiseMappedSearchBlending_BreakPoints": "0,550;0.018,1300;0.14,1398;1,1422",
+                        "MlUrlPiecewiseMappedSearchBlending_GroupingThreshold": "1400",
+                        "MlUrlPiecewiseMappedSearchBlending_RelevanceBias": "0",
+                        "MlUrlScoringShortcutDocumentSignals": "true",
+                        "enable_scoring_signals_annotators_for_ml_scoring": "true"
+                    },
+                    "enable_features": [
+                        "MlUrlPiecewiseMappedSearchBlending",
+                        "MlUrlScoring",
+                        "UrlScoringModel"
+                    ]
+                },
+                {
+                    "name": "Enabled_AdjustedBy50",
+                    "params": {
+                        "MlUrlPiecewiseMappedSearchBlending": "true",
+                        "MlUrlPiecewiseMappedSearchBlending_BreakPoints": "0,550;0.018,1250;0.14,1348;1,1422",
+                        "MlUrlPiecewiseMappedSearchBlending_GroupingThreshold": "1350",
+                        "MlUrlPiecewiseMappedSearchBlending_RelevanceBias": "0",
+                        "MlUrlScoringShortcutDocumentSignals": "true",
+                        "enable_scoring_signals_annotators_for_ml_scoring": "true"
+                    },
+                    "enable_features": [
+                        "MlUrlPiecewiseMappedSearchBlending",
+                        "MlUrlScoring",
+                        "UrlScoringModel"
+                    ]
+                },
+                {
+                    "name": "Enabled_AdjustedBy100",
+                    "params": {
+                        "MlUrlPiecewiseMappedSearchBlending": "true",
+                        "MlUrlPiecewiseMappedSearchBlending_BreakPoints": "0,550;0.018,1200;0.14,1298;1,1422",
+                        "MlUrlPiecewiseMappedSearchBlending_GroupingThreshold": "1300",
+                        "MlUrlPiecewiseMappedSearchBlending_RelevanceBias": "0",
+                        "MlUrlScoringShortcutDocumentSignals": "true",
+                        "enable_scoring_signals_annotators_for_ml_scoring": "true"
+                    },
+                    "enable_features": [
+                        "MlUrlPiecewiseMappedSearchBlending",
+                        "MlUrlScoring",
+                        "UrlScoringModel"
+                    ]
+                },
+                {
+                    "name": "Enabled_AdjustedBy150",
+                    "params": {
+                        "MlUrlPiecewiseMappedSearchBlending": "true",
+                        "MlUrlPiecewiseMappedSearchBlending_BreakPoints": "0,550;0.018,1150;0.14,1248;1,1422",
+                        "MlUrlPiecewiseMappedSearchBlending_GroupingThreshold": "1250",
+                        "MlUrlPiecewiseMappedSearchBlending_RelevanceBias": "0",
+                        "MlUrlScoringShortcutDocumentSignals": "true",
+                        "enable_scoring_signals_annotators_for_ml_scoring": "true"
+                    },
+                    "enable_features": [
+                        "MlUrlPiecewiseMappedSearchBlending",
+                        "MlUrlScoring",
+                        "UrlScoringModel"
                     ]
                 }
             ]
