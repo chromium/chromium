@@ -2718,11 +2718,14 @@ TEST(SpanTest, Example_UnsafeBuffersPatterns) {
   }
 
   UNSAFE_BUFFERS({
-    uint8_t array[44] = {};
+    // `array` must be aligned for the cast to be valid. Moreover, the
+    // dereference is only valid because Chromium builds with
+    // -fno-strict-aliasing.
+    alignas(uint64_t) uint8_t array[44] = {};
     [[maybe_unused]] uint32_t v1 =
         *reinterpret_cast<const uint32_t*>(array);  // Front.
     [[maybe_unused]] uint64_t v2 =
-        *reinterpret_cast<const uint64_t*>(array + 6);  // Middle.
+        *reinterpret_cast<const uint64_t*>(array + 16);  // Middle.
   })
 
   {
@@ -2730,7 +2733,7 @@ TEST(SpanTest, Example_UnsafeBuffersPatterns) {
     [[maybe_unused]] uint32_t v1 =
         base::U32FromLittleEndian(base::span(array).first<4u>());  // Front.
     [[maybe_unused]] uint64_t v2 = base::U64FromLittleEndian(
-        base::span(array).subspan<6u, 8u>());  // Middle.
+        base::span(array).subspan<16u, 8u>());  // Middle.
   }
 
   UNSAFE_BUFFERS({

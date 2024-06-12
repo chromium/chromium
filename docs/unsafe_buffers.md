@@ -131,15 +131,16 @@ uint64_t v2 = base::U64FromLittleEndian(base::span(array).subspan<6u, 8u>());  /
 
 ### Copy an array into an integer via cast
 
-Note: This pattern was UB-prone in addition to bounds-unsafe, as it can produce
-a pointer with incorrect alignment. reinterpret_cast is very easy to hold wrong
-in C++ and is worth avoiding.
+Note: This pattern is prone to more UB than out-of-bounds access. It is UB to
+cast pointers if the result is not aligned, so these cases are often buggy or
+were only correct due to subtle assumptions on buffer alignment. The spanified
+version avoids this pitfalls. It has no alignment requirement.
 
 You have:
 ```cc
 uint8_t array[44] = {};
 uint32_t v1 = *reinterpret_cast<const uint32_t*>(array);  // Front.
-uint64_t v2 = *reinterpret_cast<const uint64_t*>(array + 6);  // Middle.
+uint64_t v2 = *reinterpret_cast<const uint64_t*>(array + 16);  // Middle.
 ```
 
 Spanified:
@@ -148,7 +149,7 @@ Spanified:
 ...
 uint8_t array[44] = {};
 uint32_t v1 = base::U32FromLittleEndian(base::span(array).first<4u>());  // Front.
-uint64_t v2 = base::U64FromLittleEndian(base::span(array).subspan<6u, 8u>());  // Middle.
+uint64_t v2 = base::U64FromLittleEndian(base::span(array).subspan<16u, 8u>());  // Middle.
 ```
 
 ### Making a byte array (`span<uint8_t>`) from a string (or any array/range)
