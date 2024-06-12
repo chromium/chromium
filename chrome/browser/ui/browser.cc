@@ -668,6 +668,13 @@ Browser::Browser(const CreateParams& params)
 }
 
 Browser::~Browser() {
+  // Tear down `BrowserWindowFeatures` and `BrowserUserData`s now to avoid
+  // exposing them to Browser in a partially-destroyed state. Eventually,
+  // all BrowserUserData should be converted to features. Until then,
+  // destroy `features_` because that's what breaks things the least :)
+  features_.reset();
+  ClearAllUserData();
+
   if (tab_groups::IsTabGroupsSaveV2Enabled()) {
     auto* saved_tab_group_keyed_service =
         tab_groups::SavedTabGroupServiceFactory::GetForProfile(profile_);
