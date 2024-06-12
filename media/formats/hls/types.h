@@ -16,6 +16,20 @@
 
 namespace media::hls::types {
 
+namespace {
+
+template <size_t count, typename impl, typename... types>
+struct repeat_t {
+  using type = repeat_t<count - 1, impl, impl, types...>::type;
+};
+
+template <typename impl, typename... types>
+struct repeat_t<0, impl, types...> {
+  using type = std::tuple<types...>;
+};
+
+}  // namespace
+
 // A `DecimalInteger` is an unsigned integer value.
 // https://datatracker.ietf.org/doc/html/draft-pantos-hls-rfc8216bis#:~:text=of%20the%20following%3A%0A%0A%20%20%20o-,decimal%2Dinteger,-%3A%20an%20unquoted%20string
 using DecimalInteger = uint64_t;
@@ -116,6 +130,103 @@ struct MEDIA_EXPORT ByteRangeExpression
   // previous segment. The previous segment must be a subrange of the same
   // resource.
   std::optional<types::DecimalInteger> offset;
+};
+
+// Calculate chunk sizes for the hex parser. This needs to be separated so that
+// the SubstitutingParser template can be specialized on the proper return type
+// of HexRepr::Parse.
+template <int64_t bits>
+struct HexPackInfo {
+  // Must be a multiple of 8!
+  static_assert((bits % 0x8) == 0);
+
+  // The pack size should be whatever is the largest integer type with a size
+  // that is a factor of `bits`. Since there is no builtin integer type larger
+  // than uint64_t, this number is also capped.
+  static constexpr int64_t UnitSize = std::min<int64_t>(64, bits & -bits);
+
+  // Select repeating unit.
+  using Unit = std::conditional_t<
+      (UnitSize == 64),
+      uint64_t,
+      std::conditional_t<
+          (UnitSize == 32),
+          uint32_t,
+          std::conditional_t<(UnitSize == 16), uint16_t, uint8_t>>>;
+
+  // A tuple of repeating `Unit`s
+  using Container = repeat_t<bits / UnitSize, Unit>::type;
+};
+
+// Represents a hexadecimal string in the form 0xXXXXXX...
+// where this might require more than sizeof(size_t) bytes.
+// HexRepr<X>::Container can be used to get the tuple format for the
+// underlying container that HexRepr<X>::Parse should return.
+template <int64_t bits>
+struct MEDIA_EXPORT HexRepr
+    : public SubstitutingParser<HexRepr<bits>,
+                                typename HexPackInfo<bits>::Container> {
+  using Container = HexPackInfo<bits>::Container;
+  using Unit = HexPackInfo<bits>::Unit;
+  static constexpr int64_t UnitSize = HexPackInfo<bits>::UnitSize;
+
+  template <size_t reps>
+  struct ParserImpl {
+    static ParseStatus::Or<typename repeat_t<reps, Unit>::type> Parse(
+        ResolvedSourceString str,
+        bool extrapolate_leading_zeros) {
+      Unit chunk = 0;
+      for (size_t i = 0; i < sizeof(Unit) * 2; i++) {
+        if (!extrapolate_leading_zeros && !str.Size()) {
+          return ParseStatusCode::kFailedToParseHexadecimalString;
+        }
+        if (str.Size()) {
+          auto bits4 = str.Str()[str.Size() - 1];
+          Unit num4 = 0;
+          if (bits4 >= '0' && bits4 <= '9') {
+            num4 = bits4 - '0';
+          } else if (bits4 >= 'A' && bits4 <= 'F') {
+            num4 = bits4 - 'A' + 10;
+          } else if (bits4 >= 'a' && bits4 <= 'f') {
+            num4 = bits4 - 'a' + 10;
+          } else {
+            return ParseStatusCode::kFailedToParseHexadecimalString;
+          }
+          chunk += (num4 << (4 * i));
+          str = str.Substr(0, str.Size() - 1);
+        }
+      }
+      auto rest = ParserImpl<reps - 1>::Parse(str, extrapolate_leading_zeros);
+      if (!rest.has_value()) {
+        return std::move(rest).error();
+      }
+      return std::tuple_cat(std::move(rest).value(), std::make_tuple(chunk));
+    }
+  };
+
+  template <>
+  struct ParserImpl<0> {
+    static ParseStatus::Or<std::tuple<>> Parse(ResolvedSourceString str,
+                                               bool extrapolate_leading_zeros) {
+      if (str.Size() != 0) {
+        return ParseStatusCode::kFailedToParseHexadecimalString;
+      }
+      return std::make_tuple();
+    }
+  };
+
+  static ParseStatus::Or<Container> Parse(
+      ResolvedSourceString str,
+      bool extrapolate_leading_zeros = false,
+      bool has_prefix = true) {
+    if (has_prefix && str.Consume(2).Str() != "0x") {
+      return ParseStatusCode::kFailedToParseHexadecimalString;
+    }
+    if (!str.Size()) {
+      return ParseStatusCode::kFailedToParseHexadecimalString;
+    }
+    return ParserImpl<bits / UnitSize>::Parse(str, extrapolate_leading_zeros);
+  }
 };
 
 }  // namespace parsing
