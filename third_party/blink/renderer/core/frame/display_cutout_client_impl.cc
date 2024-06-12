@@ -6,7 +6,10 @@
 
 #include "third_party/blink/renderer/core/css/document_style_environment_variables.h"
 #include "third_party/blink/renderer/core/css/style_engine.h"
+#include "third_party/blink/renderer/core/dom/document.h"
 #include "third_party/blink/renderer/core/frame/local_frame.h"
+#include "third_party/blink/renderer/core/page/page.h"
+#include "third_party/blink/renderer/platform/runtime_enabled_features.h"
 
 namespace blink {
 
@@ -19,12 +22,19 @@ void DisplayCutoutClientImpl::BindMojoReceiver(
     LocalFrame* frame,
     mojo::PendingAssociatedReceiver<mojom::blink::DisplayCutoutClient>
         receiver) {
-  if (!frame)
+  if (!frame) {
     return;
+  }
   MakeGarbageCollected<DisplayCutoutClientImpl>(frame, std::move(receiver));
 }
 
 void DisplayCutoutClientImpl::SetSafeArea(const gfx::Insets& safe_area) {
+  if (RuntimeEnabledFeatures::DynamicSafeAreaInsetsEnabled()) {
+    // TODO(crbug.com/345796091): Make this class a member of a Page.
+    frame_->GetDocument()->GetPage()->SetMaxSafeAreaInsets(safe_area);
+    return;
+  }
+
   DocumentStyleEnvironmentVariables& vars =
       frame_->GetDocument()->GetStyleEngine().EnsureEnvironmentVariables();
   vars.SetVariable(UADefinedVariable::kSafeAreaInsetTop,

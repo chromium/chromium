@@ -853,6 +853,58 @@ int Page::SubframeCount() const {
   return subframe_count_;
 }
 
+void Page::UpdateSafeAreaInsetWithBrowserControls(
+    const BrowserControls& browser_controls,
+    bool force_update) {
+  DCHECK(RuntimeEnabledFeatures::DynamicSafeAreaInsetsEnabled());
+
+  // Adjust the top / left / right is not needed, since they are set when
+  // display insets was received at |SetSafeArea()|.
+  int inset_bottom = GetMaxSafeAreaInsets().bottom();
+  int bottom_controls_full_height = browser_controls.BottomHeight();
+  float control_ratio = browser_controls.BottomShownRatio();
+  float dip_scale = GetVisualViewport().ScaleFromDIP();
+
+  // As control_ratio decrease, safe_area_inset_bottom will be added to the web
+  // page to keep the bottom element out from the display cutout area.
+  float safe_area_inset_bottom =
+      std::max(0.f, inset_bottom - control_ratio * bottom_controls_full_height /
+                                       dip_scale);
+
+  gfx::Insets new_safe_area = gfx::Insets().TLBR(
+      max_safe_area_insets_.top(), max_safe_area_insets_.left(),
+      safe_area_inset_bottom, max_safe_area_insets_.right());
+
+  if (force_update || safe_area_insets_ != new_safe_area) {
+    SetSafeAreaInsets(new_safe_area);
+  }
+}
+
+void Page::SetMaxSafeAreaInsets(gfx::Insets max_safe_area) {
+  if (max_safe_area_insets_ == max_safe_area) {
+    return;
+  }
+
+  max_safe_area_insets_ = max_safe_area;
+  SetSafeAreaInsets(max_safe_area);
+}
+
+void Page::SetSafeAreaInsets(gfx::Insets safe_area) {
+  safe_area_insets_ = safe_area;
+  DocumentStyleEnvironmentVariables& vars = DeprecatedLocalMainFrame()
+                                                ->GetDocument()
+                                                ->GetStyleEngine()
+                                                .EnsureEnvironmentVariables();
+  vars.SetVariable(UADefinedVariable::kSafeAreaInsetTop,
+                   StyleEnvironmentVariables::FormatPx(safe_area.top()));
+  vars.SetVariable(UADefinedVariable::kSafeAreaInsetLeft,
+                   StyleEnvironmentVariables::FormatPx(safe_area.left()));
+  vars.SetVariable(UADefinedVariable::kSafeAreaInsetBottom,
+                   StyleEnvironmentVariables::FormatPx(safe_area.bottom()));
+  vars.SetVariable(UADefinedVariable::kSafeAreaInsetRight,
+                   StyleEnvironmentVariables::FormatPx(safe_area.right()));
+}
+
 void Page::SettingsChanged(ChangeType change_type) {
   switch (change_type) {
     case ChangeType::kStyle:

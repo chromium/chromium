@@ -35,7 +35,9 @@
 #include "third_party/blink/public/common/input/web_coalesced_input_event.h"
 #include "third_party/blink/public/web/web_element.h"
 #include "third_party/blink/public/web/web_settings.h"
+#include "third_party/blink/renderer/core/css/css_variable_data.h"
 #include "third_party/blink/renderer/core/dom/element.h"
+#include "third_party/blink/renderer/core/dom/qualified_name.h"
 #include "third_party/blink/renderer/core/frame/frame_test_helpers.h"
 #include "third_party/blink/renderer/core/frame/local_frame.h"
 #include "third_party/blink/renderer/core/frame/local_frame_view.h"
@@ -55,6 +57,7 @@
 #include "third_party/blink/renderer/platform/testing/unit_test_helpers.h"
 #include "third_party/blink/renderer/platform/testing/url_loader_mock_factory.h"
 #include "third_party/blink/renderer/platform/testing/url_test_helpers.h"
+#include "ui/gfx/geometry/insets.h"
 
 namespace blink {
 
@@ -178,6 +181,24 @@ class BrowserControlsTest : public testing::Test,
 
     // Second tick to set final value.
     CompositeForTest(base::Milliseconds(kShowHideMaxDurationMs));
+  }
+
+  void SetSafeAreaInsets(const gfx::Insets& insets) {
+    GetFrame()->GetPage()->SetMaxSafeAreaInsets(insets);
+  }
+
+  String ResolveSafeAreaInsetsBottom() {
+    DocumentStyleEnvironmentVariables& vars = GetWebView()
+                                                  ->MainFrameImpl()
+                                                  ->GetFrame()
+                                                  ->GetDocument()
+                                                  ->GetStyleEngine()
+                                                  .EnsureEnvironmentVariables();
+
+    CSSVariableData* data =
+        vars.ResolveVariable(AtomicString("safe-area-inset-bottom"), {});
+    EXPECT_NE(nullptr, data);
+    return data->Serialize();
   }
 
  private:
@@ -333,6 +354,40 @@ TEST_F(BrowserControlsTest, MAYBE(HideBottomControlsOnScrollDown)) {
             GetFrame()->View()->LayoutViewport()->GetScrollOffset());
 }
 
+TEST_F(BrowserControlsTest, MAYBE(DynamicSafeAreaInsetBottomScrollDown)) {
+  ScopedDynamicSafeAreaInsetsForTest dynamic_safe_area_insets(true);
+
+  WebViewImpl* web_view = Initialize();
+  SetSafeAreaInsets(gfx::Insets().set_bottom(30));
+
+  // initialize browser controls to be shown.
+  web_view->ResizeWithBrowserControls(web_view->MainFrameViewWidget()->Size(),
+                                      0, 50.f, true);
+  web_view->GetBrowserControls().SetShownRatio(0.0, 1);
+  CompositeForTest();
+  // Bottom insets should be 0, as browser control is presented and it's taller
+  // than the bottom of the insets.
+  EXPECT_EQ("0px", ResolveSafeAreaInsetsBottom());
+
+  // Bottom controls and page content should both scroll and there should be
+  // no content offset.
+  VerticalScroll(-40.0f);
+
+  // Calculate the bottom safe area insets, as there's no min height for bottom
+  // controls.
+  // shown_ratio (0.2) = 1 - scroll_offset(40) / bottom_controls_height(50)
+  // inset.bottom (20) = safe_area_insets.bottom(30) -
+  //                     bottom_controls_height(50) * shown_ratio (0.2)
+  EXPECT_FLOAT_EQ(0.2f, web_view->GetBrowserControls().BottomShownRatio());
+  EXPECT_EQ("20px", ResolveSafeAreaInsetsBottom());
+
+  // Browser controls should become completely hidden.
+  VerticalScroll(-40.0f);
+
+  EXPECT_FLOAT_EQ(0.f, web_view->GetBrowserControls().BottomShownRatio());
+  EXPECT_EQ("30px", ResolveSafeAreaInsetsBottom());
+}
+
 // Scrolling up should show browser controls.
 TEST_F(BrowserControlsTest, MAYBE(ShowOnScrollUp)) {
   WebViewImpl* web_view = Initialize();
@@ -397,6 +452,40 @@ TEST_F(BrowserControlsTest, MAYBE(ShowBottomControlsOnScrollUp)) {
   EXPECT_FLOAT_EQ(1.f, web_view->GetBrowserControls().BottomShownRatio());
   EXPECT_EQ(ScrollOffset(0, 25),
             GetFrame()->View()->LayoutViewport()->GetScrollOffset());
+}
+
+TEST_F(BrowserControlsTest, MAYBE(DynamicSafeAreaInsetBottomScrollUp)) {
+  ScopedDynamicSafeAreaInsetsForTest dynamic_safe_area_insets(true);
+
+  WebViewImpl* web_view = Initialize();
+  SetSafeAreaInsets(gfx::Insets().set_bottom(30));
+
+  // initialize browser controls to be shown.
+  web_view->ResizeWithBrowserControls(web_view->MainFrameViewWidget()->Size(),
+                                      0, 50.f, true);
+  web_view->GetBrowserControls().SetShownRatio(0, 0);
+  CompositeForTest();
+
+  // Bottom insets should be 30, as browser control is fully hidden.
+  EXPECT_EQ("30px", ResolveSafeAreaInsetsBottom());
+
+  VerticalScroll(20.0f);
+
+  // shown_ratio (0.4) = scroll_offset(20) / bottom_controls_height(50)
+  // inset.bottom (0) = safe_area_insets.bottom(30) -
+  //                     bottom_controls_height(50) * shown_ratio (0.4)
+  EXPECT_FLOAT_EQ(0.4f, web_view->GetBrowserControls().BottomShownRatio());
+  EXPECT_EQ("10px", ResolveSafeAreaInsetsBottom());
+
+  VerticalScroll(20.0f);
+
+  // Calculate the bottom safe area insets, as there's no min height for bottom
+  // controls.
+  // shown_ratio (0.8) = scroll_offset(40) / bottom_controls_height(50)
+  // inset.bottom (0) = max(0, safe_area_insets.bottom(30) -
+  //                     bottom_controls_height(50) * shown_ratio (0.8))
+  EXPECT_FLOAT_EQ(0.8f, web_view->GetBrowserControls().BottomShownRatio());
+  EXPECT_EQ("0px", ResolveSafeAreaInsetsBottom());
 }
 
 // Scrolling up after previous scroll downs should cause browser controls to be

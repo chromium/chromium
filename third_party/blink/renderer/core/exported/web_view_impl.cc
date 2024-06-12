@@ -1296,6 +1296,10 @@ void WebViewImpl::DidUpdateBrowserControls() {
     visual_viewport.SetBrowserControlsAdjustment(
         GetBrowserControls().UnreportedSizeAdjustment());
   }
+
+  if (RuntimeEnabledFeatures::DynamicSafeAreaInsetsEnabled()) {
+    GetPage()->UpdateSafeAreaInsetWithBrowserControls(GetBrowserControls());
+  }
 }
 
 BrowserControls& WebViewImpl::GetBrowserControls() {
@@ -1313,6 +1317,11 @@ void WebViewImpl::ResizeViewWhileAnchored(
 
   if (old_viewport_shrink != GetBrowserControls().ShrinkViewport())
     MainFrameImpl()->GetFrameView()->DynamicViewportUnitsChanged();
+
+  if (RuntimeEnabledFeatures::DynamicSafeAreaInsetsEnabled()) {
+    GetPage()->UpdateSafeAreaInsetWithBrowserControls(GetBrowserControls(),
+                                                      /* force_update= */ true);
+  }
 
   {
     // Avoids unnecessary invalidations while various bits of state in
