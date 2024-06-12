@@ -19,6 +19,5 @@ android.webkit.WebView focusable focused
 ++android.widget.EditText clickable editable_text hint='Required illegal' state_description='Required'
 ++android.view.View role_description='tree' collection hierarchical multiselectable state_description='multiselectable, 1 of 1 selected.' item_count=1 row_count=1
 ++++android.view.View role_description='tree item' clickable collection_item selected name='Selected illegal'
-++android.widget.GridView role_description='table' collection row_count=1 column_count=1
-++++android.view.View
-++++++android.view.View role_description='column header' collection_item table_header name='Sort illegal' row_span=1 column_span=1
+++android.widget.GridView role_description='table' collection
+++++android.view.View role_description='column header' collection_item table_header name='Sort illegal' row_span=1 column_span=1

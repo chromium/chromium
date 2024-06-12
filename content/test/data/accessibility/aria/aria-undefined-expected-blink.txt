@@ -23,6 +23,5 @@ rootWebArea
 ++++++tree multiselectable vertical
 ++++++++treeItem name='Selected undefined' selected=false selectedFromFocus=false
 ++++++grid
-++++++++row
-++++++++++columnHeader name='Sort undefined'
+++++++++columnHeader name='Sort undefined'
 ++++++group name='Hidden undefined, display block'

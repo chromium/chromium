@@ -276,9 +276,6 @@ HashSet<ax::mojom::blink::Role> GetExpectedParentRole(
     ax::mojom::blink::Role role) {
   switch (role) {
       // TODO(crbug.com/341369908): Add other roles that have required parents.
-    case ax::mojom::blink::Role::kColumnHeader:
-    case ax::mojom::blink::Role::kRowHeader:
-      return {ax::mojom::blink::Role::kRow};
     case ax::mojom::blink::Role::kRow:
       return {ax::mojom::blink::Role::kTable, ax::mojom::blink::Role::kGrid,
               ax::mojom::blink::Role::kRowGroup,
