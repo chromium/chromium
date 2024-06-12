@@ -2,6 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include "base/i18n/base_i18n_switches.h"
 #include "base/json/json_reader.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
@@ -32,6 +33,7 @@
 #include "ui/base/interaction/element_identifier.h"
 #include "ui/base/interaction/element_tracker.h"
 #include "ui/base/l10n/l10n_util.h"
+#include "ui/base/ui_base_switches.h"
 #include "ui/views/bubble/bubble_frame_view.h"
 #include "ui/views/controls/styled_label.h"
 #include "url/origin.h"
@@ -97,34 +99,49 @@ class ScopedPlusAddressFeatureList {
          {"error-report-url", {kFakeErrorReportUrl}}});
   }
 
-  void Reinit(const std::string& server_url) {
+  void Reinit(const std::string& server_url, bool enable_ui_redesign) {
     CHECK(!server_url.empty());
     features_.Reset();
-    // Don't enable the 'sync-with-server' param so that the dialog is the
-    // only way to trigger requests to the server.
-    features_.InitWithFeaturesAndParameters(
-        /*enabled_features=*/{{features::kPlusAddressesEnabled,
-                               {{"server-url", {server_url}},
-                                {"oauth-scope", {kFakeOauthScope}},
-                                {"manage-url", {kFakeManagementUrl}},
-                                {"error-report-url", {kFakeErrorReportUrl}}}},
-                              {features::kPlusAddressRefresh, {}},
-                              {features::kPlusAddressRefreshUiInDesktopModal,
-                               {}}},
-        /*disabled_features=*/{});
+    if (enable_ui_redesign) {
+      // Don't enable the 'sync-with-server' param so that the dialog is the
+      // only way to trigger requests to the server.
+      features_.InitWithFeaturesAndParameters(
+          /*enabled_features=*/{{features::kPlusAddressesEnabled,
+                                 {{"server-url", {server_url}},
+                                  {"oauth-scope", {kFakeOauthScope}},
+                                  {"manage-url", {kFakeManagementUrl}},
+                                  {"error-report-url", {kFakeErrorReportUrl}}}},
+                                {features::kPlusAddressRefresh, {}},
+                                {features::kPlusAddressRefreshUiInDesktopModal,
+                                 {}},
+                                {features::kPlusAddressUIRedesign, {}}},
+          /*disabled_features=*/{});
+    } else {
+      // Don't enable the 'sync-with-server' param so that the dialog is the
+      // only way to trigger requests to the server.
+      features_.InitWithFeaturesAndParameters(
+          /*enabled_features=*/{{features::kPlusAddressesEnabled,
+                                 {{"server-url", {server_url}},
+                                  {"oauth-scope", {kFakeOauthScope}},
+                                  {"manage-url", {kFakeManagementUrl}},
+                                  {"error-report-url", {kFakeErrorReportUrl}}}},
+                                {features::kPlusAddressRefresh, {}},
+                                {features::kPlusAddressRefreshUiInDesktopModal,
+                                 {}}},
+          /*disabled_features=*/{
+              features::kPlusAddressUIRedesign,
+          });
+    }
   }
 
  private:
   base::test::ScopedFeatureList features_;
 };
 
-class PlusAddressCreationDialogInteractiveTest
-    : public InteractiveBrowserTest,
-      public base::test::WithFeatureOverride {
+class PlusAddressCreationDialogInteractiveTest : public InteractiveBrowserTest {
  public:
   PlusAddressCreationDialogInteractiveTest()
-      : base::test::WithFeatureOverride(features::kPlusAddressUIRedesign),
-        override_profile_selections_(
+      : override_profile_selections_(
             PlusAddressServiceFactory::GetInstance(),
             PlusAddressServiceFactory::CreateProfileSelections()) {}
 
@@ -158,7 +175,8 @@ class PlusAddressCreationDialogInteractiveTest
     ASSERT_TRUE(embedded_test_server()->InitializeAndListen());
     // Reinit `feature_list_` here since the test server URL isn't ready at the
     // time we must first initialize the ScopedFeatureList.
-    feature_list_.Reinit(embedded_test_server()->base_url().spec());
+    feature_list_.Reinit(embedded_test_server()->base_url().spec(),
+                         /*enable_ui_redesign=*/false);
     InteractiveBrowserTest::SetUp();
   }
 
@@ -270,7 +288,7 @@ class PlusAddressCreationDialogInteractiveTest
 };
 
 // An interactive UI test to exercise successful plus address user flow.
-IN_PROC_BROWSER_TEST_P(PlusAddressCreationDialogInteractiveTest,
+IN_PROC_BROWSER_TEST_F(PlusAddressCreationDialogInteractiveTest,
                        ConfirmPlusAddressSucceeds) {
   embedded_test_server()->RegisterRequestHandler(base::BindRepeating(
       &PlusAddressCreationDialogInteractiveTest::HandleRequestWithSuccess,
@@ -294,11 +312,6 @@ IN_PROC_BROWSER_TEST_P(PlusAddressCreationDialogInteractiveTest,
           EnsureNotPresent(
               PlusAddressCreationView::kPlusAddressErrorTextElementId),
           EnsureNotPresent(views::BubbleFrameView::kProgressIndicatorElementId),
-          SetOnIncompatibleAction(OnIncompatibleAction::kIgnoreAndContinue,
-                                  kSuppressedScreenshotError),
-          Screenshot(PlusAddressCreationView::kTopViewId,
-                     /*screenshot_name=*/"plus_address_creation_dialog",
-                     /*baseline_cl=*/"5611344"),
           // Simulate confirming plus address.
           PressButton(
               PlusAddressCreationView::kPlusAddressConfirmButtonElementId),
@@ -324,7 +337,7 @@ IN_PROC_BROWSER_TEST_P(PlusAddressCreationDialogInteractiveTest,
 }
 
 // An interactive UI test to exercise successful plus address user flow.
-IN_PROC_BROWSER_TEST_P(PlusAddressCreationDialogInteractiveTest,
+IN_PROC_BROWSER_TEST_F(PlusAddressCreationDialogInteractiveTest,
                        ConfirmPlusAddressSucceedsAfterRefresh) {
   embedded_test_server()->RegisterRequestHandler(base::BindRepeating(
       &PlusAddressCreationDialogInteractiveTest::HandleRequestWithSuccess,
@@ -381,7 +394,7 @@ IN_PROC_BROWSER_TEST_P(PlusAddressCreationDialogInteractiveTest,
           /*refresh_count=*/1));
 }
 
-IN_PROC_BROWSER_TEST_P(PlusAddressCreationDialogInteractiveTest,
+IN_PROC_BROWSER_TEST_F(PlusAddressCreationDialogInteractiveTest,
                        ReserveFailsFromNoResponse_ShowsPlaceholderAndTimesOut) {
   // Simulate server not responding.
   embedded_test_server()->RegisterRequestHandler(base::BindLambdaForTesting(
@@ -410,12 +423,6 @@ IN_PROC_BROWSER_TEST_P(PlusAddressCreationDialogInteractiveTest,
           WaitForShow(PlusAddressCreationView::kPlusAddressErrorTextElementId),
           WaitForHide(
               PlusAddressCreationView::kPlusAddressSuggestedEmailElementId),
-          SetOnIncompatibleAction(OnIncompatibleAction::kIgnoreAndContinue,
-                                  kSuppressedScreenshotError),
-          Screenshot(
-              PlusAddressCreationView::kTopViewId,
-              /*screenshot_name=*/"plus_address_creation_dialog_reserve_fails",
-              /*baseline_cl=*/"5611344"),
           // Simulate canceling after reservation failure.
           PressButton(
               PlusAddressCreationView::kPlusAddressCancelButtonElementId),
@@ -431,7 +438,7 @@ IN_PROC_BROWSER_TEST_P(PlusAddressCreationDialogInteractiveTest,
           /*refresh_count=*/0));
 }
 
-IN_PROC_BROWSER_TEST_P(
+IN_PROC_BROWSER_TEST_F(
     PlusAddressCreationDialogInteractiveTest,
     ConfirmFailsFromNoResponse_ShowsProgressIndicatorAndTimesout) {
   // Simulate server not responding after successful plus address reservation.
@@ -465,12 +472,6 @@ IN_PROC_BROWSER_TEST_P(
                       true),
           // UI should time out and eventually show error state.
           WaitForShow(PlusAddressCreationView::kPlusAddressErrorTextElementId),
-          SetOnIncompatibleAction(OnIncompatibleAction::kIgnoreAndContinue,
-                                  kSuppressedScreenshotError),
-          Screenshot(
-              PlusAddressCreationView::kTopViewId,
-              /*screenshot_name=*/"plus_address_creation_dialog_confirm_fails",
-              /*baseline_cl=*/"5611344"),
           // Simulate canceling after confirm failure.
           PressButton(
               PlusAddressCreationView::kPlusAddressCancelButtonElementId),
@@ -489,7 +490,7 @@ IN_PROC_BROWSER_TEST_P(
           /*refresh_count=*/0));
 }
 
-IN_PROC_BROWSER_TEST_P(PlusAddressCreationDialogInteractiveTest,
+IN_PROC_BROWSER_TEST_F(PlusAddressCreationDialogInteractiveTest,
                        ConfirmFails_ShowsErrorState) {
   // Confirm request fails with `HTTP_NOT_FOUND`.
   embedded_test_server()->RegisterRequestHandler(base::BindLambdaForTesting(
@@ -542,12 +543,8 @@ IN_PROC_BROWSER_TEST_P(PlusAddressCreationDialogInteractiveTest,
 // Ensure modal handles manager link clicked on description text and opens a new
 // tab.
 // TODO(b/342330801): Remove this test when the UI redesign is launched.
-IN_PROC_BROWSER_TEST_P(PlusAddressCreationDialogInteractiveTest,
+IN_PROC_BROWSER_TEST_F(PlusAddressCreationDialogInteractiveTest,
                        ManagementLinkClicked_OpensNewTab) {
-  if (IsParamFeatureEnabled()) {
-    GTEST_SKIP()
-        << "Manage plus addresses link is absent when UI redesign is enabled.";
-  }
   embedded_test_server()->RegisterRequestHandler(base::BindRepeating(
       &PlusAddressCreationDialogInteractiveTest::HandleRequestWithSuccess,
       // It is safe to use base::Unretained(this) because the
@@ -575,7 +572,7 @@ IN_PROC_BROWSER_TEST_P(PlusAddressCreationDialogInteractiveTest,
 
 // Ensure modal handles error report link click when modal encounters error and
 // open a new tab.
-IN_PROC_BROWSER_TEST_P(PlusAddressCreationDialogInteractiveTest,
+IN_PROC_BROWSER_TEST_F(PlusAddressCreationDialogInteractiveTest,
                        ErrorReportLinkClicked_OpensNewTab) {
   // Simulate server not responding.
   embedded_test_server()->RegisterRequestHandler(base::BindLambdaForTesting(
@@ -607,10 +604,7 @@ IN_PROC_BROWSER_TEST_P(PlusAddressCreationDialogInteractiveTest,
 
 // User opens the dialog and closes it with the "x" button.
 // TODO(b/342330801): Remove this test when the UI redesign is launched.
-IN_PROC_BROWSER_TEST_P(PlusAddressCreationDialogInteractiveTest, DialogClosed) {
-  if (IsParamFeatureEnabled()) {
-    GTEST_SKIP() << "Close button absent when the UI redesign is enabled.";
-  }
+IN_PROC_BROWSER_TEST_F(PlusAddressCreationDialogInteractiveTest, DialogClosed) {
   embedded_test_server()->RegisterRequestHandler(base::BindRepeating(
       &PlusAddressCreationDialogInteractiveTest::HandleRequestWithSuccess,
       // It is safe to use base::Unretained(this) because the
@@ -637,7 +631,7 @@ IN_PROC_BROWSER_TEST_P(PlusAddressCreationDialogInteractiveTest, DialogClosed) {
 }
 
 // User opens the dialog and presses the "Cancel" button.
-IN_PROC_BROWSER_TEST_P(PlusAddressCreationDialogInteractiveTest,
+IN_PROC_BROWSER_TEST_F(PlusAddressCreationDialogInteractiveTest,
                        DialogCanceled) {
   embedded_test_server()->RegisterRequestHandler(base::BindRepeating(
       &PlusAddressCreationDialogInteractiveTest::HandleRequestWithSuccess,
@@ -666,7 +660,7 @@ IN_PROC_BROWSER_TEST_P(PlusAddressCreationDialogInteractiveTest,
           1));
 }
 
-IN_PROC_BROWSER_TEST_P(PlusAddressCreationDialogInteractiveTest,
+IN_PROC_BROWSER_TEST_F(PlusAddressCreationDialogInteractiveTest,
                        WebContentsClosed) {
   embedded_test_server()->RegisterRequestHandler(base::BindRepeating(
       &PlusAddressCreationDialogInteractiveTest::HandleRequestWithSuccess,
@@ -692,7 +686,7 @@ IN_PROC_BROWSER_TEST_P(PlusAddressCreationDialogInteractiveTest,
                                       /*canceled=*/0));
 }
 
-IN_PROC_BROWSER_TEST_P(PlusAddressCreationDialogInteractiveTest, DoubleInit) {
+IN_PROC_BROWSER_TEST_F(PlusAddressCreationDialogInteractiveTest, DoubleInit) {
   embedded_test_server()->RegisterRequestHandler(base::BindRepeating(
       &PlusAddressCreationDialogInteractiveTest::HandleRequestWithSuccess,
       // It is safe to use base::Unretained(this) because the
@@ -732,7 +726,128 @@ IN_PROC_BROWSER_TEST_P(PlusAddressCreationDialogInteractiveTest, DoubleInit) {
                                       /*canceled=*/0));
 }
 
-INSTANTIATE_FEATURE_OVERRIDE_TEST_SUITE(
-    PlusAddressCreationDialogInteractiveTest);
+class PlusAddressCreationDialogUiVariationsTest
+    : public PlusAddressCreationDialogInteractiveTest,
+      public testing::WithParamInterface<std::tuple</*force_dark_mode=*/bool,
+                                                    /*is_rtl=*/bool,
+                                                    /*enable_redesign=*/bool>> {
+ public:
+  bool IsDarkModeOn() { return std::get<0>(GetParam()); }
+
+  bool IsBrowserLanguageRTL() { return std::get<1>(GetParam()); }
+
+  bool IsUiRedesignFeatureEnabled() { return std::get<2>(GetParam()); }
+
+  void SetUpCommandLine(base::CommandLine* command_line) override {
+    if (IsDarkModeOn()) {
+      command_line->AppendSwitch(switches::kForceDarkMode);
+    }
+    if (IsBrowserLanguageRTL()) {
+      command_line->AppendSwitchASCII(switches::kForceUIDirection,
+                                      switches::kForceDirectionRTL);
+    }
+  }
+
+  void SetUp() override {
+    ASSERT_TRUE(embedded_test_server()->InitializeAndListen());
+    // Reinit `feature_list_` here since the test server URL isn't ready at the
+    // time we must first initialize the ScopedFeatureList.
+    feature_list_.Reinit(embedded_test_server()->base_url().spec(),
+                         IsUiRedesignFeatureEnabled());
+    InteractiveBrowserTest::SetUp();
+  }
+};
+
+// An interactive UI test to exercise successful plus address user flow.
+IN_PROC_BROWSER_TEST_P(PlusAddressCreationDialogUiVariationsTest,
+                       ConfirmPlusAddressSucceeds) {
+  embedded_test_server()->RegisterRequestHandler(base::BindRepeating(
+      &PlusAddressCreationDialogInteractiveTest::HandleRequestWithSuccess,
+      // It is safe to use base::Unretained(this) because the
+      // embedded_test_server is shutdown as part of `TearDownOnMainThread`.
+      base::Unretained(this)));
+  // RegisterRequestHandler must be called before server starts.
+  embedded_test_server()->StartAcceptingConnections();
+
+  RunTestSequence(
+      ShowModal(),
+      // Wait for modal to be shown and plus address reservation to complete.
+      InAnyContext(WaitForViewProperty(
+          PlusAddressCreationView::kPlusAddressConfirmButtonElementId,
+          views::View, Enabled, true)),
+      InSameContext(Steps(
+          // Ensure hidden elements are not present.
+          EnsureNotPresent(
+              PlusAddressCreationView::kPlusAddressErrorTextElementId),
+          EnsureNotPresent(views::BubbleFrameView::kProgressIndicatorElementId),
+          SetOnIncompatibleAction(OnIncompatibleAction::kIgnoreAndContinue,
+                                  kSuppressedScreenshotError),
+          Screenshot(PlusAddressCreationView::kTopViewId,
+                     /*screenshot_name=*/"confirm_succeeds",
+                     /*baseline_cl=*/"5621234"),
+          // Simulate confirming plus address.
+          PressButton(
+              PlusAddressCreationView::kPlusAddressConfirmButtonElementId),
+          // Successful confirmation should close the modal.
+          WaitForHide(
+              PlusAddressCreationView::kPlusAddressDescriptionTextElementId))));
+}
+
+IN_PROC_BROWSER_TEST_P(PlusAddressCreationDialogUiVariationsTest,
+                       ReserveFailsShowsPlaceholderAndTimesOut) {
+  // Simulate server not responding.
+  embedded_test_server()->RegisterRequestHandler(base::BindLambdaForTesting(
+      [&](const net::test_server::HttpRequest& request)
+          -> std::unique_ptr<net::test_server::HttpResponse> {
+        return std::make_unique<net::test_server::HungResponse>();
+      }));
+  embedded_test_server()->StartAcceptingConnections();
+
+  RunTestSequence(
+      ShowModal(),
+      InAnyContext(WaitForShow(
+          PlusAddressCreationView::kPlusAddressSuggestedEmailElementId)),
+      InSameContext(Steps(
+          // Ensure that modal shows a placeholder & disables the confirm button
+          // while `Reserve()` is pending.
+          CheckViewProperty(
+              PlusAddressCreationView::kPlusAddressSuggestedEmailElementId,
+              &views::Label::GetText,
+              l10n_util::GetStringUTF16(
+                  IDS_PLUS_ADDRESS_MODAL_PROPOSED_PLUS_ADDRESS_PLACEHOLDER)),
+          CheckViewProperty(
+              PlusAddressCreationView::kPlusAddressConfirmButtonElementId,
+              &views::View::GetEnabled, false),
+          // UI should time out and eventually show error state.
+          WaitForShow(PlusAddressCreationView::kPlusAddressErrorTextElementId),
+          WaitForHide(
+              PlusAddressCreationView::kPlusAddressSuggestedEmailElementId),
+          SetOnIncompatibleAction(OnIncompatibleAction::kIgnoreAndContinue,
+                                  kSuppressedScreenshotError),
+          Screenshot(PlusAddressCreationView::kTopViewId,
+                     /*screenshot_name=*/"reserve_fails",
+                     /*baseline_cl=*/"5621234"),
+          // Simulate canceling after reservation failure.
+          PressButton(
+              PlusAddressCreationView::kPlusAddressCancelButtonElementId),
+          WaitForHide(
+              PlusAddressCreationView::kPlusAddressDescriptionTextElementId))));
+}
+
+INSTANTIATE_TEST_SUITE_P(
+    ,
+    PlusAddressCreationDialogUiVariationsTest,
+    testing::Combine(testing::Bool(), testing::Bool(), testing::Bool()),
+    [](const ::testing::TestParamInfo<std::tuple</*force_dark_mode=*/bool,
+                                                 /*is_rtl=*/bool,
+                                                 /*enable_redesign=*/bool>>&
+           info) {
+      std::string suffix;
+      suffix += std::get<0>(info.param) ? "DarkMode_" : "LightMode_";
+      suffix += std::get<1>(info.param) ? "RightToLeft_" : "LeftToRight_";
+      suffix +=
+          std::get<2>(info.param) ? "UiRedesignEnabled" : "UiRedesignDisabled";
+      return suffix;
+    });
 
 }  // namespace plus_addresses
