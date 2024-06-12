@@ -102,41 +102,50 @@ bool ShouldCreateDmlContext(const mojom::CreateContextOptions& options) {
 
 }  // namespace
 
+#if BUILDFLAG(IS_CHROMEOS)
+WebNNContextProviderImpl::WebNNContextProviderImpl() = default;
+#else
 WebNNContextProviderImpl::WebNNContextProviderImpl(
-#if !BUILDFLAG(IS_CHROMEOS)
     scoped_refptr<gpu::SharedContextState> shared_context_state,
-    gpu::GpuFeatureInfo gpu_feature_info
-#endif
-    )
-#if !BUILDFLAG(IS_CHROMEOS)
+    gpu::GpuFeatureInfo gpu_feature_info)
     : shared_context_state_(std::move(shared_context_state)),
-      gpu_feature_info_(std::move(gpu_feature_info))
-#endif
-{
+      gpu_feature_info_(std::move(gpu_feature_info)) {}
+
+WebNNContextProviderImpl::WebNNContextProviderImpl(
+    mojo::PendingReceiver<WebNNContextProvider> receiver,
+    base::OnceClosure on_disconnect_handler,
+    scoped_refptr<gpu::SharedContextState> shared_context_state,
+    gpu::GpuFeatureInfo gpu_feature_info)
+    : shared_context_state_(std::move(shared_context_state)),
+      gpu_feature_info_(std::move(gpu_feature_info)) {
+  receiver_.emplace(this, std::move(receiver));
+  receiver_->set_disconnect_handler(std::move(on_disconnect_handler));
 }
+#endif
 
 WebNNContextProviderImpl::~WebNNContextProviderImpl() = default;
 
+#if BUILDFLAG(IS_CHROMEOS)
 // static
 void WebNNContextProviderImpl::Create(
     mojo::PendingReceiver<WebNNContextProvider> receiver
-#if !BUILDFLAG(IS_CHROMEOS)
-    ,
-    scoped_refptr<gpu::SharedContextState> shared_context_state,
-    gpu::GpuFeatureInfo gpu_feature_info
-#endif
 ) {
-#if BUILDFLAG(IS_CHROMEOS)
   mojo::MakeSelfOwnedReceiver<WebNNContextProvider>(
-      std::make_unique<WebNNContextProviderImpl>(), std::move(receiver));
-#else
-  CHECK_NE(shared_context_state, nullptr);
-  mojo::MakeSelfOwnedReceiver<WebNNContextProvider>(
-      std::make_unique<WebNNContextProviderImpl>(
-          std::move(shared_context_state), std::move(gpu_feature_info)),
-      std::move(receiver));
-#endif
+      base::WrapUnique(new WebNNContextProviderImpl()), std::move(receiver));
 }
+#else
+// static
+std::unique_ptr<WebNNContextProviderImpl> WebNNContextProviderImpl::Create(
+    mojo::PendingReceiver<WebNNContextProvider> receiver,
+    base::OnceClosure on_disconnect_handler,
+    scoped_refptr<gpu::SharedContextState> shared_context_state,
+    gpu::GpuFeatureInfo gpu_feature_info) {
+  CHECK_NE(shared_context_state, nullptr);
+  return base::WrapUnique(new WebNNContextProviderImpl(
+      std::move(receiver), std::move(on_disconnect_handler),
+      std::move(shared_context_state), std::move(gpu_feature_info)));
+}
+#endif
 
 // static
 void WebNNContextProviderImpl::CreateForTesting(
@@ -144,6 +153,11 @@ void WebNNContextProviderImpl::CreateForTesting(
     bool is_gpu_supported) {
   CHECK_IS_TEST();
 
+  // TODO(crbug.com/40278771): use context provider manager instead of
+  // standalone for tests.
+#if BUILDFLAG(IS_CHROMEOS)
+  WebNNContextProviderImpl::Create(std::move(receiver));
+#else
   gpu::GpuFeatureInfo gpu_feature_info;
   for (auto& status : gpu_feature_info.status_values) {
     status = gpu::GpuFeatureStatus::kGpuFeatureStatusDisabled;
@@ -153,12 +167,10 @@ void WebNNContextProviderImpl::CreateForTesting(
                        : gpu::kGpuFeatureStatusBlocklisted;
 
   mojo::MakeSelfOwnedReceiver<WebNNContextProvider>(
-      std::make_unique<WebNNContextProviderImpl>(
-#if !BUILDFLAG(IS_CHROMEOS)
-          /*shared_context_state=*/nullptr, std::move(gpu_feature_info)
-#endif
-              ),
+      base::WrapUnique(new WebNNContextProviderImpl(
+          /*shared_context_state=*/nullptr, std::move(gpu_feature_info))),
       std::move(receiver));
+#endif  // BUILDFLAG(IS_CHROMEOS)
 }
 
 void WebNNContextProviderImpl::OnConnectionError(WebNNContextImpl* impl) {

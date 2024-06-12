@@ -112,7 +112,7 @@
 
 #if !BUILDFLAG(IS_CHROMEOS)
 #include "components/ml/webnn/features.mojom-features.h"
-#include "services/webnn/webnn_context_provider_impl.h"
+#include "services/webnn/webnn_context_provider_manager.h"
 #endif  // !BUILDFLAG(IS_CHROMEOS)
 
 #if BUILDFLAG(IS_WIN)
@@ -427,6 +427,14 @@ GpuServiceImpl::GpuServiceImpl(
   gpu_memory_buffer_factory_ = gpu::GpuMemoryBufferFactory::CreateNativeType(
       vulkan_context_provider(), io_runner_);
 
+#if !BUILDFLAG(IS_CHROMEOS)
+  if (base::FeatureList::IsEnabled(
+          webnn::mojom::features::kWebMachineLearningNeuralNetwork)) {
+    owned_webnn_context_provider_manager_ =
+        std::make_unique<webnn::WebNNContextProviderManager>();
+  }
+#endif
+
   weak_ptr_ = weak_ptr_factory_.GetWeakPtr();
 }
 
@@ -493,6 +501,10 @@ GpuServiceImpl::~GpuServiceImpl() {
   owned_scheduler_.reset();
   owned_sync_point_manager_.reset();
   owned_shared_image_manager_.reset();
+
+#if !BUILDFLAG(IS_CHROMEOS)
+  owned_webnn_context_provider_manager_.reset();
+#endif
 
   // The image decode accelerator worker must outlive the GPU channel manager so
   // that it doesn't get any decode requests during/after destruction.
@@ -910,8 +922,9 @@ void GpuServiceImpl::BindWebNNContextProvider(
                        std::move(pending_receiver), client_id));
     return;
   }
-  webnn::WebNNContextProviderImpl::Create(std::move(pending_receiver),
-                                          GetContextState(), gpu_feature_info_);
+  owned_webnn_context_provider_manager_->CreateWebNNContextProviderImpl(
+      client_id, std::move(pending_receiver), GetContextState(),
+      gpu_feature_info_);
 }
 #endif  // !BUILDFLAG(IS_CHROMEOS)
 
