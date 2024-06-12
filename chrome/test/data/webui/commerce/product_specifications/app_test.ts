@@ -496,6 +496,7 @@ suite('AppTest', () => {
       }),
       infos: [info1, info2],
     });
+
     createAppElementWithPromiseValues(promiseValues);
     appElement.resetMinLoadingAnimationMsForTesting();
     await flushTasks();
@@ -533,6 +534,115 @@ suite('AppTest', () => {
         rows);
   });
 
+  test('add url for new set creates set', async () => {
+    const openTabs = [{
+      title: 'title',
+      url: stringToMojoUrl('https://example.com/'),
+    }];
+    shoppingServiceApi.setResultFor(
+        'getUrlInfosForOpenTabs', Promise.resolve({urlInfos: openTabs}));
+    shoppingServiceApi.setResultFor(
+        'getUrlInfosForRecentlyViewedTabs', Promise.resolve({urlInfos: []}));
+
+    createAppElement();
+    appElement.resetMinLoadingAnimationMsForTesting();
+    await flushTasks();
+
+    // Click on the "add column" button and select the first (only) item.
+    const newColSelector = appElement.$.newColumnSelector;
+    newColSelector.$.button.click();
+    await waitAfterNextRender(appElement);
+    const menu = newColSelector.$.productSelectionMenu;
+    const crActionMenu = menu.$.menu.get();
+    assertTrue(crActionMenu.open);
+    const dropdownItem =
+        crActionMenu.querySelector<HTMLElement>('.dropdown-item')!;
+    dropdownItem.click();
+    await waitAfterNextRender(appElement);
+
+    // Since the UI wasn't showing an existing set, we should attempt to create
+    // one.
+    const args =
+        await shoppingServiceApi.whenCalled('addProductSpecificationsSet');
+    assertEquals(2, args.length);
+    assertArrayEquals([{url: 'https://example.com/'}], args[1]);
+  });
+
+  test('add url for existing set', async () => {
+    const dimensionValues = {
+      summary: [],
+      specificationDescriptions: [
+        {
+          label: '',
+          altText: '',
+          options: [],
+        },
+      ],
+    };
+    const dimensionValuesMap = new Map<bigint, ProductSpecificationsValue>(
+        [[BigInt(2), dimensionValues]]);
+
+    const specsProduct = createSpecsProduct({
+      productClusterId: BigInt(123),
+      title: 'Product',
+      productDimensionValues: dimensionValuesMap,
+    });
+    const info = createInfo({
+      clusterId: BigInt(123),
+      title: 'Product',
+      productUrl: {url: 'https://example.com/'},
+      imageUrl: {url: 'http://example.com/image.png'},
+    });
+
+    const testId = '00000000-0000-0000-0000-000000000001';
+    const promiseValues = createAppPromiseValues({
+      idParam: testId,
+      specs: createSpecs({
+        productDimensionMap: new Map<bigint, string>([[BigInt(2), 'Title']]),
+        products: [specsProduct],
+      }),
+      infos: [info],
+    });
+
+    const specsSet = createSpecsSet(
+        {urls: [{url: 'https://example.com/'}], uuid: {value: testId}});
+    shoppingServiceApi.setResultFor(
+        'getProductSpecificationsSetByUuid', Promise.resolve({set: specsSet}));
+
+    const openTabs = [{
+      title: 'title 2',
+      url: stringToMojoUrl('https://example.com/2'),
+    }];
+    shoppingServiceApi.setResultFor(
+        'getUrlInfosForOpenTabs', Promise.resolve({urlInfos: openTabs}));
+    shoppingServiceApi.setResultFor(
+        'getUrlInfosForRecentlyViewedTabs', Promise.resolve({urlInfos: []}));
+
+    createAppElementWithPromiseValues(promiseValues);
+    appElement.resetMinLoadingAnimationMsForTesting();
+    await flushTasks();
+
+    // Click on the "add column" button and select the first (only) item.
+    const newColSelector = appElement.$.newColumnSelector;
+    newColSelector.$.button.click();
+    await waitAfterNextRender(appElement);
+    const menu = newColSelector.$.productSelectionMenu;
+    const crActionMenu = menu.$.menu.get();
+    assertTrue(crActionMenu.open);
+    const dropdownItem =
+        crActionMenu.querySelector<HTMLElement>('.dropdown-item')!;
+    dropdownItem.click();
+    await waitAfterNextRender(appElement);
+
+    // We should see a call to update the URLs in the set.
+    const args = await shoppingServiceApi.whenCalled(
+        'setUrlsForProductSpecificationsSet');
+    assertEquals(2, args.length);
+    assertArrayEquals(
+        [{url: 'https://example.com/'}, {url: 'https://example.com/2'}],
+        args[1]);
+  });
+
   test('shows full table loading state', async () => {
     const minLoadingAnimationMs = 10;
     const promiseValues = createAppPromiseValues({
@@ -563,14 +673,16 @@ suite('AppTest', () => {
 
   test('updates on selection change', async () => {
     const urlsParam = ['https://example.com/', 'https://example2.com/'];
-    const promiseValues = createAppPromiseValues({urlsParam: urlsParam});
+    const specsSetUrls =
+        [{url: 'https://example.com/'}, {url: 'https://example2.com/'}];
+    const specsSet = createSpecsSet({urls: specsSetUrls, uuid: {value: 'foo'}});
+    const promiseValues =
+        createAppPromiseValues({urlsParam: urlsParam, specsSet: specsSet});
     await createAppElementWithPromiseValues(promiseValues);
 
     assertEquals(
-        1, shoppingServiceApi.getCallCount('getProductSpecificationsForUrls'));
-    assertArrayEquals(
-        urlsParam.map(url => ({url})),
-        shoppingServiceApi.getArgs('getProductSpecificationsForUrls')[0]);
+        0,
+        shoppingServiceApi.getCallCount('setUrlsForProductSpecificationsSet'));
 
     const table =
         appElement.shadowRoot!.querySelector('product-specifications-table');
@@ -585,10 +697,11 @@ suite('AppTest', () => {
     await flushTasks();
 
     assertEquals(
-        2, shoppingServiceApi.getCallCount('getProductSpecificationsForUrls'));
+        1,
+        shoppingServiceApi.getCallCount('setUrlsForProductSpecificationsSet'));
     assertArrayEquals(
         [{url: newUrl}],
-        shoppingServiceApi.getArgs('getProductSpecificationsForUrls')[1]);
+        shoppingServiceApi.getArgs('setUrlsForProductSpecificationsSet')[0][1]);
   });
 
   test('updates on removal', async () => {

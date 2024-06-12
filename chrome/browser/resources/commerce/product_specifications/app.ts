@@ -14,11 +14,13 @@ import {ColorChangeUpdater} from 'chrome://resources/cr_components/color_change_
 import type {BrowserProxy} from 'chrome://resources/cr_components/commerce/browser_proxy.js';
 import {BrowserProxyImpl} from 'chrome://resources/cr_components/commerce/browser_proxy.js';
 import type {PageCallbackRouter, ProductSpecificationsSet} from 'chrome://resources/cr_components/commerce/shopping_service.mojom-webui.js';
+import {assert} from 'chrome://resources/js/assert.js';
 import type {Uuid} from 'chrome://resources/mojo/mojo/public/mojom/base/uuid.mojom-webui.js';
 import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {getTemplate} from './app.html.js';
 import type {HeaderElement} from './header.js';
+import type {NewColumnSelectorElement} from './new_column_selector.js';
 import type {ProductSelectorElement} from './product_selector.js';
 import {Router} from './router.js';
 import type {ProductInfo, ProductSpecifications, ProductSpecificationsProduct} from './shopping_service.mojom-webui.js';
@@ -38,6 +40,7 @@ export interface ProductSpecificationsElement {
   $: {
     header: HeaderElement,
     loading: HTMLElement,
+    newColumnSelector: NewColumnSelectorElement,
     productSelector: ProductSelectorElement,
     summaryTable: TableElement,
   };
@@ -140,17 +143,8 @@ export class ProductSpecificationsElement extends PolymerElement {
       return;
     }
 
-    const setName = 'Product specs';
-    this.setName_ = setName;
-    const {createdSet} = await this.shoppingApi_.addProductSpecificationsSet(
-        setName, urls.map(url => ({url})));
-    if (createdSet) {
-      this.id_ = createdSet.uuid;
-      window.history.replaceState(
-          undefined, '', '?id=' + createdSet.uuid.value);
-    }
-
-    this.populateTable_(urls);
+    // TODO(b/346601645): Detect if a set already exists
+    await this.createNewSet_(urls);
   }
 
   resetMinLoadingAnimationMsForTesting(newValue = 0) {
@@ -301,24 +295,40 @@ export class ProductSpecificationsElement extends PolymerElement {
   private onUrlAdd_(e: CustomEvent<{url: string}>) {
     const urls = this.getTableUrls_();
     urls.push(e.detail.url);
-    // TODO(b/330345730): Plumb through mojom instead of calling populateTable
-    // directly. Then, onSetUpdated should handle the table change.
-    this.populateTable_(urls);
+    this.modifyUrls_(urls);
   }
 
   private onUrlChange_(e: CustomEvent<{url: string, index: number}>) {
     const urls = this.getTableUrls_();
     urls[e.detail.index] = e.detail.url;
-    // TODO(b/330345730): Plumb through mojom instead of calling populateTable
-    // directly. Then, onSetUpdated should handle the table change.
-    this.populateTable_(urls);
+    this.modifyUrls_(urls);
   }
 
   private onUrlRemove_(e: CustomEvent<{index: number}>) {
     const urls = this.getTableUrls_();
     urls.splice(e.detail.index, 1);
-    // TODO(b/330345730): Plumb through mojom instead of calling populateTable
-    // directly. Then, onSetUpdated should handle the table change.
+    this.modifyUrls_(urls);
+  }
+
+  private modifyUrls_(urls: string[]) {
+    if (this.id_) {
+      this.shoppingApi_.setUrlsForProductSpecificationsSet(
+          this.id_!, urls.map(url => ({url})));
+    } else {
+      this.createNewSet_(urls);
+    }
+  }
+
+  private async createNewSet_(urls: string[]) {
+    assert(!this.id_ && !this.setName_);
+    // TODO(b/346381503): Use a more targeted set name.
+    this.setName_ = 'Product specs';
+    const {createdSet} = await this.shoppingApi_.addProductSpecificationsSet(
+        this.setName_, urls.map(url => ({url})));
+    if (createdSet) {
+      this.id_ = createdSet.uuid;
+      window.history.replaceState(undefined, '', `?id=${this.id_.value}`);
+    }
     this.populateTable_(urls);
   }
 
