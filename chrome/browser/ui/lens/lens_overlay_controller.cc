@@ -64,7 +64,6 @@
 #include "ui/views/controls/webview/webview.h"
 #include "ui/views/layout/flex_layout_types.h"
 #include "ui/views/layout/flex_layout_view.h"
-#include "ui/views/widget/widget.h"
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
 #include "ui/aura/window.h"                    // nogncheck
@@ -145,26 +144,6 @@ std::vector<lens::mojom::OverlayObjectPtr> CopyObjects(
       objects.begin(), objects.end(), objects_copy.begin(),
       [](const lens::mojom::OverlayObjectPtr& obj) { return obj->Clone(); });
   return objects_copy;
-}
-
-gfx::Rect ComputeOverlayBounds(content::WebContents* contents) {
-  auto bounds = contents->GetContainerBounds();
-#if BUILDFLAG(IS_CHROMEOS_ASH)
-  gfx::NativeWindow top_level_native_window =
-      contents->GetTopLevelNativeWindow();
-  if (!top_level_native_window->GetProperty(wm::kUsesScreenCoordinatesKey)) {
-    wm::ConvertRectFromScreen(top_level_native_window, &bounds);
-  }
-#endif
-  return bounds;
-}
-
-gfx::NativeView TopLevelNativeView(content::WebContents* contents) {
-  gfx::NativeWindow top_level_native_window =
-      contents->GetTopLevelNativeWindow();
-  views::Widget* top_level_widget =
-      views::Widget::GetWidgetForNativeWindow(top_level_native_window);
-  return top_level_widget->GetNativeView();
 }
 
 }  // namespace
@@ -519,13 +498,12 @@ void LensOverlayController::ResetSearchboxHandler() {
   searchbox_handler_.reset();
 }
 
-views::Widget* LensOverlayController::GetOverlayWidgetForTesting() {
-  return overlay_widget_.get();
+views::View* LensOverlayController::GetOverlayViewForTesting() {
+  return overlay_view_.get();
 }
 
-void LensOverlayController::ResetUIBounds() {
-  content::WebContents* active_web_contents = tab_->GetContents();
-  overlay_widget_->SetBounds(ComputeOverlayBounds(active_web_contents));
+views::WebView* LensOverlayController::GetOverlayWebViewForTesting() {
+  return overlay_web_view_.get();
 }
 
 void LensOverlayController::CreateGlueForWebView(views::WebView* web_view) {
@@ -573,8 +551,6 @@ void LensOverlayController::SendObjects(
 }
 
 void LensOverlayController::NotifyResultsPanelOpened() {
-  UpdateCornerRadiusForSidePanel();
-
   page_->NotifyResultsPanelOpened();
 }
 
@@ -871,15 +847,6 @@ class LensOverlayController::UnderlyingWebContentsObserver
       const UnderlyingWebContentsObserver&) = delete;
 
   // content::WebContentsObserver
-  void FrameSizeChanged(content::RenderFrameHost* render_frame_host,
-                        const gfx::Size& frame_size) override {
-    // We only care to resize the overlay when it's visible to the user.
-    if (lens_overlay_controller_->IsOverlayShowing()) {
-      lens_overlay_controller_->ResetUIBounds();
-    }
-  }
-
-  // content::WebContentsObserver
   void PrimaryPageChanged(content::Page& page) override {
     lens_overlay_controller_->CloseUISync(
         lens::LensOverlayDismissalSource::kPageChanged);
@@ -1003,7 +970,7 @@ void LensOverlayController::DidCaptureScreenshot(
       color_palette, page_url, page_title);
   AddBoundingBoxesToInitializationData(all_bounds);
 
-  ShowOverlayWidget();
+  ShowOverlay();
 
   state_ = State::kStartingWebUI;
 }
@@ -1049,29 +1016,17 @@ void LensOverlayController::AddBoundingBoxesToInitializationData(
       std::move(significant_region_boxes);
 }
 
-void LensOverlayController::ShowOverlayWidget() {
-  content::WebContents* active_web_contents = tab_->GetContents();
+void LensOverlayController::ShowOverlay() {
+  // Listen to WebContents events
+  tab_contents_observer_ = std::make_unique<UnderlyingWebContentsObserver>(
+      tab_->GetContents(), this);
 
-  if (overlay_widget_) {
+  // If the view already exists, we just need to reshow it.
+  if (overlay_view_) {
     CHECK(overlay_web_view_);
-    CHECK(!overlay_widget_->IsVisible());
+    CHECK(!overlay_view_->GetVisible());
 
-    // If the tab has moved windows, the widget must be reparented.
-    if (overlay_widget_window_session_id_.value() !=
-        tab_->GetBrowserWindowInterface()->GetSessionID()) {
-      views::Widget::ReparentNativeView(
-          overlay_widget_->GetNativeView(),
-          TopLevelNativeView(tab_->GetContents()));
-    }
-
-    // Regardless, reset state associated with the parent widget.
-    tab_contents_observer_ = std::make_unique<UnderlyingWebContentsObserver>(
-        active_web_contents, this);
-    overlay_widget_window_session_id_.emplace(
-        tab_->GetBrowserWindowInterface()->GetSessionID());
-    ResetUIBounds();
-
-    overlay_widget_->Show();
+    overlay_view_->SetVisible(true);
 
     // The overlay needs to be focused on show to immediately begin
     // receiving key events.
@@ -1079,25 +1034,20 @@ void LensOverlayController::ShowOverlayWidget() {
     return;
   }
 
-  overlay_widget_ = std::make_unique<views::Widget>();
-  overlay_widget_->Init(CreateWidgetInitParams());
-  overlay_widget_->SetContentsView(CreateViewForOverlay());
-  overlay_widget_window_session_id_.emplace(
-      tab_->GetBrowserWindowInterface()->GetSessionID());
+  // Create the view that will house our UI.
+  std::unique_ptr<views::View> host_view = CreateViewForOverlay();
 
-  tab_contents_observer_ = std::make_unique<UnderlyingWebContentsObserver>(
-      active_web_contents, this);
+  // Grab the tab contents web view.
+  auto* contents_web_view = tab_->GetBrowserWindowInterface()->GetWebView();
+  CHECK(contents_web_view);
 
-  // Stack widget at top.
-  gfx::NativeWindow top_level_native_window =
-      active_web_contents->GetTopLevelNativeWindow();
-  views::Widget* top_level_widget =
-      views::Widget::GetWidgetForNativeWindow(top_level_native_window);
-  overlay_widget_->StackAboveWidget(top_level_widget);
+  // Ensure our view starts with the correct bounds.
+  host_view->SetBoundsRect(contents_web_view->GetLocalBounds());
 
-  SetWebViewCornerRadii(initial_corner_radii_);
+  // Add the view as a child of the view housing the tab contents.
+  overlay_view_ = contents_web_view->AddChildView(std::move(host_view));
+  tab_contents_view_observer_.Observe(contents_web_view);
 
-  overlay_widget_->Show();
   // The overlay needs to be focused on show to immediately begin
   // receiving key events.
   CHECK(overlay_web_view_);
@@ -1106,41 +1056,11 @@ void LensOverlayController::ShowOverlayWidget() {
 
 void LensOverlayController::BackgroundUI() {
   RemoveBackgroundBlur();
-  overlay_widget_->Hide();
+  overlay_view_->SetVisible(false);
   tab_contents_observer_.reset();
   state_ = State::kBackground;
 
   // TODO(b/335516480): Schedule the UI to be suspended.
-}
-
-void LensOverlayController::SetWebViewCornerRadii(
-    const gfx::RoundedCornersF& radii) {
-  CHECK(overlay_web_view_);
-  views::NativeViewHost* host = overlay_web_view_->holder();
-  DCHECK(host);
-
-  host->SetCornerRadii(radii);
-}
-
-void LensOverlayController::UpdateCornerRadiusForSidePanel() {
-  Browser* tab_browser = chrome::FindBrowserWithTab(tab_->GetContents());
-  CHECK(tab_browser);
-  auto* browser_view = BrowserView::GetBrowserViewForBrowser(tab_browser);
-  CHECK(browser_view);
-
-  bool is_right_aligned = browser_view->unified_side_panel()->IsRightAligned();
-  const float corner_radius =
-      browser_view->GetLayoutProvider()->GetCornerRadiusMetric(
-          views::ShapeContextTokens::kSidePanelPageContentRadius);
-  gfx::RoundedCornersF new_radii = initial_corner_radii_;
-  if (is_right_aligned) {
-    new_radii.set_upper_right(corner_radius);
-    new_radii.set_lower_right(0);
-  } else {
-    new_radii.set_upper_left(corner_radius);
-    new_radii.set_lower_left(0);
-  }
-  SetWebViewCornerRadii(new_radii);
 }
 
 void LensOverlayController::CloseUIPart2(
@@ -1159,7 +1079,7 @@ void LensOverlayController::CloseUIPart2(
   state_ = State::kClosing;
 
   // Destroy the glue to avoid UaF. This must be done before destroying
-  // `results_side_panel_coordinator_` or `overlay_widget_`.
+  // `results_side_panel_coordinator_` or `overlay_view_`.
   // This logic results on the assumption that the only way to destroy the
   // instances of views::WebView being glued is through this method. Any changes
   // to this assumption will likely need to restructure the concept of
@@ -1191,16 +1111,25 @@ void LensOverlayController::CloseUIPart2(
   side_panel_state_observer_.Reset();
   side_panel_coordinator_ = nullptr;
 
-  // Widget destruction can be asynchronous. We want to synchronously release
-  // resources, so we clear the contents view immediately.
-  overlay_web_view_ = nullptr;
-  if (overlay_widget_) {
-    overlay_widget_->SetContentsView(std::make_unique<views::View>());
-  }
-  overlay_widget_.reset();
-  overlay_widget_window_session_id_.reset();
-  tab_contents_observer_.reset();
+  if (overlay_view_) {
+    auto* contents_web_view = tab_->GetBrowserWindowInterface()->GetWebView();
+    CHECK(contents_web_view);
 
+    // Remove and delete the overlay view and web view. Not doing so will result
+    // in dangling pointers when the browser closes. Note the trailing `T` on
+    // the method name -- this removes `overlay_view_` and returns a unique_ptr
+    // to it which we then discard.  Without the `T`, it returns nothing and
+    // frees nothing. Since technically the views are owned by
+    // contents_web_view, we need to release our reference using std::exchange
+    // to avoid a dangling pointer which throws an error when DCHECK is on.
+    overlay_view_->RemoveChildViewT(std::exchange(overlay_web_view_, nullptr));
+    contents_web_view->RemoveChildViewT(std::exchange(overlay_view_, nullptr));
+  }
+  overlay_web_view_ = nullptr;
+  overlay_view_ = nullptr;
+
+  tab_contents_view_observer_.Reset();
+  tab_contents_observer_.reset();
   side_panel_receiver_.reset();
   side_panel_page_.reset();
   receiver_.reset();
@@ -1265,22 +1194,6 @@ void LensOverlayController::InitializeOverlayUI(
   }
 }
 
-views::Widget::InitParams LensOverlayController::CreateWidgetInitParams() {
-  content::WebContents* active_web_contents = tab_->GetContents();
-  views::Widget::InitParams params(
-      views::Widget::InitParams::NATIVE_WIDGET_OWNS_WIDGET,
-      views::Widget::InitParams::TYPE_WINDOW_FRAMELESS);
-  params.name = "LensOverlayWidget";
-  params.child = true;
-
-  params.parent = TopLevelNativeView(active_web_contents);
-  params.layer_type = ui::LAYER_NOT_DRAWN;
-
-  params.opacity = views::Widget::InitParams::WindowOpacity::kTranslucent;
-  params.bounds = ComputeOverlayBounds(active_web_contents);
-  return params;
-}
-
 std::unique_ptr<views::View> LensOverlayController::CreateViewForOverlay() {
   // Create a flex layout host view to make sure the web view covers the entire
   // tab.
@@ -1325,8 +1238,8 @@ bool LensOverlayController::HandleContextMenu(
 bool LensOverlayController::HandleKeyboardEvent(
     content::WebContents* source,
     const input::NativeWebKeyboardEvent& event) {
-  // This can be called before the overlay web view is attached to the widget.
-  // In that case, the focus manager could be null.
+  // This can be called before the overlay web view is attached to the overlay
+  // view. In that case, the focus manager could be null.
   if (overlay_web_view_ && overlay_web_view_->GetFocusManager()) {
     return unhandled_keyboard_event_handler_.HandleKeyboardEvent(
         event, overlay_web_view_->GetFocusManager());
@@ -1336,6 +1249,12 @@ bool LensOverlayController::HandleKeyboardEvent(
 
 void LensOverlayController::OnFullscreenStateChanged() {
   CloseUISync(lens::LensOverlayDismissalSource::kFullscreened);
+}
+
+void LensOverlayController::OnViewBoundsChanged(views::View* observed_view) {
+  CHECK(observed_view == overlay_view_->parent());
+  gfx::Rect bounds = observed_view->GetLocalBounds();
+  overlay_view_->SetBoundsRect(bounds);
 }
 
 const GURL& LensOverlayController::GetPageURL() const {
@@ -1444,9 +1363,9 @@ void LensOverlayController::OnSidePanelDidClose() {
 }
 
 void LensOverlayController::TabForegrounded(tabs::TabInterface* tab) {
-  // If the overlay was backgrounded, reshow the overlay widget.
+  // If the overlay was backgrounded, reshow the overlay view.
   if (state_ == State::kBackground) {
-    ShowOverlayWidget();
+    ShowOverlay();
     state_ = State::kOverlay;
 
     // Show after moving to kOverlay state.
@@ -1544,7 +1463,7 @@ void LensOverlayController::AddBackgroundBlur() {
     return;
   }
   // Blur the original web contents. This should be done after the overlay
-  // widget is showing and the screenshot is rendered so the user cannot see the
+  // view is showing and the screenshot is rendered so the user cannot see the
   // live page get blurred. SetLayerBlur() multiplies by 3 to convert the given
   // value to a pixel value. Since we are already in pixels, we need to divide
   // by 3 so the blur is as expected.

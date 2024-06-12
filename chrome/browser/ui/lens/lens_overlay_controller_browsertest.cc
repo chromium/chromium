@@ -432,12 +432,7 @@ class LensOverlayControllerBrowserTest : public InProcessBrowserTest {
                            ->GetActiveTab()
                            ->tab_features()
                            ->lens_overlay_controller();
-    raw_ptr<views::WebView> overlay_web_view =
-        views::AsViewClass<views::WebView>(
-            controller->GetOverlayWidgetForTesting()
-                ->GetContentsView()
-                ->children()[0]);
-    return overlay_web_view->GetWebContents();
+    return controller->GetOverlayWebViewForTesting()->GetWebContents();
   }
 
   void SimulateLeftClickDrag(gfx::Point from, gfx::Point to) {
@@ -1232,7 +1227,7 @@ IN_PROC_BROWSER_TEST_F(LensOverlayControllerBrowserTest,
   ASSERT_TRUE(base::test::RunUntil(
       [&]() { return controller->state() == State::kOverlay; }));
   ASSERT_TRUE(content::WaitForLoadStop(GetOverlayWebContents()));
-  EXPECT_TRUE(controller->GetOverlayWidgetForTesting()->IsVisible());
+  EXPECT_TRUE(controller->GetOverlayViewForTesting()->GetVisible());
 
   // Open a side panel to test that the side panel persists between tab
   // switches.
@@ -1250,7 +1245,7 @@ IN_PROC_BROWSER_TEST_F(LensOverlayControllerBrowserTest,
                    ui_test_utils::BROWSER_TEST_WAIT_FOR_LOAD_STOP);
   EXPECT_TRUE(base::test::RunUntil(
       [&]() { return controller->state() == State::kBackground; }));
-  EXPECT_FALSE(controller->GetOverlayWidgetForTesting()->IsVisible());
+  EXPECT_FALSE(controller->GetOverlayViewForTesting()->GetVisible());
   EXPECT_TRUE(base::test::RunUntil(
       [&]() { return !coordinator->IsSidePanelShowing(); }));
 
@@ -1258,7 +1253,7 @@ IN_PROC_BROWSER_TEST_F(LensOverlayControllerBrowserTest,
   browser()->tab_strip_model()->ActivateTabAt(active_controller_tab_index);
   EXPECT_TRUE(base::test::RunUntil(
       [&]() { return controller->state() == State::kOverlay; }));
-  EXPECT_TRUE(controller->GetOverlayWidgetForTesting()->IsVisible());
+  EXPECT_TRUE(controller->GetOverlayViewForTesting()->GetVisible());
   // Side panel should come back when returning to previous tab.
   EXPECT_TRUE(base::test::RunUntil(
       [&]() { return coordinator->IsSidePanelShowing(); }));
@@ -1284,7 +1279,7 @@ IN_PROC_BROWSER_TEST_F(LensOverlayControllerBrowserTest,
   ASSERT_TRUE(base::test::RunUntil(
       [&]() { return controller->state() == State::kOverlay; }));
   ASSERT_TRUE(content::WaitForLoadStop(GetOverlayWebContents()));
-  EXPECT_TRUE(controller->GetOverlayWidgetForTesting()->IsVisible());
+  EXPECT_TRUE(controller->GetOverlayViewForTesting()->GetVisible());
 
   // Side panel is not showing at first.
   auto* coordinator =
@@ -1339,7 +1334,7 @@ IN_PROC_BROWSER_TEST_F(LensOverlayControllerBrowserTest,
   EXPECT_TRUE(base::test::RunUntil(
       [&]() { return controller->state() == State::kOverlay; }));
   EXPECT_TRUE(content::WaitForLoadStop(GetOverlayWebContents()));
-  EXPECT_TRUE(controller->GetOverlayWidgetForTesting()->IsVisible());
+  EXPECT_TRUE(controller->GetOverlayViewForTesting()->GetVisible());
 
   // Loading a url in the side panel should show the results page. This needs to
   // be done to set up the WebContentsObserver.
@@ -1421,7 +1416,7 @@ IN_PROC_BROWSER_TEST_F(LensOverlayControllerBrowserTest,
   EXPECT_TRUE(base::test::RunUntil(
       [&]() { return controller->state() == State::kOverlay; }));
   EXPECT_TRUE(content::WaitForLoadStop(GetOverlayWebContents()));
-  EXPECT_TRUE(controller->GetOverlayWidgetForTesting()->IsVisible());
+  EXPECT_TRUE(controller->GetOverlayViewForTesting()->GetVisible());
 
   // Loading a url in the side panel should show the results page. This needs to
   // be done to set up the WebContentsObserver.
@@ -1485,7 +1480,7 @@ IN_PROC_BROWSER_TEST_F(LensOverlayControllerBrowserTest,
   EXPECT_TRUE(base::test::RunUntil(
       [&]() { return controller->state() == State::kOverlay; }));
   EXPECT_TRUE(content::WaitForLoadStop(GetOverlayWebContents()));
-  EXPECT_TRUE(controller->GetOverlayWidgetForTesting()->IsVisible());
+  EXPECT_TRUE(controller->GetOverlayViewForTesting()->GetVisible());
 
   // Loading a url in the side panel should show the results page. This needs to
   // be done to set up the WebContentsObserver.
@@ -1549,7 +1544,7 @@ IN_PROC_BROWSER_TEST_F(LensOverlayControllerBrowserTest,
   EXPECT_TRUE(base::test::RunUntil(
       [&]() { return controller->state() == State::kOverlay; }));
   EXPECT_TRUE(content::WaitForLoadStop(GetOverlayWebContents()));
-  EXPECT_TRUE(controller->GetOverlayWidgetForTesting()->IsVisible());
+  EXPECT_TRUE(controller->GetOverlayViewForTesting()->GetVisible());
 
   // Loading a url in the side panel should show the results page. This needs to
   // be done to set up the WebContentsObserver.
@@ -1655,7 +1650,7 @@ IN_PROC_BROWSER_TEST_F(LensOverlayControllerBrowserTest,
   EXPECT_TRUE(base::test::RunUntil(
       [&]() { return controller->state() == State::kOverlay; }));
   EXPECT_TRUE(content::WaitForLoadStop(GetOverlayWebContents()));
-  EXPECT_TRUE(controller->GetOverlayWidgetForTesting()->IsVisible());
+  EXPECT_TRUE(controller->GetOverlayViewForTesting()->GetVisible());
 
   // Loading a url in the side panel should show the results page.
   const GURL first_search_url(
@@ -1754,7 +1749,7 @@ IN_PROC_BROWSER_TEST_F(
   EXPECT_TRUE(base::test::RunUntil(
       [&]() { return controller->state() == State::kOverlay; }));
   EXPECT_TRUE(content::WaitForLoadStop(GetOverlayWebContents()));
-  EXPECT_TRUE(controller->GetOverlayWidgetForTesting()->IsVisible());
+  EXPECT_TRUE(controller->GetOverlayViewForTesting()->GetVisible());
 
   // Issuing a text selection request should show the results page.
   const GURL first_search_url(
@@ -1905,7 +1900,7 @@ IN_PROC_BROWSER_TEST_F(LensOverlayControllerBrowserTest,
   EXPECT_TRUE(base::test::RunUntil(
       [&]() { return controller->state() == State::kOverlay; }));
   EXPECT_TRUE(content::WaitForLoadStop(GetOverlayWebContents()));
-  EXPECT_TRUE(controller->GetOverlayWidgetForTesting()->IsVisible());
+  EXPECT_TRUE(controller->GetOverlayViewForTesting()->GetVisible());
 
   // Loading a url in the side panel should show the results page.
   const GURL first_search_url(

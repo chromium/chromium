@@ -81,12 +81,8 @@ class LensOverlayTest : public LensWebUIBrowserTest {
         [&]() { return controller->state() == State::kOverlay; }));
 
     // Get the overlay webview and wait for WebUI to finish loading.
-    raw_ptr<views::WebView> overlay_web_view =
-        views::AsViewClass<views::WebView>(
-            controller->GetOverlayWidgetForTesting()
-                ->GetContentsView()
-                ->children()[0]);
-    auto* web_contents = overlay_web_view->GetWebContents();
+    auto* web_contents =
+        controller->GetOverlayWebViewForTesting()->GetWebContents();
     content::WaitForLoadStop(web_contents);
     ASSERT_TRUE(RunTestOnWebContents(web_contents, file, trigger, true));
 
