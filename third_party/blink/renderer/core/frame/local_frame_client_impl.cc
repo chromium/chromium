@@ -385,6 +385,8 @@ void LocalFrameClientImpl::DispatchWillSendRequest(ResourceRequest& request) {
 void LocalFrameClientImpl::DispatchDidDispatchDOMContentLoadedEvent() {
   if (web_frame_->Client())
     web_frame_->Client()->DidDispatchDOMContentLoadedEvent();
+
+  web_frame_->DidDispatchDOMContentLoadedEvent();
 }
 
 void LocalFrameClientImpl::DispatchDidLoadResourceFromMemoryCache(

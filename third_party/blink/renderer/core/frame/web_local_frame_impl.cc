@@ -105,7 +105,6 @@
 #include "services/network/public/cpp/web_sandbox_flags.h"
 #include "services/network/public/mojom/web_sandbox_flags.mojom-blink.h"
 #include "third_party/blink/public/common/context_menu_data/context_menu_params_builder.h"
-#include "third_party/blink/public/common/features.h"
 #include "third_party/blink/public/common/frame/fenced_frame_sandbox_flags.h"
 #include "third_party/blink/public/common/page_state/page_state.h"
 #include "third_party/blink/public/common/storage_key/storage_key.h"
@@ -2511,21 +2510,49 @@ WebViewImpl* WebLocalFrameImpl::ViewImpl() const {
   return GetFrame()->GetPage()->GetChromeClient().GetWebView();
 }
 
+bool WebLocalFrameImpl::ShouldWarmUpCompositorOnPrerenderFromThisPoint(
+    features::Prerender2WarmUpCompositorTriggerPoint trigger_point) {
+  static const bool is_warm_up_compositor_enabled =
+      base::FeatureList::IsEnabled(::features::kWarmUpCompositor);
+  if (!is_warm_up_compositor_enabled) {
+    return false;
+  }
+
+  static const bool is_prerender2_warm_up_compositor_enabled =
+      base::FeatureList::IsEnabled(features::kPrerender2WarmUpCompositor);
+  // TODO(crbug.com/41496019): Seek the best point to start warm-up.
+  static const auto prerender2_warm_up_compositor_trigger_point =
+      features::kPrerender2WarmUpCompositorTriggerPoint.Get();
+  if (!is_prerender2_warm_up_compositor_enabled ||
+      prerender2_warm_up_compositor_trigger_point != trigger_point) {
+    return false;
+  }
+
+  if (!GetFrame()->IsOutermostMainFrame()) {
+    return false;
+  }
+
+  // TODO(crbug.com/41496019): Limit the use of this warm-up to prerender
+  // trigger types that are most affected by this.
+  if (!GetFrame()->GetPage() || !GetFrame()->GetPage()->IsPrerendering()) {
+    return false;
+  }
+
+  return true;
+}
+
 void WebLocalFrameImpl::DidCommitLoad() {
-  // If the page is under prerendering, the page requests compositor warm-up
-  // to minimize its activation time. Please see crbug.com/41496019 for more
-  // details.
-  if (frame_widget_ && GetFrame()->IsOutermostMainFrame() &&
-      GetFrame()->GetPage() && GetFrame()->GetPage()->IsPrerendering() &&
-      base::FeatureList::IsEnabled(::features::kWarmUpCompositor) &&
-      base::FeatureList::IsEnabled(
-          blink::features::kPrerender2WarmUpCompositor) &&
-      blink::features::kPrerender2WarmUpCompositorTriggerPoint.Get() ==
-          blink::features::Prerender2WarmUpCompositorTriggerPoint::
-              kDidCommitLoad) {
-    // TODO(crbug.com/41496019): Limit the use of this warm-up to prerender
-    // trigger types that are most affected by this.
-    // TODO(crbug.com/41496019): Seek the best point to start warm-up.
+  if (frame_widget_ &&
+      ShouldWarmUpCompositorOnPrerenderFromThisPoint(
+          features::Prerender2WarmUpCompositorTriggerPoint::kDidCommitLoad)) {
+    frame_widget_->WarmUpCompositor();
+  }
+}
+
+void WebLocalFrameImpl::DidDispatchDOMContentLoadedEvent() {
+  if (frame_widget_ && ShouldWarmUpCompositorOnPrerenderFromThisPoint(
+                           features::Prerender2WarmUpCompositorTriggerPoint::
+                               kDidDispatchDOMContentLoadedEvent)) {
     frame_widget_->WarmUpCompositor();
   }
 }
@@ -2544,20 +2571,9 @@ void WebLocalFrameImpl::DidFinish() {
   if (!Client())
     return;
 
-  // If the page is under prerendering, the page requests compositor warm-up
-  // to minimize its activation time. Please see crbug.com/41496019 for more
-  // details.
-  if (frame_widget_ && GetFrame()->IsOutermostMainFrame() &&
-      GetFrame()->GetPage() && GetFrame()->GetPage()->IsPrerendering() &&
-      base::FeatureList::IsEnabled(::features::kWarmUpCompositor) &&
-      base::FeatureList::IsEnabled(
-          blink::features::kPrerender2WarmUpCompositor) &&
-      blink::features::kPrerender2WarmUpCompositorTriggerPoint.Get() ==
-          blink::features::Prerender2WarmUpCompositorTriggerPoint::
-              kDidFinishLoad) {
-    // TODO(crbug.com/41496019): Limit the use of this warm-up to prerender
-    // trigger types that are most affected by this.
-    // TODO(crbug.com/41496019): Seek the best point to start warm-up.
+  if (frame_widget_ &&
+      ShouldWarmUpCompositorOnPrerenderFromThisPoint(
+          features::Prerender2WarmUpCompositorTriggerPoint::kDidFinishLoad)) {
     frame_widget_->WarmUpCompositor();
   }
 

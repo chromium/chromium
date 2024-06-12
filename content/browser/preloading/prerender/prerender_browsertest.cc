@@ -13670,6 +13670,7 @@ INSTANTIATE_TEST_SUITE_P(
     // latter flag is enabled).
     testing::Values(
         std::make_tuple(true, true, "did_commit_load"),
+        std::make_tuple(true, true, "did_dispatch_dom_content_loaded_event"),
         std::make_tuple(true, true, "did_finish_load"),
         // `kWarmUpCompositor` controls the independent cc internal feature of
         // warming up, and `kPrerender2WarmUpCompositor` manages the trigger
@@ -13678,6 +13679,7 @@ INSTANTIATE_TEST_SUITE_P(
         // are enabled.
         std::make_tuple(true, false, ""),
         std::make_tuple(false, true, "did_commit_load"),
+        std::make_tuple(false, true, "did_dispatch_dom_content_loaded_event"),
         std::make_tuple(false, true, "did_finish_load")),
     PrerenderWarmUpCompositorBrowserTest::DescribeParams);
 

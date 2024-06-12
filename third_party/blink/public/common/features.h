@@ -1225,6 +1225,7 @@ BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE(kPrerender2NoVarySearch);
 BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE(kPrerender2WarmUpCompositor);
 enum class Prerender2WarmUpCompositorTriggerPoint {
   kDidCommitLoad,
+  kDidDispatchDOMContentLoadedEvent,
   kDidFinishLoad,
 };
 BLINK_COMMON_EXPORT extern const base::FeatureParam<

@@ -1893,6 +1893,9 @@ const base::FeatureParam<Prerender2WarmUpCompositorTriggerPoint>::Option
     prerender2_warm_up_compositor_trigger_point[] = {
         {Prerender2WarmUpCompositorTriggerPoint::kDidCommitLoad,
          "did_commit_load"},
+        {Prerender2WarmUpCompositorTriggerPoint::
+             kDidDispatchDOMContentLoadedEvent,
+         "did_dispatch_dom_content_loaded_event"},
         {Prerender2WarmUpCompositorTriggerPoint::kDidFinishLoad,
          "did_finish_load"},
 };

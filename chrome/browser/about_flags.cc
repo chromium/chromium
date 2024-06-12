@@ -3910,6 +3910,9 @@ const FeatureEntry::FeatureParam
     kPrerender2WarmUpCompositorTriggerPointDidCommitLoad[] = {
         {"trigger_point", "did_commit_load"}};
 const FeatureEntry::FeatureParam
+    kPrerender2WarmUpCompositorTriggerPointDidDispatchDOMContentLoadedEvent[] =
+        {{"trigger_point", "did_dispatch_dom_content_loaded_event"}};
+const FeatureEntry::FeatureParam
     kPrerender2WarmUpCompositorTriggerPointDidFinishLoad[] = {
         {"trigger_point", "did_finish_load"}};
 const FeatureEntry::FeatureVariation
@@ -3917,6 +3920,11 @@ const FeatureEntry::FeatureVariation
         {"(on DidCommitLoad)",
          kPrerender2WarmUpCompositorTriggerPointDidCommitLoad,
          std::size(kPrerender2WarmUpCompositorTriggerPointDidCommitLoad),
+         nullptr},
+        {"(on DOMContentLoaded)",
+         kPrerender2WarmUpCompositorTriggerPointDidDispatchDOMContentLoadedEvent,
+         std::size(
+             kPrerender2WarmUpCompositorTriggerPointDidDispatchDOMContentLoadedEvent),
          nullptr},
         {"(on DidFinishLoad)",
          kPrerender2WarmUpCompositorTriggerPointDidFinishLoad,
