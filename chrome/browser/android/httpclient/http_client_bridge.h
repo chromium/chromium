@@ -7,10 +7,12 @@
 
 #include <jni.h>
 
+#include <map>
 #include <vector>
 
 #include "base/android/scoped_java_ref.h"
 #include "base/memory/weak_ptr.h"
+#include "url/gurl.h"
 
 class Profile;
 
@@ -32,11 +34,10 @@ class HttpClientBridge {
 
   void SendNetworkRequest(
       JNIEnv* env,
-      const base::android::JavaParamRef<jobject>& j_gurl,
-      const base::android::JavaParamRef<jstring>& j_request_type,
-      const base::android::JavaParamRef<jbyteArray>& j_body,
-      const base::android::JavaParamRef<jobjectArray>& j_header_keys,
-      const base::android::JavaParamRef<jobjectArray>& j_header_values,
+      GURL& gurl,
+      std::string& request_type,
+      std::vector<uint8_t>& request_body,
+      std::map<std::string, std::string> headers,
       jint j_network_annotation_hashcode,
       const base::android::JavaParamRef<jobject>& j_callback);
 
@@ -45,8 +46,7 @@ class HttpClientBridge {
                 int32_t http_code,
                 int32_t net_error_code,
                 std::vector<uint8_t>&& response_bytes,
-                std::vector<std::string>&& response_header_keys,
-                std::vector<std::string>&& response_header_values);
+                std::map<std::string, std::string>&& response_headers);
 
   std::unique_ptr<HttpClient> http_client_;
   base::WeakPtrFactory<HttpClientBridge> weak_ptr_factory_{this};

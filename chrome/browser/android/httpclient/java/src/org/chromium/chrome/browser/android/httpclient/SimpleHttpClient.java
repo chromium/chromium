@@ -4,7 +4,6 @@
 
 package org.chromium.chrome.browser.android.httpclient;
 
-import androidx.annotation.VisibleForTesting;
 
 import org.jni_zero.CalledByNative;
 import org.jni_zero.JNINamespace;
@@ -12,7 +11,6 @@ import org.jni_zero.JniType;
 import org.jni_zero.NativeMethods;
 
 import org.chromium.base.Callback;
-import org.chromium.base.JNIUtils;
 import org.chromium.base.ThreadUtils;
 import org.chromium.base.lifetime.Destroyable;
 import org.chromium.base.task.PostTask;
@@ -112,10 +110,6 @@ public class SimpleHttpClient implements Destroyable {
         assert mNativeBridge != 0;
         assert gurl.isValid();
 
-        String[] headerKeys = new String[headers.size()];
-        String[] headerValues = new String[headerKeys.length];
-        JNIUtils.splitMap(headers, headerKeys, headerValues);
-
         PostTask.runOrPostTask(
                 TaskTraits.UI_DEFAULT,
                 () -> {
@@ -125,27 +119,13 @@ public class SimpleHttpClient implements Destroyable {
                                     gurl,
                                     requestType,
                                     body,
-                                    headerKeys,
-                                    headerValues,
+                                    headers,
                                     annotation.getHashCode(),
                                     responseConsumer);
                 });
     }
 
-    /**
-     * Create the HttpResponse object based on set of attributes.  Note that the
-     * order of headerValues are designed to be purposefully matching
-     * headerKeys, and some headerKey(s) might map to multiple headerValues
-     * (which will be joined into one value separated by a new line).
-     *
-     * @param responseCode Response code for HttpResponse.
-     * @param netErrorCode Network error code for HttpResponse.
-     * @param body Response body for the HttpResponse.
-     * @param headerKeys Keys of the headers for the HttpResponse.
-     * @param headerValues Values of the headers for the HttpResponse.
-     */
-    @VisibleForTesting
-    @CalledByNative
+    // TODO(agrieve): Delete once unused by //clank.
     public static HttpResponse createHttpResponse(
             int responseCode,
             int netErrorCode,
@@ -155,7 +135,6 @@ public class SimpleHttpClient implements Destroyable {
         assert headerKeys.length == headerValues.length;
 
         Map<String, String> responseHeaders = new HashMap<>();
-
         for (int i = 0; i < headerKeys.length; i++) {
             if (!responseHeaders.containsKey(headerKeys[i])) {
                 responseHeaders.put(headerKeys[i], headerValues[i]);
@@ -165,6 +144,25 @@ public class SimpleHttpClient implements Destroyable {
                 responseHeaders.put(headerKeys[i], headerValue);
             }
         }
+        return createHttpResponse(responseCode, netErrorCode, body, responseHeaders);
+    }
+
+    /**
+     * Create the HttpResponse object based on set of attributes. Note that the order of
+     * headerValues are designed to be purposefully matching headerKeys, and some headerKey(s) might
+     * map to multiple headerValues (which will be joined into one value separated by a new line).
+     *
+     * @param responseCode Response code for HttpResponse.
+     * @param netErrorCode Network error code for HttpResponse.
+     * @param body Response body for the HttpResponse.
+     * @param headers Headers for the HttpResponse.
+     */
+    @CalledByNative
+    private static HttpResponse createHttpResponse(
+            int responseCode,
+            int netErrorCode,
+            @JniType("std::vector<uint8_t>") byte[] body,
+            @JniType("std::map<std::string, std::string>") Map<String, String> responseHeaders) {
         return new HttpResponse(responseCode, netErrorCode, body, responseHeaders);
     }
 
@@ -176,11 +174,10 @@ public class SimpleHttpClient implements Destroyable {
 
         void sendNetworkRequest(
                 long nativeHttpClientBridge,
-                GURL gurl,
-                String requestType,
-                byte[] body,
-                String[] headerKeys,
-                String[] headerValues,
+                @JniType("GURL") GURL gurl,
+                @JniType("std::string") String requestType,
+                @JniType("std::vector<uint8_t>") byte[] body,
+                @JniType("std::map<std::string, std::string>") Map<String, String> headers,
                 int annotation,
                 Callback<HttpResponse> responseCallback);
     }

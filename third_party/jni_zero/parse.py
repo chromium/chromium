@@ -211,7 +211,19 @@ def _parse_param_list(type_resolver, value) -> java_types.JavaParamList:
     return java_types.EMPTY_PARAM_LIST
   params = []
   value = _FINAL_REGEX.sub('', value)
+  pending = ''
   for param_str in value.split(','):
+    # Combine multiple entries when , is in an annotation.
+    # E.g.: @JniType("std::map<std::string, std::string>") Map arg0
+    if pending:
+      pending += ',' + param_str
+      if '"' not in param_str:
+        continue
+      param_str = pending
+      pending = ''
+    elif param_str.count('"') == 1:
+      pending = param_str
+      continue
     param_str = param_str.strip()
     param_str, _, param_name = param_str.rpartition(' ')
     param_str = param_str.rstrip()

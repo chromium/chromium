@@ -14,6 +14,11 @@ config("toolchain_define") {
   }
 }
 
+generate_jni("jni_zero_jni") {
+  sources = [ "java/src/org/jni_zero/JniUtil.java" ]
+  visibility = [ ":*" ]
+}
+
 generate_jar_jni("system_jni") {
   classes = [
     "java/util/Arrays.class",
@@ -51,14 +56,16 @@ component("jni_zero") {
     ":jni_include_dir",
   ]
 
-  # Need to depend on the inner target to avoid a circular dependency.
-  deps = [ ":system_jni__action($default_toolchain)" ]
+  deps = [
+    ":jni_zero_jni($default_toolchain)",
+    ":system_jni($default_toolchain)",
+  ]
 }
 
 if (enable_java_templates && is_android) {
   import("//build/config/android/rules.gni")
 
-  java_library("jni_zero_java") {
+  android_library("jni_zero_java") {
     supports_android = true
     deps = [ "//build/android:build_java" ]
     sources = [
@@ -70,6 +77,7 @@ if (enable_java_templates && is_android) {
       "java/src/org/jni_zero/JNINamespace.java",
       "java/src/org/jni_zero/JniStaticTestMocker.java",
       "java/src/org/jni_zero/JniType.java",
+      "java/src/org/jni_zero/JniUtil.java",
       "java/src/org/jni_zero/NativeClassQualifiedName.java",
       "java/src/org/jni_zero/NativeLibraryLoadedStatus.java",
       "java/src/org/jni_zero/NativeMethods.java",
