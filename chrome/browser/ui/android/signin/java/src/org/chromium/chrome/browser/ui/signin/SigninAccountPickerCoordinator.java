@@ -35,7 +35,6 @@ import org.chromium.components.browser_ui.widget.scrim.ScrimCoordinator;
 import org.chromium.components.signin.base.CoreAccountInfo;
 import org.chromium.components.signin.metrics.SigninAccessPoint;
 import org.chromium.ui.KeyboardVisibilityDelegate;
-import org.chromium.ui.UiUtils;
 import org.chromium.ui.base.WindowAndroid;
 import org.chromium.ui.util.ColorUtils;
 import org.chromium.ui.widget.Toast;
@@ -71,6 +70,9 @@ public class SigninAccountPickerCoordinator implements AccountPickerDelegate {
 
         /** Called when the bottom sheet is dismissed without completing sign-in. */
         void onSignInCancel();
+
+        /** Called when the bottom sheet scrim color is updated. */
+        void setScrimColor(@ColorInt int scrimColor);
     }
 
     /**
@@ -127,7 +129,12 @@ public class SigninAccountPickerCoordinator implements AccountPickerDelegate {
                                 float alpha = ((float) Color.alpha(scrimColor)) * scrimFraction;
                                 @ColorInt
                                 int color = ColorUtils.setAlphaComponent(scrimColor, (int) alpha);
-                                UiUtils.setStatusBarColor(mActivity.getWindow(), color);
+                                mDelegate.setScrimColor(color);
+                            }
+
+                            @Override
+                            public void setScrimColor(@ColorInt int scrimColor) {
+                                mDelegate.setScrimColor(scrimColor);
                             }
 
                             @Override

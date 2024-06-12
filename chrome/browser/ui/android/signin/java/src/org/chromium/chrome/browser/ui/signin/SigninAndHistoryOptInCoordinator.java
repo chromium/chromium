@@ -12,6 +12,7 @@ import android.view.ViewGroup;
 
 import androidx.activity.ComponentActivity;
 import androidx.activity.OnBackPressedCallback;
+import androidx.annotation.ColorInt;
 import androidx.annotation.IntDef;
 import androidx.annotation.NonNull;
 
@@ -28,6 +29,7 @@ import org.chromium.chrome.browser.ui.signin.history_sync.HistorySyncCoordinator
 import org.chromium.chrome.browser.ui.signin.history_sync.HistorySyncHelper;
 import org.chromium.components.browser_ui.device_lock.DeviceLockActivityLauncher;
 import org.chromium.components.browser_ui.styles.SemanticColorUtils;
+import org.chromium.components.browser_ui.widget.scrim.ScrimProperties;
 import org.chromium.components.signin.AccountManagerFacadeProvider;
 import org.chromium.components.signin.identitymanager.ConsentLevel;
 import org.chromium.components.signin.identitymanager.IdentityManager;
@@ -35,6 +37,7 @@ import org.chromium.components.signin.metrics.SigninAccessPoint;
 import org.chromium.components.sync.SyncFeatureMap;
 import org.chromium.components.sync.SyncService;
 import org.chromium.components.sync.UserSelectableType;
+import org.chromium.ui.UiUtils;
 import org.chromium.ui.base.WindowAndroid;
 import org.chromium.ui.modaldialog.DialogDismissalCause;
 import org.chromium.ui.modaldialog.ModalDialogManager;
@@ -77,6 +80,12 @@ public class SigninAndHistoryOptInCoordinator
 
         /** Called when the whole flow finishes. */
         void onFlowComplete();
+
+        /**
+         * Returns whether the history sync modal dialog is shown in full screen mode instead of
+         * dialog mode.
+         */
+        boolean isHistorySyncShownFullScreen();
     }
 
     /** The sign-in step that should be shown to the user when there's no account on the device. */
@@ -237,6 +246,24 @@ public class SigninAndHistoryOptInCoordinator
         mAccountPickerCoordinator.destroy();
         mAccountPickerCoordinator = null;
         onFlowComplete();
+    }
+
+    /** Implements {@link SigninAccountPickerCoordinator.Delegate}. */
+    @Override
+    public void setScrimColor(@ColorInt int scrimColor) {
+        // INVALID_COLOR is set at the end of the bottom sheet scrim fade out animation. The status
+        // bar background should then be reset to match the history sync full screen dialog which
+        // may appear next.
+        // In case the history sync dialog is skipped, the activity will finish and the status bar
+        // color change is not shown to the user.
+        if (scrimColor != ScrimProperties.INVALID_COLOR) {
+            UiUtils.setStatusBarColor(mActivity.getWindow(), scrimColor);
+            return;
+        }
+
+        if (mDelegate.isHistorySyncShownFullScreen()) {
+            UiUtils.setStatusBarColor(mActivity.getWindow(), getHistorySyncBackgroundColor());
+        }
     }
 
     /** Provides the root view of the sign-in and history opt-in flow. */
@@ -419,7 +446,7 @@ public class SigninAndHistoryOptInCoordinator
                         null);
         assert mDialogModel != null;
         View view = mHistorySyncCoordinator.getView();
-        view.setBackgroundColor(SemanticColorUtils.getDefaultBgColor(mActivity));
+        view.setBackgroundColor(getHistorySyncBackgroundColor());
         mDialogModel.set(ModalDialogProperties.CUSTOM_VIEW, view);
         ModalDialogManager manager = mModalDialogManagerSupplier.get();
         assert manager != null;
@@ -444,5 +471,9 @@ public class SigninAndHistoryOptInCoordinator
 
     private void onFlowComplete() {
         mDelegate.onFlowComplete();
+    }
+
+    private @ColorInt int getHistorySyncBackgroundColor() {
+        return SemanticColorUtils.getDefaultBgColor(mActivity);
     }
 }
