@@ -205,7 +205,7 @@ class PowerButton::MenuController : public ui::SimpleMenuModel::Delegate,
       case VIEW_ID_QS_POWER_SIGNOUT_MENU_BUTTON:
         quick_settings_metrics_util::RecordQsButtonActivated(
             QsButtonCatalogName::kPowerSignoutMenuButton);
-        Shell::Get()->session_controller()->RequestSignOut();
+        Shell::Get()->lock_state_controller()->RequestSignOut();
         break;
       case VIEW_ID_QS_POWER_RESTART_MENU_BUTTON:
         quick_settings_metrics_util::RecordQsButtonActivated(

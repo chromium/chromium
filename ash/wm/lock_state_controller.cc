@@ -435,6 +435,7 @@ void LockStateController::RequestShutdown(ShutdownReason reason) {
 
   shutting_down_ = true;
   shutdown_reason_ = reason;
+  shutdown_canceled_ = false;
 
   if (reason == ShutdownReason::LOGIN_SHUT_DOWN_BUTTON) {
     base::Time now_timestamp = base::DefaultClock::GetInstance()->Now();
@@ -443,14 +444,23 @@ void LockStateController::RequestShutdown(ShutdownReason reason) {
   }
 
   HideAndMaybeLockCursor(/*lock=*/true);
-  ShutdownOnPine(/*cancelable_shutdown=*/false);
+  if (IsForestFeatureEnabled()) {
+    SessionStateChangeOnPine(RequestedSessionState::kShutdown);
+  } else {
+    StartSessionStateChange(RequestedSessionState::kShutdown);
+  }
 }
 
 void LockStateController::RequestCancelableShutdown(ShutdownReason reason) {
   shutdown_reason_ = reason;
+  shutdown_canceled_ = false;
 
   HideAndMaybeLockCursor(/*lock=*/false);
-  ShutdownOnPine(/*cancelable_shutdown=*/true);
+  if (IsForestFeatureEnabled()) {
+    SessionStateChangeOnPine(RequestedSessionState::kCancelableShutdown);
+  } else {
+    StartSessionStateChange(RequestedSessionState::kCancelableShutdown);
+  }
 }
 
 bool LockStateController::ShutdownRequested() const {
@@ -480,12 +490,21 @@ void LockStateController::RequestRestart(
     power_manager::RequestRestartReason reason,
     const std::string& description) {
   if (IsForestFeatureEnabled()) {
-    restart_reason_ = reason;
-    restart_description_ = description;
     HideAndMaybeLockCursor(/*lock=*/false);
-    TakePineImageAndShutdown(/*cancelable_shutdown=*/false);
+    restart_callback_ =
+        base::BindOnce(&LockStateController::DoRestart, base::Unretained(this),
+                       reason, description);
+    SessionStateChangeOnPine(RequestedSessionState::kRestart);
   } else {
     chromeos::PowerManagerClient::Get()->RequestRestart(reason, description);
+  }
+}
+
+void LockStateController::RequestSignOut() {
+  if (IsForestFeatureEnabled()) {
+    SessionStateChangeOnPine(RequestedSessionState::kSignOut);
+  } else {
+    Shell::Get()->session_controller()->RequestSignOut();
   }
 }
 
@@ -787,10 +806,13 @@ void LockStateController::OnPreShutdownAnimationTimeout() {
   shutting_down_ = true;
 
   HideAndMaybeLockCursor(/*lock=*/false);
-  StartRealShutdownTimer(false);
+  StartSessionStateChangeTimer(/*with_animation_time=*/false,
+                               RequestedSessionState::kCancelableShutdown);
 }
 
-void LockStateController::StartRealShutdownTimer(bool with_animation_time) {
+void LockStateController::StartSessionStateChangeTimer(
+    bool with_animation_time,
+    RequestedSessionState requested_session_state) {
   base::TimeDelta duration = kShutdownRequestDelay;
   if (with_animation_time) {
     duration +=
@@ -798,43 +820,48 @@ void LockStateController::StartRealShutdownTimer(bool with_animation_time) {
   }
   // Play and get shutdown sound duration from chrome in |sound_duration|. And
   // start real shutdown after a delay of |duration|.
-  base::TimeDelta sound_duration =
-      std::min(Shell::Get()->accessibility_controller()->PlayShutdownSound(),
-               base::Milliseconds(kMaxShutdownSoundDurationMs));
-  duration = std::max(duration, sound_duration);
-  real_shutdown_timer_.Start(FROM_HERE, duration, this,
-                             &LockStateController::OnRealPowerTimeout);
+  if (requested_session_state == RequestedSessionState::kShutdown ||
+      requested_session_state == RequestedSessionState::kCancelableShutdown) {
+    base::TimeDelta sound_duration =
+        std::min(Shell::Get()->accessibility_controller()->PlayShutdownSound(),
+                 base::Milliseconds(kMaxShutdownSoundDurationMs));
+    duration = std::max(duration, sound_duration);
+  }
+  session_state_change_timer_.Start(
+      FROM_HERE, duration,
+      base::BindOnce(&LockStateController::OnSessionStateChangeTimeout,
+                     base::Unretained(this), requested_session_state));
 }
 
-void LockStateController::OnRealPowerTimeout() {
-  VLOG(1) << "OnRealPowerTimeout";
-  DCHECK(shutting_down_);
-  DCHECK(shutdown_reason_ || restart_reason_);
-  // Shut down or reboot based on device policy.
-  if (restart_reason_) {
-    chromeos::PowerManagerClient::Get()->RequestRestart(*restart_reason_,
-                                                        restart_description_);
-  } else {
-    shutdown_controller_->ShutDownOrReboot(*shutdown_reason_);
+void LockStateController::OnSessionStateChangeTimeout(
+    RequestedSessionState requested_session_state) {
+  if (requested_session_state == RequestedSessionState::kShutdown ||
+      requested_session_state == RequestedSessionState::kCancelableShutdown) {
+    VLOG(1) << "OnSessionStateChangeTimeout with shutdown requested";
+  }
+  switch (requested_session_state) {
+    case RequestedSessionState::kShutdown:
+    case RequestedSessionState::kCancelableShutdown:
+      DCHECK(shutting_down_);
+      DCHECK(shutdown_reason_);
+      shutdown_controller_->ShutDownOrReboot(*shutdown_reason_);
+      break;
+    case RequestedSessionState::kRestart:
+      std::move(restart_callback_).Run();
+      break;
+    case RequestedSessionState::kSignOut:
+      Shell::Get()->session_controller()->RequestSignOut();
+      break;
   }
 }
 
-void LockStateController::ShutdownOnPine(bool cancelable_shutdown) {
-  shutdown_canceled_ = false;
-  if (IsForestFeatureEnabled()) {
-    TakePineImageAndShutdown(cancelable_shutdown);
-  } else {
-    StartShutdownProcess(cancelable_shutdown);
-  }
-}
-
-void LockStateController::TakePineImageAndShutdown(bool cancelable_shutdown) {
+void LockStateController::SessionStateChangeOnPine(
+    RequestedSessionState requested_session_state) {
   const base::FilePath file_path = GetShutdownPineImagePath();
 
   if (!ShouldTakePineScreenshot()) {
     DeletePineImage(pine_image_callback_for_test_, file_path);
-    StartShutdownProcess(cancelable_shutdown);
-    return;
+    StartSessionStateChange(requested_session_state);
   }
 
   // Check if there are any content currently on the screen that are restricted
@@ -842,16 +869,16 @@ void LockStateController::TakePineImageAndShutdown(bool cancelable_shutdown) {
   CaptureModeController::Get()->CheckScreenCaptureDlpRestrictions(
       base::BindOnce(
           &LockStateController::OnDlpRestrictionCheckedAtScreenCapture,
-          weak_ptr_factory_.GetWeakPtr(), cancelable_shutdown, file_path));
+          weak_ptr_factory_.GetWeakPtr(), requested_session_state, file_path));
 }
 
 void LockStateController::OnDlpRestrictionCheckedAtScreenCapture(
-    bool cancelable_shutdown,
+    RequestedSessionState requested_session_state,
     const base::FilePath& file_path,
     bool proceed) {
   if (!proceed) {
     RecordScreenshotOnShutdownStatus(ScreenshotOnShutdownStatus::kFailedOnDLP);
-    StartShutdownProcess(cancelable_shutdown);
+    StartSessionStateChange(requested_session_state);
     return;
   }
 
@@ -887,7 +914,7 @@ void LockStateController::OnDlpRestrictionCheckedAtScreenCapture(
     take_screenshot_fail_timer_.Start(
         FROM_HERE, kTakeScreenshotFailTimeout,
         base::BindOnce(&LockStateController::OnTakeScreenshotFailTimeout,
-                       base::Unretained(this), cancelable_shutdown));
+                       base::Unretained(this), requested_session_state));
   }
 
   if (auto* workspace_controller = GetWorkspaceController(
@@ -904,12 +931,14 @@ void LockStateController::OnDlpRestrictionCheckedAtScreenCapture(
       pine_screenshot_container,
       /*source_rect=*/gfx::Rect(pine_screenshot_container->bounds().size()),
       base::BindOnce(&LockStateController::OnPineImageTaken,
-                     weak_ptr_factory_.GetWeakPtr(), cancelable_shutdown,
+                     weak_ptr_factory_.GetWeakPtr(), requested_session_state,
                      file_path, base::TimeTicks::Now()));
 }
 
-void LockStateController::StartShutdownProcess(bool cancelable_shutdown) {
-  if (shutdown_canceled_) {
+void LockStateController::StartSessionStateChange(
+    RequestedSessionState requested_session_state) {
+  if (requested_session_state == RequestedSessionState::kCancelableShutdown &&
+      shutdown_canceled_) {
     return;
   }
 
@@ -918,28 +947,30 @@ void LockStateController::StartShutdownProcess(bool cancelable_shutdown) {
       SessionStateAnimator::ANIMATION_GRAYSCALE_BRIGHTNESS,
       SessionStateAnimator::ANIMATION_SPEED_SHUTDOWN);
 
-  if (cancelable_shutdown) {
+  if (requested_session_state == RequestedSessionState::kCancelableShutdown) {
     StartPreShutdownAnimationTimer();
   } else {
-    StartRealShutdownTimer(true);
+    StartSessionStateChangeTimer(/*with_animation_time=*/true,
+                                 requested_session_state);
   }
 }
 
 void LockStateController::OnTakeScreenshotFailTimeout(
-    bool cancelable_shutdown) {
+    RequestedSessionState requested_session_state) {
   SavePineScreenshotDuration(local_state_, prefs::kPineScreenshotTakenDuration,
                              kTakeScreenshotFailTimeout);
   RecordScreenshotOnShutdownStatus(
       ScreenshotOnShutdownStatus::kFailedOnTakingScreenshotTimeout);
   mirror_wallpaper_layer_.reset();
   DeletePineImage(pine_image_callback_for_test_, GetShutdownPineImagePath());
-  StartShutdownProcess(cancelable_shutdown);
+  StartSessionStateChange(requested_session_state);
 }
 
-void LockStateController::OnPineImageTaken(bool cancelable_shutdown,
-                                           const base::FilePath& file_path,
-                                           base::TimeTicks start_time,
-                                           gfx::Image pine_image) {
+void LockStateController::OnPineImageTaken(
+    RequestedSessionState requested_session_state,
+    const base::FilePath& file_path,
+    base::TimeTicks start_time,
+    gfx::Image pine_image) {
   // Do not proceed if the `take_screenshot_fail_timer_` is stopped, which means
   // taking screenshot process took too long and the shutdown process has been
   // triggered without the pine image.
@@ -963,7 +994,7 @@ void LockStateController::OnPineImageTaken(bool cancelable_shutdown,
                      weak_ptr_factory_.GetWeakPtr(), base::TimeTicks::Now(),
                      file_path));
 
-  StartShutdownProcess(cancelable_shutdown);
+  StartSessionStateChange(requested_session_state);
 }
 
 void LockStateController::OnPineImageSaved(base::TimeTicks start_time,
@@ -982,6 +1013,11 @@ void LockStateController::OnPineImageSaved(base::TimeTicks start_time,
   if (pine_image_callback_for_test_) {
     std::move(pine_image_callback_for_test_).Run();
   }
+}
+
+void LockStateController::DoRestart(power_manager::RequestRestartReason reason,
+                                    const std::string& description) {
+  chromeos::PowerManagerClient::Get()->RequestRestart(reason, description);
 }
 
 }  // namespace ash

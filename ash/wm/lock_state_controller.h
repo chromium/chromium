@@ -110,11 +110,16 @@ class ASH_EXPORT LockStateController : public aura::WindowTreeHostObserver,
   // shutdown is canceled, otherwise false.
   bool MaybeCancelShutdownAnimation();
 
-  // Requests restart with the same animation as `RequestShutdown`.
+  // Requests restart with the same animation as `RequestShutdown` and take the
+  // pine image if forest feature is enabled, restart directly otherwise.
   // `description` is a human-readable string describing the source of request
   // the restart.
   void RequestRestart(power_manager::RequestRestartReason reason,
                       const std::string& description);
+
+  // Requests sign out with the same animation as `RequestShutdown` and take the
+  // pine image if forest feature is enabled, sign out directly otherwise.
+  void RequestSignOut();
 
   // aura::WindowTreeHostObserver override:
   void OnHostCloseRequested(aura::WindowTreeHost* host) override;
@@ -133,6 +138,14 @@ class ASH_EXPORT LockStateController : public aura::WindowTreeHostObserver,
 
   struct UnlockedStateProperties {
     bool wallpaper_is_hidden;
+  };
+
+  // Specifies the requested session state.
+  enum class RequestedSessionState {
+    kShutdown = 0,
+    kCancelableShutdown,
+    kRestart,
+    kSignOut,
   };
 
   // Cancels unlock animation.
@@ -183,52 +196,54 @@ class ASH_EXPORT LockStateController : public aura::WindowTreeHostObserver,
   // Starts timer for undoable shutdown animation.
   void StartPreShutdownAnimationTimer();
 
-  // Calls StartRealShutdownTimer().
+  // Calls `StartSessionStateChangeTimer()` with
+  // `RequestedSessionState::kCancelableShutdown` when
+  // `cancelable_shutdown_timer_` expires.
   void OnPreShutdownAnimationTimeout();
 
-  // Starts timer for final shutdown animation.
-  // If |with_animation_time| is true, it will also include time of "fade to
-  // white" shutdown animation.
-  void StartRealShutdownTimer(bool with_animation_time);
+  // Starts timer for final session state change animation. If
+  // `with_animation_time` is true, it will also include time of "fade to white"
+  // shutdown animation (NOTE: we are using the same animation for restart and
+  // signout as well). If `requested_session_state` is shutdown related,
+  // shutdown sound duration will be included in the duration calculation as
+  // well.
+  void StartSessionStateChangeTimer(
+      bool with_animation_time,
+      RequestedSessionState requested_session_state);
 
-  // Request that the machine be shut down.
-  void OnRealPowerTimeout();
+  // Called by `session_state_change_timer_` to start the
+  // `requested_session_state` change.
+  void OnSessionStateChangeTimeout(
+      RequestedSessionState requested_session_state);
 
-  // Triggers the shutdown way on `Pine`. `cancelable_shutdown` indicates
-  // whether the shutdown process is cancelable or not.
-  void ShutdownOnPine(bool cancelable_shutdown);
-
-  // Takes a pine image first and then starts the shutdown process.
-  // `cancelable_shutdown` indicates whether the shutdown process is cancelable
-  // or not.
-  void TakePineImageAndShutdown(bool cancelable_shutdown);
+  // Takes a pine image first and then starts the session state change process.
+  // `requested_session_state` indicates the requested session state.
+  void SessionStateChangeOnPine(RequestedSessionState requested_session_state);
 
   // Binds to a callback that will be called by the DLP manager to let us know
   // whether capturing the screenshot should `proceed` or abort due to some
-  // restricted contents on the screen. `cancelable_shutdown` indicates
-  // whether the shutdown process triggered after the check is cancelable or
-  // not.
-  void OnDlpRestrictionCheckedAtScreenCapture(bool cancelable_shutdown,
-                                              const base::FilePath& file_path,
-                                              bool proceed);
+  // restricted contents on the screen. `requested_session_state` indicates the
+  // requested session state change.
+  void OnDlpRestrictionCheckedAtScreenCapture(
+      RequestedSessionState requested_session_state,
+      const base::FilePath& file_path,
+      bool proceed);
 
-  // Starts the shutdown process. If `cancelable_shutdown` is true, starts the
-  // `cancelable_shutdown_timer_` to give it some timeframe to allow the
-  // shutdown to be canceled, otherwise, starts the real non-cancelable
-  // shutdown.
-  void StartShutdownProcess(bool cancelable_shutdown);
+  // Starts the session state change process with the given
+  // `requested_session_state`.
+  void StartSessionStateChange(RequestedSessionState requested_session_state);
 
-  // Triggers the shutdown process on `take_screenshot_fail_timer_` timeouts.
-  // `cancelable_shutdown` indicates whether the shutdown process is cancelable
-  // or not.
-  void OnTakeScreenshotFailTimeout(bool cancelable_shutdown);
+  // Triggers the session state change process when the
+  // `take_screenshot_fail_timer_` times out. `requested_session_state`
+  // indicates the requested session state change.
+  void OnTakeScreenshotFailTimeout(
+      RequestedSessionState requested_session_state);
 
-  // Callback invoked inside `TakePineImageAndShutdown` once the image is
-  // taken. `cancelable_shutdown` indicates
-  // whether the shutdown process is cancelable or not after taking the image.
-  // `file_path` indicates file path to save the pine image. Note: `gfx::Image`
+  // Callback invoked once the image is taken. `requested_session_state`
+  // indicates the requested session state after the image had been taken.
+  // `file_path` indicates the path to save the pine image. Note: `gfx::Image`
   // is cheap to pass by value.
-  void OnPineImageTaken(bool cancelable_shutdown,
+  void OnPineImageTaken(RequestedSessionState requested_session_state,
                         const base::FilePath& file_path,
                         base::TimeTicks start_time,
                         gfx::Image pine_image);
@@ -237,6 +252,11 @@ class ASH_EXPORT LockStateController : public aura::WindowTreeHostObserver,
   // the file path to save the pine image.
   void OnPineImageSaved(base::TimeTicks start_time,
                         const base::FilePath& file_path);
+
+  // Called when `session_state_change_timer_` times out with `kRestart`
+  // requested.
+  void DoRestart(power_manager::RequestRestartReason reason,
+                 const std::string& description);
 
   std::unique_ptr<SessionStateAnimator> animator_;
 
@@ -252,9 +272,9 @@ class ASH_EXPORT LockStateController : public aura::WindowTreeHostObserver,
   // The reason (e.g. user action) for a pending shutdown.
   std::optional<ShutdownReason> shutdown_reason_;
 
-  // The reason and description for requesting a restart.
-  std::optional<power_manager::RequestRestartReason> restart_reason_;
-  std::string restart_description_;
+  // Callback bound on restart requested and run when
+  // `session_state_change_timer_` times out.
+  base::OnceClosure restart_callback_;
 
   // Indicates whether controller should proceed to (cancellable) shutdown after
   // locking.
@@ -293,10 +313,11 @@ class ASH_EXPORT LockStateController : public aura::WindowTreeHostObserver,
   // triggered. When it fires, the real non-cancelable shutdown will start.
   base::OneShotTimer cancelable_shutdown_timer_;
 
-  // Started when we display the shutdown animation. When it fires, we actually
-  // request shutdown. Gives the animation time to complete before Chrome, X,
-  // etc. are shut down.
-  base::OneShotTimer real_shutdown_timer_;
+  // Started when we display the session state change animation (NOTE, shutdown,
+  // restart and signout have the same animation). When it fires, we actually
+  // request the session state change. Gives the animation time to complete
+  // before Chrome etc are shut down.
+  base::OneShotTimer session_state_change_timer_;
 
   base::OnceClosure lock_screen_displayed_callback_;
 

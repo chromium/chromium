@@ -29,7 +29,7 @@ class LockStateControllerTestApi {
     return controller_->cancelable_shutdown_timer_.IsRunning();
   }
   bool real_shutdown_timer_is_running() const {
-    return controller_->real_shutdown_timer_.IsRunning();
+    return controller_->session_state_change_timer_.IsRunning();
   }
   bool is_animating_lock() const { return controller_->animating_lock_; }
 
@@ -37,7 +37,7 @@ class LockStateControllerTestApi {
     controller_->cancelable_shutdown_timer_.FireNow();
   }
   void trigger_real_shutdown_timeout() {
-    controller_->real_shutdown_timer_.FireNow();
+    controller_->session_state_change_timer_.FireNow();
   }
 
   void set_pine_image_callback(base::OnceClosure callback) {
