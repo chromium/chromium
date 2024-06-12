@@ -129,9 +129,8 @@ void UserCloudSigninRestrictionPolicyFetcher::GetSecondaryGoogleAccountUsage(
           email_) == signin::AccountManagedStatusFinder::EmailEnterpriseStatus::
                          kKnownNonEnterprise) {
     // Non Enterprise accounts do not have restrictions.
-    std::move(callback_).Run(/*status=*/Status::kUnsupportedAccountTypeError,
-                             /*policy=*/std::nullopt,
-                             /*domain=*/std::string());
+    FinalizeResult(Status::kUnsupportedAccountTypeError,
+                   /*policy=*/std::nullopt);
     return;
   }
   access_token_fetcher_ = std::move(access_token_fetcher);
@@ -141,7 +140,7 @@ void UserCloudSigninRestrictionPolicyFetcher::GetSecondaryGoogleAccountUsage(
 void UserCloudSigninRestrictionPolicyFetcher::
     GetSecondaryAccountAllowedInArcPolicy(
         std::unique_ptr<OAuth2AccessTokenFetcher> access_token_fetcher,
-        PolicyInfoCallbackForSecondaryAccountAllowedInArc callback) {
+        PolicyInfoCallbackForArc callback) {
   CHECK(access_token_fetcher);
   CHECK(callback);
   CHECK(!callback_for_arc_) << "A request is already in progress";
@@ -170,15 +169,11 @@ void UserCloudSigninRestrictionPolicyFetcher::OnGetTokenFailure(
   // TODO(b/223628330): Implement retry strategy.
   LOG(ERROR) << "Failed to fetch access token for consumer: "
              << GetConsumerName() << " with error: " << error.ToString();
-  if (!callback_.is_null()) {
-    std::move(callback_).Run(/*status=*/Status::kGetTokenError,
-                             /*policy=*/std::nullopt,
-                             /*domain=*/std::string());
-  } else {
-    std::move(callback_for_arc_)
-        .Run(/*status=*/Status::kGetTokenError,
-             /*policy=*/std::nullopt);
-  }
+  FinalizeResult(Status::kGetTokenError, /*policy=*/std::nullopt);
+}
+
+bool UserCloudSigninRestrictionPolicyFetcher::IsFetchingArcPolicy() const {
+  return !callback_for_arc_.is_null();
 }
 
 std::string UserCloudSigninRestrictionPolicyFetcher::GetConsumerName() const {
@@ -195,14 +190,13 @@ void UserCloudSigninRestrictionPolicyFetcher::OnGetUserInfoSuccess(
   // SecondaryAccountAllowedInArcPolicy since call to fetch its value is only
   // made after establishing that SecondaryGoogleAccountUsage is called on a
   // hosted domain
-  if (!callback_.is_null()) {
+  if (!IsFetchingArcPolicy()) {
     const std::string* hosted_domain = user_info.FindString(kHostedDomainKey);
     if (!hosted_domain) {
       // Non Enterprise accounts do not have restrictions.
       DVLOG(1) << "User account is not an Enterprise account";
-      std::move(callback_).Run(/*status=*/Status::kUnsupportedAccountTypeError,
-                               /*policy=*/std::nullopt,
-                               /*domain=*/std::string());
+      FinalizeResult(Status::kUnsupportedAccountTypeError,
+                     /*policy=*/std::nullopt);
       return;
     } else {
       hosted_domain_ = *hosted_domain;
@@ -214,15 +208,7 @@ void UserCloudSigninRestrictionPolicyFetcher::OnGetUserInfoSuccess(
 void UserCloudSigninRestrictionPolicyFetcher::OnGetUserInfoFailure(
     const GoogleServiceAuthError& error) {
   LOG(ERROR) << "Failed to fetch user info: " << error.ToString();
-  if (!callback_.is_null()) {
-    std::move(callback_).Run(/*status=*/Status::kGetUserInfoError,
-                             /*policy=*/std::nullopt,
-                             /*domain=*/std::string());
-  } else {
-    std::move(callback_for_arc_)
-        .Run(/*status=*/Status::kGetUserInfoError,
-             /*policy=*/std::nullopt);
-  }
+  FinalizeResult(Status::kGetUserInfoError, /*policy=*/std::nullopt);
 }
 
 void UserCloudSigninRestrictionPolicyFetcher::
@@ -242,18 +228,33 @@ void UserCloudSigninRestrictionPolicyFetcher::
       1024 * 1024 /* 1 MiB */);
 }
 
+void UserCloudSigninRestrictionPolicyFetcher::FinalizeResult(
+    Status status,
+    std::optional<std::string> policy) {
+  if (callback_for_arc_.is_null() && callback_.is_null()) {
+    LOG(ERROR) << "Callback is missing. Result dropped.";
+    return;
+  }
+
+  if (IsFetchingArcPolicy()) {
+    std::move(callback_for_arc_).Run(status, policy);
+  } else {
+    std::move(callback_).Run(status, policy, hosted_domain_);
+  }
+}
+
 void UserCloudSigninRestrictionPolicyFetcher::
     OnSecondaryGoogleAccountUsageResult(
         std::unique_ptr<std::string> response_body) {
-  if (!callback_.is_null()) {
+  if (!IsFetchingArcPolicy()) {
     base::UmaHistogramMediumTimes(
         kSecondaryGoogleAccountUsageLatencyHistogramName,
         base::TimeTicks::Now() - policy_fetch_start_time_);
   }
   std::optional<std::string> restriction;
-  const std::string policy_name = !callback_.is_null()
-                                      ? "SecondaryGoogleAccountUsage"
-                                      : "SecondaryAccountAllowedInArcPolicy";
+  const std::string policy_name = IsFetchingArcPolicy()
+                                      ? "SecondaryAccountAllowedInArcPolicy"
+                                      : "SecondaryGoogleAccountUsage";
   Status status = Status::kUnknownError;
   std::unique_ptr<network::SimpleURLLoader> url_loader = std::move(url_loader_);
 
@@ -279,11 +280,7 @@ void UserCloudSigninRestrictionPolicyFetcher::
                  << url_loader->NetError();
       status = Status::kNetworkError;
     }
-    if (!callback_.is_null()) {
-      std::move(callback_).Run(status, restriction, hosted_domain_);
-    } else {
-      std::move(callback_for_arc_).Run(status, restriction);
-    }
+    FinalizeResult(status, restriction);
     return;
   }
 
@@ -300,11 +297,7 @@ void UserCloudSigninRestrictionPolicyFetcher::
       status = Status::kParsingResponseError;
     }
   }
-  if (!callback_.is_null()) {
-    std::move(callback_).Run(status, restriction, hosted_domain_);
-  } else {
-    std::move(callback_for_arc_).Run(status, restriction);
-  }
+  FinalizeResult(status, restriction);
 }
 
 std::string UserCloudSigninRestrictionPolicyFetcher::
@@ -315,7 +308,7 @@ std::string UserCloudSigninRestrictionPolicyFetcher::
         policy::switches::kSecureConnectApiUrl);
   }
 
-  return callback_.is_null()
+  return IsFetchingArcPolicy()
              ? kSecureConnectApiGetSecondaryAccountAllowedInArcPolicyUrl
              : kSecureConnectApiGetSecondaryGoogleAccountUsageUrl;
 }

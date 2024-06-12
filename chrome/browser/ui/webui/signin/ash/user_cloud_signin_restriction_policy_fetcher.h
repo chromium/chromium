@@ -90,7 +90,7 @@ class UserCloudSigninRestrictionPolicyFetcher
 
   // Callback invoked when SecondaryAccountAllowedInArc policy value
   // is fetched. `policy` is the fetched policy value.
-  using PolicyInfoCallbackForSecondaryAccountAllowedInArc =
+  using PolicyInfoCallbackForArc =
       base::OnceCallback<void(Status status,
                               std::optional<std::string> policy)>;
 
@@ -122,7 +122,7 @@ class UserCloudSigninRestrictionPolicyFetcher
 
   void GetSecondaryAccountAllowedInArcPolicy(
       std::unique_ptr<OAuth2AccessTokenFetcher> access_token_fetcher,
-      PolicyInfoCallbackForSecondaryAccountAllowedInArc callback);
+      PolicyInfoCallbackForArc callback);
 
   // Protected for testing.
  protected:
@@ -157,6 +157,8 @@ class UserCloudSigninRestrictionPolicyFetcher
   void GetSecondaryGoogleAccountUsageInternal();
 
   void GetSecondaryAccountAllowedInArcInternal();
+  bool IsFetchingArcPolicy() const;
+  void FinalizeResult(Status status, std::optional<std::string> policy);
 
   std::string GetSecureConnectApiGetAccountSigninRestrictionUrl() const;
 
@@ -167,7 +169,7 @@ class UserCloudSigninRestrictionPolicyFetcher
   std::unique_ptr<OAuth2AccessTokenFetcher> access_token_fetcher_;
   std::unique_ptr<policy::UserInfoFetcher> user_info_fetcher_;
   PolicyInfoCallback callback_;
-  PolicyInfoCallbackForSecondaryAccountAllowedInArc callback_for_arc_;
+  PolicyInfoCallbackForArc callback_for_arc_;
   base::TimeTicks policy_fetch_start_time_;
 
   scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory_;
