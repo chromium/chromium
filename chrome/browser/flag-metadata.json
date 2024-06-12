@@ -7681,7 +7681,7 @@
       "zoraiznaeem@chromium.org",
       "chromeos-foundations@google.com"
     ],
-    "expiry_milestone": 127
+    "expiry_milestone": 132
   },
   {
     "name": "rounded-windows",
@@ -7689,7 +7689,7 @@
       "zoraiznaeem@chromium.org",
       "chromeos-foundations@google.com"
     ],
-    "expiry_milestone": 127
+    "expiry_milestone": 132
   },
   {
     "name": "ruby-short-heuristics",
