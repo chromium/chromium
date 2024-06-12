@@ -12,6 +12,7 @@
 #include "chrome/common/extensions/extension_constants.h"
 #include "components/performance_manager/embedder/performance_manager_registry.h"
 #include "extensions/browser/extension_host.h"
+#include "extensions/common/constants.h"
 
 namespace performance_manager {
 

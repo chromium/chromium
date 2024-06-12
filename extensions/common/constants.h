@@ -468,6 +468,14 @@ inline constexpr char kInvalidColorError[] =
 // The default block size for hashing used in content verification.
 inline constexpr int kContentVerificationDefaultBlockSize = 4096;
 
+// The extension id of the Google Docs Offline extension.
+// TODO(crbug.com/325613709): This is only used to log targeted histograms to
+// diagnose corruption rates for this extension. Move this back to
+// chrome/common/extensions/extension_constants.h once the issue has been
+// resolved.
+inline constexpr char kDocsOfflineExtensionId[] =
+    "ghbmnnjooekpmoecnnnilnnbdlolhkhi";
+
 }  // namespace extension_misc
 
 #endif  // EXTENSIONS_COMMON_CONSTANTS_H_
