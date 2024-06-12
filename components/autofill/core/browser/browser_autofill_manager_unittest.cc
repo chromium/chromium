@@ -1302,9 +1302,9 @@ class BrowserAutofillManagerTest : public testing::Test {
   base::test::TaskEnvironment task_environment_{
       base::test::TaskEnvironment::TimeSource::MOCK_TIME};
   test::AutofillUnitTestEnvironment autofill_test_environment_;
+  syncer::TestSyncService sync_service_;
   NiceMock<MockAutofillClient> autofill_client_;
   std::unique_ptr<MockAutofillDriver> autofill_driver_;
-  syncer::TestSyncService sync_service_;
   std::unique_ptr<TestBrowserAutofillManager> browser_autofill_manager_;
 
  private:
