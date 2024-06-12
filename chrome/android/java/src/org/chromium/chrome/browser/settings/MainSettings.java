@@ -14,11 +14,14 @@ import android.provider.Settings;
 import android.view.View;
 
 import androidx.annotation.Nullable;
+import androidx.lifecycle.Lifecycle;
 import androidx.preference.Preference;
 
 import org.chromium.base.BuildInfo;
 import org.chromium.base.ContextUtils;
 import org.chromium.base.supplier.ObservableSupplier;
+import org.chromium.base.task.PostTask;
+import org.chromium.base.task.TaskTraits;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.autofill.options.AutofillOptionsFragment;
 import org.chromium.chrome.browser.autofill.options.AutofillOptionsFragment.AutofillOptionsReferrer;
@@ -108,6 +111,10 @@ public class MainSettings extends ChromeBaseSettingsFragment
     private ChromeBasePreference mManageSync;
     private @Nullable PasswordCheck mPasswordCheck;
     private ObservableSupplier<ModalDialogManager> mModalDialogManagerSupplier;
+    // TODO(crbug.com/343933167): This should be removed when the snackbar issue is addressed.
+    // Will be true if `onSignedOut()` was called when the current activity state is not
+    // `Lifecycle.State.STARTED`.
+    private boolean mShouldShowSnackbar;
 
     public MainSettings() {
         setHasOptionsMenu(true);
@@ -156,6 +163,10 @@ public class MainSettings extends ChromeBaseSettingsFragment
         SyncService syncService = SyncServiceFactory.getForProfile(getProfile());
         if (syncService != null) {
             syncService.addSyncStateChangedListener(this);
+        }
+        if (mShouldShowSnackbar) {
+            mShouldShowSnackbar = false;
+            PostTask.postTask(TaskTraits.UI_DEFAULT, this::showSignoutSnackbar);
         }
     }
 
@@ -489,6 +500,14 @@ public class MainSettings extends ChromeBaseSettingsFragment
         pref.setSummary(isOn ? R.string.text_on : R.string.text_off);
     }
 
+    private void showSignoutSnackbar() {
+        assert getLifecycle().getCurrentState().isAtLeast(Lifecycle.State.STARTED);
+        SignOutCoordinator.showSnackbar(
+                getContext(),
+                ((SnackbarManager.SnackbarManageable) getActivity()).getSnackbarManager(),
+                SyncServiceFactory.getForProfile(getProfile()));
+    }
+
     // SigninManager.SignInStateObserver implementation.
     @Override
     public void onSignedIn() {
@@ -502,10 +521,15 @@ public class MainSettings extends ChromeBaseSettingsFragment
         // TODO(crbug.com/343933167): The snackbar should be shown from
         // SignOutCoordinator.startSignOutFlow(), in other words SignOutCoordinator.showSnackbar()
         // should be private method.
-        SignOutCoordinator.showSnackbar(
-                getContext(),
-                ((SnackbarManager.SnackbarManageable) getActivity()).getSnackbarManager(),
-                SyncServiceFactory.getForProfile(getProfile()));
+
+        // Show the signout snackbar, or wait until `onStart()` if the fragment is not in the
+        // `STARTED` state.
+        if (getLifecycle().getCurrentState().isAtLeast(Lifecycle.State.STARTED)) {
+            showSignoutSnackbar();
+        } else {
+            mShouldShowSnackbar = true;
+        }
+
         updatePreferences();
     }
 
