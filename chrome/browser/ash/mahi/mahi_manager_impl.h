@@ -61,7 +61,8 @@ class MahiManagerImpl : public chromeos::MahiManager, public SessionObserver {
   void OnMahiPrefChanged();
 
   // Initialize required provider if it is not initialized yet.
-  void MaybeInitialize();
+  // Returns true if successfully initialized.
+  bool MaybeInitialize();
 
   void OnGetPageContentForSummary(
       MahiSummaryCallback callback,

@@ -121,7 +121,12 @@ GURL MahiManagerImpl::GetContentUrl() {
 }
 
 void MahiManagerImpl::GetSummary(MahiSummaryCallback callback) {
-  MaybeInitialize();
+  if (!MaybeInitialize()) {
+    latest_response_status_ = MahiResponseStatus::kUnknownError;
+    std::move(callback).Run(u"", latest_response_status_);
+    LOG(ERROR) << "Initialized unsuccessfully.";
+    return;
+  }
 
   current_panel_url_ = current_page_info_->url;
   GetMahiBrowserDelgateAsh()->GetContentFromClient(
@@ -144,7 +149,12 @@ void MahiManagerImpl::GoToOutlineContent(int outline_id) {}
 void MahiManagerImpl::AnswerQuestion(const std::u16string& question,
                                      bool current_panel_content,
                                      MahiAnswerQuestionCallback callback) {
-  MaybeInitialize();
+  if (!MaybeInitialize()) {
+    latest_response_status_ = MahiResponseStatus::kUnknownError;
+    std::move(callback).Run(u"", latest_response_status_);
+    LOG(ERROR) << "Initialized unsuccessfully.";
+    return;
+  }
 
   if (current_panel_content) {
     mahi_provider_->QuestionAndAnswer(
@@ -288,11 +298,12 @@ void MahiManagerImpl::OnMahiPrefChanged() {
   }
 }
 
-void MahiManagerImpl::MaybeInitialize() {
+bool MahiManagerImpl::MaybeInitialize() {
   if (!mahi_provider_) {
     mahi_provider_ = CreateProvider();
   }
-  CHECK(mahi_provider_);
+
+  return mahi_provider_ != nullptr;
 }
 
 void MahiManagerImpl::OnGetPageContentForSummary(
