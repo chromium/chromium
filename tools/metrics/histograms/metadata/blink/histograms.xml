@@ -2131,6 +2131,8 @@ chromium-metrics-reviews@google.com.
     <variant name="" summary="all URLs"/>
     <variant name=".Data" summary="data URLs"/>
     <variant name=".Preload" summary="preloaded URLs"/>
+    <variant name=".TransparentPlaceholderImage"
+        summary="transparent placeholder images"/>
   </token>
 </histogram>
 

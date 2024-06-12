@@ -1728,6 +1728,10 @@ BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE(kInteractiveDetectorIgnoreFcp);
 BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE(
     kSimplifyLoadingTransparentPlaceholderImage);
 
+// Returns true if optimizations for loading 1x1 transparent placeholder images
+// is enabled.
+BLINK_COMMON_EXPORT bool IsSimplifyLoadingTransparentPlaceholderImageEnabled();
+
 // Don't throttle frames that are same-agent with with a visible frame.
 BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE(kNoThrottlingVisibleAgent);
 

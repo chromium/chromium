@@ -2658,6 +2658,13 @@ BASE_FEATURE(kSimplifyLoadingTransparentPlaceholderImage,
              "SimplifyLoadingTransparentPlaceholderImage",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
+bool IsSimplifyLoadingTransparentPlaceholderImageEnabled() {
+  static const bool transparent_image_optimization_enabled =
+      base::FeatureList::IsEnabled(
+          features::kSimplifyLoadingTransparentPlaceholderImage);
+  return transparent_image_optimization_enabled;
+}
+
 BASE_FEATURE(kNoThrottlingVisibleAgent,
              "NoThrottlingVisibleAgent",
              base::FEATURE_DISABLED_BY_DEFAULT);
