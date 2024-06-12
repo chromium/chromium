@@ -45,22 +45,18 @@ LocalDataSource::LocalDataSource(base::TimeDelta poll_rate,
 inline LocalDataSource::~LocalDataSource() = default;
 
 void LocalDataSource::Fetch(FetchCallback callback) {
-  if (data_buffer_.empty() && pending_upload_buffer_.empty()) {
+  if (data_buffer_.empty()) {
     std::move(callback).Run({});
     return;
   }
 
-  // Move the contents of the internal data buffer into the
-  // pending upload buffer. If the pending upload buffer is not
-  // empty (from a previously-failed upload attempt), do nothing
-  // and attempt to consume it again.
-  if (pending_upload_buffer_.empty()) {
-    std::move(data_buffer_.begin(), data_buffer_.end(),
-              std::back_inserter(pending_upload_buffer_));
-    data_buffer_.clear();
-  }
+  // data_buffer_ is a deque, so move data to a proper vector first.
+  std::vector<std::string> return_data;
+  std::move(data_buffer_.begin(), data_buffer_.end(),
+            std::back_inserter(return_data));
+  data_buffer_.clear();
 
-  std::move(callback).Run(pending_upload_buffer_);
+  std::move(callback).Run(std::move(return_data));
 }
 
 void LocalDataSource::AddWatchDog(
@@ -100,7 +96,9 @@ void LocalDataSource::AddWatchDog(
 }
 
 void LocalDataSource::Flush() {
-  pending_upload_buffer_.clear();
+  // No-op by default. Use this function to perform any cleanup
+  // task needed after a successful processing step.
+  return;
 }
 
 void LocalDataSource::StartCollectingData() {
@@ -173,10 +171,6 @@ void LocalDataSource::FillDataBuffer() {
 
 bool LocalDataSource::IsDataBufferOverMaxLimit() {
   return data_buffer_.size() > kMaxInternalBufferSize;
-}
-
-bool LocalDataSource::IsCurrentlyWaitingForUpload() {
-  return !pending_upload_buffer_.empty();
 }
 
 void LocalDataSource::RedactDataBuffer(std::vector<std::string>& buffer) {

@@ -63,11 +63,8 @@ void LogSource::Fetch(FetchCallback callback) {
   //
   // Since the data buffer will continue filling up between this
   // call to Fetch() and the next call to Flush(), we MUST cache
-  // this value here, or we risk dropping those logs. The only
-  // exception is during a pending upload.
-  if (!IsCurrentlyWaitingForUpload()) {
-    recovery_offset_ = log_file_.GetCurrentOffset();
-  }
+  // this value here, or we risk dropping those logs.
+  recovery_offset_ = log_file_.GetCurrentOffset();
   LocalDataSource::Fetch(std::move(callback));
 }
 
