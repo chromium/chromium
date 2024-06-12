@@ -10,11 +10,13 @@
 #include "ash/components/arc/mojom/net.mojom-shared.h"
 #include "ash/components/arc/mojom/net.mojom.h"
 #include "base/containers/map_util.h"
+#include "base/strings/stringprintf.h"
 #include "chromeos/ash/components/login/login_state/login_state.h"
 #include "chromeos/ash/components/network/device_state.h"
 #include "chromeos/ash/components/network/network_event_log.h"
 #include "chromeos/ash/components/network/network_state.h"
 #include "chromeos/ash/components/network/onc/network_onc_utils.h"
+#include "net/base/ip_address.h"
 #include "third_party/cros_system_api/dbus/shill/dbus-constants.h"
 
 namespace {
@@ -44,78 +46,49 @@ ash::NetworkStateHandler* GetStateHandler() {
   return ash::NetworkHandler::Get()->network_state_handler();
 }
 
-// Parses a shill IPConfig dictionary and adds the relevant fields to
-// the given |network| NetworkConfiguration object.
-void AddIpConfiguration(arc::mojom::NetworkConfiguration* network,
-                        const base::Value::Dict* shill_ipconfig) {
-  // Only set the IP address and gateway if both are defined and non empty.
-  const auto* address = shill_ipconfig->FindString(shill::kAddressProperty);
-  const auto* gateway = shill_ipconfig->FindString(shill::kGatewayProperty);
-  const int prefixlen =
-      shill_ipconfig->FindInt(shill::kPrefixlenProperty).value_or(0);
-  if (address && !address->empty() && gateway && !gateway->empty()) {
-    if (prefixlen < 64) {
-      network->host_ipv4_prefix_length = prefixlen;
-      network->host_ipv4_address = *address;
-      network->host_ipv4_gateway = *gateway;
-    } else {
-      network->host_ipv6_prefix_length = prefixlen;
-      network->host_ipv6_global_addresses->push_back(*address);
-      network->host_ipv6_gateway = *gateway;
+// Update the IP configuration fields in the given |mojo| NetworkConfiguration
+// object with |network_state|.
+void UpdateIpConfiguration(const ash::NetworkState& network_state,
+                           arc::mojom::NetworkConfiguration* mojo) {
+  const ash::NetworkConfig* config = network_state.network_config();
+
+  // Service may not be connected.
+  if (!config) {
+    return;
+  }
+
+  // Only set the IP address and gateway if both are defined.
+  if (config->ipv4_address && config->ipv4_gateway) {
+    mojo->host_ipv4_address = config->ipv4_address->addr.ToString();
+    mojo->host_ipv4_prefix_length = config->ipv4_address->prefix_len;
+    mojo->host_ipv4_gateway = config->ipv4_gateway->ToString();
+  }
+  if (config->ipv6_addresses.size() > 0 && config->ipv6_gateway) {
+    for (const auto& cidr : config->ipv6_addresses) {
+      mojo->host_ipv6_global_addresses->push_back(cidr.addr.ToString());
     }
+    // Assume that all addresses have the same prefix length.
+    mojo->host_ipv6_prefix_length = config->ipv6_addresses[0].prefix_len;
+    mojo->host_ipv6_gateway = config->ipv6_gateway->ToString();
   }
 
-  // If the user has overridden DNS with the "Google nameservers" UI options,
-  // the kStaticIPConfigProperty object will be empty except for DNS addresses.
-  if (const auto* dns_list =
-          shill_ipconfig->FindList(shill::kNameServersProperty)) {
-    for (const auto& dns_value : *dns_list) {
-      const std::string& dns = dns_value.GetString();
-      if (dns.empty()) {
-        continue;
-      }
-
-      // When manually setting DNS, up to 4 addresses can be specified in the
-      // UI. Unspecified entries can show up as 0.0.0.0 and should be removed.
-      if (dns == "0.0.0.0") {
-        continue;
-      }
-
-      network->host_dns_addresses->push_back(dns);
-    }
+  for (const auto& dns : config->dns_servers) {
+    mojo->host_dns_addresses->push_back(dns.ToString());
+  }
+  for (const auto& domain : config->search_domains) {
+    mojo->host_search_domains->push_back(domain);
   }
 
-  if (const auto* domains =
-          shill_ipconfig->FindList(shill::kSearchDomainsProperty)) {
-    for (const auto& domain : *domains) {
-      network->host_search_domains->push_back(domain.GetString());
-    }
+  for (const auto& cidr : config->included_routes) {
+    mojo->include_routes->push_back(base::StringPrintf(
+        "%s/%d", cidr.addr.ToString().c_str(), cidr.prefix_len));
+  }
+  for (const auto& cidr : config->excluded_routes) {
+    mojo->exclude_routes->push_back(base::StringPrintf(
+        "%s/%d", cidr.addr.ToString().c_str(), cidr.prefix_len));
   }
 
-  const int mtu = shill_ipconfig->FindInt(shill::kMtuProperty).value_or(0);
-  if (mtu > 0) {
-    network->host_mtu = mtu;
-  }
-
-  if (const auto* include_routes_list =
-          shill_ipconfig->FindList(shill::kIncludedRoutesProperty)) {
-    for (const auto& include_routes_value : *include_routes_list) {
-      const std::string& include_route = include_routes_value.GetString();
-      if (!include_route.empty()) {
-        network->include_routes->push_back(include_route);
-      }
-    }
-  }
-
-  if (const auto* exclude_routes_list =
-          shill_ipconfig->FindList(shill::kExcludedRoutesProperty)) {
-    for (const auto& exclude_routes_value : *exclude_routes_list) {
-      const std::string& exclude_route = exclude_routes_value.GetString();
-      if (!exclude_route.empty()) {
-        network->exclude_routes->push_back(exclude_route);
-      }
-    }
-  }
+  mojo->host_mtu = config->mtu > 0 ? config->mtu : 0;
 }
 
 const ash::NetworkState* GetShillBackedNetwork(
@@ -244,40 +217,15 @@ void FillConfigurationsFromState(const ash::NetworkState* network_state,
   mojo->type = TranslateNetworkType(network_state->type());
   mojo->is_metered = network_state->metered();
 
-  // IP configuration data is added from the properties of the underlying shill
-  // Device and shill Service attached to the Device. Device properties are
-  // preferred because Service properties cannot have both IPv4 and IPv6
-  // configurations at the same time for dual stack networks. It is necessary to
-  // fallback on Service properties for networks without a shill Device exposed
-  // over DBus (builtin OpenVPN, builtin L2TP client, Chrome extension VPNs),
-  // particularly to obtain the DNS server list (b/155129178).
-  // A connecting or newly connected network may not immediately have any
-  // usable IP config object if IPv4 dhcp or IPv6 autoconf have not completed
-  // yet. This case is covered by requesting shill properties asynchronously
-  // when ash::NetworkStateHandlerObserver::NetworkPropertiesUpdated is
-  // called.
-
   // Add shill's Device properties to the given mojo NetworkConfiguration
-  // objects. This adds the network interface and current IP configurations.
+  // objects. This adds the network interface.
   if (const auto* device =
           GetStateHandler()->GetDeviceState(network_state->device_path())) {
     mojo->network_interface = device->interface();
-    for (const auto [key, value] : device->ip_configs()) {
-      if (value.is_dict()) {
-        AddIpConfiguration(mojo, &value.GetDict());
-      }
-    }
   }
 
-  if (shill_dict) {
-    for (const auto* property :
-         {shill::kStaticIPConfigProperty, shill::kSavedIPConfigProperty}) {
-      const base::Value::Dict* config = shill_dict->FindDict(property);
-      if (config) {
-        AddIpConfiguration(mojo, config);
-      }
-    }
-  }
+  UpdateIpConfiguration(*network_state, mojo);
+
   if (mojo->type == arc::mojom::NetworkType::WIFI) {
     mojo->wifi = arc::mojom::WiFi::New();
     mojo->wifi->bssid = network_state->bssid();

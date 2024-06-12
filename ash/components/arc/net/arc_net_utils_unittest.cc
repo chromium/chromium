@@ -8,6 +8,7 @@
 #include <string>
 
 #include "ash/components/arc/mojom/arc_wifi.mojom.h"
+#include "base/strings/stringprintf.h"
 #include "base/test/task_environment.h"
 #include "chromeos/ash/components/network/device_state.h"
 #include "chromeos/ash/components/network/network_state_test_helper.h"
@@ -32,12 +33,19 @@ constexpr char kBssid[] = "bssid";
 constexpr char kHexSsid[] = "123456";
 constexpr char kTestWiFiAddress[] = "192.168.2.1";
 constexpr char kDestinationAddress[] = "192.168.1.1";
-constexpr char kGateway[] = "192.168.0.1";
+constexpr char kIPv4Address[] = "192.168.0.2";
+constexpr int kIPv4PrefixLen = 16;
+constexpr char kIPv4Gateway[] = "192.168.0.1";
+constexpr char kIPv6Address[] = "fd00::1";
+constexpr int kIPv6PrefixLen = 64;
+constexpr char kIPv6Gateway[] = "fd00::2";
 constexpr char kNameServer1[] = "1.1.1.1";
 constexpr char kNameServer2[] = "2.2.2.2";
-constexpr char kNameServerIpv6[] = "2001:4860:4860::8888";
+constexpr char kNameServerIPv6[] = "2001:4860:4860::8888";
+constexpr char kDomainName[] = "domain";
+constexpr char kIncludedRoute[] = "1.2.3.4/24";
+constexpr char kExcludedRoute[] = "4.3.2.1/24";
 constexpr char kFqdn[] = "www.example.com";
-constexpr int kPrefixLen = 16;
 constexpr int kHostMtu = 32;
 constexpr int kFrequency = 100;
 constexpr int kSignalStrength = 80;
@@ -104,22 +112,8 @@ class ArcNetUtilsTest : public testing::Test {
   }
 
   base::Value::Dict GetShillDict() {
-    base::Value::Dict static_ip_config;
-    base::Value::List name_servers;
     base::Value::Dict shill_dict;
-
-    name_servers.Append(kNameServer1);
-    name_servers.Append(kNameServer2);
-    name_servers.Append("0.0.0.0");
-
-    static_ip_config.Set(shill::kAddressProperty, kTestWiFiAddress);
-    static_ip_config.Set(shill::kGatewayProperty, kGateway);
-    static_ip_config.Set(shill::kPrefixlenProperty, kPrefixLen);
-    static_ip_config.Set(shill::kNameServersProperty, std::move(name_servers));
-    static_ip_config.Set(shill::kMtuProperty, kHostMtu);
-
     shill_dict.Set(shill::kMeteredProperty, true);
-    shill_dict.Set(shill::kStaticIPConfigProperty, std::move(static_ip_config));
     return shill_dict;
   }
 
@@ -170,6 +164,31 @@ class ArcNetUtilsTest : public testing::Test {
     network_state_->PropertyChanged(shill::kPasspointFQDNProperty,
                                     base::Value(kFqdn));
     network_state_->PropertyChanged(shill::kWifiHiddenSsid, base::Value(true));
+
+    // Set up NetworkConfig.
+    base::Value::Dict properties;
+    properties.Set(shill::kNetworkConfigIPv4AddressProperty,
+                   base::StringPrintf("%s/%d", kIPv4Address, kIPv4PrefixLen));
+    properties.Set(shill::kNetworkConfigIPv4GatewayProperty, kIPv4Gateway);
+    properties.Set(shill::kNetworkConfigIPv6AddressesProperty,
+                   base::Value::List().Append(base::StringPrintf(
+                       "%s/%d", kIPv6Address, kIPv6PrefixLen)));
+    properties.Set(shill::kNetworkConfigIPv6GatewayProperty, kIPv6Gateway);
+    properties.Set(shill::kNetworkConfigNameServersProperty,
+                   base::Value::List()
+                       .Append(kNameServer1)
+                       .Append(kNameServer2)
+                       .Append(kNameServerIPv6));
+    properties.Set(shill::kNetworkConfigSearchDomainsProperty,
+                   base::Value::List().Append(kDomainName));
+    properties.Set(shill::kNetworkConfigMTUProperty, kHostMtu);
+    properties.Set(shill::kNetworkConfigIncludedRoutesProperty,
+                   base::Value::List().Append(kIncludedRoute));
+    properties.Set(shill::kNetworkConfigExcludedRoutesProperty,
+                   base::Value::List().Append(kExcludedRoute));
+
+    network_state_->PropertyChanged(shill::kNetworkConfigProperty,
+                                    base::Value(std::move(properties)));
   }
 
   std::unique_ptr<ash::NetworkState> network_state_;
@@ -389,13 +408,20 @@ TEST_F(ArcNetUtilsTest, FillConfigurationsFromState) {
   EXPECT_EQ(true, mojo->is_metered);
   EXPECT_EQ(kTestWiFiDeviceInterface, mojo->network_interface);
 
-  EXPECT_EQ(16u, mojo->host_ipv4_prefix_length);
-  EXPECT_EQ(kTestWiFiAddress, mojo->host_ipv4_address);
-  EXPECT_EQ(kGateway, mojo->host_ipv4_gateway);
-  EXPECT_EQ(2u, mojo->host_dns_addresses.value().size());
-  EXPECT_EQ(kNameServer1, mojo->host_dns_addresses.value()[0]);
-  EXPECT_EQ(kNameServer2, mojo->host_dns_addresses.value()[1]);
-  EXPECT_EQ(32u, mojo->host_mtu);
+  EXPECT_EQ(kIPv4Address, mojo->host_ipv4_address);
+  EXPECT_EQ(uint32_t{kIPv4PrefixLen}, mojo->host_ipv4_prefix_length);
+  EXPECT_EQ(kIPv4Gateway, mojo->host_ipv4_gateway);
+  EXPECT_EQ(std::vector<std::string>({kIPv6Address}),
+            mojo->host_ipv6_global_addresses);
+  EXPECT_EQ(uint32_t{kIPv6PrefixLen}, mojo->host_ipv6_prefix_length);
+  EXPECT_EQ(kIPv6Gateway, mojo->host_ipv6_gateway);
+  EXPECT_EQ(
+      std::vector<std::string>({kNameServer1, kNameServer2, kNameServerIPv6}),
+      mojo->host_dns_addresses);
+  EXPECT_EQ(std::vector<std::string>({kDomainName}), mojo->host_search_domains);
+  EXPECT_EQ(uint32_t{kHostMtu}, mojo->host_mtu);
+  EXPECT_EQ(std::vector<std::string>({kIncludedRoute}), mojo->include_routes);
+  EXPECT_EQ(std::vector<std::string>({kExcludedRoute}), mojo->exclude_routes);
 
   EXPECT_FALSE(mojo->wifi.is_null());
   EXPECT_EQ(kBssid, mojo->wifi->bssid);
@@ -414,12 +440,12 @@ TEST_F(ArcNetUtilsTest, FillConfigurationsFromDevice) {
                 patchpanel::NetworkDevice::WIFI);
   // set IP config of device.
   device.set_ipv4_addr(StringToIPv4Address(kTestWiFiAddress).s_addr);
-  device.set_host_ipv4_addr(StringToIPv4Address(kGateway).s_addr);
-  device.mutable_ipv4_subnet()->set_prefix_len(kPrefixLen);
+  device.set_host_ipv4_addr(StringToIPv4Address(kIPv4Gateway).s_addr);
+  device.mutable_ipv4_subnet()->set_prefix_len(kIPv4PrefixLen);
   auto ipv4_addr = StringToIPv4Address(kNameServer1);
   device.set_dns_proxy_ipv4_addr(reinterpret_cast<const char*>(&ipv4_addr),
                                  sizeof(ipv4_addr));
-  auto ipv6_addr = StringToIPv6Address(kNameServerIpv6);
+  auto ipv6_addr = StringToIPv6Address(kNameServerIPv6);
   device.set_dns_proxy_ipv6_addr(reinterpret_cast<const char*>(&ipv6_addr),
                                  sizeof(ipv6_addr));
   net_utils::FillConfigurationsFromDevice(device, mojo.get());
@@ -427,10 +453,10 @@ TEST_F(ArcNetUtilsTest, FillConfigurationsFromDevice) {
 
   EXPECT_EQ(kTestWiFiDeviceGuestInterface, mojo->arc_network_interface);
   EXPECT_EQ(kTestWiFiAddress, mojo->arc_ipv4_address);
-  EXPECT_EQ(kGateway, mojo->arc_ipv4_gateway);
-  EXPECT_EQ((uint32_t)kPrefixLen, mojo->arc_ipv4_prefix_length);
+  EXPECT_EQ(kIPv4Gateway, mojo->arc_ipv4_gateway);
+  EXPECT_EQ((uint32_t)kIPv4PrefixLen, mojo->arc_ipv4_prefix_length);
   EXPECT_EQ(kNameServer1, mojo->dns_proxy_addresses.value()[0]);
-  EXPECT_EQ(kNameServerIpv6, mojo->dns_proxy_addresses.value()[1]);
+  EXPECT_EQ(kNameServerIPv6, mojo->dns_proxy_addresses.value()[1]);
 }
 
 TEST_F(ArcNetUtilsTest, TranslateNetworkDevices) {
@@ -572,7 +598,7 @@ TEST_F(ArcNetUtilsTest, AreConfigurationsEquivalent) {
   network->host_search_domains->push_back("search.domain");
   network->host_ipv4_address = kTestWiFiAddress;
   network->host_ipv6_global_addresses = std::vector<std::string>();
-  network->host_ipv6_global_addresses->push_back(kNameServerIpv6);
+  network->host_ipv6_global_addresses->push_back(kNameServerIPv6);
   network->host_dns_addresses = std::vector<std::string>();
   network->host_search_domains->push_back(kNameServer1);
   network->dns_proxy_addresses = std::vector<std::string>();
