@@ -105,8 +105,11 @@ struct HistoryGraph: View {
   /// Color representing solid white.
   static let solidWhite = UIColor(named: kSolidWhiteColor) ?? .white
 
+  /// Color representing grey 200.
+  static let grey200 = UIColor(named: kGrey200Color) ?? .gray
+
   /// Number of ticks on the Y-axis.
-  static let tickCountY = 4
+  static let tickCountY = 3
 
   /// The selected date on the graph.
   @State private var selectedDate: Date?
@@ -182,14 +185,16 @@ struct HistoryGraph: View {
       AxisMarks(position: .leading, values: axisTicksY) { price in
         if let price = price.as(Double.self) {
           if price == axisTicksY.first {
-            AxisTick()
+            AxisTick(length: .longestLabel, stroke: StrokeStyle(lineWidth: 1))
+              .foregroundStyle(Color(uiColor: Self.grey200))
           } else {
             AxisValueLabel(
               format: .currency(code: currency).precision(.fractionLength(0)))
             AxisTick(stroke: StrokeStyle(lineWidth: 0))
           }
         }
-        AxisGridLine()
+        AxisGridLine(stroke: StrokeStyle(lineWidth: 1))
+          .foregroundStyle(Color(uiColor: Self.grey200))
       }
     }
     .chartXScale(domain: axisXRange)
