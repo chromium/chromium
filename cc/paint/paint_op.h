@@ -7,6 +7,7 @@
 
 #include <stdint.h>
 
+#include <cmath>
 #include <iosfwd>
 #include <limits>
 #include <memory>
@@ -669,7 +670,11 @@ class CC_PAINT_EXPORT DrawArcLiteOp final : public PaintOp {
   static void Raster(const DrawArcLiteOp* op,
                      SkCanvas* canvas,
                      const PlaybackParams& params);
-  bool IsValid() const { return core_paint_flags.IsValid(); }
+  bool IsValid() const {
+    return core_paint_flags.IsValid() && oval.isFinite() &&
+           std::isfinite(start_angle_degrees) &&
+           std::isfinite(sweep_angle_degrees);
+  }
   bool EqualsForTesting(const DrawArcLiteOp& other) const;
   HAS_SERIALIZATION_FUNCTIONS();
 
@@ -700,7 +705,11 @@ class CC_PAINT_EXPORT DrawArcOp final : public PaintOpWithFlags {
                               const PlaybackParams& params);
   // Actual implementation for rastering.
   void RasterWithFlagsImpl(const PaintFlags* flags, SkCanvas* canvas) const;
-  bool IsValid() const { return flags.IsValid(); }
+  bool IsValid() const {
+    return flags.IsValid() && oval.isFinite() &&
+           std::isfinite(start_angle_degrees) &&
+           std::isfinite(sweep_angle_degrees);
+  }
   bool EqualsForTesting(const DrawArcOp& other) const;
   HAS_SERIALIZATION_FUNCTIONS();
 
