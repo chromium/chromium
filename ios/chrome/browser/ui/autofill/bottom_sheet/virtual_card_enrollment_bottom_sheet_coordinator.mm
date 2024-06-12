@@ -5,10 +5,10 @@
 #import "ios/chrome/browser/ui/autofill/bottom_sheet/virtual_card_enrollment_bottom_sheet_coordinator.h"
 
 #import "components/autofill/core/browser/metrics/payments/virtual_card_enrollment_metrics.h"
-#import "components/autofill/core/browser/payments/virtual_card_enroll_metrics_logger.h"
 #import "ios/chrome/browser/net/model/crurl.h"
 #import "ios/chrome/browser/shared/model/browser_state/chrome_browser_state.h"
 #import "ios/chrome/browser/shared/public/commands/application_commands.h"
+#import "ios/chrome/browser/shared/public/commands/browser_coordinator_commands.h"
 #import "ios/chrome/browser/shared/public/commands/command_dispatcher.h"
 #import "ios/chrome/browser/shared/public/commands/open_new_tab_command.h"
 #import "ios/chrome/browser/ui/autofill/bottom_sheet/virtual_card_enrollment_bottom_sheet_delegate.h"
@@ -65,10 +65,15 @@
 
 - (void)start {
   self.mediator = [[VirtualCardEnrollmentBottomSheetMediator alloc]
-      initWithUiModel:self->model_];
+                 initWithUiModel:self->model_
+                       callbacks:std::move(callbacks_.value())
+      browserCoordinatorCommands:HandlerForProtocol(
+                                     self.browser->GetCommandDispatcher(),
+                                     BrowserCoordinatorCommands)];
   self.viewController =
       [[VirtualCardEnrollmentBottomSheetViewController alloc] init];
   self.viewController.delegate = self;
+  self.viewController.mutator = self.mediator;
   self.mediator.consumer = self.viewController;
 
   self.viewController.modalPresentationStyle = UIModalPresentationPageSheet;
@@ -95,26 +100,6 @@
 
 #pragma mark VirtualCardEnrollmentBottomSheetDelegate
 
-- (void)didAccept {
-  CHECK(callbacks_) << "Callbacks_ are not set. Callbacks_ should have been "
-                       "set and called only once.";
-  callbacks_->OnAccepted();
-  callbacks_.reset();
-  [self logResultMetric:autofill::VirtualCardEnrollmentBubbleResult::
-                            VIRTUAL_CARD_ENROLLMENT_BUBBLE_ACCEPTED];
-  [self stop];
-}
-
-- (void)didCancel {
-  CHECK(callbacks_) << "Callbacks_ are not set. Callbacks_ should have been "
-                       "set and called only once.";
-  callbacks_->OnDeclined();
-  callbacks_.reset();
-  [self logResultMetric:autofill::VirtualCardEnrollmentBubbleResult::
-                            VIRTUAL_CARD_ENROLLMENT_BUBBLE_CANCELLED];
-  [self stop];
-}
-
 - (void)didTapLinkURL:(CrURL*)url text:(NSString*)text {
   [dispatcher_
       openURLInNewTab:[OpenNewTabCommand
@@ -125,15 +110,6 @@
 }
 
 - (void)viewDidDisappear:(BOOL)animated {
-}
-
-#pragma mark - Private
-
-// Logs the result metric attaching additional parameters from the model.
-- (void)logResultMetric:(autofill::VirtualCardEnrollmentBubbleResult)result {
-  autofill::VirtualCardEnrollMetricsLogger::OnDismissed(
-      result, model_.enrollment_fields.virtual_card_enrollment_source,
-      /*is_reshow=*/false, model_.enrollment_fields.previously_declined);
 }
 
 @end

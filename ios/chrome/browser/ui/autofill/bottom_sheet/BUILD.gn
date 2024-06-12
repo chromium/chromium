@@ -205,9 +205,18 @@ source_set("virtual_card_enrollment_bottom_sheet_mediator") {
   deps = [
     ":virtual_card_enrollment_bottom_sheet_consumer",
     ":virtual_card_enrollment_bottom_sheet_data",
+    ":virtual_card_enrollment_bottom_sheet_mutator",
     "//components/autofill/core/browser",
+    "//ios/chrome/browser/autofill/model/bottom_sheet:virtual_card_enrollment_callbacks",
     "//ios/chrome/browser/autofill/model/credit_card",
+    "//ios/chrome/browser/shared/public/commands",
   ]
+  frameworks = [ "UIKit.framework" ]
+}
+
+source_set("virtual_card_enrollment_bottom_sheet_mutator") {
+  sources = [ "virtual_card_enrollment_bottom_sheet_mutator.h" ]
+  deps = []
   frameworks = [ "UIKit.framework" ]
 }
 
@@ -242,6 +251,7 @@ source_set("virtual_card_enrollment_bottom_sheet_mediator_unittest") {
     "//components/autofill/core/browser:browser",  # This tests depends on
                                                    # autofill::VirtualCardEnrollUiModel.
     "//components/autofill/core/browser:test_support",
+    "//ios/chrome/browser/shared/public/commands",
     "//testing/gtest",
     "//third_party/ocmock",
     "//ui/gfx:test_support",
@@ -257,6 +267,7 @@ source_set("virtual_card_enrollment_bottom_sheet_view_controller") {
     ":bottom_sheet",
     ":virtual_card_enrollment_bottom_sheet_consumer",
     ":virtual_card_enrollment_bottom_sheet_delegate",
+    ":virtual_card_enrollment_bottom_sheet_mutator",
     "//build:branding_buildflags",
     "//components/autofill/core/browser",
     "//components/resources:components_scaled_resources_grit",

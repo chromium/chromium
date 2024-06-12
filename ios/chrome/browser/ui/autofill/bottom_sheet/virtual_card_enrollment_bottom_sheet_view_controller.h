@@ -5,19 +5,23 @@
 #ifndef IOS_CHROME_BROWSER_UI_AUTOFILL_BOTTOM_SHEET_VIRTUAL_CARD_ENROLLMENT_BOTTOM_SHEET_VIEW_CONTROLLER_H_
 #define IOS_CHROME_BROWSER_UI_AUTOFILL_BOTTOM_SHEET_VIRTUAL_CARD_ENROLLMENT_BOTTOM_SHEET_VIEW_CONTROLLER_H_
 
+#import <UIKit/UIKit.h>
+
 #import "ios/chrome/browser/shared/ui/bottom_sheet/bottom_sheet_view_controller.h"
 #import "ios/chrome/browser/ui/autofill/bottom_sheet/virtual_card_enrollment_bottom_sheet_consumer.h"
 #import "ios/chrome/browser/ui/autofill/bottom_sheet/virtual_card_enrollment_bottom_sheet_delegate.h"
-
-#import <UIKit/UIKit.h>
+#import "ios/chrome/browser/ui/autofill/bottom_sheet/virtual_card_enrollment_bottom_sheet_mutator.h"
 
 // A bottom sheet view controller for the virtual card enrollment prompt.
 @interface VirtualCardEnrollmentBottomSheetViewController
     : BottomSheetViewController <VirtualCardEnrollmentBottomSheetConsumer>
 
-// Button actions and link opening are delegated.
+// Link opening is delegated.
 @property(nonatomic, weak) id<VirtualCardEnrollmentBottomSheetDelegate>
     delegate;
+
+// User actions are delagated to this mutator.
+@property(nonatomic, weak) id<VirtualCardEnrollmentBottomSheetMutator> mutator;
 
 @end
 

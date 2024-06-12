@@ -2,9 +2,9 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#import <Foundation/Foundation.h>
-
 #import "ios/chrome/browser/ui/autofill/bottom_sheet/virtual_card_enrollment_bottom_sheet_coordinator.h"
+
+#import <Foundation/Foundation.h>
 
 #import "base/memory/weak_ptr.h"
 #import "base/test/metrics/histogram_tester.h"
@@ -18,6 +18,7 @@
 #import "ios/chrome/browser/shared/model/browser_state/test_chrome_browser_state.h"
 #import "ios/chrome/browser/shared/model/web_state_list/web_state_list.h"
 #import "ios/chrome/browser/shared/public/commands/application_commands.h"
+#import "ios/chrome/browser/shared/public/commands/browser_coordinator_commands.h"
 #import "ios/chrome/browser/shared/public/commands/command_dispatcher.h"
 #import "ios/chrome/browser/shared/public/commands/open_new_tab_command.h"
 #import "ios/chrome/test/ios_chrome_scoped_testing_local_state.h"
@@ -80,6 +81,12 @@ class VirtualCardEnrollmentBottomSheetCoordinatorTest : public PlatformTest {
         startDispatchingToTarget:application_commands_
                      forProtocol:@protocol(ApplicationCommands)];
 
+    id<BrowserCoordinatorCommands> browserCoordinatorCommands =
+        OCMProtocolMock(@protocol(BrowserCoordinatorCommands));
+    [browser_->GetCommandDispatcher()
+        startDispatchingToTarget:browserCoordinatorCommands
+                     forProtocol:@protocol(BrowserCoordinatorCommands)];
+
     coordinator_ = [[VirtualCardEnrollmentBottomSheetCoordinator alloc]
              initWithUIModel:model_
           baseViewController:window_.rootViewController
@@ -106,60 +113,6 @@ class VirtualCardEnrollmentBottomSheetCoordinatorTest : public PlatformTest {
 };
 
 #pragma mark - Tests
-
-// Test that pushing accept calls the provided callback.
-TEST_F(VirtualCardEnrollmentBottomSheetCoordinatorTest, AcceptButtonPushed) {
-  [coordinator_ start];
-
-  [coordinator_ didAccept];
-  EXPECT_EQ(times_accept_virtual_card_called_, 1);
-  EXPECT_EQ(times_decline_virtual_card_called_, 0);
-
-  [coordinator_ stop];
-  task_environment_.RunUntilIdle();
-}
-
-// Test that the result metric is logged when the prompt is accepted.
-TEST_F(VirtualCardEnrollmentBottomSheetCoordinatorTest, LogsAcceptedMetric) {
-  [coordinator_ start];
-
-  [coordinator_ didAccept];
-  histogram_tester_.ExpectUniqueSample(
-      "Autofill.VirtualCardEnrollBubble.Result.Downstream.FirstShow",
-      autofill::VirtualCardEnrollmentBubbleResult::
-          VIRTUAL_CARD_ENROLLMENT_BUBBLE_ACCEPTED,
-      /*expected_count=*/1);
-
-  [coordinator_ stop];
-  task_environment_.RunUntilIdle();
-}
-
-// Test that using the primary button logs the correct exit reason.
-TEST_F(VirtualCardEnrollmentBottomSheetCoordinatorTest, CancelButtonPushed) {
-  [coordinator_ start];
-
-  [coordinator_ didCancel];
-  EXPECT_EQ(times_accept_virtual_card_called_, 0);
-  EXPECT_EQ(times_decline_virtual_card_called_, 1);
-
-  [coordinator_ stop];
-  task_environment_.RunUntilIdle();
-}
-
-// Test that the result metric is logged when the prompt is cancelled.
-TEST_F(VirtualCardEnrollmentBottomSheetCoordinatorTest, LogsCancelledMetric) {
-  [coordinator_ start];
-
-  [coordinator_ didCancel];
-  histogram_tester_.ExpectUniqueSample(
-      "Autofill.VirtualCardEnrollBubble.Result.Downstream.FirstShow",
-      autofill::VirtualCardEnrollmentBubbleResult::
-          VIRTUAL_CARD_ENROLLMENT_BUBBLE_CANCELLED,
-      /*expected_count=*/1);
-
-  [coordinator_ stop];
-  task_environment_.RunUntilIdle();
-}
 
 TEST_F(VirtualCardEnrollmentBottomSheetCoordinatorTest, OpensNewTabForLinks) {
   [coordinator_ start];

@@ -90,12 +90,12 @@ CGFloat const kCreditCardCellHeight = 64;
 
 - (void)confirmationAlertPrimaryAction {
   // Accept button was clicked.
-  [self.delegate didAccept];
+  [self.mutator didAccept];
 }
 
 - (void)confirmationAlertSecondaryAction {
   // Dismiss button was clicked.
-  [self.delegate didCancel];
+  [self.mutator didCancel];
 }
 
 #pragma mark - UITableViewDataSource
