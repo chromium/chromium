@@ -656,28 +656,40 @@ public final class ReturnToChromeUtil {
         // If the current session is recreated due to a transition from the phone mode to the tablet
         // mode on foldable, checks if the Start surface was shown on the phone mode before the
         // transition.
-        if (shouldResumeHomeSurfaceOnFoldConfigurationChange(bundle)) return true;
+        if (didFoldConfigurationChange(bundle)) {
+            if (shouldResumeHomeSurfaceOnFoldConfigurationChange(bundle)) {
+                return true;
+            }
+            // If the change was caused by fold/unfold there is no need to show the start surface so
+            // just early out. See crbug.com/341812558.
+            return false;
+        }
 
         return shouldShowHomeSurfaceAtStartupImpl(
                 /* useNewReturnTime= */ true, intent, tabModelSelector, inactivityTracker);
     }
 
-    /**
-     * Returns whether to show a Home surface on foldable when transiting from the phone mode to the
-     * tablet mode. Returns true if Start surface was showing on phone mode before the transition.
-     */
-    @VisibleForTesting
-    public static boolean shouldResumeHomeSurfaceOnFoldConfigurationChange(Bundle bundle) {
+    /** Returns whether the device transitioned between phone and tablet mode. */
+    private static boolean didFoldConfigurationChange(Bundle bundle) {
         if (bundle == null) return false;
 
-        return bundle.getBoolean(FoldTransitionController.DID_CHANGE_TABLET_MODE, false)
-                && bundle.getBoolean(RESUME_HOME_SURFACE_ON_MODE_CHANGE, false);
+        return bundle.getBoolean(FoldTransitionController.DID_CHANGE_TABLET_MODE, false);
     }
 
     /**
-     * @param currentTab  The current {@link Tab}.
+     * Returns true if Start surface was showing on device before the transition between device
+     * modes.
+     */
+    private static boolean shouldResumeHomeSurfaceOnFoldConfigurationChange(Bundle bundle) {
+        if (bundle == null) return false;
+
+        return bundle.getBoolean(RESUME_HOME_SURFACE_ON_MODE_CHANGE, false);
+    }
+
+    /**
+     * @param currentTab The current {@link Tab}.
      * @return Whether the Tab is launched with launchType TabLaunchType.FROM_START_SURFACE or it
-     *         has "OpenedFromStart" property.
+     *     has "OpenedFromStart" property.
      */
     public static boolean isTabFromStartSurface(Tab currentTab) {
         final @TabLaunchType int type = currentTab.getLaunchType();
