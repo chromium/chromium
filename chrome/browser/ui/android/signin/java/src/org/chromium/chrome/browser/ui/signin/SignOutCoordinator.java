@@ -271,7 +271,7 @@ public class SignOutCoordinator {
                         return;
                     }
                     signinManager.signOut(
-                            signOutReason, signOutCallback, /* forceWipeUserData= */ true);
+                            signOutReason, signOutCallback, /* forceWipeUserData= */ false);
                 });
     }
 }
