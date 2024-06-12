@@ -518,7 +518,7 @@ IN_PROC_BROWSER_TEST_F(ProxyAuthLockscreenWebUiTest,
   reauth_dialog_helper->WaitForPrimaryGaiaButtonToBeEnabled();
   reauth_dialog_helper->ClickPrimaryGaiaButton();
 
-  reauth_dialog_helper->WaitForIdpPageLoad();
+  reauth_dialog_helper->WaitForSamlIdpPageLoad();
 
   // Fill-in the SAML IdP form and submit.
   test::JSChecker signin_frame_js = reauth_dialog_helper->SigninFrameJS();
@@ -618,9 +618,10 @@ class AutoStartTest : public LockscreenWebUiTest {
     // dialog is shown.
     EXPECT_TRUE(reauth_dialog_helper);
 
-    // Wait for the webview to load and confirm that we skip the "Verify
-    // account" screen: this is a requirement in auto-start flow.
+    // Wait for the webview and SAML IdP page to load and confirm that we skip
+    // the "Verify account" screen: this is a requirement in auto-start flow.
     reauth_dialog_helper->WaitForSigninWebview();
+    reauth_dialog_helper->WaitForSamlIdpPageLoad();
     reauth_dialog_helper->ExpectVerifyAccountScreenHidden();
   }
 
@@ -699,18 +700,15 @@ IN_PROC_BROWSER_TEST_F(SamlUnlockTest, SamlNoticeMessage) {
   std::optional<LockScreenReauthDialogTestHelper> reauth_dialog_helper =
       LockScreenReauthDialogTestHelper::StartSamlAndWaitForIdpPageLoad();
 
-  test::JSChecker dialog_frame_js = reauth_dialog_helper->DialogJS();
-
+  reauth_dialog_helper->ExpectSamlNoticeMessageVisible();
   // Check that SAML notice message contains idp host .
-  const test::UIPath kSamlNoticeMessage = {"main-element", "samlNoticeMessage"};
-  dialog_frame_js.ExpectVisiblePath(kSamlNoticeMessage);
   std::string js = "$SamlNoticeMessagePath.textContent.indexOf('$Host') > -1";
   base::ReplaceSubstringsAfterOffset(
       &js, 0, "$SamlNoticeMessagePath",
-      test::GetOobeElementPath(kSamlNoticeMessage));
+      test::GetOobeElementPath(reauth_dialog_helper->SamlNoticeMessage()));
   base::ReplaceSubstringsAfterOffset(&js, 0, "$Host",
                                      fake_saml_idp()->GetIdpHost());
-  dialog_frame_js.ExpectTrue(js);
+  reauth_dialog_helper->DialogJS().ExpectTrue(js);
 }
 
 // Tests that we can switch from SAML page to Gaia page on the lock screen.

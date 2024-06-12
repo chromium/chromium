@@ -56,10 +56,8 @@ class LockScreenReauthDialogTestHelper {
   LockScreenReauthDialogTestHelper& operator=(
       LockScreenReauthDialogTestHelper&& other);
 
-  // Clicks the 'Cancel' button on the 'Error' screen.
   void ClickCancelButtonOnErrorScreen();
 
-  // Clicks the 'Cancel' button on the 'Saml Account' screen.
   void ClickCancelButtonOnSamlScreen();
 
   // Clicks the 'Enter Google Account Info' button on the SAML screen.
@@ -78,7 +76,6 @@ class LockScreenReauthDialogTestHelper {
   void ExpectChangeIdPButtonVisible();
   void ExpectChangeIdPButtonHidden();
 
-  // Waits for sign-in webview to be shown.
   void WaitForSigninWebview();
 
   void ExpectVerifyAccountScreenHidden();
@@ -109,9 +106,13 @@ class LockScreenReauthDialogTestHelper {
   // Wait until the main dialog closes.
   void WaitForReauthDialogToClose();
 
-  // Wait for the SAML IdP page to load.
-  // Precondition: The SAML container is visible.
-  void WaitForIdpPageLoad();
+  // SAML notice message is displayed when we show a 3P IdP page.
+  test::UIPath SamlNoticeMessage() const;
+  void WaitForSamlNoticeMessage();
+  void ExpectSamlNoticeMessageVisible();
+  void ExpectSamlNoticeMessageHidden();
+
+  void WaitForSamlIdpPageLoad();
 
   // Next members allow to wait for the captive portal dialog to load (i.e. be
   // initialized in `LockScreenStartReauthDialog`), be shown or be closed.
@@ -124,7 +125,6 @@ class LockScreenReauthDialogTestHelper {
   void ExpectCaptivePortalDialogHidden();
   void CloseCaptivePortalDialogAndWait();
 
-  // Returns the WebContents of the dialog's WebUI.
   content::WebContents* DialogWebContents();
   // Returns a JSChecker for the WebContents of the dialog's WebUI.
   test::JSChecker DialogJS();
