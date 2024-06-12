@@ -2334,57 +2334,6 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram
-    name="PasswordManager.PasswordNotesMigrationToOSCrypt.{Store}DeletedNotesCount"
-    units="count" expires_after="2024-07-21">
-  <owner>rgod@google.com</owner>
-  <owner>vasilii@chromium.org</owner>
-  <summary>
-    Records number of notes which are missing from the keychain during migration
-    to OSCrypt on iOS. Recorded when migration succeeds.
-  </summary>
-  <token key="Store" variants="Store"/>
-</histogram>
-
-<histogram
-    name="PasswordManager.PasswordNotesMigrationToOSCrypt.{Store}KeychainRetrievalError"
-    enum="ErrSecOSStatus" expires_after="2024-07-21">
-  <owner>rgod@google.com</owner>
-  <owner>vasilii@chromium.org</owner>
-  <summary>
-    Records keychain retrieval error code received during the migration of
-    password notes to OSCrypt on iOS {Store}. Recorded when retrieval fails.
-  </summary>
-  <token key="Store" variants="Store"/>
-</histogram>
-
-<histogram
-    name="PasswordManager.PasswordNotesMigrationToOSCrypt.{Store}MigratedNotesCount"
-    units="count" expires_after="2024-07-21">
-  <owner>rgod@google.com</owner>
-  <owner>vasilii@chromium.org</owner>
-  <summary>
-    Records number of notes successfully migrated to encryption with OSCrypt on
-    iOS. Recorded when migration succeeds.
-  </summary>
-  <token key="Store" variants="Store"/>
-</histogram>
-
-<histogram name="PasswordManager.PasswordNotesMigrationToOSCrypt{StoreType}"
-    enum="PasswordNotesMigrationToOSCryptEnum" expires_after="2024-07-21">
-  <owner>rgod@google.com</owner>
-  <owner>vasilii@chromium.org</owner>
-  <summary>
-    Records the migration status of password notes to OSCrypt on iOS for
-    {StoreType}. Recorded when migration starts and finishes.
-  </summary>
-  <token key="StoreType">
-    <variant name="" summary="both profile and account store"/>
-    <variant name=".AccountStore" summary="the AccountStore"/>
-    <variant name=".ProfileStore" summary="the ProfileStore"/>
-  </token>
-</histogram>
-
 <histogram name="PasswordManager.PasswordReuse.NumberOfMatches"
     units="credentials" expires_after="2024-11-03">
   <owner>nwokedi@chromium.org</owner>

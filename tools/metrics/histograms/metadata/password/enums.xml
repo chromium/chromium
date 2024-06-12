@@ -1170,19 +1170,6 @@ chromium-metrics-reviews@google.com.
   <int value="4" label="Note did not change"/>
 </enum>
 
-<enum name="PasswordNotesMigrationToOSCryptEnum">
-  <summary>
-    Display migration status of LoginDatabase to OSCrypt on IOS for notes.
-  </summary>
-  <int value="0" label="Migration started"/>
-  <int value="1" label="Migration failed: can't read note from keychain"/>
-  <int value="2" label="Migration failed: can't encrypt note with OSCrypt"/>
-  <int value="3" label="Migration failed: can't update note value"/>
-  <int value="4" label="Migration succeeded"/>
-  <int value="5"
-      label="Migration failed: can't delete missing note from the database"/>
-</enum>
-
 <enum name="PasswordProtectionReferringAppSource">
   <int value="0" label="Source unspecified"/>
   <int value="1" label="Known app id"/>
