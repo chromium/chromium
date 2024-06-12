@@ -16,13 +16,14 @@
 #include "components/feature_engagement/public/feature_constants.h"
 #include "content/public/test/browser_test.h"
 
-class IOSPromoBubbleTest : public DialogBrowserTest {
+class IOSPasswordPromoBubbleTest : public DialogBrowserTest {
  public:
-  IOSPromoBubbleTest() = default;
+  IOSPasswordPromoBubbleTest() = default;
 
-  IOSPromoBubbleTest(const IOSPromoBubbleTest&) = delete;
+  IOSPasswordPromoBubbleTest(const IOSPasswordPromoBubbleTest&) = delete;
 
-  IOSPromoBubbleTest& operator=(const IOSPromoBubbleTest&) = delete;
+  IOSPasswordPromoBubbleTest& operator=(const IOSPasswordPromoBubbleTest&) =
+      delete;
 
   // DialogBrowserTest
   void ShowUi(const std::string& name) override {
@@ -38,6 +39,33 @@ class IOSPromoBubbleTest : public DialogBrowserTest {
   }
 };
 
-IN_PROC_BROWSER_TEST_F(IOSPromoBubbleTest, InvokeUi_default) {
+class IOSAddressPromoBubbleTest : public DialogBrowserTest {
+ public:
+  IOSAddressPromoBubbleTest() = default;
+
+  IOSAddressPromoBubbleTest(const IOSAddressPromoBubbleTest&) = delete;
+
+  IOSAddressPromoBubbleTest& operator=(const IOSAddressPromoBubbleTest&) =
+      delete;
+
+  // DialogBrowserTest
+  void ShowUi(const std::string& name) override {
+    ToolbarButtonProvider* button_provider =
+        BrowserView::GetBrowserViewForBrowser(browser())
+            ->toolbar_button_provider();
+    // Test for iOS Promo Bubble for Desktop Address promo.
+    IOSPromoBubble::ShowPromoBubble(
+        button_provider->GetAnchorView(PageActionIconType::kAutofillAddress),
+        button_provider->GetPageActionIconView(
+            PageActionIconType::kAutofillAddress),
+        browser(), IOSPromoType::kAddress);
+  }
+};
+
+IN_PROC_BROWSER_TEST_F(IOSPasswordPromoBubbleTest, InvokeUi_default) {
+  ShowAndVerifyUi();
+}
+
+IN_PROC_BROWSER_TEST_F(IOSAddressPromoBubbleTest, InvokeUi_default) {
   ShowAndVerifyUi();
 }

@@ -933,6 +933,7 @@ chromium-metrics-reviews@google.com.
   <token key="Impression">
     <variant name="FirstImpression" summary="first"/>
     <variant name="SecondImpression" summary="second"/>
+    <variant name="ThirdImpression" summary="third"/>
   </token>
 </histogram>
 

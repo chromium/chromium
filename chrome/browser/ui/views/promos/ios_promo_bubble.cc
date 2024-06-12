@@ -48,7 +48,8 @@ class IOSPromoBubbleDelegate : public ui::DialogModelDelegate {
       : browser_(browser),
         impression_histogram_already_recorded_(false),
         promo_type_(promo_type),
-        ios_promo_prefs_config_(SetUpIOSPromoConfig(promo_type)) {}
+        ios_promo_prefs_config_(promos_utils::IOSPromoPrefsConfig(promo_type)) {
+  }
 
   // Handler for when the window closes.
   void OnWindowClosing() { ios_promo_delegate_ = nullptr; }
@@ -58,13 +59,13 @@ class IOSPromoBubbleDelegate : public ui::DialogModelDelegate {
     feature_engagement::Tracker* tracker =
         feature_engagement::TrackerFactory::GetForBrowserContext(
             browser_->profile());
-    if (tracker && ios_promo_prefs_config_.promo_feature_) {
-      tracker->Dismissed(*ios_promo_prefs_config_.promo_feature_);
+    if (tracker && ios_promo_prefs_config_.promo_feature) {
+      tracker->Dismissed(*ios_promo_prefs_config_.promo_feature);
     }
     // Don't record a histogram if either of the buttons' callbacks have run
     // and a histogram has already been recorded.
     if (!impression_histogram_already_recorded_) {
-      RecordIOSPromoUserInteractionHistogram(
+      RecordIOSDesktopPromoUserInteractionHistogram(
           promo_type_,
           browser_->profile()->GetPrefs()->GetInteger(
               ios_promo_prefs_config_.promo_impressions_counter_pref_name),
@@ -79,7 +80,7 @@ class IOSPromoBubbleDelegate : public ui::DialogModelDelegate {
     browser_->profile()->GetPrefs()->SetBoolean(
         ios_promo_prefs_config_.promo_opt_out_pref_name, true);
 
-    promos_utils::RecordIOSPromoUserInteractionHistogram(
+    promos_utils::RecordIOSDesktopPromoUserInteractionHistogram(
         promo_type_,
         browser_->profile()->GetPrefs()->GetInteger(
             ios_promo_prefs_config_.promo_impressions_counter_pref_name),
@@ -100,7 +101,7 @@ class IOSPromoBubbleDelegate : public ui::DialogModelDelegate {
   const IOSPromoType promo_type_;
 
   // The structure that holds the configurations of the current promo type.
-  const IOSPromoPrefsConfig ios_promo_prefs_config_;
+  const promos_utils::IOSPromoPrefsConfig ios_promo_prefs_config_;
 };
 
 // CreateFooter creates the view that is inserted as footer to the bubble.
@@ -240,6 +241,21 @@ IOSPromoConstants::IOSPromoTypeConfigs IOSPromoBubble::SetUpBubble(
           IDS_IOS_DESKTOP_PASSWORD_PROMO_BUBBLE_FOOTER_DESCRIPTION_QR;
       IOSPromoConfig.kDeclineButtonTextID =
           IDS_IOS_DESKTOP_PASSWORD_PROMO_BUBBLE_BUTTON_DECLINE;
+      break;
+    case IOSPromoType::kAddress:
+      // Set up iOS Address Promo Bubble.
+      IOSPromoConfig.kPromoQRCodeURL =
+          IOSPromoConstants::kAddressBubbleQRCodeURL;
+      IOSPromoConfig.kBubbleTitleID =
+          IDS_IOS_DESKTOP_ADDRESS_PROMO_BUBBLE_TITLE;
+      IOSPromoConfig.kBubbleSubtitleID =
+          IDS_IOS_DESKTOP_ADDRESS_PROMO_BUBBLE_SUBTITLE;
+      IOSPromoConfig.kPromoTitleID =
+          IDS_IOS_DESKTOP_ADDRESS_PROMO_BUBBLE_FOOTER_TITLE;
+      IOSPromoConfig.kPromoDescriptionID =
+          IDS_IOS_DESKTOP_ADDRESS_PROMO_BUBBLE_FOOTER_DESCRIPTION_QR;
+      IOSPromoConfig.kDeclineButtonTextID =
+          IDS_IOS_DESKTOP_ADDRESS_PROMO_BUBBLE_BUTTON_DECLINE;
       break;
     default:
       NOTREACHED_NORETURN();

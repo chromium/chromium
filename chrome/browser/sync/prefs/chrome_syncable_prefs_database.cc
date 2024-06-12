@@ -347,6 +347,9 @@ enum {
   kKeyboardAmbientLightSensorLastEnabled = 100288,
   kAccessibilityReadAnythingImagesEnabled = 100289,
   kShelfMallAppPinRolls = 100290,
+  kDesktopToiOSAddressPromoLastImpressionTimestamp = 100291,
+  kDesktopToiOSAddressPromoImpressionsCounter = 100292,
+  kDesktopToiOSAddressPromoOptOut = 100293,
   // See components/sync_preferences/README.md about adding new entries here.
   // vvvvv IMPORTANT! vvvvv
   // Note to the reviewer: IT IS YOUR RESPONSIBILITY to ensure that new syncable
@@ -1505,6 +1508,18 @@ constexpr auto kChromeSyncablePrefsAllowlist = base::MakeFixedFlatMap<
       sync_preferences::MergeBehavior::kNone}},
     {prefs::kHttpsFirstModeIncognito,
      {syncable_prefs_ids::kHttpsFirstModeIncognito, syncer::PREFERENCES,
+      sync_preferences::PrefSensitivity::kNone,
+      sync_preferences::MergeBehavior::kNone}},
+    {promos_prefs::kDesktopToiOSAddressPromoLastImpressionTimestamp,
+     {syncable_prefs_ids::kDesktopToiOSAddressPromoLastImpressionTimestamp,
+      syncer::PREFERENCES, sync_preferences::PrefSensitivity::kNone,
+      sync_preferences::MergeBehavior::kNone}},
+    {promos_prefs::kDesktopToiOSAddressPromoImpressionsCounter,
+     {syncable_prefs_ids::kDesktopToiOSAddressPromoImpressionsCounter,
+      syncer::PREFERENCES, sync_preferences::PrefSensitivity::kNone,
+      sync_preferences::MergeBehavior::kNone}},
+    {promos_prefs::kDesktopToiOSAddressPromoOptOut,
+     {syncable_prefs_ids::kDesktopToiOSAddressPromoOptOut, syncer::PREFERENCES,
       sync_preferences::PrefSensitivity::kNone,
       sync_preferences::MergeBehavior::kNone}},
 });

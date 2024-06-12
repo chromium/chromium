@@ -66,6 +66,7 @@ the generic promo launch. -->
 <enum name="DesktopIOSPromoImpression">
   <int value="0" label="FirstImpression"/>
   <int value="1" label="SecondImpression"/>
+  <int value="2" label="ThirdImpression"/>
 </enum>
 
 <enum name="DocumentDownloadConflictResolution">

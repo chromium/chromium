@@ -55,26 +55,28 @@ class IOSPromoOnDesktopTest : public ::testing::Test {
   TestingProfile profile_;
 };
 
-// Tests that RecordIOSPromoUserInteractionHistogram records the proper
+// Tests RecordIOSDesktopPromoUserInteractionHistogram for all promo types.
+// Tests that RecordIOSDesktopPromoUserInteractionHistogram records the proper
 // histogram for first impression and action dismissed for the password promo
 // type.
-TEST_F(IOSPromoOnDesktopTest,
-       RecordIOSPromoUserInteractionHistogramTestFirstImpressionDismissed) {
-  RecordIOSPromoUserInteractionHistogram(IOSPromoType::kPassword, 1,
-                                         DesktopIOSPromoAction::kDismissed);
+TEST_F(
+    IOSPromoOnDesktopTest,
+    RecordIOSDesktopPromoUserInteractionHistogramTestFirstImpressionDismissedForPasswordPromo) {
+  RecordIOSDesktopPromoUserInteractionHistogram(
+      IOSPromoType::kPassword, 1, DesktopIOSPromoAction::kDismissed);
 
   histograms()->ExpectUniqueSample(
       "IOS.Desktop.PasswordPromo.FirstImpression.Action",
       DesktopIOSPromoAction::kDismissed, 1);
 }
 
-// Tests that RecordIOSPromoUserInteractionHistogram records the proper
+// Tests that RecordIOSDesktopPromoUserInteractionHistogram records the proper
 // histogram for first impression and no thanks clicked action for the password
 // promo type.
 TEST_F(
     IOSPromoOnDesktopTest,
-    RecordIOSPromoUserInteractionHistogramTestFirstImpressionNoThanksClicked) {
-  RecordIOSPromoUserInteractionHistogram(
+    RecordIOSDesktopPromoUserInteractionHistogramTestFirstImpressionNoThanksClickedForPasswordPromo) {
+  RecordIOSDesktopPromoUserInteractionHistogram(
       IOSPromoType::kPassword, 1, DesktopIOSPromoAction::kNoThanksClicked);
 
   histograms()->ExpectUniqueSample(
@@ -82,26 +84,27 @@ TEST_F(
       DesktopIOSPromoAction::kNoThanksClicked, 1);
 }
 
-// Tests that RecordIOSPromoUserInteractionHistogram records the proper
+// Tests that RecordIOSDesktopPromoUserInteractionHistogram records the proper
 // histogram for second impression and action dismissed for the password promo
 // type.
-TEST_F(IOSPromoOnDesktopTest,
-       RecordIOSPromoUserInteractionHistogramTestSecondImpressionDismissed) {
-  RecordIOSPromoUserInteractionHistogram(IOSPromoType::kPassword, 2,
-                                         DesktopIOSPromoAction::kDismissed);
+TEST_F(
+    IOSPromoOnDesktopTest,
+    RecordIOSDesktopPromoUserInteractionHistogramTestSecondImpressionDismissedForPasswordPromo) {
+  RecordIOSDesktopPromoUserInteractionHistogram(
+      IOSPromoType::kPassword, 2, DesktopIOSPromoAction::kDismissed);
 
   histograms()->ExpectUniqueSample(
       "IOS.Desktop.PasswordPromo.SecondImpression.Action",
       DesktopIOSPromoAction::kDismissed, 1);
 }
 
-// Tests that RecordIOSPromoUserInteractionHistogram records the proper
-// histogram for second impression and no thanks clicked action for the
-// password promo type.
+// Tests that RecordIOSDesktopPromoUserInteractionHistogram records the proper
+// histogram for second impression and no thanks clicked action for the password
+// promo type.
 TEST_F(
     IOSPromoOnDesktopTest,
-    RecordIOSPromoUserInteractionHistogramTestSecondImpressionNoThanksClicked) {
-  RecordIOSPromoUserInteractionHistogram(
+    RecordIOSDesktopPromoUserInteractionHistogramTestSecondImpressionNoThanksClickedForPasswordPromo) {
+  RecordIOSDesktopPromoUserInteractionHistogram(
       IOSPromoType::kPassword, 2, DesktopIOSPromoAction::kNoThanksClicked);
 
   histograms()->ExpectUniqueSample(
@@ -109,72 +112,139 @@ TEST_F(
       DesktopIOSPromoAction::kNoThanksClicked, 1);
 }
 
-// Tests that RecordIOSDesktopPasswordPromoUserInteractionHistogram records the
-// proper histogram for first impression and action dismissed.
+// Tests that RecordIOSDesktopPromoUserInteractionHistogram records the proper
+// histogram for third impression and action dismissed for the password promo
+// type.
 TEST_F(
     IOSPromoOnDesktopTest,
-    RecordIOSDesktopPasswordPromoUserInteractionHistogramTestFirstImpressionDismissed) {
-  RecordIOSDesktopPasswordPromoUserInteractionHistogram(
-      1, DesktopIOSPromoAction::kDismissed);
+    RecordIOSDesktopPromoUserInteractionHistogramTestThirdImpressionDismissedForPasswordPromo) {
+  RecordIOSDesktopPromoUserInteractionHistogram(
+      IOSPromoType::kPassword, 3, DesktopIOSPromoAction::kDismissed);
+
   histograms()->ExpectUniqueSample(
-      "IOS.Desktop.PasswordPromo.FirstImpression.Action",
+      "IOS.Desktop.PasswordPromo.ThirdImpression.Action",
       DesktopIOSPromoAction::kDismissed, 1);
 }
 
-// Tests that RecordIOSDesktopPasswordPromoUserInteractionHistogram records the
-// proper histogram for first impression and action explicitly closed.
+// Tests that RecordIOSDesktopPromoUserInteractionHistogram records the proper
+// histogram for third impression and no thanks clicked action for the
+// password promo type.
 TEST_F(
     IOSPromoOnDesktopTest,
-    RecordIOSDesktopPasswordPromoUserInteractionHistogramTestFirstImpressionNoThanksClicked) {
-  RecordIOSDesktopPasswordPromoUserInteractionHistogram(
-      1, DesktopIOSPromoAction::kNoThanksClicked);
+    RecordIOSDesktopPromoUserInteractionHistogramTestThirdImpressionNoThanksClickedForPasswordPromo) {
+  RecordIOSDesktopPromoUserInteractionHistogram(
+      IOSPromoType::kPassword, 3, DesktopIOSPromoAction::kNoThanksClicked);
+
   histograms()->ExpectUniqueSample(
-      "IOS.Desktop.PasswordPromo.FirstImpression.Action",
+      "IOS.Desktop.PasswordPromo.ThirdImpression.Action",
       DesktopIOSPromoAction::kNoThanksClicked, 1);
 }
 
-// Tests that RecordIOSDesktopPasswordPromoUserInteractionHistogram records the
-// proper histogram for second impression and action dismissed.
+// Tests that RecordIOSDesktopPromoUserInteractionHistogram records the proper
+// histogram for first impression and action dismissed for the address promo
+// type.
 TEST_F(
     IOSPromoOnDesktopTest,
-    RecordIOSDesktopPasswordPromoUserInteractionHistogramTestSecondImpressionDismissed) {
-  RecordIOSDesktopPasswordPromoUserInteractionHistogram(
-      2, DesktopIOSPromoAction::kDismissed);
+    RecordIOSDesktopPromoUserInteractionHistogramTestFirstImpressionDismissedForAddressPromo) {
+  RecordIOSDesktopPromoUserInteractionHistogram(
+      IOSPromoType::kAddress, 1, DesktopIOSPromoAction::kDismissed);
+
   histograms()->ExpectUniqueSample(
-      "IOS.Desktop.PasswordPromo.SecondImpression.Action",
+      "IOS.Desktop.AddressPromo.FirstImpression.Action",
       DesktopIOSPromoAction::kDismissed, 1);
 }
 
-// Tests that RecordIOSDesktopPasswordPromoUserInteractionHistogram records the
-// proper histogram for second impression and action explicitly closed.
+// Tests that RecordIOSDesktopPromoUserInteractionHistogram records the proper
+// histogram for first impression and no thanks clicked action for the address
+// promo type.
 TEST_F(
     IOSPromoOnDesktopTest,
-    RecordIOSDesktopPasswordPromoUserInteractionHistogramTestSecondImpressionNoThanksClicked) {
-  RecordIOSDesktopPasswordPromoUserInteractionHistogram(
-      2, DesktopIOSPromoAction::kNoThanksClicked);
+    RecordIOSDesktopPromoUserInteractionHistogramTestFirstImpressionNoThanksClickedForAddressPromo) {
+  RecordIOSDesktopPromoUserInteractionHistogram(
+      IOSPromoType::kAddress, 1, DesktopIOSPromoAction::kNoThanksClicked);
+
   histograms()->ExpectUniqueSample(
-      "IOS.Desktop.PasswordPromo.SecondImpression.Action",
+      "IOS.Desktop.AddressPromo.FirstImpression.Action",
       DesktopIOSPromoAction::kNoThanksClicked, 1);
 }
 
+// Tests that RecordIOSDesktopPromoUserInteractionHistogram records the proper
+// histogram for second impression and action dismissed for the address promo
+// type.
+TEST_F(
+    IOSPromoOnDesktopTest,
+    RecordIOSDesktopPromoUserInteractionHistogramTestSecondImpressionDismissedForAddressPromo) {
+  RecordIOSDesktopPromoUserInteractionHistogram(
+      IOSPromoType::kAddress, 2, DesktopIOSPromoAction::kDismissed);
+
+  histograms()->ExpectUniqueSample(
+      "IOS.Desktop.AddressPromo.SecondImpression.Action",
+      DesktopIOSPromoAction::kDismissed, 1);
+}
+
+// Tests that RecordIOSDesktopPromoUserInteractionHistogram records the proper
+// histogram for second impression and no thanks clicked action for the
+// address promo type.
+TEST_F(
+    IOSPromoOnDesktopTest,
+    RecordIOSDesktopPromoUserInteractionHistogramTestSecondImpressionNoThanksClickedForAddressPromo) {
+  RecordIOSDesktopPromoUserInteractionHistogram(
+      IOSPromoType::kAddress, 2, DesktopIOSPromoAction::kNoThanksClicked);
+
+  histograms()->ExpectUniqueSample(
+      "IOS.Desktop.AddressPromo.SecondImpression.Action",
+      DesktopIOSPromoAction::kNoThanksClicked, 1);
+}
+
+// Tests that RecordIOSDesktopPromoUserInteractionHistogram records the proper
+// histogram for third impression and action dismissed for the address promo
+// type.
+TEST_F(
+    IOSPromoOnDesktopTest,
+    RecordIOSDesktopPromoUserInteractionHistogramTestThirdImpressionDismissedForAddressPromo) {
+  RecordIOSDesktopPromoUserInteractionHistogram(
+      IOSPromoType::kAddress, 3, DesktopIOSPromoAction::kDismissed);
+
+  histograms()->ExpectUniqueSample(
+      "IOS.Desktop.AddressPromo.ThirdImpression.Action",
+      DesktopIOSPromoAction::kDismissed, 1);
+}
+
+// Tests that RecordIOSDesktopPromoUserInteractionHistogram records the proper
+// histogram for third impression and no thanks clicked action for the
+// address promo type.
+TEST_F(
+    IOSPromoOnDesktopTest,
+    RecordIOSDesktopPromoUserInteractionHistogramTestThirdImpressionNoThanksClickedForAddressPromo) {
+  RecordIOSDesktopPromoUserInteractionHistogram(
+      IOSPromoType::kAddress, 3, DesktopIOSPromoAction::kNoThanksClicked);
+
+  histograms()->ExpectUniqueSample(
+      "IOS.Desktop.AddressPromo.ThirdImpression.Action",
+      DesktopIOSPromoAction::kNoThanksClicked, 1);
+}
+
+// Tests ShouldShowIOSDesktopPromo with all promo types.
 // Tests that ShouldShowIOSDesktopPromo returns true when no promo has yet been
 // shown for the given password promo type.
-TEST_F(IOSPromoOnDesktopTest, ShouldShowIOSDesktopPromoTestTrue) {
+TEST_F(IOSPromoOnDesktopTest,
+       ShouldShowIOSDesktopPromoTestTrueForPasswordPromo) {
   EXPECT_TRUE(ShouldShowIOSDesktopPromo(profile(), IOSPromoType::kPassword));
 }
 
 // Tests that ShouldShowIOSDesktopPromo returns false when the user has already
-// seen 2 promos for the given password promo type.
+// seen 3 promos for the given password promo type.
 TEST_F(IOSPromoOnDesktopTest,
-       ShouldShowIOSDesktopPromoTestFalseTooManyImpressions) {
-  prefs()->SetInteger(promos_prefs::kiOSPasswordPromoImpressionsCounter, 2);
+       ShouldShowIOSDesktopPromoTestFalseTooManyImpressionsForPasswordPromo) {
+  prefs()->SetInteger(promos_prefs::kiOSPasswordPromoImpressionsCounter, 3);
   EXPECT_FALSE(ShouldShowIOSDesktopPromo(profile(), IOSPromoType::kPassword));
 }
 
 // Tests that ShouldShowIOSDesktopPromo returns false when the last seen
-// impression is too recent for the given password promo type..
-TEST_F(IOSPromoOnDesktopTest,
-       ShouldShowIOSDesktopPromoTestFalseLastImpressionTooRecent) {
+// impression is too recent for the given password promo type.
+TEST_F(
+    IOSPromoOnDesktopTest,
+    ShouldShowIOSDesktopPromoTestFalseLastImpressionTooRecentForPasswordPromo) {
   prefs()->SetTime(promos_prefs::kiOSPasswordPromoLastImpressionTimestamp,
                    base::Time::Now());
   EXPECT_FALSE(ShouldShowIOSDesktopPromo(profile(), IOSPromoType::kPassword));
@@ -182,99 +252,55 @@ TEST_F(IOSPromoOnDesktopTest,
 
 // Tests that ShouldShowIOSDesktopPromo returns false when the user has
 // opted-out from the given password promo type.
-TEST_F(IOSPromoOnDesktopTest, ShouldShowIOSDesktopPromoTestFalseUserOptedOut) {
+TEST_F(IOSPromoOnDesktopTest,
+       ShouldShowIOSDesktopPromoTestFalseUserOptedOutForPasswordPromo) {
   prefs()->SetBoolean(promos_prefs::kiOSPasswordPromoOptOut, true);
   EXPECT_FALSE(ShouldShowIOSDesktopPromo(profile(), IOSPromoType::kPassword));
+}
+
+// Tests that ShouldShowIOSDesktopPromo returns true when no promo has yet been
+// shown for the given address promo type.
+TEST_F(IOSPromoOnDesktopTest,
+       ShouldShowIOSDesktopPromoTestTrueForAddressPromo) {
+  EXPECT_TRUE(ShouldShowIOSDesktopPromo(profile(), IOSPromoType::kAddress));
+}
+
+// Tests that ShouldShowIOSDesktopPromo returns false when the user has already
+// seen 3 promos for the given address promo type.
+TEST_F(IOSPromoOnDesktopTest,
+       ShouldShowIOSDesktopPromoTestFalseTooManyImpressionsForAddressPromo) {
+  prefs()->SetInteger(promos_prefs::kDesktopToiOSAddressPromoImpressionsCounter,
+                      3);
+  EXPECT_FALSE(ShouldShowIOSDesktopPromo(profile(), IOSPromoType::kAddress));
+}
+
+// Tests that ShouldShowIOSDesktopPromo returns false when the last seen
+// impression is too recent for the given address promo type.
+TEST_F(
+    IOSPromoOnDesktopTest,
+    ShouldShowIOSDesktopPromoTestFalseLastImpressionTooRecentForAddressPromo) {
+  prefs()->SetTime(
+      promos_prefs::kDesktopToiOSAddressPromoLastImpressionTimestamp,
+      base::Time::Now());
+  EXPECT_FALSE(ShouldShowIOSDesktopPromo(profile(), IOSPromoType::kAddress));
+}
+
+// Tests that ShouldShowIOSDesktopPromo returns false when the user has
+// opted-out from the given address promo type.
+TEST_F(IOSPromoOnDesktopTest,
+       ShouldShowIOSDesktopPromoTestFalseUserOptedOutForAddressPromo) {
+  prefs()->SetBoolean(promos_prefs::kDesktopToiOSAddressPromoOptOut, true);
+  EXPECT_FALSE(ShouldShowIOSDesktopPromo(profile(), IOSPromoType::kAddress));
 }
 
 // Tests that IOSDesktopPromoShown sets the correct prefs and records the
 // correct histogram for the first impression for the given password promo
 // type.
-TEST_F(IOSPromoOnDesktopTest, IOSDesktopPromoShownTestFirstImpression) {
+TEST_F(IOSPromoOnDesktopTest,
+       IOSDesktopPromoShownTestFirstImpressionForPasswordPromo) {
   // Record before and after times to ensure the timestamp is within that range.
   base::Time before = base::Time::Now();
   IOSDesktopPromoShown(profile(), IOSPromoType::kPassword);
-  base::Time after = base::Time::Now();
-
-  ASSERT_EQ(
-      prefs()->GetInteger(promos_prefs::kiOSPasswordPromoImpressionsCounter),
-      1);
-  ASSERT_GE(
-      prefs()->GetTime(promos_prefs::kiOSPasswordPromoLastImpressionTimestamp),
-      before);
-  ASSERT_LE(
-      prefs()->GetTime(promos_prefs::kiOSPasswordPromoLastImpressionTimestamp),
-      after);
-
-  histograms()->ExpectUniqueSample(
-      "IOS.Desktop.PasswordPromo.Shown",
-      DesktopIOSPasswordPromoImpression::kFirstImpression, 1);
-}
-
-// Tests that IOSDesktopPromoShown sets the correct prefs and records the
-// correct histogram for the second impression for the given password promo
-// type.
-TEST_F(IOSPromoOnDesktopTest, IOSDesktopPromoShownTestSecondImpression) {
-  // First impression
-  IOSDesktopPromoShown(profile(), IOSPromoType::kPassword);
-
-  // Second impression
-  base::Time before = base::Time::Now();
-  IOSDesktopPasswordPromoShown(profile());
-  base::Time after = base::Time::Now();
-
-  ASSERT_EQ(
-      prefs()->GetInteger(promos_prefs::kiOSPasswordPromoImpressionsCounter),
-      2);
-  ASSERT_GE(
-      prefs()->GetTime(promos_prefs::kiOSPasswordPromoLastImpressionTimestamp),
-      before);
-  ASSERT_LE(
-      prefs()->GetTime(promos_prefs::kiOSPasswordPromoLastImpressionTimestamp),
-      after);
-
-  histograms()->ExpectBucketCount("IOS.Desktop.PasswordPromo.Shown",
-                                  DesktopIOSPromoImpression::kSecondImpression,
-                                  1);
-}
-
-// Tests that ShouldShowIOSDesktopPasswordPromo returns true when no promo has
-// yet been shown.
-TEST_F(IOSPromoOnDesktopTest, ShouldShowIOSDesktopPasswordPromoTestTrue) {
-  EXPECT_TRUE(ShouldShowIOSDesktopPasswordPromo(profile()));
-}
-
-// Tests that ShouldShowIOSDesktopPasswordPromo returns false when the user has
-// already seen 2 promos.
-TEST_F(IOSPromoOnDesktopTest,
-       ShouldShowIOSDesktopPasswordPromoTestFalseTooManyImpressions) {
-  prefs()->SetInteger(promos_prefs::kiOSPasswordPromoImpressionsCounter, 2);
-  EXPECT_FALSE(ShouldShowIOSDesktopPasswordPromo(profile()));
-}
-
-// Tests that ShouldShowIOSDesktopPasswordPromo returns false when the last seen
-// impression is too recent.
-TEST_F(IOSPromoOnDesktopTest,
-       ShouldShowIOSDesktopPasswordPromoTestFalseLastImpressionTooRecent) {
-  prefs()->SetTime(promos_prefs::kiOSPasswordPromoLastImpressionTimestamp,
-                   base::Time::Now());
-  EXPECT_FALSE(ShouldShowIOSDesktopPasswordPromo(profile()));
-}
-
-// Tests that ShouldShowIOSDesktopPasswordPromo returns false when the user has
-// opted-out from the promo.
-TEST_F(IOSPromoOnDesktopTest,
-       ShouldShowIOSDesktopPasswordPromoTestFalseUserOptedOut) {
-  prefs()->SetBoolean(promos_prefs::kiOSPasswordPromoOptOut, true);
-  EXPECT_FALSE(ShouldShowIOSDesktopPasswordPromo(profile()));
-}
-
-// Tests that IOSDesktopPasswordPromoShown sets the correct prefs and records
-// the correct histogram for the first impression.
-TEST_F(IOSPromoOnDesktopTest, IOSDesktopPasswordPromoShownTestFirstImpression) {
-  // Record before and after times to ensure the timestamp is within that range.
-  base::Time before = base::Time::Now();
-  IOSDesktopPasswordPromoShown(profile());
   base::Time after = base::Time::Now();
 
   ASSERT_EQ(
@@ -292,16 +318,17 @@ TEST_F(IOSPromoOnDesktopTest, IOSDesktopPasswordPromoShownTestFirstImpression) {
                                    1);
 }
 
-// Tests that IOSDesktopPasswordPromoShown sets the correct prefs and records
-// the correct histogram for the second impression.
+// Tests that IOSDesktopPromoShown sets the correct prefs and records the
+// correct histogram for the second impression for the given password promo
+// type.
 TEST_F(IOSPromoOnDesktopTest,
-       IOSDesktopPasswordPromoShownTestSecondImpression) {
+       IOSDesktopPromoShownTestSecondImpressionForPasswordPromo) {
   // First impression
-  IOSDesktopPasswordPromoShown(profile());
+  IOSDesktopPromoShown(profile(), IOSPromoType::kPassword);
 
   // Second impression
   base::Time before = base::Time::Now();
-  IOSDesktopPasswordPromoShown(profile());
+  IOSDesktopPromoShown(profile(), IOSPromoType::kPassword);
   base::Time after = base::Time::Now();
 
   ASSERT_EQ(
@@ -316,6 +343,120 @@ TEST_F(IOSPromoOnDesktopTest,
 
   histograms()->ExpectBucketCount("IOS.Desktop.PasswordPromo.Shown",
                                   DesktopIOSPromoImpression::kSecondImpression,
+                                  1);
+}
+
+// Tests that IOSDesktopPromoShown sets the correct prefs and records the
+// correct histogram for the third impression for the given password promo
+// type.
+TEST_F(IOSPromoOnDesktopTest,
+       IOSDesktopPromoShownTestThirdImpressionForPasswordPromo) {
+  // First impression
+  IOSDesktopPromoShown(profile(), IOSPromoType::kPassword);
+
+  // Second impression
+  IOSDesktopPromoShown(profile(), IOSPromoType::kPassword);
+
+  // Third impression
+  base::Time before = base::Time::Now();
+  IOSDesktopPromoShown(profile(), IOSPromoType::kPassword);
+  base::Time after = base::Time::Now();
+
+  ASSERT_EQ(
+      prefs()->GetInteger(promos_prefs::kiOSPasswordPromoImpressionsCounter),
+      3);
+  ASSERT_GE(
+      prefs()->GetTime(promos_prefs::kiOSPasswordPromoLastImpressionTimestamp),
+      before);
+  ASSERT_LE(
+      prefs()->GetTime(promos_prefs::kiOSPasswordPromoLastImpressionTimestamp),
+      after);
+
+  histograms()->ExpectBucketCount("IOS.Desktop.PasswordPromo.Shown",
+                                  DesktopIOSPromoImpression::kThirdImpression,
+                                  1);
+}
+
+// Tests that IOSDesktopPromoShown sets the correct prefs and records the
+// correct histogram for the first impression for the given address promo
+// type.
+TEST_F(IOSPromoOnDesktopTest,
+       IOSDesktopPromoShownTestFirstImpressionForAddressPromo) {
+  // Record before and after times to ensure the timestamp is within that range.
+  base::Time before = base::Time::Now();
+  IOSDesktopPromoShown(profile(), IOSPromoType::kAddress);
+  base::Time after = base::Time::Now();
+
+  ASSERT_EQ(prefs()->GetInteger(
+                promos_prefs::kDesktopToiOSAddressPromoImpressionsCounter),
+            1);
+  ASSERT_GE(prefs()->GetTime(
+                promos_prefs::kDesktopToiOSAddressPromoLastImpressionTimestamp),
+            before);
+  ASSERT_LE(prefs()->GetTime(
+                promos_prefs::kDesktopToiOSAddressPromoLastImpressionTimestamp),
+            after);
+
+  histograms()->ExpectUniqueSample("IOS.Desktop.AddressPromo.Shown",
+                                   DesktopIOSPromoImpression::kFirstImpression,
+                                   1);
+}
+
+// Tests that IOSDesktopPromoShown sets the correct prefs and records the
+// correct histogram for the second impression for the given address promo
+// type.
+TEST_F(IOSPromoOnDesktopTest,
+       IOSDesktopPromoShownTestSecondImpressionForAddressPromo) {
+  // First impression
+  IOSDesktopPromoShown(profile(), IOSPromoType::kAddress);
+
+  // Second impression
+  base::Time before = base::Time::Now();
+  IOSDesktopPromoShown(profile(), IOSPromoType::kAddress);
+  base::Time after = base::Time::Now();
+
+  ASSERT_EQ(prefs()->GetInteger(
+                promos_prefs::kDesktopToiOSAddressPromoImpressionsCounter),
+            2);
+  ASSERT_GE(prefs()->GetTime(
+                promos_prefs::kDesktopToiOSAddressPromoLastImpressionTimestamp),
+            before);
+  ASSERT_LE(prefs()->GetTime(
+                promos_prefs::kDesktopToiOSAddressPromoLastImpressionTimestamp),
+            after);
+
+  histograms()->ExpectBucketCount("IOS.Desktop.AddressPromo.Shown",
+                                  DesktopIOSPromoImpression::kSecondImpression,
+                                  1);
+}
+// Tests that IOSDesktopPromoShown sets the correct prefs and records the
+// correct histogram for the third impression for the given address promo
+// type.
+TEST_F(IOSPromoOnDesktopTest,
+       IOSDesktopPromoShownTestThirdImpressionForAddressPromo) {
+  // First impression
+  IOSDesktopPromoShown(profile(), IOSPromoType::kAddress);
+
+  // Second impression
+  IOSDesktopPromoShown(profile(), IOSPromoType::kAddress);
+
+  // Third impression
+  base::Time before = base::Time::Now();
+  IOSDesktopPromoShown(profile(), IOSPromoType::kAddress);
+  base::Time after = base::Time::Now();
+
+  ASSERT_EQ(prefs()->GetInteger(
+                promos_prefs::kDesktopToiOSAddressPromoImpressionsCounter),
+            3);
+  ASSERT_GE(prefs()->GetTime(
+                promos_prefs::kDesktopToiOSAddressPromoLastImpressionTimestamp),
+            before);
+  ASSERT_LE(prefs()->GetTime(
+                promos_prefs::kDesktopToiOSAddressPromoLastImpressionTimestamp),
+            after);
+
+  histograms()->ExpectBucketCount("IOS.Desktop.AddressPromo.Shown",
+                                  DesktopIOSPromoImpression::kThirdImpression,
                                   1);
 }
 
@@ -453,6 +594,14 @@ TEST_F(IOSPromoOnDesktopTest, RegisterProfilePrefsTest) {
   ASSERT_EQ(
       prefs()->GetTime(promos_prefs::kiOSPasswordPromoLastImpressionTimestamp),
       base::Time());
+  ASSERT_FALSE(
+      prefs()->GetBoolean(promos_prefs::kDesktopToiOSAddressPromoOptOut));
+  ASSERT_EQ(prefs()->GetInteger(
+                promos_prefs::kDesktopToiOSAddressPromoImpressionsCounter),
+            0);
+  ASSERT_EQ(prefs()->GetTime(
+                promos_prefs::kDesktopToiOSAddressPromoLastImpressionTimestamp),
+            base::Time());
 }
 
 // TODO(crbug.com/339262105): Clean up the old password promo methods after the
