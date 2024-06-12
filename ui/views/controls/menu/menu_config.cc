@@ -12,6 +12,10 @@
 #include "ui/views/style/typography.h"
 #include "ui/views/style/typography_provider.h"
 
+#if BUILDFLAG(IS_OZONE)
+#include "ui/ozone/public/ozone_platform.h"
+#endif
+
 namespace views {
 
 MenuConfig::MenuConfig() {
@@ -22,6 +26,11 @@ MenuConfig::MenuConfig() {
 MenuConfig::~MenuConfig() = default;
 
 int MenuConfig::CornerRadiusForMenu(const MenuController* controller) const {
+#if BUILDFLAG(IS_OZONE)
+  if (!ui::OzonePlatform::GetInstance()->IsWindowCompositingSupported()) {
+    return 0;
+  }
+#endif
   if (controller && controller->use_ash_system_ui_layout()) {
     return controller->rounded_corners().has_value() ? 0
                                                      : touchable_corner_radius;
