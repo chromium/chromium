@@ -131,13 +131,9 @@ typedef NS_ENUM(NSInteger, ItemIdentifier) {
 - (void)viewWillLayoutSubviews {
   [super viewWillLayoutSubviews];
 
-  // Update the table view height since the browsing data row with the detail
+  // Update the bottom sheet height since the browsing data row with the detail
   // text is bigger then the standard row height.
-  _tableViewHeightConstraint.constant = _tableView.contentSize.height;
-
-  // Update the height of the bottom sheet since we might have a different
-  // height for the table view after all the rows have been loaded.
-  [self setUpBottomSheetDetents];
+  [self updateBottomSheetHeight];
 }
 
 #pragma mark - ConfirmationAlertActionHandler
@@ -174,10 +170,33 @@ typedef NS_ENUM(NSInteger, ItemIdentifier) {
 }
 
 - (void)setBrowsingDataSummary:(NSString*)summary {
+  if ([_browsingDataSummary isEqualToString:summary]) {
+    return;
+  }
   _browsingDataSummary = summary;
+
+  // Reload the browsing data row with the new summary.
+  NSDiffableDataSourceSnapshot<NSNumber*, NSNumber*>* snapshot =
+      [_dataSource snapshot];
+  [snapshot reconfigureItemsWithIdentifiers:@[ @(ItemIdentifierBrowsingData) ]];
+  [_dataSource applySnapshot:snapshot
+        animatingDifferences:NO
+                  completion:^{
+                    // Update the bottom sheet height since the browsing data
+                    // row can change height depending on the length of summary.
+                    [self updateBottomSheetHeight];
+                  }];
 }
 
 #pragma mark - Private
+
+// Updates the bottom sheet height by also updating the table view height. The
+// table view might have a different height after the browsing data summary is
+// updated.
+- (void)updateBottomSheetHeight {
+  _tableViewHeightConstraint.constant = _tableView.contentSize.height;
+  [self setUpBottomSheetDetents];
+}
 
 // Returns `_tableView` used to show the time range and browsing data rows.
 - (UITableView*)createTableView {

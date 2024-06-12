@@ -5,20 +5,40 @@
 #import "ios/chrome/browser/ui/settings/clear_browsing_data/browsing_data_mediator.h"
 
 #import "components/browsing_data/core/browsing_data_utils.h"
+#import "components/browsing_data/core/counters/autofill_counter.h"
+#import "components/browsing_data/core/counters/history_counter.h"
+#import "components/browsing_data/core/counters/passwords_counter.h"
 #import "components/browsing_data/core/pref_names.h"
 #import "components/prefs/pref_service.h"
-#import "ios/chrome/browser/shared/model/browser_state/chrome_browser_state.h"
+#import "components/strings/grit/components_strings.h"
 #import "ios/chrome/browser/ui/settings/clear_browsing_data/browsing_data_consumer.h"
+#import "ios/chrome/browser/ui/settings/clear_browsing_data/browsing_data_counter_wrapper_producer.h"
 #import "ios/chrome/grit/ios_strings.h"
 #import "ui/base/l10n/l10n_util_mac.h"
 
 @implementation BrowsingDataMediator {
-  raw_ptr<PrefService> _prefs;
+  PrefService* _prefs;
+  BrowsingDataCounterWrapperProducer* _counterWrapperProducer;
+
+  // Summaries based on the results returned by `_counters`. If they're nil, it
+  // means that the counter for the browsing data type in `_counters` has not
+  // yet returned.
+  NSString* _browsingHistorySummary;
+  NSString* _passwordsSummary;
+  NSString* _addressesSummary;
+  NSString* _cardsSummary;
+  NSString* _suggestionsSummary;
+
+  // Set of `BrowsingDataCounter`s used to create the summaries.
+  std::set<std::unique_ptr<BrowsingDataCounterWrapper>> _counters;
 }
 
-- (instancetype)initWithPrefs:(PrefService*)prefs {
+- (instancetype)initWithPrefs:(PrefService*)prefs
+    browsingDataCounterWrapperProducer:
+        (BrowsingDataCounterWrapperProducer*)counterWrapperProducer {
   if (self = [super init]) {
     _prefs = prefs;
+    _counterWrapperProducer = counterWrapperProducer;
   }
   return self;
 }
@@ -31,10 +51,14 @@
   [_consumer
       setTimeRange:static_cast<browsing_data::TimePeriod>(_prefs->GetInteger(
                        browsing_data::prefs::kDeleteTimePeriod))];
-  [self dispatchBrowsingDataSummary];
+
+  [self createCounters];
+  [self restartCounters];
 }
 
 - (void)disconnect {
+  _counters.clear();
+  _counterWrapperProducer = nil;
   _prefs = nil;
 }
 
@@ -44,22 +68,105 @@
   _prefs->SetInteger(browsing_data::prefs::kDeleteTimePeriod,
                      static_cast<int>(timeRange));
 
-  // TODO(crbug.com/341097601): Call `dispatchBrowsingDataSummary` to update the
-  // browsing data summary with the updated counters when the time range is
-  // changed.
+  [self restartCounters];
 }
 
 #pragma mark - Private
+
+// Creates counters for browsing history, passwords and form data browsing data
+// types. These counters when triggered by `restartCounters` will lead to an
+// update of the browsing data summary in the ViewController.
+- (void)createCounters {
+  [self createCounter:browsing_data::prefs::kDeleteBrowsingHistory];
+  [self createCounter:browsing_data::prefs::kDeletePasswords];
+  [self createCounter:browsing_data::prefs::kDeleteFormData];
+}
+
+// Creates a counter for the browsing data type defined by the `prefName`.
+- (void)createCounter:(std::string)prefName {
+  __weak BrowsingDataMediator* weakSelf = self;
+  std::unique_ptr<BrowsingDataCounterWrapper> counter = [_counterWrapperProducer
+      createCounterWrapperWithPrefName:prefName
+                      updateUiCallback:
+                          base::BindRepeating(^(
+                              const browsing_data::BrowsingDataCounter::Result&
+                                  result) {
+                            [weakSelf updateSummaryWith:&result];
+                          })];
+  if (counter != nullptr) {
+    _counters.insert(std::move(counter));
+  }
+}
+
+// Restarts the counters created in `createdCounters`. Restarting the counters
+// results on the browsing data summary being updated in the ViewController.
+- (void)restartCounters {
+  // TODO(crbug.com/342977162): Leave the "Calculating..." string enough time on
+  // screen so there isn't a flash between quick summary updates.
+  // Reset the summary shown in the ViewController and the variables updated by
+  // `_counters`.
+  [_consumer setBrowsingDataSummary:l10n_util::GetNSString(
+                                        IDS_CLEAR_BROWSING_DATA_CALCULATING)];
+  _browsingHistorySummary = nil;
+  _passwordsSummary = nil;
+  _addressesSummary = nil;
+  _cardsSummary = nil;
+  _suggestionsSummary = nil;
+
+  for (std::set<std::unique_ptr<BrowsingDataCounterWrapper>>::iterator it =
+           _counters.begin();
+       it != _counters.end(); ++it) {
+    (*it)->RestartCounter();
+  }
+}
+
+// Updates the summary for the browsing data type in `result`. Dispatches the
+// complete browsing data summary to the ViewController if all browsing data
+// types with counters have returned.
+- (void)updateSummaryWith:
+    (const browsing_data::BrowsingDataCounter::Result*)result {
+  if (!result->Finished()) {
+    return;
+  }
+
+  std::string prefName = result->source()->GetPrefName();
+  if (prefName == browsing_data::prefs::kDeleteBrowsingHistory) {
+    _browsingHistorySummary = [self
+        browsingHistorySummary:
+            static_cast<const browsing_data::HistoryCounter::HistoryResult*>(
+                result)];
+  } else if (prefName == browsing_data::prefs::kDeletePasswords) {
+    _passwordsSummary = [self
+        passwordsSummary:static_cast<const browsing_data::PasswordsCounter::
+                                         PasswordsResult*>(result)];
+  } else if (prefName == browsing_data::prefs::kDeleteFormData) {
+    const browsing_data::AutofillCounter::AutofillResult* autofillResult =
+        static_cast<const browsing_data::AutofillCounter::AutofillResult*>(
+            result);
+    _addressesSummary = [self addressesSummary:autofillResult];
+    _cardsSummary = [self cardsSummary:autofillResult];
+    _suggestionsSummary = [self suggestionsSummary:autofillResult];
+  } else {
+    NOTREACHED();
+  }
+
+  // TODO(crbug.com/342977162): There is the possiblity that some counters may
+  // not return, so we should update the summary after a set timeout even if not
+  // all counters have returned.
+  if (_browsingHistorySummary && _passwordsSummary && _addressesSummary &&
+      _cardsSummary && _suggestionsSummary) {
+    [self dispatchBrowsingDataSummary];
+  }
+}
 
 // Dispatches the updated browsing data summary to the ViewController.
 - (void)dispatchBrowsingDataSummary {
   NSMutableArray<NSString*>* summaryItems = [[NSMutableArray alloc] init];
 
   if (_prefs->GetBoolean(browsing_data::prefs::kDeleteBrowsingHistory)) {
-    // TODO(crbug.com/341097601): Use the actual number of sites that could be
-    // deleted for the selected time frame.
-    [summaryItems addObject:l10n_util::GetPluralNSStringF(
-                                IDS_IOS_DELETE_BROWSING_DATA_SUMMARY_SITES, 2)];
+    if (_browsingHistorySummary && _browsingHistorySummary.length > 0) {
+      [summaryItems addObject:_browsingHistorySummary];
+    }
   }
 
   if (_prefs->GetBoolean(browsing_data::prefs::kDeleteCookies)) {
@@ -75,20 +182,27 @@
   }
 
   if (_prefs->GetBoolean(browsing_data::prefs::kDeletePasswords)) {
-    // TODO(crbug.com/341097601): Use the actual number of passwords that could
-    // be deleted for the selected time frame.
-    [summaryItems
-        addObject:l10n_util::GetPluralNSStringF(
-                      IDS_IOS_DELETE_BROWSING_DATA_SUMMARY_PASSWORDS, 1)];
+    if (_passwordsSummary && _passwordsSummary.length > 0) {
+      [summaryItems addObject:_passwordsSummary];
+    }
   }
 
   if (_prefs->GetBoolean(browsing_data::prefs::kDeleteFormData)) {
-    // TODO(crbug.com/341097601): Use the actual number of passwords that could
-    // be deleted for the selected time frame.
-    [summaryItems
-        addObject:l10n_util::GetPluralNSStringF(
-                      IDS_IOS_DELETE_BROWSING_DATA_SUMMARY_AUTOFILL_DATA, 5)];
+    if (_addressesSummary && _addressesSummary.length > 0) {
+      [summaryItems addObject:_addressesSummary];
+    }
+
+    if (_cardsSummary && _cardsSummary.length > 0) {
+      [summaryItems addObject:_cardsSummary];
+    }
+
+    if (_suggestionsSummary && _suggestionsSummary.length > 0) {
+      [summaryItems addObject:_suggestionsSummary];
+    }
   }
+
+  // TODO(crbug.com/342373508): Use a placeholder string if `[summaryItems
+  // count]` == 0, i.e. the summary is empty.
 
   // TODO(crbug.com/342185075): Check if the comma is translated correctly for
   // right to left languages, e.g. arabic.
@@ -97,6 +211,105 @@
                      componentsJoinedByString:
                          l10n_util::GetNSString(
                              IDS_IOS_DELETE_BROWSING_DATA_SUMMARY_SEPARATOR)]];
+}
+
+// Returns the browsing history summary based on `result`. If the count of
+// browsing history entries in `result ` is less than 1, then returns an empty
+// string.
+- (NSString*)browsingHistorySummary:
+    (const browsing_data::HistoryCounter::HistoryResult*)result {
+  CHECK(result);
+  browsing_data::BrowsingDataCounter::ResultInt historyCount = result->Value();
+  if (historyCount < 1) {
+    return @"";
+  }
+
+  return result->has_synced_visits()
+             ? l10n_util::GetPluralNSStringF(
+                   IDS_IOS_DELETE_BROWSING_DATA_SUMMARY_SITES_SYNCED,
+                   historyCount)
+             : l10n_util::GetPluralNSStringF(
+                   IDS_IOS_DELETE_BROWSING_DATA_SUMMARY_SITES, historyCount);
+}
+
+// Returns the passwords summary based on `result`. If the count of passwords in
+// `result ` is less than 1, then returns an empty string.
+- (NSString*)passwordsSummary:
+    (const browsing_data::PasswordsCounter::PasswordsResult*)result {
+  browsing_data::BrowsingDataCounter::ResultInt passwordCount =
+      result->Value() + result->account_passwords();
+
+  if (passwordCount < 1) {
+    return @"";
+  }
+
+  bool hasSyncedPasswords =
+      result->is_sync_enabled() || (result->account_passwords() > 0);
+  return hasSyncedPasswords
+             ? l10n_util::GetPluralNSStringF(
+                   IDS_IOS_DELETE_BROWSING_DATA_SUMMARY_PASSWORDS_SYNCED,
+                   passwordCount)
+             : l10n_util::GetPluralNSStringF(
+                   IDS_IOS_DELETE_BROWSING_DATA_SUMMARY_PASSWORDS,
+                   passwordCount);
+}
+
+// Returns the addresses summary based on `result`. If the count of addresses in
+// `result ` is less than 1, then returns an empty string.
+- (NSString*)addressesSummary:
+    (const browsing_data::AutofillCounter::AutofillResult*)result {
+  browsing_data::AutofillCounter::ResultInt addressesCount =
+      result->num_addresses();
+
+  if (addressesCount < 1) {
+    return @"";
+  }
+
+  return result->is_sync_enabled()
+             ? l10n_util::GetPluralNSStringF(
+                   IDS_IOS_DELETE_BROWSING_DATA_SUMMARY_ADRESSES_SYNCED,
+                   addressesCount)
+             : l10n_util::GetPluralNSStringF(
+                   IDS_IOS_DELETE_BROWSING_DATA_SUMMARY_ADRESSES,
+                   addressesCount);
+}
+
+// Returns the cards summary based on `result`. If the count of cards in `result
+// ` is less than 1, then returns an empty string.
+- (NSString*)cardsSummary:
+    (const browsing_data::AutofillCounter::AutofillResult*)result {
+  browsing_data::AutofillCounter::ResultInt cardsCount =
+      result->num_credit_cards();
+
+  if (cardsCount < 1) {
+    return @"";
+  }
+
+  return result->is_sync_enabled()
+             ? l10n_util::GetPluralNSStringF(
+                   IDS_IOS_DELETE_BROWSING_DATA_SUMMARY_CARDS_SYNCED,
+                   cardsCount)
+             : l10n_util::GetPluralNSStringF(
+                   IDS_IOS_DELETE_BROWSING_DATA_SUMMARY_CARDS, cardsCount);
+}
+
+// Returns the suggestions summary based on `result`. If the count of
+// suggestions in `result ` is less than 1, then returns an empty string.
+- (NSString*)suggestionsSummary:
+    (const browsing_data::AutofillCounter::AutofillResult*)result {
+  browsing_data::AutofillCounter::ResultInt suggestionCount = result->Value();
+
+  if (suggestionCount < 1) {
+    return @"";
+  }
+
+  return result->is_sync_enabled()
+             ? l10n_util::GetPluralNSStringF(
+                   IDS_IOS_DELETE_BROWSING_DATA_SUMMARY_SUGGESTIONS_SYNCED,
+                   suggestionCount)
+             : l10n_util::GetPluralNSStringF(
+                   IDS_IOS_DELETE_BROWSING_DATA_SUMMARY_SUGGESTIONS,
+                   suggestionCount);
 }
 
 @end
