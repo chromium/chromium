@@ -192,42 +192,6 @@ UpdaterScope Scope(const std::map<std::string, std::string>& switches) {
   return IsSystemShim() ? UpdaterScope::kSystem : UpdaterScope::kUser;
 }
 
-void MaybeInstallUpdater(UpdaterScope scope) {
-  const std::optional<base::FilePath> path = GetUpdaterExecutablePath(scope);
-
-  if (path &&
-      [NSFileManager.defaultManager
-          fileExistsAtPath:base::apple::FilePathToNSString(path.value())]) {
-    return;
-  }
-
-  if (IsSystemInstall(scope) && geteuid() != 0) {
-    VLOG(0) << "Cannot install system updater without root privilege.";
-    return;
-  }
-
-  const std::optional<base::FilePath> setup_path = GetUpdaterExecutablePath(
-      IsSystemShim() ? UpdaterScope::kSystem : UpdaterScope::kUser);
-  if (!setup_path || ![NSFileManager.defaultManager
-                         fileExistsAtPath:base::apple::FilePathToNSString(
-                                              setup_path.value())]) {
-    VLOG(0) << "No existing updater to install from.";
-    return;
-  }
-
-  base::CommandLine install_command(setup_path.value());
-  install_command.AppendSwitch(kInstallSwitch);
-  if (IsSystemInstall(scope)) {
-    install_command.AppendSwitch(kSystemSwitch);
-  }
-  int exit_code = -1;
-  if (base::LaunchProcess(install_command, {}).WaitForExit(&exit_code)) {
-    VLOG(0) << "Installer returned " << exit_code << ".";
-  } else {
-    VLOG(0) << "Failed to wait for the installer to exit.";
-  }
-}
-
 class UpdateCheckResult : public base::RefCountedThreadSafe<UpdateCheckResult> {
  public:
   explicit UpdateCheckResult(const std::string& app_id) : app_id_(app_id) {}
@@ -285,6 +249,10 @@ class KSAdminApp : public App {
   scoped_refptr<UpdateService> ServiceProxy(UpdaterScope scope) const;
   void ChooseService(
       base::OnceCallback<void(UpdaterScope scope)> callback) const;
+  void FinishChoosingServiceWithSystemAppStates(
+      base::OnceCallback<void(UpdaterScope)> callback,
+      const std::vector<updater::UpdateService::AppState>& states) const;
+  void MaybeInstallUpdater(UpdaterScope scope) const;
 
   bool HasSwitch(const std::string& arg) const;
   std::string SwitchValue(const std::string& arg) const;
@@ -311,6 +279,46 @@ KSTicket* KSAdminApp::TicketFromAppState(
 scoped_refptr<UpdateService> KSAdminApp::ServiceProxy(
     UpdaterScope scope) const {
   return IsSystemInstall(scope) ? system_service_proxy_ : user_service_proxy_;
+}
+
+void KSAdminApp::MaybeInstallUpdater(UpdaterScope scope) const {
+  const std::optional<base::FilePath> path = GetUpdaterExecutablePath(scope);
+
+  if (path &&
+      [NSFileManager.defaultManager
+          fileExistsAtPath:base::apple::FilePathToNSString(path.value())]) {
+    return;
+  }
+
+  if (!HasSwitch(kCommandInstall) && !HasSwitch(kCommandRegister)) {
+    return;
+  }
+
+  if (IsSystemInstall(scope) && geteuid() != 0) {
+    VLOG(0) << "Cannot install system updater without root privilege.";
+    return;
+  }
+
+  const std::optional<base::FilePath> setup_path = GetUpdaterExecutablePath(
+      IsSystemShim() ? UpdaterScope::kSystem : UpdaterScope::kUser);
+  if (!setup_path || ![NSFileManager.defaultManager
+                         fileExistsAtPath:base::apple::FilePathToNSString(
+                                              setup_path.value())]) {
+    VLOG(0) << "No existing updater to install from.";
+    return;
+  }
+
+  base::CommandLine install_command(setup_path.value());
+  install_command.AppendSwitch(kInstallSwitch);
+  if (IsSystemInstall(scope)) {
+    install_command.AppendSwitch(kSystemSwitch);
+  }
+  int exit_code = -1;
+  if (base::LaunchProcess(install_command, {}).WaitForExit(&exit_code)) {
+    VLOG(0) << "Installer returned " << exit_code << ".";
+  } else {
+    VLOG(0) << "Failed to wait for the installer to exit.";
+  }
 }
 
 void KSAdminApp::ChooseService(
@@ -346,21 +354,23 @@ void KSAdminApp::ChooseService(
     MaybeInstallUpdater(scope.value());
     std::move(callback).Run(scope.value());
   } else {
-    system_service_proxy_->GetAppStates(base::BindOnce(
-        [](const std::string& app_id,
-           base::OnceCallback<void(UpdaterScope scope)> callback,
-           const std::vector<updater::UpdateService::AppState>& states) {
-          for (const updater::UpdateService::AppState& state : states) {
-            if (base::EqualsCaseInsensitiveASCII(app_id, state.app_id)) {
-              return std::move(callback).Run(UpdaterScope::kSystem);
-            }
-          }
-
-          MaybeInstallUpdater(UpdaterScope::kUser);
-          std::move(callback).Run(UpdaterScope::kUser);
-        },
-        SwitchValue(kCommandProductId), std::move(callback)));
+    system_service_proxy_->GetAppStates(
+        base::BindOnce(&KSAdminApp::FinishChoosingServiceWithSystemAppStates,
+                       this, std::move(callback)));
   }
+}
+
+void KSAdminApp::FinishChoosingServiceWithSystemAppStates(
+    base::OnceCallback<void(UpdaterScope)> callback,
+    const std::vector<updater::UpdateService::AppState>& states) const {
+  std::string app_id = SwitchValue(kCommandProductId);
+  for (const updater::UpdateService::AppState& state : states) {
+    if (base::EqualsCaseInsensitiveASCII(app_id, state.app_id)) {
+      return std::move(callback).Run(UpdaterScope::kSystem);
+    }
+  }
+  MaybeInstallUpdater(UpdaterScope::kUser);
+  std::move(callback).Run(UpdaterScope::kUser);
 }
 
 void KSAdminApp::PrintUsage(const std::string& error_message) {
