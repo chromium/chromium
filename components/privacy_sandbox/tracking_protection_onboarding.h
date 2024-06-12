@@ -188,6 +188,12 @@ class TrackingProtectionOnboarding : public KeyedService {
   // Returns the time delta from Onboarded to Acknowledged.
   std::optional<base::TimeDelta> OnboardedToAcknowledged();
 
+  // Returns the timestamp for when the profile was onboarded.
+  std::optional<base::Time> GetOnboardingTimestamp();
+
+  // Returns the timestamp for when the profile was silently onboarded.
+  std::optional<base::Time> GetSilentOnboardingTimestamp();
+
  private:
   friend class tpcd::experiment::EligibilityServiceTest;
   FRIEND_TEST(TrackingProtectionOnboardingNoticeBrowserTest,

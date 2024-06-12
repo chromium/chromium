@@ -246,7 +246,6 @@ void RecordHistogramsOnStartup(PrefService* pref_service) {
   RecordHistogramsSilentOnboardingOnStartup(pref_service);
 }
 
-
 TrackingProtectionOnboarding::NoticeType GetRequiredSilentOnboardingNotice(
     PrefService* pref_service) {
   auto onboarding_status = GetInternalSilentOnboardingStatus(pref_service);
@@ -588,6 +587,25 @@ TrackingProtectionOnboarding::OnboardedToAcknowledged() {
   return pref_service_->GetTime(
              prefs::kTrackingProtectionOnboardingAckedSince) -
          pref_service_->GetTime(prefs::kTrackingProtectionOnboardedSince);
+}
+
+std::optional<base::Time>
+TrackingProtectionOnboarding::GetOnboardingTimestamp() {
+  if (!pref_service_->HasPrefPath(prefs::kTrackingProtectionOnboardedSince) ||
+      GetOnboardingStatus() != OnboardingStatus::kOnboarded) {
+    return std::nullopt;
+  }
+  return pref_service_->GetTime(prefs::kTrackingProtectionOnboardedSince);
+}
+
+std::optional<base::Time>
+TrackingProtectionOnboarding::GetSilentOnboardingTimestamp() {
+  if (!pref_service_->HasPrefPath(
+          prefs::kTrackingProtectionSilentOnboardedSince) ||
+      GetSilentOnboardingStatus() != SilentOnboardingStatus::kOnboarded) {
+    return std::nullopt;
+  }
+  return pref_service_->GetTime(prefs::kTrackingProtectionSilentOnboardedSince);
 }
 
 TrackingProtectionOnboarding::OnboardingStatus

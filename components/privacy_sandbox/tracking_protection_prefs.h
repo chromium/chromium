@@ -69,6 +69,12 @@ inline constexpr char kTrackingProtectionSilentOnboardedSince[] =
 inline constexpr char kTrackingProtectionReminderStatus[] =
     "tracking_protection.reminder_status";
 
+// Tracking Protection Survey Prefs.
+
+// Unsynced pref that indicates the start time of the survey window.
+inline constexpr char kTrackingProtectionSurveyWindowStartTime[] =
+    "tracking_protection.survey_window_start_time";
+
 // Tracking Protection Settings Prefs.
 
 // Synced boolean that indicates whether the "block all 3pc" toggle on the

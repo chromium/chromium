@@ -455,6 +455,22 @@ TEST_F(TrackingProtectionOnboardingTest, OnboardedToAckForAckedProfile) {
             std::make_optional(delay));
 }
 
+TEST_F(TrackingProtectionOnboardingTest,
+       OnboardingTimestampIsNullForNotOnboardedProfile) {
+  tracking_protection_onboarding()->MaybeMarkEligible();
+  EXPECT_EQ(tracking_protection_onboarding()->GetOnboardingTimestamp(),
+            std::nullopt);
+}
+
+TEST_F(TrackingProtectionOnboardingTest,
+       ReturnsOnboardingTimestampForOnboardedProfile) {
+  tracking_protection_onboarding()->MaybeMarkEligible();
+  tracking_protection_onboarding()->OnboardingNoticeShown();
+
+  EXPECT_EQ(tracking_protection_onboarding()->GetOnboardingTimestamp(),
+            std::make_optional(base::Time::Now()));
+}
+
 TEST_F(TrackingProtectionOnboardingTest, UserActionMetrics) {
   base::UserActionTester user_action_tester;
 
@@ -1247,6 +1263,22 @@ TEST_F(TrackingProtectionSilentOnboardingTest,
 
   // Expectation
   testing::Mock::VerifyAndClearExpectations(&observer);
+}
+
+TEST_F(TrackingProtectionSilentOnboardingTest,
+       SilentOnboardingTimestampIsNullForNotOnboardedProfile) {
+  tracking_protection_onboarding()->MaybeMarkSilentEligible();
+  EXPECT_EQ(tracking_protection_onboarding()->GetSilentOnboardingTimestamp(),
+            std::nullopt);
+}
+
+TEST_F(TrackingProtectionSilentOnboardingTest,
+       ReturnsSilentOnboardingTimestampForSilentlyOnboardedProfile) {
+  tracking_protection_onboarding()->MaybeMarkSilentEligible();
+  tracking_protection_onboarding()->SilentOnboardingNoticeShown();
+
+  EXPECT_EQ(tracking_protection_onboarding()->GetSilentOnboardingTimestamp(),
+            std::make_optional(base::Time::Now()));
 }
 
 class TrackingProtectionSilentOnboardingAccessorTest
