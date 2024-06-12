@@ -49,6 +49,7 @@ const METRIC_NAME_MODULE_DISABLED = 'NewTabPage.Modules.Disabled';
 
 export type UndoActionEvent =
     CustomEvent<{message: string, restoreCallback?: () => void}>;
+export type DismissModuleElementEvent = UndoActionEvent;
 export type DismissModuleInstanceEvent = UndoActionEvent;
 export type DisableModuleEvent = UndoActionEvent;
 
@@ -56,6 +57,7 @@ declare global {
   interface HTMLElementEventMap {
     'disable-module': DisableModuleEvent;
     'dismiss-module-instance': DismissModuleInstanceEvent;
+    'dismiss-module-element': DismissModuleElementEvent;
   }
 }
 
@@ -431,6 +433,21 @@ export class ModulesV2Element extends AppElementBase {
 
     NewTabPageProxy.getInstance().handler.onDismissModule(
         wrapper.module.descriptor.id);
+  }
+
+  private onDismissModuleElementInstance_(e: DismissModuleElementEvent) {
+    const restoreCallback = e.detail.restoreCallback;
+    this.undoData_ = {
+      message: e.detail.message,
+      undo: restoreCallback ?
+          () => {
+            restoreCallback();
+          } :
+          undefined,
+    };
+
+    // Notify the user.
+    this.$.undoToast.show();
   }
 
   private onUndoButtonClick_() {

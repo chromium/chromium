@@ -15,6 +15,7 @@
 #include "mojo/public/cpp/bindings/receiver.h"
 
 class Profile;
+class PrefRegistrySimple;
 
 namespace content {
 class WebContents;
@@ -47,6 +48,10 @@ class MostRelevantTabResumptionPageHandler
 
   // most_relevant_tab_resumption::mojom::PageHandler:
   void GetTabs(GetTabsCallback callback) override;
+  void DismissModule(const std::vector<history::mojom::TabPtr> tabs) override;
+  void DismissTab(const history::mojom::TabPtr tab) override;
+  void RestoreModule(const std::vector<history::mojom::TabPtr> tabs) override;
+  void RestoreTab(history::mojom::TabPtr tab) override;
 
   // Invoked when the URL visit aggregates have been fetched.
   void OnGotRankedURLVisitAggregates(
@@ -54,7 +59,16 @@ class MostRelevantTabResumptionPageHandler
       visited_url_ranking::ResultStatus status,
       std::vector<visited_url_ranking::URLVisitAggregate> url_visit_aggregates);
 
+  static void RegisterProfilePrefs(PrefRegistrySimple* registry);
+
  private:
+  // Method to determine if a url is in the list of previously dismissed urls.
+  bool IsNewURL(history::mojom::TabPtr& tab);
+
+  // Method to clear dismissed tabs that are older than a certain amount of
+  // time.
+  void RemoveOldDismissedTabs();
+
   raw_ptr<Profile> profile_;
   raw_ptr<content::WebContents> web_contents_;
 

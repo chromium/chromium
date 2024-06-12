@@ -18,9 +18,12 @@
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/webui/ntp/new_tab_ui.h"
 #include "chrome/browser/visited_url_ranking/visited_url_ranking_service_factory.h"
+#include "chrome/common/pref_names.h"
 #include "chrome/grit/generated_resources.h"
 #include "components/history/core/browser/history_types.h"
 #include "components/history/core/browser/mojom/history_types.mojom.h"
+#include "components/prefs/pref_registry_simple.h"
+#include "components/prefs/scoped_user_pref_update.h"
 #include "components/search/ntp_features.h"
 #include "components/strings/grit/components_strings.h"
 #include "components/sync_device_info/device_info.h"
@@ -42,6 +45,10 @@ using visited_url_ranking::URLVisitAggregatesTransformType;
 using Source = visited_url_ranking::URLVisit::Source;
 
 namespace {
+// Name of preference to track list of dismissed tabs.
+const char kDismissedTabsPrefName[] =
+    "NewTabPage.MostRelevantTabResumption.DismissedTabs";
+
 std::u16string FormatRelativeTime(const base::Time& time) {
   // Return a time like "1 hour ago", "2 days ago", etc.
   base::Time now = base::Time::Now();
@@ -73,6 +80,7 @@ history::mojom::TabPtr TabToMojom(const URLVisitAggregate::Tab& tab) {
     tab_mojom->relative_time_text =
         base::UTF16ToUTF8(FormatRelativeTime(tab.visit.last_modified));
   }
+  tab_mojom->timestamp = tab.visit.last_modified;
 
   return tab_mojom;
 }
@@ -100,6 +108,7 @@ history::mojom::TabPtr HistoryEntryVisitToMojom(
     tab_mojom->relative_time_text =
         base::UTF16ToUTF8(FormatRelativeTime(visit.url_row.last_visit()));
   }
+  tab_mojom->timestamp = visit.url_row.last_visit();
 
   return tab_mojom;
 }
@@ -167,6 +176,48 @@ void MostRelevantTabResumptionPageHandler::GetTabs(GetTabsCallback callback) {
           weak_ptr_factory_.GetWeakPtr(), std::move(callback)));
 }
 
+void MostRelevantTabResumptionPageHandler::DismissModule(
+    const std::vector<history::mojom::TabPtr> tabs) {
+  RemoveOldDismissedTabs();
+  ScopedListPrefUpdate tab_list(profile_->GetPrefs(), kDismissedTabsPrefName);
+  for (const auto& tab : tabs) {
+    tab_list->Append(base::Value(
+        tab->url_key + ' ' +
+        base::NumberToString(
+            tab->timestamp->ToDeltaSinceWindowsEpoch().InMicroseconds())));
+  }
+}
+
+void MostRelevantTabResumptionPageHandler::DismissTab(
+    const history::mojom::TabPtr tab) {
+  RemoveOldDismissedTabs();
+  ScopedListPrefUpdate tab_list(profile_->GetPrefs(), kDismissedTabsPrefName);
+  tab_list->Append(base::Value(
+      tab->url_key + ' ' +
+      base::NumberToString(
+          tab->timestamp->ToDeltaSinceWindowsEpoch().InMicroseconds())));
+}
+
+void MostRelevantTabResumptionPageHandler::RestoreModule(
+    const std::vector<history::mojom::TabPtr> tabs) {
+  ScopedListPrefUpdate tab_list(profile_->GetPrefs(), kDismissedTabsPrefName);
+  for (const auto& tab : tabs) {
+    tab_list->EraseValue(base::Value(
+        tab->url_key + ' ' +
+        base::NumberToString(
+            tab->timestamp->ToDeltaSinceWindowsEpoch().InMicroseconds())));
+  }
+}
+
+void MostRelevantTabResumptionPageHandler::RestoreTab(
+    history::mojom::TabPtr tab) {
+  ScopedListPrefUpdate tab_list(profile_->GetPrefs(), kDismissedTabsPrefName);
+  tab_list->EraseValue(base::Value(
+      tab->url_key + ' ' +
+      base::NumberToString(
+          tab->timestamp->ToDeltaSinceWindowsEpoch().InMicroseconds())));
+}
+
 void MostRelevantTabResumptionPageHandler::OnGotRankedURLVisitAggregates(
     GetTabsCallback callback,
     visited_url_ranking::ResultStatus status,
@@ -175,16 +226,18 @@ void MostRelevantTabResumptionPageHandler::OnGotRankedURLVisitAggregates(
                                 status);
   std::vector<history::mojom::TabPtr> tabs_mojom;
   for (const auto& url_visit_aggregate : url_visit_aggregates) {
-    // TODO(crbug.com/338622450): Wire fields to be displayed on the UI.
     const URLVisitAggregate::Tab* tab =
         visited_url_ranking::GetTabIfExists(url_visit_aggregate);
     if (tab) {
       auto tab_mojom = TabToMojom(*tab);
       tab_mojom->url = **url_visit_aggregate.GetAssociatedURLs().begin();
-      tabs_mojom.push_back(std::move(tab_mojom));
-      base::UmaHistogramEnumeration(
-          "NewTabPage.TabResumption.URLVisitAggregateDataTypeDisplayed",
-          URLVisitAggregateDataType::kTab);
+      tab_mojom->url_key = url_visit_aggregate.url_key;
+      if (IsNewURL(tab_mojom)) {
+        tabs_mojom.push_back(std::move(tab_mojom));
+        base::UmaHistogramEnumeration(
+            "NewTabPage.TabResumption.URLVisitAggregateDataTypeDisplayed",
+            URLVisitAggregateDataType::kTab);
+      }
     } else {
       const history::AnnotatedVisit* visit =
           visited_url_ranking::GetHistoryEntryVisitIfExists(
@@ -193,13 +246,56 @@ void MostRelevantTabResumptionPageHandler::OnGotRankedURLVisitAggregates(
         auto history_tab_mojom = HistoryEntryVisitToMojom(*visit);
         history_tab_mojom->url =
             **url_visit_aggregate.GetAssociatedURLs().begin();
-        tabs_mojom.push_back(std::move(history_tab_mojom));
-        base::UmaHistogramEnumeration(
-            "NewTabPage.TabResumption.URLVisitAggregateDataTypeDisplayed",
-            URLVisitAggregateDataType::kHistory);
+        history_tab_mojom->url_key = url_visit_aggregate.url_key;
+        if (IsNewURL(history_tab_mojom)) {
+          tabs_mojom.push_back(std::move(history_tab_mojom));
+          base::UmaHistogramEnumeration(
+              "NewTabPage.TabResumption.URLVisitAggregateDataTypeDisplayed",
+              URLVisitAggregateDataType::kHistory);
+        }
       }
     }
   }
 
   std::move(callback).Run(std::move(tabs_mojom));
+}
+
+// static
+void MostRelevantTabResumptionPageHandler::RegisterProfilePrefs(
+    PrefRegistrySimple* registry) {
+  registry->RegisterListPref(kDismissedTabsPrefName, base::Value::List());
+}
+
+bool MostRelevantTabResumptionPageHandler::IsNewURL(
+    history::mojom::TabPtr& tab) {
+  const base::Value::List& cached_urls =
+      profile_->GetPrefs()->GetList(kDismissedTabsPrefName);
+  auto it =
+      std::find_if(cached_urls.begin(), cached_urls.end(),
+                   [&tab](const base::Value& cached_url) {
+                     return cached_url.GetString() ==
+                            tab->url_key + ' ' +
+                                base::NumberToString(
+                                    tab->timestamp->ToDeltaSinceWindowsEpoch()
+                                        .InMicroseconds());
+                   });
+  return it == cached_urls.end();
+}
+
+void MostRelevantTabResumptionPageHandler::RemoveOldDismissedTabs() {
+  ScopedListPrefUpdate tab_list(profile_->GetPrefs(), kDismissedTabsPrefName);
+  for (const auto& entry : tab_list.Get().Clone()) {
+    const std::string dismissed_tab_string = entry.GetString();
+    size_t delimiter_pos = dismissed_tab_string.find(' ');
+    if (delimiter_pos != std::string::npos) {
+      int64_t timestamp_microseconds;
+      base::StringToInt64(dismissed_tab_string.substr(delimiter_pos),
+                          &timestamp_microseconds);
+      base::Time timestamp = base::Time::FromDeltaSinceWindowsEpoch(
+          base::Microseconds(timestamp_microseconds));
+      if (base::Time::Now() - timestamp > base::Days(90)) {
+        tab_list->EraseValue(entry);
+      }
+    }
+  }
 }

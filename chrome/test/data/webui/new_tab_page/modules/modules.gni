@@ -10,6 +10,7 @@ import("./photos/photos.gni")
 import("./v2/calendar/calendar.gni")
 import("./v2/file_suggestion/file_suggestion.gni")
 import("./v2/history_clusters/history_clusters.gni")
+import("./v2/most_relevant_tab_resumption/most_relevant_tab_resumption.gni")
 import("./v2/tab_resumption/tab_resumption.gni")
 
 if (!is_official_build) {
@@ -29,7 +30,7 @@ modules_test_files =
     ] + cart_test_files + calendar_v2_test_files + drive_test_files +
     file_suggestion_v2_test_files + feed_test_files + photos_test_files +
     history_clusters_test_files + history_clusters_v2_test_files +
-    tab_resumption_test_files
+    tab_resumption_test_files + most_relevant_tab_resumption_test_files
 
 if (!is_official_build) {
   modules_test_files += dummy_v2_test_files

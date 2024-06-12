@@ -61,7 +61,7 @@ export {HistoryClustersProxyImpl as HistoryClustersProxyImplV2} from './modules/
 export {HistoryClusterImageDisplayState as HistoryClusterV2ImageDisplayState, historyClustersDescriptor as historyClustersV2Descriptor, HistoryClustersModuleElement as HistoryClustersV2ModuleElement} from './modules/v2/history_clusters/module.js';
 export {VisitTileModuleElement} from './modules/v2/history_clusters/visit_tile.js';
 export {ModuleHeaderElementV2} from './modules/v2/module_header.js';
-export {DismissModuleInstanceEvent, MODULE_CUSTOMIZE_ELEMENT_ID, ModulesV2Element, NamedWidth, SUPPORTED_MODULE_WIDTHS} from './modules/v2/modules.js';
+export {DismissModuleElementEvent, DismissModuleInstanceEvent, MODULE_CUSTOMIZE_ELEMENT_ID, ModulesV2Element, NamedWidth, SUPPORTED_MODULE_WIDTHS} from './modules/v2/modules.js';
 export {mostRelevantTabResumptionDescriptor, MostRelevantTabResumptionModuleElement} from './modules/v2/most_relevant_tab_resumption/module.js';
 export {MostRelevantTabResumptionProxyImpl} from './modules/v2/most_relevant_tab_resumption/most_relevant_tab_resumption_proxy.js';
 export {tabResumptionDescriptor, TabResumptionModuleElement} from './modules/v2/tab_resumption/module.js';

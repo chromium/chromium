@@ -69,6 +69,8 @@ class MostRelevantTabResumptionPageHandlerTest
     BrowserWithTestWindowTest::TearDown();
   }
 
+  MostRelevantTabResumptionPageHandler* Handler() { return handler_.get(); }
+
  private:
   // BrowserWithTestWindowTest:
   TestingProfile::TestingFactories GetTestingFactories() override {
@@ -141,4 +143,80 @@ TEST_F(MostRelevantTabResumptionPageHandlerTest, GetTabs) {
     ASSERT_EQ("sample_title", tab_mojom->title);
     ASSERT_EQ(GURL(visited_url_ranking::kSampleSearchUrl), tab_mojom->url);
   }
+}
+
+TEST_F(MostRelevantTabResumptionPageHandlerTest, DismissTab) {
+  visited_url_ranking::MockVisitedURLRankingService*
+      mock_visited_url_ranking_service =
+          static_cast<visited_url_ranking::MockVisitedURLRankingService*>(
+              VisitedURLRankingServiceFactory::GetForProfile(profile()));
+
+  EXPECT_CALL(*mock_visited_url_ranking_service, FetchURLVisitAggregates(_, _))
+      .Times(3)
+      .WillRepeatedly(testing::Invoke(
+          [](const FetchOptions& options,
+             VisitedURLRankingService::GetURLVisitAggregatesCallback callback) {
+            std::vector<URLVisitAggregate> url_visit_aggregates = {};
+            url_visit_aggregates.emplace_back(
+                visited_url_ranking::CreateSampleURLVisitAggregate(
+                    GURL(visited_url_ranking::kSampleSearchUrl), 1.0f,
+                    base::Time::FromDeltaSinceWindowsEpoch(
+                        base::Microseconds(12345)),
+                    {Fetcher::kSession}));
+            url_visit_aggregates.emplace_back(
+                visited_url_ranking::CreateSampleURLVisitAggregate(
+                    GURL(visited_url_ranking::kSampleSearchUrl), 1.0f,
+                    base::Time::Now(), {Fetcher::kHistory}));
+
+            std::move(callback).Run(ResultStatus::kSuccess,
+                                    std::move(url_visit_aggregates));
+          }));
+
+  auto tabs_mojom = RunGetTabs();
+  ASSERT_EQ(2u, tabs_mojom.size());
+  Handler()->DismissTab(mojo::Clone(tabs_mojom[0]));
+  auto dismissed_tabs_mojom = RunGetTabs();
+  ASSERT_EQ(1u, dismissed_tabs_mojom.size());
+  Handler()->RestoreTab(mojo::Clone(tabs_mojom[0]));
+  auto restored_tabs_mojom = RunGetTabs();
+  ASSERT_EQ(2u, restored_tabs_mojom.size());
+}
+
+TEST_F(MostRelevantTabResumptionPageHandlerTest, DismissAll) {
+  visited_url_ranking::MockVisitedURLRankingService*
+      mock_visited_url_ranking_service =
+          static_cast<visited_url_ranking::MockVisitedURLRankingService*>(
+              VisitedURLRankingServiceFactory::GetForProfile(profile()));
+
+  EXPECT_CALL(*mock_visited_url_ranking_service, FetchURLVisitAggregates(_, _))
+      .Times(3)
+      .WillRepeatedly(testing::Invoke(
+          [](const FetchOptions& options,
+             VisitedURLRankingService::GetURLVisitAggregatesCallback callback) {
+            std::vector<URLVisitAggregate> url_visit_aggregates = {};
+            url_visit_aggregates.emplace_back(
+                visited_url_ranking::CreateSampleURLVisitAggregate(
+                    GURL(visited_url_ranking::kSampleSearchUrl), 1.0f,
+                    base::Time::FromDeltaSinceWindowsEpoch(
+                        base::Microseconds(12345)),
+                    {Fetcher::kSession}));
+            url_visit_aggregates.emplace_back(
+                visited_url_ranking::CreateSampleURLVisitAggregate(
+                    GURL(visited_url_ranking::kSampleSearchUrl), 1.0f,
+                    base::Time::FromDeltaSinceWindowsEpoch(
+                        base::Microseconds(123456)),
+                    {Fetcher::kHistory}));
+
+            std::move(callback).Run(ResultStatus::kSuccess,
+                                    std::move(url_visit_aggregates));
+          }));
+
+  auto tabs_mojom = RunGetTabs();
+  ASSERT_EQ(2u, tabs_mojom.size());
+  Handler()->DismissModule(mojo::Clone(tabs_mojom));
+  auto dismissed_tabs_mojom = RunGetTabs();
+  ASSERT_EQ(0u, dismissed_tabs_mojom.size());
+  Handler()->RestoreModule(mojo::Clone(tabs_mojom));
+  auto restored_tabs_mojom = RunGetTabs();
+  ASSERT_EQ(2u, restored_tabs_mojom.size());
 }

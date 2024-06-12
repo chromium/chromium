@@ -353,3 +353,24 @@ IN_PROC_BROWSER_TEST_F(NewTabPageModulesTabResumptionModuleTest, Core) {
   RunTest("new_tab_page/modules/v2/tab_resumption/module_test.js",
           "runMochaSuite('NewTabPageModulesTabResumptionModuleTest Core')");
 }
+
+class NewTabPageModulesMostRelevantTabResumptionModuleTest
+    : public NewTabPageBrowserTest {
+ protected:
+  NewTabPageModulesMostRelevantTabResumptionModuleTest() {
+    scoped_feature_list_.InitWithFeatures(
+        /*enabled_features=*/{ntp_features::
+                                  kNtpMostRelevantTabResumptionModule},
+        /*disabled_features=*/{});
+  }
+
+ private:
+  base::test::ScopedFeatureList scoped_feature_list_;
+};
+
+IN_PROC_BROWSER_TEST_F(NewTabPageModulesMostRelevantTabResumptionModuleTest,
+                       Core) {
+  RunTest("new_tab_page/modules/v2/most_relevant_tab_resumption/module_test.js",
+          "runMochaSuite('NewTabPageModulesMostRelevantTabResumptionModuleTest "
+          "Core')");
+}
