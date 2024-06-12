@@ -196,6 +196,11 @@ class UnusedSitePermissionsService final : public SafetyHubService,
       base::Clock* clock,
       const scoped_refptr<HostContentSettingsMap> hcsm);
 
+  // Helpers to convert content settings between enum int and string name.
+  static std::string ConvertContentSettingsTypeToKey(ContentSettingsType type);
+  static ContentSettingsType ConvertKeyToContentSettingsType(
+      const std::string& key);
+
   // SafetyHubService implementation
   // Returns a weak pointer to the service.
   base::WeakPtr<SafetyHubService> GetAsWeakRef() override;
@@ -213,6 +218,15 @@ class UnusedSitePermissionsService final : public SafetyHubService,
       std::map<std::string, std::list<ContentSettingEntry>>;
 
  private:
+  FRIEND_TEST_ALL_PREFIXES(UnusedSitePermissionsServiceTest,
+                           UpdateIntegerValuesToGroupName_AllContentSettings);
+  FRIEND_TEST_ALL_PREFIXES(
+      UnusedSitePermissionsServiceTest,
+      UpdateIntegerValuesToGroupName_SubsetOfContentSettings);
+  FRIEND_TEST_ALL_PREFIXES(UnusedSitePermissionsServiceTest,
+                           UpdateIntegerValuesToGroupName_OnStartUp);
+  FRIEND_TEST_ALL_PREFIXES(UnusedSitePermissionsServiceTest,
+                           UpdateIntegerValuesToGroupName_MixedKeys);
   // Called by TabHelper when a URL was visited.
   void OnPageVisited(const url::Origin& origin);
 
@@ -270,6 +284,10 @@ class UnusedSitePermissionsService final : public SafetyHubService,
   // from the set if it is in there.
   const std::set<ContentSettingsType> GetRevokedUnusedSitePermissionTypes(
       const std::set<ContentSettingsType> permissions);
+
+  // Convert all integer permission values to string, if there is any permission
+  // represented by integer.
+  void UpdateIntegerValuesToGroupName();
 
   // Set of permissions that haven't been used for at least a week.
   UnusedPermissionMap recently_unused_permissions_;

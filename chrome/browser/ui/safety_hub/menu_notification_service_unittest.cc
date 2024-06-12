@@ -90,7 +90,8 @@ class SafetyHubMenuNotificationServiceTest
     auto dict = base::Value::Dict().Set(
         permissions::kRevokedKey,
         base::Value::List().Append(
-            static_cast<int32_t>(ContentSettingsType::GEOLOCATION)));
+            UnusedSitePermissionsService::ConvertContentSettingsTypeToKey(
+                ContentSettingsType::GEOLOCATION)));
     hcsm()->SetWebsiteSettingDefaultScope(
         GURL(url), GURL(url),
         ContentSettingsType::REVOKED_UNUSED_SITE_PERMISSIONS,

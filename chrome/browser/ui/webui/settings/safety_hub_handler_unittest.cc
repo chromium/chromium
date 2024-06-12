@@ -45,6 +45,7 @@
 #include "chrome/test/base/testing_profile.h"
 #include "components/content_settings/core/browser/content_settings_registry.h"
 #include "components/content_settings/core/browser/host_content_settings_map.h"
+#include "components/content_settings/core/browser/website_settings_registry.h"
 #include "components/content_settings/core/common/content_settings.h"
 #include "components/content_settings/core/common/content_settings_pattern.h"
 #include "components/content_settings/core/common/content_settings_types.h"
@@ -149,17 +150,21 @@ class SafetyHubHandlerTest : public testing::Test {
   }
 
   void AddRevokedPermission() {
-    auto dict =
-        base::Value::Dict()
-            .Set(permissions::kRevokedKey,
-                 base::Value::List()
-                     .Append(static_cast<int32_t>(kUnusedRegularPermission))
-                     .Append(static_cast<int32_t>(kUnusedChooserPermission)))
-            .Set(permissions::kRevokedChooserPermissionsKey,
-                 base::Value::Dict().Set(
-                     base::NumberToString(
-                         static_cast<int32_t>(kUnusedChooserPermission)),
-                     base::Value::Dict().Set("foo", "bar")));
+    auto dict = base::Value::Dict()
+                    .Set(permissions::kRevokedKey,
+                         base::Value::List()
+                             .Append(UnusedSitePermissionsService::
+                                         ConvertContentSettingsTypeToKey(
+                                             kUnusedRegularPermission))
+                             .Append(UnusedSitePermissionsService::
+                                         ConvertContentSettingsTypeToKey(
+                                             kUnusedChooserPermission)))
+                    .Set(permissions::kRevokedChooserPermissionsKey,
+                         base::Value::Dict().Set(
+                             UnusedSitePermissionsService::
+                                 ConvertContentSettingsTypeToKey(
+                                     kUnusedChooserPermission),
+                             base::Value::Dict().Set("foo", "bar")));
 
     content_settings::ContentSettingConstraints constraint(clock()->Now());
     constraint.set_lifetime(kLifetime);
@@ -203,13 +208,17 @@ class SafetyHubHandlerTest : public testing::Test {
         base::Value::Dict()
             .Set(permissions::kRevokedKey,
                  base::Value::List()
-                     .Append(static_cast<int32_t>(kUnusedRegularPermission))
-                     .Append(static_cast<int32_t>(kUnusedChooserPermission)))
+                     .Append(UnusedSitePermissionsService::
+                                 ConvertContentSettingsTypeToKey(
+                                     kUnusedRegularPermission))
+                     .Append(UnusedSitePermissionsService::
+                                 ConvertContentSettingsTypeToKey(
+                                     kUnusedChooserPermission)))
             .Set(permissions::kRevokedChooserPermissionsKey,
-                 base::Value::Dict().Set(
-                     base::NumberToString(
-                         static_cast<int32_t>(kUnusedChooserPermission)),
-                     base::Value::Dict().Set("foo", "bar")))
+                 base::Value::Dict().Set(UnusedSitePermissionsService::
+                                             ConvertContentSettingsTypeToKey(
+                                                 kUnusedChooserPermission),
+                                         base::Value::Dict().Set("foo", "bar")))
             .Set(safety_hub::kAbusiveRevocationExpirationKey,
                  base::TimeToValue(constraint.expiration()))
             .Set(safety_hub::kAbusiveRevocationLifetimeKey,
@@ -570,7 +579,8 @@ TEST_F(SafetyHubHandlerTest, PopulateUnusedSitePermissionsData) {
   const auto* chooser_permissions_data = revoked_permission_dict.FindDict(
       safety_hub::kSafetyHubChooserPermissionsData);
   EXPECT_TRUE(chooser_permissions_data->contains(
-      base::NumberToString(static_cast<int32_t>(kUnusedChooserPermission))));
+      UnusedSitePermissionsService::ConvertContentSettingsTypeToKey(
+          kUnusedChooserPermission)));
 }
 
 TEST_F(SafetyHubHandlerTest, HandleAllowPermissionsAgainForUnusedSite) {
@@ -1046,7 +1056,9 @@ TEST_F(SafetyHubHandlerTest, RevokeAllContentSettingTypes) {
     // Add the permission to revoked permission list.
     auto dict = base::Value::Dict().Set(
         permissions::kRevokedKey,
-        base::Value::List().Append(static_cast<int32_t>(type)));
+        base::Value::List().Append(
+            UnusedSitePermissionsService::ConvertContentSettingsTypeToKey(
+                type)));
     hcsm()->SetWebsiteSettingDefaultScope(
         GURL(kUnusedTestSite), GURL(kUnusedTestSite),
         ContentSettingsType::REVOKED_UNUSED_SITE_PERMISSIONS,

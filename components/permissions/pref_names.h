@@ -28,6 +28,7 @@ extern const char kOneTimePermissionPromptsDecidedCount[];
 // Currently Safety Hub is available only on desktop and Android.
 #if !BUILDFLAG(IS_IOS)
 extern const char kUnusedSitePermissionsRevocationEnabled[];
+extern const char kUnusedSitePermissionsRevocationMigrationCompleted[];
 #endif  // !BUILDFLAG(IS_IOS)
 
 }  // namespace prefs

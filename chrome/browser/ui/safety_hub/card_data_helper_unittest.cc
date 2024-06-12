@@ -131,7 +131,8 @@ class SafetyHubCardDataHelperTest : public testing::Test {
     base::Value::Dict dict;
     dict.Set(permissions::kRevokedKey,
              base::Value::List().Append(
-                 static_cast<int32_t>(ContentSettingsType::GEOLOCATION)));
+                 UnusedSitePermissionsService::ConvertContentSettingsTypeToKey(
+                     ContentSettingsType::GEOLOCATION)));
     content_settings::ContentSettingConstraints default_constraint(
         base::Time::Now());
     default_constraint.set_lifetime(base::Days(60));

@@ -47,6 +47,11 @@ const char kOneTimePermissionPromptsDecidedCount[] =
 #if !BUILDFLAG(IS_IOS)
 const char kUnusedSitePermissionsRevocationEnabled[] =
     "safety_hub.unused_site_permissions_revocation.enabled";
+
+// Boolean that indicates whether the revoked permissions have successfully
+// migrated to use string key values instead of integer key values.
+const char kUnusedSitePermissionsRevocationMigrationCompleted[] =
+    "safety_hub.unused_site_permissions_revocation.migration_completed";
 #endif  // !BUILDFLAG(IS_IOS)
 }  // namespace prefs
 
@@ -56,6 +61,8 @@ void RegisterProfilePrefs(user_prefs::PrefRegistrySyncable* registry) {
 #if !BUILDFLAG(IS_IOS)
   registry->RegisterBooleanPref(prefs::kUnusedSitePermissionsRevocationEnabled,
                                 true);
+  registry->RegisterBooleanPref(
+      prefs::kUnusedSitePermissionsRevocationMigrationCompleted, false);
 #endif  // !BUILDFLAG(IS_IOS)
 }
 
