@@ -12,7 +12,6 @@
 
 #include "base/json/json_writer.h"
 #include "base/memory/raw_ptr.h"
-#include "base/memory/raw_ptr_exclusion.h"
 #include "base/memory/raw_ref.h"
 #include "base/memory/ref_counted_memory.h"
 #include "base/memory/scoped_refptr.h"
@@ -389,16 +388,10 @@ class NewTabPageHandlerTest : public testing::Test {
   raw_ptr<MockCustomizeChromeTabHelper> mock_customize_chrome_tab_helper_;
   base::HistogramTester histogram_tester_;
   std::unique_ptr<NewTabPageHandler> handler_;
-  // This field is not a raw_ptr<> because it was filtered by the rewriter for:
-  // #addr-of
-  RAW_PTR_EXCLUSION ThemeServiceObserver* theme_service_observer_;
-  // This field is not a raw_ptr<> because it was filtered by the rewriter for:
-  // #addr-of
-  RAW_PTR_EXCLUSION NtpCustomBackgroundServiceObserver*
+  raw_ptr<ThemeServiceObserver> theme_service_observer_;
+  raw_ptr<NtpCustomBackgroundServiceObserver>
       ntp_custom_background_service_observer_;
-  // This field is not a raw_ptr<> because it was filtered by the rewriter for:
-  // #addr-of
-  RAW_PTR_EXCLUSION PromoServiceObserver* promo_service_observer_;
+  raw_ptr<PromoServiceObserver> promo_service_observer_;
 
  private:
   const std::vector<std::pair<const std::string, int>> module_id_names = {
