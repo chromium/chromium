@@ -4,7 +4,7 @@
 
 import("//build/config/chrome_build.gni")
 
-source_set("appearance") {
+source_set("ui_bundled") {
   sources = [
     "appearance_customization.h",
     "appearance_customization.mm",
