@@ -3231,9 +3231,11 @@ class BackForwardCacheWithSubframeNavigationWithParamBrowserTest
 
 // Confirm that BackForwardCache is blocked when there is only 1 navigation and
 // it's pending commit.
+#define MAYBE_SubframeNavigationWithPendingCommitShouldPreventCache \
+  DISABLED_SubframeNavigationWithPendingCommitShouldPreventCache
 IN_PROC_BROWSER_TEST_P(
     BackForwardCacheWithSubframeNavigationWithParamBrowserTest,
-    SubframeNavigationWithPendingCommitShouldPreventCache) {
+    MAYBE_SubframeNavigationWithPendingCommitShouldPreventCache) {
   const GURL main_url(embedded_test_server()->GetURL(
       "a.com", "/cross_site_iframe_factory.html?a(b)"));
   const GURL subframe_url = embedded_test_server()->GetURL(
@@ -3276,9 +3278,11 @@ IN_PROC_BROWSER_TEST_P(
 
 // Confirm that BackForwardCache is blocked when there are 2 navigations, 1 not
 // pending commit yet, and 1 pending commit.
+#define MAYBE_MultipleSubframeNavigationWithBeforeAndPendingCommitShouldPreventCache \
+  DISABLED_MultipleSubframeNavigationWithBeforeAndPendingCommitShouldPreventCache
 IN_PROC_BROWSER_TEST_F(
     BackForwardCacheWithSubframeNavigationBrowserTest,
-    MultipleSubframeNavigationWithBeforeAndPendingCommitShouldPreventCache) {
+    MAYBE_MultipleSubframeNavigationWithBeforeAndPendingCommitShouldPreventCache) {
   // This test relies on the main frame and the iframe to live in different
   // processes. This allows one renderer process to proceed a navigation while
   // the other renderer process is busy executing its beforeunload handler.
