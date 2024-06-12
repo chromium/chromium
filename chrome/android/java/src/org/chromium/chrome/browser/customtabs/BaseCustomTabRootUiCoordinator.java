@@ -792,7 +792,7 @@ public class BaseCustomTabRootUiCoordinator extends RootUiCoordinator {
                                                     .TRACKING_PROTECTION_USER_BYPASS_PWA_TRIGGER)
                                     && mActivityType == ActivityType.WEB_APK
                                     && mTrackingProtectionSnackbarController != null) {
-                                mTrackingProtectionSnackbarController.showSnackbar();
+                                mTrackingProtectionSnackbarController.maybeTriggerSnackbar();
                             }
                         }));
         SupplierUtils.waitForAll(

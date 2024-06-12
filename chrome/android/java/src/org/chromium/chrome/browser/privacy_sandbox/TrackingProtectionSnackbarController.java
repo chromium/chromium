@@ -53,7 +53,8 @@ public class TrackingProtectionSnackbarController implements CookieControlsObser
     private boolean mTrackingProtectionControlsVisible;
     private boolean mTrackingProtectionBlocked;
     private int mBlockingStatus3pcd;
-    private long mLastTimestamp;
+    private TrackingProtectionSnackbarLimiter mTrackingProtectionLimiter;
+    private WebContents mWebContents;
 
     /**
      * Creates the {@link TrackingProtectionSnackbarController} object.
@@ -75,6 +76,8 @@ public class TrackingProtectionSnackbarController implements CookieControlsObser
         mSnackbarManagerSupplier = snackbarManagerSupplier;
         mCookieControlsBridge = new CookieControlsBridge(this, webContents, originalBrowserContext);
         mActivityType = activityType;
+        mWebContents = webContents;
+        mTrackingProtectionLimiter = new TrackingProtectionSnackbarLimiter();
     }
 
     @Override
@@ -90,14 +93,7 @@ public class TrackingProtectionSnackbarController implements CookieControlsObser
 
     @Override
     public void onHighlightPwaCookieControl() {
-        long current = System.currentTimeMillis();
-        long diff = current - mLastTimestamp;
-        if (diff > MINIMUM_DELAY_BETWEEN_CONSECUTIVE_SNACKBARS_MS
-                && mTrackingProtectionControlsVisible
-                && !mTrackingProtectionBlocked) {
-            mLastTimestamp = current;
-            showSnackbar();
-        }
+        maybeTriggerSnackbar();
     }
 
     @Override
@@ -113,9 +109,39 @@ public class TrackingProtectionSnackbarController implements CookieControlsObser
     }
 
     /**
-     * Show {@link Snackbar} for TrackingProtection if the provided {@link ActivityType} is correct.
+     * Checks PWA {@link Snackbar} eligibility criteria and triggers it if needed.
+     *
+     * <p>It takes into account both rate limiting and test / feature triggers.
      */
-    public void showSnackbar() {
+    public void maybeTriggerSnackbar() {
+        if (!ChromeFeatureList.isEnabled(ChromeFeatureList.TRACKING_PROTECTION_USER_BYPASS_PWA)) {
+            return;
+        }
+
+        boolean forceTriggerEnabled =
+                ChromeFeatureList.isEnabled(
+                        ChromeFeatureList.TRACKING_PROTECTION_USER_BYPASS_PWA_TRIGGER);
+
+        String host = "";
+        if (mWebContents != null && mWebContents.getLastCommittedUrl() != null) {
+            host = mWebContents.getLastCommittedUrl().getHost();
+        }
+
+        if (!forceTriggerEnabled
+                && (!mTrackingProtectionLimiter.shouldAllowRequest(host)
+                        || !mTrackingProtectionControlsVisible
+                        || mTrackingProtectionBlocked)) {
+            return;
+        }
+
+        showSnackbar();
+    }
+
+    /**
+     * Shows {@link Snackbar} for TrackingProtection if the provided {@link ActivityType} is
+     * correct.
+     */
+    private void showSnackbar() {
         boolean locked = mLock.tryLock();
         try {
             if (!locked) {

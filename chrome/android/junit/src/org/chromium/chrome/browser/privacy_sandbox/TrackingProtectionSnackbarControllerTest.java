@@ -51,6 +51,7 @@ public class TrackingProtectionSnackbarControllerTest {
 
     @Test
     @Features.EnableFeatures(ChromeFeatureList.TRACKING_PROTECTION_USER_BYPASS_PWA)
+    @Features.DisableFeatures(ChromeFeatureList.TRACKING_PROTECTION_USER_BYPASS_PWA_TRIGGER)
     public void testShowSnackbar() {
         doNothing().when(mSnackbarManagerMock).showSnackbar(any());
         doReturn(mSnackbarManagerMock).when(mSnackbarManagerSupplierMock).get();
@@ -58,12 +59,14 @@ public class TrackingProtectionSnackbarControllerTest {
                 new TrackingProtectionSnackbarController(
                         null, mSnackbarManagerSupplierMock, null, null, ActivityType.WEB_APK);
 
-        controller.showSnackbar();
+        controller.onStatusChanged(true, false, 0, 0, 0);
+        controller.maybeTriggerSnackbar();
         verify(mSnackbarManagerMock, times(1)).showSnackbar(any());
     }
 
     @Test
     @Features.EnableFeatures(ChromeFeatureList.TRACKING_PROTECTION_USER_BYPASS_PWA)
+    @Features.DisableFeatures(ChromeFeatureList.TRACKING_PROTECTION_USER_BYPASS_PWA_TRIGGER)
     public void testShowSnackbarTriggeredByReloadEvent() {
         doNothing().when(mSnackbarManagerMock).showSnackbar(any());
         doReturn(mSnackbarManagerMock).when(mSnackbarManagerSupplierMock).get();
@@ -78,6 +81,7 @@ public class TrackingProtectionSnackbarControllerTest {
 
     @Test
     @Features.EnableFeatures(ChromeFeatureList.TRACKING_PROTECTION_USER_BYPASS_PWA)
+    @Features.DisableFeatures(ChromeFeatureList.TRACKING_PROTECTION_USER_BYPASS_PWA_TRIGGER)
     public void testShowSnackbarTriggeredByMultipleReloadEvents() {
         doNothing().when(mSnackbarManagerMock).showSnackbar(any());
         doReturn(mSnackbarManagerMock).when(mSnackbarManagerSupplierMock).get();
@@ -95,6 +99,7 @@ public class TrackingProtectionSnackbarControllerTest {
 
     @Test
     @Features.EnableFeatures(ChromeFeatureList.TRACKING_PROTECTION_USER_BYPASS_PWA)
+    @Features.DisableFeatures(ChromeFeatureList.TRACKING_PROTECTION_USER_BYPASS_PWA_TRIGGER)
     public void testShowSnackbarTriggeredByReloadEventsWithoutTrackingProtection() {
         doNothing().when(mSnackbarManagerMock).showSnackbar(any());
         doReturn(mSnackbarManagerMock).when(mSnackbarManagerSupplierMock).get();
@@ -109,6 +114,7 @@ public class TrackingProtectionSnackbarControllerTest {
 
     @Test
     @Features.EnableFeatures(ChromeFeatureList.TRACKING_PROTECTION_USER_BYPASS_PWA)
+    @Features.DisableFeatures(ChromeFeatureList.TRACKING_PROTECTION_USER_BYPASS_PWA_TRIGGER)
     public void testShowSnackbarTriggeredByReloadEventsWithProtectionsOn() {
         doNothing().when(mSnackbarManagerMock).showSnackbar(any());
         doReturn(mSnackbarManagerMock).when(mSnackbarManagerSupplierMock).get();
@@ -123,36 +129,50 @@ public class TrackingProtectionSnackbarControllerTest {
 
     @Test
     @Features.EnableFeatures(ChromeFeatureList.TRACKING_PROTECTION_USER_BYPASS_PWA)
+    @Features.DisableFeatures(ChromeFeatureList.TRACKING_PROTECTION_USER_BYPASS_PWA_TRIGGER)
     public void testShowSnackbarForNonWebApk() {
         doNothing().when(mSnackbarManagerMock).showSnackbar(any());
         doReturn(mSnackbarManagerMock).when(mSnackbarManagerSupplierMock).get();
 
-        new TrackingProtectionSnackbarController(
+        TrackingProtectionSnackbarController controller =
+                new TrackingProtectionSnackbarController(
                         null,
                         mSnackbarManagerSupplierMock,
                         null,
                         null,
-                        ActivityType.TRUSTED_WEB_ACTIVITY)
-                .showSnackbar();
-        new TrackingProtectionSnackbarController(
-                        null, mSnackbarManagerSupplierMock, null, null, ActivityType.CUSTOM_TAB)
-                .showSnackbar();
-        new TrackingProtectionSnackbarController(
-                        null, mSnackbarManagerSupplierMock, null, null, ActivityType.PRE_FIRST_TAB)
-                .showSnackbar();
-        new TrackingProtectionSnackbarController(
-                        null, mSnackbarManagerSupplierMock, null, null, ActivityType.TABBED)
-                .showSnackbar();
-        new TrackingProtectionSnackbarController(
-                        null, mSnackbarManagerSupplierMock, null, null, ActivityType.WEBAPP)
-                .showSnackbar();
+                        ActivityType.TRUSTED_WEB_ACTIVITY);
+        controller.onStatusChanged(true, false, 0, 0, 0);
+        controller.maybeTriggerSnackbar();
+        controller =
+                new TrackingProtectionSnackbarController(
+                        null, mSnackbarManagerSupplierMock, null, null, ActivityType.CUSTOM_TAB);
+        controller.onStatusChanged(true, false, 0, 0, 0);
+        controller.maybeTriggerSnackbar();
+        controller =
+                new TrackingProtectionSnackbarController(
+                        null, mSnackbarManagerSupplierMock, null, null, ActivityType.PRE_FIRST_TAB);
+        controller.onStatusChanged(true, false, 0, 0, 0);
+        controller.maybeTriggerSnackbar();
+        controller =
+                new TrackingProtectionSnackbarController(
+                        null, mSnackbarManagerSupplierMock, null, null, ActivityType.TABBED);
+        controller.onStatusChanged(true, false, 0, 0, 0);
+        controller.maybeTriggerSnackbar();
+        controller =
+                new TrackingProtectionSnackbarController(
+                        null, mSnackbarManagerSupplierMock, null, null, ActivityType.WEBAPP);
+        controller.onStatusChanged(true, false, 0, 0, 0);
+        controller.maybeTriggerSnackbar();
 
         verifyNoInteractions(mSnackbarManagerMock);
         verifyNoInteractions(mSnackbarManagerSupplierMock);
     }
 
     @Test
-    @Features.DisableFeatures(ChromeFeatureList.TRACKING_PROTECTION_USER_BYPASS_PWA)
+    @Features.DisableFeatures({
+        ChromeFeatureList.TRACKING_PROTECTION_USER_BYPASS_PWA,
+        ChromeFeatureList.TRACKING_PROTECTION_USER_BYPASS_PWA_TRIGGER
+    })
     public void testShowSnackbarForDisabledFeature() {
         doNothing().when(mSnackbarManagerMock).showSnackbar(any());
         doReturn(mSnackbarManagerMock).when(mSnackbarManagerSupplierMock).get();
@@ -160,9 +180,25 @@ public class TrackingProtectionSnackbarControllerTest {
                 new TrackingProtectionSnackbarController(
                         null, mSnackbarManagerSupplierMock, null, null, ActivityType.WEB_APK);
 
-        controller.showSnackbar();
+        controller.maybeTriggerSnackbar();
 
         verifyNoInteractions(mSnackbarManagerMock);
         verifyNoInteractions(mSnackbarManagerSupplierMock);
+    }
+
+    @Test
+    @Features.EnableFeatures({
+        ChromeFeatureList.TRACKING_PROTECTION_USER_BYPASS_PWA,
+        ChromeFeatureList.TRACKING_PROTECTION_USER_BYPASS_PWA_TRIGGER
+    })
+    public void testForceShowSnackbar() {
+        doNothing().when(mSnackbarManagerMock).showSnackbar(any());
+        doReturn(mSnackbarManagerMock).when(mSnackbarManagerSupplierMock).get();
+        TrackingProtectionSnackbarController controller =
+                new TrackingProtectionSnackbarController(
+                        null, mSnackbarManagerSupplierMock, null, null, ActivityType.WEB_APK);
+
+        controller.maybeTriggerSnackbar();
+        verify(mSnackbarManagerMock, times(1)).showSnackbar(any());
     }
 }
