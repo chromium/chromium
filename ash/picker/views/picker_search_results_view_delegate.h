@@ -24,6 +24,9 @@ class ASH_EXPORT PickerSearchResultsViewDelegate {
 
   virtual void SelectMoreResults(PickerSectionType type) = 0;
 
+  // TODO: b/346657082 - Create a separate delegate for emoji bar functionality.
+  virtual void OpenGifs() = 0;
+
   // `view` may be `nullptr` if there's no pseudo focused view.
   virtual void NotifyPseudoFocusChanged(views::View* view) = 0;
 

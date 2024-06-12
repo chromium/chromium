@@ -79,6 +79,7 @@ class ASH_EXPORT PickerView : public views::WidgetDelegateView,
   // PickerSearchResultsViewDelegate:
   void SelectSearchResult(const PickerSearchResult& result) override;
   void SelectMoreResults(PickerSectionType type) override;
+  void OpenGifs() override;
   PickerActionType GetActionForResult(
       const PickerSearchResult& result) override;
 

@@ -285,6 +285,19 @@ void PickerView::SelectMoreResults(PickerSectionType type) {
                           search_field_view_->GetQueryText());
 }
 
+void PickerView::OpenGifs() {
+  PickerSessionMetrics& session_metrics = delegate_->GetSessionMetrics();
+  session_metrics.SetAction(PickerCategory::kExpressions);
+
+  if (auto* widget = GetWidget()) {
+    widget->CloseWithReason(views::Widget::ClosedReason::kLostFocus);
+  }
+
+  session_metrics.SetOutcome(PickerSessionMetrics::SessionOutcome::kRedirected);
+  delegate_->ShowEmojiPicker(ui::EmojiPickerCategory::kGifs,
+                             search_field_view_->GetQueryText());
+}
+
 bool PickerView::DoPseudoFocusedAction() {
   return active_pseudo_focus_handler_ == nullptr
              ? false

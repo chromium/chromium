@@ -14,6 +14,10 @@
 #include "ui/base/metadata/metadata_header_macros.h"
 #include "ui/views/view.h"
 
+namespace views {
+class Button;
+}
+
 namespace ash {
 
 class IconButton;
@@ -58,12 +62,16 @@ class ASH_EXPORT PickerEmojiBarView : public views::View,
 
   views::View* item_row_for_testing() { return item_row_; }
 
+  views::Button* gifs_button_for_testing() { return gifs_button_; }
+
   IconButton* more_emojis_button_for_testing() { return more_emojis_button_; }
 
  private:
   void SelectSearchResult(const PickerSearchResult& result);
 
   void OpenMoreEmojis();
+
+  void OpenGifs();
 
   int CalculateAvailableWidthForItemRow();
 
@@ -79,6 +87,9 @@ class ASH_EXPORT PickerEmojiBarView : public views::View,
 
   // Contains the item views corresponding to each search result.
   raw_ptr<views::View> item_row_ = nullptr;
+
+  // The button for opening the gif picker.
+  raw_ptr<views::Button> gifs_button_ = nullptr;
 
   // The button for opening more emojis.
   raw_ptr<IconButton> more_emojis_button_ = nullptr;

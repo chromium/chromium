@@ -37,6 +37,7 @@ class MockSearchResultsViewDelegate : public PickerSearchResultsViewDelegate {
               SelectSearchResult,
               (const PickerSearchResult&),
               (override));
+  MOCK_METHOD(void, OpenGifs, (), (override));
   MOCK_METHOD(void, NotifyPseudoFocusChanged, (views::View*), (override));
   MOCK_METHOD(PickerActionType,
               GetActionForResult,

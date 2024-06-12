@@ -7325,6 +7325,9 @@ New install
       <message name="IDS_PICKER_MORE_EMOJIS_BUTTON_ACCESSIBLE_NAME" translateable="false" desc="The accessible text for a button which opens a panel with more emojis, symbols and emoticons.">
         Open emojis and more
       </message>
+      <message name="IDS_PICKER_GIFS_BUTTON_LABEL" translateable="false" desc="The label of a button that opens a panel of GIFs.">
+        GIFs
+      </message>
       <message name="IDS_PICKER_NO_RESULTS_TEXT" translateable="false" desc="Label of the view showing that there are no search results.">
         No results found.
       </message>

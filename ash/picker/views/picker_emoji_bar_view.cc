@@ -22,16 +22,23 @@
 #include "ash/resources/vector_icons/vector_icons.h"
 #include "ash/strings/grit/ash_strings.h"
 #include "ash/style/icon_button.h"
+#include "ash/style/style_util.h"
 #include "ash/style/system_shadow.h"
+#include "ash/style/typography.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback_forward.h"
 #include "base/functional/overloaded.h"
 #include "base/notreached.h"
+#include "ui/base/l10n/l10n_util.h"
+#include "ui/base/metadata/metadata_header_macros.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/chromeos/styles/cros_tokens_color_mappings.h"
 #include "ui/gfx/geometry/insets.h"
+#include "ui/gfx/geometry/rounded_corners_f.h"
 #include "ui/gfx/geometry/size.h"
 #include "ui/views/background.h"
+#include "ui/views/controls/button/label_button.h"
+#include "ui/views/controls/label.h"
 #include "ui/views/focus/focus_manager.h"
 #include "ui/views/highlight_border.h"
 #include "ui/views/layout/flex_layout.h"
@@ -48,11 +55,13 @@ constexpr int kPickerEmojiBarHeight = 48;
 
 constexpr gfx::Size kEmojiBarItemPreferredSize(32, 32);
 
+constexpr auto kGifsButtonCornerRadius = 12;
+
 // Padding around the more emojis icon button.
 constexpr auto kMoreEmojisIconButtonPadding = gfx::Insets::TLBR(0, 8, 0, 12);
 
 // Padding around the item row.
-constexpr auto kItemRowMargins = gfx::Insets::TLBR(8, 16, 8, 0);
+constexpr auto kItemRowMargins = gfx::Insets::TLBR(8, 16, 8, 12);
 
 // Horizontal padding between items in the item row.
 constexpr auto kItemMargins = gfx::Insets::VH(0, 12);
@@ -98,14 +107,40 @@ std::unique_ptr<views::View> CreateItemRow() {
                  .SetCollapseMargins(true)
                  .SetIgnoreDefaultMainAxisMargins(true)
                  .SetInteriorMargin(kItemRowMargins)
-                 .SetProperty(views::kFlexBehaviorKey,
-                              views::FlexSpecification(
-                                  views::MinimumFlexSizeRule::kScaleToMinimum,
-                                  views::MaximumFlexSizeRule::kUnbounded))
                  .Build();
   row->SetDefault(views::kMarginsKey, kItemMargins);
   return row;
 }
+
+class GifsButton : public views::LabelButton {
+  METADATA_HEADER(GifsButton, views::LabelButton)
+
+ public:
+  explicit GifsButton(base::RepeatingClosure pressed_callback) {
+    views::Builder<views::LabelButton>(this)
+        .SetText(l10n_util::GetStringUTF16(IDS_PICKER_GIFS_BUTTON_LABEL))
+        .SetCallback(std::move(pressed_callback))
+        .SetEnabledTextColorIds(cros_tokens::kCrosSysOnSurface)
+        .SetBackground(views::CreateThemedRoundedRectBackground(
+            cros_tokens::kCrosSysSystemOnBase, kGifsButtonCornerRadius))
+        .BuildChildren();
+    label()->SetFontList(TypographyProvider::Get()->ResolveTypographyToken(
+        TypographyToken::kCrosLabel1));
+    label()->SetLineHeight(ash::TypographyProvider::Get()->ResolveLineHeight(
+        ash::TypographyToken::kCrosLabel1));
+    StyleUtil::SetUpInkDropForButton(this, gfx::Insets(),
+                                     /*highlight_on_hover=*/true,
+                                     /*highlight_on_focus=*/true);
+    StyleUtil::InstallRoundedCornerHighlightPathGenerator(
+        this, gfx::RoundedCornersF(kGifsButtonCornerRadius));
+  }
+  GifsButton(const GifsButton&) = delete;
+  GifsButton& operator=(const GifsButton&) = delete;
+  ~GifsButton() override = default;
+};
+
+BEGIN_METADATA(GifsButton)
+END_METADATA
 
 }  // namespace
 
@@ -129,6 +164,18 @@ PickerEmojiBarView::PickerEmojiBarView(
   shadow_->SetRoundedCornerRadius(kPickerContainerBorderRadius);
 
   item_row_ = AddChildView(CreateItemRow());
+
+  // base::Unretained is safe here because this class owns `gifs_button_`.
+  gifs_button_ = AddChildView(std::make_unique<GifsButton>(base::BindRepeating(
+      &PickerEmojiBarView::OpenGifs, base::Unretained(this))));
+
+  // Spacer.
+  AddChildView(views::Builder<views::View>()
+                   .SetProperty(views::kFlexBehaviorKey,
+                                views::FlexSpecification(
+                                    views::MinimumFlexSizeRule::kScaleToMinimum,
+                                    views::MaximumFlexSizeRule::kUnbounded))
+                   .Build());
 
   // base::Unretained is safe here because this class owns
   // `more_emojis_button_`.
@@ -234,8 +281,13 @@ void PickerEmojiBarView::OpenMoreEmojis() {
   delegate_->SelectMoreResults(PickerSectionType::kExpressions);
 }
 
+void PickerEmojiBarView::OpenGifs() {
+  delegate_->OpenGifs();
+}
+
 int PickerEmojiBarView::CalculateAvailableWidthForItemRow() {
-  return picker_view_width_ - more_emojis_button_->GetPreferredSize().width() -
+  return picker_view_width_ - gifs_button_->GetPreferredSize().width() -
+         more_emojis_button_->GetPreferredSize().width() -
          kMoreEmojisIconButtonPadding.width();
 }
 

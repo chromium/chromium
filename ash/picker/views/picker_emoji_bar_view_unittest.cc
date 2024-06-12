@@ -42,6 +42,7 @@ class MockSearchResultsViewDelegate : public PickerSearchResultsViewDelegate {
               SelectSearchResult,
               (const PickerSearchResult&),
               (override));
+  MOCK_METHOD(void, OpenGifs, (), (override));
   MOCK_METHOD(void, NotifyPseudoFocusChanged, (views::View*), (override));
   MOCK_METHOD(PickerActionType,
               GetActionForResult,
@@ -92,6 +93,21 @@ TEST_F(PickerEmojiBarViewTest, ClickingMoreEmojisButton) {
 
   ViewDrawnWaiter().Wait(emoji_bar->more_emojis_button_for_testing());
   LeftClickOn(*emoji_bar->more_emojis_button_for_testing());
+}
+
+TEST_F(PickerEmojiBarViewTest, ClickingGifsButton) {
+  MockSearchResultsViewDelegate mock_delegate;
+  std::unique_ptr<views::Widget> widget =
+      CreateTestWidget(views::Widget::InitParams::CLIENT_OWNS_WIDGET);
+  widget->SetFullscreen(true);
+  auto* emoji_bar = widget->SetContentsView(
+      std::make_unique<PickerEmojiBarView>(&mock_delegate, kPickerWidth));
+  widget->Show();
+
+  EXPECT_CALL(mock_delegate, OpenGifs()).Times(1);
+
+  ViewDrawnWaiter().Wait(emoji_bar->gifs_button_for_testing());
+  LeftClickOn(*emoji_bar->gifs_button_for_testing());
 }
 
 TEST_F(PickerEmojiBarViewTest, GainsPseudoFocus) {
