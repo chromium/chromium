@@ -9,6 +9,7 @@
 #include "components/global_media_controls/public/views/media_action_button.h"
 #include "components/global_media_controls/public/views/media_item_ui_device_selector.h"
 #include "components/global_media_controls/public/views/media_item_ui_footer.h"
+#include "components/global_media_controls/public/views/media_live_status_view.h"
 #include "components/global_media_controls/public/views/media_progress_view.h"
 #include "components/media_message_center/media_notification_view.h"
 #include "components/media_message_center/notification_theme.h"
@@ -103,6 +104,7 @@ class COMPONENT_EXPORT(GLOBAL_MEDIA_CONTROLS) MediaItemUIUpdatedView
   MediaActionButton* GetMediaActionButtonForTesting(
       media_session::mojom::MediaSessionAction action);
   MediaProgressView* GetProgressViewForTesting();
+  MediaLiveStatusView* GetLiveStatusViewForTesting();
   MediaActionButton* GetStartCastingButtonForTesting();
   MediaItemUIDeviceSelector* GetDeviceSelectorForTesting();
   MediaItemUIFooter* GetFooterForTesting();
@@ -170,6 +172,7 @@ class COMPONENT_EXPORT(GLOBAL_MEDIA_CONTROLS) MediaItemUIUpdatedView
   raw_ptr<views::Label> duration_timestamp_label_ = nullptr;
 
   raw_ptr<MediaProgressView> progress_view_ = nullptr;
+  raw_ptr<MediaLiveStatusView> live_status_view_ = nullptr;
   std::vector<MediaActionButton*> media_action_buttons_;
   raw_ptr<MediaActionButton> start_casting_button_ = nullptr;
   raw_ptr<MediaActionButton> picture_in_picture_button_ = nullptr;

@@ -22,6 +22,9 @@ namespace global_media_controls {
 
 namespace {
 
+// The height of the whole view.
+constexpr int kViewHeight = 32;
+
 // The width of stroke to paint the progress foreground and background lines,
 // and also the focus ring.
 constexpr int kStrokeWidth = 2;
@@ -59,9 +62,6 @@ constexpr base::TimeDelta kSlideAnimationDuration = base::Milliseconds(200);
 // Defines how frequently the progress will be updated.
 constexpr base::TimeDelta kProgressUpdateFrequency = base::Milliseconds(100);
 
-// Used to set the height of the whole view.
-constexpr auto kInsideInsets = gfx::Insets::VH(16, 0);
-
 // Defines the radius of the focus ring around the progress.
 constexpr float kFocusRingRadius = 18.0f;
 
@@ -98,7 +98,6 @@ MediaProgressView::MediaProgressView(
       seek_callback_(std::move(seek_callback)),
       on_update_progress_callback_(std::move(on_update_progress_callback)),
       slide_animation_(this) {
-  SetInsideBorderInsets(kInsideInsets);
   SetFlipCanvasOnPaintForRTLUI(true);
   GetViewAccessibility().SetProperties(
       ax::mojom::Role::kProgressIndicator,
@@ -126,7 +125,7 @@ void MediaProgressView::AnimationProgressed(const gfx::Animation* animation) {
 
 gfx::Size MediaProgressView::CalculatePreferredSize(
     const views::SizeBounds& available_size) const {
-  return GetContentsBounds().size();
+  return gfx::Size(GetContentsBounds().size().width(), kViewHeight);
 }
 
 void MediaProgressView::GetAccessibleNodeData(ui::AXNodeData* node_data) {

@@ -413,4 +413,16 @@ TEST_F(MediaItemUIUpdatedViewTest, TimestampLabelsCheck) {
   EXPECT_FALSE(view()->GetDurationTimestampLabelForTesting()->GetVisible());
 }
 
+TEST_F(MediaItemUIUpdatedViewTest, LiveStatusViewCheck) {
+  EXPECT_TRUE(view()->GetProgressViewForTesting()->GetVisible());
+  EXPECT_FALSE(view()->GetLiveStatusViewForTesting()->GetVisible());
+
+  media_session::MediaPosition media_position(
+      /*playback_rate=*/1, /*duration=*/base::TimeDelta::Max(),
+      /*position=*/base::Seconds(5), /*end_of_media=*/false);
+  view()->UpdateWithMediaPosition(media_position);
+  EXPECT_FALSE(view()->GetProgressViewForTesting()->GetVisible());
+  EXPECT_TRUE(view()->GetLiveStatusViewForTesting()->GetVisible());
+}
+
 }  // namespace global_media_controls

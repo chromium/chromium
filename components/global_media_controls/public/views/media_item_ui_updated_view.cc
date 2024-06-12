@@ -236,6 +236,13 @@ MediaItemUIUpdatedView::MediaItemUIUpdatedView(
           std::u16string(), views::style::CONTEXT_LABEL,
           views::style::STYLE_CAPTION_MEDIUM));
 
+  // Create the live status view below |progress_row| while only either
+  // |progress_row| or |live_status_view_| will show.
+  live_status_view_ = AddChildView(std::make_unique<MediaLiveStatusView>(
+      media_color_theme_.playing_progress_foreground_color_id,
+      media_color_theme_.playing_progress_background_color_id));
+  live_status_view_->SetVisible(false);
+
   // Add the device selector view below the |progress_row| if there is one.
   UpdateDeviceSelectorView(std::move(device_selector_view));
 
@@ -381,6 +388,12 @@ void MediaItemUIUpdatedView::UpdateWithMediaPosition(
   position_ = position;
   progress_view_->UpdateProgress(position);
   duration_timestamp_label_->SetText(GetFormattedDuration(position.duration()));
+
+  // Show either the progress view or the live status view based on whether the
+  // media is live.
+  bool media_is_live = position.duration().is_max();
+  progress_view_->SetVisible(!media_is_live);
+  live_status_view_->SetVisible(media_is_live);
 }
 
 void MediaItemUIUpdatedView::UpdateWithMediaArtwork(
@@ -628,6 +641,10 @@ MediaActionButton* MediaItemUIUpdatedView::GetMediaActionButtonForTesting(
 
 MediaProgressView* MediaItemUIUpdatedView::GetProgressViewForTesting() {
   return progress_view_;
+}
+
+MediaLiveStatusView* MediaItemUIUpdatedView::GetLiveStatusViewForTesting() {
+  return live_status_view_;
 }
 
 MediaActionButton* MediaItemUIUpdatedView::GetStartCastingButtonForTesting() {

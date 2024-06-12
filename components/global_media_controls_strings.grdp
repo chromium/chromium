@@ -18,4 +18,7 @@
   <message name="IDS_GLOBAL_MEDIA_CONTROLS_UNKNOWN_DEVICE_TEXT" desc="Placeholder text for cast media item with empty device.">
    Unknown device
   </message>
+  <message name="IDS_GLOBAL_MEDIA_CONTROLS_MEDIA_LIVE_TEXT" desc="Text showing that the media is live.">
+   LIVE
+  </message>
 </grit-part>

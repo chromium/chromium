@@ -24,6 +24,7 @@ component("global_media_controls") {
     "public/views/media_item_ui_list_view.h",
     "public/views/media_item_ui_updated_view.h",
     "public/views/media_item_ui_view.h",
+    "public/views/media_live_status_view.h",
     "public/views/media_progress_view.h",
   ]
 
@@ -73,6 +74,7 @@ component("global_media_controls") {
     "public/views/media_item_ui_list_view.cc",
     "public/views/media_item_ui_updated_view.cc",
     "public/views/media_item_ui_view.cc",
+    "public/views/media_live_status_view.cc",
     "public/views/media_progress_view.cc",
   ]
 
@@ -96,6 +98,7 @@ source_set("unit_tests") {
     "public/views/media_item_ui_list_view_unittest.cc",
     "public/views/media_item_ui_updated_view_unittest.cc",
     "public/views/media_item_ui_view_unittest.cc",
+    "public/views/media_live_status_view_unittest.cc",
     "public/views/media_progress_view_unittest.cc",
   ]
 
