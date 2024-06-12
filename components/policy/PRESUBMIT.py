@@ -204,7 +204,7 @@ def _GetPolicyChangeList(input_api):
         filename == 'DIR_METADATA'):
       continue
 
-    if policy_name not in policy_name_to_id:
+    if policy_name not in policy_name_to_id and affected_file.Action() != 'D':
       raise Exception("Policy not listed in %s: '%s'" % (
           _POLICIES_YAML_PATH, policy_name))
 
