@@ -506,12 +506,15 @@ bool AXTreeSourceAndroid::UpdateAndroidFocusedId(
                                       : nullptr;
 
   // Ensure that the focused node correctly gets focus.
-  while (focused_node && !focused_node->IsImportantInAndroid()) {
+  while (focused_node && focused_node->IsIgnored()) {
     AccessibilityInfoDataWrapper* parent = GetParent(focused_node);
     if (parent) {
       android_focused_id_ = parent->GetId();
       focused_node = parent;
     } else {
+      // Unable to find the appropriate focus. Removing the focused node.
+      android_focused_id_.reset();
+      focused_node = nullptr;
       break;
     }
   }
