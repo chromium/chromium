@@ -2,6 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include "mojo/public/cpp/system/data_pipe.h"
 #ifdef UNSAFE_BUFFERS_BUILD
 // TODO(crbug.com/342213636): Remove this and spanify to fix the errors.
 #pragma allow_unsafe_buffers
@@ -85,7 +86,7 @@ void RaceNetworkRequestWriteBufferManager::CancelWatching() {
 
 MojoResult RaceNetworkRequestWriteBufferManager::BeginWriteData() {
   void* buffer;
-  size_t num_write_bytes;
+  size_t num_write_bytes = mojo::DataPipeProducerHandle::kNoSizeHint;
   MojoResult result = producer_->BeginWriteData(&buffer, &num_write_bytes,
                                                 MOJO_WRITE_DATA_FLAG_NONE);
   buffer_ = base::make_span(static_cast<char*>(buffer), num_write_bytes);

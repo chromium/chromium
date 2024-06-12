@@ -2,12 +2,15 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include "mojo/public/cpp/system/string_data_source.h"
+
 #include <algorithm>
 #include <list>
 #include <memory>
 #include <string>
 #include <string_view>
 
+#include "base/containers/span.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
 #include "base/run_loop.h"
@@ -16,7 +19,6 @@
 #include "mojo/public/cpp/system/data_pipe.h"
 #include "mojo/public/cpp/system/data_pipe_producer.h"
 #include "mojo/public/cpp/system/simple_watcher.h"
-#include "mojo/public/cpp/system/string_data_source.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace mojo {
@@ -50,15 +52,15 @@ class DataPipeReader {
  private:
   void OnDataAvailable(MojoResult result, const HandleSignalsState& state) {
     if (result == MOJO_RESULT_OK) {
-      size_t size = 64;
-      std::vector<char> buffer(size, 0);
+      size_t size = 0;
+      std::string buffer(64, '\0');
       MojoResult read_result;
       do {
-        read_result = consumer_handle_->ReadData(buffer.data(), &size,
-                                                 MOJO_READ_DATA_FLAG_NONE);
+        read_result = consumer_handle_->ReadData(
+            MOJO_READ_DATA_FLAG_NONE, base::as_writable_byte_span(buffer),
+            size);
         if (read_result == MOJO_RESULT_OK) {
-          std::copy(buffer.begin(), buffer.begin() + size,
-                    std::back_inserter(data_));
+          data_.append(std::string_view(buffer).substr(0, size));
         }
       } while (read_result == MOJO_RESULT_OK);
 

@@ -268,7 +268,7 @@ void SerialPortImpl::ReadFromPortAndWriteOut(
     MojoResult result,
     const mojo::HandleSignalsState& state) {
   void* buffer;
-  size_t num_bytes;
+  size_t num_bytes = mojo::DataPipeProducerHandle::kNoSizeHint;
   if (result == MOJO_RESULT_OK) {
     DCHECK(out_stream_);
     result = out_stream_->BeginWriteData(&buffer, &num_bytes,
