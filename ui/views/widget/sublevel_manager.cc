@@ -79,6 +79,16 @@ void SublevelManager::EnsureOwnerSublevel() {
   }
 }
 
+void SublevelManager::EnsureOwnerTreeSublevel() {
+  for (Widget* child : children_) {
+    child->GetSublevelManager()->EnsureOwnerTreeSublevel();
+  }
+
+  if (Widget* parent = owner_->parent()) {
+    parent->GetSublevelManager()->OrderChildWidget(owner_);
+  }
+}
+
 void SublevelManager::OrderChildWidget(Widget* child) {
   DCHECK_EQ(1, base::ranges::count(children_, child));
   children_.erase(base::ranges::remove(children_, child), std::end(children_));

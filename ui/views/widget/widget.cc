@@ -1618,11 +1618,14 @@ bool Widget::OnNativeWidgetActivationChanged(bool active) {
   if (active) {
     base::AutoReset<bool> is_traversing_widget_tree(&is_traversing_widget_tree_,
                                                     true);
+    Widget* root = nullptr;
     for (Widget* widget = this; widget; widget = widget->parent()) {
       for (WidgetObserver& observer : widget->observers_) {
         observer.OnWidgetTreeActivated(widget, this);
       }
+      root = widget;
     }
+    root->GetSublevelManager()->EnsureOwnerTreeSublevel();
   }
 
   const bool was_paint_as_active = ShouldPaintAsActive();

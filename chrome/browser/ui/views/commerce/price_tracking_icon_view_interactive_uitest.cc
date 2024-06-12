@@ -159,7 +159,10 @@ class PriceTrackingIconViewInteractiveTest : public InteractiveBrowserTest {
                image_fetcher::ImageFetcherCallback* image_callback,
                image_fetcher::ImageFetcherParams params) {
               SkBitmap bitmap;
-              bitmap.allocN32Pixels(1, 1);
+              // The image size must not be too small (e.g., 1x1), as it becomes
+              // empty when cropped for rounded corners in BubbleFrameView,
+              // triggering a DCHECK in ImageSkiaRep.
+              bitmap.allocN32Pixels(10, 10);
               gfx::Image image =
                   gfx::Image(gfx::ImageSkia::CreateFrom1xBitmap(bitmap));
 

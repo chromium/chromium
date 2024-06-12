@@ -43,6 +43,10 @@ class VIEWS_EXPORT SublevelManager : public WidgetObserver {
   // to ensure that its sublevel is respected.
   void EnsureOwnerSublevel();
 
+  // Repositions `owner_` and its descendants to ensure that their sublevels
+  // are respected.
+  void EnsureOwnerTreeSublevel();
+
  private:
   // WidgetObserver:
   void OnWidgetDestroying(Widget* owner) override;

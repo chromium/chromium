@@ -55,6 +55,7 @@
 #include "ui/views/controls/textarea/textarea.h"
 #include "ui/views/controls/textfield/textfield.h"
 #include "ui/views/focus/focus_manager.h"
+#include "ui/views/test/widget_test.h"
 
 using base::Bucket;
 using net::test_server::BasicHttpResponse;
@@ -478,12 +479,16 @@ IN_PROC_BROWSER_TEST_F(PasswordBubbleInteractiveUiTest, AutoSigninNoFocus) {
 IN_PROC_BROWSER_TEST_F(PasswordBubbleInteractiveUiTest, LeakPromptHidesBubble) {
   ASSERT_TRUE(ui_test_utils::BringBrowserWindowToFront(browser()));
   SetupPendingPassword();
-  EXPECT_TRUE(IsBubbleShowing());
+  ASSERT_NE(PasswordBubbleViewBase::manage_password_bubble(), nullptr);
+  views::Widget* password_bubble =
+      PasswordBubbleViewBase::manage_password_bubble()->GetWidget();
+  ASSERT_NE(password_bubble, nullptr);
+  views::test::WidgetVisibleWaiter(password_bubble).Wait();
 
   GetController()->OnCredentialLeak(
       password_manager::CredentialLeakFlags::kPasswordSaved,
       GURL("https://example.com"), std::u16string(u"Eve"));
-  EXPECT_FALSE(IsBubbleShowing());
+  views::test::WidgetDestroyedWaiter(password_bubble).Wait();
 }
 
 class PasswordBubbleInteractiveUiTestWithExplicitBrowserSigninParam
