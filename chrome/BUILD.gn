@@ -999,41 +999,24 @@ if (is_win) {
     }
   }
 
-  # EGL on MacOS ships with official chrome
-  bundle_egl_libraries = use_egl
-
-  if (bundle_egl_libraries) {
-    # Add the ANGLE .dylibs in the MODULE_DIR of Chromium.app
-    bundle_data("angle_binaries") {
-      sources = [
-        "$root_out_dir/egl_intermediates/libEGL.dylib",
-        "$root_out_dir/egl_intermediates/libGLESv2.dylib",
-      ]
-      outputs = [ "{{bundle_contents_dir}}/Libraries/{{source_file_part}}" ]
-      public_deps = [ "//ui/gl:angle_library_copy" ]
-    }
-
-    # Add the SwiftShader .dylibs in the MODULE_DIR of Chromium.app
-    bundle_data("swiftshader_binaries") {
-      sources = [
-        "$root_out_dir/vk_intermediates/libvk_swiftshader.dylib",
-        "$root_out_dir/vk_intermediates/vk_swiftshader_icd.json",
-      ]
-      outputs = [ "{{bundle_contents_dir}}/Libraries/{{source_file_part}}" ]
-      public_deps = [ "//ui/gl:swiftshader_vk_library_copy" ]
-    }
+  # Add the ANGLE .dylibs in the MODULE_DIR of Chromium.app
+  bundle_data("angle_binaries") {
+    sources = [
+      "$root_out_dir/egl_intermediates/libEGL.dylib",
+      "$root_out_dir/egl_intermediates/libGLESv2.dylib",
+    ]
+    outputs = [ "{{bundle_contents_dir}}/Libraries/{{source_file_part}}" ]
+    public_deps = [ "//ui/gl:angle_library_copy" ]
   }
 
-  group("angle_library") {
-    if (bundle_egl_libraries) {
-      deps = [ ":angle_binaries" ]
-    }
-  }
-
-  group("swiftshader_library") {
-    if (bundle_egl_libraries) {
-      deps = [ ":swiftshader_binaries" ]
-    }
+  # Add the SwiftShader .dylibs in the MODULE_DIR of Chromium.app
+  bundle_data("swiftshader_binaries") {
+    sources = [
+      "$root_out_dir/vk_intermediates/libvk_swiftshader.dylib",
+      "$root_out_dir/vk_intermediates/vk_swiftshader_icd.json",
+    ]
+    outputs = [ "{{bundle_contents_dir}}/Libraries/{{source_file_part}}" ]
+    public_deps = [ "//ui/gl:swiftshader_vk_library_copy" ]
   }
 
   if (bundle_widevine_cdm) {
@@ -1217,12 +1200,12 @@ if (is_win) {
     public_deps = [ ":chrome_dll" ]
 
     bundle_deps = [
-      ":angle_library",
+      ":angle_binaries",
       ":chrome_framework_helpers",
       ":chrome_framework_plugins",
       ":chrome_framework_resources",
       ":optimization_guide_library",
-      ":swiftshader_library",
+      ":swiftshader_binaries",
       ":widevine_cdm_library",
       "//chrome/browser/resources/media/mei_preload:component_bundle",
     ]
