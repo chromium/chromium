@@ -47,8 +47,6 @@ void HistoryEmbeddingsProvider::Start(const AutocompleteInput& input,
           input, client_->GetTemplateURLService());
   starter_pack_engine_ = starter_pack_engine;
 
-  matches_.clear();
-
   history_embeddings::HistoryEmbeddingsService* service =
       client_->GetHistoryEmbeddingsService();
   CHECK(service);
@@ -72,6 +70,8 @@ void HistoryEmbeddingsProvider::DeleteMatch(const AutocompleteMatch& match) {
 void HistoryEmbeddingsProvider::OnReceivedSearchResult(
     std::u16string input_text,
     history_embeddings::SearchResult result) {
+  matches_.clear();
+
   for (const history_embeddings::ScoredUrlRow& scored_url_row :
        result.scored_url_rows) {
     AutocompleteMatch match(this, scored_url_row.scored_url.score * kMaxScore,
