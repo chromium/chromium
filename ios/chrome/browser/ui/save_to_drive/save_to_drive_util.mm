@@ -7,7 +7,7 @@
 #import "base/apple/foundation_util.h"
 #import "base/files/file_path.h"
 #import "base/strings/sys_string_conversions.h"
-#import "ios/chrome/browser/ui/account_picker/account_picker_configuration.h"
+#import "ios/chrome/browser/account_picker/ui_bundled/account_picker_configuration.h"
 #import "ios/chrome/grit/ios_strings.h"
 #import "ios/web/public/download/download_task.h"
 #import "ui/base/l10n/l10n_util_mac.h"

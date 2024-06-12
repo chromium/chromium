@@ -1,0 +1,5 @@
+include_rules = [
+  "+ios/chrome/browser/sync/model/sync_service_factory.h",
+  "+ios/chrome/browser/ui/authentication/views/identity_button_control.h",
+  "+ios/chrome/browser/ui/authentication/views/identity_view.h",
+]
