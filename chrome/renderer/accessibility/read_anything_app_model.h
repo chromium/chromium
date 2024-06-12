@@ -185,7 +185,6 @@ class ReadAnythingAppModel {
   int highlight_granularity() const { return highlight_granularity_; }
   const SkColor& foreground_color() const { return foreground_color_; }
   const SkColor& background_color() const { return background_color_; }
-  float speech_rate() const { return speech_rate_; }
   const base::Value::Dict& voices() const { return voices_; }
   void SetVoice(const std::string& voice, const std::string& lang) {
     voices_.Set(lang, voice);
@@ -258,7 +257,6 @@ class ReadAnythingAppModel {
       bool links_enabled,
       bool images_enabled,
       read_anything::mojom::Colors color,
-      double speech_rate,
       base::Value::Dict* voices,
       base::Value::List* languages_enabled_in_pref_,
       read_anything::mojom::HighlightGranularity granularity);
@@ -570,7 +568,6 @@ class ReadAnythingAppModel {
   SkColor background_color_ = (int)read_anything::mojom::Colors::kDefaultValue;
   SkColor foreground_color_ = (int)read_anything::mojom::Colors::kDefaultValue;
   int color_theme_ = (int)read_anything::mojom::Colors::kDefaultValue;
-  float speech_rate_ = kReadAnythingDefaultSpeechRate;
   base::Value::Dict voices_;
   base::Value::List languages_enabled_in_pref_;
   int highlight_granularity_ =

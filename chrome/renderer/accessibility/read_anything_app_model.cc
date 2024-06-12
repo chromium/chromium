@@ -90,7 +90,6 @@ void ReadAnythingAppModel::OnSettingsRestoredFromPrefs(
     bool links_enabled,
     bool images_enabled,
     read_anything::mojom::Colors color,
-    double speech_rate,
     base::Value::Dict* voices,
     base::Value::List* languages_enabled_in_pref,
     read_anything::mojom::HighlightGranularity granularity) {
@@ -101,7 +100,6 @@ void ReadAnythingAppModel::OnSettingsRestoredFromPrefs(
   links_enabled_ = links_enabled;
   images_enabled_ = images_enabled;
   color_theme_ = static_cast<size_t>(color);
-  speech_rate_ = speech_rate;
   voices_ = voices->Clone();
   languages_enabled_in_pref_ = languages_enabled_in_pref->Clone();
   highlight_granularity_ = static_cast<size_t>(granularity);

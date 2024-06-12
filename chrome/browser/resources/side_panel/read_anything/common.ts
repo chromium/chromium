@@ -52,6 +52,10 @@ export function validatedFontName(fontName: string): string {
   return validFontName ? validFontName.css : defaultFontName;
 }
 
+export function getCurrentSpeechRate(): number {
+  return parseFloat(chrome.readingMode.speechRate.toFixed(1));
+}
+
 export function openMenu(
     menuToOpen: CrActionMenuElement, target: HTMLElement,
     showAtConfig?: {minX: number, maxX: number}) {

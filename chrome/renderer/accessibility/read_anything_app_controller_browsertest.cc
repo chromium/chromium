@@ -399,6 +399,12 @@ class ReadAnythingAppControllerTest : public ChromeRenderViewTest {
                                    focus_offset);
   }
 
+  void OnSpeechRateChange(double rate) {
+    controller_->OnSpeechRateChange(rate);
+  }
+
+  double SpeechRate() { return controller_->read_aloud_model_.speech_rate(); }
+
   void OnCollapseSelection() { controller_->OnCollapseSelection(); }
 
   void OnRestartReadAloud() { controller_->OnRestartReadAloud(); }
@@ -450,6 +456,15 @@ TEST_F(ReadAnythingAppControllerTest, OnFontChange_UpdatesFont) {
 
   EXPECT_CALL(page_handler_, OnFontChange(expected_font)).Times(1);
   ASSERT_EQ(FontName(), expected_font);
+}
+
+TEST_F(ReadAnythingAppControllerTest, OnSpeechRateChange) {
+  double expected_rate = 1.5;
+
+  OnSpeechRateChange(expected_rate);
+
+  EXPECT_CALL(page_handler_, OnSpeechRateChange(expected_rate)).Times(1);
+  ASSERT_EQ(SpeechRate(), expected_rate);
 }
 
 TEST_F(ReadAnythingAppControllerTest,

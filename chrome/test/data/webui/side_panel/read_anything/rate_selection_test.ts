@@ -18,7 +18,7 @@ suite('RateSelection', () => {
   let toolbar: ReadAnythingToolbarElement;
   let testBrowserProxy: TestColorUpdaterBrowserProxy;
   let rateButton: CrIconButtonElement;
-  let rateEmitted: number;
+  let rateEmitted: boolean;
 
   setup(() => {
     suppressInnocuousErrors();
@@ -34,9 +34,9 @@ suite('RateSelection', () => {
     flush();
     rateButton =
         toolbar.shadowRoot!.querySelector<CrIconButtonElement>('#rate')!;
-    rateEmitted = -1;
-    document.addEventListener(RATE_EVENT, event => {
-      rateEmitted = (event as CustomEvent).detail.rate;
+    rateEmitted = false;
+    document.addEventListener(RATE_EVENT, () => {
+      rateEmitted = true;
     });
   });
 
@@ -75,9 +75,11 @@ suite('RateSelection', () => {
       let previousRate = -1;
       options.forEach((option) => {
         option.click();
-        const newRate = rateEmitted;
+        const newRate = chrome.readingMode.speechRate;
         assertGT(newRate, previousRate);
+        assertTrue(rateEmitted);
         previousRate = newRate;
+        rateEmitted = false;
       });
     });
 
@@ -95,7 +97,7 @@ suite('RateSelection', () => {
 
       test('updates rate', () => {
         assertEquals(chrome.readingMode.speechRate, rateValue);
-        assertEquals(rateEmitted, rateValue);
+        assertTrue(rateEmitted);
       });
 
       test('updates icon on toolbar', () => {

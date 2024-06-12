@@ -108,34 +108,6 @@ suite('Speech', () => {
           paragraph2.every(sentence => utteranceTexts.includes(sentence)));
     });
 
-    test('uses set rate', () => {
-      let expectedRate = 1;
-      assertTrue(
-          speechSynthesis.spokenUtterances.every(
-              utterance => utterance.rate === expectedRate),
-          '1');
-
-      speechSynthesis.clearSpokenUtterances();
-      expectedRate = 1.5;
-      emitEvent(app, RATE_EVENT, {detail: {rate: expectedRate}});
-      app.playSpeech();
-
-      assertTrue(
-          speechSynthesis.spokenUtterances.every(
-              utterance => utterance.rate === expectedRate),
-          '1.5');
-
-      speechSynthesis.clearSpokenUtterances();
-      expectedRate = 4;
-      emitEvent(app, RATE_EVENT, {detail: {rate: expectedRate}});
-      app.playSpeech();
-
-      assertTrue(
-          speechSynthesis.spokenUtterances.every(
-              utterance => utterance.rate === expectedRate),
-          '4');
-    });
-
     test('uses set language', () => {
       // no need to update fonts for this test
       app.$.toolbar.updateFonts = () => {};
@@ -475,7 +447,7 @@ suite('Speech', () => {
     });
 
     test('rate change cancels and restarts speech', () => {
-      emitEvent(app, RATE_EVENT, {detail: {rate: 0.8}});
+      emitEvent(app, RATE_EVENT);
 
       assertGT(speechSynthesis.spokenUtterances.length, 0);
       assertTrue(speechSynthesis.canceled);
@@ -593,6 +565,29 @@ suite('Speech', () => {
                 app.getSpeechSynthesisVoice()?.name,
                 speechSynthesis.getVoices()[0]?.name);
           });
+    });
+
+    suite('invalid argument', () => {
+      setup(() => {
+        speechSynthesis.triggerErrorEventOnNextSpeak('invalid-argument');
+      });
+
+      test('cancels and uses default rate', () => {
+        let speechRate = 4;
+        chrome.readingMode.onSpeechRateChange = rate => {
+          speechRate = rate;
+        };
+        emitEvent(app, 'select-voice', {
+          detail: {
+            selectedVoice: {lang: 'en', name: 'Lisie'} as SpeechSynthesisVoice,
+          },
+        });
+
+        assertFalse(speechSynthesis.speaking);
+        assertTrue(speechSynthesis.canceled);
+        assertFalse(speechSynthesis.paused);
+        assertEquals(speechRate, 1);
+      });
     });
 
     suite('and voice preview is played', () => {

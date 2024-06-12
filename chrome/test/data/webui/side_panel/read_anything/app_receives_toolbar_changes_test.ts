@@ -12,6 +12,7 @@ import {assertEquals, assertFalse, assertNotEquals, assertTrue} from 'chrome-unt
 
 import {emitEvent, suppressInnocuousErrors} from './common.js';
 import {FakeReadingMode} from './fake_reading_mode.js';
+import {FakeSpeechSynthesis} from './fake_speech_synthesis.js';
 import {TestColorUpdaterBrowserProxy} from './test_color_updater_browser_proxy.js';
 
 suite('AppReceivesToolbarChanges', () => {
@@ -309,22 +310,32 @@ suite('AppReceivesToolbarChanges', () => {
   });
 
   suite('on speech rate change', () => {
-    function emitRate(rate: number): void {
-      emitEvent(app, RATE_EVENT, {detail: {rate}});
+    function emitRate(): void {
+      emitEvent(app, RATE_EVENT);
     }
 
     test('speech rate updated', () => {
+      const speechSynthesis = new FakeSpeechSynthesis();
+      app.synth = speechSynthesis;
+      app.playSpeech();
+
       const speechRate1 = 2;
-      emitRate(speechRate1);
-      assertEquals(app.rate, speechRate1);
+      chrome.readingMode.speechRate = speechRate1;
+      emitRate();
+      assertTrue(speechSynthesis.spokenUtterances.every(
+          utterance => utterance.rate === speechRate1));
 
       const speechRate2 = 0.5;
-      emitRate(speechRate2);
-      assertEquals(app.rate, speechRate2);
+      chrome.readingMode.speechRate = speechRate2;
+      emitRate();
+      assertTrue(speechSynthesis.spokenUtterances.every(
+          utterance => utterance.rate === speechRate2));
 
       const speechRate3 = 4;
-      emitRate(speechRate3);
-      assertEquals(app.rate, speechRate3);
+      chrome.readingMode.speechRate = speechRate3;
+      emitRate();
+      assertTrue(speechSynthesis.spokenUtterances.every(
+          utterance => utterance.rate === speechRate3));
     });
   });
 

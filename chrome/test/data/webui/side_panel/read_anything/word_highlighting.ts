@@ -94,7 +94,7 @@ suite('WordHighlighting', () => {
     });
 
     test('with rate over 1 sentence highlight used', () => {
-      app.rate = 2;
+      chrome.readingMode.onSpeechRateChange(2);
       app.playSpeech();
       const currentHighlight =
           app.$.container.querySelector('.current-read-highlight');

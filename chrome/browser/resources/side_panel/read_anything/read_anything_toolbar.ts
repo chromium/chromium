@@ -24,7 +24,7 @@ import {loadTimeData} from '//resources/js/load_time_data.js';
 import type {DomRepeatEvent} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 import {Debouncer, PolymerElement, timeOut} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
-import {minOverflowLengthToScroll, openMenu, ReadAloudSettingsChange, SPEECH_SETTINGS_CHANGE_UMA, spinnerDebounceTimeout, validatedFontName} from './common.js';
+import {getCurrentSpeechRate, minOverflowLengthToScroll, openMenu, ReadAloudSettingsChange, SPEECH_SETTINGS_CHANGE_UMA, spinnerDebounceTimeout, validatedFontName} from './common.js';
 import {getTemplate} from './read_anything_toolbar.html.js';
 import type {VoiceSelectionMenuElement} from './voice_selection_menu.js';
 
@@ -555,7 +555,7 @@ export class ReadAnythingToolbarElement extends ReadAnythingToolbarElementBase {
     this.updateLinkToggleButton();
 
     if (this.isReadAloudEnabled_) {
-      const speechRate = this.getCurrentSpeechRate();
+      const speechRate = getCurrentSpeechRate();
       this.setRateIcon_(speechRate);
       this.setCheckMarkForMenu_(
           this.$.rateMenu.getIfExists(), this.rateOptions_.indexOf(speechRate));
@@ -617,12 +617,7 @@ export class ReadAnythingToolbarElement extends ReadAnythingToolbarElementBase {
   }
 
   private isRateItemSelected_(item: number): boolean {
-    return item !== this.rateOptions_.indexOf(this.getCurrentSpeechRate());
-  }
-
-
-  private getCurrentSpeechRate(): number {
-    return parseFloat(chrome.readingMode.speechRate.toFixed(1));
+    return item !== this.rateOptions_.indexOf(getCurrentSpeechRate());
   }
 
   private getCurrentLineSpacing(): number {
@@ -803,9 +798,7 @@ export class ReadAnythingToolbarElement extends ReadAnythingToolbarElementBase {
     // Log which rate is chosen by index rather than the rate value itself.
     chrome.metricsPrivate.recordSmallCount(VOICE_SPEED_UMA, event.model.index);
     chrome.readingMode.onSpeechRateChange(event.model.item);
-    this.emitEvent_(RATE_EVENT, {
-      rate: event.model.item,
-    });
+    this.emitEvent_(RATE_EVENT);
     this.setRateIcon_(event.model.item);
     this.setCheckMarkForMenu_(this.$.rateMenu.getIfExists(), event.model.index);
 
@@ -1102,8 +1095,7 @@ export class ReadAnythingToolbarElement extends ReadAnythingToolbarElementBase {
         this.i18n('readingModeToolbarLabel');
   }
 
-  private getVoiceSpeedLabel_(rate: number = this.getCurrentSpeechRate()):
-      string {
+  private getVoiceSpeedLabel_(rate: number = getCurrentSpeechRate()): string {
     return loadTimeData.getStringF('voiceSpeedWithRateLabel', rate);
   }
 }

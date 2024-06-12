@@ -146,7 +146,7 @@ class ReadAnythingAppController
   bool LinksEnabled() const;
   bool ImagesEnabled() const;
   bool ImagesFeatureEnabled() const;
-  float SpeechRate() const;
+  double SpeechRate() const;
   void OnFontSizeChanged(bool increase);
   void OnFontSizeReset();
   void OnLinksEnabledToggled();

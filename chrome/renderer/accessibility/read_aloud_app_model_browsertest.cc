@@ -27,6 +27,12 @@ class ReadAnythingReadAloudAppModelTest : public ChromeRenderViewTest {
     model_->set_speech_playing(speech_playing);
   }
 
+  double SpeechRate() { return model_->speech_rate(); }
+
+  void SetSpeechRate(double speech_rate) {
+    model_->set_speech_rate(speech_rate);
+  }
+
  private:
   // ReadAloudAppModel constructor and destructor are private so it's
   // not accessible by std::make_unique.
@@ -41,4 +47,16 @@ TEST_F(ReadAnythingReadAloudAppModelTest, SpeechPlaying) {
 
   SetSpeechPlaying(false);
   EXPECT_FALSE(SpeechPlaying());
+}
+
+TEST_F(ReadAnythingReadAloudAppModelTest, SpeechRate) {
+  EXPECT_EQ(SpeechRate(), 1);
+
+  const double speech_rate1 = 0.5;
+  SetSpeechRate(speech_rate1);
+  EXPECT_EQ(SpeechRate(), speech_rate1);
+
+  const double speech_rate2 = 1.2;
+  SetSpeechRate(speech_rate2);
+  EXPECT_EQ(SpeechRate(), speech_rate2);
 }

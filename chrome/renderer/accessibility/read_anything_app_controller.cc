@@ -741,11 +741,11 @@ void ReadAnythingAppController::OnSettingsRestoredFromPrefs(
     base::Value::Dict voices,
     base::Value::List languages_enabled_in_pref,
     read_anything::mojom::HighlightGranularity granularity) {
+  read_aloud_model_.OnSettingsRestoredFromPrefs(speech_rate);
   bool needs_redraw_for_links = model_.links_enabled() != links_enabled;
-  model_.OnSettingsRestoredFromPrefs(line_spacing, letter_spacing, font,
-                                     font_size, links_enabled, images_enabled,
-                                     color, speech_rate, &voices,
-                                     &languages_enabled_in_pref, granularity);
+  model_.OnSettingsRestoredFromPrefs(
+      line_spacing, letter_spacing, font, font_size, links_enabled,
+      images_enabled, color, &voices, &languages_enabled_in_pref, granularity);
   ExecuteJavaScript("chrome.readingMode.restoreSettingsFromPrefs();");
   // Only redraw if there is an active tree.
   if (needs_redraw_for_links &&
@@ -992,8 +992,8 @@ int ReadAnythingAppController::ColorTheme() const {
   return model_.color_theme();
 }
 
-float ReadAnythingAppController::SpeechRate() const {
-  return model_.speech_rate();
+double ReadAnythingAppController::SpeechRate() const {
+  return read_aloud_model_.speech_rate();
 }
 
 std::string ReadAnythingAppController::GetStoredVoice() const {
@@ -1487,6 +1487,7 @@ void ReadAnythingAppController::OnFontChange(const std::string& font) {
 
 void ReadAnythingAppController::OnSpeechRateChange(double rate) {
   page_handler_->OnSpeechRateChange(rate);
+  read_aloud_model_.set_speech_rate(rate);
 }
 
 void ReadAnythingAppController::OnVoiceChange(const std::string& voice,

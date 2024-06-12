@@ -33,6 +33,7 @@ build_webui_tests("build") {
     "language_menu_test.ts",
     "links_toggled_integration.ts",
     "common.ts",
+    "common_test.ts",
     "fake_speech_synthesis.ts",
     "speech_test.ts",
     "voice_language_util_test.ts",

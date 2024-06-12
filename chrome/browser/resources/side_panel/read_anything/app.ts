@@ -21,7 +21,7 @@ import type {SkColor} from '//resources/mojo/skia/public/mojom/skcolor.mojom-web
 import {PolymerElement} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {getTemplate} from './app.html.js';
-import {minOverflowLengthToScroll, playFromSelectionTimeout, toastDurationMs, validatedFontName} from './common.js';
+import {getCurrentSpeechRate, minOverflowLengthToScroll, playFromSelectionTimeout, toastDurationMs, validatedFontName} from './common.js';
 import type {ReadAnythingToolbarElement} from './read_anything_toolbar.js';
 import type {VoicePackStatus} from './voice_language_util.js';
 import {areVoicesEqual, AVAILABLE_GOOGLE_TTS_LOCALES, convertLangOrLocaleForVoicePackManager, convertLangOrLocaleToExactVoicePackLocale, convertLangToAnAvailableLangIfPresent, createInitialListOfEnabledLanguages, doesLanguageHaveNaturalVoices, getVoicePackConvertedLangIfExists, isEspeak, isNatural, isVoicePackStatusError, isVoicePackStatusSuccess, isWaitingForInstallLocally, mojoVoicePackStatusToVoicePackStatusEnum, VoiceClientSideStatusCode, VoicePackServerStatusErrorCode, VoicePackServerStatusSuccessCode} from './voice_language_util.js';
@@ -415,8 +415,6 @@ export class ReadAnythingElement extends ReadAnythingElementBase {
   // If the node id of the first text node that should be used by Read Aloud
   // has been set. This is null if the id has not been set.
   firstTextNodeSetForReadAloud: number|null = null;
-
-  rate: number = 1;
 
   speechSynthesisLanguage: string;
 
@@ -1169,15 +1167,6 @@ export class ReadAnythingElement extends ReadAnythingElementBase {
     }
   }
 
-  private onSpeechRateChange_(event: CustomEvent<{rate: number}>) {
-    this.updateSpeechRate_(event.detail.rate);
-  }
-
-  private updateSpeechRate_(rate: number) {
-    this.rate = rate;
-    this.resetSpeechPostSettingChange_();
-  }
-
   getSpeechSynthesisVoice(): SpeechSynthesisVoice|undefined {
     if (!this.selectedVoice) {
       this.selectedVoice = this.defaultVoice();
@@ -1878,7 +1867,8 @@ export class ReadAnythingElement extends ReadAnythingElementBase {
         // invalid-argument can be triggered when the rate, pitch, or volume
         // is not supported by the synthesizer. Since we're only setting the
         // speech rate, update the speech rate to the WebSpeech default of 1.
-        this.updateSpeechRate_(1);
+        chrome.readingMode.onSpeechRateChange(1);
+        this.resetSpeechPostSettingChange_();
       }
 
       // No appropriate voice is available for the language designated in
@@ -2106,7 +2096,7 @@ export class ReadAnythingElement extends ReadAnythingElementBase {
       lang,
       // TODO(crbug.com/40927698): Ensure the rate is valid for the current
       // speech engine.
-      rate: this.rate,
+      rate: getCurrentSpeechRate(),
       volume: 1,
       pitch: 1,
     };
@@ -2188,7 +2178,7 @@ export class ReadAnythingElement extends ReadAnythingElementBase {
     // Word highlighting should only be used for speech rates less than or
     // equal to 1x speed.
     return chrome.readingMode.isAutomaticWordHighlightingEnabled &&
-        this.rate <= 1;
+        getCurrentSpeechRate() <= 1;
   }
 
   private onSelectVoice_(
@@ -2326,7 +2316,6 @@ export class ReadAnythingElement extends ReadAnythingElementBase {
 
   restoreSettingsFromPrefs() {
     if (this.isReadAloudEnabled_) {
-      this.updateSpeechRate_(chrome.readingMode.speechRate);
       // We need to restore enabled languages prior to selecting the preferred
       // voice to ensure we have the right voices available.
       this.restoreEnabledLanguagesFromPref_();

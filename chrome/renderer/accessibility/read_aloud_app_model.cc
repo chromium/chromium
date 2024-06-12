@@ -7,3 +7,7 @@
 ReadAloudAppModel::ReadAloudAppModel() = default;
 
 ReadAloudAppModel::~ReadAloudAppModel() = default;
+
+void ReadAloudAppModel::OnSettingsRestoredFromPrefs(double speech_rate) {
+  speech_rate_ = speech_rate;
+}
