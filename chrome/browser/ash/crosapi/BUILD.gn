@@ -373,6 +373,7 @@ source_set("crosapi") {
     "//chromeos/ash/components/network",
     "//chromeos/ash/components/network/portal_detector",
     "//chromeos/ash/components/osauth/public",
+    "//chromeos/ash/components/report:utils",
     "//chromeos/ash/components/settings",
     "//chromeos/ash/components/standalone_browser",
     "//chromeos/ash/components/system",
