@@ -24642,10 +24642,10 @@ IN_PROC_BROWSER_TEST_F(RealTimeReportingEnabledTest, RealTimeReporting) {
       platform_histogram, [](uint8_t bit) { return bit == 0 || bit == 1; }));
 }
 
-// Opted-in sellers will receive real time histograms, even though they don't
-// call the API (same for buyers).
+// Opted-in sellers will receive real time histograms, even if they don't call
+// the API.
 IN_PROC_BROWSER_TEST_F(RealTimeReportingEnabledTest,
-                       RealTimeReportingWithoutCallingAPI) {
+                       RealTimeReportingSellerDoesNotCallAPI) {
   const char kHostA[] = "a.test";
   const char kHostB[] = "b.test";
 
@@ -24714,6 +24714,67 @@ IN_PROC_BROWSER_TEST_F(RealTimeReportingEnabledTest,
             isolation_info.request_type());
   EXPECT_TRUE(isolation_info.network_isolation_key().IsTransient());
   EXPECT_TRUE(isolation_info.site_for_cookies().IsNull());
+}
+
+// Opted-in buyers will receive real time histograms, even if they don't call
+// the API.
+IN_PROC_BROWSER_TEST_F(RealTimeReportingEnabledTest,
+                       RealTimeReportingBuyerDoesNotCallAPI) {
+  const char kHostA[] = "a.test";
+  const char kHostB[] = "b.test";
+
+  // Setting a small reporting interval to run the test faster.
+  manager_->set_reporting_interval_for_testing(base::Milliseconds(1));
+  manager_->set_max_report_queue_length_for_testing(50);
+  manager_->set_max_active_report_requests_for_testing(50);
+
+  URLLoaderMonitor url_loader_monitor;
+
+  GURL test_url =
+      embedded_https_test_server().GetURL(kHostA, "/page_with_iframe.html");
+  ASSERT_TRUE(NavigateToURL(shell(), test_url));
+  url::Origin test_origin = url::Origin::Create(test_url);
+  GURL ad_url =
+      embedded_https_test_server().GetURL(kHostA, "/echo?render_cars");
+  url::Origin test_origin_b =
+      url::Origin::Create(embedded_https_test_server().GetURL(kHostB, "/echo"));
+
+  EXPECT_EQ(kSuccess,
+            JoinInterestGroupAndVerify(
+                /*owner=*/test_origin,
+                /*name=*/"cars",
+                /*priority=*/0.0,
+                /*execution_mode=*/
+                blink::InterestGroup::ExecutionMode::kCompatibilityMode,
+                /*bidding_url=*/
+                embedded_https_test_server().GetURL(
+                    kHostA, "/interest_group/bidding_logic.js"),
+                /*ads=*/{{{ad_url, /*metadata=*/std::nullopt}}}));
+
+  const char kConfigTemplate[] = R"({
+    seller: $1,
+    decisionLogicURL: $2,
+    interestGroupBuyers: [$3],
+    perBuyerRealTimeReportingConfig: {
+      $3: {type: 'default-local-reporting'}
+    }
+  })";
+
+  std::string auction_config =
+      JsReplace(kConfigTemplate, test_origin_b,
+                embedded_https_test_server().GetURL(
+                    kHostB, "/interest_group/decision_logic.js"),
+                test_origin);
+  RunAuctionAndWaitForURLAndNavigateIframe(auction_config, ad_url);
+
+  const GURL expected_report_url = embedded_https_test_server().GetURL(
+      "a.test", "/.well-known/interest-group/real-time-report");
+
+  WaitForUrl(expected_report_url);
+  std::optional<network::ResourceRequest> request =
+      url_loader_monitor.WaitForUrl(expected_report_url);
+  ASSERT_TRUE(request);
+  EXPECT_EQ(net::HttpRequestHeaders::kPostMethod, request->method);
 }
 
 IN_PROC_BROWSER_TEST_F(RealTimeReportingEnabledTest,
