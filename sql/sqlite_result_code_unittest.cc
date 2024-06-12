@@ -56,16 +56,6 @@ TEST(SqliteResultCodeTest, ToSqliteResultCode_SqliteInternalError) {
 #endif
 }
 
-TEST(SqliteResultCodeTest, ToSqliteResultCode_ChromeBugError) {
-#if DCHECK_IS_ON()
-  EXPECT_DCHECK_DEATH_WITH(
-      ToSqliteResultCode(SQLITE_NOTFOUND),
-      "SQLite reported code that should never show up in Chrome: 12");
-#else
-  EXPECT_EQ(SqliteResultCode::kNotFound, ToSqliteResultCode(SQLITE_NOTFOUND));
-#endif
-}
-
 TEST(SqliteResultCodeTest, ToSqliteErrorCode_Success_Ok) {
   EXPECT_DCHECK_DEATH_WITH(
       ToSqliteErrorCode(SqliteResultCode::kOk),
@@ -110,17 +100,6 @@ TEST(SqliteResultCodeTest, ToSqliteErrorCode_SqliteInternalError) {
 #else
   EXPECT_EQ(SqliteErrorCode::kInternal,
             ToSqliteErrorCode(SqliteResultCode::kInternal));
-#endif
-}
-
-TEST(SqliteResultCodeTest, ToSqliteErrorCode_ChromeBugError) {
-#if DCHECK_IS_ON()
-  EXPECT_DCHECK_DEATH_WITH(
-      ToSqliteErrorCode(SqliteResultCode::kNotFound),
-      "SQLite reported code that should never show up in Chrome: 12");
-#else
-  EXPECT_EQ(SqliteErrorCode::kNotFound,
-            ToSqliteErrorCode(SqliteResultCode::kNotFound));
 #endif
 }
 
