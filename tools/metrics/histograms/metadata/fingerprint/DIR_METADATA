@@ -1,0 +1,6 @@
+buganizer {
+  component_id: 782045  # http://go/cros-fp-bug
+}
+buganizer_public {
+  component_id: 960643  # Chrome OS Public Tracker > Services > Fingerprint
+}
