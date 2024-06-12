@@ -1094,14 +1094,9 @@ TEST_F(PrivacySandboxServiceTest,
   // associatedSites: ["https://associate1.test"}
   net::GlobalFirstPartySets global_sets(
       kFirstPartySetsVersion,
-      {
-          {primary_site,
-           {net::FirstPartySetEntry(primary_site, net::SiteType::kPrimary,
-                                    std::nullopt)}},
-          {associate1_site,
-           {net::FirstPartySetEntry(primary_site, net::SiteType::kAssociated,
-                                    0)}},
-      },
+      {{associate1_site,
+        {net::FirstPartySetEntry(primary_site, net::SiteType::kAssociated,
+                                 0)}}},
       {});
 
   // Simulate 3PC are allowed while:
@@ -1136,14 +1131,9 @@ TEST_F(PrivacySandboxServiceTest,
   // associatedSites: ["https://associate1.test"}
   net::GlobalFirstPartySets global_sets(
       kFirstPartySetsVersion,
-      {
-          {primary_site,
-           {net::FirstPartySetEntry(primary_site, net::SiteType::kPrimary,
-                                    std::nullopt)}},
-          {associate1_site,
-           {net::FirstPartySetEntry(primary_site, net::SiteType::kAssociated,
-                                    0)}},
-      },
+      {{associate1_site,
+        {net::FirstPartySetEntry(primary_site, net::SiteType::kAssociated,
+                                 0)}}},
       {});
 
   // Simulate all cookies are blocked while:
@@ -1180,14 +1170,9 @@ TEST_F(PrivacySandboxServiceTest,
   // associatedSites: ["https://associate1.test"}
   net::GlobalFirstPartySets global_sets(
       kFirstPartySetsVersion,
-      {
-          {primary_site,
-           {net::FirstPartySetEntry(primary_site, net::SiteType::kPrimary,
-                                    std::nullopt)}},
-          {associate1_site,
-           {net::FirstPartySetEntry(primary_site, net::SiteType::kAssociated,
-                                    0)}},
-      },
+      {{associate1_site,
+        {net::FirstPartySetEntry(primary_site, net::SiteType::kAssociated,
+                                 0)}}},
       {});
 
   // Simulate FPS UI feature disabled while:
@@ -1224,14 +1209,9 @@ TEST_F(PrivacySandboxServiceTest,
   // associatedSites: ["https://associate1.test"}
   net::GlobalFirstPartySets global_sets(
       kFirstPartySetsVersion,
-      {
-          {primary_site,
-           {net::FirstPartySetEntry(primary_site, net::SiteType::kPrimary,
-                                    std::nullopt)}},
-          {associate1_site,
-           {net::FirstPartySetEntry(primary_site, net::SiteType::kAssociated,
-                                    0)}},
-      },
+      {{associate1_site,
+        {net::FirstPartySetEntry(primary_site, net::SiteType::kAssociated,
+                                 0)}}},
       {});
 
   // Simulate FPS pref disabled while:
@@ -1314,17 +1294,11 @@ TEST_F(PrivacySandboxServiceTest,
   // associatedSites: ["https://associate1.test", "https://associate2.test"] }
   mock_first_party_sets_handler().SetGlobalSets(net::GlobalFirstPartySets(
       kFirstPartySetsVersion,
-      {
-          {primary_site,
-           {net::FirstPartySetEntry(primary_site, net::SiteType::kPrimary,
-                                    std::nullopt)}},
-          {associate1_site,
-           {net::FirstPartySetEntry(primary_site, net::SiteType::kAssociated,
-                                    0)}},
-          {associate2_site,
-           {net::FirstPartySetEntry(primary_site, net::SiteType::kAssociated,
-                                    1)}},
-      },
+      {{associate1_site,
+        {net::FirstPartySetEntry(primary_site, net::SiteType::kAssociated, 0)}},
+       {associate2_site,
+        {net::FirstPartySetEntry(primary_site, net::SiteType::kAssociated,
+                                 1)}}},
       {}));
 
   // Simulate that associate2 is removed from the Global First-Party Sets for
@@ -1444,14 +1418,9 @@ TEST_F(PrivacySandboxServiceTest, UsesFpsSampleSetsWhenProvided) {
 
   mock_first_party_sets_handler().SetGlobalSets(net::GlobalFirstPartySets(
       kFirstPartySetsVersion,
-      {
-          {youtube_primary_site,
-           {net::FirstPartySetEntry(youtube_primary_site,
-                                    net::SiteType::kPrimary, std::nullopt)}},
-          {youtube_site,
-           {net::FirstPartySetEntry(youtube_primary_site,
-                                    net::SiteType::kAssociated, 0)}},
-      },
+      {{youtube_site,
+        {net::FirstPartySetEntry(youtube_primary_site,
+                                 net::SiteType::kAssociated, 0)}}},
       {}));
 
   // Simulate that https://google.de is moved into a new First-Party Set for

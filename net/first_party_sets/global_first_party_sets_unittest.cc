@@ -7,7 +7,6 @@
 #include <optional>
 
 #include "base/containers/flat_map.h"
-#include "base/test/gtest_util.h"
 #include "base/version.h"
 #include "net/base/schemeful_site.h"
 #include "net/first_party_sets/first_party_set_entry.h"
@@ -32,7 +31,6 @@ namespace {
 
 const base::Version kVersion("1.2.3");
 const SchemefulSite kPrimary(GURL("https://primary.test"));
-const SchemefulSite kPrimaryCctld(GURL("https://primary.ccltd"));
 const SchemefulSite kPrimary2(GURL("https://primary2.test"));
 const SchemefulSite kPrimary3(GURL("https://primary3.test"));
 const SchemefulSite kAssociated1(GURL("https://associated1.test"));
@@ -86,50 +84,6 @@ TEST_F(GlobalFirstPartySetsTest, CtorSkipsInvalidVersion) {
       IsEmpty());
 }
 
-using GlobalFirstPartySetsDeathTest = GlobalFirstPartySetsTest;
-
-TEST_F(GlobalFirstPartySetsDeathTest, CtorDetectsSingleton_Primary) {
-  EXPECT_DEATH_IF_SUPPORTED(
-      {
-        net::GlobalFirstPartySets sets(
-            base::Version("1.2.3"), /*entries=*/
-            {
-                {kPrimary, FirstPartySetEntry(kPrimary, SiteType::kPrimary,
-                                              std::nullopt)},
-            },
-            /*aliases=*/{});
-      },
-      "Sets must not contain singleton or orphan");
-}
-
-TEST_F(GlobalFirstPartySetsDeathTest, CtorDetectsSingleton_AssociatedOrphan) {
-  EXPECT_DEATH_IF_SUPPORTED(
-      {
-        net::GlobalFirstPartySets sets(
-            base::Version("1.2.3"), /*entries=*/
-            {
-                {kAssociated1,
-                 FirstPartySetEntry(kPrimary, SiteType::kAssociated, 0)},
-            },
-            /*aliases=*/{});
-      },
-      "Sets must not contain singleton or orphan");
-}
-
-TEST_F(GlobalFirstPartySetsDeathTest, CtorDetectsSingleton_ServiceOrphan) {
-  EXPECT_DEATH_IF_SUPPORTED(
-      {
-        net::GlobalFirstPartySets sets(
-            base::Version("1.2.3"), /*entries=*/
-            {
-                {kService, FirstPartySetEntry(kPrimary, SiteType::kService,
-                                              std::nullopt)},
-            },
-            /*aliases=*/{});
-      },
-      "Sets must not contain singleton or orphan");
-}
-
 TEST_F(GlobalFirstPartySetsTest, Clone) {
   base::Version version("1.2.3.4.5");
   const SchemefulSite example(GURL("https://example.test"));
@@ -152,27 +106,6 @@ TEST_F(GlobalFirstPartySetsTest, Clone) {
       /*aliases=*/{}));
 
   EXPECT_EQ(sets, sets.Clone());
-}
-
-TEST_F(GlobalFirstPartySetsTest, Ctor_PrimaryWithAlias_Valid) {
-  GlobalFirstPartySets global_sets(
-      kVersion, /*entries=*/
-      {
-          {kPrimary,
-           FirstPartySetEntry(kPrimary, SiteType::kPrimary, std::nullopt)},
-      },
-      /*aliases=*/
-      {
-          {kPrimaryCctld, kPrimary},
-      });
-
-  EXPECT_THAT(
-      CollectEffectiveSetEntries(global_sets, FirstPartySetsContextConfig()),
-      UnorderedElementsAre(
-          Pair(kPrimaryCctld,
-               FirstPartySetEntry(kPrimary, SiteType::kPrimary, std::nullopt)),
-          Pair(kPrimary, FirstPartySetEntry(kPrimary, SiteType::kPrimary,
-                                            std::nullopt))));
 }
 
 TEST_F(GlobalFirstPartySetsTest, FindEntry_Nonexistent) {
@@ -876,6 +809,8 @@ TEST_F(
           Pair(kAssociated1,
                FirstPartySetEntry(kPrimary2, SiteType::kAssociated,
                                   std::nullopt)),
+          Pair(kPrimary,
+               FirstPartySetEntry(kPrimary, SiteType::kPrimary, std::nullopt)),
           Pair(kPrimary2, FirstPartySetEntry(kPrimary2, SiteType::kPrimary,
                                              std::nullopt))));
 }
