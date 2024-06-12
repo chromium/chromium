@@ -46,6 +46,9 @@ class AsyncCheckTracker
     // is completed before the response body is processed, which is the majority
     // of cases).
     virtual void OnAsyncSafeBrowsingCheckCompleted() {}
+    // Notify the observers to unsubscribe before AsyncCheckTracker is
+    // destructed.
+    virtual void OnAsyncSafeBrowsingCheckTrackerDestructed() {}
   };
 
   static AsyncCheckTracker* GetOrCreateForWebContents(

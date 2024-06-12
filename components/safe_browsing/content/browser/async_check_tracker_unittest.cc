@@ -465,10 +465,15 @@ class AsyncCheckTrackerTestObserver : public AsyncCheckTracker::Observer {
   void OnAsyncSafeBrowsingCheckCompleted() override {
     async_check_completed_times_++;
   }
+  void OnAsyncSafeBrowsingCheckTrackerDestructed() override {
+    tracker_destructed_times_++;
+  }
   int AsyncCheckCompletedTimes() { return async_check_completed_times_; }
+  int TrackerDestructedTimes() { return tracker_destructed_times_; }
 
  private:
   int async_check_completed_times_ = 0;
+  int tracker_destructed_times_ = 0;
 };
 
 class AsyncCheckTrackerObserverTest : public AsyncCheckTrackerTest {
@@ -516,6 +521,7 @@ TEST_F(AsyncCheckTrackerObserverTest, AsyncCheckTrackerDeletedWhileObserving) {
   web_contents.reset();
   // Ensure that the observer is auto removed after the tracker is deleted.
   EXPECT_FALSE(observer_.IsInObserverList());
+  EXPECT_EQ(observer_.TrackerDestructedTimes(), 1);
 }
 
 }  // namespace safe_browsing

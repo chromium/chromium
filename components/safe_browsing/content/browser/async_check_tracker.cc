@@ -83,6 +83,9 @@ AsyncCheckTracker::AsyncCheckTracker(content::WebContents* web_contents,
 
 AsyncCheckTracker::~AsyncCheckTracker() {
   DeletePendingCheckers(/*excluded_navigation_id=*/std::nullopt);
+  for (auto& observer : observers_) {
+    observer.OnAsyncSafeBrowsingCheckTrackerDestructed();
+  }
 }
 
 void AsyncCheckTracker::TransferUrlChecker(
