@@ -5,6 +5,7 @@ import './app_management_shared_style.css.js';
 import '//resources/cr_elements/cr_toggle/cr_toggle.js';
 import '//resources/cr_elements/policy/cr_policy_indicator.js';
 import '//resources/cr_elements/icons.html.js';
+import '//resources/polymer/v3_0/iron-icon/iron-icon.js';
 
 import type {CrToggleElement} from '//resources/cr_elements/cr_toggle/cr_toggle.js';
 import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
