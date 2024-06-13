@@ -251,7 +251,7 @@ PopupRowView::PopupRowView(
 
   content_view_ = AddChildView(std::move(content_view));
   content_view_->SetFocusBehavior(FocusBehavior::ALWAYS);
-  content_view_->AddObserver(this);
+  content_view_observer_.Observe(content_view_);
   content_view_->GetViewAccessibility().SetRole(
       ax::mojom::Role::kListBoxOption);
   content_view_->GetViewAccessibility().SetName(
@@ -281,7 +281,8 @@ PopupRowView::PopupRowView(
                 popup_cell_utils::ImageModelFromVectorIcon(
                     popup_cell_utils::GetExpandableMenuIcon(suggestion.type),
                     kExpandChildSuggestionsIconWidth)));
-    expand_child_suggestions_view_->AddObserver(this);
+    expand_child_suggestions_view_observer_.Observe(
+        expand_child_suggestions_view_);
     control_event_handler_ = set_exit_enter_callbacks(
         CellType::kControl, *expand_child_suggestions_view_);
     layout->SetFlexForView(expand_child_suggestions_view_.get(), 0);

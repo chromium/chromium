@@ -11,6 +11,7 @@
 #include "base/memory/raw_ptr.h"
 #include "base/memory/raw_ref.h"
 #include "base/memory/weak_ptr.h"
+#include "base/scoped_observation.h"
 #include "chrome/browser/ui/views/autofill/popup/popup_view_utils.h"
 #include "components/input/native_web_keyboard_event.h"
 #include "ui/base/metadata/metadata_header_macros.h"
@@ -165,9 +166,13 @@ class PopupRowView : public views::View, public views::ViewObserver {
 
   // The view wrapping the content area of the row.
   raw_ptr<PopupRowContentView> content_view_ = nullptr;
+  base::ScopedObservation<PopupRowContentView, views::ViewObserver>
+      content_view_observer_{this};
   // The view wrapping the control area of the row.
   raw_ptr<views::View> expand_child_suggestions_view_ = nullptr;
   raw_ptr<views::View> expand_child_suggestions_view_icon_ = nullptr;
+  base::ScopedObservation<views::View, views::ViewObserver>
+      expand_child_suggestions_view_observer_{this};
 
   // Overriding event handles for the content and control views.
   std::unique_ptr<ui::EventHandler> content_event_handler_;
