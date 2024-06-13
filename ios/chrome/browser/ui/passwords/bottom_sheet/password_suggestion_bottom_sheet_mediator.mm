@@ -184,6 +184,12 @@ int PrimaryActionStringIdFromSuggestion(FormSuggestion* suggestion) {
       self.suggestionsProvider = tabHelper->GetAccessoryViewProvider();
       DCHECK(self.suggestionsProvider);
 
+      // The 'params' argument may go out of scope before the completion block
+      // is called, so we need to store variables used in the completion block
+      // locally.
+      autofill::FormRendererId formId = params.form_renderer_id;
+      std::string frameId = params.frame_id;
+
       __weak __typeof(self) weakSelf = self;
       [self.suggestionsProvider
           retrieveSuggestionsForForm:params
@@ -192,9 +198,9 @@ int PrimaryActionStringIdFromSuggestion(FormSuggestion* suggestion) {
                 NSArray<FormSuggestion*>* suggestions,
                 id<FormInputSuggestionsProvider> formInputSuggestionsProvider) {
               weakSelf.suggestions = suggestions;
-              [weakSelf fetchCredentialsForForm:params.form_renderer_id
+              [weakSelf fetchCredentialsForForm:formId
                                        webState:activeWebState
-                                     webFrameId:params.frame_id];
+                                     webFrameId:frameId];
             }];
     }
 
