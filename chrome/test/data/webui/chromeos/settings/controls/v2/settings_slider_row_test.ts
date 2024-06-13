@@ -208,4 +208,36 @@ suite(SettingsSliderRowElement.is, () => {
       assertEquals(internalSliderElement, sliderRow.shadowRoot!.activeElement);
     });
   });
+
+  suite('for a11y', () => {
+    test('label is the ARIA label by default', () => {
+      const label = 'Lorem ipsum';
+      sliderRow.label = label;
+      assertEquals(label, internalSliderElement.ariaLabel);
+    });
+
+    test('sublabel is the ARIA description by default', () => {
+      const sublabel = 'Lorem ipsum dolor sit amet';
+      sliderRow.sublabel = sublabel;
+      assertEquals(sublabel, internalSliderElement.ariaDescription);
+    });
+
+    test('ariaLabel property takes precedence for the ARIA label', () => {
+      const label = 'Lorem ipsum';
+      const ariaLabel = 'A11y ' + label;
+      sliderRow.label = label;
+      sliderRow.ariaLabel = ariaLabel;
+      assertEquals(ariaLabel, internalSliderElement.ariaLabel);
+    });
+
+    test(
+        'ariaDescription property takes precedence for the ARIA description',
+        () => {
+          const sublabel = 'Lorem ipsum dolor sit amet';
+          const ariaDescription = 'A11y ' + sublabel;
+          sliderRow.sublabel = sublabel;
+          sliderRow.ariaDescription = ariaDescription;
+          assertEquals(ariaDescription, internalSliderElement.ariaDescription);
+        });
+  });
 });
