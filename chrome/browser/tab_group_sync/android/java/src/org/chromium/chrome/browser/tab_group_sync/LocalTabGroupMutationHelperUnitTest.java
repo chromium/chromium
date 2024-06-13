@@ -11,6 +11,7 @@ import static org.mockito.ArgumentMatchers.anyList;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.ArgumentMatchers.argThat;
 import static org.mockito.ArgumentMatchers.eq;
+import static org.mockito.Mockito.inOrder;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.spy;
 import static org.mockito.Mockito.times;
@@ -23,6 +24,7 @@ import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.mockito.InOrder;
 import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.junit.MockitoJUnit;
@@ -142,6 +144,7 @@ public class LocalTabGroupMutationHelperUnitTest {
         verify(mTabGroupModelFilter).mergeListOfTabsToGroup(anyList(), any(), eq(false));
         verify(mTabGroupModelFilter).setTabGroupColor(anyInt(), anyInt());
         verify(mTabGroupModelFilter).setTabGroupTitle(anyInt(), any());
+        verify(mTabGroupModelFilter).setTabGroupCollapsed(anyInt(), eq(true));
         verify(mTabGroupSyncService).updateLocalTabGroupMapping(any(), any());
         verify(mTabGroupSyncService, times(2)).updateLocalTabId(any(), any(), anyInt());
     }
@@ -188,15 +191,20 @@ public class LocalTabGroupMutationHelperUnitTest {
     public void testUpdateTabGroup_AddTabsFromSync() {
         // One local group with one tab syncing.
         addOneTab();
+        when(mTabGroupModelFilter.getTabGroupCollapsed(ROOT_ID_1)).thenReturn(true);
 
         // One saved group with two tabs: both with no local mapping.
         SavedTabGroup savedTabGroup =
                 createOneSavedTabGroup(LOCAL_TAB_GROUP_ID_1, new Integer[] {null, null});
         mLocalMutationHelper.updateTabGroup(savedTabGroup);
 
-        verify(mTabGroupModelFilter, times(2))
+        // Collapsed must be re-set after the merge.
+        InOrder inOrder = inOrder(mTabGroupModelFilter);
+        inOrder.verify(mTabGroupModelFilter, times(2))
                 .mergeListOfTabsToGroup(
                         anyList(), argThat(tab -> tab.getId() == ROOT_ID_1), eq(false));
+        inOrder.verify(mTabGroupModelFilter).setTabGroupCollapsed(ROOT_ID_1, true);
+
         verify(mTabGroupSyncService, times(1))
                 .updateLocalTabId(eq(LOCAL_TAB_GROUP_ID_1), any(), eq(TAB_ID_1));
         verify(mTabModel).closeMultipleTabs(argThat(tabs -> tabs.size() == 1), eq(false));
