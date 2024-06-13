@@ -4,8 +4,6 @@
 
 package org.chromium.base.test.util;
 
-import org.junit.rules.ExternalResource;
-
 import org.chromium.base.CommandLine;
 import org.chromium.base.FeatureList;
 import org.chromium.base.FeatureParam;
@@ -46,12 +44,6 @@ public class Features {
     }
 
     private Features() {}
-
-    // TODO(b/326415975): Delete once no longer referenced.
-    public static class JUnitProcessor extends ExternalResource {}
-
-    // TODO(b/326415975): Delete once no longer referenced.
-    public static class InstrumentationProcessor extends ExternalResource {}
 
     static void resetCachedFlags() {
         // TODO(agrieve): Allow cached flags & field trials to be set in @BeforeClass.

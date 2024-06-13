@@ -26,10 +26,7 @@ import java.util.Collections;
 import java.util.HashSet;
 import java.util.Set;
 
-/**
- * Tests the behavior of {@link ChromeFeatureList} in Robolectric unit tests when the rule
- * Features.JUnitProcessor is present.
- */
+/** Tests the behavior of {@link ChromeFeatureList}. */
 @RunWith(BaseRobolectricTestRunner.class)
 @Config(manifest = Config.NONE)
 public class ChromeFeatureListWithProcessorUnitTest {
