@@ -35,15 +35,9 @@ void ArcActivationNecessityChecker::Check(CheckCallback callback) {
     return;
   }
 
-  // If the ARC on Demand feature is disabled, always activate ARC.
-  if (!base::FeatureList::IsEnabled(kArcOnDemandFeature)) {
-    std::move(callback).Run(true);
-    return;
-  }
-
-  // Always activate ARC for unmanaged users who will get some applications
-  // installed by Play Auto Install (PAI).
-  if (!policy_util::IsAccountManaged(profile_)) {
+  // If ARC on Demand is not enabled for unmanaged user.
+  if (!policy_util::IsAccountManaged(profile_) &&
+      !base::FeatureList::IsEnabled(kArcOnDemandV2)) {
     std::move(callback).Run(true);
     return;
   }

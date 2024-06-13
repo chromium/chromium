@@ -9,10 +9,12 @@
 namespace arc {
 
 // Controls whether to always start ARC automatically, or wait for the user's
-// action to start it later in an on-demand manner.
-BASE_FEATURE(kArcOnDemandFeature,
-             "ArcOnDemand",
-             base::FEATURE_ENABLED_BY_DEFAULT);
+// action to start it later in an on-demand manner. Already enabled by default
+// for managed users. In V2, it will be expand to more users such as unmanaged
+// users.
+BASE_FEATURE(kArcOnDemandV2,
+             "ArcOnDemandV2",
+             base::FEATURE_DISABLED_BY_DEFAULT);
 
 // Controls whether to start ARC with the GKI kernel.
 BASE_FEATURE(kArcVmGki,

@@ -10481,12 +10481,6 @@ const FeatureEntry kFeatureEntries[] = {
      flag_descriptions::kSharedZstdDescription, kOsAll,
      FEATURE_VALUE_TYPE(network::features::kSharedZstd)},
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
-    {"arc-arc-on-demand", flag_descriptions::kArcArcOnDemandExperimentName,
-     flag_descriptions::kArcArcOnDemandExperimentDescription, kOsCrOS,
-     FEATURE_VALUE_TYPE(arc::kArcOnDemandFeature)},
-#endif
-
 #if BUILDFLAG(IS_ANDROID)
     {"web-authentication-android-credential-management",
      flag_descriptions::kWebAuthnAndroidCredManName,

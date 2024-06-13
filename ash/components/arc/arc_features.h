@@ -14,7 +14,7 @@
 namespace arc {
 
 // Please keep alphabetized.
-BASE_DECLARE_FEATURE(kArcOnDemandFeature);
+BASE_DECLARE_FEATURE(kArcOnDemandV2);
 BASE_DECLARE_FEATURE(kArcVmGki);
 BASE_DECLARE_FEATURE(kBlockIoScheduler);
 extern const base::FeatureParam<bool> kEnableDataBlockIoScheduler;

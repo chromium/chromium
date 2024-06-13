@@ -59,8 +59,6 @@ class ArcActivationNecessityCheckerTest : public testing::Test {
   ~ArcActivationNecessityCheckerTest() override = default;
 
   void SetUp() override {
-    feature_list_.InitAndEnableFeature(kArcOnDemandFeature);
-
     SetArcAvailableCommandLineForTesting(
         base::CommandLine::ForCurrentProcess());
     base::CommandLine::ForCurrentProcess()->AppendSwitch(
@@ -133,15 +131,16 @@ TEST_F(ArcActivationNecessityCheckerTest, NotARCVM) {
   EXPECT_TRUE(future.Get());
 }
 
-TEST_F(ArcActivationNecessityCheckerTest, FeatureIsDisabled) {
+TEST_F(ArcActivationNecessityCheckerTest, UnmanagedUserEnabled) {
+  profile_->GetProfilePolicyConnector()->OverrideIsManagedForTesting(false);
   base::test::ScopedFeatureList feature_list;
-  feature_list.InitAndDisableFeature(kArcOnDemandFeature);
+  feature_list.InitAndEnableFeature(kArcOnDemandV2);
   base::test::TestFuture<bool> future;
   checker_->Check(future.GetCallback());
-  EXPECT_TRUE(future.Get());
+  EXPECT_FALSE(future.Get());
 }
 
-TEST_F(ArcActivationNecessityCheckerTest, UnmanagedUser) {
+TEST_F(ArcActivationNecessityCheckerTest, UnmanagedUserDisabled) {
   profile_->GetProfilePolicyConnector()->OverrideIsManagedForTesting(false);
   base::test::TestFuture<bool> future;
   checker_->Check(future.GetCallback());
