@@ -12,6 +12,8 @@ chrome_stdlib_sql_files = [
   "metadata.sql",
   "page_loads.sql",
   "speedometer.sql",
+  "speedometer_2_1.sql",
+  "speedometer_3.sql",
   "startups.sql",
   "tasks.sql",
   "vsync_intervals.sql",

@@ -2262,11 +2262,18 @@ deps = {
         'output_file': 'chrome_page_load_all_categories_not_extended.pftrace.gz'
       },
       {
-        'object_name': 'test_data/speedometer.perfetto_trace.gz-8a159b354d74a3ca0d38ce9cd071ef47de322db4261ee266bfafe04d70310529',
+        'object_name': 'test_data/speedometer_21.perfetto_trace.gz-8a159b354d74a3ca0d38ce9cd071ef47de322db4261ee266bfafe04d70310529',
         'sha256sum': '8a159b354d74a3ca0d38ce9cd071ef47de322db4261ee266bfafe04d70310529',
         'size_bytes': 891088,
-        'generation': 1684336047660953,
-        'output_file': 'speedometer.perfetto_trace.gz'
+        'generation': 1716566741068306,
+        'output_file': 'speedometer_21.perfetto_trace.gz'
+      },
+      {
+       'object_name': 'test_data/speedometer_3.perfetto_trace.gz-b2c77fbe2c17363432a1ad0c05c1c1c20d3ebc62bda92c041d39918011af6f02',
+        'sha256sum': 'b2c77fbe2c17363432a1ad0c05c1c1c20d3ebc62bda92c041d39918011af6f02',
+        'size_bytes': 1301036,
+        'generation': 1716566914245446,
+        'output_file': 'speedometer_3.perfetto_trace.gz'
       },
       {
         'object_name': 'test_data/scroll_jank_with_pinch.pftrace-8587d2016fdb5d39b5f852704b6e3925e9e6527af01696396be767bed04d4a45',

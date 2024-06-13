@@ -109,32 +109,85 @@ class ChromeStdlib(TestSuite):
         "Net.HttpResponseCode",541
         """))
 
-  def test_speedometer(self):
+  def test_speedometer_2_1_score(self):
     return DiffTestBlueprint(
-        trace=DataPath('speedometer.perfetto_trace.gz'),
+        trace=DataPath('speedometer_21.perfetto_trace.gz'),
+        query="""
+        INCLUDE PERFETTO MODULE chrome.speedometer;
+
+        SELECT format("%.1f", chrome_speedometer_score()) AS score
+        """,
+        out=Csv("""
+        "score"
+        "95.8"
+        """))
+
+  def test_speedometer_2_1_iteration(self):
+    return DiffTestBlueprint(
+        trace=DataPath('speedometer_21.perfetto_trace.gz'),
         query="""
         INCLUDE PERFETTO MODULE chrome.speedometer;
 
         SELECT
-          iteration,
-          ts,
-          dur,
-          total,
-          format('%.1f', mean) AS mean,
-          format('%.1f', geomean) AS geomean,
-          format('%.1f', score) AS score,
-          num_measurements
-        FROM
-          chrome_speedometer_iteration,
-          (
-            SELECT iteration, COUNT(*) AS num_measurements
-            FROM chrome_speedometer_measure
-            GROUP BY iteration
-          )
-        USING (iteration)
-        ORDER BY iteration;
+         ts,dur,name,iteration,
+         format("%.1f", geomean) AS geomean,
+         format("%.1f", score) AS score
+           FROM chrome_speedometer_iteration
+          ORDER BY iteration ASC
         """,
-        out=Path('chrome_speedometer.out'))
+        out=Csv("""
+        "ts","dur","name","iteration","geomean","score"
+        693997310311984,7020297000,"iteration-1",1,"254.2","78.7"
+        694004414619984,6308034000,"iteration-2",2,"224.4","89.1"
+        694010770005984,5878289000,"iteration-3",3,"200.3","99.9"
+        694016699502984,5934578000,"iteration-4",4,"201.2","99.4"
+        694022683560984,5952163000,"iteration-5",5,"203.0","98.5"
+        694028690570984,5966530000,"iteration-6",6,"204.3","97.9"
+        694034719276984,5853043000,"iteration-7",7,"200.4","99.8"
+        694040637173984,6087435000,"iteration-8",8,"203.0","98.5"
+        694046772284984,6040820000,"iteration-9",9,"199.3","100.3"
+        694052857814984,6063770000,"iteration-10",10,"208.0","96.2"
+        """))
+
+  def test_speedometer_3_score(self):
+    return DiffTestBlueprint(
+        trace=DataPath('speedometer_3.perfetto_trace.gz'),
+        query="""
+        INCLUDE PERFETTO MODULE chrome.speedometer;
+
+        SELECT format("%.2f", chrome_speedometer_score()) AS score
+        """,
+        out=Csv("""
+        "score"
+        "9.32"
+        """))
+
+  def test_speedometer_3_iteration(self):
+    return DiffTestBlueprint(
+        trace=DataPath('speedometer_3.perfetto_trace.gz'),
+        query="""
+        INCLUDE PERFETTO MODULE chrome.speedometer;
+
+        SELECT
+         ts,dur,name,iteration,
+         format("%.1f", geomean) AS geomean,
+         format("%.1f", score) AS score
+           FROM chrome_speedometer_iteration
+          ORDER BY iteration ASC
+        """,
+        out=Csv("""
+        "ts","dur","name","iteration","geomean","score"
+        303831755756,29237440000,"iteration-0","0","149.6","6.7"
+        333069212756,5852045000,"iteration-1","1","110.7","9.0"
+        338921282756,5128440000,"iteration-2","2","113.5","8.8"
+        344049763756,4640412000,"iteration-3","3","105.0","9.5"
+        348690198756,4790109000,"iteration-4","4","106.9","9.4"
+        353480329756,5150878000,"iteration-5","5","106.0","9.4"
+        358631265756,4825246000,"iteration-6","6","103.1","9.7"
+        363456560756,4447621000,"iteration-7","7","95.5","10.5"
+        367904208756,4566333000,"iteration-8","8","100.8","9.9"
+        372470568756,4301553000,"iteration-9","9","96.9","10.3"
+        """))
 
   # CPU power ups
   def test_cpu_powerups(self):
