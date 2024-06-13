@@ -210,7 +210,11 @@ void FakeOnDeviceModelService::LoadPlatformModel(
 
 void FakeOnDeviceModelService::GetEstimatedPerformanceClass(
     GetEstimatedPerformanceClassCallback callback) {
-  std::move(callback).Run(on_device_model::mojom::PerformanceClass::kVeryHigh);
+  base::SequencedTaskRunner::GetCurrentDefault()->PostDelayedTask(
+      FROM_HERE,
+      base::BindOnce(std::move(callback),
+                     on_device_model::mojom::PerformanceClass::kVeryHigh),
+      settings_->estimated_performance_delay);
 }
 
 FakeOnDeviceModelServiceController::FakeOnDeviceModelServiceController(
@@ -227,10 +231,15 @@ FakeOnDeviceModelServiceController::~FakeOnDeviceModelServiceController() =
     default;
 
 void FakeOnDeviceModelServiceController::LaunchService() {
+  if (service_remote_) {
+    return;
+  }
   did_launch_service_ = true;
   service_remote_.reset();
   service_ = std::make_unique<FakeOnDeviceModelService>(
       service_remote_.BindNewPipeAndPassReceiver(), settings_);
+  service_remote_.reset_on_disconnect();
+  service_remote_.reset_on_idle_timeout(base::TimeDelta());
 }
 
 }  // namespace optimization_guide

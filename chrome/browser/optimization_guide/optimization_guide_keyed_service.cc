@@ -254,9 +254,7 @@ void OptimizationGuideKeyedService::DeterminePerformanceClass(
   auto controller =
       GetOnDeviceModelServiceController(on_device_component_state_manager);
   controller->GetEstimatedPerformanceClass(base::BindOnce(
-      [](scoped_refptr<optimization_guide::OnDeviceModelServiceController>
-             controller,
-         base::WeakPtr<optimization_guide::OnDeviceModelComponentStateManager>
+      [](base::WeakPtr<optimization_guide::OnDeviceModelComponentStateManager>
              on_device_component_state_manager,
          std::optional<on_device_model::mojom::PerformanceClass>
              performance_class) {
@@ -274,9 +272,8 @@ void OptimizationGuideKeyedService::DeterminePerformanceClass(
             OnDeviceModelPerformanceClassToString(
                 optimization_guide_performance_class),
             variations::SyntheticTrialAnnotationMode::kCurrentLog);
-        controller->ShutdownServiceIfNoModelLoaded();
       },
-      controller, on_device_component_state_manager));
+      on_device_component_state_manager));
 }
 
 OptimizationGuideKeyedService::OptimizationGuideKeyedService(

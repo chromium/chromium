@@ -27,6 +27,10 @@ struct FakeOnDeviceServiceSettings final {
   // If non-zero this amount of delay is added before the response is sent.
   base::TimeDelta execute_delay;
 
+  // The delay before running the GetEstimatedPerformanceClass() response
+  // callback.
+  base::TimeDelta estimated_performance_delay;
+
   // If non-empty, used as the output from Execute().
   std::vector<std::string> model_execute_result;
 
@@ -38,6 +42,10 @@ struct FakeOnDeviceServiceSettings final {
   bool drop_connection_request = false;
 
   void set_execute_delay(base::TimeDelta delay) { execute_delay = delay; }
+
+  void set_estimated_performance_delay(base::TimeDelta delay) {
+    estimated_performance_delay = delay;
+  }
 
   void set_execute_result(const std::vector<std::string>& result) {
     model_execute_result = result;
@@ -172,8 +180,6 @@ class FakeOnDeviceModelServiceController
   }
 
   void CrashService() { service_ = nullptr; }
-
-  bool IsServiceConnected() { return service_remote_.is_bound(); }
 
  private:
   ~FakeOnDeviceModelServiceController() override;

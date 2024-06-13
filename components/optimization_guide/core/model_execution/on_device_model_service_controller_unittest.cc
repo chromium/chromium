@@ -16,6 +16,7 @@
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
+#include "base/test/test_future.h"
 #include "base/time/time.h"
 #include "base/types/cxx23_to_underlying.h"
 #include "base/uuid.h"
@@ -547,13 +548,80 @@ TEST_F(OnDeviceModelServiceControllerTest,
   session_compose.reset();
   session_test.reset();
 
-  // Fast forward by the amount of time that triggers an idle disconnect. The
-  // model adaptations will be reset. But the base model remote will still be
-  // connected.
+  // Fast forward by the amount of time that triggers an idle disconnect. All
+  // adaptations and the base model should be reset.
   task_environment_.FastForwardBy(features::GetOnDeviceModelIdleTimeout() +
                                   base::Seconds(1));
   EXPECT_TRUE(GetModelAdaptationControllers().empty());
+  task_environment_.RunUntilIdle();
+  EXPECT_FALSE(test_controller_->IsConnectedForTesting());
+}
+
+TEST_F(OnDeviceModelServiceControllerTest, ModelAdaptationAndBaseModelSuccess) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitWithFeaturesAndParameters(
+      {{features::internal::kModelAdaptationCompose, {}},
+       {features::internal::kOnDeviceModelTestFeature,
+        {{"enable_adaptation", "false"}}}},
+      {});
+
+  proto::OnDeviceModelExecutionFeatureConfig config_compose, config_test;
+  config_compose.set_can_skip_text_safety(true);
+  config_test.set_can_skip_text_safety(true);
+  PopulateConfigForFeature(ModelBasedCapabilityKey::kCompose, config_compose);
+  PopulateConfigForFeature(ModelBasedCapabilityKey::kTest, config_test);
+
+  Initialize({.config = config_compose, .config2 = config_test});
+
+  FakeOnDeviceModelAvailabilityObserver availability_observer_compose(
+      ModelBasedCapabilityKey::kCompose);
+  test_controller_->AddOnDeviceModelAvailabilityChangeObserver(
+      ModelBasedCapabilityKey::kCompose, &availability_observer_compose);
+
+  test_controller_->MaybeUpdateModelAdaptation(
+      ModelBasedCapabilityKey::kCompose,
+      OnDeviceModelAdaptationMetadata::New(
+          on_device_model::AdaptationAssetPaths(), kModelAdatationVersion,
+          /*adapter=*/nullptr));
+  EXPECT_EQ(OnDeviceModelEligibilityReason::kSuccess,
+            availability_observer_compose.reason_);
+
+  auto session_compose = test_controller_->CreateSession(
+      ModelBasedCapabilityKey::kCompose, base::DoNothing(),
+      logger_.GetWeakPtr(), nullptr,
+      /*config_params=*/std::nullopt);
+  task_environment_.RunUntilIdle();
+  auto session_test = test_controller_->CreateSession(
+      ModelBasedCapabilityKey::kTest, base::DoNothing(), logger_.GetWeakPtr(),
+      nullptr,
+      /*config_params=*/std::nullopt);
+
+  EXPECT_EQ(1u, GetModelAdaptationControllers().size());
+
+  ExecuteModel(*session_compose, "foo");
+  task_environment_.RunUntilIdle();
+  EXPECT_TRUE(response_received_);
+  EXPECT_EQ(*response_received_, "Adaptation model: 1\nInput: execute:foo\n");
+  EXPECT_TRUE(*provided_by_on_device_);
+
+  ExecuteModel(*session_test, "bar");
+  task_environment_.RunUntilIdle();
+  EXPECT_TRUE(response_received_);
+  EXPECT_EQ(*response_received_, "Input: execute:bar\n");
+  EXPECT_TRUE(*provided_by_on_device_);
+
+  session_compose.reset();
+  session_test.reset();
+
+  // Fast forward by the amount of time that triggers an idle disconnect. The
+  // base model will still be connected since it needs to wait for 2 idle
+  // timeouts (one for the adaptation and one for it's own timeout).
+  task_environment_.FastForwardBy(features::GetOnDeviceModelIdleTimeout() +
+                                  base::Seconds(1));
+  EXPECT_TRUE(GetModelAdaptationControllers().empty());
+  task_environment_.RunUntilIdle();
   EXPECT_TRUE(test_controller_->IsConnectedForTesting());
+  EXPECT_EQ(1ull, test_controller_->on_device_model_receiver_count());
 
   // Fast forward by another idle timeout. The base model remote will be reset.
   task_environment_.FastForwardBy(features::GetOnDeviceModelIdleTimeout() +
@@ -2047,7 +2115,7 @@ TEST_F(OnDeviceModelServiceControllerTest, ReturnsErrorOnServiceDisconnect) {
   EXPECT_TRUE(session);
   task_environment_.RunUntilIdle();
 
-  test_controller_->LaunchService();
+  test_controller_->CrashService();
   ExecuteModel(*session, "foo");
   base::HistogramTester histogram_tester;
   task_environment_.RunUntilIdle();
@@ -2232,7 +2300,7 @@ TEST_F(OnDeviceModelServiceControllerTest, AddContextDisconnectExecute) {
   task_environment_.RunUntilIdle();
 
   // Launch the service again, which triggers disconnect.
-  test_controller_->LaunchService();
+  test_controller_->CrashService();
   task_environment_.RunUntilIdle();
 
   // Send some text, ensuring the context is received.
@@ -2271,7 +2339,7 @@ TEST_F(OnDeviceModelServiceControllerTest, AddContextExecuteDisconnect) {
   // Send the text, this won't make it because the service is immediately
   // killed.
   ExecuteModel(*session, "bar");
-  test_controller_->LaunchService();
+  test_controller_->CrashService();
   task_environment_.RunUntilIdle();
   ASSERT_FALSE(response_received_);
   ASSERT_FALSE(log_entry_received_);
@@ -2459,7 +2527,7 @@ TEST_F(OnDeviceModelServiceControllerTest,
       /*config_params=*/std::nullopt);
   EXPECT_TRUE(session);
   task_environment_.RunUntilIdle();
-  test_controller_->LaunchService();
+  test_controller_->CrashService();
   ExecuteModel(*session, "foo");
   base::HistogramTester histogram_tester;
   task_environment_.RunUntilIdle();
@@ -2498,6 +2566,11 @@ TEST_F(OnDeviceModelServiceControllerTest,
 }
 
 TEST_F(OnDeviceModelServiceControllerTest, DisconnectsWhenIdle) {
+  const base::TimeDelta idle_timeout = base::Seconds(10);
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndEnableFeatureWithParameters(
+      features::kOptimizationGuideOnDeviceModel,
+      {{"on_device_model_service_idle_timeout", "10s"}});
   Initialize();
   auto session = test_controller_->CreateSession(
       kFeature, base::DoNothing(), logger_.GetWeakPtr(), nullptr,
@@ -2506,11 +2579,30 @@ TEST_F(OnDeviceModelServiceControllerTest, DisconnectsWhenIdle) {
   ExecuteModel(*session, "foo");
   session.reset();
   EXPECT_TRUE(test_controller_->IsConnectedForTesting());
+
+  task_environment_.FastForwardBy(idle_timeout / 2 + base::Milliseconds(1));
+  task_environment_.RunUntilIdle();
+  // Should still be connected after half the idle time.
+  EXPECT_TRUE(test_controller_->IsConnectedForTesting());
+
   // Fast forward by the amount of time that triggers a disconnect.
-  task_environment_.FastForwardBy(features::GetOnDeviceModelIdleTimeout() +
-                                  base::Seconds(1));
+  task_environment_.FastForwardBy(idle_timeout / 2 + base::Milliseconds(1));
   // As there are no sessions and no traffic for GetOnDeviceModelIdleTimeout()
   // the connection should be dropped.
+  EXPECT_FALSE(test_controller_->IsConnectedForTesting());
+}
+
+TEST_F(OnDeviceModelServiceControllerTest,
+       ShutsDownServiceAfterPerformanceCheck) {
+  Initialize();
+  base::test::TestFuture<
+      std::optional<on_device_model::mojom::PerformanceClass>>
+      result_future;
+  test_controller_->GetEstimatedPerformanceClass(result_future.GetCallback());
+  EXPECT_EQ(on_device_model::mojom::PerformanceClass::kVeryHigh,
+            *result_future.Get());
+  task_environment_.RunUntilIdle();
+
   EXPECT_FALSE(test_controller_->IsConnectedForTesting());
 }
 
@@ -3481,16 +3573,11 @@ INSTANTIATE_TEST_SUITE_P(OnDeviceModelServiceControllerTsIntervalTests,
                          testing::ValuesIn<int>({1, 2, 3, 4, 10}));
 
 TEST_F(OnDeviceModelServiceControllerTest, ModelValidationSucceeds) {
-  proto::OnDeviceModelValidationConfig validation_config;
-  auto* prompt = validation_config.add_validation_prompts();
-  prompt->set_prompt("hello");
-  prompt->set_expected_output("HELLO");
-
   base::HistogramTester histogram_tester;
-  Initialize({.validation_config = validation_config});
+  Initialize({.validation_config = WillPassValidationConfig()});
   task_environment_.RunUntilIdle();
   // Service should be immediately shut down.
-  EXPECT_FALSE(test_controller_->IsServiceConnected());
+  EXPECT_FALSE(test_controller_->IsConnectedForTesting());
 
   histogram_tester.ExpectUniqueSample(
       "OptimizationGuide.ModelExecution.OnDeviceModelValidationResult",
@@ -3527,14 +3614,9 @@ TEST_F(OnDeviceModelServiceControllerTest, ModelValidationBlocksSession) {
         {{"on_device_model_validation_delay", "0"},
          {"on_device_model_block_on_validation_failure", "true"}}}},
       {});
-  proto::OnDeviceModelValidationConfig validation_config;
-  auto* prompt = validation_config.add_validation_prompts();
-  prompt->set_prompt("hello");
-  prompt->set_expected_output("goodbye");
-
   {
     base::HistogramTester histogram_tester;
-    Initialize({.validation_config = validation_config});
+    Initialize({.validation_config = WillFailValidationConfig()});
     task_environment_.RunUntilIdle();
 
     EXPECT_FALSE(test_controller_->CreateSession(
@@ -3574,14 +3656,9 @@ TEST_F(OnDeviceModelServiceControllerTest,
         {{"on_device_model_validation_delay", "30s"},
          {"on_device_model_block_on_validation_failure", "true"}}}},
       {});
-  proto::OnDeviceModelValidationConfig validation_config;
-  auto* prompt = validation_config.add_validation_prompts();
-  prompt->set_prompt("hello");
-  prompt->set_expected_output("hello");
-
   {
     base::HistogramTester histogram_tester;
-    Initialize({.validation_config = validation_config});
+    Initialize({.validation_config = WillPassValidationConfig()});
     task_environment_.RunUntilIdle();
 
     EXPECT_FALSE(test_controller_->CreateSession(
@@ -3617,14 +3694,10 @@ TEST_F(OnDeviceModelServiceControllerTest, ModelValidationNewModelVersion) {
         {{"on_device_model_validation_delay", "0"},
          {"on_device_model_block_on_validation_failure", "true"}}}},
       {});
-  proto::OnDeviceModelValidationConfig validation_config;
-  auto* prompt = validation_config.add_validation_prompts();
-  prompt->set_prompt("hello");
-  prompt->set_expected_output("hello");
 
   {
     base::HistogramTester histogram_tester;
-    Initialize({.validation_config = validation_config});
+    Initialize({.validation_config = WillPassValidationConfig()});
     task_environment_.RunUntilIdle();
 
     histogram_tester.ExpectUniqueSample(
@@ -3635,6 +3708,8 @@ TEST_F(OnDeviceModelServiceControllerTest, ModelValidationNewModelVersion) {
   EXPECT_TRUE(test_controller_->CreateSession(kFeature, base::DoNothing(),
                                               logger_.GetWeakPtr(), nullptr,
                                               /*config_params=*/std::nullopt));
+  // Kill the service since we are simulating a startup.
+  test_controller_->CrashService();
 
   fake_settings_.set_execute_result({"goodbye"});
   {
@@ -3655,15 +3730,48 @@ TEST_F(OnDeviceModelServiceControllerTest, ModelValidationNewModelVersion) {
                                                /*config_params=*/std::nullopt));
 }
 
-TEST_F(OnDeviceModelServiceControllerTest, ModelValidationDoesNotRepeat) {
-  proto::OnDeviceModelValidationConfig validation_config;
-  auto* prompt = validation_config.add_validation_prompts();
-  prompt->set_prompt("hello");
-  prompt->set_expected_output("hello");
+TEST_F(OnDeviceModelServiceControllerTest,
+       ModelValidationNewModelVersionCancelsPreviousValidation) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitWithFeaturesAndParameters(
+      {{features::kOnDeviceModelValidation,
+        {{"on_device_model_validation_delay", "10s"},
+         {"on_device_model_block_on_validation_failure", "true"}}}},
+      {});
 
+  base::HistogramTester histogram_tester;
+
+  Initialize({.validation_config = WillPassValidationConfig()});
+  task_environment_.RunUntilIdle();
+
+  // Write an empty validation config and send a new model update.
+  proto::OnDeviceModelExecutionFeatureConfig default_config;
+  default_config.set_can_skip_text_safety(true);
+  PopulateConfigForFeature(kFeature, default_config);
+  WriteFeatureConfig(default_config);
+
+  on_device_component_state_manager_.SetReady(temp_dir(), "0.0.2");
+  task_environment_.RunUntilIdle();
+
+  task_environment_.FastForwardBy(base::Seconds(10) + base::Milliseconds(1));
+
+  // Full validation should never run.
+  histogram_tester.ExpectTotalCount(
+      "OptimizationGuide.ModelExecution.OnDeviceModelValidationResult", 0);
+  histogram_tester.ExpectUniqueSample(
+      "OptimizationGuide.ModelExecution."
+      "OnDeviceModelValidationResultOnValidationStarted",
+      OnDeviceModelValidationResult::kUnknown, 1);
+
+  EXPECT_TRUE(test_controller_->CreateSession(kFeature, base::DoNothing(),
+                                              logger_.GetWeakPtr(), nullptr,
+                                              /*config_params=*/std::nullopt));
+}
+
+TEST_F(OnDeviceModelServiceControllerTest, ModelValidationDoesNotRepeat) {
   {
     base::HistogramTester histogram_tester;
-    Initialize({.validation_config = validation_config});
+    Initialize({.validation_config = WillPassValidationConfig()});
     task_environment_.RunUntilIdle();
 
     histogram_tester.ExpectUniqueSample(
@@ -3820,8 +3928,13 @@ TEST_F(OnDeviceModelServiceControllerTest, ModelValidationInterrupted) {
       "OptimizationGuide.ModelExecution.OnDeviceModelValidationResult",
       OnDeviceModelValidationResult::kInterrupted, 1);
 
-  // Session was created to the service should still be connected.
-  EXPECT_TRUE(test_controller_->IsServiceConnected());
+  // Session was created so the service should still be connected.
+  EXPECT_TRUE(test_controller_->IsConnectedForTesting());
+
+  // After idle timeout, service should be killed.
+  task_environment_.FastForwardBy(features::GetOnDeviceModelIdleTimeout() +
+                                  base::Seconds(1));
+  EXPECT_FALSE(test_controller_->IsConnectedForTesting());
 }
 
 TEST_F(OnDeviceModelServiceControllerTest, ModelValidationFails) {
@@ -3848,6 +3961,66 @@ TEST_F(OnDeviceModelServiceControllerTest, ModelValidationFailsOnCrash) {
   histogram_tester.ExpectUniqueSample(
       "OptimizationGuide.ModelExecution.OnDeviceModelValidationResult",
       OnDeviceModelValidationResult::kServiceCrash, 1);
+}
+
+TEST_F(OnDeviceModelServiceControllerTest,
+       PerformanceCheckDoesNotInterruptModelValidation) {
+  fake_settings_.set_execute_delay(base::Seconds(10));
+
+  base::HistogramTester histogram_tester;
+  Initialize({.validation_config = WillPassValidationConfig()});
+  task_environment_.RunUntilIdle();
+
+  base::test::TestFuture<
+      std::optional<on_device_model::mojom::PerformanceClass>>
+      result_future;
+  test_controller_->GetEstimatedPerformanceClass(result_future.GetCallback());
+  EXPECT_EQ(on_device_model::mojom::PerformanceClass::kVeryHigh,
+            *result_future.Get());
+  task_environment_.RunUntilIdle();
+
+  // Performance check sh;ould not shut down service.
+  EXPECT_TRUE(test_controller_->IsConnectedForTesting());
+  histogram_tester.ExpectTotalCount(
+      "OptimizationGuide.ModelExecution.OnDeviceModelValidationResult", 0);
+
+  task_environment_.FastForwardBy(base::Seconds(10) + base::Milliseconds(1));
+  task_environment_.RunUntilIdle();
+  EXPECT_FALSE(test_controller_->IsConnectedForTesting());
+
+  histogram_tester.ExpectUniqueSample(
+      "OptimizationGuide.ModelExecution.OnDeviceModelValidationResult",
+      OnDeviceModelValidationResult::kSuccess, 1);
+}
+
+TEST_F(OnDeviceModelServiceControllerTest,
+       ModelValidationDoesNotInterruptPerformanceCheck) {
+  fake_settings_.set_estimated_performance_delay(base::Seconds(10));
+  fake_settings_.set_execute_delay(base::Seconds(1));
+
+  base::HistogramTester histogram_tester;
+  Initialize({.validation_config = WillPassValidationConfig()});
+  task_environment_.RunUntilIdle();
+
+  base::test::TestFuture<
+      std::optional<on_device_model::mojom::PerformanceClass>>
+      result_future;
+  test_controller_->GetEstimatedPerformanceClass(result_future.GetCallback());
+
+  task_environment_.FastForwardBy(base::Seconds(1) + base::Milliseconds(1));
+  task_environment_.RunUntilIdle();
+  // Still connected since the performance estimator is running.
+  EXPECT_TRUE(test_controller_->IsConnectedForTesting());
+
+  histogram_tester.ExpectUniqueSample(
+      "OptimizationGuide.ModelExecution.OnDeviceModelValidationResult",
+      OnDeviceModelValidationResult::kSuccess, 1);
+
+  EXPECT_FALSE(result_future.IsReady());
+  EXPECT_EQ(on_device_model::mojom::PerformanceClass::kVeryHigh,
+            *result_future.Get());
+  task_environment_.RunUntilIdle();
+  EXPECT_FALSE(test_controller_->IsConnectedForTesting());
 }
 
 }  // namespace optimization_guide

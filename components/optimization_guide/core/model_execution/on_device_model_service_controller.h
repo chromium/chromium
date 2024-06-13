@@ -11,7 +11,6 @@
 #include <optional>
 #include <string_view>
 
-#include "base/cancelable_callback.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/raw_ref.h"
 #include "base/memory/ref_counted.h"
@@ -98,9 +97,6 @@ class OnDeviceModelServiceController
           performance_class)>;
   void GetEstimatedPerformanceClass(
       GetEstimatedPerformanceClassCallback callback);
-
-  // Shuts down the service if there is no active model.
-  void ShutdownServiceIfNoModelLoaded();
 
   bool IsConnectedForTesting() {
     return base_model_remote_.is_bound() || service_remote_.is_bound();
@@ -204,11 +200,10 @@ class OnDeviceModelServiceController
       on_device_model::ModelAssets assets);
 
   // Called when disconnected from the model.
-  void OnDisconnected();
+  void OnBaseModelDisconnected();
 
-  // Called when the remote (either `service_remote_` or `base_model_remote_` is
-  // idle.
-  void OnRemoteIdle();
+  // Called when `base_model_remote_` is idle.
+  void OnBaseModelRemoteIdle();
 
   scoped_refptr<const OnDeviceModelFeatureAdapter> GetFeatureAdapter(
       ModelBasedCapabilityKey feature);
@@ -255,17 +250,17 @@ class OnDeviceModelServiceController
   // Whether a session has been started for the most recently updated model.
   bool has_started_session_ = false;
 
-  // How many calls to the performance estimator are active.
-  int active_performance_estimator_count_ = 0;
-
   std::unique_ptr<OnDeviceModelValidator> model_validator_;
-  base::CancelableOnceCallback<void()> validation_callback_;
 
   std::map<ModelBasedCapabilityKey,
            base::ObserverList<OnDeviceModelAvailabilityObserver>>
       model_availability_change_observers_;
 
   SEQUENCE_CHECKER(sequence_checker_);
+
+  // Used to get weak pointers that are reset if the base model is updated.
+  base::WeakPtrFactory<OnDeviceModelServiceController>
+      base_model_scoped_weak_ptr_factory_{this};
 
   // Used to get `weak_ptr_` to self.
   base::WeakPtrFactory<OnDeviceModelServiceController> weak_ptr_factory_{this};
