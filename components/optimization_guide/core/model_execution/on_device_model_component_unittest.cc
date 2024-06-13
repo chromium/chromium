@@ -16,6 +16,7 @@
 #include "components/optimization_guide/core/model_execution/test_on_device_model_component.h"
 #include "components/optimization_guide/core/optimization_guide_enums.h"
 #include "components/optimization_guide/core/optimization_guide_features.h"
+#include "components/optimization_guide/core/optimization_guide_switches.h"
 #include "components/prefs/testing_pref_service.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -515,6 +516,15 @@ TEST_F(OnDeviceModelComponentTest, SetPrefsWhenManifestContainsBaseModelSpec) {
                       kTestManifest);  // manifest is populated with test data.
   EXPECT_EQ(manager()->GetState()->GetBaseModelSpec().model_name, "Test");
   EXPECT_EQ(manager()->GetState()->GetBaseModelSpec().model_version, "0.0.1");
+}
+
+TEST_F(OnDeviceModelComponentTest, SetStateWhenModelOverridden) {
+  base::CommandLine::ForCurrentProcess()->AppendSwitchASCII(
+      switches::kOnDeviceModelExecutionOverride, "/some/path");
+  manager()->OnStartup();
+  EXPECT_EQ(manager()->GetState()->GetBaseModelSpec().model_name, "override");
+  EXPECT_EQ(manager()->GetState()->GetBaseModelSpec().model_version,
+            "override");
 }
 
 }  // namespace
