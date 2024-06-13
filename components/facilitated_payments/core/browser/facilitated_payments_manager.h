@@ -71,10 +71,10 @@ class FacilitatedPaymentsManager {
   static constexpr base::TimeDelta kOptimizationGuideDeciderWaitTime =
       base::Seconds(0.5);
   static constexpr int kMaxAttemptsForAllowlistCheck = 6;
-  static constexpr base::TimeDelta kPageLoadWaitTime = base::Seconds(2);
+  static constexpr base::TimeDelta kPageLoadWaitTime = base::Seconds(1);
   static constexpr base::TimeDelta kRetriggerPixCodeDetectionWaitTime =
-      base::Seconds(1);
-  static constexpr int kMaxAttemptsForPixCodeDetection = 6;
+      base::Seconds(3);
+  static constexpr int kMaxAttemptsForPixCodeDetection = 15;
 
   friend class FacilitatedPaymentsManagerTest;
   FRIEND_TEST_ALL_PREFIXES(FacilitatedPaymentsManagerTest,

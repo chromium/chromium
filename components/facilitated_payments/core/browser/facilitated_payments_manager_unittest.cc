@@ -665,8 +665,8 @@ TEST_P(FacilitatedPaymentsManagerTestWhenPixCodeExists,
   GURL url("https://example.com/");
   SetAllowlistDecision(optimization_guide::OptimizationGuideDecision::kTrue);
 
-  // Simulate that the page contents take a short time (1.6s) to finish loading.
-  base::TimeDelta page_load_delay = base::Seconds(1.6);
+  // Simulate that the page contents take a short time (0.6s) to finish loading.
+  base::TimeDelta page_load_delay = base::Seconds(0.6);
   SimulateDelayedPageLoadWithPixCodeDetectionResult(page_load_delay,
                                                     GetParam());
 
@@ -716,9 +716,9 @@ TEST_P(FacilitatedPaymentsManagerTestWhenPixCodeExists,
   GURL url("https://example.com/");
   SetAllowlistDecision(optimization_guide::OptimizationGuideDecision::kTrue);
 
-  // Simulate that the page contents take a slightly longer time (3.6s) to
+  // Simulate that the page contents take a slightly longer time (5.6s) to
   // finish loading.
-  base::TimeDelta page_load_delay = base::Seconds(3.6);
+  base::TimeDelta page_load_delay = base::Seconds(5.6);
   SimulateDelayedPageLoadWithPixCodeDetectionResult(page_load_delay,
                                                     GetParam());
 
@@ -768,8 +768,8 @@ TEST_P(FacilitatedPaymentsManagerTestWhenPixCodeExists,
   GURL url("https://example.com/");
   SetAllowlistDecision(optimization_guide::OptimizationGuideDecision::kTrue);
 
-  // Simulate that the page contents take a long time (10.6s) to finish loading.
-  base::TimeDelta page_load_delay = base::Seconds(10.6);
+  // Simulate that the page contents take a long time (50.6s) to finish loading.
+  base::TimeDelta page_load_delay = base::Seconds(50.6);
   SimulateDelayedPageLoadWithPixCodeDetectionResult(page_load_delay,
                                                     GetParam());
 
