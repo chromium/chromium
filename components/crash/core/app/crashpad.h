@@ -104,7 +104,16 @@ bool InitializeCrashpadWithDllEmbeddedHandler(
 
 // Returns the CrashpadClient for this process. This will lazily create it if
 // it does not already exist. This is called as part of InitializeCrashpad.
+// This code is not MT-safe
 crashpad::CrashpadClient& GetCrashpadClient();
+
+// In case GetCrashpadClient() was called and so constructed a new
+// CrashpadClient instance then calling this method destroys that object,
+// otherwise it does nothing.
+// This method is useful when the CrashpadClient need to be explicitly removed,
+// like when the crashpad is being used from a dynamically loaded DLL.
+// This code is not MT-safe
+void DestroyCrashpadClient();
 
 // ChromeOS has its own, OS-level consent system; Chrome does not maintain a
 // separate Upload Consent on ChromeOS.

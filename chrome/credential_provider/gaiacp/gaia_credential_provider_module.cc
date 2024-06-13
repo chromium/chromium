@@ -26,6 +26,7 @@
 #include "chrome/credential_provider/gaiacp/mdm_utils.h"
 #include "chrome/credential_provider/gaiacp/reg_utils.h"
 #include "components/crash/core/app/crash_switches.h"
+#include "components/crash/core/app/crashpad.h"
 #include "content/public/common/content_switches.h"
 
 namespace credential_provider {
@@ -179,6 +180,8 @@ BOOL CGaiaCredentialProviderModule::DllMain(HINSTANCE /*hinstance*/,
 
       _set_invalid_parameter_handler(nullptr);
       exit_manager_.reset();
+
+      crash_reporter::DestroyCrashpadClient();
       break;
 
     default:

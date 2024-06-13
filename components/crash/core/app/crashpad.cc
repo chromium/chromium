@@ -235,10 +235,22 @@ bool InitializeCrashpadWithDllEmbeddedHandler(
 }
 #endif  // BUILDFLAG(IS_WIN)
 
+namespace {
+crashpad::CrashpadClient* crashpad_client = nullptr;
+} // namespace
+
 crashpad::CrashpadClient& GetCrashpadClient() {
-  static crashpad::CrashpadClient* const client =
-      new crashpad::CrashpadClient();
-  return *client;
+  if (!crashpad_client) {
+    crashpad_client = new crashpad::CrashpadClient();
+  }
+  return *crashpad_client;
+}
+
+void DestroyCrashpadClient() {
+  if (crashpad_client) {
+    delete crashpad_client;
+    crashpad_client = nullptr;
+  }
 }
 
 #if !BUILDFLAG(IS_CHROMEOS_ASH)
