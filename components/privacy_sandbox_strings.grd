@@ -410,6 +410,42 @@
       <message name="IDS_TRACKING_PROTECTION_FULL_ONBOARDING_NOTICE_LEARN_MORE_BUTTON_A11Y_LABEL" desc="Onboarding notice secondary menu button content accessibility text." formatter_data="android_java" translateable="false" is_accessibility_with_no_ui="true">
         Learn more about Tracking Protection
       </message>
+
+      <!--Privacy Guide - Ad Topics-->
+      <!-- TODO(crbug.com/331970504): Make privacy guide ad topics strings translateable. -->
+      <message name="IDS_SETTINGS_PRIVACY_GUIDE_AD_TOPICS_HEADING" desc="Header text on the Ad Topics card of the Privacy Guide." translateable="false">
+        Review your ad topics setting
+      </message>
+      <message name="IDS_SETTINGS_PRIVACY_GUIDE_AD_TOPICS_TOGGLE_LABEL" desc="Text for the Ad topics toggle button on the Ad Topics card of the Privacy Guide." translateable="false">
+        Ad topics
+      </message>
+      <message name="IDS_SETTINGS_PRIVACY_GUIDE_AD_TOPICS_THINGS_TO_CONSIDER_BULLET1" desc="A part of the things to consider section of the Ad Topics card in the Privacy Guide." translateable="false">
+        Ad topics older than 4 weeks are automatically deleted. Topics include things like Sports, Apparel, and more
+      </message>
+      <if expr="_google_chrome">
+        <then>
+          <message name="IDS_SETTINGS_PRIVACY_GUIDE_AD_TOPICS_WHEN_ON_BULLET1" desc="A part of the feature description of Ad Topics card in the Privacy Guide." translateable="false">
+            Chrome notes topics of interest based on your recent browsing history
+          </message>
+          <message name="IDS_SETTINGS_PRIVACY_GUIDE_AD_TOPICS_WHEN_ON_BULLET2" desc="A part of the feature description of Ad Topics card in the Privacy Guide." translateable="false">
+            Sites you visit can ask Chrome for up to 3 topics to show you relevant ads while protecting your browsing history and identity
+          </message>
+          <message name="IDS_SETTINGS_PRIVACY_GUIDE_AD_TOPICS_THINGS_TO_CONSIDER_BULLET2" desc="A part of the things to consider section of the Ad Topics card in the Privacy Guide." translateable="false">
+            You can see your ad topics in Chrome settings and block the ones you don't want shared with sites
+          </message>
+        </then>
+        <else>
+          <message name="IDS_SETTINGS_PRIVACY_GUIDE_AD_TOPICS_WHEN_ON_BULLET1" desc="A part of the feature description of Ad Topics card in the Privacy Guide." translateable="false">
+            Chromium notes topics of interest based on your recent browsing history
+          </message>
+          <message name="IDS_SETTINGS_PRIVACY_GUIDE_AD_TOPICS_WHEN_ON_BULLET2" desc="A part of the feature description of Ad Topics card in the Privacy Guide." translateable="false">
+            Sites you visit can ask Chromium for up to 3 topics to show you relevant ads while protecting your browsing history and identity
+          </message>
+          <message name="IDS_SETTINGS_PRIVACY_GUIDE_AD_TOPICS_THINGS_TO_CONSIDER_BULLET2" desc="A part of the things to consider section of the Ad Topics card in the Privacy Guide." translateable="false">
+            You can see your ad topics in Chromium settings and block the ones you don't want shared with sites
+          </message>
+        </else>
+      </if>
     </messages>
   </release>
 </grit>

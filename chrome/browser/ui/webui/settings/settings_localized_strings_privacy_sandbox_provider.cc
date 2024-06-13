@@ -211,6 +211,18 @@ void AddPrivacySandboxStrings(content::WebUIDataSource* html_source,
        IDS_SETTINGS_UNBLOCK_TOPIC_TOAST_BUTTON_TEXT},
       {"fledgePageExplanation", IDS_SETTINGS_FLEDGE_PAGE_EXPLANATION},
       {"unblockTopicButtonTextV2", IDS_SETTINGS_UNBLOCK_TOPIC_BUTTON_TEXT_V2},
+      {"privacyGuideAdTopicsHeading",
+       IDS_SETTINGS_PRIVACY_GUIDE_AD_TOPICS_HEADING},
+      {"privacyGuideAdTopicsToggleLabel",
+       IDS_SETTINGS_PRIVACY_GUIDE_AD_TOPICS_TOGGLE_LABEL},
+      {"privacyGuideAdTopicsWhenOnBullet1",
+       IDS_SETTINGS_PRIVACY_GUIDE_AD_TOPICS_WHEN_ON_BULLET1},
+      {"privacyGuideAdTopicsWhenOnBullet2",
+       IDS_SETTINGS_PRIVACY_GUIDE_AD_TOPICS_WHEN_ON_BULLET2},
+      {"privacyGuideAdTopicsThingsToConsiderBullet1",
+       IDS_SETTINGS_PRIVACY_GUIDE_AD_TOPICS_THINGS_TO_CONSIDER_BULLET1},
+      {"privacyGuideAdTopicsThingsToConsiderBullet2",
+       IDS_SETTINGS_PRIVACY_GUIDE_AD_TOPICS_THINGS_TO_CONSIDER_BULLET2},
 
   };
   html_source->AddLocalizedStrings(kLocalizedStrings);
