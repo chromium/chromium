@@ -293,7 +293,7 @@
   },
   {
     "name": "arc-custom-tabs-experiment",
-    "owners": [ "hashimoto@chromium.org", "dominickn@chromium.org" ],
+    "owners": [ "hashimoto@chromium.org" ],
     "expiry_milestone": 95
   },
   {

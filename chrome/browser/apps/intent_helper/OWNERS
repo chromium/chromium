@@ -3,5 +3,3 @@ tsergeant@chromium.org
 djacobo@chromium.org
 # For ARC related code, backup reviewers
 file://chrome/browser/ash/arc/OWNERS
-# For backup
-dominickn@chromium.org

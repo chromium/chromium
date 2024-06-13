@@ -2,9 +2,6 @@ file://chrome/browser/chromeos/extensions/OWNERS
 
 per-file default_app*=tsergeant@chromium.org
 
-# For backup
-per-file default_app*=dominickn@chromium.org
-
 # DeviceLocalAccount reviewers. emaxx@ is primary, others are backup.
 per-file device_local_account*=emaxx@chromium.org
 per-file device_local_account*=poromov@chromium.org
