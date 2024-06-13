@@ -84,7 +84,10 @@ class ClusterManagerTest : public testing::Test {
   void SetUp() override {
     product_specification_service_ =
         std::make_unique<MockProductSpecificationsService>();
-    EXPECT_CALL(*product_specification_service_, GetAllProductSpecifications())
+    EXPECT_CALL(
+        *product_specification_service_,
+        GetAllProductSpecifications(
+            testing::An<ProductSpecificationsService::GetAllCallback>()))
         .Times(1);
     auto proxy = std::make_unique<MockClusterServerProxy>(nullptr, nullptr);
     server_proxy_ = proxy.get();
@@ -94,6 +97,7 @@ class ClusterManagerTest : public testing::Test {
                             base::Unretained(this)),
         base::BindRepeating(&ClusterManagerTest::url_infos,
                             base::Unretained(this)));
+    base::RunLoop().RunUntilIdle();
     InitializeProductInfos();
   }
 
@@ -268,10 +272,17 @@ TEST_F(ClusterManagerTest,
        ClusterManagerInitializationWithExistingProductSpecificationsSets) {
   ProductSpecificationsSet set1 = CreateProductSpecificationsSet(kProduct1Url);
   ProductSpecificationsSet set2 = CreateProductSpecificationsSet(kProduct2Url);
-  ON_CALL(*product_specification_service_, GetAllProductSpecifications())
+  std::vector<ProductSpecificationsSet> sets({set1, set2});
+  ON_CALL(*product_specification_service_,
+          GetAllProductSpecifications(
+              testing::An<ProductSpecificationsService::GetAllCallback>()))
       .WillByDefault(
-          testing::Return(std::vector<ProductSpecificationsSet>{set1, set2}));
-  EXPECT_CALL(*product_specification_service_, GetAllProductSpecifications())
+          [sets](ProductSpecificationsService::GetAllCallback callback) {
+            std::move(callback).Run(sets);
+          });
+  EXPECT_CALL(*product_specification_service_,
+              GetAllProductSpecifications(
+                  testing::An<ProductSpecificationsService::GetAllCallback>()))
       .Times(1);
   server_proxy_ = nullptr;
   cluster_manager_ = std::make_unique<ClusterManager>(
@@ -281,10 +292,10 @@ TEST_F(ClusterManagerTest,
                           base::Unretained(this)),
       base::BindRepeating(&ClusterManagerTest::url_infos,
                           base::Unretained(this)));
+  base::RunLoop().RunUntilIdle();
   ASSERT_EQ(GetProductGroupMap()->size(), 2u);
   ASSERT_EQ(GetProductGroupMap()->count(set1.uuid()), 1u);
   ASSERT_EQ(GetProductGroupMap()->count(set2.uuid()), 1u);
-  base::RunLoop().RunUntilIdle();
 
   ProductGroup* product1 = (*GetProductGroupMap())[set1.uuid()].get();
   ASSERT_EQ(product1->categories.size(), 1u);
@@ -318,10 +329,17 @@ TEST_F(ClusterManagerTest, ClusterManagerInitialization_SkipInvalidSet) {
       std::vector<GURL>{GURL(GetProductSpecsTabUrlForID(set2.uuid()))});
 
   ProductSpecificationsSet set3 = CreateProductSpecificationsSet(kTestUrl3);
-  ON_CALL(*product_specification_service_, GetAllProductSpecifications())
-      .WillByDefault(testing::Return(
-          std::vector<ProductSpecificationsSet>{set1, set2, set3}));
-  EXPECT_CALL(*product_specification_service_, GetAllProductSpecifications())
+  std::vector<ProductSpecificationsSet> sets({set1, set2, set3});
+  ON_CALL(*product_specification_service_,
+          GetAllProductSpecifications(
+              testing::An<ProductSpecificationsService::GetAllCallback>()))
+      .WillByDefault(
+          [sets](ProductSpecificationsService::GetAllCallback callback) {
+            std::move(callback).Run(sets);
+          });
+  EXPECT_CALL(*product_specification_service_,
+              GetAllProductSpecifications(
+                  testing::An<ProductSpecificationsService::GetAllCallback>()))
       .Times(1);
   server_proxy_ = nullptr;
   cluster_manager_ = std::make_unique<ClusterManager>(
@@ -341,10 +359,17 @@ TEST_F(ClusterManagerTest, ClusterManagerInitialization_SkipInvalidSet) {
 
 TEST_F(ClusterManagerTest, ClusterManagerInitialization_KickOffRemoving) {
   ProductSpecificationsSet set1 = CreateProductSpecificationsSet(kProduct1Url);
-  ON_CALL(*product_specification_service_, GetAllProductSpecifications())
+  std::vector<ProductSpecificationsSet> sets({set1});
+  ON_CALL(*product_specification_service_,
+          GetAllProductSpecifications(
+              testing::An<ProductSpecificationsService::GetAllCallback>()))
       .WillByDefault(
-          testing::Return(std::vector<ProductSpecificationsSet>{set1}));
-  EXPECT_CALL(*product_specification_service_, GetAllProductSpecifications())
+          [sets](ProductSpecificationsService::GetAllCallback callback) {
+            std::move(callback).Run(sets);
+          });
+  EXPECT_CALL(*product_specification_service_,
+              GetAllProductSpecifications(
+                  testing::An<ProductSpecificationsService::GetAllCallback>()))
       .Times(1);
   server_proxy_ = nullptr;
   cluster_manager_ = std::make_unique<ClusterManager>(
@@ -354,6 +379,7 @@ TEST_F(ClusterManagerTest, ClusterManagerInitialization_KickOffRemoving) {
                           base::Unretained(this)),
       base::BindRepeating(&ClusterManagerTest::url_infos,
                           base::Unretained(this)));
+  base::RunLoop().RunUntilIdle();
   ASSERT_EQ(GetProductGroupMap()->size(), 1u);
   ASSERT_EQ(GetProductGroupMap()->count(set1.uuid()), 1u);
 

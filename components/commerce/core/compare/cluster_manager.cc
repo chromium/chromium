@@ -165,12 +165,9 @@ ClusterManager::ClusterManager(
     : cluster_server_proxy_(std::move(cluster_server_proxy)),
       get_product_info_cb_(get_product_info_cb),
       get_open_url_infos_cb_(get_open_url_infos_cb) {
-  const std::vector<ProductSpecificationsSet> product_specifications_sets =
-      product_specification_service->GetAllProductSpecifications();
-  for (const auto& product : product_specifications_sets) {
-    OnProductSpecificationsSetAdded(product);
-  }
-
+  product_specification_service->GetAllProductSpecifications(
+      base::BindOnce(&ClusterManager::OnGetAllProductSpecificationsSets,
+                     weak_ptr_factory_.GetWeakPtr()));
   obs_.Observe(product_specification_service);
   base::SequencedTaskRunner::GetCurrentDefault()->PostDelayedTask(
       FROM_HERE,
@@ -181,6 +178,13 @@ ClusterManager::ClusterManager(
 
 ClusterManager::~ClusterManager() {
   observers_.Clear();
+}
+
+void ClusterManager::OnGetAllProductSpecificationsSets(
+    const std::vector<ProductSpecificationsSet> sets) {
+  for (const auto& set : sets) {
+    OnProductSpecificationsSetAdded(set);
+  }
 }
 
 void ClusterManager::OnProductSpecificationsSetAdded(

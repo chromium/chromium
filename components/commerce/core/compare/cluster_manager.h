@@ -107,6 +107,9 @@ class ClusterManager : public ProductSpecificationsSet::Observer {
  private:
   friend class ClusterManagerTest;
 
+  void OnGetAllProductSpecificationsSets(
+      const std::vector<ProductSpecificationsSet> sets);
+
   // Called when information about a product is retrieved.
   void OnProductInfoRetrieved(
       const GURL& url,

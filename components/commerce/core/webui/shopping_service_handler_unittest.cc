@@ -848,7 +848,7 @@ TEST_F(ShoppingServiceHandlerTest, TestGetAllProductSpecificationsSets) {
   std::vector<ProductSpecificationsSet> sets;
   sets.push_back(ProductSpecificationsSet(
       uuid, 0, 0, {GURL("https://example.com/")}, "set1"));
-  ON_CALL(*product_spec_service_, GetAllProductSpecifications)
+  ON_CALL(*product_spec_service_, GetAllProductSpecifications())
       .WillByDefault(testing::Return(std::move(sets)));
 
   base::RunLoop run_loop;

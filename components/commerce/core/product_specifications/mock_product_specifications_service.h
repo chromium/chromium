@@ -19,6 +19,10 @@ class MockProductSpecificationsService : public ProductSpecificationsService {
               GetAllProductSpecifications,
               (),
               (override));
+  MOCK_METHOD(void,
+              GetAllProductSpecifications,
+              (GetAllCallback callback),
+              (override));
   MOCK_METHOD(const std::optional<ProductSpecificationsSet>,
               GetSetByUuid,
               (const base::Uuid& uuid),
