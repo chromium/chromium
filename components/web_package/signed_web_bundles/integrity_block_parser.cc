@@ -8,7 +8,7 @@
 #include "base/types/expected_macros.h"
 #include "components/web_package/input_reader.h"
 #include "components/web_package/mojom/web_bundle_parser.mojom.h"
-#include "components/web_package/web_bundle_parser.h"
+#include "components/web_package/signed_web_bundles/signature_entry_parser.h"
 
 namespace web_package {
 
@@ -37,7 +37,7 @@ void IntegrityBlockParser::StartParsing(
 }
 
 void IntegrityBlockParser::ParseMagicBytesAndVersion(
-    const std::optional<std::vector<uint8_t>>& data) {
+    const std::optional<BinaryData>& data) {
   if (!data) {
     RunErrorCallback("Error reading integrity block magic bytes.",
                      mojom::BundleParseErrorType::kParserInternalError);
@@ -79,7 +79,7 @@ void IntegrityBlockParser::ParseMagicBytesAndVersion(
 }
 
 void IntegrityBlockParser::ParseSignatureStack(
-    const std::optional<std::vector<uint8_t>>& data) {
+    const std::optional<BinaryData>& data) {
   if (!data) {
     RunErrorCallback("Error reading signature stack.");
     return;
@@ -117,12 +117,12 @@ void IntegrityBlockParser::ReadSignatureStackEntry() {
 void IntegrityBlockParser::NextSignatureStackEntry(
     base::expected<
         std::pair<mojom::BundleIntegrityBlockSignatureStackEntryPtr, uint64_t>,
-        SignatureStackEntryParser::ParserError> result) {
+        std::string> result) {
   CHECK_GT(signature_stack_entries_left_, 0u);
 
   if (!result.has_value()) {
-    RunErrorCallback(std::move(result.error().message),
-                     result.error().error_type);
+    RunErrorCallback(std::move(result.error()),
+                     mojom::BundleParseErrorType::kFormatError);
     return;
   }
 

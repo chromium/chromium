@@ -9,7 +9,6 @@
 #include "base/strings/stringprintf.h"
 #include "base/types/expected_macros.h"
 #include "components/web_package/input_reader.h"
-#include "components/web_package/signed_web_bundles/signature_entry_parser.h"
 
 namespace web_package {
 
@@ -158,18 +157,6 @@ void AttributeMapParser::ReadAttributeValue(
   offset_in_stream_ += data->size();
 
   ReadNextAttributeEntry();
-}
-
-void AttributeMapParser::RunSuccessCallback() {
-  std::move(callback_).Run(
-      std::make_pair(std::move(attributes_map_), offset_in_stream_));
-}
-
-void AttributeMapParser::RunErrorCallback(
-    const std::string& message,
-    mojom::BundleParseErrorType error_type) {
-  auto error = SignatureStackEntryParser::ParserError{message, error_type};
-  std::move(callback_).Run(base::unexpected{error});
 }
 
 }  // namespace web_package

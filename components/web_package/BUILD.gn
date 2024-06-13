@@ -27,6 +27,7 @@ static_library("web_package") {
     "signed_web_bundles/signed_web_bundle_signature_verifier.h",
     "signed_web_bundles/signed_web_bundle_utils.cc",
     "signed_web_bundles/signed_web_bundle_utils.h",
+    "signed_web_bundles/types.h",
     "web_bundle_builder.cc",
     "web_bundle_builder.h",
     "web_bundle_parser.cc",

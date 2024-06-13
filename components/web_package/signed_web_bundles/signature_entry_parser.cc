@@ -4,7 +4,6 @@
 
 #include "components/web_package/signed_web_bundles/signature_entry_parser.h"
 
-#include "base/containers/contains.h"
 #include "base/containers/extend.h"
 #include "base/containers/map_util.h"
 #include "base/strings/stringprintf.h"
@@ -17,15 +16,17 @@
 #include "components/web_package/signed_web_bundles/ed25519_public_key.h"
 #include "components/web_package/signed_web_bundles/ed25519_signature.h"
 #include "components/web_package/signed_web_bundles/integrity_block_parser.h"
+#include "components/web_package/signed_web_bundles/types.h"
 #include "third_party/boringssl/src/include/openssl/curve25519.h"
 
 namespace web_package {
 
 namespace {
+
 using SignatureType = mojom::SignatureInfo::Tag;
 
 std::pair<SignatureType, BinaryData> GetSignatureType(
-    const AttributesMap& attributes_map) {
+    const SignatureAttributesMap& attributes_map) {
   const BinaryData* ed25519_key =
       base::FindOrNull(attributes_map, kEd25519PublicKeyAttributeName);
   const BinaryData* ecdsa_key =
@@ -103,10 +104,10 @@ void SignatureStackEntryParser::ReadSignatureStructure(
 }
 
 void SignatureStackEntryParser::GetAttributesMap(
-    base::expected<std::pair<AttributesMap, uint64_t>, ParserError> result) {
+    base::expected<std::pair<SignatureAttributesMap, uint64_t>, std::string>
+        result) {
   if (!result.has_value()) {
-    RunErrorCallback(std::move(result.error().message),
-                     result.error().error_type);
+    RunErrorCallback(std::move(result.error()));
     return;
   }
 
@@ -232,11 +233,8 @@ void SignatureStackEntryParser::EvaluateSignatureEntry(
       std::make_pair(std::move(signature_stack_entry_), offset_in_stream_));
 }
 
-void SignatureStackEntryParser::RunErrorCallback(
-    const std::string& message,
-    mojom::BundleParseErrorType error_type) {
-  auto error = ParserError{message, error_type};
-  std::move(callback_).Run(base::unexpected{error});
+void SignatureStackEntryParser::RunErrorCallback(const std::string& message) {
+  std::move(callback_).Run(base::unexpected{message});
 }
 
 }  // namespace web_package

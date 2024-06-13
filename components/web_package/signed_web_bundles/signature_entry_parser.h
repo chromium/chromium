@@ -5,31 +5,27 @@
 #ifndef COMPONENTS_WEB_PACKAGE_SIGNED_WEB_BUNDLES_SIGNATURE_ENTRY_PARSER_H_
 #define COMPONENTS_WEB_PACKAGE_SIGNED_WEB_BUNDLES_SIGNATURE_ENTRY_PARSER_H_
 
-#include "components/web_package/web_bundle_parser.h"
+#include "base/functional/callback_forward.h"
+#include "base/memory/weak_ptr.h"
+#include "base/types/expected.h"
+#include "components/web_package/mojom/web_bundle_parser.mojom.h"
+#include "components/web_package/signed_web_bundles/types.h"
 
 namespace web_package {
 
 class AttributeMapParser;
 
-using BinaryData = std::vector<uint8_t>;
-using AttributesMap = base::flat_map<std::string, BinaryData>;
-
 // This class is responsible for parsing a single signature entry from the
 // signature stack of the integrity block of a signed web bundle.
 class SignatureStackEntryParser {
  public:
-  struct ParserError {
-    const std::string message;
-    mojom::BundleParseErrorType error_type;
-  };
-
   // In case of success the callback returns the signature stack entry and the
   // offset in the stream corresponding to the end of the entry.
   using SignatureEntryParsedCallback = base::OnceCallback<void(
       base::expected<
           std::pair<mojom::BundleIntegrityBlockSignatureStackEntryPtr,
                     uint64_t>,
-          ParserError>)>;
+          std::string>)>;
 
   explicit SignatureStackEntryParser(mojom::BundleDataSource& data_source,
                                      SignatureEntryParsedCallback callback);
@@ -41,18 +37,17 @@ class SignatureStackEntryParser {
  private:
   void ReadSignatureStructure(const std::optional<BinaryData>& data);
   void GetAttributesMap(
-      base::expected<std::pair<AttributesMap, uint64_t>, ParserError> result);
+      base::expected<std::pair<SignatureAttributesMap, uint64_t>, std::string>
+          result);
   void ReadAttributesMapBytes(uint64_t num_bytes,
                               const std::optional<BinaryData>& data);
   void ReadSignatureHeader(const std::optional<BinaryData>& data);
   void ReadSignatureValue(const std::optional<BinaryData>& data);
   void EvaluateSignatureEntry(BinaryData data);
-  void RunErrorCallback(const std::string& message,
-                        mojom::BundleParseErrorType error_type =
-                            mojom::BundleParseErrorType::kFormatError);
+  void RunErrorCallback(const std::string& message);
 
   mojom::BundleIntegrityBlockSignatureStackEntryPtr signature_stack_entry_;
-  AttributesMap attributes_map_;
+  SignatureAttributesMap attributes_map_;
   std::unique_ptr<AttributeMapParser> attribute_map_parser_;
 
   uint64_t offset_in_stream_;

@@ -7,10 +7,13 @@
 
 #include "base/containers/flat_map.h"
 #include "components/web_package/signed_web_bundles/signature_entry_parser.h"
+#include "components/web_package/signed_web_bundles/types.h"
 #include "components/web_package/web_bundle_parser.h"
 #include "third_party/abseil-cpp/absl/base/attributes.h"
 
 namespace web_package {
+
+class SignatureStackEntryParser;
 
 class IntegrityBlockParser : public WebBundleParser::WebBundleSectionParser {
  public:
@@ -49,10 +52,9 @@ class IntegrityBlockParser : public WebBundleParser::WebBundleSectionParser {
   };
 
  private:
-  void ParseMagicBytesAndVersion(
-      const std::optional<std::vector<uint8_t>>& data);
+  void ParseMagicBytesAndVersion(const std::optional<BinaryData>& data);
 
-  void ParseSignatureStack(const std::optional<std::vector<uint8_t>>& data);
+  void ParseSignatureStack(const std::optional<BinaryData>& data);
 
   void ReadSignatureStackEntry();
 
@@ -60,7 +62,7 @@ class IntegrityBlockParser : public WebBundleParser::WebBundleSectionParser {
       base::expected<
           std::pair<mojom::BundleIntegrityBlockSignatureStackEntryPtr,
                     uint64_t>,
-          SignatureStackEntryParser::ParserError> result);
+          std::string> result);
 
   void RunSuccessCallback();
 
