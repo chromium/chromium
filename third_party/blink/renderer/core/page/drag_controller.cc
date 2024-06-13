@@ -164,8 +164,12 @@ static DocumentFragment* DocumentFragmentFromDragData(
     LocalFrame* frame,
     Range* context,
     bool allow_plain_text,
-    DragSourceType& drag_source_type) {
+    DragSourceType& drag_source_type,
+    bool is_richly_editable_position) {
   DCHECK(drag_data);
+  CHECK(is_richly_editable_position ||
+        RuntimeEnabledFeatures::
+            DropUrlAsPlainTextInPlainTextOnlyEditablePositionEnabled());
   drag_source_type = DragSourceType::kHTMLSource;
 
   Document& document = context->OwnerDocument();
@@ -173,7 +177,8 @@ static DocumentFragment* DocumentFragmentFromDragData(
     if (DocumentFragment* fragment = drag_data->AsFragment(frame))
       return fragment;
 
-    if (drag_data->ContainsURL(DragData::kDoNotConvertFilenames)) {
+    if (is_richly_editable_position &&
+        drag_data->ContainsURL(DragData::kDoNotConvertFilenames)) {
       String title;
       String url = drag_data->AsURL(DragData::kDoNotConvertFilenames, &title);
       if (!url.empty()) {
@@ -640,15 +645,23 @@ bool DragController::ConcludeEditDrag(DragData* drag_data) {
   inner_frame->GetEditor().RegisterCommandGroup(
       MakeGarbageCollected<DragAndDropCommand>(*inner_frame->GetDocument()));
 
-  if (DragIsMove(inner_frame->Selection(), drag_data) ||
-      IsRichlyEditablePosition(drag_caret.Anchor())) {
+  bool drag_is_move = DragIsMove(inner_frame->Selection(), drag_data);
+  bool is_richly_editable_position =
+      IsRichlyEditablePosition(drag_caret.Anchor());
+
+  if (drag_is_move || is_richly_editable_position) {
     DragSourceType drag_source_type = DragSourceType::kHTMLSource;
+    if (!RuntimeEnabledFeatures::
+            DropUrlAsPlainTextInPlainTextOnlyEditablePositionEnabled()) {
+      is_richly_editable_position = true;
+    }
     DocumentFragment* fragment = DocumentFragmentFromDragData(
-        drag_data, inner_frame, range, true, drag_source_type);
+        drag_data, inner_frame, range, true, drag_source_type,
+        is_richly_editable_position);
     if (!fragment)
       return false;
 
-    if (DragIsMove(inner_frame->Selection(), drag_data)) {
+    if (drag_is_move) {
       // NSTextView behavior is to always smart delete on moving a selection,
       // but only to smart insert if the selection granularity is word
       // granularity.

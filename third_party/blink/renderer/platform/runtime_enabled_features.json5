@@ -1427,6 +1427,13 @@
       name: "DontFireDblclickOnDisabledFormControls",
       status: "stable",
     },
+    {
+      // Drop the entire URL as plaintext in plaintext only editable position.
+      // Fix for https://crbug.com/40895258. This change is landing in M127 and
+      // the flag can be removed in M129 in case of no issues.
+      name: "DropUrlAsPlainTextInPlainTextOnlyEditablePosition",
+      status: "stable"
+    },
     // Dynamically change the safe area insets as browser controls scrolls.
     {
       name: "DynamicSafeAreaInsets",
