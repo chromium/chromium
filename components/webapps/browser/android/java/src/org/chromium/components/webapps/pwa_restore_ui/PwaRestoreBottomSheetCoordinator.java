@@ -97,7 +97,7 @@ public class PwaRestoreBottomSheetCoordinator {
     }
 
     protected void onRestoreButtonClicked() {
-        mController.hideContent(mContent, /* animate= */ true);
+        hideBottomSheet();
     }
 
     protected PropertyModel getModelForTesting() {

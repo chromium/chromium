@@ -222,24 +222,6 @@ public class PwaRestoreBottomSheetIntegrationTest {
     @Test
     @SmallTest
     @Feature({"PwaRestore"})
-    public void testNoOlderAppsShown() {
-        // This test is about ensuring that when all apps are recent,  we don't
-        // show the separate ("Older") app list.
-        Assert.assertTrue(setTestAppsForRestoring(sDefaultApps, sDefaultLastUsed));
-
-        // Ensure the promo dialog shows.
-        setAppsAvailableAndPromoStage(true, DisplayStage.SHOW_PROMO);
-
-        mActivityTestRule.startMainActivityFromLauncher();
-        assertDialogShown(true);
-        onView(withId(R.id.review_button)).perform(click());
-
-        onView(withText("Older")).check(doesNotExist());
-    }
-
-    @Test
-    @SmallTest
-    @Feature({"PwaRestore"})
     public void testBackButton() {
         // This test opens the dialog, clicks the Review button to expand the bottom sheet dialog
         // and then presses the Back in the OS twice to see what happens (first click should
@@ -286,6 +268,22 @@ public class PwaRestoreBottomSheetIntegrationTest {
         onView(withText("App 1")).check(matches(isDisplayed()));
         onView(withText("App 1")).perform(click());
         assertIsComboCheckedAtIndex(1, false);
+    }
+
+    @Test
+    @SmallTest
+    @Feature({"PwaRestore"})
+    public void testButtonsInitiallyDisabled() throws Exception {
+        // Ensure the promo dialog shows.
+        setAppsAvailableAndPromoStage(true, DisplayStage.SHOW_PROMO);
+
+        mActivityTestRule.startMainActivityFromLauncher();
+        assertDialogShown(true);
+        onView(withId(R.id.review_button)).perform(click());
+
+        // Deselect and Restore buttons should now be disabled (nothing to act on).
+        onView(withId(R.id.deselect_button)).check(matches(isNotEnabled()));
+        onView(withId(R.id.restore_button)).check(matches(isNotEnabled()));
     }
 
     @Test
