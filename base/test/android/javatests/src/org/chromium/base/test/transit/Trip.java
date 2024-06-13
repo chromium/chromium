@@ -4,9 +4,9 @@
 
 package org.chromium.base.test.transit;
 
-import org.chromium.base.test.transit.ConditionWaiter.ConditionWait;
 import org.chromium.base.test.transit.ConditionalState.Phase;
 
+import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -26,20 +26,21 @@ class Trip extends Transition {
      * @param trigger the action that triggers the transition. e.g. clicking a View.
      */
     Trip(Station origin, Station destination, TransitionOptions options, Trigger trigger) {
-        super(options, List.of(origin), List.of(destination), trigger);
+        super(
+                options,
+                getStationPlusFacilitiesWithPhase(origin, Phase.ACTIVE),
+                getStationPlusFacilitiesWithPhase(destination, Phase.NEW),
+                trigger);
         mOrigin = origin;
         mDestination = destination;
     }
 
-    @Override
-    protected List<ConditionWait> createWaits() {
-        Elements originElements =
-                mOrigin.getElementsIncludingFacilitiesWithPhase(Phase.TRANSITIONING_FROM);
-        Elements destinationElements =
-                mDestination.getElementsIncludingFacilitiesWithPhase(Phase.TRANSITIONING_TO);
-
-        return calculateConditionWaits(
-                originElements, destinationElements, getTransitionConditions());
+    private static List<? extends ConditionalState> getStationPlusFacilitiesWithPhase(
+            Station station, @Phase int phase) {
+        List<ConditionalState> allConditionalStates =
+                new ArrayList<>(station.getFacilitiesWithPhase(phase));
+        allConditionalStates.add(station);
+        return allConditionalStates;
     }
 
     @Override

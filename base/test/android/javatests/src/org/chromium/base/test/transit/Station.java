@@ -37,15 +37,14 @@ public abstract class Station extends ConditionalState {
         mName = String.format("<S%d: %s>", mId, getClass().getSimpleName());
     }
 
-    Elements getElementsIncludingFacilitiesWithPhase(@Phase int phase) {
-        Elements.Builder allElements = Elements.newBuilder();
-        allElements.addAll(getElements());
+    protected List<Facility> getFacilitiesWithPhase(@Phase int phase) {
+        List<Facility> facilities = new ArrayList<>();
         for (Facility facility : mFacilities) {
             if (facility.getPhase() == phase) {
-                allElements.addAll(facility.getElements());
+                facilities.add(facility);
             }
         }
-        return allElements.build();
+        return facilities;
     }
 
     void registerFacility(Facility facility) {
@@ -76,46 +75,6 @@ public abstract class Station extends ConditionalState {
                     String.format(
                             "%s should have been ACTIVE or TRANSITIONING_FROM, but was %s",
                             this, phaseToString(phase)));
-        }
-    }
-
-    @Override
-    void setStateTransitioningTo() {
-        super.setStateTransitioningTo();
-
-        for (Facility facility : mFacilities) {
-            facility.setStateTransitioningTo();
-        }
-    }
-
-    @Override
-    void setStateActive() {
-        super.setStateActive();
-
-        for (Facility facility : mFacilities) {
-            facility.setStateActive();
-        }
-    }
-
-    @Override
-    void setStateTransitioningFrom() {
-        super.setStateTransitioningFrom();
-
-        for (Facility facility : mFacilities) {
-            if (facility.getPhase() == Phase.ACTIVE) {
-                facility.setStateTransitioningFrom();
-            }
-        }
-    }
-
-    @Override
-    void setStateFinished() {
-        super.setStateFinished();
-
-        for (Facility facility : mFacilities) {
-            if (facility.getPhase() == Phase.TRANSITIONING_FROM) {
-                facility.setStateFinished();
-            }
         }
     }
 

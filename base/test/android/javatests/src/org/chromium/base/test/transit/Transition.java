@@ -167,9 +167,6 @@ public abstract class Transition {
     /** Should return a String representation of the Transition for debugging. */
     public abstract String toDebugString();
 
-    /** Should create the {@link ConditionWait}s. */
-    protected abstract List<ConditionWait> createWaits();
-
     @Override
     public String toString() {
         return toDebugString();
@@ -183,44 +180,50 @@ public abstract class Transition {
         }
     }
 
-    protected static ArrayList<ConditionWait> calculateConditionWaits(
-            Elements originElements,
-            Elements destinationElements,
-            List<Condition> transitionConditions) {
+    private List<ConditionWait> createWaits() {
         ArrayList<ConditionWait> waits = new ArrayList<>();
 
-        // Create ENTER Conditions for Views that should appear and LogicalElements that should
-        // be true.
         Set<String> destinationElementIds = new HashSet<>();
-        for (ElementInState element : destinationElements.getElementsInState()) {
-            destinationElementIds.add(element.getId());
-            @Nullable Condition enterCondition = element.getEnterCondition();
-            if (enterCondition != null) {
+        for (ConditionalState conditionalState : mEnteredStates) {
+            final Elements destinationElements = conditionalState.getElements();
+            // Create ENTER Conditions for Views that should appear and LogicalElements that should
+            // be true.
+            for (ElementInState element : destinationElements.getElementsInState()) {
+                destinationElementIds.add(element.getId());
+                @Nullable Condition enterCondition = element.getEnterCondition();
+                if (enterCondition != null) {
+                    waits.add(
+                            new ConditionWait(
+                                    enterCondition, ConditionWaiter.ConditionOrigin.ENTER));
+                }
+            }
+
+            // Add extra ENTER Conditions.
+            for (Condition enterCondition : destinationElements.getOtherEnterConditions()) {
                 waits.add(new ConditionWait(enterCondition, ConditionWaiter.ConditionOrigin.ENTER));
             }
         }
 
-        // Add extra ENTER Conditions.
-        for (Condition enterCondition : destinationElements.getOtherEnterConditions()) {
-            waits.add(new ConditionWait(enterCondition, ConditionWaiter.ConditionOrigin.ENTER));
-        }
-
         // Create EXIT Conditions for Views that should disappear and LogicalElements that should
         // be false.
-        for (ElementInState element : originElements.getElementsInState()) {
-            Condition exitCondition = element.getExitCondition(destinationElementIds);
-            if (exitCondition != null) {
+        for (ConditionalState conditionalState : mExitedStates) {
+            final Elements originElements = conditionalState.getElements();
+            for (ElementInState element : originElements.getElementsInState()) {
+                Condition exitCondition = element.getExitCondition(destinationElementIds);
+                if (exitCondition != null) {
+                    waits.add(
+                            new ConditionWait(exitCondition, ConditionWaiter.ConditionOrigin.EXIT));
+                }
+            }
+
+            // Add extra EXIT Conditions.
+            for (Condition exitCondition : originElements.getOtherExitConditions()) {
                 waits.add(new ConditionWait(exitCondition, ConditionWaiter.ConditionOrigin.EXIT));
             }
         }
 
-        // Add extra EXIT Conditions.
-        for (Condition exitCondition : originElements.getOtherExitConditions()) {
-            waits.add(new ConditionWait(exitCondition, ConditionWaiter.ConditionOrigin.EXIT));
-        }
-
         // Add transition (TRSTN) conditions
-        for (Condition condition : transitionConditions) {
+        for (Condition condition : getTransitionConditions()) {
             waits.add(new ConditionWait(condition, ConditionWaiter.ConditionOrigin.TRANSITION));
         }
 

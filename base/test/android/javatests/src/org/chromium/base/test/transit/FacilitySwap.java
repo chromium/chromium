@@ -4,8 +4,6 @@
 
 package org.chromium.base.test.transit;
 
-import org.chromium.base.test.transit.ConditionWaiter.ConditionWait;
-
 import java.util.List;
 
 /** A {@link Transition} out of one or more {@link Facility}s into another {@link Facility}. */
@@ -42,17 +40,5 @@ public class FacilitySwap extends Transition {
         }
         return String.format(
                 "FacilitySwap %d (from %s to %s)", mId, facilitiesToExitString, mFacilityToEnter);
-    }
-
-    @Override
-    protected List<ConditionWait> createWaits() {
-        Elements.Builder originElements = Elements.newBuilder();
-        for (Facility f : mFacilitiesToExit) {
-            originElements.addAll(f.getElements());
-        }
-        Elements destinationElements = mFacilityToEnter.getElements();
-
-        return calculateConditionWaits(
-                originElements.build(), destinationElements, getTransitionConditions());
     }
 }

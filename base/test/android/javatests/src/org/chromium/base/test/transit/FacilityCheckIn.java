@@ -6,8 +6,6 @@ package org.chromium.base.test.transit;
 
 import androidx.annotation.Nullable;
 
-import org.chromium.base.test.transit.ConditionWaiter.ConditionWait;
-
 import java.util.Collections;
 import java.util.List;
 
@@ -31,11 +29,5 @@ class FacilityCheckIn extends Transition {
     @Override
     public String toDebugString() {
         return String.format("FacilityCheckIn %d (enter %s)", mId, mFacility);
-    }
-
-    @Override
-    protected List<ConditionWait> createWaits() {
-        return calculateConditionWaits(
-                Elements.EMPTY, mFacility.getElements(), getTransitionConditions());
     }
 }
