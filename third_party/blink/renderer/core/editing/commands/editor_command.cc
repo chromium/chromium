@@ -451,42 +451,33 @@ static bool DeleteWithDirection(LocalFrame& frame,
   if (!editor.CanEdit())
     return false;
 
-  EditingState editing_state;
   if (frame.Selection()
           .ComputeVisibleSelectionInDOMTreeDeprecated()
-          .IsRange()) {
-    if (is_typing_action) {
-      DCHECK(frame.GetDocument());
-      TypingCommand::DeleteKeyPressed(
-          *frame.GetDocument(),
-          CanSmartCopyOrDelete(frame) ? TypingCommand::kSmartDelete : 0,
-          granularity);
-      editor.RevealSelectionAfterEditingOperation();
-    } else {
-      if (kill_ring)
-        editor.AddToKillRing(editor.SelectedRange());
-      editor.DeleteSelectionWithSmartDelete(
-          CanSmartCopyOrDelete(frame) ? DeleteMode::kSmart
-                                      : DeleteMode::kSimple,
-          DeletionInputTypeFromTextGranularity(direction, granularity));
-      // Implicitly calls revealSelectionAfterEditingOperation().
+          .IsRange() &&
+      !is_typing_action) {
+    if (kill_ring) {
+      editor.AddToKillRing(editor.SelectedRange());
     }
+    editor.DeleteSelectionWithSmartDelete(
+        CanSmartCopyOrDelete(frame) ? DeleteMode::kSmart : DeleteMode::kSimple,
+        DeletionInputTypeFromTextGranularity(direction, granularity));
+    // Implicitly calls revealSelectionAfterEditingOperation().
   } else {
+    EditingState editing_state;
     TypingCommand::Options options = 0;
     if (CanSmartCopyOrDelete(frame))
       options |= TypingCommand::kSmartDelete;
     if (kill_ring)
       options |= TypingCommand::kKillRing;
+    DCHECK(frame.GetDocument());
     switch (direction) {
       case DeleteDirection::kForward:
-        DCHECK(frame.GetDocument());
         TypingCommand::ForwardDeleteKeyPressed(
             *frame.GetDocument(), &editing_state, options, granularity);
         if (editing_state.IsAborted())
           return false;
         break;
       case DeleteDirection::kBackward:
-        DCHECK(frame.GetDocument());
         TypingCommand::DeleteKeyPressed(*frame.GetDocument(), options,
                                         granularity);
         break;
