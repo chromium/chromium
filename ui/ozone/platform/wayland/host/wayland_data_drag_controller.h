@@ -156,6 +156,8 @@ class WaylandDataDragController : public WaylandDataDevice::DragDelegate,
                            StartDragWithWrongMimeType);
   FRIEND_TEST_ALL_PREFIXES(WaylandDataDragControllerTest,
                            OutgoingSessionWithoutDndFinished);
+  FRIEND_TEST_ALL_PREFIXES(WaylandWindowDragControllerTest,
+                           OutgoingSessionWithoutDndFinished);
 
   enum class DragResult {
     kCancelled,

@@ -2,6 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include "ui/ozone/platform/wayland/host/wayland_window_drag_controller.h"
+
 #include <linux/input-event-codes.h>
 #include <wayland-server-protocol.h>
 #include <wayland-server.h>
@@ -13,8 +15,12 @@
 #include "base/functional/bind.h"
 #include "base/notreached.h"
 #include "base/test/bind.h"
+#include "base/test/mock_callback.h"
 #include "base/time/time.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "ui/base/cursor/cursor.h"
+#include "ui/base/dragdrop/drag_drop_types.h"
+#include "ui/base/dragdrop/os_exchange_data.h"
 #include "ui/events/base_event_utils.h"
 #include "ui/events/event.h"
 #include "ui/events/types/event_type.h"
@@ -30,7 +36,6 @@
 #include "ui/ozone/platform/wayland/host/wayland_serial_tracker.h"
 #include "ui/ozone/platform/wayland/host/wayland_toplevel_window.h"
 #include "ui/ozone/platform/wayland/host/wayland_window.h"
-#include "ui/ozone/platform/wayland/host/wayland_window_drag_controller.h"
 #include "ui/ozone/platform/wayland/host/wayland_window_manager.h"
 #include "ui/ozone/platform/wayland/test/mock_pointer.h"
 #include "ui/ozone/platform/wayland/test/mock_surface.h"
@@ -70,7 +75,7 @@ class WaylandWindowDragControllerTest : public WaylandDragDropTest {
     EXPECT_EQ(State::kIdle, drag_controller_state());
   }
 
-  WaylandWindowDragController* drag_controller() const {
+  WaylandWindowDragController* drag_controller() {
     return connection_->window_drag_controller();
   }
 
@@ -2132,6 +2137,49 @@ TEST_P(WaylandWindowDragControllerTest, AllPointersReleasedAfterDragEnd) {
       pointer_delegate()->IsPointerButtonPressed(EF_RIGHT_MOUSE_BUTTON));
   EXPECT_FALSE(
       pointer_delegate()->IsPointerButtonPressed(EF_MIDDLE_MOUSE_BUTTON));
+}
+
+// Regression test for crbug.com/330274075. There are circumstances under which
+// compositors will not send a send data_source.dnd_finish|cancelled for a
+// wayland drag session. This can result in a data drag leaving the shared state
+// in the data device in an inconsistent state. If a window drag session is
+// requested while in such an inconsistent state this shared state must first be
+// reset.
+TEST_P(WaylandWindowDragControllerTest, OutgoingSessionWithoutDndFinished) {
+  SendPointerEnter(window_.get(), &delegate_);
+  SendPointerPress(window_.get(), &delegate_, BTN_LEFT);
+
+  // Once the drag session effectively starts at server-side, emulate a
+  // data_source.dnd_drop_performed without its subsequent dnd_finished.
+  ScheduleTestTask(
+      base::BindLambdaForTesting([&]() { SendDndDropPerformed(); }));
+
+  // Start the data drag session, which spins a nested message loop, and ensure
+  // it quits even without wl_data_source.dnd_finished. In which case, the
+  // expected side effect is drag controller's internal state left inconsistent,
+  // ie: not reset to `kIdle`.
+  OSExchangeData os_exchange_data;
+  os_exchange_data.SetString(u"dnd-data");
+  base::MockOnceCallback<void(mojom::DragOperation)> completion_callback;
+  window_->StartDrag(os_exchange_data,
+                     DragDropTypes::DRAG_COPY | DragDropTypes::DRAG_MOVE,
+                     DragEventSource::kMouse, /*cursor=*/{},
+                     /*can_grab_pointer=*/true, completion_callback.Get(),
+                     /*loation delegate=*/nullptr);
+  EXPECT_NE(connection_->data_drag_controller()->state_,
+            WaylandDataDragController::State::kIdle);
+
+  // Attempt to start a window drag with the left mouse button. It should
+  // succeed despite data device state not having been reset correctly.
+  SendPointerEnter(window_.get(), &delegate_);
+  SendPointerPress(window_.get(), &delegate_, BTN_LEFT);
+  EXPECT_TRUE(drag_controller()->StartDragSession(
+      window_->AsWaylandToplevelWindow(), DragEventSource::kMouse));
+  EXPECT_EQ(State::kAttached, drag_controller_state());
+
+  // End the drag.
+  SendDndFinished();
+  EXPECT_EQ(State::kIdle, drag_controller_state());
 }
 
 #if !BUILDFLAG(IS_CHROMEOS_LACROS)

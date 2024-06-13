@@ -81,6 +81,13 @@ class WaylandDataDevice : public WaylandDataDeviceBase {
   // transfer of data happens asynchronously, on-demand-only.
   void SetSelectionSource(WaylandDataSource* source, uint32_t serial);
 
+  // Returns true if there is an active wayland drag session.
+  bool IsDragInProgress() const;
+
+  void set_drag_delegate_for_testing(DragDelegate* drag_delegate) {
+    drag_delegate_ = drag_delegate;
+  }
+
  private:
   FRIEND_TEST_ALL_PREFIXES(WaylandDataDragControllerTest, StartDrag);
   FRIEND_TEST_ALL_PREFIXES(WaylandDataDragControllerTest, ReceiveDrag);

@@ -76,6 +76,13 @@ void WaylandDataDevice::SetSelectionSource(WaylandDataSource* source,
   connection()->Flush();
 }
 
+bool WaylandDataDevice::IsDragInProgress() const {
+  // Starting wayland drag sessions require clients to provide a drag delegate.
+  // The delegate is explicitly reset by the client when the wayland drag
+  // session has ended.
+  return !!drag_delegate_;
+}
+
 // static
 void WaylandDataDevice::OnDataOffer(void* data,
                                     wl_data_device* data_device,

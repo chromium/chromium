@@ -317,10 +317,9 @@ void WaylandConnection::SetCursorBitmap(const std::vector<SkBitmap>& bitmaps,
 }
 
 bool WaylandConnection::IsDragInProgress() const {
-  // |data_drag_controller_| can be null when running on headless weston.
-  return (data_drag_controller_ && data_drag_controller_->IsDragInProgress()) ||
-         (window_drag_controller_ &&
-          window_drag_controller_->IsDragInProgress());
+  // An active drag requires a seat exist.
+  return seat_ && data_device_manager_ &&
+         data_device_manager_->GetDevice()->IsDragInProgress();
 }
 
 bool WaylandConnection::SupportsSetWindowGeometry() const {

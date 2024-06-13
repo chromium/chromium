@@ -128,6 +128,22 @@ bool WaylandWindowDragController::StartDragSession(
   if (state_ != State::kIdle)
     return true;
 
+  // TODO(crbug.com/340398746): This should be a CHECK instead. However
+  // currently buggy compositors, eg: KWin 6, which do not send
+  // data_source.dnd_finish|cancelled in some cases. In such a case for a data
+  // drag, the data drag controller is left in an inconsistent state and shared
+  // dragging state is not reset. This may cause chrome to crash if a window
+  // drag session is requested before the shared dragging state is reset. Reset
+  // the shared drag state in this case, revert this handling once it stabilizes
+  // at compositors side (see also comment in
+  // WaylandDataDragController::StartSession).
+  if (connection_->IsDragInProgress()) {
+    LOG(ERROR) << "Received window drag request for active data drag, "
+                  "resetting shared data device state.";
+    data_device_->ResetDragDelegate();
+    CHECK(!connection_->IsDragInProgress());
+  }
+
   auto serial = GetSerial(drag_source, origin);
   if (!serial) {
     LOG(ERROR) << "Failed to retrieve dnd serial. origin=" << origin
