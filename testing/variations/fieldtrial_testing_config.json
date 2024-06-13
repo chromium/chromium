@@ -16975,44 +16975,6 @@
             ]
         }
     ],
-    "PrivacySandboxLocalNoticeConfirmation": [
-        {
-            "platforms": [
-                "android",
-                "chromeos",
-                "chromeos_lacros",
-                "linux",
-                "mac",
-                "windows"
-            ],
-            "experiments": [
-                {
-                    "name": "Local_Notice_Confirmation_Disabled",
-                    "disable_features": [
-                        "PrivacySandboxLocalNoticeConfirmation"
-                    ]
-                },
-                {
-                    "name": "Default_To_OS_Country_Enabled",
-                    "params": {
-                        "default-to-os-country": "true"
-                    },
-                    "enable_features": [
-                        "PrivacySandboxLocalNoticeConfirmation"
-                    ]
-                },
-                {
-                    "name": "Default_To_OS_Country_Disabled",
-                    "params": {
-                        "default-to-os-country": "false"
-                    },
-                    "enable_features": [
-                        "PrivacySandboxLocalNoticeConfirmation"
-                    ]
-                }
-            ]
-        }
-    ],
     "PrivacySandboxProactiveTopicsBlocking": [
         {
             "platforms": [
