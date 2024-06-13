@@ -293,6 +293,9 @@
   <message name="IDS_WEBSTORAGE_DELETE_DATA_DIALOG_TITLE" desc="Title of the confirmation dialog when the user ask to delete all data for an origin">
     Delete site data?
   </message>
+  <message name="IDS_WEBSTORAGE_DELETE_DATA_CONTENT_DESCRIPTION" desc="Content description for the button that deletes all data for an origin">
+    Delete site data? <ph name="SITE_NAME">%1$s<ex>google.com</ex></ph>
+  </message>
   <message name="IDS_WEBSTORAGE_DELETE_DATA_DIALOG_OK_BUTTON" desc="Button confirming site data cleanup [CHAR_LIMIT=20]">
     Delete
   </message>

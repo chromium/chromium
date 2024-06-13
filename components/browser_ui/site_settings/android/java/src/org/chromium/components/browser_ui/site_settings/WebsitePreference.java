@@ -204,7 +204,11 @@ class WebsitePreference extends ChromeImageViewPreference {
             // Create and set the delete button for this preference.
             setImageView(
                     R.drawable.btn_close,
-                    R.string.webstorage_delete_data_dialog_title,
+                    getContext()
+                            .getResources()
+                            .getString(
+                                    R.string.webstorage_delete_data_content_description,
+                                    buildTitle()),
                     (OnClickListener)
                             view -> {
                                 SiteSettingsUtil.resetZoomLevel(
@@ -219,7 +223,11 @@ class WebsitePreference extends ChromeImageViewPreference {
         if (hasSubPage()) {
             setImageView(
                     R.drawable.ic_expand_more_horizontal_black_24dp,
-                    R.string.webstorage_delete_data_dialog_title,
+                    getContext()
+                            .getResources()
+                            .getString(
+                                    R.string.webstorage_delete_data_content_description,
+                                    buildTitle()),
                     (OnClickListener)
                             view -> {
                                 mStorageAccessSettingsPageListener

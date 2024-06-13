@@ -61,7 +61,10 @@ public class WebsiteRowPreference extends ChromeImageViewPreference {
         setTitle(mSiteEntry.getTitleForPreferenceRow());
         setImageView(
                 R.drawable.ic_delete_white_24dp,
-                R.string.webstorage_delete_data_dialog_title,
+                context.getResources()
+                        .getString(
+                                R.string.webstorage_delete_data_content_description,
+                                mSiteEntry.getTitleForPreferenceRow()),
                 (View view) -> {
                     displayResetDialog();
                 });
