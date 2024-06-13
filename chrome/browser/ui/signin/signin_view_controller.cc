@@ -27,6 +27,7 @@
 #include "components/prefs/pref_service.h"
 #include "components/signin/public/base/consent_level.h"
 #include "components/signin/public/base/signin_buildflags.h"
+#include "components/signin/public/base/signin_metrics.h"
 #include "components/signin/public/base/signin_pref_names.h"
 #include "components/signin/public/base/signin_switches.h"
 #include "components/signin/public/identity_manager/account_info.h"
@@ -153,6 +154,27 @@ void HandleSignoutConfirmationChoice(
       return;
     }
   }
+}
+
+bool ShouldUseChromeSigninURL(const signin::IdentityManager& identity_manager,
+                              signin_metrics::AccessPoint access_point,
+                              signin_metrics::Reason signin_reason) {
+  // Note: It is expected with the below sign in reason and access point
+  // that there is no primary account. Maybe move to a `CHECK` later.
+  if (signin_reason == signin_metrics::Reason::kAddSecondaryAccount &&
+      access_point == signin_metrics::AccessPoint::ACCESS_POINT_EXTENSIONS &&
+      !identity_manager.HasPrimaryAccount(signin::ConsentLevel::kSignin) &&
+      switches::IsExplicitBrowserSigninUIOnDesktopEnabled()) {
+    // Extensions wants the user to sign in to Chrome.
+    // Ensure the Gaia page informs the user that they will also be signed in to
+    // Chrome.
+    // Note: The sync confirmation screen will NOT be displayed after signin,
+    // because the reason is `kAddSecondaryAccount`.
+    return true;
+  }
+
+  return signin_reason != signin_metrics::Reason::kAddSecondaryAccount &&
+         signin_reason != signin_metrics::Reason::kReauthentication;
 }
 #endif  // BUILDFLAG(ENABLE_DICE_SUPPORT)
 
@@ -429,10 +451,11 @@ void SigninViewController::ShowDiceSigninTab(
           : redirect_url;
 
   GURL signin_url =
-      (signin_reason == signin_metrics::Reason::kAddSecondaryAccount ||
-       signin_reason == signin_metrics::Reason::kReauthentication)
-          ? signin::GetAddAccountURLForDice(email_hint, continue_url)
-          : signin::GetChromeSyncURLForDice({email_hint, continue_url});
+      ShouldUseChromeSigninURL(
+          *IdentityManagerFactory::GetForProfile(browser_->profile()),
+          access_point, signin_reason)
+          ? signin::GetChromeSyncURLForDice({email_hint, continue_url})
+          : signin::GetAddAccountURLForDice(email_hint, continue_url);
 
   content::WebContents* active_contents = nullptr;
   if (access_point == signin_metrics::AccessPoint::ACCESS_POINT_START_PAGE) {

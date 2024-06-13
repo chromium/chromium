@@ -874,6 +874,51 @@ TEST_F(SigninUiUtilWithUnoDesktopTest, SignInWithExistingWebOnlyAccount) {
   EXPECT_TRUE(
       GetIdentityManager()->HasPrimaryAccount(signin::ConsentLevel::kSignin));
 }
+
+TEST_F(SigninUiUtilWithUnoDesktopTest, ShowExtensionSigninPrompt) {
+  Profile* profile = browser()->profile();
+  TabStripModel* tab_strip = browser()->tab_strip_model();
+  ShowExtensionSigninPrompt(profile, /*enable_sync=*/false,
+                            /*email_hint=*/std::string());
+  EXPECT_EQ(1, tab_strip->count());
+  // Calling the function again reuses the tab.
+  ShowExtensionSigninPrompt(profile, /*enable_sync=*/false,
+                            /*email_hint=*/std::string());
+  EXPECT_EQ(1, tab_strip->count());
+
+  content::WebContents* tab = tab_strip->GetWebContentsAt(0);
+  ASSERT_TRUE(tab);
+  EXPECT_TRUE(base::StartsWith(
+      tab->GetVisibleURL().spec(),
+      GaiaUrls::GetInstance()->signin_chrome_sync_dice().spec(),
+      base::CompareCase::INSENSITIVE_ASCII));
+}
+
+TEST_F(SigninUiUtilWithUnoDesktopTest, ShowExtensionSigninPromptReauth) {
+  CoreAccountId account_id =
+      GetIdentityManager()->GetAccountsMutator()->AddOrUpdateAccount(
+          kMainGaiaID, kMainEmail, "refresh_token", false,
+          signin_metrics::AccessPoint::ACCESS_POINT_UNKNOWN,
+          signin_metrics::SourceForRefreshTokenOperation::kUnknown);
+  GetIdentityManager()->GetPrimaryAccountMutator()->SetPrimaryAccount(
+      account_id, signin::ConsentLevel::kSignin,
+      signin_metrics::AccessPoint::ACCESS_POINT_UNKNOWN);
+  signin::UpdatePersistentErrorOfRefreshTokenForAccount(
+      GetIdentityManager(), account_id,
+      GoogleServiceAuthError(GoogleServiceAuthError::INVALID_GAIA_CREDENTIALS));
+
+  Profile* profile = browser()->profile();
+  TabStripModel* tab_strip = browser()->tab_strip_model();
+  ShowExtensionSigninPrompt(profile, /*enable_sync=*/false, kMainEmail);
+  EXPECT_EQ(1, tab_strip->count());
+
+  content::WebContents* tab = tab_strip->GetWebContentsAt(0);
+  ASSERT_TRUE(tab);
+  EXPECT_TRUE(
+      base::StartsWith(tab->GetVisibleURL().spec(),
+                       GaiaUrls::GetInstance()->add_account_url().spec(),
+                       base::CompareCase::INSENSITIVE_ASCII));
+}
 #endif  // BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN)
 
 #endif  // BUILDFLAG(ENABLE_DICE_SUPPORT) || BUILDFLAG(IS_CHROMEOS_LACROS)
