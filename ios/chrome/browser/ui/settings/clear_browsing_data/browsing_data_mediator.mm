@@ -31,6 +31,11 @@
 
   // Set of `BrowsingDataCounter`s used to create the summaries.
   std::set<std::unique_ptr<BrowsingDataCounterWrapper>> _counters;
+
+  // Tracks if the placeholder summary has already been dispatched to the
+  // `_consumer` in order to avoid uncessary calls in
+  // `dispatchPlaceholderSummary`.
+  bool _placeholderSummaryWasDispatched;
 }
 
 - (instancetype)initWithPrefs:(PrefService*)prefs
@@ -101,12 +106,6 @@
 // Restarts the counters created in `createdCounters`. Restarting the counters
 // results on the browsing data summary being updated in the ViewController.
 - (void)restartCounters {
-  // TODO(crbug.com/342977162): Leave the "Calculating..." string enough time on
-  // screen so there isn't a flash between quick summary updates.
-  // Reset the summary shown in the ViewController and the variables updated by
-  // `_counters`.
-  [_consumer setBrowsingDataSummary:l10n_util::GetNSString(
-                                        IDS_CLEAR_BROWSING_DATA_CALCULATING)];
   _browsingHistorySummary = nil;
   _passwordsSummary = nil;
   _addressesSummary = nil;
@@ -120,12 +119,30 @@
   }
 }
 
+// Dispatches the placeholder browsing data summary if it hasn't already been
+// dispatched to the `_consumer`.
+- (void)dispatchPlaceholderSummary {
+  if (_placeholderSummaryWasDispatched) {
+    return;
+  }
+  _placeholderSummaryWasDispatched = YES;
+  [_consumer setBrowsingDataSummary:l10n_util::GetNSString(
+                                        IDS_CLEAR_BROWSING_DATA_CALCULATING)];
+}
+
 // Updates the summary for the browsing data type in `result`. Dispatches the
 // complete browsing data summary to the ViewController if all browsing data
-// types with counters have returned.
+// types with counters have finished.
+//
+// There is a garantee that `BrowsingDataCounter` will eventually trigger (up
+// until a maximum delay has elapsed) its callback with a finished
+// `BrowsingDataCounter::Result`.
 - (void)updateSummaryWith:
     (const browsing_data::BrowsingDataCounter::Result*)result {
   if (!result->Finished()) {
+    // A placeholder summary should be displayed since the counter still needs a
+    // bit more time to return the actual result.
+    [self dispatchPlaceholderSummary];
     return;
   }
 
@@ -150,9 +167,10 @@
     NOTREACHED();
   }
 
-  // TODO(crbug.com/342977162): There is the possiblity that some counters may
-  // not return, so we should update the summary after a set timeout even if not
-  // all counters have returned.
+  // All `BrowsingDataCounter` will eventually return with a finished
+  // `BrowsingDataCounter::Result`. Meaning that eventually this if condition
+  // will evaluate to true and a non-placeholder browsing data summary will be
+  // dispatched.
   if (_browsingHistorySummary && _passwordsSummary && _addressesSummary &&
       _cardsSummary && _suggestionsSummary) {
     [self dispatchBrowsingDataSummary];
@@ -206,6 +224,7 @@
 
   // TODO(crbug.com/342185075): Check if the comma is translated correctly for
   // right to left languages, e.g. arabic.
+  _placeholderSummaryWasDispatched = NO;
   [_consumer setBrowsingDataSummary:
                  [summaryItems
                      componentsJoinedByString:
