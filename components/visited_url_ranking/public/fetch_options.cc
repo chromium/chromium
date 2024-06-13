@@ -47,6 +47,7 @@ FetchOptions FetchOptions::CreateDefaultFetchOptionsForTabResumption() {
       },
       base::Time::Now() - base::Hours(query_duration),
       {
+          URLVisitAggregatesTransformType::kRecencyFilter,
 #if !BUILDFLAG(IS_IOS)
           // components/history_clusters is not compiled on iOS.
           // TODO(crbug/344615016): Enable on iOS.

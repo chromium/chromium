@@ -15,6 +15,18 @@ BASE_DECLARE_FEATURE(kVisitedURLRankingService);
 // Parameter determining the fetch option's default query duration in hours.
 extern const char kVisitedURLRankingFetchDurationInHoursParam[];
 
+// Parameter to determine the age limit for history entries to be ranked.
+extern const char kHistoryAgeThresholdHours[];
+extern const int kHistoryAgeThresholdHoursDefaultValue;
+
+// Parameter to determine the age limit for tab entries to be ranked.
+extern const char kTabAgeThresholdHours[];
+extern const int kTabAgeThresholdHoursDefaultValue;
+
+// Max number of URL aggregate candidates to rank.
+extern const char kURLAggregateCountLimit[];
+extern const int kURLAggregateCountLimitDefaultValue;
+
 }  // namespace visited_url_ranking::features
 
 #endif  // COMPONENTS_VISITED_URL_RANKING_PUBLIC_FEATURES_H_
