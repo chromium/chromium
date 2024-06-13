@@ -206,6 +206,10 @@
 #include "chrome/browser/component_updater/registration.h"
 #endif  // BUILDFLAG(ENABLE_COMPONENT_UPDATER)
 
+#if BUILDFLAG(ENABLE_UPDATER)
+#include "chrome/browser/updater/scheduler.h"
+#endif
+
 #if BUILDFLAG(IS_ANDROID)
 #include "chrome/browser/flags/android/chrome_feature_list.h"
 #include "chrome/browser/share/share_history.h"
@@ -880,6 +884,10 @@ void ChromeBrowserMainParts::PreCreateMainMessageLoop() {
 
   for (auto& chrome_extra_part : chrome_extra_parts_)
     chrome_extra_part->PreCreateMainMessageLoop();
+
+#if BUILDFLAG(ENABLE_UPDATER)
+  updater::SchedulePeriodicTasks();
+#endif  // BUILDFLAG(ENABLE_UPDATER)
 }
 
 void ChromeBrowserMainParts::PostCreateMainMessageLoop() {
