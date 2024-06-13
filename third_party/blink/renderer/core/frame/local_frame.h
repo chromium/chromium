@@ -427,7 +427,9 @@ class CORE_EXPORT LocalFrame final
   bool InViewSourceMode() const;
   void SetInViewSourceMode(bool = true);
 
-  // Layout zoom factor reflects hardware device pixel ratio and browser zoom.
+  // Layout zoom factor reflects hardware device pixel ratio, browser zoom, and
+  // for embedded frames the effect of the CSS "zoom" property applied to the
+  // embedding element (e.g. <iframe>).
   void SetLayoutZoomFactor(float);
   float LayoutZoomFactor() const { return layout_zoom_factor_; }
   void SetTextZoomFactor(float);

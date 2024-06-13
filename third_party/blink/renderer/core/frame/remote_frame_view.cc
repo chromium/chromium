@@ -292,7 +292,7 @@ void RemoteFrameView::UpdateFrozenSize() {
 }
 
 void RemoteFrameView::ZoomFactorChanged(float zoom_factor) {
-  remote_frame_->ZoomLevelChanged(ZoomFactorToZoomLevel(zoom_factor));
+  remote_frame_->ZoomFactorChanged(zoom_factor);
 }
 
 void RemoteFrameView::PropagateFrameRects() {

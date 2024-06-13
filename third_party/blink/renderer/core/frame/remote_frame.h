@@ -145,7 +145,7 @@ class CORE_EXPORT RemoteFrame final : public Frame,
   void DidChangeScreenInfos(const display::ScreenInfos& screen_info);
   // Called when the main frame's zoom level is changed and should be propagated
   // to the remote's associated view.
-  void ZoomLevelChanged(double zoom_level);
+  void ZoomFactorChanged(double zoom_factor);
   // Called when the local root's viewport segments change.
   void DidChangeRootViewportSegments(
       const std::vector<gfx::Rect>& root_widget_viewport_segments);

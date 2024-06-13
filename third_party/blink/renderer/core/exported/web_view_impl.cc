@@ -599,8 +599,10 @@ WebViewImpl::WebViewImpl(
     : widgets_never_composited_(widgets_never_composited),
       web_view_client_(client),
       chrome_client_(MakeGarbageCollected<ChromeClientImpl>(this)),
-      minimum_zoom_level_(ZoomFactorToZoomLevel(kMinimumBrowserZoomFactor)),
-      maximum_zoom_level_(ZoomFactorToZoomLevel(kMaximumBrowserZoomFactor)),
+      minimum_zoom_level_(
+          blink::ZoomFactorToZoomLevel(kMinimumBrowserZoomFactor)),
+      maximum_zoom_level_(
+          blink::ZoomFactorToZoomLevel(kMaximumBrowserZoomFactor)),
       does_composite_(does_composite),
       fullscreen_controller_(std::make_unique<FullscreenController>(this)),
       page_base_background_color_(
@@ -2306,11 +2308,9 @@ double WebViewImpl::ClampZoomLevel(double zoom_level) const {
 
 double WebViewImpl::ZoomLevelToZoomFactor(double zoom_level,
                                           bool for_main_frame) const {
-  double zoom_factor;
+  double zoom_factor = blink::ZoomLevelToZoomFactor(zoom_level);
   if (for_main_frame && zoom_factor_override_) {
     zoom_factor = zoom_factor_override_;
-  } else {
-    zoom_factor = blink::ZoomLevelToZoomFactor(zoom_level);
   }
   if (zoom_factor_for_device_scale_factor_) {
     if (compositor_device_scale_factor_override_) {
@@ -2320,6 +2320,17 @@ double WebViewImpl::ZoomLevelToZoomFactor(double zoom_level,
     }
   }
   return zoom_factor;
+}
+
+double WebViewImpl::ZoomFactorToZoomLevel(double zoom_factor) const {
+  if (zoom_factor_for_device_scale_factor_) {
+    if (compositor_device_scale_factor_override_) {
+      zoom_factor /= compositor_device_scale_factor_override_;
+    } else {
+      zoom_factor /= zoom_factor_for_device_scale_factor_;
+    }
+  }
+  return blink::ZoomFactorToZoomLevel(zoom_factor);
 }
 
 void WebViewImpl::UpdateWidgetZoomFactors() {

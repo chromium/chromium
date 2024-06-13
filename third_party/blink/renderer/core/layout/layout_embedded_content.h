@@ -116,6 +116,8 @@ class CORE_EXPORT LayoutEmbeddedContent : public LayoutReplaced {
   bool PointOverResizer(const HitTestResult&,
                         const HitTestLocation&,
                         const PhysicalOffset& accumulated_offset) const;
+
+  void PropagateZoomFactor(double zoom_factor);
 };
 
 template <>

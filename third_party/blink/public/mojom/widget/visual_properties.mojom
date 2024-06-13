@@ -78,9 +78,11 @@ struct VisualProperties {
   // should cause a new LocalSurfaceId to be generated.
   uint32 capture_sequence_number;
 
-  // This represents the page zoom level for a WebContents.
-  // (0 is the default value which results in 1.0 zoom factor).
-  // Page scoped value.
+  // This is composed from browser zoom (i.e. the page zoom level for a
+  // WebContents) and, for a non-main-frame widget, the effect of the CSS "zoom"
+  // property applied to the embedding element (e.g. <iframe>) in the embedding
+  // document. 0 is the default value which results in 1.0 zoom factor.
+  // See WebFrameWidgetImpl::SetZoomLevel() for how this value is used.
   double zoom_level;
 
   // This represents the page's scale factor, which changes during pinch zoom.

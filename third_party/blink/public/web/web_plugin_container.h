@@ -139,7 +139,8 @@ class WebPluginContainer {
 
   // PageScaleFactor represents visual viewport pinch zoom.
   virtual float PageScaleFactor() = 0;
-  // LayoutZoomFactor represents hardware device pixel ratio and browser zoom.
+  // LayoutZoomFactor represents hardware device pixel ratio, browser zoom and,
+  // the effect of the CSS "zoom" property applied to ancestors.
   virtual float LayoutZoomFactor() = 0;
 
   // Sets the layer representing the plugin for compositing. The

@@ -2667,8 +2667,6 @@ crbug.com/335769262 [ Mac14-arm64 ] external/wpt/html/canvas/element/manual/draw
 crbug.com/335769262 [ Mac13-arm64 ] external/wpt/html/canvas/element/manual/drawing-images-to-the-canvas/image-orientation/drawImage-from-blob.tentative.html [ Failure ]
 crbug.com/335769262 [ Mac12-arm64 ] external/wpt/html/canvas/element/manual/drawing-images-to-the-canvas/image-orientation/drawImage-from-blob.tentative.html [ Failure ]
 crbug.com/335769262 [ Mac11-arm64 ] external/wpt/html/canvas/element/manual/drawing-images-to-the-canvas/image-orientation/drawImage-from-blob.tentative.html [ Failure ]
-crbug.com/335246098 external/wpt/css/css-viewport/zoom/iframe-zoom-nested.html [ Failure ]
-crbug.com/335246098 external/wpt/css/css-viewport/zoom/iframe-zoom.sub.html [ Failure ]
 crbug.com/333976551 external/wpt/html/meta/refresh-time.html [ Failure Pass Timeout ]
 crbug.com/333971751 external/wpt/mathml/relations/css-styling/first-line-first-letter-pseudo-elements-002.html [ Failure ]
 crbug.com/333971751 external/wpt/mathml/relations/css-styling/first-line-first-letter-pseudo-elements-003.html [ Failure ]
@@ -3411,11 +3409,6 @@ crbug.com/1017164 external/wpt/css/css-text/word-break/word-break-normal-my-000.
 crbug.com/1017164 [ Linux ] external/wpt/css/css-text/word-break/word-break-normal-lo-000.html [ Failure ]
 crbug.com/1017164 [ Win ] external/wpt/css/css-text/word-break/word-break-normal-lo-000.html [ Failure ]
 crbug.com/1017164 external/wpt/css/css-text/word-break/word-break-normal-tdd-000.html [ Failure ]
-
-# Implement zoom for iframes
-crbug.com/329482480 external/wpt/css/zoom/iframe-zoom.sub.html [ Failure ]
-crbug.com/329482480 external/wpt/css/zoom/iframe-zoom-nested.html [ Failure ]
-
 
 crbug.com/1290460 [ Mac ] external/wpt/css/css-text/letter-spacing/letter-spacing-bengali-yaphala-001.html [ Failure ]
 crbug.com/1281208 external/wpt/css/css-text/hyphens/hyphenate-character-002.html [ Failure ]

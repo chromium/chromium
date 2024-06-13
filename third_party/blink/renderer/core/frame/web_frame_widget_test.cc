@@ -1620,10 +1620,10 @@ TEST_F(WebFrameWidgetSimTest, TestLineBoundsWithDifferentZoom) {
             border: 0;
           }
           html {
-            zoom: 1.1;
+            zoom: 1.2;
           }
         </style>
-        <div style='height: 100px;'></div>
+        <div style='height: 70px;'></div>
         <iframe src='https://example.com/child_frame.html'
                 id='child_frame' width='300px' height='300px'></iframe>)HTML");
   Compositor().BeginFrame();
@@ -1662,8 +1662,9 @@ TEST_F(WebFrameWidgetSimTest, TestLineBoundsWithDifferentZoom) {
       *test::ReadFromFile(test::CoreTestDataPath("Ahem.woff2")));
   Compositor().BeginFrame();
 
-  Vector<gfx::Rect> expected(Vector({gfx::Rect(
-      0, /* 100*1.1+40*1.5= */ 170, /* 40*1.5= */ 60, /* 10*1.5= */ 15)}));
+  Vector<gfx::Rect> expected(
+      Vector({gfx::Rect(0, /* 70*1.2+40*1.2*1.5= */ 156, /* 40*1.2*1.5= */ 72,
+                        /* 10*1.2*1.5= */ 18)}));
   Vector<gfx::Rect>& actual = widget->GetVisibleLineBoundsOnScreen();
   EXPECT_EQ(expected.size(), actual.size());
   for (wtf_size_t i = 0; i < expected.size(); ++i) {

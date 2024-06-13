@@ -639,6 +639,7 @@ class CORE_EXPORT WebViewImpl final : public WebView,
 
   double ClampZoomLevel(double zoom_level) const;
   double ZoomLevelToZoomFactor(double zoom_level, bool for_main_frame) const;
+  double ZoomFactorToZoomLevel(double zoom_factor) const;
 
  private:
   FRIEND_TEST_ALL_PREFIXES(WebFrameTest, DivScrollIntoEditableTest);

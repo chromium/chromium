@@ -1060,8 +1060,10 @@ void RemoteFrame::DidChangeScreenInfos(
   SynchronizeVisualProperties();
 }
 
-void RemoteFrame::ZoomLevelChanged(double zoom_level) {
-  pending_visual_properties_.zoom_level = zoom_level;
+void RemoteFrame::ZoomFactorChanged(double zoom_factor) {
+  pending_visual_properties_.zoom_level =
+      GetPage()->GetChromeClient().GetWebView()->ZoomFactorToZoomLevel(
+          zoom_factor);
   SynchronizeVisualProperties();
 }
 

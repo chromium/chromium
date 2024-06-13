@@ -2178,13 +2178,16 @@ double WebFrameWidgetImpl::GetZoomLevel() {
 }
 
 // There are four main values that go into zoom arithmetic:
-// - "zoom level", a log-based value which represents browser zoom level.
+//
+// - "zoom level", a log-based value which represents browser zoom level and
+//   also the effects of the CSS "zoom" property.
 // - kTextSizeMultiplierRatio, a hard-coded constant used as the log base for
 //   zoom level.
 // - Hardware device pixel ratio, which is stored on WebView as
 //   zoom_factor_for_device_scale_factor_.
-// - "zoom factor", which is calculated from the first three values, with
-//   override mechanisms for testing and device emulation.
+// - "zoom factor" (AKA "layout zoom factor"), which is calculated from the
+//   first three values, with override mechanisms for testing and device
+//   emulation.
 //
 // Here and elsewhere, the code tries to be consistent in its naming conventions
 // with respect to "zoom level" vs. "zoom factor".
@@ -2203,15 +2206,6 @@ void WebFrameWidgetImpl::SetZoomLevel(double zoom_level) {
       double zoom_factor =
           View()->ZoomLevelToZoomFactor(zoom_level, ForMainFrame());
       if (zoom_level_changed) {
-        // local_frame->SetPageZoomFactor() below will propagate to the
-        // connected LocalFrame tree, but not to RemoteFrames because they need
-        // zoom level (rather than zoom factor), which is not available to the
-        // LocalFrame.
-        ForEachRemoteFrameControlledByWidget(
-            [zoom_level](RemoteFrame* remote_frame) {
-              remote_frame->ZoomLevelChanged(zoom_level);
-            });
-
         // Set the layout shift exclusion window for the zoom level change.
         if (LocalFrameView* view = document->View()) {
           view->GetLayoutShiftTracker().NotifyZoomLevelChanged();
