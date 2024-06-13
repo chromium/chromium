@@ -719,38 +719,6 @@ fyi_mac_builder(
     ),
 )
 
-ci.builder(
-    name = "linux-rr-fyi",
-    description_html = "Runs top flaky tests using the rr tool and upload recorded traces.",
-    executable = "recipe:chromium/rr_test_launcher",
-    schedule = "with 3h interval",
-    triggered_by = [],
-    builder_spec = builder_config.builder_spec(
-        gclient_config = builder_config.gclient_config(
-            config = "chromium",
-        ),
-        chromium_config = builder_config.chromium_config(
-            config = "chromium",
-            apply_configs = ["mb"],
-            build_config = builder_config.build_config.RELEASE,
-            target_bits = 64,
-            target_platform = builder_config.target_platform.LINUX,
-        ),
-    ),
-    gn_args = gn_args.config(
-        configs = [
-            "remoteexec",
-            "release_builder",
-        ],
-    ),
-    os = os.LINUX_DEFAULT,
-    console_view_entry = consoles.console_view_entry(
-        category = "linux",
-        short_name = "linux-rr",
-    ),
-    contact_team_email = "chrome-browser-infra-team@google.com",
-)
-
 fyi_mac_builder(
     name = "mac13-wpt-chromium-rel",
     description_html = """\

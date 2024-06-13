@@ -315,7 +315,6 @@
     "linux-network-sandbox-rel": "ci/linux-network-sandbox-rel/gn-args.json",
     "linux-perfetto-rel": "ci/linux-perfetto-rel/gn-args.json",
     "linux-rel-no-external-ip": "ci/linux-rel-no-external-ip/gn-args.json",
-    "linux-rr-fyi": "ci/linux-rr-fyi/gn-args.json",
     "linux-upload-perfetto": "ci/linux-upload-perfetto/gn-args.json",
     "linux-wpt-chromium-rel": "ci/linux-wpt-chromium-rel/gn-args.json",
     "mac-osxbeta-rel": "ci/mac-osxbeta-rel/gn-args.json",
