@@ -6,6 +6,7 @@
 #define MEDIA_MOJO_COMMON_MOJO_DATA_PIPE_READ_WRITE_H_
 
 #include "base/memory/raw_ptr.h"
+#include "base/memory/raw_span.h"
 #include "mojo/public/cpp/system/data_pipe.h"
 #include "mojo/public/cpp/system/simple_watcher.h"
 
@@ -102,16 +103,10 @@ class MojoDataPipeWriter {
 
   // The current buffer to be written. It is provided by Write() and should be
   // guaranteed to be valid until the current write completes.
-  raw_ptr<const uint8_t, AllowPtrArithmetic> current_buffer_ = nullptr;
-
-  // The number of bytes to be written for the current write request.
-  uint32_t current_buffer_size_ = 0;
+  base::raw_span<const uint8_t> current_buffer_;
 
   // The current once callback to be called when write completes.
   DoneCB done_cb_;
-
-  // Number of bytes already written from the current buffer.
-  size_t bytes_written_ = 0;
 };
 
 }  // namespace media

@@ -6,6 +6,7 @@
 
 #include <memory>
 
+#include "base/compiler_specific.h"
 #include "base/functional/bind.h"
 #include "base/logging.h"
 #include "base/memory/ptr_util.h"
@@ -84,11 +85,19 @@ void MojoDataPipeReader::TryReadData(MojoResult result) {
   DCHECK_GT(current_buffer_size_, bytes_read_);
   size_t num_bytes = current_buffer_size_ - bytes_read_;
   if (current_buffer_) {
-    result = consumer_handle_->ReadData(current_buffer_ + bytes_read_,
-                                        &num_bytes, MOJO_READ_DATA_FLAG_NONE);
+    // SAFETY: Depending on the caller of Read to provide a valid ptr+size.
+    //
+    // TODO(lukasza): Consider removing the whole `MojoDataPipeReader` class:
+    // * It is only used from test code (from unit tests of
+    //   `MojoDataPipeWriter`)
+    // * It uses `UNSAFE_BUFFERS` + it is the only caller of `DiscardData`
+    base::span<uint8_t> buffer =
+        UNSAFE_BUFFERS(base::span(current_buffer_.get(), current_buffer_size_));
+    buffer = buffer.subspan(bytes_read_);
+    result =
+        consumer_handle_->ReadData(MOJO_READ_DATA_FLAG_NONE, buffer, num_bytes);
   } else {
-    result = consumer_handle_->ReadData(nullptr, &num_bytes,
-                                        MOJO_READ_DATA_FLAG_DISCARD);
+    result = consumer_handle_->DiscardData(num_bytes, num_bytes);
   }
 
   if (IsPipeReadWriteError(result)) {
@@ -162,7 +171,7 @@ void MojoDataPipeWriter::Write(const uint8_t* buffer,
                                DoneCB done_cb) {
   DVLOG(3) << __func__;
   // Write() can not be called when another writing request is in process.
-  DCHECK(!current_buffer_);
+  DCHECK(current_buffer_.empty());
   DCHECK(done_cb);
   if (!buffer_size) {
     std::move(done_cb).Run(true);
@@ -178,9 +187,9 @@ void MojoDataPipeWriter::Write(const uint8_t* buffer,
     return;
   }
 
-  current_buffer_ = buffer;
-  current_buffer_size_ = size_t{buffer_size};
-  bytes_written_ = 0;
+  // TODO(lukasza): Take `span` instead of `buffer` + `buffer_size`.
+  current_buffer_ =
+      UNSAFE_BUFFERS(base::span<const uint8_t>(buffer, size_t{buffer_size}));
   done_cb_ = std::move(done_cb);
   // Try writing data immediately to reduce latency.
   TryWriteData(MOJO_RESULT_OK);
@@ -192,19 +201,17 @@ void MojoDataPipeWriter::TryWriteData(MojoResult result) {
     return;
   }
 
-  DCHECK(current_buffer_);
-  DCHECK_GT(current_buffer_size_, bytes_written_);
-  size_t num_bytes = current_buffer_size_ - bytes_written_;
-
-  result = producer_handle_->WriteData(current_buffer_ + bytes_written_,
-                                       &num_bytes, MOJO_WRITE_DATA_FLAG_NONE);
+  DCHECK(!current_buffer_.empty());
+  size_t actually_written_bytes = 0;
+  result = producer_handle_->WriteData(
+      current_buffer_, MOJO_WRITE_DATA_FLAG_NONE, actually_written_bytes);
   if (IsPipeReadWriteError(result)) {
     OnPipeError(result);
   } else {
     if (result == MOJO_RESULT_OK) {
-      DCHECK_GT(num_bytes, 0u);
-      bytes_written_ += num_bytes;
-      if (bytes_written_ == current_buffer_size_) {
+      DCHECK_GT(actually_written_bytes, 0u);
+      current_buffer_ = current_buffer_.subspan(actually_written_bytes);
+      if (current_buffer_.empty()) {
         CompleteCurrentWrite();
         return;
       }
@@ -216,7 +223,7 @@ void MojoDataPipeWriter::TryWriteData(MojoResult result) {
 void MojoDataPipeWriter::CompleteCurrentWrite() {
   DVLOG(4) << __func__;
   DCHECK(done_cb_);
-  current_buffer_ = nullptr;
+  current_buffer_ = base::span<const uint8_t>();
   std::move(done_cb_).Run(true);
 }
 
@@ -226,13 +233,10 @@ void MojoDataPipeWriter::OnPipeError(MojoResult result) {
 
   producer_handle_.reset();
 
-  if (current_buffer_) {
+  if (!current_buffer_.empty()) {
     DVLOG(1) << __func__ << ": writing to data pipe failed. result=" << result
-             << ", buffer size=" << current_buffer_size_
-             << ", num_bytes(written)=" << bytes_written_;
-    current_buffer_ = nullptr;
-    current_buffer_size_ = 0;
-    bytes_written_ = 0;
+             << ", current_buffer_.size()=" << current_buffer_.size();
+    current_buffer_ = base::span<const uint8_t>();
     DCHECK(done_cb_);
     std::move(done_cb_).Run(false);
   }

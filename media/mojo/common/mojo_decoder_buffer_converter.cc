@@ -267,14 +267,12 @@ void MojoDecoderBufferReader::ProcessPendingReads() {
       continue;
     }
 
-    // We may be starting to read a new buffer (|bytes_read_| == 0), or
-    // recovering from a previous partial read (|bytes_read_| > 0).
-    DCHECK_GT(buffer_size, bytes_read_);
-    size_t num_bytes = buffer_size - bytes_read_;
-
-    MojoResult result =
-        consumer_handle_->ReadData(buffer->writable_data() + bytes_read_,
-                                   &num_bytes, MOJO_WRITE_DATA_FLAG_NONE);
+    size_t actually_read_bytes = 0;
+    MojoResult result = consumer_handle_->ReadData(
+        MOJO_WRITE_DATA_FLAG_NONE,
+        // We may be starting to read a new buffer (|bytes_read_| == 0), or
+        // recovering from a previous partial read (|bytes_read_| > 0).
+        buffer->writable_span().subspan(bytes_read_), actually_read_bytes);
 
     if (IsPipeReadWriteError(result)) {
       OnPipeError(result);
@@ -287,9 +285,9 @@ void MojoDecoderBufferReader::ProcessPendingReads() {
     }
 
     DCHECK_EQ(result, MOJO_RESULT_OK);
-    DVLOG(4) << __func__ << ": " << num_bytes << " bytes read.";
-    DCHECK_GT(num_bytes, 0u);
-    bytes_read_ += num_bytes;
+    DVLOG(4) << __func__ << ": " << actually_read_bytes << " bytes read.";
+    DCHECK_GT(actually_read_bytes, 0u);
+    bytes_read_ += actually_read_bytes;
 
     // TODO(sandersd): Make sure there are no possible re-entrancy issues
     // here.
@@ -436,16 +434,17 @@ void MojoDecoderBufferWriter::ProcessPendingWrites() {
   while (!pending_buffers_.empty()) {
     DecoderBuffer* buffer = pending_buffers_.front().get();
 
-    size_t buffer_size = buffer->size();
-    DCHECK_GT(buffer_size, 0u) << "Unexpected EOS or empty buffer";
+    base::span<const uint8_t> bytes_to_write(*buffer);
+    DCHECK_GT(bytes_to_write.size(), 0u) << "Unexpected EOS or empty buffer";
 
     // We may be starting to write a new buffer (|bytes_written_| == 0), or
     // recovering from a previous partial write (|bytes_written_| > 0).
-    size_t num_bytes = buffer_size - bytes_written_;
-    DCHECK_GT(num_bytes, 0u);
+    bytes_to_write = bytes_to_write.subspan(bytes_written_);
+    DCHECK_GT(bytes_to_write.size(), 0u);
 
+    size_t actually_written_bytes = 0;
     MojoResult result = producer_handle_->WriteData(
-        buffer->data() + bytes_written_, &num_bytes, MOJO_WRITE_DATA_FLAG_NONE);
+        bytes_to_write, MOJO_WRITE_DATA_FLAG_NONE, actually_written_bytes);
 
     if (IsPipeReadWriteError(result)) {
       OnPipeError(result);
@@ -458,10 +457,10 @@ void MojoDecoderBufferWriter::ProcessPendingWrites() {
     }
 
     DCHECK_EQ(MOJO_RESULT_OK, result);
-    DVLOG(4) << __func__ << ": " << num_bytes << " bytes written.";
-    DCHECK_GT(num_bytes, 0u);
-    bytes_written_ += num_bytes;
-    if (bytes_written_ == buffer_size) {
+    DVLOG(4) << __func__ << ": " << actually_written_bytes << " bytes written.";
+    DCHECK_GT(actually_written_bytes, 0u);
+    bytes_written_ += actually_written_bytes;
+    if (actually_written_bytes == bytes_to_write.size()) {
       TRACE_EVENT_NESTABLE_ASYNC_END2(
           "media,gpu", "MojoDecoderBufferWriter::Write",
           buffer->timestamp().InMicroseconds(), "timestamp",
