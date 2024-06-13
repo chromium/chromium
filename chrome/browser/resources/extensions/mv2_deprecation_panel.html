@@ -49,7 +49,8 @@
         <div class="extension-buttons">
           <cr-button class="find-alternative-button"
               on-click="onFindAlternativeButtonClick_"
-              hidden="[[!item.recommendationsUrl]]">
+              hidden="[[!item.recommendationsUrl]]"
+              aria-label="[[getFindAlternativeButtonLabelFor_(item.name)]]">
             $i18n{mv2DeprecationPanelFindAlternativeButton}
             <iron-icon icon="cr:open-in-new" slot="suffix-icon"></iron-icon>
           </cr-button>

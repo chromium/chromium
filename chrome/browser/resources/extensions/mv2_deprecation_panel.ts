@@ -114,6 +114,15 @@ export class ExtensionsMv2DeprecationPanelElement extends I18nMixin
   }
 
   /**
+   * Returns the accessible label for the find alternative button corresponding
+   * to `extensionName`.
+   */
+  private getFindAlternativeButtonLabelFor_(extensionName: string): string {
+    return this.i18n(
+        'mv2DeprecationPanelFindAlternativeButtonAccLabel', extensionName);
+  }
+
+  /**
    * Triggers the panel dismissal when the dismiss button is clicked.
    */
   private onDismissButtonClick_() {
