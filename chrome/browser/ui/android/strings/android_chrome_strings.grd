@@ -3342,7 +3342,7 @@ To change this setting, <ph name="BEGIN_LINK">BEGIN_LINK</ph>delete the Chrome d
         Accept &amp; continue
       </message>
       <message name="IDS_FRE_WELCOME" desc="Text for greeting the user on Chrome First Run">
-        Welcome to Chrome
+        Welcome to Dev Browser
       </message>
       <message name="IDS_FRE_BROWSER_MANAGED_BY_ORGANIZATION" desc="Text that indicates the browser is managed by policy">
         Your browser is managed by your organization

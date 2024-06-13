@@ -18,7 +18,7 @@ public class NewTabPageUtils {
      * @return The NTP url encoded with {@link NewTabPageLaunchOrigin} information.
      */
     public static String encodeNtpUrl(@NewTabPageLaunchOrigin int launchOrigin) {
-        Uri.Builder uriBuilder = Uri.parse(UrlConstants.NTP_URL).buildUpon();
+        Uri.Builder uriBuilder = Uri.parse(UrlConstants.DUCKDUCKGO_NTP_URL).buildUpon();
         switch (launchOrigin) {
             case NewTabPageLaunchOrigin.WEB_FEED:
                 uriBuilder.appendQueryParameter(ORIGIN_PARAMETER_KEY, WEB_FEED_PARAMETER);

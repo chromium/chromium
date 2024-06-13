@@ -110,7 +110,8 @@
       "suggest_url": "https://duckduckgo.com/ac/?q={searchTerms}&type=list",
       "new_tab_url": "https://duckduckgo.com/chrome_newtab",
       "type": "SEARCH_ENGINE_DUCKDUCKGO",
-      "id": 92
+      "id": 92,
+      "default":true
     },
 
     "ecosia": {

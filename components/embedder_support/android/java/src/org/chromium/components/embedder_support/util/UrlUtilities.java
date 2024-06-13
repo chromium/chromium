@@ -278,7 +278,8 @@ public class UrlUtilities {
     public static boolean isNtpUrl(GURL gurl) {
         if (!gurl.isValid() || !isInternalScheme(gurl)) return false;
         return UrlConstants.NTP_HOST.equals(gurl.getHost())
-                || UrlConstants.NEW_TAB_PAGE_URL_LEGACY.equals(gurl.getValidSpecOrEmpty());
+                || UrlConstants.NEW_TAB_PAGE_URL_LEGACY.equals(gurl.getValidSpecOrEmpty())
+                || UrlConstants.DUCKDUCKGO_NTP_URL.equals(gurl.getValidSpecOrEmpty());
     }
 
     /**
@@ -296,7 +297,7 @@ public class UrlUtilities {
         // We need to fixup the URL to handle about: schemes and transform them into the equivalent
         // chrome:// scheme so that GURL parses the host correctly.
         GURL gurl = UrlFormatter.fixupUrl(url);
-        return isNtpUrl(gurl);
+        return isNtpUrl(gurl) || url.equals(UrlConstants.DUCKDUCKGO_NTP_URL);
     }
 
     /**
@@ -317,7 +318,8 @@ public class UrlUtilities {
         if (LibraryLoader.getInstance().isInitialized()) return isNtpUrl(url);
         return TextUtils.equals(url, UrlConstants.NTP_URL)
                 || TextUtils.equals(url, UrlConstants.NTP_NON_NATIVE_URL)
-                || TextUtils.equals(url, UrlConstants.NTP_ABOUT_URL);
+                || TextUtils.equals(url, UrlConstants.NTP_ABOUT_URL)
+		|| TextUtils.equals(url, UrlConstants.DUCKDUCKGO_NTP_URL);
     }
 
     public static String extractPublisherFromPublisherUrl(GURL publisherUrl) {

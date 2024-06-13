@@ -52,6 +52,7 @@ public class UrlConstants {
     public static final String NTP_URL = "chrome-native://newtab/";
     public static final String NTP_NON_NATIVE_URL = "chrome://newtab/";
     public static final String NTP_ABOUT_URL = "about:newtab";
+    public static final String DUCKDUCKGO_NTP_URL = "https://duckduckgo.com/";
 
     // Don't use this URL. The constant is added for legacy reasons.
     public static final String NEW_TAB_PAGE_URL_LEGACY = "chrome://new-tab-page/";

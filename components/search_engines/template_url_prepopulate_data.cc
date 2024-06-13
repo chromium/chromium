@@ -325,7 +325,7 @@ std::unique_ptr<TemplateURLData> GetPrepopulatedFallbackSearch(
     PrefService* prefs,
     search_engines::SearchEngineChoiceService* search_engine_choice_service) {
   return FindPrepopulatedEngineInternal(prefs, search_engine_choice_service,
-                                        google.id,
+                                        duckduckgo.id,
                                         /*use_first_as_fallback=*/true);
 }
 
