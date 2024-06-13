@@ -380,26 +380,40 @@ UScriptCode GetScript(int ucs4) {
   return script;
 }
 
-const UChar* GetFontBasedOnUnicodeBlock(UBlockCode block_code,
-                                        const SkFontMgr& font_manager) {
+const UChar* FirstAvailableEmojiFont(const SkFontMgr& font_manager) {
   static const UChar* const kEmojiFonts[] = {u"Segoe UI Emoji",
                                              u"Segoe UI Symbol"};
+  static const UChar* emoji_font = nullptr;
+  static std::once_flag once_flag;
+  std::call_once(once_flag, [&] {
+    emoji_font = FirstAvailableFont(kEmojiFonts, font_manager);
+  });
+  return emoji_font;
+}
+
+const UChar* FirstAvailableMathFont(const SkFontMgr& font_manager) {
   static const UChar* const kMathFonts[] = {u"Cambria Math", u"Segoe UI Symbol",
                                             u"Code2000"};
-  static const UChar* const kSymbolFont = u"Segoe UI Symbol";
-  static const UChar* emoji_font = nullptr;
   static const UChar* math_font = nullptr;
-  static bool initialized = false;
-  if (!initialized) {
-    emoji_font = FirstAvailableFont(kEmojiFonts, font_manager);
+  static std::once_flag once_flag;
+  std::call_once(once_flag, [&] {
     math_font = FirstAvailableFont(kMathFonts, font_manager);
-    initialized = true;
-  }
+  });
+  return math_font;
+}
 
+const AtomicString& GetEmojiFont(const SkFontMgr& font_manager) {
+  DEFINE_THREAD_SAFE_STATIC_LOCAL(AtomicString, kEmojiFont,
+                                  (FirstAvailableEmojiFont(font_manager)));
+  return kEmojiFont;
+}
+
+const AtomicString& GetFontBasedOnUnicodeBlock(UBlockCode block_code,
+                                               const SkFontMgr& font_manager) {
   switch (block_code) {
     case UBLOCK_EMOTICONS:
     case UBLOCK_ENCLOSED_ALPHANUMERIC_SUPPLEMENT:
-      return emoji_font;
+      return GetEmojiFont(font_manager);
     case UBLOCK_PLAYING_CARDS:
     case UBLOCK_MISCELLANEOUS_SYMBOLS:
     case UBLOCK_MISCELLANEOUS_SYMBOLS_AND_ARROWS:
@@ -407,8 +421,11 @@ const UChar* GetFontBasedOnUnicodeBlock(UBlockCode block_code,
     case UBLOCK_TRANSPORT_AND_MAP_SYMBOLS:
     case UBLOCK_ALCHEMICAL_SYMBOLS:
     case UBLOCK_DINGBATS:
-    case UBLOCK_GOTHIC:
+    case UBLOCK_GOTHIC: {
+      DEFINE_THREAD_SAFE_STATIC_LOCAL(AtomicString, kSymbolFont,
+                                      ("Segoe UI Symbol"));
       return kSymbolFont;
+    }
     case UBLOCK_ARROWS:
     case UBLOCK_MATHEMATICAL_OPERATORS:
     case UBLOCK_MISCELLANEOUS_TECHNICAL:
@@ -420,10 +437,13 @@ const UChar* GetFontBasedOnUnicodeBlock(UBlockCode block_code,
     case UBLOCK_SUPPLEMENTAL_MATHEMATICAL_OPERATORS:
     case UBLOCK_MATHEMATICAL_ALPHANUMERIC_SYMBOLS:
     case UBLOCK_ARABIC_MATHEMATICAL_ALPHABETIC_SYMBOLS:
-    case UBLOCK_GEOMETRIC_SHAPES_EXTENDED:
-      return math_font;
+    case UBLOCK_GEOMETRIC_SHAPES_EXTENDED: {
+      DEFINE_THREAD_SAFE_STATIC_LOCAL(AtomicString, kMathFont,
+                                      (FirstAvailableMathFont(font_manager)));
+      return kMathFont;
+    }
     default:
-      return 0;
+      return g_null_atom;
   }
 }
 
@@ -480,12 +500,18 @@ AtomicString GetFallbackFamily(UChar32 character,
                                const SkFontMgr& font_manager,
                                UScriptCode& script_out) {
   DCHECK(character);
-  UBlockCode block = fallback_priority == FontFallbackPriority::kEmojiEmoji
-                         ? UBLOCK_EMOTICONS
-                         : ublock_getCode(character);
-  if (const UChar* family = GetFontBasedOnUnicodeBlock(block, font_manager)) {
-    script_out = USCRIPT_INVALID_CODE;
-    return AtomicString(family);
+  if (UNLIKELY(fallback_priority == FontFallbackPriority::kEmojiEmoji)) {
+    if (const AtomicString& family = GetEmojiFont(font_manager)) {
+      script_out = USCRIPT_INVALID_CODE;
+      return family;
+    }
+  } else {
+    const UBlockCode block = ublock_getCode(character);
+    if (const AtomicString& family =
+            GetFontBasedOnUnicodeBlock(block, font_manager)) {
+      script_out = USCRIPT_INVALID_CODE;
+      return family;
+    }
   }
 
   UScriptCode script = GetScript(character);
