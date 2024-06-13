@@ -121,9 +121,9 @@ def _GenerateClasspathEntry(kind, path):
 
 def _GenerateClasspathFile(source_dirs, libs):
   classpath = xml.etree.ElementTree.Element('classpath')
-  for source_dir in source_dirs:
+  for source_dir in sorted(source_dirs):
     classpath.append(_GenerateClasspathEntry('src', source_dir))
-  for lib in libs:
+  for lib in sorted(libs):
     classpath.append(_GenerateClasspathEntry('lib', lib))
 
   xml.etree.ElementTree.ElementTree(classpath).write(sys.stdout,
