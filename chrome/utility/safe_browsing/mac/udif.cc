@@ -11,12 +11,10 @@
 
 #include <algorithm>
 #include <memory>
-#include <optional>
 #include <utility>
 
 #include "base/apple/foundation_util.h"
 #include "base/apple/scoped_cftyperef.h"
-#include "base/containers/span.h"
 #include "base/logging.h"
 #include "base/memory/raw_ptr.h"
 #include "base/notreached.h"
@@ -294,7 +292,7 @@ class UDIFPartitionReadStream : public ReadStream {
 
   ~UDIFPartitionReadStream() override;
 
-  bool Read(base::span<uint8_t> buf, size_t* bytes_read) override;
+  bool Read(uint8_t* buffer, size_t buffer_size, size_t* bytes_read) override;
   // Seek only supports SEEK_SET and SEEK_CUR.
   off_t Seek(off_t offset, int whence) override;
 
@@ -320,7 +318,7 @@ class UDIFBlockChunkReadStream : public ReadStream {
 
   ~UDIFBlockChunkReadStream() override;
 
-  bool Read(base::span<uint8_t> buf, size_t* bytes_read) override;
+  bool Read(uint8_t* buffer, size_t buffer_size, size_t* bytes_read) override;
   // Seek only supports SEEK_SET.
   off_t Seek(off_t offset, int whence) override;
 
@@ -330,17 +328,18 @@ class UDIFBlockChunkReadStream : public ReadStream {
   size_t length_in_bytes() const { return length_in_bytes_; }
 
  private:
-  bool CopyOutZeros(base::span<uint8_t> buf, size_t* bytes_read);
-  bool CopyOutUncompressed(base::span<uint8_t> buf, size_t* bytes_read);
-  bool CopyOutDecompressed(base::span<uint8_t> buf, size_t* bytes_read);
-  bool HandleADC(base::span<uint8_t> buf, size_t* bytes_read);
-  bool HandleZLib(base::span<uint8_t> buf, size_t* bytes_read);
-  bool HandleBZ2(base::span<uint8_t> buf, size_t* bytes_read);
+  bool CopyOutZeros(uint8_t* buffer, size_t buffer_size, size_t* bytes_read);
+  bool CopyOutUncompressed(
+      uint8_t* buffer, size_t buffer_size, size_t* bytes_read);
+  bool CopyOutDecompressed(
+      uint8_t* buffer, size_t buffer_size, size_t* bytes_read);
+  bool HandleADC(uint8_t* buffer, size_t buffer_size, size_t* bytes_read);
+  bool HandleZLib(uint8_t* buffer, size_t buffer_size, size_t* bytes_read);
+  bool HandleBZ2(uint8_t* buffer, size_t buffer_size, size_t* bytes_read);
 
   // Reads from |stream_| |chunk_->compressed_length| bytes, starting at
-  // |chunk_->compressed_offset|. Returns (possibly empty) vector containing
-  // data, or nullopt on error.
-  std::optional<std::vector<uint8_t>> ReadCompressedData();
+  // |chunk_->compressed_offset| into |out_data|.
+  bool ReadCompressedData(std::vector<uint8_t>* out_data);
 
   const raw_ptr<ReadStream> stream_;           // The UDIF stream.
   const raw_ptr<const UDIFBlockChunk> chunk_;  // The chunk to be read.
@@ -423,7 +422,7 @@ bool UDIFParser::ParseBlkx() {
   if (trailer_start == -1)
     return false;
 
-  if (!stream_->ReadType(trailer)) {
+  if (!stream_->ReadType(&trailer)) {
     DLOG(ERROR) << "Failed to read UDIFResourceFile";
     return false;
   }
@@ -452,7 +451,8 @@ bool UDIFParser::ParseBlkx() {
   if (stream_->Seek(trailer.plist_offset, SEEK_SET) == -1)
     return false;
 
-  if (trailer.plist_length == 0 || !stream_->ReadExact(plist_bytes)) {
+  if (trailer.plist_length == 0 ||
+      !stream_->ReadExact(plist_bytes.data(), trailer.plist_length)) {
     DLOG(ERROR) << "Failed to read blkx plist data";
     return false;
   }
@@ -584,7 +584,8 @@ bool UDIFParser::ParseBlkx() {
 
       size_t bytes_read = 0;
 
-      if (!stream_->Read(signature_blob_, &bytes_read)) {
+      if (!stream_->Read(signature_blob_.data(), trailer.code_signature_length,
+                         &bytes_read)) {
         DLOG(ERROR) << "Failed to read raw signature bytes";
         return false;
       }
@@ -614,9 +615,10 @@ UDIFPartitionReadStream::UDIFPartitionReadStream(
 
 UDIFPartitionReadStream::~UDIFPartitionReadStream() {}
 
-bool UDIFPartitionReadStream::Read(base::span<uint8_t> buf,
+bool UDIFPartitionReadStream::Read(uint8_t* buffer,
+                                   size_t buffer_size,
                                    size_t* bytes_read) {
-  size_t buffer_space_remaining = buf.size();
+  size_t buffer_space_remaining = buffer_size;
   *bytes_read = 0;
 
   for (uint32_t i = current_chunk_; i < block_->chunk_count(); ++i) {
@@ -640,7 +642,8 @@ bool UDIFPartitionReadStream::Read(base::span<uint8_t> buf,
     DCHECK_EQ(chunk, chunk_stream_->chunk());
 
     size_t chunk_bytes_read = 0;
-    if (!chunk_stream_->Read(buf.last(buffer_space_remaining),
+    if (!chunk_stream_->Read(&buffer[buffer_size - buffer_space_remaining],
+                             buffer_space_remaining,
                              &chunk_bytes_read)) {
       DLOG(ERROR) << "Failed to read " << buffer_space_remaining << " bytes "
                   << "from chunk " << i;
@@ -742,20 +745,21 @@ UDIFBlockChunkReadStream::UDIFBlockChunkReadStream(ReadStream* stream,
 UDIFBlockChunkReadStream::~UDIFBlockChunkReadStream() {
 }
 
-bool UDIFBlockChunkReadStream::Read(base::span<uint8_t> buf,
+bool UDIFBlockChunkReadStream::Read(uint8_t* buffer,
+                                    size_t buffer_size,
                                     size_t* bytes_read) {
   switch (chunk_->type) {
     case UDIFBlockChunk::Type::ZERO_FILL:
     case UDIFBlockChunk::Type::IGNORED:
-      return CopyOutZeros(buf, bytes_read);
+      return CopyOutZeros(buffer, buffer_size, bytes_read);
     case UDIFBlockChunk::Type::UNCOMPRESSED:
-      return CopyOutUncompressed(buf, bytes_read);
+      return CopyOutUncompressed(buffer, buffer_size, bytes_read);
     case UDIFBlockChunk::Type::COMPRESS_ADC:
-      return HandleADC(buf, bytes_read);
+      return HandleADC(buffer, buffer_size, bytes_read);
     case UDIFBlockChunk::Type::COMPRESS_ZLIB:
-      return HandleZLib(buf, bytes_read);
+      return HandleZLib(buffer, buffer_size, bytes_read);
     case UDIFBlockChunk::Type::COMPRESSS_BZ2:
-      return HandleBZ2(buf, bytes_read);
+      return HandleBZ2(buffer, buffer_size, bytes_read);
     case UDIFBlockChunk::Type::COMMENT:
       NOTREACHED_IN_MIGRATION();
       break;
@@ -774,62 +778,60 @@ off_t UDIFBlockChunkReadStream::Seek(off_t offset, int whence) {
   return offset_;
 }
 
-bool UDIFBlockChunkReadStream::CopyOutZeros(base::span<uint8_t> buf,
+bool UDIFBlockChunkReadStream::CopyOutZeros(uint8_t* buffer,
+                                            size_t buffer_size,
                                             size_t* bytes_read) {
-  *bytes_read = std::min(buf.size(), length_in_bytes_ - offset_);
-  bzero(buf.data(), *bytes_read);
+  *bytes_read = std::min(buffer_size, length_in_bytes_ - offset_);
+  bzero(buffer, *bytes_read);
   offset_ += *bytes_read;
   return true;
 }
 
-bool UDIFBlockChunkReadStream::CopyOutUncompressed(base::span<uint8_t> buf,
+bool UDIFBlockChunkReadStream::CopyOutUncompressed(uint8_t* buffer,
+                                                   size_t buffer_size,
                                                    size_t* bytes_read) {
-  *bytes_read = std::min(buf.size(), length_in_bytes_ - offset_);
+  *bytes_read = std::min(buffer_size, length_in_bytes_ - offset_);
 
-  if (*bytes_read == 0) {
+  if (*bytes_read == 0)
     return true;
-  }
 
   uint64_t offset = chunk_->compressed_offset + offset_;
-  if (stream_->Seek(offset, SEEK_SET) == -1) {
+  if (stream_->Seek(offset, SEEK_SET) == -1)
     return false;
-  }
 
-  bool rv = stream_->Read(buf.first(*bytes_read), bytes_read);
-  if (rv) {
+  bool rv = stream_->Read(buffer, *bytes_read, bytes_read);
+  if (rv)
     offset_ += *bytes_read;
-  } else {
+  else
     DLOG(ERROR) << "Failed to read uncompressed chunk data";
-  }
   return rv;
 }
 
-bool UDIFBlockChunkReadStream::CopyOutDecompressed(base::span<uint8_t> buf,
+bool UDIFBlockChunkReadStream::CopyOutDecompressed(uint8_t* buffer,
+                                                   size_t buffer_size,
                                                    size_t* bytes_read) {
   DCHECK(did_decompress_);
-  *bytes_read = std::min(buf.size(), decompress_buffer_.size() - offset_);
-  base::span<uint8_t> src_data =
-      base::span(decompress_buffer_).subspan(offset_, *bytes_read);
-  buf.first(*bytes_read).copy_from(src_data);
+  *bytes_read = std::min(buffer_size, decompress_buffer_.size() - offset_);
+  memcpy(buffer, &decompress_buffer_[offset_], *bytes_read);
   offset_ += *bytes_read;
   return true;
 }
 
-bool UDIFBlockChunkReadStream::HandleADC(base::span<uint8_t> buf,
+bool UDIFBlockChunkReadStream::HandleADC(uint8_t* buffer,
+                                         size_t buffer_size,
                                          size_t* bytes_read) {
   // TODO(rsesek): Implement ADC handling.
   NOTIMPLEMENTED();
   return false;
 }
 
-bool UDIFBlockChunkReadStream::HandleZLib(base::span<uint8_t> buf,
+bool UDIFBlockChunkReadStream::HandleZLib(uint8_t* buffer,
+                                          size_t buffer_size,
                                           size_t* bytes_read) {
   if (!did_decompress_) {
-    auto compressed_data_or_error = ReadCompressedData();
-    if (!compressed_data_or_error.has_value()) {
+    std::vector<uint8_t> compressed_data(chunk_->compressed_length, 0);
+    if (!ReadCompressedData(&compressed_data))
       return false;
-    }
-    std::vector<uint8_t>& compressed_data = compressed_data_or_error.value();
 
     z_stream zlib = {};
     if (inflateInit(&zlib) != Z_OK) {
@@ -838,9 +840,9 @@ bool UDIFBlockChunkReadStream::HandleZLib(base::span<uint8_t> buf,
     }
 
     decompress_buffer_.resize(length_in_bytes_);
-    zlib.next_in = compressed_data.data();
+    zlib.next_in = &compressed_data[0];
     zlib.avail_in = compressed_data.size();
-    zlib.next_out = decompress_buffer_.data();
+    zlib.next_out = &decompress_buffer_[0];
     zlib.avail_out = decompress_buffer_.size();
 
     int rv = inflate(&zlib, Z_FINISH);
@@ -854,17 +856,16 @@ bool UDIFBlockChunkReadStream::HandleZLib(base::span<uint8_t> buf,
     did_decompress_ = true;
   }
 
-  return CopyOutDecompressed(buf, bytes_read);
+  return CopyOutDecompressed(buffer, buffer_size, bytes_read);
 }
 
-bool UDIFBlockChunkReadStream::HandleBZ2(base::span<uint8_t> buf,
-                                         size_t* bytes_read) {
+bool UDIFBlockChunkReadStream::HandleBZ2(uint8_t* buffer,
+                                          size_t buffer_size,
+                                          size_t* bytes_read) {
   if (!did_decompress_) {
-    auto compressed_data_or_error = ReadCompressedData();
-    if (!compressed_data_or_error.has_value()) {
+    std::vector<uint8_t> compressed_data(chunk_->compressed_length, 0);
+    if (!ReadCompressedData(&compressed_data))
       return false;
-    }
-    std::vector<uint8_t>& compressed_data = compressed_data_or_error.value();
 
     bz_stream bz = {};
     if (BZ2_bzDecompressInit(&bz, 0, 0) != BZ_OK) {
@@ -873,9 +874,9 @@ bool UDIFBlockChunkReadStream::HandleBZ2(base::span<uint8_t> buf,
     }
 
     decompress_buffer_.resize(length_in_bytes_);
-    bz.next_in = reinterpret_cast<char*>(compressed_data.data());
+    bz.next_in = reinterpret_cast<char*>(&compressed_data[0]);
     bz.avail_in = compressed_data.size();
-    bz.next_out = reinterpret_cast<char*>(decompress_buffer_.data());
+    bz.next_out = reinterpret_cast<char*>(&decompress_buffer_[0]);
     bz.avail_out = decompress_buffer_.size();
 
     int rv = BZ2_bzDecompress(&bz);
@@ -889,22 +890,22 @@ bool UDIFBlockChunkReadStream::HandleBZ2(base::span<uint8_t> buf,
     did_decompress_ = true;
   }
 
-  return CopyOutDecompressed(buf, bytes_read);
+  return CopyOutDecompressed(buffer, buffer_size, bytes_read);
 }
 
-std::optional<std::vector<uint8_t>>
-UDIFBlockChunkReadStream::ReadCompressedData() {
-  std::vector<uint8_t> data;
-  data.resize(chunk_->compressed_length);
+bool UDIFBlockChunkReadStream::ReadCompressedData(
+    std::vector<uint8_t>* out_data) {
+  DCHECK_EQ(chunk_->compressed_length, out_data->size());
 
-  if (stream_->Seek(chunk_->compressed_offset, SEEK_SET) == -1) {
-    return std::nullopt;
-  }
+  if (stream_->Seek(chunk_->compressed_offset, SEEK_SET) == -1)
+    return false;
 
-  if (!stream_->ReadExact(data)) {
-    return std::nullopt;
+  if (!stream_->ReadExact(&(*out_data)[0], out_data->size())) {
+    DLOG(ERROR) << "Failed to read chunk compressed data at "
+                << chunk_->compressed_offset;
+    return false;
   }
-  return data;
+  return true;
 }
 
 }  // namespace

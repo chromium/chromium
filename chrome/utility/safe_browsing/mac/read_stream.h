@@ -9,9 +9,8 @@
 #include <stdint.h>
 #include <unistd.h>
 
-#include <optional>
+#include <vector>
 
-#include "base/containers/span.h"
 #include "base/files/file.h"
 
 namespace safe_browsing {
@@ -22,20 +21,18 @@ class ReadStream {
  public:
   virtual ~ReadStream() {}
 
-  // Copies up to |buf.size()| bytes from the stream into |buf|.
-  // Returns |true| on success with the actual number of bytes written stored in
-  // |bytes_read| (which should be non-null). Returns |false| on error. At
-  // end-of-stream, returns |true| with |bytes_read| set to 0.
-  virtual bool Read(base::span<uint8_t> buf, size_t* bytes_read) = 0;
+  // Copies up to |size| bytes into |data|. Returns |true| on success with the
+  // actual number of bytes written stored in |size|. Returns |false| on error.
+  // At end-of-stream, returns |true| with |bytes_read| set to 0.
+  virtual bool Read(uint8_t* data, size_t size, size_t* bytes_read) = 0;
 
   // Calls |Read| but only returns true if the number of bytes read equals
-  // |buf.size()|.
-  bool ReadExact(base::span<uint8_t> buf);
+  // |size|.
+  bool ReadExact(uint8_t* data, size_t size);
 
-  // Reads bytes corresponding to exactly one T instance from the stream.
   template <typename T>
-  bool ReadType(T& t) {
-    return ReadExact(base::byte_span_from_ref(t));
+  bool ReadType(T* t) {
+    return ReadExact(reinterpret_cast<uint8_t*>(t), sizeof(T));
   }
 
   // Seeks the read stream to |offset| from |whence|. |whence| is a POSIX-style
@@ -56,7 +53,7 @@ class FileReadStream : public ReadStream {
   ~FileReadStream() override;
 
   // ReadStream:
-  bool Read(base::span<uint8_t> buf, size_t* bytes_read) override;
+  bool Read(uint8_t* data, size_t size, size_t* bytes_read) override;
   off_t Seek(off_t offset, int whence) override;
 
  private:
@@ -67,7 +64,7 @@ class FileReadStream : public ReadStream {
 // does not take ownership of the underlying byte array.
 class MemoryReadStream : public ReadStream {
  public:
-  explicit MemoryReadStream(base::span<const uint8_t> byte_buf);
+  MemoryReadStream(const uint8_t* data, size_t size);
 
   MemoryReadStream(const MemoryReadStream&) = delete;
   MemoryReadStream& operator=(const MemoryReadStream&) = delete;
@@ -75,24 +72,25 @@ class MemoryReadStream : public ReadStream {
   ~MemoryReadStream() override;
 
   // ReadStream:
-  bool Read(base::span<uint8_t> buf, size_t* bytes_read) override;
+  bool Read(uint8_t* data, size_t size, size_t* bytes_read) override;
   off_t Seek(off_t offset, int whence) override;
 
-  base::span<const uint8_t> byte_buf() const { return byte_buf_; }
+  const uint8_t* data() const { return data_; }
+  size_t size() const { return size_; }
 
  protected:
-  base::span<const uint8_t> byte_buf_;
+  const uint8_t* data_;
+  size_t size_;
   off_t offset_;
 };
 
-// Reads the given |stream| until end-of-stream is reached. Returns (possibly
-// empty) vector containing the data from the stream on success, or nullopt on
-// error.
-std::optional<std::vector<uint8_t>> ReadEntireStream(ReadStream& stream);
+// Reads the given |stream| until end-of-stream is reached, storying the read
+// bytes into |data|. Returns true on success and false on error.
+bool ReadEntireStream(ReadStream* stream, std::vector<uint8_t>* data);
 
 // CopyStreamToFile reads from `source` and writes the entire contents
 // of it into `dest`. Returns true on success and false on failure.
-bool CopyStreamToFile(ReadStream& source, base::File& dest);
+bool CopyStreamToFile(ReadStream* source, base::File& dest);
 
 }  // namespace dmg
 }  // namespace safe_browsing
