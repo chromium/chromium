@@ -6266,6 +6266,20 @@
           'isolated_scripts': 'chromium_win_rel_isolated_scripts',
         },
       },
+      'linux-win-cross-rel': {
+        'mixins': [
+          'win10',
+          'x86-64',
+        ],
+        'additional_compile_targets': [
+          'all',
+        ],
+        # TODO: crbug.com/346921029 - Support the same test suites with
+        # Win10 Tests x64.
+        'test_suites': {
+          'gtest_tests': 'chromium_gtests',
+        },
+      },
       'win-arm64-dbg': {
         'additional_compile_targets': [
           'all'

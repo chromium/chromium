@@ -48,8 +48,7 @@
           "group": "tryserver.chromium.win"
         }
       ],
-      "retry_failed_shards": true,
-      "targets_spec_directory": "src/infra/config/generated/builders/ci/linux-win-cross-rel/targets"
+      "retry_failed_shards": true
     }
   },
   "$build/reclient": {
