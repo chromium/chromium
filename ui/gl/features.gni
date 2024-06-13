@@ -11,10 +11,6 @@ declare_args() {
   # Should ANGLE be linked statically?
   use_static_angle = is_android || is_ios
 
-  # Should EGL support be compiled?
-  # Can be overriden to test during bring up of EGL support on other platforms.
-  use_egl = true
-
   # Should Dawn support be compiled to back the WebGPU implementation?
   # Also controls linking Dawn dependencies in such as SPIRV-Tools/SPIRV-Cross.
   use_dawn = is_apple || is_win || is_chromeos_ash ||

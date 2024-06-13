@@ -20,10 +20,6 @@ declare_args() {
   enable_gpu_service_logging = false
 }
 
-# TODO(344606399): Remove along with the declaration of use_egl when no other
-# references to the variable exist.
-assert(use_egl)
-
 if (is_android) {
   import("//build/config/android/config.gni")
   import("//build/config/android/rules.gni")
