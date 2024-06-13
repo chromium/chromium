@@ -262,8 +262,8 @@ WifiConfigurationBridge::ApplyIncrementalSyncChanges(
   return std::nullopt;
 }
 
-void WifiConfigurationBridge::GetData(StorageKeyList storage_keys,
-                                      DataCallback callback) {
+void WifiConfigurationBridge::GetDataForCommit(StorageKeyList storage_keys,
+                                               DataCallback callback) {
   auto batch = std::make_unique<syncer::MutableDataBatch>();
 
   for (const std::string& id : storage_keys) {
