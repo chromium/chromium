@@ -16,6 +16,12 @@
 
 namespace privacy_sandbox {
 
+enum class ReminderType {
+  kNone,    // Don't show a reminder.
+  kSilent,  // Check if a reminder would be shown.
+  kActive,  // Show a visual reminder.
+};
+
 class TrackingProtectionReminderService
     : TrackingProtectionOnboarding::Observer,
       public KeyedService {
@@ -36,6 +42,9 @@ class TrackingProtectionReminderService
       delete;
   TrackingProtectionReminderService& operator=(
       const TrackingProtectionReminderService&) = delete;
+
+  // Determines the type of reminder that should be experienced.
+  ReminderType GetReminderType();
 
   // KeyedService:
   void Shutdown() override;

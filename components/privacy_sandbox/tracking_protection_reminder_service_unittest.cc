@@ -6,6 +6,7 @@
 
 #include "base/feature_list.h"
 #include "base/test/scoped_feature_list.h"
+#include "base/test/task_environment.h"
 #include "components/prefs/testing_pref_service.h"
 #include "components/privacy_sandbox/privacy_sandbox_features.h"
 #include "components/privacy_sandbox/tracking_protection_prefs.h"
@@ -28,11 +29,13 @@ class MockTrackingProtectionReminderObserver
 
 class TrackingProtectionReminderServiceTest : public testing::Test {
  public:
-  TrackingProtectionReminderServiceTest() {
+  TrackingProtectionReminderServiceTest()
+      : task_env_(base::test::TaskEnvironment::TimeSource::MOCK_TIME) {
     tracking_protection::RegisterProfilePrefs(prefs()->registry());
   }
 
   void SetUp() override {
+    feature_list_.InitWithFeaturesAndParameters(GetEnabledFeatures(), {});
     tracking_protection_onboarding_service_ =
         std::make_unique<TrackingProtectionOnboarding>(
             prefs(), version_info::Channel::DEV);
@@ -60,8 +63,21 @@ class TrackingProtectionReminderServiceTest : public testing::Test {
   TestingPrefServiceSimple* prefs() { return &prefs_; }
 
  protected:
-  void RunOnboardingLogic(bool is_silent_onboarding) {
-    if (is_silent_onboarding) {
+  virtual std::vector<base::test::FeatureRefAndParams> GetEnabledFeatures() {
+    return {};
+  }
+
+  void ShowOnboardingNotice(bool is_silent) {
+    if (is_silent) {
+      onboarding_service()->MaybeMarkSilentEligible();
+      onboarding_service()->SilentOnboardingNoticeShown();
+    } else {
+      onboarding_service()->MaybeMarkEligible();
+      onboarding_service()->OnboardingNoticeShown();
+    }
+  }
+  void CallOnboardingObserver(bool is_silent) {
+    if (is_silent) {
       reminder_service()->OnTrackingProtectionSilentOnboardingUpdated(
           TrackingProtectionOnboarding::SilentOnboardingStatus::kOnboarded);
     } else {
@@ -70,6 +86,7 @@ class TrackingProtectionReminderServiceTest : public testing::Test {
     }
   }
 
+  base::test::TaskEnvironment task_env_;
   TestingPrefServiceSimple prefs_;
   std::unique_ptr<TrackingProtectionReminderService>
       tracking_protection_reminder_service_;
@@ -81,14 +98,9 @@ class TrackingProtectionReminderServiceTest : public testing::Test {
 class TrackingProtectionReminderServiceReminderTest
     : public TrackingProtectionReminderServiceTest,
       public testing::WithParamInterface<bool> {
- public:
-  TrackingProtectionReminderServiceReminderTest() {
-    feature_list_.InitWithFeaturesAndParameters(GetEnabledFeatures(), {});
-  }
-
- private:
-  std::vector<base::test::FeatureRefAndParams> GetEnabledFeatures() {
-    return {{kTrackingProtectionReminder, {{"is-silent-reminder", "false"}}}};
+  std::vector<base::test::FeatureRefAndParams> GetEnabledFeatures() override {
+    return {{kTrackingProtectionReminder,
+             {{"is-silent-reminder", "false"}, {"reminder-delay", "7d"}}}};
   }
 };
 
@@ -100,7 +112,7 @@ TEST_F(TrackingProtectionReminderServiceReminderTest,
           tracking_protection::TrackingProtectionReminderStatus::kUnset));
 
   // Simulate a regular onboarding experience.
-  RunOnboardingLogic(/*is_silent_onboarding=*/false);
+  CallOnboardingObserver(/*is_silent=*/false);
 
   // Expect this profile to see a regular reminder.
   EXPECT_EQ(
@@ -124,7 +136,7 @@ TEST_F(TrackingProtectionReminderServiceReminderTest,
                 tracking_protection::TrackingProtectionReminderStatus::kUnset));
 
   // Simulate a regular onboarding experience.
-  RunOnboardingLogic(/*is_silent_onboarding=*/false);
+  CallOnboardingObserver(/*is_silent=*/false);
 
   EXPECT_EQ(
       prefs()->GetInteger(prefs::kTrackingProtectionReminderStatus),
@@ -140,7 +152,7 @@ TEST_F(TrackingProtectionReminderServiceReminderTest, UpdatesStatusToInvalid) {
           tracking_protection::TrackingProtectionReminderStatus::kUnset));
 
   // Simulate a silent onboarding.
-  RunOnboardingLogic(/*is_silent_onboarding=*/true);
+  CallOnboardingObserver(/*is_silent=*/true);
 
   // We shouldn't show reminders after a silent onboarding, instead we should
   // end up in an invalid state.
@@ -157,7 +169,7 @@ TEST_P(TrackingProtectionReminderServiceReminderTest,
       static_cast<int>(tracking_protection::TrackingProtectionReminderStatus::
                            kFeatureDisabledSkipped));
 
-  RunOnboardingLogic(/*is_silent_onboarding=*/GetParam());
+  CallOnboardingObserver(/*is_silent=*/GetParam());
 
   // Check that the status did not change.
   EXPECT_EQ(
@@ -166,21 +178,38 @@ TEST_P(TrackingProtectionReminderServiceReminderTest,
                            kFeatureDisabledSkipped));
 }
 
+TEST_F(TrackingProtectionReminderServiceReminderTest,
+       ExpectsActiveReminderToBeExperienced) {
+  // The only valid case to see a active reminder would be on a non-silent
+  // onboarding.
+  ShowOnboardingNotice(/*is_silent=*/false);
+  CallOnboardingObserver(/*is_silent=*/false);
+
+  task_env_.FastForwardBy(base::Days(7));
+  EXPECT_EQ(reminder_service()->GetReminderType(), ReminderType::kActive);
+}
+
+TEST_F(TrackingProtectionReminderServiceReminderTest,
+       ExpectsNoReminderExperienceWhenOnboardingTimestampsNotSet) {
+  // By not calling `ShowOnboardingNotice` we will not be setting the
+  // timestamps.
+  CallOnboardingObserver(/*is_silent=*/false);
+
+  // Since the onboarding timestamp won't be set, we should always return
+  // `kNone`.
+  EXPECT_EQ(reminder_service()->GetReminderType(), ReminderType::kNone);
+}
+
 INSTANTIATE_TEST_SUITE_P(TrackingProtectionReminderServiceReminderTest,
                          TrackingProtectionReminderServiceReminderTest,
-                         /*is_silent_onboarding=*/testing::Bool());
+                         /*is_silent=*/testing::Bool());
 
 class TrackingProtectionReminderServiceSilentReminderTest
     : public TrackingProtectionReminderServiceTest,
       public testing::WithParamInterface<bool> {
- public:
-  TrackingProtectionReminderServiceSilentReminderTest() {
-    feature_list_.InitWithFeaturesAndParameters(GetEnabledFeatures(), {});
-  }
-
- private:
-  std::vector<base::test::FeatureRefAndParams> GetEnabledFeatures() {
-    return {{kTrackingProtectionReminder, {{"is-silent-reminder", "true"}}}};
+  std::vector<base::test::FeatureRefAndParams> GetEnabledFeatures() override {
+    return {{kTrackingProtectionReminder,
+             {{"is-silent-reminder", "true"}, {"reminder-delay", "7d"}}}};
   }
 };
 
@@ -191,7 +220,7 @@ TEST_P(TrackingProtectionReminderServiceSilentReminderTest,
       static_cast<int>(
           tracking_protection::TrackingProtectionReminderStatus::kUnset));
 
-  RunOnboardingLogic(/*is_silent_onboarding=*/GetParam());
+  CallOnboardingObserver(/*is_silent=*/GetParam());
 
   EXPECT_EQ(
       prefs()->GetInteger(prefs::kTrackingProtectionReminderStatus),
@@ -213,7 +242,7 @@ TEST_P(TrackingProtectionReminderServiceSilentReminderTest,
             static_cast<int>(
                 tracking_protection::TrackingProtectionReminderStatus::kUnset));
 
-  RunOnboardingLogic(/*is_silent_onboarding=*/GetParam());
+  CallOnboardingObserver(/*is_silent=*/GetParam());
 
   EXPECT_EQ(
       prefs()->GetInteger(prefs::kTrackingProtectionReminderStatus),
@@ -222,18 +251,22 @@ TEST_P(TrackingProtectionReminderServiceSilentReminderTest,
   testing::Mock::VerifyAndClearExpectations(&observer);
 }
 
+TEST_P(TrackingProtectionReminderServiceSilentReminderTest,
+       ExpectsSilentReminderToBeExperienced) {
+  ShowOnboardingNotice(/*is_silent=*/GetParam());
+  CallOnboardingObserver(/*is_silent=*/GetParam());
+
+  task_env_.FastForwardBy(base::Days(7));
+  EXPECT_EQ(reminder_service()->GetReminderType(), ReminderType::kSilent);
+}
+
 INSTANTIATE_TEST_SUITE_P(TrackingProtectionReminderServiceSilentReminderTest,
                          TrackingProtectionReminderServiceSilentReminderTest,
-                         /*is_silent_onboarding=*/testing::Bool());
+                         /*is_silent=*/testing::Bool());
 
 class TrackingProtectionReminderServiceDisabledReminderFeatureTest
     : public TrackingProtectionReminderServiceTest,
-      public testing::WithParamInterface<bool> {
- public:
-  TrackingProtectionReminderServiceDisabledReminderFeatureTest() {
-    feature_list_.InitWithFeaturesAndParameters({}, {});
-  }
-};
+      public testing::WithParamInterface<bool> {};
 
 TEST_P(TrackingProtectionReminderServiceDisabledReminderFeatureTest,
        SetsStatusToSkipped) {
@@ -242,7 +275,7 @@ TEST_P(TrackingProtectionReminderServiceDisabledReminderFeatureTest,
       static_cast<int>(
           tracking_protection::TrackingProtectionReminderStatus::kUnset));
 
-  RunOnboardingLogic(/*is_silent_onboarding=*/GetParam());
+  CallOnboardingObserver(/*is_silent=*/GetParam());
 
   EXPECT_EQ(
       prefs()->GetInteger(prefs::kTrackingProtectionReminderStatus),
@@ -264,7 +297,7 @@ TEST_P(TrackingProtectionReminderServiceDisabledReminderFeatureTest,
             static_cast<int>(
                 tracking_protection::TrackingProtectionReminderStatus::kUnset));
 
-  RunOnboardingLogic(/*is_silent_onboarding=*/GetParam());
+  CallOnboardingObserver(/*is_silent=*/GetParam());
 
   EXPECT_EQ(
       prefs()->GetInteger(prefs::kTrackingProtectionReminderStatus),
@@ -273,25 +306,39 @@ TEST_P(TrackingProtectionReminderServiceDisabledReminderFeatureTest,
   testing::Mock::VerifyAndClearExpectations(&observer);
 }
 
+TEST_P(TrackingProtectionReminderServiceDisabledReminderFeatureTest,
+       ExpectNoReminderExperience) {
+  prefs()->SetInteger(
+      prefs::kTrackingProtectionReminderStatus,
+      static_cast<int>(
+          tracking_protection::TrackingProtectionReminderStatus::kUnset));
+
+  ShowOnboardingNotice(/*is_silent=*/GetParam());
+  CallOnboardingObserver(/*is_silent=*/GetParam());
+
+  EXPECT_EQ(
+      prefs()->GetInteger(prefs::kTrackingProtectionReminderStatus),
+      static_cast<int>(tracking_protection::TrackingProtectionReminderStatus::
+                           kFeatureDisabledSkipped));
+  // Since the status != `kPendingReminder` we should always expect `kNone`.
+  EXPECT_EQ(reminder_service()->GetReminderType(), ReminderType::kNone);
+}
+
 INSTANTIATE_TEST_SUITE_P(
     TrackingProtectionReminderServiceDisabledReminderFeatureTest,
     TrackingProtectionReminderServiceDisabledReminderFeatureTest,
-    /*is_silent_onboarding=*/testing::Bool());
+    /*is_silent=*/testing::Bool());
 
 class TrackingProtectionReminderServiceModeBEnabledTest
     : public TrackingProtectionReminderServiceTest,
       public testing::WithParamInterface<bool> {
- public:
-  TrackingProtectionReminderServiceModeBEnabledTest() {
-    feature_list_.InitWithFeaturesAndParameters(GetEnabledFeatures(), {});
-  }
-
+ protected:
   void SetIsModeBUser(bool is_mode_b_user) {
     reminder_service()->is_mode_b_user_ = is_mode_b_user;
   }
 
  private:
-  std::vector<base::test::FeatureRefAndParams> GetEnabledFeatures() {
+  std::vector<base::test::FeatureRefAndParams> GetEnabledFeatures() override {
     return {{kTrackingProtectionReminder, {{}}}};
   }
 };
@@ -304,7 +351,7 @@ TEST_P(TrackingProtectionReminderServiceModeBEnabledTest,
                 tracking_protection::TrackingProtectionReminderStatus::kUnset));
 
   SetIsModeBUser(true);
-  RunOnboardingLogic(/*is_silent_onboarding=*/GetParam());
+  CallOnboardingObserver(/*is_silent=*/GetParam());
 
   EXPECT_EQ(
       prefs()->GetInteger(prefs::kTrackingProtectionReminderStatus),
@@ -327,7 +374,7 @@ TEST_P(TrackingProtectionReminderServiceModeBEnabledTest,
                 tracking_protection::TrackingProtectionReminderStatus::kUnset));
 
   SetIsModeBUser(true);
-  RunOnboardingLogic(/*is_silent_onboarding=*/GetParam());
+  CallOnboardingObserver(/*is_silent=*/GetParam());
 
   EXPECT_EQ(
       prefs()->GetInteger(prefs::kTrackingProtectionReminderStatus),
@@ -338,18 +385,12 @@ TEST_P(TrackingProtectionReminderServiceModeBEnabledTest,
 
 INSTANTIATE_TEST_SUITE_P(TrackingProtectionReminderServiceModeBEnabledTest,
                          TrackingProtectionReminderServiceModeBEnabledTest,
-                         /*is_silent_onboarding=*/testing::Bool());
+                         /*is_silent=*/testing::Bool());
 
 class TrackingProtectionReminderServiceObserverTest
     : public TrackingProtectionReminderServiceTest {
- public:
-  TrackingProtectionReminderServiceObserverTest() {
-    feature_list_.InitWithFeaturesAndParameters(GetEnabledFeatures(), {});
-  }
-
- private:
-  std::vector<base::test::FeatureRefAndParams> GetEnabledFeatures() {
-    return {{kTrackingProtectionReminder, {{}}}};
+  std::vector<base::test::FeatureRefAndParams> GetEnabledFeatures() override {
+    return {{kTrackingProtectionReminder, {{"is_silent_reminder", "false"}}}};
   }
 };
 
@@ -367,13 +408,75 @@ TEST_F(TrackingProtectionReminderServiceObserverTest,
             static_cast<int>(
                 tracking_protection::TrackingProtectionReminderStatus::kUnset));
 
-  RunOnboardingLogic(/*is_silent_onboarding=*/true);
+  CallOnboardingObserver(/*is_silent=*/true);
 
+  // Status should be `kInvalid``since we were silently onboarded and we expect
+  // a non-silent reminder.
   EXPECT_EQ(
       prefs()->GetInteger(prefs::kTrackingProtectionReminderStatus),
       static_cast<int>(
           tracking_protection::TrackingProtectionReminderStatus::kInvalid));
   testing::Mock::VerifyAndClearExpectations(&observer);
+}
+
+class TrackingProtectionReminderServiceReminderDelayTest
+    : public TrackingProtectionReminderServiceTest,
+      public testing::WithParamInterface<bool> {
+  std::vector<base::test::FeatureRefAndParams> GetEnabledFeatures() override {
+    return {{kTrackingProtectionReminder,
+             {{"is-silent-reminder", GetParam() ? "true" : "false"},
+              {"reminder-delay", "7d"}}}};
+  }
+};
+
+TEST_P(TrackingProtectionReminderServiceReminderDelayTest,
+       ReminderDelayNotMetNoReminderToBeExperienced) {
+  // Test only the non-silent route to avoid the invalid case of silent
+  // onboarding + active reminder.
+  ShowOnboardingNotice(/*is_silent=*/false);
+  CallOnboardingObserver(/*is_silent=*/false);
+
+  // Expected delay not met, we should always return `kNone`.
+  EXPECT_EQ(reminder_service()->GetReminderType(), ReminderType::kNone);
+}
+
+TEST_P(TrackingProtectionReminderServiceReminderDelayTest,
+       ExpectReminderToBeExperienced) {
+  // Test only the non-silent route to avoid the invalid case of silent
+  // onboarding + active reminder.
+  ShowOnboardingNotice(/*is_silent=*/false);
+  CallOnboardingObserver(/*is_silent=*/false);
+
+  // Fast forward to meet the expected reminder delay requirement.
+  task_env_.FastForwardBy(base::Days(7));
+  EXPECT_EQ(reminder_service()->GetReminderType(),
+            GetParam() ? ReminderType::kSilent : ReminderType::kActive);
+}
+
+INSTANTIATE_TEST_SUITE_P(TrackingProtectionReminderServiceReminderDelayTest,
+                         TrackingProtectionReminderServiceReminderDelayTest,
+                         /*is_silent_reminder=*/testing::Bool());
+
+class TrackingProtectionReminderServiceUnsetReminderDelayTest
+    : public TrackingProtectionReminderServiceTest {
+  std::vector<base::test::FeatureRefAndParams> GetEnabledFeatures() override {
+    return {{kTrackingProtectionReminder, {{}}}};
+  }
+};
+
+TEST_F(TrackingProtectionReminderServiceUnsetReminderDelayTest,
+       ReminderDelaySetToDefaultValue) {
+  ShowOnboardingNotice(/*is_silent=*/false);
+  CallOnboardingObserver(/*is_silent=*/false);
+
+  // Confirm that the reminder delay defaults to `TimeDelta::Max()`.
+  EXPECT_EQ(privacy_sandbox::kTrackingProtectionReminderDelay.Get(),
+            base::TimeDelta::Max());
+  // Fast forward some amount of time to ensure the default doesn't cross the
+  // threshold.
+  task_env_.FastForwardBy(base::Days(28));
+  // No reminder should be experienced since the threshold is unreachable.
+  EXPECT_EQ(reminder_service()->GetReminderType(), ReminderType::kNone);
 }
 
 }  // namespace privacy_sandbox

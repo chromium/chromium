@@ -258,6 +258,11 @@ BASE_DECLARE_FEATURE(kTrackingProtectionReminder);
 COMPONENT_EXPORT(PRIVACY_SANDBOX_FEATURES)
 extern const base::FeatureParam<bool> kTrackingProtectionIsSilentReminder;
 
+// Defines the required delay after onboarding to see a reminder.
+COMPONENT_EXPORT(PRIVACY_SANDBOX_FEATURES)
+extern const base::FeatureParam<base::TimeDelta>
+    kTrackingProtectionReminderDelay;
+
 // Enables tracking protection HaTS surveys.
 COMPONENT_EXPORT(PRIVACY_SANDBOX_FEATURES)
 BASE_DECLARE_FEATURE(kTrackingProtectionSentimentSurvey);

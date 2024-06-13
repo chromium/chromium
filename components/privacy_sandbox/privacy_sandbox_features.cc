@@ -226,6 +226,9 @@ BASE_FEATURE(kPrivateStateTokensDevUI,
              "PrivateStateTokensDevUI",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
+const base::FeatureParam<base::TimeDelta> kTrackingProtectionReminderDelay{
+    &kTrackingProtectionReminder, "reminder-delay", base::TimeDelta::Max()};
+
 BASE_FEATURE(kTrackingProtectionSentimentSurvey,
              "TrackingProtectionSentimentSurvey",
              base::FEATURE_DISABLED_BY_DEFAULT);

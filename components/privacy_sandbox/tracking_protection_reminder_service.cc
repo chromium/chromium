@@ -5,6 +5,7 @@
 #include "components/privacy_sandbox/tracking_protection_reminder_service.h"
 
 #include "base/feature_list.h"
+#include "base/time/time_delta_from_string.h"
 #include "components/prefs/pref_service.h"
 #include "components/privacy_sandbox/privacy_sandbox_features.h"
 #include "tracking_protection_prefs.h"
@@ -28,6 +29,25 @@ void SetReminderStatus(
     tracking_protection::TrackingProtectionReminderStatus status) {
   pref_service->SetInteger(prefs::kTrackingProtectionReminderStatus,
                            static_cast<int>(status));
+}
+
+std::optional<base::Time> MaybeGetOnboardedTimestamp(
+    TrackingProtectionOnboarding* onboarding_service) {
+  std::optional<base::Time> onboarded_timestamp =
+      onboarding_service->GetOnboardingTimestamp();
+  if (onboarded_timestamp.has_value()) {
+    return onboarded_timestamp;
+  }
+  return onboarding_service->GetSilentOnboardingTimestamp();
+}
+
+base::TimeDelta GetReminderDelay() {
+  return privacy_sandbox::kTrackingProtectionReminderDelay.Get();
+}
+
+bool HasEnoughTimePassed(base::Time onboarded_timestamp) {
+  base::TimeDelta reminder_delay = GetReminderDelay();
+  return base::Time::Now() >= onboarded_timestamp + reminder_delay;
 }
 
 tracking_protection::TrackingProtectionReminderStatus GetReminderStatus(
@@ -58,7 +78,7 @@ void MaybeUpdateReminderStatus(PrefService* pref_service,
   if (was_silently_onboarded && !ShouldReminderBeSilent()) {
     // We shouldn't show a reminder for silent onboardings unless it's a silent
     // reminder.
-    // TODO(b/332764120): Emit an event to track this case.
+    // TODO(crbug.com/332764120): Emit a event to track this case.
     SetReminderStatus(
         pref_service,
         tracking_protection::TrackingProtectionReminderStatus::kInvalid);
@@ -90,6 +110,29 @@ TrackingProtectionReminderService::TrackingProtectionReminderService(
 
 TrackingProtectionReminderService::~TrackingProtectionReminderService() =
     default;
+
+ReminderType TrackingProtectionReminderService::GetReminderType() {
+  if (GetReminderStatus(pref_service_) !=
+      tracking_protection::TrackingProtectionReminderStatus::kPendingReminder) {
+    return ReminderType::kNone;
+  }
+
+  auto onboarded_timestamp = MaybeGetOnboardedTimestamp(onboarding_service_);
+  if (!onboarded_timestamp.has_value()) {
+    // This condition should only fail if the profile has not been onboarded.
+    // TODO(crbug.com/332764120): Emit a metric detailing that we tried checking
+    // if we should show a reminder for a profile that was not onboarded.
+    return ReminderType::kNone;
+  }
+
+  if (!HasEnoughTimePassed(*onboarded_timestamp)) {
+    // Not enough time has passed to show the reminder.
+    return ReminderType::kNone;
+  }
+
+  return ShouldReminderBeSilent() ? ReminderType::kSilent
+                                  : ReminderType::kActive;
+}
 
 void TrackingProtectionReminderService::Shutdown() {
   observers_.Clear();
