@@ -1335,7 +1335,9 @@ class BottomSheet extends FrameLayout
         // If the sheet height changes mid-animation, make sure we animate to that height.
         // TODO(330357665): This animation will look rough in most cases, we should investigate a
         //                  way to smooth this.
-        if (isRunningSettleAnimation() && isFullHeightWrapContent()) {
+        int newHeight = bottom - top;
+        int oldHeight = oldBottom - oldTop;
+        if (isRunningSettleAnimation() && isFullHeightWrapContent() && oldHeight != newHeight) {
             @SheetState int target = getTargetSheetState();
             if (target != SheetState.NONE) {
                 cancelAnimation();
