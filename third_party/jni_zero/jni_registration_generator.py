@@ -271,12 +271,9 @@ def _InsertMultiplexingSwitchCases(signature_to_cpp_calls,
 
   swaps = {}
   for match in java_function_call_re.finditer(java_functions_string):
-    unhashed_java_name = match.group(1)
-    is_test_only = jni_generator.NameIsTestOnly(unhashed_java_name)
-    hashed = proxy.create_hashed_method_name(unhashed_java_name, is_test_only)
-    fully_qualified_hash = f'{short_gen_jni_class.full_name_with_slashes}/{hashed}'
-    cpp_hash_name = 'Java_' + common.escape_class_name(fully_qualified_hash)
-    switch_num = method_to_switch_num[cpp_hash_name]
+    java_name = match.group(1)
+    cpp_full_name = 'Java_' + common.escape_class_name(java_name)
+    switch_num = method_to_switch_num[cpp_full_name]
     replace_location = java_functions_string.find(
         _SWITCH_NUM_TO_BE_INERSERTED_LATER_TOKEN, match.end())
     swaps[replace_location] = switch_num
@@ -942,8 +939,8 @@ def main(parser, args):
     parser.error('--remove-uncalled-methods requires --native-sources-file.')
   if args.priority_java_sources_file and not args.enable_jni_multiplexing:
     parser.error('--priority-java-sources is only for multiplexing.')
-  if args.enable_jni_multiplexing and not args.use_proxy_hash:
-    parser.error('--enable-jni-multiplexing requires --use_proxy_hash.')
+  if args.enable_jni_multiplexing and args.use_proxy_hash:
+    parser.error('--enable-jni-multiplexing cannot work with --use-proxy-hash.')
 
   java_sources = _ParseSourceList(args.java_sources_file)
   if args.native_sources_file:

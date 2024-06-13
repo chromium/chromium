@@ -287,6 +287,8 @@ class JniObject:
         return 'Java_' + common.escape_class_name(
             f'{self.java_class.full_name_with_slashes}Jni/native{common.capitalize(native.name)}'
         )
+      elif self.options.enable_jni_multiplexing:
+        return f'Java_{method_name}'
       else:
         return 'Java_%s_%s' % (common.escape_class_name(
             self.final_gen_jni_class.full_name_with_slashes), method_name)

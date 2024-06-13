@@ -11,23 +11,23 @@ if (is_android) {
 _JAVAP_PATH = "//third_party/jdk/current/bin/javap"
 
 declare_args() {
-  # Use hashed symbol names to reduce JNI symbol overhead.
-  use_hashed_jni_names = !is_java_debug
-}
-
-declare_args() {
   # Enables JNI multiplexing to reduce JNI native methods overhead. Component
   # build must be false as most components are not visible to the base component
   # which dispatches out to every component. Disabling for cronet, at least for
   # now, since it needs to be able to convert GN to Soong build rules, which we
   # don't want to do right now. use_hashed_jni_names is required until we can
   # determine method names (and namespaces) of all java->native functions.
-  allow_jni_multiplexing = !is_java_debug && !is_component_build &&
-                           !is_cronet_build && use_hashed_jni_names
+  allow_jni_multiplexing =
+      !is_java_debug && !is_component_build && !is_cronet_build
 }
 
-assert(use_hashed_jni_names || !allow_jni_multiplexing,
-       "Multiplexing currently requires hashed names, see crbug.com/343440072")
+declare_args() {
+  # Use hashed symbol names to reduce JNI symbol overhead when not multiplexing.
+  use_hashed_jni_names = !allow_jni_multiplexing && !is_java_debug
+}
+
+assert(!use_hashed_jni_names || !allow_jni_multiplexing,
+       "Multiplexing requires that hashed names be disabled.")
 
 # Use a dedicated include dir so that files can #include headers from other
 # toolchains without affecting non-JNI #includes.
@@ -366,8 +366,7 @@ template("generate_jni_impl") {
           args += [ "--use-proxy-hash" ]
         }
 
-        if (defined(invoker.enable_jni_multiplexing) &&
-            invoker.enable_jni_multiplexing) {
+        if (allow_jni_multiplexing) {
           args += [ "--enable-jni-multiplexing" ]
         }
         if (defined(invoker.namespace)) {

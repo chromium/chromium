@@ -217,11 +217,11 @@ class BaseTest(unittest.TestCase):
         f'{dir_prefix}org/jni_zero/{file_prefix}GEN_JNI.java':
         f'{golden_name}-Final-GEN_JNI.java.golden',
     }
-    if options.use_proxy_hash:
+    if options.use_proxy_hash or options.enable_jni_multiplexing:
       name_to_goldens[f'{dir_prefix}J/{file_prefix}N.java'] = (
           f'{golden_name}-Final-N.java.golden')
     header_golden = None
-    if options.use_proxy_hash or options.manual_jni_registration:
+    if options.use_proxy_hash or options.manual_jni_registration or options.enable_jni_multiplexing:
       header_golden = f'{golden_name}-Registration.h.golden'
 
     with tempfile.TemporaryDirectory() as tdir:
@@ -408,8 +408,7 @@ class Tests(BaseTest):
     priority_java_files = ['TinySample2.java']
     self._TestEndToEndRegistration(input_java_files,
                                    priority_java_files=priority_java_files,
-                                   enable_jni_multiplexing=True,
-                                   use_proxy_hash=True)
+                                   enable_jni_multiplexing=True)
 
   def testFullStubs(self):
     self._TestEndToEndRegistration(
@@ -469,8 +468,7 @@ class Tests(BaseTest):
   def testMultiplexing(self):
     self._TestEndToEndRegistration(['SampleForAnnotationProcessor.java'],
                                    enable_jni_multiplexing=True,
-                                   manual_jni_registration=True,
-                                   use_proxy_hash=True)
+                                   manual_jni_registration=True)
 
   def testParseError_noPackage(self):
     data = """
