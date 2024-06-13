@@ -95,3 +95,28 @@ source_set("constants") {
   deps = []
   frameworks = [ "UserNotifications.framework" ]
 }
+
+source_set("unit_tests") {
+  testonly = true
+  sources = [ "content_notification_client_unittest.mm" ]
+  deps = [
+    ":constants",
+    ":content_notification_client",
+    "//base",
+    "//base/test:test_support",
+    "//ios/chrome/browser/default_browser/model",
+    "//ios/chrome/browser/default_browser/model:test_support",
+    "//ios/chrome/browser/default_browser/model:utils",
+    "//ios/chrome/browser/first_run/model",
+    "//ios/chrome/browser/push_notification/model:constants",
+    "//ios/chrome/browser/shared/coordinator/scene:scene_state_header",
+    "//ios/chrome/browser/shared/model/browser",
+    "//ios/chrome/browser/shared/model/browser/test:test_support",
+    "//ios/chrome/browser/shared/model/browser_state:test_support",
+    "//ios/chrome/browser/shared/model/prefs:pref_names",
+    "//ios/chrome/browser/shared/public/commands",
+    "//ios/chrome/test:test_support",
+    "//ios/testing:block_swizzler",
+    "//third_party/ocmock",
+  ]
+}

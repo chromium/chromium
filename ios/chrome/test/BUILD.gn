@@ -219,6 +219,7 @@ test("ios_chrome_unittests") {
     "//ios/chrome/browser/commerce/model:unit_tests",
     "//ios/chrome/browser/commerce/model/push_notification:unit_tests",
     "//ios/chrome/browser/complex_tasks/model:unit_tests",
+    "//ios/chrome/browser/content_notification/model:unit_tests",
     "//ios/chrome/browser/contextual_panel/entrypoint/coordinator:unit_tests",
     "//ios/chrome/browser/contextual_panel/model:unit_tests",
     "//ios/chrome/browser/contextual_panel/sample/model:unit_tests",

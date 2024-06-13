@@ -101,6 +101,7 @@ UIBackgroundFetchResult ContentNotificationClient::HandleNotificationReception(
     content.userInfo = [newPayload copy];
     config.content = content;
     contentNotificationService->SendNAUForConfiguration(config);
+    return UIBackgroundFetchResultNewData;
   }
   return UIBackgroundFetchResultNoData;
 }
