@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CONTENT_BROWSER_PRELOADING_PREFETCH_PREFETCH_TEST_UTIL_H_
-#define CONTENT_BROWSER_PRELOADING_PREFETCH_PREFETCH_TEST_UTIL_H_
+#ifndef CONTENT_PUBLIC_TEST_PREFETCH_TEST_UTIL_H_
+#define CONTENT_PUBLIC_TEST_PREFETCH_TEST_UTIL_H_
 
 #include <memory>
 
@@ -57,4 +57,4 @@ class TestPrefetchWatcher {
 
 }  // namespace content::test
 
-#endif  // CONTENT_BROWSER_PRELOADING_PREFETCH_PREFETCH_TEST_UTIL_H_
+#endif  // CONTENT_PUBLIC_TEST_PREFETCH_TEST_UTIL_H_

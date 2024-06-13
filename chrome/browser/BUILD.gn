@@ -1286,6 +1286,8 @@ static_library("browser") {
     "preloading/chrome_preloading.h",
     "preloading/navigation_ablation_throttle.cc",
     "preloading/navigation_ablation_throttle.h",
+    "preloading/prefetch/chrome_prefetch_manager.cc",
+    "preloading/prefetch/chrome_prefetch_manager.h",
     "preloading/prefetch/no_state_prefetch/chrome_no_state_prefetch_contents_delegate.cc",
     "preloading/prefetch/no_state_prefetch/chrome_no_state_prefetch_contents_delegate.h",
     "preloading/prefetch/no_state_prefetch/chrome_no_state_prefetch_manager_delegate.cc",

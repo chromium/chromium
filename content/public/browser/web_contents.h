@@ -1479,6 +1479,25 @@ class WebContents : public PageNavigator,
   // done.
   virtual void ActivatePreviewPage() = 0;
 
+  // Starts browser-initiated prefetch, triggered by embedder.
+  // - `prefetch_url` is the url the prefetch will be performed.
+  // - If `use_prefetch_proxy` is set to true, private prefetch proxy is used in
+  //   this prefetch request.
+  // - `referrer` is utilized as a value of Referer HTTP request header in this
+  //   prefetch request.
+  // - `referring_origin` represents the initiator origin of prefetch request,
+  //   and is mainly used to regulate prefetch behaviors from some security
+  //   perspectives. Normally it should be nullopt and then the opaque origin is
+  //   used internally, but if necessary, custom value from trusted surfaces can
+  //   be embedded into it here.
+  // - `attempt` is used to record some metrics associated with this prefetch
+  //   request.
+  virtual void StartPrefetch(const GURL& prefetch_url,
+                             bool use_prefetch_proxy,
+                             const blink::mojom::Referrer& referrer,
+                             const std::optional<url::Origin>& referring_origin,
+                             base::WeakPtr<PreloadingAttempt> attempt) = 0;
+
   // Starts an embedder triggered (browser-initiated) prerendering page and
   // returns the unique_ptr<PrerenderHandle>, which cancels prerendering on its
   // destruction. If the prerendering failed to start (e.g. if prerendering is

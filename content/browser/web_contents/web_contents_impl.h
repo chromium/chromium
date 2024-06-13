@@ -33,6 +33,7 @@
 #include "components/download/public/common/download_url_parameters.h"
 #include "content/browser/media/audio_stream_monitor.h"
 #include "content/browser/media/forwarding_audio_stream_factory.h"
+#include "content/browser/preloading/prefetch/prefetch_container.h"
 #include "content/browser/preloading/prerender/prerender_final_status.h"
 #include "content/browser/preloading/prerender/prerender_handle_impl.h"
 #include "content/browser/renderer_host/frame_tree.h"
@@ -933,6 +934,11 @@ class CONTENT_EXPORT WebContentsImpl
   bool IsGuest() override;
   void RecomputeWebPreferencesSlow() override;
   std::optional<SkColor> GetBaseBackgroundColor() override;
+  void StartPrefetch(const GURL& prefetch_url,
+                     bool use_prefetch_proxy,
+                     const blink::mojom::Referrer& referrer,
+                     const std::optional<url::Origin>& referring_origin,
+                     base::WeakPtr<PreloadingAttempt> attempt) override;
   std::unique_ptr<PrerenderHandle> StartPrerendering(
       const GURL& prerendering_url,
       PreloadingTriggerType trigger_type,
@@ -2460,6 +2466,9 @@ class CONTENT_EXPORT WebContentsImpl
   // Indicates how many sources are currently suppressing the unresponsive
   // renderer dialog.
   int suppress_unresponsive_renderer_count_ = 0;
+
+  // Stores all prefetch containers created by `this`.
+  std::vector<base::WeakPtr<PrefetchContainer>> prefetch_containers_;
 
   std::unique_ptr<PrerenderHostRegistry> prerender_host_registry_;
 
