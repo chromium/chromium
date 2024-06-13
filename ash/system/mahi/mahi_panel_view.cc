@@ -34,8 +34,8 @@
 #include "base/metrics/histogram_functions.h"
 #include "base/time/time.h"
 #include "build/branding_buildflags.h"
+#include "chromeos/components/magic_boost/public/cpp/views/experiment_badge.h"
 #include "chromeos/components/mahi/public/cpp/mahi_manager.h"
-#include "chromeos/components/mahi/public/cpp/views/experiment_badge.h"
 #include "components/vector_icons/vector_icons.h"
 #include "third_party/skia/include/core/SkPath.h"
 #include "third_party/skia/include/core/SkScalar.h"
@@ -796,7 +796,7 @@ std::unique_ptr<views::View> MahiPanelView::CreateHeaderRow() {
               .SetEnabledColorId(cros_tokens::kCrosSysOnSurface),
           // Experimental badge
           views::Builder<views::View>(
-              std::make_unique<chromeos::mahi::ExperimentBadge>()),
+              std::make_unique<chromeos::ExperimentBadge>()),
           // Close Button, aligned to the right by setting a `FlexSpecification`
           // with unbounded maximum flex size and `LayoutAlignment::kEnd`.
           views::Builder<views::Button>(

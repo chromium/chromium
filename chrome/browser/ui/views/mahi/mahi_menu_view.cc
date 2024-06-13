@@ -13,16 +13,16 @@
 #include "base/functional/callback_helpers.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/notreached.h"
-#include "build/branding_buildflags.h"
 #include "chrome/browser/chromeos/mahi/mahi_browser_util.h"
 #include "chrome/browser/chromeos/mahi/mahi_web_contents_manager.h"
+#include "chrome/browser/ui/chromeos/magic_boost/magic_boost_constants.h"
 #include "chrome/browser/ui/views/editor_menu/utils/pre_target_handler.h"
 #include "chrome/browser/ui/views/editor_menu/utils/pre_target_handler_view.h"
 #include "chrome/browser/ui/views/editor_menu/utils/utils.h"
 #include "chrome/browser/ui/views/mahi/mahi_menu_constants.h"
+#include "chromeos/components/magic_boost/public/cpp/views/experiment_badge.h"
 #include "chromeos/components/mahi/public/cpp/mahi_manager.h"
 #include "chromeos/components/mahi/public/cpp/mahi_media_app_content_manager.h"
-#include "chromeos/components/mahi/public/cpp/views/experiment_badge.h"
 #include "chromeos/strings/grit/chromeos_strings.h"
 #include "chromeos/ui/vector_icons/vector_icons.h"
 #include "components/vector_icons/vector_icons.h"
@@ -60,10 +60,6 @@
 #include "ui/views/widget/unique_widget_ptr.h"
 #include "ui/views/widget/widget.h"
 
-#if BUILDFLAG(GOOGLE_CHROME_BRANDING)
-#include "chrome/app/theme/google_chrome/chromeos/strings/grit/chromeos_chrome_internal_strings.h"
-#endif  // BUILDFLAG(GOOGLE_CHROME_BRANDING)
-
 namespace chromeos::mahi {
 
 namespace {
@@ -99,13 +95,8 @@ void StyleMenuButton(views::LabelButton* button, const gfx::VectorIcon& icon) {
       kButtonPadding));
 }
 
-// TODO(b/331127382): Finalize the Mahi menu title.
 std::u16string GetMahiMenuTitle() {
-#if BUILDFLAG(GOOGLE_CHROME_BRANDING)
-  return l10n_util::GetStringUTF16(IDS_MAHI_MENU_TITLE);
-#else
-  return l10n_util::GetStringUTF16(IDS_MAHI_MENU_TITLE_SHORT);
-#endif  // BUILDFLAG(GOOGLE_CHROME_BRANDING)
+  return l10n_util::GetStringUTF16(magic_boost::kMahiMenuTitleStringId);
 }
 
 }  // namespace
@@ -190,7 +181,7 @@ MahiMenuView::MahiMenuView(Surface surface)
   header_label->SetHorizontalAlignment(gfx::HorizontalAlignment::ALIGN_LEFT);
 
   header_left_container->AddChildView(
-      std::make_unique<chromeos::mahi::ExperimentBadge>());
+      std::make_unique<chromeos::ExperimentBadge>());
 
   header_row->AddChildView(std::move(header_left_container));
 

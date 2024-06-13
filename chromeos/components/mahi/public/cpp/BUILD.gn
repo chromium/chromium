@@ -20,22 +20,18 @@ component("cpp") {
     "mahi_switches.h",
     "mahi_util.cc",
     "mahi_util.h",
-    "views/experiment_badge.cc",
-    "views/experiment_badge.h",
   ]
 
   deps = [
     "//base",
     "//chromeos/constants",
     "//chromeos/crosapi/mojom",
-    "//chromeos/strings:strings_grit",
     "//components/account_id",
     "//components/user_manager",
     "//google_apis",
     "//ui/base",
     "//ui/color",
     "//ui/gfx",
-    "//ui/views",
   ]
   if (is_chromeos_ash) {
     deps += [ "//ash/constants" ]

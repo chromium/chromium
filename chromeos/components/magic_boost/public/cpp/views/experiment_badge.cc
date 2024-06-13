@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chromeos/components/mahi/public/cpp/views/experiment_badge.h"
+#include "chromeos/components/magic_boost/public/cpp/views/experiment_badge.h"
 
 #include <memory>
 
@@ -18,7 +18,7 @@
 #include "ui/views/layout/fill_layout.h"
 #include "ui/views/view.h"
 
-namespace chromeos::mahi {
+namespace chromeos {
 
 namespace {
 
@@ -48,4 +48,4 @@ ExperimentBadge::~ExperimentBadge() = default;
 BEGIN_METADATA(ExperimentBadge)
 END_METADATA
 
-}  // namespace chromeos::mahi
+}  // namespace chromeos

@@ -8915,6 +8915,7 @@ test("unit_tests") {
       "//chrome/browser/screen_ai/public:test_support",
       "//chrome/browser/ui/ash/holding_space:test_support",
       "//chrome/browser/ui/chromeos/magic_boost",
+      "//chrome/browser/ui/chromeos/magic_boost:magic_boost_constants",
       "//chrome/browser/ui/chromeos/magic_boost:test_support",
       "//chrome/browser/ui/chromeos/read_write_cards",
       "//chrome/browser/ui/quick_answers",

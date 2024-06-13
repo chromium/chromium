@@ -11,11 +11,11 @@ source_set("magic_boost") {
   sources = [
     "magic_boost_card_controller.cc",
     "magic_boost_card_controller.h",
-    "magic_boost_constants.h",
     "magic_boost_opt_in_card.cc",
     "magic_boost_opt_in_card.h",
   ]
   deps = [
+    ":magic_boost_constants",
     "//base",
     "//chrome/browser/chromeos",
     "//chrome/browser/resources:component_extension_resources",
@@ -64,4 +64,17 @@ source_set("test_support") {
     "//chromeos/crosapi/mojom",
     "//testing/gmock",
   ]
+}
+
+source_set("magic_boost_constants") {
+  sources = [ "magic_boost_constants.h" ]
+
+  deps = [
+    "//build:branding_buildflags",
+    "//chromeos/strings:strings_grit",
+  ]
+
+  if (is_chrome_branded) {
+    deps += [ "//chrome/app/theme/google_chrome/chromeos/strings" ]
+  }
 }
