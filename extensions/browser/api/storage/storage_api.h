@@ -108,11 +108,13 @@ class StorageStorageAreaRemoveFunction : public SettingsFunction {
   ~StorageStorageAreaRemoveFunction() override {}
 
   // SettingsFunction:
-  ResponseValue RunWithStorage(value_store::ValueStore* storage) override;
-  ResponseValue RunInSession() override;
+  ResponseAction Run() override;
 
   // ExtensionFunction:
   void GetQuotaLimitHeuristics(QuotaLimitHeuristics* heuristics) const override;
+
+  // Called after removing data from storage.
+  void OnRemoveOperationFinished(StorageFrontend::ResultStatus status);
 };
 
 class StorageStorageAreaClearFunction : public SettingsFunction {

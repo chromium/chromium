@@ -425,52 +425,51 @@ void StorageStorageAreaSetFunction::GetQuotaLimitHeuristics(
   GetModificationQuotaLimitHeuristics(heuristics);
 }
 
-ExtensionFunction::ResponseValue
-StorageStorageAreaRemoveFunction::RunWithStorage(ValueStore* storage) {
-  TRACE_EVENT1("browser", "StorageStorageAreaRemoveFunction::RunWithStorage",
-               "extension_id", extension_id());
-  if (args().empty())
-    return BadMessage();
+ExtensionFunction::ResponseAction StorageStorageAreaRemoveFunction::Run() {
+  if (args().empty()) {
+    return RespondNow(BadMessage());
+  }
+
   const base::Value& input = args()[0];
+  std::vector<std::string> keys;
 
   switch (input.type()) {
     case base::Value::Type::STRING:
-      return UseWriteResult(storage->Remove(input.GetString()));
+      keys = std::vector<std::string>(1, input.GetString());
+      break;
 
     case base::Value::Type::LIST:
-      return UseWriteResult(storage->Remove(GetKeysFromList(input.GetList())));
+      keys = GetKeysFromList(input.GetList());
+      break;
 
     default:
-      return BadMessage();
+      return RespondNow(BadMessage());
   }
+
+  StorageFrontend* frontend = StorageFrontend::Get(browser_context());
+  frontend->Remove(
+      extension(), storage_area(), keys,
+      base::BindOnce(
+          &StorageStorageAreaRemoveFunction::OnRemoveOperationFinished, this));
+
+  return RespondLater();
 }
 
-ExtensionFunction::ResponseValue
-StorageStorageAreaRemoveFunction::RunInSession() {
-  if (args().empty())
-    return BadMessage();
-  const base::Value& input = args()[0];
-
-  SessionStorageManager* session_manager =
-      SessionStorageManager::GetForBrowserContext(browser_context());
-  std::vector<SessionStorageManager::ValueChange> changes;
-
-  switch (input.type()) {
-    case base::Value::Type::STRING:
-      session_manager->Remove(extension_id(), input.GetString(), changes);
-      break;
-
-    case base::Value::Type::LIST:
-      session_manager->Remove(extension_id(), GetKeysFromList(input.GetList()),
-                              changes);
-      break;
-
-    default:
-      return BadMessage();
+void StorageStorageAreaRemoveFunction::OnRemoveOperationFinished(
+    StorageFrontend::ResultStatus status) {
+  // Since the storage access happens asynchronously, the browser context can
+  // be torn down in the interim. If this happens, early-out.
+  if (!browser_context()) {
+    return;
   }
 
-  OnSessionSettingsChanged(std::move(changes));
-  return NoArguments();
+  if (!status.success) {
+    CHECK(status.error.has_value());
+    Respond(Error(*status.error));
+    return;
+  }
+
+  Respond(NoArguments());
 }
 
 void StorageStorageAreaRemoveFunction::GetQuotaLimitHeuristics(
