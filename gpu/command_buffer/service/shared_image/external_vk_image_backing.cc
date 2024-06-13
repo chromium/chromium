@@ -8,6 +8,7 @@
 #include <vector>
 
 #include "base/bits.h"
+#include "base/feature_list.h"
 #include "base/memory/raw_ptr.h"
 #include "build/build_config.h"
 #include "components/viz/common/resources/resource_sizes.h"
@@ -22,6 +23,7 @@
 #include "gpu/command_buffer/service/shared_image/shared_image_gl_utils.h"
 #include "gpu/command_buffer/service/shared_image/skia_gl_image_representation.h"
 #include "gpu/command_buffer/service/skia_utils.h"
+#include "gpu/config/gpu_finch_features.h"
 #include "gpu/ipc/common/vulkan_ycbcr_info.h"
 #include "gpu/vulkan/vma_wrapper.h"
 #include "gpu/vulkan/vulkan_command_buffer.h"
@@ -80,6 +82,31 @@
 namespace gpu {
 
 namespace {
+
+BASE_FEATURE(kCorrectColorAttachmentUsageComputationInExternalVk,
+             "CorrectColorAttachmentUsageComputationInExternalVk",
+             base::FEATURE_ENABLED_BY_DEFAULT);
+
+// Determine whether to apply the correction of the computation on using the
+// color attachment, which conceptually is "can this backing be written".
+bool CorrectComputationOfUsagesNeedingColorAttachment() {
+  // This feature guards the addition of the invariant that the WebGPU
+  // RenderAttachment usage only gets passed when beginning access on Dawn
+  // representations if WEBGPU_WRITE has been specified when creating the
+  // backing. Without this invariant, there is no guarantee that a SharedImage
+  // with WEBGPU_READ won't require the color attachment (e.g., for lazy
+  // clearing).
+  if (!base::FeatureList::IsEnabled(
+          features::kDawnSIRepsUseClientProvidedInternalUsages)) {
+    return false;
+  }
+
+  // This killswitch guards the correction of the computation on using the
+  // color attachment, which conceptually is "can this backing be written".
+  // TODO(crbug.com/333014977): Remove this killswitch post safe rollout.
+  return base::FeatureList::IsEnabled(
+      kCorrectColorAttachmentUsageComputationInExternalVk);
+}
 
 class ScopedDedicatedMemoryObject {
  public:
@@ -163,15 +190,25 @@ std::unique_ptr<ExternalVkImageBacking> ExternalVkImageBacking::Create(
   bool is_external = context_state->support_vulkan_external_object();
 
   auto* device_queue = context_state->vk_context_provider()->GetDeviceQueue();
-  constexpr auto kUsageNeedsColorAttachment =
-      SHARED_IMAGE_USAGE_GLES2_READ | SHARED_IMAGE_USAGE_GLES2_WRITE |
-      SHARED_IMAGE_USAGE_RASTER_READ | SHARED_IMAGE_USAGE_RASTER_WRITE |
-      SHARED_IMAGE_USAGE_OOP_RASTERIZATION | SHARED_IMAGE_USAGE_WEBGPU_READ |
-      SHARED_IMAGE_USAGE_WEBGPU_WRITE;
+
+  SharedImageUsageSet usages_needing_color_attachment;
+
+  if (CorrectComputationOfUsagesNeedingColorAttachment()) {
+    usages_needing_color_attachment =
+        SHARED_IMAGE_USAGE_GLES2_WRITE | SHARED_IMAGE_USAGE_RASTER_WRITE |
+        SHARED_IMAGE_USAGE_DISPLAY_WRITE | SHARED_IMAGE_USAGE_WEBGPU_WRITE;
+  } else {
+    usages_needing_color_attachment =
+        SHARED_IMAGE_USAGE_GLES2_READ | SHARED_IMAGE_USAGE_GLES2_WRITE |
+        SHARED_IMAGE_USAGE_RASTER_READ | SHARED_IMAGE_USAGE_RASTER_WRITE |
+        SHARED_IMAGE_USAGE_OOP_RASTERIZATION | SHARED_IMAGE_USAGE_WEBGPU_READ |
+        SHARED_IMAGE_USAGE_WEBGPU_WRITE;
+  }
+
   VkImageUsageFlags vk_usage = VK_IMAGE_USAGE_SAMPLED_BIT |
                                VK_IMAGE_USAGE_TRANSFER_SRC_BIT |
                                VK_IMAGE_USAGE_TRANSFER_DST_BIT;
-  if (usage.HasAny(kUsageNeedsColorAttachment)) {
+  if (usage.HasAny(usages_needing_color_attachment)) {
     vk_usage |= VK_IMAGE_USAGE_COLOR_ATTACHMENT_BIT |
                 VK_IMAGE_USAGE_INPUT_ATTACHMENT_BIT;
     if (format.IsCompressed()) {
