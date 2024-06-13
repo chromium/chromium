@@ -5,6 +5,7 @@
 #ifndef UI_COLOR_COLOR_PROVIDER_H_
 #define UI_COLOR_COLOR_PROVIDER_H_
 
+#include <forward_list>
 #include <map>
 #include <memory>
 #include <optional>
@@ -29,8 +30,6 @@ class COMPONENT_EXPORT(COLOR) ColorProvider {
   ColorProvider();
   ColorProvider(const ColorProvider&) = delete;
   ColorProvider& operator=(const ColorProvider&) = delete;
-  ColorProvider(ColorProvider&&);
-  ColorProvider& operator=(ColorProvider&&);
   ~ColorProvider();
 
   // Adds a mixer to the current color pipeline after all other
@@ -50,15 +49,24 @@ class COMPONENT_EXPORT(COLOR) ColorProvider {
 
   void SetColorForTesting(ColorId id, SkColor color);
   void GenerateColorMapForTesting();
-  const ColorMap& color_map_for_testing();
+  const ColorMap& color_map_for_testing() { return color_map_; }
 
  private:
-  // ColorProviderInternal provides the actual implementation of ColorProvider.
-  // It's non-movable and non-copyable so that ColorMixer's callbacks can safely
-  // bind to it.
-  class ColorProviderInternal;
+  using Mixers = std::forward_list<ColorMixer>;
 
-  std::unique_ptr<ColorProviderInternal> internal_;
+  // Returns the last mixer in the chain that is not a "postprocessing" mixer,
+  // or nullptr.
+  const ColorMixer* GetLastNonPostprocessingMixer() const;
+
+  // The entire color pipeline, in reverse order (that is, the "last" mixer is
+  // at the front).
+  Mixers mixers_;
+
+  // The first mixer in the chain that is a "postprocessing" mixer.
+  Mixers::iterator first_postprocessing_mixer_ = mixers_.before_begin();
+
+  // A cached map of ColorId => SkColor mappings for this provider.
+  mutable ColorMap color_map_;
 };
 
 }  // namespace ui

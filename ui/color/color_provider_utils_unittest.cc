@@ -60,9 +60,9 @@ TEST_F(ColorProviderUtilsTest, RendererColorMapGeneratesProvidersCorrectly) {
   // also match the number of defined RendererColorIds.
   auto new_color_provider =
       ui::CreateColorProviderFromRendererColorMap(renderer_color_map);
-  new_color_provider.GenerateColorMapForTesting();
+  new_color_provider->GenerateColorMapForTesting();
   EXPECT_EQ(kTotaltRendererColorIds,
-            new_color_provider.color_map_for_testing().size());
+            new_color_provider->color_map_for_testing().size());
 }
 
 TEST_F(ColorProviderUtilsTest, ColorProviderRendererColorMapEquivalence) {

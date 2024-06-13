@@ -5,6 +5,7 @@
 #ifndef UI_COLOR_COLOR_PROVIDER_UTILS_H_
 #define UI_COLOR_COLOR_PROVIDER_UTILS_H_
 
+#include <memory>
 #include <string>
 #include <string_view>
 
@@ -73,8 +74,9 @@ RendererColorMap COMPONENT_EXPORT(COLOR)
 
 // Used in combination with CreateRendererColormap() to create the ColorProvider
 // in the renderer process.
-ColorProvider COMPONENT_EXPORT(COLOR) CreateColorProviderFromRendererColorMap(
-    const RendererColorMap& renderer_color_map);
+std::unique_ptr<ColorProvider> COMPONENT_EXPORT(COLOR)
+    CreateColorProviderFromRendererColorMap(
+        const RendererColorMap& renderer_color_map);
 
 // Adds colors for emulating Windows 10 default high contrast color themes
 // to `mixer`. Used to support the devtools forced colors emulation feature.
@@ -83,14 +85,14 @@ void COMPONENT_EXPORT(COLOR)
 
 // Creates a color provider emulating Windows 10 default high contrast color
 // themes.
-ColorProvider COMPONENT_EXPORT(COLOR)
+std::unique_ptr<ColorProvider> COMPONENT_EXPORT(COLOR)
     CreateEmulatedForcedColorsColorProvider(bool dark_mode);
 
 // TODO(samomekarajr): Forced colors web tests currently rely on specific set of
 // hardcoded colors for for determining which system colors to render. This
 // function should be updated once the web driver support spec for forced colors
 // mode is updated.
-ColorProvider COMPONENT_EXPORT(COLOR)
+std::unique_ptr<ColorProvider> COMPONENT_EXPORT(COLOR)
     CreateEmulatedForcedColorsColorProviderForTest();
 
 // TODO(crbug.com/40779801): Enhance this function by incorporating platform
@@ -100,7 +102,7 @@ ColorProvider COMPONENT_EXPORT(COLOR)
 // ordinary pages. These scenarios do not use the normal machinery to establish
 // color providers in the renderer. The color mappings for this provider are
 // derived from old Aura colors for controls.
-ColorProvider COMPONENT_EXPORT(COLOR)
+std::unique_ptr<ColorProvider> COMPONENT_EXPORT(COLOR)
     CreateDefaultColorProviderForBlink(bool dark_mode);
 
 // Scrollbars have three main colors. This function completes the

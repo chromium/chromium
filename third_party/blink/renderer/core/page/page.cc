@@ -519,10 +519,8 @@ void Page::ColorSchemeChanged() {
 void Page::EmulateForcedColors(bool is_dark_theme) {
   emulated_forced_colors_provider_ =
       WebTestSupport::IsRunningWebTest()
-          ? std::make_unique<ui::ColorProvider>(
-                ui::CreateEmulatedForcedColorsColorProviderForTest())
-          : std::make_unique<ui::ColorProvider>(
-                ui::CreateEmulatedForcedColorsColorProvider(is_dark_theme));
+          ? ui::CreateEmulatedForcedColorsColorProviderForTest()
+          : ui::CreateEmulatedForcedColorsColorProvider(is_dark_theme);
 }
 
 void Page::DisableEmulatedForcedColors() {
@@ -539,16 +537,14 @@ bool Page::UpdateColorProviders(
   if (!ui::IsRendererColorMappingEquivalent(
           light_color_provider_.get(),
           color_provider_colors.light_colors_map)) {
-    light_color_provider_ = std::make_unique<ui::ColorProvider>(
-        ui::CreateColorProviderFromRendererColorMap(
-            color_provider_colors.light_colors_map));
+    light_color_provider_ = ui::CreateColorProviderFromRendererColorMap(
+        color_provider_colors.light_colors_map);
     did_color_provider_update = true;
   }
   if (!ui::IsRendererColorMappingEquivalent(
           dark_color_provider_.get(), color_provider_colors.dark_colors_map)) {
-    dark_color_provider_ = std::make_unique<ui::ColorProvider>(
-        ui::CreateColorProviderFromRendererColorMap(
-            color_provider_colors.dark_colors_map));
+    dark_color_provider_ = ui::CreateColorProviderFromRendererColorMap(
+        color_provider_colors.dark_colors_map);
     did_color_provider_update = true;
   }
   if (!ui::IsRendererColorMappingEquivalent(
@@ -556,11 +552,9 @@ bool Page::UpdateColorProviders(
           color_provider_colors.forced_colors_map)) {
     forced_colors_color_provider_ =
         WebTestSupport::IsRunningWebTest()
-            ? std::make_unique<ui::ColorProvider>(
-                  ui::CreateEmulatedForcedColorsColorProviderForTest())
-            : std::make_unique<ui::ColorProvider>(
-                  ui::CreateColorProviderFromRendererColorMap(
-                      color_provider_colors.forced_colors_map));
+            ? ui::CreateEmulatedForcedColorsColorProviderForTest()
+            : ui::CreateColorProviderFromRendererColorMap(
+                  color_provider_colors.forced_colors_map);
     did_color_provider_update = true;
   }
 
@@ -568,12 +562,12 @@ bool Page::UpdateColorProviders(
 }
 
 void Page::UpdateColorProvidersForTest() {
-  light_color_provider_ = std::make_unique<ui::ColorProvider>(
-      ui::CreateDefaultColorProviderForBlink(/*dark_mode=*/false));
-  dark_color_provider_ = std::make_unique<ui::ColorProvider>(
-      ui::CreateDefaultColorProviderForBlink(/*dark_mode=*/true));
-  forced_colors_color_provider_ = std::make_unique<ui::ColorProvider>(
-      ui::CreateEmulatedForcedColorsColorProviderForTest());
+  light_color_provider_ =
+      ui::CreateDefaultColorProviderForBlink(/*dark_mode=*/false);
+  dark_color_provider_ =
+      ui::CreateDefaultColorProviderForBlink(/*dark_mode=*/true);
+  forced_colors_color_provider_ =
+      ui::CreateEmulatedForcedColorsColorProviderForTest();
 }
 
 const ui::ColorProvider* Page::GetColorProviderForPainting(
