@@ -185,6 +185,36 @@ TEST_F(PinnedTabCollectionTest, RemoveOperation) {
   EXPECT_EQ(removed_tab_model.get(), tab_model_one_ptr);
 }
 
+TEST_F(PinnedTabCollectionTest, CloseTabOperation) {
+  // Setup phase of keeping track of a tab.
+  auto tab_model_one =
+      std::make_unique<tabs::TabModel>(MakeWebContents(), GetTabStripModel());
+  tabs::TabModel* tab_model_one_ptr = tab_model_one.get();
+
+  tabs::PinnedTabCollection* pinned_collection_instance = pinned_collection();
+  pinned_collection_instance->AppendTab(std::move(tab_model_one));
+  EXPECT_EQ(pinned_collection_instance->ChildCount(), 1ul);
+
+  // Remove `tab_model_one` from the collection.
+  pinned_collection_instance->CloseTab(tab_model_one_ptr);
+  EXPECT_EQ(pinned_collection_instance->ChildCount(), 0ul);
+}
+
+TEST_F(PinnedTabCollectionTest, CollectionOperationsIsNoop) {
+  // Setup phase of keeping track of a tab.
+  tabs::PinnedTabCollection* pinned_collection_instance = pinned_collection();
+
+  // Add four tabs to the collection.
+  AddTabsToPinnedContainer(pinned_collection_instance, GetTabStripModel(), 4);
+
+  std::unique_ptr<tabs::TabCollection> collection =
+      std::make_unique<tabs::UnpinnedTabCollection>();
+  EXPECT_EQ(pinned_collection_instance->MaybeRemoveCollection(collection.get()),
+            nullptr);
+  EXPECT_EQ(pinned_collection_instance->GetIndexOfCollection(collection.get()),
+            std::nullopt);
+}
+
 TEST_F(PinnedTabCollectionTest, MoveOperation) {
   // Setup phase of keeping track of a tab.
   auto tab_model_one =

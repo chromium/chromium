@@ -1970,6 +1970,11 @@ int TabStripModel::InsertTabAtImpl(
     std::unique_ptr<tabs::TabModel> tab,
     int add_types,
     std::optional<tab_groups::TabGroupId> group) {
+  if (group_model_ && group.has_value()) {
+    CHECK(group_model_->ContainsTabGroup(group.value()),
+          base::NotFatalUntil::M129);
+  }
+
   delegate()->WillAddWebContents(tab->contents());
 
   const bool active = (add_types & ADD_ACTIVE) != 0 || empty();

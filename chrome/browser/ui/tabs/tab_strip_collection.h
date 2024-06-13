@@ -100,6 +100,8 @@ class TabStripCollection : public TabCollection, public TabContentsData {
     return impl_.get();
   }
 
+  void ValidateData(const TabGroupModel* group_model) override;
+
  private:
   // Creates a new group collection with respect to a tab based on the
   // position of the tab in the collection.

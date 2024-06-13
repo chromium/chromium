@@ -62,7 +62,7 @@ class TabContentsData {
                            const tab_groups::TabGroupId& group,
                            int to_index) = 0;
 
-  virtual void ValidateData(const TabGroupModel* group_model) {}
+  virtual void ValidateData(const TabGroupModel* group_model) = 0;
 };
 
 std::unique_ptr<TabContentsData> CreateTabContentsDataImpl();

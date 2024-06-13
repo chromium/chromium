@@ -110,6 +110,8 @@ class UnpinnedTabCollection : public TabCollection {
 
   void MoveGroupToRecursive(int index, TabGroupTabCollection* collection);
 
+  void ValidateCollections() const;
+
  private:
   // Return the direct child index of a tab
   std::optional<size_t> GetIndexOfTab(const TabModel* tab_model) const;

@@ -17,23 +17,27 @@ TabCollectionStorage::TabCollectionStorage(TabCollection& owner)
 TabCollectionStorage::~TabCollectionStorage() = default;
 
 bool TabCollectionStorage::ContainsTab(TabModel* tab_model) const {
+  CHECK(tab_model);
   return GetIndexOfTab(tab_model).has_value();
 }
 
 TabModel* TabCollectionStorage::GetTabAtIndex(size_t index) const {
+  CHECK(index < GetChildrenCount() && index >= 0);
   const std::unique_ptr<tabs::TabModel>* tab =
       std::get_if<std::unique_ptr<tabs::TabModel>>(&children_[index]);
-  return tab ? tab->get() : nullptr;
+  CHECK(tab);
+  return tab->get();
 }
 
 bool TabCollectionStorage::ContainsCollection(
     TabCollection* tab_collection) const {
+  CHECK(tab_collection);
   return GetIndexOfCollection(tab_collection).has_value();
 }
 
 TabModel* TabCollectionStorage::AddTab(std::unique_ptr<TabModel> tab_model,
                                        size_t index) {
-  CHECK(index <= GetChildrenCount());
+  CHECK(index <= GetChildrenCount() && index >= 0);
   CHECK(tab_model);
 
   TabModel* tab_model_ptr = tab_model.get();
@@ -43,6 +47,7 @@ TabModel* TabCollectionStorage::AddTab(std::unique_ptr<TabModel> tab_model,
 
 void TabCollectionStorage::MoveTab(TabModel* tab_model, size_t dst_index) {
   CHECK(tab_model);
+  CHECK(dst_index < GetChildrenCount() && dst_index >= 0);
   std::unique_ptr<TabModel> tab_model_to_move = RemoveTab(tab_model);
   CHECK(tab_model_to_move);
   AddTab(std::move(tab_model_to_move), dst_index);
@@ -65,6 +70,7 @@ std::unique_ptr<TabModel> TabCollectionStorage::RemoveTab(TabModel* tab_model) {
 }
 
 void TabCollectionStorage::CloseTab(TabModel* tab) {
+  CHECK(tab);
   std::unique_ptr<TabModel> removed_tab_model = RemoveTab(tab);
   removed_tab_model.reset();
 }
@@ -72,7 +78,7 @@ void TabCollectionStorage::CloseTab(TabModel* tab) {
 TabCollection* TabCollectionStorage::AddCollection(
     std::unique_ptr<TabCollection> collection,
     size_t index) {
-  CHECK(index <= GetChildrenCount());
+  CHECK(index <= GetChildrenCount() && index >= 0);
   CHECK(collection);
 
   TabCollection* collection_ptr = collection.get();
@@ -83,6 +89,7 @@ TabCollection* TabCollectionStorage::AddCollection(
 void TabCollectionStorage::MoveCollection(TabCollection* collection,
                                           size_t dst_index) {
   CHECK(collection);
+  CHECK(dst_index < GetChildrenCount() && dst_index >= 0);
   std::unique_ptr<TabCollection> tab_collection_to_move =
       RemoveCollection(collection);
   CHECK(tab_collection_to_move);
@@ -108,6 +115,7 @@ std::unique_ptr<TabCollection> TabCollectionStorage::RemoveCollection(
 
 void TabCollectionStorage::CloseCollection(TabCollection* collection) {
   // This should free all the children as well.
+  CHECK(collection);
   std::unique_ptr<TabCollection> removed_tab_collection =
       RemoveCollection(collection);
   removed_tab_collection.reset();
@@ -115,6 +123,7 @@ void TabCollectionStorage::CloseCollection(TabCollection* collection) {
 
 std::optional<size_t> TabCollectionStorage::GetIndexOfTab(
     const TabModel* const tab_model) const {
+  CHECK(tab_model);
   const auto it = std::find_if(
       children_.begin(), children_.end(), [tab_model](const auto& child) {
         return std::holds_alternative<std::unique_ptr<TabModel>>(child) &&
@@ -126,6 +135,7 @@ std::optional<size_t> TabCollectionStorage::GetIndexOfTab(
 
 std::optional<size_t> TabCollectionStorage::GetIndexOfCollection(
     TabCollection* tab_collection) const {
+  CHECK(tab_collection);
   const auto it = std::find_if(
       children_.begin(), children_.end(), [tab_collection](const auto& child) {
         return std::holds_alternative<std::unique_ptr<TabCollection>>(child) &&

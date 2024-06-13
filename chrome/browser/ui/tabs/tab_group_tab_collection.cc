@@ -20,55 +20,65 @@ TabGroupTabCollection::~TabGroupTabCollection() = default;
 
 void TabGroupTabCollection::AddTab(std::unique_ptr<TabModel> tab_model,
                                    size_t index) {
+  CHECK(index <= ChildCount() && index >= 0);
+  CHECK(tab_model);
+
   TabModel* inserted_tab_model = impl_->AddTab(std::move(tab_model), index);
   inserted_tab_model->set_group(/*group=*/group_id_);
   inserted_tab_model->OnReparented(this, GetPassKey());
 }
 
 void TabGroupTabCollection::AppendTab(std::unique_ptr<TabModel> tab_model) {
+  CHECK(tab_model);
   AddTab(std::move(tab_model), ChildCount());
 }
 
-void TabGroupTabCollection::MoveTab(TabModel* tab_model, size_t index) {
-  impl_->MoveTab(tab_model, index);
+void TabGroupTabCollection::MoveTab(TabModel* tab_model, size_t dst_index) {
+  CHECK(dst_index < ChildCount() && dst_index >= 0);
+  impl_->MoveTab(tab_model, dst_index);
 }
 
 void TabGroupTabCollection::CloseTab(TabModel* tab_model) {
+  CHECK(tab_model);
   impl_->CloseTab(tab_model);
 }
 
 tabs::TabModel* TabGroupTabCollection::GetTabAtIndex(size_t index) const {
+  CHECK(index < ChildCount() && index >= 0);
   return impl_->GetTabAtIndex(index);
 }
 
 bool TabGroupTabCollection::ContainsTab(TabModel* tab_model) const {
+  CHECK(tab_model);
   return impl_->ContainsTab(tab_model);
 }
 
 bool TabGroupTabCollection::ContainsTabRecursive(TabModel* tab_model) const {
+  CHECK(tab_model);
   return impl_->ContainsTab(tab_model);
 }
 
 bool TabGroupTabCollection::ContainsCollection(
     TabCollection* collection) const {
+  CHECK(collection);
   return false;
 }
 
 std::optional<size_t> TabGroupTabCollection::GetIndexOfTabRecursive(
     const TabModel* tab_model) const {
+  CHECK(tab_model);
   return impl_->GetIndexOfTab(tab_model);
 }
 
 std::optional<size_t> TabGroupTabCollection::GetIndexOfCollection(
     TabCollection* collection) const {
+  CHECK(collection);
   return std::nullopt;
 }
 
 std::unique_ptr<TabModel> TabGroupTabCollection::MaybeRemoveTab(
     TabModel* tab_model) {
-  if (!ContainsTab(tab_model)) {
-    return nullptr;
-  }
+  CHECK(tab_model);
 
   std::unique_ptr<TabModel> removed_tab_model = impl_->RemoveTab(tab_model);
   removed_tab_model->set_group(/*group=*/std::nullopt);
