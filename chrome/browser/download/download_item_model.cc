@@ -284,7 +284,14 @@ Profile* DownloadItemModel::profile() const {
 
 std::u16string DownloadItemModel::GetTabProgressStatusText() const {
   int64_t total = GetTotalBytes();
-  int64_t size = download_->GetReceivedBytes();
+  int64_t size;
+  auto* renamer = download_->GetRenameHandler();
+  if (renamer && renamer->ShowRenameProgress()) {
+    size = static_cast<int>(
+        (download_->GetReceivedBytes() + download_->GetUploadedBytes()) * 0.5);
+  } else {
+    size = download_->GetReceivedBytes();
+  }
   std::u16string received_size = ui::FormatBytes(size);
   std::u16string amount = received_size;
 

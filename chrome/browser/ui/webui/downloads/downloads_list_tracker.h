@@ -118,6 +118,7 @@ class DownloadsListTracker
                            CreateDownloadData_ReferrerUrlFormatting_Long);
   FRIEND_TEST_ALL_PREFIXES(DownloadsListTrackerTest,
                            CreateDownloadData_ReferrerUrlFormatting_VeryLong);
+  FRIEND_TEST_ALL_PREFIXES(DownloadsListTrackerTest, RenamingProgress);
 
 #if BUILDFLAG(FULL_SAFE_BROWSING)
   FRIEND_TEST_ALL_PREFIXES(DownloadsListTrackerTest,
@@ -152,6 +153,9 @@ class DownloadsListTracker
   // Removes the item that corresponds to |remove| and sends "removeItems"
   // if sending updates.
   void RemoveItem(const SortedSet::iterator& remove);
+
+  // Calculates and returns the percent complete of |download_item|.
+  int GetPercentComplete(download::DownloadItem* download_item) const;
 
   download::AllDownloadItemNotifier main_notifier_;
   std::unique_ptr<download::AllDownloadItemNotifier> original_notifier_;

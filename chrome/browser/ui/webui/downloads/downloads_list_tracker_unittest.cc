@@ -21,6 +21,7 @@
 #include "chrome/browser/ui/webui/downloads/mock_downloads_page.h"
 #include "chrome/test/base/testing_profile.h"
 #include "components/download/public/common/download_item.h"
+#include "components/download/public/common/download_item_rename_handler.h"
 #include "components/download/public/common/mock_download_item.h"
 #include "content/public/browser/download_item_utils.h"
 #include "content/public/test/browser_task_environment.h"
@@ -54,6 +55,16 @@ bool ShouldShowItem(const DownloadItem& item) {
   DownloadItemModel model(const_cast<DownloadItem*>(&item));
   return model.ShouldShowInShelf();
 }
+
+class FakeRenameHandler : public download::DownloadItemRenameHandler {
+ public:
+  explicit FakeRenameHandler(DownloadItem* download_item)
+      : DownloadItemRenameHandler(download_item) {}
+  ~FakeRenameHandler() override = default;
+
+  // DownloadItemRenameHandler interface:
+  bool ShowRenameProgress() override { return true; }
+};
 
 }  // namespace
 
@@ -583,6 +594,21 @@ TEST_F(DownloadsListTrackerTest,
   downloads::mojom::DataPtr data = tracker->CreateDownloadData(item);
   EXPECT_FALSE(data->referrer_url);
   EXPECT_EQ(data->display_referrer_url, expected);
+}
+
+TEST_F(DownloadsListTrackerTest, RenamingProgress) {
+  MockDownloadItem* item = CreateNextItem();
+  FakeRenameHandler renamer(item);
+  ON_CALL(*item, GetRenameHandler()).WillByDefault(Return(&renamer));
+  ON_CALL(*item, GetReceivedBytes()).WillByDefault(Return(10));
+  ON_CALL(*item, GetUploadedBytes()).WillByDefault(Return(4));
+  ON_CALL(*item, GetTotalBytes()).WillByDefault(Return(10));
+
+  auto tracker = std::make_unique<DownloadsListTracker>(
+      manager(), page_.BindAndGetRemote());
+
+  downloads::mojom::DataPtr data = tracker->CreateDownloadData(item);
+  EXPECT_EQ(data->percent, 70);
 }
 
 #if BUILDFLAG(FULL_SAFE_BROWSING)
