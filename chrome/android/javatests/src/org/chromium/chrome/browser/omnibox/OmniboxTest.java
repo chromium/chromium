@@ -145,23 +145,7 @@ public class OmniboxTest {
         omnibox.checkSuggestionsShown();
 
         // Dispatch ALT + ENTER key event.
-        final UrlBar urlBar = mActivityTestRule.getActivity().findViewById(R.id.url_bar);
-        KeyEvent keyDownEvent =
-                new KeyEvent(
-                        0,
-                        0,
-                        KeyEvent.ACTION_DOWN,
-                        KeyEvent.KEYCODE_ENTER,
-                        0,
-                        KeyEvent.META_ALT_ON);
-        KeyEvent keyUpEvent =
-                new KeyEvent(
-                        0, 0, KeyEvent.ACTION_UP, KeyEvent.KEYCODE_ENTER, 0, KeyEvent.META_ALT_ON);
-        TestThreadUtils.runOnUiThreadBlocking(
-                () -> {
-                    urlBar.onKeyPreIme(keyDownEvent.getKeyCode(), keyDownEvent);
-                    urlBar.onKeyPreIme(keyUpEvent.getKeyCode(), keyUpEvent);
-                });
+        omnibox.sendKey(KeyEvent.KEYCODE_ENTER, KeyEvent.META_ALT_ON);
 
         Tab resultTab = mActivityTestRule.getActivity().getActivityTab();
         Assert.assertNotEquals(

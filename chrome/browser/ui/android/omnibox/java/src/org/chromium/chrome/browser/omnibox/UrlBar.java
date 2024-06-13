@@ -47,8 +47,10 @@ import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.base.metrics.RecordUserAction;
 import org.chromium.base.metrics.TimingMetric;
 import org.chromium.build.BuildConfig;
+import org.chromium.build.annotations.CheckDiscard;
 import org.chromium.chrome.browser.back_press.BackPressManager;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
+import org.chromium.chrome.browser.util.KeyNavigationUtil;
 import org.chromium.components.browser_ui.share.ShareHelper;
 import org.chromium.components.browser_ui.util.FirstDrawDetector;
 import org.chromium.ui.KeyboardVisibilityDelegate;
@@ -91,7 +93,7 @@ public abstract class UrlBar extends AutocompleteEditText {
 
     private UrlBarDelegate mUrlBarDelegate;
     private Optional<Callback<String>> mTextChangeListener;
-    private Optional<OnKeyListener> mHwKeyEventListener;
+    private Optional<OnKeyListener> mKeyDownListener;
     private UrlBarTextContextMenuDelegate mTextContextMenuDelegate;
     private Callback<Integer> mUrlDirectionListener;
 
@@ -263,14 +265,37 @@ public abstract class UrlBar extends AutocompleteEditText {
      */
     @Override
     public boolean onKeyPreIme(int keyCode, KeyEvent event) {
-        boolean consumed =
-                mHwKeyEventListener.map(l -> l.onKey(this, keyCode, event)).orElse(false);
-        if (consumed) return true;
-
         if (KeyEvent.KEYCODE_BACK == keyCode && event.getAction() == KeyEvent.ACTION_UP) {
             mKeyboardHideHelper.monitorForKeyboardHidden();
         }
+
+        // NOTE: Do not pass ENTER key to listeners from here. This is because Enter key may also
+        // come from a software keyboard.
+        // - If we pass the event here, it will be emitted twice (once before IME and once after),
+        // - if we don't pass the event after IME, soft keyboard navigation will not work.
+        return KeyNavigationUtil.isActionDown(event)
+                        && !KeyNavigationUtil.isEnter(event)
+                        && mKeyDownListener.map(l -> l.onKey(this, keyCode, event)).orElse(false)
+                || super_onKeyPreIme(keyCode, event);
+    }
+
+    @CheckDiscard("exposed for testing; should be inlined")
+    @VisibleForTesting
+    public boolean super_onKeyPreIme(int keyCode, KeyEvent event) {
         return super.onKeyPreIme(keyCode, event);
+    }
+
+    @Override
+    public boolean onKeyDown(int keyCode, KeyEvent event) {
+        return KeyNavigationUtil.isEnter(event)
+                        && mKeyDownListener.map(l -> l.onKey(this, keyCode, event)).orElse(false)
+                || super_onKeyDown(keyCode, event);
+    }
+
+    @CheckDiscard("exposed for testing; should be inlined")
+    @VisibleForTesting
+    public boolean super_onKeyDown(int keyCode, KeyEvent event) {
+        return super.onKeyDown(keyCode, event);
     }
 
     /**
@@ -480,8 +505,8 @@ public abstract class UrlBar extends AutocompleteEditText {
      *
      * @param listener The listener to be notified.
      */
-    public void setHardwareKeyEventListener(OnKeyListener listener) {
-        mHwKeyEventListener = Optional.ofNullable(listener);
+    public void setKeyDownListener(OnKeyListener listener) {
+        mKeyDownListener = Optional.ofNullable(listener);
     }
 
     /** Set the text to report to Autofill services upon call to onProvideAutofillStructure. */
@@ -935,7 +960,7 @@ public abstract class UrlBar extends AutocompleteEditText {
         // scroll position.
         if (mPendingScroll || mPreviousScrollViewWidth != getVisibleMeasuredViewportWidth()) {
             scrollDisplayText(mCurrentScrollType);
-            // sanity check: be sure we don't re-request layout as a result of something that
+            // Confirmation check: be sure we don't re-request layout as a result of something that
             // happens in scrollDisplayText().
             assert !isLayoutRequested();
         }

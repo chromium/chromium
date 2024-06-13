@@ -83,10 +83,10 @@ class UrlBarMediator implements UrlBar.UrlBarTextContextMenuDelegate {
 
     /**
      * Sets a listener for url key events. See the {@link
-     * UrlBarCoordinator#setHardwareKeyEventListener(View.OnKeyListener)}.
+     * UrlBarCoordinator#setKeyDownListener(View.OnKeyListener)}.
      */
-    public void setHardwareKeyEventListener(View.OnKeyListener listener) {
-        mModel.set(UrlBarProperties.HW_KEY_EVENT_LISTENER, listener);
+    public void setKeyDownListener(View.OnKeyListener listener) {
+        mModel.set(UrlBarProperties.KEY_DOWN_LISTENER, listener);
     }
 
     /**

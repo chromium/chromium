@@ -141,7 +141,7 @@ class UrlBarProperties {
             new WritableObjectPropertyKey<>();
 
     /** The callback to be notified on url key events. */
-    public static final WritableObjectPropertyKey<View.OnKeyListener> HW_KEY_EVENT_LISTENER =
+    public static final WritableObjectPropertyKey<View.OnKeyListener> KEY_DOWN_LISTENER =
             new WritableObjectPropertyKey<>();
 
     /** Specifies the typeface for url bar text. */
@@ -181,7 +181,7 @@ class UrlBarProperties {
                 TEXT_STATE,
                 URL_DIRECTION_LISTENER,
                 TEXT_CHANGE_LISTENER,
-                HW_KEY_EVENT_LISTENER,
+                KEY_DOWN_LISTENER,
                 INCOGNITO_COLORS_ENABLED,
                 WINDOW_DELEGATE,
                 HAS_URL_SUGGESTIONS,

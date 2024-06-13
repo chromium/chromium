@@ -105,12 +105,15 @@ public class UrlBarCoordinator
     }
 
     /**
-     * Set the callback that will be invoked for every KeyEvent UrlBar receives from the hardware
-     * keyboard. The callback implementation should carefully decide which keys to consume to avoid
-     * affecting user text composition.
+     * Set the callback that will be invoked for:
+     *
+     * <ul>
+     *   <li>All hardware keyboard sourced key events,
+     *   <li>All enter key events, regardless of source.
+     * </ul>
      */
-    public void setHardwareKeyEventListener(View.OnKeyListener listener) {
-        mMediator.setHardwareKeyEventListener(listener);
+    public void setKeyDownListener(View.OnKeyListener listener) {
+        mMediator.setKeyDownListener(listener);
     }
 
     /**
