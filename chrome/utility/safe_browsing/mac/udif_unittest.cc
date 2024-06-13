@@ -102,7 +102,7 @@ class UDIFParserTest : public testing::TestWithParam<UDIFTestCase> {
       bool success = false;
       do {
         size_t bytes_read = 0;
-        success = stream->Read(&buffer[0], buffer.size(), &bytes_read);
+        success = stream->Read(buffer, &bytes_read);
         total_bytes_read += bytes_read;
         EXPECT_TRUE(success);
         EXPECT_TRUE(bytes_read == buffer_size ||
@@ -152,7 +152,7 @@ TEST_P(UDIFParserTest, ParseUDIF) {
       HFSPlusVolumeHeader header = {0};
       bool expect_read_success =
           test_case.expected_results & UDIFTestCase::READ_UDIF_DATA;
-      EXPECT_EQ(expect_read_success, stream->ReadType(&header));
+      EXPECT_EQ(expect_read_success, stream->ReadType(header));
       if (!expect_read_success)
         continue;
 
@@ -162,7 +162,7 @@ TEST_P(UDIFParserTest, ParseUDIF) {
       EXPECT_EQ(size - 1024, static_cast<size_t>(offset));
 
       HFSPlusVolumeHeader alternate_header = {0};
-      EXPECT_TRUE(stream->ReadType(&alternate_header));
+      EXPECT_TRUE(stream->ReadType(alternate_header));
 
       EXPECT_EQ(0, memcmp(&header, &alternate_header, sizeof(header)));
       EXPECT_EQ(kHFSPlusSigWord, OSSwapBigToHostInt16(header.signature));
@@ -172,7 +172,7 @@ TEST_P(UDIFParserTest, ParseUDIF) {
       EXPECT_EQ(0, stream->Seek(0, SEEK_SET));
       size_t partition_size = udif.GetPartitionSize(i);
       std::vector<uint8_t> data(partition_size, 0);
-      EXPECT_TRUE(stream->ReadExact(&data[0], partition_size));
+      EXPECT_TRUE(stream->ReadExact(data));
     }
   }
 }

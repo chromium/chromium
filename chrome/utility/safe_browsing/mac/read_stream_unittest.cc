@@ -10,6 +10,7 @@
 #include <memory>
 #include <vector>
 
+#include "base/containers/span.h"
 #include "base/files/file.h"
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
@@ -72,8 +73,7 @@ std::unique_ptr<ReadStream> ReadStreamTest<MemoryReadStreamTest>::CreateStream(
   for (size_t i = 0; i < data_size; ++i) {
     test_helper_.data[i] = i % 255;
   }
-  return base::WrapUnique(
-      new MemoryReadStream(&test_helper_.data[0], data_size));
+  return std::make_unique<MemoryReadStream>(test_helper_.data);
 }
 
 template <>
@@ -116,14 +116,14 @@ TYPED_TEST(ReadStreamTest, Read) {
   size_t bytes_read;
 
   {
-    EXPECT_TRUE(stream->Read(buf, 4, &bytes_read));
+    EXPECT_TRUE(stream->Read(base::span(buf).first(4u), &bytes_read));
     EXPECT_EQ(4u, bytes_read);
     uint8_t expected[] = { 0, 1, 2, 3, 0, 0, 0 };
     EXPECT_EQ(0, memcmp(expected, buf, sizeof(expected)));
   }
 
   {
-    EXPECT_TRUE(stream->Read(buf, 9, &bytes_read));
+    EXPECT_TRUE(stream->Read(base::span(buf).first(9u), &bytes_read));
     EXPECT_EQ(9u, bytes_read);
     uint8_t expected[] = { 4, 5, 6, 7, 8, 9, 10, 11, 12, 0, 0 };
     EXPECT_EQ(0, memcmp(expected, buf, sizeof(expected)));
@@ -141,7 +141,7 @@ TYPED_TEST(ReadStreamTest, CopyStreamToFileTest) {
       temp_path, (base::File::FLAG_CREATE_ALWAYS | base::File::FLAG_READ |
                   base::File::FLAG_WRITE | base::File::FLAG_WIN_TEMPORARY |
                   base::File::FLAG_DELETE_ON_CLOSE));
-  EXPECT_TRUE(CopyStreamToFile(stream.get(), temp_file));
+  EXPECT_TRUE(CopyStreamToFile(*stream, temp_file));
   EXPECT_EQ(kStreamSize, static_cast<size_t>(temp_file.GetLength()));
   uint8_t file_buf[kStreamSize];
   uint8_t expected[] = {0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14};
@@ -158,9 +158,9 @@ TYPED_TEST(ReadStreamTest, ReadAll) {
   std::unique_ptr<ReadStream> stream =
       ReadStreamTest<TypeParam>::CreateStream(kStreamSize);
 
-  std::vector<uint8_t> data;
-  EXPECT_TRUE(ReadEntireStream(stream.get(), &data));
-  EXPECT_EQ(kStreamSize, data.size());
+  auto maybe_data = ReadEntireStream(*stream);
+  ASSERT_TRUE(maybe_data.has_value());
+  EXPECT_EQ(kStreamSize, maybe_data->size());
 }
 
 TYPED_TEST(ReadStreamTest, SeekSet) {
@@ -171,7 +171,7 @@ TYPED_TEST(ReadStreamTest, SeekSet) {
 
   {
     EXPECT_EQ(250, stream->Seek(250, SEEK_SET));
-    EXPECT_TRUE(stream->Read(buf, sizeof(buf), &bytes_read));
+    EXPECT_TRUE(stream->Read(buf, &bytes_read));
     EXPECT_EQ(5u, bytes_read);
     uint8_t expected[] = { 250, 251, 252, 253, 254, 0, 0 };
     EXPECT_EQ(0, memcmp(expected, buf, sizeof(expected)));
@@ -179,7 +179,7 @@ TYPED_TEST(ReadStreamTest, SeekSet) {
 
   {
     EXPECT_EQ(5, stream->Seek(5, SEEK_SET));
-    EXPECT_TRUE(stream->Read(buf, 3, &bytes_read));
+    EXPECT_TRUE(stream->Read(base::span(buf).first(3u), &bytes_read));
     EXPECT_EQ(3u, bytes_read);
     uint8_t expected[] = { 5, 6, 7, 253, 254, 0, 0 };
     EXPECT_EQ(0, memcmp(expected, buf, sizeof(expected)));
@@ -194,13 +194,13 @@ TYPED_TEST(ReadStreamTest, SeekEnd) {
 
   {
     EXPECT_EQ(32, stream->Seek(0, SEEK_END));
-    EXPECT_TRUE(stream->Read(buf, sizeof(buf), &bytes_read));
+    EXPECT_TRUE(stream->Read(buf, &bytes_read));
     EXPECT_EQ(0u, bytes_read);
   }
 
   {
     EXPECT_EQ(28, stream->Seek(-4, SEEK_END));
-    EXPECT_TRUE(stream->Read(buf, sizeof(buf), &bytes_read));
+    EXPECT_TRUE(stream->Read(buf, &bytes_read));
     EXPECT_EQ(4u, bytes_read);
     uint8_t expected[] = { 28, 29, 30, 31, 0, 0, 0 };
     EXPECT_EQ(0, memcmp(expected, buf, sizeof(expected)));
@@ -218,7 +218,7 @@ TYPED_TEST(ReadStreamTest, SeekCur) {
   }
 
   {
-    EXPECT_TRUE(stream->Read(buf, sizeof(buf), &bytes_read));
+    EXPECT_TRUE(stream->Read(buf, &bytes_read));
     EXPECT_EQ(sizeof(buf), bytes_read);
     for (size_t i = 0; i < sizeof(buf); ++i) {
       EXPECT_EQ(i, buf[i]);
@@ -228,7 +228,7 @@ TYPED_TEST(ReadStreamTest, SeekCur) {
 
   {
     EXPECT_EQ(30, stream->Seek(-2, SEEK_CUR));
-    EXPECT_TRUE(stream->Read(buf, 3, &bytes_read));
+    EXPECT_TRUE(stream->Read(base::span(buf).first(3u), &bytes_read));
     EXPECT_EQ(3u, bytes_read);
     uint8_t expected[] = { 30, 31, 32 };
     EXPECT_EQ(0, memcmp(expected, buf, sizeof(expected)));

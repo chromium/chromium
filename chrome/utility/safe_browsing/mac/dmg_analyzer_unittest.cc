@@ -60,7 +60,7 @@ class MockDMGIterator : public DMGIterator {
   std::unique_ptr<ReadStream> GetReadStream() override {
     EXPECT_LT(index_, entries_.size());
     const std::vector<uint8_t>& data = entries_[index_].data;
-    return std::make_unique<MemoryReadStream>(data.data(), data.size());
+    return std::make_unique<MemoryReadStream>(data);
   }
 
   bool IsEmpty() override { return entries_.empty(); }

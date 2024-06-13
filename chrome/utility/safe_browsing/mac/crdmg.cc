@@ -220,7 +220,7 @@ bool SafeDMG::ParseDMG() {
         size_t read_this_pass = 0;
         do {
           uint8_t buf[4096];
-          if (!stream->Read(buf, sizeof(buf), &read_this_pass)) {
+          if (!stream->Read(buf, &read_this_pass)) {
             LOG(ERROR) << "Failed to read stream: " << path;
             unlinkat(unpack_dir_.get(), path.c_str(), 0);
             break;
