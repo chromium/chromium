@@ -6,7 +6,7 @@
 #include "ash/public/cpp/shelf_item_delegate.h"
 #include "ash/public/cpp/shelf_model.h"
 #include "base/functional/callback_helpers.h"
-#include "base/memory/raw_ptr_exclusion.h"
+#include "base/memory/stack_allocated.h"
 #include "base/run_loop.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/bind.h"
@@ -50,10 +50,11 @@ class AppServiceShelfContextMenuBrowserTest : public InProcessBrowserTest {
   ~AppServiceShelfContextMenuBrowserTest() override = default;
 
   struct MenuSection {
+    STACK_ALLOCATED();
+
+   public:
     std::unique_ptr<ui::SimpleMenuModel> menu_model;
-    // This field is not a raw_ptr<> because it was filtered by the rewriter
-    // for: #addr-of, #union
-    RAW_PTR_EXCLUSION ui::MenuModel* sub_model = nullptr;
+    ui::MenuModel* sub_model = nullptr;
     size_t command_index = 0;
   };
 
