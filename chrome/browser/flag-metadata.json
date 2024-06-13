@@ -8913,7 +8913,7 @@
   {
     "name": "vc-web-api",
     "owners": [ "chenjih@chromium.org", "charleszhao@chromium.org" ],
-    "expiry_milestone": 128
+    "expiry_milestone": 140
   },
   {
     "name": "verbose-logging-in-nacl",
