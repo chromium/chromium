@@ -33,6 +33,13 @@ bool IsUrlOpen(
   return false;
 }
 
+std::optional<std::string> GetShortLabelForCategory(
+    const CategoryLabel& category_label) {
+  return category_label.category_short_label().empty()
+             ? category_label.category_default_label()
+             : category_label.category_short_label();
+}
+
 // Gets product label from the bottom of a product category. If
 // `level_from_bottom` is 0, this returns the last level of the category. If
 // `level_from_bottom` is 1, this returns the second to last level of the
@@ -43,8 +50,8 @@ std::optional<std::string> GetLabelFromBottom(const ProductCategory& category,
   if (label_size <= level_from_bottom) {
     return std::nullopt;
   }
-  return category.category_labels(label_size - 1 - level_from_bottom)
-      .category_default_label();
+  return GetShortLabelForCategory(
+      category.category_labels(label_size - 1 - level_from_bottom));
 }
 
 std::optional<std::string> GetShortestLabelAtBottom(

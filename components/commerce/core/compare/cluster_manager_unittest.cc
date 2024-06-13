@@ -174,6 +174,20 @@ class ClusterManagerTest : public testing::Test {
     return product_info;
   }
 
+  ProductInfo CreateProductInfoWithShortLabel(const std::string& default_label,
+                                              const std::string& short_label,
+                                              int64_t product_id) {
+    ProductInfo product_info = ProductInfo();
+    product_info.product_cluster_id = product_id;
+    product_info.category_data.add_product_categories()
+        ->add_category_labels()
+        ->set_category_default_label(default_label);
+    product_info.category_data.add_product_categories()
+        ->add_category_labels()
+        ->set_category_short_label(short_label);
+    return product_info;
+  }
+
   void InitializeProductInfos() {
     product_infos_[GURL(kTestUrl1)] =
         CreateProductInfo(kCategoryLamp, kProductID1);
@@ -512,6 +526,33 @@ TEST_F(ClusterManagerTest,
   ASSERT_FALSE(info);
   GetEntryPointInfoForNavigation(foo2, &info);
   ASSERT_FALSE(info);
+}
+
+TEST_F(ClusterManagerTest, PrioritizeShortCategoryLabels) {
+  const std::string kCategoryShortLabel = "S";
+  GURL foo1(kTestUrl1);
+  GURL foo2(kTestUrl2);
+  UpdateUrlInfos(std::vector<GURL>{foo1, foo2});
+  // Add 2 products with the same category and both have short category labels.
+  product_infos_[GURL(kTestUrl1)] = CreateProductInfoWithShortLabel(
+      kCategoryLamp, kCategoryShortLabel, kProductID1);
+  product_infos_[GURL(kTestUrl2)] = CreateProductInfoWithShortLabel(
+      kCategoryLamp, kCategoryShortLabel, kProductID2);
+
+  cluster_manager_->DidNavigatePrimaryMainFrame(foo1);
+  cluster_manager_->DidNavigatePrimaryMainFrame(foo2);
+
+  base::RunLoop().RunUntilIdle();
+  ASSERT_EQ(2u, GetCandidateProductMap()->size());
+
+  std::optional<EntryPointInfo> info;
+  GetEntryPointInfoForNavigation(foo1, &info);
+  ASSERT_EQ(info->similar_candidate_products.size(), 2u);
+  ASSERT_EQ(info->similar_candidate_products.count(foo1), 1u);
+  ASSERT_EQ(info->similar_candidate_products[foo1], kProductID1);
+  ASSERT_EQ(info->similar_candidate_products.count(foo2), 1u);
+  ASSERT_EQ(info->similar_candidate_products[foo2], kProductID2);
+  ASSERT_EQ(info->title, kCategoryShortLabel);
 }
 
 TEST_F(ClusterManagerTest,
