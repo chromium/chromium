@@ -724,7 +724,11 @@ class CrossbenchTest(object):
             [self.OUTDIR % working_dir] + [self.browser] + benchmark_args +
             self.driver_path_arg)
 
-  def execute_benchmark(self, benchmark, display_name, benchmark_args):
+  def execute_benchmark(self,
+                        benchmark,
+                        display_name,
+                        benchmark_args,
+                        is_unittest=False):
     start = time.time()
 
     env = os.environ.copy()
@@ -772,6 +776,8 @@ class CrossbenchTest(object):
 
     write_simple_test_results(return_code, output_paths.test_results,
                               display_name)
+    if not is_unittest:
+      upload_simple_test_results(return_code, display_name)
 
     print_duration(f'Executing benchmark: {benchmark}', start)
 
