@@ -93,26 +93,6 @@ class Context : public media::RenderableGpuMemoryBufferVideoFramePool::Context {
     return client_shared_image;
   }
 
-  scoped_refptr<gpu::ClientSharedImage> CreateSharedImage(
-      gfx::GpuMemoryBuffer* gpu_memory_buffer,
-      gfx::BufferPlane plane,
-      const gfx::ColorSpace& color_space,
-      GrSurfaceOrigin surface_origin,
-      SkAlphaType alpha_type,
-      uint32_t usage,
-      gpu::SyncToken& sync_token) override {
-    auto* sii = SharedImageInterface();
-    if (!sii)
-      return nullptr;
-    auto client_shared_image = sii->CreateSharedImage(
-        gpu_memory_buffer, GpuMemoryBufferManager(), plane,
-        {color_space, surface_origin, alpha_type, usage,
-         "WebRTCVideoFramePool"});
-    CHECK(client_shared_image);
-    sync_token = sii->GenVerifiedSyncToken();
-    return client_shared_image;
-  }
-
   void DestroySharedImage(
       const gpu::SyncToken& sync_token,
       scoped_refptr<gpu::ClientSharedImage> shared_image) override {

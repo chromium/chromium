@@ -92,26 +92,6 @@ class GmbVideoFramePoolContext
     return client_shared_image;
   }
 
-  // Create a SharedImage representation of a plane of a GpuMemoryBuffer
-  // allocated by this interface. Return a ClientSharedImage pointer and
-  // populate `mailbox` and `sync_token`.
-  scoped_refptr<gpu::ClientSharedImage> CreateSharedImage(
-      gfx::GpuMemoryBuffer* gpu_memory_buffer,
-      gfx::BufferPlane plane,
-      const gfx::ColorSpace& color_space,
-      GrSurfaceOrigin surface_origin,
-      SkAlphaType alpha_type,
-      uint32_t usage,
-      gpu::SyncToken& sync_token) override {
-    auto client_shared_image = sii_in_process_->CreateSharedImage(
-        gpu_memory_buffer, gpu_memory_buffer_manager_, plane,
-        {color_space, surface_origin, alpha_type, usage,
-         "VizGmbVideoFramePool"});
-    CHECK(client_shared_image);
-    sync_token = sii_in_process_->GenVerifiedSyncToken();
-    return client_shared_image;
-  }
-
   // Destroy a SharedImage created by this interface.
   void DestroySharedImage(
       const gpu::SyncToken& sync_token,

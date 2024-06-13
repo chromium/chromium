@@ -782,20 +782,6 @@ class TestGmbVideoFramePoolContext
         gpu_memory_buffer->CloneHandle());
   }
 
-  scoped_refptr<gpu::ClientSharedImage> CreateSharedImage(
-      gfx::GpuMemoryBuffer* gpu_memory_buffer,
-      gfx::BufferPlane plane,
-      const gfx::ColorSpace& color_space,
-      GrSurfaceOrigin surface_origin,
-      SkAlphaType alpha_type,
-      uint32_t usage,
-      gpu::SyncToken& sync_token) override {
-    return context_provider_->SharedImageInterface()->CreateSharedImage(
-        gpu_memory_buffer, /*gpu_memory_buffer_manager=*/nullptr, plane,
-        {color_space, surface_origin, alpha_type, usage,
-         "FrameSinkVideoCapturerImplUnittest"});
-  }
-
   void DestroySharedImage(
       const gpu::SyncToken& sync_token,
       scoped_refptr<gpu::ClientSharedImage> shared_image) override {
