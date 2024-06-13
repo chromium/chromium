@@ -3535,6 +3535,7 @@ class MAYBE_AutofillInteractiveFormSubmissionTest
 
 // Tests that user-triggered submission triggers a submission event in
 // BrowserAutofillManager.
+// TODO(crbug.com/346982005): The test is showing flakiness.
 IN_PROC_BROWSER_TEST_F(MAYBE_AutofillInteractiveFormSubmissionTest,
                        Submission) {
   EnterValues();
