@@ -45,33 +45,27 @@ export class CursorTooltipElement extends CursorTooltipElementBase {
 
   static get properties() {
     return {
-      canShowTooltipFromPrefs: {
-        type: Boolean,
-        value: () => loadTimeData.getBoolean('canShowTooltipFromPrefs'),
-        reflectToAttribute: true,
-      },
-
-      tooltipMessage: {
-        type: String,
-        value: '',
-        reflectToAttribute: true,
-      },
-
-      tooltipHidden: {
-        type: Boolean,
-        value: false,
-        reflectToAttribute: true,
-      },
-
-      isNoneType: {
-        type: Boolean,
-        value: false,
-        reflectToAttribute: true,
-      },
-
-      isPointerInside: Boolean,
+      canShowTooltipFromPrefs: Boolean,
+      currentTooltip: Number,
+      forceTooltipHidden: Boolean,
+      isPointerInsideViewport: Boolean,
+      tooltipMessage: String,
     };
   }
+
+  // Whether the users has used the feature enough to not need the helping
+  // tooltip anymore.
+  private canShowTooltipFromPrefs: boolean =
+      loadTimeData.getBoolean('canShowTooltipFromPrefs');
+
+  // The current tooltip showing to the user.
+  private currentTooltip: CursorTooltipType = CursorTooltipType.NONE;
+
+  // Whether or not to force the tooltip as hidden.
+  private forceTooltipHidden: boolean = false;
+
+  // Whether or not the pointer is inside the web contents.
+  private isPointerInsideViewport: boolean;
 
   // The tooltip message string.
   private tooltipMessage: string;
@@ -82,21 +76,11 @@ export class CursorTooltipElement extends CursorTooltipElementBase {
   // The queued tooltip message string.
   private queuedTooltipMessage: string;
 
-  // Whether or not the pointer is inside the web contents.
-  private isPointerInside: boolean;
-
   // The queued tooltip offset pixels.
   private queuedOffsetLeftPx = 0;
 
   // The queued tooltip offset pixels.
   private queuedOffsetTopPx = 0;
-
-  // Whether or not the tooltip is hidden.
-  private tooltipHidden: boolean;
-
-  // Whether or not the type is NONE and the tooltip should not be
-  // rendered.
-  private isNoneType: boolean;
 
   // Whether or not to pause tooltip changes. If true, the tooltip changes
   // will be queued and applied when this becomes unset. This allows the
@@ -106,19 +90,19 @@ export class CursorTooltipElement extends CursorTooltipElementBase {
   private shouldPauseTooltipChanges = false;
 
   markPointerEnteredContentArea() {
-    this.isPointerInside = true;
+    this.isPointerInsideViewport = true;
   }
 
   markPointerLeftContentArea() {
-    this.isPointerInside = false;
+    this.isPointerInsideViewport = false;
   }
 
   hideTooltip() {
-    this.tooltipHidden = true;
+    this.forceTooltipHidden = true;
   }
 
   unhideTooltip() {
-    this.tooltipHidden = false;
+    this.forceTooltipHidden = false;
   }
 
   setPauseTooltipChanges(shouldPauseTooltipChanges: boolean) {
@@ -136,17 +120,17 @@ export class CursorTooltipElement extends CursorTooltipElementBase {
     }
   }
 
-  private setTooltipImmediately(type: CursorTooltipType) {
-    if (type === CursorTooltipType.NONE) {
-      this.isNoneType = true;
+  private setTooltipImmediately(tooltipType: CursorTooltipType) {
+    this.currentTooltip = tooltipType;
+
+    if (tooltipType === CursorTooltipType.NONE) {
       return;
     }
     this.queuedTooltipType = undefined;
-    this.isNoneType = false;
     let offsetLeftPx = 0;
     let offsetTopPx = 0;
     let tooltipMessage = '';
-    if (type === CursorTooltipType.LIVE_PAGE) {
+    if (tooltipType === CursorTooltipType.LIVE_PAGE) {
       offsetTopPx = 24;
       tooltipMessage = this.i18n('cursorTooltipLivePageMessage');
     } else {
@@ -155,15 +139,15 @@ export class CursorTooltipElement extends CursorTooltipElementBase {
       // Add the height of the cursor tooltip icon, plus 8px.
       offsetTopPx += 40;
       // LINT.IfChange(CursorOffsetValues)
-      if (type === CursorTooltipType.REGION_SEARCH) {
+      if (tooltipType === CursorTooltipType.REGION_SEARCH) {
         offsetTopPx += 6;
         offsetLeftPx += 3;
         tooltipMessage = this.i18n('cursorTooltipDragMessage');
-      } else if (type === CursorTooltipType.TEXT_HIGHLIGHT) {
+      } else if (tooltipType === CursorTooltipType.TEXT_HIGHLIGHT) {
         offsetTopPx += 8;
         offsetLeftPx += 3;
         tooltipMessage = this.i18n('cursorTooltipTextHighlightMessage');
-      } else if (type === CursorTooltipType.CLICK_SEARCH) {
+      } else if (tooltipType === CursorTooltipType.CLICK_SEARCH) {
         offsetTopPx += 8;
         offsetLeftPx += 4;
         tooltipMessage = this.i18n('cursorTooltipClickMessage');
@@ -176,11 +160,23 @@ export class CursorTooltipElement extends CursorTooltipElementBase {
     this.tooltipMessage = tooltipMessage;
   }
 
-  private getHiddenCursorClass(
-      isPointerInside: boolean, canShowTooltipFromPrefs: boolean,
-      tooltipHidden: boolean, isNoneType: boolean): string {
-    return (isPointerInside && canShowTooltipFromPrefs && !tooltipHidden &&
-            !isNoneType) ?
+  private getHiddenCursorClass(): string {
+    // Force hidden hides the cursor no matter what, so exit early.
+    if (this.forceTooltipHidden) {
+      return 'hidden';
+    }
+
+    // If the user is hovering over the live page, we want to show the tooltip
+    // despite what the user prefs are set to.
+    if (this.currentTooltip === CursorTooltipType.LIVE_PAGE &&
+        this.isPointerInsideViewport) {
+      return '';
+    }
+
+    // In all other cases, show the tooltip if the users prefs allows it, the
+    // cursor is in the viewport, and the tooltip is set to a valid tooltip.
+    return (this.isPointerInsideViewport && this.canShowTooltipFromPrefs &&
+            this.currentTooltip !== CursorTooltipType.NONE) ?
         '' :
         'hidden';
   }
