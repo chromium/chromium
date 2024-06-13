@@ -2,7 +2,7 @@ Document
 ++Group IsControlElement=false
 ++++RadioButton SelectionItem.IsSelected=false
 ++++Text Name='Radio1'
-++++Separator Name='<newline>'
+++++Text Name='<newline>'
 ++++RadioButton SelectionItem.IsSelected=false
 ++++Text Name='Radio2'
 ++Group IsControlElement=false

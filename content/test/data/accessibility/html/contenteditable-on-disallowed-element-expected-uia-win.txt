@@ -2,7 +2,7 @@ Document
 ++Edit Value.Value='value'
 ++Edit Value.Value='value'
 ++ComboBox ExpandCollapse.ExpandCollapseState='Collapsed' Value.Value='option'
-++Separator Name='<newline>'
+++Text Name='<newline>'
 ++Thumb RangeValue.IsReadOnly=false RangeValue.LargeChange=0.00 RangeValue.SmallChange=0.00 RangeValue.Maximum=0.00 RangeValue.Minimum=0.00 RangeValue.Value=0.00
 ++Image Name='To get missing image descriptions, open the context menu.'
 ++Text Name=' '

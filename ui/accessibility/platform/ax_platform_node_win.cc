@@ -1422,7 +1422,7 @@ AXPlatformNodeWin::UIARoleProperties AXPlatformNodeWin::GetUIARoleProperties() {
 
     case ax::mojom::Role::kLineBreak:
       return {UIALocalizationStrategy::kDeferToControlType,
-              UIA_SeparatorControlTypeId, L"separator"};
+              UIA_TextControlTypeId, L"description"};
 
     case ax::mojom::Role::kVideo:
       return {UIALocalizationStrategy::kSupply, UIA_GroupControlTypeId,

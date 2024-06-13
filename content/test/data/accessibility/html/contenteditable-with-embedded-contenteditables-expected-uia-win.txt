@@ -3,7 +3,7 @@ Document
 ++++Group IsControlElement=false
 ++++++Text Name='This is editable.'
 ++++Text Name='This is not editable.'
-++++Separator Name='<newline>'
+++++Text Name='<newline>'
 ++++Group
 ++++++Text Name='But this one is.'
 ++++Group
