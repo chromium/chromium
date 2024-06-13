@@ -81,15 +81,17 @@ def parse_args(args=None, *, parser_type=None):
 
 
 def initial_settings(
-    project: str,
+    *,
     milestone: str,
     branch: str,
+    chromium_project: str,
+    chrome_project: str,
 ) -> dict[str, Any]:
   settings = dict(
-      project=project,
+      project=chromium_project,
       project_title=f'Chromium M{milestone}',
       ref=f'refs/branch-heads/{branch}',
-      chrome_project=f'chrome-m{milestone}',
+      chrome_project=chrome_project,
       is_main=False,
       platforms={
           p: {
@@ -111,8 +113,18 @@ def initial_settings(
   return json.dumps(settings, indent=4) + '\n'
 
 def initialize_cmd(args):
-  project = 'chromium' if args.test_config else f'chromium-m{args.milestone}'
-  settings = initial_settings(project, args.milestone, args.branch)
+  if args.test_config:
+    chromium_project = 'chromium'
+    chrome_project = 'chrome'
+  else:
+    chromium_project = f'chromium-m{args.milestone}'
+    chrome_project = f'chrome-m{args.milestone}'
+  settings = initial_settings(
+      milestone=args.milestone,
+      branch=args.branch,
+      chromium_project=chromium_project,
+      chrome_project=chrome_project,
+  )
 
   with open(args.settings_json, 'w') as f:
     f.write(settings)

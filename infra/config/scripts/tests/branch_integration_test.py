@@ -105,7 +105,7 @@ class BranchIntegrationTest(unittest.TestCase):
             "project": "chromium",
             "project_title": "Chromium MXX",
             "ref": "refs/branch-heads/YYYY",
-            "chrome_project": "chrome-mXX",
+            "chrome_project": "chrome",
             "is_main": false,
             "platforms": {
                 "android": {
