@@ -17,6 +17,9 @@ class FasterSplitView : public views::BoxLayoutView {
   METADATA_HEADER(FasterSplitView, views::BoxLayoutView)
 
  public:
+  static constexpr int kDismissButtonIDForTest = 3000;
+  static constexpr int kSettingsButtonIDForTest = 3001;
+
   FasterSplitView(base::RepeatingClosure skip_callback,
                   base::RepeatingClosure settings_callback);
   FasterSplitView(const FasterSplitView&) = delete;

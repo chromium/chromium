@@ -40,11 +40,13 @@ FasterSplitView::FasterSplitView(base::RepeatingClosure skip_callback,
       /*leading_icon=*/&gfx::kNoneIcon, /*use_custom_focus=*/false));
   toast->dismiss_button()->SetTooltipText(l10n_util::GetStringUTF16(
       IDS_ASH_OVERVIEW_FASTER_SPLITSCREEN_TOAST_DISMISS_WINDOW_SUGGESTIONS));
+  toast->dismiss_button()->SetID(kDismissButtonIDForTest);
 
   auto* settings_button = AddChildView(std::make_unique<IconButton>(
       std::move(settings_callback), IconButton::Type::kLarge,
       &kOverviewSettingsIcon, IDS_ASH_OVERVIEW_SETTINGS_BUTTON_LABEL));
   settings_button->SetBackgroundColor(kColorAshShieldAndBase80);
+  settings_button->SetID(kSettingsButtonIDForTest);
 
   views::FocusRing* focus_ring = StyleUtil::SetUpFocusRingForView(
       settings_button, kWindowMiniViewFocusRingHaloInset);

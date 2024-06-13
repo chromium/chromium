@@ -2560,6 +2560,13 @@ FasterSplitViewOld* OverviewGrid::GetFasterSplitViewOld() {
              : nullptr;
 }
 
+const FasterSplitView* OverviewGrid::GetFasterSplitView() const {
+  return faster_splitview_widget_
+             ? views::AsViewClass<FasterSplitView>(
+                   faster_splitview_widget_->GetContentsView())
+             : nullptr;
+}
+
 gfx::Rect OverviewGrid::GetWallpaperClipBounds() const {
   // The bottom of the clipping bounds should be above the birch bar.
   gfx::Rect clipping_bounds = GetGridEffectiveBounds();
