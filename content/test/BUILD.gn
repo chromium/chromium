@@ -3256,11 +3256,9 @@ test("content_unittests") {
       "../child/dwrite_font_proxy/dwrite_font_proxy_win_unittest.cc",
       "../child/dwrite_font_proxy/font_fallback_win_unittest.cc",
       "../child/font_warmup_win_unittest.cc",
-      "../renderer/font_data/font_data_manager_unittest.cc",
       "../renderer/media/win/dcomp_texture_wrapper_unittest.cc",
     ]
     deps += [
-      "//components/services/font_data/public/mojom",
       "//sandbox/policy:sandbox_test_utils",
       "//sandbox/win:sandbox",
       "//third_party/blink/public/common",
