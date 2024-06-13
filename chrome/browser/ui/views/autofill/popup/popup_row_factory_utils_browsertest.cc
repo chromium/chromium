@@ -222,7 +222,7 @@ IN_PROC_BROWSER_TEST_F(CreatePopupRowViewTest, FilterMatchHighlighting) {
 IN_PROC_BROWSER_TEST_F(CreatePopupRowViewTest, PasswordWithFaviconPlaceholder) {
   Suggestion suggestion = CreatePasswordSuggestion(u"Password_entry");
   suggestion.custom_icon =
-      Suggestion::FaviconDomainUrl(GURL("https://google.com"));
+      Suggestion::FaviconDetails(/*domain_url=*/GURL("https://google.com"));
   CreateRowView(std::move(suggestion), /*selected_cell=*/std::nullopt);
   ShowAndVerifyUi();
 }

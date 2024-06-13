@@ -47,7 +47,18 @@ struct Suggestion {
   using ValueToFill = base::StrongAlias<struct ValueToFill, std::u16string>;
   using Payload =
       absl::variant<BackendId, GURL, ValueToFill, PasswordSuggestionDetails>;
-  using FaviconDomainUrl = base::StrongAlias<class FaviconDomainURLTag, GURL>;
+
+  struct FaviconDetails {
+    GURL domain_url;
+
+    // Whether the favicon can be requested from a Google server. Only set to
+    // `true` if the user's association with the domain is already known to
+    // Google, e.g., because the user is syncing a credential for that domain.
+    bool can_be_requested_from_google = false;
+
+    friend bool operator==(const FaviconDetails&,
+                           const FaviconDetails&) = default;
+  };
 
   // The text information shown on the UI layer for a Suggestion.
   struct Text {
@@ -228,7 +239,7 @@ struct Suggestion {
   // The latter is used for manually triggered password suggestions only.
   // While the favicon loads, the icon from `Suggestion::icon` will be used as
   // a placeholder.
-  absl::variant<gfx::Image, FaviconDomainUrl> custom_icon;
+  absl::variant<gfx::Image, FaviconDetails> custom_icon;
 
   // The children of this suggestion. If present, the autofill popup will have
   // submenus.

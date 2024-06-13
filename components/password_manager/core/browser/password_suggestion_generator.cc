@@ -280,7 +280,9 @@ void AppendManualFallbackSuggestions(const CredentialUIEntry& credential,
         credential.password, base::UTF8ToUTF16(kDisplaySingonRealm),
         is_cross_origin.value());
     suggestion.is_acceptable = on_password_form.value();
-    suggestion.custom_icon = Suggestion::FaviconDomainUrl(domain_info.url);
+    suggestion.custom_icon = Suggestion::FaviconDetails(domain_info.url);
+    // TODO(crbug.com/325246516): Based on sync status and credentials storage,
+    // calculate `FaviconDetails::can_be_requested_from_google`.
 
     if (!replaced) {
       AddPasswordUsernameChildSuggestion(maybe_username, suggestion);

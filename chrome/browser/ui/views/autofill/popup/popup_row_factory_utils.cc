@@ -406,12 +406,12 @@ std::vector<std::unique_ptr<views::View>> CreateAndTrackPasswordSubtextViews(
   return result;
 }
 
-// If the `Suggestion::custom_icon` holds the `FaviconDomainUrl` alternative,
+// If the `Suggestion::custom_icon` holds the `FaviconDetails` alternative,
 // the icon should be loaded lazily. For this case, this method creates a
 // `LazyLoadingImageView` to be passed to `CreatePasswordPopupRowContentView()`
 // as the `icon`. Otherwise, it returns an icon created by `GetIconImageView()`.
 std::unique_ptr<views::View> GetPasswordIconView(const Suggestion& suggestion) {
-  if (!absl::holds_alternative<Suggestion::FaviconDomainUrl>(
+  if (!absl::holds_alternative<Suggestion::FaviconDetails>(
           suggestion.custom_icon)) {
     return popup_cell_utils::GetIconImageView(suggestion);
   }
