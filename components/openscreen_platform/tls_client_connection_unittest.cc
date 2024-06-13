@@ -76,10 +76,12 @@ class FakeSocketStreams {
 
   // Writes data into the inbound data pipe, which should ultimately result in a
   // TlsClientConnection::Client's OnRead() method being called.
-  void SimulateSocketReceive(const void* data, size_t num_bytes) {
+  void SimulateSocketReceive(base::span<const uint8_t> data) {
+    size_t actually_written_bytes = 0;
     const MojoResult result = inbound_stream_->WriteData(
-        data, &num_bytes, MOJO_WRITE_DATA_FLAG_ALL_OR_NONE);
+        data, MOJO_WRITE_DATA_FLAG_ALL_OR_NONE, actually_written_bytes);
     ASSERT_EQ(result, MOJO_RESULT_OK);
+    // Ok to ignore `actually_written_bytes` because of `...ALL_OR_NONE` flag.
   }
 
   // Closes the inbound (or outbound) data pipe to allow the unit tests to check
@@ -105,13 +107,14 @@ class FakeSocketStreams {
     ASSERT_EQ(result, MOJO_RESULT_OK);
 
     size_t num_bytes = 0;
-    result = outbound_stream_->ReadData(nullptr, &num_bytes,
-                                        MOJO_READ_DATA_FLAG_QUERY);
+    result = outbound_stream_->ReadData(MOJO_READ_DATA_FLAG_QUERY,
+                                        base::span<uint8_t>(), num_bytes);
     ASSERT_EQ(result, MOJO_RESULT_OK);
     size_t old_end_index = outbound_data_.size();
     outbound_data_.resize(old_end_index + num_bytes);
-    result = outbound_stream_->ReadData(outbound_data_.data() + old_end_index,
-                                        &num_bytes, MOJO_READ_DATA_FLAG_NONE);
+    result = outbound_stream_->ReadData(
+        MOJO_READ_DATA_FLAG_NONE,
+        base::span(outbound_data_).subspan(old_end_index), num_bytes);
     ASSERT_EQ(result, MOJO_RESULT_OK);
     outbound_data_.resize(old_end_index + num_bytes);
 
@@ -184,8 +187,7 @@ TEST_F(TlsClientConnectionTest, CallsClientOnReadForInboundData) {
       byte ^= i;
     }
     EXPECT_CALL(*client(), OnRead(connection(), expected_data)).Times(1);
-    socket_streams()->SimulateSocketReceive(expected_data.data(),
-                                            expected_data.size());
+    socket_streams()->SimulateSocketReceive(expected_data);
     base::RunLoop().RunUntilIdle();
     Mock::VerifyAndClearExpectations(client());
   }

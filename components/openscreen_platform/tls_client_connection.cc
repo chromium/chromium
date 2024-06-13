@@ -10,6 +10,7 @@
 #include <utility>
 #include <vector>
 
+#include "base/compiler_specific.h"
 #include "base/functional/bind.h"
 #include "base/numerics/safe_conversions.h"
 
@@ -59,9 +60,14 @@ bool TlsClientConnection::Send(const void* data, size_t len) {
     return false;
   }
 
-  size_t num_bytes = len;
+  // SAFETY: Relying on the caller to provide valid `data` and `len`.
+  // TODO(https://crbug.com/344896902): `span`-ify this API.
+  base::span<const uint8_t> span =
+      UNSAFE_BUFFERS(base::span(static_cast<const uint8_t*>(data), len));
+  size_t actually_written_bytes = 0;
   const MojoResult result = send_stream_->WriteData(
-      data, &num_bytes, MOJO_WRITE_DATA_FLAG_ALL_OR_NONE);
+      span, MOJO_WRITE_DATA_FLAG_ALL_OR_NONE, actually_written_bytes);
+  // Ok to ignore `actually_written_bytes` because of `...ALL_OR_NONE` flag.
   mojo::HandleSignalsState state = send_stream_->QuerySignalsState();
   return ProcessMojoResult(result, state.peer_closed()
                                        ? Error::Code::kSocketClosedFailure
@@ -85,13 +91,13 @@ void TlsClientConnection::ReceiveMore(MojoResult result,
 
   if (result == MOJO_RESULT_OK) {
     size_t num_bytes = 0;
-    result = receive_stream_->ReadData(nullptr, &num_bytes,
-                                       MOJO_READ_DATA_FLAG_QUERY);
+    result = receive_stream_->ReadData(MOJO_READ_DATA_FLAG_QUERY,
+                                       base::span<uint8_t>(), num_bytes);
     if (result == MOJO_RESULT_OK) {
       num_bytes = std::min(num_bytes, kMaxBytesPerRead);
       std::vector<uint8_t> buffer(num_bytes);
-      result = receive_stream_->ReadData(buffer.data(), &num_bytes,
-                                         MOJO_READ_DATA_FLAG_NONE);
+      result = receive_stream_->ReadData(MOJO_READ_DATA_FLAG_NONE, buffer,
+                                         num_bytes);
       if (result == MOJO_RESULT_OK && client_) {
         buffer.resize(num_bytes);
         client_->OnRead(this, std::move(buffer));

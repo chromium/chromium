@@ -6,6 +6,7 @@
 
 #include <utility>
 
+#include "base/containers/span.h"
 #include "base/functional/bind.h"
 #include "base/memory/ptr_util.h"
 #include "base/numerics/safe_conversions.h"
@@ -49,9 +50,10 @@ void MojoDataPump::Read(net::IOBuffer* io_buffer,
     std::move(callback).Run(net::ERR_INVALID_ARGUMENT);
     return;
   }
+  // Safe because of the `count <= 0` check above.
+  read_size_ = base::checked_cast<size_t>(count);
 
   pending_read_buffer_ = io_buffer;
-  read_size_ = count;
   read_callback_ = std::move(callback);
   receive_stream_watcher_.ArmOrNotify();
 }
@@ -64,7 +66,7 @@ void MojoDataPump::Write(net::IOBuffer* io_buffer,
 
   write_callback_ = std::move(callback);
   pending_write_buffer_ = io_buffer;
-  pending_write_buffer_size_ = io_buffer_size;
+  pending_write_buffer_size_ = base::checked_cast<size_t>(io_buffer_size);
   send_stream_watcher_.ArmOrNotify();
 }
 
@@ -73,11 +75,13 @@ void MojoDataPump::ReceiveMore(MojoResult result,
   DCHECK(read_callback_);
   DCHECK_NE(0u, read_size_);
 
-  size_t num_bytes = size_t{read_size_};
+  size_t num_bytes = read_size_;
 
   if (result == MOJO_RESULT_OK) {
-    result = receive_stream_->ReadData(pending_read_buffer_->data(), &num_bytes,
-                                       MOJO_READ_DATA_FLAG_NONE);
+    result = receive_stream_->ReadData(
+        MOJO_READ_DATA_FLAG_NONE,
+        base::as_writable_bytes(pending_read_buffer_->span()).first(num_bytes),
+        num_bytes);
   }
   if (result == MOJO_RESULT_SHOULD_WAIT) {
     receive_stream_watcher_.ArmOrNotify();
@@ -95,10 +99,13 @@ void MojoDataPump::SendMore(MojoResult result,
                             const mojo::HandleSignalsState& state) {
   DCHECK(write_callback_);
 
-  size_t num_bytes = base::checked_cast<size_t>(pending_write_buffer_size_);
+  size_t actually_written_bytes = 0;
   if (result == MOJO_RESULT_OK) {
-    result = send_stream_->WriteData(pending_write_buffer_->data(), &num_bytes,
-                                     MOJO_WRITE_DATA_FLAG_NONE);
+    base::span<const uint8_t> data_to_write =
+        base::as_bytes(pending_write_buffer_->span())
+            .first(pending_write_buffer_size_);
+    result = send_stream_->WriteData(data_to_write, MOJO_WRITE_DATA_FLAG_NONE,
+                                     actually_written_bytes);
   }
   if (result == MOJO_RESULT_SHOULD_WAIT) {
     send_stream_watcher_.ArmOrNotify();
@@ -110,7 +117,8 @@ void MojoDataPump::SendMore(MojoResult result,
     std::move(write_callback_).Run(net::ERR_FAILED);
     return;
   }
-  std::move(write_callback_).Run(base::checked_cast<int>(num_bytes));
+  std::move(write_callback_)
+      .Run(base::checked_cast<int>(actually_written_bytes));
 }
 
 }  // namespace cast_channel
