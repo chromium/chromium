@@ -229,10 +229,10 @@ class DownloadServiceControllerImplTest : public testing::Test {
   scoped_refptr<base::TestMockTimeTaskRunner> task_runner_;
   base::SingleThreadTaskRunner::CurrentDefaultHandle current_default_handle_;
 
-  std::unique_ptr<ControllerImpl> controller_;
-  raw_ptr<Configuration> config_;
   std::unique_ptr<LogSink> log_sink_;
   NavigationMonitorImpl navigation_monitor;
+  std::unique_ptr<ControllerImpl> controller_;
+  raw_ptr<Configuration> config_;
   raw_ptr<test::MockClient> client_;
   raw_ptr<UploadClient> client3_;
   raw_ptr<test::TestDownloadDriver> driver_;
