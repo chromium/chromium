@@ -110,10 +110,9 @@ void StreamConsumer::OnPipeWritable(MojoResult result) {
     return;
   }
 
-  base::span<uint8_t> span = data_wrapper_.Get();
-  size_t bytes_written = span.size();
-  result = data_pipe_->WriteData(span.data(), &bytes_written,
-                                 MOJO_WRITE_DATA_FLAG_NONE);
+  size_t bytes_written = 0;
+  result = data_pipe_->WriteData(data_wrapper_.Get(), MOJO_WRITE_DATA_FLAG_NONE,
+                                 bytes_written);
   if (result != MOJO_RESULT_OK) {
     CloseDataPipeOnError();
     return;
@@ -195,10 +194,9 @@ void StreamConsumer::MaybeSendNextFrame() {
   no_frames_available_cb_.Reset();
 
   // Write the frame's data to Mojo.
-  span = data_wrapper_.Get();
-  size_t bytes_written = span.size();
-  auto result = data_pipe_->WriteData(span.data(), &bytes_written,
-                                      MOJO_WRITE_DATA_FLAG_NONE);
+  size_t bytes_written = 0;
+  auto result = data_pipe_->WriteData(data_wrapper_.Get(),
+                                      MOJO_WRITE_DATA_FLAG_NONE, bytes_written);
   if (result == MOJO_RESULT_SHOULD_WAIT) {
     pipe_watcher_.ArmOrNotify();
     bytes_written = 0;
