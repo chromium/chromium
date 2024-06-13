@@ -11244,6 +11244,21 @@
             ]
         }
     ],
+    "IOSLensWebPageEarlyTransitionEnabled": [
+        {
+            "platforms": [
+                "ios"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "enable_features": [
+                        "LensWebPageEarlyTransitionEnabled"
+                    ]
+                }
+            ]
+        }
+    ],
     "IOSLogApplicationStorageSizeMetrics": [
         {
             "platforms": [
