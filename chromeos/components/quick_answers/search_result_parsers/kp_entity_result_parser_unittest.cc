@@ -44,7 +44,6 @@ TEST_F(KpEntityResultParserTest, SuccessWithRating) {
   QuickAnswer quick_answer;
 
   EXPECT_TRUE(parser_->Parse(result, &quick_answer));
-  EXPECT_EQ(ResultType::kKnowledgePanelEntityResult, quick_answer.result_type);
 
   EXPECT_EQ(0u, quick_answer.title.size());
   EXPECT_EQ(1u, quick_answer.first_answer_row.size());
@@ -66,7 +65,6 @@ TEST_F(KpEntityResultParserTest, SuccessWithRatingScoreRound) {
   QuickAnswer quick_answer;
 
   EXPECT_TRUE(parser_->Parse(result, &quick_answer));
-  EXPECT_EQ(ResultType::kKnowledgePanelEntityResult, quick_answer.result_type);
 
   EXPECT_EQ(0u, quick_answer.title.size());
   EXPECT_EQ(1u, quick_answer.first_answer_row.size());
@@ -102,7 +100,6 @@ TEST_F(KpEntityResultParserTest, SuccessWithKnownForReason) {
   QuickAnswer quick_answer;
 
   EXPECT_TRUE(parser_->Parse(result, &quick_answer));
-  EXPECT_EQ(ResultType::kKnowledgePanelEntityResult, quick_answer.result_type);
 
   EXPECT_EQ(0u, quick_answer.title.size());
   EXPECT_EQ(1u, quick_answer.first_answer_row.size());

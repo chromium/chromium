@@ -69,7 +69,7 @@ class QuickAnswersControllerImpl : public chromeos::ReadWriteCardController,
   void OnRetryQuickAnswersRequest();
 
   // User clicks on the quick answer result.
-  void OnQuickAnswerClick();
+  void OnQuickAnswersResultClick();
 
   // Handle user consent result.
   void OnUserConsentResult(bool consented);
@@ -81,10 +81,18 @@ class QuickAnswersControllerImpl : public chromeos::ReadWriteCardController,
     return quick_answers_ui_controller_.get();
   }
 
+  // `quick_answers_session()` return non-nullptr if it has received a result,
+  // including `kNoResult`. `quick_answer()` return non-nullptr if it has
+  // received a result which is NOT `kNoResult`;
+  quick_answers::QuickAnswersSession* quick_answers_session() {
+    return quick_answers_session_.get();
+  }
+
   quick_answers::QuickAnswer* quick_answer() {
     return quick_answers_session_ ? quick_answers_session_->quick_answer.get()
                                   : nullptr;
   }
+
   quick_answers::StructuredResult* structured_result() {
     return quick_answers_session_
                ? quick_answers_session_->structured_result.get()

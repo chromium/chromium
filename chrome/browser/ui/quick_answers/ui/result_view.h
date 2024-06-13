@@ -33,13 +33,10 @@ class ResultView : public views::FlexLayoutView {
   std::u16string GetFirstLineText() const;
 
   // If FirstLineSubText is set, it will be shown as:
-  // [FirstLineText]<a dot>[FirstLineSubText]
-  // This is used to render a word + pronunciation for a definition or a query
-  // + language for a translation. FirstLineSubText is not used now as the
-  // current Quick Answers code sets a combined text to the FirstLineText. This
-  // approach allows us to ellipse FirstLineText depending on an available
-  // space.
-  // TODO(b/335701090): Split it to FirstLineText and FirstLineSubText.
+  // [FirstLineText] <a dot> [FirstLineSubText]
+  // This is used to render [text to translate] + [source locale] where we want
+  // to elide [text to translate]. Note that [a word] + [phonetics] are rendered
+  // as a single text while it looks similar for a different elide behavior.
   void SetFirstLineSubText(const std::u16string& first_line_sub_text);
   std::u16string GetFirstLineSubText() const;
 
@@ -59,7 +56,9 @@ class ResultView : public views::FlexLayoutView {
 
   PhoneticsInfo phonetics_info_;
 
+  raw_ptr<views::FlexLayoutView> flex_layout_view_ = nullptr;
   raw_ptr<views::Label> first_line_label_ = nullptr;
+  raw_ptr<views::Label> separator_label_ = nullptr;
   raw_ptr<views::Label> first_line_sub_label_ = nullptr;
   raw_ptr<views::ImageButton> phonetics_audio_button_ = nullptr;
   raw_ptr<views::Label> second_line_label_ = nullptr;

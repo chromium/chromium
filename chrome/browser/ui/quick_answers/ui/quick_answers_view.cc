@@ -10,7 +10,9 @@
 #include "base/check_is_test.h"
 #include "base/functional/bind.h"
 #include "base/memory/raw_ptr.h"
+#include "base/strings/stringprintf.h"
 #include "base/strings/utf_string_conversions.h"
+#include "chrome/browser/browser_process.h"
 #include "chrome/browser/profiles/profile_manager.h"
 #include "chrome/browser/ui/chromeos/read_write_cards/read_write_cards_ui_controller.h"
 #include "chrome/browser/ui/chromeos/read_write_cards/read_write_cards_view.h"
@@ -26,6 +28,7 @@
 #include "chrome/browser/ui/views/editor_menu/utils/pre_target_handler.h"
 #include "chromeos/components/quick_answers/quick_answers_model.h"
 #include "chromeos/components/quick_answers/utils/quick_answers_metrics.h"
+#include "chromeos/components/quick_answers/utils/quick_answers_utils.h"
 #include "chromeos/constants/chromeos_features.h"
 #include "chromeos/strings/grit/chromeos_strings.h"
 #include "components/omnibox/browser/vector_icons.h"
@@ -110,20 +113,6 @@ constexpr int kMaximumHeight =
     kDefaultLineHeightDip + kLineSpacingDip +
     quick_answers::ResultView::kMaxLines * kDefaultLineHeightDip;
 
-std::u16string ExtractText(QuickAnswerUiElement* quick_answer_ui_element) {
-  if (!quick_answer_ui_element) {
-    return std::u16string();
-  }
-
-  if (quick_answer_ui_element->type != QuickAnswerUiElementType::kText) {
-    return std::u16string();
-  }
-
-  QuickAnswerText* quick_answer_text =
-      static_cast<QuickAnswerText*>(quick_answer_ui_element);
-  return quick_answer_text->text;
-}
-
 const gfx::VectorIcon& GetVectorIcon(QuickAnswersView::Intent intent) {
   switch (intent) {
     case QuickAnswersView::Intent::kDefinition:
@@ -156,6 +145,56 @@ ui::ImageModel GetIcon(QuickAnswersView::Design design,
   }
 
   CHECK(false) << "Invalid design enum value specified";
+}
+
+void SetResultTo(ResultView* result_view, DefinitionResult* definition_result) {
+  if (definition_result->phonetics_info.text.empty()) {
+    result_view->SetFirstLineText(base::UTF8ToUTF16(definition_result->word));
+  } else {
+    result_view->SetFirstLineText(base::UTF8ToUTF16(BuildDefinitionTitleText(
+        definition_result->word, definition_result->phonetics_info.text)));
+  }
+
+  if (definition_result->phonetics_info.PhoneticsInfoAvailable()) {
+    result_view->SetPhoneticsInfo(definition_result->phonetics_info);
+  }
+
+  result_view->SetSecondLineText(
+      base::UTF8ToUTF16(definition_result->sense.definition));
+}
+
+void SetResultTo(ResultView* result_view,
+                 TranslationResult* translation_result,
+                 QuickAnswersView::Design design) {
+  result_view->SetFirstLineText(
+      base::UTF8ToUTF16(translation_result->text_to_translate));
+
+  if (design != QuickAnswersView::Design::kCurrent) {
+    std::u16string display_name_locale =
+        l10n_util::GetDisplayNameForLocaleWithoutCountry(
+            translation_result->source_locale,
+            g_browser_process->GetApplicationLocale(), /*is_for_ui=*/true);
+    if (!display_name_locale.empty()) {
+      result_view->SetFirstLineSubText(display_name_locale);
+    }
+  }
+
+  result_view->SetSecondLineText(
+      base::UTF8ToUTF16(translation_result->translated_text));
+}
+
+void SetResultTo(ResultView* result_view,
+                 UnitConversionResult* unit_conversion_result) {
+  result_view->SetFirstLineText(
+      base::UTF8ToUTF16(unit_conversion_result->source_text));
+  result_view->SetSecondLineText(
+      base::UTF8ToUTF16(unit_conversion_result->result_text));
+}
+
+void SetNoResult(ResultView* result_view, std::string_view title) {
+  result_view->SetFirstLineText(base::UTF8ToUTF16(title));
+  result_view->SetSecondLineText(
+      l10n_util::GetStringUTF16(IDS_QUICK_ANSWERS_VIEW_NO_RESULT_V2));
 }
 
 }  // namespace
@@ -360,10 +399,6 @@ void QuickAnswersView::SendQuickAnswersQuery() {
   }
 }
 
-void QuickAnswersView::UpdateView(const QuickAnswer& quick_answer) {
-  UpdateQuickAnswerResult(quick_answer);
-}
-
 void QuickAnswersView::SwitchTo(views::View* view) {
   CHECK(view == loading_view_ || view == retry_view_ || view == result_view_);
 
@@ -405,22 +440,29 @@ bool QuickAnswersView::HasFocusInside() {
   return Contains(focus_manager->GetFocusedView());
 }
 
-void QuickAnswersView::UpdateQuickAnswerResult(
-    const QuickAnswer& quick_answer) {
+void QuickAnswersView::SetResult(const StructuredResult& structured_result) {
   // Check if the view (or any of its children) had focus before resetting the
   // view, so it can be restored for the updated view.
   bool pane_already_had_focus = HasFocusInside();
 
   SwitchTo(result_view_);
-  result_view_->SetFirstLineText(ExtractText(quick_answer.title.front().get()));
-  result_view_->SetPhoneticsInfo(
-      ShouldAddPhoneticsAudioButton(
-          quick_answer.result_type, quick_answer.phonetics_info.phonetics_audio,
-          quick_answer.phonetics_info.tts_audio_enabled)
-          ? quick_answer.phonetics_info
-          : PhoneticsInfo());
-  result_view_->SetSecondLineText(
-      ExtractText(quick_answer.first_answer_row.front().get()));
+
+  switch (structured_result.GetResultType()) {
+    case ResultType::kDefinitionResult:
+      SetResultTo(result_view_, structured_result.definition_result.get());
+      break;
+    case ResultType::kTranslationResult:
+      SetResultTo(result_view_, structured_result.translation_result.get(),
+                  design_);
+      break;
+    case ResultType::kUnitConversionResult:
+      SetResultTo(result_view_, structured_result.unit_conversion_result.get());
+      break;
+    case ResultType::kNoResult:
+      SetNoResult(result_view_, title_);
+      break;
+  }
+
   GetViewAccessibility().SetDescription(result_view_->GetA11yDescription());
 
   // Restore focus if the view had one prior to updating the answer.

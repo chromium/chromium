@@ -6,6 +6,7 @@
 
 #include <memory>
 #include <string>
+#include <string_view>
 
 #include "base/functional/bind.h"
 #include "chromeos/components/quick_answers/quick_answers_model.h"
@@ -38,6 +39,8 @@ constexpr int kPhoneticsAudioButtonBorderDip = 3;
 
 constexpr int kItemSpacing = 4;
 
+constexpr char16_t kSeparatorText[] = u" · ";
+
 views::Builder<views::ImageButton> PhoneticsAudioButton() {
   return views::Builder<views::ImageButton>()
       .SetImageModel(
@@ -61,27 +64,43 @@ ResultView::ResultView() {
   SetDefault(views::kMarginsKey, gfx::Insets::VH(kItemSpacing, 0));
   SetCollapseMargins(true);
 
+  views::FlexLayoutView* flex_layout_view;
   views::Label* first_line_label;
+  views::Label* separator_label;
   views::Label* first_line_sub_label;
   views::ImageButton* phonetics_audio_button;
   AddChildView(
       views::Builder<views::FlexLayoutView>()
+          .CopyAddressTo(&flex_layout_view)
           .AddChild(
               views::Builder<views::Label>()
                   .CopyAddressTo(&first_line_label)
                   .SetVisible(false)
                   .SetEnabledColorId(ui::kColorLabelForeground)
                   .SetHorizontalAlignment(gfx::HorizontalAlignment::ALIGN_LEFT)
+                  // Set lower priority order for `first_line_label` compared to
+                  // `first_line_sub_label` as primary text gets elided first
+                  // if a sub text is shown.
                   .SetProperty(views::kFlexBehaviorKey,
                                views::FlexSpecification(
-                                   views::MinimumFlexSizeRule::kScaleToZero,
-                                   views::MaximumFlexSizeRule::kPreferred)))
+                                   views::MinimumFlexSizeRule::kScaleToMinimum)
+                                   .WithOrder(2)))
+          .AddChild(views::Builder<views::Label>()
+                        .CopyAddressTo(&separator_label)
+                        .SetVisible(false)
+                        .SetHorizontalAlignment(gfx::ALIGN_LEFT)
+                        .SetEnabledColorId(ui::kColorLabelForeground)
+                        .SetText(kSeparatorText))
           .AddChild(
               views::Builder<views::Label>()
                   .CopyAddressTo(&first_line_sub_label)
                   .SetVisible(false)
                   .SetHorizontalAlignment(gfx::HorizontalAlignment::ALIGN_LEFT)
-                  .SetEnabledColorId(ui::kColorLabelForeground))
+                  .SetEnabledColorId(ui::kColorLabelForeground)
+                  .SetProperty(views::kFlexBehaviorKey,
+                               views::FlexSpecification(
+                                   views::MinimumFlexSizeRule::kScaleToMinimum)
+                                   .WithOrder(1)))
           .AddChild(PhoneticsAudioButton()
                         .CopyAddressTo(&phonetics_audio_button)
                         .SetVisible(false)
@@ -92,8 +111,12 @@ ResultView::ResultView() {
                             base::Unretained(this))))
           .Build());
 
+  CHECK(flex_layout_view);
+  flex_layout_view_ = flex_layout_view;
   CHECK(first_line_label);
   first_line_label_ = first_line_label;
+  CHECK(separator_label);
+  separator_label_ = separator_label;
   CHECK(first_line_sub_label);
   first_line_sub_label_ = first_line_sub_label;
   CHECK(phonetics_audio_button);
@@ -133,6 +156,10 @@ void ResultView::SetFirstLineSubText(
     const std::u16string& first_line_sub_text) {
   first_line_sub_label_->SetText(first_line_sub_text);
   first_line_sub_label_->SetVisible(!first_line_sub_text.empty());
+  separator_label_->SetVisible(!first_line_sub_text.empty());
+  flex_layout_view_->SetFlexAllocationOrder(
+      first_line_sub_text.empty() ? views::FlexAllocationOrder::kNormal
+                                  : views::FlexAllocationOrder::kReverse);
 }
 
 std::u16string ResultView::GetFirstLineSubText() const {

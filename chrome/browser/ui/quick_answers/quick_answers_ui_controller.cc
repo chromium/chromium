@@ -139,7 +139,7 @@ void QuickAnswersUiController::CreateRichAnswersView() {
     // If the rich card widget cannot be created, fall-back to open the query
     // in Google Search.
     OpenUrl(profile_, quick_answers::GetDetailsUrlForQuery(query_));
-    controller_->OnQuickAnswerClick();
+    controller_->OnQuickAnswersResultClick();
   }
 
   rich_answers_widget_ = std::move(widget);
@@ -159,12 +159,15 @@ void QuickAnswersUiController::OnQuickAnswersViewPressed() {
     return;
   }
 
-  OpenUrl(profile_, quick_answers::GetDetailsUrlForQuery(query_));
-  controller_->OnQuickAnswerClick();
+  OpenWebUrl(quick_answers::GetDetailsUrlForQuery(query_));
+
+  if (controller_->quick_answers_session()) {
+    controller_->OnQuickAnswersResultClick();
+  }
 }
 
 void QuickAnswersUiController::OnGoogleSearchLabelPressed() {
-  OpenUrl(profile_, quick_answers::GetDetailsUrlForQuery(query_));
+  OpenWebUrl(quick_answers::GetDetailsUrlForQuery(query_));
 
   // Route dismissal through |controller_| for logging impressions.
   controller_->DismissQuickAnswers(QuickAnswersExitPoint::kUnspecified);
@@ -207,13 +210,13 @@ void QuickAnswersUiController::SetFakeOnRetryLabelPressedCallbackForTesting(
 }
 
 void QuickAnswersUiController::RenderQuickAnswersViewWithResult(
-    const QuickAnswer& quick_answer) {
+    const quick_answers::StructuredResult& structured_result) {
   if (!IsShowingQuickAnswersView())
     return;
 
   // QuickAnswersView was initiated with a loading page and will be updated
   // when quick answers result from server side is ready.
-  quick_answers_view()->UpdateView(quick_answer);
+  quick_answers_view()->SetResult(structured_result);
 }
 
 void QuickAnswersUiController::SetActiveQuery(Profile* profile,
@@ -321,6 +324,25 @@ void QuickAnswersUiController::OpenFeedbackPage(
       chrome::FindBrowserWithActiveWindow(),
       feedback::FeedbackSource::kFeedbackSourceQuickAnswers, feedback_template);
 #endif
+}
+
+void QuickAnswersUiController::SetFakeOpenWebUrlForTesting(
+    QuickAnswersUiController::FakeOpenWebUrlCallback
+        fake_open_web_url_callback) {
+  CHECK_IS_TEST();
+  CHECK(!fake_open_web_url_callback.is_null());
+  CHECK(fake_open_web_url_callback_.is_null());
+  fake_open_web_url_callback_ = fake_open_web_url_callback;
+}
+
+void QuickAnswersUiController::OpenWebUrl(const GURL& url) {
+  if (!fake_open_web_url_callback_.is_null()) {
+    CHECK_IS_TEST();
+    fake_open_web_url_callback_.Run(url);
+    return;
+  }
+
+  OpenUrl(profile_, url);
 }
 
 void QuickAnswersUiController::OnUserConsentResult(bool consented) {

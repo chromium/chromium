@@ -13,6 +13,7 @@
 #include "chrome/browser/ui/quick_answers/ui/quick_answers_view.h"
 #include "chrome/browser/ui/quick_answers/ui/rich_answers_view.h"
 #include "chrome/browser/ui/quick_answers/ui/user_consent_view.h"
+#include "chromeos/components/quick_answers/quick_answers_model.h"
 #include "ui/gfx/geometry/rect.h"
 #include "ui/views/view_tracker.h"
 #include "ui/views/view_utils.h"
@@ -29,7 +30,6 @@ class ReadWriteCardsUiController;
 namespace quick_answers {
 class RichAnswersView;
 class UserConsentView;
-struct QuickAnswer;
 }  // namespace quick_answers
 
 // A controller to show/hide and handle interactions for quick
@@ -37,9 +37,13 @@ struct QuickAnswer;
 class QuickAnswersUiController {
  public:
   using FakeOnRetryLabelPressedCallback = base::RepeatingCallback<void()>;
+
+  // TODO(b/335701090): extract those browser actions to
+  // QuickAnswersBrowserDelegate.
   using FakeOpenSettingsCallback = base::RepeatingCallback<void()>;
   using FakeOpenFeedbackPageCallback =
       base::RepeatingCallback<void(const std::string&)>;
+  using FakeOpenWebUrlCallback = base::RepeatingCallback<void(const GURL&)>;
 
   explicit QuickAnswersUiController(QuickAnswersControllerImpl* controller);
   ~QuickAnswersUiController();
@@ -73,7 +77,7 @@ class QuickAnswersUiController {
       FakeOnRetryLabelPressedCallback fake_on_retry_label_pressed_callback);
 
   void RenderQuickAnswersViewWithResult(
-      const quick_answers::QuickAnswer& quick_answer);
+      const quick_answers::StructuredResult& structured_result);
 
   void SetActiveQuery(Profile* profile, const std::string& query);
 
@@ -99,6 +103,9 @@ class QuickAnswersUiController {
   void OnReportQueryButtonPressed();
   void SetFakeOpenFeedbackPageCallbackForTesting(
       FakeOpenFeedbackPageCallback fake_open_feedback_page_callback);
+
+  void SetFakeOpenWebUrlForTesting(
+      FakeOpenWebUrlCallback fake_open_web_url_callback);
 
   // Handle consent result from user consent view.
   void OnUserConsentResult(bool consented);
@@ -135,6 +142,7 @@ class QuickAnswersUiController {
  private:
   void OpenSettings();
   void OpenFeedbackPage(const std::string& feedback_template);
+  void OpenWebUrl(const GURL& url);
 
   void CreateQuickAnswersViewInternal(
       Profile* profile,
@@ -158,6 +166,7 @@ class QuickAnswersUiController {
   FakeOnRetryLabelPressedCallback fake_on_retry_label_pressed_callback_;
   FakeOpenSettingsCallback fake_open_settings_callback_;
   FakeOpenFeedbackPageCallback fake_open_feedback_page_callback_;
+  FakeOpenWebUrlCallback fake_open_web_url_callback_;
 
   base::WeakPtrFactory<QuickAnswersUiController> weak_factory_{this};
 };

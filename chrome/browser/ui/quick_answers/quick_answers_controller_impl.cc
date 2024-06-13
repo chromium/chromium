@@ -356,26 +356,15 @@ void QuickAnswersControllerImpl::OnQuickAnswerReceived(
 
   quick_answers_session_ = std::move(quick_answers_session);
 
-  if (quick_answer()) {
-    if (quick_answer()->title.empty()) {
-      quick_answer()->title.push_back(
-          std::make_unique<quick_answers::QuickAnswerText>(title_));
-    }
-    quick_answers_ui_controller_->RenderQuickAnswersViewWithResult(
-        *quick_answer());
-  } else {
-    quick_answers::QuickAnswer quick_answer_with_no_result;
-    quick_answer_with_no_result.title.push_back(
-        std::make_unique<quick_answers::QuickAnswerText>(title_));
-    quick_answer_with_no_result.first_answer_row.push_back(
-        std::make_unique<quick_answers::QuickAnswerResultText>(
-            l10n_util::GetStringUTF8(IDS_QUICK_ANSWERS_VIEW_NO_RESULT_V2)));
-    quick_answers_ui_controller_->RenderQuickAnswersViewWithResult(
-        quick_answer_with_no_result);
+  if (quick_answers_session_->structured_result->GetResultType() ==
+      ResultType::kNoResult) {
     // Fallback query to title if no result is available.
     query_ = title_;
     quick_answers_ui_controller_->SetActiveQuery(profile_, query_);
   }
+
+  quick_answers_ui_controller_->RenderQuickAnswersViewWithResult(
+      *(quick_answers_session_->structured_result));
 }
 
 void QuickAnswersControllerImpl::OnNetworkError() {
@@ -422,9 +411,13 @@ void QuickAnswersControllerImpl::OnRetryQuickAnswersRequest() {
   }
 }
 
-void QuickAnswersControllerImpl::OnQuickAnswerClick() {
+void QuickAnswersControllerImpl::OnQuickAnswersResultClick() {
+  CHECK(quick_answers_client_);
+  CHECK(quick_answers_session_);
+  CHECK(quick_answers_session_->structured_result);
+
   quick_answers_client_->OnQuickAnswerClick(
-      quick_answer() ? quick_answer()->result_type : ResultType::kNoResult);
+      quick_answers_session_->structured_result->GetResultType());
 }
 
 void QuickAnswersControllerImpl::OnUserConsent(

@@ -110,7 +110,6 @@ views::UniqueWidgetPtr RichAnswersView::CreateWidget(
           anchor_view_bounds, controller, *result.unit_conversion_result.get());
       break;
     }
-    case ResultType::kKnowledgePanelEntityResult:
     case ResultType::kNoResult: {
       return views::UniqueWidgetPtr();
     }

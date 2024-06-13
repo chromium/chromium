@@ -57,7 +57,6 @@ bool KpEntityResultParser::Parse(const Value::Dict& result,
         std::make_unique<QuickAnswerResultText>(*localized_known_for_reason));
   }
 
-  quick_answer->result_type = ResultType::kKnowledgePanelEntityResult;
   return true;
 }
 

@@ -86,8 +86,7 @@ class QuickAnswersView : public chromeos::ReadWriteCardsView {
   // Called when a click happens to trigger Assistant Query.
   void SendQuickAnswersQuery();
 
-  // Update the quick answers view with quick answers result.
-  void UpdateView(const quick_answers::QuickAnswer& quick_answer);
+  void SetResult(const StructuredResult& structured_result);
 
   void ShowRetryView();
 
