@@ -4,6 +4,8 @@
 
 #import "ios/chrome/browser/snapshots/model/legacy_snapshot_generator.h"
 
+#import "base/debug/crash_logging.h"
+#import "base/debug/dump_without_crashing.h"
 #import "base/functional/bind.h"
 #import "build/blink_buildflags.h"
 #import "ios/chrome/browser/snapshots/model/model_swift.h"
@@ -201,7 +203,16 @@ struct SnapshotInfo {
   if (!baseImage) {
     return nil;
   }
-  DCHECK(!CGRectIsEmpty(frameInBaseView));
+  if (CGRectIsEmpty(frameInBaseView)) {
+    // TODO(crbug.com/345153432): This should not be empty but we have observed
+    // `frameInBaseView` being empty.
+    SCOPED_CRASH_KEY_NUMBER("Snapshots", "frame_in_base_view_height",
+                            frameInBaseView.size.height);
+    SCOPED_CRASH_KEY_NUMBER("Snapshots", "frame_in_base_view_width",
+                            frameInBaseView.size.width);
+    base::debug::DumpWithoutCrashing();
+    return nil;
+  }
 
   // Scale `frameInBaseView` to handle an image with 2x scale.
   CGFloat scale = baseImage.scale;
@@ -314,7 +325,15 @@ struct SnapshotInfo {
   snapshotInfo.snapshotFrameInWindow =
       [snapshotInfo.baseView convertRect:snapshotInfo.snapshotFrameInBaseView
                                   toView:nil];
-  DCHECK(!CGRectIsEmpty(snapshotInfo.snapshotFrameInWindow));
+  if (CGRectIsEmpty(snapshotInfo.snapshotFrameInWindow)) {
+    // TODO(crbug.com/345153432): This should not be empty but we have observed
+    // `snapshotInfo.snapshotFrameInWindow` being empty.
+    SCOPED_CRASH_KEY_NUMBER("Snapshots", "frame_in_window_height",
+                            snapshotInfo.snapshotFrameInWindow.size.height);
+    SCOPED_CRASH_KEY_NUMBER("Snapshots", "frame_in_window_width",
+                            snapshotInfo.snapshotFrameInWindow.size.width);
+    base::debug::DumpWithoutCrashing();
+  }
   return snapshotInfo;
 }
 
