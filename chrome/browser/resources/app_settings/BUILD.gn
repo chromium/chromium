@@ -36,6 +36,7 @@ build_webui("build") {
     "app_management_shared_style_lit.css",
     "shared_vars.css",
     "toggle_row.css",
+    "uninstall_button.css",
   ]
 
   icons_html_files = [ "icons.html" ]

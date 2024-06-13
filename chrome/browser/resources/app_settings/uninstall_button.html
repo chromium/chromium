@@ -1,26 +1,16 @@
-<style include="app-management-shared-style">
-  :host {
-    align-items: center;
-    display: flex;
-    flex-direction: row;
-  }
-
-  #policyIndicator {
-    padding-inline-end: var(--app-management-controlled-by-spacing);
-  }
-</style>
-<template is="dom-if" if="[[showPolicyIndicator_(app)]]">
+${this.showPolicyIndicator_() ? html`
   <cr-tooltip-icon
       id="policyIndicator"
       icon-class="cr20:domain"
-      tooltip-text="[[policyLabel]]"
-      icon-aria-label="[[policyLabel]]"
+      tooltip-text="${this.policyLabel}"
+      icon-aria-label="${this.policyLabel}"
       tooltip-position="bottom">
   </cr-tooltip-icon>
-</template>
-<template is="dom-if" if="[[showUninstallButton_(app)]]">
-  <cr-button id="uninstallButton" on-click="onClick_"
-      disabled$="[[getDisableState_(app)]]">
-    [[uninstallLabel]]
+` : ''}
+
+${this.showUninstallButton_() ? html`
+  <cr-button id="uninstallButton" @click="${this.onClick_}"
+      ?disabled="${this.getDisableState_()}">
+    ${this.uninstallLabel}
   </cr-button>
-</template>
+` : ''}
