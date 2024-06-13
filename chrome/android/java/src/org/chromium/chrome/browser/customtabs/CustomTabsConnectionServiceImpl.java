@@ -13,6 +13,7 @@ import androidx.annotation.Nullable;
 import androidx.browser.customtabs.CustomTabsService;
 import androidx.browser.customtabs.CustomTabsSessionToken;
 import androidx.browser.customtabs.EngagementSignalsCallback;
+import androidx.browser.customtabs.PrefetchOptions;
 
 import org.chromium.chrome.browser.firstrun.FirstRunFlowSequencer;
 import org.chromium.chrome.browser.init.ProcessInitializationHandler;
@@ -66,6 +67,13 @@ public class CustomTabsConnectionServiceImpl extends CustomTabsConnectionService
             List<Bundle> otherLikelyBundles) {
         if (!isFirstRunDone()) return false;
         return mConnection.mayLaunchUrl(sessionToken, url, extras, otherLikelyBundles);
+    }
+
+    @Override
+    @androidx.browser.customtabs.ExperimentalPrefetch
+    protected void prefetch(CustomTabsSessionToken sessionToken, Uri uri, PrefetchOptions options) {
+        if (!isFirstRunDone()) return;
+        mConnection.prefetch(sessionToken, uri, options);
     }
 
     @Override

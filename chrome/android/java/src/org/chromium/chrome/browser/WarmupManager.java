@@ -44,6 +44,7 @@ import org.chromium.chrome.browser.app.tab_activity_glue.ReparentingTask;
 import org.chromium.chrome.browser.content.WebContentsFactory;
 import org.chromium.chrome.browser.crash.ChromePureJavaExceptionReporter;
 import org.chromium.chrome.browser.customtabs.CustomTabDelegateFactory;
+import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.tab.EmptyTabObserver;
 import org.chromium.chrome.browser.tab.Tab;
@@ -58,6 +59,8 @@ import org.chromium.content_public.browser.WebContentsObserver;
 import org.chromium.ui.LayoutInflaterUtils;
 import org.chromium.ui.base.WindowAndroid;
 import org.chromium.ui.display.DisplayUtil;
+import org.chromium.url.GURL;
+import org.chromium.url.Origin;
 
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
@@ -586,6 +589,42 @@ public class WarmupManager {
     }
 
     /**
+     * Request the browser to start navigational prefetch to the page that will be used for future
+     * navigations.
+     *
+     * @param url The url to be prefetched for future navigations.
+     * @param usePrefetchProxy The flag whether the private prefetch proxy is used in requested
+     *     prefetch.
+     * @param verifiedSourceOrigin The origin that prefetch is requested from. Currently, this is
+     *     always null.
+     */
+    public void startPrefetchFromCCT(
+            String url, boolean usePrefetchProxy, @Nullable String verifiedSourceOrigin) {
+        try (TraceEvent e = TraceEvent.scoped("WarmupManager.startPrefetchFromCCT")) {
+            ThreadUtils.assertOnUiThread();
+            if (!ChromeFeatureList.sCctNavigationalPrefetch.isEnabled()) {
+                Log.e(TAG, "Prefetch failed because CCTNavigationalPrefetch is not enabled.");
+                return;
+            }
+
+            if (mSpareWebContents == null) {
+                Log.e(
+                        TAG,
+                        "Prefetch failed because mSpareWebContents is null. warmup() is required"
+                                + " beforehand.");
+                return;
+            }
+            final GURL gurl = new GURL(url);
+            Origin origin = Origin.createOpaqueOrigin();
+            if (verifiedSourceOrigin != null) {
+                origin = Origin.create(new GURL(verifiedSourceOrigin));
+            }
+            WarmupManagerJni.get()
+                    .startPrefetchFromCCT(mSpareWebContents, gurl, usePrefetchProxy, origin);
+        }
+    }
+
+    /**
      * Creates and initializes a spare WebContents, to be used in a subsequent navigation.
      *
      * <p>This creates a renderer that is suitable for any navigation. It can be picked up by any
@@ -657,5 +696,11 @@ public class WarmupManager {
         void startPreconnectPredictorInitialization(@JniType("Profile*") Profile profile);
 
         void preconnectUrlAndSubresources(@JniType("Profile*") Profile profile, String url);
+
+        void startPrefetchFromCCT(
+                WebContents webcontents,
+                GURL url,
+                boolean usePrefetchProxy,
+                org.chromium.url.Origin verifiedSourceOrigin);
     }
 }

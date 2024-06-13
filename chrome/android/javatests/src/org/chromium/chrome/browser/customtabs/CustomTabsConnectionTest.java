@@ -20,6 +20,7 @@ import androidx.browser.customtabs.CustomTabsService;
 import androidx.browser.customtabs.CustomTabsServiceConnection;
 import androidx.browser.customtabs.CustomTabsSession;
 import androidx.browser.customtabs.CustomTabsSessionToken;
+import androidx.browser.customtabs.PrefetchOptions;
 import androidx.test.core.app.ApplicationProvider;
 import androidx.test.filters.SmallTest;
 
@@ -846,5 +847,39 @@ public class CustomTabsConnectionTest {
                         }
                     }
                 });
+    }
+
+    /** Tests that prefetch() with valid Uri and default PrefetchOptions succeeds. */
+    @Test
+    @SmallTest
+    @EnableFeatures({
+        ChromeFeatureList.PREFETCH_BROWSER_INITIATED_TRIGGERS,
+        ChromeFeatureList.CCT_NAVIGATIONAL_PREFETCH
+    })
+    public void testPrefetch() throws Exception {
+        CustomTabsSessionToken token = CustomTabsSessionToken.createMockSessionTokenForTesting();
+        Assert.assertTrue(mCustomTabsConnection.newSession(token));
+        Assert.assertTrue(mCustomTabsConnection.warmup(0));
+        Assert.assertTrue(
+                mCustomTabsConnection.prefetch(
+                        token, Uri.parse(URL), new PrefetchOptions.Builder().build()));
+    }
+
+    /** Tests that prefetch() with invalid Uri fails. */
+    @Test
+    @SmallTest
+    @EnableFeatures({
+        ChromeFeatureList.PREFETCH_BROWSER_INITIATED_TRIGGERS,
+        ChromeFeatureList.CCT_NAVIGATIONAL_PREFETCH
+    })
+    public void testPrefetchWithInvalidUri() throws Exception {
+        CustomTabsSessionToken token = CustomTabsSessionToken.createMockSessionTokenForTesting();
+        Assert.assertTrue(mCustomTabsConnection.newSession(token));
+        Assert.assertTrue(mCustomTabsConnection.warmup(0));
+        Assert.assertFalse(
+                mCustomTabsConnection.prefetch(
+                        token,
+                        Uri.parse(INVALID_SCHEME_URL),
+                        new PrefetchOptions.Builder().build()));
     }
 }

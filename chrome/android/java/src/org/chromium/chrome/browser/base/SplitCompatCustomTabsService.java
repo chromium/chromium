@@ -13,6 +13,8 @@ import android.os.IBinder;
 import androidx.browser.customtabs.CustomTabsService;
 import androidx.browser.customtabs.CustomTabsSessionToken;
 import androidx.browser.customtabs.EngagementSignalsCallback;
+import androidx.browser.customtabs.ExperimentalPrefetch;
+import androidx.browser.customtabs.PrefetchOptions;
 
 import org.chromium.base.BundleUtils;
 import org.chromium.base.metrics.RecordHistogram;
@@ -73,6 +75,12 @@ public class SplitCompatCustomTabsService extends CustomTabsService {
             Bundle extras,
             List<Bundle> otherLikelyBundles) {
         return mImpl.mayLaunchUrl(sessionToken, url, extras, otherLikelyBundles);
+    }
+
+    @Override
+    @ExperimentalPrefetch
+    protected void prefetch(CustomTabsSessionToken sessionToken, Uri uri, PrefetchOptions options) {
+        mImpl.prefetch(sessionToken, uri, options);
     }
 
     @Override
@@ -176,6 +184,10 @@ public class SplitCompatCustomTabsService extends CustomTabsService {
                 Uri url,
                 Bundle extras,
                 List<Bundle> otherLikelyBundles);
+
+        @ExperimentalPrefetch
+        protected abstract void prefetch(
+                CustomTabsSessionToken sessionToken, Uri uri, PrefetchOptions options);
 
         protected abstract Bundle extraCommand(String commandName, Bundle args);
 

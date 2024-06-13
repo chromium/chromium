@@ -30,6 +30,7 @@ import androidx.browser.customtabs.CustomTabsSessionToken;
 import androidx.browser.customtabs.EngagementSignalsCallback;
 import androidx.browser.customtabs.ExperimentalMinimizationCallback;
 import androidx.browser.customtabs.PostMessageServiceConnection;
+import androidx.browser.customtabs.PrefetchOptions;
 
 import org.jni_zero.CalledByNative;
 import org.jni_zero.JNINamespace;
@@ -655,6 +656,40 @@ public class CustomTabsConnection {
                             extras,
                             otherLikelyBundles,
                             true);
+                });
+        return true;
+    }
+
+    @androidx.browser.customtabs.ExperimentalPrefetch
+    public boolean prefetch(
+            CustomTabsSessionToken session, Uri uri, @Nullable PrefetchOptions options) {
+        try (TraceEvent e = TraceEvent.scoped("CustomTabsConnection.prefetch")) {
+            if (!ChromeFeatureList.sPrefetchBrowserInitiatedTriggers.isEnabled()
+                    || !ChromeFeatureList.sCctNavigationalPrefetch.isEnabled()) {
+                return false;
+            }
+            return prefetchInternal(session, uri, options);
+        }
+    }
+
+    @androidx.browser.customtabs.ExperimentalPrefetch
+    private boolean prefetchInternal(
+            CustomTabsSessionToken session, Uri uri, PrefetchOptions options) {
+        String uriString = isValid(uri) ? uri.toString() : null;
+        if (uriString == null) return false;
+
+        boolean usePrefetchProxy = options.requiresAnonymousIpWhenCrossOrigin;
+        String verifiedSourceOrigin = null;
+        if (options.sourceOrigin != null) {
+            // TODO(crbug.com/40288091): Perform origin verification of `options.SourceOrigin`.
+        }
+
+        PostTask.postTask(
+                TaskTraits.UI_DEFAULT,
+                () -> {
+                    WarmupManager.getInstance()
+                            .startPrefetchFromCCT(
+                                    uriString, usePrefetchProxy, verifiedSourceOrigin);
                 });
         return true;
     }
