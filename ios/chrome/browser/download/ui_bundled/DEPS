@@ -1,0 +1,10 @@
+include_rules = [
+  "+ios/chrome/browser/drive/model",
+  "+ios/chrome/browser/infobars/model",
+  "+ios/chrome/browser/overlays/model/public",
+  "+ios/chrome/browser/signin/model",
+  "+ios/chrome/browser/store_kit/model",
+  "+ios/chrome/browser/ui/fullscreen",
+  "+ios/chrome/browser/ui/presenters",
+  "+ios/chrome/browser/web_state_list/model/web_state_dependency_installer_bridge.h",
+]

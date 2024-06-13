@@ -7,7 +7,7 @@
 
 #import <Foundation/Foundation.h>
 
-#import "ios/chrome/browser/ui/download/download_manager_consumer.h"
+#import "ios/chrome/browser/download/ui_bundled/download_manager_consumer.h"
 
 // Consumer for the download manager mediator to be used in tests.
 @interface FakeDownloadManagerConsumer : NSObject<DownloadManagerConsumer>
