@@ -176,7 +176,12 @@ void CrashMetricsReporter::ChildProcessExited(
         case base::android::ChildBindingState::UNBOUND:
           break;
         case base::android::ChildBindingState::WAIVED:
-          if (!intentional_kill && !info.normal_termination) {
+          if (intentional_kill || info.normal_termination) {
+            ReportCrashCount(
+                ProcessedCrashCounts::
+                    kRendererForegroundInvisibleWithWaivedBindingKilled,
+                &reported_counts);
+          } else {
             ReportCrashCount(
                 ProcessedCrashCounts::
                     kRendererForegroundInvisibleWithWaivedBindingOom,

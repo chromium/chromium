@@ -86,6 +86,8 @@ chromium-metrics-reviews@google.com.
              binding oom"/>
   <int value="24"
       label="Invisible renderer in foreground app with waived binding oom"/>
+  <int value="25"
+      label="Invisible renderer in foreground app with waived binding killed"/>
 </enum>
 
 <enum name="AndroidProcessedMinidumps">
