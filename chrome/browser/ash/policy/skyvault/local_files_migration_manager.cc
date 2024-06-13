@@ -16,6 +16,7 @@
 #include "base/location.h"
 #include "base/logging.h"
 #include "base/metrics/histogram_macros.h"
+#include "base/no_destructor.h"
 #include "base/time/time.h"
 #include "base/timer/wall_clock_timer.h"
 #include "chrome/browser/ash/policy/skyvault/local_user_files_policy_observer.h"
@@ -24,10 +25,12 @@
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/download/download_dir_util.h"
 #include "chrome/browser/profiles/profile.h"
-#include "chrome/browser/profiles/profile_manager.h"
+#include "chrome/browser/profiles/profile_selections.h"
 #include "chrome/common/chrome_features.h"
 #include "chrome/common/pref_names.h"
+#include "components/keyed_service/content/browser_context_dependency_manager.h"
 #include "components/prefs/pref_service.h"
+#include "content/public/browser/browser_context.h"
 
 namespace policy::local_user_files {
 
@@ -38,8 +41,10 @@ const base::TimeDelta kMigrationTimeout = base::Hours(24);
 
 }  // namespace
 
-LocalFilesMigrationManager::LocalFilesMigrationManager()
-    : notification_manager_(std::make_unique<MigrationNotificationManager>()),
+LocalFilesMigrationManager::LocalFilesMigrationManager(
+    content::BrowserContext* context)
+    : context_(context),
+      notification_manager_(std::make_unique<MigrationNotificationManager>()),
       start_delay_timer_(std::make_unique<base::WallClockTimer>()) {
   pref_change_registrar_.Init(g_browser_process->local_state());
   pref_change_registrar_.Add(
@@ -51,6 +56,12 @@ LocalFilesMigrationManager::LocalFilesMigrationManager()
 
 LocalFilesMigrationManager::~LocalFilesMigrationManager() {
   pref_change_registrar_.RemoveAll();
+}
+
+void LocalFilesMigrationManager::Shutdown() {
+  weak_factory_.InvalidateWeakPtrs();
+
+  notification_manager_.reset();
 }
 
 void LocalFilesMigrationManager::AddObserver(Observer* observer) {
@@ -94,7 +105,7 @@ bool LocalFilesMigrationManager::ShouldStart() {
 
   // ... and the FilesAppDefaultLocation (derived from DownloadDirectory) is set
   // to Google Drive or OneDrive.
-  Profile* profile = ProfileManager::GetPrimaryUserProfile();
+  Profile* profile = Profile::FromBrowserContext(context_);
   CHECK(profile);
   const PrefService* const prefs = profile->GetPrefs();
   CHECK(prefs);
@@ -150,6 +161,33 @@ void LocalFilesMigrationManager::OnMigrationDone() {
     notification_manager_->ShowMigrationCompletedNotification(base::FilePath());
     VLOG(1) << "Local files migration done";
   }
+}
+
+// static
+LocalFilesMigrationManagerFactory*
+LocalFilesMigrationManagerFactory::GetInstance() {
+  static base::NoDestructor<LocalFilesMigrationManagerFactory> factory;
+  return factory.get();
+}
+
+LocalFilesMigrationManager*
+LocalFilesMigrationManagerFactory::GetForBrowserContext(
+    content::BrowserContext* context) {
+  return static_cast<LocalFilesMigrationManager*>(
+      GetInstance()->GetServiceForBrowserContext(context, /*create=*/true));
+}
+
+LocalFilesMigrationManagerFactory::LocalFilesMigrationManagerFactory()
+    : ProfileKeyedServiceFactory("LocalFilesMigrationManager",
+                                 ProfileSelections::BuildForRegularProfile()) {}
+
+LocalFilesMigrationManagerFactory::~LocalFilesMigrationManagerFactory() =
+    default;
+
+std::unique_ptr<KeyedService>
+LocalFilesMigrationManagerFactory::BuildServiceInstanceForBrowserContext(
+    content::BrowserContext* context) const {
+  return std::make_unique<LocalFilesMigrationManager>(context);
 }
 
 }  // namespace policy::local_user_files

@@ -31,7 +31,6 @@
 #include "chrome/browser/ash/policy/remote_commands/user_commands_factory_ash.h"
 #include "chrome/browser/ash/policy/reporting/arc_app_install_event_log_uploader.h"
 #include "chrome/browser/ash/policy/skyvault/local_files_cleanup.h"
-#include "chrome/browser/ash/policy/skyvault/local_files_migration_manager.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/browser_process_platform_part.h"
 #include "chrome/browser/enterprise/reporting/report_scheduler_desktop.h"
@@ -127,6 +126,12 @@ class UserCloudPolicyManagerAshNotifierFactory
 
   ~UserCloudPolicyManagerAshNotifierFactory() override = default;
 };
+
+// Returns true only if SkyVault TT is enabled, but GA is not.
+bool IsSkyVaultTTEnabled() {
+  return base::FeatureList::IsEnabled(features::kSkyVault) &&
+         !base::FeatureList::IsEnabled(features::kSkyVaultV2);
+}
 
 }  // namespace
 
@@ -254,12 +259,7 @@ void UserCloudPolicyManagerAsh::ConnectManagementService(
   app_install_event_log_uploader_ =
       std::make_unique<ArcAppInstallEventLogUploader>(client(), profile_);
 
-  const bool skyvaultGA = base::FeatureList::IsEnabled(features::kSkyVaultV2);
-  if (skyvaultGA) {
-    // Local files should be moved to cloud if required by policy.
-    local_files_migration_manager_ =
-        std::make_unique<local_user_files::LocalFilesMigrationManager>();
-  } else {  // TT
+  if (IsSkyVaultTTEnabled()) {
     // Local files should be deleted if required by policy.
     local_files_cleanup_ =
         std::make_unique<local_user_files::LocalFilesCleanup>();
@@ -338,7 +338,6 @@ UserCloudPolicyManagerAsh::GetAppInstallEventLogUploader() {
 void UserCloudPolicyManagerAsh::Shutdown() {
   observed_profile_.Reset();
   local_files_cleanup_.reset();
-  local_files_migration_manager_.reset();
   app_install_event_log_uploader_.reset();
   report_scheduler_.reset();
   if (client())

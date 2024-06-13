@@ -83,7 +83,7 @@ IN_PROC_BROWSER_TEST_P(LocalFilesMigrationManagerLocationTest,
   base::ScopedMockTimeMessageLoopTaskRunner task_runner;
   MockMigrationObserver observer;
   EXPECT_CALL(observer, OnMigrationSucceeded).Times(1);
-  LocalFilesMigrationManager manager;
+  LocalFilesMigrationManager manager(browser()->profile());
   manager.AddObserver(&observer);
 
   browser()->profile()->GetPrefs()->SetString(prefs::kFilesAppDefaultLocation,
@@ -99,7 +99,7 @@ IN_PROC_BROWSER_TEST_P(LocalFilesMigrationManagerLocationTest,
                        NoMigrationIfLocalFilesAllowed) {
   MockMigrationObserver observer;
   EXPECT_CALL(observer, OnMigrationSucceeded).Times(0);
-  LocalFilesMigrationManager manager;
+  LocalFilesMigrationManager manager(browser()->profile());
   manager.AddObserver(&observer);
 
   browser()->profile()->GetPrefs()->SetString(prefs::kFilesAppDefaultLocation,
@@ -112,7 +112,7 @@ IN_PROC_BROWSER_TEST_P(LocalFilesMigrationManagerLocationTest,
                        NoMigrationIfDisabled) {
   MockMigrationObserver observer;
   EXPECT_CALL(observer, OnMigrationSucceeded).Times(0);
-  LocalFilesMigrationManager manager;
+  LocalFilesMigrationManager manager(browser()->profile());
   manager.AddObserver(&observer);
 
   browser()->profile()->GetPrefs()->SetString(prefs::kFilesAppDefaultLocation,
@@ -125,7 +125,7 @@ IN_PROC_BROWSER_TEST_F(LocalFilesMigrationManagerTest,
                        NoMigrationIfNoDefaultLocation) {
   MockMigrationObserver observer;
   EXPECT_CALL(observer, OnMigrationSucceeded).Times(0);
-  LocalFilesMigrationManager manager;
+  LocalFilesMigrationManager manager(browser()->profile());
   manager.AddObserver(&observer);
 
   browser()->profile()->GetPrefs()->SetString(prefs::kFilesAppDefaultLocation,

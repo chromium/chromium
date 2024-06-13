@@ -9,18 +9,31 @@
 #include <optional>
 
 #include "base/functional/callback_forward.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/observer_list.h"
 #include "base/timer/wall_clock_timer.h"
 #include "chrome/browser/ash/policy/skyvault/local_user_files_policy_observer.h"
 #include "chrome/browser/ash/policy/skyvault/migration_notification_manager.h"
+#include "chrome/browser/profiles/profile_keyed_service_factory.h"
+#include "components/keyed_service/core/keyed_service.h"
 #include "components/prefs/pref_change_registrar.h"
+
+namespace base {
+template <typename T>
+class NoDestructor;
+}  // namespace base
+
+namespace content {
+class BrowserContext;
+}  // namespace content
 
 namespace policy::local_user_files {
 
 // Manages the migration of local files to the cloud when SkyVault is enabled.
 // Handles starting, monitoring, and completing the migration process.
-class LocalFilesMigrationManager : public LocalUserFilesPolicyObserver {
+class LocalFilesMigrationManager : public LocalUserFilesPolicyObserver,
+                                   public KeyedService {
  public:
   class Observer {
    public:
@@ -29,8 +42,14 @@ class LocalFilesMigrationManager : public LocalUserFilesPolicyObserver {
     virtual void OnMigrationSucceeded() = 0;
   };
 
-  LocalFilesMigrationManager();
+  explicit LocalFilesMigrationManager(content::BrowserContext* context);
+  LocalFilesMigrationManager(const LocalFilesMigrationManager&) = delete;
+  LocalFilesMigrationManager& operator=(const LocalFilesMigrationManager&) =
+      delete;
   ~LocalFilesMigrationManager() override;
+
+  // KeyedService overrides:
+  void Shutdown() override;
 
   // Adds an observer to receive notifications about migration events.
   void AddObserver(Observer* observer);
@@ -70,6 +89,9 @@ class LocalFilesMigrationManager : public LocalUserFilesPolicyObserver {
   // Stores any error that occurred during migration.
   std::optional<std::string> error_;
 
+  // Context for which this instance is created.
+  raw_ptr<content::BrowserContext> context_;
+
   // Shows and manages migration notifications and dialogs.
   std::unique_ptr<MigrationNotificationManager> notification_manager_;
 
@@ -79,6 +101,34 @@ class LocalFilesMigrationManager : public LocalUserFilesPolicyObserver {
   PrefChangeRegistrar pref_change_registrar_;
 
   base::WeakPtrFactory<LocalFilesMigrationManager> weak_factory_{this};
+};
+
+// Manages all LocalFilesMigrationManager instances and associates them with
+// Profiles.
+class LocalFilesMigrationManagerFactory : public ProfileKeyedServiceFactory {
+ public:
+  LocalFilesMigrationManagerFactory(const LocalFilesMigrationManagerFactory&) =
+      delete;
+  LocalFilesMigrationManagerFactory& operator=(
+      const LocalFilesMigrationManagerFactory&) = delete;
+
+  // Gets the singleton instance of the factory.
+  static LocalFilesMigrationManagerFactory* GetInstance();
+
+  // Gets the LocalFilesMigrationManager instance associated with the given
+  // BrowserContext.
+  static LocalFilesMigrationManager* GetForBrowserContext(
+      content::BrowserContext* context);
+
+ private:
+  friend base::NoDestructor<LocalFilesMigrationManagerFactory>;
+
+  LocalFilesMigrationManagerFactory();
+  ~LocalFilesMigrationManagerFactory() override;
+
+  // BrowserContextKeyedServiceFactory overrides:
+  std::unique_ptr<KeyedService> BuildServiceInstanceForBrowserContext(
+      content::BrowserContext* context) const override;
 };
 
 }  // namespace policy::local_user_files
