@@ -403,17 +403,3 @@ declare_args() {
   # Embedders may opt-out of using C++ 20 build.
   assert_cpp20 = assert_cpp20_default
 }
-
-declare_args() {
-  # Enables compilation of the freelist dispatcher, which we'll use to
-  # carry out runtime evaluation of PartitionAlloc's two freelist
-  # implementations: the existing encoded-next freelist and the new
-  # pool offset freelist. When false, the latter is not built.
-  #
-  # This is being exposed as a GN arg because of an undiagnosed crashy
-  # interaction with Mac PGO builders: crbug.com/338094768#comment20
-  use_freelist_dispatcher = has_64_bit_pointers && false
-}
-
-assert(has_64_bit_pointers || !use_freelist_dispatcher,
-       "freelist dispatcher can't be used without 64-bit pointers")
