@@ -1,3 +1,13 @@
+// Copyright 2024 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+import {html} from '//resources/lit/v3_0/lit.rollup.js';
+
+import type {ProgressIndicatorDemoElement} from './progress_indicator_demo.js';
+
+export function getHtml(this: ProgressIndicatorDemoElement) {
+  return html`
 <h1>cr-progress</h1>
 <div class="demos">
   <cr-progress indeterminate></cr-progress>
@@ -52,4 +62,5 @@
       </clipPath>
     </svg>
   </cr-loading-gradient>
-</div>
+</div>`;
+}

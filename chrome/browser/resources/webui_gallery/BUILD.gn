@@ -41,13 +41,6 @@ build_webui("build") {
   # Files holding a Polymer or native custom element definition AND have an
   # equivalent .html template file.
   web_component_files = [
-    "demos/cr_url_list_item/cr_url_list_item_demo.ts",
-    "demos/md_select/md_select_demo.ts",
-    "demos/nav_menu/nav_menu_demo.ts",
-    "demos/nav_menu/nav_menu.ts",
-    "demos/progress_indicators/progress_indicator_demo.ts",
-    "demos/scroll_view/scroll_view_demo.ts",
-    "demos/side_panel/sp_components_demo.ts",
     "demos/cr_tab_box/cr_tab_box_demo.ts",
     "demos/cr_tree/cr_tree_demo.ts",
   ]
@@ -87,6 +80,20 @@ build_webui("build") {
     "demos/cr_toolbar/cr_toolbar_demo.ts",
     "demos/cr_tooltip/cr_tooltip_demo.html.ts",
     "demos/cr_tooltip/cr_tooltip_demo.ts",
+    "demos/cr_url_list_item/cr_url_list_item_demo.html.ts",
+    "demos/cr_url_list_item/cr_url_list_item_demo.ts",
+    "demos/md_select/md_select_demo.html.ts",
+    "demos/md_select/md_select_demo.ts",
+    "demos/nav_menu/nav_menu_demo.html.ts",
+    "demos/nav_menu/nav_menu_demo.ts",
+    "demos/nav_menu/nav_menu.html.ts",
+    "demos/nav_menu/nav_menu.ts",
+    "demos/progress_indicators/progress_indicator_demo.html.ts",
+    "demos/progress_indicators/progress_indicator_demo.ts",
+    "demos/scroll_view/scroll_view_demo.html.ts",
+    "demos/scroll_view/scroll_view_demo.ts",
+    "demos/side_panel/sp_components_demo.html.ts",
+    "demos/side_panel/sp_components_demo.ts",
   ]
 
   html_to_wrapper_template = "detect"

@@ -1,3 +1,13 @@
+// Copyright 2024 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+import {html} from '//resources/lit/v3_0/lit.rollup.js';
+
+import type {CrUrlListItemDemoElement} from './cr_url_list_item_demo.js';
+
+export function getHtml(this: CrUrlListItemDemoElement) {
+  return html`
 <h1>cr-url-list-item</h1>
 <div class="demos">
   <cr-url-list-item count="23" title="A Bookmark Folder"
@@ -110,4 +120,5 @@
       title="Bookmark folder" description="23 bookmarks">
     <cr-checkbox slot="prefix"></cr-checkbox>
   </cr-url-list-item>
-</div>
+</div>`;
+}
