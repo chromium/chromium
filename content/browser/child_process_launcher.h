@@ -107,6 +107,9 @@ struct RenderProcessPriority {
   // Returns true if the child process is backgrounded.
   bool is_background() const;
 
+  // Returns the process priority for this child process.
+  base::Process::Priority GetProcessPriority() const;
+
   bool operator==(const RenderProcessPriority& other) const;
   bool operator!=(const RenderProcessPriority& other) const {
     return !(*this == other);
@@ -115,8 +118,9 @@ struct RenderProcessPriority {
   using TraceProto = perfetto::protos::pbzero::ChildProcessLauncherPriority;
   void WriteIntoTrace(perfetto::TracedProto<TraceProto> proto) const;
 
-  // Prefer |is_background()| to inspecting these fields individually (to ensure
-  // all logic uses the same notion of "backgrounded").
+  // Prefer `is_background()` or `GetProcessPriority()` to inspecting these
+  // fields individually (to ensure all logic uses the same notion of
+  // "backgrounded").
 
   // |visible| is true if the process is responsible for one or more widget(s)
   // in foreground tabs. The notion of "visible" is determined by the embedder

@@ -8,6 +8,7 @@ import "content/common/agent_scheduling_group.mojom";
 import "content/common/native_types.mojom";
 import "ipc/ipc.mojom";
 import "mojo/public/mojom/base/generic_pending_receiver.mojom";
+import "mojo/public/mojom/base/process_priority.mojom";
 import "mojo/public/mojom/base/shared_memory.mojom";
 import "mojo/public/mojom/base/time.mojom";
 import "services/network/public/mojom/network_types.mojom";
@@ -33,18 +34,6 @@ struct UpdateScrollbarThemeParams {
 struct UpdateSystemColorInfoParams {
   // Accent color used by the system. Currently only set on ChromeOS.
   uint32? accent_color;
-};
-
-// The background state for the render process.  When backgrounded the process's
-// priority will be lower (via base::Process::SetPriority()) if allowed on the
-// current platform (as determined by base::Process::CanSetPriority()).
-enum RenderProcessBackgroundState {
-  // The renderer process has not been backgrounded, a hidden renderer may still
-  // be foregrounded, e.g. when it is playing audio.
-  kForegrounded,
-  // The renderer process has been backgrounded, a visible renderer may still
-  // be backgrounded, e.g. when it is hosting only low priority frames.
-  kBackgrounded,
 };
 
 // The visibility state for the renderer process, indicating whether or not any
@@ -129,8 +118,8 @@ interface Renderer {
   // Tells the renderer to purge its in-memory resource cache.
   PurgeResourceCache() => ();
 
-  // Tells the renderer process of a change in visibility or background state.
-  SetProcessState(RenderProcessBackgroundState background_state,
+  // Tells the renderer process of a change in visibility or priority state.
+  SetProcessState(mojo_base.mojom.ProcessPriority process_priority,
                   RenderProcessVisibleState visible_state);
 
   // Asks the renderer process to modify its internal settings to bias towards

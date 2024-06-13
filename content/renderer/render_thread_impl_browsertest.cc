@@ -254,22 +254,20 @@ class RenderThreadImplBrowserTest : public testing::Test,
  protected:
   IPC::Sender* sender() { return process_host_.get(); }
 
-  void SetBackgroundState(
-      mojom::RenderProcessBackgroundState background_state) {
+  void SetBackgroundState(base::Process::Priority process_priority) {
     mojom::Renderer* renderer_interface = thread_;
     const mojom::RenderProcessVisibleState visible_state =
         RendererIsHidden() ? mojom::RenderProcessVisibleState::kHidden
                            : mojom::RenderProcessVisibleState::kVisible;
-    renderer_interface->SetProcessState(background_state, visible_state);
+    renderer_interface->SetProcessState(process_priority, visible_state);
   }
 
   void SetVisibleState(mojom::RenderProcessVisibleState visible_state) {
     mojom::Renderer* renderer_interface = thread_;
-    const mojom::RenderProcessBackgroundState background_state =
-        RendererIsBackgrounded()
-            ? mojom::RenderProcessBackgroundState::kBackgrounded
-            : mojom::RenderProcessBackgroundState::kForegrounded;
-    renderer_interface->SetProcessState(background_state, visible_state);
+    const base::Process::Priority process_priority =
+        RendererIsBackgrounded() ? base::Process::Priority::kBestEffort
+                                 : base::Process::Priority::kUserBlocking;
+    renderer_interface->SetProcessState(process_priority, visible_state);
   }
 
   bool RendererIsBackgrounded() { return thread_->RendererIsBackgrounded(); }
@@ -322,10 +320,10 @@ TEST_F(RenderThreadImplBrowserTest,
 #endif
 
 TEST_F(RenderThreadImplBrowserTest, RendererIsBackgrounded) {
-  SetBackgroundState(mojom::RenderProcessBackgroundState::kBackgrounded);
+  SetBackgroundState(base::Process::Priority::kBestEffort);
   EXPECT_TRUE(RendererIsBackgrounded());
 
-  SetBackgroundState(mojom::RenderProcessBackgroundState::kForegrounded);
+  SetBackgroundState(base::Process::Priority::kUserBlocking);
   EXPECT_FALSE(RendererIsBackgrounded());
 }
 
@@ -387,7 +385,7 @@ TEST_F(RenderThreadImplBrowserTest, RendererStateTransitionBackgrounded) {
   EXPECT_CALL(*main_thread_scheduler_, SetRendererBackgrounded(true));
   EXPECT_CALL(*main_thread_scheduler_, SetRendererHidden(false));
   EXPECT_CALL(*main_thread_scheduler_, SetRendererBackgrounded(false)).Times(0);
-  SetBackgroundState(mojom::RenderProcessBackgroundState::kBackgrounded);
+  SetBackgroundState(base::Process::Priority::kBestEffort);
   testing::Mock::VerifyAndClear(main_thread_scheduler_);
 
   // Going from a backgrounded to a foregrounded state should mark the renderer
@@ -396,7 +394,16 @@ TEST_F(RenderThreadImplBrowserTest, RendererStateTransitionBackgrounded) {
   EXPECT_CALL(*main_thread_scheduler_, SetRendererHidden(true)).Times(0);
   EXPECT_CALL(*main_thread_scheduler_, SetRendererHidden(false)).Times(0);
   EXPECT_CALL(*main_thread_scheduler_, SetRendererBackgrounded(false));
-  SetBackgroundState(mojom::RenderProcessBackgroundState::kForegrounded);
+  SetBackgroundState(base::Process::Priority::kUserBlocking);
+  testing::Mock::VerifyAndClear(main_thread_scheduler_);
+
+  // Going from a foregrounded state to another foregrounded state should not
+  // remark the renderer as foregrounded.
+  EXPECT_CALL(*main_thread_scheduler_, SetRendererBackgrounded(true)).Times(0);
+  EXPECT_CALL(*main_thread_scheduler_, SetRendererHidden(true)).Times(0);
+  EXPECT_CALL(*main_thread_scheduler_, SetRendererHidden(false)).Times(0);
+  EXPECT_CALL(*main_thread_scheduler_, SetRendererBackgrounded(false)).Times(0);
+  SetBackgroundState(base::Process::Priority::kUserVisible);
   testing::Mock::VerifyAndClear(main_thread_scheduler_);
 
   // Going from a foregrounded to a backgrounded state should mark the renderer
@@ -405,7 +412,7 @@ TEST_F(RenderThreadImplBrowserTest, RendererStateTransitionBackgrounded) {
   EXPECT_CALL(*main_thread_scheduler_, SetRendererBackgrounded(true));
   EXPECT_CALL(*main_thread_scheduler_, SetRendererHidden(false)).Times(0);
   EXPECT_CALL(*main_thread_scheduler_, SetRendererBackgrounded(false)).Times(0);
-  SetBackgroundState(mojom::RenderProcessBackgroundState::kBackgrounded);
+  SetBackgroundState(base::Process::Priority::kBestEffort);
   testing::Mock::VerifyAndClear(main_thread_scheduler_);
 
   testing::Mock::AllowLeak(main_thread_scheduler_);
@@ -418,7 +425,7 @@ TEST_F(RenderThreadImplBrowserTest, RendererStateTransitionForegrounded) {
   EXPECT_CALL(*main_thread_scheduler_, SetRendererHidden(true)).Times(0);
   EXPECT_CALL(*main_thread_scheduler_, SetRendererBackgrounded(true)).Times(0);
   EXPECT_CALL(*main_thread_scheduler_, SetRendererHidden(false));
-  SetBackgroundState(mojom::RenderProcessBackgroundState::kForegrounded);
+  SetBackgroundState(base::Process::Priority::kUserBlocking);
   testing::Mock::VerifyAndClear(main_thread_scheduler_);
 
   testing::Mock::AllowLeak(main_thread_scheduler_);

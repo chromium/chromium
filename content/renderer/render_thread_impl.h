@@ -26,6 +26,7 @@
 #include "base/memory/ref_counted.h"
 #include "base/metrics/user_metrics_action.h"
 #include "base/observer_list.h"
+#include "base/process/process.h"
 #include "base/task/sequenced_task_runner.h"
 #include "base/time/time.h"
 #include "base/types/pass_key.h"
@@ -432,7 +433,7 @@ class CONTENT_EXPORT RenderThreadImpl
       mojom::UpdateSystemColorInfoParamsPtr params) override;
   void PurgePluginListCache(bool reload_pages) override;
   void PurgeResourceCache(PurgeResourceCacheCallback callback) override;
-  void SetProcessState(mojom::RenderProcessBackgroundState background_state,
+  void SetProcessState(base::Process::Priority priority,
                        mojom::RenderProcessVisibleState visible_state) override;
   void SetBatterySaverMode(bool battery_saver_mode_enabled) override;
   void SetIsLockedToSite() override;
@@ -489,7 +490,7 @@ class CONTENT_EXPORT RenderThreadImpl
   // Used to keep track of the renderer's backgrounded and visibility state.
   // Updated via an IPC from the browser process. If nullopt, the browser
   // process has yet to send an update and the state is unknown.
-  std::optional<mojom::RenderProcessBackgroundState> background_state_;
+  std::optional<base::Process::Priority> process_priority_;
   std::optional<mojom::RenderProcessVisibleState> visible_state_;
 
   // A read-only mapping of a std::atomic<base::TimeTicks> set to

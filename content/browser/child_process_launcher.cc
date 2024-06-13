@@ -274,6 +274,11 @@ bool RenderProcessPriority::is_background() const {
          !has_foreground_service_worker;
 }
 
+base::Process::Priority RenderProcessPriority::GetProcessPriority() const {
+  return is_background() ? base::Process::Priority::kBestEffort
+                         : base::Process::Priority::kUserBlocking;
+}
+
 bool RenderProcessPriority::operator==(
     const RenderProcessPriority& other) const {
   return visible == other.visible &&

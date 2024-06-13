@@ -27,6 +27,7 @@ mojom_component("base") {
     "memory_pressure_level.mojom",
     "message_pump_type.mojom",
     "process_id.mojom",
+    "process_priority.mojom",
     "read_only_buffer.mojom",
     "read_only_file.mojom",
     "ref_counted_memory.mojom",
@@ -463,6 +464,20 @@ mojom_component("base") {
       ]
       traits_headers =
           [ "//mojo/public/cpp/base/message_pump_type_mojom_traits.h" ]
+      traits_public_deps = [
+        "//base",
+        "//mojo/public/cpp/base:typemap_traits",
+      ]
+    },
+    {
+      types = [
+        {
+          mojom = "mojo_base.mojom.ProcessPriority"
+          cpp = "::base::Process::Priority"
+        },
+      ]
+      traits_headers =
+          [ "//mojo/public/cpp/base/process_priority_mojom_traits.h" ]
       traits_public_deps = [
         "//base",
         "//mojo/public/cpp/base:typemap_traits",

@@ -66,6 +66,8 @@ component("typemap_traits") {
     "message_pump_type_mojom_traits.h",
     "process_id_mojom_traits.cc",
     "process_id_mojom_traits.h",
+    "process_priority_mojom_traits.cc",
+    "process_priority_mojom_traits.h",
     "ref_counted_memory_mojom_traits.cc",
     "ref_counted_memory_mojom_traits.h",
     "string16_mojom_traits.cc",

@@ -5312,13 +5312,10 @@ void RenderProcessHostImpl::UpdateProcessPriority() {
     if (base::FeatureList::IsEnabled(
             features::kMacAllowBackgroundingRenderProcesses)) {
       child_process_launcher_->SetProcessPriority(
-          priority_.is_background() ? base::Process::Priority::kBestEffort
-                                    : base::Process::Priority::kUserBlocking);
+          priority_.GetProcessPriority());
     }
 #else
-    child_process_launcher_->SetProcessPriority(
-        priority_.is_background() ? base::Process::Priority::kBestEffort
-                                  : base::Process::Priority::kUserBlocking);
+    child_process_launcher_->SetProcessPriority(priority_.GetProcessPriority());
 #endif
   }
 
@@ -5365,14 +5362,11 @@ void RenderProcessHostImpl::SendProcessStateToRenderer() {
                                         : base::TimeTicks::Now(),
               std::memory_order_relaxed);
 
-  mojom::RenderProcessBackgroundState background_state =
-      priority_.is_background()
-          ? mojom::RenderProcessBackgroundState::kBackgrounded
-          : mojom::RenderProcessBackgroundState::kForegrounded;
+  base::Process::Priority priority = priority_.GetProcessPriority();
   mojom::RenderProcessVisibleState visible_state =
       priority_.visible ? mojom::RenderProcessVisibleState::kVisible
                         : mojom::RenderProcessVisibleState::kHidden;
-  GetRendererInterface()->SetProcessState(background_state, visible_state);
+  GetRendererInterface()->SetProcessState(priority, visible_state);
 }
 
 void RenderProcessHostImpl::OnProcessLaunched() {

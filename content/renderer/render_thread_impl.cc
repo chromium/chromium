@@ -333,6 +333,21 @@ static bool IsSingleProcess() {
       switches::kSingleProcess);
 }
 
+// Returns true if `process_priority` should be considered as backgrounded.
+bool IsBackgrounded(std::optional<base::Process::Priority> process_priority) {
+  // Not backgrounded until we've received a state from the browser.
+  if (!process_priority.has_value()) {
+    return false;
+  }
+  switch (*process_priority) {
+    case base::Process::Priority::kBestEffort:
+      return true;
+    case base::Process::Priority::kUserVisible:
+    case base::Process::Priority::kUserBlocking:
+      return false;
+  }
+}
+
 }  // namespace
 
 RenderThreadImpl::HistogramCustomizer::HistogramCustomizer() {
@@ -1320,16 +1335,20 @@ bool RenderThreadImpl::OnControlMessageReceived(const IPC::Message& msg) {
 #endif
 
 void RenderThreadImpl::SetProcessState(
-    mojom::RenderProcessBackgroundState background_state,
+    base::Process::Priority process_priority,
     mojom::RenderProcessVisibleState visible_state) {
-  DCHECK(background_state_ != background_state ||
+  DCHECK(process_priority_ != process_priority ||
          visible_state_ != visible_state);
 
-  if (background_state != background_state_) {
-    if (background_state == mojom::RenderProcessBackgroundState::kForegrounded)
-      OnRendererForegrounded();
-    else
+  bool was_backgrounded = IsBackgrounded(process_priority_);
+  bool is_backgrounded = IsBackgrounded(process_priority);
+
+  if (!process_priority_.has_value() || is_backgrounded != was_backgrounded) {
+    if (is_backgrounded) {
       OnRendererBackgrounded();
+    } else {
+      OnRendererForegrounded();
+    }
   }
 
   if (visible_state != visible_state_) {
@@ -1347,7 +1366,7 @@ void RenderThreadImpl::SetProcessState(
       OnRendererHidden();
   }
 
-  background_state_ = background_state;
+  process_priority_ = process_priority;
   visible_state_ = visible_state;
 }
 
@@ -1680,8 +1699,7 @@ void RenderThreadImpl::OnRendererVisible() {
 }
 
 bool RenderThreadImpl::RendererIsBackgrounded() const {
-  return background_state_ ==
-         mojom::RenderProcessBackgroundState::kBackgrounded;
+  return IsBackgrounded(process_priority_);
 }
 
 void RenderThreadImpl::OnRendererBackgrounded() {
