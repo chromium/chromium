@@ -1,4 +1,4 @@
-# ![Logo](chrome/android/java/res_chromium_base/mipmap-hdpi.app_icon.png) Chromium
+# ![Logo](chrome/android/java/res_chromium_base/mipmap-hdpi/app_icon.png) Chromium
 
 Custom-build Chromium for android only - #Dev_Browser
 
