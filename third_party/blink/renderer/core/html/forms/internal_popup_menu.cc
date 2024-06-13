@@ -732,7 +732,7 @@ void InternalPopupMenu::SetMenuListOptionsBoundsInAXTree(
   // Factor in the scroll offset of the select's window.
   LocalDOMWindow* window = owner_element_->GetDocument().domWindow();
   const float page_zoom_factor =
-      owner_element_->GetDocument().GetFrame()->PageZoomFactor();
+      owner_element_->GetDocument().GetFrame()->LayoutZoomFactor();
   popup_origin.Offset(window->scrollX() * page_zoom_factor,
                       window->scrollY() * page_zoom_factor);
 

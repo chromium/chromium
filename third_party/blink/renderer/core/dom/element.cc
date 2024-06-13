@@ -2001,7 +2001,7 @@ int Element::scrollWidth() {
     if (GetDocument().View()) {
       return AdjustForAbsoluteZoom::AdjustInt(
           GetDocument().View()->LayoutViewport()->ContentsSize().width(),
-          GetDocument().GetFrame()->PageZoomFactor());
+          GetDocument().GetFrame()->LayoutZoomFactor());
     }
     return 0;
   }
@@ -2025,7 +2025,7 @@ int Element::scrollHeight() {
     if (GetDocument().View()) {
       return AdjustForAbsoluteZoom::AdjustInt(
           GetDocument().View()->LayoutViewport()->ContentsSize().height(),
-          GetDocument().GetFrame()->PageZoomFactor());
+          GetDocument().GetFrame()->LayoutZoomFactor());
     }
     return 0;
   }
@@ -2218,7 +2218,7 @@ void Element::ScrollFrameBy(const ScrollToOptions* scroll_to_options) {
     return;
   }
 
-  displacement.Scale(frame->PageZoomFactor());
+  displacement.Scale(frame->LayoutZoomFactor());
   gfx::PointF new_position = viewport->ScrollPosition() + displacement;
   gfx::PointF current_position = viewport->ScrollPosition();
   std::unique_ptr<cc::SnapSelectionStrategy> strategy =
@@ -2251,12 +2251,12 @@ void Element::ScrollFrameTo(const ScrollToOptions* scroll_to_options) {
   if (scroll_to_options->hasLeft()) {
     new_offset.set_x(
         ScrollableArea::NormalizeNonFiniteScroll(scroll_to_options->left()) *
-        frame->PageZoomFactor());
+        frame->LayoutZoomFactor());
   }
   if (scroll_to_options->hasTop()) {
     new_offset.set_y(
         ScrollableArea::NormalizeNonFiniteScroll(scroll_to_options->top()) *
-        frame->PageZoomFactor());
+        frame->LayoutZoomFactor());
   }
 
   gfx::PointF new_position = viewport->ScrollOffsetToPosition(new_offset);

@@ -1247,7 +1247,7 @@ void InspectorOverlayAgent::PaintOverlayPage() {
   // The emulation scale factor is backed in the overlay frame.
   gfx::Size viewport_size =
       gfx::ScaleToCeiledSize(visual_viewport.Size(), EmulationScaleFactor());
-  overlay_frame->SetPageZoomFactor(WindowToViewportScale());
+  overlay_frame->SetLayoutZoomFactor(WindowToViewportScale());
   overlay_frame->View()->Resize(viewport_size);
   OverlayMainFrame()->View()->UpdateAllLifecyclePhases(
       DocumentUpdateReason::kInspector);
@@ -1441,8 +1441,8 @@ void InspectorOverlayAgent::Reset(
 
   // The zoom factor in the overlay frame already has been multiplied by the
   // window to viewport scale (aka device scale factor), so cancel it.
-  reset_data->setDouble("pageZoomFactor",
-                        GetFrame()->PageZoomFactor() / WindowToViewportScale());
+  reset_data->setDouble("pageZoomFactor", GetFrame()->LayoutZoomFactor() /
+                                              WindowToViewportScale());
 
   // TODO(szager): These values have been zero since root layer scrolling
   // landed. Probably they should be derived from

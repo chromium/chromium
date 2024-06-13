@@ -5649,7 +5649,7 @@ IN_PROC_BROWSER_TEST_F(WebContentsImplBrowserTestWindowControlsOverlay,
   std::ignore = title_watcher.WaitAndGetTitle();
 
   // Validate the event payload.
-  double zoom_factor = blink::PageZoomLevelToZoomFactor(
+  double zoom_factor = blink::ZoomLevelToZoomFactor(
       content::HostZoomMap::GetZoomLevel(web_contents));
   gfx::Rect scaled_rect =
       gfx::ScaleToEnclosingRect(bounding_client_rect, 1.0f / zoom_factor);

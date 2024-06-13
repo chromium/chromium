@@ -106,12 +106,12 @@ namespace settingsPrivate {
         GetPrefCallback callback);
 
     // Gets the default page zoom factor. Possible values are currently between
-    // 0.25 and 5. For a full list, see zoom::kPresetZoomFactors.
+    // 0.25 and 5. For a full list, see zoom::kPresetBrowserZoomFactors.
     static void getDefaultZoom(
         GetDefaultZoomCallback callback);
 
     // Sets the page zoom factor. Must be less than 0.001 different than a value
-    // in zoom::kPresetZoomFactors.
+    // in zoom::kPresetBrowserZoomFactors.
     static void setDefaultZoom(
         double zoom,
         optional SetDefaultZoomCallback callback);

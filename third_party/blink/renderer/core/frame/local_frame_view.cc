@@ -896,7 +896,7 @@ void LocalFrameView::SetNeedsPaintPropertyUpdate() {
 gfx::SizeF LocalFrameView::SmallViewportSizeForViewportUnits() const {
   float zoom = 1;
   if (!frame_->GetDocument() || !frame_->GetDocument()->Printing())
-    zoom = GetFrame().PageZoomFactor();
+    zoom = GetFrame().LayoutZoomFactor();
 
   auto* layout_view = GetLayoutView();
   if (!layout_view)
@@ -950,7 +950,7 @@ gfx::SizeF LocalFrameView::ViewportSizeForMediaQueries() const {
   }
   gfx::SizeF viewport_size(layout_size_);
   if (!frame_->GetDocument()->Printing()) {
-    viewport_size.Scale(1 / GetFrame().PageZoomFactor());
+    viewport_size.Scale(1 / GetFrame().LayoutZoomFactor());
   }
   return viewport_size;
 }
@@ -3691,8 +3691,8 @@ void LocalFrameView::PropagateFrameRects() {
   }
 }
 
-void LocalFrameView::ZoomChanged(float zoom_factor) {
-  GetFrame().SetPageZoomFactor(zoom_factor);
+void LocalFrameView::ZoomFactorChanged(float zoom_factor) {
+  GetFrame().SetLayoutZoomFactor(zoom_factor);
 }
 
 void LocalFrameView::SetLayoutSizeInternal(const gfx::Size& size) {

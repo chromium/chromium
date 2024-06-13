@@ -1188,9 +1188,9 @@ WebContentsImpl::WebContentsImpl(BrowserContext* browser_context)
       last_active_time_(base::TimeTicks::Now()),
       closed_by_user_gesture_(false),
       minimum_zoom_percent_(
-          static_cast<int>(blink::kMinimumPageZoomFactor * 100)),
+          static_cast<int>(blink::kMinimumBrowserZoomFactor * 100)),
       maximum_zoom_percent_(
-          static_cast<int>(blink::kMaximumPageZoomFactor * 100)),
+          static_cast<int>(blink::kMaximumBrowserZoomFactor * 100)),
       zoom_scroll_remainder_(0),
       force_disable_overscroll_content_(false),
       last_dialog_suppressed_(false),

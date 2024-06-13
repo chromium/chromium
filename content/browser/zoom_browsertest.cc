@@ -234,7 +234,7 @@ IN_PROC_BROWSER_TEST_F(ZoomBrowserTest, DISABLED_ZoomPreservedOnReload) {
     ResizeObserver observer(root->current_frame_host());
 
     const double new_zoom_level =
-        default_zoom_level + blink::PageZoomFactorToZoomLevel(new_zoom_factor);
+        default_zoom_level + blink::ZoomFactorToZoomLevel(new_zoom_factor);
     host_zoom_map->SetZoomLevelForHost(top_level_host, new_zoom_level);
 
     WaitForResize(msg_queue, observer);
@@ -301,7 +301,7 @@ IN_PROC_BROWSER_TEST_F(IFrameZoomBrowserTest, DISABLED_SubframesZoomProperly) {
                                  scale_one_grandchild_width, kTolerance);
 
     const double new_zoom_level =
-        default_zoom_level + blink::PageZoomFactorToZoomLevel(new_zoom_factor);
+        default_zoom_level + blink::ZoomFactorToZoomLevel(new_zoom_factor);
     host_zoom_map->SetZoomLevelForHost(top_level_host, new_zoom_level);
 
     WaitAndCheckFrameZoom(msg_queue, frame_observers);
@@ -347,7 +347,7 @@ IN_PROC_BROWSER_TEST_F(IFrameZoomBrowserTest, SubframesDontZoomIndependently) {
 
   const double new_zoom_factor = 2.0;
   const double new_zoom_level =
-      default_zoom_level + blink::PageZoomFactorToZoomLevel(new_zoom_factor);
+      default_zoom_level + blink::ZoomFactorToZoomLevel(new_zoom_factor);
 
   // This should not cause the nested iframe to change its zoom.
   host_zoom_map->SetZoomLevelForHost("b.com", new_zoom_level);
@@ -410,7 +410,7 @@ IN_PROC_BROWSER_TEST_F(IFrameZoomBrowserTest,
 
     const double new_default_zoom_level =
         default_zoom_level +
-        blink::PageZoomFactorToZoomLevel(new_default_zoom_factor);
+        blink::ZoomFactorToZoomLevel(new_default_zoom_factor);
 
     host_zoom_map->SetZoomLevelForHost("b.com", new_default_zoom_level + 1.0);
     host_zoom_map->SetDefaultZoomLevel(new_default_zoom_level);
@@ -472,7 +472,7 @@ IN_PROC_BROWSER_TEST_F(IFrameZoomBrowserTest, MAYBE_SiblingFramesZoom) {
                                  scale_one_child2_width, kTolerance);
 
     const double new_zoom_level =
-        default_zoom_level + blink::PageZoomFactorToZoomLevel(new_zoom_factor);
+        default_zoom_level + blink::ZoomFactorToZoomLevel(new_zoom_factor);
     host_zoom_map->SetZoomLevelForHost(top_level_host, new_zoom_level);
 
     WaitAndCheckFrameZoom(msg_queue, frame_observers);
@@ -522,7 +522,7 @@ IN_PROC_BROWSER_TEST_F(IFrameZoomBrowserTest, SubframeRetainsZoomOnNavigation) {
                                  scale_one_child_width, kTolerance);
 
     const double new_zoom_level =
-        default_zoom_level + blink::PageZoomFactorToZoomLevel(new_zoom_factor);
+        default_zoom_level + blink::ZoomFactorToZoomLevel(new_zoom_factor);
     host_zoom_map->SetZoomLevelForHost(top_level_host, new_zoom_level);
 
     WaitAndCheckFrameZoom(msg_queue, frame_observers);
@@ -566,7 +566,7 @@ IN_PROC_BROWSER_TEST_F(IFrameZoomBrowserTest,
   HostZoomMap* host_zoom_map = HostZoomMap::GetForWebContents(web_contents());
   host_zoom_map->SetZoomLevelForHost(
       redirected_host,
-      blink::PageZoomFactorToZoomLevel(kZoomFactorForRedirectedHost));
+      blink::ZoomFactorToZoomLevel(kZoomFactorForRedirectedHost));
 
   // Navigation to a.com doesn't change the zoom level, but when it redirects
   // to b.com, and then a subframe loads, the zoom should change.
@@ -611,7 +611,7 @@ IN_PROC_BROWSER_TEST_F(IFrameZoomBrowserTest,
   // Set a zoom for a host that will be navigated to below.
   const double new_zoom_factor = 2.0;
   const double new_zoom_level =
-      default_zoom_level + blink::PageZoomFactorToZoomLevel(new_zoom_factor);
+      default_zoom_level + blink::ZoomFactorToZoomLevel(new_zoom_factor);
   host_zoom_map->SetZoomLevelForHost("foo.com", new_zoom_level);
 
   // Navigate forward in the same RFH to a site with that host via a

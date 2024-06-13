@@ -127,7 +127,7 @@ class ImageDocumentTest : public testing::Test {
   test::TaskEnvironment task_environment_;
   Persistent<WindowToViewportScalingChromeClient> chrome_client_;
   std::unique_ptr<DummyPageHolder> dummy_page_holder_;
-  float page_zoom_factor_ = 0.0f;
+  float zoom_factor_ = 0.0f;
   float viewport_scaling_factor_ = 0.0f;
   std::optional<bool> force_zero_layout_height_;
 };
@@ -140,8 +140,9 @@ void ImageDocumentTest::CreateDocumentWithoutLoadingImage(int view_width,
   dummy_page_holder_ = std::make_unique<DummyPageHolder>(
       gfx::Size(view_width, view_height), chrome_client_);
 
-  if (page_zoom_factor_)
-    dummy_page_holder_->GetFrame().SetPageZoomFactor(page_zoom_factor_);
+  if (zoom_factor_) {
+    dummy_page_holder_->GetFrame().SetLayoutZoomFactor(zoom_factor_);
+  }
   if (viewport_scaling_factor_)
     chrome_client_->SetScalingFactor(viewport_scaling_factor_);
   if (force_zero_layout_height_.has_value()) {
@@ -176,9 +177,9 @@ ImageDocument& ImageDocumentTest::GetDocument() const {
 }
 
 void ImageDocumentTest::SetPageZoom(float factor) {
-  page_zoom_factor_ = factor;
+  zoom_factor_ = factor;
   if (dummy_page_holder_)
-    dummy_page_holder_->GetFrame().SetPageZoomFactor(factor);
+    dummy_page_holder_->GetFrame().SetLayoutZoomFactor(factor);
 }
 
 void ImageDocumentTest::SetWindowToViewportScalingFactor(float factor) {

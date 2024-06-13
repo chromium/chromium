@@ -56,7 +56,7 @@ class TextAutosizerTest : public RenderingTest,
 
     // This fake ChromeClient cannot update device scale factor (DSF). We apply
     // DSF to the zoom factor manually.
-    GetDocument().GetFrame()->SetPageZoomFactor(device_scale_factor);
+    GetDocument().GetFrame()->SetLayoutZoomFactor(device_scale_factor);
   }
 
  private:

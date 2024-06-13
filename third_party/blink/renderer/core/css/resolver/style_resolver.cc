@@ -1866,7 +1866,7 @@ ComputedStyleBuilder StyleResolver::CreateComputedStyleBuilderInheritingFrom(
 float StyleResolver::InitialZoom() const {
   const Document& document = GetDocument();
   if (const LocalFrame* frame = document.GetFrame()) {
-    return !document.Printing() ? frame->PageZoomFactor() : 1;
+    return !document.Printing() ? frame->LayoutZoomFactor() : 1;
   }
   return 1;
 }

@@ -359,11 +359,11 @@ void DataTransfer::setDragImage(Element* image, int x, int y) {
     return;
 
   // Convert `drag_loc_` from CSS px to physical pixels.
-  // `LocalFrame::PageZoomFactor` converts from CSS px to physical px by taking
-  // into account both device scale factor and page zoom.
+  // `LocalFrame::LayoutZoomFactor` converts from CSS px to physical px by
+  // taking into account both device scale factor and page zoom.
   LocalFrame* frame = image->GetDocument().GetFrame();
   gfx::Point location =
-      gfx::ScaleToRoundedPoint(gfx::Point(x, y), frame->PageZoomFactor());
+      gfx::ScaleToRoundedPoint(gfx::Point(x, y), frame->LayoutZoomFactor());
 
   auto* html_image_element = DynamicTo<HTMLImageElement>(image);
   if (html_image_element && !image->isConnected())

@@ -533,7 +533,7 @@ v8::Local<v8::Value> NewTabPageBindings::GetMostVisited(v8::Isolate* isolate) {
   content::RenderFrame* render_frame = GetMainRenderFrameForCurrentContext();
 
   // This corresponds to "window.devicePixelRatio" in JavaScript.
-  float zoom_factor = blink::PageZoomLevelToZoomFactor(
+  float zoom_factor = blink::ZoomLevelToZoomFactor(
       (render_frame->GetWebFrame())->FrameWidget()->GetZoomLevel());
   float device_pixel_ratio = render_frame->GetDeviceScaleFactor() * zoom_factor;
 

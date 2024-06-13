@@ -137,7 +137,7 @@ double LayoutSVGRoot::LogicalSizeScaleFactorForPercentageLengths() const {
     return 1;
   }
   // This will return the zoom factor which is different from the typical usage
-  // of "zoom factor" in blink (e.g., |LocalFrame::PageZoomFactor()|) which
+  // of "zoom factor" in blink (e.g., |LocalFrame::LayoutZoomFactor()|) which
   // includes CSS zoom and the device scale factor (if use-zoom-for-dsf is
   // enabled). For this special-case, we only want to include the user's zoom
   // factor, as all other types of zoom should not scale a percentage-sized svg.

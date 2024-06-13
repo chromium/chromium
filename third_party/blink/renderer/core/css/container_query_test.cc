@@ -410,7 +410,7 @@ TEST_F(ContainerQueryTest, ContainerQueryEvaluation) {
 }
 
 TEST_F(ContainerQueryTest, QueryZoom) {
-  GetFrame().SetPageZoomFactor(2.0f);
+  GetFrame().SetLayoutZoomFactor(2.0f);
 
   SetBodyInnerHTML(R"HTML(
     <style>
@@ -470,7 +470,7 @@ TEST_F(ContainerQueryTest, QueryZoom) {
 }
 
 TEST_F(ContainerQueryTest, QueryFontRelativeWithZoom) {
-  GetFrame().SetPageZoomFactor(2.0f);
+  GetFrame().SetLayoutZoomFactor(2.0f);
 
   SetBodyInnerHTML(R"HTML(
     <style>

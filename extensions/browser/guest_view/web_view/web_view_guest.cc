@@ -229,7 +229,7 @@ void ParsePartitionParam(const base::Value::Dict& create_params,
 }
 
 double ConvertZoomLevelToZoomFactor(double zoom_level) {
-  double zoom_factor = blink::PageZoomLevelToZoomFactor(zoom_level);
+  double zoom_factor = blink::ZoomLevelToZoomFactor(zoom_level);
   // Because the conversion from zoom level to zoom factor isn't perfect, the
   // resulting zoom factor is rounded to the nearest 6th decimal place.
   zoom_factor = round(zoom_factor * 1000000) / 1000000;
@@ -1349,7 +1349,7 @@ void WebViewGuest::SetZoom(double zoom_factor) {
   did_set_explicit_zoom_ = true;
   auto* zoom_controller = ZoomController::FromWebContents(web_contents());
   DCHECK(zoom_controller);
-  double zoom_level = blink::PageZoomFactorToZoomLevel(zoom_factor);
+  double zoom_level = blink::ZoomFactorToZoomLevel(zoom_factor);
   zoom_controller->SetZoomLevel(zoom_level);
 }
 

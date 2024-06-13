@@ -118,9 +118,8 @@ void SearchEngineChoiceDialogView::Initialize() {
       web_contents->GetPrimaryMainFrame();
   content::HostZoomMap* zoom_map =
       content::HostZoomMap::GetForWebContents(web_contents);
-  zoom_map->SetTemporaryZoomLevel(
-      render_frame_host->GetGlobalId(),
-      blink::PageZoomFactorToZoomLevel(zoom_factor));
+  zoom_map->SetTemporaryZoomLevel(render_frame_host->GetGlobalId(),
+                                  blink::ZoomFactorToZoomLevel(zoom_factor));
 
   int preferred_dialog_width = kPreferredMaxDialogWidth;
   int preferred_dialog_height = kPreferredMaxDialogHeight;

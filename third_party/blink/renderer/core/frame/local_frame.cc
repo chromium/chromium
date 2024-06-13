@@ -267,9 +267,9 @@ static LocalFramesByTokenMap& GetLocalFramesMap() {
 // Maximum number of burst download requests allowed.
 const int kBurstDownloadLimit = 10;
 
-inline float ParentPageZoomFactor(LocalFrame* frame) {
+inline float ParentLayoutZoomFactor(LocalFrame* frame) {
   auto* parent_local_frame = DynamicTo<LocalFrame>(frame->Tree().Parent());
-  return parent_local_frame ? parent_local_frame->PageZoomFactor() : 1;
+  return parent_local_frame ? parent_local_frame->LayoutZoomFactor() : 1;
 }
 
 inline float ParentTextZoomFactor(LocalFrame* frame) {
@@ -1559,19 +1559,20 @@ void LocalFrame::RestoreScrollOffsets() {
   saved_scroll_offsets_ = nullptr;
 }
 
-void LocalFrame::SetPageZoomFactor(float factor) {
-  SetPageAndTextZoomFactors(factor, text_zoom_factor_);
+void LocalFrame::SetLayoutZoomFactor(float factor) {
+  SetLayoutAndTextZoomFactors(factor, text_zoom_factor_);
 }
 
 void LocalFrame::SetTextZoomFactor(float factor) {
-  SetPageAndTextZoomFactors(page_zoom_factor_, factor);
+  SetLayoutAndTextZoomFactors(layout_zoom_factor_, factor);
 }
 
-void LocalFrame::SetPageAndTextZoomFactors(float page_zoom_factor,
-                                           float text_zoom_factor) {
-  if (page_zoom_factor_ == page_zoom_factor &&
-      text_zoom_factor_ == text_zoom_factor)
+void LocalFrame::SetLayoutAndTextZoomFactors(float layout_zoom_factor,
+                                             float text_zoom_factor) {
+  if (layout_zoom_factor_ == layout_zoom_factor &&
+      text_zoom_factor_ == text_zoom_factor) {
     return;
+  }
 
   Page* page = GetPage();
   if (!page)
@@ -1589,20 +1590,20 @@ void LocalFrame::SetPageAndTextZoomFactors(float page_zoom_factor,
       return;
   }
 
-  bool page_zoom_changed = (page_zoom_factor != page_zoom_factor_);
+  bool layout_zoom_changed = (layout_zoom_factor != layout_zoom_factor_);
 
-  page_zoom_factor_ = page_zoom_factor;
+  layout_zoom_factor_ = layout_zoom_factor;
   text_zoom_factor_ = text_zoom_factor;
 
   for (Frame* child = Tree().FirstChild(); child;
        child = child->Tree().NextSibling()) {
     if (auto* child_local_frame = DynamicTo<LocalFrame>(child)) {
-      child_local_frame->SetPageAndTextZoomFactors(page_zoom_factor_,
-                                                   text_zoom_factor_);
+      child_local_frame->SetLayoutAndTextZoomFactors(layout_zoom_factor_,
+                                                     text_zoom_factor_);
     }
   }
 
-  if (page_zoom_changed) {
+  if (layout_zoom_changed) {
 #if !BUILDFLAG(IS_ANDROID)
     MaybeUpdateWindowControlsOverlayWithNewZoomLevel();
 #endif
@@ -1738,7 +1739,7 @@ double LocalFrame::DevicePixelRatio() const {
     return 0;
 
   double ratio = page_->InspectorDeviceScaleFactorOverride();
-  ratio *= PageZoomFactor();
+  ratio *= LayoutZoomFactor();
   return ratio;
 }
 
@@ -1854,7 +1855,7 @@ LocalFrame::LocalFrame(LocalFrameClient* client,
       frozen_(false),
       paused_(false),
       hidden_(false),
-      page_zoom_factor_(ParentPageZoomFactor(this)),
+      layout_zoom_factor_(ParentLayoutZoomFactor(this)),
       text_zoom_factor_(ParentTextZoomFactor(this)),
       inspector_task_runner_(InspectorTaskRunner::Create(
           GetTaskRunner(TaskType::kInternalInspector))),
@@ -3344,7 +3345,7 @@ void LocalFrame::UpdateWindowControlsOverlay(
   // zoom factor into account so we must scale by the inverse of the page zoom
   // in order to get correct CSS space coordinates. Note that when
   // use-zoom-for-dsf is enabled, WindowToViewportScalar will be the true device
-  // scale factor, and PageZoomFactor will be the combination of the device
+  // scale factor, and LayoutZoomFactor will be the combination of the device
   // scale factor and the zoom percent of the page. It is preferable to compute
   // a rect that is slightly larger than one that would render smaller than the
   // window control overlay.
@@ -3352,7 +3353,7 @@ void LocalFrame::UpdateWindowControlsOverlay(
   const float window_to_viewport_factor =
       GetPage()->GetChromeClient().WindowToViewportScalar(&local_frame_root,
                                                           1.0f);
-  const float zoom_factor = local_frame_root.PageZoomFactor();
+  const float zoom_factor = local_frame_root.LayoutZoomFactor();
   const float scale_factor = zoom_factor / window_to_viewport_factor;
   gfx::Rect window_controls_overlay_rect =
       gfx::ScaleToEnclosingRect(bounding_rect_in_dips, 1.0f / scale_factor);

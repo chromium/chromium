@@ -204,7 +204,7 @@ bool SelectionBoundsRecorder::IsVisible(const LayoutObject& rect_layout_object,
     return true;
 
   PhysicalOffset sample_point = GetSamplePointForVisibility(
-      edge_start, edge_end, rect_layout_object.GetFrame()->PageZoomFactor());
+      edge_start, edge_end, rect_layout_object.GetFrame()->LayoutZoomFactor());
 
   // Convert from paint coordinates to local layout coordinates.
   sample_point -= layout_object->FirstFragment().PaintOffset();

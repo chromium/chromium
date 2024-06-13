@@ -157,7 +157,7 @@ int MediaControlSliderElement::TrackWidth() {
 
 float MediaControlSliderElement::ZoomFactor() const {
   const LocalFrame* frame = GetDocument().GetFrame();
-  return frame ? frame->PageZoomFactor() : 1;
+  return frame ? frame->LayoutZoomFactor() : 1;
 }
 
 void MediaControlSliderElement::NotifyElementSizeChanged() {

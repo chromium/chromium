@@ -171,7 +171,7 @@ double GetZoomFactor(BrowserContext* context, const GURL& url) {
                      ->GetDefaultZoomLevel();
   }
 
-  return blink::PageZoomLevelToZoomFactor(zoom_level);
+  return blink::ZoomLevelToZoomFactor(zoom_level);
 }
 
 // Returns a string corresponding to |value|. The returned string satisfies

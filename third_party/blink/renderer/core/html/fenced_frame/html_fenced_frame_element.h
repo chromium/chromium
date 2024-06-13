@@ -231,7 +231,7 @@ class CORE_EXPORT HTMLFencedFrameElement : public HTMLFrameOwnerElement {
   friend class FencedFrameShadowDOMDelegate;
   friend class ResizeObserverDelegate;
   FRIEND_TEST_ALL_PREFIXES(HTMLFencedFrameElementTest,
-                           FreezeSizePageZoomFactor);
+                           FreezeSizeLayoutZoomFactor);
   FRIEND_TEST_ALL_PREFIXES(HTMLFencedFrameElementTest, CoerceFrameSizeTest);
   FRIEND_TEST_ALL_PREFIXES(HTMLFencedFrameElementTest,
                            HistogramTestResizeAfterFreeze);

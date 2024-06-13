@@ -552,7 +552,7 @@ base::Value::Dict CreateZoomLevelException(
   // Calculate the zoom percent from the factor. Round up to the nearest
   // whole number.
   int zoom_percent =
-      static_cast<int>(blink::PageZoomLevelToZoomFactor(zoom) * 100 + 0.5);
+      static_cast<int>(blink::ZoomLevelToZoomFactor(zoom) * 100 + 0.5);
   exception.Set(kZoom, base::FormatPercent(zoom_percent));
   return exception;
 }

@@ -1555,8 +1555,8 @@ protocol::Response InspectorDOMAgent::getNodeForLocation(
       optional_include_user_agent_shadow_dom.value_or(false);
   Document* document = inspected_frames_->Root()->GetDocument();
   PhysicalOffset document_point(
-      LayoutUnit(x * inspected_frames_->Root()->PageZoomFactor()),
-      LayoutUnit(y * inspected_frames_->Root()->PageZoomFactor()));
+      LayoutUnit(x * inspected_frames_->Root()->LayoutZoomFactor()),
+      LayoutUnit(y * inspected_frames_->Root()->LayoutZoomFactor()));
   HitTestRequest::HitTestRequestType hit_type =
       HitTestRequest::kMove | HitTestRequest::kReadOnly |
       HitTestRequest::kAllowChildFrameContent;

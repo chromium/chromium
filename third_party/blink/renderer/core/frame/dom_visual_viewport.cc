@@ -106,7 +106,7 @@ float DOMVisualViewport::pageLeft() const {
     viewport_x += page->GetVisualViewport().GetWebExposedScrollOffset().x();
 
   return AdjustForAbsoluteZoom::AdjustScroll(viewport_x,
-                                             frame->PageZoomFactor());
+                                             frame->LayoutZoomFactor());
 }
 
 float DOMVisualViewport::pageTop() const {
@@ -133,7 +133,7 @@ float DOMVisualViewport::pageTop() const {
     viewport_y += page->GetVisualViewport().GetWebExposedScrollOffset().y();
 
   return AdjustForAbsoluteZoom::AdjustScroll(viewport_y,
-                                             frame->PageZoomFactor());
+                                             frame->LayoutZoomFactor());
 }
 
 double DOMVisualViewport::width() const {
@@ -149,7 +149,7 @@ double DOMVisualViewport::width() const {
     float width =
         scrollable_area->VisibleContentRect(kExcludeScrollbars).width();
     return AdjustForAbsoluteZoom::AdjustInt(ClampTo<int>(ceilf(width)),
-                                            frame->PageZoomFactor());
+                                            frame->LayoutZoomFactor());
   }
 
   if (Page* page = frame->GetPage())
@@ -171,7 +171,7 @@ double DOMVisualViewport::height() const {
     float height =
         scrollable_area->VisibleContentRect(kExcludeScrollbars).height();
     return AdjustForAbsoluteZoom::AdjustInt(ClampTo<int>(ceilf(height)),
-                                            frame->PageZoomFactor());
+                                            frame->LayoutZoomFactor());
   }
 
   if (Page* page = frame->GetPage())
@@ -215,14 +215,14 @@ std::optional<HeapVector<Member<DOMRect>>> DOMVisualViewport::segments() const {
   // frame/widget. This doesn't take the page's zoom factor into account so we
   // must scale by the inverse of the page zoom in order to get correct client
   // coordinates.
-  // WindowToViewportScalar is the device scale factor, and PageZoomFactor is
+  // WindowToViewportScalar is the device scale factor, and LayoutZoomFactor is
   // the combination of the device scale factor and the zoom percent of the
   // page.
   HeapVector<Member<DOMRect>> viewport_segments;
   const float dips_to_blink =
       frame->GetWidgetForLocalRoot()->DIPsToBlinkSpace(1.0f);
-  const float page_zoom_factor = frame->PageZoomFactor();
-  const float scale_factor = dips_to_blink / page_zoom_factor;
+  const float zoom_factor = frame->LayoutZoomFactor();
+  const float scale_factor = dips_to_blink / zoom_factor;
   for (auto const& web_segment : web_segments) {
     gfx::QuadF quad((gfx::RectF(web_segment)));
     quad.Scale(scale_factor);

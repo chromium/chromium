@@ -93,7 +93,7 @@ gfx::Size MediaControlElementsHelper::GetSizeOrDefault(
 
   float zoom_factor = 1.0f;
   if (const LocalFrame* frame = element.GetDocument().GetFrame())
-    zoom_factor = frame->PageZoomFactor();
+    zoom_factor = frame->LayoutZoomFactor();
   return gfx::Size(round(box->LogicalWidth() / zoom_factor),
                    round(box->LogicalHeight() / zoom_factor));
 }

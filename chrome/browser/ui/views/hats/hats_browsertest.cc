@@ -351,7 +351,7 @@ IN_PROC_BROWSER_TEST_F(HatsNextWebDialogBrowserTest, MaximumSize) {
 IN_PROC_BROWSER_TEST_F(HatsNextWebDialogBrowserTest, ZoomLevel) {
   // Ensure that the dialog correctly resets the zoom level to default.
   browser()->profile()->GetZoomLevelPrefs()->SetDefaultZoomLevelPref(
-      blink::PageZoomFactorToZoomLevel(5.0f));
+      blink::ZoomFactorToZoomLevel(5.0f));
 
   ScopedBrowserLocale browser_locale(kTestLocale);
 
@@ -370,8 +370,8 @@ IN_PROC_BROWSER_TEST_F(HatsNextWebDialogBrowserTest, ZoomLevel) {
   }));
   run_loop.Run();
 
-  EXPECT_TRUE(blink::PageZoomValuesEqual(
+  EXPECT_TRUE(blink::ZoomValuesEqual(
       content::HostZoomMap::GetDefaultForBrowserContext(dialog->otr_profile_)
           ->GetZoomLevel(dialog->web_view_->GetWebContents()),
-      blink::PageZoomFactorToZoomLevel(1.0f)));
+      blink::ZoomFactorToZoomLevel(1.0f)));
 }

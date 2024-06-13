@@ -128,7 +128,7 @@ void TextTrackContainer::UpdateDefaultFontSize(
   LayoutUnit smallest_dimension = std::min(video_size.height, video_size.width);
   float font_size = smallest_dimension * 0.05f;
   if (media_layout_object->GetFrame())
-    font_size /= media_layout_object->GetFrame()->PageZoomFactor();
+    font_size /= media_layout_object->GetFrame()->LayoutZoomFactor();
 
   // Avoid excessive FP precision issue.
   // C11 5.2.4.2.2:9 requires assignment and cast to remove extra precision, but

@@ -88,7 +88,7 @@ TEST_F(MediaValuesTest, Basic) {
 
 TEST_F(MediaValuesTest, ZoomedFontUnits) {
   LoadAhem();
-  GetFrame().SetPageZoomFactor(2.0f);
+  GetFrame().SetLayoutZoomFactor(2.0f);
 
   // Set 'font:Ahem 10px' as the default font.
   Settings* settings = GetDocument().GetSettings();

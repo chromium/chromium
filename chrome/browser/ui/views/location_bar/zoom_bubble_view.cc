@@ -551,10 +551,10 @@ void ZoomBubbleView::UpdateZoomPercent() {
       zoom::PageZoom::PresetZoomLevels(default_zoom_level);
   DCHECK(zoom_out_button_);
   zoom_out_button_->SetEnabled(
-      !blink::PageZoomValuesEqual(zoom_levels.front(), current_zoom_level));
+      !blink::ZoomValuesEqual(zoom_levels.front(), current_zoom_level));
   DCHECK(zoom_in_button_);
   zoom_in_button_->SetEnabled(
-      !blink::PageZoomValuesEqual(zoom_levels.back(), current_zoom_level));
+      !blink::ZoomValuesEqual(zoom_levels.back(), current_zoom_level));
 }
 
 void ZoomBubbleView::UpdateZoomIconVisibility() {

@@ -133,7 +133,7 @@ IN_PROC_BROWSER_TEST_F(SystemWebDialogTest, FontSize) {
 
 IN_PROC_BROWSER_TEST_F(SystemWebDialogTest, PageZoom) {
   // Set the default browser page zoom to 150%.
-  double level = blink::PageZoomFactorToZoomLevel(1.5);
+  double level = blink::ZoomFactorToZoomLevel(1.5);
   browser()->profile()->GetZoomLevelPrefs()->SetDefaultZoomLevelPref(level);
 
   // Open a system dialog.
@@ -143,8 +143,8 @@ IN_PROC_BROWSER_TEST_F(SystemWebDialogTest, PageZoom) {
   // Dialog page zoom is still 100%.
   auto* web_contents = dialog->GetWebUIForTest()->GetWebContents();
   double dialog_level = content::HostZoomMap::GetZoomLevel(web_contents);
-  EXPECT_TRUE(blink::PageZoomValuesEqual(dialog_level,
-                                         blink::PageZoomFactorToZoomLevel(1.0)))
+  EXPECT_TRUE(
+      blink::ZoomValuesEqual(dialog_level, blink::ZoomFactorToZoomLevel(1.0)))
       << dialog_level;
 }
 

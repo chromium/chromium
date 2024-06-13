@@ -12,7 +12,7 @@ namespace zoom {
 
 std::string GetPresetZoomFactorsAsJSON() {
   base::Value::List zoom_factors;
-  for (double zoom_value : blink::kPresetZoomFactors) {
+  for (double zoom_value : blink::kPresetBrowserZoomFactors) {
     zoom_factors.Append(zoom_value);
   }
   std::string zoom_factors_json;

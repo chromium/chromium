@@ -887,7 +887,7 @@ TEST_F(ScrollTimelineTest, ScrollTimelineOffsetZoom) {
   }
 
   // zoom = 2
-  GetFrame().SetPageZoomFactor(2.0f);
+  GetFrame().SetLayoutZoomFactor(2.0f);
   UpdateAllLifecyclePhasesForTest();
 
   {
@@ -944,7 +944,7 @@ TEST_F(ScrollTimelineTest, ViewTimelineOffsetZoom) {
   }
 
   // zoom = 2
-  GetFrame().SetPageZoomFactor(2.0f);
+  GetFrame().SetLayoutZoomFactor(2.0f);
   UpdateAllLifecyclePhasesForTest();
 
   {

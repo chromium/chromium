@@ -93,7 +93,7 @@ class AdjustForAbsoluteZoom {
       const LayoutObject& layout_object) {
     float zoom;
     if (RuntimeEnabledFeatures::StandardizedBrowserZoomEnabled()) {
-      zoom = layout_object.GetFrame()->PageZoomFactor();
+      zoom = layout_object.GetFrame()->LayoutZoomFactor();
     } else {
       zoom = layout_object.StyleRef().EffectiveZoom();
     }
@@ -105,7 +105,7 @@ class AdjustForAbsoluteZoom {
       const LayoutObject& layout_object) {
     float zoom;
     if (RuntimeEnabledFeatures::StandardizedBrowserZoomEnabled()) {
-      zoom = layout_object.GetFrame()->PageZoomFactor();
+      zoom = layout_object.GetFrame()->LayoutZoomFactor();
     } else {
       zoom = layout_object.StyleRef().EffectiveZoom();
     }

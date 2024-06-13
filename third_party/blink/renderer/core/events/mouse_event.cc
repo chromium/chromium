@@ -51,13 +51,13 @@ namespace blink {
 
 namespace {
 
-float PageZoomFactor(const LocalDOMWindow* local_dom_window) {
+float LayoutZoomFactor(const LocalDOMWindow* local_dom_window) {
   if (!local_dom_window)
     return 1.f;
   LocalFrame* frame = local_dom_window->GetFrame();
   if (!frame)
     return 1.f;
-  return frame->PageZoomFactor();
+  return frame->LayoutZoomFactor();
 }
 
 const LayoutObject* FindTargetLayoutObject(Node*& target_node) {
@@ -167,8 +167,8 @@ void MouseEvent::InitCoordinates(const double client_x,
   absolute_location_ = gfx::PointF(client_x, client_y);
 
   auto* local_dom_window = DynamicTo<LocalDOMWindow>(view());
-  float zoom_factor =
-      PageZoomFactor(local_dom_window ? local_dom_window : fallback_dom_window);
+  float zoom_factor = LayoutZoomFactor(local_dom_window ? local_dom_window
+                                                        : fallback_dom_window);
 
   if (local_dom_window) {
     if (LocalFrame* frame = local_dom_window->GetFrame()) {
@@ -212,7 +212,7 @@ void MouseEvent::SetCoordinatesFromWebPointerProperties(
     }
     gfx::PointF frame_point =
         frame->View()->ConvertFromRootFrame(root_frame_point);
-    inverse_zoom_factor = 1.0f / frame->PageZoomFactor();
+    inverse_zoom_factor = 1.0f / frame->LayoutZoomFactor();
     client_point = gfx::ScalePoint(frame_point, inverse_zoom_factor);
   }
 
@@ -464,7 +464,7 @@ void MouseEvent::ComputeRelativePosition() {
   if (!dom_window_for_zoom_factor)
     dom_window_for_zoom_factor = target_node->GetDocument().domWindow();
 
-  float zoom_factor = PageZoomFactor(dom_window_for_zoom_factor);
+  float zoom_factor = LayoutZoomFactor(dom_window_for_zoom_factor);
   float inverse_zoom_factor = 1 / zoom_factor;
 
   // Must have an updated layout tree for this math to work correctly.

@@ -2673,10 +2673,9 @@ ExtensionFunction::ResponseAction TabsSetZoomFunction::Run() {
 
   ZoomController* zoom_controller =
       ZoomController::FromWebContents(web_contents);
-  double zoom_level =
-      params->zoom_factor > 0
-          ? blink::PageZoomFactorToZoomLevel(params->zoom_factor)
-          : zoom_controller->GetDefaultZoomLevel();
+  double zoom_level = params->zoom_factor > 0
+                          ? blink::ZoomFactorToZoomLevel(params->zoom_factor)
+                          : zoom_controller->GetDefaultZoomLevel();
 
   auto client = base::MakeRefCounted<ExtensionZoomRequestClient>(extension());
   if (!zoom_controller->SetZoomLevelByClient(zoom_level, client)) {
@@ -2701,7 +2700,7 @@ ExtensionFunction::ResponseAction TabsGetZoomFunction::Run() {
 
   double zoom_level =
       ZoomController::FromWebContents(web_contents)->GetZoomLevel();
-  double zoom_factor = blink::PageZoomLevelToZoomFactor(zoom_level);
+  double zoom_factor = blink::ZoomLevelToZoomFactor(zoom_level);
 
   return RespondNow(ArgumentList(tabs::GetZoom::Results::Create(zoom_factor)));
 }
@@ -2776,7 +2775,7 @@ ExtensionFunction::ResponseAction TabsGetZoomSettingsFunction::Run() {
   api::tabs::ZoomSettings zoom_settings;
   ZoomModeToZoomSettings(zoom_mode, &zoom_settings);
   zoom_settings.default_zoom_factor =
-      blink::PageZoomLevelToZoomFactor(zoom_controller->GetDefaultZoomLevel());
+      blink::ZoomLevelToZoomFactor(zoom_controller->GetDefaultZoomLevel());
 
   return RespondNow(
       ArgumentList(api::tabs::GetZoomSettings::Results::Create(zoom_settings)));

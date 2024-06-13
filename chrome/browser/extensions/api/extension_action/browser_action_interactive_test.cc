@@ -508,13 +508,13 @@ IN_PROC_BROWSER_TEST_F(BrowserActionInteractiveTest, PopupZoomsIndependently) {
       content::HostZoomMap::GetForWebContents(popup_contents)
           ->GetDefaultZoomLevel();
   double popup_zoom_level = content::HostZoomMap::GetZoomLevel(popup_contents);
-  EXPECT_TRUE(blink::PageZoomValuesEqual(popup_zoom_level, default_zoom_level))
+  EXPECT_TRUE(blink::ZoomValuesEqual(popup_zoom_level, default_zoom_level))
       << popup_zoom_level << " vs " << default_zoom_level;
 
   // Preventing the use of the per-origin zoom level in the popup should not
   // affect the zoom of the tab.
-  EXPECT_TRUE(blink::PageZoomValuesEqual(zoom_controller->GetZoomLevel(),
-                                         tab_new_zoom_level))
+  EXPECT_TRUE(blink::ZoomValuesEqual(zoom_controller->GetZoomLevel(),
+                                     tab_new_zoom_level))
       << zoom_controller->GetZoomLevel() << " vs " << tab_new_zoom_level;
 
   // Subsequent zooming in the tab should also be done independently of the
@@ -530,7 +530,7 @@ IN_PROC_BROWSER_TEST_F(BrowserActionInteractiveTest, PopupZoomsIndependently) {
   zoom_change_watcher2.Wait();
 
   popup_zoom_level = content::HostZoomMap::GetZoomLevel(popup_contents);
-  EXPECT_TRUE(blink::PageZoomValuesEqual(popup_zoom_level, default_zoom_level))
+  EXPECT_TRUE(blink::ZoomValuesEqual(popup_zoom_level, default_zoom_level))
       << popup_zoom_level << " vs " << default_zoom_level;
 
   EXPECT_TRUE(ClosePopup());

@@ -747,7 +747,7 @@ IN_PROC_BROWSER_TEST_P(WebAppNonClientFrameViewChromeOSTest, ShowZoomIcon) {
   EXPECT_FALSE(zoom_icon->GetVisible());
   EXPECT_FALSE(ZoomBubbleView::GetZoomBubble());
 
-  zoom_controller->SetZoomLevel(blink::PageZoomFactorToZoomLevel(1.5));
+  zoom_controller->SetZoomLevel(blink::ZoomFactorToZoomLevel(1.5));
   ASSERT_TRUE(WaitForVisible(true, zoom_icon));
   EXPECT_TRUE(ZoomBubbleView::GetZoomBubble());
 }

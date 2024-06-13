@@ -264,7 +264,7 @@ HatsNextWebDialog::HatsNextWebDialog(
   // with native UI elements, rather than web content.
   content::HostZoomMap::GetDefaultForBrowserContext(otr_profile_)
       ->SetZoomLevelForHost(hats_survey_url_.host(),
-                            blink::PageZoomFactorToZoomLevel(1.0f));
+                            blink::ZoomFactorToZoomLevel(1.0f));
 
   SetButtons(ui::DIALOG_BUTTON_NONE);
 

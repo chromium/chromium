@@ -136,7 +136,7 @@ PrivacySandboxDialogView::PrivacySandboxDialogView(
   auto* rfh = web_contents->GetPrimaryMainFrame();
   auto* zoom_map = content::HostZoomMap::GetForWebContents(web_contents);
   zoom_map->SetTemporaryZoomLevel(rfh->GetGlobalId(),
-                                  blink::PageZoomFactorToZoomLevel(1.0f));
+                                  blink::ZoomFactorToZoomLevel(1.0f));
 
   const int max_width = browser_->window()
                             ->GetWebContentsModalDialogHost()

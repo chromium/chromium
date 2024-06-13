@@ -2236,7 +2236,7 @@ void WebFrameWidgetImpl::SetZoomLevel(double zoom_level) {
       if (!plugin_document || !plugin_document->GetPluginView()) {
         // The local root is responsible for propagating to its connected tree
         // of LocalFrame descendants.
-        local_frame->SetPageZoomFactor(zoom_factor);
+        local_frame->SetLayoutZoomFactor(zoom_factor);
       }
     }
   }

@@ -385,7 +385,7 @@ void MediaControlsImplTest::GestureTapAt(gfx::PointF pos) {
       WebInputEvent::GetStaticTimeStampForTests());
 
   // Adjust |pos| by current frame scale.
-  float frame_scale = GetDocument().GetFrame()->PageZoomFactor();
+  float frame_scale = GetDocument().GetFrame()->LayoutZoomFactor();
   gesture_tap_event.SetFrameScale(frame_scale);
   pos.Scale(frame_scale);
   gesture_tap_event.SetPositionInWidget(pos);
@@ -1494,7 +1494,7 @@ TEST_F(MediaControlsImplTest, DoubleTouchChangesTimeWhenZoomed) {
                             videoRect->top() + 10);
 
   // Add a zoom factor and ensure that it's properly handled.
-  MediaControls().GetDocument().GetFrame()->SetPageZoomFactor(2);
+  MediaControls().GetDocument().GetFrame()->SetLayoutZoomFactor(2);
 
   // Double-tapping left of center should shift the time backwards by 10
   // seconds.

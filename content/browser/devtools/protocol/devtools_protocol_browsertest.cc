@@ -464,7 +464,7 @@ IN_PROC_BROWSER_TEST_F(SyntheticMouseEventTest, MouseEventCoordinatesWithZoom) {
   HostZoomMap* host_zoom_map =
       HostZoomMap::GetForWebContents(shell()->web_contents());
   host_zoom_map->SetZoomLevelForHost(test_url.host(),
-                                     blink::PageZoomFactorToZoomLevel(2.5));
+                                     blink::ZoomFactorToZoomLevel(2.5));
   WaitForNotification("Page.frameResized", true);
 
   // In about 1 out of 1000 runs, the event gets lost on the way to the

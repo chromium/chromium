@@ -105,8 +105,8 @@ class DelegatedInkTrailPresenterUnitTest : public SimTest {
                                         ->DelegatedInkMetadataForTesting());
   }
 
-  void SetPageZoomFactor(const float zoom) {
-    GetDocument().GetFrame()->SetPageZoomFactor(zoom);
+  void SetLayoutZoomFactor(const float zoom) {
+    GetDocument().GetFrame()->SetLayoutZoomFactor(zoom);
   }
 };
 
@@ -192,7 +192,7 @@ TEST_P(DelegatedInkTrailPresenterCanvasBeyondViewport,
 TEST_P(DelegatedInkTrailPresenterCanvasBeyondViewport,
        NotDefaultDevicePixelRatio) {
   const float kZoom = 1.7;
-  SetPageZoomFactor(kZoom);
+  SetLayoutZoomFactor(kZoom);
 
   SimRequest main_resource("https://example.com/test.html", "text/html");
   LoadURL("https://example.com/test.html");

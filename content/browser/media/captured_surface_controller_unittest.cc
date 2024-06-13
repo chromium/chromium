@@ -165,7 +165,7 @@ class TestTab {
   int GetZoomLevel() {
     CHECK(web_contents_);
     return std::round(100 *
-                      blink::PageZoomLevelToZoomFactor(
+                      blink::ZoomLevelToZoomFactor(
                           HostZoomMap::GetZoomLevel(web_contents_.get())));
   }
 
@@ -450,7 +450,7 @@ class CapturedSurfaceControllerZoomEventTest
 
 TEST_F(CapturedSurfaceControllerZoomEventTest, ZoomEvent) {
   HostZoomMap::SetZoomLevel(capturee_->web_contents(),
-                            blink::PageZoomFactorToZoomLevel(0.9));
+                            blink::ZoomFactorToZoomLevel(0.9));
   AwaitOnZoomLevelChange();
   ASSERT_TRUE(zoom_level_);
   EXPECT_EQ(zoom_level_, 90);
@@ -469,7 +469,7 @@ TEST_F(CapturedSurfaceControllerZoomEventTest, ZoomEventUpdateTarget) {
   HostZoomMapImpl* host_zoom_map = static_cast<HostZoomMapImpl*>(
       HostZoomMap::GetForWebContents(new_capturee_->web_contents()));
   host_zoom_map->SetTemporaryZoomLevel(new_main_rfh->GetGlobalId(),
-                                       blink::PageZoomFactorToZoomLevel(1.1));
+                                       blink::ZoomFactorToZoomLevel(1.1));
 
   AwaitOnZoomLevelChange();
   ASSERT_TRUE(zoom_level_);
@@ -491,8 +491,8 @@ INSTANTIATE_TEST_SUITE_P(
     ,
     CapturedSurfaceControllerSetZoomLevelTest,
     ::testing::Values(
-        static_cast<int>(std::ceil(100 * blink::kMinimumPageZoomFactor)),
-        static_cast<int>(std::floor(100 * blink::kMaximumPageZoomFactor))));
+        static_cast<int>(std::ceil(100 * blink::kMinimumBrowserZoomFactor)),
+        static_cast<int>(std::floor(100 * blink::kMaximumBrowserZoomFactor))));
 
 TEST_P(CapturedSurfaceControllerSetZoomLevelTest, SetZoomLevelSuccess) {
   permission_manager_->SetPermissionResult(CSCPermissionResult::kGranted);
@@ -918,8 +918,8 @@ class CapturedSurfaceControllerSendWheelClampTest
 
  protected:
   int zoom_level() const {
-    static const double kMin = 100 * blink::kMaximumPageZoomFactor;
-    static const double kMax = 100 * blink::kMinimumPageZoomFactor;
+    static const double kMin = 100 * blink::kMaximumBrowserZoomFactor;
+    static const double kMax = 100 * blink::kMinimumBrowserZoomFactor;
     switch (zoom_level_boundary_) {
       case Boundary::kMin:
         return static_cast<int>(std::ceil(kMin));

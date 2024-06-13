@@ -592,7 +592,7 @@ class CORE_EXPORT ChromeClient : public GarbageCollected<ChromeClient> {
   virtual void DocumentDetached(Document&) {}
 
   // Return the user's zoom factor which is different from the typical usage
-  // of "zoom factor" in blink (e.g., |LocalFrame::PageZoomFactor()|) which
+  // of "zoom factor" in blink (e.g., |LocalFrame::LayoutZoomFactor()|) which
   // includes CSS zoom and the device scale factor (if use-zoom-for-dsf is
   // enabled). This only includes the zoom initiated by the user (ctrl +/-).
   virtual double UserZoomFactor(LocalFrame* frame) const { return 1; }

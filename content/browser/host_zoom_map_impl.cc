@@ -244,7 +244,7 @@ void HostZoomMapImpl::SetZoomLevelForHostInternal(const std::string& host,
                                                   base::Time last_modified) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
 
-  if (blink::PageZoomValuesEqual(level, default_zoom_level_)) {
+  if (blink::ZoomValuesEqual(level, default_zoom_level_)) {
     host_zoom_levels_.erase(host);
   } else {
     ZoomLevel& zoomLevel = host_zoom_levels_[host];
@@ -292,17 +292,19 @@ double HostZoomMapImpl::GetDefaultZoomLevel() {
 void HostZoomMapImpl::SetDefaultZoomLevel(double level) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
 
-  if (blink::PageZoomValuesEqual(level, default_zoom_level_))
+  if (blink::ZoomValuesEqual(level, default_zoom_level_)) {
     return;
+  }
 
   default_zoom_level_ = level;
 
   // First, remove all entries that match the new default zoom level.
   for (auto it = host_zoom_levels_.begin(); it != host_zoom_levels_.end();) {
-    if (blink::PageZoomValuesEqual(it->second.level, default_zoom_level_))
+    if (blink::ZoomValuesEqual(it->second.level, default_zoom_level_)) {
       it = host_zoom_levels_.erase(it);
-    else
+    } else {
       it++;
+    }
   }
 
   // Second, update zoom levels for all pages that do not have an overriding
@@ -664,7 +666,7 @@ double HostZoomMapImpl::GetZoomLevelForPreviewAndHost(const std::string& host) {
 
 void HostZoomMapImpl::SetZoomLevelForPreviewAndHost(const std::string& host,
                                                     double level) {
-  if (blink::PageZoomValuesEqual(level, default_zoom_level_)) {
+  if (blink::ZoomValuesEqual(level, default_zoom_level_)) {
     host_zoom_levels_for_preview_.erase(host);
   } else {
     ZoomLevel& zoomLevel = host_zoom_levels_for_preview_[host];

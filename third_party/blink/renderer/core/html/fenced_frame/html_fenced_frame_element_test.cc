@@ -50,21 +50,21 @@ class HTMLFencedFrameElementTest : private ScopedFencedFramesForTest,
   base::test::ScopedFeatureList enabled_feature_list_;
 };
 
-TEST_F(HTMLFencedFrameElementTest, FreezeSizePageZoomFactor) {
+TEST_F(HTMLFencedFrameElementTest, FreezeSizeLayoutZoomFactor) {
   Document& doc = GetDocument();
   auto* fenced_frame = MakeGarbageCollected<HTMLFencedFrameElement>(doc);
   doc.body()->AppendChild(fenced_frame);
   UpdateAllLifecyclePhasesForTest();
 
   LocalFrame& frame = GetFrame();
-  const float zoom_factor = frame.PageZoomFactor();
+  const float zoom_factor = frame.LayoutZoomFactor();
   const PhysicalSize size(200, 100);
   fenced_frame->FreezeFrameSize(size);
-  frame.SetPageZoomFactor(zoom_factor * 2);
+  frame.SetLayoutZoomFactor(zoom_factor * 2);
   EXPECT_EQ(*fenced_frame->FrozenFrameSize(),
             PhysicalSize(size.width * 2, size.height * 2));
 
-  frame.SetPageZoomFactor(zoom_factor);
+  frame.SetLayoutZoomFactor(zoom_factor);
 }
 
 TEST_F(HTMLFencedFrameElementTest, CoerceFrameSizeTest) {

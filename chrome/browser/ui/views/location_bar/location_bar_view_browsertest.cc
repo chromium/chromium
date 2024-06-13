@@ -97,7 +97,7 @@ IN_PROC_BROWSER_TEST_F(LocationBarViewBrowserTest, LocationBarDecoration) {
 
   // Altering zoom should display a bubble. Note ZoomBubbleView closes
   // asynchronously, so precede checks with a run loop flush.
-  zoom_controller->SetZoomLevel(blink::PageZoomFactorToZoomLevel(1.5));
+  zoom_controller->SetZoomLevel(blink::ZoomFactorToZoomLevel(1.5));
   base::RunLoop().RunUntilIdle();
   EXPECT_TRUE(zoom_view->GetVisible());
   EXPECT_TRUE(ZoomBubbleView::GetZoomBubble());
@@ -109,13 +109,13 @@ IN_PROC_BROWSER_TEST_F(LocationBarViewBrowserTest, LocationBarDecoration) {
   EXPECT_FALSE(ZoomBubbleView::GetZoomBubble());
 
   // Show the bubble again.
-  zoom_controller->SetZoomLevel(blink::PageZoomFactorToZoomLevel(2.0));
+  zoom_controller->SetZoomLevel(blink::ZoomFactorToZoomLevel(2.0));
   base::RunLoop().RunUntilIdle();
   EXPECT_TRUE(zoom_view->GetVisible());
   EXPECT_TRUE(ZoomBubbleView::GetZoomBubble());
 
   // Remains visible at 100% until the bubble is closed.
-  zoom_controller->SetZoomLevel(blink::PageZoomFactorToZoomLevel(1.0));
+  zoom_controller->SetZoomLevel(blink::ZoomFactorToZoomLevel(1.0));
   base::RunLoop().RunUntilIdle();
   EXPECT_TRUE(zoom_view->GetVisible());
   EXPECT_TRUE(ZoomBubbleView::GetZoomBubble());
@@ -138,7 +138,7 @@ IN_PROC_BROWSER_TEST_F(LocationBarViewBrowserTest, BubblesCloseOnHide) {
   ASSERT_TRUE(zoom_view);
   EXPECT_FALSE(zoom_view->GetVisible());
 
-  zoom_controller->SetZoomLevel(blink::PageZoomFactorToZoomLevel(1.5));
+  zoom_controller->SetZoomLevel(blink::ZoomFactorToZoomLevel(1.5));
   base::RunLoop().RunUntilIdle();
   EXPECT_TRUE(zoom_view->GetVisible());
   EXPECT_TRUE(ZoomBubbleView::GetZoomBubble());

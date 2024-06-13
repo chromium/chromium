@@ -406,7 +406,7 @@ WebPagePopupImpl::WebPagePopupImpl(
 
   SegmentedBuffer data;
   popup_client_->WriteDocument(data);
-  frame->SetPageZoomFactor(popup_client_->ZoomFactor());
+  frame->SetLayoutZoomFactor(popup_client_->ZoomFactor());
   frame->ForceSynchronousDocumentInstall(AtomicString("text/html"),
                                          std::move(data));
 

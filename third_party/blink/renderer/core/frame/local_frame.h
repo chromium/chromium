@@ -425,12 +425,13 @@ class CORE_EXPORT LocalFrame final
   bool InViewSourceMode() const;
   void SetInViewSourceMode(bool = true);
 
-  void SetPageZoomFactor(float);
-  float PageZoomFactor() const { return page_zoom_factor_; }
+  // Layout zoom factor reflects hardware device pixel ratio and browser zoom.
+  void SetLayoutZoomFactor(float);
+  float LayoutZoomFactor() const { return layout_zoom_factor_; }
   void SetTextZoomFactor(float);
   float TextZoomFactor() const { return text_zoom_factor_; }
-  void SetPageAndTextZoomFactors(float page_zoom_factor,
-                                 float text_zoom_factor);
+  void SetLayoutAndTextZoomFactors(float layout_zoom_factor,
+                                   float text_zoom_factor);
 
   double DevicePixelRatio() const;
 
@@ -1091,7 +1092,7 @@ class CORE_EXPORT LocalFrame final
   // OS-level windows.
   unsigned hidden_ : 1;
 
-  float page_zoom_factor_;
+  float layout_zoom_factor_;
   float text_zoom_factor_;
 
   Member<CoreProbeSink> probe_sink_;
@@ -1178,11 +1179,11 @@ class CORE_EXPORT LocalFrame final
 
 #if !BUILDFLAG(IS_ANDROID)
   bool is_window_controls_overlay_visible_ = false;
-  // |page_zoom_factor_| is asynchronously set sometimes (most prominently seen
-  // on mac) in |LocalFrame| via |PropagatePageZoomToNewlyAttachedFrame| on
+  // |layout_zoom_factor_| is asynchronously set sometimes (most prominently
+  // seen on mac) in |LocalFrame| via |WebFrameWidgetImpl::SetZoomLevel| on
   // navigation. We need to store the window_controls_overlay_rect sent from the
   // browser in dips so we can convert the rect to blink space coordinates when
-  // |page_zoom_factor_| gets updated this way.
+  // |layout_zoom_factor_| gets updated this way.
   gfx::Rect window_controls_overlay_rect_in_dips_;
   gfx::Rect window_controls_overlay_rect_;
   WeakMember<WindowControlsOverlayChangedDelegate>

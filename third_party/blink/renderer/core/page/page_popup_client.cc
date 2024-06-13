@@ -46,7 +46,7 @@ float PagePopupClient::ZoomFactor() {
   if (const ComputedStyle* style = OwnerElement().GetComputedStyle())
     return style->EffectiveZoom();
   if (LocalFrame* frame = OwnerElement().GetDocument().GetFrame())
-    return frame->PageZoomFactor();
+    return frame->LayoutZoomFactor();
   return 1;
 }
 

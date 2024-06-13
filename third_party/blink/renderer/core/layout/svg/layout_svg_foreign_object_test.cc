@@ -380,7 +380,7 @@ TEST_F(LayoutSVGForeignObjectTest, HitTestUnderScrollingAncestor) {
 }
 
 TEST_F(LayoutSVGForeignObjectTest, BBoxPropagationZoomed) {
-  GetFrame().SetPageZoomFactor(2);
+  GetFrame().SetLayoutZoomFactor(2);
   SetBodyInnerHTML(R"HTML(
     <svg>
       <g>

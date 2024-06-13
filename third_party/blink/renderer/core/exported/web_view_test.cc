@@ -4934,21 +4934,21 @@ TEST_F(WebViewTest, PreferredSize) {
   EXPECT_EQ(100, size.width());
   EXPECT_EQ(100, size.height());
 
-  web_view->MainFrameWidget()->SetZoomLevel(PageZoomFactorToZoomLevel(2.0));
+  web_view->MainFrameWidget()->SetZoomLevel(ZoomFactorToZoomLevel(2.0));
   UpdateAllLifecyclePhases();
   size = web_view->ContentsPreferredMinimumSize();
   EXPECT_EQ(200, size.width());
   EXPECT_EQ(200, size.height());
 
   // Verify that both width and height are rounded (in this case up)
-  web_view->MainFrameWidget()->SetZoomLevel(PageZoomFactorToZoomLevel(0.9995));
+  web_view->MainFrameWidget()->SetZoomLevel(ZoomFactorToZoomLevel(0.9995));
   UpdateAllLifecyclePhases();
   size = web_view->ContentsPreferredMinimumSize();
   EXPECT_EQ(100, size.width());
   EXPECT_EQ(100, size.height());
 
   // Verify that both width and height are rounded (in this case down)
-  web_view->MainFrameWidget()->SetZoomLevel(PageZoomFactorToZoomLevel(1.0005));
+  web_view->MainFrameWidget()->SetZoomLevel(ZoomFactorToZoomLevel(1.0005));
   UpdateAllLifecyclePhases();
   size = web_view->ContentsPreferredMinimumSize();
   EXPECT_EQ(100, size.width());
@@ -4959,7 +4959,7 @@ TEST_F(WebViewTest, PreferredSize) {
       ToKURL(url), test::CoreTestDataPath("specify_size.html"));
   web_view = web_view_helper_.InitializeAndLoad(url);
 
-  web_view->MainFrameWidget()->SetZoomLevel(PageZoomFactorToZoomLevel(1));
+  web_view->MainFrameWidget()->SetZoomLevel(ZoomFactorToZoomLevel(1));
   UpdateAllLifecyclePhases();
   size = web_view->ContentsPreferredMinimumSize();
   EXPECT_EQ(2, size.width());
@@ -5640,7 +5640,7 @@ TEST_F(WebViewTest, ResizeForPrintingViewportUnits) {
 TEST_F(WebViewTest, WidthMediaQueryWithPageZoomAfterPrinting) {
   WebViewImpl* web_view = web_view_helper_.Initialize();
   web_view->MainFrameViewWidget()->Resize(gfx::Size(800, 600));
-  web_view->MainFrameWidget()->SetZoomLevel(PageZoomFactorToZoomLevel(2.0));
+  web_view->MainFrameWidget()->SetZoomLevel(ZoomFactorToZoomLevel(2.0));
 
   WebURL base_url = url_test_helpers::ToKURL("http://example.com/");
   frame_test_helpers::LoadHTMLString(web_view->MainFrameImpl(),
@@ -5675,7 +5675,7 @@ TEST_F(WebViewTest, WidthMediaQueryWithPageZoomAfterPrinting) {
 TEST_F(WebViewTest, ViewportUnitsPrintingWithPageZoom) {
   WebViewImpl* web_view = web_view_helper_.Initialize();
   web_view->MainFrameViewWidget()->Resize(gfx::Size(800, 600));
-  web_view->MainFrameWidget()->SetZoomLevel(PageZoomFactorToZoomLevel(2.0));
+  web_view->MainFrameWidget()->SetZoomLevel(ZoomFactorToZoomLevel(2.0));
 
   WebURL base_url = url_test_helpers::ToKURL("http://example.com/");
   frame_test_helpers::LoadHTMLString(web_view->MainFrameImpl(),
@@ -5786,11 +5786,11 @@ TEST_F(WebViewTest, SetZoomLevelWhilePluginFocused) {
   EXPECT_TRUE(plugin_element->OwnedPlugin());
   // Focus the plugin element, and then change the zoom level on the WebView.
   plugin_element->Focus();
-  EXPECT_FLOAT_EQ(1.0f, main_frame->PageZoomFactor());
+  EXPECT_FLOAT_EQ(1.0f, main_frame->LayoutZoomFactor());
   web_view->MainFrameWidget()->SetZoomLevel(-1.0);
   // Even though the plugin is focused, the entire frame's zoom factor should
   // still be updated.
-  EXPECT_FLOAT_EQ(5.0f / 6.0f, main_frame->PageZoomFactor());
+  EXPECT_FLOAT_EQ(5.0f / 6.0f, main_frame->LayoutZoomFactor());
   web_view_helper_.Reset();  // Remove dependency on locally scoped client.
 }
 

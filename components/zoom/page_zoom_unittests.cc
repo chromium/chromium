@@ -13,8 +13,9 @@ namespace {
 bool ZoomValueExists(const std::vector<double>& zoom_values,
                      double expected_zoom_value) {
   for (double zoom_value : zoom_values) {
-    if (blink::PageZoomValuesEqual(zoom_value, expected_zoom_value))
+    if (blink::ZoomValuesEqual(zoom_value, expected_zoom_value)) {
       return true;
+    }
   }
   return false;
 }
@@ -30,8 +31,8 @@ TEST(PageTestZoom, PresetZoomFactors) {
   EXPECT_GE(factors.size(), 10U);
 
   // Expect the first and last items to match the minimum and maximum values.
-  EXPECT_DOUBLE_EQ(factors.front(), blink::kMinimumPageZoomFactor);
-  EXPECT_DOUBLE_EQ(factors.back(), blink::kMaximumPageZoomFactor);
+  EXPECT_DOUBLE_EQ(factors.front(), blink::kMinimumBrowserZoomFactor);
+  EXPECT_DOUBLE_EQ(factors.back(), blink::kMaximumBrowserZoomFactor);
 
   EXPECT_TRUE(std::is_sorted(factors.begin(), factors.end()));
 
@@ -57,19 +58,19 @@ TEST(PageTestZoom, PresetZoomLevels) {
 TEST(PageTestZoom, InvalidCustomFactor) {
   double too_low = 0.01;
   std::vector<double> factors = zoom::PageZoom::PresetZoomFactors(too_low);
-  EXPECT_FALSE(blink::PageZoomValuesEqual(factors.front(), too_low));
+  EXPECT_FALSE(blink::ZoomValuesEqual(factors.front(), too_low));
 
   double too_high = 99.0;
   factors = zoom::PageZoom::PresetZoomFactors(too_high);
-  EXPECT_FALSE(blink::PageZoomValuesEqual(factors.back(), too_high));
+  EXPECT_FALSE(blink::ZoomValuesEqual(factors.back(), too_high));
 }
 
 TEST(PageTestZoom, InvalidCustomLevel) {
   double too_low = -99.0;
   std::vector<double> levels = zoom::PageZoom::PresetZoomLevels(too_low);
-  EXPECT_FALSE(blink::PageZoomValuesEqual(levels.front(), too_low));
+  EXPECT_FALSE(blink::ZoomValuesEqual(levels.front(), too_low));
 
   double too_high = 99.0;
   levels = zoom::PageZoom::PresetZoomLevels(too_high);
-  EXPECT_FALSE(blink::PageZoomValuesEqual(levels.back(), too_high));
+  EXPECT_FALSE(blink::ZoomValuesEqual(levels.back(), too_high));
 }

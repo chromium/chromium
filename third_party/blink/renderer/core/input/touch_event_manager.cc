@@ -205,7 +205,7 @@ Touch* TouchEventManager::CreateDomTouch(
 
   WebPointerEvent transformed_event =
       point_attr->event_.WebPointerEventInRootFrame();
-  float scale_factor = 1.0f / target_frame->PageZoomFactor();
+  float scale_factor = 1.0f / target_frame->LayoutZoomFactor();
 
   gfx::PointF document_point =
       gfx::ScalePoint(target_frame->View()->RootFrameToDocument(

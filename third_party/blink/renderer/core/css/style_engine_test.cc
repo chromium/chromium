@@ -6611,8 +6611,7 @@ TEST_F(StyleEngineTest, BorderWidthsAreRecalculatedWhenZoomChanges) {
   WebFrameWidget* mainFrameWidget = web_view_impl->MainFrameWidget();
 
   const auto setZoom{[&](const float zoomFactor) {
-    mainFrameWidget->SetZoomLevelForTesting(
-        PageZoomFactorToZoomLevel(zoomFactor));
+    mainFrameWidget->SetZoomLevelForTesting(ZoomFactorToZoomLevel(zoomFactor));
 
     mainFrameWidget->UpdateAllLifecyclePhases(DocumentUpdateReason::kTest);
   }};

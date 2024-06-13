@@ -141,7 +141,7 @@ class CORE_EXPORT WebPluginContainerImpl final
                                  int index,
                                  bool final_update) override;
   float PageScaleFactor() override;
-  float PageZoomFactor() override;
+  float LayoutZoomFactor() override;
   void SetCcLayer(cc::Layer*) override;
   void RequestFullscreen() override;
   bool IsFullscreenElement() const override;

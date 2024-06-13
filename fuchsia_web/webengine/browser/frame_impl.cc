@@ -798,7 +798,7 @@ void FrameImpl::UpdateRenderFrameZoomLevel(
       content::HostZoomMap::GetForWebContents(web_contents_.get());
   host_zoom_map->SetTemporaryZoomLevel(
       render_frame_host->GetGlobalId(),
-      blink::PageZoomFactorToZoomLevel(page_scale));
+      blink::ZoomFactorToZoomLevel(page_scale));
 }
 
 void FrameImpl::ConnectToAccessibilityBridge() {

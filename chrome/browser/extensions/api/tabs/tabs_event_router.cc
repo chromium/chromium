@@ -290,9 +290,9 @@ void TabsEventRouter::OnZoomChanged(
   api::tabs::OnZoomChange::ZoomChangeInfo zoom_change_info;
   zoom_change_info.tab_id = tab_id;
   zoom_change_info.old_zoom_factor =
-      blink::PageZoomLevelToZoomFactor(data.old_zoom_level);
+      blink::ZoomLevelToZoomFactor(data.old_zoom_level);
   zoom_change_info.new_zoom_factor =
-      blink::PageZoomLevelToZoomFactor(data.new_zoom_level);
+      blink::ZoomLevelToZoomFactor(data.new_zoom_level);
   ZoomModeToZoomSettings(data.zoom_mode, &zoom_change_info.zoom_settings);
 
   // Dispatch the |onZoomChange| event.

@@ -1970,7 +1970,7 @@ TEST_P(IntersectionObserverTest, MinScrollDeltaToUpdateWithPageZoom) {
     return;
   }
   WebView().MainFrameViewWidget()->Resize(gfx::Size(800, 600));
-  GetDocument().GetFrame()->SetPageZoomFactor(2);
+  GetDocument().GetFrame()->SetLayoutZoomFactor(2);
 
   SimRequest main_resource("https://example.com/", "text/html");
   LoadURL("https://example.com/");

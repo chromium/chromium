@@ -1487,7 +1487,7 @@ float InputHandler::ScaleFactor() {
     page_zoom_level = widget_host->GetView()->GetZoomLevel();
   }
 
-  return blink::PageZoomLevelToZoomFactor(page_zoom_level) *
+  return blink::ZoomLevelToZoomFactor(page_zoom_level) *
          web_contents_->GetPrimaryPage().GetPageScaleFactor();
 }
 

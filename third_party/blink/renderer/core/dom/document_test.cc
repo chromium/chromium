@@ -1116,7 +1116,7 @@ TEST_F(DocumentTest, ElementFromPointWithPageZoom) {
   EXPECT_EQ(GetDocument().ElementFromPoint(1, 12), GetDocument().body());
 
   // Zoom the page by 2x,
-  GetDocument().GetFrame()->SetPageZoomFactor(2);
+  GetDocument().GetFrame()->SetLayoutZoomFactor(2);
 
   // A hit test on the content div should hit it.
   EXPECT_EQ(GetDocument().ElementFromPoint(1, 8), content);
@@ -1243,7 +1243,7 @@ TEST_F(DocumentTest, FindInPageUkmInFrame) {
 }
 
 TEST_F(DocumentTest, AtPageMarginWithDeviceScaleFactor) {
-  GetDocument().GetFrame()->SetPageZoomFactor(2);
+  GetDocument().GetFrame()->SetLayoutZoomFactor(2);
   SetBodyInnerHTML("<style>@page { margin: 50px; size: 400px 10in; }</style>");
 
   constexpr gfx::SizeF initial_page_size(800, 600);

@@ -450,7 +450,7 @@ TEST_F(ScoreLineBreakerTest, Zoom) {
   Vector<float> scores = ComputeScores(target);
 
   constexpr float zoom = 2;
-  GetFrame().SetPageZoomFactor(zoom);
+  GetFrame().SetLayoutZoomFactor(zoom);
   UpdateAllLifecyclePhasesForTest();
   const Vector<float> scores2 = ComputeScores(target);
 

@@ -178,8 +178,8 @@ void ValidationMessageOverlayDelegate::CreatePage(const FrameOverlay& overlay) {
 
   SegmentedBuffer data;
   WriteDocument(data);
-  float zoom_factor = anchor_->GetDocument().GetFrame()->PageZoomFactor();
-  frame->SetPageZoomFactor(zoom_factor);
+  float zoom_factor = anchor_->GetDocument().GetFrame()->LayoutZoomFactor();
+  frame->SetLayoutZoomFactor(zoom_factor);
 
   // ForceSynchronousDocumentInstall can cause another call to
   // ValidationMessageClientImpl::ShowValidationMessage, which will hide this
@@ -271,7 +271,7 @@ void ValidationMessageOverlayDelegate::AdjustBubblePosition(
     const gfx::Rect& view_rect) {
   if (IsHiding())
     return;
-  float zoom_factor = To<LocalFrame>(page_->MainFrame())->PageZoomFactor();
+  float zoom_factor = To<LocalFrame>(page_->MainFrame())->LayoutZoomFactor();
   gfx::Rect anchor_rect = anchor_->VisibleBoundsInLocalRoot();
 
   Page* anchor_page = anchor_->GetDocument().GetPage();

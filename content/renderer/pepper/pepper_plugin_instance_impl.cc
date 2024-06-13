@@ -1191,7 +1191,7 @@ void PepperPluginInstanceImpl::ViewChanged(
   // TODO(chrishtr): remove device_scale
   view_data_.device_scale = 1;
   view_data_.css_scale =
-      container_->PageZoomFactor() * container_->PageScaleFactor();
+      container_->LayoutZoomFactor() * container_->PageScaleFactor();
   WebWidget* widget = render_frame()->GetLocalRootWebFrameWidget();
 
   viewport_to_dip_scale_ =

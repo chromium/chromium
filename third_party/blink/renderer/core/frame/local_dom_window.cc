@@ -1588,7 +1588,7 @@ int LocalDOMWindow::innerHeight() const {
     return 0;
 
   return AdjustForAbsoluteZoom::AdjustInt(GetViewportSize().height(),
-                                          GetFrame()->PageZoomFactor());
+                                          GetFrame()->LayoutZoomFactor());
 }
 
 int LocalDOMWindow::innerWidth() const {
@@ -1596,7 +1596,7 @@ int LocalDOMWindow::innerWidth() const {
     return 0;
 
   return AdjustForAbsoluteZoom::AdjustInt(GetViewportSize().width(),
-                                          GetFrame()->PageZoomFactor());
+                                          GetFrame()->LayoutZoomFactor());
 }
 
 int LocalDOMWindow::screenX() const {
@@ -1653,7 +1653,7 @@ double LocalDOMWindow::scrollX() const {
   // crbug.com/505516.
   double viewport_x = view->LayoutViewport()->GetWebExposedScrollOffset().x();
   return AdjustForAbsoluteZoom::AdjustScroll(viewport_x,
-                                             GetFrame()->PageZoomFactor());
+                                             GetFrame()->LayoutZoomFactor());
 }
 
 double LocalDOMWindow::scrollY() const {
@@ -1674,7 +1674,7 @@ double LocalDOMWindow::scrollY() const {
   // crbug.com/505516.
   double viewport_y = view->LayoutViewport()->GetWebExposedScrollOffset().y();
   return AdjustForAbsoluteZoom::AdjustScroll(viewport_y,
-                                             GetFrame()->PageZoomFactor());
+                                             GetFrame()->LayoutZoomFactor());
 }
 
 DOMVisualViewport* LocalDOMWindow::visualViewport() {
@@ -1782,8 +1782,8 @@ void LocalDOMWindow::scrollBy(const ScrollToOptions* scroll_to_options) const {
 
   PaintLayerScrollableArea* viewport = view->LayoutViewport();
   gfx::PointF current_position = viewport->ScrollPosition();
-  gfx::Vector2dF scaled_delta(x * GetFrame()->PageZoomFactor(),
-                              y * GetFrame()->PageZoomFactor());
+  gfx::Vector2dF scaled_delta(x * GetFrame()->LayoutZoomFactor(),
+                              y * GetFrame()->LayoutZoomFactor());
   gfx::PointF new_scaled_position = current_position + scaled_delta;
 
   std::unique_ptr<cc::SnapSelectionStrategy> strategy =
@@ -1844,13 +1844,13 @@ void LocalDOMWindow::scrollTo(const ScrollToOptions* scroll_to_options) const {
   if (scroll_to_options->hasLeft()) {
     scaled_x = ScrollableArea::NormalizeNonFiniteScroll(
                    base::saturated_cast<float>(scroll_to_options->left())) *
-               GetFrame()->PageZoomFactor();
+               GetFrame()->LayoutZoomFactor();
   }
 
   if (scroll_to_options->hasTop()) {
     scaled_y = ScrollableArea::NormalizeNonFiniteScroll(
                    base::saturated_cast<float>(scroll_to_options->top())) *
-               GetFrame()->PageZoomFactor();
+               GetFrame()->LayoutZoomFactor();
   }
 
   gfx::PointF new_scaled_position =

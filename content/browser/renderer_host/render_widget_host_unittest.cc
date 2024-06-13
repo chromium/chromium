@@ -926,7 +926,7 @@ TEST_F(RenderWidgetHostTest, SynchronizeVisualProperties) {
   ClearVisualProperties();
 
   // The zoom has changed so host should send out a sync message.
-  double new_zoom_level = blink::PageZoomFactorToZoomLevel(0.25);
+  double new_zoom_level = blink::ZoomFactorToZoomLevel(0.25);
   delegate_->SetZoomLevel(new_zoom_level);
   EXPECT_TRUE(host_->SynchronizeVisualProperties());
   EXPECT_FALSE(host_->visual_properties_ack_pending_);

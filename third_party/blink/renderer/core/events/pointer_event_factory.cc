@@ -116,7 +116,7 @@ void UpdateCommonPointerEventInit(const WebPointerEvent& web_pointer_event,
       web_pointer_event.GetType() != WebInputEvent::Type::kPointerUp) {
     float scale_factor = 1.0f;
     if (dom_window && dom_window->GetFrame()) {
-      scale_factor = 1.0f / dom_window->GetFrame()->PageZoomFactor();
+      scale_factor = 1.0f / dom_window->GetFrame()->LayoutZoomFactor();
     }
 
     gfx::SizeF point_shape =

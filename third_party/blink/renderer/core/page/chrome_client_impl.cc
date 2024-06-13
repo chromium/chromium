@@ -1432,7 +1432,7 @@ void ChromeClientImpl::DocumentDetached(Document& document) {
 
 double ChromeClientImpl::UserZoomFactor(LocalFrame* frame) const {
   DCHECK(web_view_);
-  return PageZoomLevelToZoomFactor(
+  return ZoomLevelToZoomFactor(
       WebLocalFrameImpl::FromFrame(frame->LocalFrameRoot())
           ->FrameWidgetImpl()
           ->GetZoomLevel());

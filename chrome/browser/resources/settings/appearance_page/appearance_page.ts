@@ -461,7 +461,7 @@ export class SettingsAppearancePageElement extends
     chrome.settingsPrivate.setDefaultZoom(parseFloat(this.$.zoomLevel.value));
   }
 
-  /** @see blink::PageZoomValuesEqual(). */
+  /** @see blink::ZoomValuesEqual(). */
   private zoomValuesEqual_(zoom1: number, zoom2: number): boolean {
     return Math.abs(zoom1 - zoom2) <= 0.001;
   }

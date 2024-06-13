@@ -2404,7 +2404,7 @@ void TestRunnerBindings::SetPageZoomFactor(double zoom_factor) {
   // for the operation to complete, if it can tell which number to use in
   // min-resolution.
   frame_->GetLocalRootWebFrameWidget()->SetZoomLevelForTesting(
-      blink::PageZoomFactorToZoomLevel(zoom_factor));
+      blink::ZoomFactorToZoomLevel(zoom_factor));
 }
 
 std::string TestRunnerBindings::TooltipText() {

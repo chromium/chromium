@@ -766,7 +766,7 @@ TEST_P(FrameFetchContextHintsTest, MonitorDPRHints) {
   document->GetFrame()->GetClientHintsPreferences().UpdateFrom(preferences);
   ExpectHeader("https://www.example.com/1.gif", "DPR", true, "1");
   ExpectHeader("https://www.example.com/1.gif", "Sec-CH-DPR", true, "1");
-  document->GetFrame()->SetPageZoomFactor(2.5);
+  document->GetFrame()->SetLayoutZoomFactor(2.5);
   ExpectHeader("https://www.example.com/1.gif", "DPR", true, "2.5");
   ExpectHeader("https://www.example.com/1.gif", "Sec-CH-DPR", true, "2.5");
   ExpectHeader("https://www.example.com/1.gif", "Width", false, "");
@@ -779,7 +779,7 @@ TEST_P(FrameFetchContextHintsTest, MonitorDPRHints) {
 TEST_P(FrameFetchContextHintsTest, MonitorDPRHintsInsecureTransport) {
   ExpectHeader("http://www.example.com/1.gif", "DPR", false, "");
   ExpectHeader("http://www.example.com/1.gif", "Sec-CH-DPR", false, "");
-  document->GetFrame()->SetPageZoomFactor(2.5);
+  document->GetFrame()->SetLayoutZoomFactor(2.5);
   ExpectHeader("http://www.example.com/1.gif", "DPR", false, "  ");
   ExpectHeader("http://www.example.com/1.gif", "Sec-CH-DPR", false, "  ");
   ExpectHeader("http://www.example.com/1.gif", "Width", false, "");
@@ -805,7 +805,7 @@ TEST_P(FrameFetchContextHintsTest, MonitorResourceWidthHints) {
   ExpectHeader("https://www.example.com/1.gif", "DPR", false, "");
   ExpectHeader("https://www.example.com/1.gif", "Sec-CH-DPR", false, "");
 
-  document->GetFrame()->SetPageZoomFactor(2.5);
+  document->GetFrame()->SetLayoutZoomFactor(2.5);
   ExpectHeader("https://www.example.com/1.gif", "Width", true, "1250", 500);
   ExpectHeader("https://www.example.com/1.gif", "Sec-CH-Width", true, "1250",
                500);

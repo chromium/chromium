@@ -197,7 +197,7 @@ void SystemWebDialogDelegate::OnDialogShown(content::WebUI* webui) {
   auto* zoom_map = content::HostZoomMap::GetForWebContents(web_contents);
   // Temporary means the lifetime of the WebContents.
   zoom_map->SetTemporaryZoomLevel(rfh->GetGlobalId(),
-                                  blink::PageZoomFactorToZoomLevel(1.0));
+                                  blink::ZoomFactorToZoomLevel(1.0));
 }
 
 void SystemWebDialogDelegate::ShowSystemDialogForBrowserContext(

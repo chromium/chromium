@@ -1578,12 +1578,12 @@ protocol::Response InspectorPageAgent::getLayoutMetrics(
                              .setClientHeight(visible_contents.height())
                              .build();
 
-  // PageZoomFactor takes CSS pixels to device/physical pixels. It includes
+  // LayoutZoomFactor takes CSS pixels to device/physical pixels. It includes
   // both browser ctrl+/- zoom as well as the device scale factor for screen
   // density. Note: we don't account for pinch-zoom, even though it scales a
   // CSS pixel, since "device pixels" coming from Blink are also unscaled by
   // pinch-zoom.
-  float css_to_physical = main_frame->PageZoomFactor();
+  float css_to_physical = main_frame->LayoutZoomFactor();
   float physical_to_css = 1.f / css_to_physical;
 
   // `visible_contents` is in physical pixels. Normlisation is needed to

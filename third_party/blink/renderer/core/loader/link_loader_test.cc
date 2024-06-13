@@ -441,7 +441,7 @@ TEST_P(LinkLoaderPreloadImageSrcsetTest, Preload) {
   const auto& test_case = GetParam();
   dummy_page_holder_->GetDocument().SetBaseURLOverride(
       KURL("http://example.test/"));
-  dummy_page_holder_->GetDocument().GetFrame()->SetPageZoomFactor(
+  dummy_page_holder_->GetDocument().GetFrame()->SetLayoutZoomFactor(
       test_case.scale_factor);
   LinkLoadParameters params(
       LinkRelAttribute("preload"), kCrossOriginAttributeNotSet, "image/gif",

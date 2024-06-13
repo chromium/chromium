@@ -28,16 +28,17 @@ enum PageZoomValueType {
 std::vector<double> PresetZoomValues(PageZoomValueType value_type,
                                      double custom_value) {
   // Generate a vector of zoom values from an array of known preset
-  // factors. The values in content::kPresetZoomFactors will already be in
-  // sorted order.
+  // factors. The values in content::kPresetBrowserZoomFactors will already be
+  // in sorted order.
   std::vector<double> zoom_values;
-  zoom_values.reserve(blink::kPresetZoomFactors.size());
+  zoom_values.reserve(blink::kPresetBrowserZoomFactors.size());
   bool found_custom = false;
-  for (double zoom_value : blink::kPresetZoomFactors) {
+  for (double zoom_value : blink::kPresetBrowserZoomFactors) {
     if (value_type == PAGE_ZOOM_VALUE_TYPE_LEVEL)
-      zoom_value = blink::PageZoomFactorToZoomLevel(zoom_value);
-    if (blink::PageZoomValuesEqual(zoom_value, custom_value))
+      zoom_value = blink::ZoomFactorToZoomLevel(zoom_value);
+    if (blink::ZoomValuesEqual(zoom_value, custom_value)) {
       found_custom = true;
+    }
     zoom_values.push_back(zoom_value);
   }
   // If the preset array did not contain the custom value, insert the value
@@ -96,7 +97,7 @@ void PageZoom::Zoom(content::WebContents* web_contents,
     // If the next level is within epsilon of the current, keep going until
     // we're taking a meaningful step.
     while (next_lower != zoom_levels.rend() &&
-           blink::PageZoomValuesEqual(*next_lower, current_zoom_level)) {
+           blink::ZoomValuesEqual(*next_lower, current_zoom_level)) {
       ++next_lower;
     }
     if (next_lower == zoom_levels.rend()) {
@@ -113,7 +114,7 @@ void PageZoom::Zoom(content::WebContents* web_contents,
     // If the next level is within epsilon of the current, keep going until
     // we're taking a meaningful step.
     while (next_higher != zoom_levels.end() &&
-           blink::PageZoomValuesEqual(*next_higher, current_zoom_level)) {
+           blink::ZoomValuesEqual(*next_higher, current_zoom_level)) {
       ++next_higher;
     }
     if (next_higher == zoom_levels.end()) {

@@ -10,20 +10,25 @@
 
 namespace blink {
 
-// Default user-selectable zoom factors.
-BLINK_COMMON_EXPORT extern const base::span<const double> kPresetZoomFactors;
+// Note on terminology: "zoom level" is a logarithmic scale with a hard-coded
+// log base (see kTextSizeMultiplierRatio). "zoom factor" is a straight
+// multiplier which is used for rendering.
 
-// The minimum and maximum page zoom factors that are allowed.
-BLINK_COMMON_EXPORT extern const double kMinimumPageZoomFactor;
-BLINK_COMMON_EXPORT extern const double kMaximumPageZoomFactor;
+// Default user-selectable browser zoom factors.
+BLINK_COMMON_EXPORT extern const base::span<const double>
+    kPresetBrowserZoomFactors;
 
-// Convert between page zoom factors and levels.
-BLINK_COMMON_EXPORT double PageZoomLevelToZoomFactor(double zoom_level);
-BLINK_COMMON_EXPORT double PageZoomFactorToZoomLevel(double factor);
+// The minimum and maximum browser zoom factors that are allowed.
+BLINK_COMMON_EXPORT extern const double kMinimumBrowserZoomFactor;
+BLINK_COMMON_EXPORT extern const double kMaximumBrowserZoomFactor;
+
+// Convert between zoom factors and levels.
+BLINK_COMMON_EXPORT double ZoomLevelToZoomFactor(double zoom_level);
+BLINK_COMMON_EXPORT double ZoomFactorToZoomLevel(double zoom_factor);
 
 // Use this to compare page zoom factors and levels. It accounts for precision
 // loss due to conversions back and forth.
-BLINK_COMMON_EXPORT bool PageZoomValuesEqual(double value_a, double value_b);
+BLINK_COMMON_EXPORT bool ZoomValuesEqual(double value_a, double value_b);
 
 }  // namespace blink
 

@@ -1685,7 +1685,7 @@ TEST_P(PaintLayerTest, ReferenceClipPathWithPageZoom) {
   EXPECT_EQ(body, GetDocument().ElementFromPoint(60, 151));
 
   // Zoom the page by 2x,
-  GetDocument().GetFrame()->SetPageZoomFactor(2);
+  GetDocument().GetFrame()->SetLayoutZoomFactor(2);
 
   // A hit test on the content div within the clip should hit it.
   EXPECT_EQ(content, GetDocument().ElementFromPoint(125, 75));
