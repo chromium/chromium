@@ -93,7 +93,7 @@ TEST_F(IOSTabGroupSyncDelegateTest, CreateTabGroupSameBrowserStateForeground) {
   std::vector<SavedTabGroupTab> tabs;
   SavedTabGroup saved_group(u"my group", TabGroupColorId::kBlue, tabs,
                             std::make_optional(1));
-  delegate_->CreateNewTabGroup(saved_group);
+  delegate_->CreateLocalTabGroup(saved_group);
 
   // TODO(crbug.com/329631494): Check that the web state list contains the
   // browser.
@@ -109,7 +109,7 @@ TEST_F(IOSTabGroupSyncDelegateTest, CreateTabGroupOtherBrowserStateForeground) {
   std::vector<SavedTabGroupTab> tabs;
   SavedTabGroup saved_group(u"my group", TabGroupColorId::kBlue, tabs,
                             std::make_optional(1));
-  delegate_->CreateNewTabGroup(saved_group);
+  delegate_->CreateLocalTabGroup(saved_group);
 
   // TODO(crbug.com/329631494): Check that the web state list contains the
   // browser.
@@ -127,7 +127,7 @@ TEST_F(IOSTabGroupSyncDelegateTest, CreateTabGroupBackgroundScene) {
   std::vector<SavedTabGroupTab> tabs;
   SavedTabGroup saved_group(u"my group", TabGroupColorId::kBlue, tabs,
                             std::make_optional(1));
-  delegate_->CreateNewTabGroup(saved_group);
+  delegate_->CreateLocalTabGroup(saved_group);
 
   // TODO(crbug.com/329631494): Check that the web state list contains the
   // browser.
@@ -148,7 +148,7 @@ TEST_F(IOSTabGroupSyncDelegateTest, CloseTabGroup) {
 
   // TODO(crbug.com/329631494): Use the two group IDs to close them.
   LocalTabGroupID local_id_group_0 = TabGroupId::CreateEmpty();
-  delegate_->CloseTabGroup(local_id_group_0);
+  delegate_->CloseLocalTabGroup(local_id_group_0);
 }
 
 TEST_F(IOSTabGroupSyncDelegateTest, UpdateTabGroup) {
@@ -170,7 +170,7 @@ TEST_F(IOSTabGroupSyncDelegateTest, UpdateTabGroup) {
   std::vector<SavedTabGroupTab> tabs;
   SavedTabGroup saved_group(u"my group", TabGroupColorId::kBlue, tabs,
                             std::make_optional(1));
-  delegate_->UpdateTabGroup(saved_group);
+  delegate_->UpdateLocalTabGroup(saved_group);
 }
 
 }  // namespace tab_groups

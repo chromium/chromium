@@ -26,7 +26,13 @@ IOSTabGroupSyncDelegate::IOSTabGroupSyncDelegate(
   CHECK(!browser_state_->IsOffTheRecord());
 }
 
-void IOSTabGroupSyncDelegate::CreateNewTabGroup(
+void IOSTabGroupSyncDelegate::HandleOpenTabGroupRequest(
+    const base::Uuid& sync_tab_group_id,
+    std::unique_ptr<TabGroupActionContext> context) {
+  // TODO(crbug.com/329640329): Send the command to update the UI here.
+}
+
+void IOSTabGroupSyncDelegate::CreateLocalTabGroup(
     const SavedTabGroup& synced_tab_group) {
   BrowserList* browser_list =
       BrowserListFactory::GetForBrowserState(browser_state_);
@@ -60,7 +66,8 @@ void IOSTabGroupSyncDelegate::CreateNewTabGroup(
   }
 }
 
-void IOSTabGroupSyncDelegate::CloseTabGroup(const LocalTabGroupID& local_id) {
+void IOSTabGroupSyncDelegate::CloseLocalTabGroup(
+    const LocalTabGroupID& local_id) {
   BrowserList* browser_list =
       BrowserListFactory::GetForBrowserState(browser_state_);
   for (Browser* browser : browser_list->AllRegularBrowsers()) {
@@ -72,7 +79,7 @@ void IOSTabGroupSyncDelegate::CloseTabGroup(const LocalTabGroupID& local_id) {
   }
 }
 
-void IOSTabGroupSyncDelegate::UpdateTabGroup(
+void IOSTabGroupSyncDelegate::UpdateLocalTabGroup(
     const SavedTabGroup& synced_tab_group) {
   BrowserList* browser_list =
       BrowserListFactory::GetForBrowserState(browser_state_);
