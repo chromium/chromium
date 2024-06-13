@@ -53,14 +53,11 @@ void URLRequestFilter::AddHostnameInterceptor(
   hostname_interceptor_map_[std::pair(scheme, hostname)] =
       std::move(interceptor);
 
-#ifndef NDEBUG
+#if !defined(NDEBUG)
   // Check to see if we're masking URLs in the url_interceptor_map_.
-  for (const auto& pair : url_interceptor_map_) {
-    const GURL& url = GURL(pair.first);
-    HostnameInterceptorMap::const_iterator host_it =
-        hostname_interceptor_map_.find(std::pair(url.scheme(), url.host()));
-    if (host_it != hostname_interceptor_map_.end())
-      NOTREACHED_IN_MIGRATION();
+  for (const auto& [url_spec, _] : url_interceptor_map_) {
+    const GURL url(url_spec);
+    DCHECK(!hostname_interceptor_map_.contains({url.scheme(), url.host()}));
   }
 #endif  // !NDEBUG
 }
