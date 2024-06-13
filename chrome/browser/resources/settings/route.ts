@@ -191,7 +191,7 @@ function createRoutes(): SettingsRoutes {
       r.PAGE_CONTENT = r.SYNC.createChild('/syncSetup/pageContent');
     }
     if (loadTimeData.getBoolean('enableHistorySearchSetting')) {
-      r.HISTORY_SEARCH = r.SYNC.createChild('/syncSetup/historySearch');
+      r.HISTORY_SEARCH = r.SYNC.createChild('/historySearch');
     }
   }
 
