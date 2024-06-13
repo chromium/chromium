@@ -3200,6 +3200,11 @@ void NetworkContext::Prefetch(
       client->BindNewPipeAndPassRemote(), traffic_annotation);
 }
 
+void NetworkContext::GetBoundNetworkForTesting(
+    GetBoundNetworkForTestingCallback callback) {
+  std::move(callback).Run(url_request_context()->bound_network());
+}
+
 bool NetworkContext::IsNetworkForNonceAndUrlAllowed(
     const base::UnguessableToken& nonce,
     const GURL& url) const {

@@ -39,8 +39,11 @@
 #include "media/media_buildflags.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
+#include "net/base/network_handle.h"
 #include "services/device/public/cpp/geolocation/buildflags.h"
 #include "services/metrics/public/cpp/ukm_source_id.h"
+#include "services/network/public/mojom/network_context.mojom.h"
+#include "services/network/public/mojom/url_loader_factory.mojom.h"
 #include "services/video_effects/public/mojom/video_effects_processor.mojom-forward.h"
 #include "third_party/blink/public/mojom/worker/shared_worker_info.mojom.h"
 
@@ -1192,6 +1195,29 @@ class ChromeContentBrowserClient : public content::ContentBrowserClient {
       std::unique_ptr<ScopedKeepAlive> keep_alive_handle);
 #endif
 
+  // If `bound_network` != net::base::kInvalidNetworkHandle, this will make sure
+  // tha the chain of URLLoaderFactories will end up with a network factory that
+  // knows how to target `bound_network` (see
+  // network.mojom.NetworkContextParams::bound_network documentation).
+  // WARNING: This must be the last interceptor in the chain as the proxying
+  // URLLoaderFactory installed by this needs to be the one actually sending
+  // packets over the network (to effectively target `bound_network`).
+  void MaybeProxyNetworkBoundRequest(
+      content::BrowserContext* browser_context,
+      net::handles::NetworkHandle bound_network,
+      network::URLLoaderFactoryBuilder& factory_builder,
+      network::mojom::URLLoaderFactoryOverridePtr* factory_override);
+
+  mojo::Remote<network::mojom::NetworkContext>&
+  get_network_bound_network_context_for_testing() {
+    return network_bound_network_context_;
+  }
+
+  net::handles::NetworkHandle
+  get_target_network_for_network_bound_network_context_for_testing() const {
+    return target_network_for_network_bound_network_context_;
+  }
+
   // True if the Gaia origin should be isolated in a dedicated process.
   static bool DoesGaiaOriginRequireDedicatedProcess();
 
@@ -1240,6 +1266,28 @@ class ChromeContentBrowserClient : public content::ContentBrowserClient {
 #if BUILDFLAG(IS_MAC)
   std::string GetChildProcessSuffix(int child_flags) override;
 #endif  // BUILDFLAG(IS_MAC)
+
+  // NetworkContext used by WebContents targeting a network. Currently, due to
+  // the intended use-case (captive portal login over CCT), we support only a
+  // single additional NetworkContext: this simplifies the lifetime handling by
+  // *a lot*.
+  // Whenever a WebContent targeting a new network issues a load request, the
+  // previous NetworkContext will be destroyed and a new one will be created.
+  // This can lead to "trashing" when multiple WebContents, targeting different
+  // networks, are loading resources simultaneuously, as they will keep
+  // destroying each other's NetworkContext. This is a known limitation of the
+  // current design, but, as mentioned above, this should not happened in the
+  // intended use-case (there is no expectation that a user will connect to
+  // multiple captive portals at once).
+  mojo::Remote<network::mojom::NetworkContext> network_bound_network_context_;
+
+  // Network to which `network_bound_network_context_` is bound to. If ==
+  // net::handles::kInvalidNetworkHandle, `network_bound_network_context_` is
+  // currently in a pending remote state (i.e., no underlying NetworkContext
+  // exists).
+  net::handles::NetworkHandle
+      target_network_for_network_bound_network_context_ =
+          net::handles::kInvalidNetworkHandle;
 
   // Tracks whether the browser was started in "minimal" mode (as opposed to
   // full browser mode), where most subsystems are not initialized.

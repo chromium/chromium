@@ -67,6 +67,7 @@
 #include "net/test/embedded_test_server/embedded_test_server.h"
 #include "net/test/embedded_test_server/http_request.h"
 #include "net/test/embedded_test_server/http_response.h"
+#include "services/network/public/cpp/url_loader_factory_builder.h"
 #include "third_party/blink/public/mojom/webpreferences/web_preferences.mojom.h"
 #include "ui/base/data_transfer_policy/data_transfer_endpoint.h"
 #include "ui/color/color_provider.h"
@@ -1888,6 +1889,95 @@ IN_PROC_BROWSER_TEST_F(AutomaticBeaconCredentialsBrowserTest,
              content::JsReplace("window.open($1, '_blank');", top_nav_url)));
   second_response.WaitForRequest();
   EXPECT_EQ(0U, second_response.http_request()->headers.count("Cookie"));
+}
+
+IN_PROC_BROWSER_TEST_F(TopChromeChromeContentBrowserClientTest,
+                       UnboundRequestDoesNothing) {
+#if BUILDFLAG(IS_ANDROID)
+  network::URLLoaderFactoryBuilder factory_builder;
+  client()->MaybeProxyNetworkBoundRequest(browser()->profile(),
+                                          net::handles::kInvalidNetworkHandle,
+                                          factory_builder, nullptr);
+  EXPECT_EQ(
+      client()
+          ->get_target_network_for_network_bound_network_context_for_testing(),
+      net::handles::kInvalidNetworkHandle);
+  EXPECT_FALSE(
+      client()->get_network_bound_network_context_for_testing().is_bound());
+#else   // !BUILDFLAG(IS_ANDROID)
+  GTEST_SKIP() << "proxying bound requests is supported only on Android";
+#endif  // BUILDFLAG(IS_ANDROID)
+}
+
+IN_PROC_BROWSER_TEST_F(TopChromeChromeContentBrowserClientTest,
+                       BoundRequestCreatesNetworkContext) {
+#if BUILDFLAG(IS_ANDROID)
+  constexpr net::handles::NetworkHandle network = 1;
+  network::URLLoaderFactoryBuilder factory_builder;
+  client()->MaybeProxyNetworkBoundRequest(browser()->profile(), network,
+                                          factory_builder, nullptr);
+  EXPECT_EQ(
+      client()
+          ->get_target_network_for_network_bound_network_context_for_testing(),
+      network);
+  EXPECT_TRUE(
+      client()->get_network_bound_network_context_for_testing().is_bound());
+  EXPECT_TRUE(
+      client()->get_network_bound_network_context_for_testing().is_connected());
+  {
+    base::RunLoop run_loop;
+    client()
+        ->get_network_bound_network_context_for_testing()
+        ->GetBoundNetworkForTesting(base::BindOnce(
+            [](base::OnceClosure callback,
+               net::handles::NetworkHandle bound_network) {
+              EXPECT_EQ(bound_network, network);
+              std::move(callback).Run();
+            },
+            run_loop.QuitClosure()));
+    run_loop.Run();
+  }
+#else   // !BUILDFLAG(IS_ANDROID)
+  GTEST_SKIP() << "proxying bound requests is supported only on Android";
+#endif  // BUILDFLAG(IS_ANDROID)
+}
+
+IN_PROC_BROWSER_TEST_F(TopChromeChromeContentBrowserClientTest,
+                       BoundRequestWithOverrideCreatesNetworkContext) {
+#if BUILDFLAG(IS_ANDROID)
+  constexpr net::handles::NetworkHandle network = 1;
+  network::URLLoaderFactoryBuilder factory_builder;
+  network::mojom::URLLoaderFactoryOverridePtr factory_override;
+  EXPECT_FALSE(factory_override);
+  client()->MaybeProxyNetworkBoundRequest(browser()->profile(), network,
+                                          factory_builder, &factory_override);
+  EXPECT_EQ(
+      client()
+          ->get_target_network_for_network_bound_network_context_for_testing(),
+      network);
+  EXPECT_TRUE(
+      client()->get_network_bound_network_context_for_testing().is_bound());
+  EXPECT_TRUE(
+      client()->get_network_bound_network_context_for_testing().is_connected());
+  EXPECT_TRUE(factory_override->overriding_factory);
+  mojo::Remote<network::mojom::URLLoaderFactory> overridden_factory;
+  overridden_factory.Bind(std::move(factory_override->overriding_factory));
+  {
+    base::RunLoop run_loop;
+    client()
+        ->get_network_bound_network_context_for_testing()
+        ->GetBoundNetworkForTesting(base::BindOnce(
+            [](base::OnceClosure callback,
+               net::handles::NetworkHandle bound_network) {
+              EXPECT_EQ(bound_network, network);
+              std::move(callback).Run();
+            },
+            run_loop.QuitClosure()));
+    run_loop.Run();
+  }
+#else   // !BUILDFLAG(IS_ANDROID)
+  GTEST_SKIP() << "proxying bound requests is supported only on Android";
+#endif  // BUILDFLAG(IS_ANDROID)
 }
 
 }  // namespace

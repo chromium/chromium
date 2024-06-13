@@ -327,6 +327,7 @@
 #include "content/public/browser/legacy_tech_cookie_issue_details.h"
 #include "content/public/browser/navigation_handle.h"
 #include "content/public/browser/navigation_throttle.h"
+#include "content/public/browser/network_service_instance.h"
 #include "content/public/browser/overlay_window.h"
 #include "content/public/browser/permission_controller.h"
 #include "content/public/browser/render_frame_host.h"
@@ -368,6 +369,7 @@
 #include "sandbox/policy/features.h"
 #include "sandbox/policy/mojom/sandbox.mojom.h"
 #include "sandbox/policy/switches.h"
+#include "services/cert_verifier/public/mojom/cert_verifier_service_factory.mojom.h"
 #include "services/metrics/public/cpp/ukm_source_id.h"
 #include "services/network/public/cpp/features.h"
 #include "services/network/public/cpp/is_potentially_trustworthy.h"
@@ -375,7 +377,9 @@
 #include "services/network/public/cpp/resource_request.h"
 #include "services/network/public/cpp/self_deleting_url_loader_factory.h"
 #include "services/network/public/cpp/web_sandbox_flags.h"
+#include "services/network/public/mojom/cert_verifier_service.mojom.h"
 #include "services/network/public/mojom/network_service.mojom.h"
+#include "services/network/public/mojom/url_loader_factory.mojom.h"
 #include "services/network/public/mojom/web_transport.mojom.h"
 #include "services/video_effects/public/mojom/video_effects_processor.mojom-forward.h"
 #include "third_party/blink/public/common/features.h"
@@ -1477,6 +1481,12 @@ bool DetermineIfDevtoolsUserForProcessPerSite() {
   return is_devtools_user;
 }
 
+net::handles::NetworkHandle GetBoundNetworkFromRenderFrameHost(
+    content::RenderFrameHost* frame) {
+  // TODO(crbug.com/340528507): Implement this logic.
+  return net::handles::kInvalidNetworkHandle;
+}
+
 }  // namespace
 
 // static
@@ -1648,6 +1658,72 @@ void ChromeContentBrowserClient::SetApplicationLocale(
 
   content::GetIOThreadTaskRunner({})->PostTask(
       FROM_HERE, base::BindOnce(&SetApplicationLocaleOnIOThread, locale));
+}
+
+void ChromeContentBrowserClient::MaybeProxyNetworkBoundRequest(
+    content::BrowserContext* browser_context,
+    net::handles::NetworkHandle bound_network,
+    network::URLLoaderFactoryBuilder& factory_builder,
+    network::mojom::URLLoaderFactoryOverridePtr* factory_override) {
+  if (bound_network == net::handles::kInvalidNetworkHandle) {
+    return;
+  }
+
+  // We support one network-bound NetworkContext at most. If a new one is
+  // needed, make sure to clean up the previous one first.
+  if (bound_network != target_network_for_network_bound_network_context_) {
+    network_bound_network_context_ =
+        mojo::Remote<network::mojom::NetworkContext>();
+    network::mojom::NetworkContextParamsPtr context_params =
+        network::mojom::NetworkContextParams::New();
+    context_params->bound_network = bound_network;
+    context_params->cert_verifier_params = content::GetCertVerifierParams(
+        cert_verifier::mojom::CertVerifierCreationParams::New());
+    ConfigureNetworkContextParams(
+        browser_context, true, base::FilePath(), context_params.get(),
+        cert_verifier::mojom::CertVerifierCreationParams::New().get());
+    content::CreateNetworkContextInNetworkService(
+        network_bound_network_context_.BindNewPipeAndPassReceiver(),
+        std::move(context_params));
+    target_network_for_network_bound_network_context_ = bound_network;
+  }
+
+  // TLDR; if `factory_override` != nullptr, this is being called for the
+  // creation of a 2-layer URLLoaderFactory (see
+  // network.mojom.URLLoaderFactoryOverride documentation). In this case, we
+  // want to substitute the internal (defined by
+  // factory_override->overriding_factory, with a URLLoaderFactory that targets
+  // `bound_network`. If `factory_override` == nullptr, this is a single-layer
+  // URLLoaderFactory. In this case, we want the last URLLoaderFactory in the
+  // `factory_builder` chain to be a URLLoaderFactory that targets
+  // `bound_network`.
+  mojo::PendingReceiver<network::mojom::URLLoaderFactory> proxied_receiver;
+  mojo::PendingRemote<network::mojom::URLLoaderFactory> bypassed_remote;
+  if (!factory_override) {
+    // Hijack the receiver end returned by network::URLLoaderFactoryBuilder.
+    // This will be then redirected to a network-bound URLLoaderFactory.
+    std::tie(proxied_receiver, bypassed_remote) = factory_builder.Append();
+  } else {
+    // Hijack the remote end stored in network::mojom::URLLoaderFactoryOverride.
+    // This will be then redirected to a network-bound URLLoaderFactory.
+    *factory_override = network::mojom::URLLoaderFactoryOverride::New();
+    proxied_receiver =
+        (*factory_override)
+            ->overriding_factory.InitWithNewPipeAndPassReceiver();
+    (*factory_override)->overridden_factory_receiver =
+        bypassed_remote.InitWithNewPipeAndPassReceiver();
+    (*factory_override)->skip_cors_enabled_scheme_check = true;
+  }
+
+  // Create a network-bound URLLoaderFactory and redirect the receiver end of
+  // the hijacked remote to this.
+  network::mojom::URLLoaderFactoryParamsPtr params =
+      network::mojom::URLLoaderFactoryParams::New();
+  params->process_id = network::mojom::kBrowserProcessId;
+  // Disable CORS wrapping, this is already handled by the caller.
+  params->disable_web_security = true;
+  network_bound_network_context_->CreateURLLoaderFactory(
+      std::move(proxied_receiver), std::move(params));
 }
 
 std::unique_ptr<content::BrowserMainParts>
@@ -6375,6 +6451,13 @@ void ChromeContentBrowserClient::WillCreateURLLoaderFactory(
             ->is_captive_portal_window();
   }
 #endif
+
+  // WARNING: This must be the last interceptor in the chain as the proxying
+  // URLLoaderFactory installed by this needs to be the one actually sending
+  // packets over the network (to effectively target `bound_network`).
+  MaybeProxyNetworkBoundRequest(browser_context,
+                                GetBoundNetworkFromRenderFrameHost(frame),
+                                factory_builder, factory_override);
 }
 
 std::vector<std::unique_ptr<content::URLLoaderRequestInterceptor>>

@@ -1708,4 +1708,10 @@ interface NetworkContext {
            uint32 options,
            URLRequest request,
            MutableNetworkTrafficAnnotationTag traffic_annotation);
+
+  // Returns whether this NetworkContext was bound to a network.
+  // `bound_network` represents a net::handles::NetworkHandle,
+  // `bound_network` == -1 means that this NetworkContext is not bound to any
+  // network. Refer to NetworkContextParams::bound_network for more info.
+  GetBoundNetworkForTesting() => (int64 bound_network);
 };

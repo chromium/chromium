@@ -354,6 +354,8 @@ class TestNetworkContext : public mojom::NetworkContext {
                 const ResourceRequest& request,
                 const net::MutableNetworkTrafficAnnotationTag&
                     traffic_annotation) override {}
+  void GetBoundNetworkForTesting(
+      GetBoundNetworkForTestingCallback callback) override {}
 };
 
 }  // namespace network
