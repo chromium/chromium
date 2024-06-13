@@ -22,6 +22,10 @@ namespace attribution_reporting {
 
 struct FilterPair;
 
+// TODO(apaseltiner): Consider making the value type a `base::flat_set` because
+// there is no semantic benefit to duplicate values, making it wasteful to pass
+// them around. Unfortunately, this is difficult to do because there is no
+// `mojo::ArrayTraits` deserialization for `base::flat_set`.
 using FilterValues = base::flat_map<std::string, std::vector<std::string>>;
 
 class FilterConfig;
@@ -34,6 +38,18 @@ class COMPONENT_EXPORT(ATTRIBUTION_REPORTING) FilterData {
   static constexpr char kSourceTypeFilterKey[] = "source_type";
 
   // Filter data is not allowed to contain a `source_type` filter.
+  //
+  // Note: This method is called with data deserialized from Mojo and proto. In
+  // both cases, the values will already be deduplicated if they were produced
+  // by the corresponding Mojo/proto serialization code, but if the serialized
+  // data is corrupted or deliberately modified, it could contain duplicate
+  // values; those duplicates will be retained by this method and count toward
+  // the value-cardinality limit. This is OK, as the `Matches()` logic still
+  // works correctly even in the presence of duplicates, excessive values, and
+  // unordered values, but we may wish to be stricter here (e.g. by performing
+  // deduplication as part of this method's operation) in order to match the
+  // equivalent behavior in `FromJSON()`. This will be easier to accomplish once
+  // the value type of `FilterValues` is changed to `base::flat_set`.
   static std::optional<FilterData> Create(FilterValues);
 
   static base::expected<FilterData, mojom::SourceRegistrationError> FromJSON(

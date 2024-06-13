@@ -5,6 +5,7 @@
 #ifndef COMPONENTS_ATTRIBUTION_REPORTING_PARSING_UTILS_H_
 #define COMPONENTS_ATTRIBUTION_REPORTING_PARSING_UTILS_H_
 
+#include <stddef.h>
 #include <stdint.h>
 
 #include <concepts>
@@ -13,6 +14,7 @@
 #include <string_view>
 
 #include "base/component_export.h"
+#include "base/containers/flat_set.h"
 #include "base/types/expected.h"
 #include "base/values.h"
 #include "third_party/abseil-cpp/absl/numeric/int128.h"
@@ -96,6 +98,17 @@ COMPONENT_EXPORT(ATTRIBUTION_REPORTING)
 base::expected<uint32_t, ParseError> ParseUint32(const base::Value&);
 
 base::Value Uint32ToJson(uint32_t);
+
+enum class StringSetError {
+  kWrongType,
+  kStringTooLong,
+  kSetTooLong,
+};
+
+base::expected<base::flat_set<std::string>, StringSetError> ExtractStringSet(
+    base::Value::List,
+    size_t max_string_size,
+    size_t max_set_size);
 
 }  // namespace attribution_reporting
 

@@ -33,6 +33,10 @@ namespace {
 using ::attribution_reporting::mojom::SourceRegistrationError;
 using ::attribution_reporting::mojom::SourceType;
 using ::attribution_reporting::mojom::TriggerRegistrationError;
+using ::base::test::ValueIs;
+using ::testing::ElementsAre;
+using ::testing::Pair;
+using ::testing::Property;
 
 FilterValues CreateFilterValues(size_t n) {
   FilterValues filter_values;
@@ -60,7 +64,7 @@ base::Value MakeFilterValuesWithKeyLength(size_t n) {
 base::Value MakeFilterValuesWithValues(size_t n) {
   base::Value::List list;
   for (size_t i = 0; i < n; ++i) {
-    list.Append("x");
+    list.Append(base::NumberToString(i));
   }
 
   base::Value::Dict dict;
@@ -111,17 +115,17 @@ const struct {
           })json"),
         *FilterData::Create({
             {"a", {"b"}},
-            {"c", {"e", "d"}},
+            {"c", {"d", "e"}},
             {"f", {}},
         }),
         FiltersDisjunction({*FilterConfig::Create({
             {"a", {"b"}},
-            {"c", {"e", "d"}},
+            {"c", {"d", "e"}},
             {"f", {}},
         })}),
         FiltersDisjunction({*FilterConfig::Create({
             {"a", {"b"}},
-            {"c", {"e", "d"}},
+            {"c", {"d", "e"}},
             {"f", {}},
         })}),
     },
@@ -272,6 +276,26 @@ TEST(FilterDataTest, FromJSON) {
   {
     base::Value json = MakeFilterValuesWithValues(50);
     EXPECT_TRUE(FilterData::FromJSON(&json).has_value());
+  }
+
+  // Regression test for http://crbug.com/346951921 in which value cardinality
+  // was erroneously checked before deduplication instead of after.
+  {
+    base::Value::List list;
+    for (int i = 4; i >= 0; --i) {
+      for (int j = 0; j < 11; ++j) {
+        list.Append(base::NumberToString(i));
+      }
+    }
+    ASSERT_GT(list.size(), 50u);
+
+    base::Value value(base::Value::Dict().Set("a", std::move(list)));
+
+    EXPECT_THAT(
+        FilterData::FromJSON(&value),
+        ValueIs(Property(
+            &FilterData::filter_values,
+            ElementsAre(Pair("a", ElementsAre("0", "1", "2", "3", "4"))))));
   }
 
   {

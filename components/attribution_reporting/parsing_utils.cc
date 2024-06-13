@@ -4,6 +4,7 @@
 
 #include "components/attribution_reporting/parsing_utils.h"
 
+#include <stddef.h>
 #include <stdint.h>
 
 #include <cmath>
@@ -12,11 +13,15 @@
 #include <string>
 #include <string_view>
 #include <utility>
+#include <vector>
 
 #include "base/check.h"
+#include "base/containers/flat_set.h"
+#include "base/containers/flat_tree.h"
 #include "base/functional/overloaded.h"
 #include "base/not_fatal_until.h"
 #include "base/numerics/safe_conversions.h"
+#include "base/ranges/algorithm.h"
 #include "base/strings/abseil_string_number_conversions.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_util.h"
@@ -242,6 +247,38 @@ base::Value Uint32ToJson(uint32_t value) {
   return base::IsValueInRangeForNumericType<int>(value)
              ? base::Value(static_cast<int>(value))
              : base::Value(static_cast<double>(value));
+}
+
+base::expected<base::flat_set<std::string>, StringSetError> ExtractStringSet(
+    base::Value::List list,
+    const size_t max_string_size,
+    const size_t max_set_size) {
+  for (const base::Value& item : list) {
+    const std::string* string = item.GetIfString();
+    if (!string) {
+      return base::unexpected(StringSetError::kWrongType);
+    }
+
+    if (string->size() > max_string_size) {
+      return base::unexpected(StringSetError::kStringTooLong);
+    }
+  }
+
+  base::ranges::sort(list);
+  list.erase(base::ranges::unique(list), list.end());
+
+  if (list.size() > max_set_size) {
+    return base::unexpected(StringSetError::kSetTooLong);
+  }
+
+  std::vector<std::string> values;
+  values.reserve(list.size());
+
+  for (base::Value& item : list) {
+    values.emplace_back(std::move(item).TakeString());
+  }
+
+  return base::flat_set<std::string>(base::sorted_unique, std::move(values));
 }
 
 }  // namespace attribution_reporting
