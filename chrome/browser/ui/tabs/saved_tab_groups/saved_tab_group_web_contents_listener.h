@@ -37,6 +37,7 @@ class SavedTabGroupWebContentsListener : public content::WebContentsObserver,
   void DidFinishNavigation(
       content::NavigationHandle* navigation_handle) override;
   void TitleWasSet(content::NavigationEntry* entry) override;
+  void DidGetUserInteraction(const blink::WebInputEvent& event) override;
 
   // favicon::FaviconDriverObserver
   void OnFaviconUpdated(
@@ -52,6 +53,14 @@ class SavedTabGroupWebContentsListener : public content::WebContentsObserver,
   content::WebContents* web_contents() const { return web_contents_; }
 
  private:
+  // Creates the tab state for the current tab. Once this completes, this tab
+  // will be restricted on certain activities.
+  void SetTabState();
+
+  // Removes the tab state for the current tab. Once this completes, this tab
+  // will be treated like a normal tab and certain activities will be permitted.
+  void ResetTabState();
+
   const base::Token token_;
   const raw_ptr<content::WebContents> web_contents_;
   // Used to update the favicon for this tab.
