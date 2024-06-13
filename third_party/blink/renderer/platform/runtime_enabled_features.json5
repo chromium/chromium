@@ -3691,7 +3691,7 @@
     {
       name: "SkipAd",
       depends_on: ["MediaSession"],
-      status: "experimental",
+      status: "stable",
     },
     {
       // If enabled, HTMLPreloadScanner will be skipped.
