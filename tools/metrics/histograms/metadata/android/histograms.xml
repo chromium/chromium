@@ -6421,10 +6421,10 @@ chromium-metrics-reviews@google.com.
   <owner>torne@chromium.org</owner>
   <owner>src/android_webview/OWNERS</owner>
   <summary>
-    How long it takes to initialize a WebViewProvider, the first time that one
-    is initialized. WebViewProvider initialization is the second major phase of
-    WebViewChromium construction. When it is not the first time, it is faster
-    and thus recorded separately.
+    How long it takes to initialize a WebViewProvider, when it is initialized
+    the second or later times. WebViewProvider initialization is the second
+    major phase of WebViewChromium construction. When it is not the first time,
+    it is faster and thus recorded separately.
   </summary>
 </histogram>
 
