@@ -8,9 +8,8 @@
 #include <string>
 
 namespace autofill {
-struct FormData;
+class FormData;
 struct PasswordFormFillData;
-struct FormData;
 }  // namespace autofill
 
 namespace password_manager {

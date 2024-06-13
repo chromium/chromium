@@ -12,7 +12,7 @@ import {gCrWeb} from '//ios/web/public/js_messaging/resources/gcrweb.js';
  * It scans the DOM, extracting and storing password forms and returns a JSON
  * string representing an array of objects, each of which represents an Password
  * form with information about a form to be filled and/or submitted and it can
- * be translated to struct FormData for further processing.
+ * be translated to class FormData for further processing.
  */
 
 /**

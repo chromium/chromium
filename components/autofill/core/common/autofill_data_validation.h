@@ -14,7 +14,7 @@ class GURL;
 namespace autofill {
 
 struct SelectOption;
-struct FormData;
+class FormData;
 class FormFieldData;
 struct PasswordFormFillData;
 

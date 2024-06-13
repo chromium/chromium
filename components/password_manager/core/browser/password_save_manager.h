@@ -9,7 +9,7 @@
 #include "components/password_manager/core/browser/password_store/password_store_interface.h"
 
 namespace autofill {
-struct FormData;
+class FormData;
 }  // namespace autofill
 
 namespace signin {

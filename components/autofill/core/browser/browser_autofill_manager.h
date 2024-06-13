@@ -69,7 +69,7 @@ class CreditCard;
 class CreditCardAccessManager;
 class PaymentsSuggestionGenerator;
 
-struct FormData;
+class FormData;
 class FormFieldData;
 struct SuggestionsContext;
 

@@ -13,7 +13,7 @@ import {sendWebKitMessage} from '//ios/web/public/js_messaging/resources/utils.j
  * It scans the DOM, extracting and storing forms and returns a JSON string
  * representing an array of objects, each of which represents an Autofill form
  * with information about a form to be filled and/or submitted and it can be
- * translated to struct FormData
+ * translated to class FormData
  * (chromium/src/components/autofill/core/common/form_data.h) for further
  * processing.
  */

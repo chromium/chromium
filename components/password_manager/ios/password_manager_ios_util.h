@@ -14,7 +14,7 @@ class WebState;
 }
 
 namespace autofill {
-struct FormData;
+class FormData;
 class FieldDataManager;
 }
 

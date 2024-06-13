@@ -19,7 +19,7 @@ NS_ASSUME_NONNULL_BEGIN
 @class PasswordFormHelper;
 
 namespace autofill {
-struct FormData;
+class FormData;
 struct PasswordFormFillData;
 }  // namespace autofill
 

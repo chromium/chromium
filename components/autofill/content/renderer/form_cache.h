@@ -26,7 +26,7 @@ class WebLocalFrame;
 
 namespace autofill {
 
-struct FormData;
+class FormData;
 struct FormDataPredictions;
 
 // Manages the forms in a single RenderFrame.

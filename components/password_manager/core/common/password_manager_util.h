@@ -8,7 +8,7 @@
 #include <string>
 
 namespace autofill {
-struct FormData;
+class FormData;
 }  // namespace autofill
 
 namespace password_manager::util {

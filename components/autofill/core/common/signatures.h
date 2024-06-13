@@ -15,7 +15,7 @@
 
 namespace autofill {
 
-struct FormData;
+class FormData;
 class FormFieldData;
 
 namespace internal {

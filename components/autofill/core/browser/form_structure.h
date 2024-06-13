@@ -52,7 +52,7 @@ using FormAndFieldSignatures =
     std::vector<std::pair<FormSignature, std::vector<FieldSignature>>>;
 using FieldSuggestion = AutofillQueryResponse::FormSuggestion::FieldSuggestion;
 
-struct FormData;
+class FormData;
 struct FormDataPredictions;
 
 class RandomizedEncoder;

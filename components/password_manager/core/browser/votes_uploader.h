@@ -23,7 +23,7 @@
 
 namespace autofill {
 class AutofillField;
-struct FormData;
+class FormData;
 class FormStructure;
 }  // namespace autofill
 

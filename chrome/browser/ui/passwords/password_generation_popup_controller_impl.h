@@ -44,7 +44,7 @@ class PasswordManagerDriver;
 }  // namespace password_manager
 
 namespace autofill {
-struct FormData;
+class FormData;
 namespace password_generation {
 enum class PasswordGenerationType;
 struct PasswordGenerationUIData;

@@ -11,7 +11,7 @@
 #include "url/gurl.h"
 
 namespace autofill {
-struct FormData;
+class FormData;
 }  // namespace autofill
 
 namespace password_manager {

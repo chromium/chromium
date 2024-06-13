@@ -28,7 +28,7 @@
 class PrefService;
 
 namespace autofill {
-struct FormData;
+class FormData;
 }
 
 namespace password_manager {

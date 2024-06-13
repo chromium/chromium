@@ -16,7 +16,7 @@
 
 namespace autofill {
 
-struct FormData;
+class FormData;
 class FormStructure;
 class AutofillDriver;
 

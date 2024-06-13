@@ -13,7 +13,7 @@ class RenderFrameHost;
 
 namespace autofill {
 
-struct FormData;
+class FormData;
 
 namespace bad_message {
 

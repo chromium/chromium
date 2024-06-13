@@ -18,7 +18,7 @@
 class GURL;
 
 namespace autofill {
-struct FormData;
+class FormData;
 struct ParsingResult;
 struct PasswordFormGenerationData;
 struct PasswordFormFillData;

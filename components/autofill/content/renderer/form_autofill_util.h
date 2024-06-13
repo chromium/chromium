@@ -47,7 +47,7 @@ class RenderFrame;
 
 namespace autofill {
 
-struct FormData;
+class FormData;
 class FormFieldData;
 
 class FieldDataManager;

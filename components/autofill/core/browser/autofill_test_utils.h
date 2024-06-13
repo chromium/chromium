@@ -40,7 +40,7 @@ namespace autofill {
 class AutofillExternalDelegate;
 class AutofillProfile;
 class BankAccount;
-struct FormData;
+class FormData;
 class FormFieldData;
 struct FormDataPredictions;
 struct FormFieldDataPredictions;

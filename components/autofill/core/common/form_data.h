@@ -135,7 +135,8 @@ struct FrameTokenWithPredecessor {
 // [3] https://html.spec.whatwg.org/multipage/custom-elements.html#custom-elements-face-example
 // [4] https://html.spec.whatwg.org/multipage/input.html#attr-input-type
 // clang-format on
-struct FormData {
+class FormData {
+ public:
   struct FillData;
   // Returns true if many members of forms |a| and |b| are identical.
   //
@@ -315,6 +316,12 @@ struct FormData {
   //   contains two representations of F; that is, FormData::fields contains two
   //   fields with the same FormFieldData::global_id().
   const std::vector<FormFieldData>& fields() const { return fields_; }
+  void set_fields(std::vector<FormFieldData> new_fields) {
+    fields_ = std::move(new_fields);
+  }
+  [[nodiscard]] std::vector<FormFieldData> ExtractFields() {
+    return std::exchange(fields_, std::vector<FormFieldData>());
+  }
   class MutableFieldsPassKey {
     constexpr MutableFieldsPassKey() = default;
     friend class AutofillAgent;
@@ -324,12 +331,6 @@ struct FormData {
   };
   std::vector<FormFieldData>& mutable_fields(MutableFieldsPassKey pass_key) {
     return fields_;
-  }
-  void set_fields(std::vector<FormFieldData> new_fields) {
-    fields_ = std::move(new_fields);
-  }
-  [[nodiscard]] std::vector<FormFieldData> ExtractFields() {
-    return std::exchange(fields_, std::vector<FormFieldData>());
   }
 
   // Contains unique renderer IDs of text elements which are predicted to be

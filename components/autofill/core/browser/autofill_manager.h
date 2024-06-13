@@ -41,7 +41,7 @@ namespace autofill {
 class AutofillField;
 class AutofillProfile;
 class CreditCard;
-struct FormData;
+class FormData;
 class FormFieldData;
 class FormStructure;
 class LogManager;

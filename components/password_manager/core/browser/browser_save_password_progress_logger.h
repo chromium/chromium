@@ -21,7 +21,7 @@ namespace autofill {
 class FormStructure;
 class LogManager;
 
-struct FormData;
+class FormData;
 }  // namespace autofill
 
 namespace password_manager {

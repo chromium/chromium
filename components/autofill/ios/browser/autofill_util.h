@@ -20,7 +20,7 @@ class WebState;
 
 namespace autofill {
 
-struct FormData;
+class FormData;
 class FormFieldData;
 class FieldDataManager;
 struct FrameTokenWithPredecessor;
