@@ -38,6 +38,7 @@ source_set("interface") {
     "ink_stroke.h",
     "ink_stroke_input.h",
     "ink_stroke_input_batch.h",
+    "ink_stroke_input_batch_view.h",
   ]
 
   configs += [ "//pdf:strict" ]

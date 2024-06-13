@@ -20,6 +20,7 @@
 #include "pdf/ink/ink_in_progress_stroke.h"
 #include "pdf/ink/ink_stroke.h"
 #include "pdf/ink/ink_stroke_input_batch.h"
+#include "pdf/ink/ink_stroke_input_batch_view.h"
 #include "pdf/input_utils.h"
 #include "pdf/pdf_features.h"
 #include "pdf/pdf_ink_brush.h"
@@ -116,7 +117,7 @@ InkModule::GetInkStrokesInputPositionsForTesting() const {
 
   all_strokes_points.reserve(ink_strokes_.size());
   for (const auto& stroke : ink_strokes_) {
-    const InkStrokeInputBatch& input_batch = stroke->GetInputs();
+    const InkStrokeInputBatchView& input_batch = stroke->GetInputs();
     InkModule::InkStrokeInputPoints stroke_points;
     stroke_points.reserve(input_batch.Size());
     for (size_t i = 0; i < input_batch.Size(); ++i) {

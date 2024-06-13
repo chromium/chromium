@@ -8,6 +8,7 @@
 #include "pdf/ink/ink_stroke.h"
 #include "pdf/ink/stub/ink_modeled_shape_view_stub.h"
 #include "pdf/ink/stub/ink_stroke_input_batch_stub.h"
+#include "pdf/ink/stub/ink_stroke_input_batch_view_stub.h"
 
 namespace chrome_pdf {
 
@@ -19,12 +20,13 @@ class InkStrokeStub : public InkStroke {
   ~InkStrokeStub() override;
 
   // InkStroke:
-  const InkStrokeInputBatch& GetInputs() const override;
+  const InkStrokeInputBatchView& GetInputs() const override;
   const InkModeledShapeView& GetShape() const override;
 
  private:
   const InkModeledShapeViewStub shape_;
   const InkStrokeInputBatchStub inputs_;
+  const InkStrokeInputBatchViewStub inputs_view_;
 };
 
 }  // namespace chrome_pdf
