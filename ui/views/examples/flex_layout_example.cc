@@ -2,12 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#if defined(UNSAFE_BUFFERS_BUILD)
-// TODO(https://crbug.com/344639839): fix the unsafe buffer errors in this file,
-// then remove this pragma.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "ui/views/examples/flex_layout_example.h"
 
 #include <memory>
@@ -50,22 +44,24 @@ void FlexLayoutExample::ContentsChanged(Textfield* sender,
 }
 
 void FlexLayoutExample::CreateAdditionalControls() {
-  constexpr const char* kOrientationValues[2] = {"Horizontal", "Vertical"};
+  constexpr auto kOrientationValues =
+      std::to_array<const char* const>({"Horizontal", "Vertical"});
   orientation_ = CreateAndAddCombobox(
-      u"Orientation", kOrientationValues, std::size(kOrientationValues),
+      u"Orientation", kOrientationValues,
       base::BindRepeating(&FlexLayoutExample::OrientationChanged,
                           base::Unretained(this)));
 
-  constexpr const char* kMainAxisValues[3] = {"Start", "Center", "End"};
+  constexpr auto kMainAxisValues =
+      std::to_array<const char* const>({"Start", "Center", "End"});
   main_axis_alignment_ = CreateAndAddCombobox(
-      u"Main axis", kMainAxisValues, std::size(kMainAxisValues),
+      u"Main axis", kMainAxisValues,
       base::BindRepeating(&FlexLayoutExample::MainAxisAlignmentChanged,
                           base::Unretained(this)));
 
-  constexpr const char* kCrossAxisValues[4] = {"Stretch", "Start", "Center",
-                                               "End"};
+  constexpr auto kCrossAxisValues =
+      std::to_array<const char* const>({"Stretch", "Start", "Center", "End"});
   cross_axis_alignment_ = CreateAndAddCombobox(
-      u"Cross axis", kCrossAxisValues, std::size(kCrossAxisValues),
+      u"Cross axis", kCrossAxisValues,
       base::BindRepeating(&FlexLayoutExample::CrossAxisAlignmentChanged,
                           base::Unretained(this)));
 
@@ -116,25 +112,26 @@ FlexSpecification FlexLayoutExample::GetFlexSpecification(int weight) const {
 }
 
 void FlexLayoutExample::OrientationChanged() {
-  constexpr LayoutOrientation kOrientations[2] = {
-      LayoutOrientation::kHorizontal, LayoutOrientation::kVertical};
+  constexpr auto kOrientations = std::to_array<LayoutOrientation>(
+      {LayoutOrientation::kHorizontal, LayoutOrientation::kVertical});
   layout_->SetOrientation(
       kOrientations[orientation_->GetSelectedIndex().value()]);
   RefreshLayoutPanel(false);
 }
 
 void FlexLayoutExample::MainAxisAlignmentChanged() {
-  constexpr LayoutAlignment kMainAxisAlignments[3] = {
-      LayoutAlignment::kStart, LayoutAlignment::kCenter, LayoutAlignment::kEnd};
+  constexpr auto kMainAxisAlignments = std::to_array<LayoutAlignment>(
+      {LayoutAlignment::kStart, LayoutAlignment::kCenter,
+       LayoutAlignment::kEnd});
   layout_->SetMainAxisAlignment(
       kMainAxisAlignments[main_axis_alignment_->GetSelectedIndex().value()]);
   RefreshLayoutPanel(false);
 }
 
 void FlexLayoutExample::CrossAxisAlignmentChanged() {
-  constexpr LayoutAlignment kCrossAxisAlignments[4] = {
-      LayoutAlignment::kStretch, LayoutAlignment::kStart,
-      LayoutAlignment::kCenter, LayoutAlignment::kEnd};
+  constexpr auto kCrossAxisAlignments = std::to_array<LayoutAlignment>(
+      {LayoutAlignment::kStretch, LayoutAlignment::kStart,
+       LayoutAlignment::kCenter, LayoutAlignment::kEnd});
   layout_->SetCrossAxisAlignment(
       kCrossAxisAlignments[cross_axis_alignment_->GetSelectedIndex().value()]);
   RefreshLayoutPanel(false);

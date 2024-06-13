@@ -58,22 +58,24 @@ void BoxLayoutExample::ContentsChanged(Textfield* textfield,
 }
 
 void BoxLayoutExample::CreateAdditionalControls() {
-  constexpr const char* kOrientationValues[2] = {"Horizontal", "Vertical"};
+  constexpr auto kOrientationValues =
+      std::to_array<const char* const>({"Horizontal", "Vertical"});
   orientation_ = CreateAndAddCombobox(
-      u"Orientation", kOrientationValues, std::size(kOrientationValues),
+      u"Orientation", kOrientationValues,
       base::BindRepeating(&LayoutExampleBase::RefreshLayoutPanel,
                           base::Unretained(this), true));
 
-  constexpr const char* kMainAxisValues[3] = {"Start", "Center", "End"};
+  constexpr auto kMainAxisValues =
+      std::to_array<const char* const>({"Start", "Center", "End"});
   main_axis_alignment_ = CreateAndAddCombobox(
-      u"Main axis", kMainAxisValues, std::size(kMainAxisValues),
+      u"Main axis", kMainAxisValues,
       base::BindRepeating(&BoxLayoutExample::MainAxisAlignmentChanged,
                           base::Unretained(this)));
 
-  constexpr const char* kCrossAxisValues[4] = {"Start", "Center", "End",
-                                               "Stretch"};
+  constexpr auto kCrossAxisValues =
+      std::to_array<const char* const>({"Start", "Center", "End", "Stretch"});
   cross_axis_alignment_ = CreateAndAddCombobox(
-      u"Cross axis", kCrossAxisValues, std::size(kCrossAxisValues),
+      u"Cross axis", kCrossAxisValues,
       base::BindRepeating(&BoxLayoutExample::CrossAxisAlignmentChanged,
                           base::Unretained(this)));
   // Select Stretch as the default.

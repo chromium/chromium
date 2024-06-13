@@ -35,7 +35,8 @@ namespace views::examples {
 
 namespace {
 
-const char* kAlignments[] = {"Left", "Center", "Right", "Head"};
+constexpr auto kAlignments =
+    std::to_array<const char* const>({"Left", "Center", "Right", "Head"});
 
 // A Label with a clamped preferred width to demonstrate eliding or wrapping.
 class ExamplePreferredSizeLabel : public Label {
@@ -59,17 +60,15 @@ class ExamplePreferredSizeLabel : public Label {
     return gfx::Size(50,
                      Label::CalculatePreferredSize(available_size).height());
   }
-
-  static const char* kElideBehaviors[];
 };
 
 BEGIN_METADATA(ExamplePreferredSizeLabel)
 END_METADATA
 
 // static
-const char* ExamplePreferredSizeLabel::kElideBehaviors[] = {
-    "No Elide",   "Truncate",    "Elide Head", "Elide Middle",
-    "Elide Tail", "Elide Email", "Fade Tail"};
+constexpr auto kElideBehaviors = std::to_array<const char* const>(
+    {"No Elide", "Truncate", "Elide Head", "Elide Middle", "Elide Tail",
+     "Elide Email", "Fade Tail"});
 
 }  // namespace
 
@@ -198,13 +197,10 @@ void LabelExample::AddCustomLabel(View* container) {
   textfield_->set_controller(this);
   textfield_->SetAccessibleName(content_label);
 
-  alignment_ =
-      AddCombobox(table, u"Alignment: ", kAlignments, std::size(kAlignments),
-                  &LabelExample::AlignmentChanged);
-  elide_behavior_ = AddCombobox(
-      table, u"Elide Behavior: ", ExamplePreferredSizeLabel::kElideBehaviors,
-      std::size(ExamplePreferredSizeLabel::kElideBehaviors),
-      &LabelExample::ElidingChanged);
+  alignment_ = AddCombobox(table, u"Alignment: ", kAlignments,
+                           &LabelExample::AlignmentChanged);
+  elide_behavior_ = AddCombobox(table, u"Elide Behavior: ", kElideBehaviors,
+                                &LabelExample::ElidingChanged);
 
   auto* checkboxes =
       control_container->AddChildView(std::make_unique<BoxLayoutView>());
@@ -237,12 +233,11 @@ void LabelExample::AddCustomLabel(View* container) {
 
 Combobox* LabelExample::AddCombobox(View* parent,
                                     std::u16string name,
-                                    const char** strings,
-                                    int count,
+                                    base::span<const char* const> items,
                                     void (LabelExample::*function)()) {
   parent->AddChildView(std::make_unique<Label>(name));
   auto* combobox = parent->AddChildView(std::make_unique<Combobox>(
-      std::make_unique<ExampleComboboxModel>(strings, count)));
+      std::make_unique<ExampleComboboxModel>(items)));
   combobox->SetSelectedIndex(0);
   combobox->SetAccessibleName(name);
   combobox->SetCallback(base::BindRepeating(function, base::Unretained(this)));

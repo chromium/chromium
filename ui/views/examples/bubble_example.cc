@@ -2,14 +2,9 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#if defined(UNSAFE_BUFFERS_BUILD)
-// TODO(https://crbug.com/344639839): fix the unsafe buffer errors in this file,
-// then remove this pragma.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "ui/views/examples/bubble_example.h"
 
+#include <array>
 #include <memory>
 #include <utility>
 
@@ -31,18 +26,19 @@ namespace views::examples {
 
 namespace {
 
-ExamplesColorIds colors[] = {ExamplesColorIds::kColorBubbleExampleBackground1,
-                             ExamplesColorIds::kColorBubbleExampleBackground2,
-                             ExamplesColorIds::kColorBubbleExampleBackground3,
-                             ExamplesColorIds::kColorBubbleExampleBackground4};
+constexpr auto colors = std::to_array<ExamplesColorIds>(
+    {ExamplesColorIds::kColorBubbleExampleBackground1,
+     ExamplesColorIds::kColorBubbleExampleBackground2,
+     ExamplesColorIds::kColorBubbleExampleBackground3,
+     ExamplesColorIds::kColorBubbleExampleBackground4});
 
-BubbleBorder::Arrow arrows[] = {
-    BubbleBorder::TOP_LEFT,     BubbleBorder::TOP_CENTER,
-    BubbleBorder::TOP_RIGHT,    BubbleBorder::RIGHT_TOP,
-    BubbleBorder::RIGHT_CENTER, BubbleBorder::RIGHT_BOTTOM,
-    BubbleBorder::BOTTOM_RIGHT, BubbleBorder::BOTTOM_CENTER,
-    BubbleBorder::BOTTOM_LEFT,  BubbleBorder::LEFT_BOTTOM,
-    BubbleBorder::LEFT_CENTER,  BubbleBorder::LEFT_TOP};
+constexpr auto arrows = std::to_array<BubbleBorder::Arrow>(
+    {BubbleBorder::TOP_LEFT, BubbleBorder::TOP_CENTER, BubbleBorder::TOP_RIGHT,
+     BubbleBorder::RIGHT_TOP, BubbleBorder::RIGHT_CENTER,
+     BubbleBorder::RIGHT_BOTTOM, BubbleBorder::BOTTOM_RIGHT,
+     BubbleBorder::BOTTOM_CENTER, BubbleBorder::BOTTOM_LEFT,
+     BubbleBorder::LEFT_BOTTOM, BubbleBorder::LEFT_CENTER,
+     BubbleBorder::LEFT_TOP});
 
 std::u16string GetArrowName(BubbleBorder::Arrow arrow) {
   switch (arrow) {

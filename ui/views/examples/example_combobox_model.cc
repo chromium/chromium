@@ -8,18 +8,17 @@
 
 namespace views::examples {
 
-ExampleComboboxModel::ExampleComboboxModel(const char* const* strings,
-                                           size_t count)
-    : strings_(strings), count_(count) {}
+ExampleComboboxModel::ExampleComboboxModel(base::span<const char* const> items)
+    : items_(items) {}
 
 ExampleComboboxModel::~ExampleComboboxModel() = default;
 
 size_t ExampleComboboxModel::GetItemCount() const {
-  return count_;
+  return items_.size();
 }
 
 std::u16string ExampleComboboxModel::GetItemAt(size_t index) const {
-  return base::ASCIIToUTF16(strings_[index]);
+  return base::ASCIIToUTF16(items_[index]);
 }
 
 }  // namespace views::examples

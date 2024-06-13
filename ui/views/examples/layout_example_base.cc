@@ -246,8 +246,7 @@ gfx::Insets LayoutExampleBase::TextfieldsToInsets(
 
 Combobox* LayoutExampleBase::CreateAndAddCombobox(
     const std::u16string& label_text,
-    const char* const* items,
-    int count,
+    base::span<const char* const> items,
     base::RepeatingClosure combobox_callback) {
   auto* const row = control_panel_->AddChildView(std::make_unique<View>());
   row->SetLayoutManager(std::make_unique<BoxLayout>(
@@ -255,7 +254,7 @@ Combobox* LayoutExampleBase::CreateAndAddCombobox(
       kLayoutExampleVerticalSpacing));
   row->AddChildView(std::make_unique<Label>(label_text));
   auto* const combobox = row->AddChildView(std::make_unique<Combobox>(
-      std::make_unique<ExampleComboboxModel>(items, count)));
+      std::make_unique<ExampleComboboxModel>(items)));
   combobox->SetCallback(std::move(combobox_callback));
   combobox->SetAccessibleName(label_text);
   return combobox;

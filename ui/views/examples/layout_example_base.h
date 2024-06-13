@@ -5,6 +5,7 @@
 #ifndef UI_VIEWS_EXAMPLES_LAYOUT_EXAMPLE_BASE_H_
 #define UI_VIEWS_EXAMPLES_LAYOUT_EXAMPLE_BASE_H_
 
+#include "base/containers/span.h"
 #include "base/memory/raw_ptr.h"
 #include "ui/base/metadata/metadata_header_macros.h"
 #include "ui/gfx/geometry/insets.h"
@@ -100,8 +101,7 @@ class VIEWS_EXAMPLES_EXPORT LayoutExampleBase : public ExampleBase,
   // Creates and adds a Combobox with a label with |label_text| to the left.
   // Sets |combobox_callback| as the callback for the created combobox.
   Combobox* CreateAndAddCombobox(const std::u16string& label_text,
-                                 const char* const* items,
-                                 int count,
+                                 base::span<const char* const> items,
                                  base::RepeatingClosure combobox_callback);
 
   // Creates and adds a Textfield with a label with |label_text| to the left.
