@@ -1427,7 +1427,7 @@ void ChromePasswordProtectionService::UpdateSecurityState(
   // If user already click-through interstitial warning, or if there's already
   // a dangerous security state showing, we'll override it.
   if (ui_manager_->IsUrlAllowlistedOrPendingForWebContents(
-          url_with_empty_path, /*is_subresource=*/false,
+          url_with_empty_path,
           web_contents->GetController().GetLastCommittedEntry(), web_contents,
           /*allowlist_only=*/false, &current_threat_type)) {
     DCHECK_NE(SBThreatType::SB_THREAT_TYPE_UNUSED, current_threat_type);
@@ -1702,7 +1702,6 @@ bool ChromePasswordProtectionService::UserClickedThroughSBInterstitial(
   SBThreatType current_threat_type;
   if (!ui_manager_->IsUrlAllowlistedOrPendingForWebContents(
           web_contents->GetLastCommittedURL().GetWithEmptyPath(),
-          /*is_subresource=*/false,
           web_contents->GetController().GetLastCommittedEntry(), web_contents,
           /*allowlist_only=*/true, &current_threat_type)) {
     return false;

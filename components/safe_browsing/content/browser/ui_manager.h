@@ -257,9 +257,6 @@ class SafeBrowsingUIManager : public BaseUIManager {
       SafeBrowsingUIManagerTest,
       DontSendClientSafeBrowsingWarningShownReportNullWebContents);
 
-  static GURL GetMainFrameAllowlistUrlForResourceForTesting(
-      const safe_browsing::SafeBrowsingUIManager::UnsafeResource& resource);
-
   std::unique_ptr<Delegate> delegate_;
 
   std::unique_ptr<SafeBrowsingBlockingPageFactory> blocking_page_factory_;

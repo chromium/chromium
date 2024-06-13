@@ -59,7 +59,6 @@ class MockSafeBrowsingUIManager : public safe_browsing::SafeBrowsingUIManager {
 
   bool IsUrlAllowlistedOrPendingForWebContents(
       const GURL& url,
-      bool is_subresource,
       content::NavigationEntry* entry,
       WebContents* web_contents,
       bool allowlist_only,
@@ -228,7 +227,7 @@ TEST_F(PhishyInteractionTrackerTest, CheckHistogramCountsOnPhishyUserEvents) {
       MakeUnsafeResource(kBadURL, false /* is_subresource */);
   safe_browsing::SBThreatType threat_type;
   EXPECT_TRUE(ui_manager_->IsUrlAllowlistedOrPendingForWebContents(
-      resource.url, resource.is_subresource, /*entry=*/nullptr,
+      resource.url, /*entry=*/nullptr,
       safe_browsing::unsafe_resource_util::GetWebContentsForResource(resource),
       true, &threat_type));
 

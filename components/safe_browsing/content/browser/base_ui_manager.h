@@ -47,9 +47,9 @@ class BaseUIManager : public base::RefCountedThreadSafe<BaseUIManager> {
   // Called on the UI thread to display an interstitial page.
   // |resource| is the unsafe resource that triggered the interstitial.
   // With committed interstitials:
-  // -For main frame navigations this will only cancel the load, the
+  // -For pre-commit navigations this will only cancel the load, the
   // interstitial will then be shown from a navigation throttle.
-  // -For subresources this will cancel the load, then call
+  // -For post-commit this will cancel the load, then call
   // LoadPostCommitErrorPage, which will show the interstitial.
   virtual void DisplayBlockingPage(const UnsafeResource& resource);
 
@@ -107,10 +107,10 @@ class BaseUIManager : public base::RefCountedThreadSafe<BaseUIManager> {
   virtual bool IsAllowlisted(const UnsafeResource& resource);
 
   // Checks if we already displayed or are displaying an interstitial
-  // for the top-level site |url| in a given WebContents. If
-  // |allowlist_only|, it returns true only if the user chose to ignore
-  // the interstitial. Otherwise, it returns true if an interstitial for
-  // |url| is already displaying *or* if the user has seen an
+  // for the top-level site |url| or any URLs in the redirect chain of |entry|
+  // in a given WebContents. If |allowlist_only|, it returns true only if the
+  // user chose to ignore the interstitial. Otherwise, it returns true if an
+  // interstitial for |url| is already displaying *or* if the user has seen an
   // interstitial for |url| before in this WebContents and proceeded
   // through it. Called on the UI thread.
   //
@@ -119,7 +119,6 @@ class BaseUIManager : public base::RefCountedThreadSafe<BaseUIManager> {
   // the URL was first allowlisted.
   virtual bool IsUrlAllowlistedOrPendingForWebContents(
       const GURL& url,
-      bool is_subresource,
       content::NavigationEntry* entry,
       content::WebContents* web_contents,
       bool allowlist_only,
@@ -190,11 +189,6 @@ class BaseUIManager : public base::RefCountedThreadSafe<BaseUIManager> {
 
   // Ensures that |web_contents| has its allowlist set in its userdata
   static void EnsureAllowlistCreated(content::WebContents* web_contents);
-
-  // Returns the URL that should be used in a AllowlistUrlSet for the given
-  // |resource|.
-  static GURL GetMainFrameAllowlistUrlForResource(
-      const security_interstitials::UnsafeResource& resource);
 
   // BaseUIManager does not send SafeBrowsingHitReport. Subclasses should
   // implement the reporting logic themselves if needed.

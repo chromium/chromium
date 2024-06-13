@@ -149,7 +149,6 @@ bool PhishyInteractionTracker::IsSitePhishy() {
   safe_browsing::SBThreatType current_threat_type;
   if (!ui_manager_->IsUrlAllowlistedOrPendingForWebContents(
           current_url_,
-          /*is_subresource=*/false,
           web_contents_->GetController().GetLastCommittedEntry(), web_contents_,
           /*allowlist_only=*/true, &current_threat_type)) {
     return false;

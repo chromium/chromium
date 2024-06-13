@@ -428,12 +428,6 @@ void SafeBrowsingUIManager::OnBlockingPageDone(
   }
 }
 
-// Static.
-GURL SafeBrowsingUIManager::GetMainFrameAllowlistUrlForResourceForTesting(
-    const security_interstitials::UnsafeResource& resource) {
-  return GetMainFrameAllowlistUrlForResource(resource);
-}
-
 security_interstitials::SecurityInterstitialPage*
 SafeBrowsingUIManager::CreateBlockingPage(
     content::WebContents* contents,
