@@ -4,12 +4,12 @@
 
 import 'chrome://os-settings/lazy_load.js';
 
-import {CrLinkRowElement, CrSliderElement, CrToggleElement, DevicePageBrowserProxyImpl, DisplayLayoutElement, displaySettingsProviderMojom, Router, routes, setDisplayApiForTesting, setDisplaySettingsProviderForTesting, SettingsDisplayElement, SettingsDropdownMenuElement, SettingsSliderElement, SettingsToggleButtonElement} from 'chrome://os-settings/os_settings.js';
+import {CrA11yAnnouncerElement, CrLinkRowElement, CrSliderElement, CrToggleElement, DevicePageBrowserProxyImpl, DisplayLayoutElement, displaySettingsProviderMojom, Router, routes, setDisplayApiForTesting, setDisplaySettingsProviderForTesting, SettingsDisplayElement, SettingsDropdownMenuElement, SettingsSliderElement, SettingsToggleButtonElement} from 'chrome://os-settings/os_settings.js';
 import {strictQuery} from 'chrome://resources/ash/common/typescript_utils/strict_query.js';
 import {assert} from 'chrome://resources/js/assert.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
 import {flush, microTask} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
-import {assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
+import {assertEquals, assertFalse, assertStringContains, assertTrue} from 'chrome://webui-test/chai_assert.js';
 import {flushTasks, waitAfterNextRender} from 'chrome://webui-test/polymer_test_util.js';
 import {eventToPromise} from 'chrome://webui-test/test_util.js';
 
@@ -772,7 +772,7 @@ suite('<settings-display>', () => {
             microTask.run(resolve);
           });
         })
-        .then(() => {
+        .then(async () => {
           const displayLayout =
               displayPage.shadowRoot!.querySelector<DisplayLayoutElement>(
                   '#displayLayout');
@@ -798,17 +798,37 @@ suite('<settings-display>', () => {
               new KeyboardEvent('keydown', {key: 'Enter', bubbles: true}));
           assertEquals(offset, layout.offset);
 
+          const displayArea = strictQuery(
+              '#displayArea', displayLayout.shadowRoot, HTMLDivElement);
+          const announcer = strictQuery(
+              'cr-a11y-announcer', displayArea, CrA11yAnnouncerElement);
+          const messagesDiv =
+              strictQuery('#messages', announcer.shadowRoot, HTMLDivElement);
+          assert(!!messagesDiv);
+          const announcementTimeout = 150;
+          await new Promise(
+              resolve => setTimeout(resolve, announcementTimeout));
+          assertStringContains(
+              messagesDiv.textContent!, 'Window moved downwards');
+
           display.dispatchEvent(
               new KeyboardEvent('keydown', {key: 'ArrowDown', bubbles: true}));
           display.dispatchEvent(
               new KeyboardEvent('keydown', {key: 'Enter', bubbles: true}));
           assertEquals(offset * 2, layout.offset);
+          await new Promise(
+              resolve => setTimeout(resolve, announcementTimeout));
+          assertStringContains(
+              messagesDiv.textContent!, 'Window moved downwards');
 
           display.dispatchEvent(
               new KeyboardEvent('keydown', {key: 'ArrowUp', bubbles: true}));
           display.dispatchEvent(
               new KeyboardEvent('keydown', {key: 'Enter', bubbles: true}));
           assertEquals(offset, layout.offset);
+          await new Promise(
+              resolve => setTimeout(resolve, announcementTimeout));
+          assertStringContains(messagesDiv.textContent!, 'Window moved upwards');
         });
   });
 
