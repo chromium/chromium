@@ -659,6 +659,7 @@ public class AccountPickerBottomSheetTest {
 
     @Test
     @MediumTest
+    @DisableFeatures({ChromeFeatureList.REPLACE_SYNC_PROMOS_WITH_SIGN_IN_PROMOS})
     public void testSignInAnotherAccountForWebSignin() {
         var accountConsistencyHistogram =
                 HistogramWatcher.newBuilder()
