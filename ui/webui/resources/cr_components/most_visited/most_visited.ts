@@ -200,9 +200,6 @@ export class MostVisitedElement extends MostVisitedElementBase {
         this.shadowRoot!.querySelectorAll<HTMLElement>('.tile:not([hidden])'));
   }
 
-  // Suppress TypeScript's error TS2376 to intentionally allow calling
-  // performance.mark() before calling super().
-  // @ts-ignore
   constructor() {
     performance.mark('most-visited-creation-start');
     super();

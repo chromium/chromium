@@ -11,6 +11,7 @@ import {clearChildren, createEl, setFormattedClipboardForMl, signalNames} from '
 
 import type {MlBrowserProxy} from './ml_browser_proxy.js';
 import {ResponseFilter} from './ml_browser_proxy.js';
+/* eslint-disable-next-line @typescript-eslint/ban-ts-comment */
 // @ts-ignore:next-line
 import sheet from './ml_table.css' with {type : 'css'};
 import {getTemplate} from './ml_table.html.js';

@@ -477,11 +477,15 @@ export class SettingsClearBrowsingDataDialogElement extends
    * will not be signed out on clearing cookies
    */
   private cookiesCheckboxLabel_(
-      isSignedIn: boolean, shouldShowCookieException: boolean,
-      cookiesSummary: string, clearCookiesSummarySignedIn: string,
+      isSignedIn: boolean,
+      shouldShowCookieException: boolean,
+      cookiesSummary: string,
+      clearCookiesSummarySignedIn: string,
       clearCookiesSummarySyncing: string,
-      // @ts-ignore: error TS6133: unused on some platforms
-      clearCookiesSummarySignedInSupervisedProfile: string): string {
+      // <if expr="is_linux or is_macosx or is_win">
+      clearCookiesSummarySignedInSupervisedProfile: string,
+      // </if>
+      ): string {
     // <if expr="is_linux or is_macosx or is_win">
     if (loadTimeData.getBoolean('isChildAccount')) {
       return clearCookiesSummarySignedInSupervisedProfile;

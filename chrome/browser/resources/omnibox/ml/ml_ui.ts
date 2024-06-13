@@ -13,6 +13,7 @@ import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
 import type {Signals} from '../omnibox.mojom-webui.js';
 
 import {MlBrowserProxy} from './ml_browser_proxy.js';
+/* eslint-disable-next-line @typescript-eslint/ban-ts-comment */
 // @ts-ignore:next-line
 import sheet from './ml_ui.css' with {type : 'css'};
 import {getTemplate} from './ml_ui.html.js';

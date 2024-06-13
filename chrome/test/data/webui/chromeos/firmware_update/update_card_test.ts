@@ -18,8 +18,7 @@ suite('UpdateCardTest', () => {
   let updateCardElement: UpdateCardElement|null = null;
 
   setup(() => {
-    // @ts-ignore
-    document.body.innerHTML = window.trustedTypes.emptyHTML;
+    document.body.innerHTML = window.trustedTypes!.emptyHTML;
   });
 
   teardown(() => {

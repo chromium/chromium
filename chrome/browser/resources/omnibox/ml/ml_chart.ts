@@ -8,6 +8,7 @@ import type {Signals} from '../omnibox.mojom-webui.js';
 import {clamp, signalNames} from '../omnibox_util.js';
 
 import type {MlBrowserProxy} from './ml_browser_proxy.js';
+/* eslint-disable-next-line @typescript-eslint/ban-ts-comment */
 // @ts-ignore:next-line
 import sheet from './ml_chart.css' with {type : 'css'};
 import {getTemplate} from './ml_chart.html.js';

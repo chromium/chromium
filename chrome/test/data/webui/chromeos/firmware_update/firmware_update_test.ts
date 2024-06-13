@@ -31,8 +31,7 @@ suite('FirmwareUpdateAppTest', () => {
   let controller: FakeUpdateController|null = null;
 
   setup(() => {
-    // @ts-ignore
-    document.body.innerHTML = window.trustedTypes.emptyHTML;
+    document.body.innerHTML = window.trustedTypes!.emptyHTML;
     controller = new FakeUpdateController();
     controller.setUpdateIntervalInMs(0);
     setUpdateControllerForTesting(controller);
