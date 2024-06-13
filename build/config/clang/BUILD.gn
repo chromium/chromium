@@ -10,8 +10,71 @@ if (is_ios) {
   import("//build/config/ios/config.gni")  # For `target_environment`
 }
 
+config("raw_ptr_check") {
+  if (clang_use_chrome_plugins) {
+    cflags = []
+
+    # The plugin is built directly into clang, so there's no need to load it
+    # dynamically.
+    cflags += [
+      "-Xclang",
+      "-add-plugin",
+      "-Xclang",
+      "raw-ptr-plugin",
+
+      "-Xclang",
+      "-plugin-arg-raw-ptr-plugin",
+      "-Xclang",
+      "check-raw-ptr-to-stack-allocated",
+
+      "-Xclang",
+      "-plugin-arg-raw-ptr-plugin",
+      "-Xclang",
+      "disable-check-raw-ptr-to-stack-allocated-error",
+
+      # TODO(https://crbug.com/40064499): Remove when clang plugin rolls with
+      # updated RawPtrManualPathsToIgnore.h and we confirm that these
+      # directories are fully rewritten.
+      "-Xclang",
+      "-plugin-arg-raw-ptr-plugin",
+      "-Xclang",
+      "raw-ptr-exclude-path=/renderer/",
+      "-Xclang",
+      "-plugin-arg-raw-ptr-plugin",
+      "-Xclang",
+      "raw-ptr-exclude-path=third_party/blink/public/web/",
+
+      # TODO(crbug.com/40944547): Remove when raw_ptr check has been
+      # enabled for the dawn repo.
+      "-Xclang",
+      "-plugin-arg-raw-ptr-plugin",
+      "-Xclang",
+      "raw-ptr-exclude-path=/third_party/dawn/",
+    ]
+
+    if (enable_check_raw_ptr_fields) {
+      cflags += [
+        "-Xclang",
+        "-plugin-arg-raw-ptr-plugin",
+        "-Xclang",
+        "check-raw-ptr-fields",
+      ]
+    }
+
+    if (enable_check_raw_ref_fields) {
+      cflags += [
+        "-Xclang",
+        "-plugin-arg-raw-ptr-plugin",
+        "-Xclang",
+        "check-raw-ref-fields",
+      ]
+    }
+  }
+}
+
 config("find_bad_constructs") {
   if (clang_use_chrome_plugins) {
+    configs = []
     cflags = []
 
     # The plugin is built directly into clang, so there's no need to load it
@@ -42,35 +105,6 @@ config("find_bad_constructs") {
       "-plugin-arg-find-bad-constructs",
       "-Xclang",
       "check-allow-auto-typedefs-better-nested",
-
-      "-Xclang",
-      "-plugin-arg-find-bad-constructs",
-      "-Xclang",
-      "check-raw-ptr-to-stack-allocated",
-
-      "-Xclang",
-      "-plugin-arg-find-bad-constructs",
-      "-Xclang",
-      "disable-check-raw-ptr-to-stack-allocated-error",
-
-      # TODO(https://crbug.com/40064499): Remove when clang plugin rolls with
-      # updated RawPtrManualPathsToIgnore.h and we confirm that these
-      # directories are fully rewritten.
-      "-Xclang",
-      "-plugin-arg-find-bad-constructs",
-      "-Xclang",
-      "raw-ptr-exclude-path=/renderer/",
-      "-Xclang",
-      "-plugin-arg-find-bad-constructs",
-      "-Xclang",
-      "raw-ptr-exclude-path=third_party/blink/public/web/",
-
-      # TODO(crbug.com/40944547): Remove when raw_ptr check has been
-      # enabled for the dawn repo.
-      "-Xclang",
-      "-plugin-arg-find-bad-constructs",
-      "-Xclang",
-      "raw-ptr-exclude-path=/third_party/dawn/",
     ]
 
     if (is_linux || is_chromeos || is_android || is_fuchsia) {
@@ -82,23 +116,7 @@ config("find_bad_constructs") {
       ]
     }
 
-    if (enable_check_raw_ptr_fields) {
-      cflags += [
-        "-Xclang",
-        "-plugin-arg-find-bad-constructs",
-        "-Xclang",
-        "check-raw-ptr-fields",
-      ]
-    }
-
-    if (enable_check_raw_ref_fields) {
-      cflags += [
-        "-Xclang",
-        "-plugin-arg-find-bad-constructs",
-        "-Xclang",
-        "check-raw-ref-fields",
-      ]
-    }
+    configs += [ ":raw_ptr_check" ]
   }
 }
 
