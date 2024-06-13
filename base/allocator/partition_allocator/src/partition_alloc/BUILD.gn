@@ -201,10 +201,6 @@ pa_buildflag_header("partition_alloc_buildflags") {
     "USE_RAW_PTR_HOOKABLE_IMPL=$use_raw_ptr_hookable_impl",
     "ENABLE_GWP_ASAN_SUPPORT=$_enable_gwp_asan_support",
 
-    # TODO(bartekn): Remove once PDFium switches to
-    # USE_RAW_PTR_ASAN_UNOWNED_IMPL.
-    "USE_ASAN_UNOWNED_PTR=$use_raw_ptr_asan_unowned_impl",
-
     "FORCE_ENABLE_RAW_PTR_EXCLUSION=$force_enable_raw_ptr_exclusion",
 
     "USE_FULL_MTE=$use_full_mte",
