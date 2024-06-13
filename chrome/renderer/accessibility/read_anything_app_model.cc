@@ -1693,7 +1693,7 @@ ui::AXNodeID ReadAnythingAppModel::GetNodeIdForCurrentSegmentIndex(
   std::map<std::pair<int, int>, ui::AXNodeID> index_map =
       current_granularity.index_map;
   for (const auto& [range, id] : index_map) {
-    if (range.first <= index && range.second >= index) {
+    if (range.first <= index && range.second > index) {
       // If the given index is within a range, return the associated node id.
       return id;
     }

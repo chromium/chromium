@@ -2034,25 +2034,34 @@ TEST_F(ReadAnythingAppModelTest,
   // Spot check that indices 0->sentence1.length() map to the first node id.
   EXPECT_EQ(GetNodeIdForCurrentSegmentIndex(0), static_text1.id);
   EXPECT_EQ(GetNodeIdForCurrentSegmentIndex(7), static_text1.id);
-  EXPECT_EQ(GetNodeIdForCurrentSegmentIndex(sentence1.length()),
+  EXPECT_EQ(GetNodeIdForCurrentSegmentIndex(sentence1.length() - 1),
             static_text1.id);
+  EXPECT_EQ(GetNodeIdForCurrentSegmentIndex(sentence1.length()),
+            static_text2.id);
 
   // Spot check that indices in sentence 2 map to the second node id.
   EXPECT_EQ(GetNodeIdForCurrentSegmentIndex(sentence1.length() + 1),
             static_text2.id);
   EXPECT_EQ(GetNodeIdForCurrentSegmentIndex(26), static_text2.id);
+  EXPECT_EQ(GetNodeIdForCurrentSegmentIndex(sentence1.length() +
+                                            sentence2.length() - 1),
+            static_text2.id);
   EXPECT_EQ(
       GetNodeIdForCurrentSegmentIndex(sentence1.length() + sentence2.length()),
-      static_text2.id);
+      static_text3.id);
 
   // Spot check that indices in sentence 3 map to the third node id.
   EXPECT_EQ(GetNodeIdForCurrentSegmentIndex(sentence1.length() +
                                             sentence2.length() + 1),
             static_text3.id);
   EXPECT_EQ(GetNodeIdForCurrentSegmentIndex(40), static_text3.id);
+  EXPECT_EQ(
+      GetNodeIdForCurrentSegmentIndex(sentence1.length() + sentence2.length() +
+                                      sentence3.length() - 1),
+      static_text3.id);
   EXPECT_EQ(GetNodeIdForCurrentSegmentIndex(
                 sentence1.length() + sentence2.length() + sentence3.length()),
-            static_text3.id);
+            ui::kInvalidAXNodeID);
 
   // Out-of-bounds nodes return invalid.
   EXPECT_EQ(
@@ -2099,9 +2108,9 @@ TEST_F(ReadAnythingAppModelTest,
   // Spot check that indices 0->sentence1.length() map to the first node id.
   EXPECT_EQ(GetNodeIdForCurrentSegmentIndex(0), static_text1.id);
   EXPECT_EQ(GetNodeIdForCurrentSegmentIndex(7), static_text1.id);
-  EXPECT_EQ(GetNodeIdForCurrentSegmentIndex(sentence1.length()),
+  EXPECT_EQ(GetNodeIdForCurrentSegmentIndex(sentence1.length() - 1),
             static_text1.id);
-  EXPECT_EQ(GetNodeIdForCurrentSegmentIndex(sentence1.length() + 1),
+  EXPECT_EQ(GetNodeIdForCurrentSegmentIndex(sentence1.length()),
             ui::kInvalidAXNodeID);
 
   // Move to the next granularity.
@@ -2112,16 +2121,16 @@ TEST_F(ReadAnythingAppModelTest,
   // Spot check that indices in sentence 2 map to the second node id.
   EXPECT_EQ(GetNodeIdForCurrentSegmentIndex(0), static_text2.id);
   EXPECT_EQ(GetNodeIdForCurrentSegmentIndex(7), static_text2.id);
-  EXPECT_EQ(GetNodeIdForCurrentSegmentIndex(sentence2.length()),
+  EXPECT_EQ(GetNodeIdForCurrentSegmentIndex(sentence2.length() - 1),
             static_text2.id);
 
   // Spot check that indices in sentence 3 map to the third node id.
   EXPECT_EQ(GetNodeIdForCurrentSegmentIndex(sentence2.length() + 1),
             static_text3.id);
   EXPECT_EQ(GetNodeIdForCurrentSegmentIndex(27), static_text3.id);
-  EXPECT_EQ(
-      GetNodeIdForCurrentSegmentIndex(sentence2.length() + sentence3.length()),
-      static_text3.id);
+  EXPECT_EQ(GetNodeIdForCurrentSegmentIndex(sentence2.length() +
+                                            sentence3.length() - 1),
+            static_text3.id);
 
   // Out-of-bounds nodes return invalid.
   EXPECT_EQ(GetNodeIdForCurrentSegmentIndex(sentence2.length() +
@@ -2170,7 +2179,7 @@ TEST_F(ReadAnythingAppModelTest,
   // Spot check that indices 0->sentence3.length() map to the third node id.
   EXPECT_EQ(GetNodeIdForCurrentSegmentIndex(0), static_text3.id);
   EXPECT_EQ(GetNodeIdForCurrentSegmentIndex(7), static_text3.id);
-  EXPECT_EQ(GetNodeIdForCurrentSegmentIndex(sentence3.length()),
+  EXPECT_EQ(GetNodeIdForCurrentSegmentIndex(sentence3.length() - 1),
             static_text3.id);
 
   // Move backwards.
@@ -2181,16 +2190,16 @@ TEST_F(ReadAnythingAppModelTest,
   // Spot check that indices in sentence 1 map to the first node id.
   EXPECT_EQ(GetNodeIdForCurrentSegmentIndex(0), static_text1.id);
   EXPECT_EQ(GetNodeIdForCurrentSegmentIndex(6), static_text1.id);
-  EXPECT_EQ(GetNodeIdForCurrentSegmentIndex(sentence1.length()),
+  EXPECT_EQ(GetNodeIdForCurrentSegmentIndex(sentence1.length() - 1),
             static_text1.id);
 
   // Spot check that indices in sentence 2 map to the second node id.
   EXPECT_EQ(GetNodeIdForCurrentSegmentIndex(sentence1.length() + 1),
             static_text2.id);
   EXPECT_EQ(GetNodeIdForCurrentSegmentIndex(27), static_text2.id);
-  EXPECT_EQ(
-      GetNodeIdForCurrentSegmentIndex(sentence1.length() + sentence2.length()),
-      static_text2.id);
+  EXPECT_EQ(GetNodeIdForCurrentSegmentIndex(sentence1.length() +
+                                            sentence2.length() - 1),
+            static_text2.id);
 
   // Out-of-bounds nodes return invalid.
   EXPECT_EQ(GetNodeIdForCurrentSegmentIndex(sentence1.length() +
