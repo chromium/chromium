@@ -1,7 +1,6 @@
-# ![Logo](chrome/app/theme/chromium/product_logo_64.png) Chromium
+# ![Logo](chrome/android/java/res_chromium_base/mipmap-hdpi.app_icon.png) Chromium
 
-Chromium is an open-source browser project that aims to build a safer, faster,
-and more stable way for all users to experience the web.
+Custom-build Chromium for android only - #Dev_Browser
 
 The project's web site is https://www.chromium.org.
 
