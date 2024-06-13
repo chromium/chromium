@@ -53,8 +53,7 @@ EnumTraits<viz::mojom::CopyOutputResultFormat, viz::CopyOutputResult::Format>::
     case viz::CopyOutputResult::Format::RGBA:
       return viz::mojom::CopyOutputResultFormat::RGBA;
     case viz::CopyOutputResult::Format::I420_PLANES:
-    case viz::CopyOutputResult::Format::NV12_PLANES:
-    case viz::CopyOutputResult::Format::NV12_MULTIPLANE:
+    case viz::CopyOutputResult::Format::NV12:
       break;  // Not intended for transport across service boundaries.
   }
   NOTREACHED_IN_MIGRATION();
@@ -307,8 +306,7 @@ bool StructTraits<viz::mojom::CopyOutputResultDataView,
       }
 
     case viz::CopyOutputResult::Format::I420_PLANES:
-    case viz::CopyOutputResult::Format::NV12_PLANES:
-    case viz::CopyOutputResult::Format::NV12_MULTIPLANE:
+    case viz::CopyOutputResult::Format::NV12:
       break;  // Not intended for transport across service boundaries.
   }
 

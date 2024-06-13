@@ -104,8 +104,7 @@ media::VideoPixelFormat CopyOutputRequestFormatToVideoPixelFormat(
   switch (format) {
     case CopyOutputRequest::ResultFormat::I420_PLANES:
       return media::PIXEL_FORMAT_I420;
-    case CopyOutputRequest::ResultFormat::NV12_MULTIPLANE:
-    case CopyOutputRequest::ResultFormat::NV12_PLANES:
+    case CopyOutputRequest::ResultFormat::NV12:
       return media::PIXEL_FORMAT_NV12;
     case CopyOutputRequest::ResultFormat::RGBA:
       return media::PIXEL_FORMAT_ARGB;

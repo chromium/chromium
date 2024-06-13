@@ -1331,13 +1331,6 @@ void SkiaOutputSurfaceImplOnGpu::CopyOutputNV12(
     return;
   }
 
-  if (request->result_format() ==
-      CopyOutputRequest::ResultFormat::NV12_PLANES) {
-    // Legacy multi-planar is no longer supported. This can go away when enum
-    // is removed.
-    return;
-  }
-
   // Overview:
   // 1. Try to create surfaces for NV12 planes (we know the needed size in
   // advance). If this fails, send an empty result. For requests that have a
@@ -1557,7 +1550,7 @@ void SkiaOutputSurfaceImplOnGpu::CopyOutputNV12(
                 std::move(mailbox_access_data.representation)));
       }
       request->SendResult(std::make_unique<CopyOutputTextureResult>(
-          CopyOutputResult::Format::NV12_MULTIPLANE, geometry.result_selection,
+          CopyOutputResult::Format::NV12, geometry.result_selection,
           CopyOutputResult::TextureResult(mailbox_access_data.mailbox, {},
                                           color_space),
           std::move(release_callbacks)));
@@ -1785,8 +1778,7 @@ void SkiaOutputSurfaceImplOnGpu::CopyOutput(
       }
       break;
     }
-    case CopyOutputRequest::ResultFormat::NV12_PLANES:
-    case CopyOutputRequest::ResultFormat::NV12_MULTIPLANE: {
+    case CopyOutputRequest::ResultFormat::NV12: {
       CopyOutputNV12(surface, geometry, color_space, src_rect, rescale_mode,
                      is_downscale_or_identity_in_both_dimensions,
                      std::move(request));

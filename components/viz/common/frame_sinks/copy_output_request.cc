@@ -25,10 +25,8 @@ const char* ResultFormatToShortString(
       return "RGBA";
     case viz::CopyOutputRequest::ResultFormat::I420_PLANES:
       return "I420";
-    case viz::CopyOutputRequest::ResultFormat::NV12_PLANES:
+    case viz::CopyOutputRequest::ResultFormat::NV12:
       return "NV12";
-    case viz::CopyOutputRequest::ResultFormat::NV12_MULTIPLANE:
-      return "NV12_MULTIPLANE";
   }
 }
 
@@ -109,13 +107,11 @@ void CopyOutputRequest::SetUniformScaleRatio(int scale_from, int scale_to) {
 void CopyOutputRequest::set_blit_request(BlitRequest blit_request) {
   DCHECK(!blit_request_);
   DCHECK_EQ(result_destination(), ResultDestination::kNativeTextures);
-  DCHECK(result_format() == ResultFormat::NV12_PLANES ||
-         result_format() == ResultFormat::NV12_MULTIPLANE ||
+  DCHECK(result_format() == ResultFormat::NV12 ||
          result_format() == ResultFormat::RGBA);
   DCHECK(has_result_selection());
 
-  if (result_format() == ResultFormat::NV12_PLANES ||
-      result_format() == ResultFormat::NV12_MULTIPLANE) {
+  if (result_format() == ResultFormat::NV12) {
     // Destination region must start at an even offset for NV12 results:
     DCHECK_EQ(blit_request.destination_region_offset().x() % 2, 0);
     DCHECK_EQ(blit_request.destination_region_offset().y() % 2, 0);
@@ -134,10 +130,7 @@ void CopyOutputRequest::set_blit_request(BlitRequest blit_request) {
       case ResultFormat::RGBA:
         DCHECK_EQ(num_nonzeroed_mailboxes, CopyOutputResult::kRGBAMaxPlanes);
         break;
-      case ResultFormat::NV12_PLANES:
-        DCHECK_EQ(num_nonzeroed_mailboxes, CopyOutputResult::kNV12MaxPlanes);
-        break;
-      case ResultFormat::NV12_MULTIPLANE:
+      case ResultFormat::NV12:
         DCHECK_EQ(num_nonzeroed_mailboxes,
                   CopyOutputResult::kNV12MultiplaneMaxPlanes);
         break;

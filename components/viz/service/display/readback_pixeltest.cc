@@ -796,7 +796,7 @@ class ReadbackPixelTestNV12
   }
 
   CopyOutputResult::Format RequestFormat() const {
-    return CopyOutputResult::Format::NV12_MULTIPLANE;
+    return CopyOutputResult::Format::NV12;
   }
 
   void SetUp() override {
@@ -918,7 +918,7 @@ class ReadbackPixelTestNV12WithBlit
   }
 
   CopyOutputResult::Format RequestFormat() const {
-    return CopyOutputResult::Format::NV12_MULTIPLANE;
+    return CopyOutputResult::Format::NV12;
   }
 
   void SetUp() override {

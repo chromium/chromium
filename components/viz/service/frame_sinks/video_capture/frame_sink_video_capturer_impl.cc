@@ -135,7 +135,7 @@ CopyOutputRequest::ResultFormat VideoPixelFormatToCopyOutputRequestFormat(
     case media::PIXEL_FORMAT_I420:
       return CopyOutputRequest::ResultFormat::I420_PLANES;
     case media::PIXEL_FORMAT_NV12:
-      return CopyOutputRequest::ResultFormat::NV12_MULTIPLANE;
+      return CopyOutputRequest::ResultFormat::NV12;
     case media::PIXEL_FORMAT_ARGB:
       return CopyOutputRequest::ResultFormat::RGBA;
     default:
@@ -1220,11 +1220,8 @@ void FrameSinkVideoCapturerImpl::DidCopyFrame(
                                      frame->stride(VideoFrame::Plane::kU),
                                      frame->stride(VideoFrame::Plane::kV));
         break;
-      case CopyOutputResult::Format::NV12_PLANES:
-      case CopyOutputResult::Format::NV12_MULTIPLANE:
-        format = (result->format() == CopyOutputResult::Format::NV12_MULTIPLANE)
-                     ? "NV12_MULTIPLANE"
-                     : "NV12";
+      case CopyOutputResult::Format::NV12:
+        format = "NV12";
         strides = base::StringPrintf("strideY:%d StrideUV:%d",
                                      frame->stride(VideoFrame::Plane::kY),
                                      frame->stride(VideoFrame::Plane::kUV));

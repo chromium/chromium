@@ -45,7 +45,7 @@ CopyOutputResult::CopyOutputResult(Format format,
       rect_(rect),
       needs_lock_for_bitmap_(needs_lock_for_bitmap) {
   DCHECK(format_ == Format::RGBA || format_ == Format::I420_PLANES ||
-         format == Format::NV12_PLANES || format == Format::NV12_MULTIPLANE);
+         format == Format::NV12);
   DCHECK(destination_ == Destination::kSystemMemory ||
          destination_ == Destination::kNativeTextures);
 }
@@ -229,11 +229,8 @@ CopyOutputTextureResult::CopyOutputTextureResult(
   // Otherwise, the first mailbox must be non-zero.
   DCHECK_EQ(rect.IsEmpty(),
             texture_result_.mailbox_holders[0].mailbox.IsZero());
-  if (format == Format::NV12_PLANES) {
-    DCHECK_EQ(rect.IsEmpty(),
-              texture_result_.mailbox_holders[1].mailbox.IsZero());
-  } else if (format == Format::NV12_MULTIPLANE) {
-    // In NV12_MULTIPLANE, a single mailbox stores all the planes.
+  if (format == Format::NV12) {
+    // In NV12, a single mailbox stores all the planes.
     DCHECK(texture_result_.mailbox_holders[1].mailbox.IsZero());
   }
   // If we're constructing empty result, the callbacks must be empty.

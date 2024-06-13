@@ -41,17 +41,11 @@ class VIZ_COMMON_EXPORT CopyOutputResult {
     // DirectRenderer implementation. For now, I420 format can be requested only
     // for system memory.
     I420_PLANES,
-    // NV12 format planes. This is intended to be used internally within the VIZ
+    // An NV12 image. This is intended to be used internally within the VIZ
     // component to support video capture. When requesting this format, results
     // can only be delivered on the same task runner sequence that runs the
     // DirectRenderer implementation.
-    NV12_PLANES,
-    // An NV12 image associated with a single mailbox via
-    // MultiplanarSharedImage. This is intended to be used internally within the
-    // VIZ component to support video capture. When requesting this format,
-    // results can only be delivered on the same task runner sequence that runs
-    // the DirectRenderer implementation.
-    NV12_MULTIPLANE,
+    NV12,
   };
 
   // Specifies how the results are delivered to the issuer of the request.
@@ -199,10 +193,9 @@ class VIZ_COMMON_EXPORT CopyOutputResult {
                               uint8_t* v_out,
                               int v_out_stride) const;
 
-  // Copies the image planes of an NV12_PLANES result to the caller-provided
-  // memory. Returns true if successful, or false if: 1) this result is empty,
-  // or 2) the result format is not NV12_PLANES and does not provide a
-  // conversion implementation.
+  // Copies the image planes of an NV12 result to the caller-provided memory.
+  // Returns true if successful, or false if: 1) this result is empty, or 2) the
+  // result format is not NV12 and does not provide a conversion implementation.
   //
   // |y_out| and |uv_out| point to the start of the memory regions to
   // receive each plane. These memory regions must have the following sizes:
