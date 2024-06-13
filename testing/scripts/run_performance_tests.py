@@ -678,30 +678,51 @@ class CrossbenchTest(object):
   def __init__(self, options, isolated_out_dir):
     self.options = options
     self.isolated_out_dir = isolated_out_dir
-    self._find_desktop_browser(options.passthrough_args)
+    browser_arg = self._get_browser_arg(options.passthrough_args)
+    self._find_desktop_browser(browser_arg)
+    self.driver_path_arg = self._find_chromedriver(browser_arg)
 
-  # TODO: Implement similar method for Android.
-  def _find_desktop_browser(self, args):
+  def _get_browser_arg(self, args):
     browser_args = [arg for arg in args if arg.startswith('--browser=')]
     if len(browser_args) != 1:
       raise ValueError('Expects exactly one --browser=... arg on command line')
-    if '/' in browser_args[0] or '\\' in browser_args[0]:
+    return browser_args[0].split('=', 1)[1]
+
+  # TODO: Implement similar method for Android.
+  def _find_desktop_browser(self, browser_arg):
+    if '/' in browser_arg or '\\' in browser_arg:
       # The --browser arg looks like a path. Use it as-is.
-      self.browser = browser_args[0]
+      self.browser = self.CHROME_BROWSER % browser_arg
       return
     options = browser_options.BrowserFinderOptions()
     parser = options.CreateParser()
     binary_manager.InitDependencyManager(None)
-    parser.parse_args(browser_args)
+    parser.parse_args([self.CHROME_BROWSER % browser_arg])
     possible_browser = browser_finder.FindBrowser(options)
     if not possible_browser:
-      raise ValueError(
-          f'Unable to find Chrome browser of type: {browser_args[0]}')
+      raise ValueError(f'Unable to find Chrome browser of type: {browser_arg}')
     self.browser = self.CHROME_BROWSER % possible_browser._local_executable
+
+  def _find_chromedriver(self, browser_arg):
+    browser_arg = browser_arg.lower()
+    if browser_arg == 'release_x64':
+      path = '../Release_x64'
+    elif browser_arg.startswith('android'):
+      path = 'clang_x64'
+    else:
+      path = '.'
+
+    abspath = pathlib.Path(path).absolute()
+    if ((driver_path := (abspath / 'chromedriver')).exists()
+        or (driver_path := (abspath / 'chromedriver.exe')).exists()):
+      return [f'--driver-path={driver_path}']
+    # Unable to find ChromeDriver, will rely on crossbench to download one.
+    return []
 
   def _generate_command_list(self, benchmark, benchmark_args, working_dir):
     return ([sys.executable] + [self.options.executable] + [benchmark] +
-            [self.OUTDIR % working_dir] + [self.browser] + benchmark_args)
+            [self.OUTDIR % working_dir] + [self.browser] + benchmark_args +
+            self.driver_path_arg)
 
   def execute_benchmark(self, benchmark, display_name, benchmark_args):
     start = time.time()
