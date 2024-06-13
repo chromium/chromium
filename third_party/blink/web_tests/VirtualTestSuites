@@ -3061,7 +3061,7 @@
   {
     "prefix": "css-line-clamp",
     "platforms": ["Linux"],
-    "bases": ["external/wpt/css/css-overflow", "fast/overflow"],
+    "bases": ["external/wpt/css/css-overflow/line-clamp", "fast/overflow"],
     "args": ["--enable-blink-features=CSSLineClamp"],
     "owners": ["abotella@igalia.com"]
   },
