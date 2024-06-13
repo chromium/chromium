@@ -61,10 +61,6 @@ BASE_DECLARE_FEATURE(kCustomWebSignInInterceptForSupervisedUsers);
 BASE_DECLARE_FEATURE(kHideGuestModeForSupervisedUsers);
 #endif
 
-// Runs a shadow no-op safe-sites call alongside kids-api call, to compare
-// latencies.
-BASE_DECLARE_FEATURE(kShadowKidsApiWithSafeSites);
-
 // Updates usages of Profile.isChild() in Profile.java to use the account
 // capability to determine if account is supervised.
 #if BUILDFLAG(IS_ANDROID)
@@ -90,9 +86,6 @@ bool IsLocalWebApprovalsEnabled();
 // Returns whether the experiment to display a kid-friendly content stream on
 // the New Tab page has been enabled.
 bool IsKidFriendlyContentFeedAvailable();
-
-// Returns whether to shadow safe-sites call with kids-api call.
-bool IsShadowKidsApiWithSafeSitesEnabled();
 
 }  // namespace supervised_user
 

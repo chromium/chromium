@@ -88,9 +88,7 @@ KidsChromeManagementURLCheckerClient::KidsChromeManagementURLCheckerClient(
     signin::IdentityManager* identity_manager,
     scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory,
     std::string_view country)
-    : safe_search_client_(url_loader_factory,
-                          kClassifyUrlConfig.traffic_annotation()),
-      country_(country),
+    : country_(country),
       fetch_manager_(base::BindRepeating(&ClassifyURL,
                                          identity_manager,
                                          url_loader_factory,
@@ -108,10 +106,5 @@ void KidsChromeManagementURLCheckerClient::CheckURL(
 
   fetch_manager_.Fetch(request,
                        base::BindOnce(&OnResponse, url, std::move(callback)));
-
-  if (IsShadowKidsApiWithSafeSitesEnabled()) {
-    // Actual client is timing the latency in Enterprise.SafeSites.Latency
-    safe_search_client_.CheckURL(url, base::DoNothing());
-  }
 }
 }  // namespace supervised_user

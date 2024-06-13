@@ -20279,27 +20279,6 @@
             ]
         }
     ],
-    "ShadowKidsApiWithSafeSites": [
-        {
-            "platforms": [
-                "android",
-                "chromeos",
-                "chromeos_lacros",
-                "ios",
-                "linux",
-                "mac",
-                "windows"
-            ],
-            "experiments": [
-                {
-                    "name": "Enabled_20231018",
-                    "enable_features": [
-                        "ShadowKidsApiWithSafeSites"
-                    ]
-                }
-            ]
-        }
-    ],
     "ShareThisTabDialog": [
         {
             "platforms": [
