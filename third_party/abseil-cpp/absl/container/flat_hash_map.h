@@ -36,7 +36,6 @@
 #include <utility>
 
 #include "absl/algorithm/container.h"
-#include "absl/base/attributes.h"
 #include "absl/base/macros.h"
 #include "absl/container/hash_container_defaults.h"
 #include "absl/container/internal/container_memory.h"
@@ -122,10 +121,9 @@ struct FlatHashMapPolicy;
 template <class K, class V, class Hash = DefaultHashContainerHash<K>,
           class Eq = DefaultHashContainerEq<K>,
           class Allocator = std::allocator<std::pair<const K, V>>>
-class ABSL_INTERNAL_ATTRIBUTE_OWNER flat_hash_map
-    : public absl::container_internal::raw_hash_map<
-          absl::container_internal::FlatHashMapPolicy<K, V>, Hash, Eq,
-          Allocator> {
+class flat_hash_map : public absl::container_internal::raw_hash_map<
+                          absl::container_internal::FlatHashMapPolicy<K, V>,
+                          Hash, Eq, Allocator> {
   using Base = typename flat_hash_map::raw_hash_map;
 
  public:

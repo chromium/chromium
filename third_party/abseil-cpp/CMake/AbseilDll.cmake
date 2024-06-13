@@ -133,8 +133,6 @@ set(ABSL_INTERNAL_DLL_FILES
   "debugging/internal/stack_consumption.h"
   "debugging/internal/stacktrace_config.h"
   "debugging/internal/symbolize.h"
-  "debugging/internal/utf8_for_code_point.cc"
-  "debugging/internal/utf8_for_code_point.h"
   "debugging/internal/vdso_support.cc"
   "debugging/internal/vdso_support.h"
   "functional/any_invocable.h"

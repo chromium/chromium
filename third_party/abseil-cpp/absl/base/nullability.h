@@ -150,11 +150,9 @@
 #ifndef ABSL_BASE_NULLABILITY_H_
 #define ABSL_BASE_NULLABILITY_H_
 
-#include "absl/base/config.h"
 #include "absl/base/internal/nullability_impl.h"
 
 namespace absl {
-ABSL_NAMESPACE_BEGIN
 
 // absl::Nonnull
 //
@@ -221,7 +219,6 @@ using Nullable = nullability_internal::NullableImpl<T>;
 template <typename T>
 using NullabilityUnknown = nullability_internal::NullabilityUnknownImpl<T>;
 
-ABSL_NAMESPACE_END
 }  // namespace absl
 
 #endif  // ABSL_BASE_NULLABILITY_H_

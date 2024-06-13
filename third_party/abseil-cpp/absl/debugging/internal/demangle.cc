@@ -14,6 +14,8 @@
 
 // For reference check out:
 // https://itanium-cxx-abi.github.io/cxx-abi/abi.html#mangling
+//
+// Note that we only have partial C++11 support yet.
 
 #include "absl/debugging/internal/demangle.h"
 
@@ -44,15 +46,13 @@ typedef struct {
 
 // List of operators from Itanium C++ ABI.
 static const AbbrevPair kOperatorList[] = {
-    // New has special syntax.
+    // New has special syntax (not currently supported).
     {"nw", "new", 0},
     {"na", "new[]", 0},
 
-    // Special-cased elsewhere to support the optional gs prefix.
+    // Works except that the 'gs' prefix is not supported.
     {"dl", "delete", 1},
     {"da", "delete[]", 1},
-
-    {"aw", "co_await", 1},
 
     {"ps", "+", 1},  // "positive"
     {"ng", "-", 1},  // "negative"
@@ -589,7 +589,6 @@ static bool ParseFloatNumber(State *state);
 static bool ParseSeqId(State *state);
 static bool ParseIdentifier(State *state, size_t length);
 static bool ParseOperatorName(State *state, int *arity);
-static bool ParseConversionOperatorType(State *state);
 static bool ParseSpecialName(State *state);
 static bool ParseCallOffset(State *state);
 static bool ParseNVOffset(State *state);
@@ -599,7 +598,6 @@ static bool ParseCtorDtorName(State *state);
 static bool ParseDecltype(State *state);
 static bool ParseType(State *state);
 static bool ParseCVQualifiers(State *state);
-static bool ParseExtendedQualifier(State *state);
 static bool ParseBuiltinType(State *state);
 static bool ParseVendorExtendedType(State *state);
 static bool ParseFunctionType(State *state);
@@ -620,7 +618,6 @@ static bool ParseUnionSelector(State* state);
 static bool ParseFunctionParam(State* state);
 static bool ParseBracedExpression(State *state);
 static bool ParseExpression(State *state);
-static bool ParseInitializer(State *state);
 static bool ParseExprPrimary(State *state);
 static bool ParseExprCastValueAndTrailingE(State *state);
 static bool ParseQRequiresClauseExpr(State *state);
@@ -824,14 +821,8 @@ static bool ParsePrefix(State *state) {
 //                    ::= <source-name> [<abi-tags>]
 //                    ::= <local-source-name> [<abi-tags>]
 //                    ::= <unnamed-type-name> [<abi-tags>]
-//                    ::= DC <source-name>+ E  # C++17 structured binding
-//                    ::= F <source-name>  # C++20 constrained friend
-//                    ::= F <operator-name>  # C++20 constrained friend
 //
 // <local-source-name> is a GCC extension; see below.
-//
-// For the F notation for constrained friends, see
-// https://github.com/itanium-cxx-abi/cxx-abi/issues/24#issuecomment-1491130332.
 static bool ParseUnqualifiedName(State *state) {
   ComplexityGuard guard(state);
   if (guard.IsTooComplex()) return false;
@@ -840,23 +831,6 @@ static bool ParseUnqualifiedName(State *state) {
       ParseUnnamedTypeName(state)) {
     return ParseAbiTags(state);
   }
-
-  // DC <source-name>+ E
-  ParseState copy = state->parse_state;
-  if (ParseTwoCharToken(state, "DC") && OneOrMore(ParseSourceName, state) &&
-      ParseOneCharToken(state, 'E')) {
-    return true;
-  }
-  state->parse_state = copy;
-
-  // F <source-name>
-  // F <operator-name>
-  if (ParseOneCharToken(state, 'F') && MaybeAppend(state, "friend ") &&
-      (ParseSourceName(state) || ParseOperatorName(state, nullptr))) {
-    return true;
-  }
-  state->parse_state = copy;
-
   return false;
 }
 
@@ -1046,7 +1020,6 @@ static bool ParseIdentifier(State *state, size_t length) {
 
 // <operator-name> ::= nw, and other two letters cases
 //                 ::= cv <type>  # (cast)
-//                 ::= li <source-name>  # C++11 user-defined literal
 //                 ::= v  <digit> <source-name> # vendor extended operator
 static bool ParseOperatorName(State *state, int *arity) {
   ComplexityGuard guard(state);
@@ -1057,18 +1030,11 @@ static bool ParseOperatorName(State *state, int *arity) {
   // First check with "cv" (cast) case.
   ParseState copy = state->parse_state;
   if (ParseTwoCharToken(state, "cv") && MaybeAppend(state, "operator ") &&
-      EnterNestedName(state) && ParseConversionOperatorType(state) &&
+      EnterNestedName(state) && ParseType(state) &&
       LeaveNestedName(state, copy.nest_level)) {
     if (arity != nullptr) {
       *arity = 1;
     }
-    return true;
-  }
-  state->parse_state = copy;
-
-  // Then user-defined literals.
-  if (ParseTwoCharToken(state, "li") && MaybeAppend(state, "operator\"\" ") &&
-      ParseSourceName(state)) {
     return true;
   }
   state->parse_state = copy;
@@ -1106,65 +1072,6 @@ static bool ParseOperatorName(State *state, int *arity) {
   return false;
 }
 
-// <operator-name> ::= cv <type>  # (cast)
-//
-// The name of a conversion operator is the one place where cv-qualifiers, *, &,
-// and other simple type combinators are expected to appear in our stripped-down
-// demangling (elsewhere they appear in function signatures or template
-// arguments, which we omit from the output).  We make reasonable efforts to
-// render simple cases accurately.
-static bool ParseConversionOperatorType(State *state) {
-  ComplexityGuard guard(state);
-  if (guard.IsTooComplex()) return false;
-  ParseState copy = state->parse_state;
-
-  // Scan pointers, const, and other easy mangling prefixes with postfix
-  // demanglings.  Remember the range of input for later rescanning.
-  //
-  // See `ParseType` and the `switch` below for the meaning of each char.
-  const char* begin_simple_prefixes = RemainingInput(state);
-  while (ParseCharClass(state, "OPRCGrVK")) {}
-  const char* end_simple_prefixes = RemainingInput(state);
-
-  // Emit the base type first.
-  if (!ParseType(state)) {
-    state->parse_state = copy;
-    return false;
-  }
-
-  // Then rescan the easy type combinators in reverse order to emit their
-  // demanglings in the expected output order.
-  while (begin_simple_prefixes != end_simple_prefixes) {
-    switch (*--end_simple_prefixes) {
-      case 'P':
-        MaybeAppend(state, "*");
-        break;
-      case 'R':
-        MaybeAppend(state, "&");
-        break;
-      case 'O':
-        MaybeAppend(state, "&&");
-        break;
-      case 'C':
-        MaybeAppend(state, " _Complex");
-        break;
-      case 'G':
-        MaybeAppend(state, " _Imaginary");
-        break;
-      case 'r':
-        MaybeAppend(state, " restrict");
-        break;
-      case 'V':
-        MaybeAppend(state, " volatile");
-        break;
-      case 'K':
-        MaybeAppend(state, " const");
-        break;
-    }
-  }
-  return true;
-}
-
 // <special-name> ::= TV <type>
 //                ::= TT <type>
 //                ::= TI <type>
@@ -1173,15 +1080,12 @@ static bool ParseConversionOperatorType(State *state) {
 //                ::= TH <name>  # thread-local initialization
 //                ::= Tc <call-offset> <call-offset> <(base) encoding>
 //                ::= GV <(object) name>
-//                ::= GR <(object) name> [<seq-id>] _
 //                ::= T <call-offset> <(base) encoding>
-//                ::= GTt <encoding>  # transaction-safe entry point
-//                ::= TA <template-arg>  # nontype template parameter object
 // G++ extensions:
 //                ::= TC <type> <(offset) number> _ <(base) type>
 //                ::= TF <type>
 //                ::= TJ <type>
-//                ::= GR <name>  # without final _, perhaps an earlier form?
+//                ::= GR <name>
 //                ::= GA <encoding>
 //                ::= Th <call-offset> <(base) encoding>
 //                ::= Tv <call-offset> <(base) encoding>
@@ -1191,8 +1095,6 @@ static bool ParseConversionOperatorType(State *state) {
 // thread_local feature.  For these see:
 //
 // https://maskray.me/blog/2021-02-14-all-about-thread-local-storage
-//
-// For TA see https://github.com/itanium-cxx-abi/cxx-abi/issues/63.
 static bool ParseSpecialName(State *state) {
   ComplexityGuard guard(state);
   if (guard.IsTooComplex()) return false;
@@ -1250,30 +1152,12 @@ static bool ParseSpecialName(State *state) {
   }
   state->parse_state = copy;
 
-  // <special-name> ::= GR <(object) name> [<seq-id>] _  # modern standard
-  //                ::= GR <(object) name>  # also recognized
-  if (ParseTwoCharToken(state, "GR")) {
-    MaybeAppend(state, "reference temporary for ");
-    if (!ParseName(state)) {
-      state->parse_state = copy;
-      return false;
-    }
-    const bool has_seq_id = ParseSeqId(state);
-    const bool has_underscore = ParseOneCharToken(state, '_');
-    if (has_seq_id && !has_underscore) {
-      state->parse_state = copy;
-      return false;
-    }
-    return true;
-  }
-
-  if (ParseTwoCharToken(state, "GA") && ParseEncoding(state)) {
+  if (ParseTwoCharToken(state, "GR") && ParseName(state)) {
     return true;
   }
   state->parse_state = copy;
 
-  if (ParseThreeCharToken(state, "GTt") &&
-      MaybeAppend(state, "transaction clone for ") && ParseEncoding(state)) {
+  if (ParseTwoCharToken(state, "GA") && ParseEncoding(state)) {
     return true;
   }
   state->parse_state = copy;
@@ -1283,18 +1167,6 @@ static bool ParseSpecialName(State *state) {
     return true;
   }
   state->parse_state = copy;
-
-  if (ParseTwoCharToken(state, "TA")) {
-    bool append = state->parse_state.append;
-    DisableAppend(state);
-    if (ParseTemplateArg(state)) {
-      RestoreAppend(state, append);
-      MaybeAppend(state, "template parameter object");
-      return true;
-    }
-  }
-  state->parse_state = copy;
-
   return false;
 }
 
@@ -1398,6 +1270,7 @@ static bool ParseDecltype(State *state) {
 //        ::= O <type>   # rvalue reference-to (C++0x)
 //        ::= C <type>   # complex pair (C 2000)
 //        ::= G <type>   # imaginary (C 2000)
+//        ::= U <source-name> <type>  # vendor extended type qualifier
 //        ::= <builtin-type>
 //        ::= <function-type>
 //        ::= <class-enum-type>  # note: just an alias for <name>
@@ -1408,8 +1281,7 @@ static bool ParseDecltype(State *state) {
 //        ::= <decltype>
 //        ::= <substitution>
 //        ::= Dp <type>          # pack expansion of (C++0x)
-//        ::= Dv <(elements) number> _ <type>  # GNU vector extension
-//        ::= Dv <(bytes) expression> _ <type>
+//        ::= Dv <num-elems> _   # GNU vector extension
 //        ::= Dk <type-constraint>  # constrained auto
 //
 static bool ParseType(State *state) {
@@ -1453,6 +1325,12 @@ static bool ParseType(State *state) {
   }
   state->parse_state = copy;
 
+  if (ParseOneCharToken(state, 'U') && ParseSourceName(state) &&
+      ParseType(state)) {
+    return true;
+  }
+  state->parse_state = copy;
+
   if (ParseBuiltinType(state) || ParseFunctionType(state) ||
       ParseClassEnumType(state) || ParseArrayType(state) ||
       ParsePointerToMemberType(state) || ParseDecltype(state) ||
@@ -1471,16 +1349,8 @@ static bool ParseType(State *state) {
     return true;
   }
 
-  // GNU vector extension Dv <number> _ <type>
   if (ParseTwoCharToken(state, "Dv") && ParseNumber(state, nullptr) &&
-      ParseOneCharToken(state, '_') && ParseType(state)) {
-    return true;
-  }
-  state->parse_state = copy;
-
-  // GNU vector extension Dv <expression> _ <type>
-  if (ParseTwoCharToken(state, "Dv") && ParseExpression(state) &&
-      ParseOneCharToken(state, '_') && ParseType(state)) {
+      ParseOneCharToken(state, '_')) {
     return true;
   }
   state->parse_state = copy;
@@ -1496,110 +1366,30 @@ static bool ParseType(State *state) {
   return ParseLongToken(state, "_SUBSTPACK_");
 }
 
-// <qualifiers> ::= <extended-qualifier>* <CV-qualifiers>
 // <CV-qualifiers> ::= [r] [V] [K]
-//
 // We don't allow empty <CV-qualifiers> to avoid infinite loop in
 // ParseType().
 static bool ParseCVQualifiers(State *state) {
   ComplexityGuard guard(state);
   if (guard.IsTooComplex()) return false;
   int num_cv_qualifiers = 0;
-  while (ParseExtendedQualifier(state)) ++num_cv_qualifiers;
   num_cv_qualifiers += ParseOneCharToken(state, 'r');
   num_cv_qualifiers += ParseOneCharToken(state, 'V');
   num_cv_qualifiers += ParseOneCharToken(state, 'K');
   return num_cv_qualifiers > 0;
 }
 
-// <extended-qualifier> ::= U <source-name> [<template-args>]
-static bool ParseExtendedQualifier(State *state) {
-  ComplexityGuard guard(state);
-  if (guard.IsTooComplex()) return false;
-  ParseState copy = state->parse_state;
-
-  if (!ParseOneCharToken(state, 'U')) return false;
-
-  bool append = state->parse_state.append;
-  DisableAppend(state);
-  if (!ParseSourceName(state)) {
-    state->parse_state = copy;
-    return false;
-  }
-  Optional(ParseTemplateArgs(state));
-  RestoreAppend(state, append);
-  return true;
-}
-
 // <builtin-type> ::= v, etc.  # single-character builtin types
 //                ::= <vendor-extended-type>
 //                ::= Dd, etc.  # two-character builtin types
-//                ::= DB (<number> | <expression>) _  # _BitInt(N)
-//                ::= DU (<number> | <expression>) _  # unsigned _BitInt(N)
-//                ::= DF <number> _  # _FloatN (N bits)
-//                ::= DF <number> x  # _FloatNx
-//                ::= DF16b  # std::bfloat16_t
 //
 // Not supported:
-//                ::= [DS] DA <fixed-point-size>
-//                ::= [DS] DR <fixed-point-size>
-// because real implementations of N1169 fixed-point are scant.
+//                ::= DF <number> _ # _FloatN (N bits)
+//
+// NOTE: [I <type> E] is a vendor extension (http://shortn/_FrINpH1XC5).
 static bool ParseBuiltinType(State *state) {
   ComplexityGuard guard(state);
   if (guard.IsTooComplex()) return false;
-  ParseState copy = state->parse_state;
-
-  // DB (<number> | <expression>) _  # _BitInt(N)
-  // DU (<number> | <expression>) _  # unsigned _BitInt(N)
-  if (ParseTwoCharToken(state, "DB") ||
-      (ParseTwoCharToken(state, "DU") && MaybeAppend(state, "unsigned "))) {
-    bool append = state->parse_state.append;
-    DisableAppend(state);
-    int number = -1;
-    if (!ParseNumber(state, &number) && !ParseExpression(state)) {
-      state->parse_state = copy;
-      return false;
-    }
-    RestoreAppend(state, append);
-
-    if (!ParseOneCharToken(state, '_')) {
-      state->parse_state = copy;
-      return false;
-    }
-
-    MaybeAppend(state, "_BitInt(");
-    if (number >= 0) {
-      MaybeAppendDecimal(state, number);
-    } else {
-      MaybeAppend(state, "?");  // the best we can do for dependent sizes
-    }
-    MaybeAppend(state, ")");
-    return true;
-  }
-
-  // DF <number> _  # _FloatN
-  // DF <number> x  # _FloatNx
-  // DF16b  # std::bfloat16_t
-  if (ParseTwoCharToken(state, "DF")) {
-    if (ParseThreeCharToken(state, "16b")) {
-      MaybeAppend(state, "std::bfloat16_t");
-      return true;
-    }
-    int number = 0;
-    if (!ParseNumber(state, &number)) {
-      state->parse_state = copy;
-      return false;
-    }
-    MaybeAppend(state, "_Float");
-    MaybeAppendDecimal(state, number);
-    if (ParseOneCharToken(state, 'x')) {
-      MaybeAppend(state, "x");
-      return true;
-    }
-    if (ParseOneCharToken(state, '_')) return true;
-    state->parse_state = copy;
-    return false;
-  }
 
   for (const AbbrevPair *p = kBuiltinTypeList; p->abbrev != nullptr; ++p) {
     // Guaranteed only 1- or 2-character strings in kBuiltinTypeList.
@@ -1617,15 +1407,22 @@ static bool ParseBuiltinType(State *state) {
   return ParseVendorExtendedType(state);
 }
 
-// <vendor-extended-type> ::= u <source-name> [<template-args>]
+// <vendor-extended-type> ::= u <source-name> [I <type> E]
+//
+// NOTE: [I <type> E] is a vendor extension (http://shortn/_FrINpH1XC5).
 static bool ParseVendorExtendedType(State *state) {
   ComplexityGuard guard(state);
   if (guard.IsTooComplex()) return false;
 
   ParseState copy = state->parse_state;
-  if (ParseOneCharToken(state, 'u') && ParseSourceName(state) &&
-      Optional(ParseTemplateArgs(state))) {
-    return true;
+  if (ParseOneCharToken(state, 'u') && ParseSourceName(state)) {
+    copy = state->parse_state;
+    if (ParseOneCharToken(state, 'I') && ParseType(state) &&
+        ParseOneCharToken(state, 'E')) {
+      return true;  // ::= u <source-name> I <type> E
+    }
+    state->parse_state = copy;
+    return true;  // ::= u <source-name>
   }
   state->parse_state = copy;
   return false;
@@ -1660,7 +1457,7 @@ static bool ParseExceptionSpec(State *state) {
 }
 
 // <function-type> ::=
-//     [exception-spec] [Dx] F [Y] <bare-function-type> [<ref-qualifier>] E
+//     [exception-spec] F [Y] <bare-function-type> [<ref-qualifier>] E
 //
 // <ref-qualifier> ::= R | O
 static bool ParseFunctionType(State *state) {
@@ -1668,7 +1465,6 @@ static bool ParseFunctionType(State *state) {
   if (guard.IsTooComplex()) return false;
   ParseState copy = state->parse_state;
   Optional(ParseExceptionSpec(state));
-  Optional(ParseTwoCharToken(state, "Dx"));
   if (!ParseOneCharToken(state, 'F')) {
     state->parse_state = copy;
     return false;
@@ -1725,23 +1521,10 @@ static bool ParseOverloadAttribute(State *state) {
 }
 
 // <class-enum-type> ::= <name>
-//                   ::= Ts <name>  # struct Name or class Name
-//                   ::= Tu <name>  # union Name
-//                   ::= Te <name>  # enum Name
-//
-// See http://shortn/_W3YrltiEd0.
 static bool ParseClassEnumType(State *state) {
   ComplexityGuard guard(state);
   if (guard.IsTooComplex()) return false;
-  ParseState copy = state->parse_state;
-  if (Optional(ParseTwoCharToken(state, "Ts") ||
-               ParseTwoCharToken(state, "Tu") ||
-               ParseTwoCharToken(state, "Te")) &&
-      ParseName(state)) {
-    return true;
-  }
-  state->parse_state = copy;
-  return false;
+  return ParseName(state);
 }
 
 // <array-type> ::= A <(positive dimension) number> _ <(element) type>
@@ -2049,13 +1832,6 @@ static bool ParseBaseUnresolvedName(State *state) {
 //                         <base-unresolved-name>
 //                   ::= [gs] sr <unresolved-qualifier-level>+ E
 //                         <base-unresolved-name>
-//                   ::= sr St <simple-id> <simple-id>  # nonstandard
-//
-// The last case is not part of the official grammar but has been observed in
-// real-world examples that the GNU demangler (but not the LLVM demangler) is
-// able to decode; see demangle_test.cc for one such symbol name.  The shape
-// sr St <simple-id> <simple-id> was inferred by closed-box testing of the GNU
-// demangler.
 static bool ParseUnresolvedName(State *state) {
   ComplexityGuard guard(state);
   if (guard.IsTooComplex()) return false;
@@ -2085,12 +1861,6 @@ static bool ParseUnresolvedName(State *state) {
       ParseTwoCharToken(state, "sr") &&
       OneOrMore(ParseUnresolvedQualifierLevel, state) &&
       ParseOneCharToken(state, 'E') && ParseBaseUnresolvedName(state)) {
-    return true;
-  }
-  state->parse_state = copy;
-
-  if (ParseTwoCharToken(state, "sr") && ParseTwoCharToken(state, "St") &&
-      ParseSimpleId(state) && ParseSimpleId(state)) {
     return true;
   }
   state->parse_state = copy;
@@ -2192,8 +1962,6 @@ static bool ParseBracedExpression(State *state) {
 // <expression> ::= <1-ary operator-name> <expression>
 //              ::= <2-ary operator-name> <expression> <expression>
 //              ::= <3-ary operator-name> <expression> <expression> <expression>
-//              ::= pp_ <expression>  # ++e; pp <expression> is e++
-//              ::= mm_ <expression>  # --e; mm <expression> is e--
 //              ::= cl <expression>+ E
 //              ::= cp <simple-id> <expression>* E # Clang-specific.
 //              ::= so <type> <expression> [<number>] <union-selector>* [p] E
@@ -2201,22 +1969,11 @@ static bool ParseBracedExpression(State *state) {
 //              ::= cv <type> _ <expression>* E # type (expr-list)
 //              ::= tl <type> <braced-expression>* E
 //              ::= il <braced-expression>* E
-//              ::= [gs] nw <expression>* _ <type> E
-//              ::= [gs] nw <expression>* _ <type> <initializer>
-//              ::= [gs] na <expression>* _ <type> E
-//              ::= [gs] na <expression>* _ <type> <initializer>
-//              ::= [gs] dl <expression>
-//              ::= [gs] da <expression>
 //              ::= dc <type> <expression>
 //              ::= sc <type> <expression>
 //              ::= cc <type> <expression>
 //              ::= rc <type> <expression>
-//              ::= ti <type>
-//              ::= te <expression>
 //              ::= st <type>
-//              ::= at <type>
-//              ::= az <expression>
-//              ::= nx <expression>
 //              ::= <template-param>
 //              ::= <function-param>
 //              ::= sZ <template-param>
@@ -2230,8 +1987,6 @@ static bool ParseBracedExpression(State *state) {
 //              ::= fr <binary operator-name> <expression>
 //              ::= fL <binary operator-name> <expression> <expression>
 //              ::= fR <binary operator-name> <expression> <expression>
-//              ::= tw <expression>
-//              ::= tr
 //              ::= sr <type> <unqualified-name> <template-args>
 //              ::= sr <type> <unqualified-name>
 //              ::= u <source-name> <template-arg>* E  # vendor extension
@@ -2249,15 +2004,6 @@ static bool ParseExpression(State *state) {
   // Object/function call expression.
   if (ParseTwoCharToken(state, "cl") && OneOrMore(ParseExpression, state) &&
       ParseOneCharToken(state, 'E')) {
-    return true;
-  }
-  state->parse_state = copy;
-
-  // Preincrement and predecrement.  Postincrement and postdecrement are handled
-  // by the operator-name logic later on.
-  if ((ParseThreeCharToken(state, "pp_") ||
-       ParseThreeCharToken(state, "mm_")) &&
-      ParseExpression(state)) {
     return true;
   }
   state->parse_state = copy;
@@ -2298,28 +2044,6 @@ static bool ParseExpression(State *state) {
   if (ParseTwoCharToken(state, "il") &&
       ZeroOrMore(ParseBracedExpression, state) &&
       ParseOneCharToken(state, 'E')) {
-    return true;
-  }
-  state->parse_state = copy;
-
-  // <expression> ::= [gs] nw <expression>* _ <type> E
-  //              ::= [gs] nw <expression>* _ <type> <initializer>
-  //              ::= [gs] na <expression>* _ <type> E
-  //              ::= [gs] na <expression>* _ <type> <initializer>
-  if (Optional(ParseTwoCharToken(state, "gs")) &&
-      (ParseTwoCharToken(state, "nw") || ParseTwoCharToken(state, "na")) &&
-      ZeroOrMore(ParseExpression, state) && ParseOneCharToken(state, '_') &&
-      ParseType(state) &&
-      (ParseOneCharToken(state, 'E') || ParseInitializer(state))) {
-    return true;
-  }
-  state->parse_state = copy;
-
-  // <expression> ::= [gs] dl <expression>
-  //              ::= [gs] da <expression>
-  if (Optional(ParseTwoCharToken(state, "gs")) &&
-      (ParseTwoCharToken(state, "dl") || ParseTwoCharToken(state, "da")) &&
-      ParseExpression(state)) {
     return true;
   }
   state->parse_state = copy;
@@ -2370,38 +2094,8 @@ static bool ParseExpression(State *state) {
   }
   state->parse_state = copy;
 
-  // typeid(type)
-  if (ParseTwoCharToken(state, "ti") && ParseType(state)) {
-    return true;
-  }
-  state->parse_state = copy;
-
-  // typeid(expression)
-  if (ParseTwoCharToken(state, "te") && ParseExpression(state)) {
-    return true;
-  }
-  state->parse_state = copy;
-
   // sizeof type
   if (ParseTwoCharToken(state, "st") && ParseType(state)) {
-    return true;
-  }
-  state->parse_state = copy;
-
-  // alignof(type)
-  if (ParseTwoCharToken(state, "at") && ParseType(state)) {
-    return true;
-  }
-  state->parse_state = copy;
-
-  // alignof(expression), a GNU extension
-  if (ParseTwoCharToken(state, "az") && ParseExpression(state)) {
-    return true;
-  }
-  state->parse_state = copy;
-
-  // noexcept(expression) appearing as an expression in a dependent signature
-  if (ParseTwoCharToken(state, "nx") && ParseExpression(state)) {
     return true;
   }
   state->parse_state = copy;
@@ -2445,15 +2139,6 @@ static bool ParseExpression(State *state) {
     return true;
   }
   state->parse_state = copy;
-
-  // tw <expression>: throw e
-  if (ParseTwoCharToken(state, "tw") && ParseExpression(state)) {
-    return true;
-  }
-  state->parse_state = copy;
-
-  // tr: throw (rethrows an exception from the handler that caught it)
-  if (ParseTwoCharToken(state, "tr")) return true;
 
   // Object and pointer member access expressions.
   //
@@ -2506,32 +2191,6 @@ static bool ParseExpression(State *state) {
   state->parse_state = copy;
 
   return ParseUnresolvedName(state);
-}
-
-// <initializer> ::= pi <expression>* E
-//               ::= il <braced-expression>* E
-//
-// The il ... E form is not in the ABI spec but is seen in practice for
-// braced-init-lists in new-expressions, which are standard syntax from C++11
-// on.
-static bool ParseInitializer(State *state) {
-  ComplexityGuard guard(state);
-  if (guard.IsTooComplex()) return false;
-  ParseState copy = state->parse_state;
-
-  if (ParseTwoCharToken(state, "pi") && ZeroOrMore(ParseExpression, state) &&
-      ParseOneCharToken(state, 'E')) {
-    return true;
-  }
-  state->parse_state = copy;
-
-  if (ParseTwoCharToken(state, "il") &&
-      ZeroOrMore(ParseBracedExpression, state) &&
-      ParseOneCharToken(state, 'E')) {
-    return true;
-  }
-  state->parse_state = copy;
-  return false;
 }
 
 // <expr-primary> ::= L <type> <(value) number> E
@@ -2630,15 +2289,8 @@ static bool ParseExprCastValueAndTrailingE(State *state) {
   }
   state->parse_state = copy;
 
-  if (ParseFloatNumber(state)) {
-    // <float> for ordinary floating-point types
-    if (ParseOneCharToken(state, 'E')) return true;
-
-    // <float> _ <float> for complex floating-point types
-    if (ParseOneCharToken(state, '_') && ParseFloatNumber(state) &&
-        ParseOneCharToken(state, 'E')) {
-      return true;
-    }
+  if (ParseFloatNumber(state) && ParseOneCharToken(state, 'E')) {
+    return true;
   }
   state->parse_state = copy;
 

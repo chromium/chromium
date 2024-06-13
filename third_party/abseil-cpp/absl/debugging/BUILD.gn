@@ -122,12 +122,10 @@ absl_source_set("demangle_internal") {
   sources = [
     "internal/demangle.cc",
     "internal/demangle_rust.cc",
-    "internal/utf8_for_code_point.cc",
   ]
   public = [
     "internal/demangle.h",
     "internal/demangle_rust.h",
-    "internal/utf8_for_code_point.h",
   ]
   visibility = [
     "//third_party/abseil-cpp/absl/container:*",
@@ -161,14 +159,6 @@ absl_test("demangle_rust_test") {
 #     "//third_party/abseil-cpp/absl/memory",
 #   ]
 # }
-
-absl_test("utf8_for_code_point_test") {
-  sources = [ "internal/utf8_for_code_point_test.cc" ]
-  deps = [
-    ":demangle_internal",
-    "//third_party/abseil-cpp/absl/base:config",
-  ]
-}
 
 absl_source_set("leak_check") {
   if (is_ios || is_win) {
