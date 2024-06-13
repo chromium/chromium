@@ -200,6 +200,8 @@ public final class ProductionSupportedFlagList {
                 BlinkFeatures.SIMPLIFY_LOADING_TRANSPARENT_PLACEHOLDER_IMAGE,
                 "Enables simplifying loading known transparent placeholder images."),
         Flag.baseFeature(
+                BlinkFeatures.OPTIMIZE_LOADING_DATA_URLS, "Enables optimizing loading data: URLs."),
+        Flag.baseFeature(
                 AwFeatures.WEBVIEW_EXIT_REASON_METRIC, "Records various system exit reasons"),
         Flag.baseFeature(
                 AwFeatures.WEBVIEW_EXTRA_HEADERS_SAME_ORIGIN_ONLY,
