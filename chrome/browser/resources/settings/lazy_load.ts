@@ -187,6 +187,7 @@ export {SettingsDoNotTrackToggleElement} from './privacy_page/do_not_track_toggl
 export {FINGERPRINT_CHECK_DARK_URL, FINGERPRINT_CHECK_LIGHT_URL, FINGERPRINT_SCANNED_ICON_DARK, FINGERPRINT_SCANNED_ICON_LIGHT, FingerprintProgressArcElement, PROGRESS_CIRCLE_BACKGROUND_COLOR_DARK, PROGRESS_CIRCLE_BACKGROUND_COLOR_LIGHT, PROGRESS_CIRCLE_FILL_COLOR_DARK, PROGRESS_CIRCLE_FILL_COLOR_LIGHT} from './privacy_page/fingerprint_progress_arc.js';
 export {SettingsPersonalizationOptionsElement} from './privacy_page/personalization_options.js';
 export {PrivacyGuideStep} from './privacy_page/privacy_guide/constants.js';
+export {PrivacyGuideAdTopicsFragmentElement} from './privacy_page/privacy_guide/privacy_guide_ad_topics_fragment.js';
 export {PrivacyGuideCompletionFragmentElement} from './privacy_page/privacy_guide/privacy_guide_completion_fragment.js';
 export {PrivacyGuideCookiesFragmentElement} from './privacy_page/privacy_guide/privacy_guide_cookies_fragment.js';
 export {PrivacyGuideDescriptionItemElement} from './privacy_page/privacy_guide/privacy_guide_description_item.js';

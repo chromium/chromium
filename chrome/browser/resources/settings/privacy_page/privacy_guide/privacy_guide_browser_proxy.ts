@@ -2,6 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+import {sendWithPromise} from 'chrome://resources/js/cr.js';
+
 // The number of times the prviacy guide promo has been shown.
 export const MAX_PRIVACY_GUIDE_PROMO_IMPRESSION: number = 10;
 
@@ -15,6 +17,9 @@ export interface PrivacyGuideBrowserProxy {
 
   /** Increment The number of times the privacy guide promo was shown. */
   incrementPromoImpressionCount(): void;
+
+  /** @return True or False if the Ad Topics Card should be shown. */
+  privacySandboxPrivacyGuideShouldShowAdTopicsCard(): Promise<boolean>;
 }
 
 export class PrivacyGuideBrowserProxyImpl implements PrivacyGuideBrowserProxy {
@@ -30,6 +35,10 @@ export class PrivacyGuideBrowserProxyImpl implements PrivacyGuideBrowserProxy {
     window.localStorage.setItem(
         PRIVACY_GUIDE_PROMO_IMPRESSION_COUNT_KEY,
         (this.getPromoImpressionCount() + 1).toString());
+  }
+
+  privacySandboxPrivacyGuideShouldShowAdTopicsCard() {
+    return sendWithPromise('privacySandboxPrivacyGuideShouldShowAdTopicsCard');
   }
 
   static getInstance(): PrivacyGuideBrowserProxy {

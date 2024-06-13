@@ -9,7 +9,7 @@ import {flush} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min
 import type {SettingsPrivacyGuideDialogElement, SettingsPrivacyGuidePageElement} from 'chrome://settings/lazy_load.js';
 import {CookiePrimarySetting, PrivacyGuideStep, SafeBrowsingSetting} from 'chrome://settings/lazy_load.js';
 import type {SettingsPrefsElement, SyncStatus} from 'chrome://settings/settings.js';
-import {HatsBrowserProxyImpl, TrustSafetyInteraction, CrSettingsPrefs, MetricsBrowserProxyImpl, PrivacyGuideInteractions, resetRouterForTesting, Router, routes, StatusAction, SyncBrowserProxyImpl} from 'chrome://settings/settings.js';
+import {HatsBrowserProxyImpl, TrustSafetyInteraction, CrSettingsPrefs, MetricsBrowserProxyImpl, PrivacyGuideBrowserProxyImpl, PrivacyGuideInteractions, resetRouterForTesting, Router, routes, StatusAction, SyncBrowserProxyImpl} from 'chrome://settings/settings.js';
 import {assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
 import {isChildVisible} from 'chrome://webui-test/test_util.js';
 import {flushTasks} from 'chrome://webui-test/polymer_test_util.js';
@@ -18,12 +18,13 @@ import {createPrivacyGuidePageForTest, navigateToStep, clickNextOnWelcomeStep, s
 import {TestMetricsBrowserProxy} from './test_metrics_browser_proxy.js';
 import {TestSyncBrowserProxy} from './test_sync_browser_proxy.js';
 import {TestHatsBrowserProxy} from './test_hats_browser_proxy.js';
+import {TestPrivacyGuideBrowserProxy} from './test_privacy_guide_browser_proxy.js';
 
 // clang-format on
 
 // Maximum number of steps in the privacy guide, excluding the welcome and
 // completion steps.
-const PRIVACY_GUIDE_STEPS = 4;
+const PRIVACY_GUIDE_STEPS = 5;
 
 function assertQueryParameter(step: PrivacyGuideStep) {
   assertEquals(step, Router.getInstance().getQueryParameters().get('step'));
@@ -39,6 +40,7 @@ interface AssertCardComponentsVisibleParams {
   isHistorySyncFragmentVisibleExpected?: boolean;
   isSafeBrowsingFragmentVisibleExpected?: boolean;
   isCookiesFragmentVisibleExpected?: boolean;
+  isAdTopicsFragmentVisibleExpected?: boolean;
 }
 
 function assertCardComponentsVisible({
@@ -51,6 +53,7 @@ function assertCardComponentsVisible({
   isHistorySyncFragmentVisibleExpected,
   isSafeBrowsingFragmentVisibleExpected,
   isCookiesFragmentVisibleExpected,
+  isAdTopicsFragmentVisibleExpected,
 }: AssertCardComponentsVisibleParams) {
   assertEquals(
       !!isSettingFooterVisibleExpected, isChildVisible(page, '#settingFooter'),
@@ -88,6 +91,10 @@ function assertCardComponentsVisible({
       !!isCookiesFragmentVisibleExpected,
       isChildVisible(page, '#' + PrivacyGuideStep.COOKIES),
       'Incorrect cookies fragment visibility.');
+  assertEquals(
+      !!isAdTopicsFragmentVisibleExpected,
+      isChildVisible(page, '#' + PrivacyGuideStep.AD_TOPICS),
+      'Incorrect Ad Topics fragment visibility.');
 }
 
 /**
@@ -95,7 +102,8 @@ function assertCardComponentsVisible({
  */
 function getExpectedNumberOfActiveCards(
     page: SettingsPrivacyGuidePageElement,
-    syncBrowserProxy: TestSyncBrowserProxy): number {
+    syncBrowserProxy: TestSyncBrowserProxy,
+    testPrivacyGuideBrowserProxy: TestPrivacyGuideBrowserProxy): number {
   let numSteps = PRIVACY_GUIDE_STEPS;
   if (!shouldShowHistorySyncCard(syncBrowserProxy)) {
     numSteps -= 1;
@@ -109,16 +117,23 @@ function getExpectedNumberOfActiveCards(
   if (!shouldShowSafeBrowsingCard(page)) {
     numSteps -= 1;
   }
+  if (!testPrivacyGuideBrowserProxy.getShouldShowAdTopicsCardForTesting()) {
+    numSteps -= 1;
+  }
   return numSteps;
 }
 
 function assertStepIndicatorModel(
     page: SettingsPrivacyGuidePageElement,
-    syncBrowserProxy: TestSyncBrowserProxy, activeIndex: number) {
+    syncBrowserProxy: TestSyncBrowserProxy,
+    testPrivacyGuideBrowserProxy: TestPrivacyGuideBrowserProxy,
+    activeIndex: number) {
   const model = page.computeStepIndicatorModel();
   assertEquals(activeIndex, model.active);
   assertEquals(
-      getExpectedNumberOfActiveCards(page, syncBrowserProxy), model.total);
+      getExpectedNumberOfActiveCards(
+          page, syncBrowserProxy, testPrivacyGuideBrowserProxy),
+      model.total);
 }
 
 function assertWelcomeCardVisible(page: SettingsPrivacyGuidePageElement) {
@@ -139,7 +154,8 @@ function assertCompletionCardVisible(page: SettingsPrivacyGuidePageElement) {
 
 function assertMsbbCardVisible(
     page: SettingsPrivacyGuidePageElement,
-    syncBrowserProxy: TestSyncBrowserProxy) {
+    syncBrowserProxy: TestSyncBrowserProxy,
+    testPrivacyGuideBrowserProxy: TestPrivacyGuideBrowserProxy) {
   assertQueryParameter(PrivacyGuideStep.MSBB);
   assertCardComponentsVisible({
     page: page,
@@ -147,12 +163,14 @@ function assertMsbbCardVisible(
     isBackButtonVisibleExpected: true,
     isMsbbFragmentVisibleExpected: true,
   });
-  assertStepIndicatorModel(page, syncBrowserProxy, 0);
+  assertStepIndicatorModel(
+      page, syncBrowserProxy, testPrivacyGuideBrowserProxy, 0);
 }
 
 function assertHistorySyncCardVisible(
     page: SettingsPrivacyGuidePageElement,
-    syncBrowserProxy: TestSyncBrowserProxy) {
+    syncBrowserProxy: TestSyncBrowserProxy,
+    testPrivacyGuideBrowserProxy: TestPrivacyGuideBrowserProxy) {
   assertQueryParameter(PrivacyGuideStep.HISTORY_SYNC);
   assertCardComponentsVisible({
     page: page,
@@ -160,12 +178,14 @@ function assertHistorySyncCardVisible(
     isBackButtonVisibleExpected: true,
     isHistorySyncFragmentVisibleExpected: true,
   });
-  assertStepIndicatorModel(page, syncBrowserProxy, 1);
+  assertStepIndicatorModel(
+      page, syncBrowserProxy, testPrivacyGuideBrowserProxy, 1);
 }
 
 function assertCookiesCardVisible(
     page: SettingsPrivacyGuidePageElement,
-    syncBrowserProxy: TestSyncBrowserProxy) {
+    syncBrowserProxy: TestSyncBrowserProxy,
+    testPrivacyGuideBrowserProxy: TestPrivacyGuideBrowserProxy) {
   assertQueryParameter(PrivacyGuideStep.COOKIES);
   assertCardComponentsVisible({
     page: page,
@@ -180,13 +200,15 @@ function assertCookiesCardVisible(
   if (!shouldShowSafeBrowsingCard(page)) {
     activeIndex -= 1;
   }
-  assertStepIndicatorModel(page, syncBrowserProxy, activeIndex);
+  assertStepIndicatorModel(
+      page, syncBrowserProxy, testPrivacyGuideBrowserProxy, activeIndex);
   return;
 }
 
 function assertSafeBrowsingCardVisible(
     page: SettingsPrivacyGuidePageElement,
-    syncBrowserProxy: TestSyncBrowserProxy) {
+    syncBrowserProxy: TestSyncBrowserProxy,
+    testPrivacyGuideBrowserProxy: TestPrivacyGuideBrowserProxy) {
   assertQueryParameter(PrivacyGuideStep.SAFE_BROWSING);
   assertCardComponentsVisible({
     page: page,
@@ -195,8 +217,35 @@ function assertSafeBrowsingCardVisible(
     isSafeBrowsingFragmentVisibleExpected: true,
   });
   assertStepIndicatorModel(
-      page, syncBrowserProxy,
+      page, syncBrowserProxy, testPrivacyGuideBrowserProxy,
       shouldShowHistorySyncCard(syncBrowserProxy) ? 2 : 1);
+}
+
+function assertAdTopicsCardVisible(
+    page: SettingsPrivacyGuidePageElement,
+    syncBrowserProxy: TestSyncBrowserProxy,
+    testPrivacyGuideBrowserProxy: TestPrivacyGuideBrowserProxy) {
+  assertQueryParameter(PrivacyGuideStep.AD_TOPICS);
+  assertCardComponentsVisible({
+    page: page,
+    isSettingFooterVisibleExpected: true,
+    isBackButtonVisibleExpected: true,
+    isAdTopicsFragmentVisibleExpected: true,
+  });
+  let activeIndex = 4;
+  if (!shouldShowCookiesCard(page) ||
+      loadTimeData.getBoolean('is3pcdCookieSettingsRedesignEnabled')) {
+    activeIndex -= 1;
+  }
+  if (!shouldShowHistorySyncCard(syncBrowserProxy)) {
+    activeIndex -= 1;
+  }
+  if (!shouldShowSafeBrowsingCard(page)) {
+    activeIndex -= 1;
+  }
+  assertStepIndicatorModel(
+      page, syncBrowserProxy, testPrivacyGuideBrowserProxy, activeIndex);
+  return;
 }
 
 suite('PrivacyGuidePage', function() {
@@ -204,6 +253,7 @@ suite('PrivacyGuidePage', function() {
   let settingsPrefs: SettingsPrefsElement;
   let syncBrowserProxy: TestSyncBrowserProxy;
   let testMetricsBrowserProxy: TestMetricsBrowserProxy;
+  let testPrivacyGuideBrowserProxy: TestPrivacyGuideBrowserProxy;
 
   suiteSetup(function() {
     settingsPrefs = document.createElement('settings-prefs');
@@ -225,6 +275,9 @@ suite('PrivacyGuidePage', function() {
       typedUrlsSynced: true,
     });
     SyncBrowserProxyImpl.setInstance(syncBrowserProxy);
+    testPrivacyGuideBrowserProxy = new TestPrivacyGuideBrowserProxy();
+    testPrivacyGuideBrowserProxy.setShouldShowAdTopicsCardForTesting(false);
+    PrivacyGuideBrowserProxyImpl.setInstance(testPrivacyGuideBrowserProxy);
 
     page = createPrivacyGuidePageForTest(settingsPrefs);
     setupPrivacyGuidePageForTest(page, syncBrowserProxy);
@@ -259,7 +312,7 @@ suite('PrivacyGuidePage', function() {
         new CustomEvent('start-button-click', {bubbles: true, composed: true}));
     flush();
 
-    assertMsbbCardVisible(page, syncBrowserProxy);
+    assertMsbbCardVisible(page, syncBrowserProxy, testPrivacyGuideBrowserProxy);
     const result = await testMetricsBrowserProxy.whenCalled(
         'recordPrivacyGuideNextNavigationHistogram');
     assertEquals(PrivacyGuideInteractions.WELCOME_NEXT_BUTTON, result);
@@ -273,7 +326,7 @@ suite('PrivacyGuidePage', function() {
       syncAllDataTypes: true,
       typedUrlsSynced: true,
     });
-    assertMsbbCardVisible(page, syncBrowserProxy);
+    assertMsbbCardVisible(page, syncBrowserProxy, testPrivacyGuideBrowserProxy);
   });
 
   test('completionCardBackNavigation', async function() {
@@ -289,7 +342,8 @@ suite('PrivacyGuidePage', function() {
         new CustomEvent('back-button-click', {bubbles: true, composed: true}));
     flush();
 
-    assertSafeBrowsingCardVisible(page, syncBrowserProxy);
+    assertSafeBrowsingCardVisible(
+        page, syncBrowserProxy, testPrivacyGuideBrowserProxy);
     const actionResult =
         await testMetricsBrowserProxy.whenCalled('recordAction');
     assertEquals(actionResult, 'Settings.PrivacyGuide.BackClickCompletion');
@@ -365,11 +419,13 @@ suite('PrivacyGuidePage', function() {
     // Forward flow.
     await navigateToStep(PrivacyGuideStep.WELCOME);
     dispatchArrowRightEvent();
-    assertMsbbCardVisible(page, syncBrowserProxy);
+    assertMsbbCardVisible(page, syncBrowserProxy, testPrivacyGuideBrowserProxy);
     dispatchArrowRightEvent();
-    assertHistorySyncCardVisible(page, syncBrowserProxy);
+    assertHistorySyncCardVisible(
+        page, syncBrowserProxy, testPrivacyGuideBrowserProxy);
     dispatchArrowRightEvent();
-    assertSafeBrowsingCardVisible(page, syncBrowserProxy);
+    assertSafeBrowsingCardVisible(
+        page, syncBrowserProxy, testPrivacyGuideBrowserProxy);
     // Arrow keys don't trigger a navigation when the focus is inside the radio
     // group.
     const sbRadioGroup =
@@ -378,9 +434,11 @@ suite('PrivacyGuidePage', function() {
             .shadowRoot!.querySelector<HTMLElement>('#safeBrowsingRadioGroup');
     assertTrue(!!sbRadioGroup);
     sbRadioGroup.dispatchEvent(arrowLeftEvent);
-    assertSafeBrowsingCardVisible(page, syncBrowserProxy);
+    assertSafeBrowsingCardVisible(
+        page, syncBrowserProxy, testPrivacyGuideBrowserProxy);
     sbRadioGroup.dispatchEvent(arrowRightEvent);
-    assertSafeBrowsingCardVisible(page, syncBrowserProxy);
+    assertSafeBrowsingCardVisible(
+        page, syncBrowserProxy, testPrivacyGuideBrowserProxy);
 
     dispatchArrowRightEvent();
     assertCompletionCardVisible(page);
@@ -390,11 +448,13 @@ suite('PrivacyGuidePage', function() {
 
     // Backward flow.
     dispatchArrowLeftEvent();
-    assertSafeBrowsingCardVisible(page, syncBrowserProxy);
+    assertSafeBrowsingCardVisible(
+        page, syncBrowserProxy, testPrivacyGuideBrowserProxy);
     dispatchArrowLeftEvent();
-    assertHistorySyncCardVisible(page, syncBrowserProxy);
+    assertHistorySyncCardVisible(
+        page, syncBrowserProxy, testPrivacyGuideBrowserProxy);
     dispatchArrowLeftEvent();
-    assertMsbbCardVisible(page, syncBrowserProxy);
+    assertMsbbCardVisible(page, syncBrowserProxy, testPrivacyGuideBrowserProxy);
     dispatchArrowLeftEvent();
     assertWelcomeCardVisible(page);
     // Backward navigation on the welcome card does not trigger a navigation.
@@ -408,6 +468,7 @@ suite('FlowLength', function() {
   let settingsPrefs: SettingsPrefsElement;
   let syncBrowserProxy: TestSyncBrowserProxy;
   let testMetricsBrowserProxy: TestMetricsBrowserProxy;
+  let testPrivacyGuideBrowserProxy: TestPrivacyGuideBrowserProxy;
 
   suiteSetup(function() {
     settingsPrefs = document.createElement('settings-prefs');
@@ -436,6 +497,9 @@ suite('FlowLength', function() {
       typedUrlsSynced: true,
     });
     SyncBrowserProxyImpl.setInstance(syncBrowserProxy);
+    testPrivacyGuideBrowserProxy = new TestPrivacyGuideBrowserProxy();
+    testPrivacyGuideBrowserProxy.setShouldShowAdTopicsCardForTesting(false);
+    PrivacyGuideBrowserProxyImpl.setInstance(testPrivacyGuideBrowserProxy);
 
     page = createPrivacyGuidePageForTest(settingsPrefs);
 
@@ -504,6 +568,7 @@ suite('MsbbCardNavigations', function() {
   let settingsPrefs: SettingsPrefsElement;
   let syncBrowserProxy: TestSyncBrowserProxy;
   let testMetricsBrowserProxy: TestMetricsBrowserProxy;
+  let testPrivacyGuideBrowserProxy: TestPrivacyGuideBrowserProxy;
 
   suiteSetup(function() {
     settingsPrefs = document.createElement('settings-prefs');
@@ -520,6 +585,9 @@ suite('MsbbCardNavigations', function() {
     syncBrowserProxy = new TestSyncBrowserProxy();
     syncBrowserProxy.testSyncStatus = null;
     SyncBrowserProxyImpl.setInstance(syncBrowserProxy);
+    testPrivacyGuideBrowserProxy = new TestPrivacyGuideBrowserProxy();
+    testPrivacyGuideBrowserProxy.setShouldShowAdTopicsCardForTesting(false);
+    PrivacyGuideBrowserProxyImpl.setInstance(testPrivacyGuideBrowserProxy);
 
     page = createPrivacyGuidePageForTest(settingsPrefs);
     setupPrivacyGuidePageForTest(page, syncBrowserProxy);
@@ -536,7 +604,7 @@ suite('MsbbCardNavigations', function() {
 
   test('BackNavigation', async function() {
     await navigateToStep(PrivacyGuideStep.MSBB);
-    assertMsbbCardVisible(page, syncBrowserProxy);
+    assertMsbbCardVisible(page, syncBrowserProxy, testPrivacyGuideBrowserProxy);
 
     page.shadowRoot!.querySelector<HTMLElement>('#backButton')!.click();
     flush();
@@ -549,10 +617,11 @@ suite('MsbbCardNavigations', function() {
 
   test('ForwardNavigationSyncOn', async function() {
     await navigateToStep(PrivacyGuideStep.MSBB);
-    assertMsbbCardVisible(page, syncBrowserProxy);
+    assertMsbbCardVisible(page, syncBrowserProxy, testPrivacyGuideBrowserProxy);
 
     page.shadowRoot!.querySelector<HTMLElement>('#nextButton')!.click();
-    assertHistorySyncCardVisible(page, syncBrowserProxy);
+    assertHistorySyncCardVisible(
+        page, syncBrowserProxy, testPrivacyGuideBrowserProxy);
 
     const result = await testMetricsBrowserProxy.whenCalled(
         'recordPrivacyGuideNextNavigationHistogram');
@@ -571,10 +640,11 @@ suite('MsbbCardNavigations', function() {
       typedUrlsSynced: false,
     });
     await navigateToStep(PrivacyGuideStep.MSBB);
-    assertMsbbCardVisible(page, syncBrowserProxy);
+    assertMsbbCardVisible(page, syncBrowserProxy, testPrivacyGuideBrowserProxy);
 
     page.shadowRoot!.querySelector<HTMLElement>('#nextButton')!.click();
-    assertSafeBrowsingCardVisible(page, syncBrowserProxy);
+    assertSafeBrowsingCardVisible(
+        page, syncBrowserProxy, testPrivacyGuideBrowserProxy);
   });
 });
 
@@ -583,6 +653,7 @@ suite('HistorySyncCardNavigations', function() {
   let settingsPrefs: SettingsPrefsElement;
   let syncBrowserProxy: TestSyncBrowserProxy;
   let testMetricsBrowserProxy: TestMetricsBrowserProxy;
+  let testPrivacyGuideBrowserProxy: TestPrivacyGuideBrowserProxy;
 
   suiteSetup(function() {
     settingsPrefs = document.createElement('settings-prefs');
@@ -599,6 +670,9 @@ suite('HistorySyncCardNavigations', function() {
     syncBrowserProxy = new TestSyncBrowserProxy();
     syncBrowserProxy.testSyncStatus = null;
     SyncBrowserProxyImpl.setInstance(syncBrowserProxy);
+    testPrivacyGuideBrowserProxy = new TestPrivacyGuideBrowserProxy();
+    testPrivacyGuideBrowserProxy.setShouldShowAdTopicsCardForTesting(false);
+    PrivacyGuideBrowserProxyImpl.setInstance(testPrivacyGuideBrowserProxy);
 
     page = createPrivacyGuidePageForTest(settingsPrefs);
     setupPrivacyGuidePageForTest(page, syncBrowserProxy);
@@ -615,10 +689,11 @@ suite('HistorySyncCardNavigations', function() {
 
   test('BackNavigation', async function() {
     await navigateToStep(PrivacyGuideStep.HISTORY_SYNC);
-    assertHistorySyncCardVisible(page, syncBrowserProxy);
+    assertHistorySyncCardVisible(
+        page, syncBrowserProxy, testPrivacyGuideBrowserProxy);
 
     page.shadowRoot!.querySelector<HTMLElement>('#backButton')!.click();
-    assertMsbbCardVisible(page, syncBrowserProxy);
+    assertMsbbCardVisible(page, syncBrowserProxy, testPrivacyGuideBrowserProxy);
 
     const actionResult =
         await testMetricsBrowserProxy.whenCalled('recordAction');
@@ -627,7 +702,8 @@ suite('HistorySyncCardNavigations', function() {
 
   test('NavigatesAwayOnSyncOff', async function() {
     await navigateToStep(PrivacyGuideStep.HISTORY_SYNC);
-    assertHistorySyncCardVisible(page, syncBrowserProxy);
+    assertHistorySyncCardVisible(
+        page, syncBrowserProxy, testPrivacyGuideBrowserProxy);
 
     // User disables sync while history sync card is shown.
     setupSync({
@@ -636,7 +712,8 @@ suite('HistorySyncCardNavigations', function() {
       syncAllDataTypes: false,
       typedUrlsSynced: false,
     });
-    assertSafeBrowsingCardVisible(page, syncBrowserProxy);
+    assertSafeBrowsingCardVisible(
+        page, syncBrowserProxy, testPrivacyGuideBrowserProxy);
   });
 
   test('NotReachableWhenSyncOff', async function() {
@@ -647,13 +724,15 @@ suite('HistorySyncCardNavigations', function() {
       syncAllDataTypes: false,
       typedUrlsSynced: false,
     });
-    assertSafeBrowsingCardVisible(page, syncBrowserProxy);
+    assertSafeBrowsingCardVisible(
+        page, syncBrowserProxy, testPrivacyGuideBrowserProxy);
   });
 
   test('ForwardNavigationShouldHideSafeBrowsingCard', async function() {
     setSafeBrowsingSetting(page, SafeBrowsingSetting.DISABLED);
     await navigateToStep(PrivacyGuideStep.HISTORY_SYNC);
-    assertHistorySyncCardVisible(page, syncBrowserProxy);
+    assertHistorySyncCardVisible(
+        page, syncBrowserProxy, testPrivacyGuideBrowserProxy);
 
     page.shadowRoot!.querySelector<HTMLElement>('#nextButton')!.click();
     flush();
@@ -667,6 +746,7 @@ suite('SafeBrowsingCardNavigations', function() {
   let syncBrowserProxy: TestSyncBrowserProxy;
   let testMetricsBrowserProxy: TestMetricsBrowserProxy;
   let testHatsBrowserProxy: TestHatsBrowserProxy;
+  let testPrivacyGuideBrowserProxy: TestPrivacyGuideBrowserProxy;
 
   suiteSetup(function() {
     settingsPrefs = document.createElement('settings-prefs');
@@ -685,6 +765,9 @@ suite('SafeBrowsingCardNavigations', function() {
     SyncBrowserProxyImpl.setInstance(syncBrowserProxy);
     testHatsBrowserProxy = new TestHatsBrowserProxy();
     HatsBrowserProxyImpl.setInstance(testHatsBrowserProxy);
+    testPrivacyGuideBrowserProxy = new TestPrivacyGuideBrowserProxy();
+    testPrivacyGuideBrowserProxy.setShouldShowAdTopicsCardForTesting(false);
+    PrivacyGuideBrowserProxyImpl.setInstance(testPrivacyGuideBrowserProxy);
 
     page = createPrivacyGuidePageForTest(settingsPrefs);
     setupPrivacyGuidePageForTest(page, syncBrowserProxy);
@@ -701,10 +784,12 @@ suite('SafeBrowsingCardNavigations', function() {
 
   test('BackNavigationSyncOn', async function() {
     await navigateToStep(PrivacyGuideStep.SAFE_BROWSING);
-    assertSafeBrowsingCardVisible(page, syncBrowserProxy);
+    assertSafeBrowsingCardVisible(
+        page, syncBrowserProxy, testPrivacyGuideBrowserProxy);
 
     page.shadowRoot!.querySelector<HTMLElement>('#backButton')!.click();
-    assertHistorySyncCardVisible(page, syncBrowserProxy);
+    assertHistorySyncCardVisible(
+        page, syncBrowserProxy, testPrivacyGuideBrowserProxy);
 
     const actionResult =
         await testMetricsBrowserProxy.whenCalled('recordAction');
@@ -719,15 +804,17 @@ suite('SafeBrowsingCardNavigations', function() {
       typedUrlsSynced: false,
     });
     await navigateToStep(PrivacyGuideStep.SAFE_BROWSING);
-    assertSafeBrowsingCardVisible(page, syncBrowserProxy);
+    assertSafeBrowsingCardVisible(
+        page, syncBrowserProxy, testPrivacyGuideBrowserProxy);
 
     page.shadowRoot!.querySelector<HTMLElement>('#backButton')!.click();
-    assertMsbbCardVisible(page, syncBrowserProxy);
+    assertMsbbCardVisible(page, syncBrowserProxy, testPrivacyGuideBrowserProxy);
   });
 
   test('ForwardNavigation', async function() {
     await navigateToStep(PrivacyGuideStep.SAFE_BROWSING);
-    assertSafeBrowsingCardVisible(page, syncBrowserProxy);
+    assertSafeBrowsingCardVisible(
+        page, syncBrowserProxy, testPrivacyGuideBrowserProxy);
 
     page.shadowRoot!.querySelector<HTMLElement>('#nextButton')!.click();
     flush();
@@ -744,7 +831,8 @@ suite('SafeBrowsingCardNavigations', function() {
 
   test('safeBrowsingOffNavigatesAway', async function() {
     await navigateToStep(PrivacyGuideStep.SAFE_BROWSING);
-    assertSafeBrowsingCardVisible(page, syncBrowserProxy);
+    assertSafeBrowsingCardVisible(
+        page, syncBrowserProxy, testPrivacyGuideBrowserProxy);
 
     // Changing the safe browsing setting to a disabled state while shown should
     // navigate away from the safe browsing card.
@@ -772,6 +860,7 @@ suite('CookiesCardNavigations', function() {
   let syncBrowserProxy: TestSyncBrowserProxy;
   let testMetricsBrowserProxy: TestMetricsBrowserProxy;
   let testHatsBrowserProxy: TestHatsBrowserProxy;
+  let testPrivacyGuideBrowserProxy: TestPrivacyGuideBrowserProxy;
 
   suiteSetup(function() {
     loadTimeData.overrideValues({is3pcdCookieSettingsRedesignEnabled: false});
@@ -792,6 +881,9 @@ suite('CookiesCardNavigations', function() {
     SyncBrowserProxyImpl.setInstance(syncBrowserProxy);
     testHatsBrowserProxy = new TestHatsBrowserProxy();
     HatsBrowserProxyImpl.setInstance(testHatsBrowserProxy);
+    testPrivacyGuideBrowserProxy = new TestPrivacyGuideBrowserProxy();
+    testPrivacyGuideBrowserProxy.setShouldShowAdTopicsCardForTesting(false);
+    PrivacyGuideBrowserProxyImpl.setInstance(testPrivacyGuideBrowserProxy);
 
     page = createPrivacyGuidePageForTest(settingsPrefs);
     setupPrivacyGuidePageForTest(page, syncBrowserProxy);
@@ -808,11 +900,13 @@ suite('CookiesCardNavigations', function() {
 
   test('BackNavigationShouldShowSafeBrowsing', async function() {
     await navigateToStep(PrivacyGuideStep.COOKIES);
-    assertCookiesCardVisible(page, syncBrowserProxy);
+    assertCookiesCardVisible(
+        page, syncBrowserProxy, testPrivacyGuideBrowserProxy);
 
     page.shadowRoot!.querySelector<HTMLElement>('#backButton')!.click();
     await flushTasks();
-    assertSafeBrowsingCardVisible(page, syncBrowserProxy);
+    assertSafeBrowsingCardVisible(
+        page, syncBrowserProxy, testPrivacyGuideBrowserProxy);
 
     const actionResult =
         await testMetricsBrowserProxy.whenCalled('recordAction');
@@ -822,16 +916,19 @@ suite('CookiesCardNavigations', function() {
   test('BackNavigationShouldSafeBrowsingSync', async function() {
     setSafeBrowsingSetting(page, SafeBrowsingSetting.DISABLED);
     await navigateToStep(PrivacyGuideStep.COOKIES);
-    assertCookiesCardVisible(page, syncBrowserProxy);
+    assertCookiesCardVisible(
+        page, syncBrowserProxy, testPrivacyGuideBrowserProxy);
 
     page.shadowRoot!.querySelector<HTMLElement>('#backButton')!.click();
     await flushTasks();
-    assertHistorySyncCardVisible(page, syncBrowserProxy);
+    assertHistorySyncCardVisible(
+        page, syncBrowserProxy, testPrivacyGuideBrowserProxy);
   });
 
   test('ForwardNavigation', async function() {
     await navigateToStep(PrivacyGuideStep.COOKIES);
-    assertCookiesCardVisible(page, syncBrowserProxy);
+    assertCookiesCardVisible(
+        page, syncBrowserProxy, testPrivacyGuideBrowserProxy);
 
     page.shadowRoot!.querySelector<HTMLElement>('#nextButton')!.click();
     await flushTasks();
@@ -848,7 +945,8 @@ suite('CookiesCardNavigations', function() {
 
   test('cookiesAllowAllNavigatesAway', async function() {
     await navigateToStep(PrivacyGuideStep.COOKIES);
-    assertCookiesCardVisible(page, syncBrowserProxy);
+    assertCookiesCardVisible(
+        page, syncBrowserProxy, testPrivacyGuideBrowserProxy);
 
     // Changing the cookie setting to a non-third-party state while shown should
     // navigate away from the cookies card.
@@ -859,7 +957,8 @@ suite('CookiesCardNavigations', function() {
 
   test('cookiesBlockAllNavigatesAway', async function() {
     await navigateToStep(PrivacyGuideStep.COOKIES);
-    assertCookiesCardVisible(page, syncBrowserProxy);
+    assertCookiesCardVisible(
+        page, syncBrowserProxy, testPrivacyGuideBrowserProxy);
 
     // Changing the cookie setting to a non-third-party state while shown should
     // navigate away from the cookies card.
@@ -877,6 +976,111 @@ suite('CookiesCardNavigations', function() {
     const interaction =
         await testHatsBrowserProxy.whenCalled('trustSafetyInteractionOccurred');
     assertEquals(TrustSafetyInteraction.COMPLETED_PRIVACY_GUIDE, interaction);
+  });
+});
+
+suite('AdTopicsCardNavigations', function() {
+  let page: SettingsPrivacyGuidePageElement;
+  let settingsPrefs: SettingsPrefsElement;
+  let syncBrowserProxy: TestSyncBrowserProxy;
+  let testMetricsBrowserProxy: TestMetricsBrowserProxy;
+  let testHatsBrowserProxy: TestHatsBrowserProxy;
+  let testPrivacyGuideBrowserProxy: TestPrivacyGuideBrowserProxy;
+
+  suiteSetup(function() {
+    settingsPrefs = document.createElement('settings-prefs');
+    return CrSettingsPrefs.initialized;
+  });
+
+  setup(function() {
+    document.body.innerHTML = window.trustedTypes!.emptyHTML;
+
+    assertTrue(loadTimeData.getBoolean('showPrivacyGuide'));
+
+    testMetricsBrowserProxy = new TestMetricsBrowserProxy();
+    MetricsBrowserProxyImpl.setInstance(testMetricsBrowserProxy);
+    syncBrowserProxy = new TestSyncBrowserProxy();
+    syncBrowserProxy.testSyncStatus = null;
+    SyncBrowserProxyImpl.setInstance(syncBrowserProxy);
+    testHatsBrowserProxy = new TestHatsBrowserProxy();
+    HatsBrowserProxyImpl.setInstance(testHatsBrowserProxy);
+    testPrivacyGuideBrowserProxy = new TestPrivacyGuideBrowserProxy();
+    testPrivacyGuideBrowserProxy.setShouldShowAdTopicsCardForTesting(true);
+    PrivacyGuideBrowserProxyImpl.setInstance(testPrivacyGuideBrowserProxy);
+
+    page = createPrivacyGuidePageForTest(settingsPrefs);
+    setupPrivacyGuidePageForTest(page, syncBrowserProxy);
+
+    return flushTasks();
+  });
+
+  teardown(function() {
+    page.remove();
+    // The browser instance is shared among the tests, hence the route needs to
+    // be reset between tests.
+    Router.getInstance().navigateTo(routes.BASIC);
+  });
+
+  test('BackNavigationCookiesNotShown', async function() {
+    await navigateToStep(PrivacyGuideStep.AD_TOPICS);
+    assertAdTopicsCardVisible(
+        page, syncBrowserProxy, testPrivacyGuideBrowserProxy);
+
+    page.shadowRoot!.querySelector<HTMLElement>('#backButton')!.click();
+    assertSafeBrowsingCardVisible(
+        page, syncBrowserProxy, testPrivacyGuideBrowserProxy);
+  });
+
+  test('BackNavigationCookiesNotShownSafeBrowsingDisabled', async function() {
+    setSafeBrowsingSetting(page, SafeBrowsingSetting.DISABLED);
+    await navigateToStep(PrivacyGuideStep.AD_TOPICS);
+    assertAdTopicsCardVisible(
+        page, syncBrowserProxy, testPrivacyGuideBrowserProxy);
+
+    page.shadowRoot!.querySelector<HTMLElement>('#backButton')!.click();
+    assertHistorySyncCardVisible(
+        page, syncBrowserProxy, testPrivacyGuideBrowserProxy);
+  });
+
+  test(
+      'BackNavigationCookiesNotShownSafeBrowsingDisabledSyncOff',
+      async function() {
+        setupSync({
+          syncBrowserProxy: syncBrowserProxy,
+          syncOn: false,
+          syncAllDataTypes: false,
+          typedUrlsSynced: false,
+        });
+        setSafeBrowsingSetting(page, SafeBrowsingSetting.DISABLED);
+        await navigateToStep(PrivacyGuideStep.AD_TOPICS);
+        assertAdTopicsCardVisible(
+            page, syncBrowserProxy, testPrivacyGuideBrowserProxy);
+
+        page.shadowRoot!.querySelector<HTMLElement>('#backButton')!.click();
+        assertMsbbCardVisible(
+            page, syncBrowserProxy, testPrivacyGuideBrowserProxy);
+      });
+
+  test('BackNavigationCookiesShown', async function() {
+    loadTimeData.overrideValues({is3pcdCookieSettingsRedesignEnabled: false});
+    resetRouterForTesting();
+    await navigateToStep(PrivacyGuideStep.AD_TOPICS);
+    assertAdTopicsCardVisible(
+        page, syncBrowserProxy, testPrivacyGuideBrowserProxy);
+
+    page.shadowRoot!.querySelector<HTMLElement>('#backButton')!.click();
+    assertCookiesCardVisible(
+        page, syncBrowserProxy, testPrivacyGuideBrowserProxy);
+  });
+
+  test('ForwardNavigation', async function() {
+    await navigateToStep(PrivacyGuideStep.AD_TOPICS);
+    assertAdTopicsCardVisible(
+        page, syncBrowserProxy, testPrivacyGuideBrowserProxy);
+
+    page.shadowRoot!.querySelector<HTMLElement>('#nextButton')!.click();
+    flush();
+    assertCompletionCardVisible(page);
   });
 });
 
@@ -929,6 +1133,7 @@ suite('3pcdOff', function() {
   let settingsPrefs: SettingsPrefsElement;
   let syncBrowserProxy: TestSyncBrowserProxy;
   let testMetricsBrowserProxy: TestMetricsBrowserProxy;
+  let testPrivacyGuideBrowserProxy: TestPrivacyGuideBrowserProxy;
 
   suiteSetup(function() {
     loadTimeData.overrideValues({is3pcdCookieSettingsRedesignEnabled: false});
@@ -960,6 +1165,9 @@ suite('3pcdOff', function() {
       typedUrlsSynced: true,
     });
     SyncBrowserProxyImpl.setInstance(syncBrowserProxy);
+    testPrivacyGuideBrowserProxy = new TestPrivacyGuideBrowserProxy();
+    testPrivacyGuideBrowserProxy.setShouldShowAdTopicsCardForTesting(false);
+    PrivacyGuideBrowserProxyImpl.setInstance(testPrivacyGuideBrowserProxy);
 
     page = createPrivacyGuidePageForTest(settingsPrefs);
     setupPrivacyGuidePageForTest(page, syncBrowserProxy);
@@ -1021,11 +1229,13 @@ suite('3pcdOff', function() {
     // Forward flow.
     await navigateToStep(PrivacyGuideStep.WELCOME);
     dispatchArrowRightEvent();
-    assertMsbbCardVisible(page, syncBrowserProxy);
+    assertMsbbCardVisible(page, syncBrowserProxy, testPrivacyGuideBrowserProxy);
     dispatchArrowRightEvent();
-    assertHistorySyncCardVisible(page, syncBrowserProxy);
+    assertHistorySyncCardVisible(
+        page, syncBrowserProxy, testPrivacyGuideBrowserProxy);
     dispatchArrowRightEvent();
-    assertSafeBrowsingCardVisible(page, syncBrowserProxy);
+    assertSafeBrowsingCardVisible(
+        page, syncBrowserProxy, testPrivacyGuideBrowserProxy);
     // Arrow keys don't trigger a navigation when the focus is inside the radio
     // group.
     const sbRadioGroup =
@@ -1034,12 +1244,15 @@ suite('3pcdOff', function() {
             .shadowRoot!.querySelector<HTMLElement>('#safeBrowsingRadioGroup');
     assertTrue(!!sbRadioGroup);
     sbRadioGroup.dispatchEvent(arrowLeftEvent);
-    assertSafeBrowsingCardVisible(page, syncBrowserProxy);
+    assertSafeBrowsingCardVisible(
+        page, syncBrowserProxy, testPrivacyGuideBrowserProxy);
     sbRadioGroup.dispatchEvent(arrowRightEvent);
-    assertSafeBrowsingCardVisible(page, syncBrowserProxy);
+    assertSafeBrowsingCardVisible(
+        page, syncBrowserProxy, testPrivacyGuideBrowserProxy);
 
     dispatchArrowRightEvent();
-    assertCookiesCardVisible(page, syncBrowserProxy);
+    assertCookiesCardVisible(
+        page, syncBrowserProxy, testPrivacyGuideBrowserProxy);
     // Arrow keys don't trigger a navigation when the focus is inside the radio
     // group.
     const cookiesRadioGroup =
@@ -1048,9 +1261,11 @@ suite('3pcdOff', function() {
             .shadowRoot!.querySelector<HTMLElement>('#cookiesRadioGroup');
     assertTrue(!!cookiesRadioGroup);
     cookiesRadioGroup.dispatchEvent(arrowLeftEvent);
-    assertCookiesCardVisible(page, syncBrowserProxy);
+    assertCookiesCardVisible(
+        page, syncBrowserProxy, testPrivacyGuideBrowserProxy);
     cookiesRadioGroup.dispatchEvent(arrowRightEvent);
-    assertCookiesCardVisible(page, syncBrowserProxy);
+    assertCookiesCardVisible(
+        page, syncBrowserProxy, testPrivacyGuideBrowserProxy);
 
     dispatchArrowRightEvent();
     assertCompletionCardVisible(page);
@@ -1060,13 +1275,16 @@ suite('3pcdOff', function() {
 
     // Backward flow.
     dispatchArrowLeftEvent();
-    assertCookiesCardVisible(page, syncBrowserProxy);
+    assertCookiesCardVisible(
+        page, syncBrowserProxy, testPrivacyGuideBrowserProxy);
     dispatchArrowLeftEvent();
-    assertSafeBrowsingCardVisible(page, syncBrowserProxy);
+    assertSafeBrowsingCardVisible(
+        page, syncBrowserProxy, testPrivacyGuideBrowserProxy);
     dispatchArrowLeftEvent();
-    assertHistorySyncCardVisible(page, syncBrowserProxy);
+    assertHistorySyncCardVisible(
+        page, syncBrowserProxy, testPrivacyGuideBrowserProxy);
     dispatchArrowLeftEvent();
-    assertMsbbCardVisible(page, syncBrowserProxy);
+    assertMsbbCardVisible(page, syncBrowserProxy, testPrivacyGuideBrowserProxy);
     dispatchArrowLeftEvent();
     assertWelcomeCardVisible(page);
     // Backward navigation on the welcome card does not trigger a navigation.
@@ -1076,10 +1294,12 @@ suite('3pcdOff', function() {
 
   test('safeBrowsingForwardNavigationShouldShowCookies', async function() {
     await navigateToStep(PrivacyGuideStep.SAFE_BROWSING);
-    assertSafeBrowsingCardVisible(page, syncBrowserProxy);
+    assertSafeBrowsingCardVisible(
+        page, syncBrowserProxy, testPrivacyGuideBrowserProxy);
 
     page.shadowRoot!.querySelector<HTMLElement>('#nextButton')!.click();
-    assertCookiesCardVisible(page, syncBrowserProxy);
+    assertCookiesCardVisible(
+        page, syncBrowserProxy, testPrivacyGuideBrowserProxy);
 
     const result = await testMetricsBrowserProxy.whenCalled(
         'recordPrivacyGuideNextNavigationHistogram');
@@ -1093,7 +1313,8 @@ suite('3pcdOff', function() {
   test('safeBrowsingForwardNavigationShouldHideCookies', async function() {
     setCookieSetting(page, CookiePrimarySetting.ALLOW_ALL);
     await navigateToStep(PrivacyGuideStep.SAFE_BROWSING);
-    assertSafeBrowsingCardVisible(page, syncBrowserProxy);
+    assertSafeBrowsingCardVisible(
+        page, syncBrowserProxy, testPrivacyGuideBrowserProxy);
 
     page.shadowRoot!.querySelector<HTMLElement>('#nextButton')!.click();
     await flushTasks();
@@ -1102,10 +1323,12 @@ suite('3pcdOff', function() {
 
   test('cookiesBackNavigationSafeBrowsingOn', async function() {
     await navigateToStep(PrivacyGuideStep.COOKIES);
-    assertCookiesCardVisible(page, syncBrowserProxy);
+    assertCookiesCardVisible(
+        page, syncBrowserProxy, testPrivacyGuideBrowserProxy);
 
     page.shadowRoot!.querySelector<HTMLElement>('#backButton')!.click();
-    assertSafeBrowsingCardVisible(page, syncBrowserProxy);
+    assertSafeBrowsingCardVisible(
+        page, syncBrowserProxy, testPrivacyGuideBrowserProxy);
 
     const actionResult =
         await testMetricsBrowserProxy.whenCalled('recordAction');
@@ -1115,16 +1338,19 @@ suite('3pcdOff', function() {
   test('cookiesBackNavigationSafeBrowsingOff', async function() {
     setSafeBrowsingSetting(page, SafeBrowsingSetting.DISABLED);
     await navigateToStep(PrivacyGuideStep.COOKIES);
-    assertCookiesCardVisible(page, syncBrowserProxy);
+    assertCookiesCardVisible(
+        page, syncBrowserProxy, testPrivacyGuideBrowserProxy);
 
     page.shadowRoot!.querySelector<HTMLElement>('#backButton')!.click();
     await flushTasks();
-    assertHistorySyncCardVisible(page, syncBrowserProxy);
+    assertHistorySyncCardVisible(
+        page, syncBrowserProxy, testPrivacyGuideBrowserProxy);
   });
 
   test('cookiesForwardNavigation', async function() {
     await navigateToStep(PrivacyGuideStep.COOKIES);
-    assertCookiesCardVisible(page, syncBrowserProxy);
+    assertCookiesCardVisible(
+        page, syncBrowserProxy, testPrivacyGuideBrowserProxy);
 
     page.shadowRoot!.querySelector<HTMLElement>('#nextButton')!.click();
     await flushTasks();
@@ -1148,7 +1374,8 @@ suite('3pcdOff', function() {
         new CustomEvent('back-button-click', {bubbles: true, composed: true}));
     flush();
 
-    assertCookiesCardVisible(page, syncBrowserProxy);
+    assertCookiesCardVisible(
+        page, syncBrowserProxy, testPrivacyGuideBrowserProxy);
     const actionResult =
         await testMetricsBrowserProxy.whenCalled('recordAction');
     assertEquals(actionResult, 'Settings.PrivacyGuide.BackClickCompletion');

@@ -793,6 +793,11 @@ IN_PROC_BROWSER_TEST_F(SettingsPrivacyGuideTest, CookiesCardNavigations) {
           "runMochaSuite('CookiesCardNavigations')");
 }
 
+IN_PROC_BROWSER_TEST_F(SettingsPrivacyGuideTest, AdTopicsCardNavigations) {
+  RunTest("settings/privacy_guide_page_test.js",
+          "runMochaSuite('AdTopicsCardNavigations')");
+}
+
 IN_PROC_BROWSER_TEST_F(SettingsPrivacyGuideTest, PrivacyGuideDialog) {
   RunTest("settings/privacy_guide_page_test.js",
           "runMochaSuite('PrivacyGuideDialog')");

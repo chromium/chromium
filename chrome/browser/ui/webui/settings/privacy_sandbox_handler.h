@@ -41,6 +41,7 @@ class PrivacySandboxHandler : public SettingsPageUIHandler {
   void HandleTopicsToggleChanged(const base::Value::List& args);
   void HandleGetFirstLevelTopics(const base::Value::List& args);
   void HandleGetChildTopicsCurrentlyAssigned(const base::Value::List& args);
+  void HandleShouldShowAdTopicsCard(const base::Value::List& args);
 
   PrivacySandboxService* GetPrivacySandboxService();
 
