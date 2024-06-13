@@ -144,7 +144,6 @@ void FrameRateDecider::UpdatePreferredFrameIntervalIfNeeded() {
         fixed_interval_frame_sink_intervals.push_back(interval);
         break;
       case mojom::CompositorFrameSinkType::kLayerTree:
-        DCHECK_NE(interval, BeginFrameArgs::MaxInterval());
         break;
     }
   }
@@ -205,7 +204,6 @@ void FrameRateDecider::UpdatePreferredFrameIntervalIfNeeded() {
   for (const auto& frame_sink_id : frame_sinks_updated_in_previous_frame_) {
     auto interval =
         client_->GetPreferredFrameIntervalForFrameSinkId(frame_sink_id);
-    DCHECK_NE(interval, BeginFrameArgs::MaxInterval());
     if (!min_frame_sink_interval) {
       min_frame_sink_interval = interval;
       continue;
