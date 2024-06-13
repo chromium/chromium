@@ -4,6 +4,7 @@
 
 package org.chromium.chrome.browser.tasks;
 
+import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyInt;
@@ -936,9 +937,28 @@ public class ReturnToChromeUtilUnitTest {
 
     @Test
     @SmallTest
-    public void testShouldResumeHomeSurfaceOnFoldConfigurationChange() {
-        Assert.assertFalse(
-                ReturnToChromeUtil.shouldResumeHomeSurfaceOnFoldConfigurationChange(null));
+    public void testShouldShowNtpOnFoldChange() {
+        assertTrue(StartSurfaceConfiguration.isNtpAsHomeSurfaceEnabled(true));
+
+        // Sets main intent from launcher:
+        Intent intent = createMainIntentFromLauncher();
+
+        // Sets background time to make the return time arrive:
+        ChromeSharedPreferences.getInstance()
+                .addToStringSet(
+                        ChromePreferenceKeys.TABBED_ACTIVITY_LAST_BACKGROUNDED_TIME_MS_PREF, "0");
+        START_SURFACE_RETURN_TIME_SECONDS.setForTesting(0);
+        assertTrue(ReturnToChromeUtil.shouldShowTabSwitcher(0, false));
+
+        // There should always be at least 1 tab. Otherwise one will be created regardless.
+        doReturn(true).when(mTabModelSelector).isTabStateInitialized();
+        doReturn(1).when(mTabModelSelector).getTotalTabCount();
+        assertTrue(HomepagePolicyManager.isInitializedWithNative());
+
+        assertTrue(IntentUtils.isMainIntentFromLauncher(intent));
+        assertTrue(
+                ReturnToChromeUtil.shouldShowNtpAsHomeSurfaceAtStartup(
+                        true, intent, mSaveInstanceState, mTabModelSelector, mInactivityTracker));
 
         doReturn(true)
                 .when(mSaveInstanceState)
@@ -946,19 +966,19 @@ public class ReturnToChromeUtilUnitTest {
         doReturn(false)
                 .when(mSaveInstanceState)
                 .getBoolean(RESUME_HOME_SURFACE_ON_MODE_CHANGE, false);
-        Assert.assertFalse(
-                ReturnToChromeUtil.shouldResumeHomeSurfaceOnFoldConfigurationChange(
-                        mSaveInstanceState));
+        assertFalse(
+                ReturnToChromeUtil.shouldShowNtpAsHomeSurfaceAtStartup(
+                        true, intent, mSaveInstanceState, mTabModelSelector, mInactivityTracker));
 
         doReturn(false)
                 .when(mSaveInstanceState)
                 .getBoolean(FoldTransitionController.DID_CHANGE_TABLET_MODE, false);
-        doReturn(true)
+        doReturn(false)
                 .when(mSaveInstanceState)
                 .getBoolean(RESUME_HOME_SURFACE_ON_MODE_CHANGE, false);
-        Assert.assertFalse(
-                ReturnToChromeUtil.shouldResumeHomeSurfaceOnFoldConfigurationChange(
-                        mSaveInstanceState));
+        assertTrue(
+                ReturnToChromeUtil.shouldShowNtpAsHomeSurfaceAtStartup(
+                        true, intent, mSaveInstanceState, mTabModelSelector, mInactivityTracker));
 
         doReturn(true)
                 .when(mSaveInstanceState)
@@ -967,8 +987,18 @@ public class ReturnToChromeUtilUnitTest {
                 .when(mSaveInstanceState)
                 .getBoolean(RESUME_HOME_SURFACE_ON_MODE_CHANGE, false);
         assertTrue(
-                ReturnToChromeUtil.shouldResumeHomeSurfaceOnFoldConfigurationChange(
-                        mSaveInstanceState));
+                ReturnToChromeUtil.shouldShowNtpAsHomeSurfaceAtStartup(
+                        true, intent, mSaveInstanceState, mTabModelSelector, mInactivityTracker));
+
+        doReturn(false)
+                .when(mSaveInstanceState)
+                .getBoolean(FoldTransitionController.DID_CHANGE_TABLET_MODE, false);
+        doReturn(true)
+                .when(mSaveInstanceState)
+                .getBoolean(RESUME_HOME_SURFACE_ON_MODE_CHANGE, false);
+        assertTrue(
+                ReturnToChromeUtil.shouldShowNtpAsHomeSurfaceAtStartup(
+                        true, intent, mSaveInstanceState, mTabModelSelector, mInactivityTracker));
     }
 
     @Test
