@@ -4,7 +4,7 @@
 
 # Schema can be found at: platform/dev/test/gtest/gtest_schema.yaml
 ---
-name: "TerminalIntegrationTest"
+name: "AshIntegrationTest"
 harness: "crosier"
 category: "integration"
 owners:
