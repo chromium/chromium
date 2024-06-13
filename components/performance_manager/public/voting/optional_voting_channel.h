@@ -20,8 +20,8 @@ template <class VoteImpl>
 class OptionalVotingChannel {
  public:
   using ContextType = typename VoteImpl::ContextType;
-  using VoterId = VoterId<VoteImpl>;
-  using VotingChannel = VotingChannel<VoteImpl>;
+  using VoterId = voting::VoterId<VoteImpl>;
+  using VotingChannel = voting::VotingChannel<VoteImpl>;
   using VoteType = VoteImpl::VoteType;
 
   explicit OptionalVotingChannel(VotingChannel upstream_voting_channel);
