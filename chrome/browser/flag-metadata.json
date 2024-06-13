@@ -8790,7 +8790,7 @@
   {
     "name": "use-search-click-for-right-click",
     "owners": [ "zentaro@chromium.org", "jimmyxgong@chromium.org", "cros-peripherals@google.com" ],
-    "expiry_milestone": 130
+    "expiry_milestone": 140
   },
   {
     "name": "use-stork-smds-server-address",
