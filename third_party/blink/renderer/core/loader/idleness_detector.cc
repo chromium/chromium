@@ -226,4 +226,16 @@ void IdlenessDetector::Trace(Visitor* visitor) const {
   visitor->Trace(network_quiet_timer_);
 }
 
+void IdlenessDetector::Dispose() {
+  if (task_observer_added_) {
+    // `IdlenessDetector` should never be deleted without having been
+    // `Shutdown()`. As a temporary workaround for crbug.com/337200890,
+    // unregister as a `TaskTimeObserver` if `Shutdown()` wasn't called.
+    //
+    // TODO(crbug.com/337200890): Remove when the root cause of the bug has been
+    // addressed.
+    Thread::Current()->RemoveTaskTimeObserver(this);
+  }
+}
+
 }  // namespace blink

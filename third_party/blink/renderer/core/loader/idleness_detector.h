@@ -10,6 +10,7 @@
 #include "base/time/time.h"
 #include "third_party/blink/renderer/core/core_export.h"
 #include "third_party/blink/renderer/platform/heap/garbage_collected.h"
+#include "third_party/blink/renderer/platform/heap/prefinalizer.h"
 #include "third_party/blink/renderer/platform/timer.h"
 
 namespace blink {
@@ -25,6 +26,8 @@ class ResourceFetcher;
 class CORE_EXPORT IdlenessDetector
     : public GarbageCollected<IdlenessDetector>,
       public base::sequence_manager::TaskTimeObserver {
+  USING_PRE_FINALIZER(IdlenessDetector, Dispose);
+
  public:
   IdlenessDetector(
       LocalFrame*,
@@ -71,6 +74,8 @@ class CORE_EXPORT IdlenessDetector
   // have the side effect of triggering a task, which will send WillProcessTask
   // and DidProcessTask observer notifications.
   void NetworkQuietTimerFired(TimerBase*);
+
+  void Dispose();
 
   Member<LocalFrame> local_frame_;
   bool task_observer_added_;
