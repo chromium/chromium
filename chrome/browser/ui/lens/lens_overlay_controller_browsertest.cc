@@ -121,18 +121,12 @@ constexpr char kCheckSidePanelTranslateResultsLoadedScript[] =
     "document.getElementsByTagName('lens-side-panel-app')[0].shadowRoot; "
     "const iframeSrcLoaded = "
     "  root.getElementById('results').src.includes('q=' + $1);"
-    "const tlitetxtPresent = "
-    "  root.getElementById('results').src.includes('tlitetxt=' + $1);"
-    "const ctxslTransPresent = "
-    "  root.getElementById('results').src.includes('ctxsl_trans=1');"
-    "const tliteslPresent = "
-    "  root.getElementById('results').src.includes('tlitesl=' + $2);"
-    "const tlitetlPresent = "
-    "  root.getElementById('results').src.includes('tlitetl=en');"
+    "const stickPresent = "
+    "  root.getElementById('results').src.includes('stick=');"
     "const searchboxInputLoaded = "
     "  root.getElementById('realbox').shadowRoot.getElementById('input').value "
-    "  === $1; return iframeSrcLoaded && tlitetxtPresent && ctxslTransPresent "
-    "&& tliteslPresent & tlitetlPresent && searchboxInputLoaded;})();";
+    "  === $1; return iframeSrcLoaded && stickPresent && "
+    "  searchboxInputLoaded;})();";
 
 constexpr char kCheckSidePanelThumbnailShownScript[] =
     "(function() {const appRoot = "
@@ -1123,7 +1117,7 @@ IN_PROC_BROWSER_TEST_F(LensOverlayControllerBrowserTest,
            content::EvalJs(
                controller->GetSidePanelWebContentsForTesting(),
                content::JsReplace(kCheckSidePanelTranslateResultsLoadedScript,
-                                  text_query, "auto"));
+                                  text_query));
   }));
 }
 
