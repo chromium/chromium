@@ -31,6 +31,8 @@ build_webui("build") {
     "power_bookmarks_service.ts",
   ]
 
+  css_files = [ "power_bookmark_row.css" ]
+
   icons_html_files = [
     "commerce/icons.html",
     "icons.html",
@@ -49,6 +51,7 @@ build_webui("build") {
   ]
   ts_deps = [
     "../shared:build_ts",
+    "//third_party/lit/v3_0:build_ts",
     "//third_party/polymer/v3_0:library",
     "//ui/webui/resources/cr_components/color_change_listener:build_ts",
     "//ui/webui/resources/cr_components/commerce:build_ts",
@@ -63,5 +66,6 @@ build_webui("build") {
             "$root_gen_dir/chrome/browser/resources/side_panel/shared/tsc/*",
             target_gen_dir) ]
 
+  html_to_wrapper_template = "detect"
   webui_context_type = "trusted"
 }
