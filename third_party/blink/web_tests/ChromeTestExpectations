@@ -138,3 +138,7 @@ crbug.com/1517744 external/wpt/wai-aria/role/tree-roles.html [ Pass ]
 # Run secure payment confirmation tests on new headless
 external/wpt/secure-payment-confirmation/* [ Pass ]
 crbug.com/336866579 external/wpt/secure-payment-confirmation/authentication-requires-user-activation.https.html [ Failure ]
+crbug.com/336866579 external/wpt/secure-payment-confirmation/authentication-cross-origin.sub.https.html [ Pass Timeout ]
+crbug.com/336866579 external/wpt/secure-payment-confirmation/authentication-in-iframe.sub.https.html [ Failure Pass ]
+crbug.com/336866579 external/wpt/secure-payment-confirmation/enrollment-in-iframe.sub.https.html [ Pass Timeout ]
+
