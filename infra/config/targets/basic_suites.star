@@ -2250,7 +2250,7 @@ targets.legacy_basic_suite(
                 "--no-xvfb",
             ],
             ci_only = True,  # https://crbug.com/dawn/1749
-            android_swarming = targets.swarming(
+            swarming = targets.swarming(
                 shards = 2,
             ),
         ),
@@ -2258,7 +2258,7 @@ targets.legacy_basic_suite(
             linux_args = [
                 "--no-xvfb",
             ],
-            android_swarming = targets.swarming(
+            swarming = targets.swarming(
                 shards = 2,
             ),
         ),
@@ -2266,7 +2266,7 @@ targets.legacy_basic_suite(
             linux_args = [
                 "--no-xvfb",
             ],
-            android_swarming = targets.swarming(
+            swarming = targets.swarming(
                 shards = 2,
             ),
         ),
@@ -2274,7 +2274,7 @@ targets.legacy_basic_suite(
             linux_args = [
                 "--no-xvfb",
             ],
-            android_swarming = targets.swarming(
+            swarming = targets.swarming(
                 shards = 2,
             ),
         ),
@@ -2284,14 +2284,22 @@ targets.legacy_basic_suite(
 targets.legacy_basic_suite(
     name = "gpu_dawn_gtests_no_dxc",
     tests = {
-        "dawn_end2end_no_dxc_tests": targets.legacy_test_config(),
+        "dawn_end2end_no_dxc_tests": targets.legacy_test_config(
+            swarming = targets.swarming(
+                shards = 2,
+            ),
+        ),
     },
 )
 
 targets.legacy_basic_suite(
     name = "gpu_dawn_gtests_no_dxc_with_validation",
     tests = {
-        "dawn_end2end_no_dxc_validation_layers_tests": targets.legacy_test_config(),
+        "dawn_end2end_no_dxc_validation_layers_tests": targets.legacy_test_config(
+            swarming = targets.swarming(
+                shards = 2,
+            ),
+        ),
     },
 )
 
@@ -2303,6 +2311,9 @@ targets.legacy_basic_suite(
             linux_args = [
                 "--no-xvfb",
             ],
+            swarming = targets.swarming(
+                shards = 2,
+            ),
         ),
     },
 )

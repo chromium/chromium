@@ -2331,7 +2331,7 @@
           '--no-xvfb',
         ],
         'ci_only': True,
-        'android_swarming': {
+        'swarming': {
           'shards': 2,
         },
       },
@@ -2346,7 +2346,7 @@
         'linux_args': [
           '--no-xvfb',
         ],
-        'android_swarming': {
+        'swarming': {
           'shards': 2,
         },
       },
@@ -2357,7 +2357,7 @@
         'linux_args': [
           '--no-xvfb',
         ],
-        'android_swarming': {
+        'swarming': {
           'shards': 2,
         },
       },
@@ -2372,7 +2372,7 @@
         'linux_args': [
           '--no-xvfb',
         ],
-        'android_swarming': {
+        'swarming': {
           'shards': 2,
         },
       },
@@ -2387,6 +2387,9 @@
         'args': [
           '--disable-toggles=use_dxc',
         ],
+        'swarming': {
+          'shards': 2,
+        },
       },
     },
 
@@ -2400,6 +2403,9 @@
           '--disable-toggles=use_dxc',
           '--enable-backend-validation',
         ],
+        'swarming': {
+          'shards': 2,
+        },
       },
     },
 
@@ -2415,6 +2421,9 @@
         'linux_args': [
           '--no-xvfb',
         ],
+        'swarming': {
+          'shards': 2,
+        },
       },
     },
 
