@@ -11,6 +11,7 @@
 
 #include "content/public/browser/web_contents_delegate.h"
 #include "ui/base/accelerators/accelerator.h"
+#include "ui/base/interaction/element_identifier.h"
 #include "ui/base/ui_base_types.h"
 #include "ui/base/window_open_disposition.h"
 #include "ui/web_dialogs/web_dialogs_export.h"
@@ -110,6 +111,16 @@ class WEB_DIALOGS_EXPORT WebDialogDelegate {
   // Returns true if the dialog can ever be minimized.
   bool can_minimize() const { return can_minimize_; }
   void set_can_minimize(bool can_minimize) { can_minimize_ = can_minimize; }
+
+  // Gets the element identifier that should be used for the web view that
+  // `this` is a delegate of.
+  ui::ElementIdentifier web_view_element_id() const {
+    return web_view_element_id_;
+  }
+  void set_web_view_element_id(
+      const ui::ElementIdentifier web_view_element_id) {
+    web_view_element_id_ = web_view_element_id;
+  }
 
   // A callback to notify the delegate that |source|'s loading state has
   // changed.
@@ -288,6 +299,9 @@ class WEB_DIALOGS_EXPORT WebDialogDelegate {
   bool show_title_ = true;
   gfx::Size size_;
   std::u16string title_;
+  // The value that should be used for the element ID of the web view that this
+  // is a delegate for.
+  ui::ElementIdentifier web_view_element_id_;
 
   OnDialogClosedCallback closed_callback_;
 

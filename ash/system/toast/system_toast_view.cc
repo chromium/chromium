@@ -24,6 +24,7 @@
 #include "ui/views/controls/label.h"
 #include "ui/views/highlight_border.h"
 #include "ui/views/layout/flex_layout_view.h"
+#include "ui/views/view_class_properties.h"
 
 namespace ash {
 
@@ -141,12 +142,18 @@ SystemToastView::SystemToastView(const std::u16string& text,
   shadow_ =
       SystemShadow::CreateShadowOnTextureLayer(SystemShadow::Type::kElevation4);
   shadow_->SetRoundedCornerRadius(rounded_corner_radius);
+
+  SetProperty(views::kElementIdentifierKey, kSystemToastViewElementId);
 }
 
 SystemToastView::~SystemToastView() = default;
 
 void SystemToastView::SetText(const std::u16string& text) {
   label_->SetText(text);
+}
+
+const std::u16string& SystemToastView::GetText() const {
+  return label_->GetText();
 }
 
 void SystemToastView::ToggleButtonA11yFocus() {
@@ -184,6 +191,9 @@ void SystemToastView::OnBoundsChanged(const gfx::Rect& previous_bounds) {
   // `shadow_` should have the same bounds as the view's layer.
   shadow_->SetContentBounds(layer()->bounds());
 }
+
+DEFINE_CLASS_ELEMENT_IDENTIFIER_VALUE(SystemToastView,
+                                      kSystemToastViewElementId);
 
 BEGIN_METADATA(SystemToastView)
 END_METADATA

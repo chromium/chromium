@@ -17,12 +17,11 @@
 #include "base/test/test_switches.h"
 #include "chrome/browser/ui/chrome_pages.h"
 #include "chrome/browser/ui/settings_window_manager_chromeos.h"
-#include "chrome/test/base/ash/interactive/interactive_ash_test.h"
+#include "chrome/test/base/ash/interactive/bluetooth/bluetooth_power_state_observer.h"
 #include "chrome/test/base/chromeos/crosier/annotations.h"
 #include "chrome/test/base/chromeos/crosier/ash_integration_test.h"
 #include "dbus/object_path.h"
 #include "device/bluetooth/dbus/bluetooth_adapter_client.h"
-#include "device/bluetooth/dbus/bluez_dbus_manager.h"
 #include "device/bluetooth/floss/floss_features.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/base/interaction/element_identifier.h"
@@ -31,38 +30,6 @@
 
 namespace ash {
 namespace {
-
-using bluez::BluetoothAdapterClient;
-using bluez::BluezDBusManager;
-
-// State tracker for Bluetooth power-on.
-class BluetoothPowerStateObserver : public ui::test::ObservationStateObserver<
-                                        bool,
-                                        BluetoothAdapterClient,
-                                        BluetoothAdapterClient::Observer> {
- public:
-  BluetoothPowerStateObserver(BluetoothAdapterClient* adapter_client,
-                              BluetoothAdapterClient::Properties* properties)
-      : ObservationStateObserver(adapter_client), properties_(properties) {}
-
-  ~BluetoothPowerStateObserver() override = default;
-
-  // ui::test::ObservationStateObserver:
-  bool GetStateObserverInitialState() const override {
-    return properties_->powered.value();
-  }
-
-  // BluetoothAdapterClient::Observer:
-  void AdapterPropertyChanged(const dbus::ObjectPath& object_path,
-                              const std::string& property_name) override {
-    if (property_name == properties_->powered.name()) {
-      OnStateObserverStateChanged(properties_->powered.value());
-    }
-  }
-
- private:
-  const raw_ptr<BluetoothAdapterClient::Properties> properties_;
-};
 
 DEFINE_LOCAL_STATE_IDENTIFIER_VALUE(BluetoothPowerStateObserver,
                                     kBluetoothPowerState);
@@ -79,37 +46,11 @@ class BluetoothIntegrationTest : public AshIntegrationTest {
   // AshIntegrationTest:
   void SetUpOnMainThread() override {
     TEST_REQUIRES(crosier::Requirement::kBluetooth);
-
     AshIntegrationTest::SetUpOnMainThread();
-
-    bluez_dbus_manager_ = BluezDBusManager::Get();
-    // The TEST_REQURIES annotation should have already validated that bluetooth
-    // works on this target.
-    ASSERT_TRUE(bluez_dbus_manager_);
-
-    // Get the D-Bus property tracker for the first bluetooth adapter.
-    adapter_client_ = bluez_dbus_manager_->GetBluetoothAdapterClient();
-    ASSERT_TRUE(adapter_client_);
-    std::vector<dbus::ObjectPath> adapters = adapter_client_->GetAdapters();
-    ASSERT_FALSE(adapters.empty());
-    properties_ = adapter_client_->GetProperties(adapters[0]);
-    ASSERT_TRUE(properties_);
-  }
-
-  void TearDownOnMainThread() override {
-    // Avoid dangling pointers during shutdown.
-    properties_ = nullptr;
-    adapter_client_ = nullptr;
-    bluez_dbus_manager_ = nullptr;
-
-    AshIntegrationTest::TearDownOnMainThread();
   }
 
  protected:
   base::test::ScopedFeatureList feature_list_;
-  raw_ptr<BluezDBusManager> bluez_dbus_manager_ = nullptr;
-  raw_ptr<BluetoothAdapterClient> adapter_client_ = nullptr;
-  raw_ptr<BluetoothAdapterClient::Properties> properties_ = nullptr;
 };
 
 IN_PROC_BROWSER_TEST_F(BluetoothIntegrationTest,
@@ -117,37 +58,37 @@ IN_PROC_BROWSER_TEST_F(BluetoothIntegrationTest,
   base::AddFeatureIdTagToTestResult(
       "screenplay-ba8a2ed6-be82-4174-bf38-489eba7181c6");
   SetupContextWidget();
-  RunTestSequence(ObserveState(kBluetoothPowerState,
-                               std::make_unique<BluetoothPowerStateObserver>(
-                                   adapter_client_, properties_)),
-                  // Ensure bluetooth is on at test start. If this fails it
-                  // means some previous test left bluetooth disabled.
-                  WaitForState(kBluetoothPowerState, true),
+  RunTestSequence(
+      ObserveState(kBluetoothPowerState, BluetoothPowerStateObserver::Create()),
 
-                  Log("Opening quick settings bubble"),
-                  PressButton(kUnifiedSystemTrayElementId),
-                  WaitForShow(kQuickSettingsViewElementId),
+      // Ensure bluetooth is on at test start. If this fails it
+      // means some previous test left bluetooth disabled.
+      WaitForState(kBluetoothPowerState, true),
 
-                  // The bluetooth toggle button may take time to enable because
-                  // the UI queries the bluetooth adapter state asynchronously.
-                  Log("Waiting for bluetooth toggle button to enable"),
-                  WaitForViewProperty(kBluetoothFeatureTileToggleElementId,
-                                      views::View, Enabled, true),
+      Log("Opening quick settings bubble"),
+      PressButton(kUnifiedSystemTrayElementId),
+      WaitForShow(kQuickSettingsViewElementId),
 
-                  Log("Pressing bluetooth toggle button"),
-                  PressButton(kBluetoothFeatureTileToggleElementId),
+      // The bluetooth toggle button may take time to enable because
+      // the UI queries the bluetooth adapter state asynchronously.
+      Log("Waiting for bluetooth toggle button to enable"),
+      WaitForViewProperty(kBluetoothFeatureTileToggleElementId, views::View,
+                          Enabled, true),
 
-                  Log("Waiting for bluetooth adapter to power off"),
-                  WaitForState(kBluetoothPowerState, false),
+      Log("Pressing bluetooth toggle button"),
+      PressButton(kBluetoothFeatureTileToggleElementId),
 
-                  // Allow UI state to settle.
-                  FlushEvents(),
+      Log("Waiting for bluetooth adapter to power off"),
+      WaitForState(kBluetoothPowerState, false),
 
-                  Log("Pressing bluetooth toggle button again"),
-                  PressButton(kBluetoothFeatureTileToggleElementId),
+      // Allow UI state to settle.
+      FlushEvents(),
 
-                  Log("Waiting for bluetooth adapter to power on"),
-                  WaitForState(kBluetoothPowerState, true));
+      Log("Pressing bluetooth toggle button again"),
+      PressButton(kBluetoothFeatureTileToggleElementId),
+
+      Log("Waiting for bluetooth adapter to power on"),
+      WaitForState(kBluetoothPowerState, true));
 }
 
 IN_PROC_BROWSER_TEST_F(BluetoothIntegrationTest,
@@ -175,9 +116,7 @@ IN_PROC_BROWSER_TEST_F(BluetoothIntegrationTest,
       // Ensure bluetooth is on at test start. If this fails it
       // means some previous test left bluetooth disabled.
       Log("Verifying initial bluetooth power state"),
-      ObserveState(kBluetoothPowerState,
-                   std::make_unique<BluetoothPowerStateObserver>(
-                       adapter_client_, properties_)),
+      ObserveState(kBluetoothPowerState, BluetoothPowerStateObserver::Create()),
       WaitForState(kBluetoothPowerState, true),
 
       Log("Opening OS settings system web app"),

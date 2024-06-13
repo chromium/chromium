@@ -7,6 +7,7 @@
 #include <memory>
 #include <utility>
 
+#include "ash/ash_element_identifiers.h"
 #include "ash/bubble/bubble_utils.h"
 #include "ash/public/cpp/system_tray_client.h"
 #include "ash/resources/vector_icons/vector_icons.h"
@@ -234,6 +235,9 @@ void BluetoothDetailedViewImpl::CreateMainContainer() {
   // Add a row for "pair new device".
   pair_new_device_view_ = main_container_->AddChildView(
       std::make_unique<HoverHighlightView>(/*listener=*/this));
+  pair_new_device_view_->SetProperty(
+      views::kElementIdentifierKey,
+      kBluetoothDetailedViewPairNewDeviceElementId);
 
   // Create the "+" icon.
   auto icon = std::make_unique<views::ImageView>();

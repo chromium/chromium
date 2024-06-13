@@ -7,6 +7,7 @@
 
 #include "ash/ash_export.h"
 #include "base/memory/raw_ptr.h"
+#include "ui/base/interaction/element_identifier.h"
 #include "ui/base/metadata/metadata_header_macros.h"
 #include "ui/gfx/paint_vector_icon.h"
 #include "ui/views/layout/flex_layout_view.h"
@@ -29,6 +30,8 @@ class ASH_EXPORT SystemToastView : public views::FlexLayoutView {
   METADATA_HEADER(SystemToastView, views::FlexLayoutView)
 
  public:
+  DECLARE_CLASS_ELEMENT_IDENTIFIER_VALUE(kSystemToastViewElementId);
+
   SystemToastView(const std::u16string& text,
                   const std::u16string& dismiss_text = std::u16string(),
                   base::RepeatingClosure dismiss_callback = base::DoNothing(),
@@ -46,6 +49,7 @@ class ASH_EXPORT SystemToastView : public views::FlexLayoutView {
 
   // Updates the toast label text.
   void SetText(const std::u16string& text);
+  const std::u16string& GetText() const;
 
   // Toggles the dismiss button's focus. This function is necessary since toasts
   // are not directly focus accessible by tab traversal. This function should
