@@ -446,6 +446,11 @@ const base::FeatureParam<base::TimeDelta>
     kProductSpecificationsSetValidForClusteringTime{
         &commerce::kProductSpecifications,
         kProductSpecificationsSetValidForClusteringTimeParam, base::Days(14)};
+const char kProductSpecificationsUseServerClusteringParam[] =
+    "use-server-clustering";
+const base::FeatureParam<bool> kProductSpecificationsUseServerClustering{
+    &commerce::kProductSpecifications,
+    kProductSpecificationsUseServerClusteringParam, false};
 
 const char kRevertIconOnFailureParam[] =
     "shopping-list-revert-page-action-icon-on-failure";

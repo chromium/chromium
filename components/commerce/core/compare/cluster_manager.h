@@ -95,8 +95,8 @@ class ClusterManager : public ProductSpecificationsSet::Observer {
       const base::Uuid& uuid);
 
   // Finds comparable products from an EntryPointInfo.
-  void GetComparableProducts(const EntryPointInfo& entry_point_info,
-                             GetEntryPointInfoCallback callback);
+  virtual void GetComparableProducts(const EntryPointInfo& entry_point_info,
+                                     GetEntryPointInfoCallback callback);
 
   // Registers an observer for cluster manager.
   void AddObserver(Observer* observer);

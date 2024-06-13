@@ -48,4 +48,16 @@ void MockClusterManager::SetResponseForGetProductGroupForCandidateProduct(
   ON_CALL(*this, GetProductGroupForCandidateProduct)
       .WillByDefault(testing::Return(product_group));
 }
+
+void MockClusterManager::SetResponseForGetComparableProducts(
+    std::optional<EntryPointInfo> entry_point_info) {
+  ON_CALL(*this, GetComparableProducts)
+      .WillByDefault([entry_point_info = std::move(entry_point_info)](
+                         const EntryPointInfo& info,
+                         ClusterManager::GetEntryPointInfoCallback callback) {
+        base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
+            FROM_HERE,
+            base::BindOnce(std::move(callback), std::move(entry_point_info)));
+      });
+}
 }  // namespace commerce

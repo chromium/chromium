@@ -36,6 +36,11 @@ class MockClusterManager : public ClusterManager {
               GetProductGroupForCandidateProduct,
               (const GURL& product_url),
               (override));
+  MOCK_METHOD(void,
+              GetComparableProducts,
+              (const EntryPointInfo& entry_point_info,
+               ClusterManager::GetEntryPointInfoCallback callback),
+              (override));
 
   void SetResponseForGetEntryPointInfoForSelection(
       std::optional<EntryPointInfo> entry_point_info);
@@ -43,6 +48,8 @@ class MockClusterManager : public ClusterManager {
       std::optional<EntryPointInfo> entry_point_info);
   void SetResponseForGetProductGroupForCandidateProduct(
       std::optional<ProductGroup> product_group);
+  void SetResponseForGetComparableProducts(
+      std::optional<EntryPointInfo> entry_point_info);
 };
 }  // namespace commerce
 

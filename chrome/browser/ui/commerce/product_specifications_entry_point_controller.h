@@ -75,6 +75,22 @@ class ProductSpecificationsEntryPointController
  private:
   void MaybeHideEntryPoint();
 
+  // Check entry point info for tab selection. This will first check if the
+  // `entry_point_info` is valid based on info of current browser window. Then
+  // it might call server-side clustering, and ultimately trigger an observer
+  // event to show the UI.
+  void CheckEntryPointInfoForSelection(
+      const GURL old_url,
+      const GURL new_url,
+      std::optional<EntryPointInfo> entry_point_info);
+
+  // Check entry point info for navigation. This will first check if the
+  // `entry_point_info` is valid based on info of current browser window. Then
+  // it might call server-side clustering, and ultimately trigger an observer
+  // event to show the UI.
+  void CheckEntryPointInfoForNavigation(
+      std::optional<EntryPointInfo> entry_point_info);
+
   // Show the tab strip entry point for tab selection.
   void ShowEntryPointWithTitleForSelection(
       const GURL old_url,
