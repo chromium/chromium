@@ -3,6 +3,9 @@
 // found in the LICENSE file.
 
 #include "ui/android/dummy_screen_android.h"
+
+#include <optional>
+
 #include "ui/display/display.h"
 #include "ui/display/screen.h"
 
@@ -51,6 +54,11 @@ class DummyScreenAndroid : public display::Screen {
 
   Display GetDisplayNearestView(gfx::NativeView view) const override {
     return GetPrimaryDisplay();
+  }
+
+  std::optional<float> GetPreferredScaleFactorForView(
+      gfx::NativeView view) const override {
+    return GetDisplayNearestView(view).device_scale_factor();
   }
 
   Display GetDisplayNearestPoint(const gfx::Point& point) const override {
