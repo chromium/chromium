@@ -351151,7 +351151,7 @@
      ],
      "resources": {
       "domparts-utils.js": [
-       "5deeec80a358a56e2c40c2b6e371591210504316",
+       "f8982de50f334fa7899385b27085434e4f97a6a7",
        []
       ]
      }
@@ -401035,7 +401035,7 @@
        []
       ],
       "softmax.json": [
-       "ebb12114fc6e08ed51b1f9dd3ff820d3664e8f2f",
+       "cbe868ac1dee4cfa85454b5c785daa8be2aaad39",
        []
       ],
       "softplus.json": [
@@ -401080,7 +401080,7 @@
       ]
      },
      "utils.js": [
-      "3cfcf579a50e4658f7cb0fbe0306fa84cbaea240",
+      "363341bec8f345d094f77b09a235a03dd1ecb486",
       []
      ],
      "utils_validation.js": [
@@ -401329,7 +401329,7 @@
      []
     ],
     "idlharness.https.window-expected.txt": [
-     "95cbd1549de7f3ec818d0c4ddc264ee38d924328",
+     "80c0b2d01e6a4716503c587e96d72c3fac86d623",
      []
     ],
     "legacy": {
@@ -488834,7 +488834,7 @@
     },
     "parts": {
      "basic-dom-part-declarative-brace-syntax-innerhtml.tentative.html": [
-      "ba29136b5d4be9eed1df4196493d885e997b687b",
+      "b2782dbfa9bcd95007cc1855521e2e4d1c464c7a",
       [
        null,
        {}
@@ -599331,7 +599331,7 @@
      ]
     ],
     "input-events-typing.html": [
-     "a894beea9bd381313b999e45abe0b4b8f61c804b",
+     "cff32a44d153145a02c0914ef22d2fefea0edd97",
      [
       null,
       {
@@ -686559,7 +686559,7 @@
       ]
      ],
      "softmax.https.any.js": [
-      "75893eb34cb208ead47f2ec2595e798e6828b235",
+      "20c050d7bd8e5c4788e799c0991e7e4dcadd338e",
       [
        "webnn/conformance_tests/softmax.https.any.html?cpu",
        {
@@ -689989,7 +689989,7 @@
       ]
      ],
      "softmax.https.any.js": [
-      "68891b27d88074ea80b13a9ff93c47030f30766c",
+      "a75878307f620f672ff0aecc4d7649c8e4a3162b",
       [
        "webnn/validation_tests/softmax.https.any.html",
        {
@@ -691447,7 +691447,7 @@
      ]
     ],
     "idlharness.https.window.js": [
-     "98685f1cd12378e715b5b35317387abea137ba00",
+     "58e696f73c15a0c5fd2f38e625577096df0af318",
      [
       "webrtc/idlharness.https.window.html",
       {
