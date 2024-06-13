@@ -102,9 +102,8 @@ class DataPipeConsumerHelper {
     }
 
     while (current_offset_ < max_bytes_to_read_) {
-      const void* data;
-      size_t size;
-      result = pipe_->BeginReadData(&data, &size, MOJO_READ_DATA_FLAG_NONE);
+      base::span<const uint8_t> data;
+      result = pipe_->BeginReadData(MOJO_READ_DATA_FLAG_NONE, data);
       if (result == MOJO_RESULT_INVALID_ARGUMENT) {
         // `pipe_` is not actually a ScopedDataPipeConsumerHandle.
         InvokeDone(mojo::ScopedDataPipeConsumerHandle(), PassProgressClient(),
@@ -124,19 +123,18 @@ class DataPipeConsumerHelper {
         break;
       }
       DCHECK_EQ(MOJO_RESULT_OK, result);
-      size = base::checked_cast<size_t>(std::min<uint64_t>(
-          uint64_t{size}, max_bytes_to_read_ - current_offset_));
-      if (!Populate(base::make_span(static_cast<const char*>(data), size),
-                    current_offset_)) {
+      data = data.first(base::checked_cast<size_t>(std::min(
+          uint64_t{data.size()}, max_bytes_to_read_ - current_offset_)));
+      if (!Populate(base::as_chars(data), current_offset_)) {
         InvokeDone(mojo::ScopedDataPipeConsumerHandle(), PassProgressClient(),
                    false, current_offset_);
         delete this;
         return;
       }
       if (progress_client_)
-        progress_client_->OnProgress(uint64_t{size});
-      current_offset_ += size;
-      result = pipe_->EndReadData(size);
+        progress_client_->OnProgress(data.size());
+      current_offset_ += data.size();
+      result = pipe_->EndReadData(data.size());
       DCHECK_EQ(MOJO_RESULT_OK, result);
     }
 

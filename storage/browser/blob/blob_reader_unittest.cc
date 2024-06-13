@@ -15,6 +15,7 @@
 #include <vector>
 
 #include "base/containers/heap_array.h"
+#include "base/containers/span.h"
 #include "base/files/file_path.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
@@ -688,11 +689,11 @@ TEST_F(BlobReaderTest, ReadableDataHandleSingle) {
   size_t num_bytes = base::checked_cast<size_t>(bytes_read);
   std::vector<uint8_t> buffer(num_bytes);
   MojoReadDataFlags flags = MOJO_READ_DATA_FLAG_ALL_OR_NONE;
-  MojoResult read_result = consumer->ReadData(buffer.data(), &num_bytes, flags);
+  MojoResult read_result = consumer->ReadData(flags, buffer, num_bytes);
   ASSERT_EQ(MOJO_RESULT_OK, read_result);
   ASSERT_EQ(kData.size(), num_bytes);
 
-  EXPECT_EQ(0, memcmp(buffer.data(), kData.c_str(), kData.size()));
+  EXPECT_EQ(base::as_string_view(base::as_byte_span(buffer)), kData);
 }
 
 // This test is the same as ReadableDataHandleSingle, but adds the
@@ -735,12 +736,13 @@ TEST_F(BlobReaderTest, ReadableDataHandleSingleRange) {
   size_t num_bytes = base::checked_cast<size_t>(bytes_read);
   std::vector<uint8_t> buffer(num_bytes);
   MojoReadDataFlags flags = MOJO_READ_DATA_FLAG_ALL_OR_NONE;
-  MojoResult read_result = consumer->ReadData(buffer.data(), &num_bytes, flags);
+  MojoResult read_result = consumer->ReadData(flags, buffer, num_bytes);
   ASSERT_EQ(MOJO_RESULT_OK, read_result);
   ASSERT_EQ(range_length, num_bytes);
 
-  EXPECT_EQ(0,
-            memcmp(buffer.data(), kData.c_str() + range_start, range_length));
+  EXPECT_EQ(
+      base::as_string_view(base::as_byte_span(buffer)).substr(0, num_bytes),
+      kData.substr(range_start, range_length));
 }
 
 TEST_F(BlobReaderTest, ReadableDataHandleMultipleSlices) {
