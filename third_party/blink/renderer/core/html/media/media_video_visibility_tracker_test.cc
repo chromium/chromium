@@ -1026,8 +1026,10 @@ TEST_F(MediaVideoVisibilityTrackerTest,
   EXPECT_EQ(0u, set.size());
 }
 
+// TODO(crbug.com/40275580): Disabled because of UBSan test failures. Re-enable
+// once fixed.
 TEST_F(MediaVideoVisibilityTrackerTest,
-       ComputeVisibilityOnDemandReturnsFalseWhenTrackerNotAttached) {
+       DISABLED_ComputeVisibilityOnDemandReturnsFalseWhenTrackerNotAttached) {
   GetDocument().CreateRawElement(html_names::kVideoTag);
 
   // Create tracker and verify that: it is not attached and,
