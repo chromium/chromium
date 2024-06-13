@@ -94,6 +94,21 @@ TEST(DestinationSetTest, Parse) {
           ])json",
           ErrorIs(SourceRegistrationError::kDestinationWrongType),
       },
+      {
+          "size_check_after_transformation_and_deduplication",
+          R"json([
+            "https://d1.example",
+            "https://d2.example",
+            "https://d3.example/a",
+            "https://d3.example/b"
+          ])json",
+          ValueIs(Property(
+              &DestinationSet::destinations,
+              ElementsAre(
+                  net::SchemefulSite::Deserialize("https://d1.example"),
+                  net::SchemefulSite::Deserialize("https://d2.example"),
+                  net::SchemefulSite::Deserialize("https://d3.example")))),
+      },
   };
 
   for (const auto& test_case : kTestCases) {

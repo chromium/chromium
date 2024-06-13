@@ -1,0 +1,380 @@
+{
+  "description": "Source registrations with invalid destination are dropped",
+  "input": {
+    "registrations": [
+      {
+        "timestamp": "0",
+        "registration_request": {
+          "context_origin": "https://source.test",
+          "Attribution-Reporting-Eligible": "navigation-source"
+        },
+        "responses": [
+          {
+            "url": "https://reporter.test/register-source",
+            "response": {
+              "Attribution-Reporting-Info": "report-header-errors",
+              // missing destination
+              "Attribution-Reporting-Register-Source": {}
+            }
+          }
+        ]
+      },
+      {
+        "timestamp": "1",
+        "registration_request": {
+          "context_origin": "https://source.test",
+          "Attribution-Reporting-Eligible": "navigation-source"
+        },
+        "responses": [
+          {
+            "url": "https://reporter.test/register-source",
+            "response": {
+              "Attribution-Reporting-Info": "report-header-errors",
+              "Attribution-Reporting-Register-Source": {
+                // wrong type (must be list or string)
+                "destination": 123
+              }
+            }
+          }
+        ]
+      },
+      {
+        "timestamp": "2",
+        "registration_request": {
+          "context_origin": "https://source.test",
+          "Attribution-Reporting-Eligible": "navigation-source"
+        },
+        "responses": [
+          {
+            "url": "https://reporter.test/register-source",
+            "response": {
+              "Attribution-Reporting-Info": "report-header-errors",
+              "Attribution-Reporting-Register-Source": {
+                // wrong type (must be list of string)
+                "destination": [123]
+              }
+            }
+          }
+        ]
+      },
+      {
+        "timestamp": "3",
+        "registration_request": {
+          "context_origin": "https://source.test",
+          "Attribution-Reporting-Eligible": "navigation-source"
+        },
+        "responses": [
+          {
+            "url": "https://reporter.test/register-source",
+            "response": {
+              "Attribution-Reporting-Info": "report-header-errors",
+              "Attribution-Reporting-Register-Source": {
+                // invalid URL
+                "destination": "!"
+              }
+            }
+          }
+        ]
+      },
+      {
+        "timestamp": "4",
+        "registration_request": {
+          "context_origin": "https://source.test",
+          "Attribution-Reporting-Eligible": "navigation-source"
+        },
+        "responses": [
+          {
+            "url": "https://reporter.test/register-source",
+            "response": {
+              "Attribution-Reporting-Info": "report-header-errors",
+              "Attribution-Reporting-Register-Source": {
+                // invalid URL
+                "destination": ["!"]
+              }
+            }
+          }
+        ]
+      },
+      {
+        "timestamp": "5",
+        "registration_request": {
+          "context_origin": "https://source.test",
+          "Attribution-Reporting-Eligible": "navigation-source"
+        },
+        "responses": [
+          {
+            "url": "https://reporter.test/register-source",
+            "response": {
+              "Attribution-Reporting-Info": "report-header-errors",
+              "Attribution-Reporting-Register-Source": {
+                // untrustworthy URL
+                "destination": "http://d.test"
+              }
+            }
+          }
+        ]
+      },
+      {
+        "timestamp": "6",
+        "registration_request": {
+          "context_origin": "https://source.test",
+          "Attribution-Reporting-Eligible": "navigation-source"
+        },
+        "responses": [
+          {
+            "url": "https://reporter.test/register-source",
+            "response": {
+              "Attribution-Reporting-Info": "report-header-errors",
+              "Attribution-Reporting-Register-Source": {
+                // untrustworthy URL
+                "destination": ["http://d.test"]
+              }
+            }
+          }
+        ]
+      },
+      {
+        "timestamp": "7",
+        "registration_request": {
+          "context_origin": "https://source.test",
+          "Attribution-Reporting-Eligible": "navigation-source"
+        },
+        "responses": [
+          {
+            "url": "https://reporter.test/register-source",
+            "response": {
+              "Attribution-Reporting-Info": "report-header-errors",
+              "Attribution-Reporting-Register-Source": {
+                // scheme not suitable
+                "destination": "wss://d.test"
+              }
+            }
+          }
+        ]
+      },
+      {
+        "timestamp": "8",
+        "registration_request": {
+          "context_origin": "https://source.test",
+          "Attribution-Reporting-Eligible": "navigation-source"
+        },
+        "responses": [
+          {
+            "url": "https://reporter.test/register-source",
+            "response": {
+              "Attribution-Reporting-Info": "report-header-errors",
+              "Attribution-Reporting-Register-Source": {
+                // scheme not suitable
+                "destination": ["wss://d.test"]
+              }
+            }
+          }
+        ]
+      },
+      {
+        "timestamp": "9",
+        "registration_request": {
+          "context_origin": "https://source.test",
+          "Attribution-Reporting-Eligible": "navigation-source"
+        },
+        "responses": [
+          {
+            "url": "https://reporter.test/register-source",
+            "response": {
+              "Attribution-Reporting-Info": "report-header-errors",
+              "Attribution-Reporting-Register-Source": {
+                // empty list
+                "destination": []
+              }
+            }
+          }
+        ]
+      },
+      {
+        "timestamp": "10",
+        "registration_request": {
+          "context_origin": "https://source.test",
+          "Attribution-Reporting-Eligible": "navigation-source"
+        },
+        "responses": [
+          {
+            "url": "https://reporter.test/register-source",
+            "response": {
+              "Attribution-Reporting-Info": "report-header-errors",
+              "Attribution-Reporting-Register-Source": {
+                // list too long without duplicates
+                "destination": [
+                  "https://d1.test",
+                  "https://d2.test",
+                  "https://d3.test",
+                  "https://d4.test"
+                ]
+              }
+            }
+          }
+        ]
+      },
+      {
+        "timestamp": "11",
+        "registration_request": {
+          "context_origin": "https://source.test",
+          "Attribution-Reporting-Eligible": "navigation-source"
+        },
+        "responses": [
+          {
+            "url": "https://reporter.test/register-source",
+            "response": {
+              "Attribution-Reporting-Info": "report-header-errors",
+              "Attribution-Reporting-Register-Source": {
+                // list OK, as set has size 3 after URL-to-site transformation
+                // and deduplication
+                "destination": [
+                  "https://d1.test",
+                  "https://d2.test",
+                  "https://d3.test/a",
+                  "https://d3.test/b"
+                ]
+              }
+            }
+          }
+        ]
+      }
+    ]
+  },
+  "output": {
+    "reports": [
+      {
+        "payload": [{
+           "body": {
+              "context_site": "https://source.test",
+              "header": "Attribution-Reporting-Register-Source",
+              "value": "{}"
+           },
+           "type": "header-parsing-error"
+        }],
+        "report_time": "0",
+        "report_url": "https://reporter.test/.well-known/attribution-reporting/debug/verbose"
+      },
+      {
+        "payload": [{
+           "body": {
+              "context_site": "https://source.test",
+              "header": "Attribution-Reporting-Register-Source",
+              "value": "{\"destination\":123}"
+           },
+           "type": "header-parsing-error"
+        }],
+        "report_time": "1",
+        "report_url": "https://reporter.test/.well-known/attribution-reporting/debug/verbose"
+      },
+      {
+        "payload": [{
+           "body": {
+              "context_site": "https://source.test",
+              "header": "Attribution-Reporting-Register-Source",
+              "value": "{\"destination\":[123]}"
+           },
+           "type": "header-parsing-error"
+        }],
+        "report_time": "2",
+        "report_url": "https://reporter.test/.well-known/attribution-reporting/debug/verbose"
+      },
+      {
+        "payload": [{
+           "body": {
+              "context_site": "https://source.test",
+              "header": "Attribution-Reporting-Register-Source",
+              "value": "{\"destination\":\"!\"}"
+           },
+           "type": "header-parsing-error"
+        }],
+        "report_time": "3",
+        "report_url": "https://reporter.test/.well-known/attribution-reporting/debug/verbose"
+      },
+      {
+        "payload": [{
+           "body": {
+              "context_site": "https://source.test",
+              "header": "Attribution-Reporting-Register-Source",
+              "value": "{\"destination\":[\"!\"]}"
+           },
+           "type": "header-parsing-error"
+        }],
+        "report_time": "4",
+        "report_url": "https://reporter.test/.well-known/attribution-reporting/debug/verbose"
+      },
+      {
+        "payload": [{
+           "body": {
+              "context_site": "https://source.test",
+              "header": "Attribution-Reporting-Register-Source",
+              "value": "{\"destination\":\"http://d.test\"}"
+           },
+           "type": "header-parsing-error"
+        }],
+        "report_time": "5",
+        "report_url": "https://reporter.test/.well-known/attribution-reporting/debug/verbose"
+      },
+      {
+        "payload": [{
+           "body": {
+              "context_site": "https://source.test",
+              "header": "Attribution-Reporting-Register-Source",
+              "value": "{\"destination\":[\"http://d.test\"]}"
+           },
+           "type": "header-parsing-error"
+        }],
+        "report_time": "6",
+        "report_url": "https://reporter.test/.well-known/attribution-reporting/debug/verbose"
+      },
+      {
+        "payload": [{
+           "body": {
+              "context_site": "https://source.test",
+              "header": "Attribution-Reporting-Register-Source",
+              "value": "{\"destination\":\"wss://d.test\"}"
+           },
+           "type": "header-parsing-error"
+        }],
+        "report_time": "7",
+        "report_url": "https://reporter.test/.well-known/attribution-reporting/debug/verbose"
+      },
+      {
+        "payload": [{
+           "body": {
+              "context_site": "https://source.test",
+              "header": "Attribution-Reporting-Register-Source",
+              "value": "{\"destination\":[\"wss://d.test\"]}"
+           },
+           "type": "header-parsing-error"
+        }],
+        "report_time": "8",
+        "report_url": "https://reporter.test/.well-known/attribution-reporting/debug/verbose"
+      },
+      {
+        "payload": [{
+           "body": {
+              "context_site": "https://source.test",
+              "header": "Attribution-Reporting-Register-Source",
+              "value": "{\"destination\":[]}"
+           },
+           "type": "header-parsing-error"
+        }],
+        "report_time": "9",
+        "report_url": "https://reporter.test/.well-known/attribution-reporting/debug/verbose"
+      },
+      {
+        "payload": [{
+           "body": {
+              "context_site": "https://source.test",
+              "header": "Attribution-Reporting-Register-Source",
+              "value": "{\"destination\":[\"https://d1.test\",\"https://d2.test\",\"https://d3.test\",\"https://d4.test\"]}"
+           },
+           "type": "header-parsing-error"
+        }],
+        "report_time": "10",
+        "report_url": "https://reporter.test/.well-known/attribution-reporting/debug/verbose"
+      }
+    ]
+  }
+}

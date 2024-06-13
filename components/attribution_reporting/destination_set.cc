@@ -4,12 +4,13 @@
 
 #include "components/attribution_reporting/destination_set.h"
 
+#include <algorithm>
 #include <optional>
 #include <string>
 #include <utility>
-#include <vector>
 
 #include "base/check.h"
+#include "base/containers/flat_set.h"
 #include "base/functional/overloaded.h"
 #include "base/not_fatal_until.h"
 #include "base/ranges/algorithm.h"
@@ -51,7 +52,12 @@ DestinationSet::FromJSON(const base::Value* v) {
     return base::unexpected(SourceRegistrationError::kDestinationMissing);
   }
 
-  std::vector<net::SchemefulSite> destination_sites;
+  // Although we build this set iteratively, which results in O(n^2)
+  // construction, n is very small, so this is fine.
+  static_assert(kMaxDestinations == 3,
+                "Consider using more performant set construction if the size "
+                "limit increases.");
+  base::flat_set<net::SchemefulSite> destination_sites;
 
   using AppendIfValidResult = base::expected<void, SourceRegistrationError>;
 
@@ -62,7 +68,7 @@ DestinationSet::FromJSON(const base::Value* v) {
     if (!origin.has_value()) {
       return base::unexpected(error);
     }
-    destination_sites.emplace_back(*origin);
+    destination_sites.emplace(*origin);
     return base::ok();
   };
 
@@ -72,12 +78,12 @@ DestinationSet::FromJSON(const base::Value* v) {
             str, SourceRegistrationError::kDestinationUntrustworthy);
       },
       [&](const base::Value::List& list) -> AppendIfValidResult {
-        if (list.empty() || list.size() > kMaxDestinations) {
+        if (list.empty()) {
           return base::unexpected(
               SourceRegistrationError::kDestinationWrongType);
         }
 
-        destination_sites.reserve(list.size());
+        destination_sites.reserve(std::min(list.size(), kMaxDestinations));
 
         for (const auto& item : list) {
           const std::string* str = item.GetIfString();
@@ -87,6 +93,11 @@ DestinationSet::FromJSON(const base::Value* v) {
           }
           RETURN_IF_ERROR(append_if_valid(
               *str, SourceRegistrationError::kDestinationListUntrustworthy));
+
+          if (destination_sites.size() > kMaxDestinations) {
+            return base::unexpected(
+                SourceRegistrationError::kDestinationWrongType);
+          }
         }
 
         return base::ok();
