@@ -1,0 +1,41 @@
+This is a testharness.js-based test.
+[FAIL] User succesfully selected an empty directory.
+  promise_test: Unhandled rejection with value: object "AbortError: The user aborted a request."
+[FAIL] User granted write access.
+  promise_test: Unhandled rejection with value: object "AbortError: The user aborted a request."
+[FAIL] move(name) to rename an empty directory
+  promise_test: Unhandled rejection with value: object "AbortError: The user aborted a request."
+[FAIL] move("") to rename an empty directory fails
+  promise_test: Unhandled rejection with value: object "AbortError: The user aborted a request."
+[FAIL] move(name) to rename a non-empty directory
+  promise_test: Unhandled rejection with value: object "AbortError: The user aborted a request."
+[FAIL] move(dir, name) to rename an empty directory
+  promise_test: Unhandled rejection with value: object "AbortError: The user aborted a request."
+[FAIL] move(dir, name) to rename a non-empty directory
+  promise_test: Unhandled rejection with value: object "AbortError: The user aborted a request."
+[FAIL] move(dir) to move an empty directory to a new directory
+  promise_test: Unhandled rejection with value: object "AbortError: The user aborted a request."
+[FAIL] move(dir, name) to move an empty directory to a new directory
+  promise_test: Unhandled rejection with value: object "AbortError: The user aborted a request."
+[FAIL] move(dir) to move a non-empty directory to a new directory
+  promise_test: Unhandled rejection with value: object "AbortError: The user aborted a request."
+[FAIL] move(dir, name) to move a non-empty directory to a new directory
+  promise_test: Unhandled rejection with value: object "AbortError: The user aborted a request."
+[FAIL] move(dir) can be called multiple times
+  promise_test: Unhandled rejection with value: object "AbortError: The user aborted a request."
+[FAIL] move(dir, name) can be called multiple times
+  promise_test: Unhandled rejection with value: object "AbortError: The user aborted a request."
+[FAIL] move(dir, name) with a name with invalid characters should fail
+  promise_test: Unhandled rejection with value: object "AbortError: The user aborted a request."
+[FAIL] move(dir, "") should fail
+  promise_test: Unhandled rejection with value: object "AbortError: The user aborted a request."
+[FAIL] move(dir, name) to move a directory within itself fails
+  promise_test: Unhandled rejection with value: object "AbortError: The user aborted a request."
+[FAIL] move(dir, name) to move a directory within itself and rename fails
+  promise_test: Unhandled rejection with value: object "AbortError: The user aborted a request."
+[FAIL] move(dir) to move a directory within a descendent fails
+  promise_test: Unhandled rejection with value: object "AbortError: The user aborted a request."
+[FAIL] move(dir, name) to move a directory within a descendent fails
+  promise_test: Unhandled rejection with value: object "AbortError: The user aborted a request."
+Harness: the test ran to completion.
+

@@ -1,0 +1,31 @@
+This is a testharness.js-based test.
+[FAIL] User succesfully selected an empty directory.
+  promise_test: Unhandled rejection with value: object "AbortError: The user aborted a request."
+[FAIL] User granted write access.
+  promise_test: Unhandled rejection with value: object "AbortError: The user aborted a request."
+[FAIL] removeEntry() to remove a file
+  promise_test: Unhandled rejection with value: object "AbortError: The user aborted a request."
+[FAIL] removeEntry() on an already removed file should fail
+  promise_test: Unhandled rejection with value: object "AbortError: The user aborted a request."
+[FAIL] removeEntry() to remove an empty directory
+  promise_test: Unhandled rejection with value: object "AbortError: The user aborted a request."
+[FAIL] removeEntry() on a non-empty directory should fail
+  promise_test: Unhandled rejection with value: object "AbortError: The user aborted a request."
+[FAIL] removeEntry() on a directory recursively should delete all sub-items
+  promise_test: Unhandled rejection with value: object "AbortError: The user aborted a request."
+[FAIL] removeEntry() with empty name should fail
+  promise_test: Unhandled rejection with value: object "AbortError: The user aborted a request."
+[FAIL] removeEntry() with "." name should fail
+  promise_test: Unhandled rejection with value: object "AbortError: The user aborted a request."
+[FAIL] removeEntry() with ".." name should fail
+  promise_test: Unhandled rejection with value: object "AbortError: The user aborted a request."
+[FAIL] removeEntry() with a path separator should fail.
+  promise_test: Unhandled rejection with value: object "AbortError: The user aborted a request."
+[FAIL] removeEntry() while the file has an open writable fails
+  promise_test: Unhandled rejection with value: object "AbortError: The user aborted a request."
+[FAIL] removeEntry() of a directory while a containing file has an open writable fails
+  promise_test: Unhandled rejection with value: object "AbortError: The user aborted a request."
+[FAIL] createWritable after removeEntry succeeds but doesnt recreate the file
+  promise_test: Unhandled rejection with value: object "AbortError: The user aborted a request."
+Harness: the test ran to completion.
+

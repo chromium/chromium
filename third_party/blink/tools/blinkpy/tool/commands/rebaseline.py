@@ -146,8 +146,10 @@ class AbstractRebaseliningCommand(Command):
     def _host_port(self):
         # TODO(crbug.com/1498195): This may be changed to `--no-wdspec`.
         return self._tool.port_factory.get(options=optparse.Values({
-            'test_types':
-            ['testharness', 'reftest', 'wdspec', 'crashtest', 'print-reftest']
+            'test_types': [
+                'testharness', 'reftest', 'wdspec', 'crashtest',
+                'print-reftest', 'manual'
+            ]
         }))
 
     def _file_name_for_actual_result(self, test_name, suffix):

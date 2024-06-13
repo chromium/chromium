@@ -1,0 +1,15 @@
+This is a testharness.js-based test.
+[FAIL] User succesfully selected an empty directory.
+  promise_test: Unhandled rejection with value: object "AbortError: The user aborted a request."
+[FAIL] User granted write access.
+  promise_test: Unhandled rejection with value: object "AbortError: The user aborted a request."
+[FAIL] Send and receive messages using a same origin iframe.
+  promise_test: Unhandled rejection with value: object "AbortError: The user aborted a request."
+[FAIL] Send and receive messages using a sandboxed same origin iframe.
+  promise_test: Unhandled rejection with value: object "AbortError: The user aborted a request."
+[FAIL] Send and receive messages using a blob iframe.
+  promise_test: Unhandled rejection with value: object "AbortError: The user aborted a request."
+[FAIL] Send and receive messages using an iframe srcdoc.
+  promise_test: Unhandled rejection with value: object "AbortError: The user aborted a request."
+Harness: the test ran to completion.
+

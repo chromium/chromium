@@ -244,7 +244,7 @@ class WebTestFinder(object):
         for test in all_tests:
             # Manual tests and virtual tests skipped by platform config are
             # always skipped and not affected by the --skip parameter
-            if (self._port.is_manual_test(test)
+            if (self._port.skipped_due_to_manual_test(test)
                     or self._port.virtual_test_skipped_due_to_platform_config(
                         test)
                     or self._port.skipped_due_to_exclusive_virtual_tests(test)

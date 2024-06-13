@@ -1,0 +1,8 @@
+This is a testharness.js-based test.
+Harness Error. harness_status.status = 1 , harness_status.message = Uncaught ReferenceError: kDocumentMessageTarget is not defined
+[FAIL] User succesfully selected an empty directory.
+  promise_test: Unhandled rejection with value: object "AbortError: The user aborted a request."
+[FAIL] User granted write access.
+  promise_test: Unhandled rejection with value: object "AbortError: The user aborted a request."
+Harness: the test ran to completion.
+

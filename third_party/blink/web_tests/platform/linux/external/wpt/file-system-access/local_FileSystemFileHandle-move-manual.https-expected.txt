@@ -1,0 +1,55 @@
+This is a testharness.js-based test.
+[FAIL] User succesfully selected an empty directory.
+  promise_test: Unhandled rejection with value: object "AbortError: The user aborted a request."
+[FAIL] User granted write access.
+  promise_test: Unhandled rejection with value: object "AbortError: The user aborted a request."
+[FAIL] move(name) to rename a file
+  promise_test: Unhandled rejection with value: object "AbortError: The user aborted a request."
+[FAIL] get a handle to a moved file
+  promise_test: Unhandled rejection with value: object "AbortError: The user aborted a request."
+[FAIL] move(name) to rename a file the same name
+  promise_test: Unhandled rejection with value: object "AbortError: The user aborted a request."
+[FAIL] move("") to rename a file fails
+  promise_test: Unhandled rejection with value: object "AbortError: The user aborted a request."
+[FAIL] move(name) can be called multiple times
+  promise_test: Unhandled rejection with value: object "AbortError: The user aborted a request."
+[FAIL] move(name) with a name with path separators should fail
+  promise_test: Unhandled rejection with value: object "AbortError: The user aborted a request."
+[FAIL] move(name) while the file has an open writable fails
+  promise_test: Unhandled rejection with value: object "AbortError: The user aborted a request."
+[FAIL] move(name) while the destination file has an open writable fails
+  promise_test: Unhandled rejection with value: object "AbortError: The user aborted a request."
+[FAIL] move(name) can overwrite an existing file
+  promise_test: Unhandled rejection with value: object "AbortError: The user aborted a request."
+[FAIL] move(dir, name) to rename a file
+  promise_test: Unhandled rejection with value: object "AbortError: The user aborted a request."
+[FAIL] move(dir, name) to rename a file the same name
+  promise_test: Unhandled rejection with value: object "AbortError: The user aborted a request."
+[FAIL] move(dir) to move a file to a new directory
+  promise_test: Unhandled rejection with value: object "AbortError: The user aborted a request."
+[FAIL] move(dir, "") to move a file to a new directory fails
+  promise_test: Unhandled rejection with value: object "AbortError: The user aborted a request."
+[FAIL] move(dir, name) to move a file to a new directory
+  promise_test: Unhandled rejection with value: object "AbortError: The user aborted a request."
+[FAIL] move(dir) can be called multiple times
+  promise_test: Unhandled rejection with value: object "AbortError: The user aborted a request."
+[FAIL] move(dir, name) can be called multiple times
+  promise_test: Unhandled rejection with value: object "AbortError: The user aborted a request."
+[FAIL] move(dir, name) with a name with invalid characters should fail
+  promise_test: Unhandled rejection with value: object "AbortError: The user aborted a request."
+[FAIL] move(dir) while the file has an open writable fails
+  promise_test: Unhandled rejection with value: object "AbortError: The user aborted a request."
+[FAIL] move(dir, name) while the file has an open writable fails
+  promise_test: Unhandled rejection with value: object "AbortError: The user aborted a request."
+[FAIL] move(dir) while the destination file has an open writable fails
+  promise_test: Unhandled rejection with value: object "AbortError: The user aborted a request."
+[FAIL] move(dir) can overwrite an existing file
+  promise_test: Unhandled rejection with value: object "AbortError: The user aborted a request."
+[FAIL] move(dir, name) while the destination file has an open writable fails
+  promise_test: Unhandled rejection with value: object "AbortError: The user aborted a request."
+[FAIL] move(dir, name) can overwrite an existing file
+  promise_test: Unhandled rejection with value: object "AbortError: The user aborted a request."
+[FAIL] FileSystemFileHandles are references, not paths
+  promise_test: Unhandled rejection with value: object "AbortError: The user aborted a request."
+Harness: the test ran to completion.
+

@@ -1,0 +1,27 @@
+This is a testharness.js-based test.
+[FAIL] User succesfully selected an empty directory.
+  promise_test: Unhandled rejection with value: object "AbortError: The user aborted a request."
+[FAIL] User granted write access.
+  promise_test: Unhandled rejection with value: object "AbortError: The user aborted a request."
+[FAIL] getDirectoryHandle(create=false) rejects for non-existing directories
+  promise_test: Unhandled rejection with value: object "AbortError: The user aborted a request."
+[FAIL] getDirectoryHandle(create=true) creates an empty directory
+  promise_test: Unhandled rejection with value: object "AbortError: The user aborted a request."
+[FAIL] getDirectoryHandle(create=false) returns existing directories
+  promise_test: Unhandled rejection with value: object "AbortError: The user aborted a request."
+[FAIL] getDirectoryHandle(create=true) returns existing directories without erasing
+  promise_test: Unhandled rejection with value: object "AbortError: The user aborted a request."
+[FAIL] getDirectoryHandle() when a file already exists with the same name
+  promise_test: Unhandled rejection with value: object "AbortError: The user aborted a request."
+[FAIL] getDirectoryHandle() with empty name
+  promise_test: Unhandled rejection with value: object "AbortError: The user aborted a request."
+[FAIL] getDirectoryHandle() with "." name
+  promise_test: Unhandled rejection with value: object "AbortError: The user aborted a request."
+[FAIL] getDirectoryHandle() with ".." name
+  promise_test: Unhandled rejection with value: object "AbortError: The user aborted a request."
+[FAIL] getDirectoryHandle(create=false) with a path separator when the directory exists
+  promise_test: Unhandled rejection with value: object "AbortError: The user aborted a request."
+[FAIL] getDirectoryHandle(create=true) with a path separator
+  promise_test: Unhandled rejection with value: object "AbortError: The user aborted a request."
+Harness: the test ran to completion.
+

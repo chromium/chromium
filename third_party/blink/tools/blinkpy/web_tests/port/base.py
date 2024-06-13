@@ -1591,6 +1591,17 @@ class Port(object):
             tests.add(line)
         return tests
 
+    def skipped_due_to_manual_test(self, test_name):
+        """Checks whether a manual test should be skipped."""
+        base_test = self.lookup_virtual_test_base(test_name)
+        if not base_test:
+            base_test = test_name
+        # TODO(crbug.com/346563686): remove this once we have testdriver api for
+        # file-system-access
+        if base_test.startswith("external/wpt/file-system-access/"):
+            return False
+        return self.is_manual_test(base_test)
+
     def skipped_due_to_smoke_tests(self, test):
         """Checks if the test is skipped based on the set of Smoke tests.
 
