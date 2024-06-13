@@ -62,7 +62,7 @@ std::unique_ptr<views::Widget> CreateAuthDialogWidget(
   params.name = "AuthDialogWidget";
 
   params.delegate->SetInitiallyFocusedView(contents_view.get());
-  params.delegate->SetModalType(ui::MODAL_TYPE_NONE);
+  params.delegate->SetModalType(ui::MODAL_TYPE_SYSTEM);
   params.delegate->SetOwnedByWidget(true);
 
   std::unique_ptr<views::Widget> widget = std::make_unique<views::Widget>();
