@@ -942,8 +942,6 @@ gpu::SharedImageCapabilities SharedImageFactory::MakeCapabilities() {
             kA16_float_SkColorType);
   }
 
-  shared_image_caps.texture_target_exception_list =
-      gpu_preferences_.texture_target_exception_list;
 #if BUILDFLAG(IS_MAC)
   shared_image_caps.macos_specific_texture_target =
       macos_specific_texture_target_;

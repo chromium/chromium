@@ -3,7 +3,6 @@
 // found in the LICENSE file.
 
 #include "gpu/ipc/common/shared_image_capabilities_mojom_traits.h"
-#include "ui/gfx/mojom/buffer_types_mojom_traits.h"
 
 namespace mojo {
 
@@ -22,17 +21,6 @@ bool StructTraits<gpu::mojom::SharedImageCapabilitiesDataView,
 
   out->shared_image_d3d = data.shared_image_d3d();
   out->shared_image_swap_chain = data.shared_image_swap_chain();
-
-  mojo::ArrayDataView<gfx::mojom::BufferUsageAndFormatDataView>
-      usage_and_format_list;
-  data.GetTextureTargetExceptionListDataView(&usage_and_format_list);
-  for (size_t i = 0; i < usage_and_format_list.size(); ++i) {
-    gfx::BufferUsageAndFormat usage_format;
-    if (!usage_and_format_list.Read(i, &usage_format)) {
-      return false;
-    }
-    out->texture_target_exception_list.push_back(usage_format);
-  }
 
 #if BUILDFLAG(IS_MAC)
   out->macos_specific_texture_target = data.macos_specific_texture_target();

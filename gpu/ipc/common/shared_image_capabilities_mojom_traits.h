@@ -55,11 +55,6 @@ struct GPU_EXPORT StructTraits<gpu::mojom::SharedImageCapabilitiesDataView,
     return input.shared_image_swap_chain;
   }
 
-  static std::vector<gfx::BufferUsageAndFormat> texture_target_exception_list(
-      const gpu::SharedImageCapabilities& input) {
-    return input.texture_target_exception_list;
-  }
-
 #if BUILDFLAG(IS_MAC)
   static uint32_t macos_specific_texture_target(
       const gpu::SharedImageCapabilities& input) {
