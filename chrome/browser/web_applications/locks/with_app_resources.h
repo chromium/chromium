@@ -7,9 +7,6 @@
 
 #include "base/memory/weak_ptr.h"
 
-// TODO(crbug/344633754): Fix IWYU for WebAppRegistrar across web_applications/
-#include "chrome/browser/web_applications/web_app_registrar.h"
-
 namespace web_app {
 
 class ExtensionsManager;
@@ -19,6 +16,7 @@ class WebAppIconManager;
 class WebAppInstallFinalizer;
 class WebAppInstallManager;
 class WebAppLockManager;
+class WebAppRegistrar;
 class WebAppSyncBridge;
 class WebAppTranslationManager;
 class WebAppUiManager;

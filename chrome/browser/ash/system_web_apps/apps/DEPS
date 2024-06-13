@@ -99,6 +99,7 @@ include_rules = [
   "+chrome/browser/web_applications/web_app_install_info.h",
   "+chrome/browser/web_applications/web_app_launch_queue.h",
   "+chrome/browser/web_applications/web_app_provider.h",
+  "+chrome/browser/web_applications/web_app_registrar.h",
   "+chrome/browser/web_applications/web_app_tab_helper.h",
   "+chrome/browser/web_applications/web_app_utils.h",
   "+chrome/common/channel_info.h",

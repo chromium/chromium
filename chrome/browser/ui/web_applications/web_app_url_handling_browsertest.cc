@@ -14,6 +14,7 @@
 #include "chrome/browser/ui/web_applications/web_app_browsertest_base.h"
 #include "chrome/browser/web_applications/os_integration/os_integration_manager.h"
 #include "chrome/browser/web_applications/web_app_provider.h"
+#include "chrome/browser/web_applications/web_app_registrar.h"
 #include "components/page_load_metrics/browser/page_load_metrics_test_waiter.h"
 #include "components/services/app_service/public/cpp/url_handler_info.h"
 #include "content/public/test/browser_test.h"

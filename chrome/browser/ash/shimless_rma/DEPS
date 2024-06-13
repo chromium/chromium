@@ -30,6 +30,7 @@ include_rules = [
   "+chrome/browser/web_applications/web_app_command_scheduler.h",
   "+chrome/browser/web_applications/web_app.h",
   "+chrome/browser/web_applications/web_app_provider.h",
+  "+chrome/browser/web_applications/web_app_registrar.h",
   "+chrome/common/chromeos/extensions",
   "+chrome/common/pref_names.h",
   "+chrome/grit",

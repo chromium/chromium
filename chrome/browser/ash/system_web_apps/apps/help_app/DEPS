@@ -1,0 +1,7 @@
+specific_include_rules = {
+  "help_app_integration_browsertest.cc": [
+    "+chrome/common/chrome_features.h",
+    "+chrome/browser/web_applications/web_app_provider.h",
+    "+chrome/browser/web_applications/web_app_registrar.h"
+  ],
+}
