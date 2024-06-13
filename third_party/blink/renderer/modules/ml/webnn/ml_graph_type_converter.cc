@@ -328,6 +328,16 @@ blink_mojom::LinearPtr CreateLinear(const OperandToIdMap& operand_to_id_map,
   return linear_mojo;
 }
 
+OperationPtr CreateSoftmaxOperation(const OperandToIdMap& operand_to_id_map,
+                                    const MLOperator* softmax) {
+  const auto* softmax_operator = static_cast<const MLSoftmaxOperator*>(softmax);
+  auto softmax_mojo =
+      blink_mojom::Softmax::New(GetOperatorInputId(softmax, operand_to_id_map),
+                                GetOperatorOutputId(softmax, operand_to_id_map),
+                                softmax_operator->Axis());
+  return blink_mojom::Operation::NewSoftmax(std::move(softmax_mojo));
+}
+
 OperationPtr CreateSoftplus(const OperandToIdMap& operand_to_id_map,
                             const MLOperator* softplus) {
   auto softplus_mojo = blink_mojom::Softplus::New(
@@ -1289,14 +1299,6 @@ OperationPtr CreateSliceOperation(const OperandToIdMap& operand_to_id_map,
     slice_mojo->starts_and_sizes.push_back(std::move(start_and_size));
   }
   return webnn::mojom::blink::Operation::NewSlice(std::move(slice_mojo));
-}
-
-OperationPtr CreateSoftmaxOperation(const OperandToIdMap& operand_to_id_map,
-                                    const MLOperator* softmax) {
-  auto softmax_mojo = blink_mojom::Softmax::New(
-      GetOperatorInputId(softmax, operand_to_id_map),
-      GetOperatorOutputId(softmax, operand_to_id_map));
-  return blink_mojom::Operation::NewSoftmax(std::move(softmax_mojo));
 }
 
 OperationPtr CreateSoftsignOperation(const OperandToIdMap& operand_to_id_map,

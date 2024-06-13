@@ -227,6 +227,21 @@ class MODULES_EXPORT MLSliceOperator : public MLOperator {
   Vector<uint32_t> sizes_;
 };
 
+class MODULES_EXPORT MLSoftmaxOperator : public MLOperator {
+ public:
+  MLSoftmaxOperator(MLGraphBuilder* builder, const uint32_t axis);
+
+  MLSoftmaxOperator(const MLSoftmaxOperator&) = delete;
+  MLSoftmaxOperator& operator=(const MLSoftmaxOperator&) = delete;
+
+  ~MLSoftmaxOperator() override;
+
+  uint32_t Axis() const { return axis_; }
+
+ private:
+  const uint32_t axis_;
+};
+
 class MODULES_EXPORT MLSplitOperator : public MLOperator {
  public:
   MLSplitOperator(MLGraphBuilder* builder,

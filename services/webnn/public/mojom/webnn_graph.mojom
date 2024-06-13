@@ -827,8 +827,8 @@ struct Sigmoid {
   uint64 output_operand_id;
 };
 
-// Corresponds to `MLOperand softmax(MLOperand x)` that compute the softmax
-// values of the 2-D input tensor along axis 1.
+// Corresponds to `MLOperand softmax(MLOperand x, unsigned long axis)` that
+// compute the softmax values of the N-D input tensor along the given axis.
 struct Softmax {
   // The id of input operand is used to get the `Operand` description from
   // `GraphInfo.id_to_operand_map`.
@@ -836,6 +836,9 @@ struct Softmax {
   // The id of output operand is used to get the `Operand` description from
   // `GraphInfo.id_to_operand_map`.
   uint64 output_operand_id;
+
+  // The dimension the reduction will be performed on.
+  uint32 axis;
 };
 
 // Corresponds to `MLOperand softplus(MLOperand x)` that computes the softplus

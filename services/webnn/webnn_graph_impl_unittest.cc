@@ -5828,6 +5828,7 @@ TEST_F(WebNNGraphImplTest, FloatingPointUnaryTest) {
 struct SoftmaxTester {
   OperandInfo input;
   OperandInfo output;
+  uint32_t axis;
   bool expected;
 
   void Test() {
@@ -5839,7 +5840,7 @@ struct SoftmaxTester {
         builder.BuildInput("input", input.dimensions, input.type);
     uint64_t output_operand_id =
         builder.BuildOutput("output", output.dimensions, output.type);
-    builder.BuildSoftmax(input_operand_id, output_operand_id);
+    builder.BuildSoftmax(input_operand_id, output_operand_id, axis);
     EXPECT_EQ(WebNNGraphImpl::ValidateGraph(*context_properties,
                                             builder.GetGraphInfo()),
               expected);
@@ -5852,6 +5853,7 @@ TEST_F(WebNNGraphImplTest, SoftmaxTest) {
     SoftmaxTester{
         .input = {.type = mojom::DataType::kFloat32, .dimensions = {2, 2}},
         .output = {.type = mojom::DataType::kFloat32, .dimensions = {2, 2}},
+        .axis = 1,
         .expected = true}
         .Test();
   }
@@ -5860,16 +5862,18 @@ TEST_F(WebNNGraphImplTest, SoftmaxTest) {
     SoftmaxTester{
         .input = {.type = mojom::DataType::kFloat16, .dimensions = {1, 4}},
         .output = {.type = mojom::DataType::kFloat16, .dimensions = {1, 4}},
+        .axis = 1,
         .expected = true}
         .Test();
   }
   {
-    // Test the invalid graph when building softmax with 4-D input.
+    // Test softmax operator for input operand with [1, 1, 4, 2] dimensions.
     SoftmaxTester{.input = {.type = mojom::DataType::kFloat32,
                             .dimensions = {1, 1, 4, 2}},
                   .output = {.type = mojom::DataType::kFloat32,
                              .dimensions = {1, 1, 4, 2}},
-                  .expected = false}
+                  .axis = 3,
+                  .expected = true}
         .Test();
   }
   {
@@ -5877,6 +5881,16 @@ TEST_F(WebNNGraphImplTest, SoftmaxTest) {
     SoftmaxTester{
         .input = {.type = mojom::DataType::kInt32, .dimensions = {2, 3}},
         .output = {.type = mojom::DataType::kInt32, .dimensions = {2, 3}},
+        .axis = 1,
+        .expected = false}
+        .Test();
+  }
+  {
+    // Test the invalid graph for axis is not less than the input rank.
+    SoftmaxTester{
+        .input = {.type = mojom::DataType::kFloat32, .dimensions = {2, 5}},
+        .output = {.type = mojom::DataType::kFloat32, .dimensions = {2, 5}},
+        .axis = 2,
         .expected = false}
         .Test();
   }
@@ -5885,6 +5899,7 @@ TEST_F(WebNNGraphImplTest, SoftmaxTest) {
     SoftmaxTester{
         .input = {.type = mojom::DataType::kFloat32, .dimensions = {4, 2}},
         .output = {.type = mojom::DataType::kFloat32, .dimensions = {2}},
+        .axis = 1,
         .expected = false}
         .Test();
   }
@@ -5893,6 +5908,7 @@ TEST_F(WebNNGraphImplTest, SoftmaxTest) {
     SoftmaxTester{
         .input = {.type = mojom::DataType::kFloat32, .dimensions = {2, 5}},
         .output = {.type = mojom::DataType::kFloat16, .dimensions = {2, 5}},
+        .axis = 1,
         .expected = false}
         .Test();
   }

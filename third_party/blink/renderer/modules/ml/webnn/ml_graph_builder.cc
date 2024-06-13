@@ -2156,19 +2156,17 @@ MLOperand* MLGraphBuilder::slice(const MLOperand* input,
 }
 
 MLOperand* MLGraphBuilder::softmax(const MLOperand* input,
+                                   uint32_t axis,
                                    ExceptionState& exception_state) {
   THROW_AND_RETURN_TYPE_IF_ERROR(ValidateInput(input), nullptr);
 
-  auto validated_output =
-      webnn::ValidateSoftmaxAndInferOutput(BlinkOperandToComponent(input));
+  auto validated_output = webnn::ValidateSoftmaxAndInferOutput(
+      BlinkOperandToComponent(input), axis);
   if (!validated_output.has_value()) {
-    exception_state.ThrowDOMException(
-        DOMExceptionCode::kDataError,
-        WTF::String::FromUTF8(validated_output.error()));
+    exception_state.ThrowTypeError(String::FromUTF8(validated_output.error()));
     return nullptr;
   }
-  auto* softmax = MakeGarbageCollected<MLOperator>(
-      this, webnn::mojom::blink::Operation::Tag::kSoftmax);
+  auto* softmax = MakeGarbageCollected<MLSoftmaxOperator>(this, axis);
   auto output = MLOperand::ValidateAndCreateOutput(
       this, ComponentOperandTypeToBlink(validated_output.value().data_type),
       Vector<uint32_t>(validated_output.value().dimensions), softmax);
@@ -2179,6 +2177,17 @@ MLOperand* MLGraphBuilder::softmax(const MLOperand* input,
   }
   softmax->Connect({input}, {output.value()});
   return output.value();
+}
+
+MLOperand* MLGraphBuilder::softmax(const MLOperand* input,
+                                   ExceptionState& exception_state) {
+  // This is to emulate the deprecated 2-D softmax until all Chrome channels
+  // support the latest version.
+  if (input->Dimensions().size() != 2) {
+    exception_state.ThrowTypeError("The input must be a 2-D tensor.");
+    return nullptr;
+  }
+  return softmax(input, /*axis=*/1, exception_state);
 }
 
 MLOperand* MLGraphBuilder::softplus(const MLOperand* input,

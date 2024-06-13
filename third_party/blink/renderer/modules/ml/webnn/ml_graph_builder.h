@@ -340,6 +340,9 @@ class MODULES_EXPORT MLGraphBuilder final : public ScriptWrappable {
                    const Vector<uint32_t>& sizes,
                    ExceptionState& exception_state);
 
+  MLOperand* softmax(const MLOperand* input,
+                     uint32_t axis,
+                     ExceptionState& exception_state);
   MLOperand* softmax(const MLOperand* input, ExceptionState& exception_state);
 
   MLOperand* softplus(const MLOperand* input,

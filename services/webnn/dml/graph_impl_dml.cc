@@ -481,6 +481,7 @@ struct ActivationOperatorDesc {
                 DML_ACTIVATION_LINEAR_OPERATOR_DESC,
                 DML_ACTIVATION_RELU_OPERATOR_DESC,
                 DML_ACTIVATION_SIGMOID_OPERATOR_DESC,
+                DML_ACTIVATION_SOFTMAX1_OPERATOR_DESC,
                 DML_ACTIVATION_SOFTPLUS_OPERATOR_DESC,
                 DML_ACTIVATION_SOFTSIGN_OPERATOR_DESC,
                 DML_ACTIVATION_TANH_OPERATOR_DESC>
@@ -510,6 +511,10 @@ struct ActivationOperatorDesc {
                    desc)) {
       return {DML_OPERATOR_ACTIVATION_SIGMOID,
               &absl::get<DML_ACTIVATION_SIGMOID_OPERATOR_DESC>(desc)};
+    } else if (absl::holds_alternative<DML_ACTIVATION_SOFTMAX1_OPERATOR_DESC>(
+                   desc)) {
+      return {DML_OPERATOR_ACTIVATION_SOFTMAX1,
+              &absl::get<DML_ACTIVATION_SOFTMAX1_OPERATOR_DESC>(desc)};
     } else if (absl::holds_alternative<DML_ACTIVATION_SOFTPLUS_OPERATOR_DESC>(
                    desc)) {
       return {DML_OPERATOR_ACTIVATION_SOFTPLUS,
@@ -670,6 +675,8 @@ std::optional<uint64_t> GetFusibleActivationOutputId(
       return operation->get_relu()->output_operand_id;
     case Operation::Tag::kSigmoid:
       return operation->get_sigmoid()->output_operand_id;
+    case Operation::Tag::kSoftmax:
+      return operation->get_softmax()->output_operand_id;
     case Operation::Tag::kSoftplus:
       return operation->get_softplus()->output_operand_id;
     case Operation::Tag::kSoftsign:
@@ -2498,6 +2505,45 @@ base::expected<void, mojom::ErrorPtr> CreateOperatorNodeForReduce(
   return base::ok();
 }
 
+// Append an identity node to the input node output. Return the node output of
+// the identity operator if it's successfully created, otherwise return a
+// nullptr.
+const NodeOutput* AppendIdentityNode(
+    GraphBuilderDml& graph_builder,
+    const NodeOutput* input,
+    const TensorDesc* input_tensor_desc = nullptr) {
+  CHECK(input);
+  if (!input_tensor_desc) {
+    input_tensor_desc = &input->GetTensorDesc();
+  }
+  TensorDesc identity_tensor_desc(input_tensor_desc->GetDataType(),
+                                  DML_TENSOR_FLAG_NONE,
+                                  input_tensor_desc->GetDimensions());
+  const OperatorNode* identity =
+      CreateUnaryOperator<DML_ELEMENT_WISE_IDENTITY_OPERATOR_DESC,
+                          DML_OPERATOR_ELEMENT_WISE_IDENTITY>(
+          *input_tensor_desc, identity_tensor_desc, input, graph_builder);
+
+  return identity ? graph_builder.CreateNodeOutput(
+                        identity, std::move(identity_tensor_desc))
+                  : nullptr;
+}
+
+// Create a reshape node with the given new shape.
+const NodeOutput* CreateReshapeNode(GraphBuilderDml& graph_builder,
+                                    const NodeOutput* input,
+                                    base::span<const uint32_t> new_shape) {
+  CHECK(input);
+  const auto& input_tensor_desc = input->GetTensorDesc();
+  const TensorDesc reshaped_input_tensor_desc(
+      input_tensor_desc.GetDataType(), input_tensor_desc.GetFlags(),
+      std::vector<uint32_t>(new_shape.begin(), new_shape.end()));
+  const NodeOutput* reshape_node =
+      AppendIdentityNode(graph_builder, input, &reshaped_input_tensor_desc);
+
+  return reshape_node;
+}
+
 // DirectML API does not have a real Reshape operator. The WebNN Reshape is
 // implemented by a DirectML Identity operator. DirectML runtime is able to
 // optimize the unnecessary IDENTITY operators when compiling the graph.
@@ -2508,30 +2554,15 @@ base::expected<void, mojom::ErrorPtr> CreateOperatorNodeForReshape(
     IdToNodeOutputMap& id_to_node_output_map) {
   const NodeOutput* input =
       GetNodeOutputForOperand(id_to_node_output_map, reshape->input_operand_id);
-  const auto& input_tensor_desc = input->GetTensorDesc();
-  // Ensure the the output tensor description of identity node having
-  // `DML_TENSOR_FLAG_NONE` flag.
-  auto input_tensor_desc_without_flags = TensorDesc(
-      input_tensor_desc.GetDataType(), input_tensor_desc.GetDimensions());
-
-  // Insert an identity node.
-  const OperatorNode* identity_node =
-      CreateUnaryOperator<DML_ELEMENT_WISE_IDENTITY_OPERATOR_DESC,
-                          DML_OPERATOR_ELEMENT_WISE_IDENTITY>(
-          input_tensor_desc, input_tensor_desc_without_flags, input,
-          graph_builder);
-  if (!identity_node) {
-    return base::unexpected(CreateError(mojom::Error::Code::kUnknownError,
-                                        "Failed to create identity operator."));
-  }
-
   uint64_t output_id = reshape->output_operand_id;
-  const auto output_tensor_desc =
-      CreateOutputTensorDesc(id_to_operand_map, output_id);
+  const OperandPtr& output_operand = id_to_operand_map.at(output_id);
+  base::span<const uint32_t> new_shape = output_operand->dimensions;
 
-  const NodeOutput* output = graph_builder.CreateNodeOutput(
-      identity_node, std::move(output_tensor_desc));
-
+  const NodeOutput* output = CreateReshapeNode(graph_builder, input, new_shape);
+  if (!output) {
+    return CreateUnexpectedError(mojom::Error::Code::kUnknownError,
+                                 "Failed to create reshape operator.");
+  }
   // The output id must be unique in the map.
   CHECK(id_to_node_output_map.try_emplace(output_id, output).second);
 
@@ -2813,26 +2844,6 @@ base::expected<void, mojom::ErrorPtr> CreateOperatorNodeForGemm(
   CHECK(id_to_node_output_map.try_emplace(output_id, output).second);
 
   return base::ok();
-}
-
-// Append an identity node to the input node output. Return the node output of
-// the identity operator if it's successfully created, otherwise return a
-// nullptr.
-const NodeOutput* AppendIdentityNode(GraphBuilderDml& graph_builder,
-                                     const NodeOutput* input) {
-  CHECK(input);
-  const TensorDesc& input_tensor_desc = input->GetTensorDesc();
-  TensorDesc identity_tensor_desc(input_tensor_desc.GetDataType(),
-                                  DML_TENSOR_FLAG_NONE,
-                                  input_tensor_desc.GetDimensions());
-  const OperatorNode* identity =
-      CreateUnaryOperator<DML_ELEMENT_WISE_IDENTITY_OPERATOR_DESC,
-                          DML_OPERATOR_ELEMENT_WISE_IDENTITY>(
-          input_tensor_desc, identity_tensor_desc, input, graph_builder);
-
-  return identity ? graph_builder.CreateNodeOutput(
-                        identity, std::move(identity_tensor_desc))
-                  : nullptr;
 }
 
 // This helper checks if the input node output is a constant operand, if so,
@@ -3994,6 +4005,22 @@ base::expected<void, mojom::ErrorPtr> CreateOperatorNodeForMatmul(
   return base::ok();
 }
 
+// Create a transpose node with the given permutation.
+const NodeOutput* CreateTransposeNode(GraphBuilderDml& graph_builder,
+                                      const NodeOutput* input,
+                                      base::span<const uint32_t> permutation) {
+  CHECK(input);
+  const TensorDesc& input_tensor_desc = input->GetTensorDesc();
+  TensorDesc transposed_input_tensor_desc = input_tensor_desc;
+  transposed_input_tensor_desc.Transpose(permutation);
+
+  // Append an identity node to consume the strides.
+  const NodeOutput* transpose_node =
+      AppendIdentityNode(graph_builder, input, &transposed_input_tensor_desc);
+
+  return transpose_node;
+}
+
 base::expected<void, mojom::ErrorPtr> CreateOperatorNodeForSoftmax(
     Adapter* adapter,
     const IdToOperandMap& id_to_operand_map,
@@ -4008,27 +4035,17 @@ base::expected<void, mojom::ErrorPtr> CreateOperatorNodeForSoftmax(
   const auto output_tensor_desc =
       CreateOutputTensorDesc(id_to_operand_map, output_id);
   std::array<const NodeOutput*, 1> inputs = {input};
+  const uint32_t axis = softmax->axis;
 
-  const OperatorNode* softmax_node = nullptr;
   if (adapter->IsDMLFeatureLevelSupported(DML_FEATURE_LEVEL_5_1)) {
-    // TODO(crbug.com/338094927): Support the N-D input and axis parameter for
-    // softmax to align with WebNN spec:
-    // https://www.w3.org/TR/webnn/#api-mlgraphbuilder-softmax-input-axis
-    //
-    // DML_ACTIVATION_SOFTMAX1_OPERATOR_DESC is equivalent to
-    // DML_ACTIVATION_SOFTMAX_OPERATOR_DESC when AxisCount
-    // == 1, and Axes == {DimensionCount - 1}:
-    // https://learn.microsoft.com/en-us/windows/ai/directml/api/ns-directml-dml_activation_softmax1_operator_desc#remarks
-    const auto input_rank = input_tensor_desc.GetDimensions().size();
-    CHECK_EQ(input_rank, 2u);
-    std::array<uint32_t, 1> axes = {1};
+    std::array<uint32_t, 1> axes = {axis};
     DML_ACTIVATION_SOFTMAX1_OPERATOR_DESC softmax1_operator_desc{
         .InputTensor = &input_tensor_desc.GetDMLTensorDesc(),
         .OutputTensor = &output_tensor_desc.GetDMLTensorDesc(),
         .AxisCount = base::checked_cast<uint32_t>(axes.size()),
         .Axes = axes.data()};
 
-    softmax_node = graph_builder.CreateOperatorNode(
+    const OperatorNode* softmax_node = graph_builder.CreateOperatorNode(
         DML_OPERATOR_ACTIVATION_SOFTMAX1, &softmax1_operator_desc, inputs);
     if (!softmax_node) {
       return base::unexpected(
@@ -4036,24 +4053,130 @@ base::expected<void, mojom::ErrorPtr> CreateOperatorNodeForSoftmax(
                             "Failed to create softmax1 operator to implement "
                             "WebNN softmax operation."));
     }
-  } else {
-    DML_ACTIVATION_SOFTMAX_OPERATOR_DESC softmax_operator_desc{
-        .InputTensor = &input_tensor_desc.GetDMLTensorDesc(),
-        .OutputTensor = &output_tensor_desc.GetDMLTensorDesc()};
 
-    softmax_node = graph_builder.CreateOperatorNode(
-        DML_OPERATOR_ACTIVATION_SOFTMAX, &softmax_operator_desc, inputs);
-    if (!softmax_node) {
-      return base::unexpected(
-          mojom::Error::New(mojom::Error::Code::kUnknownError,
-                            "Failed to create softmax operator to implement "
-                            "WebNN softmax operation."));
+    const NodeOutput* output = graph_builder.CreateNodeOutput(
+        softmax_node, std::move(output_tensor_desc));
+
+    // The output id must be unique in the map.
+    CHECK(id_to_node_output_map.try_emplace(output_id, output).second);
+  } else {
+    // Emulate softmax with N-D input and axis parameter supported when feature
+    // level less than DML_FEATURE_LEVEL_5_1:
+    // https://learn.microsoft.com/en-us/windows/win32/api/directml/ns-directml-dml_activation_softmax_operator_desc.
+    //
+    // Transpose the input tensor to make the axis to be the last dimension if
+    // needed.
+    const NodeOutput* axis_transposed_to_last_output = nullptr;
+    const uint32_t input_rank = input_tensor_desc.GetDimensions().size();
+    std::vector<uint32_t> permutation(input_rank);
+    std::iota(permutation.begin(), permutation.end(), 0);
+    if (axis == (input_rank - 1)) {
+      axis_transposed_to_last_output = input;
+    } else {
+      std::vector<uint32_t> transpose_axis_to_last(permutation);
+      std::swap(transpose_axis_to_last[axis],
+                transpose_axis_to_last[input_rank - 1]);
+      axis_transposed_to_last_output =
+          CreateTransposeNode(graph_builder, input, transpose_axis_to_last);
+      if (!axis_transposed_to_last_output) {
+        return CreateUnexpectedError(mojom::Error::Code::kUnknownError,
+                                     "For the emulation of softmax: failed to "
+                                     "create transpose operator.");
+      }
     }
+
+    // Reshape the input tensor to 2D if needed.
+    const NodeOutput* reshaped_2d_output = nullptr;
+    if (axis_transposed_to_last_output->GetTensorDesc()
+            .GetDimensions()
+            .size() <= 2) {
+      reshaped_2d_output = axis_transposed_to_last_output;
+    } else {
+      const std::vector<uint32_t>& axis_transposed_to_last_output_dims =
+          axis_transposed_to_last_output->GetTensorDesc().GetDimensions();
+      auto reshaped_2d_dim_0 = base::MakeCheckedNum<uint32_t>(1);
+      for (uint32_t i = 0; i < axis_transposed_to_last_output_dims.size() - 1;
+           i++) {
+        reshaped_2d_dim_0 *= axis_transposed_to_last_output_dims[i];
+        if (!reshaped_2d_dim_0.IsValid<uint32_t>()) {
+          return base::unexpected(mojom::Error::New(
+              mojom::Error::Code::kUnknownError,
+              "For softmax impl: failed to reshape the input to 2-D tensor."));
+        }
+      }
+      std::vector<uint32_t> reshaped_2d_dims = {
+          reshaped_2d_dim_0.ValueOrDie(),
+          axis_transposed_to_last_output_dims.back()};
+
+      reshaped_2d_output = CreateReshapeNode(
+          graph_builder, axis_transposed_to_last_output, reshaped_2d_dims);
+      if (!reshaped_2d_output) {
+        return CreateUnexpectedError(
+            mojom::Error::Code::kUnknownError,
+            "For the emulation of softmax: failed to create reshape operator.");
+      }
+    }
+
+    // Perform 2-D softmax.
+    const TensorDesc softmax_2d_output_tensor_desc =
+        TensorDesc(reshaped_2d_output->GetTensorDesc().GetDataType(),
+                   reshaped_2d_output->GetTensorDesc().GetDimensions());
+    DML_ACTIVATION_SOFTMAX_OPERATOR_DESC softmax_2d_operator_desc{
+        .InputTensor = &reshaped_2d_output->GetTensorDesc().GetDMLTensorDesc(),
+        .OutputTensor = &softmax_2d_output_tensor_desc.GetDMLTensorDesc()};
+
+    std::array<const NodeOutput*, 1> softmax_2d_inputs = {reshaped_2d_output};
+    const OperatorNode* softmax_2d_node = graph_builder.CreateOperatorNode(
+        DML_OPERATOR_ACTIVATION_SOFTMAX, &softmax_2d_operator_desc,
+        softmax_2d_inputs);
+    if (!softmax_2d_node) {
+      return base::unexpected(mojom::Error::New(
+          mojom::Error::Code::kUnknownError,
+          "For the emulation of softmax: failed to create softmax operator."));
+    }
+    const NodeOutput* softmax_2d_output = graph_builder.CreateNodeOutput(
+        softmax_2d_node, softmax_2d_output_tensor_desc);
+
+    // Reshape the 2-D tensor back to N-D.
+    const NodeOutput* reshaped_nd_output = nullptr;
+    if (axis_transposed_to_last_output->GetTensorDesc()
+            .GetDimensions()
+            .size() <= 2) {
+      reshaped_nd_output = softmax_2d_output;
+    } else {
+      reshaped_nd_output = CreateReshapeNode(
+          graph_builder, softmax_2d_output,
+          axis_transposed_to_last_output->GetTensorDesc().GetDimensions());
+      if (!reshaped_nd_output) {
+        return base::unexpected(
+            mojom::Error::New(mojom::Error::Code::kUnknownError,
+                              "For the emulation of softmax: failed to create "
+                              "reshape operator."));
+      }
+    }
+
+    // Transpose the output tensor back to the original shape.
+    const NodeOutput* last_transposed_to_axis_output = nullptr;
+    if (axis == (input_rank - 1)) {
+      last_transposed_to_axis_output = reshaped_nd_output;
+    } else {
+      std::vector<uint32_t> transpose_axis_back(permutation);
+      std::swap(transpose_axis_back[axis], transpose_axis_back[input_rank - 1]);
+      last_transposed_to_axis_output = CreateTransposeNode(
+          graph_builder, reshaped_nd_output, transpose_axis_back);
+      if (!last_transposed_to_axis_output) {
+        return base::unexpected(
+            mojom::Error::New(mojom::Error::Code::kUnknownError,
+                              "For the emulation of softmax: failed to create "
+                              "transpose operator."));
+      }
+    }
+
+    // The output id must be unique in the map.
+    CHECK(id_to_node_output_map
+              .try_emplace(output_id, last_transposed_to_axis_output)
+              .second);
   }
-  const NodeOutput* output = graph_builder.CreateNodeOutput(
-      softmax_node, std::move(output_tensor_desc), 0);
-  // The output id must be unique in the map.
-  CHECK(id_to_node_output_map.try_emplace(output_id, output).second);
 
   return base::ok();
 }
@@ -4103,29 +4226,16 @@ base::expected<void, mojom::ErrorPtr> CreateOperatorNodeForTranspose(
     IdToNodeOutputMap& id_to_node_output_map) {
   const NodeOutput* input = GetNodeOutputForOperand(
       id_to_node_output_map, transpose->input_operand_id);
-  const auto& input_tensor_desc = input->GetTensorDesc();
-
   uint64_t output_id = transpose->output_operand_id;
-  auto output_tensor_desc =
-      CreateOutputTensorDesc(id_to_operand_map, output_id);
-  CHECK_EQ(input_tensor_desc.GetDimensions().size(),
-           output_tensor_desc.GetDimensions().size());
 
-  TensorDesc remapped_input_tensor_desc = input_tensor_desc;
-  remapped_input_tensor_desc.Transpose(transpose->permutation);
-
-  // Append an identity node to consume the strides.
-  const OperatorNode* identity_node =
-      CreateUnaryOperator<DML_ELEMENT_WISE_IDENTITY_OPERATOR_DESC,
-                          DML_OPERATOR_ELEMENT_WISE_IDENTITY>(
-          remapped_input_tensor_desc, output_tensor_desc, input, graph_builder);
-  if (!identity_node) {
-    return base::unexpected(CreateError(mojom::Error::Code::kUnknownError,
-                                        "Failed to create identity operator."));
+  const NodeOutput* output =
+      CreateTransposeNode(graph_builder, input, transpose->permutation);
+  if (!output) {
+    return base::unexpected(
+        mojom::Error::New(mojom::Error::Code::kUnknownError,
+                          "Failed to create transpose operator."));
   }
 
-  const NodeOutput* output = graph_builder.CreateNodeOutput(
-      identity_node, std::move(output_tensor_desc));
   // The output id must be unique in the map.
   CHECK(id_to_node_output_map.try_emplace(output_id, output).second);
 

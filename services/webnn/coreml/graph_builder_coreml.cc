@@ -2298,9 +2298,9 @@ GraphBuilderCoreml::AddOperationForSoftmax(
   SetInputWithName(*op->mutable_inputs(), kOpParamX,
                    input_operand_info.coreml_name);
 
-  // TODO: crbug.com/341341298 - support axis parameter.
-  SetInputWithValue(*op->mutable_inputs(), kOpParamAxis,
-                    CreateScalarImmediateValue<int32_t>(-1));
+  SetInputWithValue(
+      *op->mutable_inputs(), kOpParamAxis,
+      CreateScalarImmediateValue(base::checked_cast<int32_t>(operation.axis)));
   PopulateNamedValueType(operation.output_operand_id, *op->add_outputs());
   return base::ok();
 }

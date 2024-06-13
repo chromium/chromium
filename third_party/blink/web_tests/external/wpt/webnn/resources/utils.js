@@ -785,6 +785,20 @@ const buildSlice = (operationName, builder, resources) => {
   return namedOutputOperand;
 };
 
+const buildSoftmax = (operationName, builder, resources) => {
+  // MLOperand softmax(MLOperand input, [EnforceRange] unsigned long axis);
+  const namedOutputOperand = {};
+  const inputOperand = createSingleInputOperand(builder, resources);
+  if (resources.axis !== undefined) {
+    // invoke builder.softmax(input, axis)
+    namedOutputOperand[resources.expected.name] = builder[operationName](inputOperand, resources.axis);
+  } else {
+    // invoke builder.softmax(input)
+    namedOutputOperand[resources.expected.name] = builder[operationName](inputOperand);
+  }
+  return namedOutputOperand;
+};
+
 const buildSplit = (operationName, builder, resources) => {
   // sequence<MLOperand> split(MLOperand input,
   //                           (unsigned long or sequence<unsigned long>) splits,

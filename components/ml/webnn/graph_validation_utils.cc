@@ -344,17 +344,15 @@ std::string DataTypeConstraintToString(
 }
 
 base::expected<Operand, std::string> ValidateSoftmaxAndInferOutput(
-    Operand input) {
-  // According to WebNN spec:
-  // https://www.w3.org/TR/webnn/#api-mlgraphbuilder-softmax, The input must be
-  // a 2-D tensor.
-  if (input.dimensions.size() != 2) {
-    return base::unexpected("The input must be a 2-D tensor.");
-  }
+    Operand input,
+    uint32_t axis) {
   // The input data type must be one of the floating point types.
   if (!IsFloatingPointType(input.data_type)) {
     return base::unexpected(
         "The input data type must be one of the floating point types.");
+  }
+  if (axis >= input.dimensions.size()) {
+    return base::unexpected("Axis must be a valid dimension.");
   }
   // The output tensor of softmax is the same shape as the input tensor.
   return Operand(input.data_type, std::move(input.dimensions));

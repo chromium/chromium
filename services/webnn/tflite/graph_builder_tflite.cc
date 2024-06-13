@@ -2251,14 +2251,51 @@ auto GraphBuilderTflite::SerializeSlice(const mojom::Slice& slice)
 
 auto GraphBuilderTflite::SerializeSoftmax(const mojom::Softmax& softmax)
     -> OperatorOffset {
+  const auto& input_operand = GetOperand(softmax.input_operand_id);
+  // The input shape has been validated to not overflow before creating tensor.
+  auto signed_input_dimensions = ToSignedDimensions(input_operand.dimensions);
+  CHECK(signed_input_dimensions.has_value());
+  const size_t input_rank = signed_input_dimensions->size();
+
   const auto softmax_options =
       ::tflite::CreateSoftmaxOptions(builder_, /*beta=*/1.0);
+  if (softmax.axis == input_rank - 1) {
+    // The axis is the last dimension, so the softmax operation can be directly
+    // serialized.
+    return SerializeUnaryOperation(
+        ::tflite::BuiltinOperator_SOFTMAX,
+        operand_to_index_map_.at(softmax.input_operand_id),
+        operand_to_index_map_.at(softmax.output_operand_id),
+        ::tflite::BuiltinOptions_SoftmaxOptions, softmax_options.Union());
+  }
+  // Transpose the input tensor to make the axis to be the last dimension.
+  const ::tflite::TensorType input_tensor_type =
+      MojoOperandTypeToTFLite(input_operand.data_type);
+  std::vector<uint32_t> permutation(input_rank);
+  std::iota(permutation.begin(), permutation.end(), 0);
+  std::swap(permutation[softmax.axis], permutation[input_rank - 1]);
+  std::vector<int32_t> transpose_dimensions = *signed_input_dimensions;
+  std::swap(transpose_dimensions[softmax.axis],
+            transpose_dimensions[input_rank - 1]);
 
-  return SerializeUnaryOperation(
-      ::tflite::BuiltinOperator_SOFTMAX,
+  const int32_t output_tensor_index_of_transpose =
+      SerializeTemporaryTensor(transpose_dimensions, input_tensor_type);
+  operators_.emplace_back(SerializeTransposeOperation(
       operand_to_index_map_.at(softmax.input_operand_id),
-      operand_to_index_map_.at(softmax.output_operand_id),
-      ::tflite::BuiltinOptions_SoftmaxOptions, softmax_options.Union());
+      output_tensor_index_of_transpose, permutation));
+
+  // Perform softmax.
+  const int32_t output_tensor_index_of_softmax =
+      SerializeTemporaryTensor(*signed_input_dimensions, input_tensor_type);
+  operators_.emplace_back(SerializeUnaryOperation(
+      ::tflite::BuiltinOperator_SOFTMAX, output_tensor_index_of_transpose,
+      output_tensor_index_of_softmax, ::tflite::BuiltinOptions_SoftmaxOptions,
+      softmax_options.Union()));
+
+  // Transpose the last dimension back to the original axis.
+  return SerializeTransposeOperation(
+      output_tensor_index_of_softmax,
+      operand_to_index_map_.at(softmax.output_operand_id), permutation);
 }
 
 auto GraphBuilderTflite::SerializeSoftplus(const mojom::Softplus& softplus)

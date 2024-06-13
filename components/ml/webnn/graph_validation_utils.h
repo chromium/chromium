@@ -417,7 +417,8 @@ base::expected<Operand, std::string> ValidateArgMinMaxAndInferOutput(
 // Validate softmax operator defined in WebIDL here
 // https://www.w3.org/TR/webnn/#api-mlgraphbuilder-softmax
 base::expected<Operand, std::string> ValidateSoftmaxAndInferOutput(
-    Operand input);
+    Operand input,
+    uint32_t axis);
 
 // Contains the attributes of the split operator.
 struct SplitAttribute {

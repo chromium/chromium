@@ -548,7 +548,9 @@ class GraphInfoBuilder final {
 
   void BuildSigmoid(uint64_t input_operand_id, uint64_t output_operand_id);
 
-  void BuildSoftmax(uint64_t input_operand_id, uint64_t output_operand_id);
+  void BuildSoftmax(uint64_t input_operand_id,
+                    uint64_t output_operand_id,
+                    uint32_t axis);
 
   void BuildSoftplus(uint64_t input_operand_id, uint64_t output_operand_id);
 

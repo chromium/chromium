@@ -392,6 +392,13 @@ const Vector<uint32_t>& MLSliceOperator::Sizes() const {
   return sizes_;
 }
 
+MLSoftmaxOperator::MLSoftmaxOperator(MLGraphBuilder* builder,
+                                     const uint32_t axis)
+    : MLOperator(builder, webnn::mojom::blink::Operation::Tag::kSoftmax),
+      axis_(axis) {}
+
+MLSoftmaxOperator::~MLSoftmaxOperator() = default;
+
 MLSplitOperator::MLSplitOperator(MLGraphBuilder* builder,
                                  const uint32_t splits,
                                  const bindings::DictionaryBase* options)

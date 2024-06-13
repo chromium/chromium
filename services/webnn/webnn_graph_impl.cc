@@ -1758,8 +1758,8 @@ bool ValidateSoftmax(const IdToOperandMap& id_to_operand_map,
     // The softmax operator is invalid.
     return false;
   }
-  auto validated_output =
-      ValidateSoftmaxAndInferOutput(MojoOperandToComponent(input));
+  auto validated_output = ValidateSoftmaxAndInferOutput(
+      MojoOperandToComponent(input), softmax->axis);
   if (!validated_output.has_value()) {
     return false;
   }
