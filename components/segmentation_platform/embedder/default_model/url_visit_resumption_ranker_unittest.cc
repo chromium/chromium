@@ -35,4 +35,18 @@ TEST_F(URLVisitResumptionRankerTest, VerifyMetadata) {
   }
 }
 
+TEST_F(URLVisitResumptionRankerTest, ModelScore) {
+  ExpectInitAndFetchModel();
+  ASSERT_TRUE(fetched_metadata_);
+
+  ModelProvider::Request inputs(visited_url_ranking::kNumInputs, -1);
+  ExpectExecutionWithInput(inputs, false, {0});
+
+  inputs[visited_url_ranking::kTimeSinceLastModifiedSec] = 0;
+  ExpectExecutionWithInput(inputs, false, {1});
+
+  inputs[visited_url_ranking::kTimeSinceLastModifiedSec] = 10;
+  ExpectExecutionWithInput(inputs, false, {0.1});
+}
+
 }  // namespace segmentation_platform

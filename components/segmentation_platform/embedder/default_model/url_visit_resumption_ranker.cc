@@ -102,7 +102,13 @@ void URLVisitResumptionRanker::ExecuteModelWithInput(
   if (use_random_score_) {
     resumption_score = base::RandFloat();
   } else {
-    resumption_score = 1.0 / (time_since_modified_sec + 1);
+    if (time_since_modified_sec < 0) {
+      resumption_score = 0;
+    } else if (time_since_modified_sec == 0) {
+      resumption_score = 1;
+    } else {
+      resumption_score = 1.0f / time_since_modified_sec;
+    }
   }
   base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
       FROM_HERE, base::BindOnce(std::move(callback),
