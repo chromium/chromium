@@ -209,9 +209,6 @@ TEST_F(ExtensionMetricsProviderInstallsTest, TestProtoConstruction) {
     EXPECT_TRUE(install.has_updates_from_store());
     EXPECT_FALSE(install.updates_from_store());
 
-    EXPECT_TRUE(install.has_is_from_bookmark());
-    EXPECT_FALSE(install.is_from_bookmark());
-
     EXPECT_TRUE(install.has_is_converted_from_user_script());
     EXPECT_FALSE(install.is_converted_from_user_script());
 
