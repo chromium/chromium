@@ -6,6 +6,7 @@
 
 #import <Foundation/Foundation.h>
 #include <paths.h>
+#include <sys/attr.h>
 #include <sys/clonefile.h>
 #include <sys/fcntl.h>
 #include <sys/stat.h>
@@ -460,6 +461,47 @@ bool ValidateUniqueTempDirPath(const base::FilePath& unique_temp_dir_path) {
   return unique_temp_dir_path.value().starts_with(prefix.value());
 }
 
+void RecordCloneCount() {
+  base::FilePath clone_temp_dir;
+  if (!GetCloneTempDir(&clone_temp_dir)) {
+    return;
+  }
+
+  struct attrlist attr_list = {
+      // `man 2 getattrlist` explains `ATTR_BIT_MAP_COUNT` must be set.
+      .bitmapcount = ATTR_BIT_MAP_COUNT,
+
+      // Get the entry count of the provided dir. The "." and ".." entries are
+      // not included in the count.
+      .dirattr = ATTR_DIR_ENTRYCOUNT,
+  };
+
+  struct alignas(4) {
+    uint32_t length;
+    uint32_t entry_count;
+  } __attribute__((packed)) attr_buff;
+
+  //
+  // Count the number of entries in the clone temp dir. The count would be 2 in
+  // this example:
+  //  /private/var/folders/.../X/org.chromium.Chromium.code_sign_clone/
+  //    code_sign_clone.123456
+  //    code_sign_clone.654321
+  //
+  if (getattrlist(clone_temp_dir.value().c_str(), &attr_list, &attr_buff,
+                  sizeof(attr_buff), 0) != 0) {
+    return;
+  }
+  DCHECK_GE(sizeof(attr_buff), attr_buff.length);
+
+  // Record the clone count. Each running instance of Chrome maintains a clone
+  // of itself. Only a handful (~1-5) of in use clones are expected to be
+  // present at a given time. We don't need granularity over 100. A high count
+  // indicates a more robust cleanup approach is needed.
+  base::UmaHistogramCounts100("Mac.AppCodeSignCloneCount",
+                              attr_buff.entry_count);
+}
+
 }  // namespace
 
 namespace code_sign_clone_manager {
@@ -571,10 +613,12 @@ void CodeSignCloneManager::Clone(const base::FilePath& src_path,
   // overlap, it is safe to set `needs_cleanup_` from this task.
   needs_cleanup_ = true;
 
-  std::move(callback).Run(clone_app_path);
+  RecordCloneCount();
 
   // TODO(https://crbug.com/343784575): Search for inactive clones and clean
-  // them up and/or create a metric.
+  // them up if the clone count gets too high.
+
+  std::move(callback).Run(clone_app_path);
 }
 
 void CodeSignCloneManager::SetTemporaryDirectoryPathForTesting(

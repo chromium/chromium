@@ -32,6 +32,16 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Mac.AppCodeSignCloneCount" units="count"
+    expires_after="2025-06-03">
+  <owner>bur@google.com</owner>
+  <owner>src/ui/base/cocoa/OWNERS</owner>
+  <summary>
+    The current count of app clones in the code sign clone temp dir. This
+    histogram is emitted once at browser startup.
+  </summary>
+</histogram>
+
 <histogram name="Mac.AppCodeSignCloneCreationTime" units="ms"
     expires_after="2025-03-06">
   <owner>bur@google.com</owner>
