@@ -495,8 +495,9 @@ const CGFloat kClearButtonWidthAndHeight = 40;
         kColoredButtonContentInset, kColoredButtonContentInset,
         kColoredButtonContentInset, kColoredButtonContentInset);
     colorButton.configuration = buttonConfiguration;
-    colorButton.accessibilityLabel =
-        base::SysUTF16ToNSString(colorLabelMap.at(colorID));
+    colorButton.accessibilityLabel = l10n_util::GetNSStringF(
+        IDS_IOS_TAB_GROUP_CREATION_ACCESSIBILITY_COLOR_SELECTION,
+        colorLabelMap.at(colorID));
 
     UIImageSymbolConfiguration* configuration = [UIImageSymbolConfiguration
         configurationWithPointSize:kColoredButtonSize

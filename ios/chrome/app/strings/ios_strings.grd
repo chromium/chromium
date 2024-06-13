@@ -5164,6 +5164,9 @@ While in Incognito, sites can't use cookies to see your browsing activity across
       <message name="IDS_IOS_TAB_GROUP_CELL_ACCESSIBILITY_TITLE" desc="Accessibility label, giving context to screen reader when users navigate the tab grouping cell in the tab grid. This is spoken by VoiceOver.">
         Tab group, <ph name="GROUP_TITLE">$1<ex>Group name</ex></ph>, <ph name="TABS_NUMBER">$2<ex>4</ex></ph> Tabs.
       </message>
+      <message name="IDS_IOS_TAB_GROUP_CREATION_ACCESSIBILITY_COLOR_SELECTION" desc="Accessibility label, giving context to screen reader when users navigate the color list in the tab group creation screen. This is spoken by VoiceOver.">
+          Tab group color <ph name="COLOR"><ex>yellow</ex>$1</ph>
+      </message>
       <message name="IDS_IOS_TAB_GROUP_CREATION_BUTTON" desc="In Title Case: Label of the button to create a tab group. [iOS only]">
           Create Group
       </message>
