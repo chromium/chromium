@@ -4726,11 +4726,6 @@
      "expiry_milestone": 136
   },
   {
-    "name": "force-password-initial-sync-when-decryption-fails",
-    "owners": [ "derinel@google.com", "mamir@chromium.org" ],
-    "expiry_milestone": 124
-  },
-  {
     "name": "force-resync-drive",
     "owners": [ "cassycc@google.com", "alexbn@chromium.org", "simmonsjosh@google.com" ],
     "expiry_milestone": 128
@@ -8077,7 +8072,7 @@
   {
     "name": "skip-undecryptable-passwords",
     "owners": [ "derinel@google.com", "mamir@chromium.org" ],
-    "expiry_milestone": 124
+    "expiry_milestone": 131
   },
   {
     "name": "smart-suggestion-for-large-downloads",
