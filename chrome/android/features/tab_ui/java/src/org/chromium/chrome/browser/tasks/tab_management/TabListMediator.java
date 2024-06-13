@@ -902,8 +902,9 @@ class TabListMediator {
                         PropertyModel model = getModelFromId(groupTab.getId());
 
                         if (model != null) {
+                            @TabGroupColorId
                             int colorId =
-                                    filter.getOrCreateTabGroupColor(destinationTab.getRootId());
+                                    filter.getTabGroupColorWithFallback(destinationTab.getRootId());
                             model.set(TabProperties.TAB_GROUP_COLOR_ID, colorId);
                         }
                     }
@@ -1624,7 +1625,7 @@ class TabListMediator {
                 if (isInTabGroup) {
                     TabGroupModelFilter filter =
                             (TabGroupModelFilter) mCurrentTabModelFilterSupplier.get();
-                    tabGroupColorId = filter.getOrCreateTabGroupColor(tab.getRootId());
+                    tabGroupColorId = filter.getTabGroupColorWithFallback(tab.getRootId());
                 }
 
                 PropertyModel model = getModelFromId(tab.getId());
@@ -2057,7 +2058,7 @@ class TabListMediator {
             if (mMode == TabListMode.LIST && isInTabGroup && isParentComponentTabSwitcher()) {
                 TabGroupModelFilter filter =
                         (TabGroupModelFilter) mCurrentTabModelFilterSupplier.get();
-                colorId = filter.getOrCreateTabGroupColor(tab.getRootId());
+                colorId = filter.getTabGroupColorWithFallback(tab.getRootId());
             }
         }
 
@@ -2184,7 +2185,7 @@ class TabListMediator {
             } else {
                 TabGroupModelFilter filter =
                         (TabGroupModelFilter) mCurrentTabModelFilterSupplier.get();
-                int colorId = filter.getOrCreateTabGroupColor(tab.getRootId());
+                @TabGroupColorId int colorId = filter.getTabGroupColorWithFallback(tab.getRootId());
                 final @StringRes int colorDescRes =
                         ColorPickerUtils.getTabGroupColorPickerItemColorAccessibilityString(
                                 colorId);
@@ -2319,7 +2320,8 @@ class TabListMediator {
                 if (ChromeFeatureList.sTabGroupParityAndroid.isEnabled()) {
                     TabGroupModelFilter filter =
                             (TabGroupModelFilter) mCurrentTabModelFilterSupplier.get();
-                    int colorId = filter.getOrCreateTabGroupColor(tab.getRootId());
+                    @TabGroupColorId
+                    int colorId = filter.getTabGroupColorWithFallback(tab.getRootId());
                     faviconFetcher =
                             mTabGroupColorFaviconProvider.getFaviconFromTabGroupColorFetcher(
                                     colorId, filter.getTabModel().isIncognito());
@@ -2926,7 +2928,7 @@ class TabListMediator {
             } else {
                 TabGroupModelFilter filter =
                         (TabGroupModelFilter) mCurrentTabModelFilterSupplier.get();
-                int colorId = filter.getOrCreateTabGroupColor(rootId);
+                @TabGroupColorId int colorId = filter.getTabGroupColorWithFallback(rootId);
                 final @StringRes int colorDescRes =
                         ColorPickerUtils.getTabGroupColorPickerItemColorAccessibilityString(
                                 colorId);

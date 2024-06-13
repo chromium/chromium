@@ -373,10 +373,10 @@ public class TabGroupSyncIntegrationTestHelper {
      */
     public void verifyGroupInfoMatchesLocalData(int index, GroupInfo expectedGroup) {
         TabGroupModelFilter filter = getTabGroupFilter();
-        int groupId = getTabGroupRootIdAt(index);
-        String actualTitle = filter.getTabGroupTitle(groupId);
-        int actualColor = filter.getOrCreateTabGroupColor(groupId);
-        List<Tab> tabs = filter.getRelatedTabList(groupId);
+        int rootId = getTabGroupRootIdAt(index);
+        String actualTitle = filter.getTabGroupTitle(rootId);
+        int actualColor = filter.getTabGroupColorWithFallback(rootId);
+        List<Tab> tabs = filter.getRelatedTabList(rootId);
 
         // group details
         assertEquals(

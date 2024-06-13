@@ -122,7 +122,7 @@ public class TabGroupVisualDataDialogManager {
                         /* isIncognito= */ false,
                         ColorPickerLayoutType.DYNAMIC,
                         null);
-        mDefaultColorId = filter.getOrCreateTabGroupColor(rootId);
+        mDefaultColorId = filter.getTabGroupColorWithFallback(rootId);
         mColorPickerCoordinator.setSelectedColorItem(mDefaultColorId);
 
         LinearLayout linearLayout = mCustomView.findViewById(R.id.visual_data_dialog_layout);

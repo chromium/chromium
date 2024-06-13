@@ -64,7 +64,7 @@ public class TabGroupModelFilter extends TabModelFilter {
 
         public TabGroupMetadata(int rootId) {
             title = getTabGroupTitle(rootId);
-            color = getOrCreateTabGroupColor(rootId);
+            color = getTabGroupColorWithFallback(rootId);
             isCollapsed = getTabGroupCollapsed(rootId);
         }
     }
@@ -185,18 +185,20 @@ public class TabGroupModelFilter extends TabModelFilter {
     public void createSingleTabGroup(Tab tab, boolean notify) {
         assert ChromeFeatureList.sAndroidTabGroupStableIds.isEnabled();
         assert tab.getTabGroupId() == null;
+
+        for (TabGroupModelFilterObserver observer : mGroupFilterObserver) {
+            observer.willMergeTabToGroup(tab, tab.getRootId());
+        }
+
         tab.setTabGroupId(Token.createRandom());
-        boolean willMergingCreateNewGroup = true;
 
         // If this is a new tab group creation, do not trigger a snackbar.
-        if (ChromeFeatureList.sTabGroupParityAndroid.isEnabled() && willMergingCreateNewGroup) {
+        if (ChromeFeatureList.sTabGroupParityAndroid.isEnabled()) {
             notify = false;
         }
 
         for (TabGroupModelFilterObserver observer : mGroupFilterObserver) {
-            if (willMergingCreateNewGroup) {
-                observer.didCreateNewGroup(tab, this);
-            }
+            observer.didCreateNewGroup(tab, this);
         }
 
         for (TabGroupModelFilterObserver observer : mGroupFilterObserver) {
@@ -1467,21 +1469,16 @@ public class TabGroupModelFilter extends TabModelFilter {
 
     /**
      * This method fetches tab group colors for the related tab group root ID. If the color does not
-     * exist, the next suggested color will be fetched, stored and returned for that root ID.
+     * exist, then GREY will be returned. This method is intended to be used by UI surfaces that
+     * want to show a color, and they need the color returned to be valid.
      *
      * @param rootId The tab root ID whose related tab group color will be fetched if found.
-     * @return The stored or newly created color for the target tab group.
+     * @return The color that should be used for this group.
      */
-    public @TabGroupColorId int getOrCreateTabGroupColor(int rootId) {
+    public @TabGroupColorId int getTabGroupColorWithFallback(int rootId) {
         assert rootId != Tab.INVALID_TAB_ID;
-        int color = TabGroupColorUtils.getTabGroupColor(rootId);
-
-        if (color == TabGroupColorUtils.INVALID_COLOR_ID) {
-            color = TabGroupColorUtils.getNextSuggestedColorId(this);
-            setTabGroupColor(rootId, color);
-        }
-
-        return color;
+        int color = getTabGroupColor(rootId);
+        return color == TabGroupColorUtils.INVALID_COLOR_ID ? TabGroupColorId.GREY : color;
     }
 
     /** Stores the given color for the tab group. */
