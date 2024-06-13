@@ -24,8 +24,6 @@ TEST(RaceNetworkRequestReadBufferManagerTest, ReadData) {
   EXPECT_EQ(mojo::CreateDataPipe(10u, producer_handle, consumer_handle),
             MOJO_RESULT_OK);
 
-  const char expected_data[] = "abcde";
-  size_t num_bytes = sizeof(expected_data);
   base::test::SingleThreadTaskEnvironment task_environment;
   base::RunLoop run_loop;
 
@@ -35,6 +33,8 @@ TEST(RaceNetworkRequestReadBufferManagerTest, ReadData) {
   RaceNetworkRequestReadBufferManager buffer_manager(
       std::move(consumer_handle));
 
+  const std::string_view expected_data = "abcde";
+  size_t actually_written_bytes = 0;
   producer_watcher.Watch(
       producer_handle.get(),
       MOJO_HANDLE_SIGNAL_WRITABLE | MOJO_HANDLE_SIGNAL_PEER_CLOSED,
@@ -43,8 +43,9 @@ TEST(RaceNetworkRequestReadBufferManagerTest, ReadData) {
           [&](MojoResult result, const mojo::HandleSignalsState& state) {
             if (state.writable()) {
               EXPECT_EQ(result, MOJO_RESULT_OK);
-              result = producer_handle->WriteData(expected_data, &num_bytes,
-                                                  MOJO_WRITE_DATA_FLAG_NONE);
+              result = producer_handle->WriteData(
+                  base::as_byte_span(expected_data), MOJO_WRITE_DATA_FLAG_NONE,
+                  actually_written_bytes);
               EXPECT_EQ(result, MOJO_RESULT_OK);
               buffer_manager.ArmOrNotify();
               producer_handle.reset();
@@ -58,8 +59,8 @@ TEST(RaceNetworkRequestReadBufferManagerTest, ReadData) {
         std::pair<MojoResult, base::span<const char>> first_result =
             buffer_manager.ReadData();
         EXPECT_EQ(first_result.first, MOJO_RESULT_OK);
-        EXPECT_EQ(first_result.second.size(), num_bytes);
-        EXPECT_EQ(first_result.second.data(), std::string_view(expected_data));
+        EXPECT_EQ(first_result.second.size(), actually_written_bytes);
+        EXPECT_EQ(base::as_string_view(first_result.second), expected_data);
 
         // Consume data with the partial bytes.
         size_t num_bytes_to_consume = 2;
@@ -69,9 +70,10 @@ TEST(RaceNetworkRequestReadBufferManagerTest, ReadData) {
         // data.
         base::span<const char> remaining_buffer =
             buffer_manager.RemainingBuffer();
-        EXPECT_EQ(remaining_buffer.size(), num_bytes - num_bytes_to_consume);
-        EXPECT_EQ(remaining_buffer.data(),
-                  std::string_view(expected_data).substr(num_bytes_to_consume));
+        EXPECT_EQ(remaining_buffer.size(),
+                  actually_written_bytes - num_bytes_to_consume);
+        EXPECT_EQ(base::as_string_view(remaining_buffer),
+                  expected_data.substr(num_bytes_to_consume));
 
         base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
             FROM_HERE, run_loop.QuitClosure());

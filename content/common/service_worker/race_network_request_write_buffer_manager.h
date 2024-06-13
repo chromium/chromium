@@ -53,7 +53,7 @@ class CONTENT_EXPORT RaceNetworkRequestWriteBufferManager {
   bool is_data_pipe_created_;
   mojo::ScopedDataPipeProducerHandle producer_;
   mojo::ScopedDataPipeConsumerHandle consumer_;
-  base::span<char> buffer_;
+  base::span<uint8_t> buffer_;
   mojo::SimpleWatcher watcher_;
   size_t num_bytes_written_ = 0;
 };

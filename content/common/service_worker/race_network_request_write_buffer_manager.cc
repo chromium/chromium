@@ -2,17 +2,19 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "mojo/public/cpp/system/data_pipe.h"
 #ifdef UNSAFE_BUFFERS_BUILD
 // TODO(crbug.com/342213636): Remove this and spanify to fix the errors.
 #pragma allow_unsafe_buffers
 #endif
 
 #include "content/common/service_worker/race_network_request_write_buffer_manager.h"
+
+#include "base/containers/span.h"
 #include "base/metrics/field_trial_params.h"
 #include "base/system/sys_info.h"
 #include "content/common/features.h"
 #include "content/common/service_worker/race_network_request_url_loader_client.h"
+#include "mojo/public/cpp/system/data_pipe.h"
 #include "mojo/public/cpp/system/simple_watcher.h"
 #include "services/network/public/cpp/features.h"
 
@@ -85,13 +87,8 @@ void RaceNetworkRequestWriteBufferManager::CancelWatching() {
 }
 
 MojoResult RaceNetworkRequestWriteBufferManager::BeginWriteData() {
-  void* buffer;
-  size_t num_write_bytes = mojo::DataPipeProducerHandle::kNoSizeHint;
-  MojoResult result = producer_->BeginWriteData(&buffer, &num_write_bytes,
-                                                MOJO_WRITE_DATA_FLAG_NONE);
-  buffer_ = base::make_span(static_cast<char*>(buffer), num_write_bytes);
-
-  return result;
+  return producer_->BeginWriteData(mojo::DataPipeProducerHandle::kNoSizeHint,
+                                   MOJO_WRITE_DATA_FLAG_NONE, buffer_);
 }
 
 MojoResult RaceNetworkRequestWriteBufferManager::EndWriteData(
@@ -107,17 +104,17 @@ std::tuple<MojoResult, size_t> RaceNetworkRequestWriteBufferManager::WriteData(
     base::span<const char> read_buffer) {
   // In order to use |MOJO_WRITE_DATA_FLAG_ALL_OR_NONE| flag to write data, the
   // read buffer data size should be smaller than the write buffer size.
-  // Otherwise we can't finish the write operation nad `WriteData()` always
-  // return |MOJO_RESULT_OUT_OF_RANGE|.
-  auto buffer = read_buffer.size() > data_pipe_buffer_size_
-                    ? read_buffer.subspan(0, data_pipe_buffer_size_)
-                    : read_buffer;
-  size_t num_bytes = buffer.size();
-  MojoResult result = producer_->WriteData(buffer.data(), &num_bytes,
-                                           MOJO_WRITE_DATA_FLAG_ALL_OR_NONE);
-  num_bytes_written_ += num_bytes;
+  // Otherwise we can't finish the write operation and `WriteData()` always
+  // returns |MOJO_RESULT_OUT_OF_RANGE|.
+  read_buffer = read_buffer.first(
+      std::min(read_buffer.size(), size_t{data_pipe_buffer_size_}));
+  size_t actually_written_bytes = 0;
+  MojoResult result = producer_->WriteData(base::as_bytes(read_buffer),
+                                           MOJO_WRITE_DATA_FLAG_ALL_OR_NONE,
+                                           actually_written_bytes);
+  num_bytes_written_ += actually_written_bytes;
 
-  return {result, num_bytes};
+  return {result, actually_written_bytes};
 }
 
 size_t RaceNetworkRequestWriteBufferManager::CopyAndCompleteWriteData(
@@ -150,7 +147,9 @@ size_t RaceNetworkRequestWriteBufferManager::CopyAndCompleteWriteDataWithSize(
   for (size_t i = 0; i < read_buffer.size(); ++i) {
     read_buffer_v[i];
   }
-  memcpy(buffer_.data(), read_buffer.data(), num_bytes_to_consume);
+  base::as_writable_chars(buffer_)
+      .first(num_bytes_to_consume)
+      .copy_from(read_buffer.first(num_bytes_to_consume));
   MojoResult result = EndWriteData(num_bytes_to_consume);
   CHECK_EQ(result, MOJO_RESULT_OK);
 
