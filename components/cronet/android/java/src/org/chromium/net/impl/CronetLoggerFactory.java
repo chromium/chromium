@@ -30,9 +30,9 @@ public final class CronetLoggerFactory {
     public static CronetLogger createLogger(Context ctx, CronetSource source) {
         synchronized (CronetLoggerFactory.class) {
             if (sLogger == null
-                    && CronetManifest.isAppOptedInForTelemetry(ctx, source)
                     // The CronetLoggerImpl only works from apiLevel 30
-                    && Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
+                    && Build.VERSION.SDK_INT >= Build.VERSION_CODES.R
+                    && CronetManifest.isAppOptedInForTelemetry(ctx, source)) {
                 try {
                     sLogger = new CronetLoggerImpl(SAMPLE_RATE_PER_SECOND);
                 } catch (Exception e) {
