@@ -41,7 +41,7 @@ PrivacySandboxInternalsUI::PrivacySandboxInternalsUI(content::WebUI* web_ui)
   }
   if (base::FeatureList::IsEnabled(privacy_sandbox::kPrivateStateTokensDevUI)) {
     source->AddResourcePath("private-state-tokens",
-                            IDR_PRIVATE_STATE_TOKENS_APP_HTML);
+                            IDR_PRIVATE_STATE_TOKENS_PRIVATE_STATE_TOKENS_HTML);
   }
 #endif
 }
