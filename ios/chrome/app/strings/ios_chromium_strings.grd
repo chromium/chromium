@@ -1057,6 +1057,9 @@ Your data was encrypted with your passphrase on <ph name="TIME">$2<ex>Sept 1, 20
       <message name="IDS_IOS_EXPANDED_MANUAL_FILL_VIEW_ACCESSIBILITY_ANNOUNCEMENT" desc="Accessibility announcement read by VoiceOver when the expanded manual fill view is shown.">
          Chromium Autofill Expanded View
       </message>
+      <message name="IDS_IOS_CONTEXTUAL_PANEL_BRANDING_TITLE" desc="Branded title on the Contextual Panel screen. The string is lowercase on purpose.">
+        chromium
+      </message>
     </messages>
   </release>
 </grit>

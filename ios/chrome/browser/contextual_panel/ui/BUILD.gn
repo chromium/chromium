@@ -12,10 +12,12 @@ source_set("ui") {
   deps = [
     ":public",
     "//components/strings:components_strings_grit",
+    "//ios/chrome/app/strings:ios_branded_strings_grit",
     "//ios/chrome/browser/shared/public/commands",
     "//ios/chrome/browser/shared/ui/symbols",
     "//ios/chrome/common/ui/colors",
     "//ios/chrome/common/ui/util",
+    "//ios/public/provider/chrome/browser/font:font_api",
   ]
   frameworks = [ "UIKit.framework" ]
 }

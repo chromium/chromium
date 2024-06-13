@@ -10,6 +10,8 @@
 #import "ios/chrome/browser/shared/ui/symbols/symbols.h"
 #import "ios/chrome/common/ui/colors/semantic_color_names.h"
 #import "ios/chrome/common/ui/util/constraints_ui_util.h"
+#import "ios/chrome/grit/ios_branded_strings.h"
+#import "ios/public/provider/chrome/browser/font/font_api.h"
 #import "ui/base/l10n/l10n_util_mac.h"
 
 namespace {
@@ -24,6 +26,12 @@ const CGFloat kCloseButtonTopMargin = 10;
 
 // Margin between the close button and the trailing edge of the screen.
 const CGFloat kCloseButtonTrailingMargin = 16;
+
+// The size of the logo image.
+constexpr CGFloat kLogoSize = 22;
+
+// The top logo has a specific font size for branding reasons.
+const CGFloat kLogoLabelFontSize = 18;
 
 // Identifier for the one section in this collection view.
 NSString* const kSectionIdentifier = @"section1";
@@ -95,6 +103,40 @@ NSString* const kCloseButtonAccessibilityIdentifier = @"PanelCloseButtonAXID";
     [_headerView.contentView.trailingAnchor
         constraintEqualToAnchor:_closeButton.trailingAnchor
                        constant:kCloseButtonTrailingMargin],
+  ]];
+
+#if BUILDFLAG(IOS_USE_BRANDED_SYMBOLS)
+  UIImage* logoImage = MakeSymbolMulticolor(
+      CustomSymbolWithPointSize(kMulticolorChromeballSymbol, kLogoSize));
+#else
+  UIImage* logoImage =
+      CustomSymbolWithPointSize(kChromeProductSymbol, kLogoSize);
+#endif  // BUILDFLAG(IOS_USE_BRANDED_SYMBOLS)
+
+  UIImageView* logoImageView = [[UIImageView alloc] initWithImage:logoImage];
+  logoImageView.translatesAutoresizingMaskIntoConstraints = NO;
+
+  UILabel* logoLabel = [[UILabel alloc] init];
+  logoLabel.translatesAutoresizingMaskIntoConstraints = NO;
+  logoLabel.text =
+      l10n_util::GetNSString(IDS_IOS_CONTEXTUAL_PANEL_BRANDING_TITLE);
+  UIFont* productFont =
+      ios::provider::GetBrandedProductRegularFont(kLogoLabelFontSize);
+  logoLabel.font = [[[UIFontMetrics alloc]
+      initForTextStyle:UIFontTextStyleCaption1] scaledFontForFont:productFont];
+  logoLabel.textColor = [UIColor colorNamed:kGrey700Color];
+
+  UIStackView* logo = [[UIStackView alloc]
+      initWithArrangedSubviews:@[ logoImageView, logoLabel ]];
+  logo.translatesAutoresizingMaskIntoConstraints = NO;
+  logo.spacing = 5;
+
+  [_headerView.contentView addSubview:logo];
+  [NSLayoutConstraint activateConstraints:@[
+    [logo.centerXAnchor
+        constraintEqualToAnchor:_headerView.contentView.centerXAnchor],
+    [logo.centerYAnchor
+        constraintEqualToAnchor:_headerView.contentView.centerYAnchor],
   ]];
 
   // One of UIVisualEffectView's subviews has a white-ish background color,
