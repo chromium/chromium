@@ -37,6 +37,10 @@
 #include "chromeos/startup/browser_init_params.h"
 #endif  // BUILDFLAG(IS_CHROMEOS_LACROS)
 
+#if BUILDFLAG(IS_MAC)
+#include "device/fido/mac/util.h"
+#endif  //  BUILDFLAG(IS_MAC)
+
 using ::testing::_;
 using ::testing::NiceMock;
 using ::testing::Sequence;
@@ -120,8 +124,9 @@ MATCHER_P2(IsAdvertisementContent,
   const auto manufacturer_data = arg->manufacturer_data();
   const auto manufacturer_data_value = manufacturer_data->find(0x00E0);
 
-  if (manufacturer_data_value == manufacturer_data->end())
+  if (manufacturer_data_value == manufacturer_data->end()) {
     return false;
+  }
 
   const auto& manufacturer_data_payload = manufacturer_data_value->second;
   return manufacturer_data_payload.size() >= 4u &&
@@ -137,8 +142,9 @@ MATCHER_P2(IsAdvertisementContent,
   const auto service_data = arg->service_data();
   const auto service_data_with_uuid = service_data->find(kGoogleCableUUID128);
 
-  if (service_data_with_uuid == service_data->end())
+  if (service_data_with_uuid == service_data->end()) {
     return false;
+  }
 
   const auto& service_data_value = service_data_with_uuid->second;
   return (service_data_value[0] >> 5 & 1) &&
@@ -204,6 +210,15 @@ class CableMockAdapter : public MockBluetoothAdapter {
         .WillRepeatedly(::testing::Return(false));
     return mock_adapter;
   }
+  static scoped_refptr<CableMockAdapter> MakeWithUndeterminedPermission() {
+    auto mock_adapter =
+        base::MakeRefCounted<::testing::NiceMock<CableMockAdapter>>();
+    EXPECT_CALL(*mock_adapter, IsPresent())
+        .WillRepeatedly(::testing::Return(true));
+    EXPECT_CALL(*mock_adapter, GetOsPermissionStatus())
+        .WillRepeatedly(testing::Return(PermissionStatus::kUndetermined));
+    return mock_adapter;
+  }
 
   MOCK_METHOD3(RegisterAdvertisement,
                void(std::unique_ptr<BluetoothAdvertisement::Data>,
@@ -234,8 +249,9 @@ class CableMockAdapter : public MockBluetoothAdapter {
   void AddNewTestBluetoothDevice(
       base::span<const uint8_t, kCableEphemeralIdSize> authenticator_eid) {
     auto* device = CreateNewTestBluetoothDevice(authenticator_eid);
-    for (auto& observer : GetObservers())
+    for (auto& observer : GetObservers()) {
       observer.DeviceAdded(this, device);
+    }
   }
 
   void AddNewTestAppleBluetoothDevice(
@@ -250,8 +266,9 @@ class CableMockAdapter : public MockBluetoothAdapter {
     auto* mock_device_ptr = mock_device.get();
     AddMockDevice(std::move(mock_device));
 
-    for (auto& observer : GetObservers())
+    for (auto& observer : GetObservers()) {
       observer.DeviceAdded(this, mock_device_ptr);
+    }
   }
 
   void ExpectRegisterAdvertisementWithResponse(
@@ -457,6 +474,56 @@ TEST_F(FidoCableDiscoveryTest, TestDiscoveryFindsNewAppleDevice) {
   cable_discovery->Start();
   task_environment_.FastForwardUntilNoTasksRemain();
 }
+
+#if BUILDFLAG(IS_MAC)
+
+// Tests that the discovery will not attempt to call bluetooth functions like
+// IsPowered() if the build is signed and the OS reports an undetermined
+// permission status.
+TEST_F(FidoCableDiscoveryTest, TestDiscoveryDoesNotUseBluetoothIfUnauthorized) {
+  fido::mac::ScopedProcessIsSignedOverride scoped_process_is_signed_override(
+      fido::mac::CodeSigningState::kSigned);
+  auto cable_discovery = CreateDiscovery();
+  NiceMock<MockFidoDiscoveryObserver> mock_observer;
+  EXPECT_CALL(mock_observer,
+              DiscoveryStarted(cable_discovery.get(), true,
+                               std::vector<FidoAuthenticator*>()));
+  cable_discovery->set_observer(&mock_observer);
+
+  auto mock_adapter = CableMockAdapter::MakeWithUndeterminedPermission();
+  EXPECT_CALL(*mock_adapter, IsPowered()).Times(0);
+  BluetoothAdapterFactory::SetAdapterForTesting(mock_adapter);
+  cable_discovery->Start();
+  task_environment_.FastForwardUntilNoTasksRemain();
+}
+
+// Tests that the discovery will assume bluetooth permission is granted if the
+// build is not signed.
+TEST_F(FidoCableDiscoveryTest,
+       TestDiscoveryAssumesBluetoothAuthorizedIfUnsigned) {
+  fido::mac::ScopedProcessIsSignedOverride scoped_process_is_signed_override(
+      fido::mac::CodeSigningState::kNotSigned);
+  auto cable_discovery = CreateDiscovery();
+  NiceMock<MockFidoDiscoveryObserver> mock_observer;
+  EXPECT_CALL(mock_observer,
+              DiscoveryStarted(cable_discovery.get(), true,
+                               std::vector<FidoAuthenticator*>()));
+  EXPECT_CALL(mock_observer, AuthenticatorAdded(_, _));
+  cable_discovery->set_observer(&mock_observer);
+
+  auto mock_adapter = CableMockAdapter::MakeWithUndeterminedPermission();
+  EXPECT_CALL(*mock_adapter, IsPowered())
+      .WillRepeatedly(::testing::Return(true));
+  mock_adapter->ExpectDiscoveryWithScanCallback(kAuthenticatorEid);
+  mock_adapter->ExpectRegisterAdvertisementWithResponse(
+      true /* simulate_success */, kClientEid, kUuidFormattedClientEid);
+
+  BluetoothAdapterFactory::SetAdapterForTesting(mock_adapter);
+  cable_discovery->Start();
+  task_environment_.FastForwardUntilNoTasksRemain();
+}
+
+#endif  // BUILDFLAG(IS_MAC)
 
 // Tests a scenario where upon broadcasting advertisement and scanning, client
 // discovers a device with an incorrect authenticator EID. Observer::AddDevice()

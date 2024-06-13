@@ -805,7 +805,10 @@ void ChromeAuthenticatorRequestDelegate::RegisterActionCallbacks(
     base::RepeatingClosure start_over_callback,
     AccountPreselectedCallback account_preselected_callback,
     device::FidoRequestHandlerBase::RequestCallback request_callback,
-    base::RepeatingClosure bluetooth_adapter_power_on_callback) {
+    base::RepeatingClosure bluetooth_adapter_power_on_callback,
+    base::RepeatingCallback<
+        void(device::FidoRequestHandlerBase::BlePermissionCallback)>
+        request_ble_permission_callback) {
   request_callback_ = request_callback;
   cancel_callback_ = std::move(cancel_callback);
   start_over_callback_ = std::move(start_over_callback);
@@ -816,6 +819,8 @@ void ChromeAuthenticatorRequestDelegate::RegisterActionCallbacks(
       account_preselected_callback_);
   dialog_controller_->SetBluetoothAdapterPowerOnCallback(
       bluetooth_adapter_power_on_callback);
+  dialog_controller_->SetRequestBlePermissionCallback(
+      request_ble_permission_callback);
 }
 
 void ChromeAuthenticatorRequestDelegate::ShouldReturnAttestation(
@@ -1242,9 +1247,9 @@ void ChromeAuthenticatorRequestDelegate::FidoAuthenticatorRemoved(
   dialog_controller_->RemoveAuthenticator(authenticator_id);
 }
 
-void ChromeAuthenticatorRequestDelegate::BluetoothAdapterPowerChanged(
-    bool is_powered_on) {
-  dialog_controller_->BluetoothAdapterPowerChanged(is_powered_on);
+void ChromeAuthenticatorRequestDelegate::BluetoothAdapterStatusChanged(
+    device::FidoRequestHandlerBase::BleStatus ble_status) {
+  dialog_controller_->BluetoothAdapterStatusChanged(ble_status);
 }
 
 bool ChromeAuthenticatorRequestDelegate::SupportsPIN() const {

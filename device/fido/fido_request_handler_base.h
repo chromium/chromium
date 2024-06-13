@@ -18,7 +18,7 @@
 #include "base/check.h"
 #include "base/component_export.h"
 #include "base/containers/flat_set.h"
-#include "base/functional/callback.h"
+#include "base/functional/callback_forward.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "build/build_config.h"
@@ -47,6 +47,23 @@ class COMPONENT_EXPORT(DEVICE_FIDO) FidoRequestHandlerBase
 
   using AuthenticatorMap =
       std::map<std::string, FidoAuthenticator*, std::less<>>;
+
+  // BLE adapter status.
+  enum class BleStatus {
+    // The adapter is turned on.
+    kOn,
+
+    // The adapter is turned off.
+    kOff,
+
+    // The user has denied Chrome the permission to use bluetooth.
+    kPermissionDenied,
+
+    // Chrome has not yet requested permission to use bluetooth.
+    kPendingPermissionRequest,
+  };
+
+  using BlePermissionCallback = base::OnceCallback<void(BleStatus)>;
 
   enum class RecognizedCredential {
     kUnknown,
@@ -112,12 +129,9 @@ class COMPONENT_EXPORT(DEVICE_FIDO) FidoRequestHandlerBase
     // |kHasRecognizedCredential|.
     std::vector<DiscoverableCredentialMetadata> recognized_credentials;
 
-    bool is_ble_powered = false;
-    bool can_power_on_ble_adapter = false;
+    BleStatus ble_status = BleStatus::kOff;
 
-    // ble_access_denied is set to true if Chromium does not have permission
-    // to use the BLE adaptor. Resolving this is a platform-specific operation.
-    bool ble_access_denied = false;
+    bool can_power_on_ble_adapter = false;
 
     // Indicates whether the native Windows WebAuthn API is available.
     // Dispatching to it should be controlled by the embedder.
@@ -225,7 +239,7 @@ class COMPONENT_EXPORT(DEVICE_FIDO) FidoRequestHandlerBase
     virtual bool EmbedderControlsAuthenticatorDispatch(
         const FidoAuthenticator& authenticator) = 0;
 
-    virtual void BluetoothAdapterPowerChanged(bool is_powered_on) = 0;
+    virtual void BluetoothAdapterStatusChanged(BleStatus ble_status) = 0;
     virtual void FidoAuthenticatorAdded(
         const FidoAuthenticator& authenticator) = 0;
     virtual void FidoAuthenticatorRemoved(std::string_view device_id) = 0;
@@ -305,11 +319,20 @@ class COMPONENT_EXPORT(DEVICE_FIDO) FidoRequestHandlerBase
   // https://w3c.github.io/webauthn/#iface-pkcredential
   void CancelActiveAuthenticators(std::string_view exclude_id = "");
   virtual void OnBluetoothAdapterEnumerated(bool is_present,
-                                            bool is_powered_on,
+                                            BleStatus ble_status,
                                             bool can_power_on,
                                             bool is_peripheral_role_supported);
-  void OnBluetoothAdapterPowerChanged(bool is_powered_on);
+  void OnBluetoothAdapterStatusChanged(BleStatus ble_status);
   void PowerOnBluetoothAdapter();
+
+  // Queries the OS for the status of the Bluetooth adapter. This is useful on
+  // macOS when TransportAvailabilityInfo::ble_status reports
+  // kPendingPermissionRequest, in which case the OS will display a blocking
+  // permissions prompt. Once the user allows or denies the prompt, |callback|
+  // will be executed with the result.
+  // TODO(crbug.com/345753557): tickle the Bluetooth API in the background so it
+  // doesn't block.
+  void RequestBluetoothPermissionMayBlock(BlePermissionCallback callback);
 
   base::WeakPtr<FidoRequestHandlerBase> GetWeakPtr();
 
@@ -370,7 +393,6 @@ class COMPONENT_EXPORT(DEVICE_FIDO) FidoRequestHandlerBase
                           FidoAuthenticator* authenticator) override;
   void AuthenticatorRemoved(FidoDiscoveryBase* discovery,
                             FidoAuthenticator* authenticator) override;
-  void BleDenied() override;
 
   // GetPlatformCredentialStatus is called to learn whether a platform
   // authenticator has credentials responsive to the current request. If this

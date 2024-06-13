@@ -97,7 +97,7 @@ class COMPONENT_EXPORT(DEVICE_FIDO) GetAssertionRequestHandler
 
   // FidoRequestHandlerBase:
   void OnBluetoothAdapterEnumerated(bool is_present,
-                                    bool is_powered_on,
+                                    BleStatus ble_status,
                                     bool can_power_on,
                                     bool is_peripheral_role_supported) override;
   void DispatchRequest(FidoAuthenticator* authenticator) override;

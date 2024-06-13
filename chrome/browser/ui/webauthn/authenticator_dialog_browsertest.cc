@@ -43,6 +43,7 @@
 namespace {
 
 constexpr char kPhoneName[] = "Elisa's Pixel 6 Pro";
+using BleStatus = device::FidoRequestHandlerBase::BleStatus;
 
 }  // namespace
 
@@ -618,7 +619,6 @@ class GPMPasskeysAuthenticatorDialogTest : public AuthenticatorDialogTest {
             controller_->transport_availability_for_testing();
     transport_availability.request_type =
         device::FidoRequestType::kGetAssertion;
-    transport_availability.ble_access_denied = false;
     transport_availability.available_transports = {
         AuthenticatorTransport::kUsbHumanInterfaceDevice,
         AuthenticatorTransport::kInternal,
@@ -693,7 +693,7 @@ class GPMPasskeysAuthenticatorDialogTest : public AuthenticatorDialogTest {
           /*extension_is_v2=*/std::nullopt,
           /*paired_phones=*/{},
           /*contact_phone_callback=*/base::DoNothing(), "fido://qrcode");
-      transport_availability.is_ble_powered = true;
+      transport_availability.ble_status = BleStatus::kOn;
       transport_availability.available_transports = {
           AuthenticatorTransport::kHybrid,
           AuthenticatorTransport::kUsbHumanInterfaceDevice,
@@ -703,7 +703,7 @@ class GPMPasskeysAuthenticatorDialogTest : public AuthenticatorDialogTest {
           /*extension_is_v2=*/std::nullopt,
           /*paired_phones=*/{},
           /*contact_phone_callback=*/base::DoNothing(), "fido://qrcode");
-      transport_availability.is_ble_powered = true;
+      transport_availability.ble_status = BleStatus::kOn;
       transport_availability.available_transports = {
           AuthenticatorTransport::kHybrid,
       };
@@ -714,7 +714,7 @@ class GPMPasskeysAuthenticatorDialogTest : public AuthenticatorDialogTest {
           /*contact_phone_callback=*/base::DoNothing(), "fido://qrcode");
       transport_availability.request_type =
           device::FidoRequestType::kMakeCredential;
-      transport_availability.is_ble_powered = true;
+      transport_availability.ble_status = BleStatus::kOn;
       transport_availability.available_transports = {
           AuthenticatorTransport::kHybrid,
           AuthenticatorTransport::kUsbHumanInterfaceDevice,
@@ -726,7 +726,7 @@ class GPMPasskeysAuthenticatorDialogTest : public AuthenticatorDialogTest {
           /*contact_phone_callback=*/base::DoNothing(), "fido://qrcode");
       transport_availability.request_type =
           device::FidoRequestType::kMakeCredential;
-      transport_availability.is_ble_powered = true;
+      transport_availability.ble_status = BleStatus::kOn;
       transport_availability.available_transports = {
           AuthenticatorTransport::kHybrid,
       };

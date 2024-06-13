@@ -10,6 +10,7 @@
 #include "base/containers/contains.h"
 #include "base/feature_list.h"
 #include "base/functional/bind.h"
+#include "base/functional/callback.h"
 #include "base/location.h"
 #include "base/logging.h"
 #include "base/notreached.h"
@@ -22,6 +23,7 @@
 #include "device/fido/discoverable_credential_metadata.h"
 #include "device/fido/features.h"
 #include "device/fido/fido_authenticator.h"
+#include "device/fido/fido_constants.h"
 #include "device/fido/fido_discovery_base.h"
 #include "device/fido/fido_discovery_factory.h"
 #include "device/fido/mac/icloud_keychain.h"
@@ -313,7 +315,7 @@ void FidoRequestHandlerBase::CancelActiveAuthenticators(
 
 void FidoRequestHandlerBase::OnBluetoothAdapterEnumerated(
     bool is_present,
-    bool is_powered_on,
+    BleStatus ble_status,
     bool can_power_on,
     bool is_peripheral_role_supported) {
   if (!is_present) {
@@ -322,17 +324,17 @@ void FidoRequestHandlerBase::OnBluetoothAdapterEnumerated(
   }
 
   transport_availability_callback_readiness_->ble_information_pending = false;
-  transport_availability_info_.is_ble_powered = is_powered_on;
+  transport_availability_info_.ble_status = ble_status;
   transport_availability_info_.can_power_on_ble_adapter = can_power_on;
   MaybeSignalTransportsEnumerated();
 }
 
-void FidoRequestHandlerBase::OnBluetoothAdapterPowerChanged(
-    bool is_powered_on) {
-  transport_availability_info_.is_ble_powered = is_powered_on;
+void FidoRequestHandlerBase::OnBluetoothAdapterStatusChanged(
+    BleStatus ble_status) {
+  transport_availability_info_.ble_status = ble_status;
 
   if (observer_) {
-    observer_->BluetoothAdapterPowerChanged(is_powered_on);
+    observer_->BluetoothAdapterStatusChanged(ble_status);
   }
 }
 
@@ -342,6 +344,12 @@ void FidoRequestHandlerBase::PowerOnBluetoothAdapter() {
   }
 
   bluetooth_adapter_manager_->SetAdapterPower(true /* set_power_on */);
+}
+
+void FidoRequestHandlerBase::RequestBluetoothPermissionMayBlock(
+    BlePermissionCallback callback) {
+  return bluetooth_adapter_manager_->RequestBluetoothPermissionMayBlock(
+      std::move(callback));
 }
 
 base::WeakPtr<FidoRequestHandlerBase> FidoRequestHandlerBase::GetWeakPtr() {
@@ -485,10 +493,6 @@ void FidoRequestHandlerBase::AuthenticatorAdded(
             ->ShowsPrivacyNotice();
   }
 #endif  // BUILDFLAG(IS_WIN)
-}
-
-void FidoRequestHandlerBase::BleDenied() {
-  transport_availability_info_.ble_access_denied = true;
 }
 
 void FidoRequestHandlerBase::GetPlatformCredentialStatus(

@@ -29,7 +29,7 @@ class MockBluetoothAdapter : public BluetoothAdapter {
  public:
   class Observer : public BluetoothAdapter::Observer {
    public:
-    Observer(scoped_refptr<BluetoothAdapter> adapter);
+    explicit Observer(scoped_refptr<BluetoothAdapter> adapter);
 
     Observer(const Observer&) = delete;
     Observer& operator=(const Observer&) = delete;
@@ -69,6 +69,7 @@ class MockBluetoothAdapter : public BluetoothAdapter {
                     ErrorCallback error_callback));
   MOCK_CONST_METHOD0(IsPresent, bool());
   MOCK_CONST_METHOD0(IsPowered, bool());
+  MOCK_CONST_METHOD0(GetOsPermissionStatus, PermissionStatus());
   MOCK_CONST_METHOD0(CanPower, bool());
   MOCK_METHOD3(SetPowered,
                void(bool powered,

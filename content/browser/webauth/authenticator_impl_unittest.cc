@@ -82,6 +82,7 @@
 #include "device/fido/fido_authenticator.h"
 #include "device/fido/fido_constants.h"
 #include "device/fido/fido_parsing_utils.h"
+#include "device/fido/fido_request_handler_base.h"
 #include "device/fido/fido_test_data.h"
 #include "device/fido/fido_transport_protocol.h"
 #include "device/fido/fido_types.h"
@@ -1952,7 +1953,10 @@ class TestAuthenticatorRequestDelegate
       base::RepeatingClosure start_over_callback,
       AccountPreselectedCallback account_preselected_callback,
       device::FidoRequestHandlerBase::RequestCallback request_callback,
-      base::RepeatingClosure bluetooth_adapter_power_on_callback) override {
+      base::RepeatingClosure bluetooth_adapter_power_on_callback,
+      base::RepeatingCallback<
+          void(device::FidoRequestHandlerBase::BlePermissionCallback)>
+          ble_status_callback) override {
     ASSERT_TRUE(action_callbacks_registered_callback_)
         << "RegisterActionCallbacks called twice.";
     cancel_callback_ = std::move(cancel_callback);
@@ -6570,7 +6574,10 @@ class BlockingAuthenticatorRequestDelegate
       base::RepeatingClosure start_over_callback,
       AccountPreselectedCallback account_preselected_callback,
       device::FidoRequestHandlerBase::RequestCallback request_callback,
-      base::RepeatingClosure bluetooth_adapter_power_on_callback) override {
+      base::RepeatingClosure bluetooth_adapter_power_on_callback,
+      base::RepeatingCallback<
+          void(device::FidoRequestHandlerBase::BlePermissionCallback)>
+          ble_status_callback) override {
     cancel_callback_ = std::move(cancel_callback);
   }
 
@@ -6752,7 +6759,10 @@ class ResidentKeyTestAuthenticatorRequestDelegate
       base::RepeatingClosure start_over_callback,
       AccountPreselectedCallback account_preselected_callback,
       device::FidoRequestHandlerBase::RequestCallback request_callback,
-      base::RepeatingClosure bluetooth_adapter_power_on_callback) override {
+      base::RepeatingClosure bluetooth_adapter_power_on_callback,
+      base::RepeatingCallback<
+          void(device::FidoRequestHandlerBase::BlePermissionCallback)>
+          ble_status_callback) override {
     account_preselected_callback_ = account_preselected_callback;
     request_callback_ = request_callback;
   }

@@ -34,6 +34,8 @@ MockBluetoothAdapter::MockBluetoothAdapter() {
       .WillByDefault(Invoke([this](BluetoothAdapter::Observer* observer) {
         this->BluetoothAdapter::RemoveObserver(observer);
       }));
+  ON_CALL(*this, GetOsPermissionStatus())
+      .WillByDefault(testing::Return(PermissionStatus::kAllowed));
 }
 
 MockBluetoothAdapter::~MockBluetoothAdapter() = default;

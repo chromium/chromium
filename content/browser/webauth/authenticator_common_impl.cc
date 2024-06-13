@@ -18,6 +18,7 @@
 #include "base/functional/bind.h"
 #include "base/functional/callback_helpers.h"
 #include "base/memory/raw_ptr.h"
+#include "base/memory/weak_ptr.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/notreached.h"
 #include "base/timer/timer.h"
@@ -44,6 +45,7 @@
 #include "device/fido/fido_authenticator.h"
 #include "device/fido/fido_constants.h"
 #include "device/fido/fido_parsing_utils.h"
+#include "device/fido/fido_request_handler_base.h"
 #include "device/fido/fido_transport_protocol.h"
 #include "device/fido/fido_types.h"
 #include "device/fido/filter.h"
@@ -743,7 +745,11 @@ void AuthenticatorCommonImpl::StartMakeCredentialRequest(
       base::BindRepeating(
           &device::FidoRequestHandlerBase::PowerOnBluetoothAdapter,
           req_state_->request_handler
-              ->GetWeakPtr()) /* bluetooth_adapter_power_on_callback */);
+              ->GetWeakPtr()) /* bluetooth_adapter_power_on_callback */,
+      base::BindRepeating(
+          &device::FidoRequestHandlerBase::RequestBluetoothPermissionMayBlock,
+          req_state_->request_handler
+              ->GetWeakPtr()) /* request_ble_permission_callback */);
   req_state_->request_handler->set_observer(req_state_->request_delegate.get());
 }
 
@@ -805,7 +811,10 @@ void AuthenticatorCommonImpl::StartGetAssertionRequest(
       base::BindRepeating(
           &device::FidoRequestHandlerBase::PowerOnBluetoothAdapter,
           request_handler
-              ->GetWeakPtr()) /* bluetooth_adapter_power_on_callback */);
+              ->GetWeakPtr()) /* bluetooth_adapter_power_on_callback */,
+      base::BindRepeating(
+          &device::FidoRequestHandlerBase::RequestBluetoothPermissionMayBlock,
+          request_handler->GetWeakPtr()) /* request_ble_permission_callback */);
 
   request_handler->set_observer(req_state_->request_delegate.get());
   req_state_->request_handler = std::move(request_handler);

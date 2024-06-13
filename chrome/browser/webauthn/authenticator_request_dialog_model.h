@@ -553,6 +553,8 @@ class AuthenticatorRequestDialogController
   using RequestCallback = device::FidoRequestHandlerBase::RequestCallback;
   using TransportAvailabilityInfo =
       device::FidoRequestHandlerBase::TransportAvailabilityInfo;
+  using BlePermissionCallback = base::RepeatingCallback<void(
+      device::FidoRequestHandlerBase::BlePermissionCallback)>;
 
   explicit AuthenticatorRequestDialogController(Model* model);
 
@@ -650,16 +652,19 @@ class AuthenticatorRequestDialogController
   // phone.
   void StartPhonePairing();
 
-  // Ensures that the Bluetooth adapter is powered before proceeding to |step|.
-  //  -- If the adapter is powered, advanced directly to |step|.
+  // Ensures that the Bluetooth adapter is powered before executing |action|.
+  //  -- If the adapter is powered, run |action| directly.
+  //  -- If Chrome does not have Bluetooth permissions, show an error (macOS).
+  //  -- If Chrome has not requested Bluetooth permissions yet, trigger a
+  //     permission prompt (macOS).
   //  -- If the adapter is not powered, but Chrome can turn it automatically,
   //     then advanced to the flow to turn on Bluetooth automatically.
   //  -- Otherwise advanced to the manual Bluetooth power on flow.
   //
-  // Valid action when at step: kNotStarted, kMechanismSelection, and steps
-  // where the other transports menu is shown, namely, kUsbInsertAndActivate,
-  // kCableActivate.
-  void EnsureBleAdapterIsPoweredAndContinueWithStep(Step step);
+  // Valid action whenever contacting a phone or showing the QR code screen is
+  // possible.
+  void EnsureBleAdapterIsPoweredAndContinue(base::OnceClosure action);
+  void OnBleStatusKnown(device::FidoRequestHandlerBase::BleStatus ble_status);
 
   void ContinueWithFlowAfterBleAdapterPowered() override;
   void PowerOnBleAdapter() override;
@@ -752,8 +757,9 @@ class AuthenticatorRequestDialogController
   // request should never have been sent to iCloud Keychain in the first place.
   bool OnNoPasskeys();
 
-  // To be called when the Bluetooth adapter powered state changes.
-  void BluetoothAdapterPowerChanged(bool powered);
+  // To be called when the Bluetooth adapter status changes.
+  void BluetoothAdapterStatusChanged(
+      device::FidoRequestHandlerBase::BleStatus ble_status);
 
   void SetRequestCallback(RequestCallback request_callback);
   void SetAccountPreselectedCallback(
@@ -761,6 +767,7 @@ class AuthenticatorRequestDialogController
           callback);
   void SetBluetoothAdapterPowerOnCallback(
       base::RepeatingClosure bluetooth_adapter_power_on_callback);
+  void SetRequestBlePermissionCallback(BlePermissionCallback callback);
   void OnHavePIN(std::u16string pin) override;
 
   // Called when the user needs to retry user verification with the number of
@@ -1022,6 +1029,10 @@ class AuthenticatorRequestDialogController
       account_preselected_callback_;
   RequestCallback request_callback_;
   base::RepeatingClosure bluetooth_adapter_power_on_callback_;
+
+  // Triggers a permission prompt on macOS if ble_status is
+  // kPendingPermissionRequest and returns the bluetooth status.
+  BlePermissionCallback request_ble_permission_callback_;
 
   base::OnceClosure bio_enrollment_callback_;
 

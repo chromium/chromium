@@ -433,7 +433,7 @@ GetAssertionRequestHandler::GetWeakPtr() {
 
 void GetAssertionRequestHandler::OnBluetoothAdapterEnumerated(
     bool is_present,
-    bool is_powered_on,
+    BleStatus ble_status,
     bool can_power_on,
     bool is_peripheral_role_supported) {
   if (!is_peripheral_role_supported && request_.cable_extension) {
@@ -446,7 +446,7 @@ void GetAssertionRequestHandler::OnBluetoothAdapterEnumerated(
         << "caBLEv1 request, but BLE adapter does not support peripheral role";
   }
   FidoRequestHandlerBase::OnBluetoothAdapterEnumerated(
-      is_present, is_powered_on, can_power_on, is_peripheral_role_supported);
+      is_present, ble_status, can_power_on, is_peripheral_role_supported);
 }
 
 void GetAssertionRequestHandler::DispatchRequest(

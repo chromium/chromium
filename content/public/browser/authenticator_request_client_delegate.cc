@@ -13,6 +13,7 @@
 #include "build/chromeos_buildflags.h"
 #include "content/browser/webauth/authenticator_environment.h"
 #include "device/fido/fido_discovery_factory.h"
+#include "device/fido/fido_request_handler_base.h"
 #include "device/fido/public_key_credential_descriptor.h"
 #include "device/fido/public_key_credential_user_entity.h"
 #include "url/origin.h"
@@ -145,7 +146,10 @@ void AuthenticatorRequestClientDelegate::RegisterActionCallbacks(
     base::RepeatingClosure start_over_callback,
     AccountPreselectedCallback account_preselected_callback,
     device::FidoRequestHandlerBase::RequestCallback request_callback,
-    base::RepeatingClosure bluetooth_adapter_power_on_callback) {}
+    base::RepeatingClosure bluetooth_adapter_power_on_callback,
+    base::RepeatingCallback<
+        void(device::FidoRequestHandlerBase::BlePermissionCallback)>
+        request_ble_permission_callback) {}
 
 void AuthenticatorRequestClientDelegate::ShouldReturnAttestation(
     const std::string& relying_party_id,
@@ -218,8 +222,8 @@ bool AuthenticatorRequestClientDelegate::EmbedderControlsAuthenticatorDispatch(
   return false;
 }
 
-void AuthenticatorRequestClientDelegate::BluetoothAdapterPowerChanged(
-    bool is_powered_on) {}
+void AuthenticatorRequestClientDelegate::BluetoothAdapterStatusChanged(
+    device::FidoRequestHandlerBase::BleStatus ble_status) {}
 
 void AuthenticatorRequestClientDelegate::FidoAuthenticatorAdded(
     const device::FidoAuthenticator& authenticator) {}

@@ -1040,7 +1040,7 @@ class WebAuthnCableSecondFactor : public WebAuthnBrowserTest {
         device::FidoRequestHandlerBase::TransportAvailabilityInfo* tai)
         override {
       tai->available_transports.insert(device::FidoTransportProtocol::kHybrid);
-      tai->is_ble_powered = true;
+      tai->ble_status = device::FidoRequestHandlerBase::BleStatus::kOn;
     }
 
     void UIShown(ChromeAuthenticatorRequestDelegate* delegate) override {

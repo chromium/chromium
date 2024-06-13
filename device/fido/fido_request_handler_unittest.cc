@@ -110,7 +110,8 @@ class TestObserver : public FidoRequestHandlerBase::Observer {
     return false;
   }
 
-  void BluetoothAdapterPowerChanged(bool is_powered_on) override {}
+  void BluetoothAdapterStatusChanged(
+      FidoRequestHandlerBase::BleStatus ble_status) override {}
   void FidoAuthenticatorAdded(const FidoAuthenticator& authenticator) override {
   }
   void FidoAuthenticatorRemoved(std::string_view device_id) override {}

@@ -193,7 +193,10 @@ class ChromeAuthenticatorRequestDelegate
       base::RepeatingClosure start_over_callback,
       AccountPreselectedCallback account_preselected_callback,
       device::FidoRequestHandlerBase::RequestCallback request_callback,
-      base::RepeatingClosure bluetooth_adapter_power_on_callback) override;
+      base::RepeatingClosure bluetooth_adapter_power_on_callback,
+      base::RepeatingCallback<
+          void(device::FidoRequestHandlerBase::BlePermissionCallback)>
+          bluetooth_query_status_callback) override;
   void OnTransactionSuccessful(RequestSource request_source,
                                device::FidoRequestType,
                                device::AuthenticatorType) override;
@@ -237,7 +240,8 @@ class ChromeAuthenticatorRequestDelegate
   void FidoAuthenticatorAdded(
       const device::FidoAuthenticator& authenticator) override;
   void FidoAuthenticatorRemoved(std::string_view authenticator_id) override;
-  void BluetoothAdapterPowerChanged(bool is_powered_on) override;
+  void BluetoothAdapterStatusChanged(
+      device::FidoRequestHandlerBase::BleStatus ble_status) override;
   bool SupportsPIN() const override;
   void CollectPIN(
       CollectPINOptions options,

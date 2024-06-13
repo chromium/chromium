@@ -13,7 +13,9 @@
 #include "base/containers/contains.h"
 #include "base/feature_list.h"
 #include "base/functional/bind.h"
+#include "base/functional/callback.h"
 #include "base/i18n/string_compare.h"
+#include "base/memory/weak_ptr.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/notreached.h"
 #include "base/observer_list.h"
@@ -81,6 +83,8 @@
 namespace {
 
 constexpr int kMaxPriorityGPMCredentialCreations = 2;
+
+using BleStatus = device::FidoRequestHandlerBase::BleStatus;
 
 // StepUiType enumerates the different types of UI that can be displayed.
 enum class StepUIType {
@@ -993,43 +997,46 @@ void AuthenticatorRequestDialogController::StartPhonePairing() {
   SetCurrentStep(Step::kCableV2QRCode);
 }
 
-void AuthenticatorRequestDialogController::
-    EnsureBleAdapterIsPoweredAndContinueWithStep(Step step) {
-  DCHECK(model_->step() == Step::kMechanismSelection ||
-         model_->step() == Step::kUsbInsertAndActivate ||
-         model_->step() == Step::kCableActivate ||
-         model_->step() == Step::kAndroidAccessory ||
-         model_->step() == Step::kOffTheRecordInterstitial ||
-         model_->step() == Step::kPreSelectAccount ||
-         model_->step() == Step::kSelectPriorityMechanism ||
-         model_->step() == Step::kSelectAccount ||
-         model_->step() == Step::kConditionalMediation ||
-         model_->step() == Step::kNotStarted)
-      << "Invalid step " << static_cast<int>(model_->step());
-
-#if BUILDFLAG(IS_MAC)
-  if (transport_availability()->ble_access_denied) {
-    // |step| is not saved because macOS asks the user to restart Chrome
-    // after permission has been granted. So the user will end up retrying
-    // the whole WebAuthn request in the new process.
-    SetCurrentStep(Step::kBlePermissionMac);
+void AuthenticatorRequestDialogController::EnsureBleAdapterIsPoweredAndContinue(
+    base::OnceClosure action) {
+  after_ble_adapter_powered_ = std::move(action);
+  if (transport_availability_.ble_status ==
+      BleStatus::kPendingPermissionRequest) {
+    // Trigger requesting Bluetooth permissions on macOS.
+    request_ble_permission_callback_.Run(
+        base::BindOnce(&AuthenticatorRequestDialogController::OnBleStatusKnown,
+                       weak_factory_.GetWeakPtr()));
     return;
   }
-#endif
+  OnBleStatusKnown(transport_availability_.ble_status);
+}
 
-  if (model_->ble_adapter_is_powered) {
-    SetCurrentStep(step);
-    return;
-  }
-
-  after_ble_adapter_powered_ =
-      base::BindOnce(&AuthenticatorRequestDialogController::SetCurrentStep,
-                     weak_factory_.GetWeakPtr(), step);
-
-  if (transport_availability()->can_power_on_ble_adapter) {
-    SetCurrentStep(Step::kBlePowerOnAutomatic);
-  } else {
-    SetCurrentStep(Step::kBlePowerOnManual);
+void AuthenticatorRequestDialogController::OnBleStatusKnown(
+    BleStatus ble_status) {
+  transport_availability_.ble_status = ble_status;
+  model_->ble_adapter_is_powered =
+      transport_availability_.ble_status ==
+      device::FidoRequestHandlerBase::BleStatus::kOn;
+  switch (transport_availability_.ble_status) {
+    case BleStatus::kOn:
+      std::move(after_ble_adapter_powered_).Run();
+      return;
+    case BleStatus::kOff:
+      if (transport_availability()->can_power_on_ble_adapter) {
+        SetCurrentStep(Step::kBlePowerOnAutomatic);
+      } else {
+        SetCurrentStep(Step::kBlePowerOnManual);
+      }
+      return;
+    case BleStatus::kPermissionDenied:
+      // |step| is not saved because macOS asks the user to restart Chrome
+      // after permission has been granted. So the user will end up retrying
+      // the whole WebAuthn request in the new process.
+      SetCurrentStep(Step::kBlePermissionMac);
+      return;
+    case BleStatus::kPendingPermissionRequest:
+      // This should have been handled by EnsureBleAdapterIsPoweredAndContinue.
+      NOTREACHED_NORETURN();
   }
 }
 
@@ -1343,9 +1350,10 @@ bool AuthenticatorRequestDialogController::OnNoPasskeys() {
   return true;
 }
 
-void AuthenticatorRequestDialogController::BluetoothAdapterPowerChanged(
-    bool powered) {
-  model_->ble_adapter_is_powered = powered;
+void AuthenticatorRequestDialogController::BluetoothAdapterStatusChanged(
+    BleStatus ble_status) {
+  transport_availability_.ble_status = ble_status;
+  model_->ble_adapter_is_powered = ble_status == BleStatus::kOn;
   model_->OnBluetoothPoweredStateChanged();
 
   // For the manual flow, the user has to click the "next" button explicitly.
@@ -1368,6 +1376,11 @@ void AuthenticatorRequestDialogController::SetAccountPreselectedCallback(
 void AuthenticatorRequestDialogController::SetBluetoothAdapterPowerOnCallback(
     base::RepeatingClosure bluetooth_adapter_power_on_callback) {
   bluetooth_adapter_power_on_callback_ = bluetooth_adapter_power_on_callback;
+}
+
+void AuthenticatorRequestDialogController::SetRequestBlePermissionCallback(
+    BlePermissionCallback callback) {
+  request_ble_permission_callback_ = std::move(callback);
 }
 
 void AuthenticatorRequestDialogController::OnHavePIN(std::u16string pin) {
@@ -1517,6 +1530,7 @@ void AuthenticatorRequestDialogController::ContactPhoneForTesting(
     const std::string& name) {
   // Ensure BLE is powered so that `ContactPhone()` shows the "Check your phone"
   // screen right away.
+  transport_availability_.ble_status = BleStatus::kOn;
   model_->ble_adapter_is_powered = true;
   ContactPhone(name);
 }
@@ -1814,7 +1828,9 @@ void AuthenticatorRequestDialogController::StartGuidedFlowForTransport(
       StartPlatformAuthenticatorFlow();
       break;
     case AuthenticatorTransport::kHybrid:
-      EnsureBleAdapterIsPoweredAndContinueWithStep(Step::kCableActivate);
+      EnsureBleAdapterIsPoweredAndContinue(
+          base::BindOnce(&AuthenticatorRequestDialogController::SetCurrentStep,
+                         weak_factory_.GetWeakPtr(), Step::kCableActivate));
       break;
     case AuthenticatorTransport::kAndroidAccessory:
       SetCurrentStep(Step::kAndroidAccessory);
@@ -1825,7 +1841,9 @@ void AuthenticatorRequestDialogController::StartGuidedFlowForTransport(
 }
 
 void AuthenticatorRequestDialogController::StartGuidedFlowForAddPhone() {
-  EnsureBleAdapterIsPoweredAndContinueWithStep(Step::kCableV2QRCode);
+  EnsureBleAdapterIsPoweredAndContinue(
+      base::BindOnce(&AuthenticatorRequestDialogController::SetCurrentStep,
+                     weak_factory_.GetWeakPtr(), Step::kCableV2QRCode));
 }
 
 void AuthenticatorRequestDialogController::StartWinNativeApi() {
@@ -1882,15 +1900,13 @@ void AuthenticatorRequestDialogController::ReauthForSyncRestore() {
 
 void AuthenticatorRequestDialogController::ContactPhone(
     const std::string& name) {
-#if BUILDFLAG(IS_MAC)
-  if (transport_availability()->ble_access_denied) {
+  if (transport_availability()->ble_status == BleStatus::kPermissionDenied) {
     // |step| is not saved because macOS asks the user to restart Chrome
     // after permission has been granted. So the user will end up retrying
     // the whole WebAuthn request in the new process.
     SetCurrentStep(Step::kBlePermissionMac);
     return;
   }
-#endif
 
   if (transport_availability_.request_type ==
           device::FidoRequestType::kMakeCredential &&
@@ -1908,20 +1924,9 @@ void AuthenticatorRequestDialogController::ContactPhone(
 
 void AuthenticatorRequestDialogController::
     ContactPhoneAfterOffTheRecordInterstitial(std::string name) {
-  if (!model_->ble_adapter_is_powered) {
-    after_ble_adapter_powered_ = base::BindOnce(
-        &AuthenticatorRequestDialogController::ContactPhoneAfterBleIsPowered,
-        weak_factory_.GetWeakPtr(), std::move(name));
-
-    if (transport_availability()->can_power_on_ble_adapter) {
-      SetCurrentStep(Step::kBlePowerOnAutomatic);
-    } else {
-      SetCurrentStep(Step::kBlePowerOnManual);
-    }
-    return;
-  }
-
-  ContactPhoneAfterBleIsPowered(std::move(name));
+  EnsureBleAdapterIsPoweredAndContinue(base::BindOnce(
+      &AuthenticatorRequestDialogController::ContactPhoneAfterBleIsPowered,
+      weak_factory_.GetWeakPtr(), std::move(name)));
 }
 
 void AuthenticatorRequestDialogController::ContactPhoneAfterBleIsPowered(
@@ -2315,8 +2320,8 @@ void AuthenticatorRequestDialogController::PopulateMechanisms() {
   const bool include_usb_option =
       base::Contains(transport_availability_.available_transports,
                      AuthenticatorTransport::kUsbHumanInterfaceDevice) &&
-      (!include_add_phone_option || !model_->ble_adapter_is_powered ||
-       transport_availability_.ble_access_denied ||
+      (!include_add_phone_option ||
+       transport_availability_.ble_status != BleStatus::kOn ||
        hints_.transport == AuthenticatorTransport::kUsbHumanInterfaceDevice);
 
   if (include_add_phone_option) {
@@ -2599,7 +2604,8 @@ void AuthenticatorRequestDialogController::
   model_->request_type = transport_availability_.request_type;
   model_->resident_key_requirement =
       transport_availability_.resident_key_requirement;
-  model_->ble_adapter_is_powered = transport_availability_.is_ble_powered;
+  model_->ble_adapter_is_powered =
+      transport_availability_.ble_status == BleStatus::kOn;
   model_->security_key_is_possible =
       base::Contains(transport_availability_.available_transports,
                      device::FidoTransportProtocol::kUsbHumanInterfaceDevice);

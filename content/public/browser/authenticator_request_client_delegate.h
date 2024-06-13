@@ -258,14 +258,17 @@ class CONTENT_EXPORT AuthenticatorRequestClientDelegate
 
   // Supplies callbacks that the embedder can invoke to initiate certain
   // actions, namely: cancel the request, start the request over, preselect an
-  // account, dispatch request to connected authenticators, and power on the
-  // bluetooth adapter.
+  // account, dispatch request to connected authenticators, power on the
+  // bluetooth adapter, and request permission to use the bluetooth adapter.
   virtual void RegisterActionCallbacks(
       base::OnceClosure cancel_callback,
       base::RepeatingClosure start_over_callback,
       AccountPreselectedCallback account_preselected_callback,
       device::FidoRequestHandlerBase::RequestCallback request_callback,
-      base::RepeatingClosure bluetooth_adapter_power_on_callback);
+      base::RepeatingClosure bluetooth_adapter_power_on_callback,
+      base::RepeatingCallback<
+          void(device::FidoRequestHandlerBase::BlePermissionCallback)>
+          request_ble_permission_callback);
 
   // Invokes |callback| with |true| if the given relying party ID is permitted
   // to receive attestation certificates from the provided FidoAuthenticator.
@@ -386,7 +389,8 @@ class CONTENT_EXPORT AuthenticatorRequestClientDelegate
   // |FidoAuthenticatorAdded|.
   bool EmbedderControlsAuthenticatorDispatch(
       const device::FidoAuthenticator& authenticator) override;
-  void BluetoothAdapterPowerChanged(bool is_powered_on) override;
+  void BluetoothAdapterStatusChanged(
+      device::FidoRequestHandlerBase::BleStatus ble_status) override;
   void FidoAuthenticatorAdded(
       const device::FidoAuthenticator& authenticator) override;
   void FidoAuthenticatorRemoved(std::string_view device_id) override;
