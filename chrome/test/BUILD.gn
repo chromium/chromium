@@ -6765,7 +6765,6 @@ test("unit_tests") {
       "../browser/page_load_metrics/observers/side_search_page_load_metrics_observer_unittest.cc",
       "../browser/ui/side_search/side_search_side_contents_helper_unittest.cc",
       "../browser/ui/side_search/side_search_tab_contents_helper_unittest.cc",
-      "../browser/ui/views/side_panel/customize_chrome/customize_chrome_side_panel_controller_unittest.cc",
     ]
   }
 

@@ -7,7 +7,9 @@
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_tabstrip.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_features.h"
-#include "chrome/browser/ui/views/side_panel/customize_chrome/customize_chrome_tab_helper.h"
+#include "chrome/browser/ui/tabs/public/tab_features.h"
+#include "chrome/browser/ui/views/side_panel/customize_chrome/customize_chrome_side_panel_controller.h"
+#include "chrome/browser/ui/views/side_panel/side_panel_registry.h"
 #include "chrome/browser/ui/views/side_panel/side_panel_ui.h"
 #include "chrome/browser/ui/webui/side_panel/customize_chrome/customize_chrome_section.h"
 #include "chrome/common/webui_url_constants.h"
@@ -26,7 +28,7 @@ class CustomizeChromeSidePanelBrowserTest : public InProcessBrowserTest {
   void AppendTab(Browser* browser, const GURL& url);
 
   // Returns the CustomizeChromeTabHelper associated with the tab
-  CustomizeChromeTabHelper* GetTabHelper(Browser* browser);
+  CustomizeChromeSidePanelController* GetTabHelper(Browser* browser);
 
  private:
   base::test::ScopedFeatureList scoped_feature_list_;
@@ -42,10 +44,11 @@ void CustomizeChromeSidePanelBrowserTest::AppendTab(Browser* browser,
   chrome::AddTabAt(browser, url, -1, true);
 }
 
-CustomizeChromeTabHelper* CustomizeChromeSidePanelBrowserTest::GetTabHelper(
-    Browser* browser) {
-  auto* web_contents = browser->tab_strip_model()->GetActiveWebContents();
-  return CustomizeChromeTabHelper::FromWebContents(web_contents);
+CustomizeChromeSidePanelController*
+CustomizeChromeSidePanelBrowserTest::GetTabHelper(Browser* browser) {
+  return browser->GetActiveTabInterface()
+      ->GetTabFeatures()
+      ->customize_chrome_side_panel_controller();
 }
 
 IN_PROC_BROWSER_TEST_F(CustomizeChromeSidePanelBrowserTest,
@@ -118,4 +121,77 @@ IN_PROC_BROWSER_TEST_F(CustomizeChromeSidePanelBrowserTest,
   customize_chrome_tab_helper->SetCustomizeChromeSidePanelVisible(
       false, CustomizeChromeSection::kAppearance);
   EXPECT_FALSE(customize_chrome_tab_helper->IsCustomizeChromeEntryShowing());
+}
+
+IN_PROC_BROWSER_TEST_F(CustomizeChromeSidePanelBrowserTest,
+                       DeregisterEmptyCustomizeChromeEntry) {
+  // When there is no customize chrome entry, calling deregister should
+  // not crash.
+  auto* customize_chrome_tab_helper = GetTabHelper(browser());
+  customize_chrome_tab_helper->DeregisterEntry();
+}
+
+IN_PROC_BROWSER_TEST_F(CustomizeChromeSidePanelBrowserTest,
+                       RegisterCustomizeChromeEntry) {
+  // When CreateAndRegisterEntry() is called, the current tabs side
+  // panel registry should contain a kCustomizeChromeEntry.
+  auto* customize_chrome_tab_helper = GetTabHelper(browser());
+  customize_chrome_tab_helper->CreateAndRegisterEntry();
+  auto* registry =
+      SidePanelRegistry::Get(browser()->GetActiveTabInterface()->GetContents());
+  EXPECT_EQ(registry
+                ->GetEntryForKey(
+                    SidePanelEntry::Key(SidePanelEntry::Id::kCustomizeChrome))
+                ->key()
+                .id(),
+            SidePanelEntry::Id::kCustomizeChrome);
+}
+
+IN_PROC_BROWSER_TEST_F(CustomizeChromeSidePanelBrowserTest,
+                       DeregisterCustomizeChromeEntry) {
+  // When Deregister() is called, there should be no side panel entry
+  // in the registry.
+  auto* customize_chrome_tab_helper = GetTabHelper(browser());
+  auto* registry =
+      SidePanelRegistry::Get(browser()->GetActiveTabInterface()->GetContents());
+
+  customize_chrome_tab_helper->CreateAndRegisterEntry();
+  EXPECT_EQ(registry
+                ->GetEntryForKey(
+                    SidePanelEntry::Key(SidePanelEntry::Id::kCustomizeChrome))
+                ->key()
+                .id(),
+            SidePanelEntry::Id::kCustomizeChrome);
+  customize_chrome_tab_helper->DeregisterEntry();
+  EXPECT_EQ(registry->GetEntryForKey(
+                SidePanelEntry::Key(SidePanelEntry::Id::kCustomizeChrome)),
+            nullptr);
+}
+
+IN_PROC_BROWSER_TEST_F(CustomizeChromeSidePanelBrowserTest,
+                       CreateAndRegisterMultipleTimes) {
+  // When CreateAndRegisterEntry() is called multiple times, only
+  // one entry should be added to the registry.
+  auto* customize_chrome_tab_helper = GetTabHelper(browser());
+  auto* registry =
+      SidePanelRegistry::Get(browser()->GetActiveTabInterface()->GetContents());
+
+  customize_chrome_tab_helper->CreateAndRegisterEntry();
+  EXPECT_EQ(registry
+                ->GetEntryForKey(
+                    SidePanelEntry::Key(SidePanelEntry::Id::kCustomizeChrome))
+                ->key()
+                .id(),
+            SidePanelEntry::Id::kCustomizeChrome);
+  customize_chrome_tab_helper->CreateAndRegisterEntry();
+  EXPECT_EQ(registry
+                ->GetEntryForKey(
+                    SidePanelEntry::Key(SidePanelEntry::Id::kCustomizeChrome))
+                ->key()
+                .id(),
+            SidePanelEntry::Id::kCustomizeChrome);
+  customize_chrome_tab_helper->DeregisterEntry();
+  EXPECT_EQ(registry->GetEntryForKey(
+                SidePanelEntry::Key(SidePanelEntry::Id::kCustomizeChrome)),
+            nullptr);
 }

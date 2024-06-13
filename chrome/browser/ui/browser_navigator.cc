@@ -859,7 +859,7 @@ base::WeakPtr<content::NavigationHandle> Navigate(NavigateParams* params) {
   if (params->contents_to_insert) {
     tab_to_insert =
         std::make_unique<tabs::TabModel>(std::move(params->contents_to_insert),
-                                         params->browser->tab_strip_model());
+                                         params->browser->is_type_normal());
   }
 
   // If no target WebContents was specified (and we didn't seek and find a
@@ -870,7 +870,7 @@ base::WeakPtr<content::NavigationHandle> Navigate(NavigateParams* params) {
     if (params->disposition != WindowOpenDisposition::CURRENT_TAB) {
       tab_to_insert = std::make_unique<tabs::TabModel>(
           CreateTargetContents(*params, params->url),
-          params->browser->tab_strip_model());
+          params->browser->is_type_normal());
       contents_to_navigate_or_insert = tab_to_insert->contents();
     } else {
       // ... otherwise if we're loading in the current tab, the target is the

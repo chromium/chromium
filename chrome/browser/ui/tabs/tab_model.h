@@ -28,8 +28,13 @@ class TabModel final : public SupportsHandles<const TabModel>,
                        public TabInterface,
                        public TabStripModelObserver {
  public:
+  // Conceptually, tabs should always be a part of a normal window. There are
+  // currently 2 cases where they are not:
+  // (1) Tabbed PWAs is a ChromeOS_only feature that exposes Tabs to PWAs.
+  // (2) Non-browser windows currently have a tab-strip and may use tabs. See
+  // TODO(https://crbug.com/331031753) which tracks their eventual removal.
   TabModel(std::unique_ptr<content::WebContents> contents,
-           TabStripModel* owning_model);
+           bool is_in_normal_window);
   ~TabModel() override;
 
   TabModel(const TabModel&) = delete;
@@ -146,7 +151,7 @@ class TabModel final : public SupportsHandles<const TabModel>,
   // owning model can be nullptr if the tab has been detached from it's previous
   // owning tabstrip model, and has yet to be transferred to a new tabstrip
   // model or is in the process of being closed.
-  raw_ptr<TabStripModel> owning_model_;
+  raw_ptr<TabStripModel> owning_model_ = nullptr;
   raw_ptr<content::WebContents> opener_ = nullptr;
   bool reset_opener_on_active_tab_change_ = false;
   bool pinned_ = false;

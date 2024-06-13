@@ -15,6 +15,7 @@
 #include "chrome/browser/ui/tabs/tab_model.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/browser/ui/tabs/tab_strip_model_delegate.h"
+#include "chrome/browser/ui/views/side_panel/customize_chrome/customize_chrome_side_panel_controller.h"
 #include "components/browsing_topics/browsing_topics_service.h"
 #include "components/permissions/permission_indicators_tab_data.h"
 
@@ -69,6 +70,11 @@ void TabFeatures::Init(TabInterface* tab, Profile* profile) {
         std::make_unique<permissions::PermissionIndicatorsTabData>(
             tab->GetContents());
   }
+
+  // TODO(crbug.com/346148554): Do not create a SidePanelRegistry or
+  // dependencies for non-normal browsers.
+  customize_chrome_side_panel_controller_ =
+      std::make_unique<CustomizeChromeSidePanelController>(tab);
 }
 
 TabFeatures::TabFeatures() = default;

@@ -204,8 +204,6 @@
 #include "chrome/browser/ui/search_engine_choice/search_engine_choice_tab_helper.h"
 #include "chrome/browser/ui/views/side_panel/companion/companion_tab_helper.h"
 #include "chrome/browser/ui/views/side_panel/companion/exps_registration_success_observer.h"
-#include "chrome/browser/ui/views/side_panel/customize_chrome/customize_chrome_tab_helper.h"
-#include "chrome/browser/ui/views/side_panel/customize_chrome/customize_chrome_utils.h"
 #include "chrome/browser/ui/views/side_panel/history_clusters/history_clusters_tab_helper.h"
 #include "chrome/browser/ui/views/side_panel/read_anything/read_anything_tab_helper.h"
 #include "chrome/browser/ui/sync/browser_synced_tab_delegate.h"
@@ -765,10 +763,6 @@ void TabHelpers::AttachTabHelpers(WebContents* web_contents) {
   if (IsSideSearchEnabled(profile)) {
     SideSearchTabContentsHelper::CreateForWebContents(web_contents);
   }
-#endif
-
-#if !BUILDFLAG(IS_ANDROID)
-  CustomizeChromeTabHelper::CreateForWebContents(web_contents);
 #endif
 
   // --- Section 3: Feature tab helpers behind BUILDFLAGs ---

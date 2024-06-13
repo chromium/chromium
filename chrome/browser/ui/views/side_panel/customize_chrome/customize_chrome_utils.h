@@ -5,8 +5,6 @@
 #ifndef CHROME_BROWSER_UI_VIEWS_SIDE_PANEL_CUSTOMIZE_CHROME_CUSTOMIZE_CHROME_UTILS_H_
 #define CHROME_BROWSER_UI_VIEWS_SIDE_PANEL_CUSTOMIZE_CHROME_CUSTOMIZE_CHROME_UTILS_H_
 
-#include "chrome/browser/ui/views/side_panel/customize_chrome/customize_chrome_tab_helper.h"
-
 class Profile;
 
 namespace customize_chrome {

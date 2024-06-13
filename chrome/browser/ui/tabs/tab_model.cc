@@ -4,33 +4,61 @@
 
 #include "chrome/browser/ui/tabs/tab_model.h"
 
+#include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/tabs/public/tab_features.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/browser/ui/tabs/tab_strip_model_delegate.h"
 #include "chrome/browser/ui/ui_features.h"
+#include "content/public/browser/web_contents_user_data.h"
 #include "third_party/perfetto/include/perfetto/tracing/traced_value.h"
 
 namespace tabs {
 
+namespace {
+
+// This class exists to allow consumers to look up a TabInterface from an
+// instance of WebContents. This is necessary while transitioning features to
+// use TabInterface and TabModel instead of WebContents.
+class TabLookupFromWebContents
+    : public content::WebContentsUserData<TabLookupFromWebContents> {
+ public:
+  ~TabLookupFromWebContents() override = default;
+
+  TabModel* model() { return model_; }
+
+ private:
+  friend WebContentsUserData;
+  TabLookupFromWebContents(content::WebContents* contents, TabModel* model)
+      : content::WebContentsUserData<TabLookupFromWebContents>(*contents),
+        model_(model) {}
+
+  // Semantically owns this class.
+  raw_ptr<TabModel> model_;
+  WEB_CONTENTS_USER_DATA_KEY_DECL();
+};
+
+WEB_CONTENTS_USER_DATA_KEY_IMPL(TabLookupFromWebContents);
+
+}  // namespace
+
 TabModel::TabModel(std::unique_ptr<content::WebContents> contents,
-                   TabStripModel* owning_model)
+                   bool is_in_normal_window)
     : contents_owned_(std::move(contents)),
       contents_(contents_owned_.get()),
-      owning_model_(owning_model),
-      is_in_normal_window_(owning_model->delegate()->IsNormalWindow()) {
-  // When a TabModel is constructed it must be attached to a TabStripModel. This
-  // may later change if the Tab is detached.
-  CHECK(owning_model);
-  owning_model_->AddObserver(this);
+      is_in_normal_window_(is_in_normal_window) {
+  TabLookupFromWebContents::CreateForWebContents(contents_, this);
 
   tab_features_ = TabFeatures::CreateTabFeatures();
 
   // Once tabs are pulled into a standalone module, TabFeatures and its
   // initialization will need to be delegated back to the main module.
-  tab_features_->Init(this, owning_model_->profile());
+  tab_features_->Init(
+      this, Profile::FromBrowserContext(contents_->GetBrowserContext()));
 }
 
-TabModel::~TabModel() = default;
+TabModel::~TabModel() {
+  contents_->RemoveUserData(TabLookupFromWebContents::UserDataKey());
+}
 
 void TabModel::OnAddedToModel(TabStripModel* owning_model) {
   CHECK(!owning_model_);
@@ -168,10 +196,12 @@ void TabModel::WriteIntoTrace(perfetto::TracedValue context) const {
 std::unique_ptr<content::WebContents> TabModel::DiscardContents(
     std::unique_ptr<content::WebContents> contents) {
   will_discard_contents_callback_list_.Notify(this, contents_, contents.get());
+  contents_->RemoveUserData(TabLookupFromWebContents::UserDataKey());
   std::unique_ptr<content::WebContents> old_contents =
       std::move(contents_owned_);
   contents_owned_ = std::move(contents);
   contents_ = contents_owned_.get();
+  TabLookupFromWebContents::CreateForWebContents(contents_, this);
   return old_contents;
 }
 
@@ -181,6 +211,12 @@ std::unique_ptr<content::WebContents> TabModel::DestroyAndTakeWebContents(
   std::unique_ptr<content::WebContents> contents =
       std::move(tab_model->contents_owned_);
   return contents;
+}
+
+// static
+TabInterface* TabInterface::GetFromContents(
+    content::WebContents* web_contents) {
+  return TabLookupFromWebContents::FromWebContents(web_contents)->model();
 }
 
 }  // namespace tabs

@@ -50,7 +50,7 @@
 #include "chrome/browser/ui/color/chrome_color_id.h"
 #include "chrome/browser/ui/hats/hats_service.h"
 #include "chrome/browser/ui/hats/hats_service_factory.h"
-#include "chrome/browser/ui/views/side_panel/customize_chrome/customize_chrome_tab_helper.h"
+#include "chrome/browser/ui/views/side_panel/customize_chrome/customize_chrome_side_panel_controller.h"
 #include "chrome/browser/ui/views/side_panel/customize_chrome/customize_chrome_utils.h"
 #include "chrome/browser/ui/webui/new_tab_page/ntp_pref_names.h"
 #include "chrome/browser/ui/webui/side_panel/customize_chrome/customize_chrome_section.h"
@@ -440,7 +440,9 @@ NewTabPageHandler::NewTabPageHandler(
     std::unique_ptr<NewTabPageFeaturePromoHelper>
         customize_chrome_feature_promo_helper,
     const base::Time& ntp_navigation_start_time,
-    const std::vector<std::pair<const std::string, int>>* module_id_names)
+    const std::vector<std::pair<const std::string, int>>* module_id_names,
+    CustomizeChromeSidePanelControllerBase*
+        customize_chrome_side_panel_controller)
     : SettingsEnabledObserver(
           optimization_guide::UserVisibleFeatureKey::kWallpaperSearch),
       ntp_background_service_(
@@ -460,6 +462,8 @@ NewTabPageHandler::NewTabPageHandler(
       promo_service_(PromoServiceFactory::GetForProfile(profile)),
       interaction_module_id_trigger_dict_(
           MakeModuleInteractionTriggerIdDictionary()),
+      customize_chrome_side_panel_controller_(
+          customize_chrome_side_panel_controller),
       page_{std::move(pending_page)},
       receiver_{this, std::move(pending_page_handler)} {
   CHECK(ntp_background_service_);
@@ -505,15 +509,11 @@ NewTabPageHandler::NewTabPageHandler(
       base::BindRepeating(&NewTabPageHandler::MaybeShowWebstoreToast,
                           base::Unretained(this)));
 
-    auto* customize_chrome_tab_helper =
-        CustomizeChromeTabHelper::FromWebContents(web_contents_);
-    // Lifetime is tied to NewTabPageUI which owns the NewTabPageHandler.
-    DCHECK(customize_chrome_tab_helper);
-    page_->SetCustomizeChromeSidePanelVisibility(
-        customize_chrome_tab_helper->IsCustomizeChromeEntryShowing());
-    customize_chrome_tab_helper->SetCallback(base::BindRepeating(
-        &NewTabPageHandler::NotifyCustomizeChromeSidePanelVisibilityChanged,
-        weak_ptr_factory_.GetWeakPtr()));
+  page_->SetCustomizeChromeSidePanelVisibility(
+      customize_chrome_side_panel_controller_->IsCustomizeChromeEntryShowing());
+  customize_chrome_side_panel_controller_->SetCallback(base::BindRepeating(
+      &NewTabPageHandler::NotifyCustomizeChromeSidePanelVisibilityChanged,
+      weak_ptr_factory_.GetWeakPtr()));
 }
 
 NewTabPageHandler::~NewTabPageHandler() {
@@ -526,6 +526,10 @@ NewTabPageHandler::~NewTabPageHandler() {
         ->RemoveModelExecutionSettingsEnabledObserver(this);
     optimization_guide_keyed_service_ = nullptr;
   }
+}
+
+void NewTabPageHandler::TabWillDelete() {
+  customize_chrome_side_panel_controller_ = nullptr;
 }
 
 // static
@@ -930,10 +934,8 @@ void NewTabPageHandler::SetCustomizeChromeSidePanelVisible(
       section_enum = CustomizeChromeSection::kWallpaperSearch;
       break;
   }
-  auto* customize_chrome_tab_helper =
-      CustomizeChromeTabHelper::FromWebContents(web_contents_);
-  customize_chrome_tab_helper->SetCustomizeChromeSidePanelVisible(visible,
-                                                                  section_enum);
+  customize_chrome_side_panel_controller_->SetCustomizeChromeSidePanelVisible(
+      visible, section_enum);
 
   if (visible) {
     // Record usage for customize chrome promo.

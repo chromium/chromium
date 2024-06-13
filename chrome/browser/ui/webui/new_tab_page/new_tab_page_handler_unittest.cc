@@ -36,7 +36,7 @@
 #include "chrome/browser/ui/color/chrome_color_id.h"
 #include "chrome/browser/ui/hats/hats_service_factory.h"
 #include "chrome/browser/ui/hats/mock_hats_service.h"
-#include "chrome/browser/ui/views/side_panel/customize_chrome/customize_chrome_tab_helper.h"
+#include "chrome/browser/ui/views/side_panel/customize_chrome/customize_chrome_side_panel_controller.h"
 #include "chrome/browser/ui/webui/new_tab_page/new_tab_page.mojom.h"
 #include "chrome/browser/ui/webui/side_panel/customize_chrome/customize_chrome_section.h"
 #include "chrome/browser/ui/webui/webui_util_desktop.h"
@@ -198,27 +198,17 @@ class MockPromoService : public PromoService {
   MOCK_METHOD(void, Refresh, (), (override));
 };
 
-class MockCustomizeChromeTabHelper : public CustomizeChromeTabHelper {
+class MockCustomizeChromeTabHelper
+    : public CustomizeChromeSidePanelControllerBase {
  public:
-  static MockCustomizeChromeTabHelper* CreateForWebContents(
-      content::WebContents* contents) {
-    DCHECK(contents);
-    DCHECK(!contents->GetUserData(UserDataKey()));
-    contents->SetUserData(
-        UserDataKey(),
-        base::WrapUnique(new MockCustomizeChromeTabHelper(contents)));
-    return static_cast<MockCustomizeChromeTabHelper*>(
-        contents->GetUserData(UserDataKey()));
-  }
+  ~MockCustomizeChromeTabHelper() override = default;
 
   MOCK_METHOD(void,
               SetCustomizeChromeSidePanelVisible,
               (bool, CustomizeChromeSection),
               (override));
-
- private:
-  explicit MockCustomizeChromeTabHelper(content::WebContents* web_contents)
-      : CustomizeChromeTabHelper(web_contents) {}
+  MOCK_METHOD(bool, IsCustomizeChromeEntryShowing, (), (const, override));
+  MOCK_METHOD(void, SetCallback, (StateChangedCallBack), (override));
 };
 
 class MockFeaturePromoHelper : public NewTabPageFeaturePromoHelper {
@@ -284,8 +274,7 @@ class NewTabPageHandlerTest : public testing::Test {
         mock_feature_promo_helper_ptr_(std::unique_ptr<MockFeaturePromoHelper>(
             mock_feature_promo_helper_)),
         mock_customize_chrome_tab_helper_(
-            MockCustomizeChromeTabHelper::CreateForWebContents(
-                web_contents_.get())) {
+            std::make_unique<MockCustomizeChromeTabHelper>()) {
     mock_hats_service_ = static_cast<MockHatsService*>(
         HatsServiceFactory::GetInstance()->SetTestingFactoryAndUse(
             profile_.get(), base::BindRepeating(&BuildMockHatsService)));
@@ -328,7 +317,7 @@ class NewTabPageHandlerTest : public testing::Test {
         &mock_ntp_custom_background_service_, &mock_theme_service_,
         &mock_logo_service_, web_contents_,
         std::move(mock_feature_promo_helper_ptr_), base::Time::Now(),
-        &module_id_names);
+        &module_id_names, mock_customize_chrome_tab_helper_.get());
     mock_page_.FlushForTesting();
     EXPECT_EQ(handler_.get(), theme_service_observer_);
     EXPECT_EQ(handler_.get(), ntp_custom_background_service_observer_);
@@ -385,7 +374,8 @@ class NewTabPageHandlerTest : public testing::Test {
   // Pointer to mock that will eventually be solely owned by the handler.
   raw_ptr<MockFeaturePromoHelper, DanglingUntriaged> mock_feature_promo_helper_;
   std::unique_ptr<MockFeaturePromoHelper> mock_feature_promo_helper_ptr_;
-  raw_ptr<MockCustomizeChromeTabHelper> mock_customize_chrome_tab_helper_;
+  std::unique_ptr<MockCustomizeChromeTabHelper>
+      mock_customize_chrome_tab_helper_;
   base::HistogramTester histogram_tester_;
   std::unique_ptr<NewTabPageHandler> handler_;
   raw_ptr<ThemeServiceObserver> theme_service_observer_;

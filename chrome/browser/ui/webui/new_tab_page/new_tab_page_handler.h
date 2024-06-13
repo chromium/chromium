@@ -40,6 +40,7 @@
 #include "ui/native_theme/native_theme_observer.h"
 #include "ui/shell_dialogs/select_file_dialog.h"
 
+class CustomizeChromeSidePanelControllerBase;
 class GURL;
 class NtpBackgroundService;
 class Profile;
@@ -79,7 +80,9 @@ class NewTabPageHandler : public new_tab_page::mojom::PageHandler,
       std::unique_ptr<NewTabPageFeaturePromoHelper>
           customize_chrome_feature_promo_helper,
       const base::Time& ntp_navigation_start_time,
-      const std::vector<std::pair<const std::string, int>>* module_id_names);
+      const std::vector<std::pair<const std::string, int>>* module_id_names,
+      CustomizeChromeSidePanelControllerBase*
+          customize_chrome_side_panel_controller);
 
   NewTabPageHandler(const NewTabPageHandler&) = delete;
   NewTabPageHandler& operator=(const NewTabPageHandler&) = delete;
@@ -91,6 +94,9 @@ class NewTabPageHandler : public new_tab_page::mojom::PageHandler,
   static const char kModuleRestoredHistogram[];
 
   static void RegisterProfilePrefs(PrefRegistrySimple* registry);
+
+  // This method should be called before the tab is deleted.
+  void TabWillDelete();
 
   // new_tab_page::mojom::PageHandler:
   void SetMostVisitedSettings(bool custom_links_enabled, bool visible) override;
@@ -258,6 +264,8 @@ class NewTabPageHandler : public new_tab_page::mojom::PageHandler,
       promo_service_observation_{this};
   std::optional<base::TimeTicks> promo_load_start_time_;
   base::Value::Dict interaction_module_id_trigger_dict_;
+  raw_ptr<CustomizeChromeSidePanelControllerBase>
+      customize_chrome_side_panel_controller_;
 
   // These are located at the end of the list of member variables to ensure the
   // WebUI page is disconnected before other members are destroyed.

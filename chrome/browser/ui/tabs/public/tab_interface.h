@@ -37,6 +37,11 @@ class ScopedTabModalUI {
 // in TabFeatures.
 class TabInterface {
  public:
+  // This method exists to ease the transition from WebContents to TabInterface.
+  // This method should only be called on instances of WebContents that are
+  // known to be tabs.
+  static TabInterface* GetFromContents(content::WebContents* web_contents);
+
   // When a tab is in the background, the WebContents may be discarded to save
   // memory. When a tab is in the foreground it is guaranteed to have a
   // WebContents.

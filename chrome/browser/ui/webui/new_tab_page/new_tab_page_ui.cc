@@ -40,9 +40,11 @@
 #include "chrome/browser/signin/identity_manager_factory.h"
 #include "chrome/browser/sync/sync_service_factory.h"
 #include "chrome/browser/themes/theme_service_factory.h"
+#include "chrome/browser/ui/browser_finder.h"
 #include "chrome/browser/ui/browser_window.h"
 #include "chrome/browser/ui/color/chrome_color_id.h"
-#include "chrome/browser/ui/views/side_panel/customize_chrome/customize_chrome_tab_helper.h"
+#include "chrome/browser/ui/tabs/public/tab_features.h"
+#include "chrome/browser/ui/views/side_panel/customize_chrome/customize_chrome_side_panel_controller.h"
 #include "chrome/browser/ui/views/side_panel/customize_chrome/customize_chrome_utils.h"
 #include "chrome/browser/ui/webui/browser_command/browser_command_handler.h"
 #include "chrome/browser/ui/webui/cr_components/most_visited/most_visited_handler.h"
@@ -708,6 +710,7 @@ NewTabPageUI::NewTabPageUI(content::WebUI* web_ui)
       most_visited_page_factory_receiver_(this),
       browser_command_factory_receiver_(this),
       profile_(Profile::FromWebUI(web_ui)),
+      tab_(tabs::TabInterface::GetFromContents(web_ui->GetWebContents())),
       theme_service_(ThemeServiceFactory::GetForProfile(profile_)),
       ntp_custom_background_service_(
           NtpCustomBackgroundServiceFactory::GetForProfile(profile_)),
@@ -777,16 +780,17 @@ NewTabPageUI::NewTabPageUI(content::WebUI* web_ui)
       ntp_custom_background_service_.get());
 
   // Create and register customize chrome entry on unified side panel
-    auto* customize_chrome_tab_helper =
-        CustomizeChromeTabHelper::FromWebContents(web_contents());
-    if (customize_chrome_tab_helper) {
-      customize_chrome_tab_helper->CreateAndRegisterEntry();
-    }
+  auto* customize_chrome_side_panel_coordinator =
+      tab_->GetTabFeatures()->customize_chrome_side_panel_controller();
+  customize_chrome_side_panel_coordinator->CreateAndRegisterEntry();
 
   // Populates the load time data with basic info.
   OnColorProviderChanged();
   OnCustomBackgroundImageUpdated();
   OnLoad();
+
+  tab_subscriptions_.push_back(tab_->RegisterWillDetach(base::BindRepeating(
+      &NewTabPageUI::TabWillDetach, weak_ptr_factory_.GetWeakPtr())));
 }
 
 WEB_UI_CONTROLLER_TYPE_IMPL(NewTabPageUI)
@@ -800,10 +804,17 @@ NewTabPageUI::~NewTabPageUI() {
       return;
     }
   }
-  auto* customize_chrome_tab_helper =
-      CustomizeChromeTabHelper::FromWebContents(web_contents());
-  if (customize_chrome_tab_helper) {
-    customize_chrome_tab_helper->DeregisterEntry();
+
+  // It is possible for the TabFeatures to outlive the NewTabPageUI if the user
+  // navigates away from the NTP. The only way for NewTabPageUI to outlive
+  // TabFeatures is during Tab deletion, when TabFeatures is destroyed before
+  // the WebContents, whereas NewTabPageUI is destroyed during WebContents
+  // destruction. Thus, the only time we do a null check for `tab_` is in the
+  // destructor.
+  if (tab_) {
+    auto* customize_chrome_side_panel_coordinator =
+        tab_->GetTabFeatures()->customize_chrome_side_panel_controller();
+    customize_chrome_side_panel_coordinator->DeregisterEntry();
   }
 }
 
@@ -1020,12 +1031,14 @@ void NewTabPageUI::CreatePageHandler(
         pending_page_handler) {
   DCHECK(pending_page.is_valid());
 
+  auto* customize_chrome_side_panel_coordinator =
+      tab_->GetTabFeatures()->customize_chrome_side_panel_controller();
   page_handler_ = std::make_unique<NewTabPageHandler>(
       std::move(pending_page_handler), std::move(pending_page), profile_,
       ntp_custom_background_service_, theme_service_,
       LogoServiceFactory::GetForProfile(profile_), web_contents(),
       std::make_unique<NewTabPageFeaturePromoHelper>(), navigation_start_time_,
-      &module_id_names_);
+      &module_id_names_, customize_chrome_side_panel_coordinator);
 }
 
 void NewTabPageUI::CreateCustomizeThemesHandler(
@@ -1161,6 +1174,16 @@ void NewTabPageUI::OnLoad() {
                              IdentityManagerFactory::GetForProfile(profile_)));
   content::WebUIDataSource::Update(profile_, chrome::kChromeUINewTabPageHost,
                                    std::move(update));
+}
+
+void NewTabPageUI::TabWillDetach(tabs::TabInterface* tab,
+                                 tabs::TabInterface::DetachReason reason) {
+  if (reason == tabs::TabInterface::DetachReason::kDelete) {
+    tab_ = nullptr;
+    if (page_handler_) {
+      page_handler_->TabWillDelete();
+    }
+  }
 }
 
 // static

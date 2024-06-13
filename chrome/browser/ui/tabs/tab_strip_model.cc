@@ -296,9 +296,10 @@ int TabStripModel::InsertWebContentsAt(
     std::unique_ptr<WebContents> contents,
     int add_types,
     std::optional<tab_groups::TabGroupId> group) {
-  ReentrancyCheck reentrancy_check(&reentrancy_guard_);
-  return InsertTabAtImpl(
-      index, std::make_unique<tabs::TabModel>(std::move(contents), this),
+  return InsertDetachedTabAt(
+      index,
+      std::make_unique<tabs::TabModel>(std::move(contents),
+                                       delegate()->IsNormalWindow()),
       add_types, group);
 }
 
@@ -933,7 +934,7 @@ void TabStripModel::AddWebContents(
     int add_types,
     std::optional<tab_groups::TabGroupId> group) {
   auto tab = std::make_unique<tabs::TabModel>(std::move(contents),
-                                              /*owning_model=*/this);
+                                              delegate()->IsNormalWindow());
   AddTab(std::move(tab), index, transition, add_types, group);
 }
 
@@ -1010,6 +1011,7 @@ void TabStripModel::AddTab(std::unique_ptr<tabs::TabModel> tab,
     inherit_opener = true;
   }
   WebContents* raw_contents = tab->contents();
+  tab->OnAddedToModel(this);
   InsertTabAtImpl(index, std::move(tab),
                   add_types | (inherit_opener ? ADD_INHERIT_OPENER : 0), group);
   // Reset the index, just in case insert ended up moving it on us.

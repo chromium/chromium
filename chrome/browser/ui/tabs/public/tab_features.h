@@ -9,6 +9,7 @@
 
 #include "base/functional/callback.h"
 
+class CustomizeChromeSidePanelController;
 class LensOverlayController;
 class Profile;
 namespace permissions {
@@ -42,6 +43,10 @@ class TabFeatures {
     return permission_indicators_tab_data_.get();
   }
 
+  CustomizeChromeSidePanelController* customize_chrome_side_panel_controller() {
+    return customize_chrome_side_panel_controller_.get();
+  }
+
   // Called exactly once to initialize features.
   void Init(TabInterface* tab, Profile* profile);
 
@@ -62,6 +67,10 @@ class TabFeatures {
 
   std::unique_ptr<permissions::PermissionIndicatorsTabData>
       permission_indicators_tab_data_;
+
+  // Responsible for the customize chrome tab-scoped side panel.
+  std::unique_ptr<CustomizeChromeSidePanelController>
+      customize_chrome_side_panel_controller_;
 };
 
 }  // namespace tabs

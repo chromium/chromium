@@ -654,6 +654,9 @@ class TabStripModel : public TabGroupController {
   // Serialise this object into a trace.
   void WriteIntoTrace(perfetto::TracedValue context) const;
 
+  // Returns the tab at `index` in the tabstrip.
+  tabs::TabModel* GetTabAtIndex(int index) const;
+
  private:
   FRIEND_TEST_ALL_PREFIXES(TabStripModelTest, GetIndicesClosedByCommand);
 
@@ -751,9 +754,6 @@ class TabStripModel : public TabGroupController {
                       std::unique_ptr<tabs::TabModel> tab,
                       int add_types,
                       std::optional<tab_groups::TabGroupId> group);
-
-  // Returns the tab at  `index` in the tabstrip.
-  tabs::TabModel* GetTabAtIndex(int index) const;
 
   // Closes the WebContentses at the specified indices. This causes the
   // WebContentses to be destroyed, but it may not happen immediately. If
