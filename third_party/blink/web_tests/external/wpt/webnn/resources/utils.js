@@ -380,6 +380,7 @@ const PrecisionMetrics = {
   elu: {ULP: {float32: 18, float16: 18}},
   expand: {ULP: {float32: 0, float16: 0}},
   gather: {ULP: {float32: 0, float16: 0}},
+  gelu: {ULP: {float32: 18, float16: 18}},
   gemm: {ULP: {float32: getGemmPrecisionTolerance, float16: getGemmPrecisionTolerance}},
   instanceNormalization: {ULP: {float32: 840, float16: 8400}},
   hardSigmoid: {ULP: {float32: 2, float16: 2}},
