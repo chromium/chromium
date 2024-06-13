@@ -116,9 +116,6 @@ extern const base::FeatureParam<base::TimeDelta>
     kReduceAcceptLanguageCacheDuration;
 
 COMPONENT_EXPORT(NETWORK_CPP)
-BASE_DECLARE_FEATURE(kReduceAcceptLanguageOriginTrial);
-
-COMPONENT_EXPORT(NETWORK_CPP)
 BASE_DECLARE_FEATURE(kPrivateNetworkAccessPreflightShortTimeout);
 
 COMPONENT_EXPORT(NETWORK_CPP)

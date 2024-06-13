@@ -456,11 +456,9 @@ void ProfileNetworkContextService::OnTrackingProtectionEnabledFor3pcdChanged(
 }
 
 std::string ProfileNetworkContextService::ComputeAcceptLanguage() const {
-  // If reduce accept language is enabled, only return the first language
-  // without expanding the language list.
-  if (base::FeatureList::IsEnabled(network::features::kReduceAcceptLanguage)) {
-    return language::GetFirstLanguage(pref_accept_language_.GetValue());
-  }
+  // TODO:(https://crbug.com/40224802) Return only single language without
+  // expanding the language list if the DisableReduceAcceptLanguage deprecation
+  // trial ends.
 
   if (profile_->IsOffTheRecord()) {
     // In incognito mode return only the first language.

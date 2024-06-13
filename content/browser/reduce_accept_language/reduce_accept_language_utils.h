@@ -6,6 +6,7 @@
 #define CONTENT_BROWSER_REDUCE_ACCEPT_LANGUAGE_REDUCE_ACCEPT_LANGUAGE_UTILS_H_
 
 #include "content/common/content_export.h"
+#include "content/public/browser/origin_trials_controller_delegate.h"
 #include "content/public/browser/reduce_accept_language_controller_delegate.h"
 #include "net/http/http_request_headers.h"
 #include "net/http/http_response_headers.h"
@@ -65,10 +66,12 @@ class CONTENT_EXPORT ReduceAcceptLanguageUtils {
   static bool OriginCanReduceAcceptLanguage(const url::Origin& request_origin);
 
   // Return true if the given `request_origin` opted into the
-  // ReduceAcceptLanguage first-party origin trial.
-  static bool IsReduceAcceptLanguageEnabledForOrigin(
-      const url::Origin& request_origin,
-      const net::HttpResponseHeaders* response_headers);
+  // ReduceAcceptLanguage deprecation origin trial. This method can only be
+  // called on the UI thread.
+  static bool CheckDisableReduceAcceptLanguageOriginTrial(
+      const GURL& request_url,
+      FrameTreeNode* frame_tree_node,
+      OriginTrialsControllerDelegate* origin_trials_delegate);
 
   // Updates the accept-language present in headers and returns the reduced
   // accept language added to accept-language header. This is called when
@@ -87,8 +90,7 @@ class CONTENT_EXPORT ReduceAcceptLanguageUtils {
   bool ReadAndPersistAcceptLanguageForNavigation(
       const url::Origin& request_origin,
       const net::HttpRequestHeaders& request_headers,
-      const network::mojom::ParsedHeadersPtr& parsed_headers,
-      bool is_origin_trial_enabled = false);
+      const network::mojom::ParsedHeadersPtr& parsed_headers);
 
   // Looks up which reduced accept language should be used.
   //
@@ -107,15 +109,9 @@ class CONTENT_EXPORT ReduceAcceptLanguageUtils {
       const url::Origin& request_origin,
       FrameTreeNode* frame_tree_node);
 
-  // Remove the persisted language for the given top-level document's `origin`
-  // if the corresponding `persisted_language` is not empty and the response
-  // header doesn't have a valid origin trial token when ReduceAcceptLanguage
-  // origin trial is enabled.
-  void RemoveOriginTrialReducedAcceptLanguage(
-      const std::string& persisted_language,
-      const url::Origin& origin,
-      const network::mojom::URLResponseHead* response,
-      FrameTreeNode* frame_tree_node);
+  // Remove the persisted language for the given top-level document's `origin`.
+  void RemoveReducedAcceptLanguage(const url::Origin& origin,
+                                   FrameTreeNode* frame_tree_node);
 
  private:
   // Captures the state used in applying persist accept language.
@@ -137,8 +133,7 @@ class CONTENT_EXPORT ReduceAcceptLanguageUtils {
       const std::string& initial_accept_language,
       const std::vector<std::string>& content_languages,
       const std::vector<std::string>& preferred_languages,
-      const std::vector<std::string>& available_languages,
-      bool is_origin_trial_enabled);
+      const std::vector<std::string>& available_languages);
 
   // Return the origin to look up the persisted language.
   //
@@ -153,7 +148,7 @@ class CONTENT_EXPORT ReduceAcceptLanguageUtils {
   // Fenced Frames should be treated as an internally-consistent Page, with
   // language negotiation for the inner main document and/or subframes
   // that match the main document.
-  std::optional<url::Origin> GetOriginForLanguageLookup(
+  static std::optional<url::Origin> GetOriginForLanguageLookup(
       const url::Origin& request_origin,
       FrameTreeNode* frame_tree_node);
 

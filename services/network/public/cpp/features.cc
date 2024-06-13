@@ -361,15 +361,6 @@ const base::FeatureParam<base::TimeDelta> kReduceAcceptLanguageCacheDuration{
     &kReduceAcceptLanguage, "reduce-accept-language-cache-duration",
     base::Days(30)};
 
-// Gate access to ReduceAcceptLanguage origin trial major code. Currently, All
-// ReduceAcceptLanguage feature codes are guarded by the feature flag
-// kReduceAcceptLanguage. This feature flag is useful on control major code
-// which required to do origin trial. It allows Chrome developers to mitigate
-// issues when exposed codes cause impacts.
-BASE_FEATURE(kReduceAcceptLanguageOriginTrial,
-             "ReduceAcceptLanguageOriginTrial",
-             base::FEATURE_ENABLED_BY_DEFAULT);
-
 // Reduce PNA preflight response waiting time to 200ms.
 // See: https://wicg.github.io/private-network-access/#cors-preflight
 BASE_FEATURE(kPrivateNetworkAccessPreflightShortTimeout,

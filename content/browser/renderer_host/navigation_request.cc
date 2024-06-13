@@ -1925,7 +1925,10 @@ NavigationRequest::NavigationRequest(
     // Add reduced accept language header.
     if (auto reduce_accept_lang_utils =
             ReduceAcceptLanguageUtils::Create(browser_context);
-        reduce_accept_lang_utils && !devtools_accept_language_override_) {
+        reduce_accept_lang_utils && !devtools_accept_language_override_ &&
+        !ReduceAcceptLanguageUtils::CheckDisableReduceAcceptLanguageOriginTrial(
+            common_params_->url, frame_tree_node_,
+            browser_context->GetOriginTrialsControllerDelegate())) {
       // Add the Accept-Language header with the reduce accept language value.
       // Chromium network stack won't overwrite the value if Accept-Language
       // header was already added in the request header.
@@ -5516,38 +5519,23 @@ void NavigationRequest::OnRedirectChecksComplete(
   if (auto reduce_accept_lang_utils =
           ReduceAcceptLanguageUtils::Create(browser_context);
       reduce_accept_lang_utils && !devtools_accept_language_override_) {
-    // Remove persisted language for the source origin if needed.
-    const network::mojom::URLResponseHead* response_head =
-        commit_params_->redirect_response.back().get();
-    // ReduceAcceptLanguageThrottle issues a 307 internal redirect without the
-    // original headers, and we don't want to remove persisted language when
-    // there is a potential restart due to language negotiation. This means that
-    // if the site sends a 307 (instead of a 301 or 302), the source origin
-    // persisted language will *not* be removed from the cache if the redirect
-    // response doesn't have a valid origin trial token.
-    if (response_head->headers && response_head->headers->response_code() !=
-                                      net::HTTP_TEMPORARY_REDIRECT) {
-      const url::Origin& source_origin =
-          url::Origin::Create(commit_params_->redirects.back());
-      std::optional<std::string> persisted_language =
-          reduce_accept_lang_utils.value().LookupReducedAcceptLanguage(
-              source_origin, frame_tree_node_);
-      reduce_accept_lang_utils.value().RemoveOriginTrialReducedAcceptLanguage(
-          persisted_language.value_or(""), source_origin, response_head,
-          frame_tree_node_);
+    if (!ReduceAcceptLanguageUtils::CheckDisableReduceAcceptLanguageOriginTrial(
+            common_params_->url, frame_tree_node_,
+            browser_context->GetOriginTrialsControllerDelegate())) {
+      net::HttpRequestHeaders accept_language_headers;
+      std::optional<std::string> reduced_accept_language =
+          reduce_accept_lang_utils.value()
+              .AddNavigationRequestAcceptLanguageHeaders(
+                  url::Origin::Create(common_params_->url), frame_tree_node_,
+                  &accept_language_headers);
+      commit_params_->reduced_accept_language =
+          reduced_accept_language.value_or("");
+      modified_headers.MergeFrom(accept_language_headers);
+    } else {
+      // Remove the Accept-Language header passed from previous request, if any.
+      removed_headers.push_back(net::HttpRequestHeaders::kAcceptLanguage);
+      commit_params_->reduced_accept_language = "";
     }
-
-    net::HttpRequestHeaders accept_language_headers;
-    std::optional<std::string> reduced_accept_language =
-        reduce_accept_lang_utils.value()
-            .AddNavigationRequestAcceptLanguageHeaders(
-                url::Origin::Create(common_params_->url), frame_tree_node_,
-                &accept_language_headers);
-    commit_params_->reduced_accept_language =
-        reduced_accept_language.value_or("");
-    modified_headers.MergeFrom(accept_language_headers);
-    // Remove the Accept-Language header passed from previous request if it has.
-    removed_headers.push_back(net::HttpRequestHeaders::kAcceptLanguage);
   }
 
   net::HttpRequestHeaders cors_exempt_headers;
@@ -6056,28 +6044,18 @@ void NavigationRequest::CommitNavigation() {
   PersistOriginTrialsFromHeaders(origin_to_commit, partition_origin, response(),
                                  browser_context, GetNextPageUkmSourceId());
 
-  // Update the reduced accept-language to commit if it's empty, and stop
-  // persisting the accepted language if the final response do not have a valid
-  // ReduceAcceptLanguage origin trial token. This happens when a site initially
-  // opts-in to the origin trial, the token expires, is invalid, or is missing
-  // when the server stops using it.
+  // Clean the reduced accept-language to commit if the final response have a
+  // valid deprecation origin trial token.
   if (auto reduce_accept_lang_utils =
           ReduceAcceptLanguageUtils::Create(browser_context);
-      reduce_accept_lang_utils && !devtools_accept_language_override_) {
-    // When the server initially opt into the origin trial, via an OT token in
-    // the navigation response, the reduced accept-language to commit has not
-    // been set. It is set here to make sure the initial page load uses an
-    // appropriate value. E.g. this helps subresource requests send reduced
-    // accept-language when server initially opt into the origin trial.
-    if (commit_params_->reduced_accept_language.empty()) {
-      commit_params_->reduced_accept_language =
-          reduce_accept_lang_utils.value()
-              .LookupReducedAcceptLanguage(origin_to_commit, frame_tree_node_)
-              .value_or("");
-    }
-    reduce_accept_lang_utils.value().RemoveOriginTrialReducedAcceptLanguage(
-        commit_params_->reduced_accept_language, origin_to_commit, response(),
-        frame_tree_node_);
+      reduce_accept_lang_utils && !devtools_accept_language_override_ &&
+      ReduceAcceptLanguageUtils::CheckDisableReduceAcceptLanguageOriginTrial(
+          common_params_->url, frame_tree_node_,
+          browser_context->GetOriginTrialsControllerDelegate()) &&
+      !commit_params_->reduced_accept_language.empty()) {
+    reduce_accept_lang_utils.value().RemoveReducedAcceptLanguage(
+        origin_to_commit, frame_tree_node_);
+    commit_params_->reduced_accept_language = "";
   }
 
   // Sticky user activation should only be preserved for same-site subframe

@@ -10351,7 +10351,7 @@ Called by update_use_counter_feature_enum.py.-->
   <int value="4383" label="ViewTransition"/>
   <int value="4384" label="ElementTogglePopover"/>
   <int value="4385" label="OBSOLETE_LayoutMediaInlineChildren"/>
-  <int value="4386" label="ReduceAcceptLanguage"/>
+  <int value="4386" label="OBSOLETE_ReduceAcceptLanguage"/>
   <int value="4387" label="OBSOLETE_UuidInPackageUrlNavigation"/>
   <int value="4388" label="CSSValueAppearanceMediaSliderRendered"/>
   <int value="4389" label="CSSValueAppearanceMediaSliderThumbRendered"/>
@@ -11046,6 +11046,7 @@ Called by update_use_counter_feature_enum.py.-->
   <int value="5003" label="ZstdContentEncodingForSubFrameNavigation"/>
   <int value="5004" label="ZstdContentEncodingForSubresource"/>
   <int value="5005" label="EventTimingOrphanPointerupWithClick"/>
+  <int value="5006" label="DisableReduceAcceptLanguage"/>
 </enum>
 
 <enum name="FeaturePolicyFeature">

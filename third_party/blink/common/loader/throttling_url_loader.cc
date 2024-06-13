@@ -31,19 +31,10 @@ namespace blink {
 
 namespace {
 
-// Removing headers won't work if we intend to remove the headers for the new
-// requests because all previous headers will be merge into the new header if
-// there is no overrides in the new header.
-// Remove Accept-Language header from `modified_headers` before we merge
-// incoming new headers. This helps us avoid inheriting headers which need to be
-// removed in the new requests.
 void RemoveModifiedHeadersBeforeMerge(
     net::HttpRequestHeaders* modified_headers) {
-  if (base::FeatureList::IsEnabled(
-          network::features::kReduceAcceptLanguageOriginTrial)) {
-    DCHECK(modified_headers);
-    modified_headers->RemoveHeader(net::HttpRequestHeaders::kAcceptLanguage);
-  }
+  DCHECK(modified_headers);
+  modified_headers->RemoveHeader(net::HttpRequestHeaders::kAcceptLanguage);
 }
 
 // Merges |removed_headers_B| into |removed_headers_A|.

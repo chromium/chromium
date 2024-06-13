@@ -10,6 +10,7 @@
 #include "content/browser/reduce_accept_language/reduce_accept_language_utils.h"
 #include "content/browser/renderer_host/frame_tree_node.h"
 #include "content/browser/renderer_host/navigation_request.h"
+#include "content/public/browser/origin_trials_controller_delegate.h"
 #include "content/public/browser/reduce_accept_language_controller_delegate.h"
 #include "services/network/public/cpp/features.h"
 #include "third_party/blink/public/common/loader/url_loader_throttle.h"
@@ -40,12 +41,14 @@ void LogAcceptLanguageStatus(AcceptLanguageNegotiationRestart status) {
 }  // namespace
 
 ReduceAcceptLanguageThrottle::ReduceAcceptLanguageThrottle(
-    ReduceAcceptLanguageControllerDelegate& accept_language_delegate)
-    : accept_language_delegate_(accept_language_delegate) {
+    ReduceAcceptLanguageControllerDelegate& accept_language_delegate,
+    OriginTrialsControllerDelegate* origin_trials_delegate,
+    int frame_tree_node_id)
+    : accept_language_delegate_(accept_language_delegate),
+      origin_trials_delegate_(origin_trials_delegate),
+      frame_tree_node_id_(frame_tree_node_id) {
   DCHECK(
-      base::FeatureList::IsEnabled(network::features::kReduceAcceptLanguage) ||
-      base::FeatureList::IsEnabled(
-          network::features::kReduceAcceptLanguageOriginTrial));
+      base::FeatureList::IsEnabled(network::features::kReduceAcceptLanguage));
   LogAcceptLanguageStatus(AcceptLanguageNegotiationRestart::kNavigationStarted);
 }
 
@@ -125,13 +128,11 @@ void ReduceAcceptLanguageThrottle::MaybeRestartWithLanguageNegotiation(
   }
 
   ReduceAcceptLanguageUtils reduce_language_utils(*accept_language_delegate_);
-  // Skip if kReduceAcceptLanguage feature is disabled and response header has
-  // no valid origin trial token.
-  const bool is_origin_trial_enabled =
-      ReduceAcceptLanguageUtils::IsReduceAcceptLanguageEnabledForOrigin(
-          url::Origin::Create(last_request_url_), response_head.headers.get());
-  if (!base::FeatureList::IsEnabled(network::features::kReduceAcceptLanguage) &&
-      !is_origin_trial_enabled) {
+  FrameTreeNode* frame_tree_node =
+      FrameTreeNode::GloballyFindByID(frame_tree_node_id_);
+  // Skip if origin opted-in ReduceAcceptLanguage deprecation origin trial.
+  if (ReduceAcceptLanguageUtils::CheckDisableReduceAcceptLanguageOriginTrial(
+          last_request_url_, frame_tree_node, origin_trials_delegate_)) {
     return;
   }
 
@@ -142,7 +143,7 @@ void ReduceAcceptLanguageThrottle::MaybeRestartWithLanguageNegotiation(
   bool need_restart =
       reduce_language_utils.ReadAndPersistAcceptLanguageForNavigation(
           last_request_origin, initial_request_headers_,
-          response_head.parsed_headers, is_origin_trial_enabled);
+          response_head.parsed_headers);
 
   // Only restart if the initial accept language doesn't match content language.
   if (need_restart) {

@@ -1256,6 +1256,14 @@
       base_feature: "none",
     },
     {
+      name: "DisableReduceAcceptLanguage",
+      origin_trial_feature_name: "DisableReduceAcceptLanguage",
+      origin_trial_type: "deprecation",
+      origin_trial_allows_insecure: true,
+      origin_trial_allows_third_party: true,
+      base_feature: "none",
+    },
+    {
       name: "DisableSelectAllForEmptyText",
       status: "stable",
     },
