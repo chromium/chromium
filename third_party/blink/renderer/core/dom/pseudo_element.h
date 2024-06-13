@@ -111,6 +111,9 @@ CORE_EXPORT const QualifiedName& PseudoElementTagName(PseudoId);
 bool PseudoElementLayoutObjectIsNeeded(PseudoId pseudo_id,
                                        const ComputedStyle* pseudo_style,
                                        const Element* originating_element);
+bool PseudoElementLayoutObjectIsNeeded(PseudoId pseudo_id,
+                                       const DisplayStyle& pseudo_style,
+                                       const Element* originating_element);
 
 template <>
 struct DowncastTraits<PseudoElement> {

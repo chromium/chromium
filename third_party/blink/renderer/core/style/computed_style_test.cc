@@ -2124,12 +2124,16 @@ TEST_F(ComputedStyleTest, DynamicRangeLimitMixAllThree) {
 TEST_F(ComputedStyleTest, UseCountInsideListMarkerPositionQuirk) {
   Document& document = GetDocument();
   document.body()->setInnerHTML(R"HTML(
+    <style>.marker-content-none::marker { content: none }</style>
     <ul><li></li></ul>
-    <ol><li></li</ol>
+    <ol><li></li></ol>
     <ul><div><li></li></ul>
     <ol><li><li></li></li></ol>
     <div style="display: list-item"></div>
     <li style="list-style-position: inside"></li>
+    <li style="list-style: none"></li>
+    <li class="marker-content-none"></li>
+    <li style="display: flex"></li>
   )HTML");
   document.View()->UpdateAllLifecyclePhasesForTest();
   EXPECT_FALSE(

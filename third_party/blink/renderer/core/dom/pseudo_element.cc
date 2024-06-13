@@ -73,10 +73,6 @@ PseudoId ResolvePseudoIdAlias(PseudoId pseudo_id) {
 
 }  // namespace
 
-bool PseudoElementLayoutObjectIsNeeded(PseudoId pseudo_id,
-                                       const DisplayStyle& pseudo_style,
-                                       const Element* originating_element);
-
 PseudoElement* PseudoElement::Create(Element* parent,
                                      PseudoId pseudo_id,
                                      const AtomicString& view_transition_name) {

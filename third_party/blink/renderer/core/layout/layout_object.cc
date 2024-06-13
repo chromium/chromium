@@ -347,7 +347,8 @@ LayoutObject* LayoutObject::CreateObject(Element* element,
     return image;
   } else if (element->GetPseudoId() == kPseudoIdMarker) {
     const Element* parent = element->parentElement();
-    if (parent->GetComputedStyle()->MarkerShouldBeInside(*parent)) {
+    if (parent->GetComputedStyle()->MarkerShouldBeInside(
+            *parent, style.GetDisplayStyle())) {
       return MakeGarbageCollected<LayoutInsideListMarker>(element);
     }
     return MakeGarbageCollected<LayoutOutsideListMarker>(element);

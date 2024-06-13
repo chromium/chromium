@@ -2741,7 +2741,9 @@ const AtomicString& ComputedStyle::ListStyleStringValue() const {
   return ListStyleType()->GetStringValue();
 }
 
-bool ComputedStyle::MarkerShouldBeInside(const Element& parent) const {
+bool ComputedStyle::MarkerShouldBeInside(
+    const Element& parent,
+    const DisplayStyle& marker_style) const {
   // https://w3c.github.io/csswg-drafts/css-lists/#list-style-position-outside
   // > If the list item is an inline box: this value is equivalent to inside.
   if (Display() == EDisplay::kInlineListItem ||
@@ -2754,7 +2756,9 @@ bool ComputedStyle::MarkerShouldBeInside(const Element& parent) const {
   // the behavior of the Internet Explorer from that time. However, Microsoft
   // ended up removing it (before switching to Blink), and Firefox never had it,
   // so it may be possible to get rid of it.
-  if (IsA<HTMLLIElement>(parent) && !IsInsideListElement()) {
+  if (IsA<HTMLLIElement>(parent) && !IsInsideListElement() &&
+      PseudoElementLayoutObjectIsNeeded(kPseudoIdMarker, marker_style,
+                                        &parent)) {
     parent.GetDocument().CountUse(WebFeature::kInsideListMarkerPositionQuirk);
     return true;
   }

@@ -411,7 +411,8 @@ static void AdjustStyleForMarker(ComputedStyleBuilder& builder,
     return;
   }
 
-  if (parent_style.MarkerShouldBeInside(parent_element)) {
+  if (parent_style.MarkerShouldBeInside(parent_element,
+                                        builder.GetDisplayStyle())) {
     Document& document = parent_element.GetDocument();
     auto margins =
         ListMarker::InlineMarginsForInside(document, builder, parent_style);
