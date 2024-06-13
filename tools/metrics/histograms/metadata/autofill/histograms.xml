@@ -4080,7 +4080,7 @@ chromium-metrics-reviews@google.com.
   <token key="FormType" variants="Autofill.Ablation.FormType"/>
 </histogram>
 
-<histogram name="Autofill.PreFilledFields.ByFieldType"
+<histogram name="Autofill.PreFilledFieldStatus.ByFieldType"
     enum="AutofillPreFilledFieldStatusByFieldType" expires_after="2024-10-20">
   <owner>bwolfgang@google.com</owner>
   <owner>chrome-autofill-alerts@google.com</owner>
@@ -4090,7 +4090,7 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="Autofill.PreFilledFields.{FormType}"
+<histogram name="Autofill.PreFilledFieldStatus.{FormType}"
     enum="AutofillPreFilledFieldStatus" expires_after="2024-10-20">
   <owner>bwolfgang@google.com</owner>
   <owner>chrome-autofill-alerts@google.com</owner>
