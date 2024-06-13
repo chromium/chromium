@@ -4,16 +4,21 @@
 
 #include "third_party/blink/renderer/modules/ai/ai.h"
 
+#include "base/functional/bind.h"
+#include "base/functional/callback_forward.h"
 #include "base/metrics/histogram_functions.h"
 #include "third_party/blink/public/mojom/ai/ai_manager.mojom-blink-forward.h"
 #include "third_party/blink/public/mojom/ai/ai_manager.mojom-blink.h"
+#include "third_party/blink/public/mojom/devtools/console_message.mojom-blink-forward.h"
 #include "third_party/blink/public/mojom/frame/frame.mojom-blink.h"
+#include "third_party/blink/public/web/web_console_message.h"
 #include "third_party/blink/renderer/bindings/core/v8/script_promise.h"
 #include "third_party/blink/renderer/bindings/core/v8/script_promise_resolver.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_ai_model_availability.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_ai_text_session_options.h"
 #include "third_party/blink/renderer/core/dom/dom_exception.h"
 #include "third_party/blink/renderer/core/execution_context/execution_context.h"
+#include "third_party/blink/renderer/core/frame/local_dom_window.h"
 #include "third_party/blink/renderer/modules/ai/ai_metrics.h"
 #include "third_party/blink/renderer/modules/ai/ai_text_session.h"
 #include "third_party/blink/renderer/modules/ai/exception_helpers.h"
@@ -26,6 +31,8 @@
 
 namespace blink {
 
+namespace {
+
 V8AIModelAvailability AvailabilityToV8(AI::ModelAvailability availability) {
   switch (availability) {
     case AI::ModelAvailability::kReadily:
@@ -36,6 +43,16 @@ V8AIModelAvailability AvailabilityToV8(AI::ModelAvailability availability) {
       return V8AIModelAvailability(V8AIModelAvailability::Enum::kNo);
   }
 }
+
+void ResolveAvailability(ScriptPromiseResolver<V8AIModelAvailability>* resolver,
+                         AI::ModelAvailability availability) {
+  base::UmaHistogramEnumeration(AIMetrics::GetAIModelAvailabilityMetricName(
+                                    AIMetrics::AISessionType::kText),
+                                availability);
+  resolver->Resolve(AvailabilityToV8(availability));
+}
+
+}  // namespace
 
 AI::AI(ExecutionContext* context)
     : ExecutionContextClient(context),
@@ -56,14 +73,6 @@ HeapMojoRemote<mojom::blink::AIManager>& AI::GetAIRemote() {
     }
   }
   return ai_remote_;
-}
-
-void ResolveAvailability(ScriptPromiseResolver<V8AIModelAvailability>* resolver,
-                         AI::ModelAvailability availability) {
-  base::UmaHistogramEnumeration(AIMetrics::GetAIModelAvailabilityMetricName(
-                                    AIMetrics::AISessionType::kText),
-                                availability);
-  resolver->Resolve(AvailabilityToV8(availability));
 }
 
 ScriptPromise<V8AIModelAvailability> AI::canCreateTextSession(
@@ -89,15 +98,25 @@ ScriptPromise<V8AIModelAvailability> AI::canCreateTextSession(
   }
 
   GetAIRemote()->CanCreateTextSession(WTF::BindOnce(
-      [](ScriptPromiseResolver<V8AIModelAvailability>* resolver,
-         bool can_create) {
-        if (can_create) {
+      [](ScriptPromiseResolver<V8AIModelAvailability>* resolver, AI* ai,
+         mojom::blink::ModelAvailabilityCheckResult result) {
+        if (result == mojom::blink::ModelAvailabilityCheckResult::kReadily) {
           ResolveAvailability(resolver, ModelAvailability::kReadily);
+        } else if (result ==
+                   mojom::blink::ModelAvailabilityCheckResult::kAfterDownload) {
+          // TODO(crbug.com/345357441): Implement the kAfterDownload event.
+          ResolveAvailability(resolver, ModelAvailability::kAfterDownload);
         } else {
+          // If the text session cannot be created, logs the error message to
+          // the console.
+          ai->GetExecutionContext()->AddConsoleMessage(
+              mojom::blink::ConsoleMessageSource::kJavaScript,
+              mojom::blink::ConsoleMessageLevel::kWarning,
+              ConvertModelAvailabilityCheckResultToDebugString(result));
           ResolveAvailability(resolver, ModelAvailability::kNo);
         }
       },
-      WrapPersistent(resolver)));
+      WrapPersistent(resolver), WrapWeakPersistent(this)));
 
   return promise;
 }

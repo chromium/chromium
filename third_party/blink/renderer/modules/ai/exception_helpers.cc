@@ -5,6 +5,8 @@
 #include "third_party/blink/renderer/modules/ai/exception_helpers.h"
 
 #include "base/debug/dump_without_crashing.h"
+#include "base/notreached.h"
+#include "third_party/blink/public/mojom/ai/ai_manager.mojom-shared.h"
 #include "third_party/blink/public/mojom/ai/ai_text_session.mojom-shared.h"
 #include "third_party/blink/renderer/core/dom/dom_exception.h"
 #include "third_party/blink/renderer/platform/bindings/exception_code.h"
@@ -104,8 +106,58 @@ DOMException* ConvertModelStreamingResponseErrorToDOMException(
     case ModelStreamingResponseStatus::kOngoing:
     case ModelStreamingResponseStatus::kComplete:
       NOTREACHED_IN_MIGRATION();
-      return nullptr;
   }
+  NOTREACHED_NORETURN();
 }
+
+// LINT.IfChange(ConvertModelAvailabilityCheckResultToDebugString)
+WTF::String ConvertModelAvailabilityCheckResultToDebugString(
+    mojom::blink::ModelAvailabilityCheckResult result) {
+  switch (result) {
+    case mojom::blink::ModelAvailabilityCheckResult::kNoServiceNotRunning:
+      return "Unable to create a text session because the service is not "
+             "running.";
+    case mojom::blink::ModelAvailabilityCheckResult::kNoUnknown:
+      return "The service is unable to create new session.";
+    case mojom::blink::ModelAvailabilityCheckResult::kNoFeatureNotEnabled:
+      return "The feature flag gating model execution was disabled.";
+    case mojom::blink::ModelAvailabilityCheckResult::kNoModelNotAvailable:
+      return "There was no model available.";
+    case mojom::blink::ModelAvailabilityCheckResult::
+        kNoConfigNotAvailableForFeature:
+      return "The model was available but there was not an execution config "
+             "available for the feature.";
+    case mojom::blink::ModelAvailabilityCheckResult::kNoGpuBlocked:
+      return "The GPU is blocked.";
+    case mojom::blink::ModelAvailabilityCheckResult::kNoTooManyRecentCrashes:
+      return "The model process crashed too many times for this version.";
+    case mojom::blink::ModelAvailabilityCheckResult::kNoTooManyRecentTimeouts:
+      return "The model took too long too many times for this version.";
+    case mojom::blink::ModelAvailabilityCheckResult::kNoSafetyModelNotAvailable:
+      return "The safety model was required but not available.";
+    case mojom::blink::ModelAvailabilityCheckResult::
+        kNoSafetyConfigNotAvailableForFeature:
+      return "The safety model was available but there was not a safety config "
+             "available for the feature.";
+    case mojom::blink::ModelAvailabilityCheckResult::
+        kNoLanguageDetectionModelNotAvailable:
+      return "The language detection model was required but not available.";
+    case mojom::blink::ModelAvailabilityCheckResult::
+        kNoFeatureExecutionNotEnabled:
+      return "Model execution for this feature was not enabled.";
+    case mojom::blink::ModelAvailabilityCheckResult::
+        kNoModelAdaptationNotAvailable:
+      return "Model adaptation was required but not available.";
+    case mojom::blink::ModelAvailabilityCheckResult::kNoValidationPending:
+      return "Model validation is still pending.";
+    case mojom::blink::ModelAvailabilityCheckResult::kNoValidationFailed:
+      return "Model validation failed.";
+    case mojom::blink::ModelAvailabilityCheckResult::kReadily:
+    case mojom::blink::ModelAvailabilityCheckResult::kAfterDownload:
+      NOTREACHED_IN_MIGRATION();
+  }
+  NOTREACHED_NORETURN();
+}
+// LINT.ThenChange(//third_party/blink/public/mojom/ai.mojom:ModelAvailabilityCheckResult)
 
 }  // namespace blink

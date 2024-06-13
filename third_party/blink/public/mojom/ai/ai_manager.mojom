@@ -6,6 +6,61 @@ module blink.mojom;
 
 import "third_party/blink/public/mojom/ai/ai_text_session.mojom";
 
+// LINT.IfChange(ModelAvailabilityCheckResult)
+enum ModelAvailabilityCheckResult {
+  // The model is readily available and the text session can be created.
+  kReadily = 0,
+  // The model is not available but the test session can be created after
+  // downloading the model
+  kAfterDownload = 1,
+  // The model cannot be created because the service is not running.
+  kNoServiceNotRunning = 2,
+
+  // The following reasons are from
+  // `optimization_guide::OnDeviceModelEligibilityReason`.
+
+  // The model is not available because of unknown reason.
+  kNoUnknown = 3,
+  // The model is not available because the feature flag gating on-device model
+  // execution was disabled.
+  kNoFeatureNotEnabled = 4,
+  // The model is not available because there was no on-device model available.
+  kNoModelNotAvailable = 5,
+  // The model is not available because the on-device model was available but
+  // there was not an execution config available for the feature.
+  kNoConfigNotAvailableForFeature = 6,
+  // The model is not available because the GPU is blocked.
+  kNoGpuBlocked = 7,
+  // The model is not available because the on-device model process crashed too
+  // many times for this version.
+  kNoTooManyRecentCrashes = 8,
+  // The model is not available because the on-device model took too long too
+  // many times for this version.
+  kNoTooManyRecentTimeouts = 9,
+  // The model is not available because the on-device safety model was required
+  // but not available.
+  kNoSafetyModelNotAvailable = 10,
+  // The model is not available because the on-device safety model was
+  // available but there was not a safety config available for the feature.
+  kNoSafetyConfigNotAvailableForFeature = 11,
+  // The model is not available because the on-device language detection model
+  // was required but not available.
+  kNoLanguageDetectionModelNotAvailable = 12,
+  // The model is not available because the on-device model execution for this
+  // feature was not enabled.
+  kNoFeatureExecutionNotEnabled = 13,
+  // The model is not available because the on-device model adaptation was
+  // required but not available.
+  kNoModelAdaptationNotAvailable = 14,
+  // Validation has not completed for the model yet.
+  kNoValidationPending = 15,
+  // Validation failed for the model.
+  kNoValidationFailed = 16,
+
+  // Append new line here
+};
+// LINT.ThenChange(//third_party/blink/renderer/modules/ai/exception_helpers.cc:ConvertModelAvailabilityCheckResultToDebugString)
+
 struct AITextSessionSamplingParams {
   uint32 top_k;
   float temperature;
@@ -16,7 +71,7 @@ interface AIManager {
   // Returns if it is possible to create a text session. For example, when
   // the service in charge of model loading and session creation is not
   // available, this should return false.
-  CanCreateTextSession() => (bool can_create);
+  CanCreateTextSession() => (ModelAvailabilityCheckResult result);
   // Creates a new session and returns if the session is created successfully.
   // Note that this could return false even if the previous
   // `CanCreateTextSession()` returns true, because some errors can only

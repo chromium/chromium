@@ -17,10 +17,12 @@
 #include "chrome/browser/profiles/profile.h"
 #include "components/optimization_guide/core/model_execution/feature_keys.h"
 #include "components/optimization_guide/core/model_util.h"
+#include "components/optimization_guide/core/optimization_guide_enums.h"
 #include "components/optimization_guide/core/optimization_guide_features.h"
 #include "components/optimization_guide/core/optimization_guide_switches.h"
 #include "content/public/browser/render_frame_host.h"
 #include "mojo/public/cpp/bindings/self_owned_receiver.h"
+#include "third_party/blink/public/mojom/ai/ai_manager.mojom-shared.h"
 #include "third_party/blink/public/mojom/ai/ai_manager.mojom.h"
 #include "third_party/blink/public/mojom/devtools/console_message.mojom-shared.h"
 
@@ -34,6 +36,60 @@ bool IsModelPathValid(const std::string& model_path_str) {
     return false;
   }
   return base::PathExists(*model_path);
+}
+
+blink::mojom::ModelAvailabilityCheckResult
+ConvertOnDeviceModelEligibilityReasonToModelAvailabilityCheckResult(
+    optimization_guide::OnDeviceModelEligibilityReason debug_reason) {
+  switch (debug_reason) {
+    case optimization_guide::OnDeviceModelEligibilityReason::kUnknown:
+      return blink::mojom::ModelAvailabilityCheckResult::kNoUnknown;
+    case optimization_guide::OnDeviceModelEligibilityReason::kFeatureNotEnabled:
+      return blink::mojom::ModelAvailabilityCheckResult::kNoFeatureNotEnabled;
+    case optimization_guide::OnDeviceModelEligibilityReason::kModelNotAvailable:
+      return blink::mojom::ModelAvailabilityCheckResult::kNoModelNotAvailable;
+    case optimization_guide::OnDeviceModelEligibilityReason::
+        kConfigNotAvailableForFeature:
+      return blink::mojom::ModelAvailabilityCheckResult::
+          kNoConfigNotAvailableForFeature;
+    case optimization_guide::OnDeviceModelEligibilityReason::kGpuBlocked:
+      return blink::mojom::ModelAvailabilityCheckResult::kNoGpuBlocked;
+    case optimization_guide::OnDeviceModelEligibilityReason::
+        kTooManyRecentCrashes:
+      return blink::mojom::ModelAvailabilityCheckResult::
+          kNoTooManyRecentCrashes;
+    case optimization_guide::OnDeviceModelEligibilityReason::
+        kTooManyRecentTimeouts:
+      return blink::mojom::ModelAvailabilityCheckResult::
+          kNoTooManyRecentTimeouts;
+    case optimization_guide::OnDeviceModelEligibilityReason::
+        kSafetyModelNotAvailable:
+      return blink::mojom::ModelAvailabilityCheckResult::
+          kNoSafetyModelNotAvailable;
+    case optimization_guide::OnDeviceModelEligibilityReason::
+        kSafetyConfigNotAvailableForFeature:
+      return blink::mojom::ModelAvailabilityCheckResult::
+          kNoSafetyConfigNotAvailableForFeature;
+    case optimization_guide::OnDeviceModelEligibilityReason::
+        kLanguageDetectionModelNotAvailable:
+      return blink::mojom::ModelAvailabilityCheckResult::
+          kNoLanguageDetectionModelNotAvailable;
+    case optimization_guide::OnDeviceModelEligibilityReason::
+        kFeatureExecutionNotEnabled:
+      return blink::mojom::ModelAvailabilityCheckResult::
+          kNoFeatureExecutionNotEnabled;
+    case optimization_guide::OnDeviceModelEligibilityReason::
+        kModelAdaptationNotAvailable:
+      return blink::mojom::ModelAvailabilityCheckResult::
+          kNoModelAdaptationNotAvailable;
+    case optimization_guide::OnDeviceModelEligibilityReason::kValidationPending:
+      return blink::mojom::ModelAvailabilityCheckResult::kNoValidationPending;
+    case optimization_guide::OnDeviceModelEligibilityReason::kValidationFailed:
+      return blink::mojom::ModelAvailabilityCheckResult::kNoValidationFailed;
+    case optimization_guide::OnDeviceModelEligibilityReason::kSuccess:
+      NOTREACHED_IN_MIGRATION();
+  }
+  NOTREACHED_NORETURN();
 }
 
 }  // namespace
@@ -117,8 +173,7 @@ void AIManagerImpl::CreateTextSession(
     std::move(callback).Run(/*success=*/false);
     return;
   }
-  // The new `AITextSession` shares the same lifetime with the
-  // `receiver`.
+  // The new `AITextSession` shares the same lifetime with the `receiver`.
   mojo::MakeSelfOwnedReceiver(
       std::make_unique<AITextSession>(std::move(session)), std::move(receiver));
   std::move(callback).Run(/*success=*/true);
@@ -131,53 +186,6 @@ void AIManagerImpl::GetDefaultTextSessionSamplingParams(
       optimization_guide::features::GetOnDeviceModelDefaultTemperature()));
 }
 
-std::string ConvertOnDeviceModelEligibilityReasonToString(
-    optimization_guide::OnDeviceModelEligibilityReason debug_reason) {
-  switch (debug_reason) {
-    case optimization_guide::OnDeviceModelEligibilityReason::kUnknown:
-      return "The service is unable to create new session.";
-    case optimization_guide::OnDeviceModelEligibilityReason::kFeatureNotEnabled:
-      return "The feature flag gating model execution was disabled.";
-    case optimization_guide::OnDeviceModelEligibilityReason::kModelNotAvailable:
-      return "There was no model available.";
-    case optimization_guide::OnDeviceModelEligibilityReason::
-        kConfigNotAvailableForFeature:
-      return "The model was available but there was not an execution config "
-             "available for the feature.";
-    case optimization_guide::OnDeviceModelEligibilityReason::kGpuBlocked:
-      return "The GPU is blocked.";
-    case optimization_guide::OnDeviceModelEligibilityReason::
-        kTooManyRecentCrashes:
-      return "The model process crashed too many times for this version.";
-    case optimization_guide::OnDeviceModelEligibilityReason::
-        kTooManyRecentTimeouts:
-      return "The model took too long too many times for this version.";
-    case optimization_guide::OnDeviceModelEligibilityReason::
-        kSafetyModelNotAvailable:
-      return "The safety model was required but not available.";
-    case optimization_guide::OnDeviceModelEligibilityReason::
-        kSafetyConfigNotAvailableForFeature:
-      return "The safety model was available but there was not a safety config "
-             "available for the feature.";
-    case optimization_guide::OnDeviceModelEligibilityReason::
-        kLanguageDetectionModelNotAvailable:
-      return "The language detection model was required but not available.";
-    case optimization_guide::OnDeviceModelEligibilityReason::
-        kFeatureExecutionNotEnabled:
-      return "Model execution for this feature was not enabled.";
-    case optimization_guide::OnDeviceModelEligibilityReason::
-        kModelAdaptationNotAvailable:
-      return "Model adaptation was required but not available.";
-    case optimization_guide::OnDeviceModelEligibilityReason::kValidationPending:
-      return "Model validation is still pending.";
-    case optimization_guide::OnDeviceModelEligibilityReason::kValidationFailed:
-      return "Model validation failed.";
-    case optimization_guide::OnDeviceModelEligibilityReason::kSuccess:
-      NOTREACHED_IN_MIGRATION();
-  }
-  return "";
-}
-
 void AIManagerImpl::CanOptimizationGuideKeyedServiceCreateGenericSession(
     CanCreateTextSessionCallback callback) {
   content::BrowserContext* browser_context = browser_context_.get();
@@ -188,10 +196,9 @@ void AIManagerImpl::CanOptimizationGuideKeyedServiceCreateGenericSession(
 
   // If the `OptimizationGuideKeyedService` cannot be retrieved, return false.
   if (!service) {
-    render_frame_host().AddMessageToConsole(
-        blink::mojom::ConsoleMessageLevel::kWarning,
-        "Unable to create a text session because the service is not running.");
-    std::move(callback).Run(/*can_create=*/false);
+    std::move(callback).Run(
+        /*result=*/blink::mojom::ModelAvailabilityCheckResult::
+            kNoServiceNotRunning);
     return;
   }
 
@@ -201,23 +208,24 @@ void AIManagerImpl::CanOptimizationGuideKeyedServiceCreateGenericSession(
   if (!service->CanCreateOnDeviceSession(
           optimization_guide::ModelBasedCapabilityKey::kPromptApi,
           &debug_reason)) {
-    render_frame_host().AddMessageToConsole(
-        blink::mojom::ConsoleMessageLevel::kWarning,
-        ConvertOnDeviceModelEligibilityReasonToString(debug_reason));
-    std::move(callback).Run(/*can_create=*/false);
+    std::move(callback).Run(
+        /*result=*/
+        ConvertOnDeviceModelEligibilityReasonToModelAvailabilityCheckResult(
+            debug_reason));
     return;
   }
 
-  std::move(callback).Run(/*can_create=*/true);
+  std::move(callback).Run(
+      /*result=*/blink::mojom::ModelAvailabilityCheckResult::kReadily);
 }
 
 void AIManagerImpl::OnModelPathValidationComplete(const std::string& model_path,
                                                   bool is_valid_path) {
+  // TODO(crbug.com/346491542): Remove this when the error page is implemented.
   if (!is_valid_path) {
-    render_frame_host().AddMessageToConsole(
-        blink::mojom::ConsoleMessageLevel::kWarning,
-        base::StringPrintf("Unable to create a text session because the model "
-                           "path ('%s') is invalid.",
-                           model_path.c_str()));
+    VLOG(1) << base::StringPrintf(
+        "Unable to create a text session because the model path ('%s') is "
+        "invalid.",
+        model_path.c_str());
   }
 }

@@ -7,6 +7,7 @@
 #include "content/browser/ai/mock_ai_text_session.h"
 #include "content/public/browser/render_frame_host.h"
 #include "mojo/public/cpp/bindings/self_owned_receiver.h"
+#include "third_party/blink/public/mojom/ai/ai_manager.mojom-shared.h"
 #include "third_party/blink/public/mojom/ai/ai_manager.mojom.h"
 
 namespace content {
@@ -29,7 +30,8 @@ void MockAIManagerImpl::Create(
 
 void MockAIManagerImpl::CanCreateTextSession(
     CanCreateTextSessionCallback callback) {
-  std::move(callback).Run(/*can_create=*/true);
+  std::move(callback).Run(
+      /*result=*/blink::mojom::ModelAvailabilityCheckResult::kReadily);
 }
 
 void MockAIManagerImpl::CreateTextSession(

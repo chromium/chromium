@@ -10,6 +10,7 @@
 #include "chrome/test/base/chrome_render_view_host_test_harness.h"
 #include "components/optimization_guide/core/optimization_guide_switches.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/blink/public/mojom/ai/ai_manager.mojom-shared.h"
 #include "third_party/blink/public/mojom/ai/ai_manager.mojom.h"
 
 using ::testing::AtMost;
@@ -46,8 +47,12 @@ TEST_F(AIManagerImplTest, NoUAFWithInvalidOnDeviceModelPath) {
       callback;
   EXPECT_CALL(callback, Run(testing::_))
       .Times(AtMost(1))
-      .WillOnce(
-          testing::Invoke([&](bool can_create) { EXPECT_FALSE(can_create); }));
+      .WillOnce(testing::Invoke([&](blink::mojom::ModelAvailabilityCheckResult
+                                        result) {
+        EXPECT_EQ(
+            result,
+            blink::mojom::ModelAvailabilityCheckResult::kNoFeatureNotEnabled);
+      }));
 
   AIManagerImpl* ai_manager =
       AIManagerImpl::GetOrCreateForCurrentDocument(main_rfh());
