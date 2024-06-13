@@ -77,7 +77,7 @@ chrome::mojom::ResumeBlockedRequestsTrigger AggregateMultipleTriggers(
 
 BASE_FEATURE(kMultipleBoundSessionsEnabled,
              "MultipleBoundSessionsEnabled",
-             base::FEATURE_DISABLED_BY_DEFAULT);
+             base::FEATURE_ENABLED_BY_DEFAULT);
 
 BoundSessionCookieRefreshServiceImpl::BoundSessionCookieRefreshServiceImpl(
     unexportable_keys::UnexportableKeyService& key_service,

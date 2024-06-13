@@ -800,7 +800,12 @@ TEST_F(BoundSessionCookieRefreshServiceImplTest, RegisterNewBoundSession) {
   VerifyBoundSession(params);
 }
 
+// This test is specific to `kMultipleBoundSessionsEnabled` being disabled.
+// BoundSessionCookieRefreshServiceImplMultiSessionTest.RegisterBoundSessionSameSessionKey
+// tests a similar scenario with `kMultipleBoundSessionsEnabled` enabled.
 TEST_F(BoundSessionCookieRefreshServiceImplTest, OverrideExistingBoundSession) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndDisableFeature(kMultipleBoundSessionsEnabled);
   BoundSessionCookieRefreshServiceImpl* service = GetCookieRefreshServiceImpl();
   service->RegisterNewBoundSession(CreateTestBoundSessionParams());
 
@@ -982,13 +987,17 @@ TEST_F(BoundSessionCookieRefreshServiceImplTest,
   EXPECT_FALSE(registration_fetcher());
 }
 
+// This test is specific to `kMultipleBoundSessionsEnabled` being disabled.
+// BoundSessionCookieRefreshServiceImplMultiSessionTest.CreateRegistrationRequest
+// tests a similar scenario with `kMultipleBoundSessionsEnabled` enabled.
 TEST_F(BoundSessionCookieRefreshServiceImplTest,
        CreateRegistrationRequestMultipleRequests) {
   // Turn path restrictions off to test with two different paths.
   base::test::ScopedFeatureList scoped_feature_list;
-  scoped_feature_list.InitAndEnableFeatureWithParameters(
-      switches::kEnableBoundSessionCredentials,
-      {{"exclusive-registration-path", ""}});
+  scoped_feature_list.InitWithFeaturesAndParameters(
+      {{switches::kEnableBoundSessionCredentials,
+        {{"exclusive-registration-path", ""}}}},
+      {kMultipleBoundSessionsEnabled});
 
   BoundSessionCookieRefreshServiceImpl* service = GetCookieRefreshServiceImpl();
   const std::string kFirstPath = "/First";
