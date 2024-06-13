@@ -1967,6 +1967,11 @@ void AddPrivacyStrings(content::WebUIDataSource* html_source,
                          chrome::kChromeRootStoreSettingsHelpCenterURL);
 #endif  // BUILDFLAG(CHROME_ROOT_STORE_SUPPORTED)
 
+#if BUILDFLAG(CHROME_ROOT_STORE_CERT_MANAGEMENT_UI)
+  html_source->AddString("certManagementV2URL",
+                         chrome::kChromeUICertificateManagerDialogURL);
+#endif  // BUILDFLAG(CHROME_ROOT_STORE_CERT_MANAGEMENT_UI)
+
   // The link to the Advanced Protection Program landing page, with a referrer
   // from Chrome settings.
   GURL advanced_protection_url(
@@ -3373,26 +3378,6 @@ void AddSiteSettingsStrings(content::WebUIDataSource* html_source,
   html_source->AddString("addSiteExceptionPlaceholder", "[*.]example.com");
 }
 
-#if BUILDFLAG(CHROME_ROOT_STORE_CERT_MANAGEMENT_UI)
-void AddCertificateManagerV2Strings(content::WebUIDataSource* html_source) {
-  static constexpr webui::LocalizedString kLocalizedStrings[] = {
-      {"certificateManagerV2ClientCerts",
-       IDS_SETTINGS_CERTIFICATE_MANAGER_V2_CLIENT_CERTIFICATES},
-      {"certificateManagerV2LocalCerts",
-       IDS_SETTINGS_CERTIFICATE_MANAGER_V2_LOCAL_CERTIFICATES},
-      {"certificateManagerV2CRSCerts",
-       IDS_SETTINGS_CERTIFICATE_MANAGER_V2_CRS_CERTIFICATES},
-      {"certificateManagerV2HashCopiedToast",
-       IDS_SETTINGS_CERTIFICATE_MANAGER_V2_HASH_COPIED_TOAST},
-      {"certificateManagerV2PolicyCertsSingular",
-       IDS_SETTINGS_CERTIFICATE_MANAGER_V2_ADMIN_CERTS_SINGULAR},
-      {"certificateManagerV2PolicyCertsPlural",
-       IDS_SETTINGS_CERTIFICATE_MANAGER_V2_ADMIN_CERTS_PLURAL},
-  };
-  html_source->AddLocalizedStrings(kLocalizedStrings);
-}
-#endif  // BUILDFLAG(CHROME_ROOT_STORE_CERT_MANAGEMENT_UI)
-
 void AddStorageAccessStrings(content::WebUIDataSource* html_source) {
   static constexpr webui::LocalizedString kLocalizedStrings[] = {
       {"siteSettingsStorageAccess", IDS_SITE_SETTINGS_TYPE_STORAGE_ACCESS},
@@ -3696,9 +3681,6 @@ void AddLocalizedStrings(content::WebUIDataSource* html_source,
 #if BUILDFLAG(USE_NSS_CERTS)
   certificate_manager::AddLocalizedStrings(html_source);
 #endif
-#if BUILDFLAG(CHROME_ROOT_STORE_CERT_MANAGEMENT_UI)
-  AddCertificateManagerV2Strings(html_source);
-#endif  // BUILDFLAG(CHROME_ROOT_STORE_CERT_MANAGEMENT_UI)
 
   policy_indicator::AddLocalizedStrings(html_source);
   AddSecurityKeysStrings(html_source);

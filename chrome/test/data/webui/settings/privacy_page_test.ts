@@ -108,19 +108,16 @@ suite('PrivacyPage', function() {
     Router.getInstance().navigateTo(routes.BASIC);
   });
 
-  // New certificate manager should be shown since kEnableCertManagementUIV2
+  // <if expr="use_nss_certs">
+  // Old certificate manager should not be shown since kEnableCertManagementUIV2
   // feature flag is enabled in SettingsSecurityPageTest constructor.
-  // TODO(crbug.com/40928765): remove this comment once the feature flag is
-  // set to default enabled.
+  // TODO(crbug.com/40928765): remove this test once feature is rolled out
   test('certificate_manager_visibility', function() {
     Router.getInstance().navigateTo(routes.CERTIFICATES);
-    const certManager = page.shadowRoot!.querySelector('certificate-manager')!;
+    const certManager = page.shadowRoot!.querySelector('certificate-manager');
     assertFalse(!!certManager, 'found unexpected <certificate-manager> tag');
-    const certManagerV2 =
-        page.shadowRoot!.querySelector('certificate-manager-v2')!;
-    assertTrue(
-        !!certManagerV2, 'did not find expected <certificate-manager-v2> tag');
   });
+  // </if>
 
   test('showClearBrowsingDataDialog', function() {
     assertFalse(!!page.shadowRoot!.querySelector(
@@ -343,7 +340,9 @@ suite(`PrivacySandbox`, function() {
   });
 });
 
+// <if expr="use_nss_certs">
 // Test with Certificate Management V2 flag off.
+// TODO(crbug.com/40928765): remove this suite once feature is rolled out
 suite(`CertificateManagementV2`, function() {
   let page: SettingsPrivacyPageElement;
   let settingsPrefs: SettingsPrefsElement;
@@ -375,22 +374,13 @@ suite(`CertificateManagementV2`, function() {
 
   test('certificate_manager_visibility', function() {
     Router.getInstance().navigateTo(routes.CERTIFICATES);
-    // Old certificate manager only shown on platforms using NSS.
+    // Old certificate manager shown on platforms using NSS.
     const certManager = page.shadowRoot!.querySelector('certificate-manager');
-    // <if expr="use_nss_certs">
     assertTrue(
         !!certManager, 'did not find expected <certificate-manager> tag');
-    // </if>
-    // <if expr="not use_nss_certs">
-    assertFalse(!!certManager, 'found unexpected <certificate-manager> tag');
-    // </if>
-    // New certificate manager not shown anywhere with the load time flag off.
-    const certManagerV2 =
-        page.shadowRoot!.querySelector('certificate-manager-v2')!;
-    assertFalse(
-        !!certManagerV2, 'found unexpected <certificate-manager-v2> tag');
   });
 });
+// </if>
 
 suite('WebPrintingNotShown', function () {
   test('navigateToWebPrinting', function () {

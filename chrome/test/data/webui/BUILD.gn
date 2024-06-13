@@ -94,6 +94,10 @@ source_set("browser_tests") {
         [ "certificate_viewer_dialog/certificate_viewer_dialog_browsertest.cc" ]
   }
 
+  if (chrome_root_store_cert_management_ui) {
+    sources += [ "certificate_manager/certificate_manager_browsertest.cc" ]
+  }
+
   if (is_chromeos_ash) {
     sources += [
       "chromeos/ash_common/ash_common_browsertest.cc",
@@ -475,6 +479,11 @@ generate_grd("build_grd") {
   if (enable_webui_certificate_viewer) {
     deps += [ "certificate_viewer_dialog:build_grdp" ]
     grdp_files += [ "$target_gen_dir/certificate_viewer_dialog/resources.grdp" ]
+  }
+
+  if (chrome_root_store_cert_management_ui) {
+    deps += [ "certificate_manager:build_grdp" ]
+    grdp_files += [ "$target_gen_dir/certificate_manager/resources.grdp" ]
   }
 
   if (enable_webui_tab_strip) {

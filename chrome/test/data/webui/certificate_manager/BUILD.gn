@@ -1,0 +1,23 @@
+# Copyright 2024 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+import("//chrome/common/features.gni")
+import("../build_webui_tests.gni")
+
+assert(!is_android && !is_ios)
+assert(chrome_root_store_cert_management_ui)
+
+build_webui_tests("build") {
+  files = [ "certificate_manager_test.ts" ]
+
+  ts_definitions = [
+    "//tools/typescript/definitions/chrome_event.d.ts",
+    "//tools/typescript/definitions/settings_private.d.ts",
+  ]
+
+  ts_deps = [
+    "//ui/webui/resources/cr_components/certificate_manager:build_ts",
+    "//ui/webui/resources/js:build_ts",
+  ]
+}

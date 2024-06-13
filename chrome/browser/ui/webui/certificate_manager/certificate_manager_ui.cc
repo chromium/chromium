@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/ui/webui/certificate_manager/certificate_manager_dialog_ui.h"
+#include "chrome/browser/ui/webui/certificate_manager/certificate_manager_ui.h"
 
 #include <memory>
 
@@ -44,10 +44,35 @@ void AddCertificateManagerStrings(content::WebUIDataSource* html_source) {
 }
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
+#if BUILDFLAG(CHROME_ROOT_STORE_CERT_MANAGEMENT_UI)
+void AddCertificateManagerV2Strings(content::WebUIDataSource* html_source) {
+  static constexpr webui::LocalizedString kLocalizedStrings[] = {
+      {"opensInNewTab", IDS_SETTINGS_OPENS_IN_NEW_TAB},
+      {"certificateManagerV2ClientCerts",
+       IDS_SETTINGS_CERTIFICATE_MANAGER_V2_CLIENT_CERTIFICATES},
+      {"certificateManagerV2LocalCerts",
+       IDS_SETTINGS_CERTIFICATE_MANAGER_V2_LOCAL_CERTIFICATES},
+      {"certificateManagerV2CRSCerts",
+       IDS_SETTINGS_CERTIFICATE_MANAGER_V2_CRS_CERTIFICATES},
+      {"certificateManagerV2HashCopiedToast",
+       IDS_SETTINGS_CERTIFICATE_MANAGER_V2_HASH_COPIED_TOAST},
+      {"certificateManagerV2PolicyCertsSingular",
+       IDS_SETTINGS_CERTIFICATE_MANAGER_V2_ADMIN_CERTS_SINGULAR},
+      {"certificateManagerV2PolicyCertsPlural",
+       IDS_SETTINGS_CERTIFICATE_MANAGER_V2_ADMIN_CERTS_PLURAL},
+  };
+  html_source->AddLocalizedStrings(kLocalizedStrings);
+}
+#endif  // BUILDFLAG(CHROME_ROOT_STORE_CERT_MANAGEMENT_UI)
+
 }  // namespace
 
-CertificateManagerDialogUI::CertificateManagerDialogUI(content::WebUI* web_ui)
-    : WebDialogUI(web_ui) {
+CertificateManagerUI::CertificateManagerUI(content::WebUI* web_ui)
+#if BUILDFLAG(IS_CHROMEOS)
+    : MojoWebDialogUI(web_ui) {
+#else
+    : MojoWebUIController(web_ui) {
+#endif
   Profile* profile = Profile::FromWebUI(web_ui);
   content::WebUIDataSource* source = content::WebUIDataSource::CreateAndAdd(
       profile, chrome::kChromeUICertificateManagerHost);
@@ -78,12 +103,38 @@ CertificateManagerDialogUI::CertificateManagerDialogUI(content::WebUI* web_ui)
 #if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX) || \
     BUILDFLAG(IS_CHROMEOS)
   if (base::FeatureList::IsEnabled(features::kEnableCertManagementUIV2)) {
-    // TODO(crbug.com/40928765): Finish serving cert manager v2 here.
-    source->UseStringsJs();
+    webui::SetJSModuleDefaults(source);
     source->AddResourcePath("", IDR_CERT_MANAGER_DIALOG_V2_HTML);
+    AddCertificateManagerV2Strings(source);
   }
 #endif  // BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX) ||
         // BUILDFLAG(IS_CHROMEOS)
 }
 
-CertificateManagerDialogUI::~CertificateManagerDialogUI() = default;
+#if BUILDFLAG(CHROME_ROOT_STORE_CERT_MANAGEMENT_UI)
+void CertificateManagerUI::BindInterface(
+    mojo::PendingReceiver<
+        certificate_manager_v2::mojom::CertificateManagerPageHandlerFactory>
+        pending_receiver) {
+  if (certificate_manager_handler_factory_receiver_.is_bound()) {
+    certificate_manager_handler_factory_receiver_.reset();
+  }
+  certificate_manager_handler_factory_receiver_.Bind(
+      std::move(pending_receiver));
+}
+
+void CertificateManagerUI::CreateCertificateManagerPageHandler(
+    mojo::PendingRemote<certificate_manager_v2::mojom::CertificateManagerPage>
+        client,
+    mojo::PendingReceiver<
+        certificate_manager_v2::mojom::CertificateManagerPageHandler> handler) {
+  certificate_manager_page_handler_ =
+      std::make_unique<CertificateManagerPageHandler>(
+          std::move(client), std::move(handler), Profile::FromWebUI(web_ui()),
+          web_ui()->GetWebContents());
+}
+#endif  // BUILDFLAG(CHROME_ROOT_STORE_CERT_MANAGEMENT_UI)
+
+CertificateManagerUI::~CertificateManagerUI() = default;
+
+WEB_UI_CONTROLLER_TYPE_IMPL(CertificateManagerUI)

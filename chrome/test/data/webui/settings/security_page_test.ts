@@ -103,12 +103,15 @@ suite('Main', function() {
   // moment and is never called from Lacros-Chrome. This should be revisited
   // when there is a solution for the client certificates settings page on
   // Lacros-Chrome.
-  test('LogManageCertificatesClick', async function() {
+  test('ManageCertificatesClick', async function() {
     page.shadowRoot!.querySelector<HTMLElement>(
                         '#manageCertificatesLinkRow')!.click();
     const result =
         await testMetricsBrowserProxy.whenCalled('recordSettingsPageHistogram');
     assertEquals(PrivacyElementInteractions.MANAGE_CERTIFICATES, result);
+
+    const url = await openWindowProxy.whenCalled('openUrl');
+    assertEquals(url, loadTimeData.getString('certManagementV2URL'));
   });
   // </if>
 

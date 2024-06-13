@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/ui/webui/settings/certificate_manager_handler.h"
+#include "chrome/browser/ui/webui/certificate_manager/certificate_manager_handler.h"
 
 #include <memory>
 #include <vector>

@@ -344,12 +344,11 @@
 
 <if expr="chrome_root_store_cert_management_ui">
     <template is="dom-if" if="[[enableCertManagementUIV2_]]">
-      <cr-link-row id="manageCertificatesLinkRow"
-          class="hr"
+      <cr-link-row id="manageCertificatesLinkRow" class="hr"
           role-description="$i18n{subpageArrowRoleDescription}"
           label="$i18n{manageCertificates}"
           sub-label="$i18n{manageCertificatesDescription}"
-          on-click="onNewManageCertificatesClick_">
+          on-click="onNewManageCertificatesClick_" external>
       </cr-link-row>
     </template>
 

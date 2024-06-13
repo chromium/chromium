@@ -7054,10 +7054,10 @@ static_library("ui") {
 
   if (chrome_root_store_cert_management_ui) {
     sources += [
-      "webui/certificate_manager/certificate_manager_dialog_ui.cc",
-      "webui/certificate_manager/certificate_manager_dialog_ui.h",
-      "webui/settings/certificate_manager_handler.cc",
-      "webui/settings/certificate_manager_handler.h",
+      "webui/certificate_manager/certificate_manager_handler.cc",
+      "webui/certificate_manager/certificate_manager_handler.h",
+      "webui/certificate_manager/certificate_manager_ui.cc",
+      "webui/certificate_manager/certificate_manager_ui.h",
     ]
 
     public_deps +=

@@ -17,6 +17,7 @@
 #include "components/safe_browsing/core/common/features.h"
 #include "content/public/common/content_features.h"
 #include "content/public/test/browser_test.h"
+#include "crypto/crypto_buildflags.h"
 #include "third_party/blink/public/common/features_generated.h"
 #include "ui/compositor/compositor_switches.h"
 
@@ -966,10 +967,12 @@ IN_PROC_BROWSER_TEST_F(SettingsPrivacyPageTest, PrivacySandbox) {
   RunTest("settings/privacy_page_test.js", "runMochaSuite('PrivacySandbox')");
 }
 
+#if BUILDFLAG(USE_NSS_CERTS)
 IN_PROC_BROWSER_TEST_F(SettingsPrivacyPageTest, CertificateManagementV2) {
   RunTest("settings/privacy_page_test.js",
           "runMochaSuite('CertificateManagementV2')");
 }
+#endif  // BUILDFLAG(USE_NSS_CERTS)
 
 IN_PROC_BROWSER_TEST_F(SettingsPrivacyPageTest, CookiesSubpage) {
   RunTest("settings/privacy_page_test.js", "runMochaSuite('CookiesSubpage')");

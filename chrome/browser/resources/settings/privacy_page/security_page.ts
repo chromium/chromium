@@ -532,11 +532,10 @@ export class SettingsSecurityPageElement extends
   }
 
   private onNewManageCertificatesClick_() {
-    // Use the same route and histogram as the old NSS-only cert management
-    // page.
-    Router.getInstance().navigateTo(routes.CERTIFICATES);
     this.metricsBrowserProxy_.recordSettingsPageHistogram(
         PrivacyElementInteractions.MANAGE_CERTIFICATES);
+    OpenWindowProxyImpl.getInstance().openUrl(
+        loadTimeData.getString('certManagementV2URL'));
   }
 
   private onChromeCertificatesClick_() {

@@ -5,7 +5,7 @@
 // These test suites test the certificate-manager v2 component.
 
 import 'chrome://resources/cr_components/certificate_manager/certificate_manager_v2.js';
-import 'chrome://settings/strings.m.js';
+import 'chrome://certificate-manager/strings.m.js';
 
 import type {CertificateEntryV2Element} from 'chrome://resources/cr_components/certificate_manager/certificate_entry_v2.js';
 import type {CertificateListV2Element} from 'chrome://resources/cr_components/certificate_manager/certificate_list_v2.js';
