@@ -31,6 +31,8 @@
 #include "content/public/browser/render_frame_host.h"
 #include "content/public/browser/weak_document_ptr.h"
 
+class HistoryEmbeddingsInteractiveTest;
+
 namespace optimization_guide {
 class OptimizationGuideModelProvider;
 }  // namespace optimization_guide
@@ -134,6 +136,7 @@ class HistoryEmbeddingsService : public KeyedService,
  private:
   friend class HistoryEmbeddingsBrowserTest;
   friend class HistoryEmbeddingsServiceTest;
+  friend class ::HistoryEmbeddingsInteractiveTest;
 
   // A utility container to wrap anything that should be accessed on
   // the separate storage worker sequence.

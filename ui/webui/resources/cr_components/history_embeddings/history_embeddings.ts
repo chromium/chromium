@@ -14,6 +14,8 @@ import './icons.html.js';
 
 import {HistoryResultType, QUERY_RESULT_MINIMUM_AGE} from '//resources/cr_components/history/constants.js';
 import type {CrActionMenuElement} from '//resources/cr_elements/cr_action_menu/cr_action_menu.js';
+import type {CrFeedbackButtonsElement} from '//resources/cr_elements/cr_feedback_buttons/cr_feedback_buttons.js';
+import {CrFeedbackOption} from '//resources/cr_elements/cr_feedback_buttons/cr_feedback_buttons.js';
 import type {CrLazyRenderElement} from '//resources/cr_elements/cr_lazy_render/cr_lazy_render.js';
 import {I18nMixin} from '//resources/cr_elements/i18n_mixin.js';
 import {assert} from '//resources/js/assert.js';
@@ -25,6 +27,7 @@ import type {DomRepeatEvent} from '//resources/polymer/v3_0/polymer/polymer_bund
 import {HistoryEmbeddingsBrowserProxyImpl} from './browser_proxy.js';
 import {getTemplate} from './history_embeddings.html.js';
 import type {SearchQuery, SearchResult, SearchResultItem} from './history_embeddings.mojom-webui.js';
+import {UserFeedback} from './history_embeddings.mojom-webui.js';
 
 function jsDateToMojoDate(date: Date): Time {
   const windowsEpoch = Date.UTC(1601, 0, 1, 0, 0, 0, 0);
@@ -36,6 +39,7 @@ function jsDateToMojoDate(date: Date): Time {
 
 export interface HistoryEmbeddingsElement {
   $: {
+    feedbackButtons: CrFeedbackButtonsElement,
     heading: HTMLElement,
     sharedMenu: CrLazyRenderElement<CrActionMenuElement>,
   };
@@ -64,6 +68,10 @@ export class HistoryEmbeddingsElement extends HistoryEmbeddingsElementBase {
 
   static get properties() {
     return {
+      feedbackState_: {
+        type: String,
+        value: CrFeedbackOption.UNSPECIFIED,
+      },
       loading_: Boolean,
       searchResult_: Object,
       searchQuery: String,
@@ -86,6 +94,7 @@ export class HistoryEmbeddingsElement extends HistoryEmbeddingsElementBase {
 
   private actionMenuItem_: SearchResultItem|null = null;
   private browserProxy_ = HistoryEmbeddingsBrowserProxyImpl.getInstance();
+  private feedbackState_: CrFeedbackOption;
   private loading_ = false;
   private searchResult_: SearchResult;
   /**
@@ -124,6 +133,23 @@ export class HistoryEmbeddingsElement extends HistoryEmbeddingsElementBase {
       return this.i18n('historyEmbeddingsHeadingLoading', this.searchQuery);
     }
     return this.i18n('historyEmbeddingsHeading', this.searchQuery);
+  }
+
+  private onFeedbackSelectedOptionChanged_(
+      e: CustomEvent<{value: CrFeedbackOption}>) {
+    this.feedbackState_ = e.detail.value;
+    switch (e.detail.value) {
+      case CrFeedbackOption.UNSPECIFIED:
+        this.browserProxy_.setUserFeedback(
+            UserFeedback.kUserFeedbackUnspecified);
+        return;
+      case CrFeedbackOption.THUMBS_UP:
+        this.browserProxy_.setUserFeedback(UserFeedback.kUserFeedbackPositive);
+        return;
+      case CrFeedbackOption.THUMBS_DOWN:
+        this.browserProxy_.setUserFeedback(UserFeedback.kUserFeedbackNegative);
+        return;
+    }
   }
 
   private onMoreActionsClick_(e: DomRepeatEvent<SearchResultItem>) {
@@ -181,6 +207,9 @@ export class HistoryEmbeddingsElement extends HistoryEmbeddingsElementBase {
       }
       // Flush any old results metrics before overwriting the member variable.
       this.flushDebouncedUserMetrics_(/*userClickedResult=*/ false);
+
+      // Reset feedback state for new results.
+      this.feedbackState_ = CrFeedbackOption.UNSPECIFIED;
 
       this.searchResult_ = result;
       this.loading_ = false;

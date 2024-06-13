@@ -2,13 +2,14 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import type {PageHandlerRemote, SearchQuery, SearchResult} from './history_embeddings.mojom-webui.js';
+import type {PageHandlerRemote, SearchQuery, SearchResult, UserFeedback} from './history_embeddings.mojom-webui.js';
 import {PageHandler} from './history_embeddings.mojom-webui.js';
 
 export interface HistoryEmbeddingsBrowserProxy {
   search(query: SearchQuery): Promise<SearchResult>;
   recordSearchResultsMetrics(
       nonEmptyResults: boolean, userClickedResult: boolean): void;
+  setUserFeedback(userFeedback: UserFeedback): void;
 }
 
 export class HistoryEmbeddingsBrowserProxyImpl implements
@@ -37,5 +38,9 @@ export class HistoryEmbeddingsBrowserProxyImpl implements
   recordSearchResultsMetrics(
       nonEmptyResults: boolean, userClickedResult: boolean) {
     this.handler.recordSearchResultsMetrics(nonEmptyResults, userClickedResult);
+  }
+
+  setUserFeedback(userFeedback: UserFeedback) {
+    this.handler.setUserFeedback(userFeedback);
   }
 }

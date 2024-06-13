@@ -46,6 +46,15 @@ struct SearchResult {
   array<SearchResultItem> items;
 };
 
+enum UserFeedback {
+  // Unspecified.
+  kUserFeedbackUnspecified,
+  // A thumbs down.
+  kUserFeedbackNegative,
+  // A thumbs up.
+  kUserFeedbackPositive,
+};
+
 // Browser-side handler for requests from WebUI page.
 interface PageHandler {
   // Search method to retrieve history embeddings search results.
@@ -54,4 +63,7 @@ interface PageHandler {
   // Records the results from an embeddings query: whether the UI received
   // non-empty embeddings results, and if the user clicked one of the results.
   RecordSearchResultsMetrics(bool nonEmptyResults, bool userClickedResult);
+
+  // Store the user feedback supplied by the user.
+  SetUserFeedback(UserFeedback feedback);
 };

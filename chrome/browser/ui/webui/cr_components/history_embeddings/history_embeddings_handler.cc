@@ -7,9 +7,14 @@
 #include "base/metrics/histogram_functions.h"
 #include "base/strings/utf_string_conversions.h"
 #include "chrome/browser/history_embeddings/history_embeddings_service_factory.h"
+#include "chrome/browser/ui/browser.h"
+#include "chrome/browser/ui/browser_finder.h"
+#include "chrome/browser/ui/chrome_pages.h"
 #include "components/history_embeddings/history_embeddings_features.h"
 #include "components/history_embeddings/history_embeddings_service.h"
+#include "components/strings/grit/components_strings.h"
 #include "components/url_formatter/url_formatter.h"
+#include "ui/base/l10n/l10n_util.h"
 #include "ui/base/l10n/time_format.h"
 
 HistoryEmbeddingsHandler::HistoryEmbeddingsHandler(
@@ -87,5 +92,27 @@ void HistoryEmbeddingsHandler::RecordSearchResultsMetrics(
     base::UmaHistogramEnumeration(
         "History.Embeddings.UserActions",
         HistoryEmbeddingsUserActions::kEmbeddingsResultClicked);
+  }
+}
+
+void HistoryEmbeddingsHandler::SetUserFeedback(
+    history_embeddings::mojom::UserFeedback user_feedback) {
+  // TODO(crbug.com/345308285): Plumb user_feedback to quality log.
+
+  if (user_feedback ==
+      history_embeddings::mojom::UserFeedback::kUserFeedbackNegative) {
+    Browser* browser = chrome::FindLastActive();
+    if (!browser) {
+      return;
+    }
+
+    chrome::ShowFeedbackPage(
+        browser, feedback::kFeedbackSourceAI,
+        /*description_template=*/std::string(),
+        /*description_placeholder_text=*/
+        l10n_util::GetStringUTF8(IDS_HISTORY_EMBEDDINGS_FEEDBACK_PLACEHOLDER),
+        /*category_tag=*/"genai_history",
+        /*extra_diagnostics=*/std::string(),
+        /*autofill_metadata=*/base::Value::Dict(), base::Value::Dict());
   }
 }

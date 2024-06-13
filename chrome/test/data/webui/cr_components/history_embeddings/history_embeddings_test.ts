@@ -5,16 +5,16 @@
 import 'chrome://history/strings.m.js';
 import 'chrome://resources/cr_components/history_embeddings/history_embeddings.js';
 
+import {CrFeedbackOption} from '//resources/cr_elements/cr_feedback_buttons/cr_feedback_buttons.js';
 import {HistoryEmbeddingsBrowserProxyImpl} from 'chrome://resources/cr_components/history_embeddings/browser_proxy.js';
 import type {HistoryEmbeddingsElement} from 'chrome://resources/cr_components/history_embeddings/history_embeddings.js';
-import {PageHandlerRemote} from 'chrome://resources/cr_components/history_embeddings/history_embeddings.mojom-webui.js';
+import {PageHandlerRemote, UserFeedback} from 'chrome://resources/cr_components/history_embeddings/history_embeddings.mojom-webui.js';
 import type {SearchResultItem} from 'chrome://resources/cr_components/history_embeddings/history_embeddings.mojom-webui.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
 import {assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
 import {flushTasks} from 'chrome://webui-test/polymer_test_util.js';
 import {TestMock} from 'chrome://webui-test/test_mock.js';
-import {eventToPromise} from 'chrome://webui-test/test_util.js';
-import {isVisible} from 'chrome://webui-test/test_util.js';
+import {eventToPromise, isVisible} from 'chrome://webui-test/test_util.js';
 
 suite('cr-history-embeddings', () => {
   let element: HistoryEmbeddingsElement;
@@ -158,5 +158,55 @@ suite('cr-history-embeddings', () => {
     // No results left.
     assertTrue(element.isEmpty);
     assertFalse(isVisible(element));
+  });
+
+  test('SetsUserFeedback', async () => {
+    assertEquals(
+        CrFeedbackOption.UNSPECIFIED, element.$.feedbackButtons.selectedOption,
+        'defaults to unspecified');
+
+    function dispatchFeedbackOptionChange(option: CrFeedbackOption) {
+      element.$.feedbackButtons.dispatchEvent(
+          new CustomEvent('selected-option-changed', {
+            bubbles: true,
+            composed: true,
+            detail: {value: option},
+          }));
+    }
+
+    dispatchFeedbackOptionChange(CrFeedbackOption.THUMBS_DOWN);
+    assertEquals(
+        UserFeedback.kUserFeedbackNegative,
+        await handler.whenCalled('setUserFeedback'));
+    assertEquals(
+        CrFeedbackOption.THUMBS_DOWN, element.$.feedbackButtons.selectedOption);
+    handler.reset();
+
+    dispatchFeedbackOptionChange(CrFeedbackOption.THUMBS_UP);
+    assertEquals(
+        UserFeedback.kUserFeedbackPositive,
+        await handler.whenCalled('setUserFeedback'));
+    assertEquals(
+        CrFeedbackOption.THUMBS_UP, element.$.feedbackButtons.selectedOption);
+    handler.reset();
+
+    dispatchFeedbackOptionChange(CrFeedbackOption.UNSPECIFIED);
+    assertEquals(
+        UserFeedback.kUserFeedbackUnspecified,
+        await handler.whenCalled('setUserFeedback'));
+    assertEquals(
+        CrFeedbackOption.UNSPECIFIED, element.$.feedbackButtons.selectedOption);
+    handler.reset();
+
+    // Set up a new query and result.
+    handler.setResultFor(
+        'search', Promise.resolve({result: {items: [...mockResults]}}));
+    element.searchQuery = 'new query';
+
+    await handler.whenCalled('search');
+    await flushTasks();
+    assertEquals(
+        CrFeedbackOption.UNSPECIFIED, element.$.feedbackButtons.selectedOption,
+        'defaults back to unspecified when there is a new set of results');
   });
 });

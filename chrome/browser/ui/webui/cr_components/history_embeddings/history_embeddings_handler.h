@@ -40,6 +40,8 @@ class HistoryEmbeddingsHandler : public history_embeddings::mojom::PageHandler {
               SearchCallback callback) override;
   void RecordSearchResultsMetrics(bool non_empty_results,
                                   bool user_clicked_results) override;
+  void SetUserFeedback(
+      history_embeddings::mojom::UserFeedback user_feedback) override;
 
   // Callback for querying `HistoryEmbeddingsService::Search()`.
   void OnReceivedSearchResult(SearchCallback callback,

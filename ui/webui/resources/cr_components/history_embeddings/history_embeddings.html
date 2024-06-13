@@ -130,7 +130,10 @@ a {
         [[i18n('historyEmbeddingsFooter')]]
         <a href="#" target="_blank">[[i18n('learnMore')]]</a>
       </div>
-      <cr-feedback-buttons></cr-feedback-buttons>
+      <cr-feedback-buttons id="feedbackButtons"
+          selected-option="[[feedbackState_]]"
+          on-selected-option-changed="onFeedbackSelectedOptionChanged_">
+      </cr-feedback-buttons>
     </div>
   </div>
 </div>

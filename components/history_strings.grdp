@@ -170,6 +170,9 @@
   <message name="IDS_HISTORY_EMBEDDINGS_THUMBS_DOWN" desc="Alternative text to the thumbs up icon under history embeddings results." translateable="false">
     Thumbs down
   </message>
+  <message name="IDS_HISTORY_EMBEDDINGS_FEEDBACK_PLACEHOLDER" desc="Placeholder text in feedback from for history search" translateable="false">
+    Send feedback for history search
+  </message>
 
   <!-- For Product Specifications -->
   <message name="IDS_PRODUCT_SPECIFICATIONS_HEADER" desc="Header text for product specifications tab in history." translateable="false">
