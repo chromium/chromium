@@ -20,9 +20,9 @@ PATH=$SCRIPT_DIR/depot_tools:$PATH tools/gradle.py r8
 
 # Shrink (improves r8/d8 launch time):
 # Needs the -D flag to avoid compilation error, see http://b/311202383.
-$DEPS_PREFIX/current/bin/java -Dcom.android.tools.r8.enableKeepAnnotations=1 \
+$DEPS_PREFIX/bin/java -Dcom.android.tools.r8.enableKeepAnnotations=1 \
     -jar build/libs/r8.jar --debug --classfile --output r8.jar \
-    --lib $DEPS_PREFIX/current --pg-conf src/main/keep.txt \
+    --lib $DEPS_PREFIX --pg-conf src/main/keep.txt \
     --no-minification --no-desugaring build/libs/r8.jar
 
 mkdir -p "$PREFIX/lib"
