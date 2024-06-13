@@ -6,6 +6,7 @@
 #define CHROME_BROWSER_SYNC_TEST_INTEGRATION_PRODUCT_SPECIFICATIONS_HELPER_H_
 
 #include "base/memory/raw_ptr.h"
+#include "base/memory/raw_ref.h"
 #include "chrome/browser/sync/test/integration/status_change_checker.h"
 
 namespace sync_pb {
@@ -22,7 +23,7 @@ class ProductSpecificationsChecker : public StatusChangeChecker {
  public:
   ProductSpecificationsChecker(
       commerce::ProductSpecificationsService* service,
-      const sync_pb::ProductComparisonSpecifics* product_comparison_specifics);
+      const sync_pb::ProductComparisonSpecifics& product_comparison_specifics);
 
   ProductSpecificationsChecker(const ProductSpecificationsChecker&) = delete;
   ProductSpecificationsChecker& operator=(const ProductSpecificationsChecker&) =
@@ -34,7 +35,7 @@ class ProductSpecificationsChecker : public StatusChangeChecker {
   bool IsExitConditionSatisfied(std::ostream* os) override;
 
  private:
-  const raw_ptr<const sync_pb::ProductComparisonSpecifics>
+  const raw_ref<const sync_pb::ProductComparisonSpecifics>
       product_comparison_specifics_;
   const raw_ptr<commerce::ProductSpecificationsService> service_;
 

@@ -159,6 +159,9 @@ class ProductSpecificationsServiceTest : public testing::Test {
     store_ = syncer::ModelTypeStoreTestUtil::CreateInMemoryStoreForTest();
     ON_CALL(processor_, IsTrackingMetadata())
         .WillByDefault(testing::Return(true));
+    ON_CALL(processor_, GetPossiblyTrimmedRemoteSpecifics)
+        .WillByDefault(
+            testing::ReturnRef(sync_pb::EntitySpecifics::default_instance()));
     service_ = std::make_unique<ProductSpecificationsService>(
         syncer::ModelTypeStoreTestUtil::FactoryForForwardingStore(store()),
         change_processor().CreateForwardingProcessor());

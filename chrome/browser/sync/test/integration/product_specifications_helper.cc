@@ -16,7 +16,7 @@ namespace commerce {
 
 ProductSpecificationsChecker::ProductSpecificationsChecker(
     commerce::ProductSpecificationsService* service,
-    const sync_pb::ProductComparisonSpecifics* product_comparison_specifics)
+    const sync_pb::ProductComparisonSpecifics& product_comparison_specifics)
     : product_comparison_specifics_(product_comparison_specifics),
       service_(service) {}
 

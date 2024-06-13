@@ -154,6 +154,9 @@ class ProductSpecificationsSyncBridgeTest : public testing::Test {
     AddInitialSpecifics();
     ON_CALL(processor_, IsTrackingMetadata())
         .WillByDefault(testing::Return(true));
+    ON_CALL(processor_, GetPossiblyTrimmedRemoteSpecifics)
+        .WillByDefault(
+            testing::ReturnRef(sync_pb::EntitySpecifics::default_instance()));
     bridge_ = std::make_unique<ProductSpecificationsSyncBridge>(
         syncer::ModelTypeStoreTestUtil::FactoryForForwardingStore(store_.get()),
         processor_.CreateForwardingProcessor(), base::DoNothing());
@@ -529,6 +532,30 @@ TEST_F(ProductSpecificationsSyncBridgeTest,
   for (const auto& product_comparison_specifics : kInitCompareSpecifics) {
     VerifySpecificsExists(product_comparison_specifics);
   }
+}
+
+TEST_F(ProductSpecificationsSyncBridgeTest,
+       TestTrimAllSupportedFieldsFromRemoteSpecifics) {
+  sync_pb::EntitySpecifics entity_specifics;
+  *entity_specifics.mutable_product_comparison() = kInitCompareSpecifics[0];
+  EXPECT_TRUE(entity_specifics.mutable_product_comparison()->has_uuid());
+  EXPECT_TRUE(entity_specifics.mutable_product_comparison()->has_name());
+  EXPECT_TRUE(entity_specifics.mutable_product_comparison()
+                  ->has_creation_time_unix_epoch_micros());
+  EXPECT_TRUE(entity_specifics.mutable_product_comparison()
+                  ->has_update_time_unix_epoch_micros());
+  EXPECT_EQ(kInitCompareSpecifics[0].data_size(),
+            entity_specifics.mutable_product_comparison()->data_size());
+
+  sync_pb::EntitySpecifics trimmed =
+      bridge().TrimAllSupportedFieldsFromRemoteSpecifics(entity_specifics);
+  EXPECT_FALSE(trimmed.product_comparison().has_uuid());
+  EXPECT_FALSE(trimmed.product_comparison().has_name());
+  EXPECT_FALSE(
+      trimmed.product_comparison().has_creation_time_unix_epoch_micros());
+  EXPECT_FALSE(
+      trimmed.product_comparison().has_update_time_unix_epoch_micros());
+  EXPECT_EQ(0, trimmed.product_comparison().data_size());
 }
 
 }  // namespace commerce

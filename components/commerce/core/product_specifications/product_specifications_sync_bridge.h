@@ -51,6 +51,8 @@ class ProductSpecificationsSyncBridge : public syncer::ModelTypeSyncBridge {
   void GetDataForCommit(StorageKeyList storage_keys,
                         DataCallback callback) override;
   void GetAllDataForDebugging(DataCallback callback) override;
+  sync_pb::EntitySpecifics TrimAllSupportedFieldsFromRemoteSpecifics(
+      const sync_pb::EntitySpecifics& entity_specifics) const override;
 
  private:
   friend class commerce::MockProductSpecificationsSyncBridge;
@@ -97,6 +99,12 @@ class ProductSpecificationsSyncBridge : public syncer::ModelTypeSyncBridge {
   void OnSpecificsUpdated(const sync_pb::ProductComparisonSpecifics& before,
                           const sync_pb::ProductComparisonSpecifics& after);
   void OnSpecificsRemoved(const ProductSpecificationsSet& removed_set);
+
+  const sync_pb::ProductComparisonSpecifics&
+  GetPossiblyTrimmedPasswordSpecificsData(const std::string& storage_key);
+
+  std::unique_ptr<syncer::EntityData> CreateEntityData(
+      const sync_pb::ProductComparisonSpecifics& specifics);
 
   CompareSpecificsEntries entries_;
 

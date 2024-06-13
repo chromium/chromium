@@ -20,13 +20,16 @@
 
 namespace {
 
-std::unique_ptr<syncer::EntityData> CreateEntityData(
-    const sync_pb::ProductComparisonSpecifics& specifics) {
-  auto entity_data = std::make_unique<syncer::EntityData>();
-  entity_data->name = base::StringPrintf("%s_%s", specifics.name().c_str(),
-                                         specifics.uuid().c_str());
-  entity_data->specifics.mutable_product_comparison()->CopyFrom(specifics);
-  return entity_data;
+const sync_pb::ProductComparisonSpecifics TrimSpecificsForCaching(
+    const sync_pb::ProductComparisonSpecifics& comparison_specifics) {
+  sync_pb::ProductComparisonSpecifics trimmed_comparison_data =
+      sync_pb::ProductComparisonSpecifics(comparison_specifics);
+  trimmed_comparison_data.clear_uuid();
+  trimmed_comparison_data.clear_creation_time_unix_epoch_micros();
+  trimmed_comparison_data.clear_update_time_unix_epoch_micros();
+  trimmed_comparison_data.clear_name();
+  trimmed_comparison_data.clear_data();
+  return trimmed_comparison_data;
 }
 
 }  // namespace
@@ -138,6 +141,21 @@ void ProductSpecificationsSyncBridge::GetAllDataForDebugging(
     batch->Put(entry.first, CreateEntityData(entry.second));
   }
   std::move(callback).Run(std::move(batch));
+}
+
+sync_pb::EntitySpecifics
+ProductSpecificationsSyncBridge::TrimAllSupportedFieldsFromRemoteSpecifics(
+    const sync_pb::EntitySpecifics& entity_specifics) const {
+  const sync_pb::ProductComparisonSpecifics trimmed_specifics =
+      TrimSpecificsForCaching(entity_specifics.product_comparison());
+
+  if (trimmed_specifics.ByteSizeLong() == 0u) {
+    return sync_pb::EntitySpecifics();
+  }
+
+  sync_pb::EntitySpecifics trimmed_entity_specifics;
+  *trimmed_entity_specifics.mutable_product_comparison() = trimmed_specifics;
+  return trimmed_entity_specifics;
 }
 
 sync_pb::ProductComparisonSpecifics
@@ -319,6 +337,39 @@ void ProductSpecificationsSyncBridge::OnSpecificsRemoved(
   for (auto& observer : observers_) {
     observer.OnProductSpecificationsSetRemoved(removed_set);
   }
+}
+
+const sync_pb::ProductComparisonSpecifics&
+ProductSpecificationsSyncBridge::GetPossiblyTrimmedPasswordSpecificsData(
+    const std::string& storage_key) {
+  return change_processor()
+      ->GetPossiblyTrimmedRemoteSpecifics(storage_key)
+      .product_comparison();
+}
+
+std::unique_ptr<syncer::EntityData>
+ProductSpecificationsSyncBridge::CreateEntityData(
+    const sync_pb::ProductComparisonSpecifics& specifics) {
+  auto entity_data = std::make_unique<syncer::EntityData>();
+  entity_data->name = base::StringPrintf("%s_%s", specifics.name().c_str(),
+                                         specifics.uuid().c_str());
+  sync_pb::ProductComparisonSpecifics* entity_specifics =
+      entity_data->specifics.mutable_product_comparison();
+
+  *entity_specifics = GetPossiblyTrimmedPasswordSpecificsData(specifics.uuid());
+
+  entity_specifics->set_uuid(specifics.uuid());
+  entity_specifics->set_creation_time_unix_epoch_micros(
+      specifics.creation_time_unix_epoch_micros());
+  entity_specifics->set_update_time_unix_epoch_micros(
+      specifics.update_time_unix_epoch_micros());
+  entity_specifics->set_name(specifics.name());
+
+  for (const sync_pb::ComparisonData& data_to_copy : specifics.data()) {
+    sync_pb::ComparisonData* data = entity_specifics->add_data();
+    data->set_url(data_to_copy.url());
+  }
+  return entity_data;
 }
 
 }  // namespace commerce

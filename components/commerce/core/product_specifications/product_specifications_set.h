@@ -13,6 +13,10 @@
 #include "components/sync/protocol/product_comparison_specifics.pb.h"
 #include "url/gurl.h"
 
+namespace {
+class SingleClientProductSpecificationsSyncTest;
+}  // namespace
+
 namespace commerce {
 
 class ProductSpecificationsService;
@@ -68,9 +72,12 @@ class ProductSpecificationsSet {
  private:
   friend commerce::ProductSpecificationsService;
   friend commerce::ProductSpecificationsSyncBridge;
+  friend ::SingleClientProductSpecificationsSyncTest;
 
   static ProductSpecificationsSet FromProto(
       const sync_pb::ProductComparisonSpecifics& product_comparison_specifics);
+
+  sync_pb::ProductComparisonSpecifics ToProto() const;
 
   const base::Uuid uuid_;
   const base::Time creation_time_;
