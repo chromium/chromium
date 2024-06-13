@@ -1434,9 +1434,15 @@
       name: "DropUrlAsPlainTextInPlainTextOnlyEditablePosition",
       status: "stable"
     },
-    // Dynamically change the safe area insets as browser controls scrolls.
+    // Dynamically change the safe area insets based on the bottom browser
+    // controls visibility.
     {
       name: "DynamicSafeAreaInsets",
+    },
+    // Dynamically change the safe area insets as browser controls scrolls.
+    {
+      name: "DynamicSafeAreaInsetsOnScroll",
+      depends_on: ["DynamicSafeAreaInsets"]
     },
     {
       name: "DynamicScrollCullRectExpansion",

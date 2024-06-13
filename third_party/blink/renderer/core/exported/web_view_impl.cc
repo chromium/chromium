@@ -1297,7 +1297,8 @@ void WebViewImpl::DidUpdateBrowserControls() {
         GetBrowserControls().UnreportedSizeAdjustment());
   }
 
-  if (RuntimeEnabledFeatures::DynamicSafeAreaInsetsEnabled()) {
+  if (RuntimeEnabledFeatures::DynamicSafeAreaInsetsEnabled() &&
+      RuntimeEnabledFeatures::DynamicSafeAreaInsetsOnScrollEnabled()) {
     GetPage()->UpdateSafeAreaInsetWithBrowserControls(GetBrowserControls());
   }
 }

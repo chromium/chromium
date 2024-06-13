@@ -354,8 +354,43 @@ TEST_F(BrowserControlsTest, MAYBE(HideBottomControlsOnScrollDown)) {
             GetFrame()->View()->LayoutViewport()->GetScrollOffset());
 }
 
+TEST_F(BrowserControlsTest,
+       MAYBE(DynamicSafeAreaInsetBottomUntilScrollDownFinished)) {
+  ScopedDynamicSafeAreaInsetsForTest dynamic_safe_area_insets(true);
+  ScopedDynamicSafeAreaInsetsOnScrollForTest on_scroll(false);
+
+  WebViewImpl* web_view = Initialize();
+  SetSafeAreaInsets(gfx::Insets().set_bottom(30));
+
+  // initialize browser controls to be shown.
+  web_view->GetBrowserControls().SetShownRatio(0.0, 1);
+  web_view->ResizeWithBrowserControls(web_view->MainFrameViewWidget()->Size(),
+                                      0, 50.f, true);
+  CompositeForTest();
+  // Bottom insets should be 0, as browser control is presented and it's taller
+  // than the bottom of the insets.
+  EXPECT_EQ("0px", ResolveSafeAreaInsetsBottom());
+
+  VerticalScroll(-40.0f);
+
+  // The safe area does not update until the scroll is finished.
+  EXPECT_FLOAT_EQ(0.2f, web_view->GetBrowserControls().BottomShownRatio());
+  EXPECT_EQ("0px", ResolveSafeAreaInsetsBottom());
+
+  // Simulate the scroll is finished, and call the browser control
+  // to resize the page.
+  FinishAnimation();
+  web_view->ResizeWithBrowserControls(web_view->MainFrameViewWidget()->Size(),
+                                      0, 50.f, false);
+  UpdateAllLifecyclePhases();
+
+  EXPECT_FLOAT_EQ(0.f, web_view->GetBrowserControls().BottomShownRatio());
+  EXPECT_EQ("30px", ResolveSafeAreaInsetsBottom());
+}
+
 TEST_F(BrowserControlsTest, MAYBE(DynamicSafeAreaInsetBottomScrollDown)) {
   ScopedDynamicSafeAreaInsetsForTest dynamic_safe_area_insets(true);
+  ScopedDynamicSafeAreaInsetsOnScrollForTest on_scroll(true);
 
   WebViewImpl* web_view = Initialize();
   SetSafeAreaInsets(gfx::Insets().set_bottom(30));
@@ -454,8 +489,45 @@ TEST_F(BrowserControlsTest, MAYBE(ShowBottomControlsOnScrollUp)) {
             GetFrame()->View()->LayoutViewport()->GetScrollOffset());
 }
 
+TEST_F(BrowserControlsTest,
+       MAYBE(DynamicSafeAreaInsetBottomUntilScrollUpFinished)) {
+  ScopedDynamicSafeAreaInsetsForTest dynamic_safe_area_insets(true);
+  ScopedDynamicSafeAreaInsetsOnScrollForTest on_scroll(false);
+
+  WebViewImpl* web_view = Initialize();
+  SetSafeAreaInsets(gfx::Insets().set_bottom(30));
+
+  // initialize browser controls to be shown.
+  web_view->GetBrowserControls().SetShownRatio(0, 0);
+  web_view->ResizeWithBrowserControls(web_view->MainFrameViewWidget()->Size(),
+                                      0, 50.f, false);
+  CompositeForTest();
+
+  // Bottom insets should be 30, as browser control is fully hidden.
+  EXPECT_EQ("30px", ResolveSafeAreaInsetsBottom());
+
+  VerticalScroll(40.0f);
+
+  // Safe area insets does not update when DynamicSafeAreaInsetsOnScroll
+  // flag is disabled.
+  EXPECT_FLOAT_EQ(0.8f, web_view->GetBrowserControls().BottomShownRatio());
+  EXPECT_EQ("30px", ResolveSafeAreaInsetsBottom());
+
+  // Simulate the scroll is finished, and call the browser control
+  // to resize the page.
+  FinishAnimation();
+  web_view->ResizeWithBrowserControls(web_view->MainFrameViewWidget()->Size(),
+                                      0, 50.f, true);
+  UpdateAllLifecyclePhases();
+
+  // Browser controls full shown when the entire scroll is finished.
+  EXPECT_FLOAT_EQ(1.0f, web_view->GetBrowserControls().BottomShownRatio());
+  EXPECT_EQ("0px", ResolveSafeAreaInsetsBottom());
+}
+
 TEST_F(BrowserControlsTest, MAYBE(DynamicSafeAreaInsetBottomScrollUp)) {
   ScopedDynamicSafeAreaInsetsForTest dynamic_safe_area_insets(true);
+  ScopedDynamicSafeAreaInsetsOnScrollForTest on_scroll(true);
 
   WebViewImpl* web_view = Initialize();
   SetSafeAreaInsets(gfx::Insets().set_bottom(30));
