@@ -303,6 +303,7 @@ public class StripLayoutTab extends StripLayoutView {
 
     @Override
     public void getVirtualViews(List<VirtualView> views) {
+        if (isCollapsed()) return;
         super.getVirtualViews(views);
         if (mShowingCloseButton) mCloseButton.getVirtualViews(views);
     }
