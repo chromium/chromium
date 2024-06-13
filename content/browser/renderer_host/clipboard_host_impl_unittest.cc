@@ -60,6 +60,7 @@ class ClipboardHostImplTest : public RenderViewHostTestHarness {
   void SetUp() override {
     RenderViewHostTestHarness::SetUp();
     SetContents(CreateTestWebContents());
+    NavigateAndCommit(GURL("https://google.com/"));
     ClipboardHostImpl::Create(web_contents()->GetPrimaryMainFrame(),
                               remote_.BindNewPipeAndPassReceiver());
   }
@@ -177,6 +178,7 @@ class ClipboardHostImplWriteTest : public RenderViewHostTestHarness {
   void SetUp() override {
     RenderViewHostTestHarness::SetUp();
     SetContents(CreateTestWebContents());
+    NavigateAndCommit(GURL("https://foobar.com/"));
   }
 
   void TearDown() override {
@@ -491,6 +493,7 @@ class ClipboardHostImplAsyncWriteTest : public RenderViewHostTestHarness {
   void SetUp() override {
     RenderViewHostTestHarness::SetUp();
     SetContents(CreateTestWebContents());
+    NavigateAndCommit(GURL("https://google.com/"));
     fake_clipboard_host_impl_ =
         new AsyncWriteClipboardHostImpl(*web_contents()->GetPrimaryMainFrame(),
                                         remote_.BindNewPipeAndPassReceiver());

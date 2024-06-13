@@ -818,6 +818,9 @@ TEST_F(WebContentsViewAuraTest,
 }
 
 TEST_F(WebContentsViewAuraTest, StartDragFromPrivilegedWebContents) {
+  const char kGoogleUrl[] = "https://google.com/";
+  NavigateAndCommit(GURL(kGoogleUrl));
+
   TestDragDropClient drag_drop_client;
   aura::client::SetDragDropClient(root_window(), &drag_drop_client);
 
@@ -832,7 +835,7 @@ TEST_F(WebContentsViewAuraTest, StartDragFromPrivilegedWebContents) {
   view->drag_in_progress_ = true;
 
   DropData drop_data;
-  view->StartDragging(drop_data, url::Origin(),
+  view->StartDragging(drop_data, url::Origin::Create(GURL(kGoogleUrl)),
                       blink::DragOperationsMask::kDragOperationNone,
                       gfx::ImageSkia(), gfx::Vector2d(), gfx::Rect(),
                       blink::mojom::DragEventSourceInfo(),

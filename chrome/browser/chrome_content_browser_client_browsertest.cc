@@ -1314,12 +1314,13 @@ IN_PROC_BROWSER_TEST_F(IsClipboardPasteAllowedTest, BitmapAllowed) {
   clipboard_paste_data.png = StringToVector("allowed");
 
   client()->IsClipboardPasteAllowedByPolicy(
-      content::ClipboardEndpoint(ui::DataTransferEndpoint(GURL("google.com"))),
-      content::ClipboardEndpoint(ui::DataTransferEndpoint(GURL("google.com")),
-                                 base::BindLambdaForTesting([contents] {
-                                   return contents->GetBrowserContext();
-                                 }),
-                                 *contents->GetPrimaryMainFrame()),
+      content::ClipboardEndpoint(
+          ui::DataTransferEndpoint(GURL("https://google.com/"))),
+      content::ClipboardEndpoint(
+          ui::DataTransferEndpoint(GURL("https://google.com/")),
+          base::BindLambdaForTesting(
+              [contents] { return contents->GetBrowserContext(); }),
+          *contents->GetPrimaryMainFrame()),
       {
           .size = clipboard_paste_data.png.size(),
           .format_type = ui::ClipboardFormatType::BitmapType(),
@@ -1340,12 +1341,13 @@ IN_PROC_BROWSER_TEST_F(IsClipboardPasteAllowedTest, BitmapBlocked) {
   clipboard_paste_data.png = StringToVector("blocked");
 
   client()->IsClipboardPasteAllowedByPolicy(
-      content::ClipboardEndpoint(ui::DataTransferEndpoint(GURL("google.com"))),
-      content::ClipboardEndpoint(ui::DataTransferEndpoint(GURL("google.com")),
-                                 base::BindLambdaForTesting([contents] {
-                                   return contents->GetBrowserContext();
-                                 }),
-                                 *contents->GetPrimaryMainFrame()),
+      content::ClipboardEndpoint(
+          ui::DataTransferEndpoint(GURL("https://google.com/"))),
+      content::ClipboardEndpoint(
+          ui::DataTransferEndpoint(GURL("https://google.com/")),
+          base::BindLambdaForTesting(
+              [contents] { return contents->GetBrowserContext(); }),
+          *contents->GetPrimaryMainFrame()),
       {
           .size = clipboard_paste_data.png.size(),
           .format_type = ui::ClipboardFormatType::BitmapType(),
@@ -1373,12 +1375,13 @@ IN_PROC_BROWSER_TEST_F(IsClipboardPasteAllowedTest, TextAllowed) {
   clipboard_paste_data.text = u"allowed";
 
   client()->IsClipboardPasteAllowedByPolicy(
-      content::ClipboardEndpoint(ui::DataTransferEndpoint(GURL("google.com"))),
-      content::ClipboardEndpoint(ui::DataTransferEndpoint(GURL("google.com")),
-                                 base::BindLambdaForTesting([contents] {
-                                   return contents->GetBrowserContext();
-                                 }),
-                                 *contents->GetPrimaryMainFrame()),
+      content::ClipboardEndpoint(
+          ui::DataTransferEndpoint(GURL("https://google.com/"))),
+      content::ClipboardEndpoint(
+          ui::DataTransferEndpoint(GURL("https://google.com/")),
+          base::BindLambdaForTesting(
+              [contents] { return contents->GetBrowserContext(); }),
+          *contents->GetPrimaryMainFrame()),
       {
           .size = clipboard_paste_data.text.size(),
           .format_type = ui::ClipboardFormatType::PlainTextType(),
@@ -1399,12 +1402,13 @@ IN_PROC_BROWSER_TEST_F(IsClipboardPasteAllowedTest, TextBlocked) {
   clipboard_paste_data.text = u"blocked";
 
   client()->IsClipboardPasteAllowedByPolicy(
-      content::ClipboardEndpoint(ui::DataTransferEndpoint(GURL("google.com"))),
-      content::ClipboardEndpoint(ui::DataTransferEndpoint(GURL("google.com")),
-                                 base::BindLambdaForTesting([contents] {
-                                   return contents->GetBrowserContext();
-                                 }),
-                                 *contents->GetPrimaryMainFrame()),
+      content::ClipboardEndpoint(
+          ui::DataTransferEndpoint(GURL("https://google.com/"))),
+      content::ClipboardEndpoint(
+          ui::DataTransferEndpoint(GURL("https://google.com/")),
+          base::BindLambdaForTesting(
+              [contents] { return contents->GetBrowserContext(); }),
+          *contents->GetPrimaryMainFrame()),
       {
           .size = clipboard_paste_data.text.size(),
           .format_type = ui::ClipboardFormatType::PlainTextType(),
@@ -1432,12 +1436,13 @@ IN_PROC_BROWSER_TEST_F(IsClipboardPasteAllowedTest, HtmlAllowed) {
   clipboard_paste_data.html = u"allowed";
 
   client()->IsClipboardPasteAllowedByPolicy(
-      content::ClipboardEndpoint(ui::DataTransferEndpoint(GURL("google.com"))),
-      content::ClipboardEndpoint(ui::DataTransferEndpoint(GURL("google.com")),
-                                 base::BindLambdaForTesting([contents] {
-                                   return contents->GetBrowserContext();
-                                 }),
-                                 *contents->GetPrimaryMainFrame()),
+      content::ClipboardEndpoint(
+          ui::DataTransferEndpoint(GURL("https://google.com/"))),
+      content::ClipboardEndpoint(
+          ui::DataTransferEndpoint(GURL("https://google.com/")),
+          base::BindLambdaForTesting(
+              [contents] { return contents->GetBrowserContext(); }),
+          *contents->GetPrimaryMainFrame()),
       {
           .size = clipboard_paste_data.html.size(),
           .format_type = ui::ClipboardFormatType::HtmlType(),
@@ -1458,12 +1463,13 @@ IN_PROC_BROWSER_TEST_F(IsClipboardPasteAllowedTest, HtmlBlocked) {
   clipboard_paste_data.html = u"blocked";
 
   client()->IsClipboardPasteAllowedByPolicy(
-      content::ClipboardEndpoint(ui::DataTransferEndpoint(GURL("google.com"))),
-      content::ClipboardEndpoint(ui::DataTransferEndpoint(GURL("google.com")),
-                                 base::BindLambdaForTesting([contents] {
-                                   return contents->GetBrowserContext();
-                                 }),
-                                 *contents->GetPrimaryMainFrame()),
+      content::ClipboardEndpoint(
+          ui::DataTransferEndpoint(GURL("https://google.com/"))),
+      content::ClipboardEndpoint(
+          ui::DataTransferEndpoint(GURL("https://google.com/")),
+          base::BindLambdaForTesting(
+              [contents] { return contents->GetBrowserContext(); }),
+          *contents->GetPrimaryMainFrame()),
       {
           .size = clipboard_paste_data.html.size(),
           .format_type = ui::ClipboardFormatType::HtmlType(),
@@ -1491,12 +1497,13 @@ IN_PROC_BROWSER_TEST_F(IsClipboardPasteAllowedTest, SvgAllowed) {
   clipboard_paste_data.svg = u"allowed";
 
   client()->IsClipboardPasteAllowedByPolicy(
-      content::ClipboardEndpoint(ui::DataTransferEndpoint(GURL("google.com"))),
-      content::ClipboardEndpoint(ui::DataTransferEndpoint(GURL("google.com")),
-                                 base::BindLambdaForTesting([contents] {
-                                   return contents->GetBrowserContext();
-                                 }),
-                                 *contents->GetPrimaryMainFrame()),
+      content::ClipboardEndpoint(
+          ui::DataTransferEndpoint(GURL("https://google.com/"))),
+      content::ClipboardEndpoint(
+          ui::DataTransferEndpoint(GURL("https://google.com/")),
+          base::BindLambdaForTesting(
+              [contents] { return contents->GetBrowserContext(); }),
+          *contents->GetPrimaryMainFrame()),
       {
           .size = clipboard_paste_data.svg.size(),
           .format_type = ui::ClipboardFormatType::SvgType(),
@@ -1517,12 +1524,13 @@ IN_PROC_BROWSER_TEST_F(IsClipboardPasteAllowedTest, SvgBlocked) {
   clipboard_paste_data.svg = u"blocked";
 
   client()->IsClipboardPasteAllowedByPolicy(
-      content::ClipboardEndpoint(ui::DataTransferEndpoint(GURL("google.com"))),
-      content::ClipboardEndpoint(ui::DataTransferEndpoint(GURL("google.com")),
-                                 base::BindLambdaForTesting([contents] {
-                                   return contents->GetBrowserContext();
-                                 }),
-                                 *contents->GetPrimaryMainFrame()),
+      content::ClipboardEndpoint(
+          ui::DataTransferEndpoint(GURL("https://google.com/"))),
+      content::ClipboardEndpoint(
+          ui::DataTransferEndpoint(GURL("https://google.com/")),
+          base::BindLambdaForTesting(
+              [contents] { return contents->GetBrowserContext(); }),
+          *contents->GetPrimaryMainFrame()),
       {
           .size = clipboard_paste_data.svg.size(),
           .format_type = ui::ClipboardFormatType::SvgType(),
@@ -1549,12 +1557,13 @@ IN_PROC_BROWSER_TEST_F(IsClipboardPasteAllowedTest, RtfAllowed) {
   clipboard_paste_data.rtf = "allowed";
 
   client()->IsClipboardPasteAllowedByPolicy(
-      content::ClipboardEndpoint(ui::DataTransferEndpoint(GURL("google.com"))),
-      content::ClipboardEndpoint(ui::DataTransferEndpoint(GURL("google.com")),
-                                 base::BindLambdaForTesting([contents] {
-                                   return contents->GetBrowserContext();
-                                 }),
-                                 *contents->GetPrimaryMainFrame()),
+      content::ClipboardEndpoint(
+          ui::DataTransferEndpoint(GURL("https://google.com/"))),
+      content::ClipboardEndpoint(
+          ui::DataTransferEndpoint(GURL("https://google.com/")),
+          base::BindLambdaForTesting(
+              [contents] { return contents->GetBrowserContext(); }),
+          *contents->GetPrimaryMainFrame()),
       {
           .size = clipboard_paste_data.rtf.size(),
           .format_type = ui::ClipboardFormatType::RtfType(),
@@ -1575,12 +1584,13 @@ IN_PROC_BROWSER_TEST_F(IsClipboardPasteAllowedTest, RtfBlocked) {
   clipboard_paste_data.rtf = "blocked";
 
   client()->IsClipboardPasteAllowedByPolicy(
-      content::ClipboardEndpoint(ui::DataTransferEndpoint(GURL("google.com"))),
-      content::ClipboardEndpoint(ui::DataTransferEndpoint(GURL("google.com")),
-                                 base::BindLambdaForTesting([contents] {
-                                   return contents->GetBrowserContext();
-                                 }),
-                                 *contents->GetPrimaryMainFrame()),
+      content::ClipboardEndpoint(
+          ui::DataTransferEndpoint(GURL("https://google.com/"))),
+      content::ClipboardEndpoint(
+          ui::DataTransferEndpoint(GURL("https://google.com/")),
+          base::BindLambdaForTesting(
+              [contents] { return contents->GetBrowserContext(); }),
+          *contents->GetPrimaryMainFrame()),
       {
           .size = clipboard_paste_data.rtf.size(),
           .format_type = ui::ClipboardFormatType::RtfType(),
@@ -1608,12 +1618,13 @@ IN_PROC_BROWSER_TEST_F(IsClipboardPasteAllowedTest, CustomDataAllowed) {
   clipboard_paste_data.custom_data[u"custom/data"] = u"allowed";
 
   client()->IsClipboardPasteAllowedByPolicy(
-      content::ClipboardEndpoint(ui::DataTransferEndpoint(GURL("google.com"))),
-      content::ClipboardEndpoint(ui::DataTransferEndpoint(GURL("google.com")),
-                                 base::BindLambdaForTesting([contents] {
-                                   return contents->GetBrowserContext();
-                                 }),
-                                 *contents->GetPrimaryMainFrame()),
+      content::ClipboardEndpoint(
+          ui::DataTransferEndpoint(GURL("https://google.com/"))),
+      content::ClipboardEndpoint(
+          ui::DataTransferEndpoint(GURL("https://google.com/")),
+          base::BindLambdaForTesting(
+              [contents] { return contents->GetBrowserContext(); }),
+          *contents->GetPrimaryMainFrame()),
       {
           .size = clipboard_paste_data.custom_data[u"custom/data"].size(),
           .format_type = ui::ClipboardFormatType::DataTransferCustomType(),
@@ -1638,12 +1649,13 @@ IN_PROC_BROWSER_TEST_F(IsClipboardPasteAllowedTest, CustomDataBlocked) {
   clipboard_paste_data.custom_data[u"custom/data"] = u"blocked";
 
   client()->IsClipboardPasteAllowedByPolicy(
-      content::ClipboardEndpoint(ui::DataTransferEndpoint(GURL("google.com"))),
-      content::ClipboardEndpoint(ui::DataTransferEndpoint(GURL("google.com")),
-                                 base::BindLambdaForTesting([contents] {
-                                   return contents->GetBrowserContext();
-                                 }),
-                                 *contents->GetPrimaryMainFrame()),
+      content::ClipboardEndpoint(
+          ui::DataTransferEndpoint(GURL("https://google.com/"))),
+      content::ClipboardEndpoint(
+          ui::DataTransferEndpoint(GURL("https://google.com/")),
+          base::BindLambdaForTesting(
+              [contents] { return contents->GetBrowserContext(); }),
+          *contents->GetPrimaryMainFrame()),
       {
           .size = clipboard_paste_data.custom_data[u"custom/data"].size(),
           .format_type = ui::ClipboardFormatType::DataTransferCustomType(),
@@ -1678,12 +1690,13 @@ IN_PROC_BROWSER_TEST_F(IsClipboardPasteAllowedTest, AllFilesAllowed) {
   content::WebContents* contents =
       browser()->tab_strip_model()->GetWebContentsAt(0);
   client()->IsClipboardPasteAllowedByPolicy(
-      content::ClipboardEndpoint(ui::DataTransferEndpoint(GURL("google.com"))),
-      content::ClipboardEndpoint(ui::DataTransferEndpoint(GURL("google.com")),
-                                 base::BindLambdaForTesting([contents] {
-                                   return contents->GetBrowserContext();
-                                 }),
-                                 *contents->GetPrimaryMainFrame()),
+      content::ClipboardEndpoint(
+          ui::DataTransferEndpoint(GURL("https://google.com/"))),
+      content::ClipboardEndpoint(
+          ui::DataTransferEndpoint(GURL("https://google.com/")),
+          base::BindLambdaForTesting(
+              [contents] { return contents->GetBrowserContext(); }),
+          *contents->GetPrimaryMainFrame()),
       {
           .format_type = ui::ClipboardFormatType::FilenamesType(),
       },
@@ -1708,12 +1721,13 @@ IN_PROC_BROWSER_TEST_F(IsClipboardPasteAllowedTest, AllFilesBlocked) {
   content::WebContents* contents =
       browser()->tab_strip_model()->GetWebContentsAt(0);
   client()->IsClipboardPasteAllowedByPolicy(
-      content::ClipboardEndpoint(ui::DataTransferEndpoint(GURL("google.com"))),
-      content::ClipboardEndpoint(ui::DataTransferEndpoint(GURL("google.com")),
-                                 base::BindLambdaForTesting([contents] {
-                                   return contents->GetBrowserContext();
-                                 }),
-                                 *contents->GetPrimaryMainFrame()),
+      content::ClipboardEndpoint(
+          ui::DataTransferEndpoint(GURL("https://google.com/"))),
+      content::ClipboardEndpoint(
+          ui::DataTransferEndpoint(GURL("https://google.com/")),
+          base::BindLambdaForTesting(
+              [contents] { return contents->GetBrowserContext(); }),
+          *contents->GetPrimaryMainFrame()),
       {
           .format_type = ui::ClipboardFormatType::FilenamesType(),
       },
@@ -1744,12 +1758,13 @@ IN_PROC_BROWSER_TEST_F(IsClipboardPasteAllowedTest, SomeFilesBlocked) {
   content::WebContents* contents =
       browser()->tab_strip_model()->GetWebContentsAt(0);
   client()->IsClipboardPasteAllowedByPolicy(
-      content::ClipboardEndpoint(ui::DataTransferEndpoint(GURL("google.com"))),
-      content::ClipboardEndpoint(ui::DataTransferEndpoint(GURL("google.com")),
-                                 base::BindLambdaForTesting([contents] {
-                                   return contents->GetBrowserContext();
-                                 }),
-                                 *contents->GetPrimaryMainFrame()),
+      content::ClipboardEndpoint(
+          ui::DataTransferEndpoint(GURL("https://google.com/"))),
+      content::ClipboardEndpoint(
+          ui::DataTransferEndpoint(GURL("https://google.com/")),
+          base::BindLambdaForTesting(
+              [contents] { return contents->GetBrowserContext(); }),
+          *contents->GetPrimaryMainFrame()),
       {
           .format_type = ui::ClipboardFormatType::FilenamesType(),
       },
