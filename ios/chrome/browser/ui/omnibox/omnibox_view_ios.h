@@ -130,7 +130,6 @@ class OmniboxViewIOS : public OmniboxView,
   void OnDidBeginEditing() override;
   bool OnWillChange(NSRange range, NSString* new_text) override;
   void OnDidChange(bool processing_user_input) override;
-  void OnWillEndEditing() override;
   void EndEditing() override;
   void OnCopy() override;
   void ClearText() override;

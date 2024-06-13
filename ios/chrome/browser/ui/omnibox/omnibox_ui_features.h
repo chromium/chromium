@@ -7,10 +7,6 @@
 
 #import "base/feature_list.h"
 
-// Feature flag to enable omnibox suggestions scrolling on iPad. This will also
-// disable suggestions hiding on keyboard dismissal.
-BASE_DECLARE_FEATURE(kEnableSuggestionsScrollingOnIPad);
-
 // Feature flag to make omnibox popup a floating rounded rect.
 BASE_DECLARE_FEATURE(kEnablePopoutOmniboxIpad);
 

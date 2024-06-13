@@ -485,12 +485,6 @@ const char kEnableStartupImprovementsName[] =
 const char kEnableStartupImprovementsDescription[] =
     "Enables startup latency improvements to make startup faster.";
 
-const char kEnableSuggestionsScrollingOnIPadName[] =
-    "Enable omnibox suggestions scrolling on iPad";
-const char kEnableSuggestionsScrollingOnIPadDescription[] =
-    "Enable omnibox suggestions scrolling on iPad and disable suggestions "
-    "hiding on keyboard dismissal.";
-
 
 const char kEnableWebChannelsName[] = "Enable WebFeed";
 const char kEnableWebChannelsDescription[] =

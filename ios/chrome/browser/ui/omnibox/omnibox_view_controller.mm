@@ -332,17 +332,6 @@ using base::UserMetricsAction;
   _textChangeDelegate->OnDidBeginEditing();
 }
 
-- (BOOL)textFieldShouldEndEditing:(UITextField*)textField {
-  if (!_textChangeDelegate) {
-    // This can happen when the view controller is still alive but the model is
-    // already deconstructed on shutdown.
-    return YES;
-  }
-  _textChangeDelegate->OnWillEndEditing();
-
-  return YES;
-}
-
 // Record the metrics as needed.
 - (void)textFieldDidEndEditing:(UITextField*)textField
                         reason:(UITextFieldDidEndEditingReason)reason {

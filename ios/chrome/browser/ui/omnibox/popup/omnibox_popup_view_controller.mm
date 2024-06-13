@@ -60,12 +60,6 @@ const CGFloat kHeaderPadding = 2.0f;
 /// Top padding for table view headers.
 const CGFloat kHeaderTopPadding = 16.0f;
 
-/// Returns whether the keyboard is dismissed when scrolling suggestions.
-BOOL ShouldDismissKeyboardOnScroll() {
-  return ui::GetDeviceFormFactor() != ui::DEVICE_FORM_FACTOR_TABLET ||
-         base::FeatureList::IsEnabled(kEnableSuggestionsScrollingOnIPad);
-}
-
 }  // namespace
 
 @interface OmniboxPopupViewController () <OmniboxPopupActionsRowDelegate,
@@ -150,15 +144,6 @@ BOOL ShouldDismissKeyboardOnScroll() {
     _visibleSuggestionCount = 0;
     _cachedContentHeight = 0;
     NSNotificationCenter* defaultCenter = [NSNotificationCenter defaultCenter];
-    if (!ShouldDismissKeyboardOnScroll()) {
-      // The iPad keyboard can cover some of the rows of the scroll view. The
-      // scroll view's content inset may need to be updated when the keyboard is
-      // displayed.
-      [defaultCenter addObserver:self
-                        selector:@selector(keyboardDidShow:)
-                            name:UIKeyboardDidShowNotification
-                          object:nil];
-    }
     // Listen to keyboard frame change event to detect keyboard frame changes
     // (ex: when changing input method) to update the estimated number of
     // visible suggestions.
@@ -324,15 +309,6 @@ BOOL ShouldDismissKeyboardOnScroll() {
   [super viewWillDisappear:animated];
   UMA_HISTOGRAM_MEDIUM_TIMES("MobileOmnibox.PopupOpenDuration",
                              base::TimeTicks::Now() - self.viewAppearanceTime);
-}
-
-- (void)viewDidLayoutSubviews {
-  [super viewDidLayoutSubviews];
-  if (!ShouldDismissKeyboardOnScroll() &&
-      self.tableView.visibleSize.height != self.cachedContentHeight) {
-    self.cachedContentHeight = self.tableView.visibleSize.height;
-    [self updateContentInsetForKeyboard];
-  }
 }
 
 - (void)viewWillTransitionToSize:(CGSize)size
@@ -1045,28 +1021,6 @@ BOOL ShouldDismissKeyboardOnScroll() {
   }
 }
 
-/// Adjust the inset on the table view to allow user to scroll to suggestions
-/// below the keyboard.
-- (void)updateContentInsetForKeyboard {
-  // Disable content inset update when scrolling dismisses the keyboard.
-  if (ShouldDismissKeyboardOnScroll() ||
-      self.tableView.contentSize.height <= 0) {
-    return;
-  }
-  UIWindow* currentWindow = self.tableView.window;
-  CGRect absoluteRect =
-      [self.tableView convertRect:self.tableView.bounds
-                toCoordinateSpace:currentWindow.coordinateSpace];
-  CGFloat windowHeight = CGRectGetHeight(currentWindow.bounds);
-  CGFloat bottomInset = windowHeight - self.tableView.visibleSize.height -
-                        self.keyboardHeight - absoluteRect.origin.y -
-                        kBottomPadding - kTopPadding;
-  bottomInset = MAX(kBottomPadding, -bottomInset);
-  self.tableView.contentInset =
-      UIEdgeInsetsMake(kTopPadding, 0, bottomInset, 0);
-  self.tableView.scrollIndicatorInsets = self.tableView.contentInset;
-}
-
 /// Updates the color of the background based on the incognito-ness and the size
 /// class.
 - (void)updateBackgroundColor {
@@ -1105,14 +1059,6 @@ BOOL ShouldDismissKeyboardOnScroll() {
 }
 
 #pragma mark - Keyboard events
-
-/// Handles `UIKeyboardDidShowNotification`, only active when
-/// `ShouldDismissKeyboardOnScroll` is false.
-- (void)keyboardDidShow:(NSNotification*)notification {
-  self.keyboardHeight =
-      [KeyboardObserverHelper keyboardHeightInWindow:self.tableView.window];
-  [self updateContentInsetForKeyboard];
-}
 
 - (void)keyboardDidChangeFrame:(NSNotification*)notification {
   CGFloat keyboardHeight =

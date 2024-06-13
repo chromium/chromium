@@ -8156,11 +8156,6 @@
     "expiry_milestone": 93
   },
   {
-    "name": "suggestions-scrolling-ipad",
-    "owners": [ "christianxu@chromium.org", "bling-flags@google.com" ],
-    "expiry_milestone": 130
-  },
-  {
     "name": "support-f11-and-f12-shortcuts",
     "owners": [ "michaelcheco@chromium.org", "cros-peripherals@google.com"],
     "expiry_milestone": 130

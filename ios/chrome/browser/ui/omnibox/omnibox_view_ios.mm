@@ -376,21 +376,6 @@ void OmniboxViewIOS::OnDidBeginEditing() {
     [focus_delegate_ omniboxDidBecomeFirstResponder];
 }
 
-void OmniboxViewIOS::OnWillEndEditing() {
-  // On iPad, this will be called when the "hide keyboard" button is pressed
-  // on the software keyboard.
-  // This will also be called if -resignFirstResponder is called
-  // programmatically. On phone, the omnibox may still be editing when
-  // the popup is open, so the Cancel button calls OnWillEndEditing.
-  if (!base::FeatureList::IsEnabled(kEnableSuggestionsScrollingOnIPad) &&
-      ui::GetDeviceFormFactor() == ui::DEVICE_FORM_FACTOR_TABLET) {
-    // This should be equivalent to tapping the typing
-    // shield and should defocus the omnibox, transition the location bar to
-    // steady view, and close the popup.
-    [omnibox_focuser_ cancelOmniboxEdit];
-  }
-}
-
 bool OmniboxViewIOS::OnWillChange(NSRange range, NSString* new_text) {
   bool ok_to_change = true;
 
@@ -697,10 +682,7 @@ int OmniboxViewIOS::GetOmniboxTextLength() const {
 #pragma mark - OmniboxPopupViewSuggestionsDelegate
 
 void OmniboxViewIOS::OnPopupDidScroll() {
-  if (ui::GetDeviceFormFactor() != ui::DEVICE_FORM_FACTOR_TABLET ||
-      base::FeatureList::IsEnabled(kEnableSuggestionsScrollingOnIPad)) {
-    this->HideKeyboard();
-  }
+  this->HideKeyboard();
   suggestions_list_scrolled_ = true;
 }
 

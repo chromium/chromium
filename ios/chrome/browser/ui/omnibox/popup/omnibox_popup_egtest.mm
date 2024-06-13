@@ -427,99 +427,6 @@ std::unique_ptr<net::test_server::HttpResponse> StandardResponse(
                                                        _URL2)];
 }
 
-// Test that on iPhones, when the popup is scrolled, the keyboard is dismissed
-// but the omnibox is still expanded and the suggestions are visible.
-// Test with flag kEnableSuggestionsScrollingOnIPad disabled.
-- (void)testScrollingDismissesKeyboardOnPhones {
-  [[AppLaunchManager sharedManager]
-      ensureAppLaunchedWithFeaturesEnabled:{}
-                                  disabled:{kEnableSuggestionsScrollingOnIPad}
-                            relaunchPolicy:ForceRelaunchByCleanShutdown];
-  [[EarlGrey selectElementWithMatcher:chrome_test_util::FakeOmnibox()]
-      performAction:grey_tap()];
-  [ChromeEarlGrey
-      waitForSufficientlyVisibleElementWithMatcher:chrome_test_util::Omnibox()];
-  [[EarlGrey selectElementWithMatcher:chrome_test_util::Omnibox()]
-      performAction:grey_replaceText(@"hello")];
-
-  // Matcher for a URL-what-you-typed suggestion.
-  id<GREYMatcher> textMatcher = grey_descendant(
-      chrome_test_util::StaticTextWithAccessibilityLabel(@"hello"));
-  id<GREYMatcher> row =
-      grey_allOf(chrome_test_util::OmniboxPopupRow(), textMatcher, nil);
-
-  // Omnibox can reorder itself in multiple animations, so add an extra wait
-  // here.
-  [ChromeEarlGrey waitForUIElementToAppearWithMatcher:row];
-  GREYAssertTrue([EarlGrey isKeyboardShownWithError:nil],
-                 @"Keyboard Should be Shown");
-
-  // Scroll the popup. This swipes from the point located at 50% of the width of
-  // the frame horizontally and most importantly 10% of the height of the frame
-  // vertically. This is necessary if the center of the list's accessibility
-  // frame is not visible, as it is the default start point.
-  [[EarlGrey selectElementWithMatcher:chrome_test_util::OmniboxPopupList()]
-      performAction:grey_swipeFastInDirectionWithStartPoint(kGREYDirectionDown,
-                                                            0.5, 0.1)];
-  [[EarlGrey selectElementWithMatcher:row]
-      assertWithMatcher:grey_interactable()];
-
-  // The keyboard should only be dismissed on phones. Ipads, even in
-  // multitasking, are considered tall enough to fit all suggestions.
-  if ([ChromeEarlGrey isIPadIdiom]) {
-    GREYAssertTrue([EarlGrey isKeyboardShownWithError:nil],
-                   @"Keyboard Should be Shown");
-  } else {
-    GREYAssertFalse([EarlGrey isKeyboardShownWithError:nil],
-                    @"Keyboard Should not be Shown");
-  }
-}
-
-// Test when the popup is scrolled, the keyboard is dismissed
-// but the omnibox is still expanded and the suggestions are visible.
-// Test with flag kEnableSuggestionsScrollingOnIPad enabled.
-- (void)testScrollingDismissesKeyboard {
-  [[AppLaunchManager sharedManager]
-      ensureAppLaunchedWithFeaturesEnabled:{kEnableSuggestionsScrollingOnIPad}
-                                  disabled:{}
-                            relaunchPolicy:ForceRelaunchByCleanShutdown];
-
-  [[EarlGrey selectElementWithMatcher:chrome_test_util::FakeOmnibox()]
-      performAction:grey_tap()];
-  [ChromeEarlGrey
-      waitForSufficientlyVisibleElementWithMatcher:chrome_test_util::Omnibox()];
-  [[EarlGrey selectElementWithMatcher:chrome_test_util::Omnibox()]
-      performAction:grey_replaceText(@"hello")];
-
-  // Matcher for a URL-what-you-typed suggestion.
-  id<GREYMatcher> textMatcher = grey_descendant(
-      chrome_test_util::StaticTextWithAccessibilityLabel(@"hello"));
-  id<GREYMatcher> row =
-      grey_allOf(chrome_test_util::OmniboxPopupRow(), textMatcher,
-                 grey_sufficientlyVisible(), nil);
-
-  // Omnibox can reorder itself in multiple animations, so add an extra wait
-  // here.
-  [ChromeEarlGrey waitForSufficientlyVisibleElementWithMatcher:row];
-  GREYAssertTrue([EarlGrey isKeyboardShownWithError:nil],
-                 @"Keyboard Should be Shown");
-
-  // Scroll the popup. This swipes from the point located at 50% of the width of
-  // the frame horizontally and most importantly 10% of the height of the frame
-  // vertically. This is necessary if the center of the list's accessibility
-  // frame is not visible, as it is the default start point.
-  [[EarlGrey selectElementWithMatcher:chrome_test_util::OmniboxPopupList()]
-      performAction:grey_swipeFastInDirectionWithStartPoint(kGREYDirectionDown,
-                                                            0.5, 0.1)];
-
-  [[EarlGrey selectElementWithMatcher:row]
-      assertWithMatcher:grey_sufficientlyVisible()];
-
-  // The keyboard should be dismissed.
-  GREYAssertFalse([EarlGrey isKeyboardShownWithError:nil],
-                  @"Keyboard Should not be Shown");
-}
-
 // Tests that selecting a suggestion in the omnibox and successfully navigating
 // to it adds an entry in the shortcuts database.
 - (void)testShortcutsDatabasePopulation {
@@ -606,6 +513,45 @@ std::unique_ptr<net::test_server::HttpResponse> StandardResponse(
   [ChromeEarlGrey
       waitForUIElementToAppearWithMatcher:
           chrome_test_util::OmniboxPopupRowWithString(@"abcdefghi")];
+}
+
+// Test when the popup is scrolled, the keyboard is dismissed
+// but the omnibox is still expanded and the suggestions are visible.
+- (void)testScrollingDismissesKeyboard {
+  [[EarlGrey selectElementWithMatcher:chrome_test_util::FakeOmnibox()]
+      performAction:grey_tap()];
+  [ChromeEarlGrey
+      waitForSufficientlyVisibleElementWithMatcher:chrome_test_util::Omnibox()];
+  [[EarlGrey selectElementWithMatcher:chrome_test_util::Omnibox()]
+      performAction:grey_replaceText(@"abc")];
+
+  // Matcher for a URL-what-you-typed suggestion.
+  id<GREYMatcher> textMatcher = grey_descendant(
+      chrome_test_util::StaticTextWithAccessibilityLabel(@"abc"));
+  id<GREYMatcher> row =
+      grey_allOf(chrome_test_util::OmniboxPopupRow(), textMatcher,
+                 grey_sufficientlyVisible(), nil);
+
+  // Omnibox can reorder itself in multiple animations, so add an extra wait
+  // here.
+  [ChromeEarlGrey waitForSufficientlyVisibleElementWithMatcher:row];
+  GREYAssertTrue([EarlGrey isKeyboardShownWithError:nil],
+                 @"Keyboard Should be Shown");
+
+  // Scroll the popup. This swipes from the point located at 50% of the width of
+  // the frame horizontally and most importantly 10% of the height of the frame
+  // vertically. This is necessary if the center of the list's accessibility
+  // frame is not visible, as it is the default start point.
+  [[EarlGrey selectElementWithMatcher:chrome_test_util::OmniboxPopupList()]
+      performAction:grey_swipeFastInDirectionWithStartPoint(kGREYDirectionDown,
+                                                            0.5, 0.1)];
+
+  [[EarlGrey selectElementWithMatcher:row]
+      assertWithMatcher:grey_sufficientlyVisible()];
+
+  // The keyboard should be dismissed.
+  GREYAssertFalse([EarlGrey isKeyboardShownWithError:nil],
+                  @"Keyboard Should not be Shown");
 }
 
 @end

@@ -400,11 +400,6 @@ extern const char kEnableReadingListAccountStorageDescription[];
 extern const char kEnableReadingListSignInPromoName[];
 extern const char kEnableReadingListSignInPromoDescription[];
 
-// Title and description for the flag to enable omnibox suggestions scrolling on
-// iPad.
-extern const char kEnableSuggestionsScrollingOnIPadName[];
-extern const char kEnableSuggestionsScrollingOnIPadDescription[];
-
 // Title and description for the flag to enable startup latency improvements.
 extern const char kEnableStartupImprovementsName[];
 extern const char kEnableStartupImprovementsDescription[];
