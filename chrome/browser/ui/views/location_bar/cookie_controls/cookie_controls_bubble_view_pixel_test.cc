@@ -26,6 +26,7 @@
 #include "components/content_settings/core/common/tracking_protection_feature.h"
 #include "components/content_settings/core/test/content_settings_mock_provider.h"
 #include "components/content_settings/core/test/content_settings_test_utils.h"
+#include "components/privacy_sandbox/privacy_sandbox_features.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/browser_test_utils.h"
@@ -293,5 +294,39 @@ INSTANTIATE_TEST_SUITE_P(
     CookieControlsBubbleViewPixelTest,
     testing::ValuesIn({CookieBlocking3pcdStatus::kNotIn3pcd,
                        CookieBlocking3pcdStatus::kLimited,
+                       CookieBlocking3pcdStatus::kAll}),
+    &ParamToTestSuffix);
+
+class CookieControlsBubbleViewTrackingProtectionUiPixelTest
+    : public CookieControlsBubbleViewPixelTest {
+ public:
+  CookieControlsBubbleViewTrackingProtectionUiPixelTest() = default;
+
+  void SetUp() override {
+    scoped_feature_list_.InitAndEnableFeature(
+        privacy_sandbox::kTrackingProtectionSettingsLaunch);
+    CookieControlsBubbleViewPixelTest::SetUp();
+  }
+
+ protected:
+  base::test::ScopedFeatureList scoped_feature_list_;
+};
+
+IN_PROC_BROWSER_TEST_P(CookieControlsBubbleViewTrackingProtectionUiPixelTest,
+                       InvokeUi_SiteHasNoException) {
+  ShowAndVerifyUi();
+}
+
+IN_PROC_BROWSER_TEST_P(CookieControlsBubbleViewTrackingProtectionUiPixelTest,
+                       InvokeUi_SiteHasTemporaryException) {
+  protections_on_ = false;
+  days_to_expiration_ = 90;
+  ShowAndVerifyUi();
+}
+
+INSTANTIATE_TEST_SUITE_P(
+    /*no prefix*/,
+    CookieControlsBubbleViewTrackingProtectionUiPixelTest,
+    testing::ValuesIn({CookieBlocking3pcdStatus::kLimited,
                        CookieBlocking3pcdStatus::kAll}),
     &ParamToTestSuffix);

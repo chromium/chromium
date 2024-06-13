@@ -5370,6 +5370,8 @@ static_library("ui") {
       "views/controls/site_icon_text_and_origin_view.h",
       "views/controls/subpage_view.cc",
       "views/controls/subpage_view.h",
+      "views/controls/text_with_controls_view.cc",
+      "views/controls/text_with_controls_view.h",
       "views/data_sharing/data_sharing_bubble_controller.cc",
       "views/data_sharing/data_sharing_bubble_controller.h",
       "views/desktop_capture/desktop_media_content_pane_view.cc",

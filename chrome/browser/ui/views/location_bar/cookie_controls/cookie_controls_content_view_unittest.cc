@@ -57,7 +57,7 @@ TEST_F(CookieControlsContentViewUnitTest, ToggleButton_Initial) {
 
 TEST_F(CookieControlsContentViewUnitTest, ToggleButton_UpdatedSites) {
   const std::u16string label = u"17 sites allowed";
-  GetContentView()->SetToggleLabel(label);
+  GetContentView()->SetCookiesLabel(label);
   std::u16string expected = base::JoinString(
       {l10n_util::GetStringUTF16(
            IDS_COOKIE_CONTROLS_BUBBLE_THIRD_PARTY_COOKIES_LABEL),

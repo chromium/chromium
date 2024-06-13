@@ -73,7 +73,7 @@ class MockCookieControlsContentView : public CookieControlsContentView {
               (override));
   MOCK_METHOD(void, SetToggleIsOn, (bool), (override));
   MOCK_METHOD(void, SetToggleIcon, (const gfx::VectorIcon&), (override));
-  MOCK_METHOD(void, SetToggleLabel, (const std::u16string&), (override));
+  MOCK_METHOD(void, SetCookiesLabel, (const std::u16string&), (override));
   MOCK_METHOD(void, SetFeedbackSectionVisibility, (bool), (override));
   MOCK_METHOD(void, SetContentLabelsVisible, (bool), (override));
   MOCK_METHOD(void, SetToggleVisible, (bool), (override));
@@ -299,7 +299,7 @@ TEST_P(CookieControlsBubbleViewController3pcdStatusesTest,
               SetToggleIcon(testing::Field(&gfx::VectorIcon::name,
                                            views::kEyeRefreshIcon.name)));
   EXPECT_CALL(*mock_content_view(),
-              SetToggleLabel(l10n_util::GetStringUTF16(
+              SetCookiesLabel(l10n_util::GetStringUTF16(
                   IDS_TRACKING_PROTECTION_BUBBLE_COOKIES_ALLOWED_LABEL)));
   blocking_status_ = GetParam();
   protections_on_ = false;
@@ -314,7 +314,7 @@ TEST_P(CookieControlsBubbleViewController3pcdStatusesTest,
               SetToggleIcon(testing::Field(
                   &gfx::VectorIcon::name, views::kEyeCrossedRefreshIcon.name)));
   EXPECT_CALL(*mock_content_view(),
-              SetToggleLabel(l10n_util::GetStringUTF16(
+              SetCookiesLabel(l10n_util::GetStringUTF16(
                   GetParam() == CookieBlocking3pcdStatus::kAll
                       ? IDS_TRACKING_PROTECTION_BUBBLE_COOKIES_BLOCKED_LABEL
                       : IDS_TRACKING_PROTECTION_BUBBLE_COOKIES_LIMITED_LABEL)));
@@ -500,7 +500,7 @@ TEST_F(CookieControlsBubbleViewControllerPre3pcdTest,
   EXPECT_CALL(*mock_content_view(), SetFeedbackSectionVisibility(false));
   EXPECT_CALL(*mock_content_view(), SetToggleIsOn(false));
   EXPECT_CALL(*mock_content_view(),
-              SetToggleLabel(l10n_util::GetStringUTF16(
+              SetCookiesLabel(l10n_util::GetStringUTF16(
                   IDS_TRACKING_PROTECTION_BUBBLE_COOKIES_BLOCKED_LABEL)));
   EXPECT_CALL(*mock_content_view(),
               SetToggleIcon(testing::Field(
@@ -524,7 +524,7 @@ TEST_F(CookieControlsBubbleViewControllerPre3pcdTest,
   EXPECT_CALL(*mock_content_view(), SetFeedbackSectionVisibility(true));
   EXPECT_CALL(*mock_content_view(), SetToggleIsOn(true));
   EXPECT_CALL(*mock_content_view(),
-              SetToggleLabel(l10n_util::GetStringUTF16(
+              SetCookiesLabel(l10n_util::GetStringUTF16(
                   IDS_TRACKING_PROTECTION_BUBBLE_COOKIES_ALLOWED_LABEL)));
   EXPECT_CALL(*mock_content_view(),
               SetToggleIcon(testing::Field(&gfx::VectorIcon::name,
@@ -550,7 +550,7 @@ TEST_F(CookieControlsBubbleViewControllerPre3pcdTest,
   EXPECT_CALL(*mock_content_view(), SetFeedbackSectionVisibility(true));
   EXPECT_CALL(*mock_content_view(), SetToggleIsOn(true));
   EXPECT_CALL(*mock_content_view(),
-              SetToggleLabel(l10n_util::GetStringUTF16(
+              SetCookiesLabel(l10n_util::GetStringUTF16(
                   IDS_TRACKING_PROTECTION_BUBBLE_COOKIES_ALLOWED_LABEL)));
   EXPECT_CALL(*mock_content_view(),
               SetToggleIcon(testing::Field(&gfx::VectorIcon::name,

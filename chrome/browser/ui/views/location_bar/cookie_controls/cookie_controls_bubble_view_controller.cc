@@ -175,7 +175,7 @@ void CookieControlsBubbleViewController::FillViewForThirdPartyCookies(
   } else {
     ApplyThirdPartyCookiesAllowedState(cookies_feature.enforcement, expiration);
   }
-  bubble_view_->GetContentView()->SetToggleLabel(
+  bubble_view_->GetContentView()->SetCookiesLabel(
       GetStatusLabel(cookies_feature.status));
   switch (cookies_feature.enforcement) {
     case CookieControlsEnforcement::kNoEnforcement:
