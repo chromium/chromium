@@ -7,6 +7,7 @@
 
 #include "base/android/jni_weak_ref.h"
 #include "base/memory/raw_ptr.h"
+#include "base/scoped_observation.h"
 #include "chrome/browser/ui/cookie_controls/cookie_controls_service.h"
 #include "components/content_settings/core/common/cookie_controls_enforcement.h"
 
@@ -48,6 +49,9 @@ class CookieControlsServiceBridge : public CookieControlsService::Observer {
   raw_ptr<CookieControlsService> service_;
   base::android::ScopedJavaGlobalRef<jobject> jobject_;
   raw_ptr<Profile> profile_;
+  base::ScopedObservation<CookieControlsService,
+                          CookieControlsService::Observer>
+      cookie_controls_service_obs_{this};
 };
 
 #endif  // CHROME_BROWSER_ANDROID_PREFERENCES_COOKIE_CONTROLS_SERVICE_BRIDGE_H_
