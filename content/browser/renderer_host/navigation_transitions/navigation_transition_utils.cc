@@ -68,7 +68,8 @@ NavigationEntryImpl* GetEntryForToken(
         destination_token) {
   for (int i = 0; i < controller->GetEntryCount(); ++i) {
     if (auto* entry = controller->GetEntryAtIndex(i);
-        entry->same_document_navigation_entry_screenshot_token() ==
+        entry->navigation_transition_data()
+            .same_document_navigation_entry_screenshot_token() ==
         destination_token) {
       return entry;
     }
@@ -136,10 +137,12 @@ void CacheScreenshotImpl(NavigationControllerImpl& controller,
   bitmap_copy.setImmutable();
 
   auto screenshot = std::make_unique<NavigationEntryScreenshot>(
-      bitmap_copy, entry.GetUniqueID(), is_copied_from_embedder);
+      bitmap_copy, entry.GetUniqueID());
   NavigationEntryScreenshotCache* cache =
       controller.GetNavigationEntryScreenshotCache();
   cache->SetScreenshot(&entry, std::move(screenshot));
+  entry.navigation_transition_data().set_is_copied_from_embedder(
+      is_copied_from_embedder);
 }
 
 void CacheScreenshotForCrossDocNavigations(
@@ -283,8 +286,8 @@ void CacheScreenshotForSameDocNavigations(
                       std::move(navigation_request),
                       /*is_copied_from_embedder=*/false, bitmap);
 
-  destination_entry->SetSameDocumentNavigationEntryScreenshotToken(
-      std::nullopt);
+  destination_entry->navigation_transition_data()
+      .SetSameDocumentNavigationEntryScreenshotToken(std::nullopt);
 }
 
 }  // namespace
@@ -460,7 +463,8 @@ void NavigationTransitionUtils::SetSameDocumentNavigationEntryScreenshotToken(
   // `blink::SameDocNavigationScreenshotDestinationToken` is guaranteed
   // non-empty.
   nav_controller.GetLastCommittedEntry()
-      ->SetSameDocumentNavigationEntryScreenshotToken(destination_token);
+      ->navigation_transition_data()
+      .SetSameDocumentNavigationEntryScreenshotToken(destination_token);
 
   CHECK(GetHostFrameSinkManager());
 

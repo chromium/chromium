@@ -19,6 +19,7 @@
 #include "build/build_config.h"
 #include "content/browser/renderer_host/back_forward_cache_metrics.h"
 #include "content/browser/renderer_host/frame_navigation_entry.h"
+#include "content/browser/renderer_host/navigation_transitions/navigation_transition_data.h"
 #include "content/browser/site_instance_impl.h"
 #include "content/common/content_export.h"
 #include "content/public/browser/favicon_status.h"
@@ -509,13 +510,11 @@ class CONTENT_EXPORT NavigationEntryImpl : public NavigationEntry {
     return initial_navigation_entry_state_;
   }
 
-  void SetSameDocumentNavigationEntryScreenshotToken(
-      const std::optional<blink::SameDocNavigationScreenshotDestinationToken>&
-          token);
-
-  const std::optional<blink::SameDocNavigationScreenshotDestinationToken>&
-  same_document_navigation_entry_screenshot_token() const {
-    return same_document_navigation_entry_screenshot_token_;
+  NavigationTransitionData& navigation_transition_data() {
+    return navigation_transition_data_;
+  }
+  const NavigationTransitionData& navigation_transition_data() const {
+    return navigation_transition_data_;
   }
 
  private:
@@ -657,13 +656,9 @@ class CONTENT_EXPORT NavigationEntryImpl : public NavigationEntry {
   InitialNavigationEntryState initial_navigation_entry_state_ =
       InitialNavigationEntryState::kNonInitial;
 
-  // Used to map a screenshot for the last frame of this navigation entry
-  // captured in Viz and sent back to the browser process. The token is set when
-  // `DidCommitSameDocumentNavigation` is received in the browser process from
-  // the renderer; and reset when its corresponding screenshot is received by
-  // the browser process from Viz.
-  std::optional<blink::SameDocNavigationScreenshotDestinationToken>
-      same_document_navigation_entry_screenshot_token_;
+  // Information about a navigation transition. See the comments on the class
+  // for details.
+  NavigationTransitionData navigation_transition_data_;
 };
 
 }  // namespace content

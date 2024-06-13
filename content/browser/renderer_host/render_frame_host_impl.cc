@@ -7102,6 +7102,12 @@ void RenderFrameHostImpl::DidChangeBackgroundColor(
   // TODO(crbug.com/40188381): Consider moving this to PageImpl.
   DCHECK(is_main_frame());
   GetPage().DidChangeBackgroundColor(background_color, color_adjust);
+  NavigationEntryImpl* entry =
+      frame_tree()->controller().GetEntryWithUniqueID(nav_entry_id_);
+  if (entry) {
+    entry->navigation_transition_data().set_main_frame_background_color(
+        background_color);
+  }
 }
 
 void RenderFrameHostImpl::SetCommitCallbackInterceptorForTesting(

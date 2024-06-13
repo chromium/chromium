@@ -279,13 +279,15 @@ class AnimatorForTesting : public BackForwardTransitionAnimator {
       const ui::BackGestureEvent& gesture,
       BackForwardTransitionAnimationManager::NavigationDirection nav_type,
       int destination_entry_id,
-      BackForwardTransitionAnimationManagerAndroid* animation_manager)
+      BackForwardTransitionAnimationManagerAndroid* animation_manager,
+      const NavigationTransitionData& transition_data)
       : BackForwardTransitionAnimator(web_contents_view_android,
                                       controller,
                                       gesture,
                                       nav_type,
                                       destination_entry_id,
-                                      animation_manager),
+                                      animation_manager,
+                                      transition_data),
         wcva_(web_contents_view_android) {}
 
   ~AnimatorForTesting() override {
@@ -576,11 +578,11 @@ class FactoryForTesting : public BackForwardTransitionAnimator::Factory {
       const ui::BackGestureEvent& gesture,
       BackForwardTransitionAnimationManager::NavigationDirection nav_type,
       int destination_entry_id,
-      BackForwardTransitionAnimationManagerAndroid* animation_manager)
-      override {
+      BackForwardTransitionAnimationManagerAndroid* animation_manager,
+      const NavigationTransitionData& transition_data) override {
     return std::make_unique<AnimatorForTesting>(
         web_contents_view_android, controller, gesture, nav_type,
-        destination_entry_id, animation_manager);
+        destination_entry_id, animation_manager, transition_data);
   }
 };
 }  // namespace

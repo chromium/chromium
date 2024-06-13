@@ -109,7 +109,8 @@ void BackForwardTransitionAnimationManagerAndroid::OnGestureStarted(
   CHECK(animator_factory_);
   animator_ = animator_factory_->Create(
       web_contents_view_android_.get(), navigation_controller_.get(), gesture,
-      navigation_direction, destination_entry->GetUniqueID(), this);
+      navigation_direction, destination_entry->GetUniqueID(), this,
+      destination_entry->navigation_transition_data());
   OnAnimationStageChanged();
 }
 

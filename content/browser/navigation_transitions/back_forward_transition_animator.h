@@ -60,7 +60,8 @@ class CONTENT_EXPORT BackForwardTransitionAnimator
         BackForwardTransitionAnimationManager::NavigationDirection
             nav_direction,
         int destination_entry_id,
-        BackForwardTransitionAnimationManagerAndroid* animation_manager);
+        BackForwardTransitionAnimationManagerAndroid* animation_manager,
+        const NavigationTransitionData& transition_data);
   };
 
   BackForwardTransitionAnimator(const BackForwardTransitionAnimator&) = delete;
@@ -88,7 +89,8 @@ class CONTENT_EXPORT BackForwardTransitionAnimator
       const ui::BackGestureEvent& gesture,
       BackForwardTransitionAnimationManager::NavigationDirection nav_type,
       int destination_entry_id,
-      BackForwardTransitionAnimationManagerAndroid* animation_manager);
+      BackForwardTransitionAnimationManagerAndroid* animation_manager,
+      const NavigationTransitionData& transition_data);
 
   // `RenderFrameMetadataProvider::Observer`:
   void OnRenderFrameMetadataChangedBeforeActivation(
@@ -327,6 +329,15 @@ class CONTENT_EXPORT BackForwardTransitionAnimator
   // animation. This is to keep the cache from evicting the screenshot while
   // it's being displayed in the UI.
   std::unique_ptr<NavigationEntryScreenshot> screenshot_;
+
+  // Other information about the screenshot, and about the page we are
+  // navigating towards.
+  //
+  // If `screenshot_` is supplied by the embedder.
+  const bool is_copied_from_embedder_;
+  // The background color of the destination page. Used to compose a fallback
+  // screenshot when no screenshot is available in the desination entry.
+  const SkColor4f main_frame_background_color_;
 
   // Tracks various state of the navigation request associated with this
   // gesture. Only set if the navigation request is successfully created.

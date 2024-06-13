@@ -46,6 +46,9 @@ void PutScreenshotBack(NavigationControllerImpl* controller,
   }
 }
 
+// The default background color if the CSS has not computed one.
+static constexpr SkColor4f kDefaultBackgoundColor = SkColors::kWhite;
+
 //========================== Fitted animation timeline =========================
 //
 // The animations for `OnGestureProgressed` are driven purely by user gestures.
@@ -137,10 +140,11 @@ BackForwardTransitionAnimator::Factory::Create(
     const ui::BackGestureEvent& gesture,
     NavigationDirection nav_direction,
     int destination_entry_id,
-    BackForwardTransitionAnimationManagerAndroid* animation_manager) {
+    BackForwardTransitionAnimationManagerAndroid* animation_manager,
+    const NavigationTransitionData& transition_data) {
   return base::WrapUnique(new BackForwardTransitionAnimator(
       web_contents_view_android, controller, gesture, nav_direction,
-      destination_entry_id, animation_manager));
+      destination_entry_id, animation_manager, transition_data));
 }
 
 BackForwardTransitionAnimator::~BackForwardTransitionAnimator() {
@@ -202,10 +206,15 @@ BackForwardTransitionAnimator::BackForwardTransitionAnimator(
     const ui::BackGestureEvent& gesture,
     NavigationDirection nav_direction,
     int destination_entry_id,
-    BackForwardTransitionAnimationManagerAndroid* animation_manager)
+    BackForwardTransitionAnimationManagerAndroid* animation_manager,
+    const NavigationTransitionData& transition_data)
     : nav_direction_(nav_direction),
       destination_entry_id_(destination_entry_id),
       animation_manager_(animation_manager),
+      is_copied_from_embedder_(transition_data.is_copied_from_embedder()),
+      main_frame_background_color_(
+          transition_data.main_frame_background_color().value_or(
+              kDefaultBackgoundColor)),
       physics_model_(web_contents_view_android->GetNativeView()
                          ->GetPhysicalBackingSize()
                          .width(),
@@ -752,7 +761,7 @@ void BackForwardTransitionAnimator::OnInvokeAnimationDisplayed() {
   // viewport, so the `KeyFrameModel` for the scrim should also be exhausted and
   // removed.
   CHECK(effect_.keyframe_models().empty());
-  if (screenshot_->is_copied_from_embedder()) {
+  if (is_copied_from_embedder_) {
     AdvanceAndProcessState(State::kWaitingForContentForNavigationEntryShown);
   } else if (viz_has_activated_first_frame_) {
     AdvanceAndProcessState(State::kDisplayingCrossFadeAnimation);
@@ -1220,7 +1229,7 @@ void BackForwardTransitionAnimator::SubscribeToNewRenderWidgetHost(
   CHECK_EQ(primary_main_frame_navigation_entry_item_sequence_number_,
            cc::RenderFrameMetadata::kInvalidItemSequenceNumber);
 
-  if (screenshot_->is_copied_from_embedder()) {
+  if (is_copied_from_embedder_) {
     // The embedder will be responsible for cross-fading from the screenshot
     // to the new content. We don't register
     // `RenderFrameMetadataProvider::Observer` and do not set

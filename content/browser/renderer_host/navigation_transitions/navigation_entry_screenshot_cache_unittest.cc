@@ -82,8 +82,7 @@ class NavigationEntryScreenshotCacheTest : public RenderViewHostTestHarness {
     auto* entry = GetEntryWithID(tab, entry_id);
     auto* cache = GetCacheForTab(tab);
     cache->SetScreenshot(
-        entry, std::make_unique<NavigationEntryScreenshot>(
-                   bitmap, entry_id, /*is_copied_from_embedder=*/false));
+        entry, std::make_unique<NavigationEntryScreenshot>(bitmap, entry_id));
   }
 
   std::unique_ptr<NavigationEntryScreenshot> GetScreenshot(WebContents* tab,

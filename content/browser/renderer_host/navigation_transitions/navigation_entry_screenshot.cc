@@ -12,13 +12,10 @@ namespace content {
 const void* const NavigationEntryScreenshot::kUserDataKey =
     &NavigationEntryScreenshot::kUserDataKey;
 
-NavigationEntryScreenshot::NavigationEntryScreenshot(
-    const SkBitmap& bitmap,
-    int navigation_entry_id,
-    bool is_copied_from_embedder)
+NavigationEntryScreenshot::NavigationEntryScreenshot(const SkBitmap& bitmap,
+                                                     int navigation_entry_id)
     : bitmap_(cc::UIResourceBitmap(bitmap)),
-      navigation_entry_id_(navigation_entry_id),
-      is_copied_from_embedder_(is_copied_from_embedder) {
+      navigation_entry_id_(navigation_entry_id) {
   CHECK(AreBackForwardTransitionsEnabled());
 }
 

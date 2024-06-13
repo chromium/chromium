@@ -444,7 +444,9 @@ NavigationEntryImpl::NavigationEntryImpl(
               : InitialNavigationEntryState::kNonInitial) {}
 
 NavigationEntryImpl::~NavigationEntryImpl() {
-  if (same_document_navigation_entry_screenshot_token_.has_value()) {
+  if (navigation_transition_data_
+          .same_document_navigation_entry_screenshot_token()
+          .has_value()) {
     // We get here if:
     // - `DidCommitSameDocumentNavigation` sets the token, promising a
     //    screenshot was supposed to arrive.
@@ -453,7 +455,9 @@ NavigationEntryImpl::~NavigationEntryImpl() {
     viz::HostFrameSinkManager* manager = GetHostFrameSinkManager();
     CHECK(manager);
     manager->InvalidateCopyOutputReadyCallback(
-        same_document_navigation_entry_screenshot_token_.value());
+        navigation_transition_data_
+            .same_document_navigation_entry_screenshot_token()
+            .value());
   }
 }
 
@@ -1256,18 +1260,6 @@ void NavigationEntryImpl::UpdateBackForwardCacheNotRestoredReasons(
 
 GURL NavigationEntryImpl::GetHistoryURLForDataURL() {
   return GetBaseURLForDataURL().is_empty() ? GURL() : GetVirtualURL();
-}
-
-void NavigationEntryImpl::SetSameDocumentNavigationEntryScreenshotToken(
-    const std::optional<blink::SameDocNavigationScreenshotDestinationToken>&
-        token) {
-  viz::HostFrameSinkManager* manager = GetHostFrameSinkManager();
-  CHECK(manager);
-  if (same_document_navigation_entry_screenshot_token_.has_value()) {
-    manager->InvalidateCopyOutputReadyCallback(
-        same_document_navigation_entry_screenshot_token_.value());
-  }
-  same_document_navigation_entry_screenshot_token_ = token;
 }
 
 }  // namespace content
