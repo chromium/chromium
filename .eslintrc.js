@@ -291,6 +291,9 @@ module.exports = {
           },
         }
       }],
+
+      // https://google.github.io/styleguide/tsguide.html#ts-ignore
+      '@typescript-eslint/ban-ts-comment': ['error', {'ts-ignore': true}],
     }
   }]
 };

@@ -11,5 +11,8 @@ module.exports = {
 
     // Turn off since there are many violations in this folder.
     '@typescript-eslint/consistent-type-imports' : 'off',
+
+    // Turn off until violations in this folder are fixed.
+    '@typescript-eslint/ban-ts-comment' : 'off',
   },
 };

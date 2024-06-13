@@ -56,6 +56,7 @@ export class MockChromeFileManagerPrivateDirectoryChanged {
 
     window.chrome.fileManagerPrivate = window.chrome.fileManagerPrivate || {};
 
+    /* eslint-disable-next-line @typescript-eslint/ban-ts-comment */
     // @ts-ignore: The file_manager_private.d.ts don't allow to overwrite
     // `onDirectoryChanged`.
     window.chrome.fileManagerPrivate.onDirectoryChanged =
