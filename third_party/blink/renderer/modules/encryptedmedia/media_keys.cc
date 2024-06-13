@@ -57,44 +57,6 @@
 #define MEDIA_KEYS_LOG_LEVEL 3
 
 namespace blink {
-namespace {
-
-// TODO(crbug/1347553): Remove duplicate function and merge it with the one
-// used in platform/media.
-media::HdcpVersion ConvertEncryptedMediaHdcpVersion(
-    const WebString& hdcp_version_string) {
-  if (!hdcp_version_string.ContainsOnlyASCII())
-    return media::HdcpVersion::kHdcpVersionNone;
-
-  std::string hdcp_version_ascii = hdcp_version_string.Ascii();
-
-  // The strings are specified in the explainer doc:
-  // https://github.com/WICG/hdcp-detection/blob/master/explainer.md
-  if (hdcp_version_ascii.empty())
-    return media::HdcpVersion::kHdcpVersionNone;
-  else if (hdcp_version_ascii == "1.0")
-    return media::HdcpVersion::kHdcpVersion1_0;
-  else if (hdcp_version_ascii == "1.1")
-    return media::HdcpVersion::kHdcpVersion1_1;
-  else if (hdcp_version_ascii == "1.2")
-    return media::HdcpVersion::kHdcpVersion1_2;
-  else if (hdcp_version_ascii == "1.3")
-    return media::HdcpVersion::kHdcpVersion1_3;
-  else if (hdcp_version_ascii == "1.4")
-    return media::HdcpVersion::kHdcpVersion1_4;
-  else if (hdcp_version_ascii == "2.0")
-    return media::HdcpVersion::kHdcpVersion2_0;
-  else if (hdcp_version_ascii == "2.1")
-    return media::HdcpVersion::kHdcpVersion2_1;
-  else if (hdcp_version_ascii == "2.2")
-    return media::HdcpVersion::kHdcpVersion2_2;
-  else if (hdcp_version_ascii == "2.3")
-    return media::HdcpVersion::kHdcpVersion2_3;
-
-  return media::HdcpVersion::kHdcpVersionNone;
-}
-
-}  // namespace
 
 // A class holding a pending action.
 class MediaKeys::PendingAction final
@@ -244,8 +206,13 @@ class GetStatusForPolicyResultPromise
             GetMediaKeysConfig().key_system.Ascii()));
         builder.SetUseHardwareSecureCodecs(
             static_cast<int>(GetMediaKeysConfig().use_hardware_secure_codecs));
+        std::optional<media::HdcpVersion> hdcp_version;
+        if (min_hdcp_version_.ContainsOnlyASCII()) {
+          hdcp_version =
+              media::MaybeHdcpVersionFromString(min_hdcp_version_.Ascii());
+        }
         builder.SetMinHdcpVersion(static_cast<int>(
-            ConvertEncryptedMediaHdcpVersion(min_hdcp_version_)));
+            hdcp_version.value_or(media::HdcpVersion::kHdcpVersionNone)));
         LocalFrame* frame = document->GetFrame();
         if (frame) {
           builder.SetIsAdFrame(static_cast<int>(frame->IsAdFrame()));

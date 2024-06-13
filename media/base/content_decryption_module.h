@@ -8,6 +8,7 @@
 #include <stdint.h>
 
 #include <memory>
+#include <optional>
 #include <string>
 #include <vector>
 
@@ -192,6 +193,11 @@ struct MEDIA_EXPORT ContentDecryptionModuleTraits {
   // Destroys |cdm| on the correct thread.
   static void Destruct(const ContentDecryptionModule* cdm);
 };
+
+// Try to convert `hdcp_version_string` to `HdcpVersion`. Returns std::nullopt
+// on failure.
+MEDIA_EXPORT std::optional<media::HdcpVersion> MaybeHdcpVersionFromString(
+    const std::string& hdcp_version_string);
 
 // CDM session event callbacks.
 

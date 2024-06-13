@@ -32,41 +32,6 @@ const char kCreateSessionSessionTypeUMAName[] = "CreateSession.SessionType";
 const char kSetServerCertificateUMAName[] = "SetServerCertificate";
 const char kGetStatusForPolicyUMAName[] = "GetStatusForPolicy";
 
-bool ConvertHdcpVersion(const WebString& hdcp_version_string,
-                        media::HdcpVersion* hdcp_version) {
-  if (!hdcp_version_string.ContainsOnlyASCII())
-    return false;
-
-  std::string hdcp_version_ascii = hdcp_version_string.Ascii();
-
-  // The strings are specified in the explainer doc:
-  // https://github.com/WICG/hdcp-detection/blob/master/explainer.md
-  if (hdcp_version_ascii.empty())
-    *hdcp_version = media::HdcpVersion::kHdcpVersionNone;
-  else if (hdcp_version_ascii == "1.0")
-    *hdcp_version = media::HdcpVersion::kHdcpVersion1_0;
-  else if (hdcp_version_ascii == "1.1")
-    *hdcp_version = media::HdcpVersion::kHdcpVersion1_1;
-  else if (hdcp_version_ascii == "1.2")
-    *hdcp_version = media::HdcpVersion::kHdcpVersion1_2;
-  else if (hdcp_version_ascii == "1.3")
-    *hdcp_version = media::HdcpVersion::kHdcpVersion1_3;
-  else if (hdcp_version_ascii == "1.4")
-    *hdcp_version = media::HdcpVersion::kHdcpVersion1_4;
-  else if (hdcp_version_ascii == "2.0")
-    *hdcp_version = media::HdcpVersion::kHdcpVersion2_0;
-  else if (hdcp_version_ascii == "2.1")
-    *hdcp_version = media::HdcpVersion::kHdcpVersion2_1;
-  else if (hdcp_version_ascii == "2.2")
-    *hdcp_version = media::HdcpVersion::kHdcpVersion2_2;
-  else if (hdcp_version_ascii == "2.3")
-    *hdcp_version = media::HdcpVersion::kHdcpVersion2_3;
-  else
-    return false;
-
-  return true;
-}
-
 }  // namespace
 
 void WebContentDecryptionModuleImpl::Create(
@@ -146,15 +111,20 @@ void WebContentDecryptionModuleImpl::SetServerCertificate(
 void WebContentDecryptionModuleImpl::GetStatusForPolicy(
     const WebString& min_hdcp_version_string,
     WebContentDecryptionModuleResult result) {
-  media::HdcpVersion min_hdcp_version;
-  if (!ConvertHdcpVersion(min_hdcp_version_string, &min_hdcp_version)) {
+  std::optional<media::HdcpVersion> min_hdcp_version = std::nullopt;
+  if (min_hdcp_version_string.ContainsOnlyASCII()) {
+    min_hdcp_version =
+        media::MaybeHdcpVersionFromString(min_hdcp_version_string.Ascii());
+  }
+
+  if (!min_hdcp_version.has_value()) {
     result.CompleteWithError(kWebContentDecryptionModuleExceptionTypeError, 0,
                              "Invalid HDCP version");
     return;
   }
 
   adapter_->GetStatusForPolicy(
-      min_hdcp_version,
+      min_hdcp_version.value(),
       std::make_unique<CdmResultPromise<media::CdmKeyInformation::KeyStatus>>(
           result, adapter_->GetKeySystemUMAPrefix(),
           kGetStatusForPolicyUMAName));
