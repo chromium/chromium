@@ -20,6 +20,11 @@ class Document;
 
 using PartRootUnion = V8UnionChildNodePartOrDocumentPartRoot;
 
+// These should be the data (text content) of the start and end comment nodes
+// that represent the endpoints of a ChildNodePart range.
+#define kChildNodePartStartCommentData "S"
+#define kChildNodePartEndCommentData "E"
+
 // Implementation of the PartRoot class, which is part of the DOM Parts API.
 // PartRoot is the base of the class hierarchy.
 class CORE_EXPORT PartRoot : public GarbageCollectedMixin {
@@ -62,6 +67,7 @@ class CORE_EXPORT PartRoot : public GarbageCollectedMixin {
 
  private:
   void RebuildPartsList();
+  void BuildPartsList();
   HeapVector<Member<Part>> cached_ordered_parts_;
   bool cached_parts_list_dirty_{false};
 };

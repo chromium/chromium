@@ -93,6 +93,7 @@ void NodeRareData::InvalidateAssociatedAnimationEffects() {
 }
 
 void NodeRareData::AddDOMPart(Part& part) {
+  DCHECK(!RuntimeEnabledFeatures::DOMPartsAPIMinimalEnabled());
   if (!dom_parts_) {
     dom_parts_ = MakeGarbageCollected<PartsList>();
   }
@@ -101,6 +102,7 @@ void NodeRareData::AddDOMPart(Part& part) {
 }
 
 void NodeRareData::RemoveDOMPart(Part& part) {
+  DCHECK(!RuntimeEnabledFeatures::DOMPartsAPIMinimalEnabled());
   DCHECK(dom_parts_ && base::Contains(*dom_parts_, &part));
   // Common case is that one node has one part:
   if (dom_parts_->size() == 1) {
@@ -119,6 +121,11 @@ void NodeRareData::RemoveDOMPart(Part& part) {
   if (dom_parts_->empty()) {
     dom_parts_ = nullptr;
   }
+}
+
+PartsList* NodeRareData::GetDOMParts() const {
+  DCHECK(!dom_parts_ || !RuntimeEnabledFeatures::DOMPartsAPIMinimalEnabled());
+  return dom_parts_.Get();
 }
 
 void NodeRareData::Trace(blink::Visitor* visitor) const {

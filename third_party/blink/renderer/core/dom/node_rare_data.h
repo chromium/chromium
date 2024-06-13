@@ -77,6 +77,7 @@ class NodeRareData : public GarbageCollected<NodeRareData> {
     kConnectedFrameCountBits = 10,  // Must fit Page::maxNumberOfFrames.
     kNumberOfElementFlags = 8,
     kNumberOfDynamicRestyleFlags = 14
+    // 0 bits remaining.
   };
 
   NodeRareData() = default;
@@ -145,7 +146,7 @@ class NodeRareData : public GarbageCollected<NodeRareData> {
 
   void AddDOMPart(Part& part);
   void RemoveDOMPart(Part& part);
-  PartsList* GetDOMParts() const { return dom_parts_.Get(); }
+  PartsList* GetDOMParts() const;
 
   virtual void Trace(Visitor*) const;
 
@@ -153,7 +154,6 @@ class NodeRareData : public GarbageCollected<NodeRareData> {
   uint32_t restyle_flags_ : kNumberOfDynamicRestyleFlags = 0u;
   uint32_t connected_frame_count_ : kConnectedFrameCountBits = 0u;
   uint32_t element_flags_ : kNumberOfElementFlags = 0u;
-  // 0 bits remaining.
 
  private:
   NodeListsNodeData& CreateNodeLists();

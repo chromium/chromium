@@ -289,8 +289,15 @@ void HTMLConstructionSite::ExecuteTask(HTMLConstructionSiteTask& task) {
   if (task.operation == HTMLConstructionSiteTask::kInsert) {
     ExecuteInsertTask(task);
     if (pending_dom_parts_) {
-      pending_dom_parts_->ConstructDOMPartsIfNeeded(*task.child,
-                                                    task.dom_parts_needed);
+      if (RuntimeEnabledFeatures::DOMPartsAPIMinimalEnabled()) {
+        if (task.dom_parts_needed.needs_node_part) {
+          // Just mark the node as having a node part.
+          task.child->SetHasNodePart();
+        }
+      } else {
+        pending_dom_parts_->ConstructDOMPartsIfNeeded(*task.child,
+                                                      task.dom_parts_needed);
+      }
     }
     return;
   }
@@ -298,8 +305,15 @@ void HTMLConstructionSite::ExecuteTask(HTMLConstructionSiteTask& task) {
   if (task.operation == HTMLConstructionSiteTask::kInsertText) {
     ExecuteInsertTextTask(task);
     if (pending_dom_parts_) {
-      pending_dom_parts_->ConstructDOMPartsIfNeeded(*task.child,
-                                                    task.dom_parts_needed);
+      if (RuntimeEnabledFeatures::DOMPartsAPIMinimalEnabled()) {
+        if (task.dom_parts_needed.needs_node_part) {
+          // Just mark the node as having a node part.
+          task.child->SetHasNodePart();
+        }
+      } else {
+        pending_dom_parts_->ConstructDOMPartsIfNeeded(*task.child,
+                                                      task.dom_parts_needed);
+      }
     }
     return;
   }
@@ -801,14 +815,29 @@ void HTMLConstructionSite::InsertDOMPart(AtomicHTMLToken* token) {
   DCHECK(InParsePartsScope());
   // Insert an empty comment in place of the part token.
   Comment& comment_node = *Comment::Create(OwnerDocumentForCurrentNode(), "");
-  switch (token->DOMPartType()) {
-    case DOMPartTokenType::kChildNodePartStart:
-      pending_dom_parts_->AddChildNodePartStart(comment_node,
-                                                token->DOMPartMetadata());
-      break;
-    case DOMPartTokenType::kChildNodePartEnd:
-      pending_dom_parts_->AddChildNodePartEnd(comment_node);
-      break;
+  if (RuntimeEnabledFeatures::DOMPartsAPIMinimalEnabled()) {
+    // Just set a bit on this comment node that it has a NodePart, and change
+    // the content of the comment to kChildNodePartStartCommentData or
+    // kChildNodePartEndCommentData, as appropriate.
+    comment_node.SetHasNodePart();
+    switch (token->DOMPartType()) {
+      case DOMPartTokenType::kChildNodePartStart:
+        comment_node.setData(kChildNodePartStartCommentData);
+        break;
+      case DOMPartTokenType::kChildNodePartEnd:
+        comment_node.setData(kChildNodePartEndCommentData);
+        break;
+    }
+  } else {
+    switch (token->DOMPartType()) {
+      case DOMPartTokenType::kChildNodePartStart:
+        pending_dom_parts_->AddChildNodePartStart(comment_node,
+                                                  token->DOMPartMetadata());
+        break;
+      case DOMPartTokenType::kChildNodePartEnd:
+        pending_dom_parts_->AddChildNodePartEnd(comment_node);
+        break;
+    }
   }
   AttachLater(CurrentNode(), &comment_node);
 }
@@ -912,7 +941,8 @@ void HTMLConstructionSite::InsertHTMLTemplateElement(
     // Attach a normal template element.
     AttachLater(CurrentNode(), template_element, token->GetDOMPartsNeeded());
     DocumentFragment* template_content = template_element->content();
-    if (pending_dom_parts_ && template_content) {
+    if (pending_dom_parts_ && template_content &&
+        !RuntimeEnabledFeatures::DOMPartsAPIMinimalEnabled()) {
       pending_dom_parts_->PushPartRoot(&template_content->getPartRoot());
     }
   }
@@ -1370,8 +1400,10 @@ void HTMLConstructionSite::FinishedTemplateElement(
   if (!pending_dom_parts_) {
     return;
   }
-  PartRoot* last_root = pending_dom_parts_->PopPartRoot();
-  CHECK_EQ(&content_fragment->getPartRoot(), last_root);
+  if (!RuntimeEnabledFeatures::DOMPartsAPIMinimalEnabled()) {
+    PartRoot* last_root = pending_dom_parts_->PopPartRoot();
+    CHECK_EQ(&content_fragment->getPartRoot(), last_root);
+  }
 }
 
 HTMLConstructionSite::PendingDOMParts::PendingDOMParts(
@@ -1390,6 +1422,7 @@ void HTMLConstructionSite::PendingDOMParts::AddChildNodePartStart(
     Node& previous_sibling,
     Vector<String> metadata) {
   DCHECK(RuntimeEnabledFeatures::DOMPartsAPIEnabled());
+  DCHECK(!RuntimeEnabledFeatures::DOMPartsAPIMinimalEnabled());
   // Note that this ChildNodePart is constructed with both `previous_sibling`
   // and `next_sibling` pointing to the same node, `previous_sibling`. That's
   // because at this point we will move on to parse the children of this
@@ -1404,6 +1437,7 @@ void HTMLConstructionSite::PendingDOMParts::AddChildNodePartStart(
 void HTMLConstructionSite::PendingDOMParts::AddChildNodePartEnd(
     Node& next_sibling) {
   DCHECK(RuntimeEnabledFeatures::DOMPartsAPIEnabled());
+  DCHECK(!RuntimeEnabledFeatures::DOMPartsAPIMinimalEnabled());
   PartRoot* current_part_root = CurrentPartRoot();
   if (current_part_root->IsDocumentPartRoot()) {
     // Mismatched opening/closing child parts.
@@ -1422,6 +1456,7 @@ void HTMLConstructionSite::PendingDOMParts::ConstructDOMPartsIfNeeded(
     return;
   }
   DCHECK(RuntimeEnabledFeatures::DOMPartsAPIEnabled());
+  DCHECK(!RuntimeEnabledFeatures::DOMPartsAPIMinimalEnabled());
   DCHECK(pending_node_part_metadata_.empty());
   // For now, there's no syntax for metadata, so just use empty.
   Vector<String> metadata;
@@ -1438,15 +1473,18 @@ void HTMLConstructionSite::PendingDOMParts::ConstructDOMPartsIfNeeded(
 }
 
 PartRoot* HTMLConstructionSite::PendingDOMParts::CurrentPartRoot() const {
+  DCHECK(!RuntimeEnabledFeatures::DOMPartsAPIMinimalEnabled());
   CHECK(!part_root_stack_.empty());
   return part_root_stack_.back().Get();
 }
 
 void HTMLConstructionSite::PendingDOMParts::PushPartRoot(PartRoot* root) {
+  DCHECK(!RuntimeEnabledFeatures::DOMPartsAPIMinimalEnabled());
   return part_root_stack_.push_back(root);
 }
 
 PartRoot* HTMLConstructionSite::PendingDOMParts::PopPartRoot() {
+  DCHECK(!RuntimeEnabledFeatures::DOMPartsAPIMinimalEnabled());
   CHECK(!part_root_stack_.empty());
   PartRoot* popped = part_root_stack_.back();
   part_root_stack_.pop_back();

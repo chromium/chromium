@@ -1417,6 +1417,10 @@
     {
       name: "DOMPartsAPI",
       status: "experimental",
+      implied_by: ["DOMPartsAPIMinimal"],
+    },
+    {
+      name: "DOMPartsAPIMinimal",
     },
     {
       // Shipping in M121, so should be safe to remove in M126.

@@ -1,0 +1,32 @@
+This is a testharness.js-based test.
+[FAIL] Basic imperative DOM Parts object construction (Document)
+  assert_equals: getParts() for the root should now have this attributePart: lengths differ expected 2 but got 1
+[FAIL] Cloning (Document)
+  assert_equals: setup: lengths differ expected 3 but got 6
+[FAIL] Cloning Element (Document)
+  assert_true: getParts2: index 1 expected ChildNodePart expected true got false
+[FAIL] Cloning Text (Document)
+  assert_true: getParts2: index 1 expected ChildNodePart expected true got false
+[FAIL] Cloning Comment (Document)
+  assert_true: getParts2: index 1 expected ChildNodePart expected true got false
+[FAIL] DOM mutations are not tracked (Document)
+  assert_array_equals: Parts can be out of order, if added out of order expected property 0 to be object "[object NodePart]" but got object "[object NodePart]" (expected array [object "[object NodePart]", object "[object NodePart]", object "[object NodePart]"] got [object "[object NodePart]", object "[object NodePart]", object "[object NodePart]"])
+[FAIL] Corner case ChildNodePart construction and cloning (Document)
+  assert_array_equals: lengths differ, expected array [] length 0, got [object "[object NodePart]", object "[object NodePart]", object "[object NodePart]"] length 3
+[FAIL] Basic imperative DOM Parts object construction (DocumentFragment)
+  assert_equals: getParts() for the root should now have this attributePart: lengths differ expected 2 but got 1
+[FAIL] Cloning (DocumentFragment)
+  assert_equals: setup: lengths differ expected 3 but got 6
+[FAIL] Cloning Element (DocumentFragment)
+  assert_true: getParts2: index 1 expected ChildNodePart expected true got false
+[FAIL] Cloning Text (DocumentFragment)
+  assert_true: getParts2: index 1 expected ChildNodePart expected true got false
+[FAIL] Cloning Comment (DocumentFragment)
+  assert_true: getParts2: index 1 expected ChildNodePart expected true got false
+[FAIL] DOM mutations are not tracked (DocumentFragment)
+  assert_array_equals: Parts can be out of order, if added out of order expected property 0 to be object "[object NodePart]" but got object "[object NodePart]" (expected array [object "[object NodePart]", object "[object NodePart]", object "[object NodePart]"] got [object "[object NodePart]", object "[object NodePart]", object "[object NodePart]"])
+[FAIL] Corner case ChildNodePart construction and cloning (DocumentFragment)
+  assert_array_equals: lengths differ, expected array [object "[object ChildNodePart]"] length 1, got [object "[object NodePart]", object "[object NodePart]", object "[object NodePart]", object "[object NodePart]", object "[object NodePart]"] length 5
+Harness: the test ran to completion.
+
+hello

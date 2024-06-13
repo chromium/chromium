@@ -5,7 +5,9 @@
 #include "third_party/blink/renderer/core/dom/part_root.h"
 
 #include "base/containers/contains.h"
+#include "third_party/blink/renderer/core/dom/child_node_list.h"
 #include "third_party/blink/renderer/core/dom/child_node_part.h"
+#include "third_party/blink/renderer/core/dom/comment.h"
 #include "third_party/blink/renderer/core/dom/container_node.h"
 #include "third_party/blink/renderer/core/dom/document.h"
 #include "third_party/blink/renderer/core/dom/document_part_root.h"
@@ -14,6 +16,7 @@
 #include "third_party/blink/renderer/core/dom/node_traversal.h"
 #include "third_party/blink/renderer/core/dom/part.h"
 #include "third_party/blink/renderer/platform/heap/garbage_collected.h"
+#include "third_party/blink/renderer/platform/runtime_enabled_features.h"
 
 namespace blink {
 
@@ -22,6 +25,7 @@ void PartRoot::Trace(Visitor* visitor) const {
 }
 
 void PartRoot::AddPart(Part& new_part) {
+  DCHECK(!RuntimeEnabledFeatures::DOMPartsAPIMinimalEnabled());
   if (cached_parts_list_dirty_) {
     return;
   }
@@ -42,6 +46,7 @@ void PartRoot::AddPart(Part& new_part) {
 // TODO(crbug.com/1453291) The comment for this function should get updated
 // if we get rid of part tracking.
 void PartRoot::RemovePart(Part& part) {
+  DCHECK(!RuntimeEnabledFeatures::DOMPartsAPIMinimalEnabled());
   if (cached_parts_list_dirty_) {
     return;
   }
@@ -58,6 +63,12 @@ void PartRoot::CloneParts(const Node& source_node,
     return;
   }
   DCHECK(RuntimeEnabledFeatures::DOMPartsAPIEnabled());
+  if (RuntimeEnabledFeatures::DOMPartsAPIMinimalEnabled()) {
+    if (source_node.HasNodePart()) {
+      destination_node.SetHasNodePart();
+    }
+    return;
+  }
   if (auto* parts = source_node.GetDOMParts()) {
     for (Part* part : *parts) {
       if (!part->IsValid()) {
@@ -109,6 +120,7 @@ void PartRoot::SwapPartsList(PartRoot& other) {
 // Parts until we exit the Partroot.
 void PartRoot::RebuildPartsList() {
   DCHECK(cached_parts_list_dirty_);
+  DCHECK(!RuntimeEnabledFeatures::DOMPartsAPIMinimalEnabled());
   cached_ordered_parts_.clear();
   // Then traverse the tree under the root container and add parts in the order
   // they're found in the tree, and for the same Node, in the order they were
@@ -170,8 +182,77 @@ void PartRoot::RebuildPartsList() {
   }
 }
 
+// This is used only in the case of DOMPartsAPIMinimal enabled, and it just
+// fresh-builds the parts list every time.
+void PartRoot::BuildPartsList() {
+  DCHECK(RuntimeEnabledFeatures::DOMPartsAPIMinimalEnabled());
+  // Use |cached_ordered_parts_| for the data.
+  cached_ordered_parts_.clear();
+  // Then traverse the tree under the root container and add parts in the order
+  // they're found in the tree, and for the same Node, in the order they were
+  // constructed.
+  Node* node = FirstIncludedChildNode();
+  Node* end_node = LastIncludedChildNode();
+  if (!node || !end_node) {
+    return;  // Empty list
+  }
+  if (!IsDocumentPartRoot()) {
+    // This is a ChildNodePart, so we need to skip the first start node, or
+    // we'll just re-detect this ChildNodePart. If `node` doesn't have a
+    // nextSibling (i.e. this ChildNodePart is mal-formed), then `node` will be
+    // set to nullptr, and the entire while loop below will be properly skipped.
+    node = node->nextSibling();
+  } else {
+    end_node = end_node->nextSibling();
+  }
+  while (node != end_node) {
+    if (node->HasNodePart()) {
+      Vector<String> metadata;
+      if (Comment* start_comment = DynamicTo<Comment>(node);
+          start_comment &&
+          start_comment->data() == kChildNodePartStartCommentData) {
+        // We've found the starting node of a child node range - scan to find
+        // the ending node, skipping contents and nested ChildNodeParts.
+        unsigned nested_child_node_part_count = 0;
+        while (node->HasNextSibling() &&
+               ((node = node->nextSibling()) != end_node)) {
+          if (LIKELY(!IsA<Comment>(node))) {
+            continue;
+          }
+          Comment& end_comment = *To<Comment>(node);
+          if (!end_comment.HasNodePart()) {
+            continue;  // Plain comment, not ChildNodePart marker.
+          }
+          if (LIKELY(end_comment.data() == kChildNodePartEndCommentData)) {
+            if (LIKELY(!nested_child_node_part_count)) {
+              // Found the end of the child node part.
+              cached_ordered_parts_.push_back(
+                  MakeGarbageCollected<ChildNodePart>(*this, *start_comment,
+                                                      end_comment, metadata));
+              break;
+            }
+            --nested_child_node_part_count;
+          } else if (end_comment.data() == kChildNodePartStartCommentData) {
+            ++nested_child_node_part_count;
+          }
+        }
+      } else {
+        // Plain NodePart
+        cached_ordered_parts_.push_back(
+            MakeGarbageCollected<NodePart>(*this, *node, metadata));
+      }
+    }
+    node = NodeTraversal::Next(*node);
+  }
+}
+
 const HeapVector<Member<Part>>& PartRoot::getParts() {
-  if (cached_parts_list_dirty_) {
+  if (RuntimeEnabledFeatures::DOMPartsAPIMinimalEnabled()) {
+    // For minimal mode, always traverse the tree and return parts. No caching
+    // at all. For now, this *only* returns NodeParts, and does not take
+    // ChildNodeParts into account.
+    BuildPartsList();
+  } else if (cached_parts_list_dirty_) {
     RebuildPartsList();
     cached_parts_list_dirty_ = false;
   } else {
