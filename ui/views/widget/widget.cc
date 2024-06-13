@@ -1625,7 +1625,13 @@ bool Widget::OnNativeWidgetActivationChanged(bool active) {
       }
       root = widget;
     }
+#if BUILDFLAG(IS_WIN)
+    // Windows shuffles child widgets when the application re-gains
+    // activation, so re-order to ensure z-order sublevels.
     root->GetSublevelManager()->EnsureOwnerTreeSublevel();
+#else
+    std::ignore = root;
+#endif
   }
 
   const bool was_paint_as_active = ShouldPaintAsActive();
