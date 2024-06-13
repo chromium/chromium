@@ -2,8 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "ash/events/peripheral_customization_event_rewriter.h"
-
 #include <linux/input.h>
 
 #include <iterator>
@@ -70,22 +68,6 @@ constexpr auto kStaticActionToMouseButtonFlag =
         {mojom::StaticShortcutAction::kRightClick, ui::EF_RIGHT_MOUSE_BUTTON},
         {mojom::StaticShortcutAction::kMiddleClick, ui::EF_MIDDLE_MOUSE_BUTTON},
     });
-
-constexpr std::string_view ToMetricsString(
-    PeripheralCustomizationEventRewriter::PeripheralCustomizationMetricsType
-        peripheral_kind) {
-  switch (peripheral_kind) {
-    case PeripheralCustomizationEventRewriter::
-        PeripheralCustomizationMetricsType::kMouse:
-      return "Mouse";
-    case PeripheralCustomizationEventRewriter::
-        PeripheralCustomizationMetricsType::kGraphicsTablet:
-      return "GraphicsTablet";
-    case PeripheralCustomizationEventRewriter::
-        PeripheralCustomizationMetricsType::kGraphicsTabletPen:
-      return "GraphicsTabletPen";
-  }
-}
 
 mojom::KeyEvent GetStaticShortcutAction(mojom::StaticShortcutAction action) {
   mojom::KeyEvent key_event;
@@ -612,8 +594,8 @@ GetRemappingActionFromMouseSettings(const mojom::Button& button,
 
     auto result = PeripheralCustomizationEventRewriter::RemappingActionResult(
         *button_remapping.remapping_action,
-        PeripheralCustomizationEventRewriter::
-            PeripheralCustomizationMetricsType::kMouse);
+        InputDeviceSettingsMetricsManager::PeripheralCustomizationMetricsType::
+            kMouse);
     return result;
   }
 
@@ -637,7 +619,7 @@ GetRemappingActionFromGraphicsTabletSettings(
     auto pen_action =
         PeripheralCustomizationEventRewriter::RemappingActionResult(
             *button_remapping.remapping_action,
-            PeripheralCustomizationEventRewriter::
+            InputDeviceSettingsMetricsManager::
                 PeripheralCustomizationMetricsType::kGraphicsTabletPen);
     return std::move(pen_action);
   }
@@ -655,7 +637,7 @@ GetRemappingActionFromGraphicsTabletSettings(
     auto tablet_action =
         PeripheralCustomizationEventRewriter::RemappingActionResult(
             *button_remapping.remapping_action,
-            PeripheralCustomizationEventRewriter::
+            InputDeviceSettingsMetricsManager::
                 PeripheralCustomizationMetricsType::kGraphicsTablet);
     return std::move(tablet_action);
   }
@@ -777,8 +759,10 @@ PeripheralCustomizationEventRewriter::DeviceIdButton::operator=(
     default;
 
 PeripheralCustomizationEventRewriter::RemappingActionResult::
-    RemappingActionResult(mojom::RemappingAction& remapping_action,
-                          PeripheralCustomizationMetricsType peripheral_kind)
+    RemappingActionResult(
+        mojom::RemappingAction& remapping_action,
+        InputDeviceSettingsMetricsManager::PeripheralCustomizationMetricsType
+            peripheral_kind)
     : remapping_action(remapping_action), peripheral_kind(peripheral_kind) {}
 
 PeripheralCustomizationEventRewriter::RemappingActionResult::
@@ -976,23 +960,25 @@ bool PeripheralCustomizationEventRewriter::RewriteEventFromButton(
   if (event.type() == ui::ET_KEY_PRESSED ||
       event.type() == ui::ET_MOUSE_PRESSED) {
     metrics_manager_->RecordRemappingActionWhenButtonPressed(
-        *remapping_action,
-        ToMetricsString(remapping_action_result->peripheral_kind).data());
+        *remapping_action, remapping_action_result->peripheral_kind);
   }
 
   auto id = event.source_device_id();
   switch (remapping_action_result->peripheral_kind) {
-    case PeripheralCustomizationMetricsType::kMouse:
+    case InputDeviceSettingsMetricsManager::PeripheralCustomizationMetricsType::
+        kMouse:
       PR_LOG(INFO, Feature::IDS) << GetMouseSettingsLog(
           "Mouse button is pressed",
           *(input_device_settings_controller_->GetMouse(id)));
       break;
-    case PeripheralCustomizationMetricsType::kGraphicsTablet:
+    case InputDeviceSettingsMetricsManager::PeripheralCustomizationMetricsType::
+        kGraphicsTablet:
       PR_LOG(INFO, Feature::IDS) << GetGraphicsTabletSettingsLog(
           "Graphics tablet button is pressed",
           *(input_device_settings_controller_->GetGraphicsTablet(id)));
       break;
-    case PeripheralCustomizationMetricsType::kGraphicsTabletPen:
+    case InputDeviceSettingsMetricsManager::PeripheralCustomizationMetricsType::
+        kGraphicsTabletPen:
       PR_LOG(INFO, Feature::IDS) << GetGraphicsTabletSettingsLog(
           "Graphics tablet pen button is pressed",
           *(input_device_settings_controller_->GetGraphicsTablet(id)));

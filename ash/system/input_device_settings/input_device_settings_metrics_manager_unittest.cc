@@ -1311,8 +1311,10 @@ TEST_F(InputDeviceSettingsMetricsManagerTest,
       mojom::Button::NewCustomizableButton(mojom::CustomizableButton::kMiddle);
   base::HistogramTester histogram_tester;
 
-  manager_->RecordNewButtonRegisteredMetrics(*mouse_customizable_button,
-                                             "Mouse");
+  manager_->RecordNewButtonRegisteredMetrics(
+      *mouse_customizable_button,
+      InputDeviceSettingsMetricsManager::PeripheralCustomizationMetricsType::
+          kMouse);
   histogram_tester.ExpectTotalCount(
       "ChromeOS.Settings.Device.Mouse.ButtonRemapping.Registered."
       "CustomizableButton",
@@ -1323,7 +1325,9 @@ TEST_F(InputDeviceSettingsMetricsManagerTest,
       mojom::CustomizableButton::kMiddle, 1);
 
   const auto vkey_button = mojom::Button::NewVkey(ui::VKEY_B);
-  manager_->RecordNewButtonRegisteredMetrics(*vkey_button, "GraphicsTabletPen");
+  manager_->RecordNewButtonRegisteredMetrics(
+      *vkey_button, InputDeviceSettingsMetricsManager::
+                        PeripheralCustomizationMetricsType::kGraphicsTabletPen);
   histogram_tester.ExpectTotalCount(
       "ChromeOS.Settings.Device.GraphicsTabletPen.ButtonRemapping.Registered."
       "Vkey",
@@ -1344,8 +1348,9 @@ TEST_F(InputDeviceSettingsMetricsManagerTest,
       "Pressed",
       /*expected_count=*/0);
 
-  manager_->RecordRemappingActionWhenButtonPressed(*remappingAction,
-                                                   /*peripheral_kind=*/"Mouse");
+  manager_->RecordRemappingActionWhenButtonPressed(
+      *remappingAction, InputDeviceSettingsMetricsManager::
+                            PeripheralCustomizationMetricsType::kMouse);
   histogram_tester.ExpectTotalCount(
       "ChromeOS.Settings.Device.Mouse.ButtonRemapping.StaticShortcutAction."
       "Pressed",

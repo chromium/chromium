@@ -33,12 +33,6 @@ class ASH_EXPORT PeripheralCustomizationEventRewriter
 
   enum class DeviceType { kMouse, kGraphicsTablet };
 
-  enum class PeripheralCustomizationMetricsType {
-    kMouse,
-    kGraphicsTablet,
-    kGraphicsTabletPen
-  };
-
   struct DeviceIdButton {
     int device_id;
     mojom::ButtonPtr button;
@@ -54,10 +48,13 @@ class ASH_EXPORT PeripheralCustomizationEventRewriter
 
   struct RemappingActionResult {
     raw_ref<mojom::RemappingAction> remapping_action;
-    PeripheralCustomizationMetricsType peripheral_kind;
+    InputDeviceSettingsMetricsManager::PeripheralCustomizationMetricsType
+        peripheral_kind;
 
-    RemappingActionResult(mojom::RemappingAction& remapping_action,
-                          PeripheralCustomizationMetricsType peripheral_kind);
+    RemappingActionResult(
+        mojom::RemappingAction& remapping_action,
+        InputDeviceSettingsMetricsManager::PeripheralCustomizationMetricsType
+            peripheral_kind);
     RemappingActionResult(RemappingActionResult&& result);
     ~RemappingActionResult();
   };

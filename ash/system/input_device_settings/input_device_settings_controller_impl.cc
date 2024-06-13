@@ -76,9 +76,6 @@ namespace ash {
 namespace {
 
 const int kMaxButtonNameLength = 32;
-constexpr char kGraphicsTabletDeviceType[] = "GraphicsTablet";
-constexpr char kGraphicsTabletPenDeviceType[] = "GraphicsTabletPen";
-constexpr char kMouseDeviceType[] = "Mouse";
 
 constexpr mojom::TopRowActionKey ConvertTopRowActionKey(
     ui::TopRowActionKey action_key) {
@@ -2323,7 +2320,9 @@ void InputDeviceSettingsControllerImpl::OnMouseButtonPressed(
       active_pref_service_, policy_handler_->mouse_policies(), mouse);
   PR_LOG(INFO, Feature::IDS) << GetMouseSettingsLog("Updated", mouse);
   DispatchCustomizableMouseButtonPressed(mouse, button);
-  metrics_manager_->RecordNewButtonRegisteredMetrics(button, kMouseDeviceType);
+  metrics_manager_->RecordNewButtonRegisteredMetrics(
+      button, InputDeviceSettingsMetricsManager::
+                  PeripheralCustomizationMetricsType::kMouse);
   DispatchMouseSettingsChanged(mouse_ptr->id);
 
   UpdateDuplicateDeviceSettings(
@@ -2371,13 +2370,15 @@ void InputDeviceSettingsControllerImpl::OnGraphicsTabletButtonPressed(
                                    /*is_mouse_button_remapping=*/false);
     DispatchCustomizablePenButtonPressed(graphics_tablet, button);
     metrics_manager_->RecordNewButtonRegisteredMetrics(
-        button, kGraphicsTabletPenDeviceType);
+        button, InputDeviceSettingsMetricsManager::
+                    PeripheralCustomizationMetricsType::kGraphicsTabletPen);
   } else {
     AddButtonToButtonRemappingList(button, tablet_button_remappings,
                                    /*is_mouse_button_remapping=*/false);
     DispatchCustomizableTabletButtonPressed(graphics_tablet, button);
     metrics_manager_->RecordNewButtonRegisteredMetrics(
-        button, kGraphicsTabletDeviceType);
+        button, InputDeviceSettingsMetricsManager::
+                    PeripheralCustomizationMetricsType::kGraphicsTablet);
   }
   graphics_tablet_pref_handler_->UpdateGraphicsTabletSettings(
       active_pref_service_, graphics_tablet);
