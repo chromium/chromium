@@ -118,7 +118,7 @@ struct FetcherConfig {
   std::string ServicePath(const PathArgs& args) const;
 };
 
-constexpr FetcherConfig kClassifyUrlConfig = {
+inline constexpr FetcherConfig kClassifyUrlConfig = {
     .service_path = "/kidsmanagement/v1/people/me:classifyUrl",
     .method = FetcherConfig::Method::kPost,
     .histogram_basename = "FamilyLinkUser.ClassifyUrlRequest",
@@ -138,24 +138,27 @@ constexpr FetcherConfig kClassifyUrlConfig = {
     .request_priority = net::IDLE,
 };
 
-constexpr FetcherConfig kClassifyUrlConfigWaitUntilAccessTokenAvailable = {
-    .service_path = "/kidsmanagement/v1/people/me:classifyUrl",
-    .method = FetcherConfig::Method::kPost,
-    .histogram_basename = "FamilyLinkUser.ClassifyUrlRequest",
-    .traffic_annotation = annotations::ClassifyUrlTag,
-    .access_token_config =
-        {
-            .credentials_requirement =
-                AccessTokenConfig::CredentialsRequirement::kStrict,
-            .mode = signin::PrimaryAccountAccessTokenFetcher::Mode::
-                kWaitUntilAvailable,
-            // TODO(b/284523446): Refer to GaiaConstants rather than literal.
-            .oauth2_scope = "https://www.googleapis.com/auth/kid.permission",
-        },
-    .request_priority = net::IDLE,
+inline constexpr FetcherConfig kClassifyUrlConfigWaitUntilAccessTokenAvailable =
+    {
+        .service_path = "/kidsmanagement/v1/people/me:classifyUrl",
+        .method = FetcherConfig::Method::kPost,
+        .histogram_basename = "FamilyLinkUser.ClassifyUrlRequest",
+        .traffic_annotation = annotations::ClassifyUrlTag,
+        .access_token_config =
+            {
+                .credentials_requirement =
+                    AccessTokenConfig::CredentialsRequirement::kStrict,
+                .mode = signin::PrimaryAccountAccessTokenFetcher::Mode::
+                    kWaitUntilAvailable,
+                // TODO(b/284523446): Refer to GaiaConstants rather than
+                // literal.
+                .oauth2_scope =
+                    "https://www.googleapis.com/auth/kid.permission",
+            },
+        .request_priority = net::IDLE,
 };
 
-constexpr FetcherConfig kListFamilyMembersConfig{
+inline constexpr FetcherConfig kListFamilyMembersConfig{
     .service_path = "/kidsmanagement/v1/families/mine/members",
     .method = FetcherConfig::Method::kGet,
     .histogram_basename = "Signin.ListFamilyMembersRequest",
@@ -201,7 +204,7 @@ constexpr FetcherConfig kListFamilyMembersConfig{
     .request_priority = net::IDLE,
 };
 
-constexpr FetcherConfig kCreatePermissionRequestConfig = {
+inline constexpr FetcherConfig kCreatePermissionRequestConfig = {
     .service_path = "/kidsmanagement/v1/people/me/permissionRequests",
     .method = FetcherConfig::Method::kPost,
     .histogram_basename = "FamilyLinkUser.CreatePermissionRequest",
