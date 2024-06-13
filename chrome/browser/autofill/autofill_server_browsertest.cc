@@ -131,6 +131,7 @@ class AutofillServerTest : public InProcessBrowserTest {
          features::kAutofillUseI18nAddressModel,
          features::kAutofillUseBRAddressModel,
          features::kAutofillUseCAAddressModel,
+         features::kAutofillUseITAddressModel,
          features::kAutofillUseMXAddressModel},
         // Disabled.
         {});

@@ -527,6 +527,7 @@ class FormDataImporterTest : public testing::Test {
          features::kAutofillUseCAAddressModel,
          features::kAutofillUseDEAddressModel,
          features::kAutofillUseINAddressModel,
+         features::kAutofillUseITAddressModel,
          features::kAutofillUseMXAddressModel,
          features::kAutofillEnableDependentLocalityParsing,
          features::kAutofillEnableSupportForApartmentNumbers,

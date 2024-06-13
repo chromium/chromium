@@ -1371,6 +1371,7 @@ TEST(AutofillProfileTest, Compare_StructuredTypes) {
        features::kAutofillUseCAAddressModel,
        features::kAutofillUseDEAddressModel,
        features::kAutofillUseINAddressModel,
+       features::kAutofillUseITAddressModel,
        features::kAutofillUseMXAddressModel,
        features::kAutofillEnableSupportForLandmark,
        features::kAutofillEnableSupportForBetweenStreets,

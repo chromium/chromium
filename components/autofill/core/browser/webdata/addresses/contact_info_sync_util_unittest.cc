@@ -681,6 +681,7 @@ class ContactInfoSyncUtilTest
          features::kAutofillUseCAAddressModel,
          features::kAutofillUseDEAddressModel,
          features::kAutofillUseINAddressModel,
+         features::kAutofillUseITAddressModel,
          features::kAutofillUseMXAddressModel,
          features::kAutofillEnableSupportForLandmark,
          features::kAutofillEnableSupportForBetweenStreets,

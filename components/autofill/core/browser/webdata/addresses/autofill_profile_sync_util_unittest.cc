@@ -923,6 +923,7 @@ class AutofillProfileSyncUtilTest
          features::kAutofillUseCAAddressModel,
          features::kAutofillUseDEAddressModel,
          features::kAutofillUseINAddressModel,
+         features::kAutofillUseITAddressModel,
          features::kAutofillUseMXAddressModel,
          features::kAutofillEnableSupportForLandmark,
          features::kAutofillEnableSupportForAddressOverflow,

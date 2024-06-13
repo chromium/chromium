@@ -150,6 +150,7 @@ class ProfileMatchingTypesTest
          features::kAutofillUseI18nAddressModel,
          features::kAutofillUseBRAddressModel,
          features::kAutofillUseCAAddressModel,
+         features::kAutofillUseITAddressModel,
          features::kAutofillUseMXAddressModel},
         {});
   }
