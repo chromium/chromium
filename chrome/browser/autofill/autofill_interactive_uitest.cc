@@ -3676,6 +3676,7 @@ IN_PROC_BROWSER_TEST_F(MAYBE_AutofillInteractiveFormSubmissionTest,
 }
 
 // Tests that a DOM mutation after an XHR can indicate a form submission.
+// TODO(crbug.com/346982005): The test is showing flakiness.
 IN_PROC_BROWSER_TEST_F(MAYBE_AutofillInteractiveFormSubmissionTest,
                        DomMutationAfterXhr) {
   EnterValues();
