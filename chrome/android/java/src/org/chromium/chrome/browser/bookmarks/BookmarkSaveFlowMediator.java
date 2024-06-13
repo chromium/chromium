@@ -323,12 +323,6 @@ public class BookmarkSaveFlowMediator extends BookmarkModelObserver
                             });
         }
 
-        // Make sure the notification channel is initialized when the user tracks a product.
-        // TODO(crbug.com/40245507): Add a SubscriptionsObserver in the PriceDropNotificationManager
-        // and initialize the channel there.
-        if (toggled && Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-            PriceDropNotificationManagerFactory.create(mProfile).createNotificationChannel();
-        }
         setPriceTrackingIconForEnabledState(toggled);
         PriceTrackingUtils.setPriceTrackingStateForBookmark(
                 mProfile,
@@ -427,6 +421,11 @@ public class BookmarkSaveFlowMediator extends BookmarkModelObserver
     public void onSubscribe(CommerceSubscription subscription, boolean succeeded) {
         if (!succeeded || !subscription.equals(mSubscription)) return;
         setPriceTrackingToggleVisualsOnly(true);
+
+        // Make sure the notification channel is initialized when the user tracks the product.
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+            PriceDropNotificationManagerFactory.create(mProfile).createNotificationChannel();
+        }
     }
 
     @Override
