@@ -14,6 +14,7 @@
 #include "base/component_export.h"
 #include "base/export_template.h"
 #include "base/memory/raw_ptr_exclusion.h"
+#include "base/memory/stack_allocated.h"
 #include "base/numerics/clamped_math.h"
 #include "url/third_party/mozilla/url_parse.h"
 
@@ -153,8 +154,8 @@ class CanonOutputT {
     return true;
   }
 
-  // `buffer_` is not a raw_ptr<...> for performance reasons (based on analysis
-  // of sampling profiler data).
+  // RAW_PTR_EXCLUSION: Performance (based on analysis of sampling profiler
+  // data).
   RAW_PTR_EXCLUSION T* buffer_ = nullptr;
   size_t buffer_len_ = 0;
 
@@ -832,6 +833,9 @@ bool CanonicalizeMailtoURL(const char16_t* spec,
 // modified.
 template <typename CHAR>
 struct URLComponentSource {
+  STACK_ALLOCATED();
+
+ public:
   // Constructor normally used by callers wishing to replace components. This
   // will make them all NULL, which is no replacement. The caller would then
   // override the components they want to replace.
@@ -857,30 +861,14 @@ struct URLComponentSource {
         query(default_value),
         ref(default_value) {}
 
-  // This field is not a raw_ptr<> because it was filtered by the rewriter for:
-  // #addr-of
-  RAW_PTR_EXCLUSION const CHAR* scheme;
-  // This field is not a raw_ptr<> because it was filtered by the rewriter for:
-  // #addr-of
-  RAW_PTR_EXCLUSION const CHAR* username;
-  // This field is not a raw_ptr<> because it was filtered by the rewriter for:
-  // #addr-of
-  RAW_PTR_EXCLUSION const CHAR* password;
-  // This field is not a raw_ptr<> because it was filtered by the rewriter for:
-  // #addr-of
-  RAW_PTR_EXCLUSION const CHAR* host;
-  // This field is not a raw_ptr<> because it was filtered by the rewriter for:
-  // #addr-of
-  RAW_PTR_EXCLUSION const CHAR* port;
-  // This field is not a raw_ptr<> because it was filtered by the rewriter for:
-  // #addr-of
-  RAW_PTR_EXCLUSION const CHAR* path;
-  // This field is not a raw_ptr<> because it was filtered by the rewriter for:
-  // #addr-of
-  RAW_PTR_EXCLUSION const CHAR* query;
-  // This field is not a raw_ptr<> because it was filtered by the rewriter for:
-  // #addr-of
-  RAW_PTR_EXCLUSION const CHAR* ref;
+  const CHAR* scheme;
+  const CHAR* username;
+  const CHAR* password;
+  const CHAR* host;
+  const CHAR* port;
+  const CHAR* path;
+  const CHAR* query;
+  const CHAR* ref;
 };
 
 // This structure encapsulates information on modifying a URL. Each component
