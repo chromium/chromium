@@ -456,7 +456,9 @@ static const char* kInterstitialFirstTimeBanner =
 // Tests that for users who have the filtering behaviour changed from "Allow
 // approved" to "Allow all" websites, a blocked pages will be refreshed and
 // unblocks as soon as the filtering behaviour changes.
-- (void)testSupervisedUserWithAllowAllSitesFilteringIsUnblockedOnFilterChange {
+// TODO(crbug.com/346923501): This test is flaky.
+- (void)
+    FLAKY_testSupervisedUserWithAllowAllSitesFilteringIsUnblockedOnFilterChange {
   [self signInSupervisedUser];
   [SupervisedUserSettingsAppInterface setFilteringToAllowApprovedSites];
 
