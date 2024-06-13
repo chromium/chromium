@@ -182,11 +182,16 @@ class TestShardingMapGenerator(unittest.TestCase):
     benchmarks_data, timing_data, = self._generate_test_data(
         [[10, 20, 30], [65, 55, 5, 45], [50, 40, 30, 20, 10]])
     benchmarks_data.append(
-        bot_platforms.CrossbenchConfig('cb_benchmark_0', 'cb_benchmark_0_name'))
+        bot_platforms.CrossbenchConfig('cb_benchmark_0',
+                                       'cb_benchmark_0_name',
+                                       arguments=['--my_arg']))
     sharding_map = sharding_map_generator.generate_sharding_map(
         benchmarks_data, timing_data, 3, None)
     self.assertIn('crossbench', sharding_map['2'])
-    self.assertIn('cb_benchmark_0', sharding_map['2']['crossbench'])
+    self.assertIn('cb_benchmark_0_name', sharding_map['2']['crossbench'])
     self.assertEqual(
-        'cb_benchmark_0_name',
-        sharding_map['2']['crossbench']['cb_benchmark_0']['crossbench_name'])
+        'cb_benchmark_0',
+        sharding_map['2']['crossbench']['cb_benchmark_0_name']['display_name'])
+    self.assertEqual(
+        ['--my_arg'],
+        sharding_map['2']['crossbench']['cb_benchmark_0_name']['arguments'])

@@ -284,13 +284,16 @@ def _add_benchmarks_to_shard(sharding_map, shard_index, stories_in_shard,
   for b in benchmarks:
     config = benchmark_name_to_config[b]
     if isinstance(config, core.bot_platforms.CrossbenchConfig):
-      crossbench_in_shard[b] = {'crossbench_name': config.crossbench_name}
+      crossbench_in_shard[config.crossbench_name] = {
+          'display_name': b,
+          'arguments': config.arguments,
+      }
       first_story = all_stories[b].index(benchmarks[b][0])
       last_story = all_stories[b].index(benchmarks[b][-1]) + 1
       if first_story != 0:
-        crossbench_in_shard[b]['begin'] = first_story
+        crossbench_in_shard[config.crossbench_name]['begin'] = first_story
       if last_story != len(all_stories[b]):
-        crossbench_in_shard[b]['end'] = last_story
+        crossbench_in_shard[config.crossbench_name]['end'] = last_story
     elif config.is_telemetry:
       benchmarks_in_shard[b] = {}
       first_story = all_stories[b].index(benchmarks[b][0])

@@ -1,6 +1,9 @@
 # Copyright 2018 The Chromium Authors
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
+
+# pylint: disable=too-many-lines
+
 import os
 import six.moves.urllib.parse  # pylint: disable=import-error
 
@@ -197,11 +200,17 @@ class ExecutableConfig(object):
 
 class CrossbenchConfig:
 
-  def __init__(self, name, crossbench_name, estimated_runtime=60, stories=None):
+  def __init__(self,
+               name,
+               crossbench_name,
+               estimated_runtime=60,
+               stories=None,
+               arguments=None):
     self.name = name
     self.crossbench_name = crossbench_name
     self.estimated_runtime = estimated_runtime
     self.stories = stories or ['default']
+    self.arguments = arguments or []
     self.repeat = 1
 
 
@@ -267,9 +276,9 @@ OFFICIAL_BENCHMARK_CONFIGS = OFFICIAL_BENCHMARK_CONFIGS.Remove([
 OFFICIAL_BENCHMARK_NAMES = frozenset(
     b.name for b in OFFICIAL_BENCHMARK_CONFIGS.Frozenset())
 
-# TODO(crbug.com/40110184): Stop using these 'OFFICIAL_EXCEPT' suites and instead
-# define each benchmarking config separately as is already done for many of the
-# suites below.
+# TODO(crbug.com/40110184): Stop using these 'OFFICIAL_EXCEPT' suites and
+# instead define each benchmarking config separately as is already done for
+# many of the suites below.
 _OFFICIAL_EXCEPT_DISPLAY_LOCKING = PerfSuite(OFFICIAL_BENCHMARK_CONFIGS).Remove(
     ['blink_perf.display_locking'])
 _OFFICIAL_EXCEPT_JETSTREAM2 = PerfSuite(OFFICIAL_BENCHMARK_CONFIGS).Remove(
@@ -355,7 +364,8 @@ def _views_perftests(estimated_runtime=7):
 def _crossbench_speedometer3_0(estimated_runtime=60):
   return CrossbenchConfig('speedometer3.crossbench',
                           'speedometer_3.0',
-                          estimated_runtime=estimated_runtime)
+                          estimated_runtime=estimated_runtime,
+                          arguments=['--timeout-unit=60'])
 
 
 _CROSSBENCH_BENCHMARKS = frozenset([

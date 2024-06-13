@@ -14,7 +14,9 @@
         "crossbench": {
             "speedometer_3.0": {
                 "display_name": "speedometer3.crossbench",
-                "arguments": ["--timeout-unit=60"]
+                "arguments": [
+                    "--timeout-unit=60"
+                ]
             }
         }
     },
@@ -33,7 +35,9 @@
         "crossbench": {
             "speedometer_3.0": {
                 "display_name": "speedometer3.crossbench",
-                "arguments": ["--timeout-unit=60"]
+                "arguments": [
+                    "--timeout-unit=60"
+                ]
             }
         }
     },
@@ -52,7 +56,9 @@
         "crossbench": {
             "speedometer_3.0": {
                 "display_name": "speedometer3.crossbench",
-                "arguments": ["--timeout-unit=60"]
+                "arguments": [
+                    "--timeout-unit=60"
+                ]
             }
         }
     },
@@ -71,7 +77,9 @@
         "crossbench": {
             "speedometer_3.0": {
                 "display_name": "speedometer3.crossbench",
-                "arguments": ["--timeout-unit=60"]
+                "arguments": [
+                    "--timeout-unit=60"
+                ]
             }
         }
     },
