@@ -4,6 +4,8 @@
 
 #include "ui/aura/window_tree_host.h"
 
+#include <optional>
+
 #include "base/command_line.h"
 #include "base/containers/contains.h"
 #include "base/feature_list.h"
@@ -128,9 +130,9 @@ WindowTreeHost* WindowTreeHost::GetForAcceleratedWidget(
 }
 
 void WindowTreeHost::InitHost() {
-  display::Display display =
-      display::Screen::GetScreen()->GetDisplayNearestWindow(window());
-  device_scale_factor_ = display.device_scale_factor();
+  device_scale_factor_ = display::Screen::GetScreen()
+                             ->GetPreferredScaleFactorForWindow(window())
+                             .value_or(1.f);
 
   UpdateRootWindowSize();
   InitCompositor();
@@ -455,10 +457,12 @@ WindowTreeHost::CreateVideoCaptureLock() {
 
 WindowTreeHost::WindowTreeHost(std::unique_ptr<Window> window)
     : window_(window.release()) {  // See header for details on ownership.
-  if (!window_)
+  if (!window_) {
     window_ = new Window(nullptr);
-  auto display = display::Screen::GetScreen()->GetDisplayNearestWindow(window_);
-  device_scale_factor_ = display.device_scale_factor();
+  }
+  device_scale_factor_ = display::Screen::GetScreen()
+                             ->GetPreferredScaleFactorForWindow(window_)
+                             .value_or(1.f);
 #if BUILDFLAG(IS_WIN)
   // The feature state is necessary but not sufficient for checking if
   // occlusion is enabled. It may be disabled by other means (e.g., policy).
@@ -586,12 +590,12 @@ void WindowTreeHost::OnHostResizedInPixels(
   if (!compositor_)
     return;
 
-  display::Display display =
-      display::Screen::GetScreen()->GetDisplayNearestWindow(window());
-  // If we don't have the actual display, don't overwrite the scale factor with
-  // the default value. See https://crbug.com/1285476 for details.
-  if (display.is_valid())
-    device_scale_factor_ = display.device_scale_factor();
+  // If we don't have the actual preferred scale, don't overwrite the scale
+  // factor with the default value. See https://crbug.com/1285476 for details.
+  auto* screen = display::Screen::GetScreen();
+  if (auto scale = screen->GetPreferredScaleFactorForWindow(window())) {
+    device_scale_factor_ = scale.value();
+  }
 
   UpdateRootWindowSize();
 

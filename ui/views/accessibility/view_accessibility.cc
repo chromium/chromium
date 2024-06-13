@@ -198,10 +198,10 @@ void ViewAccessibility::GetAccessibleNodeData(ui::AXNodeData* data) const {
 
     const views::Widget* widget = view_->GetWidget();
     if (widget && widget->GetNativeView() && display::Screen::GetScreen()) {
-      const float scale_factor =
-          display::Screen::GetScreen()
-              ->GetDisplayNearestView(view_->GetWidget()->GetNativeView())
-              .device_scale_factor();
+      const float scale_factor = display::Screen::GetScreen()
+                                     ->GetPreferredScaleFactorForView(
+                                         view_->GetWidget()->GetNativeView())
+                                     .value_or(1.0f);
       data->AddFloatAttribute(ax::mojom::FloatAttribute::kChildTreeScale,
                               scale_factor);
     }

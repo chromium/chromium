@@ -5,6 +5,7 @@
 #include "ui/aura/window_tree_host_platform.h"
 
 #include <memory>
+#include <optional>
 #include <utility>
 
 #include "base/check_is_test.h"
@@ -251,8 +252,11 @@ void WindowTreeHostPlatform::OnBoundsChanged(const BoundsChange& change) {
     for (WindowTreeHostObserver& observer : observers())
       observer.OnHostWillProcessBoundsChange(this);
   }
+
+  const auto preferred_scale =
+      display::Screen::GetScreen()->GetPreferredScaleFactorForWindow(window());
   float current_scale = compositor()->device_scale_factor();
-  float new_scale = ui::GetScaleFactorForNativeView(window());
+  float new_scale = preferred_scale.value_or(1.0f);
   auto weak_ref = GetWeakPtr();
   auto new_size = GetBoundsInPixels().size();
   bool size_changed = size_in_pixels_ != new_size;
