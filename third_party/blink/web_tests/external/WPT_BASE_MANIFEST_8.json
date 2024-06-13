@@ -291578,6 +291578,22 @@
      "4e77d4da5cdc29a44dc04240a0b861a3972d13f1",
      []
     ],
+    "idlharness-expected.txt": [
+     "d83c462f4e9c098f0ed8870cea9f0088eba0fd00",
+     []
+    ],
+    "idlharness.any-expected.txt": [
+     "570bc06eb586a1ef249f2d9aacbebaa61e07238f",
+     []
+    ],
+    "idlharness.any.worker-expected.txt": [
+     "570bc06eb586a1ef249f2d9aacbebaa61e07238f",
+     []
+    ],
+    "idlharness.worker-expected.txt": [
+     "d83c462f4e9c098f0ed8870cea9f0088eba0fd00",
+     []
+    ],
     "reading-data-section": {
      "filereader_events.any-expected.txt": [
       "b9adde792a9deaf3bec152efe2ce745f34515444",
@@ -297929,7 +297945,7 @@
      []
     ],
     "idlharness.https.window-expected.txt": [
-     "7bf9206f3170c1caac15a30fe7dc6d4067a7ce57",
+     "8c50be6805bf5dee2c774ddca530488ee6375acb",
      []
     ],
     "non-fully-active.https-expected.txt": [
@@ -378853,7 +378869,7 @@
      []
     ],
     "FileAPI.idl": [
-     "aee0e65dcae267201bbe6ae8b8c90231795facf1",
+     "49219fce277f2387d0d7ed39cf87d95da497f0f6",
      []
     ],
     "IndexedDB.idl": [
@@ -379065,7 +379081,7 @@
      []
     ],
     "compression.idl": [
-     "7525d7c9847b74a8e382e55ad9627b64dd4af161",
+     "defe4ba55cdfd4154e7472181391f52fe83fbb82",
      []
     ],
     "compute-pressure.idl": [
@@ -379093,7 +379109,7 @@
      []
     ],
     "credential-management.idl": [
-     "75e18319190a7976379b8b5ec5d153270c1fa8ad",
+     "94cf6a58614f4ba14b114fd844a4dc048c6493e8",
      []
     ],
     "csp-embedded-enforcement.idl": [
@@ -379229,7 +379245,7 @@
      []
     ],
     "cssom-view.idl": [
-     "5c6c2f58a8c1a05b6436ab995f0e703d6f30263b",
+     "f922bc81486442108d566645b31c4dd24f257b5b",
      []
     ],
     "cssom.idl": [
@@ -379305,7 +379321,7 @@
      []
     ],
     "fenced-frame.idl": [
-     "9846d4037e934f8f7927abfbefd0fdf61410bc24",
+     "a3ec8d731bbcd65491ff533322994f45c5641fab",
      []
     ],
     "fetch.idl": [
@@ -379377,7 +379393,7 @@
      []
     ],
     "html.idl": [
-     "aad8994b87dae6df4134353fffa68416c0b9eb4c",
+     "b5bf357357946ba8255dc3b309409602997147f4",
      []
     ],
     "idle-detection.idl": [
@@ -379505,7 +379521,7 @@
      []
     ],
     "mediacapture-transform.idl": [
-     "5b2c8fa67a6b130d1fe99f962ff85c5cf7a7bc3d",
+     "1ce35452f0c2afc7762ca53b6d83199a638e5a91",
      []
     ],
     "mediacapture-viewport.idl": [
@@ -379513,7 +379529,7 @@
      []
     ],
     "mediasession.idl": [
-     "e6c8e46462793cf6e96bebe48c04c466f8cc5117",
+     "0630f48da4b29f25be358c1cf9fe9d589051dd67",
      []
     ],
     "mediastream-recording.idl": [
@@ -379641,7 +379657,7 @@
      []
     ],
     "push-api.idl": [
-     "f582788806c79223f9a7b935ce48c179ac247cd9",
+     "b16a730b7229d02bb8c06434b521815ae3440d78",
      []
     ],
     "raw-camera-access.idl": [
@@ -379680,6 +379696,10 @@
      "33fed05b75683891047785f7521b7a250086c645",
      []
     ],
+    "saa-non-cookie-storage.idl": [
+     "6cc0a7887be78013f74c80ed0b1ab83cc39647ef",
+     []
+    ],
     "sanitizer-api.idl": [
      "8f5c667973a359ed576c143b0a5aa639c0a89b94",
      []
@@ -379693,7 +379713,7 @@
      []
     ],
     "scheduling-apis.idl": [
-     "1e84e79cd1503946088888d02a5da45d5af7c5fe",
+     "3c858a2db06ad3f7e47198aaa4935303116533fe",
      []
     ],
     "screen-capture.idl": [
@@ -379789,7 +379809,7 @@
      []
     ],
     "turtledove.idl": [
-     "fdaef0268b6f4554680e82adaf9fd72b75064d94",
+     "d4cc8c6bc5d5b106dc3f495058a2108ed6792c6f",
      []
     ],
     "ua-client-hints.idl": [
@@ -379933,7 +379953,7 @@
      []
     ],
     "webgpu.idl": [
-     "ef5b9c730abed4a31306cfb36d9a68c51ac91528",
+     "4a1b339a002661035a8b5f366d6ce166b8bfe37c",
      []
     ],
     "webhid.idl": [
@@ -379949,7 +379969,7 @@
      []
     ],
     "webnn.idl": [
-     "297a2bdbf873b2a7f44be847faffdb86679b7f06",
+     "29c88122adc760aa49d431057f7c26d5b426440f",
      []
     ],
     "webrtc-encoded-transform.idl": [
@@ -379977,7 +379997,7 @@
      []
     ],
     "webrtc.idl": [
-     "da3a6f4645e082e66719bcc573fa22ad13708179",
+     "de6ba1420cec4bb53b1651cea69ac030db6f4a78",
      []
     ],
     "websockets.idl": [
@@ -380005,7 +380025,7 @@
      []
     ],
     "webxr-depth-sensing.idl": [
-     "c44f029436f11afe8fe91023c3eda20af3f5755b",
+     "b77b59c0ce67425d459428721c92d3f548f10048",
      []
     ],
     "webxr-dom-overlays.idl": [
@@ -383027,7 +383047,7 @@
      ]
     },
     "idlharness.window-expected.txt": [
-     "c2fd8138e32b011ca6eafefe1b4d259dba762e7f",
+     "1467636d2466b9cc06ae59ce46fd6fa60ec21bcb",
      []
     ]
    },
@@ -385832,6 +385852,10 @@
    "push-api": {
     "META.yml": [
      "4886e6a70da668e136d3149ee760c79aaf34be39",
+     []
+    ],
+    "idlharness.https.any.serviceworker-expected.txt": [
+     "e7e6997acd218ec6c304a32e080d753c2488e077",
      []
     ],
     "noop-sw.js": [
@@ -400749,11 +400773,11 @@
      ]
     },
     "idlharness.https.any-expected.txt": [
-     "1a6cfb9c4badb32b220b35010437e697b9781c07",
+     "cede0673697996cf63ff86309b3942420ea868c0",
      []
     ],
     "idlharness.https.any.worker-expected.txt": [
-     "1a6cfb9c4badb32b220b35010437e697b9781c07",
+     "cede0673697996cf63ff86309b3942420ea868c0",
      []
     ],
     "resources": {
@@ -401305,7 +401329,7 @@
      []
     ],
     "idlharness.https.window-expected.txt": [
-     "cddb3d3a0f04081a49e8c4e605f73f2d9b6b3dfe",
+     "95cbd1549de7f3ec818d0c4ddc264ee38d924328",
      []
     ],
     "legacy": {
@@ -477725,7 +477749,7 @@
     },
     "css-viewport": {
      "computedStyle-zoom.html": [
-      "82af111bbe72d3ab20f071d97ff5919781061add",
+      "bd53ce535ceb416456e0b6237ba8b81d5542e4a8",
       [
        null,
        {}

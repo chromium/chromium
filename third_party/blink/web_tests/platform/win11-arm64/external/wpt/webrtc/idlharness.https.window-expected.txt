@@ -1,5 +1,5 @@
 This is a testharness.js-based test.
-Found 22 FAIL, 0 TIMEOUT, 0 NOTRUN.
+Found 14 FAIL, 0 TIMEOUT, 0 NOTRUN.
 [FAIL] RTCSessionDescription interface object length
   assert_equals: wrong value for RTCSessionDescription.length expected 1 but got 0
 [FAIL] RTCSessionDescription interface: attribute type
@@ -18,22 +18,6 @@ Found 22 FAIL, 0 TIMEOUT, 0 NOTRUN.
   assert_equals: expected "string" but got "object"
 [FAIL] RTCIceTransport interface: idlTestObjects.iceTransport must inherit property "component" with the proper type
   assert_inherits: property "component" not found in prototype chain
-[FAIL] RTCIceCandidatePair interface: existence and properties of interface object
-  assert_own_property: self does not have own property "RTCIceCandidatePair" expected property "RTCIceCandidatePair" missing
-[FAIL] RTCIceCandidatePair interface object length
-  assert_own_property: self does not have own property "RTCIceCandidatePair" expected property "RTCIceCandidatePair" missing
-[FAIL] RTCIceCandidatePair interface object name
-  assert_own_property: self does not have own property "RTCIceCandidatePair" expected property "RTCIceCandidatePair" missing
-[FAIL] RTCIceCandidatePair interface: existence and properties of interface prototype object
-  assert_own_property: self does not have own property "RTCIceCandidatePair" expected property "RTCIceCandidatePair" missing
-[FAIL] RTCIceCandidatePair interface: existence and properties of interface prototype object's "constructor" property
-  assert_own_property: self does not have own property "RTCIceCandidatePair" expected property "RTCIceCandidatePair" missing
-[FAIL] RTCIceCandidatePair interface: existence and properties of interface prototype object's @@unscopables property
-  assert_own_property: self does not have own property "RTCIceCandidatePair" expected property "RTCIceCandidatePair" missing
-[FAIL] RTCIceCandidatePair interface: attribute local
-  assert_own_property: self does not have own property "RTCIceCandidatePair" expected property "RTCIceCandidatePair" missing
-[FAIL] RTCIceCandidatePair interface: attribute remote
-  assert_own_property: self does not have own property "RTCIceCandidatePair" expected property "RTCIceCandidatePair" missing
 [FAIL] RTCDataChannel interface: new RTCPeerConnection().createDataChannel('') must inherit property "binaryType" with the proper type
   Right-hand side of 'instanceof' is not an object
 [FAIL] RTCDTMFToneChangeEvent interface object length

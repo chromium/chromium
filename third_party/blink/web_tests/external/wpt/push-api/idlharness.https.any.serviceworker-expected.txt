@@ -1,0 +1,6 @@
+This is a testharness.js-based test.
+Found 1 FAIL, 0 TIMEOUT, 0 NOTRUN.
+[FAIL] PushMessageData interface: operation bytes()
+  assert_own_property: interface prototype object missing non-static operation expected property "bytes" missing
+Harness: the test ran to completion.
+
