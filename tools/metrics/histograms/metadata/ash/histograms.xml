@@ -407,6 +407,20 @@ chromium-metrics-reviews@google.com.
   <variant name=".TabletMode.WithOverview" summary=""/>
 </variants>
 
+<variants name="WallpaperType">
+  <variant name="Customized"/>
+  <variant name="Daily"/>
+  <variant name="DailyGooglePhotos"/>
+  <variant name="Default"/>
+  <variant name="Device"/>
+  <variant name="OnceGooglePhotos"/>
+  <variant name="Online"/>
+  <variant name="Oobe"/>
+  <variant name="Policy"/>
+  <variant name="SeaPen"/>
+  <variant name="ThirdParty"/>
+</variants>
+
 <histogram name="Ash.Accelerators.Actions.{ActionName}" units="Shortcuts"
     expires_after="2024-11-03">
   <owner>dpad@google.com</owner>
@@ -9068,6 +9082,16 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Ash.Wallpaper.MigrationFailureReason"
+    enum="WallpaperMigrationFailureReason" expires_after="2025-05-30">
+  <owner>jasontt@chromium.org</owner>
+  <owner>assistive-eng@google.com</owner>
+  <summary>
+    Tracks the reason for the versioned wallpaper migration failure. Recorded
+    when the migration fails on user's login.
+  </summary>
+</histogram>
+
 <histogram name="Ash.Wallpaper.Online.Result" enum="SetWallpaperResult"
     expires_after="2023-08-31">
   <owner>jasontt@chromium.org</owner>
@@ -9122,28 +9146,39 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="Ash.Wallpaper.{WallpaperType}.Result2"
-    enum="SetWallpaperResult" expires_after="2024-10-20">
+<histogram name="Ash.Wallpaper.{Type}.MigrationLatency" units="ms"
+    expires_after="2025-05-30">
+  <owner>jasontt@chromium.org</owner>
+  <owner>assistive-eng@google.com</owner>
+  <summary>
+    Tracks the latency of migration for wallpaper info of type {Type}. Recorded
+    after the migration is completed on user's login.
+  </summary>
+  <token key="Type" variants="WallpaperType"/>
+</histogram>
+
+<histogram name="Ash.Wallpaper.{Type}.MigrationStatus"
+    enum="WallpaperMigrationStatus" expires_after="2025-05-30">
+  <owner>jasontt@chromium.org</owner>
+  <owner>assistive-eng@google.com</owner>
+  <summary>
+    Tracks the status of migration for wallpaper info of type {Type}. Recorded
+    after the migration is completed on user's login.
+  </summary>
+  <token key="Type" variants="WallpaperType"/>
+</histogram>
+
+<histogram name="Ash.Wallpaper.{Type}.Result2" enum="SetWallpaperResult"
+    expires_after="2024-10-20">
   <owner>thuongphan@chromium.org</owner>
   <owner>assistive-eng@google.com</owner>
   <summary>
-    Tracks the result of user's attempt to set a wallpaper of type
-    {WallpaperType}. Recorded when a user selects a {WallpaperType} wallpaper
-    from the personalization hub.
+    Tracks the result of user's attempt to set a wallpaper of type {Type}.
+    Replaces the previous Result histogram where there is a misreport of online
+    wallpapers. Recorded when a user selects a {Type} wallpaper from the
+    personalization hub.
   </summary>
-  <token key="WallpaperType">
-    <variant name="Customized"/>
-    <variant name="Daily"/>
-    <variant name="DailyGooglePhotos"/>
-    <variant name="Default"/>
-    <variant name="Device"/>
-    <variant name="OnceGooglePhotos"/>
-    <variant name="Online"/>
-    <variant name="Oobe"/>
-    <variant name="Policy"/>
-    <variant name="SeaPen"/>
-    <variant name="ThirdParty"/>
-  </token>
+  <token key="Type" variants="WallpaperType"/>
 </histogram>
 
 <histogram name="Ash.Window.AnimationSmoothness.CrossFade" units="%"

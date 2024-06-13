@@ -4,10 +4,44 @@
 
 #include "ash/public/cpp/wallpaper/wallpaper_types.h"
 
+#include <string>
+
 #include "base/logging.h"
+#include "base/notreached.h"
 #include "base/types/cxx23_to_underlying.h"
 
 namespace ash {
+
+std::string WallpaperTypeToString(WallpaperType type) {
+  switch (type) {
+    case WallpaperType::kDaily:
+      return "Daily";
+    case WallpaperType::kCustomized:
+      return "Customized";
+    case WallpaperType::kDefault:
+      return "Default";
+    case WallpaperType::kOnline:
+      return "Online";
+    case WallpaperType::kPolicy:
+      return "Policy";
+    case WallpaperType::kThirdParty:
+      return "ThirdParty";
+    case WallpaperType::kDevice:
+      return "Device";
+    case WallpaperType::kOneShot:
+      return "OneShot";
+    case WallpaperType::kDailyGooglePhotos:
+      return "DailyGooglePhotos";
+    case WallpaperType::kOnceGooglePhotos:
+      return "OnceGooglePhotos";
+    case WallpaperType::kOobe:
+      return "Oobe";
+    case WallpaperType::kSeaPen:
+      return "SeaPen";
+    case WallpaperType::kCount:
+      NOTREACHED_NORETURN() << " Unhandled type=" << base::to_underlying(type);
+  }
+}
 
 bool IsAllowedInPrefs(WallpaperType type) {
   switch (type) {

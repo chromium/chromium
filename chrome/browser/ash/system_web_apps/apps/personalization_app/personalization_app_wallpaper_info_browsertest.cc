@@ -26,12 +26,14 @@
 #include "base/functional/callback_helpers.h"
 #include "base/run_loop.h"
 #include "base/scoped_observation.h"
+#include "base/version.h"
 #include "build/build_config.h"
 #include "chrome/browser/ash/system_web_apps/apps/personalization_app/personalization_app_utils.h"
 #include "chrome/browser/ash/system_web_apps/apps/personalization_app/test_personalization_app_webui_provider.h"
 #include "chrome/browser/ash/system_web_apps/test_support/system_web_app_browsertest_base.h"
 #include "chrome/browser/ash/wallpaper_handlers/mock_wallpaper_handlers.h"
 #include "chrome/browser/ash/wallpaper_handlers/test_wallpaper_fetcher_delegate.h"
+#include "chrome/browser/browser_process.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/ash/wallpaper_controller_client_impl.h"
 #include "chrome/browser/ui/browser.h"
@@ -364,8 +366,9 @@ class PersonalizationAppVersionedWallpaperInfoBrowserTest
   base::test::ScopedFeatureList scoped_feature_list_;
 };
 
-IN_PROC_BROWSER_TEST_F(PersonalizationAppVersionedWallpaperInfoBrowserTest,
-                       OnlineWallpaperFetchMissingUnitIdSuccessfully) {
+IN_PROC_BROWSER_TEST_F(
+    PersonalizationAppVersionedWallpaperInfoBrowserTest,
+    OnlineWallpaperFetchMissingUnitIdSuccessfullyForSyncedPref) {
   WallpaperInfo info =
       WallpaperInfo(std::string(), WALLPAPER_LAYOUT_CENTER_CROPPED,
                     WallpaperType::kOnline, base::Time::Now());
@@ -378,6 +381,36 @@ IN_PROC_BROWSER_TEST_F(PersonalizationAppVersionedWallpaperInfoBrowserTest,
   PutWallpaperInfoInPrefs(account_id, info, browser()->profile()->GetPrefs(),
                           prefs::kSyncableVersionedWallpaperInfo);
   loop.Run();
+
+  WallpaperInfo new_info =
+      *wallpaper_controller()->GetActiveUserWallpaperInfo();
+
+  // Expects asset_id to be empty.
+  EXPECT_FALSE(new_info.asset_id.has_value());
+  // Expects unit_id, and variants to be set.
+  EXPECT_TRUE(new_info.unit_id.has_value());
+  EXPECT_EQ(new_info.variants.size(), 1u);
+  EXPECT_EQ(new_info.collection_id, kDummyCollectionId);
+  EXPECT_TRUE(new_info.version.IsValid());
+  EXPECT_EQ(new_info.version, GetSupportedVersion(new_info.type));
+}
+
+IN_PROC_BROWSER_TEST_F(PersonalizationAppVersionedWallpaperInfoBrowserTest,
+                       LocalPrefIsMigratedSuccessfullyForOnlineWallpaper) {
+  WallpaperInfo unmigrated_info;
+  unmigrated_info.collection_id = kDummyCollectionId;
+  unmigrated_info.location = kDummyUrl;
+  unmigrated_info.type = WallpaperType::kOnline;
+  unmigrated_info.version = base::Version();
+
+  const AccountId account_id = GetAccountId(browser()->profile());
+  PutWallpaperInfoInPrefs(account_id, unmigrated_info,
+                          g_browser_process->local_state(),
+                          prefs::kUserWallpaperInfo);
+  // Migration is triggered by `OnActiveUserPrefServiceChanged`.
+  wallpaper_controller()->OnActiveUserPrefServiceChanged(
+      browser()->profile()->GetPrefs());
+  base::RunLoop().RunUntilIdle();
 
   WallpaperInfo new_info =
       *wallpaper_controller()->GetActiveUserWallpaperInfo();
