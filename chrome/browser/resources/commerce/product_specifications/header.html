@@ -56,6 +56,11 @@
     flex: 1;
   }
 
+  #subtitle:hover {
+    border-bottom: 1px solid var(--color-product-specifications-divider);
+    margin-bottom: -1px; /* Don't move on hover */
+  }
+
   #menuButton {
     --cr-icon-button-size: 30px;
   }
@@ -72,7 +77,8 @@
   <div class="spacer"></div>
 </template>
 <template is="dom-if" if="[[!showingInput_]]">
-  <div class="title-text" id="subtitle" hidden="[[!subtitle]]">
+  <div class="title-text" id="subtitle" hidden="[[!subtitle]]"
+      on-click="onRenaming_">
     [[subtitle]]
   </div>
 </template>
