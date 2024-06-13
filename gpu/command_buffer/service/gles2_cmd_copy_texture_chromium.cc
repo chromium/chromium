@@ -8,6 +8,7 @@
 
 #include <unordered_map>
 
+#include "base/containers/heap_array.h"
 #include "base/ranges/algorithm.h"
 #include "build/build_config.h"
 #include "gpu/command_buffer/common/gles2_cmd_copy_texture_chromium_utils.h"
@@ -703,15 +704,15 @@ void prepareUnpackBuffer(GLuint buffer[2],
     // GLCopyTextureCHROMIUMES3Test.FormatCombinations in gl_tests. This is seen
     // on Nexus 5 but not Nexus 4. Read pixels to client memory, then upload to
     // pixel unpack buffer with glBufferData.
-    std::unique_ptr<uint8_t[]> pixels(new uint8_t[width * height * 4]);
-    glReadPixels(0, 0, width, height, GL_RGBA, GL_UNSIGNED_BYTE, pixels.get());
-    std::unique_ptr<float[]> data(new float[width * height * 3]);
-    convertToRGBFloat(pixels.get(), data.get(), pixel_num);
+    auto pixels = base::HeapArray<uint8_t>::Uninit(width * height * 4);
+    glReadPixels(0, 0, width, height, GL_RGBA, GL_UNSIGNED_BYTE, pixels.data());
+    auto data = base::HeapArray<float>::Uninit(width * height * 3);
+    convertToRGBFloat(pixels.data(), data.data(), pixel_num);
     bytes_per_group =
         gpu::gles2::GLES2Util::ComputeImageGroupSize(format, type);
     buf_size = pixel_num * bytes_per_group;
     glBindBuffer(GL_PIXEL_UNPACK_BUFFER, buffer[1]);
-    glBufferData(GL_PIXEL_UNPACK_BUFFER, buf_size, data.get(), GL_STATIC_DRAW);
+    glBufferData(GL_PIXEL_UNPACK_BUFFER, buf_size, data.data(), GL_STATIC_DRAW);
 #else
     glBindBuffer(GL_PIXEL_PACK_BUFFER, buffer[0]);
     glBufferData(GL_PIXEL_PACK_BUFFER, buf_size, 0, GL_STATIC_READ);
