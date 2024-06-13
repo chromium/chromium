@@ -1877,6 +1877,10 @@
       // a Chromium level feature.
     },
     {
+      name: "FontSystemFallbackNotoCjk",
+      status: "stable",
+    },
+    {
       name: "FontVariantEmoji",
     },
     {

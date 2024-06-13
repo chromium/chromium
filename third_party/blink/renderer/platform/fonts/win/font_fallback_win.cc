@@ -179,7 +179,9 @@ void InitializeScriptFontMap(ScriptToFontMap& script_font_map) {
   static const UChar* const kGreekFonts[] = {u"Times New Roman"};
   static const UChar* const kGujaratiFonts[] = {u"Nirmala UI", u"Shruti"};
   static const UChar* const kGurmukhiFonts[] = {u"Nirmala UI", u"Raavi"};
-  static const UChar* const kHangulFonts[] = {u"Malgun Gothic", u"Gulim"};
+  static const UChar* const kHangulFonts[] = {
+      u"Noto Sans KR", u"Noto Sans CJK KR", u"Malgun Gothic", u"Gulim"};
+  static const UChar* const kHangulFontsNoNoto[] = {u"Malgun Gothic", u"Gulim"};
   static const UChar* const kHebrewFonts[] = {u"David", u"Segoe UI"};
   static const UChar* const kImperialAramaicFonts[] = {u"Segoe UI Historic"};
   static const UChar* const kInscriptionalPahlaviFonts[] = {
@@ -189,6 +191,9 @@ void InitializeScriptFontMap(ScriptToFontMap& script_font_map) {
   static const UChar* const kJavaneseFonts[] = {u"Javanese Text"};
   static const UChar* const kKannadaFonts[] = {u"Tunga", u"Nirmala UI"};
   static const UChar* const kKatakanaOrHiraganaFonts[] = {
+      u"Noto Sans JP", u"Noto Sans CJK JP", u"Meiryo",
+      u"Yu Gothic",    u"MS PGothic",       u"Microsoft YaHei"};
+  static const UChar* const kKatakanaOrHiraganaFontsNoNoto[] = {
       u"Meiryo", u"Yu Gothic", u"MS PGothic", u"Microsoft YaHei"};
   static const UChar* const kKharoshthiFonts[] = {u"Segoe UI Historic"};
   // Try Khmer OS before Vista fonts as it goes along better with Latin
@@ -226,8 +231,10 @@ void InitializeScriptFontMap(ScriptToFontMap& script_font_map) {
   static const UChar* const kRunicFonts[] = {u"Segoe UI Historic",
                                              u"Segoe UI Symbol"};
   static const UChar* const kShavianFonts[] = {u"Segoe UI Historic"};
-  static const UChar* const kSimplifiedHanFonts[] = {u"Microsoft YaHei",
-                                                     u"simsun"};
+  static const UChar* const kSimplifiedHanFonts[] = {
+      u"Noto Sans SC", u"Noto Sans CJK SC", u"Microsoft YaHei", u"simsun"};
+  static const UChar* const kSimplifiedHanFontsNoNoto[] = {u"Microsoft YaHei",
+                                                           u"simsun"};
   static const UChar* const kSinhalaFonts[] = {u"Iskoola Pota",
                                                u"AksharUnicode", u"Nirmala UI"};
   static const UChar* const kSoraSompengFonts[] = {u"Nirmala UI"};
@@ -243,8 +250,10 @@ void InitializeScriptFontMap(ScriptToFontMap& script_font_map) {
   static const UChar* const kTibetanFonts[] = {
       u"Microsoft Himalaya", u"Jomolhari", u"Tibetan Machine Uni"};
   static const UChar* const kTifinaghFonts[] = {u"Ebrima"};
-  static const UChar* const kTraditionalHanFonts[] = {u"Microsoft JhengHei",
-                                                      u"pmingliu"};
+  static const UChar* const kTraditionalHanFonts[] = {
+      u"Noto Sans TC", u"Noto Sans CJK TC", u"Microsoft JhengHei", u"pmingliu"};
+  static const UChar* const kTraditionalHanFontsNoNoto[] = {
+      u"Microsoft JhengHei", u"pmingliu"};
   static const UChar* const kVaiFonts[] = {u"Ebrima"};
   static const UChar* const kYiFonts[] = {u"Microsoft Yi Baiti", u"Nuosu SIL",
                                           u"Code2000"};
@@ -323,6 +332,18 @@ void InitializeScriptFontMap(ScriptToFontMap& script_font_map) {
       {USCRIPT_VAI, kVaiFonts},
       {USCRIPT_YI, kYiFonts}};
   script_font_map.Set(kScriptToFontFamilies);
+
+  if (UNLIKELY(!RuntimeEnabledFeatures::FontSystemFallbackNotoCjkEnabled())) {
+    const ScriptToFontFamilies no_noto[] = {
+        {USCRIPT_HANGUL, kHangulFontsNoNoto},
+        {USCRIPT_HIRAGANA, kKatakanaOrHiraganaFontsNoNoto},
+        {USCRIPT_KATAKANA, kKatakanaOrHiraganaFontsNoNoto},
+        {USCRIPT_KATAKANA_OR_HIRAGANA, kKatakanaOrHiraganaFontsNoNoto},
+        {USCRIPT_SIMPLIFIED_HAN, kSimplifiedHanFontsNoNoto},
+        {USCRIPT_TRADITIONAL_HAN, kTraditionalHanFontsNoNoto},
+    };
+    script_font_map.Set(no_noto);
+  }
 
   // Initialize the locale-dependent mapping from system locale.
   UScriptCode han_script = LayoutLocale::GetSystem().GetScriptForHan();
