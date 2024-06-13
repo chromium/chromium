@@ -2280,6 +2280,15 @@ bool RenderFrameHostImpl::IsNestedWithinFencedFrame() const {
   }
 }
 
+bool RenderFrameHostImpl::IsUntrustedNetworkDisabled() const {
+  return frame_tree_node_->GetFencedFrameProperties(
+             FencedFramePropertiesNodeSource::kFrameTreeRoot) &&
+         frame_tree_node_
+             ->GetFencedFrameProperties(
+                 FencedFramePropertiesNodeSource::kFrameTreeRoot)
+             ->HasDisabledNetworkForCurrentFrameTree();
+}
+
 void RenderFrameHostImpl::ForEachRenderFrameHostWithAction(
     base::FunctionRef<FrameIterationAction(RenderFrameHost*)> on_frame) {
   ForEachRenderFrameHostWithAction(

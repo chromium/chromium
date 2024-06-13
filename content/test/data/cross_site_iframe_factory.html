@@ -318,7 +318,7 @@ function main() {
     self.worker = new Worker(worker_url);
   }
 
-  // Create a shared worker with matching query-string if the "with-worker" 
+  // Create a shared worker with matching query-string if the "with-worker"
   // attribute is specified.
   if (shouldCreateSharedWorker(frameTree.attributes)) {
     let worker_url = 'workers/empty.js';

@@ -3646,6 +3646,17 @@ bool RenderViewContextMenu::IsSaveAsItemAllowedByPolicy() const {
   return true;
 }
 
+bool RenderViewContextMenu::IsSaveAsItemAllowedByUntrustedNetworkStatus()
+    const {
+  if (!GetRenderFrameHost()) {
+    return true;
+  }
+
+  // Download requests are not allowed in a frame tree that has untrusted
+  // network access disabled.
+  return !GetRenderFrameHost()->IsUntrustedNetworkDisabled();
+}
+
 // Controller functions --------------------------------------------------------
 
 bool RenderViewContextMenu::IsReloadEnabled() const {
@@ -3710,6 +3721,10 @@ bool RenderViewContextMenu::IsTranslateEnabled() const {
 
 bool RenderViewContextMenu::IsSaveLinkAsEnabled() const {
   if (!IsSaveAsItemAllowedByPolicy()) {
+    return false;
+  }
+
+  if (!IsSaveAsItemAllowedByUntrustedNetworkStatus()) {
     return false;
   }
 

@@ -8,6 +8,7 @@
 #include <map>
 #include <memory>
 #include <string>
+#include <string_view>
 #include <tuple>
 #include <utility>
 #include <variant>
@@ -2120,6 +2121,45 @@ class ContextMenuFencedFrameTest : public ContextMenuBrowserTestBase {
 
   net::EmbeddedTestServer* https_server() { return &https_server_; }
 
+  void SimulateClickAt(const content::ToRenderFrameHost& adapter,
+                       blink::WebMouseEvent::Button button,
+                       const gfx::PointF& point) {
+    blink::WebMouseEvent mouse_event(
+        blink::WebInputEvent::Type::kMouseDown,
+        blink::WebInputEvent::kNoModifiers,
+        blink::WebInputEvent::GetStaticTimeStampForTests());
+    mouse_event.button = button;
+    mouse_event.SetPositionInWidget(point);
+    mouse_event.click_count = 1;
+    adapter.render_frame_host()->GetRenderWidgetHost()->ForwardMouseEvent(
+        mouse_event);
+    mouse_event.SetType(blink::WebInputEvent::Type::kMouseUp);
+    adapter.render_frame_host()->GetRenderWidgetHost()->ForwardMouseEvent(
+        mouse_event);
+  }
+
+  gfx::PointF GetTopLeftCoordinatesOfElementWithId(
+      const content::ToRenderFrameHost& adapter,
+      std::string_view id) {
+    double x = EvalJs(adapter, content::JsReplace(R"(
+                                  const bounds =
+                                    document.getElementById($1).
+                                    getBoundingClientRect();
+                                  Math.floor(bounds.left)
+                                )",
+                                                  id))
+                   .ExtractDouble();
+    double y = EvalJs(adapter, content::JsReplace(R"(
+                                  const bounds =
+                                    document.getElementById($1).
+                                    getBoundingClientRect();
+                                  Math.floor(bounds.top)
+                                )",
+                                                  id))
+                   .ExtractDouble();
+    return gfx::PointF(x, y);
+  }
+
  private:
   content::test::FencedFrameTestHelper fenced_frame_test_helper_;
   net::EmbeddedTestServer https_server_;
@@ -2177,6 +2217,156 @@ IN_PROC_BROWSER_TEST_F(ContextMenuFencedFrameTest,
                              IDC_SAVE_PAGE, IDC_CONTENT_CONTEXT_VIEWFRAMESOURCE,
                              IDC_CONTENT_CONTEXT_RELOADFRAME,
                              IDC_CONTENT_CONTEXT_INSPECTELEMENT}));
+}
+
+IN_PROC_BROWSER_TEST_F(ContextMenuFencedFrameTest,
+                       SaveLinkAsEntryIsDisabledAfterNetworkCutoff) {
+  // Add content/test/data for cross_site_iframe_factory.html.
+  https_server()->ServeFilesFromSourceDirectory("content/test/data");
+  ASSERT_TRUE(https_server()->Start());
+
+  // Navigate fenced frame to a page with an anchor element.
+  GURL fenced_frame_url(
+      https_server()->GetURL("a.test", "/download-anchor-same-origin.html"));
+
+  GURL main_url(https_server()->GetURL(
+      "a.test",
+      base::StringPrintf("/cross_site_iframe_factory.html?a.test(%s{fenced})",
+                         fenced_frame_url.spec().c_str())));
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), main_url));
+
+  // Get fenced frame render frame host.
+  std::vector<content::RenderFrameHost*> child_frames =
+      fenced_frame_test_helper().GetChildFencedFrameHosts(
+          primary_main_frame_host());
+  ASSERT_EQ(child_frames.size(), 1u);
+  content::RenderFrameHost* fenced_frame_rfh = child_frames[0];
+  ASSERT_EQ(fenced_frame_rfh->GetLastCommittedURL(), fenced_frame_url);
+
+  // To avoid flakiness and ensure fenced_frame_rfh is ready for hit testing.
+  content::WaitForHitTestData(fenced_frame_rfh);
+
+  // Get the coordinate of the anchor element inside the fenced frame.
+  const gfx::PointF anchor_element =
+      GetCenterCoordinatesOfElementWithId(fenced_frame_rfh, "anchor");
+
+  // Open a context menu by right clicking on the anchor element.
+  ContextMenuWaiter menu_observer;
+  SimulateClickAt(fenced_frame_rfh, blink::WebMouseEvent::Button::kRight,
+                  anchor_element);
+
+  // Wait for context menu to be visible.
+  menu_observer.WaitForMenuOpenAndClose();
+
+  // "Save Link As..." should be present and enabled in the context menu.
+  EXPECT_THAT(menu_observer.GetCapturedCommandIds(),
+              testing::Contains(IDC_CONTENT_CONTEXT_SAVELINKAS));
+  EXPECT_THAT(menu_observer.GetCapturedEnabledCommandIds(),
+              testing::Contains(IDC_CONTENT_CONTEXT_SAVELINKAS));
+
+  // Disable fenced frame untrusted network access.
+  ASSERT_TRUE(ExecJs(fenced_frame_rfh, R"(
+    (async () => {
+      return window.fence.disableUntrustedNetwork();
+    })();
+  )"));
+
+  // Open the context menu again.
+  ContextMenuWaiter menu_observer_after_network_cutoff;
+  SimulateClickAt(fenced_frame_rfh, blink::WebMouseEvent::Button::kRight,
+                  anchor_element);
+
+  // Wait for context menu to be visible.
+  menu_observer_after_network_cutoff.WaitForMenuOpenAndClose();
+
+  // "Save Link As..." should be disabled in the context menu after fenced frame
+  // has untrusted network access revoked.
+  EXPECT_THAT(menu_observer_after_network_cutoff.GetCapturedCommandIds(),
+              testing::Contains(IDC_CONTENT_CONTEXT_SAVELINKAS));
+  EXPECT_THAT(menu_observer_after_network_cutoff.GetCapturedEnabledCommandIds(),
+              testing::Not(testing::Contains(IDC_CONTENT_CONTEXT_SAVELINKAS)));
+}
+
+IN_PROC_BROWSER_TEST_F(
+    ContextMenuFencedFrameTest,
+    SaveLinkAsEntryIsDisabledInNestedIframeAfterNetworkCutoff) {
+  // Add content/test/data for cross_site_iframe_factory.html.
+  https_server()->ServeFilesFromSourceDirectory("content/test/data");
+  ASSERT_TRUE(https_server()->Start());
+
+  // Navigate the nested iframe to a page with an anchor element.
+  GURL nested_iframe_url(
+      https_server()->GetURL("a.test", "/download-anchor-same-origin.html"));
+
+  // The page has a fenced frame with a nested iframe inside.
+  GURL main_url(https_server()->GetURL(
+      "a.test",
+      base::StringPrintf(
+          "/cross_site_iframe_factory.html?a.test(a.test{fenced}(%s))",
+          nested_iframe_url.spec().c_str())));
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), main_url));
+
+  // Get fenced frame and nested iframe render frame host.
+  std::vector<content::RenderFrameHost*> child_frames =
+      fenced_frame_test_helper().GetChildFencedFrameHosts(
+          primary_main_frame_host());
+  ASSERT_EQ(child_frames.size(), 1u);
+  content::RenderFrameHost* fenced_frame_rfh = child_frames[0];
+  content::RenderFrameHost* nested_iframe_rfh =
+      content::ChildFrameAt(fenced_frame_rfh, 0);
+  ASSERT_EQ(nested_iframe_rfh->GetLastCommittedURL(), nested_iframe_url);
+
+  // To avoid flakiness and ensure fenced_frame_rfh and nested_iframe_rfh is
+  // ready for hit testing.
+  content::WaitForHitTestData(fenced_frame_rfh);
+  content::WaitForHitTestData(nested_iframe_rfh);
+
+  // Get the coordinate of the anchor element inside the nested iframe.
+  gfx::PointF anchor_element =
+      GetCenterCoordinatesOfElementWithId(nested_iframe_rfh, "anchor");
+
+  // Because the mouse event is forwarded to the `RenderWidgetHost` of the
+  // fenced frame, the anchor element needs to be offset by the top left
+  // coordinates of the nested iframe relative to the fenced frame.
+  const gfx::PointF iframe_offset =
+      GetTopLeftCoordinatesOfElementWithId(fenced_frame_rfh, "child-0");
+  anchor_element.Offset(iframe_offset.x(), iframe_offset.y());
+
+  // Open a context menu by right clicking on the anchor element.
+  ContextMenuWaiter menu_observer;
+  SimulateClickAt(nested_iframe_rfh, blink::WebMouseEvent::Button::kRight,
+                  anchor_element);
+
+  // Wait for context menu to be visible.
+  menu_observer.WaitForMenuOpenAndClose();
+
+  // "Save Link As..." should be present and enabled in the context menu.
+  EXPECT_THAT(menu_observer.GetCapturedCommandIds(),
+              testing::Contains(IDC_CONTENT_CONTEXT_SAVELINKAS));
+  EXPECT_THAT(menu_observer.GetCapturedEnabledCommandIds(),
+              testing::Contains(IDC_CONTENT_CONTEXT_SAVELINKAS));
+
+  // Disable fenced frame untrusted network access.
+  ASSERT_TRUE(ExecJs(fenced_frame_rfh, R"(
+    (async () => {
+      return window.fence.disableUntrustedNetwork();
+    })();
+  )"));
+
+  // Open the context menu again.
+  ContextMenuWaiter menu_observer_after_network_cutoff;
+  SimulateClickAt(nested_iframe_rfh, blink::WebMouseEvent::Button::kRight,
+                  anchor_element);
+
+  // Wait for context menu to be visible.
+  menu_observer_after_network_cutoff.WaitForMenuOpenAndClose();
+
+  // "Save Link As..." should be disabled in the context menu after fenced frame
+  // has untrusted network access revoked.
+  EXPECT_THAT(menu_observer_after_network_cutoff.GetCapturedCommandIds(),
+              testing::Contains(IDC_CONTENT_CONTEXT_SAVELINKAS));
+  EXPECT_THAT(menu_observer_after_network_cutoff.GetCapturedEnabledCommandIds(),
+              testing::Not(testing::Contains(IDC_CONTENT_CONTEXT_SAVELINKAS)));
 }
 
 // TODO(crbug.com/40285326): This fails with the field trial testing config.

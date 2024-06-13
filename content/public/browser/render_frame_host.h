@@ -379,6 +379,31 @@ class CONTENT_EXPORT RenderFrameHost : public IPC::Listener,
   // supports both Shadow DOM and MPArch implementations.
   virtual bool IsNestedWithinFencedFrame() const = 0;
 
+  // Check if the frame has untrusted network access disabled.
+  //
+  // A Fenced frame can disable untrusted network access for itself and the
+  // descendant iframes in the fenced frame tree by calling the fenced frame API
+  // `window.fence.disableUntrustedNetwork()`. After this API is invoked, no
+  // untrusted network requests are allowed in the fenced frame tree, i.e. in
+  // the root fenced frame and all of its descendant iframes. This includes:
+  // * Subresources requests.
+  // * Navigation requests.
+  // * Event level reporting.
+  // * Any other network channels, for example, WebSocket, web workers, etc.
+  //
+  // Fenced frames will get access to cross-site information, for example,
+  // shared storage API after the untrusted network access is disabled.
+  //
+  // Note: An example of a trusted network request is the aggregation report
+  // sent by Private Aggregation API. Because the report is privacy preserving,
+  // it is allowed from the fenced frame after the untrusted network access is
+  // disabled. Additional trusted network communications, such as to a secure
+  // trusted execution environment, may be added in the future.
+  //
+  // See
+  // https://github.com/WICG/fenced-frame/blob/master/explainer/fenced_frames_with_local_unpartitioned_data_access.md.
+  virtual bool IsUntrustedNetworkDisabled() const = 0;
+
   // |ForEachRenderFrameHost| traverses this RenderFrameHost and all of its
   // descendants, including frames in any inner frame trees (such as guest
   // views), in breadth-first order.

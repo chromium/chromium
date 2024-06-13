@@ -332,6 +332,10 @@ class RenderViewContextMenu
   // Helper function for checking policies.
   bool IsSaveAsItemAllowedByPolicy() const;
 
+  // Helper function for checking fenced frame tree untrusted network access
+  // status.
+  bool IsSaveAsItemAllowedByUntrustedNetworkStatus() const;
+
   // Command enabled query functions.
   bool IsReloadEnabled() const;
   bool IsViewSourceEnabled() const;
