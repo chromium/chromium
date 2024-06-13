@@ -120,6 +120,7 @@ class ServiceWorkerTrackingBrowserTest : public ExtensionBrowserTest {
   }
 
   void TearDownOnMainThread() override {
+    ExtensionBrowserTest::TearDownOnMainThread();
     extension_ = nullptr;
     process_manager_ = nullptr;
   }
