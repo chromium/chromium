@@ -924,6 +924,15 @@
   <message name="IDS_AUTOFILL_CREDIT_CARD_BENEFIT_IPH_BUBBLE_LABEL_SCREENREADER" is_accessibility_with_no_ui="true" desc="Screenreader text for the IPH bubble for educating the user on the existence of card benefits.">
     Now you can see card benefits before you pay
   </message>
+  <message name="IDS_AUTOFILL_SETTINGS_PAGE_CARD_BENEFITS_PREFERENCE_LABEL" desc="Label for the card benefits preference on the payments settings page, helping users access the card benefits settings." formatter_data="android_java">
+    Card benefits
+  </message>
+  <message name="IDS_AUTOFILL_SETTINGS_PAGE_CARD_BENEFITS_PREFERENCE_SUMMARY" desc="Summary text for the card benefits preference on the payments settings page, helping users access the card benefits settings." formatter_data="android_java">
+    Choose whether you see your card benefits at checkout (bank terms apply)
+  </message>
+  <message name="IDS_AUTOFILL_CARD_BENEFITS_SETTINGS_PAGE_TITLE" desc="Title for the card benefits settings page." formatter_data="android_java">
+    Card benefits
+  </message>
 
   <!-- Credit card and promo code offers and rewards-related strings -->
   <message name="IDS_AUTOFILL_OFFERS_CASHBACK" desc="Displays that a cashback offer will be rewarded if credit card is used on current page. Part of Autofill suggestions popup.">

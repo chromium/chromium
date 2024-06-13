@@ -40,6 +40,7 @@ class AutofillTestRule extends ChromeBrowserTestRule
         mValidationUpdate = new CallbackHelper();
         mConfirmationDialogUpdate = new CallbackHelper();
         mFragmentShown = new CallbackHelper();
+        AutofillCardBenefitsFragment.setObserverForTest(AutofillTestRule.this);
         AutofillProfilesFragment.setObserverForTest(AutofillTestRule.this);
         AutofillLocalCardEditor.setObserverForTest(AutofillTestRule.this);
         AutofillLocalIbanEditor.setObserverForTest(AutofillTestRule.this);

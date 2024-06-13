@@ -68,6 +68,7 @@ public class AutofillPaymentMethodsFragment extends ChromeBaseSettingsFragment
     static final String PREF_SAVE_CVC = "save_cvc";
     static final String PREF_ADD_IBAN = "add_iban";
     static final String PREF_IBAN = "iban";
+    static final String PREF_CARD_BENEFITS = "card_benefits";
     private static final String PREF_PAYMENT_APPS = "payment_apps";
 
     @VisibleForTesting
@@ -225,6 +226,22 @@ public class AutofillPaymentMethodsFragment extends ChromeBaseSettingsFragment
                     .anyMatch(card -> !card.getCvc().isEmpty())) {
                 createDeleteSavedCvcsButton();
             }
+        }
+
+        if (personalDataManager.isAutofillCreditCardEnabled()
+                && (ChromeFeatureList.isEnabled(
+                                ChromeFeatureList
+                                        .AUTOFILL_ENABLE_CARD_BENEFITS_FOR_AMERICAN_EXPRESS)
+                        || ChromeFeatureList.isEnabled(
+                                ChromeFeatureList.AUTOFILL_ENABLE_CARD_BENEFITS_FOR_CAPITAL_ONE))) {
+            Preference cardBenefitsPref = new Preference(getStyledContext());
+            cardBenefitsPref.setTitle(
+                    R.string.autofill_settings_page_card_benefits_preference_label);
+            cardBenefitsPref.setSummary(
+                    R.string.autofill_settings_page_card_benefits_preference_summary);
+            cardBenefitsPref.setKey(PREF_CARD_BENEFITS);
+            cardBenefitsPref.setFragment(AutofillCardBenefitsFragment.class.getName());
+            getPreferenceScreen().addPreference(cardBenefitsPref);
         }
 
         for (CreditCard card : personalDataManager.getCreditCardsForSettings()) {
