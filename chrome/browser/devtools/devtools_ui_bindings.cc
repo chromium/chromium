@@ -391,6 +391,46 @@ std::string SanitizeFrontendQueryParam(const std::string& key,
     return value;
   }
 
+  if (base::FeatureList::IsEnabled(::features::kDevToolsConsoleInsights) ||
+      base::FeatureList::IsEnabled(
+          ::features::kDevToolsConsoleInsightsDogfood) ||
+      base::FeatureList::IsEnabled(
+          ::features::kDevToolsConsoleInsightsSettingVisible)) {
+    if (key == "enableAida" && value == "true") {
+      return value;
+    }
+    if (key == "aidaModelId") {
+      return value;
+    }
+    if (key == "aidaTemperature") {
+      return value;
+    }
+  }
+
+  if (key == "ci_blockedByAge" && value == "true") {
+    return value;
+  }
+
+  if (key == "ci_blockedByEnterprisePolicy" && value == "true") {
+    return value;
+  }
+
+  if (key == "ci_disallowLogging" && value == "true") {
+    return value;
+  }
+
+  if (key == "ci_blockedByGeo" && value == "true") {
+    return value;
+  }
+
+  if (key == "ci_blockedByRollout" && value == "true") {
+    return value;
+  }
+
+  if (key == "ci_disabledByDefault" && value == "true") {
+    return value;
+  }
+
   if (key == "disableSelfXssWarnings" && value == "true") {
     return value;
   }
