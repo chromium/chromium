@@ -1857,11 +1857,35 @@ class CORE_EXPORT LayoutObject : public GarbageCollected<LayoutObject>,
   // walk the containing block chain. See e.g. markContainerChainForLayout.
   // It is also used for correctly sizing absolutely positioned elements
   // (point 3 above).
-  LayoutObject* Container(AncestorSkipInfo* = nullptr) const;
+  LayoutObject* Container(AncestorSkipInfo* skip_info = nullptr) const {
+    NOT_DESTROYED();
+#if DCHECK_IS_ON()
+    if (skip_info) {
+      skip_info->AssertClean();
+    }
+#endif
+
+    if (UNLIKELY(IsColumnSpanAll())) {
+      return ContainerForColumnSpanAll(skip_info);
+    }
+
+    if (IsOutOfFlowPositioned()) {
+      if (style_->GetPosition() == EPosition::kFixed) {
+        return ContainerForFixedPosition(skip_info);
+      }
+      DCHECK_EQ(style_->GetPosition(), EPosition::kAbsolute);
+      return ContainerForAbsolutePosition(skip_info);
+    }
+
+    return Parent();
+  }
+
   // Finds the container as if this object is absolute-position.
   LayoutObject* ContainerForAbsolutePosition(AncestorSkipInfo* = nullptr) const;
   // Finds the container as if this object is fixed-position.
   LayoutObject* ContainerForFixedPosition(AncestorSkipInfo* = nullptr) const;
+  // Finds the container as if this object is a column-spanner.
+  LayoutObject* ContainerForColumnSpanAll(AncestorSkipInfo* = nullptr) const;
 
   bool CanContainOutOfFlowPositionedElement(EPosition position) const {
     NOT_DESTROYED();

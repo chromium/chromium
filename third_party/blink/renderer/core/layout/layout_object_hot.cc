@@ -28,59 +28,6 @@ void LayoutObject::Trace(Visitor* visitor) const {
   DisplayItemClient::Trace(visitor);
 }
 
-LayoutObject* LayoutObject::Container(AncestorSkipInfo* skip_info) const {
-  NOT_DESTROYED();
-
-#if DCHECK_IS_ON()
-  if (skip_info)
-    skip_info->AssertClean();
-#endif
-
-  if (IsTextOrSVGChild())
-    return Parent();
-
-  EPosition pos = style_->GetPosition();
-  if (pos == EPosition::kFixed)
-    return ContainerForFixedPosition(skip_info);
-
-  if (pos == EPosition::kAbsolute) {
-    return ContainerForAbsolutePosition(skip_info);
-  }
-
-  if (IsColumnSpanAll()) {
-    LayoutObject* multicol_container = SpannerPlaceholder()->Container();
-    if (skip_info) {
-      // We jumped directly from the spanner to the multicol container. Need to
-      // check if we skipped |ancestor| or filter/reflection on the way.
-      for (LayoutObject* walker = Parent();
-           walker && walker != multicol_container; walker = walker->Parent())
-        skip_info->Update(*walker);
-    }
-    return multicol_container;
-  }
-
-  if (IsFloating() && !IsInLayoutNGInlineFormattingContext()) {
-    // TODO(crbug.com/1229581): Remove this when removing support for legacy
-    // layout.
-    //
-    // In the legacy engine, floats inside non-atomic inlines belong to their
-    // nearest containing block, not the parent non-atomic inline (if any). Skip
-    // past all non-atomic inlines. Note that the reason for not simply using
-    // ContainingBlock() here is that we want to stop at any kind of LayoutBox,
-    // such as LayoutVideo. Otherwise we won't mark the container chain
-    // correctly when marking for re-layout.
-    LayoutObject* walker = Parent();
-    while (walker && walker->IsLayoutInline()) {
-      if (skip_info)
-        skip_info->Update(*walker);
-      walker = walker->Parent();
-    }
-    return walker;
-  }
-
-  return Parent();
-}
-
 LayoutBox* LayoutObject::DeprecatedEnclosingScrollableBox() const {
   NOT_DESTROYED();
   DCHECK(!RuntimeEnabledFeatures::IntersectionOptimizationEnabled());
