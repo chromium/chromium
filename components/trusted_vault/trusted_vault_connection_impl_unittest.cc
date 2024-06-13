@@ -314,7 +314,7 @@ TEST_P(TrustedVaultConnectionImplTest,
   ASSERT_THAT(key_pair, NotNull());
 
   std::unique_ptr<TrustedVaultConnection::Request> request =
-      connection()->RegisterDeviceWithoutKeys(
+      connection()->RegisterLocalDeviceWithoutKeys(
           /*account_info=*/CoreAccountInfo(), key_pair->public_key(),
           TrustedVaultConnection::RegisterAuthenticationFactorCallback());
   EXPECT_THAT(request, NotNull());
@@ -378,7 +378,7 @@ TEST_P(TrustedVaultConnectionImplTest,
       connection()->RegisterAuthenticationFactor(
           /*account_info=*/CoreAccountInfo(),
           GetTrustedVaultKeysWithVersions(kTrustedVaultKeys, kLastKeyVersion),
-          key_pair->public_key(), PhysicalDevice(),
+          key_pair->public_key(), LocalPhysicalDevice(),
           TrustedVaultConnection::RegisterAuthenticationFactorCallback());
   EXPECT_THAT(request, NotNull());
 
@@ -451,7 +451,7 @@ TEST_P(TrustedVaultConnectionImplTest,
       connection()->RegisterAuthenticationFactor(
           /*account_info=*/CoreAccountInfo(),
           PrecomputedMemberKeys(kVersion, kWrappedKey, kProof),
-          key_pair->public_key(), PhysicalDevice(),
+          key_pair->public_key(), LocalPhysicalDevice(),
           TrustedVaultConnection::RegisterAuthenticationFactorCallback());
 
   const network::TestURLLoaderFactory::PendingRequest* pending_request =
@@ -591,7 +591,7 @@ TEST_P(TrustedVaultConnectionImplTest,
           /*account_info=*/CoreAccountInfo(),
           GetTrustedVaultKeysWithVersions(kTrustedVaultKeys,
                                           /*last_key_version=*/1),
-          key_pair->public_key(), PhysicalDevice(), callback.Get());
+          key_pair->public_key(), LocalPhysicalDevice(), callback.Get());
   ASSERT_THAT(request, NotNull());
 
   EXPECT_CALL(callback, Run(Eq(TrustedVaultRegistrationStatus::kSuccess),
@@ -627,7 +627,7 @@ TEST_P(TrustedVaultConnectionImplTest,
       callback;
 
   std::unique_ptr<TrustedVaultConnection::Request> request =
-      connection()->RegisterDeviceWithoutKeys(
+      connection()->RegisterLocalDeviceWithoutKeys(
           /*account_info=*/CoreAccountInfo(), key_pair->public_key(),
           callback.Get());
   ASSERT_THAT(request, NotNull());
@@ -652,7 +652,7 @@ TEST_P(TrustedVaultConnectionImplTest,
       callback;
 
   std::unique_ptr<TrustedVaultConnection::Request> request =
-      connection()->RegisterDeviceWithoutKeys(
+      connection()->RegisterLocalDeviceWithoutKeys(
           /*account_info=*/CoreAccountInfo(), key_pair->public_key(),
           callback.Get());
   ASSERT_THAT(request, NotNull());
@@ -691,7 +691,7 @@ TEST_P(TrustedVaultConnectionImplTest,
           /*account_info=*/CoreAccountInfo(),
           GetTrustedVaultKeysWithVersions(kTrustedVaultKeys,
                                           /*last_key_version=*/0),
-          key_pair->public_key(), PhysicalDevice(), callback.Get());
+          key_pair->public_key(), LocalPhysicalDevice(), callback.Get());
   ASSERT_THAT(request, NotNull());
 
   EXPECT_CALL(callback,
@@ -715,7 +715,7 @@ TEST_P(TrustedVaultConnectionImplTest,
           /*account_info=*/CoreAccountInfo(),
           GetTrustedVaultKeysWithVersions(kTrustedVaultKeys,
                                           /*last_key_version=*/0),
-          key_pair->public_key(), PhysicalDevice(), callback.Get());
+          key_pair->public_key(), LocalPhysicalDevice(), callback.Get());
   ASSERT_THAT(request, NotNull());
 
   EXPECT_CALL(callback,
@@ -739,7 +739,7 @@ TEST_P(TrustedVaultConnectionImplTest,
           /*account_info=*/CoreAccountInfo(),
           GetTrustedVaultKeysWithVersions(kTrustedVaultKeys,
                                           /*last_key_version=*/1),
-          key_pair->public_key(), PhysicalDevice(), callback.Get());
+          key_pair->public_key(), LocalPhysicalDevice(), callback.Get());
   ASSERT_THAT(request, NotNull());
 
   EXPECT_CALL(callback,
@@ -763,7 +763,7 @@ TEST_P(TrustedVaultConnectionImplTest,
           /*account_info=*/CoreAccountInfo(),
           GetTrustedVaultKeysWithVersions(kTrustedVaultKeys,
                                           /*last_key_version=*/1),
-          key_pair->public_key(), PhysicalDevice(), callback.Get());
+          key_pair->public_key(), LocalPhysicalDevice(), callback.Get());
   ASSERT_THAT(request, NotNull());
 
   // Advance time to bypass retry logic.
@@ -788,7 +788,7 @@ TEST_P(TrustedVaultConnectionImplTest,
           /*account_info=*/CoreAccountInfo(),
           GetTrustedVaultKeysWithVersions(kTrustedVaultKeys,
                                           /*last_key_version=*/1),
-          key_pair->public_key(), PhysicalDevice(), callback.Get());
+          key_pair->public_key(), LocalPhysicalDevice(), callback.Get());
   ASSERT_THAT(request, NotNull());
 
   // In particular, HTTP_NOT_FOUND indicates that security domain was removed.
@@ -814,7 +814,7 @@ TEST_P(TrustedVaultConnectionImplTest,
           /*account_info=*/CoreAccountInfo(),
           GetTrustedVaultKeysWithVersions(kTrustedVaultKeys,
                                           /*last_key_version=*/1),
-          key_pair->public_key(), PhysicalDevice(), callback.Get());
+          key_pair->public_key(), LocalPhysicalDevice(), callback.Get());
   ASSERT_THAT(request, NotNull());
 
   // In particular, HTTP_BAD_REQUEST indicates that
@@ -853,7 +853,7 @@ TEST_P(
           /*account_info=*/CoreAccountInfo(),
           GetTrustedVaultKeysWithVersions(kTrustedVaultKeys,
                                           /*last_key_version=*/1),
-          key_pair->public_key(), PhysicalDevice(), callback.Get());
+          key_pair->public_key(), LocalPhysicalDevice(), callback.Get());
   ASSERT_THAT(request, NotNull());
 
   // No requests should be sent to the network.
@@ -873,7 +873,7 @@ TEST_P(TrustedVaultConnectionImplTest, ShouldCancelJoinSecurityDomainsRequest) {
           /*account_info=*/CoreAccountInfo(),
           GetTrustedVaultKeysWithVersions(kTrustedVaultKeys,
                                           /*last_key_version=*/1),
-          key_pair->public_key(), PhysicalDevice(), callback.Get());
+          key_pair->public_key(), LocalPhysicalDevice(), callback.Get());
   ASSERT_THAT(request, NotNull());
 
   EXPECT_CALL(callback, Run).Times(0);

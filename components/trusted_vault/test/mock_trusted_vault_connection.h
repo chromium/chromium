@@ -27,7 +27,7 @@ class MockTrustedVaultConnection : public TrustedVaultConnection {
                RegisterAuthenticationFactorCallback callback),
               (override));
   MOCK_METHOD(std::unique_ptr<Request>,
-              RegisterDeviceWithoutKeys,
+              RegisterLocalDeviceWithoutKeys,
               (const CoreAccountInfo& account_info,
                const SecureBoxPublicKey& device_public_key,
                RegisterAuthenticationFactorCallback callback),

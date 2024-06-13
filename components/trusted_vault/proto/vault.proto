@@ -50,6 +50,21 @@ message Timestamp {
   int32 nanos = 2;
 }
 
+message PhysicalDeviceMetadata {
+  enum DeviceType {
+    DEVICE_TYPE_UNKNOWN = 0;
+    DEVICE_TYPE_ANDROID = 1;
+    DEVICE_TYPE_IOS = 2;
+    DEVICE_TYPE_CHROMEOS = 3;
+    DEVICE_TYPE_WINDOWS = 4;
+    DEVICE_TYPE_MAC_OS = 5;
+    DEVICE_TYPE_LINUX = 6;
+  }
+
+  // The device type for physical device members.
+  DeviceType device_type = 1;
+}
+
 message LskfMetadata {
   Timestamp expiration_time = 1;
 }
@@ -84,6 +99,7 @@ message SecurityDomainMember {
   message MemberMetadata {
     bool usable_for_retrieval = 1;
     oneof member_metadata_variant {
+      PhysicalDeviceMetadata physical_device_metadata = 3;
       LskfMetadata lskf_metadata = 4;
       GooglePasswordManagerPinMetadata google_password_manager_pin_metadata = 5;
     }

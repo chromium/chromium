@@ -151,8 +151,8 @@ struct DownloadAuthenticationFactorsRegistrationStateResult {
 };
 
 // Authentication factor types:
-using PhysicalDevice =
-    base::StrongAlias<class PhysicalDeviceTag, absl::monostate>;
+using LocalPhysicalDevice =
+    base::StrongAlias<class LocalPhysicalDeviceTag, absl::monostate>;
 using LockScreenKnowledgeFactor =
     base::StrongAlias<class VirtualDeviceTag, absl::monostate>;
 using ICloudKeychain =
@@ -162,7 +162,7 @@ using UnspecifiedAuthenticationFactorType =
     base::StrongAlias<class UnspecifiedAuthenticationFactorTypeTag, int>;
 
 using AuthenticationFactorType =
-    absl::variant<PhysicalDevice,
+    absl::variant<LocalPhysicalDevice,
                   LockScreenKnowledgeFactor,
                   UnspecifiedAuthenticationFactorType,
                   GpmPinMetadata,
@@ -259,7 +259,7 @@ class TrustedVaultConnection {
   // Special version of the above for the case where the caller has no local
   // keys available. Attempts to register the device using constant key. May
   // succeed only if constant key is the only key known server-side.
-  [[nodiscard]] virtual std::unique_ptr<Request> RegisterDeviceWithoutKeys(
+  [[nodiscard]] virtual std::unique_ptr<Request> RegisterLocalDeviceWithoutKeys(
       const CoreAccountInfo& account_info,
       const SecureBoxPublicKey& device_public_key,
       RegisterAuthenticationFactorCallback callback) = 0;

@@ -95,6 +95,30 @@ trusted_vault_pb::SharedMemberKey CreateSharedMemberKey(
   return shared_member_key;
 }
 
+trusted_vault_pb::PhysicalDeviceMetadata::DeviceType
+GetLocalPhysicalDeviceType() {
+  // Note that some of the below are unreachable in practice as this code isn't
+  // currently used or even built on all platforms.
+#if BUILDFLAG(IS_CHROMEOS)
+  return trusted_vault_pb::PhysicalDeviceMetadata::DEVICE_TYPE_CHROMEOS;
+#elif BUILDFLAG(IS_LINUX)
+  return trusted_vault_pb::PhysicalDeviceMetadata::DEVICE_TYPE_LINUX;
+#elif BUILDFLAG(IS_ANDROID)
+  return trusted_vault_pb::PhysicalDeviceMetadata::DEVICE_TYPE_ANDROID;
+#elif BUILDFLAG(IS_IOS)
+  return trusted_vault_pb::PhysicalDeviceMetadata::DEVICE_TYPE_IOS;
+#elif BUILDFLAG(IS_MAC)
+  return trusted_vault_pb::PhysicalDeviceMetadata::DEVICE_TYPE_MAC_OS;
+#elif BUILDFLAG(IS_WIN)
+  return trusted_vault_pb::PhysicalDeviceMetadata::DEVICE_TYPE_WINDOWS;
+#elif BUILDFLAG(IS_FUCHSIA)
+  // Not used in Fuchsia.
+  return trusted_vault_pb::PhysicalDeviceMetadata::DEVICE_TYPE_UNKNOWN;
+#else
+#error Please handle your new device OS here.
+#endif
+}
+
 trusted_vault_pb::SecurityDomainMember CreateSecurityDomainMember(
     const SecureBoxPublicKey& public_key,
     AuthenticationFactorType authentication_factor_type) {
@@ -114,9 +138,14 @@ trusted_vault_pb::SecurityDomainMember CreateSecurityDomainMember(
 
   absl::visit(
       base::Overloaded{
-          [&member](const PhysicalDevice&) {
+          [&member](const LocalPhysicalDevice&) {
             member.set_member_type(trusted_vault_pb::SecurityDomainMember::
                                        MEMBER_TYPE_PHYSICAL_DEVICE);
+            auto* member_metadata = member.mutable_member_metadata();
+            auto* physical_device_metadata =
+                member_metadata->mutable_physical_device_metadata();
+            physical_device_metadata->set_device_type(
+                GetLocalPhysicalDeviceType());
           },
           [&member](const LockScreenKnowledgeFactor&) {
             member.set_member_type(trusted_vault_pb::SecurityDomainMember::
@@ -125,8 +154,8 @@ trusted_vault_pb::SecurityDomainMember CreateSecurityDomainMember(
           [&member](const UnspecifiedAuthenticationFactorType&) {
             member.set_member_type(trusted_vault_pb::SecurityDomainMember::
                                        MEMBER_TYPE_UNSPECIFIED);
-            // The type hint field is in the request protobuf, not the security
-            // domain member, and so is set in
+            // The type hint field is in the request protobuf, not the
+            // security domain member, and so is set in
             // `CreateJoinSecurityDomainsRequest`.
           },
           [&member](const GpmPinMetadata& gpm_pin_metadata) {
@@ -467,7 +496,7 @@ GetURLFetchReasonForUMAForJoinSecurityDomainsRequest(
     AuthenticationFactorType authentication_factor_type) {
   return absl::visit(
       base::Overloaded{
-          [](const PhysicalDevice&) {
+          [](const LocalPhysicalDevice&) {
             return TrustedVaultURLFetchReasonForUMA::kRegisterDevice;
           },
           [](const LockScreenKnowledgeFactor&) {
@@ -536,12 +565,13 @@ TrustedVaultConnectionImpl::RegisterAuthenticationFactor(
 }
 
 std::unique_ptr<TrustedVaultConnection::Request>
-TrustedVaultConnectionImpl::RegisterDeviceWithoutKeys(
+TrustedVaultConnectionImpl::RegisterLocalDeviceWithoutKeys(
     const CoreAccountInfo& account_info,
     const SecureBoxPublicKey& device_public_key,
     RegisterAuthenticationFactorCallback callback) {
   return SendJoinSecurityDomainsRequest(
-      account_info, ConstantKeySource(), device_public_key, PhysicalDevice(),
+      account_info, ConstantKeySource(), device_public_key,
+      LocalPhysicalDevice(),
       base::BindOnce(&RunRegisterAuthenticationFactorCallback,
                      std::move(callback)));
 }

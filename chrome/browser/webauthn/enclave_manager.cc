@@ -2261,7 +2261,7 @@ class EnclaveManager::StateMachine {
         trusted_vault::GetTrustedVaultKeysWithVersions(
             store_keys_args_for_joining_->keys,
             store_keys_args_for_joining_->last_key_version),
-        *secure_box_pub_key, trusted_vault::PhysicalDevice(),
+        *secure_box_pub_key, trusted_vault::LocalPhysicalDevice(),
         base::BindOnce(&StateMachine::OnJoinedSecurityDomain,
                        weak_ptr_factory_.GetWeakPtr()));
   }

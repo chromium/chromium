@@ -909,12 +909,12 @@ StandaloneTrustedVaultBackend::MaybeRegisterDevice() {
             GetTrustedVaultKeysWithVersions(
                 GetAllVaultKeys(*per_user_vault),
                 per_user_vault->last_vault_key_version()),
-            key_pair->public_key(), PhysicalDevice(),
+            key_pair->public_key(), LocalPhysicalDevice(),
             base::BindOnce(&StandaloneTrustedVaultBackend::OnDeviceRegistered,
                            base::Unretained(this)));
   } else {
     ongoing_device_registration_request_ =
-        connection_->RegisterDeviceWithoutKeys(
+        connection_->RegisterLocalDeviceWithoutKeys(
             *primary_account_, key_pair->public_key(),
             base::BindOnce(
                 &StandaloneTrustedVaultBackend::OnDeviceRegisteredWithoutKeys,
