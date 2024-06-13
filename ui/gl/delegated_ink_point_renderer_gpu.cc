@@ -97,6 +97,7 @@ bool DelegatedInkPointRendererGpu::DelegatedInkIsSupported(
 
 uint64_t DelegatedInkPointRendererGpu::GetMaximumNumberOfPointerIdsForTesting()
     const {
+  CHECK_IS_TEST();
   return kMaximumNumberOfPointerIds;
 }
 
@@ -249,6 +250,7 @@ void DelegatedInkPointRendererGpu::ResetPrediction() {
 }
 
 uint64_t DelegatedInkPointRendererGpu::InkTrailTokenCountForTesting() const {
+  CHECK_IS_TEST();
   DCHECK_EQ(delegated_ink_points_.size(), 1u);
   uint64_t valid_tokens = 0u;
   for (const auto& it : delegated_ink_points_.begin()->second) {
@@ -261,6 +263,7 @@ uint64_t DelegatedInkPointRendererGpu::InkTrailTokenCountForTesting() const {
 
 bool DelegatedInkPointRendererGpu::CheckForPointerIdForTesting(
     int32_t pointer_id) const {
+  CHECK_IS_TEST();
   return delegated_ink_points_.find(pointer_id) != delegated_ink_points_.end();
 }
 

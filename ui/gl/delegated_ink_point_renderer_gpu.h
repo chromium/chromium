@@ -65,6 +65,7 @@ class GL_EXPORT DelegatedInkPointRendererGpu
   void ResetPrediction() override;
 
   gfx::DelegatedInkMetadata* MetadataForTesting() const {
+    CHECK_IS_TEST();
     return metadata_.get();
   }
 
@@ -80,6 +81,7 @@ class GL_EXPORT DelegatedInkPointRendererGpu
   uint64_t InkTrailTokenCountForTesting() const;
 
   uint64_t DelegatedInkPointPointerIdCountForTesting() const {
+    CHECK_IS_TEST();
     return delegated_ink_points_.size();
   }
 
@@ -87,12 +89,14 @@ class GL_EXPORT DelegatedInkPointRendererGpu
 
   const DelegatedInkPointTokenMap& DelegatedInkPointsForTesting(
       int32_t pointer_id) {
+    CHECK_IS_TEST();
     DCHECK(delegated_ink_points_.find(pointer_id) !=
            delegated_ink_points_.end());
     return delegated_ink_points_[pointer_id];
   }
 
   bool WaitForNewTrailToDrawForTesting() const {
+    CHECK_IS_TEST();
     return wait_for_new_trail_to_draw_;
   }
 
