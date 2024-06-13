@@ -73,6 +73,18 @@ scoped_refptr<ClientSharedImage> SharedImageInterface::NotifyMailboxAdded(
   return nullptr;
 }
 
+scoped_refptr<ClientSharedImage> SharedImageInterface::NotifyMailboxAdded(
+    const Mailbox& /*mailbox*/,
+    viz::SharedImageFormat /*format*/,
+    const gfx::Size& /*size*/,
+    const gfx::ColorSpace& /*color_space*/,
+    GrSurfaceOrigin /*surface_origin*/,
+    SkAlphaType /*alpha_type*/,
+    uint32_t /*usage*/,
+    uint32_t /*texture_target*/) {
+  return nullptr;
+}
+
 void SharedImageInterface::CopyToGpuMemoryBuffer(const SyncToken& sync_token,
                                                  const Mailbox& mailbox) {
   NOTREACHED_IN_MIGRATION();

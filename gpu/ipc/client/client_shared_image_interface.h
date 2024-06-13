@@ -112,6 +112,15 @@ class GPU_EXPORT ClientSharedImageInterface : public SharedImageInterface {
       GrSurfaceOrigin surface_origin,
       SkAlphaType alpha_type,
       uint32_t usage) override;
+  scoped_refptr<ClientSharedImage> NotifyMailboxAdded(
+      const Mailbox& mailbox,
+      viz::SharedImageFormat format,
+      const gfx::Size& size,
+      const gfx::ColorSpace& color_space,
+      GrSurfaceOrigin surface_origin,
+      SkAlphaType alpha_type,
+      uint32_t usage,
+      uint32_t texture_target) override;
 
   scoped_refptr<ClientSharedImage> ImportSharedImage(
       const ExportedSharedImage& exported_shared_image) override;

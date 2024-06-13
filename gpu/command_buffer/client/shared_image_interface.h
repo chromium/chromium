@@ -392,8 +392,8 @@ class GPU_EXPORT SharedImageInterface
   // been created using a SharedImageInterface on the same channel.
   virtual uint32_t UsageForMailbox(const Mailbox& mailbox);
 
-  // Informs that existing |mailbox| with |usage| can be passed to
-  // DestroySharedImage().
+  // Informs that existing |mailbox| with the specified metadata can be passed
+  // to DestroySharedImage().
   virtual scoped_refptr<ClientSharedImage> NotifyMailboxAdded(
       const Mailbox& mailbox,
       viz::SharedImageFormat format,
@@ -402,6 +402,15 @@ class GPU_EXPORT SharedImageInterface
       GrSurfaceOrigin surface_origin,
       SkAlphaType alpha_type,
       uint32_t usage);
+  virtual scoped_refptr<ClientSharedImage> NotifyMailboxAdded(
+      const Mailbox& mailbox,
+      viz::SharedImageFormat format,
+      const gfx::Size& size,
+      const gfx::ColorSpace& color_space,
+      GrSurfaceOrigin surface_origin,
+      SkAlphaType alpha_type,
+      uint32_t usage,
+      uint32_t texture_target);
 
   virtual const SharedImageCapabilities& GetCapabilities() = 0;
 
