@@ -106,6 +106,8 @@ struct ScriptToFontFamilies {
 // which works well since the range of UScriptCode values is small.
 class ScriptToFontMap {
  public:
+  static constexpr UScriptCode kSize = USCRIPT_CODE_LIMIT;
+
   FontMapping& operator[](UScriptCode script) { return mappings_[script]; }
 
   void Set(base::span<const ScriptToFontFamilies> families) {
@@ -115,25 +117,15 @@ class ScriptToFontMap {
   }
 
  private:
-  FontMapping mappings_[USCRIPT_CODE_LIMIT];
+  FontMapping mappings_[kSize];
 };
 
-const UChar* FindMonospaceFontForScript(UScriptCode script) {
-  struct FontMap {
-    UScriptCode script;
-    const UChar* family;
-  };
-
-  static const FontMap kFontMap[] = {
-      {USCRIPT_HEBREW, u"courier new"},
-      {USCRIPT_ARABIC, u"courier new"},
-  };
-
-  for (const auto& font_family : kFontMap) {
-    if (font_family.script == script)
-      return font_family.family;
+const AtomicString& FindMonospaceFontForScript(UScriptCode script) {
+  if (script == USCRIPT_ARABIC || script == USCRIPT_HEBREW) {
+    DEFINE_THREAD_SAFE_STATIC_LOCAL(AtomicString, kCourierNew, ("courier new"));
+    return kCourierNew;
   }
-  return nullptr;
+  return g_null_atom;
 }
 
 void InitializeScriptFontMap(ScriptToFontMap& script_font_map) {
@@ -485,25 +477,36 @@ const AtomicString& GetFontBasedOnUnicodeBlock(UBlockCode block_code,
 //    keep track of which character is supported by which font
 //  - Update script_font_cache in response to WM_FONTCHANGE
 
-const UChar* GetFontFamilyForScript(UScriptCode script,
-                                    FontDescription::GenericFamilyType generic,
-                                    const SkFontMgr& font_manager) {
-  static ScriptToFontMap script_font_map;
-  static bool initialized = false;
-  if (!initialized) {
-    InitializeScriptFontMap(script_font_map);
-    initialized = true;
+const AtomicString& GetFontFamilyForScript(
+    UScriptCode script,
+    FontDescription::GenericFamilyType generic,
+    const SkFontMgr& font_manager) {
+  if (UNLIKELY(script < 0 || script >= ScriptToFontMap::kSize)) {
+    return g_null_atom;
   }
 
-  if (script == USCRIPT_INVALID_CODE)
-    return 0;
-  DCHECK_LT(script, USCRIPT_CODE_LIMIT);
   if (generic == FontDescription::kMonospaceFamily) {
-    const UChar* monospace_family = FindMonospaceFontForScript(script);
-    if (monospace_family)
-      return monospace_family;
+    if (const AtomicString& family = FindMonospaceFontForScript(script)) {
+      return family;
+    }
   }
-  return script_font_map[script].FirstAvailableFont(font_manager);
+
+  // Try the `AtomicString` cache first. `AtomicString` must be per thread, and
+  // thus it can't be added to `ScriptToFontMap`.
+  struct AtomicFamilies {
+    std::optional<AtomicString> families[ScriptToFontMap::kSize];
+  };
+  DEFINE_THREAD_SAFE_STATIC_LOCAL(AtomicFamilies, families, ());
+  std::optional<AtomicString>& family = families.families[script];
+  if (family) {
+    return *family;
+  }
+
+  static ScriptToFontMap script_font_map;
+  static std::once_flag once_flag;
+  std::call_once(once_flag, [] { InitializeScriptFontMap(script_font_map); });
+  family.emplace(script_font_map[script].FirstAvailableFont(font_manager));
+  return *family;
 }
 
 // FIXME:
@@ -563,9 +566,9 @@ AtomicString GetFallbackFamily(UChar32 character,
   // review to match the modern environment. This was done in 2010 for
   // https://bugs.webkit.org/show_bug.cgi?id=35605.
   if (character <= 0xFFFF) {
-    if (const UChar* family =
+    if (const AtomicString& family =
             GetFontFamilyForScript(script, generic, font_manager)) {
-      return AtomicString(family);
+      return family;
     }
   }
 
