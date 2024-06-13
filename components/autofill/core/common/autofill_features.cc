@@ -432,6 +432,11 @@ BASE_FEATURE(kAutofillUseBRAddressModel,
              "AutofillUseBRAddressModel",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
+// Enables using a custom address model for Canada, overriding the legacy one.
+BASE_FEATURE(kAutofillUseCAAddressModel,
+             "AutofillUseCAAddressModel",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 // Enables using a custom address model for Germany, overriding the legacy one.
 BASE_FEATURE(kAutofillUseDEAddressModel,
              "AutofillUseDEAddressModel",

@@ -547,6 +547,7 @@ TEST_P(HeuristicClassificationTests, EndToEnd) {
       // Support for new field types.
       features::kAutofillUseI18nAddressModel,
       features::kAutofillUseBRAddressModel,
+      features::kAutofillUseCAAddressModel,
       features::kAutofillUseMXAddressModel,
       features::kAutofillUsePLAddressModel,
       features::kAutofillEnableSupportForBetweenStreets,

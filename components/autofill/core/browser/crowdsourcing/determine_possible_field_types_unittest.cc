@@ -149,6 +149,7 @@ class ProfileMatchingTypesTest
          features::kAutofillEnableDependentLocalityParsing,
          features::kAutofillUseI18nAddressModel,
          features::kAutofillUseBRAddressModel,
+         features::kAutofillUseCAAddressModel,
          features::kAutofillUseMXAddressModel},
         {});
   }

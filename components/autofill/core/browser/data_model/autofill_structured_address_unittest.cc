@@ -88,6 +88,7 @@ class AutofillStructuredAddress : public testing::Test {
          features::kAutofillEnableSupportForAddressOverflowAndLandmark,
          features::kAutofillUseI18nAddressModel,
          features::kAutofillUseBRAddressModel,
+         features::kAutofillUseCAAddressModel,
          features::kAutofillUseMXAddressModel,
          features::kAutofillUseDEAddressModel},
         {});
@@ -990,6 +991,7 @@ class AutofillI18nStructuredAddress : public testing::Test {
          features::kAutofillUseI18nAddressModel,
          features::kAutofillUseAUAddressModel,
          features::kAutofillUseBRAddressModel,
+         features::kAutofillUseCAAddressModel,
          features::kAutofillUseDEAddressModel,
          features::kAutofillUseINAddressModel,
          features::kAutofillUseMXAddressModel},

@@ -418,6 +418,11 @@ bool IsCustomHierarchyAvailableForCountry(AddressCountryCode country_code) {
     return false;
   }
 
+  if (country_code == AddressCountryCode("CA") &&
+      !base::FeatureList::IsEnabled(features::kAutofillUseCAAddressModel)) {
+    return false;
+  }
+
   if (country_code == AddressCountryCode("DE") &&
       !base::FeatureList::IsEnabled(features::kAutofillUseDEAddressModel)) {
     return false;

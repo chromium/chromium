@@ -1368,6 +1368,7 @@ TEST(AutofillProfileTest, Compare_StructuredTypes) {
       {features::kAutofillUseI18nAddressModel,
        features::kAutofillUseAUAddressModel,
        features::kAutofillUseBRAddressModel,
+       features::kAutofillUseCAAddressModel,
        features::kAutofillUseDEAddressModel,
        features::kAutofillUseINAddressModel,
        features::kAutofillUseMXAddressModel,

@@ -327,6 +327,9 @@ public final class ProductionSupportedFlagList {
                 AutofillFeatures.AUTOFILL_USE_BR_ADDRESS_MODEL,
                 "When enabled, Autofill uses a custom address model for Brazil."),
         Flag.baseFeature(
+                AutofillFeatures.AUTOFILL_USE_CA_ADDRESS_MODEL,
+                "When enabled, Autofill uses a custom address model for Canada."),
+        Flag.baseFeature(
                 AutofillFeatures.AUTOFILL_USE_DE_ADDRESS_MODEL,
                 "When enabled, Autofill uses a custom address model for Germany."),
         Flag.baseFeature(

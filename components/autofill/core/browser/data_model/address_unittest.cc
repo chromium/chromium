@@ -38,6 +38,7 @@ class AddressTest : public testing::Test {
             features::kAutofillEnableDependentLocalityParsing,
             features::kAutofillUseAUAddressModel,
             features::kAutofillUseBRAddressModel,
+            features::kAutofillUseCAAddressModel,
             features::kAutofillUseDEAddressModel,
             features::kAutofillUseINAddressModel,
             features::kAutofillUseMXAddressModel,
