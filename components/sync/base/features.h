@@ -198,10 +198,6 @@ inline constexpr base::FeatureParam<double>
         &kSyncIncreaseNudgeDelayForSingleClient,
         "SyncIncreaseNudgeDelayForSingleClientFactor", 2.0};
 
-// If enabled, SyncSchedulerImpl uses a WallClockTimer instead of a OneShotTimer
-// to schedule poll requests.
-BASE_DECLARE_FEATURE(kSyncSchedulerUseWallClockTimer);
-
 // Guards the registration of synthetic field trials based on information in
 // Nigori's TrustedVaultDebugInfo.
 BASE_DECLARE_FEATURE(kTrustedVaultAutoUpgradeSyntheticFieldTrial);

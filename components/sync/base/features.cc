@@ -208,10 +208,6 @@ BASE_FEATURE(kSyncIncreaseNudgeDelayForSingleClient,
              "SyncIncreaseNudgeDelayForSingleClient",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
-BASE_FEATURE(kSyncSchedulerUseWallClockTimer,
-             "SyncSchedulerUseWallClockTimer",
-             base::FEATURE_ENABLED_BY_DEFAULT);
-
 BASE_FEATURE(kTrustedVaultAutoUpgradeSyntheticFieldTrial,
              "TrustedVaultAutoUpgradeSyntheticFieldTrial",
              base::FEATURE_ENABLED_BY_DEFAULT);

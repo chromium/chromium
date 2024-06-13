@@ -233,14 +233,9 @@ class SyncSchedulerImpl : public SyncScheduler {
   // Timer for polling. Restarted on each successful poll, and when entering
   // normal sync mode or exiting an error state. Not active in configuration
   // mode.
-  // Depending on the state of kSyncSchedulerUseWallClockTimer, *either* the
-  // OneShotTimer *or* the WallClockTimer is used.
-  // TODO(crbug.com/40939309): Once kSyncSchedulerUseWallClockTimer is launched,
-  // remove poll_timer_ticks_.
-  base::OneShotTimer poll_timer_ticks_;
   // Note that this is a WallClockTimer (as opposed to a regular OneShotTimer)
   // so that it continues counting even if the device is suspended.
-  base::WallClockTimer poll_timer_wall_;
+  base::WallClockTimer poll_timer_;
 
   // The mode of operation.
   Mode mode_ = CONFIGURATION_MODE;
@@ -271,9 +266,6 @@ class SyncSchedulerImpl : public SyncScheduler {
 
   // The time when the last poll request finished. Used for computing the next
   // poll time.
-  // TODO(crbug.com/40939309): Once kSyncSchedulerUseWallClockTimer is launched,
-  // remove last_poll_reset_ticks_.
-  base::TimeTicks last_poll_reset_ticks_;
   base::Time last_poll_reset_time_;
 
   // One-shot timer for scheduling GU retry according to delay set by server.
