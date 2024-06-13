@@ -4,6 +4,8 @@
 
 #include "chrome/browser/push_messaging/push_messaging_features.h"
 
+#include "chrome/browser/push_messaging/push_messaging_constants.h"
+
 namespace features {
 
 BASE_FEATURE(kPushMessagingDisallowSenderIDs,
@@ -13,6 +15,14 @@ BASE_FEATURE(kPushMessagingDisallowSenderIDs,
 BASE_FEATURE(kPushSubscriptionWithExpirationTime,
              "PushSubscriptionWithExpirationTime",
              base::FEATURE_DISABLED_BY_DEFAULT);
+
+BASE_FEATURE(kPushMessagingGcmEndpointEnvironment,
+             "PushMessagingGcmEndpointEnvironment",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
+constexpr base::FeatureParam<std::string> kPushMessagingGcmEndpointUrl{
+    &kPushMessagingGcmEndpointEnvironment, "PushMessagingGcmEndpointUrl",
+    kPushMessagingGcmEndpoint};
 
 #if BUILDFLAG(IS_ANDROID)
 BASE_FEATURE(kRevokeNotificationsPermissionIfDisabledOnAppLevel,

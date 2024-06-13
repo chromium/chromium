@@ -3,14 +3,17 @@
 // found in the LICENSE file.
 
 #include "chrome/browser/push_messaging/push_messaging_utils.h"
+
 #include "base/base64url.h"
 #include "chrome/browser/push_messaging/push_messaging_constants.h"
+#include "chrome/browser/push_messaging/push_messaging_features.h"
 #include "url/gurl.h"
 
 namespace push_messaging {
 
 GURL CreateEndpoint(const std::string& subscription_id) {
-  const GURL endpoint(kPushMessagingGcmEndpoint + subscription_id);
+  const GURL endpoint(features::kPushMessagingGcmEndpointUrl.Get() +
+                      subscription_id);
   DCHECK(endpoint.is_valid());
   return endpoint;
 }

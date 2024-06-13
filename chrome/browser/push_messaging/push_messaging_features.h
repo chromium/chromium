@@ -6,6 +6,7 @@
 #define CHROME_BROWSER_PUSH_MESSAGING_PUSH_MESSAGING_FEATURES_H_
 
 #include "base/feature_list.h"
+#include "base/metrics/field_trial_params.h"
 
 namespace features {
 
@@ -15,6 +16,14 @@ BASE_DECLARE_FEATURE(kPushMessagingDisallowSenderIDs);
 // Feature flag to enable push subscription with expiration times specified in
 // /chrome/browser/push_messaging/push_messaging_constants.h
 BASE_DECLARE_FEATURE(kPushSubscriptionWithExpirationTime);
+
+// Feature flag to control which environment |kPushMessagingGcmEndpoint|
+// corresponds to.
+BASE_DECLARE_FEATURE(kPushMessagingGcmEndpointEnvironment);
+
+// FeatureParam indicating what URL to use. The production URL is set by
+// default.
+extern const base::FeatureParam<std::string> kPushMessagingGcmEndpointUrl;
 
 #if BUILDFLAG(IS_ANDROID)
 // Feature flag to revoke site-level Notifications permissions and FCM
