@@ -1351,9 +1351,6 @@ void GpuDataManagerImplPrivate::UpdateGpuPreferences(
 
   gpu_preferences->gpu_program_cache_size = gpu::GetDefaultGpuDiskCacheSize();
 
-  gpu_preferences->texture_target_exception_list =
-      gpu::CreateBufferUsageAndFormatExceptionList();
-
   gpu_preferences->watchdog_starts_backgrounded = !application_is_visible_;
 
   const base::CommandLine* command_line =

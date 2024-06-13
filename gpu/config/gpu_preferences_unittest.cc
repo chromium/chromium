@@ -63,8 +63,6 @@ void CheckGpuPreferencesEqual(GpuPreferences left, GpuPreferences right) {
             right.use_passthrough_cmd_decoder);
   EXPECT_EQ(left.disable_biplanar_gpu_memory_buffers_for_video_frames,
             right.disable_biplanar_gpu_memory_buffers_for_video_frames);
-  EXPECT_EQ(left.texture_target_exception_list,
-            right.texture_target_exception_list);
   EXPECT_EQ(left.ignore_gpu_blocklist, right.ignore_gpu_blocklist);
   EXPECT_EQ(left.watchdog_starts_backgrounded,
             right.watchdog_starts_backgrounded);
@@ -186,11 +184,6 @@ TEST(GpuPreferencesTest, EncodeDecode) {
 #endif
     GPU_PREFERENCES_FIELD(force_separate_egl_display_for_webgl_testing, true);
 
-    input_prefs.texture_target_exception_list.emplace_back(
-        gfx::BufferUsage::SCANOUT, gfx::BufferFormat::RGBA_8888);
-    input_prefs.texture_target_exception_list.emplace_back(
-        gfx::BufferUsage::GPU_READ, gfx::BufferFormat::BGRA_8888);
-
     // Make sure every field is encoded/decoded.
     std::string encoded = input_prefs.ToSwitchValue();
     bool flag = decoded_prefs.FromSwitchValue(encoded);
@@ -253,11 +246,6 @@ TEST(GpuPreferencesTest, DISABLED_DecodePreferences) {
   PRINT_BOOL(enable_gpu_service_tracing);
   PRINT_BOOL(use_passthrough_cmd_decoder);
   PRINT_BOOL(disable_biplanar_gpu_memory_buffers_for_video_frames);
-  for (size_t i = 0; i < gpu_preferences.texture_target_exception_list.size();
-       ++i) {
-    PRINT_INT(texture_target_exception_list[i].usage);
-    PRINT_INT(texture_target_exception_list[i].format);
-  }
   PRINT_BOOL(ignore_gpu_blocklist);
   PRINT_BOOL(watchdog_starts_backgrounded);
   PRINT_INT(gr_context_type);

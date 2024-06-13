@@ -50,10 +50,6 @@ DemoService::DemoService(
 
     io_thread_ = CreateAndStartIOThread();
 
-    auto pref = gpu_init_->gpu_preferences();
-    pref.texture_target_exception_list =
-        gpu::CreateBufferUsageAndFormatExceptionList();
-
     viz::GpuServiceImpl::InitParams init_params;
     init_params.watchdog_thread = gpu_init_->TakeWatchdogThread();
     init_params.io_runner = io_thread_->task_runner();

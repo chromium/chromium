@@ -90,7 +90,6 @@ struct GpuPreferences {
   bool enable_gpu_service_tracing;
   bool use_passthrough_cmd_decoder;
   bool disable_biplanar_gpu_memory_buffers_for_video_frames;
-  array<gfx.mojom.BufferUsageAndFormat> texture_target_exception_list;
 
   bool ignore_gpu_blocklist;
   bool watchdog_starts_backgrounded;

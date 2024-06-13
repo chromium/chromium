@@ -208,10 +208,6 @@ struct GPU_EXPORT GpuPreferences {
   // VideoFrames (e.g. NV12), see https://crbug.com/791676.
   bool disable_biplanar_gpu_memory_buffers_for_video_frames = false;
 
-  // List of texture usage & formats that require use of a platform specific
-  // texture target.
-  std::vector<gfx::BufferUsageAndFormat> texture_target_exception_list;
-
   // ===================================
   // Settings from //gpu/config/gpu_switches.h
 

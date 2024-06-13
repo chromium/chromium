@@ -13,7 +13,6 @@
 #include "gpu/config/gpu_preferences.h"
 #include "gpu/gpu_export.h"
 #include "gpu/ipc/common/gpu_preferences.mojom-shared.h"
-#include "ui/gfx/mojom/buffer_types_mojom_traits.h"
 
 #if BUILDFLAG(IS_OZONE)
 #include "base/message_loop/message_pump_type.h"
@@ -263,16 +262,6 @@ struct GPU_EXPORT
     out->disable_biplanar_gpu_memory_buffers_for_video_frames =
         prefs.disable_biplanar_gpu_memory_buffers_for_video_frames();
 
-    mojo::ArrayDataView<gfx::mojom::BufferUsageAndFormatDataView>
-        usage_and_format_list;
-    prefs.GetTextureTargetExceptionListDataView(&usage_and_format_list);
-    for (size_t i = 0; i < usage_and_format_list.size(); ++i) {
-      gfx::BufferUsageAndFormat usage_format;
-      if (!usage_and_format_list.Read(i, &usage_format))
-        return false;
-      out->texture_target_exception_list.push_back(usage_format);
-    }
-
     out->ignore_gpu_blocklist = prefs.ignore_gpu_blocklist();
     out->watchdog_starts_backgrounded = prefs.watchdog_starts_backgrounded();
     if (!prefs.ReadGrContextType(&out->gr_context_type)) {
@@ -434,10 +423,6 @@ struct GPU_EXPORT
   static bool disable_biplanar_gpu_memory_buffers_for_video_frames(
       const gpu::GpuPreferences& prefs) {
     return prefs.disable_biplanar_gpu_memory_buffers_for_video_frames;
-  }
-  static const std::vector<gfx::BufferUsageAndFormat>&
-  texture_target_exception_list(const gpu::GpuPreferences& prefs) {
-    return prefs.texture_target_exception_list;
   }
   static bool ignore_gpu_blocklist(const gpu::GpuPreferences& prefs) {
     return prefs.ignore_gpu_blocklist;

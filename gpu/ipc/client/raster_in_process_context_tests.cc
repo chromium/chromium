@@ -59,8 +59,6 @@ class RasterInProcessCommandBufferTest : public ::testing::Test {
   void SetUp() override {
     if (!RasterInProcessContext::SupportedInTest())
       return;
-    gpu_thread_holder_.GetGpuPreferences()->texture_target_exception_list =
-        CreateBufferUsageAndFormatExceptionList();
     gpu_thread_holder_.GetGpuPreferences()->gr_context_type =
         GrContextType::kGL;
     context_ = CreateRasterInProcessContext();

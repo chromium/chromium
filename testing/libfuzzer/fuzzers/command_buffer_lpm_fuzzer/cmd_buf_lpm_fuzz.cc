@@ -100,8 +100,6 @@ void CmdBufFuzz::GfxInit() {
   VLOG(3) << "Aura + Ozone init";
   gl_display_ = gl::GLSurfaceTestSupport::InitializeOneOffWithStubBindings();
   CHECK(gl_display_);
-  preferences.texture_target_exception_list =
-      gpu::CreateBufferUsageAndFormatExceptionList();
   VLOG(3) << "TestGpuServiceHolder: starting GPU threads";
   gpu_service_holder_ =
       std::make_unique<viz::TestGpuServiceHolder>(preferences);
