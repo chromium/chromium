@@ -215,3 +215,14 @@ There was a test
 Interesting first commit.
 
 If debugging is the process of removing bugs, then programming must be the process of putting them in.
+
+---
+
+TOKI PONA:
+
+Toki Pona is an isolating language with only 14 phonemes and an underlying feature of minimalism.
+It focuses on simple, near-universal concepts to maximize expression from very few words.
+In Toki Pona: The Language of Good (referred to as pu), Lang presents around 120 words,
+while the later Toki Pona Dictionary (referred to as ku) lists 137 "essential" words and a
+number of less-used ones. Its words are easy to pronounce across language backgrounds,
+which allows it to serve as a bridge of sorts for people of different cultures.
