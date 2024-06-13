@@ -74,7 +74,6 @@
 #include "content/browser/attribution_reporting/storable_source.h"
 #include "content/browser/attribution_reporting/store_source_result.h"
 #include "content/browser/attribution_reporting/stored_source.h"
-#include "content/browser/browsing_data/browsing_data_filter_builder_impl.h"
 #include "content/browser/storage_partition_impl.h"
 #include "content/public/browser/attribution_data_model.h"
 #include "content/public/browser/browser_context.h"
@@ -1004,12 +1003,10 @@ void AttributionManagerImpl::ClearData(
   done = barrier;
 
   if (filter_builder) {
-    auto* filter_builder_impl =
-        static_cast<BrowsingDataFilterBuilderImpl*>(filter_builder);
     os_level_manager_->ClearData(
-        delete_begin, delete_end, filter_builder_impl->GetOrigins(),
-        filter_builder_impl->GetRegisterableDomains(),
-        filter_builder->GetMode(), delete_rate_limit_data, std::move(barrier));
+        delete_begin, delete_end, filter_builder->GetOrigins(),
+        filter_builder->GetRegisterableDomains(), filter_builder->GetMode(),
+        delete_rate_limit_data, std::move(barrier));
   } else {
     // When there is not filter_builder, we clear all the data.
     os_level_manager_->ClearData(delete_begin, delete_end, /*origins=*/{},
