@@ -104,8 +104,7 @@ BASE_FEATURE(kExtensionsMenuInAppMenu,
              base::FEATURE_ENABLED_BY_DEFAULT);
 
 bool IsExtensionMenuInRootAppMenu() {
-  return base::FeatureList::IsEnabled(kExtensionsMenuInAppMenu) ||
-         features::IsChromeRefresh2023();
+  return base::FeatureList::IsEnabled(kExtensionsMenuInAppMenu);
 }
 
 #if !defined(ANDROID)
@@ -343,8 +342,7 @@ BASE_FEATURE(kTabOrganization,
              base::FEATURE_DISABLED_BY_DEFAULT);
 
 bool IsTabOrganization() {
-  return IsChromeRefresh2023() &&
-         base::FeatureList::IsEnabled(features::kTabOrganization);
+  return base::FeatureList::IsEnabled(features::kTabOrganization);
 }
 
 BASE_FEATURE(kMultiTabOrganization,
