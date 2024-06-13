@@ -32,6 +32,7 @@ include_rules = [
   "+components/ml/mojom",
   "+components/services/filesystem",
   "+components/services/font/public",
+  "+components/services/font_data/public",
   "+components/startup_metric_utils",
   "+components/variations",
   "+components/value_store",
