@@ -1243,7 +1243,7 @@ public class SyncConsentFragmentTest {
                                 SigninMetricsUtils.SyncButtonClicked.SYNC_CANCEL_EQUAL_WEIGHTED)
                         .expectIntRecord(
                                 "Signin.SyncButtons.Shown",
-                                MinorModeHelper.SyncButtonsType.SYNC_EQUAL_WEIGHTED)
+                                MinorModeHelper.SyncButtonsType.SYNC_EQUAL_WEIGHTED_FROM_CAPABILITY)
                         .build();
 
         mChromeActivityTestRule.startMainActivityOnBlankPage();
@@ -1290,7 +1290,7 @@ public class SyncConsentFragmentTest {
                                 SigninMetricsUtils.SyncButtonClicked.SYNC_OPT_IN_EQUAL_WEIGHTED)
                         .expectIntRecord(
                                 "Signin.SyncButtons.Shown",
-                                MinorModeHelper.SyncButtonsType.SYNC_EQUAL_WEIGHTED)
+                                MinorModeHelper.SyncButtonsType.SYNC_EQUAL_WEIGHTED_FROM_CAPABILITY)
                         .build();
 
         mChromeActivityTestRule.startMainActivityOnBlankPage();
@@ -1331,6 +1331,13 @@ public class SyncConsentFragmentTest {
     @LargeTest
     @Feature("RenderTest")
     public void testSignedInWithMinorModeRequiredHasEqualButtons() throws IOException {
+        HistogramWatcher histogramWatcher =
+                HistogramWatcher.newBuilder()
+                        .expectIntRecord(
+                                "Signin.SyncButtons.Shown",
+                                MinorModeHelper.SyncButtonsType.SYNC_EQUAL_WEIGHTED_FROM_CAPABILITY)
+                        .build();
+
         mChromeActivityTestRule.startMainActivityOnBlankPage();
         mSigninTestRule.addAccount(AccountManagerTestRule.AADC_MINOR_ACCOUNT);
 
@@ -1342,12 +1349,21 @@ public class SyncConsentFragmentTest {
         mRenderTestRule.render(
                 mSyncConsentActivity.findViewById(R.id.fragment_container),
                 "signed_in_with_minor_mode_required_has_equal_buttons");
+
+        histogramWatcher.assertExpected();
     }
 
     @Test
     @LargeTest
     @Feature("RenderTest")
     public void testSignedInWithMinorModeNotRequiredHasWeightedButtons() throws IOException {
+        HistogramWatcher histogramWatcher =
+                HistogramWatcher.newBuilder()
+                        .expectIntRecord(
+                                "Signin.SyncButtons.Shown",
+                                MinorModeHelper.SyncButtonsType.SYNC_NOT_EQUAL_WEIGHTED)
+                        .build();
+
         mChromeActivityTestRule.startMainActivityOnBlankPage();
         mSigninTestRule.addAccount(AccountManagerTestRule.AADC_ADULT_ACCOUNT);
 
@@ -1359,11 +1375,19 @@ public class SyncConsentFragmentTest {
         mRenderTestRule.render(
                 mSyncConsentActivity.findViewById(R.id.fragment_container),
                 "signed_in_with_minor_mode_not_required_has_weighted_buttons");
+        histogramWatcher.assertExpected();
     }
 
     @Test
     @LargeTest
     public void testSignedInWithMinorModeUnknownHasEqualButtonsOnDeadline() throws Exception {
+        HistogramWatcher histogramWatcher =
+                HistogramWatcher.newBuilder()
+                        .expectIntRecord(
+                                "Signin.SyncButtons.Shown",
+                                MinorModeHelper.SyncButtonsType.SYNC_EQUAL_WEIGHTED_FROM_DEADLINE)
+                        .build();
+
         mChromeActivityTestRule.startMainActivityOnBlankPage();
         // Account Capabilities are intentionally empty.
         mSigninTestRule.addAccount(AccountManagerTestRule.AADC_UNRESOLVED_ACCOUNT);
@@ -1378,6 +1402,7 @@ public class SyncConsentFragmentTest {
         ViewUtils.waitForVisibleView(withText(R.string.signin_accept_button));
 
         checkButtonsAreEquallyWeightedandVisible();
+        histogramWatcher.assertExpected();
     }
 
     @Test
@@ -1411,6 +1436,12 @@ public class SyncConsentFragmentTest {
     @LargeTest
     public void testSignedInWithMinorModeUnknownHasEqualButtonsBeforeDeadline()
             throws InterruptedException {
+        HistogramWatcher histogramWatcher =
+                HistogramWatcher.newBuilder()
+                        .expectIntRecord(
+                                "Signin.SyncButtons.Shown",
+                                MinorModeHelper.SyncButtonsType.SYNC_EQUAL_WEIGHTED_FROM_CAPABILITY)
+                        .build();
         MinorModeHelper.disableTimeoutForTesting();
         mChromeActivityTestRule.startMainActivityOnBlankPage();
         // Account Capabilities are intentionally empty.
@@ -1443,12 +1474,21 @@ public class SyncConsentFragmentTest {
                             primaryButton.getTextColors().getDefaultColor(),
                             secondaryButton.getTextColors().getDefaultColor());
                 });
+
+        histogramWatcher.assertExpected();
     }
 
     @Test
     @LargeTest
     public void testSignedInWithMinorModeUnknownHasUnequalButtonsBeforeDeadline()
             throws InterruptedException {
+        HistogramWatcher histogramWatcher =
+                HistogramWatcher.newBuilder()
+                        .expectIntRecord(
+                                "Signin.SyncButtons.Shown",
+                                MinorModeHelper.SyncButtonsType.SYNC_NOT_EQUAL_WEIGHTED)
+                        .build();
+
         MinorModeHelper.disableTimeoutForTesting();
         mChromeActivityTestRule.startMainActivityOnBlankPage();
         // Account Capabilities are intentionally empty.
@@ -1481,12 +1521,21 @@ public class SyncConsentFragmentTest {
                             primaryButton.getTextColors().getDefaultColor(),
                             secondaryButton.getTextColors().getDefaultColor());
                 });
+
+        histogramWatcher.assertExpected();
     }
 
     @Test
     @LargeTest
     @Feature("RenderTest")
     public void testSignedOutWithMinorModeRequiredHasEqualButtons() throws IOException {
+        HistogramWatcher histogramWatcher =
+                HistogramWatcher.newBuilder()
+                        .expectIntRecord(
+                                "Signin.SyncButtons.Shown",
+                                MinorModeHelper.SyncButtonsType.SYNC_EQUAL_WEIGHTED_FROM_CAPABILITY)
+                        .build();
+
         mChromeActivityTestRule.startMainActivityOnBlankPage();
         mSigninTestRule.addAccount(AccountManagerTestRule.AADC_MINOR_ACCOUNT);
         mSyncConsentActivity =
@@ -1494,12 +1543,21 @@ public class SyncConsentFragmentTest {
         mRenderTestRule.render(
                 mSyncConsentActivity.findViewById(R.id.fragment_container),
                 "signed_out_with_minor_mode_required_has_equal_buttons");
+
+        histogramWatcher.assertExpected();
     }
 
     @Test
     @LargeTest
     @Feature("RenderTest")
     public void testSignedOutWithMinorModeNotRequiredHasWeightedButtons() throws IOException {
+        HistogramWatcher histogramWatcher =
+                HistogramWatcher.newBuilder()
+                        .expectIntRecord(
+                                "Signin.SyncButtons.Shown",
+                                MinorModeHelper.SyncButtonsType.SYNC_NOT_EQUAL_WEIGHTED)
+                        .build();
+
         mChromeActivityTestRule.startMainActivityOnBlankPage();
         mSigninTestRule.addAccount(AccountManagerTestRule.AADC_ADULT_ACCOUNT);
         mSyncConsentActivity =
@@ -1507,11 +1565,20 @@ public class SyncConsentFragmentTest {
         mRenderTestRule.render(
                 mSyncConsentActivity.findViewById(R.id.fragment_container),
                 "signed_out_with_minor_mode_not_required_has_weighted_buttons");
+
+        histogramWatcher.assertExpected();
     }
 
     @Test
     @LargeTest
     public void testSignedOutWithMinorModeUnknownHasEqualButtonsOnDeadline() throws Exception {
+        HistogramWatcher histogramWatcher =
+                HistogramWatcher.newBuilder()
+                        .expectIntRecord(
+                                "Signin.SyncButtons.Shown",
+                                MinorModeHelper.SyncButtonsType.SYNC_EQUAL_WEIGHTED_FROM_DEADLINE)
+                        .build();
+
         mChromeActivityTestRule.startMainActivityOnBlankPage();
         mSigninTestRule.addAccount(AccountManagerTestRule.AADC_UNRESOLVED_ACCOUNT);
         mSyncConsentActivity =
@@ -1521,6 +1588,7 @@ public class SyncConsentFragmentTest {
         ViewUtils.waitForVisibleView(withText(R.string.signin_accept_button));
 
         checkButtonsAreEquallyWeightedandVisible();
+        histogramWatcher.assertExpected();
     }
 
     @Test

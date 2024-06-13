@@ -162,45 +162,54 @@ class SigninView extends LinearLayout {
         if (this.mAcceptOnClickListener == null) {
             return;
         }
-
         switch (mScreenMode) {
+            case ScreenMode.RESTRICTED:
+            case ScreenMode.DEADLINED:
+                MinorModeHelper.recordButtonClicked(
+                        MinorModeHelper.SyncButtonClicked.SYNC_OPT_IN_EQUAL_WEIGHTED);
+                break;
             case ScreenMode.UNRESTRICTED:
                 MinorModeHelper.recordButtonClicked(
                         SigninMetricsUtils.SyncButtonClicked.SYNC_OPT_IN_NOT_EQUAL_WEIGHTED);
                 break;
-            case ScreenMode.RESTRICTED:
-                MinorModeHelper.recordButtonClicked(
-                        SigninMetricsUtils.SyncButtonClicked.SYNC_OPT_IN_EQUAL_WEIGHTED);
-                break;
             default:
-                // Do not record metrics in other cases.
+                // Button not present
         }
+
         this.mAcceptOnClickListener.onClick(view);
     }
 
     void refuseButtonClicked() {
-        if (mScreenMode == ScreenMode.PENDING) {
-            return;
-        }
-        if (mScreenMode == ScreenMode.UNRESTRICTED) {
-            MinorModeHelper.recordButtonClicked(
-                    SigninMetricsUtils.SyncButtonClicked.SYNC_CANCEL_NOT_EQUAL_WEIGHTED);
-        } else {
-            MinorModeHelper.recordButtonClicked(
-                    SigninMetricsUtils.SyncButtonClicked.SYNC_CANCEL_EQUAL_WEIGHTED);
+        switch (mScreenMode) {
+            case ScreenMode.RESTRICTED:
+            case ScreenMode.DEADLINED:
+                MinorModeHelper.recordButtonClicked(
+                        MinorModeHelper.SyncButtonClicked.SYNC_CANCEL_EQUAL_WEIGHTED);
+                break;
+            case ScreenMode.UNRESTRICTED:
+                MinorModeHelper.recordButtonClicked(
+                        MinorModeHelper.SyncButtonClicked.SYNC_CANCEL_NOT_EQUAL_WEIGHTED);
+                break;
+            default:
+                // Button not present
         }
     }
 
     void settingsClicked() {
-        if (mScreenMode == ScreenMode.PENDING) {
-            return;
-        }
-        if (mScreenMode == ScreenMode.UNRESTRICTED) {
-            MinorModeHelper.recordButtonClicked(
-                    SigninMetricsUtils.SyncButtonClicked.SYNC_SETTINGS_NOT_EQUAL_WEIGHTED);
-        } else {
-            MinorModeHelper.recordButtonClicked(
-                    SigninMetricsUtils.SyncButtonClicked.SYNC_SETTINGS_EQUAL_WEIGHTED);
+        switch (mScreenMode) {
+            case ScreenMode.PENDING:
+                MinorModeHelper.recordButtonClicked(
+                        MinorModeHelper.SyncButtonClicked.SYNC_SETTINGS_UNKNOWN_WEIGHTED);
+                break;
+            case ScreenMode.RESTRICTED:
+            case ScreenMode.DEADLINED:
+                MinorModeHelper.recordButtonClicked(
+                        MinorModeHelper.SyncButtonClicked.SYNC_SETTINGS_EQUAL_WEIGHTED);
+                break;
+            case ScreenMode.UNRESTRICTED:
+                MinorModeHelper.recordButtonClicked(
+                        MinorModeHelper.SyncButtonClicked.SYNC_SETTINGS_NOT_EQUAL_WEIGHTED);
+                break;
         }
     }
 
@@ -281,11 +290,19 @@ class SigninView extends LinearLayout {
 
         // Only at this point buttons were made visible and added to the button bar, so record the
         // displayed button type.
-        if (mScreenMode == ScreenMode.UNRESTRICTED) {
-            MinorModeHelper.recordButtonsShown(
-                    MinorModeHelper.SyncButtonsType.SYNC_NOT_EQUAL_WEIGHTED);
-        } else {
-            MinorModeHelper.recordButtonsShown(MinorModeHelper.SyncButtonsType.SYNC_EQUAL_WEIGHTED);
+        switch (mScreenMode) {
+            case ScreenMode.RESTRICTED:
+                MinorModeHelper.recordButtonsShown(
+                        MinorModeHelper.SyncButtonsType.SYNC_EQUAL_WEIGHTED_FROM_CAPABILITY);
+                break;
+            case ScreenMode.UNRESTRICTED:
+                MinorModeHelper.recordButtonsShown(
+                        MinorModeHelper.SyncButtonsType.SYNC_NOT_EQUAL_WEIGHTED);
+                break;
+            case ScreenMode.DEADLINED:
+                MinorModeHelper.recordButtonsShown(
+                        MinorModeHelper.SyncButtonsType.SYNC_EQUAL_WEIGHTED_FROM_DEADLINE);
+                break;
         }
     }
 

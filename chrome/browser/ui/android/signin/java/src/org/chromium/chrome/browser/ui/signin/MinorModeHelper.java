@@ -12,7 +12,6 @@ import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.base.task.PostTask;
 import org.chromium.base.task.TaskTraits;
 import org.chromium.chrome.browser.signin.services.SigninMetricsUtils;
-import org.chromium.chrome.browser.signin.services.SigninMetricsUtils.SyncButtonClicked;
 import org.chromium.components.signin.SigninFeatureMap;
 import org.chromium.components.signin.SigninFeatures;
 import org.chromium.components.signin.Tribool;
@@ -44,15 +43,25 @@ import java.lang.annotation.RetentionPolicy;
 public class MinorModeHelper implements IdentityManager.Observer {
 
     /** Screen modes indicated by capability. */
-    @IntDef({ScreenMode.PENDING, ScreenMode.RESTRICTED, ScreenMode.UNRESTRICTED})
+    @IntDef({
+        ScreenMode.UNSUPPORTED,
+        ScreenMode.PENDING,
+        ScreenMode.RESTRICTED,
+        ScreenMode.UNRESTRICTED,
+        ScreenMode.DEADLINED
+    })
     @Retention(RetentionPolicy.SOURCE)
     public @interface ScreenMode {
+        int UNSUPPORTED = 0;
         // Screen mode is pending resolution to RESTRICTED or UNRESTRICTED.
-        int PENDING = 0;
-        // The UI must be presented in minor-mode aware way.
-        int RESTRICTED = 1;
+        int PENDING = 1;
+        // The UI must be presented in minor-mode aware way because determined by the capability.
+        int RESTRICTED = 2;
         // The UI does not need to be presented in minor-mode aware way.
-        int UNRESTRICTED = 2;
+        int UNRESTRICTED = 3;
+        // The UI must be presented in minor-mode aware way because the time to load the
+        // capabilities was exceeded.
+        int DEADLINED = 4;
     }
 
     /** Controls the actual UI Update. */
@@ -73,11 +82,30 @@ public class MinorModeHelper implements IdentityManager.Observer {
     public @interface SyncButtonsType {
         // These values are persisted to logs. Entries should not be renumbered and
         // numeric values should never be reused.
-        int SYNC_EQUAL_WEIGHTED = 0;
+        int SYNC_EQUAL_WEIGHTED_DEPRECATED = 0;
         int SYNC_NOT_EQUAL_WEIGHTED = 1;
         int HISTORY_SYNC_EQUAL_WEIGHTED = 2;
         int HISTORY_SYNC_NOT_EQUAL_WEIGHTED = 3;
-        int NUM_ENTRIES = 4;
+        int SYNC_EQUAL_WEIGHTED_FROM_DEADLINE = 4;
+        int SYNC_EQUAL_WEIGHTED_FROM_CAPABILITY = 5;
+        int NUM_ENTRIES = 6;
+    };
+
+    public @interface SyncButtonClicked {
+        // These values are persisted to logs. Entries should not be renumbered and
+        // numeric values should never be reused.
+        int SYNC_OPT_IN_EQUAL_WEIGHTED = 0;
+        int SYNC_CANCEL_EQUAL_WEIGHTED = 1;
+        int SYNC_SETTINGS_EQUAL_WEIGHTED = 2;
+        int SYNC_OPT_IN_NOT_EQUAL_WEIGHTED = 3;
+        int SYNC_CANCEL_NOT_EQUAL_WEIGHTED = 4;
+        int SYNC_SETTINGS_NOT_EQUAL_WEIGHTED = 5;
+        int HISTORY_SYNC_OPT_IN_EQUAL_WEIGHTED = 6;
+        int HISTORY_SYNC_CANCEL_EQUAL_WEIGHTED = 7;
+        int HISTORY_SYNC_OPT_IN_NOT_EQUAL_WEIGHTED = 8;
+        int HISTORY_SYNC_CANCEL_NOT_EQUAL_WEIGHTED = 9;
+        int SYNC_SETTINGS_UNKNOWN_WEIGHTED = 10;
+        int NUM_ENTRIES = 11;
     };
 
     private static boolean sDisableHistorySyncOptInTimeoutForTesting;
@@ -187,7 +215,7 @@ public class MinorModeHelper implements IdentityManager.Observer {
                                     "MinorModeRestrictionsFetchDeadlineMs",
                                     1000);
 
-            PostTask.postDelayedTask(TaskTraits.UI_DEFAULT, this::defaultToRestricted, timeoutMs);
+            PostTask.postDelayedTask(TaskTraits.UI_DEFAULT, this::onDeadline, timeoutMs);
         }
     }
 
@@ -205,8 +233,8 @@ public class MinorModeHelper implements IdentityManager.Observer {
         executeUiChanges(screenModeFromCapabilities(accountInfo.getAccountCapabilities()));
     }
 
-    private void defaultToRestricted() {
-        executeUiChanges(ScreenMode.RESTRICTED);
+    private void onDeadline() {
+        executeUiChanges(ScreenMode.DEADLINED);
     }
 
     /** Executes ui changes defined in {@link mUiUpdater}, but does this only once. */
