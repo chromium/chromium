@@ -16,19 +16,14 @@
 
 namespace device::enclave {
 
-// TODO(livseibert): Change return type to std::optional<MatchResult> when
-// util.h is ready. Compares the digest contained in the endorsement against the
-// given one.
-bool VerifyBinaryDigest(base::span<const uint8_t> endorsement,
-                        const Hash& expected);
-
 // Verifies the binary endorsement against log entry and public keys.
-bool VerifyBinaryEndorsement(base::Time now,
-                             base::span<const uint8_t> endorsement,
-                             base::span<const uint8_t> signature,
-                             base::span<const uint8_t> log_entry,
-                             base::span<const uint8_t> endorser_public_key,
-                             base::span<const uint8_t> rekor_public_key);
+bool COMPONENT_EXPORT(DEVICE_FIDO)
+    VerifyBinaryEndorsement(base::Time now,
+                            base::span<const uint8_t> endorsement,
+                            base::span<const uint8_t> signature,
+                            base::span<const uint8_t> log_entry,
+                            base::span<const uint8_t> endorser_public_key,
+                            base::span<const uint8_t> rekor_public_key);
 
 // Verifies endorsement against the given reference values.
 bool COMPONENT_EXPORT(DEVICE_FIDO)

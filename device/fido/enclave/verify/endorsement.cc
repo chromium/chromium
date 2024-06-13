@@ -13,6 +13,32 @@
 
 namespace device::enclave {
 
+bool VerifyBinaryEndorsement(base::Time now,
+                             base::span<const uint8_t> endorsement,
+                             base::span<const uint8_t> signature,
+                             base::span<const uint8_t> log_entry,
+                             base::span<const uint8_t> endorser_public_key,
+                             base::span<const uint8_t> rekor_public_key) {
+  auto endorsement_statement = ParseEndorsementStatement(endorsement);
+  if (!endorsement_statement.has_value()) {
+    return false;
+  }
+  if (log_entry.size() != 0) {
+    if (!VerifyEndorsementStatement(now, endorsement_statement.value()) ||
+        !VerifyRekorLogEntry(log_entry, rekor_public_key, endorsement) ||
+        !VerifyEndorserPublicKey(log_entry, endorser_public_key)) {
+      return false;
+    }
+    return true;
+  } else {
+    if (rekor_public_key.size() != 0) {
+      return false;
+    }
+    return VerifySignatureRaw(signature, endorsement, endorser_public_key)
+        .has_value();
+  }
+}
+
 bool VerifyEndorsementStatement(base::Time now,
                                 const EndorsementStatement& statement) {
   if (!ValidateEndorsement(statement) ||
