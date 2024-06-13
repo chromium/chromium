@@ -195,7 +195,6 @@ struct HttpAuthStaticNetworkContextParams {
 struct CTPolicy {
   array<string> excluded_hosts;
   array<string> excluded_spkis;
-  array<string> excluded_legacy_spkis;
 };
 
 struct NetworkContextFilePaths {

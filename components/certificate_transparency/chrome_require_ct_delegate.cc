@@ -190,8 +190,7 @@ ChromeRequireCTDelegate::IsCTRequiredForHost(
 
 void ChromeRequireCTDelegate::UpdateCTPolicies(
     const std::vector<std::string>& excluded_hosts,
-    const std::vector<std::string>& excluded_spkis,
-    const std::vector<std::string>& excluded_legacy_spkis) {
+    const std::vector<std::string>& excluded_spkis) {
   url_matcher_ = std::make_unique<url_matcher::URLMatcher>();
   filters_.clear();
   next_id_ = 0;
@@ -202,16 +201,6 @@ void ChromeRequireCTDelegate::UpdateCTPolicies(
   url_matcher_->AddConditionSets(all_conditions);
 
   ParseSpkiHashes(excluded_spkis, &spkis_);
-  ParseSpkiHashes(excluded_legacy_spkis, &legacy_spkis_);
-
-  // Filter out SPKIs that aren't for legacy CAs.
-  std::erase_if(legacy_spkis_, [](const net::HashValue& hash) {
-    if (!net::IsLegacyPubliclyTrustedCA(hash)) {
-      LOG(ERROR) << "Non-legacy SPKI configured " << hash.ToString();
-      return true;
-    }
-    return false;
-  });
 }
 
 bool ChromeRequireCTDelegate::MatchHostname(const std::string& hostname) const {
@@ -233,17 +222,6 @@ bool ChromeRequireCTDelegate::MatchHostname(const std::string& hostname) const {
 bool ChromeRequireCTDelegate::MatchSPKI(
     const net::X509Certificate* chain,
     const net::HashValueVector& hashes) const {
-  // Try to scan legacy SPKIs first, if any, since they will only require
-  // comparing hash values.
-  if (!legacy_spkis_.empty()) {
-    for (const auto& hash : hashes) {
-      if (std::binary_search(legacy_spkis_.begin(), legacy_spkis_.end(),
-                             hash)) {
-        return true;
-      }
-    }
-  }
-
   if (spkis_.empty())
     return false;
 

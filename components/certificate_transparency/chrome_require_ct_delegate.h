@@ -48,12 +48,11 @@ class COMPONENT_EXPORT(CERTIFICATE_TRANSPARENCY) ChromeRequireCTDelegate
       const net::X509Certificate* chain,
       const net::HashValueVector& spki_hashes) override;
 
-  // Updates the CTDelegate to exclude |excluded_hosts| from CT policies.  In
-  // addition, this method updates |excluded_spkis| and |excluded_legacy_spkis|
-  // intended for use within an Enterprise (see https://crbug.com/824184).
+  // Updates the CTDelegate to exclude |excluded_hosts| from CT policies. In
+  // addition, this method updates |excluded_spkis| intended for use within an
+  // Enterprise (see https://crbug.com/824184).
   void UpdateCTPolicies(const std::vector<std::string>& excluded_hosts,
-                        const std::vector<std::string>& excluded_spkis,
-                        const std::vector<std::string>& excluded_legacy_spkis);
+                        const std::vector<std::string>& excluded_spkis);
 
  private:
   struct Filter {
@@ -85,9 +84,8 @@ class COMPONENT_EXPORT(CERTIFICATE_TRANSPARENCY) ChromeRequireCTDelegate
   base::MatcherStringPattern::ID next_id_;
   std::map<base::MatcherStringPattern::ID, Filter> filters_;
 
-  // Both SPKI lists are sorted.
+  // SPKI list is sorted.
   net::HashValueVector spkis_;
-  net::HashValueVector legacy_spkis_;
 };
 
 }  // namespace certificate_transparency

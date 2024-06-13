@@ -316,10 +316,6 @@ ProfileNetworkContextService::ProfileNetworkContextService(Profile* profile)
       certificate_transparency::prefs::kCTExcludedSPKIs,
       base::BindRepeating(&ProfileNetworkContextService::ScheduleUpdateCTPolicy,
                           base::Unretained(this)));
-  pref_change_registrar_.Add(
-      certificate_transparency::prefs::kCTExcludedLegacySPKIs,
-      base::BindRepeating(&ProfileNetworkContextService::ScheduleUpdateCTPolicy,
-                          base::Unretained(this)));
 #if BUILDFLAG(CHROME_CERTIFICATE_POLICIES_SUPPORTED)
   // When any of the following Certificate preferences change, we schedule an
   // update to aggregate the actual update using a |cert_policy_update_timer_|.
@@ -489,18 +485,13 @@ network::mojom::CTPolicyPtr ProfileNetworkContextService::GetCTPolicy() {
       prefs->GetList(certificate_transparency::prefs::kCTExcludedHosts);
   const base::Value::List& ct_excluded_spkis =
       prefs->GetList(certificate_transparency::prefs::kCTExcludedSPKIs);
-  const base::Value::List& ct_excluded_legacy_spkis =
-      prefs->GetList(certificate_transparency::prefs::kCTExcludedLegacySPKIs);
 
   std::vector<std::string> excluded(TranslateStringArray(ct_excluded));
   std::vector<std::string> excluded_spkis(
       TranslateStringArray(ct_excluded_spkis));
-  std::vector<std::string> excluded_legacy_spkis(
-      TranslateStringArray(ct_excluded_legacy_spkis));
 
   return network::mojom::CTPolicy::New(std::move(excluded),
-                                       std::move(excluded_spkis),
-                                       std::move(excluded_legacy_spkis));
+                                       std::move(excluded_spkis));
 }
 
 void ProfileNetworkContextService::UpdateCTPolicyForContexts(

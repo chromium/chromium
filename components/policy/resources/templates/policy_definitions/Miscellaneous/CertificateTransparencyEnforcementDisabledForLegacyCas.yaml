@@ -6,14 +6,14 @@ desc: |-
         Specify a <ph name="SUBJECT_PUBLIC_KEY_INFO">subjectPublicKeyInfo</ph> hash by linking the hash algorithm name, a slash and the Base64 encoding of that hash algorithm applied to the DER-encoded <ph name="SUBJECT_PUBLIC_KEY_INFO">subjectPublicKeyInfo</ph> of the specified certificate. Base64 encoding format matches that of an SPKI Fingerprint. The only recognized hash algorithm is sha256; others are ignored.
 
         Leaving the policy unset means that if certificates requiring disclosure through Certificate Transparency aren't disclosed, then <ph name="PRODUCT_NAME">$1<ex>Google Chrome</ex></ph> doesn't trust those certificates.
+
+        This policy was removed in <ph name="PRODUCT_NAME">$1<ex>Google Chrome</ex></ph> version 128.
 example_value:
 - sha256/AAAAAAAAAAAAAAAAAAAAAA==
 - sha256//////////////////////w==
 features:
   dynamic_refresh: true
   per_profile: true
-future_on:
-- fuchsia
 owners:
 - file://components/certificate_transparency/OWNERS
 - rsleevi@chromium.org
@@ -21,10 +21,11 @@ schema:
   items:
     type: string
   type: array
+deprecated: true
 supported_on:
-- chrome.*:67-
-- chrome_os:67-
-- android:67-
+- chrome.*:67-127
+- chrome_os:67-127
+- android:67-127
 tags:
 - system-security
 type: list
