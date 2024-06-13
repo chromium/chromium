@@ -4,7 +4,10 @@
 
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
+#include "base/json/values_util.h"
+#include "base/test/test_timeouts.h"
 #include "chrome/browser/content_settings/cookie_settings_factory.h"
+#include "chrome/browser/file_system_access/chrome_file_system_access_permission_context.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/test/base/in_process_browser_test.h"
 #include "chrome/test/base/ui_test_utils.h"
@@ -42,15 +45,26 @@ constexpr char kSecurityErrorMessage[] =
 
 }  // namespace
 
-class FileSystemObserverStorageAccessTest : public InProcessBrowserTest {
+class TestFileSystemAccessPermissionContext
+    : public ChromeFileSystemAccessPermissionContext {
  public:
-  FileSystemObserverStorageAccessTest() = default;
-  ~FileSystemObserverStorageAccessTest() override = default;
+  explicit TestFileSystemAccessPermissionContext(
+      content::BrowserContext* context)
+      : ChromeFileSystemAccessPermissionContext(context) {}
+  ~TestFileSystemAccessPermissionContext() override = default;
 
-  FileSystemObserverStorageAccessTest(
-      const FileSystemObserverStorageAccessTest&) = delete;
-  FileSystemObserverStorageAccessTest& operator=(
-      const FileSystemObserverStorageAccessTest&) = delete;
+ private:
+  base::WeakPtrFactory<TestFileSystemAccessPermissionContext> weak_factory_{
+      this};
+};
+
+class FileSystemObserverTest : public InProcessBrowserTest {
+ public:
+  FileSystemObserverTest() = default;
+  ~FileSystemObserverTest() override = default;
+
+  FileSystemObserverTest(const FileSystemObserverTest&) = delete;
+  FileSystemObserverTest& operator=(const FileSystemObserverTest&) = delete;
 
   void SetUpOnMainThread() override {
     ASSERT_TRUE(temp_dir_.CreateUniqueTempDir());
@@ -108,8 +122,7 @@ class FileSystemObserverStorageAccessTest : public InProcessBrowserTest {
   GURL test_url_;
 };
 
-IN_PROC_BROWSER_TEST_F(FileSystemObserverStorageAccessTest,
-                       StorageAccessAllowed) {
+IN_PROC_BROWSER_TEST_F(FileSystemObserverTest, StorageAccessAllowed) {
   CreateFileToBePicked();
   ConfigureCookieSetting(test_url_, CONTENT_SETTING_ALLOW);
 
@@ -124,8 +137,7 @@ IN_PROC_BROWSER_TEST_F(FileSystemObserverStorageAccessTest,
   EXPECT_EQ(EvalJs(GetWebContents(), script), kSuccessMessage);
 }
 
-IN_PROC_BROWSER_TEST_F(FileSystemObserverStorageAccessTest,
-                       StorageAccessBlocked) {
+IN_PROC_BROWSER_TEST_F(FileSystemObserverTest, StorageAccessBlocked) {
   CreateFileToBePicked();
   ConfigureCookieSetting(test_url_, CONTENT_SETTING_ALLOW);
 
@@ -150,8 +162,8 @@ IN_PROC_BROWSER_TEST_F(FileSystemObserverStorageAccessTest,
   EXPECT_EQ(EvalJs(GetWebContents(), script), kSecurityErrorMessage);
 }
 
-IN_PROC_BROWSER_TEST_F(FileSystemObserverStorageAccessTest,
-                       StateChangeFromAllowedToBlocked) {
+IN_PROC_BROWSER_TEST_F(FileSystemObserverTest,
+                       StorageAccessChangeFromAllowedToBlocked) {
   CreateFileToBePicked();
   ConfigureCookieSetting(test_url_, CONTENT_SETTING_ALLOW);
 
@@ -171,7 +183,7 @@ IN_PROC_BROWSER_TEST_F(FileSystemObserverStorageAccessTest,
   EXPECT_EQ(EvalJs(GetWebContents(), script), kSuccessMessage);
 }
 
-IN_PROC_BROWSER_TEST_F(FileSystemObserverStorageAccessTest,
+IN_PROC_BROWSER_TEST_F(FileSystemObserverTest,
                        StorageAccessChangeFromBlockedToAllowed) {
   CreateFileToBePicked();
   ConfigureCookieSetting(test_url_, CONTENT_SETTING_ALLOW);
@@ -200,4 +212,81 @@ IN_PROC_BROWSER_TEST_F(FileSystemObserverStorageAccessTest,
 
   // The cached value will be used. So, the new state will be ignored.
   EXPECT_EQ(EvalJs(GetWebContents(), script), kSecurityErrorMessage);
+}
+
+IN_PROC_BROWSER_TEST_F(FileSystemObserverTest,
+                       ErrorsAfterPermissionsAreRevoked) {
+  auto file = CreateFileToBePicked();
+
+  auto* browser_profile = browser()->profile();
+  TestFileSystemAccessPermissionContext permission_context(browser_profile);
+  content::SetFileSystemAccessPermissionContext(browser_profile,
+                                                &permission_context);
+
+  std::string setup_script = content::JsReplace(
+      R"""((async () => {
+        // Constants
+        const actionTimeoutMs = $1;
+
+        // Setup observer
+        let records = [];
+        function onChange(recs) {
+          records.push(...recs.map(record => record.type));
+        };
+        self.observer = new FileSystemObserver(onChange);
+
+        // Observe a file.
+        const [file] = await self.showOpenFilePicker();
+        await observer.observe(file);
+
+        // Returns a promise that resolves after `actionTimeoutMs` to the list
+        // of records observed by the observer.
+        self.collectRecords = () => {
+          const {promise, resolve} = Promise.withResolvers();
+          setTimeout(() => {
+            resolve([...records]);
+            records = [];
+          }, actionTimeoutMs);
+          return promise;
+        };
+      })())""",
+      base::Int64ToValue(TestTimeouts::action_timeout().InMilliseconds()));
+
+  std::string get_results_script = "collectRecords()";
+
+  EXPECT_TRUE(ExecJs(GetWebContents(), setup_script));
+
+  {
+    base::ScopedAllowBlockingForTesting allow_blocking;
+
+    ASSERT_TRUE(base::WriteFile(file, "content"));
+    auto records = EvalJs(GetWebContents(), get_results_script).ExtractList();
+
+    // Expect that we received at least one "modified" event.
+    ASSERT_THAT(records.GetList(), testing::Not(testing::IsEmpty()));
+    EXPECT_THAT(records.GetList().front().GetString(),
+                testing::StrEq("modified"));
+  }
+
+  auto origin = url::Origin::Create(test_url_);
+  permission_context.RevokeGrants(origin);
+
+  {
+    base::ScopedAllowBlockingForTesting allow_blocking;
+    auto records = EvalJs(GetWebContents(), get_results_script).ExtractList();
+
+    // Expect that we received only one "errored" event.
+    ASSERT_THAT(records.GetList(), testing::SizeIs(1));
+    EXPECT_THAT(records.GetList().front().GetString(),
+                testing::StrEq("errored"));
+  }
+
+  {
+    base::ScopedAllowBlockingForTesting allow_blocking;
+    ASSERT_TRUE(base::WriteFile(file, "content v2"));
+    auto records = EvalJs(GetWebContents(), get_results_script).ExtractList();
+
+    // Expect that no more events are received after it's errored.
+    ASSERT_THAT(records.GetList(), testing::IsEmpty());
+  }
 }
