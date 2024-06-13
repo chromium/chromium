@@ -94,8 +94,6 @@ source_set("web_applications") {
     "isolated_web_apps/check_isolated_web_app_bundle_installability_command.h",
     "isolated_web_apps/chrome_content_browser_client_isolated_web_apps_part.cc",
     "isolated_web_apps/chrome_content_browser_client_isolated_web_apps_part.h",
-    "isolated_web_apps/cleanup_orphaned_isolated_web_apps_command.cc",
-    "isolated_web_apps/cleanup_orphaned_isolated_web_apps_command.h",
     "isolated_web_apps/error/uma_logging.cc",
     "isolated_web_apps/error/uma_logging.h",
     "isolated_web_apps/error/unusable_swbn_file_error.cc",
@@ -683,12 +681,8 @@ source_set("web_applications_test_support") {
   ]
   if (is_chromeos) {
     sources += [
-      "isolated_web_apps/test/mock_isolated_web_app_install_command_wrapper.cc",
-      "isolated_web_apps/test/mock_isolated_web_app_install_command_wrapper.h",
       "isolated_web_apps/test/policy_generator.cc",
       "isolated_web_apps/test/policy_generator.h",
-      "isolated_web_apps/test/test_iwa_installer_factory.cc",
-      "isolated_web_apps/test/test_iwa_installer_factory.h",
     ]
   }
   public_deps = [ "//components/webapps/common:mojo_bindings" ]

@@ -224,8 +224,6 @@ class IsolatedWebAppPolicyManager {
 
   void MaybeStartNextInstallTask();
 
-  void CleanupOrphanedBundles();
-
   // Keeps track of the last few processing logs for debugging purposes.
   // Automatically discards older logs to keep at most `kMaxEntries`.
   class ProcessLogs {
