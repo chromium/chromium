@@ -141,6 +141,7 @@ suite('SidePanelPowerBookmarksListTest', () => {
         eventToPromise('checkbox-change', getPowerBookmarksRowElement(id)!);
     const bookmarkListItem = getCrUrlListItemElementWithId(id);
     assertTrue(!!bookmarkListItem);
+    await bookmarkListItem.updateComplete;
     bookmarkListItem.click();
     await checkboxClicked;
   }
@@ -224,7 +225,7 @@ suite('SidePanelPowerBookmarksListTest', () => {
     assertEquals(2, getBookmarksInList(1).length);
   });
 
-  test('UpdatesChangedBookmarks', () => {
+  test('UpdatesChangedBookmarks', async () => {
     const changedBookmark = folders[1]!.children![0]!;
     bookmarksApi.callbackRouter.onChanged.callListeners(changedBookmark.id, {
       title: 'New title',
@@ -240,6 +241,7 @@ suite('SidePanelPowerBookmarksListTest', () => {
 
     const crUrlListItemElement = getCrUrlListItemElementWithId('3');
     assertTrue(!!crUrlListItemElement);
+    await crUrlListItemElement.updateComplete;
 
     assertEquals('New title', crUrlListItemElement.title);
   });
