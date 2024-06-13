@@ -62,6 +62,7 @@
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "mojo/public/cpp/bindings/remote.h"
 #include "net/base/load_states.h"
+#include "net/base/network_handle.h"
 #include "ppapi/buildflags/buildflags.h"
 #include "services/device/public/mojom/geolocation_context.mojom.h"
 #include "services/network/public/mojom/fetch_api.mojom-forward.h"
@@ -953,6 +954,7 @@ class CONTENT_EXPORT WebContentsImpl
   static void UpdateAttributionSupportAllRenderers();
   BackForwardTransitionAnimationManager*
   GetBackForwardTransitionAnimationManager() override;
+  net::handles::NetworkHandle GetTargetNetwork() override;
 
   void GetMediaCaptureRawDeviceIdsOpened(
       blink::mojom::MediaStreamType type,
@@ -2519,6 +2521,12 @@ class CONTENT_EXPORT WebContentsImpl
 
   // Indicates accessibility had an unrecoverable error.
   bool unrecoverable_accessibility_error_ = false;
+
+  // The network handle bound to the target network, is used to handle the
+  // loading requests over a specific network. The network handle is set when
+  // WebContents is created and will not change during the life cycle of
+  // WebContents.
+  net::handles::NetworkHandle target_network_ = net::handles::kInvalidNetworkHandle;
 
   base::WeakPtrFactory<WebContentsImpl> loading_weak_factory_{this};
   base::WeakPtrFactory<WebContentsImpl> weak_factory_{this};

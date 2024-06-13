@@ -30,6 +30,7 @@ static ScopedJavaLocalRef<jobject> JNI_WebContentsFactory_CreateWebContents(
           ? content::WebContents::CreateParams::
                 kInitializeAndWarmupRendererProcess
           : content::WebContents::CreateParams::kOkayToHaveRendererProcess;
+  params.target_network = j_network_handle;
   params.java_creator_location = j_creator_location;
 
   // Ownership is passed into java, and then to TabAndroid::InitWebContents.

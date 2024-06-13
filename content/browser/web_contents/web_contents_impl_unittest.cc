@@ -62,6 +62,7 @@
 #include "content/test/test_render_frame_host.h"
 #include "content/test/test_render_view_host.h"
 #include "content/test/test_web_contents.h"
+#include "net/base/network_handle.h"
 #include "net/test/cert_test_util.h"
 #include "net/test/test_data_directory.h"
 #include "services/network/public/cpp/web_sandbox_flags.h"
@@ -3191,6 +3192,31 @@ TEST_F(WebContentsImplTest, OnColorProviderChangedTriggersPageBroadcast) {
   EXPECT_CALL(mock_page_broadcast, UpdateColorProviders(color_provider_colors))
       .Times(2);
   mock_page_broadcast.FlushForTesting();
+}
+
+TEST_F(WebContentsImplTest, InvalidNetworkHandleAsDefault) {
+  WebContents::CreateParams params(browser_context());
+  std::unique_ptr<WebContents> contents(WebContents::Create(params));
+  EXPECT_EQ(net::handles::kInvalidNetworkHandle, contents->GetTargetNetwork());
+}
+
+TEST_F(WebContentsImplTest, CreateWebContentsWithNetworkHandle) {
+  int64_t test_target_network_handle = 100;
+  WebContents::CreateParams params(browser_context());
+  params.target_network = test_target_network_handle;
+
+  std::unique_ptr<WebContents> contents(WebContents::Create(params));
+  EXPECT_EQ(test_target_network_handle, contents->GetTargetNetwork());
+}
+
+TEST_F(WebContentsImplTest, CreateWebContentsWithOpenerAndNetworkHandle) {
+  int64_t test_target_network_handle = 100;
+  WebContents::CreateParams params(browser_context());
+  params.target_network = test_target_network_handle;
+
+  std::unique_ptr<WebContentsImpl> contents(
+      WebContentsImpl::CreateWithOpener(params, /*opener_rfh=*/nullptr));
+  EXPECT_EQ(test_target_network_handle, contents->GetTargetNetwork());
 }
 
 }  // namespace content

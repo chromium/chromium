@@ -1483,8 +1483,11 @@ bool DetermineIfDevtoolsUserForProcessPerSite() {
 
 net::handles::NetworkHandle GetBoundNetworkFromRenderFrameHost(
     content::RenderFrameHost* frame) {
-  // TODO(crbug.com/340528507): Implement this logic.
-  return net::handles::kInvalidNetworkHandle;
+  auto* web_contents = WebContents::FromRenderFrameHost(frame);
+  if (!web_contents) {
+    return net::handles::kInvalidNetworkHandle;
+  }
+  return web_contents->GetTargetNetwork();
 }
 
 }  // namespace

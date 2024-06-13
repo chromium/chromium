@@ -1414,6 +1414,16 @@ std::unique_ptr<WebContentsImpl> WebContentsImpl::CreateWithOpener(
         params.guest_delegate->GetOwnerWebContents());
   }
 
+  // To support multi-network feature in chrome (e.g. want to open a tab over
+  // a specific network such as Wi-Fi while the current default network is
+  // cellular connection), a feasible solution would be to associate the target
+  // network handle to WebContents on creation time and MUST set it before
+  // WebContents initialization, otherwise the renderer might create a
+  // URLLoaderFactory that won't load the resources from the target network
+  // handle during WebContents initialization below, as a result, it will end
+  // up with a URLLoaderFactory that has not been bound to the target network.
+  new_contents->target_network_ = params.target_network;
+
   new_contents->Init(params, frame_policy);
   if (outer_web_contents) {
     outer_web_contents->InnerWebContentsCreated(new_contents.get());
@@ -11019,6 +11029,10 @@ void WebContentsImpl::UpdateAttributionSupportRenderer() {
 BackForwardTransitionAnimationManager*
 WebContentsImpl::GetBackForwardTransitionAnimationManager() {
   return GetView()->GetBackForwardTransitionAnimationManager();
+}
+
+net::handles::NetworkHandle WebContentsImpl::GetTargetNetwork() {
+  return target_network_;
 }
 
 // static

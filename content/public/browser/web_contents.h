@@ -39,6 +39,7 @@
 #include "content/public/browser/save_page_type.h"
 #include "content/public/browser/visibility.h"
 #include "content/public/common/stop_find_action.h"
+#include "net/base/network_handle.h"
 #include "services/network/public/mojom/web_sandbox_flags.mojom-shared.h"
 #include "third_party/blink/public/mojom/favicon/favicon_url.mojom-forward.h"
 #include "third_party/blink/public/mojom/frame/find_in_page.mojom-forward.h"
@@ -284,6 +285,13 @@ class WebContents : public PageNavigator,
     // Enable preview mode that shows a page with a capability restriction
     // for previewing the page.
     bool preview_mode = false;
+
+    // The network handle bound to a target network, is used to handle the
+    // loading requests over that specific network for the WebContents to be
+    // created. The value `kInvalidNetworkHandle` indicates that the current
+    // default network will be used.
+    net::handles::NetworkHandle target_network =
+        net::handles::kInvalidNetworkHandle;
   };
 
   // Token that causes input to be blocked on this WebContents for at least as
@@ -1538,6 +1546,11 @@ class WebContents : public PageNavigator,
   // `features::kBackForwardTransitions` is enabled for the supported platform.
   virtual BackForwardTransitionAnimationManager*
   GetBackForwardTransitionAnimationManager() = 0;
+
+  // Returns the network handle targeting to a specific network. The value
+  // `kInvalidNetworkHandle` indicates that the current default network will
+  // be bound.
+  virtual net::handles::NetworkHandle GetTargetNetwork() = 0;
 
  private:
   // This interface should only be implemented inside content.
