@@ -40,6 +40,10 @@ FakeGlanceablesClassroomClient::FakeGlanceablesClassroomClient() = default;
 
 FakeGlanceablesClassroomClient::~FakeGlanceablesClassroomClient() = default;
 
+void FakeGlanceablesClassroomClient::SetAssignmentsCount(size_t count) {
+  assignments_count_ = count;
+}
+
 bool FakeGlanceablesClassroomClient::IsDisabledByAdmin() const {
   return is_disabled_by_admin_;
 }
@@ -51,27 +55,27 @@ void FakeGlanceablesClassroomClient::IsStudentRoleActive(
 
 void FakeGlanceablesClassroomClient::GetCompletedStudentAssignments(
     GetAssignmentsCallback callback) {
-  std::move(callback).Run(
-      true, CreateAssignmentsWithStringForStudents("Completed", 3));
+  std::move(callback).Run(true, CreateAssignmentsWithStringForStudents(
+                                    "Completed", assignments_count_));
 }
 
 void FakeGlanceablesClassroomClient::
     GetStudentAssignmentsWithApproachingDueDate(
         GetAssignmentsCallback callback) {
-  std::move(callback).Run(
-      true, CreateAssignmentsWithStringForStudents("Approaching", 3));
+  std::move(callback).Run(true, CreateAssignmentsWithStringForStudents(
+                                    "Approaching", assignments_count_));
 }
 
 void FakeGlanceablesClassroomClient::GetStudentAssignmentsWithMissedDueDate(
     GetAssignmentsCallback callback) {
-  std::move(callback).Run(true,
-                          CreateAssignmentsWithStringForStudents("Missing", 3));
+  std::move(callback).Run(true, CreateAssignmentsWithStringForStudents(
+                                    "Missing", assignments_count_));
 }
 
 void FakeGlanceablesClassroomClient::GetStudentAssignmentsWithoutDueDate(
     GetAssignmentsCallback callback) {
-  std::move(callback).Run(
-      true, CreateAssignmentsWithStringForStudents("No Due Date", 3));
+  std::move(callback).Run(true, CreateAssignmentsWithStringForStudents(
+                                    "No Due Date", assignments_count_));
 }
 
 void FakeGlanceablesClassroomClient::OnGlanceablesBubbleClosed() {}

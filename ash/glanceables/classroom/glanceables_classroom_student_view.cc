@@ -101,7 +101,6 @@ constexpr char kCollapseAnimationSmoothnessHistogramName[] =
     "Ash.Glanceables.TimeManagement.Classroom.Collapse.AnimationSmoothness";
 
 constexpr size_t kMaxAssignments = 100;
-constexpr size_t kMaxAssignmentsForV2 = 3;
 
 constexpr auto kEmptyListLabelMargins = gfx::Insets::TLBR(24, 0, 32, 0);
 constexpr auto kHeaderIconButtonMargins = gfx::Insets::TLBR(0, 0, 0, 2);
@@ -253,24 +252,18 @@ GlanceablesClassroomStudentView::GlanceablesClassroomStudentView()
       base::BindRepeating(&GlanceablesClassroomStudentView::ToggleExpandState,
                           base::Unretained(this)));
 
-  if (features::AreGlanceablesV2Enabled()) {
-    // TODO(b/338917100): Remove body_container_ if GlanceablesV2 flag is
-    // removed, as we only need `content_scroll_view_` after that.
-    body_container_ = AddChildView(std::make_unique<views::FlexLayoutView>());
-  } else {
-    content_scroll_view_ = AddChildView(
-        std::make_unique<GlanceablesContentsScrollView>(Context::kClassroom));
-    body_container_ = content_scroll_view_->SetContents(
-        std::make_unique<views::FlexLayoutView>());
-  }
-  body_container_->SetOrientation(views::LayoutOrientation::kVertical);
+  content_scroll_view_ = AddChildView(
+      std::make_unique<GlanceablesContentsScrollView>(Context::kClassroom));
+  auto* body_container = content_scroll_view_->SetContents(
+      std::make_unique<views::FlexLayoutView>());
+  body_container->SetOrientation(views::LayoutOrientation::kVertical);
 
-  progress_bar_ = body_container_->AddChildView(
+  progress_bar_ = body_container->AddChildView(
       std::make_unique<GlanceablesProgressBarView>());
   progress_bar_->UpdateProgressBarVisibility(/*visible=*/false);
 
   list_container_view_ =
-      body_container_->AddChildView(std::make_unique<views::BoxLayoutView>());
+      body_container->AddChildView(std::make_unique<views::BoxLayoutView>());
   list_container_view_->SetID(
       base::to_underlying(GlanceablesViewId::kClassroomBubbleListContainer));
   list_container_view_->SetOrientation(
@@ -279,7 +272,7 @@ GlanceablesClassroomStudentView::GlanceablesClassroomStudentView()
   list_container_view_->GetViewAccessibility().SetRole(ax::mojom::Role::kList);
 
   const auto* const typography_provider = TypographyProvider::Get();
-  empty_list_label_ = body_container_->AddChildView(
+  empty_list_label_ = body_container->AddChildView(
       views::Builder<views::Label>()
           .SetProperty(views::kMarginsKey, kEmptyListLabelMargins)
           .SetEnabledColorId(cros_tokens::kCrosSysOnSurface)
@@ -292,7 +285,7 @@ GlanceablesClassroomStudentView::GlanceablesClassroomStudentView()
           .Build());
 
   list_footer_view_ =
-      body_container_->AddChildView(std::make_unique<GlanceablesListFooterView>(
+      body_container->AddChildView(std::make_unique<GlanceablesListFooterView>(
           l10n_util::GetStringUTF16(
               IDS_GLANCEABLES_LIST_FOOTER_SEE_ALL_ASSIGNMENTS_LABEL),
           l10n_util::GetStringUTF16(
@@ -377,7 +370,6 @@ void GlanceablesClassroomStudentView::SetExpandState(bool is_expanded) {
   if (content_scroll_view_) {
     content_scroll_view_->SetVisible(is_expanded_);
   }
-  body_container_->SetVisible(is_expanded_);
   combo_box_view_->SetVisible(is_expanded_);
   combobox_replacement_label_->SetVisible(!is_expanded_);
 
@@ -545,10 +537,7 @@ void GlanceablesClassroomStudentView::OnGetAssignments(
   list_container_view_->RemoveAllChildViews();
   total_assignments_ = assignments.size();
 
-  const size_t num_assignments =
-      features::AreGlanceablesV2Enabled()
-          ? std::min(kMaxAssignmentsForV2, assignments.size())
-          : std::min(kMaxAssignments, assignments.size());
+  const size_t num_assignments = std::min(kMaxAssignments, assignments.size());
   for (size_t i = 0; i < num_assignments; ++i) {
     list_container_view_->AddChildView(
         std::make_unique<GlanceablesClassroomItemView>(
@@ -558,19 +547,13 @@ void GlanceablesClassroomStudentView::OnGetAssignments(
                 base::Unretained(this), initial_update, assignments[i]->link)));
   }
   const size_t shown_assignments = list_container_view_->children().size();
-  // TODO(b/338917100): Revisit the counter used on the expand button later to
-  // see if we want to use the shown one or the total one.
   expand_button_->UpdateCounter(shown_assignments);
 
   const bool is_list_empty = shown_assignments == 0;
   empty_list_label_->SetVisible(is_list_empty);
 
   bool should_show_footer_view;
-  if (features::AreGlanceablesV2Enabled()) {
-    should_show_footer_view = !is_list_empty;
-  } else {
     should_show_footer_view = assignments.size() >= kMaxAssignments;
-  }
   list_footer_view_->SetVisible(should_show_footer_view);
   list_footer_view_->SetProperty(views::kMarginsKey, kFooterMargins);
 

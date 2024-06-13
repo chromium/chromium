@@ -194,6 +194,10 @@ class GlanceablesBrowserTest : public InProcessBrowserTest {
     return current_items;
   }
 
+  void SetStudentAssignmentsCount(size_t count) {
+    fake_glanceables_classroom_client_->SetAssignmentsCount(count);
+  }
+
   views::View* GetStudentView() const {
     return GetGlanceableTrayBubble()->GetClassroomStudentView();
   }
@@ -253,7 +257,8 @@ class GlanceablesMvpBrowserTest : public GlanceablesBrowserTest {
  public:
   GlanceablesMvpBrowserTest() {
     features_.InitWithFeatures(
-        /*enabled_features=*/{features::kGlanceablesV2},
+        /*enabled_features=*/
+        {features::kGlanceablesTimeManagementClassroomStudentView},
         /*disabled_features=*/{features::kGlanceablesTimeManagementTasksView});
   }
 
@@ -298,6 +303,7 @@ IN_PROC_BROWSER_TEST_F(GlanceablesMvpBrowserTest, OpenStudentCourseItemURL) {
 
 IN_PROC_BROWSER_TEST_F(GlanceablesMvpBrowserTest, ClickSeeAllStudentButton) {
   ASSERT_TRUE(glanceables_controller()->GetClassroomClient());
+  SetStudentAssignmentsCount(101);
 
   // Click the date tray to show the glanceable bubbles.
   ToggleDateTray();
@@ -309,14 +315,9 @@ IN_PROC_BROWSER_TEST_F(GlanceablesMvpBrowserTest, ClickSeeAllStudentButton) {
       Shell::Get()->GetPrimaryRootWindow()->GetBoundsInScreen().Contains(
           GetStudentView()->GetBoundsInScreen()));
 
-  // Check that the approaching course work items are shown.
-  EXPECT_EQ(GetCurrentStudentAssignmentCourseWorkTitles(),
-            std::vector<std::string>({"Approaching Course Work 0",
-                                      "Approaching Course Work 1",
-                                      "Approaching Course Work 2"}));
-
   // Click the "See All" button in the student glanceable footer, and check that
   // the correct URL is opened.
+  GetStudentFooterSeeAllButton()->ScrollViewToVisible();
   GetEventGenerator()->MoveMouseTo(
       GetStudentFooterSeeAllButton()->GetBoundsInScreen().CenterPoint());
   GetEventGenerator()->ClickLeftButton();

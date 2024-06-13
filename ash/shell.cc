@@ -1762,8 +1762,7 @@ void Shell::Init(
         std::make_unique<DisplayAlignmentController>();
   }
 
-  if (features::AreGlanceablesV2Enabled() ||
-      features::AreAnyGlanceablesTimeManagementViewsEnabled()) {
+  if (features::AreAnyGlanceablesTimeManagementViewsEnabled()) {
     glanceables_controller_ = std::make_unique<GlanceablesController>();
   }
   post_login_glanceables_metrics_reporter_ =

@@ -29,7 +29,7 @@ constexpr char kFeatureStatusHistogram[] =
 enum class GlanceablesStatus {
   kDisabled = 0,
   kDEPRECATED_EnabledForTrustedTesters = 1,
-  kEnabledByV2Flag = 2,
+  kDEPRECATED_EnabledByV2Flag = 2,
   kDEPRECATED_EnabledByPrefBypass = 3,
   kEnabledForFullLaunch = 4,
   kMaxValue = kEnabledForFullLaunch
@@ -39,11 +39,6 @@ bool ShouldCreateServiceInstance() {
   if (features::AreAnyGlanceablesTimeManagementViewsEnabled()) {
     base::UmaHistogramEnumeration(kFeatureStatusHistogram,
                                   GlanceablesStatus::kEnabledForFullLaunch);
-    return true;
-  }
-  if (features::AreGlanceablesV2Enabled()) {
-    base::UmaHistogramEnumeration(kFeatureStatusHistogram,
-                                  GlanceablesStatus::kEnabledByV2Flag);
     return true;
   }
   base::UmaHistogramEnumeration(kFeatureStatusHistogram,

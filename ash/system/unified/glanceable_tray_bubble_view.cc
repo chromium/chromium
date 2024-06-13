@@ -250,8 +250,7 @@ void GlanceableTrayBubbleView::InitializeContents() {
       Shell::Get()->glanceables_controller()->GetClassroomClient();
   const bool is_classroom_enabled_via_flags =
       features::IsGlanceablesTimeManagementClassroomStudentDataEnabled() ||
-      features::IsGlanceablesTimeManagementClassroomStudentViewEnabled() ||
-      features::AreGlanceablesV2Enabled();
+      features::IsGlanceablesTimeManagementClassroomStudentViewEnabled();
   if (should_show_non_calendar_glanceables && is_classroom_enabled_via_flags &&
       classroom_client && !classroom_client->IsDisabledByAdmin()) {
     CHECK(!classroom_bubble_student_view_);
@@ -340,8 +339,7 @@ void GlanceableTrayBubbleView::AddClassroomBubbleStudentViewIfNeeded(
     return;
   }
 
-  if (features::AreGlanceablesV2Enabled() ||
-      features::IsGlanceablesTimeManagementClassroomStudentViewEnabled()) {
+  if (features::IsGlanceablesTimeManagementClassroomStudentViewEnabled()) {
     // Adds classroom bubble before `calendar_view_`.
     MaybeCreateTimeManagementContainer();
     classroom_bubble_student_view_ =

@@ -9,6 +9,7 @@
 
 #include "ash/ash_element_identifiers.h"
 #include "ash/bubble/bubble_utils.h"
+#include "ash/constants/ash_features.h"
 #include "ash/glanceables/common/glanceables_progress_bar_view.h"
 #include "ash/public/cpp/ash_typography.h"
 #include "ash/public/cpp/system_tray_client.h"
@@ -296,7 +297,7 @@ class MonthHeaderView : public views::View {
               .Build();
       label->SetHorizontalAlignment(gfx::HorizontalAlignment::ALIGN_CENTER);
       label->SetBorder((views::CreateEmptyBorder(
-          calendar_utils::IsForGlanceablesV2()
+          features::AreAnyGlanceablesTimeManagementViewsEnabled()
               ? kMonthHeaderBorder
               : gfx::Insets::VH(calendar_utils::kDateVerticalPadding, 0))));
       label->SetElideBehavior(gfx::NO_ELIDE);
@@ -500,7 +501,7 @@ CalendarView::CalendarView(bool use_glanceables_container_style)
                                  ax::mojom::NameFrom::kAttribute);
 
   views::View* calendar_header_view = nullptr;
-  if (calendar_utils::IsForGlanceablesV2()) {
+  if (features::AreAnyGlanceablesTimeManagementViewsEnabled()) {
     calendar_header_view = CreateCalendarHeaderRow();
   } else {
     CreateCalendarTitleRow();
@@ -521,7 +522,7 @@ CalendarView::CalendarView(bool use_glanceables_container_style)
 
   // Adds the calendar month header view and up/down buttons after the progress
   // bar for non-Glanceables calendar view.
-  if (!calendar_utils::IsForGlanceablesV2()) {
+  if (!features::AreAnyGlanceablesTimeManagementViewsEnabled()) {
     TriView* tri_view =
         TrayPopupUtils::CreateDefaultRowView(/*use_wide_layout=*/false);
     tri_view->SetBorder(views::CreateEmptyBorder(
@@ -592,7 +593,9 @@ CalendarView::CalendarView(bool use_glanceables_container_style)
   // the current date view) and the UI within calendar sliding surfaces get
   // focused before the "Today" button in the calendar view header.
   scroll_view_->InsertBeforeInFocusList(
-      calendar_utils::IsForGlanceablesV2() ? calendar_header_view : tri_view_);
+      features::AreAnyGlanceablesTimeManagementViewsEnabled()
+          ? calendar_header_view
+          : tri_view_);
   calendar_sliding_surface_->InsertAfterInFocusList(scroll_view_);
 
   scoped_calendar_model_observer_.Observe(calendar_model_.get());
@@ -763,8 +766,9 @@ views::View* CalendarView::CreateButtonContainer() {
       views::BoxLayout::MainAxisAlignment::kEnd);
   // Aligns button with the calendar dates in the `TableLayout`.
   button_container_layout->set_between_child_spacing(
-      calendar_utils::IsForGlanceablesV2() ? kButtonInBetweenPadding
-                                           : kChevronInBetweenPadding);
+      features::AreAnyGlanceablesTimeManagementViewsEnabled()
+          ? kButtonInBetweenPadding
+          : kChevronInBetweenPadding);
 
   up_button_ = button_container->AddChildView(std::make_unique<IconButton>(
       base::BindRepeating(&CalendarView::OnMonthArrowButtonActivated,

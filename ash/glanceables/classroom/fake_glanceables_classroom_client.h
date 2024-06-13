@@ -9,6 +9,12 @@
 
 namespace ash {
 
+namespace {
+
+inline constexpr size_t kDefaultAssignmentsCount = 3;
+
+}  // namespace
+
 class FakeGlanceablesClassroomClient : public GlanceablesClassroomClient {
  public:
   FakeGlanceablesClassroomClient();
@@ -17,6 +23,8 @@ class FakeGlanceablesClassroomClient : public GlanceablesClassroomClient {
   FakeGlanceablesClassroomClient& operator=(
       const FakeGlanceablesClassroomClient&) = delete;
   ~FakeGlanceablesClassroomClient() override;
+
+  void SetAssignmentsCount(size_t assignments_count);
 
   // GlanceablesClassroomClient:
   bool IsDisabledByAdmin() const override;
@@ -35,6 +43,8 @@ class FakeGlanceablesClassroomClient : public GlanceablesClassroomClient {
   }
 
  private:
+  size_t assignments_count_ = kDefaultAssignmentsCount;
+
   bool is_disabled_by_admin_ = false;
 };
 

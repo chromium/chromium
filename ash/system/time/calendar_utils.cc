@@ -23,13 +23,6 @@
 
 namespace ash::calendar_utils {
 
-bool IsForGlanceablesV2() {
-  // Use the same flags for Glanceables Time Management so that the new UI is
-  // turned on for both calendar and the time management glanceables at the same
-  // time.
-  return features::AreAnyGlanceablesTimeManagementViewsEnabled();
-}
-
 bool IsMultiCalendarEnabled() {
   return features::IsMultiCalendarSupportEnabled();
 }

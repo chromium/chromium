@@ -100,10 +100,6 @@ constexpr int kUpNextBetweenChildSpacing = 8;
 // between the bottom and top of the 'nub'.
 constexpr int kUpNextOverlapInPx = 12;
 
-// Returns true if CalendarView is for GlanceablesV2 based on whether the
-// features are enabled.
-bool IsForGlanceablesV2();
-
 // Returns true if the Multi-Calendar Support feature is enabled.
 bool IsMultiCalendarEnabled();
 
