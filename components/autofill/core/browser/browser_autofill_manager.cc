@@ -2707,10 +2707,8 @@ std::vector<Suggestion> BrowserAutofillManager::GetCreditCardSuggestions(
       trigger_field, signin_state_for_metrics_);
 
   std::vector<Suggestion> suggestions;
-  bool with_offer = false;
-  bool with_cvc = false;
+  PaymentsSuggestionGenerator::CreditCardSuggestionSummary summary;
   bool is_virtual_card_standalone_cvc_field = false;
-  autofill_metrics::CardMetadataLoggingContext context;
 
   // If credit card number field is not empty and is not autofilled, do not
   // offer suggestions for expiration type field.
@@ -2743,10 +2741,10 @@ std::vector<Suggestion> BrowserAutofillManager::GetCreditCardSuggestions(
               GetVirtualCreditCardsForStandaloneCvcField(
                   trigger_field.origin());
       if (!virtual_card_guid_to_last_four_map.empty()) {
-        suggestions =
-            payments_suggestion_generator_
-                ->GetSuggestionsForVirtualCardStandaloneCvc(
-                    trigger_field, context, virtual_card_guid_to_last_four_map);
+        suggestions = payments_suggestion_generator_
+                          ->GetSuggestionsForVirtualCardStandaloneCvc(
+                              trigger_field, summary.metadata_logging_context,
+                              virtual_card_guid_to_last_four_map);
         is_virtual_card_standalone_cvc_field = true;
       }
     } else {
@@ -2756,13 +2754,14 @@ std::vector<Suggestion> BrowserAutofillManager::GetCreditCardSuggestions(
               ShouldShowScanCreditCard(form, trigger_field),
               ShouldShowCardsFromAccountOption(form, trigger_field,
                                                trigger_source),
-              with_offer, with_cvc, context);
+              summary);
     }
   }
 
   credit_card_form_event_logger_->OnDidFetchSuggestion(
-      suggestions, with_offer, with_cvc, is_virtual_card_standalone_cvc_field,
-      std::move(context));
+      suggestions, summary.with_offer, summary.with_cvc,
+      is_virtual_card_standalone_cvc_field,
+      std::move(summary.metadata_logging_context));
   return suggestions;
 }
 

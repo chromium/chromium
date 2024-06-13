@@ -550,16 +550,13 @@ TEST_F(PaymentsSuggestionGeneratorTest,
   ASSERT_FALSE(card.HasRawInfo(PHONE_HOME_WHOLE_NUMBER));
   payments_data().AddCreditCard(card);
 
-  bool with_offer;
-  bool with_cvc;
-  autofill_metrics::CardMetadataLoggingContext metadata_logging_context;
+  PaymentsSuggestionGenerator::CreditCardSuggestionSummary summary;
   std::vector<Suggestion> suggestions =
       suggestion_generator().GetSuggestionsForCreditCards(
           FormFieldData(), CREDIT_CARD_NAME_FULL,
           AutofillSuggestionTriggerSource::kManualFallbackPayments,
           /*should_show_scan_credit_card=*/false,
-          /*should_show_cards_from_account=*/false, with_offer, with_cvc,
-          metadata_logging_context);
+          /*should_show_cards_from_account=*/false, summary);
 
   ASSERT_EQ(3u, suggestions.size());
   EXPECT_EQ(suggestions[0].type, SuggestionType::kCreditCardEntry);
@@ -574,8 +571,7 @@ TEST_F(PaymentsSuggestionGeneratorTest,
       FormFieldData(), CREDIT_CARD_VERIFICATION_CODE,
       AutofillSuggestionTriggerSource::kManualFallbackPayments,
       /*should_show_scan_credit_card=*/false,
-      /*should_show_cards_from_account=*/false, with_offer, with_cvc,
-      metadata_logging_context);
+      /*should_show_cards_from_account=*/false, summary);
 
   ASSERT_EQ(3u, suggestions.size());
   EXPECT_EQ(suggestions[0].type, SuggestionType::kCreditCardEntry);
@@ -699,16 +695,13 @@ TEST_F(PaymentsSuggestionGeneratorTest,
                           base::Days(1));
   payments_data().AddCreditCard(local_card);
 
-  bool with_offer;
-  bool with_cvc;
-  autofill_metrics::CardMetadataLoggingContext metadata_logging_context;
+  PaymentsSuggestionGenerator::CreditCardSuggestionSummary summary;
   std::vector<Suggestion> suggestions =
       suggestion_generator().GetSuggestionsForCreditCards(
           FormFieldData(), UNKNOWN_TYPE,
           AutofillSuggestionTriggerSource::kManualFallbackPayments,
           /*should_show_scan_credit_card=*/false,
-          /*should_show_cards_from_account=*/false, with_offer, with_cvc,
-          metadata_logging_context);
+          /*should_show_cards_from_account=*/false, summary);
 
   EXPECT_FALSE(suggestions.empty());
 }
@@ -761,17 +754,14 @@ TEST_F(PaymentsSuggestionGeneratorTest,
       GURL("http://www.example1.com"));
   payments_data().AddAutofillOfferData(offer_data);
 
-  bool with_offer;
-  bool with_cvc;
-  autofill_metrics::CardMetadataLoggingContext metadata_logging_context;
+  PaymentsSuggestionGenerator::CreditCardSuggestionSummary summary;
   std::vector<Suggestion> suggestions =
       suggestion_generator().GetSuggestionsForCreditCards(
           FormFieldData(), CREDIT_CARD_NUMBER, kDefaultTriggerSource,
           /*should_show_scan_credit_card=*/false,
-          /*should_show_cards_from_account=*/false, with_offer, with_cvc,
-          metadata_logging_context);
+          /*should_show_cards_from_account=*/false, summary);
 
-  EXPECT_TRUE(with_offer);
+  EXPECT_TRUE(summary.with_offer);
   ASSERT_EQ(suggestions.size(), 5U);
   // The suggestion with card linked offer available should be ranked to the
   // top.
@@ -843,18 +833,15 @@ TEST_F(PaymentsSuggestionGeneratorTest, GetCardSuggestionsWithCvc) {
   CreditCard card = test::WithCvc(test::GetMaskedServerCard2());
   payments_data().AddServerCreditCard(card);
 
-  bool with_offer;
-  bool with_cvc;
-  autofill_metrics::CardMetadataLoggingContext metadata_logging_context;
+  PaymentsSuggestionGenerator::CreditCardSuggestionSummary summary;
   std::vector<Suggestion> suggestions =
       suggestion_generator().GetSuggestionsForCreditCards(
           FormFieldData(), CREDIT_CARD_NUMBER, kDefaultTriggerSource,
           /*should_show_scan_credit_card=*/false,
-          /*should_show_cards_from_account=*/false, with_offer, with_cvc,
-          metadata_logging_context);
+          /*should_show_cards_from_account=*/false, summary);
 
   ASSERT_EQ(suggestions.size(), 3U);
-  EXPECT_TRUE(with_cvc);
+  EXPECT_TRUE(summary.with_cvc);
   EXPECT_THAT(suggestions,
               ContainsCreditCardFooterSuggestions(/*with_gpay_logo=*/true));
 }
@@ -871,15 +858,12 @@ TEST_F(PaymentsSuggestionGeneratorTest, ShouldDisplayGpayLogo) {
         /*guid=*/"00000000-0000-0000-0000-000000000002",
         /*server_id=*/"server_id2", /*instrument_id=*/2));
 
-    bool with_offer;
-    bool with_cvc;
-    autofill_metrics::CardMetadataLoggingContext metadata_logging_context;
+    PaymentsSuggestionGenerator::CreditCardSuggestionSummary summary;
     std::vector<Suggestion> suggestions =
         suggestion_generator().GetSuggestionsForCreditCards(
             FormFieldData(), CREDIT_CARD_NUMBER, kDefaultTriggerSource,
             /*should_show_scan_credit_card=*/false,
-            /*should_show_cards_from_account=*/false, with_offer, with_cvc,
-            metadata_logging_context);
+            /*should_show_cards_from_account=*/false, summary);
 
     EXPECT_EQ(suggestions.size(), 4U);
     EXPECT_THAT(suggestions,
@@ -900,15 +884,12 @@ TEST_F(PaymentsSuggestionGeneratorTest, ShouldDisplayGpayLogo) {
         /*guid=*/"00000000-0000-0000-0000-000000000002",
         /*server_id=*/"server_id2", /*instrument_id=*/2));
 
-    bool with_offer;
-    bool with_cvc;
-    autofill_metrics::CardMetadataLoggingContext metadata_logging_context;
+    PaymentsSuggestionGenerator::CreditCardSuggestionSummary summary;
     std::vector<Suggestion> suggestions =
         suggestion_generator().GetSuggestionsForCreditCards(
             FormFieldData(), CREDIT_CARD_NUMBER, kDefaultTriggerSource,
             /*should_show_scan_credit_card=*/false,
-            /*should_show_cards_from_account=*/false, with_offer, with_cvc,
-            metadata_logging_context);
+            /*should_show_cards_from_account=*/false, summary);
 
     EXPECT_EQ(suggestions.size(), 4U);
     EXPECT_THAT(suggestions,
@@ -931,15 +912,12 @@ TEST_F(PaymentsSuggestionGeneratorTest, ShouldDisplayGpayLogo) {
         /*guid=*/"00000000-0000-0000-0000-000000000002",
         /*server_id=*/"server_id2", /*instrument_id=*/2));
 
-    bool with_offer;
-    bool with_cvc;
-    autofill_metrics::CardMetadataLoggingContext metadata_logging_context;
+    PaymentsSuggestionGenerator::CreditCardSuggestionSummary summary;
     std::vector<Suggestion> suggestions =
         suggestion_generator().GetSuggestionsForCreditCards(
             FormFieldData(), CREDIT_CARD_NUMBER, kDefaultTriggerSource,
             /*should_show_scan_credit_card=*/false,
-            /*should_show_cards_from_account=*/false, with_offer, with_cvc,
-            metadata_logging_context);
+            /*should_show_cards_from_account=*/false, summary);
 
     EXPECT_EQ(suggestions.size(), 3U);
     EXPECT_THAT(suggestions,
@@ -948,32 +926,26 @@ TEST_F(PaymentsSuggestionGeneratorTest, ShouldDisplayGpayLogo) {
 }
 
 TEST_F(PaymentsSuggestionGeneratorTest, NoSuggestionsWhenNoUserData) {
-  bool with_offer;
-  bool with_cvc;
-  autofill_metrics::CardMetadataLoggingContext metadata_logging_context;
   FormFieldData field;
   field.set_is_autofilled(true);
+  PaymentsSuggestionGenerator::CreditCardSuggestionSummary summary;
   std::vector<Suggestion> suggestions =
       suggestion_generator().GetSuggestionsForCreditCards(
           field, CREDIT_CARD_NUMBER, kDefaultTriggerSource,
           /*should_show_scan_credit_card=*/true,
-          /*should_show_cards_from_account=*/true, with_offer, with_cvc,
-          metadata_logging_context);
+          /*should_show_cards_from_account=*/true, summary);
 
   EXPECT_TRUE(suggestions.empty());
 }
 
 TEST_F(PaymentsSuggestionGeneratorTest, ShouldShowScanCreditCard) {
   payments_data().AddCreditCard(test::GetCreditCard());
-  bool with_offer;
-  bool with_cvc;
-  autofill_metrics::CardMetadataLoggingContext metadata_logging_context;
+  PaymentsSuggestionGenerator::CreditCardSuggestionSummary summary;
   std::vector<Suggestion> suggestions =
       suggestion_generator().GetSuggestionsForCreditCards(
           FormFieldData(), CREDIT_CARD_NUMBER, kDefaultTriggerSource,
           /*should_show_scan_credit_card=*/true,
-          /*should_show_cards_from_account=*/false, with_offer, with_cvc,
-          metadata_logging_context);
+          /*should_show_cards_from_account=*/false, summary);
 
   EXPECT_EQ(suggestions.size(), 4ul);
   EXPECT_THAT(suggestions[0],
@@ -989,15 +961,12 @@ TEST_F(PaymentsSuggestionGeneratorTest, ShouldShowScanCreditCard) {
 
 TEST_F(PaymentsSuggestionGeneratorTest, ShouldShowCardsFromAccount) {
   payments_data().AddCreditCard(test::GetCreditCard());
-  bool with_offer;
-  bool with_cvc;
-  autofill_metrics::CardMetadataLoggingContext metadata_logging_context;
+  PaymentsSuggestionGenerator::CreditCardSuggestionSummary summary;
   std::vector<Suggestion> suggestions =
       suggestion_generator().GetSuggestionsForCreditCards(
           FormFieldData(), CREDIT_CARD_NUMBER, kDefaultTriggerSource,
           /*should_show_scan_credit_card=*/false,
-          /*should_show_cards_from_account=*/true, with_offer, with_cvc,
-          metadata_logging_context);
+          /*should_show_cards_from_account=*/true, summary);
 
   EXPECT_EQ(suggestions.size(), 4ul);
   EXPECT_THAT(suggestions[0],
@@ -1015,17 +984,14 @@ TEST_F(PaymentsSuggestionGeneratorTest, ShouldShowCardsFromAccount) {
 TEST_F(PaymentsSuggestionGeneratorTest,
        FieldWasAutofilled_UndoAutofillOnCreditCardForm) {
   payments_data().AddCreditCard(test::GetCreditCard());
-  bool with_offer;
-  bool with_cvc;
-  autofill_metrics::CardMetadataLoggingContext metadata_logging_context;
   FormFieldData field;
   field.set_is_autofilled(true);
+  PaymentsSuggestionGenerator::CreditCardSuggestionSummary summary;
   std::vector<Suggestion> suggestions =
       suggestion_generator().GetSuggestionsForCreditCards(
           field, CREDIT_CARD_NUMBER, kDefaultTriggerSource,
           /*should_show_scan_credit_card=*/false,
-          /*should_show_cards_from_account=*/false, with_offer, with_cvc,
-          metadata_logging_context);
+          /*should_show_cards_from_account=*/false, summary);
 
   EXPECT_THAT(suggestions,
               ElementsAre(EqualsSuggestion(SuggestionType::kCreditCardEntry),
@@ -1879,16 +1845,13 @@ TEST_F(AutofillCreditCardSuggestionContentTest,
 
   FormFieldData field_data;
   field_data.set_value(u"$$$");
-  bool with_offer;
-  bool with_cvc;
-  autofill_metrics::CardMetadataLoggingContext metadata_logging_context;
+  PaymentsSuggestionGenerator::CreditCardSuggestionSummary summary;
   std::vector<Suggestion> suggestions =
       suggestion_generator().GetSuggestionsForCreditCards(
           field_data, UNKNOWN_TYPE,
           AutofillSuggestionTriggerSource::kManualFallbackPayments,
           /*should_show_scan_credit_card=*/false,
-          /*should_show_cards_from_account=*/false, with_offer, with_cvc,
-          metadata_logging_context);
+          /*should_show_cards_from_account=*/false, summary);
 
   // Credit card suggestions should not depend on the field's value.
   EXPECT_EQ(suggestions.size(), 3U);
@@ -1909,15 +1872,12 @@ TEST_F(AutofillCreditCardSuggestionContentTest,
   payments_data().AddCreditCard(std::move(local_card));
   payments_data().AddServerCreditCard(CreateServerCard());
 
-  bool with_offer;
-  bool with_cvc;
-  autofill_metrics::CardMetadataLoggingContext metadata_logging_context;
+  PaymentsSuggestionGenerator::CreditCardSuggestionSummary summary;
   const std::vector<Suggestion> suggestions =
       suggestion_generator().GetSuggestionsForCreditCards(
           FormFieldData(), CREDIT_CARD_VERIFICATION_CODE, kDefaultTriggerSource,
           /*should_show_scan_credit_card=*/false,
-          /*should_show_cards_from_account=*/false, with_offer, with_cvc,
-          metadata_logging_context);
+          /*should_show_cards_from_account=*/false, summary);
 
   // Both local card and server card suggestion should be shown when CVC field
   // is focused.
@@ -1945,15 +1905,12 @@ TEST_F(AutofillCreditCardSuggestionContentTest,
   payments_data().AddCreditCard(CreateLocalCard());
   payments_data().AddServerCreditCard(CreateServerCard());
 
-  bool with_offer;
-  bool with_cvc;
-  autofill_metrics::CardMetadataLoggingContext metadata_logging_context;
+  PaymentsSuggestionGenerator::CreditCardSuggestionSummary summary;
   const std::vector<Suggestion> suggestions =
       suggestion_generator().GetSuggestionsForCreditCards(
           FormFieldData(), CREDIT_CARD_VERIFICATION_CODE, kDefaultTriggerSource,
           /*should_show_scan_credit_card=*/false,
-          /*should_show_cards_from_account=*/false, with_offer, with_cvc,
-          metadata_logging_context);
+          /*should_show_cards_from_account=*/false, summary);
 
   // Only 1 suggestion + footer should be shown when CVC field is focused.
   ASSERT_EQ(suggestions.size(), 3U);
@@ -1971,15 +1928,12 @@ TEST_F(AutofillCreditCardSuggestionContentTest,
       CreditCard::VirtualCardEnrollmentState::kEnrolled);
   payments_data().AddServerCreditCard(std::move(server_card));
 
-  bool with_offer;
-  bool with_cvc;
-  autofill_metrics::CardMetadataLoggingContext metadata_logging_context;
+  PaymentsSuggestionGenerator::CreditCardSuggestionSummary summary;
   const std::vector<Suggestion> suggestions =
       suggestion_generator().GetSuggestionsForCreditCards(
           FormFieldData(), CREDIT_CARD_VERIFICATION_CODE, kDefaultTriggerSource,
           /*should_show_scan_credit_card=*/false,
-          /*should_show_cards_from_account=*/false, with_offer, with_cvc,
-          metadata_logging_context);
+          /*should_show_cards_from_account=*/false, summary);
 
   // Both FPAN and VCN suggestion should be shown when CVC field is focused.
   ASSERT_EQ(suggestions.size(), 4U);
@@ -2011,15 +1965,12 @@ TEST_F(AutofillCreditCardSuggestionContentTest,
   payments_data().AddServerCreditCard(std::move(server_card));
   payments_data().AddCreditCard(CreateLocalCard());
 
-  bool with_offer;
-  bool with_cvc;
-  autofill_metrics::CardMetadataLoggingContext metadata_logging_context;
+  PaymentsSuggestionGenerator::CreditCardSuggestionSummary summary;
   const std::vector<Suggestion> suggestions =
       suggestion_generator().GetSuggestionsForCreditCards(
           FormFieldData(), CREDIT_CARD_VERIFICATION_CODE, kDefaultTriggerSource,
           /*should_show_scan_credit_card=*/false,
-          /*should_show_cards_from_account=*/false, with_offer, with_cvc,
-          metadata_logging_context);
+          /*should_show_cards_from_account=*/false, summary);
 
   // Both FPAN and VCN suggestion should be shown when CVC field is focused.
   ASSERT_EQ(suggestions.size(), 4U);
@@ -2406,28 +2357,26 @@ TEST_P(PaymentsSuggestionGeneratorTestForMetadata,
     }
     payments_data().AddServerCreditCard(server_card);
 
-    bool with_offer;
-    bool with_cvc;
-    autofill_metrics::CardMetadataLoggingContext metadata_logging_context;
+    PaymentsSuggestionGenerator::CreditCardSuggestionSummary summary;
     suggestion_generator().GetSuggestionsForCreditCards(
         FormFieldData(), CREDIT_CARD_NUMBER, kDefaultTriggerSource,
         /*should_show_scan_credit_card=*/false,
-        /*should_show_cards_from_account=*/false, with_offer, with_cvc,
-        metadata_logging_context);
+        /*should_show_cards_from_account=*/false, summary);
 
-    EXPECT_TRUE(
-        metadata_logging_context.instruments_with_metadata_available.empty());
-    EXPECT_FALSE(metadata_logging_context.card_product_description_shown);
-    EXPECT_FALSE(metadata_logging_context.card_art_image_shown);
+    EXPECT_TRUE(summary.metadata_logging_context
+                    .instruments_with_metadata_available.empty());
+    EXPECT_FALSE(
+        summary.metadata_logging_context.card_product_description_shown);
+    EXPECT_FALSE(summary.metadata_logging_context.card_art_image_shown);
 
     // Verify that a record is added that a Capital One card suggestion
     // was generated, and it did not have metadata.
     base::flat_map<std::string, bool>
         expected_issuer_or_network_to_metadata_availability = {
             {server_card.issuer_id(), false}, {server_card.network(), false}};
-    EXPECT_EQ(
-        metadata_logging_context.issuer_or_network_to_metadata_availability,
-        expected_issuer_or_network_to_metadata_availability);
+    EXPECT_EQ(summary.metadata_logging_context
+                  .issuer_or_network_to_metadata_availability,
+              expected_issuer_or_network_to_metadata_availability);
   }
 
   payments_data().ClearCreditCards();
@@ -2441,21 +2390,18 @@ TEST_P(PaymentsSuggestionGeneratorTestForMetadata,
         GURL("https://www.example.com/card-art.png"));
     payments_data().AddServerCreditCard(server_card_with_metadata);
 
-    bool with_offer;
-    bool with_cvc;
-    autofill_metrics::CardMetadataLoggingContext metadata_logging_context;
+    PaymentsSuggestionGenerator::CreditCardSuggestionSummary summary;
     suggestion_generator().GetSuggestionsForCreditCards(
         FormFieldData(), CREDIT_CARD_NUMBER, kDefaultTriggerSource,
         /*should_show_scan_credit_card=*/false,
-        /*should_show_cards_from_account=*/false, with_offer, with_cvc,
-        metadata_logging_context);
+        /*should_show_cards_from_account=*/false, summary);
 
     EXPECT_TRUE(
-        metadata_logging_context.instruments_with_metadata_available.contains(
-            server_card_with_metadata.instrument_id()));
-    EXPECT_EQ(metadata_logging_context.card_product_description_shown,
+        summary.metadata_logging_context.instruments_with_metadata_available
+            .contains(server_card_with_metadata.instrument_id()));
+    EXPECT_EQ(summary.metadata_logging_context.card_product_description_shown,
               card_product_description_enabled());
-    EXPECT_EQ(metadata_logging_context.card_art_image_shown,
+    EXPECT_EQ(summary.metadata_logging_context.card_art_image_shown,
               card_art_image_enabled());
 
     // Verify that a record is added that a Capital One card suggestion
@@ -2463,9 +2409,9 @@ TEST_P(PaymentsSuggestionGeneratorTestForMetadata,
     base::flat_map<std::string, bool> expected_issuer_to_metadata_availability =
         {{server_card_with_metadata.issuer_id(), true},
          {server_card_with_metadata.network(), true}};
-    EXPECT_EQ(
-        metadata_logging_context.issuer_or_network_to_metadata_availability,
-        expected_issuer_to_metadata_availability);
+    EXPECT_EQ(summary.metadata_logging_context
+                  .issuer_or_network_to_metadata_availability,
+              expected_issuer_to_metadata_availability);
   }
 }
 
@@ -2488,15 +2434,12 @@ TEST_P(PaymentsSuggestionGeneratorTestForMetadata,
   payments_data().AddServerCreditCard(server_card);
   payments_data().AddCardArtImage(card_art_url, fake_image);
 
-  bool unused_with_offer;
-  bool unused_with_cvc;
-  autofill_metrics::CardMetadataLoggingContext metadata_logging_context;
+  PaymentsSuggestionGenerator::CreditCardSuggestionSummary summary;
   std::vector<Suggestion> suggestions =
       suggestion_generator().GetSuggestionsForCreditCards(
           FormFieldData(), CREDIT_CARD_NUMBER, kDefaultTriggerSource,
           /*should_show_scan_credit_card=*/false,
-          /*should_show_cards_from_account=*/false, unused_with_offer,
-          unused_with_cvc, metadata_logging_context);
+          /*should_show_cards_from_account=*/false, summary);
 
   // Suggestions in `suggestions` are persisted in order of their presentation
   // to the user in the Autofill dropdown and currently virtual cards are shown

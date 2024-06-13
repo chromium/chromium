@@ -14,6 +14,7 @@
 #include "components/autofill/core/browser/data_model/autofill_wallet_usage_data.h"
 #include "components/autofill/core/browser/field_types.h"
 #include "components/autofill/core/browser/metrics/log_event.h"
+#include "components/autofill/core/browser/metrics/payments/card_metadata_metrics.h"
 #include "components/autofill/core/browser/personal_data_manager.h"
 #include "components/autofill/core/browser/ui/suggestion.h"
 #include "components/autofill/core/browser/ui/suggestion_type.h"
@@ -24,10 +25,6 @@ class Time;
 }  // namespace base
 
 namespace autofill {
-
-namespace autofill_metrics {
-struct CardMetadataLoggingContext;
-}
 
 class AutofillClient;
 class AutofillOfferData;
@@ -40,6 +37,16 @@ class PaymentsDataManager;
 // address profile Autofill.
 class PaymentsSuggestionGenerator {
  public:
+  // Describes the suggestions returned by
+  // `GetSuggestionsForCreditCards()`.
+  struct CreditCardSuggestionSummary {
+    // Whether any card has card-linked offers.
+    bool with_offer = false;
+    // True if any card has a saved CVC.
+    bool with_cvc = false;
+    // Contains card metadata related information used for metrics logging.
+    autofill_metrics::CardMetadataLoggingContext metadata_logging_context;
+  };
   explicit PaymentsSuggestionGenerator(AutofillClient& autofill_client);
   ~PaymentsSuggestionGenerator();
   PaymentsSuggestionGenerator(const PaymentsSuggestionGenerator&) = delete;
@@ -48,20 +55,14 @@ class PaymentsSuggestionGenerator {
 
   // Generates suggestions for all available credit cards based on the
   // `trigger_field_type`, `trigger_field` and `trigger_source`.
-  // `with_offer` is set to true if ANY card has card-linked offers.
-  // `with_cvc` is set to true if ANY card has cvc saved.
-  // `metadata_logging_context` contains card metadata related information used
-  // for metrics logging.
-  // TODO(crbug.com/41492160): Merging out-parameters into a struct.
+  // `summary` contains metadata about the returned suggestions.
   std::vector<Suggestion> GetSuggestionsForCreditCards(
       const FormFieldData& trigger_field,
       FieldType trigger_field_type,
       AutofillSuggestionTriggerSource trigger_source,
       bool should_show_scan_credit_card,
       bool should_show_cards_from_account,
-      bool& with_offer,
-      bool& with_cvc,
-      autofill_metrics::CardMetadataLoggingContext& metadata_logging_context);
+      CreditCardSuggestionSummary& summary);
 
   // Generates suggestions for standalone CVC fields. These only apply to
   // virtual cards that are saved on file to a merchant. In these cases,

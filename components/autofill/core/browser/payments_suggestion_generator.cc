@@ -286,16 +286,14 @@ PaymentsSuggestionGenerator::GetSuggestionsForCreditCards(
     AutofillSuggestionTriggerSource trigger_source,
     bool should_show_scan_credit_card,
     bool should_show_cards_from_account,
-    bool& with_offer,
-    bool& with_cvc,
-    autofill_metrics::CardMetadataLoggingContext& metadata_logging_context) {
+    CreditCardSuggestionSummary& summary) {
   // Manual fallback entries are shown for all non credit card fields.
   const bool is_manual_fallback_for_non_credit_card_field =
       GroupTypeOfFieldType(trigger_field_type) != FieldTypeGroup::kCreditCard;
 
   std::map<std::string, AutofillOfferData*> card_linked_offers_map =
       GetCardLinkedOffers(*autofill_client_);
-  with_offer = !card_linked_offers_map.empty();
+  summary.with_offer = !card_linked_offers_map.empty();
 
   std::vector<CreditCard> cards_to_suggest = GetOrderedCardsToSuggest(
       trigger_field, trigger_field_type,
@@ -325,11 +323,10 @@ PaymentsSuggestionGenerator::GetSuggestionsForCreditCards(
           features::kAutofillForUnclassifiedFieldsAvailable)) {
     return GetSuggestionsForCreditCards(
         trigger_field, UNKNOWN_TYPE, trigger_source,
-        should_show_scan_credit_card, should_show_cards_from_account,
-        with_offer, with_cvc, metadata_logging_context);
+        should_show_scan_credit_card, should_show_cards_from_account, summary);
   }
 
-  metadata_logging_context =
+  summary.metadata_logging_context =
       autofill_metrics::GetMetadataLoggingContext(cards_to_suggest);
   std::vector<Suggestion> suggestions;
   for (const CreditCard& credit_card : cards_to_suggest) {
@@ -337,10 +334,10 @@ PaymentsSuggestionGenerator::GetSuggestionsForCreditCards(
         credit_card, trigger_field_type,
         credit_card.record_type() == CreditCard::RecordType::kVirtualCard,
         base::Contains(card_linked_offers_map, credit_card.guid()),
-        metadata_logging_context));
+        summary.metadata_logging_context));
   }
-  with_cvc = !base::ranges::all_of(cards_to_suggest, &std::u16string::empty,
-                                   &CreditCard::cvc);
+  summary.with_cvc = !base::ranges::all_of(
+      cards_to_suggest, &std::u16string::empty, &CreditCard::cvc);
   if (suggestions.empty()) {
     return suggestions;
   }
