@@ -40,10 +40,8 @@ DataTransferEndpoint& DataTransferEndpoint::operator=(
 DataTransferEndpoint& DataTransferEndpoint::operator=(
     DataTransferEndpoint&& other) = default;
 
-bool DataTransferEndpoint::operator==(const DataTransferEndpoint& other) const {
-  return url_ == other.url_ && type_ == other.type_ &&
-         notify_if_restricted_ == other.notify_if_restricted_;
-}
+bool DataTransferEndpoint::operator==(const DataTransferEndpoint& other) const =
+    default;
 
 DataTransferEndpoint::~DataTransferEndpoint() = default;
 
