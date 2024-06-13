@@ -23,7 +23,7 @@ source_set("fullscreen_broadcasting_util") {
   ]
   deps = [
     ":fullscreen",
-    "//ios/chrome/browser/broadcaster/ui_bundled",
+    "//ios/chrome/browser/ui/broadcaster",
   ]
 }
 
@@ -38,11 +38,11 @@ source_set("unit_tests") {
     "//components/bookmarks/test",
     "//components/omnibox/browser:test_support",
     "//ios/chrome/browser/bookmarks/model",
-    "//ios/chrome/browser/broadcaster/ui_bundled",
     "//ios/chrome/browser/shared/model/browser_state:test_support",
     "//ios/chrome/browser/shared/model/web_state_list",
     "//ios/chrome/browser/shared/ui/util",
     "//ios/chrome/browser/tabs/model",
+    "//ios/chrome/browser/ui/broadcaster",
     "//ios/chrome/browser/ui/toolbar/test",
     "//ios/chrome/test:test_support",
     "//ios/testing:ocmock_support",

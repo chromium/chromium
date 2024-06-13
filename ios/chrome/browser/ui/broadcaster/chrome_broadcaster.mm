@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#import "ios/chrome/browser/broadcaster/ui_bundled/chrome_broadcaster.h"
+#import "ios/chrome/browser/ui/broadcaster/chrome_broadcaster.h"
 
 #import <objc/runtime.h>
 #import <memory>

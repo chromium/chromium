@@ -15,7 +15,7 @@ source_set("test") {
   ]
 
   deps = [
-    "//ios/chrome/browser/broadcaster/ui_bundled",
+    "//ios/chrome/browser/ui/broadcaster",
     "//ios/chrome/browser/ui/main_content:main_content_ui",
     "//ios/chrome/common/ui/util",
     "//testing/gtest",

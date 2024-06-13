@@ -2,9 +2,9 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#import "ios/chrome/browser/broadcaster/ui_bundled/chrome_broadcaster.h"
+#import "ios/chrome/browser/ui/broadcaster/chrome_broadcaster.h"
 
-#import "ios/chrome/browser/broadcaster/ui_bundled/chrome_broadcast_observer.h"
+#import "ios/chrome/browser/ui/broadcaster/chrome_broadcast_observer.h"
 #import "testing/gtest/include/gtest/gtest.h"
 #import "testing/gtest_mac.h"
 #import "testing/perf/perf_test.h"

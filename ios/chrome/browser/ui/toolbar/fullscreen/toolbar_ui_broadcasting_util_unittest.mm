@@ -4,7 +4,7 @@
 
 #import "ios/chrome/browser/ui/toolbar/fullscreen/toolbar_ui_broadcasting_util.h"
 
-#import "ios/chrome/browser/broadcaster/ui_bundled/chrome_broadcaster.h"
+#import "ios/chrome/browser/ui/broadcaster/chrome_broadcaster.h"
 #import "ios/chrome/browser/ui/toolbar/fullscreen/toolbar_ui.h"
 #import "ios/chrome/browser/ui/toolbar/test/toolbar_broadcast_test_util.h"
 #import "testing/gtest/include/gtest/gtest.h"
