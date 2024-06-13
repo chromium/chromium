@@ -5,6 +5,7 @@
 #include "content/browser/loader/prefetch_url_loader_service_context.h"
 
 #include "content/browser/loader/prefetch_url_loader.h"
+#include "content/browser/renderer_host/frame_tree_node.h"
 #include "content/browser/renderer_host/render_frame_host_impl.h"
 #include "content/browser/web_package/prefetched_signed_exchange_cache.h"
 #include "content/public/browser/content_browser_client.h"
@@ -76,6 +77,15 @@ void PrefetchURLLoaderServiceContext::CreatePrefetchLoaderAndStart(
     // Cross-site prefetches shouldn't include SameSite cookies.
     resource_request.site_for_cookies = net::SiteForCookies();
 
+    // Attach the fenced frame nonce to the request's IsolationInfo. If the
+    // nonce is marked revoked for untrusted network access, the request will
+    // either not be created due to the check in
+    // `CorsURLLoaderFactory::CreateLoaderAndStart` or cancelled due to the
+    // check `CancelRequestIfNonceMatchesAndUrlNotExempted`.
+    std::optional<base::UnguessableToken> fenced_frame_nonce =
+        current_context.render_frame_host->frame_tree_node()
+            ->GetFencedFrameNonce();
+
     // Use the trusted cross-origin prefetch loader factory, and set the
     // request's IsolationInfo suitable for the cross-origin prefetch.
     network_loader_factory_to_use = current_context.cross_origin_factory;
@@ -84,7 +94,8 @@ void PrefetchURLLoaderServiceContext::CreatePrefetchLoaderAndStart(
     resource_request.trusted_params->isolation_info =
         net::IsolationInfo::Create(net::IsolationInfo::RequestType::kOther,
                                    destination_origin, destination_origin,
-                                   net::SiteForCookies());
+                                   net::SiteForCookies(),
+                                   /*nonce=*/fenced_frame_nonce);
   }
 
   // Recursive prefetch from a cross-origin main resource prefetch.

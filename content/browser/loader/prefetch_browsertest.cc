@@ -23,12 +23,15 @@
 #include "content/public/test/browser_test_utils.h"
 #include "content/public/test/content_browser_test.h"
 #include "content/public/test/content_browser_test_utils.h"
+#include "content/public/test/fenced_frame_test_util.h"
+#include "content/public/test/test_frame_navigation_observer.h"
 #include "content/public/test/url_loader_monitor.h"
 #include "content/shell/browser/shell.h"
 #include "net/base/features.h"
 #include "net/base/filename_util.h"
 #include "net/base/isolation_info.h"
 #include "net/dns/mock_host_resolver.h"
+#include "net/test/embedded_test_server/default_handlers.h"
 #include "services/network/public/cpp/features.h"
 #include "services/network/public/cpp/resource_request.h"
 #include "third_party/blink/public/common/features.h"
@@ -1117,6 +1120,134 @@ IN_PROC_BROWSER_TEST_P(PrefetchBrowserTest, FileToHttp) {
   // Subsequent navigation to the target URL wouldn't hit the network for
   // the target URL. The target content should still be read correctly.
   NavigateToURLAndWaitTitle(target_url, "Prefetch Target");
+}
+
+class FencedFramePrefetchTest : public PrefetchBrowserTestBase {
+ public:
+  FencedFramePrefetchTest() = default;
+
+  void SetUpOnMainThread() override {
+    PrefetchBrowserTestBase::SetUpOnMainThread();
+    host_resolver()->AddRule("*", "127.0.0.1");
+
+    // Set up the embedded https test server for fenced frame which requires a
+    // secure context to load.
+    embedded_https_test_server().SetSSLConfig(
+        net::EmbeddedTestServer::CERT_TEST_NAMES);
+    SetupCrossSiteRedirector(&embedded_https_test_server());
+    net::test_server::RegisterDefaultHandlers(&embedded_https_test_server());
+  }
+
+  content::test::FencedFrameTestHelper& fenced_frame_test_helper() {
+    return fenced_frame_test_helper_;
+  }
+
+ private:
+  test::FencedFrameTestHelper fenced_frame_test_helper_;
+};
+
+// Verify that prefetch works in fenced frame.
+IN_PROC_BROWSER_TEST_F(FencedFramePrefetchTest, BasicPrefetch) {
+  base::RunLoop prefetch_waiter;
+  auto request_counter = RequestCounter::CreateAndMonitor(
+      &embedded_https_test_server(), "/image.jpg", &prefetch_waiter);
+
+  RegisterRequestHandler(&embedded_https_test_server());
+  ASSERT_TRUE(embedded_https_test_server().Start());
+  EXPECT_EQ(0, request_counter->GetRequestCount());
+  EXPECT_EQ(0, GetPrefetchURLLoaderCallCount());
+
+  GURL prefetch_url =
+      embedded_https_test_server().GetURL("a.test", "/image.jpg");
+  URLLoaderMonitor monitor({prefetch_url});
+
+  const GURL main_url =
+      embedded_https_test_server().GetURL("a.test", "/title1.html");
+  EXPECT_TRUE(NavigateToURL(shell(), main_url));
+
+  const GURL fenced_frame_url = embedded_https_test_server().GetURL(
+      "a.test", "/fenced_frames/title1.html");
+  RenderFrameHost* fenced_frame_rfh =
+      fenced_frame_test_helper().CreateFencedFrame(
+          shell()->web_contents()->GetPrimaryMainFrame(), fenced_frame_url);
+
+  // Loading a page that prefetches the URL would increment the
+  // |request_counter|.
+  TestFrameNavigationObserver observer(fenced_frame_rfh);
+  EXPECT_TRUE(ExecJs(shell()->web_contents()->GetPrimaryMainFrame(),
+                     JsReplace(
+                         R"(document.querySelector('fencedframe').config
+                            = new FencedFrameConfig($1);)",
+                         embedded_https_test_server().GetURL(
+                             "a.test", "/link_rel_prefetch.html"))));
+  observer.WaitForCommit();
+
+  // Expect there is a prefetch request.
+  prefetch_waiter.Run();
+  monitor.WaitForUrls();
+  std::optional<network::ResourceRequest> request =
+      monitor.GetRequestInfo(prefetch_url);
+  EXPECT_TRUE(request->load_flags & net::LOAD_PREFETCH);
+
+  EXPECT_EQ(1, request_counter->GetRequestCount());
+  EXPECT_EQ(1, GetPrefetchURLLoaderCallCount());
+
+  // Shutdown the server.
+  EXPECT_TRUE(embedded_https_test_server().ShutdownAndWaitUntilComplete());
+}
+
+// Test that after fenced frame disables untrusted network access, prefetch
+// request is not allowed.
+IN_PROC_BROWSER_TEST_F(FencedFramePrefetchTest, NetworkCutoffDisablesPrefetch) {
+  base::RunLoop prefetch_waiter;
+  auto request_counter = RequestCounter::CreateAndMonitor(
+      &embedded_https_test_server(), "/image.jpg", &prefetch_waiter);
+
+  RegisterRequestHandler(&embedded_https_test_server());
+  ASSERT_TRUE(embedded_https_test_server().Start());
+  EXPECT_EQ(0, request_counter->GetRequestCount());
+  EXPECT_EQ(0, GetPrefetchURLLoaderCallCount());
+
+  GURL prefetch_url =
+      embedded_https_test_server().GetURL("a.test", "/image.jpg");
+  URLLoaderMonitor monitor({prefetch_url});
+
+  const GURL main_url =
+      embedded_https_test_server().GetURL("a.test", "/title1.html");
+  EXPECT_TRUE(NavigateToURL(shell(), main_url));
+
+  const GURL fenced_frame_url = embedded_https_test_server().GetURL(
+      "a.test", "/fenced_frames/title1.html");
+  RenderFrameHost* fenced_frame_rfh =
+      fenced_frame_test_helper().CreateFencedFrame(
+          shell()->web_contents()->GetPrimaryMainFrame(), fenced_frame_url);
+
+  // Loading a page that immediately disables untrusted network by calling
+  // `window.fence.disableUntrustedNetwork()`.
+  TestFrameNavigationObserver observer(fenced_frame_rfh);
+  EXPECT_TRUE(
+      ExecJs(shell()->web_contents()->GetPrimaryMainFrame(),
+             JsReplace(
+                 R"(document.querySelector('fencedframe').config
+                            = new FencedFrameConfig($1);)",
+                 embedded_https_test_server().GetURL(
+                     "a.test", "/link_rel_prefetch_disable_network.html"))));
+  observer.WaitForCommit();
+
+  // There should be no prefetch request because the untrusted network has been
+  // disabled.
+  prefetch_waiter.RunUntilIdle();
+  EXPECT_EQ(monitor.WaitForRequestCompletion(prefetch_url).error_code,
+            net::ERR_NETWORK_ACCESS_REVOKED);
+  EXPECT_EQ(0, request_counter->GetRequestCount());
+
+  // The `PrefetchURLLoader` count is 1 because the request did go through it.
+  // It was eventually blocked by the nonce network status check in
+  // `CorsURLLoaderFactory::CreateLoaderAndStart`.
+  EXPECT_EQ(1, GetPrefetchURLLoaderCallCount());
+
+  // Shutdown the server.
+  EXPECT_TRUE(embedded_https_test_server().ShutdownAndWaitUntilComplete());
 }
 
 INSTANTIATE_TEST_SUITE_P(PrefetchBrowserTest,

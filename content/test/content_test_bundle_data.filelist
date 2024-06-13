@@ -6894,6 +6894,9 @@ data/launch_navigation_frame.html
 data/linearized.pdf
 data/linearized.pdf.README
 data/link_rel_prefetch.html
+data/link_rel_prefetch.html.mock-http-headers
+data/link_rel_prefetch_disable_network.html
+data/link_rel_prefetch_disable_network.html.mock-http-headers
 data/link_rel_prefetch_referrer_policy.html
 data/lite_js_test.mojom
 data/loader/async_resource_handler.html
