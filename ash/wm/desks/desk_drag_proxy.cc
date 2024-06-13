@@ -69,9 +69,8 @@ void DeskDragProxy::InitAndScaleAndMoveToX(float location_screen_x) {
   drag_widget_->SetVisibilityAnimationTransition(views::Widget::ANIMATE_NONE);
 
   // Copy the preview of the dragged desk to the widget content.
-  drag_preview_ =
-      drag_widget_->SetContentsView(std::make_unique<DeskPreviewView>(
-          views::Button::PressedCallback(), drag_view_));
+  drag_widget_->SetContentsView(std::make_unique<DeskPreviewView>(
+      views::Button::PressedCallback(), drag_view_));
 
   // Set the bounds of dragged preview to drag proxy.
   drag_widget_->SetBounds(drag_view_->GetPreviewBoundsInScreen());

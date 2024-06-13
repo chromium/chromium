@@ -3461,14 +3461,14 @@ TEST_F(ViewTest, WidgetObserverViewWidgetClosedViewReparented) {
   EXPECT_TRUE(view_1->GetViewAccessibility().is_widget_closed_);
   EXPECT_TRUE(child_view_1->GetViewAccessibility().is_widget_closed_);
 
-  widget = std::make_unique<Widget>();
+  UniqueWidgetPtr widget_2 = std::make_unique<Widget>();
   params = CreateParams(Widget::InitParams::NATIVE_WIDGET_OWNS_WIDGET,
                         Widget::InitParams::TYPE_WINDOW);
-  widget->Init(std::move(params));
-  EXPECT_TRUE(widget->GetRootView());
+  widget_2->Init(std::move(params));
+  EXPECT_TRUE(widget_2->GetRootView());
 
   // Reparent the views tree with the closed widget to a new widget.
-  widget->GetRootView()->AddChildView(contents_view);
+  widget_2->GetRootView()->AddChildView(contents_view);
   EXPECT_TRUE(!contents_view->GetViewAccessibility().is_widget_closed_);
   EXPECT_TRUE(!view_1->GetViewAccessibility().is_widget_closed_);
   EXPECT_TRUE(!child_view_1->GetViewAccessibility().is_widget_closed_);
