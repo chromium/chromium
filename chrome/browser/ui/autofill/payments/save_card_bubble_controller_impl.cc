@@ -427,7 +427,11 @@ void SaveCardBubbleControllerImpl::OnSaveButton(
             autofill_metrics::SaveCardPromptResult::kAccepted, is_upload_save_,
             is_reshow_, options_,
             personal_data_manager_->payments_data_manager()
-                .GetPaymentsSigninStateForMetrics());
+                .GetPaymentsSigninStateForMetrics(),
+            /*has_saved_cards=*/
+            !personal_data_manager_->payments_data_manager()
+                 .GetCreditCards()
+                 .empty());
         autofill_metrics::LogCreditCardUploadLoadingViewShownMetric(
             /*is_shown=*/true);
         current_bubble_type_ = BubbleType::UPLOAD_IN_PROGRESS;
@@ -536,7 +540,11 @@ void SaveCardBubbleControllerImpl::OnBubbleClosed(
       autofill_metrics::LogSaveCardPromptResultMetric(
           get_metric(closed_reason), is_upload_save_, is_reshow_, options_,
           personal_data_manager_->payments_data_manager()
-              .GetPaymentsSigninStateForMetrics());
+              .GetPaymentsSigninStateForMetrics(),
+          /*has_saved_cards=*/
+          !personal_data_manager_->payments_data_manager()
+               .GetCreditCards()
+               .empty());
       break;
     case BubbleType::UPLOAD_IN_PROGRESS:
       autofill_metrics::LogCreditCardUploadLoadingViewResultMetric(

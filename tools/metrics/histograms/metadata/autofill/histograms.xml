@@ -4710,6 +4710,30 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram
+    name="Autofill.SaveCreditCardPromptResult{SaveDestination}.{UserGroup}"
+    enum="AutofillSavePaymentMethodPromptResultEnum" expires_after="2025-07-01">
+  <owner>jsaul@google.com</owner>
+  <owner>siyua@chromium.org</owner>
+  <owner>payments-autofill-team@google.com</owner>
+  <summary>
+    The relative frequency with which users accept or deny the Autofill save
+    credit card prompt to save credit card {SaveDestination}. Only first shows
+    are recorded. Logged when the prompt closes.
+  </summary>
+  <token key="SaveDestination"
+      variants="AutofillSaveCreditCardPromptDestination"/>
+  <token key="UserGroup">
+    <variant name="Aggregate" summary="Aggregated data of all users."/>
+    <variant name="UserHasNoCards"
+        summary="Metrics are recorded for users who don't have any credit
+                 cards saved."/>
+    <variant name="UserHasSavedCards"
+        summary="Metrics are recorded for users who have credit cards saved
+                 already."/>
+  </token>
+</histogram>
+
+<histogram
     name="Autofill.SaveCreditCardPromptResult{SaveDestination}{ShowType}{SaveType}"
     enum="AutofillSavePaymentMethodPromptResultEnum" expires_after="2025-07-01">
   <owner>jsaul@google.com</owner>

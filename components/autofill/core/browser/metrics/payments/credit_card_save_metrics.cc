@@ -115,7 +115,8 @@ void LogSaveCardPromptResultMetric(
     bool is_uploading,
     bool is_reshow,
     AutofillClient::SaveCreditCardOptions options,
-    AutofillMetrics::PaymentsSigninState sync_state) {
+    AutofillMetrics::PaymentsSigninState sync_state,
+    bool has_saved_cards) {
   DCHECK_LE(metric, SaveCardPromptResult::kMaxValue);
   std::string base_histogram_name = "Autofill.SaveCreditCardPromptResult";
   std::string destination = is_uploading ? ".Upload" : ".Local";
@@ -151,6 +152,15 @@ void LogSaveCardPromptResultMetric(
       AutofillClient::CardSaveType::kCardSaveWithCvc) {
     base::UmaHistogramEnumeration(
         metric_with_destination_and_show + ".SavingWithCvc", metric);
+  }
+  if (!is_reshow) {
+    base::UmaHistogramEnumeration(
+        base::StrCat(
+            {base_histogram_name, destination,
+             has_saved_cards ? ".UserHasSavedCards" : ".UserHasNoCards"}),
+        metric);
+    base::UmaHistogramEnumeration(
+        base::StrCat({base_histogram_name, destination, ".Aggregate"}), metric);
   }
 }
 
