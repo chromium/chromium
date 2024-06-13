@@ -469,19 +469,11 @@ void InputRouterImpl::OnTouchEventAck(
     blink::mojom::InputEventResultSource ack_source,
     blink::mojom::InputEventResultState ack_result) {
   if (event.event.IsTouchSequenceStart()) {
-    touch_action_filter_.AppendToGestureSequenceForDebugging("T");
-    touch_action_filter_.AppendToGestureSequenceForDebugging(
-        base::NumberToString(static_cast<uint32_t>(ack_result)).c_str());
-    touch_action_filter_.AppendToGestureSequenceForDebugging(
-        base::NumberToString(event.event.unique_touch_event_id).c_str());
     touch_action_filter_.IncreaseActiveTouches();
   }
   disposition_handler_->OnTouchEventAck(event, ack_source, ack_result);
 
   if (event.event.IsTouchSequenceEnd()) {
-    touch_action_filter_.AppendToGestureSequenceForDebugging("E");
-    touch_action_filter_.AppendToGestureSequenceForDebugging(
-        base::NumberToString(event.event.unique_touch_event_id).c_str());
     touch_action_filter_.DecreaseActiveTouches();
     touch_action_filter_.ReportAndResetTouchAction();
     UpdateTouchAckTimeoutEnabled();
@@ -797,7 +789,6 @@ void InputRouterImpl::FlushTouchEventQueue() {
 }
 
 void InputRouterImpl::ForceSetTouchActionAuto() {
-  touch_action_filter_.AppendToGestureSequenceForDebugging("F");
   touch_action_filter_.OnSetTouchAction(cc::TouchAction::kAuto);
   // TODO(xidachen): Call FlushDeferredGestureQueue when this flag is enabled.
   touch_event_queue_.StopTimeoutMonitor();

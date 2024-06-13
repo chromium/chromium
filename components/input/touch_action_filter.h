@@ -6,7 +6,6 @@
 #define COMPONENTS_INPUT_TOUCH_ACTION_FILTER_H_
 
 #include <optional>
-#include <string>
 
 #include "cc/input/touch_action.h"
 #include "base/component_export.h"
@@ -90,9 +89,6 @@ class COMPONENT_EXPORT(INPUT) TouchActionFilter {
 
   void ForceResetTouchActionForTest();
 
-  // Debugging only.
-  void AppendToGestureSequenceForDebugging(const char* str);
-
  private:
   friend class content::InputRouterImplTest;
   friend class content::InputRouterImplTestBase;
@@ -162,9 +158,6 @@ class COMPONENT_EXPORT(INPUT) TouchActionFilter {
 
   // Allowed touch action received from the compositor.
   cc::TouchAction compositor_allowed_touch_action_;
-
-  // Debugging only.
-  std::string gesture_sequence_;
 };
 
 }  // namespace input

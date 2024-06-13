@@ -7,10 +7,7 @@
 #include <math.h>
 
 #include "base/check_op.h"
-#include "base/debug/crash_logging.h"
-#include "base/debug/dump_without_crashing.h"
 #include "base/notreached.h"
-#include "base/strings/string_number_conversions.h"
 #include "base/trace_event/trace_event.h"
 #include "third_party/blink/public/common/input/web_gesture_event.h"
 #include "ui/base/ui_base_features.h"
@@ -137,7 +134,6 @@ FilterGestureEventResult TouchActionFilter::FilterGestureEvent(
         return FilterGestureEventResult::kFilterGestureEventFiltered;
       }
 
-      gesture_sequence_.append("U");
       // Scrolls restricted to a specific axis shouldn't permit movement
       // in the perpendicular axis.
       //
@@ -177,9 +173,6 @@ FilterGestureEventResult TouchActionFilter::FilterGestureEvent(
       break;
 
     case WebInputEvent::Type::kGestureScrollEnd:
-      if (gesture_sequence_.size() >= 1000)
-        gesture_sequence_.erase(gesture_sequence_.begin(),
-                                gesture_sequence_.end() - 250);
       // Do not reset |compositor_allowed_touch_action_|. In the fling cancel
       // case, the ack for the second touch sequence start, which sets the
       // compositor allowed touch action, could arrive before the GSE of the
@@ -195,7 +188,6 @@ FilterGestureEventResult TouchActionFilter::FilterGestureEvent(
                            cc::TouchAction::kNone;
       [[fallthrough]];
     case WebInputEvent::Type::kGesturePinchUpdate:
-      gesture_sequence_.append("P");
       if (!drop_pinch_events_)
         return FilterGestureEventResult::kFilterGestureEventAllowed;
       if (!active_touch_action_.has_value()) {
@@ -217,7 +209,6 @@ FilterGestureEventResult TouchActionFilter::FilterGestureEvent(
     // assumption here at least to avoid introducing new bugs in future.
     case WebInputEvent::Type::kGestureDoubleTap:
       gesture_sequence_in_progress_ = false;
-      gesture_sequence_.append("D");
       DCHECK_EQ(1, gesture_event->data.tap.tap_count);
       if (!allow_current_double_tap_event_) {
         gesture_event->SetType(WebInputEvent::Type::kGestureTap);
@@ -229,7 +220,6 @@ FilterGestureEventResult TouchActionFilter::FilterGestureEvent(
     // If double tap is disabled, there's no reason for the tap delay.
     case WebInputEvent::Type::kGestureTapUnconfirmed: {
       DCHECK_EQ(1, gesture_event->data.tap.tap_count);
-      gesture_sequence_.append("C");
       allow_current_double_tap_event_ =
           (touch_action & cc::TouchAction::kDoubleTapZoom) !=
           cc::TouchAction::kNone;
@@ -242,7 +232,6 @@ FilterGestureEventResult TouchActionFilter::FilterGestureEvent(
 
     case WebInputEvent::Type::kGestureTap:
       gesture_sequence_in_progress_ = false;
-      gesture_sequence_.append("A");
       if (drop_current_tap_ending_event_) {
         drop_current_tap_ending_event_ = false;
         return FilterGestureEventResult::kFilterGestureEventFiltered;
@@ -250,7 +239,6 @@ FilterGestureEventResult TouchActionFilter::FilterGestureEvent(
       break;
 
     case WebInputEvent::Type::kGestureTapCancel:
-      gesture_sequence_.append("K");
       if (drop_current_tap_ending_event_) {
         drop_current_tap_ending_event_ = false;
         return FilterGestureEventResult::kFilterGestureEventFiltered;
@@ -262,21 +250,11 @@ FilterGestureEventResult TouchActionFilter::FilterGestureEvent(
       allow_cursor_control_ =
           !::features::IsTouchTextEditingRedesignEnabled() ||
           gesture_event->data.tap_down.tap_down_count <= 1;
-      if (allowed_touch_action_.has_value())
-        gesture_sequence_.append("AY");
-      else
-        gesture_sequence_.append("AN");
-      if (active_touch_action_.has_value())
-        gesture_sequence_.append("OY");
-      else
-        gesture_sequence_.append("ON");
       // In theory, the num_of_active_touches_ should be > 0 at this point. But
       // crash reports suggest otherwise.
       if (num_of_active_touches_ <= 0)
         SetTouchAction(cc::TouchAction::kAuto);
       active_touch_action_ = allowed_touch_action_;
-      gesture_sequence_.append(
-          base::NumberToString(gesture_event->unique_touch_event_id));
       DCHECK(!drop_current_tap_ending_event_);
       break;
 
@@ -286,7 +264,6 @@ FilterGestureEventResult TouchActionFilter::FilterGestureEvent(
 
     case WebInputEvent::Type::kGestureLongTap:
     case WebInputEvent::Type::kGestureTwoFingerTap:
-      gesture_sequence_.append("G");
       gesture_sequence_in_progress_ = false;
       break;
 
@@ -373,18 +350,10 @@ void TouchActionFilter::DecreaseActiveTouches() {
 }
 
 void TouchActionFilter::ReportAndResetTouchAction() {
-  if (has_touch_event_handler_)
-    gesture_sequence_.append("RY");
-  else
-    gesture_sequence_.append("RN");
   if (num_of_active_touches_ <= 0) {
     ResetTouchAction();
     allow_cursor_control_ = true;
   }
-}
-
-void TouchActionFilter::AppendToGestureSequenceForDebugging(const char* str) {
-  gesture_sequence_.append(str);
 }
 
 void TouchActionFilter::ResetTouchAction() {
@@ -488,17 +457,12 @@ void TouchActionFilter::OnHasTouchEventHandlers(bool has_handlers) {
   if (has_handlers && has_touch_event_handler_ == has_handlers)
     return;
   has_touch_event_handler_ = has_handlers;
-  if (has_touch_event_handler_)
-    gesture_sequence_.append("LY");
-  else
-    gesture_sequence_.append("LN");
   // We have set the associated touch action if the touch start already happened
   // or there is a gesture in progress. In these cases, we should not reset the
   // associated touch action.
   if (!gesture_sequence_in_progress_ && num_of_active_touches_ <= 0) {
     ResetTouchAction();
     if (has_touch_event_handler_) {
-      gesture_sequence_.append("H");
       active_touch_action_.reset();
     }
   }
