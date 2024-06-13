@@ -46,6 +46,8 @@ int DhcpPacFileFetcherMojo::Fetch(
 void DhcpPacFileFetcherMojo::Cancel() {
   callback_.Reset();
   pac_file_fetcher_->Cancel();
+  utf16_text_ = nullptr;
+
   // Invalidate any pending callbacks (i.e. calls to ContinueFetch).
   weak_ptr_factory_.InvalidateWeakPtrs();
 }
@@ -67,11 +69,15 @@ void DhcpPacFileFetcherMojo::SetPacFileFetcherForTesting(
     std::unique_ptr<net::PacFileFetcher> pac_file_fetcher) {
   pac_file_fetcher_ = std::move(pac_file_fetcher);
 }
-void DhcpPacFileFetcherMojo::ContinueFetch(
-    std::u16string* utf16_text,
-    const net::NetworkTrafficAnnotationTag traffic_annotation,
-    std::string pac_url) {
+
+void DhcpPacFileFetcherMojo::OnPacUrlReceived(const std::string& pac_url) {
+  DCHECK(utf16_text_);
+  std::u16string* utf16_text = utf16_text_;
+  // Clear raw pointer, as it will no longer be needed after this call.
+  utf16_text_ = nullptr;
+
   pac_url_ = GURL(pac_url);
+
   if (pac_url_.is_empty()) {
     std::move(callback_).Run(net::ERR_PAC_NOT_IN_DHCP);
     return;
@@ -81,18 +87,13 @@ void DhcpPacFileFetcherMojo::ContinueFetch(
       pac_url_, utf16_text,
       base::BindOnce(&DhcpPacFileFetcherMojo::OnFetchCompleted,
                      weak_ptr_factory_.GetWeakPtr()),
-      traffic_annotation);
+      net::NetworkTrafficAnnotationTag(traffic_annotation_));
   if (result != net::ERR_IO_PENDING)
     std::move(callback_).Run(result);
 }
 
 void DhcpPacFileFetcherMojo::OnFetchCompleted(int result) {
   std::move(callback_).Run(result);
-}
-
-void DhcpPacFileFetcherMojo::OnPacUrlReceived(const std::string& pac_url) {
-  ContinueFetch(utf16_text_,
-                net::NetworkTrafficAnnotationTag(traffic_annotation_), pac_url);
 }
 
 }  // namespace network
