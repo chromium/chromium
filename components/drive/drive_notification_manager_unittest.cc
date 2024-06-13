@@ -8,8 +8,10 @@
 
 #include "base/strings/strcat.h"
 #include "base/test/metrics/histogram_tester.h"
+#include "base/test/scoped_feature_list.h"
 #include "base/test/test_mock_time_task_runner.h"
 #include "components/drive/drive_notification_observer.h"
+#include "components/drive/features.h"
 #include "components/invalidation/impl/fake_invalidation_service.h"
 #include "components/invalidation/public/invalidation.h"
 #include "components/invalidation/public/invalidation_util.h"
@@ -46,17 +48,20 @@ class FakeDriveNotificationObserver : public DriveNotificationObserver {
       const std::map<std::string, int64_t>& ids) override {
     notification_ids_ = ids;
   }
-  void OnNotificationTimerFired() override {}
+  void OnNotificationTimerFired() override { timer_fired_count_++; }
   void OnPushNotificationEnabled(bool enabled) override {}
 
   const std::map<std::string, int64_t> GetNotificationIds() const {
     return notification_ids_;
   }
+  int GetNotificationTimerCount() const { return timer_fired_count_; }
 
   void ClearNotificationIds() { notification_ids_.clear(); }
+  void ClearNotificationTimerCount() { timer_fired_count_ = 0; }
 
  private:
   std::map<std::string, int64_t> notification_ids_;
+  int timer_fired_count_ = 0;
 };
 
 invalidation::Topic CreateTeamDriveInvalidationTopic(
@@ -279,6 +284,33 @@ TEST_F(DriveNotificationManagerTest, UnregisterOnNoObservers) {
   subscribed_topics = fake_invalidation_service_->invalidator_registrar()
                           .GetAllSubscribedTopics();
   EXPECT_EQ(expected_topics, subscribed_topics);
+}
+
+class DriveNotificationManagerPollingTest
+    : public DriveNotificationManagerTest {
+ protected:
+  void SetUp() override {
+    scoped_feature_list_.InitAndEnableFeatureWithParameters(
+        features::kEnablePollingInterval, {{"PollingIntervalInSecs", "5"}});
+    DriveNotificationManagerTest::SetUp();
+  }
+
+  base::test::ScopedFeatureList scoped_feature_list_;
+};
+
+TEST_F(DriveNotificationManagerPollingTest, OverridePollingInterval) {
+  // By default we'll be registered for the default change notification.
+  EXPECT_TRUE(IsInvalidatorRegistered(kDefaultCorpusTopic));
+  EXPECT_EQ(drive_notification_observer_->GetNotificationTimerCount(), 0);
+
+  // Should poll by timer with interval set by feature param + randomized noise.
+  task_runner_->FastForwardBy(base::Seconds(20));
+  EXPECT_GE(drive_notification_observer_->GetNotificationTimerCount(), 2);
+  drive_notification_observer_->ClearNotificationTimerCount();
+
+  // Should continuously poll by timer when there are no invalidations received.
+  task_runner_->FastForwardBy(base::Seconds(70));
+  EXPECT_GE(drive_notification_observer_->GetNotificationTimerCount(), 7);
 }
 
 }  // namespace drive

@@ -17,6 +17,8 @@ static_library("drive") {
     "drive_uploader.h",
     "event_logger.cc",
     "event_logger.h",
+    "features.cc",
+    "features.h",
     "file_errors.cc",
     "file_errors.h",
     "file_system_core_util.cc",

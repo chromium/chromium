@@ -7,6 +7,7 @@
 #include <string_view>
 #include <utility>
 
+#include "base/feature_list.h"
 #include "base/functional/bind.h"
 #include "base/logging.h"
 #include "base/metrics/histogram_functions.h"
@@ -192,9 +193,15 @@ bool DriveNotificationManager::AreInvalidationsEnabled() const {
 
 void DriveNotificationManager::RestartPollingTimer() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  const int interval_secs =
-      (AreInvalidationsEnabled() ? kSlowPollingIntervalInSecs
-                                 : kFastPollingIntervalInSecs);
+  int interval_secs = (AreInvalidationsEnabled() ? kSlowPollingIntervalInSecs
+                                                 : kFastPollingIntervalInSecs);
+
+  // Override polling interval if feature is enabled. Added to update polling
+  // frequency for versions where the invalidation service may no longer
+  // receive notifications (crbug.com/338254621).
+  if (base::FeatureList::IsEnabled(features::kEnablePollingInterval)) {
+    interval_secs = features::kPollingIntervalInSecs.Get();
+  }
 
   int jitter = base::RandInt(0, interval_secs);
 

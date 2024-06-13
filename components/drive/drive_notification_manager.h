@@ -19,6 +19,7 @@
 #include "base/time/default_tick_clock.h"
 #include "base/timer/timer.h"
 #include "components/drive/drive_notification_observer.h"
+#include "components/drive/features.h"
 #include "components/invalidation/public/invalidation_handler.h"
 #include "components/invalidation/public/invalidation_util.h"
 #include "components/keyed_service/core/keyed_service.h"
