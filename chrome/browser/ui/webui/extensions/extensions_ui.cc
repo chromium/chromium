@@ -104,6 +104,7 @@ content::WebUIDataSource* CreateAndAddExtensionsSource(Profile* profile,
 
       // Multi-use strings defined in extensions_strings.grdp.
       {"remove", IDS_EXTENSIONS_REMOVE},
+      {"moreOptions", IDS_EXTENSIONS_MORE_OPTIONS},
 
       // Add extension-specific strings.
       {"title", IDS_MANAGE_EXTENSIONS_SETTING_WINDOWS_TITLE},
@@ -337,6 +338,8 @@ content::WebUIDataSource* CreateAndAddExtensionsSource(Profile* profile,
       {"mv2DeprecationPanelTitle", IDS_EXTENSIONS_MV2_DEPRECATION_PANEL_TITLE},
       {"mv2DeprecationPanelDismissButton",
        IDS_EXTENSIONS_MV2_DEPRECATION_PANEL_DISMISS_BUTTON},
+      {"mv2DeprecationPanelExtensionActionMenuLabel",
+       IDS_EXTENSIONS_MV2_DEPRECATION_PANEL_ACTION_MENU_BUTTON_LABEL},
       {"mv2DeprecationPanelFindAlternativeButton",
        IDS_EXTENSIONS_MV2_DEPRECATION_PANEL_FIND_ALTERNATIVE_BUTTON},
       {"mv2DeprecationPanelKeepForNowButton",

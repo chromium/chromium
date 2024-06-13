@@ -7,6 +7,7 @@ import 'chrome://resources/cr_elements/cr_button/cr_button.js';
 import 'chrome://resources/polymer/v3_0/iron-icon/iron-icon.js';
 import './shared_style.css.js';
 
+import {I18nMixin} from '//resources/cr_elements/i18n_mixin.js';
 import type {CrActionMenuElement} from 'chrome://resources/cr_elements/cr_action_menu/cr_action_menu.js';
 import {assert} from 'chrome://resources/js/assert.js';
 import {sanitizeInnerHtml} from 'chrome://resources/js/parse_html_subset.js';
@@ -28,7 +29,8 @@ export interface ExtensionsMv2DeprecationPanelElement {
   };
 }
 
-export class ExtensionsMv2DeprecationPanelElement extends PolymerElement {
+export class ExtensionsMv2DeprecationPanelElement extends I18nMixin
+(PolymerElement) {
   static get is() {
     return 'extensions-mv2-deprecation-panel';
   }
@@ -100,6 +102,15 @@ export class ExtensionsMv2DeprecationPanelElement extends PolymerElement {
    */
   private getSubtitleString_(): TrustedHTML {
     return sanitizeInnerHtml(this.subtitleString_);
+  }
+
+  /**
+   * Returns the accessible label for the action menu button corresponding to
+   * `extensionName`.
+   */
+  private getActionMenuButtonLabelFor_(extensionName: string): string {
+    return this.i18n(
+        'mv2DeprecationPanelExtensionActionMenuLabel', extensionName);
   }
 
   /**
