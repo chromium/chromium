@@ -1,5 +1,5 @@
 include_rules = [
-  "+ios/chrome/browser/ui/broadcaster",
+  "+ios/chrome/browser/broadcaster/ui_bundled",
 ]
 
 specific_include_rules = {

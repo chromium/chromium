@@ -2,12 +2,12 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef IOS_CHROME_BROWSER_UI_BROADCASTER_CHROME_BROADCASTER_H_
-#define IOS_CHROME_BROWSER_UI_BROADCASTER_CHROME_BROADCASTER_H_
+#ifndef IOS_CHROME_BROWSER_BROADCASTER_UI_BUNDLED_CHROME_BROADCASTER_H_
+#define IOS_CHROME_BROWSER_BROADCASTER_UI_BUNDLED_CHROME_BROADCASTER_H_
 
 #import <UIKit/UIKit.h>
 
-#import "ios/chrome/browser/ui/broadcaster/chrome_broadcast_observer.h"
+#import "ios/chrome/browser/broadcaster/ui_bundled/chrome_broadcast_observer.h"
 
 // An interface for lightweight synchronization of object properties; it is
 // generally intended to allow properties of UI-layer objects (typically view
@@ -57,4 +57,4 @@
 
 @end
 
-#endif  // IOS_CHROME_BROWSER_UI_BROADCASTER_CHROME_BROADCASTER_H_
+#endif  // IOS_CHROME_BROWSER_BROADCASTER_UI_BUNDLED_CHROME_BROADCASTER_H_

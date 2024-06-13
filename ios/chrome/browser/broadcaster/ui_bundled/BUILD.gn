@@ -2,7 +2,7 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
-source_set("broadcaster") {
+source_set("ui_bundled") {
   sources = [
     "chrome_broadcast_observer.h",
     "chrome_broadcast_observer_bridge.h",
@@ -24,7 +24,7 @@ source_set("unit_tests") {
     "chrome_broadcaster_unittest.mm",
   ]
   deps = [
-    ":broadcaster",
+    ":ui_bundled",
     "//base",
     "//base/test:test_support",
     "//ios/web/common:features",

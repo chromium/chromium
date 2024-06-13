@@ -6,11 +6,12 @@
 #define IOS_CHROME_BROWSER_UI_FULLSCREEN_FULLSCREEN_MODEL_H_
 
 #include <CoreGraphics/CoreGraphics.h>
+
 #include <cmath>
 
 #include "base/observer_list.h"
+#include "ios/chrome/browser/broadcaster/ui_bundled/chrome_broadcast_observer_bridge.h"
 #include "ios/chrome/browser/shared/public/features/features.h"
-#include "ios/chrome/browser/ui/broadcaster/chrome_broadcast_observer_bridge.h"
 #include "ios/chrome/browser/ui/fullscreen/scoped_fullscreen_disabler.h"
 #import "ios/web/common/features.h"
 
