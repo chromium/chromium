@@ -11,6 +11,7 @@
 #include "base/values.h"
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
+#include "chrome/browser/policy/extension_developer_mode_policy_handler.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/profiles/profile_manager.h"
 #include "chrome/common/chrome_switches.h"
@@ -191,9 +192,9 @@ Availability GetMostRestrictiveAvailability(Availability availability_1,
 
 }  // namespace
 
-DeveloperToolsPolicyHandler::DeveloperToolsPolicyHandler() {}
+DeveloperToolsPolicyHandler::DeveloperToolsPolicyHandler() = default;
 
-DeveloperToolsPolicyHandler::~DeveloperToolsPolicyHandler() {}
+DeveloperToolsPolicyHandler::~DeveloperToolsPolicyHandler() = default;
 
 bool DeveloperToolsPolicyHandler::CheckPolicySettings(
     const policy::PolicyMap& policies,
@@ -220,6 +221,19 @@ bool DeveloperToolsPolicyHandler::CheckPolicySettings(
                      key::kDeveloperToolsAvailability);
   }
 
+#if BUILDFLAG(ENABLE_EXTENSIONS)
+  const std::optional<Availability> policy = GetValueFromBothPolicies(policies);
+
+  if (policy.has_value() && *policy == Availability::kDisallowed &&
+      extension_developer_mode_policy_handler_.IsValidPolicySet(policies)) {
+    errors->AddError(key::kDeveloperToolsAvailability,
+                     IDS_POLICY_DEVELOPER_TOOLS_EXTENSIONS_CONFLICT_MESSAGE,
+                     key::kExtensionDeveloperModeSettings,
+                     key::kDeveloperToolsAvailability,
+                     /*error_path=*/{}, PolicyMap::MessageType::kInfo);
+  }
+#endif  // BUILDFLAG(ENABLE_EXTENSIONS)
+
   // Always continue to ApplyPolicySettings which can handle invalid policy
   // values.
   return true;
@@ -227,16 +241,17 @@ bool DeveloperToolsPolicyHandler::CheckPolicySettings(
 
 void DeveloperToolsPolicyHandler::ApplyPolicySettings(const PolicyMap& policies,
                                                       PrefValueMap* prefs) {
-  const std::optional<Availability> value = GetValueFromBothPolicies(policies);
+  const std::optional<Availability> policy = GetValueFromBothPolicies(policies);
 
-  if (value.has_value()) {
-    prefs->SetInteger(prefs::kDevToolsAvailability,
-                      static_cast<int>(value.value()));
+  if (policy.has_value()) {
+    prefs->SetInteger(prefs::kDevToolsAvailability, static_cast<int>(*policy));
 
 #if BUILDFLAG(ENABLE_EXTENSIONS)
-    if (value.value() == Availability::kDisallowed) {
-      // Piggy-back disallowed developer tools to also force-disable
-      // kExtensionsUIDeveloperMode.
+    // ExtensionDeveloperModePolicySettings takes precedence over this policy.
+    // Thus, we only set the value of kExtensionsUIDeveloperMode if the former
+    // is not set.
+    if (*policy == Availability::kDisallowed &&
+        !extension_developer_mode_policy_handler_.IsValidPolicySet(policies)) {
       prefs->SetValue(prefs::kExtensionsUIDeveloperMode, base::Value(false));
     }
 #endif  // BUILDFLAG(ENABLE_EXTENSIONS)

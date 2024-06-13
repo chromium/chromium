@@ -4292,6 +4292,8 @@ static_library("browser") {
       "policy/developer_tools_policy_handler.h",
       "policy/device_account_initializer.cc",
       "policy/device_account_initializer.h",
+      "policy/extension_developer_mode_policy_handler.cc",
+      "policy/extension_developer_mode_policy_handler.h",
       "policy/managed_account_policy_handler.cc",
       "policy/managed_account_policy_handler.h",
       "policy/webhid_device_policy_handler.cc",

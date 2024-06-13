@@ -2136,6 +2136,7 @@ chromium-metrics-reviews@google.com.
   <int value="1268" label="DeviceAllowEnterpriseRemoteAccessConnections"/>
   <int value="1269" label="LocalUserFilesMigrationEnabled"/>
   <int value="1270" label="FocusModeSoundsEnabled"/>
+  <int value="1271" label="ExtensionDeveloperModeSettings"/>
 </enum>
 
 <enum name="EnterprisePoliciesSources">

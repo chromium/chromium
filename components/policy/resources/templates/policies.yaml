@@ -1269,6 +1269,7 @@ policies:
   1268: DeviceAllowEnterpriseRemoteAccessConnections
   1269: LocalUserFilesMigrationEnabled
   1270: FocusModeSoundsEnabled
+  1271: ExtensionDeveloperModeSettings
 
 atomic_groups:
   1: Homepage
