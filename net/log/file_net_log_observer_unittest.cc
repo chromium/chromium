@@ -245,6 +245,22 @@ class FileNetLogObserverTest : public ::testing::TestWithParam<bool>,
     logger_->StartObserving(NetLog::Get());
   }
 
+  void CreateAndStartObservingBoundedFile(
+      int max_file_size,
+      std::unique_ptr<base::Value::Dict> constants) {
+    base::File file(log_path_,
+                    base::File::FLAG_CREATE | base::File::FLAG_WRITE);
+    EXPECT_TRUE(file.IsValid());
+    // Stick in some nonsense to make sure the file gets cleared properly
+    file.Write(0, "not json", 8);
+
+    logger_ = FileNetLogObserver::CreateBoundedFile(
+        std::move(file), max_file_size, NetLogCaptureMode::kDefault,
+        std::move(constants));
+
+    logger_->StartObserving(NetLog::Get());
+  }
+
   void CreateAndStartObservingPreExisting(
       std::unique_ptr<base::Value::Dict> constants) {
     ASSERT_TRUE(scratch_dir_.CreateUniqueTempDir());
@@ -474,6 +490,87 @@ TEST_P(FileNetLogObserverTest, GeneratesValidJSONWithOneEventPreExisting) {
   ASSERT_OK_AND_ASSIGN(std::unique_ptr<ParsedNetLog> log,
                        ReadNetLogFromDisk(log_path_));
   ASSERT_EQ(1u, log->events->size());
+}
+
+TEST_P(FileNetLogObserverTest,
+       GeneratesValidJSONWithNoEventsCreateBoundedFile) {
+  TestClosure closure;
+
+  CreateAndStartObservingBoundedFile(kLargeFileSize, nullptr);
+
+  logger_->StopObserving(nullptr, closure.closure());
+
+  closure.WaitForResult();
+
+  // Verify the written log.
+  ASSERT_OK_AND_ASSIGN(std::unique_ptr<ParsedNetLog> log,
+                       ReadNetLogFromDisk(log_path_));
+  ASSERT_EQ(0u, log->events->size());
+}
+
+TEST_P(FileNetLogObserverTest,
+       GeneratesValidJSONWithOneEventCreateBoundedFile) {
+  TestClosure closure;
+
+  CreateAndStartObservingBoundedFile(kLargeFileSize, nullptr);
+
+  // Send dummy event.
+  AddEntries(logger_.get(), 1, kDummyEventSize);
+
+  logger_->StopObserving(nullptr, closure.closure());
+
+  closure.WaitForResult();
+
+  // Verify the written log.
+  ASSERT_OK_AND_ASSIGN(std::unique_ptr<ParsedNetLog> log,
+                       ReadNetLogFromDisk(log_path_));
+  ASSERT_EQ(1u, log->events->size());
+}
+
+// Sends exactly enough events to the observer to completely fill the file.
+TEST_P(FileNetLogObserverTest, BoundedFileFillsFile) {
+  const int kTotalFileSize = 10000;
+  const int kEventSize = 200;
+  const int kFileSize = kTotalFileSize;
+  const int kNumEvents = kFileSize / kEventSize;
+  TestClosure closure;
+
+  CreateAndStartObservingBoundedFile(kTotalFileSize, nullptr);
+
+  // Send dummy events.
+  AddEntries(logger_.get(), kNumEvents, kEventSize);
+
+  logger_->StopObserving(nullptr, closure.closure());
+
+  closure.WaitForResult();
+
+  // Verify the written log.
+  ASSERT_OK_AND_ASSIGN(std::unique_ptr<ParsedNetLog> log,
+                       ReadNetLogFromDisk(log_path_));
+  VerifyEventsInLog(log.get(), kNumEvents, kNumEvents);
+}
+
+// Sends twice as many events as will fill the file to the observer
+TEST_P(FileNetLogObserverTest, BoundedFileTruncatesEventsAfterLimit) {
+  const int kTotalFileSize = 10000;
+  const int kEventSize = 200;
+  const int kFileSize = kTotalFileSize;
+  const int kNumEvents = kFileSize / kEventSize;
+  TestClosure closure;
+
+  CreateAndStartObservingBoundedFile(kTotalFileSize, nullptr);
+
+  // Send dummy events.
+  AddEntries(logger_.get(), kNumEvents * 2, kEventSize);
+
+  logger_->StopObserving(nullptr, closure.closure());
+
+  closure.WaitForResult();
+
+  // Verify the written log.
+  ASSERT_OK_AND_ASSIGN(std::unique_ptr<ParsedNetLog> log,
+                       ReadNetLogFromDisk(log_path_));
+  VerifyEventsInLog(log.get(), kNumEvents, kNumEvents);
 }
 
 TEST_P(FileNetLogObserverTest, PreExistingFileBroken) {

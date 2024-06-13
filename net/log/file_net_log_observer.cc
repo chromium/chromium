@@ -241,6 +241,10 @@ class FileNetLogObserver::FileWriter {
   bool IsUnbounded() const;
   bool IsBounded() const;
 
+  // Returns true if there is a file size bound to enforce and we want to stitch
+  // the files together.
+  bool IsBoundedAndStitchable() const;
+
   // Increments |current_event_file_number_|, and updates all state relating to
   // the current event file (open file handle, num bytes written, current file
   // number).
@@ -373,6 +377,16 @@ FileNetLogObserver::CreateUnboundedPreExisting(
                         std::make_optional<base::File>(std::move(output_file)),
                         kNoLimit, kDefaultNumFiles, capture_mode,
                         std::move(constants));
+}
+
+std::unique_ptr<FileNetLogObserver> FileNetLogObserver::CreateBoundedFile(
+    base::File output_file,
+    uint64_t max_total_size,
+    NetLogCaptureMode capture_mode,
+    std::unique_ptr<base::Value::Dict> constants) {
+  return CreateInternal(base::FilePath(), base::FilePath(),
+                        std::make_optional<base::File>(std::move(output_file)),
+                        max_total_size, 1, capture_mode, std::move(constants));
 }
 
 FileNetLogObserver::~FileNetLogObserver() {
@@ -558,11 +572,16 @@ FileNetLogObserver::FileWriter::FileWriter(
       max_event_file_size_(max_event_file_size),
       task_runner_(std::move(task_runner)) {
   DCHECK_EQ(pre_existing_log_file.has_value(), log_path.empty());
-  DCHECK_EQ(IsBounded(), !inprogress_dir_path.empty());
 
   if (pre_existing_log_file.has_value()) {
     // pre_existing_log_file.IsValid() being false is fine.
     final_log_file_ = std::move(pre_existing_log_file.value());
+    if (inprogress_dir_path.empty()) {
+      // If we are not stitching the files together, then we aren't using
+      // bounded, but we still need to to keep track of the size of the current
+      // event file starting from 0 bytes written.
+      current_event_file_size_ = 0;
+    }
   }
 }
 
@@ -572,14 +591,14 @@ void FileNetLogObserver::FileWriter::Initialize(
     std::unique_ptr<base::Value::Dict> constants_value) {
   DCHECK(task_runner_->RunsTasksInCurrentSequence());
 
-  // Open the final log file, and keep it open for the duration of logging (even
-  // in bounded mode).
+  // Open the final log file, and keep it open for the duration of logging
+  // (even in bounded mode).
   if (!final_log_path_.empty())
     final_log_file_ = OpenFileForWrite(final_log_path_);
   else
     TruncateFile(&final_log_file_);
 
-  if (IsBounded()) {
+  if (IsBoundedAndStitchable()) {
     CreateInprogressDirectory();
     base::File constants_file = OpenFileForWrite(GetConstantsFilePath());
     WriteConstantsToFile(std::move(constants_value), &constants_file);
@@ -593,7 +612,7 @@ void FileNetLogObserver::FileWriter::Stop(
   DCHECK(task_runner_->RunsTasksInCurrentSequence());
 
   // Write out the polled data.
-  if (IsBounded()) {
+  if (IsBoundedAndStitchable()) {
     base::File closing_file = OpenFileForWrite(GetClosingFilePath());
     WritePolledDataToFile(std::move(polled_data), &closing_file);
   } else {
@@ -604,8 +623,9 @@ void FileNetLogObserver::FileWriter::Stop(
   // If operating in bounded mode, the events were written to separate files
   // within |inprogress_dir_path_|. Assemble them into the final destination
   // file.
-  if (IsBounded())
+  if (IsBoundedAndStitchable()) {
     StitchFinalLogFile();
+  }
 
   // Ensure the final log file has been flushed.
   final_log_file_.Close();
@@ -621,9 +641,14 @@ void FileNetLogObserver::FileWriter::Flush(
   while (!local_file_queue.empty()) {
     base::File* output_file;
 
+    if (inprogress_dir_path_.empty() && IsBounded() &&
+        current_event_file_size_ > max_event_file_size_) {
+      return;
+    }
+
     // If in bounded mode, output events to the current event file. Otherwise
     // output events to the final log path.
-    if (IsBounded()) {
+    if (IsBoundedAndStitchable()) {
       if (current_event_file_number_ == 0 ||
           current_event_file_size_ >= max_event_file_size_) {
         IncrementCurrentEventFile();
@@ -639,9 +664,9 @@ void FileNetLogObserver::FileWriter::Flush(
     wrote_event_bytes_ |= bytes_written > 0;
 
     // Keep track of the filesize for current event file when in bounded mode.
-    if (IsBounded())
+    if (IsBounded()) {
       current_event_file_size_ += bytes_written;
-
+    }
     local_file_queue.pop();
   }
 }
@@ -651,7 +676,7 @@ void FileNetLogObserver::FileWriter::DeleteAllFiles() {
 
   final_log_file_.Close();
 
-  if (IsBounded()) {
+  if (IsBoundedAndStitchable()) {
     current_event_file_.Close();
     base::DeletePathRecursively(inprogress_dir_path_);
   }
@@ -677,9 +702,13 @@ bool FileNetLogObserver::FileWriter::IsBounded() const {
   return !IsUnbounded();
 }
 
+bool FileNetLogObserver::FileWriter::IsBoundedAndStitchable() const {
+  return IsBounded() && !inprogress_dir_path_.empty();
+}
+
 void FileNetLogObserver::FileWriter::IncrementCurrentEventFile() {
   DCHECK(task_runner_->RunsTasksInCurrentSequence());
-  DCHECK(IsBounded());
+  DCHECK(IsBoundedAndStitchable());
 
   current_event_file_number_++;
   current_event_file_ = OpenFileForWrite(
@@ -690,7 +719,7 @@ void FileNetLogObserver::FileWriter::IncrementCurrentEventFile() {
 base::FilePath FileNetLogObserver::FileWriter::GetEventFilePath(
     size_t index) const {
   DCHECK_LT(index, total_num_event_files_);
-  DCHECK(IsBounded());
+  DCHECK(IsBoundedAndStitchable());
   return inprogress_dir_path_.AppendASCII(
       "event_file_" + base::NumberToString(index) + ".json");
 }
@@ -792,7 +821,7 @@ void FileNetLogObserver::FileWriter::StitchFinalLogFile() {
 }
 
 void FileNetLogObserver::FileWriter::CreateInprogressDirectory() {
-  DCHECK(IsBounded());
+  DCHECK(IsBoundedAndStitchable());
 
   // If an output file couldn't be created, either creation of intermediate
   // files will also fail (if they're in a sibling directory), or are they are

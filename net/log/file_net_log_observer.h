@@ -86,6 +86,15 @@ class NET_EXPORT FileNetLogObserver : public NetLog::ThreadSafeObserver {
       NetLogCaptureMode capture_mode,
       std::unique_ptr<base::Value::Dict> constants);
 
+  // Creates a bounded log that writes to a pre-existing. Instead of stitching
+  // multiple log files together, once the maximum capacity has been reached the
+  // logging stops.
+  static std::unique_ptr<FileNetLogObserver> CreateBoundedFile(
+      base::File output_file,
+      uint64_t max_total_size,
+      NetLogCaptureMode capture_mode,
+      std::unique_ptr<base::Value::Dict> constants);
+
   FileNetLogObserver(const FileNetLogObserver&) = delete;
   FileNetLogObserver& operator=(const FileNetLogObserver&) = delete;
 
