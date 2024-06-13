@@ -23,6 +23,7 @@
 #include "components/prefs/scoped_user_pref_update.h"
 #include "components/signin/public/base/gaia_id_hash.h"
 #include "components/signin/public/base/signin_pref_names.h"
+#include "components/signin/public/base/signin_switches.h"
 #include "components/sync/base/features.h"
 #include "components/sync/base/passphrase_enums.h"
 #include "components/sync/base/pref_names.h"
@@ -57,6 +58,13 @@ constexpr char kSyncToSigninMigrationState[] =
 // State of the migration done by MaybeMigrateCustomPassphrasePref().
 constexpr char kSyncEncryptionBootstrapTokenPerAccountMigrationDone[] =
     "sync.encryption_bootstrap_token_per_account_migration_done";
+
+#if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
+// Pref to record if the one-off MaybeMigratePasswordsToPerAccountPref()
+// migration ran.
+constexpr char kPasswordsPerAccountPrefMigrationDone[] =
+    "sync.passwords_per_account_pref_migration_done";
+#endif  // !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
 
 constexpr int kNotMigrated = 0;
 constexpr int kMigratedPart1ButNot2 = 1;
@@ -212,6 +220,9 @@ void SyncPrefs::RegisterProfilePrefs(PrefRegistrySimple* registry) {
       prefs::internal::kSyncPassphrasePromptMutedProductVersion, 0);
   registry->RegisterBooleanPref(prefs::kEnableLocalSyncBackend, false);
   registry->RegisterFilePathPref(prefs::kLocalSyncBackendDir, base::FilePath());
+#if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
+  registry->RegisterBooleanPref(kPasswordsPerAccountPrefMigrationDone, false);
+#endif  // !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
 
   SyncFeatureStatusForMigrationsRecorder::RegisterProfilePrefs(registry);
 
@@ -1081,6 +1092,44 @@ void SyncPrefs::MigrateGlobalDataTypePrefsToAccount(
   pref_service->SetInteger(kSyncToSigninMigrationState,
                            kMigratedPart2AndFullyDone);
 }
+
+#if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
+// static
+void SyncPrefs::MaybeMigratePasswordsToPerAccountPref(
+    PrefService* pref_service) {
+  if (!base::FeatureList::IsEnabled(
+          switches::kExplicitBrowserSigninUIOnDesktop)) {
+    // Ensures the migration happens again if the experiment gets rolled back
+    // then rolled out a second time.
+    pref_service->ClearPref(kPasswordsPerAccountPrefMigrationDone);
+    return;
+  }
+
+  if (pref_service->GetBoolean(kPasswordsPerAccountPrefMigrationDone)) {
+    return;
+  }
+  pref_service->SetBoolean(kPasswordsPerAccountPrefMigrationDone, true);
+
+  std::string last_syncing_gaia_id =
+      pref_service->GetString(::prefs::kGoogleServicesLastSyncingGaiaId);
+  if (last_syncing_gaia_id.empty()) {
+    return;
+  }
+
+  bool global_password_setting_enabled =
+      pref_service->GetBoolean(prefs::internal::kSyncKeepEverythingSynced) ||
+      pref_service->GetBoolean(
+          GetPrefNameForType(UserSelectableType::kPasswords));
+  if (global_password_setting_enabled) {
+    return;
+  }
+
+  SetAccountKeyedPrefDictEntry(
+      pref_service, prefs::internal::kSelectedTypesPerAccount,
+      signin::GaiaIdHash::FromGaiaId(last_syncing_gaia_id),
+      GetPrefNameForType(UserSelectableType::kPasswords), base::Value(false));
+}
+#endif  // !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
 
 void SyncPrefs::MarkPartialSyncToSigninMigrationFullyDone() {
   // If the first part of the migration has run, but the second part has not,

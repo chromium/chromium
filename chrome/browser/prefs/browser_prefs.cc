@@ -3137,6 +3137,11 @@ void MigrateObsoleteProfilePrefs(PrefService* profile_prefs,
   profile_prefs->ClearPref(kHoldingSpaceWallpaperNudgeNudgeShownCount);
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
+#if !BUILDFLAG(IS_ANDROID)
+  // Added 06/2024.
+  syncer::SyncPrefs::MaybeMigratePasswordsToPerAccountPref(profile_prefs);
+#endif  // !BUILDFLAG(IS_ANDROID)
+
   // Please don't delete the following line. It is used by PRESUBMIT.py.
   // END_MIGRATE_OBSOLETE_PROFILE_PREFS
 

@@ -279,6 +279,19 @@ class SyncPrefs {
       PrefService* pref_service,
       const signin::GaiaIdHash& gaia_id_hash);
 
+#if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
+  // If switches::kExplicitBrowserSigninUIOnDesktop is enabled, performs a
+  // one-off migration which ensures that, for a user who...
+  // ...enabled sync-the-feature, then...
+  // ...disabled the passwords data type, then...
+  // ...disabled sync-the-feature, then...
+  // ...signed-in with the same account (without sync-the-feture), the passwords
+  // data type is disabled.
+  // Internally this works by reading the global passwords setting and writing
+  // it to the account setting for kGoogleServicesLastSyncingGaiaId.
+  static void MaybeMigratePasswordsToPerAccountPref(PrefService* pref_service);
+#endif  // !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
+
  private:
   static void RegisterTypeSelectedPref(PrefRegistrySimple* prefs,
                                        UserSelectableType type);
