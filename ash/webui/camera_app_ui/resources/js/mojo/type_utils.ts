@@ -369,8 +369,6 @@ export function convertPerfEventTypeToMojo(perfEventType: PerfEvent):
       return mojoType.PerfEventType.kPhotoCapturePostProcessing;
     case PerfEvent.PHOTO_CAPTURE_SHUTTER:
       return mojoType.PerfEventType.kPhotoCaptureShutter;
-    case PerfEvent.PHOTO_TAKING:
-      return mojoType.PerfEventType.kPhotoTaking;
     case PerfEvent.PORTRAIT_MODE_CAPTURE_POST_PROCESSING:
       return mojoType.PerfEventType.kPortraitModeCapturePostProcessing;
     case PerfEvent.TIME_LAPSE_CAPTURE_POST_PROCESSING:

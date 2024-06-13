@@ -245,7 +245,7 @@ enum PerfEventType {
   kModeSwitching,
   kPhotoCapturePostProcessing,
   kPhotoCaptureShutter,
-  kPhotoTaking,
+  kPhotoTakingDeprecated, // Deprecated
   kPortraitModeCapturePostProcessing,
   kTimelapseCapturePostProcessing,
   kVideoCapturePostProcessing,

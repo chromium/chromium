@@ -44,6 +44,7 @@ export enum State {
   MIC = 'mic',
   MIRROR = 'mirror',
   MULTI_CAMERA = 'multi-camera',
+  PHOTO_TAKING = 'photo-taking',
   RECORD_TYPE_GIF = 'record-type-gif',
   RECORD_TYPE_NORMAL = 'record-type-normal',
   RECORD_TYPE_TIME_LAPSE = 'record-type-time-lapse',

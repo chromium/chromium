@@ -230,7 +230,6 @@ export enum PerfEvent {
   MODE_SWITCHING = 'mode-switching',
   PHOTO_CAPTURE_POST_PROCESSING = 'photo-capture-post-processing',
   PHOTO_CAPTURE_SHUTTER = 'photo-capture-shutter',
-  PHOTO_TAKING = 'photo-taking',
   PORTRAIT_MODE_CAPTURE_POST_PROCESSING =
       'portrait-mode-capture-post-processing',
   TIME_LAPSE_CAPTURE_POST_PROCESSING = 'time-lapse-capture-post-processing',

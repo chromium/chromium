@@ -386,11 +386,11 @@ function createPerfLogger(): PerfLogger {
   state.addObserver(state.State.TAKING, (val, extras) => {
     // `taking` state indicates either taking photo or video. Skips for
     // some modes such as video mode since they didn't start `photo-taking`.
-    if (!state.get(PerfEvent.PHOTO_TAKING)) {
+    if (!state.get(state.State.PHOTO_TAKING)) {
       return;
     }
     if (!val) {
-      state.set(PerfEvent.PHOTO_TAKING, false, extras);
+      state.set(state.State.PHOTO_TAKING, false, extras);
     }
   });
 
@@ -405,7 +405,7 @@ function createPerfLogger(): PerfLogger {
     // timer duration. photo-capture-shutter is the timing that a shutter is
     // clicked.
     if (val) {
-      state.set(PerfEvent.PHOTO_TAKING, true);
+      state.set(state.State.PHOTO_TAKING, true);
     }
   });
 

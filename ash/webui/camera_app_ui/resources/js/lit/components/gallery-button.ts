@@ -17,7 +17,6 @@ import {CoverPhoto} from '../../cover_photo.js';
 import {I18nString} from '../../i18n_string.js';
 import {getI18nMessage} from '../../models/load_time_data.js';
 import {State} from '../../state.js';
-import {PerfEvent} from '../../type.js';
 import {withTooltip} from '../directives/with_tooltip.js';
 import {StateObserverController} from '../state_observer_controller.js';
 import {DEFAULT_STYLE} from '../styles.js';
@@ -90,7 +89,7 @@ export class GalleryButton extends LitElement {
       new StateObserverController(this, State.SUPER_RES_ZOOM);
 
   private readonly photoTakingState =
-      new StateObserverController(this, PerfEvent.PHOTO_TAKING);
+      new StateObserverController(this, State.PHOTO_TAKING);
 
   isSuperResZoomCapture(): boolean {
     return this.superResZoomState.value && this.photoTakingState.value;
