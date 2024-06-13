@@ -1240,7 +1240,7 @@ void Converter::Visit(const LayerDrawLooper& layer_draw_looper) {
   WriteNum(layer_draw_looper.layer_infos_size());
   int n = layer_draw_looper.layer_infos_size();
 #ifdef AVOID_MISBEHAVIOR
-  n = 1;  // Only write 1 to avoid timeouts.
+  n = std::min(n, 1);  // Write at most 1 to avoid timeouts.
 #endif
   for (int i = 0; i < n; ++i)
     Visit(layer_draw_looper.layer_infos(i));
