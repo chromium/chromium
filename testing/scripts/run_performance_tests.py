@@ -719,10 +719,17 @@ class CrossbenchTest(object):
     # Unable to find ChromeDriver, will rely on crossbench to download one.
     return []
 
+  def _get_default_args(self):
+    return [
+        '--enable-field-trial-config',
+        # Required until crbug/41491492 and crbug/346323630 are fixed.
+        '--enable-features=DisablePrivacySandboxPrompts',
+    ]
+
   def _generate_command_list(self, benchmark, benchmark_args, working_dir):
     return ([sys.executable] + [self.options.executable] + [benchmark] +
             [self.OUTDIR % working_dir] + [self.browser] + benchmark_args +
-            self.driver_path_arg)
+            self.driver_path_arg + self._get_default_args())
 
   def execute_benchmark(self,
                         benchmark,
