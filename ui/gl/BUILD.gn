@@ -42,11 +42,6 @@ buildflag_header("buildflags") {
   ]
 }
 
-# TODO(344606399): Remove once no longer referenced in
-# //components/exo/wayland/BUILD.gn
-config("gl_config") {
-}
-
 component("gl") {
   output_name = "gl_wrapper"  # Avoid colliding with OS X"s libGL.dylib.
 
