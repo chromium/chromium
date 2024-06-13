@@ -11045,6 +11045,7 @@ Called by update_use_counter_feature_enum.py.-->
   <int value="5002" label="ZstdContentEncodingForMainFrameNavigation"/>
   <int value="5003" label="ZstdContentEncodingForSubFrameNavigation"/>
   <int value="5004" label="ZstdContentEncodingForSubresource"/>
+  <int value="5005" label="EventTimingOrphanPointerupWithClick"/>
 </enum>
 
 <enum name="FeaturePolicyFeature">

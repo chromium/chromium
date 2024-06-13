@@ -4372,6 +4372,7 @@ enum WebFeature {
   kZstdContentEncodingForMainFrameNavigation = 5002,
   kZstdContentEncodingForSubFrameNavigation = 5003,
   kZstdContentEncodingForSubresource = 5004,
+  kEventTimingOrphanPointerupWithClick = 5005,
 
   // Add new features immediately above this line. Don't change assigned
   // numbers of any item, and don't reuse removed slots. Also don't add extra

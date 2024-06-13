@@ -3,6 +3,7 @@
 // found in the LICENSE file.
 
 #include "third_party/blink/renderer/core/timing/responsiveness_metrics.h"
+
 #include <memory>
 
 #include "base/metrics/histogram_functions.h"
@@ -17,6 +18,7 @@
 #include "third_party/blink/public/common/responsiveness_metrics/user_interaction_latency.h"
 #include "third_party/blink/renderer/core/dom/dom_high_res_time_stamp.h"
 #include "third_party/blink/renderer/core/event_type_names.h"
+#include "third_party/blink/renderer/core/events/pointer_event_factory.h"
 #include "third_party/blink/renderer/core/frame/frame.h"
 #include "third_party/blink/renderer/core/frame/local_dom_window.h"
 #include "third_party/blink/renderer/core/frame/local_frame.h"
@@ -316,10 +318,14 @@ bool ResponsivenessMetrics::SetPointerIdAndRecordLatency(
     // Any existing pointerup in the map cannot fire a click.
     FlushPointerup();
 
+    is_last_pointerup_orphan_ = false;
+
     // Platforms like Android would create ever-increasing pointer_id for
     // interactions, whereas platforms like linux could reuse the same id for
     // different interactions. So resetting pointer_info here if it's flushed.
     if (!pointer_id_entry_map_.Contains(pointer_id)) {
+      is_last_pointerup_orphan_ = true;
+
       // Reset if pointer_info got flushed.
       pointer_info = nullptr;
 
@@ -357,6 +363,13 @@ bool ResponsivenessMetrics::SetPointerIdAndRecordLatency(
     pointer_flush_timer_.StartOneShot(kFlushTimerLength, FROM_HERE);
     last_pointer_id_ = pointer_id;
   } else if (event_type == event_type_names::kClick) {
+    if (is_last_pointerup_orphan_ &&
+        pointer_id != PointerEventFactory::kReservedNonPointerId) {
+      UseCounter::Count(window_performance_->GetExecutionContext(),
+                        WebFeature::kEventTimingOrphanPointerupWithClick);
+      is_last_pointerup_orphan_ = false;
+    }
+
     // We do not rely on the |pointer_id| for clicks because they may be
     // inaccurate. Instead, we rely on the last pointer id seen.
     pointer_info = nullptr;
