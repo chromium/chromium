@@ -450,6 +450,10 @@ std::vector<std::unique_ptr<BirchItem>> BirchModel::GetItemsForDisplay() {
     return item->ranking() == std::numeric_limits<float>::max();
   });
 
+  // Remove any items with no title. These aren't useful to users.
+  std::erase_if(results,
+                [](const auto& item) { return item->title().empty(); });
+
   return results;
 }
 

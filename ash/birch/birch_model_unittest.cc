@@ -1319,6 +1319,23 @@ TEST_F(BirchModelTest, GetItemsForDisplay_NotRankedItem) {
   EXPECT_EQ(items[0]->GetType(), BirchItemType::kCalendar);
 }
 
+TEST_F(BirchModelTest, GetItemsForDisplay_NoTitle) {
+  BirchModel* model = Shell::Get()->birch_model();
+
+  // Add an item with an empty title.
+  std::vector<BirchTabItem> tab_item_list;
+  tab_item_list.emplace_back(u"", GURL("https://www.example.com/"),
+                             base::Time(), GURL("favicon"), "session",
+                             BirchTabItem::DeviceFormFactor::kDesktop);
+  tab_item_list.back().set_ranking(1.f);
+  model->SetRecentTabItems(std::move(tab_item_list));
+
+  std::vector<std::unique_ptr<BirchItem>> items = model->GetItemsForDisplay();
+
+  // No items are returned because the item with the empty title was removed.
+  EXPECT_TRUE(items.empty());
+}
+
 TEST_F(BirchModelTest, ModelClearedOnMultiProfileUserSwitch) {
   BirchModel* model = Shell::Get()->birch_model();
   TestModelConsumer consumer;
