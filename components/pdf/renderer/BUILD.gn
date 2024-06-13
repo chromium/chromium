@@ -44,7 +44,6 @@ static_library("renderer") {
     "//pdf:pdf_view_web_plugin",
     "//printing/buildflags",
     "//services/screen_ai/buildflags",
-    "//services/screen_ai/public/mojom",
     "//skia",
     "//third_party/blink/public:blink",
     "//third_party/blink/public/strings:accessibility_strings",
@@ -71,7 +70,10 @@ static_library("renderer") {
       "pdf_ocr_helper.cc",
       "pdf_ocr_helper.h",
     ]
-    deps += [ "//components/language/core/common" ]
+    deps += [
+      "//components/language/core/common",
+      "//services/screen_ai/public/mojom",
+    ]
   }
 }
 

@@ -142,7 +142,7 @@ source_set("utility") {
     }
   }
 
-  if (is_linux || is_chromeos) {
+  if (enable_screen_ai_service && (is_linux || is_chromeos)) {
     deps += [ "//services/screen_ai:screen_ai_sandbox_hook" ]
   }
 
