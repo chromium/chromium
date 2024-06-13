@@ -17,7 +17,7 @@ namespace {
 std::map<uint64_t, ContainerAppTabHelper::Page>* GetMD5PageHashes() {
   using Page = ContainerAppTabHelper::Page;
   static base::NoDestructor<std::map<uint64_t, Page>> md5_page_hashes(
-      {{11570261827078652039u, Page::kCongratulations},
+      {{15434391541687473744u, Page::kCongratulations},
        {6579551706563083045u, Page::kOffer},
        {18084016612939108325u, Page::kTermsAndConditions}});
   return md5_page_hashes.get();
