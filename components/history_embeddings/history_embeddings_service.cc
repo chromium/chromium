@@ -283,14 +283,9 @@ base::WeakPtr<HistoryEmbeddingsService> HistoryEmbeddingsService::AsWeakPtr() {
 void HistoryEmbeddingsService::SendQualityLog(
     const SearchResult& result,
     optimization_guide::proto::UserFeedback user_feedback,
-    size_t selection,
+    std::set<size_t> selections,
     size_t num_entered_characters,
     bool from_omnibox_history_scope) {
-  size_t num_days =
-      result.time_range_start.has_value()
-          ? (base::Time::Now() - result.time_range_start.value()).InDays() + 1
-          : 0;
-
   // Exit early if logging is not enabled.
   if (!kSendQualityLog.Get() || !embedder_metadata_.has_value()) {
     return;
@@ -317,6 +312,10 @@ void HistoryEmbeddingsService::SendQualityLog(
   }
 
   // Fill the quality proto with data.
+  size_t num_days =
+      result.time_range_start.has_value()
+          ? (base::Time::Now() - result.time_range_start.value()).InDays() + 1
+          : 0;
   quality_proto->set_user_feedback(user_feedback);
   quality_proto->set_embedding_model_version(
       embedder_metadata_.value().model_version);
@@ -337,7 +336,7 @@ void HistoryEmbeddingsService::SendQualityLog(
     optimization_guide::proto::DocumentShown* document_shown =
         quality_proto->add_top_documents_shown();
     document_shown->set_url(scored_url_row.row.url().spec());
-    document_shown->set_was_clicked(i == selection);
+    document_shown->set_was_clicked(selections.contains(i));
 
     optimization_guide::proto::PassageData* passage_data =
         document_shown->add_passages();

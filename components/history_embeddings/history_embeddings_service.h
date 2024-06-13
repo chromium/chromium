@@ -120,7 +120,7 @@ class HistoryEmbeddingsService : public KeyedService,
   // Submit quality logging data after user selects an item from search result.
   void SendQualityLog(const SearchResult& result,
                       optimization_guide::proto::UserFeedback user_feedback,
-                      size_t selection,
+                      std::set<size_t> selections,
                       size_t num_entered_characters,
                       bool from_omnibox_history_scope);
 
