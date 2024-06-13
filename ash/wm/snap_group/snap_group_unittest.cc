@@ -7005,7 +7005,8 @@ TEST_F(SnapGroupDisplayMetricsTest, ChromeVox) {
   // Enable ChromeVox panel.
   const int kAccessibilityPanelHeight = 45;
   std::unique_ptr<views::Widget> widget =
-      CreateTestWidget(nullptr, kShellWindowId_AccessibilityPanelContainer);
+      CreateTestWidget(views::Widget::InitParams::WIDGET_OWNS_NATIVE_WIDGET,
+                       nullptr, kShellWindowId_AccessibilityPanelContainer);
   SetAccessibilityPanelHeight(kAccessibilityPanelHeight);
   auto* a11y_controller = Shell::Get()->accessibility_controller();
   a11y_controller->spoken_feedback().SetEnabled(true);

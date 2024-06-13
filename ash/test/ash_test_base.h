@@ -132,14 +132,6 @@ class AshTestBase : public testing::Test {
 
   // Creates and shows a widget. See ash/public/cpp/shell_window_ids.h for
   // values for |container_id|.
-  // TODO(crbug.com/339619005) - Remove this function in favor of the next
-  // one so that callers have to explicitly specify the ownership mode.
-  static std::unique_ptr<views::Widget> CreateTestWidget(
-      views::WidgetDelegate* delegate = nullptr,
-      int container_id = desks_util::GetActiveDeskContainerId(),
-      const gfx::Rect& bounds = gfx::Rect(),
-      bool show = true);
-
   static std::unique_ptr<views::Widget> CreateTestWidget(
       views::Widget::InitParams::Ownership ownership,
       views::WidgetDelegate* delegate = nullptr,

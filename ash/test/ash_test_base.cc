@@ -272,15 +272,6 @@ aura::Window* AshTestBase::GetContext() {
 
 // static
 std::unique_ptr<views::Widget> AshTestBase::CreateTestWidget(
-    views::WidgetDelegate* delegate,
-    int container_id,
-    const gfx::Rect& bounds,
-    bool show) {
-  return CreateTestWidget(views::Widget::InitParams::WIDGET_OWNS_NATIVE_WIDGET,
-                          delegate, container_id, bounds, show);
-}
-
-std::unique_ptr<views::Widget> AshTestBase::CreateTestWidget(
     views::Widget::InitParams::Ownership ownership,
     views::WidgetDelegate* delegate,
     int container_id,
