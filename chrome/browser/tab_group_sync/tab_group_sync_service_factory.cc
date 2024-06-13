@@ -20,6 +20,8 @@
 #include "components/saved_tab_groups/saved_tab_group_model.h"
 #include "components/saved_tab_groups/tab_group_store.h"
 #include "components/saved_tab_groups/tab_group_store_delegate.h"
+#include "components/saved_tab_groups/tab_group_sync_coordinator.h"
+#include "components/saved_tab_groups/tab_group_sync_delegate.h"
 #include "components/saved_tab_groups/tab_group_sync_metrics_logger.h"
 #include "components/saved_tab_groups/tab_group_sync_service.h"
 #include "components/saved_tab_groups/tab_group_sync_service_impl.h"
@@ -32,6 +34,9 @@
 #if BUILDFLAG(IS_ANDROID)
 #include "components/saved_tab_groups/android/tab_group_store_delegate_android.h"
 #include "components/saved_tab_groups/android/tab_group_store_migration_utils.h"
+#include "components/saved_tab_groups/empty_tab_group_sync_delegate.h"
+#else
+#include "chrome/browser/ui/tabs/saved_tab_groups/tab_group_sync_delegate_desktop.h"
 #endif
 
 namespace tab_groups {
@@ -126,10 +131,26 @@ TabGroupSyncServiceFactory::BuildServiceInstanceForBrowserContext(
   }
 #endif
 
-  return std::make_unique<TabGroupSyncServiceImpl>(
+  auto service = std::make_unique<TabGroupSyncServiceImpl>(
       std::move(model), std::move(saved_config), std::move(shared_config),
       std::move(tab_group_store), profile->GetPrefs(),
       std::move(migrated_android_local_ids), std::move(metrics_logger));
+
+  std::unique_ptr<TabGroupSyncDelegate> delegate;
+#if BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_MAC) || \
+    BUILDFLAG(IS_WIN)
+  delegate = std::make_unique<TabGroupSyncDelegateDesktop>(service.get());
+#else
+  delegate = std::make_unique<EmptyTabGroupSyncDelegate>();
+#endif  // BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_MAC) ||
+        // BUILDFLAG(IS_WIN)
+
+  std::unique_ptr<TabGroupSyncCoordinator> coordinator =
+      std::make_unique<TabGroupSyncCoordinator>(std::move(delegate),
+                                                service.get());
+  service->SetCoordinator(std::move(coordinator));
+
+  return std::move(service);
 }
 
 }  // namespace tab_groups

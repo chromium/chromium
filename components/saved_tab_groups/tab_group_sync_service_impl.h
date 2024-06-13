@@ -20,6 +20,8 @@
 #include "components/saved_tab_groups/saved_tab_group_sync_bridge.h"
 #include "components/saved_tab_groups/shared_tab_group_data_sync_bridge.h"
 #include "components/saved_tab_groups/tab_group_store.h"
+#include "components/saved_tab_groups/tab_group_sync_coordinator.h"
+#include "components/saved_tab_groups/tab_group_sync_delegate.h"
 #include "components/saved_tab_groups/tab_group_sync_metrics_logger.h"
 #include "components/saved_tab_groups/tab_group_sync_service.h"
 #include "components/sync/model/model_type_store.h"
@@ -60,6 +62,10 @@ class TabGroupSyncServiceImpl : public TabGroupSyncService,
   // Disallow copy/assign.
   TabGroupSyncServiceImpl(const TabGroupSyncServiceImpl&) = delete;
   TabGroupSyncServiceImpl& operator=(const TabGroupSyncServiceImpl&) = delete;
+
+  // Called to set a coordinator that will manage all interactions with the tab
+  // model UI layer.
+  void SetCoordinator(std::unique_ptr<TabGroupSyncCoordinator> coordinator);
 
   // TabGroupSyncService implementation.
   void AddGroup(SavedTabGroup group) override;
@@ -157,6 +163,10 @@ class TabGroupSyncServiceImpl : public TabGroupSyncService,
 
   // Stores SharedTabGroupData to the disk and to sync if enabled.
   std::unique_ptr<SharedTabGroupDataSyncBridge> shared_bridge_;
+
+  // The UI coordinator to apply changes between local tab groups and the
+  // TabGroupSyncService.
+  std::unique_ptr<TabGroupSyncCoordinator> coordinator_;
 
   // Stores tab group ID mapping (Sync ID -> Local ID) and some local metadata.
   std::unique_ptr<TabGroupStore> tab_group_store_;

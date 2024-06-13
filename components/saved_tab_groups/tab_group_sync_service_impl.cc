@@ -69,6 +69,12 @@ TabGroupSyncServiceImpl::~TabGroupSyncServiceImpl() {
   model_->RemoveObserver(this);
 }
 
+void TabGroupSyncServiceImpl::SetCoordinator(
+    std::unique_ptr<TabGroupSyncCoordinator> coordinator) {
+  CHECK(!coordinator_);
+  coordinator_ = std::move(coordinator);
+}
+
 void TabGroupSyncServiceImpl::AddObserver(
     TabGroupSyncService::Observer* observer) {
   observers_.AddObserver(observer);

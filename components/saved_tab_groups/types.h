@@ -12,6 +12,7 @@
 
 namespace tab_groups {
 
+// Types for tab and tab group IDs.
 #if BUILDFLAG(IS_ANDROID)
 using LocalTabID = int;
 using LocalTabGroupID = base::Token;
@@ -19,6 +20,10 @@ using LocalTabGroupID = base::Token;
 using LocalTabID = base::Token;
 using LocalTabGroupID = tab_groups::TabGroupId;
 #endif
+
+// Base context for tab group actions. Platforms can subclass this to pass
+// additional context such as a browser window.
+struct TabGroupActionContext {};
 
 }  // namespace tab_groups
 
