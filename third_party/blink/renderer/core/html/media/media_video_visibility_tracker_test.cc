@@ -38,8 +38,10 @@ class MediaVideoVisibilityTrackerTest : public SimTest {
   }
 
   HTMLVideoElement* VideoElement() {
-    return To<HTMLVideoElement>(
+    HTMLVideoElement* video_element = To<HTMLVideoElement>(
         GetDocument().QuerySelector(AtomicString("video")));
+    DCHECK(video_element);
+    return video_element;
   }
 
   MediaVideoVisibilityTracker* CreateTracker(float visibility_threshold) {
@@ -98,12 +100,14 @@ class MediaVideoVisibilityTrackerTest : public SimTest {
 
 #if DCHECK_IS_ON()
 TEST_F(MediaVideoVisibilityTrackerTest, InvalidThresholdEqualToZero) {
-  GetDocument().CreateRawElement(html_names::kVideoTag);
+  auto* video = GetDocument().CreateRawElement(html_names::kVideoTag);
+  GetDocument().body()->AppendChild(video);
   EXPECT_DEATH_IF_SUPPORTED(CreateAndAttachVideoVisibilityTracker(0.0), "");
 }
 
 TEST_F(MediaVideoVisibilityTrackerTest, InvalidThresholdGreaterThanOne) {
-  GetDocument().CreateRawElement(html_names::kVideoTag);
+  auto* video = GetDocument().CreateRawElement(html_names::kVideoTag);
+  GetDocument().body()->AppendChild(video);
   EXPECT_DEATH_IF_SUPPORTED(CreateAndAttachVideoVisibilityTracker(1.1), "");
 }
 #endif  // DCHECK_IS_ON()
@@ -1026,11 +1030,10 @@ TEST_F(MediaVideoVisibilityTrackerTest,
   EXPECT_EQ(0u, set.size());
 }
 
-// TODO(crbug.com/40275580): Disabled because of UBSan test failures. Re-enable
-// once fixed.
 TEST_F(MediaVideoVisibilityTrackerTest,
-       DISABLED_ComputeVisibilityOnDemandReturnsFalseWhenTrackerNotAttached) {
-  GetDocument().CreateRawElement(html_names::kVideoTag);
+       ComputeVisibilityOnDemandReturnsFalseWhenTrackerNotAttached) {
+  auto* video = GetDocument().CreateRawElement(html_names::kVideoTag);
+  GetDocument().body()->AppendChild(video);
 
   // Create tracker and verify that: it is not attached and,
   // `ComputeVisibilityOnDemand` returns false.
