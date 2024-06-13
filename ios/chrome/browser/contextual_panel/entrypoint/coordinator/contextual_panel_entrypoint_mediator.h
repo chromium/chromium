@@ -11,6 +11,7 @@
 
 @protocol ContextualPanelEntrypointConsumer;
 @protocol ContextualPanelEntrypointMediatorDelegate;
+@protocol ContextualSheetCommands;
 @protocol ContextualPanelEntrypointIPHCommands;
 class WebStateList;
 
@@ -20,9 +21,11 @@ class WebStateList;
 
 - (instancetype)init NS_UNAVAILABLE;
 
-- (instancetype)initWithWebStateList:(WebStateList*)webStateList
-               entrypointHelpHandler:(id<ContextualPanelEntrypointIPHCommands>)
-                                         entrypointHelpHandler
+- (instancetype)
+      initWithWebStateList:(WebStateList*)webStateList
+    contextualSheetHandler:(id<ContextualSheetCommands>)contextualSheetHandler
+     entrypointHelpHandler:
+         (id<ContextualPanelEntrypointIPHCommands>)entrypointHelpHandler
     NS_DESIGNATED_INITIALIZER;
 
 // The consumer for this mediator.

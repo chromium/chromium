@@ -14,6 +14,7 @@
 #import "ios/chrome/browser/shared/model/web_state_list/test/fake_web_state_list_delegate.h"
 #import "ios/chrome/browser/shared/model/web_state_list/web_state_list.h"
 #import "ios/chrome/browser/shared/public/commands/contextual_panel_entrypoint_iph_commands.h"
+#import "ios/chrome/browser/shared/public/commands/contextual_sheet_commands.h"
 #import "ios/chrome/browser/shared/public/features/features.h"
 #import "ios/web/public/test/fakes/fake_web_state.h"
 #import "ios/web/public/test/web_task_environment.h"
@@ -160,10 +161,13 @@ class ContextualPanelEntrypointMediatorTest : public PlatformTest {
 
     mocked_entrypoint_help_handler_ =
         OCMStrictProtocolMock(@protocol(ContextualPanelEntrypointIPHCommands));
+    mocked_contextual_sheet_handler_ =
+        OCMStrictProtocolMock(@protocol(ContextualSheetCommands));
 
     mediator_ = [[ContextualPanelEntrypointMediator alloc]
-         initWithWebStateList:&web_state_list_
-        entrypointHelpHandler:mocked_entrypoint_help_handler_];
+          initWithWebStateList:&web_state_list_
+        contextualSheetHandler:mocked_contextual_sheet_handler_
+         entrypointHelpHandler:mocked_entrypoint_help_handler_];
 
     entrypoint_consumer_ = [[FakeEntrypointConsumer alloc] init];
     mediator_.consumer = entrypoint_consumer_;
@@ -180,23 +184,33 @@ class ContextualPanelEntrypointMediatorTest : public PlatformTest {
   ContextualPanelEntrypointMediator* mediator_;
   FakeEntrypointConsumer* entrypoint_consumer_;
   FakeContextualPanelEntrypointMediatorDelegate* delegate_;
+  id mocked_contextual_sheet_handler_;
   id mocked_entrypoint_help_handler_;
 };
 
-// Tests that tapping the entrypoint opens and then closes the panel.
+// Tests that tapping the entrypoint opens the panel if it's closed and vice
+// versa.
 TEST_F(ContextualPanelEntrypointMediatorTest, TestEntrypointTapped) {
+  ContextualPanelTabHelper* tab_helper = ContextualPanelTabHelper::FromWebState(
+      web_state_list_.GetActiveWebState());
+
+  [[mocked_contextual_sheet_handler_ expect] openContextualSheet];
   [[mocked_entrypoint_help_handler_ expect]
       dismissContextualPanelEntrypointIPHAnimated:YES];
 
   [mediator_ entrypointTapped];
+  tab_helper->OpenContextualPanel();
   EXPECT_TRUE(entrypoint_consumer_.contextualPanelIsOpen);
 
+  [[mocked_contextual_sheet_handler_ expect] closeContextualSheet];
   [[mocked_entrypoint_help_handler_ expect]
       dismissContextualPanelEntrypointIPHAnimated:YES];
 
   [mediator_ entrypointTapped];
+  tab_helper->CloseContextualPanel();
   EXPECT_FALSE(entrypoint_consumer_.contextualPanelIsOpen);
 
+  [mocked_contextual_sheet_handler_ verify];
   [mocked_entrypoint_help_handler_ verify];
 }
 

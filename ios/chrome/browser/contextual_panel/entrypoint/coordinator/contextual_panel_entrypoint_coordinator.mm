@@ -12,6 +12,7 @@
 #import "ios/chrome/browser/shared/model/browser/browser.h"
 #import "ios/chrome/browser/shared/public/commands/command_dispatcher.h"
 #import "ios/chrome/browser/shared/public/commands/contextual_panel_entrypoint_iph_commands.h"
+#import "ios/chrome/browser/shared/public/commands/contextual_sheet_commands.h"
 #import "ios/chrome/browser/shared/ui/util/omnibox_util.h"
 #import "ios/chrome/browser/ui/fullscreen/animated_scoped_fullscreen_disabler.h"
 #import "ios/chrome/browser/ui/fullscreen/fullscreen_controller.h"
@@ -42,12 +43,16 @@
 
   WebStateList* webStateList = self.browser->GetWebStateList();
   CommandDispatcher* dispatcher = self.browser->GetCommandDispatcher();
+
+  id<ContextualSheetCommands> contextualSheetHandler =
+      HandlerForProtocol(dispatcher, ContextualSheetCommands);
   id<ContextualPanelEntrypointIPHCommands> entrypointHelpHandler =
       HandlerForProtocol(dispatcher, ContextualPanelEntrypointIPHCommands);
 
   _mediator = [[ContextualPanelEntrypointMediator alloc]
-       initWithWebStateList:webStateList
-      entrypointHelpHandler:entrypointHelpHandler];
+        initWithWebStateList:webStateList
+      contextualSheetHandler:contextualSheetHandler
+       entrypointHelpHandler:entrypointHelpHandler];
   _mediator.delegate = self;
 
   _mediator.consumer = _viewController;

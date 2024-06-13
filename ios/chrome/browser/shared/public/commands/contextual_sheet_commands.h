@@ -8,11 +8,11 @@
 // Commands related to contextual sheet
 @protocol ContextualSheetCommands
 
-// Shows the contextual sheet.
-- (void)showContextualSheet;
+// Opens the contextual sheet.
+- (void)openContextualSheet;
 
-// Hides the contextual sheet.
-- (void)hideContextualSheet;
+// Closes the contextual sheet.
+- (void)closeContextualSheet;
 
 @end
 

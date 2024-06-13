@@ -35,6 +35,7 @@
 #import "ios/chrome/browser/commerce/model/shopping_service_factory.h"
 #import "ios/chrome/browser/content_settings/model/host_content_settings_map_factory.h"
 #import "ios/chrome/browser/contextual_panel/coordinator/contextual_sheet_coordinator.h"
+#import "ios/chrome/browser/contextual_panel/model/contextual_panel_tab_helper.h"
 #import "ios/chrome/browser/credential_provider_promo/ui_bundled/credential_provider_promo_coordinator.h"
 #import "ios/chrome/browser/default_browser/model/utils.h"
 #import "ios/chrome/browser/docking_promo/coordinator/docking_promo_coordinator.h"
@@ -2117,7 +2118,16 @@ enum class ToolbarKind {
 
 #pragma mark - ContextualSheetCommands
 
-- (void)showContextualSheet {
+- (void)openContextualSheet {
+  web::WebState* activeWebState = self.activeWebState;
+  if (!activeWebState) {
+    return;
+  }
+
+  ContextualPanelTabHelper* contextualPanelTabHelper =
+      ContextualPanelTabHelper::FromWebState(activeWebState);
+  contextualPanelTabHelper->OpenContextualPanel();
+
   _contextualSheetCoordinator = [[ContextualSheetCoordinator alloc]
       initWithBaseViewController:self.viewController
                          browser:self.browser];
@@ -2125,7 +2135,14 @@ enum class ToolbarKind {
   [_contextualSheetCoordinator start];
 }
 
-- (void)hideContextualSheet {
+- (void)closeContextualSheet {
+  web::WebState* activeWebState = self.activeWebState;
+  if (activeWebState) {
+    ContextualPanelTabHelper* contextualPanelTabHelper =
+        ContextualPanelTabHelper::FromWebState(activeWebState);
+    contextualPanelTabHelper->CloseContextualPanel();
+  }
+
   [_contextualSheetCoordinator stop];
   _contextualSheetCoordinator = nil;
 }

@@ -15,6 +15,7 @@
 #import "ios/chrome/browser/contextual_panel/model/contextual_panel_tab_helper_observer_bridge.h"
 #import "ios/chrome/browser/shared/model/web_state_list/web_state_list_observer_bridge.h"
 #import "ios/chrome/browser/shared/public/commands/contextual_panel_entrypoint_iph_commands.h"
+#import "ios/chrome/browser/shared/public/commands/contextual_sheet_commands.h"
 #import "ios/chrome/browser/shared/public/features/features.h"
 #import "ios/chrome/browser/shared/ui/symbols/symbols.h"
 
@@ -24,8 +25,11 @@
 @end
 
 @implementation ContextualPanelEntrypointMediator {
+  // The command handler for contextual sheet commands.
+  __weak id<ContextualSheetCommands> _contextualSheetHandler;
+
   // The command handler for entrypoint in-product help commands.
-  id<ContextualPanelEntrypointIPHCommands> _entrypointHelpHandler;
+  __weak id<ContextualPanelEntrypointIPHCommands> _entrypointHelpHandler;
 
   // WebStateList to use for observing ContextualPanelTabHelper events.
   raw_ptr<WebStateList> _webStateList;
@@ -53,12 +57,15 @@
       _activeContextualPanelObservationForwarder;
 }
 
-- (instancetype)initWithWebStateList:(WebStateList*)webStateList
-               entrypointHelpHandler:(id<ContextualPanelEntrypointIPHCommands>)
-                                         entrypointHelpHandler {
+- (instancetype)
+      initWithWebStateList:(WebStateList*)webStateList
+    contextualSheetHandler:(id<ContextualSheetCommands>)contextualSheetHandler
+     entrypointHelpHandler:
+         (id<ContextualPanelEntrypointIPHCommands>)entrypointHelpHandler {
   self = [super init];
   if (self) {
     _webStateList = webStateList;
+    _contextualSheetHandler = contextualSheetHandler;
     _entrypointHelpHandler = entrypointHelpHandler;
 
     // Set up web state list observation.
@@ -105,9 +112,9 @@
           _webStateList->GetActiveWebState());
 
   if (contextualPanelTabHelper->IsContextualPanelCurrentlyOpened()) {
-    contextualPanelTabHelper->CloseContextualPanel();
+    [_contextualSheetHandler closeContextualSheet];
   } else {
-    contextualPanelTabHelper->OpenContextualPanel();
+    [_contextualSheetHandler openContextualSheet];
   }
 }
 

@@ -78,7 +78,7 @@ const int kCloseBottomThreshold = 250;
       _topConstraint.constant = kLargeDetentTopMargin;
     } else if (_topConstraint.constant >
                self.view.superview.frame.size.height - kCloseBottomThreshold) {
-      [self.contextualSheetHandler hideContextualSheet];
+      [self.contextualSheetHandler closeContextualSheet];
     } else {
       _topConstraint.constant = kMediumDetentTopMargin;
     }

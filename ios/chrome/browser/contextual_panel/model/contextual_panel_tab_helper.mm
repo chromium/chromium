@@ -61,16 +61,20 @@ bool ContextualPanelTabHelper::IsContextualPanelCurrentlyOpened() {
 }
 
 void ContextualPanelTabHelper::OpenContextualPanel() {
+  if (is_contextual_panel_currently_opened_) {
+    return;
+  }
   is_contextual_panel_currently_opened_ = true;
-  [contextual_sheet_handler_ showContextualSheet];
   for (auto& observer : observers_) {
     observer.ContextualPanelOpened(this);
   }
 }
 
 void ContextualPanelTabHelper::CloseContextualPanel() {
+  if (!is_contextual_panel_currently_opened_) {
+    return;
+  }
   is_contextual_panel_currently_opened_ = false;
-  [contextual_sheet_handler_ hideContextualSheet];
   for (auto& observer : observers_) {
     observer.ContextualPanelClosed(this);
   }

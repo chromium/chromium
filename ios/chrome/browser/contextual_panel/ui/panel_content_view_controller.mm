@@ -135,7 +135,7 @@ NSString* const kCloseButtonAccessibilityIdentifier = @"PanelCloseButtonAXID";
 
 // Target for the close button.
 - (void)closeButtonTapped {
-  [self.contextualSheetCommandHandler hideContextualSheet];
+  [self.contextualSheetCommandHandler closeContextualSheet];
 }
 
 // Looks up the correct registration for the provided item. Wrapper for
