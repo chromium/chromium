@@ -987,7 +987,7 @@ class TabSwitcherMediator
     public TabListMediator.TabActionListener openTabGridDialog(Tab tab) {
         if (!ableToOpenDialog(tab)) return null;
         assert isTabInTabGroup(tab);
-        return tabId -> {
+        return (view, tabId) -> {
             List<Tab> relatedTabs = getRelatedTabs(tabId);
             if (relatedTabs.size() == 0) {
                 relatedTabs = null;

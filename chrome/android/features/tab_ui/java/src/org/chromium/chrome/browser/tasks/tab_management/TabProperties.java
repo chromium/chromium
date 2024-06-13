@@ -62,7 +62,10 @@ public class TabProperties {
     public static final WritableIntPropertyKey TAB_ID = new WritableIntPropertyKey();
 
     public static final WritableObjectPropertyKey<TabListMediator.TabActionListener>
-            TAB_SELECTED_LISTENER = new WritableObjectPropertyKey<>();
+            TAB_CLICK_LISTENER = new WritableObjectPropertyKey<>();
+
+    public static final WritableObjectPropertyKey<TabListMediator.TabActionListener>
+            TAB_LONG_CLICK_LISTENER = new WritableObjectPropertyKey<>();
 
     public static final WritableObjectPropertyKey<TabListMediator.TabActionListener>
             TAB_ACTION_BUTTON_LISTENER = new WritableObjectPropertyKey<>();
@@ -95,9 +98,6 @@ public class TabProperties {
             new WritableObjectPropertyKey<>();
 
     public static final WritableIntPropertyKey CARD_ANIMATION_STATUS = new WritableIntPropertyKey();
-
-    public static final PropertyModel.WritableObjectPropertyKey<TabListMediator.TabActionListener>
-            SELECTABLE_TAB_CLICKED_LISTENER = new PropertyModel.WritableObjectPropertyKey<>();
 
     public static final WritableObjectPropertyKey<SelectionDelegate<Integer>>
             TAB_SELECTION_DELEGATE = new WritableObjectPropertyKey<>();
@@ -144,14 +144,13 @@ public class TabProperties {
 
     public static final WritableObjectPropertyKey<TabListMediator.TabGroupInfo> TAB_GROUP_INFO =
             new WritableObjectPropertyKey<>();
-    public static final WritableObjectPropertyKey<TabListGroupMenuCoordinator.OnItemClickedCallback>
-            ON_MENU_ITEM_CLICKED_CALLBACK = new WritableObjectPropertyKey<>();
 
     public static final PropertyKey[] ALL_KEYS_TAB_GRID =
             new PropertyKey[] {
                 TAB_ACTION_STATE,
                 TAB_ID,
-                TAB_SELECTED_LISTENER,
+                TAB_CLICK_LISTENER,
+                TAB_LONG_CLICK_LISTENER,
                 TAB_ACTION_BUTTON_LISTENER,
                 FAVICON_FETCHED,
                 FAVICON_FETCHER,
@@ -164,7 +163,6 @@ public class TabProperties {
                 CHECKED_DRAWABLE_STATE_LIST,
                 CARD_ALPHA,
                 CARD_ANIMATION_STATUS,
-                SELECTABLE_TAB_CLICKED_LISTENER,
                 TAB_SELECTION_DELEGATE,
                 SELECTED_TAB_BACKGROUND_DRAWABLE_ID,
                 TABSTRIP_FAVICON_BACKGROUND_COLOR_ID,
@@ -179,14 +177,13 @@ public class TabProperties {
                 SHOULD_SHOW_PRICE_DROP_TOOLTIP,
                 QUICK_DELETE_ANIMATION_STATUS,
                 TAB_GROUP_COLOR_ID,
-                TAB_GROUP_INFO,
-                ON_MENU_ITEM_CLICKED_CALLBACK
+                TAB_GROUP_INFO
             };
 
     public static final PropertyKey[] ALL_KEYS_TAB_STRIP =
             new PropertyKey[] {
                 TAB_ID,
-                TAB_SELECTED_LISTENER,
+                TAB_CLICK_LISTENER,
                 TAB_ACTION_BUTTON_LISTENER,
                 FAVICON_FETCHED,
                 FAVICON_FETCHER,
@@ -198,13 +195,19 @@ public class TabProperties {
 
     public static final PropertyKey[] TAB_GRID_SELECTABLE_KEYS =
             new PropertyKey[] {
+                TAB_ACTION_BUTTON_LISTENER,
+                TAB_CLICK_LISTENER,
+                TAB_LONG_CLICK_LISTENER,
                 CHECKED_DRAWABLE_STATE_LIST,
-                SELECTABLE_TAB_ACTION_BUTTON_BACKGROUND,
-                SELECTABLE_TAB_CLICKED_LISTENER
+                SELECTABLE_TAB_ACTION_BUTTON_BACKGROUND
             };
 
     public static final PropertyKey[] TAB_GRID_CLOSABLE_KEYS =
             new PropertyKey[] {
-                TAB_SELECTED_LISTENER, ON_MENU_ITEM_CLICKED_CALLBACK,
+                TAB_ACTION_BUTTON_LISTENER,
+                TAB_CLICK_LISTENER,
+                TAB_LONG_CLICK_LISTENER,
+                CONTENT_DESCRIPTION_STRING,
+                ACTION_BUTTON_DESCRIPTION_STRING
             };
 }

@@ -58,7 +58,7 @@ class TabStripViewBinder {
                 button.setOnClickListener(
                         v -> {
                             model.get(TabProperties.TAB_ACTION_BUTTON_LISTENER)
-                                    .run(model.get(TabProperties.TAB_ID));
+                                    .run(v, model.get(TabProperties.TAB_ID));
                         });
                 button.setContentDescription(
                         view.getContext()
@@ -67,8 +67,8 @@ class TabStripViewBinder {
             } else {
                 button.setOnClickListener(
                         v -> {
-                            model.get(TabProperties.TAB_SELECTED_LISTENER)
-                                    .run(model.get(TabProperties.TAB_ID));
+                            model.get(TabProperties.TAB_CLICK_LISTENER)
+                                    .run(v, model.get(TabProperties.TAB_ID));
                         });
                 button.setContentDescription(
                         view.getContext().getString(R.string.accessibility_tabstrip_tab, title));

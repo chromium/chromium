@@ -15,6 +15,7 @@ import android.widget.ImageView;
 import android.widget.TextView;
 
 import androidx.annotation.ColorInt;
+import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.core.graphics.drawable.DrawableCompat;
 import androidx.core.view.ViewCompat;
@@ -132,35 +133,22 @@ class TabGridViewBinder {
             updateThumbnail(view, model);
         } else if (TabProperties.THUMBNAIL_FETCHER == propertyKey) {
             updateThumbnail(view, model);
+        } else if (TabProperties.TAB_ACTION_BUTTON_LISTENER == propertyKey) {
+            setNullableClickListener(
+                    model.get(TabProperties.TAB_ACTION_BUTTON_LISTENER),
+                    view.fastFindViewById(R.id.action_button),
+                    model);
+        } else if (TabProperties.TAB_CLICK_LISTENER == propertyKey) {
+            setNullableClickListener(model.get(TabProperties.TAB_CLICK_LISTENER), view, model);
+        } else if (TabProperties.TAB_LONG_CLICK_LISTENER == propertyKey) {
+            setNullableLongClickListener(
+                    model.get(TabProperties.TAB_LONG_CLICK_LISTENER), view, model);
         }
     }
 
     private static void bindClosableTabProperties(
             PropertyModel model, ViewLookupCachingFrameLayout view, PropertyKey propertyKey) {
-        if (TabProperties.TAB_ACTION_BUTTON_LISTENER == propertyKey) {
-            if (model.get(TabProperties.TAB_ACTION_BUTTON_LISTENER) == null) {
-                view.fastFindViewById(R.id.action_button).setOnClickListener(null);
-            } else {
-                view.fastFindViewById(R.id.action_button)
-                        .setOnClickListener(
-                                v -> {
-                                    int tabId = model.get(TabProperties.TAB_ID);
-                                    model.get(TabProperties.TAB_ACTION_BUTTON_LISTENER).run(tabId);
-                                });
-            }
-        } else if (TabProperties.TAB_SELECTED_LISTENER == propertyKey) {
-            // Stub out the long click listener to avoid selection for closable tabs.
-            view.setOnLongClickListener(v -> true);
-            if (model.get(TabProperties.TAB_SELECTED_LISTENER) == null) {
-                view.setOnClickListener(null);
-            } else {
-                view.setOnClickListener(
-                        v -> {
-                            int tabId = model.get(TabProperties.TAB_ID);
-                            model.get(TabProperties.TAB_SELECTED_LISTENER).run(tabId);
-                        });
-            }
-        } else if (CARD_ALPHA == propertyKey) {
+        if (CARD_ALPHA == propertyKey) {
             view.setAlpha(model.get(CARD_ALPHA));
         } else if (TabProperties.IPH_PROVIDER == propertyKey) {
             TabListMediator.IphProvider provider = model.get(TabProperties.IPH_PROVIDER);
@@ -208,7 +196,6 @@ class TabGridViewBinder {
                         priceCardView.findViewById(R.id.current_price));
             }
         } else if (TabProperties.IS_SELECTED == propertyKey) {
-            view.setSelected(model.get(TabProperties.IS_SELECTED));
             updateColorForActionButton(
                     view,
                     model.get(TabProperties.IS_INCOGNITO),
@@ -229,32 +216,6 @@ class TabGridViewBinder {
             if (TabProperties.TAB_GROUP_INFO == propertyKey) {
                 ((TabGridView) view).setTabActionButtonDrawable(tabGroupInfo.getIsTabGroup());
             }
-
-            // Note: TAB_ID changes are NOT flag guarded, so this code will still be used.
-            // However, TAB_GROUP_INFO will never be set since it is flag guarded and will be
-            // defaulted to null so in theory this should never cause problems. If the flag is
-            // set ensure that this specific click listener is only set for tab groups.
-            if (tabGroupInfo != null && tabGroupInfo.getIsTabGroup()) {
-                ImageView actionButton = (ImageView) view.fastFindViewById(R.id.action_button);
-                actionButton.setOnClickListener(
-                        TabListGroupMenuCoordinator.getTabListGroupMenuOnClickListener(
-                                model.get(TabProperties.ON_MENU_ITEM_CLICKED_CALLBACK),
-                                model.get(TabProperties.TAB_ID),
-                                model.get(TabProperties.IS_INCOGNITO),
-                                tabGroupInfo.getShouldShowDeleteTabGroup()));
-            } else {
-                if (model.get(TabProperties.TAB_ACTION_BUTTON_LISTENER) == null) {
-                    view.fastFindViewById(R.id.action_button).setOnClickListener(null);
-                } else {
-                    view.fastFindViewById(R.id.action_button)
-                            .setOnClickListener(
-                                    v -> {
-                                        int tabId = model.get(TabProperties.TAB_ID);
-                                        model.get(TabProperties.TAB_ACTION_BUTTON_LISTENER)
-                                                .run(tabId);
-                                    });
-                }
-            }
         }
     }
 
@@ -267,17 +228,6 @@ class TabGridViewBinder {
                     view,
                     model.get(TabProperties.IS_INCOGNITO),
                     model.get(TabProperties.IS_SELECTED));
-        } else if (TabProperties.SELECTABLE_TAB_CLICKED_LISTENER == propertyKey) {
-            view.setOnClickListener(
-                    v -> {
-                        model.get(TabProperties.SELECTABLE_TAB_CLICKED_LISTENER).run(tabId);
-                        ((TabGridView) view).onClick(view);
-                    });
-            view.setOnLongClickListener(
-                    v -> {
-                        model.get(TabProperties.SELECTABLE_TAB_CLICKED_LISTENER).run(tabId);
-                        return ((TabGridView) view).onLongClick(view);
-                    });
         } else if (TabProperties.TAB_SELECTION_DELEGATE == propertyKey) {
             ((TabGridView) view)
                     .setSelectionDelegate(model.get(TabProperties.TAB_SELECTION_DELEGATE));
@@ -291,6 +241,35 @@ class TabGridViewBinder {
                     view,
                     model.get(TabProperties.IS_INCOGNITO),
                     model.get(TabProperties.IS_SELECTED));
+        }
+    }
+
+    static void setNullableClickListener(
+            @Nullable TabListMediator.TabActionListener listener,
+            @NonNull View view,
+            @NonNull PropertyModel propertyModel) {
+        if (listener == null) {
+            view.setOnClickListener(null);
+        } else {
+            view.setOnClickListener(
+                    v -> {
+                        listener.run(v, propertyModel.get(TabProperties.TAB_ID));
+                    });
+        }
+    }
+
+    static void setNullableLongClickListener(
+            @Nullable TabListMediator.TabActionListener listener,
+            @NonNull View view,
+            @NonNull PropertyModel propertyModel) {
+        if (listener == null) {
+            view.setOnLongClickListener(null);
+        } else {
+            view.setOnLongClickListener(
+                    v -> {
+                        listener.run(v, propertyModel.get(TabProperties.TAB_ID));
+                        return true;
+                    });
         }
     }
 

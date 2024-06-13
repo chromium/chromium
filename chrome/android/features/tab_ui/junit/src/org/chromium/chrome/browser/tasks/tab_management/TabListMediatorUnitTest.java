@@ -843,8 +843,8 @@ public class TabListMediatorUnitTest {
     public void sendsSelectSignalCorrectly() {
         mModel.get(1)
                 .model
-                .get(TabProperties.TAB_SELECTED_LISTENER)
-                .run(mModel.get(1).model.get(TabProperties.TAB_ID));
+                .get(TabProperties.TAB_CLICK_LISTENER)
+                .run(mItemView2, mModel.get(1).model.get(TabProperties.TAB_ID));
 
         verify(mGridCardOnClickListenerProvider)
                 .onTabSelecting(mModel.get(1).model.get(TabProperties.TAB_ID), true);
@@ -857,10 +857,10 @@ public class TabListMediatorUnitTest {
         mMediator.resetWithListOfTabs(Arrays.asList(mTab1, mTab2), false);
         mModel.get(0)
                 .model
-                .get(TabProperties.TAB_SELECTED_LISTENER)
-                .run(mModel.get(0).model.get(TabProperties.TAB_ID));
+                .get(TabProperties.TAB_CLICK_LISTENER)
+                .run(mItemView1, mModel.get(0).model.get(TabProperties.TAB_ID));
 
-        verify(mOpenGroupActionListener).run(TAB1_ID);
+        verify(mOpenGroupActionListener).run(mItemView1, TAB1_ID);
     }
 
     @Test
@@ -870,10 +870,10 @@ public class TabListMediatorUnitTest {
         mMediator.resetWithListOfTabs(Arrays.asList(mTab1, mTab2), false);
         mModel.get(0)
                 .model
-                .get(TabProperties.TAB_SELECTED_LISTENER)
-                .run(mModel.get(0).model.get(TabProperties.TAB_ID));
+                .get(TabProperties.TAB_CLICK_LISTENER)
+                .run(mItemView1, mModel.get(0).model.get(TabProperties.TAB_ID));
 
-        verify(mOpenGroupActionListener).run(TAB1_ID);
+        verify(mOpenGroupActionListener).run(mItemView1, TAB1_ID);
     }
 
     @Test
@@ -881,7 +881,7 @@ public class TabListMediatorUnitTest {
         mModel.get(1)
                 .model
                 .get(TabProperties.TAB_ACTION_BUTTON_LISTENER)
-                .run(mModel.get(1).model.get(TabProperties.TAB_ID));
+                .run(mItemView2, mModel.get(1).model.get(TabProperties.TAB_ID));
 
         verify(mTabModel).closeTab(eq(mTab2), eq(null), eq(false), eq(true));
     }
@@ -3594,7 +3594,7 @@ public class TabListMediatorUnitTest {
 
         when(mTabGroupModelFilter.isTabInTabGroup(mTab2)).thenReturn(false);
         ThumbnailFetcher fetcher2 = mModel.get(1).model.get(TabProperties.THUMBNAIL_FETCHER);
-        mModel.get(1).model.get(TabProperties.SELECTABLE_TAB_CLICKED_LISTENER).run(TAB2_ID);
+        mModel.get(1).model.get(TabProperties.TAB_CLICK_LISTENER).run(mItemView2, TAB2_ID);
         assertThat(mModel.get(1).model.get(TabProperties.IS_SELECTED), equalTo(true));
         assertEquals(fetcher2, mModel.get(1).model.get(TabProperties.THUMBNAIL_FETCHER));
     }
@@ -3639,7 +3639,7 @@ public class TabListMediatorUnitTest {
 
         when(mTabGroupModelFilter.isTabInTabGroup(mTab2)).thenReturn(true);
         ThumbnailFetcher fetcher2 = mModel.get(1).model.get(TabProperties.THUMBNAIL_FETCHER);
-        mModel.get(1).model.get(TabProperties.SELECTABLE_TAB_CLICKED_LISTENER).run(TAB2_ID);
+        mModel.get(1).model.get(TabProperties.TAB_CLICK_LISTENER).run(mItemView2, TAB2_ID);
         assertThat(mModel.get(1).model.get(TabProperties.IS_SELECTED), equalTo(true));
         assertNotEquals(fetcher2, mModel.get(1).model.get(TabProperties.THUMBNAIL_FETCHER));
     }
@@ -3788,7 +3788,7 @@ public class TabListMediatorUnitTest {
     public void tabClosure_ignoresUpdateForTabGroup_outsideTabSwitcher() {
         initAndAssertAllProperties();
         TabListMediator.TabActionListener actionListenerBeforeUpdate =
-                mModel.get(0).model.get(TabProperties.TAB_SELECTED_LISTENER);
+                mModel.get(0).model.get(TabProperties.TAB_CLICK_LISTENER);
 
         // Mock that tab1 and tab3 are in the same group and group root id is TAB1_ID.
         Tab tab3 = prepareTab(TAB3_ID, TAB3_TITLE, TAB3_URL);
@@ -3805,7 +3805,7 @@ public class TabListMediatorUnitTest {
         assertEquals(1, mModel.size());
 
         TabListMediator.TabActionListener actionListenerAfterUpdate =
-                mModel.get(0).model.get(TabProperties.TAB_SELECTED_LISTENER);
+                mModel.get(0).model.get(TabProperties.TAB_CLICK_LISTENER);
         // The selection listener should remain unchanged, since the property model of the tab group
         // should not get updated when the closure is triggered from outside the tab switcher.
         assertThat(actionListenerBeforeUpdate, equalTo(actionListenerAfterUpdate));
@@ -3846,13 +3846,10 @@ public class TabListMediatorUnitTest {
         mMediator.resetWithListOfTabs(tabs, false);
 
         // Assert that the callback performs as expected.
-        assertNotNull(mModel.get(POSITION1).model.get(TabProperties.ON_MENU_ITEM_CLICKED_CALLBACK));
+        assertNotNull(mModel.get(POSITION1).model.get(TabProperties.TAB_ACTION_BUTTON_LISTENER));
         when(mTabModel.getTabAt(0)).thenReturn(mTab1);
         when(mTabGroupModelFilter.getRelatedTabListForRootId(TAB1_ID)).thenReturn(tabs);
-        mModel.get(POSITION1)
-                .model
-                .get(TabProperties.ON_MENU_ITEM_CLICKED_CALLBACK)
-                .onClick(R.id.close_tab, TAB1_ID);
+        mMediator.onMenuItemClicked(R.id.close_tab, TAB1_ID);
         verify(mTabGroupModelFilter)
                 .closeMultipleTabs(tabs, /* canUndo= */ true, /* hideTabGroups= */ true);
     }
@@ -3873,13 +3870,10 @@ public class TabListMediatorUnitTest {
         mMediator.resetWithListOfTabs(tabs, false);
 
         // Assert that the callback performs as expected.
-        assertNotNull(mModel.get(POSITION1).model.get(TabProperties.ON_MENU_ITEM_CLICKED_CALLBACK));
+        assertNotNull(mModel.get(POSITION1).model.get(TabProperties.TAB_ACTION_BUTTON_LISTENER));
         when(mIncognitoTabModel.getTabAt(0)).thenReturn(mTab1);
         when(mIncognitoTabGroupModelFilter.getRelatedTabListForRootId(TAB1_ID)).thenReturn(tabs);
-        mModel.get(POSITION1)
-                .model
-                .get(TabProperties.ON_MENU_ITEM_CLICKED_CALLBACK)
-                .onClick(R.id.ungroup_tab, TAB1_ID);
+        mMediator.onMenuItemClicked(R.id.ungroup_tab, TAB1_ID);
         verify(mIncognitoTabGroupModelFilter).moveTabOutOfGroup(TAB1_ID);
     }
 
@@ -3899,13 +3893,10 @@ public class TabListMediatorUnitTest {
         mMediator.resetWithListOfTabs(tabs, false);
 
         // Assert that the callback performs as expected.
-        assertNotNull(mModel.get(POSITION1).model.get(TabProperties.ON_MENU_ITEM_CLICKED_CALLBACK));
+        assertNotNull(mModel.get(POSITION1).model.get(TabProperties.TAB_ACTION_BUTTON_LISTENER));
         when(mIncognitoTabModel.getTabAt(0)).thenReturn(mTab1);
         when(mIncognitoTabGroupModelFilter.getRelatedTabListForRootId(TAB1_ID)).thenReturn(tabs);
-        mModel.get(POSITION1)
-                .model
-                .get(TabProperties.ON_MENU_ITEM_CLICKED_CALLBACK)
-                .onClick(R.id.delete_tab, TAB1_ID);
+        mMediator.onMenuItemClicked(R.id.delete_tab, TAB1_ID);
         verify(mIncognitoTabGroupModelFilter)
                 .closeMultipleTabs(tabs, /* canUndo= */ true, /* hideTabGroups= */ false);
     }
@@ -3923,13 +3914,10 @@ public class TabListMediatorUnitTest {
         mMediator.resetWithListOfTabs(tabs, false);
 
         // Assert that the callback performs as expected.
-        assertNotNull(mModel.get(POSITION1).model.get(TabProperties.ON_MENU_ITEM_CLICKED_CALLBACK));
+        assertNotNull(mModel.get(POSITION1).model.get(TabProperties.TAB_ACTION_BUTTON_LISTENER));
         when(mTabModel.getTabAt(0)).thenReturn(mTab1);
         when(mTabGroupModelFilter.getRelatedTabListForRootId(TAB1_ID)).thenReturn(tabs);
-        mModel.get(POSITION1)
-                .model
-                .get(TabProperties.ON_MENU_ITEM_CLICKED_CALLBACK)
-                .onClick(R.id.close_tab, TAB1_ID);
+        mMediator.onMenuItemClicked(R.id.close_tab, TAB1_ID);
         verify(mTabGroupModelFilter)
                 .closeMultipleTabs(tabs, /* canUndo= */ true, /* hideTabGroups= */ true);
     }
@@ -4175,13 +4163,13 @@ public class TabListMediatorUnitTest {
             assertNull(mModel.get(1).model.get(TabProperties.THUMBNAIL_FETCHER));
         }
 
-        if (mModel.get(0).model.get(TabProperties.SELECTABLE_TAB_CLICKED_LISTENER) != null) return;
+        if (mModel.get(0).model.get(TabProperties.TAB_LONG_CLICK_LISTENER) != null) return;
 
         assertThat(
-                mModel.get(0).model.get(TabProperties.TAB_SELECTED_LISTENER),
+                mModel.get(0).model.get(TabProperties.TAB_CLICK_LISTENER),
                 instanceOf(TabListMediator.TabActionListener.class));
         assertThat(
-                mModel.get(1).model.get(TabProperties.TAB_SELECTED_LISTENER),
+                mModel.get(1).model.get(TabProperties.TAB_CLICK_LISTENER),
                 instanceOf(TabListMediator.TabActionListener.class));
 
         assertThat(

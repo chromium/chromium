@@ -107,6 +107,17 @@ class TabListViewBinder {
             ((TextView) view.findViewById(R.id.description)).setText(domain);
         } else if (TabProperties.TAB_GROUP_COLOR_ID == propertyKey) {
             setTabGroupColorIcon(view, model);
+        } else if (TabProperties.TAB_ACTION_BUTTON_LISTENER == propertyKey) {
+            TabGridViewBinder.setNullableClickListener(
+                    model.get(TabProperties.TAB_ACTION_BUTTON_LISTENER),
+                    view.findViewById(R.id.end_button),
+                    model);
+        } else if (TabProperties.TAB_CLICK_LISTENER == propertyKey) {
+            TabGridViewBinder.setNullableClickListener(
+                    model.get(TabProperties.TAB_CLICK_LISTENER), view, model);
+        } else if (TabProperties.TAB_LONG_CLICK_LISTENER == propertyKey) {
+            TabGridViewBinder.setNullableLongClickListener(
+                    model.get(TabProperties.TAB_LONG_CLICK_LISTENER), view, model);
         }
     }
 
@@ -133,29 +144,6 @@ class TabListViewBinder {
             view.findViewById(R.id.end_button)
                     .setContentDescription(
                             model.get(TabProperties.ACTION_BUTTON_DESCRIPTION_STRING));
-        } else if (TabProperties.TAB_SELECTED_LISTENER == propertyKey) {
-            // Stub out the long click listener to avoid selection for closable tabs.
-            view.setOnLongClickListener(v -> true);
-            if (model.get(TabProperties.TAB_SELECTED_LISTENER) == null) {
-                view.setOnClickListener(null);
-            } else {
-                view.setOnClickListener(
-                        v -> {
-                            int tabId = model.get(TabProperties.TAB_ID);
-                            model.get(TabProperties.TAB_SELECTED_LISTENER).run(tabId);
-                        });
-            }
-        } else if (TabProperties.TAB_ACTION_BUTTON_LISTENER == propertyKey) {
-            if (model.get(TabProperties.TAB_ACTION_BUTTON_LISTENER) == null) {
-                view.findViewById(R.id.end_button).setOnClickListener(null);
-            } else {
-                view.findViewById(R.id.end_button)
-                        .setOnClickListener(
-                                v -> {
-                                    int tabId = model.get(TabProperties.TAB_ID);
-                                    model.get(TabProperties.TAB_ACTION_BUTTON_LISTENER).run(tabId);
-                                });
-            }
         } else if (TabProperties.TAB_GROUP_INFO == propertyKey
                 || TabProperties.TAB_ID == propertyKey) {
             @Nullable TabGroupInfo tabGroupInfo = model.get(TabProperties.TAB_GROUP_INFO);
@@ -176,31 +164,6 @@ class TabListViewBinder {
                     Bitmap bitmap = BitmapFactory.decodeResource(res, R.drawable.btn_close);
                     Bitmap.createScaledBitmap(bitmap, closeButtonSize, closeButtonSize, true);
                     actionButton.setImageBitmap(bitmap);
-                }
-            }
-
-            // Note: TAB_ID changes are NOT flag guarded, so this code will still be used.
-            // However, TAB_GROUP_INFO will never be set since it is flag guarded and will be
-            // defaulted to null so in theory this should never cause problems. If the flag is
-            // set ensure that this specific click listener is only set for tab groups.
-            if (tabGroupInfo != null && tabGroupInfo.getIsTabGroup()) {
-                actionButton.setOnClickListener(
-                        TabListGroupMenuCoordinator.getTabListGroupMenuOnClickListener(
-                                model.get(TabProperties.ON_MENU_ITEM_CLICKED_CALLBACK),
-                                model.get(TabProperties.TAB_ID),
-                                model.get(TabProperties.IS_INCOGNITO),
-                                tabGroupInfo.getShouldShowDeleteTabGroup()));
-            } else {
-                if (model.get(TabProperties.TAB_ACTION_BUTTON_LISTENER) == null) {
-                    view.findViewById(R.id.end_button).setOnClickListener(null);
-                } else {
-                    view.findViewById(R.id.end_button)
-                            .setOnClickListener(
-                                    v -> {
-                                        int tabId = model.get(TabProperties.TAB_ID);
-                                        model.get(TabProperties.TAB_ACTION_BUTTON_LISTENER)
-                                                .run(tabId);
-                                    });
                 }
             }
         }
@@ -262,26 +225,7 @@ class TabListViewBinder {
                 view.getResources().getInteger(R.integer.list_item_level_selected);
         TabListView tabListView = (TabListView) view;
 
-        if (TabProperties.SELECTABLE_TAB_CLICKED_LISTENER == propertyKey) {
-            View.OnClickListener onClickListener =
-                    v -> {
-                        model.get(TabProperties.SELECTABLE_TAB_CLICKED_LISTENER).run(tabId);
-                        tabListView.onClick(tabListView);
-                    };
-            View.OnLongClickListener onLongClickListener =
-                    v -> {
-                        model.get(TabProperties.SELECTABLE_TAB_CLICKED_LISTENER).run(tabId);
-                        return tabListView.onLongClick(tabListView);
-                    };
-            tabListView.setOnClickListener(onClickListener);
-            tabListView.setOnLongClickListener(onLongClickListener);
-
-            // The row should act as one large button.
-            ImageView endButton = tabListView.findViewById(R.id.end_button);
-            endButton.setOnClickListener(onClickListener);
-            endButton.setOnLongClickListener(onLongClickListener);
-            endButton.setImportantForAccessibility(View.IMPORTANT_FOR_ACCESSIBILITY_NO);
-        } else if (TabProperties.TAB_SELECTION_DELEGATE == propertyKey) {
+        if (TabProperties.TAB_SELECTION_DELEGATE == propertyKey) {
             tabListView.setSelectionDelegate(model.get(TabProperties.TAB_SELECTION_DELEGATE));
             tabListView.setItem(tabId);
         } else if (TabProperties.IS_SELECTED == propertyKey) {

@@ -228,7 +228,7 @@ public class TabGridItemTouchHelperCallbackUnitTest {
 
         mItemTouchHelperCallback.onSwiped(mMockViewHolder1, POSITION1);
 
-        verify(mTabClosedListener).run(TAB1_ID);
+        verify(mTabClosedListener).run(null, TAB1_ID);
     }
 
     @Test

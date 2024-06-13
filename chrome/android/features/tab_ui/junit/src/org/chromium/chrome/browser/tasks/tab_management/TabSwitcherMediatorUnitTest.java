@@ -630,7 +630,7 @@ public class TabSwitcherMediatorUnitTest {
         TabListMediator.TabActionListener listener = mMediator.openTabGridDialog(mTab1);
         assertThat(listener, notNullValue());
 
-        listener.run(TAB1_ID);
+        listener.run(mCustomViewMock, TAB1_ID);
         verify(mTabGridDialogController).resetWithListOfTabs(eq(tabs));
     }
 
@@ -645,7 +645,7 @@ public class TabSwitcherMediatorUnitTest {
         TabListMediator.TabActionListener listener = mMediator.openTabGridDialog(mTab1);
         assertThat(listener, notNullValue());
 
-        listener.run(TAB1_ID);
+        listener.run(mCustomViewMock, TAB1_ID);
         verify(mTabGridDialogController).resetWithListOfTabs(eq(tabs));
     }
 
@@ -659,7 +659,7 @@ public class TabSwitcherMediatorUnitTest {
         TabListMediator.TabActionListener listener = mMediator.openTabGridDialog(mTab1);
         assertThat(listener, notNullValue());
 
-        listener.run(TAB1_ID);
+        listener.run(mCustomViewMock, TAB1_ID);
         verify(mTabGridDialogController).resetWithListOfTabs(eq(null));
     }
 

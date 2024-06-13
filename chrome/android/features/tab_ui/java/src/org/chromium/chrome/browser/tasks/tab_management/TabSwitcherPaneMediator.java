@@ -352,7 +352,7 @@ public class TabSwitcherPaneMediator
         mTabGridDialogControllerSupplier.get().resetWithListOfTabs(relatedTabs);
     }
 
-    private void onTabGroupClicked(int tabId) {
+    private void onTabGroupClicked(View view, int tabId) {
         openTabGroupDialog(tabId);
         RecordUserAction.record("TabGridDialog.ExpandedFromSwitcher");
     }

@@ -401,7 +401,7 @@ class TabListMediator {
     private final TabActionListener mTabSelectedListener =
             new TabActionListener() {
                 @Override
-                public void run(int tabId) {
+                public void run(View view, int tabId) {
                     if (mModel.indexFromId(tabId) == TabModel.INVALID_TAB_INDEX) return;
 
                     mNextTabId = tabId;
@@ -467,7 +467,11 @@ class TabListMediator {
     private final TabActionListener mSelectableTabOnClickListener =
             new TabActionListener() {
                 @Override
-                public void run(int tabId) {
+                public void run(View view, int tabId) {
+                    SelectionDelegate<Integer> selectionDelegate = getTabSelectionDelegate();
+                    assert selectionDelegate != null;
+                    selectionDelegate.toggleSelectionForItem(tabId);
+
                     int index = mModel.indexFromId(tabId);
                     if (index == TabModel.INVALID_TAB_INDEX) return;
                     boolean selected = mModel.get(index).model.get(TabProperties.IS_SELECTED);
@@ -913,7 +917,8 @@ class TabListMediator {
 
     /** Interface for implementing a {@link Runnable} that takes a tabId for a generic action. */
     public interface TabActionListener {
-        void run(int tabId);
+        /** Run the action for the given view and tabId. */
+        void run(View view, int tabId);
     }
 
     /**
@@ -1160,7 +1165,7 @@ class TabListMediator {
         mTabClosedListener =
                 new TabActionListener() {
                     @Override
-                    public void run(int tabId) {
+                    public void run(View view, int tabId) {
                         // TODO(crbug.com/40638921): Consider disabling all touch events during
                         // animation.
                         if (mModel.indexFromId(tabId) == TabModel.INVALID_TAB_INDEX) return;
@@ -1216,14 +1221,14 @@ class TabListMediator {
                 };
 
         TabActionListener swipeSafeTabActionListener =
-                (id) -> {
+                (view, tabId) -> {
                     // The DefaultItemAnimator is prone to crashing in combination with the swipe
                     // animation.
                     // Avoid this issue by disabling the default item animation for the duration of
                     // the tab removal. This is a framework issue. For more details see
                     // crbug/1319859.
                     mRecyclerViewItemAnimationToggle.setDisableItemAnimations(true);
-                    mTabClosedListener.run(id);
+                    mTabClosedListener.run(view, tabId);
                     // It is necessary to post the restoration as otherwise any animation triggered
                     // by removing the tab will still use the animator as they are also posted to
                     // the UI thread.
@@ -1637,16 +1642,13 @@ class TabListMediator {
 
         mModel.get(index)
                 .model
-                .set(TabProperties.TAB_SELECTED_LISTENER, getTabActionListener(tab, isInTabGroup));
+                .set(TabProperties.TAB_CLICK_LISTENER, getTabActionListener(tab, isInTabGroup));
         mModel.get(index).model.set(TabProperties.IS_SELECTED, isSelected);
         mModel.get(index).model.set(TabProperties.SHOULD_SHOW_PRICE_DROP_TOOLTIP, false);
         mModel.get(index)
                 .model
                 .set(TabProperties.TITLE, getLatestTitleForTab(tab, /* useDefault= */ true));
 
-        mModel.get(index)
-                .model
-                .set(TabProperties.ON_MENU_ITEM_CLICKED_CALLBACK, mOnMenuItemClickedCallback);
         // A tab is deemed a tab group card representation if it is part of a tab group and
         // based in the tab switcher.
         boolean isTabGroup = isTabInTabGroup(tab) && isParentComponentTabSwitcher();
@@ -1675,8 +1677,11 @@ class TabListMediator {
                                     isTabGroup));
         }
 
-        updateDescriptionString(tab, mModel.get(index).model);
-        updateActionButtonDescriptionString(tab, mModel.get(index).model);
+        bindTabActionStateProperties(
+                mModel.get(index).model.get(TabProperties.TAB_ACTION_STATE),
+                tab,
+                mModel.get(index).model);
+
         mModel.get(index).model.set(TabProperties.URL_DOMAIN, getDomainForTab(tab));
 
         setupPersistedTabDataFetcherForTab(tab, index);
@@ -1927,12 +1932,14 @@ class TabListMediator {
             @NonNull PropertyModel model, @NonNull PropertyKey propertyKey) {
         if (TabProperties.TAB_ACTION_BUTTON_LISTENER == propertyKey) {
             model.set(TabProperties.TAB_ACTION_BUTTON_LISTENER, null);
+        } else if (TabProperties.TAB_CLICK_LISTENER == propertyKey) {
+            model.set(TabProperties.TAB_CLICK_LISTENER, null);
+        } else if (TabProperties.TAB_LONG_CLICK_LISTENER == propertyKey) {
+            model.set(TabProperties.TAB_LONG_CLICK_LISTENER, null);
         } else if (TabProperties.CHECKED_DRAWABLE_STATE_LIST == propertyKey) {
             model.set(TabProperties.CHECKED_DRAWABLE_STATE_LIST, null);
         } else if (TabProperties.SELECTABLE_TAB_ACTION_BUTTON_BACKGROUND == propertyKey) {
             model.set(TabProperties.SELECTABLE_TAB_ACTION_BUTTON_BACKGROUND, null);
-        } else if (TabProperties.SELECTABLE_TAB_CLICKED_LISTENER == propertyKey) {
-            model.set(TabProperties.SELECTABLE_TAB_CLICKED_LISTENER, null);
         }
     }
 
@@ -1940,17 +1947,68 @@ class TabListMediator {
             @NonNull PropertyModel model, @NonNull PropertyKey propertyKey) {
         if (TabProperties.TAB_ACTION_BUTTON_LISTENER == propertyKey) {
             model.set(TabProperties.TAB_ACTION_BUTTON_LISTENER, null);
-        } else if (TabProperties.TAB_SELECTED_LISTENER == propertyKey) {
-            model.set(TabProperties.TAB_SELECTED_LISTENER, null);
-        } else if (TabProperties.ON_MENU_ITEM_CLICKED_CALLBACK == propertyKey) {
-            model.set(TabProperties.ON_MENU_ITEM_CLICKED_CALLBACK, null);
+        } else if (TabProperties.TAB_CLICK_LISTENER == propertyKey) {
+            model.set(TabProperties.TAB_CLICK_LISTENER, null);
+        } else if (TabProperties.TAB_LONG_CLICK_LISTENER == propertyKey) {
+            model.set(TabProperties.TAB_LONG_CLICK_LISTENER, null);
+        } else if (TabProperties.CONTENT_DESCRIPTION_STRING == propertyKey) {
+            model.set(TabProperties.CONTENT_DESCRIPTION_STRING, null);
+        } else if (TabProperties.ACTION_BUTTON_DESCRIPTION_STRING == propertyKey) {
+            model.set(TabProperties.ACTION_BUTTON_DESCRIPTION_STRING, null);
+        }
+    }
+
+    private TabListMediator.TabActionListener getTabActionButtonListener(
+            Tab tab, @TabActionState int tabActionState) {
+        if (tabActionState == TabActionState.SELECTABLE) {
+            return mTabSelectedListener;
+        } else {
+            return isTabInTabGroup(tab)
+                    ? TabListGroupMenuCoordinator.getTabListGroupMenuOnClickListener(
+                            mOnMenuItemClickedCallback,
+                            tab.getId(),
+                            tab.isIncognito(),
+                            /* shouldShowDeleteGroup= */ TabGroupSyncFeatures.isTabGroupSyncEnabled(
+                                    mProfile))
+                    : mTabClosedListener;
+        }
+    }
+
+    private TabListMediator.TabActionListener getTabClickListener(
+            Tab tab, @TabActionState int tabActionState) {
+        if (tabActionState == TabActionState.SELECTABLE) {
+            return mSelectableTabOnClickListener;
+        } else {
+            if (isTabInTabGroup(tab)
+                    && mActionsOnAllRelatedTabs
+                    && mGridCardOnClickListenerProvider != null) {
+                return mGridCardOnClickListenerProvider.openTabGridDialog(tab);
+            } else {
+                return mTabSelectedListener;
+            }
+        }
+    }
+
+    private TabListMediator.TabActionListener getTabLongClickListener(
+            @TabActionState int tabActionState) {
+        if (tabActionState == TabActionState.SELECTABLE) {
+            return mSelectableTabOnClickListener;
+        } else {
+            return null;
         }
     }
 
     private void bindTabActionStateProperties(
             @TabActionState int tabActionState, Tab tab, PropertyModel model) {
         model.set(TabProperties.IS_SELECTED, isTabSelected(tabActionState, tab));
+
         boolean isInTabGroup = isTabInTabGroup(tab);
+        model.set(
+                TabProperties.TAB_ACTION_BUTTON_LISTENER,
+                getTabActionButtonListener(tab, tabActionState));
+        model.set(TabProperties.TAB_CLICK_LISTENER, getTabClickListener(tab, tabActionState));
+        model.set(TabProperties.TAB_LONG_CLICK_LISTENER, getTabLongClickListener(tabActionState));
+
         if (mTabActionState == TabActionState.SELECTABLE) {
             // Incognito in both light/dark theme is the same as non-incognito mode in dark theme.
             // Non-incognito mode and incognito in both light/dark themes in dark theme all look
@@ -1981,16 +2039,12 @@ class TabListMediator {
             model.set(
                     TabProperties.SELECTABLE_TAB_ACTION_BUTTON_SELECTED_BACKGROUND,
                     actionbuttonSelectedBackgroundColorList);
-            model.set(TabProperties.SELECTABLE_TAB_CLICKED_LISTENER, mSelectableTabOnClickListener);
         } else {
             model.set(
                     TabProperties.IS_SELECTED,
                     TabModelUtils.getCurrentTabId(
                                     mCurrentTabModelFilterSupplier.get().getTabModel())
                             == tab.getId());
-            model.set(TabProperties.TAB_SELECTED_LISTENER, getTabActionListener(tab, isInTabGroup));
-
-            model.set(TabProperties.ON_MENU_ITEM_CLICKED_CALLBACK, mOnMenuItemClickedCallback);
             // A tab is deemed a tab group card representation if it is part of a tab group and
             // based in the tab switcher.
             boolean isTabGroup = isTabInTabGroup(tab) && isParentComponentTabSwitcher();
@@ -2009,7 +2063,7 @@ class TabListMediator {
                         new TabGroupInfo(
                                 TabGroupSyncFeatures.isTabGroupSyncEnabled(mProfile), isTabGroup));
             }
-            // Can this be done separately from SELECTABLE/CLOSABLE?
+
             updateDescriptionString(tab, model);
             updateActionButtonDescriptionString(tab, model);
         }
@@ -2767,7 +2821,8 @@ class TabListMediator {
         }
     }
 
-    private void onMenuItemClicked(@IdRes int menuId, int tabId) {
+    @VisibleForTesting
+    void onMenuItemClicked(@IdRes int menuId, int tabId) {
         if (menuId == R.id.close_tab) {
             RecordUserAction.record("TabGroupItemMenu.Close");
             closeTabGroup(tabId, /* hideTabGroups= */ true);

@@ -26,20 +26,21 @@ public class TabListGroupMenuCoordinator extends TabGroupOverflowMenuCoordinator
     }
 
     /**
-     * Creates a {@link View.OnClickListener} that creates the menu and shows it when clicked.
+     * Creates a {@link TabListMediator.TabActionListener} that creates the menu and shows it when
+     * clicked.
      *
      * @param onItemClicked The clicked listener callback that handles clicks on menu items.
      * @param tabId The tabId that represents which tab to perform the onItemClicked action on.
      * @param isIncognito Whether the current tab group model filter is in an incognito state.
      * @param shouldShowDeleteGroup Whether to show the delete group menu item.
-     * @return A {@link View.OnClickListener} for the button that opens up the menu.
+     * @return A {@link TabListMediator.TabActionListener} for the button that opens up the menu.
      */
-    static View.OnClickListener getTabListGroupMenuOnClickListener(
+    static TabListMediator.TabActionListener getTabListGroupMenuOnClickListener(
             OnItemClickedCallback onItemClicked,
             int tabId,
             boolean isIncognito,
             boolean shouldShowDeleteGroup) {
-        return view -> {
+        return (view, unusedTabId) -> {
             Context context = view.getContext();
             TabListGroupMenuCoordinator menu =
                     new TabListGroupMenuCoordinator(

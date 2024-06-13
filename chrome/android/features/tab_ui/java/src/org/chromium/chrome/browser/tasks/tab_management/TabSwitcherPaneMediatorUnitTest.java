@@ -362,7 +362,7 @@ public class TabSwitcherPaneMediatorUnitTest {
     public void testOpenTabGridDialog() {
         TabActionListener listener = mMediator.openTabGridDialog(mGroupedTab1);
         assertNotNull(listener);
-        listener.run(mGroupedTab1.getId());
+        listener.run(mCustomView, mGroupedTab1.getId());
 
         verify(mTabGridDialogController).resetWithListOfTabs(List.of(mGroupedTab1, mGroupedTab2));
     }
@@ -380,7 +380,7 @@ public class TabSwitcherPaneMediatorUnitTest {
 
         TabActionListener listener = mMediator.openTabGridDialog(mUngroupedTab);
         assertNotNull(listener);
-        listener.run(mUngroupedTab.getId());
+        listener.run(mCustomView, mUngroupedTab.getId());
         verify(mTabGridDialogController).resetWithListOfTabs(List.of(mUngroupedTab));
     }
 
