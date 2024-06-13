@@ -100,7 +100,12 @@ class TabHoverCardInteractiveUiTest
     MemorySaverInteractiveTestMixin::SetUpOnMainThread();
     Tab::SetShowHoverCardOnMouseHoverForTesting(true);
     base::RunLoop run_loop(base::RunLoop::Type::kNestableTasksAllowed);
-    gfx::Point upper_left = browser()->window()->GetBounds().origin();
+    gfx::Point upper_left;
+#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
+    // Because Ozone makes it impossible to target a point not in a window in
+    // tests, instead target the extreme upper left of the browser window.
+    upper_left = browser()->window()->GetBounds().origin();
+#endif
     ui_controls::SendMouseMoveNotifyWhenDone(upper_left.x(), upper_left.y(),
                                              run_loop.QuitClosure());
     run_loop.Run();
