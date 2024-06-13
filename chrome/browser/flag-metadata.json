@@ -3294,7 +3294,7 @@
   {
     "name": "enable-input-device-settings-split",
     "owners": ["dpad@chromium.org", "zentaro@chromium.org", "cros-peripherals@google.com"],
-    "expiry_milestone": 130
+    "expiry_milestone": 140
   },
   {
     "name": "enable-input-event-logging",
