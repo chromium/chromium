@@ -36,6 +36,7 @@ if (fuzzing_engine_supports_custom_main) {
     flags = [
       "IS_CENTIPEDE=$use_centipede",
       "IS_LIBFUZZER=$use_libfuzzer",
+      "IS_FUZZILLI=$use_fuzzilli",
 
       # crbug.com/1474421: remove these lines once the bug is fixed.
       "DEBUG_CLUSTERFUZZ_FAILURE=$use_libfuzzer",
@@ -56,6 +57,8 @@ if (!is_android) {
   }
   in_process_fuzzer("js_in_process_fuzzer") {
     sources = [ "js_in_process_fuzzer.cc" ]
+    deps = [ ":in_process_fuzzer_buildflags" ]
+    is_fuzzilli_compatible = true
   }
   in_process_proto_fuzzer("page_load_in_process_fuzzer") {
     sources = [ "page_load_in_process_fuzzer.cc" ]

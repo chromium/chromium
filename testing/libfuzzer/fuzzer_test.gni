@@ -34,6 +34,7 @@ import("//testing/test.gni")
 # - exclude_main - if you're going to provide your own 'main' function
 # - high_end_job_required - whether the fuzzer requires bigger machines to run.
 #   Optional argument.
+# - is_fuzzilli_compatible - whether the fuzzer is compatible with fuzzilli.
 #
 # If use_libfuzzer gn flag is defined, then proper fuzzer would be build.
 # Without use_libfuzzer or use_afl a unit-test style binary would be built on
@@ -55,7 +56,9 @@ template("fuzzer_test") {
   # TODO(crbug.com/333831251): Once CF supports high end jobs, do not compile
   # high end targets except for high end jobs.
   _should_build = (_high_end_job_required || !high_end_fuzzer_targets) &&
-                  !disable_libfuzzer && use_fuzzing_engine
+                  !disable_libfuzzer && use_fuzzing_engine &&
+                  ((defined(invoker.is_fuzzilli_compatible) &&
+                    invoker.is_fuzzilli_compatible) || !use_fuzzilli)
   if (_should_build) {
     assert(defined(invoker.sources), "Need sources in $target_name.")
 
