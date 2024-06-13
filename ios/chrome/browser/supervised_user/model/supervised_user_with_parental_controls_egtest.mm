@@ -403,8 +403,9 @@ static const char* kInterstitialFirstTimeBanner =
 
 // Tests that when an interstitial is displayed for a blocked site,
 // allow-listing it triggers an intestitial refresh and unblocks the page.
+// TODO(crbug.com/346923501): This test is flaky.
 - (void)
-    testSupervisedUserWithAllowApprovedFilteringIsUnblockedOnURLAllowListing {
+    FLAKY_testSupervisedUserWithAllowApprovedFilteringIsUnblockedOnURLAllowListing {
   [self signInSupervisedUser];
   [SupervisedUserSettingsAppInterface setFilteringToAllowApprovedSites];
 
