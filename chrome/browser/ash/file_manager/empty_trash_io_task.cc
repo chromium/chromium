@@ -8,12 +8,14 @@
 #include <memory>
 #include <utility>
 
+#include "base/check.h"
 #include "base/files/file.h"
 #include "base/files/file_util.h"
 #include "base/functional/callback.h"
 #include "base/task/bind_post_task.h"
 #include "base/task/sequenced_task_runner.h"
 #include "chrome/browser/ash/file_manager/io_task_util.h"
+#include "chrome/browser/ash/file_manager/trash_common_util.h"
 #include "content/public/browser/browser_task_traits.h"
 #include "content/public/browser/browser_thread.h"
 
@@ -68,6 +70,12 @@ void EmptyTrashIOTask::Execute(IOTask::ProgressCallback /*progress_callback*/,
     ++in_flight_;
 
     VLOG(1) << "Removing " << entry.url.path();
+
+    // Double-check the path to delete.
+    CHECK(dir.IsAbsolute()) << dir;
+    CHECK(!dir.ReferencesParent()) << dir;
+    CHECK_EQ(dir.BaseName().value(), trash::kTrashFolderName) << dir;
+
     base::ThreadPool::PostTaskAndReplyWithResult(
         FROM_HERE, {base::MayBlock()},
         base::BindOnce(&base::DeletePathRecursively, std::move(dir)),
