@@ -148,12 +148,12 @@ class PrimaryAccountManager::ScopedPrefCommit {
       : pref_service_(pref_service),
         commit_on_destroy_(commit_on_destroy),
         commit_done_callback_(std::move(commit_done_callback)) {
-    if (commit_done_callback) {
+    if (commit_done_callback_) {
       // If `commit_on_destroy` is false, no commit will be done by
       // `ScopedPrefCommit` so the commit-related callback will not be called.
       // This CHECK ensures that the callback is not used (and expected to run)
       // in this case.
-      CHECK(commit_on_destroy);
+      CHECK(commit_on_destroy_);
     }
   }
 
