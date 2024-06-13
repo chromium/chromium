@@ -188,8 +188,6 @@ void ViewAccessibility::GetAccessibleNodeData(ui::AXNodeData* data) const {
     data->AddStringAttribute(ax::mojom::StringAttribute::kRole, "alertdialog");
   }
 
-  data->relative_bounds.bounds = gfx::RectF(view_->bounds());
-
   DCHECK(!data->HasStringAttribute(ax::mojom::StringAttribute::kChildTreeId))
       << "Please annotate child tree ids using "
          "ViewAccessibility::OverrideChildTreeID.";
@@ -528,6 +526,7 @@ ax::mojom::Role ViewAccessibility::GetCachedRole() const {
 
 void ViewAccessibility::SetBounds(const gfx::RectF& bounds) {
   data_.relative_bounds.bounds = bounds;
+  NotifyEvent(ax::mojom::Event::kLocationChanged, false);
 }
 
 void ViewAccessibility::SetPosInSet(int pos_in_set) {

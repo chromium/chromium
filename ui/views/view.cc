@@ -453,7 +453,7 @@ void View::SetBoundsRect(const gfx::Rect& bounds) {
   }
 
   OnBoundsChanged(prev);
-  NotifyAccessibilityEvent(ax::mojom::Event::kLocationChanged, false);
+  GetViewAccessibility().SetBounds(gfx::RectF(bounds_));
 
   if (needs_layout_ || is_size_changed) {
     needs_layout_ = false;
