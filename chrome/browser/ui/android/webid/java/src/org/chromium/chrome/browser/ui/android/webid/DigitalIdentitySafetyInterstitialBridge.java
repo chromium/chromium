@@ -6,13 +6,10 @@ package org.chromium.chrome.browser.ui.android.webid;
 
 import android.app.Activity;
 
-import androidx.annotation.VisibleForTesting;
-
 import org.jni_zero.CalledByNative;
 import org.jni_zero.NativeMethods;
 
-import org.chromium.content_public.browser.ContentFeatureList;
-import org.chromium.content_public.browser.ContentFeatureMap;
+import org.chromium.content_public.browser.webid.DigitalIdentityInterstitialType;
 import org.chromium.content_public.browser.webid.DigitalIdentityRequestStatusForMetrics;
 import org.chromium.ui.base.WindowAndroid;
 import org.chromium.ui.modaldialog.DialogDismissalCause;
@@ -25,14 +22,6 @@ import org.chromium.url.Origin;
  * website.
  */
 public class DigitalIdentitySafetyInterstitialBridge {
-    @VisibleForTesting public static final String DIGITAL_IDENTITY_DIALOG_PARAM = "dialog";
-
-    @VisibleForTesting
-    public static final String DIGITAL_IDENTITY_LOW_RISK_DIALOG_PARAM_VALUE = "low_risk";
-
-    @VisibleForTesting
-    public static final String DIGITAL_IDENTITY_HIGH_RISK_DIALOG_PARAM_VALUE = "high_risk";
-
     private long mNativeDigitalIdentitySafetyInterstitialBridgeAndroid;
 
     private DigitalIdentitySafetyInterstitialController mController;
@@ -57,8 +46,10 @@ public class DigitalIdentitySafetyInterstitialBridge {
     }
 
     @CalledByNative
-    public void showInterstitialIfNeeded(
-            WindowAndroid window, Origin origin, boolean isOnlyRequestingAge) {
+    public void showInterstitial(
+            WindowAndroid window,
+            Origin origin,
+            @DigitalIdentityInterstitialType int interstitialType) {
         if (window == null) {
             onDone(DigitalIdentityRequestStatusForMetrics.ERROR_OTHER);
             return;
@@ -75,29 +66,10 @@ public class DigitalIdentitySafetyInterstitialBridge {
             return;
         }
 
-        boolean showLowRiskDialog = false;
-        boolean showHighRiskDialog = !isOnlyRequestingAge;
-        if (isOnlyRequestingAge) {
-            String dialogParamValue =
-                    ContentFeatureMap.getInstance()
-                            .getFieldTrialParamByFeature(
-                                    ContentFeatureList.WEB_IDENTITY_DIGITAL_CREDENTIALS,
-                                    DIGITAL_IDENTITY_DIALOG_PARAM);
-            showLowRiskDialog =
-                    dialogParamValue.equals(DIGITAL_IDENTITY_LOW_RISK_DIALOG_PARAM_VALUE);
-            showHighRiskDialog =
-                    dialogParamValue.equals(DIGITAL_IDENTITY_HIGH_RISK_DIALOG_PARAM_VALUE);
-        }
-
-        if (!showLowRiskDialog && !showHighRiskDialog) {
-            onDone(DigitalIdentityRequestStatusForMetrics.SUCCESS);
-            return;
-        }
-
         mController = new DigitalIdentitySafetyInterstitialController(origin);
         mController.show(
                 modalDialogManager,
-                /* isHighRisk= */ showHighRiskDialog,
+                interstitialType,
                 (/*DialogDismissalCause*/ Integer dismissalCause) -> {
                     onDone(
                             dismissalCause.intValue()

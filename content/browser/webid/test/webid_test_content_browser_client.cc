@@ -25,10 +25,10 @@ void WebIdTestContentBrowserClient::SetIdentityRequestDialogController(
 }
 
 ContentBrowserClient::DigitalIdentityInterstitialAbortCallback
-WebIdTestContentBrowserClient::ShowDigitalIdentityInterstitialIfNeeded(
+WebIdTestContentBrowserClient::ShowDigitalIdentityInterstitial(
     content::WebContents& web_contents,
     const url::Origin& origin,
-    bool is_only_requesting_age,
+    DigitalIdentityInterstitialType interstitial_type,
     DigitalIdentityInterstitialCallback callback) {
   std::move(callback).Run(
       DigitalIdentityProvider::RequestStatusForMetrics::kSuccess);

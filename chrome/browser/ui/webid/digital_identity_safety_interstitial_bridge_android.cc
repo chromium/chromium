@@ -5,6 +5,7 @@
 #include "chrome/browser/ui/webid/digital_identity_safety_interstitial_bridge_android.h"
 
 #include "base/android/jni_android.h"
+#include "content/public/browser/digital_identity_interstitial_type.h"
 #include "content/public/browser/web_contents.h"
 #include "ui/android/window_android.h"
 #include "url/origin.h"
@@ -30,10 +31,10 @@ DigitalIdentitySafetyInterstitialBridgeAndroid::
 }
 
 content::ContentBrowserClient::DigitalIdentityInterstitialAbortCallback
-DigitalIdentitySafetyInterstitialBridgeAndroid::ShowInterstitialIfNeeded(
+DigitalIdentitySafetyInterstitialBridgeAndroid::ShowInterstitial(
     content::WebContents& web_contents,
     const url::Origin& origin,
-    bool is_only_requesting_age,
+    content::DigitalIdentityInterstitialType interstitial_type,
     content::ContentBrowserClient::DigitalIdentityInterstitialCallback
         callback) {
   callback_ = std::move(callback);
@@ -47,8 +48,8 @@ DigitalIdentitySafetyInterstitialBridgeAndroid::ShowInterstitialIfNeeded(
 
   auto weak_ptr = weak_ptr_factory_.GetWeakPtr();
 
-  Java_DigitalIdentitySafetyInterstitialBridge_showInterstitialIfNeeded(
-      env, j_bridge_, j_window, j_origin, is_only_requesting_age);
+  Java_DigitalIdentitySafetyInterstitialBridge_showInterstitial(
+      env, j_bridge_, j_window, j_origin, static_cast<int>(interstitial_type));
 
   // If no interstitial was shown,
   // DigitalIdentitySafetyInterstitialBridgeAndroid will have been destroyed.

@@ -1,0 +1,204 @@
+// Copyright 2024 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+#include <memory>
+#include <string>
+
+#include "base/files/file_path.h"
+#include "base/functional/callback.h"
+#include "base/memory/weak_ptr.h"
+#include "base/run_loop.h"
+#include "base/test/scoped_feature_list.h"
+#include "chrome/app/chrome_main_delegate.h"
+#include "chrome/browser/chrome_content_browser_client.h"
+#include "chrome/browser/ui/browser.h"
+#include "chrome/browser/ui/views/webid/digital_identity_safety_interstitial_controller_desktop.h"
+#include "chrome/grit/generated_resources.h"
+#include "chrome/test/base/in_process_browser_test.h"
+#include "chrome/test/base/ui_test_utils.h"
+#include "content/public/browser/digital_identity_provider.h"
+#include "content/public/common/content_features.h"
+#include "content/public/test/browser_test.h"
+#include "content/public/test/browser_test_utils.h"
+#include "testing/gtest/include/gtest/gtest-spi.h"
+#include "ui/base/l10n/l10n_util.h"
+#include "ui/views/widget/any_widget_observer.h"
+#include "ui/views/widget/widget.h"
+#include "ui/views/widget/widget_delegate.h"
+#include "ui/views/widget/widget_observer.h"
+
+namespace {
+
+// Callback for when a views::Widget is shown. Sets `was_dialog_shown` if the
+// shown views::Widget has `expected_dialog_title`.
+void OnDialogShown(bool* was_dialog_shown,
+                   std::u16string expected_dialog_title,
+                   views::Widget* widget) {
+  if (widget->widget_delegate()->GetWindowTitle() == expected_dialog_title) {
+    *was_dialog_shown = true;
+  }
+}
+
+// content::DigitalIdentityProvider which:
+// - always succeeds
+// - offers method to wait till DigitalIdentityProvider::Request() is invoked.
+class TestDigitalIdentityProvider
+    : public content::DigitalIdentityProvider,
+      public base::SupportsWeakPtr<TestDigitalIdentityProvider> {
+ public:
+  TestDigitalIdentityProvider() = default;
+  ~TestDigitalIdentityProvider() override = default;
+
+  void WaitTillRequestCredential() {
+    if (did_request_credential_) {
+      return;
+    }
+
+    base::RunLoop run_loop;
+    credential_request_observer_ = run_loop.QuitClosure();
+    run_loop.Run();
+  }
+
+  void Request(content::WebContents* web_contents,
+               const url::Origin& origin,
+               const std::string& request,
+               DigitalIdentityCallback callback) override {
+    did_request_credential_ = true;
+
+    base::OnceClosure observer = std::move(credential_request_observer_);
+    // Calling the callback might destroy `this`.
+    std::move(callback).Run("token");
+    if (observer) {
+      std::move(observer).Run();
+    }
+  }
+
+ private:
+  bool did_request_credential_ = false;
+  base::OnceClosure credential_request_observer_;
+};
+
+// ChromeContentBrowserClient which returns custom
+// content::DigitalIdentityProvider.
+class TestBrowserClient : public ChromeContentBrowserClient {
+ public:
+  explicit TestBrowserClient(
+      std::unique_ptr<content::DigitalIdentityProvider> provider)
+      : provider_(std::move(provider)) {}
+  ~TestBrowserClient() override = default;
+
+  std::unique_ptr<content::DigitalIdentityProvider>
+  CreateDigitalIdentityProvider() override {
+    return std::move(provider_);
+  }
+
+ private:
+  std::unique_ptr<content::DigitalIdentityProvider> provider_;
+};
+
+}  // anonymous namespace
+
+// Tests for DigitalIdentitySafetyInterstitialControllerDesktop.
+//
+// A bunch of logic for showing the interstitial is shared between the desktop
+// and Android implementations. For the sake of not duplicating integration
+// tests for shared code for both desktop and Android, integration tests for
+// shared logic are intentionally Android-only.
+class DigitalIdentitySafetyInterstitialIntegrationTest
+    : public InProcessBrowserTest {
+ public:
+  DigitalIdentitySafetyInterstitialIntegrationTest() {
+    scoped_feature_list_.InitAndEnableFeature(
+        features::kWebIdentityDigitalCredentials);
+  }
+  ~DigitalIdentitySafetyInterstitialIntegrationTest() override = default;
+
+  void SetUpOnMainThread() override {
+    auto unique_provider = std::make_unique<TestDigitalIdentityProvider>();
+    provider_ = unique_provider->AsWeakPtr();
+    auto unique_digital_provider =
+        static_cast<std::unique_ptr<content::DigitalIdentityProvider>>(
+            std::move(unique_provider));
+    client_ =
+        std::make_unique<TestBrowserClient>(std::move(unique_digital_provider));
+    original_client_ = content::SetBrowserClientForTesting(client_.get());
+
+    InProcessBrowserTest::SetUpOnMainThread();
+  }
+
+  void TearDownOnMainThread() override {
+    content::SetBrowserClientForTesting(original_client_.get());
+  }
+
+ protected:
+  std::unique_ptr<TestBrowserClient> client_;
+  raw_ptr<content::ContentBrowserClient> original_client_;
+  base::WeakPtr<TestDigitalIdentityProvider> provider_;
+
+ private:
+  base::test::ScopedFeatureList scoped_feature_list_;
+};
+
+/**
+ * Test that an interstitial is shown if the page requests more than just the
+ * age.
+ */
+IN_PROC_BROWSER_TEST_F(DigitalIdentitySafetyInterstitialIntegrationTest,
+                       InterstitialShownMoreThanJustAge) {
+  content::WebContents* web_contents =
+      browser()->tab_strip_model()->GetActiveWebContents();
+
+  std::u16string kExpectedDialogTitle = l10n_util::GetStringUTF16(
+      IDS_WEB_DIGITAL_CREDENTIALS_INTERSTITIAL_DIALOG_TITLE);
+
+  auto dialog_observer = std::make_unique<views::AnyWidgetObserver>(
+      views::test::AnyWidgetTestPasskey());
+  bool was_dialog_shown = false;
+  dialog_observer->set_shown_callback(base::BindRepeating(
+      &OnDialogShown, &was_dialog_shown, kExpectedDialogTitle));
+
+  GURL url = ui_test_utils::GetTestUrl(
+      base::FilePath(),
+      base::FilePath(FILE_PATH_LITERAL("digital_credentials.html")));
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), url));
+  ASSERT_TRUE(content::ExecJs(
+      web_contents,
+      "document.getElementById('request_age_and_name_button').click();"));
+
+  provider_->WaitTillRequestCredential();
+  EXPECT_TRUE(was_dialog_shown);
+}
+
+/**
+ * Test that an interstitial is not shown if the page only requests the age.
+ */
+IN_PROC_BROWSER_TEST_F(DigitalIdentitySafetyInterstitialIntegrationTest,
+                       InterstitialNotShown) {
+  content::WebContents* web_contents =
+      browser()->tab_strip_model()->GetActiveWebContents();
+
+  std::u16string kExpectedDialogTitle = l10n_util::GetStringUTF16(
+      IDS_WEB_DIGITAL_CREDENTIALS_INTERSTITIAL_DIALOG_TITLE);
+
+  auto dialog_observer = std::make_unique<views::AnyWidgetObserver>(
+      views::test::AnyWidgetTestPasskey());
+  base::RunLoop run_loop;
+  bool was_dialog_shown = false;
+  dialog_observer->set_shown_callback(base::BindRepeating(
+      &OnDialogShown, &was_dialog_shown, kExpectedDialogTitle));
+
+  GURL url = ui_test_utils::GetTestUrl(
+      base::FilePath(),
+      base::FilePath(FILE_PATH_LITERAL("digital_credentials.html")));
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), url));
+  ASSERT_TRUE(content::ExecJs(
+      web_contents,
+      "document.getElementById('request_age_only_button').click();"));
+
+  provider_->WaitTillRequestCredential();
+
+  base::RunLoop().RunUntilIdle();
+
+  EXPECT_FALSE(was_dialog_shown);
+}

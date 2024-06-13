@@ -182,6 +182,7 @@
 #include "chrome/browser/ui/prefs/pref_watcher.h"
 #include "chrome/browser/ui/tab_contents/chrome_web_contents_view_delegate.h"
 #include "chrome/browser/ui/ui_features.h"
+#include "chrome/browser/ui/webid/digital_identity_safety_interstitial_controller.h"
 #include "chrome/browser/ui/webid/identity_dialog_controller.h"
 #include "chrome/browser/ui/webui/chrome_web_ui_controller_factory.h"
 #include "chrome/browser/ui/webui/log_web_ui_url.h"
@@ -619,6 +620,7 @@
 #include "chrome/browser/ui/side_search/side_search_side_contents_helper.h"
 #include "chrome/browser/ui/side_search/side_search_utils.h"
 #include "chrome/browser/ui/views/chrome_browser_main_extra_parts_views.h"
+#include "chrome/browser/ui/views/webid/digital_identity_safety_interstitial_controller_desktop.h"
 #endif
 
 #if BUILDFLAG(ENABLE_LENS_DESKTOP_GOOGLE_BRANDED_FEATURES)
@@ -7939,11 +7941,15 @@ ChromeContentBrowserClient::CreateIdentityRequestDialogController(
   return std::make_unique<IdentityDialogController>(web_contents);
 }
 
-#if BUILDFLAG(IS_ANDROID)
 namespace {
 
 void RunDigitalIdentityCallback(
-    std::unique_ptr<DigitalIdentitySafetyInterstitialBridgeAndroid> bridge,
+#if BUILDFLAG(IS_ANDROID)
+    std::unique_ptr<DigitalIdentitySafetyInterstitialBridgeAndroid> controller,
+#else
+    std::unique_ptr<DigitalIdentitySafetyInterstitialControllerDesktop>
+        controller,
+#endif
     content::ContentBrowserClient::DigitalIdentityInterstitialCallback callback,
     content::DigitalIdentityProvider::RequestStatusForMetrics
         status_for_metrics) {
@@ -7953,21 +7959,25 @@ void RunDigitalIdentityCallback(
 }  // anonymous namespace
 
 content::ContentBrowserClient::DigitalIdentityInterstitialAbortCallback
-ChromeContentBrowserClient::ShowDigitalIdentityInterstitialIfNeeded(
+ChromeContentBrowserClient::ShowDigitalIdentityInterstitial(
     content::WebContents& web_contents,
     const url::Origin& origin,
-    bool is_only_requesting_age,
+    content::DigitalIdentityInterstitialType interstitial_type,
     DigitalIdentityInterstitialCallback callback) {
-  auto bridge =
+#if BUILDFLAG(IS_ANDROID)
+  auto controller =
       std::make_unique<DigitalIdentitySafetyInterstitialBridgeAndroid>();
-  auto* bridge_ptr = bridge.get();
-  // Callback takes ownership of |bridge|.
-  return bridge_ptr->ShowInterstitialIfNeeded(
-      web_contents, origin, is_only_requesting_age,
-      base::BindOnce(&RunDigitalIdentityCallback, std::move(bridge),
+#else
+  auto controller =
+      std::make_unique<DigitalIdentitySafetyInterstitialControllerDesktop>();
+#endif
+  auto* controller_ptr = controller.get();
+  // Callback takes ownership of |controller|.
+  return controller_ptr->ShowInterstitial(
+      web_contents, origin, interstitial_type,
+      base::BindOnce(&RunDigitalIdentityCallback, std::move(controller),
                      std::move(callback)));
 }
-#endif
 
 std::unique_ptr<content::DigitalIdentityProvider>
 ChromeContentBrowserClient::CreateDigitalIdentityProvider() {

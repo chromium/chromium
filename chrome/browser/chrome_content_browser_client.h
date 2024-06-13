@@ -910,14 +910,11 @@ class ChromeContentBrowserClient : public content::ContentBrowserClient {
   CreateIdentityRequestDialogController(
       content::WebContents* web_contents) override;
 
-#if BUILDFLAG(IS_ANDROID)
-  DigitalIdentityInterstitialAbortCallback
-  ShowDigitalIdentityInterstitialIfNeeded(
+  DigitalIdentityInterstitialAbortCallback ShowDigitalIdentityInterstitial(
       content::WebContents& web_contents,
       const url::Origin& origin,
-      bool is_only_requesting_age,
+      content::DigitalIdentityInterstitialType interstitial_type,
       DigitalIdentityInterstitialCallback callback) override;
-#endif
 
   std::unique_ptr<content::DigitalIdentityProvider>
   CreateDigitalIdentityProvider() override;

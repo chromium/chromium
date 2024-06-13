@@ -11,6 +11,7 @@ import org.chromium.base.Callback;
 import org.chromium.base.ContextUtils;
 import org.chromium.components.url_formatter.SchemeDisplay;
 import org.chromium.components.url_formatter.UrlFormatter;
+import org.chromium.content_public.browser.webid.DigitalIdentityInterstitialType;
 import org.chromium.ui.UiUtils;
 import org.chromium.ui.modaldialog.DialogDismissalCause;
 import org.chromium.ui.modaldialog.ModalDialogManager;
@@ -29,7 +30,9 @@ public class DigitalIdentitySafetyInterstitialController {
     }
 
     public void show(
-            ModalDialogManager modalDialogManager, boolean isHighRisk, Callback<Integer> callback) {
+            ModalDialogManager modalDialogManager,
+            @DigitalIdentityInterstitialType int interstitialType,
+            Callback<Integer> callback) {
         ModalDialogProperties.Controller controller =
                 new ModalDialogProperties.Controller() {
                     @Override
@@ -52,16 +55,16 @@ public class DigitalIdentitySafetyInterstitialController {
                 };
 
         int bodyTextResourceId =
-                isHighRisk
+                interstitialType == DigitalIdentityInterstitialType.HIGH_RISK
                         ? R.string.digital_identity_interstitial_high_risk_dialog_text
                         : R.string.digital_identity_interstitial_low_risk_dialog_text;
         int positiveButtonTextResourceId =
-                isHighRisk
+                interstitialType == DigitalIdentityInterstitialType.HIGH_RISK
                         ? R.string.digital_identity_interstitial_high_risk_positive_button_text
                         : R.string.digital_identity_interstitial_low_risk_positive_button_text;
         @ModalDialogProperties.ButtonStyles
         int buttonStyles =
-                isHighRisk
+                interstitialType == DigitalIdentityInterstitialType.HIGH_RISK
                         ? ModalDialogProperties.ButtonStyles.PRIMARY_OUTLINE_NEGATIVE_FILLED
                         : ModalDialogProperties.ButtonStyles.PRIMARY_FILLED_NEGATIVE_OUTLINE;
 

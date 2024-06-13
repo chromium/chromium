@@ -14,6 +14,7 @@
 #include "content/browser/webid/flags.h"
 #include "content/public/browser/browser_thread.h"
 #include "content/public/browser/content_browser_client.h"
+#include "content/public/browser/digital_identity_interstitial_type.h"
 #include "content/public/browser/digital_identity_provider.h"
 #include "content/public/browser/render_frame_host.h"
 #include "content/public/browser/web_contents.h"
@@ -23,6 +24,7 @@
 
 using base::Value;
 using blink::mojom::RequestDigitalIdentityStatus;
+using InterstitialType = content::DigitalIdentityInterstitialType;
 using RequestStatusForMetrics =
     content::DigitalIdentityProvider::RequestStatusForMetrics;
 using DigitalIdentityInterstitialAbortCallback =
@@ -35,6 +37,10 @@ constexpr char kMdlDocumentType[] = "org.iso.18013.5.1.mDL";
 constexpr char kOpenid4vpAgeOverPathRegex[] =
     R"(\$\['org\.iso\.18013\.5\.1'\]\['age_over_\d\d'\])";
 
+constexpr char kDigitalIdentityDialogParam[] = "dialog";
+constexpr char kDigitalIdentityLowRiskDialogParamValue[] = "low_risk";
+constexpr char kDigitalIdentityHighRiskDialogParamValue[] = "high_risk";
+
 // Returns entry if `dict` has a list with a single dict element for key
 // `list_key`.
 const base::Value::Dict* FindSingleElementListEntry(
@@ -45,6 +51,25 @@ const base::Value::Dict* FindSingleElementListEntry(
     return nullptr;
   }
   return list->front().GetIfDict();
+}
+
+std::optional<InterstitialType> ComputeInterstitialType(
+    bool is_only_requesting_age) {
+  if (!is_only_requesting_age) {
+    return InterstitialType::kHighRisk;
+  }
+
+  std::string dialog_param_value = base::GetFieldTrialParamValueByFeature(
+      features::kWebIdentityDigitalCredentials, kDigitalIdentityDialogParam);
+  if (dialog_param_value == kDigitalIdentityHighRiskDialogParamValue) {
+    return InterstitialType::kHighRisk;
+  }
+
+  if (dialog_param_value == kDigitalIdentityLowRiskDialogParamValue) {
+    return InterstitialType::kLowRisk;
+  }
+
+  return std::nullopt;
 }
 
 }  // anonymous namespace
@@ -307,10 +332,18 @@ void DigitalIdentityRequestImpl::ShowInterstitialIfNeeded(
     return;
   }
 
+  std::optional<InterstitialType> interstitial_type =
+      ComputeInterstitialType(is_only_requesting_age);
+
+  if (!interstitial_type) {
+    CompleteRequest(response);
+    return;
+  }
+
   update_interstitial_on_abort_callback_ =
-      GetContentClient()->browser()->ShowDigitalIdentityInterstitialIfNeeded(
+      GetContentClient()->browser()->ShowDigitalIdentityInterstitial(
           *WebContents::FromRenderFrameHost(&render_frame_host()), origin(),
-          is_only_requesting_age,
+          *interstitial_type,
           base::BindOnce(&DigitalIdentityRequestImpl::OnInterstitialDone,
                          weak_ptr_factory_.GetWeakPtr(), response.value()));
 }

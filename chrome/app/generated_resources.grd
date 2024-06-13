@@ -16483,6 +16483,30 @@ Please help our engineers fix this problem. Tell us what happened right before y
         QR code
       </message>
 
+    <!-- Interstitial shown prior to making digital identity request to wallet -->
+    <!-- Android strings are declared in android_chrome_strings.grd. -->
+    <message name="IDS_WEB_DIGITAL_CREDENTIALS_INTERSTITIAL_DIALOG_TITLE" translateable="false">
+      Caution
+    </message>
+    <message name="IDS_WEB_DIGITAL_CREDENTIALS_INTERSTITIAL_LOW_RISK_DIALOG_TEXT" translateable="false">
+      <ph name="WEBSITE_ORIGIN">$1<ex>www.cheapalcohol.com</ex></ph> would like to ask Android to give you options for sharing your identity information.
+    </message>
+    <message name="IDS_WEB_DIGITAL_CREDENTIALS_INTERSTITIAL_LOW_RISK_POSITIVE_BUTTON_TEXT" translateable="false">
+      Share
+    </message>
+    <message name="IDS_WEB_DIGITAL_CREDENTIALS_INTERSTITIAL_HIGH_RISK_DIALOG_TEXT" translateable="false">
+      <ph name="WEBSITE_ORIGIN">$1<ex>www.cheapalcohol.com</ex></ph> would like to ask Android for access to your identity. Chrome cannot determine what privacy risks this may pose.
+    </message>
+    <message name="IDS_WEB_DIGITAL_CREDENTIALS_INTERSTITIAL_HIGH_RISK_POSITIVE_BUTTON_TEXT" translateable="false">
+      Share Anyway
+    </message>
+    <message name="IDS_WEB_DIGITAL_CREDENTIALS_INTERSTITIAL_NEGATIVE_BUTTON_TEXT" translateable="false">
+      Do Not Share
+    </message>
+    <message name="IDS_WEB_DIGITAL_CREDENTIALS_INTERSTITIAL_REQUEST_ABORTED_DIALOG_TEXT" translateable="false">
+      <ph name="WEBSITE_ORIGIN">$1<ex>www.cheapalcohol.com</ex></ph> has canceled the request for identity information.
+    </message>
+
       <!-- Side Search -->
       <message name="IDS_ACCNAME_SIDE_SEARCH_TOOL" desc="The accessible name for the side search tool.">
         Side Search

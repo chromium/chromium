@@ -33,10 +33,10 @@ class DigitalIdentitySafetyInterstitialBridgeAndroid {
       const DigitalIdentitySafetyInterstitialBridgeAndroid&) = delete;
 
   content::ContentBrowserClient::DigitalIdentityInterstitialAbortCallback
-  ShowInterstitialIfNeeded(
+  ShowInterstitial(
       content::WebContents& web_contents,
       const url::Origin& origin,
-      bool is_only_requesting_age,
+      content::DigitalIdentityInterstitialType interstitial_type,
       content::ContentBrowserClient::DigitalIdentityInterstitialCallback
           callback);
 

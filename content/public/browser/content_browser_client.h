@@ -34,6 +34,7 @@
 #include "content/public/browser/child_process_security_policy.h"
 #include "content/public/browser/clipboard_types.h"
 #include "content/public/browser/commit_deferring_condition.h"
+#include "content/public/browser/digital_identity_interstitial_type.h"
 #include "content/public/browser/digital_identity_provider.h"
 #include "content/public/browser/file_system_access_permission_context.h"
 #include "content/public/browser/generated_code_cache_settings.h"
@@ -2642,25 +2643,20 @@ class CONTENT_EXPORT ContentBrowserClient {
   virtual std::unique_ptr<IdentityRequestDialogController>
   CreateIdentityRequestDialogController(WebContents* web_contents);
 
-  // Determines whether to show interstitial to prompt user whether they want to
-  // share their identity with the web page. Shows the interstitial if one is
-  // needed. Runs callback immediately if no interestitial is needed or after
-  // the user dismisses the interstitial if an interstitial is needed.
-  // `is_only_requesting_age` indicates whether the real-world-identity request
-  // is only requesting an assertion about whether the user is over a specific
-  // age.
+  // Show interstitial to prompt user whether they want to share their identity
+  // with the web page. Runs callback after the user dismisses the interstitial.
   // Returns a callback to call if the digital identity request is aborted. The
-  // callback updates the interstial UI to inform the user that the credential
+  // callback updates the interstitial UI to inform the user that the credential
   // request has been canceled. Returns an empty callback if no interstitial was
   // shown.
   using DigitalIdentityInterstitialAbortCallback = base::OnceClosure;
   using DigitalIdentityInterstitialCallback = base::OnceCallback<void(
       DigitalIdentityProvider::RequestStatusForMetrics status_for_metrics)>;
   virtual DigitalIdentityInterstitialAbortCallback
-  ShowDigitalIdentityInterstitialIfNeeded(
+  ShowDigitalIdentityInterstitial(
       WebContents& web_contents,
       const url::Origin& origin,
-      bool is_only_requesting_age,
+      DigitalIdentityInterstitialType interstitial_type,
       DigitalIdentityInterstitialCallback callback);
 
   // Creates a digital credential provider to fetch from native apps.
