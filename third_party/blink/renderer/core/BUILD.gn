@@ -458,6 +458,7 @@ blink_core_sources("core_hot") {
   }
 
   deps = [
+    ":buildflags",
     "//build:chromeos_buildflags",
     "//components/miracle_parameter/common",
     "//services/metrics/public/cpp:ukm_builders",
