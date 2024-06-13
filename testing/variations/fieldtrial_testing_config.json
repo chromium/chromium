@@ -12886,15 +12886,6 @@
             ],
             "experiments": [
                 {
-                    "name": "EnabledFsyncOnly",
-                    "params": {
-                        "MacEfficientFileFlushUseBarrier": "false"
-                    },
-                    "enable_features": [
-                        "MacEfficientFileFlush"
-                    ]
-                },
-                {
                     "name": "EnabledBarrierFsync",
                     "params": {
                         "MacEfficientFileFlushUseBarrier": "true"
