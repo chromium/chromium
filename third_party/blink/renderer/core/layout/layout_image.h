@@ -52,7 +52,7 @@ class CORE_EXPORT LayoutImage : public LayoutReplaced {
   ~LayoutImage() override;
   void Trace(Visitor*) const override;
 
-  static LayoutImage* CreateAnonymous(PseudoElement&);
+  static LayoutImage* CreateAnonymous(Document&);
 
   void SetImageResource(LayoutImageResource*);
 

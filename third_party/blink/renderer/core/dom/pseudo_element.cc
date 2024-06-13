@@ -344,7 +344,7 @@ void PseudoElement::AttachLayoutTree(AttachContext& context) {
   for (const ContentData* content = style.GetContentData(); content;
        content = content->Next()) {
     if (!content->IsAltText()) {
-      LayoutObject* child = content->CreateLayoutObject(*this, style);
+      LayoutObject* child = content->CreateLayoutObject(*layout_object);
       if (layout_object->IsChildAllowed(child, style)) {
         layout_object->AddChild(child);
         if (child->IsQuote()) {

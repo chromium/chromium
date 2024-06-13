@@ -39,9 +39,7 @@
 
 namespace blink {
 
-class ComputedStyle;
 class LayoutObject;
-class PseudoElement;
 class TreeScope;
 
 class ContentData : public GarbageCollected<ContentData> {
@@ -55,8 +53,10 @@ class ContentData : public GarbageCollected<ContentData> {
   virtual bool IsAltText() const { return false; }
   virtual bool IsNone() const { return false; }
 
-  virtual LayoutObject* CreateLayoutObject(PseudoElement&,
-                                           const ComputedStyle&) const = 0;
+  // Create a layout object for this piece of content. `owner` is the layout
+  // object that has the content property, e.g. a pseudo element, or an @page
+  // margin box.
+  virtual LayoutObject* CreateLayoutObject(LayoutObject& owner) const = 0;
 
   virtual ContentData* Clone() const;
 
@@ -111,8 +111,7 @@ class ImageContentData final : public ContentData {
   }
 
   bool IsImage() const override { return true; }
-  LayoutObject* CreateLayoutObject(PseudoElement&,
-                                   const ComputedStyle&) const override;
+  LayoutObject* CreateLayoutObject(LayoutObject& owner) const override;
 
   bool Equals(const ContentData& data) const override {
     if (!data.IsImage()) {
@@ -177,8 +176,7 @@ class TextContentData final : public ContentData {
   void SetText(const String& text) { text_ = text; }
 
   bool IsText() const override { return true; }
-  LayoutObject* CreateLayoutObject(PseudoElement&,
-                                   const ComputedStyle&) const override;
+  LayoutObject* CreateLayoutObject(LayoutObject& owner) const override;
 
   bool Equals(const ContentData& data) const override {
     if (!data.IsText()) {
@@ -220,8 +218,7 @@ class AltTextContentData final : public ContentData {
   void SetText(const String& text) { text_ = text; }
 
   bool IsAltText() const override { return true; }
-  LayoutObject* CreateLayoutObject(PseudoElement&,
-                                   const ComputedStyle&) const override;
+  LayoutObject* CreateLayoutObject(LayoutObject& owner) const override;
 
   bool Equals(const ContentData& data) const override {
     if (!data.IsAltText()) {
@@ -260,8 +257,7 @@ class CounterContentData final : public ContentData {
         tree_scope_(tree_scope) {}
 
   bool IsCounter() const override { return true; }
-  LayoutObject* CreateLayoutObject(PseudoElement&,
-                                   const ComputedStyle&) const override;
+  LayoutObject* CreateLayoutObject(LayoutObject& owner) const override;
 
   const AtomicString& Identifier() const { return identifier_; }
   const AtomicString& ListStyle() const { return list_style_; }
@@ -313,8 +309,7 @@ class QuoteContentData final : public ContentData {
   void SetQuote(QuoteType quote) { quote_ = quote; }
 
   bool IsQuote() const override { return true; }
-  LayoutObject* CreateLayoutObject(PseudoElement&,
-                                   const ComputedStyle&) const override;
+  LayoutObject* CreateLayoutObject(LayoutObject& owner) const override;
 
   bool Equals(const ContentData& data) const override {
     if (!data.IsQuote()) {
@@ -347,8 +342,7 @@ class NoneContentData final : public ContentData {
   explicit NoneContentData() {}
 
   bool IsNone() const override { return true; }
-  LayoutObject* CreateLayoutObject(PseudoElement&,
-                                   const ComputedStyle&) const override;
+  LayoutObject* CreateLayoutObject(LayoutObject& owner) const override;
 
   bool Equals(const ContentData& data) const override { return data.IsNone(); }
 

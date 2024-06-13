@@ -489,7 +489,7 @@ void FirstLetterPseudoElement::AttachFirstLetterTextLayoutObjects(
                                    old_text.Impl(), length, remaining_length);
   } else {
     remaining_text = LayoutTextFragment::CreateAnonymous(
-        *this, old_text.Impl(), length, remaining_length);
+        GetDocument(), old_text.Impl(), length, remaining_length);
   }
 
   remaining_text->SetFirstLetterPseudoElement(this);
@@ -506,8 +506,8 @@ void FirstLetterPseudoElement::AttachFirstLetterTextLayoutObjects(
 
   // Construct text fragment for the first letter.
   const ComputedStyle* const letter_style = GetComputedStyle();
-  LayoutTextFragment* letter =
-      LayoutTextFragment::CreateAnonymous(*this, old_text.Impl(), 0, length);
+  LayoutTextFragment* letter = LayoutTextFragment::CreateAnonymous(
+      GetDocument(), old_text.Impl(), 0, length);
   letter->SetFirstLetterPseudoElement(this);
   if (UNLIKELY(GetLayoutObject()->IsInitialLetterBox())) {
     const LayoutBlock& paragraph = *GetLayoutObject()->ContainingBlock();

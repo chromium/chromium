@@ -54,9 +54,9 @@ namespace blink {
 LayoutImage::LayoutImage(Element* element)
     : LayoutReplaced(element, PhysicalSize()) {}
 
-LayoutImage* LayoutImage::CreateAnonymous(PseudoElement& pseudo) {
+LayoutImage* LayoutImage::CreateAnonymous(Document& document) {
   LayoutImage* image = MakeGarbageCollected<LayoutImage>(nullptr);
-  image->SetDocumentForAnonymous(&pseudo.GetDocument());
+  image->SetDocumentForAnonymous(&document);
   return image;
 }
 

@@ -47,11 +47,7 @@ class CORE_EXPORT LayoutTextFragment : public LayoutText {
                                     const String&,
                                     int start_offset,
                                     int length);
-  static LayoutTextFragment* CreateAnonymous(PseudoElement&, const String&);
-  static LayoutTextFragment* CreateAnonymous(PseudoElement&,
-                                             const String&,
-                                             unsigned start,
-                                             unsigned length);
+  static LayoutTextFragment* CreateAnonymous(Document&, const String&);
   static LayoutTextFragment* CreateAnonymous(Document&,
                                              const String&,
                                              unsigned start,
