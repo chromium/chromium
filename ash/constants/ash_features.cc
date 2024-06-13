@@ -1304,12 +1304,6 @@ BASE_FEATURE(kGlanceablesTimeManagementTasksViewAssignedTasks,
              "GlanceablesTimeManagementTasksViewAssignedTasks",
              base::FEATURE_ENABLED_BY_DEFAULT);
 
-// Enables scrolling from the bottom of the tasks view to expand classroom, or
-// scrolling from the top of the classroom view to expand tasks.
-BASE_FEATURE(kGlanceablesTimeManagementOverscrollToExpand,
-             "GlanceablesTimeManagementOverscrollToExpand",
-             base::FEATURE_DISABLED_BY_DEFAULT);
-
 // Enables logging new Gaia account creation event.
 BASE_FEATURE(kGaiaRecordAccountCreation,
              "GaiaRecordAccountCreation",
@@ -3799,11 +3793,6 @@ bool IsGlanceablesTimeManagementTasksViewAssignedTasksEnabled() {
 bool AreAnyGlanceablesTimeManagementViewsEnabled() {
   return IsGlanceablesTimeManagementClassroomStudentViewEnabled() ||
          IsGlanceablesTimeManagementTasksViewEnabled();
-}
-
-bool IsGlanceablesTimeManagementOverscrollToExpandEnabled() {
-  return base::FeatureList::IsEnabled(
-      kGlanceablesTimeManagementOverscrollToExpand);
 }
 
 bool IsHibernateEnabled() {
