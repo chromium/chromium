@@ -170,6 +170,7 @@ void VisitedURLRankingServiceImpl::FetchURLVisitAggregates(
       // Some fetchers may not be available (e.g. due to policy) and the client
       // of the service may not know it, so handle the case silently for now.
       // TODO(crbug/346822243): check if there is a better fallback behavior.
+      fetch_barrier_callback.Run(FetchResult(FetchResult::Status::kSuccess, {}));
       continue;
     }
     const auto& data_fetcher = data_fetchers_.at(fetcher_entry.first);
