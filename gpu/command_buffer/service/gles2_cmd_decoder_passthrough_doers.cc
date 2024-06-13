@@ -5214,7 +5214,7 @@ GLES2DecoderPassthroughImpl::DoConvertYUVAMailboxesToTextureINTERNAL(
   ui::ScopedMakeCurrent smc(lazy_context_->shared_context_state()->context(),
                             lazy_context_->shared_context_state()->surface());
 
-  if (GLenumToTextureTarget(target) == TextureTarget::kUnkown) {
+  if (target != GL_TEXTURE_2D && target != GL_TEXTURE_RECTANGLE) {
     InsertError(GL_INVALID_VALUE, "Invalid texture target");
     return error::kNoError;
   }
@@ -5286,7 +5286,7 @@ error::Error GLES2DecoderPassthroughImpl::DoCopySharedImageToTextureINTERNAL(
   ui::ScopedMakeCurrent smc(lazy_context_->shared_context_state()->context(),
                             lazy_context_->shared_context_state()->surface());
 
-  if (GLenumToTextureTarget(target) == TextureTarget::kUnkown) {
+  if (target != GL_TEXTURE_2D && target != GL_TEXTURE_RECTANGLE) {
     InsertError(GL_INVALID_VALUE, "Invalid texture target");
     return error::kNoError;
   }
