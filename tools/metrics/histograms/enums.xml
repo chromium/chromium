@@ -2913,6 +2913,12 @@ Called by update_net_error_codes.py.-->
   <int value="3" label="Changed from Available To Available"/>
 </enum>
 
+<enum name="ComponentAvailability">
+  <int value="0" label="Availble"/>
+  <int value="1" label="Unavailble with Network"/>
+  <int value="2" label="Unavailble without Network"/>
+</enum>
+
 <enum name="ComponentUpdaterCalls">
   <int value="0" label="Install"/>
   <int value="1" label="Update"/>

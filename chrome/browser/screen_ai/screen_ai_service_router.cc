@@ -20,9 +20,11 @@
 #include "base/strings/stringprintf.h"
 #include "base/task/thread_pool.h"
 #include "chrome/browser/screen_ai/screen_ai_install_state.h"
+#include "content/public/browser/network_service_instance.h"
 #include "content/public/browser/service_process_host.h"
 #include "content/public/browser/service_process_host_passkeys.h"
 #include "mojo/public/mojom/base/file_path.mojom.h"
+#include "services/network/public/mojom/network_change_manager.mojom.h"
 #include "services/screen_ai/public/cpp/utilities.h"
 #include "ui/accessibility/accessibility_features.h"
 
@@ -31,6 +33,17 @@
 #endif
 
 namespace {
+
+// These values are persisted to logs. Entries should not be renumbered and
+// numeric values should never be reused.
+// If any value is added, please update `ComponentAvailability` in `enums.xml`.
+enum class ComponentAvailability {
+  kAvailable = 0,
+  kUnavailableWithNetwork = 1,
+  kUnavailableWithoutNetwork = 2,
+
+  kMaxValue = kUnavailableWithoutNetwork,
+};
 
 // Maximum time to wait for service initialization.
 // TODO(crbug.com/40947650): Update based on collected metrics.
@@ -109,9 +122,14 @@ std::unique_ptr<ComponentFiles> ComponentFiles::Load(
       files_list_file_name);
 }
 
-void RecordComponentAvailablity(bool available) {
-  base::UmaHistogramBoolean("Accessibility.ScreenAI.Component.Available",
-                            available);
+void RecordComponentAvailability(bool available) {
+  bool network = !content::GetNetworkConnectionTracker()->IsOffline();
+  base::UmaHistogramEnumeration(
+      "Accessibility.ScreenAI.Component.Available2",
+      available
+          ? ComponentAvailability::kAvailable
+          : (network ? ComponentAvailability::kUnavailableWithNetwork
+                     : ComponentAvailability::kUnavailableWithoutNetwork));
 }
 
 }  // namespace
@@ -150,7 +168,7 @@ void ScreenAIServiceRouter::GetServiceStateAsync(
   if (service_state) {
     // Either service is already initialized or disabled.
     std::move(callback).Run(*service_state);
-    RecordComponentAvailablity(true);
+    RecordComponentAvailability(true);
     return;
   }
 
@@ -195,7 +213,7 @@ void ScreenAIServiceRouter::StateChanged(ScreenAIInstallState::State state) {
       for (Service service : all_services) {
         CallPendingStatusRequests(service, false);
       }
-      RecordComponentAvailablity(false);
+      RecordComponentAvailability(false);
       break;
     }
 
@@ -204,7 +222,7 @@ void ScreenAIServiceRouter::StateChanged(ScreenAIInstallState::State state) {
       for (Service service : all_services) {
         InitializeServiceIfNeeded(service);
       }
-      RecordComponentAvailablity(true);
+      RecordComponentAvailability(true);
       break;
     }
   }

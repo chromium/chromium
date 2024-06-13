@@ -2614,13 +2614,14 @@ even if they fit the naming pattern. -->
   </token>
 </histogram>
 
-<histogram name="Accessibility.ScreenAI.Component.Available"
-    enum="BooleanSuccess" expires_after="2025-02-28">
+<histogram name="Accessibility.ScreenAI.Component.Available2"
+    enum="ComponentAvailability" expires_after="2025-02-28">
   <owner>rhalavati@chromium.org</owner>
   <owner>chrome-a11y-core@google.com</owner>
   <summary>
     Records if the component was available or could be downloaded when it was
-    needed.
+    needed. If not available, it also records if the network connection existed
+    or not.
   </summary>
 </histogram>
 
