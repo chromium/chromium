@@ -16684,6 +16684,7 @@ from previous Chrome versions.
   <int value="-1611305202" label="KeepPrefetchedContentSuggestions:disabled"/>
   <int value="-1609065859" label="ClipboardCustomFormats:enabled"/>
   <int value="-1608869911" label="RobustAudioDeviceSelectLogic:enabled"/>
+  <int value="-1608717313" label="TabStripCollectionStorage:enabled"/>
   <int value="-1607953813"
       label="AndroidPartnerCustomizationPhenotype:enabled"/>
   <int value="-1607691647" label="MojoVideoEncodeAccelerator:disabled"/>
@@ -25131,6 +25132,7 @@ from previous Chrome versions.
   <int value="2032801941" label="SpeakOnMuteOptInNudgePrefsReset:disabled"/>
   <int value="2032880973" label="U2FSecurityKeyAPI:disabled"/>
   <int value="2034198538" label="TabHoverCards:enabled"/>
+  <int value="2034874546" label="TabStripCollectionStorage:disabled"/>
   <int value="2035351945" label="lacros-selection-policy-ignore"/>
   <int value="2035415906" label="Win11StyleMenus:enabled"/>
   <int value="2035524582" label="WebViewRecordAppDataDirectorySize:disabled"/>
