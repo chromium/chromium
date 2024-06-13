@@ -80,6 +80,7 @@
 <translation id="1247519845643687288">Недавне апликације</translation>
 <translation id="1252999807265626933">Пуњење из уређаја <ph name="POWER_SOURCE" /></translation>
 <translation id="1255033239764210633">Какво је време?</translation>
+<translation id="1256734167083229794">Притиснули сте тастерску пречицу за лупу преко целог екрана. Користите <ph name="ZOOM_IN_ACCELERATOR" /> да бисте увећали, а <ph name="ZOOM_OUT_ACCELERATOR" /> да бисте умањили. Користите ctrl + alt + стрелице да бисте се кретали по увећаном приказу.</translation>
 <translation id="1269405891096105529">Периферни уређај није подржан у режиму госта</translation>
 <translation id="1270290102613614947">Тастатура на екрану је онемогућена</translation>
 <translation id="1272079795634619415">Заустави</translation>
@@ -264,6 +265,7 @@
 <translation id="1969011864782743497"><ph name="DEVICE_NAME" /> (USB)</translation>
 <translation id="1971815855639997522">Радна површина и прозори су уклоњени. Притисните Control + Z да бисте опозвали радњу.</translation>
 <translation id="1972950159383891558">Здраво, <ph name="USERNAME" /></translation>
+<translation id="1977686871076551563">Режим инверзије боја је омогућен. Поново притисните <ph name="ACCELERATOR" /> да бисте га искључили.</translation>
 <translation id="1978498689038657292">Унос текста</translation>
 <translation id="1980808257969311265">Придружи се догађају <ph name="EVENT_SUMMARY" /></translation>
 <translation id="1982717156487272186">Прикажите претходну недељу</translation>
@@ -574,6 +576,7 @@
 <translation id="3226991577105957773">и још <ph name="COUNT" /></translation>
 <translation id="3227137524299004712">Микрофон</translation>
 <translation id="3233611303007751344">Уштеда батерије је искључена</translation>
+<translation id="3238409143297336341">Подесите родитељски надзор за апликације</translation>
 <translation id="324366796737464147">Умањивање шума</translation>
 <translation id="3249513730522716925">Прозор <ph name="WINDOW_TITLE" /> је премештен са радне површине <ph name="ACTIVE_DESK" /> на радну површину <ph name="TARGET_DESK" /></translation>
 <translation id="3253743281242075461">Тип школских задатака: <ph name="GLANCEABLES_CLASSROOM_LIST_NAME" /></translation>
@@ -1186,6 +1189,7 @@
 <translation id="5377367976106153749">Желите да укључите приступ камери?</translation>
 <translation id="5379115545237091094">Превише покушаја</translation>
 <translation id="5391307769715781764">Желите да замените сачувану радну површину?</translation>
+<translation id="5392327145184648521">Израчунава се проценат батерије...</translation>
 <translation id="5393156353051693207">Додирните и задржите било где да бисте променили редослед апликација</translation>
 <translation id="5395308026110844773"><ph name="DRAGGED_APP_NAME" /> преко апликације <ph name="IN_PLACE_APP" />, отпустите да бисте направили фолдер.</translation>
 <translation id="5397578532367286026">Менаџер (<ph name="MANAGER_EMAIL" />) може да прегледа коришћење и историју овог корисника на chrome.com.</translation>
@@ -1240,6 +1244,7 @@
 <translation id="5577281275355252094">Уверите се да је Bluetooth омогућен на телефону да бисте користили Phone Hub</translation>
 <translation id="5578188167649348993">меморија</translation>
 <translation id="5580000943347215299">Библиотека</translation>
+<translation id="5586388332127302891">Монтирана лупа екрана је омогућена. Поново притисните <ph name="ACCELERATOR" /> да бисте је искључили.</translation>
 <translation id="5587506661873751671">Преузима се <ph name="DOWNLOAD_PERCENT" />%</translation>
 <translation id="558849140439112033">Превуците да бисте изабрали област за снимање</translation>
 <translation id="5590609058453685222">Подсетник за микрофон је укључен. Добићете обавештење ако говорите док је звук искључен.</translation>
@@ -1403,6 +1408,7 @@
 <translation id="6141205840878048728">На шта желите да се фокусирате?</translation>
 <translation id="6141988275892716286">Потврдите преузимање</translation>
 <translation id="6143578372829139382">Дели на YouTube-у</translation>
+<translation id="6147182561428020853">Сада можете да блокирате апликације инсталиране на овом уређају <ph name="DEVICE_TYPE" /></translation>
 <translation id="6154006699632741460">Периферни уређај није подржан</translation>
 <translation id="6156960295318603523">Подешавања језика</translation>
 <translation id="615957422585914272">Прикажи тастатуру на екрану</translation>
@@ -1450,6 +1456,7 @@
 <translation id="6319503618073410818">Прикажи детаље у прегледачу</translation>
 <translation id="6324916366299863871">Измени пречицу</translation>
 <translation id="6330012934079202188">Приказују се прозори са свих радних површина. Притисните тастер са стрелицом нагоре да би се приказивали прозори са актуелне радне површине.</translation>
+<translation id="6337159624125741244">Лупа преко целог екрана је укључена</translation>
 <translation id="6338485349199627913"><ph name="DISPLAY_NAME" /> је сесија којом управља <ph name="MANAGER" /></translation>
 <translation id="6344138931392227467"><ph name="DEVICE_NAME" /> – повезанo</translation>
 <translation id="6348449481487610270"><ph name="MODIFIER_ONE" /><ph name="MODIFIER_TWO" /><ph name="KEY_ONE" />, па <ph name="MODIFIER_THREE" /><ph name="KEY_TWO" /> или <ph name="KEY_THREE" /></translation>
@@ -1517,6 +1524,7 @@
 <translation id="6574587113394758819">Обавештење апликације <ph name="APP_TITLE" /> је скривено јер је заштита од прегледа укључена</translation>
 <translation id="6574622320167699133">Откључан је телефоном. Додирните или кликните да бисте покренули Chromebook.</translation>
 <translation id="6578407462441924264">Без имена</translation>
+<translation id="6582034443359256692">Израчунава се ниво напуњености батерије.</translation>
 <translation id="6585808820553845416">Сесија се завршава за <ph name="SESSION_TIME_REMAINING" />.</translation>
 <translation id="6593850935013518327"><ph name="PRIMARY_TEXT" />, <ph name="SECONDARY_TEXT" /></translation>
 <translation id="6597278316891651699">Камера је уклопљена у доњи леви угао. Неусаглашеност са површином система.</translation>
@@ -1578,6 +1586,7 @@
 <translation id="6790428901817661496">Пусти</translation>
 <translation id="679368458793552943">Увећајте када је лупа укључена</translation>
 <translation id="6794287755901682422">Ова ставка има: <ph name="GLANCEABLES_TASK_ITEM_METADATA" />.</translation>
+<translation id="6797745268063125932">Нека остане укључена</translation>
 <translation id="6801878137098616817">Недавно измењено</translation>
 <translation id="6802687695197837794">Ово омогућава приступ апликацијама <ph name="APP1_NAME" />, <ph name="APP2_NAME" /> и свим апликацијама и веб-сајтовима који имају дозволе за камеру и микрофон</translation>
 <translation id="6803622936009808957">Није могуће пресликати екране зато што није пронађена ниједна подржана резолуција. Уместо тога, приказује се проширена радна површина.</translation>
@@ -1674,6 +1683,7 @@
 <translation id="7167913274352523149"><ph name="HOTSPOT" />,
         <ph name="NETWORK" /></translation>
 <translation id="7168224885072002358">Враћање на стару резолуцију за <ph name="TIMEOUT_SECONDS" /></translation>
+<translation id="7173114856073700355">Отвори Подешавања</translation>
 <translation id="7180611975245234373">Освежи</translation>
 <translation id="7181691792034457084">Здраво, <ph name="PRODUCT_NAME" /> је мало другачији.</translation>
 <translation id="7188494361780961876">Мени је премештен у горњи леви угао екрана.</translation>
@@ -1890,6 +1900,7 @@
 <translation id="7947798320695032612"><ph name="APP_NAME" /> жели да користи уређај <ph name="DEVICE_NAME" /></translation>
 <translation id="7951630946012935453">Затамни тастатуру</translation>
 <translation id="7953994493035617347">Желите да потврдите нову резолуцију?</translation>
+<translation id="795958884516058160">Лупа преко целог екрана је омогућена. Поново притисните <ph name="ACCELERATOR" /> да бисте је искључили.</translation>
 <translation id="7963689218131240420">Режим Не узнемиравај је искључен.</translation>
 <translation id="7963992254934562106">Извор: <ph name="PHONE_NAME" /></translation>
 <translation id="7968693143708939792">Изаберите фолдер…</translation>
@@ -2143,6 +2154,7 @@
 <translation id="894774083269346314">Избор није потврђен у пољу за потврду <ph name="PROFILE_NAME" /> <ph name="EMAIL" />.</translation>
 <translation id="8949925099261528566">Веза је успостављена, нема интернета</translation>
 <translation id="8951539504029375108">Само одобрени Thunderbolt уређаји су компатибилни са вашим Chromebook-ом</translation>
+<translation id="8959380109429710384">Притиснули сте тастерску пречицу за лупу преко целог екрана. Користите ctrl + alt + стрелице да бисте се кретали по увећаном приказу.</translation>
 <translation id="8964525410783593407">1 с</translation>
 <translation id="8973885907461690937">Постави фокус на икону менија</translation>
 <translation id="8980862970816311842">Преместите икону апликације у фолдер у мрежи апликација или из њега</translation>

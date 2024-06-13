@@ -567,6 +567,7 @@ Aks holda bu maxfiylik sozlamalaringiz tomonidan bloklanadi. Bunda siz ochgan sa
 <translation id="2036983605131262583">Muqobil oʻram</translation>
 <translation id="2040463897538655645">Tashqi xotira</translation>
 <translation id="2040894699575719559">Joylashuv bloklandi</translation>
+<translation id="2041788246978549610">Mavjud mikrofonlardan foydalanish (<ph name="MICS_COUNT" />)</translation>
 <translation id="2042213636306070719">Tarnov 7</translation>
 <translation id="204357726431741734">Google hisobingizda saqlangan parollardan foydalanish uchun hisobingizga kiring</translation>
 <translation id="2045871135676061132">Envelope Personal</translation>
@@ -888,6 +889,7 @@ Aks holda bu maxfiylik sozlamalaringiz tomonidan bloklanadi. Bunda siz ochgan sa
 <translation id="2655752832536625875">Hammom</translation>
 <translation id="2657637947725373811">{0,plural, =1{Maxfiy fayl uzatilsinmi?}other{Maxfiy fayllar uzatilsinmi?}}</translation>
 <translation id="2658843814961855121">Mehnat va bandlik qonunchiligi</translation>
+<translation id="2658944305627908367">Balans limitidan tashqari tranzaksiyalar qayta ishlanmaydi</translation>
 <translation id="2660779039299703961">Hodisa</translation>
 <translation id="2664887757054927933">{COUNT,plural, =0{Hech qanday}=1{1 ta parol (<ph name="DOMAIN_LIST" /> uchun)}=2{2 ta parol (<ph name="DOMAIN_LIST" /> uchun)}other{# ta parol (<ph name="DOMAIN_LIST" /> uchun)}}</translation>
 <translation id="2666092431469916601">Tepaga</translation>
@@ -1085,6 +1087,7 @@ Aks holda bu maxfiylik sozlamalaringiz tomonidan bloklanadi. Bunda siz ochgan sa
 <translation id="3090667236485488075">Shisha</translation>
 <translation id="3095940652251934233">Statement</translation>
 <translation id="3098513225387949945">Eʼtiborga olinmadi, chunki oʻchirish roʻyxatida “*” ga teng andoza bor, bu esa qoidani faolsizlantirish bilan barobar.</translation>
+<translation id="3099619114405539473">Mavjud kameralardan foydalanish (<ph name="CAMERAS_COUNT" />)</translation>
 <translation id="3102312643185441063">Jamgʻarma</translation>
 <translation id="3103188521861412364">Qimmatli qogʻozlar va obligatsiyalar</translation>
 <translation id="3105172416063519923">Obyekt identifikatori:</translation>
@@ -1358,6 +1361,7 @@ Aks holda bu maxfiylik sozlamalaringiz tomonidan bloklanadi. Bunda siz ochgan sa
 <translation id="3583757800736429874">&amp;Ko‘chirib o‘tkazishni qayta bajarish</translation>
 <translation id="3584299510153766161">Quyidan ikkita teshik ochish</translation>
 <translation id="3584755835709800788">Ilmiy fantastika va fentezi filmlar</translation>
+<translation id="3585455899094692781">Mavjud kameralardan foydalanish va ularni siljitish (<ph name="CAMERAS_COUNT" />)</translation>
 <translation id="3586833803451155175">Nam plyonka</translation>
 <translation id="3586931643579894722">Tafsilotlarni yopish</translation>
 <translation id="3587738293690942763">Oʻrtacha</translation>
@@ -1478,6 +1482,7 @@ Aks holda bu maxfiylik sozlamalaringiz tomonidan bloklanadi. Bunda siz ochgan sa
 <translation id="3799805948399000906">Shrift talabi qilindi</translation>
 <translation id="3801265110651850478">Brauzerda kezish trafigi bilan “Kuzatilmasin” soʻrovini yuborish</translation>
 <translation id="380329542618494757">Ism</translation>
+<translation id="3803801106042434208">Bu qidiruv tizimlari mintaqangizda mashhur</translation>
 <translation id="3806932344025766608">Siz ochayotgan saytda firibgarlar sizni aldab, parolingiz, telefon yoki kredit karta raqamingizni oʻgʻirlashi mumkin dasurni oʻrnatishi mumkin. Chrome xavfsizlik maqsadida zudlik bilan joriy sahifadan ortga qaytishni tavsiya qiladi. <ph name="BEGIN_LEARN_MORE_LINK" />Batafsil<ph name="END_LEARN_MORE_LINK" /></translation>
 <translation id="3807366285948165054">Tasvirning X oʻqidagi siljishi</translation>
 <translation id="3807709094043295184">Klassik rok va eski musiqa</translation>

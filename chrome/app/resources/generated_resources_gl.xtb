@@ -1550,6 +1550,7 @@ https://www.chromium.org/chromium-os/how-tos-and-troubleshooting/debugging-featu
 <translation id="2116619964159595185">Os sitios adoitan conectarse a dispositivos Bluetooth para ofrecerche determinadas funcións (por exemplo, configurar ou sincronizar unha baliza de baixo consumo, un dispositivo de seguimento da saúde ou da forma física, ou unha lámpada de luz intelixente)</translation>
 <translation id="2117655453726830283">Seguinte diapositiva</translation>
 <translation id="211803431539496924">Queres confirmar as actualizacións de seguranza ampliadas?</translation>
+<translation id="2118594521750010466">Corrixir agora</translation>
 <translation id="2119461801241504254">A opción Navegación segura está activada e protéxete contra descargas e sitios daniños</translation>
 <translation id="2120297377148151361">Actividade e interaccións</translation>
 <translation id="2120639962942052471">Bloqueouse o permiso: <ph name="PERMISSION" /></translation>
@@ -3685,6 +3686,7 @@ https://allthings.how/content/images/wordpress/2023/02/allthings.how-how-to-make
 <translation id="3699920817649120894">Queres desactivar a sincronización e a personalización?</translation>
 <translation id="3700888195348409686">Presentación (<ph name="PAGE_ORIGIN" />)</translation>
 <translation id="3700993174159313525">Non permitir que os sitios fagan un seguimento da posición da túa cámara</translation>
+<translation id="3701167022068948696">Corrixir agora</translation>
 <translation id="3701515417135397388">Avisarte se un contrasinal está en risco debido a unha violación da seguranza dos datos</translation>
 <translation id="3702797829026927713"><ph name="BEGIN_PARAGRAPH1" />Indica o nome do punto de venda e o número da tenda para a que se está configurando este dispositivo de demostración*. <ph name="END_PARAGRAPH1" />
     <ph name="BEGIN_PARAGRAPH2" />Se non sabes o número da tenda, podes poñer "0000" para continuar coa instalación do modo de demostración. <ph name="END_PARAGRAPH2" />

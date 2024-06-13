@@ -11,6 +11,7 @@
 <translation id="1273910660700874265">Možnosti skupiny kariet <ph name="TITLE_OF_GROUP" /></translation>
 <translation id="1322824555808364080">Pozvať ľudí</translation>
 <translation id="1419023007528516122">Týmto natrvalo odstránite skupinu zo svojho zariadenia</translation>
+<translation id="1486715732399361704">Tu nájdete všetky svoje skupiny kariet</translation>
 <translation id="149054111719651807">{NUM_MINS,plural, =1{Vytvorená pred <ph name="NUM_MINS_ONE" /> minútou}few{Vytvorená pred <ph name="NUM_MINS_MANY" /> minútami}many{Vytvorená pred <ph name="NUM_MINS_MANY" /> minúty}other{Vytvorená pred <ph name="NUM_MINS_MANY" /> minútami}}</translation>
 <translation id="1499635324672558517">Chcete zavrieť všetky karty inkognito?</translation>
 <translation id="1501480321619201731">Odstrániť skupinu</translation>

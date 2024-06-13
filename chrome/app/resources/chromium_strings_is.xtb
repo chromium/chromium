@@ -18,6 +18,7 @@ Sumir eiginleikar kunna að vera óaðgengilegir og breytingar á kjörstillingu
 <translation id="1203500561924088507">Takk fyrir að setja upp. Þú þarft að endurræsa vafrann áður en þú getur notað <ph name="BUNDLE_NAME" />.</translation>
 <translation id="1262876892872089030">Meðan þessi flipi var óvirkur var losað um minni til að gera Chromium hraðari. Þú getur valið að undanskilja þetta vefsvæði alltaf frá því að vera óvirkt.</translation>
 <translation id="1265577313130862557">Chromium lokaði á þetta niðurhal vegna þess að skráin er hættuleg</translation>
+<translation id="126567311906253476">Þegar þú skráir þig inn í Google-þjónustu á borð við Gmail eða YouTube með <ph name="USER_EMAIL" /> geturðu skráð þig sjálfkrafa inn í Chromium með sama reikningi</translation>
 <translation id="1315551408014407711">Settu upp nýja Chromium prófílinn þinn</translation>
 <translation id="1342274909142618978">Eyða einnig gögnum úr Chromium (<ph name="URL" />)</translation>
 <translation id="1414495520565016063">Þú ert skráð(ur) inn á Chromium!</translation>
@@ -42,6 +43,7 @@ Heimildir sem þú hefur þegar veitt vefsvæðum og forritum kunna að gilda á
 <translation id="1749104137266986751">Ef HTTPS er ekki í boði mun Chromium notast við ótrygga tengingu án þess að vara þig við</translation>
 <translation id="1774152462503052664">Leyfa Chromium að keyra í bakgrunni</translation>
 <translation id="1779356040007214683">Til að gera Chromium öruggara höfum við slökkt á vissum viðbótum sem ekki eru á skrá hjá <ph name="IDS_EXTENSION_WEB_STORE_TITLE" /> og kann að hafa verið bætt við án þinnar vitneskju.</translation>
+<translation id="1804128559285178512">Á meðan þú ert innskráð(ur) geturðu notað aðgangsorðin þín og fleira af Google-reikningnum þínum í Chromium</translation>
 <translation id="1808667845054772817">Setja Chromium upp aftur</translation>
 <translation id="1820835682567584003">Chromium er að reyna að <ph name="AUTHENTICATION_PURPOSE" /></translation>
 <translation id="18552579716432081"><ph name="BEGIN_LINK" />Skráðu þig út af Chromium<ph name="END_LINK" /> til að eyða vefskoðunargögnum aðeins úr þessu tæki en ekki af Google-reikningnum þínum.</translation>

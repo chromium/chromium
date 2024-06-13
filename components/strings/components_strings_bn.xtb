@@ -548,6 +548,7 @@
 <translation id="2003709556000175978">আপনার পাসওয়ার্ড রিসেট করুন</translation>
 <translation id="2003775180883135320">উপরে কোয়াড পাঞ্চ</translation>
 <translation id="2004697686368036666">কিছু সাইটের ফিচার কাজ নাও করতে পারে</translation>
+<translation id="2005042463110681802">আপনি ছদ্মবেশী মোডে রয়েছেন এবং এই সাইটে HTTPS কাজ করে না, তাই আপনি এই সতর্কতা দেখছেন। <ph name="BEGIN_LEARN_MORE_LINK" />আরও জানুন<ph name="END_LEARN_MORE_LINK" /></translation>
 <translation id="2009942480257059311">'ইভেন্ট তৈরি করুন' বোতাম, Google Calendar-এ চটপট নতুন ইভেন্ট তৈরি করতে এটি চালু করুন</translation>
 <translation id="201174227998721785">Chrome সেটিংসে বিভিন্ন সাইটের স্টোর করা ডেটা ও অনুমতি ম্যানেজ করুন</translation>
 <translation id="2012276282211112603">এই মুহূর্তে, দেখানোর মতো কোনও বিষয় নেই</translation>
@@ -1483,6 +1484,7 @@
 <translation id="3799805948399000906">ফন্টের অনুরোধ করা হয়েছে</translation>
 <translation id="3801265110651850478">আপনার ব্রাউজিং ট্র্যাফিকের মাধ্যমে একটি “Do Not Track” অনুরোধ পাঠান</translation>
 <translation id="380329542618494757">নাম</translation>
+<translation id="3803801106042434208">এইসব সার্চ ইঞ্জিন আপনার অঞ্চলে জনপ্রিয়</translation>
 <translation id="3806932344025766608">আপনি যে সাইট ভিজিট করার চেষ্টা করছেন সেখানে হয়ত আক্রমণকারীরা আপনাকে দিয়ে প্রতারণা করে সফ্টওয়্যার ইনস্টল করিয়ে দিতে পারে। এর সাহায্যে আপনার পাসওয়ার্ড, ফোন অথবা ক্রেডিট কার্ড নম্বরের মতো তথ্য প্রকাশ হয়ে যেতে পারে। Chrome সম্পূর্ণভাবে নিরাপদ সাইটে ফিরে যাওয়ার সাজেশন দেয়। <ph name="BEGIN_LEARN_MORE_LINK" />আরও জানুন<ph name="END_LEARN_MORE_LINK" /></translation>
 <translation id="3807366285948165054">ছবি X শিফ্ট</translation>
 <translation id="3807709094043295184">ক্লাসিক রক ও পুরানো দিনের</translation>

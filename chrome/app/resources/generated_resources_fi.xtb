@@ -1560,6 +1560,7 @@ Voit ylläpitää tilin asetuksia asentamalla laitteellesi Family Link ‑sovell
 <translation id="2116619964159595185">Sivustot yhdistävät yleensä Bluetooth-laitteisiin esim. ottaakseen käyttöön tai synkronoidakseen vähän virtaa käyttävän majakan, terveys- tai liikuntaseurannan tai älylampun</translation>
 <translation id="2117655453726830283">Seuraava dia</translation>
 <translation id="211803431539496924">Vahvistetaanko laajennetut tietoturvapäivitykset?</translation>
+<translation id="2118594521750010466">Korjaa nyt</translation>
 <translation id="2119461801241504254">Selaussuoja on päällä ja suojelee sinua haitallisilta sivustoilta ja latauksilta</translation>
 <translation id="2120297377148151361">Toiminnot ja vuorovaikutukset</translation>
 <translation id="2120639962942052471"><ph name="PERMISSION" /> estetty</translation>
@@ -3695,6 +3696,7 @@ Voit ylläpitää tilin asetuksia asentamalla laitteellesi Family Link ‑sovell
 <translation id="3699920817649120894">Poistetaanko synkronointi ja personointi käytöstä?</translation>
 <translation id="3700888195348409686">Näytetään (<ph name="PAGE_ORIGIN" />)</translation>
 <translation id="3700993174159313525">Älä salli sivustojen seurata kamerasi sijaintia</translation>
+<translation id="3701167022068948696">Korjaa nyt</translation>
 <translation id="3701515417135397388">Varoitus, jos salasana vaarantuu tietosuojaloukkauksessa</translation>
 <translation id="3702797829026927713"><ph name="BEGIN_PARAGRAPH1" />Lisää sen jälleenmyyjän nimi ja kaupan numero, jolle tämä demolaite määritetään*. <ph name="END_PARAGRAPH1" />
     <ph name="BEGIN_PARAGRAPH2" />Jos et tiedä kaupan numeroa, voit jatkaa demotilan asennusta kirjoittamalla "0000". <ph name="END_PARAGRAPH2" />

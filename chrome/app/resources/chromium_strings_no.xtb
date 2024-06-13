@@ -48,6 +48,7 @@ Tillatelser du allerede har gitt nettsteder og apper, kan gjelde for denne konto
 <translation id="185970820835152459">Du kan administrere de påloggede Google-kontoene dine. Google-kontoene dine brukes i Chromium-nettleseren, Play-butikken, Gmail med mer. Hvis du vil legge til en konto for noen andre, for eksempel et familiemedlem, legger du til en ny person på <ph name="DEVICE_TYPE" /> i stedet. <ph name="LINK_BEGIN" />Finn ut mer<ph name="LINK_END" /></translation>
 <translation id="1863308913976887472">Nettsteder kan lagre informasjon om interessene dine i Chromium. Hvis du for eksempel besøker et nettsted for å kjøpe maratonsko, kan det hende nettstedet definerer interessen din som maratonløp. Hvis du senere besøker et annet nettsted for å melde deg på et løp, kan dette nettstedet vise deg en annonse for løpesko basert på interessene dine.</translation>
 <translation id="1881322772814446296">Du logger deg på med en administrert konto og gir tilhørende administratorer kontroll over Chromium-profilen din. Chromium-dataene dine, slik som apper, bokmerker, loggen, passord og andre innstillinger knyttes permanent til <ph name="USER_NAME" />. Du kan slette disse dataene via oversikten for Google-kontoer, men du kan ikke knytte disse dataene til en annen konto. Du kan velge om du vil opprette en ny profil for å holde de eksisterende Chromium-dataene atskilte. <ph name="LEARN_MORE" /></translation>
+<translation id="1903204122890929795">For å bruke denne utvidelsen som <ph name="USER_EMAIL_ADDRESS" />, logg på Chromium.\nDu kan også bruke og lagre passord med mer fra Google-kontoen din.</translation>
 <translation id="1906696617298807388">Når du skriver i adressefeltet eller søkefeltet, sender Chromium det du skriver til Google Disk for å få forslag til elementer. Dette er av i Inkognito.</translation>
 <translation id="1911763535808217981">Ved å slå dette av kan du logge på Google-sider, som Gmail, uten å logge på Chromium</translation>
 <translation id="1929939181775079593">Chromium svarer ikke. Vil du starte den på nytt nå?</translation>
@@ -139,6 +140,7 @@ Tillatelser du allerede har gitt nettsteder og apper, kan gjelde for denne konto
 <translation id="3296368748942286671">Fortsett å kjøre bakgrunnsprogrammer når Chromium er lukket</translation>
 <translation id="3313189106987092621">Chromium advarer deg før all innlasting av nettsteder via usikre tilkoblinger</translation>
 <translation id="3316771292331273802">Du logges av de fleste nettsteder når du lukker alle Chromium-vinduer, men du blir ikke logget av Google-kontoen din hvis du er logget på Chromium. For å la nettsteder huske deg, <ph name="SETTINGS_LINK" />.</translation>
+<translation id="333055255088403283">Utvidelsen «<ph name="EXTENSION_NAME" />» vil at du skal logge på Chromium</translation>
 <translation id="3350761136195634146">Det finnes allerede en Chromium-profil med denne kontoen</translation>
 <translation id="3387527074123400161">ChromiumOS</translation>
 <translation id="3406848076815591792">Vil du bytte til den eksisterende Chromium-profilen?</translation>
@@ -316,6 +318,7 @@ Tillatelser du allerede har gitt nettsteder og apper, kan gjelde for denne konto
 <translation id="6268381023930128611">Vil du logge av Chromium?</translation>
 <translation id="6281746429495226318">Tilpass Chromium-profilen din</translation>
 <translation id="6290827346642914212">Gi navn til Chromium-profilen din</translation>
+<translation id="6294831894865512704">En utvidelse vil at du skal logge på Chromium</translation>
 <translation id="6295779123002464101"><ph name="FILE_NAME" /> kan være farlig, så Chromium har blokkert den.</translation>
 <translation id="6309712487085796862">Chromium bruker kameraet ditt.</translation>
 <translation id="6327105987658262776">Ingen oppdatering er tilgjengelig.</translation>

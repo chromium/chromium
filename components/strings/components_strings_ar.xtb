@@ -568,6 +568,7 @@
 <translation id="2036983605131262583">اللفافة البديلة</translation>
 <translation id="2040463897538655645">وحدة التخزين القابلة للإزالة</translation>
 <translation id="2040894699575719559">تم حظر الموقع الجغرافي</translation>
+<translation id="2041788246978549610">استخدام الميكروفونات المتاحة (<ph name="MICS_COUNT" />)</translation>
 <translation id="2042213636306070719">الدُرج 7</translation>
 <translation id="204357726431741734">‏يُرجى تسجيل الدخول لاستخدام كلمات المرور المحفوظة في حسابك على Google.</translation>
 <translation id="2045871135676061132">ظرف شخصي</translation>
@@ -890,6 +891,7 @@
 <translation id="2655752832536625875">حمّام</translation>
 <translation id="2657637947725373811">{0,plural, =1{هل تريد نقل الملف السرّي؟}zero{هل تريد نقل الملفات السرّية؟}two{هل تريد نقل الملفَّين السريَّين؟}few{هل تريد نقل الملفات السرّية؟}many{هل تريد نقل الملفات السرّية؟}other{هل تريد نقل الملفات السرّية؟}}</translation>
 <translation id="2658843814961855121">قانون عمل وتوظيف</translation>
+<translation id="2658944305627908367">لن تتم معالجة المعاملات التي تتجاوز قيمة رصيدك</translation>
 <translation id="2660779039299703961">حدث</translation>
 <translation id="2664887757054927933">{COUNT,plural, =0{ما من كلمات مرور}=1{كلمة مرور واحدة (للقائمة <ph name="DOMAIN_LIST" />)}=2{كلمتا مرور (للقائمة <ph name="DOMAIN_LIST" />)}few{# كلمات مرور (للقائمة <ph name="DOMAIN_LIST" />)}many{# كلمة مرور (للقائمة <ph name="DOMAIN_LIST" />)}other{# كلمة مرور (للقائمة <ph name="DOMAIN_LIST" />)}}</translation>
 <translation id="2666092431469916601">أعلى</translation>
@@ -1087,6 +1089,7 @@
 <translation id="3090667236485488075">زجاج</translation>
 <translation id="3095940652251934233">كشف</translation>
 <translation id="3098513225387949945">تم التجاهل لأنّ قائمة الإيقاف تتضمّن نمطًا يعادل حرف البدل "*"، ما يعادل إيقاف السياسة.</translation>
+<translation id="3099619114405539473">استخدام الكاميرات المتاحة (<ph name="CAMERAS_COUNT" />)</translation>
 <translation id="3102312643185441063">حساب التوفير</translation>
 <translation id="3103188521861412364">أسهم وسندات</translation>
 <translation id="3105172416063519923">رقم تعريف الأصل:</translation>
@@ -1363,6 +1366,7 @@
 <translation id="3583757800736429874">إ&amp;عادة النقل</translation>
 <translation id="3584299510153766161">عمل ثقبَين بالأسفل</translation>
 <translation id="3584755835709800788">أفلام الخيال العلمي والفنتازيا</translation>
+<translation id="3585455899094692781">استخدام الكاميرات المتاحة (<ph name="CAMERAS_COUNT" />) وتحريكها</translation>
 <translation id="3586833803451155175">فيلم بمكوّنات رطبة</translation>
 <translation id="3586931643579894722">إخفاء التفاصيل</translation>
 <translation id="3587738293690942763">متوسط</translation>

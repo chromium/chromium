@@ -251,6 +251,7 @@ Det här är några saker du kan testa för att komma igång.</translation>
 <translation id="1915307458270490472">Lägg på</translation>
 <translation id="1918022425394817322">Kameran har fästs i det övre högra hörnet</translation>
 <translation id="1923539912171292317">Automatiska klick</translation>
+<translation id="1925320505152357008">mindre än 1 min</translation>
 <translation id="1928739107511554905">Starta om Chromebook-enheten via pekskärmen med tangentbordet tillkopplat för att uppdatera.</translation>
 <translation id="1948405482892809935">Byt till nästa användare</translation>
 <translation id="1951012854035635156">Assistent</translation>
@@ -604,6 +605,7 @@ Det här är några saker du kan testa för att komma igång.</translation>
 <translation id="334927402682780278">Markera text från markören till slutet av raden</translation>
 <translation id="3349345708646875009">Öppna Aktivitetshanteraren</translation>
 <translation id="3364721542077212959">Verktyg för e-penna</translation>
+<translation id="3365281428003534650">Ställ in en timer och uppgift</translation>
 <translation id="3365977133351922112">Telefonen är för långt bort. Flytta telefonen närmare.</translation>
 <translation id="3368922792935385530">Ansluten</translation>
 <translation id="3369111525500416043">Inlämning snart</translation>
@@ -907,6 +909,7 @@ Vissa funktioner är begränsade för att förlänga batteritiden.</translation>
 <translation id="4406883609789734330">Live Caption</translation>
 <translation id="4412698727486357573">Hjälpcenter</translation>
 <translation id="4412944820643904175"><ph name="FEATURE_NAME" /> är av.</translation>
+<translation id="4417647906073317561">Fokusinställningar. Ställ in en timer, uppgift och musik för att komma igång.</translation>
 <translation id="4424159417645388645">Skrivbord 5</translation>
 <translation id="4430019312045809116">Volym</translation>
 <translation id="4441283832827406317">Apparna har sorterats efter namn</translation>
@@ -1670,6 +1673,7 @@ Nyligen installerad</translation>
 <translation id="7167913274352523149"><ph name="HOTSPOT" />,
         <ph name="NETWORK" /></translation>
 <translation id="7168224885072002358">Återgår till den gamla upplösningen om <ph name="TIMEOUT_SECONDS" /></translation>
+<translation id="7173114856073700355">Inställningar</translation>
 <translation id="7180611975245234373">Uppdatera</translation>
 <translation id="7181691792034457084">Hej! <ph name="PRODUCT_NAME" /> är lite annorlunda.</translation>
 <translation id="7188494361780961876">Menyn har flyttats till skärmens övre vänstra hörn.</translation>
@@ -1862,6 +1866,7 @@ Stäng av enheten genom att hålla av/på-knappen nedtryckt igen.</translation>
         <ph name="MANAGED" />
         <ph name="IME" />
         <ph name="LOCALE" /></translation>
+<translation id="7899977217122813285">Ljudet är avstängt för aviseringar tills <ph name="TIME" /> medan du fokuserar</translation>
 <translation id="7901190436359881020">Byt plats på fönstren</translation>
 <translation id="7901405293566323524">Phone Hub</translation>
 <translation id="7902625623987030061">Tryck på fingeravtryckssensorn</translation>

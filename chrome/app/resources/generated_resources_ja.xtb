@@ -295,6 +295,7 @@
 <translation id="1203942045716040624">共有ワーカー: <ph name="SCRIPT_URL" /></translation>
 <translation id="1205104724635486855">リンクをプレビュー</translation>
 <translation id="1206832039833782423">セキュリティ コードはカードの裏面に記載されています</translation>
+<translation id="1208339823324516598">{GROUP_COUNT,plural, =1{グループを削除}other{グループを削除}}</translation>
 <translation id="1208392090861059168">現在のスケジュールは <ph name="SUNRISE" />～<ph name="SUNSET" /> に設定されています。日の入りと日の出のスケジュールを自動的に更新するには、<ph name="BEGIN_LINK" />システムの位置情報へのアクセスをオンにしてください<ph name="END_LINK" />。</translation>
 <translation id="1210678701920254279">プリンタを表示または追加して、アクティブな印刷ジョブを確認する</translation>
 <translation id="1211769675100312947">ユーザーが選択したショートカットが表示されます</translation>
@@ -1382,6 +1383,7 @@
 <translation id="199610894463449797">{0,plural, =1{このプロフィールを閉じる}other{このプロフィールを閉じる（# 個のウィンドウ）}}</translation>
 <translation id="1997433994358798851">Chrome からデバイスに接続するには、Bluetooth の使用を許可する必要があります</translation>
 <translation id="1997616988432401742">ユーザーの証明書</translation>
+<translation id="199801374788581808">もう一度お試しいただくか、管理者またはサポートにお問い合わせください</translation>
 <translation id="1999115740519098545">起動時</translation>
 <translation id="2002109485265116295">リアルタイム</translation>
 <translation id="2002160221914907025">試験運用版 AI</translation>
@@ -1548,6 +1550,7 @@
 <translation id="2116619964159595185">Bluetooth Low Energy ビーコン、ヘルス トラッカー、フィットネス トラッカー、スマート電球の設定や同期などの機能に対応するために、多くのサイトは Bluetooth デバイスに接続します</translation>
 <translation id="2117655453726830283">次のスライド</translation>
 <translation id="211803431539496924">セキュリティ アップデートの延長を確定しますか？</translation>
+<translation id="2118594521750010466">今すぐ修正</translation>
 <translation id="2119461801241504254">セーフ ブラウジングは有効で、有害なサイトやダウンロードから保護されています</translation>
 <translation id="2120297377148151361">アクティビティと操作</translation>
 <translation id="2120639962942052471"><ph name="PERMISSION" />をブロック</translation>
@@ -1778,6 +1781,7 @@
 <translation id="2297822946037605517">このページを共有</translation>
 <translation id="229871422646860597">ツールバーの固定を解除する</translation>
 <translation id="2299734369537008228">スライダー: <ph name="MIN_LABEL" /> から <ph name="MAX_LABEL" /> まで</translation>
+<translation id="2299917175735489779">仕事用プロフィールを設定しています…</translation>
 <translation id="2299941608784654630">debugd で収集したすべてのログファイルを個別のアーカイブとして含める。</translation>
 <translation id="2300214399009193026">PCIe</translation>
 <translation id="2300332192655962933">サイトでファイルを取得できませんでした</translation>
@@ -2721,6 +2725,7 @@
 <translation id="2967926928600500959">これらのルールに一致する URL は、特定のブラウザで強制的に開かれます。</translation>
 <translation id="2969411787010981955">データを選択した場所にエクスポートしました</translation>
 <translation id="2970766364519518369">近くにいる選択した連絡先と共有できます。共有リクエストを承認するよう求められます。<ph name="USER_EMAIL" /> にログインしているデバイス間では共有リクエストを承認する必要はありません。</translation>
+<translation id="2970982365449313350">この Google アカウントを使用して Chrome</translation>
 <translation id="2972557485845626008">ファームウェア</translation>
 <translation id="2972581237482394796">やり直し(&amp;R)</translation>
 <translation id="2973324205039581528">サイトをミュート</translation>
@@ -3162,6 +3167,7 @@
         <ph name="BREAK" />
         カードメニューから設定を管理することや、[Chrome をカスタマイズ] でその他のオプションを見ることができます。</translation>
 <translation id="3308134619352333507">ボタンを非表示にする</translation>
+<translation id="3308604065765626613">{GROUP_COUNT,plural, =1{タブはこのデバイスで引き続き表示されますが、グループは完全に削除されます。}other{タブはこのデバイスで引き続き表示されますが、グループは完全に削除されます。}}</translation>
 <translation id="3308852433423051161">Google アシスタントを読み込んでいます...</translation>
 <translation id="3309330461362844500">証明書プロファイル ID</translation>
 <translation id="3311445899360743395">このアプリに関連付けられているデータはこのデバイスから削除されます。</translation>
@@ -3414,6 +3420,7 @@
 <translation id="3503995387997205657">前回のアプリを復元できます</translation>
 <translation id="3505100368357440862">おすすめのショッピング情報</translation>
 <translation id="3505602163050943406">一部の機能の使用時に、開いているページ、関連する最近のページ、それらの URL の一部が Google に送信されることがあります</translation>
+<translation id="3505762711681798106">ワークスペースを準備しています。もうしばらくお待ちください。</translation>
 <translation id="3507132249039706973">標準保護機能がオンになっています</translation>
 <translation id="3507888235492474624">Bluetooth デバイスを再スキャン</translation>
 <translation id="3508492320654304609">ログインデータを削除できませんでした</translation>
@@ -3674,6 +3681,7 @@
 <translation id="3699920817649120894">同期とカスタマイズをオフにしますか？</translation>
 <translation id="3700888195348409686">表示中（<ph name="PAGE_ORIGIN" />）</translation>
 <translation id="3700993174159313525">サイトにカメラ位置の追跡を許可しない</translation>
+<translation id="3701167022068948696">今すぐ修正</translation>
 <translation id="3701515417135397388">データ侵害によりパスワードが漏洩した場合に警告する</translation>
 <translation id="3702797829026927713"><ph name="BEGIN_PARAGRAPH1" />このデモデバイスを設定する販売店の名前と番号を入力してください*。<ph name="END_PARAGRAPH1" />
     <ph name="BEGIN_PARAGRAPH2" />販売店の番号が不明な場合は、「0000」と入力するとデモモードのインストールを続行できます。<ph name="END_PARAGRAPH2" />
@@ -4131,6 +4139,7 @@
 <translation id="4002347779798688515">モバイル ネットワーク プロバイダがロックされている場合は、ダウンロードしたプロファイルを使用できない可能性があります。サポートについてはプロバイダにお問い合わせください。</translation>
 <translation id="4002440992267487163">PIN の設定</translation>
 <translation id="4005817994523282006">タイムゾーンの検出方法</translation>
+<translation id="4007064749990466867">{GROUP_COUNT,plural, =1{この操作を行うとデバイスからグループが完全に削除されます。}other{この操作を行うとデバイスからグループが完全に削除されます。}}</translation>
 <translation id="4007856537951125667">ショートカットを非表示にする</translation>
 <translation id="4010036441048359843">ハイライト表示をオンにする</translation>
 <translation id="4010746393007464819">Debian 12（Bookworm）へのアップグレードが利用可能です</translation>
@@ -4683,6 +4692,7 @@
 <translation id="4434611816075088065">他に確認の必要な項目はありません</translation>
 <translation id="443475966875174318">互換性のないアプリケーションの更新または削除</translation>
 <translation id="443503224864902151">ほとんどのサイトからログアウトします。ただし、同期データを削除できるように Google アカウントへのログイン状態は維持されます。</translation>
+<translation id="4437879751057074691">パスワードとパスキーを保存するか確認する</translation>
 <translation id="4437947179446780764">カスタム DNS サービス プロバイダを追加</translation>
 <translation id="4438043733494739848">透明</translation>
 <translation id="4441124369922430666">マシンの起動時にこのアプリを自動的に起動しますか？</translation>
@@ -4900,6 +4910,7 @@
 <translation id="4602776638371779614">このタブは Bluetooth デバイスをスキャンしています</translation>
 <translation id="4605026046465576953">分離されたウェブアプリを実行する権限がないため、このアプリを開けません</translation>
 <translation id="4606551464649945562">サイトに周囲の 3D マップの作成またはカメラ位置の追跡を許可しない</translation>
+<translation id="4607297000182742106">{GROUP_COUNT,plural, =1{タブグループを削除しますか？}other{タブグループを削除しますか？}}</translation>
 <translation id="4608500690299898628">検索(&amp;F)...</translation>
 <translation id="4610162781778310380"><ph name="PLUGIN_NAME" /> でエラーが発生しました</translation>
 <translation id="4610637590575890427">もしかして: <ph name="SITE" /></translation>
@@ -4945,6 +4956,7 @@
 <translation id="4643612240819915418">動画を新しいタブで開く(&amp;O)</translation>
 <translation id="4643833688073835173">Chromebook では、内蔵センサーを使用してデバイスの前にいる人を検出します。すべてのデータがデバイス上ですぐに処理され、その後に削除されます。センサーデータは Google には一切送信されません。</translation>
 <translation id="4644205769234414680">シークレット モードでの実行を許可する</translation>
+<translation id="4645322559577140968">{GROUP_COUNT,plural, =1{タブグループを削除しますか？}other{タブグループを削除しますか？}}</translation>
 <translation id="4645575059429386691">保護者により管理されています</translation>
 <translation id="4645676300727003670">継続(&amp;K)</translation>
 <translation id="4646675363240786305">ポート</translation>
@@ -5044,6 +5056,7 @@
 <translation id="4716715661140829720">十分な空き容量がありません</translation>
 <translation id="471759229191973607">テーマを変更</translation>
 <translation id="4719276504493791870">アプリでの位置情報の使用は許可されていません</translation>
+<translation id="4722676601353983425">{GROUP_COUNT,plural, =1{グループを削除}other{グループを削除}}</translation>
 <translation id="4722735765955348426"><ph name="USERNAME" /> のパスワード</translation>
 <translation id="4722920479021006856"><ph name="APP_NAME" /> が画面を共有しています。</translation>
 <translation id="4722989931633062466">サードパーティのログイン メッセージの表示を許可しないサイト</translation>
@@ -5084,6 +5097,7 @@
 <translation id="4750185073185658673">スマートフォンでアクセス許可の設定を見直し、スマートフォンの Bluetooth と Wi-Fi がオンになっていることをご確認ください。</translation>
 <translation id="4750394297954878236">候補</translation>
 <translation id="475088594373173692">最初のユーザー</translation>
+<translation id="4754167810863682207">プロフィールの設定はあと少しで完了です</translation>
 <translation id="4756378406049221019">停止 / 再読み込み</translation>
 <translation id="4756388243121344051">履歴(&amp;H)</translation>
 <translation id="4756671452988984333">音声のテキスト変換</translation>
@@ -5653,6 +5667,7 @@
 <translation id="5187641678926990264">ページをアプリとしてインストール(&amp;I)...</translation>
 <translation id="5187826826541650604"><ph name="KEY_NAME" />（<ph name="DEVICE" />）</translation>
 <translation id="5188648870018555788">位置情報を使用するとともに、位置情報へのアクセス権を持つ ChromeOS アプリ、Android アプリ、ウェブサイト、サービスに対して、デバイスの位置情報の使用を許可します。[位置情報の精度] 設定では、Android アプリやサービスで使用される位置情報の精度を高めることができます。この設定では、クラウドソースのワイヤレス シグナルを利用した位置情報の向上に役立てるため、デバイスのセンサーに関する情報やデバイスから送信されるワイヤレス シグナルが Google で定期的に処理されます。この情報は、ユーザーを特定することなく、位置情報の精度と、位置情報を利用したサービスを改善する目的で使用されます。また、ユーザーのニーズに応えるうえでの Google とサードパーティの正当な利益に基づき、Google のサービスを改善、提供、維持する目的でも使用されます。<ph name="BEGIN_LINK1" />位置情報の使用に関する詳細<ph name="END_LINK1" /></translation>
+<translation id="5190434775614603677">もっと見る</translation>
 <translation id="5190577235024772869">使用量: <ph name="USED_SPACE" /></translation>
 <translation id="5190926251776387065">ポートを有効にする</translation>
 <translation id="5190959794678983197">マイクがありません</translation>
@@ -5701,6 +5716,7 @@
 <translation id="5227679487546032910">デフォルトの青緑のアバター</translation>
 <translation id="5228245824943774148"><ph name="NUM_DEVICES_CONNECTED" /> 台のデバイスが接続されています</translation>
 <translation id="5228579091201413441">同期を有効にする</translation>
+<translation id="5228704301508740018">{GROUP_COUNT,plural, =1{タブグループを解除しますか？}other{タブグループを解除しますか？}}</translation>
 <translation id="5230190638672215545">「ươ」を入力するには「uow」と入力します。</translation>
 <translation id="5230516054153933099">ウィンドウ</translation>
 <translation id="5231427103154766313">リモコンを使用してキャストを停止してください。</translation>
@@ -7372,6 +7388,7 @@
 <translation id="6507194767856842483">{NUM_SUB_APP_INSTALLS,plural, =1{「<ph name="APP_NAME" />」がこのデバイスに次のアプリをインストールしようとしています。}other{「<ph name="APP_NAME" />」がこのデバイスに次のアプリをインストールしようとしています。}}</translation>
 <translation id="6508248480704296122"><ph name="NAME_PH" /> に関連しています</translation>
 <translation id="6508261954199872201">アプリ: <ph name="APP_NAME" /></translation>
+<translation id="6509236174479207412">仕事用プロフィールの設定が完了しました</translation>
 <translation id="6511607461419653612">Chromebook を再起動してから、もう一度お試しください</translation>
 <translation id="6511827214781912955"><ph name="FILENAME" /> を削除して、このデバイスを使用する他のユーザーがパスワードを確認できないようにすることを検討してください</translation>
 <translation id="6512759338201777379">生成画像 <ph name="INDEX" />/<ph name="SUBJECT" />、ムード: <ph name="MOOD" />。</translation>
@@ -7439,6 +7456,7 @@
 <translation id="6551612971599078809">サイトで USB が使用されています</translation>
 <translation id="6551620030439692385">ブロックされています。現在、タイムゾーンは <ph name="TIMEZONE" /> に設定されており、手動でのみ更新できます。</translation>
 <translation id="6551739526055143276">ファミリー リンクの管理対象</translation>
+<translation id="6553046373262346328">{GROUP_COUNT,plural, =1{<ph name="EMAIL" /> にログインしているすべてのデバイスからグループを削除します}other{<ph name="EMAIL" /> にログインしているすべてのデバイスからグループを削除します}}</translation>
 <translation id="655384502888039633">ユーザー数: <ph name="USER_COUNT" /> 人</translation>
 <translation id="6555432686520421228">すべてのユーザー アカウントを削除し、<ph name="IDS_SHORT_PRODUCT_NAME" /> デバイスを出荷時と同じ状態にリセットします。</translation>
 <translation id="6555604601707417276">Linux バックアップを復元しました</translation>
@@ -8714,6 +8732,7 @@
 <translation id="7525067979554623046">作成</translation>
 <translation id="7526989658317409655">プレースホルダ</translation>
 <translation id="7528224636098571080">開かない</translation>
+<translation id="7528440855533975803">{GROUP_COUNT,plural, =1{タブグループを解除しますか？}other{タブグループを解除しますか？}}</translation>
 <translation id="7529411698175791732">インターネット接続を確認してください。問題が解消しない場合は、ログアウトして再度ログインしてみてください。</translation>
 <translation id="7529865045818406536">これまでに接続したネットワークが複数ある場合は、優先ネットワークが使用されます</translation>
 <translation id="7529876053219658589">{0,plural, =1{ゲストモードを終了}other{ゲストモードを終了}}</translation>
@@ -10101,6 +10120,7 @@
 <translation id="8531367864749403520">タブバーからグループを削除するには、[グループを非表示] を選択します</translation>
 <translation id="8531701051932785007">セーフ ブラウジング保護強化機能はオフになっています</translation>
 <translation id="8533670235862049797">セーフ ブラウジングはオンになっています</translation>
+<translation id="853377257670044988">{GROUP_COUNT,plural, =1{タブはこのデバイスで引き続き表示されますが、グループは <ph name="EMAIL" /> にログインしているすべてのデバイスから削除されます}other{タブはこのデバイスで引き続き表示されますが、グループは <ph name="EMAIL" /> にログインしているすべてのデバイスから削除されます}}</translation>
 <translation id="8535005006684281994">Netscape 証明書更新 URL</translation>
 <translation id="8536810348276651776">ほとんどのサイトからログアウトします。ただし、Google アカウントへのログイン状態は維持されるため、Chrome のファミリー リンクの設定は適用されます。</translation>
 <translation id="8536956381488731905">キー操作音</translation>
@@ -10317,6 +10337,7 @@
 <translation id="8694596275649352090">スリープ状態またはディスプレイを閉じたときにロックする</translation>
 <translation id="8695139659682234808">セットアップ後に保護者による使用制限を設定できます</translation>
 <translation id="8695825812785969222">場所を開く（&amp;L）...</translation>
+<translation id="8697753370348182287">仕事用プロフィールの設定が完了しました</translation>
 <translation id="8698269656364382265">前の画面に戻るには、左端から中央にスワイプします。</translation>
 <translation id="8698432579173128320">Google ドライブにデータをバックアップします。これにより、いつでも簡単にデータを復元したりデバイスを切り替えたりできます。バックアップ内容にはアプリのデータが含まれます。バックアップ データは Google にアップロードされ、Google アカウントのパスワードを使って暗号化されます。<ph name="BEGIN_LINK1" />バックアップの詳細<ph name="BEGIN_LINK1_END" />詳細<ph name="END_LINK1" /></translation>
 <translation id="869884720829132584">アプリケーション メニュー</translation>
@@ -10985,6 +11006,7 @@
 <translation id="9167450455589251456">このプロファイルはサポートされていません</translation>
 <translation id="9167813284871066981"><ph name="NUM_ACCOUNTS" /> 件のアカウント</translation>
 <translation id="9168436347345867845">後で行う</translation>
+<translation id="9169093579080634183">タブの詳細</translation>
 <translation id="9169496697824289689">キーボード ショートカットの表示</translation>
 <translation id="916964310188958970">この候補が表示された理由</translation>
 <translation id="9170048603158555829">Thunderbolt</translation>

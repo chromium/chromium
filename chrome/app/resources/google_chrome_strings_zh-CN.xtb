@@ -121,6 +121,7 @@
 <translation id="2765403129283291972">Chrome 需要获得相应权限，才能允许此网站使用您的麦克风</translation>
 <translation id="2770231113462710648">将默认浏览器更改为：</translation>
 <translation id="2775140325783767197">Chrome 无法检查您的密码。请检查您的互联网连接。</translation>
+<translation id="2797864378188255696">使用 <ph name="USER_EMAIL" /> 登录 Gmail 或 YouTube 等 Google 服务时，您可以使用同一账号自动登录 Chrome</translation>
 <translation id="2799223571221894425">重新启动</translation>
 <translation id="2825024317344269723">危险网站。Chrome 移除了通知权限。</translation>
 <translation id="2846251086934905009">安装时出错：安装程序进程未完成。已中止安装。</translation>
@@ -293,6 +294,7 @@
 <translation id="5334309298019785904">由于您的网域不支持同步，Chrome 操作系统无法同步您的数据。</translation>
 <translation id="5334487786912937552">Chrome 需要获得存储空间使用权限才能下载文件</translation>
 <translation id="5337648990166757586">可选：自动向 Google 发送诊断数据和使用情况数据，协助改进 Chrome 操作系统的功能和性能。</translation>
+<translation id="5345497718959596593">登录后，您可以在 Chrome 中使用 Google 账号中的密码等信息</translation>
 <translation id="5357889879764279201">获取 ChromeOS Flex 方面的帮助</translation>
 <translation id="5368118228313795342">额外代码：<ph name="EXTRA_CODE" />。</translation>
 <translation id="5386244825306882791">它还能够控制您启动Chrome后或通过多功能框进行搜索时系统显示的页面。</translation>

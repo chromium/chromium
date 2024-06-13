@@ -80,6 +80,7 @@ Oto kilka rzeczy, które możesz wypróbować na początek.</translation>
 <translation id="1247519845643687288">Ostatnie aplikacje</translation>
 <translation id="1252999807265626933">Trwa ładowanie z: <ph name="POWER_SOURCE" /></translation>
 <translation id="1255033239764210633">Jaka jest pogoda?</translation>
+<translation id="1256734167083229794">Naciśnięto skrót klawiszowy lupy pełnego ekranu. Aby powiększyć widok, naciśnij <ph name="ZOOM_IN_ACCELERATOR" />, aby go pomniejszyć, naciśnij <ph name="ZOOM_OUT_ACCELERATOR" />. Aby poruszać się po powiększonym widoku, naciskaj Ctrl + Alt + klawisze strzałek.</translation>
 <translation id="1269405891096105529">Urządzenia peryferyjnego nie można używać w trybie gościa</translation>
 <translation id="1270290102613614947">Klawiatura ekranowa wyłączona</translation>
 <translation id="1272079795634619415">Zatrzymaj</translation>
@@ -264,6 +265,7 @@ Oto kilka rzeczy, które możesz wypróbować na początek.</translation>
 <translation id="1969011864782743497"><ph name="DEVICE_NAME" /> (USB)</translation>
 <translation id="1971815855639997522">Biurko i okna zostały usunięte. Aby cofnąć czynność, naciśnij Control + Z.</translation>
 <translation id="1972950159383891558">Cześć <ph name="USERNAME" />,</translation>
+<translation id="1977686871076551563">Tryb odwrócenia kolorów został włączony. Aby go wyłączyć, naciśnij ponownie <ph name="ACCELERATOR" />.</translation>
 <translation id="1978498689038657292">Wprowadzanie tekstu</translation>
 <translation id="1980808257969311265">Dołącz do: <ph name="EVENT_SUMMARY" /></translation>
 <translation id="1982717156487272186">Pokaż poprzedni tydzień</translation>
@@ -574,6 +576,7 @@ Podłączone urządzenia: <ph name="DEVICECOUNT" />.</translation>
 <translation id="3226991577105957773">i jeszcze <ph name="COUNT" /></translation>
 <translation id="3227137524299004712">Mikrofon</translation>
 <translation id="3233611303007751344">Oszczędzanie baterii zostało wyłączone</translation>
+<translation id="3238409143297336341">Skonfiguruj kontrolę rodzicielską dotyczącą aplikacji</translation>
 <translation id="324366796737464147">Wyciszanie szumów</translation>
 <translation id="3249513730522716925">Okno <ph name="WINDOW_TITLE" /> zostało przeniesione z biurka <ph name="ACTIVE_DESK" /> na biurko <ph name="TARGET_DESK" /></translation>
 <translation id="3253743281242075461">Typ zadania: <ph name="GLANCEABLES_CLASSROOM_LIST_NAME" /></translation>
@@ -1185,6 +1188,7 @@ Brak połączonych urządzeń.</translation>
 <translation id="5377367976106153749">Włączyć dostęp do aparatu?</translation>
 <translation id="5379115545237091094">Zbyt wiele prób</translation>
 <translation id="5391307769715781764">Zastąpić zapisane biurko?</translation>
+<translation id="5392327145184648521">Obliczam procent naładowania baterii…</translation>
 <translation id="5393156353051693207">Naciśnij i przytrzymaj dowolne miejsce, aby zmienić kolejność aplikacji</translation>
 <translation id="5395308026110844773">Aplikacja <ph name="DRAGGED_APP_NAME" /> jest nad aplikacją <ph name="IN_PLACE_APP" /> – puść, by utworzyć folder.</translation>
 <translation id="5397578532367286026">Działania i historia tego użytkownika mogą być sprawdzane przez menedżera (<ph name="MANAGER_EMAIL" />) na chrome.com.</translation>
@@ -1239,6 +1243,7 @@ Brak połączonych urządzeń.</translation>
 <translation id="5577281275355252094">Aby korzystać ze sterowania telefonem, na telefonie musi być włączony Bluetooth</translation>
 <translation id="5578188167649348993">pamięć</translation>
 <translation id="5580000943347215299">Biblioteka</translation>
+<translation id="5586388332127302891">Lupa zadokowana włączona. Aby ją wyłączyć, naciśnij ponownie <ph name="ACCELERATOR" />.</translation>
 <translation id="5587506661873751671">Pobieram <ph name="DOWNLOAD_PERCENT" />%</translation>
 <translation id="558849140439112033">Przeciągnij, by wybrać obszar, który chcesz przechwycić</translation>
 <translation id="5590609058453685222">Powiadomienie o wyciszeniu jest włączone. Powiadomimy Cię, gdy będziesz mówić, a mikrofon będzie wyciszony.</translation>
@@ -1402,6 +1407,7 @@ Brak połączonych urządzeń.</translation>
 <translation id="6141205840878048728">Na czym chcesz się skupić?</translation>
 <translation id="6141988275892716286">Potwierdź pobranie</translation>
 <translation id="6143578372829139382">Udostępnij w YouTube</translation>
+<translation id="6147182561428020853">Możesz teraz blokować aplikacje zainstalowane na tym urządzeniu <ph name="DEVICE_TYPE" /></translation>
 <translation id="6154006699632741460">Nieobsługiwane urządzenie peryferyjne</translation>
 <translation id="6156960295318603523">Ustawienia języka</translation>
 <translation id="615957422585914272">Pokaż klawiaturę ekranową</translation>
@@ -1449,6 +1455,7 @@ Brak połączonych urządzeń.</translation>
 <translation id="6319503618073410818">Wyświetl szczegóły w przeglądarce</translation>
 <translation id="6324916366299863871">Edytuj skrót</translation>
 <translation id="6330012934079202188">Pokazuję okna ze wszystkich biurek, naciśnij klawisz strzałki w górę, aby wyświetlić okna z aktualnego biurka</translation>
+<translation id="6337159624125741244">Lupa pełnego ekranu jest włączona</translation>
 <translation id="6338485349199627913"><ph name="DISPLAY_NAME" /> jest sesją zarządzaną, którą zarządza <ph name="MANAGER" /></translation>
 <translation id="6344138931392227467">Urządzenie <ph name="DEVICE_NAME" /> zostało połączone</translation>
 <translation id="6348449481487610270"><ph name="MODIFIER_ONE" /> + <ph name="MODIFIER_TWO" /> + <ph name="KEY_ONE" />, a potem <ph name="MODIFIER_THREE" /> + <ph name="KEY_TWO" /> lub <ph name="KEY_THREE" /></translation>
@@ -1515,6 +1522,7 @@ Brak połączonych urządzeń.</translation>
 <translation id="6574587113394758819">Powiadomienie z aplikacji <ph name="APP_TITLE" /> zostało ukryte, bo masz włączoną ochronę przeglądania</translation>
 <translation id="6574622320167699133">Odblokowany przez Twój telefon. Kliknij, aby rozpocząć.</translation>
 <translation id="6578407462441924264">Bez nazwy</translation>
+<translation id="6582034443359256692">Obliczam poziom naładowania baterii.</translation>
 <translation id="6585808820553845416">Sesja kończy się za <ph name="SESSION_TIME_REMAINING" />.</translation>
 <translation id="6593850935013518327"><ph name="PRIMARY_TEXT" />, <ph name="SECONDARY_TEXT" /></translation>
 <translation id="6597278316891651699">Podgląd z kamery został przyciągnięty do lewego dolnego rogu. Konflikt z obszarem systemowym.</translation>
@@ -1576,6 +1584,7 @@ Brak połączonych urządzeń.</translation>
 <translation id="6790428901817661496">Odtwórz</translation>
 <translation id="679368458793552943">Powiększ, gdy lupa jest włączona</translation>
 <translation id="6794287755901682422">Ten element zawiera: <ph name="GLANCEABLES_TASK_ITEM_METADATA" />.</translation>
+<translation id="6797745268063125932">Zostaw włączoną</translation>
 <translation id="6801878137098616817">Niedawno edytowane</translation>
 <translation id="6802687695197837794">Zezwala na dostęp aplikacjom <ph name="APP1_NAME" /> i <ph name="APP2_NAME" /> oraz wszystkim aplikacjom i stronom internetowym, które mają uprawnienia do korzystania z kamery i mikrofonu</translation>
 <translation id="6803622936009808957">Nie można wyświetlić odbicia lustrzanego, ponieważ nie znaleziono obsługiwanych rozdzielczości. Zamiast tego został włączony pulpit rozszerzony.</translation>
@@ -1672,6 +1681,7 @@ Brak połączonych urządzeń.</translation>
 <translation id="7167913274352523149"><ph name="HOTSPOT" />,
         <ph name="NETWORK" /></translation>
 <translation id="7168224885072002358">Powrót do wcześniejszej rozdzielczości za <ph name="TIMEOUT_SECONDS" /></translation>
+<translation id="7173114856073700355">Otwórz Ustawienia</translation>
 <translation id="7180611975245234373">Odśwież</translation>
 <translation id="7181691792034457084">Cześć, <ph name="PRODUCT_NAME" /> jest nieco inny.</translation>
 <translation id="7188494361780961876">Menu zostało przeniesione w lewy górny róg ekranu.</translation>
@@ -1887,6 +1897,7 @@ Aby wyłączyć urządzenie, ponownie naciśnij i przytrzymaj na nim przycisk z
 <translation id="7947798320695032612"><ph name="APP_NAME" /> chce użyć urządzenia <ph name="DEVICE_NAME" /></translation>
 <translation id="7951630946012935453">Przyciemnij klawiaturę</translation>
 <translation id="7953994493035617347">Potwierdzić nową rozdzielczość?</translation>
+<translation id="795958884516058160">Lupa pełnego ekranu włączona. Aby ją wyłączyć, naciśnij ponownie <ph name="ACCELERATOR" />.</translation>
 <translation id="7963689218131240420">Tryb Nie przeszkadzać jest wyłączony.</translation>
 <translation id="7963992254934562106">Źródło: <ph name="PHONE_NAME" /></translation>
 <translation id="7968693143708939792">Wybierz folder...</translation>
@@ -2140,6 +2151,7 @@ Aby wyłączyć urządzenie, ponownie naciśnij i przytrzymaj na nim przycisk z
 <translation id="894774083269346314">Niezaznaczone pole wyboru <ph name="PROFILE_NAME" /> <ph name="EMAIL" />.</translation>
 <translation id="8949925099261528566">Połączono, brak internetu</translation>
 <translation id="8951539504029375108">Chromebook obsługuje tylko zatwierdzone urządzenia Thunderbolt</translation>
+<translation id="8959380109429710384">Naciśnięto skrót klawiszowy lupy pełnego ekranu. Aby poruszać się po powiększonym widoku, naciskaj Ctrl + Alt + klawisze strzałek.</translation>
 <translation id="8964525410783593407">1 godz.</translation>
 <translation id="8973885907461690937">Przenieś zaznaczenie na ikonę menu</translation>
 <translation id="8980862970816311842">Przenieś ikonę aplikacji do folderu lub poza folder w siatce aplikacji</translation>

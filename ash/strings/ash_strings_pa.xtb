@@ -253,6 +253,7 @@
 <translation id="1915307458270490472">ਸਮਾਪਤ ਕਰੋ</translation>
 <translation id="1918022425394817322">ਕੈਮਰੇ ਨੂੰ ਉੱਪਰਲੇ ਸੱਜੇ ਕੋਨੇ 'ਤੇ ਵਿਵਸਥਿਤ ਕੀਤਾ ਗਿਆ</translation>
 <translation id="1923539912171292317">ਆਟੋਮੈਟਿਕ ਕਲਿਕ</translation>
+<translation id="1925320505152357008">1 ਮਿੰਟ ਤੋਂ ਘੱਟ</translation>
 <translation id="1928739107511554905">ਅੱਪਡੇਟ ਪ੍ਰਾਪਤ ਕਰਨ ਲਈ, ਅਟੈਚ ਕੀਤੇ ਕੀ-ਬੋਰਡ ਦੇ ਨਾਲ ਆਪਣੀ Chromebook ਨੂੰ ਮੁੜ-ਚਾਲੂ ਕਰਨ ਲਈ ਟੱਚਸਕ੍ਰੀਨ ਦੀ ਵਰਤੋਂ ਕਰੋ।</translation>
 <translation id="1948405482892809935">ਅਗਲੇ ਵਰਤੋਂਕਾਰ 'ਤੇ ਸਵਿੱਚ ਕਰੋ</translation>
 <translation id="1951012854035635156">Assistant</translation>
@@ -608,6 +609,7 @@
 <translation id="334927402682780278">ਕਰਸਰ ਤੋਂ ਲਾਈਨ ਦੇ ਅਖੀਰ ਤੱਕ ਲਿਖਤ ਚੁਣੋ</translation>
 <translation id="3349345708646875009">ਕਾਰਜ ਪ੍ਰਬੰਧਕ ਖੋਲ੍ਹੋ</translation>
 <translation id="3364721542077212959">ਸਟਾਈਲਸ ਟੂਲ</translation>
+<translation id="3365281428003534650">ਟਾਈਮਰ, ਕਾਰਜ ਅਤੇ ਸੰਗੀਤ ਸੈੱਟ ਕਰੋ</translation>
 <translation id="3365977133351922112">ਤੁਹਾਡਾ ਫ਼ੋਨ ਬਹੁਤ ਦੂਰ ਹੈ। ਆਪਣਾ ਫ਼ੋਨ ਨੇੜੇ ਲਿਆਓ।</translation>
 <translation id="3368922792935385530">ਕਨੈਕਟ ਕੀਤਾ</translation>
 <translation id="3369111525500416043">ਭੁਗਤਾਨ ਦੀ ਤਾਰੀਖ ਨੇੜੇ ਹੈ</translation>
@@ -911,6 +913,7 @@
 <translation id="4406883609789734330">ਲਾਈਵ ਸੁਰਖੀਆਂ</translation>
 <translation id="4412698727486357573">ਮਦਦ ਕੇਂਦਰ</translation>
 <translation id="4412944820643904175"><ph name="FEATURE_NAME" /> ਬੰਦ ਹੈ।</translation>
+<translation id="4417647906073317561">ਫੋਕਸ ਮੋਡ ਸੰਬੰਧੀ ਸੈਟਿੰਗਾਂ। ਕੰਮ 'ਤੇ ਧਿਆਨ ਦੇਣ ਲਈ ਟਾਈਮਰ, ਕਾਰਜ ਅਤੇ ਸੰਗੀਤ ਸੈੱਟ ਕਰੋ।</translation>
 <translation id="4424159417645388645">ਡੈਸਕ 5</translation>
 <translation id="4430019312045809116">ਵੌਲਿਊਮ</translation>
 <translation id="4441283832827406317">ਐਪਾਂ ਨੂੰ ਨਾਮ ਮੁਤਾਬਕ ਕ੍ਰਮ-ਬੱਧ ਕੀਤਾ ਗਿਆ</translation>
@@ -1676,6 +1679,7 @@
 <translation id="7167913274352523149"><ph name="HOTSPOT" />,
         <ph name="NETWORK" /></translation>
 <translation id="7168224885072002358">ਪੁਰਾਣੇ ਰੈਜ਼ੋਲਿਊਸ਼ਨ ਨੂੰ <ph name="TIMEOUT_SECONDS" /> ਵਿੱਚ ਵਾਪਸ ਲਿਆ ਰਿਹਾ ਹੈ</translation>
+<translation id="7173114856073700355">ਸੈਟਿੰਗਾਂ ਖੋਲ੍ਹੋ</translation>
 <translation id="7180611975245234373">ਰਿਫ੍ਰੈਸ਼ ਕਰੋ</translation>
 <translation id="7181691792034457084">ਸਤਿ ਸ੍ਰੀ ਅਕਾਲ। <ph name="PRODUCT_NAME" /> ਥੋੜ੍ਹਾ ਵੱਖਰਾ ਹੈ।</translation>
 <translation id="7188494361780961876">ਮੀਨੂ ਨੂੰ ਸਕ੍ਰੀਨ ਦੇ ਉੱਪਰਲੇ ਖੱਬੇ ਕੋਨੇ ਵਿੱਚ ਲਿਜਾਇਆ ਗਿਆ।</translation>
@@ -1868,6 +1872,7 @@
         <ph name="MANAGED" />
         <ph name="IME" />
         <ph name="LOCALE" /></translation>
+<translation id="7899977217122813285">ਫੋਕਸ ਮੋਡ ਚਾਲੂ ਹੋਣ ਕਰਕੇ, ਸੂਚਨਾਵਾਂ <ph name="TIME" /> ਤੱਕ ਮਿਊਟ ਹਨ</translation>
 <translation id="7901190436359881020">ਵਿੰਡੋਆਂ ਨੂੰ ਸਵੈਪ ਕਰੋ</translation>
 <translation id="7901405293566323524">ਫ਼ੋਨ ਹੱਬ</translation>
 <translation id="7902625623987030061">ਫਿੰਗਰਪ੍ਰਿੰਟ ਸੈਂਸਰ ਨੂੰ ਸਪਰਸ਼ ਕਰੋ</translation>

@@ -850,6 +850,7 @@ Gweler cyfarwyddiadau eich peiriant chwilio er mwyn dileu eich hanes chwilio, os
 <translation id="5345660046352249607">{COUNT,plural, =1{Tracio'r Pecyn Hwn?}zero{Tracio {COUNT} Pecyn?}two{Tracio {COUNT} Becyn?}few{Tracio {COUNT} Pecyn?}many{Tracio {COUNT} Pecyn?}other{Tracio {COUNT} Pecyn?}}</translation>
 <translation id="5348775987281903912">Gallwch rannu'r dudalen hon yma o'r botwm rhannu.</translation>
 <translation id="536067926684072644">Dangos Nodau Tudalen</translation>
+<translation id="537853552771686272">Rheoli'r pynciau a'r gwefannau y mae gennych ddiddordeb ynddynt</translation>
 <translation id="5379352933722332597">{count,plural, =1{Mae'r Nod tudalen wedi'i gadw i "{title}". Mae wedi'i gadw i'r ddyfais hon yn unig.}zero{Mae {count} Nod tudalen wedi'u cadw i "{title}". Maent wedi'u cadw i'r ddyfais hon yn unig.}two{Mae {count} Nod tudalen wedi'u cadw i "{title}". Maent wedi'u cadw i'r ddyfais hon yn unig.}few{Mae {count} Nod tudalen wedi'u cadw i "{title}". Maent wedi'u cadw i'r ddyfais hon yn unig.}many{Mae {count} Nod tudalen wedi'u cadw i "{title}". Maent wedi'u cadw i'r ddyfais hon yn unig.}other{Mae {count} Nod tudalen wedi'u cadw i "{title}". Maent wedi'u cadw i'r ddyfais hon yn unig.}}</translation>
 <translation id="5388358297987318779">Agor Llun</translation>
 <translation id="5395707839134961196">Cuddio manylion peiriant chwilio</translation>
@@ -932,6 +933,7 @@ Rhaid galluogi Handoff hefyd yn adran Cyffredinol y Gosodiadau, a rhaid i'ch dyf
 <translation id="5758631781033351321">Byddwch yn gweld eich rhestr ddarllen yma</translation>
 <translation id="5765456154762864099">Dewislen → Gosodiadau → Porwr Diofyn</translation>
 <translation id="5777888488419460501">Cadw yn y Cyfrif</translation>
+<translation id="5778292857689789362">Grŵp tabiau, <ph name="GROUP_TITLE" />, <ph name="TABS_NUMBER" /> o Dabiau.</translation>
 <translation id="5782227691023083829">Wrthi'n cyfieithu...</translation>
 <translation id="5791632441210678828">Botwm trefnu ar gyfer Ffrwd o bethau rydych yn eu dilyn.</translation>
 <translation id="5793373065989412701">Wrthi'n gwirio aelodau'ch teulu…</translation>

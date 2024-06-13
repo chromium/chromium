@@ -1562,6 +1562,7 @@
 <translation id="2116619964159595185">कमी ऊर्जेचे बीकन, आरोग्य किंवा फिटनेस ट्रॅकर अथवा स्मार्ट लाइट बल्ब सेट करणे किंवा सिंक करणे यांसारख्या वैशिष्ट्यांसाठी साइट सामान्यपणे ब्लूटूथ डिव्‍हाइसशी कनेक्ट करतात</translation>
 <translation id="2117655453726830283">पुढील स्लाइड</translation>
 <translation id="211803431539496924">विस्तारित सुरक्षा अपडेट कन्फर्म करायची आहेत का?</translation>
+<translation id="2118594521750010466">आता निराकरण करा</translation>
 <translation id="2119461801241504254">सुरक्षित ब्राउझिंग सुरू आहे आणि ते तुमचे हानिकारक साइट आणि डाउनलोडपासून संरक्षण करत आहे</translation>
 <translation id="2120297377148151361">ॲक्टिव्हिटी आणि संवाद</translation>
 <translation id="2120639962942052471">ब्लॉक केलेली <ph name="PERMISSION" /></translation>
@@ -1870,6 +1871,7 @@
 <translation id="233375395665273385">हटवा आणि साइन आउट करा</translation>
 <translation id="233471714539944337">संवेदनशील आशय</translation>
 <translation id="2335111415680198280">{0,plural, =1{# विंडो बंद करा}other{# विंडो बंद करा}}</translation>
+<translation id="2335758110242123814">गट उघडा</translation>
 <translation id="2336228925368920074">सर्व टॅब बुकमार्क करा...</translation>
 <translation id="2336258397628212480"><ph name="APP_NAME" /> हे <ph name="PRINTER_NAME" /> वर १ पेज प्रिंट करत आहे</translation>
 <translation id="2336381494582898602">Powerwash</translation>
@@ -1890,6 +1892,7 @@
 <translation id="2351923523007389195">अनुमती दिली आहे – <ph name="PERMISSION_DETAILS" />. <ph name="LINK_BEGIN" />सिस्टीम स्थान अ‍ॅक्सेस<ph name="LINK_END" /> सुरू करा.</translation>
 <translation id="2352662711729498748">&lt; 1 MB</translation>
 <translation id="2352810082280059586">लॉक स्‍क्रीन नोट <ph name="LOCK_SCREEN_APP_NAME" /> वर आपोआप सेव्ह केल्या जातात. तुमची सर्वात अलीकडील नोट लॉक स्‍क्रीनवर राहील.</translation>
+<translation id="2353168619378866466">गट उघडा</translation>
 <translation id="2353297238722298836">कॅमेरा आणि मायक्रोफोनला अनुमती आहे</translation>
 <translation id="2353910600995338714">एक्सपोर्ट करणे यशस्वी झाले</translation>
 <translation id="2355314311311231464">तुमच्या खात्याचे तपशील मिळवता न आल्याने तरतूद करता आली नाही. कृपया पुन्हा प्रयत्न करा. एरर कोड: <ph name="ERROR_CODE" />.</translation>
@@ -2844,6 +2847,7 @@
 <translation id="3033348223765101500">तुमचा डेटा नियंत्रित करा</translation>
 <translation id="3036327949511794916">हे <ph name="DEVICE_TYPE" /> परत करण्याची डेडलाइन निघून गेली आहे.</translation>
 <translation id="3036546437875325427">फ्लॅश सुरू करा</translation>
+<translation id="3037193115779933814">अक्षरे आणि अंक</translation>
 <translation id="3038272154009688107">सर्व साइट पहा</translation>
 <translation id="3038612606416062604">एक प्रिंटर व्यक्तिचलितपणे जोडा</translation>
 <translation id="3039491566278747710">डिव्हाइसवर ऑफलाइन धोरण इंस्टॉल करता आले नाही.</translation>
@@ -3698,6 +3702,7 @@
 <translation id="3699920817649120894">सिंक करणे आणि पर्सनलाइझेशन बंद करायचे आहे का?</translation>
 <translation id="3700888195348409686">सादर करत आहे (<ph name="PAGE_ORIGIN" />)</translation>
 <translation id="3700993174159313525">साइटना तुमच्या कॅमेराच्या स्थानाचा माग ठेवण्याची अनुमती देऊ नका</translation>
+<translation id="3701167022068948696">आता निराकरण करा</translation>
 <translation id="3701515417135397388">डेटा भंगामध्ये पासवर्ड धोक्यात आला असल्यास, तुम्हाला चेतावणी दिली जावी</translation>
 <translation id="3702797829026927713"><ph name="BEGIN_PARAGRAPH1" />ज्या रिटेल विक्रेत्यासाठी हे डेमो डिव्हाइस कॉन्फिगर केले जात आहे त्याचे नाव आणि स्टोअर नंबर एंटर करा*. <ph name="END_PARAGRAPH1" />
     <ph name="BEGIN_PARAGRAPH2" />तुम्हाला स्टोअर नंबर माहित नसल्यास, डेमो मोड इंस्टॉलेशन सुरू ठेवण्यासाठी तुम्ही "००००" एंटर करू शकता. <ph name="END_PARAGRAPH2" />
@@ -4237,6 +4242,7 @@
 <translation id="4066207411788646768">कृपया तुमच्या नेटवर्कमध्ये उपलब्ध असणारे प्रिंटर पाहण्यासाठी तुमचे कनेक्शन तपासा</translation>
 <translation id="4067839975993712852">सध्याचा टॅब वाचला म्हणून मार्क करा</translation>
 <translation id="4068776064906523561">फिंगरप्रिंट सेव्ह केले</translation>
+<translation id="4070132839822635162">साइन इन करू नका</translation>
 <translation id="407173827865827707">क्लिकवर</translation>
 <translation id="4072805772816336153">नंतर पुन्हा प्रयत्न करा</translation>
 <translation id="4074164314564067597">कीबोर्ड</translation>
@@ -6051,6 +6057,7 @@
 <translation id="5469540749878136997">वापरावर आधारित मेमरी मोकळी करा</translation>
 <translation id="5469852975082458401">तुम्ही मजकुराचा कर्सर वापरून पेज नेव्हिगेट करू शकता. बंद करण्यासाठी F7 प्रेस करा.</translation>
 <translation id="5470735824776589490">Powerwash सह तुमचा डिव्हाइस रीसेट केला जाण्यापूर्वी तो रीस्टार्ट करणे आवश्यक आहे. <ph name="LINK_BEGIN" />अधिक जाणून घ्या<ph name="LINK_END" /></translation>
+<translation id="5470741195701938302">अंक</translation>
 <translation id="5471768120198416576">हाय! मी तुमचा टेक्‍स्‍ट टू स्‍पीच व्हॉइस आहे.</translation>
 <translation id="5472627187093107397">या साइटसाठी पासवर्ड सेव्ह करा</translation>
 <translation id="5473062644742711742">Chrome वेब स्टोअरमध्ये आणखी अ‍ॅक्सेसिबिलिटी टूल पहा</translation>
@@ -6888,6 +6895,7 @@
 <translation id="6101226222197207147">नवीन अ‍ॅप जोडला (<ph name="EXTENSION_NAME" />)</translation>
 <translation id="6102043788063419338">ही फाइल प्रगत संरक्षणाने ब्लॉक केली होती.</translation>
 <translation id="6103681770816982672">चेतावणी: तुम्ही डेव्हलपर चॅनेलवर स्विच करत आहात</translation>
+<translation id="610395411842312282">बाजूबाजूला असलेल्या दोन खिडक्यांचे गट करा</translation>
 <translation id="6104068876731806426">Google खाती</translation>
 <translation id="6104667115274478616">ChromeOS ऑडिओ सेटिंग्ज व्यवस्थापित करा</translation>
 <translation id="6104796831253957966">प्रिंटरची क्यू भरली आहे</translation>
@@ -7366,6 +7374,7 @@
 <translation id="6469702164109431067">पासवर्ड आणि पासकी</translation>
 <translation id="6470823736074966819">सूचना म्यूट करा</translation>
 <translation id="6472893788822429178">होम बटण दर्शवा</translation>
+<translation id="6473315466413288899">पर्याय निवडा</translation>
 <translation id="6474498546677193336">अनशेअर करता आले नाही कारण अ‍ॅप्लिकेशन हे फोल्डर वापरत आहे. पुढे Linux बंद केल्यावर फोल्डर अनशेअर केले जाईल.</translation>
 <translation id="6474884162850599008">Google ड्राइव्ह खाते डिस्कनेक्ट करा</translation>
 <translation id="6475294023568239942">जागा मोकळी करा किंवा सेटिंग्ज मध्ये Linux डिस्कचा आकार बदला</translation>
@@ -10835,6 +10844,7 @@
 <translation id="9031811691986152304">पुन्हा प्रयत्न करा</translation>
 <translation id="9032004780329249150">तुमच्या iOS डिव्हाइसवर तुमचे पासवर्ड वापरा</translation>
 <translation id="9032097289595078011">जलद पेअरिंग बंद करा</translation>
+<translation id="9032513103438497286">या <ph name="DEVICE_TYPE" /> वर इंस्टॉल केलेली ॲप्स ब्लॉक करा. ॲप्स किंवा आशय डाउनलोड करणे प्रतिबंधित करण्यासाठी, Google Play सेटिंग्ज वर जा.</translation>
 <translation id="9033765790910064284">तरीही सुरू ठेवा</translation>
 <translation id="9033857511263905942">&amp;पेस्ट करा</translation>
 <translation id="9034408118624208974">Chromebook वर नवीन आहात का? सिंक सुरू करा, जेणेकरून तुमच्या प्राधान्यांचा बॅकअप घेतला जाईल.</translation>

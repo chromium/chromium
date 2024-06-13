@@ -915,6 +915,7 @@ Na stronie <ph name="BEGIN_LINK" />myactivity.google.com<ph name="END_LINK" /> n
 <translation id="5596627076506792578">Więcej opcji</translation>
 <translation id="5599455543593328020">Tryb incognito</translation>
 <translation id="5601180634394228718">W <ph name="BEGIN_LINK" />usługach Google<ph name="END_LINK" /> znajdziesz więcej ustawień, które wykorzystują dane do ulepszania działania Chrome.</translation>
+<translation id="5614625640221885312">Zaloguj się, aby mieć dostęp do zakładek, haseł oraz innych ustawień i danych na wszystkich swoich urządzeniach</translation>
 <translation id="5620163320393916465">Brak zapisanych haseł</translation>
 <translation id="5620928963363755975">Znajdź pliki i strony w Pobranych plikach, używając przycisku Więcej opcji</translation>
 <translation id="562289928968387744">Zarządzaj reakcjami</translation>
@@ -956,6 +957,7 @@ Na stronie <ph name="BEGIN_LINK" />myactivity.google.com<ph name="END_LINK" /> n
 <translation id="5793665092639000975">Zajmują <ph name="SPACE_USED" /> z <ph name="SPACE_AVAILABLE" /></translation>
 <translation id="5795872532621730126">Wyszukiwanie i przeglądanie</translation>
 <translation id="5797949256525811424">Temat został zablokowany</translation>
+<translation id="580893287573699959">Zarządzaj tematami i witrynami, które Cię interesują</translation>
 <translation id="5809361687334836369">{HOURS,plural, =1{# godzinę temu}few{# godziny temu}many{# godzin temu}other{# godziny temu}}</translation>
 <translation id="5810288467834065221">Copyright <ph name="YEAR" /> Google LLC. Wszelkie prawa zastrzeżone.</translation>
 <translation id="5814749351757353073">Bądź na bieżąco ze swoimi ulubionymi stronami</translation>

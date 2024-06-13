@@ -122,6 +122,7 @@
 <translation id="2765403129283291972">Chrome benötigt für diese Website die Berechtigung, auf dein Mikrofon zuzugreifen</translation>
 <translation id="2770231113462710648">Standardbrowser ändern in:</translation>
 <translation id="2775140325783767197">Chrome kann deine Passwörter nicht prüfen. Überprüfe deine Internetverbindung.</translation>
+<translation id="2797864378188255696">Wenn du dich mit <ph name="USER_EMAIL" /> in Google-Diensten wie Gmail oder YouTube anmeldest, kannst du dich mit demselben Konto automatisch in Chrome anmelden</translation>
 <translation id="2799223571221894425">Neu starten</translation>
 <translation id="2825024317344269723">Gefährliche Website. Chrome hat Benachrichtigungen entfernt.</translation>
 <translation id="2846251086934905009">Installationsfehler: Die Installation konnte nicht abgeschlossen werden und wurde abgebrochen.</translation>
@@ -294,6 +295,7 @@
 <translation id="5334309298019785904">Chrome OS konnte deine Daten nicht synchronisieren, da die Synchronisierung für deine Domain nicht verfügbar ist.</translation>
 <translation id="5334487786912937552">Chrome benötigt Speicherzugriff, um Dateien herunterladen zu können</translation>
 <translation id="5337648990166757586">Optional: Lass Diagnose- und Nutzungsdaten automatisch an Google senden, um die Funktionen und die Leistung von Chrome OS zu verbessern.</translation>
+<translation id="5345497718959596593">Solange du angemeldet bist, kannst du deine Passwörter und weitere Daten aus deinem Google-Konto in Chrome verwenden</translation>
 <translation id="5357889879764279201">Hilfe zu Chrome OS Flex erhalten</translation>
 <translation id="5368118228313795342">Zusätzlicher Code: <ph name="EXTRA_CODE" />.</translation>
 <translation id="5386244825306882791">Die Erweiterung legt auch fest, welche Seite beim Start von Chrome oder bei der Suche über die Omnibox angezeigt wird.</translation>

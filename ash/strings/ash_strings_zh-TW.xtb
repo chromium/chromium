@@ -1669,6 +1669,7 @@
 <translation id="7167913274352523149"><ph name="HOTSPOT" />，
         <ph name="NETWORK" /></translation>
 <translation id="7168224885072002358">系統將在 <ph name="TIMEOUT_SECONDS" /> 秒後還原成原來的解析度</translation>
+<translation id="7173114856073700355">開啟設定</translation>
 <translation id="7180611975245234373">重新整理</translation>
 <translation id="7181691792034457084">你好！<ph name="PRODUCT_NAME" /> 不一樣了</translation>
 <translation id="7188494361780961876">已將選單移至畫面左上角。</translation>
@@ -1823,7 +1824,7 @@
 <translation id="7780094051999721182">捷徑</translation>
 <translation id="7780159184141939021">旋轉螢幕</translation>
 <translation id="7781829728241885113">昨天</translation>
-<translation id="7787212146956232129">輸入和輸出裝置已設定完成。如要變更，請前往「設定」。</translation>
+<translation id="7787212146956232129">輸入和輸出裝置已設定。如要變更，請前往「設定」。</translation>
 <translation id="7792590255364786396">顯示</translation>
 <translation id="7796735576426975947">已隱藏新通知</translation>
 <translation id="7798302898096527229">按下搜尋鍵或 Shift 鍵即可取消。</translation>

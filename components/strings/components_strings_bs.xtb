@@ -547,7 +547,7 @@ To će u suprotnom biti blokirano prema vašim postavkama privatnosti. Ovo će o
 <translation id="2003709556000175978">Poništite lozinku sada</translation>
 <translation id="2003775180883135320">Četverostruko bušenje na gornjoj strani</translation>
 <translation id="2004697686368036666">Moguće je da funkcije neće raditi na nekim web lokacijama</translation>
-<translation id="2005042463110681802">Upozorenje vam se prikazuje jer ova web-lokacija ne podržava HTTPS i jer ste u anonimnom načinu. <ph name="BEGIN_LEARN_MORE_LINK" />Saznajte više<ph name="END_LEARN_MORE_LINK" /></translation>
+<translation id="2005042463110681802">Ovo upozorenje vam se prikazuje jer ova web lokacija ne podržava HTTPS, a nalazite se u anonimnom načinu rada. <ph name="BEGIN_LEARN_MORE_LINK" />Saznajte više<ph name="END_LEARN_MORE_LINK" /></translation>
 <translation id="2009942480257059311">Dugme Kreiraj događaj, aktivirajte da brzo kreirate novi događaj u Google Kalendaru</translation>
 <translation id="201174227998721785">Upravljajte odobrenjima i podacima pohranjenim na svim web lokacijama u postavkama Chromea</translation>
 <translation id="2012276282211112603">Trenutno nema tema za prikaz</translation>
@@ -568,6 +568,7 @@ To će u suprotnom biti blokirano prema vašim postavkama privatnosti. Ovo će o
 <translation id="2036983605131262583">Alternativna rolna</translation>
 <translation id="2040463897538655645">Uklonjiva pohrana</translation>
 <translation id="2040894699575719559">Lokacija je blokirana</translation>
+<translation id="2041788246978549610">Upotreba dostupnih mikrofona (<ph name="MICS_COUNT" />)</translation>
 <translation id="2042213636306070719">Ladica 7</translation>
 <translation id="204357726431741734">Prijavite se da koristite lozinke sačuvane na Google računu</translation>
 <translation id="2045871135676061132">Koverta Personal</translation>
@@ -889,6 +890,7 @@ To će u suprotnom biti blokirano prema vašim postavkama privatnosti. Ovo će o
 <translation id="2655752832536625875">Kupatilo</translation>
 <translation id="2657637947725373811">{0,plural, =1{Prenijeti povjerljiv fajl?}one{Prenijeti povjerljive fajlove?}few{Prenijeti povjerljive fajlove?}other{Prenijeti povjerljive fajlove?}}</translation>
 <translation id="2658843814961855121">Zakon o radu i zapošljavanju</translation>
+<translation id="2658944305627908367">Transakcije koje premašuju vaš saldo neće se obraditi</translation>
 <translation id="2660779039299703961">Događaj</translation>
 <translation id="2664887757054927933">{COUNT,plural, =0{Ništa}=1{1 lozinka (za <ph name="DOMAIN_LIST" />)}=2{2 lozinke (za <ph name="DOMAIN_LIST" />)}one{# lozinka (za <ph name="DOMAIN_LIST" />)}few{# lozinke (za <ph name="DOMAIN_LIST" />)}other{# lozinki (za <ph name="DOMAIN_LIST" />)}}</translation>
 <translation id="2666092431469916601">Gornji</translation>
@@ -1086,6 +1088,7 @@ To će u suprotnom biti blokirano prema vašim postavkama privatnosti. Ovo će o
 <translation id="3090667236485488075">Staklo</translation>
 <translation id="3095940652251934233">Izjava</translation>
 <translation id="3098513225387949945">Zanemareno je jer lista onemogućenih sadrži uzorak koji je jednak "*", a što je ekvivalentno onemogućavanju pravila.</translation>
+<translation id="3099619114405539473">Upotreba dostupnih kamera (<ph name="CAMERAS_COUNT" />)</translation>
 <translation id="3102312643185441063">Štedni</translation>
 <translation id="3103188521861412364">Dionice i obveznice</translation>
 <translation id="3105172416063519923">ID materijala:</translation>
@@ -1362,6 +1365,7 @@ To će u suprotnom biti blokirano prema vašim postavkama privatnosti. Ovo će o
 <translation id="3583757800736429874">&amp;Ponovi premještanje</translation>
 <translation id="3584299510153766161">Dvostruko bušenje na dnu</translation>
 <translation id="3584755835709800788">Filmovi naučne fantastike i fantazije</translation>
+<translation id="3585455899094692781">Upotreba i premještanje dostupnih kamera (<ph name="CAMERAS_COUNT" />)</translation>
 <translation id="3586833803451155175">Vlažna folija</translation>
 <translation id="3586931643579894722">Sakrij detalje</translation>
 <translation id="3587738293690942763">Srednje</translation>

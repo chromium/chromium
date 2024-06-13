@@ -1548,6 +1548,7 @@
 <translation id="2116619964159595185">Сайттар әдетте төмен қуатты сигналды, денсаулық немесе фитнес трекерін, сондай-ақ смарт жарық көзін орнату немесе синхрондау сияқты функциялар үшін Bluetooth құрылғыларына қосылады.</translation>
 <translation id="2117655453726830283">Келесі слайд</translation>
 <translation id="211803431539496924">Кеңейтілген қауіпсіздік жаңартуларын растау қажет пе?</translation>
+<translation id="2118594521750010466">Қазір түзету</translation>
 <translation id="2119461801241504254">"Қауіпсіз шолу" функциясы қосулы және ол зиянды сайттар мен жүктеп алынған файлдардан қорғайды.</translation>
 <translation id="2120297377148151361">Белсенділік және өзара әрекеттер</translation>
 <translation id="2120639962942052471"><ph name="PERMISSION" /> бөгелді.</translation>
@@ -1852,6 +1853,7 @@
 <translation id="233375395665273385">Жою және шығу</translation>
 <translation id="233471714539944337">Құпия контент</translation>
 <translation id="2335111415680198280">{0,plural, =1{# терезені жабу}other{# терезені жабу}}</translation>
+<translation id="2335758110242123814">Топты ашу</translation>
 <translation id="2336228925368920074">Барлық қойындыларды бетбелгілерге қосу…</translation>
 <translation id="2336258397628212480"><ph name="APP_NAME" /> қолданбасы <ph name="PRINTER_NAME" /> принтерінде 1 бет басып шығарып жатыр.</translation>
 <translation id="2336381494582898602">Powerwash</translation>
@@ -1872,6 +1874,7 @@
 <translation id="2351923523007389195">Рұқсат етілген (<ph name="PERMISSION_DETAILS" />). <ph name="LINK_BEGIN" />Жүйенің локацияны пайдалану рұқсатын<ph name="LINK_END" /> қосыңыз.</translation>
 <translation id="2352662711729498748">&lt; 1 МБ</translation>
 <translation id="2352810082280059586">Экран құлпы жөніндегі ескертпелері автоматты түрде <ph name="LOCK_SCREEN_APP_NAME" /> қолданбасына сақталған. Ең соңғы ескертпе құлып экранында берілген.</translation>
+<translation id="2353168619378866466">Топты ашу</translation>
 <translation id="2353297238722298836">Камера мен микрофонды пайдалануға рұқсат берілген</translation>
 <translation id="2353910600995338714">Экспорттау сәтті болды</translation>
 <translation id="2355314311311231464">Инициализация сәтсіз аяқталды, себебі аккаунт деректерін шығарып алу мүмкін болмады. Қайталап көріңіз. Қате коды: <ph name="ERROR_CODE" />.</translation>
@@ -2825,6 +2828,7 @@
 <translation id="3033348223765101500">Деректі бақылау</translation>
 <translation id="3036327949511794916">Осы <ph name="DEVICE_TYPE" /> құрылғысын қайтару мерзімі өтіп кетті.</translation>
 <translation id="3036546437875325427">Flash қолданбасын қосу</translation>
+<translation id="3037193115779933814">Әріптер және сандар</translation>
 <translation id="3038272154009688107">Барлық сайтты көру</translation>
 <translation id="3038612606416062604">Принтерді қолмен енгізу</translation>
 <translation id="3039491566278747710">Офлайн саясат құрылғыға орнатылмады.</translation>
@@ -3675,6 +3679,7 @@
 <translation id="3699920817649120894">Синхрондау және жекелендіру өшірілсін бе?</translation>
 <translation id="3700888195348409686">Көрсетілуде (<ph name="PAGE_ORIGIN" />)</translation>
 <translation id="3700993174159313525">Сайттардың камераңыздың орнын бақылауына рұқсат бермеу</translation>
+<translation id="3701167022068948696">Қазір түзету</translation>
 <translation id="3701515417135397388">Деректер қолды болған кезде құпия сөз ұрланса, сізге ескерту жасау</translation>
 <translation id="3702797829026927713"><ph name="BEGIN_PARAGRAPH1" />Бөлшек сатушы атын және осы демо құрылғы конфигурацияланатын дүкен нөмірін енгізіңіз*. <ph name="END_PARAGRAPH1" />
     <ph name="BEGIN_PARAGRAPH2" />Дүкен нөмірін білмесеңіз, Демо режимін орнатуды жалғастыру үшін "0000" деп енгізуіңізге болады. <ph name="END_PARAGRAPH2" />
@@ -6022,6 +6027,7 @@
 <translation id="5469540749878136997">Қолданысқа қарай жадты босату</translation>
 <translation id="5469852975082458401">Мәтін курсорымен бір беттен екінші бетке өте аласыз. Оны өшіру үшін F7 пернесін басыңыз.</translation>
 <translation id="5470735824776589490">Powerwash арқылы қалпына келтіру үшін құрылғыңызды қайта іске қосу қажет. <ph name="LINK_BEGIN" />Толығырақ<ph name="LINK_END" /></translation>
+<translation id="5470741195701938302">Сандар</translation>
 <translation id="5471768120198416576">Сәлеметсіз бе! Мен сізге мәтінді дыбыстап беремін.</translation>
 <translation id="5472627187093107397">Осы сайт үшін құпия сөздерді сақтау</translation>
 <translation id="5473062644742711742">Chrome Web Store-дан басқа да арнайы мүмкіндік құралдарын табыңыз</translation>
@@ -6855,6 +6861,7 @@
 <translation id="6101226222197207147">Жаңа қолданба қосылды (<ph name="EXTENSION_NAME" />)</translation>
 <translation id="6102043788063419338">Бұл файлды "Күшейтілген қорғаныс" функциясы бөгеген.</translation>
 <translation id="6103681770816982672">Ескерту: әзірлеуші арнасына ауысудасыз</translation>
+<translation id="610395411842312282">Қатар екі терезені топтау</translation>
 <translation id="6104068876731806426">Google аккаунттары</translation>
 <translation id="6104667115274478616">ChromeOS аудио параметрлерін басқару</translation>
 <translation id="6104796831253957966">Принтер кезегі толы.</translation>

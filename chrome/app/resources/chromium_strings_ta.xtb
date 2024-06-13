@@ -16,6 +16,7 @@
 <translation id="1203500561924088507">நிறுவியதற்கு நன்றி. <ph name="BUNDLE_NAME" /> ஐப் பயன்படுத்துவதற்கு முன் உலாவியை மீண்டும் தொடங்க வேண்டும்.</translation>
 <translation id="1262876892872089030">Chromium தொடர்ந்து வேகமாக இயங்குவதற்கு, இந்தப் பக்கம் செயலில் இல்லாதபோது நினைவகம் காலியாக்கப்பட்டது. இந்தத் தளத்தை எப்போதும் செயலற்ற நிலையில் இருந்து விலக்க நீங்கள் தேர்வுசெய்யலாம்.</translation>
 <translation id="1265577313130862557">இந்த ஃபைல் ஆபத்தானது என்பதால் இந்தப் பதிவிறக்கத்தை Chromium தடுத்துள்ளது</translation>
+<translation id="126567311906253476"><ph name="USER_EMAIL" /> கணக்கின் மூலம் Gmail, YouTube போன்ற Google சேவைகளில் உள்நுழையும்போது Chromiumமிலும் அதே கணக்கின் மூலம் தானாக நீங்கள் உள்நுழையலாம்.</translation>
 <translation id="1315551408014407711">உங்கள் புதிய Chromium சுயவிவரத்தை அமைத்திடுங்கள்</translation>
 <translation id="1342274909142618978">Chromium தரவையும் நீக்கு (<ph name="URL" />)</translation>
 <translation id="1414495520565016063">Chromium இல் உள்நுழைந்துள்ளீர்கள்!</translation>
@@ -40,6 +41,7 @@
 <translation id="1749104137266986751">HTTPS கிடைக்காதபோது, Chromium உங்களை எச்சரிக்காமலேயே பாதுகாப்பற்ற இணைப்பைப் பயன்படுத்தும்</translation>
 <translation id="1774152462503052664">பின்புலத்தில் Chromium ஐ இயக்கு</translation>
 <translation id="1779356040007214683">Chromium ஐப் பாதுகாப்பானதாக்க <ph name="IDS_EXTENSION_WEB_STORE_TITLE" /> இல் பட்டியலிடப்படாத சில நீட்டிப்புகளை நாங்கள் முடக்கிவிட்டோம், மேலும் அவை உங்களுக்குத் தெரியாமல் சேர்க்கப்பட்டிருக்கலாம்.</translation>
+<translation id="1804128559285178512">உள்நுழைந்திருக்கும்போது உங்கள் Google கணக்கில் உள்ள கடவுச்சொற்களையும், மேலும் பலவற்றையும் நீங்கள் Chromiumமில் பயன்படுத்தலாம்.</translation>
 <translation id="1808667845054772817">Chromium ஐ மீண்டும்நிறுவு</translation>
 <translation id="1820835682567584003">Chromium <ph name="AUTHENTICATION_PURPOSE" /> முயல்கிறது</translation>
 <translation id="18552579716432081">உலாவிய தரவை உங்கள் Google கணக்கில் இருந்து நீக்காமல் இந்தச் சாதனத்தில் இருந்து மட்டும் நீக்க, <ph name="BEGIN_LINK" />Chromiumமில் இருந்து வெளியேறுங்கள்<ph name="END_LINK" />.</translation>

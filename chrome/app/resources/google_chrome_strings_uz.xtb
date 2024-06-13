@@ -52,6 +52,7 @@
 <ph name="USER_DATA_DIRECTORY" /></translation>
 <translation id="1698376642261615901">Google Chrome – veb sahifalarni va ilovalarni bir necha soniyada ochadigan brauzer. U tez, barqaror va undan foydalanish oson. Google Chrome brauzerining firibgarlik va zararli dasturlardan saqlovchi ichki o‘rnatilgan himoya vositasi Internetdagi faoliyatni maksimal havfsizlik bilan ta’minlaydi.</translation>
 <translation id="1713301662689114961">{0,plural, =1{Chrome bir soatdan keyin qayta ishga tushadi}other{Chrome # soatdan keyin qayta ishga tushadi}}</translation>
+<translation id="1722488837206509557">Bu mavjud qurilmalardan birini tanlash va undagi kontentni chiqarish imkonini beradi.</translation>
 <translation id="1734234790201236882">Chrome bu parolni Google hisobingizga saqlaydi. Uni eslab qolishingiz shart emas.</translation>
 <translation id="1786003790898721085"><ph name="TARGET_DEVICE_NAME" /> qurilmangizda Chrome hisobingizga kiring va keyin qaytadan yuborishga urining.</translation>
 <translation id="1786044937610313874">Yorliqlar Chrome ichida ochiladi</translation>
@@ -124,6 +125,7 @@
 <translation id="2765403129283291972">Bu sayt mikrofoningizdan foydalanishi uchun Chrome brauzeriga ruxsat berishingiz lozim</translation>
 <translation id="2770231113462710648">Standart brauzer etib tayinlash:</translation>
 <translation id="2775140325783767197">Chrome parollaringizni tekshira olmadi. Internet aloqasini tekshiring.</translation>
+<translation id="2797864378188255696">Gmail yoki YouTube kabi Google xizmatlariga <ph name="USER_EMAIL" /> hisobidan avtomatik kirganda Chromega ham shu hisobdan kirishingiz mumkin</translation>
 <translation id="2799223571221894425">Qaytadan ishga tushirish</translation>
 <translation id="2825024317344269723">Xavfli sayt. Chrome bildirishnomalarni olib tashladi.</translation>
 <translation id="2846251086934905009">Oʻrnatishda xato: Oʻrnatish vositasi tugallanmadi. Oʻrnatish bekor qilindi.</translation>
@@ -298,6 +300,7 @@ Ba’zi imkoniyatlar ishlamasligi mumkin. Profilni saqlash uchun boshqa jild tan
 <translation id="5334309298019785904">Domeningizda Sinxronlash xizmati mavjud emasligi sababli ChromeOS maʼlumotlaringizni sinxronlay olmadi.</translation>
 <translation id="5334487786912937552">Chrome bu fayllarni yuklab olishi uchun xotiraga saqlash ruxsati kerak</translation>
 <translation id="5337648990166757586">Ixtiyoriy: Google serverlariga diagnostika va foydalanish statistikasi maʼlumotlarini yuborish orqali ChromeOS tizimini takomillashtirishga yordam bering.</translation>
+<translation id="5345497718959596593">Hisobga kirganingizda Chrome brauzeridagi Google hisobingizdagi parollaringiz va boshqalardan foydalanishingiz mumkin</translation>
 <translation id="5357889879764279201">ChromeOS Flex yordam markazi</translation>
 <translation id="5368118228313795342">Qoʻshimcha kod: <ph name="EXTRA_CODE" />.</translation>
 <translation id="5386244825306882791">Bundan tashqari kengaytma Chrome boshlash sahifasini va omniboksdagi so‘rovlar uchun foydalaniladigan birlamchi qidiruv tizimini o‘zgartirdi.</translation>

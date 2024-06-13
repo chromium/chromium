@@ -147,7 +147,7 @@
 <translation id="1487931858675166540">הפריט <ph name="SECOND_ITEM_TITLE" /> החליף את <ph name="FIRST_ITEM_TITLE" /></translation>
 <translation id="1500926532737552529">הצגת כל ההצעות</translation>
 <translation id="1501946871587957338">להחליף את מקור האודיו?</translation>
-<translation id="1505542291183484463">חלון לשינוי גודל של משבצת כלפי מטה</translation>
+<translation id="1505542291183484463">Tiled resize window downward</translation>
 <translation id="1510238584712386396">מרכז האפליקציות</translation>
 <translation id="1520303207432623762">{NUM_APPS,plural, =1{צפייה בהגדרות של הודעות. ההודעות מושבתות באפליקציה אחת}one{צפייה בהגדרות של הודעות. ההודעות מושבתות ב-# אפליקציות}two{צפייה בהגדרות של הודעות. ההודעות מושבתות ב-# אפליקציות}other{צפייה בהגדרות של הודעות. ההודעות מושבתות ב-# אפליקציות}}</translation>
 <translation id="1523032696246003">סוללה: %<ph name="BATTERY_PERCENTAGE" /> | הזמן שנותר לטעינה מלאה: <ph name="TIME" /></translation>
@@ -251,6 +251,7 @@
 <translation id="1915307458270490472">ניתוק</translation>
 <translation id="1918022425394817322">המצלמה מוצמדת לפינה השמאלית העליונה</translation>
 <translation id="1923539912171292317">לחיצות אוטומטיות</translation>
+<translation id="1925320505152357008">פחות מדקה</translation>
 <translation id="1928739107511554905">‏כדי להתקין את העדכון, יש להשתמש במסך המגע ולהפעיל מחדש את ה-Chromebook כשהמקלדת מחוברת.</translation>
 <translation id="1948405482892809935">מעבר אל המשתמש הבא</translation>
 <translation id="1951012854035635156">Assistant</translation>
@@ -298,7 +299,7 @@
 <translation id="2149229036084364364">מעבר לטראק הקודם</translation>
 <translation id="2152895518047545149">נראה שכלום לא חסר. כל הכבוד!</translation>
 <translation id="2161132820593978283">אפשר להפעיל את הפריים האוטומטי במצלמה כדי למקם את עצמך במרכז המסך בשיחות וידאו. ניתן להפעיל אותו בהגדרות המהירות.</translation>
-<translation id="216955976692983107">חלון לשינוי גודל של משבצת ימינה</translation>
+<translation id="216955976692983107">Tiled resize window toward the right</translation>
 <translation id="2185166372312820725">מעבר לכרטיסייה הקודמת</translation>
 <translation id="2185444992308415167">מקשי קיצור למעבר בין כרטיסיות 1 עד 8</translation>
 <translation id="2195732836444333448">יש עומס גדול מהרגיל. אפשר לנסות שוב בעוד כמה דקות.</translation>
@@ -604,6 +605,7 @@
 <translation id="334927402682780278">בחירת הטקסט מהסמן עד סוף השורה</translation>
 <translation id="3349345708646875009">פתיחת מנהל המשימות</translation>
 <translation id="3364721542077212959">כלי סטיילוס</translation>
+<translation id="3365281428003534650">הגדרה של טיימר, משימה ומוזיקה</translation>
 <translation id="3365977133351922112">הטלפון שלך רחוק מדי. צריך לקרב אותו.</translation>
 <translation id="3368922792935385530">מחובר</translation>
 <translation id="3369111525500416043">להגשה בקרוב</translation>
@@ -647,7 +649,7 @@
 <translation id="3509391053705095206">‏לא הצלחנו למצוא את הטלפון. צריך לוודא שה-Bluetooth שלו מופעל.</translation>
 <translation id="3510164367642747937">הדגשה של סמן העכבר</translation>
 <translation id="3513798432020909783">החשבון מנוהל על-ידי <ph name="MANAGER_EMAIL" /></translation>
-<translation id="3516000762115478502">חלון לשינוי גודל של משבצת כלפי מעלה</translation>
+<translation id="3516000762115478502">Tiled resize window upward</translation>
 <translation id="3517037892157925473">העדכון האחרון של המשימות: <ph name="TIME" />,‏ <ph name="DATE" />.</translation>
 <translation id="352245152354538528">{0,plural, =1{עליך לעדכן את המכשיר בתוך דקה אחת}one{עליך לעדכן את המכשיר בתוך # דקות}two{עליך לעדכן את המכשיר בתוך # דקות}other{עליך לעדכן את המכשיר בתוך # דקות}}</translation>
 <translation id="3522979239100719575">מתבצע חיפוש של פרופילים זמינים. הפעולה עשויה להימשך מספר דקות.</translation>
@@ -765,7 +767,7 @@
 <translation id="3899995891769452915">קלט קולי</translation>
 <translation id="3900355044994618856">הסשן יסתיים בעוד <ph name="SESSION_TIME_REMAINING" /></translation>
 <translation id="3901991538546252627">מתבצעת התחברות אל: <ph name="NAME" /></translation>
-<translation id="3904768293285573640">חלון לשינוי גודל של משבצת שמאלה</translation>
+<translation id="3904768293285573640">Tiled resize window toward the left</translation>
 <translation id="3906954721959377182">טאבלט</translation>
 <translation id="3923494859158167397">לא הוגדרו רשתות סלולריות</translation>
 <translation id="3925540965556789199"><ph name="DATE" />, האירועים בטעינה.</translation>
@@ -907,6 +909,7 @@
 <translation id="4406883609789734330">כתוביות מיידיות</translation>
 <translation id="4412698727486357573">מרכז העזרה</translation>
 <translation id="4412944820643904175">התכונה <ph name="FEATURE_NAME" /> מושבתת.</translation>
+<translation id="4417647906073317561">ההגדרות של מצב הריכוז. אפשר להגדיר טיימר, משימה ומוזיקה כדי להיכנס לקצב העבודה.</translation>
 <translation id="4424159417645388645">שולחן עבודה וירטואלי 5</translation>
 <translation id="4430019312045809116">עוצמת קול</translation>
 <translation id="4441283832827406317">האפליקציות ממוינות לפי שם</translation>
@@ -1670,6 +1673,7 @@
 <translation id="7167913274352523149"><ph name="HOTSPOT" />,
         <ph name="NETWORK" /></translation>
 <translation id="7168224885072002358">תבוצע חזרה לרזולוציה הקודמת בעוד <ph name="TIMEOUT_SECONDS" /></translation>
+<translation id="7173114856073700355">פתיחת ההגדרות</translation>
 <translation id="7180611975245234373">רענון</translation>
 <translation id="7181691792034457084">שלום. מכשיר <ph name="PRODUCT_NAME" /> טיפה שונה</translation>
 <translation id="7188494361780961876">התפריט הועבר לפינה הימנית העליונה של המסך.</translation>
@@ -1864,6 +1868,7 @@
         <ph name="MANAGED" />
         <ph name="IME" />
         <ph name="LOCALE" /></translation>
+<translation id="7899977217122813285">במצב ריכוז, ההתראות מושתקות עד <ph name="TIME" /></translation>
 <translation id="7901190436359881020">החלפה בין החלונות</translation>
 <translation id="7901405293566323524">מרכז טלפוני</translation>
 <translation id="7902625623987030061">יש לגעת בחיישן טביעות האצבע</translation>

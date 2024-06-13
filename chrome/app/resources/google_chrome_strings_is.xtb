@@ -125,6 +125,7 @@ Sumir eiginleikar kunna að vera óaðgengilegir og breytingar á kjörstillingu
 <translation id="2765403129283291972">Chrome þarf leyfi til að nota hljóðnemann á þessu vefsvæði</translation>
 <translation id="2770231113462710648">Breyta sjálfgefnum vafra í:</translation>
 <translation id="2775140325783767197">Chrome getur ekki athugað aðgangsorðin þín. Athugaðu nettenginguna þína.</translation>
+<translation id="2797864378188255696">Þegar þú skráir þig inn í Google-þjónustu á borð við Gmail eða YouTube með <ph name="USER_EMAIL" /> geturðu skráð þig sjálfkrafa inn í Chrome með sama reikningi</translation>
 <translation id="2799223571221894425">Endurræsa</translation>
 <translation id="2825024317344269723">Skaðlegt vefsvæði. Chrome fjarlægði tilkynningar.</translation>
 <translation id="2846251086934905009">Uppsetningarvilla: Uppsetningarforrit lauk ekki verki sínu. Hætt var við uppsetningu.</translation>
@@ -299,6 +300,7 @@ Sumir eiginleikar kunna að vera óaðgengilegir. Tilgreindu aðra prófílmöpp
 <translation id="5334309298019785904">ChromeOS gat ekki samstillt gögnin þín vegna þess að samstilling er ekki í boði fyrir lénið þitt.</translation>
 <translation id="5334487786912937552">Chrome verður að fá aðgang að geymslurými til að geta sótt skrár</translation>
 <translation id="5337648990166757586">Valfrjálst: Hjálpa til við að bæta eiginleika og afköst ChromeOS með því að senda greiningar- og notkunargögn sjálfkrafa til Google.</translation>
+<translation id="5345497718959596593">Á meðan þú ert innskráð(ur) geturðu notað aðgangsorðin þín og fleira af Google-reikningnum þínum í Chrome</translation>
 <translation id="5357889879764279201">Fá aðstoð með ChromeOS Flex</translation>
 <translation id="5368118228313795342">Viðbótarkóði: <ph name="EXTRA_CODE" />.</translation>
 <translation id="5386244825306882791">Þetta stýrir því einnig hvaða síða er birt þegar þú ræsir Chrome eða leitar úr veffangastikunni.</translation>

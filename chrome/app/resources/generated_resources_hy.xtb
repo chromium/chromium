@@ -1553,6 +1553,7 @@
 <translation id="2116619964159595185">Կայքերը սովորաբար միանում են Bluetooth սարքերին՝ առողջության հետագծիչ, էներգախնայող փարոս, խելացի լամպ կարգավորելու/համաժամացնելու և նման այլ գործառույթների համար</translation>
 <translation id="2117655453726830283">Հաջորդ սլայդը</translation>
 <translation id="211803431539496924">Հաստատե՞լ անվտանգության ընդլայնված թարմացումները</translation>
+<translation id="2118594521750010466">Շտկել</translation>
 <translation id="2119461801241504254">Անվտանգ դիտարկումը միացված է և պաշտպանում է ձեզ վտանգավոր կայքերից ու ներբեռնումներից</translation>
 <translation id="2120297377148151361">Գործողություններ դիտարկիչում</translation>
 <translation id="2120639962942052471"><ph name="PERMISSION" />՝ արգելափակված է</translation>
@@ -1857,6 +1858,7 @@
 <translation id="233375395665273385">Ջնջել և դուրս գալ</translation>
 <translation id="233471714539944337">Խիստ անձնական տվյալներ</translation>
 <translation id="2335111415680198280">{0,plural, =1{Փակել # պատուհանը}one{Փակել # պատուհանները}other{Փակել # պատուհանները}}</translation>
+<translation id="2335758110242123814">Բացել խումբը</translation>
 <translation id="2336228925368920074">Էջանշել բոլոր ներդիրները…</translation>
 <translation id="2336258397628212480"><ph name="APP_NAME" /> հավելվածը 1 էջ է տպում <ph name="PRINTER_NAME" /> տպիչում</translation>
 <translation id="2336381494582898602">Powerwash</translation>
@@ -1877,6 +1879,7 @@
 <translation id="2351923523007389195">Թույլատրված է – <ph name="PERMISSION_DETAILS" />։ Միացրեք <ph name="LINK_BEGIN" />համակարգի տեղորոշման թույլտվությունը<ph name="LINK_END" />։</translation>
 <translation id="2352662711729498748">&lt;1 ՄԲ</translation>
 <translation id="2352810082280059586">Կողպէկրանի ծանուցումներն ավտոմատ պահվում են <ph name="LOCK_SCREEN_APP_NAME" /> հավելվածում: Ձեր վերջին նշումը կպահպանվի կողպէկրանի վրա:</translation>
+<translation id="2353168619378866466">Բացել խումբը</translation>
 <translation id="2353297238722298836">Տեսախցիկի ու խոսափողի օգտագործումը թույլատրված է</translation>
 <translation id="2353910600995338714">Արտահանումը կատարված է</translation>
 <translation id="2355314311311231464">Համաժամացումը ձախողվեց, քանի որ ձեր հաշվի տվյալները չհաջողվեց բեռնել։ Նորից փորձեք։ Սխալի կոդը՝ <ph name="ERROR_CODE" />։</translation>
@@ -2828,6 +2831,7 @@
 <translation id="3033348223765101500">Տվյալների վերահսկում</translation>
 <translation id="3036327949511794916">Այս <ph name="DEVICE_TYPE" /> սարքը վերադարձնելու վերջնաժամկետը լրացել է։</translation>
 <translation id="3036546437875325427">Միացնել Flash-ը</translation>
+<translation id="3037193115779933814">Տառեր և թվեր</translation>
 <translation id="3038272154009688107">Դիտել բոլոր կայքերը</translation>
 <translation id="3038612606416062604">Ավելացնել տպիչ ձեռքով</translation>
 <translation id="3039491566278747710">Չհաջողվեց սարքում կիրառել անցանց ռեժիմում աշխատանքի քաղաքականությունը:</translation>
@@ -3678,6 +3682,7 @@
 <translation id="3699920817649120894">Անջատե՞լ համաժամացումն ու անհատականացումը</translation>
 <translation id="3700888195348409686">Ցուցադրվում է (<ph name="PAGE_ORIGIN" />)</translation>
 <translation id="3700993174159313525">Թույլ չտալ կայքերին հետագծել ձեր տեսախցիկի դիրքը</translation>
+<translation id="3701167022068948696">Ուղղել</translation>
 <translation id="3701515417135397388">Զգուշացնել ձեզ, եթե գաղտնաբառը տվյալների արտահոսքի պատճառով բացահայտվել է</translation>
 <translation id="3702797829026927713"><ph name="BEGIN_PARAGRAPH1" />Մուտքագրեք խանութի անվանումը և մասնաճյուղի համարը, որում սարքը պետք է աշխատի դեմո ռեժիմում*։ <ph name="END_PARAGRAPH1" />
     <ph name="BEGIN_PARAGRAPH2" />Եթե չգիտեք մասնաճյուղի համարը, մուտքագրեք «0000»՝ դեմո ռեժիմի տեղադրումը շարունակելու համար։ <ph name="END_PARAGRAPH2" />
@@ -6026,6 +6031,7 @@
 <translation id="5469540749878136997">Ազատել տարածք օգտագործման հիման վրա</translation>
 <translation id="5469852975082458401">Դուք կարող եք մեկ էջից անցնել մյուսը տեսքտի նշորդի միջոցով։ Սեղմեք F7՝ անջատելու համար։</translation>
 <translation id="5470735824776589490">Պետք է վերագործարկեք սարքը՝ նախքան Powerwash կատարելը։ <ph name="LINK_BEGIN" />Իմանալ ավելին<ph name="LINK_END" /></translation>
+<translation id="5470741195701938302">Թվեր</translation>
 <translation id="5471768120198416576">Ողջո՛ւյն: Ես տեքստի հնչեցման ձայնն եմ:</translation>
 <translation id="5472627187093107397">Պահպանել գաղտնաբառերն այս կայքի համար</translation>
 <translation id="5473062644742711742">Գտեք ավելի շատ հատուկ հնարավորությունների գործիքներ Chrome Web Store-ում</translation>
@@ -6859,6 +6865,7 @@
 <translation id="6101226222197207147">Ավելացվել է նոր հավելված (<ph name="EXTENSION_NAME" />)</translation>
 <translation id="6102043788063419338">Լրացուցիչ պաշտպանությունն արգելափակել է այս ֆայլը։</translation>
 <translation id="6103681770816982672">Դուք անցնում եք մշակողների վարկածին</translation>
+<translation id="610395411842312282">Խմբավորեք երկու կողք կողքի պատուհաններ</translation>
 <translation id="6104068876731806426">Google Հաշիվներ</translation>
 <translation id="6104667115274478616">Կառավարել ChromeOS-ի ձայնի կարգավորումները</translation>
 <translation id="6104796831253957966">Տպիչի հերթացանկը լցված է</translation>

@@ -11,6 +11,7 @@
 <translation id="1273910660700874265"><ph name="TITLE_OF_GROUP" /> 탭 그룹 옵션</translation>
 <translation id="1322824555808364080">사용자 초대</translation>
 <translation id="1419023007528516122">기기에서 그룹이 완전히 삭제됩니다.</translation>
+<translation id="1486715732399361704">여기에서 모든 탭 그룹을 확인할 수 있습니다</translation>
 <translation id="149054111719651807">{NUM_MINS,plural, =1{<ph name="NUM_MINS_ONE" />분 전 생성됨}other{<ph name="NUM_MINS_MANY" />분 전 생성됨}}</translation>
 <translation id="1499635324672558517">시크릿 탭을 모두 닫으시겠습니까?</translation>
 <translation id="1501480321619201731">그룹 삭제</translation>

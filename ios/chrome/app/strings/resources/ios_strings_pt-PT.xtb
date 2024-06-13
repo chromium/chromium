@@ -200,6 +200,7 @@
 <translation id="199425419756152024">Ver a palavra-passe</translation>
 <translation id="2010008505735295285">Atualizar</translation>
 <translation id="2015722694326466240">Para ver as palavras-passe, tem de definir primeiro um código secreto no dispositivo.</translation>
+<translation id="201759455285471444">Expandir grupo de separadores.</translation>
 <translation id="2021670401941426298">Se aplicável, consulte as instruções do motor de pesquisa para eliminar o histórico de pesquisas.</translation>
 <translation id="202292859882676807">Acesso ao microfone permitido</translation>
 <translation id="20485545164632846">novo item</translation>
@@ -850,6 +851,7 @@ Se aplicável, consulte as instruções do motor de pesquisa para eliminar o his
 <translation id="5345660046352249607">{COUNT,plural, =1{Acompanhar esta embalagem?}other{Acompanhar {COUNT} embalagens?}}</translation>
 <translation id="5348775987281903912">Pode partilhar esta página aqui através do botão Partilhar.</translation>
 <translation id="536067926684072644">Mostrar marcadores</translation>
+<translation id="537853552771686272">Faça a gestão dos tópicos e sites que lhe interessam</translation>
 <translation id="5379352933722332597">{count,plural, =1{Marcador guardado em "{title}". Está guardado apenas neste dispositivo.}other{{count} marcadores guardados em "{title}". Estão guardados apenas neste dispositivo.}}</translation>
 <translation id="5388358297987318779">Abrir Imagem</translation>
 <translation id="5395707839134961196">Ocultar detalhes do motor de pesquisa</translation>
@@ -932,6 +934,7 @@ A Entrega também tem de estar ativada na secção Geral das Definições e os s
 <translation id="5758631781033351321">A sua lista de leitura será apresentada aqui</translation>
 <translation id="5765456154762864099">Menu → Definições → Navegador predefinido</translation>
 <translation id="5777888488419460501">Guardar na conta</translation>
+<translation id="5778292857689789362">Grupo de separadores, <ph name="GROUP_TITLE" />, <ph name="TABS_NUMBER" /> separadores.</translation>
 <translation id="5782227691023083829">A traduzir...</translation>
 <translation id="5791632441210678828">Botão Ordenar do feed A seguir.</translation>
 <translation id="5793373065989412701">A verificar os membros da família…</translation>
@@ -1095,6 +1098,7 @@ Os sites não podem utilizar cookies para ver a sua atividade de navegação em 
 <translation id="648164694371393720">Erro de autenticação</translation>
 <translation id="6494931198667773526">Fim</translation>
 <translation id="650279896687777322">Saber mais…</translation>
+<translation id="6505334220040167806">Reduzir grupo de separadores.</translation>
 <translation id="6507973708545996744">Inicie sessão para obter a sua Lista de leitura em todos os dispositivos.</translation>
 <translation id="6510072653668207258">Lembrar-me mais tarde</translation>
 <translation id="651505212789431520">Quer cancelar a sincronização? Pode ativar a sincronização em qualquer altura nas Definições.</translation>

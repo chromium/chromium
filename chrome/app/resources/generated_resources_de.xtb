@@ -24,7 +24,7 @@
 <translation id="1010833424573920260">{NUM_PAGES,plural, =1{Seite reagiert nicht}other{Seiten reagieren nicht}}</translation>
 <translation id="1011003645819296594">Gespeicherte Geräte</translation>
 <translation id="1011355516189274711">Lautstärke der Sprachausgabe</translation>
-<translation id="1012794136286421601">Deine Dateien aus Google Docs, Google Tabellen, Google Präsentationen und Google Zeichnungen werden synchronisiert. Öffne die Google Drive App, um online oder offline auf die Dateien zuzugreifen.</translation>
+<translation id="1012794136286421601">Deine Dateien aus Google Docs, Google Sheets, Google Präsentationen und Google Zeichnungen werden synchronisiert. Öffne die Google Drive App, um online oder offline auf die Dateien zuzugreifen.</translation>
 <translation id="1012876632442809908">USB-C-Gerät (Port vorne)</translation>
 <translation id="1015041505466489552">TrackPoint</translation>
 <translation id="1015318665228971643">Ordnernamen bearbeiten</translation>
@@ -696,7 +696,7 @@ Berechtigungen, die du Apps bereits gewährt hast, gelten möglicherweise für d
 <translation id="1515163294334130951">Starten</translation>
 <translation id="1517467582299994451">Wenn du mit einem Code streamen möchtest, musst du die Synchronisierungseinstellungen des Chrome-Browsers aktivieren</translation>
 <translation id="1521442365706402292">Zertifikate verwalten</translation>
-<translation id="1521655867290435174">Google Tabellen</translation>
+<translation id="1521655867290435174">Google Sheets</translation>
 <translation id="1521774566618522728">Heute aktiv</translation>
 <translation id="1521933835545997395">Mit Android-Smartphone verbunden</translation>
 <translation id="1523279371236772909">Im letzten Monat angesehen</translation>
@@ -1548,6 +1548,7 @@ Wenn du die Family Link App auf deinem Gerät installierst, kannst du die Einste
 <translation id="2116619964159595185">Websites verwenden Bluetooth-Geräte normalerweise für Funktionen wie das Einrichten oder Synchronisieren eines LE-Beacons, eines Gesundheits- oder Fitnesstrackers oder einer intelligenten Lampe</translation>
 <translation id="2117655453726830283">Nächste Folie</translation>
 <translation id="211803431539496924">Erweiterte Sicherheitsupdates bestätigen?</translation>
+<translation id="2118594521750010466">Jetzt beheben</translation>
 <translation id="2119461801241504254">Safe Browsing ist aktiviert und schützt dich vor schädlichen Websites und Downloads</translation>
 <translation id="2120297377148151361">Aktivitäten und Interaktionen</translation>
 <translation id="2120639962942052471"><ph name="PERMISSION" /> blockiert</translation>
@@ -2633,7 +2634,7 @@ Diese Aktion wirkt sich nicht auf Lesezeichen, Passwörter und den Verlauf aus.<
 <translation id="289695669188700754">Schlüssel-ID: <ph name="KEY_ID" /></translation>
 <translation id="2897713966423243833">Diese benutzerdefinierte Einstellung wird entfernt, wenn du alle deine Inkognitofenster schließt</translation>
 <translation id="2897878306272793870">Möchtest du wirklich <ph name="TAB_COUNT" /> Tabs öffnen?</translation>
-<translation id="2900247416110050639">Für Google Docs, Google Tabellen und Google Präsentationen müssen Dateien in Google Drive gespeichert sein. Lokale Dateien werden verschoben und Dateien von anderen Speicherorten werden kopiert. Du findest deine Dateien im Google Drive-Ordner in der App „Dateien“.</translation>
+<translation id="2900247416110050639">Für Google Docs, Google Sheets und Google Präsentationen müssen Dateien in Google Drive gespeichert sein. Lokale Dateien werden verschoben und Dateien von anderen Speicherorten werden kopiert. Du findest deine Dateien im Google Drive-Ordner in der App „Dateien“.</translation>
 <translation id="290105521672621980">Datei verwendet nicht unterstützte Funktionen</translation>
 <translation id="2901348420151309559">Letzte Fotos und Apps</translation>
 <translation id="2902127500170292085"><ph name="EXTENSION_NAME" /> konnte nicht mit diesem Drucker kommunizieren. Vergewissere dich, dass der Drucker angeschlossen ist, und versuche es dann erneut.</translation>
@@ -3678,6 +3679,7 @@ Servernachricht: <ph name="SERVER_MSG" /></translation>
 <translation id="3699920817649120894">Synchronisierung und Personalisierung deaktivieren?</translation>
 <translation id="3700888195348409686">(<ph name="PAGE_ORIGIN" />) wird präsentiert</translation>
 <translation id="3700993174159313525">Websites dürfen nicht meine Kameraposition erfassen</translation>
+<translation id="3701167022068948696">Jetzt beheben</translation>
 <translation id="3701515417135397388">Warnen, wenn ein Passwort durch eine Datenpanne gehackt wurde</translation>
 <translation id="3702797829026927713"><ph name="BEGIN_PARAGRAPH1" />Gib den Namen des Einzelhändlers und die Geschäftsnummer ein, für die dieses Demogerät konfiguriert wird.* <ph name="END_PARAGRAPH1" />
     <ph name="BEGIN_PARAGRAPH2" />Wenn du die Geschäftsnummer nicht weißt, kannst du stattdessen „0000“ eingeben, um mit der Installation des Demomodus fortzufahren. <ph name="END_PARAGRAPH2" />
@@ -4216,6 +4218,7 @@ Dazu gehören beispielsweise installierte Software, Dateien, dein Browser und da
 <translation id="4066207411788646768">Stelle eine Internetverbindung her, damit du verfügbare Drucker im Netzwerk sehen kannst</translation>
 <translation id="4067839975993712852">Aktuellen Tab als gelesen markieren</translation>
 <translation id="4068776064906523561">Gespeicherte Fingerabdrücke</translation>
+<translation id="4070132839822635162">Nicht anmelden</translation>
 <translation id="407173827865827707">Bei Klick</translation>
 <translation id="4072805772816336153">Versuch es später noch einmal</translation>
 <translation id="4074164314564067597">Tastatur</translation>
@@ -7337,6 +7340,7 @@ Berechtigungen, die du Websites und Apps bereits gewährt hast, gelten mögliche
 <translation id="6469702164109431067">Passwörter und Passkeys</translation>
 <translation id="6470823736074966819">Benachrichtigungen stummschalten</translation>
 <translation id="6472893788822429178">Schaltfläche "Startseite" anzeigen</translation>
+<translation id="6473315466413288899">Option auswählen</translation>
 <translation id="6474498546677193336">Die Aufhebung der Freigabe ist nicht möglich, weil eine Anwendung diesen Ordner verwendet. Die Freigabe des Ordners wird aufgehoben, wenn Linux das nächste Mal heruntergefahren wird.</translation>
 <translation id="6474884162850599008">Verbindung zu Google Drive-Konto aufheben</translation>
 <translation id="6475294023568239942">Gib Speicherplatz frei oder ändere die Größe des Linux-Laufwerks in den Einstellungen</translation>
@@ -10802,6 +10806,7 @@ Berechtigungen, die du Websites und Apps bereits gewährt hast, gelten mögliche
 <translation id="9031811691986152304">Wiederholen</translation>
 <translation id="9032004780329249150">Passwörter auf iOS-Geräten verwenden</translation>
 <translation id="9032097289595078011">Schnelles Pairing deaktivieren</translation>
+<translation id="9032513103438497286">Hier kannst du Apps blockieren, die auf diesem <ph name="DEVICE_TYPE" /> installiert sind. Wenn du das Herunterladen von Apps oder Inhalten einschränken möchtest, rufe die Google Play-Einstellungen auf.</translation>
 <translation id="9033765790910064284">Trotzdem fortfahren</translation>
 <translation id="9033857511263905942">&amp;Einfügen</translation>
 <translation id="9034408118624208974">Neu bei Chromebook? Aktiviere die Synchronisierung, damit deine Einstellungen gesichert werden.</translation>

@@ -1557,6 +1557,7 @@ https://www.chromium.org/chromium-os/how-tos-and-troubleshooting/debugging-featu
 <translation id="2116619964159595185">Сайтовете обикновено се свързват с устройства с Bluetooth, за да осигуряват функции като настройване или синхронизиране на маяци с нисък разход на енергия, инструменти за проследяване на здравословното състояние или физическата активност или интелигентни електрически крушки</translation>
 <translation id="2117655453726830283">Следващият слайд</translation>
 <translation id="211803431539496924">Да се потвърди ли включването на удължените актуализации за сигурност?</translation>
+<translation id="2118594521750010466">Коригиране сега</translation>
 <translation id="2119461801241504254">Функцията „Безопасно сърфиране“ е включена и ви предпазва от злонамерени сайтове и изтегляния</translation>
 <translation id="2120297377148151361">Активност и взаимодействия</translation>
 <translation id="2120639962942052471">„<ph name="PERMISSION" />“ е блокирано</translation>
@@ -3692,6 +3693,7 @@ https://www.chromium.org/chromium-os/how-tos-and-troubleshooting/debugging-featu
 <translation id="3699920817649120894">Искате ли да изключите синхронизирането и персонализирането?</translation>
 <translation id="3700888195348409686">Представя се (<ph name="PAGE_ORIGIN" />)</translation>
 <translation id="3700993174159313525">Да не се разрешава на сайтовете да следят позицията на камерата ви</translation>
+<translation id="3701167022068948696">Коригиране сега</translation>
 <translation id="3701515417135397388">Предупреждение за компрометирана парола при нарушение на сигурността на данните</translation>
 <translation id="3702797829026927713"><ph name="BEGIN_PARAGRAPH1" />Въведете името на търговеца и номера на магазина, за който се конфигурира това демонстрационно устройство.* <ph name="END_PARAGRAPH1" />
     <ph name="BEGIN_PARAGRAPH2" />Ако не знаете номера на магазина, можете да въведете 0000, за да продължите инсталирането на демонстрационния режим. <ph name="END_PARAGRAPH2" />
@@ -5464,6 +5466,7 @@ https://www.chromium.org/chromium-os/how-tos-and-troubleshooting/debugging-featu
 <translation id="5032430150487044192">Не може да се създаде QR код</translation>
 <translation id="5033137252639132982">Сайтове без разрешение за използване на сензорите за движение</translation>
 <translation id="5033266061063942743">Геометрични фигури</translation>
+<translation id="503441068567788948">Създайте нов ПИН код за Google Мениджър на пароли</translation>
 <translation id="5035846135112863536">Изберете „Още подробности“ по-долу, за да получите повече информация от <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" />.</translation>
 <translation id="5037676449506322593">Избиране на всички</translation>
 <translation id="5038818366306248416">По-рано избрахте да не разрешавате разширенията на <ph name="ORIGIN" /></translation>
@@ -5491,6 +5494,7 @@ https://www.chromium.org/chromium-os/how-tos-and-troubleshooting/debugging-featu
 <translation id="5057110919553308744">При кликване върху разширението</translation>
 <translation id="5057127674016624293">Сканирането отнема повече време от очакваното</translation>
 <translation id="5057480703570202545">История на изтеглянията</translation>
+<translation id="5058771692413403640"><ph name="SITE" /> иска да потвърди, че това сте вие</translation>
 <translation id="5059241099014281248">Ограничаване на влизането в профил</translation>
 <translation id="5059429103770496207">Стил на показване</translation>
 <translation id="5059526285558225588">Изберете какво да споделите</translation>
@@ -5930,6 +5934,7 @@ https://www.chromium.org/chromium-os/how-tos-and-troubleshooting/debugging-featu
 <translation id="5390112241331447203">Запазване на файла system_logs.txt, който се изпраща в сигналите с отзиви.</translation>
 <translation id="5390677308841849479">Тъмночервено и оранжево</translation>
 <translation id="5392192690789334093">Сайтове с разрешение да изпращат известия</translation>
+<translation id="5393330235977997602">Опции за ПИН кода</translation>
 <translation id="5393761864111565424">{COUNT,plural, =1{Връзка}other{# връзки}}</translation>
 <translation id="5394529681046491727">Wi-Fi Direct</translation>
 <translation id="5395498824851198390">Стандартен шрифт</translation>
@@ -6665,6 +6670,7 @@ https://www.chromium.org/chromium-os/how-tos-and-troubleshooting/debugging-featu
 <translation id="5935158534896975820">Заявката за подписване на сертификат се подготвя (чака се сървърът)</translation>
 <translation id="5935656526031444304">Управление на „Безопасно сърфиране“</translation>
 <translation id="5936065461722368675">Превод на цялата страница</translation>
+<translation id="5937347877659196749">Защитете всичките си ключове за достъп с ПИН код за възстановяване</translation>
 <translation id="5937977334791924341">Лого на <ph name="APP" /></translation>
 <translation id="5938002010494270685">Налице е надстройка за сигурност</translation>
 <translation id="5939518447894949180">Нулиране</translation>
@@ -8111,6 +8117,7 @@ https://www.chromium.org/chromium-os/how-tos-and-troubleshooting/debugging-featu
 <translation id="7033616203784997570">Въведеното трябва да съдържа най-много 62 знака</translation>
 <translation id="7034692021407794547">Администратор, който има права за управление на таксуването, първо трябва да приеме Общите условия за хардуерните устройства за Google Meet в съответната секция в конзолата за администратори.</translation>
 <translation id="7036706669646341689">За Linux е препоръчително да разполагате с поне <ph name="DISK_SIZE" /> свободно място. За да увеличите свободното място, изтрийте файлове от устройството.</translation>
+<translation id="7037157058268992880">Забравен ПИН код</translation>
 <translation id="7037509989619051237">Текст за прослушване</translation>
 <translation id="7038632520572155338">Достъп с превключване</translation>
 <translation id="7038710352229712897">Добавяне на друг профил в Google за <ph name="USER_NAME" /></translation>
@@ -9524,6 +9531,7 @@ https://www.chromium.org/chromium-os/how-tos-and-troubleshooting/debugging-featu
 <translation id="8084429490152575036">Настройки за името на точката за достъп (APN) за мобилна мрежа</translation>
 <translation id="8084510406207562688">Възстановяване на всички раздели</translation>
 <translation id="8084628902026812045">Този сайт не използва защитена връзка и файлът може да е компрометиран</translation>
+<translation id="8085701268329068646">Въведете ПИН кода си за Google Мениджър на пароли</translation>
 <translation id="8086015605808120405"><ph name="PRINTER_NAME" /> се конфигурира...</translation>
 <translation id="8086121155774250556">Чрез този раздел се споделя екранът ви</translation>
 <translation id="8086610718778464681">Създаването на резервно копие на файловете и приложенията за Linux не е възможно</translation>
@@ -11046,6 +11054,7 @@ https://www.chromium.org/chromium-os/how-tos-and-troubleshooting/debugging-featu
 <translation id="920045321358709304">Търсене с/ъс <ph name="SEARCH_ENGINE" /></translation>
 <translation id="9201117361710210082">Прегледано преди време</translation>
 <translation id="9201220332032049474">Опции за заключване на екрана</translation>
+<translation id="9201762611758697018">ПИН кодът за възстановяване ви помага да осъществявате достъп до запазените от вас ключове за достъп на всяко устройство</translation>
 <translation id="9201842707396338580">Нещо се обърка. Моля, свържете се със собственика или администратора на устройството си. Код на грешката: <ph name="ERROR_CODE" />.</translation>
 <translation id="9203296457393252944">Червено-зелен, нарушено възприемане на зелено (деутераномалия)</translation>
 <translation id="9203398526606335860">&amp;Профилирането е активирано</translation>

@@ -850,6 +850,7 @@ Vezi instrucțiunile motorului de căutare pentru ștergerea istoricului căută
 <translation id="5345660046352249607">{COUNT,plural, =1{Urmărești acest pachet?}few{Urmărești {COUNT} pachete?}other{Urmărești {COUNT} de pachete?}}</translation>
 <translation id="5348775987281903912">Poți distribui pagina aici, folosind butonul de distribuire.</translation>
 <translation id="536067926684072644">Afișează marcajele</translation>
+<translation id="537853552771686272">Gestionează subiectele și site-urile care te interesează</translation>
 <translation id="5379352933722332597">{count,plural, =1{Marcajul s-a salvat în {title}. Se salvează numai pe acest dispozitiv.}few{{count} marcaje s-au salvat în {title}. Ele se salvează numai pe acest dispozitiv.}other{{count} de marcaje s-au salvat în {title}. Ele se salvează numai pe acest dispozitiv.}}</translation>
 <translation id="5388358297987318779">Deschide imaginea</translation>
 <translation id="5395707839134961196">Ascunde detaliile motorului de căutare</translation>
@@ -932,6 +933,7 @@ Trebuie să activezi Handoff în secțiunea General din Setări, iar dispozitive
 <translation id="5758631781033351321">Aici vei vedea lista de lectură</translation>
 <translation id="5765456154762864099">Meniu → Setări → Browser prestabilit</translation>
 <translation id="5777888488419460501">Salvează în cont</translation>
+<translation id="5778292857689789362">Grup de file, <ph name="GROUP_TITLE" />, <ph name="TABS_NUMBER" /> file.</translation>
 <translation id="5782227691023083829">Se traduce...</translation>
 <translation id="5791632441210678828">Buton de sortare pentru feedul Urmărești.</translation>
 <translation id="5793373065989412701">Se verifică membrii familiei…</translation>

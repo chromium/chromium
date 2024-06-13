@@ -850,6 +850,7 @@
 <translation id="5345660046352249607">{COUNT,plural, =1{この荷物を追跡しますか？}other{{COUNT} 個の荷物を追跡しますか？}}</translation>
 <translation id="5348775987281903912">このページは共有ボタンから共有できます。</translation>
 <translation id="536067926684072644">ブックマークを表示する</translation>
+<translation id="537853552771686272">関心のあるトピックとサイトを管理する</translation>
 <translation id="5379352933722332597">{count,plural, =1{ブックマークを「{title}」に保存しました。保存されるのはこのデバイスのみに限られます。}other{{count} 件のブックマークを「{title}」に保存しました。保存されるのはこのデバイスのみに限られます。}}</translation>
 <translation id="5388358297987318779">画像を開く</translation>
 <translation id="5395707839134961196">検索エンジンの詳細を非表示</translation>
@@ -932,6 +933,7 @@
 <translation id="5758631781033351321">リーディング リストはここに表示されます</translation>
 <translation id="5765456154762864099">メニュー → 設定 → 既定のブラウザ</translation>
 <translation id="5777888488419460501">アカウントに保存</translation>
+<translation id="5778292857689789362">タブグループ、<ph name="GROUP_TITLE" />、<ph name="TABS_NUMBER" /> 個のタブ。</translation>
 <translation id="5782227691023083829">翻訳しています...</translation>
 <translation id="5791632441210678828">フォロー中のフィードの並べ替えボタン</translation>
 <translation id="5793373065989412701">ファミリー メンバーを確認しています…</translation>

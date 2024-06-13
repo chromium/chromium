@@ -125,6 +125,7 @@ Certaines fonctionnalités ne seront peut-être pas disponibles, et les modifica
 <translation id="2765403129283291972">Chrome a besoin de votre autorisation pour accéder à votre micro pour ce site</translation>
 <translation id="2770231113462710648">Remplacer le navigateur par défaut par :</translation>
 <translation id="2775140325783767197">Chrome ne parvient pas à vérifier vos mots de passe. Vérifiez votre connexion Internet.</translation>
+<translation id="2797864378188255696">Lorsque vous vous connectez à des services Google comme Gmail ou YouTube avec <ph name="USER_EMAIL" />, vous pouvez vous connecter automatiquement à Chrome avec ce même compte</translation>
 <translation id="2799223571221894425">Relancer</translation>
 <translation id="2825024317344269723">Site dangereux. Chrome a supprimé l'autorisation de notification.</translation>
 <translation id="2846251086934905009">Erreur d'installation : le processus du programme d'installation ne s'est pas terminé. L'installation a été annulée.</translation>
@@ -299,6 +300,7 @@ Certaines fonctionnalités peuvent être indisponibles. Veuillez spécifier un r
 <translation id="5334309298019785904">Impossible de synchroniser vos données dans Chrome OS, car la synchronisation n'est pas disponible pour votre domaine.</translation>
 <translation id="5334487786912937552">Pour télécharger des fichiers, Chrome a besoin d'accéder à l'espace de stockage</translation>
 <translation id="5337648990166757586">Facultatif : contribuez à améliorer les fonctionnalités et les performances de Chrome OS en envoyant automatiquement des données de diagnostic et d'utilisation à Google.</translation>
+<translation id="5345497718959596593">Lorsque vous êtes connecté, vous pouvez utiliser vos mots de passe et d'autres éléments de votre compte Google dans Chrome</translation>
 <translation id="5357889879764279201">Obtenir de l'aide pour ChromeOS Flex</translation>
 <translation id="5368118228313795342">Code supplémentaire : <ph name="EXTRA_CODE" />.</translation>
 <translation id="5386244825306882791">Elle contrôle également la page qui s'affiche au démarrage de Chrome ou lorsque vous effectuez une recherche dans l'omnibox.</translation>

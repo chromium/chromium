@@ -156,6 +156,7 @@ Pentru mai multe setări care folosesc date pentru a-ți îmbunătăți experien
 <translation id="1755203724116202818">Pentru a măsura performanța unui anunț, sunt trimise tipuri de date limitate între site-uri, de exemplu, dacă ai făcut o achiziție după ce ai accesat un site.</translation>
 <translation id="1757620656501361327">Informare despre Managerul de parole Google</translation>
 <translation id="1760873718737761808">{FILE_COUNT,plural, =1{Pagini, o pagină în listă}few{Pagini, # pagini în listă}other{Pagini, # de pagini în listă}}</translation>
+<translation id="1771929606532798550">Google primește informații despre modul în care folosești Chrome, dar acestea nu pot fi asociate cu tine\n\nDacă Chrome se blochează, detaliile despre blocare pot include unele informații cu caracter personal.\n\nDacă sincronizezi istoricul cu Contul Google, valorile pot include informații despre adresele URL pe care le accesezi</translation>
 <translation id="1778457539567749232">Marchează ca necitit</translation>
 <translation id="1779766957982586368">Închide fereastra</translation>
 <translation id="1780023393214832643">Parolele s-au salvat pentru <ph name="USERNAME" /></translation>
@@ -799,6 +800,7 @@ Contul Google poate să ofere alte forme ale istoricului de navigare, cum ar fi 
 <translation id="4987271110129728827">Pagina nu a fost găsită. Verifică ortografierea sau încearcă o căutare pe internet.</translation>
 <translation id="4988526792673242964">Pagini</translation>
 <translation id="4991110219272367918">Opțiune pentru a aproba sau nu un site închis</translation>
+<translation id="4996095658297597226">Folosești parola sugerată?</translation>
 <translation id="499724277181351974">Navighează: <ph name="WEBSITE_TITLE" />: <ph name="WEBSITE_URL" /></translation>
 <translation id="5001388021414335527">Urmărește site-ul aici</translation>
 <translation id="5004416275253351869">Opțiuni privind activitatea Google</translation>
@@ -1042,6 +1044,7 @@ De exemplu, unele site-uri pot răspunde la această solicitare afișând anunț
 <translation id="6233974827872475843">Salvează parolele de pe acest dispozitiv în Contul Google activând sincronizarea</translation>
 <translation id="6247557882553405851">Manager de parole Google</translation>
 <translation id="6251449557817521191">Consultă istoricul Chrome aici</translation>
+<translation id="6254139308321626268">Se afișează un fișier PDF</translation>
 <translation id="6255794742848779505">Schimbăm modul în care se salvează parolele pe acest dispozitiv</translation>
 <translation id="6264376385120300461">Descarcă oricum</translation>
 <translation id="6277522088822131679">A apărut o problemă la printarea paginii. Încercați din nou.</translation>
@@ -1083,6 +1086,7 @@ De exemplu, unele site-uri pot răspunde la această solicitare afișând anunț
 <translation id="641643625718530986">Printați...</translation>
 <translation id="6433501201775827830">Alege motorul de căutare</translation>
 <translation id="6434309073475700221">Renunță</translation>
+<translation id="6437162790453527153">Conectează-te pentru a-ți accesa marcajele și altele pe toate dispozitivele</translation>
 <translation id="6437478888915024427">Informații despre pagină</translation>
 <translation id="6440291723980579689">Paginile se încarcă numai după ce le deschizi</translation>
 <translation id="6441734959916820584">Numele este prea lung</translation>
@@ -1437,6 +1441,7 @@ Pentru a modifica această setare, <ph name="BEGIN_LINK" />șterge datele Chrome
 <translation id="7986497153528221272">Pentru a vedea parolele, mai întâi setează o blocare a ecranului pe dispozitiv</translation>
 <translation id="7995059495660416932">Vei vedea conținut când acesta devine disponibil</translation>
 <translation id="799576009106109668">Vei naviga mai rapid deoarece conținutul se încarcă proactiv în funcție de pagina web accesată în acel moment</translation>
+<translation id="8001245658307297681">Se afișează un fișier local</translation>
 <translation id="8004582292198964060">Browser</translation>
 <translation id="8015452622527143194">Readuce pagina la dimensiunea prestabilită</translation>
 <translation id="8026238112629815203">Am schimbat modul în care se salvează parolele pe acest dispozitiv</translation>

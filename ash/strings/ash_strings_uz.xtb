@@ -80,6 +80,7 @@ Quyidagi narsalardan boshlashingiz mumkin.</translation>
 <translation id="1247519845643687288">Oxirgi ilovalar</translation>
 <translation id="1252999807265626933"><ph name="POWER_SOURCE" /> orqali quvvat olmoqda</translation>
 <translation id="1255033239764210633">Ob-havo qanday?</translation>
+<translation id="1256734167083229794">Butun ekran rejimidagi lupa tezkor tugmasini bosdingiz. Yaqinlashtirish uchun <ph name="ZOOM_IN_ACCELERATOR" /> va uzoqlashtirish uchun <ph name="ZOOM_OUT_ACCELERATOR" /> tugmalarini bosing. Kattalashtirilganidan keyin ctrl+alt+strelka tugmalari bilan harakatlaning.</translation>
 <translation id="1269405891096105529">Mehmon rejimida tashqi qurilmalar ishlamaydi</translation>
 <translation id="1270290102613614947">Ekran klaviaturasi o‘chirib qo‘yilgan</translation>
 <translation id="1272079795634619415">To‘xtatish</translation>
@@ -251,6 +252,7 @@ Quyidagi narsalardan boshlashingiz mumkin.</translation>
 <translation id="1915307458270490472">Tugatish</translation>
 <translation id="1918022425394817322">Kamera yuqori oʻng burchakka joylandi</translation>
 <translation id="1923539912171292317">Avtomatik bosishlar</translation>
+<translation id="1925320505152357008">1 daqiqadan kamroq</translation>
 <translation id="1928739107511554905">Yangilanishni o‘rnatish uchun Chromebook qurilmangizni klaviaturani uzmasdan sensor paneli orqali o‘chirib yoqing.</translation>
 <translation id="1948405482892809935">Keyingi foydalanuvchiga almashish</translation>
 <translation id="1951012854035635156">Assistent</translation>
@@ -263,6 +265,7 @@ Quyidagi narsalardan boshlashingiz mumkin.</translation>
 <translation id="1969011864782743497"><ph name="DEVICE_NAME" /> (USB)</translation>
 <translation id="1971815855639997522">Ish stoli va oynalar olib tashlandi. Amalni bekor qilish uchun Control + Z tugmalarini bosing.</translation>
 <translation id="1972950159383891558">Salom <ph name="USERNAME" /></translation>
+<translation id="1977686871076551563">Ranglarni akslantirish usuli yoqildi. Uni oʻchirish uchun yana <ph name="ACCELERATOR" /> tugmalarini bosing.</translation>
 <translation id="1978498689038657292">Matn kiritish</translation>
 <translation id="1980808257969311265"><ph name="EVENT_SUMMARY" /> tadbiriga kirish</translation>
 <translation id="1982717156487272186">Avvalgi hafta jadvalini ochish</translation>
@@ -604,6 +607,7 @@ Quyidagi narsalardan boshlashingiz mumkin.</translation>
 <translation id="334927402682780278">Kursordan qator oxirigacha matnni belgilash</translation>
 <translation id="3349345708646875009">Vazifalar boshqaruvini ochish</translation>
 <translation id="3364721542077212959">Stilus vositalari</translation>
+<translation id="3365281428003534650">Taymer, vazifa va musiqani sozlang.</translation>
 <translation id="3365977133351922112">Telefon sizdan uzoqda. Telefonni yaqinlashtiring.</translation>
 <translation id="3368922792935385530">Ulangan</translation>
 <translation id="3369111525500416043">Muddati yaqin</translation>
@@ -907,6 +911,7 @@ Quvvatni tejash uchun ayrim funksiyalar ishlashi cheklandi.</translation>
 <translation id="4406883609789734330">Jonli izoh</translation>
 <translation id="4412698727486357573">Yordam markazi</translation>
 <translation id="4412944820643904175"><ph name="FEATURE_NAME" /> yoqilmagan</translation>
+<translation id="4417647906073317561">Fokus sozlamalari. Oqimga kirish uchun taymer, vazifa va musiqani sozlang.</translation>
 <translation id="4424159417645388645">Desk 5</translation>
 <translation id="4430019312045809116">Hajmi</translation>
 <translation id="4441283832827406317">Ilovalar nomi asosida saralandi</translation>
@@ -1182,6 +1187,7 @@ Hech qanday qurilma ulanmagan.</translation>
 <translation id="5377367976106153749">Kameraga ruxsat yoqilsinmi?</translation>
 <translation id="5379115545237091094">Juda ko‘p urinishlar bo‘ldi</translation>
 <translation id="5391307769715781764">Saqlangan ish stoli almashtirilsinmi?</translation>
+<translation id="5392327145184648521">Batareya foizi hisoblanmoqda...</translation>
 <translation id="5393156353051693207">Ilovalarni qayta saralash uchun istalgan joyni bosib turing</translation>
 <translation id="5395308026110844773">Jild yaratish uchun <ph name="DRAGGED_APP_NAME" /> ilovaisini <ph name="IN_PLACE_APP" /> ustiga sudrang.</translation>
 <translation id="5397578532367286026">Boshqaruvchi (<ph name="MANAGER_EMAIL" />) bu foydalanuvchining brauzerdagi ish tarixini chrome.com saytida ko‘rishi mumkin.</translation>
@@ -1236,6 +1242,7 @@ Hech qanday qurilma ulanmagan.</translation>
 <translation id="5577281275355252094">Phone Hub ishlatish uchun telefoningizda Bluetooth yoniq turishi kerak</translation>
 <translation id="5578188167649348993">xotira</translation>
 <translation id="5580000943347215299">Kutubxona</translation>
+<translation id="5586388332127302891">Mahkamlangan lupa yoqildi. Uni oʻchirish uchun yana <ph name="ACCELERATOR" /> tugmalarini bosing.</translation>
 <translation id="5587506661873751671">Yuklab olinmoqda: <ph name="DOWNLOAD_PERCENT" />%</translation>
 <translation id="558849140439112033">Rasmga olinadigan hududni tanlash uchun suring</translation>
 <translation id="5590609058453685222">Sukut bildirgisi yoniq. Ovozsiz rejimda gapirsangiz ham bildirishnoma olasiz.</translation>
@@ -1446,6 +1453,7 @@ Hech qanday qurilma ulanmagan.</translation>
 <translation id="6319503618073410818">Tafsilotlarni brauzerda ochish</translation>
 <translation id="6324916366299863871">Yorliqni tahrirlash</translation>
 <translation id="6330012934079202188">Barcha ish stollar oynalari chiqarilgan, joriy ish stoli oynalarini chiqarish uchun yuqoriga strelkani bosing</translation>
+<translation id="6337159624125741244">Butun ekran rejimidagi lupa yoniq</translation>
 <translation id="6338485349199627913"><ph name="DISPLAY_NAME" /> seansi <ph name="MANAGER" /> domenida boshqariladi</translation>
 <translation id="6344138931392227467"><ph name="DEVICE_NAME" /> ulandi</translation>
 <translation id="6348449481487610270"><ph name="MODIFIER_ONE" /><ph name="MODIFIER_TWO" /><ph name="KEY_ONE" />, keyin esa <ph name="MODIFIER_THREE" /><ph name="KEY_TWO" /> yoki <ph name="KEY_THREE" /></translation>
@@ -1513,6 +1521,7 @@ yangi oʻrnatilgan</translation>
 <translation id="6574587113394758819">Xavfsiz koʻrish rejimi yoniqligi uchun <ph name="APP_TITLE" /> bildirishnomasi yashirildi</translation>
 <translation id="6574622320167699133">Telefoningiz orqali ochildi. Kirish uchun tegining yoki bosing.</translation>
 <translation id="6578407462441924264">Nomsiz</translation>
+<translation id="6582034443359256692">Batareyaning quvvat darajasi hisoblanmoqda.</translation>
 <translation id="6585808820553845416">Sessiya yakunlanishiga <ph name="SESSION_TIME_REMAINING" /> qoldi.</translation>
 <translation id="6593850935013518327"><ph name="PRIMARY_TEXT" />, <ph name="SECONDARY_TEXT" /></translation>
 <translation id="6597278316891651699">Kamera pastki chap burchakka joylandi. Tizim platfromasi bilan muammo chiqdi.</translation>
@@ -1574,6 +1583,7 @@ yangi oʻrnatilgan</translation>
 <translation id="6790428901817661496">Ijro etish</translation>
 <translation id="679368458793552943">Lupa yoqilganda kattalashtirish</translation>
 <translation id="6794287755901682422">Bu bandda: <ph name="GLANCEABLES_TASK_ITEM_METADATA" />.</translation>
+<translation id="6797745268063125932">Yoniq qoldirish</translation>
 <translation id="6801878137098616817">Yaqinda tahrirlangan</translation>
 <translation id="6802687695197837794">Kamera va mikrofon ruxsatiga ega <ph name="APP1_NAME" />, <ph name="APP2_NAME" /> va barcha ilova va saytlarga kirish imkonini beradi</translation>
 <translation id="6803622936009808957">Ekran tasvirini nusxalab bo‘lmadi, chunki ko‘rsatilgan ekran sig‘imi qo‘llab-quvvatlanmaydi. Kengaytirilgan ish stoli rejimi yoqildi.</translation>
@@ -1670,6 +1680,7 @@ yangi oʻrnatilgan</translation>
 <translation id="7167913274352523149"><ph name="HOTSPOT" />,
         <ph name="NETWORK" /></translation>
 <translation id="7168224885072002358">Avvalgi ekran hajmiga qaytishga <ph name="TIMEOUT_SECONDS" /> qoldi.</translation>
+<translation id="7173114856073700355">Sozlamalarni ochish</translation>
 <translation id="7180611975245234373">Yangilash</translation>
 <translation id="7181691792034457084">Salom. <ph name="PRODUCT_NAME" /> — biroz boshqasha qurilma.</translation>
 <translation id="7188494361780961876">Menyu ekranning yuqori chap burchagiga surildi.</translation>
@@ -1862,6 +1873,7 @@ Qurilmani oʻchirish uchun uning quvvat tugmasini biroz bosib turing.</translati
         <ph name="MANAGED" />
         <ph name="IME" />
         <ph name="LOCALE" /></translation>
+<translation id="7899977217122813285">Fokuslash vaqtida bildirishnomalar <ph name="TIME" /> gacha oʻchiriladi</translation>
 <translation id="7901190436359881020">Oynalar joyini almashtirish</translation>
 <translation id="7901405293566323524">Phone Hub</translation>
 <translation id="7902625623987030061">Barmoq izi skaneriga tegining</translation>
@@ -1884,6 +1896,7 @@ Qurilmani oʻchirish uchun uning quvvat tugmasini biroz bosib turing.</translati
 <translation id="7947798320695032612"><ph name="APP_NAME" /> ilovasi <ph name="DEVICE_NAME" /> ishlatmoqchi</translation>
 <translation id="7951630946012935453">Klaviaturani xiralashtirish</translation>
 <translation id="7953994493035617347">Ekran aniqlik darajasi oʻzgardi</translation>
+<translation id="795958884516058160">Butun ekran rejimidagi lupa yoniq. Uni oʻchirish uchun yana <ph name="ACCELERATOR" /> tugmalarini bosing.</translation>
 <translation id="7963689218131240420">Bezovta qilinmasin rejimi oʻchiq.</translation>
 <translation id="7963992254934562106"><ph name="PHONE_NAME" /> qurilmasidan</translation>
 <translation id="7968693143708939792">Jildni tanlang...</translation>
@@ -2137,6 +2150,7 @@ Qurilmani oʻchirish uchun uning quvvat tugmasini biroz bosib turing.</translati
 <translation id="894774083269346314"><ph name="PROFILE_NAME" /> <ph name="EMAIL" /> katakchasi belgilanmagan</translation>
 <translation id="8949925099261528566">Ulangan, lekin internetsiz</translation>
 <translation id="8951539504029375108">Chromebook qurilmangiz faqat ishonchli Thunderbolt qurilmalari bilan ishlay oladi</translation>
+<translation id="8959380109429710384">Butun ekran rejimidagi lupa tezkor tugmasini bosdingiz. Kattalashtirilganidan keyin ctrl + alt + strelka tugmalari bilan harakatlaning.</translation>
 <translation id="8964525410783593407">1 soat</translation>
 <translation id="8973885907461690937">Menyu belgisini fokuslash</translation>
 <translation id="8980862970816311842">Ilova ikonkasini olib, ilovalar jadvaliga joylash</translation>

@@ -568,6 +568,7 @@ Se não permitir, isto será bloqueado pelas suas definições de privacidade. I
 <translation id="2036983605131262583">Rolo alternativo</translation>
 <translation id="2040463897538655645">Armazenamento amovível</translation>
 <translation id="2040894699575719559">Localização bloqueada</translation>
+<translation id="2041788246978549610">Usar microfones disponíveis (<ph name="MICS_COUNT" />)</translation>
 <translation id="2042213636306070719">Tabuleiro 7</translation>
 <translation id="204357726431741734">Iniciar sessão para utilizar palavras-passe guardadas na sua Conta Google</translation>
 <translation id="2045871135676061132">Envelope Personal</translation>
@@ -889,6 +890,7 @@ Se não permitir, isto será bloqueado pelas suas definições de privacidade. I
 <translation id="2655752832536625875">Casa de banho</translation>
 <translation id="2657637947725373811">{0,plural, =1{Transferir o ficheiro confidencial?}other{Transferir os ficheiros confidenciais?}}</translation>
 <translation id="2658843814961855121">Direito do trabalho</translation>
+<translation id="2658944305627908367">As transações que excedam o seu saldo não são processadas</translation>
 <translation id="2660779039299703961">Evento</translation>
 <translation id="2664887757054927933">{COUNT,plural, =0{Nenhuma}=1{1 palavra-passe (de <ph name="DOMAIN_LIST" />)}=2{2 palavras-passe (de <ph name="DOMAIN_LIST" />)}other{# palavras-passe (de <ph name="DOMAIN_LIST" />)}}</translation>
 <translation id="2666092431469916601">Parte superior</translation>
@@ -1086,6 +1088,7 @@ Se não permitir, isto será bloqueado pelas suas definições de privacidade. I
 <translation id="3090667236485488075">Vidro</translation>
 <translation id="3095940652251934233">Statement</translation>
 <translation id="3098513225387949945">Ignorada porque a lista de desativação contém um padrão igual a "*", que é equivalente a desativar a política.</translation>
+<translation id="3099619114405539473">Usar câmaras disponíveis (<ph name="CAMERAS_COUNT" />)</translation>
 <translation id="3102312643185441063">Poupança</translation>
 <translation id="3103188521861412364">Ações e obrigações</translation>
 <translation id="3105172416063519923">ID de recurso:</translation>
@@ -1362,6 +1365,7 @@ Se não permitir, isto será bloqueado pelas suas definições de privacidade. I
 <translation id="3583757800736429874">&amp;Refazer movimentação</translation>
 <translation id="3584299510153766161">Perfuração dupla na parte inferior</translation>
 <translation id="3584755835709800788">Filmes de ficção científica e fantasia</translation>
+<translation id="3585455899094692781">Usar e mover câmaras disponíveis (<ph name="CAMERAS_COUNT" />)</translation>
 <translation id="3586833803451155175">Filme molhado</translation>
 <translation id="3586931643579894722">Ocultar detalhes</translation>
 <translation id="3587738293690942763">Central</translation>

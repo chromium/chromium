@@ -50,6 +50,7 @@ Permissions that you've already given to websites and apps may apply to this acc
 <translation id="185970820835152459">You can manage your signed-in Google Accounts. Your Google Accounts are used for Chromium browser, Play Store, Gmail and more. If you want to add an account for someone else, like a family member, add a new person to your <ph name="DEVICE_TYPE" /> instead. <ph name="LINK_BEGIN" />Learn more<ph name="LINK_END" /></translation>
 <translation id="1863308913976887472">Sites can store information with Chromium about your interests. For example, if you visit a site to buy shoes for a marathon, the site might define your interest as running marathons. Later, if you visit a different site to register for a race, that site can show you an ad for running shoes based on your interests.</translation>
 <translation id="1881322772814446296">You are signing in with a managed account and giving its administrator control over your Chromium profile. Your Chromium data, such as your apps, bookmarks, history, passwords and other settings will become permanently tied to <ph name="USER_NAME" />. You will be able to delete this data via the Google Accounts Dashboard, but you will not be able to associate this data with another account. You can optionally create a new profile to keep your existing Chromium data separate. <ph name="LEARN_MORE" /></translation>
+<translation id="1903204122890929795">To use this extension as <ph name="USER_EMAIL_ADDRESS" />, sign in to Chromium.\nYou'll also be able to use and save your passwords and more from your Google Account.</translation>
 <translation id="1906696617298807388">When you type in the address bar or search box, Chromium sends what you type to Google Drive to get item suggestions. This is off in Incognito.</translation>
 <translation id="1911763535808217981">By turning this off, you can sign in to Google sites such as Gmail, without signing in to Chromium</translation>
 <translation id="1929939181775079593">Chromium is unresponsive. Relaunch now?</translation>
@@ -141,6 +142,7 @@ Permissions that you've already given to websites and apps may apply to this acc
 <translation id="3296368748942286671">Continue running background apps when Chromium is closed</translation>
 <translation id="3313189106987092621">Chromium will warn you before loading any site using an insecure connection</translation>
 <translation id="3316771292331273802">You'll be signed out of most sites when you close all Chromium windows, except your Google Account if you're signed in to Chromium. To let sites remember you, <ph name="SETTINGS_LINK" />.</translation>
+<translation id="333055255088403283">The extension '<ph name="EXTENSION_NAME" />' wants you to sign in to Chromium</translation>
 <translation id="3350761136195634146">A Chromium profile with this account already exists</translation>
 <translation id="3387527074123400161">Chromium OS</translation>
 <translation id="3406848076815591792">Switch to existing Chromium profile?</translation>
@@ -318,6 +320,7 @@ Permissions that you've already given to websites and apps may apply to this acc
 <translation id="6268381023930128611">Sign out of Chromium?</translation>
 <translation id="6281746429495226318">Customise your Chromium profile</translation>
 <translation id="6290827346642914212">Name your Chromium profile</translation>
+<translation id="6294831894865512704">An extension wants you to sign in to Chromium</translation>
 <translation id="6295779123002464101"><ph name="FILE_NAME" /> may be dangerous, so Chromium has blocked it.</translation>
 <translation id="6309712487085796862">Chromium is using your camera.</translation>
 <translation id="6327105987658262776">No update is available.</translation>

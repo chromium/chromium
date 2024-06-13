@@ -28,6 +28,7 @@
 <translation id="1407223320754252908">Chrome are Google Traducere încorporat ca să poți traduce când ai nevoie</translation>
 <translation id="1425903838053942728">{COUNT,plural, =0{Chrome s-a actualizat. Poți folosi cea mai recentă versiune după ce relansezi browserul. Apoi, filele actuale se vor redeschide.}=1{Chrome s-a actualizat. Poți folosi cea mai recentă versiune după ce relansezi browserul. Apoi, filele actuale se vor redeschide. Fereastra incognito nu se va mai deschide.}few{Chrome s-a actualizat. Poți folosi cea mai recentă versiune după ce relansezi browserul. Apoi, filele actuale se vor redeschide. Cele # ferestre incognito nu se vor mai deschide.}other{Chrome s-a actualizat. Poți folosi cea mai recentă versiune după ce relansezi browserul. Apoi, filele actuale se vor redeschide. Cele # de ferestre incognito nu se vor mai deschide.}}</translation>
 <translation id="1434626383986940139">Aplicații Chrome Canary</translation>
+<translation id="1438479496118074429">Extensia <ph name="EXTENSION_NAME" /> solicită să te conectezi la Chrome</translation>
 <translation id="146866447420868597">Te conectezi la Chrome?</translation>
 <translation id="1492280395845991349">Relansează ca să finalizezi actualizarea pentru Chrome</translation>
 <translation id="1497802159252041924">Eroare la instalare: <ph name="INSTALL_ERROR" /></translation>
@@ -460,6 +461,7 @@ Permisiunile pe care le-ai acordat deja site-urilor și aplicațiilor se pot apl
 <translation id="7802622118583152311">Chrome îți oferă cea mai recentă tehnologie pentru navigare mai bună</translation>
 <translation id="7808348361785373670">Elimină din Chrome...</translation>
 <translation id="7825851276765848807">Instalarea nu a reușit din cauza unei erori neprecizate. Descarci Google Chrome din nou.</translation>
+<translation id="7828063580843052643">Pentru a folosi această extensie ca <ph name="USER_EMAIL_ADDRESS" />, conectează-te la Chrome.\nVei putea, în plus, să folosești și să salvezi parolele și alte elemente din Contul Google.</translation>
 <translation id="7836610565365456468">Transformă-ți browserul cu teme vibrante inspirate de artiști, natură și altele</translation>
 <translation id="7845233973568007926">Mulțumim pentru instalare. Înainte să folosești <ph name="BUNDLE_NAME" /> trebuie să repornești computerul.</translation>
 <translation id="7852254990718225089">Inteligența artificială din Chrome face internetul mai rapid, mai sigur și mai accesibil</translation>
@@ -479,6 +481,7 @@ Permisiunile pe care le-ai acordat deja site-urilor și aplicațiilor se pot apl
 <translation id="8009904340233602924">Folosește Chrome fără un cont</translation>
 <translation id="8013993649590906847">Dacă o imagine nu are o descriere utilă, Chrome va încerca să o completeze. Pentru a crea descrieri, imaginile sunt trimise la Google.</translation>
 <translation id="8019103195866286235">Dezvoltatorul a anulat publicarea acestei extensii și ar putea fi nesigură. Elimin-o din Chromium ca să nu mai poată vedea și modifica datele tale de pe site-urile pe care le accesezi, inclusiv informațiile cu caracter personal.</translation>
+<translation id="8040768861829554732">O extensie solicită să te conectezi la Chrome</translation>
 <translation id="80471789339884597">Mulțumim pentru instalare. Înainte să folosești <ph name="BUNDLE_NAME" /> trebuie să repornești toate browserele.</translation>
 <translation id="8064015041956107954">Poți să deschizi marcaje, modul de lectură și altele din meniul Chrome din dreapta sus</translation>
 <translation id="8064015586118426197">ChromeOS Flex</translation>

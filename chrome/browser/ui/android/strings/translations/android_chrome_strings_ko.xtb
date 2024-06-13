@@ -156,6 +156,7 @@ Chrome 환경을 개선하는 데 데이터를 사용하는 설정을 더 보려
 <translation id="1755203724116202818">광고 실적을 측정하기 위해 제한된 유형의 데이터(예: 사이트 방문 후 구매했는지)가 사이트 간에 공유됩니다.</translation>
 <translation id="1757620656501361327">Google 비밀번호 관리자 업데이트</translation>
 <translation id="1760873718737761808">{FILE_COUNT,plural, =1{페이지, 목록에 있는 페이지 1개}other{페이지, 목록에 있는 페이지 #개}}</translation>
+<translation id="1771929606532798550">Chrome 사용에 관한 정보가 Google로 전송되지만 사용자와 연결되지 않습니다.\n\nChrome이 다운되면 관련 정보에 일부 개인 정보가 포함될 수 있습니다.\n\n방문 기록을 Google 계정에 동기화하면 측정항목에 내가 방문한 URL에 관한 정보도 포함될 수 있습니다.</translation>
 <translation id="1778457539567749232">읽지 않은 상태로 표시</translation>
 <translation id="1779766957982586368">창 닫기</translation>
 <translation id="1780023393214832643"><ph name="USERNAME" />에 저장된 비밀번호</translation>
@@ -799,6 +800,7 @@ Chrome 환경을 개선하는 데 데이터를 사용하는 설정을 더 보려
 <translation id="4987271110129728827">페이지를 찾을 수 없습니다. 철자를 확인하거나 웹 검색을 이용해 보세요.</translation>
 <translation id="4988526792673242964">페이지</translation>
 <translation id="4991110219272367918">웹사이트 승인 또는 비승인 옵션 닫힘</translation>
+<translation id="4996095658297597226">추천 비밀번호를 사용하시겠습니까?</translation>
 <translation id="499724277181351974">이동: <ph name="WEBSITE_TITLE" />: <ph name="WEBSITE_URL" /></translation>
 <translation id="5001388021414335527">여기에서 사이트를 팔로우하세요</translation>
 <translation id="5004416275253351869">Google 활동 제어</translation>
@@ -1042,6 +1044,7 @@ Chrome 환경을 개선하는 데 데이터를 사용하는 설정을 더 보려
 <translation id="6233974827872475843">동기화를 사용 설정하여 이 기기의 비밀번호를 Google 계정에 저장하세요.</translation>
 <translation id="6247557882553405851">Google 비밀번호 관리자</translation>
 <translation id="6251449557817521191">여기에서 Chrome 방문 기록 보기</translation>
+<translation id="6254139308321626268">PDF 파일을 보는 중</translation>
 <translation id="6255794742848779505">이 기기에 비밀번호가 저장되는 방식이 변경됩니다</translation>
 <translation id="6264376385120300461">무시하고 다운로드</translation>
 <translation id="6277522088822131679">페이지를 인쇄하는 중에 문제가 발생했습니다. 다시 시도해 주세요.</translation>
@@ -1083,6 +1086,7 @@ Chrome 환경을 개선하는 데 데이터를 사용하는 설정을 더 보려
 <translation id="641643625718530986">인쇄…</translation>
 <translation id="6433501201775827830">검색엔진 선택</translation>
 <translation id="6434309073475700221">삭제</translation>
+<translation id="6437162790453527153">모든 기기에서 내 북마크 등을 사용하려면 로그인하세요</translation>
 <translation id="6437478888915024427">페이지 정보</translation>
 <translation id="6440291723980579689">사용자가 페이지를 열어야 페이지가 로드됩니다.</translation>
 <translation id="6441734959916820584">이름이 너무 깁니다.</translation>
@@ -1437,6 +1441,7 @@ Chrome 환경을 개선하는 데 데이터를 사용하는 설정을 더 보려
 <translation id="7986497153528221272">비밀번호를 보려면 먼저 기기에 화면 잠금을 설정하세요.</translation>
 <translation id="7995059495660416932">이용 가능한 콘텐츠가 있으면 표시됩니다.</translation>
 <translation id="799576009106109668">현재 웹페이지 방문을 토대로 콘텐츠가 미리 로드되므로 더 빠르게 탐색할 수 있습니다.</translation>
+<translation id="8001245658307297681">로컬 파일을 보는 중</translation>
 <translation id="8004582292198964060">브라우저</translation>
 <translation id="8015452622527143194">페이지의 모든 항목을 기본 크기로 되돌리기</translation>
 <translation id="8026238112629815203">이 기기에 비밀번호가 저장되는 방식이 변경되었습니다.</translation>

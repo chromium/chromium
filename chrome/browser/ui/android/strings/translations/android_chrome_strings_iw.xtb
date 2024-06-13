@@ -90,6 +90,9 @@
 <translation id="1390418506739274310">‏יכול להיות שתוצג היסטוריה מאפליקציות אחרות שפותחות קישורים ב-Chrome. בחשבון שלך ב-Google עשויים להופיע סוגים אחרים של היסטוריית גלישה בכתובת <ph name="BEGIN_LINK" />myactivity.google.com<ph name="END_LINK" />.</translation>
 <translation id="13931502444227376">כדי להמשיך, הפרטים הבאים ישותפו על ידי <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> עם האתר הזה: השם, כתובת האימייל ותמונת הפרופיל שלך. <ph name="BEGIN_LINK1" />כאן מפורטים התנאים וההגבלות<ph name="END_LINK1" /> של האתר הזה.</translation>
 <translation id="1397811292916898096">חיפוש באמצעות <ph name="PRODUCT_NAME" /></translation>
+<translation id="1398057416966591719">‏אפשר <ph name="BEGIN_LINK1" />לקבוע אילו נתונים מ-Chrome יישמרו<ph name="END_LINK1" /> בחשבון שלך ב-Google.
+
+כדי לראות אילו הגדרות נוספות מתבססות על נתונים לצורך שיפור חוויית השימוש ב-Chrome, ניתן לעבור אל <ph name="BEGIN_LINK2" />שירותי Google<ph name="END_LINK2" />.</translation>
 <translation id="1407069428457324124">עיצוב כהה</translation>
 <translation id="1407135791313364759">פתיחת כל הכרטיסיות</translation>
 <translation id="1409879593029778104">הורדת <ph name="FILE_NAME" /> נמנעה מכיוון שהקובץ כבר קיים.</translation>
@@ -248,6 +251,7 @@
 <translation id="2286841657746966508">כתובת לחיוב</translation>
 <translation id="228704530595896923">רשימת אפשרויות השיתוף.</translation>
 <translation id="2297822946037605517">שתף דף זה</translation>
+<translation id="22981027763501686">אפשר לבצע סנכרון כדי להוסיף את הסימניות, ההיסטוריה ועוד מהמכשירים האחרים שלך</translation>
 <translation id="230115972905494466">לא נמצאו מכשירים תואמים</translation>
 <translation id="2318045970523081853">יש להקיש כדי להתקשר</translation>
 <translation id="2321086116217818302">המערכת מכינה את הסיסמאות…</translation>
@@ -851,6 +855,7 @@
 <translation id="5292796745632149097">שליחה אל</translation>
 <translation id="5301876394151419436">‏נכנסת לחשבון בתור <ph name="EMAIL" />. אפשר לעדכן את ההגדרות, בכל רגע, כדי להפסיק את הסנכרון. ‫Google עשויה להתאים אישית את החיפוש ושירותים נוספים על סמך ההיסטוריה שלך.</translation>
 <translation id="5304593522240415983">שדה זה לא יכול להיות ריק</translation>
+<translation id="5306014156308790439">הלחצן 'הוספה לאוסף' מושבת</translation>
 <translation id="5308380583665731573">התחברות</translation>
 <translation id="5316947901395241499">האפשרות לשמור סיסמאות הושבתה על ידי האדמין</translation>
 <translation id="5317780077021120954">שמירה</translation>

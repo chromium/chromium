@@ -568,6 +568,7 @@ Jeśli się nie zgodzisz, zostaną one zablokowane ze względu na Twoje ustawien
 <translation id="2036983605131262583">Rolka alternatywna</translation>
 <translation id="2040463897538655645">Pamięć wymienna</translation>
 <translation id="2040894699575719559">Lokalizacja zablokowana</translation>
+<translation id="2041788246978549610">Używaj dostępnych mikrofonów (<ph name="MICS_COUNT" />)</translation>
 <translation id="2042213636306070719">Taca 7</translation>
 <translation id="204357726431741734">Zaloguj się, by używać haseł zapisanych na Twoim koncie Google</translation>
 <translation id="2045871135676061132">Koperta personalizowana</translation>
@@ -889,6 +890,7 @@ Jeśli się nie zgodzisz, zostaną one zablokowane ze względu na Twoje ustawien
 <translation id="2655752832536625875">Łazienka</translation>
 <translation id="2657637947725373811">{0,plural, =1{Przenieść plik poufny?}few{Przenieść pliki poufne?}many{Przenieść pliki poufne?}other{Przenieść pliki poufne?}}</translation>
 <translation id="2658843814961855121">Prawo pracy</translation>
+<translation id="2658944305627908367">Transakcje przekraczające saldo nie będą przetwarzane</translation>
 <translation id="2660779039299703961">Wydarzenie</translation>
 <translation id="2664887757054927933">{COUNT,plural, =0{Brak}=1{1 hasło (do <ph name="DOMAIN_LIST" />)}=2{2 hasła (do <ph name="DOMAIN_LIST" />)}few{# hasła (do <ph name="DOMAIN_LIST" />)}many{# haseł (do <ph name="DOMAIN_LIST" />)}other{# hasła (do <ph name="DOMAIN_LIST" />)}}</translation>
 <translation id="2666092431469916601">Do góry</translation>
@@ -1086,6 +1088,7 @@ Jeśli się nie zgodzisz, zostaną one zablokowane ze względu na Twoje ustawien
 <translation id="3090667236485488075">Szkło</translation>
 <translation id="3095940652251934233">Statement</translation>
 <translation id="3098513225387949945">Ignorowana, bo lista wyłączonych zawiera wzorzec równoważny z „*”, co oznacza wyłączenie zasady.</translation>
+<translation id="3099619114405539473">Używaj dostępnych kamer (<ph name="CAMERAS_COUNT" />)</translation>
 <translation id="3102312643185441063">Konto oszczędnościowe</translation>
 <translation id="3103188521861412364">Akcje i obligacje</translation>
 <translation id="3105172416063519923">Identyfikator zasobu:</translation>
@@ -1362,6 +1365,7 @@ Uruchamianie aplikacji może potrwać dłużej niż zwykle.</translation>
 <translation id="3583757800736429874">&amp;Ponów przeniesienie</translation>
 <translation id="3584299510153766161">Dwa otwory na dole</translation>
 <translation id="3584755835709800788">Filmy science fiction i fantasy</translation>
+<translation id="3585455899094692781">Używaj dostępnych kamer (<ph name="CAMERAS_COUNT" />) i poruszaj nimi</translation>
 <translation id="3586833803451155175">Mokry nadruk</translation>
 <translation id="3586931643579894722">Ukryj szczegóły</translation>
 <translation id="3587738293690942763">Średni</translation>

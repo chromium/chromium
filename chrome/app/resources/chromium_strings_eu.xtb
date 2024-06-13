@@ -18,6 +18,7 @@ Eginbide batzuk agian dira erabilgarri egongo eta hobespenei egindako aldaketak 
 <translation id="1203500561924088507">Eskerrik asko instalatzeagatik. <ph name="BUNDLE_NAME" /> erabiltzeko, arakatzailea berrabiarazi behar duzu.</translation>
 <translation id="1262876892872089030">Fitxa inaktibo zegoen bitartean, memorian tokia egin da Chromium-ek bizkor funtzionatzen jarrai dezan. Webgune hau inoiz ez inaktibo ezartzea aukera dezakezu.</translation>
 <translation id="1265577313130862557">Chromium-ek deskarga hau blokeatu du, fitxategia arriskutsua delako</translation>
+<translation id="126567311906253476"><ph name="USER_EMAIL" /> kontuarekin Google-ren zerbitzuetan saioa hastean (adibidez, Gmail-en edo YouTube-n), Chromium-en ere automatikoki has dezakezu saioa kontu berarekin</translation>
 <translation id="1315551408014407711">Konfiguratu Chromium-eko profil berria</translation>
 <translation id="1342274909142618978">Ezabatu datuak Chromium-etik ere bai (<ph name="URL" />)</translation>
 <translation id="1414495520565016063">Chromium-en saioa hasi duzu.</translation>
@@ -42,6 +43,7 @@ Baliteke webguneei eta aplikazioei emandako baimenak kontu honi aplikatzea. Goog
 <translation id="1749104137266986751">HTTPS erabilgarri ez dagoenean, Chromium-ek konexio ez-seguru bat erabiliko du abisatu gabe</translation>
 <translation id="1774152462503052664">Onartu Chromium atzeko planoan abiaraztea</translation>
 <translation id="1779356040007214683">Chromium seguruagoa izan dadin, zuk jakin gabe gehitu izan dituzten eta <ph name="IDS_EXTENSION_WEB_STORE_TITLE" /> dendan zerrendatu gabe dauden luzapen batzuk desgaitu ditugu.</translation>
+<translation id="1804128559285178512">Saioa hasita daukazunean, Google-ko kontuko pasahitzak eta beste erabil ditzakezu Chromium-en</translation>
 <translation id="1808667845054772817">Instalatu berriro Chromium</translation>
 <translation id="1820835682567584003">Chromium-ek <ph name="AUTHENTICATION_PURPOSE" /></translation>
 <translation id="18552579716432081">Zure arakatze-datuak gailu honetatik soilik ezabatzeko, baina haiek Google-ko kontuan mantentzeko, <ph name="BEGIN_LINK" />amaitu saioa Chromium-en<ph name="END_LINK" />.</translation>

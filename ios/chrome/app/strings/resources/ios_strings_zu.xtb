@@ -850,6 +850,7 @@ Bona imiyalelo yenjini yakho yokusesha yokusula umlando wakho wosesho, uma kuseb
 <translation id="5345660046352249607">{COUNT,plural, =1{Landelela leli phakheji?}one{Landelela amaphakheji angu-{COUNT}?}other{Landelela amaphakheji angu-{COUNT}?}}</translation>
 <translation id="5348775987281903912">Ungabelana ngaleli khasi lapha enkinobheni yokwabelana.</translation>
 <translation id="536067926684072644">Bonisa Amabhukimakhi</translation>
+<translation id="537853552771686272">Lawula izihloko namasayithi onentshisekelo kuwo</translation>
 <translation id="5379352933722332597">{count,plural, =1{Ibhukhimakhi ilondolozwe kokuthi "{title}". Lilondolozwe kule divayisi kuphela.}one{Amabhukhimakhi angu-{count} alondolozwe kokuthi "{title}". Alondolozwe kule divayisi kuphela.}other{Amabhukhimakhi angu-{count} alondolozwe kokuthi "{title}". Alondolozwe kule divayisi kuphela.}}</translation>
 <translation id="5388358297987318779">Vula isithombe</translation>
 <translation id="5395707839134961196">Fihla imininingwane yenjini yokusesha</translation>
@@ -932,6 +933,7 @@ I-Handoff futhi kufanele inikwe amandla esigabeni sokuvamile zezilungiselelo, fu
 <translation id="5758631781033351321">Uzothola uhlu lwakho lokufunda lapha</translation>
 <translation id="5765456154762864099">Imeny → Amasethingi → Ibhrawuza Ezenzakalelayo</translation>
 <translation id="5777888488419460501">Londoloza ku-akhawunti</translation>
+<translation id="5778292857689789362">Iqembu lethebhu, <ph name="GROUP_TITLE" />, <ph name="TABS_NUMBER" /> Amathebhu.</translation>
 <translation id="5782227691023083829">Iyahumusha...</translation>
 <translation id="5791632441210678828">Inkinobho yokuhlunga yokuphakelayo Kokulandelayo.</translation>
 <translation id="5793373065989412701">Ihlola amalungu omndeni wakho…</translation>

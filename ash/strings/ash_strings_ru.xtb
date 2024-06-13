@@ -251,6 +251,7 @@
 <translation id="1915307458270490472">Закрыть</translation>
 <translation id="1918022425394817322">Окно предварительного просмотра камеры привязано к правому верхнему углу</translation>
 <translation id="1923539912171292317">Автоматическое нажатие</translation>
+<translation id="1925320505152357008">Меньше 1 мин.</translation>
 <translation id="1928739107511554905">Чтобы выполнить обновление, перезагрузите устройство Chromebook с помощью сенсорной панели, не отключая от него клавиатуру.</translation>
 <translation id="1948405482892809935">Переключиться на следующего пользователя</translation>
 <translation id="1951012854035635156">Ассистент</translation>
@@ -604,6 +605,7 @@
 <translation id="334927402682780278">Выделить текст от курсора до конца строки</translation>
 <translation id="3349345708646875009">Открыть диспетчер задач</translation>
 <translation id="3364721542077212959">Инструменты стилуса</translation>
+<translation id="3365281428003534650">Установить таймер и задачу</translation>
 <translation id="3365977133351922112">Телефон слишком далеко. Поднесите его ближе.</translation>
 <translation id="3368922792935385530">Подключено</translation>
 <translation id="3369111525500416043">К сдаче</translation>
@@ -907,6 +909,7 @@
 <translation id="4406883609789734330">Автоматические субтитры</translation>
 <translation id="4412698727486357573">Справочный центр</translation>
 <translation id="4412944820643904175">Функция "<ph name="FEATURE_NAME" />" отключена</translation>
+<translation id="4417647906073317561">Настройки режима концентрации внимания. Установите таймер, задачу и музыку, чтобы погрузиться в процесс.</translation>
 <translation id="4424159417645388645">Рабочий стол 5</translation>
 <translation id="4430019312045809116">Объем</translation>
 <translation id="4441283832827406317">Приложения упорядочены по названию.</translation>
@@ -1670,6 +1673,7 @@
 <translation id="7167913274352523149"><ph name="HOTSPOT" />,
         <ph name="NETWORK" /></translation>
 <translation id="7168224885072002358">Возврат к предыдущему разрешению через <ph name="TIMEOUT_SECONDS" /></translation>
+<translation id="7173114856073700355">Открыть настройки</translation>
 <translation id="7180611975245234373">Обновить</translation>
 <translation id="7181691792034457084">Здравствуйте! Непривычно работать на новом устройстве (<ph name="PRODUCT_NAME" />)?</translation>
 <translation id="7188494361780961876">Меню перемещено в левый верхний угол экрана.</translation>
@@ -1862,6 +1866,7 @@
         <ph name="MANAGED" />.
         <ph name="IME" />.
         <ph name="LOCALE" />.</translation>
+<translation id="7899977217122813285">Уведомления отключены до <ph name="TIME" />, пока вы в режиме концентрации внимания.</translation>
 <translation id="7901190436359881020">Поменять окна местами</translation>
 <translation id="7901405293566323524">Управление телефоном</translation>
 <translation id="7902625623987030061">Коснитесь сканера отпечатков.</translation>

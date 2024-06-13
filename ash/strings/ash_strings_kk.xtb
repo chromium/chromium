@@ -179,6 +179,7 @@
 <translation id="1611993646327628135">Қосулы</translation>
 <translation id="1620510694547887537">Камера</translation>
 <translation id="1623768535032616219">Google Classroom интерфейсін жию</translation>
+<translation id="163032029566320584"><ph name="UNAVAILABLE_DLC" /> қолжетімді емес.</translation>
 <translation id="1632985212731562677">Switch Access функциясын "Параметрлер &gt; Accessibility" бөлімінен өшіруге болады.</translation>
 <translation id="1637505162081889933"><ph name="NUM_DEVICES" /> құрылғы</translation>
 <translation id="1639239467298939599">Жүктелуде</translation>
@@ -720,6 +721,7 @@
 <translation id="3702846122927433391">Нигерия халқының саны</translation>
 <translation id="3705722231355495246">-</translation>
 <translation id="3706423975342040244">Ойын-сауық</translation>
+<translation id="3707093869106077605"><ph name="UNAVAILABLE_DLC_ONE" /> және <ph name="UNAVAILABLE_DLC_TWO" /> қолжетімді емес.</translation>
 <translation id="3708186454126126312">Бұған дейін жалғанғандар</translation>
 <translation id="3712143870407382523">Экранның осы жағына қоятын терезені таңдау</translation>
 <translation id="371370241367527062">Алдыңғы микрофон</translation>
@@ -992,6 +994,7 @@
 <translation id="4733161265940833579"><ph name="BATTERY_PERCENTAGE" />% (сол)</translation>
 <translation id="4734965478015604180">Көлденең</translation>
 <translation id="4735944890391795473">12-жұмыс үстелі</translation>
+<translation id="4736732123074402682">Қосылымды тексеріп, әрекетті қайталап көріңіз.</translation>
 <translation id="473775607612524610">Жаңарту</translation>
 <translation id="4740516757091333363">Сақталған жұмыс үстелін жою керек пе?</translation>
 <translation id="4746798685375253449">{0,plural, =1{Құрылғыны алдыңғы нұсқаға бір күн ішінде қайтарыңыз}other{Құрылғыны алдыңғы нұсқаға # күн ішінде қайтарыңыз}}</translation>
@@ -1325,6 +1328,7 @@
 <translation id="588258955323874662">Толық экран</translation>
 <translation id="5887954372087850114"><ph name="WINDOW_TITLE" /> терезесі <ph name="DESK_TITLE" /> жұмыс үстеліне тағайындалып, басқаларының бәрінен алынды.</translation>
 <translation id="588817334757907802">Файлды Chrome браузерінде ашу</translation>
+<translation id="5892014525522223653">Офлайн режимдесіз.</translation>
 <translation id="5895138241574237353">Қайта іске қосу</translation>
 <translation id="589817443623831496">Нүктемен сканерлеу</translation>
 <translation id="5901316534475909376">Shift+Esc</translation>
@@ -1384,6 +1388,7 @@
 <translation id="6095425951508823973"><ph name="PROVIDER" /> көмегімен байланыс қосу</translation>
 <translation id="6099678161144790572">Өткен айда өзгертілді.</translation>
 <translation id="6103838137565245112">жүйе</translation>
+<translation id="610395411842312282">Қатар екі терезені топтау</translation>
 <translation id="6108952804512516814">AI көмегімен жасау</translation>
 <translation id="6114505516289286752">Тіл файлдары (<ph name="LANGUAGE" />) жүктеп алынды</translation>
 <translation id="6119360623251949462"><ph name="CHARGING_STATE" />. <ph name="BATTERY_SAVER_STATE" /></translation>
@@ -1391,6 +1396,7 @@
 <translation id="6121838516699723042"><ph name="FILENAME" /> жүктеп алуды растау</translation>
 <translation id="612734058257491180">Google Assistant қонақ сеансында жұмыс істемейді.</translation>
 <translation id="6127370444807669747">Жекелендірілген ойнату тізімдері мен зейін қоюға арналған басқа музыканы тыңдау үшін YouTube Music Premium-ді байқап көріңіз.</translation>
+<translation id="6127395413317891856">Офлайн режимдесіз. Қосылымды тексеріп, әрекетті қайталап көріңіз.</translation>
 <translation id="6129953537138746214">Бос орын</translation>
 <translation id="6137566720514957455"><ph name="USER_EMAIL_ADDRESS" /> аккаунтын өшіру диалогтік терезесін ашу</translation>
 <translation id="6141205840878048728">Не нәрсеге зейін қойғыңыз келеді?</translation>
@@ -1667,6 +1673,7 @@
 <translation id="7167913274352523149"><ph name="HOTSPOT" />,
         <ph name="NETWORK" /></translation>
 <translation id="7168224885072002358"><ph name="TIMEOUT_SECONDS" /> уақыт ішінде ескі ажыратымдылыққа ауысады</translation>
+<translation id="7173114856073700355">Параметрлерді ашу</translation>
 <translation id="7180611975245234373">Жаңарту</translation>
 <translation id="7181691792034457084">Сәлеметсіз бе! <ph name="PRODUCT_NAME" /> сәл өзгеше.</translation>
 <translation id="7188494361780961876">Мәзір экранның жоғарғы сол жақ бұрышына жылжытылды.</translation>
@@ -1964,6 +1971,7 @@
 <translation id="8257510091797044096">Құрылғы параметрлерін реттеу</translation>
 <translation id="8261506727792406068">Жою</translation>
 <translation id="8262312463845990408">Ойнату/кідірту</translation>
+<translation id="8268302343625273732">Google Classroom-дағы барлық тапсырманы көру</translation>
 <translation id="8277261673056602147">Экрандағы мәтінді ерекшелеу</translation>
 <translation id="8287009018010202411">Өнімділік</translation>
 <translation id="828708037801473432">Өшірулі</translation>

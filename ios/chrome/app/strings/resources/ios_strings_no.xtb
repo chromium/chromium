@@ -850,6 +850,7 @@ Se eventuelt instruksjonene fra den aktuelle søkemotoren om hvordan du sletter 
 <translation id="5345660046352249607">{COUNT,plural, =1{Vil du spore denne pakken?}other{Vil du spore {COUNT} pakker?}}</translation>
 <translation id="5348775987281903912">Du kan dele denne siden her via Del-knappen.</translation>
 <translation id="536067926684072644">Vis bokmerker</translation>
+<translation id="537853552771686272">Administrer emnene og nettstedene du er interessert i</translation>
 <translation id="5379352933722332597">{count,plural, =1{Bokmerket er lagret i «{title}». Det er bare lagret på denne enheten.}other{{count} bokmerker er lagret i «{title}». De er bare lagret på denne enheten.}}</translation>
 <translation id="5388358297987318779">Åpne bildet</translation>
 <translation id="5395707839134961196">Skjul søkemotordetaljer</translation>
@@ -932,6 +933,7 @@ Handoff må også være aktivert i Generelt-delen av Innstillinger, og enhetene 
 <translation id="5758631781033351321">Her finner du leselisten din</translation>
 <translation id="5765456154762864099">Meny → Innstillinger → Standardnettleser</translation>
 <translation id="5777888488419460501">Lagre i konto</translation>
+<translation id="5778292857689789362">Fanegruppe, <ph name="GROUP_TITLE" />, <ph name="TABS_NUMBER" /> faner.</translation>
 <translation id="5782227691023083829">Oversetter</translation>
 <translation id="5791632441210678828">Sorteringsknapp for Følger-feeden.</translation>
 <translation id="5793373065989412701">Sjekker familiemedlemmene dine …</translation>

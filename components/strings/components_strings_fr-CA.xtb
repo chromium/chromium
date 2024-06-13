@@ -547,6 +547,7 @@
 <translation id="2003709556000175978">Réinitialiser votre mot de passe maintenant</translation>
 <translation id="2003775180883135320">Quadruple perforation dans le haut</translation>
 <translation id="2004697686368036666">Des fonctionnalités de certains sites pourraient ne pas fonctionner</translation>
+<translation id="2005042463110681802">Vous voyez cet avertissement parce que ce site ne prend pas en charge HTTPS et que vous êtes en mode Navigation privée. <ph name="BEGIN_LEARN_MORE_LINK" />En savoir plus<ph name="END_LEARN_MORE_LINK" /></translation>
 <translation id="2009942480257059311">Bouton Créer un événement, activez-le pour créer rapidement un nouvel événement dans Google Agenda</translation>
 <translation id="201174227998721785">Gérez les autorisations et les données stockées pour les sites dans les paramètres de Chrome</translation>
 <translation id="2012276282211112603">Aucun sujet à afficher pour le moment</translation>
@@ -1482,6 +1483,7 @@
 <translation id="3799805948399000906">Police demandée</translation>
 <translation id="3801265110651850478">Envoyer une demande « Do Not Track » avec les transferts liés à votre navigation</translation>
 <translation id="380329542618494757">Nom</translation>
+<translation id="3803801106042434208">Ces moteurs de recherche sont populaires dans votre région</translation>
 <translation id="3806932344025766608">Des pirates informatiques qui se trouvent sur le site que vous essayez de visiter peuvent vous inciter à installer un logiciel ou à révéler des renseignements, tels que votre mot de passe ou votre numéro de téléphone ou de carte de crédit. Chrome vous recommande fortement de revenir à la page de sécurité. <ph name="BEGIN_LEARN_MORE_LINK" />En savoir plus<ph name="END_LEARN_MORE_LINK" /></translation>
 <translation id="3807366285948165054">Décalage X de l'image</translation>
 <translation id="3807709094043295184">Rock classique et vieux succès</translation>

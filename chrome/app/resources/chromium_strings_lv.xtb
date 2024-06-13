@@ -16,6 +16,7 @@
 <translation id="1203500561924088507">Pateicamies, ka veicāt instalēšanu. Pirms <ph name="BUNDLE_NAME" /> izmantošanas ir jārestartē pārlūkprogramma.</translation>
 <translation id="1262876892872089030">Kamēr šī cilne bija neaktīva, tika atbrīvota atmiņa pārlūka Chromium ātrākai darbībai. Varat izvēlēties vienmēr saglabāt šo vietni aktīvu.</translation>
 <translation id="1265577313130862557">Pārlūkā Chromium šī lejupielāde tika bloķēta, jo fails ir bīstams.</translation>
+<translation id="126567311906253476">Ja pierakstāties Google pakalpojumos, piemēram, Gmail vai YouTube, ar kontu <ph name="USER_EMAIL" />, varat automātiski pierakstīties pārlūkā Chromium ar to pašu kontu.</translation>
 <translation id="1315551408014407711">Jaunā Chromium profila iestatīšana</translation>
 <translation id="1342274909142618978">Dzēst arī datus no pārlūka Chromium (<ph name="URL" />)</translation>
 <translation id="1414495520565016063">Esat pierakstījies operētājsistēmā Chromium!</translation>
@@ -40,6 +41,7 @@ Uz šo kontu var attiekties atļaujas, ko esat jau piešķīris vietnēm un liet
 <translation id="1749104137266986751">Ja HTTPS nav pieejams, pārlūkā Chromium bez brīdinājuma tiks izmantots nedrošs savienojums.</translation>
 <translation id="1774152462503052664">Ļaut Chromium darboties fonā</translation>
 <translation id="1779356040007214683">Lai uzlabotu Chromium drošību, mēs atspējojām dažus paplašinājumus, kas nav norādīti vietnē <ph name="IDS_EXTENSION_WEB_STORE_TITLE" /> un, iespējams, tika pievienoti, jums nezinot.</translation>
+<translation id="1804128559285178512">Kamēr esat pierakstījies, pārlūkā Chromium varat izmantot savas paroles un citu saturu no Google konta.</translation>
 <translation id="1808667845054772817">Pārinstalēt Chromium</translation>
 <translation id="1820835682567584003">Chromium mēģina <ph name="AUTHENTICATION_PURPOSE" /></translation>
 <translation id="18552579716432081">Lai dzēstu pārlūkošanas datus tikai no šīs ierīces un paturētu tos Google kontā, <ph name="BEGIN_LINK" />izrakstieties no Chromium<ph name="END_LINK" />.</translation>

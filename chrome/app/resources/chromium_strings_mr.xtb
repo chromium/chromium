@@ -17,6 +17,7 @@
 <translation id="1203500561924088507">इंस्टॉल केल्याबद्दल धन्यवाद. तुम्ही <ph name="BUNDLE_NAME" /> वापरण्यापूर्वी तुमचा ब्राउझर रीस्टार्ट करणे आवश्यक आहे.</translation>
 <translation id="1262876892872089030">हा टॅब इनॅक्टिव्ह असताना, Chromium ला जलद ठेवण्यासाठी मेमरी मोकळी करण्यात आली होती. ही साइट इनॅक्टिव्ह राहण्यापासून नेहमी वगळली जावी असे तुम्ही निवडू शकता.</translation>
 <translation id="1265577313130862557">फाइल धोकादायक असल्याने Chromium ने हे डाउनलोड ब्लॉक केले आहे</translation>
+<translation id="126567311906253476"><ph name="USER_EMAIL" /> वापरून Gmail किंवा YouTube सारख्या Google सेवांमध्ये साइन इन करताना, तुम्ही तेच खाते वापरून Chromium मध्ये आपोआप साइन इन करू शकता</translation>
 <translation id="1315551408014407711">तुमची नवीन Chromium प्रोफाइल सेट करा</translation>
 <translation id="1342274909142618978">तसेच Chromium मधून डेटा हटवा (<ph name="URL" />)</translation>
 <translation id="1414495520565016063">तुम्ही Chromium मध्ये साइन इन केले आहे!</translation>
@@ -41,6 +42,7 @@
 <translation id="1749104137266986751">HTTPS उपलब्ध नसल्यास, Chromium तुम्हाला चेतावणी न देता असुरक्षित कनेक्शन वापरेल</translation>
 <translation id="1774152462503052664">Chromium बॅकग्राउंडमध्ये सुरू द्या</translation>
 <translation id="1779356040007214683">Chromium अधिक सुरक्षित बनविण्‍यासाठी, आम्‍ही <ph name="IDS_EXTENSION_WEB_STORE_TITLE" /> मध्‍ये सूचीबद्ध नसलेले आणि आपल्‍या माहिती शिवाय कदाचित जोडले गेलेले काही विस्‍तार अक्षम केले.</translation>
+<translation id="1804128559285178512">तुम्ही साइन इन केलेले असताना, तुम्ही Chromium मध्ये तुमचे पासवर्ड आणि तुमच्या Google खाते मधील बऱ्याच गोष्टी वापरू शकता</translation>
 <translation id="1808667845054772817">Chromium पुनर्स्थापित करा</translation>
 <translation id="1820835682567584003">Chromium <ph name="AUTHENTICATION_PURPOSE" /> याचा प्रयत्न करत आहे</translation>
 <translation id="18552579716432081">तुमच्या Google खाते मध्ये ब्राउझिंग डेटा राखून ठेवून, तो फक्त या डिव्हाइसवरून हटवण्यासाठी, <ph name="BEGIN_LINK" />Chromium मधून साइन आउट करणे<ph name="END_LINK" /> हे करा.</translation>

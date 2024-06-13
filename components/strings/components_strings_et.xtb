@@ -547,6 +547,7 @@ Vastasel korral blokeeritakse see teie privaatsusseadetes. See võimaldab teie k
 <translation id="2003709556000175978">Lähtestage oma parool kohe</translation>
 <translation id="2003775180883135320">Neli auku ülal</translation>
 <translation id="2004697686368036666">Funktsioonid ei pruugi mõnel saidil toimida</translation>
+<translation id="2005042463110681802">Näete seda hoiatust, kuna see sait ei toeta HTTPS-i ja olete inkognito režiimis. <ph name="BEGIN_LEARN_MORE_LINK" />Lisateave<ph name="END_LEARN_MORE_LINK" /></translation>
 <translation id="2009942480257059311">Nupp Loo sündmus, aktiveerige nupp, et luua Google'i kalendris kiiresti uus sündmus</translation>
 <translation id="201174227998721785">Hallake Chrome'i seadetes lubasid ja mitmel saidil talletatud andmeid</translation>
 <translation id="2012276282211112603">Praegu ei ole kuvamiseks ühtegi teemat</translation>
@@ -1482,6 +1483,7 @@ Vastasel korral blokeeritakse see teie privaatsusseadetes. See võimaldab teie k
 <translation id="3799805948399000906">Taotleti fonti</translation>
 <translation id="3801265110651850478">Saada sirvimisliikluse kohta taotlus „Ära jälgi”</translation>
 <translation id="380329542618494757">Nimi</translation>
+<translation id="3803801106042434208">Need otsingumootorid on teie piirkonnas populaarsed</translation>
 <translation id="3806932344025766608">Saidil, mida proovite külastada, võivad ründajad meelitada teid kahjulikku tarkvara installima või näiteks parooli, telefoni- või krediitkaardinumbrit avaldama. Chrome soovitab tungivalt turvalisse keskkonda naasta. <ph name="BEGIN_LEARN_MORE_LINK" />Lisateave<ph name="END_LEARN_MORE_LINK" /></translation>
 <translation id="3807366285948165054">Pildi nihe X-teljel</translation>
 <translation id="3807709094043295184">Klassikaline rokk ja vanad hitid</translation>

@@ -90,6 +90,9 @@
 <translation id="1390418506739274310">Historiken från andra appar som öppnar länkar kan visas i Chrome. Det kan finnas andra former av webbhistorik i Google-kontot på <ph name="BEGIN_LINK" />myactivity.google.com<ph name="END_LINK" />.</translation>
 <translation id="13931502444227376"><ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> delar ditt namn, din e-postadress och din profilbild med den här webbplatsen om du fortsätter. Läs webbplatsens <ph name="BEGIN_LINK1" />användarvillkor<ph name="END_LINK1" />.</translation>
 <translation id="1397811292916898096">Sök med <ph name="PRODUCT_NAME" /></translation>
+<translation id="1398057416966591719">Du kan <ph name="BEGIN_LINK1" />styra vilken Chrome-data som sparas<ph name="END_LINK1" /> i Google-kontot.
+
+Du hittar fler inställningar som använder data för att förbättra Chrome-upplevelsen under <ph name="BEGIN_LINK2" />Googles tjänster<ph name="END_LINK2" />.</translation>
 <translation id="1407069428457324124">Mörkt tema</translation>
 <translation id="1407135791313364759">Öppna alla</translation>
 <translation id="1409879593029778104">Nedladdningen av <ph name="FILE_NAME" /> hindrades eftersom filen redan finns.</translation>
@@ -248,6 +251,7 @@ Din krypterade data kan endast läsas av en person som har din lösenfras. Löse
 <translation id="2286841657746966508">Faktureringsadress</translation>
 <translation id="228704530595896923">Lista över delningsalternativ.</translation>
 <translation id="2297822946037605517">Dela den här sidan</translation>
+<translation id="22981027763501686">Synkronisera för att få dina bokmärken, din historik och mer på dina andra enheter</translation>
 <translation id="230115972905494466">Inga kompatibla enheter hittades</translation>
 <translation id="2318045970523081853">Tryck för att ringa</translation>
 <translation id="2321086116217818302">Lösenorden förbereds …</translation>
@@ -852,6 +856,7 @@ Det kan finnas andra former av webbhistorik i Google-kontot på <ph name="BEGIN_
 <translation id="5292796745632149097">Skicka till</translation>
 <translation id="5301876394151419436">Du är inloggad som <ph name="EMAIL" />. Du kan sluta synkronisera när som helst i inställningarna. Google kan anpassa Sök och andra tjänster utifrån din historik.</translation>
 <translation id="5304593522240415983">Fältet får inte vara tomt</translation>
+<translation id="5306014156308790439">Lägg till i samling har inaktiverats</translation>
 <translation id="5308380583665731573">Anslut</translation>
 <translation id="5316947901395241499">Funktionen för att spara lösenord har inaktiverats av administratören</translation>
 <translation id="5317780077021120954">Spara</translation>

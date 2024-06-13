@@ -126,6 +126,7 @@ Vissa funktioner kanske inte är tillgängliga och ändringar i inställningarna
 <translation id="2765403129283291972">Du behöver ge Chrome behörighet att använda mikrofonen på webbplatsen</translation>
 <translation id="2770231113462710648">Ändra standardwebbläsare till:</translation>
 <translation id="2775140325783767197">Chrome kan inte kontrollera dina lösenord. Testa att kontrollera internetanslutningen.</translation>
+<translation id="2797864378188255696">När du loggar in på Googles tjänster, som Gmail eller YouTube, med <ph name="USER_EMAIL" /> kan du logga in automatiskt i Chrome med samma konto</translation>
 <translation id="2799223571221894425">Starta om</translation>
 <translation id="2825024317344269723">Farlig webbplats. Chrome tog bort aviseringar.</translation>
 <translation id="2846251086934905009">Installationsfel: Installationsprogrammet slutfördes inte. Installationen har avbrutits.</translation>
@@ -300,6 +301,7 @@ Vissa funktioner är kanske inte tillgängliga. Ange en annan profilkatalog om d
 <translation id="5334309298019785904">Det gick inte att synkronisera data med ChromeOS eftersom synkronisering inte är tillgängligt för din domän.</translation>
 <translation id="5334487786912937552">Du behöver ge Chrome åtkomst till lagringsutrymmet om det ska gå att ladda ned filer</translation>
 <translation id="5337648990166757586">Valfritt: Skicka diagnostik- och användningsdata automatiskt till Google och hjälp oss att förbättra funktioner och prestanda i ChromeOS.</translation>
+<translation id="5345497718959596593">När du är inloggad kan du använda dina lösenord och mer från ditt Google-konto i Chrome</translation>
 <translation id="5357889879764279201">Få hjälp med ChromeOS Flex</translation>
 <translation id="5368118228313795342">Extra kod: <ph name="EXTRA_CODE" />.</translation>
 <translation id="5386244825306882791">Det styr också vilken sida som visas när du startar Chrome eller söker i adressfältet.</translation>

@@ -580,6 +580,7 @@
 <translation id="3226991577105957773">+<ph name="COUNT" /> სხვა</translation>
 <translation id="3227137524299004712">მიკროფონი</translation>
 <translation id="3233611303007751344">ბატარეის დამზოგი გამორთულია</translation>
+<translation id="3238409143297336341">დააყენეთ მშობელთა კონტროლი აპებისთვის</translation>
 <translation id="324366796737464147">ხმაურის შემცირება</translation>
 <translation id="3249513730522716925">ფანჯარა <ph name="WINDOW_TITLE" /> გადატანილია სამუშაო მაგიდიდან <ph name="ACTIVE_DESK" /> სამუშაო მაგიდაზე <ph name="TARGET_DESK" /></translation>
 <translation id="3253743281242075461">საკლასო სამუშაოს ტიპი: <ph name="GLANCEABLES_CLASSROOM_LIST_NAME" /></translation>
@@ -1411,6 +1412,7 @@
 <translation id="6141205840878048728">რაზე გსურთ ფოკუსირება?</translation>
 <translation id="6141988275892716286">დაადასტურეთ ჩამოტვირთვა</translation>
 <translation id="6143578372829139382">YouTube-ზე გაზიარება</translation>
+<translation id="6147182561428020853">თქვენ უკვე შეგიძლიათ <ph name="DEVICE_TYPE" />-ზე დაყენებული აპების დაბლოკვა</translation>
 <translation id="6154006699632741460">პერიფერიული მოწყობილობა მხარდაუჭერელია</translation>
 <translation id="6156960295318603523">ენის პარამეტრები</translation>
 <translation id="615957422585914272">ეკრანული კლავიატურის ჩვენება</translation>
@@ -1685,6 +1687,7 @@
 <translation id="7167913274352523149"><ph name="HOTSPOT" />,
         <ph name="NETWORK" /></translation>
 <translation id="7168224885072002358">დრო ძველ გარჩევადობაზე დაბრუნებამდე: <ph name="TIMEOUT_SECONDS" /></translation>
+<translation id="7173114856073700355">პარამეტრების გახსნა</translation>
 <translation id="7180611975245234373">განახლება</translation>
 <translation id="7181691792034457084">გამარჯობა! <ph name="PRODUCT_NAME" /> ოდნავ განსხვავებულია.</translation>
 <translation id="7188494361780961876">მენიუ გადატანილია ეკრანის ზედა მარცხენა კუთხეში.</translation>

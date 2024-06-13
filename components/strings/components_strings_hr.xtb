@@ -568,6 +568,7 @@ To će u suprotnom biti onemogućeno na temelju vaših postavki privatnosti. To 
 <translation id="2036983605131262583">Alternativni kolut</translation>
 <translation id="2040463897538655645">Prijenosna pohrana</translation>
 <translation id="2040894699575719559">Lokacija je blokirana</translation>
+<translation id="2041788246978549610">Upotreba dostupnih mikrofona (<ph name="MICS_COUNT" />)</translation>
 <translation id="2042213636306070719">Ladica 7</translation>
 <translation id="204357726431741734">Prijavite se kako biste upotrebljavali zaporke spremljene na Google računu</translation>
 <translation id="2045871135676061132">Omotnica za privatna pisma</translation>
@@ -889,6 +890,7 @@ To će u suprotnom biti onemogućeno na temelju vaših postavki privatnosti. To 
 <translation id="2655752832536625875">Kupaonica</translation>
 <translation id="2657637947725373811">{0,plural, =1{Želite li prenijeti povjerljivu datoteku?}one{Želite li prenijeti povjerljive datoteke?}few{Želite li prenijeti povjerljive datoteke?}other{Želite li prenijeti povjerljive datoteke?}}</translation>
 <translation id="2658843814961855121">Zakon o radu i zapošljavanju</translation>
+<translation id="2658944305627908367">Transakcije koje premašuju vaš saldo neće se obraditi</translation>
 <translation id="2660779039299703961">Događaj</translation>
 <translation id="2664887757054927933">{COUNT,plural, =0{Nijedna}=1{Jedna zaporka (za <ph name="DOMAIN_LIST" />)}=2{Dvije zaporke (za <ph name="DOMAIN_LIST" />)}one{# zaporka (za <ph name="DOMAIN_LIST" />)}few{# zaporke (za <ph name="DOMAIN_LIST" />)}other{# zaporki (za <ph name="DOMAIN_LIST" />)}}</translation>
 <translation id="2666092431469916601">Gornji</translation>
@@ -1086,6 +1088,7 @@ To će u suprotnom biti onemogućeno na temelju vaših postavki privatnosti. To 
 <translation id="3090667236485488075">Staklo</translation>
 <translation id="3095940652251934233">Izjava</translation>
 <translation id="3098513225387949945">Ignorira se jer popis za onemogućivanje sadrži obrazac koji je jednak "*", što je istovjetno onemogućivanju pravila.</translation>
+<translation id="3099619114405539473">Upotreba dostupnih kamera (<ph name="CAMERAS_COUNT" />)</translation>
 <translation id="3102312643185441063">Štedni račun</translation>
 <translation id="3103188521861412364">Dionice i obveznice</translation>
 <translation id="3105172416063519923">ID uređaja:</translation>
@@ -1362,6 +1365,7 @@ To će u suprotnom biti onemogućeno na temelju vaših postavki privatnosti. To 
 <translation id="3583757800736429874">&amp;Ponovi premještanje</translation>
 <translation id="3584299510153766161">Dvostruko bušenje pri dnu</translation>
 <translation id="3584755835709800788">Filmovi znanstvene fantastike i fantazije</translation>
+<translation id="3585455899094692781">Upotreba i premještanje dostupnih kamera (<ph name="CAMERAS_COUNT" />)</translation>
 <translation id="3586833803451155175">Mokri film</translation>
 <translation id="3586931643579894722">Sakrij detalje</translation>
 <translation id="3587738293690942763">Srednji</translation>

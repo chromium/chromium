@@ -179,6 +179,7 @@
 <translation id="1611993646327628135">চালু আছে</translation>
 <translation id="1620510694547887537">ক্যামেরা</translation>
 <translation id="1623768535032616219">Google Classroom আড়াল করুন</translation>
+<translation id="163032029566320584"><ph name="UNAVAILABLE_DLC" /> উপলভ্য নেই।</translation>
 <translation id="1632985212731562677">সেটিংস &gt; অ্যাক্সেসিবিলিটি বিকল্পে গিয়ে 'অ্যাক্সেস পাল্টান' ফিচারটি বন্ধ করা করতে পারেন।</translation>
 <translation id="1637505162081889933"><ph name="NUM_DEVICES" />টি ডিভাইস</translation>
 <translation id="1639239467298939599">লোড হচ্ছে</translation>
@@ -250,6 +251,7 @@
 <translation id="1915307458270490472">কল নামিয়ে রাখুন</translation>
 <translation id="1918022425394817322">ক্যামেরাটি উপরে ডানদিকের কোণে স্ন্যাপ করা হয়েছে</translation>
 <translation id="1923539912171292317">স্বয়ংক্রিয় ক্লিকগুলি</translation>
+<translation id="1925320505152357008">১ মিনিটেরও কম</translation>
 <translation id="1928739107511554905">আপডেট পেতে, অ্যাটাচ করা কীবোর্ডের মাধ্যমে আপনার Chromebook রিস্টার্ট করার জন্য টাচস্ক্রিন ব্যবহার করুন।</translation>
 <translation id="1948405482892809935">পরের ব্যবহারকারীতে সুইচ করুন</translation>
 <translation id="1951012854035635156">Assistant</translation>
@@ -603,6 +605,7 @@
 <translation id="334927402682780278">কার্সার থেকে লাইনের শেষে টেক্সট বেছে নিন</translation>
 <translation id="3349345708646875009">টাস্ক ম্যানেজার খুলুন</translation>
 <translation id="3364721542077212959">স্টাইলাস টুল</translation>
+<translation id="3365281428003534650">টাইমার, টাস্ক ও মিউজিক সেট করুন</translation>
 <translation id="3365977133351922112">আপনার ফোনটি অনেক দূরে আছে। আপনার ফোনটি কাছে আনুন।</translation>
 <translation id="3368922792935385530">সংযুক্ত</translation>
 <translation id="3369111525500416043">অ্যাসাইনমেন্ট খুব তাড়াতাড়ি শেষ করতে হবে</translation>
@@ -718,6 +721,7 @@
 <translation id="3702846122927433391">নাইজিরিয়াতে জনপ্রিয়</translation>
 <translation id="3705722231355495246">-</translation>
 <translation id="3706423975342040244">বিনোদন</translation>
+<translation id="3707093869106077605"><ph name="UNAVAILABLE_DLC_ONE" /> এবং <ph name="UNAVAILABLE_DLC_TWO" /> উপলভ্য নেই।</translation>
 <translation id="3708186454126126312">আগে কানেক্ট করা ছিল</translation>
 <translation id="3712143870407382523">এই দিকে কোন উইন্ডো দেখা যাবে বেছে নিন</translation>
 <translation id="371370241367527062">সামনের মাইক্রোফোন</translation>
@@ -905,6 +909,7 @@
 <translation id="4406883609789734330">লাইভ ক্যাপশন</translation>
 <translation id="4412698727486357573">সহায়তা কেন্দ্র</translation>
 <translation id="4412944820643904175"><ph name="FEATURE_NAME" /> বন্ধ আছে।</translation>
+<translation id="4417647906073317561">ফোকাস মোড সংক্রান্ত সেটিংস। এটি ব্যবহার করতে, টাইমার, টাস্ক ও মিউজিক সেট করুন।</translation>
 <translation id="4424159417645388645">ডেস্ক ৫</translation>
 <translation id="4430019312045809116">ভলিউম</translation>
 <translation id="4441283832827406317">নাম অনুযায়ী অ্যাপ সাজানো হয়েছে</translation>
@@ -989,6 +994,7 @@
 <translation id="4733161265940833579"><ph name="BATTERY_PERCENTAGE" />% (বাঁদিক)</translation>
 <translation id="4734965478015604180">অনুভূমিক</translation>
 <translation id="4735944890391795473">ডেস্ক ১২</translation>
+<translation id="4736732123074402682">আপনার ডিভাইসের কানেকশন ঠিক আছে কিনা দেখে নিয়ে আবার চেষ্টা করুন।</translation>
 <translation id="473775607612524610">আপডেট করুন</translation>
 <translation id="4740516757091333363">সেভ করা ডেস্ক মুছবেন?</translation>
 <translation id="4746798685375253449">{0,plural, =1{এক দিনের মধ্যে ডিভাইস আগের ভার্সনে আপডেট করুন}one{# দিনের মধ্যে ডিভাইস আগের ভার্সনে আপডেট করুন}other{# দিনের মধ্যে ডিভাইস আগের ভার্সনে আপডেট করুন}}</translation>
@@ -1322,6 +1328,7 @@
 <translation id="588258955323874662">সম্পূর্নস্ক্রীণ</translation>
 <translation id="5887954372087850114"><ph name="WINDOW_TITLE" /> উইন্ডো <ph name="DESK_TITLE" /> ডেস্কে অ্যাসাইন এবং অন্যান্য সব ডেস্ক থেকে আনঅ্যাসাইন করা হয়েছে</translation>
 <translation id="588817334757907802">Chrome ব্রাউজারে ফাইল খুলুন</translation>
+<translation id="5892014525522223653">আপনি অফলাইন আছেন।</translation>
 <translation id="5895138241574237353">পুনর্সূচনা</translation>
 <translation id="589817443623831496">পয়েন্ট স্ক্যানিং</translation>
 <translation id="5901316534475909376">Shift+Esc</translation>
@@ -1381,6 +1388,7 @@
 <translation id="6095425951508823973"><ph name="PROVIDER" />-এর মাধ্যমে কানেকশন যোগ করুন</translation>
 <translation id="6099678161144790572">গত মাসে এডিট করা হয়েছে</translation>
 <translation id="6103838137565245112">সিস্টেম</translation>
+<translation id="610395411842312282">পাশাপাশি দুটি উইন্ডো গ্রুপ করুন</translation>
 <translation id="6108952804512516814">AI-এর মাধ্যমে তৈরি করুন</translation>
 <translation id="6114505516289286752"><ph name="LANGUAGE" /> স্পিচ ফাইল ডাউনলোড করা হয়েছে</translation>
 <translation id="6119360623251949462"><ph name="CHARGING_STATE" />। <ph name="BATTERY_SAVER_STATE" /></translation>
@@ -1388,6 +1396,7 @@
 <translation id="6121838516699723042"><ph name="FILENAME" /> ডাউনলোড নিশ্চিত করুন</translation>
 <translation id="612734058257491180">Google অ্যাসিস্ট্যান্ট কোনও গেস্ট সেশনে উপলভ্য নয়।</translation>
 <translation id="6127370444807669747">পছন্দসই প্লেলিস্ট ও আরও ফোকাস করা মিউজিকের জন্য YouTube Music Premium ব্যবহার করে দেখুন</translation>
+<translation id="6127395413317891856">আপনি অফলাইন আছেন। আপনার ডিভাইসের কানেকশন ঠিক আছে কিনা দেখে নিয়ে আবার চেষ্টা করুন।</translation>
 <translation id="6129953537138746214">ব্যবধান</translation>
 <translation id="6137566720514957455"><ph name="USER_EMAIL_ADDRESS" />-এর জন্য, 'অ্যাকাউন্ট সরিয়ে দিন' ডায়ালগ খুলুন</translation>
 <translation id="6141205840878048728">আপনি কীসের উপর ফোকাস করতে চান?</translation>
@@ -1664,6 +1673,7 @@
 <translation id="7167913274352523149"><ph name="HOTSPOT" />,
         <ph name="NETWORK" /></translation>
 <translation id="7168224885072002358"><ph name="TIMEOUT_SECONDS" /> -এ পুরনো রেজোলিউশানে ফেরানো হচ্ছে</translation>
+<translation id="7173114856073700355">সেটিংস খুলুন</translation>
 <translation id="7180611975245234373">রিফ্রেশ করুন</translation>
 <translation id="7181691792034457084">হ্যালো। <ph name="PRODUCT_NAME" /> হল একটু আলাদা।</translation>
 <translation id="7188494361780961876">স্ক্রিনের উপরে বাঁদিকের কোণায় মেনু সরে গেছে।</translation>
@@ -1857,6 +1867,7 @@
         <ph name="MANAGED" />
         <ph name="IME" />
         <ph name="LOCALE" /></translation>
+<translation id="7899977217122813285">ফোকাস মোড চালু হওয়ার জন্য <ph name="TIME" /> পর্যন্ত বিজ্ঞপ্তি মিউট করা আছে</translation>
 <translation id="7901190436359881020">উইন্ডো পাল্টান</translation>
 <translation id="7901405293566323524">ফোন হাব</translation>
 <translation id="7902625623987030061">আঙুলের ছাপের সেন্সর টাচ করুন</translation>
@@ -1961,6 +1972,7 @@
 <translation id="8257510091797044096">আপনার ডিভাইস সেট-আপ করুন</translation>
 <translation id="8261506727792406068">মুছুন</translation>
 <translation id="8262312463845990408">প্লেব্যাক টগল করুন</translation>
+<translation id="8268302343625273732">Google Classroom-এ সব অ্যাসাইনমেন্ট দেখুন</translation>
 <translation id="8277261673056602147">আপনার স্ক্রিনে টেক্সট হাইলাইট করুন</translation>
 <translation id="8287009018010202411">প্রোডাক্টিভিটি</translation>
 <translation id="828708037801473432">বন্ধ করা আছে</translation>

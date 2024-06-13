@@ -90,6 +90,9 @@
 <translation id="1390418506739274310">Můžete vidět historii z jiných aplikací, které otevírají odkazy v Chromu. Na stránce <ph name="BEGIN_LINK" />myactivity.google.com<ph name="END_LINK" /> mohou být k dispozici další druhy historie prohlížení zaznamenané ve vašem účtu Google.</translation>
 <translation id="13931502444227376">Aby bylo možné pokračovat, <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> bude s tímto webem sdílet vaše jméno, e‑mailovou adresu a profilový obrázek. Přečtěte si <ph name="BEGIN_LINK1" />smluvní podmínky<ph name="END_LINK1" /> tohoto webu.</translation>
 <translation id="1397811292916898096">Hledat pomocí vyhledávače <ph name="PRODUCT_NAME" /></translation>
+<translation id="1398057416966591719">Můžete <ph name="BEGIN_LINK1" />spravovat, která data prohlížeče Chrome se ukládají<ph name="END_LINK1" /> do účtu Google.
+
+Další nastavení využití dat ke zlepšení prostředí v prohlížeči Chrome najdete v sekci <ph name="BEGIN_LINK2" />Služby Google<ph name="END_LINK2" />.</translation>
 <translation id="1407069428457324124">Tmavý motiv</translation>
 <translation id="1407135791313364759">Otevřít vše</translation>
 <translation id="1409879593029778104">Stažení souboru <ph name="FILE_NAME" /> bylo zabráněno, protože soubor již existuje.</translation>
@@ -248,6 +251,7 @@ Vaše šifrovaná data mohou číst pouze uživatelé, kteří mají vaši heslo
 <translation id="2286841657746966508">Fakturační adresa</translation>
 <translation id="228704530595896923">Seznam možností sdílení.</translation>
 <translation id="2297822946037605517">Sdílet tuto stránku</translation>
+<translation id="22981027763501686">Pokud chcete mít své záložky, historii a další položky na svých ostatních zařízeních, zapněte synchronizaci</translation>
 <translation id="230115972905494466">Nebyla nalezena žádná kompatibilní zařízení</translation>
 <translation id="2318045970523081853">Klepnutím zahájíte hovor</translation>
 <translation id="2321086116217818302">Příprava hesel…</translation>
@@ -851,6 +855,7 @@ Na stránce <ph name="BEGIN_LINK" />history.google.com<ph name="END_LINK" /> moh
 <translation id="5292796745632149097">Odeslat do zařízení</translation>
 <translation id="5301876394151419436">Jste přihlášeni jako <ph name="EMAIL" />. Synchronizaci můžete v nastavení kdykoli zastavit. Google může personalizovat Vyhledávání a další služby na základě vaší historie.</translation>
 <translation id="5304593522240415983">Toto pole nesmí být prázdné</translation>
+<translation id="5306014156308790439">Zakázané tlačítko Přidat do sbírky</translation>
 <translation id="5308380583665731573">Připojení</translation>
 <translation id="5316947901395241499">Administrátor ukládání hesel vypnul</translation>
 <translation id="5317780077021120954">Uložit</translation>

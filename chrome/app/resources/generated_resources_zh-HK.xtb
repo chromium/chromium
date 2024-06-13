@@ -1561,6 +1561,7 @@
 <translation id="2116619964159595185">網站通常會連接藍牙裝置，以提供設定或同步低功耗信標、健康與健身追蹤器或智能燈泡等功能</translation>
 <translation id="2117655453726830283">下一張投影片</translation>
 <translation id="211803431539496924">確認延長安全更新嗎？</translation>
+<translation id="2118594521750010466">立即修正</translation>
 <translation id="2119461801241504254">「安全瀏覽」功能已啟動，可保護您免受有害的網站和下載內容影響</translation>
 <translation id="2120297377148151361">活動和互動</translation>
 <translation id="2120639962942052471">已封鎖<ph name="PERMISSION" /></translation>
@@ -2842,7 +2843,7 @@
 <translation id="3033348223765101500">控制資料</translation>
 <translation id="3036327949511794916">此 <ph name="DEVICE_TYPE" /> 的退貨期限已過。</translation>
 <translation id="3036546437875325427">啟用 Flash</translation>
-<translation id="3037193115779933814">英文字母和數字</translation>
+<translation id="3037193115779933814">字母和數字</translation>
 <translation id="3038272154009688107">查看所有網站</translation>
 <translation id="3038612606416062604">手動新增打印機</translation>
 <translation id="3039491566278747710">無法在裝置上安裝離線政策。</translation>
@@ -3693,6 +3694,7 @@
 <translation id="3699920817649120894">要停用同步處理和個人化功能嗎？</translation>
 <translation id="3700888195348409686">正在顯示 (<ph name="PAGE_ORIGIN" />)</translation>
 <translation id="3700993174159313525">不允許網站追蹤攝錄機位置</translation>
+<translation id="3701167022068948696">立即修正</translation>
 <translation id="3701515417135397388">在密碼於資料外洩中被盜用時警告你</translation>
 <translation id="3702797829026927713"><ph name="BEGIN_PARAGRAPH1" />輸入此示範裝置要設定的零售商名稱和商店編號*。<ph name="END_PARAGRAPH1" />
     <ph name="BEGIN_PARAGRAPH2" />如不知道商店編號，輸入「0000」即可繼續進行「示範模式」安裝。<ph name="END_PARAGRAPH2" />
@@ -4226,7 +4228,7 @@
 <translation id="4066207411788646768">請檢查您的連線，以查看網絡中的可用打印機</translation>
 <translation id="4067839975993712852">將目前的分頁標示為已讀</translation>
 <translation id="4068776064906523561">已儲存的指紋</translation>
-<translation id="4070132839822635162">不登入</translation>
+<translation id="4070132839822635162">不要登入</translation>
 <translation id="407173827865827707">僅在點擊時</translation>
 <translation id="4072805772816336153">請稍後再試</translation>
 <translation id="4074164314564067597">鍵盤</translation>
@@ -6867,7 +6869,7 @@
 <translation id="6101226222197207147">已新增應用程式 (<ph name="EXTENSION_NAME" />)</translation>
 <translation id="6102043788063419338">「進階保護功能」已封鎖此檔案。</translation>
 <translation id="6103681770816982672">警告：您即將切換為開發人員版</translation>
-<translation id="610395411842312282">將兩個並排視窗設為同一組</translation>
+<translation id="610395411842312282">將兩個並排視窗設定為同一組</translation>
 <translation id="6104068876731806426">Google 帳戶</translation>
 <translation id="6104667115274478616">管理 ChromeOS 音效設定</translation>
 <translation id="6104796831253957966">打印機序列已滿</translation>
@@ -7347,7 +7349,7 @@
 <translation id="6469702164109431067">密碼和密鑰</translation>
 <translation id="6470823736074966819">忽略通知</translation>
 <translation id="6472893788822429178">顯示 [主頁] 按鈕</translation>
-<translation id="6473315466413288899">選取所需選項</translation>
+<translation id="6473315466413288899">選取一個選項</translation>
 <translation id="6474498546677193336">某個應用程式正在使用此資料夾，因此無法取消分享。系統會在下次關閉 Linux 時取消分享此資料夾。</translation>
 <translation id="6474884162850599008">中斷 Google Drive 帳戶連線</translation>
 <translation id="6475294023568239942">請前往「設定」釋出磁碟空間或調整 Linux 磁碟大小</translation>
@@ -10810,7 +10812,7 @@
 <translation id="9031811691986152304">再試一次</translation>
 <translation id="9032004780329249150">在 iOS 裝置上使用密碼</translation>
 <translation id="9032097289595078011">停用「快速配對」</translation>
-<translation id="9032513103438497286">禁止在這部 <ph name="DEVICE_TYPE" /> 上安裝應用程式。如要限制下載應用程式或內容，請前往 Google Play 設定。</translation>
+<translation id="9032513103438497286">禁止在此 <ph name="DEVICE_TYPE" /> 安裝應用程式。如要限制下載應用程式或內容，請前往 Google Play 設定。</translation>
 <translation id="9033765790910064284">仍要繼續</translation>
 <translation id="9033857511263905942">貼上(&amp;P)</translation>
 <translation id="9034408118624208974">第一次使用 Chromebook 嗎？開啟同步功能，即可備份您的偏好設定。</translation>

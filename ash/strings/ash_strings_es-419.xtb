@@ -1339,7 +1339,7 @@ No hay dispositivos conectados.</translation>
 <translation id="5916646100036936191">Nueva notificación, <ph name="NOTIFICATION_COUNT" /> en total</translation>
 <translation id="5916664084637901428">Activado</translation>
 <translation id="5920710855273935292">El micrófono está silenciado.</translation>
-<translation id="5928083197428724029">Debes cambiar la versión antes del <ph name="MANAGER" /></translation>
+<translation id="5928083197428724029"><ph name="MANAGER" /> requiere cambiar la versión</translation>
 <translation id="5946788582095584774">La función <ph name="FEATURE_NAME" /> está activada.</translation>
 <translation id="5947494881799873997">Revertir</translation>
 <translation id="595202126637698455">Seguimiento de rendimiento habilitado</translation>
@@ -1674,6 +1674,7 @@ Nueva instalación</translation>
 <translation id="7167913274352523149"><ph name="HOTSPOT" />,
         <ph name="NETWORK" /></translation>
 <translation id="7168224885072002358">Se revertirá a la resolución anterior en <ph name="TIMEOUT_SECONDS" />.</translation>
+<translation id="7173114856073700355">Abrir la configuración</translation>
 <translation id="7180611975245234373">Actualizar</translation>
 <translation id="7181691792034457084">Hola. <ph name="PRODUCT_NAME" /> es algo diferente.</translation>
 <translation id="7188494361780961876">El menú se movió a la esquina superior izquierda de la pantalla.</translation>

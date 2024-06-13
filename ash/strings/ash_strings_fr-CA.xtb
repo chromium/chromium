@@ -179,6 +179,7 @@ Voici quelques exemples de choses que vous pouvez essayer pour commencer.</trans
 <translation id="1611993646327628135">Activé</translation>
 <translation id="1620510694547887537">Caméra</translation>
 <translation id="1623768535032616219">Réduire Google Classroom</translation>
+<translation id="163032029566320584">La fonctionnalité <ph name="UNAVAILABLE_DLC" /> n'est pas accessible.</translation>
 <translation id="1632985212731562677">Switch Access peut être désactivé sous Paramètres &gt; Accessibilité.</translation>
 <translation id="1637505162081889933"><ph name="NUM_DEVICES" /> appareils</translation>
 <translation id="1639239467298939599">Chargement en cours</translation>
@@ -250,6 +251,7 @@ Voici quelques exemples de choses que vous pouvez essayer pour commencer.</trans
 <translation id="1915307458270490472">Raccrocher</translation>
 <translation id="1918022425394817322">Caméra alignée sur le coin supérieur droit</translation>
 <translation id="1923539912171292317">Clics automatiques</translation>
+<translation id="1925320505152357008">moins d'une minute</translation>
 <translation id="1928739107511554905">Pour télécharger la mise à jour, utilisez l'écran tactile pour redémarrer votre Chromebook avec le clavier associé.</translation>
 <translation id="1948405482892809935">Passer à l'utilisateur suivant</translation>
 <translation id="1951012854035635156">Assistant</translation>
@@ -603,6 +605,7 @@ Voici quelques exemples de choses que vous pouvez essayer pour commencer.</trans
 <translation id="334927402682780278">Sélectionner le texte du curseur à la fin de la ligne</translation>
 <translation id="3349345708646875009">Ouvrir le gestionnaire de tâches</translation>
 <translation id="3364721542077212959">Outils de stylet</translation>
+<translation id="3365281428003534650">Régler minuterie et tâche</translation>
 <translation id="3365977133351922112">Votre téléphone est trop loin. Rapprochez votre téléphone.</translation>
 <translation id="3368922792935385530">Connecté</translation>
 <translation id="3369111525500416043">Arrivant bientôt à échéance</translation>
@@ -718,6 +721,7 @@ Branchez votre appareil sur une source d'alimentation.</translation>
 <translation id="3702846122927433391">Quelle est la population du Nigéria?</translation>
 <translation id="3705722231355495246">–</translation>
 <translation id="3706423975342040244">Divertissements</translation>
+<translation id="3707093869106077605"><ph name="UNAVAILABLE_DLC_ONE" /> et <ph name="UNAVAILABLE_DLC_TWO" /> ne sont pas accessibles</translation>
 <translation id="3708186454126126312">Connectés précédemment</translation>
 <translation id="3712143870407382523">Choisissez une fenêtre pour ce côté</translation>
 <translation id="371370241367527062">Microphone avant</translation>
@@ -904,6 +908,7 @@ Branchez votre appareil sur une source d'alimentation.</translation>
 <translation id="4406883609789734330">Sous-titres instantanés</translation>
 <translation id="4412698727486357573">Centre d'aide</translation>
 <translation id="4412944820643904175">La fonctionnalité <ph name="FEATURE_NAME" /> est désactivée.</translation>
+<translation id="4417647906073317561">Paramètres du mode Sans distractions. Réglez une minuterie, une tâche et de la musique pour vous mettre dans l'ambiance.</translation>
 <translation id="4424159417645388645">Bureau 5</translation>
 <translation id="4430019312045809116">Volume</translation>
 <translation id="4441283832827406317">Les applications sont triées par nom</translation>
@@ -988,6 +993,7 @@ Un appareil connecté.</translation>
 <translation id="4733161265940833579"><ph name="BATTERY_PERCENTAGE" /> % (gauche)</translation>
 <translation id="4734965478015604180">Horizontal</translation>
 <translation id="4735944890391795473">Bureau 12</translation>
+<translation id="4736732123074402682">Vérifiez votre connexion, puis réessayez.</translation>
 <translation id="473775607612524610">Mise à jour</translation>
 <translation id="4740516757091333363">Supprimer le bureau enregistré?</translation>
 <translation id="4746798685375253449">{0,plural, =1{Mettez à jour l'appareil vers la version précédente dans un délai d'un jour}one{Mettez à jour l'appareil vers la version précédente dans un délai de # jour}other{Mettez à jour l'appareil vers la version précédente dans un délai de # jours}}</translation>
@@ -1321,6 +1327,7 @@ Aucun appareil n'est connecté.</translation>
 <translation id="588258955323874662">Plein écran</translation>
 <translation id="5887954372087850114">La fenêtre <ph name="WINDOW_TITLE" /> est attribuée au bureau <ph name="DESK_TITLE" />, et son attribution est annulée de tous les autres bureaux</translation>
 <translation id="588817334757907802">Ouvrir le fichier dans le navigateur Chrome</translation>
+<translation id="5892014525522223653">Vous êtes hors ligne.</translation>
 <translation id="5895138241574237353">Redémarrer</translation>
 <translation id="589817443623831496">Numérisation de points</translation>
 <translation id="5901316534475909376">Maj+Échap</translation>
@@ -1380,6 +1387,7 @@ Aucun appareil n'est connecté.</translation>
 <translation id="6095425951508823973">Ajouter une connexion avec <ph name="PROVIDER" /></translation>
 <translation id="6099678161144790572">Modifié au cours du dernier mois</translation>
 <translation id="6103838137565245112">système</translation>
+<translation id="610395411842312282">Grouper deux fenêtres côte à côte</translation>
 <translation id="6108952804512516814">Créer avec l'IA</translation>
 <translation id="6114505516289286752">Fichiers vocaux en <ph name="LANGUAGE" /> téléchargés</translation>
 <translation id="6119360623251949462"><ph name="CHARGING_STATE" />. <ph name="BATTERY_SAVER_STATE" /></translation>
@@ -1387,6 +1395,7 @@ Aucun appareil n'est connecté.</translation>
 <translation id="6121838516699723042">Confirmer le téléchargement de <ph name="FILENAME" /></translation>
 <translation id="612734058257491180">L'Assistant Google n'est pas accessible dans une session d'invité.</translation>
 <translation id="6127370444807669747">Pour des listes de lecture personnalisées et plus de musique de concentration, essayez YouTube Music Premium</translation>
+<translation id="6127395413317891856">Vous êtes hors ligne. Vérifiez votre connexion, puis réessayez.</translation>
 <translation id="6129953537138746214">Espace</translation>
 <translation id="6137566720514957455">Ouvrir la boîte de dialogue de retrait pour <ph name="USER_EMAIL_ADDRESS" /></translation>
 <translation id="6141205840878048728">Sur quoi aimeriez-vous vous concentrer?</translation>
@@ -1663,6 +1672,7 @@ Nouvelle installation</translation>
 <translation id="7167913274352523149"><ph name="HOTSPOT" />,
         <ph name="NETWORK" /></translation>
 <translation id="7168224885072002358">Rétablissement de la résolution précédente dans <ph name="TIMEOUT_SECONDS" /></translation>
+<translation id="7173114856073700355">Ouvrir les paramètres</translation>
 <translation id="7180611975245234373">Actualiser</translation>
 <translation id="7181691792034457084">Bonjour. Le <ph name="PRODUCT_NAME" /> est un peu différent.</translation>
 <translation id="7188494361780961876">Le menu a été déplacé vers le coin supérieur gauche de l'écran.</translation>
@@ -1855,6 +1865,7 @@ Pour éteindre l'appareil, appuyez à nouveau sur le bouton d'alimentation de l'
         <ph name="MANAGED" />
         <ph name="IME" />
         <ph name="LOCALE" /></translation>
+<translation id="7899977217122813285">Le son des notifications est désactivé jusqu'à <ph name="TIME" /> alors que le mode Sans distraction est activé</translation>
 <translation id="7901190436359881020">Basculez les fenêtres</translation>
 <translation id="7901405293566323524">Phone Hub</translation>
 <translation id="7902625623987030061">Touchez le capteur d'empreintes digitales</translation>
@@ -1959,6 +1970,7 @@ Pour éteindre l'appareil, appuyez à nouveau sur le bouton d'alimentation de l'
 <translation id="8257510091797044096">Configurer votre appareil</translation>
 <translation id="8261506727792406068">Supprimer</translation>
 <translation id="8262312463845990408">Activer/Désactiver la lecture</translation>
+<translation id="8268302343625273732">Voir tous les devoirs dans Google Classroom</translation>
 <translation id="8277261673056602147">Mettre du texte en évidence sur votre écran</translation>
 <translation id="8287009018010202411">Productivité</translation>
 <translation id="828708037801473432">Désactivé</translation>

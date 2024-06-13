@@ -179,6 +179,7 @@ Na začiatok môžete vyskúšať niektoré z týchto vecí.</translation>
 <translation id="1611993646327628135">Zapnuté</translation>
 <translation id="1620510694547887537">Kamera</translation>
 <translation id="1623768535032616219">Zbaliť Učebňu Google</translation>
+<translation id="163032029566320584"><ph name="UNAVAILABLE_DLC" /> nie je k dispozícii.</translation>
 <translation id="1632985212731562677">Ovládanie prepínačmi je možné deaktivovať v sekcii Nastavenia &gt; Dostupnosť.</translation>
 <translation id="1637505162081889933">Zariadenia: <ph name="NUM_DEVICES" /></translation>
 <translation id="1639239467298939599">Načítava sa</translation>
@@ -720,6 +721,7 @@ Pripojte svoje zariadenie k napájaniu.</translation>
 <translation id="3702846122927433391">Počet obyvateľov Nigérie</translation>
 <translation id="3705722231355495246">-</translation>
 <translation id="3706423975342040244">Zábava</translation>
+<translation id="3707093869106077605">Funkcie <ph name="UNAVAILABLE_DLC_ONE" /> a <ph name="UNAVAILABLE_DLC_TWO" /> nie sú k dispozícii.</translation>
 <translation id="3708186454126126312">Predtým pripojené zariadenia</translation>
 <translation id="3712143870407382523">Vyberte okno pre túto stranu</translation>
 <translation id="371370241367527062">Predný mikrofón</translation>
@@ -992,6 +994,7 @@ Pripojené je jedno zariadenie.</translation>
 <translation id="4733161265940833579"><ph name="BATTERY_PERCENTAGE" /> % (ľavé)</translation>
 <translation id="4734965478015604180">Na šírku</translation>
 <translation id="4735944890391795473">12. plocha</translation>
+<translation id="4736732123074402682">Skontrolujte pripojenie a skúste to znova.</translation>
 <translation id="473775607612524610">Aktualizovať</translation>
 <translation id="4740516757091333363">Chcete odstrániť uloženú plochu?</translation>
 <translation id="4746798685375253449">{0,plural, =1{Do dňa aktualizujte zariadenie na predchádzajúcu verziu}few{Do # dní aktualizujte zariadenie na predchádzajúcu verziu}many{Do # dňa aktualizujte zariadenie na predchádzajúcu verziu}other{Do # dní aktualizujte zariadenie na predchádzajúcu verziu}}</translation>
@@ -1325,6 +1328,7 @@ Nie sú pripojené žiadne zariadenia.</translation>
 <translation id="588258955323874662">Celá obrazovka</translation>
 <translation id="5887954372087850114">Okno <ph name="WINDOW_TITLE" /> bolo pridelené ploche <ph name="DESK_TITLE" /> a jeho pridelenie k všetkým ostatným plochám bolo zrušené</translation>
 <translation id="588817334757907802">Otvoriť súbor v prehliadači Chrome</translation>
+<translation id="5892014525522223653">Ste offline.</translation>
 <translation id="5895138241574237353">Reštartovať</translation>
 <translation id="589817443623831496">Bodové prehľadávanie</translation>
 <translation id="5901316534475909376">Shift+Esc</translation>
@@ -1384,6 +1388,7 @@ Nie sú pripojené žiadne zariadenia.</translation>
 <translation id="6095425951508823973">Pridať pripojenie s poskytovateľom <ph name="PROVIDER" /></translation>
 <translation id="6099678161144790572">Upravené za posledný mesiac</translation>
 <translation id="6103838137565245112">systém</translation>
+<translation id="610395411842312282">Zoskupiť dve okná vedľa seba</translation>
 <translation id="6108952804512516814">Vytvorenie pomocou umelej inteligencie</translation>
 <translation id="6114505516289286752">Súbory s balíkmi reči <ph name="LANGUAGE" /> boli stiahnuté</translation>
 <translation id="6119360623251949462"><ph name="CHARGING_STATE" />. <ph name="BATTERY_SAVER_STATE" /></translation>
@@ -1391,6 +1396,7 @@ Nie sú pripojené žiadne zariadenia.</translation>
 <translation id="6121838516699723042">Potvrďte stiahnutie súboru <ph name="FILENAME" /></translation>
 <translation id="612734058257491180">Asistent Google nie je k dispozícii v relácii hosťa.</translation>
 <translation id="6127370444807669747">Ak chcete získať prispôsobené zoznamy a ďalšiu hudbu, na ktorú ste sa zamerali, vyskúšajte YouTube Music Premium</translation>
+<translation id="6127395413317891856">Ste offline. Skontrolujte pripojenie a skúste to znova.</translation>
 <translation id="6129953537138746214">Medzera</translation>
 <translation id="6137566720514957455">Otvoriť dialógové okno na odstránenie účtu <ph name="USER_EMAIL_ADDRESS" /></translation>
 <translation id="6141205840878048728">Na čo by ste sa chceli zamerať?</translation>
@@ -1667,6 +1673,7 @@ Nová inštalácia</translation>
 <translation id="7167913274352523149"><ph name="HOTSPOT" />,
         <ph name="NETWORK" /></translation>
 <translation id="7168224885072002358">Vrátenie starého rozlíšenia prebehne o <ph name="TIMEOUT_SECONDS" /></translation>
+<translation id="7173114856073700355">Otvoriť Nastavenia</translation>
 <translation id="7180611975245234373">Obnoviť</translation>
 <translation id="7181691792034457084">Dobrý deň, zariadenie <ph name="PRODUCT_NAME" /> je trocha iné.</translation>
 <translation id="7188494361780961876">Ponuka bola presunutá do ľavého horného rohu obrazovky.</translation>
@@ -1964,6 +1971,7 @@ Ak chcete zariadenie vypnúť, znova pridržte jeho vypínač.</translation>
 <translation id="8257510091797044096">Nastavenie zariadenia</translation>
 <translation id="8261506727792406068">Odstrániť</translation>
 <translation id="8262312463845990408">Prepnúť prehrávanie</translation>
+<translation id="8268302343625273732">Zobraziť všetky zadania v Učebni Google</translation>
 <translation id="8277261673056602147">Zvýrazňovať text na obrazovke</translation>
 <translation id="8287009018010202411">Produktivita</translation>
 <translation id="828708037801473432">Vypnuté</translation>

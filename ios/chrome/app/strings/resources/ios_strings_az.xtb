@@ -531,6 +531,7 @@ Axtarış tarixçənizi silmək üçün axtarış mexanizminizin təlimatlarına
 <translation id="371398631992790800">Əlfəcinləri gizlədin</translation>
 <translation id="37207012422556617">Aktual Axtarışlar</translation>
 <translation id="3725081662140949903">Digərlərinin paroldan istifadə etməməsi üçün <ph name="APP" /> tətbiqini açın</translation>
+<translation id="372676576864368480"><ph name="LAST_DIGITS" /> ilə bitən kart nömrəsini avtomatik doldurun</translation>
 <translation id="3738428049780661523">Yaradılıb: <ph name="DATE" /></translation>
 <translation id="374357899112510277">Endirmələri gizlədin</translation>
 <translation id="3745190878148784130">"Mətn ölçüsünü dəyişin" seçimini gizlədin</translation>
@@ -850,6 +851,7 @@ Axtarış tarixçənizi silmək üçün axtarış mexanizminizin təlimatlarına
 <translation id="5345660046352249607">{COUNT,plural, =1{Bu paket izlənsin?}other{{COUNT} paket izlənsin?}}</translation>
 <translation id="5348775987281903912">"Paylaşın" düyməsi ilə bu səhifəni burada paylaşa bilərsiniz.</translation>
 <translation id="536067926684072644">Əlfəcinləri göstərin</translation>
+<translation id="537853552771686272">Maraqlandığınız mövzu və saytları idarə edin</translation>
 <translation id="5379352933722332597">{count,plural, =1{Əlfəcin "{title}" bölməsində yadda saxlandı. O, yalnız bu cihazda yadda saxlanır.}other{{count} əlfəcin "{title}" bölməsində yadda saxlandı. Onlar yalnız bu cihazda yadda saxlanır.}}</translation>
 <translation id="5388358297987318779">Şəkli Açın</translation>
 <translation id="5395707839134961196">Axtarış mexanizmi detallarını gizlədin</translation>
@@ -932,6 +934,7 @@ Handoff Ayarların Ümumi bölməsindən də aktiv edilə bilər və cihazların
 <translation id="5758631781033351321">Oxu siyahısını burada tapa bilərsiniz</translation>
 <translation id="5765456154762864099">Menyu → Ayarlar → Defolt Brauzer</translation>
 <translation id="5777888488419460501">Hesabda yadda saxlayın</translation>
+<translation id="5778292857689789362">Tab qrupu, <ph name="GROUP_TITLE" />, <ph name="TABS_NUMBER" /> tab.</translation>
 <translation id="5782227691023083829">Tərcümə edilir...</translation>
 <translation id="5791632441210678828">İzlənənlər lenti üçün sıralama düyməsi.</translation>
 <translation id="5793373065989412701">Ailə üzvləri yoxlanır…</translation>
@@ -1094,6 +1097,7 @@ Saytlar müxtəlif saytlarda baxış fəaliyyətinizi görmək üçün kukiləri
 <translation id="6476800141292307438">Səhifə <ph name="LANGUAGE" /> dilinə tərcümə edilir. Seçimlər ekranın aşağı hissəsində əlçatandır.</translation>
 <translation id="648164694371393720">Doğrulama Xətası</translation>
 <translation id="6494931198667773526">Bitir</translation>
+<translation id="6500795388871406244">Təklif edilmiş paroldan istifadə edin:</translation>
 <translation id="650279896687777322">Ətraflı məlumat...</translation>
 <translation id="6507973708545996744">Bütün cihazlarda oxu siyahısı əldə etmək üçün daxil olun.</translation>
 <translation id="6510072653668207258">Sonra xatırladın</translation>
@@ -1306,6 +1310,7 @@ Anonim rejimdə olduqda saytlar müxtəlif saytlarda baxış tarixçənizi görm
 <translation id="7583004045319035904">Anonim tabları kiliddən çıxarmaq üçün <ph name="BIOMETRIC_AUTHENITCATION_TYPE" /> istifadə edin.</translation>
 <translation id="7598439272585186139">Güvənliyi artırın</translation>
 <translation id="7600965453749440009"><ph name="LANGUAGE" /> heç vaxt tərcümə etməyin</translation>
+<translation id="7603308509262646847">Kart sahibinin adını (<ph name="NAME" />) avtomatik doldurun</translation>
 <translation id="7603852183842204213">Popuplar bloklandı (<ph name="NUMBER_OF_BLOCKED_POPUPS" />)</translation>
 <translation id="7606639338662398635">Tab qrupları</translation>
 <translation id="7607521702806708809">Parolu Silin</translation>
@@ -1338,6 +1343,7 @@ Anonim rejimdə olduqda saytlar müxtəlif saytlarda baxış tarixçənizi görm
 <translation id="7749790401023484470">Mətn seçməmisiniz.</translation>
 <translation id="7752405526771734448">Linza ilə vizual axtarış</translation>
 <translation id="7756478488453921771">Menyu → Ayarlar → Ödəniş Metodları</translation>
+<translation id="775755486779745798">Son istifadə ayını (<ph name="MONTH" />) avtomatik doldurun</translation>
 <translation id="7760127703945531263">Anonim tabların kilidlənməsi</translation>
 <translation id="7765158879357617694">Daşıyın</translation>
 <translation id="7772032839648071052">Parolu təsdiq edin</translation>
@@ -1514,6 +1520,7 @@ Saytlar müxtəlif saytlarda baxış fəaliyyətinizi görmək üçün kukilərd
 <translation id="8556590991644167667">{count,plural, =1{{count} xəbərdarlıqdan imtina etdiniz}other{{count} xəbərdarlıqdan imtina etdiniz}}</translation>
 <translation id="8560253818350321773">Əvvəlcə çox istifadə edilənləri göstərin.</translation>
 <translation id="8569721750632860947">Oxu siyahısına hansı URL-i əlavə etmək istərdiniz?</translation>
+<translation id="8577056989960190117">Son istifadə ilini (<ph name="YEAR" />) avtomatik doldurun</translation>
 <translation id="8588404856427128947">Deaktiv</translation>
 <translation id="8591976964826315682">Anonim rejimdə üçüncü tərəf kukilərini bloklayın</translation>
 <translation id="8593565399399144771">Burada yeni tab aça bilərsiniz.</translation>

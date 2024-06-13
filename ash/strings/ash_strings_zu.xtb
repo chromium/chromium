@@ -179,6 +179,7 @@ Nazi ezinye zezinto ongazama ukuziqalisa.</translation>
 <translation id="1611993646327628135">Vuliwe</translation>
 <translation id="1620510694547887537">Ikhamela</translation>
 <translation id="1623768535032616219">Goqa iGoogle Classroom</translation>
+<translation id="163032029566320584">I-<ph name="UNAVAILABLE_DLC" /> ayitholakali.</translation>
 <translation id="1632985212731562677">Ukushintsha ukufinyelela kungakhutshazwa kokuthi Izilungiselelo &gt; Ukufinyeleleka.</translation>
 <translation id="1637505162081889933"><ph name="NUM_DEVICES" /> amadivayisi</translation>
 <translation id="1639239467298939599">Iyalayisha</translation>
@@ -720,6 +721,7 @@ Xhuma idivayisi yakho emandleni.</translation>
 <translation id="3702846122927433391">Okudumile e-Nigeria</translation>
 <translation id="3705722231355495246">-</translation>
 <translation id="3706423975342040244">Okokuzijabulisa</translation>
+<translation id="3707093869106077605">I-<ph name="UNAVAILABLE_DLC_ONE" />, kanye ne-<ph name="UNAVAILABLE_DLC_TWO" /> azitholakali.</translation>
 <translation id="3708186454126126312">Kuxhunywe ngaphambilini</translation>
 <translation id="3712143870407382523">Khetha iwindi lalolu hlangothi</translation>
 <translation id="371370241367527062">Imakrofoni yangaphambili</translation>
@@ -992,6 +994,7 @@ Kuxhunywe idivayisi engu-1.</translation>
 <translation id="4733161265940833579"><ph name="BATTERY_PERCENTAGE" />% (Kwesobunxele)</translation>
 <translation id="4734965478015604180">Okuvundlile</translation>
 <translation id="4735944890391795473">Itafula 12</translation>
+<translation id="4736732123074402682">Hlola uxhumo lwakho bese uyazama futhi.</translation>
 <translation id="473775607612524610">Buyekeza</translation>
 <translation id="4740516757091333363">Sula itafula elilondoloziwe?</translation>
 <translation id="4746798685375253449">{0,plural, =1{Buyekeza idivayisi ibe uhlobo lwangaphambilini lungakapheli usuku}one{Buyekeza idivayisi ibe uhlobo lwangaphambilini zingakapheli izinsuku ezingu-#}other{Buyekeza idivayisi ibe uhlobo lwangaphambilini zingakapheli izinsuku ezingu-#}}</translation>
@@ -1325,6 +1328,7 @@ Awekho amadivayisi axhunyiwe.</translation>
 <translation id="588258955323874662">Isikrini esigcwele</translation>
 <translation id="5887954372087850114">Iwindi le-<ph name="WINDOW_TITLE" /> labelwe ku-<ph name="DESK_TITLE" /> futhi lasuswa ekwabelweni kuwo wonke amatafula</translation>
 <translation id="588817334757907802">Vula ifayela kubhrawuza ye-Chrome</translation>
+<translation id="5892014525522223653">Awuxhunyiwe ku-inthanethi.</translation>
 <translation id="5895138241574237353">Qalisa kabusha</translation>
 <translation id="589817443623831496">Iphoyinti lokuskena</translation>
 <translation id="5901316534475909376">Shift+Esc</translation>
@@ -1384,6 +1388,7 @@ Awekho amadivayisi axhunyiwe.</translation>
 <translation id="6095425951508823973">Faka uxhumano no-<ph name="PROVIDER" /></translation>
 <translation id="6099678161144790572">Kuhlelwe enyangeni edlule</translation>
 <translation id="6103838137565245112">isistimu</translation>
+<translation id="610395411842312282">Qoqa amawindi amabili abhekene</translation>
 <translation id="6108952804512516814">Sungula nge-AI</translation>
 <translation id="6114505516289286752">Amafayela wenkulumo ye-<ph name="LANGUAGE" /> alandiwe</translation>
 <translation id="6119360623251949462"><ph name="CHARGING_STATE" />. <ph name="BATTERY_SAVER_STATE" /></translation>
@@ -1391,6 +1396,7 @@ Awekho amadivayisi axhunyiwe.</translation>
 <translation id="6121838516699723042">Qinisekisa ukudawuniloda i-<ph name="FILENAME" /></translation>
 <translation id="612734058257491180">Umsizi we-Google awutholakali kuseshini yesihambeli.</translation>
 <translation id="6127370444807669747">Ukuze wenze uhlu lokudlalayo kube ngokwakho futhi uthole umculo wokugxilisa owengeziwe, zama iYouTube Music Premium</translation>
+<translation id="6127395413317891856">Awuxhunyiwe ku-inthanethi. Hlola uxhumo lwakho bese uyazama futhi.</translation>
 <translation id="6129953537138746214">Isikhala</translation>
 <translation id="6137566720514957455">Vula okuthi susa ibhokisi le-<ph name="USER_EMAIL_ADDRESS" /></translation>
 <translation id="6141205840878048728">Yini ongathanda ukugxila kuyo?</translation>
@@ -1667,6 +1673,7 @@ Ukufaka okusha</translation>
 <translation id="7167913274352523149"><ph name="HOTSPOT" />,
         <ph name="NETWORK" /></translation>
 <translation id="7168224885072002358">Ibuyela ekulungisweni okudala ngo-<ph name="TIMEOUT_SECONDS" /></translation>
+<translation id="7173114856073700355">Vula izilungiselelo</translation>
 <translation id="7180611975245234373">Qala kabusha</translation>
 <translation id="7181691792034457084">Sawubona. I-<ph name="PRODUCT_NAME" /> ithe ukuhluka kancane.</translation>
 <translation id="7188494361780961876">Imenyu iyiswe phezulu ekhoneni elingakwesobunxele sesikrini.</translation>
@@ -1964,6 +1971,7 @@ Ukuze uvale idivayisi, cindezela futhi ubambe inkinobho yamandla kudivayisi futh
 <translation id="8257510091797044096">Setha idivayisi yakho</translation>
 <translation id="8261506727792406068">Susa</translation>
 <translation id="8262312463845990408">Guqula Ukudlala</translation>
+<translation id="8268302343625273732">Bona yonke imisebenzi ezokwenziwa kuGoogle Classroom</translation>
 <translation id="8277261673056602147">Gqamisa umbhalo esikrinini sakho</translation>
 <translation id="8287009018010202411">Ukukhiqiza</translation>
 <translation id="828708037801473432">Valiwe</translation>

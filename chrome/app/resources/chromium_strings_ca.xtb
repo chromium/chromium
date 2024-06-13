@@ -16,6 +16,7 @@
 <translation id="1203500561924088507">T'agraïm la instal·lació. Has de reiniciar el navegador abans d'utilitzar <ph name="BUNDLE_NAME" />.</translation>
 <translation id="1262876892872089030">Mentre aquesta pestanya estava inactiva, s'ha alliberat memòria perquè Chromium funcioni sempre de pressa. Pots optar per excloure sempre aquest lloc web d'estar inactiu.</translation>
 <translation id="1265577313130862557">Chromium ha bloquejat aquesta baixada perquè el fitxer és perillós</translation>
+<translation id="126567311906253476">Si inicies la sessió en serveis de Google com ara Gmail o YouTube amb <ph name="USER_EMAIL" />, pots utilitzar el mateix compte per iniciar la sessió automàticament a Chromium</translation>
 <translation id="1315551408014407711">Configura el teu perfil de Chromium nou</translation>
 <translation id="1342274909142618978">Suprimeix també les dades de Chromium (<ph name="URL" />)</translation>
 <translation id="1414495520565016063">Teniu la sessió iniciada a Chromium.</translation>
@@ -40,12 +41,14 @@
 <translation id="1749104137266986751">Quan l'HTTPS no estigui disponible, Chromium utilitzarà una connexió no segura sense avisar-te</translation>
 <translation id="1774152462503052664">Permet que Chromium s'executi en segon pla</translation>
 <translation id="1779356040007214683">Perquè Chromium sigui més segur, hem desactivat algunes de les extensions que no apareixen a <ph name="IDS_EXTENSION_WEB_STORE_TITLE" /> i que és possible que s'hagin afegit sense que ho sapigueu.</translation>
+<translation id="1804128559285178512">Amb la sessió iniciada, pots utilitzar les contrasenyes i altres elements del teu Compte de Google a Chromium</translation>
 <translation id="1808667845054772817">Torna a instal·lar Chromium</translation>
 <translation id="1820835682567584003">Chromium està intentant <ph name="AUTHENTICATION_PURPOSE" /></translation>
 <translation id="18552579716432081">Per suprimir les dades de navegació només d'aquest dispositiu i conservar-les al teu Compte de Google, <ph name="BEGIN_LINK" />tanca la sessió de Chromium<ph name="END_LINK" />.</translation>
 <translation id="185970820835152459">Pots gestionar els Comptes de Google en què tens la sessió iniciada. Els Comptes de Google s'utilitzen per al navegador Chromium, Play Store, Gmail i més. Si vols afegir un compte per a algú altre, com ara un membre de la família, afegeix una persona nova al teu dispositiu <ph name="DEVICE_TYPE" />. <ph name="LINK_BEGIN" />Més informació<ph name="LINK_END" /></translation>
 <translation id="1863308913976887472">Els llocs web poden emmagatzemar informació a Chromium sobre els teus interessos. Per exemple, si visites un lloc web per comprar sabatilles per a una marató, és possible que el lloc web defineixi que t'interessa córrer maratons. Més endavant, si visites un altre lloc web per inscriure't a una cursa, aquest altre lloc web et pot mostrar un anunci de sabatilles de curses basant-se en els teus interessos.</translation>
 <translation id="1881322772814446296">Esteu a punt d'iniciar la sessió amb un compte gestionat i d'atorgar el control del vostre perfil de Chromium a l'administrador corresponent. Les dades de Chromium, com ara aplicacions, adreces d'interès, historial, contrasenyes i altres configuracions, s'enllaçaran permanentment amb <ph name="USER_NAME" />. Podreu suprimir aquestes dades mitjançant el Tauler de Comptes de Google, però no les podreu associar amb un altre compte. De manera opcional, podeu crear un perfil nou per mantenir les vostres dades de Chromium a part. <ph name="LEARN_MORE" /></translation>
+<translation id="1903204122890929795">Per utilitzar aquesta extensió com a <ph name="USER_EMAIL_ADDRESS" />, inicia la sessió a Chromium.\nTambé podràs utilitzar i desar les teves contrasenyes i altres dades del teu Compte de Google.</translation>
 <translation id="1906696617298807388">Quan escrius a la barra d'adreces o al quadre de cerca, Chromium envia el que escrius a Google Drive per obtenir suggeriments d'elements. Aquesta opció està desactivada en mode d'incògnit.</translation>
 <translation id="1911763535808217981">En desactivar aquesta opció, pots iniciar la sessió en llocs web de Google, com ara Gmail, sense iniciar la sessió a Chromium</translation>
 <translation id="1929939181775079593">Chromium no respon. Voleu tornar-lo a iniciar ara?</translation>
@@ -137,6 +140,7 @@
 <translation id="3296368748942286671">Continua executant les aplicacions en segon pla quan es tanqui Chromium</translation>
 <translation id="3313189106987092621">Chromium t'avisarà abans de carregar qualsevol lloc web amb una connexió no segura</translation>
 <translation id="3316771292331273802">Quan tanquis totes les finestres de Chromium, se't tancarà la sessió de la majoria de llocs web, tret del teu Compte de Google si tens la sessió iniciada a Chromium. Perquè els llocs web et recordin, <ph name="SETTINGS_LINK" />.</translation>
+<translation id="333055255088403283">L'extensió \"<ph name="EXTENSION_NAME" />\" vol que iniciïs la sessió a Chromium</translation>
 <translation id="3350761136195634146">Ja existeix un perfil de Chromium amb aquest compte</translation>
 <translation id="3387527074123400161">Chromium OS</translation>
 <translation id="3406848076815591792">Vols canviar al perfil de Chromium existent?</translation>
@@ -314,6 +318,7 @@
 <translation id="6268381023930128611">Voleu tancar la sessió de Chromium?</translation>
 <translation id="6281746429495226318">Personalitza el teu perfil de Chromium</translation>
 <translation id="6290827346642914212">Posa nom al teu perfil de Chromium</translation>
+<translation id="6294831894865512704">Una extensió vol que iniciïs la sessió a Chromium</translation>
 <translation id="6295779123002464101">Chromium ha bloquejat <ph name="FILE_NAME" /> perquè pot ser perillós.</translation>
 <translation id="6309712487085796862">Chromium està utilitzant la càmera.</translation>
 <translation id="6327105987658262776">No hi ha cap actualització disponible.</translation>

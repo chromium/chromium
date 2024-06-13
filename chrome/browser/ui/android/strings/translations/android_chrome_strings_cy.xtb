@@ -156,6 +156,7 @@ Am ragor o osodiadau sy'n defnyddio data i wella'ch profiad Chrome, ewch i <ph n
 <translation id="1755203724116202818">I fesur perfformiad hysbyseb, rhennir mathau cyfyngedig o ddata rhwng gwefannau, megis a wnaethoch brynu ar ôl ymweld â gwefan.</translation>
 <translation id="1757620656501361327">Diweddariad Rheolwr Cyfrineiriau Google</translation>
 <translation id="1760873718737761808">{FILE_COUNT,plural, =1{Tudalennau, 1 dudalen yn y rhestr}zero{Tudalennau, # tudalennau yn y rhestr}two{Tudalennau, # dudalen yn y rhestr}few{Tudalennau, # tudalen yn y rhestr}many{Tudalennau, # thudalen yn y rhestr}other{Tudalennau, # tudalen yn y rhestr}}</translation>
+<translation id="1771929606532798550">Anfonir gwybodaeth at Google am eich defnydd Chrome, ond nid yw'n gysylltiedig â chi\n\nOs bydd Chrome yn torri, gall manylion y toriad gynnwys rhywfaint o wybodaeth bersonol\n\nOs ydych yn cysoni'ch hanes â'ch Cyfrif Google, gall metrigau hefyd gynnwys gwybodaeth am gyfeiriadau URL rydych yn ymweld â nhw</translation>
 <translation id="1778457539567749232">Marcio ei fod heb ei ddarllen</translation>
 <translation id="1779766957982586368">Cau'r ffenestr</translation>
 <translation id="1780023393214832643">Cyfrineiriau sydd wedi'u cadw i <ph name="USERNAME" /></translation>
@@ -799,6 +800,7 @@ Mae'n bosib y bydd gan eich cyfrif Google fathau eraill o hanes pori megis chwil
 <translation id="4987271110129728827">Methu â dod o hyd i'r dudalen honno. Gwiriwch eich sillafu neu rhowch gynnig ar chwiliad gwe.</translation>
 <translation id="4988526792673242964">Tudalennau</translation>
 <translation id="4991110219272367918">Opsiwn i gymeradwyo neu beidio â chymeradwyo gwefan wedi'i chloi</translation>
+<translation id="4996095658297597226">Defnyddio'r cyfrinair a awgrymir?</translation>
 <translation id="499724277181351974">Llywio: <ph name="WEBSITE_TITLE" />: <ph name="WEBSITE_URL" /></translation>
 <translation id="5001388021414335527">Dilyn y wefan hon yma</translation>
 <translation id="5004416275253351869">Rheolaethau gweithgarwch Google</translation>
@@ -1042,6 +1044,7 @@ Er enghraifft, gall rhai gwefannau ymateb i'r cais hwn drwy ddangos hysbysebion 
 <translation id="6233974827872475843">Cadwch y cyfrineiriau ar y ddyfais hon yn eich Cyfrif Google trwy droi cysoni ymlaen</translation>
 <translation id="6247557882553405851">Rheolwr Cyfrineiriau Google</translation>
 <translation id="6251449557817521191">Gweld eich hanes Chrome yma</translation>
+<translation id="6254139308321626268">Rydych yn edrych ar ffeil PDF</translation>
 <translation id="6255794742848779505">Rydym yn newid sut mae cyfrineiriau'n cael eu cadw ar y ddyfais hon</translation>
 <translation id="6264376385120300461">Lawrlwytho beth bynnag</translation>
 <translation id="6277522088822131679">Bu gwall wrth argraffu'r dudalen. Rhowch gynnig arall arni.</translation>
@@ -1083,6 +1086,7 @@ Er enghraifft, gall rhai gwefannau ymateb i'r cais hwn drwy ddangos hysbysebion 
 <translation id="641643625718530986">Argraffu…</translation>
 <translation id="6433501201775827830">Dewiswch eich peiriant chwilio</translation>
 <translation id="6434309073475700221">Gwaredu</translation>
+<translation id="6437162790453527153">Mewngofnodwch i gael eich nodau tudalen a rhagor ar eich holl ddyfeisiau</translation>
 <translation id="6437478888915024427">Gwybodaeth am y dudalen</translation>
 <translation id="6440291723980579689">Dim ond ar ôl i chi eu hagor y mae tudalennau'n llwytho</translation>
 <translation id="6441734959916820584">Mae'r enw'n rhy hir</translation>
@@ -1437,6 +1441,7 @@ I newid y gosodiad hwn, <ph name="BEGIN_LINK" />dileu'r data Chrome yn eich cyfr
 <translation id="7986497153528221272">I weld y cyfrineiriau, gosodwch glo sgrîn ar eich dyfais yn gyntaf.</translation>
 <translation id="7995059495660416932">Byddwn yn gweld cynnwys pan fydd ar gael</translation>
 <translation id="799576009106109668">Byddwch yn pori'n gyflymach oherwydd bod cynnwys yn cael ei lwytho'n rhagweithiol yn seiliedig ar eich ymweliad tudalen we bresennol</translation>
+<translation id="8001245658307297681">Rydych yn edrych ar ffeil leol</translation>
 <translation id="8004582292198964060">Porwr</translation>
 <translation id="8015452622527143194">Dychwelyd popeth ar y dudalen i'r maint diofyn</translation>
 <translation id="8026238112629815203">Rydym wedi newid sut mae cyfrineiriau'n cael eu cadw ar y ddyfais hon</translation>

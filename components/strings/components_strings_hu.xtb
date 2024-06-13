@@ -547,6 +547,7 @@ Ezt egyéb esetben letiltják az Ön adatvédelmi beállításai. Az engedélyez
 <translation id="2003709556000175978">Jelszó visszaállítása</translation>
 <translation id="2003775180883135320">Négy lyuk felül</translation>
 <translation id="2004697686368036666">Előfordulhat, hogy bizonyos webhelyek funkciói nem működnek majd megfelelően</translation>
+<translation id="2005042463110681802">Azért látja ezt a figyelmeztetést, mert ez a webhely nem támogatja a HTTPS-t, és Ön inkognitó módban van. <ph name="BEGIN_LEARN_MORE_LINK" />További információ<ph name="END_LEARN_MORE_LINK" />.</translation>
 <translation id="2009942480257059311">Esemény létrehozása gomb. A gombot megnyomva új eseményt hozhat létre gyorsan a Google Naptár szolgáltatással.</translation>
 <translation id="201174227998721785">A a webhelyek engedélyeinek és tárolt adatainak a Chrome-beállítások közötti kezelése</translation>
 <translation id="2012276282211112603">Jelenleg nincsenek megjeleníthető témák</translation>
@@ -1480,6 +1481,7 @@ Ezt egyéb esetben letiltják az Ön adatvédelmi beállításai. Az engedélyez
 <translation id="3799805948399000906">Kért betűtípus</translation>
 <translation id="3801265110651850478">„Nincs nyomon követés” kérés küldése a böngészési forgalommal</translation>
 <translation id="380329542618494757">Név</translation>
+<translation id="3803801106042434208">Ezek a keresőmotorok népszerűek az Ön régiójában</translation>
 <translation id="3806932344025766608">A felkeresni kívánt webhelyen tartózkodó támadók rávehetik Önt szoftver telepítésére vagy olyan adatok megadására, mint a jelszava, telefonszáma vagy hitelkártyaszáma. A Chrome kifejezetten javasolja, hogy térjen vissza biztonságos webhelyre. <ph name="BEGIN_LEARN_MORE_LINK" />További információ<ph name="END_LEARN_MORE_LINK" />.</translation>
 <translation id="3807366285948165054">Kép X-eltolása</translation>
 <translation id="3807709094043295184">Klasszikus rock és régi zenék</translation>

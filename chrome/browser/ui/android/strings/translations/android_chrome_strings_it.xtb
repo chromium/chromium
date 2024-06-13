@@ -90,6 +90,9 @@
 <translation id="1390418506739274310">Potresti vedere la cronologia di altre app che aprono link in Chrome. Il tuo Account Google potrebbe avere altre forme di cronologia di navigazione all'indirizzo <ph name="BEGIN_LINK" />myactivity.google.com<ph name="END_LINK" />.</translation>
 <translation id="13931502444227376">Per continuare, <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> condividerà il tuo nome, il tuo indirizzo email e l'immagine del tuo profilo con questo sito. Vedi i <ph name="BEGIN_LINK1" />Termini di servizio<ph name="END_LINK1" /> di questo sito.</translation>
 <translation id="1397811292916898096">Cerca con <ph name="PRODUCT_NAME" /></translation>
+<translation id="1398057416966591719">Puoi <ph name="BEGIN_LINK1" />gestire quali dati di Chrome salvare<ph name="END_LINK1" /> nel tuo Account Google.
+
+Per altre impostazioni che utilizzano i dati per migliorare la tua esperienza con Chrome, vai alle impostazioni dei <ph name="BEGIN_LINK2" />servizi Google<ph name="END_LINK2" />.</translation>
 <translation id="1407069428457324124">Tema scuro</translation>
 <translation id="1407135791313364759">Apri tutte</translation>
 <translation id="1409879593029778104">Download di <ph name="FILE_NAME" /> impedito perché il file esiste già.</translation>
@@ -248,6 +251,7 @@ Solo chi conosce la tua passphrase può leggere i tuoi dati criptati. La passphr
 <translation id="2286841657746966508">Indirizzo di fatturazione</translation>
 <translation id="228704530595896923">Elenco di opzioni di condivisione.</translation>
 <translation id="2297822946037605517">Condividi questa pagina</translation>
+<translation id="22981027763501686">Sincronizza per recuperare i preferiti, la cronologia e altri contenuti salvati sugli altri tuoi dispositivi</translation>
 <translation id="230115972905494466">Nessun dispositivo compatibile trovato</translation>
 <translation id="2318045970523081853">Tocca per chiamare</translation>
 <translation id="2321086116217818302">Preparazione delle password…</translation>
@@ -851,6 +855,7 @@ Il tuo Account Google potrebbe avere altre forme di cronologia di navigazione, a
 <translation id="5292796745632149097">Invia a</translation>
 <translation id="5301876394151419436">Hai eseguito l'accesso come <ph name="EMAIL" />. Puoi interrompere la sincronizzazione in qualsiasi momento nelle Impostazioni. Google potrebbe personalizzare la Ricerca e altri servizi in base alla tua cronologia.</translation>
 <translation id="5304593522240415983">Questo campo non può essere vuoto</translation>
+<translation id="5306014156308790439">Opzione Aggiungi alla raccolta disattivata</translation>
 <translation id="5308380583665731573">Connetti</translation>
 <translation id="5316947901395241499">Il salvataggio delle password è stato disattivato dall'amministratore</translation>
 <translation id="5317780077021120954">Salva</translation>

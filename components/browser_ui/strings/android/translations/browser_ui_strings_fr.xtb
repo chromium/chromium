@@ -278,6 +278,7 @@
 <translation id="5690795753582697420">L'appareil photo est désactivé dans les paramètres Android</translation>
 <translation id="5691080386278724773"><ph name="SITE" /> peut utiliser vos informations lorsque vous parcourez</translation>
 <translation id="5700761515355162635">Cookies tiers autorisés</translation>
+<translation id="5705383358494210886"><ph name="HOST_NAME" /> <ph name="SEPARATOR1" /> <ph name="RECENCY" /></translation>
 <translation id="5706552988683188916">Cette action supprimera les cookies et les autres données de site pour <ph name="WEBSITE" /></translation>
 <translation id="5723967018671998714">Les cookies tiers sont bloqués lorsque vous utilisez le mode navigation privée</translation>
 <translation id="5740126560802162366">Les sites peuvent enregistrer des données sur votre appareil</translation>

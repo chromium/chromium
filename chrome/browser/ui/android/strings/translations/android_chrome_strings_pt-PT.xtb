@@ -156,6 +156,7 @@ Para ver mais definições que usam dados para melhorar a sua experiência do Ch
 <translation id="1755203724116202818">Para medir o desempenho de um anúncio, são partilhados tipos de dados limitados entre sites, por exemplo, se fez uma compra depois de visitar um site.</translation>
 <translation id="1757620656501361327">Atualização do Gestor de Palavras-passe da Google</translation>
 <translation id="1760873718737761808">{FILE_COUNT,plural, =1{Páginas, 1 página na lista}other{Páginas, # páginas na lista}}</translation>
+<translation id="1771929606532798550">São enviadas à Google informações sobre a sua utilização do Chrome, mas estas não são associadas a si\n\nSe o Chrome falhar, os detalhes acerca da falha podem incluir algumas informações pessoais\n\nSe sincronizar o histórico com a sua Conta Google, as métricas também podem incluir informações sobre os URLs que visita</translation>
 <translation id="1778457539567749232">Marcar como não lida</translation>
 <translation id="1779766957982586368">Fechar janela</translation>
 <translation id="1780023393214832643">Palavras-passe guardadas em <ph name="USERNAME" /></translation>
@@ -799,6 +800,7 @@ A sua Conta Google pode ter outras formas do histórico de navegação, como pes
 <translation id="4987271110129728827">Não é possível encontrar a página. Verifique a ortografia ou experimente pesquisar na Web.</translation>
 <translation id="4988526792673242964">Páginas </translation>
 <translation id="4991110219272367918">Opção para aprovar ou não aprovar um Website fechado</translation>
+<translation id="4996095658297597226">Usar a palavra-passe sugerida?</translation>
 <translation id="499724277181351974">Navegar: <ph name="WEBSITE_TITLE" />: <ph name="WEBSITE_URL" /></translation>
 <translation id="5001388021414335527">Seguir este site aqui</translation>
 <translation id="5004416275253351869">Controlos da atividade Google</translation>
@@ -913,6 +915,7 @@ A sua Conta Google pode ter outras formas do histórico de navegação, como pes
 <translation id="5596627076506792578">Mais opções</translation>
 <translation id="5599455543593328020">Modo de navegação anónima</translation>
 <translation id="5601180634394228718">Para ver mais definições que usam dados para melhorar a sua experiência do Chrome, aceda aos <ph name="BEGIN_LINK" />serviços Google<ph name="END_LINK" />.</translation>
+<translation id="5614625640221885312">Inicie sessão para ter acesso aos seus marcadores, palavras-passe e muito mais em todos os seus dispositivos</translation>
 <translation id="5620163320393916465">Não existem palavras-passe guardadas.</translation>
 <translation id="5620928963363755975">Encontre os seus ficheiros e páginas nas Transferências através do botão Mais opções.</translation>
 <translation id="562289928968387744">Gerir reações</translation>
@@ -954,6 +957,7 @@ A sua Conta Google pode ter outras formas do histórico de navegação, como pes
 <translation id="5793665092639000975">A utilizar <ph name="SPACE_USED" /> de <ph name="SPACE_AVAILABLE" />.</translation>
 <translation id="5795872532621730126">Pesquisar e procurar</translation>
 <translation id="5797949256525811424">Tópico bloqueado</translation>
+<translation id="580893287573699959">Faça a gestão dos tópicos e sites que lhe interessam</translation>
 <translation id="5809361687334836369">{HOURS,plural, =1{Há # hora}other{Há # horas}}</translation>
 <translation id="5810288467834065221">Copyright <ph name="YEAR" /> Google LLC. Todos os direitos reservados.</translation>
 <translation id="5814749351757353073">Mantenha-se a par dos seus sites favoritos</translation>
@@ -1042,6 +1046,7 @@ Por exemplo, alguns Sites podem responder a este pedido ao mostrar-lhe anúncios
 <translation id="6233974827872475843">Para guardar as palavras-passe neste dispositivo na sua Conta Google, ative a sincronização</translation>
 <translation id="6247557882553405851">Gestor de Palavras-passe da Google</translation>
 <translation id="6251449557817521191">Veja o Histórico do Chrome aqui</translation>
+<translation id="6254139308321626268">Está a ver um ficheiro PDF</translation>
 <translation id="6255794742848779505">Estamos a alterar a forma como as palavras-passe são guardadas neste dispositivo</translation>
 <translation id="6264376385120300461">Transferir mesmo assim</translation>
 <translation id="6277522088822131679">Ocorreu um problema ao imprimir a página. Tente novamente.</translation>
@@ -1083,6 +1088,7 @@ Por exemplo, alguns Sites podem responder a este pedido ao mostrar-lhe anúncios
 <translation id="641643625718530986">Imprimir…</translation>
 <translation id="6433501201775827830">Escolha o seu motor de pesquisa</translation>
 <translation id="6434309073475700221">Rejeitar</translation>
+<translation id="6437162790453527153">Inicie sessão para ter acesso aos seus marcadores e muito mais em todos os seus dispositivos</translation>
 <translation id="6437478888915024427">Informações da página</translation>
 <translation id="6440291723980579689">As páginas só são carregadas depois de as abrir</translation>
 <translation id="6441734959916820584">O nome é demasiado longo</translation>
@@ -1437,6 +1443,7 @@ Para alterar esta definição, <ph name="BEGIN_LINK" />elimine os dados do Chrom
 <translation id="7986497153528221272">Para ver as palavras-passe, defina primeiro um bloqueio de ecrã no dispositivo.</translation>
 <translation id="7995059495660416932">É apresentado conteúdo quando este ficar disponível</translation>
 <translation id="799576009106109668">Irá navegar mais depressa porque os conteúdos são carregados proativamente com base na página Web que está a visitar</translation>
+<translation id="8001245658307297681">Está a ver um ficheiro local</translation>
 <translation id="8004582292198964060">Navegador</translation>
 <translation id="8015452622527143194">Repor tamanho predefinido dos itens na página</translation>
 <translation id="8026238112629815203">Alterámos a forma como as palavras-passe são guardadas neste dispositivo</translation>

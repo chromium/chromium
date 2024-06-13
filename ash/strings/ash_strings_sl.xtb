@@ -80,6 +80,7 @@ Tu je nekaj stvari, ki jih lahko poskusite za začetek.</translation>
 <translation id="1247519845643687288">Nedavne aplikacije</translation>
 <translation id="1252999807265626933">Polnjenje iz: <ph name="POWER_SOURCE" /></translation>
 <translation id="1255033239764210633">Kakšno je vreme?</translation>
+<translation id="1256734167083229794">Pritisnili ste bližnjično tipko za celozaslonsko lupo. Za povečavo uporabite kombinacijo tipk <ph name="ZOOM_IN_ACCELERATOR" />, za pomanjšavo pa <ph name="ZOOM_OUT_ACCELERATOR" />. Za pomikanje po povečanem pogledu uporabite kombinacijo tipk ctrl + alt + puščica.</translation>
 <translation id="1269405891096105529">Dodatna oprema v načinu za goste ni podprta.</translation>
 <translation id="1270290102613614947">Zaslonska tipkovnica onemogočena</translation>
 <translation id="1272079795634619415">Ustavi</translation>
@@ -264,6 +265,7 @@ Tu je nekaj stvari, ki jih lahko poskusite za začetek.</translation>
 <translation id="1969011864782743497"><ph name="DEVICE_NAME" /> (USB)</translation>
 <translation id="1971815855639997522">Namizje in okna so bili odstranjeni. Če želite razveljaviti dejanje, pritisnite tipki Control + Z.</translation>
 <translation id="1972950159383891558">Pozdravljeni, <ph name="USERNAME" /></translation>
+<translation id="1977686871076551563">Način inverzije barv je omogočen. Če ga želite izklopiti, znova pritisnite kombinacijo tipk <ph name="ACCELERATOR" />.</translation>
 <translation id="1978498689038657292">Vnos besedila</translation>
 <translation id="1980808257969311265">Pridružite se temu: <ph name="EVENT_SUMMARY" /></translation>
 <translation id="1982717156487272186">Prikaz prejšnjega tedna</translation>
@@ -574,6 +576,7 @@ Povezanih je toliko naprav: <ph name="DEVICECOUNT" />.</translation>
 <translation id="3226991577105957773">in še <ph name="COUNT" /></translation>
 <translation id="3227137524299004712">Mikrofon</translation>
 <translation id="3233611303007751344">Varčevanje z energijo baterije je izklopljeno</translation>
+<translation id="3238409143297336341">Nastavitev starševskega nadzora za aplikacije</translation>
 <translation id="324366796737464147">Izločanje hrupa</translation>
 <translation id="3249513730522716925">Okno <ph name="WINDOW_TITLE" /> je bilo premaknjeno iz namizja <ph name="ACTIVE_DESK" /> v namizje <ph name="TARGET_DESK" /></translation>
 <translation id="3253743281242075461">Vrsta šolskega dela: <ph name="GLANCEABLES_CLASSROOM_LIST_NAME" /></translation>
@@ -1185,6 +1188,7 @@ Nobena naprava ni povezana.</translation>
 <translation id="5377367976106153749">Želite vklopiti dostop do kamere?</translation>
 <translation id="5379115545237091094">Preveč poskusov</translation>
 <translation id="5391307769715781764">Želite zamenjati shranjeno namizje?</translation>
+<translation id="5392327145184648521">Izračunavanje % napolnjenosti baterije …</translation>
 <translation id="5393156353051693207">Če želite preurediti aplikacije, se kjer koli dotaknite in pridržite.</translation>
 <translation id="5395308026110844773"><ph name="DRAGGED_APP_NAME" /> na <ph name="IN_PLACE_APP" />, spustite, da ustvarite mapo.</translation>
 <translation id="5397578532367286026">Upravitelj (<ph name="MANAGER_EMAIL" />) lahko na chrome.com pregleduje uporabo in zgodovino tega uporabnika.</translation>
@@ -1239,6 +1243,7 @@ Nobena naprava ni povezana.</translation>
 <translation id="5577281275355252094">Če želite uporabljati telefonsko središče, preverite, ali je vklopljen Bluetooth.</translation>
 <translation id="5578188167649348993">pomnilnik</translation>
 <translation id="5580000943347215299">Knjižnica</translation>
+<translation id="5586388332127302891">Zasidrana lupa je omogočena. Če jo želite izklopiti, znova pritisnite kombinacijo tipk <ph name="ACCELERATOR" />.</translation>
 <translation id="5587506661873751671">Prenašanje <ph name="DOWNLOAD_PERCENT" /> %</translation>
 <translation id="558849140439112033">Povlecite, če želite izbrati območje za posnetek</translation>
 <translation id="5590609058453685222">Obvestilo o izklopljenem mikrofonu je vklopljeno. Prejeli boste obvestilo, če govorite med izklopljenim zvokom.</translation>
@@ -1402,6 +1407,7 @@ Nobena naprava ni povezana.</translation>
 <translation id="6141205840878048728">Na kaj se želite osredotočiti?</translation>
 <translation id="6141988275892716286">Potrdi prenos</translation>
 <translation id="6143578372829139382">Objavi v YouTubu</translation>
+<translation id="6147182561428020853">Zdaj lahko blokirate aplikacije, nameščene v tej napravi <ph name="DEVICE_TYPE" /></translation>
 <translation id="6154006699632741460">Dodatna oprema ni podprta</translation>
 <translation id="6156960295318603523">Jezikovne nastavitve</translation>
 <translation id="615957422585914272">Pokaži zaslonsko tipkovnico</translation>
@@ -1449,6 +1455,7 @@ Nobena naprava ni povezana.</translation>
 <translation id="6319503618073410818">Prikaži podrobnosti v brskalniku</translation>
 <translation id="6324916366299863871">Urejanje bližnjice</translation>
 <translation id="6330012934079202188">Prikaz oken z vseh namizij, pritisnite tipko s puščico gor, če želite prikazati okna s trenutnega namizja</translation>
+<translation id="6337159624125741244">Celozaslonska lupa je vklopljena</translation>
 <translation id="6338485349199627913"><ph name="DISPLAY_NAME" /> je upravljana seja, ki jo upravlja domena <ph name="MANAGER" />.</translation>
 <translation id="6344138931392227467">Naprava <ph name="DEVICE_NAME" /> je povezana</translation>
 <translation id="6348449481487610270"><ph name="MODIFIER_ONE" /><ph name="MODIFIER_TWO" /><ph name="KEY_ONE" />, nato <ph name="MODIFIER_THREE" /><ph name="KEY_TWO" /> ali <ph name="KEY_THREE" /></translation>
@@ -1516,6 +1523,7 @@ Nova namestitev</translation>
 <translation id="6574587113394758819">Obvestilo aplikacije <ph name="APP_TITLE" /> je skrito zaradi vklopljene zaščite pred ogledovanjem.</translation>
 <translation id="6574622320167699133">Odklenjen s telefonom. Dotaknite se ali kliknite za dostop.</translation>
 <translation id="6578407462441924264">Neimenovano</translation>
+<translation id="6582034443359256692">Izračunavanje ravni napolnjenosti baterije.</translation>
 <translation id="6585808820553845416">Seja se konča čez <ph name="SESSION_TIME_REMAINING" />.</translation>
 <translation id="6593850935013518327"><ph name="PRIMARY_TEXT" />, <ph name="SECONDARY_TEXT" /></translation>
 <translation id="6597278316891651699">Fotoaparat je pripet v spodnji levi kot. To je v navzkrižju s sistemskim okoljem.</translation>
@@ -1577,6 +1585,7 @@ Nova namestitev</translation>
 <translation id="6790428901817661496">Predvajanje</translation>
 <translation id="679368458793552943">Povečava, ko je lupa vklopljena</translation>
 <translation id="6794287755901682422">Ta element ima: <ph name="GLANCEABLES_TASK_ITEM_METADATA" />.</translation>
+<translation id="6797745268063125932">Pusti vklopljeno</translation>
 <translation id="6801878137098616817">Nedavno urejeno</translation>
 <translation id="6802687695197837794">To omogoča dostop za aplikaciji <ph name="APP1_NAME" /> in <ph name="APP2_NAME" /> ter vse aplikacije in spletna mesta z dovoljenjem za kamero in mikrofon.</translation>
 <translation id="6803622936009808957">Zaslonov ni bilo mogoče zrcaliti, ker ni bilo najdene nobene podprte ločljivosti. Uporabljeno je razširjeno namizje.</translation>
@@ -1673,6 +1682,7 @@ Nova namestitev</translation>
 <translation id="7167913274352523149"><ph name="HOTSPOT" />,
         <ph name="NETWORK" /></translation>
 <translation id="7168224885072002358">Ponastavitev na prejšnjo ločljivost čez <ph name="TIMEOUT_SECONDS" /></translation>
+<translation id="7173114856073700355">Odpri nastavitve</translation>
 <translation id="7180611975245234373">Osveži</translation>
 <translation id="7181691792034457084">Pozdravljeni. Naprava <ph name="PRODUCT_NAME" /> je nekoliko drugačna.</translation>
 <translation id="7188494361780961876">Meni je bil premaknjen v zgornji levi kot zaslona.</translation>
@@ -1888,6 +1898,7 @@ Nova namestitev</translation>
 <translation id="7947798320695032612"><ph name="APP_NAME" /> želi uporabljati napravo <ph name="DEVICE_NAME" />.</translation>
 <translation id="7951630946012935453">Zatemnitev tipkovnice</translation>
 <translation id="7953994493035617347">Želite potrditi novo ločljivost?</translation>
+<translation id="795958884516058160">Celozaslonska lupa je omogočena. Če jo želite izklopiti, znova pritisnite kombinacijo tipk <ph name="ACCELERATOR" />.</translation>
 <translation id="7963689218131240420">Način »Ne moti« je izklopljen.</translation>
 <translation id="7963992254934562106">Iz: <ph name="PHONE_NAME" /></translation>
 <translation id="7968693143708939792">Izberite mapo …</translation>
@@ -2141,6 +2152,7 @@ Nova namestitev</translation>
 <translation id="894774083269346314"><ph name="PROFILE_NAME" /> <ph name="EMAIL" /> Potrditveno polje ni označeno.</translation>
 <translation id="8949925099261528566">Vzpostavljena povezava, brez interneta</translation>
 <translation id="8951539504029375108">Z vašim Chromebookom so združljive samo odobrene naprave Thunderbolt.</translation>
+<translation id="8959380109429710384">Pritisnili ste bližnjično tipko za celozaslonsko lupo. Za pomikanje po povečanem pogledu uporabite kombinacijo tipk ctrl + alt + puščica.</translation>
 <translation id="8964525410783593407">1 h</translation>
 <translation id="8973885907461690937">Preklop izbire na ikono menija</translation>
 <translation id="8980862970816311842">Premik ikone aplikacije iz mape na mreži z aplikacijami ali vanjo</translation>

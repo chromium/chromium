@@ -1561,6 +1561,7 @@ Du kan hantera inställningarna för det här kontot genom att installera Family
 <translation id="2116619964159595185">Åtkomst till enheter via Bluetooth brukar kunna behövas för funktioner som att konfigurera eller synkronisera en energisnål beacon-sändare, hälsomätare eller smart glödlampa</translation>
 <translation id="2117655453726830283">Nästa bild</translation>
 <translation id="211803431539496924">Vill du bekräfta utökade säkerhetsuppdateringar?</translation>
+<translation id="2118594521750010466">Åtgärda nu</translation>
 <translation id="2119461801241504254">Säker webbsökning är aktiverat och skyddar dig från skadliga webbplatser och nedladdningar</translation>
 <translation id="2120297377148151361">Aktivitet och interaktion</translation>
 <translation id="2120639962942052471"><ph name="PERMISSION" /> har blockerats</translation>
@@ -3696,6 +3697,7 @@ Du kan hantera inställningarna för det här kontot genom att installera Family
 <translation id="3699920817649120894">Vill du inaktivera synkronisering och anpassning?</translation>
 <translation id="3700888195348409686">Presenteras (<ph name="PAGE_ORIGIN" />)</translation>
 <translation id="3700993174159313525">Tillåt inte att webbplatser registrerar kamerans position</translation>
+<translation id="3701167022068948696">Åtgärda nu</translation>
 <translation id="3701515417135397388">Varna dig om ett lösenord har utsatts för dataintrång</translation>
 <translation id="3702797829026927713"><ph name="BEGIN_PARAGRAPH1" />Ange namnet på återförsäljaren och det butiksnummer som demoenheten konfigureras för*. <ph name="END_PARAGRAPH1" />
     <ph name="BEGIN_PARAGRAPH2" />Om du inte känner till butiksnumret kan du ange 0000 för att fortsätta installera demoläget. <ph name="END_PARAGRAPH2" />
@@ -4234,6 +4236,7 @@ Detta kan omfatta information om installerad mjukvara, filer, webbläsaren och e
 <translation id="4066207411788646768">Kontrollera anslutningen om du vill se vilka skrivare som är tillgängliga i nätverket</translation>
 <translation id="4067839975993712852">Markera den aktuella fliken som läst</translation>
 <translation id="4068776064906523561">Sparade fingeravtryck</translation>
+<translation id="4070132839822635162">Logga inte in</translation>
 <translation id="407173827865827707">Vid klick</translation>
 <translation id="4072805772816336153">Försök igen senare</translation>
 <translation id="4074164314564067597">tangentbord</translation>
@@ -7359,6 +7362,7 @@ Behörigheter som du redan har gett webbplatser och appar kan gälla för det h�
 <translation id="6469702164109431067">Lösenord och nycklar</translation>
 <translation id="6470823736074966819">Stäng av ljudet för aviseringar</translation>
 <translation id="6472893788822429178">Visa hemknappen</translation>
+<translation id="6473315466413288899">Välj ett alternativ</translation>
 <translation id="6474498546677193336">Det gick inte att sluta dela eftersom ett program använder den här mappen. Mappen delas inte längre när Linux stängs av nästa gång.</translation>
 <translation id="6474884162850599008">Koppla från Google Drive-konto</translation>
 <translation id="6475294023568239942">Frigör utrymme på hårddisken eller ändra storlek på Linux-disken i Inställningar</translation>
@@ -10824,6 +10828,7 @@ Behörigheter som du redan har gett webbplatser och appar kan gälla för det h�
 <translation id="9031811691986152304">försöka igen</translation>
 <translation id="9032004780329249150">Använd dina lösenord på iOS-enheter</translation>
 <translation id="9032097289595078011">Inaktivera Snabb parkoppling</translation>
+<translation id="9032513103438497286">Blockera appar som har installerats på denna <ph name="DEVICE_TYPE" />. Öppna inställningarna för Google Play om du vill begränsa nedladdning av appar eller innehåll.</translation>
 <translation id="9033765790910064284">Fortsätt ändå</translation>
 <translation id="9033857511263905942">K&amp;listra in</translation>
 <translation id="9034408118624208974">Har du inte använt en Chromebook tidigare? Aktivera synkronisering så att dina inställningar säkerhetskopieras.</translation>

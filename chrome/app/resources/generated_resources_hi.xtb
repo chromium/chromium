@@ -1562,6 +1562,7 @@
 <translation id="2116619964159595185">आम तौर पर साइटें, कम ऊर्जा वाले बीकन, हेल्थ या फ़िटनेस ट्रैकर या स्मार्ट लाइट बल्ब को सेट अप या सिंक करने जैसी सुविधाओं के लिए ब्लूटूथ डिवाइसों से कनेक्ट करती हैं</translation>
 <translation id="2117655453726830283">अगली स्लाइड</translation>
 <translation id="211803431539496924">ज़्यादा समय तक सुरक्षा से जुड़े अपडेट पाने की सेटिंग को अनुमति देनी है?</translation>
+<translation id="2118594521750010466">अभी ठीक करें</translation>
 <translation id="2119461801241504254">सुरक्षित ब्राउज़िंग की सुविधा चालू है. यह आपको नुकसान पहुंचाने वाली साइटों और डाउनलोड से बचाती है</translation>
 <translation id="2120297377148151361">गतिविधि और इंटरैक्शन</translation>
 <translation id="2120639962942052471"><ph name="PERMISSION" /> को ब्लॉक किया गया है</translation>
@@ -3697,6 +3698,7 @@
 <translation id="3699920817649120894">सिंक करना और मनमुताबिक बनाना बंद करें?</translation>
 <translation id="3700888195348409686">पेश है (<ph name="PAGE_ORIGIN" />)</translation>
 <translation id="3700993174159313525">साइटों को आपके कैमरे की स्थिति ट्रैक करने की अनुमति न दें</translation>
+<translation id="3701167022068948696">अभी ठीक करें</translation>
 <translation id="3701515417135397388">अगर डेटा के गलत इस्तेमाल की वजह से, आपके पासवर्ड को हैक किया गया है, तो आपको चेतावनी दी जाए</translation>
 <translation id="3702797829026927713"><ph name="BEGIN_PARAGRAPH1" />उस खुदरा दुकानदार का नाम और स्टोर नंबर डालें जिसके लिए इस डेमो डिवाइस को कॉन्फ़िगर किया जा रहा है*. <ph name="END_PARAGRAPH1" />
     <ph name="BEGIN_PARAGRAPH2" />अगर आपको स्टोर नंबर नहीं पता है, तो डेमो मोड इंस्टॉल करने की प्रोसेस जारी रखने के लिए "0000" डालें. <ph name="END_PARAGRAPH2" />
@@ -5467,6 +5469,7 @@
 <translation id="5032430150487044192">क्यूआर कोड नहीं बनाया जा सकता</translation>
 <translation id="5033137252639132982">मोशन सेंसर इस्तेमाल करने की अनुमति नहीं है</translation>
 <translation id="5033266061063942743">जियोमेट्री (रेखागणित) के आकार</translation>
+<translation id="503441068567788948">Google Password Manager के लिए नया पिन बनाएं</translation>
 <translation id="5035846135112863536"><ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> से ज़्यादा जानकारी पाने के लिए, नीचे मौजूद "ज़्यादा जानकारी" चुनें.</translation>
 <translation id="5037676449506322593">सभी को चुनें</translation>
 <translation id="5038818366306248416">पिछली बार, आपने <ph name="ORIGIN" /> पर किसी भी एक्सटेंशन को अनुमति न देने का विकल्प चुना था</translation>
@@ -5494,6 +5497,7 @@
 <translation id="5057110919553308744">जब आप एक्सटेंशन को क्लिक करते हैं</translation>
 <translation id="5057127674016624293">स्कैन करने में उम्मीद से ज़्यादा समय लग रहा है</translation>
 <translation id="5057480703570202545">डाउनलोड का इतिहास</translation>
+<translation id="5058771692413403640"><ph name="SITE" /> को आपकी पहचान की पुष्टि करनी है</translation>
 <translation id="5059241099014281248">साइन-इन करने पर पाबंदी लगाएं</translation>
 <translation id="5059429103770496207">डिसप्ले का स्टाइल</translation>
 <translation id="5059526285558225588">चुनें कि क्या शेयर करना है</translation>
@@ -5932,6 +5936,7 @@
 <translation id="5390112241331447203">फ़ीडबैक रिपोर्ट में भेजी गई system_logs.txt फ़ाइलें शामिल करें.</translation>
 <translation id="5390677308841849479">गहरा लाल और नारंगी</translation>
 <translation id="5392192690789334093">सूचनाएं भेजने की अनुमति दी गई</translation>
+<translation id="5393330235977997602">पिन के विकल्प</translation>
 <translation id="5393761864111565424">{COUNT,plural, =1{लिंक}one{# लिंक}other{# लिंक}}</translation>
 <translation id="5394529681046491727">Wi-Fi Direct</translation>
 <translation id="5395498824851198390">डिफ़ॉल्ट फ़ॉन्ट</translation>
@@ -6666,6 +6671,7 @@
 <translation id="5935158534896975820">प्रमाणपत्र के लिए अनुरोध किया जा रहा है (सर्वर का इंतज़ार है)</translation>
 <translation id="5935656526031444304">सुरक्षित ब्राउज़िंग प्रबंधित करें</translation>
 <translation id="5936065461722368675">पूरे पेज का अनुवाद करें</translation>
+<translation id="5937347877659196749">अब रिकवरी पिन से अपनी सभी पासकी सुरक्षित करें</translation>
 <translation id="5937977334791924341"><ph name="APP" /> का लोगो</translation>
 <translation id="5938002010494270685">सुरक्षा बेहतर बनाने की सुविधा मौजूद है</translation>
 <translation id="5939518447894949180">रीसेट करें</translation>
@@ -8114,6 +8120,7 @@
 <translation id="7033616203784997570">नाम ज़्यादा से ज़्यादा 62 वर्णों का होना चाहिए</translation>
 <translation id="7034692021407794547">ऐसा एडमिन जिसके पास बिलिंग मैनेज करने का खास अधिकार है, उसे सबसे पहले Admin console के 'Google Meet हार्डवेयर' सेक्शन में जाकर, Google Meet हार्डवेयर की सेवा की शर्तों को स्वीकार करना होगा.</translation>
 <translation id="7036706669646341689">Linux के लिए कम से कम <ph name="DISK_SIZE" /> खाली जगह होनी चाहिए. खाली जगह बढ़ाने के लिए अपने डिवाइस से फ़ाइलें मिटाएं.</translation>
+<translation id="7037157058268992880">पिन याद नहीं है</translation>
 <translation id="7037509989619051237">वह लेख जिसकी झलक देखी जानी है</translation>
 <translation id="7038632520572155338">ऐक्सेस करने का तरीका बदलें</translation>
 <translation id="7038710352229712897"><ph name="USER_NAME" /> के लिए एक और Google खाता जोड़ें</translation>
@@ -9525,6 +9532,7 @@
 <translation id="8084429490152575036">मोबाइल की एपीएन सेटिंग</translation>
 <translation id="8084510406207562688">सभी टैब पहले जैसे करें</translation>
 <translation id="8084628902026812045">यह साइट सुरक्षित कनेक्शन का इस्तेमाल नहीं कर रही है और हो सकता है कि फ़ाइल के साथ छेड़छाड़ की गई हो</translation>
+<translation id="8085701268329068646">Google Password Manager के लिए अपना पिन डालें</translation>
 <translation id="8086015605808120405"><ph name="PRINTER_NAME" /> कॉन्फ़िगर किया जा रहा है ...</translation>
 <translation id="8086121155774250556">यह टैब आपकी स्क्रीन शेयर कर रहा है</translation>
 <translation id="8086610718778464681">Linux के ऐप्लिकेशन और फ़ाइलों का बैक अप नहीं लिया जा सकता</translation>
@@ -11048,6 +11056,7 @@
 <translation id="920045321358709304"><ph name="SEARCH_ENGINE" /> खोजें</translation>
 <translation id="9201117361710210082">पहले देखा गया</translation>
 <translation id="9201220332032049474">स्क्रीन लॉक विकल्प</translation>
+<translation id="9201762611758697018">रिकवरी पिन से सेव की गई पासकी को किसी भी डिवाइस पर ऐक्सेस किया जा सकता है</translation>
 <translation id="9201842707396338580">कोई गड़बड़ी हुई. कृपया डिवाइस के मालिक या एडमिन से संपर्क करें. गड़बड़ी कोड: <ph name="ERROR_CODE" />.</translation>
 <translation id="9203296457393252944">लाल-हरे रंग की पहचान से जुड़ी समस्या (ड्यूटरनॉमली) के लिए फ़िल्टर</translation>
 <translation id="9203398526606335860">&amp;प्रोफ़ाइलिंग सक्षम</translation>

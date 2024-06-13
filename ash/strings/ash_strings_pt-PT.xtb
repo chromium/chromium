@@ -80,6 +80,7 @@ Eis alguns exemplos do que pode experimentar para começar.</translation>
 <translation id="1247519845643687288">Apps recentes</translation>
 <translation id="1252999807265626933">A carregar a partir de <ph name="POWER_SOURCE" /></translation>
 <translation id="1255033239764210633">Como está o tempo?</translation>
+<translation id="1256734167083229794">Premiu o atalho de teclado da lupa de ecrã inteiro. Use <ph name="ZOOM_IN_ACCELERATOR" /> para aumentar o zoom e <ph name="ZOOM_OUT_ACCELERATOR" /> para o diminuir. Use Ctrl + Alt + setas para deslocar o ecrã na vista ampliada.</translation>
 <translation id="1269405891096105529">Periférico não suportado no Modo convidado</translation>
 <translation id="1270290102613614947">Teclado no ecrã desativado</translation>
 <translation id="1272079795634619415">Parar</translation>
@@ -264,6 +265,7 @@ Eis alguns exemplos do que pode experimentar para começar.</translation>
 <translation id="1969011864782743497"><ph name="DEVICE_NAME" /> (USB)</translation>
 <translation id="1971815855639997522">O espaço de trabalho e as janelas foram removidos. Prima Control + Z para anular a ação.</translation>
 <translation id="1972950159383891558">Olá, <ph name="USERNAME" /></translation>
+<translation id="1977686871076551563">Modo de inversão de cores ativado. Prima <ph name="ACCELERATOR" /> novamente para desativar a opção.</translation>
 <translation id="1978498689038657292">Entrada de texto</translation>
 <translation id="1980808257969311265">Aderir a <ph name="EVENT_SUMMARY" /></translation>
 <translation id="1982717156487272186">Mostrar semana anterior</translation>
@@ -1185,6 +1187,7 @@ Nenhum dispositivo ligado.</translation>
 <translation id="5377367976106153749">Ativar o acesso à câmara?</translation>
 <translation id="5379115545237091094">Demasiadas tentativas</translation>
 <translation id="5391307769715781764">Substituir o espaço de trabalho guardado?</translation>
+<translation id="5392327145184648521">A calcular a percentagem da bateria…</translation>
 <translation id="5393156353051693207">Toque sem soltar em qualquer local para reordenar as suas apps</translation>
 <translation id="5395308026110844773"><ph name="DRAGGED_APP_NAME" /> sobre <ph name="IN_PLACE_APP" />, solte para criar uma pasta.</translation>
 <translation id="5397578532367286026">A utilização e o histórico deste utilizador podem ser consultados pelo gestor (<ph name="MANAGER_EMAIL" />) em chrome.com.</translation>
@@ -1239,6 +1242,7 @@ Nenhum dispositivo ligado.</translation>
 <translation id="5577281275355252094">Verifique se o Bluetooth está ativado no seu telemóvel para utilizar o Phone Hub.</translation>
 <translation id="5578188167649348993">memória</translation>
 <translation id="5580000943347215299">Biblioteca</translation>
+<translation id="5586388332127302891">Lupa ancorada ativada. Prima <ph name="ACCELERATOR" /> novamente para desativar a opção.</translation>
 <translation id="5587506661873751671">A transferir – <ph name="DOWNLOAD_PERCENT" />%</translation>
 <translation id="558849140439112033">Arraste para selecionar uma área a capturar.</translation>
 <translation id="5590609058453685222">A chamada de atenção sobre a desativação do som está ativada. Vai receber uma notificação se falar enquanto estiver com o som desativado.</translation>
@@ -1449,6 +1453,7 @@ Nenhum dispositivo ligado.</translation>
 <translation id="6319503618073410818">Ver detalhes no navegador</translation>
 <translation id="6324916366299863871">Editar atalho</translation>
 <translation id="6330012934079202188">Ao mostrar as janelas de todos os espaços de trabalho, prima a tecla da seta para cima para mostrar janelas do espaço de trabalho atual</translation>
+<translation id="6337159624125741244">A lupa de ecrã inteiro está ativada</translation>
 <translation id="6338485349199627913"><ph name="DISPLAY_NAME" /> é uma sessão gerida por <ph name="MANAGER" /></translation>
 <translation id="6344138931392227467">Dispositivo <ph name="DEVICE_NAME" /> ligado</translation>
 <translation id="6348449481487610270"><ph name="MODIFIER_ONE" /><ph name="MODIFIER_TWO" /><ph name="KEY_ONE" /> e, em seguida, <ph name="MODIFIER_THREE" /><ph name="KEY_TWO" /> ou <ph name="KEY_THREE" /></translation>
@@ -1516,6 +1521,7 @@ Nova instalação</translation>
 <translation id="6574587113394758819">A notificação da app <ph name="APP_TITLE" /> está oculta porque a proteção da visualização está ativada</translation>
 <translation id="6574622320167699133">Desbloqueado pelo telemóvel. Toque ou clique para entrar.</translation>
 <translation id="6578407462441924264">Sem nome</translation>
+<translation id="6582034443359256692">A calcular o nível de carga da bateria.</translation>
 <translation id="6585808820553845416">A sessão termina em <ph name="SESSION_TIME_REMAINING" />.</translation>
 <translation id="6593850935013518327"><ph name="PRIMARY_TEXT" />, <ph name="SECONDARY_TEXT" /></translation>
 <translation id="6597278316891651699">Câmara ajustada ao canto inferior esquerdo. Há um conflito com a superfície do sistema.</translation>
@@ -1577,6 +1583,7 @@ Nova instalação</translation>
 <translation id="6790428901817661496">Reproduzir</translation>
 <translation id="679368458793552943">Aumentar o zoom quando a lupa estiver ativada</translation>
 <translation id="6794287755901682422">Este item tem: <ph name="GLANCEABLES_TASK_ITEM_METADATA" />.</translation>
+<translation id="6797745268063125932">Manter ativada</translation>
 <translation id="6801878137098616817">Editado recentemente</translation>
 <translation id="6802687695197837794">Isto permite o acesso para a app <ph name="APP1_NAME" />, <ph name="APP2_NAME" /> e para todas as apps e Websites com as autorizações da câmara e do microfone</translation>
 <translation id="6803622936009808957">Não foi possível espelhar os ecrãs, porque não foram encontradas resoluções suportadas. Em vez disso, entrou no ambiente de trabalho expandido.</translation>
@@ -1673,6 +1680,7 @@ Nova instalação</translation>
 <translation id="7167913274352523149"><ph name="HOTSPOT" />,
         <ph name="NETWORK" /></translation>
 <translation id="7168224885072002358">A reverter para a resolução antiga dentro de <ph name="TIMEOUT_SECONDS" /></translation>
+<translation id="7173114856073700355">Abrir Definições</translation>
 <translation id="7180611975245234373">Atualizar</translation>
 <translation id="7181691792034457084">Olá. O <ph name="PRODUCT_NAME" /> está um pouco diferente.</translation>
 <translation id="7188494361780961876">O menu foi movido para o canto superior esquerdo do ecrã.</translation>
@@ -1888,6 +1896,7 @@ Para encerrar o dispositivo, prima sem soltar o botão ligar/desligar novamente 
 <translation id="7947798320695032612">A app <ph name="APP_NAME" /> quer usar o(a) <ph name="DEVICE_NAME" /></translation>
 <translation id="7951630946012935453">Escurecer o teclado</translation>
 <translation id="7953994493035617347">Confirmar a nova resolução?</translation>
+<translation id="795958884516058160">Lupa de ecrã inteiro ativada. Prima <ph name="ACCELERATOR" /> novamente para desativar a opção.</translation>
 <translation id="7963689218131240420">O modo Não incomodar está desativado.</translation>
 <translation id="7963992254934562106">De <ph name="PHONE_NAME" /></translation>
 <translation id="7968693143708939792">Selecionar pasta…</translation>
@@ -2141,6 +2150,7 @@ Para encerrar o dispositivo, prima sem soltar o botão ligar/desligar novamente 
 <translation id="894774083269346314"><ph name="PROFILE_NAME" /> <ph name="EMAIL" /> Caixa de verificação não selecionada.</translation>
 <translation id="8949925099261528566">Ligação estabelecida, sem Internet</translation>
 <translation id="8951539504029375108">Apenas os dispositivos Thunderbolt aprovados são compatíveis com o seu Chromebook</translation>
+<translation id="8959380109429710384">Premiu o atalho de teclado da lupa de ecrã inteiro. Use Ctrl + Alt + setas para deslocar o ecrã na vista ampliada.</translation>
 <translation id="8964525410783593407">1 h</translation>
 <translation id="8973885907461690937">Focar o ícone do menu</translation>
 <translation id="8980862970816311842">Mover o ícone de uma app para dentro/fora de uma pasta na grelha de apps</translation>

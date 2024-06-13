@@ -28,6 +28,7 @@
 <translation id="1407223320754252908">El Traductor de Google està integrat a Chrome perquè puguis traduir contingut sempre que vulguis</translation>
 <translation id="1425903838053942728">{COUNT,plural, =0{Chrome s'ha acabat d'actualitzar. Pots utilitzar-ne la versió més recent tan bon punt reiniciïs Chrome. Després, es tornaran a obrir les pestanyes actuals.}=1{Chrome s'ha acabat d'actualitzar. Pots utilitzar-ne la versió més recent tan bon punt reiniciïs Chrome. Després, es tornaran a obrir les pestanyes actuals. La finestra d'incògnit no es tornarà a obrir.}other{Chrome s'ha acabat d'actualitzar. Pots utilitzar-ne la versió més recent tan bon punt reiniciïs Chrome. Després, es tornaran a obrir les pestanyes actuals. Les # finestres d'incògnit no es tornaran a obrir.}}</translation>
 <translation id="1434626383986940139">Aplicacions de Chrome Canary</translation>
+<translation id="1438479496118074429">L'extensió \"<ph name="EXTENSION_NAME" />\" vol que iniciïs la sessió a Chrome</translation>
 <translation id="146866447420868597">Vols iniciar la sessió a Chrome?</translation>
 <translation id="1492280395845991349">Reinicia per finalitzar l'actualització de Chrome</translation>
 <translation id="1497802159252041924">Error d'instal·lació: <ph name="INSTALL_ERROR" /></translation>
@@ -122,6 +123,7 @@
 <translation id="2765403129283291972">Per visitar aquest lloc web, Chrome necessita permís per accedir al micròfon</translation>
 <translation id="2770231113462710648">Canvia el navegador predeterminat a:</translation>
 <translation id="2775140325783767197">Chrome no pot comprovar les teves contrasenyes. Comprova la connexió a Internet.</translation>
+<translation id="2797864378188255696">Si inicies la sessió en serveis de Google com ara Gmail o YouTube amb <ph name="USER_EMAIL" />, pots utilitzar el mateix compte per iniciar la sessió automàticament a Chrome</translation>
 <translation id="2799223571221894425">Reinicia</translation>
 <translation id="2825024317344269723">Lloc web perillós. Chrome ha suprimit les notificacions.</translation>
 <translation id="2846251086934905009">Error d'instal·lació: l'instal·lador no ha completat el procés. La instal·lació s'ha anul·lat.</translation>
@@ -294,6 +296,7 @@
 <translation id="5334309298019785904">Chrome OS no ha pogut sincronitzar les teves dades perquè la sincronització no està disponible per al teu domini.</translation>
 <translation id="5334487786912937552">Chrome necessita permís d'accés a l'emmagatzematge per poder baixar fitxers</translation>
 <translation id="5337648990166757586">Opcional: ajuda a millorar les funcions i el rendiment de Chrome OS enviant automàticament dades de diagnòstic i d'ús a Google.</translation>
+<translation id="5345497718959596593">Amb la sessió iniciada, pots utilitzar les contrasenyes i altres elements del teu Compte de Google a Chrome</translation>
 <translation id="5357889879764279201">Obtén ajuda amb ChromeOS Flex</translation>
 <translation id="5368118228313795342">Codi addicional: <ph name="EXTRA_CODE" />.</translation>
 <translation id="5386244825306882791">També controla la pàgina que es mostra quan inicieu Chrome o quan feu una cerca des de l'omnibox.</translation>
@@ -459,6 +462,7 @@
 <translation id="7802622118583152311">Chrome t'ofereix la tecnologia més recent per navegar millor</translation>
 <translation id="7808348361785373670">Suprimeix de Chrome...</translation>
 <translation id="7825851276765848807">La instal·lació ha fallat a causa d'un error no especificat. Torneu a baixar Google Chrome.</translation>
+<translation id="7828063580843052643">Per utilitzar aquesta extensió com a <ph name="USER_EMAIL_ADDRESS" />, inicia la sessió a Chrome.\nTambé podràs utilitzar i desar les teves contrasenyes i altres dades del teu Compte de Google.</translation>
 <translation id="7836610565365456468">Transforma el teu navegador amb temes animats inspirats en artistes, la natura i més</translation>
 <translation id="7845233973568007926">T'agraïm la instal·lació. Has de reiniciar l'equip abans d'utilitzar <ph name="BUNDLE_NAME" />.</translation>
 <translation id="7852254990718225089">La IA a Chrome ajuda a fer que el web sigui més ràpid, segur i accessible</translation>
@@ -478,6 +482,7 @@
 <translation id="8009904340233602924">Fes servir Chrome sense cap compte</translation>
 <translation id="8013993649590906847">Si una imatge no té una descripció útil, Chrome provarà d'oferir-te'n una. Per crear les descripcions, les imatges s'envien a Google.</translation>
 <translation id="8019103195866286235">El desenvolupador ha anul·lat la publicació d'aquesta extensió, cosa que podria fer-la poc segura. Suprimeix-la de Chrome perquè ja no pugui veure ni canviar les teves dades als llocs web que visitis, inclosa la teva informació personal.</translation>
+<translation id="8040768861829554732">Una extensió vol que iniciïs la sessió a Chrome</translation>
 <translation id="80471789339884597">T'agraïm la instal·lació. Has de reiniciar tots els navegadors abans d'utilitzar <ph name="BUNDLE_NAME" />.</translation>
 <translation id="8064015041956107954">Pots obrir les adreces d'interès, el mode de lectura i més des del menú de Chrome de la part superior dreta</translation>
 <translation id="8064015586118426197">ChromeOS Flex</translation>

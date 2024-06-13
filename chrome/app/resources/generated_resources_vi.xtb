@@ -1563,6 +1563,7 @@ Bạn có thể quản lý các tùy chọn cài đặt của tài khoản này 
 <translation id="2116619964159595185">Các trang web thường kết nối với thiết bị Bluetooth cho những tính năng như thiết lập hoặc đồng bộ hóa beacon năng lượng thấp, trình theo dõi sức khỏe/hoạt động tập thể dục hoặc bóng đèn thông minh</translation>
 <translation id="2117655453726830283">Trang trình bày tiếp theo</translation>
 <translation id="211803431539496924">Xác nhận bật tính năng cập nhật bảo mật mở rộng?</translation>
+<translation id="2118594521750010466">Khắc phục ngay</translation>
 <translation id="2119461801241504254">Tính năng Duyệt web an toàn đang bật. Tính năng này sẽ bảo vệ bạn khỏi những tệp đã tải xuống và trang web gây hại</translation>
 <translation id="2120297377148151361">Hoạt động và tương tác</translation>
 <translation id="2120639962942052471">Đã chặn <ph name="PERMISSION" /></translation>
@@ -3702,6 +3703,7 @@ Bạn có thể quản lý các tùy chọn cài đặt của tài khoản này 
 <translation id="3699920817649120894">Bạn có muốn tắt tính năng đồng bộ hóa và cá nhân hóa không?</translation>
 <translation id="3700888195348409686">Đang hiển thị (<ph name="PAGE_ORIGIN" />)</translation>
 <translation id="3700993174159313525">Không cho phép trang web theo dõi thông tin vị trí của máy ảnh</translation>
+<translation id="3701167022068948696">Khắc phục ngay</translation>
 <translation id="3701515417135397388">Cảnh báo bạn nếu mật khẩu bị lộ trong một sự cố rò rỉ dữ liệu</translation>
 <translation id="3702797829026927713"><ph name="BEGIN_PARAGRAPH1" />Nhập tên nhà bán lẻ và số hiệu cửa hàng sẽ sử dụng thiết bị minh hoạ mà bạn đang định cấu hình*. <ph name="END_PARAGRAPH1" />
     <ph name="BEGIN_PARAGRAPH2" />Nếu không biết số hiệu cửa hàng, bạn có thể nhập "0000" để tiếp tục cài đặt Chế độ minh hoạ. <ph name="END_PARAGRAPH2" />

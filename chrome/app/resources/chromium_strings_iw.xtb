@@ -16,6 +16,7 @@
 <translation id="1203500561924088507">תודה שהתקנת. עליך להפעיל מחדש את הדפדפן לפני השימוש ב-<ph name="BUNDLE_NAME" />.</translation>
 <translation id="1262876892872089030">‏בזמן שהכרטיסייה הזו לא הייתה פעילה, התפנה זיכרון כדי ש-Chromium ימשיך לפעול במהירות. ניתן לבחור להחריג תמיד את האתר הזה כדי שיישאר במצב פעיל.</translation>
 <translation id="1265577313130862557">‏Chromium חסם את ההורדה הזאת כי הקובץ מסוכן</translation>
+<translation id="126567311906253476">‏כשנכנסים לשירותי Google כמו Gmail או YouTube עם <ph name="USER_EMAIL" />, אפשר להיכנס אוטומטית ל-Chromium עם אותו חשבון</translation>
 <translation id="1315551408014407711">‏הגדרת הפרופיל החדש שלך ב-Chromium</translation>
 <translation id="1342274909142618978">‏אני רוצה למחוק את הנתונים גם מ-Chromium (<ph name="URL" />)</translation>
 <translation id="1414495520565016063">‏נכנסת ל-Chromium!</translation>
@@ -40,6 +41,7 @@
 <translation id="1749104137266986751">‏כש-HTTPS לא יהיה זמין, Chromium ישתמש בחיבור לא מאובטח בלי להציג אזהרה</translation>
 <translation id="1774152462503052664">‏התרה ל-Chromium לפעול ברקע</translation>
 <translation id="1779356040007214683">‏כדי לשפר את האבטחה של Chromium, השבתנו חלק מהתוספים שלא רשומים ב<ph name="IDS_EXTENSION_WEB_STORE_TITLE" /> וייתכן שנוספו ללא ידיעתך.</translation>
+<translation id="1804128559285178512">‏כשמחוברים לחשבון, אפשר להשתמש בסיסמאות ועוד מחשבון Google ב-Chromium</translation>
 <translation id="1808667845054772817">‏התקנת Chromium מחדש</translation>
 <translation id="1820835682567584003">‏Chromium מנסה <ph name="AUTHENTICATION_PURPOSE" /></translation>
 <translation id="18552579716432081">‏כדי למחוק את נתוני הגלישה מהמכשיר הזה בלבד ועדיין לשמור אותם בחשבון שלך ב-Google, <ph name="BEGIN_LINK" />עליך לצאת מהחשבון ב-Chromium<ph name="END_LINK" />.</translation>

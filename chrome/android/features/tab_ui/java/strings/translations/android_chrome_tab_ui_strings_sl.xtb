@@ -11,6 +11,7 @@
 <translation id="1273910660700874265">Možnosti skupine zavihkov <ph name="TITLE_OF_GROUP" /></translation>
 <translation id="1322824555808364080">Pošiljanje povabil osebam</translation>
 <translation id="1419023007528516122">S tem boste skupino trajno izbrisali iz naprave</translation>
+<translation id="1486715732399361704">Vse skupine zavihkov so prikazane tukaj</translation>
 <translation id="149054111719651807">{NUM_MINS,plural, =1{Ustvarjeno pred <ph name="NUM_MINS_ONE" /> minuto}one{Ustvarjeno pred <ph name="NUM_MINS_MANY" /> minuto}two{Ustvarjeno pred <ph name="NUM_MINS_MANY" /> minutama}few{Ustvarjeno pred <ph name="NUM_MINS_MANY" /> minutami}other{Ustvarjeno pred <ph name="NUM_MINS_MANY" /> minutami}}</translation>
 <translation id="1499635324672558517">Želite zapreti vse anonimne zavihke?</translation>
 <translation id="1501480321619201731">Izbriši skupino</translation>

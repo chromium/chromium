@@ -28,6 +28,7 @@
 <translation id="1407223320754252908">Google Oversæt er indbygget i Chrome, så du kan oversætte, når du har brug for det</translation>
 <translation id="1425903838053942728">{COUNT,plural, =0{Chrome er blevet opdateret. Du kan bruge den nyeste version, så snart du har genstartet Chrome. Når du har gjort det, åbnes dine nuværende faner igen.}=1{Chrome er blevet opdateret. Du kan bruge den nyeste version, så snart du har genstartet Chrome. Når du har gjort det, åbnes dine nuværende faner igen. Dit inkognitovindue åbnes ikke igen.}one{Chrome er blevet opdateret. Du kan bruge den nyeste version, så snart du har genstartet Chrome. Når du har gjort det, åbnes dine nuværende faner igen. # inkognitovindue åbnes ikke igen.}other{Chrome er blevet opdateret. Du kan bruge den nyeste version, så snart du har genstartet Chrome. Når du har gjort det, åbnes dine nuværende faner igen. Dine # inkognitovinduer åbnes ikke igen.}}</translation>
 <translation id="1434626383986940139">Chrome Canary-apps</translation>
+<translation id="1438479496118074429">Udvidelsen \"<ph name="EXTENSION_NAME" />\" vil have dig til at logge ind i Chrome</translation>
 <translation id="146866447420868597">Vil du logge ind i Chrome?</translation>
 <translation id="1492280395845991349">Genstart for at gennemføre Chrome-opdateringen</translation>
 <translation id="1497802159252041924">Installationsfejl: <ph name="INSTALL_ERROR" /></translation>
@@ -122,6 +123,7 @@
 <translation id="2765403129283291972">Chrome skal have tilladelse til at bruge din mikrofon på dette website</translation>
 <translation id="2770231113462710648">Skift standardbrowser til:</translation>
 <translation id="2775140325783767197">Chrome kan ikke tjekke dine adgangskoder. Prøv at tjekke din internetforbindelse.</translation>
+<translation id="2797864378188255696">Når du logger ind i Google-tjenester som f.eks. Gmail eller YouTube med <ph name="USER_EMAIL" />, kan du automatisk logge ind i Chrome med den samme konto</translation>
 <translation id="2799223571221894425">Genstart</translation>
 <translation id="2825024317344269723">Farligt website. Chrome har fjernet notifikationer.</translation>
 <translation id="2846251086934905009">Installationsfejl: Installationen blev ikke gennemført. Installationen er blevet annulleret.</translation>
@@ -294,6 +296,7 @@
 <translation id="5334309298019785904">ChromeOS kunne ikke synkronisere dine data, fordi synkronisering ikke er tilgængelig for dit domæne.</translation>
 <translation id="5334487786912937552">Chrome skal have adgangstilladelse til lagerplads for at downloade filer</translation>
 <translation id="5337648990166757586">Valgfrit: Vær med til at forbedre funktioner og ydeevne i ChromeOS ved automatisk at sende diagnostik og brugsdata til Google.</translation>
+<translation id="5345497718959596593">Mens du er logget ind, kan du bruge dine adgangskoder m.m. fra din Google-konto i Chrome</translation>
 <translation id="5357889879764279201">Få hjælp til ChromeOS Flex</translation>
 <translation id="5368118228313795342">Ekstra kode: <ph name="EXTRA_CODE" />.</translation>
 <translation id="5386244825306882791">Den styrer også, hvilken side der vises, når du åbner Chrome eller søger via omnifeltet.</translation>
@@ -459,6 +462,7 @@ De tilladelser, du har givet til websites og apps, gælder muligvis for denne ko
 <translation id="7802622118583152311">Chrome giver dig den nyeste teknologi, så du får en optimal browseroplevelse</translation>
 <translation id="7808348361785373670">Fjern fra Chrome...</translation>
 <translation id="7825851276765848807">Installationen mislykkedes på grund af en uspecificeret fejl. Download Google Chrome igen.</translation>
+<translation id="7828063580843052643">Hvis du vil bruge denne udvidelse som <ph name="USER_EMAIL_ADDRESS" />, skal du logge ind i Chrome.\nDu kan også bruge og gemme dine adgangskoder m.m. fra din Google-konto.</translation>
 <translation id="7836610565365456468">Transformér din browser med flotte temaer, der er inspireret af kunstnere, naturen m.m.</translation>
 <translation id="7845233973568007926">Tak for installationen. Du skal genstarte computeren, før du bruger <ph name="BUNDLE_NAME" />.</translation>
 <translation id="7852254990718225089">AI i Chrome hjælper med at gøre nettet hurtigere og mere sikkert og brugervenligt</translation>
@@ -478,6 +482,7 @@ De tilladelser, du har givet til websites og apps, gælder muligvis for denne ko
 <translation id="8009904340233602924">Brug Chrome uden en konto</translation>
 <translation id="8013993649590906847">Hvis et billede ikke har en brugbar beskrivelse, forsøger Chrome at angive en for dig. Billederne sendes til Google, så der kan oprettes beskrivelser.</translation>
 <translation id="8019103195866286235">Udgivelsen af denne udvidelse blev fjernet af dens udvikler og er muligvis ikke sikker. Fjern den fra Chrome, så den ikke længere kan se og ændre dine data på de websites, du besøger, herunder dine personlige oplysninger.</translation>
+<translation id="8040768861829554732">En udvidelse vil have dig til at logge ind i Chrome</translation>
 <translation id="80471789339884597">Tak for installationen. Du skal genstarte alle dine browsere, før du bruger <ph name="BUNDLE_NAME" />.</translation>
 <translation id="8064015041956107954">Du kan åbne bogmærker, læsetilstand m.m. via Chrome-menuen øverst til højre</translation>
 <translation id="8064015586118426197">ChromeOS Flex</translation>

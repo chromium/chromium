@@ -80,6 +80,7 @@ Berikut ialah beberapa perkara yang boleh anda cuba untuk bermula.</translation>
 <translation id="1247519845643687288">Apl terbaharu</translation>
 <translation id="1252999807265626933">Mengecas daripada <ph name="POWER_SOURCE" /></translation>
 <translation id="1255033239764210633">Bagaimanakah keadaan cuaca?</translation>
+<translation id="1256734167083229794">Anda menekan pintasan papan kekunci untuk mendapatkan penggadang skrin penuh. Gunakan <ph name="ZOOM_IN_ACCELERATOR" /> untuk zum masuk dan <ph name="ZOOM_OUT_ACCELERATOR" /> untuk zum keluar. Gunakan ctrl+alt+anak panah untuk bergerak pada sekeliling paparan yang dizum masuk.</translation>
 <translation id="1269405891096105529">Peranti persisian tidak disokong dalam mod Tetamu</translation>
 <translation id="1270290102613614947">Papan kekunci pada skrin dilumpuhkan</translation>
 <translation id="1272079795634619415">Berhenti</translation>
@@ -264,6 +265,7 @@ Berikut ialah beberapa perkara yang boleh anda cuba untuk bermula.</translation>
 <translation id="1969011864782743497"><ph name="DEVICE_NAME" /> (USB)</translation>
 <translation id="1971815855639997522">Meja dan tetingkap telah dialih keluar. Tekan Control + Z untuk membuat asal tindakan.</translation>
 <translation id="1972950159383891558">Hai, <ph name="USERNAME" /></translation>
+<translation id="1977686871076551563">Mod Penyongsangan Warna didayakan. Tekan <ph name="ACCELERATOR" /> sekali lagi untuk mematikan togol.</translation>
 <translation id="1978498689038657292">Input teks</translation>
 <translation id="1980808257969311265">Sertai <ph name="EVENT_SUMMARY" /></translation>
 <translation id="1982717156487272186">Tunjukkan minggu sebelumnya</translation>
@@ -1185,6 +1187,7 @@ Tiada peranti disambungkan.</translation>
 <translation id="5377367976106153749">Hidupkan akses kamera?</translation>
 <translation id="5379115545237091094">Terlalu banyak percubaan</translation>
 <translation id="5391307769715781764">Gantikan meja yang disimpan?</translation>
+<translation id="5392327145184648521">Mengira % bateri...</translation>
 <translation id="5393156353051693207">Sentuh &amp; tahan di mana-mana untuk menyusun semula apl anda</translation>
 <translation id="5395308026110844773"><ph name="DRAGGED_APP_NAME" /> ke atas <ph name="IN_PLACE_APP" />, lepaskan untuk membuat folder.</translation>
 <translation id="5397578532367286026">Penggunaan dan sejarah pengguna ini boleh disemak oleh pengurus (<ph name="MANAGER_EMAIL" />) di chrome.com.</translation>
@@ -1239,6 +1242,7 @@ Tiada peranti disambungkan.</translation>
 <translation id="5577281275355252094">Pastikan Bluetooth didayakan pada telefon anda untuk menggunakan Hab Telefon</translation>
 <translation id="5578188167649348993">memori</translation>
 <translation id="5580000943347215299">Pustaka</translation>
+<translation id="5586388332127302891">Penggadang Didok didayakan. Tekan <ph name="ACCELERATOR" /> sekali lagi untuk mematikan togol.</translation>
 <translation id="5587506661873751671">Memuat turun <ph name="DOWNLOAD_PERCENT" />%</translation>
 <translation id="558849140439112033">Seret untuk memilih kawasan yang hendak ditangkap</translation>
 <translation id="5590609058453685222">Sigung redam dihidupkan. Anda akan diberitahu jika anda bercakap semasa diredam.</translation>
@@ -1449,6 +1453,7 @@ Tiada peranti disambungkan.</translation>
 <translation id="6319503618073410818">Lihat butiran dalam penyemak imbas</translation>
 <translation id="6324916366299863871">Edit pintasan</translation>
 <translation id="6330012934079202188">Memaparkan tetingkap daripada semua meja, tekan kekunci Anak panah ke atas untuk memaparkan tetingkap daripada meja semasa</translation>
+<translation id="6337159624125741244">Penggadang skrin penuh dihidupkan</translation>
 <translation id="6338485349199627913"><ph name="DISPLAY_NAME" /> ialah sesi terurus yang diurus oleh <ph name="MANAGER" /></translation>
 <translation id="6344138931392227467"><ph name="DEVICE_NAME" /> disambungkan</translation>
 <translation id="6348449481487610270"><ph name="MODIFIER_ONE" /><ph name="MODIFIER_TWO" /><ph name="KEY_ONE" /> kemudian <ph name="MODIFIER_THREE" /><ph name="KEY_TWO" /> atau <ph name="KEY_THREE" /></translation>
@@ -1516,6 +1521,7 @@ Pemasangan baharu</translation>
 <translation id="6574587113394758819">Pemberitahuan <ph name="APP_TITLE" /> disembunyikan kerana perlindungan paparan dihidupkan</translation>
 <translation id="6574622320167699133">Dibuka kunci oleh telefon anda. Ketik atau klik untuk masuk.</translation>
 <translation id="6578407462441924264">Tidak bernama</translation>
+<translation id="6582034443359256692">Mengira paras pengecasan bateri.</translation>
 <translation id="6585808820553845416">Sesi berakhir dalam <ph name="SESSION_TIME_REMAINING" />.</translation>
 <translation id="6593850935013518327"><ph name="PRIMARY_TEXT" />, <ph name="SECONDARY_TEXT" /></translation>
 <translation id="6597278316891651699">Kamera diautojajar ke penjuru kiri sebelah bawah. Bercanggah dengan permukaan sistem.</translation>
@@ -1577,6 +1583,7 @@ Pemasangan baharu</translation>
 <translation id="6790428901817661496">Mainkan</translation>
 <translation id="679368458793552943">Zum masuk apabila penggadang dihidupkan</translation>
 <translation id="6794287755901682422">Item ini mengandungi: <ph name="GLANCEABLES_TASK_ITEM_METADATA" />.</translation>
+<translation id="6797745268063125932">Biarkan hidup</translation>
 <translation id="6801878137098616817">Diedit baru-baru ini</translation>
 <translation id="6802687695197837794">Tindakan ini akan membenarkan akses kepada <ph name="APP1_NAME" />, <ph name="APP2_NAME" /> dan semua apl serta laman web dengan kebenaran kamera dan mikrofon</translation>
 <translation id="6803622936009808957">Tidak dapat membalikkan paparan memandangkan tiada peleraian disokong ditemui. Sebaliknya, memasuki mod desktop yang dilanjutkan.</translation>
@@ -1673,6 +1680,7 @@ Pemasangan baharu</translation>
 <translation id="7167913274352523149"><ph name="HOTSPOT" />,
         <ph name="NETWORK" /></translation>
 <translation id="7168224885072002358">Kembali kepada peleraian lama dalam <ph name="TIMEOUT_SECONDS" /></translation>
+<translation id="7173114856073700355">Buka Tetapan</translation>
 <translation id="7180611975245234373">Muat semula</translation>
 <translation id="7181691792034457084">Hai. <ph name="PRODUCT_NAME" /> agak berbeza.</translation>
 <translation id="7188494361780961876">Menu dialihkan ke sudut atas sebelah kiri skrin.</translation>
@@ -1888,6 +1896,7 @@ Untuk mematikan peranti, tekan dan tahan butang kuasa pada peranti sekali lagi.<
 <translation id="7947798320695032612"><ph name="APP_NAME" /> mahu menggunakan <ph name="DEVICE_NAME" /> anda</translation>
 <translation id="7951630946012935453">Malapkan papan kekunci</translation>
 <translation id="7953994493035617347">Sahkan peleraian baharu?</translation>
+<translation id="795958884516058160">Penggadang Skrin Penuh didayakan. Tekan <ph name="ACCELERATOR" /> sekali lagi untuk mematikan togol.</translation>
 <translation id="7963689218131240420">Jangan Ganggu dimatikan.</translation>
 <translation id="7963992254934562106">Daripada <ph name="PHONE_NAME" /></translation>
 <translation id="7968693143708939792">Pilih folder...</translation>
@@ -2141,6 +2150,7 @@ Untuk mematikan peranti, tekan dan tahan butang kuasa pada peranti sekali lagi.<
 <translation id="894774083269346314"><ph name="PROFILE_NAME" /> <ph name="EMAIL" /> Kotak pilihan tidak ditandai.</translation>
 <translation id="8949925099261528566">Disambungkan, tiada Internet</translation>
 <translation id="8951539504029375108">Hanya peranti Thunderbolt yang diluluskan serasi dengan Chromebook anda</translation>
+<translation id="8959380109429710384">Anda menekan pintasan papan kekunci untuk mendapatkan penggadang skrin penuh. Gunakan ctrl + alt + anak panah untuk bergerak pada sekeliling paparan yang dizum masuk.</translation>
 <translation id="8964525410783593407">1 j</translation>
 <translation id="8973885907461690937">Letakkan fokus pada ikon menu</translation>
 <translation id="8980862970816311842">Alihkan ikon apl masuk/keluar daripada folder dalam grid apl</translation>

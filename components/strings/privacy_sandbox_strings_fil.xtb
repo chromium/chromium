@@ -1,6 +1,7 @@
 <?xml version="1.0" ?>
 <!DOCTYPE translationbundle>
 <translationbundle lang="fil">
+<translation id="2252052615723281030">Kapag naka-sign in ka sa Chrome, nakakatulong ang setting na ito na panatilihing pribado ang IP address mo. Kung pinaghihinalaan ng Chrome na posibleng tina-track ka ng isang site, puwedeng ipadala ang ilan sa trapiko mo sa pamamagitan ng mga server ng privacy.</translation>
 <translation id="33479675708419823">Kapag naka-sign in ka sa Chrome, nakakatulong ang setting na ito na panatilihing pribado ang IP address mo. Kung pinaghihinalaan ng Chrome na posibleng tina-track ka ng isang site, puwedeng ipadala ang ilan sa trapiko mo sa pamamagitan ng mga server ng privacy. Matuto pa tungkol sa kung <ph name="LINK_BEGIN" />paano gumagana ang proteksyon sa IP<ph name="LINK_END" /></translation>
 <translation id="3529311220178827364">Matuto pa tungkol sa pag-hide ng IP address mo</translation>
 <translation id="4301151630239508244">Isa lang ang mga paksa ng ad sa maraming bagay na puwedeng gamitin ng site para mag-personalize ng mga ad. Kahit na walang paksa ng ad, puwede pa ring magpakita ng mga ad sa iyo ang mga site pero posibleng hindi gaanong naka-personalize ang mga ito para sa iyo. Matuto pa tungkol sa <ph name="BEGIN_LINK_1" />pamamahala ng iyong privacy sa ad<ph name="END_LINK_1" />.</translation>

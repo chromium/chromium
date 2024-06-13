@@ -156,7 +156,7 @@ Za više postavki koje koriste podatke radi poboljšanja iskustva u Chromeu idit
 <translation id="1755203724116202818">Radi mjerenja performansi oglasa se ograničene vrste podataka dijele između web lokacija, npr. jeste li izvršili kupovinu nakon što ste posjetili web lokaciju.</translation>
 <translation id="1757620656501361327">Ažuriranje Google upravitelja lozinki</translation>
 <translation id="1760873718737761808">{FILE_COUNT,plural, =1{Stranice, 1 stranica na listi}one{Stranice, # stranica na listi}few{Stranice, # stranice na listi}other{Stranice, # stranica na listi}}</translation>
-<translation id="1771929606532798550">Googleu se šalju podaci o vašoj upotrebi Chromea, no ti podaci nisu povezani s vama.\n\nAko se Chrome sruši, pojedinosti o rušenju mogu uključivati neke osobne podatke.\n\nAko sinkronizirate povijest s Google računom, mjerni podaci mogu uključivati i informacije o URL-ovima koje posjećujete.</translation>
+<translation id="1771929606532798550">Informacije o vašem korištenju Chromea se šalju Googleu, ali se ne povezuju s vama\n\nAko dođe do pada Chromea, detalji o padu mogu uključivati neke lične informacije\n\nAko sinhronizirate historiju s Google računom, pokazatelji mogu uključivati informacije o URL-ovima koje posjećujete</translation>
 <translation id="1778457539567749232">Označi kao nepročitano</translation>
 <translation id="1779766957982586368">Zatvori prozor</translation>
 <translation id="1780023393214832643">Lozinke sačuvane na računu <ph name="USERNAME" /></translation>
@@ -800,7 +800,7 @@ Vaš Google račun može imati druge oblike historije pregledanja kao što su pr
 <translation id="4987271110129728827">Nije moguće pronaći tu stranicu. Provjerite pravopis ili pokušajte pretražiti internet.</translation>
 <translation id="4988526792673242964">Stranice</translation>
 <translation id="4991110219272367918">Opcija za odobravanje ili neodobravanje web lokacije je zatvorena</translation>
-<translation id="4996095658297597226">Želite li upotrijebiti predloženu zaporku?</translation>
+<translation id="4996095658297597226">Koristiti predloženu lozinku?</translation>
 <translation id="499724277181351974">Navigacija: <ph name="WEBSITE_TITLE" />: <ph name="WEBSITE_URL" /></translation>
 <translation id="5001388021414335527">Pratite web lokaciju ovdje</translation>
 <translation id="5004416275253351869">Kontrole aktivnosti na Googleu</translation>
@@ -915,6 +915,7 @@ Vaš Google račun može imati druge oblike historije pregledanja kao što su pr
 <translation id="5596627076506792578">Više opcija</translation>
 <translation id="5599455543593328020">Anonimni način rada</translation>
 <translation id="5601180634394228718">Za više postavki koje koriste podatke radi poboljšanja iskustva u Chromeu idite na <ph name="BEGIN_LINK" />Googleove usluge<ph name="END_LINK" />.</translation>
+<translation id="5614625640221885312">Prijavite se kako biste imali pristup svojim oznakama, zaporkama i ostalom na svim svojim uređajima</translation>
 <translation id="5620163320393916465">Nije sačuvana nijedna lozinka</translation>
 <translation id="5620928963363755975">Pronađite fajlove i stranice u meniju Preuzimanja koristeći dugme Više opcija</translation>
 <translation id="562289928968387744">Upravljajte reakcijama</translation>
@@ -956,6 +957,7 @@ Vaš Google račun može imati druge oblike historije pregledanja kao što su pr
 <translation id="5793665092639000975">Koristi se <ph name="SPACE_USED" /> od <ph name="SPACE_AVAILABLE" /></translation>
 <translation id="5795872532621730126">Pretraživanje i pregledanje</translation>
 <translation id="5797949256525811424">Tema je blokirana</translation>
+<translation id="580893287573699959">Upravljajte temama i web-lokacijama koja vas zanimaju</translation>
 <translation id="5809361687334836369">{HOURS,plural, =1{Prije # sat}one{Prije # sat}few{Prije # sata}other{Prije # sati}}</translation>
 <translation id="5810288467834065221">Autorska prava <ph name="YEAR" />. Google LLC. Sva prava zadržana.</translation>
 <translation id="5814749351757353073">Nastavite pratiti omiljene web lokacije</translation>
@@ -1044,7 +1046,7 @@ Naprimjer, neke web lokacije mogu reagirati na ovaj zahtjev prikazivanjem oglasa
 <translation id="6233974827872475843">Sačuvajte lozinke na ovom uređaju na Google račun uključivanjem sinhronizacije</translation>
 <translation id="6247557882553405851">Google upravitelju lozinki</translation>
 <translation id="6251449557817521191">Ovdje pregledajte historiju Chromea</translation>
-<translation id="6254139308321626268">Pregledavate PDF datoteku</translation>
+<translation id="6254139308321626268">Pregledate PDF fajl</translation>
 <translation id="6255794742848779505">Mijenjamo način na koji se lozinke pohranjuju na uređaju</translation>
 <translation id="6264376385120300461">Ipak preuzmi</translation>
 <translation id="6277522088822131679">Došlo je do problema sa štampanjem stranice. Pokušajte ponovo.</translation>
@@ -1086,7 +1088,7 @@ Naprimjer, neke web lokacije mogu reagirati na ovaj zahtjev prikazivanjem oglasa
 <translation id="641643625718530986">Štampaj…</translation>
 <translation id="6433501201775827830">Odaberite pretraživač</translation>
 <translation id="6434309073475700221">Odbaci</translation>
-<translation id="6437162790453527153">Prijavite se kako biste imali pristup svojim oznakama i ostalom na svim svojim uređajima</translation>
+<translation id="6437162790453527153">Prijavite se da pristupite svojim oznakama i drugom na svim uređajima</translation>
 <translation id="6437478888915024427">Informacije o stranici</translation>
 <translation id="6440291723980579689">Stranice se učitavaju samo nakon što ih otvorite</translation>
 <translation id="6441734959916820584">Ime je predugačko</translation>
@@ -1441,7 +1443,7 @@ Da promijenite ovu postavku, <ph name="BEGIN_LINK" />izbrišite podatke Chromea 
 <translation id="7986497153528221272">Da pogledate lozinke, najprije postavite zaključavanje ekrana na uređaju</translation>
 <translation id="7995059495660416932">Vidjet ćete sadržaj kada postane dostupan</translation>
 <translation id="799576009106109668">Pregledat ćete brže jer se sadržaj učitava proaktivno na osnovu vaše posjete trenutnoj web stranici</translation>
-<translation id="8001245658307297681">Pregledavate lokalnu datoteku</translation>
+<translation id="8001245658307297681">Pregledate lokalni fajl</translation>
 <translation id="8004582292198964060">Preglednik</translation>
 <translation id="8015452622527143194">Sve što je na stranici vratiti na zadanu veličinu</translation>
 <translation id="8026238112629815203">Promijenili smo način na koji se lozinke pohranjuju na uređaju</translation>

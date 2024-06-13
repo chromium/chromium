@@ -18,6 +18,7 @@ Některé funkce možná nebudou k dispozici a změny nastavení se neuloží.</
 <translation id="1203500561924088507">Děkujeme za instalaci aplikace <ph name="BUNDLE_NAME" />. Před jejím použitím je potřeba restartovat prohlížeč.</translation>
 <translation id="1262876892872089030">Když tato karta nebyla aktivní, byla uvolněna paměť, aby byl prohlížeč Chromium rychlý. Můžete zvolit, že tento web nikdy nemá být považován za neaktivní.</translation>
 <translation id="1265577313130862557">Prohlížeč Chromium toto stahování zablokoval, protože soubor je nebezpečný</translation>
+<translation id="126567311906253476">Když se pomocí účtu <ph name="USER_EMAIL" /> přihlásíte do služeb Google, jako je Gmail nebo YouTube, můžete se pomocí něj automaticky přihlásit i do prohlížeče Chromium</translation>
 <translation id="1315551408014407711">Nastavení nového profilu Chromium</translation>
 <translation id="1342274909142618978">Smazat také data z prohlížeče Chromium (<ph name="URL" />)</translation>
 <translation id="1414495520565016063">Jste přihlášeni do prohlížeče Chromium.</translation>
@@ -42,6 +43,7 @@ Na tento účet se mohou vztahovat oprávnění, která jste již udělili webů
 <translation id="1749104137266986751">Když není k dispozici protokol HTTPS, použije prohlížeč Chromium nezabezpečené připojení, aniž by vás upozornil</translation>
 <translation id="1774152462503052664">Nechat prohlížeč Chromium spuštěný na pozadí</translation>
 <translation id="1779356040007214683">Aby bylo Chromium bezpečnější, deaktivovali jsme některá rozšíření, která nejsou uvedena na webu <ph name="IDS_EXTENSION_WEB_STORE_TITLE" /> a mohla být přidána bez vašeho vědomí.</translation>
+<translation id="1804128559285178512">Když jste přihlášeni, můžete v prohlížeči Chromium používat hesla a další položky ze svého účtu Google</translation>
 <translation id="1808667845054772817">Přeinstalovat Chromium</translation>
 <translation id="1820835682567584003">Chromium se pokouší <ph name="AUTHENTICATION_PURPOSE" /></translation>
 <translation id="18552579716432081">Pokud chcete údaje o prohlížení vymazat jen z tohoto zařízení, ale v účtu Google je ponechat, <ph name="BEGIN_LINK" />odhlaste se z prohlížeče Chromium<ph name="END_LINK" />.</translation>

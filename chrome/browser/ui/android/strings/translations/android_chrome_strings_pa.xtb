@@ -90,6 +90,9 @@
 <translation id="1390418506739274310">ਤੁਸੀਂ ਉਨ੍ਹਾਂ ਹੋਰ ਐਪਾਂ ਦਾ ਇਤਿਹਾਸ ਦੇਖ ਸਕਦੇ ਹੋ, ਜਿਨ੍ਹਾਂ ਦੇ ਲਿੰਕ Chrome ਵਿੱਚ ਖੁੱਲ੍ਹਦੇ ਹਨ। ਤੁਹਾਡੇ Google ਖਾਤੇ ਵਿੱਚ <ph name="BEGIN_LINK" />myactivity.google.com<ph name="END_LINK" /> 'ਤੇ ਬ੍ਰਾਊਜ਼ਿੰਗ ਇਤਿਹਾਸ ਦੀਆਂ ਹੋਰ ਕਿਸਮਾਂ ਹੋ ਸਕਦੀਆਂ ਹਨ।</translation>
 <translation id="13931502444227376">ਜਾਰੀ ਰੱਖਣ ਲਈ, <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> ਤੁਹਾਡੇ ਨਾਮ, ਈਮੇਲ ਪਤੇ ਅਤੇ ਪ੍ਰੋਫਾਈਲ ਤਸਵੀਰ ਨੂੰ ਇਸ ਸਾਈਟ ਨਾਲ ਸਾਂਝਾ ਕਰੇਗਾ। ਇਸ ਸਾਈਟ ਦੇ <ph name="BEGIN_LINK1" />ਸੇਵਾ ਦੇ ਨਿਯਮ<ph name="END_LINK1" /> ਦੇਖੋ।</translation>
 <translation id="1397811292916898096"><ph name="PRODUCT_NAME" /> ਨਾਲ ਖੋਜੋ</translation>
+<translation id="1398057416966591719">ਤੁਹਾਡੇ Google ਖਾਤੇ ਵਿੱਚ <ph name="BEGIN_LINK1" />ਕਿਹੜਾ Chrome ਡਾਟਾ ਰੱਖਿਅਤ ਕੀਤਾ ਜਾਂਦਾ ਹੈ, ਤੁਸੀਂ ਇਸਦਾ ਪ੍ਰਬੰਧਨ ਕਰ ਸਕਦੇ ਹੋ<ph name="END_LINK1" />।
+
+ਤੁਹਾਡੇ Chrome ਦੇ ਅਨੁਭਵ ਨੂੰ ਬਿਹਤਰ ਬਣਾਉਣ ਲਈ ਡਾਟੇ ਦੀ ਵਰਤੋਂ ਕਰਨ ਵਾਲੀਆਂ ਹੋਰ ਸੈਟਿੰਗਾਂ ਵਾਸਤੇ, <ph name="BEGIN_LINK2" />Google ਸੇਵਾਵਾਂ<ph name="END_LINK2" /> 'ਤੇ ਜਾਓ।</translation>
 <translation id="1407069428457324124">ਗੂੜ੍ਹਾ ਥੀਮ</translation>
 <translation id="1407135791313364759">ਸਾਰੇ ਖੋਲ੍ਹੋ</translation>
 <translation id="1409879593029778104"><ph name="FILE_NAME" /> ਡਾਊਨਲੋਡ ਰੋਕਿਆ ਗਿਆ ਕਿਉਂਕਿ ਫ਼ਾਈਲ ਪਹਿਲਾਂ ਤੋਂ ਹੀ ਮੌਜੂਦ ਹੈ।</translation>
@@ -155,6 +158,7 @@
 <translation id="1755203724116202818">ਕਿਸੇ ਵਿਗਿਆਪਨ ਦੀ ਕਾਰਗੁਜ਼ਾਰੀ ਦਾ ਮੁਲਾਂਕਣ ਕਰਨ ਲਈ, ਸਾਈਟਾਂ ਵਿਚਕਾਰ ਸੀਮਤ ਕਿਸਮ ਦਾ ਡਾਟਾ ਸਾਂਝਾ ਕੀਤਾ ਜਾਂਦਾ ਹੈ, ਜਿਵੇਂ ਕਿ ਕਿਸੇ ਸਾਈਟ 'ਤੇ ਜਾਣ ਤੋਂ ਬਾਅਦ ਤੁਸੀਂ ਕੋਈ ਖਰੀਦ ਕੀਤੀ ਹੈ ਜਾਂ ਨਹੀਂ।</translation>
 <translation id="1757620656501361327">Google Password Manager ਸੰਬੰਧੀ ਅੱਪਡੇਟ</translation>
 <translation id="1760873718737761808">{FILE_COUNT,plural, =1{ਪੰਨੇ, ਸੂਚੀ ਵਿੱਚ 1 ਪੰਨਾ ਹੈ}one{ਪੰਨੇ, ਸੂਚੀ ਵਿੱਚ # ਪੰਨਾ ਹੈ}other{ਪੰਨੇ, ਸੂਚੀ ਵਿੱਚ # ਪੰਨੇ ਹਨ}}</translation>
+<translation id="1771929606532798550">ਤੁਹਾਡੀ Chrome ਵਰਤੋਂ ਦੀ ਜਾਣਕਾਰੀ Google ਨੂੰ ਭੇਜੀ ਜਾਂਦੀ ਹੈ, ਪਰ ਇਹ ਤੁਹਾਡੇ ਨਾਲ ਸੰਬੰਧਿਤ ਨਹੀਂ ਹੁੰਦੀ ਹੈ\n\nਜੇ Chrome ਕ੍ਰੈਸ਼ ਹੋ ਜਾਂਦਾ ਹੈ, ਤਾਂ ਕ੍ਰੈਸ਼ ਦੇ ਵੇਰਵਿਆਂ ਵਿੱਚ ਕੁਝ ਨਿੱਜੀ ਜਾਣਕਾਰੀ ਸ਼ਾਮਲ ਹੋ ਸਕਦੀ ਹੈ\n\nਜੇ ਤੁਸੀਂ ਆਪਣੇ Google ਖਾਤੇ ਨਾਲ ਆਪਣੇ ਇਤਿਹਾਸ ਨੂੰ ਸਿੰਕ ਕਰਦੇ ਹੋ, ਤਾਂ ਮਾਪਕਾਂ ਵਿੱਚ ਉਨ੍ਹਾਂ URL ਦੀ ਜਾਣਕਾਰੀ ਵੀ ਸ਼ਾਮਲ ਹੋ ਸਕਦੀ ਹੈ, ਜਿਨ੍ਹਾਂ 'ਤੇ ਤੁਸੀਂ ਜਾਂਦੇ ਹੋ</translation>
 <translation id="1778457539567749232">ਨਾ-ਪੜ੍ਹੇ ਵਜੋਂ ਨਿਸ਼ਾਨਦੇਹੀ ਕਰੋ</translation>
 <translation id="1779766957982586368">window ਬੰਦ ਕਰੋ</translation>
 <translation id="1780023393214832643">ਪਾਸਵਰਡਾਂ ਨੂੰ <ph name="USERNAME" /> ਵਿੱਚ ਰੱਖਿਅਤ ਕੀਤਾ ਗਿਆ</translation>
@@ -250,6 +254,7 @@
 <translation id="2286841657746966508">ਬਿਲਿੰਗ ਪਤਾ</translation>
 <translation id="228704530595896923">ਸਾਂਝਾਕਰਨ ਵਿਕਲਪਾਂ ਦੀ ਸੂਚੀ।</translation>
 <translation id="2297822946037605517">ਇਹ ਪੰਨਾ ਸਾਂਝਾ ਕਰੋ</translation>
+<translation id="22981027763501686">ਆਪਣੇ ਹੋਰ ਡੀਵਾਈਸਾਂ 'ਤੇ ਬੁੱਕਮਾਰਕ, ਇਤਿਹਾਸ ਅਤੇ ਹੋਰ ਬਹੁਤ ਕੁਝ ਪ੍ਰਾਪਤ ਕਰਨ ਲਈ ਸਿੰਕ ਕਰੋ</translation>
 <translation id="230115972905494466">ਕੋਈ ਅਨੁਰੂਪ ਡੀਵਾਈਸ ਨਹੀਂ ਮਿਲੇ</translation>
 <translation id="2318045970523081853">ਕਾਲ ਕਰਨ ਲਈ ਟੈਪ ਕਰੋ</translation>
 <translation id="2321086116217818302">ਪਾਸਵਰਡ ਤਿਆਰ ਕੀਤੇ ਜਾ ਰਹੇ ਹਨ…</translation>
@@ -798,6 +803,7 @@
 <translation id="4987271110129728827">ਉਹ ਪੰਨਾ ਨਹੀਂ ਮਿਲਿਆ। ਆਪਣੇ ਸ਼ਬਦ-ਜੋੜ ਦੀ ਜਾਂਚ ਕਰੋ ਜਾਂ ਵੈੱਬ ਖੋਜ ਕਰ ਕੇ ਦੇਖੋ।</translation>
 <translation id="4988526792673242964">ਸਫ਼ੇ</translation>
 <translation id="4991110219272367918">ਕਿਸੇ ਵੈੱਬਸਾਈਟ ਨੂੰ ਮਨਜ਼ੂਰੀ ਦੇਣ ਜਾਂ ਨਾ ਦੇਣ ਦਾ ਵਿਕਲਪ ਬੰਦ ਹੋ ਗਿਆ ਹੈ</translation>
+<translation id="4996095658297597226">ਕੀ ਸੁਝਾਇਆ ਗਿਆ ਪਾਸਵਰਡ ਵਰਤਣਾ ਹੈ?</translation>
 <translation id="499724277181351974">ਨੈਵੀਗੇਟ ਕਰੋ: <ph name="WEBSITE_TITLE" />: <ph name="WEBSITE_URL" /></translation>
 <translation id="5001388021414335527">ਇਸ ਸਾਈਟ ਦਾ ਇੱਥੇ ਅਨੁਸਰਣ ਕਰੋ</translation>
 <translation id="5004416275253351869">Google ਸਰਗਰਮੀ ਕੰਟਰੋਲ</translation>
@@ -854,6 +860,7 @@
 <translation id="5292796745632149097">ਇਸ 'ਤੇ ਭੇਜੋ</translation>
 <translation id="5301876394151419436">ਤੁਸੀਂ <ph name="EMAIL" /> ਵਜੋਂ ਸਾਈਨ-ਇਨ ਕੀਤਾ ਹੋਇਆ ਹੈ। ਤੁਸੀਂ ਸੈਟਿੰਗਾਂ ਵਿੱਚ ਜਾ ਕੇ ਕਿਸੇ ਵੇਲੇ ਵੀ ਸਿੰਕ ਕਰਨਾ ਬੰਦ ਕਰ ਸਕਦੇ ਹੋ। Google ਤੁਹਾਡੇ ਇਤਿਹਾਸ ਦੇ ਆਧਾਰ 'ਤੇ Search ਅਤੇ ਹੋਰ ਸੇਵਾਵਾਂ ਨੂੰ ਵਿਅਕਤੀਗਤ ਬਣਾ ਸਕਦਾ ਹੈ।</translation>
 <translation id="5304593522240415983">ਇਹ ਖੇਤਰ ਖਾਲੀ ਨਹੀਂ ਛੱਡਿਆ ਜਾ ਸਕਦਾ</translation>
+<translation id="5306014156308790439">'ਸੰਗ੍ਰਹਿ ਵਿੱਚ ਸ਼ਾਮਲ ਕਰੋ' ਨੂੰ ਬੰਦ ਕੀਤਾ ਗਿਆ</translation>
 <translation id="5308380583665731573">ਕਨੈਕਟ ਕਰੋ</translation>
 <translation id="5316947901395241499">ਤੁਹਾਡੇ ਪ੍ਰਸ਼ਾਸਕ ਨੇ ਪਾਸਵਰਡ ਰੱਖਿਅਤ ਕਰਨ ਦੀ ਸੁਵਿਧਾ ਨੂੰ ਬੰਦ ਕਰ ਦਿੱਤਾ ਹੈ</translation>
 <translation id="5317780077021120954">ਰੱਖਿਅਤ ਕਰੋ</translation>
@@ -1040,6 +1047,7 @@
 <translation id="6233974827872475843">ਸਿੰਕ ਨੂੰ ਚਾਲੂ ਕਰ ਕੇ ਆਪਣੇ Google ਖਾਤੇ ਵਿੱਚ ਇਸ ਡੀਵਾਈਸ 'ਤੇ ਪਾਸਵਰਡ ਰੱਖਿਅਤ ਕਰੋ</translation>
 <translation id="6247557882553405851">Google Password Manager</translation>
 <translation id="6251449557817521191">ਆਪਣਾ Chrome ਇਤਿਹਾਸ ਇੱਥੇ ਦੇਖੋ</translation>
+<translation id="6254139308321626268">ਤੁਸੀਂ ਇੱਕ PDF ਫ਼ਾਈਲ ਦੇਖ ਰਹੇ ਹੋ</translation>
 <translation id="6255794742848779505">ਅਸੀਂ ਇਸ ਡੀਵਾਈਸ 'ਤੇ ਪਾਸਵਰਡ ਰੱਖਿਅਤ ਕਰਨ ਦੇ ਤਰੀਕੇ ਨੂੰ ਬਦਲ ਰਹੇ ਹਾਂ</translation>
 <translation id="6264376385120300461">ਫਿਰ ਵੀ ਡਾਊਨਲੋਡ ਕਰੋ</translation>
 <translation id="6277522088822131679">ਸਫ਼ਾ ਪ੍ਰਿੰਟ ਕਰਨ ਵਿੱਚ ਇੱਕ ਸਮੱਸਿਆ ਹੋਈ ਸੀ। ਕਿਰਪਾ ਕਰਕੇ ਦੁਬਾਰਾ ਕੋਸ਼ਿਸ਼ ਕਰੋ।</translation>
@@ -1081,6 +1089,7 @@
 <translation id="641643625718530986">ਪ੍ਰਿੰਟ…</translation>
 <translation id="6433501201775827830">ਆਪਣਾ ਖੋਜ ਇੰਜਣ ਚੁਣੋ</translation>
 <translation id="6434309073475700221">ਬਰਖਾਸਤ</translation>
+<translation id="6437162790453527153">ਆਪਣੇ ਸਾਰੇ ਡੀਵਾਈਸਾਂ 'ਤੇ ਆਪਣੇ ਬੁੱਕਮਾਰਕ ਅਤੇ ਹੋਰ ਬਹੁਤ ਕੁਝ ਪ੍ਰਾਪਤ ਕਰਨ ਲਈ ਸਾਈਨ-ਇਨ ਕਰੋ</translation>
 <translation id="6437478888915024427">ਪੰਨਾ ਜਾਣਕਾਰੀ</translation>
 <translation id="6440291723980579689">ਪੰਨੇ ਤੁਹਾਡੇ ਵੱਲੋਂ ਖੋਲ੍ਹਣ ਤੋਂ ਬਾਅਦ ਹੀ ਲੋਡ ਹੁੰਦੇ ਹਨ</translation>
 <translation id="6441734959916820584">ਨਾਮ ਬਹੁਤ ਲੰਬਾ ਹੈ</translation>
@@ -1437,6 +1446,7 @@
 <translation id="7986497153528221272">ਪਾਸਵਰਡ ਦੇਖਣ ਲਈ, ਪਹਿਲਾਂ ਆਪਣੇ ਡੀਵਾਈਸ 'ਤੇ ਸਕ੍ਰੀਨ ਲਾਕ ਸੈੱਟ ਕਰੋ</translation>
 <translation id="7995059495660416932">ਸਮੱਗਰੀ ਉਪਲਬਧ ਹੋਣ 'ਤੇ ਤੁਹਾਨੂੰ ਦਿਸੇਗੀ</translation>
 <translation id="799576009106109668">ਤੁਸੀਂ ਤੇਜ਼ੀ ਨਾਲ ਬ੍ਰਾਊਜ਼ ਕਰੋਗੇ ਕਿਉਂਕਿ ਤੁਹਾਡੇ ਵੱਲੋਂ ਦੇਖੇ ਗਏ ਮੌਜੂਦਾ ਵੈੱਬ-ਪੰਨੇ ਦੇ ਆਧਾਰ 'ਤੇ ਸਮੱਗਰੀ ਚੁਸਤੀ ਨਾਲ ਲੋਡ ਕੀਤੀ ਜਾਂਦੀ ਹੈ</translation>
+<translation id="8001245658307297681">ਤੁਸੀਂ ਇੱਕ ਸਥਾਨਕ ਫ਼ਾਈਲ ਦੇਖ ਰਹੇ ਹੋ</translation>
 <translation id="8004582292198964060">ਬ੍ਰਾਊਜ਼ਰ</translation>
 <translation id="8015452622527143194">ਪੰਨੇ 'ਤੇ ਹਰੇਕ ਚੀਜ਼ ਨੂੰ ਪੂਰਵ-ਨਿਰਧਾਰਤ ਆਕਾਰ 'ਚ ਵਾਪਸ ਪਰਤਾਓ</translation>
 <translation id="8026238112629815203">ਅਸੀਂ ਇਸ ਡੀਵਾਈਸ 'ਤੇ ਪਾਸਵਰਡ ਰੱਖਿਅਤ ਕਰਨ ਦੇ ਤਰੀਕੇ ਨੂੰ ਬਦਲ ਦਿੱਤਾ ਹੈ</translation>

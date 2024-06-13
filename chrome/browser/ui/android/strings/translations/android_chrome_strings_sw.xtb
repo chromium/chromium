@@ -90,6 +90,9 @@
 <translation id="1390418506739274310">Unaweza kuona historia kutoka kwenye programu zingine zinazofungua viungo kwenye Chrome. Huenda Akaunti yako ya Google ikawa na aina nyingine za historia ya kuvinjari kwenye <ph name="BEGIN_LINK" />myactivity.google.com<ph name="END_LINK" />.</translation>
 <translation id="13931502444227376">Ili uendelee, <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> itashiriki jina, anwani ya barua pepe, pamoja na picha yako ya wasifu na tovuti hii. Angalia <ph name="BEGIN_LINK1" />sheria na masharti<ph name="END_LINK1" />ya tovuti hii.</translation>
 <translation id="1397811292916898096">Tafuta kwa <ph name="PRODUCT_NAME" /></translation>
+<translation id="1398057416966591719">Unaweza <ph name="BEGIN_LINK1" />kudhibiti data ya Chrome inayohifadhiwa<ph name="END_LINK1" /> katika Akaunti yako ya Google.
+
+Kwa mipangilio zaidi inayotumia data ili kuboresha hali yako ya utumiaji wa Chrome, nenda kwenye <ph name="BEGIN_LINK2" />Huduma za Google<ph name="END_LINK2" />.</translation>
 <translation id="1407069428457324124">Mandhari meusi</translation>
 <translation id="1407135791313364759">Fungua zote</translation>
 <translation id="1409879593029778104">Kipakuliwa cha <ph name="FILE_NAME" /> kimezuiwa kwa sababu faili tayari ipo.</translation>
@@ -248,6 +251,7 @@ Mtu aliye na kauli yako ya siri pekee ndiye anaweza kusoma data yako iliyosimbwa
 <translation id="2286841657746966508">Anwani ya kutoza</translation>
 <translation id="228704530595896923">Orodha ya chaguo za kushiriki.</translation>
 <translation id="2297822946037605517">Shiriki ukurasa huu</translation>
+<translation id="22981027763501686">Sawazisha ili upate alamisho zako, historia na zaidi kwenye vifaa vyako vingine</translation>
 <translation id="230115972905494466">Haikupata vifaa vyovyote vinavyooana</translation>
 <translation id="2318045970523081853">Gusa ili upige simu</translation>
 <translation id="2321086116217818302">Inatayarisha manenosiri…</translation>
@@ -851,6 +855,7 @@ Huenda akaunti yako ya Google ina aina nyingine za historia ya kuvinjari kama vi
 <translation id="5292796745632149097">Tuma kwenye</translation>
 <translation id="5301876394151419436">Umeingia katika akaunti ukitumia <ph name="EMAIL" />. Unaweza kuacha kusawazisha wakati wowote katika mipangilio. Google inaweza kuwekea mapendeleo huduma ya Tafuta na huduma nyinginezo kulingana na historia yako.</translation>
 <translation id="5304593522240415983">Sehemu hii haiwezi kuwa tupu</translation>
+<translation id="5306014156308790439">Imezima kitufe cha Weka kwenye mkusanyiko</translation>
 <translation id="5308380583665731573">Unganisha</translation>
 <translation id="5316947901395241499">Msimamizi wako amezima kipengee cha kuhifadhi nenosiri</translation>
 <translation id="5317780077021120954">Hifadhi</translation>

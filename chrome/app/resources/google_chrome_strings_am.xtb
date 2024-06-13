@@ -53,6 +53,7 @@
 <ph name="USER_DATA_DIRECTORY" /></translation>
 <translation id="1698376642261615901">Google Chrome ድረ-ገፆችን እና መተግበሪያዎችን በሚገርም ፍጥነት ማሄድ የሚችል የድር አሳሽ ነው። ፈጣን፣ የረጋ እና ለመጠቀም ቀላል ነው። Google Chrome ውስጥ አብሮት በተሰራ የአስጋሪና ተንኮል-አዘል ሶፍትዌር መከላከያ አማካኝነት ደህንነትዎ በበለጠ ሁኔታ ተጠብቆ ድሩን ያስሱ።</translation>
 <translation id="1713301662689114961">{0,plural, =1{በአንድ ሰዓት ውስጥ Chrome ዳግም ይጀመራል}one{በ# ሰዓቶች ውስጥ Chrome ዳግም ይጀመራል}other{በ# ሰዓቶች ውስጥ Chrome ዳግም ይጀመራል}}</translation>
+<translation id="1722488837206509557">ይህ ከሚገኙ መሣሪያዎች እንዲመርጡ እና ይዘቶችን እንዲያሳዩ ያስችልዎታል።</translation>
 <translation id="1734234790201236882">Chrome ይህን የይለፍ ቃል በእርስዎ የGoogle መለያ ውስጥ ያስቀምጠዋል። ማስታወስ አይኖርብዎትም።</translation>
 <translation id="1786003790898721085">በእርስዎ <ph name="TARGET_DEVICE_NAME" /> ላይ በመለያ ወደ Chrome መግባትዎን ያረጋግጡ እና እንደገና ለመላክ ይሞክሩ።</translation>
 <translation id="1786044937610313874">አቋራጮች በChrome ውስጥ ተከፍተዋል</translation>

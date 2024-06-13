@@ -16,6 +16,7 @@
 <translation id="1203500561924088507">感谢您完成安装。您必须重启浏览器才能使用 <ph name="BUNDLE_NAME" />。</translation>
 <translation id="1262876892872089030">当此标签页处于闲置状态时，系统会释放一些内存，以让 Chromium 保持快速运行。您可以选择始终不让此网站处于闲置状态。</translation>
 <translation id="1265577313130862557">Chromium 阻止了此项下载操作，因为该文件具有危险性</translation>
+<translation id="126567311906253476">使用 <ph name="USER_EMAIL" /> 登录 Gmail 或 YouTube 等 Google 服务时，您可以使用同一账号自动登录 Chromium</translation>
 <translation id="1315551408014407711">设置您的新 Chromium 个人资料</translation>
 <translation id="1342274909142618978">同时删除 Chromium 中的数据 (<ph name="URL" />)</translation>
 <translation id="1414495520565016063">您已登录 Chromium！</translation>
@@ -40,6 +41,7 @@
 <translation id="1749104137266986751">如果 HTTPS 不可用，Chromium 会在不向您发出警告的情况下使用不安全的连接</translation>
 <translation id="1774152462503052664">让 Chromium 在后台运行</translation>
 <translation id="1779356040007214683">为了提高 Chromium 的安全性，系统停用了一些未列在 <ph name="IDS_EXTENSION_WEB_STORE_TITLE" />中、可能是在您不知情的情况下添加的扩展程序。</translation>
+<translation id="1804128559285178512">登录后，您可以在 Chromium 中使用 Google 账号中的密码等信息</translation>
 <translation id="1808667845054772817">重新安装Chromium</translation>
 <translation id="1820835682567584003">Chromium 正在尝试<ph name="AUTHENTICATION_PURPOSE" /></translation>
 <translation id="18552579716432081">若要仅删除此设备中的浏览数据而保留 Google 账号中的浏览数据，请<ph name="BEGIN_LINK" />从 Chromium 中退出账号<ph name="END_LINK" />。</translation>

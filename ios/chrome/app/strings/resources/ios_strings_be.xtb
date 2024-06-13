@@ -531,6 +531,7 @@
 <translation id="371398631992790800">Схаваць пункт "Закладкі"</translation>
 <translation id="37207012422556617">Папулярныя пошукавыя запыты</translation>
 <translation id="3725081662140949903">Каб іншыя не змаглі выкарыстаць ваш пароль, адкрыйце праграму "<ph name="APP" />" і змяніце яго</translation>
+<translation id="372676576864368480">Аўтаматычна запоўніць нумар карткі, які заканчваецца на <ph name="LAST_DIGITS" /></translation>
 <translation id="3738428049780661523">Створана <ph name="DATE" /></translation>
 <translation id="374357899112510277">Схаваць пункт "Спампоўкі"</translation>
 <translation id="3745190878148784130">Схаваць пункт "Змяніць памер тэксту"</translation>
@@ -850,6 +851,7 @@
 <translation id="5345660046352249607">{COUNT,plural, =1{Адсочваць гэту пасылку?}one{Адсочваць {COUNT} пасылку?}few{Адсочваць {COUNT} пасылкі?}many{Адсочваць {COUNT} пасылак?}other{Адсочваць {COUNT} пасылкі?}}</translation>
 <translation id="5348775987281903912">Націсніце кнопку абагульвання, каб абагуліць гэту старонку.</translation>
 <translation id="536067926684072644">Паказаць закладкі</translation>
+<translation id="537853552771686272">Выберыце, якія тэмы і сайты вас цікавяць</translation>
 <translation id="5379352933722332597">{count,plural, =1{Закладка захавана ў папцы "{title}" і толькі на гэтай прыладзе.}one{{count} закладка захавана ў папцы "{title}" і толькі на гэтай прыладзе.}few{{count} закладкі захаваны ў папцы "{title}" і толькі на гэтай прыладзе.}many{{count} закладак захавана ў папцы "{title}" і толькі на гэтай прыладзе.}other{{count} закладкі захаваны ў папцы "{title}" і толькі на гэтай прыладзе.}}</translation>
 <translation id="5388358297987318779">Адкрыць відарыс</translation>
 <translation id="5395707839134961196">Схаваць падрабязныя звесткі пра пошукавую сістэму</translation>
@@ -932,6 +934,7 @@
 <translation id="5758631781033351321">Ваш спіс чытання знаходзіцца тут</translation>
 <translation id="5765456154762864099">Меню → Налады → Стандартны браўзер</translation>
 <translation id="5777888488419460501">Захаваць ва ўліковым запісе</translation>
+<translation id="5778292857689789362">Група ўкладак, <ph name="GROUP_TITLE" />, колькасць укладак: <ph name="TABS_NUMBER" />.</translation>
 <translation id="5782227691023083829">Ідзе пераклад...</translation>
 <translation id="5791632441210678828">Кнопка для сартавання стужкі "Вы падпісаны".</translation>
 <translation id="5793373065989412701">Ідзе праверка ўдзельнікаў сямейнай групы…</translation>
@@ -1094,6 +1097,7 @@
 <translation id="6476800141292307438">Старонка перакладаецца на мову "<ph name="LANGUAGE" />". Параметры знаходзяцца ў ніжняй частцы экрана.</translation>
 <translation id="648164694371393720">Памылка аўтэнтыфікацыі</translation>
 <translation id="6494931198667773526">Заканчэнне</translation>
+<translation id="6500795388871406244">Выкарыстайце прапанаваны пароль:</translation>
 <translation id="650279896687777322">Даведацца больш...</translation>
 <translation id="6507973708545996744">Каб спіс для прагляду быў даступным на ўсіх вашых прыладах, выканайце ўваход.</translation>
 <translation id="6510072653668207258">Нагадаць пазней</translation>
@@ -1306,6 +1310,7 @@
 <translation id="7583004045319035904">Выкарыстоўвайце <ph name="BIOMETRIC_AUTHENITCATION_TYPE" /> для разблакіроўкі ўкладак у рэжыме інкогніта</translation>
 <translation id="7598439272585186139">Павысьце бяспеку</translation>
 <translation id="7600965453749440009">Ніколі не перакладаць з мовы: <ph name="LANGUAGE" /></translation>
+<translation id="7603308509262646847">Аўтаматычна запоўніць імя ўладальніка карткі <ph name="NAME" /></translation>
 <translation id="7603852183842204213">Успл. вокны заблак. (<ph name="NUMBER_OF_BLOCKED_POPUPS" />)</translation>
 <translation id="7606639338662398635">Групы ўкладак</translation>
 <translation id="7607521702806708809">Выдаліць пароль</translation>
@@ -1338,6 +1343,7 @@
 <translation id="7749790401023484470">Вы не выбралі тэкст</translation>
 <translation id="7752405526771734448">Візуальны пошук з дапамогай Аб'ектыва</translation>
 <translation id="7756478488453921771">Меню → Налады → Спосабы аплаты</translation>
+<translation id="775755486779745798">Аўтаматычна запоўніць месяц заканчэння тэрміну дзеяння <ph name="MONTH" /></translation>
 <translation id="7760127703945531263">Блакіроўка ўкладак інкогніта</translation>
 <translation id="7765158879357617694">Перамясціць</translation>
 <translation id="7772032839648071052">Пацвердзіце фразу-пароль</translation>
@@ -1514,6 +1520,7 @@
 <translation id="8556590991644167667">{count,plural, =1{Вы адхілілі {count} папярэджанне}one{Вы адхілілі {count} папярэджанне}few{Вы адхілілі {count} папярэджанні}many{Вы адхілілі {count} папярэджанняў}other{Вы адхілілі {count} папярэджання}}</translation>
 <translation id="8560253818350321773">Спачатку паказваць элементы, якія часта выкарыстоўваюцца.</translation>
 <translation id="8569721750632860947">Які URL-адрас вы хочаце дадаць у Спіс на прагляд?</translation>
+<translation id="8577056989960190117">Аўтаматычна запоўніць год заканчэння тэрміну дзеяння <ph name="YEAR" /></translation>
 <translation id="8588404856427128947">Выключаны</translation>
 <translation id="8591976964826315682">Блакіраваць староннія файлы cookie у рэжыме інкогніта</translation>
 <translation id="8593565399399144771">Тут вы можаце адкрыць новую ўкладку.</translation>

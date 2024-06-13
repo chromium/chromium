@@ -122,6 +122,7 @@
 <translation id="2765403129283291972">A Chrome-nak engedélyre van szüksége ahhoz, hogy hozzáférjen a mikrofonhoz ennél a webhelynél</translation>
 <translation id="2770231113462710648">Alapértelmezett böngésző beállítása:</translation>
 <translation id="2775140325783767197">A Chrome nem tudja ellenőrizni a jelszavakat. Ellenőrizze az internetkapcsolatot.</translation>
+<translation id="2797864378188255696">Amikor <ph name="USER_EMAIL" /> fiókjával bejelentkezik a Google-szolgáltatásokba (például a Gmailbe vagy a YouTube-ba), ugyanazzal a fiókkal automatikusan bejelentkezhet a Chrome-ba is.</translation>
 <translation id="2799223571221894425">Újraindítás</translation>
 <translation id="2825024317344269723">Veszélyes webhely. A Chrome eltávolította az értesítéseket.</translation>
 <translation id="2846251086934905009">Telepítési hiba: A telepítő nem fejezte be a folyamatot. A telepítés megszakadt.</translation>
@@ -294,6 +295,7 @@
 <translation id="5334309298019785904">A ChromeOS nem tudta szinkronizálni az adatait, mert a szinkronizálás nem áll rendelkezésre a domainjénél.</translation>
 <translation id="5334487786912937552">A Chrome-nak tárhelyhozzáférési engedélyre van szüksége a fájlok letöltéséhez</translation>
 <translation id="5337648990166757586">Nem kötelező: Hozzájárulhat a ChromeOS funkcióinak és teljesítményének javításához azzal, hogy automatikusan elküldi a diagnosztikai és használati adatokat a Google-nak.</translation>
+<translation id="5345497718959596593">Amíg be van jelentkezve, használhatja a Google-fiókjához kapcsolódó jelszavait és egyéb funkciókat a Chrome-ban.</translation>
 <translation id="5357889879764279201">Segítség a ChromeOS Flex használatához</translation>
 <translation id="5368118228313795342">Extra kód: <ph name="EXTRA_CODE" />.</translation>
 <translation id="5386244825306882791">Továbbá azt is szabályozza, hogy melyik oldal jelenik meg a Chrome indításakor vagy a cím- és keresősávban indított kereséskor.</translation>

@@ -251,6 +251,7 @@ Ecco alcune cose che puoi provare per iniziare.</translation>
 <translation id="1915307458270490472">Chiudi</translation>
 <translation id="1918022425394817322">Fotocamera allineata all'angolo in alto a destra</translation>
 <translation id="1923539912171292317">Clic automatici</translation>
+<translation id="1925320505152357008">meno di 1 min</translation>
 <translation id="1928739107511554905">Per scaricare l'aggiornamento, utilizza il touchscreen e riavvia il Chromebook con la tastiera collegata.</translation>
 <translation id="1948405482892809935">Passa all'utente successivo</translation>
 <translation id="1951012854035635156">Assistente</translation>
@@ -573,6 +574,7 @@ Ecco alcune cose che puoi provare per iniziare.</translation>
 <translation id="3226991577105957773">+ altre <ph name="COUNT" /></translation>
 <translation id="3227137524299004712">Microfono</translation>
 <translation id="3233611303007751344">Risparmio energetico disattivato</translation>
+<translation id="3238409143297336341">Configura il Controllo genitori per le app</translation>
 <translation id="324366796737464147">Cancellazione del rumore</translation>
 <translation id="3249513730522716925">La finestra <ph name="WINDOW_TITLE" /> è stata spostata dalla scrivania <ph name="ACTIVE_DESK" /> alla scrivania <ph name="TARGET_DESK" /></translation>
 <translation id="3253743281242075461">Tipo di lavori del corso: <ph name="GLANCEABLES_CLASSROOM_LIST_NAME" /></translation>
@@ -604,6 +606,7 @@ Ecco alcune cose che puoi provare per iniziare.</translation>
 <translation id="334927402682780278">Seleziona il testo dal cursore alla fine della riga</translation>
 <translation id="3349345708646875009">Apri Task Manager</translation>
 <translation id="3364721542077212959">Strumenti per stilo</translation>
+<translation id="3365281428003534650">Imposta timer e attività</translation>
 <translation id="3365977133351922112">Il telefono è troppo lontano. Avvicinalo.</translation>
 <translation id="3368922792935385530">Connesso</translation>
 <translation id="3369111525500416043">In scadenza</translation>
@@ -904,6 +907,7 @@ Alcune funzionalità sono limitate per aumentare la durata della batteria.</tran
 <translation id="4406883609789734330">Sottotitoli in tempo reale</translation>
 <translation id="4412698727486357573">Centro assistenza</translation>
 <translation id="4412944820643904175">La funzionalità <ph name="FEATURE_NAME" /> è disattivata.</translation>
+<translation id="4417647906073317561">Impostazioni della modalità Niente distrazioni. Imposta un timer, un'attività e la musica per iniziare a concentrarti.</translation>
 <translation id="4424159417645388645">Scrivania 5</translation>
 <translation id="4430019312045809116">Volume</translation>
 <translation id="4441283832827406317">Le app sono ordinate per nome</translation>
@@ -1396,6 +1400,7 @@ Nessun dispositivo connesso.</translation>
 <translation id="6141205840878048728">Su cosa ti piacerebbe concentrati?</translation>
 <translation id="6141988275892716286">Conferma download</translation>
 <translation id="6143578372829139382">Condividi su YouTube</translation>
+<translation id="6147182561428020853">Ora puoi bloccare le app installate su questo <ph name="DEVICE_TYPE" /></translation>
 <translation id="6154006699632741460">Periferica non supportata</translation>
 <translation id="6156960295318603523">Impostazioni lingua</translation>
 <translation id="615957422585914272">Mostra tastiera sullo schermo</translation>
@@ -1667,6 +1672,7 @@ Nuova installazione</translation>
 <translation id="7167913274352523149"><ph name="HOTSPOT" />,
         <ph name="NETWORK" /></translation>
 <translation id="7168224885072002358">Ripristino della risoluzione precedente tra <ph name="TIMEOUT_SECONDS" /></translation>
+<translation id="7173114856073700355">Apri Impostazioni</translation>
 <translation id="7180611975245234373">Aggiorna</translation>
 <translation id="7181691792034457084">Un saluto da Google. Il <ph name="PRODUCT_NAME" /> è un po' diverso.</translation>
 <translation id="7188494361780961876">Menu spostato nell'angolo in alto a sinistra dello schermo.</translation>
@@ -1859,6 +1865,7 @@ Per arrestare il dispositivo, tieni di nuovo premuto il relativo tasto di accens
         <ph name="MANAGED" />
         <ph name="IME" />
         <ph name="LOCALE" /></translation>
+<translation id="7899977217122813285">Le notifiche sono disattivate fino alle ore <ph name="TIME" /> mentre è attiva la modalità Niente distrazioni</translation>
 <translation id="7901190436359881020">Scambia le finestre</translation>
 <translation id="7901405293566323524">Phone Hub</translation>
 <translation id="7902625623987030061">Tocca il sensore di impronte digitali</translation>

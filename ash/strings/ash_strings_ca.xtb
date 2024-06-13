@@ -251,6 +251,7 @@ A continuació t'indico algunes coses que pots provar per començar.</translatio
 <translation id="1915307458270490472">Penja</translation>
 <translation id="1918022425394817322">La càmera s'ha ajustat a l'extrem superior dret</translation>
 <translation id="1923539912171292317">Clics automàtics</translation>
+<translation id="1925320505152357008">menys d'1 minut</translation>
 <translation id="1928739107511554905">Per obtenir l'actualització, utilitza la pantalla tàctil per reiniciar Chromebook amb el teclat connectat.</translation>
 <translation id="1948405482892809935">Canvia a l'usuari següent</translation>
 <translation id="1951012854035635156">Assistent</translation>
@@ -604,6 +605,7 @@ Hi ha <ph name="DEVICECOUNT" /> dispositius connectats.</translation>
 <translation id="334927402682780278">Selecciona text del cursor al final de la línia</translation>
 <translation id="3349345708646875009">Obre el gestor de tasques</translation>
 <translation id="3364721542077212959">Eines del llapis òptic</translation>
+<translation id="3365281428003534650">Temporitzador, tasca i música</translation>
 <translation id="3365977133351922112">El telèfon és massa lluny. Apropa'l.</translation>
 <translation id="3368922792935385530">Connectat</translation>
 <translation id="3369111525500416043">S'entreguen aviat</translation>
@@ -907,6 +909,7 @@ Algunes funcions estan limitades per allargar la durada de la bateria.</translat
 <translation id="4406883609789734330">Subtítols instantanis</translation>
 <translation id="4412698727486357573">Centre d'ajuda</translation>
 <translation id="4412944820643904175">La funció <ph name="FEATURE_NAME" /> està desactivada.</translation>
+<translation id="4417647906073317561">Configuració de Sense distraccions. Defineix un temporitzador, una tasca i música per concentrar-te.</translation>
 <translation id="4424159417645388645">Escriptori 5</translation>
 <translation id="4430019312045809116">Volum</translation>
 <translation id="4441283832827406317">Les aplicacions estan ordenades per nom</translation>
@@ -1670,6 +1673,7 @@ Instal·lació nova</translation>
 <translation id="7167913274352523149"><ph name="HOTSPOT" />,
         <ph name="NETWORK" /></translation>
 <translation id="7168224885072002358">Es revertirà a la resolució anterior d'aquí a <ph name="TIMEOUT_SECONDS" /></translation>
+<translation id="7173114856073700355">Obre Configuració</translation>
 <translation id="7180611975245234373">Actualitza</translation>
 <translation id="7181691792034457084">Hola. <ph name="PRODUCT_NAME" /> és una mica diferent.</translation>
 <translation id="7188494361780961876">El menú s'ha mogut a l'extrem superior esquerre de la pantalla.</translation>
@@ -1862,6 +1866,7 @@ Per apagar el dispositiu, torna a mantenir premut el botó d'engegada.</translat
         <ph name="MANAGED" />
         <ph name="IME" />
         <ph name="LOCALE" /></translation>
+<translation id="7899977217122813285">Les notificacions estan silenciades fins a les <ph name="TIME" /> mentre et concentres</translation>
 <translation id="7901190436359881020">Canvia les finestres</translation>
 <translation id="7901405293566323524">Phone Hub</translation>
 <translation id="7902625623987030061">Toca el sensor d'empremtes digitals</translation>

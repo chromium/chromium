@@ -90,6 +90,9 @@
 <translation id="1390418506739274310">É possível que o histórico de outros apps que abrem links no Chrome seja mostrado. Sua Conta do Google pode ter outras formas de histórico de navegação em <ph name="BEGIN_LINK" />myactivity.google.com<ph name="END_LINK" />.</translation>
 <translation id="13931502444227376">Para continuar, <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> vai compartilhar seu nome, endereço de e-mail e foto do perfil com esse site. Veja os <ph name="BEGIN_LINK1" />Termos de Serviço<ph name="END_LINK1" /> desse site.</translation>
 <translation id="1397811292916898096">Pesquisar com o <ph name="PRODUCT_NAME" /></translation>
+<translation id="1398057416966591719">Você pode <ph name="BEGIN_LINK1" />gerenciar quais dados do Chrome são salvos<ph name="END_LINK1" /> na sua Conta do Google.
+
+Confira mais configurações que usam dados para melhorar sua experiência do Chrome, acessando os <ph name="BEGIN_LINK2" />Serviços do Google<ph name="END_LINK2" />.</translation>
 <translation id="1407069428457324124">Tema escuro</translation>
 <translation id="1407135791313364759">Abrir todas</translation>
 <translation id="1409879593029778104">O download de <ph name="FILE_NAME" /> foi impedido porque o arquivo já existe.</translation>
@@ -153,6 +156,7 @@
 <translation id="1755203724116202818">Para medir a performance de um anúncio, tipos limitados de dados são compartilhados entre os sites, por exemplo, se você fez uma compra depois de visitar um site.</translation>
 <translation id="1757620656501361327">Atualização do Gerenciador de senhas do Google</translation>
 <translation id="1760873718737761808">{FILE_COUNT,plural, =1{Páginas: 1 página na lista}one{Páginas: # página na lista}other{Páginas: # páginas na lista}}</translation>
+<translation id="1771929606532798550">São enviadas ao Google informações sobre seu uso do Chrome, mas elas não são vinculadas a você.\n\nSe o Chrome falhar, os detalhes sobre a falha poderão incluir algumas informações pessoais.\n\nSe você sincronizar seu histórico com sua Conta do Google, as métricas também poderão incluir informações sobre os URLs que você acessa.</translation>
 <translation id="1778457539567749232">Marcar como não lida</translation>
 <translation id="1779766957982586368">Fechar janela</translation>
 <translation id="1780023393214832643">Senhas salvas na conta <ph name="USERNAME" /></translation>
@@ -248,6 +252,7 @@ Só uma pessoa com sua senha longa pode ler seus dados criptografados. Essa senh
 <translation id="2286841657746966508">Endereço de faturamento</translation>
 <translation id="228704530595896923">Lista de opções de compartilhamento.</translation>
 <translation id="2297822946037605517">Compartilhar esta página</translation>
+<translation id="22981027763501686">Sincronize para acessar favoritos, histórico e muito mais em outros dispositivos</translation>
 <translation id="230115972905494466">Nenhum dispositivo compatível encontrado</translation>
 <translation id="2318045970523081853">Toque para ligar</translation>
 <translation id="2321086116217818302">Preparando senhas…</translation>
@@ -796,6 +801,7 @@ Só uma pessoa com sua senha longa pode ler seus dados criptografados. Essa senh
 <translation id="4987271110129728827">Não foi possível encontrar a página. Verifique se há erros de ortografia ou faça uma pesquisa na Web.</translation>
 <translation id="4988526792673242964">Páginas</translation>
 <translation id="4991110219272367918">A opção para aprovar ou não um site foi fechada</translation>
+<translation id="4996095658297597226">Usar senha sugerida?</translation>
 <translation id="499724277181351974">Navegar: <ph name="WEBSITE_TITLE" /> (<ph name="WEBSITE_URL" />)</translation>
 <translation id="5001388021414335527">Siga este site</translation>
 <translation id="5004416275253351869">Controles de atividade do Google</translation>
@@ -852,6 +858,7 @@ Só uma pessoa com sua senha longa pode ler seus dados criptografados. Essa senh
 <translation id="5292796745632149097">Enviar para</translation>
 <translation id="5301876394151419436">A conta <ph name="EMAIL" /> está conectada. Você pode parar a sincronização a qualquer momento nas configurações. O Google pode personalizar a Pesquisa e outros serviços com base no seu histórico.</translation>
 <translation id="5304593522240415983">Este campo não pode ficar em branco</translation>
+<translation id="5306014156308790439">"Adicionar à coleção" desativado</translation>
 <translation id="5308380583665731573">Conectar</translation>
 <translation id="5316947901395241499">O salvamento de senhas foi desativado pelo administrador</translation>
 <translation id="5317780077021120954">Salvar</translation>
@@ -1038,6 +1045,7 @@ Por exemplo, alguns sites podem responder a esse pedido mostrando anúncios que 
 <translation id="6233974827872475843">Salve as senhas na sua Conta do Google neste dispositivo ativando a sincronização</translation>
 <translation id="6247557882553405851">Gerenciador de senhas do Google</translation>
 <translation id="6251449557817521191">Acesse seu histórico do Chrome aqui</translation>
+<translation id="6254139308321626268">Você está visualizando um arquivo PDF</translation>
 <translation id="6255794742848779505">Estamos mudando a maneira como as senhas são salvas neste dispositivo</translation>
 <translation id="6264376385120300461">Fazer o download mesmo assim</translation>
 <translation id="6277522088822131679">Ocorreu um problema ao imprimir a página. Tente novamente.</translation>
@@ -1079,6 +1087,7 @@ Por exemplo, alguns sites podem responder a esse pedido mostrando anúncios que 
 <translation id="641643625718530986">Imprimir...</translation>
 <translation id="6433501201775827830">Escolha seu mecanismo de pesquisa</translation>
 <translation id="6434309073475700221">Descartar</translation>
+<translation id="6437162790453527153">Faça login para ter acesso a favoritos e muito mais em todos os seus dispositivos</translation>
 <translation id="6437478888915024427">Informações sobre a página</translation>
 <translation id="6440291723980579689">As páginas carregam apenas depois de abertas</translation>
 <translation id="6441734959916820584">O nome é muito longo</translation>
@@ -1433,6 +1442,7 @@ Para mudar essa configuração, <ph name="BEGIN_LINK" />exclua os dados do Chrom
 <translation id="7986497153528221272">Para poder ver as senhas, configure um bloqueio de tela no dispositivo</translation>
 <translation id="7995059495660416932">O conteúdo vai ser mostrado quando estiver disponível</translation>
 <translation id="799576009106109668">Como o conteúdo é carregado proativamente com base na página da Web acessada, você vai navegar com mais rapidez</translation>
+<translation id="8001245658307297681">Você está visualizando um arquivo local</translation>
 <translation id="8004582292198964060">Navegador</translation>
 <translation id="8015452622527143194">Retornar tudo na página para o tamanho padrão</translation>
 <translation id="8026238112629815203">Mudamos a forma como as senhas são salvas neste dispositivo</translation>

@@ -107,7 +107,7 @@ Aquí tienes algunas cosas que puedes probar para empezar.</translation>
 <translation id="1333308631814936910"><ph name="DISPLAY_NAME" /> conectado</translation>
 <translation id="1340378040547539434">Reducir la página</translation>
 <translation id="1341651618736211726">Menú adicional</translation>
-<translation id="1341926407152459446">Usar <ph name="DEVICE_NAME" /> para la entrada y la salida de audio</translation>
+<translation id="1341926407152459446">Usar <ph name="DEVICE_NAME" /> como entrada y salida de audio</translation>
 <translation id="1344141078024003905">Estás enviando tu pantalla. Puedes pausar o detener el envío de tu pantalla en cualquier momento.</translation>
 <translation id="1346748346194534595">Derecha</translation>
 <translation id="1351937230027495976">Ocultar menú</translation>
@@ -1674,6 +1674,7 @@ Nueva instalación</translation>
 <translation id="7167913274352523149"><ph name="HOTSPOT" />,
         <ph name="NETWORK" /></translation>
 <translation id="7168224885072002358">Restableciendo la resolución anterior en <ph name="TIMEOUT_SECONDS" /></translation>
+<translation id="7173114856073700355">Abrir Configuración</translation>
 <translation id="7180611975245234373">Actualizar</translation>
 <translation id="7181691792034457084">¡Hola! <ph name="PRODUCT_NAME" /> ha cambiado un poco.</translation>
 <translation id="7188494361780961876">Se ha movido el menú a la esquina superior izquierda de la pantalla.</translation>
@@ -1828,7 +1829,7 @@ Para apagarlo, mantén pulsado de nuevo el botón de encendido del dispositivo.<
 <translation id="7780094051999721182">accesos directos</translation>
 <translation id="7780159184141939021">Girar pantalla</translation>
 <translation id="7781829728241885113">Ayer</translation>
-<translation id="7787212146956232129">Los dispositivos de entrada y de salida. están definidos. Ve a Configuración para cambiarlos.</translation>
+<translation id="7787212146956232129">Se han definido los dispositivos de entrada y salida. Ve a Configuración para cambiarlos.</translation>
 <translation id="7792590255364786396">Visible</translation>
 <translation id="7796735576426975947">Nueva notificación oculta</translation>
 <translation id="7798302898096527229">Pulsa la tecla de búsqueda o Mayús para cancelarlo.</translation>
@@ -2137,7 +2138,7 @@ Para apagarlo, mantén pulsado de nuevo el botón de encendido del dispositivo.<
 <translation id="8934926665751933910">{NUM_FILES,plural, =1{1 archivo}other{# archivos}}</translation>
 <translation id="8936501819958976551">desactivado</translation>
 <translation id="8938800817013097409">Dispositivo USB tipo C (puerto derecho situado en la parte trasera)</translation>
-<translation id="8939855324412367560">La entrada de audio es <ph name="INPUT_DEVICE_NAME" /> y la salida de audio, <ph name="OUTPUT_DEVICE_NAME" />. Ve a Configuración para cambiarlas.</translation>
+<translation id="8939855324412367560">La entrada de audio es <ph name="INPUT_DEVICE_NAME" />, y la salida de audio, <ph name="OUTPUT_DEVICE_NAME" />. Ve a Configuración para cambiarlas.</translation>
 <translation id="8940956008527784070">Poca batería (<ph name="PERCENTAGE" />%)</translation>
 <translation id="894774083269346314"><ph name="PROFILE_NAME" /> <ph name="EMAIL" /> Casilla no seleccionada.</translation>
 <translation id="8949925099261528566">Conexión sin Internet</translation>

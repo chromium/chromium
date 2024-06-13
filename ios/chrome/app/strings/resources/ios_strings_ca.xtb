@@ -850,6 +850,7 @@ Consulta les instruccions del teu motor de cerca per suprimir l'historial de cer
 <translation id="5345660046352249607">{COUNT,plural, =1{Vols fer el seguiment d'aquest paquet?}other{Vols fer el seguiment de {COUNT} paquets?}}</translation>
 <translation id="5348775987281903912">Pots compartir aquesta pàgina aquí des del botó per compartir.</translation>
 <translation id="536067926684072644">Mostra adreces d'interès</translation>
+<translation id="537853552771686272">Gestiona els temes i els llocs web que t'interessen</translation>
 <translation id="5379352933722332597">{count,plural, =1{L'adreça d'interès s'ha desat a "{title}", i només en aquest dispositiu.}other{S'han desat {count} adreces d'interès a "{title}", i només en aquest dispositiu.}}</translation>
 <translation id="5388358297987318779">Obre una imatge</translation>
 <translation id="5395707839134961196">Amaga els detalls del motor de cerca</translation>
@@ -932,6 +933,7 @@ Handoff també ha d'estar activat a la secció General de Configuració, i els v
 <translation id="5758631781033351321">Trobaràs la llista de lectura aquí</translation>
 <translation id="5765456154762864099">Menú → Configuració → Navegador predeterminat</translation>
 <translation id="5777888488419460501">Desa al compte</translation>
+<translation id="5778292857689789362">Grup de pestanyes, <ph name="GROUP_TITLE" />, <ph name="TABS_NUMBER" /> pestanyes.</translation>
 <translation id="5782227691023083829">S'està traduint...</translation>
 <translation id="5791632441210678828">Botó Ordena del tauler Seguint</translation>
 <translation id="5793373065989412701">S'estan comprovant els membres de la família…</translation>

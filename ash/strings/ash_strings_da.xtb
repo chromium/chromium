@@ -251,6 +251,7 @@ Her er nogle af de ting, du kan prøve for at komme godt i gang.</translation>
 <translation id="1915307458270490472">Læg på</translation>
 <translation id="1918022425394817322">Kameraet er fastgjort til hjørnet øverst til højre</translation>
 <translation id="1923539912171292317">Automatiske klik</translation>
+<translation id="1925320505152357008">mindre end 1 min.</translation>
 <translation id="1928739107511554905">Brug touchskærmen til at genstarte din Chromebook med det tilsluttede tastatur for at hente opdateringen.</translation>
 <translation id="1948405482892809935">Skift til næste bruger</translation>
 <translation id="1951012854035635156">Assistent</translation>
@@ -604,6 +605,7 @@ Her er nogle af de ting, du kan prøve for at komme godt i gang.</translation>
 <translation id="334927402682780278">Markér tekst fra markør til slutningen af linjen</translation>
 <translation id="3349345708646875009">Åbn Jobliste</translation>
 <translation id="3364721542077212959">Styluspenværktøjer</translation>
+<translation id="3365281428003534650">Angiv en timer og en opgave</translation>
 <translation id="3365977133351922112">Din telefon er for langt væk. Prøv at flytte telefonen tættere på.</translation>
 <translation id="3368922792935385530">Forbundet</translation>
 <translation id="3369111525500416043">Skal snart afleveres</translation>
@@ -907,6 +909,7 @@ Nogle funktioner er begrænset for at forlænge batteritiden.</translation>
 <translation id="4406883609789734330">Livetekstning</translation>
 <translation id="4412698727486357573">Hjælp</translation>
 <translation id="4412944820643904175"><ph name="FEATURE_NAME" /> er deaktiveret.</translation>
+<translation id="4417647906073317561">Indstillinger for fokus. Angiv en timer, opgave eller ringetone for at komme i gang.</translation>
 <translation id="4424159417645388645">Skrivebord 5</translation>
 <translation id="4430019312045809116">Lydstyrke</translation>
 <translation id="4441283832827406317">Apps er sorteret efter navn</translation>
@@ -1670,6 +1673,7 @@ Installeret for nylig</translation>
 <translation id="7167913274352523149"><ph name="HOTSPOT" />,
         <ph name="NETWORK" /></translation>
 <translation id="7168224885072002358">Fortryder og vender tilbage til den gamle opløsning om <ph name="TIMEOUT_SECONDS" /> sekunder.</translation>
+<translation id="7173114856073700355">Åbn Indstillinger</translation>
 <translation id="7180611975245234373">Opdater</translation>
 <translation id="7181691792034457084">Hej! <ph name="PRODUCT_NAME" /> er lidt anderledes.</translation>
 <translation id="7188494361780961876">Menuen blev flyttet til øverste venstre hjørne af skærmen.</translation>
@@ -1862,6 +1866,7 @@ Du kan slukke enheden ved at holde afbryderknappen på enheden nede igen.</trans
         <ph name="MANAGED" />
         <ph name="IME" />
         <ph name="LOCALE" /></translation>
+<translation id="7899977217122813285">Notifikationer ignoreres indtil <ph name="TIME" />, mens du fokuserer på din opgave</translation>
 <translation id="7901190436359881020">Byt vinduerne</translation>
 <translation id="7901405293566323524">Telefonstyring</translation>
 <translation id="7902625623987030061">Sæt finger på fingeraftrykslæser</translation>

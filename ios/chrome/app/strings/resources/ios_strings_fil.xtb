@@ -850,6 +850,7 @@ Tingnan ang mga tagubilin ng iyong search engine para sa pag-delete sa history n
 <translation id="5345660046352249607">{COUNT,plural, =1{Subaybayan ang Package na Ito?}one{Subaybayan ang {COUNT} Package?}other{Subaybayan ang {COUNT} na Package?}}</translation>
 <translation id="5348775987281903912">Puwede mong i-share ang page na ito rito mula sa button na i-share.</translation>
 <translation id="536067926684072644">Ipakita ang Mga Bookmark</translation>
+<translation id="537853552771686272">Pamahalaan ang mga paksa at site kung saan ka interesado</translation>
 <translation id="5379352933722332597">{count,plural, =1{Na-save ang bookmark sa "{title}." Naka-save lang ito sa device na ito.}one{{count} Bookmark ang na-save sa "{title}." Naka-save lang ang mga ito sa device na ito.}other{{count} na Bookmark ang na-save sa "{title}." Naka-save lang ang mga ito sa device na ito.}}</translation>
 <translation id="5388358297987318779">Buksan ang Larawan</translation>
 <translation id="5395707839134961196">I-hide ang mga detalye ng search engine</translation>
@@ -932,6 +933,7 @@ Dapat ding naka-enable ang handoff sa Pangkalahatang seksyon ng Mga Setting, at 
 <translation id="5758631781033351321">Makikita mo rito ang iyong listahan ng babasahin</translation>
 <translation id="5765456154762864099">Menu → Mga Setting → Default na Browser</translation>
 <translation id="5777888488419460501">I-save sa Account</translation>
+<translation id="5778292857689789362">Grupo ng tab na <ph name="GROUP_TITLE" />, <ph name="TABS_NUMBER" /> (na) Tab.</translation>
 <translation id="5782227691023083829">Tina-translate...</translation>
 <translation id="5791632441210678828">Button na Pagbukud-bukurin para sa feed na Sinusubaybayan.</translation>
 <translation id="5793373065989412701">Sinusuri ang iyong mga miyembro ng pamilya…</translation>

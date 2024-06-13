@@ -125,6 +125,7 @@ Eginbide batzuk agian dira erabilgarri egongo eta hobespenei egindako aldaketak 
 <translation id="2765403129283291972">Chrome-k webgune honen izenean mikrofonoa erabiltzeko baimena behar du</translation>
 <translation id="2770231113462710648">Ezarri hau arakatzaile lehenetsia gisa:</translation>
 <translation id="2775140325783767197">Chrome-k ezin ditu egiaztatu pasahitzak. Egiaztatu Internetera konektatuta zaudela.</translation>
+<translation id="2797864378188255696"><ph name="USER_EMAIL" /> kontuarekin Google-ren zerbitzuetan saioa hastean (adibidez, Gmail-en edo YouTube-n), Chrome-n ere automatikoki has dezakezu saioa kontu berarekin</translation>
 <translation id="2799223571221894425">Abiarazi berriro</translation>
 <translation id="2825024317344269723">Webgune arriskutsua. Chrome-k jakinarazpenak erabiltzeko baimena kendu dio.</translation>
 <translation id="2846251086934905009">Instalazio-errorea: instalatzailea ez da osatu. Instalazioa bertan behera utzi da.</translation>
@@ -299,6 +300,7 @@ Agian eginbide batzuk ez dira erabilgarri egongo. Zehaztu profilaren beste direk
 <translation id="5334309298019785904">Chrome OS-k ezin izan ditu sinkronizatu zure datuak, sinkronizazioa ez dagoelako erabilgarri zure domeinuan.</translation>
 <translation id="5334487786912937552">Chrome-k biltegia erabiltzeko baimena behar du fitxategiak deskargatu ahal izateko</translation>
 <translation id="5337648990166757586">Aukerakoa: lagundu Chrome OS-ren eginbideak eta errendimendua hobetzen Google-ri diagnostiko- eta erabilera-datuak automatikoki bidalita.</translation>
+<translation id="5345497718959596593">Saioa hasita daukazunean, Google-ko kontuko pasahitzak eta beste erabil ditzakezu Chrome-n</translation>
 <translation id="5357889879764279201">Lortu ChromeOS Flex erabiltzeko laguntza</translation>
 <translation id="5368118228313795342">Kode gehigarria: <ph name="EXTRA_CODE" />.</translation>
 <translation id="5386244825306882791">Chrome hastean edo Omnibox bidez bilatzean erakutsiko den orria ere kontrolatzen du.</translation>

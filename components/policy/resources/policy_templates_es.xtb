@@ -7869,7 +7869,7 @@ Si no se define, la lupa estará inhabilitada inicialmente en la pantalla de ini
 <translation id="7113803652772945829">Si se le asigna el valor true a esta política, los usuarios podrán usar un gestor de contraseñas de terceros.
 Ese gestor de contraseñas se encargará de guardar y rellenar todas las contraseñas, los datos de pago y los datos de autocompletado.
 Si se le asigna el valor true a esta política o no se define, una opción permitirá cambiar entre el gestor de contraseñas integrado de <ph name="PRODUCT_NAME" /> y el gestor de contraseñas configurado en los ajustes de Android.
-Como <ph name="PRODUCT_NAME" /> usa los mismos datos que Autocompletar de Google, la opción solo se puede cambiar para usar gestores de contraseñas de terceros si se configura un gestor distinto que no sea Autocompletar con Google en los ajustes del sistema de Android.
+Como <ph name="PRODUCT_NAME" /> usa los mismos datos que Autocompletar con Google, esta opción solo se puede cambiar para usar gestores de contraseñas de terceros si se ha configurado un gestor distinto de Autocompletar con Google en los ajustes del sistema de Android.
 
 Si se le asigna el valor false a esta política, <ph name="PRODUCT_NAME" /> siempre usará el gestor de contraseñas integrado.
 
@@ -10596,7 +10596,7 @@ El valor predeterminado es RollbackDisabled.</translation>
 2 = Inhabilitar la función. 2 es el valor predeterminado de las cuentas de centro educativo que se gestionan en <ph name="GOOGLE_WORKSPACE_PRODUCT_NAME" />.
 
 Para obtener más información sobre el tratamiento de datos en las funciones de IA generativa, consulta https://support.google.com/chrome/a?p=generative_ai_settings.</translation>
-<translation id="949192525372487705">Bloquear el cambio a un gestor de contraseñas de terceros</translation>
+<translation id="949192525372487705">Bloquear el cambio a gestores de contraseñas de terceros</translation>
 <translation id="957322141096206402">La resolución de DNS del sistema se puede ejecutar dentro o fuera del proceso de red, en función de la configuración del sistema y las marcas de funciones.</translation>
 <translation id="957778406002650056">La URL desde la que se puede descargar la imagen de <ph name="PLUGIN_VM_NAME" />.</translation>
 <translation id="957920984193041197">Permitir que las páginas muestren ventanas emergentes durante la descarga</translation>

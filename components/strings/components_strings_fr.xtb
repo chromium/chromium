@@ -547,6 +547,7 @@ Par défaut, ce type d'accès est bloqué par vos paramètres de confidentialit�
 <translation id="2003709556000175978">Réinitialiser votre mot de passe maintenant</translation>
 <translation id="2003775180883135320">Quadruple perforation en haut</translation>
 <translation id="2004697686368036666">Il est possible que les fonctionnalités de certains sites ne fonctionnent pas</translation>
+<translation id="2005042463110681802">Vous voyez cet avertissement, car ce site n'est pas HTTPS et que vous êtes en mode navigation privée. <ph name="BEGIN_LEARN_MORE_LINK" />En savoir plus<ph name="END_LEARN_MORE_LINK" /></translation>
 <translation id="2009942480257059311">Bouton "Créer un événement" à activer pour créer rapidement un événement dans Google Agenda</translation>
 <translation id="201174227998721785">Gérez les autorisations et les données stockées sur les sites dans les paramètres Chrome</translation>
 <translation id="2012276282211112603">Aucun thème à afficher pour l'instant</translation>
@@ -1482,6 +1483,7 @@ Par défaut, ce type d'accès est bloqué par vos paramètres de confidentialit�
 <translation id="3799805948399000906">Police demandée</translation>
 <translation id="3801265110651850478">Envoyer une requête "Do Not Track" pendant la navigation</translation>
 <translation id="380329542618494757">Nom</translation>
+<translation id="3803801106042434208">Ces moteurs de recherche sont populaires dans votre région</translation>
 <translation id="3806932344025766608">Des pirates informatiques qui se trouvent sur le site que vous essayez de consulter peuvent vous inciter à installer des logiciels ou à divulguer des éléments tels que votre mot de passe, votre numéro de téléphone ou votre numéro de carte de crédit. Chrome vous recommande vivement de revenir en lieu sûr. <ph name="BEGIN_LEARN_MORE_LINK" />En savoir plus<ph name="END_LEARN_MORE_LINK" /></translation>
 <translation id="3807366285948165054">Décalage X de l'image</translation>
 <translation id="3807709094043295184">Classiques rock</translation>
@@ -2648,7 +2650,7 @@ Par défaut, ce type d'accès est bloqué par vos paramètres de confidentialit�
 <translation id="6105460996796456817">Créer un site</translation>
 <translation id="6106989379647458772">Il est possible que la page Web située à l'adresse <ph name="PAGE" /> soit temporairement inaccessible ou qu'elle ait été déplacée de façon permanente à une nouvelle adresse Web.</translation>
 <translation id="6107012941649240045">Émis pour</translation>
-<translation id="6107924765192360631">Commencez avec quelques mots ou un premier brouillon pour obtenir des suggestions de rédaction.</translation>
+<translation id="6107924765192360631">Commencez avec quelques mots ou un premier jet pour obtenir des suggestions de texte.</translation>
 <translation id="6108702513636120202">Votre moteur de recherche dans Chromium</translation>
 <translation id="6108849843016142864">Reptiles et amphibiens</translation>
 <translation id="610911394827799129">Votre compte Google conserve peut-être d'autres contenus d'historique de navigation sur la page <ph name="BEGIN_LINK" />myactivity.google.com<ph name="END_LINK" /></translation>

@@ -71,6 +71,7 @@
 <translation id="1235458158152011030">ଜଣାଶୁଣା ନେଟ୍‌ୱାର୍କ</translation>
 <translation id="1239161794459865856"><ph name="FEATURE_NAME" /> ସଂଯୁକ୍ତ ହୋଇଛି।</translation>
 <translation id="1240638468526743569">ଏକ ଆପ</translation>
+<translation id="1242198791279543032">ବିଜ୍ଞପ୍ତିଗୁଡ଼ିକୁ ମ୍ୟୁଟ କରାଯାଇଛି</translation>
 <translation id="1242883863226959074">ଡିଭାଇସ୍</translation>
 <translation id="1245644940275736236">Assistantକୁ ଯାଆନ୍ତୁ</translation>
 <translation id="124678866338384709">ସାମ୍ପ୍ରତିକ ଟାବ୍ ବନ୍ଦ କରନ୍ତୁ</translation>
@@ -178,6 +179,7 @@
 <translation id="1611993646327628135">ଚାଲୁ ଅଛି</translation>
 <translation id="1620510694547887537">କ୍ୟାମେରା</translation>
 <translation id="1623768535032616219">Google Classroomକୁ ସଙ୍କୁଚିତ କରନ୍ତୁ</translation>
+<translation id="163032029566320584"><ph name="UNAVAILABLE_DLC" /> ଉପଲବ୍ଧ ନାହିଁ।</translation>
 <translation id="1632985212731562677">ସେଟିଂସ୍ &gt; ଆକ୍ସେସିବିଲିଟୀରେ 'ସ୍ୱିଚ୍ ଆକ୍ସେସ୍' ସୁବିଧା ଅକ୍ଷମ କରାଯାଇପାରିବ।</translation>
 <translation id="1637505162081889933"><ph name="NUM_DEVICES" />ଟି ଡିଭାଇସ୍</translation>
 <translation id="1639239467298939599">ଲୋଡ୍ ହେଉଛି</translation>
@@ -719,6 +721,7 @@
 <translation id="3702846122927433391">ନାଇଜେରିଆର ଜନସଂଖ୍ୟା</translation>
 <translation id="3705722231355495246">-</translation>
 <translation id="3706423975342040244">ମନୋରଞ୍ଜନ</translation>
+<translation id="3707093869106077605"><ph name="UNAVAILABLE_DLC_ONE" /> ଏବଂ <ph name="UNAVAILABLE_DLC_TWO" /> ଉପଲବ୍ଧ ନାହିଁ।</translation>
 <translation id="3708186454126126312">ପୂର୍ବରୁ ସଂଯୋଗ କରାଯାଇଛି</translation>
 <translation id="3712143870407382523">ଏହି ସାଇଡ ପାଇଁ ଏକ ୱିଣ୍ଡୋ ବାଛନ୍ତୁ</translation>
 <translation id="371370241367527062">ସାମ୍‌ନାପଟର ମାଇକ୍ରୋଫୋନ୍</translation>
@@ -991,6 +994,7 @@
 <translation id="4733161265940833579"><ph name="BATTERY_PERCENTAGE" />% (ବାମ)</translation>
 <translation id="4734965478015604180">ଭୂସମାନ୍ତର</translation>
 <translation id="4735944890391795473">ଡେସ୍କ 12</translation>
+<translation id="4736732123074402682">ଆପଣଙ୍କ କନେକ୍ସନ ଯାଞ୍ଚ କରି ପୁଣି ଚେଷ୍ଟା କରନ୍ତୁ।</translation>
 <translation id="473775607612524610">ଅପ୍‍‍ଡେଟ୍</translation>
 <translation id="4740516757091333363">ସେଭ ହୋଇଥିବା ଡେସ୍କକୁ ଡିଲିଟ କରିବେ?</translation>
 <translation id="4746798685375253449">{0,plural, =1{ଡିଭାଇସକୁ ଗୋଟିଏ ଦିନ ମଧ୍ୟରେ ପୂର୍ବବର୍ତ୍ତୀ ଭର୍ସନକୁ ଅପଡେଟ କରନ୍ତୁ}other{ଡିଭାଇସକୁ # ଦିନ ମଧ୍ୟରେ ପୂର୍ବବର୍ତ୍ତୀ ଭର୍ସନକୁ ଅପଡେଟ କରନ୍ତୁ}}</translation>
@@ -1324,6 +1328,7 @@
 <translation id="588258955323874662">ପୂର୍ଣ୍ଣସ୍କ୍ରିନ</translation>
 <translation id="5887954372087850114"><ph name="DESK_TITLE" /> ପାଇଁ Window <ph name="WINDOW_TITLE" /> ଆସାଇନ କରାଯାଇଛି ଏବଂ ଏହାକୁ ଅନ୍ୟ ସମସ୍ତ ଡେସ୍କରୁ ଅନଆସାଇନ କରାଯାଇଛି</translation>
 <translation id="588817334757907802">Chrome ବ୍ରାଉଜରରେ ଫାଇଲ ଖୋଲନ୍ତୁ</translation>
+<translation id="5892014525522223653">ଆପଣ ଅଫଲାଇନ ଅଛନ୍ତି।</translation>
 <translation id="5895138241574237353">ପୁନଃଆରମ୍ଭ</translation>
 <translation id="589817443623831496">ପଏଣ୍ଟ ସ୍କାନ୍ କରାଯାଉଛି</translation>
 <translation id="5901316534475909376">Shift+Esc</translation>
@@ -1383,6 +1388,7 @@
 <translation id="6095425951508823973"><ph name="PROVIDER" /> ସହ କନେକ୍ସନ ଯୋଗ କରନ୍ତୁ</translation>
 <translation id="6099678161144790572">ଗତ ମାସରେ ଏଡିଟ କରାଯାଇଛି</translation>
 <translation id="6103838137565245112">ସିଷ୍ଟମ</translation>
+<translation id="610395411842312282">ଦୁଇଟି ପାଖାପାଖି ୱିଣ୍ଡୋକୁ ଗୋଷ୍ଠୀଭୁକ୍ତ କରନ୍ତୁ</translation>
 <translation id="6108952804512516814">AI ମାଧ୍ୟମରେ ତିଆରି କରନ୍ତୁ</translation>
 <translation id="6114505516289286752"><ph name="LANGUAGE" /> ସ୍ପିଚ୍ ଫାଇଲଗୁଡ଼ିକ ଡାଉନଲୋଡ୍ କରାଯାଇଛି</translation>
 <translation id="6119360623251949462"><ph name="CHARGING_STATE" />। <ph name="BATTERY_SAVER_STATE" /></translation>
@@ -1390,6 +1396,7 @@
 <translation id="6121838516699723042"><ph name="FILENAME" />କୁ ଡାଉନଲୋଡ କରିବା ସୁନିଶ୍ଚିତ କରନ୍ତୁ</translation>
 <translation id="612734058257491180">ଏକ ଅତିଥି ସମୟ ଅବଧିରେ Google Assistant ଉପଲବ୍ଧ ନାହିଁ।</translation>
 <translation id="6127370444807669747">ପର୍ସନାଲାଇଜ କରାଯାଇଥିବା ପ୍ଲେଲିଷ୍ଟ ଏବଂ ଅଧିକ ଫୋକସ କରାଯାଇଥିବା ମ୍ୟୁଜିକ ପାଇଁ YouTube Music Premium ବ୍ୟବହାର କରି ଦେଖନ୍ତୁ</translation>
+<translation id="6127395413317891856">ଆପଣ ଅଫଲାଇନ ଅଛନ୍ତି। ଆପଣଙ୍କ କନେକ୍ସନ ଯାଞ୍ଚ କରି ପୁଣି ଚେଷ୍ଟା କରନ୍ତୁ।</translation>
 <translation id="6129953537138746214">ସ୍ପେସ୍</translation>
 <translation id="6137566720514957455"><ph name="USER_EMAIL_ADDRESS" /> ପାଇଁ କାଢ଼ି ଦିଅନ୍ତୁ ଡାଏଲଗ୍ ଖୋଲନ୍ତୁ</translation>
 <translation id="6141205840878048728">ଆପଣ କାହା ଉପରେ ଫୋକସ କରିବାକୁ ପସନ୍ଦ କରିବେ?</translation>
@@ -1665,6 +1672,7 @@
 <translation id="7167913274352523149"><ph name="HOTSPOT" />,
         <ph name="NETWORK" /></translation>
 <translation id="7168224885072002358"><ph name="TIMEOUT_SECONDS" /> ମଧ୍ୟରେ ପୁରୁଣା ରିଜୋଲ୍ୟୁଶନ୍‌କୁ ଫେରୁଛି</translation>
+<translation id="7173114856073700355">ସେଟିଂସ୍ ଖୋଲନ୍ତୁ</translation>
 <translation id="7180611975245234373">ରିଫ୍ରେଶ୍</translation>
 <translation id="7181691792034457084">ହାଏ। <ph name="PRODUCT_NAME" /> ସାମାନ୍ୟ ଭିନ୍ନ ଅଟେ।</translation>
 <translation id="7188494361780961876">ସ୍କ୍ରିନର ଶୀର୍ଷ-ବାମ କୋଣକୁ ମେନୁ ମୁଭ୍ କରାଯାଇଛି।</translation>
@@ -1962,6 +1970,7 @@
 <translation id="8257510091797044096">ଆପଣଙ୍କ ଡିଭାଇସ ସେଟ ଅପ କରନ୍ତୁ</translation>
 <translation id="8261506727792406068">ବିଲୋପ</translation>
 <translation id="8262312463845990408">ପ୍ଲେବେକ ଟୋଗଲ କରନ୍ତୁ</translation>
+<translation id="8268302343625273732">Google Classroomରେ ସମସ୍ତ ଆସାଇନମେଣ୍ଟ ଦେଖନ୍ତୁ</translation>
 <translation id="8277261673056602147">ଆପଣଙ୍କ ସ୍କ୍ରିନରେ ଟେକ୍ସଟକୁ ହାଇଲାଇଟ କରନ୍ତୁ</translation>
 <translation id="8287009018010202411">ଉତ୍ପାଦନକ୍ଷମତା</translation>
 <translation id="828708037801473432">ବନ୍ଦ</translation>

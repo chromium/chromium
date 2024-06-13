@@ -16,6 +16,7 @@
 <translation id="1203500561924088507">L'installazione è terminata. Dovrai riavviare il browser per poter utilizzare <ph name="BUNDLE_NAME" />.</translation>
 <translation id="1262876892872089030">Mentre questa scheda non era attiva, la memoria è stata liberata per mantenere Chromium veloce. Puoi scegliere di escludere sempre il sito dall'inattività.</translation>
 <translation id="1265577313130862557">Chromium ha bloccato questo download perché il file è pericoloso</translation>
+<translation id="126567311906253476">Quando accedi a servizi Google come Gmail o YouTube con <ph name="USER_EMAIL" />, puoi accedere automaticamente a Chromium con lo stesso account</translation>
 <translation id="1315551408014407711">Configura il tuo nuovo profilo di Chromium</translation>
 <translation id="1342274909142618978">Elimina i dati anche da Chromium (<ph name="URL" />)</translation>
 <translation id="1414495520565016063">Hai eseguito l'accesso a Chromium.</translation>
@@ -40,6 +41,7 @@ A questo account potrebbero essere applicate le autorizzazioni già concesse a s
 <translation id="1749104137266986751">Quando HTTPS non è disponibile, Chromium utilizza una connessione non sicura senza avvisarti</translation>
 <translation id="1774152462503052664">Lascia Chromium in esecuzione in background</translation>
 <translation id="1779356040007214683">Per rendere Chromium più sicuro, abbiamo disattivato alcune estensioni che non sono elencate nel <ph name="IDS_EXTENSION_WEB_STORE_TITLE" /> e potrebbero essere state aggiunte a tua insaputa.</translation>
+<translation id="1804128559285178512">Se hai eseguito l'accesso, puoi usare le password e altri dati del tuo Account Google in Chromium</translation>
 <translation id="1808667845054772817">Reinstalla Chromium</translation>
 <translation id="1820835682567584003">Chromium sta cercando di <ph name="AUTHENTICATION_PURPOSE" /></translation>
 <translation id="18552579716432081">Per eliminare i dati di navigazione solo da questo dispositivo e conservarli nel tuo Account Google, <ph name="BEGIN_LINK" />esci da Chromium<ph name="END_LINK" />.</translation>

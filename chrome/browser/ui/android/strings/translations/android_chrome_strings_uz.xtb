@@ -90,6 +90,9 @@
 <translation id="1390418506739274310">Havolalarni Chrome orqali ochadigan boshqa ilovalar tarixini koʻrish mumkin. Google hisobingiz orqali bajargan internetdagi faoliyatingizni <ph name="BEGIN_LINK" />myactivity.google.com<ph name="END_LINK" /> orqali koʻrishingiz mumkin.</translation>
 <translation id="13931502444227376">Davom etish uchun <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> ism, email manzil va profil rasmingizni bu sayt bilan ulashadi. Bu saytning <ph name="BEGIN_LINK1" />xizmat shartlari<ph name="END_LINK1" />.</translation>
 <translation id="1397811292916898096"><ph name="PRODUCT_NAME" /> orqali qidirish</translation>
+<translation id="1398057416966591719">Google hisobida <ph name="BEGIN_LINK1" />saqlangan Chrome maʼlumotlarini boshqarish<ph name="END_LINK1" /> mumkin.
+
+Chromeni yaxshilashda ishlatiladigan maʼlumotlar qoʻshimcha sozlamalarini <ph name="BEGIN_LINK2" />Google xizmatlari<ph name="END_LINK2" /> sahifasida ochish mumkin.</translation>
 <translation id="1407069428457324124">Tungi mavzu</translation>
 <translation id="1407135791313364759">Barchasini ochish</translation>
 <translation id="1409879593029778104">“<ph name="FILE_NAME" />” fayli yuklab olinmadi, chunki bunday fayl allaqachon mavjud.</translation>
@@ -249,6 +252,7 @@ Shifrlangan maʼlumotlarni faqatgina kodli ibora yordamida oʻqish mumkin. Kodli
 <translation id="2286841657746966508">To‘lov manzili</translation>
 <translation id="228704530595896923">Ruxsat parametrlari roʻyxati.</translation>
 <translation id="2297822946037605517">Bu sahifani ulashish</translation>
+<translation id="22981027763501686">Boshqa qurilmalaringizda bukmarklar, tarix va boshqalarni olish uchun sinxronlang</translation>
 <translation id="230115972905494466">Mos qurilmalar topilmadi</translation>
 <translation id="2318045970523081853">Chaqirish uchun bosing</translation>
 <translation id="2321086116217818302">Parollar tayyorlanmoqda…</translation>
@@ -853,6 +857,7 @@ Google hisobingiz orqali amalga oshirgan qidiruvlaringiz, brauzer tarixi va bosh
 <translation id="5292796745632149097">Bunga yuborish:</translation>
 <translation id="5301876394151419436"><ph name="EMAIL" /> nomidan kirgansiz. Sinxronlashni istalgan vaqt sozlamalar orqali toʻxtatish mumkin. Brauzer tarixi asosida Google Qidiruv va boshqa xizmatlarni moslashtirishi mumkin.</translation>
 <translation id="5304593522240415983">Bu maydon kiritilishi shart</translation>
+<translation id="5306014156308790439">Kolleksiyaga qoʻshish faolsizlantirilgan</translation>
 <translation id="5308380583665731573">Ulanish</translation>
 <translation id="5316947901395241499">Parol saqlashni administrator taqiqlagan</translation>
 <translation id="5317780077021120954">Saqlash</translation>
@@ -910,6 +915,7 @@ Google hisobingiz orqali amalga oshirgan qidiruvlaringiz, brauzer tarixi va bosh
 <translation id="5596627076506792578">Boshqa sozlamalar</translation>
 <translation id="5599455543593328020">Inkognito rejimidasiz</translation>
 <translation id="5601180634394228718">Chromeni yaxshilashda ishlatiladigan maʼlumotlar qoʻshimcha sozlamalarini <ph name="BEGIN_LINK" />Google xizmatlari<ph name="END_LINK" /> sahifasida ochish mumkin.</translation>
+<translation id="5614625640221885312">Barcha qurilmalaringizda bukmarklar va parollarni olish uchun hisobingizga kiring</translation>
 <translation id="5620163320393916465">Hech qanday parol saqlanmagan</translation>
 <translation id="5620928963363755975">“Yuklanmalar” jildidagi fayl va sahiflarni “Boshqa parametrlar” tugmasidan topish mumkin</translation>
 <translation id="562289928968387744">Munosabatlarni boshqarish</translation>
@@ -951,6 +957,7 @@ Google hisobingiz orqali amalga oshirgan qidiruvlaringiz, brauzer tarixi va bosh
 <translation id="5793665092639000975"><ph name="SPACE_USED" /> band, jami: <ph name="SPACE_AVAILABLE" /></translation>
 <translation id="5795872532621730126">Qidiruv va saytlarni kezish</translation>
 <translation id="5797949256525811424">Bloklangan mavzu</translation>
+<translation id="580893287573699959">Qiziq boʻlgan mavzu va saytlarni boshqarish</translation>
 <translation id="5809361687334836369">{HOURS,plural, =1{# soat oldin}other{# soat oldin}}</translation>
 <translation id="5810288467834065221">© Google LLC, <ph name="YEAR" /> Barcha huquqlar himoyalangan.</translation>
 <translation id="5814749351757353073">Sevimli saytlardan xabar olib turing</translation>

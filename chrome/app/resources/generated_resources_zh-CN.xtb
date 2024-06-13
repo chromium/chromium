@@ -1544,6 +1544,7 @@
 <translation id="2116619964159595185">网站通常会连接到蓝牙设备以实现某些功能（例如设置或同步低功耗信标、健康或健身跟踪器，或智能灯泡）</translation>
 <translation id="2117655453726830283">下一张幻灯片</translation>
 <translation id="211803431539496924">确认延长安全更新？</translation>
+<translation id="2118594521750010466">立即修正</translation>
 <translation id="2119461801241504254">“安全浏览”功能已开启，正在保护您免受有害网站及有害下载内容的侵扰</translation>
 <translation id="2120297377148151361">活动和互动行为</translation>
 <translation id="2120639962942052471">已禁用<ph name="PERMISSION" /></translation>
@@ -1848,6 +1849,7 @@
 <translation id="233375395665273385">删除数据并退出账号</translation>
 <translation id="233471714539944337">敏感内容</translation>
 <translation id="2335111415680198280">{0,plural, =1{关闭 # 个窗口}other{关闭 # 个窗口}}</translation>
+<translation id="2335758110242123814">打开分组</translation>
 <translation id="2336228925368920074">为所有标签页添加书签...</translation>
 <translation id="2336258397628212480"><ph name="APP_NAME" />正在使用<ph name="PRINTER_NAME" />打印 1 页</translation>
 <translation id="2336381494582898602">Powerwash</translation>
@@ -1868,6 +1870,7 @@
 <translation id="2351923523007389195">已允许 - <ph name="PERMISSION_DETAILS" />。请开启<ph name="LINK_BEGIN" />系统位置信息使用权<ph name="LINK_END" />。</translation>
 <translation id="2352662711729498748">&lt; 1MB</translation>
 <translation id="2352810082280059586">锁定屏幕记事会自动保存到 <ph name="LOCK_SCREEN_APP_NAME" /> 中。最近的记事将保留在锁定屏幕上。</translation>
+<translation id="2353168619378866466">打开分组</translation>
 <translation id="2353297238722298836">已允许使用摄像头和麦克风</translation>
 <translation id="2353910600995338714">已成功导出</translation>
 <translation id="2355314311311231464">未能成功配置，因为检索不到您的账号详情。请重试。错误代码：<ph name="ERROR_CODE" />。</translation>
@@ -2820,6 +2823,7 @@
 <translation id="3033348223765101500">控制您的数据</translation>
 <translation id="3036327949511794916">退还此 <ph name="DEVICE_TYPE" /> 的截止日期已过。</translation>
 <translation id="3036546437875325427">启用 Flash</translation>
+<translation id="3037193115779933814">字母和数字</translation>
 <translation id="3038272154009688107">查看所有网站</translation>
 <translation id="3038612606416062604">手动添加打印机</translation>
 <translation id="3039491566278747710">未能在此设备上安装离线政策。</translation>
@@ -3670,6 +3674,7 @@
 <translation id="3699920817649120894">要关闭同步和个性化功能吗？</translation>
 <translation id="3700888195348409686">展示中 (<ph name="PAGE_ORIGIN" />)</translation>
 <translation id="3700993174159313525">不允许网站跟踪您的摄像头位置</translation>
+<translation id="3701167022068948696">立即修正</translation>
 <translation id="3701515417135397388">发现密码遭遇数据泄露时向您发出警告</translation>
 <translation id="3702797829026927713"><ph name="BEGIN_PARAGRAPH1" />为这部正在配置的演示设备输入零售商名称和商店编号*。<ph name="END_PARAGRAPH1" />
     <ph name="BEGIN_PARAGRAPH2" />如果您不知道商店编号，可以输入“0000”以继续执行演示模式安装。<ph name="END_PARAGRAPH2" />
@@ -4207,6 +4212,7 @@
 <translation id="4066207411788646768">请检查您的网络连接状况，以查看网络中可用的打印机</translation>
 <translation id="4067839975993712852">将当前标签页标记为已读</translation>
 <translation id="4068776064906523561">已保存的指纹</translation>
+<translation id="4070132839822635162">不登录</translation>
 <translation id="407173827865827707">点击时</translation>
 <translation id="4072805772816336153">请稍后重试</translation>
 <translation id="4074164314564067597">键盘</translation>
@@ -6015,6 +6021,7 @@
 <translation id="5469540749878136997">根据使用情况释放内存</translation>
 <translation id="5469852975082458401">您可以使用文本光标浏览网页。按 F7 可关闭。</translation>
 <translation id="5470735824776589490">必须先重启设备，然后才能通过 Powerwash 重置。<ph name="LINK_BEGIN" />了解详情<ph name="LINK_END" /></translation>
+<translation id="5470741195701938302">数字</translation>
 <translation id="5471768120198416576">您好！这是文字转语音的语音。</translation>
 <translation id="5472627187093107397">为此网站保存密码</translation>
 <translation id="5473062644742711742">在 Chrome 应用商店中查找更多无障碍工具</translation>
@@ -6848,6 +6855,7 @@
 <translation id="6101226222197207147">已添加新应用（<ph name="EXTENSION_NAME" />）</translation>
 <translation id="6102043788063419338">此文件已被高级保护功能屏蔽。</translation>
 <translation id="6103681770816982672">警告：您打算切换到开发者版本</translation>
+<translation id="610395411842312282">将两个并排窗口设为一组</translation>
 <translation id="6104068876731806426">Google 账号</translation>
 <translation id="6104667115274478616">管理 ChromeOS 音频设置</translation>
 <translation id="6104796831253957966">打印机队列已满</translation>
@@ -7326,6 +7334,7 @@
 <translation id="6469702164109431067">密码和通行密钥</translation>
 <translation id="6470823736074966819">将通知静音</translation>
 <translation id="6472893788822429178">显示“主页”按钮</translation>
+<translation id="6473315466413288899">选择一个选项</translation>
 <translation id="6474498546677193336">无法停止共享，因为有一个应用正在使用此文件夹。系统将会在下次关闭 Linux 时停止共享此文件夹。</translation>
 <translation id="6474884162850599008">取消与 Google 云端硬盘账号的关联</translation>
 <translation id="6475294023568239942">请在“设置”中释放磁盘空间或调整 Linux 磁盘大小</translation>
@@ -10791,6 +10800,7 @@
 <translation id="9031811691986152304">重试</translation>
 <translation id="9032004780329249150">在 iOS 设备上使用您的密码</translation>
 <translation id="9032097289595078011">停用快速配对</translation>
+<translation id="9032513103438497286">屏蔽在此 <ph name="DEVICE_TYPE" /> 上安装的应用。如要限制下载应用或内容，请前往 Google Play 设置。</translation>
 <translation id="9033765790910064284">仍然继续</translation>
 <translation id="9033857511263905942">粘贴(&amp;P)</translation>
 <translation id="9034408118624208974">初次使用 Chromebook？不妨开启同步功能以便备份您的偏好设置。</translation>

@@ -818,7 +818,7 @@ Los permisos que hayas dado a aplicaciones se pueden aplicar a esta cuenta. Pued
 <translation id="1596286373007273895">Disponible</translation>
 <translation id="1596709061955594992">El Bluetooth está desactivado. Para ver los dispositivos disponibles, activa el Bluetooth.</translation>
 <translation id="1596780725094407793">(subdominios incluidos)</translation>
-<translation id="1598163867407640634">Usa <ph name="SITE_ETLD_PLUS_ONE" /> con <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /></translation>
+<translation id="1598163867407640634">Usar <ph name="SITE_ETLD_PLUS_ONE" /> con <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /></translation>
 <translation id="1598233202702788831">El administrador ha inhabilitado las actualizaciones.</translation>
 <translation id="1600541617401655593">Ayuda a mejorar las funciones y el rendimiento de ChromeOS Flex. Los datos se agregan y están muy protegidos.</translation>
 <translation id="1600857548979126453">Acceder al servidor de depuración de página</translation>
@@ -1553,6 +1553,7 @@ Puedes gestionar la configuración de esta cuenta instalando la aplicación Fami
 <translation id="2116619964159595185">Los sitios se suelen conectar a dispositivos Bluetooth para usarlos en funciones como configurar o sincronizar una baliza electrónica, un monitor de actividad física o de salud, o una bombilla inteligente</translation>
 <translation id="2117655453726830283">Diapositiva siguiente</translation>
 <translation id="211803431539496924">¿Confirmar actualizaciones de seguridad ampliadas?</translation>
+<translation id="2118594521750010466">Corregir ahora</translation>
 <translation id="2119461801241504254">La función Navegación segura está activada y te protege de descargas y sitios dañinos</translation>
 <translation id="2120297377148151361">Actividad e interacciones</translation>
 <translation id="2120639962942052471">Bloqueado: <ph name="PERMISSION" /></translation>
@@ -3689,6 +3690,7 @@ Puedes gestionar la configuración de esta cuenta instalando la aplicación Fami
 <translation id="3699920817649120894">¿Quieres desactivar la sincronización y la personalización?</translation>
 <translation id="3700888195348409686">Mostrando (<ph name="PAGE_ORIGIN" />)</translation>
 <translation id="3700993174159313525">No permitir que los sitios monitoricen la posición de tu cámara</translation>
+<translation id="3701167022068948696">Corregir ahora</translation>
 <translation id="3701515417135397388">Avisarte si se ha vulnerado una contraseña en una brecha de seguridad de datos</translation>
 <translation id="3702797829026927713"><ph name="BEGIN_PARAGRAPH1" />Introduce el nombre del comercio y el número de la tienda para la que se está configurando este dispositivo de demostración*. <ph name="END_PARAGRAPH1" />
     <ph name="BEGIN_PARAGRAPH2" />Si no sabes cuál es el número de la tienda, puedes introducir "0000" para continuar con la instalación del modo Demo. <ph name="END_PARAGRAPH2" />

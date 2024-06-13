@@ -179,6 +179,7 @@
 <translation id="1611993646327628135">开启</translation>
 <translation id="1620510694547887537">摄像头</translation>
 <translation id="1623768535032616219">收起 Google 课堂</translation>
+<translation id="163032029566320584">“<ph name="UNAVAILABLE_DLC" />”不可用。</translation>
 <translation id="1632985212731562677">您可在“设置”&gt;“无障碍”中停用“开关控制”功能。</translation>
 <translation id="1637505162081889933"><ph name="NUM_DEVICES" /> 部设备</translation>
 <translation id="1639239467298939599">正在加载</translation>
@@ -250,6 +251,7 @@
 <translation id="1915307458270490472">中止</translation>
 <translation id="1918022425394817322">相机已对准右上角</translation>
 <translation id="1923539912171292317">自动点击</translation>
+<translation id="1925320505152357008">不到 1 分钟</translation>
 <translation id="1928739107511554905">要想获取此项更新，请在已连接该键盘的情况下使用触摸屏重新启动您的 Chromebook。</translation>
 <translation id="1948405482892809935">切换到下一个用户</translation>
 <translation id="1951012854035635156">智能助理</translation>
@@ -603,6 +605,7 @@
 <translation id="334927402682780278">选中从光标处到行尾的文字</translation>
 <translation id="3349345708646875009">打开任务管理器</translation>
 <translation id="3364721542077212959">触控笔工具</translation>
+<translation id="3365281428003534650">设置定时器、任务和音乐</translation>
 <translation id="3365977133351922112">您的手机太远了，请移近些。</translation>
 <translation id="3368922792935385530">已连接</translation>
 <translation id="3369111525500416043">即将到期</translation>
@@ -718,6 +721,7 @@
 <translation id="3702846122927433391">尼日利亚的人口</translation>
 <translation id="3705722231355495246">-</translation>
 <translation id="3706423975342040244">娱乐</translation>
+<translation id="3707093869106077605">“<ph name="UNAVAILABLE_DLC_ONE" />”和“<ph name="UNAVAILABLE_DLC_TWO" />”不可用。</translation>
 <translation id="3708186454126126312">曾经连接过</translation>
 <translation id="3712143870407382523">选择这一侧的窗口</translation>
 <translation id="371370241367527062">前置麦克风</translation>
@@ -904,6 +908,7 @@
 <translation id="4406883609789734330">实时字幕</translation>
 <translation id="4412698727486357573">帮助中心</translation>
 <translation id="4412944820643904175">“<ph name="FEATURE_NAME" />”功能已关闭。</translation>
+<translation id="4417647906073317561">专注模式设置。您可以设置定时器、任务和音乐，让自己进入状态。</translation>
 <translation id="4424159417645388645">桌面 5</translation>
 <translation id="4430019312045809116">音量</translation>
 <translation id="4441283832827406317">应用已按名称排序</translation>
@@ -988,6 +993,7 @@
 <translation id="4733161265940833579"><ph name="BATTERY_PERCENTAGE" />%（左侧）</translation>
 <translation id="4734965478015604180">横向</translation>
 <translation id="4735944890391795473">桌面 12</translation>
+<translation id="4736732123074402682">请检查连接，然后重试。</translation>
 <translation id="473775607612524610">更新</translation>
 <translation id="4740516757091333363">要删除已保存的桌面吗？</translation>
 <translation id="4746798685375253449">{0,plural, =1{在 1 天内将设备回滚为上一个版本}other{在 # 天内将设备回滚为上一个版本}}</translation>
@@ -1320,6 +1326,7 @@
 <translation id="588258955323874662">全屏</translation>
 <translation id="5887954372087850114">已将窗口“<ph name="WINDOW_TITLE" />”分配至“<ph name="DESK_TITLE" />”，并已取消此窗口与所有其他桌面的分配关系</translation>
 <translation id="588817334757907802">在 Chrome 浏览器中打开文件</translation>
+<translation id="5892014525522223653">您处于离线状态。</translation>
 <translation id="5895138241574237353">重新启动</translation>
 <translation id="589817443623831496">点扫描</translation>
 <translation id="5901316534475909376">Shift+Esc</translation>
@@ -1379,6 +1386,7 @@
 <translation id="6095425951508823973">添加与 <ph name="PROVIDER" /> 的关联</translation>
 <translation id="6099678161144790572">过去一个月内修改过</translation>
 <translation id="6103838137565245112">系统</translation>
+<translation id="610395411842312282">将两个并排窗口设为一组</translation>
 <translation id="6108952804512516814">利用 AI 创作</translation>
 <translation id="6114505516289286752"><ph name="LANGUAGE" />语音识别结果文件已下载完毕</translation>
 <translation id="6119360623251949462"><ph name="CHARGING_STATE" />。<ph name="BATTERY_SAVER_STATE" /></translation>
@@ -1386,6 +1394,7 @@
 <translation id="6121838516699723042">确认下载“<ph name="FILENAME" />”</translation>
 <translation id="612734058257491180">无法在访客会话中使用 Google 助理。</translation>
 <translation id="6127370444807669747">如需聆听个性化播放列表和更多专注模式音乐，请试用 YouTube Music Premium</translation>
+<translation id="6127395413317891856">您处于离线状态。请检查连接，然后重试。</translation>
 <translation id="6129953537138746214">空格</translation>
 <translation id="6137566720514957455">打开与 <ph name="USER_EMAIL_ADDRESS" /> 对应的“移除账号”对话框</translation>
 <translation id="6141205840878048728">您打算专注于什么任务？</translation>
@@ -1662,6 +1671,7 @@
 <translation id="7167913274352523149"><ph name="HOTSPOT" />，
         <ph name="NETWORK" /></translation>
 <translation id="7168224885072002358"><ph name="TIMEOUT_SECONDS" />秒后恢复到原分辨率</translation>
+<translation id="7173114856073700355">打开“设置”</translation>
 <translation id="7180611975245234373">刷新</translation>
 <translation id="7181691792034457084">您好！<ph name="PRODUCT_NAME" /> 有一些变化。</translation>
 <translation id="7188494361780961876">菜单已移至屏幕的左上角。</translation>
@@ -1854,6 +1864,7 @@
         <ph name="MANAGED" />
         <ph name="IME" />
         <ph name="LOCALE" /></translation>
+<translation id="7899977217122813285">专注模式已开启，系统会在<ph name="TIME" /> 之前忽略通知</translation>
 <translation id="7901190436359881020">切换窗口</translation>
 <translation id="7901405293566323524">手机中心</translation>
 <translation id="7902625623987030061">请轻触指纹传感器</translation>
@@ -1958,6 +1969,7 @@
 <translation id="8257510091797044096">设置设备</translation>
 <translation id="8261506727792406068">删除</translation>
 <translation id="8262312463845990408">播放/暂停切换按钮</translation>
+<translation id="8268302343625273732">查看 Google 课堂中的所有作业</translation>
 <translation id="8277261673056602147">突出显示屏幕上的文字</translation>
 <translation id="8287009018010202411">效率</translation>
 <translation id="828708037801473432">已关闭</translation>

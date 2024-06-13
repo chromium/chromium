@@ -850,6 +850,7 @@ See your search engine’s instructions for deleting your search history, if app
 <translation id="5345660046352249607">{COUNT,plural, =1{Track this package?}other{Track {COUNT} packages?}}</translation>
 <translation id="5348775987281903912">You can share this page here from the share button.</translation>
 <translation id="536067926684072644">Show bookmarks</translation>
+<translation id="537853552771686272">Manage the topics and sites that you're interested in</translation>
 <translation id="5379352933722332597">{count,plural, =1{Bookmark saved to ‘{title}’. It is saved only to this device.}other{{count} Bookmarks saved to ‘{title}’. They are saved only to this device.}}</translation>
 <translation id="5388358297987318779">Open image</translation>
 <translation id="5395707839134961196">Hide search engine details</translation>
@@ -932,6 +933,7 @@ Handoff must also be enabled in the General section of Settings, and your device
 <translation id="5758631781033351321">You'll find your reading list here</translation>
 <translation id="5765456154762864099">Menu → Settings → Default browser</translation>
 <translation id="5777888488419460501">Save in account</translation>
+<translation id="5778292857689789362">Tab group, <ph name="GROUP_TITLE" />, <ph name="TABS_NUMBER" /> tabs.</translation>
 <translation id="5782227691023083829">Translating...</translation>
 <translation id="5791632441210678828">Sort button for Following feed.</translation>
 <translation id="5793373065989412701">Checking your family members…</translation>

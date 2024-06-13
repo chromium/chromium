@@ -251,6 +251,7 @@ Hona hemen hasteko egin ditzakezun gauza batzuk.</translation>
 <translation id="1915307458270490472">Amaitu deia</translation>
 <translation id="1918022425394817322">Atxiki egin da kamera goiko eskuinaldeko izkinan</translation>
 <translation id="1923539912171292317">Klik automatikoak</translation>
+<translation id="1925320505152357008">minutu bat baino gutxiago</translation>
 <translation id="1928739107511554905">Eguneratzea eskuratzeko, erabili ukipen-pantaila Chromebook-a berrabiarazteko teklatua konektatuta daukala.</translation>
 <translation id="1948405482892809935">Aldatu hurrengo erabiltzailera</translation>
 <translation id="1951012854035635156">Laguntzailea</translation>
@@ -604,6 +605,7 @@ Hona hemen hasteko egin ditzakezun gauza batzuk.</translation>
 <translation id="334927402682780278">Hautatu kurtsoretik lerroaren amaiera arteko testua</translation>
 <translation id="3349345708646875009">Ireki ataza-kudeatzailea</translation>
 <translation id="3364721542077212959">Arkatzaren tresnak</translation>
+<translation id="3365281428003534650">Ezarri tenporizadorea eta zeregina</translation>
 <translation id="3365977133351922112">Telefonoa urrunegi dago. Gertura ezazu.</translation>
 <translation id="3368922792935385530">Konektatuta</translation>
 <translation id="3369111525500416043">Laster entregatu beharrekoak</translation>
@@ -908,6 +910,7 @@ Bateriaren iraupena luzatzeko, eginbide batzuk mugatu dira.</translation>
 <translation id="4406883609789734330">Istanteko azpitituluak</translation>
 <translation id="4412698727486357573">Laguntza-zentroa</translation>
 <translation id="4412944820643904175">Desaktibatuta dago <ph name="FEATURE_NAME" />.</translation>
+<translation id="4417647906073317561">Kontzentratzeko moduaren ezarpenak. Kontzentratzeko saioari ekiteko, ezarri tenporizadorea, zeregina eta musika.</translation>
 <translation id="4424159417645388645">5. lan-eremua</translation>
 <translation id="4430019312045809116">Bolumena</translation>
 <translation id="4441283832827406317">Izenaren arabera daude ordenatuta aplikazioak</translation>
@@ -1671,6 +1674,7 @@ Berriki instalatu da</translation>
 <translation id="7167913274352523149"><ph name="HOTSPOT" />,
         <ph name="NETWORK" /></translation>
 <translation id="7168224885072002358">Aurreko bereizmenera leheneratuko da <ph name="TIMEOUT_SECONDS" /> ondoren</translation>
+<translation id="7173114856073700355">Ireki Ezarpenak</translation>
 <translation id="7180611975245234373">Freskatu</translation>
 <translation id="7181691792034457084">Kaixo: <ph name="PRODUCT_NAME" /> pixka bat ezberdina da.</translation>
 <translation id="7188494361780961876">Pantailaren goiko ezkerreko izkinara eraman da menua.</translation>
@@ -1863,6 +1867,7 @@ Itzaltzeko, eduki sakatuta berriro gailuaren etengailua.</translation>
         <ph name="MANAGED" />
         <ph name="IME" />
         <ph name="LOCALE" /></translation>
+<translation id="7899977217122813285">Kontzentratzeko saioan egon bitartean, jakinarazpenak <ph name="TIME" /> arte ezkutatzen dira</translation>
 <translation id="7901190436359881020">Aldatu leihoak</translation>
 <translation id="7901405293566323524">Phone Hub</translation>
 <translation id="7902625623987030061">Ukitu hatz-marken sentsorea</translation>

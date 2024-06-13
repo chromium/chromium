@@ -80,6 +80,7 @@
 <translation id="1247519845643687288">শেহতীয়া এপ্</translation>
 <translation id="1252999807265626933"><ph name="POWER_SOURCE" />ৰ পৰা চাৰ্জ কৰি থকা হৈছে</translation>
 <translation id="1255033239764210633">বতৰ কেনে?</translation>
+<translation id="1256734167083229794">আপুনি পূৰ্ণ স্ক্ৰীনৰ বিৱৰ্ধকৰ বাবে কীব’ৰ্ডৰ শ্বৰ্টকাটটো টিপিছে। জুম ইন কৰিবলৈ <ph name="ZOOM_IN_ACCELERATOR" /> আৰু জুম আউট কৰিবলৈ <ph name="ZOOM_OUT_ACCELERATOR" /> ব্যৱহাৰ কৰক। জুম ইন কৰা ভিউত ইফাল সিফাল কৰিবলৈ Ctrl+Alt+এৰ’ কীসমূহ ব্যৱহাৰ কৰক।</translation>
 <translation id="1269405891096105529">অতিথি ম’ডত পৰিধীয় সমর্থিত নহয়</translation>
 <translation id="1270290102613614947">অন স্ক্ৰীন কীব’র্ড অক্ষম কৰা হৈছে</translation>
 <translation id="1272079795634619415">বন্ধ কৰক</translation>
@@ -266,6 +267,7 @@
 <translation id="1969011864782743497"><ph name="DEVICE_NAME" /> (ইউএছবি)</translation>
 <translation id="1971815855639997522">ডেস্ক আৰু ৱিণ্ড’ আঁতৰোৱা হৈছে। কাৰ্যটো আনডু কৰিবলৈ Control + Z টিপক।</translation>
 <translation id="1972950159383891558">নমস্কাৰ, <ph name="USERNAME" /></translation>
+<translation id="1977686871076551563">ৰং বিপৰীতকৰণ ম’ডটো সক্ষম কৰা হৈছে। এইটো অফলৈ ট’গল কৰিবলৈ পুনৰ <ph name="ACCELERATOR" />ত টিপক।</translation>
 <translation id="1978498689038657292">পাঠ ইনপুট</translation>
 <translation id="1980808257969311265"><ph name="EVENT_SUMMARY" />ত যোগদান কৰক</translation>
 <translation id="1982717156487272186">পূৰ্বৱৰ্তী সপ্তাহ দেখুৱাওক</translation>
@@ -1190,6 +1192,7 @@
 <translation id="5377367976106153749">কেমেৰাৰ এক্সেছ অন কৰিবনে?</translation>
 <translation id="5379115545237091094">অতি বেছি প্ৰয়াস</translation>
 <translation id="5391307769715781764">ছেভ কৰি থোৱা ডেস্ক সলনি কৰিবনে?</translation>
+<translation id="5392327145184648521">বেটাৰী % গণনা কৰি থকা হৈছে...</translation>
 <translation id="5393156353051693207">আপোনাৰ এপ্ পুনৰ সজাবলৈ যিকোনো ঠাইতে স্পৰ্শ কৰি ধৰি ৰাখক</translation>
 <translation id="5395308026110844773"><ph name="DRAGGED_APP_NAME" /> <ph name="IN_PLACE_APP" />ৰ ওপৰত আছে, ফ'ল্ডাৰ সৃষ্টি কৰিবলৈ এৰি দিয়ক।</translation>
 <translation id="5397578532367286026">পৰিচালকে(<ph name="MANAGER_EMAIL" />) chrome.comত এই ব্যৱহাৰকাৰীৰ ডিভাইচৰ ব্যৱহাৰ আৰু ইতিহাস পর্যালোচনা কৰিব পাৰে।</translation>
@@ -1244,6 +1247,7 @@
 <translation id="5577281275355252094">ফ’ন হাব ব্যৱহাৰ কৰিবলৈ আপোনাৰ ফ'নত ব্লুটুথ সক্ষম কৰা আছেনে নাই সেয়া পৰীক্ষা কৰক</translation>
 <translation id="5578188167649348993">মেম’ৰী</translation>
 <translation id="5580000943347215299">লাইব্ৰেৰী</translation>
+<translation id="5586388332127302891">ড’ক কৰা বিৱৰ্ধক সক্ষম কৰা হ’ল। এইটো অফলৈ ট’গল কৰিবলৈ পুনৰ <ph name="ACCELERATOR" />ত টিপক।</translation>
 <translation id="5587506661873751671">ডাউনল’ড কৰি থকা হৈছে <ph name="DOWNLOAD_PERCENT" />%</translation>
 <translation id="558849140439112033">কেপচাৰ কৰিবৰ বাবে এটা অংশ বাছনি কৰিবলৈ টানি আনি এৰক</translation>
 <translation id="5590609058453685222">নাজ মিউট কৰাৰ সুবিধাটো অন আছে। আপুনি মিউট হৈ থাকোঁতে কথা ক’লে জাননী পাব।</translation>
@@ -1454,6 +1458,7 @@
 <translation id="6319503618073410818">ব্ৰাউজাৰত সবিশেষ চাওক</translation>
 <translation id="6324916366299863871">শ্বৰ্টকাট সম্পাদনা কৰক</translation>
 <translation id="6330012934079202188">আটাইবোৰ ডেস্কৰ পৰা ৱিণ্ড’সমূহ দেখুৱাই থকা হৈছে, বর্তমানৰ ডেস্কখনৰ পৰা ৱিণ্ড'সমূহ দেখুৱাবলৈ আপ এৰ' কীটো টিপক</translation>
+<translation id="6337159624125741244">পূৰ্ণ স্ক্ৰীনৰ বিৱৰ্ধক অন আছে</translation>
 <translation id="6338485349199627913"><ph name="DISPLAY_NAME" /> হৈছে <ph name="MANAGER" />এ পৰিচালনা কৰা এটা পৰিচালিত ছেশ্বন</translation>
 <translation id="6344138931392227467"><ph name="DEVICE_NAME" /> সংযোগ কৰা হৈছে</translation>
 <translation id="6348449481487610270"><ph name="MODIFIER_ONE" /><ph name="MODIFIER_TWO" /><ph name="KEY_ONE" /> তাৰ পাছত <ph name="MODIFIER_THREE" /><ph name="KEY_TWO" /> অথবা <ph name="KEY_THREE" /></translation>
@@ -1521,6 +1526,7 @@
 <translation id="6574587113394758819">চোৱাৰ সুৰক্ষাটো অন হৈ থকাৰ বাবে <ph name="APP_TITLE" />ৰ জাননী লুকুওৱা হৈছে</translation>
 <translation id="6574622320167699133">আপোনাৰ ফ’নৰ দ্বাৰা আনলক কৰা হৈছে। ভিতৰত সোমাবলৈ টিপক অথবা ক্লিক কৰক।</translation>
 <translation id="6578407462441924264">নামবিহীন</translation>
+<translation id="6582034443359256692">বেটাৰীৰ চাৰ্জৰ স্তৰ গণনা কৰি থকা হৈছে।</translation>
 <translation id="6585808820553845416"><ph name="SESSION_TIME_REMAINING" />ত ছেশ্বন অন্ত পৰিব।</translation>
 <translation id="6593850935013518327"><ph name="PRIMARY_TEXT" />, <ph name="SECONDARY_TEXT" /></translation>
 <translation id="6597278316891651699">কেমেৰা তলৰ বাওঁফালৰ কোণলৈ স্নেপ কৰা হৈছে। ছিষ্টেম ছাৰ্ফেচৰ সৈতে সংঘাত।</translation>
@@ -1582,6 +1588,7 @@
 <translation id="6790428901817661496">প্লে’ কৰক</translation>
 <translation id="679368458793552943">বিৱৰ্ধক অন কৰা থাকিলে জুম ইন কৰক</translation>
 <translation id="6794287755901682422">এই বস্তুটোত: <ph name="GLANCEABLES_TASK_ITEM_METADATA" /> আছে।</translation>
+<translation id="6797745268063125932">এইটো অন কৰি ৰাখক</translation>
 <translation id="6801878137098616817">শেহতীয়াকৈ সম্পাদনা কৰা হৈছে</translation>
 <translation id="6802687695197837794">এইটোৱে <ph name="APP1_NAME" />, <ph name="APP2_NAME" /> তথা কেমেৰা আৰু মাইক্ৰ’ফ’নৰ অনুমতি থকা আটাইবোৰ এপ্‌ আৰু ৱেবছাইটৰ বাবে এক্সেছৰ অনুমতি দিয়ে</translation>
 <translation id="6803622936009808957">কোনো সমৰ্থিত ৰিজ’লিউছন বিচাৰি নোপোৱাৰ বাবে ডিছপ্লে’ৰ প্ৰতিবিম্বকৰণ কৰিব নোৱাৰি। বিস্তাৰিত ডেস্কটপত প্ৰৱেশ কৰিব পৰা নগ’ল।</translation>
@@ -1678,6 +1685,7 @@
 <translation id="7167913274352523149"><ph name="HOTSPOT" />,
         <ph name="NETWORK" /></translation>
 <translation id="7168224885072002358"><ph name="TIMEOUT_SECONDS" />ত আগৰ ৰিজলিউশ্বনটোলৈ উভতি যোৱা হ’ব</translation>
+<translation id="7173114856073700355">ছেটিংসমূহ খোলক</translation>
 <translation id="7180611975245234373">ৰিফ্ৰেশ্ব কৰক</translation>
 <translation id="7181691792034457084">নমস্কাৰ। <ph name="PRODUCT_NAME" /> অলপ বেলেগ।</translation>
 <translation id="7188494361780961876">স্ক্ৰীনখনৰ ওপৰৰ বাওঁফালৰ কোণটোলৈ মেনুখন নিয়া হৈছে।</translation>
@@ -1893,6 +1901,7 @@
 <translation id="7947798320695032612"><ph name="APP_NAME" />এ আপোনাৰ <ph name="DEVICE_NAME" /> ব্যৱহাৰ কৰিব বিচাৰে</translation>
 <translation id="7951630946012935453">কীব’ৰ্ডৰ পোহৰ কমাওক</translation>
 <translation id="7953994493035617347">নতুন ৰিজ’লিউছন নিশ্চিত কৰিবনে?</translation>
+<translation id="795958884516058160">পূৰ্ণ স্ক্ৰীনৰ বিৱৰ্ধক সক্ষম কৰা হৈছে। এইটো অফলৈ ট’গল কৰিবলৈ পুনৰ <ph name="ACCELERATOR" />ত টিপক।</translation>
 <translation id="7963689218131240420">অসুবিধা নিদিব অফ কৰা আছে।</translation>
 <translation id="7963992254934562106"><ph name="PHONE_NAME" />ৰ পৰা</translation>
 <translation id="7968693143708939792">ফ’ল্ডাৰ বাছনি কৰক...</translation>
@@ -2148,6 +2157,7 @@
 <translation id="894774083269346314"><ph name="PROFILE_NAME" />ৰ <ph name="EMAIL" />ৰ চেক বাকচত টিক চিহ্ন দিয়া হোৱা নাই।</translation>
 <translation id="8949925099261528566">সংযোজিত, ইণ্টাৰনেট নাই</translation>
 <translation id="8951539504029375108">আপোনাৰ Chromebookৰ সৈতে কেৱল অনুমোদিত Thunderbolt ডিভাইচ সমিল হয়</translation>
+<translation id="8959380109429710384">আপুনি পূৰ্ণ স্ক্ৰীনৰ বিৱৰ্ধকৰ বাবে কীব’ৰ্ডৰ শ্বৰ্টকাটটো টিপিছে। জুম ইন কৰা ভিউত ইফাল সিফাল কৰিবলৈ Ctrl + Alt + এৰ’ কীসমূহ ব্যৱহাৰ কৰক।</translation>
 <translation id="8964525410783593407">১ ঘণ্টা</translation>
 <translation id="8973885907461690937">মেনুৰ চিহ্নত ফ’কাছ কৰক</translation>
 <translation id="8980862970816311842">এপৰ গ্ৰিডত থকা এটা ফ’ল্ডাৰৰ ভিতৰলৈ/বাহিৰলৈ এটা এপৰ চিহ্ন স্থানান্তৰ কৰক</translation>

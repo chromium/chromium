@@ -180,6 +180,7 @@
 <translation id="1611993646327628135">अन छ</translation>
 <translation id="1620510694547887537">क्यामेरा</translation>
 <translation id="1623768535032616219">Google Classroom कोल्याप्स गर्नुहोस्</translation>
+<translation id="163032029566320584"><ph name="UNAVAILABLE_DLC" /> उपलब्ध छैन।</translation>
 <translation id="1632985212731562677">सेटिङ &gt; पहुँचमा गएर स्विचमार्फत पहुँच राख्ने सुविधा असक्षम पार्न सकिन्छ।</translation>
 <translation id="1637505162081889933"><ph name="NUM_DEVICES" /> वटा डिभाइस</translation>
 <translation id="1639239467298939599">लोड गर्दै</translation>
@@ -724,6 +725,7 @@
 <translation id="3702846122927433391">नाइजेरियाको जनसङ्ख्या कति छ</translation>
 <translation id="3705722231355495246">-</translation>
 <translation id="3706423975342040244">मनोरञ्जन</translation>
+<translation id="3707093869106077605"><ph name="UNAVAILABLE_DLC_ONE" /> र <ph name="UNAVAILABLE_DLC_TWO" /> उपलब्ध छैनन्।</translation>
 <translation id="3708186454126126312">यसअघि कनेक्ट गरिएका डिभाइस</translation>
 <translation id="3712143870407382523">यो साइडमा राख्ने विन्डो चयन गर्नुहोस्</translation>
 <translation id="371370241367527062">अगाडिको माइक्रोफोन</translation>
@@ -997,6 +999,7 @@
 <translation id="4733161265940833579"><ph name="BATTERY_PERCENTAGE" />% (बायाँ)</translation>
 <translation id="4734965478015604180">तेर्सो</translation>
 <translation id="4735944890391795473">डेस्क १२</translation>
+<translation id="4736732123074402682">इन्टरनेट जाँचेर फेरि प्रयास गर्नुहोस्।</translation>
 <translation id="473775607612524610">अपडेट गर्नुहोस्</translation>
 <translation id="4740516757091333363">सेभ गरिएको डेस्क मेटाउने हो?</translation>
 <translation id="4746798685375253449">{0,plural, =1{अबको एक दिनभित्र यो डिभाइस अपडेट गरी अघिल्लो संस्करण रिस्टोर गर्नुहोस्}other{अबको # दिनभित्र यो डिभाइस अपडेट गरी अघिल्लो संस्करण रिस्टोर गर्नुहोस्}}</translation>
@@ -1330,6 +1333,7 @@
 <translation id="588258955323874662">पूर्णस्क्रिन</translation>
 <translation id="5887954372087850114">"<ph name="DESK_TITLE" />" मा "<ph name="WINDOW_TITLE" />" विन्डो असाइन गरिएको छ र यो विन्डो अन्य सबै डेस्कबाट अनअसाइन गरिएको छ</translation>
 <translation id="588817334757907802">यो फाइल Chrome ब्राउजरमा खोल्नुहोस्</translation>
+<translation id="5892014525522223653">तपाईं अफलाइन हुनुहुन्छ।</translation>
 <translation id="5895138241574237353">पुन: शुरू गर्नुहोस्</translation>
 <translation id="589817443623831496">पोइन्ट स्क्यानिङ</translation>
 <translation id="5901316534475909376">Shift+Esc</translation>
@@ -1389,6 +1393,7 @@
 <translation id="6095425951508823973"><ph name="PROVIDER" /> को VPN कनेक्सन हाल्नुहोस्</translation>
 <translation id="6099678161144790572">गत महिना सम्पादन गरिएको</translation>
 <translation id="6103838137565245112">सिस्टम</translation>
+<translation id="610395411842312282">सँगसँगै रहेका दुई वटा विन्डो समूहबद्ध गर्नुहोस्</translation>
 <translation id="6108952804512516814">AI प्रयोग गरी सिर्जना गर्नुहोस्</translation>
 <translation id="6114505516289286752"><ph name="LANGUAGE" /> भाषाका वाक् पहिचानसम्बन्धी फाइलहरू डाउनलोड गरिएका छन्</translation>
 <translation id="6119360623251949462"><ph name="CHARGING_STATE" />। <ph name="BATTERY_SAVER_STATE" /></translation>
@@ -1396,6 +1401,7 @@
 <translation id="6121838516699723042"><ph name="FILENAME" /> को डाउनलोड पुष्टि गर्नुहोस्</translation>
 <translation id="612734058257491180">Google सहायक अतिथिको सत्रमा उपलब्ध हुँदैन।</translation>
 <translation id="6127370444807669747">पर्सनलाइज गरिएका प्लेलिस्ट र थप फोकस म्युजिकका लागि YouTube Music Premium चलाई हेर्नुहोस्</translation>
+<translation id="6127395413317891856">तपाईं अफलाइन हुनुहुन्छ। इन्टरनेट जाँचेर फेरि प्रयास गर्नुहोस्।</translation>
 <translation id="6129953537138746214">क्षेत्र</translation>
 <translation id="6137566720514957455"><ph name="USER_EMAIL_ADDRESS" /> को खाता हटाउने कार्यसम्बन्धी डायलग खोल्नुहोस्</translation>
 <translation id="6141205840878048728">तपाईं कुन कार्यमा फोकस गर्न चाहनुहुन्छ?</translation>
@@ -1672,6 +1678,7 @@
 <translation id="7167913274352523149"><ph name="HOTSPOT" />,
         <ph name="NETWORK" /></translation>
 <translation id="7168224885072002358"><ph name="TIMEOUT_SECONDS" /> सेकेन्डमा पुरानो रिजोल्युसनमा फिर्ता जाँदै</translation>
+<translation id="7173114856073700355">सेटिङहरू खोल्नुहोस्</translation>
 <translation id="7180611975245234373">ताजा गर्नुहोस्</translation>
 <translation id="7181691792034457084">नमस्ते। <ph name="PRODUCT_NAME" /> अरू उत्पादनभन्दा थोरै फरक छ।</translation>
 <translation id="7188494361780961876">मेनु सारेर स्क्रिनको सिरानको बायाँ कुनामा लगियो।</translation>
@@ -1970,6 +1977,7 @@
 <translation id="8257510091797044096">आफ्नो डिभाइस सेटअप गर्नुहोस्</translation>
 <translation id="8261506727792406068">मेट्नुहोस्</translation>
 <translation id="8262312463845990408">प्लेब्याक टगल गर्नुहोस्</translation>
+<translation id="8268302343625273732">Google Classroom का सबै असाइनमेन्टहरू हेर्नुहोस्</translation>
 <translation id="8277261673056602147">स्क्रिनमा देखाइएको टेक्स्ट हाइलाइट गर्नुहोस्</translation>
 <translation id="8287009018010202411">उत्पादकत्व</translation>
 <translation id="828708037801473432">अफ</translation>

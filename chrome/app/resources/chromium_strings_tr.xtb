@@ -16,6 +16,7 @@
 <translation id="1203500561924088507">Yüklediğiniz için teşekkürler. <ph name="BUNDLE_NAME" /> uygulamasını kullanmadan önce tarayıcınızı yeniden başlatmanız gerekir.</translation>
 <translation id="1262876892872089030">Bu sekme etkin değilken Chromium'un hızlı çalışmaya devam etmesi için bellekte yer açıldı. Bu siteyi, etkin olmayan sitelerden her zaman hariç tutabilirsiniz.</translation>
 <translation id="1265577313130862557">Dosya tehlikeli olduğu için Chromium bu indirme işlemini engelledi</translation>
+<translation id="126567311906253476"><ph name="USER_EMAIL" /> ile Gmail veya YouTube gibi Google hizmetlerinde oturum açarken aynı hesapla Chromium'da otomatik olarak oturum açabilirsiniz</translation>
 <translation id="1315551408014407711">Yeni Chromium profilinizi oluşturun</translation>
 <translation id="1342274909142618978">Chromium'daki verileri de sil (<ph name="URL" />)</translation>
 <translation id="1414495520565016063">Chromium'da oturum açtınız!</translation>
@@ -40,6 +41,7 @@ Web sitelerine ve uygulamalara verdiğiniz izinler, bu hesap için geçerli olab
 <translation id="1749104137266986751">Chromium, HTTPS kullanılamadığında size uyarı göndermeden güvenli olmayan bir bağlantı kullanır</translation>
 <translation id="1774152462503052664">Chromium'un arka planda çalışmasına izin ver</translation>
 <translation id="1779356040007214683">Chromium'u daha güvenli bir hale getirmek için <ph name="IDS_EXTENSION_WEB_STORE_TITLE" /> altında listelenmeyen ve bilginiz dışında eklenmiş olabilecek bazı uzantıları devre dışı bıraktık.</translation>
+<translation id="1804128559285178512">Oturumunuz açıkken Chromium'da Google Hesabınızdaki şifrelerinizi ve diğer öğeleri kullanabilirsiniz</translation>
 <translation id="1808667845054772817">Chromium'u yeniden yükle</translation>
 <translation id="1820835682567584003">Chromium şunu yapmaya çalışıyor: <ph name="AUTHENTICATION_PURPOSE" /></translation>
 <translation id="18552579716432081">Tarama verilerini yalnızca bu cihazdan silip Google Hesabınızda tutmak için <ph name="BEGIN_LINK" />Chromium oturumunu kapatın<ph name="END_LINK" />.</translation>

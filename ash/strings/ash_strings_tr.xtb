@@ -179,6 +179,7 @@ Başlamak için şunları deneyebilirsin.</translation>
 <translation id="1611993646327628135">Açık</translation>
 <translation id="1620510694547887537">Kamera</translation>
 <translation id="1623768535032616219">Google Classroom'u daraltın</translation>
+<translation id="163032029566320584"><ph name="UNAVAILABLE_DLC" /> kullanılamıyor.</translation>
 <translation id="1632985212731562677">Anahtar Erişimi, Ayarlar &gt; Erişilebilirlik'te devre dışı bırakılabilir.</translation>
 <translation id="1637505162081889933"><ph name="NUM_DEVICES" /> cihaz</translation>
 <translation id="1639239467298939599">Yükleniyor</translation>
@@ -250,6 +251,7 @@ Başlamak için şunları deneyebilirsin.</translation>
 <translation id="1915307458270490472">Kapat</translation>
 <translation id="1918022425394817322">Kamera sağ üst köşeye tutturuldu</translation>
 <translation id="1923539912171292317">Otomatik tıklamalar</translation>
+<translation id="1925320505152357008">1 dakikadan az</translation>
 <translation id="1928739107511554905">Güncellemeyi almak için dokunmatik ekranı kullanarak Chromebook'unuzu klavye takılıyken yeniden başlatın.</translation>
 <translation id="1948405482892809935">Sonraki kullanıcıya geçin</translation>
 <translation id="1951012854035635156">Asistan</translation>
@@ -603,6 +605,7 @@ Başlamak için şunları deneyebilirsin.</translation>
 <translation id="334927402682780278">İmleç konumundan satırın sonuna kadar olan metni seç</translation>
 <translation id="3349345708646875009">Görev yöneticisini açın</translation>
 <translation id="3364721542077212959">Ekran kalemi araçları</translation>
+<translation id="3365281428003534650">Zamanlayıcı, görev ve müzik ayarlayın</translation>
 <translation id="3365977133351922112">Telefonunuz çok uzakta. Telefonunuzu daha yakına getirin.</translation>
 <translation id="3368922792935385530">Bağlı</translation>
 <translation id="3369111525500416043">Teslim tarihi yakında</translation>
@@ -718,6 +721,7 @@ Cihazınızı güç kaynağına bağlayın.</translation>
 <translation id="3702846122927433391">Nijerya'nın nüfusu</translation>
 <translation id="3705722231355495246">-</translation>
 <translation id="3706423975342040244">Eğlence</translation>
+<translation id="3707093869106077605"><ph name="UNAVAILABLE_DLC_ONE" /> ve <ph name="UNAVAILABLE_DLC_TWO" /> kullanılamıyor.</translation>
 <translation id="3708186454126126312">Daha önce bağlanılmış cihazlar</translation>
 <translation id="3712143870407382523">Ekranın bu tarafı için pencere seçin</translation>
 <translation id="371370241367527062">Ön mikrofon</translation>
@@ -905,6 +909,7 @@ Pil ömrünü uzatmak için bazı özellik sınırlandırıldı.</translation>
 <translation id="4406883609789734330">Canlı Altyazı</translation>
 <translation id="4412698727486357573">Yardım merkezi</translation>
 <translation id="4412944820643904175"><ph name="FEATURE_NAME" /> özelliği kapalı.</translation>
+<translation id="4417647906073317561">Odaklanma ayarları. İşe koyulmak için zamanlayıcı, görev ve müzik ayarlayın.</translation>
 <translation id="4424159417645388645">Masa 5</translation>
 <translation id="4430019312045809116">Ses</translation>
 <translation id="4441283832827406317">Uygulamalar ada göre sıralandı</translation>
@@ -989,6 +994,7 @@ Pil ömrünü uzatmak için bazı özellik sınırlandırıldı.</translation>
 <translation id="4733161265940833579">%<ph name="BATTERY_PERCENTAGE" /> (Sol)</translation>
 <translation id="4734965478015604180">Yatay</translation>
 <translation id="4735944890391795473">Masa 12</translation>
+<translation id="4736732123074402682">Bağlantınızı kontrol edip tekrar deneyin.</translation>
 <translation id="473775607612524610">Güncelle</translation>
 <translation id="4740516757091333363">Kayıtlı masa silinsin mi?</translation>
 <translation id="4746798685375253449">{0,plural, =1{Cihazı bir gün içinde önceki sürüme güncelleyin}other{Cihazı # gün içinde önceki sürüme güncelleyin}}</translation>
@@ -1322,6 +1328,7 @@ Bağlı cihaz yok.</translation>
 <translation id="588258955323874662">Tam ekran</translation>
 <translation id="5887954372087850114"><ph name="WINDOW_TITLE" /> penceresi <ph name="DESK_TITLE" /> masasına atandı ve diğer tüm masalardaki ataması kaldırıldı</translation>
 <translation id="588817334757907802">Dosyayı Chrome tarayıcıda aç</translation>
+<translation id="5892014525522223653">İnternete bağlı değilsiniz.</translation>
 <translation id="5895138241574237353">Yeniden başlat</translation>
 <translation id="589817443623831496">Nokta taraması</translation>
 <translation id="5901316534475909376">Üst Karakter+Esc</translation>
@@ -1381,6 +1388,7 @@ Bağlı cihaz yok.</translation>
 <translation id="6095425951508823973"><ph name="PROVIDER" /> ile bağlantı ekleyin</translation>
 <translation id="6099678161144790572">Geçen ay düzenlendi</translation>
 <translation id="6103838137565245112">sistem</translation>
+<translation id="610395411842312282">Yan yana iki pencereyi gruplandırın</translation>
 <translation id="6108952804512516814">Yapay zeka ile üret</translation>
 <translation id="6114505516289286752"><ph name="LANGUAGE" /> dosyaları indirildi</translation>
 <translation id="6119360623251949462"><ph name="CHARGING_STATE" />. <ph name="BATTERY_SAVER_STATE" /></translation>
@@ -1388,6 +1396,7 @@ Bağlı cihaz yok.</translation>
 <translation id="6121838516699723042"><ph name="FILENAME" /> dosyasının indirilmesini onaylayın</translation>
 <translation id="612734058257491180">Google Asistan, misafir oturumunda kullanılamaz.</translation>
 <translation id="6127370444807669747">Kişiselleştirilmiş oynatma listeleri ve daha fazla odaklanma müziği için YouTube Music Premium'u deneyin.</translation>
+<translation id="6127395413317891856">İnternete bağlı değilsiniz. Bağlantınızı kontrol edip tekrar deneyin.</translation>
 <translation id="6129953537138746214">Boşluk</translation>
 <translation id="6137566720514957455"><ph name="USER_EMAIL_ADDRESS" /> için kaldırma iletişim kutusunu aç</translation>
 <translation id="6141205840878048728">Hangi göreve odaklanmak istersiniz?</translation>
@@ -1664,6 +1673,7 @@ Yeni yüklenmiş</translation>
 <translation id="7167913274352523149"><ph name="HOTSPOT" />,
         <ph name="NETWORK" /></translation>
 <translation id="7168224885072002358"><ph name="TIMEOUT_SECONDS" /> saniye içinde eski çözünürlüğe dönülüyor</translation>
+<translation id="7173114856073700355">Ayarları Aç</translation>
 <translation id="7180611975245234373">Yenile</translation>
 <translation id="7181691792034457084">Merhaba, <ph name="PRODUCT_NAME" /> biraz farklıdır.</translation>
 <translation id="7188494361780961876">Menü, ekranın sol üst köşesine taşındı.</translation>
@@ -1856,6 +1866,7 @@ Cihazı kapatmak için cihazın güç düğmesini tekrar basılı tutun.</transl
         <ph name="MANAGED" />
         <ph name="IME" />
         <ph name="LOCALE" /></translation>
+<translation id="7899977217122813285">Odaklanma modundayken bildirimler saat <ph name="TIME" /> olana kadar yoksayılır</translation>
 <translation id="7901190436359881020">Pencereleri değiştirin</translation>
 <translation id="7901405293566323524">Phone Hub</translation>
 <translation id="7902625623987030061">Parmak izi sensörüne dokunun</translation>
@@ -1960,6 +1971,7 @@ Cihazı kapatmak için cihazın güç düğmesini tekrar basılı tutun.</transl
 <translation id="8257510091797044096">Cihazınızı ayarlayın</translation>
 <translation id="8261506727792406068">Sil</translation>
 <translation id="8262312463845990408">Çal/duraklat</translation>
+<translation id="8268302343625273732">Google Classroom'daki tüm ödevleri göster</translation>
 <translation id="8277261673056602147">Ekrandaki metni vurgula</translation>
 <translation id="8287009018010202411">Verimlilik</translation>
 <translation id="828708037801473432">Kapalı</translation>

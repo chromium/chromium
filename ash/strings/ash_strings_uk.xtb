@@ -251,6 +251,7 @@
 <translation id="1915307458270490472">Закрити</translation>
 <translation id="1918022425394817322">Зображення з камери закріплено у верхньому правому куті</translation>
 <translation id="1923539912171292317">Автоматичні кліки</translation>
+<translation id="1925320505152357008">менше ніж 1 хв</translation>
 <translation id="1928739107511554905">Щоб завантажити оновлення, перезапустіть Chromebook із під’єднаною клавіатурою, використовуючи сенсорний екран.</translation>
 <translation id="1948405482892809935">Перейти в наступний профіль користувача</translation>
 <translation id="1951012854035635156">Асистент</translation>
@@ -604,6 +605,7 @@
 <translation id="334927402682780278">Вибрати текст від курсора до кінця рядка</translation>
 <translation id="3349345708646875009">Відкрити Диспетчер завдань</translation>
 <translation id="3364721542077212959">Інструменти стилуса</translation>
+<translation id="3365281428003534650">Таймер, завдання й музика</translation>
 <translation id="3365977133351922112">Телефон задалеко. Піднесіть його ближче.</translation>
 <translation id="3368922792935385530">Підключено</translation>
 <translation id="3369111525500416043">Термін здачі: незабаром</translation>
@@ -907,6 +909,7 @@
 <translation id="4406883609789734330">Живі субтитри</translation>
 <translation id="4412698727486357573">Довідковий центр</translation>
 <translation id="4412944820643904175">Функцію "<ph name="FEATURE_NAME" />" вимкнено.</translation>
+<translation id="4417647906073317561">Налаштування режиму концентрації уваги. Установіть таймер, виберіть завдання й музику та пориньте в роботу.</translation>
 <translation id="4424159417645388645">Робочий стіл 5</translation>
 <translation id="4430019312045809116">Гучність</translation>
 <translation id="4441283832827406317">Додатки відсортовано за назвою</translation>
@@ -1670,6 +1673,7 @@
 <translation id="7167913274352523149"><ph name="HOTSPOT" />,
         <ph name="NETWORK" /></translation>
 <translation id="7168224885072002358">Попередня роздільна здатність повернеться через <ph name="TIMEOUT_SECONDS" /></translation>
+<translation id="7173114856073700355">Відкрити налаштування</translation>
 <translation id="7180611975245234373">Оновити</translation>
 <translation id="7181691792034457084">Вітаємо! У <ph name="PRODUCT_NAME" /> є деякі зміни.</translation>
 <translation id="7188494361780961876">Меню переміщено у верхній лівий кут екрана.</translation>
@@ -1862,6 +1866,7 @@
         <ph name="MANAGED" />
         <ph name="IME" />
         <ph name="LOCALE" /></translation>
+<translation id="7899977217122813285">Сповіщення в режимі концентрації уваги буде вимкнено до <ph name="TIME" /></translation>
 <translation id="7901190436359881020">Поміняти вікна місцями</translation>
 <translation id="7901405293566323524">Керування телефоном</translation>
 <translation id="7902625623987030061">Торкніться сканера відбитків пальців</translation>

@@ -1560,6 +1560,7 @@
 <translation id="2116619964159595185">‏בדרך כלל, אתרים מתחברים למכשירי Bluetooth כדי לתמוך בתכונות כמו הגדרת איתות Bluetooth בעל מתח נמוך או סנכרון עם איתות כזה, מכשיר מעקב אחר נתוני בריאות או כושר או נורה חכמה</translation>
 <translation id="2117655453726830283">לשקף הבא</translation>
 <translation id="211803431539496924">להפעיל את עדכוני האבטחה המורחבים?</translation>
+<translation id="2118594521750010466">לפתרון הבעיה</translation>
 <translation id="2119461801241504254">הגלישה הבטוחה פועלת ומגינה עליך מפני אתרים והורדות שעלולים לגרום נזק.</translation>
 <translation id="2120297377148151361">פעילות ואינטראקציות</translation>
 <translation id="2120639962942052471">ההרשאה <ph name="PERMISSION" /> נחסמה</translation>
@@ -3695,6 +3696,7 @@
 <translation id="3699920817649120894">להשבית את הסנכרון וההתאמה האישית?</translation>
 <translation id="3700888195348409686">מציג (<ph name="PAGE_ORIGIN" />)</translation>
 <translation id="3700993174159313525">לא לאפשר לאתרים לעקוב אחר מיקום המצלמה</translation>
+<translation id="3701167022068948696">לפתרון הבעיה</translation>
 <translation id="3701515417135397388">הצגת אזהרה אם סיסמה נחשפה בפרצה באבטחת מידע</translation>
 <translation id="3702797829026927713">‏<ph name="BEGIN_PARAGRAPH1" />יש להזין את שם הקמעונאי ואת מספר החנות שעבורם מוגדר מכשיר ההדגמה הזה*. <ph name="END_PARAGRAPH1" />
     <ph name="BEGIN_PARAGRAPH2" />אם לא ידוע לך מה מספר החנות, אפשר להזין '0000' כדי להמשיך בהתקנה של מצב ההדגמה. <ph name="END_PARAGRAPH2" />
@@ -4233,6 +4235,7 @@
 <translation id="4066207411788646768">יש לפתור בעיות בחיבור כדי לראות מדפסות זמינות ברשת</translation>
 <translation id="4067839975993712852">סימון הכרטיסייה הנוכחית כ'נקראה'</translation>
 <translation id="4068776064906523561">טביעות אצבע שמורות</translation>
+<translation id="4070132839822635162">אני לא רוצה להיכנס</translation>
 <translation id="407173827865827707">בזמן לחיצה</translation>
 <translation id="4072805772816336153">יש לנסות שוב מאוחר יותר</translation>
 <translation id="4074164314564067597">מקלדת</translation>
@@ -7359,6 +7362,7 @@
 <translation id="6469702164109431067">סיסמאות ומפתחות גישה</translation>
 <translation id="6470823736074966819">השתקת ההתראות</translation>
 <translation id="6472893788822429178">הצגת לחצן 'דף הבית'</translation>
+<translation id="6473315466413288899">יש לבחור אפשרות</translation>
 <translation id="6474498546677193336">‏לא ניתן לבטל את השיתוף כי אפליקציה משתמשת בתיקייה הזו. השיתוף של התיקייה הזו יבוטל בכיבוי הבא של Linux.</translation>
 <translation id="6474884162850599008">‏ניתוק חשבון Google Drive</translation>
 <translation id="6475294023568239942">‏עליך לפנות נפח אחסון או לשנות בהגדרות את גודל הנפח המיועד ל-Linux</translation>
@@ -10831,6 +10835,7 @@
 <translation id="9031811691986152304">לנסות שוב</translation>
 <translation id="9032004780329249150">‏שימוש בסיסמאות שלך במכשירי iOS</translation>
 <translation id="9032097289595078011">השבתת ההתאמה המהירה</translation>
+<translation id="9032513103438497286">‏חסימת אפליקציות שמותקנות במכשיר <ph name="DEVICE_TYPE" /> הזה. כדי להגביל הורדה של אפליקציות או תוכן, צריך לעבור להגדרות של Google Play.</translation>
 <translation id="9033765790910064284">אני רוצה להמשיך בכל זאת</translation>
 <translation id="9033857511263905942">&amp;הדבקה</translation>
 <translation id="9034408118624208974">‏זהו מכשיר Chromebook הראשון שלך? כדאי להפעיל את הסנכרון כדי שההעדפות שלך יגובו.</translation>

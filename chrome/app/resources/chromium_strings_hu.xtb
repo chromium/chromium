@@ -16,6 +16,7 @@
 <translation id="1203500561924088507">Köszönjük, hogy elvégezte a telepítést. A(z) <ph name="BUNDLE_NAME" /> használata előtt újra kell indítania a böngészőt.</translation>
 <translation id="1262876892872089030">Amíg ez a lap inaktív volt, a rendszer memóriát szabadított fel, hogy a Chromium gyors maradjon. Dönthet úgy, hogy mindig kizárja ezt a webhelyet az inaktív állapotból.</translation>
 <translation id="1265577313130862557">A Chromium letiltotta ezt a letöltést, mert a fájl veszélyes</translation>
+<translation id="126567311906253476">Amikor <ph name="USER_EMAIL" /> fiókjával bejelentkezik a Google-szolgáltatásokba (például a Gmailbe vagy a YouTube-ba), ugyanazzal a fiókkal automatikusan bejelentkezhet a Chromiumba is.</translation>
 <translation id="1315551408014407711">Új Chromium-profil beállítása</translation>
 <translation id="1342274909142618978">Az adatok a Chromiumból is legyenek törölve (<ph name="URL" />)</translation>
 <translation id="1414495520565016063">Bejelentkezett a Chromiumba.</translation>
@@ -40,6 +41,7 @@ A webhelyek és alkalmazások számára már megadott engedélyek erre a fiókra
 <translation id="1749104137266986751">Ha a HTTPS nem áll rendelkezésre, a Chromium nem biztonságos kapcsolatot fog használni anélkül, hogy figyelmeztetné Önt</translation>
 <translation id="1774152462503052664">A Chromium fusson a háttérben</translation>
 <translation id="1779356040007214683">A Chromium biztonságosabbá tétele érdekében kikapcsoltunk néhány bővítményt, amelyek nem a(z) <ph name="IDS_EXTENSION_WEB_STORE_TITLE" /> szolgáltatásból származnak, és előfordulhat, hogy az Ön tudta nélkül lettek telepítve.</translation>
+<translation id="1804128559285178512">Amíg be van jelentkezve, használhatja a Google-fiókjához kapcsolódó jelszavait és egyéb funkciókat a Chromiumban.</translation>
 <translation id="1808667845054772817">A Chromium újratelepítése</translation>
 <translation id="1820835682567584003">A Chromium megpróbálja a következőt: <ph name="AUTHENTICATION_PURPOSE" /></translation>
 <translation id="18552579716432081">Ha csak erről az eszközről szeretné törölni böngészési adatait, Google-fiókjából azonban nem, <ph name="BEGIN_LINK" />jelentkezzen ki a Chromiumból<ph name="END_LINK" />.</translation>

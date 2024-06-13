@@ -251,6 +251,7 @@ Hér eru nokkrir hlutir sem þú getur prófað til að byrja með.</translation
 <translation id="1915307458270490472">Leggja á</translation>
 <translation id="1918022425394817322">Myndavél fest við efra horn hægra megin</translation>
 <translation id="1923539912171292317">Sjálfvirkir smellir</translation>
+<translation id="1925320505152357008">styttri en 1 mín.</translation>
 <translation id="1928739107511554905">Til að fá uppfærsluna skaltu nota snertiskjáinn til að endurræsa Chromebook með lyklaborðið tengt.</translation>
 <translation id="1948405482892809935">Skipta yfir í næsta notanda</translation>
 <translation id="1951012854035635156">Hjálpari</translation>
@@ -604,6 +605,7 @@ Hér eru nokkrir hlutir sem þú getur prófað til að byrja með.</translation
 <translation id="334927402682780278">Velja texta frá bendli að enda línu</translation>
 <translation id="3349345708646875009">Opna verkstjórn</translation>
 <translation id="3364721542077212959">Pennaverkfæri</translation>
+<translation id="3365281428003534650">Stilltu tíma og veldu verkefni og tónlist</translation>
 <translation id="3365977133351922112">Síminn þinn er of langt í burtu. Færðu símann nær.</translation>
 <translation id="3368922792935385530">Tengt</translation>
 <translation id="3369111525500416043">Skiladagur nálgast</translation>
@@ -907,6 +909,7 @@ Tilteknir eiginleikar verða takmarkaðir til að lengja rafhlöðuendingu.</tra
 <translation id="4406883609789734330">Skjátextar í rauntíma</translation>
 <translation id="4412698727486357573">Hjálparmiðstöð</translation>
 <translation id="4412944820643904175">Slökkt er á <ph name="FEATURE_NAME" />.</translation>
+<translation id="4417647906073317561">Einbeitingarstillingar. Stilltu tíma og veldu verkefni og tónlist til að komast í gírinn.</translation>
 <translation id="4424159417645388645">Skrifborð 5</translation>
 <translation id="4430019312045809116">Hljóðstyrkur</translation>
 <translation id="4441283832827406317">Forritum er raðað eftir heiti</translation>
@@ -1670,6 +1673,7 @@ Ný uppsetning</translation>
 <translation id="7167913274352523149"><ph name="HOTSPOT" />,
         <ph name="NETWORK" /></translation>
 <translation id="7168224885072002358">Skiptir aftur yfir í fyrri upplausn eftir <ph name="TIMEOUT_SECONDS" /></translation>
+<translation id="7173114856073700355">Opna stillingar</translation>
 <translation id="7180611975245234373">Endurnýja</translation>
 <translation id="7181691792034457084">Hæ. <ph name="PRODUCT_NAME" /> virkar aðeins öðruvísi.</translation>
 <translation id="7188494361780961876">Valmynd færð efst í vinstra horn skjásins.</translation>
@@ -1862,6 +1866,7 @@ Til að slökkva á tækinu skaltu halda aflrofa tækisins inni aftur.</translat
         <ph name="MANAGED" />
         <ph name="IME" />
         <ph name="LOCALE" /></translation>
+<translation id="7899977217122813285">Tilkynningar eru þaggaðar til <ph name="TIME" /> á meðan einbeitingar er þörf</translation>
 <translation id="7901190436359881020">Víxla gluggum</translation>
 <translation id="7901405293566323524">Phone Hub</translation>
 <translation id="7902625623987030061">Snertu fingrafaralesarann</translation>

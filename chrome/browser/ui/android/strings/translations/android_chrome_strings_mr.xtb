@@ -90,6 +90,9 @@
 <translation id="1390418506739274310">तुम्हाला Chrome मध्ये लिंक उघडणाऱ्या इतर ॲप्समधील इतिहास दिसू शकतो. <ph name="BEGIN_LINK" />myactivity.google.com<ph name="END_LINK" /> येथे तुमच्या Google खाते चा इतर स्वरूपांमधील ब्राउझिंग इतिहास असू शकतो.</translation>
 <translation id="13931502444227376">पुढे सुरू ठेवण्यासाठी, <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> तुमचे नाव, ईमेल अ‍ॅड्रेस आणि प्रोफाइल फोटो या साइटसह शेअर करेल. या साइटच्या <ph name="BEGIN_LINK1" />सेवा अटी<ph name="END_LINK1" /> पहा.</translation>
 <translation id="1397811292916898096"><ph name="PRODUCT_NAME" /> सह शोधा</translation>
+<translation id="1398057416966591719">तुमच्या Google खाते मध्ये <ph name="BEGIN_LINK1" />Chrome चा कोणता डेटा सेव्ह केला जातो हे व्यवस्थापित करणे<ph name="END_LINK1" /> हे तुम्ही करू शकता.
+
+तुमच्या Chrome अनुभवामध्ये सुधारणा करण्यासाठी, डेटा वापरणाऱ्या आणखी सेटिंग्जकरिता, <ph name="BEGIN_LINK2" />Google सेवा<ph name="END_LINK2" /> यांवर जा.</translation>
 <translation id="1407069428457324124">गडद थीम</translation>
 <translation id="1407135791313364759">सर्व उघडा</translation>
 <translation id="1409879593029778104">फाइल आधीपासून अस्तित्वात असल्याने <ph name="FILE_NAME" /> डाउनलोड करणे प्रतिबंधित केले.</translation>
@@ -249,6 +252,7 @@
 <translation id="2286841657746966508">बिलिंग पत्ता</translation>
 <translation id="228704530595896923">शेअरिंग पर्यायांची सूची.</translation>
 <translation id="2297822946037605517">हे पेज शेअर करा</translation>
+<translation id="22981027763501686">तुमचे बुकमार्क, इतिहास आणि आणखी बऱ्याच गोष्टी तुमच्या इतर डिव्हाइसवर मिळवण्यासाठी सिंक करा</translation>
 <translation id="230115972905494466">कोणतीही कंपॅटिबल डिव्हाइस आढळली नाहीत</translation>
 <translation id="2318045970523081853">कॉल करण्यासाठी टॅप करा</translation>
 <translation id="2321086116217818302">पासवर्ड तयार करत आहे…</translation>
@@ -853,6 +857,7 @@
 <translation id="5292796745632149097">यांना पाठवा</translation>
 <translation id="5301876394151419436">तुम्ही <ph name="EMAIL" /> म्हणून साइन इन केले आहे. तुम्ही सेटिंग्जमध्ये सिंक करणे कधीही थांबवू शकता. Google तुमच्या इतिहासाच्या आधारे Search आणि इतर सेवा पर्सनलाइझ करू शकते.</translation>
 <translation id="5304593522240415983">हे फील्ड रिक्त ठेवता येणार नाही</translation>
+<translation id="5306014156308790439">संग्रहामध्ये जोडा बंद केले आहे</translation>
 <translation id="5308380583665731573">कनेक्‍ट करा</translation>
 <translation id="5316947901395241499">तुमच्या अ‍ॅडमिनिस्ट्रेटरने पासवर्ड सेव्ह करणे बंद केले आहे</translation>
 <translation id="5317780077021120954">सेव्ह करा</translation>

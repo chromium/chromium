@@ -90,6 +90,9 @@
 <translation id="1390418506739274310">您可能会看到在 Chrome 中打开了链接的其他应用的历史记录。您的 Google 账号在 <ph name="BEGIN_LINK" />myactivity.google.com<ph name="END_LINK" /> 上可能有其他形式的浏览记录。</translation>
 <translation id="13931502444227376">如果您继续注册，<ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> 便会将您的用户名、电子邮件地址和个人资料照片提供给此网站。不妨查看此网站的<ph name="BEGIN_LINK1" />服务条款<ph name="END_LINK1" />。</translation>
 <translation id="1397811292916898096">使用 <ph name="PRODUCT_NAME" /> 进行搜索</translation>
+<translation id="1398057416966591719">您可以<ph name="BEGIN_LINK1" />管理要将哪些 Chrome 数据保存<ph name="END_LINK1" />到您的 Google 账号。
+
+如需更多使用数据来提升 Chrome 体验的设置，请前往 <ph name="BEGIN_LINK2" />Google 服务<ph name="END_LINK2" />。</translation>
 <translation id="1407069428457324124">深色主题</translation>
 <translation id="1407135791313364759">全部打开</translation>
 <translation id="1409879593029778104">系统已阻止下载 <ph name="FILE_NAME" />，因为文件已存在。</translation>
@@ -248,6 +251,7 @@
 <translation id="2286841657746966508">账单邮寄地址</translation>
 <translation id="228704530595896923">分享选项列表。</translation>
 <translation id="2297822946037605517">分享此页</translation>
+<translation id="22981027763501686">同步即可获取您在其他设备上保存的书签、历史记录等信息</translation>
 <translation id="230115972905494466">未找到任何兼容设备</translation>
 <translation id="2318045970523081853">点按即可拨打电话</translation>
 <translation id="2321086116217818302">正在准备密码…</translation>
@@ -851,6 +855,7 @@
 <translation id="5292796745632149097">发送到</translation>
 <translation id="5301876394151419436">您目前登录的账号是 <ph name="EMAIL" />。您可以随时在“设置”中停止同步。Google 可能会根据您的历史记录在 Google 搜索及其他服务中为您提供个性化的体验。</translation>
 <translation id="5304593522240415983">此字段不能为空</translation>
+<translation id="5306014156308790439">已停用“添加到集合”功能</translation>
 <translation id="5308380583665731573">连接</translation>
 <translation id="5316947901395241499">您的管理员已关闭密码保存功能</translation>
 <translation id="5317780077021120954">保存</translation>

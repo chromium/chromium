@@ -80,6 +80,7 @@ Hier zijn wat voorbeelden van wat je kunt proberen om aan de slag te gaan.</tran
 <translation id="1247519845643687288">Recente apps</translation>
 <translation id="1252999807265626933">Opladen via <ph name="POWER_SOURCE" /></translation>
 <translation id="1255033239764210633">Wat voor weer is het?</translation>
+<translation id="1256734167083229794">Je hebt op de sneltoets voor het vergrootglas voor volledig scherm gedrukt. Gebruik <ph name="ZOOM_IN_ACCELERATOR" /> om in te zoomen en <ph name="ZOOM_OUT_ACCELERATOR" /> om uit te zoomen. Gebruik Ctrl + Alt + pijltoetsen om te bewegen op de ingezoomde weergave.</translation>
 <translation id="1269405891096105529">Randapparaat wordt niet ondersteund in de gastmodus</translation>
 <translation id="1270290102613614947">Schermtoetsenbord staat uit</translation>
 <translation id="1272079795634619415">Stop</translation>
@@ -264,6 +265,7 @@ Hier zijn wat voorbeelden van wat je kunt proberen om aan de slag te gaan.</tran
 <translation id="1969011864782743497"><ph name="DEVICE_NAME" /> (USB)</translation>
 <translation id="1971815855639997522">Bureau en vensters zijn verwijderd. Druk op Ctrl + Z om de actie ongedaan te maken.</translation>
 <translation id="1972950159383891558">Hallo, <ph name="USERNAME" /></translation>
+<translation id="1977686871076551563">Modus voor kleurinversie staat aan. Druk nogmaals op <ph name="ACCELERATOR" /> om deze uit te zetten.</translation>
 <translation id="1978498689038657292">Tekstinvoer</translation>
 <translation id="1980808257969311265">Deelnemen aan <ph name="EVENT_SUMMARY" /></translation>
 <translation id="1982717156487272186">Vorige week tonen</translation>
@@ -574,6 +576,7 @@ Hier zijn wat voorbeelden van wat je kunt proberen om aan de slag te gaan.</tran
 <translation id="3226991577105957773">+<ph name="COUNT" /> andere meldingen</translation>
 <translation id="3227137524299004712">Microfoon</translation>
 <translation id="3233611303007751344">Batterijbesparing staat uit</translation>
+<translation id="3238409143297336341">Ouderlijk toezicht instellen voor apps</translation>
 <translation id="324366796737464147">Ruisonderdrukking</translation>
 <translation id="3249513730522716925">Het venster <ph name="WINDOW_TITLE" /> is verplaatst van bureaublad <ph name="ACTIVE_DESK" /> naar bureaublad <ph name="TARGET_DESK" /></translation>
 <translation id="3253743281242075461">Type schoolwerk: <ph name="GLANCEABLES_CLASSROOM_LIST_NAME" /></translation>
@@ -1185,6 +1188,7 @@ Geen apparaten verbonden.</translation>
 <translation id="5377367976106153749">Cameratoegang aanzetten?</translation>
 <translation id="5379115545237091094">Te veel pogingen</translation>
 <translation id="5391307769715781764">Opgeslagen bureau vervangen?</translation>
+<translation id="5392327145184648521">Batterijpercentage berekenen...</translation>
 <translation id="5393156353051693207">Tik ergens op het scherm en houd vast om je apps opnieuw te ordenen</translation>
 <translation id="5395308026110844773"><ph name="DRAGGED_APP_NAME" /> bovenop <ph name="IN_PLACE_APP" />, laat los om een map te maken.</translation>
 <translation id="5397578532367286026">Het gebruik en de geschiedenis van deze gebruiker kunnen worden bekeken door de beheerder (<ph name="MANAGER_EMAIL" />) op chrome.com.</translation>
@@ -1239,6 +1243,7 @@ Geen apparaten verbonden.</translation>
 <translation id="5577281275355252094">Ga na of bluetooth aanstaat op je telefoon als je Telefoonhub wilt gebruiken</translation>
 <translation id="5578188167649348993">geheugen</translation>
 <translation id="5580000943347215299">Bibliotheek</translation>
+<translation id="5586388332127302891">Vastgezet vergrootglas staat aan. Druk nogmaals op <ph name="ACCELERATOR" /> om dit uit te zetten.</translation>
 <translation id="5587506661873751671">Download <ph name="DOWNLOAD_PERCENT" />%</translation>
 <translation id="558849140439112033">Sleep om het gedeelte te selecteren dat je wilt opnemen</translation>
 <translation id="5590609058453685222">Melding dat de microfoon gedempt is staat uit. Je krijgt een melding als je praat terwijl het geluid uitstaat.</translation>
@@ -1402,6 +1407,7 @@ Geen apparaten verbonden.</translation>
 <translation id="6141205840878048728">Waarop wil je je focussen?</translation>
 <translation id="6141988275892716286">Download bevestigen</translation>
 <translation id="6143578372829139382">Delen met YouTube</translation>
+<translation id="6147182561428020853">Je kunt geïnstalleerde apps op deze <ph name="DEVICE_TYPE" /> nu blokkeren</translation>
 <translation id="6154006699632741460">Randapparaat niet ondersteund</translation>
 <translation id="6156960295318603523">Taalinstellingen</translation>
 <translation id="615957422585914272">Schermtoetsenbord bekijken</translation>
@@ -1449,6 +1455,7 @@ Geen apparaten verbonden.</translation>
 <translation id="6319503618073410818">Details in browser bekijken</translation>
 <translation id="6324916366299863871">Snelkoppeling bewerken</translation>
 <translation id="6330012934079202188">Er worden vensters van alle bureaus getoond, druk op de pijl-omhoog om vensters van het huidige bureau te bekijken</translation>
+<translation id="6337159624125741244">Vergrootglas voor volledig scherm staat aan</translation>
 <translation id="6338485349199627913"><ph name="DISPLAY_NAME" /> is een beheerde sessie die wordt beheerd door <ph name="MANAGER" /></translation>
 <translation id="6344138931392227467"><ph name="DEVICE_NAME" /> gekoppeld</translation>
 <translation id="6348449481487610270"><ph name="MODIFIER_ONE" /> + <ph name="MODIFIER_TWO" /> + <ph name="KEY_ONE" /> en dan <ph name="MODIFIER_THREE" /> + <ph name="KEY_TWO" /> of <ph name="KEY_THREE" /></translation>
@@ -1516,6 +1523,7 @@ Nieuwe installatie</translation>
 <translation id="6574587113394758819">Een melding van <ph name="APP_TITLE" /> is verborgen omdat weergavebeveiliging aanstaat</translation>
 <translation id="6574622320167699133">Ontgrendeld met je telefoon. Tik of klik voor toegang.</translation>
 <translation id="6578407462441924264">Naamloos</translation>
+<translation id="6582034443359256692">Het oplaadniveau van de batterij wordt berekend.</translation>
 <translation id="6585808820553845416">Sessie loopt af over <ph name="SESSION_TIME_REMAINING" />.</translation>
 <translation id="6593850935013518327"><ph name="PRIMARY_TEXT" />, <ph name="SECONDARY_TEXT" /></translation>
 <translation id="6597278316891651699">Camera uitgelijnd op de linkerbenedenhoek. Conflict met systeemoppervlak.</translation>
@@ -1577,6 +1585,7 @@ Nieuwe installatie</translation>
 <translation id="6790428901817661496">Spelen</translation>
 <translation id="679368458793552943">Inzoomen als vergrootglas aanstaat</translation>
 <translation id="6794287755901682422">Dit item heeft: <ph name="GLANCEABLES_TASK_ITEM_METADATA" />.</translation>
+<translation id="6797745268063125932">Aan laten</translation>
 <translation id="6801878137098616817">Recent bewerkt</translation>
 <translation id="6802687695197837794">Hiermee geef je toegang aan <ph name="APP1_NAME" />, <ph name="APP2_NAME" /> en alle apps en websites met camera- en microfoonrechten</translation>
 <translation id="6803622936009808957">Kan schermen niet spiegelen, omdat er geen ondersteunde resoluties zijn gevonden. Het uitgebreide bureaublad is geactiveerd.</translation>
@@ -1673,6 +1682,7 @@ Nieuwe installatie</translation>
 <translation id="7167913274352523149"><ph name="HOTSPOT" />,
 <ph name="NETWORK" /></translation>
 <translation id="7168224885072002358">Terugzetten naar oude resolutie over <ph name="TIMEOUT_SECONDS" /></translation>
+<translation id="7173114856073700355">Instellingen openen</translation>
 <translation id="7180611975245234373">Vernieuwen</translation>
 <translation id="7181691792034457084">Hallo. Een <ph name="PRODUCT_NAME" /> is een beetje anders.</translation>
 <translation id="7188494361780961876">Menu verplaatst naar linksboven in het scherm.</translation>
@@ -1888,6 +1898,7 @@ Als je het apparaat wilt uitzetten, houd je de aan/uit-knop op het apparaat weer
 <translation id="7947798320695032612"><ph name="APP_NAME" /> wil je <ph name="DEVICE_NAME" /> gebruiken</translation>
 <translation id="7951630946012935453">Toetsenbord dimmen</translation>
 <translation id="7953994493035617347">Nieuwe resolutie bevestigen?</translation>
+<translation id="795958884516058160">Vergrootglas voor volledig scherm staat aan. Druk nogmaals op <ph name="ACCELERATOR" /> om dit uit te zetten.</translation>
 <translation id="7963689218131240420">Niet storen staat uit.</translation>
 <translation id="7963992254934562106">Van <ph name="PHONE_NAME" /></translation>
 <translation id="7968693143708939792">Map selecteren...</translation>
@@ -2141,6 +2152,7 @@ Als je het apparaat wilt uitzetten, houd je de aan/uit-knop op het apparaat weer
 <translation id="894774083269346314">Selectievakje <ph name="PROFILE_NAME" /> <ph name="EMAIL" /> niet aangevinkt.</translation>
 <translation id="8949925099261528566">Verbonden, geen internet</translation>
 <translation id="8951539504029375108">Alleen goedgekeurde Thunderbolt-apparaten werken met je Chromebook</translation>
+<translation id="8959380109429710384">Je hebt op de sneltoets voor het vergrootglas voor volledig scherm gedrukt. Gebruik Ctrl + Alt + pijltoetsen om te bewegen op de ingezoomde weergave.</translation>
 <translation id="8964525410783593407">1 u</translation>
 <translation id="8973885907461690937">De focus op het menu-icoon plaatsen</translation>
 <translation id="8980862970816311842">Een app-icoon verplaatsen naar/uit een map in het app-raster</translation>

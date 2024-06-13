@@ -1566,6 +1566,7 @@ Jei nenorite, dabar atsijunkite, kad šios paskyros pakeitimai būtų matomi ši
 <translation id="2116619964159595185">Paprastai svetainėse prisijungiama prie „Bluetooth“ įrenginių vykdant tam tikras funkcijas, pvz., nustatant ar sinchronizuojant žemo energijos lygio signalų siųstuvą, sveikatos ar mankštos stebėjimo priemonę arba išmaniojo šviestuvo lemputę</translation>
 <translation id="2117655453726830283">Kita skaidrė</translation>
 <translation id="211803431539496924">Patvirtinti išplėstinius saugos naujinius?</translation>
+<translation id="2118594521750010466">Ištaisyti dabar</translation>
 <translation id="2119461801241504254">Saugaus naršymo funkcija įjungta ir saugo jus nuo žalingų svetainių bei atsisiuntimų</translation>
 <translation id="2120297377148151361">Veikla ir sąveikos</translation>
 <translation id="2120639962942052471">Blokuojama: <ph name="PERMISSION" /></translation>
@@ -1874,6 +1875,7 @@ Jei nenorite, dabar atsijunkite, kad šios paskyros pakeitimai būtų matomi ši
 <translation id="233375395665273385">Ištrinti ir atsijungti</translation>
 <translation id="233471714539944337">Neskelbtinas turinys</translation>
 <translation id="2335111415680198280">{0,plural, =1{Uždaryti 1 langą}one{Uždaryti # langą}few{Uždaryti # langus}many{Uždaryti # lango}other{Uždaryti # langų}}</translation>
+<translation id="2335758110242123814">Atidaryti grupę</translation>
 <translation id="2336228925368920074">Žymėti visus skirtukus...</translation>
 <translation id="2336258397628212480">„<ph name="APP_NAME" />“ spausdina vieną puslapį spausdintuvu „<ph name="PRINTER_NAME" />“</translation>
 <translation id="2336381494582898602">Powerwash</translation>
@@ -1894,6 +1896,7 @@ Jei nenorite, dabar atsijunkite, kad šios paskyros pakeitimai būtų matomi ši
 <translation id="2351923523007389195">Leidžiama – <ph name="PERMISSION_DETAILS" />. Įjunkite <ph name="LINK_BEGIN" />sistemos prieigą prie vietovės<ph name="LINK_END" />.</translation>
 <translation id="2352662711729498748">&lt; 1 MB</translation>
 <translation id="2352810082280059586">Užrakinimo ekrano pastabos automatiškai išsaugomos „<ph name="LOCK_SCREEN_APP_NAME" />“. Naujausia pastaba liks užrakinimo ekrane.</translation>
+<translation id="2353168619378866466">Atidaryti grupę</translation>
 <translation id="2353297238722298836">Fotoaparatas ir mikrofonas leidžiami</translation>
 <translation id="2353910600995338714">Sėkmingai eksportuota</translation>
 <translation id="2355314311311231464">Nepavyko aprūpinti, nes negalima gauti išsamios paskyros informacijos. Bandykite dar kartą. Klaidos kodas: <ph name="ERROR_CODE" />.</translation>
@@ -2848,6 +2851,7 @@ Jei nenorite, dabar atsijunkite, kad šios paskyros pakeitimai būtų matomi ši
 <translation id="3033348223765101500">Kontroliuokite duomenis</translation>
 <translation id="3036327949511794916">Terminas, iki kurio buvo galima grąžinti šį „<ph name="DEVICE_TYPE" />“ įrenginį, jau praėjo.</translation>
 <translation id="3036546437875325427">Įgalinti „Flash“</translation>
+<translation id="3037193115779933814">Raidės ir skaičiai</translation>
 <translation id="3038272154009688107">Žr. visas svetaines</translation>
 <translation id="3038612606416062604">Pridėti spausdintuvą neautomatiškai</translation>
 <translation id="3039491566278747710">Nepavyko įrenginyje įdiegti neprisijungus pasiekiamos politikos.</translation>
@@ -3702,6 +3706,7 @@ Jei nenorite, dabar atsijunkite, kad šios paskyros pakeitimai būtų matomi ši
 <translation id="3699920817649120894">Išjungti sinchronizavimą ir suasmeninimą?</translation>
 <translation id="3700888195348409686">Pristatoma (<ph name="PAGE_ORIGIN" />)</translation>
 <translation id="3700993174159313525">Neleisti svetainėms stebėti fotoaparato pozicijos</translation>
+<translation id="3701167022068948696">Ištaisyti dabar</translation>
 <translation id="3701515417135397388">Įspėti, jei slaptažodis buvo pažeistas įvykus duomenų saugos pažeidimui</translation>
 <translation id="3702797829026927713"><ph name="BEGIN_PARAGRAPH1" />Įveskite mažmenininko pavadinimą ir parduotuvės numerį, pagal kuriuos konfigūruojamas šis demonstracinės versijos įrenginys*. <ph name="END_PARAGRAPH1" />
     <ph name="BEGIN_PARAGRAPH2" />Jei nežinote parduotuvės numerio, galite įvesti 0000, kad tęstumėte demonstracinio režimo diegimą. <ph name="END_PARAGRAPH2" />
@@ -6058,6 +6063,7 @@ Leidimai, kuriuos jau esate suteikę svetainėms ir programoms, gali būti taiko
 <translation id="5469540749878136997">Atlaisvinkite atminties vietos pagal naudojimą</translation>
 <translation id="5469852975082458401">Puslapius galite naršyti naudodami teksto žymeklį. Paspauskite F7, kad išjungtumėte.</translation>
 <translation id="5470735824776589490">Kad įrenginį būtų galima nustatyti iš naujo naudojant „Powerwash“, reikia paleisti iš naujo. <ph name="LINK_BEGIN" />Sužinokite daugiau<ph name="LINK_END" /></translation>
+<translation id="5470741195701938302">Skaičiai</translation>
 <translation id="5471768120198416576">Sveiki, tai – jūsų teksto į kalbą balsas.</translation>
 <translation id="5472627187093107397">Išsaugoti šios svetainės slaptažodžius</translation>
 <translation id="5473062644742711742">Daugiau pritaikomumo įrankių rasite „Chrome“ internetinėje parduotuvėje</translation>
@@ -6895,6 +6901,7 @@ Leidimai, kuriuos jau esate suteikę svetainėms ir programoms, gali būti taiko
 <translation id="6101226222197207147">Pridėta nauja programa (<ph name="EXTENSION_NAME" />)</translation>
 <translation id="6102043788063419338">Šį failą užblokavo Papildoma apsauga.</translation>
 <translation id="6103681770816982672">Įspėjimas: perjungiate į kūrėjo kanalą</translation>
+<translation id="610395411842312282">Grupuoti du langus šalia</translation>
 <translation id="6104068876731806426">„Google“ paskyros</translation>
 <translation id="6104667115274478616">Tvarkyti „ChromeOS“ garso nustatymus</translation>
 <translation id="6104796831253957966">Spausdintuvo eilė pilna</translation>

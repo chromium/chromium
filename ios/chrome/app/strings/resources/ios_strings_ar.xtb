@@ -202,6 +202,7 @@
 <translation id="199425419756152024">عرض كلمة المرور</translation>
 <translation id="2010008505735295285">إعادة التحميل</translation>
 <translation id="2015722694326466240">للاطّلاع على كلمات المرور، يجب أولاً ضبط رمز مرور على جهازك.</translation>
+<translation id="201759455285471444">توسيع مجموعة علامات التبويب</translation>
 <translation id="2021670401941426298">اطّلِع على تعليمات محرك البحث بشأن حذف سجلّ البحث، إن أمكن.</translation>
 <translation id="202292859882676807">الوصول إلى الميكروفون مسموح به.</translation>
 <translation id="20485545164632846">عنصر جديد</translation>
@@ -852,6 +853,7 @@
 <translation id="5345660046352249607">{COUNT,plural, =1{هل تريد تتبُّع هذه الحزمة؟}zero{هل تريد تتبُّع {COUNT} حزمة؟}two{هل تريد تتبُّع حزمتَين ({COUNT})؟}few{هل تريد تتبُّع {COUNT} حِزم؟}many{هل تريد تتبُّع {COUNT} حزمة؟}other{هل تريد تتبُّع {COUNT} حزمة؟}}</translation>
 <translation id="5348775987281903912">يمكنك مشاركة هذه الصفحة هنا باستخدام زر المشاركة.</translation>
 <translation id="536067926684072644">عرض الإشارات المرجعية</translation>
+<translation id="537853552771686272">إدارة المواضيع والمواقع الإلكترونية التي تهمّك</translation>
 <translation id="5379352933722332597">{count,plural, =1{تم حفظ الإشارة المرجعية في "{title}" على هذا الجهاز فقط.}zero{تم حفظ {count} إشارة مرجعية في "{title}" على هذا الجهاز فقط.}two{تم حفظ إشارتَين مرجعيتَين ({count}) في "{title}" على هذا الجهاز فقط.}few{تم حفظ {count} إشارات مرجعية في "{title}" على هذا الجهاز فقط.}many{تم حفظ {count} إشارة مرجعية في "{title}" على هذا الجهاز فقط.}other{تم حفظ {count} إشارة مرجعية في "{title}" على هذا الجهاز فقط.}}</translation>
 <translation id="5388358297987318779">فتح الصورة</translation>
 <translation id="5395707839134961196">إخفاء تفاصيل محرك البحث</translation>
@@ -934,6 +936,7 @@
 <translation id="5758631781033351321">ستظهر لك "قائمة القراءة" هنا</translation>
 <translation id="5765456154762864099">القائمة ← الإعدادات ← المتصفِّح التلقائي</translation>
 <translation id="5777888488419460501">الحفظ في الحساب</translation>
+<translation id="5778292857689789362">مجموعة علامات تبويب تحمل اسم "<ph name="GROUP_TITLE" />"، وعدد علامات التبويب فيها <ph name="TABS_NUMBER" /></translation>
 <translation id="5782227691023083829">جارٍ ترجمة...</translation>
 <translation id="5791632441210678828">زر الترتيب لخلاصة المتابعة</translation>
 <translation id="5793373065989412701">جارٍ التحقّق من أفراد عائلتك…</translation>
@@ -1097,6 +1100,7 @@
 <translation id="648164694371393720">خطأ في المصادقة</translation>
 <translation id="6494931198667773526">الانتهاء</translation>
 <translation id="650279896687777322">مزيد من المعلومات...</translation>
+<translation id="6505334220040167806">تصغير مجموعة علامات التبويب</translation>
 <translation id="6507973708545996744">سجِّل الدخول لعرض قائمة القراءة على جميع أجهزتك.</translation>
 <translation id="6510072653668207258">تذكيري لاحقًا</translation>
 <translation id="651505212789431520">هل تريد إلغاء المزامنة؟ يمكنك تفعيل المزامنة في أي وقت في "الإعدادات".</translation>

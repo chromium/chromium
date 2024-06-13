@@ -122,6 +122,7 @@
 <translation id="2765403129283291972">‏Chrome זקוק להרשאת גישה למיקרופון בשביל האתר הזה</translation>
 <translation id="2770231113462710648">שינוי דפדפן ברירת המחדל ל:</translation>
 <translation id="2775140325783767197">‏Chrome לא יכול לבדוק את הסיסמאות שלך. יש לבדוק את החיבור לאינטרנט.</translation>
+<translation id="2797864378188255696">‏כשנכנסים לשירותי Google כמו Gmail או YouTube עם <ph name="USER_EMAIL" />, אפשר להיכנס אוטומטית ל-Chrome עם אותו חשבון</translation>
 <translation id="2799223571221894425">הפעלה מחדש</translation>
 <translation id="2825024317344269723">‏אתר מסוכן. ‫Chrome הסיר את ההתראות.</translation>
 <translation id="2846251086934905009">שגיאת התקנה: פעולת מנהל ההתקנה לא הושלמה. ההתקנה בוטלה.</translation>
@@ -294,6 +295,7 @@
 <translation id="5334309298019785904">‏לא בוצע סנכרון של הנתונים ב-ChromeOS כי הסנכרון לא זמין לדומיין שלך.</translation>
 <translation id="5334487786912937552">‏נדרשת הרשאת גישה לאחסון ב-Chrome כדי להוריד את קבצים</translation>
 <translation id="5337648990166757586">‏אופציונלי: שליחה אוטומטית של נתוני אבחון ונתוני שימוש במכשיר אל Google תעזור לשפר את התכונות ואת הביצועים של ChromeOS.</translation>
+<translation id="5345497718959596593">‏כשמחוברים לחשבון, אפשר להשתמש בסיסמאות ועוד מחשבון Google ב-Chrome</translation>
 <translation id="5357889879764279201">‏קבלת עזרה לגבי ChromeOS Flex</translation>
 <translation id="5368118228313795342">קוד נוסף: <ph name="EXTRA_CODE" />.</translation>
 <translation id="5386244825306882791">‏הגדרה זו גם קובעת איזה דף מוצג כשמפעילים את Chrome או כשמבצעים חיפוש מסרגל הכתובות.</translation>

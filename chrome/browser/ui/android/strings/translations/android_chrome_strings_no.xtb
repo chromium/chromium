@@ -156,6 +156,7 @@ For å se flere innstillinger som bruker data for å forbedre Chrome-opplevelsen
 <translation id="1755203724116202818">For å måle annonseresultatene sine deler nettsteder begrensede typer data mellom seg, for eksempel om du har kjøpt noe etter å ha besøkt et nettsted.</translation>
 <translation id="1757620656501361327">Oppdatering om Google Passordlagring</translation>
 <translation id="1760873718737761808">{FILE_COUNT,plural, =1{Sider, 1 side på listen}other{Sider, # sider på listen}}</translation>
+<translation id="1771929606532798550">Informasjon om bruken din av Chrome blir sendt til Google, men den blir ikke knyttet til deg\n\nHvis Chrome krasjer, kan detaljene om krasjet inneholde enkelte personopplysninger\n\nHvis du synkroniserer loggen din med Google-kontoen din, kan målingene også inneholde informasjon om nettadresser du besøker</translation>
 <translation id="1778457539567749232">Merk som ulest</translation>
 <translation id="1779766957982586368">Lukk vindu</translation>
 <translation id="1780023393214832643">Passord som er lagret i <ph name="USERNAME" /></translation>
@@ -799,6 +800,7 @@ Google-kontoen din kan ha andre former for nettleserlogger, for eksempel søk og
 <translation id="4987271110129728827">Finner ikke den siden. Kontroller stavemåten, eller prøv et søk på nettet.</translation>
 <translation id="4988526792673242964">Sider</translation>
 <translation id="4991110219272367918">Valget om å godkjenne eller ikke godkjenne nettstedet er lukket</translation>
+<translation id="4996095658297597226">Vil du bruke det foreslåtte passordet?</translation>
 <translation id="499724277181351974">Naviger: <ph name="WEBSITE_TITLE" />: <ph name="WEBSITE_URL" /></translation>
 <translation id="5001388021414335527">Følg dette nettstedet her</translation>
 <translation id="5004416275253351869">Google Aktivitetslagring</translation>
@@ -1042,6 +1044,7 @@ Noen nettsteder kan for eksempel svare på denne forespørselen ved å vise deg 
 <translation id="6233974827872475843">Lagre passordene på denne enheten i Google-kontoen din ved å slå på synkronisering</translation>
 <translation id="6247557882553405851">Google Passordlagring</translation>
 <translation id="6251449557817521191">Se Chrome-loggen din her</translation>
+<translation id="6254139308321626268">Du ser på en PDF-fil</translation>
 <translation id="6255794742848779505">Vi endrer måten passord lagres på denne enheten på</translation>
 <translation id="6264376385120300461">Last ned likevel</translation>
 <translation id="6277522088822131679">Det oppsto et problem med å skrive ut siden. Prøv på nytt.</translation>
@@ -1083,6 +1086,7 @@ Noen nettsteder kan for eksempel svare på denne forespørselen ved å vise deg 
 <translation id="641643625718530986">Skriv ut</translation>
 <translation id="6433501201775827830">Velg søkemotor</translation>
 <translation id="6434309073475700221">Forkast</translation>
+<translation id="6437162790453527153">Logg på for å få blant annet bokmerkene dine på alle enhetene dine</translation>
 <translation id="6437478888915024427">Sideinformasjon</translation>
 <translation id="6440291723980579689">Sider lastes bare inn etter at du har åpnet dem</translation>
 <translation id="6441734959916820584">Navnet er for langt</translation>
@@ -1437,6 +1441,7 @@ For å endre denne innstillingen, <ph name="BEGIN_LINK" />slett Chrome-dataene i
 <translation id="7986497153528221272">For å se passord må du først angi en skjermlås på enheten din</translation>
 <translation id="7995059495660416932">Du ser innhold når det blir tilgjengelig</translation>
 <translation id="799576009106109668">Du kan surfe raskere, siden innholdet lastes inn proaktivt basert på nettsiden du er på for øyeblikket</translation>
+<translation id="8001245658307297681">Du ser på en lokal fil</translation>
 <translation id="8004582292198964060">Nettleser</translation>
 <translation id="8015452622527143194">Tilbakestill alt på siden til standardstørrelsen</translation>
 <translation id="8026238112629815203">Vi har endret hvordan passord lagres på denne enheten</translation>

@@ -1551,6 +1551,7 @@ Kontu honen ezarpenak kudeatzeko, instalatu Family Link aplikazioa zure gailuan.
 <translation id="2116619964159595185">Webguneak Bluetooth bidezko gailuetara konektatu ohi dira kontsumo txikiko kokapen-adierazle bat, osasunaren edo fitnessaren jarraipen-gailu bat, edo bonbilla adimendun bat konfiguratzeko edo sinkronizatzeko, eta antzeko eginbideak eskaintzeko</translation>
 <translation id="2117655453726830283">Hurrengo diapositiba</translation>
 <translation id="211803431539496924">Segurtasun-eguneratze hedatuak berretsi nahi dituzu?</translation>
+<translation id="2118594521750010466">Konpondu</translation>
 <translation id="2119461801241504254">Arakatze segurua aktibatuta dago, eta webgune eta deskarga kaltegarrietatik babesten zaitu</translation>
 <translation id="2120297377148151361">Jarduerak eta interakzioak</translation>
 <translation id="2120639962942052471"><ph name="PERMISSION" /> blokeatu da</translation>
@@ -3681,6 +3682,7 @@ Txartel adimenduna sartuta edukitzea eskatzen du <ph name="DOMAIN" /> domeinuak.
 <translation id="3699920817649120894">Sinkronizazioa eta pertsonalizazioa desaktibatu nahi dituzu?</translation>
 <translation id="3700888195348409686"><ph name="PAGE_ORIGIN" /> webgunea aurkezten</translation>
 <translation id="3700993174159313525">Ez eman kameraren posizioaren jarraipena egiteko baimena webguneei</translation>
+<translation id="3701167022068948696">Konpondu</translation>
 <translation id="3701515417135397388">Abisatu datuen isilpekotasunaren urratze batean pasahitz bat arriskuan jarri bada</translation>
 <translation id="3702797829026927713"><ph name="BEGIN_PARAGRAPH1" />Idatzi demo-gailu honi dagozkion saltzailearen izena eta denda-zenbakia*. <ph name="END_PARAGRAPH1" />
     <ph name="BEGIN_PARAGRAPH2" />Denda-zenbakia ezagutzen ez baduzu, idatzi "0000" demo modua instalatzen jarraitzeko. <ph name="END_PARAGRAPH2" />
@@ -4219,6 +4221,7 @@ Besteak beste, instalatutako softwareari, fitxategiei, arakatzaileari eta sistem
 <translation id="4066207411788646768">Egiaztatu konektatuta zaudela sarean eskuragarri dauden inprimagailuak ikusteko</translation>
 <translation id="4067839975993712852">Markatu oraingo fitxa irakurritako gisa</translation>
 <translation id="4068776064906523561">Gordetako hatz-markak</translation>
+<translation id="4070132839822635162">Ez hasi saioa</translation>
 <translation id="407173827865827707">Klik egitean</translation>
 <translation id="4072805772816336153">Saiatu berriro geroago</translation>
 <translation id="4074164314564067597">teklatua</translation>
@@ -5168,7 +5171,7 @@ Pantaila txikitzeko, berriz, erabili Ktrl + Alt + Txikitu distira.</translat
 <translation id="481574578487123132">Lotutako gailuak</translation>
 <translation id="4816097470512964351"><ph name="DEVICE" />, Xehetasunak</translation>
 <translation id="4816336393325437908">{COUNT,plural, =1{1 laster-marka ezabatu da}other{{COUNT} laster-marka ezabatu dira}}</translation>
-<translation id="481689174647911539">Baliteke fitxategi hau birusa edo malwarea izatea.<ph name="LINE_BREAK" />Segurua den ala ez egiaztatzeko, Google-ren Arakatze segurua zerbitzuari bidal diezaiokezu. Segundo gutxi batzuk behar izaten dira egiaztatzeko.</translation>
+<translation id="481689174647911539">Baliteke fitxategi hau birusa edo malwarea izatea.<ph name="LINE_BREAK" />Segurua den ala ez egiaztatzeko, Google-ren Arakatze segurua eginbideari bidal diezaiokezu. Segundo gutxi batzuk behar izaten dira egiaztatzeko.</translation>
 <translation id="4816900689218414104">Sortu sarbide-gako bat telefono edo tableta batean</translation>
 <translation id="4819323978093861656">{0,plural, =0{Itxi egingo da.}=1{Segundo bat barru itxiko da}other{# segundo barru itxiko da}}</translation>
 <translation id="4819607494758673676">Google-ren Laguntzailea zerbitzuaren jakinarazpenak</translation>
@@ -7340,6 +7343,7 @@ Txartel adimenduna sartuta edukitzea eskatzen du <ph name="DOMAIN" /> domeinuak.
 <translation id="6469702164109431067">Pasahitzak eta sarbide-gakoak</translation>
 <translation id="6470823736074966819">Ezkutatu jakinarazpenak</translation>
 <translation id="6472893788822429178">Erakutsi Hasiera botoia</translation>
+<translation id="6473315466413288899">Hautatu aukera bat</translation>
 <translation id="6474498546677193336">Ezin izan zaio utzi karpeta partekatzeari, aplikazio bat ari delako hura erabiltzen. Linux ixten den hurrengoan utziko zaio karpeta partekatzeari.</translation>
 <translation id="6474884162850599008">Deskonektatu Google Drive-ko kontua</translation>
 <translation id="6475294023568239942">Diskoan tokia egiteko edo Linux-en diskoaren tamaina aldatzeko, joan Ezarpenak atalera</translation>
@@ -10802,6 +10806,7 @@ Baliteke webguneei eta aplikazioei emandako baimenak kontu honi aplikatzea. Goog
 <translation id="9031811691986152304">berriro saiatzeko</translation>
 <translation id="9032004780329249150">Erabili zure pasahitzak iOS-eko gailuetan</translation>
 <translation id="9032097289595078011">Desgaitu Parekatze bizkorra</translation>
+<translation id="9032513103438497286">Blokeatu <ph name="DEVICE_TYPE" /> honetan instalatutako aplikazioak. Aplikazioak edo edukia deskargatzeko aukera murrizteko, joan Google Play-ren ezarpenetara.</translation>
 <translation id="9033765790910064284">Jarraitu, halere</translation>
 <translation id="9033857511263905942">It&amp;satsi</translation>
 <translation id="9034408118624208974">Chromebook-a erabiltzen hasi berri zara? Aktibatu sinkronizazioa, hobespenen babeskopiak egiteko.</translation>

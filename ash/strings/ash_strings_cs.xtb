@@ -179,6 +179,7 @@ Pro začátek můžete vyzkoušet třeba tohle.</translation>
 <translation id="1611993646327628135">Zap</translation>
 <translation id="1620510694547887537">Kamera</translation>
 <translation id="1623768535032616219">Sbalit Učebnu Google</translation>
+<translation id="163032029566320584"><ph name="UNAVAILABLE_DLC" /> není k dispozici.</translation>
 <translation id="1632985212731562677">Přístup pomocí přepínačů lze vypnout v Nastavení &gt; Přístupnost.</translation>
 <translation id="1637505162081889933"><ph name="NUM_DEVICES" /> zařízení</translation>
 <translation id="1639239467298939599">Načítání</translation>
@@ -250,6 +251,7 @@ Pro začátek můžete vyzkoušet třeba tohle.</translation>
 <translation id="1915307458270490472">Zavěsit</translation>
 <translation id="1918022425394817322">Kamera byla připnuta do pravého horního rohu</translation>
 <translation id="1923539912171292317">Automatická kliknutí</translation>
+<translation id="1925320505152357008">méně než 1 min</translation>
 <translation id="1928739107511554905">K získání aktualizace Chromebook pomocí dotykové obrazovky restartujte s připojenou klávesnicí.</translation>
 <translation id="1948405482892809935">Přepnout na dalšího uživatele</translation>
 <translation id="1951012854035635156">Asistent</translation>
@@ -603,6 +605,7 @@ Je připojen tento počet zařízení: <ph name="DEVICECOUNT" />.</translation>
 <translation id="334927402682780278">Vybrat text od kurzoru po konec řádku</translation>
 <translation id="3349345708646875009">Otevřít správce úloh</translation>
 <translation id="3364721542077212959">Nástroje pro dotykové pero</translation>
+<translation id="3365281428003534650">Nastavit časovač, úkol a hudbu</translation>
 <translation id="3365977133351922112">Telefon je moc daleko. Dejte ho blíž.</translation>
 <translation id="3368922792935385530">Připojeno</translation>
 <translation id="3369111525500416043">Blíží se termín</translation>
@@ -718,6 +721,7 @@ Připojte zařízení k napájení.</translation>
 <translation id="3702846122927433391">Počet obyvatel Nigérie</translation>
 <translation id="3705722231355495246">-</translation>
 <translation id="3706423975342040244">Zábava</translation>
+<translation id="3707093869106077605"><ph name="UNAVAILABLE_DLC_ONE" /> a <ph name="UNAVAILABLE_DLC_TWO" /> nejsou k dispozici</translation>
 <translation id="3708186454126126312">Dříve připojeno</translation>
 <translation id="3712143870407382523">Vyberte okno pro tuto stranu</translation>
 <translation id="371370241367527062">Přední mikrofon</translation>
@@ -905,6 +909,7 @@ Některé funkce jsou za účelem prodloužení výdrže baterie omezeny.</trans
 <translation id="4406883609789734330">Živý přepis</translation>
 <translation id="4412698727486357573">Centrum nápovědy</translation>
 <translation id="4412944820643904175">Funkce <ph name="FEATURE_NAME" /> je vypnutá.</translation>
+<translation id="4417647906073317561">Nastavení soustředění. Nastavte si časovač, úkol a hudbu, aby vás nic nerozptylovalo.</translation>
 <translation id="4424159417645388645">Plocha 5</translation>
 <translation id="4430019312045809116">Hlasitost</translation>
 <translation id="4441283832827406317">Aplikace jsou seřazeny podle názvu</translation>
@@ -989,6 +994,7 @@ Je připojeno 1 zařízení.</translation>
 <translation id="4733161265940833579"><ph name="BATTERY_PERCENTAGE" /> % (vlevo)</translation>
 <translation id="4734965478015604180">Na šířku</translation>
 <translation id="4735944890391795473">Plocha 12</translation>
+<translation id="4736732123074402682">Zkontrolujte připojení a zkuste to znovu.</translation>
 <translation id="473775607612524610">Aktualizovat</translation>
 <translation id="4740516757091333363">Smazat uloženou plochu?</translation>
 <translation id="4746798685375253449">{0,plural, =1{Do jednoho dne zařízení aktualizujte na předchozí verzi}few{Do # dní zařízení aktualizujte na předchozí verzi}many{Do # dne zařízení aktualizujte na předchozí verzi}other{Do # dní zařízení aktualizujte na předchozí verzi}}</translation>
@@ -1322,6 +1328,7 @@ Nejsou připojena žádná zařízení.</translation>
 <translation id="588258955323874662">Celá obrazovka</translation>
 <translation id="5887954372087850114">Okno <ph name="WINDOW_TITLE" /> bylo přidruženo k ploše <ph name="DESK_TITLE" /> a bylo odebráno ze všech ostatních ploch</translation>
 <translation id="588817334757907802">Otevřít soubor v prohlížeči Chrome</translation>
+<translation id="5892014525522223653">Jste offline.</translation>
 <translation id="5895138241574237353">Restartovat</translation>
 <translation id="589817443623831496">Zaměření místa</translation>
 <translation id="5901316534475909376">Shift+Esc</translation>
@@ -1381,6 +1388,7 @@ Nejsou připojena žádná zařízení.</translation>
 <translation id="6095425951508823973">Přidat propojení s poskytovatelem <ph name="PROVIDER" /></translation>
 <translation id="6099678161144790572">Upraveno v uplynulém měsíci</translation>
 <translation id="6103838137565245112">systém</translation>
+<translation id="610395411842312282">Seskupit dvě okna vedle sebe</translation>
 <translation id="6108952804512516814">Vytváření pomocí umělé inteligence</translation>
 <translation id="6114505516289286752">Byly staženy řečové soubory pro jazyk <ph name="LANGUAGE" /></translation>
 <translation id="6119360623251949462"><ph name="CHARGING_STATE" />. <ph name="BATTERY_SAVER_STATE" /></translation>
@@ -1388,6 +1396,7 @@ Nejsou připojena žádná zařízení.</translation>
 <translation id="6121838516699723042">Potvrzení stahování <ph name="FILENAME" /></translation>
 <translation id="612734058257491180">Asistent Google v relaci hosta není k dispozici.</translation>
 <translation id="6127370444807669747">Pokud chcete získat přizpůsobené playlisty a další hudbu na soustředění, vyzkoušejte YouTube Music Premium</translation>
+<translation id="6127395413317891856">Jste offline. Zkontrolujte připojení a zkuste to znovu.</translation>
 <translation id="6129953537138746214">Mezera</translation>
 <translation id="6137566720514957455">Otevřít dialogové okno odstranění účtu <ph name="USER_EMAIL_ADDRESS" /></translation>
 <translation id="6141205840878048728">Na co se chcete soustředit?</translation>
@@ -1663,6 +1672,7 @@ Nová instalace</translation>
 <translation id="7165278925115064263">Alt + Shift + K</translation>
 <translation id="7167913274352523149"><ph name="HOTSPOT" />, <ph name="NETWORK" /></translation>
 <translation id="7168224885072002358">Původní rozlišení bude obnoveno za <ph name="TIMEOUT_SECONDS" /></translation>
+<translation id="7173114856073700355">Otevřít nastavení</translation>
 <translation id="7180611975245234373">Obnovit</translation>
 <translation id="7181691792034457084">Dobrý den, <ph name="PRODUCT_NAME" /> je trochu jiný.</translation>
 <translation id="7188494361780961876">Nabídka byla přesunuta do levého horního rohu obrazovky.</translation>
@@ -1855,6 +1865,7 @@ Pokud zařízení chcete vypnout, znovu podržte tlačítko napájení na zaří
         <ph name="MANAGED" />
         <ph name="IME" />
         <ph name="LOCALE" /></translation>
+<translation id="7899977217122813285">Oznámení jsou po dobu soustředění do <ph name="TIME" /> ztlumena</translation>
 <translation id="7901190436359881020">Zaměnit okna</translation>
 <translation id="7901405293566323524">Phone Hub</translation>
 <translation id="7902625623987030061">Dotkněte se snímače otisků prstů</translation>
@@ -1959,6 +1970,7 @@ Pokud zařízení chcete vypnout, znovu podržte tlačítko napájení na zaří
 <translation id="8257510091797044096">Nastavení zařízení</translation>
 <translation id="8261506727792406068">Smazat</translation>
 <translation id="8262312463845990408">Spustit nebo pozastavit přehrávání</translation>
+<translation id="8268302343625273732">Zobrazit všechny úkoly v Učebně Google</translation>
 <translation id="8277261673056602147">Zvýraznit text na obrazovce</translation>
 <translation id="8287009018010202411">Produktivita</translation>
 <translation id="828708037801473432">Vypnuto</translation>

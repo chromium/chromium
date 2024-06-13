@@ -200,6 +200,7 @@
 <translation id="199425419756152024">পাছৱৰ্ড চাওক</translation>
 <translation id="2010008505735295285">পুনৰ ল’ড কৰক</translation>
 <translation id="2015722694326466240">পাছৱৰ্ড চাবলৈ আপুনি প্ৰথমে এই ডিভাইচটোত এটা পাছক‘ড ছেট কৰিব লাগিব।</translation>
+<translation id="201759455285471444">টেবৰ গোট বিস্তাৰ কৰক।</translation>
 <translation id="2021670401941426298">যদি প্ৰযোজ্য হয়, আপোনাৰ সন্ধানৰ ইতিহাস মচিবলৈ আপোনাৰ সন্ধানৰ ইঞ্জিনৰ নিৰ্দেশাৱলী চাওক।</translation>
 <translation id="202292859882676807">মাইক্ৰ’ফ’ন এক্সেছৰ অনুমতি দিয়া হৈছে</translation>
 <translation id="20485545164632846">নতুন বস্তু</translation>
@@ -503,7 +504,7 @@
 <translation id="3575234738189584619">Lensৰ জৰিয়তে সন্ধান কৰক</translation>
 <translation id="3575426792457739946">এই সূচীখনত আটাইবোৰ ল’ড কৰা প্ৰ’ফাইল আছে।</translation>
 <translation id="3581564640715911333">অন্য ভাষাত পৃষ্ঠাসমূহ অনুবাদ কৰাৰ সুবিধা দিয়ক</translation>
-<translation id="3585696901179982416">{count,plural, =1{{count} টা ঠিকনাৰ {position}তম ঠিকনাটো}one{{count} টা ঠিকনাৰ {position}তম ঠিকনাটো}other{{count} টা ঠিকনাৰ {position}তম ঠিকনাটো}}</translation>
+<translation id="3585696901179982416">{count,plural, =1{{count} টা ঠিকনাৰ {position} নম্বৰ ঠিকনাটো}one{{count} টা ঠিকনাৰ {position} নম্বৰ ঠিকনাটো}other{{count} টা ঠিকনাৰ {position} নম্বৰ ঠিকনাটো}}</translation>
 <translation id="3587885837929752825">আপুনি নিজৰ Google একাউণ্টত কি ছেভ কৰিব পাৰে, সেয়া আপোনাৰ প্ৰতিষ্ঠানে সীমিত কৰে।</translation>
 <translation id="3588820906588687999">প্ৰতিচ্ছবি নতুন টেবত খোলক</translation>
 <translation id="3595252146048399851">আপুনি কি ছিংক কৰিব লাগে সেয়া <ph name="BEGIN_LINK" />ছেটিঙ<ph name="END_LINK" />লৈ গৈ যেতিয়াই মন যায় তেতিয়াই বাছনি কৰিব পাৰে। Googleএ আপোনাৰ ইতিহাসৰ ওপৰত ভিত্তি কৰি Search আৰু অন্য সেৱা ব্যক্তিগতকৰণ কৰিব পাৰে।</translation>
@@ -1099,6 +1100,7 @@
 <translation id="6494931198667773526">সমাপ্তিৰ সময়</translation>
 <translation id="6500795388871406244">পৰামৰ্শিত পাছৱৰ্ড ব্যৱহাৰ কৰক:</translation>
 <translation id="650279896687777322">অধিক জানক...</translation>
+<translation id="6505334220040167806">টেবৰ গোট সংকোচন কৰক।</translation>
 <translation id="6507973708545996744">আপোনাৰ আটাইবোৰ ডিভাইচত আপোনাৰ পঢ়াৰ সূচী পাবলৈ ছাইন ইন কৰক।</translation>
 <translation id="6510072653668207258">মোক পাছত মনত পেলাই দিয়ক</translation>
 <translation id="651505212789431520">ছিংক কৰাটো বাতিল কৰিবনে? আপুনি ছেটিংসমূহলৈ গৈ যিকোনো সময়তে ছিংক অন কৰিব পাৰে।</translation>

@@ -90,6 +90,9 @@
 <translation id="1390418506739274310">Chrome-এ লিঙ্ক খোলে, এমন অন্যান্য অ্যাপ থেকে আপনি ইতিহাস দেখতে পেতে পারেন। <ph name="BEGIN_LINK" />myactivity.google.com<ph name="END_LINK" /> লিঙ্কে আপনার Google অ্যাকাউন্টের অন্যান্য ধরনের ব্রাউজিং ইতিহাস থাকতে পারে।</translation>
 <translation id="13931502444227376">চালিয়ে যেতে, <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> আপনার নাম, ইমেল আইডি ও প্রোফাইল ছবি এই সাইটের সাথে শেয়ার করবে। এই সাইটের <ph name="BEGIN_LINK1" />পরিষেবার শর্তাবলী<ph name="END_LINK1" /> দেখুন।</translation>
 <translation id="1397811292916898096"><ph name="PRODUCT_NAME" /> এর সাহায্যে খুঁজুন</translation>
+<translation id="1398057416966591719">আপনার Google অ্যাকাউন্টে <ph name="BEGIN_LINK1" />Chrome-এর কোন ডেটা সেভ করা হবে তা ম্যানেজ<ph name="END_LINK1" /> করতে পারবেন।
+
+আপনার Chrome ব্যবহার করার অভিজ্ঞতা উন্নত করতে, ডেটা ব্যবহার করে এমন আরও সেটিংসের জন্য <ph name="BEGIN_LINK2" />Google পরিষেবা<ph name="END_LINK2" /> লিঙ্কে যান।</translation>
 <translation id="1407069428457324124">ডার্ক থিম</translation>
 <translation id="1407135791313364759">সব খুলুন</translation>
 <translation id="1409879593029778104">ফাইল ইতিমধ্যেই থাকায় <ph name="FILE_NAME" /> ডাউনলোড আটকানো হয়েছে।</translation>
@@ -248,6 +251,7 @@
 <translation id="2286841657746966508">বিলিং ঠিকানা</translation>
 <translation id="228704530595896923">শেয়ার করার বিকল্পের তালিকা।</translation>
 <translation id="2297822946037605517">এই পৃষ্ঠাটি শেয়ার করুন</translation>
+<translation id="22981027763501686">আপনার বুকমার্ক, ইতিহাস এবং অন্যান্য তথ্য অন্য ডিভাইসে পেতে সিঙ্ক করুন</translation>
 <translation id="230115972905494466">উপযুক্ত ডিভাইস খুঁজে পাওয়া যায়নি</translation>
 <translation id="2318045970523081853">কল করতে ট্যাপ করুন</translation>
 <translation id="2321086116217818302">পাসওয়ার্ড তৈরি করা হচ্ছে…</translation>
@@ -851,6 +855,7 @@
 <translation id="5292796745632149097">এতে পাঠান:</translation>
 <translation id="5301876394151419436">আপনি <ph name="EMAIL" /> হিসেবে সাইন-ইন করেছেন। সেটিংস থেকে আপনি যেকোনও সময় সিঙ্ক করা বন্ধ করতে পারবেন। আপনার ইতিহাসের ভিত্তিতে, সার্চ ও অন্যান্য পরিষেবা পছন্দমতো করে তুলতে Google এই ডেটা ব্যবহার করতে পারে।</translation>
 <translation id="5304593522240415983">এই ক্ষেত্রটি খালি রাখা যাবে না</translation>
+<translation id="5306014156308790439">সংগ্রহে যোগ করার সুবিধা বন্ধ করা হয়েছে</translation>
 <translation id="5308380583665731573">কানেক্ট করুন</translation>
 <translation id="5316947901395241499">আপনার অ্যাডমিনিস্ট্রেটর পাসওয়ার্ড সেভ করার সুবিধা বন্ধ করে দিয়েছে</translation>
 <translation id="5317780077021120954">সেভ করুন</translation>

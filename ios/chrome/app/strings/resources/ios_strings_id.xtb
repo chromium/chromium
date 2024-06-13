@@ -850,6 +850,7 @@ Lihat petunjuk mesin telusur untuk menghapus histori penelusuran Anda, jika memu
 <translation id="5345660046352249607">{COUNT,plural, =1{Lacak Paket Ini?}other{Melacak {COUNT} Paket?}}</translation>
 <translation id="5348775987281903912">Anda dapat membagikan halaman ini di sini dari tombol bagikan.</translation>
 <translation id="536067926684072644">Tampilkan Bookmark</translation>
+<translation id="537853552771686272">Kelola topik dan situs yang Anda minati</translation>
 <translation id="5379352933722332597">{count,plural, =1{Bookmark disimpan ke "{title}". Bookmark hanya disimpan ke perangkat ini.}other{{count} Bookmark disimpan ke "{title}". Bookmark hanya disimpan ke perangkat ini.}}</translation>
 <translation id="5388358297987318779">Buka Gambar</translation>
 <translation id="5395707839134961196">Sembunyikan detail mesin telusur</translation>
@@ -932,6 +933,7 @@ Handoff juga harus diaktifkan pada bagian General di Settings, dan perangkat And
 <translation id="5758631781033351321">Daftar bacaan Anda akan ditampilkan di sini</translation>
 <translation id="5765456154762864099">Menu → Setelan → Browser Default</translation>
 <translation id="5777888488419460501">Simpan di Akun</translation>
+<translation id="5778292857689789362">Grup tab, <ph name="GROUP_TITLE" />, <ph name="TABS_NUMBER" /> Tab.</translation>
 <translation id="5782227691023083829">Menerjemahkan...</translation>
 <translation id="5791632441210678828">Tombol urutkan untuk feed Mengikuti.</translation>
 <translation id="5793373065989412701">Memeriksa anggota keluarga Anda…</translation>

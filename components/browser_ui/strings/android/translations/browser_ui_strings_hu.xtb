@@ -278,6 +278,7 @@
 <translation id="5690795753582697420">A kamera ki van kapcsolva az Android-beállítások között</translation>
 <translation id="5691080386278724773">A(z) <ph name="SITE" /> webhely felhasználhatja az Ön adatait böngészés közben</translation>
 <translation id="5700761515355162635">Harmadik féltől származó cookie-k engedélyezve</translation>
+<translation id="5705383358494210886"><ph name="HOST_NAME" /> <ph name="SEPARATOR1" /> <ph name="RECENCY" /></translation>
 <translation id="5706552988683188916">Ezzel törli a(z) <ph name="WEBSITE" /> webhelyhez tartozó cookie-kat és egyéb webhelyadatokat</translation>
 <translation id="5723967018671998714">A harmadik felektől származó cookie-k le vannak tiltva Inkognitó módban</translation>
 <translation id="5740126560802162366">Webhelyek menthetnek adatokat az eszközére</translation>

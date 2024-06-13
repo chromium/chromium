@@ -121,6 +121,7 @@
 <translation id="2765403129283291972">Chrome'un bu sitede mikrofonunuza erişmesi için izin gerekiyor</translation>
 <translation id="2770231113462710648">Varsayılan tarayıcıyı şuna dönüştür:</translation>
 <translation id="2775140325783767197">Chrome, şifrelerinizi kontrol edemiyor. İnternet bağlantınızı kontrol etmeyi deneyin.</translation>
+<translation id="2797864378188255696"><ph name="USER_EMAIL" /> ile Gmail veya YouTube gibi Google hizmetlerinde oturum açarken aynı hesapla Chrome'da otomatik olarak oturum açabilirsiniz</translation>
 <translation id="2799223571221894425">Yeniden başlat</translation>
 <translation id="2825024317344269723">Tehlikeli site. Chrome, bildirimleri kaldırdı.</translation>
 <translation id="2846251086934905009">Yükleme hatası: Yükleyici tamamlanmadı. Yükleme işlemi iptal edildi.</translation>
@@ -295,6 +296,7 @@ Bazı özellikler kullanılamayabilir. Lütfen farklı bir profil dizini belirti
 <translation id="5334309298019785904">Senkronizasyon, alan adınızda kullanılamadığından ChromeOS, verilerinizi senkronize edemedi.</translation>
 <translation id="5334487786912937552">Dosya indirmek için Chrome'un depolama alanına erişmesi gerekiyor</translation>
 <translation id="5337648990166757586">İsteğe bağlı: Teşhis ve kullanım verilerini Google'a otomatik olarak göndererek ChromeOS özelliklerini ve performansını iyileştirmeye yardımcı olun.</translation>
+<translation id="5345497718959596593">Oturumunuz açıkken Chrome'da Google Hesabınızdaki şifrelerinizi ve diğer öğeleri kullanabilirsiniz</translation>
 <translation id="5357889879764279201">ChromeOS Flex ile ilgili yardım al</translation>
 <translation id="5368118228313795342">Ekstra kod: <ph name="EXTRA_CODE" />.</translation>
 <translation id="5386244825306882791">Ayrıca, Chrome'u başlattığınızda veya Çok Amaçlı Adres Çubuğu'ndan arama yaptığınızda gösterilecek sayfayı da denetler.</translation>

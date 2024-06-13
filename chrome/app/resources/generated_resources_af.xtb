@@ -1561,6 +1561,7 @@ Jy kan hierdie rekening se instellings bestuur deur die Family Link-program op j
 <translation id="2116619964159595185">Werwe koppel gewoonlik aan Bluetooth-toestelle vir kenmerke soos om 'n lae-energiebaken, 'n gesondheid- of fiksheidnaspoorder, of 'n slimgloeilamp op te stel of te sinkroniseer</translation>
 <translation id="2117655453726830283">Volgende skyfie</translation>
 <translation id="211803431539496924">Bevestig uitgebreide sekuriteitopdaterings?</translation>
+<translation id="2118594521750010466">Maak nou reg</translation>
 <translation id="2119461801241504254">Veiligblaai is aan en beskerm jou teen skadelike werwe en aflaaie</translation>
 <translation id="2120297377148151361">Aktiwiteit en interaksies</translation>
 <translation id="2120639962942052471">Het <ph name="PERMISSION" /> geblokkeer</translation>
@@ -1868,6 +1869,7 @@ Jy kan hierdie rekening se instellings bestuur deur die Family Link-program op j
 <translation id="233375395665273385">Vee uit en meld af</translation>
 <translation id="233471714539944337">Sensitiewe inhoud</translation>
 <translation id="2335111415680198280">{0,plural, =1{Maak # venster toe}other{Maak # vensters toe}}</translation>
+<translation id="2335758110242123814">Maak groep oop</translation>
 <translation id="2336228925368920074">Boekmerk alle oortjies …</translation>
 <translation id="2336258397628212480"><ph name="APP_NAME" /> druk tans 1 bladsy na <ph name="PRINTER_NAME" /></translation>
 <translation id="2336381494582898602">Kragwas</translation>
@@ -1888,6 +1890,7 @@ Jy kan hierdie rekening se instellings bestuur deur die Family Link-program op j
 <translation id="2351923523007389195">Toegelaat – <ph name="PERMISSION_DETAILS" />. Skakel <ph name="LINK_BEGIN" />stelselliggingtoegang<ph name="LINK_END" /> aan.</translation>
 <translation id="2352662711729498748">&lt; 1 MB</translation>
 <translation id="2352810082280059586">Sluitskermnotas word outomaties in <ph name="LOCK_SCREEN_APP_NAME" /> gestoor. Jou mees onlangse nota sal op die sluitskerm bly.</translation>
+<translation id="2353168619378866466">Maak groep oop</translation>
 <translation id="2353297238722298836">Kamera en mikrofoon word toegelaat</translation>
 <translation id="2353910600995338714">Uitvoer suksesvol</translation>
 <translation id="2355314311311231464">Voorsiening het misluk omdat jou rekeningbesonderhede nie opgehaal kon word nie. Probeer weer. Foutkode: <ph name="ERROR_CODE" />.</translation>
@@ -2841,6 +2844,7 @@ Jy kan hierdie rekening se instellings bestuur deur die Family Link-program op j
 <translation id="3033348223765101500">Beheer jou data</translation>
 <translation id="3036327949511794916">Die sperdatum om hierdie <ph name="DEVICE_TYPE" /> terug te gee, is verby.</translation>
 <translation id="3036546437875325427">Aktiveer Flits</translation>
+<translation id="3037193115779933814">Letters en syfers</translation>
 <translation id="3038272154009688107">Sien alle werwe</translation>
 <translation id="3038612606416062604">Voeg self 'n drukker by</translation>
 <translation id="3039491566278747710">Kon nie vanlyn beleid op die toestel installeer nie.</translation>
@@ -3693,6 +3697,7 @@ Jy kan hierdie rekening se instellings bestuur deur die Family Link-program op j
 <translation id="3699920817649120894">Skakel sinkronisering en personalisering af?</translation>
 <translation id="3700888195348409686">Hou tans voor (<ph name="PAGE_ORIGIN" />)</translation>
 <translation id="3700993174159313525">Moenie werwe toelaat om jou kameraposisie na te spoor nie</translation>
+<translation id="3701167022068948696">Stel nou reg</translation>
 <translation id="3701515417135397388">Waarsku jou as ’n wagwoord in ’n dataskending gekompromitteer is</translation>
 <translation id="3702797829026927713"><ph name="BEGIN_PARAGRAPH1" />Voer die naam van die kleinhandelaar en die winkelnommer waarvoor hierdie demonstrasietoestel opgestel word, in*. <ph name="END_PARAGRAPH1" />
     <ph name="BEGIN_PARAGRAPH2" />As jy nie die winkelnommer ken nie, kan jy “0000” invoer om met installasie van demonstrasiemodus voort te gaan. <ph name="END_PARAGRAPH2" />
@@ -6041,6 +6046,7 @@ Toestemmings wat jy reeds aan webwerwe en apps gegee het, kan op hierdie rekenin
 <translation id="5469540749878136997">Maak geheue op grond van gebruik beskikbaar</translation>
 <translation id="5469852975082458401">Jy kan met 'n tekspyltjie deur bladsye navigeer. Druk F7 om af te skakel.</translation>
 <translation id="5470735824776589490">'n Herbegin word vereis voordat jou toestel met Powerwash teruggestel kan word. <ph name="LINK_BEGIN" />Kom meer te wete<ph name="LINK_END" /></translation>
+<translation id="5470741195701938302">Syfers</translation>
 <translation id="5471768120198416576">Hallo daar! Ek is jou teks-na-spraak-stem.</translation>
 <translation id="5472627187093107397">Stoor wagwoorde vir hierdie werf</translation>
 <translation id="5473062644742711742">Kry meer toeganklikheidnutsgoed in die Chrome Webwinkel</translation>
@@ -6878,6 +6884,7 @@ Maak seker jy wys nie enige sensitiewe inligting nie.</translation>
 <translation id="6101226222197207147">Nuwe program bygevoeg (<ph name="EXTENSION_NAME" />)</translation>
 <translation id="6102043788063419338">Hierdie lêer is deur Gevorderde Beskerming geblokkeer.</translation>
 <translation id="6103681770816982672">Waarskuwing: jy skakel tans na ontwikkelaarkanaal oor</translation>
+<translation id="610395411842312282">Groepeer twee vensters langs mekaar</translation>
 <translation id="6104068876731806426">Google-rekeninge</translation>
 <translation id="6104667115274478616">Bestuur ChromeOS-oudio-instellings</translation>
 <translation id="6104796831253957966">Drukkerwaglys is vol</translation>

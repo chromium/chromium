@@ -1548,6 +1548,7 @@ Para administrar la configuración de esta cuenta, instala la app de Family Lin
 <translation id="2116619964159595185">Por lo general, los sitios se conectan a dispositivos Bluetooth para usarlos en funciones, como configurar o sincronizar una baliza electrónica, un monitor de actividad física o de salud, o una lámpara inteligente.</translation>
 <translation id="2117655453726830283">Siguiente diapositiva</translation>
 <translation id="211803431539496924">¿Confirmas las actualizaciones de seguridad extendidas?</translation>
+<translation id="2118594521750010466">Corregir ahora</translation>
 <translation id="2119461801241504254">La Navegación segura está activada y te protege contra descargas y sitios dañinos</translation>
 <translation id="2120297377148151361">Interacciones y actividad</translation>
 <translation id="2120639962942052471">Se bloqueó <ph name="PERMISSION" /></translation>
@@ -3680,6 +3681,7 @@ Para administrar la configuración de esta cuenta, instala la app de Family Lin
 <translation id="3699920817649120894">¿Quieres desactivar la personalización y sincronización?</translation>
 <translation id="3700888195348409686">En presentación (<ph name="PAGE_ORIGIN" />)</translation>
 <translation id="3700993174159313525">No permitir que los sitios hagan un seguimiento de la posición de tu cámara</translation>
+<translation id="3701167022068948696">Corregir ahora</translation>
 <translation id="3701515417135397388">Advertirme si se hackeó una contraseña en una violación de la seguridad de los datos</translation>
 <translation id="3702797829026927713"><ph name="BEGIN_PARAGRAPH1" />Ingresa el nombre del minorista y el número de tienda para los que se configurará este dispositivo de demostración.* <ph name="END_PARAGRAPH1" />
     <ph name="BEGIN_PARAGRAPH2" />Si no sabes el número de tienda, puedes ingresar "0000" para continuar con la instalación del modo de demostración. <ph name="END_PARAGRAPH2" />

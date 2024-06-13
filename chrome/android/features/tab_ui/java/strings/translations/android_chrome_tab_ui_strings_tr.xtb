@@ -55,6 +55,7 @@
 <translation id="3882834874697329510">Açık bir sekmede daha düşük fiyat olduğunda uyarı almak için Ayarlar'da bildirimleri açın.</translation>
 <translation id="3940195383040445971">Sekmelerde fiyatları takip et</translation>
 <translation id="3954615705217314756">{TABS_COUNT,plural, =1{Sekmeyi grupla}other{Sekmeleri grupla}}</translation>
+<translation id="395587619114760247">{TABS_COUNT,plural, =1{<ph name="TABS_COUNT_ONE" /> etkin olmayan sekme}other{<ph name="TABS_COUNT_MANY" /> etkin olmayan sekme}}</translation>
 <translation id="3969565576924904454"><ph name="TITLE_OF_GROUP" /> grubunu aç</translation>
 <translation id="3996880007329611795">Haberdar olun</translation>
 <translation id="4009732926939031387">{NUM_DAYS,plural, =1{<ph name="NUM_DAYS_ONE" /> gün önce oluşturuldu}other{<ph name="NUM_DAYS_MANY" /> gün önce oluşturuldu}}</translation>
@@ -98,6 +99,7 @@
 <translation id="6054741997831917303">Yakın zamanda bu ürünün <ph name="PREVIOUS_PRICE" /> olan fiyatı düştü ve <ph name="NEW_PRICE" /> oldu</translation>
 <translation id="6193448654517602979">Sekmeleri seç</translation>
 <translation id="6228793724645064692">(mağaza puanı)</translation>
+<translation id="6271513594716432922">Etkin olmayan tüm sekmeleri kapat</translation>
 <translation id="6333260925957816943">Bu mağazayla ilgili bilgiler</translation>
 <translation id="6381032505162537930">Sekme gruplarınız burada gösterilir</translation>
 <translation id="639823877092900621">{TABS_COUNT,plural, =1{Seçilen <ph name="TABS_COUNT_ONE" /> sekme grubunu iptal et}other{Seçilen <ph name="TABS_COUNT_MANY" /> sekme grubunu iptal et}}</translation>

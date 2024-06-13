@@ -123,6 +123,7 @@
 <translation id="2765403129283291972">Pārlūkam Chrome ir nepieciešama atļauja piekļūt jūsu mikrofonam šajā vietnē.</translation>
 <translation id="2770231113462710648">Mainīt noklusējuma pārlūkprogrammu uz:</translation>
 <translation id="2775140325783767197">Pārlūkprogrammā Chrome nevar pārbaudīt jūsu paroles. Pārbaudiet interneta savienojumu.</translation>
+<translation id="2797864378188255696">Ja pierakstāties Google pakalpojumos, piemēram, Gmail vai YouTube, ar kontu <ph name="USER_EMAIL" />, varat automātiski pierakstīties pārlūkā Chrome ar to pašu kontu.</translation>
 <translation id="2799223571221894425">Restartēt</translation>
 <translation id="2825024317344269723">Bīstama vietne. Pārlūkā Chrome tika noņemti paziņojumi.</translation>
 <translation id="2846251086934905009">Instalēšanas kļūda: instalēšanas programma nepabeidza darbu. Instalēšana ir priekšlaikus pārtraukta.</translation>
@@ -297,6 +298,7 @@ Dažas funkcijas var nebūt pieejamas. Norādiet citu profila direktoriju vai li
 <translation id="5334309298019785904">Chrome OS nevarēja sinhronizēt jūsu datus, jo sinhronizācija jūsu domēnā nav pieejama.</translation>
 <translation id="5334487786912937552">Pārlūkam Chrome ir nepieciešama atļauja piekļūt krātuvei, lai varētu lejupielādēt failus.</translation>
 <translation id="5337648990166757586">Neobligāti: palīdziet uzlabot Chrome OS funkcijas un veiktspēju, automātiski nosūtot Google serveriem diagnostikas un lietojuma datus.</translation>
+<translation id="5345497718959596593">Kamēr esat pierakstījies, pārlūkā Chrome varat izmantot savas paroles un citu saturu no Google konta.</translation>
 <translation id="5357889879764279201">Saņemt palīdzību saistībā ar Chrome OS Flex</translation>
 <translation id="5368118228313795342">Papildu kods: <ph name="EXTRA_CODE" />.</translation>
 <translation id="5386244825306882791">Tas nosaka arī to, kāda lapa tiks rādīta, kad atvērsiet pārlūku Chrome vai meklēsiet, izmantojot universālo lodziņu.</translation>

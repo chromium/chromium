@@ -50,6 +50,7 @@ Izimvume ozinikezile kakade amawebhusayithi nama-app zingase zisebenze kule akha
 <translation id="185970820835152459">Ungaphatha ama-akhawunti we-Google wakho angene ngemvume. Ama-akhawunti wakho we-Google asetshenziselwe i-browser ye-Chromium, i-Play Store, i-Gmail, nokuningi. Uma ufuna ukungeza i-akhawunti yomuntu othile, njengelungu lomndeni, engeza umuntu omusha ku-<ph name="DEVICE_TYPE" /> yakho kunalokho. <ph name="LINK_BEGIN" />Funda kabanzi<ph name="LINK_END" /></translation>
 <translation id="1863308913976887472">Amasayithi angagcina ulwazi nge-Chromium mayelana nezintshisekelo zakho. Ngokwesibonelo, uma uvakashela isayithi ukuze uthenge izicathulo zomjaho webanga elide, isayithi lingachaza intshisekelo yakho njengokugijima umjaho. Kamuva, uma uvakashela isayithi elihlukile ukuze ubhalisele umjaho, lelo sayithi lingakubonisa isikhangiso sezicathulo zokugijima ezisekelwe kuzintshisekelo zakho.</translation>
 <translation id="1881322772814446296">Ungena ngemvume nge-akhawunti ephethwe futhi unikezele ukuqondiswa kokulawulwa kwayo ngaphezulu kwephrofayela yakho ye-Chromium. Idatha yakho ye-Chromium, efana nezinhlelo zakho zokusebenza, amabhukhimakhi, umlando, amaphasiwedi, nezinye izilungiselelo zizoboshelwa unaphakade ku-<ph name="USER_NAME" />. Uzokwazi ukususa le datha nge-Ideshibhodi yama-Akhawunti we-Google, kodwa ngeke uze ukwazi ukuhlobanisa le datha nenye i-akhawunti. Ungadala ngokukhetha iphrofayela entsha ukuze ugcine idatha yakho ekhona ye-Chromium ihlukile. <ph name="LEARN_MORE" /></translation>
+<translation id="1903204122890929795">Ukuze usebenzise lesi sandiso njengo-<ph name="USER_EMAIL_ADDRESS" />, ngena ngemvume kuChromium.\nUzokwazi futhi ukusebenzisa nokulondoloza amaphasiwedi akho nokunye okwengeziwe kuGoogle Account yakho.</translation>
 <translation id="1906696617298807388">Uma uthayipha ibha yekheli noma ibhokisi losesho, i-Chromium ithumela lokho okuthayiphayo ku-Google Drive ukuze ithole iziphakamiso zezinto. Lokhu kuvaliwe ku-Incognito.</translation>
 <translation id="1911763535808217981">Ngokuvala lokhu, ungangena ngemvume kumasayithi e-Google njenge-Gmail ngaphandle kokungena ngemvume ku-Chromium</translation>
 <translation id="1929939181775079593">I-Chromium ayiphenduli. Qalisa kabusha manje?</translation>
@@ -141,6 +142,7 @@ Izimvume ozinikezile kakade amawebhusayithi nama-app zingase zisebenze kule akha
 <translation id="3296368748942286671">Qhubeka usebenzise izinhlelo zokusebenza ezingemuva uma i-Chromium ivaliwe</translation>
 <translation id="3313189106987092621">I-Chromium izokuxwayisa ngaphambi kokulayisha noma iyiphi isayithi isebenzisa uxhumo olungavikelekile</translation>
 <translation id="3316771292331273802">Uzophuma ngemvume emasayithini amaningi uma uvala wonke amawindi e-Chromium, ngaphandle kwe-Google Account yakho uma ungene ngemvume ku-Chromium. Ukuvumela amasayithi akukhumbule, <ph name="SETTINGS_LINK" />.</translation>
+<translation id="333055255088403283">Isandiso esithi \"<ph name="EXTENSION_NAME" />"\ sifuna ukuthi ungene ngemvume kuChromium</translation>
 <translation id="3350761136195634146">Iphrofayela ye-Chromium enale akhawunti isikhona kakade</translation>
 <translation id="3387527074123400161">I-ChromiumOS</translation>
 <translation id="3406848076815591792">Shintshela kwiphrofayela le-Chromium elikhona kakade?</translation>
@@ -318,6 +320,7 @@ Izimvume ozinikezile kakade amawebhusayithi nama-app zingase zisebenze kule akha
 <translation id="6268381023930128611">Phuma ku-Chromium?</translation>
 <translation id="6281746429495226318">Yenza ngokwezifiso iphrofayela yakho ye-Chromium</translation>
 <translation id="6290827346642914212">Qama iphrofayela lakho le-Chromium</translation>
+<translation id="6294831894865512704">Isandiso sifuna ukuthi ungene kuChromium</translation>
 <translation id="6295779123002464101">I-<ph name="FILE_NAME" /> kungenzeka ibe ingozi, ngakho-ke i-Chromium iyivimbile.</translation>
 <translation id="6309712487085796862">I-Chromium isebenzisa ikhamela yakho.</translation>
 <translation id="6327105987658262776">Asikho isibuyekezo esitholakalayo.</translation>

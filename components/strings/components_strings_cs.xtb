@@ -547,6 +547,7 @@ Jinak to vaše nastavení ochrany soukromí bude blokovat. Povolením umožníte
 <translation id="2003709556000175978">Resetujte heslo</translation>
 <translation id="2003775180883135320">Čtyři otvory nahoře</translation>
 <translation id="2004697686368036666">Některé weby mohou přestat fungovat</translation>
+<translation id="2005042463110681802">Toto upozornění se vám zobrazuje, protože tento web nepodporuje protokol HTTPS a jste v anonymním režimu. <ph name="BEGIN_LEARN_MORE_LINK" />Další informace<ph name="END_LEARN_MORE_LINK" /></translation>
 <translation id="2009942480257059311">Tlačítko Vytvořit událost, aktivací rychle vytvoříte novou událost v Kalendáři Google</translation>
 <translation id="201174227998721785">Spravujte oprávnění a uložená data webů v nastavení Chromu</translation>
 <translation id="2012276282211112603">Momentálně nejsou k dispozici žádná témata</translation>
@@ -1478,6 +1479,7 @@ Jinak to vaše nastavení ochrany soukromí bude blokovat. Povolením umožníte
 <translation id="3799805948399000906">Požadováno písmo</translation>
 <translation id="3801265110651850478">Posílat při procházení webů požadavek Do Not Track</translation>
 <translation id="380329542618494757">Název</translation>
+<translation id="3803801106042434208">Tyto vyhledávače jsou ve vašem regionu oblíbené</translation>
 <translation id="3806932344025766608">Útočníci na webu, který se pokoušíte navštívit, vás mohou přimět k instalaci softwaru nebo prozrazení věcí, jako je heslo, telefon nebo číslo kreditní karty. Chrome důrazně doporučuje vrátit se do bezpečí. <ph name="BEGIN_LEARN_MORE_LINK" />Další informace<ph name="END_LEARN_MORE_LINK" /></translation>
 <translation id="3807366285948165054">Posun obrázku na ose X</translation>
 <translation id="3807709094043295184">Klasický rock a oldies</translation>

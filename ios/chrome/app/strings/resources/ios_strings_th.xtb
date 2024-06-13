@@ -850,6 +850,7 @@
 <translation id="5345660046352249607">{COUNT,plural, =1{ติดตามพัสดุนี้ไหม}other{ติดตามพัสดุ {COUNT} รายการไหม}}</translation>
 <translation id="5348775987281903912">แชร์หน้านี้ได้ที่นี่จากปุ่มแชร์</translation>
 <translation id="536067926684072644">แสดงบุ๊กมาร์ก</translation>
+<translation id="537853552771686272">จัดการหัวข้อและเว็บไซต์ที่คุณสนใจ</translation>
 <translation id="5379352933722332597">{count,plural, =1{บันทึกบุ๊กมาร์กไปยัง "{title}" แล้ว โดยจะบันทึกไว้ในอุปกรณ์นี้เท่านั้น}other{บันทึกบุ๊กมาร์ก {count} รายการไปยัง "{title}" แล้ว โดยจะบันทึกไว้ในอุปกรณ์นี้เท่านั้น}}</translation>
 <translation id="5388358297987318779">เปิดภาพ</translation>
 <translation id="5395707839134961196">ซ่อนรายละเอียดเครื่องมือค้นหา</translation>
@@ -932,6 +933,7 @@
 <translation id="5758631781033351321">คุณจะเห็นเรื่องรออ่านที่นี่</translation>
 <translation id="5765456154762864099">เมนู → การตั้งค่า → เบราว์เซอร์เริ่มต้น</translation>
 <translation id="5777888488419460501">บันทึกในบัญชี</translation>
+<translation id="5778292857689789362">กลุ่มแท็บ, <ph name="GROUP_TITLE" />, <ph name="TABS_NUMBER" /> แท็บ</translation>
 <translation id="5782227691023083829">กำลังแปล...</translation>
 <translation id="5791632441210678828">ปุ่มจัดเรียงสำหรับฟีดที่กำลังติดตาม</translation>
 <translation id="5793373065989412701">กำลังตรวจสอบสมาชิกในครอบครัว…</translation>

@@ -156,6 +156,7 @@
 <translation id="1755203724116202818">Сайтууд зарынхаа гүйцэтгэлийг хэмжихийн тулд таныг сайтад зочилсны дараа худалдан авалт хийсэн эсэх зэрэг хязгаарлагдмал төрлийн өгөгдлийг хоорондоо хуваалцдаг.</translation>
 <translation id="1757620656501361327">Google Password Manager-н шинэчлэлт</translation>
 <translation id="1760873718737761808">{FILE_COUNT,plural, =1{Хуудаснууд, жагсаалтад 1 хуудас байна}other{Хуудаснууд, жагсаалтад # хуудас байна}}</translation>
+<translation id="1771929606532798550">Таны Chrome-н ашиглалтын талаарх мэдээллийг Google-д илгээдэг хэдий ч тус мэдээллийг тантай холбодоггүй\n\nХэрэв Chrome гэмтвэл тухайн гэмтлийн талаарх дэлгэрэнгүй мэдээлэлд зарим хувийн мэдээлэл багтаж магадгүй\n\nХэрэв та түүхээ Google Бүртгэлтэйгээ синк хийвэл хэмжигдэхүүнүүдэд мөн таны зочилсон URL-уудын талаарх мэдээлэл багтаж магадгүй</translation>
 <translation id="1778457539567749232">Уншаагүй болгож тэмдэглэх</translation>
 <translation id="1779766957982586368">Цонхыг хаах</translation>
 <translation id="1780023393214832643"><ph name="USERNAME" />-д хадгалсан нууц үгнүүд</translation>
@@ -799,6 +800,7 @@ Tаны Google бүртгэл <ph name="BEGIN_LINK" />history.google.com<ph name
 <translation id="4987271110129728827">Тухайн хуудсыг олох боломжгүй. Зөв бичсэн эсэхээ шалгах эсвэл веб хайлтыг туршина уу.</translation>
 <translation id="4988526792673242964">Хуудас</translation>
 <translation id="4991110219272367918">Вебсайтыг зөвшөөрөх эсвэл зөвшөөрөхгүй байх сонголтыг хаасан</translation>
+<translation id="4996095658297597226">Санал болгосон нууц үгийг ашиглах уу?</translation>
 <translation id="499724277181351974">Шилжих: <ph name="WEBSITE_TITLE" />: <ph name="WEBSITE_URL" /></translation>
 <translation id="5001388021414335527">Энэ сайтыг энд дагана уу</translation>
 <translation id="5004416275253351869">Google-н ашиглалт удирдлага</translation>
@@ -1042,6 +1044,7 @@ Tаны Google бүртгэл <ph name="BEGIN_LINK" />history.google.com<ph name
 <translation id="6233974827872475843">Синк хийхийг асааснаар энэ төхөөрөмжийн нууц үгнүүдийг Google Бүртгэлдээ хадгална уу</translation>
 <translation id="6247557882553405851">Google-н Нууц үгний менежер</translation>
 <translation id="6251449557817521191">Chrome-н түүхээ эндээс харна уу</translation>
+<translation id="6254139308321626268">Та PDF файл үзэж байна</translation>
 <translation id="6255794742848779505">Бид энэ төхөөрөмжид нууц үгнүүдийг хэрхэн хадгалдаг болохыг өөрчилж байна</translation>
 <translation id="6264376385120300461">Ямартай ч татах</translation>
 <translation id="6277522088822131679">Энэ хуудсыг хэвлэхэд алдаа гарсан байна. Та дахин ачаална уу.</translation>
@@ -1083,6 +1086,7 @@ Tаны Google бүртгэл <ph name="BEGIN_LINK" />history.google.com<ph name
 <translation id="641643625718530986">Хэвлэх...</translation>
 <translation id="6433501201775827830">Хайлтын системээ сонгоно уу</translation>
 <translation id="6434309073475700221">Хэрэгсэхгүй байх</translation>
+<translation id="6437162790453527153">Хавчуурга болон бусад зүйлээ бүх төхөөрөмж дээрээ авахын тулд нэвтэрнэ үү</translation>
 <translation id="6437478888915024427">Хуудасны мэдээлэл</translation>
 <translation id="6440291723980579689">Таныг зөвхөн хуудаснуудыг нээсний дараа тэдгээрийг ачаална</translation>
 <translation id="6441734959916820584">Нэр хэт урт байна</translation>
@@ -1437,6 +1441,7 @@ Tаны Google бүртгэл <ph name="BEGIN_LINK" />history.google.com<ph name
 <translation id="7986497153528221272">Нууц үг харах бол, эхлээд төхөөрөмж дээрээ дэлгэцийн түгжээг тохируулна уу</translation>
 <translation id="7995059495660416932">Та контентыг боломжтой болсон үед нь харна</translation>
 <translation id="799576009106109668">Контентыг таны одоогийн веб хуудасны зочилсон байдалд тулгуурлан идэвхтэй ачаалсан тул та илүү хурдан үзнэ</translation>
+<translation id="8001245658307297681">Та дотоод файл үзэж байна</translation>
 <translation id="8004582292198964060">Хөтөч</translation>
 <translation id="8015452622527143194">Бүгдийг өгөгдмөл хэмжээнд нь буцаах</translation>
 <translation id="8026238112629815203">Бид энэ төхөөрөмжид нууц үгнүүдийг хэрхэн хадгалдаг болохыг өөрчилсөн</translation>

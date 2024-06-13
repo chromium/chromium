@@ -574,6 +574,7 @@
 <translation id="3226991577105957773">+<ph name="COUNT" /> ακόμη</translation>
 <translation id="3227137524299004712">Μικρόφωνο</translation>
 <translation id="3233611303007751344">Η Εξοικονόμηση μπαταρίας απενεργοποιήθηκε</translation>
+<translation id="3238409143297336341">Ρύθμιση γονικών ελέγχων για εφαρμογές</translation>
 <translation id="324366796737464147">Εξουδετέρωση θορύβου</translation>
 <translation id="3249513730522716925">Η επιφάνεια εργασίας <ph name="WINDOW_TITLE" /> μετακινήθηκε από την επιφάνεια εργασίας <ph name="ACTIVE_DESK" /> στην επιφάνεια εργασίας <ph name="TARGET_DESK" />.</translation>
 <translation id="3253743281242075461">Τύπος εργασιών: <ph name="GLANCEABLES_CLASSROOM_LIST_NAME" /></translation>
@@ -1402,6 +1403,7 @@
 <translation id="6141205840878048728">Σε τι θέλετε να συγκεντρωθείτε;</translation>
 <translation id="6141988275892716286">Επιβεβαίωση λήψης</translation>
 <translation id="6143578372829139382">Κοινοποίηση στο YouTube</translation>
+<translation id="6147182561428020853">Μπορείτε πλέον να αποκλείσετε εφαρμογές που έχουν εγκατασταθεί στη συσκευή <ph name="DEVICE_TYPE" /></translation>
 <translation id="6154006699632741460">Το περιφερειακό δεν υποστηρίζεται</translation>
 <translation id="6156960295318603523">Ρυθμίσεις γλώσσας</translation>
 <translation id="615957422585914272">Εμφάνιση πληκτρολογίου οθόνης</translation>
@@ -1673,6 +1675,7 @@
 <translation id="7167913274352523149"><ph name="HOTSPOT" />,
         <ph name="NETWORK" /></translation>
 <translation id="7168224885072002358">Επαναφορά στην προηγούμενη ανάλυση σε <ph name="TIMEOUT_SECONDS" /></translation>
+<translation id="7173114856073700355">Άνοιγμα ρυθμίσεων</translation>
 <translation id="7180611975245234373">Ανανέωση</translation>
 <translation id="7181691792034457084">Γεια σας. Το <ph name="PRODUCT_NAME" /> είναι λίγο διαφορετικό.</translation>
 <translation id="7188494361780961876">Το μενού μεταφέρθηκε στην επάνω αριστερή γωνία της οθόνης.</translation>

@@ -156,6 +156,7 @@ For more settings that use data to improve your Chrome experience, go to <ph nam
 <translation id="1755203724116202818">To measure the performance of an ad, limited types of data are shared between sites, such as whether you made a purchase after visiting a site.</translation>
 <translation id="1757620656501361327">Google Password Manager update</translation>
 <translation id="1760873718737761808">{FILE_COUNT,plural, =1{Pages, 1 page in list}other{Pages, # pages in list}}</translation>
+<translation id="1771929606532798550">Info is sent to Google about your Chrome usage, but it isn't tied to you\n\nIf Chrome crashes, details about the crash may include some personal info\n\nIf you sync your history to your Google Account, metrics may also include info about URLs that you visit</translation>
 <translation id="1778457539567749232">Mark as unread</translation>
 <translation id="1779766957982586368">Close window</translation>
 <translation id="1780023393214832643">Passwords saved to <ph name="USERNAME" /></translation>
@@ -799,6 +800,7 @@ Your Google Account may have other forms of browsing history such as searches an
 <translation id="4987271110129728827">Can’t find that page. Check your spelling or try a web search.</translation>
 <translation id="4988526792673242964">Pages</translation>
 <translation id="4991110219272367918">Option to approve or not approve a website closed</translation>
+<translation id="4996095658297597226">Use suggested password?</translation>
 <translation id="499724277181351974">Navigate: <ph name="WEBSITE_TITLE" />: <ph name="WEBSITE_URL" /></translation>
 <translation id="5001388021414335527">Follow this site here</translation>
 <translation id="5004416275253351869">Google activity controls</translation>
@@ -1042,6 +1044,7 @@ For example, some websites may respond to this request by showing you ads that a
 <translation id="6233974827872475843">Save the passwords on this device in your Google Account by turning on sync</translation>
 <translation id="6247557882553405851">Google Password Manager</translation>
 <translation id="6251449557817521191">View your Chrome history here</translation>
+<translation id="6254139308321626268">You're viewing a PDF file</translation>
 <translation id="6255794742848779505">We're changing how passwords are saved on this device</translation>
 <translation id="6264376385120300461">Download anyway</translation>
 <translation id="6277522088822131679">There was a problem printing the page. Please try again.</translation>
@@ -1083,6 +1086,7 @@ For example, some websites may respond to this request by showing you ads that a
 <translation id="641643625718530986">Print…</translation>
 <translation id="6433501201775827830">Choose your search engine</translation>
 <translation id="6434309073475700221">Discard</translation>
+<translation id="6437162790453527153">Sign in to get your bookmarks and more on all your devices</translation>
 <translation id="6437478888915024427">Page info</translation>
 <translation id="6440291723980579689">Pages load only after you open them</translation>
 <translation id="6441734959916820584">Name is too long</translation>
@@ -1437,6 +1441,7 @@ To change this setting, <ph name="BEGIN_LINK" />delete the Chrome data in your a
 <translation id="7986497153528221272">To view passwords, first set a screen lock on your device</translation>
 <translation id="7995059495660416932">You'll see content when it becomes available</translation>
 <translation id="799576009106109668">You’ll browse faster because content is proactively loaded based on your current web page visit</translation>
+<translation id="8001245658307297681">You're viewing a local file</translation>
 <translation id="8004582292198964060">Browser</translation>
 <translation id="8015452622527143194">Return everything on the page to default size</translation>
 <translation id="8026238112629815203">We changed how passwords are saved on this device</translation>

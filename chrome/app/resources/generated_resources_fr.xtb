@@ -1552,6 +1552,7 @@ Vous pouvez gérer les paramètres de ce compte en installant l'application Fami
 <translation id="2116619964159595185">Les sites se connectent généralement aux appareils Bluetooth pour proposer des fonctionnalités comme la configuration ou la synchronisation d'une balise à faible consommation d'énergie, d'un moniteur de santé ou d'activité physique, ou d'une ampoule connectée</translation>
 <translation id="2117655453726830283">Diapositive suivante</translation>
 <translation id="211803431539496924">Confirmer les mises à jour de sécurité étendues ?</translation>
+<translation id="2118594521750010466">Corriger</translation>
 <translation id="2119461801241504254">La navigation sécurisée est activée, et vous protège contre les sites et les téléchargements dangereux</translation>
 <translation id="2120297377148151361">Activité et interactions</translation>
 <translation id="2120639962942052471">Autorisation "<ph name="PERMISSION" />" bloquée</translation>
@@ -1856,6 +1857,7 @@ Vous pouvez gérer les paramètres de ce compte en installant l'application Fami
 <translation id="233375395665273385">Supprimer et se déconnecter</translation>
 <translation id="233471714539944337">Contenu sensible</translation>
 <translation id="2335111415680198280">{0,plural, =1{Fermer # fenêtre}one{Fermer # fenêtre}other{Fermer # fenêtres}}</translation>
+<translation id="2335758110242123814">Ouvrir le groupe</translation>
 <translation id="2336228925368920074">Ajouter tous les onglets aux favoris...</translation>
 <translation id="2336258397628212480"><ph name="APP_NAME" /> imprime 1 page sur <ph name="PRINTER_NAME" /></translation>
 <translation id="2336381494582898602">Powerwash</translation>
@@ -1876,6 +1878,7 @@ Vous pouvez gérer les paramètres de ce compte en installant l'application Fami
 <translation id="2351923523007389195">Accordée – <ph name="PERMISSION_DETAILS" />. Activez l'<ph name="LINK_BEGIN" />accès à la position du système<ph name="LINK_END" />.</translation>
 <translation id="2352662711729498748">&lt; 1 Mo</translation>
 <translation id="2352810082280059586">Les notes rédigées sur l'écran de verrouillage sont automatiquement enregistrées dans <ph name="LOCK_SCREEN_APP_NAME" />. Votre note la plus récente restera sur l'écran de verrouillage.</translation>
+<translation id="2353168619378866466">Ouvrir le groupe</translation>
 <translation id="2353297238722298836">Caméra et micro autorisés</translation>
 <translation id="2353910600995338714">Exportation réussie</translation>
 <translation id="2355314311311231464">Échec de la configuration dû à l'impossibilité de récupérer les informations liées à votre compte. Veuillez réessayer. Code d'erreur : <ph name="ERROR_CODE" />.</translation>
@@ -2829,6 +2832,7 @@ Vous pouvez gérer les paramètres de ce compte en installant l'application Fami
 <translation id="3033348223765101500">Contrôler vos données</translation>
 <translation id="3036327949511794916">Le délai de retour de ce <ph name="DEVICE_TYPE" /> a expiré.</translation>
 <translation id="3036546437875325427">Activer Flash</translation>
+<translation id="3037193115779933814">Lettres et chiffres</translation>
 <translation id="3038272154009688107">Afficher tous les sites</translation>
 <translation id="3038612606416062604">Ajouter une imprimante manuellement</translation>
 <translation id="3039491566278747710">Échec de l'installation de la règle hors connexion sur l'appareil.</translation>
@@ -3679,6 +3683,7 @@ Vous pouvez gérer les paramètres de ce compte en installant l'application Fami
 <translation id="3699920817649120894">Désactiver la synchronisation et la personnalisation ?</translation>
 <translation id="3700888195348409686">Présentation de <ph name="PAGE_ORIGIN" />…</translation>
 <translation id="3700993174159313525">Ne pas autoriser les sites à suivre la position de votre caméra</translation>
+<translation id="3701167022068948696">Corriger maintenant</translation>
 <translation id="3701515417135397388">Recevoir une alerte si un mot de passe a été compromis lors d'une violation de données</translation>
 <translation id="3702797829026927713"><ph name="BEGIN_PARAGRAPH1" />Saisissez le nom du marchand et le numéro du magasin pour lesquels cet appareil de démonstration est configuré*. <ph name="END_PARAGRAPH1" />
     <ph name="BEGIN_PARAGRAPH2" />Si vous ne connaissez pas le numéro du magasin, vous pouvez saisir "0000" pour poursuivre l'installation en mode démo. <ph name="END_PARAGRAPH2" />
@@ -4217,6 +4222,7 @@ Cela peut inclure des informations sur les logiciels installés, les fichiers, v
 <translation id="4066207411788646768">Veuillez vérifier votre connexion pour afficher les imprimantes disponibles sur le réseau</translation>
 <translation id="4067839975993712852">Marquer l'onglet actif comme lu</translation>
 <translation id="4068776064906523561">Empreintes digitales enregistrées</translation>
+<translation id="4070132839822635162">Ne pas se connecter</translation>
 <translation id="407173827865827707">En cas de clic</translation>
 <translation id="4072805772816336153">Réessayez plus tard</translation>
 <translation id="4074164314564067597">clavier</translation>
@@ -6025,6 +6031,7 @@ Les autorisations que vous avez déjà accordées aux sites Web et aux applis pe
 <translation id="5469540749878136997">Libérer de la mémoire en fonction de l'utilisation</translation>
 <translation id="5469852975082458401">Vous pouvez parcourir les pages à l'aide d'un curseur de texte. Pour désactiver la navigation au clavier, appuyez sur F7.</translation>
 <translation id="5470735824776589490">Vous devez redémarrer votre appareil avant de pouvoir le réinitialiser avec le Powerwash. <ph name="LINK_BEGIN" />En savoir plus<ph name="LINK_END" /></translation>
+<translation id="5470741195701938302">Chiffres</translation>
 <translation id="5471768120198416576">Bonjour ! Je suis la voix de votre synthèse vocale.</translation>
 <translation id="5472627187093107397">Enregistrer les mots de passe pour ce site</translation>
 <translation id="5473062644742711742">Trouver d'autres outils d'accessibilité sur le Chrome Web Store</translation>
@@ -6862,6 +6869,7 @@ Assurez-vous de ne pas dévoiler d'informations sensibles.</translation>
 <translation id="6101226222197207147">Nouvelle application (<ph name="EXTENSION_NAME" />) ajoutée.</translation>
 <translation id="6102043788063419338">Ce fichier a été bloqué par la Protection Avancée.</translation>
 <translation id="6103681770816982672">Avertissement : Vous êtes sur le point de passer à la version développeur</translation>
+<translation id="610395411842312282">Regrouper deux fenêtres côte à côte</translation>
 <translation id="6104068876731806426">Comptes Google</translation>
 <translation id="6104667115274478616">Gérer les paramètres audio ChromeOS</translation>
 <translation id="6104796831253957966">File d'attente d'impression pleine</translation>
@@ -7340,6 +7348,7 @@ Assurez-vous de ne pas dévoiler d'informations sensibles.</translation>
 <translation id="6469702164109431067">Mots de passe et clés d'accès</translation>
 <translation id="6470823736074966819">Ignorer les notifications</translation>
 <translation id="6472893788822429178">Afficher le bouton Accueil</translation>
+<translation id="6473315466413288899">Sélectionnez une option</translation>
 <translation id="6474498546677193336">Impossible d'annuler le partage, car une application utilise ce dossier. Le partage sera annulé au prochain arrêt de Linux.</translation>
 <translation id="6474884162850599008">Déconnecter le compte Google Drive</translation>
 <translation id="6475294023568239942">Libérez de l'espace disque ou redimensionnez le disque Linux dans "Paramètres"</translation>
@@ -10808,6 +10817,7 @@ Les autorisations que vous avez déjà accordées aux sites Web et aux applis pe
 <translation id="9031811691986152304">réessayer</translation>
 <translation id="9032004780329249150">Utiliser vos mots de passe sur vos appareils iOS</translation>
 <translation id="9032097289595078011">Désactiver l'Association express</translation>
+<translation id="9032513103438497286">Bloquer les applis installées sur ce <ph name="DEVICE_TYPE" />. Pour limiter le téléchargement d'applis ou de contenu, accédez aux paramètres Google Play.</translation>
 <translation id="9033765790910064284">Continuer</translation>
 <translation id="9033857511263905942">&amp;Coller</translation>
 <translation id="9034408118624208974">Vous utilisez un Chromebook pour la première fois ? Activez la synchronisation pour sauvegarder vos préférences.</translation>

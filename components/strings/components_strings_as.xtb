@@ -568,6 +568,7 @@
 <translation id="2036983605131262583">বিকল্প ৰোল</translation>
 <translation id="2040463897538655645">আঁতৰাব পৰা ষ্ট’ৰেজ</translation>
 <translation id="2040894699575719559">অৱস্থান অৱৰোধ কৰা হৈছে</translation>
+<translation id="2041788246978549610">উপলব্ধ মাইক্ৰ’ফ’নসমূহ (<ph name="MICS_COUNT" /> টা) ব্যৱহাৰ কৰক</translation>
 <translation id="2042213636306070719">ট্ৰে’ ৭</translation>
 <translation id="204357726431741734">আপোনাৰ Google একাউণ্টত ষ্ট’ৰ হৈ থকা পাছৱৰ্ডসমূহ ব্যৱহাৰ কৰিবলৈ ছাইন ইন কৰক</translation>
 <translation id="2045871135676061132">এনভেল’প ব্যক্তিগত</translation>
@@ -889,6 +890,7 @@
 <translation id="2655752832536625875">বাথৰুম</translation>
 <translation id="2657637947725373811">{0,plural, =1{গোপনীয় ফাইল স্থানান্তৰ কৰিবনে?}one{গোপনীয় ফাইল স্থানান্তৰ কৰিবনে?}other{গোপনীয় ফাইল স্থানান্তৰ কৰিবনে?}}</translation>
 <translation id="2658843814961855121">শ্ৰম আৰু নিয়োগ সম্পর্কীয় আইন</translation>
+<translation id="2658944305627908367">আপোনাৰ বেলেন্স অতিক্ৰম কৰা লেনদেনসমূহ প্ৰক্ৰিয়াকৰণ কৰা নহ’ব</translation>
 <translation id="2660779039299703961">অনুষ্ঠান</translation>
 <translation id="2664887757054927933">{COUNT,plural, =0{এটাও নাই}=1{১টা পাছৱৰ্ড (<ph name="DOMAIN_LIST" />ৰ বাবে)}=2{২টা পাছৱৰ্ড (<ph name="DOMAIN_LIST" />ৰ বাবে)}one{#টা পাছৱৰ্ড (<ph name="DOMAIN_LIST" />ৰ বাবে)}other{#টা পাছৱৰ্ড (<ph name="DOMAIN_LIST" />ৰ বাবে)}}</translation>
 <translation id="2666092431469916601">শীর্ষ</translation>
@@ -1086,6 +1088,7 @@
 <translation id="3090667236485488075">কাচ</translation>
 <translation id="3095940652251934233">ভাষ্য</translation>
 <translation id="3098513225387949945">অক্ষম সূচীখনত '*'ৰ সমান এটা আর্হি থকাৰ বাবে উপেক্ষা কৰা হৈছে, যিটো নীতিটো অক্ষম কৰাৰ সমকক্ষ।</translation>
+<translation id="3099619114405539473">উপলব্ধ কেমেৰাসমূহ (<ph name="CAMERAS_COUNT" /> টা) ব্যৱহাৰ কৰক</translation>
 <translation id="3102312643185441063">সঞ্চয়</translation>
 <translation id="3103188521861412364">ষ্টক আৰু বণ্ড</translation>
 <translation id="3105172416063519923">সম্পদৰ আইডি:</translation>
@@ -1359,6 +1362,7 @@
 <translation id="3583757800736429874">&amp;স্থানান্তৰ কৰাটো ৰিডু কৰক</translation>
 <translation id="3584299510153766161">তলৰ অংশত দুবাৰ পাঞ্চ কৰক</translation>
 <translation id="3584755835709800788">কল্পবিজ্ঞান আৰু ফেণ্টাছী বিষয়ক চলচ্চিত্ৰ</translation>
+<translation id="3585455899094692781">উপলব্ধ কেমেৰাসমূহ (<ph name="CAMERAS_COUNT" /> টা) ব্যৱহাৰ আৰু লৰচৰ কৰক</translation>
 <translation id="3586833803451155175">ৱেট ফিল্ম</translation>
 <translation id="3586931643579894722">সবিশেষ লুকুৱাওক</translation>
 <translation id="3587738293690942763">মাজভাগ</translation>

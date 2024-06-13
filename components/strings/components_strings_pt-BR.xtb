@@ -547,6 +547,7 @@ Se não fizer isso, a permissão será bloqueada pelas configurações de privac
 <translation id="2003709556000175978">Redefinir sua senha agora</translation>
 <translation id="2003775180883135320">Perfuração quádrupla na parte superior</translation>
 <translation id="2004697686368036666">Os recursos de alguns sites podem não funcionar</translation>
+<translation id="2005042463110681802">Este aviso está sendo mostrado porque o site não é compatível com HTTPS e você está no modo de navegação anônima. <ph name="BEGIN_LEARN_MORE_LINK" />Saiba mais<ph name="END_LEARN_MORE_LINK" /></translation>
 <translation id="2009942480257059311">Botão "Criar evento". Ative para criar rapidamente um novo evento no Google Agenda</translation>
 <translation id="201174227998721785">Gerencie as permissões e os dados armazenados em sites nas configurações do Chrome</translation>
 <translation id="2012276282211112603">Não há temas para mostrar no momento</translation>
@@ -1482,6 +1483,7 @@ Se não fizer isso, a permissão será bloqueada pelas configurações de privac
 <translation id="3799805948399000906">Fonte solicitada</translation>
 <translation id="3801265110651850478">Enviar uma solicitação "Do Not Track" com seu tráfego de navegação</translation>
 <translation id="380329542618494757">Nome</translation>
+<translation id="3803801106042434208">Estes mecanismos são famosos na sua região</translation>
 <translation id="3806932344025766608">Invasores no site que você está tentando acessar podem induzir você a instalar um software ou compartilhar dados como senha, telefone ou número do cartão de crédito. O Chrome recomenda voltar a uma página segura. <ph name="BEGIN_LEARN_MORE_LINK" />Saiba mais<ph name="END_LEARN_MORE_LINK" /></translation>
 <translation id="3807366285948165054">Mudança X da imagem</translation>
 <translation id="3807709094043295184">Rock clássico e músicas antigas</translation>

@@ -547,6 +547,7 @@
 <translation id="2003709556000175978">立即重置您的密码</translation>
 <translation id="2003775180883135320">四孔（顶部）</translation>
 <translation id="2004697686368036666">某些网站上的功能可能无法正常运行</translation>
+<translation id="2005042463110681802">您之所以会看到此警告，是因为该网站不支持 HTTPS 且您处于无痕模式。<ph name="BEGIN_LEARN_MORE_LINK" />了解详情<ph name="END_LEARN_MORE_LINK" /></translation>
 <translation id="2009942480257059311">“创建活动”按钮，激活它即可在 Google 日历中快速创建新活动</translation>
 <translation id="201174227998721785">在 Chrome 设置中管理各网站的权限及存储的数据</translation>
 <translation id="2012276282211112603">暂无可显示的主题</translation>
@@ -1478,6 +1479,7 @@
 <translation id="3799805948399000906">请求的字体</translation>
 <translation id="3801265110651850478">在浏览流量中发送“Do Not Track”请求</translation>
 <translation id="380329542618494757">名称</translation>
+<translation id="3803801106042434208">这些搜索引擎在您所在地区非常热门</translation>
 <translation id="3806932344025766608">您正在尝试访问的网站上的攻击者可能会诱使您安装软件或泄露某些信息，例如您的密码、手机号码或信用卡号码。Chrome 强烈建议您返回到安全的浏览环境，以免造成损害。<ph name="BEGIN_LEARN_MORE_LINK" />了解详情<ph name="END_LEARN_MORE_LINK" /></translation>
 <translation id="3807366285948165054">图片沿 X 轴位移</translation>
 <translation id="3807709094043295184">经典摇滚与老歌</translation>

@@ -251,6 +251,7 @@ Hier sind ein paar Dinge, die du tun kannst, um loszulegen.</translation>
 <translation id="1915307458270490472">Auflegen</translation>
 <translation id="1918022425394817322">Kamera ist an der oberen rechten Ecke angepinnt</translation>
 <translation id="1923539912171292317">Automatische Klicks</translation>
+<translation id="1925320505152357008">weniger als 1 Min.</translation>
 <translation id="1928739107511554905">Du kannst das Update vornehmen, indem du den Touchscreen verwendest, um dein Chromebook mit angeschlossener Tastatur neu zu starten.</translation>
 <translation id="1948405482892809935">Zum nächsten Nutzer wechseln</translation>
 <translation id="1951012854035635156">Assistant</translation>
@@ -604,6 +605,7 @@ Hier sind ein paar Dinge, die du tun kannst, um loszulegen.</translation>
 <translation id="334927402682780278">Text von Cursor bis Zeilenende auswählen</translation>
 <translation id="3349345708646875009">Task-Manager öffnen</translation>
 <translation id="3364721542077212959">Eingabestift-Tools</translation>
+<translation id="3365281428003534650">Timer und Aufgabe festlegen</translation>
 <translation id="3365977133351922112">Dein Smartphone ist zu weit weg. Hole es näher heran.</translation>
 <translation id="3368922792935385530">Verbunden</translation>
 <translation id="3369111525500416043">Demnächst fällig</translation>
@@ -907,6 +909,7 @@ Einige Funktionen sind eingeschränkt, um die Akkulaufzeit zu verlängern.</tran
 <translation id="4406883609789734330">Automatische Untertitel</translation>
 <translation id="4412698727486357573">Hilfe</translation>
 <translation id="4412944820643904175"><ph name="FEATURE_NAME" /> ist deaktiviert.</translation>
+<translation id="4417647906073317561">Einstellungen für den Konzentrationsmodus Stelle einen Timer, eine Aufgabe und Musik ein, um zu beginnen.</translation>
 <translation id="4424159417645388645">Desktop 5</translation>
 <translation id="4430019312045809116">Lautstärke</translation>
 <translation id="4441283832827406317">Apps wurden nach Name sortiert</translation>
@@ -1670,6 +1673,7 @@ Neuinstallation</translation>
 <translation id="7167913274352523149"><ph name="HOTSPOT" />,
         <ph name="NETWORK" /></translation>
 <translation id="7168224885072002358">Alte Auflösung wird in <ph name="TIMEOUT_SECONDS" /> wiederhergestellt.</translation>
+<translation id="7173114856073700355">Einstellungen öffnen</translation>
 <translation id="7180611975245234373">Aktualisieren</translation>
 <translation id="7181691792034457084">Hallo! <ph name="PRODUCT_NAME" /> ist etwas anders.</translation>
 <translation id="7188494361780961876">Menü wurde nach links oben auf dem Bildschirm verschoben.</translation>
@@ -1862,6 +1866,7 @@ Halte zum Herunterfahren des Geräts die Ein-/Aus-Taste noch einmal gedrückt.</
         <ph name="MANAGED" />
         <ph name="IME" />
         <ph name="LOCALE" /></translation>
+<translation id="7899977217122813285">Benachrichtigungen sind bis <ph name="TIME" /> stummgeschaltet, während du dich konzentrierst</translation>
 <translation id="7901190436359881020">Fenster tauschen</translation>
 <translation id="7901405293566323524">Phone Hub</translation>
 <translation id="7902625623987030061">Fingerabdrucksensor berühren</translation>

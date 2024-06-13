@@ -1562,6 +1562,7 @@
 <translation id="2116619964159595185">সাইটগুলি সাধারণত লো-এনার্জি বিকন, স্বাস্থ্য বা ফিটনেস ট্র্যাকার অথবা স্মার্ট আলোর বাল্বের মতো ফিচার সেট আপ অথবা সিঙ্ক করতে ব্লুটুথ ডিভাইস কানেক্ট করে</translation>
 <translation id="2117655453726830283">পরবর্তী স্লাইড</translation>
 <translation id="211803431539496924">এক্সটেন্ডেড নিরাপত্তা আপডেট কনফার্ম করতে চান?</translation>
+<translation id="2118594521750010466">এখনই সমাধান করুন</translation>
 <translation id="2119461801241504254">'Safe Browsing'-এর সুবিধা চালু করা আছে এবং এটি আপনাকে ক্ষতিকর সাইট ও ডাউনলোডের হাত থেকে রক্ষা করে</translation>
 <translation id="2120297377148151361">অ্যাক্টিভিটি এবং ইন্টার‌্যাকশন</translation>
 <translation id="2120639962942052471"><ph name="PERMISSION" /> ব্লক করা হয়েছে</translation>
@@ -1869,6 +1870,7 @@
 <translation id="233375395665273385">মুছুন ও সাইন-আউট করুন</translation>
 <translation id="233471714539944337">সংবেদনশীল কন্টেন্ট</translation>
 <translation id="2335111415680198280">{0,plural, =1{#টি উইন্ডো বন্ধ করুন}one{#টি উইন্ডো বন্ধ করুন}other{#টি উইন্ডো বন্ধ করুন}}</translation>
+<translation id="2335758110242123814">গ্রুপ খুলুন</translation>
 <translation id="2336228925368920074">সকল ট্যাব বুকমার্ক করুন...</translation>
 <translation id="2336258397628212480"><ph name="PRINTER_NAME" /> থেকে <ph name="APP_NAME" />-এর মাধ্যমে ১টি পৃষ্ঠা প্রিন্ট করা হচ্ছে</translation>
 <translation id="2336381494582898602">পাওয়ারওয়াশ</translation>
@@ -1889,6 +1891,7 @@
 <translation id="2351923523007389195">ব্যবহারের অনুমতি দেওয়া হয়েছে – <ph name="PERMISSION_DETAILS" />। <ph name="LINK_BEGIN" />সিস্টেম লোকেশনের অ্যাক্সেস<ph name="LINK_END" /> চালু করুন।</translation>
 <translation id="2352662711729498748">&lt; ১ এমবি</translation>
 <translation id="2352810082280059586">লক স্ক্রিন নোটগুলি নিজে থেকেই <ph name="LOCK_SCREEN_APP_NAME" /> এ সেভ হয়ে যায়। সবথেকে সাম্প্রতিক নোটটি লক স্ক্রিনে রয়ে যায়।</translation>
+<translation id="2353168619378866466">গ্রুপ খুলুন</translation>
 <translation id="2353297238722298836">ক্যামেরা এবং মাইক্রোফোন ব্যবহারে অনুমতি দেওয়া হয়েছে</translation>
 <translation id="2353910600995338714">এক্সপোর্ট করা হয়ে গেছে</translation>
 <translation id="2355314311311231464">প্রভিশনিং করা যায়নি কারণ আপনার অ্যাকাউন্টের বিবরণ পুনরুদ্ধার করা সম্ভব হয়নি। আবার চেষ্টা করুন। সমস্যার কোড: <ph name="ERROR_CODE" /></translation>
@@ -2842,6 +2845,7 @@
 <translation id="3033348223765101500">আপনার ডেটা নিয়ন্ত্রণ করুন</translation>
 <translation id="3036327949511794916">এই <ph name="DEVICE_TYPE" /> ফেরত দেওয়ার সময়সীমা পেরিয়ে গেছে।</translation>
 <translation id="3036546437875325427">Flash সক্ষম করুন</translation>
+<translation id="3037193115779933814">অক্ষর ও সংখ্যা</translation>
 <translation id="3038272154009688107">সব সাইট দেখুন</translation>
 <translation id="3038612606416062604">নিজ হাতে একটি প্রিন্টার যোগ করুন</translation>
 <translation id="3039491566278747710">ডিভাইসে অফলাইন নীতি ইনস্টল করা যায়নি।</translation>
@@ -3694,6 +3698,7 @@
 <translation id="3699920817649120894">সিঙ্ক এবং নিজের মতো সাজিয়ে নেওয়ার বিকল্পগুলি বন্ধ করবেন?</translation>
 <translation id="3700888195348409686">(<ph name="PAGE_ORIGIN" />) উপস্থাপনা করা হচ্ছে</translation>
 <translation id="3700993174159313525">সাইটগুলিকে আপনার ক্যামেরার অবস্থান ট্র্যাক করতে দেয় না</translation>
+<translation id="3701167022068948696">এখনই সমাধান করুন</translation>
 <translation id="3701515417135397388">ডেটার নিরাপত্তা লঙ্ঘনের কারণে কোনও পাসওয়ার্ড হ্যাক হয়ে থাকলে আপনাকে সেই সম্পর্কে সতর্ক করে।</translation>
 <translation id="3702797829026927713"><ph name="BEGIN_PARAGRAPH1" />রিটেলারের নাম এবং স্টোর নম্বর লিখুন যার জন্য এই ডেমো ডিভাইসটি কনফিগার করা হচ্ছে*৷ <ph name="END_PARAGRAPH1" />
     <ph name="BEGIN_PARAGRAPH2" />আপনি যদি স্টোর নম্বর না জানেন, তাহলে ডেমো মোড ইনস্টলেশন চালিয়ে যেতে আপনি "০০০০" লিখতে পারেন। <ph name="END_PARAGRAPH2" />
@@ -4231,6 +4236,7 @@
 <translation id="4066207411788646768">আপনার নেটওয়ার্কে থাকা প্রিন্টারগুলি দেখতে ইন্টারনেট কানেকশন চেক করুন</translation>
 <translation id="4067839975993712852">বর্তমান ট্যাবটি 'পড়া হয়ে গেছে' হিসেবে চিহ্নিত করুন</translation>
 <translation id="4068776064906523561">সংরক্ষিত আঙ্গুলের ছাপগুলি</translation>
+<translation id="4070132839822635162">সাইন-ইন করবেন না</translation>
 <translation id="407173827865827707">ক্লিক করা হলে</translation>
 <translation id="4072805772816336153">পরে আবার চেষ্টা করুন</translation>
 <translation id="4074164314564067597">কীবোর্ড</translation>
@@ -6042,6 +6048,7 @@
 <translation id="5469540749878136997">ব্যবহারের উপর ভিত্তি করে মেমরি খালি করুন</translation>
 <translation id="5469852975082458401">টেক্সট কার্সরের মাধ্যমে আপনি একটি পৃষ্ঠা থেকে অন্য পৃষ্ঠাতে নেভিগেট করতে পারবেন। ক্যারেট ব্রাউজিং বন্ধ করার জন্য F7 শর্টকাট প্রেস করুন।</translation>
 <translation id="5470735824776589490">আপনার ডিভাইস পাওয়ারওয়াশের মাধ্যমে রিসেট করার আগে একবার রিস্টার্ট করা প্রয়োজন। <ph name="LINK_BEGIN" />আরও জানুন<ph name="LINK_END" /></translation>
+<translation id="5470741195701938302">নম্বর</translation>
 <translation id="5471768120198416576">হ্যালো! আমি হলাম আপনার পাঠ্য থেকে ভাষ্য ভয়েস।</translation>
 <translation id="5472627187093107397">এই সাইটের জন্য সেভ করা পাসওয়ার্ড</translation>
 <translation id="5473062644742711742">Chrome ওয়েব স্টোরে আরও অ্যাক্সেসিবিলিটি টুল খুঁজুন</translation>
@@ -6879,6 +6886,7 @@
 <translation id="6101226222197207147">নতুন অ্যাপ্লিকেশন জোড়া হয়েছে (<ph name="EXTENSION_NAME" />)</translation>
 <translation id="6102043788063419338">এই ফাইল উন্নত সুরক্ষা দ্বারা ব্লক করা হয়েছে।</translation>
 <translation id="6103681770816982672">সতর্কতা: আপনি ডেভেলপারদের চ্যানেলে স্যুইচ করছেন৷</translation>
+<translation id="610395411842312282">পাশাপাশি দুটি উইন্ডো গ্রুপ করুন</translation>
 <translation id="6104068876731806426">Google অ্যাকাউন্ট</translation>
 <translation id="6104667115274478616">ChromeOS অডিও সেটিংস ম্যানেজ করুন</translation>
 <translation id="6104796831253957966">প্রিন্টারের সারি ভরে গেছে</translation>
@@ -7358,6 +7366,7 @@
 <translation id="6469702164109431067">পাসওয়ার্ড এবং পাসকি</translation>
 <translation id="6470823736074966819">বিজ্ঞপ্তি মিউট করুন</translation>
 <translation id="6472893788822429178">হোম বোতাম দেখান</translation>
+<translation id="6473315466413288899">কোনও একটি বিকল্প বেছে নিন</translation>
 <translation id="6474498546677193336">ফোল্ডারটির শেয়ারিং বন্ধ করা যাচ্ছে না, কারণ এখন একটি অ্যাপ্লিকেশন এটিকে ব্যবহার করছে। পরবর্তী সময়ে Linux-কে যখন বন্ধ করা হবে, তখনই ফোল্ডারটির শেয়ারিং বন্ধ করা যাবে।</translation>
 <translation id="6474884162850599008">Google ড্রাইভ অ্যাকাউন্ট ডিসকানেক্ট করুন</translation>
 <translation id="6475294023568239942">ডিস্কে জায়গা খালি করুন বা 'সেটিংস' থেকে Linux-এর ডিস্ক সাইজ পরিবর্তন করুন</translation>
@@ -10825,6 +10834,7 @@
 <translation id="9031811691986152304">আবার চেষ্টা করুন</translation>
 <translation id="9032004780329249150">আপনার iOS ডিভাইসে নিজের পাসওয়ার্ড ব্যবহার করুন</translation>
 <translation id="9032097289595078011">'দ্রুত পেয়ার' ফিচার বন্ধ করুন</translation>
+<translation id="9032513103438497286">এই <ph name="DEVICE_TYPE" /> ডিভাইসে ইনস্টল করা অ্যাপ ব্লক করুন। অ্যাপ বা কন্টেন্ট ডাউনলোড করাতে বিধিনিষেধ আরোপ করতে, Google Play সেটিংসে যান।</translation>
 <translation id="9033765790910064284">যাই হোক, চালিয়ে যান</translation>
 <translation id="9033857511263905942">&amp;প্রতিলেপন</translation>
 <translation id="9034408118624208974">Chromebook-এ নতুন? আপনার পছন্দগুলির যাতে ব্যাক-আপ নেওয়া যায় সেজন্য় সিঙ্ক চালু করুন।</translation>

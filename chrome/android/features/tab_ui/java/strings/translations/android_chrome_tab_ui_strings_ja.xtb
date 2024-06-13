@@ -11,6 +11,7 @@
 <translation id="1273910660700874265"><ph name="TITLE_OF_GROUP" /> 個のタブグループのオプション</translation>
 <translation id="1322824555808364080">ユーザーを招待</translation>
 <translation id="1419023007528516122">この操作を行うとデバイスからグループが完全に削除されます</translation>
+<translation id="1486715732399361704">ここですべてのタブグループを表示できます</translation>
 <translation id="149054111719651807">{NUM_MINS,plural, =1{<ph name="NUM_MINS_ONE" /> 分前に作成}other{<ph name="NUM_MINS_MANY" /> 分前に作成}}</translation>
 <translation id="1499635324672558517">すべてのシークレット タブを閉じますか？</translation>
 <translation id="1501480321619201731">グループを削除</translation>

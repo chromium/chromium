@@ -16,6 +16,7 @@
 <translation id="1203500561924088507">Oʻrnatganingiz uchun tashakkur! <ph name="BUNDLE_NAME" />ni ishlatishdan oldin brauzerni qayta ishga tushirishingiz lozim.</translation>
 <translation id="1262876892872089030">Bu varaq nonfaol boʻlganida Chromium tezroq ishlashi uchun xotira boʻshatiladi. Bu saytni har doim nofaol boʻlmasligini tanlash mumkin.</translation>
 <translation id="1265577313130862557">Chromium bu yuklamani blokladi, chunki bu fayl xavfli</translation>
+<translation id="126567311906253476">Gmail yoki YouTube kabi Google xizmatlariga <ph name="USER_EMAIL" /> hisobidan avtomatik kirganda Chromeʼga ham shu hisobdan kirishingiz mumkin</translation>
 <translation id="1315551408014407711">Yangi Chromium profilini sozlang</translation>
 <translation id="1342274909142618978">Chromium maʼlumotlari ham oʻchirilsin (<ph name="URL" />)</translation>
 <translation id="1414495520565016063">Chromium‘ga xush kelibsiz!</translation>
@@ -33,6 +34,7 @@ Sayt va ilovalarga berilgan ruxsatlar bu hisobga tatbiq etilishi mumkin. Google 
 <translation id="1640672724030957280">Yuklab olinmoqda...</translation>
 <translation id="1708666629004767631">Chromium brauzerining yangi, yanada xavfsiz versiyasi chiqdi.</translation>
 <translation id="1715127912119967311">Funksiyalarni yaxshilash maqsadida Chromium ulardan foydalanish axborotingizni Googlega yuboradi. Bu axborot xodimlar tomonidan oʻqilishi, qayta ishlanishi va izohlanishi mumkin.</translation>
+<translation id="1722488837206509557">Bu mavjud qurilmalardan birini tanlash va undagi kontentni chiqarish imkonini beradi.</translation>
 <translation id="17264556997921157">Saytlar reklamani chiqarish uchun ishlatadigan sizga qiziq mavzularni koʻrishingiz va olib tashlashingiz mumkin. Chromium siz ochgan saytlar asosida sizga qiziq boʻlishi mumkin mavzularni taxmin qiladi.</translation>
 <translation id="1733725117201708356">Chromium tez orada brauzer maʼlumotlarini oʻchirib tashlaydi</translation>
 <translation id="1736443181683099871">Chromium navigatsiyalarni HTTPS protokoliga oʻzgartirishga urinadi.</translation>
@@ -40,6 +42,7 @@ Sayt va ilovalarga berilgan ruxsatlar bu hisobga tatbiq etilishi mumkin. Google 
 <translation id="1749104137266986751">HTTPS mavjud boʻlmasa, Chromium sizni ogohlantirmasdan himoyalanmagan ulanishdan foydalanadi.</translation>
 <translation id="1774152462503052664">Chromium fonda ishlashiga ruxsat</translation>
 <translation id="1779356040007214683">Ma’lumotlaringiz xavfsizligini ta’minlash maqsadida ayrim kengaytmalarni o‘chirib qo‘ydik, chunki <ph name="IDS_EXTENSION_WEB_STORE_TITLE" />‘da ular haqida hech qanday ma’lumot yo‘q (ya’ni, ular sizning ruxsatingizsiz o‘rnatilgan bo‘lishi mumkin).</translation>
+<translation id="1804128559285178512">Hisobga kirganingizda Chromium’dagi Google hisobingiz orqali parollaringiz va boshqalardan foydalanishingiz mumkin</translation>
 <translation id="1808667845054772817">Chromium brauzerini qayta o‘rnatish</translation>
 <translation id="1820835682567584003">Chromium buni bajarmoqchi: <ph name="AUTHENTICATION_PURPOSE" /></translation>
 <translation id="18552579716432081">Brauzer maʼlumotlarini faqat shu qurilmadan oʻchirish va Google hisobingizda saqlash uchun <ph name="BEGIN_LINK" />Chromium hisobingizdan chiqing<ph name="END_LINK" />.</translation>

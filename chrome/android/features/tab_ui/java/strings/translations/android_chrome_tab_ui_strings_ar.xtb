@@ -11,6 +11,7 @@
 <translation id="1273910660700874265">خيارات مجموعة علامات التبويب "<ph name="TITLE_OF_GROUP" />"</translation>
 <translation id="1322824555808364080">دعوة أشخاص</translation>
 <translation id="1419023007528516122">سيؤدي هذا الإجراء إلى حذف المجموعة نهائيًا من جهازك</translation>
+<translation id="1486715732399361704">تظهر هنا كل مجموعات علامات التبويب</translation>
 <translation id="149054111719651807">{NUM_MINS,plural, =1{تم إنشاء المجموعة قبل دقيقة واحدة (<ph name="NUM_MINS_ONE" />)}zero{تم إنشاء المجموعة قبل <ph name="NUM_MINS_MANY" /> دقيقة}two{تم إنشاء المجموعة قبل دقيقتَين (<ph name="NUM_MINS_MANY" />)}few{تم إنشاء المجموعة قبل <ph name="NUM_MINS_MANY" /> دقائق}many{تم إنشاء المجموعة قبل <ph name="NUM_MINS_MANY" /> دقيقة}other{تم إنشاء المجموعة قبل <ph name="NUM_MINS_MANY" /> دقيقة}}</translation>
 <translation id="1499635324672558517">هل تريد إغلاق جميع علامات التبويب في وضع التصفُّح المتخفي؟</translation>
 <translation id="1501480321619201731">حذف مجموعة</translation>

@@ -1,6 +1,7 @@
 <?xml version="1.0" ?>
 <!DOCTYPE translationbundle>
 <translationbundle lang="eu">
+<translation id="2252052615723281030">Chrome-n saioa hasita daukazunean, IP helbidea pribatu mantentzen laguntzen du ezarpen honek. Chrome-k webgune bat jarraipena egiten ari zaizula susmatzen badu, baliteke zure trafikoaren zati bat zerbitzari pribatuen bidez bidaltzea.</translation>
 <translation id="33479675708419823">Chrome-n saioa hasita daukazunean, IP helbidea pribatu mantentzen laguntzen du ezarpen honek. Chrome-k webgune bat jarraipena egiten ari zaizula susmatzen badu, baliteke zure trafikoaren zati bat zerbitzari pribatuen bidez bidaltzea. Lortu <ph name="LINK_BEGIN" />IParen babesak funtzionatzeko moduari<ph name="LINK_END" /> buruzko informazio gehiago</translation>
 <translation id="3529311220178827364">Lortu IP helbidea ezkutatzeari buruzko informazio gehiago</translation>
 <translation id="4301151630239508244">Iragarkien gaiak webgune batek iragarkiak pertsonalizatzeko erabil ditzakeen gauza ugarietako bat da. Iragarkien gairik gabe ere, webguneek iragarkiak erakutsi ahal izango dizkizute, baina baliteke hain pertsonalizatuta ez egotea. Lortu <ph name="BEGIN_LINK_1" />iragarkien pribatutasuna kudeatzeari<ph name="END_LINK_1" /> buruzko informazio gehiago.</translation>

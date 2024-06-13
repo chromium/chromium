@@ -850,6 +850,7 @@ Se din søgemaskines vejledning i, hvordan du sletter din søgehistorik, hvis de
 <translation id="5345660046352249607">{COUNT,plural, =1{Vil du spore denne pakke?}one{Vil du spore {COUNT} pakke?}other{Vil du spore {COUNT} pakker?}}</translation>
 <translation id="5348775987281903912">Du kan dele denne side her via knappen Del.</translation>
 <translation id="536067926684072644">Vis bogmærker</translation>
+<translation id="537853552771686272">Administrer de emner og websites, du er interesseret i</translation>
 <translation id="5379352933722332597">{count,plural, =1{Bogmærket er gemt i "{title}". Det gemmes kun på denne enhed.}one{{count} bogmærke er gemt i "{title}". Det gemmes kun på denne enhed.}other{{count} bogmærker er gemt i "{title}". De gemmes kun på denne enhed.}}</translation>
 <translation id="5388358297987318779">Åbn billede</translation>
 <translation id="5395707839134961196">Skjul søgemaskineoplysninger</translation>
@@ -932,6 +933,7 @@ Handoff skal være aktiveret i afsnittet Generelt i Indstillinger, og dine enhed
 <translation id="5758631781033351321">Her finder du din læseliste</translation>
 <translation id="5765456154762864099">Menu → Indstillinger → Standardbrowser</translation>
 <translation id="5777888488419460501">Gem på konto</translation>
+<translation id="5778292857689789362">Fanegruppe, <ph name="GROUP_TITLE" />, <ph name="TABS_NUMBER" /> faner.</translation>
 <translation id="5782227691023083829">Oversætter ...</translation>
 <translation id="5791632441210678828">Knappen Sortér for feedet Følger.</translation>
 <translation id="5793373065989412701">Tjekker dine familiemedlemmer…</translation>

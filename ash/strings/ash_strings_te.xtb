@@ -179,6 +179,7 @@
 <translation id="1611993646327628135">ఆన్</translation>
 <translation id="1620510694547887537">కెమెరా</translation>
 <translation id="1623768535032616219">Google Classroomను కుదించండి</translation>
+<translation id="163032029566320584"><ph name="UNAVAILABLE_DLC" /> అందుబాటులో లేదు.</translation>
 <translation id="1632985212731562677">సెట్టింగ్‌లు &gt; యాక్సెసిబిలిటీలో స్విచ్ యాక్సెస్‌ను డిజేబుల్ చేయవచ్చు.</translation>
 <translation id="1637505162081889933"><ph name="NUM_DEVICES" /> పరికరాలు</translation>
 <translation id="1639239467298939599">లోడ్ చేస్తోంది</translation>
@@ -720,6 +721,7 @@
 <translation id="3702846122927433391">నైజీరియాలో జనాభా</translation>
 <translation id="3705722231355495246">-</translation>
 <translation id="3706423975342040244">వినోదం</translation>
+<translation id="3707093869106077605"><ph name="UNAVAILABLE_DLC_ONE" />, <ph name="UNAVAILABLE_DLC_TWO" /> అందుబాటులో లేవు.</translation>
 <translation id="3708186454126126312">ఇంతకు మునుపు కనెక్ట్ చేయబడినవి</translation>
 <translation id="3712143870407382523">ఈ వైపు ఏ విండో కనిపించాలో ఎంచుకోండి</translation>
 <translation id="371370241367527062">ముందువైపు మైక్రోఫోన్</translation>
@@ -993,6 +995,7 @@
 <translation id="4733161265940833579"><ph name="BATTERY_PERCENTAGE" />% (ఎడమ)</translation>
 <translation id="4734965478015604180">అడ్డంగా ఉంది</translation>
 <translation id="4735944890391795473">డెస్క్ 12</translation>
+<translation id="4736732123074402682">మీ కనెక్షన్‌ను చెక్ చేసి, మళ్లీ ట్రై చేయండి.</translation>
 <translation id="473775607612524610">అప్‌డేట్‌</translation>
 <translation id="4740516757091333363">సేవ్ చేసిన డెస్క్‌ను తొలగించాలా?</translation>
 <translation id="4746798685375253449">{0,plural, =1{ఒక రోజు లోపు పరికరాన్ని మునపటి వెర్షన్‌కు అప్‌డేట్ చేయండి}other{# రోజుల్లోపు పరికరాన్ని మునపటి వెర్షన్‌కు అప్‌డేట్ చేయండి}}</translation>
@@ -1326,6 +1329,7 @@
 <translation id="588258955323874662">పూర్తితెర</translation>
 <translation id="5887954372087850114">విండో <ph name="WINDOW_TITLE" />, <ph name="DESK_TITLE" />కు కేటాయించబడింది, ఇంకా ఇతర డెస్క్‌ల నుండి కేటాయింపు తీసివేయబడింది</translation>
 <translation id="588817334757907802">ఫైల్‌ను Chrome బ్రౌజర్‌లో తెరవండి</translation>
+<translation id="5892014525522223653">మీరు ఆఫ్‌లైన్‌లో ఉన్నారు.</translation>
 <translation id="5895138241574237353">మళ్ళీ ప్రారంభించండి</translation>
 <translation id="589817443623831496">పాయింట్ స్కానింగ్</translation>
 <translation id="5901316534475909376">Shift+Esc</translation>
@@ -1385,6 +1389,7 @@
 <translation id="6095425951508823973"><ph name="PROVIDER" />‌తో కనెక్షన్‌ను జోడించండి</translation>
 <translation id="6099678161144790572">గత నెలలో ఎడిట్ చేశారు</translation>
 <translation id="6103838137565245112">సిస్టమ్</translation>
+<translation id="610395411842312282">రెండు పక్క పక్క విండోలను గ్రూప్ చేయండి</translation>
 <translation id="6108952804512516814">AIతో క్రియేట్ చేయండి</translation>
 <translation id="6114505516289286752"><ph name="LANGUAGE" /> స్పీచ్ ఫైళ్లు డౌన్‌లోడ్ చేయబడ్డాయి</translation>
 <translation id="6119360623251949462"><ph name="CHARGING_STATE" />. <ph name="BATTERY_SAVER_STATE" /></translation>
@@ -1392,6 +1397,7 @@
 <translation id="6121838516699723042"><ph name="FILENAME" /> డౌన్‌లోడ్‌ను నిర్ధారించండి</translation>
 <translation id="612734058257491180">గెస్ట్ సెషన్‌లో Google Assistant పని చేయదు.</translation>
 <translation id="6127370444807669747">వ్యక్తిగతీకరించిన ప్లేలిస్ట్‌లు, మరింత ఫోకస్ చేసిన మ్యూజిక్ కోసం, YouTube Music Premiumను ట్రై చేయండి</translation>
+<translation id="6127395413317891856">మీరు ఆఫ్‌లైన్‌లో ఉన్నారు. మీ కనెక్షన్‌ను చెక్ చేసి, మళ్లీ ట్రై చేయండి.</translation>
 <translation id="6129953537138746214">ఖాళీ</translation>
 <translation id="6137566720514957455"><ph name="USER_EMAIL_ADDRESS" /> కోసం 'డైలాగ్‌ను తీసివేయండి'ని తెరవండి</translation>
 <translation id="6141205840878048728">మీరు దేనిపై ఫోకస్ చేయాలనుకుంటున్నారు?</translation>
@@ -1668,6 +1674,7 @@
 <translation id="7167913274352523149"><ph name="HOTSPOT" />,
         <ph name="NETWORK" /></translation>
 <translation id="7168224885072002358"><ph name="TIMEOUT_SECONDS" />లో తిరిగి పాత రిజల్యూషన్‌కి మార్చబడుతుంది</translation>
+<translation id="7173114856073700355">సెట్టింగ్‌లను తెరువు</translation>
 <translation id="7180611975245234373">రిఫ్రెష్ చేయండి</translation>
 <translation id="7181691792034457084">హాయ్. <ph name="PRODUCT_NAME" /> కొద్దిగా భిన్నంగా ఉంటుంది.</translation>
 <translation id="7188494361780961876">స్క్రీన్‌లో పైన ఎడమ వైపు మూలకు మెనూ తరలించబడింది.</translation>
@@ -1965,6 +1972,7 @@
 <translation id="8257510091797044096">మీ పరికరాన్ని సెటప్ చేయండి</translation>
 <translation id="8261506727792406068">తొలగించండి</translation>
 <translation id="8262312463845990408">ప్లేబ్యాక్‌ను టోగుల్ చేయండి</translation>
+<translation id="8268302343625273732">Google Classroomలో అసైన్‌మెంట్‌లన్నింటినీ చూడండి</translation>
 <translation id="8277261673056602147">మీ స్క్రీన్‌పై ఉన్న టెక్స్ట్‌ను హైలైట్ చేయండి</translation>
 <translation id="8287009018010202411">ప్రొడక్టివిటీ</translation>
 <translation id="828708037801473432">ఆఫ్</translation>

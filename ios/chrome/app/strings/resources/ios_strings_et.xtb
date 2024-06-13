@@ -850,6 +850,7 @@ Vaadake oma otsingumootori juhiseid otsinguajaloo kustutamise kohta, kui see on 
 <translation id="5345660046352249607">{COUNT,plural, =1{Kas jälgida seda saadetist?}other{Kas jälgida {COUNT} saadetist?}}</translation>
 <translation id="5348775987281903912">Saate seda lehte siin jagamisnupu abil jagada.</translation>
 <translation id="536067926684072644">Järjehoidjate kuvamine</translation>
+<translation id="537853552771686272">Hallake teemasid ja saite, mis teile huvi pakuvad</translation>
 <translation id="5379352933722332597">{count,plural, =1{Järjehoidja salvestati kausta „{title}“. See salvestatakse ainult selles seadmes.}other{{count} järjehoidja salvestati kausta „{title}“. Need salvestatakse ainult selles seadmes.}}</translation>
 <translation id="5388358297987318779">Ava kujutis</translation>
 <translation id="5395707839134961196">Peida otsingumootori üksikasjad</translation>
@@ -932,6 +933,7 @@ Handoff peab olema lubatud seadete jaotises General ja seadmed peavad kasutama s
 <translation id="5758631781033351321">Oma lugemisloendi leiate siit</translation>
 <translation id="5765456154762864099">Menüü → Seaded → Vaikebrauser</translation>
 <translation id="5777888488419460501">Salvesta kontole</translation>
+<translation id="5778292857689789362">Vahelehegrupp <ph name="GROUP_TITLE" />, <ph name="TABS_NUMBER" /> vahelehte.</translation>
 <translation id="5782227691023083829">Tõlkimine...</translation>
 <translation id="5791632441210678828">Voo Jälgin sortimisnupp.</translation>
 <translation id="5793373065989412701">Pereliikmete kontrollimine …</translation>

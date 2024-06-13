@@ -17,6 +17,7 @@ Certaines fonctionnalités ne seront peut-être pas disponibles, et les modifica
 <translation id="1203500561924088507">Merci d'avoir installé notre produit. Vous devez redémarrer votre navigateur avant d'utiliser <ph name="BUNDLE_NAME" />.</translation>
 <translation id="1262876892872089030">Lorsque cet onglet était inactif, de la mémoire a été libérée pour préserver la rapidité de Chromium. Si vous le souhaitez, vous pouvez exclure définitivement ce site de la liste des sites inactifs.</translation>
 <translation id="1265577313130862557">Chromium a bloqué ce téléchargement, car le fichier est dangereux</translation>
+<translation id="126567311906253476">Lorsque vous vous connectez à des services Google comme Gmail ou YouTube avec <ph name="USER_EMAIL" />, vous pouvez vous connecter automatiquement à Chromium avec ce même compte</translation>
 <translation id="1315551408014407711">Configurer votre nouveau profil Chromium</translation>
 <translation id="1342274909142618978">Supprimer également les données de Chromium (<ph name="URL" />) ?</translation>
 <translation id="1414495520565016063">Vous êtes connecté à Chromium.</translation>
@@ -41,6 +42,7 @@ Les autorisations que vous avez déjà accordées aux sites Web et aux applis pe
 <translation id="1749104137266986751">Lorsque HTTPS n'est pas disponible, Chromium utilise une connexion non sécurisée sans vous avertir</translation>
 <translation id="1774152462503052664">Laisser Chromium s'exécuter en arrière-plan</translation>
 <translation id="1779356040007214683">Afin de rendre Chrome plus sûr, nous avons désactivé certaines extensions qui ne sont pas répertoriées sur le <ph name="IDS_EXTENSION_WEB_STORE_TITLE" /> et qui ont pu être ajoutées à votre insu.</translation>
+<translation id="1804128559285178512">Lorsque vous êtes connecté, vous pouvez utiliser vos mots de passe et d'autres éléments de votre compte Google dans Chromium</translation>
 <translation id="1808667845054772817">Réinstaller Chromium</translation>
 <translation id="1820835682567584003">Chromium tente <ph name="AUTHENTICATION_PURPOSE" /></translation>
 <translation id="18552579716432081">Pour supprimer les données de navigation de cet appareil uniquement, tout en les conservant dans votre compte Google, <ph name="BEGIN_LINK" />déconnectez-vous de Chromium<ph name="END_LINK" />.</translation>

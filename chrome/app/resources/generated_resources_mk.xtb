@@ -1562,6 +1562,7 @@
 <translation id="2116619964159595185">Сајтовите обично се поврзуваат со уреди со Bluetooth за функции како поставување или синхронизирање ознаки со ниска потрошувачка на енергија, следач на здравје/фитнес или паметна светилка</translation>
 <translation id="2117655453726830283">Следен слајд</translation>
 <translation id="211803431539496924">Да се потврдат проширените безбедносни ажурирања?</translation>
+<translation id="2118594521750010466">Поправете сега</translation>
 <translation id="2119461801241504254">„Безбедно прелистување“ е вклучено и ве заштитува од штетни сајтови и преземања</translation>
 <translation id="2120297377148151361">Активност и интеракции</translation>
 <translation id="2120639962942052471">Блокирана е <ph name="PERMISSION" /></translation>
@@ -1869,6 +1870,7 @@
 <translation id="233375395665273385">Избриши и одјави се</translation>
 <translation id="233471714539944337">Чувствителни содржини</translation>
 <translation id="2335111415680198280">{0,plural, =1{Затвори # прозорец}one{Затвори # прозорец}other{Затвори # прозорци}}</translation>
+<translation id="2335758110242123814">Отвори група</translation>
 <translation id="2336228925368920074">Обележи ги сите картички...</translation>
 <translation id="2336258397628212480"><ph name="APP_NAME" /> печати 1 страница на <ph name="PRINTER_NAME" /></translation>
 <translation id="2336381494582898602">Фабричко ресетирање</translation>
@@ -1889,6 +1891,7 @@
 <translation id="2351923523007389195">Дозволено – <ph name="PERMISSION_DETAILS" />. Вклучете <ph name="LINK_BEGIN" />пристап до локацијата за оперативниот систем<ph name="LINK_END" />.</translation>
 <translation id="2352662711729498748">&lt; 1 MB</translation>
 <translation id="2352810082280059586">Белешките на заклучениот екран се зачувуваат автоматски во <ph name="LOCK_SCREEN_APP_NAME" />. Последната белешка ќе остане на заклучениот екран.</translation>
+<translation id="2353168619378866466">Отвори група</translation>
 <translation id="2353297238722298836">Камерата и микрофонот се дозволени</translation>
 <translation id="2353910600995338714">Извезувањето е успешно</translation>
 <translation id="2355314311311231464">Поставувањето не успеа бидејќи не може да се преземат деталите за вашата сметка. Обидете се повторно. Код за грешка: <ph name="ERROR_CODE" />.</translation>
@@ -2842,6 +2845,7 @@
 <translation id="3033348223765101500">Контролирајте ги податоците</translation>
 <translation id="3036327949511794916">Крајниот рок за враќање на овој <ph name="DEVICE_TYPE" /> помина.</translation>
 <translation id="3036546437875325427">Овозможи Flash</translation>
+<translation id="3037193115779933814">Букви и броеви</translation>
 <translation id="3038272154009688107">Прикажи ги сите сајтови</translation>
 <translation id="3038612606416062604">Додај печатач рачно</translation>
 <translation id="3039491566278747710">Не успеа да се инсталира офлајн правило на уредот.</translation>
@@ -3694,6 +3698,7 @@
 <translation id="3699920817649120894">Дали да се исклучи синхронизацијата и персонализацијата?</translation>
 <translation id="3700888195348409686">Се прикажува (<ph name="PAGE_ORIGIN" />)</translation>
 <translation id="3700993174159313525">Не им дозволувај на сајтовите да ја следат положбата на камерата</translation>
+<translation id="3701167022068948696">Поправи сега</translation>
 <translation id="3701515417135397388">Предупреди ме ако лозинката е компромитирана во упад во податоци</translation>
 <translation id="3702797829026927713"><ph name="BEGIN_PARAGRAPH1" />Внесете го името на продавачот на мало и бројот на продавницата за којашто се конфигурира демо-уредов*. <ph name="END_PARAGRAPH1" />
     <ph name="BEGIN_PARAGRAPH2" />Ако не го знаете бројот на продавницата, може да внесете „0000“ за да продолжите со инсталирање на демо-режимот. <ph name="END_PARAGRAPH2" />
@@ -4232,6 +4237,7 @@
 <translation id="4066207411788646768">Проверете ја врската за да ги видите достапните печатачи во мрежата</translation>
 <translation id="4067839975993712852">Означи ја тековната картичка како прочитана</translation>
 <translation id="4068776064906523561">Зачувани отпечатоци</translation>
+<translation id="4070132839822635162">Не најавувај се</translation>
 <translation id="407173827865827707">На клик</translation>
 <translation id="4072805772816336153">Обидете се повторно подоцна</translation>
 <translation id="4074164314564067597">тастатура</translation>
@@ -6041,6 +6047,7 @@
 <translation id="5469540749878136997">Ослободете меморија зависно од користењето</translation>
 <translation id="5469852975082458401">Може да се движите низ страниците со курсорот за текст. Притиснете F7 за да исклучите.</translation>
 <translation id="5470735824776589490">Треба да го рестартирате уредот за да може да го ресетирате со Powerwash. <ph name="LINK_BEGIN" />Дознајте повеќе<ph name="LINK_END" /></translation>
+<translation id="5470741195701938302">Броеви</translation>
 <translation id="5471768120198416576">Здраво! Јас сум вашиот глас за функцијата „Од текст до говор“.</translation>
 <translation id="5472627187093107397">Зачувувај лозинки за сајтов</translation>
 <translation id="5473062644742711742">Најдете други алатки за пристапност во Веб-продавницата на Chrome</translation>
@@ -6877,6 +6884,7 @@
 <translation id="6101226222197207147">Додадена е нова апликација (<ph name="EXTENSION_NAME" />)</translation>
 <translation id="6102043788063419338">Оваа датотека беше блокирана од „Напредна заштита“.</translation>
 <translation id="6103681770816982672">Предупредување: се префрлате на канал за програмери</translation>
+<translation id="610395411842312282">Групирајте два прозорци еден до друг</translation>
 <translation id="6104068876731806426">Сметки на Google</translation>
 <translation id="6104667115274478616">Управувајте со поставките за аудио на ChromeOS</translation>
 <translation id="6104796831253957966">Редицата на печатачот е полна</translation>
@@ -7355,6 +7363,7 @@
 <translation id="6469702164109431067">Лозинки и криптографски клучеви</translation>
 <translation id="6470823736074966819">Исклучете го звукот на известувањата</translation>
 <translation id="6472893788822429178">Прикажи копче Дома</translation>
+<translation id="6473315466413288899">Изберете опција</translation>
 <translation id="6474498546677193336">Не може да се откаже споделувањето бидејќи некоја апликација ја користи папкава. Споделувањето на папкава ќе се откаже кога Linux ќе се исклучи нареден пат.</translation>
 <translation id="6474884162850599008">Исклучете ја сметката на Дискот на Google</translation>
 <translation id="6475294023568239942">Ослободете простор на дискот или променете ја големината на дискот на Linux во „Поставки“</translation>
@@ -10824,6 +10833,7 @@
 <translation id="9031811691986152304">обидете се повторно</translation>
 <translation id="9032004780329249150">Користете ги вашите лозинки на вашите уреди со iOS</translation>
 <translation id="9032097289595078011">Оневозможи „Брзо спарување“</translation>
+<translation id="9032513103438497286">Блокирајте ги апликациите инсталирани на овој <ph name="DEVICE_TYPE" />. За да го ограничите преземањето апликации или содржини, одете во „Поставки за Google Play“.</translation>
 <translation id="9033765790910064284">Сепак продолжи</translation>
 <translation id="9033857511263905942">&amp;Залепи</translation>
 <translation id="9034408118624208974">Нови сте на Chromebook? Вклучете синхронизација за да се направи бекап на вашите поставки.</translation>

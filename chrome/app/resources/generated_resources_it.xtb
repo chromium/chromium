@@ -1551,6 +1551,7 @@ Puoi gestire le impostazioni dell'account installando l'app Family Link su quest
 <translation id="2116619964159595185">Solitamente i siti si connettono ai dispositivi Bluetooth per funzionalità come la configurazione o la sincronizzazione di beacon a bassa energia, tracker per fitness e benessere o lampadine smart</translation>
 <translation id="2117655453726830283">Diapositiva successiva</translation>
 <translation id="211803431539496924">Confermare gli aggiornamenti della sicurezza estesi?</translation>
+<translation id="2118594521750010466">Sistema subito</translation>
 <translation id="2119461801241504254">La funzionalità Navigazione sicura è attiva e ti protegge da siti e download pericolosi</translation>
 <translation id="2120297377148151361">Attività e interazioni</translation>
 <translation id="2120639962942052471">Autorizzazione <ph name="PERMISSION" /> bloccata</translation>
@@ -3682,6 +3683,7 @@ Puoi gestire le impostazioni dell'account installando l'app Family Link su quest
 <translation id="3699920817649120894">Disattivare la sincronizzazione e la personalizzazione?</translation>
 <translation id="3700888195348409686">Presentazione di (<ph name="PAGE_ORIGIN" />)</translation>
 <translation id="3700993174159313525">Non consentire ai siti di monitorare la posizione della fotocamera</translation>
+<translation id="3701167022068948696">Correggi subito</translation>
 <translation id="3701515417135397388">Ricevi un avviso se una password è stata compromessa a causa di una violazione dei dati</translation>
 <translation id="3702797829026927713"><ph name="BEGIN_PARAGRAPH1" />Inserisci il nome del rivenditore e il numero del negozio per i quali viene configurato questo dispositivo per le demo.* <ph name="END_PARAGRAPH1" />
     <ph name="BEGIN_PARAGRAPH2" />Se non conosci il numero del negozio, puoi inserire "0000" per continuare l'installazione della modalità demo. <ph name="END_PARAGRAPH2" />
@@ -4220,6 +4222,7 @@ Potrebbero essere incluse informazioni su software installati, file, browser e s
 <translation id="4066207411788646768">Controlla la connessione per rilevare le stampanti disponibili nella tua rete</translation>
 <translation id="4067839975993712852">Contrassegna la scheda corrente come già letta</translation>
 <translation id="4068776064906523561">Impronte digitali salvate</translation>
+<translation id="4070132839822635162">Non accedere</translation>
 <translation id="407173827865827707">Al clic</translation>
 <translation id="4072805772816336153">Riprova più tardi</translation>
 <translation id="4074164314564067597">Tastiera</translation>
@@ -5452,6 +5455,7 @@ Premi Ctrl + Alt + Diminuisci luminosità per diminuire lo zoom.</translation>
 <translation id="5032430150487044192">Impossibile creare codice QR</translation>
 <translation id="5033137252639132982">Non possono utilizzare i sensori di movimento</translation>
 <translation id="5033266061063942743">Forme geometriche</translation>
+<translation id="503441068567788948">Crea un nuovo PIN per il Gestore delle password di Google</translation>
 <translation id="5035846135112863536">Scegli "Altri dettagli" di seguito per ottenere maggiori informazioni da <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" />.</translation>
 <translation id="5037676449506322593">Seleziona tutto</translation>
 <translation id="5038818366306248416">In precedenza hai scelto di non consentire nessuna estensione su <ph name="ORIGIN" /></translation>
@@ -5479,6 +5483,7 @@ Premi Ctrl + Alt + Diminuisci luminosità per diminuire lo zoom.</translation>
 <translation id="5057110919553308744">Quando fai clic sull'estensione</translation>
 <translation id="5057127674016624293">L'analisi sta richiedendo più tempo del previsto</translation>
 <translation id="5057480703570202545">Cronologia dei download</translation>
+<translation id="5058771692413403640"><ph name="SITE" /> vuole verificare la tua identità</translation>
 <translation id="5059241099014281248">Limitare accesso</translation>
 <translation id="5059429103770496207">Stile di visualizzazione</translation>
 <translation id="5059526285558225588">Scegli cosa condividere</translation>
@@ -5918,6 +5923,7 @@ Premi Ctrl + Alt + Diminuisci luminosità per diminuire lo zoom.</translation>
 <translation id="5390112241331447203">Includi il file system_logs.txt inviato nei rapporti di feedback.</translation>
 <translation id="5390677308841849479">Rosso scuro e arancione</translation>
 <translation id="5392192690789334093">Possono inviare notifiche</translation>
+<translation id="5393330235977997602">Opzioni PIN</translation>
 <translation id="5393761864111565424">{COUNT,plural, =1{Link}other{# link}}</translation>
 <translation id="5394529681046491727">WiFi Direct</translation>
 <translation id="5395498824851198390">Carattere predefinito</translation>
@@ -6650,6 +6656,7 @@ A questo account potrebbero essere applicate le autorizzazioni già concesse a s
 <translation id="5935158534896975820">Preparazione della richiesta di firma del certificato (in attesa sul server)</translation>
 <translation id="5935656526031444304">Gestisci Navigazione sicura</translation>
 <translation id="5936065461722368675">Traduci pagina intera</translation>
+<translation id="5937347877659196749">Poi proteggi tutte le tue passkey con un PIN di recupero</translation>
 <translation id="5937977334791924341">Logo <ph name="APP" /></translation>
 <translation id="5938002010494270685">Upgrade di sicurezza disponibile</translation>
 <translation id="5939518447894949180">Reimposta</translation>
@@ -7342,6 +7349,7 @@ A questo account potrebbero essere applicate le autorizzazioni già concesse a s
 <translation id="6469702164109431067">Password e passkey</translation>
 <translation id="6470823736074966819">Silenzia notifiche</translation>
 <translation id="6472893788822429178">Mostra pulsante Home</translation>
+<translation id="6473315466413288899">Seleziona un'opzione</translation>
 <translation id="6474498546677193336">Impossibile annullare la condivisione perché questa cartella è in uso in un'applicazione. La condivisione della cartella verrà annullata quando verrà arrestato Linux.</translation>
 <translation id="6474884162850599008">Scollega account Google Drive</translation>
 <translation id="6475294023568239942">Libera spazio sul disco o ridimensiona il disco Linux nelle Impostazioni</translation>
@@ -8094,6 +8102,7 @@ Hai altre # password compromesse. Gestore delle password di Google consiglia di 
 <translation id="7033616203784997570">Il valore deve essere di massimo 62 caratteri</translation>
 <translation id="7034692021407794547">Un amministratore con privilegi per Gestione della fatturazione deve prima accettare i Termini di servizio dell'hardware Google Meet nella relativa sezione della Console di amministrazione.</translation>
 <translation id="7036706669646341689">Sono consigliati <ph name="DISK_SIZE" /> di spazio libero per Linux. Per aumentare lo spazio disponibile, elimina i file dal dispositivo.</translation>
+<translation id="7037157058268992880">PIN dimenticato</translation>
 <translation id="7037509989619051237">Anteprima del testo</translation>
 <translation id="7038632520572155338">Switch Access</translation>
 <translation id="7038710352229712897">Aggiungi un altro Account Google per <ph name="USER_NAME" /></translation>
@@ -9507,6 +9516,7 @@ Conserva il file di chiave in un luogo sicuro. Ti servirà per creare nuove vers
 <translation id="8084429490152575036">Impostazioni APN rete mobile</translation>
 <translation id="8084510406207562688">Ripristina tutt&amp;e le schede</translation>
 <translation id="8084628902026812045">Questo sito non usa una connessione sicura e il file potrebbe essere stato manomesso</translation>
+<translation id="8085701268329068646">Inserisci il PIN per il Gestore delle password di Google</translation>
 <translation id="8086015605808120405">Configurazione di <ph name="PRINTER_NAME" />…</translation>
 <translation id="8086121155774250556">Questa scheda sta condividendo il tuo schermo</translation>
 <translation id="8086610718778464681">Impossibile eseguire il backup delle app e dei file di Linux</translation>
@@ -10807,6 +10817,7 @@ A questo account potrebbero essere applicate le autorizzazioni già concesse a s
 <translation id="9031811691986152304">riprova</translation>
 <translation id="9032004780329249150">Usa le tue password sui tuoi dispositivi iOS</translation>
 <translation id="9032097289595078011">Disabilita l'Accoppiamento rapido</translation>
+<translation id="9032513103438497286">Blocca le app installate su: <ph name="DEVICE_TYPE" />. Per limitare il download di app o contenuti, vai alle Impostazioni di Google Play.</translation>
 <translation id="9033765790910064284">Continua comunque</translation>
 <translation id="9033857511263905942">&amp;Incolla</translation>
 <translation id="9034408118624208974">Non hai mai usato Chromebook? Attiva la sincronizzazione per eseguire il backup delle tue preferenze.</translation>
@@ -11028,6 +11039,7 @@ A questo account potrebbero essere applicate le autorizzazioni già concesse a s
 <translation id="920045321358709304">Cerca su <ph name="SEARCH_ENGINE" /></translation>
 <translation id="9201117361710210082">Visualizzato in precedenza</translation>
 <translation id="9201220332032049474">Opzioni di blocco schermo</translation>
+<translation id="9201762611758697018">Un PIN di recupero ti consente di accedere alle passkey salvate su qualsiasi dispositivo</translation>
 <translation id="9201842707396338580">Si è verificato un problema. Contatta l'amministratore o il proprietario del dispositivo. Codice di errore: <ph name="ERROR_CODE" />.</translation>
 <translation id="9203296457393252944">Rosso-verde, verde debole (deuteranomalia)</translation>
 <translation id="9203398526606335860">&amp;Profiling attivato</translation>

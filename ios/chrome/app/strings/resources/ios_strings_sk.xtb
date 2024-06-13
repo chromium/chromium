@@ -850,6 +850,7 @@ Prečítajte si pokyny vyhľadávača, ako odstrániť históriu vyhľadávania 
 <translation id="5345660046352249607">{COUNT,plural, =1{Chcete sledovať túto zásielku?}few{Chcete sledovať {COUNT} zásielky?}many{Track {COUNT} Packages?}other{Chcete sledovať {COUNT} zásielok?}}</translation>
 <translation id="5348775987281903912">Tu môžete zdieľať túto stránku pomocou tlačidla zdieľania.</translation>
 <translation id="536067926684072644">Zobraziť záložky</translation>
+<translation id="537853552771686272">Spravujte témy a weby, ktoré vás zaujímajú</translation>
 <translation id="5379352933722332597">{count,plural, =1{Záložka bola uložená do priečinka {title}. Je uložená iba v tomto zariadení.}few{{count} záložky boli uložené do priečinka {title}. Sú uložené iba v tomto zariadení.}many{{count} Bookmarks saved to "{title}". They are saved only to this device.}other{{count} záložiek bolo uložených do priečinka {title}. Sú uložené iba v tomto zariadení.}}</translation>
 <translation id="5388358297987318779">Otvoriť obrázok</translation>
 <translation id="5395707839134961196">Skryť podrobnosti vyhľadávača</translation>
@@ -932,6 +933,7 @@ Funkciu Handoff musíte povoliť v nastaveniach v časti Všeobecné a vaše zar
 <translation id="5758631781033351321">Tu nájdete svoj čitateľský zoznam</translation>
 <translation id="5765456154762864099">Ponuka → Nastavenia → Predvolený prehliadač</translation>
 <translation id="5777888488419460501">Uložiť do účtu</translation>
+<translation id="5778292857689789362">Skupina kariet <ph name="GROUP_TITLE" />, počet kariet: <ph name="TABS_NUMBER" />.</translation>
 <translation id="5782227691023083829">Prebieha preklad...</translation>
 <translation id="5791632441210678828">Tlačidlo na zoradenie informačného kanála Sledované.</translation>
 <translation id="5793373065989412701">Kontrolujú sa vaši členovia rodiny…</translation>

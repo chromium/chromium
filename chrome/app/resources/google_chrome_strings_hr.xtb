@@ -51,6 +51,7 @@
 <translation id="1682634494516646069">Google Chrome ne može čitati iz svojeg podatkovnog direktorija niti u njega pisati: <ph name="USER_DATA_DIRECTORY" /></translation>
 <translation id="1698376642261615901">Google Chrome jest web-preglednik koji web-stranice i aplikacije pokreće brzinom svjetlosti. Brz je, stabilan i jednostavan za upotrebu. Sigurnije pregledavajte web uz zaštitu protiv zlonamjernog i špijunskog softvera koja je ugrađena u Google Chrome.</translation>
 <translation id="1713301662689114961">{0,plural, =1{Chrome će se ponovo pokrenuti za sat vremena}one{Chrome će se ponovo pokrenuti za # h}few{Chrome će se ponovo pokrenuti za # h}other{Chrome će se ponovo pokrenuti za # h}}</translation>
+<translation id="1722488837206509557">To će vam omogućiti odabir između dostupnih uređaja i prikaz sadržaja na njima.</translation>
 <translation id="1734234790201236882">Chrome će spremiti tu zaporku na vaš Google račun. Ne morate je pamtiti.</translation>
 <translation id="1786003790898721085">Obavezno se prijavite na Chrome na uređaju <ph name="TARGET_DEVICE_NAME" /> i nakon toga ponovno pokušajte sa slanjem.</translation>
 <translation id="1786044937610313874">Prečaci se otvaraju u Chromeu</translation>

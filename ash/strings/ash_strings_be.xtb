@@ -120,6 +120,7 @@
 <translation id="1383876407941801731">Пошук</translation>
 <translation id="1391102559483454063">Уключана</translation>
 <translation id="1394698770495054737">Поўная размытасць</translation>
+<translation id="1395878931462960119">{DAYS,plural, =1{1 дзень таму}one{# дзень таму}few{# дні таму}many{# дзён таму}other{# дня таму}}</translation>
 <translation id="1404963891829069586">Аўдыя для канцэнтрацыі</translation>
 <translation id="1407069428457324124">Цёмная тэма</translation>
 <translation id="1410568680128842168"><ph name="DATE_CELL_TOOL_TIP" />. Для пераходу паміж датамі выкарыстоўвайце клавішы са стрэлкамі</translation>
@@ -210,6 +211,7 @@
 <translation id="174102739345480129">Маркер выключаны.</translation>
 <translation id="1743570585616704562">Не распазнана</translation>
 <translation id="1743927604032653654">Згарнуць апавяшчэнне "<ph name="NOTIFICATION_TITLE" />"</translation>
+<translation id="1744435831291625602">{HOURS,plural, =0{У межах 1 гадз}=1{1 гадз таму}one{# гадз таму}few{# гадз таму}many{# гадз таму}other{# гадз таму}}</translation>
 <translation id="1746730358044914197">Метады ўводу наладжаны адміністратарам.</translation>
 <translation id="1747336645387973286">тэрмін выканання: <ph name="DUE_DATE" /></translation>
 <translation id="1747827819627189109">Экранная клавіятура ўключана</translation>
@@ -346,6 +348,7 @@
 <translation id="2359808026110333948">Працягнуць</translation>
 <translation id="2360398059912971776">акумулятар</translation>
 <translation id="2361210043495191221">Уключыць або выключыць Wi-Fi. <ph name="STATE" />.</translation>
+<translation id="236574664504281623">Адпраўлена з прылады "<ph name="SESSION_NAME" />"</translation>
 <translation id="2367186422933365202">Не ўдаецца выканаць уваход на прыладзе Chromebook</translation>
 <translation id="2367972762794486313">Паказаць праграмы</translation>
 <translation id="2368828502825385061">Знайсці</translation>
@@ -508,6 +511,7 @@
 <translation id="2963773877003373896">mod3</translation>
 <translation id="2965227184985674128">Уключыць доступ да мікрафона?</translation>
 <translation id="296762781903199866">Не ўдалося спампаваць файлы для распазнавання маўлення на наступнай мове: <ph name="LANGUAGE" /></translation>
+<translation id="2968761508099987738">Вызначэнне вашага бягучага месцазнаходжання зараз не падтрымліваецца.</translation>
 <translation id="2970920913501714344">Усталёўваць праграмы, пашырэнні, тэмы.</translation>
 <translation id="2977598380246111477">Наступная лічба</translation>
 <translation id="2985148236010982088">Паказаць усе праграмы</translation>
@@ -983,6 +987,7 @@
 <translation id="468293128311738995">Праграмы з вашага тэлефона</translation>
 <translation id="4690510401873698237">Паліца ўнізе</translation>
 <translation id="4696813013609194136">Разблакіруйце прыладу бацькоўскім кодам</translation>
+<translation id="4697357603686181098">Не ўдалося дапамагчы з гэтым запытам. Паспрабуйце адправіць іншы.</translation>
 <translation id="4702647871202761252">Экран прыватнасці выключаны</translation>
 <translation id="4706121060329443414">Спроба спампоўвання будзе зроблена пазней. Пакуль што аўдыяматэрыял будзе адпраўлены для апрацоўкі ў Google.</translation>
 <translation id="470644585772471629">Інверсія колераў</translation>
@@ -1673,6 +1678,7 @@
 <translation id="7167913274352523149"><ph name="HOTSPOT" />,
         <ph name="NETWORK" /></translation>
 <translation id="7168224885072002358">Вяртанне да старой раздзяляльнасці праз <ph name="TIMEOUT_SECONDS" /></translation>
+<translation id="7173114856073700355">Адкрыць Налады</translation>
 <translation id="7180611975245234373">Абнавіць</translation>
 <translation id="7181691792034457084">Вітаем! <ph name="PRODUCT_NAME" /> працуе крыху іначай.</translation>
 <translation id="7188494361780961876">Меню перамешчана ў левы верхні вугал экрана.</translation>
@@ -1899,6 +1905,7 @@
 <translation id="7982878511129296052">Выключаецца...</translation>
 <translation id="7984197416080286869">Зашмат спроб разблакіроўкі адбіткам</translation>
 <translation id="798779949890829624">Гэта налада знаходзіцца пад кіраваннем адміністратара</translation>
+<translation id="7989206653429884947">Часта наведваецца</translation>
 <translation id="799296642788192631">Важныя файлы можна замацоўваць. Навядзіце ўказальнік на элемент або адкрыйце Файлы і націсніце на элемент правай кнопкай мышы.</translation>
 <translation id="7994370417837006925">Уваход у некалькі ўліковых запісаў</translation>
 <translation id="7995804128062002838">Не ўдалося зрабіць здымак экрана</translation>
@@ -2085,6 +2092,7 @@
 <translation id="8747464587821437069"><ph name="CAMERA_AND_MICROPHONE_ACCESS_STATUS" />,
         <ph name="SCREEN_SHARE_STATUS" /></translation>
 <translation id="8749787185286745219">Час выйшаў. Выдатная работа! 🎉</translation>
+<translation id="8753368202781196133">Гэта мова зараз не падтрымліваецца.</translation>
 <translation id="8755498163081687682">Спраўдзіце сваю асобу: <ph name="ORIGIN_NAME" /> хоча ўпэўніцца, што гэта вы</translation>
 <translation id="875593634123171288">Паказаць налады VPN</translation>
 <translation id="8756799553341497810">Вы зможаце ўпарадкаваць праграмы, пасля таго, як выйдзеце з рэжыму навучання.</translation>

@@ -850,6 +850,7 @@
 <translation id="5345660046352249607">{COUNT,plural, =1{Энэ илгээмжийг хянах уу?}other{{COUNT} илгээмжийг хянах уу?}}</translation>
 <translation id="5348775987281903912">Та энд хуваалцах товчлуураас энэ хуудсыг хуваалцах боломжтой.</translation>
 <translation id="536067926684072644">Хавчуурга харуулах</translation>
+<translation id="537853552771686272">Сонирхдог сэдэв, сайтуудаа удирдана уу</translation>
 <translation id="5379352933722332597">{count,plural, =1{Хавчуургыг "{title}"-д хадгалсан. Үүнийг зөвхөн энэ төхөөрөмжид хадгалсан.}other{{count} хавчуургыг "{title}"-д хадгалсан. Тэдгээрийг зөвхөн энэ төхөөрөмжид хадгалсан.}}</translation>
 <translation id="5388358297987318779">Зургийг нээх</translation>
 <translation id="5395707839134961196">Хайлтын системийн дэлгэрэнгүй мэдээллийг нуух</translation>
@@ -932,6 +933,7 @@ Handoff-ыг Тохиргооны ерөнхий хэсэгт идэвхижүү
 <translation id="5758631781033351321">Та унших жагсаалтаа эндээс олох болно</translation>
 <translation id="5765456154762864099">Цэс → Тохиргоо → Өгөгдмөл хөтөч</translation>
 <translation id="5777888488419460501">Бүртгэлд хадгалах</translation>
+<translation id="5778292857689789362">Табын бүлэг, <ph name="GROUP_TITLE" />, <ph name="TABS_NUMBER" /> таб.</translation>
 <translation id="5782227691023083829">Орчуулж байна...</translation>
 <translation id="5791632441210678828">'Дагаж буй' хангамжийг эрэмбэлэх товчлуур.</translation>
 <translation id="5793373065989412701">Танай гэр бүлийн гишүүдийг шалгаж байна…</translation>

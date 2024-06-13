@@ -16,6 +16,7 @@
 <translation id="1203500561924088507">Vielen Dank für die Installation. Du musst deinen Browser neu starten, bevor du <ph name="BUNDLE_NAME" /> verwenden kannst.</translation>
 <translation id="1262876892872089030">Während dieser Tab inaktiv war, wurde Arbeitsspeicher freigegeben, damit Chromium schnell bleibt. Du kannst festlegen, dass diese Website nie inaktiv sein soll.</translation>
 <translation id="1265577313130862557">Chromium hat diesen Download blockiert, weil die Datei gefährlich ist</translation>
+<translation id="126567311906253476">Wenn du dich mit <ph name="USER_EMAIL" /> in Google-Diensten wie Gmail oder YouTube anmeldest, kannst du dich mit demselben Konto automatisch in Chromium anmelden</translation>
 <translation id="1315551408014407711">Neues Chromium-Profil erstellen</translation>
 <translation id="1342274909142618978">Auch Daten aus Chromium löschen (<ph name="URL" />)</translation>
 <translation id="1414495520565016063">Du bist in Chromium angemeldet.</translation>
@@ -40,6 +41,7 @@ Berechtigungen, die du Websites und Apps bereits gewährt hast, gelten mögliche
 <translation id="1749104137266986751">Wenn HTTPS nicht verfügbar ist, verwendet Chromium eine unsichere Verbindung ohne Warnung</translation>
 <translation id="1774152462503052664">Chromium im Hintergrund ausführen</translation>
 <translation id="1779356040007214683">Um Chromium sicherer zu machen, haben wir einige Erweiterungen deaktiviert, die nicht im <ph name="IDS_EXTENSION_WEB_STORE_TITLE" /> aufgeführt sind und möglicherweise ohne dein Wissen hinzugefügt wurden.</translation>
+<translation id="1804128559285178512">Solange du angemeldet bist, kannst du deine Passwörter und weitere Daten aus deinem Google-Konto in Chromium verwenden</translation>
 <translation id="1808667845054772817">Chromium neu installieren</translation>
 <translation id="1820835682567584003">Chromium versucht, <ph name="AUTHENTICATION_PURPOSE" /></translation>
 <translation id="18552579716432081">Wenn du Browserdaten nur von diesem Gerät, aber nicht aus deinem Google-Konto löschen möchtest, <ph name="BEGIN_LINK" />melde dich in Chromium ab<ph name="END_LINK" />.</translation>

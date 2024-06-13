@@ -574,6 +574,7 @@
 <translation id="3226991577105957773">+<ph name="COUNT" /> और</translation>
 <translation id="3227137524299004712">माइक्रोफ़ोन</translation>
 <translation id="3233611303007751344">बैटरी सेवर बंद कर दिया गया है</translation>
+<translation id="3238409143297336341">ऐप्लिकेशन के लिए माता-पिता के कंट्रोल सेट अप करें</translation>
 <translation id="324366796737464147">ग़ैर-ज़रूरी आवाज़ें कम करने की सुविधा</translation>
 <translation id="3249513730522716925">Window <ph name="WINDOW_TITLE" /> को डेस्क <ph name="ACTIVE_DESK" /> से डेस्क <ph name="TARGET_DESK" /> पर सेट कर दिया गया है</translation>
 <translation id="3253743281242075461">क्लासवर्क का टाइप: <ph name="GLANCEABLES_CLASSROOM_LIST_NAME" /></translation>
@@ -1403,6 +1404,7 @@
 <translation id="6141205840878048728">आपको किस काम पर फ़ोकस करना है?</translation>
 <translation id="6141988275892716286">डाउनलोड की पुष्टि करें</translation>
 <translation id="6143578372829139382">YouTube पर शेयर करें</translation>
+<translation id="6147182561428020853">अब इस <ph name="DEVICE_TYPE" /> पर इंस्टॉल किए गए ऐप्लिकेशन ब्लॉक किए जा सकते हैं</translation>
 <translation id="6154006699632741460">सहायक डिवाइस (जैसे, कीबोर्ड, माउस, मॉनिटर, वेबकैम वगैरह) काम नहीं कर रहा</translation>
 <translation id="6156960295318603523">भाषा सेटिंग</translation>
 <translation id="615957422585914272">ऑन-स्क्रीन कीबोर्ड दिखाएं</translation>
@@ -1674,6 +1676,7 @@
 <translation id="7167913274352523149"><ph name="HOTSPOT" />,
         <ph name="NETWORK" /></translation>
 <translation id="7168224885072002358"><ph name="TIMEOUT_SECONDS" /> में पुराने रिज़ॉल्यूशन में वापस लौट रहा है</translation>
+<translation id="7173114856073700355">सेटिंग खोलें</translation>
 <translation id="7180611975245234373">रीफ्रेश करें</translation>
 <translation id="7181691792034457084">नमस्ते. <ph name="PRODUCT_NAME" />, अन्य प्रॉडक्ट के मुकाबले थोड़ा अलग है.</translation>
 <translation id="7188494361780961876">मेन्यू, स्क्रीन के सबसे ऊपर बाएं कोने में चला गया है.</translation>

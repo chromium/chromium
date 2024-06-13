@@ -18,6 +18,7 @@
 <translation id="1203500561924088507">Фала за инсталирањето. Мора да го рестартирате прелистувачот пред да користите <ph name="BUNDLE_NAME" />.</translation>
 <translation id="1262876892872089030">Додека картичкава беше неактивна, се ослободи меморија за да продолжи Chromium брзо да работи. Може да изберете сајтов секогаш да се изоставува од неактивност.</translation>
 <translation id="1265577313130862557">Chromium го блокираше преземањево затоа што датотеката е опасна</translation>
+<translation id="126567311906253476">При најавување на услуги на Google како Gmail или YouTube со <ph name="USER_EMAIL" />, може да се најавувате на Chromium автоматски со истата сметка</translation>
 <translation id="1315551408014407711">Поставете нов профил на Chromium</translation>
 <translation id="1342274909142618978">Избриши ги и податоците од Chromium (<ph name="URL" />)</translation>
 <translation id="1414495520565016063">Најавени сте на Chromium!</translation>
@@ -42,6 +43,7 @@
 <translation id="1749104137266986751">Кога не е достапна HTTPS, Chromium ќе користи небезбедна врска без да ве предупреди</translation>
 <translation id="1774152462503052664">Остави го Chromium да работи во заднина</translation>
 <translation id="1779356040007214683">За Chromium да биде побезбеден, оневозможивме неколку наставки што не се наведени во <ph name="IDS_EXTENSION_WEB_STORE_TITLE" /> и можеби се додадени без ваше знаење.</translation>
+<translation id="1804128559285178512">Додека сте најавени, може да ги користите вашите лозинки и друго од вашата сметка на Google во Chromium</translation>
 <translation id="1808667845054772817">Преинсталирај го Chromium</translation>
 <translation id="1820835682567584003">Chromium се обидува да <ph name="AUTHENTICATION_PURPOSE" /></translation>
 <translation id="18552579716432081">За да ги избришете податоците од прелистување само од овој уред, а притоа да ги задржите во сметката на Google, <ph name="BEGIN_LINK" />одјавете се од Chromium<ph name="END_LINK" />.</translation>

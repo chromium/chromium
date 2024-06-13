@@ -80,6 +80,7 @@
 <translation id="1247519845643687288">التطبيقات المستخدمة مؤخرًا</translation>
 <translation id="1252999807265626933">جارٍ الشحن من <ph name="POWER_SOURCE" /></translation>
 <translation id="1255033239764210633">ما حالة الطقس؟</translation>
+<translation id="1256734167083229794">‏لقد ضغطت على اختصار لوحة المفاتيح الخاص بـ "المكبِّر بملء الشاشة". اضغط على <ph name="ZOOM_IN_ACCELERATOR" /> للتكبير و<ph name="ZOOM_OUT_ACCELERATOR" /> للتصغير. اضغط على Ctrl ‏+ Alt ‏+ مفاتيح الأسهم للتنقّل داخل الشاشة أثناء تكبيرها.</translation>
 <translation id="1269405891096105529">الأجهزة الملحقة غير متاحة للاستخدام في وضع الضيف.</translation>
 <translation id="1270290102613614947">تم إيقاف لوحة المفاتيح على الشاشة</translation>
 <translation id="1272079795634619415">إيقاف</translation>
@@ -265,6 +266,7 @@
 <translation id="1969011864782743497"><ph name="DEVICE_NAME" /> (USB)</translation>
 <translation id="1971815855639997522">‏تمت إزالة سطح المكتب والنوافذ. اضغط على Control + Z للتراجع عن الإجراء.</translation>
 <translation id="1972950159383891558">مرحبًا، <ph name="USERNAME" /></translation>
+<translation id="1977686871076551563">تم تفعيل ميزة "قلب الألوان". اضغط على <ph name="ACCELERATOR" /> مرة أخرى لإيقافها.</translation>
 <translation id="1978498689038657292">إدخال نصي</translation>
 <translation id="1980808257969311265">الانضمام إلى "<ph name="EVENT_SUMMARY" />"</translation>
 <translation id="1982717156487272186">عرض الأسبوع الماضي</translation>
@@ -1187,6 +1189,7 @@
 <translation id="5377367976106153749">هل تريد تفعيل إمكانية الوصول إلى الكاميرا؟</translation>
 <translation id="5379115545237091094">محاولات كثيرة جدًا</translation>
 <translation id="5391307769715781764">هل تريد استبدال سطح المكتب المحفوظ؟</translation>
+<translation id="5392327145184648521">جارٍ حساب نسبة شحن البطارية...</translation>
 <translation id="5393156353051693207">انقر مع الاستمرار على أي مكان على الشاشة لإعادة ترتيب التطبيقات</translation>
 <translation id="5395308026110844773"><ph name="DRAGGED_APP_NAME" /> في أعلى <ph name="IN_PLACE_APP" />، يُرجى التحرير لإنشاء مجلد.</translation>
 <translation id="5397578532367286026">‏يُمكن للمدير مراجعة الاستخدام والسجل الخاص بهذا المستخدم (<ph name="MANAGER_EMAIL" />) على chrome.com.</translation>
@@ -1241,6 +1244,7 @@
 <translation id="5577281275355252094">يُرجى التأكّد من تفعيل البلوتوث على هاتفك لاستخدام ميزة "مركز التحكّم بالهاتف".</translation>
 <translation id="5578188167649348993">ذاكرة</translation>
 <translation id="5580000943347215299">المكتبة</translation>
+<translation id="5586388332127302891">تم تفعيل "مكبّر جزء من الشاشة". اضغط على <ph name="ACCELERATOR" /> مرة أخرى لإيقافه.</translation>
 <translation id="5587506661873751671">جارٍ التنزيل (%<ph name="DOWNLOAD_PERCENT" />)</translation>
 <translation id="558849140439112033">يُرجى السحب لتحديد منطقة لالتقاط صورة لها.</translation>
 <translation id="5590609058453685222">ميزة "التذكير بإعادة صوت الميكروفون" مفعَّلة. ستتلقّى إشعارًا إذا كنت تتحدث وصوت الميكروفون مكتوم.</translation>
@@ -1451,6 +1455,7 @@
 <translation id="6319503618073410818">عرض التفاصيل في المتصفِّح</translation>
 <translation id="6324916366299863871">تعديل الاختصار</translation>
 <translation id="6330012934079202188">يتم الآن عرض النوافذ المفتوحة في جميع أسطح المكتب، ويمكنك الضغط على مفتاح السهم المتّجه للأعلى لعرض النوافذ المفتوحة في سطح المكتب الحالي.</translation>
+<translation id="6337159624125741244">"المكبِّر بملء الشاشة" مفعَّل</translation>
 <translation id="6338485349199627913"><ph name="DISPLAY_NAME" /> هي جلسة تتم إدارتها من خلال <ph name="MANAGER" />.</translation>
 <translation id="6344138931392227467">تم توصيل <ph name="DEVICE_NAME" />.</translation>
 <translation id="6348449481487610270">‏‫‎<ph name="MODIFIER_ONE" /><ph name="MODIFIER_TWO" /><ph name="KEY_ONE" /> ثم ‎<ph name="MODIFIER_THREE" /><ph name="KEY_TWO" /> أو <ph name="KEY_THREE" /></translation>
@@ -1518,6 +1523,7 @@
 <translation id="6574587113394758819">‏تم حجب إشعار التطبيق <ph name="APP_TITLE" /> بسبب تفعيل ميزة Viewing Protection.</translation>
 <translation id="6574622320167699133">تم فتح قفل الجهاز باستخدام الهاتف. انقر لبدء استخدام الجهاز.</translation>
 <translation id="6578407462441924264">بدون اسم</translation>
+<translation id="6582034443359256692">جارٍ حساب مستوى شحن البطارية</translation>
 <translation id="6585808820553845416">تنتهي الجلسة في <ph name="SESSION_TIME_REMAINING" />.</translation>
 <translation id="6593850935013518327"><ph name="PRIMARY_TEXT" />، <ph name="SECONDARY_TEXT" /></translation>
 <translation id="6597278316891651699">تم توجيه الكاميرا إلى الزاوية السفلية اليسرى. هناك تعارض مع مساحة عرض نظام آخر.</translation>
@@ -1579,6 +1585,7 @@
 <translation id="6790428901817661496">التشغيل</translation>
 <translation id="679368458793552943">التكبير عند يكون المكبِّر مفعّلاً</translation>
 <translation id="6794287755901682422">تحتوي هذه المهمة على التفاصيل التالية: <ph name="GLANCEABLES_TASK_ITEM_METADATA" />.</translation>
+<translation id="6797745268063125932">إبقاء المكبِّر مفعَّل</translation>
 <translation id="6801878137098616817">تم تعديله مؤخرًا.</translation>
 <translation id="6802687695197837794">يتيح هذا الإجراء السماح لكل من "<ph name="APP1_NAME" />" و"<ph name="APP2_NAME" />" وجميع التطبيقات والمواقع الإلكترونية بالوصول إلى الكاميرا والميكروفون.</translation>
 <translation id="6803622936009808957">تعذر إجراء النسخ المطابق للعروض نظرًا لعدم العثور على درجات دقة متوافقة. تم الدخول إلى سطح المكتب الممتد بدلاً من ذلك.</translation>
@@ -1675,6 +1682,7 @@
 <translation id="7167913274352523149">‫<ph name="HOTSPOT" />،
         <ph name="NETWORK" /></translation>
 <translation id="7168224885072002358">سيتم الرجوع إلى درجة الدقة القديمة في غضون <ph name="TIMEOUT_SECONDS" /></translation>
+<translation id="7173114856073700355">فتح الإعدادات</translation>
 <translation id="7180611975245234373">إعادة التحميل</translation>
 <translation id="7181691792034457084">مرحبًا. لنتعرّف على <ph name="PRODUCT_NAME" /> بميزاته المختلفة.</translation>
 <translation id="7188494361780961876">تم نقل القائمة إلى أعلى يمين الشاشة.</translation>
@@ -1891,6 +1899,7 @@
 <translation id="7947798320695032612">‫"<ph name="APP_NAME" />" بحاجة إلى استخدام <ph name="DEVICE_NAME" />.</translation>
 <translation id="7951630946012935453">تعتيم لوحة المفاتيح</translation>
 <translation id="7953994493035617347">هل تريد تأكيد درجة الدقة الجديدة؟</translation>
+<translation id="795958884516058160">تم تفعيل "المكبِّر بملء الشاشة". اضغط على <ph name="ACCELERATOR" /> مرة أخرى لإيقافه.</translation>
 <translation id="7963689218131240420">تم إيقاف وضع "عدم الإزعاج".</translation>
 <translation id="7963992254934562106">من <ph name="PHONE_NAME" /></translation>
 <translation id="7968693143708939792">اختيار مجلد...</translation>
@@ -2144,6 +2153,7 @@
 <translation id="894774083269346314">لم يتم وضع علامة في مربّع اختيار الملف الشخصي "<ph name="PROFILE_NAME" />" وعنوان بريده الإلكتروني <ph name="EMAIL" />.</translation>
 <translation id="8949925099261528566">تم الاتصال بالشبكة ولكنها غير متصلة بالإنترنت.</translation>
 <translation id="8951539504029375108">‏لا يتوافق مع جهاز Chromebook سوى أجهزة Thunderbolt الموافَق عليها.</translation>
+<translation id="8959380109429710384">‏لقد ضغطت على اختصار لوحة المفاتيح الخاص بـ "المكبِّر بملء الشاشة". اضغط على Ctrl ‏+ Alt ‏+ مفاتيح الأسهم للتنقّل داخل الشاشة أثناء تكبيرها.</translation>
 <translation id="8964525410783593407">ساعة واحدة</translation>
 <translation id="8973885907461690937">التركيز على رمز القائمة</translation>
 <translation id="8980862970816311842">نقل رمز تطبيق داخل مجلد في شبكة التطبيقات أو خارجه</translation>

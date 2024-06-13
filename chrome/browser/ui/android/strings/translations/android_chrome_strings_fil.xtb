@@ -156,6 +156,7 @@ Para sa higit pang setting na gumagamit ng data para pahusayin ang iyong experie
 <translation id="1755203724116202818">Para masukat ang performance ng isang ad, nagshe-share ng mga limitadong uri ng data sa pagitan ng mga site, gaya kung bumili ka pagkatapos mong bumisita sa isang site.</translation>
 <translation id="1757620656501361327">Update sa Google Password Manager</translation>
 <translation id="1760873718737761808">{FILE_COUNT,plural, =1{Mga Page, may 1 page sa listahan}one{Mga Page, may # page sa listahan}other{Mga Page, may # na page sa listahan}}</translation>
+<translation id="1771929606532798550">Magpapadala ng impormasyon sa Google tungkol sa paggamit mo ng Chrome, pero hindi ito iuugnay sa iyo\n\nKung magka-crash ang Chrome, posibleng may kasamang ilang personal na impormasyon sa mga detalye tungkol sa crash\n\nKung isi-sync mo ang iyong history sa Google Account mo, posibleng may kasama rin sa mga sukatan na impormasyon tungkol sa mga URL na binibisita mo</translation>
 <translation id="1778457539567749232">Markahan bilang hindi pa nababasa</translation>
 <translation id="1779766957982586368">Isara ang window</translation>
 <translation id="1780023393214832643">Mga password na naka-save sa <ph name="USERNAME" /></translation>
@@ -799,6 +800,7 @@ Maaaring may ibang uri ng history ng pag-browse ang iyong Google account tulad n
 <translation id="4987271110129728827">Hindi makita ang page na iyon. Suriin ang iyong spelling o sumubok ng paghahanap sa web.</translation>
 <translation id="4988526792673242964">Mga Page</translation>
 <translation id="4991110219272367918">Opsyong aprubahan o huwag aprubahan ang isang website na isinara</translation>
+<translation id="4996095658297597226">Gamitin ang iminumungkahing password?</translation>
 <translation id="499724277181351974">Mag-navigate: <ph name="WEBSITE_TITLE" />: <ph name="WEBSITE_URL" /></translation>
 <translation id="5001388021414335527">Subaybayan ang site na ito dito</translation>
 <translation id="5004416275253351869">Mga kontrol ng aktibidad sa Google</translation>
@@ -1042,6 +1044,7 @@ Halimbawa, puwedeng tumugon ang ilang website sa kahilingang ito sa pamamagitan 
 <translation id="6233974827872475843">I-save sa iyong Google Account ang mga password sa device na ito sa pamamagitan ng pag-on sa pag-sync</translation>
 <translation id="6247557882553405851">Google Password Manager</translation>
 <translation id="6251449557817521191">Tingnan ang iyong history sa Chrome dito</translation>
+<translation id="6254139308321626268">Tumitingin ka ng PDF file</translation>
 <translation id="6255794742848779505">Babaguhin na namin kung paano sine-save ang mga password sa device na ito</translation>
 <translation id="6264376385120300461">I-download pa rin</translation>
 <translation id="6277522088822131679">Nagkaproblema sa pag-print sa pahina. Pakisubukang muli.</translation>
@@ -1083,6 +1086,7 @@ Halimbawa, puwedeng tumugon ang ilang website sa kahilingang ito sa pamamagitan 
 <translation id="641643625718530986">I-print…</translation>
 <translation id="6433501201775827830">Pumili ng iyong search engine</translation>
 <translation id="6434309073475700221">I-discard</translation>
+<translation id="6437162790453527153">Mag-sign in para makuha ang iyong mga bookmark at higit pa sa lahat ng device mo</translation>
 <translation id="6437478888915024427">Impormasyon ng page</translation>
 <translation id="6440291723980579689">Maglo-load lang ang mga page pagkatapos mong buksan ang mga ito</translation>
 <translation id="6441734959916820584">Masyadong mahaba ang pangalan</translation>
@@ -1437,6 +1441,7 @@ Para baguhin ang setting na ito, <ph name="BEGIN_LINK" />i-delete ang data sa Ch
 <translation id="7986497153528221272">Para tingnan ang mga password, magtakda muna ng lock ng screen sa iyong device</translation>
 <translation id="7995059495660416932">Makikita mo ang content kapag naging available ito</translation>
 <translation id="799576009106109668">Makakapag-browse ka nang mas mabilis dahil aktibong naglo-load ng content batay sa kasalukuyan mong pagbisita sa webpage</translation>
+<translation id="8001245658307297681">Tumitingin ka ng lokal na file</translation>
 <translation id="8004582292198964060">Browser</translation>
 <translation id="8015452622527143194">Ibalik ang lahat ng nasa page sa default na sukat</translation>
 <translation id="8026238112629815203">Binago namin kung paano sine-save ang mga password sa device na ito</translation>

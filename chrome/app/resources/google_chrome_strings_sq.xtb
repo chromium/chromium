@@ -125,6 +125,7 @@ Disa funksione mund të mos ofrohen dhe ndryshimet në preferenca nuk do të ruh
 <translation id="2765403129283291972">Chrome ka nevojë për leje për t'u qasur te mikrofoni yt për këtë sajt</translation>
 <translation id="2770231113462710648">Ndrysho shfletuesin me parazgjedhje në:</translation>
 <translation id="2775140325783767197">Chrome nuk mund t'i kontrollojë fjalëkalimet e tua. Provo të kontrollosh lidhjen e internetit.</translation>
+<translation id="2797864378188255696">Kur identifikohesh me <ph name="USER_EMAIL" /> në shërbimet e Google, si p.sh. Gmail ose YouTube, mund të identifikohesh automatikisht në Chrome me të njëjtën llogari</translation>
 <translation id="2799223571221894425">Nis sërish</translation>
 <translation id="2825024317344269723">Sajt i rrezikshëm. Chrome ka hequr njoftimet.</translation>
 <translation id="2846251086934905009">Gabim gjatë instalimit: Instaluesi nuk përfundoi. Instalimi është ndërprerë.</translation>
@@ -299,6 +300,7 @@ Disa funksione mund të mos ofrohen. Specifiko një direktori tjetër të profil
 <translation id="5334309298019785904">ChromeOS nuk mund t'i sinkronizonte të dhënat e tua sepse "Sinkronizimi" nuk ofrohet për domenin tënd.</translation>
 <translation id="5334487786912937552">Chrome ka nevojë për leje qasjeje te hapësira ruajtëse për të shkarkuar skedarë</translation>
 <translation id="5337648990166757586">Opsionale: Ndihmo në përmirësimin e veçorive dhe performancës së ChromeOS duke dërguar automatikisht te Google të dhëna diagnostikuese dhe përdorimi.</translation>
+<translation id="5345497718959596593">Kur je i identifikuar, mund të përdorësh fjalëkalimet dhe më shumë nga "Llogaria jote e Google" në Chrome</translation>
 <translation id="5357889879764279201">Merr ndihmë me Chrome OS Flex</translation>
 <translation id="5368118228313795342">Kodi shtesë: <ph name="EXTRA_CODE" />.</translation>
 <translation id="5386244825306882791">Kontrollon po ashtu se cila faqe shfaqet kur nis Chrome ose kur kërkon nga Omnibox.</translation>
