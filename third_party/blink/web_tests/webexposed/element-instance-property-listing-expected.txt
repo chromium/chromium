@@ -959,8 +959,11 @@ html element param
     property value
     property valueType
 html element permission
+    property invalidReason
+    property isValid
     property ondismiss
     property onresolve
+    property onvalidationstatuschange
     property type
 html element picture
 html element plaintext
