@@ -8,6 +8,7 @@
 #include <cstddef>
 #include <cstring>
 
+#include "base/containers/span.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
 #include "base/numerics/safe_conversions.h"
@@ -125,8 +126,10 @@ void SocketInputStream::ReadMore(
   size_t num_bytes = read_size_;
   if (result == MOJO_RESULT_OK) {
     DVLOG(1) << "Refreshing input stream, limit of " << num_bytes << " bytes.";
-    result = stream_->ReadData(read_buffer_->data(), &num_bytes,
-                               MOJO_READ_DATA_FLAG_NONE);
+    result = stream_->ReadData(
+        MOJO_READ_DATA_FLAG_NONE,
+        base::as_writable_bytes(read_buffer_->span()).first(num_bytes),
+        num_bytes);
     DVLOG(1) << "Read returned mojo result" << result;
   }
 
@@ -289,12 +292,15 @@ void SocketOutputStream::WriteMore(MojoResult result,
   DCHECK(write_callback_);
   DCHECK(write_buffer_);
 
-  size_t num_bytes =
-      base::checked_cast<size_t>(write_buffer_->BytesRemaining());
-  DVLOG(1) << "Flushing " << num_bytes << " bytes into socket.";
+  const base::span<const uint8_t> bytes =
+      base::as_bytes(write_buffer_->span())
+          .first(base::checked_cast<size_t>(write_buffer_->BytesRemaining()));
+  DVLOG(1) << "Flushing " << bytes.size() << " bytes into socket.";
+
+  size_t bytes_written = 0;
   if (result == MOJO_RESULT_OK) {
-    result = stream_->WriteData(write_buffer_->data(), &num_bytes,
-                                MOJO_WRITE_DATA_FLAG_NONE);
+    result =
+        stream_->WriteData(bytes, MOJO_WRITE_DATA_FLAG_NONE, bytes_written);
   }
   if (result == MOJO_RESULT_SHOULD_WAIT) {
     stream_watcher_.ArmOrNotify();
@@ -306,15 +312,15 @@ void SocketOutputStream::WriteMore(MojoResult result,
     std::move(write_callback_).Run();
     return;
   }
-  DVLOG(1) << "Wrote  " << num_bytes;
+  DVLOG(1) << "Wrote  " << bytes_written;
   // If an error occurred before the completion callback could complete, ignore
   // the result.
   if (GetState() == CLOSED)
     return;
 
-  DCHECK_GE(num_bytes, 0u);
+  DCHECK_GE(bytes_written, 0u);
   last_error_ = net::OK;
-  write_buffer_->DidConsume(base::checked_cast<uint32_t>(num_bytes));
+  write_buffer_->DidConsume(base::checked_cast<uint32_t>(bytes_written));
   if (write_buffer_->BytesRemaining() > 0) {
     DVLOG(1) << "Partial flush complete. Retrying.";
     // Only a partial write was completed. Flush again to finish the write.

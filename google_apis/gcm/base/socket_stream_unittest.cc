@@ -12,6 +12,7 @@
 #include <utility>
 #include <vector>
 
+#include "base/containers/span.h"
 #include "base/functional/bind.h"
 #include "base/run_loop.h"
 #include "base/test/bind.h"
@@ -428,11 +429,12 @@ TEST_F(GCMSocketStreamTest, WritePartialWithLengthChecking) {
 
   // Prepopulate |producer_handle| of |prefix_data|, now the pipe's capacity is
   // less than |kWriteDataSize|.
-  size_t num_bytes = prefix_data.size();
-  MojoResult r = producer_handle->WriteData(prefix_data.data(), &num_bytes,
-                                            MOJO_WRITE_DATA_FLAG_NONE);
+  size_t bytes_written = 0;
+  MojoResult r =
+      producer_handle->WriteData(base::as_byte_span(prefix_data),
+                                 MOJO_WRITE_DATA_FLAG_NONE, bytes_written);
   ASSERT_EQ(MOJO_RESULT_OK, r);
-  ASSERT_EQ(prefix_data.size(), num_bytes);
+  ASSERT_EQ(prefix_data.size(), bytes_written);
 
   // Create a SocketOutputStream from the producer pipe.
   auto socket_output_stream =
@@ -450,12 +452,14 @@ TEST_F(GCMSocketStreamTest, WritePartialWithLengthChecking) {
 
   std::string contents;
   // Read prefix.
-  char buffer[kPrefixDataSize];
-  size_t read_size = sizeof(buffer);
-  ASSERT_EQ(MOJO_RESULT_OK, consumer_handle->ReadData(
-                                buffer, &read_size, MOJO_READ_DATA_FLAG_NONE));
-  ASSERT_EQ(kPrefixDataSize, read_size);
-  contents += std::string(buffer, read_size);
+  std::string buffer(kPrefixDataSize, '\0');
+  size_t bytes_read = 0;
+  ASSERT_EQ(MOJO_RESULT_OK,
+            consumer_handle->ReadData(MOJO_READ_DATA_FLAG_NONE,
+                                      base::as_writable_byte_span(buffer),
+                                      bytes_read));
+  ASSERT_EQ(kPrefixDataSize, bytes_read);
+  contents += buffer.substr(0, bytes_read);
 
   base::RunLoop().RunUntilIdle();
   // Flush now should complete.
@@ -468,13 +472,15 @@ TEST_F(GCMSocketStreamTest, WritePartialWithLengthChecking) {
   // to make sure data is as what we expected, and there is no trailing garbage
   // data.
   while (true) {
-    r = consumer_handle->ReadData(buffer, &read_size, MOJO_READ_DATA_FLAG_NONE);
+    r = consumer_handle->ReadData(MOJO_READ_DATA_FLAG_NONE,
+                                  base::as_writable_byte_span(buffer),
+                                  bytes_read);
     if (r == MOJO_RESULT_SHOULD_WAIT)
       continue;
     if (r != MOJO_RESULT_OK)
       break;
     ASSERT_EQ(MOJO_RESULT_OK, r);
-    contents += std::string(buffer, read_size);
+    contents += buffer.substr(0, bytes_read);
   }
   std::string expected(prefix_data);
   expected.append(kWriteData);
