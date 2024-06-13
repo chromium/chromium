@@ -70,15 +70,19 @@ def branch_configs():
     """
     return [{
         "name": "standard branch",
-        "platforms": [p for p in PLATFORMS if p != platform.CROS_LTS],
+        "initialize": {},
         "gardener_rotation": "chrome_browser_release",
     }, {
         "name": "desktop extended stable branch",
-        "platforms": [platform.MAC, platform.WINDOWS],
-        "gardener_rotation": "chrome_browser_release",
+        "platform_set": {
+            "platforms": [platform.MAC, platform.WINDOWS],
+            "gardener_rotation": "chrome_browser_release",
+        },
     }] + [{
         "name": p,
-        "platforms": [p],
+        "platform_set": {
+            "platforms": [p],
+        },
     } for p in PLATFORMS]
 
 presubmit_builder(
