@@ -1,25 +1,74 @@
 # Preventing OOB through Unsafe Buffers errors (aka Spanification)
 
-Out-of-bounds (OOB) security bugs commonly happen through pointers
-which have no bounds information associated with them. We can prevent such
-bugs by always using containers.
+Out-of-bounds (OOB) security bugs commonly happen through pointers which
+have no bounds information associated with them. We can prevent such
+bugs by always using containers. Furthermore, the Clang compiler can
+warn about unsafe pointer usage that should be converted to containers.
+When an unsafe usage is detected, Clang prints a warning similar to
+```
+error: unsafe buffer access [-Werror,-Wunsafe-buffer-usage]
+```
+and directs developers to this file for more information.
 
-Entire directories have been opted out of unsafe pointer usage
-warnings through the
-[`//build/config/unsafe_buffers_paths.txt`](../build/config/unsafe_buffers_paths.txt)
-file. Our [compiler](../tools/clang/plugins/UnsafeBuffersPlugin.cpp) enables
-the `-Wunsafe-buffer-usage` warning in any file that is not
-opted out. As we convert unsafe pointers to safe constructs like
-`base::span`, `base::HeapArray` and `std::vector`, we will
-remove paths from that file to enable the warnings across the
-codebase. To incrementally apply the warnings across a whole directory,
-individual files [can be opted-out](#controlling-warnings-for-a-single-file)
-of the warning.
+## Suppressions
 
-## Patterns for spanification
+Our [compiler](../tools/clang/plugins/UnsafeBuffersPlugin.cpp) enables
+the `-Wunsafe-buffer-usage` warning on all files by default. Because the
+Chromium codebase is not yet compliant with these warnings, there are
+mechanisms to opt out code on a directory, file, or per-occurence basis.
 
-Most pointers are unowned references into an array (or vector)
-and the most appropriate replacement for the pointer is
+Entire directories are opted out of unsafe pointer usage warnings through
+the [`//build/config/unsafe_buffers_paths.txt`](../build/config/unsafe_buffers_paths.txt)
+file. As work progresses, directories will be removed from this list, and
+non-compliant files marked on a per-file basis as below. Early results
+indicate that often 85%+ of files in a directory already happen to be
+compliant, so file-by-file suppression allows this code to be subject
+to enforcement.
+
+Individual files are opted out of unsafe pointer usage warnings though
+the use of the following snippet, which is to be placed immediately
+following the copyright header in a source file.
+```
+#ifdef UNSAFE_BUFFERS_BUILD
+// TODO(crbug.com/ABC): Remove this and convert code to safer constructs.
+#pragma allow_unsafe_buffers
+#endif
+```
+
+Individual expressions or blocks of code are opted out by using the
+`UNSAFE_BUFFERS()` macro as defined in [`//base/compiler_specific.h`[(../base/compiler_specific.h)
+file. These should be rare once a project is fully converted, except
+perhaps when working with C-style external APIs. These must
+always be accompanied by a `// SAFETY:` comment explaining in detail
+how the code has been evaluated to be safe for all possible input.
+
+To allow for incremental conversion, the use of a safety comment with
+a TODO() is permitted, along the lines of
+`// SAFETY: TODO(crbug.com/xxxxxx): resolve safety issues`.
+
+Code introducing UNSAFE_BUFFER() macro invocations without corresponding
+`// SAFETY:` comment should be summarily rejected during code review.
+
+## Use of std::array<T>.
+
+The clang plugin is very particular about indexing a C-style array (e.g.
+`int arr[100]`) with a variable index. Often these issues can be resolved
+by replacing this with `std::array<int, 100> arr`, which provides safe
+indexed operations. In particular, new code should prefer to use the
+`std::array<T, N>` mechanism.
+
+For arrays where the size is determined by the compiler (e.g.
+`int arr[] = { 1, 3, 5 };`), the `std::to_array<T>()` helper function
+should be used along with the `auto` keyword:
+`auto arr = std::to_array<int>({1, 3, 5});`
+
+## Patterns for spanification.
+
+Most pointer issues ought to be resolved by converting to containers. In
+particular, one common conversion is to replace `T*` pointers with
+`base::span<T>` in a process known as spanification, since most pointers
+are unowned references into an array (or vector). The appropriate
+replacement for the pointer is
 [`base::span`](../base/containers/span.h).
 
 ### Copying arrays (`memcpy`)
@@ -194,50 +243,24 @@ two_byte_arrays(array, val_span.data());
 two_byte_spans(base::span(array), base::byte_span_from_ref(val));
 ```
 
-## Controlling warnings for a single file
-
-Warnings can be disabled for a single (C++ source or header) file by
-writing `#pragma allow_unsafe_buffers` anywhere in the file. This can
-be used to mark future work to drive down over time:
-```
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/ABC): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-```
-
-It's recommended to place the pragma directly copyright header. This can be used
-to work through files in a directory incrementally. To do so, remove the whole
-directory from opt-out in the
-[`//build/config/unsafe_buffers_paths.txt`](../build/config/unsafe_buffers_paths.txt)
-file, and temporarily mark any files with `#pragma allow_unsafe_buffers` that
-need it.
-
-The warnings can be enabled for a single (C++ source or header) file by writing
-`#pragma check_unsafe_buffers` anywhere in the file. These also need to be
-guarded by `#ifdef UNSAFE_BUFFERS_BUILD` if being checked in.
-
 # Functions with array pointer parameters
 
-Functions that receive a pointer into an array may read
-or write out of bounds of the pointer if given a pointer that
-is incorrectly sized. Such functions should be marked with the
-`UNSAFE_BUFFER_USAGE` attribute macro.
+Functions that receive a pointer argument into an array may read
+or write out of bounds of that array if subsequent manual size
+calculations are incorrect. Such functions should be avoided if
+possible, or marked with the `UNSAFE_BUFFER_USAGE` attribute macro
+otherwise.  This macro propagates to their callers that they must
+be called from inside an `UNSAFE_BUFFERS()` region (along with
+a corresponding safety comment explaining how the caller knows
+the call will be safe).
 
 The same is true for functions that accept an iterator instead
 of a range type. Some examples of each are `memcpy()` and
 `std::copy()`.
 
-Calling such functions is unsafe and should generally be avoided.
-Instead, replace such functions with an API built on base::span
+Again, calling such functions is unsafe and should be avoided.
+Replace such functions with an API built on base::span
 or other range types which prevents any chance of OOB memory
 access. For instance, replace `memcpy()`, `std::copy()` and
 `std::ranges::copy()` with `base::span::copy_from()`. And
 replace `memset()` with `std::ranges::fill()`.
-
-# Writing unsafe data structures with pointers
-
-TODO: Write about `UNSAFE_BUFFERS()` for rare exceptions where
-the correctness of pointer bounds can be fully explained and
-encapsulated, such as within a data structure or when working
-with Operating System and C-like APIs.
