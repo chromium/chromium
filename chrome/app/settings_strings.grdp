@@ -2617,6 +2617,18 @@
   <message name="IDS_SETTINGS_SEARCH_ENGINES_ADDITIONAL_INACTIVE_SITES" desc="Label for button that expands the Inactive Sites list of search engines to show all entries">
     Additional inactive sites
   </message>
+  <message name="IDS_SETTINGS_SEARCH_ENGINES_MORE_ACTIONS_ARIA_LABEL" desc="Accessibility label for the three-dot more actions menu button associated with each search engine on chrome://settings/searchEngines">
+    More actions for <ph name="SEARCH_ENGINE_NAME">$1<ex>Google</ex></ph>
+  </message>
+  <message name="IDS_SETTINGS_SEARCH_ENGINES_ACTIVATE_BUTTON_ARIA_LABEL" desc="Accessibility label for the Activate button associated with each inactive search engine on chrome://settings/searchEngines">
+    Click to activate <ph name="SEARCH_ENGINE_NAME">$1<ex>Google</ex></ph>
+  </message>
+  <message name="IDS_SETTINGS_SEARCH_ENGINES_ADD_SITE_SEARCH_BUTTON_ARIA_LABEL" desc="Accessibility label for the Add button that opens the Add Site search dialog on chrome://settings/searchEngines.">
+    Click to open Add Site Search dialog
+  </message>
+  <message name="IDS_SETTINGS_SEARCH_ENGINES_EDIT_SEARCH_ENGINE_BUTTON_ARIA_LABEL" desc="Accessibility label for the Edit (pencil-icon) button that opens the Edit Site search/Search engine dialog for the associated search engine on chrome://settings/searchEngines.">
+    Click to open Edit dialog for <ph name="SEARCH_ENGINE_NAME">$1<ex>Google</ex></ph>
+  </message>
 
   <!-- Site Settings Page -->
   <message name="IDS_SETTINGS_EXCEPTIONS_EMBEDDED_ON_HOST" desc="Template text for a child row in the content Exceptions page view. Controls the permission setting for the parent page when embedded on the specified site.">

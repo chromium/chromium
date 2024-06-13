@@ -2412,6 +2412,14 @@ void AddSearchEnginesStrings(content::WebUIDataSource* html_source) {
        IDS_SETTINGS_SEARCH_ENGINES_ADDITIONAL_SITES},
       {"searchEnginesAdditionalInactiveSites",
        IDS_SETTINGS_SEARCH_ENGINES_ADDITIONAL_INACTIVE_SITES},
+      {"searchEnginesMoreActionsAriaLabel",
+       IDS_SETTINGS_SEARCH_ENGINES_MORE_ACTIONS_ARIA_LABEL},
+      {"searchEnginesActivateButtonAriaLabel",
+       IDS_SETTINGS_SEARCH_ENGINES_ACTIVATE_BUTTON_ARIA_LABEL},
+      {"searchEnginesAddButtonAriaLabel",
+       IDS_SETTINGS_SEARCH_ENGINES_ADD_SITE_SEARCH_BUTTON_ARIA_LABEL},
+      {"searchEnginesEditButtonAriaLabel",
+       IDS_SETTINGS_SEARCH_ENGINES_EDIT_SEARCH_ENGINE_BUTTON_ARIA_LABEL},
   };
   html_source->AddLocalizedStrings(kLocalizedStrings);
 }

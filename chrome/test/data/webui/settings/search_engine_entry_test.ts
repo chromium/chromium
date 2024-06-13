@@ -225,6 +225,41 @@ suite('SearchEngineEntryTest', function() {
     assertEquals(entry.engine.modelIndex, modelIndex);
     assertFalse(isActive);
   });
+
+  // Test that the accessibility Aria labels are set correctly for the Edit,
+  // Activate, and More Actions buttons.
+  test('AriaLabelSetCorrectly', function() {
+    flush();
+    entry.engine = createSampleSearchEngine(
+        {default: false, canBeActivated: true, canBeEdited: true});
+
+    // Edit button
+    const editButton =
+        entry.shadowRoot!.querySelector<HTMLElement>('#editIconButton');
+    assertTrue(!!editButton);
+    assertEquals(
+        entry.i18n(
+            'searchEnginesEditButtonAriaLabel', entry.engine.displayName),
+        editButton.ariaLabel);
+
+    // Activate button
+    const activateButton =
+        entry.shadowRoot!.querySelector<HTMLElement>('#activate');
+    assertTrue(!!activateButton);
+    assertEquals(
+        entry.i18n(
+            'searchEnginesActivateButtonAriaLabel', entry.engine.displayName),
+        activateButton.ariaLabel);
+
+    // More actions button
+    const menuButton = entry.shadowRoot!.querySelector<HTMLElement>(
+        'cr-icon-button.icon-more-vert');
+    assertTrue(!!menuButton);
+    assertEquals(
+        entry.i18n(
+            'searchEnginesMoreActionsAriaLabel', entry.engine.displayName),
+        menuButton.ariaLabel);
+  });
 });
 
 suite('OmniboxExtensionEntryTest', function() {
