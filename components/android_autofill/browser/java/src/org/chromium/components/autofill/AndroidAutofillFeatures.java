@@ -22,7 +22,7 @@ public class AndroidAutofillFeatures extends Features {
             "AndroidAutofillBottomSheetWorkaround";
     public static final String ANDROID_AUTOFILL_CANCEL_SESSION_ON_NAVIGATION_NAME =
             "AndroidAutofillCancelSessionOnNavigation";
-    public static final String ANDROID_AUTOFILL_DIRECT_FORM_SUBMISSION_NAME =
+    public static final String ANDROID_AUTOFILL_DIRECT_FORM_SUBMISSION =
             "AndroidAutofillDirectFormSubmission";
     public static final String ANDROID_AUTOFILL_PREFILL_REQUESTS_FOR_LOGIN_FORMS_NAME =
             "AndroidAutofillPrefillRequestsForLoginForms";
