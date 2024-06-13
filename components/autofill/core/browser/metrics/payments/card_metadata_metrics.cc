@@ -36,8 +36,12 @@ std::string_view GetMetadataAvailabilitySuffix(
 CardMetadataLoggingContext::CardMetadataLoggingContext() = default;
 CardMetadataLoggingContext::CardMetadataLoggingContext(
     const CardMetadataLoggingContext&) = default;
+CardMetadataLoggingContext::CardMetadataLoggingContext(
+    CardMetadataLoggingContext&&) = default;
 CardMetadataLoggingContext& CardMetadataLoggingContext::operator=(
     const CardMetadataLoggingContext&) = default;
+CardMetadataLoggingContext& CardMetadataLoggingContext::operator=(
+    CardMetadataLoggingContext&&) = default;
 CardMetadataLoggingContext::~CardMetadataLoggingContext() = default;
 
 bool CardMetadataLoggingContext::HasBenefitForInstrumentId(

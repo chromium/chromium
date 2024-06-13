@@ -57,7 +57,9 @@ using HasBeenLogged = base::StrongAlias<class HasBeenLoggedTag, bool>;
 struct CardMetadataLoggingContext {
   CardMetadataLoggingContext();
   CardMetadataLoggingContext(const CardMetadataLoggingContext&);
+  CardMetadataLoggingContext(CardMetadataLoggingContext&&);
   CardMetadataLoggingContext& operator=(const CardMetadataLoggingContext&);
+  CardMetadataLoggingContext& operator=(CardMetadataLoggingContext&&);
   ~CardMetadataLoggingContext();
 
   // Returns if the `issuer_id` has a displayed credit card benefit.
