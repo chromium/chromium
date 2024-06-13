@@ -1418,7 +1418,7 @@ void AXObject::Serialize(ui::AXNodeData* node_data,
     SerializeLiveRegionAttributes(node_data);
 
   SerializeOtherScreenReaderAttributes(node_data);
-
+  SerializeMathContent(node_data);
   SerializeAriaNotificationAttributes(
       AXObjectCache().RetrieveAriaNotifications(this), node_data);
 }
@@ -1622,17 +1622,6 @@ void AXObject::SerializeHTMLAttributes(ui::AXNodeData* node_data) const {
     std::string value = attr.Value().Utf8();
     node_data->html_attributes.push_back(std::make_pair(name, value));
   }
-
-// TODO(nektar): Turn off kHTMLAccessibilityMode for automation and Mac
-// and remove ifdef.
-#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_CHROMEOS)
-  if (node_data->role == ax::mojom::blink::Role::kMath ||
-      node_data->role == ax::mojom::blink::Role::kMathMLMath) {
-    TruncateAndAddStringAttribute(node_data,
-                                  ax::mojom::blink::StringAttribute::kInnerHtml,
-                                  element->innerHTML(), kMaxStaticTextLength);
-  }
-#endif
 }
 
 void AXObject::SerializeInlineTextBoxAttributes(
@@ -1994,6 +1983,19 @@ void AXObject::SerializeOtherScreenReaderAttributes(
     node_data->AddBoolAttribute(ax::mojom::blink::BoolAttribute::kModal,
                                 IsModal());
   }
+}
+
+void AXObject::SerializeMathContent(ui::AXNodeData* node_data) const {
+#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_CHROMEOS)
+  if (node_data->role == ax::mojom::blink::Role::kMath ||
+      node_data->role == ax::mojom::blink::Role::kMathMLMath) {
+    const Element* element = GetElement();
+    DCHECK(element);
+    TruncateAndAddStringAttribute(node_data,
+                                  ax::mojom::blink::StringAttribute::kInnerHtml,
+                                  element->innerHTML(), kMaxStaticTextLength);
+  }
+#endif
 }
 
 void AXObject::SerializeScrollAttributes(ui::AXNodeData* node_data) const {

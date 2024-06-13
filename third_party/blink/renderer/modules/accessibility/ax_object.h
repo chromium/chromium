@@ -1561,8 +1561,9 @@ class MODULES_EXPORT AXObject : public GarbageCollected<AXObject> {
   void SerializeLiveRegionAttributes(ui::AXNodeData* node_data) const;
   void SerializeNameAndDescriptionAttributes(ui::AXMode accessibility_mode,
                                              ui::AXNodeData* node_data) const;
-  void SerializeOtherScreenReaderAttributes(ui::AXNodeData* node_data) const;
   void SerializeScreenReaderAttributes(ui::AXNodeData* node_data) const;
+  void SerializeOtherScreenReaderAttributes(ui::AXNodeData* node_data) const;
+  void SerializeMathContent(ui::AXNodeData* node_data) const;
   void SerializeScrollAttributes(ui::AXNodeData* node_data) const;
   void SerializeSparseAttributes(ui::AXNodeData* node_data) const;
   void SerializeStyleAttributes(ui::AXNodeData* node_data) const;
