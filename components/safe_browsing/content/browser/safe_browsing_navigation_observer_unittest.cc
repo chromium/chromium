@@ -200,10 +200,10 @@ class SBNavigationObserverTest : public content::RenderViewHostTestHarness {
  protected:
   sync_preferences::TestingPrefServiceSyncable pref_service_;
   scoped_refptr<HostContentSettingsMap> settings_map_;
+  content::FakeServiceWorkerContext service_worker_context_;
   std::unique_ptr<SafeBrowsingNavigationObserverManager>
       navigation_observer_manager_;
   std::unique_ptr<SafeBrowsingNavigationObserver> navigation_observer_;
-  content::FakeServiceWorkerContext service_worker_context_;
 };
 
 TEST_F(SBNavigationObserverTest, TestNavigationEventList) {
