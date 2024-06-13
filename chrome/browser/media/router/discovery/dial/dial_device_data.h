@@ -57,9 +57,6 @@ class DialDeviceData {
   // Updates this DeviceData based on information from a new response in
   // |new_data|.  Returns |true| if a field was updated that is visible through
   // the DIAL API.
-  //
-  // TODO(crbug.com/1260555): Merge logic into operator== once we remove the
-  // extension-specific code that needs this.
   bool UpdateFrom(const DialDeviceData& new_data);
 
   // Validates that |url| is a valid URL for this device - either a device
