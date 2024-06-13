@@ -467,9 +467,17 @@ public class SyncPromoController {
     private boolean canShowRecentTabsPromo() {
         if (ChromeFeatureList.isEnabled(
                 ChromeFeatureList.REPLACE_SYNC_PROMOS_WITH_SIGN_IN_PROMOS)) {
-            HistorySyncHelper historySyncHelper = HistorySyncHelper.getForProfile(mProfile);
-            return !historySyncHelper.isHistorySyncDisabledByPolicy()
-                    && !historySyncHelper.didAlreadyOptIn();
+            final HistorySyncHelper historySyncHelper = HistorySyncHelper.getForProfile(mProfile);
+            final SigninManager signinManager =
+                    IdentityServicesProvider.get().getSigninManager(mProfile);
+            final IdentityManager identityManager =
+                    IdentityServicesProvider.get().getIdentityManager(mProfile);
+            if (!signinManager.isSigninAllowed()
+                    && !identityManager.hasPrimaryAccount(ConsentLevel.SIGNIN)) {
+                // If sign-in is not possible, then history sync isn't possible either.
+                return false;
+            }
+            return !historySyncHelper.shouldSuppressHistorySync();
         }
         return !SyncServiceFactory.getForProfile(mProfile)
                 .isTypeManagedByPolicy(UserSelectableType.TABS);
