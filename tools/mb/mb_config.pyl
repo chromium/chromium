@@ -671,7 +671,7 @@
     ],
 
     'official_android_arm64_pgo': [
-      'official', 'reclient', 'android', 'arm64', 'minimal_symbols', 'no_default_afdo', 'pgo_phase_1', 'stable_version_code', 'android_low_end',
+      'official', 'reclient', 'android', 'arm64', 'minimal_symbols', 'no_default_afdo', 'pgo_phase_1', 'stable_version_code',
     ],
 
     'official_celab_release_bot': [
@@ -766,6 +766,7 @@
     'official_reclient_mac_perf': [
       'official', 'reclient', 'no_keystone_registration_framework', 'no_widevine_cdm_host_verification', 'minimal_symbols', 'pgo_phase_0',
     ],
+
     'official_reclient_mac_perf_pgo': [
       'official', 'reclient', 'no_keystone_registration_framework', 'no_widevine_cdm_host_verification', 'minimal_symbols',
     ],
@@ -775,10 +776,11 @@
     ],
 
     'official_reclient_minimal_symbols_android_arm64_high_end': [
-      'official', 'reclient', 'minimal_symbols', 'android', 'arm64', 'pgo_phase_0', 'no_default_afdo', 'android_high_end',
+      'official', 'reclient', 'minimal_symbols', 'android', 'arm64', 'pgo_phase_0', 'no_default_afdo',
     ],
+
     'official_reclient_minimal_symbols_android_arm64_high_end_pgo': [
-      'official', 'reclient', 'minimal_symbols', 'android', 'arm64', 'no_default_afdo', 'android_high_end',
+      'official', 'reclient', 'minimal_symbols', 'android', 'arm64', 'no_default_afdo',
     ],
 
     'official_reclient_minimal_symbols_android_arm64_pgo': [
@@ -792,6 +794,7 @@
     'official_reclient_minimal_symbols_android_thin_lto_opt': [
       'official', 'reclient', 'minimal_symbols', 'android', 'thin_lto_opt', 'no_default_afdo'
     ],
+
     'official_reclient_minimal_symbols_android_thin_lto_opt_arm64': [
       'official', 'reclient', 'minimal_symbols', 'android', 'thin_lto_opt', 'arm64', 'no_default_afdo'
     ],
@@ -937,10 +940,6 @@
     # It's significantly faster to build without static analysis checks.
     'android_fastbuild': {
       'gn_args': 'android_static_analysis="off"',
-    },
-
-    'android_high_end': {
-      'gn_args': 'is_high_end_android=true',
     },
 
     'android_low_end': {
