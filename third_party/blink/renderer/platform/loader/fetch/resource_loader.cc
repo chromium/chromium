@@ -840,6 +840,8 @@ void ResourceLoader::DidReceiveResponseInternal(
   bool used_zstd = false;
   if (content_encoding.LowerASCII() == "zstd") {
     fetcher_->GetUseCounter().CountUse(WebFeature::kZstdContentEncoding);
+    fetcher_->GetUseCounter().CountUse(
+        WebFeature::kZstdContentEncodingForSubresource);
     used_zstd = true;
   }
 

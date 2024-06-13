@@ -3271,11 +3271,15 @@ void DocumentLoader::RecordUseCountersForCommit() {
       response_.HttpHeaderField(http_names::kContentEncoding);
   if (content_encoding.LowerASCII() == "zstd") {
     CountUse(WebFeature::kZstdContentEncoding);
+    CountUse(WebFeature::kZstdContentEncodingForNavigation);
     if (frame_->IsOutermostMainFrame()) {
+      CountUse(WebFeature::kZstdContentEncodingForMainFrameNavigation);
       ukm::builders::MainFrameNavigation_ZstdContentEncoding builder(
           ukm_source_id_);
       builder.SetUsedZstd(true);
       builder.Record(frame_->GetDocument()->UkmRecorder());
+    } else {
+      CountUse(WebFeature::kZstdContentEncodingForSubFrameNavigation);
     }
   }
   if (response_.DidUseSharedDictionary()) {
