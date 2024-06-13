@@ -119,10 +119,12 @@ suite('SidePanelPowerBookmarksListTest', () => {
   async function performSearch(query: string) {
     const searchField = powerBookmarksList.shadowRoot!.querySelector(
         'cr-toolbar-search-field')!;
+    const searchChanged = eventToPromise('search-changed', searchField);
     searchField.$.searchInput.value = query;
     searchField.onSearchTermInput();
     searchField.onSearchTermSearch();
 
+    await searchChanged;
     await flushTasks();
   }
 
