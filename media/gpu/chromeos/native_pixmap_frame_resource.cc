@@ -299,12 +299,6 @@ NativePixmapFrameResource::CreateGpuMemoryBufferHandle() const {
   return gmb_handle;
 }
 
-gfx::GpuMemoryBuffer* NativePixmapFrameResource::GetGpuMemoryBuffer() const {
-  // This accessor is used for frames with STORAGE_GPU_MEMORY_BUFFER. This class
-  // is coded to advertise STORAGE_DMABUFS, so this always returns nullptr.
-  return nullptr;
-}
-
 std::unique_ptr<VideoFrame::ScopedMapping>
 NativePixmapFrameResource::MapGMBOrSharedImage() const {
   // This accessor is used for frames with STORAGE_GPU_MEMORY_BUFFER. This class

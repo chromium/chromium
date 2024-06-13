@@ -38,7 +38,6 @@ class VideoFrameResource : public FrameResource {
   scoped_refptr<const gfx::NativePixmapDmaBuf> GetNativePixmapDmaBuf()
       const override;
   gfx::GpuMemoryBufferHandle CreateGpuMemoryBufferHandle() const override;
-  gfx::GpuMemoryBuffer* GetGpuMemoryBuffer() const override;
   std::unique_ptr<VideoFrame::ScopedMapping> MapGMBOrSharedImage()
       const override;
   gfx::GenericSharedMemoryId GetSharedMemoryId() const override;

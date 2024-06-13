@@ -78,8 +78,6 @@ class NativePixmapFrameResource : public FrameResource {
   // GetSharedMemoryId(). Doing this helps with identification of original
   // FrameResource from a VideoFrame produced by CreateVideoFrame().
   gfx::GpuMemoryBufferHandle CreateGpuMemoryBufferHandle() const override;
-  // GetGpuMemoryBuffer() returns nullptr.
-  gfx::GpuMemoryBuffer* GetGpuMemoryBuffer() const override;
   // Always returns nullptr.
   std::unique_ptr<VideoFrame::ScopedMapping> MapGMBOrSharedImage()
       const override;

@@ -81,10 +81,6 @@ gfx::GpuMemoryBufferHandle VideoFrameResource::CreateGpuMemoryBufferHandle()
   return media::CreateGpuMemoryBufferHandle(frame_.get());
 }
 
-gfx::GpuMemoryBuffer* VideoFrameResource::GetGpuMemoryBuffer() const {
-  return frame_->GetGpuMemoryBuffer();
-}
-
 std::unique_ptr<VideoFrame::ScopedMapping>
 VideoFrameResource::MapGMBOrSharedImage() const {
   return frame_->MapGMBOrSharedImage();
