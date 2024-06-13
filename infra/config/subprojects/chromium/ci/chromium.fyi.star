@@ -385,6 +385,42 @@ ci.thin_tester(
 )
 
 ci.builder(
+    name = "linux-multiscreen-fyi-rel",
+    description_html = (
+        "This builder is intended to run tests related to multiscreen " +
+        "functionality on Linux. For more info, see crbug.com/346565331."
+    ),
+    schedule = "with 5h interval",
+    triggered_by = [],
+    builder_spec = builder_config.builder_spec(
+        gclient_config = builder_config.gclient_config(
+            config = "chromium",
+        ),
+        chromium_config = builder_config.chromium_config(
+            config = "chromium",
+            apply_configs = ["mb"],
+            build_config = builder_config.build_config.RELEASE,
+            target_bits = 64,
+            target_platform = builder_config.target_platform.LINUX,
+        ),
+        build_gs_bucket = "chromium-fyi-archive",
+    ),
+    gn_args = gn_args.config(
+        configs = [
+            "release_builder_blink",
+            "remoteexec",
+            "minimal_symbols",
+        ],
+    ),
+    builderless = True,
+    os = os.LINUX_DEFAULT,
+    console_view_entry = consoles.console_view_entry(
+        category = "mulitscreen",
+    ),
+    contact_team_email = "web-windowing-team@google.com",
+)
+
+ci.builder(
     name = "linux-network-sandbox-rel",
     builder_spec = builder_config.builder_spec(
         gclient_config = builder_config.gclient_config(

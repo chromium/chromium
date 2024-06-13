@@ -251,6 +251,19 @@ try_.builder(
 )
 
 try_.builder(
+    name = "linux-multiscreen-fyi-rel",
+    description_html = (
+        "This builder is intended to run tests related to multiscreen " +
+        "functionality on Linux. For more info, see crbug.com/346565331."
+    ),
+    mirrors = [
+        "ci/linux-multiscreen-fyi-rel",
+    ],
+    gn_args = "ci/linux-multiscreen-fyi-rel",
+    contact_team_email = "web-windowing-team@google.com",
+)
+
+try_.builder(
     name = "linux-lacros-fyi-rel",
     mirrors = [
         "ci/linux-lacros-builder-fyi-rel",

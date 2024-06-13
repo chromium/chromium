@@ -443,6 +443,14 @@ targets.legacy_compound_suite(
     ],
 )
 
+# Multiscreen tests for desktop platforms. See: crbug.com/346565331.
+targets.legacy_compound_suite(
+    name = "chromium_multiscreen_gtests_fyi",
+    basic_suites = [
+        "chromium_multiscreen_gtests",
+    ],
+)
+
 # Pixel tests only enabled on Win 10. So this is
 # 'chromium_win_gtests' + 'pixel_browser_tests_gtests' +
 # 'non_android_chromium_gtests_skia_gold'. When changing

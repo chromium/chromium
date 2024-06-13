@@ -78,6 +78,7 @@ os = struct(
     # A migration off of bionic is in progress, builders identified in
     # linux-default.json will have a different os dimension
     LINUX_DEFAULT = os_enum(os_category.LINUX, "Ubuntu-22.04", json.decode(io.read_file("./linux-default.json"))),
+    LINUX_NOBLE = os_enum(os_category.LINUX, "Ubuntu-24.04"),
     LINUX_UBUNTU_ANY = os_enum(os_category.LINUX, "Ubuntu"),
     LINUX_ANY = os_enum(os_category.LINUX, "Linux"),
     MAC_10_15 = os_enum(os_category.MAC, "Mac-10.15"),

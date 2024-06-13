@@ -937,6 +937,15 @@ targets.mixin(
 )
 
 targets.mixin(
+    name = "linux-noble",
+    swarming = targets.swarming(
+        dimensions = {
+            "os": "Ubuntu-24.04",
+        },
+    ),
+)
+
+targets.mixin(
     name = "linux_amd_rx_5500_xt",
     swarming = targets.swarming(
         dimensions = {

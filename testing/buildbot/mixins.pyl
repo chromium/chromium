@@ -712,6 +712,13 @@
       },
     },
   },
+  'linux-noble': {
+    'swarming': {
+      'dimensions': {
+        'os': 'Ubuntu-24.04',
+      },
+    },
+  },
   'linux-xenial': {
     'swarming': {
       'dimensions': {

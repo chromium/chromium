@@ -1335,6 +1335,20 @@
       },
     },
 
+    'chromium_multiscreen_gtests': {
+      'multiscreen_interactive_ui_tests': {
+        'test': 'interactive_ui_tests',
+        'args': [
+          '--gtest_filter=*MultiScreen*:*VirtualDisplayUtil*',
+        ],
+        'swarming': {
+          'dimensions': {
+            'pool': 'chromium.tests.multiscreen',
+          },
+        },
+      },
+    },
+
     'chromium_web_tests_brfetch_isolated_scripts': {
       'brfetch_blink_web_tests': {
         'test': 'blink_web_tests',
@@ -5855,6 +5869,10 @@
       'mac_specific_isolated_scripts',
       'mojo_python_unittests_isolated_scripts',
       'telemetry_perf_unittests_isolated_scripts',
+    ],
+
+    'chromium_multiscreen_gtests_fyi': [
+      'chromium_multiscreen_gtests',
     ],
 
     'chromium_win10_gtests': [
