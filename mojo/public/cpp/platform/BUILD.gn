@@ -23,6 +23,11 @@ component("platform") {
     "platform_handle.cc",
   ]
 
+  if (is_android && !is_robolectric) {
+    public += [ "binder_exchange.h" ]
+    sources += [ "binder_exchange.cc" ]
+  }
+
   if (is_posix && !is_mac && !is_nacl) {
     public += [ "socket_utils_posix.h" ]
     sources += [ "socket_utils_posix.cc" ]
