@@ -5,7 +5,6 @@
 #include "content/browser/android/overscroll_controller_android.h"
 #include <memory>
 #include "base/memory/raw_ptr.h"
-#include "base/memory/raw_ptr_exclusion.h"
 #include "cc/input/overscroll_behavior.h"
 #include "cc/layers/layer.h"
 #include "testing/gmock/include/gmock/gmock.h"
@@ -117,9 +116,7 @@ class OverscrollControllerAndroidUnitTest : public testing::Test {
 
  protected:
   raw_ptr<MockGlow> glow_;
-  // This field is not a raw_ptr<> because it was filtered by the rewriter for:
-  // #addr-of
-  RAW_PTR_EXCLUSION MockRefresh* refresh_;
+  raw_ptr<MockRefresh> refresh_;
   std::unique_ptr<MockCompositor> compositor_;
   std::unique_ptr<OverscrollControllerAndroid> controller_;
   float dip_scale_;
