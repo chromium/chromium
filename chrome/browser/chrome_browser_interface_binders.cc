@@ -1413,12 +1413,6 @@ void PopulateChromeWebUIFrameBinders(
       read_anything::mojom::UntrustedPageHandlerFactory,
       ReadAnythingUntrustedUI>(map);
 
-  if (base::FeatureList::IsEnabled(
-          data_sharing::features::kDataSharingFeature)) {
-    RegisterWebUIControllerInterfaceBinder<
-        data_sharing::mojom::PageHandlerFactory, DataSharingUI>(map);
-  }
-
   RegisterWebUIControllerInterfaceBinder<tab_search::mojom::PageHandlerFactory,
                                          TabSearchUI>(map);
   RegisterWebUIControllerInterfaceBinder<
@@ -1977,6 +1971,13 @@ void PopulateChromeWebUIFrameInterfaceBrokers(
   if (base::FeatureList::IsEnabled(features::kHaTSWebUI)) {
     registry.ForWebUI<HatsUI>().Add<hats::mojom::PageHandlerFactory>();
   }
+
+  if (base::FeatureList::IsEnabled(
+          data_sharing::features::kDataSharingFeature)) {
+    registry.ForWebUI<DataSharingUI>()
+        .Add<data_sharing::mojom::PageHandlerFactory>();
+  }
+
 #endif  // !BUILDFLAG(IS_ANDROID)
 }
 

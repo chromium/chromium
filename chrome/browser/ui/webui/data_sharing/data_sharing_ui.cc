@@ -34,7 +34,7 @@ bool DataSharingUIConfig::IsWebUIEnabled(
 }
 
 DataSharingUI::DataSharingUI(content::WebUI* web_ui)
-    : TopChromeWebUIController(web_ui) {
+    : UntrustedTopChromeWebUIController(web_ui) {
   content::WebUIDataSource* source = content::WebUIDataSource::CreateAndAdd(
       web_ui->GetWebContents()->GetBrowserContext(),
       chrome::kChromeUIUntrustedDataSharingURL);

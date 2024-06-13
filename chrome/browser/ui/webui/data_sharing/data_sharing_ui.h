@@ -6,7 +6,7 @@
 #define CHROME_BROWSER_UI_WEBUI_DATA_SHARING_DATA_SHARING_UI_H_
 
 #include "chrome/browser/ui/webui/data_sharing/data_sharing.mojom.h"
-#include "chrome/browser/ui/webui/top_chrome/top_chrome_web_ui_controller.h"
+#include "chrome/browser/ui/webui/top_chrome/untrusted_top_chrome_web_ui_controller.h"
 #include "content/public/browser/webui_config.h"
 
 class DataSharingPageHandler;
@@ -23,7 +23,7 @@ class DataSharingUIConfig : public content::WebUIConfig {
   bool IsWebUIEnabled(content::BrowserContext* browser_context) override;
 };
 
-class DataSharingUI : public TopChromeWebUIController,
+class DataSharingUI : public UntrustedTopChromeWebUIController,
                       public data_sharing::mojom::PageHandlerFactory {
  public:
   explicit DataSharingUI(content::WebUI* web_ui);
