@@ -9,6 +9,7 @@
 
 #include "base/bits.h"
 #include "base/logging.h"
+#include "media/gpu/av1_builder.h"
 #include "media/gpu/macros.h"
 #include "media/gpu/vaapi/vaapi_common.h"
 #include "media/gpu/vaapi/vaapi_wrapper.h"
@@ -253,101 +254,6 @@ void DownscaleSegmentMap(const uint8_t* src_seg_map,
     }
   }
 }
-
-AV1BitstreamBuilder::SequenceHeader FillAV1BuilderSequenceHeader(
-    const gfx::Size& visible_size,
-    int level_idx) {
-  AV1BitstreamBuilder::SequenceHeader sequence_header;
-
-  // The only known hardware that supports AV1 encoding only uses profile 0.
-  sequence_header.profile = 0;
-  sequence_header.level = level_idx;
-  sequence_header.tier = 0;
-  sequence_header.frame_width_bits_minus_1 = 15;
-  sequence_header.frame_height_bits_minus_1 = 15;
-  sequence_header.width = visible_size.width() - 1;
-  sequence_header.height = visible_size.height() - 1;
-
-  sequence_header.use_128x128_superblock = false;
-  sequence_header.enable_filter_intra = false;
-  sequence_header.enable_intra_edge_filter = false;
-  sequence_header.enable_interintra_compound = false;
-  sequence_header.enable_masked_compound = false;
-  sequence_header.enable_warped_motion = false;
-  sequence_header.enable_dual_filter = false;
-  sequence_header.enable_order_hint = true;
-  sequence_header.enable_jnt_comp = false;
-  sequence_header.enable_ref_frame_mvs = false;
-  sequence_header.order_hint_bits_minus_1 = 7;
-  sequence_header.enable_superres = false;
-  sequence_header.enable_cdef = true;
-  sequence_header.enable_restoration = false;
-
-  return sequence_header;
-}
-
-AV1BitstreamBuilder::FrameHeader FillAV1BuilderFrameHeader(
-    const VAEncPictureParameterBufferAV1& pic_param,
-    const AV1VaapiVideoEncoderDelegate::EncodeParams& current_params) {
-  AV1BitstreamBuilder::FrameHeader pic_hdr;
-  libgav1::FrameType frame_type =
-      static_cast<libgav1::FrameType>(pic_param.picture_flags.bits.frame_type);
-  pic_hdr.frame_type = frame_type;
-  pic_hdr.error_resilient_mode =
-      pic_param.picture_flags.bits.error_resilient_mode;
-  pic_hdr.disable_cdf_update = pic_param.picture_flags.bits.disable_cdf_update;
-  pic_hdr.disable_frame_end_update_cdf =
-      pic_param.picture_flags.bits.disable_frame_end_update_cdf;
-  pic_hdr.base_qindex = pic_param.base_qindex;
-  pic_hdr.order_hint = pic_param.order_hint;
-  pic_hdr.filter_level[0] = pic_param.filter_level[0];
-  pic_hdr.filter_level[1] = pic_param.filter_level[1];
-  pic_hdr.filter_level_u = pic_param.filter_level_u;
-  pic_hdr.filter_level_v = pic_param.filter_level_v;
-  pic_hdr.sharpness_level = pic_param.loop_filter_flags.bits.sharpness_level;
-  // Disable loop filter delta.
-  pic_hdr.loop_filter_delta_enabled = false;
-  // Set primary reference frame to index 0.
-  // TODO(b:274756117): We may want to tune the reference frames.
-  pic_hdr.primary_ref_frame = 0;
-  // Set all reference frame indices to 0
-  for (uint8_t& ref_idx : pic_hdr.ref_frame_idx) {
-    ref_idx = 0;
-  }
-  // Refresh frame flags for last frame.
-  pic_hdr.refresh_frame_flags = 1 << (libgav1::kReferenceFrameLast - 1);
-  // Set order hint for each reference frame.
-  pic_hdr.ref_order_hint[0] = pic_param.order_hint - 1;
-  // Since we only use the last keyframe as the reference, these should
-  // always be 0.
-  for (int i = 1; i < libgav1::kNumReferenceFrameTypes; i++) {
-    pic_hdr.ref_order_hint[i] = 0;
-  }
-
-  for (size_t i = 0; i < ARRAY_SIZE(current_params.cdef_y_pri_strength); i++) {
-    pic_hdr.cdef_y_pri_strength[i] = current_params.cdef_y_pri_strength[i];
-    pic_hdr.cdef_y_sec_strength[i] = current_params.cdef_y_sec_strength[i];
-    pic_hdr.cdef_uv_pri_strength[i] = current_params.cdef_uv_pri_strength[i];
-    pic_hdr.cdef_uv_sec_strength[i] = current_params.cdef_uv_sec_strength[i];
-  }
-  pic_hdr.reduced_tx_set = pic_param.picture_flags.bits.reduced_tx_set;
-  pic_hdr.segmentation_enabled =
-      pic_param.segments.seg_flags.bits.segmentation_enabled;
-  if (pic_hdr.segmentation_enabled) {
-    pic_hdr.segment_number = pic_param.segments.segment_number;
-    pic_hdr.segmentation_update_map =
-        pic_param.segments.seg_flags.bits.segmentation_update_map;
-    pic_hdr.segmentation_temporal_update =
-        pic_param.segments.seg_flags.bits.segmentation_temporal_update;
-    pic_hdr.segmentation_update_data = true;
-    for (uint32_t i = 0; i < pic_hdr.segment_number; i++) {
-      pic_hdr.feature_data[i][0] = pic_param.segments.feature_data[i][0];
-      pic_hdr.feature_mask[i] = pic_param.segments.feature_mask[i];
-    }
-  }
-  return pic_hdr;
-}
-
 }  // namespace
 
 AV1VaapiVideoEncoderDelegate::EncodeParams::EncodeParams()
@@ -570,7 +476,6 @@ bool AV1VaapiVideoEncoderDelegate::SubmitTemporalDelimiter(
 
 bool AV1VaapiVideoEncoderDelegate::SubmitSequenceHeader(
     size_t& sequence_header_obu_size) {
-  sequence_header_ = FillAV1BuilderSequenceHeader(visible_size_, level_idx_);
   if (!SubmitSequenceParam()) {
     LOG(ERROR) << "Failed to submit sequence header";
     return false;
@@ -585,58 +490,47 @@ bool AV1VaapiVideoEncoderDelegate::SubmitSequenceHeader(
 
 // TODO(b:274756117): Consider tuning these parameters.
 bool AV1VaapiVideoEncoderDelegate::SubmitSequenceParam() {
-  VAEncSequenceParameterBufferAV1 seq_param;
-  memset(&seq_param, 0, sizeof(VAEncSequenceParameterBufferAV1));
+  memset(&seq_param_, 0, sizeof(VAEncSequenceParameterBufferAV1));
 
   // The only known hardware that supports AV1 encoding only uses profile 0.
-  seq_param.seq_profile = sequence_header_.profile;
-  seq_param.seq_level_idx = sequence_header_.level;
-  seq_param.seq_tier = sequence_header_.tier;
+  seq_param_.seq_profile = 0;
+  seq_param_.seq_level_idx = level_idx_;
+  seq_param_.seq_tier = 0;
 #if VA_CHECK_VERSION(1, 16, 0)
-  seq_param.hierarchical_flag = 0;
+  seq_param_.hierarchical_flag = 0;
 #endif
 
   // Period between keyframes.
-  seq_param.intra_period = current_params_.intra_period;
+  seq_param_.intra_period = current_params_.intra_period;
   // Period between an I or P frame and the next I or P frame. B frames aren't
   // enabled by default, so this parameter is generally 1.
-  seq_param.ip_period = 1;
+  seq_param_.ip_period = 1;
 
-  seq_param.bits_per_second = current_params_.bitrate_allocation.GetSumBps();
+  seq_param_.bits_per_second = current_params_.bitrate_allocation.GetSumBps();
 
-  seq_param.order_hint_bits_minus_1 = sequence_header_.order_hint_bits_minus_1;
+  seq_param_.order_hint_bits_minus_1 = 7;
 
-  seq_param.seq_fields.bits.still_picture = 0;
-  seq_param.seq_fields.bits.use_128x128_superblock =
-      sequence_header_.use_128x128_superblock;
-  seq_param.seq_fields.bits.enable_filter_intra =
-      sequence_header_.enable_filter_intra;
-  seq_param.seq_fields.bits.enable_intra_edge_filter =
-      sequence_header_.enable_intra_edge_filter;
-  seq_param.seq_fields.bits.enable_interintra_compound =
-      sequence_header_.enable_interintra_compound;
-  seq_param.seq_fields.bits.enable_masked_compound =
-      sequence_header_.enable_masked_compound;
-  seq_param.seq_fields.bits.enable_warped_motion =
-      sequence_header_.enable_warped_motion;
-  seq_param.seq_fields.bits.enable_dual_filter =
-      sequence_header_.enable_dual_filter;
-  seq_param.seq_fields.bits.enable_order_hint =
-      sequence_header_.enable_order_hint;
-  seq_param.seq_fields.bits.enable_jnt_comp = sequence_header_.enable_jnt_comp;
-  seq_param.seq_fields.bits.enable_ref_frame_mvs =
-      sequence_header_.enable_ref_frame_mvs;
-  seq_param.seq_fields.bits.enable_superres = sequence_header_.enable_superres;
-  seq_param.seq_fields.bits.enable_cdef = sequence_header_.enable_cdef;
-  seq_param.seq_fields.bits.enable_restoration =
-      sequence_header_.enable_restoration;
-  seq_param.seq_fields.bits.bit_depth_minus8 = 0;
-  seq_param.seq_fields.bits.subsampling_x = 1;
-  seq_param.seq_fields.bits.subsampling_y = 1;
+  seq_param_.seq_fields.bits.still_picture = 0;
+  seq_param_.seq_fields.bits.use_128x128_superblock = 0;
+  seq_param_.seq_fields.bits.enable_filter_intra = 0;
+  seq_param_.seq_fields.bits.enable_intra_edge_filter = 0;
+  seq_param_.seq_fields.bits.enable_interintra_compound = 0;
+  seq_param_.seq_fields.bits.enable_masked_compound = 0;
+  seq_param_.seq_fields.bits.enable_warped_motion = 0;
+  seq_param_.seq_fields.bits.enable_dual_filter = 0;
+  seq_param_.seq_fields.bits.enable_order_hint = 1;
+  seq_param_.seq_fields.bits.enable_jnt_comp = 0;
+  seq_param_.seq_fields.bits.enable_ref_frame_mvs = 0;
+  seq_param_.seq_fields.bits.enable_superres = 0;
+  seq_param_.seq_fields.bits.enable_cdef = 1;
+  seq_param_.seq_fields.bits.enable_restoration = 0;
+  seq_param_.seq_fields.bits.bit_depth_minus8 = 0;
+  seq_param_.seq_fields.bits.subsampling_x = 1;
+  seq_param_.seq_fields.bits.subsampling_y = 1;
 
   return vaapi_wrapper_->SubmitBuffer(VAEncSequenceParameterBufferType,
                                       sizeof(VAEncSequenceParameterBufferAV1),
-                                      &seq_param);
+                                      &seq_param_);
 }
 
 bool AV1VaapiVideoEncoderDelegate::SubmitSequenceHeaderOBU(
@@ -647,17 +541,78 @@ bool AV1VaapiVideoEncoderDelegate::SubmitSequenceHeaderOBU(
       /*type=*/libgav1::ObuType::kObuSequenceHeader,
       /*extension_flag=*/false,
       /*has_size=*/true);
+  std::vector<uint8_t> packed_sequence_data = PackSequenceHeader();
 
-  AV1BitstreamBuilder obu_data =
-      AV1BitstreamBuilder::BuildSequenceHeaderOBU(sequence_header_);
-  sequence_header_obu.WriteValueInLeb128(obu_data.OutstandingBits() / 8);
-  sequence_header_obu.AppendBitstreamBuffer(std::move(obu_data));
+  sequence_header_obu.WriteValueInLeb128(packed_sequence_data.size());
 
   std::vector<uint8_t> sequence_header_obu_data =
       std::move(sequence_header_obu).Flush();
+  sequence_header_obu_data.insert(
+      sequence_header_obu_data.end(),
+      std::make_move_iterator(packed_sequence_data.begin()),
+      std::make_move_iterator(packed_sequence_data.end()));
 
   sequence_header_obu_size = sequence_header_obu_data.size();
   return SubmitPackedData(sequence_header_obu_data);
+}
+
+// See AV1 specification 5.5.1
+std::vector<uint8_t> AV1VaapiVideoEncoderDelegate::PackSequenceHeader() const {
+  AV1BitstreamBuilder ret;
+
+  ret.Write(seq_param_.seq_profile, 3);
+  ret.WriteBool(seq_param_.seq_fields.bits.still_picture);
+  ret.WriteBool(false);  // Disable reduced still picture.
+  ret.WriteBool(false);  // No timing info present.
+  ret.WriteBool(false);  // No initial display delay.
+  ret.Write(0, 5);       // One operating point.
+  ret.Write(0, 12);  // No scalability information (operating_point_idc[0] = 0)
+  ret.Write(level_idx_, 5);
+  if (level_idx_ > 7) {
+    ret.WriteBool(seq_param_.seq_tier);
+  }
+
+  ret.Write(15, 4);                           // Width bits minus 1
+  ret.Write(15, 4);                           // Height bits minus 1
+  ret.Write(visible_size_.width() - 1, 16);   // Max frame width minus 1
+  ret.Write(visible_size_.height() - 1, 16);  // Max frame height minus 1
+
+  ret.WriteBool(false);  // No frame IDs present
+  ret.WriteBool(seq_param_.seq_fields.bits.use_128x128_superblock);
+  ret.WriteBool(seq_param_.seq_fields.bits.enable_filter_intra);
+  ret.WriteBool(seq_param_.seq_fields.bits.enable_intra_edge_filter);
+  ret.WriteBool(seq_param_.seq_fields.bits.enable_interintra_compound);
+  ret.WriteBool(seq_param_.seq_fields.bits.enable_masked_compound);
+  ret.WriteBool(seq_param_.seq_fields.bits.enable_warped_motion);
+  ret.WriteBool(seq_param_.seq_fields.bits.enable_dual_filter);
+  ret.WriteBool(seq_param_.seq_fields.bits.enable_order_hint);
+  ret.WriteBool(seq_param_.seq_fields.bits.enable_jnt_comp);
+  ret.WriteBool(seq_param_.seq_fields.bits.enable_ref_frame_mvs);
+  ret.WriteBool(true);  // Enable sequence choose screen content tools
+
+  ret.WriteBool(false);  // Disable sequence choose integer MV
+  ret.WriteBool(false);  // Disable sequence force integer MV
+
+  ret.Write(seq_param_.order_hint_bits_minus_1, 3);
+
+  ret.WriteBool(seq_param_.seq_fields.bits.enable_superres);
+  ret.WriteBool(seq_param_.seq_fields.bits.enable_cdef);
+  ret.WriteBool(seq_param_.seq_fields.bits.enable_restoration);
+
+  ret.WriteBool(false);  // Disable high bit depth.
+
+  ret.WriteBool(false);  // Disable monochrome
+  ret.WriteBool(false);  // No color description present
+  ret.WriteBool(false);  // No color range
+  ret.Write(0, 2);       // Chroma sample position = 0
+
+  ret.WriteBool(true);  // Separate UV delta Q
+
+  ret.WriteBool(false);  // Disable film grain
+
+  ret.WriteBool(true);  // Trailing bit must be 1 per 5.3.4
+
+  return std::move(ret).Flush();
 }
 
 bool AV1VaapiVideoEncoderDelegate::SubmitFrame(const EncodeJob& job,
@@ -920,12 +875,153 @@ bool AV1VaapiVideoEncoderDelegate::SubmitFrameOBU(
                            /*has_size=*/true);
   frame_header_obu_size_offset = frame_obu.OutstandingBits() / 8;
 
-  AV1BitstreamBuilder obu_data = AV1BitstreamBuilder::BuildFrameHeaderOBU(
-      sequence_header_, FillAV1BuilderFrameHeader(pic_param, current_params_));
-  frame_obu.WriteValueInLeb128(obu_data.OutstandingBits() / 8, 4);
-  frame_obu.AppendBitstreamBuffer(std::move(obu_data));
+  std::vector<uint8_t> frame_header_data = PackFrameHeader(pic_param);
+  frame_obu.WriteValueInLeb128(frame_header_data.size(), 4);
+  std::vector<uint8_t> frame_obu_data = std::move(frame_obu).Flush();
+  frame_obu_data.insert(frame_obu_data.end(),
+                        std::make_move_iterator(frame_header_data.begin()),
+                        std::make_move_iterator(frame_header_data.end()));
 
-  return SubmitPackedData(std::move(frame_obu).Flush());
+  return SubmitPackedData(frame_obu_data);
+}
+
+// See AV1 specification 5.9.2
+// Sensible default values for most parameters taken from
+// https://github.com/intel/libva-utils/blob/master/encode/av1encode.c
+std::vector<uint8_t> AV1VaapiVideoEncoderDelegate::PackFrameHeader(
+    const VAEncPictureParameterBufferAV1& pic_param) const {
+  AV1BitstreamBuilder ret;
+  libgav1::FrameType frame_type =
+      static_cast<libgav1::FrameType>(pic_param.picture_flags.bits.frame_type);
+
+  ret.WriteBool(false);  // Disable show existing frame
+
+  ret.Write(frame_type, 2);  // Frame type
+
+  ret.WriteBool(true);  // Enable show frame
+
+  if (frame_type != libgav1::FrameType::kFrameKey) {
+    ret.WriteBool(pic_param.picture_flags.bits.error_resilient_mode);
+  }
+
+  ret.Write(pic_param.picture_flags.bits.disable_cdf_update, 1);
+  ret.WriteBool(false);  // Disable allow screen content tools
+  ret.WriteBool(false);  // Disable frame size override flag
+
+  ret.Write(pic_param.order_hint, 8);
+
+  if (frame_type != libgav1::FrameType::kFrameKey) {
+    // TODO(b:274756117): We may want to tune the reference frames
+    if (!pic_param.picture_flags.bits.error_resilient_mode) {
+      ret.Write(0, 3);  // Set primary reference frame to index 0
+    }
+    ret.Write(1 << (libgav1::kReferenceFrameLast - 1),
+              libgav1::kNumReferenceFrameTypes);  // Refresh frame flags for
+                                                  // last frame
+
+    if (pic_param.picture_flags.bits.error_resilient_mode) {
+      // Set order hint for each reference frame.
+      // Since we only use the last keyframe as the reference, these should
+      // always be 0.
+      ret.Write(frame_num_ - 1, 8);
+      for (int i = 1; i < libgav1::kNumReferenceFrameTypes; i++) {
+        ret.Write(0, 8);
+      }
+    }
+
+    ret.WriteBool(false);  // Disable frame reference short signaling
+    for (int i = 0; i < libgav1::kNumInterReferenceFrameTypes; i++) {
+      ret.Write(0, 3);  // Set all reference frame indices to 0
+    }
+    ret.WriteBool(false);  // Render and frame size are the same
+    ret.WriteBool(false);  // No allow high precision MV
+    ret.WriteBool(false);  // Filter not switchable
+    ret.Write(0, 2);       // Set interpolation filter to 0
+    ret.WriteBool(false);  // Motion not switchable
+  } else {
+    ret.WriteBool(false);  // Render and frame size are the same
+  }
+
+  ret.Write(pic_param.picture_flags.bits.disable_frame_end_update_cdf, 1);
+
+  // Pack tile info
+  ret.WriteBool(true);   // Uniform tile spacing
+  ret.WriteBool(false);  // Don't increment log2 of tile cols
+  ret.WriteBool(false);  // Don't increment log2 of tile rows
+
+  // Pack quantization parameters.
+  ret.Write(pic_param.base_qindex, 8);
+  ret.WriteBool(false);  // No DC Y delta Q
+  ret.WriteBool(false);  // U and V delta Q is same
+  ret.WriteBool(false);  // No DC U delta Q
+  ret.WriteBool(false);  // No AC U delta Q
+  ret.WriteBool(false);  // No Qmatrix
+
+  // Pack segmentation parameters
+  ret.WriteBool(true);  // Enable segmentation
+  if (pic_param.primary_ref_frame != kPrimaryReferenceNone) {
+    ret.WriteBool(true);   // Update segment map
+    ret.WriteBool(false);  // Temporal update false
+    ret.WriteBool(true);   // Update segment data
+  }
+  for (int i = 0; i < libgav1::kMaxSegments; i++) {
+    for (int j = 0; j < libgav1::kSegmentFeatureMax; j++) {
+      if (i < pic_param.segments.segment_number &&
+          (pic_param.segments.feature_mask[i] & (1u << j))) {
+        CHECK_EQ(j, libgav1::kSegmentFeatureQuantizer);
+
+        // This is the delta Q feature
+        ret.WriteBool(true);  // Feature enabled
+        int delta_q = pic_param.segments.feature_data[i][j];
+        ret.WriteBool(delta_q < 0);  // Sign bit
+        if (delta_q < 0) {
+          delta_q += 2 * (1 << 8);
+        }
+        ret.Write(delta_q, 8);  // Write the unsigned value
+      } else {
+        ret.WriteBool(false);  // Feature disabled
+      }
+    }
+  }
+
+  ret.WriteBool(false);  // No delta q present
+
+  // Pack loop filter parameters
+  ret.Write(pic_param.filter_level[0], 6);
+  ret.Write(pic_param.filter_level[1], 6);
+  ret.Write(pic_param.filter_level_u, 6);
+  ret.Write(pic_param.filter_level_v, 6);
+  ret.Write(pic_param.loop_filter_flags.bits.sharpness_level,
+            3);  // Set loop filter sharpness to 0
+  ret.Write(pic_param.loop_filter_flags.bits.mode_ref_delta_enabled,
+            1);  // Disable loop filter delta
+
+  // Pack CDEF parameters
+  ret.Write(2, 2);  // Set CDEF damping minus 3 to 5 - 3
+  ret.Write(3, 2);  // Set CDEF bits to 3
+  for (size_t i = 0; i < ARRAY_SIZE(current_params_.cdef_y_pri_strength); i++) {
+    ret.Write(current_params_.cdef_y_pri_strength[i], 4);
+    ret.Write(current_params_.cdef_y_sec_strength[i], 2);
+    ret.Write(current_params_.cdef_uv_pri_strength[i], 4);
+    ret.Write(current_params_.cdef_uv_sec_strength[i], 2);
+  }
+
+  ret.WriteBool(true);  // TxMode TX_MODE_SELECT
+
+  if (frame_type != libgav1::FrameType::kFrameKey) {
+    ret.WriteBool(false);  // Disable reference select
+  }
+
+  ret.WriteBool(true);  // Enabled reduced TX
+
+  if (frame_type != libgav1::FrameType::kFrameKey) {
+    for (int i = libgav1::kReferenceFrameLast;
+         i <= libgav1::kReferenceFrameAlternate; i++) {
+      ret.WriteBool(false);  // Set is_global[] to all zeros
+    }
+  }
+
+  return std::move(ret).Flush();
 }
 
 bool AV1VaapiVideoEncoderDelegate::SubmitPictureParam(
