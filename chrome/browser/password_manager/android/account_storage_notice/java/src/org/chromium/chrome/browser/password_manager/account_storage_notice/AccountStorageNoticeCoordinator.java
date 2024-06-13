@@ -8,11 +8,14 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.view.View;
 
+import androidx.annotation.IntDef;
 import androidx.annotation.Nullable;
+import androidx.annotation.VisibleForTesting;
 
 import org.jni_zero.CalledByNative;
 import org.jni_zero.NativeMethods;
 
+import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.password_manager.account_storage_toggle.AccountStorageToggleFragmentArgs;
 import org.chromium.chrome.browser.preferences.Pref;
@@ -26,13 +29,46 @@ import org.chromium.components.browser_ui.settings.SettingsLauncher.SettingsFrag
 import org.chromium.components.prefs.PrefService;
 import org.chromium.ui.base.WindowAndroid;
 
+import java.lang.annotation.Retention;
+import java.lang.annotation.RetentionPolicy;
+
 /** Coordinator for the UI described in account_storage_notice.h, meant to be used from native. */
 class AccountStorageNoticeCoordinator extends EmptyBottomSheetObserver {
+    // The reason the notice was closed.
+    // These values are persisted to logs. Entries should not be renumbered and numeric values
+    // should never be reused. Keep in sync with AndroidAccountStorageNoticeCloseReason in
+    // tools/metrics/histograms/metadata/password/enums.xml.
+    @IntDef({
+        CloseReason.OTHER,
+        CloseReason.USER_DISMISSED,
+        CloseReason.USER_CLICKED_GOT_IT,
+        CloseReason.USER_CLICKED_SETTINGS,
+        CloseReason.EMBEDDER_REQUESTED,
+    })
+    @Retention(RetentionPolicy.SOURCE)
+    @VisibleForTesting
+    public @interface CloseReason {
+        int OTHER = 0;
+        // Dismissed by swiping or back pressing.
+        int USER_DISMISSED = 1;
+        int USER_CLICKED_GOT_IT = 2;
+        int USER_CLICKED_SETTINGS = 3;
+        // Embedder requested the notice to close via hideImmediatelyIfShowing(). In practice this
+        // means the tab was closed.
+        int EMBEDDER_REQUESTED = 4;
+        int MAX_VALUE = EMBEDDER_REQUESTED;
+    }
+
+    @VisibleForTesting
+    public static final String CLOSE_REASON_METRIC =
+            "PasswordManager.AndroidAccountStorageNotice.CloseReason";
+
     private final SettingsLauncher mSettingsLauncher;
     private final WindowAndroid mWindowAndroid;
     private final AccountStorageNoticeView mView;
 
     private long mNativeCoordinatorObserver;
+    private @CloseReason int mCloseReason = CloseReason.OTHER;
 
     // Impl note: hasChosenToSyncPasswords() and isGmsCoreUpdateRequired() can't be easily called
     // here (even if the predicates are moved to different targets to avoid cyclic dependencies,
@@ -94,6 +130,7 @@ class AccountStorageNoticeCoordinator extends EmptyBottomSheetObserver {
     public void hideImmediatelyIfShowing() {
         BottomSheetController controller = BottomSheetControllerProvider.from(mWindowAndroid);
         if (controller.getCurrentSheetContent() == mView) {
+            mCloseReason = CloseReason.EMBEDDER_REQUESTED;
             controller.hideContent(mView, /* animate= */ false);
         }
     }
@@ -104,6 +141,15 @@ class AccountStorageNoticeCoordinator extends EmptyBottomSheetObserver {
         // This waits for the sheet to close, then stops the observation and notifies native.
         if (newState == SheetState.HIDDEN) {
             BottomSheetControllerProvider.from(mWindowAndroid).removeObserver(this);
+
+            if (mCloseReason == CloseReason.OTHER
+                    && (reason == StateChangeReason.SWIPE
+                            || reason == StateChangeReason.BACK_PRESS)) {
+                mCloseReason = CloseReason.USER_DISMISSED;
+            }
+            RecordHistogram.recordEnumeratedHistogram(
+                    CLOSE_REASON_METRIC, mCloseReason, CloseReason.MAX_VALUE + 1);
+
             if (mNativeCoordinatorObserver != 0) {
                 AccountStorageNoticeCoordinatorJni.get().onClosed(mNativeCoordinatorObserver);
             }
@@ -111,6 +157,7 @@ class AccountStorageNoticeCoordinator extends EmptyBottomSheetObserver {
     }
 
     private void onButtonClicked() {
+        mCloseReason = CloseReason.USER_CLICKED_GOT_IT;
         BottomSheetControllerProvider.from(mWindowAndroid).hideContent(mView, /* animate= */ true);
         // onSheetStateChanged() will take care of notifying native.
     }
@@ -134,6 +181,7 @@ class AccountStorageNoticeCoordinator extends EmptyBottomSheetObserver {
     private void onSettingsClosed(int resultCode, Intent unused) {
         // Note: closing settings via user interaction should map to Activity.RESULT_CANCELED here,
         // but we want to hide the sheet no matter what `resultCode` is.
+        mCloseReason = CloseReason.USER_CLICKED_SETTINGS;
         BottomSheetControllerProvider.from(mWindowAndroid).hideContent(mView, /* animate= */ true);
         // onSheetStateChanged() will take care of notifying native.
     }

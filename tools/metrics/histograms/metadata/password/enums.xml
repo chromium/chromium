@@ -78,6 +78,14 @@ chromium-metrics-reviews@google.com.
   <int value="2" label="Malformed response"/>
 </enum>
 
+<enum name="AndroidAccountStorageNoticeCloseReason">
+  <int value="0" label="Other"/>
+  <int value="1" label="User dismissed by swiping or back pressing"/>
+  <int value="2" label="User clicked the 'Got it' button"/>
+  <int value="3" label="User clicked the 'settings' link"/>
+  <int value="4" label="Embedder requested (in practice, tab closed)"/>
+</enum>
+
 <enum name="AuthenticationResultStatusWin">
   <summary>Result of authenticating using Windows Hello.</summary>
   <int value="0" label="User verified successfully."/>
