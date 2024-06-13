@@ -1,7 +1,8 @@
 include_rules = [
+    "+chrome/updater",
     "+components/named_mojo_ipc_server",
     "+components/named_system_lock",
     "+components/policy",
-    "+chrome/updater",
     "+mojo",
+    "+services/network/public/cpp",
 ]

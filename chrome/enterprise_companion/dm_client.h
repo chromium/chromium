@@ -1,0 +1,58 @@
+// Copyright 2024 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+#ifndef CHROME_ENTERPRISE_COMPANION_DM_CLIENT_H_
+#define CHROME_ENTERPRISE_COMPANION_DM_CLIENT_H_
+
+#include <memory>
+
+#include "base/functional/callback_forward.h"
+#include "base/memory/scoped_refptr.h"
+#include "chrome/enterprise_companion/device_management_storage/dm_storage.h"
+#include "components/policy/core/common/cloud/cloud_policy_constants.h"
+#include "components/policy/core/common/cloud/device_management_service.h"
+
+namespace network {
+class PendingSharedURLLoaderFactory;
+}
+
+namespace policy {
+class CloudPolicyClient;
+}  // namespace policy
+
+namespace enterprise_companion {
+
+using CloudPolicyClientProvider =
+    base::OnceCallback<std::unique_ptr<policy::CloudPolicyClient>(
+        policy::DeviceManagementService* dm_service)>;
+
+class DMClient {
+ public:
+  virtual ~DMClient() = default;
+
+  // Register the browser with the enrollment token from storage. Posts
+  // `callback` to the current sequence with the result of the operation.
+  virtual void RegisterBrowser(
+      base::OnceCallback<void(policy::DeviceManagementStatus)> callback) = 0;
+};
+
+CloudPolicyClientProvider GetDefaultCloudPolicyClientProvider(
+    std::unique_ptr<network::PendingSharedURLLoaderFactory>
+        pending_shared_url_loader_factory);
+
+std::unique_ptr<policy::DeviceManagementService::Configuration>
+CreateDeviceManagementServiceConfig();
+
+// Creates a DMClient. |cloud_policy_client_provider| is used to construct the
+// underlying CloudPolicyClient on a separate sequence.
+std::unique_ptr<DMClient> CreateDMClient(
+    CloudPolicyClientProvider cloud_policy_client_provider,
+    scoped_refptr<device_management_storage::DMStorage> dm_storage =
+        device_management_storage::GetDefaultDMStorage(),
+    std::unique_ptr<policy::DeviceManagementService::Configuration> config =
+        CreateDeviceManagementServiceConfig());
+
+}  // namespace enterprise_companion
+
+#endif  // CHROME_ENTERPRISE_COMPANION_DM_CLIENT_H_
