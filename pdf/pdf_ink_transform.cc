@@ -39,4 +39,54 @@ gfx::PointF EventPositionToCanonicalPosition(const gfx::PointF& event_position,
   return page_position;
 }
 
+InkAffineTransform GetInkRenderTransform(
+    const gfx::Vector2dF& viewport_origin_offset,
+    PageOrientation orientation,
+    const gfx::Rect& page_content_rect,
+    float scale_factor) {
+  CHECK_GE(viewport_origin_offset.x(), 0.0f);
+  CHECK_GE(viewport_origin_offset.y(), 0.0f);
+  CHECK_GT(scale_factor, 0.0f);
+  CHECK(!page_content_rect.IsEmpty());
+  float dx = viewport_origin_offset.x() + page_content_rect.x();
+  float dy = viewport_origin_offset.y() + page_content_rect.y();
+  InkAffineTransform transform;
+
+  switch (orientation) {
+    case PageOrientation::kOriginal:
+      transform.a = scale_factor;
+      transform.b = 0;
+      transform.c = dx;
+      transform.d = 0;
+      transform.e = scale_factor;
+      transform.f = dy;
+      break;
+    case PageOrientation::kClockwise90:
+      transform.a = 0;
+      transform.b = -scale_factor;
+      transform.c = dx + page_content_rect.width() - 1;
+      transform.d = scale_factor;
+      transform.e = 0;
+      transform.f = dy;
+      break;
+    case PageOrientation::kClockwise180:
+      transform.a = -scale_factor;
+      transform.b = 0;
+      transform.c = dx + page_content_rect.width() - 1;
+      transform.d = 0;
+      transform.e = -scale_factor;
+      transform.f = dy + page_content_rect.height() - 1;
+      break;
+    case PageOrientation::kClockwise270:
+      transform.a = 0;
+      transform.b = scale_factor;
+      transform.c = dx;
+      transform.d = -scale_factor;
+      transform.e = 0;
+      transform.f = dy + page_content_rect.height() - 1;
+      break;
+  }
+  return transform;
+}
+
 }  // namespace chrome_pdf

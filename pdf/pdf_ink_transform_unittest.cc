@@ -6,11 +6,13 @@
 
 #include <array>
 
+#include "pdf/ink/ink_affine_transform.h"
 #include "pdf/page_orientation.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/gfx/geometry/point_f.h"
 #include "ui/gfx/geometry/rect.h"
 #include "ui/gfx/geometry/size.h"
+#include "ui/gfx/geometry/vector2d_f.h"
 
 namespace chrome_pdf {
 
@@ -36,6 +38,9 @@ constexpr gfx::Rect kPageContentAreaPortraitNoOffset2x(gfx::Point(),
                                                        kPageSizePortrait2x);
 constexpr gfx::Rect kPageContentAreaLandscapeNoOffset(gfx::Point(),
                                                       kPageSizeLandscape);
+
+// Viewport origin offset used in tests.
+constexpr gfx::Vector2dF kViewportOriginOffsetNone;
 
 // Sample input positions in screen-based coordinates, based upon the standard
 // page size.
@@ -66,6 +71,18 @@ struct InputOutputPair {
 };
 
 }  // namespace
+
+bool operator==(const InkAffineTransform& lhs, const InkAffineTransform& rhs) {
+  return lhs.a == rhs.a && lhs.b == rhs.b && lhs.c == rhs.c && lhs.d == rhs.d &&
+         lhs.e == rhs.e && lhs.f == rhs.f;
+}
+
+// Supports pretty-printing transforms for test failures.
+void PrintTo(const InkAffineTransform& transform, std::ostream* os) {
+  *os << base::StringPrintf("[ %f, %f, %f, %f, %f, %f ]", transform.a,
+                            transform.b, transform.c, transform.d, transform.e,
+                            transform.f);
+}
 
 TEST(PdfInkTransformTest, EventPositionToCanonicalPositionIdentity) {
   constexpr auto kInputsAndOutputs = std::to_array<InputOutputPair>({
@@ -194,6 +211,79 @@ TEST(PdfInkTransformTest,
             gfx::Rect(kPageContentRectOrigin, kPageSizeLandscape2x),
             kScaleFactor2x));
   }
+}
+
+TEST(PdfInkTransformTest, RenderTransformIdentity) {
+  EXPECT_EQ(InkAffineTransform(1.0f, 0.0f, 0.0f, 0.0f, 1.0f, 0.0f),
+            GetInkRenderTransform(
+                kViewportOriginOffsetNone, PageOrientation::kOriginal,
+                kPageContentAreaPortraitNoOffset, kScaleFactor1x));
+}
+
+TEST(PdfInkTransformTest, RenderTransformZoom) {
+  EXPECT_EQ(InkAffineTransform(2.0f, 0.0f, 0.0f, 0.0f, 2.0f, 0.0f),
+            GetInkRenderTransform(
+                kViewportOriginOffsetNone, PageOrientation::kOriginal,
+                kPageContentAreaPortraitNoOffset2x, kScaleFactor2x));
+}
+
+TEST(PdfInkTransformTest, RenderTransformRotateClockwise90) {
+  EXPECT_EQ(InkAffineTransform(0.0f, -1.0f, 59.0f, 1.0f, 0.0f, 0.0f),
+            GetInkRenderTransform(
+                kViewportOriginOffsetNone, PageOrientation::kClockwise90,
+                kPageContentAreaLandscapeNoOffset, kScaleFactor1x));
+}
+
+TEST(PdfInkTransformTest, RenderTransformRotateClockwise180) {
+  EXPECT_EQ(InkAffineTransform(-1.0f, 0.0f, 49.0f, 0.0f, -1.0f, 59.0f),
+            GetInkRenderTransform(
+                kViewportOriginOffsetNone, PageOrientation::kClockwise180,
+                kPageContentAreaPortraitNoOffset, kScaleFactor1x));
+}
+
+TEST(PdfInkTransformTest, RenderTransformRotateClockwise270) {
+  EXPECT_EQ(InkAffineTransform(0.0f, 1.0f, 0.0f, -1.0f, 0.0f, 49.0f),
+            GetInkRenderTransform(
+                kViewportOriginOffsetNone, PageOrientation::kClockwise270,
+                kPageContentAreaLandscapeNoOffset, kScaleFactor1x));
+}
+
+TEST(PdfInkTransformTest, RenderTransformScrolled) {
+  EXPECT_EQ(
+      InkAffineTransform(1.0f, 0.0f, -8.0f, 0.0f, 1.0f, -14.0f),
+      GetInkRenderTransform(
+          kViewportOriginOffsetNone, PageOrientation::kOriginal,
+          /*page_content_rect=*/
+          gfx::Rect(gfx::Point(-8, -14), kPageSizePortrait), kScaleFactor1x));
+}
+
+TEST(PdfInkTransformTest, RenderTransformOffsetScrolled) {
+  EXPECT_EQ(
+      InkAffineTransform(1.0f, 0.0f, 18.0f, 0.0f, 1.0f, 10.0f),
+      GetInkRenderTransform(
+          /*viewport_origin_offset=*/gfx::Vector2dF(18.0f, 24.0f),
+          PageOrientation::kOriginal,
+          /*page_content_rect=*/
+          gfx::Rect(gfx::Point(0, -14), kPageSizePortrait), kScaleFactor1x));
+}
+
+TEST(PdfInkTransformTest, RenderTransformZoomScrolledClockwise90) {
+  EXPECT_EQ(InkAffineTransform(0.0f, -2.0f, 103.0f, 2.0f, 0.0f, -28.0f),
+            GetInkRenderTransform(
+                kViewportOriginOffsetNone, PageOrientation::kClockwise90,
+                /*page_content_rect=*/
+                gfx::Rect(gfx::Point(-16, -28), kPageSizeLandscape2x),
+                kScaleFactor2x));
+}
+
+TEST(PdfInkTransformTest, RenderTransformOffsetZoomScrolledClockwise90) {
+  EXPECT_EQ(
+      InkAffineTransform(0.0f, -2.0f, 137.0f, 2.0f, 0.0f, -4.0f),
+      GetInkRenderTransform(
+          /*viewport_origin_offset=*/gfx::Vector2dF(18.0f, 24.0f),
+          PageOrientation::kClockwise90,
+          /*page_content_rect=*/
+          gfx::Rect(gfx::Point(0, -28), kPageSizeLandscape2x), kScaleFactor2x));
 }
 
 }  // namespace chrome_pdf
