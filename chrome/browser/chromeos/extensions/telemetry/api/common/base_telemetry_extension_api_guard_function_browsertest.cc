@@ -902,8 +902,9 @@ IN_PROC_BROWSER_TEST_F(TelemetryExtensionApiGuardRealDelegateBrowserTest,
 
 // Verify that manufacturer will be cached and only one call to probe service
 // will be made.
+// TODO(b/346211419): The test shows excessive flakiness.
 IN_PROC_BROWSER_TEST_F(TelemetryExtensionApiGuardRealDelegateBrowserTest,
-                       UseCacheForMultipleApiAccess) {
+                       DISABLED_UseCacheForMultipleApiAccess) {
   SetUpProbeService();
 
 #if BUILDFLAG(IS_CHROMEOS_LACROS)
