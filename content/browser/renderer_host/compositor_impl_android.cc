@@ -105,12 +105,9 @@ gpu::SharedMemoryLimits GetCompositorContextSharedMemoryLimits(
   return gpu::SharedMemoryLimits::ForDisplayCompositor(screen_size);
 }
 
-gpu::ContextCreationAttribs GetCompositorContextAttributes(
-    const gfx::ColorSpace& display_color_space,
-    bool requires_alpha_channel) {
+gpu::ContextCreationAttribs GetCompositorContextAttributes() {
   gpu::ContextCreationAttribs attributes;
   attributes.bind_generates_resource = false;
-  attributes.need_alpha = requires_alpha_channel;
 
   attributes.enable_raster_interface = true;
   attributes.enable_gles2_interface = false;
@@ -568,9 +565,7 @@ void CompositorImpl::OnGpuChannelEstablished(
                std::string("CompositorContextProvider")),
           automatic_flushes, support_locking,
           GetCompositorContextSharedMemoryLimits(root_window_),
-          GetCompositorContextAttributes(
-              display_color_spaces_.GetRasterColorSpace(),
-              requires_alpha_channel_),
+          GetCompositorContextAttributes(),
           viz::command_buffer_metrics::ContextType::BROWSER_COMPOSITOR);
   auto result = context_provider->BindToCurrentSequence();
 

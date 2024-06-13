@@ -70,12 +70,6 @@ struct GPU_EXPORT StructTraits<gpu::mojom::ContextCreationAttribsDataView,
     return attribs.gpu_preference;
   }
 
-#if BUILDFLAG(IS_ANDROID)
-  static bool need_alpha(const gpu::ContextCreationAttribs& attribs) {
-    return attribs.need_alpha;
-  }
-#endif
-
   static bool bind_generates_resource(
       const gpu::ContextCreationAttribs& attribs) {
     return attribs.bind_generates_resource;

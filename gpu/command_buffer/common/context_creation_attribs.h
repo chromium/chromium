@@ -42,9 +42,6 @@ struct GPU_EXPORT ContextCreationAttribs {
   gfx::Size offscreen_framebuffer_size_for_testing;
   gl::GpuPreference gpu_preference = gl::GpuPreference::kLowPower;
 
-#if BUILDFLAG(IS_ANDROID)
-  bool need_alpha = false;
-#endif
   bool bind_generates_resource = true;
   bool fail_if_major_perf_caveat = false;
   bool lose_context_when_out_of_memory = false;

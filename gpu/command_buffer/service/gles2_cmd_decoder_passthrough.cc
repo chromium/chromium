@@ -984,13 +984,7 @@ gpu::ContextResult GLES2DecoderPassthroughImpl::Initialize(
       std::min(max_2d_texture_size, max_renderbuffer_size_);
 
   if (offscreen_) {
-#if BUILDFLAG(IS_ANDROID)
-    const bool alpha_channel_requested = attrib_helper.need_alpha;
-#else
-    const bool alpha_channel_requested = false;
-#endif
-    emulated_default_framebuffer_format_ =
-        alpha_channel_requested ? GL_RGBA : GL_RGB;
+    emulated_default_framebuffer_format_ = GL_RGB;
 
     CheckErrorCallbackState();
     emulated_back_buffer_ = std::make_unique<EmulatedDefaultFramebuffer>(this);

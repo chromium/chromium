@@ -2314,16 +2314,10 @@ class GLES2DecoderImpl : public GLES2Decoder,
     }
 
     if (offscreen_target_frame_buffer_.get()) {
-      return offscreen_buffer_should_have_alpha_;
+      return false;
     }
     return (back_buffer_color_format_ == GL_RGBA ||
             back_buffer_color_format_ == GL_RGBA8);
-  }
-
-  // If the back buffer has a non-emulated alpha channel, the clear color should
-  // be 0. Otherwise, the clear color should be 1.
-  GLfloat BackBufferAlphaClearColor() const {
-    return offscreen_buffer_should_have_alpha_ ? 0.f : 1.f;
   }
 
   // Set remaining commands to process to 0 to force DoCommands to return
@@ -2458,9 +2452,6 @@ class GLES2DecoderImpl : public GLES2Decoder,
   GLenum offscreen_target_color_format_;
 
   GLint max_offscreen_framebuffer_size_;
-
-  // Whether the client requested an offscreen buffer with an alpha channel.
-  bool offscreen_buffer_should_have_alpha_;
 
   std::unique_ptr<FramebufferManager> framebuffer_manager_;
 
@@ -2951,7 +2942,6 @@ GLES2DecoderImpl::GLES2DecoderImpl(
       fixed_attrib_buffer_size_(0),
       offscreen_target_color_format_(0),
       max_offscreen_framebuffer_size_(0),
-      offscreen_buffer_should_have_alpha_(false),
       back_buffer_color_format_(0),
       back_buffer_has_depth_(false),
       back_buffer_has_stencil_(false),
@@ -3200,16 +3190,8 @@ gpu::ContextResult GLES2DecoderImpl::Initialize(
   GLint alpha_bits = 0;
 
   if (offscreen) {
-    // NOTE: `attrib_helper.need_alpha` is defined only on Android.
-#if BUILDFLAG(IS_ANDROID)
-    offscreen_buffer_should_have_alpha_ = attrib_helper.need_alpha;
-#else
-    offscreen_buffer_should_have_alpha_ = false;
-#endif
-    offscreen_target_color_format_ = offscreen_buffer_should_have_alpha_ ||
-                                             workarounds().disable_gl_rgb_format
-                                         ? GL_RGBA
-                                         : GL_RGB;
+    offscreen_target_color_format_ =
+        workarounds().disable_gl_rgb_format ? GL_RGBA : GL_RGB;
 
     max_offscreen_framebuffer_size_ =
         std::min(renderbuffer_manager()->max_renderbuffer_size(),
@@ -4174,7 +4156,7 @@ bool GLES2DecoderImpl::CheckFramebufferValid(
     if (surfaceless_)
       return false;
     if (backbuffer_needs_clear_bits_) {
-      api()->glClearColorFn(0, 0, 0, BackBufferAlphaClearColor());
+      api()->glClearColorFn(0, 0, 0, 1.0f);
       state_.SetDeviceColorMask(GL_TRUE, GL_TRUE, GL_TRUE, GL_TRUE);
       api()->glClearStencilFn(0);
       state_.SetDeviceStencilMaskSeparate(GL_FRONT, kDefaultStencilMask);
@@ -4894,7 +4876,7 @@ bool GLES2DecoderImpl::ResizeOffscreenFramebuffer(const gfx::Size& size) {
   // Clear the target frame buffer.
   {
     ScopedFramebufferBinder binder(this, offscreen_target_frame_buffer_->id());
-    api()->glClearColorFn(0, 0, 0, BackBufferAlphaClearColor());
+    api()->glClearColorFn(0, 0, 0, 1.0f);
     state_.SetDeviceColorMask(GL_TRUE, GL_TRUE, GL_TRUE, GL_TRUE);
     api()->glClearStencilFn(0);
     state_.SetDeviceStencilMaskSeparate(GL_FRONT, kDefaultStencilMask);
@@ -5288,9 +5270,7 @@ bool GLES2DecoderImpl::BoundFramebufferAllowsChangesToAlphaChannel() {
     return external_default_framebuffer_->HasAlpha();
   }
   if (offscreen_target_frame_buffer_.get()) {
-    GLenum format = offscreen_target_color_format_;
-    return (format == GL_RGBA || format == GL_RGBA8) &&
-           offscreen_buffer_should_have_alpha_;
+    return false;
   }
   return (back_buffer_color_format_ == GL_RGBA ||
           back_buffer_color_format_ == GL_RGBA8);

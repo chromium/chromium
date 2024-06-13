@@ -53,8 +53,6 @@ enum SchedulingPriority {
 struct ContextCreationAttribs {
   gl.mojom.GpuPreference gpu_preference = kLowPower;
 
-  // -1 if invalid or unspecified.
-  [EnableIf=is_android] bool need_alpha = false;
   bool bind_generates_resource = true;
   bool fail_if_major_perf_caveat = false;
   bool lose_context_when_out_of_memory = false;
