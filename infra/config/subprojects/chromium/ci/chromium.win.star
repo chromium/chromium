@@ -576,7 +576,6 @@ ci.builder(
             "x86-64",
         ],
     ),
-    cores = 32,
     os = os.LINUX_DEFAULT,
 
     # TODO(crbug.com/332248571): Promote to main gardening rotation once green.
