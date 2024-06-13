@@ -308,14 +308,6 @@ class ReadAnythingAppModel {
   std::string GetAltText(const ui::AXNodeID& ax_node_id) const;
   std::string GetImageDataUrl(const ui::AXNodeID& ax_node_id) const;
 
-  // Returns the index of the next sentence of the given text, such that the
-  // next sentence is equivalent to text.substr(0, <returned_index>).
-  int GetNextSentence(const std::u16string& text);
-
-  // Returns the index of the next word of the given text, such that the
-  // next word is equivalent to text.substr(0, <returned_index>).
-  int GetNextWord(const std::u16string& text);
-
   // Given a text index for the current granularity, return the AXNodeID for
   // that part of the text.
   // For example, if a current granularity segment has text:
@@ -427,10 +419,6 @@ class ReadAnythingAppModel {
   std::string GetHeadingHtmlTagForPDF(ui::AXNode* ax_node,
                                       const std::string& html_tag) const;
 
-  // Uses the current AXNodePosition to return the next node that should be
-  // spoken by Read Aloud.
-  ui::AXNode* GetNodeFromCurrentPosition() const;
-
   bool IsTextForReadAnything(const ui::AXNodeID& ax_node_id) const;
 
   bool ShouldSplitAtParagraph(
@@ -457,30 +445,12 @@ class ReadAnythingAppModel {
           current_granularity,
       const ui::AXNodeID& id) const;
 
-  // Helper method to get the correct anchor node from an AXPositionInstance
-  // that should be used by Read Aloud. AXPosition can sometimes return
-  // leaf nodes that don't actually correspond to the AXNodes we're using
-  // in Reading Mode, so we need to get a parent node from the AXPosition's
-  // returned anchor when this happens.
-  ui::AXNode* GetAnchorNode(
-      const ui::AXNodePosition::AXPositionInstance& position) const;
-
   bool IsOpeningPunctuation(char& c) const;
 
   bool IsValidAXPosition(
       const ui::AXNodePosition::AXPositionInstance& positin,
       const ReadAnythingAppModel::ReadAloudCurrentGranularity&
           current_granularity) const;
-
-  // Returns true if both positions are non-null and equal.
-  bool ArePositionsEqual(
-      const ui::AXNodePosition::AXPositionInstance& position,
-      const ui::AXNodePosition::AXPositionInstance& other) const;
-
-  // Returns the index of the next granularity of the given text, such that the
-  // next granularity is equivalent to text.substr(0, <returned_index>).
-  int GetNextGranularity(const std::u16string& text,
-                         ax::mojom::TextBoundary boundary);
 
   // We want to group superscripts with the utterance preceding it.
   bool IsSuperscript(ui::AXNode* node);

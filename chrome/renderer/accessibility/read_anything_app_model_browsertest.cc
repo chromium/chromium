@@ -281,14 +281,6 @@ class ReadAnythingAppModelTest : public ChromeRenderViewTest {
     return model_->GetNextNodes();
   }
 
-  size_t GetNextSentence(const std::u16string& text) {
-    return model_->GetNextSentence(text);
-  }
-
-  size_t GetNextWord(const std::u16string& text) {
-    return model_->GetNextWord(text);
-  }
-
   ui::AXNodeID GetNodeIdForCurrentSegmentIndex(int index) {
     ui::AXNodeID id = model_->GetNodeIdForCurrentSegmentIndex(index);
     return id;
@@ -1665,84 +1657,6 @@ TEST_F(ReadAnythingAppModelTest, OnSelection_HandlesClickAndDragEvents) {
   SetRequiresPostProcessSelection(false);
   OnSelection(ax::mojom::EventFrom::kPage);
   EXPECT_FALSE(RequiresPostProcessSelection());
-}
-
-TEST_F(ReadAnythingAppModelTest, GetNextSentence_ReturnsCorrectIndex) {
-  const std::u16string first_sentence = u"This is a normal sentence. ";
-  const std::u16string second_sentence = u"This is a second sentence.";
-
-  const std::u16string sentence = first_sentence + second_sentence;
-  size_t index = GetNextSentence(sentence);
-  EXPECT_EQ(index, first_sentence.length());
-  EXPECT_EQ(sentence.substr(0, index), first_sentence);
-}
-
-TEST_F(ReadAnythingAppModelTest,
-       GetNextSentence_OnlyOneSentence_ReturnsCorrectIndex) {
-  const std::u16string sentence = u"Hello, this is a normal sentence.";
-
-  size_t index = GetNextSentence(sentence);
-  EXPECT_EQ(index, sentence.length());
-  EXPECT_EQ(sentence.substr(0, index), sentence);
-}
-
-TEST_F(ReadAnythingAppModelTest, GetNextWord_ReturnsCorrectIndex) {
-  const std::u16string first_word = u"onomatopoeia ";
-  const std::u16string second_word = u"party";
-
-  const std::u16string segment = first_word + second_word;
-  size_t index = GetNextWord(segment);
-  EXPECT_EQ(index, first_word.length());
-  EXPECT_EQ(segment.substr(0, index), first_word);
-}
-
-TEST_F(ReadAnythingAppModelTest, GetNextWord_OnlyOneWord_ReturnsCorrectIndex) {
-  const std::u16string word = u"Happiness";
-
-  size_t index = GetNextWord(word);
-  EXPECT_EQ(index, word.length());
-  EXPECT_EQ(word.substr(0, index), word);
-}
-
-TEST_F(ReadAnythingAppModelTest,
-       GetNextSentence_NotPDF_DoesNotFilterReturnCharacters) {
-  const std::u16string sentence =
-      u"Hello, this is\n a sentence \r with line breaks.";
-
-  size_t index = GetNextSentence(sentence);
-  EXPECT_EQ(index, sentence.find('\n') + 2);
-  EXPECT_EQ(sentence.substr(0, index), u"Hello, this is\n ");
-
-  std::u16string next_sentence = sentence.substr(index);
-  index = GetNextSentence(next_sentence);
-  EXPECT_EQ(index, next_sentence.find('\r') + 2);
-  EXPECT_EQ(next_sentence.substr(0, index), u"a sentence \r ");
-
-  next_sentence = next_sentence.substr(index);
-  index = GetNextSentence(next_sentence);
-  EXPECT_EQ(index, next_sentence.length());
-  EXPECT_EQ(next_sentence.substr(0, index), u"with line breaks.");
-}
-
-TEST_F(ReadAnythingAppModelTest, GetNextSentence_PDF_FiltersReturnCharacters) {
-  set_is_pdf(true);
-  const std::u16string sentence =
-      u"Hello, this is\n a sentence \r with line breaks.";
-
-  size_t index = GetNextSentence(sentence);
-  EXPECT_EQ(index, sentence.length());
-  EXPECT_EQ(sentence.substr(0, index), sentence);
-}
-
-TEST_F(ReadAnythingAppModelTest,
-       GetNextSentence_PDF_DoesNotFilterReturnCharactersAtEndOfSentence) {
-  set_is_pdf(true);
-  const std::u16string sentence =
-      u"Hello, this is a sentence with line breaks.\r\n";
-
-  size_t index = GetNextSentence(sentence);
-  EXPECT_EQ(index, sentence.length());
-  EXPECT_EQ(sentence.substr(0, index), sentence);
 }
 
 TEST_F(ReadAnythingAppModelTest, GetNextValidPosition) {

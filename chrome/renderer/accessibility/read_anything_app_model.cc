@@ -12,6 +12,7 @@
 #include "base/containers/contains.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/strings/stringprintf.h"
+#include "chrome/renderer/accessibility/read_aloud_traversal_utils.h"
 #include "content/public/renderer/render_thread.h"
 #include "services/strings/grit/services_strings.h"
 #include "ui/accessibility/accessibility_features.h"
@@ -1195,42 +1196,6 @@ std::string ReadAnythingAppModel::GetHeadingHtmlTagForPDF(
   return html_tag;
 }
 
-int ReadAnythingAppModel::GetNextSentence(const std::u16string& text) {
-    std::u16string filtered_string(text);
-    // When we receive text from a pdf node, there are return characters at each
-    // visual line break in the page. If these aren't filtered before calling
-    // GetNextGranularity on the text, text part of the same sentence will be
-    // read as separate segments, which causes speech to sound choppy.
-    // e.g. without filtering
-    // 'This is a long sentence with \n\r a line break.'
-    // will read and highlight "This is a long sentence with" and "a line break"
-    // separately.
-    if (is_pdf() && filtered_string.size() > 0) {
-      size_t pos = filtered_string.find_first_of(u"\n\r");
-      while (pos != std::string::npos && pos < filtered_string.size() - 2) {
-        filtered_string.replace(pos, 1, u" ");
-        pos = filtered_string.find_first_of(u"\n\r");
-      }
-  }
-  return GetNextGranularity(filtered_string,
-                            ax::mojom::TextBoundary::kSentenceStart);
-}
-
-int ReadAnythingAppModel::GetNextWord(const std::u16string& text) {
-  return GetNextGranularity(text, ax::mojom::TextBoundary::kWordStart);
-}
-
-int ReadAnythingAppModel::GetNextGranularity(const std::u16string& text,
-                                             ax::mojom::TextBoundary boundary) {
-  // TODO(crbug.com/40927698): Investigate providing correct line breaks
-  // or alternatively making adjustments to ax_text_utils to return boundaries
-  // that minimize choppiness.
-  std::vector<int> offsets;
-  return ui::FindAccessibleTextBoundary(text, offsets, boundary, 0,
-                                        ax::mojom::MoveDirection::kForward,
-                                        ax::mojom::TextAffinity::kDefaultValue);
-}
-
 void ReadAnythingAppModel::InitAXPositionWithNode(
     const ui::AXNodeID& starting_node_id) {
   ui::AXNode* ax_node = GetAXNode(starting_node_id);
@@ -1302,12 +1267,13 @@ ReadAnythingAppModel::GetNextNodes() {
   // AXPosition to simplify Read Aloud-specific code and allow improvements
   // to be used by other places where AXPosition is used.
   while (!ax_position_->IsNullPosition() && !ax_position_->AtEndOfAXTree()) {
-    ui::AXNode* anchor_node = GetNodeFromCurrentPosition();
+    ui::AXNode* anchor_node = GetNextNodeFromPosition(ax_position_);
     std::u16string text = anchor_node->GetTextContentUTF16();
     std::u16string text_substr = text.substr(current_text_index_);
     int prev_index = current_text_index_;
     // Gets the starting index for the next sentence in the current node.
-    int next_sentence_index = GetNextSentence(text_substr) + prev_index;
+    int next_sentence_index =
+        GetNextSentence(text_substr, is_pdf_) + prev_index;
     // If our current index within the current node is greater than that node's
     // text, look at the next node. If the starting index of the next sentence
     // in the node is the same the current index within the node, this means
@@ -1335,7 +1301,7 @@ ReadAnythingAppModel::GetNextNodes() {
         return current_granularity;
       }
 
-      anchor_node = GetNodeFromCurrentPosition();
+      anchor_node = GetNextNodeFromPosition(ax_position_);
 
       std::u16string base_text = anchor_node->GetTextContentUTF16();
 
@@ -1350,9 +1316,9 @@ ReadAnythingAppModel::GetNextNodes() {
       // previous and current node text. If we're currently in a superscript,
       // no need to check for a combined sentence, as we want to add the
       // entire superscript to the current text segment.
-      int combined_sentence_index = is_superscript
-                                        ? combined_text.length()
-                                        : GetNextSentence(combined_text);
+      int combined_sentence_index =
+          is_superscript ? combined_text.length()
+                         : GetNextSentence(combined_text, is_pdf_);
 
       bool is_opening_punctuation = false;
       // The code that checks for accessible text boundaries sometimes
@@ -1400,7 +1366,7 @@ ReadAnythingAppModel::GetNextNodes() {
       //    be added to the current sentence.
       if (((int)current_granularity.text.length() < combined_sentence_index) &&
           !is_opening_punctuation) {
-        anchor_node = GetNodeFromCurrentPosition();
+        anchor_node = GetNextNodeFromPosition(ax_position_);
         // Calculate the new sentence index.
         int index_in_new_node =
             combined_sentence_index - current_granularity.text.length();
@@ -1438,12 +1404,13 @@ ReadAnythingAppModel::GetNextNodes() {
     }
 
     // Add the next granularity piece within the current node.
-    anchor_node = GetNodeFromCurrentPosition();
+    anchor_node = GetNextNodeFromPosition(ax_position_);
     text = anchor_node->GetTextContentUTF16();
     prev_index = current_text_index_;
     text_substr = text.substr(current_text_index_);
     // Find the next sentence within the current node.
-    int new_current_text_index = GetNextSentence(text_substr) + prev_index;
+    int new_current_text_index =
+        GetNextSentence(text_substr, is_pdf_) + prev_index;
     int start_index = current_text_index_;
     current_text_index_ = new_current_text_index;
 
@@ -1469,16 +1436,6 @@ ReadAnythingAppModel::GetNextNodes() {
     }
   }
   return current_granularity;
-}
-
-// Returns either the node or the lowest platform ancestor of the node, if it's
-// a leaf.
-ui::AXNode* ReadAnythingAppModel::GetNodeFromCurrentPosition() const {
-  if (ax_position_->GetAnchor()->IsChildOfLeaf()) {
-    return ax_position_->GetAnchor()->GetLowestPlatformAncestor();
-  }
-
-  return ax_position_->GetAnchor();
 }
 
 // Gets the next valid position from our current position within AXPosition
@@ -1648,14 +1605,6 @@ bool ReadAnythingAppModel::ShouldSplitAtParagraph(
          (current_granularity.node_ids.size() > 0);
 }
 
-ui::AXNode* ReadAnythingAppModel::GetAnchorNode(
-    const ui::AXNodePosition::AXPositionInstance& position) const {
-  bool is_leaf = position->GetAnchor()->IsChildOfLeaf();
-  // If the node is a leaf, use the parent node instead.
-  return is_leaf ? position->GetAnchor()->GetLowestPlatformAncestor()
-                 : position->GetAnchor();
-}
-
 bool ReadAnythingAppModel::IsValidAXPosition(
     const ui::AXNodePosition::AXPositionInstance& position,
     const ReadAnythingAppModel::ReadAloudCurrentGranularity&
@@ -1670,14 +1619,6 @@ bool ReadAnythingAppModel::IsValidAXPosition(
   bool contains_node = base::Contains(*node_ids, anchor_node->id());
 
   return !was_previously_spoken && is_text_node && contains_node;
-}
-
-bool ReadAnythingAppModel::ArePositionsEqual(
-    const ui::AXNodePosition::AXPositionInstance& position,
-    const ui::AXNodePosition::AXPositionInstance& other) const {
-  return position->GetAnchor() && other->GetAnchor() &&
-         (position->CompareTo(*other).value_or(-1) == 0) &&
-         (position->text_offset() == other->text_offset());
 }
 
 ui::AXNodeID ReadAnythingAppModel::GetNodeIdForCurrentSegmentIndex(

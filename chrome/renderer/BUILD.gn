@@ -425,6 +425,8 @@ static_library("renderer") {
       "accessibility/ax_tree_distiller.h",
       "accessibility/read_aloud_app_model.cc",
       "accessibility/read_aloud_app_model.h",
+      "accessibility/read_aloud_traversal_utils.cc",
+      "accessibility/read_aloud_traversal_utils.h",
       "accessibility/read_anything_app_controller.cc",
       "accessibility/read_anything_app_controller.h",
       "accessibility/read_anything_app_model.cc",
