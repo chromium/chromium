@@ -5,6 +5,7 @@
 #include "net/url_request/url_request_filter.h"
 
 #include "base/logging.h"
+#include "base/notreached.h"
 #include "base/task/current_thread.h"
 #include "net/url_request/url_request.h"
 #include "net/url_request/url_request_job.h"
@@ -34,14 +35,13 @@ bool OnMessageLoopForInterceptorRemoval() {
 
 }  // namespace
 
-URLRequestFilter* URLRequestFilter::shared_instance_ = nullptr;
-
 // static
 URLRequestFilter* URLRequestFilter::GetInstance() {
+  // base::NoDestructor is not used because most tests don't use
+  // URLRequestFilter, so there's no point in reserving space for it.
+  static URLRequestFilter* instance = new URLRequestFilter();
   DCHECK(OnMessageLoopForInterceptorAddition());
-  if (!shared_instance_)
-    shared_instance_ = new URLRequestFilter;
-  return shared_instance_;
+  return instance;
 }
 
 void URLRequestFilter::AddHostnameInterceptor(
@@ -139,8 +139,7 @@ URLRequestFilter::URLRequestFilter() {
 }
 
 URLRequestFilter::~URLRequestFilter() {
-  DCHECK(OnMessageLoopForInterceptorRemoval());
-  URLRequestJobFactory::SetInterceptorForTesting(nullptr);
+  NOTREACHED();
 }
 
 }  // namespace net
