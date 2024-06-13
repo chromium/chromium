@@ -30,6 +30,7 @@ import org.chromium.components.browser_ui.widget.gesture.BackPressHandler;
 import org.chromium.content_public.browser.WebContents;
 import org.chromium.ui.UiUtils;
 
+import java.util.Locale;
 import java.util.Objects;
 import java.util.function.Predicate;
 
@@ -39,6 +40,8 @@ import java.util.function.Predicate;
  */
 public class MinimizeAppAndCloseTabBackPressHandler implements BackPressHandler, Destroyable {
     private static final String TAG = "MinimizeAppCloseTab";
+    private static final String HANDLE_BACK_STARTED = "handleOnBackStarted";
+    private static final String HANDLE_BACK_PRESSED = "handleBackPress";
     static final String HISTOGRAM = "Android.BackPress.MinimizeAppAndCloseTab";
     static final String HISTOGRAM_CUSTOM_TAB_SAME_TASK =
             "Android.BackPress.MinimizeAppAndCloseTab.CustomTab.SameTask";
@@ -183,7 +186,7 @@ public class MinimizeAppAndCloseTabBackPressHandler implements BackPressHandler,
                 /* minimizeApp= */ backPressAction.first,
                 /* shouldCloseTab= */ backPressAction.second,
                 mActivityTabSupplier.get(),
-                "handleOnBackStarted");
+                HANDLE_BACK_STARTED);
     }
 
     @Override
@@ -211,7 +214,7 @@ public class MinimizeAppAndCloseTabBackPressHandler implements BackPressHandler,
 
         mCallbackOnBackPress.run();
 
-        assertBackPressState(minimizeApp, shouldCloseTab, currentTab, "handleBackPress");
+        assertBackPressState(minimizeApp, shouldCloseTab, currentTab, HANDLE_BACK_PRESSED);
 
         if (minimizeApp) {
             record(
@@ -262,6 +265,7 @@ public class MinimizeAppAndCloseTabBackPressHandler implements BackPressHandler,
                 && !minimizeAppWithoutClosingTab) {
             String msg =
                     String.format(
+                            Locale.US,
                             "%s - system back arm %s; should close %s; minimize %s; current tab %s,"
                                     + " observed tab %s; tab on start %s; open from external %s; "
                                     + "system back arm supplier %s, non back supplier %s; layout on"
@@ -287,6 +291,7 @@ public class MinimizeAppAndCloseTabBackPressHandler implements BackPressHandler,
         if (minimizeAppWithoutClosingTab && mSystemBackPressSupplier.get()) {
             String msg =
                     String.format(
+                            Locale.US,
                             "%s - system back arm should not consume back event for minimizing app"
                                     + " only. system back arm %s; currentTab %s; mObservedTab %s;"
                                     + " mTabOnStart %s; open from external %s; layout on start: %s,"
@@ -303,6 +308,75 @@ public class MinimizeAppAndCloseTabBackPressHandler implements BackPressHandler,
                             getNavigationMode());
             assert false : msg;
             Log.i(TAG, msg);
+        }
+
+        // mLayoutTypeOnStart should not be NONE if handleOnBackStarted is called.
+        if (mTabOnStart != currentTab
+                && (VERSION.SDK_INT > VERSION_CODES.TIRAMISU
+                        || mLayoutTypeOnStart != LayoutType.NONE)) {
+            final var actionOnStart = determineBackPressAction(mTabOnStart);
+            if (actionOnStart.first != minimizeApp || actionOnStart.second != shouldCloseTab) {
+                var msg =
+                        String.format(
+                                Locale.US,
+                                "%s - tab is changed during gesture. system back arm %s;"
+                                        + " currentTab %s minimize %s close %s;  mTabOnStart %s"
+                                        + " minimize %s close %s; open from external %s; layout on"
+                                        + " start: %s, on pressed: %s; nav mode %s",
+                                caller,
+                                mUseSystemBack,
+                                currentTab,
+                                minimizeApp,
+                                shouldCloseTab,
+                                mTabOnStart,
+                                actionOnStart.first,
+                                actionOnStart.second,
+                                currentTab != null
+                                        && TabAssociatedApp.isOpenedFromExternalApp(currentTab),
+                                mLayoutTypeOnStart,
+                                getLayoutType(),
+                                getNavigationMode());
+                assert false : msg;
+                Log.i(TAG, msg);
+            }
+        }
+
+        if (caller.equals(HANDLE_BACK_PRESSED) && !mUseSystemBack) {
+            final var actionOfSystemBackArm = determineBackPressAction(mObservedTab);
+            if (actionOfSystemBackArm.first != minimizeApp
+                    || actionOfSystemBackArm.second != shouldCloseTab) {
+                int systemBackArmResult =
+                        getActionType(actionOfSystemBackArm.first, actionOfSystemBackArm.second);
+                String systemBackArmResultString =
+                        getActionAsString(
+                                actionOfSystemBackArm.first, actionOfSystemBackArm.second);
+                String expectedResultString = getActionAsString(minimizeApp, shouldCloseTab);
+                RecordHistogram.recordEnumeratedHistogram(
+                        "Android.BackPress.Failure." + expectedResultString,
+                        systemBackArmResult,
+                        MinimizeAppAndCloseTabType.NUM_TYPES);
+
+                String msg =
+                        String.format(
+                                Locale.US,
+                                "%s - different behavior. expected: %s; actual: %s, system back arm"
+                                    + " supplier %s; currentTab %s;  mTabOnStart %s open from"
+                                    + " external %s; layout on start: %s, on pressed: %s; nav mode"
+                                    + " %s",
+                                caller,
+                                expectedResultString,
+                                systemBackArmResultString,
+                                mSystemBackPressSupplier.get(),
+                                currentTab,
+                                mTabOnStart,
+                                currentTab != null
+                                        && TabAssociatedApp.isOpenedFromExternalApp(currentTab),
+                                mLayoutTypeOnStart,
+                                getLayoutType(),
+                                getNavigationMode());
+                assert false : msg;
+                Log.i(TAG, msg);
+            }
         }
     }
 
@@ -335,6 +409,23 @@ public class MinimizeAppAndCloseTabBackPressHandler implements BackPressHandler,
         return UiUtils.isGestureNavigationMode(tab.getWindowAndroid().getWindow())
                 ? "gesture"
                 : "3-button";
+    }
+
+    private String getActionAsString(boolean minimizeApp, boolean shouldCloseTab) {
+        if (minimizeApp && !shouldCloseTab) return "MinimizeApp";
+        if (minimizeApp && shouldCloseTab) return "MinimizeAppAndCloseTab";
+        assert !minimizeApp && shouldCloseTab;
+        return "CloseTab";
+    }
+
+    private @MinimizeAppAndCloseTabType int getActionType(
+            boolean minimizeApp, boolean shouldCloseTab) {
+        if (minimizeApp && !shouldCloseTab) return MinimizeAppAndCloseTabType.MINIMIZE_APP;
+        if (minimizeApp && shouldCloseTab) {
+            return MinimizeAppAndCloseTabType.MINIMIZE_APP_AND_CLOSE_TAB;
+        }
+        assert !minimizeApp && shouldCloseTab;
+        return MinimizeAppAndCloseTabType.CLOSE_TAB;
     }
 
     static boolean shouldUseSystemBack() {
