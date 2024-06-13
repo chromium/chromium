@@ -467,12 +467,7 @@ class WebAppRegistrar {
 
   // Computes and returns the DisplayMode, accounting for user preference
   // to launch in a browser window and entries in the web app manifest.
-  //
-  // With shortstand enabled, this will be relative to whether the app is
-  // a shortcut app rather than the user_display_mode. Set `ignore_shortstand`
-  // to retrieve the original user_display_mode relative value.
-  DisplayMode GetAppEffectiveDisplayMode(const webapps::AppId& app_id,
-                                         bool ignore_shortstand = false) const;
+  DisplayMode GetAppEffectiveDisplayMode(const webapps::AppId& app_id) const;
 
   // Computes and returns the DisplayMode only accounting for
   // entries in the web app manifest.

@@ -186,18 +186,11 @@ enum class AppSettingsPageEntryPoint {
 //
 // |is_isolated| overrides browser display mode for Isolated Web Apps because
 // they can't be open as a tab.
-//
-// `is_shortcut_app` overrides the user display mode if `kCrosShortstand`
-// is enabled and `ignore_shortstand` is false.
-// TODO(b/319753599): Migrate chrome os shortcut out of web app system. Should
-// be able to remove all the shortcut related code after migration completion.
 DisplayMode ResolveEffectiveDisplayMode(
     DisplayMode app_display_mode,
     const std::vector<DisplayMode>& app_display_mode_overrides,
     mojom::UserDisplayMode user_display_mode,
-    bool is_isolated,
-    bool is_shortcut_app,
-    bool ignore_shortstand);
+    bool is_isolated);
 
 apps::LaunchContainer ConvertDisplayModeToAppLaunchContainer(
     DisplayMode display_mode);
