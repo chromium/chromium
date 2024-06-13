@@ -65,6 +65,7 @@ public class SignOutCoordinator {
             @SignoutReason int signOutReason,
             Runnable onSignOut) {
         ThreadUtils.assertOnUiThread();
+        assert snackbarManager != null;
         assert onSignOut != null;
         validateSignOutReason(profile, signOutReason);
 
