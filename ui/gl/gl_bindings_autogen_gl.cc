@@ -339,8 +339,6 @@ void DriverGL::InitializeDynamicBindings(const GLVersionInfo* ver,
       gfx::HasExtension(extensions, "GL_ARB_draw_instanced");
   ext.b_GL_ARB_framebuffer_object =
       gfx::HasExtension(extensions, "GL_ARB_framebuffer_object");
-  ext.b_GL_ARB_get_program_binary =
-      gfx::HasExtension(extensions, "GL_ARB_get_program_binary");
   ext.b_GL_ARB_instanced_arrays =
       gfx::HasExtension(extensions, "GL_ARB_instanced_arrays");
   ext.b_GL_ARB_internalformat_query =
@@ -349,8 +347,6 @@ void DriverGL::InitializeDynamicBindings(const GLVersionInfo* ver,
       gfx::HasExtension(extensions, "GL_ARB_map_buffer_range");
   ext.b_GL_ARB_occlusion_query =
       gfx::HasExtension(extensions, "GL_ARB_occlusion_query");
-  ext.b_GL_ARB_program_interface_query =
-      gfx::HasExtension(extensions, "GL_ARB_program_interface_query");
   ext.b_GL_ARB_robustness = gfx::HasExtension(extensions, "GL_ARB_robustness");
   ext.b_GL_ARB_sampler_objects =
       gfx::HasExtension(extensions, "GL_ARB_sampler_objects");
@@ -1670,8 +1666,7 @@ void DriverGL::InitializeDynamicBindings(const GLVersionInfo* ver,
             GetGLProcAddress("glGetPointervRobustANGLERobustANGLE"));
   }
 
-  if (ver->IsAtLeastGL(4u, 1u) || ver->IsAtLeastGLES(3u, 0u) ||
-      ext.b_GL_ARB_get_program_binary) {
+  if (ver->IsAtLeastGL(4u, 1u) || ver->IsAtLeastGLES(3u, 0u)) {
     fn.glGetProgramBinaryFn = reinterpret_cast<glGetProgramBinaryProc>(
         GetGLProcAddress("glGetProgramBinary"));
   } else if (ext.b_GL_OES_get_program_binary) {
@@ -1679,8 +1674,7 @@ void DriverGL::InitializeDynamicBindings(const GLVersionInfo* ver,
         GetGLProcAddress("glGetProgramBinaryOES"));
   }
 
-  if (ver->IsAtLeastGL(4u, 3u) || ver->IsAtLeastGLES(3u, 1u) ||
-      ext.b_GL_ARB_program_interface_query) {
+  if (ver->IsAtLeastGL(4u, 3u) || ver->IsAtLeastGLES(3u, 1u)) {
     fn.glGetProgramInterfaceivFn =
         reinterpret_cast<glGetProgramInterfaceivProc>(
             GetGLProcAddress("glGetProgramInterfaceiv"));
@@ -1709,28 +1703,24 @@ void DriverGL::InitializeDynamicBindings(const GLVersionInfo* ver,
         GetGLProcAddress("glGetProgramPipelineiv"));
   }
 
-  if (ver->IsAtLeastGL(4u, 3u) || ver->IsAtLeastGLES(3u, 1u) ||
-      ext.b_GL_ARB_program_interface_query) {
+  if (ver->IsAtLeastGL(4u, 3u) || ver->IsAtLeastGLES(3u, 1u)) {
     fn.glGetProgramResourceIndexFn =
         reinterpret_cast<glGetProgramResourceIndexProc>(
             GetGLProcAddress("glGetProgramResourceIndex"));
   }
 
-  if (ver->IsAtLeastGL(4u, 3u) || ver->IsAtLeastGLES(3u, 1u) ||
-      ext.b_GL_ARB_program_interface_query) {
+  if (ver->IsAtLeastGL(4u, 3u) || ver->IsAtLeastGLES(3u, 1u)) {
     fn.glGetProgramResourceivFn = reinterpret_cast<glGetProgramResourceivProc>(
         GetGLProcAddress("glGetProgramResourceiv"));
   }
 
-  if (ver->IsAtLeastGL(4u, 3u) || ver->IsAtLeastGLES(3u, 1u) ||
-      ext.b_GL_ARB_program_interface_query) {
+  if (ver->IsAtLeastGL(4u, 3u) || ver->IsAtLeastGLES(3u, 1u)) {
     fn.glGetProgramResourceLocationFn =
         reinterpret_cast<glGetProgramResourceLocationProc>(
             GetGLProcAddress("glGetProgramResourceLocation"));
   }
 
-  if (ver->IsAtLeastGL(4u, 3u) || ver->IsAtLeastGLES(3u, 1u) ||
-      ext.b_GL_ARB_program_interface_query) {
+  if (ver->IsAtLeastGL(4u, 3u) || ver->IsAtLeastGLES(3u, 1u)) {
     fn.glGetProgramResourceNameFn =
         reinterpret_cast<glGetProgramResourceNameProc>(
             GetGLProcAddress("glGetProgramResourceName"));
@@ -2390,8 +2380,7 @@ void DriverGL::InitializeDynamicBindings(const GLVersionInfo* ver,
             GetGLProcAddress("glPrimitiveRestartIndex"));
   }
 
-  if (ver->IsAtLeastGL(4u, 1u) || ver->IsAtLeastGLES(3u, 0u) ||
-      ext.b_GL_ARB_get_program_binary) {
+  if (ver->IsAtLeastGL(4u, 1u) || ver->IsAtLeastGLES(3u, 0u)) {
     fn.glProgramBinaryFn = reinterpret_cast<glProgramBinaryProc>(
         GetGLProcAddress("glProgramBinary"));
   } else if (ext.b_GL_OES_get_program_binary) {
@@ -2399,8 +2388,7 @@ void DriverGL::InitializeDynamicBindings(const GLVersionInfo* ver,
         GetGLProcAddress("glProgramBinaryOES"));
   }
 
-  if (ver->IsAtLeastGL(4u, 1u) || ver->IsAtLeastGLES(3u, 0u) ||
-      ext.b_GL_ARB_get_program_binary) {
+  if (ver->IsAtLeastGL(4u, 1u) || ver->IsAtLeastGLES(3u, 0u)) {
     fn.glProgramParameteriFn = reinterpret_cast<glProgramParameteriProc>(
         GetGLProcAddress("glProgramParameteri"));
   }

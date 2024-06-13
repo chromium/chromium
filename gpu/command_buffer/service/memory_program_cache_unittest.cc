@@ -114,7 +114,8 @@ class MemoryProgramCacheTest : public GpuServiceTest, public DecoderClient {
 
  protected:
   void SetUp() override {
-    GpuServiceTest::SetUpWithGLVersion("3.0", "GL_ARB_get_program_binary");
+    GpuServiceTest::SetUpWithGLVersion("OpenGL ES 3.0",
+                                       "GL_OES_get_program_binary");
 
     vertex_shader_ = shader_manager_.CreateShader(kVertexShaderClientId,
                                                   kVertexShaderServiceId,

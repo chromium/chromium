@@ -2049,12 +2049,10 @@ struct ExtensionsGL {
   bool b_GL_ARB_draw_buffers;
   bool b_GL_ARB_draw_instanced;
   bool b_GL_ARB_framebuffer_object;
-  bool b_GL_ARB_get_program_binary;
   bool b_GL_ARB_instanced_arrays;
   bool b_GL_ARB_internalformat_query;
   bool b_GL_ARB_map_buffer_range;
   bool b_GL_ARB_occlusion_query;
-  bool b_GL_ARB_program_interface_query;
   bool b_GL_ARB_robustness;
   bool b_GL_ARB_sampler_objects;
   bool b_GL_ARB_shader_image_load_store;

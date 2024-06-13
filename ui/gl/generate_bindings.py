@@ -1080,10 +1080,8 @@ GL_FUNCTIONS = [
   'arguments':
       'GLenum pname, GLsizei bufSize, GLsizei* length, void** params', },
 { 'return_type': 'void',
-  'known_as': 'glGetProgramBinary',
-  'versions': [{ 'name': 'glGetProgramBinaryOES' },
-               { 'name': 'glGetProgramBinary',
-                 'extensions': ['GL_ARB_get_program_binary'] }],
+  'versions': [{ 'name': 'glGetProgramBinary' },
+               { 'name': 'glGetProgramBinaryOES' }],
   'arguments': 'GLuint program, GLsizei bufSize, GLsizei* length, '
                'GLenum* binaryFormat, GLvoid* binary' },
 { 'return_type': 'void',
@@ -1091,8 +1089,7 @@ GL_FUNCTIONS = [
   'arguments':
       'GLuint program, GLsizei bufsize, GLsizei* length, char* infolog', },
 { 'return_type': 'void',
-  'versions': [{'name': 'glGetProgramInterfaceiv',
-                'extensions': ['GL_ARB_program_interface_query']}],
+  'names': ['glGetProgramInterfaceiv'],
   'arguments': 'GLuint program, GLenum programInterface, GLenum pname, '
   'GLint* params'},
 { 'return_type': 'void',
@@ -1119,23 +1116,19 @@ GL_FUNCTIONS = [
   'arguments':
       'GLuint pipeline, GLenum pname, GLint* params', },
 { 'return_type': 'GLuint',
-  'versions': [{'name': 'glGetProgramResourceIndex',
-                'extensions': ['GL_ARB_program_interface_query']}],
+  'names': ['glGetProgramResourceIndex'],
   'arguments':
       'GLuint program, GLenum programInterface, const GLchar* name', },
 { 'return_type': 'void',
-  'versions': [{'name': 'glGetProgramResourceiv',
-                'extensions': ['GL_ARB_program_interface_query']}],
+  'names': ['glGetProgramResourceiv'],
   'arguments': 'GLuint program, GLenum programInterface, GLuint index, '
   'GLsizei propCount, const GLenum* props, GLsizei bufSize, '
   'GLsizei* length, GLint* params'},
 { 'return_type': 'GLint',
-  'versions': [{'name': 'glGetProgramResourceLocation',
-                'extensions': ['GL_ARB_program_interface_query']}],
+  'names': ['glGetProgramResourceLocation'],
   'arguments': 'GLuint program, GLenum programInterface, const char* name', },
 { 'return_type': 'void',
-  'versions': [{'name': 'glGetProgramResourceName',
-                'extensions': ['GL_ARB_program_interface_query']}],
+  'names': ['glGetProgramResourceName'],
   'arguments': 'GLuint program, GLenum programInterface, GLuint index, '
   'GLsizei bufSize, GLsizei* length, GLchar* name'},
 { 'return_type': 'void',
@@ -1705,15 +1698,11 @@ GL_FUNCTIONS = [
   'names': ['glPrimitiveRestartIndex'],
   'arguments': 'GLuint index', },
 { 'return_type': 'void',
-  'known_as': 'glProgramBinary',
-  'versions': [{ 'name': 'glProgramBinaryOES' },
-               { 'name': 'glProgramBinary',
-                 'extensions': ['GL_ARB_get_program_binary'] }],
+  'names': ['glProgramBinary', 'glProgramBinaryOES'],
   'arguments': 'GLuint program, GLenum binaryFormat, '
                'const GLvoid* binary, GLsizei length' },
 { 'return_type': 'void',
-  'versions': [{ 'name': 'glProgramParameteri',
-                 'extensions': ['GL_ARB_get_program_binary'] }],
+  'names': ['glProgramParameteri'],
   'arguments': 'GLuint program, GLenum pname, GLint value' },
 { 'return_type': 'void',
   'names': ['glProgramPathFragmentInputGenNV'],

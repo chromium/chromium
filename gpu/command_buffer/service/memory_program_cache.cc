@@ -202,8 +202,7 @@ void RunShaderCallback(DecoderClient* client,
 
 bool ProgramBinaryExtensionsAvailable() {
   return gl::g_current_gl_driver &&
-         (gl::g_current_gl_driver->ext.b_GL_ARB_get_program_binary ||
-          gl::g_current_gl_driver->ext.b_GL_OES_get_program_binary);
+         gl::g_current_gl_driver->ext.b_GL_OES_get_program_binary;
 }
 
 // Returns an empty vector if compression fails.

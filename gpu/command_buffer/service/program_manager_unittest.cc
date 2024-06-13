@@ -2226,7 +2226,7 @@ class ProgramManagerWithCacheTest : public ProgramManagerTestBase {
   void SetExpectationsForProgramLink(GLuint service_program_id) {
     TestHelper::SetupShaderExpectations(gl_.get(), feature_info_.get(), nullptr,
                                         0, nullptr, 0, service_program_id);
-    if (gl::g_current_gl_driver->ext.b_GL_ARB_get_program_binary) {
+    if (gl::g_current_gl_driver->ext.b_GL_OES_get_program_binary) {
       EXPECT_CALL(*gl_.get(),
                   ProgramParameteri(service_program_id,
                                     PROGRAM_BINARY_RETRIEVABLE_HINT,
@@ -2409,9 +2409,6 @@ INSTANTIATE_TEST_SUITE_P(
     SupportedContexts,
     ProgramManagerDualSourceBlendingES2Test,
     testing::Values(
-        make_gl_ext_tuple("3.2",
-                          "GL_ARB_draw_buffers GL_ARB_blend_func_extended "
-                          "GL_ARB_program_interface_query"),
         make_gl_ext_tuple("OpenGL ES 3.1",
                           "GL_EXT_draw_buffers GL_EXT_blend_func_extended")));
 
