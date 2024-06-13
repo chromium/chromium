@@ -40,10 +40,10 @@ namespace chromeos {
 // Some functions in this controller are virtual for testing.
 class MagicBoostCardController : public ReadWriteCardController {
  public:
+  MagicBoostCardController();
   MagicBoostCardController(const MagicBoostCardController&) = delete;
   MagicBoostCardController& operator=(const MagicBoostCardController&) = delete;
-
-  static MagicBoostCardController* Get();
+  ~MagicBoostCardController() override;
 
   // ReadWriteCardController:
   void OnContextMenuShown(Profile* profile) override;
@@ -90,12 +90,6 @@ class MagicBoostCardController : public ReadWriteCardController {
 
   views::Widget* opt_in_widget_for_test() { return opt_in_widget_.get(); }
 
- protected:
-  friend class base::NoDestructor<MagicBoostCardController>;
-
-  MagicBoostCardController();
-  ~MagicBoostCardController() override;
-
  private:
   // If Orca feature is included.
   bool is_orca_included_ = false;
@@ -107,15 +101,6 @@ class MagicBoostCardController : public ReadWriteCardController {
 #if BUILDFLAG(IS_CHROMEOS_LACROS)
   mojo::Remote<crosapi::mojom::MagicBoostController> remote_;
 #endif  // BUILDFLAG(IS_CHROMEOS_LACROS)
-};
-
-// Helper class to automatically set and reset the `MagicBoostCardController`
-// global instance for testing.
-class ScopedMagicBoostCardControllerForTesting {
- public:
-  explicit ScopedMagicBoostCardControllerForTesting(
-      MagicBoostCardController* controller_for_testing);
-  ~ScopedMagicBoostCardControllerForTesting();
 };
 
 }  // namespace chromeos

@@ -30,8 +30,6 @@ namespace chromeos {
 
 namespace {
 
-MagicBoostCardController* g_magic_boost_opt_in_handler_for_testing = nullptr;
-
 #if BUILDFLAG(IS_CHROMEOS_ASH)
 
 crosapi::mojom::MagicBoostController* g_crosapi_instance_for_testing = nullptr;
@@ -47,15 +45,6 @@ crosapi::mojom::MagicBoostController& GetMagicBoostControllerAsh() {
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
 }  // namespace
-
-// static
-MagicBoostCardController* MagicBoostCardController::Get() {
-  if (g_magic_boost_opt_in_handler_for_testing) {
-    return g_magic_boost_opt_in_handler_for_testing;
-  }
-  static base::NoDestructor<MagicBoostCardController> instance;
-  return instance.get();
-}
 
 MagicBoostCardController::MagicBoostCardController() {
 #if BUILDFLAG(IS_CHROMEOS_ASH)
@@ -101,8 +90,8 @@ void MagicBoostCardController::OnDismiss(bool is_other_command_executed) {
 void MagicBoostCardController::ShowOptInUi(
     const gfx::Rect& anchor_view_bounds) {
   CHECK(!opt_in_widget_);
-  opt_in_widget_ =
-      MagicBoostOptInCard::CreateWidget(anchor_view_bounds, is_orca_included_);
+  opt_in_widget_ = MagicBoostOptInCard::CreateWidget(
+      /*controller=*/this, anchor_view_bounds, is_orca_included_);
   opt_in_widget_->ShowInactive();
 }
 
@@ -157,16 +146,5 @@ void MagicBoostCardController::SetMagicBoostControllerCrosapiForTesting(
   g_crosapi_instance_for_testing = delegate;
 }
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
-
-ScopedMagicBoostCardControllerForTesting::
-    ScopedMagicBoostCardControllerForTesting(
-        MagicBoostCardController* controller_for_testing) {
-  g_magic_boost_opt_in_handler_for_testing = controller_for_testing;
-}
-
-ScopedMagicBoostCardControllerForTesting::
-    ~ScopedMagicBoostCardControllerForTesting() {
-  g_magic_boost_opt_in_handler_for_testing = nullptr;
-}
 
 }  // namespace chromeos

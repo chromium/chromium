@@ -17,13 +17,16 @@ class UniqueWidgetPtr;
 
 namespace chromeos {
 
+class MagicBoostCardController;
+
 // The Magic Boost opt-in card view.
 class MagicBoostOptInCard : public chromeos::editor_menu::PreTargetHandlerView {
   METADATA_HEADER(MagicBoostOptInCard,
                   chromeos::editor_menu::PreTargetHandlerView)
 
  public:
-  explicit MagicBoostOptInCard(const bool include_orca);
+  MagicBoostOptInCard(MagicBoostCardController* controller,
+                      const bool include_orca);
   MagicBoostOptInCard(const MagicBoostOptInCard&) = delete;
   MagicBoostOptInCard& operator=(const MagicBoostOptInCard&) = delete;
   ~MagicBoostOptInCard() override;
@@ -31,6 +34,7 @@ class MagicBoostOptInCard : public chromeos::editor_menu::PreTargetHandlerView {
   // Creates a widget that contains a `MagicBoostOptInCard`, configured with the
   // given `anchor_view_bounds`.
   static views::UniqueWidgetPtr CreateWidget(
+      MagicBoostCardController* controller,
       const gfx::Rect& anchor_view_bounds,
       const bool include_orca);
 
@@ -47,6 +51,8 @@ class MagicBoostOptInCard : public chromeos::editor_menu::PreTargetHandlerView {
   // Button callbacks.
   void OnPrimaryButtonPressed();
   void OnSecondaryButtonPressed();
+
+  raw_ptr<MagicBoostCardController> controller_ = nullptr;
 
   raw_ptr<views::MdTextButton> secondary_button_ = nullptr;
 

@@ -93,7 +93,9 @@ const gfx::FontList kTitleTextFontList =
 
 // MagicBoostOptInCard --------------------------------------------------------
 
-MagicBoostOptInCard::MagicBoostOptInCard(const bool include_orca) {
+MagicBoostOptInCard::MagicBoostOptInCard(MagicBoostCardController* controller,
+                                         const bool include_orca)
+    : controller_(controller) {
   SetLayoutManager(std::make_unique<views::FlexLayout>())
       ->SetOrientation(views::LayoutOrientation::kVertical)
       .SetInteriorMargin(kInteriorMargin)
@@ -228,6 +230,7 @@ MagicBoostOptInCard::~MagicBoostOptInCard() = default;
 
 // static
 views::UniqueWidgetPtr MagicBoostOptInCard::CreateWidget(
+    MagicBoostCardController* controller,
     const gfx::Rect& anchor_view_bounds,
     const bool include_orca) {
   views::Widget::InitParams params(
@@ -243,7 +246,7 @@ views::UniqueWidgetPtr MagicBoostOptInCard::CreateWidget(
   views::UniqueWidgetPtr widget =
       std::make_unique<views::Widget>(std::move(params));
   MagicBoostOptInCard* magic_boost_opt_in_card = widget->SetContentsView(
-      std::make_unique<MagicBoostOptInCard>(include_orca));
+      std::make_unique<MagicBoostOptInCard>(controller, include_orca));
   magic_boost_opt_in_card->UpdateWidgetBounds(anchor_view_bounds);
 
   return widget;
@@ -267,22 +270,20 @@ void MagicBoostOptInCard::RequestFocus() {
 }
 
 void MagicBoostOptInCard::OnPrimaryButtonPressed() {
-  auto* controller = MagicBoostCardController::Get();
-  controller->CloseOptInUi();
+  controller_->CloseOptInUi();
 
   // TODO(b/344024587): Pass in the correct `action` to these function calls.
-  controller->ShowDisclaimerUi(/*display_id=*/
-                               display::Screen::GetScreen()
-                                   ->GetDisplayNearestWindow(
-                                       GetWidget()->GetNativeWindow())
-                                   .id(),
-                               crosapi::mojom::MagicBoostController::
-                                   TransitionAction::kDoNothing);
+  controller_->ShowDisclaimerUi(/*display_id=*/
+                                display::Screen::GetScreen()
+                                    ->GetDisplayNearestWindow(
+                                        GetWidget()->GetNativeWindow())
+                                    .id(),
+                                crosapi::mojom::MagicBoostController::
+                                    TransitionAction::kDoNothing);
 }
 
 void MagicBoostOptInCard::OnSecondaryButtonPressed() {
-  auto* controller = MagicBoostCardController::Get();
-  controller->CloseOptInUi();
+  controller_->CloseOptInUi();
   // TODO(b/341158134): Disable opt-in card from showing again when "No thanks"
   // is pressed. We should also use `MagicBoostState::Get()` here instead when
   // it is available.

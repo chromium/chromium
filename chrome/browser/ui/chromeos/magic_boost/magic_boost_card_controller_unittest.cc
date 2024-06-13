@@ -36,15 +36,16 @@ class MagicBoostCardControllerTest : public ChromeViewsTestBase {
 
     // Replace the production `MagicBoostController` with a mock for testing
 #if BUILDFLAG(IS_CHROMEOS_LACROS)
-    MagicBoostCardController::Get()->BindMagicBoostControllerCrosapiForTesting(
+    card_controller_.BindMagicBoostControllerCrosapiForTesting(
         receiver_.BindNewPipeAndPassRemote());
 #else   // BUILDFLAG(IS_CHROMEOS_ASH)
-    MagicBoostCardController::Get()->SetMagicBoostControllerCrosapiForTesting(
+    card_controller_.SetMagicBoostControllerCrosapiForTesting(
         &crosapi_controller_);
 #endif  // BUILDFLAG(IS_CHROMEOS_LACROS)
   }
 
  protected:
+  MagicBoostCardController card_controller_;
   testing::StrictMock<MockMagicBoostControllerCrosapi> crosapi_controller_;
   mojo::Receiver<crosapi::mojom::MagicBoostController> receiver_{
       &crosapi_controller_};
@@ -53,38 +54,34 @@ class MagicBoostCardControllerTest : public ChromeViewsTestBase {
 // Tests the behavior of the controller when `OnTextAvailable()` and
 // `OnDismiss()` are triggered.
 TEST_F(MagicBoostCardControllerTest, OnTextAvailableAndDismiss) {
-  auto* controller = MagicBoostCardController::Get();
-
   // Initially the opt-in widget is not visible.
-  EXPECT_FALSE(controller->opt_in_widget_for_test());
+  EXPECT_FALSE(card_controller_.opt_in_widget_for_test());
 
   // Show the opt-in widget and test that the proper views are set.
-  controller->OnTextAvailable(/*anchor_bounds=*/gfx::Rect(),
-                              /*selected_text=*/"",
-                              /*surrounding_text=*/"");
-  auto* opt_in_widget = controller->opt_in_widget_for_test();
+  card_controller_.OnTextAvailable(/*anchor_bounds=*/gfx::Rect(),
+                                   /*selected_text=*/"",
+                                   /*surrounding_text=*/"");
+  auto* opt_in_widget = card_controller_.opt_in_widget_for_test();
   ASSERT_TRUE(opt_in_widget);
   EXPECT_TRUE(opt_in_widget->IsVisible());
   EXPECT_TRUE(views::IsViewClass<MagicBoostOptInCard>(
       opt_in_widget->GetContentsView()));
 
   // Test that the opt-in widget is closed on `CloseOptInUI`.
-  controller->OnDismiss(/*is_other_command_executed=*/false);
-  EXPECT_FALSE(controller->opt_in_widget_for_test());
+  card_controller_.OnDismiss(/*is_other_command_executed=*/false);
+  EXPECT_FALSE(card_controller_.opt_in_widget_for_test());
 }
 
 // Tests the behavior of the controller when `OnAnchorBoundsChanged()` is
 // triggered.
 TEST_F(MagicBoostCardControllerTest, BoundsChanged) {
-  auto* controller = MagicBoostCardController::Get();
-
-  EXPECT_FALSE(controller->opt_in_widget_for_test());
+  EXPECT_FALSE(card_controller_.opt_in_widget_for_test());
 
   gfx::Rect anchor_bounds = gfx::Rect(50, 50, 25, 100);
-  controller->OnTextAvailable(anchor_bounds,
-                              /*selected_text=*/"",
-                              /*surrounding_text=*/"");
-  auto* widget = controller->opt_in_widget_for_test();
+  card_controller_.OnTextAvailable(anchor_bounds,
+                                   /*selected_text=*/"",
+                                   /*surrounding_text=*/"");
+  auto* widget = card_controller_.opt_in_widget_for_test();
   EXPECT_TRUE(widget);
 
   // Correct bounds should be set.
@@ -95,15 +92,13 @@ TEST_F(MagicBoostCardControllerTest, BoundsChanged) {
   anchor_bounds = gfx::Rect(0, 50, 55, 80);
 
   // Widget should change bounds accordingly.
-  controller->OnAnchorBoundsChanged(anchor_bounds);
+  card_controller_.OnAnchorBoundsChanged(anchor_bounds);
   EXPECT_EQ(editor_menu::GetEditorMenuBounds(anchor_bounds,
                                              widget->GetContentsView()),
             widget->GetRestoredBounds());
 }
 
 TEST_F(MagicBoostCardControllerTest, DisclaimerUi) {
-  auto* controller = MagicBoostCardController::Get();
-
   int expected_display_id = 2;
   auto expected_action =
       crosapi::mojom::MagicBoostController::TransitionAction::kShowEditorPanel;
@@ -117,7 +112,7 @@ TEST_F(MagicBoostCardControllerTest, DisclaimerUi) {
             EXPECT_EQ(expected_action, action);
           });
 
-  controller->ShowDisclaimerUi(expected_display_id, expected_action);
+  card_controller_.ShowDisclaimerUi(expected_display_id, expected_action);
 }
 
 }  // namespace chromeos

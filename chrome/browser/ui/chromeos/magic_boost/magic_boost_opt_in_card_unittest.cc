@@ -53,26 +53,25 @@ class MagicBoostOptInCardTest : public ChromeViewsTestBase {
 
     // Replace the production `MagicBoostController` with a mock for testing
 #if BUILDFLAG(IS_CHROMEOS_LACROS)
-    MagicBoostCardController::Get()->BindMagicBoostControllerCrosapiForTesting(
+    card_controller_.BindMagicBoostControllerCrosapiForTesting(
         receiver_.BindNewPipeAndPassRemote());
 #else   // BUILDFLAG(IS_CHROMEOS_ASH)
-    MagicBoostCardController::Get()->SetMagicBoostControllerCrosapiForTesting(
+    card_controller_.SetMagicBoostControllerCrosapiForTesting(
         &crosapi_controller_);
 #endif  // BUILDFLAG(IS_CHROMEOS_LACROS)
   }
 
  protected:
+  MagicBoostCardController card_controller_;
   testing::StrictMock<MockMagicBoostControllerCrosapi> crosapi_controller_;
   mojo::Receiver<crosapi::mojom::MagicBoostController> receiver_{
       &crosapi_controller_};
 };
 
 TEST_F(MagicBoostOptInCardTest, PrimaryButtonActions) {
-  auto* controller = MagicBoostCardController::Get();
-
   // Show the opt-in UI card.
-  controller->ShowOptInUi(/*anchor_view_bounds=*/gfx::Rect());
-  auto* opt_in_widget = controller->opt_in_widget_for_test();
+  card_controller_.ShowOptInUi(/*anchor_view_bounds=*/gfx::Rect());
+  auto* opt_in_widget = card_controller_.opt_in_widget_for_test();
   ASSERT_TRUE(opt_in_widget);
 
   // Test that pressing the primary button closes the card and shows the
@@ -83,15 +82,13 @@ TEST_F(MagicBoostOptInCardTest, PrimaryButtonActions) {
   EXPECT_CALL(crosapi_controller_, ShowDisclaimerUi);
 
   LeftClickOn(primary_button);
-  EXPECT_FALSE(controller->opt_in_widget_for_test());
+  EXPECT_FALSE(card_controller_.opt_in_widget_for_test());
 }
 
 TEST_F(MagicBoostOptInCardTest, SecondaryButtonActions) {
-  auto* controller = MagicBoostCardController::Get();
-
   // Show the opt-in UI card.
-  controller->ShowOptInUi(/*anchor_view_bounds=*/gfx::Rect());
-  auto* opt_in_widget = controller->opt_in_widget_for_test();
+  card_controller_.ShowOptInUi(/*anchor_view_bounds=*/gfx::Rect());
+  auto* opt_in_widget = card_controller_.opt_in_widget_for_test();
   ASSERT_TRUE(opt_in_widget);
 
   // Test that pressing the secondary button closes the card and sets the pref
@@ -99,7 +96,7 @@ TEST_F(MagicBoostOptInCardTest, SecondaryButtonActions) {
   auto* secondary_button = GetSecondaryButton(opt_in_widget);
   ASSERT_TRUE(secondary_button);
   LeftClickOn(secondary_button);
-  ASSERT_FALSE(controller->opt_in_widget_for_test());
+  ASSERT_FALSE(card_controller_.opt_in_widget_for_test());
 
   // Attempt re-showing the opt-in UI card. It should not show again since the
   // user declined before.
