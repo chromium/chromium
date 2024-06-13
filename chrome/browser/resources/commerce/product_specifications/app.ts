@@ -201,7 +201,7 @@ export class ProductSpecificationsElement extends PolymerElement {
 
         columns.push({
           selectedItem: {
-            title: product ? product.title : '',
+            title: product?.title || info?.title || '',
             url: url,
             imageUrl: info ? info.imageUrl.url : '',
           },

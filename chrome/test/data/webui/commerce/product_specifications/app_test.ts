@@ -324,7 +324,9 @@ suite('AppTest', () => {
           },
           {
             selectedItem: {
-              title: '',
+              // If the product spec doesn't have a title, the column should
+              // use the title from the product info.
+              title: info2.title,
               url: 'https://example2.com/',
               imageUrl: info2.imageUrl.url,
             },
