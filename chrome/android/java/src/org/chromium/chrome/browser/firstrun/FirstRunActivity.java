@@ -13,7 +13,6 @@ import android.view.View;
 import androidx.annotation.CallSuper;
 import androidx.annotation.Nullable;
 import androidx.annotation.StringRes;
-import androidx.annotation.VisibleForTesting;
 import androidx.fragment.app.Fragment;
 import androidx.viewpager2.widget.ViewPager2;
 
@@ -635,11 +634,6 @@ public class FirstRunActivity extends FirstRunActivityBase implements FirstRunPa
         return !getResources()
                 .getConfiguration()
                 .isLayoutSizeAtLeast(Configuration.SCREENLAYOUT_SIZE_LARGE);
-    }
-
-    @VisibleForTesting
-    boolean hasPages() {
-        return mPagerAdapter != null && mPagerAdapter.getItemCount() > 0;
     }
 
     public FirstRunFragment getCurrentFragmentForTesting() {
