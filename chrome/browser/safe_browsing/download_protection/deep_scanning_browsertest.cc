@@ -5,6 +5,7 @@
 #include <memory>
 
 #include "base/base64.h"
+#include "base/containers/span.h"
 #include "base/files/file_util.h"
 #include "base/memory/raw_ptr.h"
 #include "base/path_service.h"
@@ -483,10 +484,11 @@ class DownloadDeepScanningBrowserTestBase
     EXPECT_TRUE(data_pipe_consumer.is_valid());
     std::string body;
     while (true) {
-      char buffer[1024];
-      size_t read_size = sizeof(buffer);
+      std::string buffer(1024, '\0');
+      size_t actually_read_bytes = 0;
       MojoResult result = data_pipe_consumer->ReadData(
-          buffer, &read_size, MOJO_READ_DATA_FLAG_NONE);
+          MOJO_READ_DATA_FLAG_NONE, base::as_writable_byte_span(buffer),
+          actually_read_bytes);
       if (result == MOJO_RESULT_SHOULD_WAIT) {
         base::RunLoop().RunUntilIdle();
         continue;
@@ -494,7 +496,7 @@ class DownloadDeepScanningBrowserTestBase
       if (result != MOJO_RESULT_OK) {
         break;
       }
-      body.append(buffer, read_size);
+      body.append(std::string_view(buffer).substr(0, actually_read_bytes));
     }
 
     return body;

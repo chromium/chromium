@@ -8,6 +8,7 @@
 #include <optional>
 #include <vector>
 
+#include "base/containers/span.h"
 #include "base/files/file_path.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback_helpers.h"
@@ -135,10 +136,12 @@ void CompleteWithGeneratedResponse(
                                    /*cached_metadata=*/std::nullopt);
 
   if (body.has_value()) {
-    size_t write_size = body->size();
+    size_t actually_written_bytes = 0;
     MojoResult write_result = producer_handle->WriteData(
-        body->c_str(), &write_size, MOJO_WRITE_DATA_FLAG_NONE);
-    if (write_result != MOJO_RESULT_OK || write_size != body->size()) {
+        base::as_byte_span(*body), MOJO_WRITE_DATA_FLAG_NONE,
+        actually_written_bytes);
+    if (write_result != MOJO_RESULT_OK ||
+        actually_written_bytes != body->size()) {
       loader_client->OnComplete(
           network::URLLoaderCompletionStatus(net::ERR_FAILED));
       return;

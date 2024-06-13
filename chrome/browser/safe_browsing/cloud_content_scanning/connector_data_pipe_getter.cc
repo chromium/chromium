@@ -6,6 +6,8 @@
 
 #include <algorithm>
 
+#include "base/compiler_specific.h"
+#include "base/containers/span.h"
 #include "base/files/memory_mapped_file.h"
 #include "base/memory/shared_memory_mapping.h"
 #include "base/metrics/histogram_functions.h"
@@ -27,7 +29,7 @@ namespace {
 const char kDataContentType[] = "Content-Type: application/octet-stream";
 
 // Write the data from |file_| by chunks of 32 kbs.
-constexpr int64_t kMaxSize = 32 * 1024;
+constexpr size_t kMaxSize = 32 * 1024;
 
 }  // namespace
 
@@ -291,7 +293,9 @@ bool ConnectorDataPipeGetter::WriteMultipartRequestFormat(
   CHECK_GE(offset, 0);
   CHECK_LT(offset, static_cast<int64_t>(str.size()));
 
-  return Write(str.data(), str.size(), offset);
+  base::span<const uint8_t> bytes = base::as_byte_span(str);
+  bytes = bytes.subspan(base::checked_cast<size_t>(offset));
+  return Write(bytes);
 }
 
 bool ConnectorDataPipeGetter::WriteFileData() {
@@ -300,8 +304,9 @@ bool ConnectorDataPipeGetter::WriteFileData() {
   CHECK_GE(file_offset, 0);
   CHECK_LT(file_offset, static_cast<int64_t>(file_->length()));
 
-  return Write(reinterpret_cast<const char*>(file_->data()), file_->length(),
-               file_offset);
+  base::span<const uint8_t> bytes = file_->bytes();
+  bytes = bytes.subspan(base::checked_cast<size_t>(file_offset));
+  return Write(bytes);
 }
 
 bool ConnectorDataPipeGetter::WritePageData() {
@@ -309,23 +314,22 @@ bool ConnectorDataPipeGetter::WritePageData() {
   CHECK_GE(page_offset, 0);
   CHECK_LT(page_offset, static_cast<int64_t>(page_.size()));
 
-  return Write(page_.GetMemoryAs<char>(), page_.size(), page_offset);
+  base::span<const uint8_t> bytes = page_.GetMemoryAsSpan<uint8_t>();
+  bytes = bytes.subspan(base::checked_cast<size_t>(page_offset));
+  return Write(bytes);
 }
 
-bool ConnectorDataPipeGetter::Write(const char* data,
-                                    int64_t full_size,
-                                    int64_t offset) {
+bool ConnectorDataPipeGetter::Write(base::span<const uint8_t> data) {
   while (true) {
-    int64_t remaining_bytes = full_size - offset;
-    size_t write_size =
-        base::checked_cast<size_t>(std::min(kMaxSize, remaining_bytes));
-    if (write_size == 0) {
+    if (data.empty()) {
       // The data is fully read, so allow the next Write.
       return true;
     }
 
+    size_t actually_written_bytes = 0;
     int result =
-        pipe_->WriteData(data + offset, &write_size, MOJO_WRITE_DATA_FLAG_NONE);
+        pipe_->WriteData(data.first(std::min(kMaxSize, data.size())),
+                         MOJO_WRITE_DATA_FLAG_NONE, actually_written_bytes);
     if (result == MOJO_RESULT_SHOULD_WAIT) {
       watcher_->ArmOrNotify();
       return false;
@@ -334,9 +338,8 @@ bool ConnectorDataPipeGetter::Write(const char* data,
       return false;
     }
 
-    offset += write_size;
-    write_position_ += write_size;
-    DCHECK_LE(offset, full_size);
+    data = data.subspan(actually_written_bytes);
+    write_position_ += actually_written_bytes;
   }
 }
 

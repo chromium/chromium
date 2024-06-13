@@ -24,6 +24,7 @@
 #include "extensions/browser/url_request_util.h"
 #include "extensions/common/extension_id.h"
 #include "extensions/common/file_util.h"
+#include "mojo/public/c/system/types.h"
 #include "mojo/public/cpp/bindings/receiver.h"
 #include "mojo/public/cpp/bindings/remote.h"
 #include "net/base/completion_once_callback.h"
@@ -180,9 +181,16 @@ class ResourceBundleFileLoader : public network::mojom::URLLoader {
     client_->OnReceiveResponse(std::move(head), std::move(consumer_handle),
                                std::nullopt);
 
-    size_t write_size = data->size();
-    MojoResult result = producer_handle->WriteData(data->data(), &write_size,
-                                                   MOJO_WRITE_DATA_FLAG_NONE);
+    size_t actually_written_bytes = 0;
+    MojoResult result = producer_handle->WriteData(
+        *data, MOJO_WRITE_DATA_FLAG_NONE, actually_written_bytes);
+
+    if (result == MOJO_RESULT_OK) {
+      // All bytes should fit into the buffer size used in `CreateDataPipe`
+      // above.
+      CHECK_EQ(actually_written_bytes, data->size());
+    }
+
     OnFileWritten(result);
   }
 

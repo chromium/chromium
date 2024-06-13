@@ -9,6 +9,7 @@
 #include <string>
 #include <vector>
 
+#include "base/containers/span.h"
 #include "base/files/file_util.h"
 #include "base/files/scoped_temp_dir.h"
 #include "base/functional/callback_helpers.h"
@@ -891,13 +892,14 @@ TEST_F(SignedWebBundleReaderTest, CloseWhileReadingResponseBody) {
   reader->Close(close_future.GetCallback());
 
   EXPECT_EQ(net::OK, on_response_read_callback.Get());
-  std::vector<char> buffer(response_body_length);
-  size_t bytes_read = buffer.size();
+  std::string buffer(response_body_length, '\0');
+  size_t actually_read_bytes = 0;
   MojoResult read_result = response_body_consumer->ReadData(
-      buffer.data(), &bytes_read, MOJO_READ_DATA_FLAG_NONE);
+      MOJO_READ_DATA_FLAG_NONE, base::as_writable_byte_span(buffer),
+      actually_read_bytes);
   EXPECT_EQ(MOJO_RESULT_OK, read_result);
-  EXPECT_EQ(buffer.size(), bytes_read);
-  EXPECT_EQ(std::string(buffer.data(), bytes_read), kResponseBody);
+  EXPECT_EQ(buffer.size(), actually_read_bytes);
+  EXPECT_EQ(buffer.substr(0, actually_read_bytes), kResponseBody);
 
   ASSERT_TRUE(close_future.Wait());
 }

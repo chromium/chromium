@@ -3,6 +3,8 @@
 // found in the LICENSE file.
 
 #include "chrome/browser/enterprise/connectors/test/uploader_test_utils.h"
+
+#include "base/containers/span.h"
 #include "base/run_loop.h"
 #include "base/test/bind.h"
 #include "net/base/net_errors.h"
@@ -34,10 +36,11 @@ std::string GetBodyFromFileOrPageRequest(
   std::string body;
   // Write data from `data_pipe_consumer` to `buffer`, and ultimately to `body`.
   while (true) {
-    char buffer[1024];
-    size_t read_size = sizeof(buffer);
-    MojoResult result = data_pipe_consumer->ReadData(buffer, &read_size,
-                                                     MOJO_READ_DATA_FLAG_NONE);
+    std::string buffer(1024, '\0');
+    size_t read_size = 0;
+    MojoResult result = data_pipe_consumer->ReadData(
+        MOJO_READ_DATA_FLAG_NONE, base::as_writable_byte_span(buffer),
+        read_size);
     if (result == MOJO_RESULT_SHOULD_WAIT) {
       base::RunLoop().RunUntilIdle();
       continue;
@@ -45,7 +48,7 @@ std::string GetBodyFromFileOrPageRequest(
     if (result != MOJO_RESULT_OK) {
       break;
     }
-    body.append(buffer, read_size);
+    body.append(std::string_view(buffer).substr(0, read_size));
   }
 
   return body;

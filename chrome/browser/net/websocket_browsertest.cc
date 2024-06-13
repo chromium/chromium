@@ -10,6 +10,7 @@
 #include <vector>
 
 #include "base/check_op.h"
+#include "base/containers/span.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
 #include "base/notreached.h"
@@ -579,14 +580,16 @@ class InvalidUtf8HandshakeClient
     websocket_.Bind(std::move(websocket));
 
     // Invalid UTF-8.
-    static const uint32_t message[] = {0xff};
-    size_t size = sizeof(message);
+    static const uint32_t message = 0xff;
+    size_t actually_written_bytes = 0;
+    websocket_->SendMessage(network::mojom::WebSocketMessageType::TEXT,
+                            sizeof(message));
 
-    websocket_->SendMessage(network::mojom::WebSocketMessageType::TEXT, size);
-
-    EXPECT_EQ(writable->WriteData(message, &size, MOJO_WRITE_DATA_FLAG_NONE),
-              MOJO_RESULT_OK);
-    EXPECT_EQ(size, sizeof(message));
+    EXPECT_EQ(
+        writable->WriteData(base::as_bytes(base::span_from_ref(message)),
+                            MOJO_WRITE_DATA_FLAG_NONE, actually_written_bytes),
+        MOJO_RESULT_OK);
+    EXPECT_EQ(actually_written_bytes, sizeof(message));
 
     connected_ = true;
   }

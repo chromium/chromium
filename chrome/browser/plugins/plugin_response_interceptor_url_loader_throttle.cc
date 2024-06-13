@@ -7,6 +7,7 @@
 #include <tuple>
 #include <utility>
 
+#include "base/containers/span.h"
 #include "base/functional/bind.h"
 #include "base/numerics/safe_conversions.h"
 #include "base/unguessable_token.h"
@@ -179,16 +180,19 @@ void PluginResponseInterceptorURLLoaderThrottle::WillProcessResponse(
 
   mojo::ScopedDataPipeProducerHandle producer_handle;
   mojo::ScopedDataPipeConsumerHandle consumer_handle;
-  size_t len = payload.size();
-  CHECK_EQ(mojo::CreateDataPipe(len, producer_handle, consumer_handle),
-           MOJO_RESULT_OK);
+  CHECK_EQ(
+      mojo::CreateDataPipe(payload.size(), producer_handle, consumer_handle),
+      MOJO_RESULT_OK);
 
+  size_t actually_written_bytes = 0;
   CHECK_EQ(MOJO_RESULT_OK,
-           producer_handle->WriteData(payload.c_str(), &len,
-                                      MOJO_WRITE_DATA_FLAG_ALL_OR_NONE));
+           producer_handle->WriteData(base::as_byte_span(payload),
+                                      MOJO_WRITE_DATA_FLAG_ALL_OR_NONE,
+                                      actually_written_bytes));
 
   network::URLLoaderCompletionStatus status(net::OK);
-  status.decoded_body_length = base::checked_cast<int64_t>(len);
+  status.decoded_body_length =
+      base::checked_cast<int64_t>(actually_written_bytes);
   new_client->OnComplete(status);
 
   mojo::PendingRemote<network::mojom::URLLoader> original_loader;

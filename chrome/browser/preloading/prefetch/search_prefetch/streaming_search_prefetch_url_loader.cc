@@ -9,6 +9,7 @@
 #include <string_view>
 #include <utility>
 
+#include "base/containers/span.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback_forward.h"
 #include "base/location.h"
@@ -161,9 +162,10 @@ void StreamingSearchPrefetchURLLoader::ResponseReader::PushData() {
       }
       break;
     }
-    size_t write_size = response_data.size();
+    size_t actually_written_bytes = 0;
     MojoResult result = producer_handle_->WriteData(
-        response_data.data(), &write_size, MOJO_WRITE_DATA_FLAG_NONE);
+        base::as_byte_span(response_data), MOJO_WRITE_DATA_FLAG_NONE,
+        actually_written_bytes);
 
     if (result == MOJO_RESULT_SHOULD_WAIT) {
       handle_watcher_->ArmOrNotify();
@@ -179,7 +181,7 @@ void StreamingSearchPrefetchURLLoader::ResponseReader::PushData() {
 
     // |write_position_| should only be updated when the Mojo pipe has
     // successfully been written to.
-    write_position_ += write_size;
+    write_position_ += actually_written_bytes;
   }
 }
 
@@ -730,9 +732,10 @@ void StreamingSearchPrefetchURLLoader::PushData() {
       // No data can be fed into the producer.
       return;
     }
-    size_t write_size = response_data.size();
+    size_t actually_written_bytes = 0;
     MojoResult result = producer_handle_->WriteData(
-        response_data.data(), &write_size, MOJO_WRITE_DATA_FLAG_NONE);
+        base::as_byte_span(response_data), MOJO_WRITE_DATA_FLAG_NONE,
+        actually_written_bytes);
 
     if (result == MOJO_RESULT_SHOULD_WAIT) {
       handle_watcher_->ArmOrNotify();
@@ -747,7 +750,7 @@ void StreamingSearchPrefetchURLLoader::PushData() {
 
     // |write_position_| should only be updated when the mojo pipe has
     // successfully been written to.
-    write_position_ += write_size;
+    write_position_ += actually_written_bytes;
   }
 }
 

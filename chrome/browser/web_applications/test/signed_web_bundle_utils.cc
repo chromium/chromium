@@ -4,6 +4,7 @@
 
 #include "chrome/browser/web_applications/test/signed_web_bundle_utils.h"
 
+#include "base/containers/span.h"
 #include "base/functional/bind.h"
 #include "base/test/test_future.h"
 #include "chrome/browser/web_applications/isolated_web_apps/signed_web_bundle_reader.h"
@@ -53,13 +54,14 @@ std::string ReadAndFulfillResponseBody(
                        error_future.GetCallback());
   EXPECT_EQ(net::OK, error_future.Get());
 
-  std::vector<char> buffer(response_length);
-  size_t bytes_read = buffer.size();
+  std::string buffer(response_length, '\0');
+  size_t bytes_read = 0;
   MojoResult read_result =
-      consumer->ReadData(buffer.data(), &bytes_read, MOJO_READ_DATA_FLAG_NONE);
+      consumer->ReadData(MOJO_READ_DATA_FLAG_NONE,
+                         base::as_writable_byte_span(buffer), bytes_read);
   EXPECT_EQ(MOJO_RESULT_OK, read_result);
   EXPECT_EQ(buffer.size(), bytes_read);
-  return std::string(buffer.data(), bytes_read);
+  return buffer.substr(0, bytes_read);
 }
 
 }  // namespace web_app
