@@ -1256,32 +1256,6 @@ DevToolsWindow* DevToolsWindow::Create(
                             inspected_web_contents, can_dock, opened_by);
 }
 
-std::string GetConsoleInsightsModelId() {
-  if (base::FeatureList::IsEnabled(
-          ::features::kDevToolsConsoleInsightsDogfood)) {
-    return features::kDevToolsConsoleInsightsDogfoodModelId.Get();
-  }
-  return features::kDevToolsConsoleInsightsModelId.Get();
-}
-
-std::string GetConsoleInsightsTemperature() {
-  if (base::FeatureList::IsEnabled(
-          ::features::kDevToolsConsoleInsightsDogfood)) {
-    return base::NumberToString(
-        features::kDevToolsConsoleInsightsDogfoodTemperature.Get());
-  }
-  return base::NumberToString(
-      features::kDevToolsConsoleInsightsTemperature.Get());
-}
-
-bool GetConsoleInsightsOptIn() {
-  if (base::FeatureList::IsEnabled(
-          ::features::kDevToolsConsoleInsightsDogfood)) {
-    return features::kDevToolsConsoleInsightsDogfoodOptIn.Get();
-  }
-  return features::kDevToolsConsoleInsightsOptIn.Get();
-}
-
 // static
 GURL DevToolsWindow::GetDevToolsURL(Profile* profile,
                                     FrontendType frontend_type,
@@ -1291,7 +1265,6 @@ GURL DevToolsWindow::GetDevToolsURL(Profile* profile,
                                     bool has_other_clients,
                                     bool browser_connection) {
   std::string url;
-  AidaClient::BlockedReason blocked_reason;
 
   std::string remote_base =
       "?remoteBase=" + DevToolsUI::GetRemoteBaseURL().spec();
@@ -1316,29 +1289,6 @@ GURL DevToolsWindow::GetDevToolsURL(Profile* profile,
       }
       if (base::FeatureList::IsEnabled(::features::kDevToolsVeLogging)) {
         url += "&veLogging=true";
-      }
-      blocked_reason = AidaClient::CanUseAida(profile);
-      if (!blocked_reason.blocked_by_feature_flag) {
-        url += "&enableAida=true&aidaModelId=" + GetConsoleInsightsModelId() +
-               "&aidaTemperature=" + GetConsoleInsightsTemperature();
-        if (GetConsoleInsightsOptIn()) {
-          url += "&ci_disabledByDefault=true";
-        }
-      }
-      if (blocked_reason.blocked_by_age) {
-        url += "&ci_blockedByAge=true";
-      }
-      if (blocked_reason.blocked_by_enterprise_policy) {
-        url += "&ci_blockedByEnterprisePolicy=true";
-      }
-      if (blocked_reason.disallow_logging) {
-        url += "&ci_disallowLogging=true";
-      }
-      if (blocked_reason.blocked_by_geo) {
-        url += "&ci_blockedByGeo=true";
-      }
-      if (blocked_reason.blocked_by_rollout) {
-        url += "&ci_blockedByRollout=true";
       }
       if (base::FeatureList::IsEnabled(
               ::features::kDevToolsFreestylerDogfood)) {

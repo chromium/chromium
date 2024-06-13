@@ -3806,32 +3806,6 @@ IN_PROC_BROWSER_TEST_F(DevToolsSyncTest, GetSyncInformation) {
             "user@gmail.com");
 }
 
-IN_PROC_BROWSER_TEST_F(DevToolsTest, GetHostConfig) {
-  // Smoke test to make sure that `getHostConfig` works from JavaScript.
-  OpenDevToolsWindow("about:blank", true);
-  LoadLegacyFilesInFrontend(window_);
-
-  WebContents* wc = DevToolsWindowTesting::Get(window_)->main_web_contents();
-  const auto result = content::EvalJs(wc, content::JsReplace(R"(
-      (async function() {
-        return new Promise(resolve => {
-          Host.InspectorFrontendHost.getHostConfig(resolve);
-        });
-      })();
-    )"));
-  ASSERT_TRUE(result.value.is_dict());
-  EXPECT_TRUE(result.value.GetDict()
-                  .FindDict("devToolsConsoleInsights")
-                  ->FindBool("enabled"));
-  EXPECT_TRUE(result.value.GetDict()
-                  .FindDict("devToolsConsoleInsights")
-                  ->FindBool("optIn"));
-  EXPECT_EQ(*(result.value.GetDict()
-                  .FindDict("devToolsConsoleInsightsDogfood")
-                  ->FindDouble("aidaTemperature")),
-            0.2);
-}
-
 // Regression test for https://crbug.com/1270184.
 // TODO(crbug.com/40809266): Fix flakyness. Test is disabled for now.
 IN_PROC_BROWSER_TEST_F(DevToolsTest, DISABLED_NoCrashFor1270184) {
@@ -4057,17 +4031,28 @@ IN_PROC_BROWSER_TEST_F(DevToolsConsoleInsightsTest,
   g_browser_process->variations_service()->OverrideStoredPermanentCountry("us");
   SetupAccountCapabilities();
   OpenDevToolsWindow(kDebuggerTestPage, false);
+  LoadLegacyFilesInFrontend(window_);
   WebContents* wc = DevToolsWindowTesting::Get(window_)->main_web_contents();
+  const auto result = content::EvalJs(wc, content::JsReplace(R"(
+    (async function() {
+      return new Promise(resolve => {
+        Host.InspectorFrontendHost.getHostConfig(resolve);
+      });
+    })();
+  )"));
+  ASSERT_TRUE(result.value.is_dict());
+  auto* configConsoleInsights =
+      result.value.GetDict().FindDict("devToolsConsoleInsights");
 #if BUILDFLAG(GOOGLE_CHROME_BRANDING)
-  EXPECT_TRUE(hasQueryParam(wc, "&enableAida=true"));
-  EXPECT_TRUE(hasQueryParam(wc, "&ci_disabledByDefault=true"));
+  EXPECT_FALSE(configConsoleInsights->FindBool("blockedByFeatureFlag").value());
 #else
-  EXPECT_FALSE(hasQueryParam(wc, "&enableAida=true"));
-  EXPECT_FALSE(hasQueryParam(wc, "&ci_disabledByDefault=true"));
+  EXPECT_TRUE(configConsoleInsights->FindBool("blockedByFeatureFlag").value());
 #endif
-  EXPECT_FALSE(hasQueryParam(wc, "&ci_blockedByEnterprisePolicy=true"));
-  EXPECT_FALSE(hasQueryParam(wc, "&ci_blockedByAge=true"));
-  EXPECT_FALSE(hasQueryParam(wc, "&ci_blockedByGeo=true"));
+  EXPECT_FALSE(
+      configConsoleInsights->FindBool("blockedByEnterprisePolicy").value());
+  EXPECT_FALSE(configConsoleInsights->FindBool("blockedByAge").value());
+  EXPECT_FALSE(configConsoleInsights->FindBool("blockedByGeo").value());
+  EXPECT_TRUE(configConsoleInsights->FindBool("optIn").value());
   CloseDevToolsWindow();
 }
 
@@ -4075,16 +4060,28 @@ IN_PROC_BROWSER_TEST_F(DevToolsConsoleInsightsTest, IsNotEnabledForMinors) {
   g_browser_process->variations_service()->OverrideStoredPermanentCountry("us");
   SetupAccountCapabilities(true);
   OpenDevToolsWindow(kDebuggerTestPage, false);
+  LoadLegacyFilesInFrontend(window_);
   WebContents* wc = DevToolsWindowTesting::Get(window_)->main_web_contents();
+  const auto result = content::EvalJs(wc, content::JsReplace(R"(
+    (async function() {
+      return new Promise(resolve => {
+        Host.InspectorFrontendHost.getHostConfig(resolve);
+      });
+    })();
+  )"));
+  ASSERT_TRUE(result.value.is_dict());
+  auto* configConsoleInsights =
+      result.value.GetDict().FindDict("devToolsConsoleInsights");
 #if BUILDFLAG(GOOGLE_CHROME_BRANDING)
-  EXPECT_TRUE(hasQueryParam(wc, "&enableAida=true"));
-  EXPECT_TRUE(hasQueryParam(wc, "&ci_blockedByAge=true"));
+  EXPECT_FALSE(configConsoleInsights->FindBool("blockedByFeatureFlag").value());
+  EXPECT_TRUE(configConsoleInsights->FindBool("blockedByAge").value());
 #else
-  EXPECT_FALSE(hasQueryParam(wc, "&enableAida=true"));
-  EXPECT_FALSE(hasQueryParam(wc, "&ci_blockedByAge=true"));
+  EXPECT_TRUE(configConsoleInsights->FindBool("blockedByFeatureFlag").value());
+  EXPECT_FALSE(configConsoleInsights->FindBool("blockedByAge").value());
 #endif
-  EXPECT_FALSE(hasQueryParam(wc, "&ci_blockedByEnterprisePolicy=true"));
-  EXPECT_FALSE(hasQueryParam(wc, "&ci_blockedByGeo=true"));
+  EXPECT_FALSE(
+      configConsoleInsights->FindBool("blockedByEnterprisePolicy").value());
+  EXPECT_FALSE(configConsoleInsights->FindBool("blockedByGeo").value());
   CloseDevToolsWindow();
 }
 
@@ -4102,17 +4099,36 @@ IN_PROC_BROWSER_TEST_F(DevToolsConsoleInsightsTest,
   base::RunLoop().RunUntilIdle();
 
   OpenDevToolsWindow(kDebuggerTestPage, false);
+  LoadLegacyFilesInFrontend(window_);
   WebContents* wc = DevToolsWindowTesting::Get(window_)->main_web_contents();
+  const auto result = content::EvalJs(wc, content::JsReplace(R"(
+    (async function() {
+      return new Promise(resolve => {
+        Host.InspectorFrontendHost.getHostConfig(resolve);
+      });
+    })();
+  )"));
+  ASSERT_TRUE(result.value.is_dict());
+  auto* configConsoleInsights =
+      result.value.GetDict().FindDict("devToolsConsoleInsights");
 #if BUILDFLAG(GOOGLE_CHROME_BRANDING)
-  EXPECT_TRUE(hasQueryParam(wc, "&enableAida=true"));
-  EXPECT_TRUE(hasQueryParam(wc, "&ci_blockedByEnterprisePolicy=true"));
+  EXPECT_FALSE(configConsoleInsights->FindBool("blockedByFeatureFlag").value());
+  EXPECT_TRUE(
+      configConsoleInsights->FindBool("blockedByEnterprisePolicy").value());
 #else
-  EXPECT_FALSE(hasQueryParam(wc, "&enableAida=true"));
-  EXPECT_FALSE(hasQueryParam(wc, "&ci_blockedByEnterprisePolicy=true"));
+  EXPECT_TRUE(configConsoleInsights->FindBool("blockedByFeatureFlag").value());
+  EXPECT_FALSE(
+      configConsoleInsights->FindBool("blockedByEnterprisePolicy").value());
 #endif
   CloseDevToolsWindow();
+}
 
+IN_PROC_BROWSER_TEST_F(DevToolsConsoleInsightsTest,
+                       CanBeEnabledByEnterprisePolicy) {
+  g_browser_process->variations_service()->OverrideStoredPermanentCountry("us");
+  SetupAccountCapabilities();
   // Enable via enterprise policy.
+  policy::PolicyMap policies;
   policies.Set(policy::key::kDevToolsGenAiSettings,
                policy::POLICY_LEVEL_MANDATORY, policy::POLICY_SCOPE_USER,
                policy::POLICY_SOURCE_CLOUD, base::Value(/* allow */ 0),
@@ -4121,13 +4137,25 @@ IN_PROC_BROWSER_TEST_F(DevToolsConsoleInsightsTest,
   base::RunLoop().RunUntilIdle();
 
   OpenDevToolsWindow(kDebuggerTestPage, false);
-  wc = DevToolsWindowTesting::Get(window_)->main_web_contents();
+  LoadLegacyFilesInFrontend(window_);
+  WebContents* wc = DevToolsWindowTesting::Get(window_)->main_web_contents();
+  const auto result = content::EvalJs(wc, content::JsReplace(R"(
+    (async function() {
+      return new Promise(resolve => {
+        Host.InspectorFrontendHost.getHostConfig(resolve);
+      });
+    })();
+  )"));
+  ASSERT_TRUE(result.value.is_dict());
+  auto* configConsoleInsights =
+      result.value.GetDict().FindDict("devToolsConsoleInsights");
 #if BUILDFLAG(GOOGLE_CHROME_BRANDING)
-  EXPECT_TRUE(hasQueryParam(wc, "&enableAida=true"));
+  EXPECT_FALSE(configConsoleInsights->FindBool("blockedByFeatureFlag").value());
 #else
-  EXPECT_FALSE(hasQueryParam(wc, "&enableAida=true"));
+  EXPECT_TRUE(configConsoleInsights->FindBool("blockedByFeatureFlag").value());
 #endif
-  EXPECT_FALSE(hasQueryParam(wc, "&ci_blockedByEnterprisePolicy=true"));
+  EXPECT_FALSE(
+      configConsoleInsights->FindBool("blockedByEnterprisePolicy").value());
   CloseDevToolsWindow();
 }
 
@@ -4143,14 +4171,26 @@ IN_PROC_BROWSER_TEST_F(DevToolsConsoleInsightsTest,
   base::RunLoop().RunUntilIdle();
 
   OpenDevToolsWindow(kDebuggerTestPage, false);
+  LoadLegacyFilesInFrontend(window_);
   WebContents* wc = DevToolsWindowTesting::Get(window_)->main_web_contents();
+  const auto result = content::EvalJs(wc, content::JsReplace(R"(
+    (async function() {
+      return new Promise(resolve => {
+        Host.InspectorFrontendHost.getHostConfig(resolve);
+      });
+    })();
+  )"));
+  ASSERT_TRUE(result.value.is_dict());
+  auto* configConsoleInsights =
+      result.value.GetDict().FindDict("devToolsConsoleInsights");
 #if BUILDFLAG(GOOGLE_CHROME_BRANDING)
-  EXPECT_TRUE(hasQueryParam(wc, "&enableAida=true"));
-  EXPECT_TRUE(hasQueryParam(wc, "&ci_disallowLogging"));
+  EXPECT_FALSE(configConsoleInsights->FindBool("blockedByFeatureFlag").value());
+  EXPECT_TRUE(configConsoleInsights->FindBool("disallowLogging").value());
 #else
-  EXPECT_FALSE(hasQueryParam(wc, "&enableAida=true"));
+  EXPECT_TRUE(configConsoleInsights->FindBool("blockedByFeatureFlag").value());
 #endif
-  EXPECT_FALSE(hasQueryParam(wc, "&ci_blockedByEnterprisePolicy=true"));
+  EXPECT_FALSE(
+      configConsoleInsights->FindBool("blockedByEnterprisePolicy").value());
   CloseDevToolsWindow();
 }
 
@@ -4171,17 +4211,29 @@ class DevToolsConsoleInsightsBlockedByRegionTest : public DevToolsTest {
 IN_PROC_BROWSER_TEST_F(DevToolsConsoleInsightsBlockedByRegionTest,
                        IsBlockedByGeo) {
   OpenDevToolsWindow(kDebuggerTestPage, false);
+  LoadLegacyFilesInFrontend(window_);
   WebContents* wc = DevToolsWindowTesting::Get(window_)->main_web_contents();
+  const auto result = content::EvalJs(wc, content::JsReplace(R"(
+    (async function() {
+      return new Promise(resolve => {
+        Host.InspectorFrontendHost.getHostConfig(resolve);
+      });
+    })();
+  )"));
+  ASSERT_TRUE(result.value.is_dict());
+  auto* configConsoleInsights =
+      result.value.GetDict().FindDict("devToolsConsoleInsights");
 #if BUILDFLAG(GOOGLE_CHROME_BRANDING)
-  EXPECT_TRUE(hasQueryParam(wc, "&enableAida=true"));
-  EXPECT_TRUE(hasQueryParam(wc, "&ci_blockedByGeo=true"));
+  EXPECT_FALSE(configConsoleInsights->FindBool("blockedByFeatureFlag").value());
+  EXPECT_TRUE(configConsoleInsights->FindBool("blockedByGeo").value());
 #else
-  EXPECT_FALSE(hasQueryParam(wc, "&enableAida=true"));
-  EXPECT_FALSE(hasQueryParam(wc, "&ci_blockedByGeo=true"));
+  EXPECT_TRUE(configConsoleInsights->FindBool("blockedByFeatureFlag").value());
+  EXPECT_FALSE(configConsoleInsights->FindBool("blockedByGeo").value());
 #endif
-  EXPECT_FALSE(hasQueryParam(wc, "&ci_blockedByAge=true"));
-  EXPECT_FALSE(hasQueryParam(wc, "&ci_blockedByEnterprisePolicy=true"));
-  EXPECT_FALSE(hasQueryParam(wc, "&ci_blockedByRollout=true"));
+  EXPECT_FALSE(configConsoleInsights->FindBool("blockedByAge").value());
+  EXPECT_FALSE(
+      configConsoleInsights->FindBool("blockedByEnterprisePolicy").value());
+  EXPECT_FALSE(configConsoleInsights->FindBool("blockedByRollout").value());
   CloseDevToolsWindow();
 }
 
@@ -4202,17 +4254,29 @@ class DevToolsConsoleInsightsBlockedByRolloutTest : public DevToolsTest {
 IN_PROC_BROWSER_TEST_F(DevToolsConsoleInsightsBlockedByRolloutTest,
                        IsBlockedByRollout) {
   OpenDevToolsWindow(kDebuggerTestPage, false);
+  LoadLegacyFilesInFrontend(window_);
   WebContents* wc = DevToolsWindowTesting::Get(window_)->main_web_contents();
+  const auto result = content::EvalJs(wc, content::JsReplace(R"(
+    (async function() {
+      return new Promise(resolve => {
+        Host.InspectorFrontendHost.getHostConfig(resolve);
+      });
+    })();
+  )"));
+  ASSERT_TRUE(result.value.is_dict());
+  auto* configConsoleInsights =
+      result.value.GetDict().FindDict("devToolsConsoleInsights");
 #if BUILDFLAG(GOOGLE_CHROME_BRANDING)
-  EXPECT_TRUE(hasQueryParam(wc, "&enableAida=true"));
-  EXPECT_TRUE(hasQueryParam(wc, "&ci_blockedByRollout=true"));
+  EXPECT_FALSE(configConsoleInsights->FindBool("blockedByFeatureFlag").value());
+  EXPECT_TRUE(configConsoleInsights->FindBool("blockedByRollout").value());
 #else
-  EXPECT_FALSE(hasQueryParam(wc, "&enableAida=true"));
-  EXPECT_FALSE(hasQueryParam(wc, "&ci_blockedByRollout=true"));
+  EXPECT_TRUE(configConsoleInsights->FindBool("blockedByFeatureFlag").value());
+  EXPECT_FALSE(configConsoleInsights->FindBool("blockedByRollout").value());
 #endif
-  EXPECT_FALSE(hasQueryParam(wc, "&ci_blockedByAge=true"));
-  EXPECT_FALSE(hasQueryParam(wc, "&ci_blockedByEnterprisePolicy=true"));
-  EXPECT_FALSE(hasQueryParam(wc, "&ci_blockedByGeo=true"));
+  EXPECT_FALSE(configConsoleInsights->FindBool("blockedByAge").value());
+  EXPECT_FALSE(
+      configConsoleInsights->FindBool("blockedByEnterprisePolicy").value());
+  EXPECT_FALSE(configConsoleInsights->FindBool("blockedByGeo").value());
   CloseDevToolsWindow();
 }
 
