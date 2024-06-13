@@ -136,8 +136,6 @@ using base::UserMetricsAction;
              action:@selector(searchCopiedText:)]);
 #endif
 
-  self.textField.placeholderTextColor =
-      [UIColor colorNamed:kTextfieldPlaceholderColor];
   self.textField.placeholder = l10n_util::GetNSString(IDS_OMNIBOX_EMPTY_HINT);
 
   [_clearButton addTarget:self

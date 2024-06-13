@@ -287,44 +287,6 @@ NSString* const kOmniboxFadeAnimationKey = @"OmniboxFadeAnimation";
   }
 }
 
-#pragma mark animations
-
-- (void)animateFadeWithStyle:(OmniboxTextFieldFadeStyle)style {
-  // Animation values
-  BOOL isFadingIn = (style == OMNIBOX_TEXT_FIELD_FADE_STYLE_IN);
-  CGFloat beginOpacity = isFadingIn ? 0.0 : 1.0;
-  CGFloat endOpacity = isFadingIn ? 1.0 : 0.0;
-  CAMediaTimingFunction* opacityTiming = MaterialTimingFunction(
-      isFadingIn ? MaterialCurveEaseOut : MaterialCurveEaseIn);
-  CFTimeInterval delay = isFadingIn ? kMaterialDuration8 : 0.0;
-
-  CAAnimation* labelAnimation = OpacityAnimationMake(beginOpacity, endOpacity);
-  labelAnimation.duration =
-      isFadingIn ? kMaterialDuration6 : kMaterialDuration8;
-  labelAnimation.timingFunction = opacityTiming;
-  labelAnimation = DelayedAnimationMake(labelAnimation, delay);
-  CAAnimation* auxillaryViewAnimation =
-      OpacityAnimationMake(beginOpacity, endOpacity);
-  auxillaryViewAnimation.duration = kMaterialDuration8;
-  auxillaryViewAnimation.timingFunction = opacityTiming;
-  auxillaryViewAnimation = DelayedAnimationMake(auxillaryViewAnimation, delay);
-
-  for (UIView* subview in self.subviews) {
-    if ([subview isKindOfClass:[UILabel class]]) {
-      [subview.layer addAnimation:labelAnimation
-                           forKey:kOmniboxFadeAnimationKey];
-    } else {
-      [subview.layer addAnimation:auxillaryViewAnimation
-                           forKey:kOmniboxFadeAnimationKey];
-    }
-  }
-}
-
-- (void)cleanUpFadeAnimations {
-  RemoveAnimationForKeyFromLayers(kOmniboxFadeAnimationKey,
-                                  [self fadeAnimationLayers]);
-}
-
 #pragma mark - UI Refresh animation public helpers
 
 - (CGFloat)offsetForString:(NSString*)string {
@@ -383,31 +345,6 @@ NSString* const kOmniboxFadeAnimationKey = @"OmniboxFadeAnimation";
   self.defaultTextAttributes = attributes;
 }
 
-#pragma mark - Properties
-
-/// Font to use in regular x regular size class. If not set, the regular font is
-/// used instead.
-- (UIFont*)largerFont {
-  return PreferredFontForTextStyleWithMaxCategory(
-      UIFontTextStyleBody, self.traitCollection.preferredContentSizeCategory,
-      UIContentSizeCategoryAccessibilityExtraLarge);
-}
-
-/// Font to use in Compact x Any and Any x Compact size class.
-- (UIFont*)normalFont {
-  return PreferredFontForTextStyleWithMaxCategory(
-      UIFontTextStyleSubheadline,
-      self.traitCollection.preferredContentSizeCategory,
-      UIContentSizeCategoryAccessibilityExtraLarge);
-}
-
-/// Font that should be used in current size class.
-- (UIFont*)currentFont {
-  return IsCompactWidth(self) ? self.normalFont : self.largerFont;
-}
-
-#pragma mark - Private methods
-
 #pragma mark - UITextField
 
 // Ensures that attributedText always uses the proper style attributes.
@@ -455,9 +392,11 @@ NSString* const kOmniboxFadeAnimationKey = @"OmniboxFadeAnimation";
 }
 
 - (void)setPlaceholder:(NSString*)placeholder {
-  if (placeholder && self.placeholderTextColor) {
-    NSDictionary* attributes =
-        @{NSForegroundColorAttributeName : self.placeholderTextColor};
+  if (placeholder) {
+    NSDictionary* attributes = @{
+      NSForegroundColorAttributeName :
+          [UIColor colorNamed:kTextfieldPlaceholderColor]
+    };
     self.attributedPlaceholder =
         [[NSAttributedString alloc] initWithString:placeholder
                                         attributes:attributes];
@@ -468,10 +407,6 @@ NSString* const kOmniboxFadeAnimationKey = @"OmniboxFadeAnimation";
 
 - (void)setText:(NSString*)text {
   NSAttributedString* as = [[NSAttributedString alloc] initWithString:text];
-  if (self.text.length > 0 && as.length == 0) {
-    // Remove the fade animations before the subviews are removed.
-    [self cleanUpFadeAnimations];
-  }
   [self setTextInternal:as autocompleteLength:0];
 }
 
@@ -893,7 +828,32 @@ NSString* const kOmniboxFadeAnimationKey = @"OmniboxFadeAnimation";
   self.selectedTextRange = textRange;
 }
 
-#pragma mark - helpers
+#pragma mark - Private methods
+
+#pragma mark Font
+
+/// Font to use in regular x regular size class. If not set, the regular font is
+/// used instead.
+- (UIFont*)largerFont {
+  return PreferredFontForTextStyleWithMaxCategory(
+      UIFontTextStyleBody, self.traitCollection.preferredContentSizeCategory,
+      UIContentSizeCategoryAccessibilityExtraLarge);
+}
+
+/// Font to use in Compact x Any and Any x Compact size class.
+- (UIFont*)normalFont {
+  return PreferredFontForTextStyleWithMaxCategory(
+      UIFontTextStyleSubheadline,
+      self.traitCollection.preferredContentSizeCategory,
+      UIContentSizeCategoryAccessibilityExtraLarge);
+}
+
+/// Font that should be used in current size class.
+- (UIFont*)currentFont {
+  return IsCompactWidth(self) ? self.normalFont : self.largerFont;
+}
+
+#pragma mark Helpers
 
 /// Length of added text in the omnibox (autocomplete and additional text).
 - (NSUInteger)addedTextLength {
@@ -1057,17 +1017,9 @@ NSString* const kOmniboxFadeAnimationKey = @"OmniboxFadeAnimation";
   [self updateTextDirection];
 }
 
+/// Returns the background color for selected text.
 - (UIColor*)selectedTextBackgroundColor {
   return [self.tintColor colorWithAlphaComponent:0.2];
-}
-
-/// Returns the layers affected by animations added by `-animateFadeWithStyle:`.
-- (NSArray*)fadeAnimationLayers {
-  NSMutableArray* layers = [NSMutableArray array];
-  for (UIView* subview in self.subviews) {
-    [layers addObject:subview.layer];
-  }
-  return layers;
 }
 
 @end

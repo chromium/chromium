@@ -272,7 +272,6 @@ CGFloat Interpolate(CGFloat from, CGFloat to, CGFloat percent) {
                                         textColor:color
                                     textFieldTint:color
                                          iconTint:color];
-  omnibox.textField.placeholderTextColor = color;
   omnibox.textField.placeholder =
       l10n_util::GetNSString(IDS_OMNIBOX_EMPTY_HINT);
   [omnibox.textField setText:@""];

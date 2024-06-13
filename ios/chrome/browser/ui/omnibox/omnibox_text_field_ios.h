@@ -10,12 +10,6 @@
 #import "ios/chrome/browser/ui/omnibox/omnibox_keyboard_delegate.h"
 #import "ios/chrome/browser/ui/omnibox/omnibox_text_field_delegate.h"
 
-/// Enum type specifying the direction of fade animations.
-typedef enum {
-  OMNIBOX_TEXT_FIELD_FADE_STYLE_IN,
-  OMNIBOX_TEXT_FIELD_FADE_STYLE_OUT
-} OmniboxTextFieldFadeStyle;
-
 /// UITextField subclass to allow for adjusting borders.
 /// A textfield with a pre-edit state, inline autocomplete and additional text.
 /// - Pre-edit: the state when the text is "selected" and will erase upon
@@ -32,10 +26,8 @@ typedef enum {
 @property(nonatomic, weak) id<OmniboxKeyboardDelegate> omniboxKeyboardDelegate;
 
 /// Text displayed when in pre-edit state.
-@property(nonatomic, strong) NSString* preEditText;
 @property(nonatomic) BOOL clearingPreEditText;
-@property(nonatomic, readonly, strong) UIColor* selectedTextBackgroundColor;
-@property(nonatomic, strong) UIColor* placeholderTextColor;
+/// Optional text displayed after user and autocomplete text.
 @property(nonatomic, strong) NSAttributedString* additionalText;
 
 /// Whether the omnibox has a rich inline default suggestion. Only used when
@@ -97,11 +89,6 @@ typedef enum {
 /// Checks if direction of the omnibox text changed, and updates the
 /// UITextField. alignment if necessary.
 - (void)updateTextDirection;
-
-/// Fade in/out the text and auxiliary views depending on `style`.
-- (void)animateFadeWithStyle:(OmniboxTextFieldFadeStyle)style;
-/// Called when animations added by `-animateFadeWithStyle:` can be removed.
-- (void)cleanUpFadeAnimations;
 
 /// Returns an x offset for a given `string`. If no such `string` is found,
 /// returns some default offset. Used for focus/defocus animation.
