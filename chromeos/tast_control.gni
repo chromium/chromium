@@ -117,6 +117,9 @@ tast_disabled_tests_from_chrome_all = [
   "apps.LaunchHelpAppInBrowserMenu.stable_fieldtrial_testing_config_on@betty-pi-arc",
   "apps.LaunchHelpAppInBrowserMenu.stable_fieldtrial_testing_config_on@betty",
 
+  # b/346793249, b/330290054
+  "videoconferencing.OpenCLCacher",
+
   # READ COMMENT AT TOP BEFORE ADDING NEW TESTS HERE.
 ]
 
