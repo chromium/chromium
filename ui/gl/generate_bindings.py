@@ -1997,8 +1997,7 @@ GL_FUNCTIONS = [
       'GLenum target, GLenum pname, GLsizei bufSize, const GLint* params', },
 { 'return_type': 'void',
   'known_as': 'glTexStorage2DEXT',
-  'versions': [{ 'name': 'glTexStorage2D',
-                 'extensions': ['GL_ARB_texture_storage'] },
+  'versions': [{ 'name': 'glTexStorage2D' },
                { 'name': 'glTexStorage2DEXT',
                  'extensions': ['GL_EXT_texture_storage'] }],
   'arguments': 'GLenum target, GLsizei levels, GLenum internalformat, '
@@ -2009,8 +2008,7 @@ GL_FUNCTIONS = [
       'GLenum target, GLsizei samples, GLenum internalformat, '
       'GLsizei width, GLsizei height, GLboolean fixedsamplelocations', },
 { 'return_type': 'void',
-  'versions': [{ 'name': 'glTexStorage3D',
-                 'extensions': ['GL_ARB_texture_storage'] }],
+  'names': ['glTexStorage3D'],
   'arguments': 'GLenum target, GLsizei levels, GLenum internalformat, '
                'GLsizei width, GLsizei height, GLsizei depth', },
 { 'return_type': 'void',

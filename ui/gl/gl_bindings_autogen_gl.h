@@ -1954,7 +1954,6 @@ struct ExtensionsGL {
   bool b_GL_ARB_sync;
   bool b_GL_ARB_tessellation_shader;
   bool b_GL_ARB_texture_multisample;
-  bool b_GL_ARB_texture_storage;
   bool b_GL_ARB_texture_swizzle;
   bool b_GL_ARB_timer_query;
   bool b_GL_ARB_transform_feedback2;

@@ -357,8 +357,6 @@ void DriverGL::InitializeDynamicBindings(const GLVersionInfo* ver,
       gfx::HasExtension(extensions, "GL_ARB_tessellation_shader");
   ext.b_GL_ARB_texture_multisample =
       gfx::HasExtension(extensions, "GL_ARB_texture_multisample");
-  ext.b_GL_ARB_texture_storage =
-      gfx::HasExtension(extensions, "GL_ARB_texture_storage");
   ext.b_GL_ARB_texture_swizzle =
       gfx::HasExtension(extensions, "GL_ARB_texture_swizzle");
   ext.b_GL_ARB_timer_query =
@@ -2711,8 +2709,7 @@ void DriverGL::InitializeDynamicBindings(const GLVersionInfo* ver,
             GetGLProcAddress("glTexParameterivRobustANGLE"));
   }
 
-  if (ver->IsAtLeastGL(4u, 2u) || ver->IsAtLeastGLES(3u, 0u) ||
-      ext.b_GL_ARB_texture_storage) {
+  if (ver->IsAtLeastGL(4u, 2u) || ver->IsAtLeastGLES(3u, 0u)) {
     fn.glTexStorage2DEXTFn = reinterpret_cast<glTexStorage2DEXTProc>(
         GetGLProcAddress("glTexStorage2D"));
   } else if (ext.b_GL_EXT_texture_storage) {
@@ -2726,8 +2723,7 @@ void DriverGL::InitializeDynamicBindings(const GLVersionInfo* ver,
             GetGLProcAddress("glTexStorage2DMultisample"));
   }
 
-  if (ver->IsAtLeastGL(4u, 2u) || ver->IsAtLeastGLES(3u, 0u) ||
-      ext.b_GL_ARB_texture_storage) {
+  if (ver->IsAtLeastGL(4u, 2u) || ver->IsAtLeastGLES(3u, 0u)) {
     fn.glTexStorage3DFn = reinterpret_cast<glTexStorage3DProc>(
         GetGLProcAddress("glTexStorage3D"));
   }

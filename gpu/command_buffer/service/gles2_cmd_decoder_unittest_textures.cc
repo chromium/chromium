@@ -3683,7 +3683,7 @@ INSTANTIATE_TEST_SUITE_P(Service,
 TEST_P(GLES2DecoderTexStorageFormatAndTypeTest, ES2) {
   InitState init;
   init.gl_version = "OpenGL ES 2.0";
-  init.extensions = "GL_ARB_texture_storage";
+  init.extensions = "GL_EXT_texture_storage";
   init.bind_generates_resource = true;
   init.context_type = CONTEXT_TYPE_OPENGLES2;
   DoTexStorageFormatAndType(init, GL_RGBA8_OES, GL_RGBA);
@@ -3692,7 +3692,7 @@ TEST_P(GLES2DecoderTexStorageFormatAndTypeTest, ES2) {
 TEST_P(GLES2DecoderTexStorageFormatAndTypeTest, WebGL1) {
   InitState init;
   init.gl_version = "OpenGL ES 2.0";
-  init.extensions = "GL_ARB_texture_storage";
+  init.extensions = "GL_EXT_texture_storage";
   init.bind_generates_resource = true;
   init.context_type = CONTEXT_TYPE_WEBGL1;
   DoTexStorageFormatAndType(init, GL_RGBA8_OES, GL_RGBA);
