@@ -13,6 +13,7 @@
 #include "base/containers/contains.h"
 #include "base/containers/fixed_flat_map.h"
 #include "base/files/file_path.h"
+#include "base/functional/bind.h"
 #include "base/functional/callback.h"
 #include "base/memory/raw_ptr.h"
 #include "base/run_loop.h"
@@ -37,6 +38,8 @@
 #include "chrome/browser/ui/browser_tabstrip.h"
 #include "chrome/browser/ui/hats/mock_trust_safety_sentiment_service.h"
 #include "chrome/browser/ui/hats/trust_safety_sentiment_service_factory.h"
+#include "chrome/browser/ui/safety_hub/safety_hub_hats_service.h"
+#include "chrome/browser/ui/safety_hub/safety_hub_hats_service_factory.h"
 #include "chrome/browser/ui/safety_hub/safety_hub_test_util.h"
 #include "chrome/browser/ui/test/test_browser_ui.h"
 #include "chrome/browser/ui/ui_features.h"
@@ -369,12 +372,12 @@ class AppMenuBrowserTestSafetyHub : public AppMenuBrowserTest {
 
 IN_PROC_BROWSER_TEST_F(AppMenuBrowserTestSafetyHub,
                        Safety_Hub_shown_notification) {
-  safety_hub_test_util::RunUntilPasswordCheckCompleted(browser()->profile());
   auto* mock_sentiment_service = static_cast<MockTrustSafetySentimentService*>(
       TrustSafetySentimentServiceFactory::GetInstance()
           ->SetTestingFactoryAndUse(
               browser()->profile(),
               base::BindRepeating(&BuildMockTrustSafetySentimentService)));
+  safety_hub_test_util::RunUntilPasswordCheckCompleted(browser()->profile());
   safety_hub_test_util::GenerateSafetyHubMenuNotification(browser()->profile());
   menu_button()->ShowMenu(views::MenuRunner::SHOULD_SHOW_MNEMONICS);
   // Set the elapsed timer of the menu to start 10 seconds ago.
@@ -393,7 +396,8 @@ IN_PROC_BROWSER_TEST_F(AppMenuBrowserTestSafetyHub,
   EXPECT_CALL(
       *mock_sentiment_service,
       TriggerSafetyHubSurvey(
-          TrustSafetySentimentService::FeatureArea::kSafetyHubNotification));
+          TrustSafetySentimentService::FeatureArea::kSafetyHubNotification,
+          testing::_));
   menu_button()->CloseMenu();
 }
 }  // namespace

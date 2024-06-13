@@ -11,12 +11,11 @@
 #include "base/test/run_until.h"
 #include "chrome/browser/content_settings/host_content_settings_map_factory.h"
 #include "chrome/browser/permissions/notifications_engagement_service_factory.h"
+#include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/safety_hub/notification_permission_review_service_factory.h"
 #include "chrome/browser/ui/safety_hub/password_status_check_service_factory.h"
-#include "chrome/test/base/testing_profile.h"
 #include "components/content_settings/core/common/content_settings.h"
 #include "components/crx_file/id_util.h"
-#include "components/password_manager/core/browser/password_store/test_password_store.h"
 #include "extensions/browser/extension_prefs.h"
 #include "extensions/browser/extension_registry.h"
 #include "extensions/common/extension_builder.h"
@@ -91,7 +90,6 @@ static extensions::CWSInfoService::CWSInfo cws_info_no_trigger{
 namespace safety_hub_test_util {
 
 using password_manager::BulkLeakCheckService;
-using password_manager::TestPasswordStore;
 
 MockCWSInfoService::MockCWSInfoService(Profile* profile)
     : extensions::CWSInfoService(profile) {}
