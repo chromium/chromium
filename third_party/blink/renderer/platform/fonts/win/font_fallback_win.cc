@@ -517,12 +517,13 @@ const AtomicString& GetFontFamilyForScript(
 //    and just return it.
 //  - All the characters (or characters up to the point a single
 //    font can cover) need to be taken into account
-AtomicString GetFallbackFamily(UChar32 character,
-                               FontDescription::GenericFamilyType generic,
-                               const LayoutLocale* content_locale,
-                               FontFallbackPriority fallback_priority,
-                               const SkFontMgr& font_manager,
-                               UScriptCode& script_out) {
+const AtomicString& GetFallbackFamily(
+    UChar32 character,
+    FontDescription::GenericFamilyType generic,
+    const LayoutLocale* content_locale,
+    FontFallbackPriority fallback_priority,
+    const SkFontMgr& font_manager,
+    UScriptCode& script_out) {
   DCHECK(character);
   if (UNLIKELY(fallback_priority == FontFallbackPriority::kEmojiEmoji)) {
     if (const AtomicString& family = GetEmojiFont(font_manager)) {
@@ -578,8 +579,10 @@ AtomicString GetFallbackFamily(UChar32 character,
   // fallback fonts for now.
   int plane = character >> 16;
   switch (plane) {
-    case 1:
-      return AtomicString("code2001");
+    case 1: {
+      DEFINE_THREAD_SAFE_STATIC_LOCAL(AtomicString, kPlane1, ("code2001"));
+      return kPlane1;
+    }
     case 2:
       // Use a Traditional Chinese ExtB font if in Traditional Chinese locale.
       // Otherwise, use a Simplified Chinese ExtB font. Windows Japanese
@@ -587,12 +590,18 @@ AtomicString GetFallbackFamily(UChar32 character,
       // 0213), but its coverage is rather sparse.
       // Eventually, this should be controlled by lang/xml:lang.
       if (icu::Locale::getDefault() == icu::Locale::getTraditionalChinese()) {
-        return AtomicString("pmingliu-extb");
+        DEFINE_THREAD_SAFE_STATIC_LOCAL(AtomicString, kPlane2zht,
+                                        ("pmingliu-extb"));
+        return kPlane2zht;
       }
-      return AtomicString("simsun-extb");
-    default:
-      return AtomicString("lucida sans unicode");
+      DEFINE_THREAD_SAFE_STATIC_LOCAL(AtomicString, kPlane2zhs,
+                                      ("simsun-extb"));
+      return kPlane2zhs;
   }
+
+  DEFINE_THREAD_SAFE_STATIC_LOCAL(AtomicString, kLastResort,
+                                  ("lucida sans unicode"));
+  return kLastResort;
 }
 
 }  // namespace blink
