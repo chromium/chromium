@@ -68,6 +68,9 @@ interface CommerceInternalsHandler {
   // Return product specifications the user has synced.
   GetProductSpecificationsDetails() =>
      (array<ProductSpecificationsSet> product_specifications_set);
+  // Reset all statuses related to product specification feature. This includes
+  // removing all existing product specification sets of the current user.
+  ResetProductSpecifications();
 };
 
 // WebUI-side handler for requests from the browser.

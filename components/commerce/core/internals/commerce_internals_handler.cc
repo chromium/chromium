@@ -14,6 +14,7 @@
 #include "components/commerce/core/commerce_feature_list.h"
 #include "components/commerce/core/pref_names.h"
 #include "components/commerce/core/price_tracking_utils.h"
+#include "components/commerce/core/product_specifications/product_specifications_service.h"
 #include "components/commerce/core/product_specifications/product_specifications_set.h"
 #include "components/commerce/core/shopping_service.h"
 #include "components/commerce/core/webui/webui_utils.h"
@@ -260,4 +261,24 @@ void CommerceInternalsHandler::GetProductSpecificationsDetails(
   std::move(callback).Run(std::move(product_specifications_list));
 }
 
+void CommerceInternalsHandler::ResetProductSpecifications() {
+  auto* product_specifications_service =
+      shopping_service_->GetProductSpecificationsService();
+  if (!product_specifications_service) {
+    return;
+  }
+  product_specifications_service->GetAllProductSpecifications(base::BindOnce(
+      &CommerceInternalsHandler::DeleteAllProductSpecificationSets,
+      weak_ptr_factory_.GetWeakPtr()));
+}
+
+void CommerceInternalsHandler::DeleteAllProductSpecificationSets(
+    const std::vector<ProductSpecificationsSet> sets) {
+  auto* product_specifications_service =
+      shopping_service_->GetProductSpecificationsService();
+  for (auto& set : sets) {
+    product_specifications_service->DeleteProductSpecificationsSet(
+        set.uuid().AsLowercaseString());
+  }
+}
 }  // namespace commerce

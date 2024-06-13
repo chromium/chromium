@@ -84,6 +84,16 @@ function initialize() {
         getProxy().resetPriceTrackingEmailPref();
       });
 
+  const resetMessage =
+      'All your product specification sets will be removed. Are you sure?';
+  getRequiredElement('reset_product_specifications_button')
+      .addEventListener('click', () => {
+        if (confirm(resetMessage)) {
+          getProxy().resetProductSpecifications();
+          location.reload();
+        }
+      });
+
   getProxy().getCallbackRouter().onShoppingListEligibilityChanged.addListener(
       (eligible: boolean) => {
         updateShoppingListEligibleStatus(eligible);

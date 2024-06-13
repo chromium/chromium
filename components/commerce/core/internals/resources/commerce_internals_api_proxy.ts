@@ -55,6 +55,10 @@ export class CommerceInternalsApiProxy {
       Promise<{productSpecificationsSet: ProductSpecificationsSet[]}> {
     return this.handler.getProductSpecificationsDetails();
   }
+
+  resetProductSpecifications(): void {
+    return this.handler.resetProductSpecifications();
+  }
 }
 
 let instance: CommerceInternalsApiProxy|null = null;
