@@ -113,7 +113,7 @@ class UpdateNotificationControllerTest : public AshTestBase {
     return base::UTF16ToUTF8(GetNotification()->message());
   }
 
-  std::string GetNotificationButton(int index) {
+  std::string GetNotificationButtonText(int index) {
     return base::UTF16ToUTF8(GetNotification()->buttons().at(index).title);
   }
 
@@ -181,7 +181,7 @@ TEST_F(UpdateNotificationControllerTest, VisibilityAfterUpdate) {
   EXPECT_EQ("Learn more about the latest " +
                 base::UTF16ToUTF8(system_app_name_) + " update",
             GetNotificationMessage());
-  EXPECT_EQ("Restart to update", GetNotificationButton(0));
+  EXPECT_EQ("Restart", GetNotificationButtonText(0));
 
   // Click the restart button.
   message_center::MessageCenter::Get()->ClickOnNotificationButton(
@@ -220,7 +220,7 @@ TEST_F(UpdateNotificationControllerTest, VisibilityAfterUpdateWithSlowReboot) {
                 " update. This Chromebook needs to restart to apply an update. "
                 "This can take up to 1 minute.",
             GetNotificationMessage());
-  EXPECT_EQ("Restart to update", GetNotificationButton(0));
+  EXPECT_EQ("Restart", GetNotificationButtonText(0));
 
   // Ensure Slow Boot Dialog is not open.
   EXPECT_FALSE(GetSlowBootConfirmationDialog());
@@ -306,8 +306,8 @@ TEST_F(UpdateNotificationControllerTest,
   EXPECT_EQ(l10n_util::GetStringFUTF8(IDS_UPDATE_NOTIFICATION_MESSAGE_POWERWASH,
                                       chrome_os_device_name, system_app_name_),
             GetNotificationMessage());
-  EXPECT_EQ(l10n_util::GetStringUTF8(IDS_ASH_STATUS_TRAY_RESET_TO_UPDATE),
-            GetNotificationButton(0));
+  EXPECT_EQ(l10n_util::GetStringUTF8(IDS_UPDATE_NOTIFICATION_RESTART_BUTTON),
+            GetNotificationButtonText(0));
 }
 
 TEST_F(UpdateNotificationControllerTest, NoUpdateNotification) {
@@ -341,8 +341,8 @@ TEST_F(UpdateNotificationControllerTest, RollbackNotification) {
                                       base::ASCIIToUTF16(kDomain),
                                       chrome_os_device_name),
             GetNotificationMessage());
-  EXPECT_EQ(l10n_util::GetStringUTF8(IDS_ROLLBACK_NOTIFICATION_RESTART_BUTTON),
-            GetNotificationButton(0));
+  EXPECT_EQ(l10n_util::GetStringUTF8(IDS_UPDATE_NOTIFICATION_RESTART_BUTTON),
+            GetNotificationButtonText(0));
 }
 
 TEST_F(UpdateNotificationControllerTest, RollbackRecommendedNotification) {
@@ -373,8 +373,8 @@ TEST_F(UpdateNotificationControllerTest, RollbackRecommendedNotification) {
                                       base::ASCIIToUTF16(kDomain),
                                       chrome_os_device_name),
             GetNotificationMessage());
-  EXPECT_EQ(l10n_util::GetStringUTF8(IDS_ROLLBACK_NOTIFICATION_RESTART_BUTTON),
-            GetNotificationButton(0));
+  EXPECT_EQ(l10n_util::GetStringUTF8(IDS_UPDATE_NOTIFICATION_RESTART_BUTTON),
+            GetNotificationButtonText(0));
 }
 
 TEST_F(UpdateNotificationControllerTest,
@@ -405,8 +405,8 @@ TEST_F(UpdateNotificationControllerTest,
                 IDS_UPDATE_NOTIFICATION_MESSAGE_ROLLBACK_OVERDUE,
                 base::ASCIIToUTF16(kDomain), chrome_os_device_name),
             GetNotificationMessage());
-  EXPECT_EQ(l10n_util::GetStringUTF8(IDS_ROLLBACK_NOTIFICATION_RESTART_BUTTON),
-            GetNotificationButton(0));
+  EXPECT_EQ(l10n_util::GetStringUTF8(IDS_UPDATE_NOTIFICATION_RESTART_BUTTON),
+            GetNotificationButtonText(0));
 }
 
 TEST_F(UpdateNotificationControllerTest, RollbackRequiredNotification) {
@@ -441,8 +441,8 @@ TEST_F(UpdateNotificationControllerTest, RollbackRequiredNotification) {
                                       base::ASCIIToUTF16(kDomain),
                                       chrome_os_device_name),
             GetNotificationMessage());
-  EXPECT_EQ(l10n_util::GetStringUTF8(IDS_ROLLBACK_NOTIFICATION_RESTART_BUTTON),
-            GetNotificationButton(0));
+  EXPECT_EQ(l10n_util::GetStringUTF8(IDS_UPDATE_NOTIFICATION_RESTART_BUTTON),
+            GetNotificationButtonText(0));
 }
 
 TEST_F(UpdateNotificationControllerTest, SetUpdateNotificationRecommended) {
@@ -467,7 +467,7 @@ TEST_F(UpdateNotificationControllerTest, SetUpdateNotificationRecommended) {
   EXPECT_EQ(expected_notification_title, GetNotificationTitle());
   EXPECT_EQ(expected_notification_body, GetNotificationMessage());
   EXPECT_EQ(l10n_util::GetStringUTF8(IDS_UPDATE_NOTIFICATION_RESTART_BUTTON),
-            GetNotificationButton(0));
+            GetNotificationButtonText(0));
 }
 
 TEST_F(UpdateNotificationControllerTest,
@@ -493,7 +493,7 @@ TEST_F(UpdateNotificationControllerTest,
   EXPECT_EQ(expected_notification_title, GetNotificationTitle());
   EXPECT_EQ(expected_notification_body, GetNotificationMessage());
   EXPECT_EQ(l10n_util::GetStringUTF8(IDS_UPDATE_NOTIFICATION_RESTART_BUTTON),
-            GetNotificationButton(0));
+            GetNotificationButtonText(0));
 }
 
 TEST_F(UpdateNotificationControllerTest, SetUpdateNotificationRequiredDays) {
@@ -524,7 +524,7 @@ TEST_F(UpdateNotificationControllerTest, SetUpdateNotificationRequiredDays) {
   EXPECT_EQ(expected_notification_title, GetNotificationTitle());
   EXPECT_EQ(expected_notification_body, GetNotificationMessage());
   EXPECT_EQ(l10n_util::GetStringUTF8(IDS_UPDATE_NOTIFICATION_RESTART_BUTTON),
-            GetNotificationButton(0));
+            GetNotificationButtonText(0));
 }
 
 TEST_F(UpdateNotificationControllerTest,
@@ -595,7 +595,7 @@ TEST_F(UpdateNotificationControllerTest, SetUpdateNotificationRequiredHours) {
   EXPECT_EQ(expected_notification_title, GetNotificationTitle());
   EXPECT_EQ(expected_notification_body, GetNotificationMessage());
   EXPECT_EQ(l10n_util::GetStringUTF8(IDS_UPDATE_NOTIFICATION_RESTART_BUTTON),
-            GetNotificationButton(0));
+            GetNotificationButtonText(0));
 }
 
 TEST_F(UpdateNotificationControllerTest, SetUpdateNotificationRequiredMinutes) {
@@ -626,7 +626,7 @@ TEST_F(UpdateNotificationControllerTest, SetUpdateNotificationRequiredMinutes) {
   EXPECT_EQ(expected_notification_title, GetNotificationTitle());
   EXPECT_EQ(expected_notification_body, GetNotificationMessage());
   EXPECT_EQ(l10n_util::GetStringUTF8(IDS_UPDATE_NOTIFICATION_RESTART_BUTTON),
-            GetNotificationButton(0));
+            GetNotificationButtonText(0));
 }
 
 TEST_F(UpdateNotificationControllerTest, SetUpdateNotificationRequiredSeconds) {
@@ -657,7 +657,7 @@ TEST_F(UpdateNotificationControllerTest, SetUpdateNotificationRequiredSeconds) {
   EXPECT_EQ(expected_notification_title, GetNotificationTitle());
   EXPECT_EQ(expected_notification_body, GetNotificationMessage());
   EXPECT_EQ(l10n_util::GetStringUTF8(IDS_UPDATE_NOTIFICATION_RESTART_BUTTON),
-            GetNotificationButton(0));
+            GetNotificationButtonText(0));
 }
 
 // Simulates setting the notification back to the default after showing
@@ -687,7 +687,7 @@ TEST_F(UpdateNotificationControllerTest, SetBackToDefault) {
                 IDS_UPDATE_NOTIFICATION_MESSAGE_LEARN_MORE, system_app_name_),
             GetNotificationMessage());
   EXPECT_EQ(l10n_util::GetStringUTF8(IDS_UPDATE_NOTIFICATION_RESTART_BUTTON),
-            GetNotificationButton(0));
+            GetNotificationButtonText(0));
   EXPECT_NE(message_center::NotificationPriority::SYSTEM_PRIORITY,
             GetNotificationPriority());
 }
@@ -714,7 +714,7 @@ TEST_F(UpdateNotificationControllerTest,
       "Get the latest features and security improvements. Updates happen in "
       "the background.",
       GetNotificationMessage());
-  EXPECT_EQ("Update", GetNotificationButton(0));
+  EXPECT_EQ("Restart", GetNotificationButtonText(0));
 }
 
 TEST_F(UpdateNotificationControllerTest,

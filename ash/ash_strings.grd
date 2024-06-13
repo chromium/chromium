@@ -916,19 +916,6 @@ Style notes:
       <message name="IDS_ASH_STATUS_TRAY_FOCUS_MODE_SESSION_LESS_THAN_ONE_MINUTE" desc="The tooltip text for the tray bubble and the focus mode feature tile in the quick settings menu when the focus session is less than 1 minute.">
         less than 1 min
       </message>
-
-      <message name="IDS_ASH_STATUS_TRAY_UPDATE" desc="The label used in the tray popup to notify that the user should restart to get system updates.">
-        Restart to update
-      </message>
-
-      <message name="IDS_ASH_STATUS_TRAY_RESET_TO_UPDATE" desc="The label used in the tray popup to notify that the user should restart and powerwash the device to get system updates.">
-        Reset to update
-      </message>
-
-      <message name="IDS_ASH_STATUS_TRAY_UPDATE_OVER_CELLULAR_AVAILABLE" desc="The label used in the tray popup to notify that update is available but current connection is cellular.">
-        Click to view update details
-      </message>
-
       <message name="IDS_UPDATE_NOTIFICATION_TITLE" desc="The title of the notification to notify that the user should restart to get system updates.">
         Update device
       </message>
@@ -1017,13 +1004,7 @@ Style notes:
         Learn more about the latest <ph name="SYSTEM_APP_NAME">$1<ex>ChromiumOS</ex></ph> update
       </message>
       <message name="IDS_UPDATE_NOTIFICATION_RESTART_BUTTON" meaning="button label" desc="The label used as the button to restart system and update. Displayed as the action button of the notification for system update.">
-        Restart to update
-      </message>
-      <message name="IDS_UPDATE_NOTIFICATION_APPLY_UPDATE_BUTTON" meaning="button label" desc="The label used as the button to apply deferred update. Displayed as the action button of the notification for deferred system update.">
-        Update
-      </message>
-      <message name="IDS_ROLLBACK_NOTIFICATION_RESTART_BUTTON" meaning="button label" desc="The label used as the button to restart system to rollback. Displayed as the action button of the notification for system rollback.">
-        Reset
+        Restart
       </message>
       <message name="IDS_UPDATE_NOTIFICATION_MESSAGE_DEFERRED_UPDATE"  desc="The notification message used in the system notification update when update is downloaded but deferred.">
         Get the latest features and security improvements. Updates happen in the background.

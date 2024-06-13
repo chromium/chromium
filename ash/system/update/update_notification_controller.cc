@@ -8,6 +8,7 @@
 
 #include "ash/constants/notifier_catalogs.h"
 #include "ash/public/cpp/notification_utils.h"
+#include "ash/public/cpp/system_notification_builder.h"
 #include "ash/public/cpp/system_tray_client.h"
 #include "ash/public/cpp/update_types.h"
 #include "ash/resources/vector_icons/vector_icons.h"
@@ -36,8 +37,6 @@ using message_center::Notification;
 namespace ash {
 
 namespace {
-
-const char kNotifierId[] = "ash.update";
 
 const char kNotificationId[] = "chrome://update";
 
@@ -89,40 +88,34 @@ void UpdateNotificationController::GenerateUpdateNotification(
     slow_boot_file_path_exists_ = slow_boot_file_path_exists.value();
   }
 
-  std::unique_ptr<Notification> notification = CreateSystemNotificationPtr(
-      message_center::NOTIFICATION_TYPE_SIMPLE, kNotificationId, GetTitle(),
-      GetMessage(), std::u16string() /* display_source */, GURL(),
-      message_center::NotifierId(message_center::NotifierType::SYSTEM_COMPONENT,
-                                 kNotifierId, NotificationCatalogName::kUpdate),
-      message_center::RichNotificationData(),
-      base::MakeRefCounted<message_center::HandleNotificationClickDelegate>(
-          base::BindRepeating(
-              &UpdateNotificationController::HandleNotificationClick,
-              weak_ptr_factory_.GetWeakPtr())),
-      GetIcon(), GetWarningLevel());
-  notification->set_pinned(true);
+  message_center::RichNotificationData data;
+  data.pinned = true;
+
+  if (ShouldShowDeferredUpdate() || model_->update_required()) {
+    data.buttons.emplace_back(message_center::ButtonInfo(
+        l10n_util::GetStringUTF16(IDS_UPDATE_NOTIFICATION_RESTART_BUTTON)));
+  }
+
+  std::unique_ptr<Notification> notification =
+      ash::SystemNotificationBuilder()
+          .SetId(kNotificationId)
+          .SetCatalogName(NotificationCatalogName::kUpdate)
+          .SetTitle(GetTitle())
+          .SetMessage(GetMessage())
+          .SetOptionalFields(data)
+          .SetDelegate(base::MakeRefCounted<
+                       message_center::HandleNotificationClickDelegate>(
+              base::BindRepeating(
+                  &UpdateNotificationController::HandleNotificationClick,
+                  weak_ptr_factory_.GetWeakPtr())))
+          .SetSmallImage(GetIcon())
+          .SetWarningLevel(GetWarningLevel())
+          .BuildPtr(
+              /*keep_timestamp=*/false);
 
   if (model_->relaunch_notification_state().requirement_type ==
-      RelaunchNotificationState::kRequired)
+      RelaunchNotificationState::kRequired) {
     notification->SetSystemPriority();
-
-  if (ShouldShowDeferredUpdate()) {
-    notification->set_buttons(
-        {message_center::ButtonInfo(l10n_util::GetStringUTF16(
-            IDS_UPDATE_NOTIFICATION_APPLY_UPDATE_BUTTON))});
-  } else if (model_->update_required()) {
-    std::vector<message_center::ButtonInfo> notification_actions;
-    if (model_->rollback()) {
-      notification_actions.push_back(message_center::ButtonInfo(
-          l10n_util::GetStringUTF16(IDS_ROLLBACK_NOTIFICATION_RESTART_BUTTON)));
-    } else if (model_->factory_reset_required()) {
-      notification_actions.push_back(message_center::ButtonInfo(
-          l10n_util::GetStringUTF16(IDS_ASH_STATUS_TRAY_RESET_TO_UPDATE)));
-    } else {
-      notification_actions.push_back(message_center::ButtonInfo(
-          l10n_util::GetStringUTF16(IDS_UPDATE_NOTIFICATION_RESTART_BUTTON)));
-    }
-    notification->set_buttons(notification_actions);
   }
 
   MessageCenter::Get()->AddNotification(std::move(notification));
