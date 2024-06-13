@@ -41,9 +41,7 @@ TextWithControlsView::TextWithControlsView() {
   labels_wrapper_ = AddChildView(CreateLabelWrapper());
   title_ = labels_wrapper_->AddChildView(std::make_unique<views::Label>(
       std::u16string(), views::style::CONTEXT_DIALOG_BODY_TEXT));
-  if (features::IsChromeRefresh2023()) {
-    title_->SetTextStyle(views::style::STYLE_BODY_3_MEDIUM);
-  }
+  title_->SetTextStyle(views::style::STYLE_BODY_3_MEDIUM);
   title_->SetHorizontalAlignment(gfx::ALIGN_LEFT);
   const int toggle_size = GetLayoutConstant(PAGE_INFO_ICON_SIZE);
 

@@ -17,7 +17,6 @@
 #include "chrome/browser/ui/color/chrome_color_id.h"
 #include "chrome/browser/ui/layout_constants.h"
 #include "chrome/browser/ui/tabs/tab_types.h"
-#include "chrome/browser/ui/ui_features.h"
 #include "chrome/browser/ui/views/frame/browser_non_client_frame_view.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
 #include "chrome/browser/ui/views/frame/top_container_background.h"
@@ -33,7 +32,6 @@
 #include "third_party/skia/include/core/SkScalar.h"
 #include "third_party/skia/include/pathops/SkPathOps.h"
 #include "ui/base/theme_provider.h"
-#include "ui/base/ui_base_features.h"
 #include "ui/gfx/canvas.h"
 #include "ui/gfx/favicon_size.h"
 #include "ui/gfx/font_list.h"
@@ -1369,9 +1367,5 @@ TabStyleViews::~TabStyleViews() = default;
 
 // static
 std::unique_ptr<TabStyleViews> TabStyleViews::CreateForTab(Tab* tab) {
-  // If refresh is turned on use ChromeRefresh styling.
-  if (features::IsChromeRefresh2023()) {
-    return std::make_unique<ChromeRefresh2023TabStyleViews>(tab);
-  }
-  return std::make_unique<GM2TabStyleViews>(tab);
+  return std::make_unique<ChromeRefresh2023TabStyleViews>(tab);
 }
