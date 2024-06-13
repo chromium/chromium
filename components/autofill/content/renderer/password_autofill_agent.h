@@ -553,7 +553,7 @@ class PasswordAutofillAgent : public content::RenderFrameObserver,
 
   raw_ptr<AutofillAgent> autofill_agent_ = nullptr;
 
-  raw_ptr<PasswordGenerationAgent, DanglingUntriaged>
+  raw_ptr<PasswordGenerationAgent>
       password_generation_agent_;  // Weak reference.
 
 #if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)

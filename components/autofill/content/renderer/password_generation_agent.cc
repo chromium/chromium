@@ -242,7 +242,10 @@ PasswordGenerationAgent::PasswordGenerationAgent(
   password_agent_->SetPasswordGenerationAgent(this);
 }
 
-PasswordGenerationAgent::~PasswordGenerationAgent() = default;
+PasswordGenerationAgent::~PasswordGenerationAgent() {
+  // Reset the pointer to `this` to avoid its dangling.
+  password_agent_->SetPasswordGenerationAgent(nullptr);
+}
 
 void PasswordGenerationAgent::BindPendingReceiver(
     mojo::PendingAssociatedReceiver<mojom::PasswordGenerationAgent>
