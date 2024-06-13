@@ -2030,14 +2030,16 @@ export class ReadAnythingElement extends ReadAnythingElementBase {
     const highlightLength: number =
         chrome.readingMode.getNextWordHighlightLength(index);
     const element = this.domNodeToAxNodeIdMap_.keyFrom(highlightNode);
-    const startIndex =
-        chrome.readingMode.getCurrentTextStartIndex(highlightNode) + index;
-    const endIndex = startIndex + highlightLength;
+    const highlightStartIndex =
+        chrome.readingMode.getHighlightStartIndex(highlightNode, index);
+    const endIndex = highlightStartIndex + highlightLength;
     if (!element ||
-        element.textContent?.substring(startIndex, endIndex).trim() === '') {
+        element.textContent?.substring(highlightStartIndex, endIndex).trim() ===
+            '') {
       return;
     }
-    this.highlightCurrentText_(startIndex, endIndex, element as HTMLElement);
+    this.highlightCurrentText_(
+        highlightStartIndex, endIndex, element as HTMLElement);
   }
 
   highlightNodes(nextTextIds: number[], scrollIntoView: boolean = true) {

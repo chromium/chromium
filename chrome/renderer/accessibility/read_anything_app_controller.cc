@@ -895,6 +895,8 @@ gin::ObjectTemplateBuilder ReadAnythingAppController::GetObjectTemplateBuilder(
                  &ReadAnythingAppController::InitAXPositionWithNode)
       .SetMethod("getCurrentTextStartIndex",
                  &ReadAnythingAppController::GetCurrentTextStartIndex)
+      .SetMethod("getHighlightStartIndex",
+                 &ReadAnythingAppController::GetHighlightStartIndex)
       .SetMethod("getCurrentTextEndIndex",
                  &ReadAnythingAppController::GetCurrentTextEndIndex)
       .SetMethod("getCurrentText", &ReadAnythingAppController::GetCurrentText)
@@ -1622,6 +1624,11 @@ void ReadAnythingAppController::MovePositionToPreviousGranularity() {
 
 int ReadAnythingAppController::GetCurrentTextStartIndex(ui::AXNodeID node_id) {
   return model_.GetCurrentTextStartIndex(node_id);
+}
+
+int ReadAnythingAppController::GetHighlightStartIndex(ui::AXNodeID node_id,
+                                                      int boundary_index) {
+  return model_.GetHighlightStartIndex(node_id, boundary_index);
 }
 
 int ReadAnythingAppController::GetCurrentTextEndIndex(ui::AXNodeID node_id) {

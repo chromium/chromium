@@ -313,6 +313,10 @@ declare namespace chrome {
     // Returns -1 if the node is invalid.
     function getCurrentTextStartIndex(nodeId: number): number;
 
+    // The starting index for a granularity-based highlight of the given node.
+    function getHighlightStartIndex(nodeId: number, boundaryIndex: number):
+        number;
+
     // Gets the ending text index for the current Read Aloud text segment
     // for the given node. nodeId should be a node returned by getCurrentText or
     // getPreviousText. Returns -1 if the node is invalid.

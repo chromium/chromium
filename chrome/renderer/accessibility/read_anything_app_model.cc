@@ -14,6 +14,7 @@
 #include "base/strings/stringprintf.h"
 #include "chrome/renderer/accessibility/read_aloud_traversal_utils.h"
 #include "content/public/renderer/render_thread.h"
+#include "read_anything_app_model.h"
 #include "services/strings/grit/services_strings.h"
 #include "ui/accessibility/accessibility_features.h"
 #include "ui/accessibility/ax_enum_util.h"
@@ -1533,6 +1534,41 @@ int ReadAnythingAppModel::GetCurrentTextStartIndex(
       current_granularity.segments[node_id];
 
   return segment.text_start;
+}
+
+int ReadAnythingAppModel::GetHighlightStartIndex(const ui::AXNodeID& node_id,
+                                                 int boundary_index) {
+  if (processed_granularities_on_current_page_.size() < 1) {
+    return -1;
+  }
+
+  ReadAnythingAppModel::ReadAloudCurrentGranularity current_granularity =
+      processed_granularities_on_current_page_[processed_granularity_index_];
+  if (!current_granularity.segments.count(node_id)) {
+    return -1;
+  }
+
+  std::map<std::pair<int, int>, ui::AXNodeID> index_map =
+      current_granularity.index_map;
+  for (const auto& [range, id] : index_map) {
+    if (id == node_id && range.first <= boundary_index &&
+        range.second > boundary_index) {
+      // First shift the word boundary index by the starting position within
+      // the current speech segment. Then shift this by the starting position
+      // within the current node.
+      // The first shift is necessary to handle multiple nodes within the
+      // same speech segment. e.g.
+      //   Node 1: This is a
+      //   Node 2: link.
+      // While the second shift is necessary to handle multiple speech segments
+      // within the same node. e.g.
+      //   Node 1: This is a sentence read at once. This is a second sentence
+      //           processed after the first sentence completes.
+      return (boundary_index - range.first) + GetCurrentTextStartIndex(node_id);
+    }
+  }
+
+  return -1;
 }
 
 int ReadAnythingAppModel::GetCurrentTextEndIndex(const ui::AXNodeID& node_id) {

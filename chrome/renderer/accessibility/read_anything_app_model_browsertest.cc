@@ -4,6 +4,7 @@
 
 #include "chrome/renderer/accessibility/read_anything_app_model.h"
 
+#include <string>
 #include <vector>
 
 #include "base/memory/raw_ptr.h"
@@ -284,6 +285,10 @@ class ReadAnythingAppModelTest : public ChromeRenderViewTest {
   ui::AXNodeID GetNodeIdForCurrentSegmentIndex(int index) {
     ui::AXNodeID id = model_->GetNodeIdForCurrentSegmentIndex(index);
     return id;
+  }
+
+  ui::AXNodeID GetHighlightStartIndex(ui::AXNodeID& node_id, int index) {
+    return model_->GetHighlightStartIndex(node_id, index);
   }
 
   int GetWordLength(int index) {
@@ -1910,6 +1915,242 @@ TEST_F(ReadAnythingAppModelTest,
   EXPECT_EQ((int)after_reset.node_ids.size(), 1);
   EXPECT_TRUE(base::Contains(after_reset.node_ids, static_text1.id));
   EXPECT_EQ(first_granularity.text, sentence1);
+}
+
+TEST_F(ReadAnythingAppModelTest, GetHighlightStartIndex_ReturnsCorrectIndex) {
+  std::u16string sentence = u"I\'m crossing the line!";
+  ui::AXTreeUpdate update;
+  SetUpdateTreeID(&update);
+  ui::AXNodeData static_text;
+  static_text.id = 2;
+  static_text.role = ax::mojom::Role::kStaticText;
+  static_text.SetNameChecked(sentence);
+
+  update.nodes = {static_text};
+  AccessibilityEventReceived({update});
+  ProcessDisplayNodes({static_text.id});
+  InitAXPosition(update.nodes[0].id);
+
+  // Before there are any processed granularities, GetHighlightStartIndex
+  // should return an invalid id.
+  EXPECT_EQ(GetHighlightStartIndex(static_text.id, 1), -1);
+
+  std::vector<ui::AXNodeID> node_ids = GetCurrentText();
+  EXPECT_EQ((int)node_ids.size(), 1);
+
+  // Storing as a separate variable so we don't need to cast every time.
+  int sentence_length = (int)sentence.length();
+
+  // Since we just have one node with one text segment, the returned index
+  // should equal the passed parameter.
+  EXPECT_EQ(GetHighlightStartIndex(static_text.id, 0), 0);
+  EXPECT_EQ(GetHighlightStartIndex(static_text.id, 3), 3);
+  EXPECT_EQ(GetHighlightStartIndex(static_text.id, 7), 7);
+  EXPECT_EQ(GetHighlightStartIndex(static_text.id, sentence_length - 1),
+            sentence_length - 1);
+  EXPECT_EQ(GetHighlightStartIndex(static_text.id, sentence_length), -1);
+}
+
+TEST_F(ReadAnythingAppModelTest,
+       GetHighlightStartIndex_SegmentSpansMultipleNodes_ReturnsCorrectIndex) {
+  std::u16string sentence1 = u"And I\'m done holding back,";
+  std::u16string sentence2 = u"so lookout, clear the track- it\'s my";
+  std::u16string sentence3 = u"turn.";
+  ui::AXTreeUpdate update;
+  SetUpdateTreeID(&update);
+  ui::AXNodeData static_text1;
+  static_text1.id = 2;
+  static_text1.role = ax::mojom::Role::kStaticText;
+  static_text1.SetNameChecked(sentence1);
+
+  ui::AXNodeData static_text2;
+  static_text2.id = 3;
+  static_text2.role = ax::mojom::Role::kStaticText;
+  static_text2.SetNameChecked(sentence2);
+
+  ui::AXNodeData static_text3;
+  static_text3.id = 4;
+  static_text3.role = ax::mojom::Role::kStaticText;
+  static_text3.SetNameChecked(sentence3);
+  update.nodes = {static_text1, static_text2, static_text3};
+  AccessibilityEventReceived({update});
+  ProcessDisplayNodes({static_text1.id, static_text2.id, static_text3.id});
+  InitAXPosition(update.nodes[0].id);
+
+  // Before there are any processed granularities, GetHighlightStartIndex
+  // should return an invalid id.
+  EXPECT_EQ(GetHighlightStartIndex(static_text1.id, 1), -1);
+  EXPECT_EQ(GetHighlightStartIndex(static_text2.id, 1), -1);
+  EXPECT_EQ(GetHighlightStartIndex(static_text3.id, 1), -1);
+
+  std::vector<ui::AXNodeID> node_ids = GetCurrentText();
+  EXPECT_EQ((int)node_ids.size(), 3);
+
+  // Storing as a separate variable so we don't need to cast every time.
+  int sentence1_length = (int)sentence1.length();
+  int sentence2_length = (int)sentence2.length();
+  int sentence3_length = (int)sentence3.length();
+
+  // For the first node in the first segment, the returned index should equal
+  // the passed parameter.
+  EXPECT_EQ(GetHighlightStartIndex(static_text1.id, 0), 0);
+  EXPECT_EQ(GetHighlightStartIndex(static_text1.id, 3), 3);
+  EXPECT_EQ(GetHighlightStartIndex(static_text1.id, 7), 7);
+  EXPECT_EQ(GetHighlightStartIndex(static_text1.id, sentence1_length - 1),
+            sentence1_length - 1);
+  EXPECT_EQ(GetHighlightStartIndex(static_text1.id, sentence1_length), -1);
+
+  // For the second node, the correct index is the index that the boundary
+  // index corresponds to within the second node.
+  EXPECT_EQ(GetHighlightStartIndex(static_text2.id, sentence1_length), 0);
+  EXPECT_EQ(GetHighlightStartIndex(static_text2.id, sentence1_length + 3), 3);
+  EXPECT_EQ(GetHighlightStartIndex(static_text2.id, sentence1_length + 7), 7);
+  EXPECT_EQ(GetHighlightStartIndex(static_text2.id,
+                                   sentence1_length + sentence2_length - 1),
+            sentence2_length - 1);
+  EXPECT_EQ(GetHighlightStartIndex(static_text2.id,
+                                   sentence1_length + sentence2_length),
+            -1);
+
+  // For the third node, the correct index is the index that the boundary
+  // index corresponds to within the third node.
+  EXPECT_EQ(GetHighlightStartIndex(static_text3.id,
+                                   sentence1_length + sentence2_length),
+            0);
+  EXPECT_EQ(GetHighlightStartIndex(static_text3.id,
+                                   sentence1_length + sentence2_length + 1),
+            1);
+  EXPECT_EQ(GetHighlightStartIndex(
+                static_text3.id,
+                sentence1_length + sentence2_length + sentence3_length - 1),
+            sentence3_length - 1);
+  EXPECT_EQ(GetHighlightStartIndex(
+                static_text3.id,
+                sentence1_length + sentence2_length + sentence3_length),
+            -1);
+}
+
+TEST_F(ReadAnythingAppModelTest,
+       GetHighlightStartIndex_NodeSpansMultipleSegments_ReturnsCorrectIndex) {
+  std::u16string segment1 = u"I\'m taking what\'s mine! ";
+  std::u16string segment2 = u"Every drop, every smidge. ";
+  std::u16string segment3 = u"If I\'m burning a bridge, let it burn. ";
+  std::u16string segment4 = u"But I\'m crossing the ";
+
+  std::u16string node1_text = segment1 + segment2 + segment3 + segment4;
+  std::u16string node2_text = u"line.";
+  ui::AXTreeUpdate update;
+  SetUpdateTreeID(&update);
+  ui::AXNodeData static_text1;
+  static_text1.id = 2;
+  static_text1.role = ax::mojom::Role::kStaticText;
+  static_text1.SetNameChecked(node1_text);
+
+  ui::AXNodeData static_text2;
+  static_text2.id = 3;
+  static_text2.role = ax::mojom::Role::kStaticText;
+  static_text2.SetNameChecked(node2_text);
+
+  update.nodes = {static_text1, static_text2};
+  AccessibilityEventReceived({update});
+  ProcessDisplayNodes({static_text1.id, static_text2.id});
+  InitAXPosition(update.nodes[0].id);
+
+  // Before there are any processed granularities, GetHighlightStartIndex
+  // should return an invalid id.
+  EXPECT_EQ(GetHighlightStartIndex(static_text1.id, 1), -1);
+  EXPECT_EQ(GetHighlightStartIndex(static_text2.id, 1), -1);
+
+  std::vector<ui::AXNodeID> node_ids = GetCurrentText();
+  EXPECT_EQ((int)node_ids.size(), 1);
+
+  // Storing as a separate variable so we don't need to cast every time.
+  int segment1_length = (int)segment1.length();
+  int segment2_length = (int)segment2.length();
+  int segment3_length = (int)segment3.length();
+  int segment4_partial_length = (int)segment4.length();
+  int segment4_full_length = (int)segment4.length() + (int)node2_text.length();
+
+  // For the first node in the first segment, the returned index should equal
+  // the passed parameter.
+  EXPECT_EQ(GetHighlightStartIndex(static_text1.id, 0), 0);
+  EXPECT_EQ(GetHighlightStartIndex(static_text1.id, 6), 6);
+  EXPECT_EQ(GetHighlightStartIndex(static_text1.id, 15), 15);
+  EXPECT_EQ(GetHighlightStartIndex(static_text1.id, segment1_length - 1),
+            segment1_length - 1);
+  EXPECT_EQ(GetHighlightStartIndex(static_text1.id, segment1_length), -1);
+
+  // Move to segment 2.
+  MovePositionToNextGranularity();
+  node_ids = GetCurrentText();
+  EXPECT_EQ((int)node_ids.size(), 1);
+
+  // For the second segment, the boundary index will have reset for the new
+  // speech segment. The correct highlight start index is the index that the
+  // boundary index within the segment corresponds to within the node.
+  EXPECT_EQ(GetHighlightStartIndex(static_text1.id, 0), segment1_length);
+  EXPECT_EQ(GetHighlightStartIndex(static_text1.id, 10), segment1_length + 10);
+  EXPECT_EQ(GetHighlightStartIndex(static_text1.id, 13), segment1_length + 13);
+  EXPECT_EQ(GetHighlightStartIndex(static_text1.id, segment2_length - 1),
+            segment1_length + segment2_length - 1);
+  EXPECT_EQ(GetHighlightStartIndex(static_text1.id,
+                                   segment1_length + segment2_length),
+            -1);
+
+  // Move to segment 3.
+  MovePositionToNextGranularity();
+  node_ids = GetCurrentText();
+  EXPECT_EQ((int)node_ids.size(), 1);
+
+  // For the third segment, the boundary index will have reset for the new
+  // speech segment. The correct highlight start index is the index that the
+  // boundary index within the segment corresponds to within the node.
+  EXPECT_EQ(GetHighlightStartIndex(static_text1.id, 0),
+            segment1_length + segment2_length);
+  EXPECT_EQ(GetHighlightStartIndex(static_text1.id, 9),
+            segment1_length + segment2_length + 9);
+  EXPECT_EQ(GetHighlightStartIndex(static_text1.id, 13),
+            segment1_length + +segment2_length + 13);
+  EXPECT_EQ(GetHighlightStartIndex(static_text1.id, segment3_length - 1),
+            segment1_length + segment2_length + segment3_length - 1);
+  EXPECT_EQ(
+      GetHighlightStartIndex(
+          static_text1.id, segment1_length + segment2_length + segment3_length),
+      -1);
+
+  // Move to segment 4.
+  MovePositionToNextGranularity();
+  node_ids = GetCurrentText();
+  EXPECT_EQ((int)node_ids.size(), 2);
+  EXPECT_EQ((int)node_ids[0], static_text1.id);
+  EXPECT_EQ((int)node_ids[1], static_text2.id);
+
+  // For the fourth segment, there are two nodes. For the first node,
+  // the correct highlight start corresponds to the index within the first node.
+  EXPECT_EQ(GetHighlightStartIndex(static_text1.id, 0),
+            segment1_length + segment2_length + segment3_length);
+  EXPECT_EQ(GetHighlightStartIndex(static_text1.id, 2),
+            segment1_length + segment2_length + segment3_length + 2);
+  EXPECT_EQ(GetHighlightStartIndex(static_text1.id, 8),
+            segment1_length + segment2_length + segment3_length + 8);
+  EXPECT_EQ(
+      GetHighlightStartIndex(static_text1.id, segment4_partial_length - 1),
+      segment1_length + segment2_length + segment3_length +
+          segment4_partial_length - 1);
+  EXPECT_EQ(GetHighlightStartIndex(
+                static_text1.id, segment1_length + segment2_length +
+                                     segment3_length + segment4_partial_length),
+            -1);
+
+  // For the second node, the highlight index corresponds to the position within
+  // the second node.
+  EXPECT_EQ(GetHighlightStartIndex(static_text2.id, segment4_partial_length),
+            0);
+  EXPECT_EQ(
+      GetHighlightStartIndex(static_text2.id, segment4_partial_length + 2), 2);
+  EXPECT_EQ(GetHighlightStartIndex(static_text2.id, segment4_full_length - 1),
+            (int)node2_text.length() - 1);
+  EXPECT_EQ(GetHighlightStartIndex(static_text2.id, segment4_full_length), -1);
 }
 
 TEST_F(ReadAnythingAppModelTest,

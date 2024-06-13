@@ -374,6 +374,8 @@ class ReadAnythingAppModel {
   // segment.
   int GetCurrentTextStartIndex(const ui::AXNodeID& node_id);
 
+  int GetHighlightStartIndex(const ui::AXNodeID& node_id, int index);
+
   // Returns the Read Aloud ending text index for a node. For example,
   // if the entire text of the node should be read by Read Aloud at a particular
   // moment, this will return the length of the node's text. Returns -1 if the
