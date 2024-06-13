@@ -135,7 +135,7 @@ class MODULES_EXPORT CanvasRenderingContext2D final
     return context_lost_mode_ != kNotLostContext;
   }
 
-  bool ShouldAntialias() const override;
+  bool ShouldAntialias() const;
   void SetShouldAntialias(bool) override;
 
   void scrollPathIntoView();

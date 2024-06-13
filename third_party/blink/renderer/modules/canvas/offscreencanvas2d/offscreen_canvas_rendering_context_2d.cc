@@ -336,7 +336,12 @@ void OffscreenCanvasRenderingContext2D::WillDraw(
   DCHECK(GetPaintCanvas());
   dirty_rect_for_commit_.join(dirty_rect);
   GetCanvasPerformanceMonitor().DidDraw(draw_type);
-  Host()->DidDraw(dirty_rect_for_commit_);
+  if (GetState().ShouldAntialias()) {
+    SkIRect inflated_dirty_rect = dirty_rect_for_commit_.makeOutset(1, 1);
+    Host()->DidDraw(inflated_dirty_rect);
+  } else {
+    Host()->DidDraw(dirty_rect_for_commit_);
+  }
   if (!layer_count_) {
     // TODO(crbug.com/1246486): Make auto-flushing layer friendly.
     GetCanvasResourceProvider()->FlushIfRecordingLimitExceeded();

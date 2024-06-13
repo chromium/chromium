@@ -456,7 +456,12 @@ const MemoryManagedPaintRecorder* CanvasRenderingContext2D::Recorder() const {
 void CanvasRenderingContext2D::WillDraw(
     const SkIRect& dirty_rect,
     CanvasPerformanceMonitor::DrawType draw_type) {
-  CanvasRenderingContext::DidDraw(dirty_rect, draw_type);
+  if (ShouldAntialias()) {
+    SkIRect inflated_dirty_rect = dirty_rect.makeOutset(1, 1);
+    CanvasRenderingContext::DidDraw(inflated_dirty_rect, draw_type);
+  } else {
+    CanvasRenderingContext::DidDraw(dirty_rect, draw_type);
+  }
   // Always draw everything during printing.
   if (CanvasResourceProvider* provider = ResourceProvider();
       LIKELY(layer_count_ == 0) && LIKELY(provider != nullptr)) {

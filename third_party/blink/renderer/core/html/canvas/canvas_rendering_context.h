@@ -171,7 +171,6 @@ class CORE_EXPORT CanvasRenderingContext
     // coordinates in the bottom left corner.
     return Host()->GetRasterMode() == RasterMode::kCPU;
   }
-  virtual bool ShouldAntialias() const { return false; }
   // Called when the entire tab is backgrounded or unbackgrounded.
   // The page's visibility status can be queried at any time via
   // Host()->IsPageVisible().

@@ -608,14 +608,7 @@ void HTMLCanvasElement::DidDraw(const SkIRect& rect) {
   }
 
   canvas_is_clear_ = false;
-  const bool is_rendering_context2d = IsRenderingContext2D();
-  if (is_rendering_context2d && context_->ShouldAntialias()) {
-    gfx::RectF inflated_rect(gfx::SkIRectToRect(rect));
-    inflated_rect.Outset(1);
-    dirty_rect_.Union(inflated_rect);
-  } else {
-    dirty_rect_.Union(gfx::RectF(gfx::SkIRectToRect(rect)));
-  }
+  dirty_rect_.Union(gfx::Rect(gfx::SkIRectToRect(rect)));
 }
 
 void HTMLCanvasElement::PreFinalizeFrame() {
@@ -643,9 +636,9 @@ void HTMLCanvasElement::PostFinalizeFrame(FlushReason reason) {
     const base::TimeTicks start_time = base::TimeTicks::Now();
     if (scoped_refptr<CanvasResource> canvas_resource =
             ResourceProvider()->ProduceCanvasResource(reason)) {
-      const gfx::RectF src_rect((gfx::SizeF(Size())));
+      const gfx::Rect src_rect(Size());
       dirty_rect_.Intersect(src_rect);
-      const gfx::Rect int_dirty = gfx::ToEnclosingRect(dirty_rect_);
+      const gfx::Rect int_dirty = dirty_rect_;
       const SkIRect damage_rect = SkIRect::MakeXYWH(
           int_dirty.x(), int_dirty.y(), int_dirty.width(), int_dirty.height());
       const bool needs_vertical_flip = !canvas_resource->IsOriginTopLeft();
@@ -653,7 +646,7 @@ void HTMLCanvasElement::PostFinalizeFrame(FlushReason reason) {
                                        damage_rect, needs_vertical_flip,
                                        IsOpaque());
     }
-    dirty_rect_ = gfx::RectF();
+    dirty_rect_ = gfx::Rect();
   }
 
   // If the canvas is visible, notifying listeners is taken care of in
@@ -707,13 +700,13 @@ void HTMLCanvasElement::DoDeferredPaintInvalidation() {
   }
 
   if (IsRenderingContext2D()) {
-    gfx::RectF src_rect(0, 0, Size().width(), Size().height());
+    gfx::Rect src_rect(Size());
     dirty_rect_.Intersect(src_rect);
 
     gfx::RectF invalidation_rect;
     if (layout_box) {
-      gfx::RectF mapped_dirty_rect =
-          gfx::MapRect(dirty_rect_, src_rect, content_rect);
+      gfx::RectF mapped_dirty_rect = gfx::MapRect(
+          gfx::RectF(dirty_rect_), gfx::RectF(src_rect), content_rect);
       if (context_->IsComposited()) {
         // Composited 2D canvases need the dirty rect to be expressed relative
         // to the content box, as opposed to the layout box.
@@ -721,7 +714,7 @@ void HTMLCanvasElement::DoDeferredPaintInvalidation() {
       }
       invalidation_rect = mapped_dirty_rect;
     } else {
-      invalidation_rect = dirty_rect_;
+      invalidation_rect = gfx::RectF(dirty_rect_);
     }
 
     if (dirty_rect_.IsEmpty())
@@ -743,14 +736,14 @@ void HTMLCanvasElement::DoDeferredPaintInvalidation() {
     layout_box->SetShouldDoFullPaintInvalidation();
   }
 
-  dirty_rect_ = gfx::RectF();
+  dirty_rect_ = gfx::Rect();
 }
 
 void HTMLCanvasElement::Reset() {
   if (ignore_reset_)
     return;
 
-  dirty_rect_ = gfx::RectF();
+  dirty_rect_ = gfx::Rect();
 
   bool had_resource_provider = HasResourceProvider();
 
@@ -1496,7 +1489,7 @@ void HTMLCanvasElement::DiscardResourceProvider() {
   canvas2d_bridge_.reset();
   ResetLayer();
   CanvasResourceHost::DiscardResourceProvider();
-  dirty_rect_ = gfx::RectF();
+  dirty_rect_ = gfx::Rect();
 }
 
 void HTMLCanvasElement::UpdateSuspendOffscreenCanvasAnimation() {

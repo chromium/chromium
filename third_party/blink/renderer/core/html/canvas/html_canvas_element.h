@@ -392,8 +392,8 @@ class CORE_EXPORT HTMLCanvasElement final
   bool disposing_ = false;
   bool canvas_is_clear_ = true;
 
-  bool ignore_reset_;
-  gfx::RectF dirty_rect_;
+  bool ignore_reset_ = false;
+  gfx::Rect dirty_rect_;
 
   bool origin_clean_;
   bool needs_unbuffered_input_ = false;
