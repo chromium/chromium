@@ -6,6 +6,7 @@
 #define CHROME_RENDERER_ACCESSIBILITY_READ_ALOUD_APP_MODEL_H_
 
 #include "base/values.h"
+#include "chrome/common/accessibility/read_anything.mojom.h"
 #include "chrome/common/accessibility/read_anything_constants.h"
 
 // A class that holds state related to Read Aloud for the
@@ -29,10 +30,17 @@ class ReadAloudAppModel {
   void SetVoice(const std::string& voice, const std::string& lang) {
     voices_.Set(lang, voice);
   }
+  int highlight_granularity() const { return highlight_granularity_; }
+  void set_highlight_granularity(int granularity) {
+    highlight_granularity_ = granularity;
+  }
 
-  void OnSettingsRestoredFromPrefs(double speech_rate,
-                                   base::Value::List* languages_enabled_in_pref,
-                                   base::Value::Dict* voices);
+  bool IsHighlightOn();
+  void OnSettingsRestoredFromPrefs(
+      double speech_rate,
+      base::Value::List* languages_enabled_in_pref,
+      base::Value::Dict* voices,
+      read_anything::mojom::HighlightGranularity granularity);
 
  private:
   // Whether Read Aloud speech is currently playing or not.
@@ -47,6 +55,10 @@ class ReadAloudAppModel {
   // The user's preferred voices. Maps from a language to the last chosen
   // voice for that language.
   base::Value::Dict voices_;
+
+  // The current granularity being used for the reading highlight.
+  int highlight_granularity_ =
+      (int)read_anything::mojom::HighlightGranularity::kDefaultValue;
 };
 
 #endif  // CHROME_RENDERER_ACCESSIBILITY_READ_ALOUD_APP_MODEL_H_

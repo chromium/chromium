@@ -47,6 +47,14 @@ class ReadAnythingReadAloudAppModelTest : public ChromeRenderViewTest {
     model_->SetVoice(voice, lang);
   }
 
+  int HighlightGranularity() { return model_->highlight_granularity(); }
+
+  void SetHighlightGranularity(int granularity) {
+    model_->set_highlight_granularity(granularity);
+  }
+
+  bool IsHighlightOn() { return model_->IsHighlightOn(); }
+
  private:
   // ReadAloudAppModel constructor and destructor are private so it's
   // not accessible by std::make_unique.
@@ -105,4 +113,18 @@ TEST_F(ReadAnythingReadAloudAppModelTest, Voices) {
   EXPECT_TRUE(base::Contains(Voices(), lang1));
   EXPECT_TRUE(base::Contains(Voices(), lang2));
   EXPECT_STREQ(Voices().FindString(lang2)->c_str(), voice3);
+}
+
+TEST_F(ReadAnythingReadAloudAppModelTest, Highlight) {
+  EXPECT_EQ(HighlightGranularity(), 0);
+
+  const int off = 1;
+  SetHighlightGranularity(off);
+  EXPECT_EQ(HighlightGranularity(), off);
+  EXPECT_FALSE(IsHighlightOn());
+
+  const int on = 0;
+  SetHighlightGranularity(on);
+  EXPECT_EQ(HighlightGranularity(), on);
+  EXPECT_TRUE(IsHighlightOn());
 }

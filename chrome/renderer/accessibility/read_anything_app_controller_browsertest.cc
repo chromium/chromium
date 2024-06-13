@@ -312,6 +312,8 @@ class ReadAnythingAppControllerTest : public ChromeRenderViewTest {
 
   void OnImagesEnabledToggled() { controller_->OnImagesEnabledToggled(); }
 
+  bool IsHighlightOn() { return controller_->IsHighlightOn(); }
+
   void TurnedHighlightOn() { controller_->TurnedHighlightOn(); }
 
   void TurnedHighlightOff() { controller_->TurnedHighlightOff(); }
@@ -2458,7 +2460,10 @@ TEST_F(ReadAnythingAppControllerTest, TurnedHighlightOn_SavesHighlightState) {
               OnHighlightGranularityChanged(
                   read_anything::mojom::HighlightGranularity::kOff))
       .Times(0);
+
   TurnedHighlightOn();
+
+  EXPECT_TRUE(IsHighlightOn());
 }
 
 TEST_F(ReadAnythingAppControllerTest, TurnedHighlightOff_SavesHighlightState) {
@@ -2470,7 +2475,10 @@ TEST_F(ReadAnythingAppControllerTest, TurnedHighlightOff_SavesHighlightState) {
               OnHighlightGranularityChanged(
                   read_anything::mojom::HighlightGranularity::kOff))
       .Times(1);
+
   TurnedHighlightOff();
+
+  EXPECT_FALSE(IsHighlightOn());
 }
 
 TEST_F(ReadAnythingAppControllerTest,

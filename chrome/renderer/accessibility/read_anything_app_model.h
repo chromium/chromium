@@ -182,7 +182,6 @@ class ReadAnythingAppModel {
   float letter_spacing() const { return letter_spacing_; }
   float line_spacing() const { return line_spacing_; }
   int color_theme() const { return color_theme_; }
-  int highlight_granularity() const { return highlight_granularity_; }
   const SkColor& foreground_color() const { return foreground_color_; }
   const SkColor& background_color() const { return background_color_; }
 
@@ -249,8 +248,7 @@ class ReadAnythingAppModel {
       double font_size,
       bool links_enabled,
       bool images_enabled,
-      read_anything::mojom::Colors color,
-      read_anything::mojom::HighlightGranularity granularity);
+      read_anything::mojom::Colors color);
   void OnScroll(bool on_selection, bool from_reading_mode) const;
   void OnSelection(ax::mojom::EventFrom event_from);
 
@@ -559,8 +557,6 @@ class ReadAnythingAppModel {
   SkColor background_color_ = (int)read_anything::mojom::Colors::kDefaultValue;
   SkColor foreground_color_ = (int)read_anything::mojom::Colors::kDefaultValue;
   int color_theme_ = (int)read_anything::mojom::Colors::kDefaultValue;
-  int highlight_granularity_ =
-      (int)read_anything::mojom::HighlightGranularity::kDefaultValue;
 
   // Selection information.
   bool has_selection_ = false;

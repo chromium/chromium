@@ -25,7 +25,7 @@ export class FakeReadingMode {
 
   // Current audio settings values.
   speechRate: number = 1;
-  highlightGranularity: number = 1;
+  highlightGranularity: number = 0;
 
   // Enum values for various visual theme changes.
   standardLineSpacing: number = 0;
@@ -39,7 +39,6 @@ export class FakeReadingMode {
   darkTheme: number = 8;
   yellowTheme: number = 9;
   blueTheme: number = 10;
-  highlightOn: number = 0;
 
   // Whether the WebUI toolbar feature flag is enabled.
   isWebUIToolbarVisible: boolean = true;
@@ -64,6 +63,11 @@ export class FakeReadingMode {
   savedLanguagePref: Set<string> = new Set<string>();
 
   private maxNodeId: number = 5;
+
+  // Returns whether the reading highlight is currently on.
+  isHighlightOn(): boolean {
+    return this.highlightGranularity === 0;
+  }
 
   // Returns the stored user voice preference for the current language.
   getStoredVoice(): string {
@@ -225,10 +229,10 @@ export class FakeReadingMode {
 
   // Called when the highlight granularity is changed via the webui toolbar.
   turnedHighlightOn() {
-    this.highlightGranularity = 1;
+    this.highlightGranularity = 0;
   }
   turnedHighlightOff() {
-    this.highlightGranularity = 0;
+    this.highlightGranularity = 1;
   }
 
   // Returns the actual spacing value to use based on the given lineSpacing

@@ -742,11 +742,11 @@ void ReadAnythingAppController::OnSettingsRestoredFromPrefs(
     base::Value::List languages_enabled_in_pref,
     read_anything::mojom::HighlightGranularity granularity) {
   read_aloud_model_.OnSettingsRestoredFromPrefs(
-      speech_rate, &languages_enabled_in_pref, &voices);
+      speech_rate, &languages_enabled_in_pref, &voices, granularity);
   bool needs_redraw_for_links = model_.links_enabled() != links_enabled;
   model_.OnSettingsRestoredFromPrefs(line_spacing, letter_spacing, font,
                                      font_size, links_enabled, images_enabled,
-                                     color, granularity);
+                                     color);
   ExecuteJavaScript("chrome.readingMode.restoreSettingsFromPrefs();");
   // Only redraw if there is an active tree.
   if (needs_redraw_for_links &&
@@ -796,7 +796,6 @@ gin::ObjectTemplateBuilder ReadAnythingAppController::GetObjectTemplateBuilder(
       .SetProperty("colorTheme", &ReadAnythingAppController::ColorTheme)
       .SetProperty("highlightGranularity",
                    &ReadAnythingAppController::HighlightGranularity)
-      .SetProperty("highlightOn", &ReadAnythingAppController::HighlightOn)
       .SetProperty("defaultTheme", &ReadAnythingAppController::DefaultTheme)
       .SetProperty("lightTheme", &ReadAnythingAppController::LightTheme)
       .SetProperty("darkTheme", &ReadAnythingAppController::DarkTheme)
@@ -822,6 +821,7 @@ gin::ObjectTemplateBuilder ReadAnythingAppController::GetObjectTemplateBuilder(
                    &ReadAnythingAppController::RequiresDistillation)
       .SetProperty("defaultLanguageForSpeech",
                    &ReadAnythingAppController::GetDefaultLanguageCodeForSpeech)
+      .SetMethod("isHighlightOn", &ReadAnythingAppController::IsHighlightOn)
       .SetMethod("getChildren", &ReadAnythingAppController::GetChildren)
       .SetMethod("getDataFontCss", &ReadAnythingAppController::GetDataFontCss)
       .SetMethod("getTextDirection",
@@ -1023,7 +1023,7 @@ std::vector<std::string> ReadAnythingAppController::GetLanguagesEnabledInPref()
 }
 
 int ReadAnythingAppController::HighlightGranularity() const {
-  return model_.highlight_granularity();
+  return read_aloud_model_.highlight_granularity();
 }
 
 int ReadAnythingAppController::StandardLineSpacing() const {
@@ -1070,8 +1070,8 @@ int ReadAnythingAppController::BlueTheme() const {
   return static_cast<int>(read_anything::mojom::Colors::kBlue);
 }
 
-int ReadAnythingAppController::HighlightOn() const {
-  return static_cast<int>(read_anything::mojom::HighlightGranularity::kOn);
+bool ReadAnythingAppController::IsHighlightOn() {
+  return read_aloud_model_.IsHighlightOn();
 }
 
 std::vector<ui::AXNodeID> ReadAnythingAppController::GetChildren(
@@ -1509,13 +1509,15 @@ void ReadAnythingAppController::OnLanguagePrefChange(const std::string& lang,
 }
 
 void ReadAnythingAppController::TurnedHighlightOn() {
-  page_handler_->OnHighlightGranularityChanged(
-      read_anything::mojom::HighlightGranularity::kOn);
+  auto granularity = read_anything::mojom::HighlightGranularity::kOn;
+  page_handler_->OnHighlightGranularityChanged(granularity);
+  read_aloud_model_.set_highlight_granularity((int)granularity);
 }
 
 void ReadAnythingAppController::TurnedHighlightOff() {
-  page_handler_->OnHighlightGranularityChanged(
-      read_anything::mojom::HighlightGranularity::kOff);
+  auto granularity = read_anything::mojom::HighlightGranularity::kOff;
+  page_handler_->OnHighlightGranularityChanged(granularity);
+  read_aloud_model_.set_highlight_granularity((int)granularity);
 }
 
 double ReadAnythingAppController::GetLineSpacingValue(int line_spacing) const {

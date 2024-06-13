@@ -58,7 +58,6 @@ declare namespace chrome {
     let darkTheme: number;
     let yellowTheme: number;
     let blueTheme: number;
-    let highlightOn: number;
 
     // Whether the WebUI toolbar feature flag is enabled.
     let isWebUIToolbarVisible: boolean;
@@ -93,7 +92,10 @@ declare namespace chrome {
     // If distillations have been queued up.
     let requiresDistillation: boolean;
 
-    // Returns the stored user voice preference for the current language
+    // Returns whether the reading highlight is currently on.
+    function isHighlightOn(): boolean;
+
+    // Returns the stored user voice preference for the current language.
     function getStoredVoice(): string;
 
     // Returns the stored user preference for enabled languages.

@@ -156,7 +156,7 @@ class ReadAnythingAppController
   float LineSpacing() const;
   int ColorTheme() const;
   int HighlightGranularity() const;
-  int HighlightOn() const;
+  bool IsHighlightOn();
   int StandardLineSpacing() const;
   int LooseLineSpacing() const;
   int VeryLooseLineSpacing() const;

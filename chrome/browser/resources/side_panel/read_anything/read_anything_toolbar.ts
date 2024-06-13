@@ -373,7 +373,6 @@ export class ReadAnythingToolbarElement extends ReadAnythingToolbarElementBase {
   ];
 
   private isReadAloudEnabled_: boolean;
-  private isHighlightOn_: boolean = true;
   private activeButton_: HTMLElement|null;
   private areFontsLoaded_: boolean = false;
   private colorSuffix_: string = '';
@@ -560,9 +559,7 @@ export class ReadAnythingToolbarElement extends ReadAnythingToolbarElementBase {
       this.setCheckMarkForMenu_(
           this.$.rateMenu.getIfExists(), this.rateOptions_.indexOf(speechRate));
 
-      this.setHighlightState_(
-          chrome.readingMode.highlightGranularity ===
-          chrome.readingMode.highlightOn);
+      this.setHighlightState_(chrome.readingMode.isHighlightOn());
     }
     this.setCheckMarkForMenu_(
         this.$.colorMenu.getIfExists(),
@@ -706,25 +703,25 @@ export class ReadAnythingToolbarElement extends ReadAnythingToolbarElementBase {
     chrome.metricsPrivate.recordEnumerationValue(
         SPEECH_SETTINGS_CHANGE_UMA, ReadAloudSettingsChange.HIGHLIGHT_CHANGE,
         ReadAloudSettingsChange.COUNT);
-    if (this.isHighlightOn_) {
+    const isHighlightOn = chrome.readingMode.isHighlightOn();
+    if (isHighlightOn) {
       chrome.readingMode.turnedHighlightOff();
     } else {
       chrome.readingMode.turnedHighlightOn();
     }
 
-    const newHighlightState = this.isHighlightOn_ ?
+    const newHighlightState = isHighlightOn ?
         ReadAloudHighlightState.HIGHLIGHT_OFF :
         ReadAloudHighlightState.HIGHLIGHT_ON;
     chrome.metricsPrivate.recordEnumerationValue(
         HIGHLIGHT_STATE_UMA, newHighlightState, ReadAloudHighlightState.COUNT);
-    this.setHighlightState_(!this.isHighlightOn_);
+    this.setHighlightState_(!isHighlightOn);
   }
 
   private setHighlightState_(turnOn: boolean) {
     const button = this.$.toolbarContainer.querySelector('#highlight');
     assert(button, 'no highlight button');
-    this.isHighlightOn_ = turnOn;
-    if (this.isHighlightOn_) {
+    if (turnOn) {
       button.setAttribute('iron-icon', 'read-anything:highlight-on');
       button.setAttribute('title', loadTimeData.getString('turnHighlightOff'));
     } else {
@@ -733,7 +730,7 @@ export class ReadAnythingToolbarElement extends ReadAnythingToolbarElementBase {
     }
 
     this.emitEvent_(HIGHLIGHT_TOGGLE_EVENT, {
-      highlightOn: this.isHighlightOn_,
+      highlightOn: turnOn,
     });
   }
 

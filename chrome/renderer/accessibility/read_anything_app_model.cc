@@ -89,8 +89,7 @@ void ReadAnythingAppModel::OnSettingsRestoredFromPrefs(
     double font_size,
     bool links_enabled,
     bool images_enabled,
-    read_anything::mojom::Colors color,
-    read_anything::mojom::HighlightGranularity granularity) {
+    read_anything::mojom::Colors color) {
   line_spacing_ = GetLineSpacingValue(line_spacing);
   letter_spacing_ = GetLetterSpacingValue(letter_spacing);
   font_name_ = font;
@@ -98,7 +97,6 @@ void ReadAnythingAppModel::OnSettingsRestoredFromPrefs(
   links_enabled_ = links_enabled;
   images_enabled_ = images_enabled;
   color_theme_ = static_cast<size_t>(color);
-  highlight_granularity_ = static_cast<size_t>(granularity);
 }
 
 void ReadAnythingAppModel::InsertDisplayNode(const ui::AXNodeID& node) {
