@@ -29,6 +29,7 @@
 
 #include "third_party/blink/renderer/core/editing/serializers/serialization.h"
 
+#include "base/location.h"
 #include "base/memory/weak_ptr.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/metrics/histogram_macros.h"
@@ -882,8 +883,8 @@ static Document* CreateStagingDocumentForMarkupSanitization(
       nullptr,  // Frame* previous_sibling
       FrameInsertType::kInsertInConstructor, blink::LocalFrameToken(),
       nullptr,  // WindowAgentFactory*
-      nullptr   // InterfaceRegistry*
-  );
+      nullptr,  // InterfaceRegistry*
+      FROM_HERE);
   // Don't leak the actual viewport size to unsanitized markup
   LocalFrameView* frame_view =
       MakeGarbageCollected<LocalFrameView>(*frame, gfx::Size(800, 600));
