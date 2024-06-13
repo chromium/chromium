@@ -50,6 +50,9 @@ public final class DownloadNotificationFactory {
     // length the eTLD+1 is extracted and shown.
     public static final int MAX_ORIGIN_LENGTH = 40;
 
+    // Time out duration for success and failed download notification.
+    private static final long TIME_OUT_DURATION_IN_MILLIS = 60 * 60 * 1000;
+
     private static <T> void checkNotNull(T reference) {
         if (reference == null) {
             throw new NullPointerException();
@@ -292,11 +295,13 @@ public final class DownloadNotificationFactory {
                 if (downloadUpdate.getIcon() != null) {
                     builder.setLargeIcon(downloadUpdate.getIcon());
                 }
+                builder.setTimeoutAfter(TIME_OUT_DURATION_IN_MILLIS);
 
                 break;
             case DownloadNotificationService.DownloadStatus.FAILED:
                 iconId = android.R.drawable.stat_sys_download_done;
                 contentText = StringUtils.getFailStatusForUi(downloadUpdate.getFailState());
+                builder.setTimeoutAfter(TIME_OUT_DURATION_IN_MILLIS);
                 break;
             default:
                 iconId = -1;
