@@ -29,6 +29,7 @@
 #include "chrome/browser/web_applications/web_app_provider.h"
 #include "chrome/browser/web_applications/web_app_sync_bridge.h"
 #include "chrome/browser/web_applications/web_app_utils.h"
+#include "chrome/common/chrome_features.h"
 #include "chrome/test/base/ui_test_utils.h"
 #include "chromeos/crosapi/mojom/test_controller.mojom.h"
 #include "chromeos/lacros/lacros_service.h"
@@ -356,8 +357,13 @@ IN_PROC_BROWSER_TEST_F(LacrosWebAppShelfBrowserTest, CreateShortcut) {
 
     // Install app1 shortcut.
     browser()->tab_strip_model()->ActivateTabAt(/*index=*/1);
+    AppMenuCommandState install_pwa_state =
+        base::FeatureList::IsEnabled(features::kWebAppUniversalInstall)
+            ? kEnabled
+            : kNotPresent;
     EXPECT_EQ(GetAppMenuCommandState(IDC_CREATE_SHORTCUT, browser()), kEnabled);
-    EXPECT_EQ(GetAppMenuCommandState(IDC_INSTALL_PWA, browser()), kNotPresent);
+    EXPECT_EQ(GetAppMenuCommandState(IDC_INSTALL_PWA, browser()),
+              install_pwa_state);
 
     SetAutoAcceptWebAppDialogForTesting(
         /*auto_accept=*/true,

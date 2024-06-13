@@ -703,35 +703,31 @@ IN_PROC_BROWSER_TEST_F(MLPromotionBrowserTest,
                        MLPipelineNoCrashForExistingTracker) {
   NavigateAndAwaitMetricsCollectionPending(GetInstallableAppURL());
 
-#if BUILDFLAG(IS_CHROMEOS)
-  // Maintain the old assertion on ChromeOS, until universal install is enabled
-  // on CrOS.
-  ExpectClasificationCallReturnResult(
-      /*site_url=*/GetInstallableAppURL(),
-      /*manifest_id=*/GetInstallableAppURL(),
-      MLInstallabilityPromoter::kShowInstallPromptLabel, TrainingRequestId(1ll),
-      web_contents());
-#else
-  // The call to classify will happen twice, since a newly triggered navigation
-  // will close the dialog. This use-case will never be hit, but the test is
-  // still needed since universal install doesn't exist yet on CrOS.
-  ExpectClasificationCallReturnResult(
-      /*site_url=*/GetInstallableAppURL(),
-      /*manifest_id=*/GetInstallableAppURL(),
-      MLInstallabilityPromoter::kShowInstallPromptLabel, TrainingRequestId(1ll),
-      web_contents(), /*times_called=*/2);
-#endif  // BUILDFLAG(IS_CHROMEOS)
+  bool universal_install_enabled =
+      base::FeatureList::IsEnabled(::features::kWebAppUniversalInstall);
 
-  auto GetSimpleInstallDialogNameBasedOnUniversalInstall = []() {
-    if (base::FeatureList::IsEnabled(::features::kWebAppUniversalInstall)) {
-      return "WebAppSimpleInstallDialog";
-    }
-    return "PWAConfirmationBubbleView";
-  };
+  if (universal_install_enabled) {
+    // The call to classify will happen twice, since a newly triggered
+    // navigation will close the dialog.
+    ExpectClasificationCallReturnResult(
+        /*site_url=*/GetInstallableAppURL(),
+        /*manifest_id=*/GetInstallableAppURL(),
+        MLInstallabilityPromoter::kShowInstallPromptLabel,
+        TrainingRequestId(1ll), web_contents(), /*times_called=*/2);
+  } else {
+    // This assertion is still needed on CI trybots that do not enable the field
+    // trial configs.
+    ExpectClasificationCallReturnResult(
+        /*site_url=*/GetInstallableAppURL(),
+        /*manifest_id=*/GetInstallableAppURL(),
+        MLInstallabilityPromoter::kShowInstallPromptLabel,
+        TrainingRequestId(1ll), web_contents());
+  }
 
-  views::NamedWidgetShownWaiter waiter(
-      views::test::AnyWidgetTestPasskey{},
-      GetSimpleInstallDialogNameBasedOnUniversalInstall());
+  views::NamedWidgetShownWaiter waiter(views::test::AnyWidgetTestPasskey{},
+                                       universal_install_enabled
+                                           ? "WebAppSimpleInstallDialog"
+                                           : "PWAConfirmationBubbleView");
   chrome::ExecuteCommand(browser(), IDC_INSTALL_PWA);
   views::Widget* widget = waiter.WaitIfNeededAndGet();
   EXPECT_TRUE(widget != nullptr);
