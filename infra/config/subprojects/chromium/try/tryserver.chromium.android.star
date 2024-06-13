@@ -122,6 +122,22 @@ try_.builder(
 )
 
 try_.builder(
+    name = "android-tablet-14-arm64-fyi-rel",
+    description_html = "Run chromium tests on Android 14 Tablet.",
+    mirrors = [
+        "ci/android-tablet-14-arm64-fyi-rel",
+    ],
+    gn_args = gn_args.config(
+        configs = [
+            "ci/android-tablet-14-arm64-fyi-rel",
+            "release_try_builder",
+        ],
+    ),
+    contact_team_email = "clank-engprod@google.com",
+    siso_remote_jobs = siso.remote_jobs.LOW_JOBS_FOR_CQ,
+)
+
+try_.builder(
     name = "android-14-x64-rel",
     description_html = "Run chromium tests on Android 14 emulators.",
     mirrors = [

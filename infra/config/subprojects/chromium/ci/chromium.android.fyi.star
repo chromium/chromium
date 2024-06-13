@@ -327,6 +327,46 @@ ci.builder(
 )
 
 ci.builder(
+    name = "android-tablet-14-arm64-fyi-rel",
+    description_html = "Run chromium tests on Android 14 tablets.",
+    builder_spec = builder_config.builder_spec(
+        gclient_config = builder_config.gclient_config(
+            config = "chromium",
+            apply_configs = [
+                "android",
+            ],
+        ),
+        chromium_config = builder_config.chromium_config(
+            config = "android",
+            build_config = builder_config.build_config.RELEASE,
+            target_bits = 64,
+            target_platform = builder_config.target_platform.ANDROID,
+        ),
+        android_config = builder_config.android_config(
+            config = "main_builder_mb",
+        ),
+        build_gs_bucket = "chromium-android-archive",
+    ),
+    gn_args = gn_args.config(
+        configs = [
+            "android_builder",
+            "release_builder",
+            "remoteexec",
+            "minimal_symbols",
+            "arm64",
+            "strip_debug_info",
+            "webview_trichrome",
+        ],
+    ),
+    console_view_entry = consoles.console_view_entry(
+        category = "builder_tester|arm64|rel",
+        short_name = "tablet-14",
+    ),
+    contact_team_email = "clank-engprod@google.com",
+    execution_timeout = 4 * time.hour,
+)
+
+ci.builder(
     name = "android-15-x64-fyi-rel",
     description_html = "Run chromium tests on Android 15 emulators.",
     builder_spec = builder_config.builder_spec(
