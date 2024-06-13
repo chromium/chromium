@@ -68,7 +68,8 @@ class AuthFactorStore {
 
   AuthFactorStore(Shell* shell,
                   AuthHubConnector* connector,
-                  std::optional<AshAuthFactor> password_type);
+                  std::optional<AshAuthFactor> password_type,
+                  AuthHub* auth_hub);
   ~AuthFactorStore();
 
   base::CallbackListSubscription Subscribe(OnStateUpdatedCallback callback);
@@ -93,16 +94,27 @@ class AuthFactorStore {
   raw_ptr<AuthHubConnector> auth_hub_connector_;
 
   auth_panel::SubmitPasswordCallback submit_password_callback_;
+
+  raw_ptr<AuthHub> auth_hub_;
 };
 
 class AuthFactorStoreFactory {
  public:
+  explicit AuthFactorStoreFactory(AuthHub* auth_hub) : auth_hub_(auth_hub) {}
+
   std::unique_ptr<AuthFactorStore> CreateAuthFactorStore(
       Shell* shell,
       AuthHubConnector* connector,
       std::optional<AshAuthFactor> password_type) {
-    return std::make_unique<AuthFactorStore>(shell, connector, password_type);
+    return std::make_unique<AuthFactorStore>(shell, connector, password_type,
+                                             auth_hub_);
   }
+
+ private:
+  // AuthHub is a long-lived, singleton object. It's created early in Ash's
+  // lifecycle and destroyed late, after message loop stops. It is therefore
+  // guaranteed to outlive `AuthFactorStoreFactory` and `AuthFactorStore`.
+  raw_ptr<AuthHub> auth_hub_;
 };
 
 }  // namespace ash

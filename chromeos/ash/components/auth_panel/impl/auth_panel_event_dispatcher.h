@@ -30,6 +30,7 @@ class AuthPanelEventDispatcher {
       kCapslockKeyPressed,
       kPasswordTextfieldFocused,
       kPasswordTextfieldBlurred,
+      kEscapePressedOnPasswordTextfield,
       kMaxValue = kPasswordTextfieldBlurred,
     };
 

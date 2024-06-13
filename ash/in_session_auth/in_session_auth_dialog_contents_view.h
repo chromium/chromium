@@ -68,6 +68,9 @@ class InSessionAuthDialogContentsView : public views::View {
 
   void ShowAuthError(AshAuthFactor factor);
 
+  // views::View:
+  bool OnKeyPressed(const ui::KeyEvent& event) override;
+
  private:
   friend class TestApi;
 

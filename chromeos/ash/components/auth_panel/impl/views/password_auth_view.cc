@@ -222,16 +222,19 @@ AshAuthFactor PasswordAuthView::GetFactor() {
   return AshAuthFactor::kGaiaPassword;
 }
 
-bool PasswordAuthView::OnKeyPressed(const ui::KeyEvent& event) {
-  if (event.key_code() == ui::KeyboardCode::VKEY_RETURN) {
-    OnSubmitButtonPressed();
-    return true;
-  }
-  return false;
-}
-
 void PasswordAuthView::RequestFocus() {
   auth_textfield_->RequestFocus();
+}
+
+void PasswordAuthView::OnSubmit() {
+  OnSubmitButtonPressed();
+}
+
+void PasswordAuthView::OnEscape() {
+  dispatcher_->DispatchEvent(AuthPanelEventDispatcher::UserAction{
+      AuthPanelEventDispatcher::UserAction::Type::
+          kEscapePressedOnPasswordTextfield,
+      std::nullopt});
 }
 
 void PasswordAuthView::OnCapsLockChanged(bool enabled) {

@@ -32,8 +32,9 @@ AuthFactorStore::State::PasswordViewState::~PasswordViewState() = default;
 
 AuthFactorStore::AuthFactorStore(Shell* shell,
                                  AuthHubConnector* connector,
-                                 std::optional<AshAuthFactor> password_type)
-    : auth_hub_connector_(connector) {
+                                 std::optional<AshAuthFactor> password_type,
+                                 AuthHub* auth_hub)
+    : auth_hub_connector_(connector), auth_hub_(auth_hub) {
   password_type_ = password_type;
 
   auto* ime_controller = shell->ime_controller();
@@ -115,6 +116,13 @@ void AuthFactorStore::OnUserAction(
       CHECK(state_.password_view_state_.has_value());
 
       state_.password_view_state_->is_password_textfield_focused_ = false;
+      break;
+    }
+    case AuthPanelEventDispatcher::UserAction::
+        kEscapePressedOnPasswordTextfield: {
+      CHECK(state_.password_view_state_.has_value());
+
+      auth_hub_->CancelCurrentAttempt(auth_hub_connector_);
       break;
     }
   }

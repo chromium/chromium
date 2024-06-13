@@ -225,7 +225,7 @@ void InSessionAuthDialogContentsView::AddAuthPanel(
     AuthHubConnector* connector) {
   auth_panel_ = AddChildView(std::make_unique<AuthPanel>(
       std::make_unique<FactorAuthViewFactory>(),
-      std::make_unique<AuthFactorStoreFactory>(),
+      std::make_unique<AuthFactorStoreFactory>(auth_hub_),
       std::make_unique<AuthPanelEventDispatcherFactory>(),
       std::move(on_end_authentication), std::move(on_ui_initialized),
       connector));
@@ -254,6 +254,14 @@ void InSessionAuthDialogContentsView::ShowAuthError(AshAuthFactor factor) {
   }
 
   title_->SetEnabledColorId(cros_tokens::kCrosSysError);
+}
+
+bool InSessionAuthDialogContentsView::OnKeyPressed(const ui::KeyEvent& event) {
+  if (event.key_code() == ui::KeyboardCode::VKEY_ESCAPE) {
+    auth_hub_->CancelCurrentAttempt(connector_);
+    return true;
+  }
+  return false;
 }
 
 void InSessionAuthDialogContentsView::OnCloseButtonPressed() {

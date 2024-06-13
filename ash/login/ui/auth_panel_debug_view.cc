@@ -114,7 +114,7 @@ void AuthPanelDebugView::OnUserAuthAttemptConfirmed(
   // AddAuthPanel
   auto* auth_panel = AddChildView(std::make_unique<AuthPanel>(
       std::make_unique<FactorAuthViewFactory>(),
-      std::make_unique<AuthFactorStoreFactory>(),
+      std::make_unique<AuthFactorStoreFactory>(AuthHub::Get()),
       std::make_unique<AuthPanelEventDispatcherFactory>(),
       base::BindOnce(&AuthPanelDebugView::OnEndAuthentication,
                      weak_ptr_factory_.GetWeakPtr()),

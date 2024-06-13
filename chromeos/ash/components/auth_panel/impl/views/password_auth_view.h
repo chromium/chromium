@@ -71,7 +71,6 @@ class PasswordAuthView : public FactorAuthView,
   void OnStateChanged(const AuthFactorStore::State& state) override;
 
   // views::View:
-  bool OnKeyPressed(const ui::KeyEvent& event) override;
   void RequestFocus() override;
   gfx::Size CalculatePreferredSize(
       const views::SizeBounds& available_size) const override;
@@ -79,6 +78,10 @@ class PasswordAuthView : public FactorAuthView,
   // ImeControllerImpl::Observer:
   void OnCapsLockChanged(bool enabled) override;
   void OnKeyboardLayoutNameChanged(const std::string& layout_name) override {}
+
+  // AuthTextfield::Observer:
+  void OnSubmit() override;
+  void OnEscape() override;
 
  private:
   class LoginPasswordRow;

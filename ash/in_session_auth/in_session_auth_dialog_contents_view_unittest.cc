@@ -172,6 +172,16 @@ class InSessionAuthDialogContentsViewTest : public AshTestBase {
     generator->ClickLeftButton();
   }
 
+  void PressAndReleaseEscapeButton() {
+    auto* generator = GetEventGenerator();
+    generator->PressAndReleaseKey(ui::KeyboardCode::VKEY_ESCAPE);
+  }
+
+  void PressAndReleaseEnterButton() {
+    auto* generator = GetEventGenerator();
+    generator->PressAndReleaseKey(ui::KeyboardCode::VKEY_RETURN);
+  }
+
   void SubmitPassword() {
     views::View* submit_password_button =
         password_auth_view_test_api_->GetSubmitPasswordButton();
@@ -347,6 +357,37 @@ TEST_F(InSessionAuthDialogContentsViewTest,
   contents_view_->GetAuthPanel()->OnEndAuthentication();
 
   ASSERT_EQ(end_authentication_notifications_, 1);
+}
+
+TEST_F(InSessionAuthDialogContentsViewTest, AuthPanelClosesOnEscapePressed) {
+  CreateAndShowDialog();
+  InitializeUiWithOnlyPasswordFactor();
+  NotifyAuthPanelPasswordFactorReady();
+
+  EXPECT_CALL(*auth_hub_, CancelCurrentAttempt);
+  PressAndReleaseEscapeButton();
+}
+
+TEST_F(InSessionAuthDialogContentsViewTest,
+       AuthPanelSubmitsPasswordOnEnterPressed) {
+  CreateAndShowDialog();
+  InitializeUiWithOnlyPasswordFactor();
+  NotifyAuthPanelPasswordFactorReady();
+  TypePasswordAndAssertEnteredCorrectly(kExpectedPassword);
+
+  ASSERT_EQ(password_auth_view_test_api_->GetPasswordTextfield()->GetText(),
+            base::UTF8ToUTF16(std::string{kExpectedPassword}));
+
+  base::test::TestFuture<AuthHubConnector*, AshAuthFactor, const std::string&>
+      future;
+  auth_panel_test_api_->SetSubmitPasswordCallback(
+      future.GetRepeatingCallback());
+
+  PressAndReleaseEnterButton();
+
+  auto [connector, factor, password] = future.Take();
+  EXPECT_EQ(password, std::string{kExpectedPassword});
+  EXPECT_EQ(connector, auth_hub_connector_.get());
 }
 
 }  // namespace ash
