@@ -7751,14 +7751,14 @@
   {
     "name": "safety-check-unused-site-permissions",
     "owners": ["sideyilmaz@chromium.org"],
-    "expiry_milestone": 128
+    "expiry_milestone": 130
   },
   {
     "name": "safety-hub",
     "owners": [
       "sideyilmaz@chromium.org"
     ],
-    "expiry_milestone": 128
+    "expiry_milestone": 130
   },
   {
     "name": "safety-hub-abusive-notification-revocation",
