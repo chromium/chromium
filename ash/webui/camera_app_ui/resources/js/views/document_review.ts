@@ -29,9 +29,11 @@ import {
 } from '../mojo/type.js';
 import * as nav from '../nav.js';
 import {speakMessage} from '../spoken_msg.js';
+import * as state from '../state.js';
 import {show as showToast} from '../toast.js';
 import {
   MimeType,
+  PerfEvent,
   Rotation,
   ViewName,
 } from '../type.js';
@@ -243,22 +245,30 @@ export class DocumentReview extends View {
             this.pages.length > 1 ? MimeType.PDF : MimeType.JPEG,
         );
       },
-      onSave: (mimeType: MimeType.JPEG|MimeType.PDF) => {
+      onSave: async (mimeType: MimeType.JPEG|MimeType.PDF) => {
+        if (mimeType === MimeType.PDF) {
+          state.set(PerfEvent.DOCUMENT_PDF_SAVING, true);
+        }
         this.sendResultEvent(
             mimeType === MimeType.JPEG ? DocScanResultActionType.SAVE_AS_PHOTO :
                                          DocScanResultActionType.SAVE_AS_PDF);
         nav.open(ViewName.FLASH);
-        this.save(mimeType)
-            .then(() => {
-              this.clearPages();
-              this.close();
-            })
-            .catch(() => {
-              showToast(I18nString.ERROR_MSG_SAVE_FILE_FAILED);
-            })
-            .finally(() => {
-              nav.close(ViewName.FLASH);
-            });
+        let hasError = false;
+        const pageCount = this.pages.length;
+        try {
+          await this.save(mimeType);
+          this.clearPages();
+          this.close();
+        } catch (e) {
+          hasError = true;
+          showToast(I18nString.ERROR_MSG_SAVE_FILE_FAILED);
+        } finally {
+          nav.close(ViewName.FLASH);
+          if (mimeType === MimeType.PDF) {
+            state.set(
+                PerfEvent.DOCUMENT_PDF_SAVING, false, {hasError, pageCount});
+          }
+        }
       },
     });
     this.modes = {

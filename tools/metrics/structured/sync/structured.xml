@@ -1686,7 +1686,7 @@
     </metric>
     <metric name="PageCount" type="int">
       <summary>
-        Integer indicating how many pages are there in the document scanning result.
+        Integer indicating how many pages are saved from document scanning.
       </summary>
     </metric>
   </event>
@@ -1762,6 +1762,11 @@
       <summary>
         The resolution height of the camera. Will be 0 if the resolution information
         is not provided.
+      </summary>
+    </metric>
+    <metric name="PageCount" type="int">
+      <summary>
+        Integer indicating how many pages are there in the document scanning result.
       </summary>
     </metric>
   </event>

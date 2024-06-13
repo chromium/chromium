@@ -10,7 +10,9 @@ import {BarcodeScanner, ScanBarcodeResult} from './models/barcode.js';
 import {getChromeFlag} from './models/load_time_data.js';
 import {Ocr, PerformOcrResult} from './ocr.js';
 import * as scannerChip from './scanner_chip.js';
+import * as state from './state.js';
 import {OneShotTimer} from './timer.js';
+import {PerfEvent} from './type.js';
 
 // The interval between consecutive preview scans in milliseconds.
 export const BARCODE_SCAN_INTERVAL = 200;
@@ -150,7 +152,10 @@ export class PhotoModeAutoScanner {
     const ocrScanner = new Ocr(this.video);
     return new AsyncIntervalRunner(async (stopped) => {
       const startTime = performance.now();
+      // TODO(chuhsuan): Add other dimensions like `facing` and `resolution`.
+      state.set(PerfEvent.OCR_SCANNING, true);
       const result = await ocrScanner.performOcr();
+      state.set(PerfEvent.OCR_SCANNING, false);
       if (stopped.isSignaled()) {
         return;
       }
