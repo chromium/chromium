@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/ui/views/desktop_capture/desktop_media_permission_pane_view.h"
+#include "chrome/browser/ui/views/desktop_capture/desktop_media_permission_pane_view_mac.h"
 
 #include "base/mac/mac_util.h"
 #include "base/metrics/user_metrics.h"
@@ -60,7 +60,7 @@ std::u16string GetLabelText(DesktopMediaList::Type type) {
 
 }  // namespace
 
-DesktopMediaPermissionPaneView::DesktopMediaPermissionPaneView(
+DesktopMediaPermissionPaneViewMac::DesktopMediaPermissionPaneViewMac(
     DesktopMediaList::Type type,
     base::RepeatingCallback<void()> open_screen_recording_settings_callback)
     : type_(type),
@@ -97,24 +97,26 @@ DesktopMediaPermissionPaneView::DesktopMediaPermissionPaneView(
   button_ =
       button_container->AddChildView(std::make_unique<views::MdTextButton>(
           base::BindRepeating(
-              &DesktopMediaPermissionPaneView::OpenScreenRecordingSettingsPane,
+              &DesktopMediaPermissionPaneViewMac::
+                  OpenScreenRecordingSettingsPane,
               base::Unretained(this)),
           l10n_util::GetStringUTF16(
               IDS_DESKTOP_MEDIA_PICKER_PERMISSION_BUTTON_MAC)));
   button_->SetStyle(ui::ButtonStyle::kProminent);
 }
 
-DesktopMediaPermissionPaneView::~DesktopMediaPermissionPaneView() = default;
+DesktopMediaPermissionPaneViewMac::~DesktopMediaPermissionPaneViewMac() =
+    default;
 
-bool DesktopMediaPermissionPaneView::WasPermissionButtonClicked() const {
+bool DesktopMediaPermissionPaneViewMac::WasPermissionButtonClicked() const {
   return clicked_;
 }
 
-void DesktopMediaPermissionPaneView::SimulateClickForTesting() {
+void DesktopMediaPermissionPaneViewMac::SimulateClickForTesting() {
   button_->AcceleratorPressed(ui::Accelerator());
 }
 
-void DesktopMediaPermissionPaneView::OpenScreenRecordingSettingsPane() {
+void DesktopMediaPermissionPaneViewMac::OpenScreenRecordingSettingsPane() {
   clicked_ = true;
   switch (type_) {
     case DesktopMediaList::Type::kScreen:
@@ -135,5 +137,5 @@ void DesktopMediaPermissionPaneView::OpenScreenRecordingSettingsPane() {
   NOTREACHED_NORETURN();
 }
 
-BEGIN_METADATA(DesktopMediaPermissionPaneView)
+BEGIN_METADATA(DesktopMediaPermissionPaneViewMac)
 END_METADATA

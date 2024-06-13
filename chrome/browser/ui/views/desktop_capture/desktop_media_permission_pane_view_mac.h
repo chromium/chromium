@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CHROME_BROWSER_UI_VIEWS_DESKTOP_CAPTURE_DESKTOP_MEDIA_PERMISSION_PANE_VIEW_H_
-#define CHROME_BROWSER_UI_VIEWS_DESKTOP_CAPTURE_DESKTOP_MEDIA_PERMISSION_PANE_VIEW_H_
+#ifndef CHROME_BROWSER_UI_VIEWS_DESKTOP_CAPTURE_DESKTOP_MEDIA_PERMISSION_PANE_VIEW_MAC_H_
+#define CHROME_BROWSER_UI_VIEWS_DESKTOP_CAPTURE_DESKTOP_MEDIA_PERMISSION_PANE_VIEW_MAC_H_
 
 #include "base/memory/raw_ptr.h"
 #include "chrome/browser/media/webrtc/desktop_media_list.h"
@@ -11,19 +11,19 @@
 #include "ui/views/controls/button/md_text_button.h"
 #include "ui/views/view.h"
 
-class DesktopMediaPermissionPaneView : public views::View {
-  METADATA_HEADER(DesktopMediaPermissionPaneView, views::View)
+class DesktopMediaPermissionPaneViewMac : public views::View {
+  METADATA_HEADER(DesktopMediaPermissionPaneViewMac, views::View)
  public:
-  explicit DesktopMediaPermissionPaneView(
+  explicit DesktopMediaPermissionPaneViewMac(
       DesktopMediaList::Type type,
       base::RepeatingCallback<void()> open_screen_recording_settings_callback =
           base::RepeatingClosure());
 
-  DesktopMediaPermissionPaneView(const DesktopMediaPermissionPaneView&) =
+  DesktopMediaPermissionPaneViewMac(const DesktopMediaPermissionPaneViewMac&) =
       delete;
-  DesktopMediaPermissionPaneView& operator=(
-      const DesktopMediaPermissionPaneView&) = delete;
-  ~DesktopMediaPermissionPaneView() override;
+  DesktopMediaPermissionPaneViewMac& operator=(
+      const DesktopMediaPermissionPaneViewMac&) = delete;
+  ~DesktopMediaPermissionPaneViewMac() override;
 
   bool WasPermissionButtonClicked() const;
 
@@ -40,4 +40,4 @@ class DesktopMediaPermissionPaneView : public views::View {
   raw_ptr<views::MdTextButton> button_ = nullptr;
 };
 
-#endif  // CHROME_BROWSER_UI_VIEWS_DESKTOP_CAPTURE_DESKTOP_MEDIA_PERMISSION_PANE_VIEW_H_
+#endif  // CHROME_BROWSER_UI_VIEWS_DESKTOP_CAPTURE_DESKTOP_MEDIA_PERMISSION_PANE_VIEW_MAC_H_

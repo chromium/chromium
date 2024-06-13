@@ -4,7 +4,6 @@
 
 #include "chrome/browser/ui/views/desktop_capture/desktop_media_pane_view.h"
 
-#include "chrome/browser/ui/views/desktop_capture/desktop_media_permission_pane_view.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/compositor/layer.h"
 #include "ui/views/background.h"
@@ -12,7 +11,7 @@
 #include "ui/views/controls/separator.h"
 
 #if BUILDFLAG(IS_MAC)
-#include "chrome/browser/ui/views/desktop_capture/desktop_media_permission_pane_view.h"
+#include "chrome/browser/ui/views/desktop_capture/desktop_media_permission_pane_view_mac.h"
 #endif
 
 DesktopMediaPaneView::DesktopMediaPaneView(
@@ -70,7 +69,12 @@ void DesktopMediaPaneView::OnScreenCapturePermissionUpdate(
 }
 
 bool DesktopMediaPaneView::IsPermissionPaneVisible() const {
+#if BUILDFLAG(IS_MAC)
   return permission_pane_view_ && permission_pane_view_->GetVisible();
+#else
+  CHECK(!permission_pane_view_);
+  return false;
+#endif
 }
 
 bool DesktopMediaPaneView::IsContentPaneVisible() const {
@@ -109,7 +113,7 @@ void DesktopMediaPaneView::MakePermissionPaneView() {
   CHECK(!permission_pane_view_);
 
   permission_pane_view_ =
-      AddChildView(std::make_unique<DesktopMediaPermissionPaneView>(type_));
+      AddChildView(std::make_unique<DesktopMediaPermissionPaneViewMac>(type_));
   layout_->SetFlexForView(permission_pane_view_, 1);
 #else
   NOTREACHED_NORETURN();

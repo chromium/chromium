@@ -11,7 +11,7 @@
 #include "ui/base/metadata/metadata_header_macros.h"
 #include "ui/views/layout/box_layout.h"
 
-class DesktopMediaPermissionPaneView;
+class DesktopMediaPermissionPaneViewMac;
 
 class DesktopMediaPaneView : public views::View {
   METADATA_HEADER(DesktopMediaPaneView, views::View)
@@ -50,7 +50,7 @@ class DesktopMediaPaneView : public views::View {
   const DesktopMediaList::Type type_;
   raw_ptr<views::BoxLayout> layout_ = nullptr;
   raw_ptr<DesktopMediaContentPaneView> content_pane_view_ = nullptr;
-  raw_ptr<DesktopMediaPermissionPaneView> permission_pane_view_ = nullptr;
+  raw_ptr<DesktopMediaPermissionPaneViewMac> permission_pane_view_ = nullptr;
 };
 
 #endif  // CHROME_BROWSER_UI_VIEWS_DESKTOP_CAPTURE_DESKTOP_MEDIA_PANE_VIEW_H_
