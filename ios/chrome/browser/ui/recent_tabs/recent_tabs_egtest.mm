@@ -875,8 +875,11 @@ std::unique_ptr<net::test_server::HttpResponse> StandardResponse(
 
   // Open a distant tab and check that the location bar shows the distant tab
   // URL in a short form.
-  [[EarlGrey selectElementWithMatcher:grey_accessibilityLabel(@"Tab 0")]
-      performAction:grey_tap()];
+  [[EarlGrey
+      selectElementWithMatcher:grey_allOf(grey_accessibilityLabel(@"Tab 0"),
+                                          grey_ancestor(grey_kindOfClassName(
+                                              @"TableViewURLCell")),
+                                          nil)] performAction:grey_tap()];
   [[EarlGrey selectElementWithMatcher:chrome_test_util::DefocusedLocationView()]
       assertWithMatcher:chrome_test_util::LocationViewContainingText(
                             self.testServer->base_url().host())];

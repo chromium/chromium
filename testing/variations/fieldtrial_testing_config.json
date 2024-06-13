@@ -11523,6 +11523,29 @@
             ]
         }
     ],
+    "IOSTabResumption15": [
+        {
+            "platforms": [
+                "ios"
+            ],
+            "experiments": [
+                {
+                    "name": "Tab_Resumption_15_And_2_20240610",
+                    "params": {
+                        "tr15-salient-image": "true",
+                        "tr15-see-more-button": "true",
+                        "variant": "tab-resumption-all-tabs"
+                    },
+                    "enable_features": [
+                        "PageContentAnnotations",
+                        "TabResumption",
+                        "TabResumption1_5",
+                        "TabResumption2"
+                    ]
+                }
+            ]
+        }
+    ],
     "IOSTipsNotifications": [
         {
             "platforms": [
