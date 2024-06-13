@@ -294,7 +294,9 @@ source_set("metrics_util") {
     "//components/autofill/core/common/mojom:mojo_types",
     "//components/device_reauth:device_reauth",
     "//components/password_manager/core/browser/features:utils",
+    "//components/password_manager/core/browser/password_store:password_store_interface",
     "//components/password_manager/core/common",
+    "//components/prefs:prefs",
     "//services/metrics/public/cpp:metrics_cpp",
     "//services/metrics/public/cpp:ukm_builders",
   ]

@@ -9,6 +9,8 @@
 #include "base/strings/strcat.h"
 #include "components/autofill/core/common/password_generation_util.h"
 #include "components/password_manager/core/browser/password_form.h"
+#include "components/password_manager/core/common/password_manager_pref_names.h"
+#include "components/prefs/pref_service.h"
 #include "services/metrics/public/cpp/ukm_builders.h"
 #include "services/metrics/public/cpp/ukm_source_id.h"
 
@@ -424,5 +426,19 @@ void LogTouchToFillPasswordGenerationTriggerOutcome(
       "PasswordManager.TouchToFill.PasswordGeneration.TriggerOutcome", outcome);
 }
 #endif
+
+void AddPasswordRemovalReason(
+    PrefService* prefs,
+    IsAccountStore is_account_store,
+    PasswordManagerCredentialRemovalReason removal_reason) {
+  static_assert(
+      static_cast<int>(PasswordManagerCredentialRemovalReason::kMaxValue) < 31);
+  const std::string pref = is_account_store.value()
+                               ? prefs::kPasswordRemovalReasonForAccount
+                               : prefs::kPasswordRemovalReasonForProfile;
+  int pwd_removal_reasons = prefs->GetInteger(pref);
+  pwd_removal_reasons |= 1 << static_cast<int>(removal_reason);
+  prefs->SetInteger(pref, pwd_removal_reasons);
+}
 
 }  // namespace password_manager::metrics_util

@@ -66,12 +66,14 @@
 #include "components/password_manager/core/browser/import/import_results.h"
 #include "components/password_manager/core/browser/mock_password_feature_manager.h"
 #include "components/password_manager/core/browser/password_form.h"
+#include "components/password_manager/core/browser/password_manager_metrics_util.h"
 #include "components/password_manager/core/browser/password_manager_test_utils.h"
 #include "components/password_manager/core/browser/password_store/test_password_store.h"
 #include "components/password_manager/core/browser/sharing/mock_password_sender_service.h"
 #include "components/password_manager/core/browser/sharing/password_sharing_recipients_downloader.h"
 #include "components/password_manager/core/browser/sharing/recipients_fetcher_impl.h"
 #include "components/password_manager/core/common/password_manager_features.h"
+#include "components/password_manager/core/common/password_manager_pref_names.h"
 #include "components/signin/public/base/signin_metrics.h"
 #include "components/signin/public/base/signin_pref_names.h"
 #include "components/signin/public/base/signin_switches.h"
@@ -91,7 +93,6 @@
 
 #if BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN)
 #include "base/test/scoped_feature_list.h"
-#include "components/password_manager/core/common/password_manager_pref_names.h"
 #include "components/prefs/pref_registry_simple.h"
 #include "components/prefs/pref_service.h"
 #endif
@@ -1748,6 +1749,62 @@ TEST_F(PasswordsPrivateDelegateImplTest, RemovePasskey) {
       /*id=*/42, api::passwords_private::PasswordStoreSet::kAccount);
   EXPECT_EQ(user_action_tester.GetActionCount("PasswordManager_RemovePasskey"),
             1);
+}
+
+// Ensures that if a password is deleted from the account store via the settings
+// UI, password removal reason is recorded in the pref.
+TEST_F(PasswordsPrivateDelegateImplTest,
+       RemovePasswordFromAccountStoreTracksRemovalReason) {
+  auto delegate = CreateDelegate();
+
+  PasswordForm password =
+      CreateSampleForm(PasswordForm::Store::kAccountStore, u"username");
+  password.signon_realm = "https://facebook.com";
+  password.url = GURL("https://facebook.com");
+
+  SetUpPasswordStores({password});
+
+  auto groups = delegate->GetCredentialGroups();
+  PasswordUiEntry& password_entry = groups.at(0).entries.at(0);
+
+  delegate->RemoveCredential(password_entry.id, password_entry.stored_in);
+
+  EXPECT_EQ(profile()->GetPrefs()->GetInteger(
+                password_manager::prefs::kPasswordRemovalReasonForAccount),
+            1 << static_cast<int>(
+                password_manager::metrics_util::
+                    PasswordManagerCredentialRemovalReason::kSettings));
+  EXPECT_EQ(profile()->GetPrefs()->GetInteger(
+                password_manager::prefs::kPasswordRemovalReasonForProfile),
+            0);
+}
+
+// Ensures that if a password is deleted from the profile store via the settings
+// UI, password removal reason is recorded in the pref.
+TEST_F(PasswordsPrivateDelegateImplTest,
+       RemovePasswordFromProfileStoreTracksRemovalReason) {
+  auto delegate = CreateDelegate();
+
+  PasswordForm password =
+      CreateSampleForm(PasswordForm::Store::kProfileStore, u"username");
+  password.signon_realm = "https://facebook.com";
+  password.url = GURL("https://facebook.com");
+
+  SetUpPasswordStores({password});
+
+  auto groups = delegate->GetCredentialGroups();
+  PasswordUiEntry& password_entry = groups.at(0).entries.at(0);
+
+  delegate->RemoveCredential(password_entry.id, password_entry.stored_in);
+
+  EXPECT_EQ(profile()->GetPrefs()->GetInteger(
+                password_manager::prefs::kPasswordRemovalReasonForAccount),
+            0);
+  EXPECT_EQ(profile()->GetPrefs()->GetInteger(
+                password_manager::prefs::kPasswordRemovalReasonForProfile),
+            1 << static_cast<int>(
+                password_manager::metrics_util::
+                    PasswordManagerCredentialRemovalReason::kSettings));
 }
 
 TEST_F(PasswordsPrivateDelegateImplTest, SharePasswordWithTwoRecipients) {

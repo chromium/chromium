@@ -18,6 +18,7 @@
 #include "components/autofill/core/common/password_generation_util.h"
 #include "components/device_reauth/device_reauth_metrics_util.h"
 #include "components/password_manager/core/browser/features/password_manager_features_util.h"
+#include "components/password_manager/core/browser/password_store/password_store_interface.h"
 #include "components/password_manager/core/common/credential_manager_types.h"
 #include "services/metrics/public/cpp/ukm_source_id.h"
 
@@ -692,6 +693,16 @@ enum class TouchToFillPasswordGenerationTriggerOutcome {
 };
 #endif
 
+// Enum to track the reasons of password loss.
+//
+// These values are persisted to logs. Entries should not be renumbered and
+// numeric values should never be reused.
+enum class PasswordManagerCredentialRemovalReason {
+  // TODO(crbug.com/342519805): Add reasons.
+  kSettings = 0,  // Stored as (1<<0) in the bit vector.
+  kMaxValue = kSettings,
+};
+
 std::string GetPasswordAccountStorageUsageLevelHistogramSuffix(
     password_manager::features_util::PasswordAccountStorageUsageLevel
         usage_level);
@@ -923,6 +934,13 @@ base::OnceCallback<R(Args...)> TimeCallbackMediumTimes(
 void LogTouchToFillPasswordGenerationTriggerOutcome(
     TouchToFillPasswordGenerationTriggerOutcome outcome);
 #endif
+
+// Record that password deletion from Chrome settings happened.
+// This will be used in case of suspecting a possible password loss.
+void AddPasswordRemovalReason(
+    PrefService* prefs,
+    IsAccountStore is_account_store,
+    PasswordManagerCredentialRemovalReason removal_reason);
 
 }  // namespace password_manager::metrics_util
 

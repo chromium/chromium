@@ -647,16 +647,6 @@ CredentialsCount ReportAllMetrics(
   return credentials_count;
 }
 
-// Enum to track the reasons of password loss.
-//
-// These values are persisted to logs. Entries should not be renumbered and
-// numeric values should never be reused.
-enum class PasswordManagerCredentialRemovalReason {
-  // TODO(crbug.com/342519805): Add reasons.
-  kToBeDefined = 0,  // Stored as (1<<0) in the bit vector.
-  kMaxValue = kToBeDefined,
-};
-
 void OnBackgroundMetricsReportingCompleted(
     base::WeakPtr<StoreMetricsReporter> reporter_weak_ptr,
     base::OnceClosure done_callback,

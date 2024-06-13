@@ -59,6 +59,7 @@
 #include "components/password_manager/core/browser/features/password_manager_features_util.h"
 #include "components/password_manager/core/browser/leak_detection/leak_detection_request_utils.h"
 #include "components/password_manager/core/browser/password_form.h"
+#include "components/password_manager/core/browser/password_manager_metrics_util.h"
 #include "components/password_manager/core/browser/password_manager_util.h"
 #include "components/password_manager/core/browser/password_sync_util.h"
 #include "components/password_manager/core/browser/sharing/password_sender_service.h"
@@ -67,6 +68,7 @@
 #include "components/password_manager/core/browser/ui/credential_utils.h"
 #include "components/password_manager/core/common/password_manager_constants.h"
 #include "components/password_manager/core/common/password_manager_features.h"
+#include "components/password_manager/core/common/password_manager_pref_names.h"
 #include "components/prefs/pref_service.h"
 #include "components/signin/public/base/signin_metrics.h"
 #include "components/sync/base/features.h"
@@ -81,7 +83,6 @@
 
 #if BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN) || BUILDFLAG(IS_CHROMEOS)
 #include "chrome/browser/device_reauth/chrome_device_authenticator_factory.h"
-#include "components/password_manager/core/common/password_manager_pref_names.h"
 #endif
 
 #if BUILDFLAG(IS_CHROMEOS)
@@ -512,6 +513,22 @@ void PasswordsPrivateDelegateImpl::RemoveEntryInternal(
   copy.stored_in = ConvertToPasswordFormStores(from_stores);
 
   saved_passwords_presenter_.RemoveCredential(copy);
+
+  // Record that a password removal action happened.
+  if (copy.stored_in.contains(
+          password_manager::PasswordForm::Store::kAccountStore)) {
+    AddPasswordRemovalReason(
+        profile_->GetPrefs(), password_manager::IsAccountStore(true),
+        password_manager::metrics_util::PasswordManagerCredentialRemovalReason::
+            kSettings);
+  }
+  if (copy.stored_in.contains(
+          password_manager::PasswordForm::Store::kProfileStore)) {
+    AddPasswordRemovalReason(
+        profile_->GetPrefs(), password_manager::IsAccountStore(false),
+        password_manager::metrics_util::PasswordManagerCredentialRemovalReason::
+            kSettings);
+  }
 
   if (entry->blocked_by_user) {
     base::RecordAction(
