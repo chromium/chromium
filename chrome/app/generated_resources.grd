@@ -11279,8 +11279,8 @@ Check your passwords anytime in <ph name="GOOGLE_PASSWORD_MANAGER">$1<ex>Google 
       <message name="IDS_TAB_ORGANIZATION_IN_PROGRESS_TITLE" desc="The header text for the in progress state in the tab organization UI">
         Grouping your tabs…
       </message>
-      <message name="IDS_TAB_ORGANIZATION_SUCCESS_MISSING_ACTIVE_TAB_TITLE" translateable="false" desc="The header text for the success state in the tab organization UI, when there were no groups found for the selected tab">
-        No tab groups found for your selected tab.
+      <message name="IDS_TAB_ORGANIZATION_SUCCESS_MISSING_ACTIVE_TAB_TITLE" desc="The header text for the success state in the tab organization UI, when there were no groups found for the selected tab">
+        No group for that tab but check out these
       </message>
       <message name="IDS_TAB_ORGANIZATION_SUCCESS_TITLE" desc="The header text for the MVP success state in the tab organization UI">
         Tab group suggestion

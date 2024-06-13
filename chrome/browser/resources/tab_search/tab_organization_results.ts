@@ -110,14 +110,14 @@ export class TabOrganizationResultsElement extends CrLitElement {
             scrollable.scrollHeight);
   }
 
-  protected getErrorTitle_(): string {
+  protected missingActiveTab_(): boolean {
     if (!this.session) {
-      return '';
+      return false;
     }
 
     const id = this.session.activeTabId;
     if (id === -1) {
-      return '';
+      return false;
     }
     let foundTab = false;
     this.getOrganizations_().forEach(organization => {
@@ -128,12 +128,15 @@ export class TabOrganizationResultsElement extends CrLitElement {
       });
     });
     if (foundTab) {
-      return '';
+      return false;
     }
-    return loadTimeData.getString('successMissingActiveTabTitle');
+    return true;
   }
 
   protected getTitle_(): string {
+    if (this.missingActiveTab_()) {
+      return loadTimeData.getString('successMissingActiveTabTitle');
+    }
     if (this.multiTabOrganization) {
       if (this.hasMultipleOrganizations_()) {
         return loadTimeData.getStringF(

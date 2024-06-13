@@ -562,6 +562,12 @@ suite('TabOrganizationPageTest', () => {
   });
 
   test('Active tab missing from organization shows error', async () => {
+    const errorString = 'error';
+    const successString = 'success';
+    loadTimeData.overrideValues({
+      successMissingActiveTabTitle: errorString,
+      successTitle: successString,
+    });
     await tabOrganizationResultsSetup();
     tabOrganizationResults.session = createSession({
       activeTabId: 4,
@@ -581,13 +587,17 @@ suite('TabOrganizationPageTest', () => {
     });
     await microtasksFinished();
 
-    const errorElement =
-        tabOrganizationResults.shadowRoot!.querySelector('#error');
-    assertTrue(!!errorElement);
-    assertTrue(isVisible(errorElement));
+    const header = tabOrganizationResults.$.header;
+    assertEquals(errorString, header.textContent!.trim());
   });
 
   test('Active tab present in organization does not show error', async () => {
+    const errorString = 'error';
+    const successString = 'success';
+    loadTimeData.overrideValues({
+      successMissingActiveTabTitle: errorString,
+      successTitle: successString,
+    });
     await tabOrganizationResultsSetup();
     tabOrganizationResults.session = createSession({
       activeTabId: 2,
@@ -607,9 +617,7 @@ suite('TabOrganizationPageTest', () => {
     });
     await microtasksFinished();
 
-    const errorElement =
-        tabOrganizationResults.shadowRoot!.querySelector('#error');
-    assertTrue(!!errorElement);
-    assertFalse(isVisible(errorElement));
+    const header = tabOrganizationResults.$.header;
+    assertEquals(successString, header.textContent!.trim());
   });
 });
