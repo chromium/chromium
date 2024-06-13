@@ -38,13 +38,13 @@
 #include "content/public/browser/content_browser_client.h"
 #include "content/public/browser/storage_partition.h"
 #include "content/public/common/content_client.h"
-#include "content/public/common/content_constants.h"
 #include "content/public/common/content_features.h"
 #include "content/public/common/content_switches.h"
 #include "content/public/common/url_constants.h"
 #include "crypto/sha2.h"
 #include "services/network/public/cpp/features.h"
 #include "storage/browser/blob/blob_storage_context.h"
+#include "storage/browser/database/database_tracker.h"
 #include "third_party/blink/public/common/storage_key/storage_key.h"
 
 namespace content {
@@ -455,15 +455,18 @@ void StoragePartitionImplMap::PostCreateInitialization(
     InitializeResourceContext(browser_context_);
   }
 
+#if !BUILDFLAG(IS_ANDROID)
   if (!in_memory) {
-    // Clean up any lingering AppCache user data on disk, now that AppCache
-    // has been deprecated and removed.
+    // Clean up any lingering WebSQL user data on disk, now that WebSQL
+    // has been deprecated and removed for all platforms except Android
+    // WebView (crbug.com/333756088).
     base::ThreadPool::PostTask(
         FROM_HERE, {base::MayBlock(), base::TaskPriority::BEST_EFFORT},
         base::BindOnce(
             [](const base::FilePath& dir) { base::DeletePathRecursively(dir); },
-            partition->GetPath().Append(kAppCacheDirname)));
+            partition->GetPath().Append(storage::kDatabaseDirectoryName)));
   }
+#endif  // !BUILDFLAG(IS_ANDROID)
 
   partition->GetBackgroundFetchContext()->Initialize();
 }

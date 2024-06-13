@@ -12,11 +12,6 @@
 
 namespace content {
 
-const base::FilePath::CharType kAppCacheDirname[] =
-    FILE_PATH_LITERAL("Application Cache");
-const base::FilePath::CharType kPepperDataDirname[] =
-    FILE_PATH_LITERAL("Pepper Data");
-
 const char kBrowserPluginMimeType[] = "application/browser-plugin";
 
 const size_t kMaxURLDisplayChars = 32 * 1024;
