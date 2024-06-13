@@ -37,13 +37,14 @@ import json
 import logging
 import os
 import platform
+import tempfile
 import shutil
 import subprocess
 import sys
 import urllib.request
-import zipfile
 
 from dataclasses import dataclass, field
+
 
 _HEADER = '''
 # Copyright 2022 The Chromium Authors
@@ -514,6 +515,10 @@ def GenerateObjectBuilds(cpu):
     cpu: aarch64 or k8
   """
   logging.info(f'Querying xnnpack compile commands for {cpu} with bazel...')
+  # Make sure we have a clean start, this is important if the Android NDK
+  # version changed.
+  _run_bazel_cmd(['clean'])
+
   basename = os.path.basename(_TOOLCHAIN_DIR)
   crosstool_top = f'//{basename}:cc_suite'
   logs = _run_bazel_cmd([
@@ -626,17 +631,36 @@ def MakeXNNPACKDepsList(target_sss):
 
   return deps_list
 
+
 def EnsureAndroidNDK():
   """
   Ensures that the Android NDK is available and bazel can find it later.
+
+  This must use command line utilities instead of native Python as a workaround
+  for https://github.com/python/cpython/issues/59999.
   """
-  if 'ANDROID_NDK_HOME' in os.environ:
-    return
-  logging.info('Downloading a copy of the Android NDK for bazel')
-  resp = urllib.request.urlopen('https://dl.google.com/android/repository/android-ndk-r19c-linux-x86_64.zip')
+  tempdir = tempfile.mkdtemp()
+  zipdownload = os.path.join(tempdir, 'android-ndk-r25b-linux.zip')
+  extractdir = os.path.join(tempdir, 'android-ndk-r25b')
+  logging.info('Downloading a copy of the Android NDK')
+  subprocess.check_call(
+    [
+      'curl',
+      'https://dl.google.com/android/repository/android-ndk-r25b-linux.zip',
+      '-o',
+      zipdownload,
+    ],
+    stdout=subprocess.DEVNULL,
+    stderr=subprocess.DEVNULL,
+  )
   logging.info('Unpacking the Android NDK')
-  zipfile.ZipFile(io.BytesIO(resp.read())).extractall(path='/tmp/')
-  os.environ['ANDROID_NDK_HOME'] = '/tmp/android-ndk-r19c'
+  subprocess.check_call(
+    ['unzip', zipdownload, '-d', extractdir],
+    stdout=subprocess.DEVNULL,
+    stderr=subprocess.DEVNULL,
+  )
+  os.environ['ANDROID_NDK_HOME'] = '/tmp/android-ndk-r25b'
+
 
 def MakeXNNPACKSourceSet(ss):
   """
