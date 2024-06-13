@@ -588,6 +588,30 @@ def _xcresulttool_get_side_effect(xcresult_path, ref_id=None):
 class UtilMethodsTest(test_runner_test.TestCase):
   """Test case for utility methods not related with Parser class."""
 
+  def setUp(self):
+    self.summary_xcode16_with_parallel = {
+        'tests': {
+            '_values': ['TestSuite1', 'TestSuite2']
+        }
+    }
+
+    # Example test summary when running xcode version lower than 16.
+    # It could also be when running xcode version 16 without xcode
+    # parallelization enabled.
+    self.summary_pre_xcode16 = {
+        'tests': {
+            '_values': [{
+                'subtests': {
+                    '_values': [{
+                        'subtests': {
+                            '_values': ['TestSuite1', 'TestSuite2']
+                        }
+                    }]
+                }
+            }]
+        }
+    }
+
   def testParseTestsForInterruptedRun(self):
     test_output = """
     Test case '-[DownloadManagerTestCase testVisibleFileNameAndOpenInDownloads]' passed on 'Clone 2 of iPhone X 15.0 test simulator - ios_chrome_ui_eg2tests_module-Runner (34498)' (20.715 seconds)
@@ -618,6 +642,25 @@ class UtilMethodsTest(test_runner_test.TestCase):
     for result in results.test_results:
       if result.name == 'LinkToTextTestCase/testGenerateLinkForSimpleText':
         self.assertEqual(result.test_log, expected_failed_message)
+
+  @mock.patch('xcode_util.using_xcode_16_or_higher')
+  def test_xcode16_parallel(self, mock_xcode_version):
+    mock_xcode_version.return_value = True
+    result = xcode_log_parser.get_test_suites(
+        self.summary_xcode16_with_parallel, True)
+    self.assertEqual(result, ['TestSuite1', 'TestSuite2'])
+
+  @mock.patch('xcode_util.using_xcode_16_or_higher')
+  def test_xcode16_not_parallel(self, mock_xcode_version):
+    mock_xcode_version.return_value = True
+    result = xcode_log_parser.get_test_suites(self.summary_pre_xcode16, False)
+    self.assertEqual(result, ['TestSuite1', 'TestSuite2'])
+
+  @mock.patch('xcode_util.using_xcode_16_or_higher')
+  def test_pre_xcode16_parallel(self, mock_xcode_version):
+    mock_xcode_version.return_value = False
+    result = xcode_log_parser.get_test_suites(self.summary_pre_xcode16, True)
+    self.assertEqual(result, ['TestSuite1', 'TestSuite2'])
 
 
 class XcodeLogParserTest(test_runner_test.TestCase):
@@ -684,7 +727,7 @@ class XcodeLogParserTest(test_runner_test.TestCase):
         'PageStateTestCase/testMethod3'
     ])
     results = xcode_log_parser.XcodeLogParser()._get_test_statuses(
-        OUTPUT_PATH)
+        OUTPUT_PATH, False)
     self.assertEqual(expected_expected_tests, results.expected_tests())
     seen_failed_test = False
     for test_result in results.test_results:

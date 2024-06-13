@@ -213,7 +213,8 @@ class LaunchCommand(object):
                   (attempt, ' '.join(cmd_list)))
       output = self.launch_attempt(cmd_list)
 
-      result = XcodeLogParser.collect_test_results(outdir_attempt, output)
+      result = XcodeLogParser.collect_test_results(outdir_attempt, output,
+                                                   clones > 1)
 
       tests_selected_at_runtime = _tests_decided_at_runtime(
           self.egtests_app.test_app_path)

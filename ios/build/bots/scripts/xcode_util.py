@@ -490,6 +490,13 @@ def using_xcode_15_or_higher():
       '15.0') <= distutils.version.LooseVersion(version()[0])
 
 
+def using_xcode_16_or_higher():
+  """Returns true if using Xcode version 16 or higher."""
+  LOGGER.debug('Checking if Xcode version is 16 or higher')
+  return distutils.version.LooseVersion(
+      '16.0') <= distutils.version.LooseVersion(version()[0])
+
+
 def install_xcode(mac_toolchain_cmd, xcode_build_version, xcode_path,
                   runtime_cache_prefix, ios_version):
   """Installs the requested Xcode build version.

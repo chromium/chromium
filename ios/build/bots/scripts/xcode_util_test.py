@@ -25,6 +25,10 @@ _XCODEBUILD_VERSION_OUTPUT_15 = b"""Xcode 15.0
 Build version 15A5209g
 """
 
+_XCODEBUILD_VERSION_OUTPUT_16 = b"""Xcode 16.0
+Build version 16A5171c
+"""
+
 ADD_SIMULATOR_RUNTIME_OUTPUT = 'ramdomid (iOS 15.0)'
 
 RUNTIME_15_0 = {
@@ -60,6 +64,7 @@ class XcodeUtilTest(test_runner_test.TestCase):
     self.assertTrue(xcode_util.using_xcode_11_or_higher())
     self.assertFalse(xcode_util.using_xcode_13_or_higher())
     self.assertFalse(xcode_util.using_xcode_15_or_higher())
+    self.assertFalse(xcode_util.using_xcode_16_or_higher())
 
   @mock.patch(
       'subprocess.check_output', return_value=_XCODEBUILD_VERSION_OUTPUT_13)
@@ -68,14 +73,25 @@ class XcodeUtilTest(test_runner_test.TestCase):
     self.assertTrue(xcode_util.using_xcode_11_or_higher())
     self.assertTrue(xcode_util.using_xcode_13_or_higher())
     self.assertFalse(xcode_util.using_xcode_15_or_higher())
+    self.assertFalse(xcode_util.using_xcode_16_or_higher())
 
   @mock.patch(
       'subprocess.check_output', return_value=_XCODEBUILD_VERSION_OUTPUT_15)
   def test_using_xcode_15(self, _):
-    """Tests xcode_util.using_xcode_13_or_higher"""
+    """Tests xcode_util.using_xcode_15_or_higher"""
     self.assertTrue(xcode_util.using_xcode_11_or_higher())
     self.assertTrue(xcode_util.using_xcode_13_or_higher())
     self.assertTrue(xcode_util.using_xcode_15_or_higher())
+    self.assertFalse(xcode_util.using_xcode_16_or_higher())
+
+  @mock.patch(
+      'subprocess.check_output', return_value=_XCODEBUILD_VERSION_OUTPUT_16)
+  def test_using_xcode_16(self, _):
+    """Tests xcode_util.using_xcode_16_or_higher"""
+    self.assertTrue(xcode_util.using_xcode_11_or_higher())
+    self.assertTrue(xcode_util.using_xcode_13_or_higher())
+    self.assertTrue(xcode_util.using_xcode_15_or_higher())
+    self.assertTrue(xcode_util.using_xcode_16_or_higher())
 
 
 class InstallTest(XcodeUtilTest):

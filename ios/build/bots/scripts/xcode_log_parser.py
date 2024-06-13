@@ -141,6 +141,15 @@ def test_crashed(root):
   return actionResultMetricsMissing and rootMetricsMissing
 
 
+def get_test_suites(summary, xcode_parallel_enabled):
+  # On Xcode16+, enabling test parallelization will cause test result format
+  # to vary slightly
+  if xcode_parallel_enabled and xcode_util.using_xcode_16_or_higher():
+    return summary['tests']['_values']
+  return summary['tests']['_values'][0]['subtests']['_values'][0]['subtests'][
+      '_values']
+
+
 class XcodeLogParser(object):
   """Xcode log parser. Parse Xcode result types v3."""
 
@@ -289,7 +298,7 @@ class XcodeLogParser(object):
                                   app_side_failure_message)
 
   @staticmethod
-  def _get_test_statuses(output_path):
+  def _get_test_statuses(output_path, xcode_parallel_enabled):
     """Returns test results from xcresult.
 
     Also extracts and stores attachments for failed tests
@@ -297,6 +306,8 @@ class XcodeLogParser(object):
     Args:
       output_path: (str) An output path passed in --resultBundlePath when
           running xcodebuild.
+      xcode_parallel_enabled: whether xcode parrallelization is enabled on
+          the test run, which might cause test result format to vary slightly.
 
     Returns:
       test_result.ResultCollection: Test results.
@@ -309,8 +320,8 @@ class XcodeLogParser(object):
         'testableSummaries']['_values']:
       if not summary['tests']:
         continue
-      for test_suite in summary['tests']['_values'][0]['subtests'][
-          '_values'][0]['subtests']['_values']:
+      test_suites = get_test_suites(summary, xcode_parallel_enabled)
+      for test_suite in test_suites:
         if 'subtests' not in test_suite:
           # Sometimes(if crash occurs) `subtests` node does not upload.
           # It happens only for failed tests that and a list of failures
@@ -390,13 +401,16 @@ class XcodeLogParser(object):
     return result
 
   @staticmethod
-  def collect_test_results(output_path, output):
+  def collect_test_results(output_path, output, xcode_parallel_enabled=False):
     """Gets XCTest results, diagnostic data & artifacts from xcresult.
 
     Args:
       output_path: (str) An output path passed in --resultBundlePath when
           running xcodebuild.
       output: [str] An output of test run.
+      xcode_parallel_enabled: whether xcode parrallelization is enabled on
+          the test run, which might cause test result format to vary slightly.
+          False by default.
 
     Returns:
       test_result.ResultCollection: Test results.
@@ -447,7 +461,8 @@ class XcodeLogParser(object):
       overall_collected_result.crash_message = '0 tests executed!'
     else:
       overall_collected_result.add_result_collection(
-          XcodeLogParser._get_test_statuses(output_path))
+          XcodeLogParser._get_test_statuses(output_path,
+                                            xcode_parallel_enabled))
       # For some crashed tests info about error contained only in root node.
       overall_collected_result.add_result_collection(
           XcodeLogParser._list_of_failed_tests(
