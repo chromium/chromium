@@ -41,6 +41,8 @@ chromium-metrics-reviews@google.com.
 <variants name="OptimizationTarget">
   <variant name="AutofillFieldTypeClassification"
       summary="Classifies autofill field types"/>
+  <variant name="CameraBackgroundSegmentation"
+      summary="Classifies images into foreground and background"/>
   <variant name="ClientSidePhishing" summary="Client Side Phishing"/>
   <variant name="ClientSidePhishingImageEmbedder"
       summary="Client Side Phishing Image Embedder"/>

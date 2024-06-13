@@ -220,6 +220,8 @@ enum OptimizationTarget {
   OPTIMIZATION_TARGET_SEGMENTATION_COMPOSE_PROMOTION = 45;
   // Target for ranking URL visits used in visit resumption features.
   OPTIMIZATION_TARGET_URL_VISIT_RESUMPTION_RANKER = 46;
+  // Target for background segmentation of video frames.
+  OPTIMIZATION_TARGET_CAMERA_BACKGROUND_SEGMENTATION = 47;
 }
 
 // The model engine versions that can be used to do model inference.

@@ -131,6 +131,8 @@ std::string GetStringNameForOptimizationTarget(
       return "SegmentationComposePromotion";
     case proto::OPTIMIZATION_TARGET_URL_VISIT_RESUMPTION_RANKER:
       return "URLVisitResumptionRanker";
+    case proto::OPTIMIZATION_TARGET_CAMERA_BACKGROUND_SEGMENTATION:
+      return "CameraBackgroundSegmentation";
       // Whenever a new value is added, make sure to add it to the OptTarget
       // variant list in
       // //tools/metrics/histograms/metadata/optimization/histograms.xml.
