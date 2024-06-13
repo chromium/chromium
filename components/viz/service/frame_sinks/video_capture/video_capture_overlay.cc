@@ -35,13 +35,12 @@ namespace viz {
 VideoCaptureOverlay::FrameSource::~FrameSource() = default;
 
 VideoCaptureOverlay::VideoCaptureOverlay(
-    FrameSource* frame_source,
+    FrameSource& frame_source,
     mojo::PendingReceiver<mojom::FrameSinkVideoCaptureOverlay> receiver)
     : frame_source_(frame_source), receiver_(this, std::move(receiver)) {
-  DCHECK(frame_source_);
   receiver_.set_disconnect_handler(
       base::BindOnce(&FrameSource::OnOverlayConnectionLost,
-                     base::Unretained(frame_source_), this));
+                     base::Unretained(&*frame_source_), this));
 }
 
 VideoCaptureOverlay::~VideoCaptureOverlay() = default;
@@ -319,7 +318,7 @@ VideoCaptureOverlay::Sprite::Sprite(const SkBitmap& image,
                                     const gfx::Size& size,
                                     const VideoPixelFormat format)
     : image_(image), size_(size), format_(format) {
-  DCHECK(!image_.isNull());
+  CHECK(!image_.isNull());
 }
 
 VideoCaptureOverlay::Sprite::~Sprite() {
@@ -365,18 +364,18 @@ void VideoCaptureOverlay::Sprite::Blend(const gfx::Rect& src_rect,
                                         const gfx::Rect& dst_rect,
                                         VideoFrame* frame) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  DCHECK(frame);
-  DCHECK(frame->visible_rect().Contains(dst_rect))
+  CHECK(frame);
+  CHECK(frame->visible_rect().Contains(dst_rect))
       << "frame->visible_rect()=" << frame->visible_rect().ToString()
       << ", dst_rect=" << dst_rect.ToString();
-  DCHECK(gfx::Rect(size_).Contains(src_rect))
+  CHECK(gfx::Rect(size_).Contains(src_rect))
       << "size_=" << size_.ToString() << ", src_rect=" << src_rect.ToString();
 
-  DCHECK_EQ(format_, frame->format());
-  DCHECK(!dst_rect.IsEmpty())
+  CHECK_EQ(format_, frame->format());
+  CHECK(!dst_rect.IsEmpty())
       << ": frame->visible_rect()=" << frame->visible_rect().ToString()
       << ", dst_rect=" << dst_rect.ToString();
-  DCHECK(frame->ColorSpace().IsValid());
+  CHECK(frame->ColorSpace().IsValid());
 
   TRACE_EVENT("gpu.capture", "VideoCaptureOverlay::Sprite::Blend", "x",
               dst_rect.x(), "y", dst_rect.y());
@@ -395,12 +394,12 @@ void VideoCaptureOverlay::Sprite::Blend(const gfx::Rect& src_rect,
     case media::PIXEL_FORMAT_I420: {
       // Core assumption: All coordinates are aligned to even-numbered
       // coordinates.
-      DCHECK_EQ(src_origin.x() % 2, 0);
-      DCHECK_EQ(src_origin.y() % 2, 0);
-      DCHECK_EQ(dst_rect.x() % 2, 0);
-      DCHECK_EQ(dst_rect.y() % 2, 0);
-      DCHECK_EQ(dst_rect.width() % 2, 0);
-      DCHECK_EQ(dst_rect.height() % 2, 0);
+      CHECK_EQ(src_origin.x() % 2, 0);
+      CHECK_EQ(src_origin.y() % 2, 0);
+      CHECK_EQ(dst_rect.x() % 2, 0);
+      CHECK_EQ(dst_rect.y() % 2, 0);
+      CHECK_EQ(dst_rect.width() % 2, 0);
+      CHECK_EQ(dst_rect.height() % 2, 0);
 
       // Helper function to execute a "SrcOver" blit from |src| to |dst|, and
       // store the results back in |dst|.
@@ -471,13 +470,13 @@ void VideoCaptureOverlay::Sprite::Blend(const gfx::Rect& src_rect,
       // Likewise, start |dst| at the upper-left-most pixel within the video
       // frame that will be SrcOver'ed.
       const int dst_stride = frame->stride(VideoFrame::Plane::kARGB);
-      DCHECK_EQ(dst_stride % sizeof(uint32_t), 0u);
+      CHECK_EQ(dst_stride % sizeof(uint32_t), 0u);
       uint8_t* dst = PositionPointerARGB(
           frame->GetWritableVisibleData(VideoFrame::Plane::kARGB), dst_stride,
           dst_rect.origin());
-      DCHECK_EQ((dst - frame->visible_data(VideoFrame::Plane::kARGB)) %
-                    sizeof(uint32_t),
-                0u);
+      CHECK_EQ((dst - frame->visible_data(VideoFrame::Plane::kARGB)) %
+                   sizeof(uint32_t),
+               0u);
 
       // Blend each sprite pixel over the corresponding pixel in the video
       // frame, and store the result back in the video frame. Note that the
@@ -593,8 +592,8 @@ void VideoCaptureOverlay::Sprite::TransformImage() {
       // subsampled "one minus alpha" plane, the U plane, and the V plane.
       // Pre-multiply the colors by the alpha to prevent extra work in multiple
       // later Blit() calls.
-      DCHECK_EQ(size_.width() % 2, 0);
-      DCHECK_EQ(size_.height() % 2, 0);
+      CHECK_EQ(size_.width() % 2, 0);
+      CHECK_EQ(size_.height() % 2, 0);
       const int num_chroma_pixels = size_.GetArea() / 4;
       transformed_image_.reset(
           new float[num_pixels * 2 + num_chroma_pixels * 3]);

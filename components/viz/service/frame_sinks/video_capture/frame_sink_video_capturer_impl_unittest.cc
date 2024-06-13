@@ -254,7 +254,7 @@ class MockConsumer : public mojom::FrameSinkVideoConsumer {
       // is the same type, with null check being equivalent to IsValid() check.
       // Given the above, we should never be able to receive a read only shmem
       // region that is not valid - mojo will enforce it for us.
-      DCHECK(shmem_region.IsValid());
+      CHECK(shmem_region.IsValid());
 
       auto required_bytes_to_hold_planes = media::VideoFrame::AllocationSize(
           info->pixel_format, info->coded_size);
@@ -738,7 +738,7 @@ class TestVideoCaptureOverlay : public VideoCaptureOverlay {
   using PropertiesCallback =
       base::RepeatingCallback<void(const CapturedFrameProperties&)>;
   TestVideoCaptureOverlay(
-      FrameSource* frame_source,
+      FrameSource& frame_source,
       mojo::PendingReceiver<mojom::FrameSinkVideoCaptureOverlay> receiver,
       PropertiesCallback properties_cb)
       : VideoCaptureOverlay(frame_source, std::move(receiver)),
@@ -838,7 +838,7 @@ class FrameSinkVideoCapturerTest
         std::make_unique<TestGmbVideoFramePoolContextProvider>();
 
     capturer_ = std::make_unique<FrameSinkVideoCapturerImpl>(
-        &frame_sink_manager_, gmb_context_provider_.get(), mojo::NullReceiver(),
+        frame_sink_manager_, gmb_context_provider_.get(), mojo::NullReceiver(),
         std::move(oracle), false);
   }
 
@@ -2113,7 +2113,7 @@ TEST_P(FrameSinkVideoCapturerTest, ProperlyHandlesCaptureSizeForOverlay) {
   mojo::Remote<mojom::FrameSinkVideoCaptureOverlay> overlay_remote;
   std::optional<VideoCaptureOverlay::CapturedFrameProperties> frame_properties;
   auto test_overlay = std::make_unique<TestVideoCaptureOverlay>(
-      capturer_.get(), overlay_remote.BindNewPipeAndPassReceiver(),
+      *capturer_, overlay_remote.BindNewPipeAndPassReceiver(),
       base::BindLambdaForTesting(
           [&](const VideoCaptureOverlay::CapturedFrameProperties& properties) {
             frame_properties = properties;
@@ -2186,7 +2186,7 @@ TEST_P(FrameSinkVideoCapturerTest, ProperlyHandlesSubtreeSizeForOverlay) {
   mojo::Remote<mojom::FrameSinkVideoCaptureOverlay> overlay_remote;
   std::optional<VideoCaptureOverlay::CapturedFrameProperties> frame_properties;
   auto test_overlay = std::make_unique<TestVideoCaptureOverlay>(
-      capturer_.get(), overlay_remote.BindNewPipeAndPassReceiver(),
+      *capturer_, overlay_remote.BindNewPipeAndPassReceiver(),
       base::BindLambdaForTesting(
           [&](const VideoCaptureOverlay::CapturedFrameProperties& properties) {
             frame_properties = properties;

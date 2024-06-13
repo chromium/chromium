@@ -11,7 +11,7 @@ namespace viz {
 
 VideoFramePool::VideoFramePool(int capacity)
     : capacity_(std::max(0, capacity)) {
-  DCHECK_GT(capacity_, 0u);
+  CHECK_GT(capacity_, 0u);
 }
 
 VideoFramePool::~VideoFramePool() = default;

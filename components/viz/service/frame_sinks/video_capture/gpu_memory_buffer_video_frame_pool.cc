@@ -30,9 +30,9 @@ scoped_refptr<media::VideoFrame>
 GpuMemoryBufferVideoFramePool::ReserveVideoFrame(media::VideoPixelFormat format,
                                                  const gfx::Size& size) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  DCHECK_EQ(format, format_) << "Reserving a format that is different from the "
-                                "one specified in the constructor.";
-  DCHECK_LE(num_reserved_frames_, capacity());
+  CHECK_EQ(format, format_) << "Reserving a format that is different from the "
+                               "one specified in the constructor.";
+  CHECK_LE(num_reserved_frames_, capacity());
 
   if (num_reserved_frames_ == capacity()) {
     return nullptr;
@@ -54,7 +54,7 @@ GpuMemoryBufferVideoFramePool::ReserveVideoFrame(media::VideoPixelFormat format,
 media::mojom::VideoBufferHandlePtr
 GpuMemoryBufferVideoFramePool::CloneHandleForDelivery(
     const media::VideoFrame& frame) {
-  DCHECK(frame.HasMappableGpuBuffer());
+  CHECK(frame.HasMappableGpuBuffer());
 
   gfx::GpuMemoryBufferHandle handle = frame.GetGpuMemoryBufferHandle();
   handle.id = gfx::GpuMemoryBufferHandle::kInvalidId;
@@ -87,7 +87,7 @@ void GpuMemoryBufferVideoFramePool::OnVideoFrameDestroyed(
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
   if (frame_pool_generation == video_frame_pool_generation_) {
-    DCHECK_GT(num_reserved_frames_, 0u);
+    CHECK_GT(num_reserved_frames_, 0u);
 
     num_reserved_frames_--;
   }

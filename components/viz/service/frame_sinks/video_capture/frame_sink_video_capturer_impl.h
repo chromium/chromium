@@ -15,6 +15,7 @@
 
 #include "base/containers/flat_map.h"
 #include "base/memory/raw_ptr.h"
+#include "base/memory/raw_ref.h"
 #include "base/memory/weak_ptr.h"
 #include "base/sequence_checker.h"
 #include "base/time/tick_clock.h"
@@ -83,7 +84,7 @@ class VIZ_SERVICE_EXPORT FrameSinkVideoCapturerImpl final
   // Mojo message pipe endpoint in `receiver`, but `receiver` may be empty for
   // unit testing.
   FrameSinkVideoCapturerImpl(
-      FrameSinkVideoCapturerManager* frame_sink_manager,
+      FrameSinkVideoCapturerManager& frame_sink_manager,
       GmbVideoFramePoolContextProvider* gmb_video_frame_pool_context_provider,
       mojo::PendingReceiver<mojom::FrameSinkVideoCapturer> receiver,
       std::unique_ptr<media::VideoCaptureOracle> oracle,
@@ -402,7 +403,7 @@ class VIZ_SERVICE_EXPORT FrameSinkVideoCapturerImpl final
   void MaybeInformConsumerOfEmptyRegion();
 
   // Owner/Manager of this instance.
-  const raw_ptr<FrameSinkVideoCapturerManager> frame_sink_manager_;
+  const raw_ref<FrameSinkVideoCapturerManager> frame_sink_manager_;
 
   // Mojo receiver for this instance.
   mojo::Receiver<mojom::FrameSinkVideoCapturer> receiver_{this};
