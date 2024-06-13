@@ -248,6 +248,9 @@ class StorageAreaImpl : public blink::mojom::StorageArea {
     std::map<std::vector<uint8_t>, std::vector<uint8_t>> changed_values;
     // Used if the map_type_ is LOADED_KEYS_AND_VALUES.
     std::set<std::vector<uint8_t>> changed_keys;
+    // Timestamp of each discrete `Put()` call that was coalesced into this
+    // batch.
+    std::vector<base::TimeTicks> put_timestamps;
   };
 
   enum class MapState {

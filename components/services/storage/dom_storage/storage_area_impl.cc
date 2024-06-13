@@ -9,6 +9,7 @@
 #include "base/containers/span.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback_helpers.h"
+#include "base/metrics/histogram_functions.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/trace_event/memory_dump_manager.h"
@@ -324,6 +325,8 @@ void StorageAreaImpl::Put(
       commit_batch_->changed_values[key] = value;
     else
       commit_batch_->changed_keys.insert(key);
+
+    commit_batch_->put_timestamps.push_back(base::TimeTicks::Now());
   }
 
   if (map_state_ == MapState::LOADED_KEYS_ONLY)
@@ -777,6 +780,7 @@ void StorageAreaImpl::CommitChanges() {
       }
     }
   }
+
   // Schedule the copy, and ignore if |clear_all_first| is specified and there
   // are no changing keys.
   if (commit_batch_->copy_to_prefix) {
@@ -784,7 +788,11 @@ void StorageAreaImpl::CommitChanges() {
     DCHECK(!commit_batch_->clear_all_first);
     commit.copy_to_prefix = std::move(commit_batch_->copy_to_prefix);
   }
-  commit_batch_.reset();
+
+  base::UmaHistogramCustomCounts("DOMStorage.CommitSizeBytes", data_size,
+                                 /*min=*/100,
+                                 /*exclusive_max=*/12 * 1024 * 1024,
+                                 /*buckets=*/100);
 
   data_rate_limiter_.add_samples(data_size);
 
@@ -792,7 +800,14 @@ void StorageAreaImpl::CommitChanges() {
 
   database_->RunDatabaseTask(
       base::BindOnce(
-          [](Commit commit, const DomStorageDatabase& db) {
+          [](Commit commit, std::vector<base::TimeTicks> put_timestamps,
+             const DomStorageDatabase& db) {
+            const auto now = base::TimeTicks::Now();
+            for (const base::TimeTicks& put_time : put_timestamps) {
+              UMA_HISTOGRAM_LONG_TIMES_100("DOMStorage.CommitMeasuredDelay",
+                                           now - put_time);
+            }
+
             leveldb::WriteBatch batch;
             if (commit.clear_all_first)
               db.DeletePrefixed(commit.prefix, &batch);
@@ -808,9 +823,11 @@ void StorageAreaImpl::CommitChanges() {
             }
             return db.Commit(&batch);
           },
-          std::move(commit)),
+          std::move(commit), std::move(commit_batch_->put_timestamps)),
       base::BindOnce(&StorageAreaImpl::OnCommitComplete,
                      weak_ptr_factory_.GetWeakPtr()));
+
+  commit_batch_.reset();
 }
 
 void StorageAreaImpl::OnCommitComplete(leveldb::Status status) {

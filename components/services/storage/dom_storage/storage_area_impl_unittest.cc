@@ -20,6 +20,7 @@
 #include "base/strings/string_number_conversions.h"
 #include "base/task/thread_pool.h"
 #include "base/test/bind.h"
+#include "base/test/metrics/histogram_tester.h"
 #include "base/test/task_environment.h"
 #include "base/test/test_simple_task_runner.h"
 #include "base/threading/thread.h"
@@ -474,6 +475,8 @@ TEST_P(StorageAreaImplParamTest, GetAll) {
 }
 
 TEST_P(StorageAreaImplParamTest, CommitPutToDB) {
+  base::HistogramTester histograms;
+
   storage_area_impl()->SetCacheModeForTesting(GetParam());
   std::string key1 = test_key2_;
   std::string value1 = "foo";
@@ -504,8 +507,14 @@ TEST_P(StorageAreaImplParamTest, CommitPutToDB) {
   EXPECT_TRUE(put_success3);
 
   EXPECT_FALSE(HasDatabaseEntry(test_prefix_ + key2));
+  histograms.ExpectTotalCount("DOMStorage.CommitSizeBytes", 0);
+  histograms.ExpectTotalCount("DOMStorage.CommitMeasuredDelay", 0);
 
   BlockingCommit();
+
+  histograms.ExpectTotalCount("DOMStorage.CommitSizeBytes", 1);
+  histograms.ExpectTotalCount("DOMStorage.CommitMeasuredDelay", 3);
+
   EXPECT_TRUE(HasDatabaseEntry(test_prefix_ + key1));
   EXPECT_EQ(value1, GetDatabaseEntry(test_prefix_ + key1));
   EXPECT_TRUE(HasDatabaseEntry(test_prefix_ + key2));
