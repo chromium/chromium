@@ -1430,43 +1430,44 @@ const FeatureEntry::FeatureVariation kOmniboxMlUrlScoringVariations[] = {
      std::size(kOmniboxMlUrlScoringMaxMatchesByProvider10), nullptr},
 };
 
-const FeatureEntry::FeatureParam kMlUrlPiecewiseMappedSearchBlendingNoBias[] = {
-    {"MlUrlPiecewiseMappedSearchBlending", "true"},
-    {"MlUrlPiecewiseMappedSearchBlending_BreakPoints",
-     "0,550;0.018,1300;0.14,1398;1,1422"},
-    {"MlUrlPiecewiseMappedSearchBlending_GroupingThreshold", "1400"},
-    {"MlUrlPiecewiseMappedSearchBlending_RelevanceBias", "0"}};
 const FeatureEntry::FeatureParam
-    kMlUrlPiecewiseMappedSearchBlendingSmallBias[] = {
+    kMlUrlPiecewiseMappedSearchBlendingAdjustedBy0[] = {
         {"MlUrlPiecewiseMappedSearchBlending", "true"},
         {"MlUrlPiecewiseMappedSearchBlending_BreakPoints",
          "0,550;0.018,1300;0.14,1398;1,1422"},
+        {"MlUrlPiecewiseMappedSearchBlending_GroupingThreshold", "1400"},
+        {"MlUrlPiecewiseMappedSearchBlending_RelevanceBias", "0"}};
+const FeatureEntry::FeatureParam
+    kMlUrlPiecewiseMappedSearchBlendingAdjustedBy50[] = {
+        {"MlUrlPiecewiseMappedSearchBlending", "true"},
+        {"MlUrlPiecewiseMappedSearchBlending_BreakPoints",
+         "0,550;0.018,1250;0.14,1348;1,1422"},
         {"MlUrlPiecewiseMappedSearchBlending_GroupingThreshold", "1350"},
-        {"MlUrlPiecewiseMappedSearchBlending_RelevanceBias", "-50"}};
+        {"MlUrlPiecewiseMappedSearchBlending_RelevanceBias", "0"}};
 const FeatureEntry::FeatureParam
-    kMlUrlPiecewiseMappedSearchBlendingMediumBias[] = {
+    kMlUrlPiecewiseMappedSearchBlendingAdjustedBy100[] = {
         {"MlUrlPiecewiseMappedSearchBlending", "true"},
         {"MlUrlPiecewiseMappedSearchBlending_BreakPoints",
-         "0,550;0.018,1300;0.14,1398;1,1422"},
+         "0,550;0.018,1200;0.14,1298;1,1422"},
         {"MlUrlPiecewiseMappedSearchBlending_GroupingThreshold", "1300"},
-        {"MlUrlPiecewiseMappedSearchBlending_RelevanceBias", "-100"}};
+        {"MlUrlPiecewiseMappedSearchBlending_RelevanceBias", "0"}};
 const FeatureEntry::FeatureParam
-    kMlUrlPiecewiseMappedSearchBlendingLargeBias[] = {
+    kMlUrlPiecewiseMappedSearchBlendingAdjustedBy150[] = {
         {"MlUrlPiecewiseMappedSearchBlending", "true"},
         {"MlUrlPiecewiseMappedSearchBlending_BreakPoints",
-         "0,550;0.018,1300;0.14,1398;1,1422"},
+         "0,550;0.018,1150;0.14,1248;1,1422"},
         {"MlUrlPiecewiseMappedSearchBlending_GroupingThreshold", "1250"},
-        {"MlUrlPiecewiseMappedSearchBlending_RelevanceBias", "-150"}};
+        {"MlUrlPiecewiseMappedSearchBlending_RelevanceBias", "0"}};
 const FeatureEntry::FeatureVariation
     kMlUrlPiecewiseMappedSearchBlendingVariations[] = {
-        {"no bias", kMlUrlPiecewiseMappedSearchBlendingNoBias,
-         std::size(kMlUrlPiecewiseMappedSearchBlendingNoBias), nullptr},
-        {"small bias", kMlUrlPiecewiseMappedSearchBlendingSmallBias,
-         std::size(kMlUrlPiecewiseMappedSearchBlendingSmallBias), nullptr},
-        {"medium bias", kMlUrlPiecewiseMappedSearchBlendingMediumBias,
-         std::size(kMlUrlPiecewiseMappedSearchBlendingMediumBias), nullptr},
-        {"large bias", kMlUrlPiecewiseMappedSearchBlendingLargeBias,
-         std::size(kMlUrlPiecewiseMappedSearchBlendingLargeBias), nullptr},
+        {"adjusted by 0", kMlUrlPiecewiseMappedSearchBlendingAdjustedBy0,
+         std::size(kMlUrlPiecewiseMappedSearchBlendingAdjustedBy0), nullptr},
+        {"adjusted by 50", kMlUrlPiecewiseMappedSearchBlendingAdjustedBy50,
+         std::size(kMlUrlPiecewiseMappedSearchBlendingAdjustedBy50), nullptr},
+        {"adjusted by 100", kMlUrlPiecewiseMappedSearchBlendingAdjustedBy100,
+         std::size(kMlUrlPiecewiseMappedSearchBlendingAdjustedBy100), nullptr},
+        {"adjusted by 150", kMlUrlPiecewiseMappedSearchBlendingAdjustedBy150,
+         std::size(kMlUrlPiecewiseMappedSearchBlendingAdjustedBy150), nullptr},
 };
 
 const FeatureEntry::FeatureParam kMlUrlSearchBlendingStable[] = {
@@ -6245,34 +6246,34 @@ const FeatureEntry kFeatureEntries[] = {
          "OmniboxBundledExperimentV1")},
     {"omnibox-ml-log-url-scoring-signals",
      flag_descriptions::kOmniboxMlLogUrlScoringSignalsName,
-     flag_descriptions::kOmniboxMlLogUrlScoringSignalsDescription, kOsDesktop,
+     flag_descriptions::kOmniboxMlLogUrlScoringSignalsDescription, kOsAll,
      FEATURE_VALUE_TYPE(omnibox::kLogUrlScoringSignals)},
     {"omnibox-ml-url-piecewise-mapped-search-blending",
      flag_descriptions::kOmniboxMlUrlPiecewiseMappedSearchBlendingName,
      flag_descriptions::kOmniboxMlUrlPiecewiseMappedSearchBlendingDescription,
-     kOsDesktop,
+     kOsAll,
      FEATURE_WITH_PARAMS_VALUE_TYPE(
          omnibox::kMlUrlPiecewiseMappedSearchBlending,
          kMlUrlPiecewiseMappedSearchBlendingVariations,
          "MlUrlPiecewiseMappedSearchBlending")},
     {"omnibox-ml-url-score-caching",
      flag_descriptions::kOmniboxMlUrlScoreCachingName,
-     flag_descriptions::kOmniboxMlUrlScoreCachingDescription, kOsDesktop,
+     flag_descriptions::kOmniboxMlUrlScoreCachingDescription, kOsAll,
      FEATURE_VALUE_TYPE(omnibox::kMlUrlScoreCaching)},
     {"omnibox-ml-url-scoring", flag_descriptions::kOmniboxMlUrlScoringName,
-     flag_descriptions::kOmniboxMlUrlScoringDescription, kOsDesktop,
+     flag_descriptions::kOmniboxMlUrlScoringDescription, kOsAll,
      FEATURE_WITH_PARAMS_VALUE_TYPE(omnibox::kMlUrlScoring,
                                     kOmniboxMlUrlScoringVariations,
                                     "MlUrlScoring")},
     {"omnibox-ml-url-search-blending",
      flag_descriptions::kOmniboxMlUrlSearchBlendingName,
-     flag_descriptions::kOmniboxMlUrlSearchBlendingDescription, kOsDesktop,
+     flag_descriptions::kOmniboxMlUrlSearchBlendingDescription, kOsAll,
      FEATURE_WITH_PARAMS_VALUE_TYPE(omnibox::kMlUrlSearchBlending,
                                     kMlUrlSearchBlendingVariations,
                                     "MlUrlScoring")},
     {"omnibox-ml-url-scoring-model",
      flag_descriptions::kOmniboxMlUrlScoringModelName,
-     flag_descriptions::kOmniboxMlUrlScoringModelDescription, kOsDesktop,
+     flag_descriptions::kOmniboxMlUrlScoringModelDescription, kOsAll,
      FEATURE_VALUE_TYPE(omnibox::kUrlScoringModel)},
 
     {"omnibox-limit-keyword-mode-suggestions",

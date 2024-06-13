@@ -787,6 +787,33 @@ const char kOmniboxMaxZPSMatchesDescription[] =
     "Changes the maximum number of autocomplete matches displayed in the "
     "zero-prefix state in the omnibox (e.g. on NTP when tapped on OB).";
 
+const char kOmniboxMlLogUrlScoringSignalsName[] =
+    "Log Omnibox URL Scoring Signals";
+const char kOmniboxMlLogUrlScoringSignalsDescription[] =
+    "Enables Omnibox to log scoring signals of URL suggestions.";
+
+const char kOmniboxMlUrlPiecewiseMappedSearchBlendingName[] =
+    "Omnibox ML Scoring with Piecewise Score Mapping";
+const char kOmniboxMlUrlPiecewiseMappedSearchBlendingDescription[] =
+    "Specifies how to blend URL ML scores and search traditional scores using "
+    "a piecewise ML score mapping function.";
+
+const char kOmniboxMlUrlScoreCachingName[] = "Omnibox ML URL Score Caching";
+const char kOmniboxMlUrlScoreCachingDescription[] =
+    "Enables in-memory caching of ML URL scores.";
+
+const char kOmniboxMlUrlScoringName[] = "Omnibox ML URL Scoring";
+const char kOmniboxMlUrlScoringDescription[] =
+    "Enables ML-based relevance scoring for Omnibox URL Suggestions.";
+
+const char kOmniboxMlUrlScoringModelName[] = "Omnibox URL Scoring Model";
+const char kOmniboxMlUrlScoringModelDescription[] =
+    "Enables ML scoring model for Omnibox URL sugestions.";
+
+const char kOmniboxMlUrlSearchBlendingName[] = "Omnibox ML URL Search Blending";
+const char kOmniboxMlUrlSearchBlendingDescription[] =
+    "Specifies how to blend URL ML scores and search traditional scores.";
+
 const char kOmniboxOnDeviceHeadSuggestionsIncognitoName[] =
     "Omnibox on device head suggestions (incognito only)";
 const char kOmniboxOnDeviceHeadSuggestionsIncognitoDescription[] =

@@ -698,6 +698,39 @@ extern const char kOmniboxMaxURLMatchesDescription[];
 extern const char kOmniboxMaxZPSMatchesName[];
 extern const char kOmniboxMaxZPSMatchesDescription[];
 
+// Title and description for the flag to enable logging of Omnibox URL scoring
+// signal data to OmniboxEventProto for training the ML scoring models.
+extern const char kOmniboxMlLogUrlScoringSignalsName[];
+extern const char kOmniboxMlLogUrlScoringSignalsDescription[];
+
+// Title and description for the flag to enable piecewise ML score mapping when
+// scoring & blending ML-eligible URL suggestions and ML-ineligible Search
+// suggestions.
+extern const char kOmniboxMlUrlPiecewiseMappedSearchBlendingName[];
+extern const char kOmniboxMlUrlPiecewiseMappedSearchBlendingDescription[];
+
+// Title and description for the flag to enable in-memory caching of ML scores
+// to speed up the overall ML scoring process.
+extern const char kOmniboxMlUrlScoreCachingName[];
+extern const char kOmniboxMlUrlScoreCachingDescription[];
+
+// Title and description for the flag to enable the ML scoring model for
+// assigning new relevance scores to the URL suggestions and reranking them.
+extern const char kOmniboxMlUrlScoringName[];
+extern const char kOmniboxMlUrlScoringDescription[];
+
+// Title and description for the flag that enables creation of the Omnibox
+// autocomplete URL scoring model. Prerequisite for `kMlUrlScoring` &
+// `kMlUrlSearchBlending`.
+extern const char kOmniboxMlUrlScoringModelName[];
+extern const char kOmniboxMlUrlScoringModelDescription[];
+
+// Title and description for the flag that enables logic specifying how URL
+// model scores integrate with search traditional scores via linear score
+// mapping.
+extern const char kOmniboxMlUrlSearchBlendingName[];
+extern const char kOmniboxMlUrlSearchBlendingDescription[];
+
 // Title and description for the flag to enable Omnibox On Device Head
 // suggestions (incognito).
 extern const char kOmniboxOnDeviceHeadSuggestionsIncognitoName[];
