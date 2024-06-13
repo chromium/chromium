@@ -143,14 +143,10 @@
   <cr-drawer id="drawer" on-close="onMenuClose_" heading="$i18n{settings}"
       align="$i18n{textdirection}">
     <div slot="header-icon">
-      <!-- Hidden from a11y because this icon is decorative. Clicking closes
-          the dialog, but screen reader users can do this by pressing ESC,
-          so aria-hidden is OK here. -->
       <cr-icon-button id="drawerIcon"
           iron-icon="cr20:menu"
           on-click="onDrawerIconClick_"
-          title="$i18n{close}"
-          aria-hidden="true">
+          title="$i18n{close}">
       </cr-icon-button>
     </div>
     <div slot="body">
