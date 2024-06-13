@@ -655,17 +655,18 @@ class ExtensionURLLoader : public network::mojom::URLLoader {
   void WriteData(mojo::StructPtr<network::mojom::URLResponseHead> head,
                  base::span<const uint8_t> contents) {
     DCHECK(contents.data());
-    size_t size = contents.size();
     mojo::ScopedDataPipeProducerHandle producer_handle;
     mojo::ScopedDataPipeConsumerHandle consumer_handle;
-    if (mojo::CreateDataPipe(size, producer_handle, consumer_handle) !=
-        MOJO_RESULT_OK) {
+    if (mojo::CreateDataPipe(contents.size(), producer_handle,
+                             consumer_handle) != MOJO_RESULT_OK) {
       CompleteRequestAndDeleteThis(net::ERR_FAILED);
       return;
     }
-    MojoResult result = producer_handle->WriteData(contents.data(), &size,
-                                                   MOJO_WRITE_DATA_FLAG_NONE);
-    if (result != MOJO_RESULT_OK || size < contents.size()) {
+
+    size_t actually_written_bytes = 0;
+    MojoResult result = producer_handle->WriteData(
+        contents, MOJO_WRITE_DATA_FLAG_NONE, actually_written_bytes);
+    if (result != MOJO_RESULT_OK || actually_written_bytes < contents.size()) {
       CompleteRequestAndDeleteThis(net::ERR_FAILED);
       return;
     }
