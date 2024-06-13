@@ -240,7 +240,7 @@ def main():
   else:
     gcs_platform = 'Linux_x64'
 
-  with open('buildlog.txt', 'w') as log:
+  with open('buildlog.txt', 'w', encoding='utf-8') as log:
     Tee('Starting build\n', log)
 
     # Do a clobber build.

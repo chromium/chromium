@@ -30,7 +30,9 @@ RUST_TOOLCHAIN_PACKAGE_NAME = f'rust-toolchain-{PACKAGE_VERSION}.tar.xz'
 # into Chromium; this work is on hold right now - see also
 # https://crbug.com/1510943#c2).
 def BuildCrubit(build_mac_arm):
-    with open(os.path.join(THIRD_PARTY_DIR, BUILDLOG_NAME), 'w') as log:
+    with open(os.path.join(THIRD_PARTY_DIR, BUILDLOG_NAME),
+              'w',
+              encoding='utf-8') as log:
         build_cmd = [sys.executable, os.path.join(THIS_DIR, 'build_crubit.py')]
         if build_mac_arm:
             build_cmd.append('--build-mac-arm')
@@ -84,7 +86,9 @@ def main():
     if os.path.exists(RUST_TOOLCHAIN_OUT_DIR):
         shutil.rmtree(RUST_TOOLCHAIN_OUT_DIR)
 
-    with open(os.path.join(THIRD_PARTY_DIR, BUILDLOG_NAME), 'w') as log:
+    with open(os.path.join(THIRD_PARTY_DIR, BUILDLOG_NAME),
+              'w',
+              encoding='utf-8') as log:
         # Build the Rust toolchain.
         build_cmd = [sys.executable, os.path.join(THIS_DIR, 'build_rust.py')]
         if args.build_mac_arm:
