@@ -11,7 +11,6 @@
 
 #include "base/containers/fixed_flat_map.h"
 #include "base/memory/raw_ptr.h"
-#include "base/memory/raw_ptr_exclusion.h"
 #include "base/test/mock_callback.h"
 #include "chrome/browser/new_tab_page/chrome_colors/generated_colors_info.h"
 #include "chrome/browser/search/background/ntp_custom_background_service.h"
@@ -166,15 +165,13 @@ class ThemeColorPickerHandlerTest : public testing::Test {
   std::unique_ptr<TestingProfile> profile_;
   testing::NiceMock<MockNtpCustomBackgroundService>
       mock_ntp_custom_background_service_;
-  // This field is not a raw_ptr<> because it was filtered by the rewriter for:
-  // #addr-of
-  RAW_PTR_EXCLUSION NtpCustomBackgroundServiceObserver*
-      ntp_custom_background_service_observer_;
   content::TestWebContentsFactory web_contents_factory_;
   raw_ptr<content::WebContents> web_contents_;
   testing::NiceMock<MockClient> mock_client_;
   raw_ptr<MockThemeService> mock_theme_service_;
   std::unique_ptr<ThemeColorPickerHandler> handler_;
+  raw_ptr<NtpCustomBackgroundServiceObserver>
+      ntp_custom_background_service_observer_;
 };
 
 TEST_F(ThemeColorPickerHandlerTest, GetChromeColorsExtended) {
