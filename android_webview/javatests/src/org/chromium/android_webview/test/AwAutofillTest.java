@@ -338,10 +338,7 @@ public class AwAutofillTest extends AwParameterizedTest {
                     mTest.waitForCallbackAndVerifyTypes(
                             mCnt,
                             new Integer[] {
-                                AUTOFILL_VIEW_EXITED,
-                                AUTOFILL_VALUE_CHANGED,
-                                AUTOFILL_COMMIT,
-                                AUTOFILL_CANCEL
+                                AUTOFILL_VALUE_CHANGED, AUTOFILL_COMMIT, AUTOFILL_CANCEL
                             });
         }
 
@@ -1297,7 +1294,7 @@ public class AwAutofillTest extends AwParameterizedTest {
     @Feature({"AndroidWebView"})
     // TODO: Run the test with BFCache after relanding crrev.com/c/5434056
     @CommandLineFlags.Add({
-        "enable-features=AndroidAutofillCancelSessionOnNavigation",
+        "enable-features=\"AndroidAutofillCancelSessionOnNavigation,AndroidAutofillDirectFormSubmission\"",
         "disable-features=WebViewBackForwardCache"
     })
     public void testNavigationAfterProbableSubmitResultsInSessionCommit() throws Throwable {
@@ -1329,11 +1326,7 @@ public class AwAutofillTest extends AwParameterizedTest {
         waitForCallbackAndVerifyTypes(
                 cnt,
                 new Integer[] {
-                    AUTOFILL_VIEW_EXITED,
-                    AUTOFILL_VALUE_CHANGED,
-                    AUTOFILL_VALUE_CHANGED,
-                    AUTOFILL_COMMIT,
-                    AUTOFILL_CANCEL
+                    AUTOFILL_VALUE_CHANGED, AUTOFILL_VALUE_CHANGED, AUTOFILL_COMMIT, AUTOFILL_CANCEL
                 });
         assertEquals(SubmissionSource.PROBABLY_FORM_SUBMITTED, mSubmissionSource);
     }
@@ -2170,7 +2163,9 @@ public class AwAutofillTest extends AwParameterizedTest {
     @Test
     @SmallTest
     @Feature({"AndroidWebView"})
-    @CommandLineFlags.Add({"enable-features=AndroidAutofillCancelSessionOnNavigation"})
+    @CommandLineFlags.Add({
+        "enable-features=\"AndroidAutofillCancelSessionOnNavigation,AndroidAutofillDirectFormSubmission\""
+    })
     public void testUMAFormSubmissionProbablyFormSubmitted() throws Throwable {
         var histograms =
                 TestThreadUtils.runOnUiThreadBlocking(
