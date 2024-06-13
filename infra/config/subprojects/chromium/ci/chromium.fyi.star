@@ -820,7 +820,7 @@ fyi_ios_builder(
         ],
     ),
     builderless = False,
-    os = os.MAC_13,
+    os = os.MAC_DEFAULT,
     console_view_entry = consoles.console_view_entry(
         category = "mac",
     ),
