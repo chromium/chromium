@@ -99,6 +99,7 @@ def __step_config(ctx, step_config):
         "./obj/content/test/content_browsertests__library/fenced_frame_browsertest.o",
         "./obj/content/test/content_unittests__library/ad_auction_service_impl_unittest.o",
         "./obj/content/test/content_unittests__library/auction_runner_unittest.o",
+
         # Fallback happens with follwoing args.gn (try/fuchsia-x64-cast-receiver-rel).
         # Fallback may happen in other build config too.
         # cast_streaming_enable_remoting = true
@@ -202,6 +203,7 @@ def __step_config(ctx, step_config):
         # use_siso = true
         "./obj/content/test/content_browsertests__library/interest_group_browsertest.o",
         "./obj/content/test/content_browsertests__library/prerender_browsertest.o",
+        "./obj/content/test/content_browsertests__library/site_per_process_browsertest.o",
         "./robolectric_x64/obj/net/http/transport_security_state_generated_files/transport_security_state.o",
         # Fallback happens with the following args.gn
         # (linux-build-perf-developer, win-build-perf-developer)
