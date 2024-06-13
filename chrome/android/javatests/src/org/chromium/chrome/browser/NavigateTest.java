@@ -205,6 +205,7 @@ public class NavigateTest {
     @Test
     @MediumTest
     @Feature({"Navigation"})
+    @DisabledTest(message = "https://crbug.com/346968609")
     public void testOpenAndNavigate() throws Exception {
         final String url = mTestServer.getURL("/chrome/test/data/android/navigate/simple.html");
         navigateAndObserve(url);
