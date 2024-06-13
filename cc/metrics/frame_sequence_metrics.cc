@@ -227,7 +227,8 @@ bool FrameSequenceMetrics::HasDataLeftForReporting() const {
 void FrameSequenceMetrics::AdoptTrace(FrameSequenceMetrics* adopt_from) {
   DCHECK(!trace_data_.trace_id);
   trace_data_.trace_id = adopt_from->trace_data_.trace_id;
-  trace_data_.last_presented_sequence_number = adopt_from->trace_data_.trace_id;
+  trace_data_.last_presented_sequence_number =
+      adopt_from->trace_data_.last_presented_sequence_number;
   trace_data_.last_timestamp = adopt_from->trace_data_.last_timestamp;
   trace_data_.frame_count = adopt_from->trace_data_.frame_count;
   adopt_from->trace_data_.trace_id = 0u;
