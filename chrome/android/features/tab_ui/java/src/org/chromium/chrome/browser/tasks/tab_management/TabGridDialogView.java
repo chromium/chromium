@@ -1058,6 +1058,7 @@ public class TabGridDialogView extends FrameLayout {
      */
     void updateAnimationBackgroundColor(@ColorInt int colorInt) {
         assert TabUiFeatureUtilities.shouldUseListMode();
+        updateAnimationCardView(null);
         Drawable animationBackground =
                 mAnimationCardView.findViewById(R.id.card_view).getBackground();
         DrawableCompat.setTint(animationBackground, colorInt);
