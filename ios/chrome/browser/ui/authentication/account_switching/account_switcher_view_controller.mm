@@ -4,6 +4,7 @@
 
 #import "ios/chrome/browser/ui/authentication/account_switching/account_switcher_view_controller.h"
 
+#import "ios/chrome/browser/ui/authentication/account_switching/account_switching_constants.h"
 #import "ios/chrome/common/ui/colors/semantic_color_names.h"
 
 namespace {
@@ -14,6 +15,7 @@ constexpr CGFloat kHalfSheetCornerRadius = 20.0;
 
 - (void)viewDidLoad {
   [super viewDidLoad];
+  self.tableView.accessibilityIdentifier = kAccountSwitchingTableViewId;
   self.tableView.backgroundColor =
       [UIColor colorNamed:kGroupedPrimaryBackgroundColor];
   [self setUpBottomSheetPresentationController];

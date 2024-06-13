@@ -23,6 +23,7 @@ source_set("account_switching_ui") {
     "account_switcher_view_controller.mm",
   ]
   deps = [
+    ":constants",
     "//base",
     "//ios/chrome/browser/shared/ui/table_view",
     "//ios/chrome/browser/shared/ui/util",
@@ -30,6 +31,14 @@ source_set("account_switching_ui") {
     "//ios/chrome/common/ui/util",
   ]
   public_deps = [ "//ios/chrome/browser/shared/ui/table_view" ]
+}
+
+source_set("constants") {
+  sources = [
+    "account_switching_constants.h",
+    "account_switching_constants.mm",
+  ]
+  deps = []
 }
 
 source_set("unit_tests") {
