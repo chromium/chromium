@@ -24,7 +24,6 @@ chromium-metrics-reviews@google.com.
 
 <variants name="AdditionalSecurityInterstitialSBType">
   <variant name="billing." summary=""/>
-  <variant name="billing_subresource." summary=""/>
   <variant name="origin_policy." summary=""/>
 </variants>
 
@@ -44,11 +43,8 @@ chromium-metrics-reviews@google.com.
 
 <variants name="SecurityInterstitialSBType">
   <variant name="harmful." summary=""/>
-  <variant name="harmful_subresource." summary=""/>
   <variant name="malware." summary=""/>
-  <variant name="malware_subresource." summary=""/>
   <variant name="phishing." summary=""/>
-  <variant name="phishing_subresource." summary=""/>
 </variants>
 
 <variants name="SecurityInterstitialSBWithSourceType">
@@ -245,7 +241,8 @@ chromium-metrics-reviews@google.com.
     M52, social_engineering_ads* and social_engineering_landing* interstitial
     reasons are split into their own entries from phishing*. As of M90,
     social_engineering_ads* and social_engineering_landing* interstitial reasons
-    have been removed because they don't trigger interstitials.
+    have been removed because they don't trigger interstitials. As of M128,
+    logging on subresource interstitials is removed.
 
     This metric is used to populate a dashboard on go/crca-site.
     {AdditionalSecurityInterstitialSBType}
@@ -270,7 +267,9 @@ chromium-metrics-reviews@google.com.
     social_engineering_ads* and social_engineering_landing* interstitial reasons
     are split into their own entries from phishing*. As of M90,
     social_engineering_ads* and social_engineering_landing* interstitial reasons
-    have been removed because they don't trigger interstitials.
+    have been removed because they don't trigger interstitials. As of M128,
+    logging on subresource interstitials is removed.
+
     {AdditionalSecurityInterstitialSBType}
   </summary>
   <token key="AdditionalSecurityInterstitialSBType"
@@ -377,7 +376,8 @@ chromium-metrics-reviews@google.com.
     M52, social_engineering_ads* and social_engineering_landing* interstitial
     reasons are split into their own entries from phishing*. As of M90,
     social_engineering_ads* and social_engineering_landing* interstitial reasons
-    have been removed because they don't trigger interstitials.
+    have been removed because they don't trigger interstitials. As of M128,
+    logging on subresource interstitials is removed.
 
     This metric is used to populate a dashboard on go/crca-site.
     {SecurityInterstitialSBType} {SecurityInterstitialSBWithSourceType}

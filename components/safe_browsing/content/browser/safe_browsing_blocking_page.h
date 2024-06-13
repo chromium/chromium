@@ -161,9 +161,6 @@ class SafeBrowsingBlockingPage : public BaseBlockingPage {
   // The threat type of the resource that triggered the blocking page.
   SBThreatType threat_type_;
 
-  // Whether the blocking page is triggered by subresource.
-  bool is_subresource_;
-
  private:
   raw_ptr<history::HistoryService> history_service_ = nullptr;
   raw_ptr<SafeBrowsingNavigationObserverManager> navigation_observer_manager_ =

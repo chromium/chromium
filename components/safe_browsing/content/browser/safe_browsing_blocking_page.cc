@@ -80,7 +80,6 @@ SafeBrowsingBlockingPage::SafeBrowsingBlockingPage(
       threat_details_in_progress_(false),
       threat_source_(unsafe_resources[0].threat_source),
       threat_type_(unsafe_resources[0].threat_type),
-      is_subresource_(unsafe_resources[0].is_subresource),
       history_service_(history_service),
       navigation_observer_manager_(navigation_observer_manager),
       metrics_collector_(metrics_collector),
@@ -92,8 +91,8 @@ SafeBrowsingBlockingPage::SafeBrowsingBlockingPage(
       ignore_auto_revocation_notifications_trigger_(
           std::move(ignore_auto_revocation_notifications_trigger)) {
   if (unsafe_resources.size() == 1) {
-    UMA_HISTOGRAM_ENUMERATION("SafeBrowsing.BlockingPage.RequestDestination",
-                              unsafe_resources[0].request_destination);
+    UMA_HISTOGRAM_ENUMERATION("SafeBrowsing.BlockingPage.ThreatType",
+                              unsafe_resources[0].threat_type);
   }
   LogSafeBrowsingInterstitialShownUKM(web_contents);
 
@@ -226,8 +225,8 @@ void SafeBrowsingBlockingPage::FinishThreatDetails(const base::TimeDelta& delay,
                                                    bool did_proceed,
                                                    int num_visits) {
   base::UmaHistogramBoolean(
-      "SafeBrowsing.ClientSafeBrowsingReport.HasThreatDetailsAtFinish" +
-          std::string(is_subresource_ ? ".Subresource" : ".Mainframe"),
+      "SafeBrowsing.ClientSafeBrowsingReport.HasThreatDetailsAtFinish."
+      "Mainframe",
       threat_details_in_progress_);
   // Not all interstitials collect threat details (eg., incognito mode).
   if (!threat_details_in_progress_) {

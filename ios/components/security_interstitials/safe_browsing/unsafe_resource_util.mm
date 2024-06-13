@@ -56,8 +56,6 @@ std::string GetUnsafeResourceMetricPrefix(
       break;
   }
   DCHECK(prefix.length());
-  if (resource.is_subresource)
-    prefix += "_subresource";
   return prefix;
 }
 

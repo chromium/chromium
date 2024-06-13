@@ -269,8 +269,8 @@ void PingManager::OnThreatDetailsReportURLLoaderComplete(
 // Sends a SafeBrowsing "hit" report.
 void PingManager::ReportSafeBrowsingHit(
     std::unique_ptr<safe_browsing::HitReport> hit_report) {
-  base::UmaHistogramBoolean("SafeBrowsing.HitReport.IsSubresource",
-                            hit_report->is_subresource);
+  base::UmaHistogramEnumeration("SafeBrowsing.HitReport.ThreatType",
+                                hit_report->threat_type);
 
   auto resource_request = std::make_unique<network::ResourceRequest>();
   SanitizeHitReport(hit_report.get());

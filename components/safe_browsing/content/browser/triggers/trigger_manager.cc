@@ -191,8 +191,7 @@ bool TriggerManager::StartCollectingThreatDetailsWithReason(
       &data_collectors_map_[GetWebContentsKey(web_contents)];
   bool collection_in_progress = collectors->threat_details != nullptr;
   base::UmaHistogramBoolean(
-      "SafeBrowsing.ClientSafeBrowsingReport.HasThreatDetailsAtStart" +
-          std::string(resource.is_subresource ? ".Subresource" : ".Mainframe"),
+      "SafeBrowsing.ClientSafeBrowsingReport.HasThreatDetailsAtStart.Mainframe",
       collection_in_progress);
   if (collection_in_progress) {
     return false;

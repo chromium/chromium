@@ -118,11 +118,6 @@ chromium-metrics-reviews@google.com.
   <int value="1" label="Is prefetch"/>
 </enum>
 
-<enum name="BooleanIsSubresource">
-  <int value="0" label="Mainframe"/>
-  <int value="1" label="Subresource"/>
-</enum>
-
 <enum name="BooleanManagedPref">
   <int value="0" label="Unmanaged Pref"/>
   <int value="1" label="Managed Pref"/>
