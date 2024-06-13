@@ -707,7 +707,7 @@
     ],
 
     'official_mac_arm_pgo_with_symbols': [
-      'official', 'reclient', 'no_widevine_cdm_host_verification', 'arm64', 'disable_widevine_signing', 'minimal_symbols', 'pgo_phase_1', 'release', 'disable_stripping', 'disable_pa_freelist_dispatcher'
+      'official', 'reclient', 'no_widevine_cdm_host_verification', 'arm64', 'disable_widevine_signing', 'minimal_symbols', 'pgo_phase_1', 'release', 'disable_stripping'
     ],
 
     'official_mac_pgo_with_symbols': [
@@ -1180,10 +1180,6 @@
     # Representative GN args for developer builds.
     'devtools_do_typecheck': {
       'gn_args': 'devtools_skip_typecheck=false',
-    },
-
-    'disable_pa_freelist_dispatcher': {
-      'gn_args': 'use_freelist_dispatcher = false'
     },
 
     'disable_stripping': {
