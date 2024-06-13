@@ -6,6 +6,7 @@
 
 #include <memory>
 #include <utility>
+
 #include "base/memory/scoped_refptr.h"
 #include "base/numerics/checked_math.h"
 #include "base/numerics/clamped_math.h"
@@ -1041,8 +1042,8 @@ ScriptPromise<ImageBitmap> ImageBitmap::CreateAsync(
     }
   }
 
-  SVGImageForContainer::Create(To<SVGImage>(input.get()),
-                               gfx::SizeF(input_rect.size()), 1, NullURL(),
+  SVGImageForContainer::Create(To<SVGImage>(*input),
+                               gfx::SizeF(input_rect.size()), 1, nullptr,
                                preferred_color_scheme)
       ->Draw(canvas, cc::PaintFlags(), gfx::RectF(draw_dst_rect),
              gfx::RectF(draw_src_rect), ImageDrawOptions());

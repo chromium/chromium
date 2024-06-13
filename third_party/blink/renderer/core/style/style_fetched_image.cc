@@ -23,18 +23,14 @@
 
 #include "third_party/blink/renderer/core/style/style_fetched_image.h"
 
-#include "third_party/blink/public/web/web_local_frame_client.h"
 #include "third_party/blink/renderer/core/css/css_image_value.h"
 #include "third_party/blink/renderer/core/css/style_engine.h"
 #include "third_party/blink/renderer/core/dom/document.h"
-#include "third_party/blink/renderer/core/frame/local_frame.h"
-#include "third_party/blink/renderer/core/frame/local_frame_client.h"
 #include "third_party/blink/renderer/core/frame/settings.h"
 #include "third_party/blink/renderer/core/loader/resource/image_resource_content.h"
 #include "third_party/blink/renderer/core/paint/timing/image_element_timing.h"
 #include "third_party/blink/renderer/core/paint/timing/paint_timing.h"
 #include "third_party/blink/renderer/core/style/computed_style.h"
-#include "third_party/blink/renderer/core/svg/graphics/svg_image.h"
 #include "third_party/blink/renderer/core/svg/graphics/svg_image_for_container.h"
 #include "third_party/blink/renderer/platform/graphics/bitmap_image.h"
 
@@ -165,12 +161,15 @@ gfx::SizeF StyleFetchedImage::ImageSize(
     RespectImageOrientationEnum respect_orientation) const {
   multiplier = ApplyImageResolution(multiplier);
 
-  const Image& image = *image_->GetImage();
+  Image& image = *image_->GetImage();
   gfx::SizeF size;
   if (auto* svg_image = DynamicTo<SVGImage>(image)) {
+    const SVGImageViewInfo* view_info =
+        SVGImageForContainer::CreateViewInfo(*svg_image, url_);
     const gfx::SizeF unzoomed_default_object_size =
         gfx::ScaleSize(default_object_size, 1 / multiplier);
-    size = svg_image->ConcreteObjectSize(unzoomed_default_object_size);
+    size = SVGImageForContainer::ConcreteObjectSize(
+        *svg_image, view_info, unzoomed_default_object_size);
   } else {
     size = gfx::SizeF(
         image.Size(ForceOrientationIfNecessary(respect_orientation)));
@@ -181,10 +180,15 @@ gfx::SizeF StyleFetchedImage::ImageSize(
 IntrinsicSizingInfo StyleFetchedImage::GetNaturalSizingInfo(
     float multiplier,
     RespectImageOrientationEnum respect_orientation) const {
-  const Image& image = *image_->GetImage();
+  Image& image = *image_->GetImage();
   IntrinsicSizingInfo intrinsic_sizing_info;
   if (auto* svg_image = DynamicTo<SVGImage>(image)) {
-    svg_image->GetIntrinsicSizingInfo(intrinsic_sizing_info);
+    const SVGImageViewInfo* view_info =
+        SVGImageForContainer::CreateViewInfo(*svg_image, url_);
+    if (!SVGImageForContainer::GetNaturalDimensions(*svg_image, view_info,
+                                                    intrinsic_sizing_info)) {
+      intrinsic_sizing_info = IntrinsicSizingInfo::None();
+    }
   } else {
     gfx::SizeF size(
         image.Size(ForceOrientationIfNecessary(respect_orientation)));
@@ -199,10 +203,13 @@ IntrinsicSizingInfo StyleFetchedImage::GetNaturalSizingInfo(
 }
 
 bool StyleFetchedImage::HasIntrinsicSize() const {
-  const Image& image = *image_->GetImage();
+  Image& image = *image_->GetImage();
   if (auto* svg_image = DynamicTo<SVGImage>(image)) {
     IntrinsicSizingInfo intrinsic_sizing_info;
-    if (!svg_image->GetIntrinsicSizingInfo(intrinsic_sizing_info)) {
+    const SVGImageViewInfo* view_info =
+        SVGImageForContainer::CreateViewInfo(*svg_image, url_);
+    if (!SVGImageForContainer::GetNaturalDimensions(*svg_image, view_info,
+                                                    intrinsic_sizing_info)) {
       return false;
     }
     return !intrinsic_sizing_info.IsNone();
@@ -256,8 +263,10 @@ scoped_refptr<Image> StyleFetchedImage::GetImage(
   if (!svg_image) {
     return image;
   }
+  const SVGImageViewInfo* view_info =
+      SVGImageForContainer::CreateViewInfo(*svg_image, url_);
   return SVGImageForContainer::Create(
-      svg_image, target_size, style.EffectiveZoom(), url_,
+      *svg_image, target_size, style.EffectiveZoom(), view_info,
       document.GetStyleEngine().ResolveColorSchemeForEmbedding(&style));
 }
 

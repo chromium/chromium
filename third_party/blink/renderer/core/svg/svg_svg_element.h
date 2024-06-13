@@ -105,8 +105,10 @@ class SVGSVGElement final : public SVGGraphicsElement,
 
   AffineTransform ViewBoxToViewTransform(const gfx::SizeF& viewport_size) const;
 
-  void SetupInitialView(const String& fragment_identifier,
-                        Element* anchor_node);
+  const SVGViewSpec* ParseViewSpec(const String& fragment_identifier,
+                                   Element* anchor_node) const;
+  void SetViewSpec(const SVGViewSpec*);
+
   bool ZoomAndPanEnabled() const;
 
   SVGAnimatedLength* x() const { return x_.Get(); }
@@ -117,8 +119,6 @@ class SVGSVGElement final : public SVGGraphicsElement,
   void Trace(Visitor*) const override;
 
  private:
-  void SetViewSpec(const SVGViewSpec*);
-
   void ParseAttribute(const AttributeModificationParams&) override;
   bool IsPresentationAttribute(const QualifiedName&) const override;
   void CollectStyleForPresentationAttribute(

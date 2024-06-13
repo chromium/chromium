@@ -33,6 +33,7 @@ namespace blink {
 
 class LayoutSVGText;
 class SVGElement;
+class SVGRect;
 enum class SVGTransformChange;
 
 class CORE_EXPORT LayoutSVGRoot final : public LayoutReplaced {
@@ -47,8 +48,13 @@ class CORE_EXPORT LayoutSVGRoot final : public LayoutReplaced {
   bool IsEmbeddedThroughFrameContainingSVGDocument() const;
 
   void IntrinsicSizingInfoChanged();
-  void UnscaledIntrinsicSizingInfo(IntrinsicSizingInfo&,
-                                   bool use_correct_viewbox = true) const;
+  void UnscaledIntrinsicSizingInfo(const SVGRect* override_viewbox,
+                                   IntrinsicSizingInfo&) const;
+  void UnscaledIntrinsicSizingInfo(IntrinsicSizingInfo& sizing_info) const {
+    NOT_DESTROYED();
+    UnscaledIntrinsicSizingInfo(nullptr, sizing_info);
+  }
+
   // This is a special case for SVG documents with percentage dimensions which
   // would normally not change under zoom. See: https://crbug.com/222786.
   double LogicalSizeScaleFactorForPercentageLengths() const;

@@ -32,11 +32,11 @@
 
 #include <algorithm>
 #include <memory>
+
 #include "base/memory/scoped_refptr.h"
 #include "third_party/blink/public/mojom/css/preferred_color_scheme.mojom-blink.h"
 #include "third_party/blink/public/platform/platform.h"
 #include "third_party/blink/public/platform/web_data.h"
-#include "third_party/blink/renderer/core/svg/graphics/svg_image.h"
 #include "third_party/blink/renderer/core/svg/graphics/svg_image_for_container.h"
 #include "third_party/blink/renderer/platform/graphics/image.h"
 #include "third_party/blink/renderer/platform/image-decoders/image_decoder.h"
@@ -113,12 +113,14 @@ SkBitmap WebImage::DecodeSVG(const WebData& data,
   // expect/want. If the desired size is empty, then use the intrinsic size of
   // image.
   gfx::SizeF container_size(desired_size);
-  if (container_size.IsEmpty())
-    container_size = svg_image->ConcreteObjectSize(gfx::SizeF());
+  if (container_size.IsEmpty()) {
+    container_size = SVGImageForContainer::ConcreteObjectSize(
+        *svg_image, nullptr, gfx::SizeF());
+  }
   // TODO(chrishtr): perhaps the downloaded image should be decoded in dark
   // mode if the preferred color scheme is dark.
   scoped_refptr<Image> svg_container =
-      SVGImageForContainer::Create(svg_image.get(), container_size, 1, KURL());
+      SVGImageForContainer::Create(*svg_image, container_size, 1, nullptr);
   if (PaintImage image = svg_container->PaintImageForCurrentFrame()) {
     image.GetSwSkImage()->asLegacyBitmap(&bitmap,
                                          SkImage::kRO_LegacyBitmapMode);

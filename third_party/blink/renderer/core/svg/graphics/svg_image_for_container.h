@@ -26,14 +26,18 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_CORE_SVG_GRAPHICS_SVG_IMAGE_FOR_CONTAINER_H_
 #define THIRD_PARTY_BLINK_RENDERER_CORE_SVG_GRAPHICS_SVG_IMAGE_FOR_CONTAINER_H_
 
+#include "third_party/blink/public/mojom/css/preferred_color_scheme.mojom-blink-forward.h"
 #include "third_party/blink/renderer/core/core_export.h"
 #include "third_party/blink/renderer/core/svg/graphics/svg_image.h"
 #include "third_party/blink/renderer/platform/graphics/image.h"
-#include "third_party/blink/renderer/platform/weborigin/kurl.h"
 #include "ui/gfx/geometry/rect_f.h"
 #include "ui/gfx/geometry/size_f.h"
 
 namespace blink {
+
+class Element;
+class KURL;
+class Node;
 
 // SVGImageForContainer contains a reference to an SVGImage and includes context
 // about how the image is being used (size, fragment identifier).
@@ -59,32 +63,62 @@ class CORE_EXPORT SVGImageForContainer final : public Image {
 
  public:
   static scoped_refptr<SVGImageForContainer> Create(
-      SVGImage* image,
+      SVGImage& image,
       const gfx::SizeF& target_size,
       float zoom,
-      const KURL& url,
-      mojom::blink::PreferredColorScheme preferred_color_scheme) {
+      const SVGImageViewInfo* viewinfo) {
     gfx::SizeF container_size_without_zoom =
         gfx::ScaleSize(target_size, 1 / zoom);
     return base::AdoptRef(new SVGImageForContainer(
-        image, container_size_without_zoom, zoom, url, preferred_color_scheme));
+        image, container_size_without_zoom, zoom, viewinfo));
   }
 
   static scoped_refptr<SVGImageForContainer> Create(
-      SVGImage* image,
+      SVGImage& image,
       const gfx::SizeF& target_size,
       float zoom,
-      const KURL& url) {
+      const SVGImageViewInfo* viewinfo,
+      mojom::blink::PreferredColorScheme preferred_color_scheme) {
     gfx::SizeF container_size_without_zoom =
         gfx::ScaleSize(target_size, 1 / zoom);
-    return base::AdoptRef(new SVGImageForContainer(
-        image, container_size_without_zoom, zoom, url));
+    return base::AdoptRef(
+        new SVGImageForContainer(image, container_size_without_zoom, zoom,
+                                 viewinfo, preferred_color_scheme));
   }
+
+  // Create view info for an SVGImage with a fragment identifier string.
+  static const SVGImageViewInfo* CreateViewInfo(SVGImage&,
+                                                const String& fragment);
+
+  // Create view info for an SVGImage with a URL. The same as calling the above
+  // with the URL's fragment identifier.
+  static const SVGImageViewInfo* CreateViewInfo(SVGImage&, const KURL&);
+
+  // Create view info for an SVGImage with an Element as the context. Will use
+  // `Element::ImageSourceURL()` resolved against the Element's Document.
+  static const SVGImageViewInfo* CreateViewInfo(SVGImage&, const Element&);
+
+  // Create view info for an SVGImage with a Node as the context. Essentially a
+  // convenience wrapper for `MakeWithElement()`.
+  static const SVGImageViewInfo* CreateViewInfo(SVGImage&, const Node*);
+
+  // Get the natural dimensions for the SVGImage with the view info
+  // applied. Returns false if the SVGImage lacks a document element, otherwise
+  // true.
+  static bool GetNaturalDimensions(SVGImage& image,
+                                   const SVGImageViewInfo* info,
+                                   IntrinsicSizingInfo& sizing_info);
+
+  // Determine the concrete object size of this SVGImage with the view info
+  // applied using the specified default object size (in CSS pixels).
+  static gfx::SizeF ConcreteObjectSize(SVGImage& image,
+                                       const SVGImageViewInfo* info,
+                                       const gfx::SizeF& default_object_size);
 
   gfx::Size SizeWithConfig(SizeConfig) const override;
   gfx::SizeF SizeWithConfigAsFloat(SizeConfig) const override;
 
-  bool HasIntrinsicSize() const override { return image_->HasIntrinsicSize(); }
+  bool HasIntrinsicSize() const override;
 
   bool ApplyShader(cc::PaintFlags&,
                    const SkMatrix& local_matrix,
@@ -111,23 +145,22 @@ class CORE_EXPORT SVGImageForContainer final : public Image {
 
  private:
   SVGImageForContainer(
-      SVGImage* image,
+      SVGImage& image,
       const gfx::SizeF& container_size,
       float zoom,
-      const KURL& url,
+      const SVGImageViewInfo* viewinfo,
       mojom::blink::PreferredColorScheme preferred_color_scheme);
-
-  SVGImageForContainer(SVGImage* image,
+  SVGImageForContainer(SVGImage& image,
                        const gfx::SizeF& container_size,
                        float zoom,
-                       const KURL& url);
+                       const SVGImageViewInfo* viewinfo);
 
   void DestroyDecodedData() override {}
 
-  SVGImage* image_;
+  SVGImage& image_;
+  Persistent<const SVGImageViewInfo> viewinfo_;
   const gfx::SizeF container_size_;
   const float zoom_;
-  const KURL url_;
 };
 }  // namespace blink
 
