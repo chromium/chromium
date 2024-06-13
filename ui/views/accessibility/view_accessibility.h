@@ -317,6 +317,8 @@ class VIEWS_EXPORT ViewAccessibility : public WidgetObserver {
   void OverrideChildTreeID(ui::AXTreeID tree_id);
   ui::AXTreeID GetChildTreeID() const;
 
+  void SetChildTreeScaleFactor(float scale_factor);
+
   // Returns the accessibility object that represents the View whose
   // accessibility is managed by this instance. This may be an AXPlatformNode or
   // it may be a native accessible object implemented by another class.
@@ -484,9 +486,6 @@ class VIEWS_EXPORT ViewAccessibility : public WidgetObserver {
   // screen readers, transition focus from one widget to another.
   base::WeakPtr<Widget> next_focus_ = nullptr;
   base::WeakPtr<Widget> previous_focus_ = nullptr;
-
-  // This view's child tree id.
-  std::optional<ui::AXTreeID> child_tree_id_;
 
   // Whether to move accessibility focus to an ancestor.
   bool propagate_focus_to_ancestor_ = false;

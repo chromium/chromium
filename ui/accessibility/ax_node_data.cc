@@ -483,7 +483,9 @@ bool AXNodeData::GetHtmlAttribute(const char* attribute,
 }
 
 void AXNodeData::AddChildTreeId(const AXTreeID& tree_id) {
-  DCHECK(!HasChildTreeID());
+  if (HasStringAttribute(ax::mojom::StringAttribute::kChildTreeId)) {
+    RemoveStringAttribute(ax::mojom::StringAttribute::kChildTreeId);
+  }
   if (tree_id.type() == ax::mojom::AXTreeIDType::kUnknown) {
     DUMP_WILL_BE_NOTREACHED();
     return;

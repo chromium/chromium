@@ -171,6 +171,9 @@ void ViewAccessibility::GetAccessibleNodeData(ui::AXNodeData* data) const {
 
   view_->GetAccessibleNodeData(data);
 
+  DCHECK(!data->HasChildTreeID()) << "Please annotate child tree ids using "
+                                     "ViewAccessibility::OverrideChildTreeID.";
+
   // Copy the attributes that are in the cache (`data_`) into the computed
   // `data` object. This is done after the `data` object was initialized with
   // the attributes computed by `View::GetAccessibleNodeData` to ensure that the
@@ -188,22 +191,7 @@ void ViewAccessibility::GetAccessibleNodeData(ui::AXNodeData* data) const {
     data->AddStringAttribute(ax::mojom::StringAttribute::kRole, "alertdialog");
   }
 
-  DCHECK(!data->HasStringAttribute(ax::mojom::StringAttribute::kChildTreeId))
-      << "Please annotate child tree ids using "
-         "ViewAccessibility::OverrideChildTreeID.";
-  if (child_tree_id_) {
-    data->AddChildTreeId(child_tree_id_.value());
-
-    const views::Widget* widget = view_->GetWidget();
-    if (widget && widget->GetNativeView() && display::Screen::GetScreen()) {
-      const float scale_factor = display::Screen::GetScreen()
-                                     ->GetPreferredScaleFactorForView(
-                                         view_->GetWidget()->GetNativeView())
-                                     .value_or(1.0f);
-      data->AddFloatAttribute(ax::mojom::FloatAttribute::kChildTreeScale,
-                              scale_factor);
-    }
-  }
+  data->relative_bounds.bounds = gfx::RectF(view_->bounds());
 
   // This was previously found earlier in the function. It has been moved here,
   // after the call to `ViewAccessibility::Merge`, so that we only check the
@@ -727,14 +715,37 @@ void ViewAccessibility::UpdateInvisibleState() {
 }
 
 void ViewAccessibility::OverrideChildTreeID(ui::AXTreeID tree_id) {
-  if (tree_id == ui::AXTreeIDUnknown())
-    child_tree_id_ = std::nullopt;
-  else
-    child_tree_id_ = tree_id;
+  if (tree_id != ui::AXTreeIDUnknown()) {
+    data_.AddChildTreeId(tree_id);
+
+    const views::Widget* widget = view_->GetWidget();
+    if (widget && widget->GetNativeView() && display::Screen::GetScreen()) {
+      // TODO(accessibility): There potentially could be an issue where the
+      // device scale factor changes from the time the tree ID is set to the
+      // time `GetAccessibleNodeData` is queried. If this ever pops up, a
+      // potential solution could be to make ViewAccessibility a DisplayObserver
+      // and add `this` as an observer when the tree ID is set. Then, when the
+      // display changes, we can update the scale factor in the cache, probably
+      // by implementing `OnDisplayMetricsChanged`.
+      const float scale_factor =
+          display::Screen::GetScreen()
+              ->GetDisplayNearestView(widget->GetNativeView())
+              .device_scale_factor();
+      SetChildTreeScaleFactor(scale_factor);
+    }
+  }
 }
 
 ui::AXTreeID ViewAccessibility::GetChildTreeID() const {
-  return child_tree_id_ ? *child_tree_id_ : ui::AXTreeIDUnknown();
+  std::optional<ui::AXTreeID> child_tree_id = data_.GetChildTreeID();
+  return child_tree_id ? child_tree_id.value() : ui::AXTreeIDUnknown();
+}
+
+void ViewAccessibility::SetChildTreeScaleFactor(float scale_factor) {
+  if (data_.HasChildTreeID()) {
+    data_.AddFloatAttribute(ax::mojom::FloatAttribute::kChildTreeScale,
+                            scale_factor);
+  }
 }
 
 gfx::NativeViewAccessible ViewAccessibility::GetNativeObject() const {

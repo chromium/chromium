@@ -8,6 +8,7 @@
 
 #include "base/memory/raw_ptr.h"
 #include "base/ranges/algorithm.h"
+#include "ui/accessibility/ax_tree_id.h"
 #include "ui/views/view.h"
 #include "ui/views/widget/widget.h"
 #include "ui/views/widget/widget_delegate.h"
@@ -53,7 +54,13 @@ void ViewAccessibilityUtils::Merge(const ui::AXNodeData& source,
   }
 
   for (const auto& attr : source.string_attributes) {
-    destination.AddStringAttribute(attr.first, attr.second);
+    // Child Tree ID attribute must be added using AddChildTreeId, otherwise
+    // DCHECK will be hit.
+    if (attr.first == ax::mojom::StringAttribute::kChildTreeId) {
+      destination.AddChildTreeId(ui::AXTreeID::FromString(attr.second));
+    } else {
+      destination.AddStringAttribute(attr.first, attr.second);
+    }
   }
 
   for (const auto& attr : source.bool_attributes) {
@@ -66,6 +73,10 @@ void ViewAccessibilityUtils::Merge(const ui::AXNodeData& source,
 
   for (const auto& attr : source.stringlist_attributes) {
     destination.AddStringListAttribute(attr.first, attr.second);
+  }
+
+  for (const auto& attr : source.float_attributes) {
+    destination.AddFloatAttribute(attr.first, attr.second);
   }
 
   if (!source.relative_bounds.bounds.IsEmpty()) {

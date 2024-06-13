@@ -2491,6 +2491,8 @@ void View::OnDeviceScaleFactorChanged(float old_device_scale_factor,
   } else {
     SnapLayerToPixelBoundary(LayerOffsetData());
   }
+
+  GetViewAccessibility().SetChildTreeScaleFactor(new_device_scale_factor);
 }
 
 void View::CreateOrDestroyLayer() {
@@ -3742,7 +3744,12 @@ void View::PropagateDeviceScaleFactorChanged(float old_device_scale_factor,
   if (!layer()) {
     OnDeviceScaleFactorChanged(old_device_scale_factor,
                                new_device_scale_factor);
+    return;
   }
+
+  // `OnDeviceScaleFactor` calls `SetChildTreeScaleFactor`, so we only need to
+  // call it if we don't go into the block above.
+  GetViewAccessibility().SetChildTreeScaleFactor(new_device_scale_factor);
 }
 
 // Tooltips --------------------------------------------------------------------
