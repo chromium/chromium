@@ -129,7 +129,8 @@ void SchedulingEmbedder::OnEmbeddingsComputed(std::vector<std::string> passages,
   if (embeddings.empty()) {
     Job& job = jobs_.front();
     VLOG(2) << "Aborted embedding work for " << job.passages.size()
-            << " passages starting with `" << job.passages[0] << "`";
+            << " passages starting with `"
+            << (job.passages.empty() ? "" : job.passages[0]) << "`";
     std::move(job.callback).Run({}, {}, status);
     jobs_.pop_front();
     // Continue on to allow possibility of resuming any remaining jobs.
