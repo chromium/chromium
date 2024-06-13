@@ -30,7 +30,6 @@
 #include "gpu/command_buffer/service/gpu_switches.h"
 #include "gpu/config/gpu_preferences.h"
 #include "gpu/config/gpu_switches.h"
-#include "gpu/ipc/host/gpu_memory_buffer_support.h"
 #include "gpu/ipc/in_process_command_buffer.h"
 #include "gpu/ipc/webgpu_in_process_context.h"
 #include "mojo/core/embedder/embedder.h"

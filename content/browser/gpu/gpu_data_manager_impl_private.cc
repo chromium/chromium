@@ -70,7 +70,6 @@
 #include "gpu/config/software_rendering_list_autogen.h"
 #include "gpu/ipc/common/memory_stats.h"
 #include "gpu/ipc/host/gpu_disk_cache.h"
-#include "gpu/ipc/host/gpu_memory_buffer_support.h"
 #include "gpu/vulkan/buildflags.h"
 #include "media/gpu/gpu_video_accelerator_util.h"
 #include "media/media_buildflags.h"

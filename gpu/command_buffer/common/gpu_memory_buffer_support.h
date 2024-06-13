@@ -53,12 +53,6 @@ GPU_EXPORT int32_t GetPlaneIndex(gfx::BufferPlane plane,
 GPU_EXPORT gfx::Size GetPlaneSize(gfx::BufferPlane plane,
                                   const gfx::Size& size);
 
-// Returns whether a native GMB with the given format and plane needs to be
-// bound to the platform-specfic texture target or GL_TEXTURE_2D.
-GPU_EXPORT bool NativeBufferNeedsPlatformSpecificTextureTarget(
-    gfx::BufferFormat format,
-    gfx::BufferPlane plane = gfx::BufferPlane::DEFAULT);
-
 }  // namespace gpu
 
 #endif  // GPU_COMMAND_BUFFER_COMMON_GPU_MEMORY_BUFFER_SUPPORT_H_

@@ -20,7 +20,6 @@
 #include "gpu/command_buffer/service/service_utils.h"
 #include "gpu/command_buffer/service/webgpu_decoder.h"
 #include "gpu/config/gpu_test_config.h"
-#include "gpu/ipc/host/gpu_memory_buffer_support.h"
 #include "gpu/ipc/in_process_command_buffer.h"
 #include "gpu/ipc/webgpu_in_process_context.h"
 #include "gpu/webgpu/callback.h"

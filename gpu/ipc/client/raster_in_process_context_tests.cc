@@ -14,7 +14,6 @@
 #include "gpu/command_buffer/client/shared_image_interface.h"
 #include "gpu/command_buffer/client/shared_memory_limits.h"
 #include "gpu/command_buffer/common/shared_image_usage.h"
-#include "gpu/ipc/host/gpu_memory_buffer_support.h"
 #include "gpu/ipc/in_process_gpu_thread_holder.h"
 #include "gpu/ipc/service/gpu_memory_buffer_factory.h"
 #include "testing/gtest/include/gtest/gtest.h"
