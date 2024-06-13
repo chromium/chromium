@@ -43,13 +43,17 @@ public class PageInfoTrackingProtectionLaunchSettings extends BaseSiteSettingsFr
     private static final String STORAGE_IN_USE_PREFERENCE = "storage_in_use";
     private static final String FPS_IN_USE_PREFERENCE = "fps_in_use";
     private static final String TPC_SUMMARY = "tpc_summary";
+    private static final String MANAGED_TITLE = "managed_title";
+    private static final String MANAGED_STATUS = "managed_status";
     private static final int EXPIRATION_FOR_TESTING = 33;
 
     private ChromeSwitchPreference mTpSwitch;
     private ChromeImageViewPreference mStorageInUse;
     private ChromeImageViewPreference mFPSInUse;
     private TextMessagePreference mTpTitle;
+    private TextMessagePreference mManagedTitle;
     private TrackingProtectionStatusPreference mTpStatus;
+    private TrackingProtectionStatusPreference mManagedStatus;
     private Runnable mOnClearCallback;
     private Runnable mOnCookieSettingsLinkClicked;
     private Callback<Activity> mOnFeedbackClicked;
@@ -93,10 +97,12 @@ public class PageInfoTrackingProtectionLaunchSettings extends BaseSiteSettingsFr
         mTpSwitch.setUseSummaryAsTitle(false);
 
         mTpStatus = findPreference(TP_STATUS_PREFERENCE);
+        mManagedStatus = findPreference(MANAGED_STATUS);
         mStorageInUse = findPreference(STORAGE_IN_USE_PREFERENCE);
         mFPSInUse = findPreference(FPS_IN_USE_PREFERENCE);
         mFPSInUse.setVisible(false);
         mTpTitle = findPreference(TP_TITLE);
+        mManagedTitle = findPreference(MANAGED_TITLE);
     }
 
     @Override
@@ -191,13 +197,33 @@ public class PageInfoTrackingProtectionLaunchSettings extends BaseSiteSettingsFr
         // Extract the 3PC enforcement from the feature vector.
         @CookieControlsEnforcement int enforcement = CookieControlsEnforcement.NO_ENFORCEMENT;
         boolean cookiesFeaturePresent = false;
+        int regularCount = 0;
         for (TrackingProtectionFeature feature : features) {
+            if (feature.enforcement == CookieControlsEnforcement.NO_ENFORCEMENT) {
+                regularCount++;
+                mTpStatus.setVisible(feature.featureType, true);
+            } else {
+                // Set the managed title and status to visible if they're not already.
+                mManagedTitle.setVisible(true);
+                mManagedStatus.setVisible(true);
+                mManagedStatus.setVisible(feature.featureType, true);
+            }
             if (feature.featureType == TrackingProtectionFeatureType.THIRD_PARTY_COOKIES) {
                 cookiesFeaturePresent = true;
                 enforcement = feature.enforcement;
             }
         }
+
         assert cookiesFeaturePresent : "THIRD_PARTY_COOKIES must be in the features list";
+
+        // No unmanaged protections - should hide the controls UI.
+        if (regularCount == 0) {
+            mTpSwitch.setVisible(false);
+            mTpTitle.setVisible(false);
+            mTpStatus.setVisible(false);
+            findPreference(COOKIE_SUMMARY_PREFERENCE).setVisible(false);
+            return;
+        }
 
         boolean isEnforced = enforcement != CookieControlsEnforcement.NO_ENFORCEMENT;
 
@@ -237,11 +263,6 @@ public class PageInfoTrackingProtectionLaunchSettings extends BaseSiteSettingsFr
         if (!controlsVisible) return;
 
         mTpSwitch.setChecked(protectionsOn);
-
-        // Update the tracking protection status visibility depending on which features are enabled.
-        for (TrackingProtectionFeature feature : features) {
-            mTpStatus.setVisible(feature.featureType, true);
-        }
         mTpStatus.setTrackingProtectionStatus(protectionsOn);
         mTpSwitch.setEnabled(!isEnforced);
         mTpSwitch.setManagedPreferenceDelegate(

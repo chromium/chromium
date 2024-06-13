@@ -298,6 +298,9 @@
       <message name="IDS_PAGE_INFO_TRACKING_PROTECTION_TITLE_OFF_PERMANENT" desc="" formatter_data="android_java" translateable="false">
         Protections are off
       </message>
+      <message name="IDS_PAGE_INFO_TRACKING_PROTECTION_MANAGED_TITLE" desc="" formatter_data="android_java" translateable="false">
+        Managed protections
+      </message>
       <message name="IDS_PAGE_INFO_TRACKING_PROTECTION_TOGGLE_ON" desc="" formatter_data="android_java" translateable="false">
         You have extra protections on this site to limit tracking while you browse, but some features might not work.
       </message>

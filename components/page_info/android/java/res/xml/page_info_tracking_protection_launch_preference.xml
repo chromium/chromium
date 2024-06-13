@@ -32,4 +32,15 @@ found in the LICENSE file.
     <org.chromium.components.page_info.TrackingProtectionStatusPreference
         android:key="tp_status" />
 
+    <org.chromium.components.browser_ui.settings.TextMessagePreference
+        android:key="managed_title"
+        android:layout="@layout/tracking_protection_managed_title"
+        android:title="@string/page_info_tracking_protection_managed_title"
+        app:allowDividerAbove="true"
+        app:isPreferenceVisible="false" />
+
+    <org.chromium.components.page_info.TrackingProtectionStatusPreference
+        android:key="managed_status"
+        app:isPreferenceVisible="false" />
+
 </PreferenceScreen>
