@@ -381,7 +381,7 @@ public class ContextualSearchInstrumentationBase {
         // so wait until that is set. https://crbug.com/1327063
         sActivityTestRule.assertWaitForPageScaleFactorMatch(1.0f);
 
-        mManager = sActivityTestRule.getActivity().getContextualSearchManagerSupplier().get();
+        mManager = sActivityTestRule.getActivity().getContextualSearchManagerForTesting();
         mTestHost = new ContextualSearchInstrumentationTestHost();
 
         Assert.assertNotNull(mManager);

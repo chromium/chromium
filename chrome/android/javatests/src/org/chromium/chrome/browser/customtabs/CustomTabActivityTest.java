@@ -2275,17 +2275,13 @@ public class CustomTabActivityTest {
     private void assertOverlayPanelCanHideAndroidBrowserControls(boolean canEverHide) {
         // Wait for CS to get initialized.
         CriteriaHelper.pollUiThread(
-                () ->
-                        getActivity().getContextualSearchManagerSupplier() != null
-                                && getActivity().getContextualSearchManagerSupplier().get()
-                                        != null);
+                () -> getActivity().getContextualSearchManagerForTesting() != null);
 
         // The toolbar cannot go away for Partial Height Custom Tabs, but can for full height ones.
         CriteriaHelper.pollUiThread(
                 () ->
                         getActivity()
-                                        .getContextualSearchManagerSupplier()
-                                        .get()
+                                        .getContextualSearchManagerForTesting()
                                         .getCanHideAndroidBrowserControls()
                                 == canEverHide);
     }

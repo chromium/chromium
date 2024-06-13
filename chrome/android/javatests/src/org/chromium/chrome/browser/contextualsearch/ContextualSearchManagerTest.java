@@ -932,8 +932,7 @@ public class ContextualSearchManagerTest extends ContextualSearchInstrumentation
                 () -> {
                     String selection =
                             activity2
-                                    .getContextualSearchManagerSupplier()
-                                    .get()
+                                    .getContextualSearchManagerForTesting()
                                     .getSelectionController()
                                     .getSelectedText();
                     Criteria.checkThat(selection, Matchers.is("Search"));

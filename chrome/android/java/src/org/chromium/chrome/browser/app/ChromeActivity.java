@@ -111,7 +111,6 @@ import org.chromium.chrome.browser.fullscreen.FullscreenBackPressHandler;
 import org.chromium.chrome.browser.fullscreen.FullscreenManager;
 import org.chromium.chrome.browser.gsa.ContextReporter;
 import org.chromium.chrome.browser.gsa.GSAAccountChangeListener;
-import org.chromium.chrome.browser.gsa.GSAContextDisplaySelection;
 import org.chromium.chrome.browser.gsa.GSAState;
 import org.chromium.chrome.browser.history.HistoryManagerUtils;
 import org.chromium.chrome.browser.init.AsyncInitializationActivity;
@@ -548,7 +547,7 @@ public abstract class ChromeActivity<C extends ChromeActivityComponent>
                             () -> mRootUiCoordinator.getAppBrowserControlsVisibilityDelegate(),
                             this::getTabObscuringHandler,
                             this::getToolbarManager,
-                            getContextualSearchManagerSupplier(),
+                            mRootUiCoordinator::hideContextualSearch,
                             getTabModelSelectorSupplier(),
                             this::getBrowserControlsManager,
                             this::getFullscreenManager,
@@ -1132,31 +1131,13 @@ public abstract class ChromeActivity<C extends ChromeActivityComponent>
         final SyncService syncService = getSyncServiceForOriginalProfile();
 
         if (syncService != null && syncService.isSyncingUnencryptedUrls()) {
-            ContextReporter.SelectionReporter controller =
-                    getContextualSearchManagerSupplier().hasValue()
-                            ? new ContextReporter.SelectionReporter() {
-                                @Override
-                                public void enable(Callback<GSAContextDisplaySelection> callback) {
-                                    getContextualSearchManagerSupplier()
-                                            .get()
-                                            .enableContextReporting(callback);
-                                }
-
-                                @Override
-                                public void disable() {
-                                    getContextualSearchManagerSupplier()
-                                            .get()
-                                            .disableContextReporting();
-                                }
-                            }
-                            : null;
             mContextReporter =
                     AppHooks.get()
                             .createGsaHelper()
                             .getContextReporter(
                                     getActivityTabProvider(),
                                     mTabModelSelectorSupplier,
-                                    controller);
+                                    mRootUiCoordinator.getContextReporter());
 
             if (mSyncStateChangedListener != null) {
                 syncService.removeSyncStateChangedListener(mSyncStateChangedListener);
@@ -1849,6 +1830,7 @@ public abstract class ChromeActivity<C extends ChromeActivityComponent>
                         getWindowAndroid(),
                         profileProvider.getOriginalProfile(),
                         mRootUiCoordinator.getBottomSheetController(),
+                        mRootUiCoordinator::isContextualSearchOpened,
                         (ChromeKeyboardVisibilityDelegate) getWindowAndroid().getKeyboardDelegate(),
                         mBackPressManager,
                         mEdgeToEdgeControllerSupplier,
@@ -2087,14 +2069,6 @@ public abstract class ChromeActivity<C extends ChromeActivityComponent>
      */
     public @NonNull FullscreenManager getFullscreenManager() {
         return getBrowserControlsManager().getFullscreenManager();
-    }
-
-    /**
-     * @return The {@code ContextualSearchManager} or {@code null} if none;
-     */
-    public ObservableSupplier<ContextualSearchManager> getContextualSearchManagerSupplier() {
-        // TODO(crbug.com/40141057): Remove this method.
-        return mRootUiCoordinator.getContextualSearchManagerSupplier();
     }
 
     /**
@@ -2874,6 +2848,10 @@ public abstract class ChromeActivity<C extends ChromeActivityComponent>
 
     public RootUiCoordinator getRootUiCoordinatorForTesting() {
         return mRootUiCoordinator;
+    }
+
+    public ContextualSearchManager getContextualSearchManagerForTesting() {
+        return mRootUiCoordinator.getContextualSearchManagerSupplier().get();
     }
 
     // NightModeStateProvider.Observer implementation.
