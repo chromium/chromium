@@ -4,6 +4,7 @@
 
 #include "components/download/public/common/stream_handle_input_stream.h"
 
+#include "base/containers/span.h"
 #include "base/functional/bind.h"
 #include "base/numerics/safe_conversions.h"
 #include "components/download/public/common/download_interrupt_reasons_utils.h"
@@ -70,9 +71,9 @@ InputStream::StreamState StreamHandleInputStream::Read(
 
   static size_t bytes_to_read = GetDownloadFileBufferSize();
   *data = base::MakeRefCounted<net::IOBufferWithSize>(bytes_to_read);
-  *length = bytes_to_read;
   MojoResult mojo_result = stream_handle_->stream->ReadData(
-      (*data)->data(), length, MOJO_READ_DATA_FLAG_NONE);
+      MOJO_READ_DATA_FLAG_NONE, base::as_writable_bytes((*data)->span()),
+      *length);
   // TODO(qinmin): figure out when COMPLETE should be returned.
   switch (mojo_result) {
     case MOJO_RESULT_OK:
