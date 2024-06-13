@@ -3114,16 +3114,16 @@ public class ToolbarPhone extends ToolbarLayout
      * unfocused so it can animate to a focused state.
      *
      * @param hasFocus True if the LocationBar has focus, this will be true between the focus
-     *                 animation starting and the unfocus animation starting.
+     *     animation starting and the unfocus animation starting.
      * @return The offset for the location bar when showing the dse icon.
      */
-    private int getLocationBarOffsetForFocusAnimation(boolean hasFocus) {
+    int getLocationBarOffsetForFocusAnimation(boolean hasFocus) {
         StatusCoordinator statusCoordinator = mLocationBar.getStatusCoordinator();
         if (statusCoordinator == null) return 0;
 
         var profile = getToolbarDataProvider().getProfile();
         if (profile == null
-                || SearchEngineUtils.getForProfile(profile).shouldShowSearchEngineLogo()) {
+                || !SearchEngineUtils.getForProfile(profile).shouldShowSearchEngineLogo()) {
             return 0;
         }
 

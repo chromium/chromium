@@ -68,6 +68,7 @@ import org.chromium.chrome.browser.layouts.LayoutTestUtils;
 import org.chromium.chrome.browser.layouts.LayoutType;
 import org.chromium.chrome.browser.night_mode.ChromeNightModeTestUtils;
 import org.chromium.chrome.browser.omnibox.LocationBarCoordinator;
+import org.chromium.chrome.browser.omnibox.SearchEngineUtils;
 import org.chromium.chrome.browser.profiles.ProfileManager;
 import org.chromium.chrome.browser.search_engines.TemplateUrlServiceFactory;
 import org.chromium.chrome.browser.tab.Tab;
@@ -117,6 +118,7 @@ public class ToolbarPhoneTest {
     @Mock ThemeColorProvider mThemeColorProvider;
     @Mock GradientDrawable mLocationbarBackgroundDrawable;
     @Mock OptionalButtonCoordinator mOptionalButtonCoordinator;
+    @Mock private SearchEngineUtils mSearchEngineUtils;
 
     private Canvas mCanvas = new Canvas();
     private ToolbarPhone mToolbar;
@@ -942,6 +944,52 @@ public class ToolbarPhoneTest {
         verify(mOptionalButtonCoordinator).updateButton(null);
         mOmnibox.clearFocus();
         verify(mOptionalButtonCoordinator, times(2)).updateButton(buttonData);
+    }
+
+    @Test
+    @MediumTest
+    public void testGetLocationBarOffsetForFocusAnimation() {
+        SearchEngineUtils.setInstanceForTesting(mSearchEngineUtils);
+
+        // Test focus on non-NTP pages.
+        doReturn(true).when(mSearchEngineUtils).shouldShowSearchEngineLogo();
+        TestThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    assertEquals(
+                            0,
+                            mToolbar.getLocationBarOffsetForFocusAnimation(/* hasFocus= */ true));
+                });
+
+        mActivityTestRule.loadUrl(UrlConstants.NTP_URL);
+        Tab tab = mActivityTestRule.getActivity().getActivityTab();
+        NewTabPageTestUtils.waitForNtpLoaded(tab);
+        assertEquals(true, mToolbar.isLocationBarShownInNtp());
+
+        // Test focus when should not show search engine logo.
+        doReturn(false).when(mSearchEngineUtils).shouldShowSearchEngineLogo();
+        TestThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    assertEquals(
+                            0,
+                            mToolbar.getLocationBarOffsetForFocusAnimation(/* hasFocus= */ true));
+                });
+
+        // Test un-focus on NTP.
+        doReturn(true).when(mSearchEngineUtils).shouldShowSearchEngineLogo();
+        TestThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    assertEquals(
+                            0,
+                            mToolbar.getLocationBarOffsetForFocusAnimation(/* hasFocus= */ false));
+                });
+
+        // Test focus on NTP.
+        TestThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    assertNotEquals(
+                            0,
+                            mToolbar.getLocationBarOffsetForFocusAnimation(/* hasFocus= */ true));
+                });
     }
 
     private static class TestControlsVisibilityDelegate
