@@ -195,9 +195,6 @@ TEST_F(TemplateURLTest, URLRefTestEncoding) {
 }
 
 TEST_F(TemplateURLTest, URLRefTestImageURLWithPOST) {
-  const char kInvalidPostParamsString[] =
-      "unknown_template={UnknownTemplate},bad_value=bad{value},"
-      "{google:sbiSource}";
   // List all accpectable parameter format in valid_post_params_string. it is
   // expected like: "name0=,name1=value1,name2={template1}"
   const char kValidPostParamsString[] =
@@ -211,6 +208,10 @@ TEST_F(TemplateURLTest, URLRefTestImageURLWithPOST) {
   data.image_url = KImageSearchURL;
 
   // Try to parse invalid post parameters.
+#if !BUILDFLAG(IS_ANDROID)
+  const char kInvalidPostParamsString[] =
+      "unknown_template={UnknownTemplate},bad_value=bad{value},"
+      "{google:sbiSource}";
   data.image_url_post_params = kInvalidPostParamsString;
   TemplateURL url_bad(data);
   ASSERT_FALSE(url_bad.image_url_ref().IsValid(search_terms_data_));
@@ -220,6 +221,7 @@ TEST_F(TemplateURLTest, URLRefTestImageURLWithPOST) {
   ExpectPostParamIs(bad_post_params[0], "unknown_template",
                     "{UnknownTemplate}");
   ExpectPostParamIs(bad_post_params[1], "bad_value", "bad{value}");
+#endif
 
   // Try to parse valid post parameters.
   data.image_url_post_params = kValidPostParamsString;
@@ -453,19 +455,21 @@ TEST_F(TemplateURLTest, SetPrepopulatedAndParse) {
   TemplateURL url(data);
   TemplateURLRef::Replacements replacements;
   bool valid = false;
+
   EXPECT_EQ("http://foo{fhqwhgads}bar",
             url.url_ref().ParseURL("http://foo{fhqwhgads}bar", &replacements,
                                    nullptr, &valid));
-  EXPECT_TRUE(replacements.empty());
   EXPECT_TRUE(valid);
+
+  EXPECT_TRUE(replacements.empty());
 
   data.prepopulate_id = 123;
   TemplateURL url2(data);
-  EXPECT_EQ("http://foobar",
-            url2.url_ref().ParseURL("http://foo{fhqwhgads}bar", &replacements,
-                                    nullptr, &valid));
+  EXPECT_DEATH_IF_SUPPORTED(
+      url2.url_ref().ParseURL("http://foo{fhqwhgads}bar", &replacements,
+                              nullptr, &valid),
+      "");
   EXPECT_TRUE(replacements.empty());
-  EXPECT_TRUE(valid);
 }
 
 // Test that setting the prepopulate ID from TemplateURL causes the stored
@@ -504,22 +508,8 @@ TEST_F(TemplateURLTest, SetPrepopulatedAndReplace) {
 
   data.prepopulate_id = 123;
   TemplateURL url2(data);
-  EXPECT_EQ("http://foosearch/?q=X",
-            url2.url_ref().ReplaceSearchTerms(args, stdata));
-  EXPECT_EQ("http://fooalternate/?q=X",
-            url2.url_refs()[0].ReplaceSearchTerms(args, stdata));
-  EXPECT_EQ("http://foosearch/?q=X",
-            url2.url_refs()[1].ReplaceSearchTerms(args, stdata));
-  EXPECT_EQ("http://foosuggest/?q=X",
-            url2.suggestions_url_ref().ReplaceSearchTerms(args, stdata));
-  EXPECT_EQ("http://fooimage/",
-            url2.image_url_ref().ReplaceSearchTerms(args, stdata));
-  EXPECT_EQ("http://fooimage/?translate",
-            url2.image_translate_url_ref().ReplaceSearchTerms(args, stdata));
-  EXPECT_EQ("http://foonewtab/",
-            url2.new_tab_url_ref().ReplaceSearchTerms(args, stdata));
-  EXPECT_EQ("http://foocontext/",
-            url2.contextual_search_url_ref().ReplaceSearchTerms(args, stdata));
+  EXPECT_DEATH_IF_SUPPORTED(url2.url_ref().ReplaceSearchTerms(args, stdata),
+                            "");
 }
 
 TEST_F(TemplateURLTest, InputEncodingBeforeSearchTerm) {
@@ -1233,8 +1223,8 @@ TEST_F(TemplateURLTest, ParseParameterUnknown) {
   parsed_url = "{fhqwhgads}abc";
   data.prepopulate_id = 1;
   TemplateURL url2(data);
-  EXPECT_TRUE(url2.url_ref().ParseParameter(0, 10, &parsed_url, &replacements));
-  EXPECT_EQ("abc", parsed_url);
+  EXPECT_DEATH_IF_SUPPORTED(
+      url2.url_ref().ParseParameter(0, 10, &parsed_url, &replacements), "");
   EXPECT_TRUE(replacements.empty());
 }
 
@@ -1266,9 +1256,10 @@ TEST_F(TemplateURLTest, ParseURLNoKnownParameters) {
   TemplateURL url(data);
   TemplateURLRef::Replacements replacements;
   bool valid = false;
+
   EXPECT_EQ("{}", url.url_ref().ParseURL("{}", &replacements, nullptr, &valid));
-  EXPECT_TRUE(replacements.empty());
   EXPECT_TRUE(valid);
+  EXPECT_TRUE(replacements.empty());
 }
 
 TEST_F(TemplateURLTest, ParseURLTwoParameters) {

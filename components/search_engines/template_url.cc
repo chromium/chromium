@@ -15,6 +15,7 @@
 #include "base/command_line.h"
 #include "base/containers/adapters.h"
 #include "base/containers/contains.h"
+#include "base/debug/dump_without_crashing.h"
 #include "base/feature_list.h"
 #include "base/format_macros.h"
 #include "base/i18n/case_conversion.h"
@@ -50,6 +51,7 @@
 #include "url/gurl.h"
 
 namespace {
+constexpr bool kIsAndroid = !!BUILDFLAG(IS_ANDROID);
 
 // The TemplateURLRef has any number of terms that need to be replaced. Each of
 // the terms is enclosed in braces. If the character preceeding the final
@@ -842,11 +844,45 @@ bool TemplateURLRef::ParseParameter(size_t start,
     if (!optional)
       url->insert(start, "1");
   } else if (!prepopulated_) {
+    base::UmaHistogramBoolean("Omnibox.TemplateUrl.UnrecognizedParameter",
+                              /* is externally supplied template? */ false);
+    // User-added templates (which are currently only supported on desktop) are
+    // expected to sometimes fail because they may contain user-added
+    // expansions. On Android, however, non-prepopulated templates may be
+    // provided from an external source which should only be providing valid
+    // expansions.
+    // Despite significance of this finding, this should never be a CHECK since
+    // it's external data but this will collect dumps to help us diagnose any
+    // issues.
+    if constexpr (kIsAndroid) {
+      // Capture a snippet of Template URL and the Parameter causing the
+      // problem.
+      SCOPED_CRASH_KEY_STRING32("TemplateURL", "URL", *url);
+      SCOPED_CRASH_KEY_STRING32("TemplateURL", "Parameter", parameter);
+      base::debug::DumpWithoutCrashing();
+    }
+
     // If it's a prepopulated URL, we know that it's safe to remove unknown
     // parameters, so just ignore this and return true below. Otherwise it could
     // be some garbage but can also be a javascript block. Put it back.
+    //
+    // TODO(b/344681320): revisit the logic below based on UnrecognizedParameter
+    // findings:
+    // - If the histogram shows very little or no records overall, consider
+    //   dropping the parameter and return values.
+    // - If the histogram shows no records on mobile platforms, drop the
+    //   parameter only on mobile and update return values accordingly.
     url->insert(start, full_parameter.data(), full_parameter.size());
     return false;
+  } else {
+    base::UmaHistogramBoolean("Omnibox.TemplateUrl.UnrecognizedParameter",
+                              /* is externally supplied template? */ true);
+    // Prepopulated templates should always be valid on all platforms. Enforce
+    // this invariant with a DCHECK to ensure violations are fixed immediately.
+    NOTREACHED_IN_MIGRATION() << "Unexpanded Internal TemplateURL parameter: `"
+                              << parameter << "' while processing: " << url;
+
+    return true;
   }
   return true;
 }
@@ -1281,6 +1317,9 @@ std::string TemplateURLRef::HandleReplacements(
         if (!rlz_string.empty()) {
           HandleReplacement("rlz", base::UTF16ToUTF8(rlz_string), replacement,
                             &url);
+          base::UmaHistogramBoolean("Omnibox.TemplateUrl.RlzPresent", true);
+        } else {
+          base::UmaHistogramBoolean("Omnibox.TemplateUrl.RlzPresent", false);
         }
         break;
       }
@@ -1288,8 +1327,14 @@ std::string TemplateURLRef::HandleReplacements(
       case GOOGLE_SEARCH_CLIENT: {
         DCHECK(!replacement.is_post_param);
         std::string client = search_terms_data.GetSearchClient();
-        if (!client.empty())
+        if (!client.empty()) {
+          base::UmaHistogramBoolean("Omnibox.TemplateUrl.SearchClientPresent",
+                                    true);
           HandleReplacement("client", client, replacement, &url);
+        } else {
+          base::UmaHistogramBoolean("Omnibox.TemplateUrl.SearchClientPresent",
+                                    false);
+        }
         break;
       }
 
