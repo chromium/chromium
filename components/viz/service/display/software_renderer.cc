@@ -682,6 +682,7 @@ void SoftwareRenderer::CopyDrawnRenderPass(
 
     if (!representation) {
       DLOG(ERROR) << "BlitRequest: Couldn't create shared image representation";
+      return;
     }
 
     const auto dest_rect =
