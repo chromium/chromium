@@ -13,7 +13,7 @@ import {recordAppManagementUserAction} from 'chrome://resources/cr_components/ap
 import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {getTemplate} from './run_on_os_login_item.html.js';
-import type {AppManagementToggleRowElement} from './toggle_row.js';
+import type {ToggleRowElement} from './toggle_row.js';
 
 function convertModeToBoolean(runOnOsLoginMode: RunOnOsLoginMode): boolean {
   switch (runOnOsLoginMode) {
@@ -79,8 +79,7 @@ export class AppManagementRunOnOsLoginItemElement extends PolymerElement {
   }
 
   private onClick_() {
-    this.shadowRoot!
-        .querySelector<AppManagementToggleRowElement>('#toggle-row')!.click();
+    this.shadowRoot!.querySelector<ToggleRowElement>('#toggle-row')!.click();
   }
 
   private toggleOsLoginMode_() {

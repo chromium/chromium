@@ -4,7 +4,7 @@
 
 import 'chrome://app-settings/web_app_settings.js';
 
-import type {App, AppManagementPermissionItemElement, AppManagementSupportedLinksItemElement, AppManagementSupportedLinksOverlappingAppsDialogElement, AppManagementToggleRowElement, PermissionTypeIndex, WebAppSettingsAppElement} from 'chrome://app-settings/web_app_settings.js';
+import type {App, AppManagementPermissionItemElement, AppManagementSupportedLinksItemElement, AppManagementSupportedLinksOverlappingAppsDialogElement, PermissionTypeIndex, ToggleRowElement, WebAppSettingsAppElement} from 'chrome://app-settings/web_app_settings.js';
 import {AppType, BrowserProxy, createTriStatePermission, getPermissionValueBool, InstallReason, InstallSource, PermissionType, RunOnOsLoginMode, TriState, WindowMode} from 'chrome://app-settings/web_app_settings.js';
 import type {CrRadioButtonElement} from 'chrome://resources/cr_elements/cr_radio_button/cr_radio_button.js';
 import {assertEquals, assertFalse, assertNull, assertTrue} from 'chrome://webui-test/chai_assert.js';
@@ -152,8 +152,8 @@ suite('AppSettingsAppTest', () => {
     assertEquals(fileHandlingItem.app.fileHandlingState!.enabled, false);
 
     const toggleRow =
-        fileHandlingItem.shadowRoot!
-            .querySelector<AppManagementToggleRowElement>('#toggle-row')!;
+        fileHandlingItem.shadowRoot!.querySelector<ToggleRowElement>(
+            '#toggle-row')!;
     assertTrue(!!toggleRow);
     toggleRow.click();
     await eventToPromise('change', toggleRow);

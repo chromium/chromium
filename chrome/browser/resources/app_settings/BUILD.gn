@@ -33,13 +33,18 @@ build_webui("build") {
 
   css_files = [
     "app_management_shared_style.css",
+    "app_management_shared_style_lit.css",
     "shared_vars.css",
+    "toggle_row.css",
   ]
 
   icons_html_files = [ "icons.html" ]
 
+  html_to_wrapper_template = "detect"
+
   ts_composite = true
   ts_deps = [
+    "//third_party/lit/v3_0:build_ts",
     "//third_party/polymer/v3_0:library",
     "//ui/webui/resources/cr_components/app_management:build_ts",
     "//ui/webui/resources/cr_components/localized_link:build_ts",

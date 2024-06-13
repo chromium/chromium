@@ -12,7 +12,7 @@ import {AppManagementUserAction, WindowMode} from 'chrome://resources/cr_compone
 import {recordAppManagementUserAction} from 'chrome://resources/cr_components/app_management/util.js';
 import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
-import type {AppManagementToggleRowElement} from './toggle_row.js';
+import type {ToggleRowElement} from './toggle_row.js';
 import {getTemplate} from './window_mode_item.html.js';
 
 function convertWindowModeToBool(windowMode: WindowMode): boolean {
@@ -68,8 +68,7 @@ export class AppManagementWindowModeElement extends PolymerElement {
   }
 
   private onClick_() {
-    this.shadowRoot!
-        .querySelector<AppManagementToggleRowElement>('#toggle-row')!.click();
+    this.shadowRoot!.querySelector<ToggleRowElement>('#toggle-row')!.click();
   }
 
   private toggleWindowMode_() {

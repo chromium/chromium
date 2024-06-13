@@ -15,7 +15,7 @@ import {getPermission, getPermissionValueBool, recordAppManagementUserAction} fr
 import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {getTemplate} from './permission_item.html.js';
-import type {AppManagementToggleRowElement} from './toggle_row.js';
+import type {ToggleRowElement} from './toggle_row.js';
 
 export class AppManagementPermissionItemElement extends PolymerElement {
   static get is() {
@@ -134,14 +134,12 @@ export class AppManagementPermissionItemElement extends PolymerElement {
 
   resetToggle() {
     const currentValue = this.getValue_(this.app, this.permissionType);
-    this.shadowRoot!
-        .querySelector<AppManagementToggleRowElement>('#toggle-row')!.setToggle(
-            currentValue);
+    this.shadowRoot!.querySelector<ToggleRowElement>('#toggle-row')!.setToggle(
+        currentValue);
   }
 
   private onClick_() {
-    this.shadowRoot!
-        .querySelector<AppManagementToggleRowElement>('#toggle-row')!.click();
+    this.shadowRoot!.querySelector<ToggleRowElement>('#toggle-row')!.click();
   }
 
   private togglePermission_() {

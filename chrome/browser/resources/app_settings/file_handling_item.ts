@@ -16,7 +16,7 @@ import {focusWithoutInk} from 'chrome://resources/js/focus_without_ink.js';
 import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {getTemplate} from './file_handling_item.html.js';
-import type {AppManagementToggleRowElement} from './toggle_row.js';
+import type {ToggleRowElement} from './toggle_row.js';
 
 const AppManagementFileHandlingItemBase = I18nMixin(PolymerElement);
 
@@ -136,8 +136,8 @@ export class AppManagementFileHandlingItemElement extends
 
   private onChanged_() {
     assert(this.app);
-    const enabled = this.shadowRoot!
-                        .querySelector<AppManagementToggleRowElement>(
+    const enabled =
+        this.shadowRoot!.querySelector<ToggleRowElement>(
                             '#toggle-row')!.isChecked();
 
     BrowserProxy.getInstance().handler.setFileHandlingEnabled(
