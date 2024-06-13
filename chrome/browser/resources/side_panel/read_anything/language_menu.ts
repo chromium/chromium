@@ -88,6 +88,7 @@ export class LanguageMenuElement extends LanguageMenuElementBase {
   selectedLang: string;
   localeToDisplayName: {[lang: string]: string};
   enabledLangs: string[];
+  lastDownloadedLang: string;
 
   availableVoices: SpeechSynthesisVoice[];
   private languageSearchValue_: string;
@@ -200,9 +201,9 @@ export class LanguageMenuElement extends LanguageMenuElementBase {
         lang;
   }
 
-  private getLanguageDownloadedTitle_(
-      localeToDisplayName: {[lang: string]: string}, lang: string) {
-    const langDisplayName = this.getDisplayName(localeToDisplayName, lang);
+  private getLanguageDownloadedTitle_() {
+    const langDisplayName =
+        this.getDisplayName(this.localeToDisplayName, this.lastDownloadedLang);
 
     return loadTimeData.getStringF(
         'readingModeVoiceDownloadedTitle', langDisplayName);
