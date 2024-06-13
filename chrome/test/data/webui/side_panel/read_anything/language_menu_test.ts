@@ -19,69 +19,57 @@ suite('LanguageMenu', () => {
       {[language: string]: VoiceClientSideStatusCode} = {};
 
 
-  const setAvailableVoices = () => {
-    // Bypass Typescript compiler to allow us to set a private readonly
-    // property
-    // @ts-ignore
+  function setAvailableVoices() {
     languageMenu.availableVoices = availableVoices;
     flush();
-  };
+  }
 
-  const setEnabledLanguages = () => {
-    // Bypass Typescript compiler to allow us to set a private readonly
-    // property
-    // @ts-ignore
+  function setEnabledLanguages() {
     languageMenu.enabledLangs = enabledLangs;
     flush();
-  };
+  }
 
-  const setNotificationForLanguage = () => {
-    // Bypass Typescript compiler to allow us to set a private readonly
-    // property
-    // @ts-ignore
+  function setNotificationForLanguage() {
     languageMenu.voicePackInstallStatus = {...languagesToNotificationMap};
     flush();
-  };
+  }
 
-  const reopenLanguageMenu = () => {
+  function reopenLanguageMenu() {
     languageMenu.dispatchEvent(new CustomEvent('cr-dialog-open'));
     flush();
-  };
+  }
 
-  const getLanguageLineItems = () => {
+  function getLanguageLineItems() {
     return languageMenu.$.languageMenu.querySelectorAll<HTMLElement>(
         '.language-line');
-  };
+  }
 
-  const getNotificationItems = () => {
+  function getNotificationItems() {
     return languageMenu.$.languageMenu.querySelectorAll<HTMLElement>(
         '#notificationText');
-  };
+  }
 
-  const getLanguageSearchField = () => {
+  function getLanguageSearchField() {
     return languageMenu.$.languageMenu.querySelector<CrInputElement>(
         '.search-field')!;
-  };
+  }
 
-  const getNoResultsFoundMessage = () => {
+  function getNoResultsFoundMessage() {
     return languageMenu.$.languageMenu.querySelector<HTMLElement>(
         '#noResultsMessage');
-  };
+  }
 
   setup(() => {
     document.body.innerHTML = window.trustedTypes!.emptyHTML;
     languageMenu = document.createElement('language-menu');
     document.body.appendChild(languageMenu);
-    // @ts-ignore
-    languageMenu.baseLanguages = {};
-    // @ts-ignore
+    languageMenu.baseLanguages = new Set();
     languageMenu.voicePackInstallStatus = {};
     flush();
   });
 
   suite('using pack manager languages', () => {
     setup(() => {
-      // @ts-ignore
       languageMenu.baseLanguages = AVAILABLE_GOOGLE_TTS_LOCALES;
       flush();
     });
@@ -103,8 +91,7 @@ suite('LanguageMenu', () => {
 
   suite('using some base languages', () => {
     setup(() => {
-      // @ts-ignore
-      languageMenu.baseLanguages = ['en-us'];
+      languageMenu.baseLanguages = new Set(['en-us']);
       flush();
     });
 
@@ -191,9 +178,6 @@ suite('LanguageMenu', () => {
 
     suite('with display names for locales', () => {
       setup(() => {
-        // Bypass Typescript compiler to allow us to set a private readonly
-        // property
-        // @ts-ignore
         languageMenu.localeToDisplayName = {
           'en-US': 'English (United States)',
         };
@@ -257,9 +241,6 @@ suite('LanguageMenu', () => {
 
     suite('with display names for locales', () => {
       setup(() => {
-        // Bypass Typescript compiler to allow us to set a private readonly
-        // property
-        // @ts-ignore
         languageMenu.localeToDisplayName = {
           'en-US': 'English (United States)',
           'it-IT': 'Italian',
@@ -286,9 +267,6 @@ suite('LanguageMenu', () => {
           {name: 'test voice 3', lang: 'en'} as SpeechSynthesisVoice,
         ];
         setAvailableVoices();
-        // Bypass Typescript compiler to allow us to set a private readonly
-        // property
-        // @ts-ignore
         languageMenu.localeToDisplayName = {
           'en-US': 'English (United States)',
           'en': 'English',
@@ -330,8 +308,7 @@ suite('LanguageMenu', () => {
       });
 
       test('it shows and hides downloading notification', async () => {
-        // @ts-ignore
-        languageMenu.baseLanguages = ['it-it'];
+        languageMenu.baseLanguages = new Set(['it-it']);
         enabledLangs = ['it-it', 'English (United States)'];
         setEnabledLanguages();
         languagesToNotificationMap['it'] =
@@ -361,8 +338,7 @@ suite('LanguageMenu', () => {
       });
 
       test('hides downloading notification after a reopen', async () => {
-        // @ts-ignore
-        languageMenu.baseLanguages = ['it-it'];
+        languageMenu.baseLanguages = new Set(['it-it']);
         enabledLangs = ['it-it', 'English (United States)'];
         setEnabledLanguages();
         languagesToNotificationMap['it'] =
@@ -384,8 +360,7 @@ suite('LanguageMenu', () => {
       });
 
       test('non-Google language does not show downloading notification', () => {
-        // @ts-ignore
-        languageMenu.baseLanguages = ['it', 'en-us'];
+        languageMenu.baseLanguages = new Set(['it', 'en-us']);
         enabledLangs = ['it', 'en-us', 'es'];
         setEnabledLanguages();
 
@@ -457,8 +432,7 @@ suite('LanguageMenu', () => {
           });
 
       test('with no voices it shows allocation notification ', async () => {
-        // @ts-ignore
-        languageMenu.baseLanguages = ['it', 'English (United States)'];
+        languageMenu.baseLanguages = new Set(['it', 'English (United States)']);
 
         enabledLangs = ['it', 'English (United States)'];
         setEnabledLanguages();
@@ -493,8 +467,7 @@ suite('LanguageMenu', () => {
       });
 
       test('allocation notification cleared after reopen', async () => {
-        // @ts-ignore
-        languageMenu.baseLanguages = ['it', 'English (United States)'];
+        languageMenu.baseLanguages = new Set(['it', 'English (United States)']);
 
         enabledLangs = ['it', 'English (United States)'];
         setEnabledLanguages();
@@ -580,9 +553,6 @@ suite('LanguageMenu', () => {
 
     suite('with display names for locales', () => {
       setup(() => {
-        // Bypass Typescript compiler to allow us to set a private readonly
-        // property
-        // @ts-ignore
         languageMenu.localeToDisplayName = {
           'en-US': 'English (United States)',
           'it-IT': 'Italian',

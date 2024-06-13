@@ -85,15 +85,18 @@ export class LanguageMenuElement extends LanguageMenuElementBase {
     };
   }
 
-  private availableVoices: SpeechSynthesisVoice[];
+  selectedLang: string;
+  localeToDisplayName: {[lang: string]: string};
+  enabledLangs: string[];
+
+  availableVoices: SpeechSynthesisVoice[];
   private languageSearchValue_: string;
   private toastDuration_: number = toastDurationMs;
-  private readonly voicePackInstallStatus:
-      {[language: string]: VoiceClientSideStatusCode};
+  voicePackInstallStatus: {[language: string]: VoiceClientSideStatusCode};
   private readonly availableLanguages_: LanguageDropdownItem[];
   // Use this variable instead of AVAILABLE_GOOGLE_TTS_LOCALES
   // directly to better aid in testing.
-  private baseLanguages = AVAILABLE_GOOGLE_TTS_LOCALES;
+  baseLanguages: Set<string> = AVAILABLE_GOOGLE_TTS_LOCALES;
 
   // A non-Google language is one that's not associated with a Google voice
   // that can be downloaded from the language pack.
