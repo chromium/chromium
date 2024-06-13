@@ -38,7 +38,8 @@ std::unique_ptr<KeyedService> BuildTestHistoryEmbeddingsService(
       OptimizationGuideKeyedServiceFactory::GetForProfile(profile);
   return std::make_unique<history_embeddings::HistoryEmbeddingsService>(
       history_service, page_content_annotations_service,
-      optimization_guide_keyed_service, nullptr);
+      optimization_guide_keyed_service, nullptr,
+      TestingBrowserProcess::GetGlobal()->os_crypt_async());
 }
 
 std::unique_ptr<KeyedService> BuildTestPageContentAnnotationsService(

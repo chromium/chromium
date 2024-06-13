@@ -7,13 +7,14 @@
 #include <string>
 
 #include "components/history_embeddings/proto/history_embeddings.pb.h"
-#include "components/os_crypt/sync/os_crypt.h"
+#include "components/os_crypt/async/common/encryptor.h"
 #include "third_party/zlib/google/compression_utils.h"
 
 namespace history_embeddings {
 
 std::vector<uint8_t> PassagesProtoToBlob(
-    const proto::PassagesValue& passages_value) {
+    const proto::PassagesValue& passages_value,
+    const os_crypt_async::Encryptor& encryptor) {
   // TODO(b/325524013): Add metrics to determine if this needs to be sent to a
   // separate sequence. Whole process for 1.2MB takes about 68ms on a Desktop.
   std::string serialized_proto = passages_value.SerializeAsString();
@@ -31,8 +32,8 @@ std::vector<uint8_t> PassagesProtoToBlob(
   }
 
   std::string encrypted_compressed_proto;
-  if (!OSCrypt::EncryptString(std::move(compressed_proto),
-                              &encrypted_compressed_proto)) {
+  if (!encryptor.EncryptString(std::move(compressed_proto),
+                               &encrypted_compressed_proto)) {
     return {};
   }
 
@@ -42,7 +43,8 @@ std::vector<uint8_t> PassagesProtoToBlob(
 }
 
 std::optional<history_embeddings::proto::PassagesValue> PassagesBlobToProto(
-    base::span<const uint8_t> passages_blob) {
+    base::span<const uint8_t> passages_blob,
+    const os_crypt_async::Encryptor& encryptor) {
   if (passages_blob.empty()) {
     return std::nullopt;
   }
@@ -53,7 +55,7 @@ std::optional<history_embeddings::proto::PassagesValue> PassagesBlobToProto(
                                       passages_blob.end());
 
   std::string compressed_proto;
-  if (!OSCrypt::DecryptString(passages_blob_as_string, &compressed_proto)) {
+  if (!encryptor.DecryptString(passages_blob_as_string, &compressed_proto)) {
     return std::nullopt;
   }
 

@@ -10,6 +10,7 @@
 #include <string>
 #include <vector>
 
+#include "base/callback_list.h"
 #include "base/files/file_path.h"
 #include "base/functional/callback.h"
 #include "base/functional/callback_helpers.h"
@@ -28,6 +29,7 @@
 #include "components/keyed_service/core/keyed_service.h"
 #include "components/optimization_guide/core/model_quality/model_quality_log_entry.h"
 #include "components/optimization_guide/proto/features/common_quality_data.pb.h"
+#include "components/os_crypt/async/common/encryptor.h"
 #include "content/public/browser/render_frame_host.h"
 #include "content/public/browser/weak_document_ptr.h"
 
@@ -41,6 +43,10 @@ namespace page_content_annotations {
 class BatchAnnotationResult;
 class PageContentAnnotationsService;
 }  // namespace page_content_annotations
+
+namespace os_crypt_async {
+class OSCryptAsync;
+}
 
 namespace history_embeddings {
 
@@ -94,7 +100,8 @@ class HistoryEmbeddingsService : public KeyedService,
       page_content_annotations::PageContentAnnotationsService*
           page_content_annotations_service,
       optimization_guide::OptimizationGuideModelProvider* model_provider,
-      PassageEmbeddingsServiceController* service_controller);
+      PassageEmbeddingsServiceController* service_controller,
+      os_crypt_async::OSCryptAsync* os_crypt_async);
   HistoryEmbeddingsService(const HistoryEmbeddingsService&) = delete;
   HistoryEmbeddingsService& operator=(const HistoryEmbeddingsService&) = delete;
   ~HistoryEmbeddingsService() override;
@@ -145,7 +152,8 @@ class HistoryEmbeddingsService : public KeyedService,
 
     // Associate the given metadata with this Storage instance. The storage is
     // not considered initialized until this metadata is supplied.
-    void SetEmbedderMetadata(EmbedderMetadata metadata);
+    void SetEmbedderMetadata(EmbedderMetadata metadata,
+                             os_crypt_async::Encryptor encryptor);
 
     // Called on the worker sequence to persist passages and embeddings.
     void ProcessAndStorePassages(UrlPassages url_passages,
@@ -179,6 +187,10 @@ class HistoryEmbeddingsService : public KeyedService,
   // Called when the embedder metadata is available. Passes the metadata to
   // the internal storage.
   void OnEmbedderMetadataReady(EmbedderMetadata metadata);
+
+  void OnOsCryptAsyncReady(EmbedderMetadata metadata,
+                           os_crypt_async::Encryptor encryptor,
+                           bool success);
 
   // This can be overridden to prepare a log entry that will then be filled
   // with data and sent on destruction. Default implementation returns null.
@@ -229,6 +241,8 @@ class HistoryEmbeddingsService : public KeyedService,
   // Rebuild absent embeddings from source passages.
   void RebuildAbsentEmbeddings(std::vector<UrlPassages> all_url_passages);
 
+  raw_ptr<os_crypt_async::OSCryptAsync> os_crypt_async_;
+
   // The history service is used to fill in details about URLs and visits
   // found via search. It strictly outlives this due to the dependency
   // specified in HistoryEmbeddingsServiceFactory.
@@ -271,6 +285,9 @@ class HistoryEmbeddingsService : public KeyedService,
   // can be halted. Note this is not task cancellation, it breaks the inner
   // search loop while running so the atomic is needed for thread safety.
   std::atomic<size_t> query_id_;
+
+  base::CallbackListSubscription subscription_;
+
   base::WeakPtrFactory<std::atomic<size_t>> query_id_weak_ptr_factory_;
 
   base::WeakPtrFactory<HistoryEmbeddingsService> weak_ptr_factory_;

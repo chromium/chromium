@@ -25,7 +25,7 @@
 #include "components/history_embeddings/vector_database.h"
 #include "components/optimization_guide/core/test_model_info_builder.h"
 #include "components/optimization_guide/core/test_optimization_guide_model_provider.h"
-#include "components/os_crypt/sync/os_crypt_mocker.h"
+#include "components/os_crypt/async/browser/test_utils.h"
 #include "components/page_content_annotations/core/test_page_content_annotations_service.h"
 #include "components/page_content_annotations/core/test_page_content_annotator.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -41,13 +41,13 @@ class HistoryEmbeddingsServiceTest : public testing::Test {
                                 {"SearchPassageMinimumWordCount", "3"},
                             });
 
-    OSCryptMocker::SetUp();
-
     CHECK(history_dir_.CreateUniqueTempDir());
 
     history_service_ =
         history::CreateHistoryService(history_dir_.GetPath(), true);
     CHECK(history_service_);
+    os_crypt_ = os_crypt_async::GetTestOSCryptAsyncForTesting(
+        /*is_sync_for_unittests=*/true);
 
     optimization_guide_model_provider_ = std::make_unique<
         optimization_guide::TestOptimizationGuideModelProvider>();
@@ -60,7 +60,7 @@ class HistoryEmbeddingsServiceTest : public testing::Test {
     service_ = std::make_unique<HistoryEmbeddingsService>(
         history_service_.get(), page_content_annotations_service_.get(),
         optimization_guide_model_provider_.get(),
-        /*service_controller=*/nullptr);
+        /*service_controller=*/nullptr, os_crypt_.get());
   }
 
   void TearDown() override {
@@ -68,7 +68,6 @@ class HistoryEmbeddingsServiceTest : public testing::Test {
       service_->storage_.SynchronouslyResetForTest();
       service_->Shutdown();
     }
-    OSCryptMocker::TearDown();
   }
 
   void OverrideVisibilityScoresForTesting(
@@ -131,6 +130,7 @@ class HistoryEmbeddingsServiceTest : public testing::Test {
       base::test::SingleThreadTaskEnvironment::TimeSource::MOCK_TIME};
 
   base::ScopedTempDir history_dir_;
+  std::unique_ptr<os_crypt_async::OSCryptAsync> os_crypt_;
   std::unique_ptr<history::HistoryService> history_service_;
   std::unique_ptr<optimization_guide::TestOptimizationGuideModelProvider>
       optimization_guide_model_provider_;

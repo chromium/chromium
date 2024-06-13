@@ -4,11 +4,13 @@
 
 #include "components/history_embeddings/sql_database.h"
 
+#include "base/check.h"
 #include "base/files/file_path.h"
 #include "base/sequence_checker.h"
 #include "components/history_embeddings/history_embeddings_features.h"
 #include "components/history_embeddings/passages_util.h"
 #include "components/history_embeddings/proto/history_embeddings.pb.h"
+#include "components/os_crypt/async/common/encryptor.h"
 #include "sql/init_status.h"
 #include "sql/meta_table.h"
 #include "sql/transaction.h"
@@ -83,8 +85,11 @@ SqlDatabase::SqlDatabase(const base::FilePath& storage_dir)
 
 SqlDatabase::~SqlDatabase() = default;
 
-void SqlDatabase::SetEmbedderMetadata(EmbedderMetadata embedder_metadata) {
+void SqlDatabase::SetEmbedderMetadata(EmbedderMetadata embedder_metadata,
+                                      os_crypt_async::Encryptor encryptor) {
   embedder_metadata_ = embedder_metadata;
+  CHECK(!encryptor_.has_value()) << "Cannot call SetEmbedderMetadata twice.";
+  encryptor_.emplace(std::move(encryptor));
 }
 
 bool SqlDatabase::LazyInit() {
@@ -179,7 +184,8 @@ bool SqlDatabase::InsertOrReplacePassages(const UrlPassages& url_passages) {
   statement.BindInt64(1, url_passages.visit_id);
   statement.BindTime(2, url_passages.visit_time);
 
-  std::vector<uint8_t> blob = PassagesProtoToBlob(url_passages.passages);
+  std::vector<uint8_t> blob =
+      PassagesProtoToBlob(url_passages.passages, *encryptor_);
   if (blob.empty()) {
     return false;
   }
@@ -206,7 +212,7 @@ std::optional<proto::PassagesValue> SqlDatabase::GetPassages(
   statement.BindInt64(0, url_id);
 
   if (statement.Step()) {
-    return PassagesBlobToProto(statement.ColumnBlob(0));
+    return PassagesBlobToProto(statement.ColumnBlob(0), *encryptor_);
   }
 
   return std::nullopt;
@@ -229,7 +235,7 @@ std::vector<UrlPassages> SqlDatabase::GetUrlPassagesWithoutEmbeddings() {
   std::vector<UrlPassages> all_url_passages;
   while (statement.Step()) {
     std::optional<proto::PassagesValue> passages_value =
-        PassagesBlobToProto(statement.ColumnBlob(3));
+        PassagesBlobToProto(statement.ColumnBlob(3), *encryptor_);
     if (passages_value.has_value()) {
       UrlPassages& url_passages = all_url_passages.emplace_back(
           statement.ColumnInt64(0), statement.ColumnInt64(1),

@@ -28,6 +28,7 @@
 #include "components/history_embeddings/vector_database.h"
 #include "components/optimization_guide/core/model_quality/feature_type_map.h"
 #include "components/optimization_guide/core/model_quality/model_quality_log_entry.h"
+#include "components/os_crypt/async/browser/os_crypt_async.h"
 #include "components/page_content_annotations/core/page_content_annotations_service.h"
 #include "content/public/browser/render_frame_host.h"
 #include "content/public/browser/weak_document_ptr.h"
@@ -127,8 +128,10 @@ HistoryEmbeddingsService::HistoryEmbeddingsService(
         page_content_annotations_service,
     optimization_guide::OptimizationGuideModelProvider*
         optimization_guide_model_provider,
-    PassageEmbeddingsServiceController* service_controller)
-    : history_service_(history_service),
+    PassageEmbeddingsServiceController* service_controller,
+    os_crypt_async::OSCryptAsync* os_crypt_async)
+    : os_crypt_async_(os_crypt_async),
+      history_service_(history_service),
       page_content_annotations_service_(page_content_annotations_service),
       query_id_(0u),
       query_id_weak_ptr_factory_(&query_id_),
@@ -181,16 +184,29 @@ HistoryEmbeddingsService::HistoryEmbeddingsService(
 
 HistoryEmbeddingsService::~HistoryEmbeddingsService() = default;
 
-void HistoryEmbeddingsService::OnEmbedderMetadataReady(
-    EmbedderMetadata metadata) {
+void HistoryEmbeddingsService::OnOsCryptAsyncReady(
+    EmbedderMetadata metadata,
+    os_crypt_async::Encryptor encryptor,
+    bool success) {
   embedder_metadata_ = metadata;
-  storage_.AsyncCall(&Storage::SetEmbedderMetadata).WithArgs(metadata);
+  storage_.AsyncCall(&Storage::SetEmbedderMetadata)
+      .WithArgs(metadata, std::move(encryptor));
 
   if (kRebuildEmbeddings.Get()) {
     storage_.AsyncCall(&Storage::CollectPassagesWithoutEmbeddings)
         .Then(base::BindOnce(&HistoryEmbeddingsService::RebuildAbsentEmbeddings,
                              weak_ptr_factory_.GetWeakPtr()));
   }
+}
+
+void HistoryEmbeddingsService::OnEmbedderMetadataReady(
+    EmbedderMetadata metadata) {
+  // TODO: Remove kEncryptSyncCompat option once async code will not be
+  // reverted.
+  subscription_ = os_crypt_async_->GetInstance(
+      base::BindOnce(&HistoryEmbeddingsService::OnOsCryptAsyncReady,
+                     weak_ptr_factory_.GetWeakPtr(), metadata),
+      os_crypt_async::Encryptor::Option::kEncryptSyncCompat);
 }
 
 void HistoryEmbeddingsService::RetrievePassages(
@@ -374,8 +390,9 @@ HistoryEmbeddingsService::Storage::Storage(const base::FilePath& storage_dir)
     : sql_database(storage_dir) {}
 
 void HistoryEmbeddingsService::Storage::SetEmbedderMetadata(
-    EmbedderMetadata metadata) {
-  sql_database.SetEmbedderMetadata(metadata);
+    EmbedderMetadata metadata,
+    os_crypt_async::Encryptor encryptor) {
+  sql_database.SetEmbedderMetadata(metadata, std::move(encryptor));
 }
 
 void HistoryEmbeddingsService::Storage::ProcessAndStorePassages(

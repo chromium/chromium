@@ -1,7 +1,7 @@
 include_rules = [
   "+components/history",
   "+components/keyed_service/core",
-  "+components/os_crypt/sync",
+  "+components/os_crypt/async",
   "+components/optimization_guide/core",
   "+components/optimization_guide/proto",
   "+components/page_content_annotations/core",

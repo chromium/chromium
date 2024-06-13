@@ -17,6 +17,7 @@
 #include "components/history_embeddings/embedder.h"
 #include "components/history_embeddings/proto/history_embeddings.pb.h"
 #include "components/history_embeddings/vector_database.h"
+#include "components/os_crypt/async/common/encryptor.h"
 #include "sql/database.h"
 #include "sql/init_status.h"
 
@@ -38,7 +39,8 @@ class SqlDatabase : public VectorDatabase {
 
   // Provides embedder metadata to the database. The database cannot be
   // initialized until valid metadata is provided.
-  void SetEmbedderMetadata(EmbedderMetadata embedder_metadata);
+  void SetEmbedderMetadata(EmbedderMetadata embedder_metadata,
+                           os_crypt_async::Encryptor encryptor);
 
   // Inserts or replaces `passages` keyed by `url_id`. `visit_id` and
   // `visit_time` are needed too, to respect History deletions and expirations.
@@ -81,6 +83,8 @@ class SqlDatabase : public VectorDatabase {
 
   // Metadata of the embeddings model.
   std::optional<EmbedderMetadata> embedder_metadata_;
+
+  std::optional<os_crypt_async::Encryptor> encryptor_;
 
   // The underlying SQL database.
   sql::Database db_ GUARDED_BY_CONTEXT(sequence_checker_);
