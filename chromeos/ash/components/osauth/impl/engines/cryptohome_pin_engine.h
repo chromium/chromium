@@ -22,7 +22,8 @@
 namespace ash {
 
 // This class implements engine for Cryptohome-based PIN factor.
-class CryptohomePinEngine : public CryptohomeBasedEngine {
+class COMPONENT_EXPORT(CHROMEOS_ASH_COMPONENTS_OSAUTH) CryptohomePinEngine
+    : public CryptohomeBasedEngine {
  public:
   explicit CryptohomePinEngine(CryptohomeCore& core, PrefService* local_state);
   ~CryptohomePinEngine() override;

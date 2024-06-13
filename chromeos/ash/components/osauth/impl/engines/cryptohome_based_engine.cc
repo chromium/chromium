@@ -3,6 +3,7 @@
 // found in the LICENSE file.
 
 #include "chromeos/ash/components/osauth/impl/engines/cryptohome_based_engine.h"
+
 #include <utility>
 
 #include "base/check.h"

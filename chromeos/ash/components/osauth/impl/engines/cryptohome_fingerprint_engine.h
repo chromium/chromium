@@ -23,8 +23,9 @@
 
 namespace ash {
 
-// This class implements engine for Cryptohome-based FINGERPRINT factor.
-class CryptohomeFingerprintEngine
+// This class implements engine for Cryptohome-based Fingerprint factor.
+class COMPONENT_EXPORT(CHROMEOS_ASH_COMPONENTS_OSAUTH)
+    CryptohomeFingerprintEngine
     : public CryptohomeBasedEngine,
       public UserDataAuthClient::PrepareAuthFactorProgressObserver {
  public:

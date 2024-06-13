@@ -164,6 +164,15 @@ AuthFactor::AuthFactor(AuthFactorRef ref,
   CHECK_EQ(ref_.type(), AuthFactorType::kPin);
 }
 
+AuthFactor::AuthFactor(AuthFactorRef ref,
+                       AuthFactorCommonMetadata metadata,
+                       FingerprintMetadata fingerprint_metadata)
+    : ref_(std::move(ref)),
+      common_metadata_(std::move(metadata)),
+      factor_metadata_(std::move(fingerprint_metadata)) {
+  CHECK_EQ(ref_.type(), AuthFactorType::kFingerprint);
+}
+
 AuthFactor::AuthFactor(AuthFactor&&) noexcept = default;
 AuthFactor& AuthFactor::operator=(AuthFactor&&) noexcept = default;
 AuthFactor::AuthFactor(const AuthFactor&) = default;
@@ -202,6 +211,10 @@ const PasswordMetadata& AuthFactor::GetPasswordMetadata() const {
 
 const PinMetadata& AuthFactor::GetPinMetadata() const {
   return absl::get<PinMetadata>(factor_metadata_);
+}
+
+const FingerprintMetadata& AuthFactor::GetFingerprintMetadata() const {
+  return absl::get<FingerprintMetadata>(factor_metadata_);
 }
 
 }  // namespace cryptohome

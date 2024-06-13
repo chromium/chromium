@@ -205,6 +205,9 @@ class COMPONENT_EXPORT(CHROMEOS_ASH_COMPONENTS_CRYPTOHOME) PinMetadata {
   std::optional<KnowledgeFactorHashInfo> hash_info_;
 };
 
+class COMPONENT_EXPORT(CHROMEOS_ASH_COMPONENTS_CRYPTOHOME) FingerprintMetadata {
+};
+
 // AuthFactor definition.
 // If it is obtainted from `cryptohome` it will contain factor-specific status,
 // otherwise it would only contain identity and metadata.
@@ -227,6 +230,9 @@ class COMPONENT_EXPORT(CHROMEOS_ASH_COMPONENTS_CRYPTOHOME) AuthFactor {
              AuthFactorCommonMetadata metadata,
              PinMetadata pin_metadata,
              PinStatus status);
+  AuthFactor(AuthFactorRef ref,
+             AuthFactorCommonMetadata metadata,
+             FingerprintMetadata fingerprint_metadata);
 
   AuthFactor(AuthFactor&&) noexcept;
   AuthFactor& operator=(AuthFactor&&) noexcept;
@@ -247,6 +253,7 @@ class COMPONENT_EXPORT(CHROMEOS_ASH_COMPONENTS_CRYPTOHOME) AuthFactor {
   const CryptohomeRecoveryMetadata& GetCryptohomeRecoveryMetadata() const;
   const PasswordMetadata& GetPasswordMetadata() const;
   const PinMetadata& GetPinMetadata() const;
+  const FingerprintMetadata& GetFingerprintMetadata() const;
 
  private:
   AuthFactorRef ref_;
@@ -255,7 +262,8 @@ class COMPONENT_EXPORT(CHROMEOS_ASH_COMPONENTS_CRYPTOHOME) AuthFactor {
                 SmartCardMetadata,
                 CryptohomeRecoveryMetadata,
                 PasswordMetadata,
-                PinMetadata>
+                PinMetadata,
+                FingerprintMetadata>
       factor_metadata_;
   absl::variant<absl::monostate, PinStatus> factor_status_;
 };

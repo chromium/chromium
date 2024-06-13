@@ -1,0 +1,7 @@
+specific_include_rules = {
+  "engine_test_util.h": [
+    "+chromeos/ash/components/dbus/userdataauth/mock_userdataauth_client.h",
+    "+chromeos/ash/components/install_attributes/stub_install_attributes.h",
+    "+components/user_manager/fake_user_manager.h",
+  ]
+}

@@ -368,6 +368,12 @@ AuthFactor DeserializeAuthFactor(const user_data_auth::AuthFactor& proto,
                  << " by cryptohome.";
       __builtin_unreachable();
     }
+    case AuthFactorType::kFingerprint: {
+      DCHECK(proto.has_fingerprint_metadata());
+      FingerprintMetadata fingerprint_metadata;
+      return AuthFactor(std::move(ref), std::move(common_metadata),
+                        std::move(fingerprint_metadata));
+    }
     case AuthFactorType::kUnknownLegacy:
       LOG(FATAL) << "Should already be handled above";
       __builtin_unreachable();

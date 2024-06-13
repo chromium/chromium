@@ -90,6 +90,8 @@ source_set("unit_tests") {
     "auth_hub_vector_lifecycle_unittest.cc",
     "auth_session_storage_impl_unittest.cc",
     "cryptohome_core_impl_unittest.cc",
+    "engines/cryptohome_fingerprint_engine_unittest.cc",
+    "engines/cryptohome_pin_engine_unittest.cc",
     "engines/prefs_pin_engine_unittest.cc",
   ]
 }

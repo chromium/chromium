@@ -10,12 +10,11 @@
 #include "base/test/test_future.h"
 #include "chromeos/ash/components/dbus/cryptohome/UserDataAuth.pb.h"
 #include "chromeos/ash/components/dbus/userdataauth/mock_userdataauth_client.h"
-#include "chromeos/ash/components/install_attributes/stub_install_attributes.h"
 #include "chromeos/ash/components/login/auth/public/key.h"
-#include "chromeos/ash/components/osauth/impl/cryptohome_core_impl.h"
 #include "chromeos/ash/components/osauth/impl/prefs.h"
 #include "chromeos/ash/components/osauth/public/auth_factor_engine.h"
 #include "chromeos/ash/components/osauth/public/common_types.h"
+#include "chromeos/ash/components/osauth/test_support/engine_test_util.h"
 #include "chromeos/ash/components/osauth/test_support/mock_auth_factor_engine.h"
 #include "components/account_id/account_id.h"
 #include "components/prefs/pref_registry_simple.h"
@@ -34,20 +33,10 @@ using ::testing::InSequence;
 using ::testing::IsFalse;
 using ::testing::IsTrue;
 
-class PrefsPinEngineTest : public ::testing::Test {
+class PrefsPinEngineTest : public EngineTestBase {
  protected:
-  PrefsPinEngineTest()
-      : core_(&mock_udac_),
-        engine_impl_(core_, prefs_),
-        engine_(&engine_impl_) {
-    user_manager::FakeUserManager::RegisterPrefs(prefs_.registry());
-    user_manager_.Initialize();
+  PrefsPinEngineTest() : engine_impl_(core_, prefs_), engine_(&engine_impl_) {
     RegisterPinStoragePrefs(prefs_.registry());
-  }
-
-  ~PrefsPinEngineTest() override {
-    user_manager_.Shutdown();
-    user_manager_.Destroy();
   }
 
   // Add a salt+pin to the preferences.
@@ -60,7 +49,7 @@ class PrefsPinEngineTest : public ::testing::Test {
   }
 
   // Define basic expectations for StartAuthSession and ListAuthFactors calls.
-  // These will create a minimal session and indicate that only password auth
+  // These will create a minimal session and indicate that only pin auth
   // factor support is available.
   void ExpectStartAndList() {
     EXPECT_CALL(mock_udac_, StartAuthSession(_, _))
@@ -83,23 +72,12 @@ class PrefsPinEngineTest : public ::testing::Test {
         });
   }
 
-  // Basic infrastructure for the test, including a real cryptohome core
-  // instance based on a mock userdataauth.
-  base::test::SingleThreadTaskEnvironment task_environment{
-      base::test::TaskEnvironment::TimeSource::MOCK_TIME};
-  ash::MockUserDataAuthClient mock_udac_;
-  CryptohomeCoreImpl core_;
-  TestingPrefServiceSimple prefs_;
-  ash::ScopedStubInstallAttributes install_attributes{
-      ash::StubInstallAttributes::CreateConsumerOwned()};
-  user_manager::FakeUserManager user_manager_;
-
   // The engine under test. The `engine_` pointer variable provides easy access
   // to the public engine API and `engine_impl_` can be used to access the
   // engine-specific functions.
   PrefsPinEngine engine_impl_;
   raw_ptr<AuthFactorEngine> engine_;
-  std::string kAuthSessionId = "31415926535";
+  const std::string kAuthSessionId = "31415926535";
 };
 
 TEST_F(PrefsPinEngineTest, GetFactor) {
