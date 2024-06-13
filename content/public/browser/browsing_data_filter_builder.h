@@ -176,6 +176,12 @@ class CONTENT_EXPORT BrowsingDataFilterBuilder {
   // The mode of the filter.
   virtual Mode GetMode() = 0;
 
+  // The origins targeted by the filter.
+  virtual const std::set<url::Origin>& GetOrigins() const = 0;
+
+  // The domains targeted by the filter.
+  virtual const std::set<std::string>& GetRegisterableDomains() const = 0;
+
   // Create a new filter builder with the same set of origins, set of domains,
   // and mode.
   virtual std::unique_ptr<BrowsingDataFilterBuilder> Copy() = 0;

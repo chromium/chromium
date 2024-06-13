@@ -18,6 +18,7 @@
 #include "base/test/bind.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
+#include "base/test/simple_test_clock.h"
 #include "base/test/test_future.h"
 #include "base/time/time.h"
 #include "build/build_config.h"
@@ -40,6 +41,7 @@
 #include "chrome/test/base/ui_test_utils.h"
 #include "components/browsing_data/content/browsing_data_model.h"
 #include "components/content_settings/core/browser/host_content_settings_map.h"
+#include "components/content_settings/core/common/content_settings_utils.h"
 #include "components/history/core/common/pref_names.h"
 #include "components/metrics/content/subprocess_metrics_provider.h"
 #include "components/nacl/common/buildflags.h"
@@ -103,6 +105,7 @@
 using content::BrowserThread;
 using content::BrowsingDataFilterBuilder;
 
+using testing::UnorderedElementsAre;
 using testing::UnorderedElementsAreArray;
 
 namespace {
@@ -1714,6 +1717,94 @@ IN_PROC_BROWSER_TEST_F(BrowsingDataRemoverBrowserTest,
                    ->GetClearUserCredentialsCount());
 }
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+
+IN_PROC_BROWSER_TEST_F(BrowsingDataRemoverBrowserTest,
+                       RelatedWebsiteSetsDeletion) {
+  const GURL kPrimaryUrl("https://subdomain.example.com:112");
+  const GURL kSecondaryUrl("https://subidubi.testsite.com:55");
+
+  HostContentSettingsMap* settings_map =
+      HostContentSettingsMapFactory::GetForProfile(GetProfile());
+
+  // Setting the HostContentSettingsMap's clock to test last_modified of
+  // RuleMetaData below.
+  base::SimpleTestClock test_clock;
+  settings_map->SetClockForTesting(&test_clock);
+  test_clock.SetNow(base::Time::Now());
+
+  // Expected setting for the default grant.
+  const ContentSettingPatternSource kExpectedSettingDefault(
+      ContentSettingsPattern::Wildcard(), ContentSettingsPattern::Wildcard(),
+      content_settings::ContentSettingToValue(CONTENT_SETTING_ASK),
+      content_settings::ProviderType::kDefaultProvider,
+      /*incognito=*/false);
+
+  // Check that there are only default grants.
+  ASSERT_THAT(
+      settings_map->GetSettingsForOneType(ContentSettingsType::STORAGE_ACCESS),
+      UnorderedElementsAre(kExpectedSettingDefault));
+  ASSERT_THAT(settings_map->GetSettingsForOneType(
+                  ContentSettingsType::TOP_LEVEL_STORAGE_ACCESS),
+              UnorderedElementsAre(kExpectedSettingDefault));
+
+  // Set RWS grants.
+  content_settings::ContentSettingConstraints constraints;
+  constraints.set_session_model(
+      content_settings::mojom::SessionModel::NON_RESTORABLE_USER_SESSION);
+  settings_map->SetContentSettingDefaultScope(
+      kPrimaryUrl, kSecondaryUrl, ContentSettingsType::STORAGE_ACCESS,
+      CONTENT_SETTING_ALLOW, constraints);
+  settings_map->SetContentSettingDefaultScope(
+      kPrimaryUrl, kSecondaryUrl, ContentSettingsType::TOP_LEVEL_STORAGE_ACCESS,
+      CONTENT_SETTING_ALLOW, constraints);
+
+  // Check that the grants were set.
+  content_settings::RuleMetaData expected_metadata;
+  expected_metadata.SetFromConstraints(constraints);
+  expected_metadata.set_last_modified(test_clock.Now());
+  EXPECT_THAT(
+      settings_map->GetSettingsForOneType(ContentSettingsType::STORAGE_ACCESS),
+      UnorderedElementsAre(
+          kExpectedSettingDefault,
+          ContentSettingPatternSource(
+              ContentSettingsPattern::FromURLToSchemefulSitePattern(
+                  GURL(kPrimaryUrl)),  // https://[*.]example.com
+              ContentSettingsPattern::FromURLToSchemefulSitePattern(
+                  GURL(kSecondaryUrl)),  // https://[*.]testsite.com
+              content_settings::ContentSettingToValue(CONTENT_SETTING_ALLOW),
+              content_settings::ProviderType::kPrefProvider,
+              /*incognito=*/false, expected_metadata)));
+  EXPECT_THAT(
+      settings_map->GetSettingsForOneType(
+          ContentSettingsType::TOP_LEVEL_STORAGE_ACCESS),
+      UnorderedElementsAre(
+          kExpectedSettingDefault,
+          ContentSettingPatternSource(
+              ContentSettingsPattern::FromURLNoWildcard(
+                  GURL(kPrimaryUrl)),  // https://subdomain.example.com:112
+              ContentSettingsPattern::FromURLNoWildcard(
+                  GURL(kSecondaryUrl)),  // https://subidubi.testsite.com:55
+              content_settings::ContentSettingToValue(CONTENT_SETTING_ALLOW),
+              content_settings::ProviderType::kPrefProvider,
+              /*incognito=*/false, expected_metadata)));
+
+  // Remove Related Website Sets storage grants.
+  std::unique_ptr<BrowsingDataFilterBuilder> filter_builder =
+      BrowsingDataFilterBuilder::Create(
+          BrowsingDataFilterBuilder::Mode::kDelete);
+  filter_builder->AddOrigin(url::Origin::Create(kPrimaryUrl));
+  RemoveWithFilterAndWait(
+      content::BrowsingDataRemover::DATA_TYPE_RELATED_WEBSITE_SETS_PERMISSIONS,
+      std::move(filter_builder));
+
+  // Check that there's only the default grant left.
+  EXPECT_THAT(
+      settings_map->GetSettingsForOneType(ContentSettingsType::STORAGE_ACCESS),
+      UnorderedElementsAre(kExpectedSettingDefault));
+  EXPECT_THAT(settings_map->GetSettingsForOneType(
+                  ContentSettingsType::TOP_LEVEL_STORAGE_ACCESS),
+              UnorderedElementsAre(kExpectedSettingDefault));
+}
 
 // Some storage backend use a different code path for full deletions and
 // partial deletions, so we need to test both.

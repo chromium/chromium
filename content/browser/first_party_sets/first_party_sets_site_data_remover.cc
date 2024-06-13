@@ -52,12 +52,14 @@ class ClearingTask : public BrowsingDataRemover::Observer {
     task_count_++;
     remover_->RemoveWithFilterAndReply(
         base::Time(), base::Time::Max(), BrowsingDataRemover::DATA_TYPE_COOKIES,
-        content::BrowsingDataRemover::ORIGIN_TYPE_UNPROTECTED_WEB |
-            content::BrowsingDataRemover::ORIGIN_TYPE_PROTECTED_WEB,
+        BrowsingDataRemover::ORIGIN_TYPE_UNPROTECTED_WEB |
+            BrowsingDataRemover::ORIGIN_TYPE_PROTECTED_WEB,
         std::move(cookie_filter_builder), this);
 
-    uint64_t remove_mask = BrowsingDataRemover::DATA_TYPE_DOM_STORAGE |
-                           BrowsingDataRemover::DATA_TYPE_PRIVACY_SANDBOX;
+    uint64_t remove_mask =
+        BrowsingDataRemover::DATA_TYPE_DOM_STORAGE |
+        BrowsingDataRemover::DATA_TYPE_PRIVACY_SANDBOX |
+        BrowsingDataRemover::DATA_TYPE_RELATED_WEBSITE_SETS_PERMISSIONS;
     task_count_++;
     remover_->RemoveWithFilterAndReply(
         base::Time(), base::Time::Max(), remove_mask,

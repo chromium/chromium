@@ -146,9 +146,14 @@ class BrowsingDataRemover {
   // information.
   static constexpr DataType DATA_TYPE_INTEREST_GROUPS_INTERNAL = 1 << 23;
 
+  // Permissions granted by Related Website Sets
+  // (https://github.com/WICG/first-party-sets).
+  static constexpr DataType DATA_TYPE_RELATED_WEBSITE_SETS_PERMISSIONS = 1
+                                                                         << 24;
+
   // Embedders can add more datatypes beyond this point.
   static constexpr DataType DATA_TYPE_CONTENT_END =
-      DATA_TYPE_INTEREST_GROUPS_INTERNAL;
+      DATA_TYPE_RELATED_WEBSITE_SETS_PERMISSIONS;
 
   // All data stored by the Attribution Reporting API.
   static constexpr DataType DATA_TYPE_ATTRIBUTION_REPORTING =

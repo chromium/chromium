@@ -21,6 +21,7 @@
 #include "base/metrics/histogram_macros.h"
 #include "base/metrics/user_metrics.h"
 #include "base/not_fatal_until.h"
+#include "base/ranges/algorithm.h"
 #include "base/strings/strcat.h"
 #include "base/task/bind_post_task.h"
 #include "base/task/thread_pool.h"
@@ -93,6 +94,7 @@
 #include "components/bookmarks/browser/bookmark_model.h"
 #include "components/browsing_data/content/browsing_data_helper.h"
 #include "components/content_settings/core/browser/content_settings_registry.h"
+#include "components/content_settings/core/browser/content_settings_utils.h"
 #include "components/content_settings/core/browser/host_content_settings_map.h"
 #include "components/content_settings/core/common/content_settings.h"
 #include "components/content_settings/core/common/content_settings_pattern.h"
@@ -1426,6 +1428,29 @@ void ChromeBrowsingDataRemoverDelegate::RemoveEmbedderData(
 #else   // BUILDFLAG(IS_ANDROID)
     NOTIMPLEMENTED();
 #endif  // BUILDFLAG(IS_ANDROID)
+  }
+
+  //////////////////////////////////////////////////////////////////////////////
+  // DATA_TYPE_RELATED_WEBSITE_SETS_PERMISSIONS
+  if (remove_mask & content::BrowsingDataRemover::
+                        DATA_TYPE_RELATED_WEBSITE_SETS_PERMISSIONS) {
+    for (ContentSettingsType type_to_clear :
+         {ContentSettingsType::STORAGE_ACCESS,
+          ContentSettingsType::TOP_LEVEL_STORAGE_ACCESS}) {
+      host_content_settings_map_->ClearSettingsForOneTypeWithPredicate(
+          type_to_clear, [&](const ContentSettingPatternSource& setting) {
+            return content_settings::IsGrantedByRelatedWebsiteSets(
+                       type_to_clear, setting.metadata) &&
+                   base::ranges::any_of(
+                       filter_builder->GetOrigins(),
+                       [&](const url::Origin& origin) -> bool {
+                         return setting.primary_pattern.Matches(
+                                    origin.GetURL()) ||
+                                setting.secondary_pattern.Matches(
+                                    origin.GetURL());
+                       });
+          });
+    }
   }
 }
 

@@ -9,6 +9,8 @@
 #include <memory>
 #include <set>
 #include <string>
+#include <string_view>
+#include <tuple>
 #include <utility>
 #include <vector>
 
@@ -117,7 +119,10 @@
 #include "components/content_settings/core/browser/website_settings_info.h"
 #include "components/content_settings/core/browser/website_settings_registry.h"
 #include "components/content_settings/core/common/content_settings.h"
+#include "components/content_settings/core/common/content_settings_constraints.h"
+#include "components/content_settings/core/common/content_settings_metadata.h"
 #include "components/content_settings/core/common/content_settings_pattern.h"
+#include "components/content_settings/core/common/content_settings_utils.h"
 #include "components/custom_handlers/protocol_handler.h"
 #include "components/custom_handlers/protocol_handler_registry.h"
 #include "components/custom_handlers/test_protocol_handler_registry_delegate.h"
@@ -4719,3 +4724,168 @@ TEST_F(ChromeBrowsingDataRemoverDelegateTpcdMetadataTest,
         content_settings::mojom::TpcdMetadataCohort::GRACE_PERIOD_FORCED_OFF);
   }
 }
+
+// Constants for ChromeBrowsingDataRemoverDelegateRelatedWebsiteSetsTest.
+namespace {
+constexpr char kPrimaryUrl[] = "https://subdomain.example.com:112";
+constexpr char kSecondaryUrl[] = "https://subidubi.testsite.com:55";
+constexpr char kUnrelatedPrimaryUrl[] = "https://dontdeleteme.com";
+constexpr char kUnrelatedSecondaryUrl[] = "https://keepthis.com";
+
+enum class FilterOrigins {
+  kByPrimaryUrl,
+  kBySecondaryUrl,
+  kByBothUrls,
+};
+
+// Expected setting for the default grant.
+const ContentSettingPatternSource kExpectedSettingDefault(
+    ContentSettingsPattern::Wildcard(),
+    ContentSettingsPattern::Wildcard(),
+    content_settings::ContentSettingToValue(CONTENT_SETTING_ASK),
+    content_settings::ProviderType::kDefaultProvider,
+    /*incognito=*/false);
+}  // namespace
+
+class ChromeBrowsingDataRemoverDelegateRelatedWebsiteSetsTest
+    : public ChromeBrowsingDataRemoverDelegateTest,
+      public testing::WithParamInterface<
+          std::tuple<bool,  // IsRelatedWebsiteSetsGrant.
+                     ContentSettingsType,
+                     FilterOrigins>> {
+ public:
+  bool IsRelatedWebsiteSetsGrant() const { return std::get<0>(GetParam()); }
+  ContentSettingsType GetContentSettingsType() const {
+    return std::get<1>(GetParam());
+  }
+  FilterOrigins GetFilterOrigin() const { return std::get<2>(GetParam()); }
+
+  content_settings::ContentSettingConstraints GetConstraints() {
+    content_settings::ContentSettingConstraints constraints;
+    constraints.set_session_model(
+        IsRelatedWebsiteSetsGrant()
+            ? content_settings::mojom::SessionModel::NON_RESTORABLE_USER_SESSION
+            : content_settings::mojom::SessionModel::DURABLE);
+    return constraints;
+  }
+
+  content_settings::RuleMetaData GetMetadata() {
+    content_settings::RuleMetaData metadata;
+    metadata.SetFromConstraints(GetConstraints());
+    metadata.set_last_modified(base::Time::Now());
+    return metadata;
+  }
+
+  void RemoveRelatedWebsiteSetsPermissionsData() {
+    std::unique_ptr<BrowsingDataFilterBuilder> filter_builder(
+        BrowsingDataFilterBuilder::Create(
+            BrowsingDataFilterBuilder::Mode::kDelete));
+
+    switch (GetFilterOrigin()) {
+      case FilterOrigins::kByPrimaryUrl:
+        filter_builder->AddOrigin(url::Origin::Create(GURL(kPrimaryUrl)));
+        break;
+      case FilterOrigins::kBySecondaryUrl:
+        filter_builder->AddOrigin(url::Origin::Create(GURL(kSecondaryUrl)));
+        break;
+      case FilterOrigins::kByBothUrls:
+        filter_builder->AddOrigin(url::Origin::Create(GURL(kPrimaryUrl)));
+        filter_builder->AddOrigin(url::Origin::Create(GURL(kSecondaryUrl)));
+        break;
+    }
+
+    BlockUntilOriginDataRemoved(base::Time(), base::Time::Max(),
+                                content::BrowsingDataRemover::
+                                    DATA_TYPE_RELATED_WEBSITE_SETS_PERMISSIONS,
+                                std::move(filter_builder));
+  }
+
+  ContentSettingPatternSource GetExpectedSetting() {
+    return GetExpectedSetting(kPrimaryUrl, kSecondaryUrl);
+  }
+
+  ContentSettingPatternSource GetExpectedUnrelatedSetting() {
+    return GetExpectedSetting(kUnrelatedPrimaryUrl, kUnrelatedSecondaryUrl);
+  }
+
+ private:
+  ContentSettingPatternSource GetExpectedSetting(
+      std::string_view primaryUrl,
+      std::string_view secondaryUrl) {
+    switch (GetContentSettingsType()) {
+      case ContentSettingsType::STORAGE_ACCESS:
+        return ContentSettingPatternSource(
+            ContentSettingsPattern::FromURLToSchemefulSitePattern(
+                GURL(primaryUrl)),  // e.g. https://[*.]example.com
+            ContentSettingsPattern::FromURLToSchemefulSitePattern(
+                GURL(secondaryUrl)),  // e.g. https://[*.]testsite.com
+            content_settings::ContentSettingToValue(CONTENT_SETTING_ALLOW),
+            content_settings::ProviderType::kPrefProvider, /*incognito=*/false,
+            GetMetadata());
+      case ContentSettingsType::TOP_LEVEL_STORAGE_ACCESS:
+        return ContentSettingPatternSource(
+            ContentSettingsPattern::FromURLNoWildcard(
+                GURL(primaryUrl)),  // e.g. https://subdomain.example.com:112
+            ContentSettingsPattern::FromURLNoWildcard(
+                GURL(secondaryUrl)),  // e.g. https://subidubi.testsite.com:55
+            content_settings::ContentSettingToValue(CONTENT_SETTING_ALLOW),
+            content_settings::ProviderType::kPrefProvider, /*incognito=*/false,
+            GetMetadata());
+      default:
+        NOTREACHED_NORETURN();
+    }
+  }
+};
+
+// Test that the DATA_TYPE_RELATED_WEBSITE_SETS_PERMISSIONS mask removes
+// permissions if those permissions were granted to the relevant sites and were
+// granted via Related Website Sets.
+TEST_P(ChromeBrowsingDataRemoverDelegateRelatedWebsiteSetsTest,
+       RemoveRelatedWebsiteSetsPermissions) {
+  HostContentSettingsMap* settings_map =
+      HostContentSettingsMapFactory::GetForProfile(GetProfile());
+
+  // Check that there are only default grants.
+  ASSERT_THAT(settings_map->GetSettingsForOneType(GetContentSettingsType()),
+              UnorderedElementsAre(kExpectedSettingDefault));
+
+  // Set grants.
+  settings_map->SetContentSettingDefaultScope(
+      GURL(kPrimaryUrl), GURL(kSecondaryUrl), GetContentSettingsType(),
+      CONTENT_SETTING_ALLOW, GetConstraints());
+  settings_map->SetContentSettingDefaultScope(
+      GURL(kUnrelatedPrimaryUrl), GURL(kUnrelatedSecondaryUrl),
+      GetContentSettingsType(), CONTENT_SETTING_ALLOW, GetConstraints());
+
+  // Check that the grants were set.
+  ASSERT_THAT(
+      settings_map->GetSettingsForOneType(GetContentSettingsType()),
+      UnorderedElementsAre(kExpectedSettingDefault, GetExpectedSetting(),
+                           GetExpectedUnrelatedSetting()));
+
+  RemoveRelatedWebsiteSetsPermissionsData();
+
+  if (IsRelatedWebsiteSetsGrant()) {
+    // Check that there's only the default and unrelated grants left.
+    EXPECT_THAT(settings_map->GetSettingsForOneType(GetContentSettingsType()),
+                UnorderedElementsAre(kExpectedSettingDefault,
+                                     GetExpectedUnrelatedSetting()));
+  } else {
+    // Check that none of the grants have been deleted.
+    EXPECT_THAT(
+        settings_map->GetSettingsForOneType(GetContentSettingsType()),
+        UnorderedElementsAre(kExpectedSettingDefault, GetExpectedSetting(),
+                             GetExpectedUnrelatedSetting()));
+  }
+}
+
+INSTANTIATE_TEST_SUITE_P(
+    All,
+    ChromeBrowsingDataRemoverDelegateRelatedWebsiteSetsTest,
+    testing::Combine(
+        testing::Bool(),  // IsRelatedWebsiteSetsGrant.
+        testing::Values(ContentSettingsType::STORAGE_ACCESS,
+                        ContentSettingsType::TOP_LEVEL_STORAGE_ACCESS),
+        testing::Values(FilterOrigins::kByPrimaryUrl,
+                        FilterOrigins::kBySecondaryUrl,
+                        FilterOrigins::kByBothUrls)));
