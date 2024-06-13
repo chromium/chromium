@@ -3549,31 +3549,8 @@ void StyleEngine::UpdateStyleForOutOfFlow(Element& element,
                                           const CSSPropertyValueSet* try_set,
                                           const TryTacticList& tactic_list,
                                           AnchorEvaluator* anchor_evaluator) {
-  // Note that we enter this function for any OOF element, not just those that
-  // use position-try-options. Therefore, it's important to return without
-  // doing style recalc when anchor positioning features are not in use.
-
   const CSSPropertyValueSet* try_tactics_set =
       try_value_flips_.FlipSet(tactic_list);
-
-  bool needs_update = try_set || try_tactics_set;
-
-  if (element.ComputedStyleRef().PositionAnchor() ||
-      element.ImplicitAnchorElement()) {
-    // anchor-center offsets may need to be updated since the layout of the
-    // anchor may have changed. anchor-center offsets are computed when a
-    // default anchor is present.
-    needs_update = true;
-  }
-  if (element.ComputedStyleRef().HasAnchorFunctions()) {
-    needs_update = true;
-  }
-
-  if (!needs_update) {
-    CHECK(!try_set);
-    CHECK(!try_tactics_set);
-    return;
-  }
 
   base::AutoReset<bool> pt_recalc(&in_position_try_style_recalc_, true);
 
