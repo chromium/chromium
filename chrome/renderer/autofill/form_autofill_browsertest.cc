@@ -32,6 +32,7 @@
 #include "components/autofill/core/common/form_field_data.h"
 #include "components/autofill/core/common/mojom/autofill_types.mojom-shared.h"
 #include "components/autofill/core/common/unique_ids.h"
+#include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/public/platform/web_string.h"
 #include "third_party/blink/public/platform/web_vector.h"
@@ -62,6 +63,12 @@ using blink::WebLocalFrame;
 using blink::WebSelectElement;
 using blink::WebString;
 using blink::WebVector;
+using testing::_;
+using testing::ElementsAre;
+using testing::Field;
+using testing::Optional;
+using testing::Pair;
+using testing::Property;
 
 namespace autofill::form_util {
 namespace {
@@ -2751,9 +2758,15 @@ TEST_F(FormAutofillTest, WebFormElementToFormData_TooManyFields) {
                                       .GetFormControlElements()
                                       .front()
                                       .DynamicTo<WebInputElement>();
-  EXPECT_FALSE(FindFormAndFieldForFormControlElement(
-      input_element, *base::MakeRefCounted<FieldDataManager>(),
-      {ExtractOption::kValue}));
+  EXPECT_THAT(
+      FindFormAndFieldForFormControlElement(
+          input_element, *base::MakeRefCounted<FieldDataManager>(),
+          {ExtractOption::kValue}),
+      Optional(Pair(
+          Property(&FormData::fields,
+                   ElementsAre(Property(&FormFieldData::renderer_id,
+                                        GetFieldRendererId(input_element)))),
+          _)));
 }
 
 // Tests that the `should_autocomplete` is set to false for all the fields when

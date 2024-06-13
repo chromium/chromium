@@ -25,6 +25,7 @@
 #include "base/metrics/field_trial.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/no_destructor.h"
+#include "base/not_fatal_until.h"
 #include "base/notreached.h"
 #include "base/numerics/safe_conversions.h"
 #include "base/ranges/algorithm.h"
@@ -2092,16 +2093,15 @@ void WebFormControlElementToFormField(
   if (field_data_manager &&
       field->properties_mask() & (FieldPropertiesFlags::kUserTyped |
                                   FieldPropertiesFlags::kAutofilled)) {
-    const std::u16string user_input =
-        field_data_manager->GetUserInput(GetFieldRendererId(element));
-
     // The typed value is preserved for all passwords. It is also preserved for
     // potential usernames and credit cards, as long as the |value| is not
     // deemed acceptable.
+    std::u16string user_input =
+        field_data_manager->GetUserInput(GetFieldRendererId(element));
     if (field->form_control_type() == FormControlType::kInputPassword ||
         !ScriptModifiedUsernameOrCreditCardNumberAcceptable(
             field->value(), user_input, *field_data_manager)) {
-      field->set_user_input(user_input.substr(0, kMaxStringLength));
+      field->set_user_input(std::move(user_input).substr(0, kMaxStringLength));
     }
   }
 }
@@ -2160,14 +2160,23 @@ FindFormAndFieldForFormControlElement(
   WebFormElement form_element = GetOwningForm(element);
   std::optional<FormData> form = ExtractFormData(
       document, form_element, field_data_manager, extract_options);
-  if (form) {
-    if (auto it =
-            base::ranges::find(form->fields(), GetFieldRendererId(element),
-                               &FormFieldData::renderer_id);
-        it != form->fields().end()) {
-      return std::make_optional(std::make_pair(std::move(*form), raw_ref(*it)));
-    }
+
+  if (!form) {
+    // If we couldn't extract the form, ignore the fields other than `element`.
+    // This gives Autocomplete and other handlers the chance to handle it.
+    FormFieldData field;
+    WebFormControlElementToFormField(form_util::GetOwningForm(element), element,
+                                     nullptr, extract_options, &field);
+    form.emplace();
+    form->set_fields({std::move(field)});
   }
+
+  if (auto it = base::ranges::find(form->fields(), GetFieldRendererId(element),
+                                   &FormFieldData::renderer_id);
+      it != form->fields().end()) {
+    return std::make_optional(std::make_pair(std::move(*form), raw_ref(*it)));
+  }
+  NOTREACHED(base::NotFatalUntil::M129);
   return std::nullopt;
 }
 

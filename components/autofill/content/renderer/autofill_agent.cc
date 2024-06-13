@@ -1295,26 +1295,13 @@ void AutofillAgent::QueryAutofillSuggestions(
   DCHECK(element.DynamicTo<WebInputElement>() ||
          form_util::IsTextAreaElement(element));
 
-  // TODO crbug.com/1007974 - Can we bake this into
-  // FindFormAndFieldForFormControlElement()?
   std::optional<FormAndField> form_and_field =
       form_util::FindFormAndFieldForFormControlElement(
           element, field_data_manager(),
           {form_util::ExtractOption::kDatalist,
            form_util::ExtractOption::kBounds});
   if (!form_and_field) {
-    // If we couldn't extract the form, at least let autocomplete have a shot at
-    // providing suggestions.
-    FormData form_for_single_field;
-    FormFieldData field;
-    form_util::WebFormControlElementToFormField(
-        form_util::GetOwningForm(element), element, nullptr,
-        {form_util::ExtractOption::kDatalist, form_util::ExtractOption::kValue,
-         form_util::ExtractOption::kBounds},
-        &field);
-    form_for_single_field.set_fields({std::move(field)});
-    form_and_field.emplace(std::move(form_for_single_field),
-                           raw_ref(form_for_single_field.fields().back()));
+    return;
   }
   auto& [form, field] = *form_and_field;
 

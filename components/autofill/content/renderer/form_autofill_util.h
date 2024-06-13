@@ -305,11 +305,11 @@ std::vector<blink::WebElement> GetWebElementsFromIdList(
     const blink::WebDocument& document,
     const blink::WebString& id_list);
 
-// Finds the field that represents `element`, and the form that contains
-// `element` and returns them. |extract_options| control what to extract beside
-// the default options which is {ExtractOption::kValue,
-// ExtractOption::kOptions}. Returns nullopt if the form is not found or cannot
-// be serialized.
+// Extracts the FormData that represents the form of `element`. If that form
+// cannot be extracted (e.g., because it is too large), falls back to a
+// single-field form that contains `element`. If however `element` is not
+// autofillable, returns nullopt.
+// The `extract_options` are implicitly augmented by {kValue, kOptions}.
 std::optional<std::pair<FormData, raw_ref<const FormFieldData>>>
 FindFormAndFieldForFormControlElement(
     const blink::WebFormControlElement& element,
