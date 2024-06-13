@@ -1,3 +1,10 @@
 # TODO(crbug.com/41492456): chooses a different safe-to-break offset than is
 # chosen on other platforms.
 -ShapeResultTest.AddUnsafeToBreakRtl
+
+# TODO(crbug.com/346852677): The below tests have been failing since
+# https://crrev.com/5534747.
+-HarfBuzzFaceTest.HarfBuzzGetNominalGlyph_TestVSOverrideVariantEmoji
+-HarfBuzzFaceTest.HarfBuzzGetNominalGlyph_TestVariantEmojiEmoji
+-HarfBuzzFaceTest.HarfBuzzGetNominalGlyph_TestVariantEmojiText
+-HarfBuzzFaceTest.HarfBuzzGetNominalGlyph_TestVariantEmojiUnicode
