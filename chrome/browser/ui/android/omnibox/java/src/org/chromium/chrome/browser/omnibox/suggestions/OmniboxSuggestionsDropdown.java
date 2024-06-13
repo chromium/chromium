@@ -488,6 +488,15 @@ public class OmniboxSuggestionsDropdown extends RecyclerView {
             return true;
         }
 
+        if (keyCode == KeyEvent.KEYCODE_TAB) {
+            boolean maybeProcessed = super.onKeyDown(keyCode, event);
+            if (maybeProcessed) return true;
+            if (event.isShiftPressed()) {
+                return mSelectionController.selectPreviousItem();
+            }
+            return mSelectionController.selectNextItem();
+        }
+
         if (KeyNavigationUtil.isGoDown(event)) {
             mSelectionController.selectNextItem();
             return true;

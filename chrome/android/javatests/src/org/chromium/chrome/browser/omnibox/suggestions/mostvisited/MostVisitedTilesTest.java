@@ -239,9 +239,9 @@ public class MostVisitedTilesTest {
         mOmnibox.sendKey(KeyEvent.KEYCODE_TAB);
         mOmnibox.checkText(equalTo(mMatch3.getUrl().getSpec()), null);
 
-        // Note: the carousel does not wrap around.
+        // Note: the carousel does not wrap around, and Tab takes user to the next suggestion.
         mOmnibox.sendKey(KeyEvent.KEYCODE_TAB);
-        mOmnibox.checkText(equalTo(mMatch3.getUrl().getSpec()), null);
+        mOmnibox.checkText(equalTo(SEARCH_QUERY), null);
     }
 
     @Test
@@ -259,9 +259,10 @@ public class MostVisitedTilesTest {
         mOmnibox.sendKey(KeyEvent.KEYCODE_TAB, KeyEvent.META_SHIFT_ON);
         mOmnibox.checkText(equalTo(mMatch1.getUrl().getSpec()), null);
 
-        // Note: the carousel does not wrap around.
+        // Note: the carousel does not wrap around, and Shift-Tab takes user to the previous
+        // suggestion.
         mOmnibox.sendKey(KeyEvent.KEYCODE_TAB, KeyEvent.META_SHIFT_ON);
-        mOmnibox.checkText(equalTo(mMatch1.getUrl().getSpec()), null);
+        mOmnibox.checkText(equalTo(START_PAGE_LOCATION), null);
     }
 
     @Test

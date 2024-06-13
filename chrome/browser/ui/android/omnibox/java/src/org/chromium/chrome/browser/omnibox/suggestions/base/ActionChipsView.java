@@ -65,11 +65,10 @@ public class ActionChipsView extends RecyclerView {
     public boolean onKeyDown(int keyCode, KeyEvent event) {
         if (event.getKeyCode() == KeyEvent.KEYCODE_TAB) {
             if (event.isShiftPressed()) {
-                mSelectionController.selectPreviousItem();
+                return mSelectionController.selectPreviousItem();
             } else {
-                mSelectionController.selectNextItem();
+                return mSelectionController.selectNextItem();
             }
-            return true;
         } else if (KeyNavigationUtil.isEnter(event)) {
             var chip = mSelectionController.getSelectedView();
             if (chip != null) return chip.performClick();

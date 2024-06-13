@@ -35,6 +35,7 @@ import org.mockito.junit.MockitoRule;
 
 import org.chromium.base.ContextUtils;
 import org.chromium.base.test.BaseRobolectricTestRunner;
+import org.chromium.chrome.browser.omnibox.suggestions.RecyclerViewSelectionController;
 import org.chromium.chrome.browser.omnibox.test.R;
 
 /** Tests for {@link BaseSuggestionView}. */
@@ -78,10 +79,19 @@ public class BaseSuggestionViewUnitTest {
     }
 
     @Test
-    public void onKeyDown_actionButtonKeysAreConsumed() {
+    public void onKeyDown_actionButtonKeysAreConsumedIfActionsArePresent() {
+        var controller = mock(RecyclerViewSelectionController.class);
+        mView.actionChipsView.setSelectionControllerForTesting(controller);
+
+        // Simulate Actions consuming key stroke.
+        doReturn(true).when(controller).selectNextItem();
         assertTrue(sendKey(KeyEvent.KEYCODE_TAB));
-        verifyNoMoreInteractions(mOnClickListener, mOnLongClickListener);
         verify(mView, never()).super_onKeyDown(anyInt(), any());
+
+        // Simulate Actions rejecting key stroke.
+        doReturn(false).when(controller).selectNextItem();
+        assertFalse(sendKey(KeyEvent.KEYCODE_TAB));
+        verify(mView).super_onKeyDown(anyInt(), any());
     }
 
     @Test

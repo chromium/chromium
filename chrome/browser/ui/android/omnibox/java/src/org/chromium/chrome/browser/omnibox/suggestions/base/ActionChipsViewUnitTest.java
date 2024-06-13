@@ -46,11 +46,15 @@ public class ActionChipsViewUnitTest {
         installAdapter();
 
         var event = new KeyEvent(KeyEvent.ACTION_DOWN, KeyEvent.KEYCODE_TAB);
+
+        doReturn(true).when(mController).selectNextItem();
         assertTrue(event.dispatch(mView));
+        verify(mController, times(1)).selectNextItem();
+        verifyNoMoreInteractions(mController);
+        clearInvocations(mController);
 
-        verify(mView, times(1)).onKeyDown(event.getKeyCode(), event);
-        verifyNoMoreInteractions(mView);
-
+        doReturn(false).when(mController).selectNextItem();
+        assertFalse(event.dispatch(mView));
         verify(mController, times(1)).selectNextItem();
         verifyNoMoreInteractions(mController);
     }
@@ -67,11 +71,16 @@ public class ActionChipsViewUnitTest {
                         KeyEvent.KEYCODE_TAB,
                         0,
                         KeyEvent.META_SHIFT_ON);
+
+        doReturn(true).when(mController).selectPreviousItem();
         assertTrue(event.dispatch(mView));
+        verify(mController, times(1)).selectPreviousItem();
+        verifyNoMoreInteractions(mController);
 
-        verify(mView, times(1)).onKeyDown(event.getKeyCode(), event);
-        verifyNoMoreInteractions(mView);
+        clearInvocations(mController);
 
+        doReturn(false).when(mController).selectPreviousItem();
+        assertFalse(event.dispatch(mView));
         verify(mController, times(1)).selectPreviousItem();
         verifyNoMoreInteractions(mController);
     }
