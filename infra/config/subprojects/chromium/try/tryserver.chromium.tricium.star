@@ -6,7 +6,7 @@
 load("//lib/builders.star", "os", "siso")
 load("//lib/consoles.star", "consoles")
 load("//lib/gn_args.star", "gn_args")
-load("//lib/try.star", "SOURCELESS_BUILDER_CACHES", "try_")
+load("//lib/try.star", "SOURCELESS_BUILDER_CACHE", "try_")
 load("//lib/xcode.star", "xcode")
 
 try_.defaults.set(
@@ -45,7 +45,7 @@ try_.builder(
     cores = try_.defaults.orchestrator_cores.get(),
     os = os.LINUX_DEFAULT,
     # src checkouts are only required by bots spawned by this builder.
-    caches = SOURCELESS_BUILDER_CACHES,
+    caches = [SOURCELESS_BUILDER_CACHE],
 )
 
 # Clang-tidy builders potentially spawned by the `tricium-clang-tidy`
