@@ -15,12 +15,14 @@
 #include "base/containers/queue.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/threading/thread_checker.h"
+#include "base/timer/timer.h"
 #include "device/bluetooth/bluetooth_adapter.h"
 #include "device/bluetooth/bluetooth_socket.h"
 #include "device/bluetooth/public/cpp/bluetooth_uuid.h"
 
 @class BluetoothRfcommConnectionListener;
 @class BluetoothL2capConnectionListener;
+@class SDPQueryListener;
 
 namespace net {
 class IOBuffer;
@@ -109,6 +111,9 @@ class BluetoothSocketMac : public BluetoothSocket {
   void OnChannelDataReceived(void* data, size_t length);
   void OnChannelWriteComplete(void* refcon, IOReturn status);
 
+  void OnChannelOpeningTimeout();
+  void OnSDPQueryTimeout();
+
  private:
   struct AcceptRequest {
     AcceptRequest();
@@ -168,6 +173,7 @@ class BluetoothSocketMac : public BluetoothSocket {
   // |this| profile.
   BluetoothRfcommConnectionListener* __strong rfcomm_connection_listener_;
   BluetoothL2capConnectionListener* __strong l2cap_connection_listener_;
+  SDPQueryListener* __strong sdp_query_listener_;
 
   // The service record registered in the system SDP server, used to
   // eventually unregister the service.
@@ -194,6 +200,9 @@ class BluetoothSocketMac : public BluetoothSocket {
 
   // Queue of incoming connections.
   base::queue<std::unique_ptr<BluetoothChannelMac>> accept_queue_;
+
+  // One shot timer for detecting SDP query or channel opening timeout.
+  base::OneShotTimer timer_;
 };
 
 }  // namespace device

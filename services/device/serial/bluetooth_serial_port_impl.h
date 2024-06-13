@@ -75,10 +75,8 @@ class BluetoothSerialPortImpl : public mojom::SerialPort {
   void ReadMore();
   void WriteMore();
 
-  void OnSocketConnected(OpenCallback callback,
-                         scoped_refptr<BluetoothSocket> socket);
-  void OnSocketConnectedError(OpenCallback callback,
-                              const std::string& message);
+  void OnSocketConnected(scoped_refptr<BluetoothSocket> socket);
+  void OnSocketConnectedError(const std::string& message);
 
   void OnBluetoothSocketReceive(int num_bytes_received,
                                 scoped_refptr<net::IOBuffer> receive_buffer);
@@ -125,6 +123,9 @@ class BluetoothSerialPortImpl : public mojom::SerialPort {
   scoped_refptr<net::IOBuffer> receive_buffer_;
 
   mojom::SerialConnectionOptionsPtr options_;
+
+  // Callback for the ongoing connect socket request.
+  OpenCallback open_callback_;
 
   SEQUENCE_CHECKER(sequence_checker_);
 

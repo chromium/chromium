@@ -13,6 +13,7 @@
 #include "base/containers/span.h"
 #include "base/functional/callback_helpers.h"
 #include "base/numerics/safe_conversions.h"
+#include "components/device_event_log/device_event_log.h"
 #include "mojo/public/cpp/system/data_pipe.h"
 #include "net/base/io_buffer.h"
 #include "services/device/public/cpp/bluetooth/bluetooth_utils.h"
@@ -61,6 +62,11 @@ BluetoothSerialPortImpl::BluetoothSerialPortImpl(
 }
 
 BluetoothSerialPortImpl::~BluetoothSerialPortImpl() {
+  if (open_callback_) {
+    BLUETOOTH_LOG(ERROR) << "Callback pending at destruction: address: "
+                         << address_;
+    std::move(open_callback_).Run(mojo::NullRemote());
+  }
   if (bluetooth_socket_)
     bluetooth_socket_->Disconnect(base::DoNothing());
 }
@@ -75,19 +81,16 @@ void BluetoothSerialPortImpl::OpenSocket(const BluetoothUUID& service_class_id,
     return;
   }
 
-  auto split_callback = base::SplitOnceCallback(std::move(callback));
+  open_callback_ = std::move(callback);
   device->ConnectToService(
       service_class_id,
       base::BindOnce(&BluetoothSerialPortImpl::OnSocketConnected,
-                     weak_ptr_factory_.GetWeakPtr(),
-                     std::move(split_callback.first)),
+                     weak_ptr_factory_.GetWeakPtr()),
       base::BindOnce(&BluetoothSerialPortImpl::OnSocketConnectedError,
-                     weak_ptr_factory_.GetWeakPtr(),
-                     std::move(split_callback.second)));
+                     weak_ptr_factory_.GetWeakPtr()));
 }
 
 void BluetoothSerialPortImpl::OnSocketConnected(
-    OpenCallback callback,
     scoped_refptr<BluetoothSocket> socket) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   DCHECK(socket);
@@ -97,14 +100,15 @@ void BluetoothSerialPortImpl::OnSocketConnected(
   receiver_.set_disconnect_handler(
       base::BindOnce([](BluetoothSerialPortImpl* self) { delete self; },
                      base::Unretained(this)));
-  std::move(callback).Run(std::move(port));
+  std::move(open_callback_).Run(std::move(port));
 }
 
 void BluetoothSerialPortImpl::OnSocketConnectedError(
-    OpenCallback callback,
     const std::string& message) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  std::move(callback).Run(mojo::NullRemote());
+  BLUETOOTH_LOG(ERROR) << "Failed to connect socket: address: " << address_
+                       << ", message: " << message;
+  std::move(open_callback_).Run(mojo::NullRemote());
   delete this;
 }
 
