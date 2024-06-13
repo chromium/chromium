@@ -6,8 +6,15 @@
 
 #import "components/browsing_data/core/browsing_data_utils.h"
 #import "components/browsing_data/core/pref_names.h"
+#import "components/strings/grit/components_strings.h"
+#import "components/sync/base/command_line_switches.h"
+#import "ios/chrome/browser/signin/model/fake_system_identity.h"
+#import "ios/chrome/browser/ui/authentication/signin_earl_grey.h"
+#import "ios/chrome/browser/ui/authentication/signin_earl_grey_ui_test_util.h"
+#import "ios/chrome/browser/ui/autofill/autofill_app_interface.h"
 #import "ios/chrome/browser/ui/settings/cells/clear_browsing_data_constants.h"
 #import "ios/chrome/browser/ui/settings/clear_browsing_data/features.h"
+#import "ios/chrome/browser/ui/settings/password/password_settings_app_interface.h"
 #import "ios/chrome/common/ui/confirmation_alert/constants.h"
 #import "ios/chrome/grit/ios_strings.h"
 #import "ios/chrome/test/earl_grey/chrome_earl_grey.h"
@@ -15,6 +22,7 @@
 #import "ios/chrome/test/earl_grey/chrome_matchers.h"
 #import "ios/chrome/test/earl_grey/chrome_test_case.h"
 #import "ios/testing/earl_grey/earl_grey_test.h"
+#import "net/base/apple/url_conversions.h"
 #import "ui/base/l10n/l10n_util_mac.h"
 
 namespace {
@@ -24,6 +32,12 @@ using chrome_test_util::ContainsPartialText;
 using chrome_test_util::ContextMenuItemWithAccessibilityLabel;
 using chrome_test_util::SettingsMenuPrivacyButton;
 
+// Constant for timeout while waiting for asynchronous sync operations.
+constexpr base::TimeDelta kSyncOperationTimeout = base::Seconds(10);
+
+// GURL inserted into the history service to mock history entries.
+const GURL mockURL("http://not-a-real-site.test/");
+
 }  // namespace
 
 // Tests the Quick Delete UI, the new version of Delete Browsing Data.
@@ -32,10 +46,28 @@ using chrome_test_util::SettingsMenuPrivacyButton;
 
 @implementation QuickDeleteTestCase
 
+- (void)setUp {
+  [super setUp];
+  [AutofillAppInterface clearCreditCardStore];
+  [PasswordSettingsAppInterface clearPasswordStores];
+  [ChromeEarlGrey clearBrowsingHistory];
+  [ChromeEarlGrey resetBrowsingDataPrefs];
+}
+
+- (void)tearDown {
+  [AutofillAppInterface clearCreditCardStore];
+  [PasswordSettingsAppInterface clearPasswordStores];
+  [ChromeEarlGrey clearBrowsingHistory];
+  [ChromeEarlGrey resetBrowsingDataPrefs];
+  [super tearDown];
+}
+
 - (AppLaunchConfiguration)appConfigurationForTestCase {
   AppLaunchConfiguration config;
   config.relaunch_policy = NoForceRelaunchAndResetState;
   config.features_enabled.push_back(kIOSQuickDelete);
+  config.additional_args.push_back(std::string("--") +
+                                   syncer::kSyncShortNudgeDelayForTest);
   return config;
 }
 
@@ -58,6 +90,20 @@ using chrome_test_util::SettingsMenuPrivacyButton;
                                    l10n_util::GetNSString(
                                        IDS_IOS_CLEAR_BROWSING_DATA_TITLE))]
       performAction:grey_tap()];
+
+  // Wait for the summary to be loaded.
+  [ChromeEarlGrey waitForUIElementToDisappearWithMatcher:
+                      grey_text(l10n_util::GetNSString(
+                          IDS_CLEAR_BROWSING_DATA_CALCULATING))];
+}
+
+- (void)signInAndEnableHistorySync {
+  FakeSystemIdentity* fakeIdentity = [FakeSystemIdentity fakeIdentity1];
+  [SigninEarlGrey addFakeIdentity:fakeIdentity];
+  [SigninEarlGreyUI signinWithFakeIdentity:fakeIdentity enableHistorySync:YES];
+
+  [ChromeEarlGrey
+      waitForSyncTransportStateActiveWithTimeout:kSyncOperationTimeout];
 }
 
 // Returns a matcher for the title of the Quick Delete bottom sheet.
@@ -198,6 +244,9 @@ using chrome_test_util::SettingsMenuPrivacyButton;
 // Tests that the number of browsing history items is shown on the browsing data
 // row when browsing history is selected as a data type to be deleted.
 - (void)testBrowsingHistoryForDeletion {
+  // Add entry to the history service.
+  [ChromeEarlGrey addHistoryServiceTypedURL:mockURL];
+
   // Set pref to select deletion of browsing history.
   [ChromeEarlGrey setBoolValue:true
                    forUserPref:browsing_data::prefs::kDeleteBrowsingHistory];
@@ -213,18 +262,55 @@ using chrome_test_util::SettingsMenuPrivacyButton;
   [[EarlGrey selectElementWithMatcher:grey_text(l10n_util::GetNSString(
                                           IDS_IOS_DELETE_BROWSING_DATA_TITLE))]
       assertWithMatcher:grey_sufficientlyVisible()];
-
-  // TODO(crbug.com/341097601): Use the actual number of sites that could be
-  // deleted for the selected time frame.
   [[EarlGrey selectElementWithMatcher:
                  ContainsPartialText(l10n_util::GetPluralNSStringF(
-                     IDS_IOS_DELETE_BROWSING_DATA_SUMMARY_SITES, 2))]
+                     IDS_IOS_DELETE_BROWSING_DATA_SUMMARY_SITES, 1))]
       assertWithMatcher:grey_sufficientlyVisible()];
+}
+
+// Tests that the number of browsing history items is shown on the browsing data
+// row when browsing history is selected as a data type to be deleted and when
+// the user syncs history.
+- (void)testBrowsingHistoryForDeletionWithHistorySync {
+  // Sign in and enable history sync.
+  [self signInAndEnableHistorySync];
+
+  // Add entry to the history service and wait for it to show up on the server.
+  [ChromeEarlGrey addHistoryServiceTypedURL:mockURL];
+  [ChromeEarlGrey waitForSyncServerHistoryURLs:@[ net::NSURLWithGURL(mockURL) ]
+                                       timeout:kSyncOperationTimeout];
+
+  // Set pref to select deletion of browsing history.
+  [ChromeEarlGrey setBoolValue:true
+                   forUserPref:browsing_data::prefs::kDeleteBrowsingHistory];
+
+  [self openQuickDeleteFromThreeDotMenu];
+
+  // Check that Quick Delete is presented.
+  [[EarlGrey selectElementWithMatcher:[self quickDeleteTitle]]
+      assertWithMatcher:grey_notNil()];
+
+  // Check that the browsing data row and the browsing history substring are
+  // presented.
+  [[EarlGrey selectElementWithMatcher:grey_text(l10n_util::GetNSString(
+                                          IDS_IOS_DELETE_BROWSING_DATA_TITLE))]
+      assertWithMatcher:grey_sufficientlyVisible()];
+  [[EarlGrey selectElementWithMatcher:
+                 ContainsPartialText(l10n_util::GetPluralNSStringF(
+                     IDS_IOS_DELETE_BROWSING_DATA_SUMMARY_SITES_SYNCED, 1))]
+      assertWithMatcher:grey_sufficientlyVisible()];
+
+  // Swipe the bottom sheet down.
+  [[EarlGrey selectElementWithMatcher:[self quickDeleteTitle]]
+      performAction:grey_swipeFastInDirection(kGREYDirectionDown)];
 }
 
 // Tests that the number of browsing history items is not shown on the browsing
 // data row when browsing history is not selected as a data type to be deleted.
 - (void)testKeepBrowsingHistory {
+  // Add entry to the history service.
+  [ChromeEarlGrey addHistoryServiceTypedURL:mockURL];
+
   // Set pref to keep browsing history.
   [ChromeEarlGrey setBoolValue:false
                    forUserPref:browsing_data::prefs::kDeleteBrowsingHistory];
@@ -240,9 +326,6 @@ using chrome_test_util::SettingsMenuPrivacyButton;
   [[EarlGrey selectElementWithMatcher:grey_text(l10n_util::GetNSString(
                                           IDS_IOS_DELETE_BROWSING_DATA_TITLE))]
       assertWithMatcher:grey_sufficientlyVisible()];
-
-  // TODO(crbug.com/341097601): Use the actual number of sites that could be
-  // deleted for the selected time frame.
   [[EarlGrey selectElementWithMatcher:
                  ContainsPartialText(l10n_util::GetPluralNSStringF(
                      IDS_IOS_DELETE_BROWSING_DATA_SUMMARY_SITES, 2))]
@@ -346,6 +429,11 @@ using chrome_test_util::SettingsMenuPrivacyButton;
 // Tests that the number of passwords is shown on the browsing data row if
 // passwords is selected as a data type to be deleted.
 - (void)testPasswordsForDeletion {
+  // Add password to password autofill store.
+  int kPasswordCount = 1;
+  [PasswordSettingsAppInterface
+      saveExamplePasswordToProfileWithCount:kPasswordCount];
+
   // Set pref to select deletion of passwords.
   [ChromeEarlGrey setBoolValue:true
                    forUserPref:browsing_data::prefs::kDeletePasswords];
@@ -361,17 +449,21 @@ using chrome_test_util::SettingsMenuPrivacyButton;
                                           IDS_IOS_DELETE_BROWSING_DATA_TITLE))]
       assertWithMatcher:grey_sufficientlyVisible()];
 
-  // TODO(crbug.com/341097601): Use the actual number of passwords that could
-  // be deleted for the selected time frame.
-  [[EarlGrey selectElementWithMatcher:
-                 ContainsPartialText(l10n_util::GetPluralNSStringF(
-                     IDS_IOS_DELETE_BROWSING_DATA_SUMMARY_PASSWORDS, 1))]
+  [[EarlGrey
+      selectElementWithMatcher:
+          ContainsPartialText(l10n_util::GetPluralNSStringF(
+              IDS_IOS_DELETE_BROWSING_DATA_SUMMARY_PASSWORDS, kPasswordCount))]
       assertWithMatcher:grey_sufficientlyVisible()];
 }
 
 // Tests that the number of passwords is not shown on the browsing data row if
 // passwords is not selected as a data type to be deleted.
 - (void)testKeepPasswords {
+  // Save a card to the payments data manager.
+  int kPasswordCount = 1;
+  [PasswordSettingsAppInterface
+      saveExamplePasswordToProfileWithCount:kPasswordCount];
+
   // Set pref to keep passwords.
   [ChromeEarlGrey setBoolValue:false
                    forUserPref:browsing_data::prefs::kDeletePasswords];
@@ -388,17 +480,18 @@ using chrome_test_util::SettingsMenuPrivacyButton;
                                           IDS_IOS_DELETE_BROWSING_DATA_TITLE))]
       assertWithMatcher:grey_sufficientlyVisible()];
 
-  // TODO(crbug.com/341097601): Use the actual number of passwords that could
-  // be deleted for the selected time frame.
   [[EarlGrey selectElementWithMatcher:
                  ContainsPartialText(l10n_util::GetPluralNSStringF(
-                     IDS_IOS_DELETE_BROWSING_DATA_SUMMARY_PASSWORDS, 1))]
-      assertWithMatcher:grey_nil()];
+                     IDS_IOS_DELETE_BROWSING_DATA_SUMMARY_PASSWORDS,
+                     kPasswordCount))] assertWithMatcher:grey_nil()];
 }
 
-// Tests that the number of form data items is shown on the browsing data row if
-// form data is selected as a data type to be deleted.
-- (void)testFormDataForDeletion {
+// Tests that the number of cards is shown on the browsing data row if form data
+// is selected as a data type to be deleted.
+- (void)testCardsForDeletion {
+  // Save a card to the payments data manager.
+  [AutofillAppInterface saveLocalCreditCard];
+
   // Set pref to select deletion of form data.
   [ChromeEarlGrey setBoolValue:true
                    forUserPref:browsing_data::prefs::kDeleteFormData];
@@ -413,18 +506,18 @@ using chrome_test_util::SettingsMenuPrivacyButton;
   [[EarlGrey selectElementWithMatcher:grey_text(l10n_util::GetNSString(
                                           IDS_IOS_DELETE_BROWSING_DATA_TITLE))]
       assertWithMatcher:grey_sufficientlyVisible()];
-
-  // TODO(crbug.com/341097601): Use the actual number of form data that could
-  // be deleted for the selected time frame.
   [[EarlGrey selectElementWithMatcher:
                  ContainsPartialText(l10n_util::GetPluralNSStringF(
-                     IDS_IOS_DELETE_BROWSING_DATA_SUMMARY_AUTOFILL_DATA, 5))]
+                     IDS_IOS_DELETE_BROWSING_DATA_SUMMARY_CARDS, 1))]
       assertWithMatcher:grey_sufficientlyVisible()];
 }
 
-// Tests that the number of form data items is not shown on the browsing data
-// row if form data is not selected as a data type to be deleted.
-- (void)testKeepFormData {
+// Tests that the number of cards is not shown on the browsing data row if form
+// data is not selected as a data type to be deleted.
+- (void)testKeepCards {
+  // Save a card.
+  [AutofillAppInterface saveLocalCreditCard];
+
   // Set pref to keep form data.
   [ChromeEarlGrey setBoolValue:false
                    forUserPref:browsing_data::prefs::kDeleteFormData];
@@ -440,12 +533,9 @@ using chrome_test_util::SettingsMenuPrivacyButton;
   [[EarlGrey selectElementWithMatcher:grey_text(l10n_util::GetNSString(
                                           IDS_IOS_DELETE_BROWSING_DATA_TITLE))]
       assertWithMatcher:grey_sufficientlyVisible()];
-
-  // TODO(crbug.com/341097601): Use the actual number of form data that could
-  // be deleted for the selected time frame.
   [[EarlGrey selectElementWithMatcher:
                  ContainsPartialText(l10n_util::GetPluralNSStringF(
-                     IDS_IOS_DELETE_BROWSING_DATA_SUMMARY_AUTOFILL_DATA, 5))]
+                     IDS_IOS_DELETE_BROWSING_DATA_SUMMARY_CARDS, 1))]
       assertWithMatcher:grey_nil()];
 }
 

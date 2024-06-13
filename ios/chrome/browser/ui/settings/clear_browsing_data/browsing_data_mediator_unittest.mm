@@ -1,0 +1,457 @@
+// Copyright 2024 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+#import "ios/chrome/browser/ui/settings/clear_browsing_data/browsing_data_mediator.h"
+
+#import "base/apple/foundation_util.h"
+#import "components/browsing_data/core/browsing_data_utils.h"
+#import "components/browsing_data/core/counters/autofill_counter.h"
+#import "components/browsing_data/core/counters/history_counter.h"
+#import "components/browsing_data/core/counters/passwords_counter.h"
+#import "components/browsing_data/core/pref_names.h"
+#import "components/history/core/browser/history_service.h"
+#import "components/keyed_service/core/service_access_type.h"
+#import "components/password_manager/core/browser/password_store/mock_password_store_interface.h"
+#import "components/prefs/pref_service.h"
+#import "components/strings/grit/components_strings.h"
+#import "ios/chrome/browser/history/model/history_service_factory.h"
+#import "ios/chrome/browser/shared/model/browser_state/test_chrome_browser_state.h"
+#import "ios/chrome/browser/shared/model/prefs/browser_prefs.h"
+#import "ios/chrome/browser/ui/settings/clear_browsing_data/browsing_data_consumer.h"
+#import "ios/chrome/browser/ui/settings/clear_browsing_data/fake_browsing_data_counter_wrapper_producer.h"
+#import "ios/chrome/grit/ios_strings.h"
+#import "ios/chrome/test/ios_chrome_scoped_testing_local_state.h"
+#import "ios/web/public/test/web_task_environment.h"
+#import "testing/gtest/include/gtest/gtest.h"
+#import "testing/gtest_mac.h"
+#import "testing/platform_test.h"
+#import "third_party/ocmock/OCMock/OCMock.h"
+#import "third_party/ocmock/gtest_support.h"
+#import "ui/base/l10n/l10n_util_mac.h"
+
+// Unittests for the Browsing Data Mediator, namely for testing the construction
+// of the summaries that rely on counters for the several browsing data types
+// that could be deleted in Quick Delete.
+class BrowsingDataMediatorTest : public PlatformTest {
+ public:
+  BrowsingDataMediatorTest() {
+    TestChromeBrowserState::Builder builder;
+    builder.AddTestingFactory(ios::HistoryServiceFactory::GetInstance(),
+                              ios::HistoryServiceFactory::GetDefaultFactory());
+    browser_state_ = builder.Build();
+
+    history_service_ = ios::HistoryServiceFactory::GetForBrowserState(
+        browser_state_.get(), ServiceAccessType::EXPLICIT_ACCESS);
+
+    password_store_ =
+        new testing::NiceMock<password_manager::MockPasswordStoreInterface>();
+
+    // Reset prefs related to quick delete so tests start with the same state
+    // every time.
+    resetQuickDeletePrefs();
+
+    consumer_ = OCMStrictProtocolMock(@protocol(BrowsingDataConsumer));
+    OCMStub([consumer_ setTimeRange:browsing_data::TimePeriod::LAST_HOUR])
+        .andDo(nil);
+    OCMStub(
+        [consumer_
+            setBrowsingDataSummary:l10n_util::GetNSString(
+                                       IDS_CLEAR_BROWSING_DATA_CALCULATING)])
+        .andDo(nil);
+
+    fake_browsing_data_counter_wrapper_producer_ =
+        [[FakeBrowsingDataCounterWrapperProducer alloc]
+            initWithBrowserState:browser_state_.get()];
+
+    mediator_ = [[BrowsingDataMediator alloc]
+                             initWithPrefs:browser_state_.get()->GetPrefs()
+        browsingDataCounterWrapperProducer:
+            fake_browsing_data_counter_wrapper_producer_];
+  }
+
+  ~BrowsingDataMediatorTest() override {
+    resetQuickDeletePrefs();
+
+    mediator_.consumer = nil;
+    [mediator_ disconnect];
+    mediator_ = nil;
+
+    history_service_ = nil;
+
+    task_environment_.RunUntilIdle();
+
+    password_store_->ShutdownOnUIThread();
+    password_store_ = nil;
+
+    browser_state_ = nil;
+  }
+
+  PrefService* prefs() { return browser_state_->GetPrefs(); }
+
+  void resetQuickDeletePrefs() {
+    prefs()->SetInteger(browsing_data::prefs::kDeleteTimePeriod,
+                        static_cast<int>(browsing_data::TimePeriod::LAST_HOUR));
+    prefs()->SetBoolean(browsing_data::prefs::kDeleteBrowsingHistory, false);
+    prefs()->SetBoolean(browsing_data::prefs::kDeleteCookies, false);
+    prefs()->SetBoolean(browsing_data::prefs::kDeleteCache, false);
+    prefs()->SetBoolean(browsing_data::prefs::kDeletePasswords, false);
+    prefs()->SetBoolean(browsing_data::prefs::kDeleteFormData, false);
+  }
+
+  // Triggers the history callback passed to
+  // `FakeBrowsingDataCounterWrapperProducer` with a `HistoryResult` with
+  // `num_history_items`.
+  void triggerUpdateUICallbackForHistoryResults(int num_history_items) {
+    // Add stub counter result for browsing history.
+    browsing_data::HistoryCounter historyCounter(
+        history_service_,
+        browsing_data::HistoryCounter::GetUpdatedWebHistoryServiceCallback(),
+        nullptr);
+    // Initialize the counter in advanced tab so the correct pref name is
+    // returned.
+    historyCounter.Init(prefs(), browsing_data::ClearBrowsingDataTab::ADVANCED,
+                        browsing_data::BrowsingDataCounter::ResultCallback());
+    const browsing_data::HistoryCounter::HistoryResult historyResult(
+        &historyCounter, num_history_items, false, false);
+    [fake_browsing_data_counter_wrapper_producer_
+        triggerUpdateUICallbackForResult:historyResult];
+  }
+
+  // Triggers the passwords callback passed to
+  // `FakeBrowsingDataCounterWrapperProducer` with a `PasswordsResult` with
+  // `num_passwords`.
+  void triggerUpdateUICallbackForPasswordsResults(int num_passwords) {
+    // Add stub counter result for Passwords.
+    browsing_data::PasswordsCounter passwordsCounter(password_store_.get(),
+                                                     nullptr, nullptr, nullptr);
+    const browsing_data::PasswordsCounter::PasswordsResult passwordsResult(
+        &passwordsCounter, num_passwords, 0, 0, std::vector<std::string>(),
+        std::vector<std::string>());
+    [fake_browsing_data_counter_wrapper_producer_
+        triggerUpdateUICallbackForResult:passwordsResult];
+  }
+
+  // Triggers the autofill callback passed to
+  // `FakeBrowsingDataCounterWrapperProducer` with an `AutofillResult` with
+  // `num_suggestions`, `num_cards` and `num_addresses`.
+  void triggerUpdateUICallbackForAutofillResults(int num_suggestions,
+                                                 int num_cards,
+                                                 int num_addresses) {
+    browsing_data::AutofillCounter autofillCounter(nullptr, nullptr);
+    const browsing_data::AutofillCounter::AutofillResult autofillResult(
+        &autofillCounter, num_suggestions, num_cards, num_addresses, false);
+    [fake_browsing_data_counter_wrapper_producer_
+        triggerUpdateUICallbackForResult:autofillResult];
+  }
+
+ protected:
+  web::WebTaskEnvironment task_environment_;
+  std::unique_ptr<TestChromeBrowserState> browser_state_;
+  BrowsingDataMediator* mediator_;
+  id consumer_;
+  history::HistoryService* history_service_;
+  scoped_refptr<password_manager::MockPasswordStoreInterface> password_store_;
+  FakeBrowsingDataCounterWrapperProducer*
+      fake_browsing_data_counter_wrapper_producer_;
+};
+
+// Tests the construction of the browsing history summary with different inputs.
+TEST_F(BrowsingDataMediatorTest, TestBrowsingHistorySummary) {
+  // Select browsing history for deletion.
+  prefs()->SetBoolean(browsing_data::prefs::kDeleteBrowsingHistory, true);
+
+  // Trigger creating the counters for browsing data types.
+  mediator_.consumer = consumer_;
+
+  // Trigger the callback for data types not in test. The summary is only
+  // dispatches if all counters have returned.
+  triggerUpdateUICallbackForPasswordsResults(0);
+  triggerUpdateUICallbackForAutofillResults(0, 0, 0);
+
+  // clang-format off
+    const struct TestCase {
+        int num_sites;
+        bool sync_enabled;
+        NSString* expected_output;
+    } kTestCases[] = {
+        {0, true, @""},
+        {0, false, @""},
+        {1, true, l10n_util::GetPluralNSStringF(
+                   IDS_IOS_DELETE_BROWSING_DATA_SUMMARY_SITES_SYNCED, 1)},
+        {1, false, l10n_util::GetPluralNSStringF(
+                   IDS_IOS_DELETE_BROWSING_DATA_SUMMARY_SITES, 1)},
+        {2, true, l10n_util::GetPluralNSStringF(
+                   IDS_IOS_DELETE_BROWSING_DATA_SUMMARY_SITES_SYNCED, 2)},
+        {2, false, l10n_util::GetPluralNSStringF(
+                   IDS_IOS_DELETE_BROWSING_DATA_SUMMARY_SITES, 2)},
+    };
+  // clang-format on
+
+  browsing_data::HistoryCounter counter(
+      history_service_,
+      browsing_data::HistoryCounter::GetUpdatedWebHistoryServiceCallback(),
+      nullptr);
+  // Initialize the counter in advanced tab so the correct pref name is
+  // returned.
+  counter.Init(prefs(), browsing_data::ClearBrowsingDataTab::ADVANCED,
+               browsing_data::BrowsingDataCounter::ResultCallback());
+
+  for (const TestCase& test_case : kTestCases) {
+    const browsing_data::HistoryCounter::HistoryResult result(
+        &counter, test_case.num_sites, test_case.sync_enabled,
+        test_case.sync_enabled);
+    OCMExpect([consumer_ setBrowsingDataSummary:test_case.expected_output]);
+    [fake_browsing_data_counter_wrapper_producer_
+        triggerUpdateUICallbackForResult:result];
+    EXPECT_OCMOCK_VERIFY(consumer_);
+  }
+}
+
+// Tests the construction of the passwords summary with different inputs.
+TEST_F(BrowsingDataMediatorTest, TestPasswordsSummary) {
+  // Select passwords for deletion.
+  prefs()->SetBoolean(browsing_data::prefs::kDeletePasswords, true);
+
+  // Trigger creating the counters for browsing data types.
+  mediator_.consumer = consumer_;
+
+  // Trigger the callback for data types not in test. The summary is only
+  // dispatches if all counters have returned.
+  triggerUpdateUICallbackForHistoryResults(0);
+  triggerUpdateUICallbackForAutofillResults(0, 0, 0);
+
+  // clang-format off
+    const struct TestCase {
+        int num_profile_passwords;
+        int num_account_passwords;
+        bool sync_enabled;
+        NSString* expected_output;
+    } kTestCases[] = {
+        {0, 0, true, @""},
+        {0, 0, false, @""},
+        {1, 1, true, l10n_util::GetPluralNSStringF(
+                   IDS_IOS_DELETE_BROWSING_DATA_SUMMARY_PASSWORDS_SYNCED,
+                   2)},
+        {1, 1, false, l10n_util::GetPluralNSStringF(
+                   IDS_IOS_DELETE_BROWSING_DATA_SUMMARY_PASSWORDS_SYNCED,
+                   2)},
+        {2, 0, true, l10n_util::GetPluralNSStringF(
+                   IDS_IOS_DELETE_BROWSING_DATA_SUMMARY_PASSWORDS_SYNCED,
+                   2)},
+        {1, 0, false, l10n_util::GetPluralNSStringF(
+                   IDS_IOS_DELETE_BROWSING_DATA_SUMMARY_PASSWORDS, 1)},
+        {2, 0, false, l10n_util::GetPluralNSStringF(
+                   IDS_IOS_DELETE_BROWSING_DATA_SUMMARY_PASSWORDS, 2)},
+    };
+  // clang-format on
+
+  browsing_data::PasswordsCounter counter(password_store_.get(), nullptr,
+                                          nullptr, nullptr);
+
+  for (const TestCase& test_case : kTestCases) {
+    const browsing_data::PasswordsCounter::PasswordsResult result(
+        &counter, test_case.num_profile_passwords,
+        test_case.num_account_passwords, test_case.sync_enabled,
+        std::vector<std::string>(), std::vector<std::string>());
+    OCMExpect([consumer_ setBrowsingDataSummary:test_case.expected_output]);
+    [fake_browsing_data_counter_wrapper_producer_
+        triggerUpdateUICallbackForResult:result];
+    EXPECT_OCMOCK_VERIFY(consumer_);
+  }
+}
+
+// Tests the construction of the addresses summary with different inputs.
+TEST_F(BrowsingDataMediatorTest, TestAddressesSummary) {
+  // Select autofill for deletion.
+  prefs()->SetBoolean(browsing_data::prefs::kDeleteFormData, true);
+
+  // Trigger creating the counters for browsing data types.
+  mediator_.consumer = consumer_;
+
+  // Trigger the callback for data types not in test. The summary is only
+  // dispatches if all counters have returned.
+  triggerUpdateUICallbackForHistoryResults(0);
+  triggerUpdateUICallbackForPasswordsResults(0);
+
+  // clang-format off
+    const struct TestCase {
+        int num_addresses;
+        bool sync_enabled;
+        NSString* expected_output;
+    } kTestCases[] = {
+        {0, true, @""},
+        {0, false, @""},
+        {1, true, l10n_util::GetPluralNSStringF(
+                   IDS_IOS_DELETE_BROWSING_DATA_SUMMARY_ADRESSES_SYNCED, 1)},
+        {1, false, l10n_util::GetPluralNSStringF(
+                   IDS_IOS_DELETE_BROWSING_DATA_SUMMARY_ADRESSES, 1)},
+        {2, true, l10n_util::GetPluralNSStringF(
+                   IDS_IOS_DELETE_BROWSING_DATA_SUMMARY_ADRESSES_SYNCED, 2)},
+        {2, false, l10n_util::GetPluralNSStringF(
+                   IDS_IOS_DELETE_BROWSING_DATA_SUMMARY_ADRESSES, 2)},
+    };
+  // clang-format on
+
+  browsing_data::AutofillCounter counter(nullptr, nullptr);
+
+  for (const TestCase& test_case : kTestCases) {
+    const browsing_data::AutofillCounter::AutofillResult result(
+        &counter, 0, 0, test_case.num_addresses, test_case.sync_enabled);
+    OCMExpect([consumer_ setBrowsingDataSummary:test_case.expected_output]);
+    [fake_browsing_data_counter_wrapper_producer_
+        triggerUpdateUICallbackForResult:result];
+    EXPECT_OCMOCK_VERIFY(consumer_);
+  }
+}
+
+// Tests the construction of the cards summary with different inputs.
+TEST_F(BrowsingDataMediatorTest, TestCardsSummary) {
+  // Select autofill for deletion.
+  prefs()->SetBoolean(browsing_data::prefs::kDeleteFormData, true);
+
+  // Trigger creating the counters for browsing data types.
+  mediator_.consumer = consumer_;
+
+  // Trigger the callback for data types not in test. The summary is only
+  // dispatches if all counters have returned.
+  triggerUpdateUICallbackForHistoryResults(0);
+  triggerUpdateUICallbackForPasswordsResults(0);
+
+  // clang-format off
+    const struct TestCase {
+        int num_cards;
+        bool sync_enabled;
+        NSString* expected_output;
+    } kTestCases[] = {
+        {0, true, @""},
+        {0, false, @""},
+        {1, true, l10n_util::GetPluralNSStringF(
+                   IDS_IOS_DELETE_BROWSING_DATA_SUMMARY_CARDS_SYNCED, 1)},
+        {1, false, l10n_util::GetPluralNSStringF(
+                   IDS_IOS_DELETE_BROWSING_DATA_SUMMARY_CARDS, 1)},
+        {2, true, l10n_util::GetPluralNSStringF(
+                   IDS_IOS_DELETE_BROWSING_DATA_SUMMARY_CARDS_SYNCED, 2)},
+        {2, false, l10n_util::GetPluralNSStringF(
+                   IDS_IOS_DELETE_BROWSING_DATA_SUMMARY_CARDS, 2)},
+    };
+  // clang-format on
+
+  browsing_data::AutofillCounter counter(nullptr, nullptr);
+
+  for (const TestCase& test_case : kTestCases) {
+    const browsing_data::AutofillCounter::AutofillResult result(
+        &counter, 0, test_case.num_cards, 0, test_case.sync_enabled);
+
+    OCMExpect([consumer_ setBrowsingDataSummary:test_case.expected_output]);
+    [fake_browsing_data_counter_wrapper_producer_
+        triggerUpdateUICallbackForResult:result];
+    EXPECT_OCMOCK_VERIFY(consumer_);
+  }
+}
+
+// Tests the construction of the suggestions summary with different inputs.
+TEST_F(BrowsingDataMediatorTest, TestSuggestionsSummary) {
+  // Select autofill for deletion.
+  prefs()->SetBoolean(browsing_data::prefs::kDeleteFormData, true);
+
+  // Trigger creating the counters for browsing data types.
+  mediator_.consumer = consumer_;
+
+  // Trigger the callback for data types not in test. The summary is only
+  // dispatches if all counters have returned.
+  triggerUpdateUICallbackForHistoryResults(0);
+  triggerUpdateUICallbackForPasswordsResults(0);
+
+  // clang-format off
+    const struct TestCase {
+        int num_suggestions;
+        bool sync_enabled;
+        NSString* expected_output;
+    } kTestCases[] = {
+        {0, true, @""},
+        {0, false, @""},
+        {1, true, l10n_util::GetPluralNSStringF(
+                   IDS_IOS_DELETE_BROWSING_DATA_SUMMARY_SUGGESTIONS_SYNCED,
+                   1)},
+        {1, false, l10n_util::GetPluralNSStringF(
+                   IDS_IOS_DELETE_BROWSING_DATA_SUMMARY_SUGGESTIONS, 1)},
+        {2, true, l10n_util::GetPluralNSStringF(
+                   IDS_IOS_DELETE_BROWSING_DATA_SUMMARY_SUGGESTIONS_SYNCED,
+                   2)},
+        {2, false, l10n_util::GetPluralNSStringF(
+                   IDS_IOS_DELETE_BROWSING_DATA_SUMMARY_SUGGESTIONS, 2)},
+    };
+  // clang-format on
+
+  browsing_data::AutofillCounter counter(nullptr, nullptr);
+
+  for (const TestCase& test_case : kTestCases) {
+    const browsing_data::AutofillCounter::AutofillResult result(
+        &counter, test_case.num_suggestions, 0, 0, test_case.sync_enabled);
+    OCMExpect([consumer_ setBrowsingDataSummary:test_case.expected_output]);
+    [fake_browsing_data_counter_wrapper_producer_
+        triggerUpdateUICallbackForResult:result];
+    EXPECT_OCMOCK_VERIFY(consumer_);
+  }
+}
+
+TEST_F(BrowsingDataMediatorTest,
+       TestBrowsingHistorySummaryWithPasswordsUnselected) {
+  // Select browsing history for deletion, but not passwords.
+  prefs()->SetBoolean(browsing_data::prefs::kDeleteBrowsingHistory, true);
+
+  // Trigger creating the counters for browsing data types.
+  mediator_.consumer = consumer_;
+
+  // Trigger the callback for data types not in test. The summary is only
+  // dispatches if all counters have returned.
+  triggerUpdateUICallbackForAutofillResults(0, 0, 0);
+
+  int num_history_items = 2;
+  int num_passwords = 1;
+
+  // Since passwords is not selected for deletion, then it shouldn't be
+  // returned.
+  OCMExpect([consumer_
+      setBrowsingDataSummary:l10n_util::GetPluralNSStringF(
+                                 IDS_IOS_DELETE_BROWSING_DATA_SUMMARY_SITES,
+                                 num_history_items)]);
+
+  triggerUpdateUICallbackForHistoryResults(num_history_items);
+  triggerUpdateUICallbackForPasswordsResults(num_passwords);
+  EXPECT_OCMOCK_VERIFY(consumer_);
+}
+
+TEST_F(BrowsingDataMediatorTest, TestSummaryWithSeveralTypes) {
+  // Select both browsing history and passowrds for deletion.
+  prefs()->SetBoolean(browsing_data::prefs::kDeleteBrowsingHistory, true);
+  prefs()->SetBoolean(browsing_data::prefs::kDeletePasswords, true);
+
+  // Trigger creating the counters for browsing data types.
+  mediator_.consumer = consumer_;
+
+  // Trigger the callback for data types not in test. The summary is only
+  // dispatches if all counters have returned.
+  triggerUpdateUICallbackForAutofillResults(0, 0, 0);
+
+  int num_history_items = 2;
+  int num_passwords = 1;
+
+  // Both browsing history and passwords are selected for deletion and as such
+  // should show up in the summary.
+  NSString* expectedSummary = [NSString
+      stringWithFormat:@"%@%@%@",
+                       l10n_util::GetPluralNSStringF(
+                           IDS_IOS_DELETE_BROWSING_DATA_SUMMARY_SITES,
+                           num_history_items),
+                       l10n_util::GetNSString(
+                           IDS_IOS_DELETE_BROWSING_DATA_SUMMARY_SEPARATOR),
+                       l10n_util::GetPluralNSStringF(
+                           IDS_IOS_DELETE_BROWSING_DATA_SUMMARY_PASSWORDS,
+                           num_passwords)];
+  OCMExpect([consumer_ setBrowsingDataSummary:expectedSummary]);
+  triggerUpdateUICallbackForHistoryResults(num_history_items);
+  triggerUpdateUICallbackForPasswordsResults(num_passwords);
+  EXPECT_OCMOCK_VERIFY(consumer_);
+}
