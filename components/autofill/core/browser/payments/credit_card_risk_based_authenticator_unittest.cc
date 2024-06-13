@@ -80,11 +80,11 @@ class CreditCardRiskBasedAuthenticatorTest : public testing::Test {
   base::test::TaskEnvironment task_environment_{
       base::test::TaskEnvironment::TimeSource::MOCK_TIME};
   std::unique_ptr<TestAuthenticationRequester> requester_;
+  syncer::TestSyncService sync_service_;
   TestPersonalDataManager personal_data_manager_;
   TestAutofillClient autofill_client_;
   std::unique_ptr<CreditCardRiskBasedAuthenticator> authenticator_;
   CreditCard card_;
-  syncer::TestSyncService sync_service_;
 };
 
 // Ensure the UnmaskRequestDetails is populated with the correct contents when

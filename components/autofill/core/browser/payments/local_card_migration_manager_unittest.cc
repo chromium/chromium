@@ -335,10 +335,10 @@ class LocalCardMigrationManagerTest : public testing::Test {
 
   base::test::TaskEnvironment task_environment_;
   test::AutofillUnitTestEnvironment autofill_test_environment_;
+  syncer::TestSyncService sync_service_;
   TestAutofillClient autofill_client_;
   std::unique_ptr<TestAutofillDriver> autofill_driver_;
   std::unique_ptr<TestBrowserAutofillManager> browser_autofill_manager_;
-  syncer::TestSyncService sync_service_;
   // Ends up getting owned (and destroyed) by TestAutofillClient:
   raw_ptr<TestStrikeDatabase> strike_database_;
   // Ends up getting owned (and destroyed) by TestFormDataImporter:

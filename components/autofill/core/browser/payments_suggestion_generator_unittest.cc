@@ -265,8 +265,8 @@ class PaymentsSuggestionGeneratorTest : public testing::Test {
   base::test::TaskEnvironment task_environment_{
       base::test::TaskEnvironment::TimeSource::SYSTEM_TIME};
   test::AutofillUnitTestEnvironment autofill_test_environment_;
-  TestAutofillClient autofill_client_;
   syncer::TestSyncService sync_service_;
+  TestAutofillClient autofill_client_;
   std::unique_ptr<PaymentsSuggestionGenerator> suggestion_generator_;
   testing::NiceMock<ui::MockResourceBundleDelegate> mock_resource_delegate_;
   raw_ptr<ui::ResourceBundle> original_resource_bundle_;

@@ -209,6 +209,7 @@ class FullCardRequestTest : public testing::Test {
   base::test::SingleThreadTaskEnvironment task_environment_;
   variations::ScopedVariationsIdsProvider scoped_variations_ids_provider_{
       variations::VariationsIdsProvider::Mode::kUseSignedInState};
+  syncer::TestSyncService sync_service_;
   TestPersonalDataManager personal_data_;
   MockResultDelegate result_delegate_;
   MockUIDelegate ui_delegate_;
@@ -217,7 +218,6 @@ class FullCardRequestTest : public testing::Test {
   scoped_refptr<network::SharedURLLoaderFactory> test_shared_loader_factory_;
   std::unique_ptr<PaymentsNetworkInterface> payments_network_interface_;
   std::unique_ptr<FullCardRequest> request_;
-  syncer::TestSyncService sync_service_;
 };
 
 // Matches the |arg| credit card to the given |record_type| and |card_number|.

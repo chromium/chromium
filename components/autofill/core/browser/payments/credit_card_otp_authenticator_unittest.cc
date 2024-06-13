@@ -143,13 +143,13 @@ class CreditCardOtpAuthenticatorTestBase : public testing::Test {
 
   std::unique_ptr<TestAuthenticationRequester> requester_;
   base::test::TaskEnvironment task_environment_;
+  syncer::TestSyncService sync_service_;
   TestPersonalDataManager personal_data_manager_;
   TestAutofillClient autofill_client_;
   raw_ptr<payments::TestPaymentsNetworkInterface> payments_network_interface_;
   std::unique_ptr<CreditCardOtpAuthenticator> authenticator_;
   CreditCard card_;
   CardUnmaskChallengeOption selected_otp_challenge_option_;
-  syncer::TestSyncService sync_service_;
 };
 
 class CreditCardOtpAuthenticatorTest
