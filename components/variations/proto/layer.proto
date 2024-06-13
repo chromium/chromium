@@ -87,11 +87,30 @@ message Layer {
   optional EntropyMode entropy_mode = 5;
 }
 
-// A Study can optionally specify a LayerMemberReference which will configure it
-// as a member of the layer with the given ID.
+// A Study can optionally specify a LayerMemberReference which will constrain it
+// to one or more layer members of the specified layer.
 message LayerMemberReference {
-  // Reference to the Layer with this specific ID.
+  // Reference to the layer with this specific ID.
   optional uint32 layer_id = 1;
-  // Reference to the member within the above layer, with this specific ID.
+
+  // References to members within the above layer.
+  //
+  // New code should use `layer_member_ids` instead. Older clients only support
+  // `layer_member_id`, and values in `layer_member_ids` are ignored. Newer
+  // clients support both fields for backward compatibility. A study that uses
+  // `layer_member_ids` needs to have a `min_version` that is greater than
+  // the minimum version that supports `layer_member_ids`.
+  // TODO(crbug.com/345611804): Amend this comment with the minimum version when
+  // it is known.
+  //
+  // Specifying more than one `layer_member_id` can be used to adjust the active
+  // percentage of a study:
+  //   - Adding a `layer_member_id` will result in clients randomized to that
+  //     layer member to be part of this study (and be randomized into its
+  //     groups).
+  //   - Removing a `layer_member_id` will take out clients randomized to that
+  //     layer member from the study.
+  //
   optional uint32 layer_member_id = 2;
+  repeated uint32 layer_member_ids = 3 [packed = true];
 }

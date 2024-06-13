@@ -18,6 +18,7 @@
 #include "base/metrics/histogram_functions.h"
 #include "base/numerics/checked_math.h"
 #include "components/variations/entropy_provider.h"
+#include "components/variations/proto/layer.pb.h"
 
 namespace variations {
 
@@ -245,18 +246,38 @@ bool VariationsLayers::AllowsHighEntropy(const Study& study) {
   return true;
 }
 
+// static
+bool VariationsLayers::IsReferencingLayerMemberId(
+    const LayerMemberReference& layer_member_reference,
+    uint32_t layer_member_id) {
+  for (const uint32_t& selected_id :
+       layer_member_reference.layer_member_ids()) {
+    if (selected_id == layer_member_id) {
+      return true;
+    }
+  }
+  // New protos should only use `layer_member_ids` (plural), and the legacy
+  // `layer_member_id` (singular) field should NOT be given. However, for
+  // correctness, the legacy field is still checked in case the client needs to
+  // process a proto with the legacy field.
+  // TODO(crbug/TBA): remove check of the legacy field after it's fully
+  // deprecated.
+  return layer_member_id == layer_member_reference.layer_member_id();
+}
+
 bool VariationsLayers::IsLayerActive(uint32_t layer_id) const {
   return FindActiveLayer(layer_id) != nullptr;
 }
 
-bool VariationsLayers::IsLayerMemberActive(uint32_t layer_id,
-                                           uint32_t member_id) const {
-  const auto* layer_info = FindActiveLayer(layer_id);
+bool VariationsLayers::IsLayerMemberActive(
+    const LayerMemberReference& layer_member_reference) const {
+  const auto* layer_info = FindActiveLayer(layer_member_reference.layer_id());
   if (layer_info == nullptr) {
     return false;
   }
   return layer_info->active_member_id &&
-         member_id == layer_info->active_member_id;
+         IsReferencingLayerMemberId(layer_member_reference,
+                                    layer_info->active_member_id);
 }
 
 bool VariationsLayers::ActiveLayerMemberDependsOnHighEntropy(

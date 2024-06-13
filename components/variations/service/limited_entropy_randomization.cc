@@ -120,22 +120,25 @@ double GetEntropyUsedByLimitedLayer(const Layer& limited_layer,
 
   bool includes_entropy_used_by_study = false;
   for (const Study& study : seed.study()) {
-    if (study.has_layer() && study.layer().layer_id() == limited_layer.id()) {
-      auto layer_member_id = study.layer().layer_member_id();
-
-      // Study might reference a non-existent layer, in which case the study
-      // will not be assigned (see ShouldAddStudy() in
+    if (!study.has_layer() || study.layer().layer_id() != limited_layer.id()) {
+      continue;
+    }
+    for (const Layer::LayerMember& member : limited_layer.members()) {
+      // Includes entropy from the study if it references this `member`. Study
+      // might reference a non-existent layer, in which case the study will not
+      // be assigned (see ShouldAddStudy() in
       // components/variations/study_filtering.cc). Entropy calculation should
       // also exclude such studies.
-      auto entropy = entropy_used.find(layer_member_id);
-      if (entropy != entropy_used.end()) {
-        // TODO(b/319681288): Consider mutual exclusivity among studies
-        // referencing the same layer member from the study's filter values.
-        double entropy_used_by_study = GetEntropyUsedByStudy(study);
-        if (entropy_used_by_study > 0) {
-          entropy->second += entropy_used_by_study;
-          includes_entropy_used_by_study = true;
-        }
+      if (!VariationsLayers::IsReferencingLayerMemberId(study.layer(),
+                                                        member.id())) {
+        continue;
+      }
+      // TODO(b/319681288): Consider mutual exclusivity among studies
+      // referencing the same layer member from the study's filter values.
+      double entropy_used_by_study = GetEntropyUsedByStudy(study);
+      if (entropy_used_by_study > 0) {
+        entropy_used[member.id()] += entropy_used_by_study;
+        includes_entropy_used_by_study = true;
       }
     }
   }

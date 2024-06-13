@@ -96,7 +96,7 @@ Study_Experiment_Param* AddExperimentParam(const std::string& param_name,
 void ConstrainToLayer(Study& study, int layer_id, int layer_member_id) {
   LayerMemberReference layer_member_reference;
   layer_member_reference.set_layer_id(layer_id);
-  layer_member_reference.set_layer_member_id(layer_member_id);
+  layer_member_reference.add_layer_member_ids(layer_member_id);
   *study.mutable_layer() = layer_member_reference;
 }
 

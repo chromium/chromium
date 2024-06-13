@@ -3,6 +3,7 @@
 // found in the LICENSE file.
 
 #include "components/variations/variations_layers.h"
+
 #include <sys/types.h>
 
 #include <cstdint>
@@ -12,6 +13,7 @@
 #include "base/test/metrics/histogram_tester.h"
 #include "components/variations/entropy_provider.h"
 #include "components/variations/processed_study.h"
+#include "components/variations/proto/layer.pb.h"
 #include "components/variations/proto/study.pb.h"
 #include "components/variations/proto/variations_seed.pb.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -102,9 +104,20 @@ Study CreateStudy(const StudySpec& spec) {
 
   auto* layer_member_reference = study.mutable_layer();
   layer_member_reference->set_layer_id(spec.layer_id);
-  layer_member_reference->set_layer_member_id(spec.layer_member_id);
+  layer_member_reference->add_layer_member_ids(spec.layer_member_id);
 
   return study;
+}
+
+LayerMemberReference CreateLayerMemberReference(
+    uint32_t layer_id,
+    const std::vector<uint32_t>& layer_member_ids) {
+  LayerMemberReference reference;
+  reference.set_layer_id(layer_id);
+  for (uint32_t layer_member_id : layer_member_ids) {
+    reference.add_layer_member_ids(layer_member_id);
+  }
+  return reference;
 }
 
 // Creates a study with the given `consistency`, and two 50% groups.
@@ -127,10 +140,10 @@ void AddGoogleExperimentIds(Study* study) {
   }
 }
 
-void ConstrainToLayer(Study* study, int layer_id, int layer_member_id) {
-  LayerMemberReference* layer_member_reference = study->mutable_layer();
-  layer_member_reference->set_layer_id(layer_id);
-  layer_member_reference->set_layer_member_id(layer_member_id);
+void ConstrainToLayer(Study* study,
+                      const LayerMemberReference& layer_member_reference) {
+  LayerMemberReference* reference_to_fill = study->mutable_layer();
+  reference_to_fill->MergeFrom(layer_member_reference);
 }
 
 VariationsSeed CreateSeed(const SeedSpec& spec) {
@@ -153,7 +166,8 @@ VariationsSeed CreateSeedWithLayerConstrainedStudy(
     Layer::EntropyMode layer_entropy_mode,
     Study* study_to_be_constrained) {
   Layer layer = CreateSimpleLayer(layer_entropy_mode);
-  ConstrainToLayer(study_to_be_constrained, kLayerId, kLayerMemberId);
+  ConstrainToLayer(study_to_be_constrained,
+                   CreateLayerMemberReference(kLayerId, {kLayerMemberId}));
   return CreateSeed({.layers = {layer}, .studies = {*study_to_be_constrained}});
 }
 
@@ -236,7 +250,8 @@ TEST_F(VariationsLayersTest, LayersHaveDuplicatedID) {
 
   VariationsLayers layers(seed, entropy_providers_);
 
-  EXPECT_FALSE(layers.IsLayerMemberActive(kLayerId, kLayerMemberId));
+  EXPECT_FALSE(layers.IsLayerMemberActive(
+      CreateLayerMemberReference(kLayerId, {kLayerMemberId})));
   // InvalidLayerReason::LayerIDNotUnique. Assert on the integer enum value in
   // case the semantics change over time.
   const int expected_bucket = 7;
@@ -270,8 +285,10 @@ TEST_F(VariationsLayersTest, LayersAllHaveUniqueIDs) {
 
   VariationsLayers layers(seed, entropy_providers_);
 
-  EXPECT_TRUE(layers.IsLayerMemberActive(layer_id_1, kLayerMemberId));
-  EXPECT_TRUE(layers.IsLayerMemberActive(layer_id_2, kLayerMemberId));
+  EXPECT_TRUE(layers.IsLayerMemberActive(
+      CreateLayerMemberReference(layer_id_1, {kLayerMemberId})));
+  EXPECT_TRUE(layers.IsLayerMemberActive(
+      CreateLayerMemberReference(layer_id_2, {kLayerMemberId})));
   histogram_tester_.ExpectTotalCount("Variations.InvalidLayerReason", 0);
 }
 
@@ -279,7 +296,8 @@ TEST_F(VariationsLayersTest, ValidLimitedLayer) {
   VariationsLayers layers(CreateSeedWithLimitedLayer(), entropy_providers_);
 
   EXPECT_TRUE(layers.IsLayerActive(kLayerId));
-  EXPECT_TRUE(layers.IsLayerMemberActive(kLayerId, kLayerMemberId));
+  EXPECT_TRUE(layers.IsLayerMemberActive(
+      CreateLayerMemberReference(kLayerId, {kLayerMemberId})));
   histogram_tester_.ExpectTotalCount("Variations.InvalidLayerReason", 0);
 }
 
@@ -294,7 +312,8 @@ TEST_F(VariationsLayersTest, InvalidLayer_LimitedLayerDropped) {
   VariationsLayers layers(CreateSeedWithLimitedLayer(), entropy_providers);
 
   EXPECT_FALSE(layers.IsLayerActive(kLayerId));
-  EXPECT_FALSE(layers.IsLayerMemberActive(kLayerId, kLayerMemberId));
+  EXPECT_FALSE(layers.IsLayerMemberActive(
+      CreateLayerMemberReference(kLayerId, {kLayerMemberId})));
   // InvalidLayerReason::kLimitedLayerDropped. Assert on the
   // integer enum value in case the semantics change over time.
   const int expected_bucket = 8;
@@ -342,8 +361,9 @@ TEST_F(VariationsLayersTest, UniqueLayerMemberIDs) {
 
   // One of the two layer members must be active since together they are
   // covering all slots.
-  EXPECT_TRUE(layers.IsLayerMemberActive(1u, 1u) ||
-              layers.IsLayerMemberActive(1u, 2u));
+  EXPECT_TRUE(
+      layers.IsLayerMemberActive(CreateLayerMemberReference(1u, {1u})) ||
+      layers.IsLayerMemberActive(CreateLayerMemberReference(1u, {2u})));
   histogram_tester_.ExpectTotalCount("Variations.InvalidLayerReason", 0);
 }
 
@@ -359,7 +379,8 @@ TEST_F(VariationsLayersTest, DuplicatedLayerMemberIDs) {
 
   VariationsLayers layers(seed, entropy_providers_);
 
-  EXPECT_FALSE(layers.IsLayerMemberActive(1u, 1u));
+  EXPECT_FALSE(
+      layers.IsLayerMemberActive(CreateLayerMemberReference(1u, {1u})));
   const int expected_bucket = 9;  // kDuplicatedLayerMemberID
   histogram_tester_.ExpectUniqueSample("Variations.InvalidLayerReason",
                                        expected_bucket, 1);
@@ -495,7 +516,8 @@ TEST_F(
     StudyEntropyProviderSelection_NoHighEntropy_ConstrainedToHighEntropyLayer) {
   Layer layer = CreateSimpleLayer(/*entropy_mode=*/Layer::DEFAULT);
   Study study = CreateTwoArmStudy(Study_Consistency_PERMANENT);
-  ConstrainToLayer(&study, kLayerId, kLayerMemberId);
+  ConstrainToLayer(&study,
+                   CreateLayerMemberReference(kLayerId, {kLayerMemberId}));
 
   VariationsSeed seed;
   *seed.add_study() = study;
@@ -527,7 +549,8 @@ TEST_F(VariationsLayersTest,
        StudyEntropyProviderSelection_HighEntropyStudyInHighEntropyLayer) {
   Layer layer = CreateSimpleLayer(/*entropy_mode=*/Layer::DEFAULT);
   Study study = CreateTwoArmStudy(Study_Consistency_PERMANENT);
-  ConstrainToLayer(&study, kLayerId, kLayerMemberId);
+  ConstrainToLayer(&study,
+                   CreateLayerMemberReference(kLayerId, {kLayerMemberId}));
 
   VariationsSeed seed;
   *seed.add_study() = study;
@@ -554,7 +577,8 @@ TEST_F(VariationsLayersTest,
   Layer layer = CreateSimpleLayer(/*entropy_mode=*/Layer::LOW);
   Study study = CreateTwoArmStudy(Study_Consistency_PERMANENT);
   AddGoogleExperimentIds(&study);
-  ConstrainToLayer(&study, kLayerId, kLayerMemberId);
+  ConstrainToLayer(&study,
+                   CreateLayerMemberReference(kLayerId, {kLayerMemberId}));
 
   VariationsSeed seed;
   *seed.add_study() = study;
@@ -581,7 +605,8 @@ TEST_F(VariationsLayersTest,
        StudyEntropyProviderSelection_HighEntropyStudyInLowEntropyLayer) {
   Layer layer = CreateSimpleLayer(/*entropy_mode=*/Layer::LOW);
   Study study = CreateTwoArmStudy(Study_Consistency_PERMANENT);
-  ConstrainToLayer(&study, kLayerId, kLayerMemberId);
+  ConstrainToLayer(&study,
+                   CreateLayerMemberReference(kLayerId, {kLayerMemberId}));
 
   VariationsSeed seed;
   *seed.add_study() = study;
@@ -607,7 +632,8 @@ TEST_F(VariationsLayersTest,
   Layer layer = CreateSimpleLayer(/*entropy_mode=*/Layer::LIMITED);
   Study study = CreateTwoArmStudy(Study_Consistency_PERMANENT);
   AddGoogleExperimentIds(&study);
-  ConstrainToLayer(&study, kLayerId, kLayerMemberId);
+  ConstrainToLayer(&study,
+                   CreateLayerMemberReference(kLayerId, {kLayerMemberId}));
 
   VariationsSeed seed;
   *seed.add_study() = study;
@@ -635,7 +661,8 @@ TEST_F(
   Layer layer = CreateSimpleLayer(/*entropy_mode=*/Layer::LIMITED);
   // Constructs a study without Google web experiment ID.
   Study study = CreateTwoArmStudy(Study_Consistency_PERMANENT);
-  ConstrainToLayer(&study, kLayerId, kLayerMemberId);
+  ConstrainToLayer(&study,
+                   CreateLayerMemberReference(kLayerId, {kLayerMemberId}));
 
   VariationsSeed seed;
   *seed.add_study() = study;
@@ -662,7 +689,8 @@ TEST_F(VariationsLayersTest, StudyEntropyProviderSelection_NoLimitedSource) {
   Layer layer = CreateSimpleLayer(/*entropy_mode=*/Layer::LIMITED);
   Study study = CreateTwoArmStudy(Study_Consistency_PERMANENT);
   AddGoogleExperimentIds(&study);
-  ConstrainToLayer(&study, kLayerId, kLayerMemberId);
+  ConstrainToLayer(&study,
+                   CreateLayerMemberReference(kLayerId, {kLayerMemberId}));
 
   VariationsSeed seed;
   *seed.add_study() = study;
@@ -686,4 +714,40 @@ TEST_F(VariationsLayersTest, StudyEntropyProviderSelection_NoLimitedSource) {
   EXPECT_EQ(study_entropy_providers.selection(),
             EntropyProviderSelection::NOT_SELECTED);
 }
+
+TEST_F(VariationsLayersTest, IsReferencingLayerMemberId_IncludeLayerMembers) {
+  LayerMemberReference layer_member_reference =
+      CreateLayerMemberReference(kLayerId, {42, 43});
+  EXPECT_FALSE(
+      VariationsLayers::IsReferencingLayerMemberId(layer_member_reference, 41));
+  EXPECT_TRUE(
+      VariationsLayers::IsReferencingLayerMemberId(layer_member_reference, 42));
+  EXPECT_TRUE(
+      VariationsLayers::IsReferencingLayerMemberId(layer_member_reference, 43));
+}
+
+TEST_F(VariationsLayersTest,
+       IsReferencingLayerMemberId_IncludeLayerMembers_LegacyField) {
+  LayerMemberReference layer_member_reference;
+  layer_member_reference.set_layer_id(1);
+  // `layer_member_id` is a legacy field that should be replaced with
+  // `layer_member_ids`.
+  // TODO(crbug.com/TBA): remove this test after the legacy field is deprecated.
+  layer_member_reference.set_layer_member_id(42);
+
+  EXPECT_FALSE(
+      VariationsLayers::IsReferencingLayerMemberId(layer_member_reference, 41));
+  EXPECT_TRUE(
+      VariationsLayers::IsReferencingLayerMemberId(layer_member_reference, 42));
+}
+
+TEST_F(VariationsLayersTest, IsReferencingLayerMemberId_NoLayerMembers) {
+  LayerMemberReference layer_member_reference =
+      CreateLayerMemberReference(kLayerId, {});
+  EXPECT_FALSE(
+      VariationsLayers::IsReferencingLayerMemberId(layer_member_reference, 42));
+  EXPECT_FALSE(
+      VariationsLayers::IsReferencingLayerMemberId(layer_member_reference, 43));
+}
+
 }  // namespace variations

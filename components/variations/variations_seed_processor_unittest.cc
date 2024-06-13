@@ -933,7 +933,7 @@ TYPED_TEST(VariationsSeedProcessorTest, LimitedEntropyStudyTest) {
   AddExperiment(study->default_experiment_name(), 50, study);
   LayerMemberReference* layer_member_reference = study->mutable_layer();
   layer_member_reference->set_layer_id(layer->id());
-  layer_member_reference->set_layer_member_id(member->id());
+  layer_member_reference->add_layer_member_ids(member->id());
 
   this->CreateTrialsFromSeed(seed);
 
@@ -957,7 +957,7 @@ TYPED_TEST(VariationsSeedProcessorTest, StudyWithInvalidLayer) {
 
   LayerMemberReference* layer = study->mutable_layer();
   layer->set_layer_id(42);
-  layer->set_layer_member_id(82);
+  layer->add_layer_member_ids(82);
   AddExperiment("A", 1, study);
 
   this->CreateTrialsFromSeed(seed);
@@ -985,7 +985,7 @@ TYPED_TEST(VariationsSeedProcessorTest, StudyWithInvalidLayerMember) {
 
   LayerMemberReference* layer_membership = study->mutable_layer();
   layer_membership->set_layer_id(42);
-  layer_membership->set_layer_member_id(88);
+  layer_membership->add_layer_member_ids(88);
   AddExperiment("A", 1, study);
 
   this->CreateTrialsFromSeed(seed);
@@ -1013,12 +1013,40 @@ TYPED_TEST(VariationsSeedProcessorTest, StudyWithLayerSelected) {
 
   LayerMemberReference* layer_membership = study->mutable_layer();
   layer_membership->set_layer_id(42);
-  layer_membership->set_layer_member_id(82);
+  layer_membership->add_layer_member_ids(82);
   AddExperiment("A", 1, study);
 
   this->CreateTrialsFromSeed(seed);
 
   // The layer only has the single member, which is what should be chosen.
+  EXPECT_TRUE(base::FieldTrialList::IsTrialActive(study->name()));
+}
+
+TYPED_TEST(VariationsSeedProcessorTest, StudyWithLegacyLayerMemberReference) {
+  VariationsSeed seed;
+
+  Layer* layer = seed.add_layers();
+  layer->set_id(42);
+  layer->set_num_slots(1);
+  Layer::LayerMember* member = layer->add_members();
+  member->set_id(82);
+  Layer::LayerMember::SlotRange* slot = member->add_slots();
+  slot->set_start(0);
+  slot->set_end(0);
+
+  Study* study = seed.add_study();
+  study->set_name("Study1");
+  study->set_activation_type(Study::ACTIVATE_ON_STARTUP);
+
+  LayerMemberReference* layer_membership = study->mutable_layer();
+  layer_membership->set_layer_id(42);
+  // `layer_member_id` is a legacy field that should still be considered.
+  // TODO(crbug.com/TBA): remove `layer_member_id` after it's fully deprecated.
+  layer_membership->set_layer_member_id(82);
+  AddExperiment("A", 1, study);
+
+  this->CreateTrialsFromSeed(seed);
+
   EXPECT_TRUE(base::FieldTrialList::IsTrialActive(study->name()));
 }
 
@@ -1039,7 +1067,7 @@ TYPED_TEST(VariationsSeedProcessorTest, StudyWithLayerMemberWithNoSlots) {
 
   LayerMemberReference* layer_membership = study->mutable_layer();
   layer_membership->set_layer_id(42);
-  layer_membership->set_layer_member_id(82);
+  layer_membership->add_layer_member_ids(82);
   AddExperiment("A", 1, study);
 
   this->CreateTrialsFromSeed(seed);
@@ -1067,7 +1095,7 @@ TYPED_TEST(VariationsSeedProcessorTest, StudyWithLayerMemberWithUnsetSlots) {
 
   LayerMemberReference* layer_membership = study->mutable_layer();
   layer_membership->set_layer_id(42);
-  layer_membership->set_layer_member_id(82);
+  layer_membership->add_layer_member_ids(82);
   AddExperiment("A", 1, study);
 
   this->CreateTrialsFromSeed(seed);
@@ -1104,7 +1132,7 @@ TYPED_TEST(VariationsSeedProcessorTest, StudyWithLayerWithDuplicateSlots) {
 
   LayerMemberReference* layer_membership = study->mutable_layer();
   layer_membership->set_layer_id(42);
-  layer_membership->set_layer_member_id(82);
+  layer_membership->add_layer_member_ids(82);
   AddExperiment("A", 1, study);
 
   base::HistogramTester histogram_tester;
@@ -1138,7 +1166,7 @@ TYPED_TEST(VariationsSeedProcessorTest,
 
   LayerMemberReference* layer_membership = study->mutable_layer();
   layer_membership->set_layer_id(42);
-  layer_membership->set_layer_member_id(82);
+  layer_membership->add_layer_member_ids(82);
   AddExperiment("A", 1, study);
 
   base::HistogramTester histogram_tester;
@@ -1171,7 +1199,7 @@ TYPED_TEST(VariationsSeedProcessorTest, StudyWithLayerMemberWithReversedSlots) {
 
   LayerMemberReference* layer_membership = study->mutable_layer();
   layer_membership->set_layer_id(42);
-  layer_membership->set_layer_member_id(82);
+  layer_membership->add_layer_member_ids(82);
   AddExperiment("A", 1, study);
 
   base::HistogramTester histogram_tester;
@@ -1214,7 +1242,7 @@ TYPED_TEST(VariationsSeedProcessorTest,
 
   LayerMemberReference* layer_membership = study->mutable_layer();
   layer_membership->set_layer_id(42);
-  layer_membership->set_layer_member_id(82);
+  layer_membership->add_layer_member_ids(82);
   AddExperiment("A", 1, study);
 
   base::HistogramTester histogram_tester;
@@ -1265,7 +1293,7 @@ TYPED_TEST(VariationsSeedProcessorTest, StudyWithInterleavedLayerMember) {
 
   LayerMemberReference* layer_membership = study->mutable_layer();
   layer_membership->set_layer_id(42);
-  layer_membership->set_layer_member_id(82);
+  layer_membership->add_layer_member_ids(82);
   AddExperiment("A", 1, study);
 
   this->CreateTrialsFromSeed(seed);
@@ -1273,6 +1301,111 @@ TYPED_TEST(VariationsSeedProcessorTest, StudyWithInterleavedLayerMember) {
   // high entropy should select slot 0, and low entropy should select
   // slot 9, which both activate the study.
   EXPECT_TRUE(base::FieldTrialList::IsTrialActive(study->name()));
+}
+
+TYPED_TEST(VariationsSeedProcessorTest, StudyReferencingMultipleLayerMember) {
+  VariationsSeed seed;
+
+  Layer* layer = seed.add_layers();
+  layer->set_id(42);
+  layer->set_num_slots(10);
+  Layer::LayerMember* member_1 = layer->add_members();
+  member_1->set_id(82);
+  {
+    Layer::LayerMember::SlotRange* range = member_1->add_slots();
+    range->set_start(0);
+    range->set_end(4);
+  }
+  Layer::LayerMember* member_2 = layer->add_members();
+  member_2->set_id(83);
+  {
+    Layer::LayerMember::SlotRange* range = member_2->add_slots();
+    range->set_start(5);
+    range->set_end(9);
+  }
+
+  Study* study = seed.add_study();
+  study->set_name("Study1");
+  study->set_activation_type(Study::ACTIVATE_ON_STARTUP);
+
+  LayerMemberReference* layer_membership = study->mutable_layer();
+  layer_membership->set_layer_id(layer->id());
+  layer_membership->add_layer_member_ids(member_1->id());
+  layer_membership->add_layer_member_ids(member_2->id());
+  AddExperiment("A", 1, study);
+
+  this->CreateTrialsFromSeed(seed);
+
+  // The layer members with IDs 0 and 1 cover 100% of the population. By
+  // referencing both of the layer members the study must be active all the
+  // time.
+  EXPECT_TRUE(base::FieldTrialList::IsTrialActive(study->name()));
+}
+
+TYPED_TEST(VariationsSeedProcessorTest,
+           MultipleLayerMember_NoChangeToExistingClients_RemainderEntropy) {
+  VariationsSeed seed;
+
+  // Add a low entropy layer into the seed:
+  Layer* layer = seed.add_layers();
+  layer->set_id(42);
+  layer->set_num_slots(10);
+  layer->set_entropy_mode(Layer::LOW);
+
+  // Populate the layer with two members covering all of the 10 slots:
+  Layer::LayerMember* member_1 = layer->add_members();
+  Layer::LayerMember* member_2 = layer->add_members();
+  member_1->set_id(82);
+  member_2->set_id(83);
+  {
+    Layer::LayerMember::SlotRange* range = member_1->add_slots();
+    range->set_start(0);
+    range->set_end(4);
+  }
+  {
+    Layer::LayerMember::SlotRange* range = member_2->add_slots();
+    range->set_start(5);
+    range->set_end(9);
+  }
+
+  // Add a permanently consistent, starts-active study, and constrained it to
+  // the layer member #2 in the layer:
+  Study* study = seed.add_study();
+  study->set_name("MyStudy");
+  study->set_activation_type(Study::ACTIVATE_ON_STARTUP);
+  study->set_consistency(Study_Consistency_PERMANENT);
+  LayerMemberReference* layer_membership = study->mutable_layer();
+  layer_membership->set_layer_id(layer->id());
+  layer_membership->add_layer_member_ids(member_2->id());
+
+  // Add two experiments with google_web_experiment_id. This setup forces the
+  // study to be randomized using remainder entropy from the slot randomization.
+  // See VariationsLayers::SelectEntropyProviderForStudy().
+  AddExperiment("A", 1, study);
+  AddExperiment("B", 1, study);
+  study->mutable_experiment(0)->set_google_web_experiment_id(1001);
+  study->mutable_experiment(1)->set_google_web_experiment_id(1002);
+
+  this->CreateTrialsFromSeed(seed);
+
+  // Verify that the study is active, with group A selected:
+  EXPECT_TRUE(base::FieldTrialList::IsTrialActive(study->name()));
+  EXPECT_EQ(base::FieldTrialList::Find(study->name())->group_name(), "A");
+
+  // Clear field trial states:
+  testing::ClearAllVariationIDs();
+  testing::ClearAllVariationParams();
+
+  // Give this study a new layer member constraint, and randomize it again:
+  layer_membership->add_layer_member_ids(member_1->id());
+  this->CreateTrialsFromSeed(seed);
+
+  // The randomization of this exact same client is not affected, and it will
+  // still randomize to group A. This verifies that existing clients using
+  // remainder entropy will not be re-shuffled if the study is constrained to
+  // another layer member.
+  EXPECT_TRUE(base::FieldTrialList::IsTrialActive(study->name()));
+  EXPECT_EQ(base::FieldTrialList::Find(study->name())->group_name(), "A");
 }
 
 TYPED_TEST(VariationsSeedProcessorTest, StudyWithLayerNotSelected) {
@@ -1309,7 +1442,7 @@ TYPED_TEST(VariationsSeedProcessorTest, StudyWithLayerNotSelected) {
 
   LayerMemberReference* layer_membership = study->mutable_layer();
   layer_membership->set_layer_id(42);
-  layer_membership->set_layer_member_id(0xDEAD);
+  layer_membership->add_layer_member_ids(0xDEAD);
   AddExperiment("A", 1, study);
 
   this->CreateTrialsFromSeed(seed);
@@ -1351,7 +1484,7 @@ TYPED_TEST(VariationsSeedProcessorTest, LayerWithDefaultEntropy) {
 
   LayerMemberReference* layer_membership = study->mutable_layer();
   layer_membership->set_layer_id(42);
-  layer_membership->set_layer_member_id(0xDEAD);
+  layer_membership->add_layer_member_ids(0xDEAD);
   AddExperiment("A", 1, study);
 
   this->CreateTrialsFromSeed(seed);
@@ -1496,7 +1629,7 @@ TYPED_TEST(VariationsSeedProcessorTest, StudyWithLowerEntropyThanLayer) {
 
   LayerMemberReference* layer_membership = study->mutable_layer();
   layer_membership->set_layer_id(42);
-  layer_membership->set_layer_member_id(82);
+  layer_membership->add_layer_member_ids(82);
   AddExperiment("A", 1, study);
   study->mutable_experiment(0)->set_google_web_experiment_id(kExperimentId);
 
@@ -1635,7 +1768,7 @@ TYPED_TEST(VariationsSeedProcessorTest, OutOfBoundsLayer) {
   study->set_activation_type(Study::ACTIVATE_ON_STARTUP);
   LayerMemberReference* layer_membership = study->mutable_layer();
   layer_membership->set_layer_id(42);
-  layer_membership->set_layer_member_id(82);
+  layer_membership->add_layer_member_ids(82);
   AddExperiment("A", 1, study);
   study->mutable_experiment(0)->set_google_web_experiment_id(kExperimentId);
   AddExperiment("B", 1, study);

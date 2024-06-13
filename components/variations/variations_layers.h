@@ -13,6 +13,7 @@
 #include "base/types/optional_ref.h"
 #include "components/variations/entropy_provider.h"
 #include "components/variations/processed_study.h"
+#include "components/variations/proto/layer.pb.h"
 #include "components/variations/proto/variations_seed.pb.h"
 
 namespace variations {
@@ -61,6 +62,12 @@ class COMPONENT_EXPORT(VARIATIONS) VariationsLayers {
   // True iff a high entropy provider can be used to randomize the study.
   static bool AllowsHighEntropy(const Study& study);
 
+  // Checks whether the layer member reference object is referencing the given
+  // `layer_member_id`.
+  static bool IsReferencingLayerMemberId(
+      const LayerMemberReference& layer_member_reference,
+      uint32_t layer_member_id);
+
   // Returns whether the layer that's associated with the `layer_id` is active.
   // If not, for the same `layer_id`, IsLayerMemberActive() and
   // ActiveLayerMemberDependsOnHighEntropy() will always be false, and
@@ -68,8 +75,9 @@ class COMPONENT_EXPORT(VARIATIONS) VariationsLayers {
   // randomizes to a fixed value (revealing no entropy).
   bool IsLayerActive(uint32_t layer_id) const;
 
-  // Returns whether the given layer has the given member active.
-  bool IsLayerMemberActive(uint32_t layer_id, uint32_t member_id) const;
+  // Returns whether any of the layer members referenced are active.
+  bool IsLayerMemberActive(
+      const LayerMemberReference& layer_member_reference) const;
 
   // Returns true if the layer has an active member and is configured to use
   // DEFAULT entropy, which means that any study conditioned on it would leak

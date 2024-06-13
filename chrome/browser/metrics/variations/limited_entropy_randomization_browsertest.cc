@@ -86,7 +86,7 @@ VariationsSeed CreateTestSeedWithLimitedEntropyLayer() {
 
   auto* layer_member_reference = study->mutable_layer();
   layer_member_reference->set_layer_id(1);
-  layer_member_reference->set_layer_member_id(1);
+  layer_member_reference->add_layer_member_ids(1);
 
   return seed;
 }

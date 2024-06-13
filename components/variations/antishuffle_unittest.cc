@@ -79,7 +79,7 @@ void SetupStudy(VariationsSeed* seed, const TestStudyConfig& config) {
   if (config.use_limited_entropy) {
     LayerMemberReference* reference = study->mutable_layer();
     reference->set_layer_id(kLayerId);
-    reference->set_layer_member_id(kLayerMemberId);
+    reference->add_layer_member_ids(kLayerMemberId);
   }
 }
 

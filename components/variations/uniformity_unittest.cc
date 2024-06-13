@@ -73,7 +73,7 @@ VariationsSeed LayerStudySeed(const LayerStudySeedOptions& options) {
   if (options.layer_constrain_study) {
     LayerMemberReference* layer_membership = study->mutable_layer();
     layer_membership->set_layer_id(kLayerId);
-    layer_membership->set_layer_member_id(82);
+    layer_membership->add_layer_member_ids(82);
   }
   // Use 3 arms, which does not divide
   for (auto* group_name : {"A", "B", "C"}) {
