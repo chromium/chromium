@@ -2204,55 +2204,6 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="Omnibox.TemplateUrl.RlzPresent" enum="Boolean"
-    expires_after="2025-05-30">
-  <owner>ender@google.com</owner>
-  <owner>jdonnelly@google.com</owner>
-  <owner>chrome-search@google.com</owner>
-  <summary>
-    For every TemplateUrl expansion, captures whether Query has an organic
-    nature (RLZ empty) or not (RLZ present).
-
-    Recorded once for every TemplateUrl expansion if the Template URL references
-    the {google:RLZ} parameter.
-  </summary>
-</histogram>
-
-<histogram name="Omnibox.TemplateUrl.SearchClientPresent" enum="Boolean"
-    expires_after="2025-05-30">
-  <owner>ender@google.com</owner>
-  <owner>jdonnelly@google.com</owner>
-  <owner>chrome-search@google.com</owner>
-  <summary>
-    For every TemplateUrl expansion, captures whether Query has an organic
-    nature (Search client empty) or not (Search client present).
-
-    Recorded once for every TemplateUrl expansion if the Template URL references
-    the {google:searchClient} parameter.
-  </summary>
-</histogram>
-
-<histogram name="Omnibox.TemplateUrl.UnrecognizedParameter"
-    enum="BooleanPrepopulated" expires_after="2025-05-30">
-  <owner>ender@google.com</owner>
-  <owner>jdonnelly@google.com</owner>
-  <owner>chrome-search@google.com</owner>
-  <summary>
-    For each TemplateUrl parameter that cannot be expanded, captures the origin
-    of the template url parameter. Prepopulated TemplateUrl definitions come
-    from `prepopulated_engines.json` file, whereas Non-prepopulated definitions
-    may originate from external configuration files linked to region-specific
-    DMA implementations (Android), user-supplied definitions (Desktop), or
-    device configuration (e.g. ADCP, Enterprise policies).
-
-    See go/chrome-android-dma for additional details.
-
-    Recorded once per unexpanded parameter for every TemplateUrl expansion.
-    Values reported by this histogram should be zero for mobile devices,
-    possibly also for Desktop and ChromeOS (unconfirmed).
-  </summary>
-</histogram>
-
 <histogram name="Omnibox.TimeSpentBeforeDismissLens" units="ms"
     expires_after="2022-06-26">
   <owner>yusuyoutube@google.com</owner>
