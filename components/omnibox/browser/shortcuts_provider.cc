@@ -551,18 +551,6 @@ AutocompleteMatch ShortcutsProvider::ShortcutMatchToACMatch(
   // allows, for example, the input of "foo.c" to autocomplete to "foo.com" for
   // a fill_into_edit of "http://foo.com".
   const bool is_search_type = AutocompleteMatch::IsSearchType(match.type);
-
-  const bool is_featured_search =
-      AutocompleteMatch::IsFeaturedSearchType(match.type);
-  if (kIsDesktop) {
-    DCHECK(!is_featured_search);
-    DCHECK(is_search_type != match.keyword.empty())
-        << "type: " << match.type << ", keyword: " << match.keyword;
-  } else {
-    DCHECK(is_search_type != match.keyword.empty() || is_featured_search)
-        << "type: " << match.type << ", keyword: " << match.keyword;
-  }
-
   const bool keyword_matches =
       base::StartsWith(base::UTF16ToUTF8(input.text()),
                        base::StrCat({base::UTF16ToUTF8(match.keyword), " "}),
