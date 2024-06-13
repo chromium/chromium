@@ -328,15 +328,6 @@ class ResourcePrefetchPredictor : public history::HistoryServiceObserver {
     tables_ = tables;
   }
 
-  // LCPP histogram recording functions.
-  bool RecordLcpElementLocatorHistogram(LcppData& data,
-                                        const std::string& host,
-                                        const std::string& lcp_element_locator);
-  bool RecordLcpInfluencerScriptUrlsHistogram(
-      LcppData& data,
-      const std::string& host,
-      const std::vector<GURL>& lcp_influencer_scripts);
-
   const raw_ptr<Profile, DanglingUntriaged> profile_;
   raw_ptr<TestObserver> observer_;
   const LoadingPredictorConfig config_;
