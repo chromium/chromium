@@ -25,7 +25,7 @@ LocalTabGroupID GenerateRandomTabGroupID() {
 }
 
 LocalTabID GenerateRandomTabID() {
-#if BUILDFLAG(IS_ANDROID)
+#if BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_IOS)
   return base::RandInt(0, 1000);
 #else
   return base::Token::CreateRandom();
