@@ -37,8 +37,13 @@ public class SafetyHubFragment extends SafetyHubBaseFragment
     public void onCreatePreferences(Bundle bundle, String s) {
         SettingsUtils.addPreferencesFromResource(this, R.xml.safety_hub_preferences);
         getActivity().setTitle(R.string.prefs_safety_check);
+        setUpAccountPasswordCheckModule();
+        setUpUpdateCheckModule();
+        setUpPermissionsRevocationModule();
+        setUpNotificationsReviewModule();
+    }
 
-        // Set up account-level password check preference.
+    private void setUpAccountPasswordCheckModule() {
         Preference passwordCheckPreference = findPreference(PREF_PASSWORDS);
         int compromisedPasswordsCount =
                 UserPrefs.get(getProfile()).getInteger(Pref.BREACHED_CREDENTIALS_COUNT);
@@ -61,8 +66,9 @@ public class SafetyHubFragment extends SafetyHubBaseFragment
                 passwordCheckPropertyModel,
                 passwordCheckPreference,
                 SafetyHubModuleViewBinder::bindPasswordCheckProperties);
+    }
 
-        // Set up update check preference.
+    private void setUpUpdateCheckModule() {
         Preference updateCheckPreference = findPreference(PREF_UPDATE);
 
         PropertyModel updateCheckPropertyModel =
@@ -76,8 +82,9 @@ public class SafetyHubFragment extends SafetyHubBaseFragment
                 updateCheckPropertyModel,
                 updateCheckPreference,
                 SafetyHubModuleViewBinder::bindUpdateCheckProperties);
+    }
 
-        // Set up permissions preference.
+    private void setUpPermissionsRevocationModule() {
         Preference permissionsPreference = findPreference(PREF_UNUSED_PERMISSIONS);
 
         mPermissionsModel =
@@ -97,8 +104,9 @@ public class SafetyHubFragment extends SafetyHubBaseFragment
 
         mUnusedSitePermissionsBridge = UnusedSitePermissionsBridge.getForProfile(getProfile());
         mUnusedSitePermissionsBridge.addObserver(this);
+    }
 
-        // Set up notifications review preference.
+    private void setUpNotificationsReviewModule() {
         Preference notificationsPreference = findPreference(PREF_NOTIFICATIONS_REVIEW);
 
         mNotificationsModel =

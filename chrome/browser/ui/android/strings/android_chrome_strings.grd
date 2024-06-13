@@ -1712,6 +1712,15 @@ Your Google account may have other forms of browsing history like searches and a
       <message name="IDS_SAFETY_HUB_ASK_NOTIFICATIONS_MENU_ITEM" translateable="false">
         Don’t allow but ask later
       </message>
+      <message name="IDS_SAFETY_HUB_SAFETY_MODULES_SECTION_HEADER" translateable="false">
+        Safety at a glance
+      </message>
+      <message name="IDS_SAFETY_HUB_SAFETY_TIPS_SECTION_HEADER" translateable="false">
+        More ways to stay safer with Chrome
+      </message>
+      <message name="IDS_SAFETY_HUB_DESCRIPTION" translateable="false">
+        Chrome regularly checks to make sure your browser has the safest settings. We'll let you know if anything needs review.
+      </message>
 
        <!-- Safe Browsing preferences -->
       <message name="IDS_PREFS_SAFE_BROWSING_TITLE" desc="Title for the Safe Browsing preferences. [CHAR_LIMIT=32]">

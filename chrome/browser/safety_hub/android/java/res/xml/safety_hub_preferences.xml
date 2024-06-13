@@ -8,24 +8,34 @@ found in the LICENSE file.
 <PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto">
 
+    <org.chromium.components.browser_ui.settings.TextMessagePreference
+        android:key="safety_hub_description"
+        android:summary="@string/safety_hub_description"
+        app:allowDividerAbove="false" />
+
+    <PreferenceCategory
+        android:key="safety_modules"
+        android:title="@string/safety_hub_safety_modules_section_header"/>
+
     <!-- Account-level passwords -->
     <Preference
         android:key="passwords_account"
         android:title="@string/safety_check_passwords_safe" />
-
     <!-- Update check -->
     <Preference
         android:key="update_check"
         android:title="@string/safety_check_updates_title" />
-
     <!-- Unused permissions -->
     <Preference
         android:key="permissions"
         android:title="@string/safety_hub_permissions_ok_title" />
-
     <!-- Notification review -->
     <Preference
         android:key="notifications_review"
         android:title="@string/safety_hub_notifications_review_ok_title" />
+
+    <org.chromium.chrome.browser.safety_hub.SafetyHubExpandablePreferenceCategory
+        android:key="safety_tips"
+        android:title="@string/safety_hub_safety_tips_section_header" />
 
 </PreferenceScreen>
