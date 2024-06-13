@@ -1150,6 +1150,10 @@ public class SafeModeTest extends AwParameterizedTest {
         FastVariationsSeedSafeModeAction.setAlternateSeedFilePath(embeddedSeedFile);
 
         try {
+            File oldFile = VariationsUtils.getSeedFile();
+            File newFile = VariationsUtils.getNewSeedFile();
+            VariationsTestUtils.writeMockSeed(oldFile);
+            VariationsTestUtils.writeMockSeed(newFile);
             setSafeMode(Arrays.asList(action.getId()));
 
             boolean success = action.execute();

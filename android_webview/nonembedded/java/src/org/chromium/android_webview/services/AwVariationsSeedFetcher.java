@@ -408,17 +408,13 @@ public class AwVariationsSeedFetcher extends JobService {
                 needsReschedule = (requestCount <= JOB_MAX_REQUEST_COUNT);
             }
             if (fetchInfo.seedInfo != null) {
-                if (fastMode) {
-                    VariationsSeedHolder.getInstance()
-                            .updateSeedFilesSynchronously(fetchInfo.seedInfo);
-                } else {
-                    VariationsSeedHolder.getInstance()
-                            .updateSeed(
-                                    fetchInfo.seedInfo,
-                                    /* onFinished= */ () ->
-                                            onFinished(mParams, /* needsReschedule= */ false));
-                    shouldFinish = false; // jobFinished will be deferred until updateSeed is done.
-                }
+                VariationsSeedHolder.getInstance()
+                        .updateSeed(
+                                fetchInfo.seedInfo,
+                                /* onFinished= */ () -> {
+                                    onFinished(mParams, /* needsReschedule= */ false);
+                                });
+                shouldFinish = false; // jobFinished will be deferred until updateSeed is done.
             }
             return new FetchSeedOutput(shouldFinish, needsReschedule, /* cancelled= */ false);
         }
