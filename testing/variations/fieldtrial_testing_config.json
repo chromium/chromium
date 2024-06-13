@@ -16541,7 +16541,11 @@
     "PressAndHoldEscToExitBrowserFullscreen": [
         {
             "platforms": [
-                "chromeos"
+                "chromeos",
+                "chromeos_lacros",
+                "linux",
+                "mac",
+                "windows"
             ],
             "experiments": [
                 {
