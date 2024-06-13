@@ -11,6 +11,7 @@
 #include "chrome/browser/ui/browser_finder.h"
 #include "chrome/browser/ui/browser_window.h"
 #include "components/autofill/core/browser/metrics/autofill_metrics.h"
+#include "components/autofill/core/common/credit_card_number_validation.h"
 #include "components/strings/grit/components_strings.h"
 #include "ui/base/clipboard/clipboard.h"
 #include "ui/base/clipboard/scoped_clipboard_writer.h"
@@ -212,7 +213,7 @@ void VirtualCardManualFallbackBubbleControllerImpl::OnFieldClicked(
   LogVirtualCardManualFallbackBubbleFieldClicked(field);
   // Strip the whitespaces that were added to the card number for legibility.
   UpdateClipboard(field == VirtualCardManualFallbackBubbleField::kCardNumber
-                      ? CreditCard::StripSeparators(GetValueForField(field))
+                      ? StripCardNumberSeparators(GetValueForField(field))
                       : GetValueForField(field));
 }
 

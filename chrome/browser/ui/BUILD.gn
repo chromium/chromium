@@ -497,7 +497,7 @@ static_library("ui") {
     "//components/affiliations/core/browser:affiliations",
     "//components/autofill/content/browser",
     "//components/autofill/content/browser:risk_proto",
-    "//components/autofill/core/browser",
+    "//components/autofill/core/common:credit_card_number_validation",
     "//components/blocked_content",
     "//components/bookmarks/browser",
     "//components/bookmarks/managed",

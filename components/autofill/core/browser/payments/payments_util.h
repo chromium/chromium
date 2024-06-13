@@ -6,9 +6,10 @@
 #define COMPONENTS_AUTOFILL_CORE_BROWSER_PAYMENTS_PAYMENTS_UTIL_H_
 
 #include <stdint.h>
-#include <vector>
 
-#include "components/autofill/core/browser/data_model/credit_card.h"
+#include <string>
+#include <utility>
+#include <vector>
 
 namespace autofill {
 

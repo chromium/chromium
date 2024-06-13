@@ -8,6 +8,7 @@
 #import "base/strings/utf_string_conversions.h"
 #import "components/autofill/core/browser/autofill_data_util.h"
 #import "components/autofill/core/browser/data_model/credit_card.h"
+#import "components/autofill/core/common/credit_card_number_validation.h"
 #import "components/autofill/ios/browser/credit_card_util.h"
 #import "ios/chrome/browser/shared/model/application_context/application_context.h"
 #import "url/gurl.h"
@@ -26,7 +27,7 @@
   NSString* number = nil;
   if (creditCard.record_type() !=
       autofill::CreditCard::RecordType::kMaskedServerCard) {
-    number = base::SysUTF16ToNSString(autofill::CreditCard::StripSeparators(
+    number = base::SysUTF16ToNSString(autofill::StripCardNumberSeparators(
         creditCard.GetRawInfo(autofill::CREDIT_CARD_NUMBER)));
   }
 

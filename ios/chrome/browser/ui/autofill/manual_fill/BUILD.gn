@@ -40,6 +40,7 @@ source_set("manual_fill") {
     "//base",
     "//components/autofill/core/browser",
     "//components/autofill/core/common",
+    "//components/autofill/core/common:credit_card_number_validation",
     "//components/autofill/ios/browser",
     "//components/autofill/ios/browser:util",
     "//components/autofill/ios/form_util",

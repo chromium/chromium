@@ -33,6 +33,7 @@
 #include "components/autofill/core/common/autofill_clock.h"
 #include "components/autofill/core/common/autofill_payments_features.h"
 #include "components/autofill/core/common/autofill_prefs.h"
+#include "components/autofill/core/common/credit_card_number_validation.h"
 #include "components/prefs/pref_service.h"
 #include "components/sync/base/model_type.h"
 #include "components/sync/service/sync_user_settings.h"
@@ -1017,9 +1018,9 @@ std::string PaymentsDataManager::OnAcceptedLocalIbanSave(Iban imported_iban) {
 }
 
 bool PaymentsDataManager::IsKnownCard(const CreditCard& credit_card) const {
-  const auto stripped_pan = CreditCard::StripSeparators(credit_card.number());
+  const auto stripped_pan = StripCardNumberSeparators(credit_card.number());
   for (const auto& card : local_credit_cards_) {
-    if (stripped_pan == CreditCard::StripSeparators(card->number())) {
+    if (stripped_pan == StripCardNumberSeparators(card->number())) {
       return true;
     }
   }
@@ -1028,7 +1029,7 @@ bool PaymentsDataManager::IsKnownCard(const CreditCard& credit_card) const {
   for (const auto& card : server_credit_cards_) {
     switch (card->record_type()) {
       case CreditCard::RecordType::kFullServerCard:
-        if (stripped_pan == CreditCard::StripSeparators(card->number())) {
+        if (stripped_pan == StripCardNumberSeparators(card->number())) {
           return true;
         }
         break;

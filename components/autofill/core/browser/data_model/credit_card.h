@@ -144,11 +144,6 @@ class CreditCard : public AutofillDataModel {
   std::string origin() const { return origin_; }
   void set_origin(const std::string& origin) { origin_ = origin; }
 
-  // TODO(b/281812289): Remove this static method when all dependencies switch
-  // to using credit_card_number_validation.h instead of relying on
-  // credit_card.h.
-  static const std::u16string StripSeparators(const std::u16string& number);
-
   // The user-visible issuer network of the card, e.g. 'Mastercard'.
   static std::u16string NetworkForDisplay(const std::string& network);
 

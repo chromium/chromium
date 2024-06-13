@@ -120,6 +120,7 @@
 #include "components/autofill/core/common/autofill_regex_constants.h"
 #include "components/autofill/core/common/autofill_regexes.h"
 #include "components/autofill/core/common/autofill_util.h"
+#include "components/autofill/core/common/credit_card_number_validation.h"
 #include "components/autofill/core/common/form_data.h"
 #include "components/autofill/core/common/form_data_predictions.h"
 #include "components/autofill/core/common/form_field_data.h"
@@ -726,7 +727,7 @@ bool BrowserAutofillManager::ShouldShowScanCreditCard(
 
   bool is_card_number_field =
       autofill_field->Type().GetStorableType() == CREDIT_CARD_NUMBER &&
-      base::ContainsOnlyChars(CreditCard::StripSeparators(field.value()),
+      base::ContainsOnlyChars(StripCardNumberSeparators(field.value()),
                               u"0123456789");
 
   if (!is_card_number_field) {
