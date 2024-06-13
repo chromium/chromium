@@ -2204,7 +2204,12 @@ def _RunInternal(parser,
   if bundle_generation_info:
     args.command.RegisterBundleGenerationInfo(bundle_generation_info)
   if args.additional_apk_paths:
-    for path in additional_apk_paths:
+    for i, path in enumerate(args.additional_apk_paths):
+      if path and not os.path.exists(path):
+        inc_path = path.replace('.apk', '_incremental.apk')
+        if os.path.exists(inc_path):
+          args.additional_apk_paths[i] = inc_path
+          path = inc_path
       if not path or not os.path.exists(path):
         raise Exception('Invalid additional APK path "{}"'.format(path))
   args.command.ProcessArgs(args)
