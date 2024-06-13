@@ -33,6 +33,7 @@
 #include "third_party/blink/renderer/platform/heap/collection_support/heap_vector.h"
 #include "third_party/blink/renderer/platform/heap/garbage_collected.h"
 #include "third_party/blink/renderer/platform/heap/member.h"
+#include "third_party/blink/renderer/platform/scheduler/public/post_cancellable_task.h"
 #include "third_party/blink/renderer/platform/wtf/shared_buffer.h"
 
 namespace blink {
@@ -82,6 +83,7 @@ class IsolatedSVGDocumentHost final
   Member<Page> page_;
   Member<LocalFrameClient> frame_client_;
   base::OnceClosure async_load_callback_;
+  TaskHandle async_load_task_handle_;
 
   enum LoadState {
     kNotStarted,
