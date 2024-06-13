@@ -355,6 +355,7 @@ linux_memory_builder(
     gn_args = gn_args.config(
         configs = [
             "msan",
+            "fail_on_san_warnings",
             "release_builder",
             "remoteexec",
         ],
