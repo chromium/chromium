@@ -251,6 +251,9 @@ class GraphBuilderTflite final {
       const mojom::ElementWiseUnary& reciprocal);
   base::expected<OperatorOffset, std::string> SerializeReduce(
       const mojom::Reduce& reduce);
+  base::expected<OperatorOffset, std::string> SerializeReduceSumSquare(
+      const mojom::Reduce& reduce,
+      int32_t output_tensor_index);
   OperatorOffset SerializeRelu(const mojom::Relu& relu);
   base::expected<OperatorOffset, std::string> SerializeResample2d(
       const mojom::Resample2d& resample2d);
