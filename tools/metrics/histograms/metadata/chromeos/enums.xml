@@ -1587,6 +1587,12 @@ chromeos/ash/components/language/language_packs/language_pack_manager.h -->
   <int value="17" label="Power Brick"/>
 </enum>
 
+<enum name="PeripheralCustomizationMetricsType">
+  <int value="0" label="Mouse"/>
+  <int value="1" label="GraphicsTablet"/>
+  <int value="2" label="GraphicsTabletPen"/>
+</enum>
+
 <enum name="PopularCamPeriphModuleID">
   <int value="0" label="Others"/>
   <int value="73271312" label="LifeCamHD3000_Microsoft"/>

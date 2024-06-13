@@ -3091,6 +3091,17 @@ and mapped to the variant by `StatisticNameToMachineStatisticVariant()` -->
   </summary>
 </histogram>
 
+<histogram name="ChromeOS.Settings.Device.ButtonRemapping.Pressed"
+    enum="PeripheralCustomizationMetricsType" expires_after="2025-03-22">
+  <owner>dpad@google.com</owner>
+  <owner>wangdanny@google.com</owner>
+  <owner>cros-peripherals@google.com</owner>
+  <summary>
+    Records the pressed event of button remapping when it's emitted due to the
+    device button presses.
+  </summary>
+</histogram>
+
 <histogram name="ChromeOS.Settings.Device.Keyboard.AutoRepeatDelay.{State}"
     units="ms" expires_after="2025-03-22">
   <owner>dpad@google.com</owner>

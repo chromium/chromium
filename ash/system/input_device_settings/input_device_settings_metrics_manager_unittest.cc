@@ -1342,10 +1342,15 @@ TEST_F(InputDeviceSettingsMetricsManagerTest,
        RecordRemappingActionWhenButtonPressed) {
   const auto remappingAction = mojom::RemappingAction::NewStaticShortcutAction(
       mojom::StaticShortcutAction::kPaste);
+  const auto remappingAction2 = mojom::RemappingAction::NewAcceleratorAction(
+      AcceleratorAction::kBrightnessDown);
   base::HistogramTester histogram_tester;
   histogram_tester.ExpectTotalCount(
       "ChromeOS.Settings.Device.Mouse.ButtonRemapping.StaticShortcutAction."
       "Pressed",
+      /*expected_count=*/0);
+  histogram_tester.ExpectTotalCount(
+      "ChromeOS.Settings.Device.ButtonRemapping.Pressed",
       /*expected_count=*/0);
 
   manager_->RecordRemappingActionWhenButtonPressed(
@@ -1354,6 +1359,29 @@ TEST_F(InputDeviceSettingsMetricsManagerTest,
   histogram_tester.ExpectTotalCount(
       "ChromeOS.Settings.Device.Mouse.ButtonRemapping.StaticShortcutAction."
       "Pressed",
+      /*expected_count=*/1u);
+  histogram_tester.ExpectTotalCount(
+      "ChromeOS.Settings.Device.ButtonRemapping.Pressed",
+      /*expected_count=*/1u);
+  histogram_tester.ExpectBucketCount(
+      "ChromeOS.Settings.Device.ButtonRemapping.Pressed",
+      /*sample=*/
+      InputDeviceSettingsMetricsManager::PeripheralCustomizationMetricsType::
+          kMouse,
+      /*expected_count=*/1u);
+
+  manager_->RecordRemappingActionWhenButtonPressed(
+      *remappingAction2,
+      /*peripheral_kind=*/InputDeviceSettingsMetricsManager::
+          PeripheralCustomizationMetricsType::kGraphicsTablet);
+  histogram_tester.ExpectTotalCount(
+      "ChromeOS.Settings.Device.ButtonRemapping.Pressed",
+      /*expected_count=*/2u);
+  histogram_tester.ExpectBucketCount(
+      "ChromeOS.Settings.Device.ButtonRemapping.Pressed",
+      /*sample=*/
+      InputDeviceSettingsMetricsManager::PeripheralCustomizationMetricsType::
+          kGraphicsTablet,
       /*expected_count=*/1u);
 }
 

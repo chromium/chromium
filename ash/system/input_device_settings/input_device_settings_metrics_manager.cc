@@ -835,6 +835,10 @@ void InputDeviceSettingsMetricsManager::RecordRemappingActionWhenButtonPressed(
     const mojom::RemappingAction& remapping_action,
     InputDeviceSettingsMetricsManager::PeripheralCustomizationMetricsType
         peripheral_kind) {
+  // Record grouped button pressed event based on peripheral type.
+  base::UmaHistogramEnumeration(
+      "ChromeOS.Settings.Device.ButtonRemapping.Pressed", peripheral_kind);
+
   RecordButtonRemappingAction(remapping_action, peripheral_kind,
                               /*metrics_name_suffix=*/"Pressed");
 }
