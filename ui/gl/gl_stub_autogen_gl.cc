@@ -50,10 +50,6 @@ GLsync GLStubApiBase::glFenceSyncAPPLEFn(GLenum condition, GLbitfield flags) {
   return 0;
 }
 
-GLuint GLStubApiBase::glGenPathsNVFn(GLsizei range) {
-  return 0;
-}
-
 GLuint GLStubApiBase::glGenProgramPipelinesFn(GLsizei n, GLuint* pipelines) {
   return 0;
 }
@@ -139,10 +135,6 @@ GLboolean GLStubApiBase::glIsFenceNVFn(GLuint fence) {
 }
 
 GLboolean GLStubApiBase::glIsFramebufferEXTFn(GLuint framebuffer) {
-  return 0;
-}
-
-GLboolean GLStubApiBase::glIsPathNVFn(GLuint path) {
   return 0;
 }
 

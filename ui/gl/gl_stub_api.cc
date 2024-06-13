@@ -44,10 +44,6 @@ void GLStubApi::glGenFramebuffersEXTFn(GLsizei n, GLuint* framebuffers) {
   GenHelper(n, framebuffers);
 }
 
-GLuint GLStubApi::glGenPathsNVFn(GLsizei range) {
-  return 1;
-}
-
 void GLStubApi::glGenQueriesFn(GLsizei n, GLuint* ids) {
   GenHelper(n, ids);
 }
@@ -281,10 +277,6 @@ GLboolean GLStubApi::glIsFenceNVFn(GLuint fence) {
 }
 
 GLboolean GLStubApi::glIsFramebufferEXTFn(GLuint framebuffer) {
-  return GL_TRUE;
-}
-
-GLboolean GLStubApi::glIsPathNVFn(GLuint path) {
   return GL_TRUE;
 }
 

@@ -36,7 +36,6 @@ class GL_EXPORT GLStubApi: public GLStubApiBase {
   void glGenFencesAPPLEFn(GLsizei n, GLuint* fences) override;
   void glGenFencesNVFn(GLsizei n, GLuint* fences) override;
   void glGenFramebuffersEXTFn(GLsizei n, GLuint* framebuffers) override;
-  GLuint glGenPathsNVFn(GLsizei range) override;
   void glGenQueriesFn(GLsizei n, GLuint* ids) override;
   void glGenRenderbuffersEXTFn(GLsizei n, GLuint* renderbuffers) override;
   void glGenSamplersFn(GLsizei n, GLuint* samplers) override;
@@ -61,7 +60,6 @@ class GL_EXPORT GLStubApi: public GLStubApiBase {
   GLboolean glIsFenceAPPLEFn(GLuint fence) override;
   GLboolean glIsFenceNVFn(GLuint fence) override;
   GLboolean glIsFramebufferEXTFn(GLuint framebuffer) override;
-  GLboolean glIsPathNVFn(GLuint path) override;
   GLboolean glIsProgramFn(GLuint program) override;
   GLboolean glIsQueryFn(GLuint query) override;
   GLboolean glIsRenderbufferEXTFn(GLuint renderbuffer) override;

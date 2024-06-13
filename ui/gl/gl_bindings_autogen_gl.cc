@@ -375,8 +375,6 @@ void DriverGL::InitializeDynamicBindings(const GLVersionInfo* ver,
       gfx::HasExtension(extensions, "GL_CHROMIUM_gles_depth_binding_hack");
   ext.b_GL_CHROMIUM_glgetstringi_hack =
       gfx::HasExtension(extensions, "GL_CHROMIUM_glgetstringi_hack");
-  ext.b_GL_CHROMIUM_path_rendering =
-      gfx::HasExtension(extensions, "GL_CHROMIUM_path_rendering");
   ext.b_GL_EXT_base_instance =
       gfx::HasExtension(extensions, "GL_EXT_base_instance");
   ext.b_GL_EXT_blend_func_extended =
@@ -387,8 +385,6 @@ void DriverGL::InitializeDynamicBindings(const GLVersionInfo* ver,
       gfx::HasExtension(extensions, "GL_EXT_clip_control");
   ext.b_GL_EXT_debug_marker =
       gfx::HasExtension(extensions, "GL_EXT_debug_marker");
-  ext.b_GL_EXT_direct_state_access =
-      gfx::HasExtension(extensions, "GL_EXT_direct_state_access");
   ext.b_GL_EXT_discard_framebuffer =
       gfx::HasExtension(extensions, "GL_EXT_discard_framebuffer");
   ext.b_GL_EXT_disjoint_timer_query =
@@ -462,8 +458,6 @@ void DriverGL::InitializeDynamicBindings(const GLVersionInfo* ver,
       gfx::HasExtension(extensions, "GL_NV_framebuffer_blit");
   ext.b_GL_NV_internalformat_sample_query =
       gfx::HasExtension(extensions, "GL_NV_internalformat_sample_query");
-  ext.b_GL_NV_path_rendering =
-      gfx::HasExtension(extensions, "GL_NV_path_rendering");
   ext.b_GL_OES_EGL_image = gfx::HasExtension(extensions, "GL_OES_EGL_image");
   ext.b_GL_OES_draw_buffers_indexed =
       gfx::HasExtension(extensions, "GL_OES_draw_buffers_indexed");
@@ -551,12 +545,6 @@ void DriverGL::InitializeDynamicBindings(const GLVersionInfo* ver,
     fn.glBindFragDataLocationIndexedFn =
         reinterpret_cast<glBindFragDataLocationIndexedProc>(
             GetGLProcAddress("glBindFragDataLocationIndexedEXT"));
-  }
-
-  if (ext.b_GL_CHROMIUM_path_rendering) {
-    fn.glBindFragmentInputLocationCHROMIUMFn =
-        reinterpret_cast<glBindFragmentInputLocationCHROMIUMProc>(
-            GetGLProcAddress("glBindFragmentInputLocationCHROMIUM"));
   }
 
   if (ver->IsAtLeastGL(3u, 0u) || ver->is_es) {
@@ -815,42 +803,6 @@ void DriverGL::InitializeDynamicBindings(const GLVersionInfo* ver,
         GetGLProcAddress("glCopyTextureCHROMIUM"));
   }
 
-  if (ext.b_GL_NV_path_rendering) {
-    fn.glCoverFillPathInstancedNVFn =
-        reinterpret_cast<glCoverFillPathInstancedNVProc>(
-            GetGLProcAddress("glCoverFillPathInstancedNV"));
-  } else if (ext.b_GL_CHROMIUM_path_rendering) {
-    fn.glCoverFillPathInstancedNVFn =
-        reinterpret_cast<glCoverFillPathInstancedNVProc>(
-            GetGLProcAddress("glCoverFillPathInstancedCHROMIUM"));
-  }
-
-  if (ext.b_GL_NV_path_rendering) {
-    fn.glCoverFillPathNVFn = reinterpret_cast<glCoverFillPathNVProc>(
-        GetGLProcAddress("glCoverFillPathNV"));
-  } else if (ext.b_GL_CHROMIUM_path_rendering) {
-    fn.glCoverFillPathNVFn = reinterpret_cast<glCoverFillPathNVProc>(
-        GetGLProcAddress("glCoverFillPathCHROMIUM"));
-  }
-
-  if (ext.b_GL_NV_path_rendering) {
-    fn.glCoverStrokePathInstancedNVFn =
-        reinterpret_cast<glCoverStrokePathInstancedNVProc>(
-            GetGLProcAddress("glCoverStrokePathInstancedNV"));
-  } else if (ext.b_GL_CHROMIUM_path_rendering) {
-    fn.glCoverStrokePathInstancedNVFn =
-        reinterpret_cast<glCoverStrokePathInstancedNVProc>(
-            GetGLProcAddress("glCoverStrokePathInstancedCHROMIUM"));
-  }
-
-  if (ext.b_GL_NV_path_rendering) {
-    fn.glCoverStrokePathNVFn = reinterpret_cast<glCoverStrokePathNVProc>(
-        GetGLProcAddress("glCoverStrokePathNV"));
-  } else if (ext.b_GL_CHROMIUM_path_rendering) {
-    fn.glCoverStrokePathNVFn = reinterpret_cast<glCoverStrokePathNVProc>(
-        GetGLProcAddress("glCoverStrokePathCHROMIUM"));
-  }
-
   if (ext.b_GL_EXT_memory_object) {
     fn.glCreateMemoryObjectsEXTFn =
         reinterpret_cast<glCreateMemoryObjectsEXTProc>(
@@ -910,14 +862,6 @@ void DriverGL::InitializeDynamicBindings(const GLVersionInfo* ver,
     fn.glDeleteMemoryObjectsEXTFn =
         reinterpret_cast<glDeleteMemoryObjectsEXTProc>(
             GetGLProcAddress("glDeleteMemoryObjectsEXT"));
-  }
-
-  if (ext.b_GL_NV_path_rendering) {
-    fn.glDeletePathsNVFn = reinterpret_cast<glDeletePathsNVProc>(
-        GetGLProcAddress("glDeletePathsNV"));
-  } else if (ext.b_GL_CHROMIUM_path_rendering) {
-    fn.glDeletePathsNVFn = reinterpret_cast<glDeletePathsNVProc>(
-        GetGLProcAddress("glDeletePathsCHROMIUM"));
   }
 
   if (ver->IsAtLeastGL(4u, 1u) || ver->IsAtLeastGLES(3u, 1u)) {
@@ -1316,14 +1260,6 @@ void DriverGL::InitializeDynamicBindings(const GLVersionInfo* ver,
   } else if (ext.b_GL_EXT_framebuffer_object) {
     fn.glGenFramebuffersEXTFn = reinterpret_cast<glGenFramebuffersEXTProc>(
         GetGLProcAddress("glGenFramebuffersEXT"));
-  }
-
-  if (ext.b_GL_NV_path_rendering) {
-    fn.glGenPathsNVFn =
-        reinterpret_cast<glGenPathsNVProc>(GetGLProcAddress("glGenPathsNV"));
-  } else if (ext.b_GL_CHROMIUM_path_rendering) {
-    fn.glGenPathsNVFn = reinterpret_cast<glGenPathsNVProc>(
-        GetGLProcAddress("glGenPathsCHROMIUM"));
   }
 
   if (ver->IsAtLeastGL(4u, 1u) || ver->IsAtLeastGLES(3u, 1u)) {
@@ -2098,14 +2034,6 @@ void DriverGL::InitializeDynamicBindings(const GLVersionInfo* ver,
         GetGLProcAddress("glIsFramebufferEXT"));
   }
 
-  if (ext.b_GL_NV_path_rendering) {
-    fn.glIsPathNVFn =
-        reinterpret_cast<glIsPathNVProc>(GetGLProcAddress("glIsPathNV"));
-  } else if (ext.b_GL_CHROMIUM_path_rendering) {
-    fn.glIsPathNVFn =
-        reinterpret_cast<glIsPathNVProc>(GetGLProcAddress("glIsPathCHROMIUM"));
-  }
-
   if (ver->IsAtLeastGL(4u, 1u) || ver->IsAtLeastGLES(3u, 1u)) {
     fn.glIsProgramPipelineFn = reinterpret_cast<glIsProgramPipelineProc>(
         GetGLProcAddress("glIsProgramPipeline"));
@@ -2181,24 +2109,6 @@ void DriverGL::InitializeDynamicBindings(const GLVersionInfo* ver,
   } else if (ext.b_GL_EXT_map_buffer_range) {
     fn.glMapBufferRangeFn = reinterpret_cast<glMapBufferRangeProc>(
         GetGLProcAddress("glMapBufferRangeEXT"));
-  }
-
-  if (ext.b_GL_EXT_direct_state_access || ext.b_GL_NV_path_rendering) {
-    fn.glMatrixLoadfEXTFn = reinterpret_cast<glMatrixLoadfEXTProc>(
-        GetGLProcAddress("glMatrixLoadfEXT"));
-  } else if (ext.b_GL_CHROMIUM_path_rendering) {
-    fn.glMatrixLoadfEXTFn = reinterpret_cast<glMatrixLoadfEXTProc>(
-        GetGLProcAddress("glMatrixLoadfCHROMIUM"));
-  }
-
-  if (ext.b_GL_EXT_direct_state_access || ext.b_GL_NV_path_rendering) {
-    fn.glMatrixLoadIdentityEXTFn =
-        reinterpret_cast<glMatrixLoadIdentityEXTProc>(
-            GetGLProcAddress("glMatrixLoadIdentityEXT"));
-  } else if (ext.b_GL_CHROMIUM_path_rendering) {
-    fn.glMatrixLoadIdentityEXTFn =
-        reinterpret_cast<glMatrixLoadIdentityEXTProc>(
-            GetGLProcAddress("glMatrixLoadIdentityCHROMIUM"));
   }
 
   if (ext.b_GL_KHR_parallel_shader_compile) {
@@ -2295,38 +2205,6 @@ void DriverGL::InitializeDynamicBindings(const GLVersionInfo* ver,
         GetGLProcAddress("glPatchParameteriOES"));
   }
 
-  if (ext.b_GL_NV_path_rendering) {
-    fn.glPathCommandsNVFn = reinterpret_cast<glPathCommandsNVProc>(
-        GetGLProcAddress("glPathCommandsNV"));
-  } else if (ext.b_GL_CHROMIUM_path_rendering) {
-    fn.glPathCommandsNVFn = reinterpret_cast<glPathCommandsNVProc>(
-        GetGLProcAddress("glPathCommandsCHROMIUM"));
-  }
-
-  if (ext.b_GL_NV_path_rendering) {
-    fn.glPathParameterfNVFn = reinterpret_cast<glPathParameterfNVProc>(
-        GetGLProcAddress("glPathParameterfNV"));
-  } else if (ext.b_GL_CHROMIUM_path_rendering) {
-    fn.glPathParameterfNVFn = reinterpret_cast<glPathParameterfNVProc>(
-        GetGLProcAddress("glPathParameterfCHROMIUM"));
-  }
-
-  if (ext.b_GL_NV_path_rendering) {
-    fn.glPathParameteriNVFn = reinterpret_cast<glPathParameteriNVProc>(
-        GetGLProcAddress("glPathParameteriNV"));
-  } else if (ext.b_GL_CHROMIUM_path_rendering) {
-    fn.glPathParameteriNVFn = reinterpret_cast<glPathParameteriNVProc>(
-        GetGLProcAddress("glPathParameteriCHROMIUM"));
-  }
-
-  if (ext.b_GL_NV_path_rendering) {
-    fn.glPathStencilFuncNVFn = reinterpret_cast<glPathStencilFuncNVProc>(
-        GetGLProcAddress("glPathStencilFuncNV"));
-  } else if (ext.b_GL_CHROMIUM_path_rendering) {
-    fn.glPathStencilFuncNVFn = reinterpret_cast<glPathStencilFuncNVProc>(
-        GetGLProcAddress("glPathStencilFuncCHROMIUM"));
-  }
-
   if (ver->IsAtLeastGL(4u, 0u) || ver->IsAtLeastGLES(3u, 0u) ||
       ext.b_GL_ARB_transform_feedback2) {
     fn.glPauseTransformFeedbackFn =
@@ -2391,16 +2269,6 @@ void DriverGL::InitializeDynamicBindings(const GLVersionInfo* ver,
   if (ver->IsAtLeastGL(4u, 1u) || ver->IsAtLeastGLES(3u, 0u)) {
     fn.glProgramParameteriFn = reinterpret_cast<glProgramParameteriProc>(
         GetGLProcAddress("glProgramParameteri"));
-  }
-
-  if (ext.b_GL_NV_path_rendering) {
-    fn.glProgramPathFragmentInputGenNVFn =
-        reinterpret_cast<glProgramPathFragmentInputGenNVProc>(
-            GetGLProcAddress("glProgramPathFragmentInputGenNV"));
-  } else if (ext.b_GL_CHROMIUM_path_rendering) {
-    fn.glProgramPathFragmentInputGenNVFn =
-        reinterpret_cast<glProgramPathFragmentInputGenNVProc>(
-            GetGLProcAddress("glProgramPathFragmentInputGenCHROMIUM"));
   }
 
   if (ver->IsAtLeastGL(4u, 1u) || ver->IsAtLeastGLES(3u, 1u)) {
@@ -2761,82 +2629,6 @@ void DriverGL::InitializeDynamicBindings(const GLVersionInfo* ver,
   if (ext.b_GL_QCOM_tiled_rendering) {
     fn.glStartTilingQCOMFn = reinterpret_cast<glStartTilingQCOMProc>(
         GetGLProcAddress("glStartTilingQCOM"));
-  }
-
-  if (ext.b_GL_NV_path_rendering) {
-    fn.glStencilFillPathInstancedNVFn =
-        reinterpret_cast<glStencilFillPathInstancedNVProc>(
-            GetGLProcAddress("glStencilFillPathInstancedNV"));
-  } else if (ext.b_GL_CHROMIUM_path_rendering) {
-    fn.glStencilFillPathInstancedNVFn =
-        reinterpret_cast<glStencilFillPathInstancedNVProc>(
-            GetGLProcAddress("glStencilFillPathInstancedCHROMIUM"));
-  }
-
-  if (ext.b_GL_NV_path_rendering) {
-    fn.glStencilFillPathNVFn = reinterpret_cast<glStencilFillPathNVProc>(
-        GetGLProcAddress("glStencilFillPathNV"));
-  } else if (ext.b_GL_CHROMIUM_path_rendering) {
-    fn.glStencilFillPathNVFn = reinterpret_cast<glStencilFillPathNVProc>(
-        GetGLProcAddress("glStencilFillPathCHROMIUM"));
-  }
-
-  if (ext.b_GL_NV_path_rendering) {
-    fn.glStencilStrokePathInstancedNVFn =
-        reinterpret_cast<glStencilStrokePathInstancedNVProc>(
-            GetGLProcAddress("glStencilStrokePathInstancedNV"));
-  } else if (ext.b_GL_CHROMIUM_path_rendering) {
-    fn.glStencilStrokePathInstancedNVFn =
-        reinterpret_cast<glStencilStrokePathInstancedNVProc>(
-            GetGLProcAddress("glStencilStrokePathInstancedCHROMIUM"));
-  }
-
-  if (ext.b_GL_NV_path_rendering) {
-    fn.glStencilStrokePathNVFn = reinterpret_cast<glStencilStrokePathNVProc>(
-        GetGLProcAddress("glStencilStrokePathNV"));
-  } else if (ext.b_GL_CHROMIUM_path_rendering) {
-    fn.glStencilStrokePathNVFn = reinterpret_cast<glStencilStrokePathNVProc>(
-        GetGLProcAddress("glStencilStrokePathCHROMIUM"));
-  }
-
-  if (ext.b_GL_NV_path_rendering) {
-    fn.glStencilThenCoverFillPathInstancedNVFn =
-        reinterpret_cast<glStencilThenCoverFillPathInstancedNVProc>(
-            GetGLProcAddress("glStencilThenCoverFillPathInstancedNV"));
-  } else if (ext.b_GL_CHROMIUM_path_rendering) {
-    fn.glStencilThenCoverFillPathInstancedNVFn =
-        reinterpret_cast<glStencilThenCoverFillPathInstancedNVProc>(
-            GetGLProcAddress("glStencilThenCoverFillPathInstancedCHROMIUM"));
-  }
-
-  if (ext.b_GL_NV_path_rendering) {
-    fn.glStencilThenCoverFillPathNVFn =
-        reinterpret_cast<glStencilThenCoverFillPathNVProc>(
-            GetGLProcAddress("glStencilThenCoverFillPathNV"));
-  } else if (ext.b_GL_CHROMIUM_path_rendering) {
-    fn.glStencilThenCoverFillPathNVFn =
-        reinterpret_cast<glStencilThenCoverFillPathNVProc>(
-            GetGLProcAddress("glStencilThenCoverFillPathCHROMIUM"));
-  }
-
-  if (ext.b_GL_NV_path_rendering) {
-    fn.glStencilThenCoverStrokePathInstancedNVFn =
-        reinterpret_cast<glStencilThenCoverStrokePathInstancedNVProc>(
-            GetGLProcAddress("glStencilThenCoverStrokePathInstancedNV"));
-  } else if (ext.b_GL_CHROMIUM_path_rendering) {
-    fn.glStencilThenCoverStrokePathInstancedNVFn =
-        reinterpret_cast<glStencilThenCoverStrokePathInstancedNVProc>(
-            GetGLProcAddress("glStencilThenCoverStrokePathInstancedCHROMIUM"));
-  }
-
-  if (ext.b_GL_NV_path_rendering) {
-    fn.glStencilThenCoverStrokePathNVFn =
-        reinterpret_cast<glStencilThenCoverStrokePathNVProc>(
-            GetGLProcAddress("glStencilThenCoverStrokePathNV"));
-  } else if (ext.b_GL_CHROMIUM_path_rendering) {
-    fn.glStencilThenCoverStrokePathNVFn =
-        reinterpret_cast<glStencilThenCoverStrokePathNVProc>(
-            GetGLProcAddress("glStencilThenCoverStrokePathCHROMIUM"));
   }
 
   if (ext.b_GL_APPLE_fence) {
@@ -3226,12 +3018,6 @@ void GLApiBase::glBindFragDataLocationIndexedFn(GLuint program,
                                                 const char* name) {
   driver_->fn.glBindFragDataLocationIndexedFn(program, colorNumber, index,
                                               name);
-}
-
-void GLApiBase::glBindFragmentInputLocationCHROMIUMFn(GLuint program,
-                                                      GLint location,
-                                                      const char* name) {
-  driver_->fn.glBindFragmentInputLocationCHROMIUMFn(program, location, name);
 }
 
 void GLApiBase::glBindFramebufferEXTFn(GLenum target, GLuint framebuffer) {
@@ -3673,38 +3459,6 @@ void GLApiBase::glCopyTextureCHROMIUMFn(GLuint sourceId,
       destType, unpackFlipY, unpackPremultiplyAlpha, unpackUnmultiplyAlpha);
 }
 
-void GLApiBase::glCoverFillPathInstancedNVFn(GLsizei numPaths,
-                                             GLenum pathNameType,
-                                             const void* paths,
-                                             GLuint pathBase,
-                                             GLenum coverMode,
-                                             GLenum transformType,
-                                             const GLfloat* transformValues) {
-  driver_->fn.glCoverFillPathInstancedNVFn(numPaths, pathNameType, paths,
-                                           pathBase, coverMode, transformType,
-                                           transformValues);
-}
-
-void GLApiBase::glCoverFillPathNVFn(GLuint path, GLenum coverMode) {
-  driver_->fn.glCoverFillPathNVFn(path, coverMode);
-}
-
-void GLApiBase::glCoverStrokePathInstancedNVFn(GLsizei numPaths,
-                                               GLenum pathNameType,
-                                               const void* paths,
-                                               GLuint pathBase,
-                                               GLenum coverMode,
-                                               GLenum transformType,
-                                               const GLfloat* transformValues) {
-  driver_->fn.glCoverStrokePathInstancedNVFn(numPaths, pathNameType, paths,
-                                             pathBase, coverMode, transformType,
-                                             transformValues);
-}
-
-void GLApiBase::glCoverStrokePathNVFn(GLuint name, GLenum coverMode) {
-  driver_->fn.glCoverStrokePathNVFn(name, coverMode);
-}
-
 void GLApiBase::glCreateMemoryObjectsEXTFn(GLsizei n, GLuint* memoryObjects) {
   driver_->fn.glCreateMemoryObjectsEXTFn(n, memoryObjects);
 }
@@ -3771,10 +3525,6 @@ void GLApiBase::glDeleteFramebuffersEXTFn(GLsizei n,
 void GLApiBase::glDeleteMemoryObjectsEXTFn(GLsizei n,
                                            const GLuint* memoryObjects) {
   driver_->fn.glDeleteMemoryObjectsEXTFn(n, memoryObjects);
-}
-
-void GLApiBase::glDeletePathsNVFn(GLuint path, GLsizei range) {
-  driver_->fn.glDeletePathsNVFn(path, range);
 }
 
 void GLApiBase::glDeleteProgramFn(GLuint program) {
@@ -4137,10 +3887,6 @@ void GLApiBase::glGenFencesNVFn(GLsizei n, GLuint* fences) {
 
 void GLApiBase::glGenFramebuffersEXTFn(GLsizei n, GLuint* framebuffers) {
   driver_->fn.glGenFramebuffersEXTFn(n, framebuffers);
-}
-
-GLuint GLApiBase::glGenPathsNVFn(GLsizei range) {
-  return driver_->fn.glGenPathsNVFn(range);
 }
 
 GLuint GLApiBase::glGenProgramPipelinesFn(GLsizei n, GLuint* pipelines) {
@@ -5161,10 +4907,6 @@ GLboolean GLApiBase::glIsFramebufferEXTFn(GLuint framebuffer) {
   return driver_->fn.glIsFramebufferEXTFn(framebuffer);
 }
 
-GLboolean GLApiBase::glIsPathNVFn(GLuint path) {
-  return driver_->fn.glIsPathNVFn(path);
-}
-
 GLboolean GLApiBase::glIsProgramFn(GLuint program) {
   return driver_->fn.glIsProgramFn(program);
 }
@@ -5226,14 +4968,6 @@ void* GLApiBase::glMapBufferRangeFn(GLenum target,
                                     GLsizeiptr length,
                                     GLbitfield access) {
   return driver_->fn.glMapBufferRangeFn(target, offset, length, access);
-}
-
-void GLApiBase::glMatrixLoadfEXTFn(GLenum matrixMode, const GLfloat* m) {
-  driver_->fn.glMatrixLoadfEXTFn(matrixMode, m);
-}
-
-void GLApiBase::glMatrixLoadIdentityEXTFn(GLenum matrixMode) {
-  driver_->fn.glMatrixLoadIdentityEXTFn(matrixMode);
 }
 
 void GLApiBase::glMaxShaderCompilerThreadsKHRFn(GLuint count) {
@@ -5336,28 +5070,6 @@ void GLApiBase::glPatchParameteriFn(GLenum pname, GLint value) {
   driver_->fn.glPatchParameteriFn(pname, value);
 }
 
-void GLApiBase::glPathCommandsNVFn(GLuint path,
-                                   GLsizei numCommands,
-                                   const GLubyte* commands,
-                                   GLsizei numCoords,
-                                   GLenum coordType,
-                                   const GLvoid* coords) {
-  driver_->fn.glPathCommandsNVFn(path, numCommands, commands, numCoords,
-                                 coordType, coords);
-}
-
-void GLApiBase::glPathParameterfNVFn(GLuint path, GLenum pname, GLfloat value) {
-  driver_->fn.glPathParameterfNVFn(path, pname, value);
-}
-
-void GLApiBase::glPathParameteriNVFn(GLuint path, GLenum pname, GLint value) {
-  driver_->fn.glPathParameteriNVFn(path, pname, value);
-}
-
-void GLApiBase::glPathStencilFuncNVFn(GLenum func, GLint ref, GLuint mask) {
-  driver_->fn.glPathStencilFuncNVFn(func, ref, mask);
-}
-
 void GLApiBase::glPauseTransformFeedbackFn(void) {
   driver_->fn.glPauseTransformFeedbackFn();
 }
@@ -5415,15 +5127,6 @@ void GLApiBase::glProgramParameteriFn(GLuint program,
                                       GLenum pname,
                                       GLint value) {
   driver_->fn.glProgramParameteriFn(program, pname, value);
-}
-
-void GLApiBase::glProgramPathFragmentInputGenNVFn(GLuint program,
-                                                  GLint location,
-                                                  GLenum genMode,
-                                                  GLint components,
-                                                  const GLfloat* coeffs) {
-  driver_->fn.glProgramPathFragmentInputGenNVFn(program, location, genMode,
-                                                components, coeffs);
 }
 
 void GLApiBase::glProgramUniform1fFn(GLuint program,
@@ -5903,25 +5606,6 @@ void GLApiBase::glStartTilingQCOMFn(GLuint x,
   driver_->fn.glStartTilingQCOMFn(x, y, width, height, preserveMask);
 }
 
-void GLApiBase::glStencilFillPathInstancedNVFn(GLsizei numPaths,
-                                               GLenum pathNameType,
-                                               const void* paths,
-                                               GLuint pathBase,
-                                               GLenum fillMode,
-                                               GLuint mask,
-                                               GLenum transformType,
-                                               const GLfloat* transformValues) {
-  driver_->fn.glStencilFillPathInstancedNVFn(numPaths, pathNameType, paths,
-                                             pathBase, fillMode, mask,
-                                             transformType, transformValues);
-}
-
-void GLApiBase::glStencilFillPathNVFn(GLuint path,
-                                      GLenum fillMode,
-                                      GLuint mask) {
-  driver_->fn.glStencilFillPathNVFn(path, fillMode, mask);
-}
-
 void GLApiBase::glStencilFuncFn(GLenum func, GLint ref, GLuint mask) {
   driver_->fn.glStencilFuncFn(func, ref, mask);
 }
@@ -5950,71 +5634,6 @@ void GLApiBase::glStencilOpSeparateFn(GLenum face,
                                       GLenum zfail,
                                       GLenum zpass) {
   driver_->fn.glStencilOpSeparateFn(face, fail, zfail, zpass);
-}
-
-void GLApiBase::glStencilStrokePathInstancedNVFn(
-    GLsizei numPaths,
-    GLenum pathNameType,
-    const void* paths,
-    GLuint pathBase,
-    GLint ref,
-    GLuint mask,
-    GLenum transformType,
-    const GLfloat* transformValues) {
-  driver_->fn.glStencilStrokePathInstancedNVFn(numPaths, pathNameType, paths,
-                                               pathBase, ref, mask,
-                                               transformType, transformValues);
-}
-
-void GLApiBase::glStencilStrokePathNVFn(GLuint path,
-                                        GLint reference,
-                                        GLuint mask) {
-  driver_->fn.glStencilStrokePathNVFn(path, reference, mask);
-}
-
-void GLApiBase::glStencilThenCoverFillPathInstancedNVFn(
-    GLsizei numPaths,
-    GLenum pathNameType,
-    const void* paths,
-    GLuint pathBase,
-    GLenum fillMode,
-    GLuint mask,
-    GLenum coverMode,
-    GLenum transformType,
-    const GLfloat* transformValues) {
-  driver_->fn.glStencilThenCoverFillPathInstancedNVFn(
-      numPaths, pathNameType, paths, pathBase, fillMode, mask, coverMode,
-      transformType, transformValues);
-}
-
-void GLApiBase::glStencilThenCoverFillPathNVFn(GLuint path,
-                                               GLenum fillMode,
-                                               GLuint mask,
-                                               GLenum coverMode) {
-  driver_->fn.glStencilThenCoverFillPathNVFn(path, fillMode, mask, coverMode);
-}
-
-void GLApiBase::glStencilThenCoverStrokePathInstancedNVFn(
-    GLsizei numPaths,
-    GLenum pathNameType,
-    const void* paths,
-    GLuint pathBase,
-    GLint ref,
-    GLuint mask,
-    GLenum coverMode,
-    GLenum transformType,
-    const GLfloat* transformValues) {
-  driver_->fn.glStencilThenCoverStrokePathInstancedNVFn(
-      numPaths, pathNameType, paths, pathBase, ref, mask, coverMode,
-      transformType, transformValues);
-}
-
-void GLApiBase::glStencilThenCoverStrokePathNVFn(GLuint path,
-                                                 GLint reference,
-                                                 GLuint mask,
-                                                 GLenum coverMode) {
-  driver_->fn.glStencilThenCoverStrokePathNVFn(path, reference, mask,
-                                               coverMode);
 }
 
 GLboolean GLApiBase::glTestFenceAPPLEFn(GLuint fence) {
@@ -6723,14 +6342,6 @@ void TraceGLApi::glBindFragDataLocationIndexedFn(GLuint program,
   gl_api_->glBindFragDataLocationIndexedFn(program, colorNumber, index, name);
 }
 
-void TraceGLApi::glBindFragmentInputLocationCHROMIUMFn(GLuint program,
-                                                       GLint location,
-                                                       const char* name) {
-  TRACE_EVENT_BINARY_EFFICIENT0(
-      "gpu", "TraceGLAPI::glBindFragmentInputLocationCHROMIUM");
-  gl_api_->glBindFragmentInputLocationCHROMIUMFn(program, location, name);
-}
-
 void TraceGLApi::glBindFramebufferEXTFn(GLenum target, GLuint framebuffer) {
   TRACE_EVENT_BINARY_EFFICIENT0("gpu", "TraceGLAPI::glBindFramebufferEXT");
   gl_api_->glBindFramebufferEXTFn(target, framebuffer);
@@ -7231,45 +6842,6 @@ void TraceGLApi::glCopyTextureCHROMIUMFn(GLuint sourceId,
       destType, unpackFlipY, unpackPremultiplyAlpha, unpackUnmultiplyAlpha);
 }
 
-void TraceGLApi::glCoverFillPathInstancedNVFn(GLsizei numPaths,
-                                              GLenum pathNameType,
-                                              const void* paths,
-                                              GLuint pathBase,
-                                              GLenum coverMode,
-                                              GLenum transformType,
-                                              const GLfloat* transformValues) {
-  TRACE_EVENT_BINARY_EFFICIENT0("gpu",
-                                "TraceGLAPI::glCoverFillPathInstancedNV");
-  gl_api_->glCoverFillPathInstancedNVFn(numPaths, pathNameType, paths, pathBase,
-                                        coverMode, transformType,
-                                        transformValues);
-}
-
-void TraceGLApi::glCoverFillPathNVFn(GLuint path, GLenum coverMode) {
-  TRACE_EVENT_BINARY_EFFICIENT0("gpu", "TraceGLAPI::glCoverFillPathNV");
-  gl_api_->glCoverFillPathNVFn(path, coverMode);
-}
-
-void TraceGLApi::glCoverStrokePathInstancedNVFn(
-    GLsizei numPaths,
-    GLenum pathNameType,
-    const void* paths,
-    GLuint pathBase,
-    GLenum coverMode,
-    GLenum transformType,
-    const GLfloat* transformValues) {
-  TRACE_EVENT_BINARY_EFFICIENT0("gpu",
-                                "TraceGLAPI::glCoverStrokePathInstancedNV");
-  gl_api_->glCoverStrokePathInstancedNVFn(numPaths, pathNameType, paths,
-                                          pathBase, coverMode, transformType,
-                                          transformValues);
-}
-
-void TraceGLApi::glCoverStrokePathNVFn(GLuint name, GLenum coverMode) {
-  TRACE_EVENT_BINARY_EFFICIENT0("gpu", "TraceGLAPI::glCoverStrokePathNV");
-  gl_api_->glCoverStrokePathNVFn(name, coverMode);
-}
-
 void TraceGLApi::glCreateMemoryObjectsEXTFn(GLsizei n, GLuint* memoryObjects) {
   TRACE_EVENT_BINARY_EFFICIENT0("gpu", "TraceGLAPI::glCreateMemoryObjectsEXT");
   gl_api_->glCreateMemoryObjectsEXTFn(n, memoryObjects);
@@ -7348,11 +6920,6 @@ void TraceGLApi::glDeleteMemoryObjectsEXTFn(GLsizei n,
                                             const GLuint* memoryObjects) {
   TRACE_EVENT_BINARY_EFFICIENT0("gpu", "TraceGLAPI::glDeleteMemoryObjectsEXT");
   gl_api_->glDeleteMemoryObjectsEXTFn(n, memoryObjects);
-}
-
-void TraceGLApi::glDeletePathsNVFn(GLuint path, GLsizei range) {
-  TRACE_EVENT_BINARY_EFFICIENT0("gpu", "TraceGLAPI::glDeletePathsNV");
-  gl_api_->glDeletePathsNVFn(path, range);
 }
 
 void TraceGLApi::glDeleteProgramFn(GLuint program) {
@@ -7806,11 +7373,6 @@ void TraceGLApi::glGenFencesNVFn(GLsizei n, GLuint* fences) {
 void TraceGLApi::glGenFramebuffersEXTFn(GLsizei n, GLuint* framebuffers) {
   TRACE_EVENT_BINARY_EFFICIENT0("gpu", "TraceGLAPI::glGenFramebuffersEXT");
   gl_api_->glGenFramebuffersEXTFn(n, framebuffers);
-}
-
-GLuint TraceGLApi::glGenPathsNVFn(GLsizei range) {
-  TRACE_EVENT_BINARY_EFFICIENT0("gpu", "TraceGLAPI::glGenPathsNV");
-  return gl_api_->glGenPathsNVFn(range);
 }
 
 GLuint TraceGLApi::glGenProgramPipelinesFn(GLsizei n, GLuint* pipelines) {
@@ -9025,11 +8587,6 @@ GLboolean TraceGLApi::glIsFramebufferEXTFn(GLuint framebuffer) {
   return gl_api_->glIsFramebufferEXTFn(framebuffer);
 }
 
-GLboolean TraceGLApi::glIsPathNVFn(GLuint path) {
-  TRACE_EVENT_BINARY_EFFICIENT0("gpu", "TraceGLAPI::glIsPathNV");
-  return gl_api_->glIsPathNVFn(path);
-}
-
 GLboolean TraceGLApi::glIsProgramFn(GLuint program) {
   TRACE_EVENT_BINARY_EFFICIENT0("gpu", "TraceGLAPI::glIsProgram");
   return gl_api_->glIsProgramFn(program);
@@ -9106,16 +8663,6 @@ void* TraceGLApi::glMapBufferRangeFn(GLenum target,
                                      GLbitfield access) {
   TRACE_EVENT_BINARY_EFFICIENT0("gpu", "TraceGLAPI::glMapBufferRange");
   return gl_api_->glMapBufferRangeFn(target, offset, length, access);
-}
-
-void TraceGLApi::glMatrixLoadfEXTFn(GLenum matrixMode, const GLfloat* m) {
-  TRACE_EVENT_BINARY_EFFICIENT0("gpu", "TraceGLAPI::glMatrixLoadfEXT");
-  gl_api_->glMatrixLoadfEXTFn(matrixMode, m);
-}
-
-void TraceGLApi::glMatrixLoadIdentityEXTFn(GLenum matrixMode) {
-  TRACE_EVENT_BINARY_EFFICIENT0("gpu", "TraceGLAPI::glMatrixLoadIdentityEXT");
-  gl_api_->glMatrixLoadIdentityEXTFn(matrixMode);
 }
 
 void TraceGLApi::glMaxShaderCompilerThreadsKHRFn(GLuint count) {
@@ -9239,34 +8786,6 @@ void TraceGLApi::glPatchParameteriFn(GLenum pname, GLint value) {
   gl_api_->glPatchParameteriFn(pname, value);
 }
 
-void TraceGLApi::glPathCommandsNVFn(GLuint path,
-                                    GLsizei numCommands,
-                                    const GLubyte* commands,
-                                    GLsizei numCoords,
-                                    GLenum coordType,
-                                    const GLvoid* coords) {
-  TRACE_EVENT_BINARY_EFFICIENT0("gpu", "TraceGLAPI::glPathCommandsNV");
-  gl_api_->glPathCommandsNVFn(path, numCommands, commands, numCoords, coordType,
-                              coords);
-}
-
-void TraceGLApi::glPathParameterfNVFn(GLuint path,
-                                      GLenum pname,
-                                      GLfloat value) {
-  TRACE_EVENT_BINARY_EFFICIENT0("gpu", "TraceGLAPI::glPathParameterfNV");
-  gl_api_->glPathParameterfNVFn(path, pname, value);
-}
-
-void TraceGLApi::glPathParameteriNVFn(GLuint path, GLenum pname, GLint value) {
-  TRACE_EVENT_BINARY_EFFICIENT0("gpu", "TraceGLAPI::glPathParameteriNV");
-  gl_api_->glPathParameteriNVFn(path, pname, value);
-}
-
-void TraceGLApi::glPathStencilFuncNVFn(GLenum func, GLint ref, GLuint mask) {
-  TRACE_EVENT_BINARY_EFFICIENT0("gpu", "TraceGLAPI::glPathStencilFuncNV");
-  gl_api_->glPathStencilFuncNVFn(func, ref, mask);
-}
-
 void TraceGLApi::glPauseTransformFeedbackFn(void) {
   TRACE_EVENT_BINARY_EFFICIENT0("gpu", "TraceGLAPI::glPauseTransformFeedback");
   gl_api_->glPauseTransformFeedbackFn();
@@ -9338,17 +8857,6 @@ void TraceGLApi::glProgramParameteriFn(GLuint program,
                                        GLint value) {
   TRACE_EVENT_BINARY_EFFICIENT0("gpu", "TraceGLAPI::glProgramParameteri");
   gl_api_->glProgramParameteriFn(program, pname, value);
-}
-
-void TraceGLApi::glProgramPathFragmentInputGenNVFn(GLuint program,
-                                                   GLint location,
-                                                   GLenum genMode,
-                                                   GLint components,
-                                                   const GLfloat* coeffs) {
-  TRACE_EVENT_BINARY_EFFICIENT0("gpu",
-                                "TraceGLAPI::glProgramPathFragmentInputGenNV");
-  gl_api_->glProgramPathFragmentInputGenNVFn(program, location, genMode,
-                                             components, coeffs);
 }
 
 void TraceGLApi::glProgramUniform1fFn(GLuint program,
@@ -9907,29 +9415,6 @@ void TraceGLApi::glStartTilingQCOMFn(GLuint x,
   gl_api_->glStartTilingQCOMFn(x, y, width, height, preserveMask);
 }
 
-void TraceGLApi::glStencilFillPathInstancedNVFn(
-    GLsizei numPaths,
-    GLenum pathNameType,
-    const void* paths,
-    GLuint pathBase,
-    GLenum fillMode,
-    GLuint mask,
-    GLenum transformType,
-    const GLfloat* transformValues) {
-  TRACE_EVENT_BINARY_EFFICIENT0("gpu",
-                                "TraceGLAPI::glStencilFillPathInstancedNV");
-  gl_api_->glStencilFillPathInstancedNVFn(numPaths, pathNameType, paths,
-                                          pathBase, fillMode, mask,
-                                          transformType, transformValues);
-}
-
-void TraceGLApi::glStencilFillPathNVFn(GLuint path,
-                                       GLenum fillMode,
-                                       GLuint mask) {
-  TRACE_EVENT_BINARY_EFFICIENT0("gpu", "TraceGLAPI::glStencilFillPathNV");
-  gl_api_->glStencilFillPathNVFn(path, fillMode, mask);
-}
-
 void TraceGLApi::glStencilFuncFn(GLenum func, GLint ref, GLuint mask) {
   TRACE_EVENT_BINARY_EFFICIENT0("gpu", "TraceGLAPI::glStencilFunc");
   gl_api_->glStencilFuncFn(func, ref, mask);
@@ -9964,81 +9449,6 @@ void TraceGLApi::glStencilOpSeparateFn(GLenum face,
                                        GLenum zpass) {
   TRACE_EVENT_BINARY_EFFICIENT0("gpu", "TraceGLAPI::glStencilOpSeparate");
   gl_api_->glStencilOpSeparateFn(face, fail, zfail, zpass);
-}
-
-void TraceGLApi::glStencilStrokePathInstancedNVFn(
-    GLsizei numPaths,
-    GLenum pathNameType,
-    const void* paths,
-    GLuint pathBase,
-    GLint ref,
-    GLuint mask,
-    GLenum transformType,
-    const GLfloat* transformValues) {
-  TRACE_EVENT_BINARY_EFFICIENT0("gpu",
-                                "TraceGLAPI::glStencilStrokePathInstancedNV");
-  gl_api_->glStencilStrokePathInstancedNVFn(numPaths, pathNameType, paths,
-                                            pathBase, ref, mask, transformType,
-                                            transformValues);
-}
-
-void TraceGLApi::glStencilStrokePathNVFn(GLuint path,
-                                         GLint reference,
-                                         GLuint mask) {
-  TRACE_EVENT_BINARY_EFFICIENT0("gpu", "TraceGLAPI::glStencilStrokePathNV");
-  gl_api_->glStencilStrokePathNVFn(path, reference, mask);
-}
-
-void TraceGLApi::glStencilThenCoverFillPathInstancedNVFn(
-    GLsizei numPaths,
-    GLenum pathNameType,
-    const void* paths,
-    GLuint pathBase,
-    GLenum fillMode,
-    GLuint mask,
-    GLenum coverMode,
-    GLenum transformType,
-    const GLfloat* transformValues) {
-  TRACE_EVENT_BINARY_EFFICIENT0(
-      "gpu", "TraceGLAPI::glStencilThenCoverFillPathInstancedNV");
-  gl_api_->glStencilThenCoverFillPathInstancedNVFn(
-      numPaths, pathNameType, paths, pathBase, fillMode, mask, coverMode,
-      transformType, transformValues);
-}
-
-void TraceGLApi::glStencilThenCoverFillPathNVFn(GLuint path,
-                                                GLenum fillMode,
-                                                GLuint mask,
-                                                GLenum coverMode) {
-  TRACE_EVENT_BINARY_EFFICIENT0("gpu",
-                                "TraceGLAPI::glStencilThenCoverFillPathNV");
-  gl_api_->glStencilThenCoverFillPathNVFn(path, fillMode, mask, coverMode);
-}
-
-void TraceGLApi::glStencilThenCoverStrokePathInstancedNVFn(
-    GLsizei numPaths,
-    GLenum pathNameType,
-    const void* paths,
-    GLuint pathBase,
-    GLint ref,
-    GLuint mask,
-    GLenum coverMode,
-    GLenum transformType,
-    const GLfloat* transformValues) {
-  TRACE_EVENT_BINARY_EFFICIENT0(
-      "gpu", "TraceGLAPI::glStencilThenCoverStrokePathInstancedNV");
-  gl_api_->glStencilThenCoverStrokePathInstancedNVFn(
-      numPaths, pathNameType, paths, pathBase, ref, mask, coverMode,
-      transformType, transformValues);
-}
-
-void TraceGLApi::glStencilThenCoverStrokePathNVFn(GLuint path,
-                                                  GLint reference,
-                                                  GLuint mask,
-                                                  GLenum coverMode) {
-  TRACE_EVENT_BINARY_EFFICIENT0("gpu",
-                                "TraceGLAPI::glStencilThenCoverStrokePathNV");
-  gl_api_->glStencilThenCoverStrokePathNVFn(path, reference, mask, coverMode);
 }
 
 GLboolean TraceGLApi::glTestFenceAPPLEFn(GLuint fence) {
@@ -10859,14 +10269,6 @@ void LogGLApi::glBindFragDataLocationIndexedFn(GLuint program,
   gl_api_->glBindFragDataLocationIndexedFn(program, colorNumber, index, name);
 }
 
-void LogGLApi::glBindFragmentInputLocationCHROMIUMFn(GLuint program,
-                                                     GLint location,
-                                                     const char* name) {
-  GL_SERVICE_LOG("glBindFragmentInputLocationCHROMIUM"
-                 << "(" << program << ", " << location << ", " << name << ")");
-  gl_api_->glBindFragmentInputLocationCHROMIUMFn(program, location, name);
-}
-
 void LogGLApi::glBindFramebufferEXTFn(GLenum target, GLuint framebuffer) {
   GL_SERVICE_LOG("glBindFramebufferEXT" << "(" << GLEnums::GetStringEnum(target)
                                         << ", " << framebuffer << ")");
@@ -11502,58 +10904,6 @@ void LogGLApi::glCopyTextureCHROMIUMFn(GLuint sourceId,
       destType, unpackFlipY, unpackPremultiplyAlpha, unpackUnmultiplyAlpha);
 }
 
-void LogGLApi::glCoverFillPathInstancedNVFn(GLsizei numPaths,
-                                            GLenum pathNameType,
-                                            const void* paths,
-                                            GLuint pathBase,
-                                            GLenum coverMode,
-                                            GLenum transformType,
-                                            const GLfloat* transformValues) {
-  GL_SERVICE_LOG("glCoverFillPathInstancedNV"
-                 << "(" << numPaths << ", "
-                 << GLEnums::GetStringEnum(pathNameType) << ", "
-                 << static_cast<const void*>(paths) << ", " << pathBase << ", "
-                 << GLEnums::GetStringEnum(coverMode) << ", "
-                 << GLEnums::GetStringEnum(transformType) << ", "
-                 << static_cast<const void*>(transformValues) << ")");
-  gl_api_->glCoverFillPathInstancedNVFn(numPaths, pathNameType, paths, pathBase,
-                                        coverMode, transformType,
-                                        transformValues);
-}
-
-void LogGLApi::glCoverFillPathNVFn(GLuint path, GLenum coverMode) {
-  GL_SERVICE_LOG("glCoverFillPathNV" << "(" << path << ", "
-                                     << GLEnums::GetStringEnum(coverMode)
-                                     << ")");
-  gl_api_->glCoverFillPathNVFn(path, coverMode);
-}
-
-void LogGLApi::glCoverStrokePathInstancedNVFn(GLsizei numPaths,
-                                              GLenum pathNameType,
-                                              const void* paths,
-                                              GLuint pathBase,
-                                              GLenum coverMode,
-                                              GLenum transformType,
-                                              const GLfloat* transformValues) {
-  GL_SERVICE_LOG("glCoverStrokePathInstancedNV"
-                 << "(" << numPaths << ", "
-                 << GLEnums::GetStringEnum(pathNameType) << ", "
-                 << static_cast<const void*>(paths) << ", " << pathBase << ", "
-                 << GLEnums::GetStringEnum(coverMode) << ", "
-                 << GLEnums::GetStringEnum(transformType) << ", "
-                 << static_cast<const void*>(transformValues) << ")");
-  gl_api_->glCoverStrokePathInstancedNVFn(numPaths, pathNameType, paths,
-                                          pathBase, coverMode, transformType,
-                                          transformValues);
-}
-
-void LogGLApi::glCoverStrokePathNVFn(GLuint name, GLenum coverMode) {
-  GL_SERVICE_LOG("glCoverStrokePathNV" << "(" << name << ", "
-                                       << GLEnums::GetStringEnum(coverMode)
-                                       << ")");
-  gl_api_->glCoverStrokePathNVFn(name, coverMode);
-}
-
 void LogGLApi::glCreateMemoryObjectsEXTFn(GLsizei n, GLuint* memoryObjects) {
   GL_SERVICE_LOG("glCreateMemoryObjectsEXT"
                  << "(" << n << ", " << static_cast<const void*>(memoryObjects)
@@ -11663,11 +11013,6 @@ void LogGLApi::glDeleteMemoryObjectsEXTFn(GLsizei n,
                  << "(" << n << ", " << static_cast<const void*>(memoryObjects)
                  << ")");
   gl_api_->glDeleteMemoryObjectsEXTFn(n, memoryObjects);
-}
-
-void LogGLApi::glDeletePathsNVFn(GLuint path, GLsizei range) {
-  GL_SERVICE_LOG("glDeletePathsNV" << "(" << path << ", " << range << ")");
-  gl_api_->glDeletePathsNVFn(path, range);
 }
 
 void LogGLApi::glDeleteProgramFn(GLuint program) {
@@ -12196,13 +11541,6 @@ void LogGLApi::glGenFramebuffersEXTFn(GLsizei n, GLuint* framebuffers) {
                  << "(" << n << ", " << static_cast<const void*>(framebuffers)
                  << ")");
   gl_api_->glGenFramebuffersEXTFn(n, framebuffers);
-}
-
-GLuint LogGLApi::glGenPathsNVFn(GLsizei range) {
-  GL_SERVICE_LOG("glGenPathsNV" << "(" << range << ")");
-  GLuint result = gl_api_->glGenPathsNVFn(range);
-  GL_SERVICE_LOG("GL_RESULT: " << result);
-  return result;
 }
 
 GLuint LogGLApi::glGenProgramPipelinesFn(GLsizei n, GLuint* pipelines) {
@@ -13764,13 +13102,6 @@ GLboolean LogGLApi::glIsFramebufferEXTFn(GLuint framebuffer) {
   return result;
 }
 
-GLboolean LogGLApi::glIsPathNVFn(GLuint path) {
-  GL_SERVICE_LOG("glIsPathNV" << "(" << path << ")");
-  GLboolean result = gl_api_->glIsPathNVFn(path);
-  GL_SERVICE_LOG("GL_RESULT: " << result);
-  return result;
-}
-
 GLboolean LogGLApi::glIsProgramFn(GLuint program) {
   GL_SERVICE_LOG("glIsProgram" << "(" << program << ")");
   GLboolean result = gl_api_->glIsProgramFn(program);
@@ -13876,19 +13207,6 @@ void* LogGLApi::glMapBufferRangeFn(GLenum target,
   void* result = gl_api_->glMapBufferRangeFn(target, offset, length, access);
   GL_SERVICE_LOG("GL_RESULT: " << result);
   return result;
-}
-
-void LogGLApi::glMatrixLoadfEXTFn(GLenum matrixMode, const GLfloat* m) {
-  GL_SERVICE_LOG("glMatrixLoadfEXT" << "(" << GLEnums::GetStringEnum(matrixMode)
-                                    << ", " << static_cast<const void*>(m)
-                                    << ")");
-  gl_api_->glMatrixLoadfEXTFn(matrixMode, m);
-}
-
-void LogGLApi::glMatrixLoadIdentityEXTFn(GLenum matrixMode) {
-  GL_SERVICE_LOG("glMatrixLoadIdentityEXT"
-                 << "(" << GLEnums::GetStringEnum(matrixMode) << ")");
-  gl_api_->glMatrixLoadIdentityEXTFn(matrixMode);
 }
 
 void LogGLApi::glMaxShaderCompilerThreadsKHRFn(GLuint count) {
@@ -14041,41 +13359,6 @@ void LogGLApi::glPatchParameteriFn(GLenum pname, GLint value) {
   gl_api_->glPatchParameteriFn(pname, value);
 }
 
-void LogGLApi::glPathCommandsNVFn(GLuint path,
-                                  GLsizei numCommands,
-                                  const GLubyte* commands,
-                                  GLsizei numCoords,
-                                  GLenum coordType,
-                                  const GLvoid* coords) {
-  GL_SERVICE_LOG("glPathCommandsNV"
-                 << "(" << path << ", " << numCommands << ", "
-                 << static_cast<const void*>(commands) << ", " << numCoords
-                 << ", " << GLEnums::GetStringEnum(coordType) << ", "
-                 << static_cast<const void*>(coords) << ")");
-  gl_api_->glPathCommandsNVFn(path, numCommands, commands, numCoords, coordType,
-                              coords);
-}
-
-void LogGLApi::glPathParameterfNVFn(GLuint path, GLenum pname, GLfloat value) {
-  GL_SERVICE_LOG("glPathParameterfNV" << "(" << path << ", "
-                                      << GLEnums::GetStringEnum(pname) << ", "
-                                      << value << ")");
-  gl_api_->glPathParameterfNVFn(path, pname, value);
-}
-
-void LogGLApi::glPathParameteriNVFn(GLuint path, GLenum pname, GLint value) {
-  GL_SERVICE_LOG("glPathParameteriNV" << "(" << path << ", "
-                                      << GLEnums::GetStringEnum(pname) << ", "
-                                      << value << ")");
-  gl_api_->glPathParameteriNVFn(path, pname, value);
-}
-
-void LogGLApi::glPathStencilFuncNVFn(GLenum func, GLint ref, GLuint mask) {
-  GL_SERVICE_LOG("glPathStencilFuncNV" << "(" << GLEnums::GetStringEnum(func)
-                                       << ", " << ref << ", " << mask << ")");
-  gl_api_->glPathStencilFuncNVFn(func, ref, mask);
-}
-
 void LogGLApi::glPauseTransformFeedbackFn(void) {
   GL_SERVICE_LOG("glPauseTransformFeedback" << "(" << ")");
   gl_api_->glPauseTransformFeedbackFn();
@@ -14157,19 +13440,6 @@ void LogGLApi::glProgramParameteriFn(GLuint program,
                                        << GLEnums::GetStringEnum(pname) << ", "
                                        << value << ")");
   gl_api_->glProgramParameteriFn(program, pname, value);
-}
-
-void LogGLApi::glProgramPathFragmentInputGenNVFn(GLuint program,
-                                                 GLint location,
-                                                 GLenum genMode,
-                                                 GLint components,
-                                                 const GLfloat* coeffs) {
-  GL_SERVICE_LOG("glProgramPathFragmentInputGenNV"
-                 << "(" << program << ", " << location << ", "
-                 << GLEnums::GetStringEnum(genMode) << ", " << components
-                 << ", " << static_cast<const void*>(coeffs) << ")");
-  gl_api_->glProgramPathFragmentInputGenNVFn(program, location, genMode,
-                                             components, coeffs);
 }
 
 void LogGLApi::glProgramUniform1fFn(GLuint program,
@@ -14871,35 +14141,6 @@ void LogGLApi::glStartTilingQCOMFn(GLuint x,
   gl_api_->glStartTilingQCOMFn(x, y, width, height, preserveMask);
 }
 
-void LogGLApi::glStencilFillPathInstancedNVFn(GLsizei numPaths,
-                                              GLenum pathNameType,
-                                              const void* paths,
-                                              GLuint pathBase,
-                                              GLenum fillMode,
-                                              GLuint mask,
-                                              GLenum transformType,
-                                              const GLfloat* transformValues) {
-  GL_SERVICE_LOG("glStencilFillPathInstancedNV"
-                 << "(" << numPaths << ", "
-                 << GLEnums::GetStringEnum(pathNameType) << ", "
-                 << static_cast<const void*>(paths) << ", " << pathBase << ", "
-                 << GLEnums::GetStringEnum(fillMode) << ", " << mask << ", "
-                 << GLEnums::GetStringEnum(transformType) << ", "
-                 << static_cast<const void*>(transformValues) << ")");
-  gl_api_->glStencilFillPathInstancedNVFn(numPaths, pathNameType, paths,
-                                          pathBase, fillMode, mask,
-                                          transformType, transformValues);
-}
-
-void LogGLApi::glStencilFillPathNVFn(GLuint path,
-                                     GLenum fillMode,
-                                     GLuint mask) {
-  GL_SERVICE_LOG("glStencilFillPathNV" << "(" << path << ", "
-                                       << GLEnums::GetStringEnum(fillMode)
-                                       << ", " << mask << ")");
-  gl_api_->glStencilFillPathNVFn(path, fillMode, mask);
-}
-
 void LogGLApi::glStencilFuncFn(GLenum func, GLint ref, GLuint mask) {
   GL_SERVICE_LOG("glStencilFunc" << "(" << GLEnums::GetStringEnum(func) << ", "
                                  << ref << ", " << mask << ")");
@@ -14944,100 +14185,6 @@ void LogGLApi::glStencilOpSeparateFn(GLenum face,
                                        << ", " << GLEnums::GetStringEnum(zpass)
                                        << ")");
   gl_api_->glStencilOpSeparateFn(face, fail, zfail, zpass);
-}
-
-void LogGLApi::glStencilStrokePathInstancedNVFn(
-    GLsizei numPaths,
-    GLenum pathNameType,
-    const void* paths,
-    GLuint pathBase,
-    GLint ref,
-    GLuint mask,
-    GLenum transformType,
-    const GLfloat* transformValues) {
-  GL_SERVICE_LOG(
-      "glStencilStrokePathInstancedNV"
-      << "(" << numPaths << ", " << GLEnums::GetStringEnum(pathNameType) << ", "
-      << static_cast<const void*>(paths) << ", " << pathBase << ", " << ref
-      << ", " << mask << ", " << GLEnums::GetStringEnum(transformType) << ", "
-      << static_cast<const void*>(transformValues) << ")");
-  gl_api_->glStencilStrokePathInstancedNVFn(numPaths, pathNameType, paths,
-                                            pathBase, ref, mask, transformType,
-                                            transformValues);
-}
-
-void LogGLApi::glStencilStrokePathNVFn(GLuint path,
-                                       GLint reference,
-                                       GLuint mask) {
-  GL_SERVICE_LOG("glStencilStrokePathNV" << "(" << path << ", " << reference
-                                         << ", " << mask << ")");
-  gl_api_->glStencilStrokePathNVFn(path, reference, mask);
-}
-
-void LogGLApi::glStencilThenCoverFillPathInstancedNVFn(
-    GLsizei numPaths,
-    GLenum pathNameType,
-    const void* paths,
-    GLuint pathBase,
-    GLenum fillMode,
-    GLuint mask,
-    GLenum coverMode,
-    GLenum transformType,
-    const GLfloat* transformValues) {
-  GL_SERVICE_LOG("glStencilThenCoverFillPathInstancedNV"
-                 << "(" << numPaths << ", "
-                 << GLEnums::GetStringEnum(pathNameType) << ", "
-                 << static_cast<const void*>(paths) << ", " << pathBase << ", "
-                 << GLEnums::GetStringEnum(fillMode) << ", " << mask << ", "
-                 << GLEnums::GetStringEnum(coverMode) << ", "
-                 << GLEnums::GetStringEnum(transformType) << ", "
-                 << static_cast<const void*>(transformValues) << ")");
-  gl_api_->glStencilThenCoverFillPathInstancedNVFn(
-      numPaths, pathNameType, paths, pathBase, fillMode, mask, coverMode,
-      transformType, transformValues);
-}
-
-void LogGLApi::glStencilThenCoverFillPathNVFn(GLuint path,
-                                              GLenum fillMode,
-                                              GLuint mask,
-                                              GLenum coverMode) {
-  GL_SERVICE_LOG("glStencilThenCoverFillPathNV"
-                 << "(" << path << ", " << GLEnums::GetStringEnum(fillMode)
-                 << ", " << mask << ", " << GLEnums::GetStringEnum(coverMode)
-                 << ")");
-  gl_api_->glStencilThenCoverFillPathNVFn(path, fillMode, mask, coverMode);
-}
-
-void LogGLApi::glStencilThenCoverStrokePathInstancedNVFn(
-    GLsizei numPaths,
-    GLenum pathNameType,
-    const void* paths,
-    GLuint pathBase,
-    GLint ref,
-    GLuint mask,
-    GLenum coverMode,
-    GLenum transformType,
-    const GLfloat* transformValues) {
-  GL_SERVICE_LOG(
-      "glStencilThenCoverStrokePathInstancedNV"
-      << "(" << numPaths << ", " << GLEnums::GetStringEnum(pathNameType) << ", "
-      << static_cast<const void*>(paths) << ", " << pathBase << ", " << ref
-      << ", " << mask << ", " << GLEnums::GetStringEnum(coverMode) << ", "
-      << GLEnums::GetStringEnum(transformType) << ", "
-      << static_cast<const void*>(transformValues) << ")");
-  gl_api_->glStencilThenCoverStrokePathInstancedNVFn(
-      numPaths, pathNameType, paths, pathBase, ref, mask, coverMode,
-      transformType, transformValues);
-}
-
-void LogGLApi::glStencilThenCoverStrokePathNVFn(GLuint path,
-                                                GLint reference,
-                                                GLuint mask,
-                                                GLenum coverMode) {
-  GL_SERVICE_LOG("glStencilThenCoverStrokePathNV"
-                 << "(" << path << ", " << reference << ", " << mask << ", "
-                 << GLEnums::GetStringEnum(coverMode) << ")");
-  gl_api_->glStencilThenCoverStrokePathNVFn(path, reference, mask, coverMode);
 }
 
 GLboolean LogGLApi::glTestFenceAPPLEFn(GLuint fence) {
@@ -16004,12 +15151,6 @@ void NoContextGLApi::glBindFragDataLocationIndexedFn(GLuint program,
   NoContextHelper("glBindFragDataLocationIndexed");
 }
 
-void NoContextGLApi::glBindFragmentInputLocationCHROMIUMFn(GLuint program,
-                                                           GLint location,
-                                                           const char* name) {
-  NoContextHelper("glBindFragmentInputLocationCHROMIUM");
-}
-
 void NoContextGLApi::glBindFramebufferEXTFn(GLenum target, GLuint framebuffer) {
   NoContextHelper("glBindFramebufferEXT");
 }
@@ -16431,36 +15572,6 @@ void NoContextGLApi::glCopyTextureCHROMIUMFn(GLuint sourceId,
   NoContextHelper("glCopyTextureCHROMIUM");
 }
 
-void NoContextGLApi::glCoverFillPathInstancedNVFn(
-    GLsizei numPaths,
-    GLenum pathNameType,
-    const void* paths,
-    GLuint pathBase,
-    GLenum coverMode,
-    GLenum transformType,
-    const GLfloat* transformValues) {
-  NoContextHelper("glCoverFillPathInstancedNV");
-}
-
-void NoContextGLApi::glCoverFillPathNVFn(GLuint path, GLenum coverMode) {
-  NoContextHelper("glCoverFillPathNV");
-}
-
-void NoContextGLApi::glCoverStrokePathInstancedNVFn(
-    GLsizei numPaths,
-    GLenum pathNameType,
-    const void* paths,
-    GLuint pathBase,
-    GLenum coverMode,
-    GLenum transformType,
-    const GLfloat* transformValues) {
-  NoContextHelper("glCoverStrokePathInstancedNV");
-}
-
-void NoContextGLApi::glCoverStrokePathNVFn(GLuint name, GLenum coverMode) {
-  NoContextHelper("glCoverStrokePathNV");
-}
-
 void NoContextGLApi::glCreateMemoryObjectsEXTFn(GLsizei n,
                                                 GLuint* memoryObjects) {
   NoContextHelper("glCreateMemoryObjectsEXT");
@@ -16530,10 +15641,6 @@ void NoContextGLApi::glDeleteFramebuffersEXTFn(GLsizei n,
 void NoContextGLApi::glDeleteMemoryObjectsEXTFn(GLsizei n,
                                                 const GLuint* memoryObjects) {
   NoContextHelper("glDeleteMemoryObjectsEXT");
-}
-
-void NoContextGLApi::glDeletePathsNVFn(GLuint path, GLsizei range) {
-  NoContextHelper("glDeletePathsNV");
 }
 
 void NoContextGLApi::glDeleteProgramFn(GLuint program) {
@@ -16895,11 +16002,6 @@ void NoContextGLApi::glGenFencesNVFn(GLsizei n, GLuint* fences) {
 
 void NoContextGLApi::glGenFramebuffersEXTFn(GLsizei n, GLuint* framebuffers) {
   NoContextHelper("glGenFramebuffersEXT");
-}
-
-GLuint NoContextGLApi::glGenPathsNVFn(GLsizei range) {
-  NoContextHelper("glGenPathsNV");
-  return 0U;
 }
 
 GLuint NoContextGLApi::glGenProgramPipelinesFn(GLsizei n, GLuint* pipelines) {
@@ -17892,11 +16994,6 @@ GLboolean NoContextGLApi::glIsFramebufferEXTFn(GLuint framebuffer) {
   return GL_FALSE;
 }
 
-GLboolean NoContextGLApi::glIsPathNVFn(GLuint path) {
-  NoContextHelper("glIsPathNV");
-  return GL_FALSE;
-}
-
 GLboolean NoContextGLApi::glIsProgramFn(GLuint program) {
   NoContextHelper("glIsProgram");
   return GL_FALSE;
@@ -17971,14 +17068,6 @@ void* NoContextGLApi::glMapBufferRangeFn(GLenum target,
                                          GLbitfield access) {
   NoContextHelper("glMapBufferRange");
   return NULL;
-}
-
-void NoContextGLApi::glMatrixLoadfEXTFn(GLenum matrixMode, const GLfloat* m) {
-  NoContextHelper("glMatrixLoadfEXT");
-}
-
-void NoContextGLApi::glMatrixLoadIdentityEXTFn(GLenum matrixMode) {
-  NoContextHelper("glMatrixLoadIdentityEXT");
 }
 
 void NoContextGLApi::glMaxShaderCompilerThreadsKHRFn(GLuint count) {
@@ -18076,33 +17165,6 @@ void NoContextGLApi::glPatchParameteriFn(GLenum pname, GLint value) {
   NoContextHelper("glPatchParameteri");
 }
 
-void NoContextGLApi::glPathCommandsNVFn(GLuint path,
-                                        GLsizei numCommands,
-                                        const GLubyte* commands,
-                                        GLsizei numCoords,
-                                        GLenum coordType,
-                                        const GLvoid* coords) {
-  NoContextHelper("glPathCommandsNV");
-}
-
-void NoContextGLApi::glPathParameterfNVFn(GLuint path,
-                                          GLenum pname,
-                                          GLfloat value) {
-  NoContextHelper("glPathParameterfNV");
-}
-
-void NoContextGLApi::glPathParameteriNVFn(GLuint path,
-                                          GLenum pname,
-                                          GLint value) {
-  NoContextHelper("glPathParameteriNV");
-}
-
-void NoContextGLApi::glPathStencilFuncNVFn(GLenum func,
-                                           GLint ref,
-                                           GLuint mask) {
-  NoContextHelper("glPathStencilFuncNV");
-}
-
 void NoContextGLApi::glPauseTransformFeedbackFn(void) {
   NoContextHelper("glPauseTransformFeedback");
 }
@@ -18160,14 +17222,6 @@ void NoContextGLApi::glProgramParameteriFn(GLuint program,
                                            GLenum pname,
                                            GLint value) {
   NoContextHelper("glProgramParameteri");
-}
-
-void NoContextGLApi::glProgramPathFragmentInputGenNVFn(GLuint program,
-                                                       GLint location,
-                                                       GLenum genMode,
-                                                       GLint components,
-                                                       const GLfloat* coeffs) {
-  NoContextHelper("glProgramPathFragmentInputGenNV");
 }
 
 void NoContextGLApi::glProgramUniform1fFn(GLuint program,
@@ -18637,24 +17691,6 @@ void NoContextGLApi::glStartTilingQCOMFn(GLuint x,
   NoContextHelper("glStartTilingQCOM");
 }
 
-void NoContextGLApi::glStencilFillPathInstancedNVFn(
-    GLsizei numPaths,
-    GLenum pathNameType,
-    const void* paths,
-    GLuint pathBase,
-    GLenum fillMode,
-    GLuint mask,
-    GLenum transformType,
-    const GLfloat* transformValues) {
-  NoContextHelper("glStencilFillPathInstancedNV");
-}
-
-void NoContextGLApi::glStencilFillPathNVFn(GLuint path,
-                                           GLenum fillMode,
-                                           GLuint mask) {
-  NoContextHelper("glStencilFillPathNV");
-}
-
 void NoContextGLApi::glStencilFuncFn(GLenum func, GLint ref, GLuint mask) {
   NoContextHelper("glStencilFunc");
 }
@@ -18683,64 +17719,6 @@ void NoContextGLApi::glStencilOpSeparateFn(GLenum face,
                                            GLenum zfail,
                                            GLenum zpass) {
   NoContextHelper("glStencilOpSeparate");
-}
-
-void NoContextGLApi::glStencilStrokePathInstancedNVFn(
-    GLsizei numPaths,
-    GLenum pathNameType,
-    const void* paths,
-    GLuint pathBase,
-    GLint ref,
-    GLuint mask,
-    GLenum transformType,
-    const GLfloat* transformValues) {
-  NoContextHelper("glStencilStrokePathInstancedNV");
-}
-
-void NoContextGLApi::glStencilStrokePathNVFn(GLuint path,
-                                             GLint reference,
-                                             GLuint mask) {
-  NoContextHelper("glStencilStrokePathNV");
-}
-
-void NoContextGLApi::glStencilThenCoverFillPathInstancedNVFn(
-    GLsizei numPaths,
-    GLenum pathNameType,
-    const void* paths,
-    GLuint pathBase,
-    GLenum fillMode,
-    GLuint mask,
-    GLenum coverMode,
-    GLenum transformType,
-    const GLfloat* transformValues) {
-  NoContextHelper("glStencilThenCoverFillPathInstancedNV");
-}
-
-void NoContextGLApi::glStencilThenCoverFillPathNVFn(GLuint path,
-                                                    GLenum fillMode,
-                                                    GLuint mask,
-                                                    GLenum coverMode) {
-  NoContextHelper("glStencilThenCoverFillPathNV");
-}
-
-void NoContextGLApi::glStencilThenCoverStrokePathInstancedNVFn(
-    GLsizei numPaths,
-    GLenum pathNameType,
-    const void* paths,
-    GLuint pathBase,
-    GLint ref,
-    GLuint mask,
-    GLenum coverMode,
-    GLenum transformType,
-    const GLfloat* transformValues) {
-  NoContextHelper("glStencilThenCoverStrokePathInstancedNV");
-}
-
-void NoContextGLApi::glStencilThenCoverStrokePathNVFn(GLuint path,
-                                                      GLint reference,
-                                                      GLuint mask,
-                                                      GLenum coverMode) {
-  NoContextHelper("glStencilThenCoverStrokePathNV");
 }
 
 GLboolean NoContextGLApi::glTestFenceAPPLEFn(GLuint fence) {
