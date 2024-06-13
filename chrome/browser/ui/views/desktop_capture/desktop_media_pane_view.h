@@ -37,15 +37,19 @@ class DesktopMediaPaneView : public views::View {
   // returns the empty string otherwise.
   std::u16string GetAudioLabelText() const;
 
-  void OnScreenCapturePermissionUpdate(bool has_permission);
-
   bool IsPermissionPaneVisible() const;
   bool IsContentPaneVisible() const;
+
+#if BUILDFLAG(IS_MAC)
+  void OnScreenCapturePermissionUpdate(bool has_permission);
   bool WasPermissionButtonClicked() const;
+#endif
 
  private:
+#if BUILDFLAG(IS_MAC)
   bool PermissionRequired() const;
   void MakePermissionPaneView();
+#endif
 
   const DesktopMediaList::Type type_;
   raw_ptr<views::BoxLayout> layout_ = nullptr;

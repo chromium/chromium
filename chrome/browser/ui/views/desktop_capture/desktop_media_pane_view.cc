@@ -48,9 +48,22 @@ std::u16string DesktopMediaPaneView::GetAudioLabelText() const {
   return content_pane_view_->GetAudioLabelText();
 }
 
+bool DesktopMediaPaneView::IsPermissionPaneVisible() const {
+#if BUILDFLAG(IS_MAC)
+  return permission_pane_view_ && permission_pane_view_->GetVisible();
+#else
+  CHECK(!permission_pane_view_);
+  return false;
+#endif
+}
+
+bool DesktopMediaPaneView::IsContentPaneVisible() const {
+  return content_pane_view_->GetVisible();
+}
+
+#if BUILDFLAG(IS_MAC)
 void DesktopMediaPaneView::OnScreenCapturePermissionUpdate(
     bool has_permission) {
-#if BUILDFLAG(IS_MAC)
   if (!PermissionRequired()) {
     return;
   }
@@ -65,33 +78,14 @@ void DesktopMediaPaneView::OnScreenCapturePermissionUpdate(
     content_pane_view_->SetVisible(has_permission);
     permission_pane_view_->SetVisible(!has_permission);
   }
-#endif
-}
-
-bool DesktopMediaPaneView::IsPermissionPaneVisible() const {
-#if BUILDFLAG(IS_MAC)
-  return permission_pane_view_ && permission_pane_view_->GetVisible();
-#else
-  CHECK(!permission_pane_view_);
-  return false;
-#endif
-}
-
-bool DesktopMediaPaneView::IsContentPaneVisible() const {
-  return content_pane_view_->GetVisible();
 }
 
 bool DesktopMediaPaneView::WasPermissionButtonClicked() const {
-#if BUILDFLAG(IS_MAC)
   return permission_pane_view_ &&
          permission_pane_view_->WasPermissionButtonClicked();
-#else
-  return false;
-#endif
 }
 
 bool DesktopMediaPaneView::PermissionRequired() const {
-#if BUILDFLAG(IS_MAC)
   switch (type_) {
     case DesktopMediaList::Type::kScreen:
     case DesktopMediaList::Type::kWindow:
@@ -103,22 +97,16 @@ bool DesktopMediaPaneView::PermissionRequired() const {
       return false;
   }
   NOTREACHED_NORETURN();
-#else
-  return false;
-#endif
 }
 
 void DesktopMediaPaneView::MakePermissionPaneView() {
-#if BUILDFLAG(IS_MAC)
   CHECK(!permission_pane_view_);
 
   permission_pane_view_ =
       AddChildView(std::make_unique<DesktopMediaPermissionPaneViewMac>(type_));
   layout_->SetFlexForView(permission_pane_view_, 1);
-#else
-  NOTREACHED_NORETURN();
-#endif
 }
+#endif  // BUILDFLAG(IS_MAC)
 
 BEGIN_METADATA(DesktopMediaPaneView)
 END_METADATA

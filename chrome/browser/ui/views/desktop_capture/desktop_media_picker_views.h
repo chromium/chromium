@@ -153,8 +153,10 @@ class DesktopMediaPickerDialogView : public views::DialogDelegateView,
   //   but no such sources were available.
   std::optional<int> CountSourcesOfType(DesktopMediaList::Type type);
 
+#if BUILDFLAG(IS_MAC)
   void OnPermissionUpdate(bool has_permission);
   void RecordPermissionInteractionUma() const;
+#endif
 
   const raw_ptr<content::WebContents, AcrossTasksDanglingUntriaged>
       web_contents_;
@@ -179,10 +181,12 @@ class DesktopMediaPickerDialogView : public views::DialogDelegateView,
 
   std::optional<content::DesktopMediaID> accepted_source_;
 
+#if BUILDFLAG(IS_MAC)
   std::unique_ptr<ScreenCapturePermissionChecker>
       screen_capture_permission_checker_;
   std::optional<bool> initial_permission_state_;
   bool permission_pane_was_shown_ = false;
+#endif
 
   // For recording dialog-duration UMA histograms.
   const base::TimeTicks dialog_open_time_;

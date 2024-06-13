@@ -138,12 +138,6 @@ enum class PermissionInteraction {
   kMaxValue = kClicked
 };
 
-void RecordUma(PermissionInteraction permission_interaction) {
-  base::UmaHistogramEnumeration(
-      "Media.Ui.GetDisplayMedia.PermissionInteractionMac",
-      permission_interaction);
-}
-
 void RecordUmaCancellation(DialogType dialog_type,
                            base::TimeTicks dialog_open_time) {
   RecordAction(base::UserMetricsAction("GetDisplayMedia.Cancel"));
@@ -222,6 +216,13 @@ void RecordUmaSelection(DialogType dialog_type,
   }
 }
 
+#if BUILDFLAG(IS_MAC)
+void RecordUma(PermissionInteraction permission_interaction) {
+  base::UmaHistogramEnumeration(
+      "Media.Ui.GetDisplayMedia.PermissionInteractionMac",
+      permission_interaction);
+}
+
 void RecordPermissionButtonOpenedAction(DesktopMediaList::Type type) {
   switch (type) {
     case DesktopMediaList::Type::kScreen:
@@ -241,6 +242,7 @@ void RecordPermissionButtonOpenedAction(DesktopMediaList::Type type) {
   }
   NOTREACHED_NORETURN();
 }
+#endif  // BUILDFLAG(IS_MAC)
 
 std::u16string GetLabelForReselectButton(DesktopMediaList::Type type) {
   switch (type) {
@@ -393,10 +395,13 @@ DesktopMediaPickerDialogView::DesktopMediaPickerDialogView(
          !params.exclude_system_audio);
   RecordAction(base::UserMetricsAction("GetDisplayMedia.ShowDialog"));
 
+#if BUILDFLAG(IS_MAC)
   screen_capture_permission_checker_ =
       ScreenCapturePermissionChecker::MaybeCreate(
           base::BindRepeating(&DesktopMediaPickerDialogView::OnPermissionUpdate,
                               weak_factory_.GetWeakPtr()));
+#endif
+
   SetModalType(params.modality);
   SetButtonLabel(ui::DIALOG_BUTTON_OK,
                  l10n_util::GetStringUTF16(IDS_DESKTOP_MEDIA_PICKER_SHARE));
@@ -679,7 +684,9 @@ DesktopMediaPickerDialogView::DesktopMediaPickerDialogView(
 }
 
 DesktopMediaPickerDialogView::~DesktopMediaPickerDialogView() {
+#if BUILDFLAG(IS_MAC)
   RecordPermissionInteractionUma();
+#endif
 }
 
 void DesktopMediaPickerDialogView::RecordUmaDismissal() const {
@@ -716,10 +723,12 @@ void DesktopMediaPickerDialogView::ConfigureUIForNewPane(int index) {
   if (audio_requested_ && category.audio_offered) {
     category.pane->SetAudioSharingApprovedByUser(category.audio_checked);
   }
+#if BUILDFLAG(IS_MAC)
   if (category.pane->IsPermissionPaneVisible()) {
     permission_pane_was_shown_ = true;
     RecordPermissionButtonOpenedAction(category.type);
   }
+#endif
 }
 
 void DesktopMediaPickerDialogView::StoreAudioCheckboxState() {
@@ -1101,6 +1110,7 @@ void DesktopMediaPickerDialogView::OnCanReselectChanged(
   reselect_button_->SetEnabled(controller->can_reselect());
 }
 
+#if BUILDFLAG(IS_MAC)
 void DesktopMediaPickerDialogView::OnPermissionUpdate(bool has_permission) {
   CHECK(screen_capture_permission_checker_);
 
@@ -1140,6 +1150,7 @@ void DesktopMediaPickerDialogView::RecordPermissionInteractionUma() const {
 
   RecordUma(permission_interaction);
 }
+#endif
 
 BEGIN_METADATA(DesktopMediaPickerDialogView)
 END_METADATA
