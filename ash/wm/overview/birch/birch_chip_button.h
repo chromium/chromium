@@ -62,7 +62,7 @@ class BirchChipButton : public BirchChipButtonBase,
   void OnRemoveComponentPressed();
 
   // Sets the item icon.
-  void SetIconImage(const ui::ImageModel& icon_image);
+  void SetIconImage(const ui::ImageModel& icon_image, bool success);
 
   // The chip context menu controller.
   std::unique_ptr<ChipMenuController> chip_menu_controller_;

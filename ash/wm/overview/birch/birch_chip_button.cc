@@ -53,6 +53,7 @@ constexpr int kCalendarCornerRadius = 20;
 constexpr int kIllustrationSize = 40;
 constexpr int kIllustrationCornerRadius = 8;
 constexpr int kWeatherImageSize = 32;
+constexpr int kErrorImageSize = 32;
 
 // The colors of icons.
 constexpr ui::ColorId kIconBackgroundColorId =
@@ -237,8 +238,16 @@ void BirchChipButton::Shutdown() {
   item_ = nullptr;
 }
 
-void BirchChipButton::SetIconImage(const ui::ImageModel& icon_image) {
+void BirchChipButton::SetIconImage(const ui::ImageModel& icon_image,
+                                   bool success) {
   icon_->SetImage(icon_image);
+
+  // Enlarge error icons.
+  if (!success) {
+    icon_->SetImageSize(gfx::Size(kErrorImageSize, kErrorImageSize));
+    icon_->SetBorder(views::CreateEmptyBorder(
+        gfx::Insets((kIconViewSize - kErrorImageSize) / 2)));
+  }
 }
 
 void BirchChipButton::OnGestureEvent(ui::GestureEvent* event) {

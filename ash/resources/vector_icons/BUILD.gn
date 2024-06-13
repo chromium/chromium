@@ -42,6 +42,7 @@ aggregate_vector_icons("ash_vector_icons") {
     "battery.icon",
     "battery_saver_plus.icon",
     "battery_saver_plus_outline.icon",
+    "birch_favicon_error.icon",
     "calendar_background.icon",
     "calendar_event.icon",
     "calendar_up_next_todays_events_button.icon",
