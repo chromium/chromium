@@ -149,8 +149,8 @@ TestingBrowserProcess::TestingBrowserProcess()
   // TestingBrowserProcess is used in unit_tests which sets this up through
   // content::UnitTestTestSuite but also through other test binaries which don't
   // use that test suite in which case we have to set it up.
-  if (!content::NotificationService::current())
-    notification_service_.reset(content::NotificationService::Create());
+  notification_service_ =
+      content::NotificationService::CreateIfNecessaryForTesting();
 }
 
 TestingBrowserProcess::~TestingBrowserProcess() {

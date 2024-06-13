@@ -17,26 +17,20 @@
 namespace content {
 
 struct NotificationRegistrar::Record {
-  bool operator==(const Record& other) const;
+  bool operator==(const Record& other) const = default;
 
   raw_ptr<NotificationObserver> observer;
   int type;
   NotificationSource source;
 };
 
-bool NotificationRegistrar::Record::operator==(const Record& other) const {
-  return observer == other.observer &&
-         type == other.type &&
-         source == other.source;
-}
-
 NotificationRegistrar::NotificationRegistrar() {
-  // Force the NotificationService to be constructed (if it isn't already).
+  // Ensure the NotificationService is constructed.
   // This ensures the NotificationService will be registered on the
   // AtExitManager before any objects which access it via NotificationRegistrar.
   // This in turn means it will be destroyed after these objects, so they will
   // never try to access the NotificationService after it's been destroyed.
-  NotificationServiceImpl::current();
+  CHECK(NotificationServiceImpl::current());
   // It is OK to create a NotificationRegistrar instance on one thread and then
   // use it (exclusively) on another, so we detach from the initial thread.
   DETACH_FROM_SEQUENCE(sequence_checker_);
@@ -100,11 +94,6 @@ void NotificationRegistrar::RemoveAll() {
     }
   }
   registered_.clear();
-}
-
-bool NotificationRegistrar::IsEmpty() const {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  return registered_.empty();
 }
 
 bool NotificationRegistrar::IsRegistered(NotificationObserver* observer,

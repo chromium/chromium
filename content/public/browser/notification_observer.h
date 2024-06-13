@@ -21,7 +21,7 @@ class CONTENT_EXPORT NotificationObserver {
                        const NotificationDetails& details) = 0;
 
  protected:
-  virtual ~NotificationObserver() {}
+  virtual ~NotificationObserver() = default;
 };
 
 }  // namespace content

@@ -4,6 +4,7 @@
 
 #include "content/browser/notification_service_impl.h"
 
+#include "content/public/browser/notification_details.h"
 #include "content/public/browser/notification_observer.h"
 #include "content/public/browser/notification_registrar.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -14,6 +15,10 @@ namespace {
 
 // Bogus class to act as a NotificationSource for the messages.
 class TestSource {};
+
+Details<void> NoDetails() {
+  return Details<void>(nullptr);
+}
 
 class TestObserver : public NotificationObserver {
  public:
@@ -36,7 +41,6 @@ const int kNotification2 = 2;
 
 }  // namespace
 
-
 class NotificationServiceImplTest : public testing::Test {
  protected:
   NotificationRegistrar registrar_;
@@ -56,10 +60,9 @@ TEST_F(NotificationServiceImplTest, Basic) {
   TestObserver idle_test_source;
 
   // Make sure it doesn't freak out when there are no observers.
-  NotificationService* service = NotificationService::current();
-  service->Notify(kNotification1,
-                  Source<TestSource>(&test_source),
-                  NotificationService::NoDetails());
+  NotificationServiceImpl* service = NotificationServiceImpl::current();
+  service->Notify(kNotification1, Source<TestSource>(&test_source),
+                  NoDetails());
 
   registrar_.Add(&idle_all_sources, kNotification1,
                  NotificationService::AllSources());
@@ -69,47 +72,41 @@ TEST_F(NotificationServiceImplTest, Basic) {
   EXPECT_EQ(0, idle_all_sources.notification_count());
   EXPECT_EQ(0, idle_test_source.notification_count());
 
-  service->Notify(kNotification1,
-                  Source<TestSource>(&test_source),
-                  NotificationService::NoDetails());
+  service->Notify(kNotification1, Source<TestSource>(&test_source),
+                  NoDetails());
 
   EXPECT_EQ(1, idle_all_sources.notification_count());
   EXPECT_EQ(1, idle_test_source.notification_count());
 
-  service->Notify(kNotification2,
-                  Source<TestSource>(&test_source),
-                  NotificationService::NoDetails());
+  service->Notify(kNotification2, Source<TestSource>(&test_source),
+                  NoDetails());
 
   EXPECT_EQ(1, idle_all_sources.notification_count());
   EXPECT_EQ(1, idle_test_source.notification_count());
 
-  service->Notify(kNotification1,
-                  Source<TestSource>(&other_source),
-                  NotificationService::NoDetails());
+  service->Notify(kNotification1, Source<TestSource>(&other_source),
+                  NoDetails());
 
   EXPECT_EQ(2, idle_all_sources.notification_count());
   EXPECT_EQ(1, idle_test_source.notification_count());
 
-  service->Notify(kNotification2,
-                  Source<TestSource>(&other_source),
-                  NotificationService::NoDetails());
+  service->Notify(kNotification2, Source<TestSource>(&other_source),
+                  NoDetails());
 
   EXPECT_EQ(2, idle_all_sources.notification_count());
   EXPECT_EQ(1, idle_test_source.notification_count());
 
   // Try send with NULL source.
-  service->Notify(kNotification1,
-                  NotificationService::AllSources(),
-                  NotificationService::NoDetails());
+  service->Notify(kNotification1, NotificationService::AllSources(),
+                  NoDetails());
 
   EXPECT_EQ(3, idle_all_sources.notification_count());
   EXPECT_EQ(1, idle_test_source.notification_count());
 
   registrar_.RemoveAll();
 
-  service->Notify(kNotification1,
-                  Source<TestSource>(&test_source),
-                  NotificationService::NoDetails());
+  service->Notify(kNotification1, Source<TestSource>(&test_source),
+                  NoDetails());
 
   EXPECT_EQ(3, idle_all_sources.notification_count());
   EXPECT_EQ(1, idle_test_source.notification_count());
@@ -119,7 +116,7 @@ TEST_F(NotificationServiceImplTest, MultipleRegistration) {
   TestSource test_source;
   TestObserver idle_test_source;
 
-  NotificationService* service = NotificationService::current();
+  NotificationServiceImpl* service = NotificationServiceImpl::current();
 
   registrar_.Add(&idle_test_source, kNotification1,
                  Source<TestSource>(&test_source));
@@ -127,14 +124,14 @@ TEST_F(NotificationServiceImplTest, MultipleRegistration) {
                  Source<TestSource>(&test_source));
 
   service->Notify(kNotification1, Source<TestSource>(&test_source),
-                  NotificationService::NoDetails());
+                  NoDetails());
   EXPECT_EQ(1, idle_test_source.notification_count());
 
   registrar_.Remove(&idle_test_source, kNotification1,
                     Source<TestSource>(&test_source));
 
   service->Notify(kNotification1, Source<TestSource>(&test_source),
-                  NotificationService::NoDetails());
+                  NoDetails());
   EXPECT_EQ(1, idle_test_source.notification_count());
 
   registrar_.RemoveAll();

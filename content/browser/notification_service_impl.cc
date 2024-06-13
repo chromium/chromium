@@ -25,13 +25,13 @@ NotificationServiceImpl* NotificationServiceImpl::current() {
 }
 
 // static
-NotificationService* NotificationService::current() {
-  return NotificationServiceImpl::current();
-}
+std::unique_ptr<NotificationService>
+NotificationService::CreateIfNecessaryForTesting() {
+  if (NotificationServiceImpl::current()) {
+    return nullptr;
+  }
 
-// static
-NotificationService* NotificationService::Create() {
-  return new NotificationServiceImpl;
+  return std::make_unique<NotificationServiceImpl>();
 }
 
 // static

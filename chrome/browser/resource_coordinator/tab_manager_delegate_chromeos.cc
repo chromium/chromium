@@ -45,6 +45,7 @@
 #include "components/device_event_log/device_event_log.h"
 #include "components/performance_manager/public/features.h"
 #include "content/public/browser/browser_thread.h"
+#include "content/public/browser/notification_details.h"
 #include "content/public/browser/notification_service.h"
 #include "content/public/browser/notification_types.h"
 #include "content/public/browser/render_frame_host.h"

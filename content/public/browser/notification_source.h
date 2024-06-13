@@ -18,20 +18,15 @@ namespace content {
 // NotificationService::AllSources().
 class CONTENT_EXPORT NotificationSource {
  public:
-   NotificationSource(const NotificationSource& other) : ptr_(other.ptr_) {}
-  ~NotificationSource() {}
+  NotificationSource(const NotificationSource& other) = default;
+  ~NotificationSource() = default;
 
   // NotificationSource can be used as the index for a map; this method
   // returns the pointer to the current source as an identifier, for use as a
   // map index.
   uintptr_t map_key() const { return reinterpret_cast<uintptr_t>(ptr_.get()); }
 
-  bool operator!=(const NotificationSource& other) const {
-    return ptr_ != other.ptr_;
-  }
-  bool operator==(const NotificationSource& other) const {
-    return ptr_ == other.ptr_;
-  }
+  bool operator==(const NotificationSource& other) const = default;
 
  protected:
   explicit NotificationSource(const void* ptr) : ptr_(ptr) {}
@@ -44,10 +39,9 @@ class CONTENT_EXPORT NotificationSource {
 template <class T>
 class Source : public NotificationSource {
  public:
-  // TODO(erg): Our code hard relies on implicit conversion
-  Source(const T* ptr) : NotificationSource(ptr) {}  // NOLINT
-  Source(const NotificationSource& other)      // NOLINT
-    : NotificationSource(other) {}
+  explicit Source(const T* ptr) : NotificationSource(ptr) {}
+  explicit Source(const NotificationSource& other)
+      : NotificationSource(other) {}
 
   T* operator->() const { return ptr(); }
   // The casts here allow this to compile with both T = Foo and T = const Foo.

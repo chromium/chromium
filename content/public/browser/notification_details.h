@@ -8,8 +8,6 @@
 #ifndef CONTENT_PUBLIC_BROWSER_NOTIFICATION_DETAILS_H_
 #define CONTENT_PUBLIC_BROWSER_NOTIFICATION_DETAILS_H_
 
-#include <stdint.h>
-
 #include "base/memory/raw_ptr.h"
 #include "content/common/content_export.h"
 
@@ -20,22 +18,8 @@ namespace content {
 // NotificationService::NoDetails().
 class CONTENT_EXPORT NotificationDetails {
  public:
-  NotificationDetails() : ptr_(nullptr) {}
-  NotificationDetails(const NotificationDetails& other) : ptr_(other.ptr_) {}
-  ~NotificationDetails() {}
-
-  // NotificationDetails can be used as the index for a map; this method
-  // returns the pointer to the current details as an identifier, for use as a
-  // map index.
-  uintptr_t map_key() const { return reinterpret_cast<uintptr_t>(ptr_.get()); }
-
-  bool operator!=(const NotificationDetails& other) const {
-    return ptr_ != other.ptr_;
-  }
-
-  bool operator==(const NotificationDetails& other) const {
-    return ptr_ == other.ptr_;
-  }
+  NotificationDetails(const NotificationDetails& other) = default;
+  ~NotificationDetails() = default;
 
  protected:
    explicit NotificationDetails(const void* ptr) : ptr_(ptr) {}
@@ -48,10 +32,9 @@ class CONTENT_EXPORT NotificationDetails {
 template <class T>
 class Details : public NotificationDetails {
  public:
-  // TODO(erg): Our code hard relies on implicit conversion
-  Details(T* ptr) : NotificationDetails(ptr) {}  // NOLINT
-  Details(const NotificationDetails& other)      // NOLINT
-    : NotificationDetails(other) {}
+  explicit Details(T* ptr) : NotificationDetails(ptr) {}
+  explicit Details(const NotificationDetails& other)
+      : NotificationDetails(other) {}
 
   T* operator->() const { return ptr(); }
   // The casts here allow this to compile with both T = Foo and T = const Foo.

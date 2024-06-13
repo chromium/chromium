@@ -14,11 +14,14 @@
 
 namespace content {
 
+class NotificationDetails;
 class NotificationObserver;
 class NotificationRegistrar;
 
 class CONTENT_EXPORT NotificationServiceImpl : public NotificationService {
  public:
+  // Returns the NotificationService object for the current thread, or nullptr
+  // if none.
   static NotificationServiceImpl* current();
 
   // Normally instantiated when the thread is created.  Not all threads have
@@ -30,10 +33,17 @@ class CONTENT_EXPORT NotificationServiceImpl : public NotificationService {
 
   ~NotificationServiceImpl() override;
 
-  // NotificationService:
+  // Synchronously posts a notification to all interested observers.
+  // Source is a reference to a NotificationSource object representing
+  // the object originating the notification (can be
+  // NotificationService::AllSources(), in which case
+  // only observers interested in all sources will be notified).
+  // Details is a reference to an object containing additional data about
+  // the notification.
+  // There is no particular order in which the observers will be notified.
   void Notify(int type,
               const NotificationSource& source,
-              const NotificationDetails& details) override;
+              const NotificationDetails& details);
 
  private:
   friend class NotificationRegistrar;

@@ -42,16 +42,13 @@ class CONTENT_EXPORT NotificationRegistrar final {
   // Unregisters all notifications.
   void RemoveAll();
 
-  // Returns true if no notifications are registered.
-  bool IsEmpty() const;
-
+ private:
   // Returns true if there is already a registered notification with the
   // specified details.
   bool IsRegistered(NotificationObserver* observer,
                     int type,
                     const NotificationSource& source);
 
- private:
   struct Record;
 
   // We keep registered notifications in a simple vector. This means we'll do

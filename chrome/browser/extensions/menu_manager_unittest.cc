@@ -27,7 +27,6 @@
 #include "components/prefs/pref_service.h"
 #include "components/sync_preferences/pref_service_syncable.h"
 #include "content/public/browser/context_menu_params.h"
-#include "content/public/browser/notification_service.h"
 #include "content/public/test/browser_task_environment.h"
 #include "extensions/browser/event_router.h"
 #include "extensions/browser/event_router_factory.h"
@@ -550,10 +549,6 @@ TEST_F(MenuManagerTest, ChangeParent) {
 // Tests that we properly remove an extension's menu item when that extension is
 // unloaded.
 TEST_F(MenuManagerTest, ExtensionUnloadRemovesMenuItems) {
-  content::NotificationService* notifier =
-      content::NotificationService::current();
-  ASSERT_TRUE(notifier != nullptr);
-
   // Create a test extension.
   const Extension* extension1 = AddExtension("1111");
 
