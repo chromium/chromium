@@ -23,8 +23,8 @@ class InkBrushStub : public InkBrush {
   ~InkBrushStub() override;
 
   // InkBrush:
+  float GetSize() const override;
   SkColor GetColorForTesting() const override;
-  float GetSizeForTesting() const override;
   float GetOpacityForTesting() const override;
 
  private:

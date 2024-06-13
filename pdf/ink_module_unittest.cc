@@ -160,7 +160,7 @@ TEST_F(InkModuleTest, HandleSetAnnotationBrushMessagePen) {
 
   const InkBrush& ink_brush = brush->GetInkBrush();
   EXPECT_EQ(SkColorSetRGB(10, 255, 50), ink_brush.GetColorForTesting());
-  EXPECT_EQ(8.0f, ink_brush.GetSizeForTesting());
+  EXPECT_EQ(8.0f, ink_brush.GetSize());
   EXPECT_EQ(1.0f, ink_brush.GetOpacityForTesting());
 }
 
@@ -181,7 +181,7 @@ TEST_F(InkModuleTest, HandleSetAnnotationBrushMessageHighlighter) {
 
   const InkBrush& ink_brush = brush->GetInkBrush();
   EXPECT_EQ(SkColorSetRGB(240, 133, 0), ink_brush.GetColorForTesting());
-  EXPECT_EQ(4.5f, ink_brush.GetSizeForTesting());
+  EXPECT_EQ(4.5f, ink_brush.GetSize());
   EXPECT_EQ(0.4f, ink_brush.GetOpacityForTesting());
 }
 
@@ -202,7 +202,7 @@ TEST_F(InkModuleTest, HandleSetAnnotationBrushMessageColorZero) {
 
   const InkBrush& ink_brush = brush->GetInkBrush();
   EXPECT_EQ(SkColorSetRGB(0, 0, 0), ink_brush.GetColorForTesting());
-  EXPECT_EQ(4.5f, ink_brush.GetSizeForTesting());
+  EXPECT_EQ(4.5f, ink_brush.GetSize());
   EXPECT_EQ(1.0f, ink_brush.GetOpacityForTesting());
 }
 
@@ -224,7 +224,7 @@ TEST_F(InkModuleTest, HandleSetAnnotationBrushMessageSizeZeroTranslation) {
 
   const InkBrush& ink_brush = brush->GetInkBrush();
   EXPECT_EQ(SkColorSetRGB(255, 255, 255), ink_brush.GetColorForTesting());
-  EXPECT_EQ(1.0f, ink_brush.GetSizeForTesting());
+  EXPECT_EQ(1.0f, ink_brush.GetSize());
   EXPECT_EQ(0.4f, ink_brush.GetOpacityForTesting());
 }
 
@@ -245,7 +245,7 @@ TEST_F(InkModuleTest, HandleSetAnnotationBrushMessageSizeOneTranslation) {
 
   const InkBrush& ink_brush = brush->GetInkBrush();
   EXPECT_EQ(SkColorSetRGB(255, 255, 255), ink_brush.GetColorForTesting());
-  EXPECT_EQ(8.0f, ink_brush.GetSizeForTesting());
+  EXPECT_EQ(8.0f, ink_brush.GetSize());
   EXPECT_EQ(0.4f, ink_brush.GetOpacityForTesting());
 }
 

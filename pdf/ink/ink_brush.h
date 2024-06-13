@@ -23,10 +23,11 @@ class InkBrush {
 
   virtual ~InkBrush() = default;
 
+  virtual float GetSize() const = 0;
+
   // Note that these methods do not necessarily correspond 1:1 to methods in the
   // Ink library. They are provided for convenience when testing.
   virtual SkColor GetColorForTesting() const = 0;
-  virtual float GetSizeForTesting() const = 0;
   virtual float GetOpacityForTesting() const = 0;
 };
 

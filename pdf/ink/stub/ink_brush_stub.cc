@@ -35,12 +35,12 @@ InkBrushStub::InkBrushStub(std::unique_ptr<InkBrushFamily> family,
 
 InkBrushStub::~InkBrushStub() = default;
 
-SkColor InkBrushStub::GetColorForTesting() const {
-  return color_;
+float InkBrushStub::GetSize() const {
+  return size_;
 }
 
-float InkBrushStub::GetSizeForTesting() const {
-  return size_;
+SkColor InkBrushStub::GetColorForTesting() const {
+  return color_;
 }
 
 float InkBrushStub::GetOpacityForTesting() const {
