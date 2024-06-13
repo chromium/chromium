@@ -164,7 +164,7 @@ class CONTENT_EXPORT ServiceWorkerRaceNetworkRequestURLLoaderClient
 
   // mojo::DataPipeDrainer::Client overrides:
   // These just do nothing.
-  void OnDataAvailable(const void* data, size_t num_bytes) override {}
+  void OnDataAvailable(base::span<const uint8_t> data) override {}
   void OnDataComplete() override {}
 
   // Commits the head and body through |owner_|'s commit methods.

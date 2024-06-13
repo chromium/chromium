@@ -628,10 +628,10 @@ void StreamingSearchPrefetchURLLoader::OnTransferSizeUpdated(
                      base::Unretained(this), transfer_size_diff));
 }
 
-void StreamingSearchPrefetchURLLoader::OnDataAvailable(const void* data,
-                                                       size_t num_bytes) {
-  body_content_.append(static_cast<const char*>(data), num_bytes);
-  bytes_of_raw_data_to_transfer_ += num_bytes;
+void StreamingSearchPrefetchURLLoader::OnDataAvailable(
+    base::span<const uint8_t> data) {
+  body_content_.append(base::as_string_view(data));
+  bytes_of_raw_data_to_transfer_ += data.size();
 
   if (forwarding_client_) {
     PushData();

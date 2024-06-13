@@ -60,7 +60,7 @@ class BlobReader : public blink::mojom::BlobReaderClient,
   void OnComplete(int32_t status, uint64_t data_length) override {}
 
   // mojo::DataPipeDrainer:
-  void OnDataAvailable(const void* data, size_t num_bytes) override;
+  void OnDataAvailable(base::span<const uint8_t> data) override;
   void OnDataComplete() override;
 
   void Failed();

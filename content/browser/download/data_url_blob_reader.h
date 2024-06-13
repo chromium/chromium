@@ -48,7 +48,7 @@ class DataURLBlobReader : public mojo::DataPipeDrainer::Client {
   void Start(base::OnceClosure callback);
 
   // mojo::DataPipeDrainer:
-  void OnDataAvailable(const void* data, size_t num_bytes) override;
+  void OnDataAvailable(base::span<const uint8_t> data) override;
   void OnDataComplete() override;
 
   // Called when failed to read from blob.

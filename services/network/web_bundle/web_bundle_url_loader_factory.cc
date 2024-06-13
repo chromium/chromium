@@ -456,9 +456,9 @@ class WebBundleURLLoaderFactory::BundleDataSource
   }
 
   // Implements mojo::DataPipeDrainer::Client.
-  void OnDataAvailable(const void* data, size_t num_bytes) override {
+  void OnDataAvailable(base::span<const uint8_t> data) override {
     DCHECK(!finished_loading_);
-    if (!web_bundle_memory_quota_consumer_->AllocateMemory(num_bytes)) {
+    if (!web_bundle_memory_quota_consumer_->AllocateMemory(data.size())) {
       AbortPendingReads();
       if (memory_quota_exceeded_closure_) {
         // Defer calling |memory_quota_exceeded_closure_| to avoid the
@@ -468,7 +468,7 @@ class WebBundleURLLoaderFactory::BundleDataSource
       }
       return;
     }
-    buffer_.Append(reinterpret_cast<const uint8_t*>(data), num_bytes);
+    buffer_.Append(data.data(), data.size());
     ProcessPendingReads();
   }
 

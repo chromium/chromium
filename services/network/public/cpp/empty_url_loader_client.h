@@ -51,7 +51,7 @@ class COMPONENT_EXPORT(NETWORK_CPP) EmptyURLLoaderClient
   void OnComplete(const URLLoaderCompletionStatus& status) override;
 
   // mojo::DataPipeDrainer::Client overrides:
-  void OnDataAvailable(const void* data, size_t num_bytes) override;
+  void OnDataAvailable(base::span<const uint8_t> data) override;
   void OnDataComplete() override;
 
   std::unique_ptr<mojo::DataPipeDrainer> response_body_drainer_;

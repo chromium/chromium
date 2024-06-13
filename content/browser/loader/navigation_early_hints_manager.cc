@@ -341,7 +341,7 @@ class NavigationEarlyHintsManager::PreloadURLLoaderClient
   }
 
   // mojo::DataPipeDrainer::Client overrides:
-  void OnDataAvailable(const void* data, size_t num_bytes) override {}
+  void OnDataAvailable(base::span<const uint8_t> data) override {}
   void OnDataComplete() override {
     DCHECK(response_body_drainer_);
     response_body_drainer_.reset();

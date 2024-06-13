@@ -2293,7 +2293,7 @@ class SearchPreloadServingTestURLLoader
   }
 
   // mojo::DataPipeDrainer::Client
-  void OnDataAvailable(const void* data, size_t num_bytes) override { return; }
+  void OnDataAvailable(base::span<const uint8_t> data) override { return; }
   void OnDataComplete() override { return; }
 
   mojo::Remote<network::mojom::URLLoader> remote_;

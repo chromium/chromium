@@ -10,6 +10,7 @@
 #include <string>
 #include <utility>
 
+#include "base/containers/span.h"
 #include "base/functional/callback.h"
 #include "base/functional/callback_helpers.h"
 #include "base/memory/scoped_refptr.h"
@@ -59,8 +60,8 @@ class BodyDrainer {
 
  private:
   struct DrainerClient : public mojo::DataPipeDrainer::Client {
-    void OnDataAvailable(const void* data, size_t num_bytes) override {
-      content.append(reinterpret_cast<const char*>(data), num_bytes);
+    void OnDataAvailable(base::span<const uint8_t> data) override {
+      content.append(base::as_string_view(data));
     }
 
     void OnDataComplete() override {

@@ -113,7 +113,7 @@ class PrefetchURLLoader : public network::mojom::URLLoader,
 
   // mojo::DataPipeDrainer::Client overrides:
   // This just does nothing but keep reading.
-  void OnDataAvailable(const void* data, size_t num_bytes) override {}
+  void OnDataAvailable(base::span<const uint8_t> data) override {}
   void OnDataComplete() override {}
 
   void OnNetworkConnectionError();

@@ -220,10 +220,9 @@ class BodyReader : public mojo::DataPipeDrainer::Client {
   }
 
  private:
-  void OnDataAvailable(const void* data, size_t num_bytes) override {
+  void OnDataAvailable(base::span<const uint8_t> data) override {
     DCHECK(!data_complete_);
-    body_->as_string().append(
-        std::string(static_cast<const char*>(data), num_bytes));
+    body_->as_string().append(base::as_string_view(data));
   }
 
   void OnDataComplete() override;

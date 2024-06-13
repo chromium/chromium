@@ -550,19 +550,18 @@ class ConsumerEndpoint : public perfetto::ConsumerEndpoint,
   }
 
   // mojo::DataPipeDrainer::Client implementation:
-  void OnDataAvailable(const void* data, size_t num_bytes) override {
+  void OnDataAvailable(base::span<const uint8_t> data) override {
     DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
     if (tokenizer_) {
       // Protobuf-format data.
-      auto packets =
-          tokenizer_->Parse(reinterpret_cast<const uint8_t*>(data), num_bytes);
+      auto packets = tokenizer_->Parse(data.data(), data.size());
       if (!packets.empty())
         consumer_->OnTraceData(std::move(packets), /*has_more=*/true);
     } else {
       // Legacy JSON-format data.
       std::vector<perfetto::TracePacket> packets;
       packets.emplace_back();
-      packets.back().AddSlice(data, num_bytes);
+      packets.back().AddSlice(data.data(), data.size());
       consumer_->OnTraceData(std::move(packets), /*has_more=*/true);
     }
   }

@@ -4,6 +4,7 @@
 
 #include "content/browser/preloading/prefetch/prefetch_test_util_internal.h"
 
+#include "base/containers/span.h"
 #include "base/run_loop.h"
 #include "base/time/time.h"
 #include "content/browser/preloading/prefetch/prefetch_container.h"
@@ -415,10 +416,10 @@ void PrefetchTestURLLoaderClient::OnComplete(
   completion_status_ = status;
 }
 
-void PrefetchTestURLLoaderClient::OnDataAvailable(const void* data,
-                                                  size_t num_bytes) {
-  body_content_.append(std::string(static_cast<const char*>(data), num_bytes));
-  total_bytes_read_ += num_bytes;
+void PrefetchTestURLLoaderClient::OnDataAvailable(
+    base::span<const uint8_t> data) {
+  body_content_.append(base::as_string_view(data));
+  total_bytes_read_ += data.size();
 }
 
 void PrefetchTestURLLoaderClient::OnDataComplete() {

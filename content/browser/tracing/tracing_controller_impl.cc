@@ -13,6 +13,7 @@
 #include <vector>
 
 #include "base/command_line.h"
+#include "base/containers/span.h"
 #include "base/cpu.h"
 #include "base/dcheck_is_on.h"
 #include "base/files/file_tracing.h"
@@ -560,10 +561,9 @@ void TracingControllerImpl::OnTracingFailed() {
   CompleteFlush();
 }
 
-void TracingControllerImpl::OnDataAvailable(const void* data,
-                                            size_t num_bytes) {
+void TracingControllerImpl::OnDataAvailable(base::span<const uint8_t> data) {
   if (trace_data_endpoint_) {
-    const std::string chunk(static_cast<const char*>(data), num_bytes);
+    const std::string chunk(base::as_string_view(data));
     trace_data_endpoint_->ReceiveTraceChunk(
         std::make_unique<std::string>(chunk));
   }

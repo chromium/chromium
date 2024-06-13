@@ -11780,8 +11780,9 @@ class TestLocalFrameHostForSaveImageFromDataURL : public FakeLocalFrameHost {
           output_(output) {}
     void Run() { run_loop_.Run(); }
 
-    void OnDataAvailable(const void* data, size_t num_bytes) override {
-      *output_ = String(reinterpret_cast<const char*>(data), num_bytes);
+    void OnDataAvailable(base::span<const uint8_t> data) override {
+      std::string_view chars = base::as_string_view(data);
+      *output_ = String(chars.data(), chars.size());
     }
     void OnDataComplete() override { run_loop_.Quit(); }
 

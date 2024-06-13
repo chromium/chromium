@@ -9,6 +9,7 @@
 
 #include "content/browser/devtools/request_body_collector.h"
 
+#include "base/containers/extend.h"
 #include "base/memory/raw_ref.h"
 #include "base/numerics/safe_conversions.h"
 #include "mojo/public/cpp/system/data_pipe.h"
@@ -42,10 +43,9 @@ class RequestBodyCollector::BodyReader : public mojo::DataPipeDrainer::Client {
 
  private:
   // mojo::DataPipeDrainer::Client overrides
-  void OnDataAvailable(const void* data, size_t num_bytes) override {
+  void OnDataAvailable(base::span<const uint8_t> data) override {
     CHECK_NE(expected_size_, 0ul);
-    auto* const begin = reinterpret_cast<const uint8_t*>(data);
-    bytes_.insert(bytes_.end(), begin, begin + num_bytes);
+    base::Extend(bytes_, data);
   }
 
   void OnDataComplete() override {

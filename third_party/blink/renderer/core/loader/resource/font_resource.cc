@@ -151,7 +151,7 @@ class FontResource::BackgroundFontProcessor final
       BackgroundResponseProcessor::Client* client) override;
 
   // Implements mojo::DataPipeDrainer::Client interface.
-  void OnDataAvailable(const void* data, size_t num_bytes) override;
+  void OnDataAvailable(base::span<const uint8_t> data) override;
   void OnDataComplete() override;
 
  private:
@@ -210,11 +210,9 @@ bool FontResource::BackgroundFontProcessor::MaybeStartProcessingResponse(
   return true;
 }
 
-void FontResource::BackgroundFontProcessor::OnDataAvailable(const void* data,
-                                                            size_t num_bytes) {
-  buffer_.Append(
-      Vector<char>(base::span(static_cast<const char*>(data),
-                              base::checked_cast<wtf_size_t>(num_bytes))));
+void FontResource::BackgroundFontProcessor::OnDataAvailable(
+    base::span<const uint8_t> data) {
+  buffer_.Append(Vector<char>(data));
 }
 
 void FontResource::BackgroundFontProcessor::OnDataComplete() {

@@ -7,6 +7,7 @@
 
 #include <stddef.h>
 
+#include "base/containers/span.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "mojo/public/cpp/system/data_pipe.h"
@@ -19,7 +20,7 @@ class MOJO_CPP_SYSTEM_EXPORT DataPipeDrainer {
  public:
   class Client {
    public:
-    virtual void OnDataAvailable(const void* data, size_t num_bytes) = 0;
+    virtual void OnDataAvailable(base::span<const uint8_t> data) = 0;
     virtual void OnDataComplete() = 0;
 
    protected:

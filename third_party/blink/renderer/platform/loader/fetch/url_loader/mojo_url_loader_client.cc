@@ -7,6 +7,7 @@
 #include <iterator>
 
 #include "base/containers/queue.h"
+#include "base/containers/span.h"
 #include "base/feature_list.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
@@ -156,18 +157,18 @@ class MojoURLLoaderClient::BodyBuffer final
   bool active() const { return writable_watcher_.IsWatching(); }
 
   // mojo::DataPipeDrainer::Client
-  void OnDataAvailable(const void* data, size_t num_bytes) override {
+  void OnDataAvailable(base::span<const uint8_t> data) override {
+    std::string_view chars = base::as_string_view(data);
     DCHECK(draining_);
     if (owner_->freeze_mode() == LoaderFreezeMode::kBufferIncoming) {
-      owner_->DidBufferLoadWhileInBackForwardCache(num_bytes);
+      owner_->DidBufferLoadWhileInBackForwardCache(chars.size());
       if (!owner_->CanContinueBufferingWhileInBackForwardCache()) {
         owner_->EvictFromBackForwardCache(
             mojom::blink::RendererEvictionReason::kNetworkExceedsBufferLimit);
         return;
       }
     }
-    buffered_body_.emplace(static_cast<const char*>(data),
-                           static_cast<const char*>(data) + num_bytes);
+    buffered_body_.push(std::vector<char>(chars.begin(), chars.end()));
     WriteBufferedBody(MOJO_RESULT_OK);
   }
 

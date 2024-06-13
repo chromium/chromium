@@ -20,8 +20,8 @@ class FakeBlobRegistry::DataPipeDrainerClient
       : uuid_(uuid),
         content_type_(content_type),
         callback_(std::move(callback)) {}
-  void OnDataAvailable(const void* data, size_t num_bytes) override {
-    length_ += num_bytes;
+  void OnDataAvailable(base::span<const uint8_t> data) override {
+    length_ += data.size();
   }
   void OnDataComplete() override {
     mojo::Remote<mojom::blink::Blob> blob;

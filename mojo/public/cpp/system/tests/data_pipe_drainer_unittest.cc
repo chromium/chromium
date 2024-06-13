@@ -42,8 +42,8 @@ class DataPipeDrainerTest : public testing::Test,
   ScopedDataPipeProducerHandle producer_handle_;
   base::RepeatingClosure completion_callback_;
 
-  void OnDataAvailable(const void* data, size_t num_bytes) override {
-    data_.append(static_cast<const char*>(data), num_bytes);
+  void OnDataAvailable(base::span<const uint8_t> data) override {
+    data_.append(base::as_string_view(data));
   }
 
   void OnDataComplete() override { completion_callback_.Run(); }

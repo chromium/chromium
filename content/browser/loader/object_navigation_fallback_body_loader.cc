@@ -137,8 +137,8 @@ void ObjectNavigationFallbackBodyLoader::OnComplete(
   navigation_request_->RenderFallbackContentForObjectTag();
 }
 
-void ObjectNavigationFallbackBodyLoader::OnDataAvailable(const void* data,
-                                                         size_t num_bytes) {}
+void ObjectNavigationFallbackBodyLoader::OnDataAvailable(
+    base::span<const uint8_t> data) {}
 
 void ObjectNavigationFallbackBodyLoader::OnDataComplete() {}
 
