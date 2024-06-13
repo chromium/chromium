@@ -286,7 +286,7 @@ void PrepareDragData(const DropData& drop_data,
   if (!drop_data.custom_data.empty()) {
     base::Pickle pickle;
     ui::WriteCustomDataToPickle(drop_data.custom_data, &pickle);
-    provider->SetPickledData(ui::ClipboardFormatType::WebCustomDataType(),
+    provider->SetPickledData(ui::ClipboardFormatType::DataTransferCustomType(),
                              pickle);
   }
 }
@@ -780,8 +780,8 @@ void WebContentsViewAura::PrepareDropData(
     }
   }
 
-  if (std::optional<base::Pickle> pickle =
-          data.GetPickledData(ui::ClipboardFormatType::WebCustomDataType());
+  if (std::optional<base::Pickle> pickle = data.GetPickledData(
+          ui::ClipboardFormatType::DataTransferCustomType());
       pickle.has_value()) {
     if (std::optional<std::unordered_map<std::u16string, std::u16string>>
             maybe_custom_data = ui::ReadCustomDataIntoMap(pickle.value());

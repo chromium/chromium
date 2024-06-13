@@ -52,7 +52,8 @@ std::unique_ptr<ui::OSExchangeData> CreateOSExchangeData(
         std::unordered_map<std::u16string, std::u16string>(
             {{u"fs/sources", file_system_sources}}),
         &pickle);
-    data->SetPickledData(ui::ClipboardFormatType::WebCustomDataType(), pickle);
+    data->SetPickledData(ui::ClipboardFormatType::DataTransferCustomType(),
+                         pickle);
   }
 
   if (!filenames.empty()) {

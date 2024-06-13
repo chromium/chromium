@@ -216,7 +216,7 @@ TEST_F(ClipboardNonBackedTest, TextURIList) {
   custom_data[u"text/uri-list"] = u"data";
   base::Pickle pickle;
   ui::WriteCustomDataToPickle(custom_data, &pickle);
-  data->SetCustomData(ui::ClipboardFormatType::WebCustomDataType(),
+  data->SetCustomData(ui::ClipboardFormatType::DataTransferCustomType(),
                       std::string(pickle.data_as_char(), pickle.size()));
   clipboard()->WriteClipboardData(std::move(data));
   clipboard()->ReadAvailableTypes(ClipboardBuffer::kCopyPaste,

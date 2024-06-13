@@ -354,17 +354,17 @@ void ClipboardWin::ReadAvailableTypes(
 
   // Read the custom type only if it's present on the clipboard.
   // See crbug.com/1477344 for details.
-  if (!IsFormatAvailable(ClipboardFormatType::WebCustomDataType(), buffer,
+  if (!IsFormatAvailable(ClipboardFormatType::DataTransferCustomType(), buffer,
                          data_dst)) {
     return;
   }
-  // Acquire the clipboard to read WebCustomDataType types.
+  // Acquire the clipboard to read DataTransferCustomType types.
   ScopedClipboard clipboard;
   if (!clipboard.Acquire(GetClipboardWindow()))
     return;
 
   HANDLE hdata = ::GetClipboardData(
-      ClipboardFormatType::WebCustomDataType().ToFormatEtc().cfFormat);
+      ClipboardFormatType::DataTransferCustomType().ToFormatEtc().cfFormat);
   if (!hdata)
     return;
 
@@ -554,7 +554,7 @@ void ClipboardWin::ReadCustomData(ClipboardBuffer buffer,
     return;
 
   HANDLE hdata = ::GetClipboardData(
-      ClipboardFormatType::WebCustomDataType().ToFormatEtc().cfFormat);
+      ClipboardFormatType::DataTransferCustomType().ToFormatEtc().cfFormat);
   if (!hdata)
     return;
 

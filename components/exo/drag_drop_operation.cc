@@ -342,7 +342,7 @@ void DragDropOperation::OnWebCustomDataRead(const std::string& mime_type,
   DCHECK(os_exchange_data_);
   base::Pickle pickle = base::Pickle::WithUnownedBuffer(data);
   os_exchange_data_->SetPickledData(
-      ui::ClipboardFormatType::WebCustomDataType(), pickle);
+      ui::ClipboardFormatType::DataTransferCustomType(), pickle);
   mime_type_ = mime_type;
   counter_.Run();
 }

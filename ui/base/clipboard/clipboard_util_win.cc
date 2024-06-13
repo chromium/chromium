@@ -804,16 +804,18 @@ bool GetFileContents(IDataObject* data_object,
   return false;
 }
 
-bool GetWebCustomData(
+bool GetDataTransferCustomData(
     IDataObject* data_object,
     std::unordered_map<std::u16string, std::u16string>* custom_data) {
   DCHECK(data_object && custom_data);
 
-  if (!HasData(data_object, ClipboardFormatType::WebCustomDataType()))
+  if (!HasData(data_object, ClipboardFormatType::DataTransferCustomType())) {
     return false;
+  }
 
   STGMEDIUM store;
-  if (GetData(data_object, ClipboardFormatType::WebCustomDataType(), &store)) {
+  if (GetData(data_object, ClipboardFormatType::DataTransferCustomType(),
+              &store)) {
     {
       base::win::ScopedHGlobal<const uint8_t*> data(store.hGlobal);
       if (std::optional<std::unordered_map<std::u16string, std::u16string>>

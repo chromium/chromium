@@ -234,15 +234,15 @@ class ClipboardInternal {
   }
 
   // Reads data of type |type| from the ClipboardData.
-  void ReadWebCustomData(const std::u16string& type,
-                         std::u16string* result) const {
+  void ReadDataTransferCustomData(const std::u16string& type,
+                                  std::u16string* result) const {
     result->clear();
     const ClipboardData* data = GetData();
     if (!HasFormat(ClipboardInternalFormat::kCustom))
       return;
 
     std::optional<std::u16string> maybe_result = ReadCustomDataForType(
-        base::as_bytes(base::span(data->GetWebCustomData())), type);
+        base::as_bytes(base::span(data->GetDataTransferCustomData())), type);
     if (maybe_result) {
       *result = std::move(*maybe_result);
     }
@@ -630,9 +630,10 @@ void ClipboardNonBacked::ReadAvailableTypes(
 
   if (clipboard_internal.IsFormatAvailable(ClipboardInternalFormat::kCustom) &&
       clipboard_internal.GetData()) {
-    ReadCustomDataTypes(base::as_bytes(base::span(
-                            clipboard_internal.GetData()->GetWebCustomData())),
-                        types);
+    ReadCustomDataTypes(
+        base::as_bytes(base::span(
+            clipboard_internal.GetData()->GetDataTransferCustomData())),
+        types);
   }
 }
 
@@ -794,7 +795,7 @@ void ClipboardNonBacked::ReadCustomData(ClipboardBuffer buffer,
 
   if (!clipboard_internal.IsReadAllowed(
           data_dst, ClipboardInternalFormat::kCustom,
-          ClipboardFormatType::WebCustomDataType())) {
+          ClipboardFormatType::DataTransferCustomType())) {
     return;
   }
 
@@ -803,7 +804,7 @@ void ClipboardNonBacked::ReadCustomData(ClipboardBuffer buffer,
 #endif  // BUILDFLAG(IS_CHROMEOS)
 
   RecordRead(ClipboardFormatMetric::kCustomData);
-  clipboard_internal.ReadWebCustomData(type, result);
+  clipboard_internal.ReadDataTransferCustomData(type, result);
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
   ClipboardMonitor::GetInstance()->NotifyClipboardDataRead();

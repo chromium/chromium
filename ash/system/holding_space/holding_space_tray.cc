@@ -411,7 +411,7 @@ bool HoldingSpaceTray::GetDropFormats(
   // Support custom web data so that file system sources can be retrieved from
   // pickled data. That is the storage location at which the Files app stores
   // both file paths *and* directory paths.
-  format_types->insert(ui::ClipboardFormatType::WebCustomDataType());
+  format_types->insert(ui::ClipboardFormatType::DataTransferCustomType());
   return true;
 }
 

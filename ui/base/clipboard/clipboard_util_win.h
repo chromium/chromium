@@ -99,7 +99,7 @@ bool GetFileContents(IDataObject* data_object,
 // to avoid polluting the ::RegisterClipboardFormat() namespace with random
 // strings from web content.
 COMPONENT_EXPORT(UI_BASE_CLIPBOARD)
-bool GetWebCustomData(
+bool GetDataTransferCustomData(
     IDataObject* data_object,
     std::unordered_map<std::u16string, std::u16string>* custom_data);
 

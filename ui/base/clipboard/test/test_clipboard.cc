@@ -130,7 +130,7 @@ std::vector<std::u16string> TestClipboard::GetStandardFormats(
   if (IsFormatAvailable(ClipboardFormatType::FilenamesType(), buffer, data_dst))
     types.push_back(base::UTF8ToUTF16(kMimeTypeURIList));
 
-  auto it = store.data.find(ClipboardFormatType::WebCustomDataType());
+  auto it = store.data.find(ClipboardFormatType::DataTransferCustomType());
   if (it != store.data.end())
     ReadCustomDataTypes(base::as_bytes(base::span(it->second)), &types);
 
@@ -254,7 +254,7 @@ void TestClipboard::ReadCustomData(ClipboardBuffer buffer,
     return;
   }
 
-  auto it = store.data.find(ClipboardFormatType::WebCustomDataType());
+  auto it = store.data.find(ClipboardFormatType::DataTransferCustomType());
   if (it != store.data.end()) {
     result->clear();
     *result = ReadCustomDataForType(base::as_byte_span(it->second), type)

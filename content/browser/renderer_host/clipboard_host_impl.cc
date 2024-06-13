@@ -527,7 +527,7 @@ void ClipboardHostImpl::ReadCustomData(ui::ClipboardBuffer clipboard_buffer,
       &clipboard_paste_data.custom_data[type]);
 
   PasteIfPolicyAllowed(
-      clipboard_buffer, ui::ClipboardFormatType::WebCustomDataType(),
+      clipboard_buffer, ui::ClipboardFormatType::DataTransferCustomType(),
       std::move(clipboard_paste_data),
       base::BindOnce(
           [](ReadCustomDataCallback callback, const std::u16string& type,
@@ -606,7 +606,7 @@ void ClipboardHostImpl::WriteCustomData(
       CreateClipboardEndpoint(),
       {
           .size = total_size,
-          .format_type = ui::ClipboardFormatType::WebCustomDataType(),
+          .format_type = ui::ClipboardFormatType::DataTransferCustomType(),
       },
       clipboard_paste_data,
       base::BindOnce(&ClipboardHostImpl::OnCopyAllowedResult,
@@ -788,12 +788,12 @@ void ClipboardHostImpl::OnCopyAllowedResult(
   } else if (data_type == ui::ClipboardFormatType::BitmapType()) {
     // This branch should be reached only after `WriteImage()` is called.
     clipboard_writer_->WriteImage(data.bitmap);
-  } else if (data_type == ui::ClipboardFormatType::WebCustomDataType()) {
+  } else if (data_type == ui::ClipboardFormatType::DataTransferCustomType()) {
     // This branch should be reached only after `WriteCustomData()` is called.
     base::Pickle pickle;
     ui::WriteCustomDataToPickle(data.custom_data, &pickle);
     clipboard_writer_->WritePickledData(
-        pickle, ui::ClipboardFormatType::WebCustomDataType());
+        pickle, ui::ClipboardFormatType::DataTransferCustomType());
   } else {
     NOTREACHED_IN_MIGRATION();
   }

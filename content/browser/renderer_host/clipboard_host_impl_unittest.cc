@@ -155,10 +155,11 @@ TEST_F(ClipboardHostImplTest, ReadAvailableTypes_TextUriList) {
     base::Pickle pickle;
     ui::WriteCustomDataToPickle(custom_data, &pickle);
     writer.WritePickledData(pickle,
-                            ui::ClipboardFormatType::WebCustomDataType());
+                            ui::ClipboardFormatType::DataTransferCustomType());
   }
   EXPECT_FALSE(IsFormatAvailable(ui::ClipboardFormatType::FilenamesType()));
-  EXPECT_TRUE(IsFormatAvailable(ui::ClipboardFormatType::WebCustomDataType()));
+  EXPECT_TRUE(
+      IsFormatAvailable(ui::ClipboardFormatType::DataTransferCustomType()));
   EXPECT_TRUE(IsFormatAvailable(ui::ClipboardFormatType::PlainTextType()));
   mojo_clipboard()->ReadAvailableTypes(ui::ClipboardBuffer::kCopyPaste, &types);
   EXPECT_TRUE(base::Contains(types, u"text/plain"));

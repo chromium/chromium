@@ -1355,7 +1355,7 @@ void VolumeManager::OnClipboardDataChanged() {
   std::string web_custom_data;
   const ui::ClipboardData* data = clipboard->GetClipboardData(&dte);
   if (data) {
-    web_custom_data = data->GetWebCustomData();
+    web_custom_data = data->GetDataTransferCustomData();
   }
   if (web_custom_data.empty()) {
     return;

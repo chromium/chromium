@@ -126,7 +126,7 @@ const ClipboardFormatType& ClipboardFormatType::BitmapType() {
 }
 
 // static
-const ClipboardFormatType& ClipboardFormatType::WebCustomDataType() {
+const ClipboardFormatType& ClipboardFormatType::DataTransferCustomType() {
   static base::NoDestructor<ClipboardFormatType> type(kMimeTypeWebCustomData);
   return *type;
 }

@@ -48,7 +48,7 @@ std::vector<base::FilePath> ExtractFilePathsFromFileSystemSources(
   std::vector<base::FilePath> paths;
 
   std::optional<base::Pickle> pickle =
-      data.GetPickledData(ui::ClipboardFormatType::WebCustomDataType());
+      data.GetPickledData(ui::ClipboardFormatType::DataTransferCustomType());
   if (!pickle.has_value()) {
     return paths;
   }

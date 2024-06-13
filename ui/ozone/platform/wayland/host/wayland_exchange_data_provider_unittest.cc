@@ -50,7 +50,8 @@ TEST(WaylandExchangeDataProviderTest, ExtractPickledData) {
   extracted.clear();
   base::Pickle pickle;
   pickle.WriteString("pickled-str");
-  provider.SetPickledData(ClipboardFormatType::WebCustomDataType(), pickle);
+  provider.SetPickledData(ClipboardFormatType::DataTransferCustomType(),
+                          pickle);
   EXPECT_TRUE(provider.ExtractData(kMimeTypeWebCustomData, &extracted));
 
   // Ensure Pickle "reconstruction" works as expected.
@@ -139,7 +140,8 @@ TEST(WaylandExchangeDataProviderTest, AddAndExtractMultipleData) {
   // Add pickled data.
   base::Pickle pickle;
   pickle.WriteString("pickled-str");
-  provider.SetPickledData(ClipboardFormatType::WebCustomDataType(), pickle);
+  provider.SetPickledData(ClipboardFormatType::DataTransferCustomType(),
+                          pickle);
 
   DataTransferEndpoint* actual_dte = provider.GetSource();
   EXPECT_TRUE(expected_dte.IsSameURLWith(*actual_dte));

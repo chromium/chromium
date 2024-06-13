@@ -141,12 +141,13 @@ class COMPONENT_EXPORT(UI_BASE_CLIPBOARD) ClipboardData {
   // bitmap to a PNG on a background thread.
   std::optional<SkBitmap> GetBitmapIfPngNotEncoded() const;
 
-  // Returns true if `format` such as ClipboardFormatType::WebCustomDataType(),
-  // or `application/web;type="custom/format0"` exists.
+  // Returns true if `format` such as
+  // ClipboardFormatType::DataTransferCustomType(), or
+  // `application/web;type="custom/format0"` exists.
   bool HasCustomDataFormat(const ClipboardFormatType& format) const;
   std::string GetCustomData(const ClipboardFormatType& data_format) const;
-  // Returns the ClipboardFormatType::WebCustomDataType() pickle.
-  std::string GetWebCustomData() const;
+  // Returns the ClipboardFormatType::DataTransferCustomType() pickle.
+  std::string GetDataTransferCustomData() const;
   void SetCustomData(const ClipboardFormatType& format,
                      const std::string& data);
 

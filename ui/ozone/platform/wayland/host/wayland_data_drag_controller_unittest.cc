@@ -338,7 +338,7 @@ TEST_P(WaylandDataDragControllerTest, StartDragWithCustomFormats) {
   FocusAndPressLeftPointerButton(window_.get(), &delegate_);
   OSExchangeData data(OSExchangeDataProviderFactory::CreateProvider());
   ClipboardFormatType kCustomFormats[] = {
-      ClipboardFormatType::WebCustomDataType(),
+      ClipboardFormatType::DataTransferCustomType(),
       ClipboardFormatType::GetType("chromium/x-bookmark-entries"),
       ClipboardFormatType::GetType("xyz/arbitrary-custom-type")};
   for (auto format : kCustomFormats) {

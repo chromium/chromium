@@ -558,8 +558,8 @@ TYPED_TEST(ClipboardTest, ChromiumCustomFormatTest) {
     custom_data[ASCIIToUTF16(kMimeTypeWebCustomData)] = u"data";
     base::Pickle pickle;
     WriteCustomDataToPickle(custom_data, &pickle);
-    clipboard_writer.WritePickledData(pickle,
-                                      ClipboardFormatType::WebCustomDataType());
+    clipboard_writer.WritePickledData(
+        pickle, ClipboardFormatType::DataTransferCustomType());
   }
   EXPECT_THAT(this->GetAvailableTypes(ClipboardBuffer::kCopyPaste),
               testing::Not(Contains(ASCIIToUTF16(kMimeTypeHTML))));

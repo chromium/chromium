@@ -325,9 +325,9 @@ bool WaylandExchangeDataProvider::ExtractData(const std::string& mime_type,
     return true;
   }
   if (mime_type == ui::kMimeTypeWebCustomData &&
-      HasCustomFormat(ui::ClipboardFormatType::WebCustomDataType())) {
+      HasCustomFormat(ui::ClipboardFormatType::DataTransferCustomType())) {
     std::optional<base::Pickle> pickle =
-        GetPickledData(ui::ClipboardFormatType::WebCustomDataType());
+        GetPickledData(ui::ClipboardFormatType::DataTransferCustomType());
     *out_content = std::string(reinterpret_cast<const char*>(pickle->data()),
                                pickle->size());
     return true;

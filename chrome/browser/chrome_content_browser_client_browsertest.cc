@@ -1616,7 +1616,7 @@ IN_PROC_BROWSER_TEST_F(IsClipboardPasteAllowedTest, CustomDataAllowed) {
                                  *contents->GetPrimaryMainFrame()),
       {
           .size = clipboard_paste_data.custom_data[u"custom/data"].size(),
-          .format_type = ui::ClipboardFormatType::WebCustomDataType(),
+          .format_type = ui::ClipboardFormatType::DataTransferCustomType(),
       },
       clipboard_paste_data,
       base::BindOnce(
@@ -1646,7 +1646,7 @@ IN_PROC_BROWSER_TEST_F(IsClipboardPasteAllowedTest, CustomDataBlocked) {
                                  *contents->GetPrimaryMainFrame()),
       {
           .size = clipboard_paste_data.custom_data[u"custom/data"].size(),
-          .format_type = ui::ClipboardFormatType::WebCustomDataType(),
+          .format_type = ui::ClipboardFormatType::DataTransferCustomType(),
       },
       clipboard_paste_data,
       base::BindOnce(

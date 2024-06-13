@@ -554,7 +554,7 @@ class CONTENT_EXPORT RenderFrameHostDelegate {
   // ui::ClipboardFormatType::HtmlType() is used.
   //
   // It is also possible for the data type to be
-  // ui::ClipboardFormatType::WebCustomDataType() indicating that the paste
+  // ui::ClipboardFormatType::DataTransferCustomType() indicating that the paste
   // uses a custom data format.  It is up to the implementation to attempt to
   // understand the type if possible.  It is acceptable to deny pastes of
   // unknown data types.

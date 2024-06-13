@@ -1013,7 +1013,7 @@ class ClipboardHistoryRefreshDisplayFormatTest
           &pickle);
       ui::ScopedClipboardWriter scw(ui::ClipboardBuffer::kCopyPaste);
       scw.WritePickledData(pickle,
-                           ui::ClipboardFormatType::WebCustomDataType());
+                           ui::ClipboardFormatType::DataTransferCustomType());
     }
 
     WaitForOperationConfirmed();

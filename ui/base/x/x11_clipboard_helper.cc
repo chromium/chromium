@@ -224,7 +224,8 @@ std::vector<std::string> XClipboardHelper::GetAvailableTypes(
   if (target_list.ContainsFormat(ClipboardFormatType::FilenamesType())) {
     available_types.push_back(kMimeTypeURIList);
   }
-  if (target_list.ContainsFormat(ClipboardFormatType::WebCustomDataType())) {
+  if (target_list.ContainsFormat(
+          ClipboardFormatType::DataTransferCustomType())) {
     available_types.push_back(kMimeTypeWebCustomData);
   }
 

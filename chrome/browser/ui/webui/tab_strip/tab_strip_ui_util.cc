@@ -83,8 +83,8 @@ void MoveTabAcrossWindows(Browser* source_browser,
 }
 
 bool IsDraggedTab(const ui::OSExchangeData& drop_data) {
-  std::optional<base::Pickle> pickle =
-      drop_data.GetPickledData(ui::ClipboardFormatType::WebCustomDataType());
+  std::optional<base::Pickle> pickle = drop_data.GetPickledData(
+      ui::ClipboardFormatType::DataTransferCustomType());
   if (!pickle.has_value()) {
     return false;
   }
@@ -185,8 +185,8 @@ bool ExtractTabData(const ui::OSExchangeData& drop_data,
   DCHECK(tab_id_str);
   DCHECK(group_id_str);
 
-  std::optional<base::Pickle> pickle =
-      drop_data.GetPickledData(ui::ClipboardFormatType::WebCustomDataType());
+  std::optional<base::Pickle> pickle = drop_data.GetPickledData(
+      ui::ClipboardFormatType::DataTransferCustomType());
   if (!pickle.has_value()) {
     return false;
   }

@@ -202,8 +202,8 @@ std::string ClipboardData::GetCustomData(
   return it != custom_data_.end() ? it->second : std::string();
 }
 
-std::string ClipboardData::GetWebCustomData() const {
-  return GetCustomData(ClipboardFormatType::WebCustomDataType());
+std::string ClipboardData::GetDataTransferCustomData() const {
+  return GetCustomData(ClipboardFormatType::DataTransferCustomType());
 }
 
 void ClipboardData::SetCustomData(const ClipboardFormatType& format,

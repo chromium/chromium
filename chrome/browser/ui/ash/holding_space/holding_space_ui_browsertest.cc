@@ -345,7 +345,7 @@ class DropSenderView : public views::WidgetDelegateView,
       data->provider().SetFilenames(filenames_data_.value());
     if (file_system_sources_data_) {
       data->provider().SetPickledData(
-          ui::ClipboardFormatType::WebCustomDataType(),
+          ui::ClipboardFormatType::DataTransferCustomType(),
           file_system_sources_data_.value());
     }
   }

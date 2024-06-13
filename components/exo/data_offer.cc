@@ -252,8 +252,8 @@ void DataOffer::SetDropData(DataExchangeDelegate* data_exchange_delegate,
   // We accept the filenames pickle from FilesApp, or
   // OSExchangeData::GetFilenames().
   std::vector<ui::FileInfo> filenames;
-  if (std::optional<base::Pickle> pickle =
-          data.GetPickledData(ui::ClipboardFormatType::WebCustomDataType());
+  if (std::optional<base::Pickle> pickle = data.GetPickledData(
+          ui::ClipboardFormatType::DataTransferCustomType());
       pickle.has_value()) {
     filenames = data_exchange_delegate->ParseFileSystemSources(data.GetSource(),
                                                                pickle.value());
