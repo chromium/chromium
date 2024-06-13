@@ -261,6 +261,7 @@ public class IntentHandler {
     private static final String PACKAGE_PLUS = "com.google.android.apps.plus";
     private static final String PACKAGE_HANGOUTS = "com.google.android.talk";
     private static final String PACKAGE_MESSENGER = "com.google.android.apps.messaging";
+    private static final String PACKAGE_YOUTUBE = "com.google.android.youtube";
     private static final String PACKAGE_LINE = "jp.naver.line.android";
     private static final String PACKAGE_WHATSAPP = "com.whatsapp";
     private static final String PACKAGE_YAHOO_MAIL = "com.yahoo.mobile.client.android.mail";
@@ -475,6 +476,8 @@ public class IntentHandler {
             return ExternalAppId.HANGOUTS;
         } else if (packageName.equals(PACKAGE_MESSENGER)) {
             return ExternalAppId.MESSENGER;
+        } else if (packageName.equals(PACKAGE_YOUTUBE)) {
+            return ExternalAppId.YOUTUBE;
         } else if (packageName.equals(PACKAGE_LINE)) {
             return ExternalAppId.LINE;
         } else if (packageName.equals(PACKAGE_WHATSAPP)) {
