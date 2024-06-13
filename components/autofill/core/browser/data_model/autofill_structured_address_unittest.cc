@@ -86,12 +86,16 @@ class AutofillStructuredAddress : public testing::Test {
          features::kAutofillEnableSupportForAddressOverflow,
          features::kAutofillEnableSupportForBetweenStreetsOrLandmark,
          features::kAutofillEnableSupportForAddressOverflowAndLandmark,
+         features::kAutofillEnableDependentLocalityParsing,
          features::kAutofillUseI18nAddressModel,
+         features::kAutofillUseAUAddressModel,
          features::kAutofillUseBRAddressModel,
          features::kAutofillUseCAAddressModel,
          features::kAutofillUseDEAddressModel,
+         features::kAutofillUseINAddressModel,
          features::kAutofillUseITAddressModel,
-         features::kAutofillUseMXAddressModel},
+         features::kAutofillUseMXAddressModel,
+         features::kAutofillUsePLAddressModel},
         {});
   }
 
@@ -977,34 +981,7 @@ INSTANTIATE_TEST_SUITE_P(
             "CanonicalState", VerificationStatus::kUserVerified, "Random",
             VerificationStatus::kParsed, "CanonicalState", false}));
 
-class AutofillI18nStructuredAddress : public testing::Test {
- public:
-  AutofillI18nStructuredAddress() {
-    features_.InitWithFeatures(
-        {features::kAutofillEnableSupportForLandmark,
-         features::kAutofillEnableSupportForBetweenStreets,
-         features::kAutofillEnableSupportForAdminLevel2,
-         features::kAutofillEnableSupportForApartmentNumbers,
-         features::kAutofillEnableSupportForAddressOverflow,
-         features::kAutofillEnableSupportForBetweenStreetsOrLandmark,
-         features::kAutofillEnableSupportForAddressOverflowAndLandmark,
-         features::kAutofillEnableDependentLocalityParsing,
-         features::kAutofillUseI18nAddressModel,
-         features::kAutofillUseAUAddressModel,
-         features::kAutofillUseBRAddressModel,
-         features::kAutofillUseCAAddressModel,
-         features::kAutofillUseDEAddressModel,
-         features::kAutofillUseINAddressModel,
-         features::kAutofillUseITAddressModel,
-         features::kAutofillUseMXAddressModel},
-        {});
-  }
-
- private:
-  base::test::ScopedFeatureList features_;
-};
-
-TEST_F(AutofillI18nStructuredAddress, ParseStreetAddressLegacy) {
+TEST_F(AutofillStructuredAddress, ParseStreetAddressLegacy) {
   std::vector<AddressLineParsingTestCase> test_cases = {
       {.country_code = "",
        .street_address = "Erika-Mann-Str. 33",
@@ -1151,7 +1128,7 @@ TEST_F(AutofillI18nStructuredAddress, ParseStreetAddressLegacy) {
   }
 }
 
-TEST_F(AutofillI18nStructuredAddress, ParseStreetAddressMX) {
+TEST_F(AutofillStructuredAddress, ParseStreetAddressMX) {
   std::vector<AddressLineParsingTestCase> test_cases = {
       // Examples for Mexico.
       {.country_code = "MX",
@@ -1294,7 +1271,7 @@ TEST_F(AutofillI18nStructuredAddress, ParseStreetAddressMX) {
   }
 }
 
-TEST_F(AutofillI18nStructuredAddress, ParseSubpremiseMX) {
+TEST_F(AutofillStructuredAddress, ParseSubpremiseMX) {
   AddressComponentsStore address =
       i18n_model_definition::CreateAddressComponentModel(
           AddressCountryCode("MX"));
@@ -1331,7 +1308,7 @@ TEST_F(AutofillI18nStructuredAddress, ParseSubpremiseMX) {
   VerifyTestValues(address.Root(), expectation);
 }
 
-TEST_F(AutofillI18nStructuredAddress, ParseStreetAddressBR) {
+TEST_F(AutofillStructuredAddress, ParseStreetAddressBR) {
   std::vector<AddressLineParsingTestCase> test_cases = {
       // Examples for Brasil.
       {.country_code = "BR",
@@ -1479,7 +1456,7 @@ TEST_F(AutofillI18nStructuredAddress, ParseStreetAddressBR) {
   }
 }
 
-TEST_F(AutofillI18nStructuredAddress, ParseOverflowAndLandmarkBR) {
+TEST_F(AutofillStructuredAddress, ParseOverflowAndLandmarkBR) {
   AddressComponentsStore address =
       i18n_model_definition::CreateAddressComponentModel(
           AddressCountryCode("BR"));
@@ -1522,7 +1499,7 @@ TEST_F(AutofillI18nStructuredAddress, ParseOverflowAndLandmarkBR) {
   VerifyTestValues(address.Root(), expectation);
 }
 
-TEST_F(AutofillI18nStructuredAddress, ParseSubpremiseBR) {
+TEST_F(AutofillStructuredAddress, ParseSubpremiseBR) {
   std::vector<AddressLineParsingTestCase> test_cases = {
       {.subpremise = "apto 12, 1 andar",
        .floor = "1",
@@ -1568,8 +1545,7 @@ TEST_F(AutofillI18nStructuredAddress, ParseSubpremiseBR) {
   }
 }
 
-TEST_F(AutofillI18nStructuredAddress, ParseStreetAddressDE) {
-  base::test::ScopedFeatureList features_{features::kAutofillUseDEAddressModel};
+TEST_F(AutofillStructuredAddress, ParseStreetAddressDE) {
   std::vector<AddressLineParsingTestCase> test_cases = {
       // Examples for Germany.
       {.country_code = "DE",
@@ -1646,8 +1622,7 @@ TEST_F(AutofillI18nStructuredAddress, ParseStreetAddressDE) {
   }
 }
 
-TEST_F(AutofillI18nStructuredAddress, ParseStreetLocationDE) {
-  base::test::ScopedFeatureList features_{features::kAutofillUseDEAddressModel};
+TEST_F(AutofillStructuredAddress, ParseStreetLocationDE) {
   std::vector<AddressLineParsingTestCase> test_cases = {
       // Examples for Germany.
       {.country_code = "DE",
@@ -1718,8 +1693,7 @@ TEST_F(AutofillI18nStructuredAddress, ParseStreetLocationDE) {
   }
 }
 
-TEST_F(AutofillI18nStructuredAddress, ParseSubpremiseAU) {
-  base::test::ScopedFeatureList features_{features::kAutofillUseAUAddressModel};
+TEST_F(AutofillStructuredAddress, ParseSubpremiseAU) {
   std::vector<AddressLineParsingTestCase> test_cases = {
       // Examples of subpremise(in-building-location) for Australia.
       {.country_code = "AU",
@@ -1793,8 +1767,7 @@ TEST_F(AutofillI18nStructuredAddress, ParseSubpremiseAU) {
   }
 }
 
-TEST_F(AutofillI18nStructuredAddress, ParseStreetLocationAU) {
-  base::test::ScopedFeatureList features_{features::kAutofillUseAUAddressModel};
+TEST_F(AutofillStructuredAddress, ParseStreetLocationAU) {
   std::vector<AddressLineParsingTestCase> test_cases = {
       // Examples of street locations (building-location) for Australia.
       {.country_code = "AU",
@@ -1840,8 +1813,7 @@ TEST_F(AutofillI18nStructuredAddress, ParseStreetLocationAU) {
   }
 }
 
-TEST_F(AutofillI18nStructuredAddress, ParseStreetAddressAU) {
-  base::test::ScopedFeatureList features_{features::kAutofillUseAUAddressModel};
+TEST_F(AutofillStructuredAddress, ParseStreetAddressAU) {
   std::vector<AddressLineParsingTestCase> test_cases = {
       // Examples of street addresses for Australia.
       {.country_code = "AU",
@@ -2028,8 +2000,7 @@ TEST_F(AutofillI18nStructuredAddress, ParseStreetAddressAU) {
   }
 }
 
-TEST_F(AutofillI18nStructuredAddress, TestFormattingPL) {
-  base::test::ScopedFeatureList features_{features::kAutofillUsePLAddressModel};
+TEST_F(AutofillStructuredAddress, TestFormattingPL) {
   std::vector<AddressLineParsingTestCase> test_cases = {
       {.country_code = "PL",
        .street_address = "Jan Warsaw 9/10",
@@ -2116,8 +2087,7 @@ TEST_F(AutofillI18nStructuredAddress, TestFormattingPL) {
   }
 }
 
-TEST_F(AutofillI18nStructuredAddress, ParseBuildingAndUnitPL) {
-  base::test::ScopedFeatureList features_{features::kAutofillUsePLAddressModel};
+TEST_F(AutofillStructuredAddress, ParseBuildingAndUnitPL) {
   std::vector<AddressLineParsingTestCase> test_cases = {
       // Examples of house number and apartment numbers for Poland.
       {.country_code = "PL",
@@ -2180,8 +2150,7 @@ TEST_F(AutofillI18nStructuredAddress, ParseBuildingAndUnitPL) {
   }
 }
 
-TEST_F(AutofillI18nStructuredAddress, ParseStreetAddressPL) {
-  base::test::ScopedFeatureList features_{features::kAutofillUsePLAddressModel};
+TEST_F(AutofillStructuredAddress, ParseStreetAddressPL) {
   std::vector<AddressLineParsingTestCase> test_cases = {
       // Examples of street addresses for Poland.
       {.country_code = "PL",
@@ -2304,7 +2273,7 @@ TEST_F(AutofillI18nStructuredAddress, ParseStreetAddressPL) {
   }
 }
 
-TEST_F(AutofillI18nStructuredAddress, TestFormattingIT) {
+TEST_F(AutofillStructuredAddress, TestFormattingIT) {
   std::vector<AddressLineParsingTestCase> test_cases = {
       {.country_code = "IT",
        .street_address = "Corso Vittorio Emanuele II 30",
@@ -2381,7 +2350,7 @@ TEST_F(AutofillI18nStructuredAddress, TestFormattingIT) {
   }
 }
 
-TEST_F(AutofillI18nStructuredAddress, ParseStreetLocationIT) {
+TEST_F(AutofillStructuredAddress, ParseStreetLocationIT) {
   std::vector<AddressLineParsingTestCase> test_cases = {
       // Examples for Italy.
       {.country_code = "IT",
@@ -2440,7 +2409,7 @@ TEST_F(AutofillI18nStructuredAddress, ParseStreetLocationIT) {
   }
 }
 
-TEST_F(AutofillI18nStructuredAddress, ParseStreetAddressIT) {
+TEST_F(AutofillStructuredAddress, ParseStreetAddressIT) {
   std::vector<AddressLineParsingTestCase> test_cases = {
       // Examples of street addresses for Italy.
       {.country_code = "IT",
