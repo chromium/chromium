@@ -85,7 +85,7 @@ BASE_FEATURE(kBackForwardCacheEntryTimeout,
 // experimental group of the BackForwardCache field trial.
 
 // BackForwardCacheMemoryControls is enabled only on Android to disable
-// BackForwardCache for lower memory devices due to memory limitations.
+// BackForwardCache for lower memory devices due to memory limiations.
 BASE_FEATURE(kBackForwardCacheMemoryControls,
              "BackForwardCacheMemoryControls",
 
@@ -820,13 +820,14 @@ BASE_FEATURE(kServiceWorkerStaticRouter,
 
 // Run video capture service in the Browser process as opposed to a dedicated
 // utility process.
-// Camera requests from Lacros are forwarded to Ash via a Mojo connection
-// established through cros-api. Since cros-api isn't available in utility
-// processes, Lacros's video capture service has to run within the browser
-// process.
+// On ChromeOS the service had to run in the browser process, because parts of
+// the code depend on global objects that are only available in the Browser
+// process. See https://crbug.com/891961. However, since the dependencies are
+// removed now(b/315966244), the service run in the browser process by default,
+// but an user is able to run it in an utility process by changing the flag.
 BASE_FEATURE(kRunVideoCaptureServiceInBrowserProcess,
              "RunVideoCaptureServiceInBrowserProcess",
-#if BUILDFLAG(IS_CHROMEOS_LACROS)
+#if BUILDFLAG(IS_CHROMEOS)
              base::FEATURE_ENABLED_BY_DEFAULT
 #else
              base::FEATURE_DISABLED_BY_DEFAULT
