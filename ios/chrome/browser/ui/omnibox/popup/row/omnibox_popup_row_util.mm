@@ -10,21 +10,14 @@
 #import "ui/base/device_form_factor.h"
 
 BOOL CanUseOmniboxLayoutGuide() {
-  if (ui::GetDeviceFormFactor() == ui::DEVICE_FORM_FACTOR_TABLET) {
-    return YES;
-  } else {
-    return !base::FeatureList::IsEnabled(kOmniboxSuggestionsRTLImprovements);
-  }
+  return ui::GetDeviceFormFactor() == ui::DEVICE_FORM_FACTOR_TABLET;
 }
 
 BOOL ShouldApplyOmniboxLayoutGuide(UITraitCollection* traitCollection) {
   CHECK(CanUseOmniboxLayoutGuide());
 
-  if (IsRegularXRegularSizeClass(traitCollection)) {
-    return !IsIpadPopoutOmniboxEnabled();
-  } else {
-    return !base::FeatureList::IsEnabled(kOmniboxSuggestionsRTLImprovements);
-  }
+  return IsRegularXRegularSizeClass(traitCollection) &&
+         !IsIpadPopoutOmniboxEnabled();
 }
 
 BOOL ShouldApplyOmniboxPopoutLayout(UITraitCollection* traitCollection) {

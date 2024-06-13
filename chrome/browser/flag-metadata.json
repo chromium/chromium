@@ -6467,11 +6467,6 @@
     "expiry_milestone": 110
   },
   {
-    "name": "omnibox-improved-rtl-suggestions",
-    "owners": [ "stkhapugin@chromium.org", "chrome-mobile-search@google.com" ],
-    "expiry_milestone": 130
-  },
-  {
     "name": "omnibox-inspire-me",
     "owners": [ "stkhapugin@chromium.org", "chrome-mobile-search@google.com" ],
     "expiry_milestone": 130
@@ -6578,11 +6573,6 @@
     "name": "omnibox-on-device-tail-suggestions",
     "owners": [ "cechen@google.com", "suggest-2g@google.com" ],
     "expiry_milestone": 135
-  },
-  {
-    "name": "omnibox-popup-row-content-configuration",
-    "owners": [ "christianxu@chromium.org", "chrome-omnibox-team@google.com" ],
-    "expiry_milestone": 130
   },
   {
     "name": "omnibox-pref-based-data-collection-consent-helper",

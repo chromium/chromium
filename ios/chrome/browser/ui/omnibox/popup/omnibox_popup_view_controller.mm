@@ -32,8 +32,6 @@
 #import "ios/chrome/browser/ui/omnibox/popup/row/actions/omnibox_popup_actions_row_content_configuration.h"
 #import "ios/chrome/browser/ui/omnibox/popup/row/actions/omnibox_popup_actions_row_delegate.h"
 #import "ios/chrome/browser/ui/omnibox/popup/row/actions/suggest_action.h"
-#import "ios/chrome/browser/ui/omnibox/popup/row/omnibox_popup_row_cell.h"
-#import "ios/chrome/browser/ui/omnibox/popup/row/omnibox_popup_row_cell_experimental.h"
 #import "ios/chrome/browser/ui/omnibox/popup/row/omnibox_popup_row_content_configuration.h"
 #import "ios/chrome/browser/ui/omnibox/popup/row/omnibox_popup_row_delegate.h"
 #import "ios/chrome/browser/ui/toolbar/buttons/toolbar_configuration.h"
@@ -55,9 +53,6 @@ const CGFloat kMinTileFaviconSize = 32.0f;
 /// Maximum size of the fetched favicon for tiles.
 const CGFloat kMaxTileFaviconSize = 48.0f;
 
-// Default offset to align the suggestions with the omnibox leading image.
-const CGFloat kDefaultSuggestionLeadingOffset = -10.0f;
-
 /// Bottom padding for table view headers.
 const CGFloat kHeaderPaddingBottom = 10.0f;
 /// Leading and trailing padding for table view headers.
@@ -75,7 +70,6 @@ BOOL ShouldDismissKeyboardOnScroll() {
 
 @interface OmniboxPopupViewController () <OmniboxPopupActionsRowDelegate,
                                           OmniboxPopupCarouselCellDelegate,
-                                          OmniboxPopupRowCellDelegate,
                                           OmniboxPopupRowDelegate,
                                           UITableViewDataSource,
                                           UITableViewDelegate>
@@ -277,8 +271,7 @@ BOOL ShouldDismissKeyboardOnScroll() {
   }
   self.tableView.contentInsetAdjustmentBehavior =
       UIScrollViewContentInsetAdjustmentAutomatic;
-  if (base::FeatureList::IsEnabled(kOmniboxSuggestionsRTLImprovements) &&
-      ui::GetDeviceFormFactor() == ui::DEVICE_FORM_FACTOR_TABLET &&
+  if (ui::GetDeviceFormFactor() == ui::DEVICE_FORM_FACTOR_TABLET &&
       !IsIpadPopoutOmniboxEnabled()) {
     /// The popup view in multitasking displays suggestion icons outside of the
     /// safe area (too close to the leading edge). This is ok because the entire
@@ -308,18 +301,10 @@ BOOL ShouldDismissKeyboardOnScroll() {
   self.tableView.rowHeight = UITableViewAutomaticDimension;
   self.tableView.estimatedRowHeight = kOmniboxPopupCellMinimumHeight;
 
-  if (base::FeatureList::IsEnabled(kOmniboxPopupRowContentConfiguration)) {
-    [self.tableView registerClass:[UITableViewCell class]
-           forCellReuseIdentifier:OmniboxPopupRowCellReuseIdentifier];
-    [self.tableView registerClass:[UITableViewCell class]
-           forCellReuseIdentifier:OmniboxPopupActionsRowCellReuseIdentifier];
-  } else if (base::FeatureList::IsEnabled(kOmniboxSuggestionsRTLImprovements)) {
-    [self.tableView registerClass:[OmniboxPopupRowCellExperimental class]
-           forCellReuseIdentifier:OmniboxPopupRowCellReuseIdentifier];
-  } else {
-    [self.tableView registerClass:[OmniboxPopupRowCell class]
-           forCellReuseIdentifier:OmniboxPopupRowCellReuseIdentifier];
-  }
+  [self.tableView registerClass:[UITableViewCell class]
+         forCellReuseIdentifier:OmniboxPopupRowCellReuseIdentifier];
+  [self.tableView registerClass:[UITableViewCell class]
+         forCellReuseIdentifier:OmniboxPopupActionsRowCellReuseIdentifier];
   [self.tableView registerClass:[UITableViewHeaderFooterView class]
       forHeaderFooterViewReuseIdentifier:NSStringFromClass(
                                              [UITableViewHeaderFooterView
@@ -398,28 +383,12 @@ BOOL ShouldDismissKeyboardOnScroll() {
     [headerView setNeedsUpdateConfiguration];
   }
 
-  if (base::FeatureList::IsEnabled(kOmniboxPopupRowContentConfiguration)) {
-    // Update the configuration to realign the text to the omnibox.
-    for (UITableViewCell* cell in self.tableView.visibleCells) {
-      if ([cell.contentConfiguration
-              isKindOfClass:OmniboxPopupRowContentConfiguration.class]) {
-        [cell setNeedsUpdateConfiguration];
-      }
+  // Update cells' configuration to realign the text to the omnibox.
+  for (UITableViewCell* cell in self.tableView.visibleCells) {
+    if ([cell.contentConfiguration
+            isKindOfClass:OmniboxPopupRowContentConfiguration.class]) {
+      [cell setNeedsUpdateConfiguration];
     }
-  }
-
-  if (!base::FeatureList::IsEnabled(kOmniboxPopupRowContentConfiguration) &&
-      base::FeatureList::IsEnabled(kOmniboxSuggestionsRTLImprovements) &&
-      ui::GetDeviceFormFactor() == ui::DEVICE_FORM_FACTOR_TABLET &&
-      !IsIpadPopoutOmniboxEnabled()) {
-    CGFloat leadingPadding = kDefaultSuggestionLeadingOffset;
-
-    if (IsRegularXRegularSizeClass(self)) {
-      leadingPadding += CGRectGetMinX(omniboxFrame);
-    }
-
-    self.tableView.directionalLayoutMargins =
-        NSDirectionalEdgeInsetsMake(0, leadingPadding, kBottomPadding, 0);
   }
 }
 
@@ -681,18 +650,6 @@ BOOL ShouldDismissKeyboardOnScroll() {
   [self.matchPreviewDelegate setPreviewSuggestion:suggestion isFirstUpdate:NO];
 }
 
-#pragma mark - OmniboxPopupRowCellDelegate
-
-- (void)trailingButtonTappedForCell:(OmniboxPopupRowCell*)cell {
-  NSIndexPath* indexPath = [self.tableView indexPathForCell:cell];
-  id<AutocompleteSuggestion> suggestion =
-      [self suggestionAtIndexPath:indexPath];
-  DCHECK(suggestion);
-  [self.delegate autocompleteResultConsumer:self
-           didTapTrailingButtonOnSuggestion:suggestion
-                                      inRow:indexPath.row];
-}
-
 #pragma mark - OmniboxPopupRowDelegate
 
 - (void)omniboxPopupRowWithConfiguration:
@@ -779,17 +736,8 @@ BOOL ShouldDismissKeyboardOnScroll() {
 - (void)tableView:(UITableView*)tableView
       willDisplayCell:(UITableViewCell*)cell
     forRowAtIndexPath:(NSIndexPath*)indexPath {
-  if ([cell isKindOfClass:[OmniboxPopupRowCell class]] ||
-      [cell isKindOfClass:[OmniboxPopupRowCellExperimental class]]) {
-    OmniboxPopupRowCell* rowCell = id(cell);
-    // This has to be set here because the cell's content view has its
-    // semantic content attribute reset before the cell is displayed (and before
-    // this method is called).
-    rowCell.omniboxSemanticContentAttribute = self.semanticContentAttribute;
-    rowCell.accessibilityIdentifier = [OmniboxPopupAccessibilityIdentifierHelper
-        accessibilityIdentifierForRowAtIndexPath:indexPath];
-  } else if ([cell.contentConfiguration
-                 isKindOfClass:OmniboxPopupRowContentConfiguration.class]) {
+  if ([cell.contentConfiguration
+          isKindOfClass:OmniboxPopupRowContentConfiguration.class]) {
     cell.accessibilityIdentifier = [OmniboxPopupAccessibilityIdentifierHelper
         accessibilityIdentifierForRowAtIndexPath:indexPath];
   }
@@ -989,9 +937,7 @@ BOOL ShouldDismissKeyboardOnScroll() {
       id<AutocompleteSuggestion> suggestion =
           self.currentResult[indexPath.section].suggestions[indexPath.row];
 
-      if (base::FeatureList::IsEnabled(kOmniboxPopupRowContentConfiguration)) {
         UITableViewCell* cell;
-
         OmniboxPopupRowContentConfiguration* configuration;
 
         if (base::FeatureList::IsEnabled(kOmniboxActionsInSuggest) &&
@@ -1026,21 +972,6 @@ BOOL ShouldDismissKeyboardOnScroll() {
         cell.backgroundConfiguration =
             [UIBackgroundConfiguration clearConfiguration];
         return cell;
-      } else {
-        OmniboxPopupRowCell* cell = [self.tableView
-            dequeueReusableCellWithIdentifier:OmniboxPopupRowCellReuseIdentifier
-                                 forIndexPath:indexPath];
-        cell.faviconRetriever = self.faviconRetriever;
-        cell.imageRetriever = self.imageRetriever;
-        [cell setupWithAutocompleteSuggestion:suggestion
-                                    incognito:self.incognito];
-        cell.showsSeparator =
-            (NSUInteger)indexPath.row <
-            self.currentResult[indexPath.section].suggestions.count - 1;
-        cell.delegate = self;
-        cell.layoutGuideCenter = self.layoutGuideCenter;
-        return cell;
-      }
     }
     case SuggestionGroupDisplayStyleCarousel: {
       NSArray<CarouselItem*>* carouselItems = [self
@@ -1152,24 +1083,6 @@ BOOL ShouldDismissKeyboardOnScroll() {
     self.view.backgroundColor = configuration.backgroundColor;
   } else {
     self.view.backgroundColor = [UIColor clearColor];
-  }
-}
-
-#pragma mark Action for append UIButton
-
-- (void)setSemanticContentAttribute:
-    (UISemanticContentAttribute)semanticContentAttribute {
-  _semanticContentAttribute = semanticContentAttribute;
-  // If there are any visible cells, update them right away.
-  for (UITableViewCell* cell in self.tableView.visibleCells) {
-    if ([cell isKindOfClass:[OmniboxPopupRowCell class]] ||
-        [cell isKindOfClass:[OmniboxPopupRowCellExperimental class]]) {
-      OmniboxPopupRowCell* rowCell = (id)cell;
-      // This has to be set here because the cell's content view has its
-      // semantic content attribute reset before the cell is displayed (and
-      // before this method is called).
-      rowCell.omniboxSemanticContentAttribute = self.semanticContentAttribute;
-    }
   }
 }
 

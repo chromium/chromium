@@ -7,14 +7,17 @@
 
 #import <UIKit/UIKit.h>
 
-#import "ios/chrome/browser/ui/omnibox/popup/row/omnibox_popup_row_cell.h"
-
 @protocol AutocompleteSuggestion;
 @protocol FaviconRetriever;
 @protocol ImageRetriever;
 @protocol OmniboxIcon;
 @protocol OmniboxPopupRowDelegate;
 @protocol OmniboxPopupActionsRowDelegate;
+
+extern NSString* const OmniboxPopupRowCellReuseIdentifier;
+/// This minimum height causes most of the rows to be the same height. Some have
+/// multiline answers, so those heights may be taller than this minimum.
+extern const CGFloat kOmniboxPopupCellMinimumHeight;
 
 /// Content configuration of the omnibox popup row, contains the logic of the
 /// row UI.

@@ -817,11 +817,6 @@ const char kOmniboxOnDeviceTailSuggestionsDescription[] =
     "Google tail non personalized search suggestions provided by a compact on "
     "device model.";
 
-const char kOmniboxPopupRowContentConfigurationName[] =
-    "Omnibox popup row content configuration";
-const char kOmniboxPopupRowContentConfigurationDescription[] =
-    "Enables the use of content configuration for the omnibox popup row.";
-
 const char kOmniboxRichAutocompletionName[] =
     "Omnibox rich inline autocompletion";
 const char kOmniboxRichAutocompletionDescription[] =
@@ -833,11 +828,6 @@ const char kOmniboxSuggestionAnswerMigrationName[] =
 const char kOmniboxSuggestionAnswerMigrationDescription[] =
     "Enables omnibox Suggestion answer migration, when enabled the omnibox "
     "will use the migrated Answer_template instead of answer.";
-
-extern const char kOmniboxSuggestionsRTLImprovementsName[] =
-    "Omnibox Improved RTL Suggestion Layout";
-extern const char kOmniboxSuggestionsRTLImprovementsDescription[] =
-    "Improved layout for suggestions in right-to-left contexts";
 
 const char kOmniboxZeroSuggestInMemoryCachingName[] =
     "Omnibox Zero Prefix Suggestion in-memory caching";

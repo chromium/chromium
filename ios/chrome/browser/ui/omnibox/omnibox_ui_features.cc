@@ -16,17 +16,9 @@ BASE_FEATURE(kEnablePopoutOmniboxIpad,
              "EnablePopoutOmniboxIpad",
              base::FEATURE_ENABLED_BY_DEFAULT);
 
-BASE_FEATURE(kOmniboxSuggestionsRTLImprovements,
-             "OmniboxSuggestionsRTLImprovements",
-             base::FEATURE_ENABLED_BY_DEFAULT);
-
 BASE_FEATURE(kOmniboxLockIconEnabled,
              "OmniboxLockIconEnabled",
              base::FEATURE_DISABLED_BY_DEFAULT);
-
-BASE_FEATURE(kOmniboxPopupRowContentConfiguration,
-             "OmniboxPopupRowContentConfiguration",
-             base::FEATURE_ENABLED_BY_DEFAULT);
 
 BASE_FEATURE(kOmniboxActionsInSuggest,
              "OmniboxIOSActionsInSuggest",

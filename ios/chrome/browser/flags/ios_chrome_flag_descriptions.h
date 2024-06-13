@@ -712,10 +712,6 @@ extern const char kOmniboxOnDeviceHeadSuggestionsNonIncognitoDescription[];
 extern const char kOmniboxOnDeviceTailSuggestionsName[];
 extern const char kOmniboxOnDeviceTailSuggestionsDescription[];
 
-// Title and description for using content configuration in omnibox popup row.
-extern const char kOmniboxPopupRowContentConfigurationName[];
-extern const char kOmniboxPopupRowContentConfigurationDescription[];
-
 // Title and description for omnibox rich inline autocompletion.
 extern const char kOmniboxRichAutocompletionName[];
 extern const char kOmniboxRichAutocompletionDescription[];
@@ -723,10 +719,6 @@ extern const char kOmniboxRichAutocompletionDescription[];
 // Title and description for omnibox suggestion answer migration.
 extern const char kOmniboxSuggestionAnswerMigrationName[];
 extern const char kOmniboxSuggestionAnswerMigrationDescription[];
-
-// Title and description for improved RTL layout of suggestions.
-extern const char kOmniboxSuggestionsRTLImprovementsName[];
-extern const char kOmniboxSuggestionsRTLImprovementsDescription[];
 
 // Title and description for the flag to change the max number of autocomplete
 // matches in the omnibox popup.

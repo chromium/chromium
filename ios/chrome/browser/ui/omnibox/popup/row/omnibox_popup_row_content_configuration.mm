@@ -35,6 +35,9 @@ const CGFloat kOmniboxLayoutGuideLeadingOffset = -10.0f;
 
 }  // namespace
 
+NSString* const OmniboxPopupRowCellReuseIdentifier = @"OmniboxPopupRowCell";
+const CGFloat kOmniboxPopupCellMinimumHeight = 58;
+
 /// Redefines "Content View interface" as readwrite.
 @interface OmniboxPopupRowContentConfiguration ()
 
