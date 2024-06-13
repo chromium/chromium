@@ -70,6 +70,13 @@ void GetServiceWorkerErrorTypeForRegistration(
       *out_error = blink::mojom::ServiceWorkerErrorType::kAbort;
       return;
 
+    case blink::ServiceWorkerStatusCode::kErrorStorageDataCorrupted:
+      // In case of storage data corruption, `register()`, `getRegistration()`
+      // or `getRegistrations()` fail. For that case, it might be fine to
+      // just return promise error.
+      // See: crbug.com/332136252
+      return;
+
     case blink::ServiceWorkerStatusCode::kErrorActivateWorkerFailed:
     case blink::ServiceWorkerStatusCode::kErrorIpcFailed:
     case blink::ServiceWorkerStatusCode::kErrorFailed:
@@ -78,7 +85,6 @@ void GetServiceWorkerErrorTypeForRegistration(
     case blink::ServiceWorkerStatusCode::kErrorState:
     case blink::ServiceWorkerStatusCode::kErrorInvalidArguments:
     case blink::ServiceWorkerStatusCode::kErrorStorageDisconnected:
-    case blink::ServiceWorkerStatusCode::kErrorStorageDataCorrupted:
       // Unexpected, or should have bailed out before calling this, or we don't
       // have a corresponding blink error code yet.
       break;  // Fall through to NOTREACHED().
