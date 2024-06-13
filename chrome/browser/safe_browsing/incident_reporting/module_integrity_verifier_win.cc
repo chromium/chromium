@@ -13,7 +13,7 @@
 #include "base/files/file_path.h"
 #include "base/files/memory_mapped_file.h"
 #include "base/memory/raw_ptr.h"
-#include "base/memory/raw_ptr_exclusion.h"
+#include "base/memory/stack_allocated.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/scoped_native_library.h"
 #include "base/strings/utf_string_conversions.h"
@@ -46,6 +46,9 @@ Export::~Export() {
 }
 
 struct ModuleVerificationState {
+  STACK_ALLOCATED();
+
+ public:
   explicit ModuleVerificationState(HMODULE hModule);
 
   ModuleVerificationState(const ModuleVerificationState&) = delete;
@@ -68,14 +71,10 @@ struct ModuleVerificationState {
   bool unknown_reloc_type;
 
   // The start of the code section of the in-memory binary.
-  // This field is not a raw_ptr<> because it was filtered by the rewriter for:
-  // #addr-of
-  RAW_PTR_EXCLUSION uint8_t* mem_code_addr;
+  uint8_t* mem_code_addr;
 
   // The start of the code section of the on-disk binary.
-  // This field is not a raw_ptr<> because it was filtered by the rewriter for:
-  // #addr-of
-  RAW_PTR_EXCLUSION uint8_t* disk_code_addr;
+  uint8_t* disk_code_addr;
 
   // The size of the binary's code section.
   uint32_t code_size;
@@ -85,19 +84,18 @@ struct ModuleVerificationState {
 
   // The location in the in-memory binary of the latest reloc encountered by
   // |EnumRelocsCallback|.
-  raw_ptr<uint8_t, AllowPtrArithmetic> last_mem_reloc_position;
+  uint8_t* last_mem_reloc_position;
 
   // The location in the on-disk binary of the latest reloc encountered by
   // |EnumRelocsCallback|.
-  raw_ptr<uint8_t, AllowPtrArithmetic> last_disk_reloc_position;
+  uint8_t* last_disk_reloc_position;
 
   // The number of bytes with a different value on disk and in memory, as
   // computed by |VerifyModule|.
   int bytes_different;
 
   // The module state protobuf object that |VerifyModule| will populate.
-  raw_ptr<ClientIncidentReport_EnvironmentData_Process_ModuleState>
-      module_state;
+  ClientIncidentReport_EnvironmentData_Process_ModuleState* module_state;
 };
 
 ModuleVerificationState::ModuleVerificationState(HMODULE hModule)
