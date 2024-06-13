@@ -195,8 +195,7 @@ std::vector<wgpu::WGSLFeatureName> GatherWGSLFeatures() {
           .instance);
 
   size_t feature_count = instance.EnumerateWGSLLanguageFeatures(nullptr);
-  std::vector<wgpu::WGSLFeatureName> features(feature_count,
-                                              wgpu::WGSLFeatureName::Undefined);
+  std::vector<wgpu::WGSLFeatureName> features(feature_count);
   instance.EnumerateWGSLLanguageFeatures(features.data());
 
   return features;
