@@ -3,11 +3,8 @@
 // found in the LICENSE file.
 
 #include "chrome/browser/devtools/aida_client.h"
-
 #include <string>
-
 #include "base/check_is_test.h"
-#include "base/containers/fixed_flat_set.h"
 #include "base/json/json_string_value_serializer.h"
 #include "base/json/string_escape.h"
 #include "base/metrics/histogram_functions.h"
@@ -21,29 +18,7 @@
 #include "components/prefs/scoped_user_pref_update.h"
 #include "components/signin/public/identity_manager/identity_manager.h"
 #include "components/variations/service/variations_service.h"
-#include "components/variations/service/variations_service_utils.h"
 #include "net/base/load_flags.h"
-
-constexpr auto kAidaSupportedCountries =
-    base::MakeFixedFlatSet<std::string_view>(
-        {"ae", "ag", "ai", "am", "ao", "ar", "as", "at", "au", "aw", "az", "bb",
-         "bd", "be", "bf", "bg", "bh", "bi", "bj", "bl", "bm", "bn", "bo", "bq",
-         "br", "bs", "bt", "bw", "bz", "ca", "cc", "cd", "cf", "cg", "ch", "ci",
-         "ck", "cl", "cm", "co", "cr", "cv", "cw", "cx", "cy", "cz", "de", "dj",
-         "dk", "dm", "do", "dz", "ec", "ee", "eg", "eh", "er", "es", "et", "fi",
-         "fj", "fk", "fm", "fr", "ga", "gb", "gd", "ge", "gg", "gh", "gi", "gm",
-         "gn", "gq", "gr", "gs", "gt", "gu", "gw", "gy", "hm", "hn", "hr", "ht",
-         "hu", "id", "ie", "il", "im", "in", "io", "iq", "is", "it", "je", "jm",
-         "jo", "jp", "ke", "kg", "kh", "ki", "km", "kn", "kr", "kw", "ky", "kz",
-         "la", "lb", "lc", "li", "lk", "lr", "ls", "lt", "lu", "lv", "ly", "ma",
-         "mg", "mh", "ml", "mn", "mp", "mr", "ms", "mt", "mu", "mv", "mw", "mx",
-         "my", "mz", "na", "nc", "ne", "nf", "ng", "ni", "nl", "no", "np", "nr",
-         "nu", "nz", "om", "pa", "pe", "pg", "ph", "pk", "pl", "pm", "pn", "pr",
-         "ps", "pt", "pw", "py", "qa", "ro", "rw", "sa", "sb", "sc", "sd", "se",
-         "sg", "sh", "si", "sk", "sl", "sn", "so", "sr", "ss", "st", "sv", "sz",
-         "tc", "td", "tg", "th", "tj", "tk", "tl", "tm", "tn", "to", "tr", "tt",
-         "tv", "tw", "tz", "ug", "um", "us", "uy", "uz", "vc", "ve", "vg", "vi",
-         "vn", "vu", "wf", "ws", "ye", "za", "zm", "zw"});
 
 std::string GetAidaEndpoint() {
   if (base::FeatureList::IsEnabled(
@@ -90,13 +65,6 @@ bool IsAidaBlockedByAge(std::optional<AccountInfo> account_info) {
          signin::Tribool::kTrue;
 }
 
-bool IsAidaBlockedByGeo() {
-  std::string country_code =
-      base::ToLowerASCII(variations::GetCurrentCountryCode(
-          g_browser_process->variations_service()));
-  return !kAidaSupportedCountries.contains(country_code);
-}
-
 AidaClient::BlockedReason AidaClient::CanUseAida(Profile* profile) {
   struct BlockedReason result;
   // Console insights is only available on branded builds
@@ -111,9 +79,26 @@ AidaClient::BlockedReason AidaClient::CanUseAida(Profile* profile) {
     result.blocked = false;
     return result;
   }
+  // If `SettingVisible` is disabled, DevTools does not show a blocked reason
+  if (!base::FeatureList::IsEnabled(
+          ::features::kDevToolsConsoleInsightsSettingVisible)) {
+    result.blocked = true;
+    result.blocked_by_feature_flag = true;
+    return result;
+  }
   // Console insights is not available if the feature flag is off
   if (!base::FeatureList::IsEnabled(::features::kDevToolsConsoleInsights)) {
     result.blocked = true;
+    auto blocked_by =
+        ::features::kDevToolsConsoleInsightsSettingVisibleBlockedReason.Get();
+    if (blocked_by == "rollout") {
+      result.blocked_by_rollout = true;
+      return result;
+    }
+    if (blocked_by == "region") {
+      result.blocked_by_geo = true;
+      return result;
+    }
     result.blocked_by_feature_flag = true;
     return result;
   }
@@ -124,13 +109,11 @@ AidaClient::BlockedReason AidaClient::CanUseAida(Profile* profile) {
   result.blocked_by_enterprise_policy =
       profile->GetPrefs()->GetInteger(prefs::kDevToolsGenAiSettings) ==
       static_cast<int>(DevToolsGenAiEnterprisePolicyValue::kDisable);
-  result.blocked_by_geo = IsAidaBlockedByGeo();
   result.disallow_logging =
       profile->GetPrefs()->GetInteger(prefs::kDevToolsGenAiSettings) ==
       static_cast<int>(
           DevToolsGenAiEnterprisePolicyValue::kAllowWithoutLogging);
-  result.blocked = result.blocked_by_age ||
-                   result.blocked_by_enterprise_policy || result.blocked_by_geo;
+  result.blocked = result.blocked_by_age || result.blocked_by_enterprise_policy;
   return result;
 #endif
 }

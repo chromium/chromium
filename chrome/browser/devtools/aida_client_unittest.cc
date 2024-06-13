@@ -45,7 +45,9 @@ class AidaClientTest : public testing::Test {
   void SetUp() override {
     profile_->GetPrefs()->SetInteger(prefs::kDevToolsGenAiSettings, 0);
     feature_list_.InitWithFeatures(
-        /*enabled_features=*/{::features::kDevToolsConsoleInsights},
+        /*enabled_features=*/{::features::kDevToolsConsoleInsights,
+                              ::features::
+                                  kDevToolsConsoleInsightsSettingVisible},
         /*disabled_features=*/{});
 
     auto account_info = identity_test_env_->MakePrimaryAccountAvailable(
