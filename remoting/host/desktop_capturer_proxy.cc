@@ -33,6 +33,12 @@
 #include "remoting/host/linux/wayland_utils.h"
 #endif
 
+#if BUILDFLAG(IS_WIN)
+#include <windows.h>
+
+#include "remoting/host/crash_process.h"
+#endif
+
 namespace remoting {
 
 class DesktopCapturerProxy::Core : public webrtc::DesktopCapturer::Callback {
@@ -182,6 +188,30 @@ void DesktopCapturerProxy::Core::OnFrameCaptureStart() {
 void DesktopCapturerProxy::Core::OnCaptureResult(
     webrtc::DesktopCapturer::Result result,
     std::unique_ptr<webrtc::DesktopFrame> frame) {
+#if BUILDFLAG(IS_WIN)
+  static int temporary_error_count = 0;
+  temporary_error_count =
+      result == webrtc::DesktopCapturer::Result::ERROR_TEMPORARY
+          ? temporary_error_count + 1
+          : 0;
+
+  // Don't trigger the debugging code unless we've accumulated a substantial
+  // number of temporary errors.  Don't crash until we've gathered some logging
+  // to help identify the issue.
+  if (temporary_error_count > 20) {
+    auto thread_id = ::GetCurrentThreadId();
+    PLOG(ERROR) << "GetCurrentThreadId(): " << thread_id;
+    auto desktop_handle = ::GetThreadDesktop(thread_id);
+    PLOG(ERROR) << "GetThreadDesktop(): " << desktop_handle;
+    auto set_thread_desktop_result = ::SetThreadDesktop(desktop_handle);
+    PLOG(ERROR) << "SetThreadDesktop(): " << set_thread_desktop_result;
+
+    if (temporary_error_count > 25) {
+      CrashProcess(FROM_HERE);
+    }
+  }
+#endif
+
   caller_task_runner_->PostTask(
       FROM_HERE, base::BindOnce(&DesktopCapturerProxy::OnFrameCaptured, proxy_,
                                 result, std::move(frame)));
