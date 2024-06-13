@@ -31,13 +31,13 @@ namespace {
 
 class MockBufferMapCallback {
  public:
-  MOCK_METHOD(void, Call, (WGPUBufferMapAsyncStatus status, void* userdata));
+  MOCK_METHOD(void, Call, (wgpu::MapAsyncStatus status, const char* message));
 };
 std::unique_ptr<testing::StrictMock<MockBufferMapCallback>>
     mock_buffer_map_callback;
 
-void ToMockBufferMapCallback(WGPUBufferMapAsyncStatus status, void* userdata) {
-  mock_buffer_map_callback->Call(status, userdata);
+void ToMockBufferMapCallback(wgpu::MapAsyncStatus status, const char* message) {
+  mock_buffer_map_callback->Call(status, message);
 }
 
 class MockUncapturedErrorCallback {
@@ -622,10 +622,11 @@ TEST_P(WebGPUMailboxTest, WriteToMailboxThenReadFromIt) {
     webgpu()->DissociateMailbox(reservation.id, reservation.generation);
 
     // Map the buffer and assert the pixel is the correct value.
-    readback_buffer.MapAsync(wgpu::MapMode::Read, 0, 4, ToMockBufferMapCallback,
-                             nullptr);
+    readback_buffer.MapAsync(wgpu::MapMode::Read, 0, 4,
+                             wgpu::CallbackMode::AllowSpontaneous,
+                             ToMockBufferMapCallback);
     EXPECT_CALL(*mock_buffer_map_callback,
-                Call(WGPUBufferMapAsyncStatus_Success, nullptr))
+                Call(wgpu::MapAsyncStatus::Success, nullptr))
         .Times(1);
 
     WaitForCompletion(device_);
@@ -836,9 +837,10 @@ TEST_P(WebGPUMailboxTest, ReadWritableUninitializedSharedImage) {
 
   // Map the buffer and assert the pixel is the correct value.
   readback_buffer.MapAsync(wgpu::MapMode::Read, 0, buffer_desc.size,
-                           ToMockBufferMapCallback, nullptr);
+                           wgpu::CallbackMode::AllowSpontaneous,
+                           ToMockBufferMapCallback);
   EXPECT_CALL(*mock_buffer_map_callback,
-              Call(WGPUBufferMapAsyncStatus_Success, nullptr))
+              Call(wgpu::MapAsyncStatus::Success, nullptr))
       .Times(1);
 
   WaitForCompletion(device_);

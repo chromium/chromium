@@ -229,11 +229,6 @@ struct VertexOut {
 
   device.GetQueue().Submit(1, &command_buffer);
 
-  struct MapCallbackData {
-    bool map_complete = false;
-    WGPUBufferMapAsyncStatus status;
-  } map_callback_data;
-
   wgpu::FutureWaitInfo wait_info{readback_buffer.MapAsync(
       wgpu::MapMode::Read, 0, wgpu::kWholeMapSize,
       wgpu::CallbackMode::WaitAnyOnly,
