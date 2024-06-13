@@ -306,6 +306,28 @@ TEST_F(PasswordManagerAndroidUtilTest,
   EXPECT_TRUE(ShouldUseUpmWiring(&sync_service, pref_service()));
 }
 
+TEST_F(PasswordManagerAndroidUtilTest,
+       ShouldUseUpmWiringTrueWhenSignedInWithoutSyncAndSplitStoresDisabled) {
+  syncer::TestSyncService sync_service;
+  sync_service.SetSignedInWithoutSyncFeature();
+  pref_service()->SetInteger(
+      password_manager::prefs::kPasswordsUseUPMLocalAndSeparateStores,
+      static_cast<int>(kOff));
+
+  EXPECT_TRUE(ShouldUseUpmWiring(&sync_service, pref_service()));
+}
+
+TEST_F(PasswordManagerAndroidUtilTest,
+       ShouldUseUpmWiringTrueWhenSignedInWithoutSyncAndSplitStoresEnabled) {
+  syncer::TestSyncService sync_service;
+  sync_service.SetSignedInWithoutSyncFeature();
+  pref_service()->SetInteger(
+      password_manager::prefs::kPasswordsUseUPMLocalAndSeparateStores,
+      static_cast<int>(kOn));
+
+  EXPECT_TRUE(ShouldUseUpmWiring(&sync_service, pref_service()));
+}
+
 TEST_F(
     PasswordManagerAndroidUtilTest,
     SetUsesSplitStoresAndUPMForLocal_SignedOutWithNoPasswordsAndDefaultSettings) {

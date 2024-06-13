@@ -437,8 +437,7 @@ bool AreMinUpmRequirementsMet() {
 bool ShouldUseUpmWiring(const syncer::SyncService* sync_service,
                         const PrefService* pref_service) {
   bool is_pwd_sync_enabled =
-      password_manager::sync_util::IsSyncFeatureEnabledIncludingPasswords(
-          sync_service);
+      password_manager::sync_util::HasChosenToSyncPasswords(sync_service);
   if (is_pwd_sync_enabled &&
       password_manager_upm_eviction::IsCurrentUserEvicted(pref_service)) {
     return false;
