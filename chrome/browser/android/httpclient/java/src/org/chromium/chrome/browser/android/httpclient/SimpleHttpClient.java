@@ -63,7 +63,8 @@ public class SimpleHttpClient implements Destroyable {
         /** The headers for the response. */
         public final Map<String, String> mHeaders;
 
-        HttpResponse(int responseCode, int netErrorCode, byte[] body, Map<String, String> headers) {
+        public HttpResponse(
+                int responseCode, int netErrorCode, byte[] body, Map<String, String> headers) {
             mResponseCode = responseCode;
             mNetErrorCode = netErrorCode;
             mBody = body;
