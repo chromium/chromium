@@ -8612,6 +8612,7 @@ bool AXPlatformNodeWin::IsSelectionItemSupported() const {
       }
 
       return table->GetRole() == ax::mojom::Role::kGrid ||
+             table->GetRole() == ax::mojom::Role::kListGrid ||
              table->GetRole() == ax::mojom::Role::kTreeGrid;
     }
     // https://www.w3.org/TR/core-aam-1.1/#mapping_state-property_table

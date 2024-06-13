@@ -597,7 +597,7 @@ class TableViewTest : public ViewsTestBase,
         if (row_index == 0)
           EXPECT_EQ(ax::mojom::Role::kColumnHeader, cell_data.role);
         else
-          EXPECT_EQ(ax::mojom::Role::kCell, cell_data.role);
+          EXPECT_EQ(ax::mojom::Role::kGridCell, cell_data.role);
 
         // Add 1 to get the cell's index into |expected_bounds| since the first
         // entry is the row's bounds.
@@ -726,7 +726,7 @@ TEST_P(TableViewTest, RebuildVirtualAccessibilityChildren) {
     for (const auto& cell : row->children()) {
       ASSERT_TRUE(cell);
       const ui::AXNodeData& cell_data = cell->GetData();
-      EXPECT_EQ(ax::mojom::Role::kCell, cell_data.role);
+      EXPECT_EQ(ax::mojom::Role::kGridCell, cell_data.role);
       EXPECT_EQ(i, static_cast<size_t>(cell_data.GetIntAttribute(
                        ax::mojom::IntAttribute::kTableCellRowIndex)));
       EXPECT_EQ(j++, cell_data.GetIntAttribute(
@@ -785,7 +785,7 @@ TEST_P(TableViewTest, GetVirtualAccessibilityCell) {
       const AXVirtualView* cell = helper_->GetVirtualAccessibilityCell(i, j);
       ASSERT_TRUE(cell);
       const ui::AXNodeData& cell_data = cell->GetData();
-      EXPECT_EQ(ax::mojom::Role::kCell, cell_data.role);
+      EXPECT_EQ(ax::mojom::Role::kGridCell, cell_data.role);
       EXPECT_EQ(i, static_cast<size_t>(cell_data.GetIntAttribute(
                        ax::mojom::IntAttribute::kTableCellRowIndex)));
       EXPECT_EQ(j, static_cast<size_t>(cell_data.GetIntAttribute(

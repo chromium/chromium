@@ -1580,7 +1580,7 @@ std::unique_ptr<AXVirtualView> TableView::CreateCellAccessibilityView(
   const ui::TableColumn column = visible_column.column;
   auto ax_cell = std::make_unique<AXVirtualView>();
   ui::AXNodeData& cell_data = ax_cell->GetCustomData();
-  cell_data.role = ax::mojom::Role::kCell;
+  cell_data.role = ax::mojom::Role::kGridCell;
 
   cell_data.AddIntAttribute(ax::mojom::IntAttribute::kTableCellRowIndex,
                             static_cast<int32_t>(row_index));
@@ -1809,7 +1809,7 @@ void TableView::UpdateVirtualAccessibilityChildrenBounds() {
          visible_column_index++) {
       ui::AXNodeData& cell_data =
           ax_row->children()[visible_column_index]->GetCustomData();
-      DCHECK_EQ(cell_data.role, ax::mojom::Role::kCell);
+      DCHECK_EQ(cell_data.role, ax::mojom::Role::kGridCell);
 
       if (visible_column_index < visible_columns_.size()) {
         cell_data.relative_bounds.bounds =
@@ -1952,7 +1952,7 @@ AXVirtualView* TableView::GetVirtualAccessibilityCellImpl(
   const auto matches_index = [visible_column_index](const auto& ax_cell) {
     DCHECK(ax_cell);
     DCHECK(ax_cell->GetData().role == ax::mojom::Role::kColumnHeader ||
-           ax_cell->GetData().role == ax::mojom::Role::kCell);
+           ax_cell->GetData().role == ax::mojom::Role::kGridCell);
     return base::checked_cast<size_t>(ax_cell->GetData().GetIntAttribute(
                ax::mojom::IntAttribute::kTableCellColumnIndex)) ==
            visible_column_index;
