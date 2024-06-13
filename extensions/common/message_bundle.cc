@@ -59,8 +59,9 @@ static bool BadKeyMessage(const std::string& name, std::string* error) {
 MessageBundle* MessageBundle::Create(const CatalogVector& locale_catalogs,
                                      std::string* error) {
   std::unique_ptr<MessageBundle> message_bundle(new MessageBundle);
-  if (!message_bundle->Init(locale_catalogs, error))
+  if (!message_bundle->Init(locale_catalogs, error)) {
     return nullptr;
+  }
 
   return message_bundle.release();
 }
@@ -72,19 +73,23 @@ bool MessageBundle::Init(const CatalogVector& locale_catalogs,
   for (const auto& catalog : base::Reversed(locale_catalogs)) {
     for (auto message_it : catalog) {
       std::string key(base::ToLowerASCII(message_it.first));
-      if (!IsValidName(message_it.first))
+      if (!IsValidName(message_it.first)) {
         return BadKeyMessage(key, error);
+      }
       std::string value;
-      if (!GetMessageValue(message_it.first, message_it.second, &value, error))
+      if (!GetMessageValue(message_it.first, message_it.second, &value,
+                           error)) {
         return false;
+      }
       // Keys are not case-sensitive.
       dictionary_[key] = value;
     }
   }
 
   if (!AppendReservedMessagesForLocale(
-      extension_l10n_util::CurrentLocaleOrDefault(), error))
+          extension_l10n_util::CurrentLocaleOrDefault(), error)) {
     return false;
+  }
 
   return true;
 }
@@ -144,11 +149,13 @@ bool MessageBundle::GetMessageValue(const std::string& key,
   *value = *str;
 
   SubstitutionMap placeholders;
-  if (!GetPlaceholders(*name_tree, key, &placeholders, error))
+  if (!GetPlaceholders(*name_tree, key, &placeholders, error)) {
     return false;
+  }
 
-  if (!ReplacePlaceholders(placeholders, value, error))
+  if (!ReplacePlaceholders(placeholders, value, error)) {
     return false;
+  }
 
   return true;
 }
@@ -160,8 +167,9 @@ bool MessageBundle::GetPlaceholders(const base::Value::Dict& name_tree,
                                     const std::string& name_key,
                                     SubstitutionMap* placeholders,
                                     std::string* error) const {
-  if (!name_tree.Find(kPlaceholdersKey))
+  if (!name_tree.Find(kPlaceholdersKey)) {
     return true;
+  }
 
   const base::Value::Dict* placeholders_tree =
       name_tree.FindDict(kPlaceholdersKey);
@@ -173,8 +181,9 @@ bool MessageBundle::GetPlaceholders(const base::Value::Dict& name_tree,
 
   for (auto it : *placeholders_tree) {
     const std::string& content_key(it.first);
-    if (!IsValidName(content_key))
+    if (!IsValidName(content_key)) {
       return BadKeyMessage(content_key, error);
+    }
     const base::Value::Dict* placeholder = it.second.GetIfDict();
     if (!placeholder) {
       *error = base::StringPrintf("Invalid placeholder %s for key %s",
@@ -229,23 +238,27 @@ bool MessageBundle::ReplaceVariables(const SubstitutionMap& variables,
     var_begin_delimiter.size();
   while (true) {
     beg_index = message->find(var_begin_delimiter, beg_index);
-    if (beg_index == message->npos)
+    if (beg_index == std::string::npos) {
       return true;
+    }
 
     // Advance it immediately to the begining of possible variable name.
     beg_index += var_begin_delimiter_size;
-    if (beg_index >= message->size())
+    if (beg_index >= message->size()) {
       return true;
+    }
     std::string::size_type end_index =
         message->find(var_end_delimiter, beg_index);
-    if (end_index == message->npos)
+    if (end_index == std::string::npos) {
       return true;
+    }
 
     // Looking for 1 in substring of ...$1$....
     const std::string& var_name =
       message->substr(beg_index, end_index - beg_index);
-    if (!IsValidName(var_name))
+    if (!IsValidName(var_name)) {
       continue;
+    }
     auto it = variables.find(base::ToLowerASCII(var_name));
     if (it == variables.end()) {
       *error = base::StringPrintf("Variable %s%s%s used but not defined.",
@@ -269,15 +282,16 @@ bool MessageBundle::ReplaceVariables(const SubstitutionMap& variables,
 
 // static
 bool MessageBundle::IsValidName(const std::string& name) {
-  if (name.empty())
+  if (name.empty()) {
     return false;
+  }
 
-  std::string::const_iterator it = name.begin();
-  for (; it != name.end(); ++it) {
+  for (const auto& c : name) {
     // Allow only ascii 0-9, a-z, A-Z, and _ in the name.
-    if (!base::IsAsciiAlpha(*it) && !base::IsAsciiDigit(*it) && *it != '_' &&
-        *it != '@')
+    if (!base::IsAsciiAlpha(c) && !base::IsAsciiDigit(c) && c != '_' &&
+        c != '@') {
       return false;
+    }
   }
 
   return true;

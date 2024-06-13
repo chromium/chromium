@@ -167,8 +167,9 @@ scoped_refptr<Extension> ManifestTest::LoadAndExpectWarning(
   EXPECT_TRUE(extension.get()) << manifest.name();
   EXPECT_EQ(std::string(), error) << manifest.name();
   EXPECT_EQ(1u, extension->install_warnings().size());
-  if (extension->install_warnings().size() == 1)
+  if (extension->install_warnings().size() == 1) {
     EXPECT_EQ(expected_warning, extension->install_warnings()[0].message);
+  }
   return extension;
 }
 
@@ -322,14 +323,14 @@ ManifestTest::Testcase::Testcase(const std::string& manifest_filename,
       flags_(flags) {}
 
 void ManifestTest::RunTestcases(const Testcase* testcases,
-                                         size_t num_testcases,
-                                         ExpectType type) {
-  for (size_t i = 0; i < num_testcases; ++i)
+                                size_t num_testcases,
+                                ExpectType type) {
+  for (size_t i = 0; i < num_testcases; ++i) {
     RunTestcase(testcases[i], type);
+  }
 }
 
-void ManifestTest::RunTestcase(const Testcase& testcase,
-                                        ExpectType type) {
+void ManifestTest::RunTestcase(const Testcase& testcase, ExpectType type) {
   SCOPED_TRACE(base::StringPrintf("Testing file '%s'",
                                   testcase.manifest_filename_.c_str()));
 

@@ -80,8 +80,9 @@ struct PerInputEnvironment {
 
 extern "C" int LLVMFuzzerTestOneInput(const uint8_t* data, size_t size) {
   static Environment env;
-  if (size > kMaxInputSizeBytes)
+  if (size > kMaxInputSizeBytes) {
     return 0;
+  }
   FuzzedDataProvider fuzzed_data_provider(data, size);
   PerInputEnvironment per_input_env(fuzzed_data_provider);
 

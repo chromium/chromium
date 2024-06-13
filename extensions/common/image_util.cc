@@ -26,8 +26,7 @@
 #include "third_party/skia/include/core/SkImage.h"
 #include "ui/gfx/codec/png_codec.h"
 
-namespace extensions {
-namespace image_util {
+namespace extensions::image_util {
 
 bool IsIconSufficientlyVisible(const SkBitmap& bitmap) {
   // TODO(crbug.com/40559794): Currently, we only consider if there are enough
@@ -105,8 +104,9 @@ bool IsRenderedIconSufficientlyVisible(const SkBitmap& icon,
   // values against the threshold. Any pixel with a value greater than the
   // threshold is considered visible. If analysis fails, don't render the icon.
   SkBitmap bitmap;
-  if (!RenderIconForVisibilityAnalysis(icon, background_color, &bitmap))
+  if (!RenderIconForVisibilityAnalysis(icon, background_color, &bitmap)) {
     return false;
+  }
 
   int visible_pixels = 0;
   for (int x = 0; x < icon.width(); ++x) {
@@ -163,5 +163,4 @@ bool LoadPngFromFile(const base::FilePath& path, SkBitmap* dst) {
       png_bytes.length(), dst);
 }
 
-}  // namespace image_util
-}  // namespace extensions
+}  // namespace extensions::image_util

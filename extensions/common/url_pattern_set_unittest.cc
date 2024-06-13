@@ -353,8 +353,9 @@ TEST(URLPatternSetTest, ToValueAndPopulate) {
   patterns.push_back("http://www.google.com/*");
   patterns.push_back("http://www.yahoo.com/*");
 
-  for (size_t i = 0; i < patterns.size(); ++i)
-    AddPattern(&set1, patterns[i]);
+  for (const auto& pattern : patterns) {
+    AddPattern(&set1, pattern);
+  }
 
   std::string error;
   bool allow_file_access = false;

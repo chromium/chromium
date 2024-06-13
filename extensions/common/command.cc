@@ -241,16 +241,18 @@ std::string NormalizeShortcutSuggestion(const std::string& suggestion,
 #endif
   }
 
-  if (!normalize)
+  if (!normalize) {
     return suggestion;
+  }
 
   std::vector<std::string_view> tokens = base::SplitStringPiece(
       suggestion, "+", base::TRIM_WHITESPACE, base::SPLIT_WANT_ALL);
-  for (size_t i = 0; i < tokens.size(); i++) {
-    if (tokens[i] == values::kKeyCtrl)
-      tokens[i] = values::kKeyCommand;
-    else if (tokens[i] == values::kKeyMacCtrl)
-      tokens[i] = values::kKeyCtrl;
+  for (auto& token : tokens) {
+    if (token == values::kKeyCtrl) {
+      token = values::kKeyCommand;
+    } else if (token == values::kKeyMacCtrl) {
+      token = values::kKeyCtrl;
+    }
   }
   return base::JoinString(tokens, "+");
 }
@@ -309,12 +311,14 @@ std::string Command::AcceleratorToString(const ui::Accelerator& accelerator) {
   std::string shortcut;
 
   // Ctrl and Alt are mutually exclusive.
-  if (accelerator.IsCtrlDown())
+  if (accelerator.IsCtrlDown()) {
     shortcut += values::kKeyCtrl;
-  else if (accelerator.IsAltDown())
+  } else if (accelerator.IsAltDown()) {
     shortcut += values::kKeyAlt;
-  if (!shortcut.empty())
+  }
+  if (!shortcut.empty()) {
     shortcut += values::kKeySeparator;
+  }
 
   if (accelerator.IsCmdDown()) {
 #if BUILDFLAG(IS_CHROMEOS)
@@ -402,8 +406,9 @@ std::string Command::AcceleratorToString(const ui::Accelerator& accelerator) {
 
 // static
 bool Command::IsMediaKey(const ui::Accelerator& accelerator) {
-  if (accelerator.modifiers() != 0)
+  if (accelerator.modifiers() != 0) {
     return false;
+  }
 
   return ui::MediaKeysListener::IsMediaKeycode(accelerator.key_code());
 }
@@ -490,8 +495,9 @@ bool Command::Parse(const base::Value::Dict& command,
 
   std::string platform = CommandPlatform();
   std::string key = platform;
-  if (suggestions.find(key) == suggestions.end())
+  if (suggestions.find(key) == suggestions.end()) {
     key = values::kKeybindingPlatformDefault;
+  }
   if (suggestions.find(key) == suggestions.end()) {
     *error = ErrorUtils::FormatErrorMessageUTF16(
         errors::kInvalidKeyBindingMissingPlatform, base::NumberToString(index),

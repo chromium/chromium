@@ -59,8 +59,9 @@ class MessageBundleTest : public testing::Test {
                          bool create_placeholder_subtree,
                          base::Value::Dict& dict) {
     base::Value::Dict message_tree;
-    if (create_placeholder_subtree)
+    if (create_placeholder_subtree) {
       CreatePlaceholdersTree(message_tree);
+    }
     message_tree.Set(MessageBundle::kMessageKey, message);
     dict.Set(name, std::move(message_tree));
   }
@@ -130,8 +131,9 @@ class MessageBundleTest : public testing::Test {
 
     std::string text_dir = "ltr";
     if (base::i18n::GetTextDirectionForLocale(ui_locale.c_str()) ==
-        base::i18n::RIGHT_TO_LEFT)
+        base::i18n::RIGHT_TO_LEFT) {
       text_dir = "rtl";
+    }
 
     EXPECT_EQ(text_dir, handler->GetL10nMessage(
         MessageBundle::kBidiDirectionKey));
