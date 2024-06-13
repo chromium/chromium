@@ -1235,6 +1235,15 @@
       'containment_type': 'AUTO',
     },
   },
+  'tangorpro': {
+    'swarming': {
+      'dimensions': {
+        'device_type': 'tangorpro',
+        'device_os': 'AP1A.240505.005',
+        'os': 'Android',
+      },
+    },
+  },
   'timeout_15m': {
     'swarming': {
       'hard_timeout': 900,

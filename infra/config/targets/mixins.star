@@ -1585,6 +1585,18 @@ targets.mixin(
     ),
 )
 
+# Pixel Tablet
+targets.mixin(
+    name = "tangorpro",
+    swarming = targets.swarming(
+        dimensions = {
+            "device_type": "tangorpro",
+            "device_os": "AP1A.240505.005",  # Android 14
+            "os": "Android",
+        },
+    ),
+)
+
 targets.mixin(
     name = "timeout_15m",
     swarming = targets.swarming(
