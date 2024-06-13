@@ -1,0 +1,198 @@
+diff --git a/chrome/android/java/res_chromium_base/mipmap-hdpi/app_icon.png b/chrome/android/java/res_chromium_base/mipmap-hdpi/app_icon.png
+index 29078f0417..8fced0f8fc 100644
+Binary files a/chrome/android/java/res_chromium_base/mipmap-hdpi/app_icon.png and b/chrome/android/java/res_chromium_base/mipmap-hdpi/app_icon.png differ
+diff --git a/chrome/android/java/res_chromium_base/mipmap-hdpi/layered_app_icon.png b/chrome/android/java/res_chromium_base/mipmap-hdpi/layered_app_icon.png
+index b58c5b3281..d6da5b52c0 100644
+Binary files a/chrome/android/java/res_chromium_base/mipmap-hdpi/layered_app_icon.png and b/chrome/android/java/res_chromium_base/mipmap-hdpi/layered_app_icon.png differ
+diff --git a/chrome/android/java/res_chromium_base/mipmap-hdpi/layered_app_icon_background.png b/chrome/android/java/res_chromium_base/mipmap-hdpi/layered_app_icon_background.png
+old mode 100644
+new mode 100755
+index 3e2862af9c..2b18781859
+Binary files a/chrome/android/java/res_chromium_base/mipmap-hdpi/layered_app_icon_background.png and b/chrome/android/java/res_chromium_base/mipmap-hdpi/layered_app_icon_background.png differ
+diff --git a/chrome/android/java/res_chromium_base/mipmap-mdpi/app_icon.png b/chrome/android/java/res_chromium_base/mipmap-mdpi/app_icon.png
+index 22dbe10b62..d06d9cbb2f 100644
+Binary files a/chrome/android/java/res_chromium_base/mipmap-mdpi/app_icon.png and b/chrome/android/java/res_chromium_base/mipmap-mdpi/app_icon.png differ
+diff --git a/chrome/android/java/res_chromium_base/mipmap-mdpi/layered_app_icon.png b/chrome/android/java/res_chromium_base/mipmap-mdpi/layered_app_icon.png
+old mode 100644
+new mode 100755
+index cf9b706c82..44d6ea7d23
+Binary files a/chrome/android/java/res_chromium_base/mipmap-mdpi/layered_app_icon.png and b/chrome/android/java/res_chromium_base/mipmap-mdpi/layered_app_icon.png differ
+diff --git a/chrome/android/java/res_chromium_base/mipmap-mdpi/layered_app_icon_background.png b/chrome/android/java/res_chromium_base/mipmap-mdpi/layered_app_icon_background.png
+old mode 100644
+new mode 100755
+index 10e776c973..f64638dd4a
+Binary files a/chrome/android/java/res_chromium_base/mipmap-mdpi/layered_app_icon_background.png and b/chrome/android/java/res_chromium_base/mipmap-mdpi/layered_app_icon_background.png differ
+diff --git a/chrome/android/java/res_chromium_base/mipmap-xhdpi/app_icon.png b/chrome/android/java/res_chromium_base/mipmap-xhdpi/app_icon.png
+old mode 100644
+new mode 100755
+index 9509bfb0ff..e0a193ca27
+Binary files a/chrome/android/java/res_chromium_base/mipmap-xhdpi/app_icon.png and b/chrome/android/java/res_chromium_base/mipmap-xhdpi/app_icon.png differ
+diff --git a/chrome/android/java/res_chromium_base/mipmap-xhdpi/layered_app_icon.png b/chrome/android/java/res_chromium_base/mipmap-xhdpi/layered_app_icon.png
+old mode 100644
+new mode 100755
+index 6d3f4c02ed..3b5465a743
+Binary files a/chrome/android/java/res_chromium_base/mipmap-xhdpi/layered_app_icon.png and b/chrome/android/java/res_chromium_base/mipmap-xhdpi/layered_app_icon.png differ
+diff --git a/chrome/android/java/res_chromium_base/mipmap-xhdpi/layered_app_icon_background.png b/chrome/android/java/res_chromium_base/mipmap-xhdpi/layered_app_icon_background.png
+old mode 100644
+new mode 100755
+index 767676f5ce..fe8537e2f8
+Binary files a/chrome/android/java/res_chromium_base/mipmap-xhdpi/layered_app_icon_background.png and b/chrome/android/java/res_chromium_base/mipmap-xhdpi/layered_app_icon_background.png differ
+diff --git a/chrome/android/java/res_chromium_base/mipmap-xxhdpi/app_icon.png b/chrome/android/java/res_chromium_base/mipmap-xxhdpi/app_icon.png
+old mode 100644
+new mode 100755
+index ca19346913..3daff0f23f
+Binary files a/chrome/android/java/res_chromium_base/mipmap-xxhdpi/app_icon.png and b/chrome/android/java/res_chromium_base/mipmap-xxhdpi/app_icon.png differ
+diff --git a/chrome/android/java/res_chromium_base/mipmap-xxhdpi/layered_app_icon.png b/chrome/android/java/res_chromium_base/mipmap-xxhdpi/layered_app_icon.png
+old mode 100644
+new mode 100755
+index e9e8e72f27..a327ad0766
+Binary files a/chrome/android/java/res_chromium_base/mipmap-xxhdpi/layered_app_icon.png and b/chrome/android/java/res_chromium_base/mipmap-xxhdpi/layered_app_icon.png differ
+diff --git a/chrome/android/java/res_chromium_base/mipmap-xxhdpi/layered_app_icon_background.png b/chrome/android/java/res_chromium_base/mipmap-xxhdpi/layered_app_icon_background.png
+old mode 100644
+new mode 100755
+index 52a5404985..d66c3399a8
+Binary files a/chrome/android/java/res_chromium_base/mipmap-xxhdpi/layered_app_icon_background.png and b/chrome/android/java/res_chromium_base/mipmap-xxhdpi/layered_app_icon_background.png differ
+diff --git a/chrome/android/java/res_chromium_base/mipmap-xxxhdpi/app_icon.png b/chrome/android/java/res_chromium_base/mipmap-xxxhdpi/app_icon.png
+old mode 100644
+new mode 100755
+index 8139c0e139..e6ea0a0975
+Binary files a/chrome/android/java/res_chromium_base/mipmap-xxxhdpi/app_icon.png and b/chrome/android/java/res_chromium_base/mipmap-xxxhdpi/app_icon.png differ
+diff --git a/chrome/android/java/res_chromium_base/mipmap-xxxhdpi/layered_app_icon.png b/chrome/android/java/res_chromium_base/mipmap-xxxhdpi/layered_app_icon.png
+old mode 100644
+new mode 100755
+index 20dc63205d..81b06fbca4
+Binary files a/chrome/android/java/res_chromium_base/mipmap-xxxhdpi/layered_app_icon.png and b/chrome/android/java/res_chromium_base/mipmap-xxxhdpi/layered_app_icon.png differ
+diff --git a/chrome/android/java/res_chromium_base/mipmap-xxxhdpi/layered_app_icon_background.png b/chrome/android/java/res_chromium_base/mipmap-xxxhdpi/layered_app_icon_background.png
+old mode 100644
+new mode 100755
+index f8e6c46a43..bc02235222
+Binary files a/chrome/android/java/res_chromium_base/mipmap-xxxhdpi/layered_app_icon_background.png and b/chrome/android/java/res_chromium_base/mipmap-xxxhdpi/layered_app_icon_background.png differ
+diff --git a/chrome/android/java/res_chromium_base/values/channel_constants.xml b/chrome/android/java/res_chromium_base/values/channel_constants.xml
+index cc1f2a30cb..d0eef63946 100644
+--- a/chrome/android/java/res_chromium_base/values/channel_constants.xml
++++ b/chrome/android/java/res_chromium_base/values/channel_constants.xml
+@@ -7,7 +7,7 @@ found in the LICENSE file.
+ 
+ <resources xmlns:android="http://schemas.android.com/apk/res/android">
+     <!-- The application name displayed to the user. -->
+-    <string name="app_name" translatable="false">Chromium</string>
++    <string name="app_name" translatable="false">Dev Browser</string>
+     <string name="bookmark_widget_title" translatable="false">Chromium bookmarks</string>
+     <string name="search_widget_title" translatable="false">Chromium search</string>
+     <string name="quick_action_search_widget_title" translatable="false">Chromium quick action search</string>
+diff --git a/chrome/android/java/src/org/chromium/chrome/browser/ntp/NewTabPageUtils.java b/chrome/android/java/src/org/chromium/chrome/browser/ntp/NewTabPageUtils.java
+index 7c4506828b..3f7f442c48 100644
+--- a/chrome/android/java/src/org/chromium/chrome/browser/ntp/NewTabPageUtils.java
++++ b/chrome/android/java/src/org/chromium/chrome/browser/ntp/NewTabPageUtils.java
+@@ -18,7 +18,7 @@ public class NewTabPageUtils {
+      * @return The NTP url encoded with {@link NewTabPageLaunchOrigin} information.
+      */
+     public static String encodeNtpUrl(@NewTabPageLaunchOrigin int launchOrigin) {
+-        Uri.Builder uriBuilder = Uri.parse(UrlConstants.NTP_URL).buildUpon();
++        Uri.Builder uriBuilder = Uri.parse(UrlConstants.DUCKDUCKGO_NTP_URL).buildUpon();
+         switch (launchOrigin) {
+             case NewTabPageLaunchOrigin.WEB_FEED:
+                 uriBuilder.appendQueryParameter(ORIGIN_PARAMETER_KEY, WEB_FEED_PARAMETER);
+diff --git a/chrome/browser/ui/android/strings/android_chrome_strings.grd b/chrome/browser/ui/android/strings/android_chrome_strings.grd
+index 725b0e3b42..7f6dd5b9d0 100644
+--- a/chrome/browser/ui/android/strings/android_chrome_strings.grd
++++ b/chrome/browser/ui/android/strings/android_chrome_strings.grd
+@@ -3342,7 +3342,7 @@ To change this setting, <ph name="BEGIN_LINK">BEGIN_LINK</ph>delete the Chrome d
+         Accept &amp; continue
+       </message>
+       <message name="IDS_FRE_WELCOME" desc="Text for greeting the user on Chrome First Run">
+-        Welcome to Chrome
++        Welcome to Dev Browser
+       </message>
+       <message name="IDS_FRE_BROWSER_MANAGED_BY_ORGANIZATION" desc="Text that indicates the browser is managed by policy">
+         Your browser is managed by your organization
+diff --git a/components/browser_ui/styles/android/java/res_chromium/drawable-hdpi/fre_product_logo.png b/components/browser_ui/styles/android/java/res_chromium/drawable-hdpi/fre_product_logo.png
+index 2353496baf..a84c3ddeb4 100644
+Binary files a/components/browser_ui/styles/android/java/res_chromium/drawable-hdpi/fre_product_logo.png and b/components/browser_ui/styles/android/java/res_chromium/drawable-hdpi/fre_product_logo.png differ
+diff --git a/components/browser_ui/styles/android/java/res_chromium/drawable-mdpi/fre_product_logo.png b/components/browser_ui/styles/android/java/res_chromium/drawable-mdpi/fre_product_logo.png
+index 6e79da0426..33bd0460a7 100644
+Binary files a/components/browser_ui/styles/android/java/res_chromium/drawable-mdpi/fre_product_logo.png and b/components/browser_ui/styles/android/java/res_chromium/drawable-mdpi/fre_product_logo.png differ
+diff --git a/components/browser_ui/styles/android/java/res_chromium/drawable-xhdpi/fre_product_logo.png b/components/browser_ui/styles/android/java/res_chromium/drawable-xhdpi/fre_product_logo.png
+index d8a5337bba..7ecf9ddf2e 100644
+Binary files a/components/browser_ui/styles/android/java/res_chromium/drawable-xhdpi/fre_product_logo.png and b/components/browser_ui/styles/android/java/res_chromium/drawable-xhdpi/fre_product_logo.png differ
+diff --git a/components/browser_ui/styles/android/java/res_chromium/drawable-xxhdpi/fre_product_logo.png b/components/browser_ui/styles/android/java/res_chromium/drawable-xxhdpi/fre_product_logo.png
+index 38c5010462..c6ccf5c10a 100644
+Binary files a/components/browser_ui/styles/android/java/res_chromium/drawable-xxhdpi/fre_product_logo.png and b/components/browser_ui/styles/android/java/res_chromium/drawable-xxhdpi/fre_product_logo.png differ
+diff --git a/components/browser_ui/styles/android/java/res_chromium/drawable-xxxhdpi/fre_product_logo.png b/components/browser_ui/styles/android/java/res_chromium/drawable-xxxhdpi/fre_product_logo.png
+index 056110ff69..82a57f4b40 100644
+Binary files a/components/browser_ui/styles/android/java/res_chromium/drawable-xxxhdpi/fre_product_logo.png and b/components/browser_ui/styles/android/java/res_chromium/drawable-xxxhdpi/fre_product_logo.png differ
+diff --git a/components/embedder_support/android/java/src/org/chromium/components/embedder_support/util/UrlConstants.java b/components/embedder_support/android/java/src/org/chromium/components/embedder_support/util/UrlConstants.java
+index 8e2363dc56..0ad2348868 100644
+--- a/components/embedder_support/android/java/src/org/chromium/components/embedder_support/util/UrlConstants.java
++++ b/components/embedder_support/android/java/src/org/chromium/components/embedder_support/util/UrlConstants.java
+@@ -52,6 +52,7 @@ public class UrlConstants {
+     public static final String NTP_URL = "chrome-native://newtab/";
+     public static final String NTP_NON_NATIVE_URL = "chrome://newtab/";
+     public static final String NTP_ABOUT_URL = "about:newtab";
++    public static final String DUCKDUCKGO_NTP_URL = "https://duckduckgo.com/";
+ 
+     // Don't use this URL. The constant is added for legacy reasons.
+     public static final String NEW_TAB_PAGE_URL_LEGACY = "chrome://new-tab-page/";
+diff --git a/components/embedder_support/android/java/src/org/chromium/components/embedder_support/util/UrlUtilities.java b/components/embedder_support/android/java/src/org/chromium/components/embedder_support/util/UrlUtilities.java
+index 91b83c79ce..e651fe0057 100644
+--- a/components/embedder_support/android/java/src/org/chromium/components/embedder_support/util/UrlUtilities.java
++++ b/components/embedder_support/android/java/src/org/chromium/components/embedder_support/util/UrlUtilities.java
+@@ -278,7 +278,8 @@ public class UrlUtilities {
+     public static boolean isNtpUrl(GURL gurl) {
+         if (!gurl.isValid() || !isInternalScheme(gurl)) return false;
+         return UrlConstants.NTP_HOST.equals(gurl.getHost())
+-                || UrlConstants.NEW_TAB_PAGE_URL_LEGACY.equals(gurl.getValidSpecOrEmpty());
++                || UrlConstants.NEW_TAB_PAGE_URL_LEGACY.equals(gurl.getValidSpecOrEmpty())
++                || UrlConstants.DUCKDUCKGO_NTP_URL.equals(gurl.getValidSpecOrEmpty());
+     }
+ 
+     /**
+@@ -296,7 +297,7 @@ public class UrlUtilities {
+         // We need to fixup the URL to handle about: schemes and transform them into the equivalent
+         // chrome:// scheme so that GURL parses the host correctly.
+         GURL gurl = UrlFormatter.fixupUrl(url);
+-        return isNtpUrl(gurl);
++        return isNtpUrl(gurl) || url.equals(UrlConstants.DUCKDUCKGO_NTP_URL);
+     }
+ 
+     /**
+@@ -317,7 +318,8 @@ public class UrlUtilities {
+         if (LibraryLoader.getInstance().isInitialized()) return isNtpUrl(url);
+         return TextUtils.equals(url, UrlConstants.NTP_URL)
+                 || TextUtils.equals(url, UrlConstants.NTP_NON_NATIVE_URL)
+-                || TextUtils.equals(url, UrlConstants.NTP_ABOUT_URL);
++                || TextUtils.equals(url, UrlConstants.NTP_ABOUT_URL)
++		|| TextUtils.equals(url, UrlConstants.DUCKDUCKGO_NTP_URL);
+     }
+ 
+     public static String extractPublisherFromPublisherUrl(GURL publisherUrl) {
+diff --git a/components/search_engines/prepopulated_engines.json b/components/search_engines/prepopulated_engines.json
+index eb5869be56..b7a498b4ed 100644
+--- a/components/search_engines/prepopulated_engines.json
++++ b/components/search_engines/prepopulated_engines.json
+@@ -110,7 +110,8 @@
+       "suggest_url": "https://duckduckgo.com/ac/?q={searchTerms}&type=list",
+       "new_tab_url": "https://duckduckgo.com/chrome_newtab",
+       "type": "SEARCH_ENGINE_DUCKDUCKGO",
+-      "id": 92
++      "id": 92,
++      "default":true
+     },
+ 
+     "ecosia": {
+diff --git a/components/search_engines/template_url_prepopulate_data.cc b/components/search_engines/template_url_prepopulate_data.cc
+index 3a7798c2d1..2bfe7ff988 100644
+--- a/components/search_engines/template_url_prepopulate_data.cc
++++ b/components/search_engines/template_url_prepopulate_data.cc
+@@ -325,7 +325,7 @@ std::unique_ptr<TemplateURLData> GetPrepopulatedFallbackSearch(
+     PrefService* prefs,
+     search_engines::SearchEngineChoiceService* search_engine_choice_service) {
+   return FindPrepopulatedEngineInternal(prefs, search_engine_choice_service,
+-                                        google.id,
++                                        duckduckgo.id,
+                                         /*use_first_as_fallback=*/true);
+ }
+ 
+diff --git a/docs/images/chromium_logo.png b/docs/images/chromium_logo.png
+index e6a2543389..eca4b13228 100644
+Binary files a/docs/images/chromium_logo.png and b/docs/images/chromium_logo.png differ
