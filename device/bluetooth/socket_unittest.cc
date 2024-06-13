@@ -8,6 +8,7 @@
 #include <tuple>
 #include <vector>
 
+#include "base/containers/span.h"
 #include "base/functional/callback_helpers.h"
 #include "base/location.h"
 #include "base/run_loop.h"
@@ -68,9 +69,10 @@ class SocketTest : public testing::Test {
     // Attempting to read from |receive_stream_| before the BluetoothSocket
     // provides received data should signal a MOJO_RESULT_SHOULD_WAIT result.
     size_t buffer_size = static_cast<size_t>(max_buffer_size);
+    std::vector<uint8_t> buffer1(buffer_size, 0xff);
     EXPECT_EQ(MOJO_RESULT_SHOULD_WAIT,
-              receive_stream_->ReadData(nullptr, &buffer_size,
-                                        MOJO_READ_DATA_FLAG_NONE));
+              receive_stream_->ReadData(MOJO_READ_DATA_FLAG_NONE, buffer1,
+                                        buffer_size));
 
     if (success) {
       // Emulate a successful response from the remote device on the other side
@@ -82,11 +84,14 @@ class SocketTest : public testing::Test {
               /*num_bytes_received=*/message.size(),
               /*io_buffer=*/base::MakeRefCounted<net::StringIOBuffer>(message));
 
-      std::vector<char> buffer(max_buffer_size);
+      std::vector<char> buffer2(max_buffer_size);
       EXPECT_EQ(MOJO_RESULT_OK,
-                receive_stream_->ReadData(buffer.data(), &buffer_size,
-                                          MOJO_READ_DATA_FLAG_NONE));
-      std::string received_string(buffer.data(), buffer_size);
+                receive_stream_->ReadData(
+                    MOJO_READ_DATA_FLAG_NONE,
+                    base::as_writable_byte_span(buffer2).first(buffer_size),
+                    buffer_size));
+      std::string_view received_string =
+          base::as_string_view(base::as_byte_span(buffer2).first(buffer_size));
       EXPECT_EQ(message, received_string);
     } else {
       // Emulate an error in the stack. We should not be able to read from
@@ -112,11 +117,12 @@ class SocketTest : public testing::Test {
     // because no bytes have been written over |send_stream_| yet.
     EXPECT_FALSE(fake_bluetooth_socket_->HasSendArgs());
 
-    size_t message_size = message.size();
+    size_t actually_written_bytes = 0;
     EXPECT_EQ(MOJO_RESULT_OK,
-              send_stream_->WriteData(message.data(), &message_size,
-                                      MOJO_WRITE_DATA_FLAG_NONE));
-    EXPECT_EQ(message.size(), message_size);
+              send_stream_->WriteData(base::as_byte_span(message),
+                                      MOJO_WRITE_DATA_FLAG_NONE,
+                                      actually_written_bytes));
+    EXPECT_EQ(message.size(), actually_written_bytes);
 
     // Allow Socket to be notified that it can now read |send_stream_|.
     base::RunLoop().RunUntilIdle();
@@ -127,7 +133,7 @@ class SocketTest : public testing::Test {
     auto send_args = fake_bluetooth_socket_->TakeSendArgs();
 
     int buffer_size = std::get<1>(*send_args);
-    EXPECT_EQ(message_size, static_cast<size_t>(buffer_size));
+    EXPECT_EQ(message.size(), static_cast<size_t>(buffer_size));
 
     char* buffer = std::get<0>(*send_args)->data();
     std::string sent_string(buffer, buffer_size);

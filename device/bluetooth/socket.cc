@@ -8,6 +8,7 @@
 #include <utility>
 #include <vector>
 
+#include "base/containers/span.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback_helpers.h"
 #include "base/memory/ptr_util.h"
@@ -15,6 +16,7 @@
 #include "device/bluetooth/bluetooth_socket.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/receiver.h"
+#include "mojo/public/cpp/system/data_pipe.h"
 #include "net/base/io_buffer.h"
 
 namespace bluetooth {
@@ -83,19 +85,14 @@ void Socket::ReceiveMore() {
   DCHECK(receive_stream_.is_valid());
 
   // The destination to which we will write incoming bytes from
-  // |bluetooth_socket_|. The allocated buffer and its max available size
-  // (assigned to |pending_write_buffer_max_size|) will be fetched by calling
-  // BeginWriteData() below. This already-allocated buffer is a buffer shared
-  // between the 2 sides of |receive_stream_|.
-  void* pending_write_buffer = nullptr;
-
-  // Passing 0 as the initial value allows |pending_write_buffer_max_size| to be
-  // assigned the buffer's max size.
-  size_t pending_write_buffer_max_size = 0;
+  // |bluetooth_socket_|. The allocated buffer and its size will be fetched by
+  // calling BeginWriteData() below. This already-allocated buffer is a buffer
+  // shared between the 2 sides of |receive_stream_|.
+  base::span<uint8_t> pending_write_buffer;
 
   MojoResult result = receive_stream_->BeginWriteData(
-      &pending_write_buffer, &pending_write_buffer_max_size,
-      MOJO_WRITE_DATA_FLAG_NONE);
+      mojo::DataPipeProducerHandle::kNoSizeHint, MOJO_WRITE_DATA_FLAG_NONE,
+      pending_write_buffer);
   if (result == MOJO_RESULT_SHOULD_WAIT) {
     receive_stream_watcher_.ArmOrNotify();
     return;
@@ -105,9 +102,10 @@ void Socket::ReceiveMore() {
   }
 
   bluetooth_socket_->Receive(
-      base::checked_cast<int>(pending_write_buffer_max_size),
+      base::checked_cast<int>(pending_write_buffer.size()),
       base::BindOnce(&Socket::OnBluetoothSocketReceive,
-                     weak_ptr_factory_.GetWeakPtr(), pending_write_buffer),
+                     weak_ptr_factory_.GetWeakPtr(),
+                     pending_write_buffer.data()),
       base::BindOnce(&Socket::OnBluetoothSocketReceiveError,
                      weak_ptr_factory_.GetWeakPtr()));
 }
@@ -154,22 +152,14 @@ void Socket::ShutdownSend() {
 void Socket::SendMore() {
   DCHECK(send_stream_.is_valid());
 
-  // The source from which we will write outgoing bytes to
-  // |bluetooth_socket_|. The allocated buffer and the number of bytes already
-  // written by the other side of |send_stream_| (assigned to
-  // |pending_read_buffer_size|) will be fetched by calling BeginReadData()
-  // below. This already-allocated buffer is a buffer shared between the 2 sides
-  // of |send_stream_|.
-  const void* pending_read_buffer = nullptr;
-
-  // Passing 0 as the initial value allows |pending_read_buffer_size| to be
-  // assigned the number of bytes that the other side of |send_stream_| has
-  // already written.
-  size_t pending_read_buffer_size = 0;
-
-  MojoResult result = send_stream_->BeginReadData(&pending_read_buffer,
-                                                  &pending_read_buffer_size,
-                                                  MOJO_WRITE_DATA_FLAG_NONE);
+  // The source from which we will write outgoing bytes to |bluetooth_socket_|.
+  // The allocated buffer and the number of bytes already written by the other
+  // side of |send_stream_| will be fetched by calling BeginReadData() below.
+  // This already-allocated buffer is a buffer shared between the 2 sides of
+  // |send_stream_|.
+  base::span<const uint8_t> pending_read_buffer;
+  MojoResult result = send_stream_->BeginReadData(MOJO_WRITE_DATA_FLAG_NONE,
+                                                  pending_read_buffer);
   if (result == MOJO_RESULT_SHOULD_WAIT) {
     send_stream_watcher_.ArmOrNotify();
     return;
@@ -178,15 +168,13 @@ void Socket::SendMore() {
     return;
   }
 
-  bluetooth_socket_->Send(
-      base::MakeRefCounted<net::WrappedIOBuffer>(
-          base::make_span(static_cast<const char*>(pending_read_buffer),
-                          pending_read_buffer_size)),
-      base::checked_cast<int>(pending_read_buffer_size),
-      base::BindOnce(&Socket::OnBluetoothSocketSend,
-                     weak_ptr_factory_.GetWeakPtr()),
-      base::BindOnce(&Socket::OnBluetoothSocketSendError,
-                     weak_ptr_factory_.GetWeakPtr()));
+  std::string_view chars = base::as_string_view(pending_read_buffer);
+  bluetooth_socket_->Send(base::MakeRefCounted<net::WrappedIOBuffer>(chars),
+                          chars.size(),
+                          base::BindOnce(&Socket::OnBluetoothSocketSend,
+                                         weak_ptr_factory_.GetWeakPtr()),
+                          base::BindOnce(&Socket::OnBluetoothSocketSendError,
+                                         weak_ptr_factory_.GetWeakPtr()));
 }
 
 void Socket::OnBluetoothSocketSend(int num_bytes_sent) {
