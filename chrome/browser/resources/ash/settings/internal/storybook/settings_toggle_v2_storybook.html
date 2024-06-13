@@ -1,0 +1,69 @@
+<style include="storybook-styles">
+</style>
+
+<h2>Basic</h2>
+<settings-toggle-v2
+    checked="[[checkedValue_]]"
+    disabled="[[basicToggleDisabled_]]"
+    on-change="onCheckedValueChange_">
+</settings-toggle-v2>
+<cr-checkbox checked="{{basicToggleDisabled_}}">Disabled</cr-checkbox>
+<code>
+  <div>Value: [[checkedValue_]]</div>
+</code>
+
+<h2>Managed (via pref)</h2>
+<settings-toggle-v2
+    pref="[[virtualManagedPref_]]">
+</settings-toggle-v2>
+
+<h2>Inverted (used with pref)</h2>
+<settings-toggle-v2
+    pref="[[virtualPref_]]"
+    on-change="onInvertedToggleChanged_"
+    inverted>
+</settings-toggle-v2>
+<code>
+  <div>pref value: [[virtualPref_.value]]</div>
+</code>
+
+<h2>noSetPref (used with pref)</h2>
+<settings-toggle-v2
+    id="noSetPrefToggle"
+    checked="[[prefCheckedValue_]]"
+    pref="[[virtualPref_]]"
+    on-change="enableDialog_"
+    on-user-action-setting-pref-change="handlePrefChange_"
+    no-set-pref>
+</settings-toggle-v2>
+<code>
+  <div>pref value: [[virtualPref_.value]]</div>
+</code>
+
+<template is="dom-if" if="[[showBasicDialog_]]" restamp>
+  <cr-dialog id="dialog" show-on-attach>
+    <div slot="title">
+      Basic Dialog
+    </div>
+    <div slot="body">
+      <div id="secureDnsDialogDescription">
+        <div>
+          If cancel is clicked, the dialog will close and the value of the
+          toggle resets to the original value (pref's value).
+        </div>
+        <div>
+          If confirm is clicked, the dialog will close and the value of the
+          toggle switches. The pref's value will sync to the toggle's value.
+        </div>
+      </div>
+    </div>
+    <div slot="button-container">
+      <cr-button on-click="onCancelButtonClicked_">
+        Cancel
+      </cr-button>
+      <cr-button on-click="onConfirmButtonClicked_">
+        Confirm
+      </cr-button>
+    </div>
+  </cr-dialog>
+</template>

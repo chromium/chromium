@@ -10,6 +10,7 @@ import './settings_dropdown_v2_storybook.js';
 import './settings_row_storybook.js';
 import './settings_slider_row_storybook.js';
 import './settings_slider_v2_storybook.js';
+import './settings_toggle_v2_storybook.js';
 
 import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
