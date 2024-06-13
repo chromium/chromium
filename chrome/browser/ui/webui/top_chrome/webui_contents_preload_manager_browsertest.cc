@@ -15,11 +15,16 @@
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_command_controller.h"
 #include "chrome/browser/ui/ui_features.h"
+#include "chrome/browser/ui/webui/top_chrome/preload_candidate_selector.h"
 #include "chrome/common/webui_url_constants.h"
 #include "chrome/test/base/in_process_browser_test.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/test_navigation_observer.h"
+#include "testing/gmock/include/gmock/gmock.h"
 #include "url/gurl.h"
+
+using testing::_;
+using testing::Return;
 
 namespace {
 
@@ -47,6 +52,15 @@ std::vector<PreloadModeName> GetAllPreloadManagerModes() {
           features::kPreloadTopChromeWebUIModePreloadOnMakeContentsName};
 }
 
+class MockPreloadCandidateSelector : public webui::PreloadCandidateSelector {
+ public:
+  MOCK_METHOD(void, Init, (const std::vector<GURL>&), (override));
+  MOCK_METHOD(std::optional<GURL>,
+              GetURLToPreload,
+              (const webui::PreloadContext&),
+              (const, override));
+};
+
 }  // namespace
 
 class WebUIContentsPreloadManagerBrowserTest
@@ -69,19 +83,37 @@ class WebUIContentsPreloadManagerBrowserTest
     }
   };
 
+  // InProcessBrowserTest:
   void SetUp() override {
     feature_list_.InitAndEnableFeatureWithParameters(
         features::kPreloadTopChromeWebUI,
         {{features::kPreloadTopChromeWebUIModeName, std::get<1>(GetParam())}});
-    preload_manager()->SetNextWebUIUrlToPreloadForTesting(
-        std::get<0>(GetParam()));
+
+    // Always preload the WebUI specified by the test param.
+    auto preload_candidate_selector =
+        std::make_unique<testing::NiceMock<MockPreloadCandidateSelector>>();
+    preload_candidate_selector_ = preload_candidate_selector.get();
+    preload_manager()->SetPreloadCandidateSelectorForTesting(
+        std::move(preload_candidate_selector));
+    ON_CALL(*preload_candidate_selector_, GetURLToPreload(_))
+        .WillByDefault(Return(std::get<0>(GetParam())));
+
     InProcessBrowserTest::SetUp();
   }
-
   void SetUpOnMainThread() override {
     navigation_waiter_ = std::make_unique<content::TestNavigationObserver>(
         preload_manager()->preloaded_web_contents());
     navigation_waiter_->StartWatchingNewWebContents();
+
+    InProcessBrowserTest::SetUpOnMainThread();
+  }
+  void TearDown() override {
+    preload_candidate_selector_ = nullptr;
+    // The mock object does not expect itself to leak outside of the test.
+    // Clearing it from the preload manager to destroy it.
+    preload_manager()->SetPreloadCandidateSelectorForTesting(nullptr);
+
+    InProcessBrowserTest::TearDown();
   }
 
   WebUIContentsPreloadManager* preload_manager() {
@@ -95,6 +127,7 @@ class WebUIContentsPreloadManagerBrowserTest
  private:
   std::unique_ptr<content::TestNavigationObserver> navigation_waiter_;
   base::test::ScopedFeatureList feature_list_;
+  raw_ptr<MockPreloadCandidateSelector> preload_candidate_selector_;
 };
 
 // A smoke test that ensures the browser does not crash when triggering

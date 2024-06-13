@@ -16356,7 +16356,8 @@
                 {
                     "name": "preload-on-make-contents",
                     "params": {
-                        "preload-mode": "preload-on-make-contents"
+                        "preload-mode": "preload-on-make-contents",
+                        "smart-preload": "true"
                     },
                     "enable_features": [
                         "PreloadTopChromeWebUI"
@@ -16365,7 +16366,8 @@
                 {
                     "name": "preload-on-warmup",
                     "params": {
-                        "preload-mode": "preload-on-warmup"
+                        "preload-mode": "preload-on-warmup",
+                        "smart-preload": "true"
                     },
                     "enable_features": [
                         "PreloadTopChromeWebUI"
