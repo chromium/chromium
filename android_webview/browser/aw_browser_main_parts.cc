@@ -59,6 +59,7 @@
 #include "content/public/browser/browser_thread.h"
 #include "content/public/browser/render_frame_host.h"
 #include "content/public/browser/render_process_host.h"
+#include "content/public/browser/synthetic_trial_syncer.h"
 #include "content/public/common/content_client.h"
 #include "content/public/common/content_switches.h"
 #include "content/public/common/result_codes.h"
@@ -231,6 +232,9 @@ void AwBrowserMainParts::RegisterSyntheticTrials() {
       variations::VariationsIdsProvider::GetInstance());
   metrics->GetSyntheticTrialRegistry()->AddObserver(
       variations::SyntheticTrialsActiveGroupIdProvider::GetInstance());
+
+  synthetic_trial_syncer_ = content::SyntheticTrialSyncer::Create(
+      metrics->GetSyntheticTrialRegistry());
 
   static constexpr char kWebViewApkTypeTrial[] = "WebViewApkType";
   ApkType apk_type = AwBrowserProcess::GetApkType();
