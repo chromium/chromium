@@ -149,10 +149,10 @@ void EnclaveWebSocketClient::InternalWrite(base::span<const uint8_t> data) {
 
   websocket_->SendMessage(network::mojom::WebSocketMessageType::BINARY,
                           data.size());
-  size_t num_bytes = data.size();
-  MojoResult result = writable_->WriteData(data.data(), &num_bytes,
-                                           MOJO_WRITE_DATA_FLAG_ALL_OR_NONE);
-  CHECK(result != MOJO_RESULT_OK || data.size() == num_bytes);
+  size_t actually_written_bytes = 0;
+  MojoResult result = writable_->WriteData(
+      data, MOJO_WRITE_DATA_FLAG_ALL_OR_NONE, actually_written_bytes);
+  CHECK(result != MOJO_RESULT_OK || data.size() == actually_written_bytes);
   if (result != MOJO_RESULT_OK) {
     FIDO_LOG(ERROR) << "Failed to write to WebSocket.";
     ClosePipe(SocketStatus::kError);
@@ -258,13 +258,15 @@ void EnclaveWebSocketClient::OnClosingHandshake() {}
 
 void EnclaveWebSocketClient::ReadFromDataPipe(MojoResult,
                                               const mojo::HandleSignalsState&) {
-  size_t todo = pending_read_data_.size() - pending_read_data_index_;
-  CHECK_GT(todo, 0u);
-  const MojoResult result =
-      readable_->ReadData(&pending_read_data_.data()[pending_read_data_index_],
-                          &todo, MOJO_READ_DATA_FLAG_NONE);
+  CHECK_LT(pending_read_data_index_, pending_read_data_.size());
+
+  size_t actually_read_bytes = 0;
+  const MojoResult result = readable_->ReadData(
+      MOJO_READ_DATA_FLAG_NONE,
+      base::span(pending_read_data_).subspan(pending_read_data_index_),
+      actually_read_bytes);
   if (result == MOJO_RESULT_OK) {
-    pending_read_data_index_ += todo;
+    pending_read_data_index_ += actually_read_bytes;
     DCHECK_LE(pending_read_data_index_, pending_read_data_.size());
 
     if (pending_read_data_index_ < pending_read_data_.size()) {

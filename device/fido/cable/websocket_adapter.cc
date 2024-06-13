@@ -48,10 +48,13 @@ bool WebSocketAdapter::Write(base::span<const uint8_t> data) {
   }
   socket_remote_->SendMessage(network::mojom::WebSocketMessageType::BINARY,
                               data.size());
-  size_t num_bytes = data.size();
-  MojoResult result = write_pipe_->WriteData(data.data(), &num_bytes,
-                                             MOJO_WRITE_DATA_FLAG_ALL_OR_NONE);
-  DCHECK(result != MOJO_RESULT_OK || data.size() == num_bytes);
+  size_t actually_written_bytes = 0;
+  MojoResult result = write_pipe_->WriteData(
+      data, MOJO_WRITE_DATA_FLAG_ALL_OR_NONE, actually_written_bytes);
+
+  // This follows from the `...ALL_OR_NONE` flag.
+  DCHECK(result != MOJO_RESULT_OK || data.size() == actually_written_bytes);
+
   return result == MOJO_RESULT_OK;
 }
 
@@ -197,14 +200,15 @@ void WebSocketAdapter::OnClosingHandshake() {
 
 void WebSocketAdapter::OnDataPipeReady(MojoResult,
                                        const mojo::HandleSignalsState&) {
-  size_t todo = pending_message_.size() - pending_message_i_;
-  DCHECK_GT(todo, 0u);
+  DCHECK_LT(pending_message_i_, pending_message_.size());
 
-  const MojoResult result =
-      read_pipe_->ReadData(&pending_message_.data()[pending_message_i_], &todo,
-                           MOJO_READ_DATA_FLAG_NONE);
+  size_t actually_read_bytes = 0;
+  const MojoResult result = read_pipe_->ReadData(
+      MOJO_READ_DATA_FLAG_NONE,
+      base::span(pending_message_).subspan(pending_message_i_),
+      actually_read_bytes);
   if (result == MOJO_RESULT_OK) {
-    pending_message_i_ += todo;
+    pending_message_i_ += actually_read_bytes;
     DCHECK_LE(pending_message_i_, pending_message_.size());
 
     if (pending_message_i_ < pending_message_.size()) {

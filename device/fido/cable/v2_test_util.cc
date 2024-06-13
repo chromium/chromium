@@ -11,6 +11,7 @@
 #include "base/base64url.h"
 #include "base/check.h"
 #include "base/containers/contains.h"
+#include "base/containers/span.h"
 #include "base/functional/callback.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
@@ -300,13 +301,13 @@ class TestNetworkContext : public network::TestNetworkContext {
     }
 
     void OnInPipeReady(MojoResult, const mojo::HandleSignalsState&) {
-      size_t todo = buffer_.size() - buffer_i_;
-      CHECK_GT(todo, 0u);
-
-      const MojoResult result = in_->ReadData(&buffer_.data()[buffer_i_], &todo,
-                                              MOJO_READ_DATA_FLAG_NONE);
+      size_t actually_read_bytes = 0;
+      const MojoResult result =
+          in_->ReadData(MOJO_READ_DATA_FLAG_NONE,
+                        base::as_writable_byte_span(buffer_).subspan(buffer_i_),
+                        actually_read_bytes);
       if (result == MOJO_RESULT_OK) {
-        buffer_i_ += todo;
+        buffer_i_ += actually_read_bytes;
         CHECK_LE(buffer_i_, buffer_.size());
 
         if (peer_ && buffer_i_ > 0) {
@@ -326,24 +327,24 @@ class TestNetworkContext : public network::TestNetworkContext {
     }
 
     void OnOutPipeReady(MojoResult, const mojo::HandleSignalsState&) {
-      size_t original_todo = peer_->buffer_.size();
-      if (original_todo == 0) {
+      if (peer_->buffer_.empty()) {
         return;
       }
 
-      size_t todo = original_todo;
-      const MojoResult result = out_->WriteData(peer_->buffer_.data(), &todo,
-                                                MOJO_WRITE_DATA_FLAG_NONE);
+      size_t actually_written_bytes = 0;
+      const MojoResult result = out_->WriteData(
+          peer_->buffer_, MOJO_WRITE_DATA_FLAG_NONE, actually_written_bytes);
       if (result == MOJO_RESULT_OK) {
-        if (todo == original_todo) {
+        if (actually_written_bytes == peer_->buffer_.size()) {
           peer_->buffer_.clear();
           peer_->buffer_i_ = 0;
         } else {
-          const size_t new_length = original_todo - todo;
-          memmove(peer_->buffer_.data(), &peer_->buffer_.data()[todo],
-                  new_length);
+          const size_t new_length =
+              peer_->buffer_.size() - actually_written_bytes;
+          memmove(peer_->buffer_.data(),
+                  &peer_->buffer_.data()[actually_written_bytes], new_length);
           peer_->buffer_.resize(new_length);
-          peer_->buffer_i_ -= todo;
+          peer_->buffer_i_ -= actually_written_bytes;
         }
 
         if (!peer_->buffer_.empty()) {
