@@ -2388,6 +2388,9 @@ extern const char kChromePageInfoSharingDescription[];
 extern const char kAndroidTabDeclutterName[];
 extern const char kAndroidTabDeclutterDescription[];
 
+extern const char kAndroidTabDeclutterArchiveAllButActiveTabName[];
+extern const char kAndroidTabDeclutterArchiveAllButActiveTabDescription[];
+
 extern const char kAndroidTabGroupStableIdsName[];
 extern const char kAndroidTabGroupStableIdsDescription[];
 

@@ -11322,6 +11322,13 @@ const FeatureEntry kFeatureEntries[] = {
      flag_descriptions::kAndroidTabDeclutterDescription, kOsAndroid,
      FEATURE_VALUE_TYPE(chrome::android::kAndroidTabDeclutter)},
 
+    {"android-tab-declutter-archive-all-but-active-tab",
+     flag_descriptions::kAndroidTabDeclutterArchiveAllButActiveTabName,
+     flag_descriptions::kAndroidTabDeclutterArchiveAllButActiveTabDescription,
+     kOsAndroid,
+     FEATURE_VALUE_TYPE(
+         chrome::android::kAndroidTabDeclutterArchiveAllButActiveTab)},
+
     {"force-list-tab-switcher", flag_descriptions::kForceListTabSwitcherName,
      flag_descriptions::kForceListTabSwitcherDescription, kOsAndroid,
      FEATURE_VALUE_TYPE(chrome::android::kForceListTabSwitcher)},

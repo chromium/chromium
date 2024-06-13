@@ -169,6 +169,24 @@ public class ArchivedTabModelOrchestratorTest {
 
     @Test
     @MediumTest
+    @EnableFeatures({ChromeFeatureList.ANDROID_TAB_DECLUTTER_ARCHIVE_ALL_BUT_ACTIVE})
+    public void testArchiveAllButActive() {
+        finishLoading();
+        mActivityTestRule.loadUrlInNewTab(
+                mActivityTestRule.getTestServer().getURL(TEST_PATH), /* incognito= */ false);
+
+        assertEquals(2, mRegularTabModel.getCount());
+        assertEquals(0, mArchivedTabModel.getCount());
+        runOnUiThreadBlocking(() -> mOrchestrator.resetBeginDeclutterForTesting());
+        runOnUiThreadBlocking(() -> mOrchestrator.maybeBeginDeclutter());
+        runOnUiThreadBlocking(() -> mOrchestrator.archiveAllButActiveTab(mRegularTabModel));
+
+        assertEquals(1, mRegularTabModel.getCount());
+        assertEquals(1, mArchivedTabModel.getCount());
+    }
+
+    @Test
+    @MediumTest
     public void testScheduledDeclutter() {
         finishLoading();
         mOrchestrator.getTabArchiveSettings().setArchiveEnabled(false);

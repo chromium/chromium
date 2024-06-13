@@ -21064,6 +21064,8 @@ from previous Chrome versions.
   <int value="275616740" label="ForceInitialSyncWhenDecryptionFails:disabled"/>
   <int value="275690549" label="AppManagementAppDetails:enabled"/>
   <int value="276022140" label="AutofillDontPreserveAutofillState:enabled"/>
+  <int value="277327534"
+      label="AndroidTabDeclutterArchiveAllButActiveTab:enabled"/>
   <int value="277483398" label="ClipboardHistory:disabled"/>
   <int value="277565405" label="ContextualSearchDefinitions:disabled"/>
   <int value="277769727" label="JourneysZeroStateFiltering:disabled"/>
@@ -24388,6 +24390,8 @@ from previous Chrome versions.
   <int value="1699610507" label="AutofillSyncEwalletAccounts:enabled"/>
   <int value="1700117535" label="MediaFeedsBackgroundFetching:disabled"/>
   <int value="1700181145" label="PowerBookmarksSidePanel:enabled"/>
+  <int value="1700388382"
+      label="AndroidTabDeclutterArchiveAllButActiveTab:disabled"/>
   <int value="1700394127" label="OverlayScrollbar:disabled"/>
   <int value="1700875006" label="AutofillMoreProminentPopup:disabled"/>
   <int value="1701295056"

@@ -4054,6 +4054,12 @@ const char kAndroidTabDeclutterName[] = "Android Tab Declutter";
 const char kAndroidTabDeclutterDescription[] =
     "Enables auto-archival and deletion of inactive tabs.";
 
+const char kAndroidTabDeclutterArchiveAllButActiveTabName[] =
+    "Archive all tabs except active";
+const char kAndroidTabDeclutterArchiveAllButActiveTabDescription[] =
+    "Causes all tabs in model (except the current active one) to be archived. "
+    "Used for manual testing.";
+
 const char kAndroidTabGroupStableIdsName[] = "Android Tab Group Stable IDs";
 const char kAndroidTabGroupStableIdsDescription[] =
     "Replaces the tab group ID system on Android with stable IDs. A logical "
