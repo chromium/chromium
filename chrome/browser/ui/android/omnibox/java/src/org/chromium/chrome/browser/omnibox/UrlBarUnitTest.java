@@ -18,10 +18,12 @@ import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.anyInt;
 import static org.mockito.Mockito.clearInvocations;
 import static org.mockito.Mockito.doReturn;
+import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.spy;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.verifyNoMoreInteractions;
 import static org.mockito.Mockito.when;
 
 import android.text.InputType;
@@ -30,6 +32,7 @@ import android.text.SpannableStringBuilder;
 import android.text.TextPaint;
 import android.text.TextUtils;
 import android.view.ContextThemeWrapper;
+import android.view.KeyEvent;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.View.MeasureSpec;
@@ -57,6 +60,7 @@ import org.chromium.chrome.browser.omnibox.UrlBar.UrlBarDelegate;
 import org.chromium.chrome.browser.omnibox.test.R;
 
 import java.util.Collections;
+import java.util.List;
 
 /** Unit tests for the URL bar UI component. */
 @RunWith(BaseRobolectricTestRunner.class)
@@ -138,7 +142,7 @@ public class UrlBarUnitTest {
                 MeasureSpec.makeMeasureSpec(height, MeasureSpec.EXACTLY));
         mUrlBar.layout(0, 0, width, height);
 
-        // Sanity check: new layout should be available.
+        // Confirmation check: new layout should be available.
         assertNotNull(mUrlBar.getLayout());
         assertFalse(mUrlBar.isLayoutRequested());
     }
@@ -518,5 +522,140 @@ public class UrlBarUnitTest {
         mUrlBar.setScrollState(UrlBar.ScrollType.SCROLL_TO_TLD, mShortDomain.length());
         verify(mUrlBar, times(0)).calculateVisibleHint();
         assertNull(mUrlBar.getVisibleTextPrefixHint());
+    }
+
+    @Test
+    public void keyEvents_nonEnterActionDownKeyHandling() {
+        var keysToCheck =
+                List.of(
+                        KeyEvent.KEYCODE_A,
+                        KeyEvent.KEYCODE_TAB,
+                        KeyEvent.KEYCODE_DPAD_UP,
+                        KeyEvent.KEYCODE_DPAD_DOWN);
+
+        var listener = mock(View.OnKeyListener.class);
+        mUrlBar.setKeyDownListener(listener);
+
+        for (int keyCode : keysToCheck) {
+            var event = new KeyEvent(KeyEvent.ACTION_DOWN, keyCode);
+
+            // Pre-IME Key Down, consumed: do not pass to IME.
+            doReturn(true).when(listener).onKey(any(), anyInt(), any());
+            assertTrue(mUrlBar.onKeyPreIme(keyCode, event));
+            verify(listener).onKey(mUrlBar, keyCode, event);
+            verify(mUrlBar, never()).super_onKeyPreIme(anyInt(), any());
+
+            clearInvocations(listener, mUrlBar);
+
+            // Pre-IME Key Down, not consumed: pass to IME.
+            doReturn(false).when(listener).onKey(any(), anyInt(), any());
+            doReturn(false).when(mUrlBar).super_onKeyPreIme(anyInt(), any());
+            assertFalse(mUrlBar.onKeyPreIme(keyCode, event));
+            verify(listener).onKey(mUrlBar, keyCode, event);
+            verify(mUrlBar).super_onKeyPreIme(keyCode, event);
+
+            clearInvocations(listener, mUrlBar);
+
+            // Pre-IME Key Down, not consumed: return IME result.
+            doReturn(true).when(mUrlBar).super_onKeyPreIme(anyInt(), any());
+            assertTrue(mUrlBar.onKeyPreIme(keyCode, event));
+            verify(mUrlBar).super_onKeyPreIme(keyCode, event);
+
+            clearInvocations(listener, mUrlBar);
+
+            // Post-IME Key Down: never passed to the listener.
+            doReturn(false).when(mUrlBar).super_onKeyDown(anyInt(), any());
+            assertFalse(mUrlBar.onKeyDown(keyCode, event));
+            verifyNoMoreInteractions(listener);
+
+            clearInvocations(listener, mUrlBar);
+
+            // Post-IME Key Down: return IME result.
+            doReturn(true).when(mUrlBar).super_onKeyDown(anyInt(), any());
+            assertTrue(mUrlBar.onKeyDown(keyCode, event));
+            verifyNoMoreInteractions(listener);
+
+            clearInvocations(listener, mUrlBar);
+        }
+    }
+
+    @Test
+    public void keyEvents_enterActionDownKeyHandling() {
+        var keysToCheck = List.of(KeyEvent.KEYCODE_ENTER, KeyEvent.KEYCODE_NUMPAD_ENTER);
+
+        var listener = mock(View.OnKeyListener.class);
+        mUrlBar.setKeyDownListener(listener);
+
+        for (int keyCode : keysToCheck) {
+            var event = new KeyEvent(KeyEvent.ACTION_DOWN, keyCode);
+
+            // Pre-IME Key Down: passed only to IME.
+            doReturn(false).when(mUrlBar).super_onKeyPreIme(anyInt(), any());
+            assertFalse(mUrlBar.onKeyPreIme(keyCode, event));
+            verify(listener, never()).onKey(any(), anyInt(), any());
+            verify(mUrlBar).super_onKeyPreIme(keyCode, event);
+
+            clearInvocations(listener, mUrlBar);
+
+            // Post-IME Key Down: consumed keys not passed to View.
+            doReturn(true).when(listener).onKey(any(), anyInt(), any());
+            assertTrue(mUrlBar.onKeyDown(keyCode, event));
+            verify(listener).onKey(mUrlBar, keyCode, event);
+            verify(mUrlBar, never()).super_onKeyDown(anyInt(), any());
+            verifyNoMoreInteractions(listener);
+
+            clearInvocations(listener, mUrlBar);
+
+            // Post-IME Key Down: not consumed keys passed to View.
+            doReturn(false).when(listener).onKey(any(), anyInt(), any());
+            doReturn(true).when(mUrlBar).super_onKeyPreIme(anyInt(), any());
+            assertTrue(mUrlBar.onKeyDown(keyCode, event));
+            verify(listener).onKey(mUrlBar, keyCode, event);
+            verify(mUrlBar).super_onKeyDown(keyCode, event);
+            verifyNoMoreInteractions(listener);
+
+            clearInvocations(listener, mUrlBar);
+        }
+    }
+
+    @Test
+    public void keyEvents_actionUpKeysBypassListenerCompletely() {
+        var keysToCheck =
+                List.of(
+                        KeyEvent.KEYCODE_A,
+                        KeyEvent.KEYCODE_TAB,
+                        KeyEvent.KEYCODE_ENTER,
+                        KeyEvent.KEYCODE_NUMPAD_ENTER,
+                        KeyEvent.KEYCODE_DPAD_UP,
+                        KeyEvent.KEYCODE_DPAD_DOWN);
+
+        var listener = mock(View.OnKeyListener.class);
+        mUrlBar.setKeyDownListener(listener);
+
+        for (int keyCode : keysToCheck) {
+            var event = new KeyEvent(KeyEvent.ACTION_UP, keyCode);
+
+            // Pre-IME, not consumed by IME.
+            doReturn(false).when(mUrlBar).super_onKeyPreIme(anyInt(), any());
+            assertFalse(mUrlBar.onKeyPreIme(keyCode, event));
+            verify(mUrlBar).super_onKeyPreIme(keyCode, event);
+            verifyNoMoreInteractions(listener);
+
+            clearInvocations(mUrlBar);
+
+            // Pre-IME, consumed by IME.
+            doReturn(true).when(mUrlBar).super_onKeyPreIme(anyInt(), any());
+            assertTrue(mUrlBar.onKeyPreIme(keyCode, event));
+            verify(mUrlBar).super_onKeyPreIme(keyCode, event);
+            verifyNoMoreInteractions(listener);
+
+            clearInvocations(mUrlBar);
+
+            // Post-IME.
+            assertFalse(mUrlBar.onKeyUp(keyCode, event));
+            verifyNoMoreInteractions(listener);
+
+            clearInvocations(mUrlBar);
+        }
     }
 }
