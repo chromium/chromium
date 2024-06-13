@@ -29,9 +29,7 @@ class FileSystemAccessObserverHost;
 // TODO(crbug.com/341213353): Consider removing this class in favor of
 // giving the ObserverHost a FileSystemAccessObserver mojo::RemoteSet. See
 // https://chromium-review.googlesource.com/c/chromium/src/+/4809069/comment/8d90508d_74ae7891/.
-class FileSystemAccessObserverObservation
-    : public WebContentsObserver,
-      public FileSystemAccessPermissionGrant::Observer {
+class FileSystemAccessObserverObservation : public WebContentsObserver {
  public:
   FileSystemAccessObserverObservation(
       FileSystemAccessObserverHost* host,
@@ -53,9 +51,6 @@ class FileSystemAccessObserverObservation
       RenderFrameHost* render_frame_host,
       RenderFrameHost::LifecycleState old_state,
       RenderFrameHost::LifecycleState new_state) override;
-
-  // FileSystemAccessPermissionGrant::Observer override.
-  void OnPermissionStatusChanged() override;
 
  private:
   void OnReceiverDisconnect();
