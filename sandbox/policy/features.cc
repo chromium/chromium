@@ -113,6 +113,15 @@ BASE_FEATURE(kNetworkServiceCodeIntegrity,
 BASE_FEATURE(kWinSboxNoFakeGdiInit,
              "WinSboxNoFakeGdiInit",
              base::FEATURE_DISABLED_BY_DEFAULT);
+
+// Enables Restrict Core Sharing mitigation for the renderer process, when
+// running Windows 11 Build 25922 and above. See param definition of
+// RestrictCoreSharing in
+// https://learn.microsoft.com/en-us/windows/win32/api/winnt/ns-winnt-
+// process_mitigation_side_channel_isolation_policy
+BASE_FEATURE(kWinSboxRestrictCoreSharingOnRenderer,
+             "WinSboxRestrictCoreSharingOnRenderer",
+             base::FEATURE_DISABLED_BY_DEFAULT);
 #endif  // BUILDFLAG(IS_WIN)
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)

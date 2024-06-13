@@ -91,6 +91,8 @@ base::Value::List FetchSandboxFeatures() {
       FeatureToValue(sandbox::policy::features::kWinSboxZeroAppShim));
   features.Append(
       FeatureToValue(sandbox::policy::features::kWinSboxNoFakeGdiInit));
+  features.Append(FeatureToValue(
+      sandbox::policy::features::kWinSboxRestrictCoreSharingOnRenderer));
   return features;
 }
 

@@ -458,6 +458,24 @@ SBOX_TESTS_COMMAND int CheckPolicy(int argc, wchar_t** argv) {
       break;
     }
 
+    //--------------------------------------------------
+    // MITIGATION_RESTRICT_CORE_SHARING
+    //--------------------------------------------------
+    case (TESTPOLICY_RESTRICTCORESHARING): {
+      PROCESS_MITIGATION_SIDE_CHANNEL_ISOLATION_POLICY policy = {};
+      if (!::GetProcessMitigationPolicy(::GetCurrentProcess(),
+                                        ProcessSideChannelIsolationPolicy,
+                                        &policy, sizeof(policy))) {
+        return SBOX_TEST_NOT_FOUND;
+      }
+
+      if (!(policy.RestrictCoreSharing)) {
+        return SBOX_TEST_FAILED;
+      }
+
+      break;
+    }
+
     default:
       return SBOX_TEST_INVALID_PARAMETER;
   }
@@ -1345,6 +1363,27 @@ TEST(ProcessMitigationsTest, FsctlDisabled) {
   sandbox::TargetConfig* config = runner.GetPolicy()->GetConfig();
 
   EXPECT_EQ(config->SetProcessMitigations(MITIGATION_FSCTL_DISABLED),
+            SBOX_ALL_OK);
+  EXPECT_EQ(SBOX_TEST_SUCCEEDED, runner.RunTest(test_command.c_str()));
+}
+
+// This test validates that setting the MITIGATION_RESTRICT_CORE_SHARING will
+// make sure process threads never share a core with threads outside it's
+// security domain.
+// Note: this should only be run on a physical device OR a VM that has the
+// hypervisorschedulertype set to "core"
+TEST(ProcessMitigationsTest, RestrictCoreSharing) {
+  if (base::win::GetVersion() < base::win::Version::WIN11_23H2) {
+    return;
+  }
+
+  std::wstring test_command = L"CheckPolicy ";
+  test_command += std::to_wstring(TESTPOLICY_RESTRICTCORESHARING);
+
+  TestRunner runner;
+  sandbox::TargetConfig* config = runner.GetPolicy()->GetConfig();
+
+  EXPECT_EQ(config->SetProcessMitigations(MITIGATION_RESTRICT_CORE_SHARING),
             SBOX_ALL_OK);
   EXPECT_EQ(SBOX_TEST_SUCCEEDED, runner.RunTest(test_command.c_str()));
 }

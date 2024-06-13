@@ -580,11 +580,17 @@ ResultCode GenerateConfigForSandboxedProcess(const base::CommandLine& cmd_line,
   if (!delegate->CetCompatible())
     mitigations |= MITIGATION_CET_DISABLED;
 
+  Sandbox sandbox_type = delegate->GetSandboxType();
+  if (sandbox_type == Sandbox::kRenderer &&
+      base::FeatureList::IsEnabled(
+          sandbox::policy::features::kWinSboxRestrictCoreSharingOnRenderer)) {
+    mitigations |= MITIGATION_RESTRICT_CORE_SHARING;
+  }
+
   ResultCode result = config->SetProcessMitigations(mitigations);
   if (result != SBOX_ALL_OK)
     return result;
 
-  Sandbox sandbox_type = delegate->GetSandboxType();
   // Post-startup mitigations.
   mitigations = MITIGATION_DLL_SEARCH_ORDER;
   if (!cmd_line.HasSwitch(switches::kAllowThirdPartyModules) &&
