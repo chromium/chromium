@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef PDF_INK_INK_MODELED_SHAPE_H_
-#define PDF_INK_INK_MODELED_SHAPE_H_
+#ifndef PDF_INK_INK_MODELED_SHAPE_VIEW_H_
+#define PDF_INK_INK_MODELED_SHAPE_VIEW_H_
 
 #include <stdint.h>
 
@@ -11,7 +11,7 @@
 
 namespace chrome_pdf {
 
-class InkModeledShape {
+class InkModeledShapeView {
  public:
   struct VertexIndexPair {
     uint16_t mesh_index;
@@ -19,7 +19,7 @@ class InkModeledShape {
   };
   using Outline = std::vector<VertexIndexPair>;
 
-  virtual ~InkModeledShape() = default;
+  virtual ~InkModeledShapeView() = default;
 
   virtual uint32_t RenderGroupCount() const = 0;
   virtual std::vector<Outline> GetOutlines(uint32_t group_index) const = 0;
@@ -27,4 +27,4 @@ class InkModeledShape {
 
 }  // namespace chrome_pdf
 
-#endif  // PDF_INK_INK_MODELED_SHAPE_H_
+#endif  // PDF_INK_INK_MODELED_SHAPE_VIEW_H_

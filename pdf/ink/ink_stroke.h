@@ -7,7 +7,7 @@
 
 namespace chrome_pdf {
 
-class InkModeledShape;
+class InkModeledShapeView;
 class InkStrokeInputBatch;
 
 class InkStroke {
@@ -16,7 +16,7 @@ class InkStroke {
 
   virtual const InkStrokeInputBatch& GetInputs() const = 0;
 
-  virtual const InkModeledShape* GetShape() const = 0;
+  virtual const InkModeledShapeView& GetShape() const = 0;
 };
 
 }  // namespace chrome_pdf

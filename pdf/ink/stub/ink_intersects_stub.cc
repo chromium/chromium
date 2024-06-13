@@ -10,7 +10,7 @@ bool InkIntersectsRectWithShape(float rect_x,
                                 float rect_y,
                                 float rect_width,
                                 float rect_height,
-                                const InkModeledShape& shape,
+                                const InkModeledShapeView& shape,
                                 const InkAffineTransform& transform) {
   return false;
 }

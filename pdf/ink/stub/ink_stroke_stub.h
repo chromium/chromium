@@ -5,15 +5,13 @@
 #ifndef PDF_INK_STUB_INK_STROKE_STUB_H_
 #define PDF_INK_STUB_INK_STROKE_STUB_H_
 
-#include <memory>
-
 #include "pdf/ink/ink_stroke.h"
+#include "pdf/ink/stub/ink_modeled_shape_view_stub.h"
 #include "pdf/ink/stub/ink_stroke_input_batch_stub.h"
 
 namespace chrome_pdf {
 
-class InkModeledShape;
-class InkModeledShapeStub;
+class InkModeledShapeViewStub;
 
 class InkStrokeStub : public InkStroke {
  public:
@@ -22,10 +20,10 @@ class InkStrokeStub : public InkStroke {
 
   // InkStroke:
   const InkStrokeInputBatch& GetInputs() const override;
-  const InkModeledShape* GetShape() const override;
+  const InkModeledShapeView& GetShape() const override;
 
  private:
-  const std::unique_ptr<InkModeledShapeStub> shape_;
+  const InkModeledShapeViewStub shape_;
   const InkStrokeInputBatchStub inputs_;
 };
 
