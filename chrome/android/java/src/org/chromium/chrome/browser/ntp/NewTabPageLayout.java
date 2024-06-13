@@ -6,7 +6,6 @@ package org.chromium.chrome.browser.ntp;
 
 import android.app.Activity;
 import android.content.Context;
-import android.content.res.ColorStateList;
 import android.content.res.Configuration;
 import android.content.res.Resources;
 import android.graphics.Point;
@@ -22,7 +21,6 @@ import android.widget.LinearLayout;
 
 import androidx.annotation.Nullable;
 import androidx.annotation.VisibleForTesting;
-import androidx.appcompat.content.res.AppCompatResources;
 
 import org.chromium.base.Callback;
 import org.chromium.base.CallbackController;
@@ -52,7 +50,6 @@ import org.chromium.chrome.browser.util.BrowserUiUtils;
 import org.chromium.chrome.browser.util.BrowserUiUtils.HostSurface;
 import org.chromium.chrome.browser.util.BrowserUiUtils.ModuleTypeOnStartAndNtp;
 import org.chromium.chrome.features.start_surface.StartSurfaceConfiguration;
-import org.chromium.components.browser_ui.styles.ChromeColors;
 import org.chromium.components.browser_ui.widget.displaystyle.DisplayStyleObserver;
 import org.chromium.components.browser_ui.widget.displaystyle.HorizontalDisplayStyle;
 import org.chromium.components.browser_ui.widget.displaystyle.UiConfig;
@@ -265,19 +262,10 @@ public class NewTabPageLayout extends LinearLayout {
                                         R.dimen.ntp_search_box_transition_length_polish_offset)
                         : 0;
 
-        if (mIsTablet && !mIsSurfacePolishEnabled) {
-            // We add extra side margins to the fake search box when multiple column Feeds are
-            // shown. There is only one exception that we don't shorten the width of the fake search
-            // box: one row of MV tiles in portrait mode.
-            mSearchBoxTwoSideMargin =
-                    getResources().getDimensionPixelSize(R.dimen.ntp_search_box_start_margin) * 2;
-        } else if (mIsSurfacePolishEnabled) {
-            updateSearchBoxWidthForPolish();
-        }
+        updateSearchBoxWidth();
         initializeLogoCoordinator(searchProviderHasLogo, searchProviderIsGoogle);
         initializeMostVisitedTilesCoordinator(
                 mProfile, lifecycleDispatcher, tileGroupDelegate, touchEnabledDelegate);
-        initializeSearchBoxBackground();
         initializeSearchBoxTextView();
         initializeVoiceSearchButton();
         initializeLensButton();
@@ -298,22 +286,6 @@ public class NewTabPageLayout extends LinearLayout {
      */
     FeedSurfaceScrollDelegate getScrollDelegate() {
         return mScrollDelegate;
-    }
-
-    /** Sets up the search box background or background tint. */
-    private void initializeSearchBoxBackground() {
-        if (mIsSurfacePolishEnabled) {
-            findViewById(R.id.search_box)
-                    .setBackground(
-                            AppCompatResources.getDrawable(
-                                    mContext, R.drawable.home_surface_search_box_background));
-            return;
-        }
-
-        final int searchBoxColor =
-                ChromeColors.getSurfaceColor(getContext(), R.dimen.default_elevation_4);
-        final ColorStateList colorStateList = ColorStateList.valueOf(searchBoxColor);
-        findViewById(R.id.search_box).setBackgroundTintList(colorStateList);
     }
 
     /** Sets up the hint text and event handlers for the search box text view. */
@@ -821,7 +793,7 @@ public class NewTabPageLayout extends LinearLayout {
      *
      * @param bounds The current drawing location of the search box.
      * @param translation The translation applied to the search box by the parent view hierarchy up
-     *                    to the {@code parentView}.
+     *     to the {@code parentView}.
      * @param parentView The top level parent view used to translate search box bounds.
      */
     void getSearchBoxBounds(Rect bounds, Point translation, View parentView) {
@@ -1051,7 +1023,7 @@ public class NewTabPageLayout extends LinearLayout {
 
         updateLogoOnTabletForLogoPolish();
         updateMvtOnTablet();
-        updateSearchBoxWidthForPolish();
+        updateSearchBoxWidth();
     }
 
     /**
@@ -1102,22 +1074,26 @@ public class NewTabPageLayout extends LinearLayout {
 
         int lateralPaddingId =
                 mIsInNarrowWindowOnTablet
-                        ? R.dimen.search_box_lateral_margin
+                        ? R.dimen.ntp_search_box_lateral_margin_narrow_window_tablet
                         : R.dimen.mvt_container_lateral_margin;
         int lateralPaddingsForNtp = getResources().getDimensionPixelSize(lateralPaddingId);
         marginLayoutParams.leftMargin = lateralPaddingsForNtp;
         marginLayoutParams.rightMargin = lateralPaddingsForNtp;
     }
 
-    private void updateSearchBoxWidthForPolish() {
+    private void updateSearchBoxWidth() {
         if (mIsInNarrowWindowOnTablet) {
             mSearchBoxTwoSideMargin =
-                    getResources().getDimensionPixelSize(R.dimen.search_box_lateral_margin) * 2;
+                    getResources()
+                                    .getDimensionPixelSize(
+                                            R.dimen
+                                                    .ntp_search_box_lateral_margin_narrow_window_tablet)
+                            * 2;
         } else if (mIsTablet) {
             mSearchBoxTwoSideMargin =
                     getResources()
                                     .getDimensionPixelSize(
-                                            R.dimen.ntp_search_box_lateral_margin_tablet_polish)
+                                            R.dimen.ntp_search_box_lateral_margin_tablet)
                             * 2;
         } else {
             mSearchBoxTwoSideMargin =

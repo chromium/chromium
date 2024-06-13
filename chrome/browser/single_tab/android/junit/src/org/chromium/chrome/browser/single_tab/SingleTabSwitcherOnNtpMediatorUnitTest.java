@@ -338,7 +338,9 @@ public class SingleTabSwitcherOnNtpMediatorUnitTest {
                         /* isTablet= */ false,
                         /* moduleDelegate= */ null);
         Resources resources = ContextUtils.getApplicationContext().getResources();
-        int marginExpected = resources.getDimensionPixelSize(R.dimen.search_box_lateral_margin);
+        int marginExpected =
+                resources.getDimensionPixelSize(
+                        R.dimen.ntp_search_box_lateral_margin_narrow_window_tablet);
 
         // Verifies the start margins are initialized.
         assertEquals(marginExpected, mediator.getDefaultLateralMargin());
@@ -398,7 +400,8 @@ public class SingleTabSwitcherOnNtpMediatorUnitTest {
                 ContextUtils.getApplicationContext()
                         .getResources()
                         .getDimensionPixelSize(
-                                org.chromium.chrome.R.dimen.search_box_lateral_margin);
+                                org.chromium.chrome.R.dimen
+                                        .ntp_search_box_lateral_margin_narrow_window_tablet);
         UiConfig.DisplayStyle displayStyleRegular =
                 new DisplayStyle(HorizontalDisplayStyle.REGULAR, VerticalDisplayStyle.REGULAR);
         when(mUiConfig.getCurrentDisplayStyle()).thenReturn(displayStyleRegular);

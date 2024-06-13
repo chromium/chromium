@@ -91,7 +91,8 @@ public class SingleTabSwitcherOnNtpMediator {
         mModuleDelegate = moduleDelegate;
 
         mMarginForPhoneAndNarrowWindowOnTablet =
-                mResources.getDimensionPixelSize(R.dimen.search_box_lateral_margin);
+                mResources.getDimensionPixelSize(
+                        R.dimen.ntp_search_box_lateral_margin_narrow_window_tablet);
 
         mThumbnailProvider = SingleTabSwitcherMediator.getThumbnailProvider(tabContentManager);
         if (mThumbnailProvider != null) {

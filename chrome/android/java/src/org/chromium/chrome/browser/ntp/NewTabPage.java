@@ -1321,7 +1321,7 @@ public class NewTabPage
                                 mIsTablet, mFeedSurfaceProvider.getUiConfig());
         int marginResourceId =
                 isInNarrowWindowOnTablet
-                        ? R.dimen.search_box_lateral_margin
+                        ? R.dimen.ntp_search_box_lateral_margin_narrow_window_tablet
                         : R.dimen.mvt_container_lateral_margin;
         return mContext.getResources().getDimensionPixelSize(marginResourceId);
     }

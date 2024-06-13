@@ -388,7 +388,7 @@ found in the LICENSE file.
     </style>
 
 
-    <style name="TextAppearance_FakeSearchBoxText_NewTabPage">
+    <style name="TextAppearance.FakeSearchBoxText">
         <item name="android:textSize">@dimen/ntp_fake_search_box_text_size</item>
         <item name="android:textColorHint">@macro/ntp_search_box_hint</item>
     </style>

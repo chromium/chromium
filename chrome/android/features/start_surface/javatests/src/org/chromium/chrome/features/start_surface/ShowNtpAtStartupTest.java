@@ -508,7 +508,7 @@ public class ShowNtpAtStartupTest {
 
         Resources res = cta.getResources();
         int expectedTwoSideMargin =
-                2 * res.getDimensionPixelSize(R.dimen.ntp_search_box_lateral_margin_tablet_polish);
+                2 * res.getDimensionPixelSize(R.dimen.ntp_search_box_lateral_margin_tablet);
 
         // Verifies there is additional margin added for the fake search box.
         verifyFakeSearchBoxWidth(expectedTwoSideMargin, expectedTwoSideMargin, ntp);

@@ -142,10 +142,9 @@ found in the LICENSE file.
     <dimen name="ntp_logo_vertical_bottom_margin_tablet">24dp</dimen>
     <dimen name="ntp_search_box_height_for_start_animation">48dp</dimen>
     <dimen name="ntp_search_box_bottom_margin">1dp</dimen>
-    <dimen name="ntp_search_box_start_margin">44dp</dimen>
     <dimen name="ntp_search_box_transition_length">16dp</dimen>
     <dimen name="ntp_search_box_transition_length_polish_offset">4dp</dimen>
-    <dimen name="ntp_search_box_lateral_margin_tablet_polish">100dp</dimen>
+    <dimen name="ntp_search_box_lateral_margin_tablet">100dp</dimen>
     <dimen name="snippets_article_header_height">40dp</dimen>
     <dimen name="content_suggestions_card_bottom_margin">12dp</dimen>
     <!-- This is in sp because we want the icon to scale with the TextView it sits alongside. -->

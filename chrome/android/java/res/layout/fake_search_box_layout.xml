@@ -13,14 +13,15 @@ found in the LICENSE file.
     android:id="@+id/search_box"
     android:layout_width="match_parent"
     android:layout_height="@dimen/ntp_search_box_height"
-    android:layout_marginStart="10dp"
-    android:layout_marginEnd="10dp"
+    android:layout_marginStart="@dimen/mvt_container_lateral_margin"
+    android:layout_marginEnd="@dimen/mvt_container_lateral_margin"
     android:layout_marginTop="0dp"
     android:layout_marginBottom="@dimen/ntp_search_box_bottom_margin"
     android:gravity="center_vertical"
     android:background="@drawable/home_surface_search_box_background"
     android:orientation="horizontal"
-    android:paddingStart="@dimen/fake_search_box_lateral_padding" >
+    android:paddingStart="@dimen/fake_search_box_start_padding"
+    android:paddingEnd="@dimen/fake_search_box_end_padding">
 
     <!-- TODO(crbug.com/40600572): Fix and remove lint ignore -->
     <RelativeLayout
@@ -31,7 +32,7 @@ found in the LICENSE file.
         android:gravity="center_vertical">
         <EditText
             tools:ignore="Autofill,LabelFor"
-            style="@style/TextAppearance_FakeSearchBoxText_NewTabPage"
+            style="@style/TextAppearance.FakeSearchBoxText"
             android:id="@+id/search_box_text"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
