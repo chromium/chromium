@@ -12,6 +12,8 @@ namespace chrome_pdf {
 class InkModeledShapeViewStub : public InkModeledShapeView {
  public:
   InkModeledShapeViewStub();
+  InkModeledShapeViewStub(const InkModeledShapeViewStub&) = delete;
+  InkModeledShapeViewStub& operator=(const InkModeledShapeViewStub&) = delete;
   ~InkModeledShapeViewStub() override;
 
   // InkModeledShapeView:

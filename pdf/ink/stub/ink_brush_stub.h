@@ -20,6 +20,8 @@ class InkBrushStub : public InkBrush {
                SkColor color,
                float size,
                float epsilon);
+  InkBrushStub(const InkBrushStub&) = delete;
+  InkBrushStub& operator=(const InkBrushStub&) = delete;
   ~InkBrushStub() override;
 
   // InkBrush:

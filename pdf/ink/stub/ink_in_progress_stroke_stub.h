@@ -13,6 +13,8 @@ namespace chrome_pdf {
 class InkInProgressStrokeStub : public InkInProgressStroke {
  public:
   InkInProgressStrokeStub();
+  InkInProgressStrokeStub(const InkInProgressStrokeStub&) = delete;
+  InkInProgressStrokeStub& operator=(const InkInProgressStrokeStub&) = delete;
   ~InkInProgressStrokeStub() override;
 
   // InkInProgressStroke:

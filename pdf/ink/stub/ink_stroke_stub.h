@@ -17,6 +17,8 @@ class InkModeledShapeViewStub;
 class InkStrokeStub : public InkStroke {
  public:
   explicit InkStrokeStub(const InkStrokeInputBatchStub& inputs);
+  InkStrokeStub(const InkStrokeStub&) = delete;
+  InkStrokeStub& operator=(const InkStrokeStub&) = delete;
   ~InkStrokeStub() override;
 
   // InkStroke:

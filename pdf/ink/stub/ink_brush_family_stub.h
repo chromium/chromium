@@ -13,6 +13,8 @@ namespace chrome_pdf {
 class InkBrushFamilyStub : public InkBrushFamily {
  public:
   explicit InkBrushFamilyStub(InkBrushTip tip);
+  InkBrushFamilyStub(const InkBrushFamilyStub&) = delete;
+  InkBrushFamilyStub& operator=(const InkBrushFamilyStub&) = delete;
   ~InkBrushFamilyStub() override;
 
   // InkBrushFamily:
