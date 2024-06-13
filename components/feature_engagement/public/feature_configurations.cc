@@ -818,6 +818,20 @@ std::optional<FeatureConfig> GetClientSideFeatureConfig(
 
 #if BUILDFLAG(IS_ANDROID)
 
+  if (kIPHTabGroupSyncOnStripFeature.name == feature->name) {
+    // A config that allows the TabGroupSync IPH to be shown up to 3 times per
+    // year.
+    std::optional<FeatureConfig> config = FeatureConfig();
+    config->valid = true;
+    config->availability = Comparator(ANY, 0);
+    config->session_rate = Comparator(LESS_THAN, 1);
+    config->trigger = EventConfig("tab_group_sync_on_strip_iph_triggered",
+                                  Comparator(LESS_THAN, 3), 360, 360);
+    config->used = EventConfig("tab_groups_surface_clicked",
+                               Comparator(EQUAL, 0), 360, 360);
+    return config;
+  }
+
   if (kIPHAppSpecificHistory.name == feature->name) {
     // A config that allows the AppSpecificHistory IPH to be shown once
     // a week, up to 3 times, unless the button is clicked at least once.

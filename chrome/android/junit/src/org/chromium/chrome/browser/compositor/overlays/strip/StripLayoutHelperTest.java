@@ -78,6 +78,7 @@ import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tab.TabCreationState;
 import org.chromium.chrome.browser.tab.TabLaunchType;
 import org.chromium.chrome.browser.tab.TabSelectionType;
+import org.chromium.chrome.browser.tab_group_sync.TabGroupSyncIphController;
 import org.chromium.chrome.browser.tabmodel.TabCreator;
 import org.chromium.chrome.browser.tasks.tab_groups.TabGroupModelFilter;
 import org.chromium.chrome.browser.tasks.tab_groups.TabGroupModelFilterObserver;
@@ -3576,7 +3577,8 @@ public class StripLayoutHelperTest {
                         mTabDragSource,
                         mToolbarContainerView,
                         mWindowAndroid,
-                        mActionConfirmationManager);
+                        mActionConfirmationManager,
+                        0);
         // Initialize StackScroller
         stripLayoutHelper.onContextChanged(mActivity);
         return stripLayoutHelper;
@@ -4395,6 +4397,44 @@ public class StripLayoutHelperTest {
     })
     public void testTabCreated_InCollapsedGroup_NotSelected() {
         testTabCreated_InCollapsedGroup(/* selected= */ false);
+    }
+
+    @Test
+    @EnableFeatures({
+        ChromeFeatureList.TAB_STRIP_GROUP_INDICATORS,
+        ChromeFeatureList.TAB_STRIP_GROUP_COLLAPSE,
+        ChromeFeatureList.TAB_GROUP_SYNC_ANDROID
+    })
+    public void testTabGroupSync_ShowIph() {
+        // Setup tab group.
+        initializeTest(false, false, true, 0, 5);
+        groupTabs(4, 5);
+        mStripLayoutHelper.onSizeChanged(
+                SCREEN_WIDTH, SCREEN_HEIGHT, false, TIMESTAMP, PADDING_LEFT, PADDING_RIGHT);
+        StripLayoutTab[] tabs = mStripLayoutHelper.getStripLayoutTabsForTesting();
+        StripLayoutView[] views = mStripLayoutHelper.getStripLayoutViewsForTesting();
+        StripLayoutGroupTitle groupTitle = ((StripLayoutGroupTitle) views[4]);
+
+        // Prepare iph and required objects.
+        TabGroupSyncIphController controller = mock(TabGroupSyncIphController.class);
+        mStripLayoutHelper.setTabGroupSyncIphControllerForTesting(controller);
+        TestTabModel tabModel = spy(mModel);
+        when(tabModel.getProfile()).thenReturn(mProfile);
+        mStripLayoutHelper.setTabModel(tabModel, null, false);
+        mStripLayoutHelper.setLastSyncedGroupIdForTesting(tabs[tabs.length - 1].getId());
+        mStripLayoutHelper.setTabGroupSyncIphControllerForTesting(controller);
+
+        // Trigger show iph.
+        mStripLayoutHelper.updateLayout(TIMESTAMP);
+
+        // Verify iph is displayed at the correct horizontal position.
+        verify(controller)
+                .maybeShowIphOnTabStrip(
+                        any(),
+                        eq(groupTitle.getDrawX()),
+                        anyFloat(),
+                        eq(SCREEN_WIDTH - groupTitle.getDrawX() - groupTitle.getWidth()),
+                        anyFloat());
     }
 
     @Test

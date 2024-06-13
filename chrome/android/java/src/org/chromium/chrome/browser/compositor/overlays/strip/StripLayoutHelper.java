@@ -9,6 +9,7 @@ import android.animation.Animator.AnimatorListener;
 import android.animation.AnimatorListenerAdapter;
 import android.animation.AnimatorSet;
 import android.annotation.SuppressLint;
+import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
 import android.content.res.Resources;
@@ -16,6 +17,7 @@ import android.graphics.Color;
 import android.graphics.PointF;
 import android.graphics.RectF;
 import android.os.Handler;
+import android.os.Looper;
 import android.os.Message;
 import android.os.SystemClock;
 import android.text.TextUtils;
@@ -55,10 +57,13 @@ import org.chromium.chrome.browser.compositor.layouts.phone.stack.StackScroller;
 import org.chromium.chrome.browser.compositor.overlays.strip.StripLayoutGroupTitle.StripLayoutGroupTitleDelegate;
 import org.chromium.chrome.browser.compositor.overlays.strip.StripLayoutTab.StripLayoutTabDelegate;
 import org.chromium.chrome.browser.compositor.overlays.strip.TabLoadTracker.TabLoadTrackerCallback;
+import org.chromium.chrome.browser.feature_engagement.TrackerFactory;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.layouts.animation.CompositorAnimator;
 import org.chromium.chrome.browser.layouts.components.VirtualView;
 import org.chromium.chrome.browser.tab.Tab;
+import org.chromium.chrome.browser.tab.TabLaunchType;
+import org.chromium.chrome.browser.tab_group_sync.TabGroupSyncIphController;
 import org.chromium.chrome.browser.tabmodel.TabCreator;
 import org.chromium.chrome.browser.tabmodel.TabModel;
 import org.chromium.chrome.browser.tabmodel.TabModelUtils;
@@ -71,8 +76,10 @@ import org.chromium.chrome.browser.tasks.tab_management.ColorPickerUtils;
 import org.chromium.chrome.browser.tasks.tab_management.TabUiFeatureUtilities;
 import org.chromium.chrome.browser.tasks.tab_management.TabUiThemeProvider;
 import org.chromium.chrome.browser.tasks.tab_management.TabUiThemeUtil;
+import org.chromium.chrome.browser.user_education.UserEducationHelper;
 import org.chromium.components.browser_ui.styles.ChromeColors;
 import org.chromium.components.browser_ui.styles.SemanticColorUtils;
+import org.chromium.components.feature_engagement.Tracker;
 import org.chromium.components.tab_groups.TabGroupColorId;
 import org.chromium.ui.base.LocalizationUtils;
 import org.chromium.ui.base.WindowAndroid;
@@ -463,6 +470,11 @@ public class StripLayoutHelper implements StripLayoutTabDelegate, StripLayoutGro
     private StripLayoutTab mLastHoveredTab;
     private StripTabHoverCardView mTabHoverCardView;
 
+    // Tab Group Sync.
+    private float mTabStripHeight;
+    private TabGroupSyncIphController mTabGroupSyncIphController;
+    private int mLastSyncedGroupId = Tab.INVALID_TAB_ID;
+
     /**
      * Creates an instance of the {@link StripLayoutHelper}.
      *
@@ -488,7 +500,8 @@ public class StripLayoutHelper implements StripLayoutTabDelegate, StripLayoutGro
             @Nullable TabDragSource tabDragSource,
             @NonNull View toolbarContainerView,
             @NonNull WindowAndroid windowAndroid,
-            ActionConfirmationManager actionConfirmationManager) {
+            ActionConfirmationManager actionConfirmationManager,
+            int tabStripHeight) {
         mTabOverlapWidth = TAB_OVERLAP_WIDTH_LARGE_DP;
         mGroupTitleDrawXOffset = mTabOverlapWidth - StripLayoutTab.FOLIO_FOOT_LENGTH_DP;
         mGroupTitleOverlapWidth = StripLayoutTab.FOLIO_FOOT_LENGTH_DP - mGroupTitleDrawXOffset;
@@ -498,6 +511,7 @@ public class StripLayoutHelper implements StripLayoutTabDelegate, StripLayoutGro
         mTabDragSource = tabDragSource;
         mWindowAndroid = windowAndroid;
         mActionConfirmationManager = actionConfirmationManager;
+        mTabStripHeight = tabStripHeight;
 
         // Use toolbar menu button padding to align NTB with menu button.
         mFixedEndPadding =
@@ -1038,7 +1052,62 @@ public class StripLayoutHelper implements StripLayoutTabDelegate, StripLayoutGro
             mIsFirstLayoutPass = false;
         }
 
+        if (doneAnimating && mScroller.isFinished()) {
+            showTabGroupSyncIph();
+        }
         return doneAnimating;
+    }
+
+    private void showTabGroupSyncIph() {
+        if (mLastSyncedGroupId != Tab.INVALID_TAB_ID
+                && !mModel.isIncognito()
+                && mModel.getProfile() != null) {
+
+            // Skip initialization if testing value has been set.
+            if (mTabGroupSyncIphController == null) {
+                // TODO: Change Context to Activity in this class to avoid casting.
+                UserEducationHelper userEducationHelper =
+                        new UserEducationHelper(
+                                (Activity) mContext,
+                                mModel.getProfile(),
+                                new Handler(Looper.getMainLooper()));
+                Tracker tracker = TrackerFactory.getTrackerForProfile(mModel.getProfile());
+                mTabGroupSyncIphController =
+                        new TabGroupSyncIphController(
+                                mContext.getResources(),
+                                userEducationHelper,
+                                R.string.newly_synced_tab_group_iph,
+                                tracker);
+            }
+            StripLayoutGroupTitle groupTitle = findGroupTitle(mLastSyncedGroupId);
+
+            // Display iph only when synced tab group title is fully visible.
+            if (groupTitle == null
+                    || !groupTitle.isVisible()
+                    || groupTitle.getPaddedX() + groupTitle.getPaddedWidth()
+                            >= mNewTabButton.getDrawX()) {
+                return;
+            }
+            float dpToPx = mContext.getResources().getDisplayMetrics().density;
+            // TODO(crbug.com/346634578): Update this iph position for cases like window rotate.
+            if (groupTitle != null) {
+                mTabGroupSyncIphController.maybeShowIphOnTabStrip(
+                        mToolbarContainerView,
+                        groupTitle.getDrawX() * dpToPx,
+                        0.f,
+                        (mWidth - groupTitle.getDrawX() - groupTitle.getWidth()) * dpToPx,
+                        mToolbarContainerView.getHeight() - mTabStripHeight);
+            }
+        }
+    }
+
+    void setLastSyncedGroupIdForTesting(int id) {
+        mLastSyncedGroupId = id;
+    }
+
+    void setTabGroupSyncIphControllerForTesting(
+            TabGroupSyncIphController tabGroupSyncIphController) {
+        mTabGroupSyncIphController = tabGroupSyncIphController;
     }
 
     void setIsFirstLayoutPassForTesting(boolean isFirstLayoutPass) {
@@ -2800,6 +2869,9 @@ public class StripLayoutHelper implements StripLayoutTabDelegate, StripLayoutGro
             int rootId = firstTab.getRootId();
             StripLayoutGroupTitle groupTitle = findOrCreateGroupTitle(rootId);
             if (rootId != mTabGroupIdToHide) {
+                if (firstTab.getLaunchType() == TabLaunchType.FROM_SYNC_BACKGROUND) {
+                    mLastSyncedGroupId = rootId;
+                }
                 groupTitles[groupTitleIndex++] = groupTitle;
                 mStripViews[viewIndex++] = groupTitle;
             }
@@ -2817,6 +2889,9 @@ public class StripLayoutHelper implements StripLayoutTabDelegate, StripLayoutGro
             if (nextTabInGroup && !areRelatedTabs) {
                 StripLayoutGroupTitle groupTitle = findOrCreateGroupTitle(nextRootId);
                 if (nextRootId != mTabGroupIdToHide) {
+                    if (nextTab.getLaunchType() == TabLaunchType.FROM_SYNC_BACKGROUND) {
+                        mLastSyncedGroupId = nextRootId;
+                    }
                     groupTitles[groupTitleIndex++] = groupTitle;
                     mStripViews[viewIndex++] = groupTitle;
                 }
