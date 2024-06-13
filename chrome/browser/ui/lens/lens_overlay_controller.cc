@@ -847,7 +847,16 @@ class LensOverlayController::UnderlyingWebContentsObserver
       const UnderlyingWebContentsObserver&) = delete;
 
   // content::WebContentsObserver
-  void PrimaryPageChanged(content::Page& page) override {
+  void DidFinishNavigation(
+      content::NavigationHandle* navigation_handle) override {
+    // We don't need to close if:
+    //   1) The navigation is not for the main page.
+    //   2) The navigation hasn't been committed yet.
+    if (!navigation_handle->IsInPrimaryMainFrame() ||
+        !navigation_handle->HasCommitted()) {
+      return;
+    }
+
     lens_overlay_controller_->CloseUISync(
         lens::LensOverlayDismissalSource::kPageChanged);
   }
