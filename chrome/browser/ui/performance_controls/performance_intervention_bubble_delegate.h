@@ -5,11 +5,14 @@
 #ifndef CHROME_BROWSER_UI_PERFORMANCE_CONTROLS_PERFORMANCE_INTERVENTION_BUBBLE_DELEGATE_H_
 #define CHROME_BROWSER_UI_PERFORMANCE_CONTROLS_PERFORMANCE_INTERVENTION_BUBBLE_DELEGATE_H_
 
+#include <memory>
+
 #include "base/memory/raw_ptr.h"
 #include "ui/base/models/dialog_model.h"
 
 class Browser;
 class PerformanceInterventionBubbleObserver;
+class TabListModel;
 
 // This class is the delegate for the performance intervention bubble dialog
 // that handles the events raised from the dialog.
@@ -17,6 +20,7 @@ class PerformanceInterventionBubbleDelegate : public ui::DialogModelDelegate {
  public:
   PerformanceInterventionBubbleDelegate(
       Browser* browser,
+      std::unique_ptr<TabListModel> tab_list_model,
       PerformanceInterventionBubbleObserver* observer);
 
   ~PerformanceInterventionBubbleDelegate() override;
@@ -34,6 +38,7 @@ class PerformanceInterventionBubbleDelegate : public ui::DialogModelDelegate {
 
  private:
   raw_ptr<Browser> browser_;
+  std::unique_ptr<TabListModel> tab_list_model_;
   const raw_ptr<PerformanceInterventionBubbleObserver> observer_;
 };
 

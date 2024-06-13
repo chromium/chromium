@@ -4,14 +4,21 @@
 
 #include "chrome/browser/ui/performance_controls/performance_intervention_bubble_delegate.h"
 
+#include <memory>
+
 #include "base/check.h"
+#include "chrome/browser/performance_manager/public/user_tuning/performance_detection_manager.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/performance_controls/performance_intervention_bubble_observer.h"
+#include "chrome/browser/ui/performance_controls/tab_list_model.h"
 
 PerformanceInterventionBubbleDelegate::PerformanceInterventionBubbleDelegate(
     Browser* browser,
+    std::unique_ptr<TabListModel> tab_list_model,
     PerformanceInterventionBubbleObserver* observer)
-    : browser_(browser), observer_(observer) {
+    : browser_(browser),
+      tab_list_model_(std::move(tab_list_model)),
+      observer_(observer) {
   CHECK(browser);
 }
 
@@ -36,7 +43,10 @@ void PerformanceInterventionBubbleDelegate::OnDeactivateButtonClicked() {
   // TODO(crbug.com/341138308): Record metrics for when the deactivate button is
   // clicked.
 
-  // TODO(crbug.com/338073040): Discard the selected tabs in the tab list.
-
+  performance_manager::user_tuning::PerformanceDetectionManager* manager =
+      performance_manager::user_tuning::PerformanceDetectionManager::
+          GetInstance();
+  CHECK(manager);
+  manager->DiscardTabs(tab_list_model_->page_contexts());
   observer_->OnDeactivateButtonClicked();
 }

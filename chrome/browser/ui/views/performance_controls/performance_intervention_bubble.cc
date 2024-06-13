@@ -14,7 +14,10 @@
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/performance_controls/performance_intervention_bubble_delegate.h"
 #include "chrome/browser/ui/performance_controls/performance_intervention_bubble_observer.h"
+#include "chrome/browser/ui/performance_controls/performance_intervention_button_controller.h"
+#include "chrome/browser/ui/performance_controls/tab_list_model.h"
 #include "chrome/browser/ui/views/performance_controls/performance_intervention_button.h"
+#include "chrome/browser/ui/views/performance_controls/tab_list_view.h"
 #include "chrome/grit/branded_strings.h"
 #include "chrome/grit/generated_resources.h"
 #include "components/performance_manager/public/features.h"
@@ -38,15 +41,21 @@ DEFINE_CLASS_ELEMENT_IDENTIFIER_VALUE(
 DEFINE_CLASS_ELEMENT_IDENTIFIER_VALUE(
     PerformanceInterventionBubble,
     kPerformanceInterventionDialogDeactivateButton);
+DEFINE_CLASS_ELEMENT_IDENTIFIER_VALUE(PerformanceInterventionBubble,
+                                      kPerformanceInterventionTabList);
 
 // static
 views::BubbleDialogModelHost* PerformanceInterventionBubble::CreateBubble(
     Browser* browser,
     PerformanceInterventionButton* anchor_view,
-    PerformanceInterventionBubbleObserver* observer) {
+    PerformanceInterventionButtonController* button_controller) {
+  auto tab_list_model_unique =
+      std::make_unique<TabListModel>(button_controller->actionable_cpu_tabs());
+  TabListModel* const tab_list_model = tab_list_model_unique.get();
+
   auto bubble_delegate =
-      std::make_unique<PerformanceInterventionBubbleDelegate>(browser,
-                                                              observer);
+      std::make_unique<PerformanceInterventionBubbleDelegate>(
+          browser, std::move(tab_list_model_unique), button_controller);
 
   const DialogStrings strings = GetStrings();
   PerformanceInterventionBubbleDelegate* const delegate = bubble_delegate.get();
@@ -62,6 +71,11 @@ views::BubbleDialogModelHost* PerformanceInterventionBubble::CreateBubble(
                             .set_is_secondary()
                             .set_allow_character_break(),
                         std::u16string(), kPerformanceInterventionDialogBody)
+          .AddCustomField(
+              std::make_unique<views::BubbleDialogModelHost::CustomView>(
+                  std::make_unique<TabListView>(tab_list_model),
+                  views::BubbleDialogModelHost::FieldType::kControl),
+              kPerformanceInterventionTabList)
           .AddOkButton(
               base::BindOnce(&PerformanceInterventionBubbleDelegate::
                                  OnDeactivateButtonClicked,
@@ -84,7 +98,7 @@ views::BubbleDialogModelHost* PerformanceInterventionBubble::CreateBubble(
   auto* const bubble = bubble_unique.get();
 
   views::BubbleDialogDelegate::CreateBubble(std::move(bubble_unique))->Show();
-  observer->OnBubbleShown();
+  button_controller->OnBubbleShown();
 
   return bubble;
 }

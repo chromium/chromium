@@ -2,18 +2,26 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include <memory>
 #include <vector>
 
+#include "base/run_loop.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
+#include "chrome/browser/performance_manager/public/user_tuning/performance_detection_manager.h"
+#include "chrome/browser/resource_coordinator/tab_lifecycle_observer.h"
+#include "chrome/browser/resource_coordinator/tab_lifecycle_unit_external.h"
 #include "chrome/browser/ui/browser_element_identifiers.h"
 #include "chrome/browser/ui/performance_controls/performance_controls_metrics.h"
 #include "chrome/browser/ui/performance_controls/performance_intervention_button_controller.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
 #include "chrome/browser/ui/views/performance_controls/performance_intervention_bubble.h"
 #include "chrome/browser/ui/views/performance_controls/performance_intervention_button.h"
+#include "chrome/browser/ui/views/performance_controls/tab_list_row_view.h"
+#include "chrome/browser/ui/views/performance_controls/tab_list_view.h"
 #include "chrome/browser/ui/views/toolbar/toolbar_view.h"
 #include "chrome/test/base/in_process_browser_test.h"
+#include "chrome/test/interaction/interaction_test_util_browser.h"
 #include "chrome/test/interaction/interactive_browser_test.h"
 #include "chrome/test/user_education/interactive_feature_promo_test.h"
 #include "components/feature_engagement/public/feature_constants.h"
@@ -22,7 +30,9 @@
 #include "content/public/browser/web_contents.h"
 #include "content/public/test/browser_test.h"
 #include "net/dns/mock_host_resolver.h"
+#include "ui/base/interaction/interaction_test_util.h"
 #include "ui/gfx/animation/animation_test_api.h"
+#include "ui/views/interaction/interaction_test_util_views.h"
 #include "ui/views/view.h"
 
 namespace {
@@ -31,6 +41,34 @@ DEFINE_LOCAL_ELEMENT_IDENTIFIER_VALUE(kFirstTab);
 DEFINE_LOCAL_ELEMENT_IDENTIFIER_VALUE(kSecondTab);
 DEFINE_LOCAL_ELEMENT_IDENTIFIER_VALUE(kThirdTab);
 constexpr char kSkipPixelTestsReason[] = "Should only run in pixel_tests.";
+
+class DiscardWaiter : public resource_coordinator::TabLifecycleObserver {
+ public:
+  DiscardWaiter() {
+    run_loop_ = std::make_unique<base::RunLoop>(
+        base::RunLoop::Type::kNestableTasksAllowed);
+    resource_coordinator::TabLifecycleUnitExternal::AddTabLifecycleObserver(
+        this);
+  }
+
+  ~DiscardWaiter() override {
+    resource_coordinator::TabLifecycleUnitExternal::RemoveTabLifecycleObserver(
+        this);
+  }
+
+  void Wait() { run_loop_->Run(); }
+
+  void OnDiscardedStateChange(content::WebContents* contents,
+                              LifecycleUnitDiscardReason reason,
+                              bool is_discarded) override {
+    if (is_discarded) {
+      run_loop_->Quit();
+    }
+  }
+
+ private:
+  std::unique_ptr<base::RunLoop> run_loop_;
+};
 
 }  // namespace
 
@@ -97,6 +135,14 @@ class PerformanceInterventionInteractiveTest
       browser()->tab_strip_model()->CloseWebContentsAt(
           index, TabCloseTypes::CLOSE_NONE);
     }));
+  }
+
+  auto CheckTabDiscardStatus(int index, bool discarded) {
+    return Check([=]() {
+      TabStripModel* const tab_strip_model = browser()->tab_strip_model();
+      return tab_strip_model->GetWebContentsAt(index)->WasDiscarded() ==
+             discarded;
+    });
   }
 
  private:
@@ -307,6 +353,53 @@ IN_PROC_BROWSER_TEST_F(PerformanceInterventionInteractiveTest,
       WaitForHide(
           PerformanceInterventionBubble::kPerformanceInterventionDialogBody),
       WaitForHide(kToolbarPerformanceInterventionButtonElementId));
+}
+
+// The dialog should discard tabs suggested in the tab list
+IN_PROC_BROWSER_TEST_F(PerformanceInterventionInteractiveTest,
+                       TakeSuggestedAction) {
+  auto waiter = std::make_unique<DiscardWaiter>();
+  RunTestSequence(
+      AddInstrumentedTab(kSecondTab, GetURL()),
+      AddInstrumentedTab(kThirdTab, GetURL()), SelectTab(kTabStripElementId, 0),
+      TriggerOnActionableTabListChange({1, 2}),
+      WaitForShow(kToolbarPerformanceInterventionButtonElementId),
+      WaitForShow(PerformanceInterventionBubble::
+                      kPerformanceInterventionDialogDeactivateButton),
+      FlushEvents(),
+      PressButton(PerformanceInterventionBubble::
+                      kPerformanceInterventionDialogDeactivateButton),
+      Do([&]() { waiter->Wait(); }), CheckTabDiscardStatus(0, false),
+      CheckTabDiscardStatus(1, true), CheckTabDiscardStatus(2, true));
+}
+
+// The dialog should discard tabs suggested in the tab list
+IN_PROC_BROWSER_TEST_F(PerformanceInterventionInteractiveTest,
+                       RemoveSuggestedTabFromLIst) {
+  const char kSuggestedCloseButton[] = "SuggestedCloseButton";
+  auto waiter = std::make_unique<DiscardWaiter>();
+
+  RunTestSequence(
+      AddInstrumentedTab(kSecondTab, GetURL()),
+      AddInstrumentedTab(kThirdTab, GetURL()), SelectTab(kTabStripElementId, 0),
+      TriggerOnActionableTabListChange({1, 2}),
+      WaitForShow(kToolbarPerformanceInterventionButtonElementId),
+      WaitForShow(
+          PerformanceInterventionBubble::kPerformanceInterventionTabList),
+      NameViewRelative(
+          PerformanceInterventionBubble::kPerformanceInterventionTabList,
+          kSuggestedCloseButton,
+          [](TabListView* tab_list) {
+            TabListRowView* const first_row =
+                views::AsViewClass<TabListRowView>(tab_list->children()[0]);
+            return first_row->GetCloseButtonForTesting();
+          }),
+      PressButton(kSuggestedCloseButton), WaitForHide(kSuggestedCloseButton),
+      FlushEvents(),
+      PressButton(PerformanceInterventionBubble::
+                      kPerformanceInterventionDialogDeactivateButton),
+      Do([&]() { waiter->Wait(); }), CheckTabDiscardStatus(0, false),
+      CheckTabDiscardStatus(1, false), CheckTabDiscardStatus(2, true));
 }
 
 class PerformanceInterventionNonUiMetricsTest

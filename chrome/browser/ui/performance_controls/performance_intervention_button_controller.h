@@ -56,6 +56,10 @@ class PerformanceInterventionButtonController
   void OnBubbleHidden() override;
   void OnDeactivateButtonClicked() override;
 
+  PerformanceDetectionManager::ActionableTabsResult actionable_cpu_tabs() {
+    return actionable_cpu_tabs_;
+  }
+
  private:
   void HideToolbarButton();
 
