@@ -182,6 +182,29 @@ scoped_refptr<Extension> ManifestTest::LoadAndExpectWarning(
 }
 
 scoped_refptr<Extension> ManifestTest::LoadAndExpectWarnings(
+    const ManifestData& manifest,
+    const std::vector<std::string>& expected_warnings,
+    ManifestLocation location,
+    int flags) {
+  std::string error;
+  scoped_refptr<Extension> extension =
+      LoadExtension(manifest, &error, location, flags);
+  EXPECT_TRUE(extension) << manifest.name();
+  EXPECT_EQ(std::string(), error) << manifest.name();
+  EXPECT_EQ(expected_warnings.size(), extension->install_warnings().size());
+
+  std::vector<std::string> warning_messages;
+  warning_messages.reserve(extension->install_warnings().size());
+  for (const auto& warning : extension->install_warnings()) {
+    warning_messages.push_back(warning.message);
+  }
+
+  EXPECT_THAT(warning_messages,
+              testing::UnorderedElementsAreArray(expected_warnings));
+  return extension;
+}
+
+scoped_refptr<Extension> ManifestTest::LoadAndExpectWarnings(
     char const* manifest_name,
     const std::vector<std::string>& expected_warnings,
     ManifestLocation location,

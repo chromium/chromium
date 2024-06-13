@@ -100,6 +100,12 @@ class ManifestTest : public testing::Test {
       mojom::ManifestLocation location = mojom::ManifestLocation::kInternal,
       int flags = extensions::Extension::NO_FLAGS);
 
+  scoped_refptr<Extension> LoadAndExpectWarnings(
+      const ManifestData& manifest,
+      const std::vector<std::string>& expected_warnings,
+      mojom::ManifestLocation location = mojom::ManifestLocation::kInternal,
+      int flags = extensions::Extension::NO_FLAGS);
+
   scoped_refptr<extensions::Extension> LoadAndExpectWarnings(
       char const* manifest_name,
       const std::vector<std::string>& expected_warnings,
