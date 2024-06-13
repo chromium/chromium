@@ -5,11 +5,12 @@
 #ifndef SERVICES_WEBNN_DML_BUFFER_IMPL_DML_H_
 #define SERVICES_WEBNN_DML_BUFFER_IMPL_DML_H_
 
-#include <d3d12.h>
-#include <wrl.h>
-
 #include "services/webnn/public/mojom/webnn_buffer.mojom-forward.h"
 #include "services/webnn/webnn_buffer_impl.h"
+#include "third_party/microsoft_dxheaders/src/include/directx/d3d12.h"
+
+// Windows SDK headers should be included after DirectX headers.
+#include <wrl.h>
 
 namespace webnn::dml {
 

@@ -5,9 +5,6 @@
 #ifndef SERVICES_WEBNN_DML_COMMAND_QUEUE_H_
 #define SERVICES_WEBNN_DML_COMMAND_QUEUE_H_
 
-#include <d3d12.h>
-#include <wrl.h>
-
 #include <deque>
 #include <vector>
 
@@ -19,6 +16,10 @@
 #include "base/sequence_checker.h"
 #include "base/win/object_watcher.h"
 #include "base/win/scoped_handle.h"
+#include "third_party/microsoft_dxheaders/src/include/directx/d3d12.h"
+
+// Windows SDK headers should be included after DirectX headers.
+#include <wrl.h>
 
 namespace webnn::dml {
 

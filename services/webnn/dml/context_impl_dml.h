@@ -5,12 +5,11 @@
 #ifndef SERVICES_WEBNN_DML_CONTEXT_IMPL_DML_H_
 #define SERVICES_WEBNN_DML_CONTEXT_IMPL_DML_H_
 
-#include <d3d12.h>
-
 #include "base/memory/scoped_refptr.h"
 #include "gpu/config/gpu_feature_info.h"
 #include "services/webnn/public/mojom/webnn_buffer.mojom-forward.h"
 #include "services/webnn/webnn_context_impl.h"
+#include "third_party/microsoft_dxheaders/src/include/directx/d3d12.h"
 
 namespace webnn::dml {
 
