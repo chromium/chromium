@@ -50,6 +50,9 @@ typedef uint32_t MojoPlatformHandleType;
 // opaquely of type |mach_port_t|). Only usable on macOS hosts.
 #define MOJO_PLATFORM_HANDLE_TYPE_MACH_RECEIVE_RIGHT ((MojoPlatformHandleType)5)
 
+// An Android IBinder reference.
+#define MOJO_PLATFORM_HANDLE_TYPE_BINDER ((MojoPlatformHandleType)6)
+
 // |MojoPlatformHandle|: A handle to a native platform object.
 //
 //     |uint32_t struct_size|: The size of this structure. Used for versioning

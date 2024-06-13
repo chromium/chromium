@@ -32,6 +32,10 @@
 #include "base/files/scoped_file.h"
 #endif
 
+#if BUILDFLAG(IS_ANDROID)
+#include "base/android/binder.h"
+#endif
+
 namespace mojo {
 
 namespace {
@@ -123,6 +127,11 @@ PlatformHandle::PlatformHandle(base::ScopedFD fd)
 }
 #endif
 
+#if BUILDFLAG(IS_ANDROID)
+PlatformHandle::PlatformHandle(base::android::BinderRef binder)
+    : type_(Type::kBinder), binder_(std::move(binder)) {}
+#endif
+
 PlatformHandle::~PlatformHandle() = default;
 
 PlatformHandle& PlatformHandle::operator=(PlatformHandle&& other) {
@@ -142,6 +151,9 @@ PlatformHandle& PlatformHandle::operator=(PlatformHandle&& other) {
   fd_ = std::move(other.fd_);
 #endif
 
+#if BUILDFLAG(IS_ANDROID)
+  binder_ = std::move(other.binder_);
+#endif
   return *this;
 }
 
@@ -178,6 +190,14 @@ void PlatformHandle::ToMojoPlatformHandle(PlatformHandle handle,
       out_handle->value =
           static_cast<uint64_t>(handle.ReleaseMachReceiveRight());
       break;
+    }
+#endif
+
+#if BUILDFLAG(IS_ANDROID)
+    if (handle.type_ == Type::kBinder) {
+      out_handle->type = MOJO_PLATFORM_HANDLE_TYPE_BINDER;
+      out_handle->value = reinterpret_cast<uint64_t>(handle.binder_.release());
+      return;
     }
 #endif
 
@@ -218,6 +238,13 @@ PlatformHandle PlatformHandle::FromMojoPlatformHandle(
   }
 #endif
 
+#if BUILDFLAG(IS_ANDROID)
+  if (handle->type == MOJO_PLATFORM_HANDLE_TYPE_BINDER) {
+    return PlatformHandle(
+        base::android::BinderRef(reinterpret_cast<AIBinder*>(handle->value)));
+  }
+#endif
+
 #if BUILDFLAG(IS_POSIX) || BUILDFLAG(IS_FUCHSIA)
   if (handle->type != MOJO_PLATFORM_HANDLE_TYPE_FILE_DESCRIPTOR)
     return PlatformHandle();
@@ -240,6 +267,10 @@ void PlatformHandle::reset() {
 #if BUILDFLAG(IS_POSIX) || BUILDFLAG(IS_FUCHSIA)
   fd_.reset();
 #endif
+
+#if BUILDFLAG(IS_ANDROID)
+  binder_.reset();
+#endif
 }
 
 void PlatformHandle::release() {
@@ -257,6 +288,10 @@ void PlatformHandle::release() {
 #if BUILDFLAG(IS_POSIX) || BUILDFLAG(IS_FUCHSIA)
   std::ignore = fd_.release();
 #endif
+
+#if BUILDFLAG(IS_ANDROID)
+  std::ignore = binder_.release();
+#endif
 }
 
 PlatformHandle PlatformHandle::Clone() const {
@@ -272,6 +307,11 @@ PlatformHandle PlatformHandle::Clone() const {
   CHECK(!is_valid_mach_receive()) << "Cannot clone Mach receive rights";
   return PlatformHandle(CloneFD(fd_));
 #elif BUILDFLAG(IS_POSIX)
+#if BUILDFLAG(IS_ANDROID)
+  if (is_valid_binder()) {
+    return PlatformHandle(binder_);
+  }
+#endif
   return PlatformHandle(CloneFD(fd_));
 #endif
 }

@@ -39,6 +39,8 @@ class COMPONENT_EXPORT(MOJO_CPP_PLATFORM) PlatformChannel {
   using HandlePassingInfo = PlatformChannelEndpoint::HandlePassingInfo;
 
   PlatformChannel();
+  PlatformChannel(PlatformChannelEndpoint local,
+                  PlatformChannelEndpoint remote);
   PlatformChannel(PlatformChannel&& other);
   PlatformChannel& operator=(PlatformChannel&& other);
   ~PlatformChannel();

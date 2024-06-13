@@ -23,6 +23,10 @@
 #include "base/files/scoped_file.h"
 #endif
 
+#if BUILDFLAG(IS_ANDROID)
+#include "base/android/binder.h"
+#endif
+
 namespace mojo {
 
 // A PlatformHandle is a generic wrapper around a platform-specific system
@@ -52,6 +56,9 @@ class COMPONENT_EXPORT(MOJO_CPP_PLATFORM) PlatformHandle {
 #if BUILDFLAG(IS_POSIX) || BUILDFLAG(IS_FUCHSIA)
     kFd,
 #endif
+#if BUILDFLAG(IS_ANDROID)
+    kBinder,
+#endif
   };
 
   PlatformHandle();
@@ -68,6 +75,10 @@ class COMPONENT_EXPORT(MOJO_CPP_PLATFORM) PlatformHandle {
 
 #if BUILDFLAG(IS_POSIX) || BUILDFLAG(IS_FUCHSIA)
   explicit PlatformHandle(base::ScopedFD fd);
+#endif
+
+#if BUILDFLAG(IS_ANDROID)
+  explicit PlatformHandle(base::android::BinderRef binder);
 #endif
 
   PlatformHandle(const PlatformHandle&) = delete;
@@ -165,6 +176,8 @@ class COMPONENT_EXPORT(MOJO_CPP_PLATFORM) PlatformHandle {
   [[nodiscard]] mach_port_t ReleaseMachReceiveRight() {
     return TakeMachReceiveRight().release();
   }
+#elif BUILDFLAG(IS_ANDROID)
+  bool is_valid() const { return is_valid_fd() || is_valid_binder(); }
 #elif BUILDFLAG(IS_POSIX)
   bool is_valid() const { return is_valid_fd(); }
 #else
@@ -184,6 +197,18 @@ class COMPONENT_EXPORT(MOJO_CPP_PLATFORM) PlatformHandle {
     if (type_ == Type::kFd)
       type_ = Type::kNone;
     return fd_.release();
+  }
+#endif
+
+#if BUILDFLAG(IS_ANDROID)
+  bool is_valid_binder() const { return !!binder_; }
+  bool is_binder() const { return type_ == Type::kBinder; }
+  const base::android::BinderRef& GetBinder() const { return binder_; }
+  base::android::BinderRef TakeBinder() {
+    if (type_ == Type::kBinder) {
+      type_ = Type::kNone;
+    }
+    return std::move(binder_);
   }
 #endif
 
@@ -229,6 +254,9 @@ class COMPONENT_EXPORT(MOJO_CPP_PLATFORM) PlatformHandle {
 
 #if BUILDFLAG(IS_POSIX) || BUILDFLAG(IS_FUCHSIA)
   base::ScopedFD fd_;
+#endif
+#if BUILDFLAG(IS_ANDROID)
+  base::android::BinderRef binder_;
 #endif
 };
 

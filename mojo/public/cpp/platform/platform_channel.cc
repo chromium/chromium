@@ -164,6 +164,10 @@ PlatformChannel::PlatformChannel() {
   remote_endpoint_ = PlatformChannelEndpoint(std::move(remote_handle));
 }
 
+PlatformChannel::PlatformChannel(PlatformChannelEndpoint local,
+                                 PlatformChannelEndpoint remote)
+    : local_endpoint_(std::move(local)), remote_endpoint_(std::move(remote)) {}
+
 PlatformChannel::PlatformChannel(PlatformChannel&& other) = default;
 
 PlatformChannel& PlatformChannel::operator=(PlatformChannel&& other) = default;

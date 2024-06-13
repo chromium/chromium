@@ -19,6 +19,8 @@
 #include "base/test/bind.h"
 #include "base/test/multiprocess_test.h"
 #include "base/test/test_timeouts.h"
+#include "mojo/public/cpp/platform/platform_channel.h"
+#include "mojo/public/cpp/platform/platform_channel_endpoint.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "testing/multiprocess_func_list.h"
 
@@ -252,6 +254,34 @@ TEST_F(BinderExchangeTest, InvalidExchange) {
   EXPECT_FALSE(
       ExchangeBinders(exchange1, channel1->GetBinder(), base::DoNothing())
           .has_value());
+}
+
+TEST_F(BinderExchangeTest, PlatformChannelPassing) {
+  auto channel = base::MakeRefCounted<TestChannel>();
+  auto [exchange0, exchange1] = CreateBinderExchange();
+  PlatformChannel platform_channel(
+      PlatformChannelEndpoint(PlatformHandle(std::move(exchange0))),
+      PlatformChannelEndpoint(PlatformHandle(std::move(exchange1))));
+  EXPECT_TRUE(channel->DoExchange(
+      platform_channel.TakeLocalEndpoint().TakePlatformHandle().TakeBinder()));
+  base::CommandLine cmd = base::GetMultiProcessTestChildBaseCommandLine();
+  base::LaunchOptions options;
+  platform_channel.PrepareToPassRemoteEndpoint(&options, &cmd);
+  auto child = base::SpawnMultiProcessTestChild("PlatformChannelPassing_Child",
+                                                cmd, options);
+  EXPECT_TRUE(channel->SendInt(999));
+  EXPECT_EQ(99999, channel->WaitToReceiveInt());
+  EXPECT_TRUE(JoinChild(child));
+}
+
+MULTIPROCESS_TEST_MAIN(PlatformChannelPassing_Child) {
+  auto channel = base::MakeRefCounted<TestChannel>();
+  auto endpoint = PlatformChannel::RecoverPassedEndpointFromCommandLine(
+      *base::CommandLine::ForCurrentProcess());
+  EXPECT_TRUE(channel->DoExchange(endpoint.TakePlatformHandle().TakeBinder()));
+  EXPECT_TRUE(channel->SendInt(99999));
+  EXPECT_EQ(999, channel->WaitToReceiveInt());
+  RETURN_FROM_CHILD();
 }
 
 }  // namespace
