@@ -111,8 +111,6 @@ BluetoothPairingDialog::BluetoothPairingDialog(
   std::optional<std::string> args = base::WriteJson(device_data);
   CHECK(args.has_value());
   set_dialog_args(*args);
-
-  set_web_view_element_id(kBluetoothPairingDialogElementId);
 }
 
 BluetoothPairingDialog::~BluetoothPairingDialog() = default;
@@ -127,9 +125,6 @@ void BluetoothPairingDialog::AdjustWidgetInitParams(
   params->shadow_type = views::Widget::InitParams::ShadowType::kDrop;
   params->shadow_elevation = wm::kShadowElevationActiveWindow;
 }
-
-DEFINE_CLASS_ELEMENT_IDENTIFIER_VALUE(BluetoothPairingDialog,
-                                      kBluetoothPairingDialogElementId);
 
 // BluetoothPairingUI
 
