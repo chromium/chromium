@@ -404,6 +404,18 @@ void SetFlags(IsolateHolder::ScriptMode mode,
                          "--intel-jcc-erratum-mitigation",
                          "--no-intel-jcc-erratum-mitigation");
 
+  SetV8FlagsIfOverridden(features::kV8UpdateLimitAfterLoading,
+                         "--update-allocation-limits-after-loading",
+                         "--no-update-allocation-limits-after-loading");
+
+  SetV8FlagsIfOverridden(features::kV8UseLibmTrigFunctions,
+                         "--use-libm-trig-functions",
+                         "--no-use-libm-trig-functions");
+
+  SetV8FlagsIfOverridden(features::kV8UseOriginalMessageForStackTrace,
+                         "--use-original-message-for-stack-trace",
+                         "--no-use-original-message-for-stack-trace");
+
   // JavaScript language features.
   SetV8FlagsIfOverridden(features::kJavaScriptIteratorHelpers,
                          "--harmony-iterator-helpers",
@@ -428,14 +440,6 @@ void SetFlags(IsolateHolder::ScriptMode mode,
   if (IsolateHolder::kStrictMode == mode) {
     SetV8Flags("--use_strict");
   }
-
-  SetV8FlagsIfOverridden(features::kV8UseLibmTrigFunctions,
-                         "--use-libm-trig-functions",
-                         "--no-use-libm-trig-functions");
-
-  SetV8FlagsIfOverridden(features::kV8UseOriginalMessageForStackTrace,
-                         "--use-original-message-for-stack-trace",
-                         "--no-use-original-message-for-stack-trace");
 
   SetV8FlagsIfOverridden(features::kJavaScriptCompileHintsMagic,
                          "--compile-hints-magic", "--no-compile-hints-magic");
