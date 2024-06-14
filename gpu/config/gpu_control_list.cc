@@ -431,6 +431,9 @@ bool GpuControlList::Conditions::Contains(OsType target_os_type,
     case kMultiGpuCategorySecondary:
       candidates = gpu_info.secondary_gpus;
       break;
+    case kMultiGpuCategoryNpu:
+      candidates = gpu_info.npus;
+      break;
     case kMultiGpuCategoryAny:
       candidates = gpu_info.secondary_gpus;
       candidates.push_back(gpu_info.gpu);

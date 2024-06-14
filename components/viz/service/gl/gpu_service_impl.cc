@@ -924,7 +924,7 @@ void GpuServiceImpl::BindWebNNContextProvider(
   }
   owned_webnn_context_provider_manager_->CreateWebNNContextProviderImpl(
       client_id, std::move(pending_receiver), GetContextState(),
-      gpu_feature_info_);
+      gpu_feature_info_, gpu_info_);
 }
 #endif  // !BUILDFLAG(IS_CHROMEOS)
 

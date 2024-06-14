@@ -288,6 +288,11 @@ struct GPU_EXPORT StructTraits<gpu::mojom::GpuInfoDataView, gpu::GPUInfo> {
     return input.secondary_gpus;
   }
 
+  static const std::vector<gpu::GPUInfo::GPUDevice>& npus(
+      const gpu::GPUInfo& input) {
+    return input.npus;
+  }
+
   static const std::string& pixel_shader_version(const gpu::GPUInfo& input) {
     return input.pixel_shader_version;
   }

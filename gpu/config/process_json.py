@@ -407,6 +407,7 @@ def write_multi_gpu_category(multi_gpu_category, data_file):
   suffix_for_category = {
     'primary': 'Primary',
     'secondary': 'Secondary',
+    'npu': 'Npu',
     'active': 'Active',
     'any': 'Any',
     '': 'None',

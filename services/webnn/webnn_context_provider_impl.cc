@@ -107,17 +107,21 @@ WebNNContextProviderImpl::WebNNContextProviderImpl() = default;
 #else
 WebNNContextProviderImpl::WebNNContextProviderImpl(
     scoped_refptr<gpu::SharedContextState> shared_context_state,
-    gpu::GpuFeatureInfo gpu_feature_info)
+    gpu::GpuFeatureInfo gpu_feature_info,
+    gpu::GPUInfo gpu_info)
     : shared_context_state_(std::move(shared_context_state)),
-      gpu_feature_info_(std::move(gpu_feature_info)) {}
+      gpu_feature_info_(std::move(gpu_feature_info)),
+      gpu_info_(std::move(gpu_info)) {}
 
 WebNNContextProviderImpl::WebNNContextProviderImpl(
     mojo::PendingReceiver<WebNNContextProvider> receiver,
     base::OnceClosure on_disconnect_handler,
     scoped_refptr<gpu::SharedContextState> shared_context_state,
-    gpu::GpuFeatureInfo gpu_feature_info)
+    gpu::GpuFeatureInfo gpu_feature_info,
+    gpu::GPUInfo gpu_info)
     : shared_context_state_(std::move(shared_context_state)),
-      gpu_feature_info_(std::move(gpu_feature_info)) {
+      gpu_feature_info_(std::move(gpu_feature_info)),
+      gpu_info_(std::move(gpu_info)) {
   receiver_.emplace(this, std::move(receiver));
   receiver_->set_disconnect_handler(std::move(on_disconnect_handler));
 }
@@ -139,11 +143,13 @@ std::unique_ptr<WebNNContextProviderImpl> WebNNContextProviderImpl::Create(
     mojo::PendingReceiver<WebNNContextProvider> receiver,
     base::OnceClosure on_disconnect_handler,
     scoped_refptr<gpu::SharedContextState> shared_context_state,
-    gpu::GpuFeatureInfo gpu_feature_info) {
+    gpu::GpuFeatureInfo gpu_feature_info,
+    gpu::GPUInfo gpu_info) {
   CHECK_NE(shared_context_state, nullptr);
   return base::WrapUnique(new WebNNContextProviderImpl(
       std::move(receiver), std::move(on_disconnect_handler),
-      std::move(shared_context_state), std::move(gpu_feature_info)));
+      std::move(shared_context_state), std::move(gpu_feature_info),
+      std::move(gpu_info)));
 }
 #endif
 
@@ -159,6 +165,7 @@ void WebNNContextProviderImpl::CreateForTesting(
   WebNNContextProviderImpl::Create(std::move(receiver));
 #else
   gpu::GpuFeatureInfo gpu_feature_info;
+  gpu::GPUInfo gpu_info;
   for (auto& status : gpu_feature_info.status_values) {
     status = gpu::GpuFeatureStatus::kGpuFeatureStatusDisabled;
   }
@@ -168,7 +175,8 @@ void WebNNContextProviderImpl::CreateForTesting(
 
   mojo::MakeSelfOwnedReceiver<WebNNContextProvider>(
       base::WrapUnique(new WebNNContextProviderImpl(
-          /*shared_context_state=*/nullptr, std::move(gpu_feature_info))),
+          /*shared_context_state=*/nullptr, std::move(gpu_feature_info),
+          std::move(gpu_info))),
       std::move(receiver));
 #endif  // BUILDFLAG(IS_CHROMEOS)
 }
@@ -223,8 +231,8 @@ void WebNNContextProviderImpl::CreateWebNNContext(
         adapter_creation_result = GetDmlGpuAdapter(shared_context_state_.get());
         break;
       case mojom::CreateContextOptions::Device::kNpu:
-        adapter_creation_result =
-            dml::Adapter::GetNpuInstance(kMinDMLFeatureLevelForWebNN);
+        adapter_creation_result = dml::Adapter::GetNpuInstance(
+            kMinDMLFeatureLevelForWebNN, gpu_feature_info_, gpu_info_);
         break;
     }
     if (!adapter_creation_result.has_value()) {

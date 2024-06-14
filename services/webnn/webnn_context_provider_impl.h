@@ -11,6 +11,7 @@
 #include "base/component_export.h"
 #include "gpu/command_buffer/service/shared_context_state.h"
 #include "gpu/config/gpu_feature_info.h"
+#include "gpu/config/gpu_info.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/receiver.h"
 #include "services/webnn/public/mojom/webnn_context_provider.mojom.h"
@@ -40,7 +41,8 @@ class COMPONENT_EXPORT(WEBNN_SERVICE) WebNNContextProviderImpl
       mojo::PendingReceiver<mojom::WebNNContextProvider> receiver,
       base::OnceClosure on_disconnect_handler,
       scoped_refptr<gpu::SharedContextState> shared_context_state,
-      gpu::GpuFeatureInfo gpu_feature_info);
+      gpu::GpuFeatureInfo gpu_feature_info,
+      gpu::GPUInfo gpu_info);
 #endif
 
   static void CreateForTesting(
@@ -70,13 +72,15 @@ class COMPONENT_EXPORT(WEBNN_SERVICE) WebNNContextProviderImpl
 #else
   WebNNContextProviderImpl(
       scoped_refptr<gpu::SharedContextState> shared_context_state,
-      gpu::GpuFeatureInfo gpu_feature_info);
+      gpu::GpuFeatureInfo gpu_feature_info,
+      gpu::GPUInfo gpu_info);
 
   WebNNContextProviderImpl(
       mojo::PendingReceiver<WebNNContextProvider> receiver,
       base::OnceClosure on_disconnect_handler,
       scoped_refptr<gpu::SharedContextState> shared_context_state,
-      gpu::GpuFeatureInfo gpu_feature_info);
+      gpu::GpuFeatureInfo gpu_feature_info,
+      gpu::GPUInfo gpu_info);
 #endif
 
   // mojom::WebNNContextProvider
@@ -86,6 +90,7 @@ class COMPONENT_EXPORT(WEBNN_SERVICE) WebNNContextProviderImpl
   std::vector<std::unique_ptr<WebNNContextImpl>> impls_;
   scoped_refptr<gpu::SharedContextState> shared_context_state_;
   const gpu::GpuFeatureInfo gpu_feature_info_;
+  const gpu::GPUInfo gpu_info_;
 
 #if !BUILDFLAG(IS_CHROMEOS)
   std::optional<mojo::Receiver<mojom::WebNNContextProvider>> receiver_;

@@ -67,6 +67,8 @@ class GPU_EXPORT GpuControlList {
     kMultiGpuCategoryPrimary,
     // This entry applies if this is a secondary GPU on the system.
     kMultiGpuCategorySecondary,
+    // This entry applies if this is the NPU on the system.
+    kMultiGpuCategoryNpu,
     // This entry applies if this is the active GPU on the system.
     kMultiGpuCategoryActive,
     // This entry applies if this is any of the GPUs on the system.

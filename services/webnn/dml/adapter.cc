@@ -10,6 +10,8 @@
 
 #include "base/check_is_test.h"
 #include "base/logging.h"
+#include "gpu/config/gpu_driver_bug_workaround_type.h"
+#include "gpu/config/gpu_info_collector.h"
 #include "services/webnn/dml/command_queue.h"
 #include "services/webnn/dml/error.h"
 #include "services/webnn/dml/platform_functions.h"
@@ -82,8 +84,26 @@ Adapter::GetInstanceForTesting(
 }
 
 // static
-base::expected<scoped_refptr<Adapter>, mojom::ErrorPtr> Adapter::GetNpuInstance(
+base::expected<scoped_refptr<Adapter>, mojom::ErrorPtr>
+Adapter::GetNpuInstanceForTesting(
     DML_FEATURE_LEVEL min_required_dml_feature_level) {
+  CHECK_IS_TEST();
+  gpu::GpuFeatureInfo gpu_feature_info;
+  gpu::GPUInfo gpu_info;
+  gpu::CollectBasicGraphicsInfo(&gpu_info);
+  return GetNpuInstance(DML_FEATURE_LEVEL_4_0, gpu_feature_info, gpu_info);
+}
+
+// static
+base::expected<scoped_refptr<Adapter>, mojom::ErrorPtr> Adapter::GetNpuInstance(
+    DML_FEATURE_LEVEL min_required_dml_feature_level,
+    const gpu::GpuFeatureInfo& gpu_feature_info,
+    const gpu::GPUInfo& gpu_info) {
+  if (gpu_feature_info.IsWorkaroundEnabled(gpu::DISABLE_WEBNN_FOR_NPU)) {
+    return HandleAdapterFailure(mojom::Error::Code::kNotSupportedError,
+                                "WebNN is blocklisted for NPU.");
+  }
+
   // If the `Adapter` instance is created, add a reference and return it.
   if (npu_instance_) {
     if (!npu_instance_->IsDMLFeatureLevelSupported(
@@ -95,7 +115,8 @@ base::expected<scoped_refptr<Adapter>, mojom::ErrorPtr> Adapter::GetNpuInstance(
     return base::WrapRefCounted(npu_instance_);
   }
 
-  // Otherwise, enumerate all dxcore adapters to select the npu adapter.
+  // Otherwise, pick the first instance in the list of NPU devices collected in
+  // GPUInfo, using its LUID to get the adapter.
   PlatformFunctions* platform_functions = PlatformFunctions::GetInstance();
   if (!platform_functions || !platform_functions->IsDXCoreSupported()) {
     return HandleAdapterFailure(mojom::Error::Code::kNotSupportedError,
@@ -118,72 +139,21 @@ base::expected<scoped_refptr<Adapter>, mojom::ErrorPtr> Adapter::GetNpuInstance(
     return HandleAdapterFailure(mojom::Error::Code::kUnknownError,
                                 "Failed to create adapter factory.", hr);
   }
-
-  // First query for NPU devices that satisfy the generic machine learning
-  // property. Note this must be done as a separate query from core compute
-  // because `CreateAdapterList()` returns the logical intersection of all
-  // filter properties, not union.
-  const std::array<GUID, 1> dx_guids_generic_ml = {
-      DXCORE_ADAPTER_ATTRIBUTE_D3D12_GENERIC_ML};
-  Microsoft::WRL::ComPtr<IDXCoreAdapterList> adapter_list;
-  hr = dxcore_factory->CreateAdapterList(dx_guids_generic_ml.size(),
-                                         dx_guids_generic_ml.data(),
-                                         IID_PPV_ARGS(&adapter_list));
-  if (FAILED(hr)) {
-    return HandleAdapterFailure(mojom::Error::Code::kUnknownError,
-                                "Failed to create adapter list.", hr);
-  }
-  uint32_t adapter_count = adapter_list->GetAdapterCount();
-
-  // If no generic ML devices were found, then retry with the core compute
-  // filter, getting an adapter list that only contains core-compute capable
-  // devices.
-  if (adapter_count == 0) {
-    adapter_list.Reset();
-
-    const std::array<GUID, 1> dx_guids_core_compute = {
-        DXCORE_ADAPTER_ATTRIBUTE_D3D12_CORE_COMPUTE};
-    hr = dxcore_factory->CreateAdapterList(dx_guids_core_compute.size(),
-                                           dx_guids_core_compute.data(),
-                                           IID_PPV_ARGS(&adapter_list));
-    if (FAILED(hr)) {
-      return HandleAdapterFailure(mojom::Error::Code::kUnknownError,
-                                  "Failed to create adapter list.", hr);
-    }
-    adapter_count = adapter_list->GetAdapterCount();
-  }
-
-  Microsoft::WRL::ComPtr<IDXCoreAdapter> dxcore_npu_adapter;
-  for (uint32_t adapter_index = 0; adapter_index < adapter_count;
-       ++adapter_index) {
-    Microsoft::WRL::ComPtr<IDXCoreAdapter> dxcore_adapter;
-    hr = adapter_list->GetAdapter(adapter_index, IID_PPV_ARGS(&dxcore_adapter));
-    if (FAILED(hr)) {
-      return HandleAdapterFailure(mojom::Error::Code::kUnknownError,
-                                  "Failed to get DXCore adapter.", hr);
-    }
-
-    // Because GPUs usually also have the core-compute capability, then we need
-    // to filter out the GPUs with `DXCORE_ADAPTER_ATTRIBUTE_D3D12_GRAPHICS` or
-    // `DXCORE_ADAPTER_ATTRIBUTE_D3D11_GRAPHICS` attribute to just get the first
-    // NPU.
-    bool is_hardware;
-    if (SUCCEEDED(dxcore_adapter->GetProperty(DXCoreAdapterProperty::IsHardware,
-                                              &is_hardware)) &&
-        is_hardware &&
-        !dxcore_adapter->IsAttributeSupported(
-            DXCORE_ADAPTER_ATTRIBUTE_D3D12_GRAPHICS) &&
-        !dxcore_adapter->IsAttributeSupported(
-            DXCORE_ADAPTER_ATTRIBUTE_D3D11_GRAPHICS)) {
-      dxcore_npu_adapter = std::move(dxcore_adapter);
-      break;
-    }
-  }
-
-  if (!dxcore_npu_adapter) {
+  // Make sure there is at least one entry in the list.
+  if (gpu_info.npus.size() < 1) {
     return HandleAdapterFailure(mojom::Error::Code::kUnknownError,
                                 "Unable to find a capable adapter.");
   }
+  CHROME_LUID chrome_luid = gpu_info.npus[0].luid;
+  LUID luid(chrome_luid.LowPart, chrome_luid.HighPart);
+  Microsoft::WRL::ComPtr<IDXCoreAdapter> dxcore_npu_adapter;
+  hr =
+      dxcore_factory->GetAdapterByLuid(luid, IID_PPV_ARGS(&dxcore_npu_adapter));
+  if (FAILED(hr)) {
+    return HandleAdapterFailure(mojom::Error::Code::kUnknownError,
+                                "Unable to find a capable adapter.", hr);
+  }
+
   return Adapter::Create(std::move(dxcore_npu_adapter),
                          min_required_dml_feature_level);
 }

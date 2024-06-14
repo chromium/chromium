@@ -10,6 +10,8 @@
 #include "base/memory/ref_counted.h"
 #include "base/task/thread_pool.h"
 #include "base/types/expected.h"
+#include "gpu/config/gpu_feature_info.h"
+#include "gpu/config/gpu_info.h"
 #include "services/webnn/dml/error.h"
 #include "services/webnn/public/mojom/webnn_context_provider.mojom.h"
 #include "third_party/microsoft_dxheaders/include/directml.h"
@@ -50,8 +52,13 @@ class COMPONENT_EXPORT(WEBNN_SERVICE) Adapter final
 
   // Similar to the `GetGpuInstance` method above, get the shared
   // `Adapter` instance for NPU.
+  static base::expected<scoped_refptr<Adapter>, mojom::ErrorPtr>
+  GetNpuInstanceForTesting(DML_FEATURE_LEVEL min_required_dml_feature_level);
+
   static base::expected<scoped_refptr<Adapter>, mojom::ErrorPtr> GetNpuInstance(
-      DML_FEATURE_LEVEL min_required_dml_feature_level);
+      DML_FEATURE_LEVEL min_required_dml_feature_level,
+      const gpu::GpuFeatureInfo& gpu_feature_info,
+      const gpu::GPUInfo& gpu_info);
 
   // Same as GetGpuInstance() but use the first enumerated DXGI adapter. The
   // minimum required feature level is DML_FEATURE_LEVEL_2_0 because that is

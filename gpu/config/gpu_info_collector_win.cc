@@ -8,7 +8,6 @@
 #include <DirectML.h>
 #include <d3d11.h>
 #include <d3d11_3.h>
-#include <d3d12.h>
 #include <dxgi.h>
 #include <dxgi1_6.h>
 #include <stddef.h>
@@ -31,6 +30,8 @@
 #include "base/win/scoped_com_initializer.h"
 #include "build/branding_buildflags.h"
 #include "gpu/config/gpu_util.h"
+#include "third_party/microsoft_dxheaders/src/include/directx/d3d12.h"
+#include "third_party/microsoft_dxheaders/src/include/directx/dxcore.h"
 #include "third_party/re2/src/re2/re2.h"
 #include "ui/gl/direct_composition_support.h"
 #include "ui/gl/gl_angle_util_win.h"
@@ -189,8 +190,114 @@ void CollectHardwareOverlayInfo(OverlayInfo* overlay_info) {
   }
 }
 
+std::string DriverVersionToString(LARGE_INTEGER driver_version) {
+  return base::StringPrintf("%d.%d.%d.%d", HIWORD(driver_version.HighPart),
+                            LOWORD(driver_version.HighPart),
+                            HIWORD(driver_version.LowPart),
+                            LOWORD(driver_version.LowPart));
+}
+
+void CollectNPUInformation(GPUInfo* gpu_info) {
+  // Enumerate all dxcore adapters to retrieve the NPUs.
+  base::ScopedNativeLibrary dxcore_library(
+      base::LoadSystemLibrary(L"DXCore.dll"));
+  if (!dxcore_library.is_valid()) {
+    return;
+  }
+  using DXCoreCreateAdapterFactoryProc =
+      decltype(static_cast<STDMETHODIMP (*)(REFIID, void**)>(
+          DXCoreCreateAdapterFactory));
+  DXCoreCreateAdapterFactoryProc dxcore_create_adapter_factory_proc =
+      reinterpret_cast<DXCoreCreateAdapterFactoryProc>(
+          dxcore_library.GetFunctionPointer("DXCoreCreateAdapterFactory"));
+  if (!dxcore_create_adapter_factory_proc) {
+    return;
+  }
+  Microsoft::WRL::ComPtr<IDXCoreAdapterFactory> dxcore_factory;
+  HRESULT hr =
+      dxcore_create_adapter_factory_proc(IID_PPV_ARGS(&dxcore_factory));
+  if (FAILED(hr)) {
+    return;
+  }
+  // First query for NPU devices that satisfy the generic machine learning
+  // property. Note this must be done as a separate query from core compute
+  // because `CreateAdapterList()` returns the logical intersection of all
+  // filter properties, not union.
+  const std::array<GUID, 1> dx_guids_generic_ml = {
+      DXCORE_ADAPTER_ATTRIBUTE_D3D12_GENERIC_ML};
+  Microsoft::WRL::ComPtr<IDXCoreAdapterList> adapter_list;
+  hr = dxcore_factory->CreateAdapterList(dx_guids_generic_ml.size(),
+                                         dx_guids_generic_ml.data(),
+                                         IID_PPV_ARGS(&adapter_list));
+  if (FAILED(hr)) {
+    return;
+  }
+  uint32_t adapter_count = adapter_list->GetAdapterCount();
+
+  // If no generic ML devices were found, then retry with the core compute
+  // filter, getting an adapter list that only contains core-compute capable
+  // devices.
+  if (adapter_count == 0) {
+    adapter_list.Reset();
+
+    const std::array<GUID, 1> dx_guids_core_compute = {
+        DXCORE_ADAPTER_ATTRIBUTE_D3D12_CORE_COMPUTE};
+    hr = dxcore_factory->CreateAdapterList(dx_guids_core_compute.size(),
+                                           dx_guids_core_compute.data(),
+                                           IID_PPV_ARGS(&adapter_list));
+    if (FAILED(hr)) {
+      return;
+    }
+    adapter_count = adapter_list->GetAdapterCount();
+  }
+  for (uint32_t adapter_index = 0; adapter_index < adapter_count;
+       ++adapter_index) {
+    Microsoft::WRL::ComPtr<IDXCoreAdapter> dxcore_adapter;
+    hr = adapter_list->GetAdapter(adapter_index, IID_PPV_ARGS(&dxcore_adapter));
+    if (FAILED(hr)) {
+      return;
+    }
+    // Because GPUs usually also have the core-compute capability, then we need
+    // to filter out the GPUs with `DXCORE_ADAPTER_ATTRIBUTE_D3D12_GRAPHICS` or
+    // `DXCORE_ADAPTER_ATTRIBUTE_D3D11_GRAPHICS` attribute to
+    // get the NPUs.
+    bool is_hardware;
+    if (SUCCEEDED(dxcore_adapter->GetProperty(DXCoreAdapterProperty::IsHardware,
+                                              &is_hardware)) &&
+        is_hardware &&
+        !dxcore_adapter->IsAttributeSupported(
+            DXCORE_ADAPTER_ATTRIBUTE_D3D12_GRAPHICS) &&
+        !dxcore_adapter->IsAttributeSupported(
+            DXCORE_ADAPTER_ATTRIBUTE_D3D11_GRAPHICS)) {
+      GPUInfo::GPUDevice device;
+      DXCoreHardwareID hardware_id;
+      if (SUCCEEDED(dxcore_adapter->GetProperty(
+              DXCoreAdapterProperty::HardwareID, &hardware_id))) {
+        device.vendor_id = hardware_id.vendorID;
+        device.device_id = hardware_id.deviceID;
+      }
+      uint64_t raw_driver_version;
+      if (SUCCEEDED(dxcore_adapter->GetProperty(
+              DXCoreAdapterProperty::DriverVersion, &raw_driver_version))) {
+        LARGE_INTEGER driver_version;
+        driver_version.QuadPart = static_cast<LONGLONG>(raw_driver_version);
+        device.driver_version = DriverVersionToString(driver_version);
+      }
+      LUID instance_luid;
+      if (SUCCEEDED(dxcore_adapter->GetProperty(
+              DXCoreAdapterProperty::InstanceLuid, &instance_luid))) {
+        device.luid =
+            CHROME_LUID{instance_luid.LowPart, instance_luid.HighPart};
+      }
+      gpu_info->npus.push_back(device);
+    }
+  }
+}
+
 bool CollectDriverInfoD3D(GPUInfo* gpu_info) {
   TRACE_EVENT0("gpu", "CollectDriverInfoD3D");
+
+  CollectNPUInformation(gpu_info);
 
   Microsoft::WRL::ComPtr<IDXGIFactory1> dxgi_factory;
   HRESULT hr = ::CreateDXGIFactory1(IID_PPV_ARGS(&dxgi_factory));
@@ -215,10 +322,7 @@ bool CollectDriverInfoD3D(GPUInfo* gpu_info) {
     hr = dxgi_adapter->CheckInterfaceSupport(__uuidof(IDXGIDevice),
                                              &umd_version);
     if (SUCCEEDED(hr)) {
-      device.driver_version = base::StringPrintf(
-          "%d.%d.%d.%d", HIWORD(umd_version.HighPart),
-          LOWORD(umd_version.HighPart), HIWORD(umd_version.LowPart),
-          LOWORD(umd_version.LowPart));
+      device.driver_version = DriverVersionToString(umd_version);
     } else {
       DLOG(ERROR) << "Unable to retrieve the umd version of adapter: "
                   << desc.Description << " HR: " << std::hex << hr;

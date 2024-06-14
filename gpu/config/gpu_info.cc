@@ -307,6 +307,7 @@ void GPUInfo::EnumerateFields(Enumerator* enumerator) const {
     bool amd_switchable;
     GPUDevice gpu;
     std::vector<GPUDevice> secondary_gpus;
+    std::vector<GPUDevice> npus;
     std::string pixel_shader_version;
     std::string vertex_shader_version;
     std::string max_msaa_samples;
@@ -369,7 +370,9 @@ void GPUInfo::EnumerateFields(Enumerator* enumerator) const {
   EnumerateGPUDevice(gpu, enumerator);
   for (const auto& secondary_gpu : secondary_gpus)
     EnumerateGPUDevice(secondary_gpu, enumerator);
-
+  for (const auto& npu : npus) {
+    EnumerateGPUDevice(npu, enumerator);
+  }
   enumerator->BeginAuxAttributes();
   enumerator->AddTimeDeltaInSecondsF("initializationTime", initialization_time);
   enumerator->AddBool("optimus", optimus);

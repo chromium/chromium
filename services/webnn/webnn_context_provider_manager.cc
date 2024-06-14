@@ -17,7 +17,8 @@ void WebNNContextProviderManager::CreateWebNNContextProviderImpl(
     int client_id,
     mojo::PendingReceiver<mojom::WebNNContextProvider> receiver,
     scoped_refptr<gpu::SharedContextState> shared_context_state,
-    gpu::GpuFeatureInfo gpu_feature_info) {
+    gpu::GpuFeatureInfo gpu_feature_info,
+    gpu::GPUInfo gpu_info) {
   // Safe to use base::Unretained because `this` manager owns
   // the provider that won't be destroyed until the callback executes.
   provider_impls_.emplace(
@@ -27,7 +28,8 @@ void WebNNContextProviderManager::CreateWebNNContextProviderImpl(
           base::BindOnce(&WebNNContextProviderManager::
                              DisconnectAndDestroyWebNNContextProviderImpl,
                          base::Unretained(this), client_id),
-          std::move(shared_context_state), std::move(gpu_feature_info)));
+          std::move(shared_context_state), std::move(gpu_feature_info),
+          std::move(gpu_info)));
 }
 #endif
 

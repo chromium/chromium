@@ -50,18 +50,22 @@ TEST_F(WebNNAdapterTest, GetGpuInstance) {
 
 TEST_F(WebNNAdapterTest, GetNpuInstance) {
   // Skip if failed to get NPU instance since not all platforms support NPU.
-  SKIP_TEST_IF(!Adapter::GetNpuInstance(DML_FEATURE_LEVEL_4_0).has_value());
+  SKIP_TEST_IF(
+      !Adapter::GetNpuInstanceForTesting(DML_FEATURE_LEVEL_4_0).has_value());
   // Test creating Adapter instance upon `GetNpuInstance()` and release it if
   // there are no references anymore.
-  { EXPECT_TRUE(Adapter::GetNpuInstance(DML_FEATURE_LEVEL_4_0).has_value()); }
+  {
+    EXPECT_TRUE(
+        Adapter::GetNpuInstanceForTesting(DML_FEATURE_LEVEL_4_0).has_value());
+  }
   EXPECT_EQ(Adapter::npu_instance_, nullptr);
 
   // Test two Adapters should share one instance.
   {
     auto adapter1_creation_result =
-        Adapter::GetNpuInstance(DML_FEATURE_LEVEL_4_0);
+        Adapter::GetNpuInstanceForTesting(DML_FEATURE_LEVEL_4_0);
     auto adapter2_creation_result =
-        Adapter::GetNpuInstance(DML_FEATURE_LEVEL_4_0);
+        Adapter::GetNpuInstanceForTesting(DML_FEATURE_LEVEL_4_0);
     ASSERT_TRUE(adapter1_creation_result.has_value());
     ASSERT_TRUE(adapter2_creation_result.has_value());
     EXPECT_EQ(adapter1_creation_result.value(),

@@ -163,6 +163,7 @@ struct GpuInfo {
   bool amd_switchable;
   GpuDevice gpu;
   array<GpuDevice> secondary_gpus;
+  array<GpuDevice> npus;
   string pixel_shader_version;
   string vertex_shader_version;
   string max_msaa_samples;

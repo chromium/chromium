@@ -9,6 +9,7 @@
 
 #include "gpu/command_buffer/service/shared_context_state.h"
 #include "gpu/config/gpu_feature_info.h"
+#include "gpu/config/gpu_info.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "services/webnn/public/mojom/webnn_context_provider.mojom.h"
 
@@ -30,7 +31,8 @@ class COMPONENT_EXPORT(WEBNN_SERVICE) WebNNContextProviderManager final {
       int client_id,
       mojo::PendingReceiver<mojom::WebNNContextProvider> receiver,
       scoped_refptr<gpu::SharedContextState> shared_context_state,
-      gpu::GpuFeatureInfo gpu_feature_info);
+      gpu::GpuFeatureInfo gpu_feature_info,
+      gpu::GPUInfo gpu_info);
 #endif
 
  private:

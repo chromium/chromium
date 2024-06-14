@@ -359,6 +359,9 @@ struct GPU_EXPORT GPUInfo {
   // Secondary GPUs, for example, the integrated GPU in a dual GPU machine.
   std::vector<GPUDevice> secondary_gpus;
 
+  // NPU adapters.
+  std::vector<GPUDevice> npus;
+
   // The version of the pixel/fragment shader used by the gpu.
   std::string pixel_shader_version;
 

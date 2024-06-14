@@ -4837,8 +4837,8 @@ TEST_F(WebNNGraphImplBackendTest, FuseStandaloneActivationIntoGemm) {
 // Test building and computing a graph with single operator gemm on npu.
 TEST_F(WebNNGraphImplBackendTest, BuildSingleOperatorGemmOnNpu) {
   // Skip if failed to get NPU instance since not all platforms support NPU.
-  SKIP_TEST_IF(
-      !dml::Adapter::GetNpuInstance(DML_FEATURE_LEVEL_4_0).has_value());
+  SKIP_TEST_IF(!dml::Adapter::GetNpuInstanceForTesting(DML_FEATURE_LEVEL_4_0)
+                    .has_value());
   // Test gemm without a third input.
   GemmTester<float>{.input_a = {.type = mojom::DataType::kFloat32,
                                 .dimensions = {2, 2},
