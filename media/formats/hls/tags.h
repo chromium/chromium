@@ -411,7 +411,7 @@ struct MEDIA_EXPORT XSkipTag {
 // A server MAY omit adding an attribute to an EXT-X-RENDITION-REPORT tag - even
 // a mandatory attribute - if its value is the same as that of the Rendition
 // Report of the Media Playlist to which the EXT-X-RENDITION-REPORT tag is being
-// added.  Doing so reduces the size of the Rendition Report.
+// added. Doing so reduces the size of the Rendition Report.
 struct MEDIA_EXPORT XRenditionReportTag {
   static constexpr auto kName = MediaPlaylistTagName::kXRenditionReport;
   static ParseStatus::Or<XRenditionReportTag> Parse(
@@ -443,6 +443,78 @@ struct MEDIA_EXPORT XProgramDateTimeTag {
   static ParseStatus::Or<XProgramDateTimeTag> Parse(TagItem);
 
   base::Time time;
+};
+
+enum class XKeyTagMethod {
+  kNone,
+
+  // An encryption method of AES-128 signals that Media Segments are
+  // completely encrypted using the Advanced Encryption Standard (AES)
+  // [AES_128] with a 128-bit key, Cipher Block Chaining (CBC), and
+  // Public-Key Cryptography Standards #7 (PKCS7) padding [RFC5652].
+  // CBC is restarted on each segment boundary, using either the
+  // Initialization Vector (IV) attribute value or the Media Sequence
+  // Number as the IV
+  kAES128,
+
+  // With Sample Encryption, only media sample data - such as audio
+  // packets or video frames - is encrypted. The rest of the Media
+  // Segment is unencrypted. Sample Encryption allows parts of the
+  // Segment to be processed without (or before) decrypting the media
+  // itself.
+  kSampleAES,
+
+  // An encryption method of SAMPLE-AES-CTR is similar to SAMPLE-AES.
+  // However, fMP4 Media Segments are encrypted using the 'cenc' scheme
+  // of Common Encryption [COMMON_ENC]. Encryption of other Media
+  // Segment formats is not defined for SAMPLE-AES-CTR.  The IV
+  // attribute MUST NOT be present
+  kSampleAESCTR,
+};
+
+enum class XKeyTagKeyFormat {
+  kIdentity,
+  kUnsupported,
+};
+
+struct MEDIA_EXPORT XKeyTag {
+  using IVHex = types::parsing::HexRepr<128>;
+
+  static constexpr auto kName = MediaPlaylistTagName::kXKey;
+  static ParseStatus::Or<XKeyTag> Parse(
+      TagItem,
+      const VariableDictionary&,
+      VariableDictionary::SubstitutionBuffer&);
+
+  // If the encryption method is NONE, other attributes MUST NOT be
+  // present.
+  XKeyTagMethod method;
+
+  // The value is a quoted-string containing a URI that specifies how
+  // to obtain the key. This attribute is REQUIRED unless the METHOD
+  // is NONE.
+  std::optional<ResolvedSourceString> uri;
+
+  // The value is a hexadecimal-sequence that specifies a 128-bit
+  // unsigned integer Initialization Vector to be used with the key.
+  std::optional<IVHex::Container> iv;
+
+  // The value is a quoted-string that specifies how the key is
+  // represented in the resource identified by the URI; see Section 5
+  // for more detail. This attribute is OPTIONAL; its absence
+  // indicates an implicit value of "identity". Use of the KEYFORMAT
+  // attribute REQUIRES a compatibility version number of 5 or greater.
+  XKeyTagKeyFormat keyformat;
+
+  // The value is a quoted-string containing one or more positive
+  // integers separated by the "/" character (for example, "1", "1/2",
+  // or "1/2/5"). If more than one version of a particular KEYFORMAT
+  // is defined, this attribute can be used to indicate which
+  // version(s) this instance complies with. This attribute is
+  // OPTIONAL; if it is not present, its value is considered to be "1".
+  // Use of the KEYFORMATVERSIONS attribute REQUIRES a compatibility
+  // version number of 5 or greater.
+  std::optional<ResolvedSourceString> keyformat_versions;
 };
 
 }  // namespace media::hls

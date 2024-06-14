@@ -8,6 +8,7 @@
 #include <type_traits>
 #include <utility>
 
+#include "base/logging.h"
 #include "base/notreached.h"
 #include "base/time/time.h"
 #include "media/base/mime_util.h"
@@ -308,6 +309,31 @@ constexpr std::string_view GetAttributeName(
   NOTREACHED_NORETURN();
 }
 
+enum class XKeyTagAttribute {
+  kIv,
+  kKeyFormat,
+  kKeyFormatVersions,
+  kMethod,
+  kUri,
+  kMaxValue = kUri,
+};
+
+constexpr std::string_view GetAttributeName(XKeyTagAttribute attribute) {
+  switch (attribute) {
+    case XKeyTagAttribute::kIv:
+      return "IV";
+    case XKeyTagAttribute::kKeyFormat:
+      return "KEYFORMAT";
+    case XKeyTagAttribute::kKeyFormatVersions:
+      return "KEYFORMATVERSIONS";
+    case XKeyTagAttribute::kMethod:
+      return "METHOD";
+    case XKeyTagAttribute::kUri:
+      return "URI";
+  }
+  NOTREACHED_NORETURN();
+}
+
 template <typename T, size_t kLast>
 constexpr bool IsAttributeEnumSorted(std::index_sequence<kLast>) {
   return true;
@@ -363,6 +389,13 @@ struct TypedAttributeMap {
   // Returns the value stored in the entry for the given key.
   SourceString GetValue(T key) const {
     return attributes_[static_cast<size_t>(key)].second.value();
+  }
+
+  size_t Size() const {
+    return std::count_if(attributes_.begin(), attributes_.end(),
+                         [](const types::AttributeMap::Item& item) {
+                           return item.second.has_value();
+                         });
   }
 
  private:
@@ -1471,6 +1504,110 @@ ParseStatus::Or<XRenditionReportTag> XRenditionReportTag::Parse(
 
 ParseStatus::Or<XProgramDateTimeTag> XProgramDateTimeTag::Parse(TagItem tag) {
   return ParseISO8601DateTimeTag(tag, &XProgramDateTimeTag::time);
+}
+
+template <typename Attrs>
+ParseStatus::Or<TypedAttributeMap<Attrs>> RequireNonEmptyMap(
+    std::optional<SourceString> content) {
+  if (!content.has_value()) {
+    return ParseStatusCode::kMalformedTag;
+  }
+
+  TypedAttributeMap<Attrs> map;
+  types::AttributeListIterator iter(*content);
+  auto map_result = map.FillUntilError(&iter);
+
+  if (map_result.code() != ParseStatusCode::kReachedEOF) {
+    return ParseStatus(ParseStatusCode::kMalformedTag)
+        .AddCause(std::move(map_result));
+  }
+
+  return map;
+}
+
+ParseStatus::Or<XKeyTag> XKeyTag::Parse(
+    TagItem tag,
+    const VariableDictionary& vars,
+    VariableDictionary::SubstitutionBuffer& subs) {
+  DCHECK(tag.GetName() == ToTagName(XKeyTag::kName));
+  return RequireNonEmptyMap<XKeyTagAttribute>(tag.GetContent())
+      .MapValue([&](auto map) -> ParseStatus::Or<XKeyTag> {
+        auto enc_method = ParseField<XKeyTagMethod>(
+            XKeyTagAttribute::kMethod, map,
+            [](SourceString content) -> ParseStatus::Or<XKeyTagMethod> {
+              if (content.Str() == "NONE") {
+                return XKeyTagMethod::kNone;
+              } else if (content.Str() == "AES-128") {
+                return XKeyTagMethod::kAES128;
+              } else if (content.Str() == "SAMPLE-AES") {
+                return XKeyTagMethod::kSampleAES;
+              } else if (content.Str() == "SAMPLE-AES-CTR") {
+                return XKeyTagMethod::kSampleAESCTR;
+              } else {
+                return ParseStatusCode::kMalformedTag;
+              }
+            });
+        RETURN_IF_ERROR(enc_method);
+
+        // If the encryption method is NONE, other attributes MUST NOT be
+        // present.
+        if (*enc_method == XKeyTagMethod::kNone) {
+          if (map.Size() != 1) {
+            return ParseStatusCode::kMalformedTag;
+          }
+          return XKeyTag{.method = *enc_method};
+        }
+
+        auto enc_uri = ParseField<ResolvedSourceString>(
+            XKeyTagAttribute::kUri, map,
+            &types::parsing::Quoted<
+                types::parsing::RawStr>::ParseWithSubstitution,
+            vars, subs);
+        RETURN_IF_ERROR(enc_uri);
+
+        auto enc_iv = ParseField<std::optional<XKeyTag::IVHex::Container>>(
+            XKeyTagAttribute::kIv, map,
+            &XKeyTag::IVHex::ParseWithoutSubstitution);
+        RETURN_IF_ERROR(enc_iv);
+
+        if (*enc_method == XKeyTagMethod::kSampleAESCTR &&
+            (*enc_iv).has_value()) {
+          // The IV attribute MUST NOT be present for Sample-AES-CTR content.
+          // The IV attribute MAY be present for other encryption schemes.
+          return ParseStatusCode::kMalformedTag;
+        }
+
+        auto enc_keyformat =
+            ParseField<std::optional<ResolvedSourceString>>(
+                XKeyTagAttribute::kKeyFormat, map,
+                &types::parsing::Quoted<
+                    types::parsing::RawStr>::ParseWithoutSubstitution)
+                .MapValue(
+                    [](auto formatstr) -> ParseStatus::Or<XKeyTagKeyFormat> {
+                      if (!formatstr.has_value()) {
+                        return XKeyTagKeyFormat::kIdentity;
+                      }
+                      if (formatstr.value().Str() == "identity") {
+                        return XKeyTagKeyFormat::kIdentity;
+                      }
+                      return XKeyTagKeyFormat::kUnsupported;
+                    });
+        RETURN_IF_ERROR(enc_keyformat);
+
+        auto enc_keyformat_versions =
+            ParseField<std::optional<ResolvedSourceString>>(
+                XKeyTagAttribute::kKeyFormatVersions, map,
+                &types::parsing::RawStr::ParseWithoutSubstitution);
+        RETURN_IF_ERROR(enc_keyformat_versions);
+
+        return XKeyTag{
+            .method = *enc_method,
+            .uri = std::move(enc_uri).value(),
+            .iv = std::move(enc_iv).value(),
+            .keyformat = std::move(enc_keyformat).value(),
+            .keyformat_versions = std::move(enc_keyformat_versions).value(),
+        };
+      });
 }
 
 #undef RETURN_IF_ERROR

@@ -1338,9 +1338,91 @@ TEST(HlsTagsTest, ParseXIFramesOnlyTag) {
 }
 
 TEST(HlsTagsTest, ParseXKeyTag) {
-  RunTagIdenficationTest(ToTagName(MediaPlaylistTagName::kXKey),
-                         "#EXT-X-KEY:METHOD=NONE\n", "METHOD=NONE");
-  // TODO(crbug.com/40057824): Implement the EXT-X-KEY tag.
+  RunTagIdenficationTest<XKeyTag>("#EXT-X-KEY:METHOD=NONE\n", "METHOD=NONE");
+
+  VariableDictionary dict = CreateBasicDictionary();
+  VariableDictionary::SubstitutionBuffer subs;
+
+  // Invalid method
+  ErrorTest<XKeyTag>("METHOD=77", dict, subs, ParseStatusCode::kMalformedTag);
+
+  // If method is NONE, other attributes MUST NOT be present.
+  ErrorTest<XKeyTag>("METHOD=NONE,URI=\"https://example.com\"", dict, subs,
+                     ParseStatusCode::kMalformedTag);
+  ErrorTest<XKeyTag>("METHOD=NONE,IV=0xf4d52cf0dc02329c3ad6578744590658", dict,
+                     subs, ParseStatusCode::kMalformedTag);
+  ErrorTest<XKeyTag>("METHOD=NONE,KEYFORMAT=identity", dict, subs,
+                     ParseStatusCode::kMalformedTag);
+  ErrorTest<XKeyTag>("METHOD=NONE,KEYFORMATVERSIONS=1/2/3", dict, subs,
+                     ParseStatusCode::kMalformedTag);
+
+  // No IV when method is SAMPLE-AES-CTR
+  ErrorTest<XKeyTag>(
+      "METHOD=SAMPLE-AES-CTR,IV=0xf4d52cf0dc02329c3ad6578744590658", dict, subs,
+      ParseStatusCode::kMalformedTag);
+
+  // Invalid IV
+  ErrorTest<XKeyTag>("METHOD=AES-128,IV=0xf4d52cf0dc2329c3ad6578744590658",
+                     dict, subs, ParseStatusCode::kMalformedTag);
+
+  {
+    auto result = OkTest<XKeyTag>("METHOD=NONE", dict, subs);
+    EXPECT_EQ(result.tag.method, XKeyTagMethod::kNone);
+    EXPECT_FALSE(result.tag.uri.has_value());
+    EXPECT_FALSE(result.tag.iv.has_value());
+    EXPECT_EQ(result.tag.keyformat, XKeyTagKeyFormat::kIdentity);
+    EXPECT_FALSE(result.tag.keyformat_versions.has_value());
+  }
+  {
+    auto result = OkTest<XKeyTag>(
+        "METHOD=AES-128,URI=\"https://example.com\","
+        "IV=0xf4d52cf0dc02329c3ad6578744590658",
+        dict, subs);
+    EXPECT_EQ(result.tag.method, XKeyTagMethod::kAES128);
+    EXPECT_TRUE(result.tag.uri.has_value());
+    EXPECT_EQ(result.tag.uri.value().Str(), "https://example.com");
+    EXPECT_TRUE(result.tag.iv.has_value());
+    EXPECT_EQ(std::get<0>(result.tag.iv.value()), 0xf4d52cf0dc02329cu);
+    EXPECT_EQ(std::get<1>(result.tag.iv.value()), 0x3ad6578744590658u);
+    EXPECT_EQ(result.tag.keyformat, XKeyTagKeyFormat::kIdentity);
+    EXPECT_FALSE(result.tag.keyformat_versions.has_value());
+  }
+  {
+    auto result = OkTest<XKeyTag>(
+        "METHOD=AES-128,URI=\"https://example.com\","
+        "KEYFORMAT=\"supersecretcrypto\"",
+        dict, subs);
+    EXPECT_EQ(result.tag.method, XKeyTagMethod::kAES128);
+    EXPECT_TRUE(result.tag.uri.has_value());
+    EXPECT_EQ(result.tag.uri.value().Str(), "https://example.com");
+    EXPECT_FALSE(result.tag.iv.has_value());
+    EXPECT_EQ(result.tag.keyformat, XKeyTagKeyFormat::kUnsupported);
+    EXPECT_FALSE(result.tag.keyformat_versions.has_value());
+  }
+  {
+    auto result = OkTest<XKeyTag>(
+        "METHOD=SAMPLE-AES,URI=\"https://example.com\","
+        "KEYFORMAT=\"supersecretcrypto\"",
+        dict, subs);
+    EXPECT_EQ(result.tag.method, XKeyTagMethod::kSampleAES);
+    EXPECT_TRUE(result.tag.uri.has_value());
+    EXPECT_EQ(result.tag.uri.value().Str(), "https://example.com");
+    EXPECT_FALSE(result.tag.iv.has_value());
+    EXPECT_EQ(result.tag.keyformat, XKeyTagKeyFormat::kUnsupported);
+    EXPECT_FALSE(result.tag.keyformat_versions.has_value());
+  }
+  {
+    auto result = OkTest<XKeyTag>(
+        "METHOD=SAMPLE-AES-CTR,URI=\"https://example.com\","
+        "KEYFORMAT=\"supersecretcrypto\"",
+        dict, subs);
+    EXPECT_EQ(result.tag.method, XKeyTagMethod::kSampleAESCTR);
+    EXPECT_TRUE(result.tag.uri.has_value());
+    EXPECT_EQ(result.tag.uri.value().Str(), "https://example.com");
+    EXPECT_FALSE(result.tag.iv.has_value());
+    EXPECT_EQ(result.tag.keyformat, XKeyTagKeyFormat::kUnsupported);
+    EXPECT_FALSE(result.tag.keyformat_versions.has_value());
+  }
 }
 
 TEST(HlsTagsTest, ParseXMapTag) {
