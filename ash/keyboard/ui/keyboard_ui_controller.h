@@ -376,7 +376,8 @@ class KEYBOARD_EXPORT KeyboardUIController
 
   // Notifies observers that the visual or occluded bounds of the keyboard
   // window are changing.
-  void NotifyKeyboardBoundsChanging(const gfx::Rect& new_bounds_in_root);
+  void NotifyKeyboardBoundsChanging(const gfx::Rect& new_bounds_in_root,
+                                    bool is_temporary = false);
 
   // Called when the keyboard window has loaded. Shows the keyboard if
   // |show_on_keyboard_window_load_| is true.

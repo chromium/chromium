@@ -19,6 +19,11 @@ namespace ash {
 struct KeyboardStateDescriptor {
   bool is_visible;
 
+  // True if the current state is temporary and another change will happen
+  // immediately. This happens, for example, when changing VK to floating
+  // keyboard.
+  bool is_temporary;
+
   // The bounds of the keyboard window on the screen.
   gfx::Rect visual_bounds;
 

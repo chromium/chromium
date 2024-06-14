@@ -34,6 +34,7 @@ void NotificationManager::SendNotifications(
     bool does_occluded_bounds_affect_layout,
     const gfx::Rect& visual_bounds,
     const gfx::Rect& occluded_bounds,
+    bool is_temporary,
     const base::ObserverList<ash::KeyboardControllerObserver>::Unchecked&
         observers) {
   bool is_visible = !visual_bounds.IsEmpty();
@@ -54,6 +55,7 @@ void NotificationManager::SendNotifications(
 
   ash::KeyboardStateDescriptor state;
   state.is_visible = is_visible;
+  state.is_temporary = is_temporary;
   state.visual_bounds = visual_bounds;
   state.occluded_bounds_in_screen = occluded_bounds;
   state.displaced_bounds_in_screen = workspace_layout_offset_region;

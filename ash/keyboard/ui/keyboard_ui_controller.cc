@@ -315,7 +315,8 @@ void KeyboardUIController::MoveToParentContainer(aura::Window* parent) {
 
 // private
 void KeyboardUIController::NotifyKeyboardBoundsChanging(
-    const gfx::Rect& new_bounds_in_root) {
+    const gfx::Rect& new_bounds_in_root,
+    bool is_temporary) {
   gfx::Rect occluded_bounds_in_screen;
   aura::Window* window = GetKeyboardWindow();
   if (window && window->IsVisible()) {
@@ -330,7 +331,8 @@ void KeyboardUIController::NotifyKeyboardBoundsChanging(
     // TODO(crbug.com/40619022): Use screen bounds for visual bounds.
     notification_manager_.SendNotifications(
         container_behavior_->OccludedBoundsAffectWorkspaceLayout(),
-        new_bounds_in_root, occluded_bounds_in_screen, observer_list_);
+        new_bounds_in_root, occluded_bounds_in_screen, is_temporary,
+        observer_list_);
   } else {
     visual_bounds_in_root_ = gfx::Rect();
     occluded_bounds_in_screen = GetWorkspaceOccludedBoundsInScreen();
@@ -548,7 +550,8 @@ void KeyboardUIController::HideKeyboard(HideReason reason) {
 
     case KeyboardUIState::kWillHide:
     case KeyboardUIState::kShown: {
-      NotifyKeyboardBoundsChanging(gfx::Rect());
+      NotifyKeyboardBoundsChanging(gfx::Rect(),
+                                   reason == HIDE_REASON_SYSTEM_TEMPORARY);
 
       set_keyboard_locked(false);
 

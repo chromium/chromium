@@ -433,7 +433,8 @@ TEST_F(ArcImeServiceTest, OnKeyboardAppearanceChanged) {
   EXPECT_FALSE(fake_arc_ime_bridge_->last_keyboard_availability());
 
   const gfx::Rect keyboard_bounds(0, 480, 1200, 320);
-  ash::KeyboardStateDescriptor desc{true, keyboard_bounds, keyboard_bounds,
+  ash::KeyboardStateDescriptor desc{/*is_visible=*/true, /*is_temporary=*/false,
+                                    keyboard_bounds, keyboard_bounds,
                                     keyboard_bounds};
   instance_->OnKeyboardAppearanceChanged(desc);
   EXPECT_EQ(keyboard_bounds, fake_arc_ime_bridge_->last_keyboard_bounds());
@@ -448,6 +449,17 @@ TEST_F(ArcImeServiceTest, OnKeyboardAppearanceChanged) {
       new_scale_factor);
 
   // Keyboard bounds passed to Android should be changed.
+  instance_->OnKeyboardAppearanceChanged(desc);
+  EXPECT_EQ(new_keyboard_bounds, fake_arc_ime_bridge_->last_keyboard_bounds());
+  EXPECT_TRUE(fake_arc_ime_bridge_->last_keyboard_availability());
+
+  // Temporarily hide the keyboard. This signal should be no-op.
+  desc.is_temporary = true;
+  desc.visual_bounds = gfx::Rect();
+  desc.displaced_bounds_in_screen = gfx::Rect();
+  desc.occluded_bounds_in_screen = gfx::Rect();
+
+  // Keyboard bounds and availability hasn't changed.
   instance_->OnKeyboardAppearanceChanged(desc);
   EXPECT_EQ(new_keyboard_bounds, fake_arc_ime_bridge_->last_keyboard_bounds());
   EXPECT_TRUE(fake_arc_ime_bridge_->last_keyboard_availability());

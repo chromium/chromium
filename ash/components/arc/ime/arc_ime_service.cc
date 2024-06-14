@@ -405,6 +405,10 @@ void ArcImeService::SendKeyEvent(std::unique_ptr<ui::KeyEvent> key_event,
 // Overridden from ash::KeyboardControllerObserver
 void ArcImeService::OnKeyboardAppearanceChanged(
     const ash::KeyboardStateDescriptor& state) {
+  if (state.is_temporary) {
+    return;
+  }
+
   gfx::Rect new_bounds = state.occluded_bounds_in_screen;
   // Multiply by the scale factor. To convert from Chrome DIP to Android pixels.
   gfx::Rect bounds_in_px =
