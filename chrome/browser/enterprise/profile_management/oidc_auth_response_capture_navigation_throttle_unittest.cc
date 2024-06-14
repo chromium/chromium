@@ -12,9 +12,11 @@
 #include "chrome/browser/enterprise/signin/mock_oidc_authentication_signin_interceptor.h"
 #include "chrome/browser/enterprise/signin/oidc_authentication_signin_interceptor_factory.h"
 #include "chrome/browser/enterprise/signin/oidc_metrics_utils.h"
+#include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/signin/dice_web_signin_interceptor_delegate.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/test/base/browser_with_test_window_test.h"
+#include "chrome/test/base/testing_profile_manager.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/test/mock_navigation_handle.h"
 #include "services/data_decoder/public/cpp/test_support/in_process_data_decoder.h"
@@ -149,6 +151,46 @@ class OidcAuthResponseCaptureNavigationThrottleTest
       } else {
         task_environment()->RunUntilIdle();
       }
+    }
+  }
+
+  void TestNoServiceForInvalidProfile(Profile* invalid_profile) {
+    std::string auth_token = BuildTokenFromDict(
+        base::Value::Dict()
+            .Set(kUserPrincipleNameClaimName, kExampleUserPrincipleName)
+            .Set(kSubjectClaimName, kExampleAuthSubject));
+    std::string id_token = BuildTokenFromDict(
+        base::Value::Dict()
+            .Set(kUserPrincipleNameClaimName, kExampleUserPrincipleName)
+            .Set(kSubjectClaimName, kExampleIdSubject)
+            .Set(kIssuerClaimName, kExampleIdIssuer));
+
+    auto* oidc_interceptor =
+        static_cast<MockOidcAuthenticationSigninInterceptor*>(
+            OidcAuthenticationSigninInterceptorFactory::GetForProfile(
+                invalid_profile));
+    auto test_web_content = content::WebContents::Create(
+        content::WebContents::CreateParams(invalid_profile));
+    content::MockNavigationHandle navigation_handle(test_web_content.get());
+
+    navigation_handle.set_url(GURL(kOidcEntraReprocessUrl));
+    ASSERT_EQ(nullptr, oidc_interceptor);
+
+    auto throttle =
+        OidcAuthResponseCaptureNavigationThrottle::MaybeCreateThrottleFor(
+            &navigation_handle);
+
+    if (!enable_oidc_interception()) {
+      ASSERT_EQ(nullptr, throttle.get());
+    } else {
+      navigation_handle.set_url(
+          GURL(BuildOidcResponseUrl(auth_token, id_token)));
+      EXPECT_EQ(NavigationThrottle::PROCEED,
+                throttle->WillProcessResponse().action());
+      task_environment()->RunUntilIdle();
+      CheckFunnelAndResultHistogram(
+          OidcInterceptionFunnelStep::kValidRedirectionCaptured,
+          OidcInterceptionResult::kInvalidProfile);
     }
   }
 
@@ -444,6 +486,16 @@ TEST_P(OidcAuthResponseCaptureNavigationThrottleTest, DataDecoderFailure) {
   CheckFunnelAndResultHistogram(
       OidcInterceptionFunnelStep::kValidRedirectionCaptured,
       OidcInterceptionResult::kInvalidUrlOrTokens);
+}
+
+TEST_P(OidcAuthResponseCaptureNavigationThrottleTest, NoServiceForGuestMode) {
+  TestNoServiceForInvalidProfile(profile_manager()->CreateGuestProfile());
+}
+
+TEST_P(OidcAuthResponseCaptureNavigationThrottleTest, NoServiceForIncognito) {
+  TestNoServiceForInvalidProfile(profile()->GetOffTheRecordProfile(
+      Profile::OTRProfileID::CreateUniqueForTesting(),
+      /*create_if_needed=*/true));
 }
 
 INSTANTIATE_TEST_SUITE_P(All,

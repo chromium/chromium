@@ -2366,6 +2366,7 @@ chromium-metrics-reviews@google.com.
   <int value="2" label="Can't retrieve info from URL"/>
   <int value="3" label="Unified consent dialog rejected"/>
   <int value="4" label="OIDC profile registration failure"/>
+  <int value="5" label="Can't start enrollment from Guest or OTR profile"/>
 </enum>
 
 <enum name="OidcProfileCreationFunnelStep">

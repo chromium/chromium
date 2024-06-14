@@ -126,10 +126,8 @@ OidcAuthResponseCaptureNavigationThrottle::AttemptToTriggerInterception() {
   auto* profile = Profile::FromBrowserContext(
       navigation_handle()->GetWebContents()->GetBrowserContext());
   // OIDC enrollment cannot be initiated from an incognito or guest profile.
-  if (!profile || profile->IsOffTheRecord()) {
-    // TODO(b/335677156): Add unit test coverage and a new unqiue
-    // OidcInterceptionResult value for Guest/Incognito.
-    RecordOidcInterceptionResult(OidcInterceptionResult::kInvalidUrlOrTokens);
+  if (!profile || profile->IsOffTheRecord() || profile->IsGuestSession()) {
+    RecordOidcInterceptionResult(OidcInterceptionResult::kInvalidProfile);
     VLOG_POLICY(1, OIDC_ENROLLMENT)
         << "Enrollment flow cannot be initiated from OTR profile.";
     return PROCEED;
