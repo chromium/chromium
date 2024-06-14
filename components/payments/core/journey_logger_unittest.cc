@@ -23,320 +23,6 @@ int toInt(Event2 event) {
   return static_cast<int>(event);
 }
 
-// Tests the canMakePayment stats for the case where the merchant does not use
-// it and does not show the PaymentRequest to the user.
-TEST(JourneyLoggerTest,
-     RecordJourneyStatsHistograms_CanMakePaymentNotCalled_NoShow) {
-  base::HistogramTester histogram_tester;
-  JourneyLogger logger(/*is_incognito=*/false, ukm::kInvalidSourceId);
-
-  logger.SetSkippedShow();
-  logger.SetAborted(JourneyLogger::ABORT_REASON_ABORTED_BY_MERCHANT);
-
-  // Make sure the correct events were logged.
-  std::vector<base::Bucket> buckets =
-      histogram_tester.GetAllSamples("PaymentRequest.Events");
-  ASSERT_EQ(1U, buckets.size());
-  EXPECT_FALSE(buckets[0].min & JourneyLogger::EVENT_SHOWN);
-  EXPECT_TRUE(buckets[0].min & JourneyLogger::EVENT_SKIPPED_SHOW);
-  EXPECT_FALSE(buckets[0].min & JourneyLogger::EVENT_CAN_MAKE_PAYMENT_TRUE);
-  EXPECT_FALSE(buckets[0].min & JourneyLogger::EVENT_CAN_MAKE_PAYMENT_FALSE);
-}
-
-// Tests the canMakePayment stats for the case where the merchant does not use
-// it and the transaction is aborted.
-TEST(JourneyLoggerTest,
-     RecordJourneyStatsHistograms_CanMakePaymentNotCalled_ShowAndUserAbort) {
-  base::HistogramTester histogram_tester;
-  JourneyLogger logger(/*is_incognito=*/false, ukm::kInvalidSourceId);
-
-  // The merchant does not query CanMakePayment, show the PaymentRequest and the
-  // user aborts it.
-  logger.SetShown();
-  logger.SetRequestedInformation(true, false, false, false);
-  logger.SetAborted(JourneyLogger::ABORT_REASON_ABORTED_BY_USER);
-
-  // Make sure the correct events were logged.
-  std::vector<base::Bucket> buckets =
-      histogram_tester.GetAllSamples("PaymentRequest.Events");
-  ASSERT_EQ(1U, buckets.size());
-  EXPECT_TRUE(buckets[0].min & JourneyLogger::EVENT_SHOWN);
-  EXPECT_FALSE(buckets[0].min & JourneyLogger::EVENT_CAN_MAKE_PAYMENT_TRUE);
-  EXPECT_FALSE(buckets[0].min & JourneyLogger::EVENT_CAN_MAKE_PAYMENT_FALSE);
-  EXPECT_TRUE(buckets[0].min & JourneyLogger::EVENT_USER_ABORTED);
-}
-
-// Tests the canMakePayment stats for the case where the merchant does not use
-// it and the transaction is aborted.
-TEST(JourneyLoggerTest,
-     RecordJourneyStatsHistograms_CanMakePaymentNotCalled_ShowAndOtherAbort) {
-  base::HistogramTester histogram_tester;
-  JourneyLogger logger(/*is_incognito=*/false, ukm::kInvalidSourceId);
-
-  // The merchant does not query CanMakePayment, show the PaymentRequest and
-  // there is an abort not initiated by the user.
-  logger.SetShown();
-  logger.SetRequestedInformation(true, false, false, false);
-  logger.SetAborted(JourneyLogger::ABORT_REASON_OTHER);
-
-  // Make sure the correct events were logged.
-  std::vector<base::Bucket> buckets =
-      histogram_tester.GetAllSamples("PaymentRequest.Events");
-  ASSERT_EQ(1U, buckets.size());
-  EXPECT_TRUE(buckets[0].min & JourneyLogger::EVENT_SHOWN);
-  EXPECT_FALSE(buckets[0].min & JourneyLogger::EVENT_CAN_MAKE_PAYMENT_TRUE);
-  EXPECT_FALSE(buckets[0].min & JourneyLogger::EVENT_CAN_MAKE_PAYMENT_FALSE);
-  EXPECT_TRUE(buckets[0].min & JourneyLogger::EVENT_OTHER_ABORTED);
-}
-
-// Tests the canMakePayment stats for the case where the merchant does not use
-// it and the transaction is completed.
-TEST(JourneyLoggerTest,
-     RecordJourneyStatsHistograms_CanMakePaymentNotCalled_ShowAndComplete) {
-  base::HistogramTester histogram_tester;
-  JourneyLogger logger(/*is_incognito=*/false, ukm::kInvalidSourceId);
-
-  // The merchant does not query CanMakePayment, show the PaymentRequest and the
-  // user completes it.
-  logger.SetShown();
-  logger.SetRequestedInformation(true, false, false, false);
-  std::vector<PaymentMethodCategory> methods{PaymentMethodCategory::kBasicCard};
-  logger.SetRequestedPaymentMethods(methods);
-  logger.SetPayClicked();
-  logger.SetSelectedMethod(PaymentMethodCategory::kBasicCard);
-  logger.SetCompleted();
-
-  // Make sure the correct events were logged.
-  std::vector<base::Bucket> buckets =
-      histogram_tester.GetAllSamples("PaymentRequest.Events");
-  ASSERT_EQ(1U, buckets.size());
-  EXPECT_TRUE(buckets[0].min & JourneyLogger::EVENT_SHOWN);
-  EXPECT_FALSE(buckets[0].min & JourneyLogger::EVENT_CAN_MAKE_PAYMENT_TRUE);
-  EXPECT_FALSE(buckets[0].min & JourneyLogger::EVENT_CAN_MAKE_PAYMENT_FALSE);
-  EXPECT_TRUE(buckets[0].min & JourneyLogger::EVENT_COMPLETED);
-}
-
-// Tests the canMakePayment stats for the case where the merchant uses it,
-// returns false and show is not called.
-TEST(JourneyLoggerTest,
-     RecordJourneyStatsHistograms_CanMakePaymentCalled_FalseAndNoShow) {
-  base::HistogramTester histogram_tester;
-  JourneyLogger logger(/*is_incognito=*/false, ukm::kInvalidSourceId);
-
-  // The user cannot make payment and the PaymentRequest is not shown.
-  logger.SetCanMakePaymentValue(false);
-  logger.SetAborted(JourneyLogger::ABORT_REASON_OTHER);
-
-  // Make sure the correct events were logged.
-  std::vector<base::Bucket> buckets =
-      histogram_tester.GetAllSamples("PaymentRequest.Events");
-  ASSERT_EQ(1U, buckets.size());
-  EXPECT_FALSE(buckets[0].min & JourneyLogger::EVENT_SHOWN);
-  EXPECT_FALSE(buckets[0].min & JourneyLogger::EVENT_CAN_MAKE_PAYMENT_TRUE);
-  EXPECT_TRUE(buckets[0].min & JourneyLogger::EVENT_CAN_MAKE_PAYMENT_FALSE);
-  EXPECT_TRUE(buckets[0].min & JourneyLogger::EVENT_OTHER_ABORTED);
-}
-
-// Tests the canMakePayment stats for the case where the merchant uses it,
-// returns true and show is not called.
-TEST(JourneyLoggerTest,
-     RecordJourneyStatsHistograms_CanMakePaymentCalled_TrueAndNoShow) {
-  base::HistogramTester histogram_tester;
-  JourneyLogger logger(/*is_incognito=*/false, ukm::kInvalidSourceId);
-
-  // The user can make payment and the PaymentRequest is not shown.
-  logger.SetCanMakePaymentValue(true);
-  logger.SetAborted(JourneyLogger::ABORT_REASON_OTHER);
-
-  // Make sure the correct events were logged.
-  std::vector<base::Bucket> buckets =
-      histogram_tester.GetAllSamples("PaymentRequest.Events");
-  ASSERT_EQ(1U, buckets.size());
-  EXPECT_FALSE(buckets[0].min & JourneyLogger::EVENT_SHOWN);
-  EXPECT_TRUE(buckets[0].min & JourneyLogger::EVENT_CAN_MAKE_PAYMENT_TRUE);
-  EXPECT_FALSE(buckets[0].min & JourneyLogger::EVENT_CAN_MAKE_PAYMENT_FALSE);
-  EXPECT_TRUE(buckets[0].min & JourneyLogger::EVENT_OTHER_ABORTED);
-}
-
-// Tests the canMakePayment stats for the case where the merchant uses it,
-// returns false, show is called but the transaction is aborted by the user.
-TEST(JourneyLoggerTest,
-     RecordJourneyStatsHistograms_CanMakePaymentCalled_FalseShowAndUserAbort) {
-  base::HistogramTester histogram_tester;
-  JourneyLogger logger(/*is_incognito=*/false, ukm::kInvalidSourceId);
-
-  // The user cannot make payment, the Payment Request is shown but is aborted
-  // by the user.
-  logger.SetShown();
-  logger.SetRequestedInformation(true, false, false, false);
-  logger.SetCanMakePaymentValue(false);
-  logger.SetAborted(JourneyLogger::ABORT_REASON_ABORTED_BY_USER);
-
-  // Make sure the correct events were logged.
-  std::vector<base::Bucket> buckets =
-      histogram_tester.GetAllSamples("PaymentRequest.Events");
-  ASSERT_EQ(1U, buckets.size());
-  EXPECT_TRUE(buckets[0].min & JourneyLogger::EVENT_SHOWN);
-  EXPECT_FALSE(buckets[0].min & JourneyLogger::EVENT_CAN_MAKE_PAYMENT_TRUE);
-  EXPECT_TRUE(buckets[0].min & JourneyLogger::EVENT_CAN_MAKE_PAYMENT_FALSE);
-  EXPECT_TRUE(buckets[0].min & JourneyLogger::EVENT_USER_ABORTED);
-}
-
-// Tests the canMakePayment stats for the case where the merchant uses it,
-// returns false, show is called but the transaction is aborted.
-TEST(JourneyLoggerTest,
-     RecordJourneyStatsHistograms_CanMakePaymentCalled_FalseShowAndOtherAbort) {
-  base::HistogramTester histogram_tester;
-  JourneyLogger logger(/*is_incognito=*/false, ukm::kInvalidSourceId);
-
-  // The user cannot make payment, the Payment Request is shown but is aborted.
-  logger.SetShown();
-  logger.SetRequestedInformation(true, false, false, false);
-  logger.SetCanMakePaymentValue(false);
-  logger.SetAborted(JourneyLogger::ABORT_REASON_OTHER);
-
-  // Make sure the correct events were logged.
-  std::vector<base::Bucket> buckets =
-      histogram_tester.GetAllSamples("PaymentRequest.Events");
-  ASSERT_EQ(1U, buckets.size());
-  EXPECT_TRUE(buckets[0].min & JourneyLogger::EVENT_SHOWN);
-  EXPECT_FALSE(buckets[0].min & JourneyLogger::EVENT_CAN_MAKE_PAYMENT_TRUE);
-  EXPECT_TRUE(buckets[0].min & JourneyLogger::EVENT_CAN_MAKE_PAYMENT_FALSE);
-  EXPECT_TRUE(buckets[0].min & JourneyLogger::EVENT_OTHER_ABORTED);
-}
-
-// Tests the canMakePayment stats for the case where the merchant uses it,
-// returns false, show is called and the transaction is completed.
-TEST(JourneyLoggerTest,
-     RecordJourneyStatsHistograms_CanMakePaymentCalled_FalseShowAndComplete) {
-  base::HistogramTester histogram_tester;
-  JourneyLogger logger(/*is_incognito=*/false, ukm::kInvalidSourceId);
-
-  // The user cannot make payment, the payment request is shown and is
-  // completed.
-  logger.SetShown();
-  logger.SetRequestedInformation(true, false, false, false);
-  std::vector<PaymentMethodCategory> methods{PaymentMethodCategory::kBasicCard};
-  logger.SetRequestedPaymentMethods(methods);
-  logger.SetCanMakePaymentValue(false);
-  logger.SetPayClicked();
-  logger.SetSelectedMethod(PaymentMethodCategory::kBasicCard);
-  logger.SetCompleted();
-
-  // Make sure the correct events were logged.
-  std::vector<base::Bucket> buckets =
-      histogram_tester.GetAllSamples("PaymentRequest.Events");
-  ASSERT_EQ(1U, buckets.size());
-  EXPECT_TRUE(buckets[0].min & JourneyLogger::EVENT_SHOWN);
-  EXPECT_FALSE(buckets[0].min & JourneyLogger::EVENT_CAN_MAKE_PAYMENT_TRUE);
-  EXPECT_TRUE(buckets[0].min & JourneyLogger::EVENT_CAN_MAKE_PAYMENT_FALSE);
-  EXPECT_TRUE(buckets[0].min & JourneyLogger::EVENT_COMPLETED);
-}
-
-// Tests the canMakePayment stats for the case where the merchant uses it,
-// returns true, show is called but the transaction is aborted by the user.
-TEST(JourneyLoggerTest,
-     RecordJourneyStatsHistograms_CanMakePaymentCalled_TrueShowAndUserAbort) {
-  base::HistogramTester histogram_tester;
-  JourneyLogger logger(/*is_incognito=*/false, ukm::kInvalidSourceId);
-
-  // The user can make payment, the Payment Request is shown and aborted by the
-  // user.
-  logger.SetShown();
-  logger.SetRequestedInformation(true, false, false, false);
-  logger.SetCanMakePaymentValue(true);
-  logger.SetAborted(JourneyLogger::ABORT_REASON_ABORTED_BY_USER);
-
-  // Make sure the correct events were logged.
-  std::vector<base::Bucket> buckets =
-      histogram_tester.GetAllSamples("PaymentRequest.Events");
-  ASSERT_EQ(1U, buckets.size());
-  EXPECT_TRUE(buckets[0].min & JourneyLogger::EVENT_SHOWN);
-  EXPECT_TRUE(buckets[0].min & JourneyLogger::EVENT_CAN_MAKE_PAYMENT_TRUE);
-  EXPECT_FALSE(buckets[0].min & JourneyLogger::EVENT_CAN_MAKE_PAYMENT_FALSE);
-  EXPECT_TRUE(buckets[0].min & JourneyLogger::EVENT_USER_ABORTED);
-}
-
-// Tests the canMakePayment stats for the case where the merchant uses it,
-// returns true, show is called but the transaction is aborted.
-TEST(JourneyLoggerTest,
-     RecordJourneyStatsHistograms_CanMakePaymentCalled_TrueShowAndOtherAbort) {
-  base::HistogramTester histogram_tester;
-  JourneyLogger logger(/*is_incognito=*/false, ukm::kInvalidSourceId);
-
-  // The user can make a payment, the request is shown but the transaction is
-  // aborted.
-  logger.SetShown();
-  logger.SetRequestedInformation(true, false, false, false);
-  logger.SetCanMakePaymentValue(true);
-  logger.SetAborted(JourneyLogger::ABORT_REASON_OTHER);
-
-  // Make sure the correct events were logged.
-  std::vector<base::Bucket> buckets =
-      histogram_tester.GetAllSamples("PaymentRequest.Events");
-  ASSERT_EQ(1U, buckets.size());
-  EXPECT_TRUE(buckets[0].min & JourneyLogger::EVENT_SHOWN);
-  EXPECT_TRUE(buckets[0].min & JourneyLogger::EVENT_CAN_MAKE_PAYMENT_TRUE);
-  EXPECT_FALSE(buckets[0].min & JourneyLogger::EVENT_CAN_MAKE_PAYMENT_FALSE);
-  EXPECT_TRUE(buckets[0].min & JourneyLogger::EVENT_OTHER_ABORTED);
-}
-
-// Tests the canMakePayment stats for the case where the merchant uses it,
-// returns true, show is called and the transaction is completed.
-TEST(JourneyLoggerTest,
-     RecordJourneyStatsHistograms_CanMakePaymentCalled_TrueShowAndComplete) {
-  base::HistogramTester histogram_tester;
-  JourneyLogger logger(/*is_incognito=*/false, ukm::kInvalidSourceId);
-
-  // The user can make a payment, the request is shown and the user completes
-  // the checkout.
-  logger.SetShown();
-  logger.SetRequestedInformation(true, false, false, false);
-  std::vector<PaymentMethodCategory> methods{PaymentMethodCategory::kBasicCard};
-  logger.SetRequestedPaymentMethods(methods);
-  logger.SetCanMakePaymentValue(true);
-  logger.SetPayClicked();
-  logger.SetSelectedMethod(PaymentMethodCategory::kBasicCard);
-  logger.SetCompleted();
-
-  // Make sure the correct events were logged.
-  std::vector<base::Bucket> buckets =
-      histogram_tester.GetAllSamples("PaymentRequest.Events");
-  ASSERT_EQ(1U, buckets.size());
-  EXPECT_TRUE(buckets[0].min & JourneyLogger::EVENT_SHOWN);
-  EXPECT_TRUE(buckets[0].min & JourneyLogger::EVENT_CAN_MAKE_PAYMENT_TRUE);
-  EXPECT_FALSE(buckets[0].min & JourneyLogger::EVENT_CAN_MAKE_PAYMENT_FALSE);
-  EXPECT_TRUE(buckets[0].min & JourneyLogger::EVENT_COMPLETED);
-}
-
-// Tests the canMakePayment metrics are not logged if the Payment Request was
-// done in an incognito tab.
-TEST(JourneyLoggerTest,
-     RecordJourneyStatsHistograms_CanMakePayment_IncognitoTab) {
-  base::HistogramTester histogram_tester;
-  JourneyLogger logger(/*is_incognito=*/true, ukm::kInvalidSourceId);
-
-  // The user can make a payment, the request is shown and the user completes
-  // the checkout.
-  logger.SetShown();
-  logger.SetRequestedInformation(true, false, false, false);
-  std::vector<PaymentMethodCategory> methods{PaymentMethodCategory::kBasicCard};
-  logger.SetRequestedPaymentMethods(methods);
-  logger.SetCanMakePaymentValue(true);
-  logger.SetPayClicked();
-  logger.SetSelectedMethod(PaymentMethodCategory::kBasicCard);
-  logger.SetCompleted();
-
-  // Make sure the correct events were logged.
-  std::vector<base::Bucket> buckets =
-      histogram_tester.GetAllSamples("PaymentRequest.Events");
-  ASSERT_EQ(1U, buckets.size());
-  EXPECT_TRUE(buckets[0].min & JourneyLogger::EVENT_SHOWN);
-  EXPECT_FALSE(buckets[0].min & JourneyLogger::EVENT_CAN_MAKE_PAYMENT_TRUE);
-  EXPECT_FALSE(buckets[0].min & JourneyLogger::EVENT_CAN_MAKE_PAYMENT_FALSE);
-  EXPECT_TRUE(buckets[0].min & JourneyLogger::EVENT_COMPLETED);
-}
-
 // Tests that the completion status metrics based on whether the user had
 // suggestions for all the requested sections are logged as correctly.
 TEST(JourneyLoggerTest,
@@ -366,22 +52,17 @@ TEST(JourneyLoggerTest,
 
   // Make sure the correct events were logged.
   std::vector<base::Bucket> buckets =
-      histogram_tester.GetAllSamples("PaymentRequest.Events");
+      histogram_tester.GetAllSamples("PaymentRequest.Events2");
   ASSERT_EQ(1U, buckets.size());
-  EXPECT_FALSE(buckets[0].min &
-               JourneyLogger::EVENT_HAD_NECESSARY_COMPLETE_SUGGESTIONS);
-  EXPECT_TRUE(buckets[0].min &
-              JourneyLogger::EVENT_HAD_INITIAL_FORM_OF_PAYMENT);
-  EXPECT_TRUE(buckets[0].min & JourneyLogger::EVENT_COMPLETED);
-  EXPECT_FALSE(buckets[0].min & JourneyLogger::EVENT_USER_ABORTED);
-  EXPECT_FALSE(buckets[0].min & JourneyLogger::EVENT_OTHER_ABORTED);
-  EXPECT_FALSE(buckets[0].min & JourneyLogger::EVENT_REQUEST_SHIPPING);
-  EXPECT_FALSE(buckets[0].min & JourneyLogger::EVENT_REQUEST_PAYER_NAME);
-  EXPECT_FALSE(buckets[0].min & JourneyLogger::EVENT_REQUEST_PAYER_PHONE);
-  EXPECT_FALSE(buckets[0].min & JourneyLogger::EVENT_REQUEST_PAYER_EMAIL);
-  EXPECT_TRUE(buckets[0].min & JourneyLogger::EVENT_REQUEST_METHOD_BASIC_CARD);
-  EXPECT_TRUE(buckets[0].min & JourneyLogger::EVENT_REQUEST_METHOD_GOOGLE);
-  EXPECT_FALSE(buckets[0].min & JourneyLogger::EVENT_REQUEST_METHOD_OTHER);
+  EXPECT_TRUE(buckets[0].min & toInt(Event2::kHadInitialFormOfPayment));
+  EXPECT_TRUE(buckets[0].min & toInt(Event2::kCompleted));
+  EXPECT_FALSE(buckets[0].min & toInt(Event2::kUserAborted));
+  EXPECT_FALSE(buckets[0].min & toInt(Event2::kOtherAborted));
+  EXPECT_FALSE(buckets[0].min & toInt(Event2::kRequestShipping));
+  EXPECT_FALSE(buckets[0].min & toInt(Event2::kRequestPayerData));
+  EXPECT_TRUE(buckets[0].min & toInt(Event2::kRequestMethodBasicCard));
+  EXPECT_TRUE(buckets[0].min & toInt(Event2::kRequestMethodGoogle));
+  EXPECT_FALSE(buckets[0].min & toInt(Event2::kRequestMethodOther));
 }
 
 // Tests that the completion status metrics based on whether the user had
@@ -411,22 +92,17 @@ TEST(JourneyLoggerTest,
 
   // Make sure the correct events were logged.
   std::vector<base::Bucket> buckets =
-      histogram_tester.GetAllSamples("PaymentRequest.Events");
+      histogram_tester.GetAllSamples("PaymentRequest.Events2");
   ASSERT_EQ(1U, buckets.size());
-  EXPECT_FALSE(buckets[0].min &
-               JourneyLogger::EVENT_HAD_NECESSARY_COMPLETE_SUGGESTIONS);
-  EXPECT_TRUE(buckets[0].min &
-              JourneyLogger::EVENT_HAD_INITIAL_FORM_OF_PAYMENT);
-  EXPECT_TRUE(buckets[0].min & JourneyLogger::EVENT_USER_ABORTED);
-  EXPECT_FALSE(buckets[0].min & JourneyLogger::EVENT_COMPLETED);
-  EXPECT_FALSE(buckets[0].min & JourneyLogger::EVENT_OTHER_ABORTED);
-  EXPECT_FALSE(buckets[0].min & JourneyLogger::EVENT_REQUEST_SHIPPING);
-  EXPECT_FALSE(buckets[0].min & JourneyLogger::EVENT_REQUEST_PAYER_NAME);
-  EXPECT_FALSE(buckets[0].min & JourneyLogger::EVENT_REQUEST_PAYER_PHONE);
-  EXPECT_FALSE(buckets[0].min & JourneyLogger::EVENT_REQUEST_PAYER_EMAIL);
-  EXPECT_TRUE(buckets[0].min & JourneyLogger::EVENT_REQUEST_METHOD_BASIC_CARD);
-  EXPECT_TRUE(buckets[0].min & JourneyLogger::EVENT_REQUEST_METHOD_GOOGLE);
-  EXPECT_FALSE(buckets[0].min & JourneyLogger::EVENT_REQUEST_METHOD_OTHER);
+  EXPECT_TRUE(buckets[0].min & toInt(Event2::kHadInitialFormOfPayment));
+  EXPECT_TRUE(buckets[0].min & toInt(Event2::kUserAborted));
+  EXPECT_FALSE(buckets[0].min & toInt(Event2::kCompleted));
+  EXPECT_FALSE(buckets[0].min & toInt(Event2::kOtherAborted));
+  EXPECT_FALSE(buckets[0].min & toInt(Event2::kRequestShipping));
+  EXPECT_FALSE(buckets[0].min & toInt(Event2::kRequestPayerData));
+  EXPECT_TRUE(buckets[0].min & toInt(Event2::kRequestMethodBasicCard));
+  EXPECT_TRUE(buckets[0].min & toInt(Event2::kRequestMethodGoogle));
+  EXPECT_FALSE(buckets[0].min & toInt(Event2::kRequestMethodOther));
 }
 
 // Tests that the completion status metrics based on whether the user had
@@ -456,22 +132,17 @@ TEST(JourneyLoggerTest,
 
   // Make sure the correct events were logged.
   std::vector<base::Bucket> buckets =
-      histogram_tester.GetAllSamples("PaymentRequest.Events");
+      histogram_tester.GetAllSamples("PaymentRequest.Events2");
   ASSERT_EQ(1U, buckets.size());
-  EXPECT_FALSE(buckets[0].min &
-               JourneyLogger::EVENT_HAD_NECESSARY_COMPLETE_SUGGESTIONS);
-  EXPECT_TRUE(buckets[0].min &
-              JourneyLogger::EVENT_HAD_INITIAL_FORM_OF_PAYMENT);
-  EXPECT_TRUE(buckets[0].min & JourneyLogger::EVENT_OTHER_ABORTED);
-  EXPECT_FALSE(buckets[0].min & JourneyLogger::EVENT_COMPLETED);
-  EXPECT_FALSE(buckets[0].min & JourneyLogger::EVENT_USER_ABORTED);
-  EXPECT_FALSE(buckets[0].min & JourneyLogger::EVENT_REQUEST_SHIPPING);
-  EXPECT_FALSE(buckets[0].min & JourneyLogger::EVENT_REQUEST_PAYER_NAME);
-  EXPECT_FALSE(buckets[0].min & JourneyLogger::EVENT_REQUEST_PAYER_PHONE);
-  EXPECT_FALSE(buckets[0].min & JourneyLogger::EVENT_REQUEST_PAYER_EMAIL);
-  EXPECT_TRUE(buckets[0].min & JourneyLogger::EVENT_REQUEST_METHOD_BASIC_CARD);
-  EXPECT_TRUE(buckets[0].min & JourneyLogger::EVENT_REQUEST_METHOD_GOOGLE);
-  EXPECT_FALSE(buckets[0].min & JourneyLogger::EVENT_REQUEST_METHOD_OTHER);
+  EXPECT_TRUE(buckets[0].min & toInt(Event2::kHadInitialFormOfPayment));
+  EXPECT_TRUE(buckets[0].min & toInt(Event2::kOtherAborted));
+  EXPECT_FALSE(buckets[0].min & toInt(Event2::kCompleted));
+  EXPECT_FALSE(buckets[0].min & toInt(Event2::kUserAborted));
+  EXPECT_FALSE(buckets[0].min & toInt(Event2::kRequestShipping));
+  EXPECT_FALSE(buckets[0].min & toInt(Event2::kRequestPayerData));
+  EXPECT_TRUE(buckets[0].min & toInt(Event2::kRequestMethodBasicCard));
+  EXPECT_TRUE(buckets[0].min & toInt(Event2::kRequestMethodGoogle));
+  EXPECT_FALSE(buckets[0].min & toInt(Event2::kRequestMethodOther));
 }
 
 // Tests that the completion status metrics based on whether the user had
@@ -504,22 +175,17 @@ TEST(JourneyLoggerTest,
 
   // Make sure the correct events were logged.
   std::vector<base::Bucket> buckets =
-      histogram_tester.GetAllSamples("PaymentRequest.Events");
+      histogram_tester.GetAllSamples("PaymentRequest.Events2");
   ASSERT_EQ(1U, buckets.size());
-  EXPECT_FALSE(buckets[0].min &
-               JourneyLogger::EVENT_HAD_NECESSARY_COMPLETE_SUGGESTIONS);
-  EXPECT_TRUE(buckets[0].min &
-              JourneyLogger::EVENT_HAD_INITIAL_FORM_OF_PAYMENT);
-  EXPECT_TRUE(buckets[0].min & JourneyLogger::EVENT_COMPLETED);
-  EXPECT_FALSE(buckets[0].min & JourneyLogger::EVENT_USER_ABORTED);
-  EXPECT_FALSE(buckets[0].min & JourneyLogger::EVENT_OTHER_ABORTED);
-  EXPECT_FALSE(buckets[0].min & JourneyLogger::EVENT_REQUEST_SHIPPING);
-  EXPECT_FALSE(buckets[0].min & JourneyLogger::EVENT_REQUEST_PAYER_NAME);
-  EXPECT_FALSE(buckets[0].min & JourneyLogger::EVENT_REQUEST_PAYER_PHONE);
-  EXPECT_FALSE(buckets[0].min & JourneyLogger::EVENT_REQUEST_PAYER_EMAIL);
-  EXPECT_TRUE(buckets[0].min & JourneyLogger::EVENT_REQUEST_METHOD_BASIC_CARD);
-  EXPECT_TRUE(buckets[0].min & JourneyLogger::EVENT_REQUEST_METHOD_GOOGLE);
-  EXPECT_FALSE(buckets[0].min & JourneyLogger::EVENT_REQUEST_METHOD_OTHER);
+  EXPECT_TRUE(buckets[0].min & toInt(Event2::kHadInitialFormOfPayment));
+  EXPECT_TRUE(buckets[0].min & toInt(Event2::kCompleted));
+  EXPECT_FALSE(buckets[0].min & toInt(Event2::kUserAborted));
+  EXPECT_FALSE(buckets[0].min & toInt(Event2::kOtherAborted));
+  EXPECT_FALSE(buckets[0].min & toInt(Event2::kRequestShipping));
+  EXPECT_FALSE(buckets[0].min & toInt(Event2::kRequestPayerData));
+  EXPECT_TRUE(buckets[0].min & toInt(Event2::kRequestMethodBasicCard));
+  EXPECT_TRUE(buckets[0].min & toInt(Event2::kRequestMethodGoogle));
+  EXPECT_FALSE(buckets[0].min & toInt(Event2::kRequestMethodOther));
 }
 
 // Tests that the completion status metrics based on whether the user had
@@ -551,22 +217,17 @@ TEST(JourneyLoggerTest,
 
   // Make sure the correct events were logged.
   std::vector<base::Bucket> buckets =
-      histogram_tester.GetAllSamples("PaymentRequest.Events");
+      histogram_tester.GetAllSamples("PaymentRequest.Events2");
   ASSERT_EQ(1U, buckets.size());
-  EXPECT_FALSE(buckets[0].min &
-               JourneyLogger::EVENT_HAD_NECESSARY_COMPLETE_SUGGESTIONS);
-  EXPECT_FALSE(buckets[0].min &
-               JourneyLogger::EVENT_HAD_INITIAL_FORM_OF_PAYMENT);
-  EXPECT_TRUE(buckets[0].min & JourneyLogger::EVENT_COMPLETED);
-  EXPECT_FALSE(buckets[0].min & JourneyLogger::EVENT_USER_ABORTED);
-  EXPECT_FALSE(buckets[0].min & JourneyLogger::EVENT_OTHER_ABORTED);
-  EXPECT_FALSE(buckets[0].min & JourneyLogger::EVENT_REQUEST_SHIPPING);
-  EXPECT_FALSE(buckets[0].min & JourneyLogger::EVENT_REQUEST_PAYER_NAME);
-  EXPECT_FALSE(buckets[0].min & JourneyLogger::EVENT_REQUEST_PAYER_PHONE);
-  EXPECT_FALSE(buckets[0].min & JourneyLogger::EVENT_REQUEST_PAYER_EMAIL);
-  EXPECT_TRUE(buckets[0].min & JourneyLogger::EVENT_REQUEST_METHOD_BASIC_CARD);
-  EXPECT_TRUE(buckets[0].min & JourneyLogger::EVENT_REQUEST_METHOD_GOOGLE);
-  EXPECT_FALSE(buckets[0].min & JourneyLogger::EVENT_REQUEST_METHOD_OTHER);
+  EXPECT_FALSE(buckets[0].min & toInt(Event2::kHadInitialFormOfPayment));
+  EXPECT_TRUE(buckets[0].min & toInt(Event2::kCompleted));
+  EXPECT_FALSE(buckets[0].min & toInt(Event2::kUserAborted));
+  EXPECT_FALSE(buckets[0].min & toInt(Event2::kOtherAborted));
+  EXPECT_FALSE(buckets[0].min & toInt(Event2::kRequestShipping));
+  EXPECT_FALSE(buckets[0].min & toInt(Event2::kRequestPayerData));
+  EXPECT_TRUE(buckets[0].min & toInt(Event2::kRequestMethodBasicCard));
+  EXPECT_TRUE(buckets[0].min & toInt(Event2::kRequestMethodGoogle));
+  EXPECT_FALSE(buckets[0].min & toInt(Event2::kRequestMethodOther));
 }
 
 // Tests that the completion status metrics based on whether the user had
@@ -596,22 +257,17 @@ TEST(JourneyLoggerTest,
 
   // Make sure the correct events were logged.
   std::vector<base::Bucket> buckets =
-      histogram_tester.GetAllSamples("PaymentRequest.Events");
+      histogram_tester.GetAllSamples("PaymentRequest.Events2");
   ASSERT_EQ(1U, buckets.size());
-  EXPECT_FALSE(buckets[0].min &
-               JourneyLogger::EVENT_HAD_NECESSARY_COMPLETE_SUGGESTIONS);
-  EXPECT_FALSE(buckets[0].min &
-               JourneyLogger::EVENT_HAD_INITIAL_FORM_OF_PAYMENT);
-  EXPECT_TRUE(buckets[0].min & JourneyLogger::EVENT_USER_ABORTED);
-  EXPECT_FALSE(buckets[0].min & JourneyLogger::EVENT_COMPLETED);
-  EXPECT_FALSE(buckets[0].min & JourneyLogger::EVENT_OTHER_ABORTED);
-  EXPECT_FALSE(buckets[0].min & JourneyLogger::EVENT_REQUEST_SHIPPING);
-  EXPECT_FALSE(buckets[0].min & JourneyLogger::EVENT_REQUEST_PAYER_NAME);
-  EXPECT_FALSE(buckets[0].min & JourneyLogger::EVENT_REQUEST_PAYER_PHONE);
-  EXPECT_FALSE(buckets[0].min & JourneyLogger::EVENT_REQUEST_PAYER_EMAIL);
-  EXPECT_TRUE(buckets[0].min & JourneyLogger::EVENT_REQUEST_METHOD_BASIC_CARD);
-  EXPECT_TRUE(buckets[0].min & JourneyLogger::EVENT_REQUEST_METHOD_GOOGLE);
-  EXPECT_FALSE(buckets[0].min & JourneyLogger::EVENT_REQUEST_METHOD_OTHER);
+  EXPECT_FALSE(buckets[0].min & toInt(Event2::kHadInitialFormOfPayment));
+  EXPECT_TRUE(buckets[0].min & toInt(Event2::kUserAborted));
+  EXPECT_FALSE(buckets[0].min & toInt(Event2::kCompleted));
+  EXPECT_FALSE(buckets[0].min & toInt(Event2::kOtherAborted));
+  EXPECT_FALSE(buckets[0].min & toInt(Event2::kRequestShipping));
+  EXPECT_FALSE(buckets[0].min & toInt(Event2::kRequestPayerData));
+  EXPECT_TRUE(buckets[0].min & toInt(Event2::kRequestMethodBasicCard));
+  EXPECT_TRUE(buckets[0].min & toInt(Event2::kRequestMethodGoogle));
+  EXPECT_FALSE(buckets[0].min & toInt(Event2::kRequestMethodOther));
 }
 
 // Tests that the completion status metrics based on whether the user had
@@ -641,22 +297,17 @@ TEST(JourneyLoggerTest,
 
   // Make sure the correct events were logged.
   std::vector<base::Bucket> buckets =
-      histogram_tester.GetAllSamples("PaymentRequest.Events");
+      histogram_tester.GetAllSamples("PaymentRequest.Events2");
   ASSERT_EQ(1U, buckets.size());
-  EXPECT_FALSE(buckets[0].min &
-               JourneyLogger::EVENT_HAD_NECESSARY_COMPLETE_SUGGESTIONS);
-  EXPECT_FALSE(buckets[0].min &
-               JourneyLogger::EVENT_HAD_INITIAL_FORM_OF_PAYMENT);
-  EXPECT_TRUE(buckets[0].min & JourneyLogger::EVENT_OTHER_ABORTED);
-  EXPECT_FALSE(buckets[0].min & JourneyLogger::EVENT_COMPLETED);
-  EXPECT_FALSE(buckets[0].min & JourneyLogger::EVENT_USER_ABORTED);
-  EXPECT_FALSE(buckets[0].min & JourneyLogger::EVENT_REQUEST_SHIPPING);
-  EXPECT_FALSE(buckets[0].min & JourneyLogger::EVENT_REQUEST_PAYER_NAME);
-  EXPECT_FALSE(buckets[0].min & JourneyLogger::EVENT_REQUEST_PAYER_PHONE);
-  EXPECT_FALSE(buckets[0].min & JourneyLogger::EVENT_REQUEST_PAYER_EMAIL);
-  EXPECT_TRUE(buckets[0].min & JourneyLogger::EVENT_REQUEST_METHOD_BASIC_CARD);
-  EXPECT_TRUE(buckets[0].min & JourneyLogger::EVENT_REQUEST_METHOD_GOOGLE);
-  EXPECT_FALSE(buckets[0].min & JourneyLogger::EVENT_REQUEST_METHOD_OTHER);
+  EXPECT_FALSE(buckets[0].min & toInt(Event2::kHadInitialFormOfPayment));
+  EXPECT_TRUE(buckets[0].min & toInt(Event2::kOtherAborted));
+  EXPECT_FALSE(buckets[0].min & toInt(Event2::kCompleted));
+  EXPECT_FALSE(buckets[0].min & toInt(Event2::kUserAborted));
+  EXPECT_FALSE(buckets[0].min & toInt(Event2::kRequestShipping));
+  EXPECT_FALSE(buckets[0].min & toInt(Event2::kRequestPayerData));
+  EXPECT_TRUE(buckets[0].min & toInt(Event2::kRequestMethodBasicCard));
+  EXPECT_TRUE(buckets[0].min & toInt(Event2::kRequestMethodGoogle));
+  EXPECT_FALSE(buckets[0].min & toInt(Event2::kRequestMethodOther));
 }
 
 // Tests that the completion status metrics based on whether the user had
@@ -687,22 +338,17 @@ TEST(JourneyLoggerTest,
 
   // Make sure the correct events were logged.
   std::vector<base::Bucket> buckets =
-      histogram_tester.GetAllSamples("PaymentRequest.Events");
+      histogram_tester.GetAllSamples("PaymentRequest.Events2");
   ASSERT_EQ(1U, buckets.size());
-  EXPECT_FALSE(buckets[0].min &
-               JourneyLogger::EVENT_HAD_NECESSARY_COMPLETE_SUGGESTIONS);
-  EXPECT_FALSE(buckets[0].min &
-               JourneyLogger::EVENT_HAD_INITIAL_FORM_OF_PAYMENT);
-  EXPECT_TRUE(buckets[0].min & JourneyLogger::EVENT_USER_ABORTED);
-  EXPECT_FALSE(buckets[0].min & JourneyLogger::EVENT_COMPLETED);
-  EXPECT_FALSE(buckets[0].min & JourneyLogger::EVENT_OTHER_ABORTED);
-  EXPECT_FALSE(buckets[0].min & JourneyLogger::EVENT_REQUEST_SHIPPING);
-  EXPECT_FALSE(buckets[0].min & JourneyLogger::EVENT_REQUEST_PAYER_NAME);
-  EXPECT_FALSE(buckets[0].min & JourneyLogger::EVENT_REQUEST_PAYER_PHONE);
-  EXPECT_FALSE(buckets[0].min & JourneyLogger::EVENT_REQUEST_PAYER_EMAIL);
-  EXPECT_TRUE(buckets[0].min & JourneyLogger::EVENT_REQUEST_METHOD_BASIC_CARD);
-  EXPECT_TRUE(buckets[0].min & JourneyLogger::EVENT_REQUEST_METHOD_GOOGLE);
-  EXPECT_FALSE(buckets[0].min & JourneyLogger::EVENT_REQUEST_METHOD_OTHER);
+  EXPECT_FALSE(buckets[0].min & toInt(Event2::kHadInitialFormOfPayment));
+  EXPECT_TRUE(buckets[0].min & toInt(Event2::kUserAborted));
+  EXPECT_FALSE(buckets[0].min & toInt(Event2::kCompleted));
+  EXPECT_FALSE(buckets[0].min & toInt(Event2::kOtherAborted));
+  EXPECT_FALSE(buckets[0].min & toInt(Event2::kRequestShipping));
+  EXPECT_FALSE(buckets[0].min & toInt(Event2::kRequestPayerData));
+  EXPECT_TRUE(buckets[0].min & toInt(Event2::kRequestMethodBasicCard));
+  EXPECT_TRUE(buckets[0].min & toInt(Event2::kRequestMethodGoogle));
+  EXPECT_FALSE(buckets[0].min & toInt(Event2::kRequestMethodOther));
 }
 
 // Tests that the completion status metrics based on whether the user had
@@ -734,22 +380,17 @@ TEST(
 
   // Make sure the correct events were logged.
   std::vector<base::Bucket> buckets =
-      histogram_tester.GetAllSamples("PaymentRequest.Events");
+      histogram_tester.GetAllSamples("PaymentRequest.Events2");
   ASSERT_EQ(1U, buckets.size());
-  EXPECT_FALSE(buckets[0].min &
-               JourneyLogger::EVENT_HAD_NECESSARY_COMPLETE_SUGGESTIONS);
-  EXPECT_TRUE(buckets[0].min &
-              JourneyLogger::EVENT_HAD_INITIAL_FORM_OF_PAYMENT);
-  EXPECT_TRUE(buckets[0].min & JourneyLogger::EVENT_OTHER_ABORTED);
-  EXPECT_FALSE(buckets[0].min & JourneyLogger::EVENT_COMPLETED);
-  EXPECT_FALSE(buckets[0].min & JourneyLogger::EVENT_USER_ABORTED);
-  EXPECT_FALSE(buckets[0].min & JourneyLogger::EVENT_REQUEST_SHIPPING);
-  EXPECT_FALSE(buckets[0].min & JourneyLogger::EVENT_REQUEST_PAYER_NAME);
-  EXPECT_FALSE(buckets[0].min & JourneyLogger::EVENT_REQUEST_PAYER_PHONE);
-  EXPECT_FALSE(buckets[0].min & JourneyLogger::EVENT_REQUEST_PAYER_EMAIL);
-  EXPECT_TRUE(buckets[0].min & JourneyLogger::EVENT_REQUEST_METHOD_BASIC_CARD);
-  EXPECT_TRUE(buckets[0].min & JourneyLogger::EVENT_REQUEST_METHOD_GOOGLE);
-  EXPECT_FALSE(buckets[0].min & JourneyLogger::EVENT_REQUEST_METHOD_OTHER);
+  EXPECT_TRUE(buckets[0].min & toInt(Event2::kHadInitialFormOfPayment));
+  EXPECT_TRUE(buckets[0].min & toInt(Event2::kOtherAborted));
+  EXPECT_FALSE(buckets[0].min & toInt(Event2::kCompleted));
+  EXPECT_FALSE(buckets[0].min & toInt(Event2::kUserAborted));
+  EXPECT_FALSE(buckets[0].min & toInt(Event2::kRequestShipping));
+  EXPECT_FALSE(buckets[0].min & toInt(Event2::kRequestPayerData));
+  EXPECT_TRUE(buckets[0].min & toInt(Event2::kRequestMethodBasicCard));
+  EXPECT_TRUE(buckets[0].min & toInt(Event2::kRequestMethodGoogle));
+  EXPECT_FALSE(buckets[0].min & toInt(Event2::kRequestMethodOther));
 }
 
 // Tests that the completion status metrics based on whether the user had
@@ -783,22 +424,17 @@ TEST(
 
   // Make sure the correct events were logged.
   std::vector<base::Bucket> buckets =
-      histogram_tester.GetAllSamples("PaymentRequest.Events");
+      histogram_tester.GetAllSamples("PaymentRequest.Events2");
   ASSERT_EQ(1U, buckets.size());
-  EXPECT_FALSE(buckets[0].min &
-               JourneyLogger::EVENT_HAD_NECESSARY_COMPLETE_SUGGESTIONS);
-  EXPECT_TRUE(buckets[0].min &
-              JourneyLogger::EVENT_HAD_INITIAL_FORM_OF_PAYMENT);
-  EXPECT_TRUE(buckets[0].min & JourneyLogger::EVENT_OTHER_ABORTED);
-  EXPECT_FALSE(buckets[0].min & JourneyLogger::EVENT_COMPLETED);
-  EXPECT_FALSE(buckets[0].min & JourneyLogger::EVENT_USER_ABORTED);
-  EXPECT_TRUE(buckets[0].min & JourneyLogger::EVENT_REQUEST_SHIPPING);
-  EXPECT_FALSE(buckets[0].min & JourneyLogger::EVENT_REQUEST_PAYER_NAME);
-  EXPECT_FALSE(buckets[0].min & JourneyLogger::EVENT_REQUEST_PAYER_PHONE);
-  EXPECT_FALSE(buckets[0].min & JourneyLogger::EVENT_REQUEST_PAYER_EMAIL);
-  EXPECT_TRUE(buckets[0].min & JourneyLogger::EVENT_REQUEST_METHOD_BASIC_CARD);
-  EXPECT_TRUE(buckets[0].min & JourneyLogger::EVENT_REQUEST_METHOD_GOOGLE);
-  EXPECT_FALSE(buckets[0].min & JourneyLogger::EVENT_REQUEST_METHOD_OTHER);
+  EXPECT_TRUE(buckets[0].min & toInt(Event2::kHadInitialFormOfPayment));
+  EXPECT_TRUE(buckets[0].min & toInt(Event2::kOtherAborted));
+  EXPECT_FALSE(buckets[0].min & toInt(Event2::kCompleted));
+  EXPECT_FALSE(buckets[0].min & toInt(Event2::kUserAborted));
+  EXPECT_TRUE(buckets[0].min & toInt(Event2::kRequestShipping));
+  EXPECT_FALSE(buckets[0].min & toInt(Event2::kRequestPayerData));
+  EXPECT_TRUE(buckets[0].min & toInt(Event2::kRequestMethodBasicCard));
+  EXPECT_TRUE(buckets[0].min & toInt(Event2::kRequestMethodGoogle));
+  EXPECT_FALSE(buckets[0].min & toInt(Event2::kRequestMethodOther));
 }
 
 // Tests that the completion status metrics based on whether the user had
@@ -832,22 +468,17 @@ TEST(
 
   // Make sure the correct events were logged.
   std::vector<base::Bucket> buckets =
-      histogram_tester.GetAllSamples("PaymentRequest.Events");
+      histogram_tester.GetAllSamples("PaymentRequest.Events2");
   ASSERT_EQ(1U, buckets.size());
-  EXPECT_TRUE(buckets[0].min &
-              JourneyLogger::EVENT_HAD_NECESSARY_COMPLETE_SUGGESTIONS);
-  EXPECT_TRUE(buckets[0].min &
-              JourneyLogger::EVENT_HAD_INITIAL_FORM_OF_PAYMENT);
-  EXPECT_TRUE(buckets[0].min & JourneyLogger::EVENT_OTHER_ABORTED);
-  EXPECT_FALSE(buckets[0].min & JourneyLogger::EVENT_COMPLETED);
-  EXPECT_FALSE(buckets[0].min & JourneyLogger::EVENT_USER_ABORTED);
-  EXPECT_TRUE(buckets[0].min & JourneyLogger::EVENT_REQUEST_SHIPPING);
-  EXPECT_FALSE(buckets[0].min & JourneyLogger::EVENT_REQUEST_PAYER_NAME);
-  EXPECT_FALSE(buckets[0].min & JourneyLogger::EVENT_REQUEST_PAYER_PHONE);
-  EXPECT_FALSE(buckets[0].min & JourneyLogger::EVENT_REQUEST_PAYER_EMAIL);
-  EXPECT_TRUE(buckets[0].min & JourneyLogger::EVENT_REQUEST_METHOD_BASIC_CARD);
-  EXPECT_TRUE(buckets[0].min & JourneyLogger::EVENT_REQUEST_METHOD_GOOGLE);
-  EXPECT_FALSE(buckets[0].min & JourneyLogger::EVENT_REQUEST_METHOD_OTHER);
+  EXPECT_TRUE(buckets[0].min & toInt(Event2::kHadInitialFormOfPayment));
+  EXPECT_TRUE(buckets[0].min & toInt(Event2::kOtherAborted));
+  EXPECT_FALSE(buckets[0].min & toInt(Event2::kCompleted));
+  EXPECT_FALSE(buckets[0].min & toInt(Event2::kUserAborted));
+  EXPECT_TRUE(buckets[0].min & toInt(Event2::kRequestShipping));
+  EXPECT_FALSE(buckets[0].min & toInt(Event2::kRequestPayerData));
+  EXPECT_TRUE(buckets[0].min & toInt(Event2::kRequestMethodBasicCard));
+  EXPECT_TRUE(buckets[0].min & toInt(Event2::kRequestMethodGoogle));
+  EXPECT_FALSE(buckets[0].min & toInt(Event2::kRequestMethodOther));
 }
 
 // Tests that the metrics are logged correctly for two simultaneous Payment
@@ -890,44 +521,30 @@ TEST(JourneyLoggerTest, RecordJourneyStatsHistograms_TwoPaymentRequests) {
 
   // Make sure the correct events were logged.
   std::vector<base::Bucket> buckets =
-      histogram_tester.GetAllSamples("PaymentRequest.Events");
+      histogram_tester.GetAllSamples("PaymentRequest.Events2");
   ASSERT_EQ(2U, buckets.size());
   // logger2
-  EXPECT_TRUE(buckets[0].min & JourneyLogger::EVENT_SHOWN);
-  EXPECT_FALSE(buckets[0].min &
-               JourneyLogger::EVENT_HAD_NECESSARY_COMPLETE_SUGGESTIONS);
-  EXPECT_FALSE(buckets[0].min &
-               JourneyLogger::EVENT_HAD_INITIAL_FORM_OF_PAYMENT);
-  EXPECT_FALSE(buckets[0].min & JourneyLogger::EVENT_OTHER_ABORTED);
-  EXPECT_FALSE(buckets[0].min & JourneyLogger::EVENT_COMPLETED);
-  EXPECT_TRUE(buckets[0].min & JourneyLogger::EVENT_USER_ABORTED);
-  EXPECT_TRUE(buckets[0].min & JourneyLogger::EVENT_REQUEST_SHIPPING);
-  EXPECT_FALSE(buckets[0].min & JourneyLogger::EVENT_REQUEST_PAYER_NAME);
-  EXPECT_FALSE(buckets[0].min & JourneyLogger::EVENT_REQUEST_PAYER_PHONE);
-  EXPECT_FALSE(buckets[0].min & JourneyLogger::EVENT_REQUEST_PAYER_EMAIL);
-  EXPECT_FALSE(buckets[0].min & JourneyLogger::EVENT_CAN_MAKE_PAYMENT_TRUE);
-  EXPECT_FALSE(buckets[0].min & JourneyLogger::EVENT_CAN_MAKE_PAYMENT_FALSE);
-  EXPECT_FALSE(buckets[0].min & JourneyLogger::EVENT_REQUEST_METHOD_BASIC_CARD);
-  EXPECT_FALSE(buckets[0].min & JourneyLogger::EVENT_REQUEST_METHOD_GOOGLE);
-  EXPECT_TRUE(buckets[0].min & JourneyLogger::EVENT_REQUEST_METHOD_OTHER);
+  EXPECT_TRUE(buckets[0].min & toInt(Event2::kShown));
+  EXPECT_FALSE(buckets[0].min & toInt(Event2::kHadInitialFormOfPayment));
+  EXPECT_FALSE(buckets[0].min & toInt(Event2::kOtherAborted));
+  EXPECT_FALSE(buckets[0].min & toInt(Event2::kCompleted));
+  EXPECT_TRUE(buckets[0].min & toInt(Event2::kUserAborted));
+  EXPECT_TRUE(buckets[0].min & toInt(Event2::kRequestShipping));
+  EXPECT_FALSE(buckets[0].min & toInt(Event2::kRequestPayerData));
+  EXPECT_FALSE(buckets[0].min & toInt(Event2::kRequestMethodBasicCard));
+  EXPECT_FALSE(buckets[0].min & toInt(Event2::kRequestMethodGoogle));
+  EXPECT_TRUE(buckets[0].min & toInt(Event2::kRequestMethodOther));
   // logger1
-  EXPECT_TRUE(buckets[1].min & JourneyLogger::EVENT_SHOWN);
-  EXPECT_FALSE(buckets[1].min &
-               JourneyLogger::EVENT_HAD_NECESSARY_COMPLETE_SUGGESTIONS);
-  EXPECT_TRUE(buckets[1].min &
-              JourneyLogger::EVENT_HAD_INITIAL_FORM_OF_PAYMENT);
-  EXPECT_FALSE(buckets[1].min & JourneyLogger::EVENT_OTHER_ABORTED);
-  EXPECT_TRUE(buckets[1].min & JourneyLogger::EVENT_COMPLETED);
-  EXPECT_FALSE(buckets[1].min & JourneyLogger::EVENT_USER_ABORTED);
-  EXPECT_TRUE(buckets[1].min & JourneyLogger::EVENT_REQUEST_SHIPPING);
-  EXPECT_FALSE(buckets[1].min & JourneyLogger::EVENT_REQUEST_PAYER_NAME);
-  EXPECT_FALSE(buckets[1].min & JourneyLogger::EVENT_REQUEST_PAYER_PHONE);
-  EXPECT_TRUE(buckets[1].min & JourneyLogger::EVENT_REQUEST_PAYER_EMAIL);
-  EXPECT_TRUE(buckets[1].min & JourneyLogger::EVENT_CAN_MAKE_PAYMENT_TRUE);
-  EXPECT_FALSE(buckets[1].min & JourneyLogger::EVENT_CAN_MAKE_PAYMENT_FALSE);
-  EXPECT_TRUE(buckets[1].min & JourneyLogger::EVENT_REQUEST_METHOD_BASIC_CARD);
-  EXPECT_TRUE(buckets[1].min & JourneyLogger::EVENT_REQUEST_METHOD_GOOGLE);
-  EXPECT_TRUE(buckets[1].min & JourneyLogger::EVENT_REQUEST_METHOD_OTHER);
+  EXPECT_TRUE(buckets[1].min & toInt(Event2::kShown));
+  EXPECT_TRUE(buckets[1].min & toInt(Event2::kHadInitialFormOfPayment));
+  EXPECT_FALSE(buckets[1].min & toInt(Event2::kOtherAborted));
+  EXPECT_TRUE(buckets[1].min & toInt(Event2::kCompleted));
+  EXPECT_FALSE(buckets[1].min & toInt(Event2::kUserAborted));
+  EXPECT_TRUE(buckets[1].min & toInt(Event2::kRequestShipping));
+  EXPECT_TRUE(buckets[1].min & toInt(Event2::kRequestPayerData));
+  EXPECT_TRUE(buckets[1].min & toInt(Event2::kRequestMethodBasicCard));
+  EXPECT_TRUE(buckets[1].min & toInt(Event2::kRequestMethodGoogle));
+  EXPECT_TRUE(buckets[1].min & toInt(Event2::kRequestMethodOther));
 }
 
 // Tests that the Payment Request UKMs are logged correctly when the user aborts
@@ -958,13 +575,10 @@ TEST(JourneyLoggerTest,
   logger.SetAborted(JourneyLogger::ABORT_REASON_ABORTED_BY_USER);
 
   int64_t expected_step_metric =
-      JourneyLogger::EVENT_SHOWN | JourneyLogger::EVENT_PAY_CLICKED |
-      JourneyLogger::EVENT_REQUEST_SHIPPING |
-      JourneyLogger::EVENT_REQUEST_PAYER_EMAIL |
-      JourneyLogger::EVENT_REQUEST_METHOD_BASIC_CARD |
-      JourneyLogger::EVENT_USER_ABORTED |
-      JourneyLogger::EVENT_HAD_INITIAL_FORM_OF_PAYMENT |
-      JourneyLogger::EVENT_HAD_NECESSARY_COMPLETE_SUGGESTIONS;
+      toInt(Event2::kShown) | toInt(Event2::kPayClicked) |
+      toInt(Event2::kRequestShipping) | toInt(Event2::kRequestPayerData) |
+      toInt(Event2::kRequestMethodBasicCard) | toInt(Event2::kUserAborted) |
+      toInt(Event2::kHadInitialFormOfPayment);
 
   // Make sure the UKM was logged correctly.
   auto entries = ukm_recorder.GetEntriesByName(UkmEntry::kEntryName);
@@ -975,7 +589,7 @@ TEST(JourneyLoggerTest,
     ukm_recorder.ExpectEntryMetric(
         entry, UkmEntry::kCompletionStatusName,
         JourneyLogger::COMPLETION_STATUS_USER_ABORTED);
-    ukm_recorder.ExpectEntryMetric(entry, UkmEntry::kEventsName,
+    ukm_recorder.ExpectEntryMetric(entry, UkmEntry::kEvents2Name,
                                    expected_step_metric);
   }
 }
@@ -1008,14 +622,11 @@ TEST(JourneyLoggerTest,
   logger.SetCompleted();
 
   int64_t expected_step_metric =
-      JourneyLogger::EVENT_SHOWN | JourneyLogger::EVENT_REQUEST_SHIPPING |
-      JourneyLogger::EVENT_REQUEST_PAYER_EMAIL |
-      JourneyLogger::EVENT_REQUEST_METHOD_BASIC_CARD |
-      JourneyLogger::EVENT_COMPLETED |
-      JourneyLogger::EVENT_HAD_INITIAL_FORM_OF_PAYMENT |
-      JourneyLogger::EVENT_HAD_NECESSARY_COMPLETE_SUGGESTIONS |
-      JourneyLogger::EVENT_PAY_CLICKED |
-      JourneyLogger::EVENT_SELECTED_CREDIT_CARD;
+      toInt(Event2::kShown) | toInt(Event2::kRequestShipping) |
+      toInt(Event2::kRequestPayerData) |
+      toInt(Event2::kRequestMethodBasicCard) | toInt(Event2::kCompleted) |
+      toInt(Event2::kHadInitialFormOfPayment) | toInt(Event2::kPayClicked) |
+      toInt(Event2::kSelectedCreditCard);
 
   // Make sure the UKM was logged correctly.
   auto entries = ukm_recorder.GetEntriesByName(UkmEntry::kEntryName);
@@ -1025,7 +636,7 @@ TEST(JourneyLoggerTest,
     EXPECT_EQ(3U, entry->metrics.size());
     ukm_recorder.ExpectEntryMetric(entry, UkmEntry::kCompletionStatusName,
                                    JourneyLogger::COMPLETION_STATUS_COMPLETED);
-    ukm_recorder.ExpectEntryMetric(entry, UkmEntry::kEventsName,
+    ukm_recorder.ExpectEntryMetric(entry, UkmEntry::kEvents2Name,
                                    expected_step_metric);
   }
 }
@@ -1050,10 +661,7 @@ TEST(JourneyLoggerTest, RecordJourneyStatsHistograms_SelectedPlayBilling) {
   logger.SetSelectedMethod(PaymentMethodCategory::kPlayBilling);
   logger.SetCompleted();
 
-  int64_t expected_events = JourneyLogger::EVENT_SKIPPED_SHOW |
-                            JourneyLogger::EVENT_COMPLETED |
-                            JourneyLogger::EVENT_PAY_CLICKED;
-  int64_t expected_events2 =
+  int64_t expected_events =
       toInt(Event2::kSkippedShow) | toInt(Event2::kCompleted) |
       toInt(Event2::kPayClicked) | toInt(Event2::kRequestMethodPlayBilling) |
       toInt(Event2::kSelectedPlayBilling);
@@ -1066,10 +674,8 @@ TEST(JourneyLoggerTest, RecordJourneyStatsHistograms_SelectedPlayBilling) {
     EXPECT_EQ(3U, entry->metrics.size());
     ukm_recorder.ExpectEntryMetric(entry, UkmEntry::kCompletionStatusName,
                                    JourneyLogger::COMPLETION_STATUS_COMPLETED);
-    ukm_recorder.ExpectEntryMetric(entry, UkmEntry::kEventsName,
-                                   expected_events);
     ukm_recorder.ExpectEntryMetric(entry, UkmEntry::kEvents2Name,
-                                   expected_events2);
+                                   expected_events);
   }
 
   std::vector<base::Bucket> buckets =
@@ -1104,9 +710,6 @@ TEST(JourneyLoggerTest,
   logger.SetCompleted();
 
   int64_t expected_events =
-      JourneyLogger::EVENT_SKIPPED_SHOW | JourneyLogger::EVENT_COMPLETED |
-      JourneyLogger::EVENT_PAY_CLICKED | JourneyLogger::EVENT_SELECTED_OTHER;
-  int64_t expected_events2 =
       toInt(Event2::kSkippedShow) | toInt(Event2::kCompleted) |
       toInt(Event2::kPayClicked) |
       toInt(Event2::kRequestMethodGooglePayAuthentication) |
@@ -1120,10 +723,8 @@ TEST(JourneyLoggerTest,
     EXPECT_EQ(3U, entry->metrics.size());
     ukm_recorder.ExpectEntryMetric(entry, UkmEntry::kCompletionStatusName,
                                    JourneyLogger::COMPLETION_STATUS_COMPLETED);
-    ukm_recorder.ExpectEntryMetric(entry, UkmEntry::kEventsName,
-                                   expected_events);
     ukm_recorder.ExpectEntryMetric(entry, UkmEntry::kEvents2Name,
-                                   expected_events2);
+                                   expected_events);
   }
 
   std::vector<base::Bucket> buckets =
