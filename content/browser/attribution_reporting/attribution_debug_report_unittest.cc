@@ -354,6 +354,19 @@ TEST(AttributionDebugReportTest, SourceDebugging) {
               "type": "source-trigger-state-cardinality-limit"
             }])json",
       },
+      {
+          .result =
+              StoreSourceResult::DestinationPerDayReportingLimitReached(100),
+          .expected_report_body = R"json([{
+            "body": {
+              "attribution_destination": "https://conversion.test",
+              "limit": "100",
+              "source_event_id": "123",
+              "source_site": "https://impression.test"
+            },
+            "type": "source-destination-per-day-rate-limit"
+          }])json",
+      },
   };
 
   for (bool is_debug_cookie_set : {false, true}) {

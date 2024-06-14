@@ -174,6 +174,8 @@ class AttributionInteropParser {
         ParseBool(dict, "needs_cross_app_web").value_or(false);
     interop_config.needs_aggregatable_debug =
         ParseBool(dict, "needs_aggregatable_debug").value_or(false);
+    interop_config.needs_source_destination_limit =
+        ParseBool(dict, "needs_source_destination_limit").value_or(false);
 
     AttributionConfig& config = interop_config.attribution_config;
 
@@ -195,6 +197,10 @@ class AttributionInteropParser {
       config.destination_rate_limit.rate_limit_window =
           base::Minutes(destination_rate_limit_window_in_minutes);
     }
+
+    ParseInt(dict, "max_destinations_per_reporting_site_per_day",
+             config.destination_rate_limit.max_per_reporting_site_per_day,
+             required);
 
     ParseDouble(dict, "max_navigation_info_gain",
                 config.event_level_limit.max_navigation_info_gain, required);

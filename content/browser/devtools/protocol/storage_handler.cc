@@ -1801,6 +1801,9 @@ ToSourceRegistrationResult(StoreSourceResult result) {
     case StoreSourceResult::kExceedsMaxTriggerStateCardinality:
       return Storage::AttributionReportingSourceRegistrationResultEnum::
           ExceedsMaxTriggerStateCardinality;
+    case StoreSourceResult::kDestinationPerDayReportingLimitReached:
+      return Storage::AttributionReportingSourceRegistrationResultEnum::
+          DestinationPerDayReportingLimitReached;
   }
 }
 

@@ -205,6 +205,15 @@ inline constexpr const char kRateLimitSourceAllowedDestinationRateLimitSql[] =
     " AND source_expiry_or_attribution_time>?"
     " AND time>?";
 
+inline constexpr const char
+    kRateLimitSourceAllowedDestinationPerDayRateLimitSql[] =
+        "SELECT destination_site,reporting_site FROM rate_limits "
+        "WHERE " RATE_LIMIT_SOURCE_CONDITION
+        " AND source_site=?"
+        " AND reporting_site=?"
+        " AND source_expiry_or_attribution_time>?"
+        " AND time>?";
+
 #define RATE_LIMIT_SELECT_REPORTING_ORIGINS_QUERY \
   "SELECT reporting_origin FROM rate_limits "     \
   "WHERE source_site=? "                          \

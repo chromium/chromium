@@ -250,6 +250,13 @@ class RateLimitTableTest : public testing::Test {
         &db_, input.NewSourceBuilder().Build(), input.time);
   }
 
+  [[nodiscard]] RateLimitResult SourceAllowedForDestinationPerDayRateLimit(
+      const RateLimitInput& input) {
+    CHECK_EQ(input.scope, RateLimitScope::kSource);
+    return table_.SourceAllowedForDestinationPerDayRateLimit(
+        &db_, input.NewSourceBuilder().Build(), input.time);
+  }
+
   [[nodiscard]] RateLimitResult AttributionAllowedForReportingOriginLimit(
       const RateLimitInput& input) {
     return table_.AttributionAllowedForReportingOriginLimit(
@@ -1429,6 +1436,109 @@ TEST_F(RateLimitTableTest, SourceAllowedForDestinationLimit) {
                              "https://a.r1.test", base::Time::Now());
   EXPECT_EQ(RateLimitResult::kAllowed,
             SourceAllowedForDestinationLimit(input_2));
+}
+
+TEST_F(RateLimitTableTest, DestinationPerDayRateLimit) {
+  delegate_.set_destination_rate_limit([] {
+    AttributionConfig::DestinationRateLimit limit;
+    limit.max_per_reporting_site_per_day = 2;
+    return limit;
+  }());
+
+  const base::Time now = base::Time::Now();
+  const base::TimeDelta expiry = base::Days(2);
+
+  const struct {
+    RateLimitInput input;
+    RateLimitResult expected;
+  } kRateLimitsToAdd[] = {
+      // Time now.
+      {RateLimitInput::Source("https://source.test", "https://foo1.test",
+                              "https://report.test", now, expiry),
+       RateLimitResult::kAllowed},
+      // Time now + 12 hrs.
+      {RateLimitInput::Source("https://source.test", "https://foo2.test",
+                              "https://report.test", now + base::Hours(12),
+                              expiry),
+       RateLimitResult::kAllowed},
+      // Time now + 1 day - 1s.
+      {RateLimitInput::Source("https://source.test", "https://foo3.test",
+                              "https://report.test",
+                              now + base::Days(1) - base::Seconds(1), expiry),
+       RateLimitResult::kNotAllowed},
+      // Time now + 1 day. foo1.test should be outside the window.
+      {RateLimitInput::Source("https://source.test", "https://foo3.test",
+                              "https://report.test", now + base::Days(1),
+                              expiry),
+       RateLimitResult::kAllowed},
+      {RateLimitInput::Source("https://source.test", "https://foo4.test",
+                              "https://report.test", now + base::Days(1),
+                              expiry),
+       RateLimitResult::kNotAllowed},
+      // Time now + 1 day + 12 hrs. foo2.test should be outside the
+      // window.
+      {RateLimitInput::Source("https://source.test", "https://foo5.test",
+                              "https://report.test", now + base::Hours(36),
+                              expiry),
+       RateLimitResult::kAllowed},
+      {RateLimitInput::Source("https://source.test", "https://foo6.test",
+                              "https://report.test", now + base::Hours(36),
+                              expiry),
+       RateLimitResult::kNotAllowed},
+  };
+
+  for (const auto& rate_limit : kRateLimitsToAdd) {
+    SCOPED_TRACE(rate_limit.input);
+
+    ASSERT_EQ(rate_limit.expected,
+              SourceAllowedForDestinationPerDayRateLimit(rate_limit.input));
+
+    if (rate_limit.expected == RateLimitResult::kAllowed) {
+      ASSERT_TRUE(AddRateLimitForSource(rate_limit.input));
+    }
+  }
+}
+
+TEST_F(RateLimitTableTest, DestinationPerDayRateLimitSourceExpiry) {
+  delegate_.set_destination_rate_limit([] {
+    AttributionConfig::DestinationRateLimit limit;
+    limit.max_per_reporting_site_per_day = 1;
+    return limit;
+  }());
+
+  const base::Time now = base::Time::Now();
+  const base::TimeDelta expiry = base::Hours(12);
+
+  const struct {
+    RateLimitInput input;
+    RateLimitResult expected;
+  } kRateLimitsToAdd[] = {
+      // Time now.
+      {RateLimitInput::Source("https://source.test", "https://foo1.test",
+                              "https://report.test", now, expiry),
+       RateLimitResult::kAllowed},
+      // Time now + 11 hrs.
+      {RateLimitInput::Source("https://source.test", "https://foo2.test",
+                              "https://report.test", now + base::Hours(11),
+                              expiry),
+       RateLimitResult::kNotAllowed},
+      // Time now + 12 hrs. foo1.test should have expired.
+      {RateLimitInput::Source("https://source.test", "https://foo3.test",
+                              "https://report.test", now + base::Hours(12),
+                              expiry),
+       RateLimitResult::kAllowed},
+  };
+
+  for (const auto& rate_limit : kRateLimitsToAdd) {
+    SCOPED_TRACE(rate_limit.input);
+
+    ASSERT_EQ(rate_limit.expected,
+              SourceAllowedForDestinationPerDayRateLimit(rate_limit.input));
+
+    if (rate_limit.expected == RateLimitResult::kAllowed) {
+      ASSERT_TRUE(AddRateLimitForSource(rate_limit.input));
+    }
+  }
 }
 
 TEST_F(RateLimitTableTest, GetAttributionDataKeyList) {

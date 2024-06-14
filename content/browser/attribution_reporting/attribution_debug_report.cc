@@ -109,6 +109,11 @@ std::optional<DebugDataTypeAndBody> GetReportDataBody(
                 DebugDataType::kSourceDestinationRateLimit,
                 absl::visit([](auto v) { return GetLimit(v.limit); }, v));
           },
+          [](StoreSourceResult::DestinationPerDayReportingLimitReached v) {
+            return std::make_optional<DebugDataTypeAndBody>(
+                DebugDataType::kSourceDestinationPerDayRateLimit,
+                GetLimit(v.limit));
+          },
           [](StoreSourceResult::InsufficientSourceCapacity v) {
             return std::make_optional<DebugDataTypeAndBody>(
                 DebugDataType::kSourceStorageLimit, GetLimit(v.limit));
@@ -287,7 +292,8 @@ base::Value::Dict GetReportData(DebugDataType type, base::Value::Dict body) {
 
 void RecordVerboseDebugReportType(DebugDataType type) {
   static_assert(
-      DebugDataType::kMaxValue == DebugDataType::kSourceReportingOriginLimit,
+      DebugDataType::kMaxValue ==
+          DebugDataType::kSourceDestinationPerDayRateLimit,
       "Update ConversionVerboseDebugReportType enum if the new type is "
       "supported for verbose debug reports.");
   base::UmaHistogramEnumeration("Conversions.SentVerboseDebugReportType4",

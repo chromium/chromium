@@ -23,4 +23,5 @@ enum StoreSourceResult {
   kExceedsMaxChannelCapacity = 11,
   // Reserved: 12
   kExceedsMaxTriggerStateCardinality = 13,
+  kDestinationPerDayReportingLimitReached = 14,
 };

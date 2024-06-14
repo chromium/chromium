@@ -426,6 +426,44 @@ RateLimitTable::SourceAllowedForDestinationRateLimit(
                           : DestinationRateLimitResult::kHitReportingLimit;
 }
 
+RateLimitResult RateLimitTable::SourceAllowedForDestinationPerDayRateLimit(
+    sql::Database* db,
+    const StorableSource& source,
+    base::Time source_time) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+
+  sql::Statement statement(db->GetCachedStatement(
+      SQL_FROM_HERE, attribution_queries::
+                         kRateLimitSourceAllowedDestinationPerDayRateLimitSql));
+
+  const CommonSourceInfo& common_info = source.common_info();
+  statement.BindString(0, common_info.source_site().Serialize());
+  statement.BindString(
+      1, net::SchemefulSite(common_info.reporting_origin()).Serialize());
+  statement.BindTime(2, source_time);
+  statement.BindTime(
+      3, source_time -
+             AttributionConfig::DestinationRateLimit::kPerDayRateLimitWindow);
+
+  const int limit =
+      delegate_->GetDestinationRateLimit().max_per_reporting_site_per_day;
+  DCHECK_GT(limit, 0);
+
+  base::flat_set<net::SchemefulSite> destination_sites =
+      source.registration().destination_set.destinations();
+
+  while (statement.Step()) {
+    destination_sites.insert(
+        net::SchemefulSite::Deserialize(statement.ColumnString(0)));
+    if (destination_sites.size() > static_cast<size_t>(limit)) {
+      return RateLimitResult::kNotAllowed;
+    }
+  }
+
+  return statement.Succeeded() ? RateLimitResult::kAllowed
+                               : RateLimitResult::kError;
+}
+
 RateLimitResult RateLimitTable::AttributionAllowedForReportingOriginLimit(
     sql::Database* db,
     const AttributionInfo& attribution_info,

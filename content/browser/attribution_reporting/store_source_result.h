@@ -48,6 +48,11 @@ class CONTENT_EXPORT StoreSourceResult {
     explicit DestinationReportingLimitReached(int limit) : limit(limit) {}
   };
 
+  struct DestinationPerDayReportingLimitReached {
+    int limit;
+    explicit DestinationPerDayReportingLimitReached(int limit) : limit(limit) {}
+  };
+
   struct DestinationGlobalLimitReached {};
 
   struct DestinationBothLimitsReached {
@@ -82,7 +87,8 @@ class CONTENT_EXPORT StoreSourceResult {
                                DestinationBothLimitsReached,
                                ReportingOriginsPerSiteLimitReached,
                                ExceedsMaxChannelCapacity,
-                               ExceedsMaxTriggerStateCardinality>;
+                               ExceedsMaxTriggerStateCardinality,
+                               DestinationPerDayReportingLimitReached>;
 
   StoreSourceResult(StorableSource,
                     bool is_noised,

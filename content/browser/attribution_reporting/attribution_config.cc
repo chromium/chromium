@@ -147,6 +147,10 @@ bool AttributionConfig::DestinationRateLimit::Validate() const {
     return false;
   }
 
+  if (max_per_reporting_site_per_day <= 0) {
+    return false;
+  }
+
   return true;
 }
 

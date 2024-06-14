@@ -1,7 +1,8 @@
 {
   "description": "Unique destination limit covered by unexpired sources",
   "api_config": {
-    "max_destinations_per_source_site_reporting_site": "1"
+    "max_destinations_per_source_site_reporting_site": "1",
+    "rate_limit_max_reporting_origins_per_source_reporting_site": "2"
   },
   "input": {
     "registrations": [

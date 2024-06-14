@@ -23,6 +23,7 @@
 #include "base/containers/enum_set.h"
 #include "base/containers/flat_set.h"
 #include "base/containers/span.h"
+#include "base/feature_list.h"
 #include "base/files/file_util.h"
 #include "base/functional/bind.h"
 #include "base/functional/overloaded.h"
@@ -47,6 +48,7 @@
 #include "components/attribution_reporting/destination_set.h"
 #include "components/attribution_reporting/event_report_windows.h"
 #include "components/attribution_reporting/event_trigger_data.h"
+#include "components/attribution_reporting/features.h"
 #include "components/attribution_reporting/filters.h"
 #include "components/attribution_reporting/privacy_math.h"
 #include "components/attribution_reporting/source_registration.h"
@@ -602,18 +604,6 @@ StoreSourceResult AttributionStorageSql::StoreSource(StorableSource source) {
         delegate_->GetMaxSourcesPerOrigin()));
   }
 
-  switch (rate_limit_table_.SourceAllowedForDestinationLimit(&db_, source,
-                                                             source_time)) {
-    case RateLimitResult::kAllowed:
-      break;
-    case RateLimitResult::kNotAllowed:
-      return make_result(
-          StoreSourceResult::InsufficientUniqueDestinationCapacity(
-              delegate_->GetMaxDestinationsPerSourceSiteReportingSite()));
-    case RateLimitResult::kError:
-      return make_result(StoreSourceResult::InternalError());
-  }
-
   switch (rate_limit_table_.SourceAllowedForReportingOriginPerSiteLimit(
       &db_, source, source_time)) {
     case RateLimitResult::kAllowed:
@@ -626,12 +616,6 @@ StoreSourceResult AttributionStorageSql::StoreSource(StorableSource source) {
       return make_result(StoreSourceResult::InternalError());
   }
 
-  is_noised = randomized_response_data.response().has_value();
-
-  // IMPORTANT: The following rate-limits are shared across reporting sites and
-  // therefore security sensitive. It's important to ensure that these
-  // rate-limits are checked as last steps in source registration to avoid
-  // side-channel leakage of the cross-origin data.
 
   RateLimitTable::DestinationRateLimitResult destination_rate_limit_result =
       rate_limit_table_.SourceAllowedForDestinationRateLimit(&db_, source,
@@ -639,11 +623,14 @@ StoreSourceResult AttributionStorageSql::StoreSource(StorableSource source) {
   base::UmaHistogramEnumeration("Conversions.DestinationRateLimitResult",
                                 destination_rate_limit_result);
 
+  bool hit_global_destination_limit = false;
+
   switch (destination_rate_limit_result) {
     case RateLimitTable::DestinationRateLimitResult::kAllowed:
       break;
     case RateLimitTable::DestinationRateLimitResult::kHitGlobalLimit:
-      return make_result(StoreSourceResult::DestinationGlobalLimitReached());
+      hit_global_destination_limit = true;
+      break;
     case RateLimitTable::DestinationRateLimitResult::kHitReportingLimit:
       return make_result(StoreSourceResult::DestinationReportingLimitReached(
           delegate_->GetDestinationRateLimit().max_per_reporting_site));
@@ -652,6 +639,45 @@ StoreSourceResult AttributionStorageSql::StoreSource(StorableSource source) {
           delegate_->GetDestinationRateLimit().max_per_reporting_site));
     case RateLimitTable::DestinationRateLimitResult::kError:
       return make_result(StoreSourceResult::InternalError());
+  }
+
+  if (base::FeatureList::IsEnabled(attribution_reporting::features::
+                                       kAttributionSourceDestinationLimit)) {
+    switch (rate_limit_table_.SourceAllowedForDestinationPerDayRateLimit(
+        &db_, source, source_time)) {
+      case RateLimitResult::kAllowed:
+        break;
+      case RateLimitResult::kNotAllowed:
+        return make_result(
+            StoreSourceResult::DestinationPerDayReportingLimitReached(
+                delegate_->GetDestinationRateLimit()
+                    .max_per_reporting_site_per_day));
+      case RateLimitResult::kError:
+        return make_result(StoreSourceResult::InternalError());
+    }
+  }
+
+  switch (rate_limit_table_.SourceAllowedForDestinationLimit(&db_, source,
+                                                             source_time)) {
+    case RateLimitResult::kAllowed:
+      break;
+    case RateLimitResult::kNotAllowed:
+      return make_result(
+          StoreSourceResult::InsufficientUniqueDestinationCapacity(
+              delegate_->GetMaxDestinationsPerSourceSiteReportingSite()));
+    case RateLimitResult::kError:
+      return make_result(StoreSourceResult::InternalError());
+  }
+
+  is_noised = randomized_response_data.response().has_value();
+
+  // IMPORTANT: The following rate-limits are shared across reporting sites and
+  // therefore security sensitive. It's important to ensure that these
+  // rate-limits are checked as last steps in source registration to avoid
+  // side-channel leakage of the cross-origin data.
+
+  if (hit_global_destination_limit) {
+    return make_result(StoreSourceResult::DestinationGlobalLimitReached());
   }
 
   switch (rate_limit_table_.SourceAllowedForReportingOriginLimit(&db_, source,

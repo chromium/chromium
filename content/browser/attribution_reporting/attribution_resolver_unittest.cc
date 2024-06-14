@@ -24,6 +24,7 @@
 #include "base/memory/raw_ptr.h"
 #include "base/strings/stringprintf.h"
 #include "base/test/metrics/histogram_tester.h"
+#include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
 #include "base/time/time.h"
 #include "components/attribution_reporting/aggregatable_debug_reporting_config.h"
@@ -34,6 +35,7 @@
 #include "components/attribution_reporting/aggregation_keys.h"
 #include "components/attribution_reporting/event_report_windows.h"
 #include "components/attribution_reporting/event_trigger_data.h"
+#include "components/attribution_reporting/features.h"
 #include "components/attribution_reporting/filters.h"
 #include "components/attribution_reporting/privacy_math.h"
 #include "components/attribution_reporting/source_registration_time_config.mojom.h"
@@ -4463,6 +4465,48 @@ TEST_F(AttributionResolverTest, ProcessAggregatableDebugReport_SourceId) {
         "Conversions.AggregatableDebugReport.ProcessResult",
         input.expected_result, 1);
   }
+}
+
+class AttributionResolverSourceDestinationLimitTest
+    : public AttributionResolverTest {
+ private:
+  base::test::ScopedFeatureList scoped_feature_list_{
+      attribution_reporting::features::kAttributionSourceDestinationLimit};
+};
+
+TEST_F(AttributionResolverSourceDestinationLimitTest,
+       PerDayLimitReached_SourceDropped) {
+  delegate()->set_destination_rate_limit({
+      .max_per_reporting_site_per_day = 1,
+  });
+
+  EXPECT_EQ(storage()
+                ->StoreSource(
+                    SourceBuilder()
+                        .SetDestinationSites({net::SchemefulSite::Deserialize(
+                            "https://d1.test")})
+                        .Build())
+                .status(),
+            StorableSource::Result::kSuccess);
+  EXPECT_EQ(storage()
+                ->StoreSource(
+                    SourceBuilder()
+                        .SetDestinationSites({net::SchemefulSite::Deserialize(
+                            "https://d2.test")})
+                        .Build())
+                .status(),
+            StorableSource::Result::kDestinationPerDayReportingLimitReached);
+
+  task_environment_.FastForwardBy(base::Days(1));
+
+  EXPECT_EQ(storage()
+                ->StoreSource(
+                    SourceBuilder()
+                        .SetDestinationSites({net::SchemefulSite::Deserialize(
+                            "https://d2.test")})
+                        .Build())
+                .status(),
+            StorableSource::Result::kSuccess);
 }
 
 }  // namespace content

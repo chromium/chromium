@@ -24,6 +24,12 @@
   // destinations. Formatted as a base-10 string.
   "destination_rate_limit_window_in_minutes": "1",
 
+  // Positive integer that controls the maximum number of distinct destinations
+  // covered by pending sources for a given (source site, reporting site) per
+  // day.
+  // Formatted as a base-10 string.
+  "max_destinations_per_reporting_site_per_day": "100",
+
   // Positive integer that controls the rate-limiting time window in days for
   // attribution. Formatted as a base-10 string.
   "rate_limit_time_window_in_days": "30",

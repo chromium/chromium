@@ -497,6 +497,10 @@ TEST(AttributionInteropParserTest, ValidConfig) {
        [](AttributionConfig& c) {
          c.destination_rate_limit = {.rate_limit_window = base::Minutes(5)};
        }},
+      {R"json({"max_destinations_per_reporting_site_per_day":"20"})json", false,
+       [](AttributionConfig& c) {
+         c.destination_rate_limit = {.max_per_reporting_site_per_day = 20};
+       }},
       {R"json({"rate_limit_time_window_in_days":"30"})json", false,
        [](AttributionConfig& c) { c.rate_limit.time_window = base::Days(30); }},
       {R"json({"rate_limit_max_source_registration_reporting_origins":"10"})json",
@@ -567,6 +571,7 @@ TEST(AttributionInteropParserTest, ValidConfig) {
         "max_destinations_per_rate_limit_window_reporting_site": "1",
         "max_destinations_per_rate_limit_window": "2",
         "destination_rate_limit_window_in_minutes": "10",
+        "max_destinations_per_reporting_site_per_day": "15",
         "rate_limit_time_window_in_days":"10",
         "rate_limit_max_source_registration_reporting_origins":"20",
         "rate_limit_max_attribution_reporting_origins":"15",
@@ -608,9 +613,12 @@ TEST(AttributionInteropParserTest, ValidConfig) {
          c.aggregate_limit.min_delay = base::Minutes(10);
          c.aggregate_limit.delay_span = base::Minutes(20);
 
-         c.destination_rate_limit = {.max_total = 2,
-                                     .max_per_reporting_site = 1,
-                                     .rate_limit_window = base::Minutes(10)};
+         c.destination_rate_limit = {
+             .max_total = 2,
+             .max_per_reporting_site = 1,
+             .rate_limit_window = base::Minutes(10),
+             .max_per_reporting_site_per_day = 15,
+         };
 
          config.aggregation_coordinator_origins.emplace_back(
              url::Origin::Create(GURL("https://c.test")));

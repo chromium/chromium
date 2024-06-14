@@ -433,6 +433,11 @@ RunAttributionInteropSimulation(
                                       kAttributionAggregatableDebugReporting);
   }
 
+  if (run.config.needs_source_destination_limit) {
+    enabled_features.emplace_back(
+        attribution_reporting::features::kAttributionSourceDestinationLimit);
+  }
+
   base::test::ScopedFeatureList scoped_feature_list;
   scoped_feature_list.InitWithFeatures(
       enabled_features,

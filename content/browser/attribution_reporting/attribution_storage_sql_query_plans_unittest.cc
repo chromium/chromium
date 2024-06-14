@@ -193,6 +193,14 @@ TEST_F(AttributionSqlQueryPlanTest,
                         {"scope", "source_site"})));
 }
 
+TEST_F(AttributionSqlQueryPlanTest,
+       kRateLimitSourceAllowedDestinationPerDayRateLimitSql) {
+  EXPECT_THAT(GetPlan(attribution_queries::
+                          kRateLimitSourceAllowedDestinationPerDayRateLimitSql),
+              ValueIs(UsesIndex("rate_limit_reporting_origin_idx",
+                                {"scope", "source_site"})));
+}
+
 TEST_F(AttributionSqlQueryPlanTest, kRateLimitSourceReportingOriginsBySiteSql) {
   EXPECT_THAT(
       GetPlan(

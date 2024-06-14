@@ -193,6 +193,10 @@ TEST_F(AggregatableDebugReportTest, SourceDebugReport) {
           StoreSourceResult::InsufficientUniqueDestinationCapacity(10),
       },
       {
+          DebugDataType::kSourceDestinationPerDayRateLimit,
+          StoreSourceResult::DestinationPerDayReportingLimitReached(20),
+      },
+      {
           DebugDataType::kSourceDestinationRateLimit,
           StoreSourceResult::DestinationReportingLimitReached(50),
       },

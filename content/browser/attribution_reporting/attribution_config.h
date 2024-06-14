@@ -122,9 +122,13 @@ struct CONTENT_EXPORT AttributionConfig {
     // Returns true if this config is valid.
     [[nodiscard]] bool Validate() const;
 
+    static constexpr base::TimeDelta kPerDayRateLimitWindow = base::Days(1);
+
     int max_total = 200;
     int max_per_reporting_site = 50;
     base::TimeDelta rate_limit_window = base::Minutes(1);
+
+    int max_per_reporting_site_per_day = 100;
 
     friend bool operator==(const DestinationRateLimit&,
                            const DestinationRateLimit&) = default;

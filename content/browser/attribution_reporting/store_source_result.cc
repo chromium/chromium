@@ -78,6 +78,9 @@ Status StoreSourceResult::status() const {
           [](ExceedsMaxTriggerStateCardinality) {
             return Status::kExceedsMaxTriggerStateCardinality;
           },
+          [](DestinationPerDayReportingLimitReached) {
+            return Status::kDestinationPerDayReportingLimitReached;
+          },
       },
       result_);
 }

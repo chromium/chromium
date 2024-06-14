@@ -206,9 +206,10 @@ const base::TimeDelta ReportRetryDelay(bool is_first_retry) {
 }
 
 void RecordStoreSourceStatus(const StoreSourceResult& result) {
-  static_assert(StorableSource::Result::kMaxValue ==
-                    StorableSource::Result::kExceedsMaxTriggerStateCardinality,
-                "Update `ConversionStorageSourceStatus enum` in `enums.xml`.");
+  static_assert(
+      StorableSource::Result::kMaxValue ==
+          StorableSource::Result::kDestinationPerDayReportingLimitReached,
+      "Update `ConversionStorageSourceStatus enum` in `enums.xml`.");
   base::UmaHistogramEnumeration("Conversions.SourceStoredStatus8",
                                 result.status());
 }

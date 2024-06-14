@@ -10509,6 +10509,7 @@ experimental domain Storage
       reportingOriginsPerSiteLimitReached
       exceedsMaxChannelCapacity
       exceedsMaxTriggerStateCardinality
+      destinationPerDayReportingLimitReached
 
   experimental event attributionReportingSourceRegistered
     parameters

@@ -800,6 +800,8 @@ const sourceRegistrationStatusText:
           'Rejected: reached reporting origins per site limit',
       [StoreSourceResult.kExceedsMaxTriggerStateCardinality]:
           'Rejected: trigger state cardinality exceeds limit',
+      [StoreSourceResult.kDestinationPerDayReportingLimitReached]:
+          'Rejected: destination per day reporting limit reached',
     };
 
 const commonResult = {
