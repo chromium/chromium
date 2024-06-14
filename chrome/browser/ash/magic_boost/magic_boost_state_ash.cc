@@ -64,6 +64,10 @@ void MagicBoostStateAsh::RegisterPrefChanges(PrefService* pref_service) {
   pref_change_registrar_ = std::make_unique<PrefChangeRegistrar>();
   pref_change_registrar_->Init(pref_service);
   pref_change_registrar_->Add(
+      ash::prefs::kMahiEnabled,
+      base::BindRepeating(&MagicBoostStateAsh::OnHMREnabledUpdated,
+                          base::Unretained(this)));
+  pref_change_registrar_->Add(
       ash::prefs::kHMRConsentStatus,
       base::BindRepeating(&MagicBoostStateAsh::OnHMRConsentStatusUpdated,
                           base::Unretained(this)));
@@ -73,8 +77,14 @@ void MagicBoostStateAsh::RegisterPrefChanges(PrefService* pref_service) {
           &MagicBoostStateAsh::OnHMRConsentWindowDismissCountUpdated,
           base::Unretained(this)));
 
+  OnHMREnabledUpdated();
   OnHMRConsentStatusUpdated();
   OnHMRConsentWindowDismissCountUpdated();
+}
+
+void MagicBoostStateAsh::OnHMREnabledUpdated() {
+  UpdateHMREnabled(
+      pref_change_registrar_->prefs()->GetBoolean(ash::prefs::kMahiEnabled));
 }
 
 void MagicBoostStateAsh::OnHMRConsentStatusUpdated() {

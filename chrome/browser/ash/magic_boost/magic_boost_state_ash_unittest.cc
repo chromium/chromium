@@ -28,13 +28,17 @@ class TestMagicBoostStateObserver : public MagicBoostState::Observer {
   ~TestMagicBoostStateObserver() override = default;
 
   // MagicBoostStateObserver:
+  void OnHMREnabledUpdated(bool enabled) override { hmr_enabled_ = enabled; }
+
   void OnHMRConsentStatusUpdated(HMRConsentStatus status) override {
     hmr_consent_status_ = status;
   }
 
+  bool hmr_enabled() const { return hmr_enabled_; }
   HMRConsentStatus hmr_consent_status() const { return hmr_consent_status_; }
 
  private:
+  bool hmr_enabled_ = false;
   HMRConsentStatus hmr_consent_status_ = HMRConsentStatus::kUnset;
 };
 
@@ -73,6 +77,24 @@ class MagicBoostStateAshTest : public AshTestBase {
   std::unique_ptr<TestMagicBoostStateObserver> observer_;
   std::unique_ptr<MagicBoostStateAsh> magic_boost_state_;
 };
+
+TEST_F(MagicBoostStateAshTest, UpdateHMREnabledState) {
+  MagicBoostState::Get()->AddObserver(observer());
+
+  // The observer class should get an notification when the pref value
+  // changes.
+  prefs()->SetBoolean(ash::prefs::kMahiEnabled, false);
+  EXPECT_FALSE(MagicBoostState::Get()->hmr_enabled().value());
+  EXPECT_FALSE(observer()->hmr_enabled());
+
+  // The observer class should get an notification when the pref value
+  // changes.
+  prefs()->SetBoolean(ash::prefs::kMahiEnabled, true);
+  EXPECT_TRUE(MagicBoostState::Get()->hmr_enabled().value());
+  EXPECT_TRUE(observer()->hmr_enabled());
+
+  MagicBoostState::Get()->RemoveObserver(observer());
+}
 
 TEST_F(MagicBoostStateAshTest, UpdateHMRConsentStatus) {
   MagicBoostState::Get()->AddObserver(observer());

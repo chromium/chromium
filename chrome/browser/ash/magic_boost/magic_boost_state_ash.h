@@ -46,6 +46,7 @@ class MagicBoostStateAsh : public chromeos::MagicBoostState,
   void RegisterPrefChanges(PrefService* pref_service);
 
   // Called when the related preferences are updated from the pref service.
+  void OnHMREnabledUpdated();
   void OnHMRConsentStatusUpdated();
   void OnHMRConsentWindowDismissCountUpdated();
 

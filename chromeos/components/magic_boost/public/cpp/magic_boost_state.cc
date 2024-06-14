@@ -38,6 +38,14 @@ void MagicBoostState::RemoveObserver(MagicBoostState::Observer* observer) {
   observers_.RemoveObserver(observer);
 }
 
+void MagicBoostState::UpdateHMREnabled(bool enabled) {
+  hmr_enabled_ = enabled;
+
+  for (auto& observer : observers_) {
+    observer.OnHMREnabledUpdated(hmr_enabled_.value());
+  }
+}
+
 void MagicBoostState::UpdateHMRConsentStatus(HMRConsentStatus consent_status) {
   hmr_consent_status_ = std::make_optional(consent_status);
 

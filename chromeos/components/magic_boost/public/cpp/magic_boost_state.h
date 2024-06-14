@@ -29,7 +29,8 @@ class COMPONENT_EXPORT(MAGIC_BOOST) MagicBoostState {
   // A checked observer which receives MagicBoost state changes.
   class Observer : public base::CheckedObserver {
    public:
-    virtual void OnHMRConsentStatusUpdated(HMRConsentStatus status) = 0;
+    virtual void OnHMREnabledUpdated(bool enabled) {}
+    virtual void OnHMRConsentStatusUpdated(HMRConsentStatus status) {}
   };
 
   static MagicBoostState* Get();
@@ -55,6 +56,8 @@ class COMPONENT_EXPORT(MAGIC_BOOST) MagicBoostState {
   // and/or enabled state immediately after the write can read a stale value.
   virtual void AsyncWriteConsentStatus(HMRConsentStatus consent_status) = 0;
 
+  std::optional<bool> hmr_enabled() const { return hmr_enabled_; }
+
   std::optional<HMRConsentStatus> hmr_consent_status() const {
     return hmr_consent_status_;
   }
@@ -64,10 +67,12 @@ class COMPONENT_EXPORT(MAGIC_BOOST) MagicBoostState {
   }
 
  protected:
+  void UpdateHMREnabled(bool enabled);
   void UpdateHMRConsentStatus(HMRConsentStatus status);
   void UpdateHMRConsentWindowDismissCount(int32_t count);
 
  private:
+  std::optional<bool> hmr_enabled_;
   std::optional<HMRConsentStatus> hmr_consent_status_ =
       HMRConsentStatus::kUnset;
   int32_t hmr_consent_window_dismiss_count_ = 0;
