@@ -1,17 +1,17 @@
 This is the test for internals.counterValueForElementById
    
 PASS internals.counterValue(document.getElementById('marker')) is '0'
-PASS internals.counterValue(document.getElementById('before')) is '0.0'
-PASS internals.counterValue(document.getElementById('after')) is '0.0.0'
-PASS internals.counterValue(document.getElementById('marker_before')) is '0.0.0.0 0.0.0.0'
-PASS internals.counterValue(document.getElementById('marker_after')) is '0.0.0.0.0 0.0.0.0.0'
-PASS internals.counterValue(document.getElementById('before_after')) is '0.0.0.0.0.0 0.0.0.0.0.0'
-PASS internals.counterValue(document.getElementById('marker_before_after')) is '0.0.0.0.0.0.0 0.0.0.0.0.0.0 0.0.0.0.0.0.0'
-PASS internals.counterValue(document.getElementById('twice')) is '0.0.0.0.0.0.0.0 0.0.0.0.0.0.0.0'
-PASS internals.counterValue(document.getElementById('point')) is '0.0.0.0.0.0.0.0.0.1'
-PASS internals.counterValue(document.getElementById('two-points')) is '0.0.0.0.0.0.0.0.0.1.2'
-PASS internals.counterValue(document.getElementById('greek')) is '0.0.0.0.0.0.0.0.0.α.β'
-PASS internals.counterValue(document.getElementById('three-greeks')) is '0.0.0.0.0.0.0.0.0.α.β 0.0.0.0.0.0.0.0.0.α.β 0.0.0.0.0.0.0.0.0.α.β'
+PASS internals.counterValue(document.getElementById('before')) is '0'
+PASS internals.counterValue(document.getElementById('after')) is '0'
+PASS internals.counterValue(document.getElementById('marker_before')) is '0 0'
+PASS internals.counterValue(document.getElementById('marker_after')) is '0 0'
+PASS internals.counterValue(document.getElementById('before_after')) is '0 0'
+PASS internals.counterValue(document.getElementById('marker_before_after')) is '0 0 0'
+PASS internals.counterValue(document.getElementById('twice')) is '0 0'
+PASS internals.counterValue(document.getElementById('point')) is '0.1'
+PASS internals.counterValue(document.getElementById('two-points')) is '0.1.2'
+PASS internals.counterValue(document.getElementById('greek')) is '0.α.β'
+PASS internals.counterValue(document.getElementById('three-greeks')) is '0.α.β 0.α.β 0.α.β'
 PASS successfullyParsed is true
 
 TEST COMPLETE

@@ -42,17 +42,17 @@
             testRunner.dumpAsText();
 
             shouldBe("internals.counterValue(document.getElementById('marker'))", "'0'");
-            shouldBe("internals.counterValue(document.getElementById('before'))", "'0.0'");
-            shouldBe("internals.counterValue(document.getElementById('after'))", "'0.0.0'");
-            shouldBe("internals.counterValue(document.getElementById('marker_before'))", "'0.0.0.0 0.0.0.0'");
-            shouldBe("internals.counterValue(document.getElementById('marker_after'))", "'0.0.0.0.0 0.0.0.0.0'");
-            shouldBe("internals.counterValue(document.getElementById('before_after'))", "'0.0.0.0.0.0 0.0.0.0.0.0'");
-            shouldBe("internals.counterValue(document.getElementById('marker_before_after'))", "'0.0.0.0.0.0.0 0.0.0.0.0.0.0 0.0.0.0.0.0.0'");
-            shouldBe("internals.counterValue(document.getElementById('twice'))", "'0.0.0.0.0.0.0.0 0.0.0.0.0.0.0.0'");
-            shouldBe("internals.counterValue(document.getElementById('point'))", "'0.0.0.0.0.0.0.0.0.1'");
-            shouldBe("internals.counterValue(document.getElementById('two-points'))", "'0.0.0.0.0.0.0.0.0.1.2'");
-            shouldBe("internals.counterValue(document.getElementById('greek'))", "'0.0.0.0.0.0.0.0.0.\u03b1.\u03b2'");
-            shouldBe("internals.counterValue(document.getElementById('three-greeks'))", "'0.0.0.0.0.0.0.0.0.\u03b1.\u03b2 0.0.0.0.0.0.0.0.0.\u03b1.\u03b2 0.0.0.0.0.0.0.0.0.\u03b1.\u03b2'");
+            shouldBe("internals.counterValue(document.getElementById('before'))", "'0'");
+            shouldBe("internals.counterValue(document.getElementById('after'))", "'0'");
+            shouldBe("internals.counterValue(document.getElementById('marker_before'))", "'0 0'");
+            shouldBe("internals.counterValue(document.getElementById('marker_after'))", "'0 0'");
+            shouldBe("internals.counterValue(document.getElementById('before_after'))", "'0 0'");
+            shouldBe("internals.counterValue(document.getElementById('marker_before_after'))", "'0 0 0'");
+            shouldBe("internals.counterValue(document.getElementById('twice'))", "'0 0'");
+            shouldBe("internals.counterValue(document.getElementById('point'))", "'0.1'");
+            shouldBe("internals.counterValue(document.getElementById('two-points'))", "'0.1.2'");
+            shouldBe("internals.counterValue(document.getElementById('greek'))", "'0.\u03b1.\u03b2'");
+            shouldBe("internals.counterValue(document.getElementById('three-greeks'))", "'0.\u03b1.\u03b2 0.\u03b1.\u03b2 0.\u03b1.\u03b2'");
         }
     </script>
 </body>
