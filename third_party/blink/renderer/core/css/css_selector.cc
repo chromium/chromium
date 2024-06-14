@@ -460,7 +460,7 @@ struct NameToPseudoStruct {
 };
 
 // These tables must be kept sorted.
-const static NameToPseudoStruct kPseudoTypeWithoutArgumentsMap[] = {
+constexpr static NameToPseudoStruct kPseudoTypeWithoutArgumentsMap[] = {
     {"-internal-autofill-previewed", CSSSelector::kPseudoAutofillPreviewed},
     {"-internal-autofill-selected", CSSSelector::kPseudoAutofillSelected},
     {"-internal-dialog-in-top-layer", CSSSelector::kPseudoDialogInTopLayer},
@@ -585,7 +585,7 @@ const static NameToPseudoStruct kPseudoTypeWithoutArgumentsMap[] = {
     {"xr-overlay", CSSSelector::kPseudoXrOverlay},
 };
 
-const static NameToPseudoStruct kPseudoTypeWithArgumentsMap[] = {
+constexpr static NameToPseudoStruct kPseudoTypeWithArgumentsMap[] = {
     {"-webkit-any", CSSSelector::kPseudoAny},
     {"active-view-transition-type",
      CSSSelector::kPseudoActiveViewTransitionType},
@@ -1672,5 +1672,38 @@ CSSSelector::RelationType ConvertRelationToRelative(
       return {};
   }
 }
+
+constexpr bool IsPseudoMapSorted(const NameToPseudoStruct* map, unsigned size) {
+  for (unsigned i = 0; i < size - 1; i++) {
+    // strcmp/strncmp would be much better here, but unfortunately they aren't
+    // constexpr.
+    const char* current_string = map[i].string;
+    const char* next_string = map[i + 1].string;
+    while (true) {
+      if (*current_string > *next_string) {
+        return false;
+      }
+      if (*current_string < *next_string) {
+        break;
+      }
+      if (!*current_string) {
+        break;
+      }
+      if (!*next_string) {
+        return false;
+      }
+      current_string++;
+      next_string++;
+    }
+  }
+  return true;
+}
+
+static_assert(IsPseudoMapSorted(kPseudoTypeWithoutArgumentsMap,
+                                std::size(kPseudoTypeWithoutArgumentsMap)),
+              "kPseudoTypeWithoutArgumentsMap must be sorted.");
+static_assert(IsPseudoMapSorted(kPseudoTypeWithArgumentsMap,
+                                std::size(kPseudoTypeWithArgumentsMap)),
+              "kPseudoTypeWithArgumentsMap must be sorted.");
 
 }  // namespace blink
