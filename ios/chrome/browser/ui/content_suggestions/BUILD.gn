@@ -125,6 +125,7 @@ source_set("metrics") {
     "//components/favicon_base",
     "//components/ntp_tiles",
     "//components/prefs",
+    "//ios/chrome/browser/favicon/ui_bundled",
     "//ios/chrome/browser/metrics/model:metrics_internal",
     "//ios/chrome/browser/ntp/model:set_up_list_item_type",
     "//ios/chrome/browser/ntp/model:set_up_list_metrics",
@@ -133,7 +134,6 @@ source_set("metrics") {
     "//ios/chrome/browser/ui/content_suggestions/cells",
     "//ios/chrome/browser/ui/content_suggestions/cells:constants",
     "//ios/chrome/browser/ui/content_suggestions/set_up_list:utils",
-    "//ios/chrome/browser/ui/favicon",
   ]
 }
 

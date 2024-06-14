@@ -9,7 +9,7 @@
 #import "base/strings/utf_string_conversions.h"
 #import "base/test/task_environment.h"
 #import "components/ntp_tiles/ntp_tile.h"
-#import "ios/chrome/browser/ui/favicon/favicon_attributes_provider.h"
+#import "ios/chrome/browser/favicon/ui_bundled/favicon_attributes_provider.h"
 #import "ios/chrome/common/app_group/app_group_constants.h"
 #import "ios/chrome/common/ntp_tile/ntp_tile.h"
 #import "ios/chrome/common/ui/favicon/favicon_attributes.h"

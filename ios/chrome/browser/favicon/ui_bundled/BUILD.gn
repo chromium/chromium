@@ -2,7 +2,7 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
-source_set("favicon") {
+source_set("ui_bundled") {
   sources = [
     "favicon_attributes_provider.h",
     "favicon_attributes_provider.mm",

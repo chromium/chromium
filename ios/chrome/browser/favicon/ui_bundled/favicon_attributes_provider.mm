@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#import "ios/chrome/browser/ui/favicon/favicon_attributes_provider.h"
+#import "ios/chrome/browser/favicon/ui_bundled/favicon_attributes_provider.h"
 
 #import "base/check.h"
 #import "base/functional/bind.h"
@@ -14,7 +14,7 @@
 #import "components/favicon_base/fallback_icon_style.h"
 #import "components/favicon_base/favicon_types.h"
 #import "ios/chrome/browser/favicon/model/large_icon_cache.h"
-#import "ios/chrome/browser/ui/favicon/favicon_attributes_with_payload.h"
+#import "ios/chrome/browser/favicon/ui_bundled/favicon_attributes_with_payload.h"
 #import "skia/ext/skia_utils_ios.h"
 #import "url/gurl.h"
 

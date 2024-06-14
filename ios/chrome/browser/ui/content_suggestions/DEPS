@@ -8,7 +8,7 @@ include_rules = [
   "+ios/chrome/browser/ui/omnibox",
   "+ios/chrome/browser/ui/toolbar/buttons",
   "+ios/chrome/browser/ui/menu",
-  "+ios/chrome/browser/ui/favicon",
+  "+ios/chrome/browser/favicon/ui_bundled",
   "+ios/chrome/browser/ui/settings/safety_check/safety_check_constants.h",
   "+ios/chrome/browser/ui/lens",
   "+ios/chrome/browser/ui/location_bar/location_bar_constants.h",
