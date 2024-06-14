@@ -187,7 +187,7 @@ bool AutofillExternalDelegate::IsAutofillAndFirstLayerSuggestionId(
     case SuggestionType::kManageCreditCard:
     case SuggestionType::kManageIban:
     case SuggestionType::kManagePlusAddress:
-    case SuggestionType::kClearForm:
+    case SuggestionType::kUndoOrClear:
     case SuggestionType::kComposeResumeNudge:
     case SuggestionType::kComposeDisable:
     case SuggestionType::kComposeGoToSettings:
@@ -433,7 +433,7 @@ void AutofillExternalDelegate::DidSelectSuggestion(
       suggestion.GetPayload<Suggestion::BackendId>();
 
   switch (suggestion.type) {
-    case SuggestionType::kClearForm:
+    case SuggestionType::kUndoOrClear:
 #if !BUILDFLAG(IS_IOS)
       manager_->UndoAutofill(mojom::ActionPersistence::kPreview, query_form_,
                              query_field_);
@@ -601,7 +601,7 @@ void AutofillExternalDelegate::DidAcceptSuggestion(
       manager_->client().ShowAutofillSettings(suggestion.type);
       break;
     }
-    case SuggestionType::kClearForm:
+    case SuggestionType::kUndoOrClear:
 #if !BUILDFLAG(IS_IOS)
       manager_->UndoAutofill(mojom::ActionPersistence::kFill, query_form_,
                              query_field_);
@@ -785,7 +785,7 @@ bool AutofillExternalDelegate::RemoveSuggestion(const Suggestion& suggestion) {
     case SuggestionType::kWebauthnSignInWithAnotherDevice:
     case SuggestionType::kTitle:
     case SuggestionType::kSeparator:
-    case SuggestionType::kClearForm:
+    case SuggestionType::kUndoOrClear:
     case SuggestionType::kMixedFormMessage:
     case SuggestionType::kDevtoolsTestAddresses:
     case SuggestionType::kDevtoolsTestAddressEntry:

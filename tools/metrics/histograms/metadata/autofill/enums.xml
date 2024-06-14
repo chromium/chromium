@@ -4548,7 +4548,7 @@ Called by update_autofill_enums.py.-->
   <int value="44" label="Webauthn sign-in with another device"/>
   <int value="45" label="Title"/>
   <int value="46" label="Separator"/>
-  <int value="47" label="Clear form"/>
+  <int value="47" label="Undo or clear"/>
   <int value="48" label="Mixed form message"/>
   <int value="49" label="Devtools test addresses"/>
   <int value="50" label="Devtools test address entry"/>

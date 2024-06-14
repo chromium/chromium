@@ -536,7 +536,7 @@ TEST_F(AutofillPopupControllerImplTest,
                                  Suggestion(u"abc", kAddressEntry),
                                  Suggestion(u"abx", kAddressEntry),
                                  Suggestion(kSeparator),
-                                 Suggestion(kClearForm),
+                                 Suggestion(kUndoOrClear),
                              });
 
   controller.SetFilter(AutofillPopupController::SuggestionFilter(u"ab"));
@@ -545,20 +545,20 @@ TEST_F(AutofillPopupControllerImplTest,
               ElementsAre(Field(&Suggestion::type, kAddressEntry),
                           Field(&Suggestion::type, kAddressEntry),
                           Field(&Suggestion::type, kSeparator),
-                          Field(&Suggestion::type, kClearForm)));
+                          Field(&Suggestion::type, kUndoOrClear)));
 
   controller.SetFilter(AutofillPopupController::SuggestionFilter(u"abc"));
   EXPECT_EQ(controller.GetSuggestions().size(), 3u);
   EXPECT_THAT(controller.GetSuggestions(),
               ElementsAre(Field(&Suggestion::type, kAddressEntry),
                           Field(&Suggestion::type, kSeparator),
-                          Field(&Suggestion::type, kClearForm)));
+                          Field(&Suggestion::type, kUndoOrClear)));
 
   controller.SetFilter(AutofillPopupController::SuggestionFilter(u"abcdef"));
   EXPECT_EQ(controller.GetSuggestions().size(), 2u);
   EXPECT_THAT(controller.GetSuggestions(),
               ElementsAre(Field(&Suggestion::type, kSeparator),
-                          Field(&Suggestion::type, kClearForm)));
+                          Field(&Suggestion::type, kUndoOrClear)));
 }
 
 TEST_F(AutofillPopupControllerImplTest,

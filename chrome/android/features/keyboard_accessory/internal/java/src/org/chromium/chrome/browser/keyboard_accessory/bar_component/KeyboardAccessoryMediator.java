@@ -156,7 +156,7 @@ class KeyboardAccessoryMediator
                 // The insecure context warning has a replacement in the fallback sheet.
             case SuggestionType.TITLE:
             case SuggestionType.SEPARATOR:
-            case SuggestionType.CLEAR_FORM:
+            case SuggestionType.UNDO_OR_CLEAR:
             case SuggestionType.ALL_SAVED_PASSWORDS_ENTRY:
             case SuggestionType.GENERATE_PASSWORD_ENTRY:
             case SuggestionType.SHOW_ACCOUNT_CARDS:

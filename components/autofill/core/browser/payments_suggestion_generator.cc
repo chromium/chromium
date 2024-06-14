@@ -456,18 +456,20 @@ Suggestion PaymentsSuggestionGenerator::CreateManageIbansEntry() {
 
 Suggestion PaymentsSuggestionGenerator::CreateClearFormSuggestion() {
 #if BUILDFLAG(IS_IOS)
+  // TODO(b/40266549): iOS still uses Clear Form logic, replace with Undo.
   std::u16string value =
       l10n_util::GetStringUTF16(IDS_AUTOFILL_CLEAR_FORM_MENU_ITEM);
-  Suggestion suggestion(value, SuggestionType::kClearForm);
+  Suggestion suggestion(value, SuggestionType::kUndoOrClear);
   suggestion.icon = Suggestion::Icon::kClear;
 #else
   std::u16string value = l10n_util::GetStringUTF16(IDS_AUTOFILL_UNDO_MENU_ITEM);
   if constexpr (BUILDFLAG(IS_ANDROID)) {
     value = base::i18n::ToUpper(value);
   }
-  Suggestion suggestion(value, SuggestionType::kClearForm);
+  Suggestion suggestion(value, SuggestionType::kUndoOrClear);
   suggestion.icon = Suggestion::Icon::kUndo;
 #endif
+  // TODO(b/40266549): update "Clear Form" a11y announcement to "Undo"
   suggestion.acceptance_a11y_announcement =
       l10n_util::GetStringUTF16(IDS_AUTOFILL_A11Y_ANNOUNCE_CLEARED_FORM);
   return suggestion;

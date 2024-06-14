@@ -401,7 +401,7 @@ constexpr CGFloat kSuggestionIconWidth = 32;
                formName:SysNSStringToUTF8(formName)
                   value:SysNSStringToUTF16(suggestion.value)
                 inFrame:frame];
-  } else if (suggestion.popupItemId == autofill::SuggestionType::kClearForm) {
+  } else if (suggestion.popupItemId == autofill::SuggestionType::kUndoOrClear) {
     __weak __typeof(self) weakSelf = self;
     SuggestionHandledCompletion suggestionHandledCompletionCopy =
         [_suggestionHandledCompletion copy];
@@ -566,8 +566,9 @@ constexpr CGFloat kSuggestionIconWidth = 32;
     // for example. We can't include that enum because it's from WebKit, but
     // fortunately almost all the entries we are interested in (profile or
     // autofill entries) are zero or positive. Negative entries we are
-    // interested in is autofill::SuggestionType::kClearForm, used to show the
+    // interested in is autofill::SuggestionType::kUndoOrClear, used to show the
     // "clear form" button.
+    // TODO(b/40266549): Replace Clear Form with Undo
     NSString* value = nil;
     NSString* minorValue = nil;
     NSString* displayDescription = nil;
@@ -613,8 +614,10 @@ constexpr CGFloat kSuggestionIconWidth = 32;
                           autofill::FillingProduct::kCreditCard) {
         icon = [self createIcon:popup_suggestion];
       }
-    } else if (popup_suggestion.type == autofill::SuggestionType::kClearForm) {
+    } else if (popup_suggestion.type ==
+               autofill::SuggestionType::kUndoOrClear) {
       // Show the "clear form" button.
+      // TODO(b/40266549): Replace Clear Form with Undo once this changes
       value = SysUTF16ToNSString(popup_suggestion.main_text.value);
     } else if (popup_suggestion.type ==
                autofill::SuggestionType::kShowAccountCards) {
@@ -663,7 +666,7 @@ constexpr CGFloat kSuggestionIconWidth = 32;
     }
 
     // Put "clear form" entry at the front of the suggestions.
-    if (popup_suggestion.type == autofill::SuggestionType::kClearForm) {
+    if (popup_suggestion.type == autofill::SuggestionType::kUndoOrClear) {
       [suggestions insertObject:suggestion atIndex:0];
     } else {
       [suggestions addObject:suggestion];

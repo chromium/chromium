@@ -123,7 +123,7 @@ Matcher<Suggestion> EqualsIbanSuggestion(
 
 #if !BUILDFLAG(IS_IOS)
 Matcher<Suggestion> EqualsUndoAutofillSuggestion() {
-  return EqualsSuggestion(SuggestionType::kClearForm,
+  return EqualsSuggestion(SuggestionType::kUndoOrClear,
 #if BUILDFLAG(IS_ANDROID)
                           base::i18n::ToUpper(l10n_util::GetStringUTF16(
                               IDS_AUTOFILL_UNDO_MENU_ITEM)),

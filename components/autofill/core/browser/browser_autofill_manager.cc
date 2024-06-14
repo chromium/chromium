@@ -343,7 +343,7 @@ FillDataType GetEventTypeFromSingleFieldSuggestionType(SuggestionType type) {
     case SuggestionType::kManageCreditCard:
     case SuggestionType::kManageIban:
     case SuggestionType::kManagePlusAddress:
-    case SuggestionType::kClearForm:
+    case SuggestionType::kUndoOrClear:
     case SuggestionType::kComposeResumeNudge:
     case SuggestionType::kComposeDisable:
     case SuggestionType::kComposeGoToSettings:
@@ -633,7 +633,7 @@ FieldTypeSet GetTargetFieldsForAddressFillingSuggestionType(
     case SuggestionType::kWebauthnSignInWithAnotherDevice:
     case SuggestionType::kTitle:
     case SuggestionType::kSeparator:
-    case SuggestionType::kClearForm:
+    case SuggestionType::kUndoOrClear:
     case SuggestionType::kMixedFormMessage:
     case SuggestionType::kDevtoolsTestAddresses:
     case SuggestionType::kDevtoolsTestAddressEntry:

@@ -39,7 +39,6 @@ bool IsFooterSuggestionType(SuggestionType type) {
     case SuggestionType::kManageCreditCard:
     case SuggestionType::kManageIban:
     case SuggestionType::kManagePlusAddress:
-    case SuggestionType::kClearForm:
     case SuggestionType::kDeleteAddressProfile:
     case SuggestionType::kEditAddressProfile:
     case SuggestionType::kPasswordAccountStorageEmpty:
@@ -49,6 +48,7 @@ bool IsFooterSuggestionType(SuggestionType type) {
     case SuggestionType::kScanCreditCard:
     case SuggestionType::kSeePromoCodeDetails:
     case SuggestionType::kShowAccountCards:
+    case SuggestionType::kUndoOrClear:
     case SuggestionType::kViewPasswordDetails:
       return true;
     case SuggestionType::kFillEverythingFromAddressProfile:

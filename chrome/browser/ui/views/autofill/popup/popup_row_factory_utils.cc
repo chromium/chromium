@@ -78,17 +78,17 @@ constexpr int kCloseIconSize = 16;
 // Popup items that use a leading icon instead of a trailing one.
 constexpr auto kPopupItemTypesUsingLeadingIcons =
     base::MakeFixedFlatSet<SuggestionType>(
-        {SuggestionType::kClearForm, SuggestionType::kShowAccountCards,
+        {SuggestionType::kAllSavedPasswordsEntry,
+         SuggestionType::kDeleteAddressProfile,
+         SuggestionType::kEditAddressProfile,
+         SuggestionType::kFillEverythingFromAddressProfile,
          SuggestionType::kManageAddress, SuggestionType::kManageCreditCard,
          SuggestionType::kManageIban, SuggestionType::kManagePlusAddress,
-         SuggestionType::kEditAddressProfile,
-         SuggestionType::kDeleteAddressProfile,
-         SuggestionType::kAllSavedPasswordsEntry,
-         SuggestionType::kFillEverythingFromAddressProfile,
          SuggestionType::kPasswordAccountStorageEmpty,
          SuggestionType::kPasswordAccountStorageOptIn,
-         SuggestionType::kPasswordAccountStorageReSignin,
          SuggestionType::kPasswordAccountStorageOptInAndGenerate,
+         SuggestionType::kPasswordAccountStorageReSignin,
+         SuggestionType::kShowAccountCards, SuggestionType::kUndoOrClear,
          SuggestionType::kViewPasswordDetails});
 
 // Max width for the username and masked password.

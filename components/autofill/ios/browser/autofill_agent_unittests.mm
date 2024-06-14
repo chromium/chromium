@@ -783,8 +783,9 @@ TEST_F(AutofillAgentTests, onSuggestionsReady_ClearForm) {
   autofillSuggestions.push_back(
       autofill::Suggestion("", "", autofill::Suggestion::Icon::kNoIcon,
                            autofill::SuggestionType::kAddressEntry));
-  autofillSuggestions.push_back(autofill::Suggestion(
-      "", "", autofill::Suggestion::Icon::kNoIcon, SuggestionType::kClearForm));
+  autofillSuggestions.push_back(
+      autofill::Suggestion("", "", autofill::Suggestion::Icon::kNoIcon,
+                           SuggestionType::kUndoOrClear));
   [autofill_agent_
        showAutofillPopup:autofillSuggestions
       suggestionDelegate:base::WeakPtr<autofill::AutofillSuggestionDelegate>()];
@@ -818,7 +819,7 @@ TEST_F(AutofillAgentTests, onSuggestionsReady_ClearForm) {
   // "Clear Form" should appear as the first suggestion. Otherwise, the order of
   // suggestions should not change.
   EXPECT_EQ(3U, completion_handler_suggestions.count);
-  EXPECT_EQ(SuggestionType::kClearForm,
+  EXPECT_EQ(SuggestionType::kUndoOrClear,
             completion_handler_suggestions[0].popupItemId);
   EXPECT_EQ(autofill::SuggestionType::kAddressEntry,
             completion_handler_suggestions[1].popupItemId);
@@ -840,8 +841,9 @@ TEST_F(AutofillAgentTests, onSuggestionsReady_ClearFormWithGPay) {
   autofillSuggestions.push_back(
       autofill::Suggestion("", "", autofill::Suggestion::Icon::kNoIcon,
                            autofill::SuggestionType::kCreditCardEntry));
-  autofillSuggestions.push_back(autofill::Suggestion(
-      "", "", autofill::Suggestion::Icon::kNoIcon, SuggestionType::kClearForm));
+  autofillSuggestions.push_back(
+      autofill::Suggestion("", "", autofill::Suggestion::Icon::kNoIcon,
+                           SuggestionType::kUndoOrClear));
   [autofill_agent_
        showAutofillPopup:autofillSuggestions
       suggestionDelegate:base::WeakPtr<autofill::AutofillSuggestionDelegate>()];
@@ -873,7 +875,7 @@ TEST_F(AutofillAgentTests, onSuggestionsReady_ClearFormWithGPay) {
       }));
 
   EXPECT_EQ(3U, completion_handler_suggestions.count);
-  EXPECT_EQ(SuggestionType::kClearForm,
+  EXPECT_EQ(SuggestionType::kUndoOrClear,
             completion_handler_suggestions[0].popupItemId);
   EXPECT_EQ(autofill::SuggestionType::kCreditCardEntry,
             completion_handler_suggestions[1].popupItemId);
@@ -1155,7 +1157,7 @@ TEST_F(AutofillAgentTests, DidSelectSuggestion_ClearFormEntry) {
   // Select suggestion to trigger field filling.
   __block BOOL completion_handler_called = NO;
   FormSuggestion* form_suggestion =
-      SimpleFormSuggestion(u"", autofill::SuggestionType::kClearForm);
+      SimpleFormSuggestion(u"", autofill::SuggestionType::kUndoOrClear);
   [autofill_agent_ didSelectSuggestion:form_suggestion
                                   form:@"single-username-form"
                         formRendererID:form_id

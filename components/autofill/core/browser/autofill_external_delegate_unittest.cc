@@ -549,8 +549,7 @@ TEST_F(AutofillExternalDelegateUnitTest, GetMainFillingProduct) {
   // Show auxiliary helper suggestion in the popup.
   external_delegate().OnSuggestionsReturned(
       queried_field().global_id(),
-      {test::CreateAutofillSuggestion(SuggestionType::kClearForm,
-                                      u"clear form")});
+      {test::CreateAutofillSuggestion(SuggestionType::kUndoOrClear, u"undo")});
   EXPECT_EQ(external_delegate().GetMainFillingProduct(), FillingProduct::kNone);
 
   // Show auxiliary helper suggestion in the popup.
@@ -2359,7 +2358,7 @@ TEST_F(AutofillExternalDelegateUnitTest, ExternalDelegateUndoForm) {
   IssueOnQuery();
   EXPECT_CALL(manager(), UndoAutofill);
   external_delegate().DidAcceptSuggestion(
-      Suggestion(SuggestionType::kClearForm), SuggestionPosition{.row = 0});
+      Suggestion(SuggestionType::kUndoOrClear), SuggestionPosition{.row = 0});
 }
 
 // Test that the driver is directed to undo the form after being notified that
@@ -2368,7 +2367,7 @@ TEST_F(AutofillExternalDelegateUnitTest, ExternalDelegateUndoPreviewForm) {
   IssueOnQuery();
   EXPECT_CALL(manager(), UndoAutofill);
   external_delegate().DidSelectSuggestion(
-      Suggestion(SuggestionType::kClearForm));
+      Suggestion(SuggestionType::kUndoOrClear));
 }
 #endif
 

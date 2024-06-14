@@ -29,7 +29,7 @@ using ::testing::Eq;
 using ::testing::Mock;
 using ::testing::Return;
 
-std::vector<Suggestion> CreateSuggestionsWithClearFormEntry(
+std::vector<Suggestion> CreateSuggestionsWithUndoOrClearEntry(
     size_t clear_form_offset) {
   auto create_pw_suggestion = [](std::string_view password,
                                  std::string_view username,
@@ -44,7 +44,7 @@ std::vector<Suggestion> CreateSuggestionsWithClearFormEntry(
       create_pw_suggestion("****************", "Berta", "psl.origin.eg"),
       create_pw_suggestion("***", "Carl", "")};
   suggestions.emplace(suggestions.begin() + clear_form_offset, "Clear", "",
-                      Suggestion::Icon::kNoIcon, SuggestionType::kClearForm);
+                      Suggestion::Icon::kNoIcon, SuggestionType::kUndoOrClear);
   return suggestions;
 }
 
@@ -353,7 +353,7 @@ TEST_F(AutofillKeyboardAccessoryControllerImplTest,
 // to the front.
 TEST_F(AutofillKeyboardAccessoryControllerImplTest, ReorderUpdatedSuggestions) {
   const std::vector<Suggestion> suggestions =
-      CreateSuggestionsWithClearFormEntry(/*clear_form_offset=*/2);
+      CreateSuggestionsWithUndoOrClearEntry(/*clear_form_offset=*/2);
   // Force creation of controller and view.
   client().popup_controller(manager());
   EXPECT_CALL(*client().popup_view(), Show);
@@ -370,8 +370,8 @@ TEST_F(AutofillKeyboardAccessoryControllerImplTest,
     return ElementsAre(ElementsAre(Suggestion::Text(std::move(label))));
   };
 
-  ShowSuggestions(manager(),
-                  CreateSuggestionsWithClearFormEntry(/*clear_form_offset=*/1));
+  ShowSuggestions(manager(), CreateSuggestionsWithUndoOrClearEntry(
+                                 /*clear_form_offset=*/1));
 
   // The 1st item is usually not visible (something like clear form) and has an
   // empty label. But it needs to be handled since UI might ask for it anyway.

@@ -94,7 +94,7 @@ FillingProduct GetFillingProductFromSuggestionType(SuggestionType type) {
     case SuggestionType::kSeePromoCodeDetails:
     case SuggestionType::kTitle:
     case SuggestionType::kSeparator:
-    case SuggestionType::kClearForm:
+    case SuggestionType::kUndoOrClear:
     case SuggestionType::kDatalistEntry:
     case SuggestionType::kMixedFormMessage:
     case SuggestionType::kInsecureContextPaymentDisabledMessage:
