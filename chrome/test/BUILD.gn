@@ -5051,6 +5051,7 @@ if (!is_android) {
         "../browser/ui/webui/ash/settings/integration_tests/os_settings_recovery_browsertest.cc",
         "../browser/ui/webui/ash/settings/pages/a11y/accessibility_handler_browsertest.cc",
         "../browser/ui/webui/ash/settings/pages/a11y/switch_access_handler_browsertest.cc",
+        "../browser/ui/webui/ash/settings/pages/apps/app_parental_controls_handler_browsertest.cc",
         "../browser/ui/webui/ash/settings/pages/files/google_drive_handler_browsertest.cc",
         "../browser/ui/webui/ash/settings/pages/people/account_manager_ui_handler_browsertest.cc",
         "../browser/ui/webui/ash/settings/pages/power/device_power_handler_browsertest.cc",
