@@ -1,3 +1,13 @@
+// Copyright 2024 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+import {html} from '//resources/lit/v3_0/lit.rollup.js';
+
+import type {PowerBookmarkRowElement} from './power_bookmark_row.ts';
+
+export function getHtml(this: PowerBookmarkRowElement) {
+  return html`
 <cr-url-list-item id="crUrlListItem"
     role="listitem"
     .size="${this.listItemSize}"
@@ -46,4 +56,5 @@
   ${this.isShoppingCollection ? html`
     <iron-icon slot="folder-icon" icon="bookmarks:shopping-collection">
         </iron-icon>` : ''}
-</cr-url-list-item>
+</cr-url-list-item>`;
+}
