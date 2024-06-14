@@ -22256,6 +22256,29 @@
             ]
         }
     ],
+    "UnoPhase2Android": [
+        {
+            "platforms": [
+                "android"
+            ],
+            "experiments": [
+                {
+                    "name": "Phase2",
+                    "enable_features": [
+                        "EnablePasswordsAccountStorageForNonSyncingUsers",
+                        "FeedBottomSyncStringRemoval",
+                        "HideSettingsSignInPromo",
+                        "ReadingListEnableSyncTransportModeUponSignIn",
+                        "ReplaceSyncPromosWithSignInPromos",
+                        "SyncEnableContactInfoDataTypeForCustomPassphraseUsers",
+                        "SyncEnableContactInfoDataTypeInTransportMode",
+                        "SyncEnableWalletMetadataInTransportMode",
+                        "SyncEnableWalletOfferInTransportMode"
+                    ]
+                }
+            ]
+        }
+    ],
     "UnthrottledTabProcessReporting": [
         {
             "platforms": [
