@@ -350,8 +350,8 @@ class CONTENT_EXPORT InterestGroupAuction
         auction_worklet::mojom::RejectReason::kNotAvailable;
 
     // Real time reporting contributions. Note that when an origin has no real
-    // time contributions, there's still an entry for it, and its value is an
-    // empty vector.
+    // time contributions, there must still be an entry for it, and its value is
+    // an empty vector.
     std::map<url::Origin, RealTimeReportingContributions>
         real_time_contributions;
   };

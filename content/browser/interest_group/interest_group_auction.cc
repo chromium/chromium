@@ -1958,8 +1958,7 @@ class InterestGroupAuction::BuyerHelper
     if (base::FeatureList::IsEnabled(
             blink::features::kFledgeRealTimeReporting) &&
         !base::FeatureList::IsEnabled(
-            features::kCookieDeprecationFacilitatedTesting) &&
-        !real_time_contributions.empty()) {
+            features::kCookieDeprecationFacilitatedTesting)) {
       if (!base::ranges::all_of(real_time_contributions,
                                 HasValidRealTimeBucket)) {
         mojo_bids.clear();
@@ -1976,12 +1975,18 @@ class InterestGroupAuction::BuyerHelper
                      interest_group.owner)) {
         // Only keep real time reporting contributions when the buyer is
         // opted-in.
+        // Note that this adds an entry to the map for owner with an empty
+        // vector as value, if owner was not in the map. This is important to
+        // indicate that the owner is opted-in.
         RealTimeReportingContributions& real_time_contributions_for_origin =
             state->real_time_contributions[interest_group.owner];
-        real_time_contributions_for_origin.insert(
-            real_time_contributions_for_origin.end(),
-            std::move_iterator(real_time_contributions.begin()),
-            std::move_iterator(real_time_contributions.end()));
+
+        if (!real_time_contributions.empty()) {
+          real_time_contributions_for_origin.insert(
+              real_time_contributions_for_origin.end(),
+              std::move_iterator(real_time_contributions.begin()),
+              std::move_iterator(real_time_contributions.end()));
+        }
       }
     }
 
@@ -4875,17 +4880,20 @@ void InterestGroupAuction::OnScoreAdComplete(
       }
     }
 
-    // Only keep real time reporting contributions when the seller is opted-in.
-    // TODO(qingxinwu): Validate received real time reporting message, and
-    // report bad message if invalid.
     if (base::FeatureList::IsEnabled(
             blink::features::kFledgeRealTimeReporting) &&
         !base::FeatureList::IsEnabled(
             features::kCookieDeprecationFacilitatedTesting)) {
+      // Only keep real time reporting contributions when the seller is
+      // opted-in.
       if (config_->non_shared_params.seller_real_time_reporting_type
               .has_value()) {
+        // Note that this adds an entry to the map for seller with an empty
+        // vector as value, if seller was not in the map. This is important to
+        // indicate that the seller is opted-in.
         RealTimeReportingContributions& real_time_contributions_for_origin =
             bid->bid_state->real_time_contributions[config_->seller];
+
         if (!real_time_contributions.empty()) {
           real_time_contributions_for_origin.insert(
               real_time_contributions_for_origin.end(),
