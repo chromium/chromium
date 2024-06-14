@@ -2,20 +2,17 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO: crbug.com/347137620 - Remove this and spanify to fix the errors.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "components/autofill/content/renderer/html_based_username_detector.h"
 
 #include <algorithm>
+#include <array>
 #include <string>
 #include <utility>
 #include <vector>
 
 #include "base/containers/contains.h"
 #include "base/containers/flat_set.h"
+#include "base/containers/span.h"
 #include "base/i18n/case_conversion.h"
 #include "base/strings/string_split.h"
 #include "base/strings/utf_string_conversions.h"
@@ -66,10 +63,8 @@ struct UsernameFieldData {
 // "Non-latin" translations are the translations of the words that have custom,
 // country specific characters.
 struct CategoryOfWords {
-  const std::u16string_view* latin_dictionary;
-  const size_t latin_dictionary_size;
-  const std::u16string_view* non_latin_dictionary;
-  const size_t non_latin_dictionary_size;
+  const base::span<const std::u16string_view> latin_dictionary;
+  const base::span<const std::u16string_view> non_latin_dictionary;
 };
 
 // 1. Removes delimiters from |raw_value| and appends the remainder to
@@ -160,17 +155,16 @@ void InferUsernameFieldData(
 bool CheckFieldWithDictionary(
     const std::u16string& value,
     const base::flat_set<std::u16string>& short_tokens,
-    const std::u16string_view* dictionary,
-    const size_t& dictionary_size) {
-  for (size_t i = 0; i < dictionary_size; ++i) {
-    if (dictionary[i].length() < kMinimumWordLength) {
+    base::span<const std::u16string_view> dictionary) {
+  for (std::u16string_view word : dictionary) {
+    if (word.length() < kMinimumWordLength) {
       // Treat short words by looking them up in the tokens set.
-      if (short_tokens.find(dictionary[i]) != short_tokens.end()) {
+      if (short_tokens.find(word) != short_tokens.end()) {
         return true;
       }
     } else {
       // Treat long words by looking them up as a substring in |value|.
-      if (value.find(dictionary[i]) != std::string::npos) {
+      if (value.find(word) != std::string::npos) {
         return true;
       }
     }
@@ -185,26 +179,23 @@ bool ContainsWordFromCategory(const UsernameFieldData& possible_username,
   // For user value, search in latin and non-latin dictionaries, because this
   // value is user visible. For developer value, only look up in latin
   /// dictionaries.
-  return CheckFieldWithDictionary(
-             possible_username.user_value, possible_username.user_short_tokens,
-             category.latin_dictionary, category.latin_dictionary_size) ||
+  return CheckFieldWithDictionary(possible_username.user_value,
+                                  possible_username.user_short_tokens,
+                                  category.latin_dictionary) ||
          CheckFieldWithDictionary(possible_username.user_value,
                                   possible_username.user_short_tokens,
-                                  category.non_latin_dictionary,
-                                  category.non_latin_dictionary_size) ||
+                                  category.non_latin_dictionary) ||
          CheckFieldWithDictionary(possible_username.developer_value,
                                   possible_username.developer_short_tokens,
-                                  category.latin_dictionary,
-                                  category.latin_dictionary_size);
+                                  category.latin_dictionary);
 }
 
 // Remove from |possible_usernames_data| the elements that definitely cannot be
 // usernames, because their computed values contain at least one negative word.
 void RemoveFieldsWithNegativeWords(
     std::vector<UsernameFieldData>* possible_usernames_data) {
-  static const CategoryOfWords kNegativeCategory = {
-      kNegativeLatin, kNegativeLatinSize, kNegativeNonLatin,
-      kNegativeNonLatinSize};
+  static constexpr CategoryOfWords kNegativeCategory = {kNegativeLatin,
+                                                        kNegativeNonLatin};
 
   std::erase_if(
       *possible_usernames_data, [](const UsernameFieldData& possible_username) {
@@ -249,21 +240,16 @@ void FindUsernameFieldInternal(
   DCHECK(username_predictions);
   DCHECK(username_predictions->empty());
 
-  static const CategoryOfWords kUsernameCategory = {
-      kUsernameLatin, kUsernameLatinSize, kUsernameNonLatin,
-      kUsernameNonLatinSize};
-  static const CategoryOfWords kUserCategory = {
-      kUserLatin, kUserLatinSize, kUserNonLatin, kUserNonLatinSize};
-  static const CategoryOfWords kTechnicalCategory = {
-      kTechnicalWords, kTechnicalWordsSize, nullptr, 0};
-  static const CategoryOfWords kWeakCategory = {kWeakWords, kWeakWordsSize,
-                                                nullptr, 0};
+  static constexpr CategoryOfWords kUsernameCategory = {kUsernameLatin,
+                                                        kUsernameLatin};
+  static constexpr CategoryOfWords kUserCategory = {kUserLatin, kUserNonLatin};
+  static constexpr CategoryOfWords kTechnicalCategory = {kTechnicalWords, {}};
+  static constexpr CategoryOfWords kWeakCategory = {kWeakWords, {}};
   // These categories contain words that point to username field.
   // Order of categories is vital: the detector searches for words in descending
   // order of probability to point to a username field.
-  static const CategoryOfWords kPositiveCategories[] = {
-      kUsernameCategory, kUserCategory, kTechnicalCategory, kWeakCategory};
-
+  static constexpr auto kPositiveCategories = std::to_array<CategoryOfWords>(
+      {kUsernameCategory, kUserCategory, kTechnicalCategory, kWeakCategory});
   std::vector<UsernameFieldData> possible_usernames_data;
 
   InferUsernameFieldData(all_control_elements, form_data,
