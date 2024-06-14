@@ -164,7 +164,10 @@ public class SyncPromoControllerUITest {
 
     @Test
     @MediumTest
-    @DisableFeatures(SyncFeatureMap.ENABLE_BOOKMARK_FOLDERS_FOR_ACCOUNT_STORAGE)
+    @DisableFeatures({
+        SyncFeatureMap.ENABLE_BOOKMARK_FOLDERS_FOR_ACCOUNT_STORAGE,
+        ChromeFeatureList.REPLACE_SYNC_PROMOS_WITH_SIGN_IN_PROMOS
+    })
     public void testBookmarkSyncPromoViewSignedOutAndAccountAvailable() throws Throwable {
         mSigninTestRule.addAccount(AccountManagerTestRule.TEST_ACCOUNT_1);
         ProfileDataCache profileDataCache = createProfileDataCache();
@@ -179,6 +182,26 @@ public class SyncPromoControllerUITest {
 
     @Test
     @MediumTest
+    @EnableFeatures({ChromeFeatureList.REPLACE_SYNC_PROMOS_WITH_SIGN_IN_PROMOS})
+    public void testBookmarkSyncPromoViewSignedOutAndAccountAvailable_replaceSyncBySigninEnabled()
+            throws Throwable {
+        mSigninTestRule.addAccount(AccountManagerTestRule.TEST_ACCOUNT_1);
+        ProfileDataCache profileDataCache = createProfileDataCache();
+        setUpSyncPromoView(
+                SigninAccessPoint.BOOKMARK_MANAGER,
+                profileDataCache,
+                R.layout.sync_promo_view_bookmarks);
+        onView(withText(R.string.signin_promo_title_bookmarks)).check(matches(isDisplayed()));
+        onView(withText(R.string.signin_promo_description_bookmarks)).check(matches(isDisplayed()));
+        onView(withId(R.id.sync_promo_close_button)).check(matches(isDisplayed()));
+    }
+
+    @Test
+    @MediumTest
+    @DisableFeatures({
+        SyncFeatureMap.ENABLE_BOOKMARK_FOLDERS_FOR_ACCOUNT_STORAGE,
+        ChromeFeatureList.REPLACE_SYNC_PROMOS_WITH_SIGN_IN_PROMOS
+    })
     public void testBookmarkSyncPromoViewSignedInAndNotSyncing() throws Throwable {
         mSigninTestRule.addTestAccountThenSignin();
         ProfileDataCache profileDataCache = createProfileDataCache();
@@ -261,7 +284,10 @@ public class SyncPromoControllerUITest {
 
     @Test
     @MediumTest
-    @DisableFeatures(SyncFeatureMap.ENABLE_BOOKMARK_FOLDERS_FOR_ACCOUNT_STORAGE)
+    @DisableFeatures({
+        SyncFeatureMap.ENABLE_BOOKMARK_FOLDERS_FOR_ACCOUNT_STORAGE,
+        ChromeFeatureList.REPLACE_SYNC_PROMOS_WITH_SIGN_IN_PROMOS
+    })
     public void testBookmarkSyncPromoContinueButtonLaunchesSyncFlow() throws Throwable {
         mSigninTestRule.addAccount(AccountManagerTestRule.TEST_ACCOUNT_1);
         ProfileDataCache profileDataCache = createProfileDataCache();
@@ -286,6 +312,7 @@ public class SyncPromoControllerUITest {
     @MediumTest
     @Restriction({DeviceRestriction.RESTRICTION_TYPE_NON_AUTO})
     @EnableFeatures(SyncFeatureMap.ENABLE_BOOKMARK_FOLDERS_FOR_ACCOUNT_STORAGE)
+    @DisableFeatures(ChromeFeatureList.REPLACE_SYNC_PROMOS_WITH_SIGN_IN_PROMOS)
     public void testBookmarkSyncPromoContinueButtonLaunchesSyncFlowIfSyncDataLeft()
             throws Throwable {
         TestThreadUtils.runOnUiThreadBlocking(
@@ -350,7 +377,10 @@ public class SyncPromoControllerUITest {
     @Test
     @MediumTest
     @Restriction({DeviceRestriction.RESTRICTION_TYPE_NON_AUTO})
-    @DisableFeatures(SyncFeatureMap.ENABLE_BOOKMARK_FOLDERS_FOR_ACCOUNT_STORAGE)
+    @DisableFeatures({
+        SyncFeatureMap.ENABLE_BOOKMARK_FOLDERS_FOR_ACCOUNT_STORAGE,
+        ChromeFeatureList.REPLACE_SYNC_PROMOS_WITH_SIGN_IN_PROMOS
+    })
     public void testBookmarkSyncPromoChooseAccountButtonLaunchesSyncFlow() throws Throwable {
         mSigninTestRule.addAccount(AccountManagerTestRule.TEST_ACCOUNT_1);
         ProfileDataCache profileDataCache = createProfileDataCache();
@@ -373,6 +403,7 @@ public class SyncPromoControllerUITest {
 
     @Test
     @MediumTest
+    @DisableFeatures(ChromeFeatureList.REPLACE_SYNC_PROMOS_WITH_SIGN_IN_PROMOS)
     public void testSettingsSyncPromoViewSignedOutAndNoAccountAvailable() throws Throwable {
         ProfileDataCache profileDataCache =
                 TestThreadUtils.runOnUiThreadBlockingNoException(
@@ -396,6 +427,7 @@ public class SyncPromoControllerUITest {
 
     @Test
     @MediumTest
+    @DisableFeatures(ChromeFeatureList.REPLACE_SYNC_PROMOS_WITH_SIGN_IN_PROMOS)
     public void testSettingsSyncPromoViewSignedOutAndAccountAvailable() throws Throwable {
         mSigninTestRule.addAccount(AccountManagerTestRule.TEST_ACCOUNT_1);
         ProfileDataCache profileDataCache = createProfileDataCache();
@@ -415,6 +447,7 @@ public class SyncPromoControllerUITest {
 
     @Test
     @MediumTest
+    @DisableFeatures(ChromeFeatureList.REPLACE_SYNC_PROMOS_WITH_SIGN_IN_PROMOS)
     public void testSettingsSyncPromoViewSignedInAndNotSyncing() throws Throwable {
         mSigninTestRule.addTestAccountThenSignin();
         ProfileDataCache profileDataCache = createProfileDataCache();
@@ -578,9 +611,9 @@ public class SyncPromoControllerUITest {
         mSigninTestRule.addAccount(AccountManagerTestRule.TEST_ACCOUNT_1);
         ProfileDataCache profileDataCache = createProfileDataCache();
         setUpSyncPromoView(
-                SigninAccessPoint.RECENT_TABS,
+                SigninAccessPoint.BOOKMARK_MANAGER,
                 profileDataCache,
-                R.layout.sync_promo_view_recent_tabs);
+                R.layout.sync_promo_view_bookmarks);
 
         onView(withId(R.id.sync_promo_choose_account_button)).check(matches(isDisplayed()));
     }
@@ -592,9 +625,9 @@ public class SyncPromoControllerUITest {
         mSigninTestRule.addAccount(AccountManagerTestRule.TEST_ACCOUNT_1);
         ProfileDataCache profileDataCache = createProfileDataCache();
         setUpSyncPromoView(
-                SigninAccessPoint.RECENT_TABS,
+                SigninAccessPoint.BOOKMARK_MANAGER,
                 profileDataCache,
-                R.layout.sync_promo_view_recent_tabs);
+                R.layout.sync_promo_view_bookmarks);
 
         onView(withId(R.id.sync_promo_choose_account_button)).check(matches(not(isDisplayed())));
     }
@@ -603,6 +636,7 @@ public class SyncPromoControllerUITest {
     @MediumTest
     @Feature("RenderTest")
     @UseMethodParameter(NightModeParams.class)
+    @DisableFeatures(ChromeFeatureList.REPLACE_SYNC_PROMOS_WITH_SIGN_IN_PROMOS)
     public void testNTPSyncPromoViewSignedOutAndNoAccountAvailable(boolean nightModeEnabled)
             throws Throwable {
         setUpNightMode(nightModeEnabled);
@@ -669,6 +703,7 @@ public class SyncPromoControllerUITest {
     @MediumTest
     @Feature("RenderTest")
     @UseMethodParameter(NightModeParams.class)
+    @DisableFeatures(ChromeFeatureList.REPLACE_SYNC_PROMOS_WITH_SIGN_IN_PROMOS)
     public void testNTPSyncPromoViewSignedInAndNotSyncing(boolean nightModeEnabled)
             throws Throwable {
         setUpNightMode(nightModeEnabled);
