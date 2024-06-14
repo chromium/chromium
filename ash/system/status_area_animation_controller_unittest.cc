@@ -19,7 +19,6 @@
 #include "base/test/task_environment.h"
 #include "ui/compositor/scoped_animation_duration_scale_mode.h"
 #include "ui/compositor/test/layer_animation_stopped_waiter.h"
-#include "ui/display/manager/display_manager.h"
 #include "ui/gfx/image/image_skia.h"
 #include "ui/message_center/message_center.h"
 

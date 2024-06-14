@@ -220,11 +220,11 @@ display::Display ScreenAsh::GetPrimaryDisplay() const {
 }
 
 void ScreenAsh::AddObserver(display::DisplayObserver* observer) {
-  GetDisplayManager()->AddDisplayObserver(observer);
+  GetDisplayManager()->AddObserver(observer);
 }
 
 void ScreenAsh::RemoveObserver(display::DisplayObserver* observer) {
-  GetDisplayManager()->RemoveDisplayObserver(observer);
+  GetDisplayManager()->RemoveObserver(observer);
 }
 
 display::TabletState ScreenAsh::GetTabletState() const {

@@ -64,7 +64,7 @@ class ASH_EXPORT NotificationCenterBubble : public ScreenLayoutObserver {
   void UpdateBubbleBounds();
 
   // ScreenLayoutObserver:
-  void OnDidApplyDisplayChanges() override;
+  void OnDisplayConfigurationChanged() override;
 
   // The owner of this class.
   const raw_ptr<NotificationCenterTray> notification_center_tray_;

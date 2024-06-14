@@ -14,18 +14,18 @@ AshTouchTransformController::AshTouchTransformController(
     display::DisplayManager* display_manager,
     std::unique_ptr<display::TouchTransformSetter> setter)
     : TouchTransformController(display_manager, std::move(setter)) {
-  Shell::Get()->display_manager()->AddDisplayManagerObserver(this);
+  Shell::Get()->window_tree_host_manager()->AddObserver(this);
 }
 
 AshTouchTransformController::~AshTouchTransformController() {
-  Shell::Get()->display_manager()->RemoveDisplayManagerObserver(this);
+  Shell::Get()->window_tree_host_manager()->RemoveObserver(this);
 }
 
 void AshTouchTransformController::OnDisplaysInitialized() {
   UpdateTouchTransforms();
 }
 
-void AshTouchTransformController::OnDidApplyDisplayChanges() {
+void AshTouchTransformController::OnDisplayConfigurationChanged() {
   UpdateTouchTransforms();
 }
 

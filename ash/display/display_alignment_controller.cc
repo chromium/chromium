@@ -11,7 +11,6 @@
 #include "base/functional/callback.h"
 #include "base/ranges/algorithm.h"
 #include "base/timer/timer.h"
-#include "ui/display/manager/display_manager.h"
 #include "ui/events/event.h"
 #include "ui/gfx/color_palette.h"
 #include "ui/gfx/geometry/rect.h"
@@ -62,7 +61,7 @@ DisplayAlignmentController::DisplayAlignmentController()
   Shell* shell = Shell::Get();
   shell->AddPreTargetHandler(this);
   shell->session_controller()->AddObserver(this);
-  shell->display_manager()->AddDisplayManagerObserver(this);
+  shell->window_tree_host_manager()->AddObserver(this);
 
   is_locked_ = shell->session_controller()->IsScreenLocked();
 
@@ -71,12 +70,12 @@ DisplayAlignmentController::DisplayAlignmentController()
 
 DisplayAlignmentController::~DisplayAlignmentController() {
   Shell* shell = Shell::Get();
-  shell->display_manager()->RemoveDisplayManagerObserver(this);
+  shell->window_tree_host_manager()->RemoveObserver(this);
   shell->session_controller()->RemoveObserver(this);
   shell->RemovePreTargetHandler(this);
 }
 
-void DisplayAlignmentController::OnDidApplyDisplayChanges() {
+void DisplayAlignmentController::OnDisplayConfigurationChanged() {
   RefreshState();
 }
 
@@ -148,7 +147,7 @@ void DisplayAlignmentController::DisplayDragged(int64_t display_id,
                                                 int32_t delta_y) {
   if (current_state_ != DisplayAlignmentState::kLayoutPreview) {
     // Clear existing indicators. They are all regenerated via
-    // OnDidApplyDisplayChanges() after dragging ends.
+    // OnDisplayConfigurationChanged() after dragging ends.
     ResetState();
 
     dragged_display_id_ = display_id;

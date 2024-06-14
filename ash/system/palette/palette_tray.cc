@@ -275,7 +275,7 @@ PaletteTray::PaletteTray(Shelf* shelf)
   icon_ = tray_container()->AddChildView(std::move(icon));
 
   Shell::Get()->AddShellObserver(this);
-  Shell::Get()->display_manager()->AddDisplayManagerObserver(this);
+  Shell::Get()->window_tree_host_manager()->AddObserver(this);
 
   shelf->AddObserver(this);
 }
@@ -286,7 +286,7 @@ PaletteTray::~PaletteTray() {
 
   ui::DeviceDataManager::GetInstance()->RemoveObserver(this);
   Shell::Get()->RemoveShellObserver(this);
-  Shell::Get()->display_manager()->RemoveDisplayManagerObserver(this);
+  Shell::Get()->window_tree_host_manager()->RemoveObserver(this);
   shelf()->RemoveObserver(this);
 }
 
@@ -446,7 +446,7 @@ void PaletteTray::OnShellDestroying() {
   projector_session_observation_.Reset();
 }
 
-void PaletteTray::OnDidApplyDisplayChanges() {
+void PaletteTray::OnDisplayConfigurationChanged() {
   UpdateIconVisibility();
 }
 

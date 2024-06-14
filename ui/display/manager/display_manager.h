@@ -24,7 +24,6 @@
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/observer_list.h"
-#include "base/scoped_multi_source_observation.h"
 #include "build/chromeos_buildflags.h"
 #include "ui/display/display.h"
 #include "ui/display/display_layout.h"
@@ -63,7 +62,7 @@ class DISPLAY_MANAGER_EXPORT DisplayManager
  public:
   class DISPLAY_MANAGER_EXPORT Delegate {
    public:
-    virtual ~Delegate() = default;
+    virtual ~Delegate() {}
 
     virtual void CreateDisplay(const Display& display) = 0;
     virtual void RemoveDisplay(const Display& display) = 0;
@@ -500,27 +499,22 @@ class DISPLAY_MANAGER_EXPORT DisplayManager
   // Sets `tablet_state_` and notifies observers of display.
   void SetTabletState(const TabletState& tablet_state);
 
-  // DisplayObserver notification utilities.
+  // Notifies observers of display configuration changes.
   void NotifyMetricsChanged(const Display& display, uint32_t metrics);
   void NotifyDisplayAdded(const Display& display);
   void NotifyWillRemoveDisplays(const Displays& display);
   void NotifyDisplaysRemoved(const Displays& displays);
-
-  // DisplayManagerObserver notification utilities.
-  void NotifyDisplaysInitialized();
   void NotifyWillProcessDisplayChanges();
   void NotifyDidProcessDisplayChanges(
       const DisplayManagerObserver::DisplayConfigurationChange& config_change);
-  void NotifyWillApplyDisplayChanges(bool clear_focus);
-  void NotifyDidApplyDisplayChanges();
 
   // Delegated from the Screen implementation.
-  void AddDisplayObserver(DisplayObserver* observer);
-  void RemoveDisplayObserver(DisplayObserver* observer);
+  void AddObserver(DisplayObserver* observer);
+  void RemoveObserver(DisplayObserver* observer);
 
   // Add/Remove interface for DisplayManager::Obserevrs.
-  void AddDisplayManagerObserver(DisplayManagerObserver* observer);
-  void RemoveDisplayManagerObserver(DisplayManagerObserver* observer);
+  void AddObserver(DisplayManagerObserver* observer);
+  void RemoveObserver(DisplayManagerObserver* observer);
 
   display::TabletState GetTabletState() const;
 
@@ -804,39 +798,5 @@ class DISPLAY_MANAGER_EXPORT DisplayManager
 };
 
 }  // namespace display
-
-namespace base {
-
-// Since DisplayManagerObserver and DisplayObserver has custom methods to add
-// and remove observers, we need define new trait customizations to use
-// `base::ScopedObservation` and `base::ScopedMultiSourceObservation`. See
-// `base/scoped_observation_traits.h` for more details.
-template <>
-struct ScopedObservationTraits<display::DisplayManager,
-                               display::DisplayManagerObserver> {
-  static void AddObserver(display::DisplayManager* source,
-                          display::DisplayManagerObserver* observer) {
-    source->AddDisplayManagerObserver(observer);
-  }
-  static void RemoveObserver(display::DisplayManager* source,
-                             display::DisplayManagerObserver* observer) {
-    source->RemoveDisplayManagerObserver(observer);
-  }
-};
-
-template <>
-struct ScopedObservationTraits<display::DisplayManager,
-                               display::DisplayObserver> {
-  static void AddObserver(display::DisplayManager* source,
-                          display::DisplayObserver* observer) {
-    source->AddDisplayObserver(observer);
-  }
-  static void RemoveObserver(display::DisplayManager* source,
-                             display::DisplayObserver* observer) {
-    source->RemoveDisplayObserver(observer);
-  }
-};
-
-}  // namespace base
 
 #endif  // UI_DISPLAY_MANAGER_DISPLAY_MANAGER_H_

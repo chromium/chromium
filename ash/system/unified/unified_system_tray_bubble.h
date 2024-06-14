@@ -99,7 +99,7 @@ class ASH_EXPORT UnifiedSystemTrayBubble : public TrayBubbleBase,
   views::Widget* GetBubbleWidget() const override;
 
   // ScreenLayoutObserver:
-  void OnDidApplyDisplayChanges() override;
+  void OnDisplayConfigurationChanged() override;
 
   // views::WidgetObserver:
   void OnWidgetDestroying(views::Widget* widget) override;

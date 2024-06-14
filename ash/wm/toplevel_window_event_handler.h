@@ -8,6 +8,7 @@
 #include <memory>
 
 #include "ash/ash_export.h"
+#include "ash/display/window_tree_host_manager.h"
 #include "ash/wm/pip/pip_double_tap_handler.h"
 #include "base/functional/callback.h"
 #include "base/memory/raw_ptr.h"
@@ -15,7 +16,6 @@
 #include "ui/aura/window_observer.h"
 #include "ui/aura/window_occlusion_tracker.h"
 #include "ui/display/display_observer.h"
-#include "ui/display/manager/display_manager_observer.h"
 #include "ui/events/event_handler.h"
 #include "ui/events/gestures/gesture_types.h"
 #include "ui/wm/public/window_move_client.h"
@@ -39,7 +39,7 @@ enum class WindowStateType;
 // ToplevelWindowEventHandler handles dragging and resizing of top level
 // windows.
 class ASH_EXPORT ToplevelWindowEventHandler
-    : public display::DisplayManagerObserver,
+    : public WindowTreeHostManager::Observer,
       public aura::WindowObserver,
       public display::DisplayObserver,
       public ui::EventHandler,
@@ -181,8 +181,8 @@ class ASH_EXPORT ToplevelWindowEventHandler
   // Invoked from ScopedWindowResizer if the window is destroyed.
   void ResizerWindowDestroyed();
 
-  // display::DisplayManagerObserver:
-  void OnWillApplyDisplayChanges() override;
+  // WindowTreeHostManager::Observer:
+  void OnDisplayConfigurationChanging() override;
 
   // aura::WindowObserver:
   void OnWindowDestroying(aura::Window* window) override;

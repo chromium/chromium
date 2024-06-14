@@ -8,6 +8,7 @@
 
 #include "ash/display/display_animator.h"
 #include "ash/display/display_util.h"
+#include "ash/display/window_tree_host_manager.h"
 #include "ash/public/cpp/shelf_types.h"
 #include "ash/root_window_controller.h"
 #include "ash/rotator/screen_rotation_animator.h"
@@ -87,7 +88,7 @@ DisplayConfigurationController::DisplayConfigurationController(
     WindowTreeHostManager* window_tree_host_manager)
     : display_manager_(display_manager),
       window_tree_host_manager_(window_tree_host_manager) {
-  display_manager_->AddDisplayManagerObserver(this);
+  window_tree_host_manager_->AddObserver(this);
   if (base::SysInfo::IsRunningOnChromeOS()) {
     limiter_ = std::make_unique<DisplayChangeLimiter>();
   }
@@ -96,7 +97,7 @@ DisplayConfigurationController::DisplayConfigurationController(
 }
 
 DisplayConfigurationController::~DisplayConfigurationController() {
-  display_manager_->RemoveDisplayManagerObserver(this);
+  window_tree_host_manager_->RemoveObserver(this);
 }
 
 void DisplayConfigurationController::SetDisplayLayout(
@@ -203,7 +204,7 @@ DisplayConfigurationController::GetPrimaryMirroringDisplayForUnifiedDesktop()
       GetUnifiedModeShelfCellPosition());
 }
 
-void DisplayConfigurationController::OnDidApplyDisplayChanges() {
+void DisplayConfigurationController::OnDisplayConfigurationChanged() {
   // TODO(oshima): Stop all animations.
   SetThrottleTimeout(kAfterDisplayChangeThrottleTimeoutMs);
 }

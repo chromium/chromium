@@ -29,7 +29,6 @@
 #include "ui/base/dragdrop/os_exchange_data.h"
 #include "ui/base/dragdrop/os_exchange_data_provider.h"
 #include "ui/base/hit_test.h"
-#include "ui/display/manager/display_manager.h"
 #include "ui/events/event.h"
 #include "ui/events/event_utils.h"
 #include "ui/gfx/animation/animation_delegate_notifier.h"
@@ -117,11 +116,11 @@ std::unique_ptr<ui::LocatedEvent> ConvertEvent(aura::Window* target,
 
 DragDropController::DragDropController() {
   Shell::Get()->AddPreTargetHandler(this, ui::EventTarget::Priority::kSystem);
-  Shell::Get()->display_manager()->AddDisplayManagerObserver(this);
+  Shell::Get()->window_tree_host_manager()->AddObserver(this);
 }
 
 DragDropController::~DragDropController() {
-  Shell::Get()->display_manager()->RemoveDisplayManagerObserver(this);
+  Shell::Get()->window_tree_host_manager()->RemoveObserver(this);
   Shell::Get()->RemovePreTargetHandler(this);
   Cleanup();
   if (cancel_animation_)
@@ -734,7 +733,7 @@ void DragDropController::AnimationCanceled(const gfx::Animation* animation) {
   AnimationEnded(animation);
 }
 
-void DragDropController::OnWillApplyDisplayChanges() {
+void DragDropController::OnDisplayConfigurationChanging() {
   // Abort in-progress drags if a monitor is added or removed because the drag
   // image widget's container may be destroyed.
   if (IsDragDropInProgress())

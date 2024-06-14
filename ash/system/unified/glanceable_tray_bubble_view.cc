@@ -307,7 +307,7 @@ void GlanceableTrayBubbleView::OnWidgetClosing(views::Widget* widget) {
   TrayBubbleView::OnWidgetClosing(widget);
 }
 
-void GlanceableTrayBubbleView::OnDidApplyDisplayChanges() {
+void GlanceableTrayBubbleView::OnDisplayConfigurationChanged() {
   int max_height = CalculateMaxTrayBubbleHeight(shelf_->GetWindow());
   SetMaxHeight(max_height);
   SetCalendarPreferredSize();

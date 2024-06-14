@@ -14,7 +14,6 @@
 #include "base/memory/raw_ptr.h"
 #include "ui/display/display_observer.h"
 #include "ui/display/manager/display_configurator.h"
-#include "ui/display/manager/display_manager_observer.h"
 #include "ui/events/event_handler.h"
 #include "ui/views/widget/widget_observer.h"
 
@@ -33,7 +32,7 @@ class ASH_EXPORT TouchObserverHud
       public views::WidgetObserver,
       public display::DisplayObserver,
       public display::DisplayConfigurator::Observer,
-      public display::DisplayManagerObserver {
+      public WindowTreeHostManager::Observer {
  public:
   TouchObserverHud(const TouchObserverHud&) = delete;
   TouchObserverHud& operator=(const TouchObserverHud&) = delete;
@@ -75,10 +74,10 @@ class ASH_EXPORT TouchObserverHud
   void OnDisplayConfigurationChanged(
       const display::DisplayConfigurator::DisplayStateList& outputs) override;
 
-  // display::DisplayManagerObserver
+  // WindowTreeHostManager::Observer:
   void OnDisplaysInitialized() override;
-  void OnWillApplyDisplayChanges() override;
-  void OnDidApplyDisplayChanges() override;
+  void OnDisplayConfigurationChanging() override;
+  void OnDisplayConfigurationChanged() override;
 
  private:
   friend class TouchHudTestBase;

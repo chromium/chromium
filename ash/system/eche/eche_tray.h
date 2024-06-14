@@ -24,7 +24,6 @@
 #include "base/memory/raw_ptr.h"
 #include "base/timer/timer.h"
 #include "ui/display/display_observer.h"
-#include "ui/display/tablet_state.h"
 #include "ui/events/event_handler.h"
 #include "ui/gfx/geometry/rect.h"
 #include "ui/views/controls/button/button.h"
@@ -315,7 +314,7 @@ class ASH_EXPORT EcheTray
   void UpdateEcheSizeAndBubbleBounds();
 
   // ScreenLayoutObserver:
-  void OnDidApplyDisplayChanges() override;
+  void OnDisplayConfigurationChanged() override;
 
   // ShelfObserver:
   void OnAutoHideStateChanged(ShelfAutoHideState new_state) override;

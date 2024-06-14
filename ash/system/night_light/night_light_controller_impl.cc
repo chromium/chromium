@@ -330,13 +330,13 @@ NightLightControllerImpl::NightLightControllerImpl()
       temperature_animation_(std::make_unique<ColorTemperatureAnimation>()),
       ambient_temperature_(kNeutralColorTemperatureInKelvin),
       weak_ptr_factory_(this) {
-  Shell::Get()->display_manager()->AddDisplayManagerObserver(this);
+  Shell::Get()->window_tree_host_manager()->AddObserver(this);
   aura::Env::GetInstance()->AddObserver(this);
 }
 
 NightLightControllerImpl::~NightLightControllerImpl() {
   aura::Env::GetInstance()->RemoveObserver(this);
-  Shell::Get()->display_manager()->RemoveDisplayManagerObserver(this);
+  Shell::Get()->window_tree_host_manager()->RemoveObserver(this);
 }
 
 // static
@@ -484,7 +484,7 @@ void NightLightControllerImpl::Toggle() {
   SetEnabled(!IsNightLightEnabled());
 }
 
-void NightLightControllerImpl::OnDidApplyDisplayChanges() {
+void NightLightControllerImpl::OnDisplayConfigurationChanged() {
   ReapplyColorTemperatures();
 }
 

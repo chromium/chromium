@@ -6,6 +6,7 @@
 
 #include "ash/constants/ash_switches.h"
 #include "ash/display/display_prefs.h"
+#include "ash/display/window_tree_host_manager.h"
 #include "ash/shell.h"
 #include "ash/wm/tablet_mode/tablet_mode_controller.h"
 #include "base/command_line.h"
@@ -18,11 +19,11 @@
 namespace ash {
 
 DisplayConfigurationObserver::DisplayConfigurationObserver() {
-  Shell::Get()->display_manager()->AddDisplayManagerObserver(this);
+  Shell::Get()->window_tree_host_manager()->AddObserver(this);
 }
 
 DisplayConfigurationObserver::~DisplayConfigurationObserver() {
-  Shell::Get()->display_manager()->RemoveDisplayManagerObserver(this);
+  Shell::Get()->window_tree_host_manager()->RemoveObserver(this);
 }
 
 void DisplayConfigurationObserver::OnDisplaysInitialized() {
@@ -32,7 +33,7 @@ void DisplayConfigurationObserver::OnDisplaysInitialized() {
     Shell::Get()->display_prefs()->MaybeStoreDisplayPrefs();
 }
 
-void DisplayConfigurationObserver::OnDidApplyDisplayChanges() {
+void DisplayConfigurationObserver::OnDisplayConfigurationChanged() {
   Shell::Get()->display_prefs()->MaybeStoreDisplayPrefs();
 }
 

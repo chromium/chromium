@@ -562,7 +562,7 @@ void HoldingSpaceTrayBubble::UpdateBubbleBounds() {
       holding_space_tray_->shelf()->GetSystemTrayAnchorRect());
 }
 
-void HoldingSpaceTrayBubble::OnDidApplyDisplayChanges() {
+void HoldingSpaceTrayBubble::OnDisplayConfigurationChanged() {
   UpdateBubbleBounds();
 }
 

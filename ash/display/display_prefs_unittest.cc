@@ -307,7 +307,7 @@ class DisplayPrefsTest : public AshTestBase {
   DisplayPrefs* display_prefs() { return Shell::Get()->display_prefs(); }
 
  private:
-  std::unique_ptr<display::DisplayManagerObserver> observer_;
+  std::unique_ptr<WindowTreeHostManager::Observer> observer_;
   base::test::ScopedFeatureList scoped_feature_list_;
 };
 

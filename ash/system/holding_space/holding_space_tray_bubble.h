@@ -62,7 +62,7 @@ class ASH_EXPORT HoldingSpaceTrayBubble : public ScreenLayoutObserver,
   void UpdateBubbleBounds();
 
   // ScreenLayoutObserver:
-  void OnDidApplyDisplayChanges() override;
+  void OnDisplayConfigurationChanged() override;
 
   // ShelfObserver:
   void OnAutoHideStateChanged(ShelfAutoHideState new_state) override;

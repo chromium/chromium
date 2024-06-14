@@ -53,7 +53,6 @@
 #include "ui/base/resource/resource_bundle.h"
 #include "ui/chromeos/styles/cros_tokens_color_mappings.h"
 #include "ui/color/color_id.h"
-#include "ui/display/manager/display_manager.h"
 #include "ui/events/event.h"
 #include "ui/gfx/geometry/insets.h"
 #include "ui/gfx/paint_vector_icon.h"
@@ -156,7 +155,7 @@ PhoneHubTray::PhoneHubTray(Shelf* shelf)
                 base::DefaultClock::GetInstance())
           : nullptr;
 
-  Shell::Get()->display_manager()->AddDisplayManagerObserver(this);
+  Shell::Get()->window_tree_host_manager()->AddObserver(this);
 }
 
 PhoneHubTray::~PhoneHubTray() {
@@ -170,7 +169,7 @@ PhoneHubTray::~PhoneHubTray() {
     phone_hub_manager_->GetFeatureStatusProvider()->RemoveObserver(
         onboarding_nudge_controller_.get());
   }
-  Shell::Get()->display_manager()->RemoveDisplayManagerObserver(this);
+  Shell::Get()->window_tree_host_manager()->RemoveObserver(this);
 }
 
 void PhoneHubTray::SetPhoneHubManager(
@@ -291,7 +290,7 @@ void PhoneHubTray::OnVisibilityAnimationFinished(
   }
 }
 
-void PhoneHubTray::OnDidApplyDisplayChanges() {
+void PhoneHubTray::OnDisplayConfigurationChanged() {
   if (!bubble_ || !bubble_->GetBubbleView())
     return;
   bubble_->GetBubbleView()->ChangeAnchorRect(

@@ -12,7 +12,6 @@
 #include "components/exo/wayland/server_util.h"
 #include "components/exo/wayland/wayland_display_observer.h"
 #include "ui/display/display.h"
-#include "ui/display/display_observer.h"
 #include "ui/display/screen.h"
 
 namespace exo::wayland {

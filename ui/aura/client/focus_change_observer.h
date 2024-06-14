@@ -7,7 +7,6 @@
 
 #include "base/observer_list_types.h"
 #include "ui/aura/aura_export.h"
-#include "ui/aura/window.h"
 
 namespace aura {
 class Window;

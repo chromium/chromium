@@ -11,6 +11,7 @@
 #include <vector>
 
 #include "ash/ash_export.h"
+#include "ash/display/window_tree_host_manager.h"
 #include "ash/login/login_screen_controller.h"
 #include "ash/login/ui/login_data_dispatcher.h"
 #include "ash/public/cpp/image_downloader.h"
@@ -50,7 +51,6 @@
 #include "components/user_manager/user_type.h"
 #include "ui/compositor/compositor_lock.h"
 #include "ui/display/display_observer.h"
-#include "ui/display/manager/display_manager_observer.h"
 #include "ui/gfx/image/image_skia.h"
 #include "ui/native_theme/native_theme.h"
 #include "ui/native_theme/native_theme_observer.h"
@@ -90,7 +90,7 @@ using CustomWallpaperMap = std::map<AccountId, CustomWallpaperElement>;
 //     state is ACTIVE;
 class ASH_EXPORT WallpaperControllerImpl
     : public WallpaperController,
-      public display::DisplayManagerObserver,
+      public WindowTreeHostManager::Observer,
       public ShellObserver,
       public LoginDataDispatcher::Observer,
       public SessionObserver,
@@ -334,8 +334,8 @@ class ASH_EXPORT WallpaperControllerImpl
   void SyncLocalAndRemotePrefs(const AccountId& account_id) override;
   const AccountId& CurrentAccountId() const override;
 
-  // display::DisplayManagerObserver:
-  void OnDidApplyDisplayChanges() override;
+  // WindowTreeHostManager::Observer:
+  void OnDisplayConfigurationChanged() override;
 
   // ShellObserver:
   void OnRootWindowAdded(aura::Window* root_window) override;

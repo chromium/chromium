@@ -40,10 +40,6 @@ class DISPLAY_MANAGER_EXPORT DisplayManagerObserver
     const std::vector<DisplayMetricsChange> display_metrics_changes;
   };
 
-  // Invoked only once after all displays are initialized after startup in
-  // DisplayManager delegate.
-  virtual void OnDisplaysInitialized() {}
-
   // Called before the DisplayManager begins processing a change / update to
   // the current display configuration.
   virtual void OnWillProcessDisplayChanges() {}
@@ -52,14 +48,6 @@ class DISPLAY_MANAGER_EXPORT DisplayManagerObserver
   // DisplayManager have completed.
   virtual void OnDidProcessDisplayChanges(
       const DisplayConfigurationChange& configuration_change) {}
-
-  // Called before the DisplayManager delegate starts applying the display
-  // configuration changes.
-  virtual void OnWillApplyDisplayChanges() {}
-
-  // Called after the DisplayManager delegate has applied the display
-  // configuration changes.
-  virtual void OnDidApplyDisplayChanges() {}
 };
 
 }  // namespace display

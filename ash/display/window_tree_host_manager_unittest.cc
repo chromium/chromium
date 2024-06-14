@@ -45,7 +45,6 @@
 #include "ui/display/display_switches.h"
 #include "ui/display/manager/display_layout_store.h"
 #include "ui/display/manager/display_manager.h"
-#include "ui/display/manager/display_manager_observer.h"
 #include "ui/display/manager/managed_display_info.h"
 #include "ui/display/screen.h"
 #include "ui/display/test/display_manager_test_api.h"
@@ -97,13 +96,13 @@ display::ManagedDisplayInfo CreateDisplayInfo(int64_t id,
   return info;
 }
 
-class TestObserver : public display::DisplayManagerObserver,
+class TestObserver : public WindowTreeHostManager::Observer,
                      public display::DisplayObserver,
                      public aura::client::FocusChangeObserver,
                      public ::wm::ActivationChangeObserver {
  public:
   TestObserver() {
-    Shell::Get()->display_manager()->AddDisplayManagerObserver(this);
+    Shell::Get()->window_tree_host_manager()->AddObserver(this);
     aura::client::GetFocusClient(Shell::GetPrimaryRootWindow())
         ->AddObserver(this);
     ::wm::GetActivationClient(Shell::GetPrimaryRootWindow())->AddObserver(this);
@@ -113,7 +112,7 @@ class TestObserver : public display::DisplayManagerObserver,
   TestObserver& operator=(const TestObserver&) = delete;
 
   ~TestObserver() override {
-    Shell::Get()->display_manager()->RemoveDisplayManagerObserver(this);
+    Shell::Get()->window_tree_host_manager()->RemoveObserver(this);
     aura::client::GetFocusClient(Shell::GetPrimaryRootWindow())
         ->RemoveObserver(this);
     ::wm::GetActivationClient(Shell::GetPrimaryRootWindow())
@@ -121,8 +120,8 @@ class TestObserver : public display::DisplayManagerObserver,
   }
 
   // Overridden from WindowTreeHostManager::Observer
-  void OnWillApplyDisplayChanges() override { ++changing_count_; }
-  void OnDidApplyDisplayChanges() override { ++changed_count_; }
+  void OnDisplayConfigurationChanging() override { ++changing_count_; }
+  void OnDisplayConfigurationChanged() override { ++changed_count_; }
 
   // Overrideen from display::DisplayObserver
   void OnDisplayMetricsChanged(const display::Display& display,

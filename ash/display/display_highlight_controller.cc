@@ -13,7 +13,6 @@
 #include "ui/compositor/layer_type.h"
 #include "ui/compositor/paint_recorder.h"
 #include "ui/display/manager/display_manager.h"
-#include "ui/display/manager/display_manager_observer.h"
 #include "ui/gfx/color_palette.h"
 #include "ui/views/border.h"
 #include "ui/wm/core/window_animations.h"
@@ -85,7 +84,7 @@ DisplayHighlightController::DisplayHighlightController() {
   SessionControllerImpl* session_controller = shell->session_controller();
 
   session_controller->AddObserver(this);
-  shell->display_manager()->AddDisplayManagerObserver(this);
+  shell->window_tree_host_manager()->AddObserver(this);
 
   is_locked_ = session_controller->IsScreenLocked();
 }
@@ -93,7 +92,7 @@ DisplayHighlightController::DisplayHighlightController() {
 DisplayHighlightController::~DisplayHighlightController() {
   Shell* shell = Shell::Get();
 
-  shell->display_manager()->RemoveDisplayManagerObserver(this);
+  shell->window_tree_host_manager()->RemoveObserver(this);
   shell->session_controller()->RemoveObserver(this);
 }
 
@@ -135,7 +134,7 @@ void DisplayHighlightController::OnLockStateChanged(bool locked) {
   UpdateDisplayIdentificationHighlight();
 }
 
-void DisplayHighlightController::OnDidApplyDisplayChanges() {
+void DisplayHighlightController::OnDisplayConfigurationChanged() {
   UpdateDisplayIdentificationHighlight();
 }
 

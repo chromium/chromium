@@ -48,12 +48,12 @@ TouchObserverHud::TouchObserverHud(aura::Window* initial_root,
 
   // Observe changes in display size and mode to update touch HUD.
   Shell::Get()->display_configurator()->AddObserver(this);
-  Shell::Get()->display_manager()->AddDisplayManagerObserver(this);
+  Shell::Get()->window_tree_host_manager()->AddObserver(this);
   root_window_->AddPreTargetHandler(this);
 }
 
 TouchObserverHud::~TouchObserverHud() {
-  Shell::Get()->display_manager()->RemoveDisplayManagerObserver(this);
+  Shell::Get()->window_tree_host_manager()->RemoveObserver(this);
   Shell::Get()->display_configurator()->RemoveObserver(this);
 
   widget_->RemoveObserver(this);
@@ -101,10 +101,10 @@ void TouchObserverHud::OnDisplayConfigurationChanged(
 }
 
 void TouchObserverHud::OnDisplaysInitialized() {
-  OnDidApplyDisplayChanges();
+  OnDisplayConfigurationChanged();
 }
 
-void TouchObserverHud::OnWillApplyDisplayChanges() {
+void TouchObserverHud::OnDisplayConfigurationChanging() {
   if (!root_window_)
     return;
 
@@ -121,7 +121,7 @@ void TouchObserverHud::OnWillApplyDisplayChanges() {
   root_window_ = nullptr;
 }
 
-void TouchObserverHud::OnDidApplyDisplayChanges() {
+void TouchObserverHud::OnDisplayConfigurationChanged() {
   if (root_window_)
     return;
 

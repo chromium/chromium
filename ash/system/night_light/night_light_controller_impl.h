@@ -8,6 +8,7 @@
 #include <memory>
 
 #include "ash/ash_export.h"
+#include "ash/display/window_tree_host_manager.h"
 #include "ash/public/cpp/night_light_controller.h"
 #include "ash/public/cpp/schedule_enums.h"
 #include "ash/public/cpp/session/session_observer.h"
@@ -19,7 +20,6 @@
 #include "base/timer/timer.h"
 #include "chromeos/dbus/power/power_manager_client.h"
 #include "ui/aura/env_observer.h"
-#include "ui/display/manager/display_manager_observer.h"
 #include "ui/gfx/geometry/vector3d_f.h"
 #include "ui/message_center/public/cpp/notification_delegate.h"
 
@@ -44,7 +44,7 @@ class ColorTemperatureAnimation;
 // display).
 class ASH_EXPORT NightLightControllerImpl
     : public NightLightController,
-      public display::DisplayManagerObserver,
+      public WindowTreeHostManager::Observer,
       public aura::EnvObserver,
       public message_center::NotificationObserver,
       public ScheduledFeature {
@@ -113,8 +113,8 @@ class ASH_EXPORT NightLightControllerImpl
   // AnimationDurationType::kShort.
   void Toggle();
 
-  // ui::display::DisplayManagerObserver:
-  void OnDidApplyDisplayChanges() override;
+  // ash::WindowTreeHostManager::Observer:
+  void OnDisplayConfigurationChanged() override;
 
   // aura::EnvObserver:
   void OnHostInitialized(aura::WindowTreeHost* host) override;
