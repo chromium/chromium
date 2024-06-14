@@ -141,13 +141,7 @@ void wayland_log(const char* fmt, va_list argp) {
 }
 
 int GetTextInputExtensionV1Version() {
-  // If GIF support is also enabled, we need version 13.
-  if (base::FeatureList::IsEnabled(
-          ash::features::kImeSystemEmojiPickerGIFSupport)) {
-    return 13;
-  }
-
-  return 12;
+  return 14;
 }
 
 }  // namespace
