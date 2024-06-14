@@ -60,10 +60,10 @@ class AlternativeStateNameMapUpdaterTest : public ::testing::Test {
  protected:
   base::test::TaskEnvironment task_environment_;
   TestAutofillClient autofill_client_;
+  TestAddressDataManager address_data_manager_;
   std::unique_ptr<AlternativeStateNameMapUpdater>
       alternative_state_name_map_updater_;
   base::ScopedTempDir data_install_dir_;
-  TestAddressDataManager address_data_manager_;
 };
 
 // Tests that the states data is added to AlternativeStateNameMap.
