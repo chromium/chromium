@@ -4,17 +4,17 @@
 
 // ICU-based character set converter.
 
+#include "url/url_canon_icu.h"
+
 #include <stdint.h>
 #include <stdlib.h>
 #include <string.h>
 
 #include "base/check.h"
-#include "base/memory/raw_ptr.h"
-#include "base/memory/raw_ptr_exclusion.h"
+#include "base/memory/stack_allocated.h"
 #include "third_party/icu/source/common/unicode/ucnv.h"
 #include "third_party/icu/source/common/unicode/ucnv_cb.h"
 #include "third_party/icu/source/common/unicode/utypes.h"
-#include "url/url_canon_icu.h"
 #include "url/url_canon_internal.h"  // for _itoa_s
 
 namespace url {
@@ -53,6 +53,8 @@ void appendURLEscapedChar(const void* context,
 
 // A class for scoping the installation of the invalid character callback.
 class AppendHandlerInstaller {
+  STACK_ALLOCATED();
+
  public:
   // The owner of this object must ensure that the converter is alive for the
   // duration of this object's lifetime.
@@ -68,12 +70,10 @@ class AppendHandlerInstaller {
   }
 
  private:
-  raw_ptr<UConverter> converter_;
+  UConverter* converter_;
 
   UConverterFromUCallback old_callback_;
-  // This field is not a raw_ptr<> because it was filtered by the rewriter for:
-  // #addr-of
-  RAW_PTR_EXCLUSION const void* old_context_;
+  const void* old_context_;
 };
 
 }  // namespace
