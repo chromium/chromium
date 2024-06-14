@@ -97,6 +97,7 @@ public class TabResumptionModuleView extends LinearLayout {
         if (mIsSuggestionBundleReady && mUrlImageProvider != null && mClickCallback != null) {
             if (mBundle == null) {
                 mTileContainerView.removeAllViews();
+                mTileContainerView.cancelAllCallbacks();
                 mAllTilesTexts = null;
             } else {
                 mAllTilesTexts =

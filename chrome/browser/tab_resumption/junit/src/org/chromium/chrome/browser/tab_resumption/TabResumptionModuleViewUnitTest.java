@@ -118,6 +118,7 @@ public class TabResumptionModuleViewUnitTest extends TestSupport {
     @After
     public void tearDown() {
         mModuleView.destroy();
+        Assert.assertTrue(mTileContainerView.isCallbackControllerNullForTesting());
         mModuleView = null;
     }
 
