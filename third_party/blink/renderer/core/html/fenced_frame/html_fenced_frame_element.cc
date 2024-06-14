@@ -865,7 +865,7 @@ HTMLFencedFrameElement::FencedFrameDelegate::Create(
     RecordFencedFrameUnsandboxedFlags(
         outer_element->GetExecutionContext()->GetSandboxFlags());
     RecordFencedFrameFailedSandboxLoadInTopLevelFrame(
-        outer_element->GetDocument().GetFrame()->IsMainFrame());
+        outer_element->GetDocument().IsInMainFrame());
     return nullptr;
   }
 
