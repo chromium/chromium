@@ -9,7 +9,7 @@
 
 <body>
 <script type="module">
-import { buildValidNavigatorIdentityRequest, requestIdentityWithActivation } from './support/digital-identity-helper.js';
+import { buildValidNavigatorIdentityRequest, requestIdentityWithActivation } from './support/helper.js';
 
 // This regex removes the filename from the path so that we just get
 // the directory.
@@ -108,14 +108,14 @@ promise_test(async t=> {
 
 promise_test(async t=> {
   const message = await createIframeAndWaitForMessage(
-      t, basePath + "support/digital-identity-iframe.html");
+      t, basePath + "support/iframe.html");
   assert_equals(message.result, "Pass");
   assert_equals(message.data, "fake_test_token");
 }, "navigator.identity.get() succeeds in same-origin iframe");
 
 promise_test(async t=> {
   const message = await createIframeAndWaitForMessage(
-      t, remoteBaseURL + "support/digital-identity-iframe.html");
+      t, remoteBaseURL + "support/iframe.html");
   assert_equals(message.result, "Fail");
   assert_equals(message.errorType, "NotAllowedError");
 }, "navigator.identity.get() fails in cross-origin iframe");
