@@ -26,6 +26,16 @@ chromium-metrics-reviews@google.com.
   <variant name="1000ms"/>
 </variants>
 
+<variants name="LoadedIdleVisibility">
+  <variant name="" summary="all pages"/>
+  <variant name=".Background"
+      summary="pages that were hidden during the navigation"/>
+  <variant name=".Foreground"
+      summary="pages that were visible during the navigation"/>
+  <variant name=".MixedBGFG"
+      summary="pages that were hidden for only part of the navigation"/>
+</variants>
+
 <variants name="MaxWindowSize">
   <variant name="5000ms"/>
 </variants>
@@ -1143,6 +1153,53 @@ chromium-metrics-reviews@google.com.
         summary="The page was backgrounded at least once from navigation
                  start to this event."/>
   </token>
+</histogram>
+
+<histogram
+    name="PageLoad.Clients.PerformanceManager.LCPToLoadedIdle{LoadedIdleVisibility}"
+    units="ms" expires_after="2024-12-05">
+  <owner>joenotcharles@google.com</owner>
+  <owner>catan-team@chromium.org</owner>
+  <summary>
+    Recorded for each navigation when the LargestContentfulPaint (LCP) is
+    available and the navigation reaches quiescence, as tracked by the
+    Performance Manager PageNode::LoadingState::kLoadedIdle state. The value is
+    the time between LCP and quiescence, or 0 if quiescence came first. This
+    version of the metric is recorded for navigations in {LoadedIdleVisibility}.
+  </summary>
+</histogram>
+
+<histogram
+    name="PageLoad.Clients.PerformanceManager.LCPWithoutLoadedIdle{LoadedIdleVisibility}"
+    units="ms" expires_after="2024-12-05">
+  <owner>joenotcharles@google.com</owner>
+  <owner>catan-team@chromium.org</owner>
+  <summary>
+    Recorded for each navigation when the LargestConentfulPaint (LCP) is
+    available and the navigation finishes without reaching quiescence (as
+    tracked by the Performance Manager PageNode::LoadingState::kLoadedIdle
+    state), such as by the page closing or a new navigation starting. The value
+    is the time from navigation start to LCP. If the navigation reaches
+    quiescense, PageLoad.Clients.PerformanceManager.LCPToLoadedIdle is recorded
+    instead. This version of the metric is recorded for navigations in
+    {LoadedIdleVisibility}.
+  </summary>
+</histogram>
+
+<histogram
+    name="PageLoad.Clients.PerformanceManager.LoadedIdleWithoutLCP{LoadedIdleVisibility}"
+    units="ms" expires_after="2024-12-05">
+  <owner>joenotcharles@google.com</owner>
+  <owner>catan-team@chromium.org</owner>
+  <summary>
+    Recorded for each navigation when it reaches quiescence, as tracked by the
+    Performance Manager PageNode::LoadingState::kLoadedIdle state, without the
+    LargestContentfulPaint (LCP) being available. The value is the time from
+    navigation start to quiescence. If the navigation gets an LCP before
+    reaching quiescense, PageLoad.Clients.PerformanceManager.LCPToLoadedIdle is
+    recorded instead. This version of the metric is recorded for navigations in
+    {LoadedIdleVisibility}.
+  </summary>
 </histogram>
 
 <histogram
