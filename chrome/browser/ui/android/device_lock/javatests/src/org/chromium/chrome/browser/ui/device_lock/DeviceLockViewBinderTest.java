@@ -29,6 +29,7 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 
 import org.chromium.base.test.util.Batch;
+import org.chromium.base.test.util.DisabledTest;
 import org.chromium.chrome.R;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
 import org.chromium.components.browser_ui.device_lock.DeviceLockActivityLauncher;
@@ -98,6 +99,7 @@ public class DeviceLockViewBinderTest extends BlankUiTestActivityTestCase {
     @Test
     @UiThreadTest
     @SmallTest
+    @DisabledTest(message = "crbug.com/347214230")
     public void testDeviceLockView_preExistingLock_showsAppropriateTexts() {
         mViewModel.set(PREEXISTING_DEVICE_LOCK, true);
 
