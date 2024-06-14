@@ -46,7 +46,6 @@ import org.chromium.chrome.browser.autofill.settings.AutofillCreditCardEditor;
 import org.chromium.chrome.browser.autofill.settings.AutofillLocalIbanEditor;
 import org.chromium.chrome.browser.back_press.BackPressHelper;
 import org.chromium.chrome.browser.back_press.SecondaryActivityBackPressUma.SecondaryActivity;
-import org.chromium.chrome.browser.browsing_data.ClearBrowsingDataFragment;
 import org.chromium.chrome.browser.browsing_data.ClearBrowsingDataFragmentBasic;
 import org.chromium.chrome.browser.feedback.FragmentHelpAndFeedbackLauncher;
 import org.chromium.chrome.browser.feedback.HelpAndFeedbackLauncherImpl;
@@ -373,9 +372,6 @@ public class SettingsActivity extends ChromeBaseAppCompatActivity
         if (fragment instanceof PrivacySandboxSettingsBaseFragment) {
             ((PrivacySandboxSettingsBaseFragment) fragment)
                     .setSnackbarManager(getSnackbarManager());
-        }
-        if (fragment instanceof ClearBrowsingDataFragment) {
-            ((ClearBrowsingDataFragment) fragment).setSnackbarManager(mSnackbarManager);
         }
         if (fragment instanceof AccountManagementFragment) {
             ((AccountManagementFragment) fragment).setSnackbarManager(mSnackbarManager);
