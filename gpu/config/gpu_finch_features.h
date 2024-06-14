@@ -115,6 +115,8 @@ GPU_EXPORT BASE_DECLARE_FEATURE(kDeferredOverlaysRelease);
 GPU_EXPORT BASE_DECLARE_FEATURE(kD3DBackingUploadWithUpdateSubresource);
 #endif
 
+GPU_EXPORT BASE_DECLARE_FEATURE(kHandleOverlaysSwapFailure);
+
 GPU_EXPORT bool UseGles2ForOopR();
 GPU_EXPORT bool IsUsingVulkan();
 GPU_EXPORT bool IsDrDcEnabled();
