@@ -6550,4 +6550,73 @@ TEST_F(WallpaperControllerVersionedWallpaperInfoTest,
       MigrationFailureReason::kOnlineVariantsFetchFailure, 1);
 }
 
+TEST_F(WallpaperControllerVersionedWallpaperInfoTest,
+       SyncedInOnlineWallpaperMigratedSuccessfully) {
+  {
+    WallpaperInfo unmigrated_local_info =
+        InfoWithType(WallpaperType::kOnceGooglePhotos);
+    unmigrated_local_info.version = base::Version();
+    ScopedDictPrefUpdate wallpaper_update(local_state(),
+                                          prefs::kUserWallpaperInfo);
+    wallpaper_update->Set(kAccountId1.GetUserEmail(),
+                          unmigrated_local_info.ToDict());
+  }
+  {
+    WallpaperInfo unmigrated_synced_info = {
+        kDummyUrl, WALLPAPER_LAYOUT_CENTER_CROPPED, WallpaperType::kOnline,
+        base::Time::Now()};
+    unmigrated_synced_info.collection_id =
+        TestWallpaperControllerClient::kDummyCollectionId;
+    unmigrated_synced_info.version = base::Version();
+    ScopedDictPrefUpdate wallpaper_update(
+        GetProfilePrefService(kAccountId1),
+        prefs::kSyncableVersionedWallpaperInfo);
+    wallpaper_update->Set(kAccountId1.GetUserEmail(),
+                          unmigrated_synced_info.ToDict());
+  }
+
+  SimulateUserLogin(kAccountId1);
+  RunAllTasksUntilIdle();
+
+  WallpaperInfo migrated_info;
+  ASSERT_TRUE(
+      pref_manager_->GetLocalWallpaperInfo(kAccountId1, &migrated_info));
+  EXPECT_TRUE(migrated_info.version.IsValid());
+  EXPECT_TRUE(migrated_info.unit_id.has_value());
+  EXPECT_FALSE(migrated_info.variants.empty());
+  histogram_tester().ExpectBucketCount("Ash.Wallpaper.Online.MigrationStatus",
+                                       MigrationStatus::kSucceeded, 1);
+  histogram_tester().ExpectTotalCount("Ash.Wallpaper.Online.MigrationLatency",
+                                      1);
+  histogram_tester().ExpectBucketCount(
+      "Ash.Wallpaper.OnceGooglePhotos.MigrationStatus",
+      MigrationStatus::kSucceeded, 1);
+  histogram_tester().ExpectTotalCount(
+      "Ash.Wallpaper.OnceGooglePhotos.MigrationLatency", 1);
+}
+
+TEST_F(WallpaperControllerVersionedWallpaperInfoTest,
+       ShouldNotSyncInForUnsuccessfullyMigratedWallpaper) {
+  WallpaperInfo unmigrated_info = {"https://expected_to_fail",
+                                   WALLPAPER_LAYOUT_CENTER_CROPPED,
+                                   WallpaperType::kOnline, base::Time::Now()};
+  unmigrated_info.collection_id =
+      TestWallpaperControllerClient::kDummyCollectionId;
+  unmigrated_info.version = base::Version();
+  ScopedDictPrefUpdate wallpaper_update(GetProfilePrefService(kAccountId1),
+                                        prefs::kSyncableVersionedWallpaperInfo);
+  wallpaper_update->Set(kAccountId1.GetUserEmail(), unmigrated_info.ToDict());
+
+  SimulateUserLogin(kAccountId1);
+  RunAllTasksUntilIdle();
+
+  WallpaperInfo migrated_info;
+  EXPECT_FALSE(
+      pref_manager_->GetLocalWallpaperInfo(kAccountId1, &migrated_info));
+  histogram_tester().ExpectBucketCount("Ash.Wallpaper.Online.MigrationStatus",
+                                       MigrationStatus::kFailed, 1);
+  histogram_tester().ExpectTotalCount("Ash.Wallpaper.Online.MigrationLatency",
+                                      1);
+}
+
 }  // namespace ash

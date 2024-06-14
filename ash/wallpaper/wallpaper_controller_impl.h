@@ -436,6 +436,11 @@ class ASH_EXPORT WallpaperControllerImpl
   // Processes the wallpaper info after having saved it to the local store.
   void HandleWallpaperInfoAfterMigration(const AccountId& account_id);
 
+  // Processes the synced wallpaper info after the migration.
+  void HandleSyncedWallpaperInfoAfterMigration(
+      const AccountId& account_id,
+      const std::optional<WallpaperInfo>& synced_info);
+
   // Callback after `WallpaperResizer` is done scaling the current wallpaper to
   // the current display size.
   void OnWallpaperResized();

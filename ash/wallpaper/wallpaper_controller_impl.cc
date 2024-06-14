@@ -1577,6 +1577,41 @@ void WallpaperControllerImpl::HandleWallpaperInfoAfterMigration(
                       daily_refresh_scheduler_->current_checkpoint());
 }
 
+void WallpaperControllerImpl::HandleSyncedWallpaperInfoAfterMigration(
+    const AccountId& account_id,
+    const std::optional<WallpaperInfo>& synced_info) {
+  if (!synced_info) {
+    LOG(WARNING) << __func__
+                 << " Unable to migrate synced info to the latest version";
+    return;
+  }
+
+  WallpaperInfo local_info;
+  if (!pref_manager_->GetLocalWallpaperInfo(account_id, &local_info)) {
+    HandleWallpaperInfoSyncedIn(account_id, *synced_info);
+    return;
+  }
+  // TODO(b/278096886): Move this sync-out logic for `kCustomized` type
+  // somewhere else.
+  if (!synced_info->MatchesSelection(local_info) &&
+      synced_info->date < local_info.date &&
+      local_info.type == WallpaperType::kCustomized) {
+    // Generally, we handle setting synced_info when local_info is updated.
+    // But for custom images, we wait until the image is uploaded to Drive,
+    // which may not be available at the time of setting the local_info.
+    base::FilePath source = GetCustomWallpaperDir(kOriginalWallpaperSubDir)
+                                .Append(local_info.location);
+    SaveWallpaperToDriveFsAndSyncInfo(account_id, source);
+    return;
+  }
+
+  if (!WallpaperPrefManager::ShouldSyncIn(*synced_info, local_info,
+                                          IsOobeState())) {
+    return;
+  }
+  HandleWallpaperInfoSyncedIn(account_id, *synced_info);
+}
+
 void WallpaperControllerImpl::OnWallpaperResized() {
   CalculateWallpaperColors();
   compositor_lock_.reset();
@@ -2891,33 +2926,19 @@ void WallpaperControllerImpl::SyncLocalAndRemotePrefs(
   // Check if the synced info was set by another device, and if we have already
   // handled it locally.
   WallpaperInfo synced_info;
-  WallpaperInfo local_info;
   if (!pref_manager_->GetSyncedWallpaperInfo(account_id, &synced_info)) {
     return;
   }
-  if (!pref_manager_->GetLocalWallpaperInfo(account_id, &local_info)) {
-    HandleWallpaperInfoSyncedIn(account_id, synced_info);
-    return;
+  if (wallpaper_info_migrator_.ShouldMigrate(synced_info)) {
+    wallpaper_info_migrator_.Migrate(
+        account_id, synced_info,
+        base::BindOnce(
+            &WallpaperControllerImpl::HandleSyncedWallpaperInfoAfterMigration,
+            weak_factory_.GetWeakPtr(), account_id));
+  } else {
+    // If no migration is needed, proceed as before
+    HandleSyncedWallpaperInfoAfterMigration(account_id, synced_info);
   }
-  // TODO(b/278096886): Move this sync-out logic for `kCustomized` type
-  // somewhere else.
-  if (!synced_info.MatchesSelection(local_info) &&
-      synced_info.date < local_info.date &&
-      local_info.type == WallpaperType::kCustomized) {
-    // Generally, we handle setting synced_info when local_info is updated.
-    // But for custom images, we wait until the image is uploaded to Drive,
-    // which may not be available at the time of setting the local_info.
-    base::FilePath source = GetCustomWallpaperDir(kOriginalWallpaperSubDir)
-                                .Append(local_info.location);
-    SaveWallpaperToDriveFsAndSyncInfo(account_id, source);
-    return;
-  }
-
-  if (!WallpaperPrefManager::ShouldSyncIn(synced_info, local_info,
-                                          IsOobeState())) {
-    return;
-  }
-  HandleWallpaperInfoSyncedIn(account_id, synced_info);
 }
 
 const AccountId& WallpaperControllerImpl::CurrentAccountId() const {
