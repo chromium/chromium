@@ -555,7 +555,7 @@ class CONTENT_EXPORT RenderFrameHostImpl
   void GetOpenGraphMetadata(
       base::OnceCallback<void(blink::mojom::OpenGraphMetadataPtr)> callback)
       override;
-  bool IsErrorDocument() override;
+  bool IsErrorDocument() const override;
   DocumentRef GetDocumentRef() override;
   WeakDocumentPtr GetWeakDocumentPtr() override;
   void EnableMojoJsBindings(
@@ -1719,7 +1719,10 @@ class CONTENT_EXPORT RenderFrameHostImpl
         << LifecycleStateImplToString(lifecycle_state_);
     return policy_container_host_->sandbox_flags();
   }
-  bool is_mhtml_document() { return is_mhtml_document_; }
+  bool is_mhtml_document() const { return is_mhtml_document_; }
+
+  // Returns whether this document is a subframe of a MHTML document.
+  bool IsMhtmlSubframe() const;
 
   ReloadType reload_type() { return reload_type_; }
 
