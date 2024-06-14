@@ -2887,6 +2887,7 @@ data/accessibility/html/audio-expected-mac.txt
 data/accessibility/html/audio-expected-uia-win.txt
 data/accessibility/html/audio-expected-win.txt
 data/accessibility/html/audio.html
+data/accessibility/html/audio.html.mock-http-headers
 data/accessibility/html/b-expected-android-assist-data.txt
 data/accessibility/html/b-expected-android-external.txt
 data/accessibility/html/b-expected-android.txt

@@ -3770,6 +3770,10 @@ bool RenderViewContextMenu::IsSaveAsEnabled() const {
     return false;
   }
 
+  if (!IsSaveAsItemAllowedByUntrustedNetworkStatus()) {
+    return false;
+  }
+
   const GURL& url = params_.src_url;
   bool can_save = (params_.media_flags & ContextMenuData::kMediaCanSave) &&
                   url.is_valid() &&
