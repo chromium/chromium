@@ -508,6 +508,7 @@ public class ManageSyncSettingsTest {
     @Test
     @SmallTest
     @Feature({"Sync"})
+    @DisableFeatures({ChromeFeatureList.REPLACE_SYNC_PROMOS_WITH_SIGN_IN_PROMOS})
     public void testPressingTurnOffSyncForChildUser() {
         mSyncTestRule.setUpChildAccountAndEnableSyncForTesting();
         ManageSyncSettings fragment = startManageSyncPreferences();
