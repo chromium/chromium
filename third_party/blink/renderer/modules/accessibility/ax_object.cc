@@ -7934,8 +7934,9 @@ String AXObject::ToString(bool verbose) const {
                            : CanSetFocusAttribute()) {
       string_builder = string_builder + " focusable";
     }
-    if (!IsDetached() && AXObjectCache().IsAriaOwned(this))
+    if (!IsDetached() && AXObjectCache().IsAriaOwned(this, /*checks*/ false)) {
       string_builder = string_builder + " isAriaOwned";
+    }
     if (IsIgnored()) {
       string_builder = string_builder + " isIgnored";
 #if defined(AX_FAIL_FAST_BUILD)

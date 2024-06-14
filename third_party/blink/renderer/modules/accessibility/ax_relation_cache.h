@@ -35,7 +35,7 @@ class AXRelationCache {
   // Returns true if the given object's position in the tree was due to
   // aria-owns.
   bool IsAriaOwned(AXID) const;
-  bool IsAriaOwned(const AXObject*) const;
+  bool IsAriaOwned(const AXObject*, bool check = true) const;
 
   // Returns the parent of the given object due to aria-owns, if valid,
   // otherwise, removes the child from maps indicating that it is owned.
