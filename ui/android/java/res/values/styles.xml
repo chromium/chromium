@@ -69,11 +69,6 @@ found in the LICENSE file.
     <style name="TextAppearance" parent="android:TextAppearance" tools:ignore="UnusedResources">
         <item name="android:fontFamily">sans-serif</item>
     </style>
-    <!-- Used by Chrome and Content -->
-    <!-- TODO: Remove RobotoMediumStyle once downstream CL making use of it lands. -->
-    <style name="TextAppearance.RobotoMediumStyle" tools:ignore="UnusedResources">
-        <item name="android:fontFamily">sans-serif-medium</item>
-    </style>
     <style name="TextAppearance.MediumStyle" tools:ignore="UnusedResources">
         <item name="android:fontFamily">sans-serif-medium</item>
     </style>
