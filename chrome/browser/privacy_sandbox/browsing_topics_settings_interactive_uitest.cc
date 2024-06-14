@@ -94,7 +94,7 @@ class PrivacySandboxSettingsTopicsInteractiveTest
       (blockedTopicsList + "privacy-sandbox-interest-item") + "cr-button";
   const DeepQuery blockedTopicsRow =
       GetAdTopicsPageQuery() + "#blockedTopicsRow";
-  const DeepQuery ironCollapse = GetAdTopicsPageQuery() + "iron-collapse";
+  const DeepQuery ironCollapse = GetAdTopicsPageQuery() + "cr-collapse";
 
  private:
   base::test::ScopedFeatureList scoped_feature_list_;

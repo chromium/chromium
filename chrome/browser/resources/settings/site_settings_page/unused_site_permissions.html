@@ -14,7 +14,7 @@
       <div class="secondary">[[subtitleString_]]</div>
     </cr-expand-button>
   </div>
-  <iron-collapse class="site-list"
+  <cr-collapse class="site-list"
       opened="[[unusedSitePermissionsReviewListExpanded_]]">
     <template is="dom-repeat" items="[[sites_]]">
       <div class$="list-item site-entry [[getRowClass_(item.visible)]]">
@@ -36,7 +36,7 @@
         $i18n{safetyCheckUnusedSitePermissionsGotItLabel}
       </cr-button>
     </div>
-  </iron-collapse>
+  </cr-collapse>
   <cr-tooltip fit-to-visible-bounds manual-mode position="top" offset="3">
     $i18n{safetyCheckUnusedSitePermissionsAllowAgainLabel}
   </cr-tooltip>

@@ -10,7 +10,7 @@ import type {SiteEntryElement} from 'chrome://settings/lazy_load.js';
 import {SiteSettingsPrefsBrowserProxyImpl, SortMethod} from 'chrome://settings/lazy_load.js';
 import {Router, routes} from 'chrome://settings/settings.js';
 import {assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
-import {eventToPromise, isChildVisible} from 'chrome://webui-test/test_util.js';
+import {eventToPromise, microtasksFinished, isChildVisible} from 'chrome://webui-test/test_util.js';
 
 import {TestSiteSettingsPrefsBrowserProxy} from './test_site_settings_prefs_browser_proxy.js';
 import {createOriginInfo, createSiteGroup} from './test_util.js';
@@ -69,7 +69,7 @@ suite('SiteEntry', function() {
     assertEquals(3, collapseChild.querySelectorAll('.origin-link').length);
   });
 
-  test('expands and closes to show more origins', function() {
+  test('expands and closes to show more origins', async () => {
     testElement.siteGroup = TEST_MULTIPLE_SITE_GROUP;
     assertFalse(testElement.$.expandIcon.hidden);
     assertEquals(
@@ -77,15 +77,16 @@ suite('SiteEntry', function() {
     assertEquals(
         'false', testElement.$.expandIcon.getAttribute('aria-expanded'));
     const originList = testElement.$.originList.get();
-    assertTrue(originList.classList.contains('iron-collapse-closed'));
+    assertTrue(originList.classList.contains('collapse-closed'));
     assertEquals('true', originList.getAttribute('aria-hidden'));
 
     testElement.$.toggleButton.click();
+    await microtasksFinished();
     assertEquals(
         'true', testElement.$.toggleButton.getAttribute('aria-expanded'));
     assertEquals(
         'true', testElement.$.expandIcon.getAttribute('aria-expanded'));
-    assertTrue(originList.classList.contains('iron-collapse-opened'));
+    assertTrue(originList.classList.contains('collapse-opened'));
     assertEquals('false', originList.getAttribute('aria-hidden'));
   });
 
@@ -95,13 +96,13 @@ suite('SiteEntry', function() {
     assertEquals(
         'false', testElement.$.toggleButton.getAttribute('aria-expanded'));
     const originList = testElement.$.originList.get();
-    assertTrue(originList.classList.contains('iron-collapse-closed'));
+    assertTrue(originList.classList.contains('collapse-closed'));
     assertEquals('true', originList.getAttribute('aria-hidden'));
 
     testElement.$.toggleButton.click();
     assertEquals(
         'false', testElement.$.toggleButton.getAttribute('aria-expanded'));
-    assertTrue(originList.classList.contains('iron-collapse-closed'));
+    assertTrue(originList.classList.contains('collapse-closed'));
     assertEquals('true', originList.getAttribute('aria-hidden'));
     assertEquals(
         routes.SITE_SETTINGS_SITE_DETAILS.path,
@@ -441,6 +442,7 @@ suite('SiteEntry', function() {
     flush();
     const collapseChild = testElement.$.originList.get();
     testElement.$.toggleButton.click();
+    await microtasksFinished();
     flush();
 
     const originList = collapseChild.querySelectorAll('.hr');

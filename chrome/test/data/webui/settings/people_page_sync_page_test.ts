@@ -12,7 +12,7 @@ import type {CrExpandButtonElement, CrInputElement, SettingsSyncEncryptionOption
 // <if expr="not chromeos_ash">
 import type {CrDialogElement} from 'chrome://settings/lazy_load.js';
 // </if>
-import type {IronCollapseElement} from 'chrome://settings/lazy_load.js';
+import type {CrCollapseElement} from 'chrome://settings/lazy_load.js';
 import type {CrButtonElement, CrRadioButtonElement, CrRadioGroupElement} from 'chrome://settings/settings.js';
 import {MetricsBrowserProxyImpl} from 'chrome://settings/settings.js';
 import {OpenWindowProxyImpl, PageStatus, Router, routes, SignedInState, StatusAction, SyncBrowserProxyImpl} from 'chrome://settings/settings.js';
@@ -1041,7 +1041,7 @@ suite('EEAChoiceCountry', function() {
   test('personalizationCollapse', async function() {
     // The collapse is collapsed by default.
     const personalizationCollapse =
-        syncPage.shadowRoot!.querySelector<IronCollapseElement>(
+        syncPage.shadowRoot!.querySelector<CrCollapseElement>(
             '#personalizationCollapse');
     assertTrue(!!personalizationCollapse);
     assertFalse(personalizationCollapse.opened);

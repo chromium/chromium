@@ -6,7 +6,7 @@ import 'chrome://settings/lazy_load.js';
 import 'chrome://settings/settings.js';
 
 import {flush} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
-import type {CrIconButtonElement, IronCollapseElement, SettingsRadioGroupElement} from 'chrome://settings/lazy_load.js';
+import type {CrCollapseElement, CrIconButtonElement, SettingsRadioGroupElement} from 'chrome://settings/lazy_load.js';
 import type {ExceptionEditDialogElement, ExceptionEntryElement, ExceptionListElement, ExceptionTabbedAddDialogElement, SettingsCheckboxListEntryElement, SettingsPerformancePageElement, SettingsToggleButtonElement} from 'chrome://settings/settings.js';
 import {convertDateToWindowsEpoch, DISCARD_RING_PREF, MEMORY_SAVER_MODE_AGGRESSIVENESS_PREF, MEMORY_SAVER_MODE_PREF, MemorySaverModeAggressiveness, MemorySaverModeExceptionListAction, MemorySaverModeState, PerformanceBrowserProxyImpl, PerformanceMetricsProxyImpl, TAB_DISCARD_EXCEPTIONS_MANAGED_PREF, TAB_DISCARD_EXCEPTIONS_OVERFLOW_SIZE, TAB_DISCARD_EXCEPTIONS_PREF} from 'chrome://settings/settings.js';
 import {assertDeepEquals, assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
@@ -122,7 +122,7 @@ suite('PerformancePageImprovements', function() {
   let mediumButton: HTMLElement;
   let aggressiveButton: HTMLElement;
   let radioGroup: SettingsRadioGroupElement;
-  let radioGroupCollapse: IronCollapseElement;
+  let radioGroupCollapse: CrCollapseElement;
   let discardRingTreatmentToggleButton: SettingsToggleButtonElement;
 
   /**

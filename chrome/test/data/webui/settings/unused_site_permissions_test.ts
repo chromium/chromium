@@ -179,7 +179,7 @@ suite('CrSettingsUnusedSitePermissionsTest', function() {
     assertTrue(!!expandButton);
 
     const unusedSitePermissionList =
-        testElement.shadowRoot!.querySelector('iron-collapse');
+        testElement.shadowRoot!.querySelector('cr-collapse');
     assertTrue(!!unusedSitePermissionList);
 
     // Button and list start out expanded.

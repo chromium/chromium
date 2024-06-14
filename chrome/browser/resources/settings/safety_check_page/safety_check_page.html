@@ -33,7 +33,7 @@
         </cr-icon-button>
       </template>
     </div>
-    <iron-collapse id="safetyCheckCollapse"
+    <cr-collapse id="safetyCheckCollapse"
         opened="[[shouldShowChildren_(parentStatus_)]]">
       <settings-safety-check-updates-child>
       </settings-safety-check-updates-child>
@@ -46,7 +46,7 @@
         <settings-safety-check-extensions-child>
         </settings-safety-check-extensions-child>
       </template>
-    </iron-collapse>
+    </cr-collapse>
     <template is="dom-if" if="[[shouldShowSafetyCheckExtensionsReview_(
           safetyCheckNumberOfExtensionsThatNeedReview_)]]" restamp>
       <safety-check-extensions>

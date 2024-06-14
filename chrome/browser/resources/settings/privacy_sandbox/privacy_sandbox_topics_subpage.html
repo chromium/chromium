@@ -168,7 +168,7 @@
       $i18n{topicsPageBlockedTopicsDescriptionNew}
     </div>
   </cr-expand-button>
-  <iron-collapse opened="[[blockedTopicsExpanded_]]">
+  <cr-collapse opened="[[blockedTopicsExpanded_]]">
     <div id="blockedTopicsDescription"
         class$="[[getBlockedTopicsDescriptionClass_(
         blockedTopicsList_.length)]]"
@@ -195,7 +195,7 @@
         </privacy-sandbox-interest-item>
       </template>
     </div>
-  </iron-collapse>
+  </cr-collapse>
   <template is="dom-if" if="[[shouldShowV2_]]">
     <div id="manageTopicsSection" class="hr">
         <cr-link-row id="privacySandboxManageTopicsLinkRow"

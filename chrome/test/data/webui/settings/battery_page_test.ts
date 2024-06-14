@@ -6,7 +6,7 @@ import 'chrome://settings/settings.js';
 
 import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
 import {flush} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
-import type {IronCollapseElement, SettingsRadioGroupElement} from 'chrome://settings/lazy_load.js';
+import type {CrCollapseElement, SettingsRadioGroupElement} from 'chrome://settings/lazy_load.js';
 import type {ControlledRadioButtonElement, SettingsBatteryPageElement, SettingsToggleButtonElement} from 'chrome://settings/settings.js';
 import {BATTERY_SAVER_MODE_PREF, BatterySaverModeState, PerformanceBrowserProxyImpl, PerformanceMetricsProxyImpl} from 'chrome://settings/settings.js';
 import {assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
@@ -56,7 +56,7 @@ suite('BatteryPage', function() {
             'battery');
     assertTrue(
         batteryPage.shadowRoot!
-            .querySelector<IronCollapseElement>('#radioGroupCollapse')!.opened,
+            .querySelector<CrCollapseElement>('#radioGroupCollapse')!.opened,
         'collapse should be open when battery saver mode is enabled on ' +
             'battery');
     assertEquals(
@@ -78,7 +78,7 @@ suite('BatteryPage', function() {
             'threshold');
     assertTrue(
         batteryPage.shadowRoot!
-            .querySelector<IronCollapseElement>('#radioGroupCollapse')!.opened,
+            .querySelector<CrCollapseElement>('#radioGroupCollapse')!.opened,
         'collapse should be open when battery saver mode is enabled below ' +
             'threshold');
     assertEquals(
@@ -98,7 +98,7 @@ suite('BatteryPage', function() {
         'toggle should be unchecked when battery saver mode is disabled');
     assertFalse(
         batteryPage.shadowRoot!
-            .querySelector<IronCollapseElement>('#radioGroupCollapse')!.opened,
+            .querySelector<CrCollapseElement>('#radioGroupCollapse')!.opened,
         'collapse should be closed when battery saver mode is disabled');
   });
 

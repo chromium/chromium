@@ -462,7 +462,7 @@ suite('CrSettingsReviewNotificationPermissionsTest', function() {
     assertTrue(!!expandButton);
 
     const notificationPermissionList =
-        testElement.shadowRoot!.querySelector('iron-collapse');
+        testElement.shadowRoot!.querySelector('cr-collapse');
     assertTrue(!!notificationPermissionList);
 
     // Button and list start out expanded.

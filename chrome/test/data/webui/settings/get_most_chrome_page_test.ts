@@ -5,7 +5,7 @@
 import 'chrome://settings/lazy_load.js';
 
 import {flush} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
-import type {CrExpandButtonElement, IronCollapseElement, SettingsGetMostChromePageElement} from 'chrome://settings/lazy_load.js';
+import type {CrCollapseElement, CrExpandButtonElement, SettingsGetMostChromePageElement} from 'chrome://settings/lazy_load.js';
 import {GetTheMostOutOfChromeUserAction} from 'chrome://settings/lazy_load.js';
 import type {SettingsRoutes} from 'chrome://settings/settings.js';
 import {HatsBrowserProxyImpl, loadTimeData, MetricsBrowserProxyImpl, resetRouterForTesting, Router, TrustSafetyInteraction} from 'chrome://settings/settings.js';
@@ -59,20 +59,19 @@ suite('GetMostChromePage', function() {
       const crExpandButton =
           testElement.shadowRoot!.querySelector<CrExpandButtonElement>(row.id);
       assertTrue(!!crExpandButton);
-      const ironCollapse =
-          crExpandButton.nextElementSibling as IronCollapseElement;
-      assertTrue(!!ironCollapse);
+      const crCollapse = crExpandButton.nextElementSibling as CrCollapseElement;
+      assertTrue(!!crCollapse);
 
       metricsBrowserProxy.reset();
 
-      assertFalse(ironCollapse.opened);
+      assertFalse(crCollapse.opened);
       crExpandButton.click();
 
       const userAction = await metricsBrowserProxy.whenCalled('recordAction');
       assertEquals(row.action, userAction);
 
       await crExpandButton.updateComplete;
-      assertTrue(ironCollapse.opened);
+      assertTrue(crCollapse.opened);
     }
   });
 

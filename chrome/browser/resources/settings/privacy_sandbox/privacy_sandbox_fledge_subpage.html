@@ -119,7 +119,7 @@
               expanded="{{seeAllSitesExpanded_}}">
             $i18n{fledgePageSeeAllSitesLabel}
           </cr-expand-button>
-          <iron-collapse opened="[[seeAllSitesExpanded_]]">
+          <cr-collapse opened="[[seeAllSitesExpanded_]]">
             <div role="region"
                 aria-label="$i18n{fledgePageCurrentSitesRegionA11yDescription}">
               <template is="dom-repeat" items="[[remainingSitesList_]]">
@@ -128,7 +128,7 @@
                 </privacy-sandbox-interest-item>
               </template>
             </div>
-          </iron-collapse>
+          </cr-collapse>
         </template>
         <div id="currentSitesDescriptionEmpty"
             class="no-sites cr-secondary-text"
@@ -148,7 +148,7 @@
     expanded="{{blockedSitesExpanded_}}">
   $i18n{fledgePageBlockedSitesHeading}
 </cr-expand-button>
-<iron-collapse opened="[[blockedSitesExpanded_]]">
+<cr-collapse opened="[[blockedSitesExpanded_]]">
   <div id="blockedSitesDescription"
       class$="[[getBlockedSitesDescriptionClass_(blockedSitesList_.length)]]">
     [[computeBlockedSitesDescription_(blockedSitesList_.length)]]
@@ -161,7 +161,7 @@
       </privacy-sandbox-interest-item>
     </template>
   </div>
-</iron-collapse>
+</cr-collapse>
 <div id="footer" class="cr-secondary-text hr footer"
     hidden="[[shouldShowV2_]]">
   $i18nRaw{fledgePageFooter}

@@ -64,12 +64,12 @@
         expanded="{{permissionsExpanded_}}">
       <div>$i18n{siteSettingsPermissionsMore}</div>
     </cr-expand-button>
-    <iron-collapse opened="[[permissionsExpanded_]]">
+    <cr-collapse opened="[[permissionsExpanded_]]">
       <settings-site-settings-list id="advancedPermissionsList"
           category-list="[[lists_.permissionsAdvanced]]"
           focus-config="[[focusConfig]]">
       </settings-site-settings-list>
-    </iron-collapse>
+    </cr-collapse>
 
     <div class="cr-row first line-only">
       <h2>$i18n{siteSettingsContent}</h2>
@@ -82,12 +82,12 @@
         expanded="{{contentExpanded_}}">
       <div>$i18n{siteSettingsContentMore}</div>
     </cr-expand-button>
-    <iron-collapse opened="[[contentExpanded_]]">
+    <cr-collapse opened="[[contentExpanded_]]">
       <settings-site-settings-list id="advancedContentList" prefs="{{prefs}}"
           category-list="[[lists_.contentAdvanced]]"
           focus-config="[[focusConfig]]">
       </settings-site-settings-list>
-    </iron-collapse>
+    </cr-collapse>
     <template is="dom-if" if="[[enableSafetyHub_]]">
       <settings-toggle-button
           id="unusedSitePermissionsRevocationToggle"

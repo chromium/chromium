@@ -13,7 +13,7 @@
         expanded="{{notificationPermissionReviewListExpanded_}}">
     </cr-expand-button>
   </div>
-  <iron-collapse class="site-list"
+  <cr-collapse class="site-list"
       opened="[[notificationPermissionReviewListExpanded_]]">
     <template is="dom-repeat" items="[[sites_]]">
       <div class="list-item site-entry">
@@ -41,7 +41,7 @@
         $i18n{safetyCheckNotificationPermissionReviewBlockAllLabel}
       </cr-button>
     </div>
-  </iron-collapse>
+  </cr-collapse>
   <cr-tooltip fit-to-visible-bounds manual-mode position="top" offset="3">
     $i18n{safetyCheckNotificationPermissionReviewDontAllowLabel}
   </cr-tooltip>

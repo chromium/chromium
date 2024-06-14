@@ -16,7 +16,7 @@
         opacity: var(--cr-disabled-opacity);
       }
 
-      iron-collapse {
+      cr-collapse {
         margin-inline-end: 0;
         margin-inline-start: calc(var(--cr-radio-button-label-spacing, 20px)
             + var(--cr-radio-button-size));
@@ -99,7 +99,7 @@
       </div>
     </div>
 
-    <iron-collapse opened="[[expanded]]">
+    <cr-collapse opened="[[expanded]]">
       <slot name="collapse"></slot>
       <slot name="noSelectionCollapse"></slot>
-    </iron-collapse>
+    </cr-collapse>

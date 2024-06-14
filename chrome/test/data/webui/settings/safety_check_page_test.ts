@@ -135,7 +135,7 @@ suite('SafetyCheckPageUiTests', function() {
     assertTrue(!!page.shadowRoot!.querySelector('#safetyCheckParentButton'));
     assertFalse(!!page.shadowRoot!.querySelector('cr-icon-button'));
     // Collapse is not opened.
-    const collapse = page.shadowRoot!.querySelector('iron-collapse')!;
+    const collapse = page.shadowRoot!.querySelector('cr-collapse')!;
     assertFalse(collapse.opened);
 
     // User starts check.
@@ -180,7 +180,7 @@ suite('SafetyCheckPageUiTests', function() {
     assertFalse(!!page.shadowRoot!.querySelector('#safetyCheckParentButton'));
     assertTrue(!!page.shadowRoot!.querySelector('cr-icon-button'));
     // Collapse is opened.
-    assertTrue(page.shadowRoot!.querySelector('iron-collapse')!.opened);
+    assertTrue(page.shadowRoot!.querySelector('cr-collapse')!.opened);
 
     // Ensure the automatic browser proxy calls are started.
     return safetyCheckBrowserProxy.whenCalled('getParentRanDisplayString');
