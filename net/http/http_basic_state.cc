@@ -52,22 +52,8 @@ scoped_refptr<GrowableIOBuffer> HttpBasicState::read_buf() const {
 void HttpBasicState::DeleteParser() { parser_.reset(); }
 
 std::string HttpBasicState::GenerateRequestLine() const {
-  static const char kSuffix[] = " HTTP/1.1\r\n";
-  const size_t kSuffixLen = std::size(kSuffix) - 1;
-  const std::string path = is_for_get_to_http_proxy_
-                               ? HttpUtil::SpecForRequest(parser_->url())
-                               : parser_->url().PathForRequest();
-  // Don't use StringPrintf for concatenation because it is very inefficient.
-  std::string request_line;
-  const size_t expected_size =
-      parser_->method().size() + 1 + path.size() + kSuffixLen;
-  request_line.reserve(expected_size);
-  request_line.append(parser_->method());
-  request_line.append(1, ' ');
-  request_line.append(path);
-  request_line.append(kSuffix, kSuffixLen);
-  DCHECK_EQ(expected_size, request_line.size());
-  return request_line;
+  return HttpUtil::GenerateRequestLine(parser_->method(), parser_->url(),
+                                       is_for_get_to_http_proxy_);
 }
 
 bool HttpBasicState::IsConnectionReused() const {

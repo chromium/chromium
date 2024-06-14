@@ -89,6 +89,16 @@ std::string GetBaseLanguageCode(const std::string& language_code) {
 
 // HttpUtil -------------------------------------------------------------------
 
+std::string HttpUtil::GenerateRequestLine(std::string_view method,
+                                          GURL url,
+                                          bool is_for_get_to_http_proxy) {
+  static const char kSuffix[] = " HTTP/1.1\r\n";
+  const std::string path = is_for_get_to_http_proxy
+                               ? HttpUtil::SpecForRequest(url)
+                               : url.PathForRequest();
+  return base::StrCat({method, " ", path, kSuffix});
+}
+
 // static
 std::string HttpUtil::SpecForRequest(const GURL& url) {
   DCHECK(url.is_valid() &&
