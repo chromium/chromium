@@ -92,8 +92,10 @@ void Canvas2DLayerBridge::ResetResourceProvider() {
     resource_host_->ReplaceResourceProvider(nullptr);
 }
 
-static void HibernateWrapper(base::WeakPtr<Canvas2DLayerBridge> bridge,
-                             base::TimeTicks /*idleDeadline*/) {
+// static
+void Canvas2DLayerBridge::HibernateOrLogFailure(
+    base::WeakPtr<Canvas2DLayerBridge> bridge,
+    base::TimeTicks /*idleDeadline*/) {
   if (bridge) {
     bridge->Hibernate();
   } else {
@@ -277,8 +279,8 @@ void Canvas2DLayerBridge::PageVisibilityChanged() {
     logger_->ReportHibernationEvent(kHibernationScheduled);
     hibernation_scheduled_ = true;
     ThreadScheduler::Current()->PostIdleTask(
-        FROM_HERE,
-        WTF::BindOnce(&HibernateWrapper, weak_ptr_factory_.GetWeakPtr()));
+        FROM_HERE, WTF::BindOnce(&Canvas2DLayerBridge::HibernateOrLogFailure,
+                                 weak_ptr_factory_.GetWeakPtr()));
   }
 
   // The impl tree may have dropped the transferable resource for this canvas

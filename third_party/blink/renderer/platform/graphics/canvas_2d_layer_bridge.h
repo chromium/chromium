@@ -67,7 +67,6 @@ class PLATFORM_EXPORT Canvas2DLayerBridge {
                    int y);
   void SetCanvasResourceHost(CanvasResourceHost* host);
 
-  void Hibernate();
   bool IsHibernating() const { return hibernation_handler_.IsHibernating(); }
 
   scoped_refptr<StaticBitmapImage> NewImageSnapshot(FlushReason);
@@ -114,6 +113,10 @@ class PLATFORM_EXPORT Canvas2DLayerBridge {
   friend class Canvas2DLayerBridgeTest;
   friend class CanvasRenderingContext2DTest;
   friend class HTMLCanvasPainterTestForCAP;
+
+  static void HibernateOrLogFailure(base::WeakPtr<Canvas2DLayerBridge> bridge,
+                                    base::TimeTicks /*idleDeadline*/);
+  void Hibernate();
 
   CanvasResourceProvider* ResourceProvider() const;
   void ResetResourceProvider();
