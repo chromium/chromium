@@ -864,9 +864,10 @@ attmpted as part of this update session. All events have the following members:
      *   0: No category / unknown.
      *   1: Errors acquiring the download.
      *   2: Errors during CRX unpacking.
-     *   3: Errors during installation.
+     *   3: Update client errors during installation.
      *   4: Errors within the update service itself.
      *   5: Error during update check.
+     *   7: Application installer errors during installation.
  *   `errorcode`: The error code (if any) of the operation. Default: 0. The
      meaning of an error code may depend on the error category. 0 always means
      "no error" (success).
