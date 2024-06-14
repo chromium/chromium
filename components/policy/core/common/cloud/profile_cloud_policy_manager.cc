@@ -14,6 +14,7 @@
 #include "components/policy/core/common/cloud/cloud_policy_constants.h"
 #include "components/policy/core/common/cloud/cloud_policy_service.h"
 #include "components/policy/core/common/cloud/profile_cloud_policy_store.h"
+#include "components/policy/core/common/policy_logger.h"
 #include "components/policy/core/common/policy_pref_names.h"
 #include "components/policy/core/common/policy_types.h"
 #include "components/policy/policy_constants.h"
@@ -53,7 +54,12 @@ ProfileCloudPolicyManager::ProfileCloudPolicyManager(
       profile_store_(static_cast<ProfileCloudPolicyStore*>(store())),
       external_data_manager_(std::move(external_data_manager)),
       component_policy_cache_path_(component_policy_cache_path),
-      is_dasherless_(is_dasherless) {}
+      is_dasherless_(is_dasherless) {
+  if (is_dasherless_) {
+    VLOG_POLICY(2, OIDC_ENROLLMENT)
+        << "ProfileCloudPolicyManager created for Dasherless profile.";
+  }
+}
 
 ProfileCloudPolicyManager::~ProfileCloudPolicyManager() = default;
 
@@ -106,6 +112,15 @@ void ProfileCloudPolicyManager::Connect(
 }
 
 void ProfileCloudPolicyManager::DisconnectAndRemovePolicy() {
+  if (is_dasherless_) {
+    VLOG_POLICY(2, OIDC_ENROLLMENT)
+        << "Disconnecting policy manager and removing policies for Dasherless "
+           "profile.";
+  } else {
+    VLOG_POLICY(2, OIDC_ENROLLMENT)
+        << "Disconnecting policy manager and removing profile-level policies.";
+  }
+
   if (external_data_manager_) {
     external_data_manager_->Disconnect();
   }

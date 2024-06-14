@@ -12,6 +12,7 @@
 #include "build/build_config.h"
 #include "components/policy/core/common/cloud/cloud_policy_constants.h"
 #include "components/policy/core/common/cloud/user_cloud_policy_store.h"
+#include "components/policy/core/common/policy_logger.h"
 #include "components/policy/proto/device_management_backend.pb.h"
 #include "components/policy/proto/policy_signing_key.pb.h"
 
@@ -85,6 +86,10 @@ void ProfileCloudPolicyStore::Validate(
     std::unique_ptr<enterprise_management::PolicySigningKey> key,
     bool validate_in_background,
     UserCloudPolicyValidator::CompletionCallback callback) {
+  if (is_dasherless_) {
+    VLOG_POLICY(2, OIDC_ENROLLMENT)
+        << "Started policy validation for dasherless profile policies.";
+  }
   std::unique_ptr<UserCloudPolicyValidator> validator = CreateValidator(
       std::move(policy), CloudPolicyValidatorBase::TIMESTAMP_VALIDATED);
 
