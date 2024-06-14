@@ -781,7 +781,10 @@ scoped_refptr<VideoFrame> VideoFrame::WrapExternalGpuMemoryBuffer(
   for (size_t i = 0; i < kMaxPlanes; ++i) {
     if (shared_images[i]) {
       frame->mailbox_holders_[i] = gpu::MailboxHolder(
-          shared_images[i]->mailbox(), sync_token, texture_target);
+          shared_images[i]->mailbox(), sync_token,
+          base::FeatureList::IsEnabled(kVideoFrameUseClientSITextureTarget)
+              ? shared_images[i]->GetTextureTarget()
+              : texture_target);
       frame->shared_images_[i] = shared_images[i]->MakeUnowned();
     }
   }
@@ -806,8 +809,11 @@ scoped_refptr<VideoFrame> VideoFrame::WrapExternalGpuMemoryBuffer(
   }
 
   if (shared_image) {
-    frame->mailbox_holders_[0] =
-        gpu::MailboxHolder(shared_image->mailbox(), sync_token, texture_target);
+    frame->mailbox_holders_[0] = gpu::MailboxHolder(
+        shared_image->mailbox(), sync_token,
+        base::FeatureList::IsEnabled(kVideoFrameUseClientSITextureTarget)
+            ? shared_image->GetTextureTarget()
+            : texture_target);
     frame->shared_images_[0] = shared_image->MakeUnowned();
   }
   return frame;
