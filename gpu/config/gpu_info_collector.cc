@@ -328,7 +328,7 @@ void ReportWebGPUAdapterMetrics(dawn::native::Instance* instance) {
 
     WGPUSupportedLimits limits;
     limits.nextInChain = nullptr;
-    if (!adapter.GetLimits(&limits)) {
+    if (adapter.GetLimits(&limits) != wgpu::Status::Success) {
       continue;
     }
 

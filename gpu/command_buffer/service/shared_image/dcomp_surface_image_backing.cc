@@ -492,7 +492,8 @@ wgpu::Texture DCompSurfaceImageBacking::BeginDrawDawn(
   wgpu::Texture texture =
       CreateDawnSharedTexture(shared_texture_memory_, usage, internal_usage,
                               /*view_formats=*/{});
-  if (!texture || !shared_texture_memory_.BeginAccess(texture, &desc)) {
+  if (!texture || shared_texture_memory_.BeginAccess(texture, &desc) !=
+                      wgpu::Status::Success) {
     LOG(ERROR) << "Failed to begin access and produce WGPUTexture";
     return nullptr;
   }

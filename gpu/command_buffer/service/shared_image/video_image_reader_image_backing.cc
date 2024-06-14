@@ -429,7 +429,8 @@ class VideoImageReaderImageBacking::SkiaGraphiteDawnImageRepresentation
 
     // Create the Dawn texture.
     texture_ = shared_texture_memory_.CreateTexture(&texture_descriptor);
-    if (!shared_texture_memory_.BeginAccess(texture_, &begin_access_desc)) {
+    if (shared_texture_memory_.BeginAccess(texture_, &begin_access_desc) !=
+        wgpu::Status::Success) {
       LOG(ERROR) << "Failed to begin access for texture";
     }
 
@@ -457,7 +458,8 @@ class VideoImageReaderImageBacking::SkiaGraphiteDawnImageRepresentation
     wgpu::SharedTextureMemoryVkImageLayoutEndState end_layout{};
     end_access_desc.nextInChain = &end_layout;
 
-    if (!shared_texture_memory_.EndAccess(texture_, &end_access_desc)) {
+    if (shared_texture_memory_.EndAccess(texture_, &end_access_desc) !=
+        wgpu::Status::Success) {
       LOG(ERROR) << "Failed to end access for texture";
     }
 

@@ -544,7 +544,7 @@ bool DawnSharedState::Initialize(
 
   // Use best limits for the device.
   wgpu::SupportedLimits supportedLimits = {};
-  if (!adapter.GetLimits(&supportedLimits)) {
+  if (adapter.GetLimits(&supportedLimits) != wgpu::Status::Success) {
     LOG(ERROR) << "Failed to call adapter.GetLimits().";
     return false;
   }

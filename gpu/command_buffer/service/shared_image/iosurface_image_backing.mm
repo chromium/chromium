@@ -858,7 +858,8 @@ wgpu::Texture IOSurfaceImageBacking::DawnRepresentation::BeginAccess(
   begin_access_desc.fences = shared_fences.data();
   begin_access_desc.signaledValues = signaled_values.data();
 
-  if (!shared_texture_memory_.BeginAccess(texture_, &begin_access_desc)) {
+  if (shared_texture_memory_.BeginAccess(texture_, &begin_access_desc) !=
+      wgpu::Status::Success) {
     // NOTE: WebGPU CTS tests intentionally pass in formats that are
     // incompatible with the format of the backing IOSurface to check error
     // handling.
@@ -904,7 +905,8 @@ void IOSurfaceImageBacking::DawnRepresentation::EndAccess() {
   }
 
   wgpu::SharedTextureMemoryEndAccessState end_access_desc;
-  CHECK(shared_texture_memory_.EndAccess(texture_.Get(), &end_access_desc));
+  CHECK_EQ(shared_texture_memory_.EndAccess(texture_.Get(), &end_access_desc),
+           wgpu::Status::Success);
 
   if (end_access_desc.initialized) {
     SetCleared();
