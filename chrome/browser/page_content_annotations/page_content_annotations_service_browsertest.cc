@@ -18,7 +18,6 @@
 #include "chrome/browser/page_content_annotations/page_content_annotations_service_factory.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/common/chrome_switches.h"
-#include "components/page_content_annotations/core/page_content_annotations_enums.h"
 #include "chrome/test/base/in_process_browser_test.h"
 #include "chrome/test/base/ui_test_utils.h"
 #include "components/history/core/browser/history_database.h"
@@ -32,9 +31,10 @@
 #include "components/optimization_guide/core/test_model_info_builder.h"
 #include "components/optimization_guide/machine_learning_tflite_buildflags.h"
 #include "components/optimization_guide/proto/page_entities_metadata.pb.h"
-#include "components/page_content_annotations/core/test_page_content_annotator.h"
-#include "components/page_content_annotations/core/page_content_annotations_switches.h"
+#include "components/page_content_annotations/core/page_content_annotations_enums.h"
 #include "components/page_content_annotations/core/page_content_annotations_features.h"
+#include "components/page_content_annotations/core/page_content_annotations_switches.h"
+#include "components/page_content_annotations/core/test_page_content_annotator.h"
 #include "components/ukm/test_ukm_recorder.h"
 #include "content/public/test/browser_test.h"
 #include "net/dns/mock_host_resolver.h"
@@ -92,12 +92,14 @@ class GetContentAnnotationsTask : public history::HistoryDBTask {
     // Get visits for URL.
     const history::URLID url_id = db->GetRowForURL(url_, nullptr);
     history::VisitVector visits;
-    if (!db->GetVisitsForURL(url_id, &visits))
+    if (!db->GetVisitsForURL(url_id, &visits)) {
       return true;
+    }
 
     // No visits for URL.
-    if (visits.empty())
+    if (visits.empty()) {
       return true;
+    }
 
     history::VisitContentAnnotations annotations;
     if (db->GetContentAnnotationsForVisit(visits.at(0).visit_id, &annotations))
@@ -126,7 +128,8 @@ class PageContentAnnotationsServiceDisabledBrowserTest
   PageContentAnnotationsServiceDisabledBrowserTest() {
     scoped_feature_list_.InitWithFeatures(
         /*enabled_features=*/{},
-        { optimization_guide::features::kOptimizationHints, features::kPageContentAnnotations});
+        {optimization_guide::features::kOptimizationHints,
+         features::kPageContentAnnotations});
   }
 
  private:
@@ -143,9 +146,8 @@ class PageContentAnnotationsServiceKioskModeBrowserTest
     : public InProcessBrowserTest {
  public:
   PageContentAnnotationsServiceKioskModeBrowserTest() {
-    scoped_feature_list_.InitWithFeatures(
-        { features::kPageContentAnnotations},
-        /*disabled_features=*/{});
+    scoped_feature_list_.InitWithFeatures({features::kPageContentAnnotations},
+                                          /*disabled_features=*/{});
   }
 
   void SetUpCommandLine(base::CommandLine* command_line) override {
@@ -167,9 +169,8 @@ class PageContentAnnotationsServiceEphemeralProfileBrowserTest
     : public MixinBasedInProcessBrowserTest {
  public:
   PageContentAnnotationsServiceEphemeralProfileBrowserTest() {
-    scoped_feature_list_.InitWithFeatures(
-        {features::kPageContentAnnotations},
-        /*disabled_features=*/{});
+    scoped_feature_list_.InitWithFeatures({features::kPageContentAnnotations},
+                                          /*disabled_features=*/{});
   }
 
   ~PageContentAnnotationsServiceEphemeralProfileBrowserTest() override {}
@@ -197,8 +198,7 @@ class PageContentAnnotationsServiceValidationBrowserTest
  public:
   PageContentAnnotationsServiceValidationBrowserTest() {
     scoped_feature_list_.InitWithFeatures(
-        {
-         features::kPageContentAnnotationsValidation},
+        {features::kPageContentAnnotationsValidation},
         {features::kPageContentAnnotations});
   }
 
@@ -216,13 +216,13 @@ class PageContentAnnotationsServiceBrowserTest : public InProcessBrowserTest {
  public:
   PageContentAnnotationsServiceBrowserTest() {
     scoped_feature_list_.InitWithFeaturesAndParameters(
-        {
-         {features::kPageContentAnnotations,
+        {{features::kPageContentAnnotations,
           {
               {"write_to_history_service", "true"},
           }},
          {features::kPageVisibilityPageContentAnnotations, {}}},
-        /*disabled_features=*/{optimization_guide::features::kPreventLongRunningPredictionModels});
+        /*disabled_features=*/{
+            optimization_guide::features::kPreventLongRunningPredictionModels});
   }
   ~PageContentAnnotationsServiceBrowserTest() override = default;
 
@@ -254,15 +254,16 @@ class PageContentAnnotationsServiceBrowserTest : public InProcessBrowserTest {
     }
   }
 
-  void LoadAndWaitForModel() {
+  void LoadAndWaitForModel(
+      std::optional<base::FilePath> specific_model_file_path = std::nullopt) {
     base::FilePath source_root_dir;
     base::PathService::Get(base::DIR_SRC_TEST_DATA_ROOT, &source_root_dir);
-    base::FilePath model_file_path =
+    base::FilePath model_file_path = specific_model_file_path.value_or(
         source_root_dir.AppendASCII("components")
             .AppendASCII("test")
             .AppendASCII("data")
             .AppendASCII("optimization_guide")
-            .AppendASCII("visibility_test_model.tflite");
+            .AppendASCII("visibility_test_model.tflite"));
 
     base::HistogramTester histogram_tester;
 
@@ -287,8 +288,9 @@ class PageContentAnnotationsServiceBrowserTest : public InProcessBrowserTest {
     history::HistoryService* history_service =
         HistoryServiceFactory::GetForProfile(
             browser()->profile(), ServiceAccessType::IMPLICIT_ACCESS);
-    if (!history_service)
+    if (!history_service) {
       return std::nullopt;
+    }
 
     std::unique_ptr<base::RunLoop> run_loop = std::make_unique<base::RunLoop>();
     std::optional<history::VisitContentAnnotations> got_content_annotations;
@@ -317,8 +319,9 @@ class PageContentAnnotationsServiceBrowserTest : public InProcessBrowserTest {
     std::optional<history::VisitContentAnnotations> got_content_annotations =
         GetContentAnnotationsForURL(url);
     // No content annotations -> no model annotations fields.
-    if (!got_content_annotations)
+    if (!got_content_annotations) {
       return false;
+    }
 
     const history::VisitContentModelAnnotations& model_annotations =
         got_content_annotations->model_annotations;
@@ -477,7 +480,7 @@ IN_PROC_BROWSER_TEST_F(PageContentAnnotationsServiceBrowserTest,
 
 #if BUILDFLAG(BUILD_WITH_TFLITE_LIB)
 IN_PROC_BROWSER_TEST_F(PageContentAnnotationsServiceBrowserTest,
-                       PageVisibilityModel_GoldenData) {
+                       ENPageVisibilityModel_GoldenData) {
   LoadAndWaitForModel();
 
   PageContentAnnotationsService* service =
@@ -499,6 +502,48 @@ IN_PROC_BROWSER_TEST_F(PageContentAnnotationsServiceBrowserTest,
 
             ASSERT_TRUE(results[0].visibility_score());
             EXPECT_NEAR(*results[0].visibility_score(), 0.14453125,
+                        kMaxScoreErrorBetweenPlatforms);
+
+            run_loop->Quit();
+          },
+          &run_loop),
+      std::vector<std::string>{"this is a test"},
+      AnnotationType::kContentVisibility);
+
+  run_loop.Run();
+}
+
+IN_PROC_BROWSER_TEST_F(PageContentAnnotationsServiceBrowserTest,
+                       i18nPageVisibilityModel_GoldenData) {
+  base::FilePath source_root_dir;
+  base::PathService::Get(base::DIR_SRC_TEST_DATA_ROOT, &source_root_dir);
+  base::FilePath model_file_path =
+      source_root_dir.AppendASCII("components")
+          .AppendASCII("test")
+          .AppendASCII("data")
+          .AppendASCII("optimization_guide")
+          .AppendASCII("i18n_visibility_test_model.tflite");
+  LoadAndWaitForModel(model_file_path);
+
+  PageContentAnnotationsService* service =
+      PageContentAnnotationsServiceFactory::GetForProfile(browser()->profile());
+
+  // Important: Consumers of the visibility score should query the HistoryDB
+  // instead of hitting the PCAService directly. We only do this in tests
+  // because it is less flaky.
+  // TODO(b/258468574): Maybe move this to a navigation-based test once those
+  // are less flaky?
+  base::RunLoop run_loop;
+  service->BatchAnnotate(
+      base::BindOnce(
+          [](base::RunLoop* run_loop,
+             const std::vector<BatchAnnotationResult>& results) {
+            ASSERT_EQ(results.size(), 1U);
+            EXPECT_EQ(results[0].input(), "this is a test");
+            EXPECT_EQ(results[0].type(), AnnotationType::kContentVisibility);
+
+            ASSERT_TRUE(results[0].visibility_score());
+            EXPECT_NEAR(*results[0].visibility_score(), 0.11328125,
                         kMaxScoreErrorBetweenPlatforms);
 
             run_loop->Quit();
@@ -595,8 +640,7 @@ class PageContentAnnotationsServiceRemoteMetadataBrowserTest
     // Make sure remote page metadata works without page content annotations
     // enabled.
     scoped_feature_list_.InitWithFeaturesAndParameters(
-        {
-         {page_content_annotations::features::kRemotePageMetadata,
+        {{page_content_annotations::features::kRemotePageMetadata,
           {{"min_page_category_score", "80"},
            {"supported_countries", "*"},
            {"supported_locales", "*"}}}},
@@ -616,20 +660,24 @@ IN_PROC_BROWSER_TEST_F(PageContentAnnotationsServiceRemoteMetadataBrowserTest,
   GURL url(embedded_test_server()->GetURL("a.test", "/hello.html"));
 
   optimization_guide::proto::PageEntitiesMetadata page_entities_metadata;
-  optimization_guide::proto::Entity* entity = page_entities_metadata.add_entities();
+  optimization_guide::proto::Entity* entity =
+      page_entities_metadata.add_entities();
   entity->set_entity_id("entity1");
   entity->set_score(50);
-  optimization_guide::proto::Category* category = page_entities_metadata.add_categories();
+  optimization_guide::proto::Category* category =
+      page_entities_metadata.add_categories();
   category->set_category_id("category1");
   category->set_score(0.85);
-  optimization_guide::proto::Category* category2 = page_entities_metadata.add_categories();
+  optimization_guide::proto::Category* category2 =
+      page_entities_metadata.add_categories();
   category2->set_category_id("othercategory");
   category2->set_score(0.75);
   page_entities_metadata.set_alternative_title("alternative title");
   optimization_guide::OptimizationMetadata metadata;
   metadata.SetAnyMetadataForTesting(page_entities_metadata);
   OptimizationGuideKeyedServiceFactory::GetForProfile(browser()->profile())
-      ->AddHintForTesting(url, optimization_guide::proto::PAGE_ENTITIES, metadata);
+      ->AddHintForTesting(url, optimization_guide::proto::PAGE_ENTITIES,
+                          metadata);
 
   ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), url));
   WaitForHistoryServiceToFinish();
@@ -655,19 +703,23 @@ IN_PROC_BROWSER_TEST_F(PageContentAnnotationsServiceRemoteMetadataBrowserTest,
   GURL url(embedded_test_server()->GetURL("a.test", "/hello.html"));
 
   optimization_guide::proto::PageEntitiesMetadata page_entities_metadata;
-  optimization_guide::proto::Entity* entity = page_entities_metadata.add_entities();
+  optimization_guide::proto::Entity* entity =
+      page_entities_metadata.add_entities();
   entity->set_entity_id("entity1");
   entity->set_score(50);
-  optimization_guide::proto::Category* category = page_entities_metadata.add_categories();
+  optimization_guide::proto::Category* category =
+      page_entities_metadata.add_categories();
   category->set_category_id("category1");
   category->set_score(0.85);
-  optimization_guide::proto::Category* category2 = page_entities_metadata.add_categories();
+  optimization_guide::proto::Category* category2 =
+      page_entities_metadata.add_categories();
   category2->set_category_id("othercategory");
   category2->set_score(0.75);
   optimization_guide::OptimizationMetadata metadata;
   metadata.SetAnyMetadataForTesting(page_entities_metadata);
   OptimizationGuideKeyedServiceFactory::GetForProfile(browser()->profile())
-      ->AddHintForTesting(url, optimization_guide::proto::PAGE_ENTITIES, metadata);
+      ->AddHintForTesting(url, optimization_guide::proto::PAGE_ENTITIES,
+                          metadata);
 
   ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), url));
   WaitForHistoryServiceToFinish();
@@ -696,7 +748,8 @@ IN_PROC_BROWSER_TEST_F(PageContentAnnotationsServiceRemoteMetadataBrowserTest,
   optimization_guide::OptimizationMetadata metadata;
   metadata.SetAnyMetadataForTesting(page_entities_metadata);
   OptimizationGuideKeyedServiceFactory::GetForProfile(browser()->profile())
-      ->AddHintForTesting(url, optimization_guide::proto::PAGE_ENTITIES, metadata);
+      ->AddHintForTesting(url, optimization_guide::proto::PAGE_ENTITIES,
+                          metadata);
 
   ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), url));
   WaitForHistoryServiceToFinish();
@@ -717,7 +770,8 @@ IN_PROC_BROWSER_TEST_F(PageContentAnnotationsServiceRemoteMetadataBrowserTest,
   optimization_guide::OptimizationMetadata metadata;
   metadata.SetAnyMetadataForTesting(page_entities_metadata);
   OptimizationGuideKeyedServiceFactory::GetForProfile(browser()->profile())
-      ->AddHintForTesting(url, optimization_guide::proto::PAGE_ENTITIES, metadata);
+      ->AddHintForTesting(url, optimization_guide::proto::PAGE_ENTITIES,
+                          metadata);
 
   ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), url));
   base::RunLoop().RunUntilIdle();
@@ -733,8 +787,7 @@ class PageContentAnnotationsServiceSalientImageMetadataBrowserTest
  public:
   PageContentAnnotationsServiceSalientImageMetadataBrowserTest() {
     scoped_feature_list_.InitWithFeaturesAndParameters(
-        {
-         {features::kPageContentAnnotations, {}},
+        {{features::kPageContentAnnotations, {}},
          {features::kPageContentAnnotationsPersistSalientImageMetadata,
           {{"supported_countries", "*"}, {"supported_locales", "*"}}}},
         /*disabled_features=*/{});
@@ -758,7 +811,8 @@ IN_PROC_BROWSER_TEST_F(
   optimization_guide::OptimizationMetadata metadata;
   metadata.SetAnyMetadataForTesting(salient_image_metadata);
   OptimizationGuideKeyedServiceFactory::GetForProfile(browser()->profile())
-      ->AddHintForTesting(url, optimization_guide::proto::SALIENT_IMAGE, metadata);
+      ->AddHintForTesting(url, optimization_guide::proto::SALIENT_IMAGE,
+                          metadata);
 
   ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), url));
   base::RunLoop().RunUntilIdle();
@@ -782,7 +836,8 @@ IN_PROC_BROWSER_TEST_F(
   optimization_guide::OptimizationMetadata metadata;
   metadata.SetAnyMetadataForTesting(salient_image_metadata);
   OptimizationGuideKeyedServiceFactory::GetForProfile(browser()->profile())
-      ->AddHintForTesting(url, optimization_guide::proto::SALIENT_IMAGE, metadata);
+      ->AddHintForTesting(url, optimization_guide::proto::SALIENT_IMAGE,
+                          metadata);
 
   ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), url));
   base::RunLoop().RunUntilIdle();
@@ -807,7 +862,8 @@ IN_PROC_BROWSER_TEST_F(
   optimization_guide::OptimizationMetadata metadata;
   metadata.SetAnyMetadataForTesting(salient_image_metadata);
   OptimizationGuideKeyedServiceFactory::GetForProfile(browser()->profile())
-      ->AddHintForTesting(url, optimization_guide::proto::SALIENT_IMAGE, metadata);
+      ->AddHintForTesting(url, optimization_guide::proto::SALIENT_IMAGE,
+                          metadata);
 
   ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), url));
   WaitForHistoryServiceToFinish();
@@ -823,8 +879,7 @@ class PageContentAnnotationsServiceNoHistoryTest
  public:
   PageContentAnnotationsServiceNoHistoryTest() {
     scoped_feature_list_.InitWithFeaturesAndParameters(
-        {
-         {features::kPageContentAnnotations,
+        {{features::kPageContentAnnotations,
           {
               {"write_to_history_service", "false"},
           }},
@@ -915,8 +970,7 @@ class PageContentAnnotationsServiceBatchVisitTest
  public:
   PageContentAnnotationsServiceBatchVisitTest() {
     scoped_feature_list_.InitWithFeaturesAndParameters(
-        {
-         {features::kPageContentAnnotations,
+        {{features::kPageContentAnnotations,
           {{"write_to_history_service", "false"},
            {"annotate_visit_batch_size", "2"}}},
          {features::kPageVisibilityPageContentAnnotations, {}}},
@@ -998,8 +1052,7 @@ class PageContentAnnotationsServiceBatchVisitNoAnnotateTest
  public:
   PageContentAnnotationsServiceBatchVisitNoAnnotateTest() {
     scoped_feature_list_.InitWithFeaturesAndParameters(
-        {
-         {features::kPageContentAnnotations,
+        {{features::kPageContentAnnotations,
           {{"write_to_history_service", "false"},
            {"annotate_visit_batch_size", "1"}}},
          {features::kPageVisibilityPageContentAnnotations, {}}},
