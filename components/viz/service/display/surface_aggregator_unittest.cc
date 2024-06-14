@@ -137,7 +137,6 @@ class SurfaceAggregatorTest : public testing::Test, public DisplayTimeSource {
                     true,
                     extra_pass_option,
                     prevent_merging_surfaces_to_root_pass) {
-    manager_.surface_manager()->AddObserver(&observer_);
   }
 
   SurfaceAggregatorTest()
@@ -518,7 +517,7 @@ class SurfaceAggregatorTest : public testing::Test, public DisplayTimeSource {
       FrameSinkManagerImpl::InitParams(&shared_bitmap_manager_)};
   DisplayResourceProviderSoftware resource_provider_{
       &shared_bitmap_manager_, &shared_image_manager_, &sync_point_manager_};
-  FakeSurfaceObserver observer_{false};
+  FakeSurfaceObserver observer_{manager_.surface_manager(), false};
   FakeCompositorFrameSinkClient fake_client_;
   std::unique_ptr<CompositorFrameSinkSupport> root_sink_;
   SurfaceAggregator aggregator_;

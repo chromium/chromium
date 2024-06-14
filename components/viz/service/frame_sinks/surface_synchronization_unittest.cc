@@ -70,7 +70,7 @@ class SurfaceSynchronizationTest : public testing::Test {
   SurfaceSynchronizationTest()
       : frame_sink_manager_(
             FrameSinkManagerImpl::InitParams(&shared_bitmap_manager_)),
-        surface_observer_(false) {}
+        surface_observer_(frame_sink_manager_.surface_manager(), false) {}
 
   SurfaceSynchronizationTest(const SurfaceSynchronizationTest&) = delete;
   SurfaceSynchronizationTest& operator=(const SurfaceSynchronizationTest&) =
@@ -200,7 +200,6 @@ class SurfaceSynchronizationTest : public testing::Test {
     now_src_ = std::make_unique<base::SimpleTestTickClock>();
     frame_sink_manager_.surface_manager()->SetTickClockForTesting(
         now_src_.get());
-    frame_sink_manager_.surface_manager()->AddObserver(&surface_observer_);
     supports_[kDisplayFrameSink] = std::make_unique<CompositorFrameSinkSupport>(
         &support_client_, &frame_sink_manager_, kDisplayFrameSink, kIsRoot);
 
@@ -228,7 +227,6 @@ class SurfaceSynchronizationTest : public testing::Test {
   }
 
   void TearDown() override {
-    frame_sink_manager_.surface_manager()->RemoveObserver(&surface_observer_);
     frame_sink_manager_.UnregisterBeginFrameSource(begin_frame_source_.get());
 
     begin_frame_source_->SetClient(nullptr);

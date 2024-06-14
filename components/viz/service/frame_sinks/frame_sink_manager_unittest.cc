@@ -112,10 +112,6 @@ class FrameSinkManagerTest : public testing::Test {
     }
   }
 
-  void SetUp() override {
-    manager_.surface_manager()->AddObserver(&surface_observer_);
-  }
-
   // testing::Test implementation.
   void TearDown() override {
     // Make sure that all FrameSinkSourceMappings have been deleted.
@@ -126,8 +122,6 @@ class FrameSinkManagerTest : public testing::Test {
 
     // Make sure test has invalidated all registered FrameSinkIds.
     EXPECT_TRUE(manager_.frame_sink_data_.empty());
-
-    manager_.surface_manager()->RemoveObserver(&surface_observer_);
   }
 
  protected:
@@ -135,7 +129,7 @@ class FrameSinkManagerTest : public testing::Test {
   ServerSharedBitmapManager shared_bitmap_manager_;
   TestOutputSurfaceProvider output_surface_provider_;
   FrameSinkManagerImpl manager_;
-  FakeSurfaceObserver surface_observer_;
+  FakeSurfaceObserver surface_observer_{manager_.surface_manager()};
 };
 
 TEST_F(FrameSinkManagerTest, CreateRootCompositorFrameSink) {

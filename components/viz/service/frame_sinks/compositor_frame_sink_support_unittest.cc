@@ -136,7 +136,6 @@ class CompositorFrameSinkSupportTest : public testing::Test {
     manager_.SetLocalClient(&frame_sink_manager_client_);
     now_src_ = std::make_unique<base::SimpleTestTickClock>();
     manager_.surface_manager()->SetTickClockForTesting(now_src_.get());
-    manager_.surface_manager()->AddObserver(&surface_observer_);
     manager_.RegisterFrameSinkId(kArbitraryFrameSinkId,
                                  true /* report_activation */);
     manager_.SetSharedImageInterfaceProviderForTest(
@@ -147,7 +146,6 @@ class CompositorFrameSinkSupportTest : public testing::Test {
   }
   ~CompositorFrameSinkSupportTest() override {
     manager_.InvalidateFrameSinkId(kArbitraryFrameSinkId);
-    manager_.surface_manager()->RemoveObserver(&surface_observer_);
   }
 
   void AddResourcesToFrame(CompositorFrame* frame,
@@ -299,7 +297,7 @@ class CompositorFrameSinkSupportTest : public testing::Test {
   FakeExternalBeginFrameSource begin_frame_source_;
   std::unique_ptr<CompositorFrameSinkSupport> support_;
   LocalSurfaceId local_surface_id_;
-  FakeSurfaceObserver surface_observer_;
+  FakeSurfaceObserver surface_observer_{manager_.surface_manager()};
 
   // This is the sync token submitted with the frame. It should never be
   // returned to the client.
