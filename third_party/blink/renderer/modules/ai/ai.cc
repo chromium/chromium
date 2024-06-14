@@ -158,15 +158,15 @@ ScriptPromise<AITextSession> AI::createTextSession(
     }
   }
 
-  AITextSession* generic_session =
+  AITextSession* text_session =
       MakeGarbageCollected<AITextSession>(GetExecutionContext(), task_runner_);
   GetAIRemote()->CreateTextSession(
-      generic_session->GetModelSessionReceiver(), std::move(sampling_params),
+      text_session->GetModelSessionReceiver(), std::move(sampling_params),
       WTF::BindOnce(
           [](ScriptPromiseResolver<AITextSession>* resolver,
-             AITextSession* generic_session, bool success) {
+             AITextSession* text_session, bool success) {
             if (success) {
-              resolver->Resolve(generic_session);
+              resolver->Resolve(text_session);
             } else {
               resolver->Reject(DOMException::Create(
                   kExceptionMessageUnableToCreateSession,
@@ -174,7 +174,7 @@ ScriptPromise<AITextSession> AI::createTextSession(
                       DOMExceptionCode::kInvalidStateError)));
             }
           },
-          WrapPersistent(resolver), WrapPersistent(generic_session)));
+          WrapPersistent(resolver), WrapPersistent(text_session)));
 
   return promise;
 }
