@@ -2,11 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO: crbug.com/347137620 - Remove this and spanify to fix the errors.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "components/autofill/content/renderer/prefilled_values_detector.h"
 
 #include "base/containers/fixed_flat_set.h"
@@ -85,8 +80,7 @@ constexpr auto kKnownUsernamePlaceholders =
 }  // namespace
 
 base::span<const std::string_view> KnownUsernamePlaceholders() {
-  return base::make_span(kKnownUsernamePlaceholders.begin(),
-                         kKnownUsernamePlaceholders.end());
+  return kKnownUsernamePlaceholders;
 }
 
 bool PossiblePrefilledUsernameValue(const std::string& username_value,
