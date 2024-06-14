@@ -83,6 +83,7 @@ import java.util.concurrent.atomic.AtomicInteger;
 public class FeedStream implements Stream {
     private static final String TAG = "FeedStream";
     private static final String SPACER_KEY = "Spacer";
+    private static final String LOADING_SPINNER_KEY = "LoadingSpinner";
     private static final AtomicInteger sPageId = new AtomicInteger();
 
     /** Implementation of SurfaceActionsHandler methods. */
@@ -1211,10 +1212,12 @@ public class FeedStream implements Stream {
             if (ChromeFeatureList.isEnabled(ChromeFeatureList.FEED_LOADING_PLACEHOLDER)
                     && slice.getLoadingSpinnerSlice().getIsAtTop()) {
                 return new FeedListContentManager.NativeViewContent(
-                        getLateralPaddingsPx(), sliceId, R.layout.feed_placeholder_layout);
+                        getLateralPaddingsPx(),
+                        LOADING_SPINNER_KEY,
+                        R.layout.feed_placeholder_layout);
             }
             return new FeedListContentManager.NativeViewContent(
-                    getLateralPaddingsPx(), sliceId, R.layout.feed_spinner);
+                    getLateralPaddingsPx(), LOADING_SPINNER_KEY, R.layout.feed_spinner);
         }
         assert slice.hasZeroStateSlice();
         if (mStreamKind == StreamKind.FOLLOWING) {
@@ -1303,9 +1306,10 @@ public class FeedStream implements Stream {
 
         // If too few items exist, defer scrolling until later.
         if (mContentManager.getItemCount() <= state.lastPosition) return false;
-        // Don't try to resume scrolling to a native view. This avoids scroll resume to the refresh
-        // spinner.
-        if (mContentManager.getContent(state.lastPosition).isNativeView()) return false;
+        // Don't try to resume scrolling to a refresh spinner.
+        if (mContentManager.getContent(state.lastPosition).getKey().equals(LOADING_SPINNER_KEY)) {
+            return false;
+        }
 
         ListLayoutHelper layoutHelper = mRenderer.getListLayoutHelper();
         if (layoutHelper != null) {
