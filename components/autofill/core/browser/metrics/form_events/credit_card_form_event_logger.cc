@@ -16,6 +16,7 @@
 #include "base/types/cxx23_to_underlying.h"
 #include "components/autofill/core/browser/form_data_importer.h"
 #include "components/autofill/core/browser/logging/log_manager.h"
+#include "components/autofill/core/browser/metrics/autofill_metrics_utils.h"
 #include "components/autofill/core/browser/metrics/form_events/form_events.h"
 #include "components/autofill/core/browser/metrics/payments/card_unmask_flow_metrics.h"
 #include "components/autofill/core/browser/metrics/payments/virtual_card_standalone_cvc_suggestion_metrics.h"
@@ -704,22 +705,7 @@ CreditCardFormEventLogger::GetSupportedFormTypeNamesForLogging() const {
 DenseSet<FormTypeNameForLogging>
 CreditCardFormEventLogger::GetFormTypesForLogging(
     const FormStructure& form) const {
-  DenseSet<FormTypeNameForLogging> form_types;
-  for (FormType form_type : form.GetFormTypes()) {
-    switch (form_type) {
-      case FormType::kCreditCardForm:
-        form_types.insert(FormTypeNameForLogging::kCreditCardForm);
-        break;
-      case FormType::kStandaloneCvcForm:
-        form_types.insert(FormTypeNameForLogging::kStandaloneCvcForm);
-        break;
-      case FormType::kAddressForm:
-      case FormType::kPasswordForm:
-      case FormType::kUnknownFormType:
-        break;
-    }
-  }
-  return form_types;
+  return GetCreditCardFormTypesForLogging(form);
 }
 
 FormEvent CreditCardFormEventLogger::GetCardNumberStatusFormEvent(

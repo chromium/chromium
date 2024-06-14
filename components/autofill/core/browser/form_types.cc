@@ -51,6 +51,9 @@ std::string_view FormTypeToStringView(FormType form_type) {
   NOTREACHED_NORETURN();
 }
 
+// When adding a new return value, update variants "AutofillFormType.Fillable"
+// and "AutofillFormType.Address" in
+// tools/metrics/histograms/metadata/autofill/histograms.xml accordingly.
 std::string_view FormTypeNameForLoggingToStringView(
     FormTypeNameForLogging form_type_name) {
   switch (form_type_name) {
@@ -64,6 +67,10 @@ std::string_view FormTypeNameForLoggingToStringView(
       return "Unknown";
     case FormTypeNameForLogging::kStandaloneCvcForm:
       return "VirtualCard.StandaloneCvc";
+    case FormTypeNameForLogging::kEmailOnlyForm:
+      return "EmailOnly";
+    case FormTypeNameForLogging::kPostalAddressForm:
+      return "PostalAddress";
   }
 
   NOTREACHED_NORETURN();

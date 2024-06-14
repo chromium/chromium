@@ -11,6 +11,78 @@
 
 namespace autofill::autofill_metrics {
 
+namespace internal {
+
+constexpr DenseSet<FormType> kAddressFormTypes = {FormType::kAddressForm};
+constexpr DenseSet<FormType> kCreditCardFormTypes = {
+    FormType::kCreditCardForm, FormType::kStandaloneCvcForm};
+constexpr DenseSet<FieldType> kFieldTypesOfATypicalStoreLocatorForm = {
+    ADDRESS_HOME_CITY, ADDRESS_HOME_STATE, ADDRESS_HOME_ZIP};
+
+bool IsEmailOnlyForm(const FormStructure& form) {
+  bool has_email_field = false;
+  for (const auto& field : form.fields()) {
+    FieldType field_type = field->Type().GetStorableType();
+    if (field_type == EMAIL_ADDRESS) {
+      has_email_field = true;
+    }
+    if (field_type != EMAIL_ADDRESS && field_type != UNKNOWN_TYPE &&
+        FieldTypeGroupToFormType(field->Type().group()) !=
+            FormType::kPasswordForm) {
+      return false;
+    }
+  }
+  return has_email_field;
+}
+
+bool IsPostalAddressForm(const FormStructure& form) {
+  DenseSet<FieldType> postal_address_field_types;
+  for (const auto& field : form.fields()) {
+    if (field->Type().group() == FieldTypeGroup::kAddress &&
+        field->Type().GetStorableType() != ADDRESS_HOME_COUNTRY) {
+      postal_address_field_types.insert(field->Type().GetStorableType());
+    }
+  }
+  return postal_address_field_types.size() >= 3 &&
+         postal_address_field_types != kFieldTypesOfATypicalStoreLocatorForm;
+}
+
+// Returns `form`'s types for logging. If `filter_by` is not empty, only those
+// `FormTypeNameForLogging` entries are returned that correspond to the form
+// types in `filter_by`.
+DenseSet<FormTypeNameForLogging> GetFormTypesForLogging(
+    const FormStructure& form,
+    std::optional<DenseSet<FormType>> filter_by = std::nullopt) {
+  DenseSet<FormTypeNameForLogging> form_types;
+  for (FormType form_type : form.GetFormTypes()) {
+    if (filter_by && !(*filter_by).contains(form_type)) {
+      continue;
+    }
+    switch (form_type) {
+      case FormType::kAddressForm:
+        form_types.insert(FormTypeNameForLogging::kAddressForm);
+        if (IsEmailOnlyForm(form)) {
+          form_types.insert(FormTypeNameForLogging::kEmailOnlyForm);
+        } else if (IsPostalAddressForm(form)) {
+          form_types.insert(FormTypeNameForLogging::kPostalAddressForm);
+        }
+        break;
+      case FormType::kCreditCardForm:
+        form_types.insert(FormTypeNameForLogging::kCreditCardForm);
+        break;
+      case FormType::kStandaloneCvcForm:
+        form_types.insert(FormTypeNameForLogging::kStandaloneCvcForm);
+        break;
+      case FormType::kPasswordForm:
+      case FormType::kUnknownFormType:
+        break;
+    }
+  }
+  return form_types;
+}
+
+}  // namespace internal
+
 AutofillProfileSourceCategory GetCategoryOfProfile(
     const AutofillProfile& profile) {
   switch (profile.source()) {
@@ -74,6 +146,21 @@ SettingsVisibleFieldTypeForMetrics ConvertSettingsVisibleFieldTypeForMetrics(
     default:
       return SettingsVisibleFieldTypeForMetrics::kUndefined;
   }
+}
+
+DenseSet<FormTypeNameForLogging> GetFormTypesForLogging(
+    const FormStructure& form) {
+  return internal::GetFormTypesForLogging(form);
+}
+
+DenseSet<FormTypeNameForLogging> GetAddressFormTypesForLogging(
+    const FormStructure& form) {
+  return internal::GetFormTypesForLogging(form, internal::kAddressFormTypes);
+}
+
+DenseSet<FormTypeNameForLogging> GetCreditCardFormTypesForLogging(
+    const FormStructure& form) {
+  return internal::GetFormTypesForLogging(form, internal::kCreditCardFormTypes);
 }
 
 }  // namespace autofill::autofill_metrics

@@ -12,6 +12,20 @@
 
 namespace autofill::autofill_metrics {
 
+namespace internal {
+
+// Returns `true` if `form` has at least one email field and otherwise nothing
+// but unknown, password or additional email fields.
+bool IsEmailOnlyForm(const FormStructure& form);
+
+// Returns `true` if `form` has at least 3 distinct field types of
+// `FieldTypeGroup::kAddress` that are not country, and those field types are
+// not equal to `kFieldTypesOfATypicalStoreLocatorForm`. Returns `false`
+// otherwise.
+bool IsPostalAddressForm(const FormStructure& form);
+
+}  // namespace internal
+
 // kAccount profiles are synced from an external source and have potentially
 // originated from outside of Autofill. In order to determine the added value
 // for Autofill, the `AutofillProfile::Source` is further resolved in some
@@ -57,6 +71,20 @@ enum class SettingsVisibleFieldTypeForMetrics {
 // used for metrics.
 SettingsVisibleFieldTypeForMetrics ConvertSettingsVisibleFieldTypeForMetrics(
     FieldType field_type);
+
+// Returns the set of all fillable form types for `form.`
+DenseSet<FormTypeNameForLogging> GetFormTypesForLogging(
+    const FormStructure& form);
+
+// Returns GetFormTypesForLogging() where entries need to correspond to
+// `FormType::kAddressForm`.
+DenseSet<FormTypeNameForLogging> GetAddressFormTypesForLogging(
+    const FormStructure& form);
+
+// Returns GetFormTypesForLogging() where entries need to correspond to
+// `FormType::kCreditCardForm` or `FormType::kStandaloneCvcForm`.
+DenseSet<FormTypeNameForLogging> GetCreditCardFormTypesForLogging(
+    const FormStructure& form);
 
 }  // namespace autofill::autofill_metrics
 

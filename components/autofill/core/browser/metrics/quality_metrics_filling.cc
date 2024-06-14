@@ -6,6 +6,7 @@
 
 #include "base/metrics/histogram_functions.h"
 #include "base/strings/strcat.h"
+#include "components/autofill/core/browser/metrics/autofill_metrics_utils.h"
 
 namespace autofill::autofill_metrics {
 
@@ -41,12 +42,10 @@ void LogAutomationRate(const FormStructure& form) {
     total_length += field_size;
   }
   if (total_length > 0) {
-    for (const auto form_type : form.GetFormTypes()) {
-      // TODO(crrev.com/c/5499250): Use `FormTypeNameForLogging` once the CL is
-      // merged.
+    for (const auto form_type : GetFormTypesForLogging(form)) {
       base::UmaHistogramPercentage(
-          base::StrCat(
-              {"Autofill.AutomationRate.", FormTypeToStringView(form_type)}),
+          base::StrCat({"Autofill.AutomationRate.",
+                        FormTypeNameForLoggingToStringView(form_type)}),
           100 * total_length_autofilled_fields / total_length);
     }
   }

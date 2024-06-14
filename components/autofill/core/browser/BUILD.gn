@@ -1178,6 +1178,7 @@ source_set("unit_tests") {
     "manual_testing_import_unittest.cc",
     "merchant_promo_code_manager_unittest.cc",
     "metrics/autofill_metrics_unittest.cc",
+    "metrics/autofill_metrics_utils_unittest.cc",
     "metrics/autofill_settings_metrics_unittest.cc",
     "metrics/fallback_autocomplete_unrecognized_metrics_unittest.cc",
     "metrics/field_filling_stats_and_score_metrics_unittest.cc",
