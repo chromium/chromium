@@ -63,6 +63,33 @@ constexpr DenseSet<SuggestionType> kGroupFillingSuggestions = {
     SuggestionType::kFillFullName, SuggestionType::kFillFullAddress,
     SuggestionType::kFillFullEmail, SuggestionType::kFillFullPhoneNumber};
 
+Suggestion CreateSeparator() {
+  Suggestion suggestion;
+  suggestion.type = SuggestionType::kSeparator;
+  return suggestion;
+}
+
+Suggestion CreateUndoOrClearFormSuggestion() {
+#if BUILDFLAG(IS_IOS)
+  std::u16string value =
+      l10n_util::GetStringUTF16(IDS_AUTOFILL_CLEAR_FORM_MENU_ITEM);
+  // TODO(b/40266549): iOS still uses Clear Form logic, replace with Undo.
+  Suggestion suggestion(value, SuggestionType::kUndoOrClear);
+  suggestion.icon = Suggestion::Icon::kClear;
+#else
+  std::u16string value = l10n_util::GetStringUTF16(IDS_AUTOFILL_UNDO_MENU_ITEM);
+  if constexpr (BUILDFLAG(IS_ANDROID)) {
+    value = base::i18n::ToUpper(value);
+  }
+  Suggestion suggestion(value, SuggestionType::kUndoOrClear);
+  suggestion.icon = Suggestion::Icon::kUndo;
+#endif
+  // TODO(b/40266549): update "Clear Form" a11y announcement to "Undo"
+  suggestion.acceptance_a11y_announcement =
+      l10n_util::GetStringUTF16(IDS_AUTOFILL_A11Y_ANNOUNCE_CLEARED_FORM);
+  return suggestion;
+}
+
 bool ShouldUseNationalFormatPhoneNumber(FieldType trigger_field_type) {
   return GroupTypeOfFieldType(trigger_field_type) == FieldTypeGroup::kPhone &&
          trigger_field_type != PHONE_HOME_WHOLE_NUMBER &&
@@ -345,8 +372,7 @@ void AddNameChildSuggestions(FieldTypeGroup trigger_field_type_group,
   if (AddAddressFieldByFieldSuggestions({NAME_FIRST, NAME_MIDDLE, NAME_LAST},
                                         profile, app_locale,
                                         suggestion.children)) {
-    suggestion.children.push_back(
-        AddressSuggestionGenerator::CreateSeparator());
+    suggestion.children.push_back(CreateSeparator());
   };
 }
 
@@ -426,8 +452,7 @@ void AddAddressChildSuggestions(FieldTypeGroup trigger_field_type_group,
   bool added_zip = AddAddressFieldByFieldSuggestions(
       {ADDRESS_HOME_ZIP}, profile, app_locale, suggestion.children);
   if (added_company || added_any_address_line || added_zip || added_city) {
-    suggestion.children.push_back(
-        AddressSuggestionGenerator::CreateSeparator());
+    suggestion.children.push_back(CreateSeparator());
   }
 }
 
@@ -490,8 +515,7 @@ void AddContactChildSuggestions(FieldType trigger_field_type,
   }
 
   if (email_address_suggestion_added || phone_number_suggestion_added) {
-    suggestion.children.push_back(
-        AddressSuggestionGenerator::CreateSeparator());
+    suggestion.children.push_back(CreateSeparator());
   }
 }
 
@@ -931,8 +955,7 @@ void AddAddressGranularFillingChildSuggestions(FieldType trigger_field_type,
                .Get()) {
     suggestion.children.push_back(GetFillEverythingFromAddressProfileSuggestion(
         Suggestion::Guid(profile.guid())));
-    suggestion.children.push_back(
-        AddressSuggestionGenerator::CreateSeparator());
+    suggestion.children.push_back(CreateSeparator());
   }
   AddNameChildSuggestions(trigger_field_type_group, profile, app_locale,
                           suggestion);
@@ -955,10 +978,9 @@ void AddAddressGranularFillingChildSuggestions(FieldType trigger_field_type,
 // add suggestion for clearing all autofilled fields.
 std::vector<Suggestion> GetAddressFooterSuggestions(bool is_autofilled) {
   std::vector<Suggestion> footer_suggestions;
-  footer_suggestions.push_back(AddressSuggestionGenerator::CreateSeparator());
+  footer_suggestions.push_back(CreateSeparator());
   if (is_autofilled) {
-    footer_suggestions.push_back(
-        AddressSuggestionGenerator::CreateClearFormSuggestion());
+    footer_suggestions.push_back(CreateUndoOrClearFormSuggestion());
   }
   footer_suggestions.push_back(
       AddressSuggestionGenerator::CreateManageAddressesEntry());
@@ -1241,39 +1263,11 @@ AddressSuggestionGenerator::CreateSuggestionsFromProfiles(
 }
 
 // static
-Suggestion AddressSuggestionGenerator::CreateSeparator() {
-  Suggestion suggestion;
-  suggestion.type = SuggestionType::kSeparator;
-  return suggestion;
-}
-
-// static
 Suggestion AddressSuggestionGenerator::CreateManageAddressesEntry() {
   Suggestion suggestion(
       l10n_util::GetStringUTF16(IDS_AUTOFILL_MANAGE_ADDRESSES),
       SuggestionType::kManageAddress);
   suggestion.icon = Suggestion::Icon::kSettings;
-  return suggestion;
-}
-
-Suggestion AddressSuggestionGenerator::CreateClearFormSuggestion() {
-#if BUILDFLAG(IS_IOS)
-  std::u16string value =
-      l10n_util::GetStringUTF16(IDS_AUTOFILL_CLEAR_FORM_MENU_ITEM);
-  // TODO(b/40266549): iOS still uses Clear Form logic, replace with Undo.
-  Suggestion suggestion(value, SuggestionType::kUndoOrClear);
-  suggestion.icon = Suggestion::Icon::kClear;
-#else
-  std::u16string value = l10n_util::GetStringUTF16(IDS_AUTOFILL_UNDO_MENU_ITEM);
-  if constexpr (BUILDFLAG(IS_ANDROID)) {
-    value = base::i18n::ToUpper(value);
-  }
-  Suggestion suggestion(value, SuggestionType::kUndoOrClear);
-  suggestion.icon = Suggestion::Icon::kUndo;
-#endif
-  // TODO(b/40266549): update "Clear Form" a11y announcement to "Undo"
-  suggestion.acceptance_a11y_announcement =
-      l10n_util::GetStringUTF16(IDS_AUTOFILL_A11Y_ANNOUNCE_CLEARED_FORM);
   return suggestion;
 }
 

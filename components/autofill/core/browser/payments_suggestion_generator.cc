@@ -57,6 +57,33 @@ namespace autofill {
 
 namespace {
 
+Suggestion CreateSeparator() {
+  Suggestion suggestion;
+  suggestion.type = SuggestionType::kSeparator;
+  return suggestion;
+}
+
+Suggestion CreateUndoOrClearFormSuggestion() {
+#if BUILDFLAG(IS_IOS)
+  std::u16string value =
+      l10n_util::GetStringUTF16(IDS_AUTOFILL_CLEAR_FORM_MENU_ITEM);
+  // TODO(b/40266549): iOS still uses Clear Form logic, replace with Undo.
+  Suggestion suggestion(value, SuggestionType::kUndoOrClear);
+  suggestion.icon = Suggestion::Icon::kClear;
+#else
+  std::u16string value = l10n_util::GetStringUTF16(IDS_AUTOFILL_UNDO_MENU_ITEM);
+  if constexpr (BUILDFLAG(IS_ANDROID)) {
+    value = base::i18n::ToUpper(value);
+  }
+  Suggestion suggestion(value, SuggestionType::kUndoOrClear);
+  suggestion.icon = Suggestion::Icon::kUndo;
+#endif
+  // TODO(b/40266549): update "Clear Form" a11y announcement to "Undo"
+  suggestion.acceptance_a11y_announcement =
+      l10n_util::GetStringUTF16(IDS_AUTOFILL_A11Y_ANNOUNCE_CLEARED_FORM);
+  return suggestion;
+}
+
 // Returns the credit card field |value| trimmed from whitespace and with stop
 // characters removed.
 std::u16string SanitizeCreditCardFieldValue(const std::u16string& value) {
@@ -320,8 +347,7 @@ void AddPaymentsGranularFillingChildSuggestions(const CreditCard& credit_card,
 
   if (credit_card.HasInfo(CREDIT_CARD_EXP_DATE_2_DIGIT_YEAR)) {
     if (has_content_above) {
-      suggestion.children.push_back(
-          PaymentsSuggestionGenerator::CreateSeparator());
+      suggestion.children.push_back(CreateSeparator());
     }
     AddCreditCardExpiryDateChildSuggestion(credit_card, app_locale, suggestion);
   }
@@ -685,7 +711,6 @@ std::vector<Suggestion> GetCreditCardFooterSuggestions(
     scan_credit_card.icon = Suggestion::Icon::kScanCreditCard;
     footer_suggestions.push_back(scan_credit_card);
   }
-
   if (should_show_cards_from_account) {
     Suggestion show_card_from_account(
         l10n_util::GetStringUTF16(IDS_AUTOFILL_SHOW_ACCOUNT_CARDS),
@@ -693,18 +718,13 @@ std::vector<Suggestion> GetCreditCardFooterSuggestions(
     show_card_from_account.icon = Suggestion::Icon::kGoogle;
     footer_suggestions.push_back(show_card_from_account);
   }
-
-  footer_suggestions.push_back(PaymentsSuggestionGenerator::CreateSeparator());
-
+  footer_suggestions.push_back(CreateSeparator());
   if (is_autofilled) {
-    footer_suggestions.push_back(
-        PaymentsSuggestionGenerator::CreateClearFormSuggestion());
+    footer_suggestions.push_back(CreateUndoOrClearFormSuggestion());
   }
-
   footer_suggestions.push_back(
       PaymentsSuggestionGenerator::CreateManageCreditCardsEntry(
           with_gpay_logo));
-
   return footer_suggestions;
 }
 
@@ -900,13 +920,6 @@ PaymentsSuggestionGenerator::GetTouchToFillCardsToSuggest(
 }
 
 // static
-Suggestion PaymentsSuggestionGenerator::CreateSeparator() {
-  Suggestion suggestion;
-  suggestion.type = SuggestionType::kSeparator;
-  return suggestion;
-}
-
-// static
 Suggestion PaymentsSuggestionGenerator::CreateManageCreditCardsEntry(
     bool with_gpay_logo) {
   return CreateManagePaymentMethodsEntry(SuggestionType::kManageCreditCard,
@@ -917,27 +930,6 @@ Suggestion PaymentsSuggestionGenerator::CreateManageCreditCardsEntry(
 Suggestion PaymentsSuggestionGenerator::CreateManageIbansEntry() {
   return CreateManagePaymentMethodsEntry(SuggestionType::kManageIban,
                                          /*with_gpay_logo=*/false);
-}
-
-Suggestion PaymentsSuggestionGenerator::CreateClearFormSuggestion() {
-#if BUILDFLAG(IS_IOS)
-  // TODO(b/40266549): iOS still uses Clear Form logic, replace with Undo.
-  std::u16string value =
-      l10n_util::GetStringUTF16(IDS_AUTOFILL_CLEAR_FORM_MENU_ITEM);
-  Suggestion suggestion(value, SuggestionType::kUndoOrClear);
-  suggestion.icon = Suggestion::Icon::kClear;
-#else
-  std::u16string value = l10n_util::GetStringUTF16(IDS_AUTOFILL_UNDO_MENU_ITEM);
-  if constexpr (BUILDFLAG(IS_ANDROID)) {
-    value = base::i18n::ToUpper(value);
-  }
-  Suggestion suggestion(value, SuggestionType::kUndoOrClear);
-  suggestion.icon = Suggestion::Icon::kUndo;
-#endif
-  // TODO(b/40266549): update "Clear Form" a11y announcement to "Undo"
-  suggestion.acceptance_a11y_announcement =
-      l10n_util::GetStringUTF16(IDS_AUTOFILL_A11Y_ANNOUNCE_CLEARED_FORM);
-  return suggestion;
 }
 
 // static

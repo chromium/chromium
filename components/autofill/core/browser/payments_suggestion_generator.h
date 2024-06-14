@@ -75,10 +75,6 @@ class PaymentsSuggestionGenerator {
       const FormFieldData& trigger_field,
       FieldType trigger_field_type);
 
-  // Generates a separator suggestion.
-  // TODO(b/41484171): Remove.
-  static Suggestion CreateSeparator();
-
   // Generates a footer suggestion "Manage payment methods..." menu item which
   // will redirect to Chrome payment settings page. `with_gpay_logo` is used to
   // conditionally add GPay logo icon to the manage payment methods suggestion.
@@ -95,10 +91,6 @@ class PaymentsSuggestionGenerator {
   // `CreateManageIbansEntry()` is that they use a different `SuggestionType`.
   // This distinction is needed for metrics recording.
   static Suggestion CreateManageIbansEntry();
-
-  // Generate "Clear form" suggestion.
-  // TODO(b/41484171): Remove.
-  static Suggestion CreateClearFormSuggestion();
 
   // Generates suggestions for all available IBANs.
   static std::vector<Suggestion> GetSuggestionsForIbans(

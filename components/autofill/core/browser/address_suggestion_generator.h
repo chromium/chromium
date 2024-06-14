@@ -47,17 +47,9 @@ class AddressSuggestionGenerator {
       SuggestionType suggestion_type,
       AutofillSuggestionTriggerSource trigger_source);
 
-  // Generates a separator suggestion.
-  // TODO(b/41484171): Remove.
-  static Suggestion CreateSeparator();
-
   // Generates a footer suggestion "Manage addresses..." menu item which will
   // redirect to Chrome address settings page.
   static Suggestion CreateManageAddressesEntry();
-
-  // Generate "Clear form" suggestion.
-  // TODO(b/41484171): Remove.
-  static Suggestion CreateClearFormSuggestion();
 
  private:
   friend class AddressSuggestionGeneratorTestApi;
