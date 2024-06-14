@@ -1742,9 +1742,7 @@ message ClientSafeBrowsingReportRequest {
       BUBBLE_SUBPAGE = 2;
       // Applicable actions: DISCARD, KEEP, PROCEED
       DOWNLOADS_PAGE = 3;
-      // Applicable actions: PROCEED, CANCEL, CLOSE
-      // TODO(chlily): Remove CLOSE option once ImprovedDownloadPageWarnings
-      // launches.
+      // Applicable actions: PROCEED, CANCEL
       DOWNLOAD_PROMPT = 4;
       // Applicable actions: OPEN_SUBPAGE
       // Note: This only covers ChromeOS Lacros v2 notifications. CLOSE should

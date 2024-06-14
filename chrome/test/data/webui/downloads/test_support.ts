@@ -34,7 +34,6 @@ class FakePageHandler implements PageHandlerInterface {
     'recordOpenBypassWarningPrompt',
     'remove',
     'saveDangerousFromPromptRequiringGesture',
-    'saveDangerousRequiringGesture',
     'saveSuspiciousRequiringGesture',
   ]);
 
@@ -67,10 +66,6 @@ class FakePageHandler implements PageHandlerInterface {
   saveDangerousFromPromptRequiringGesture(id: string) {
     this.callTracker_.methodCalled(
         'saveDangerousFromPromptRequiringGesture', id);
-  }
-
-  saveDangerousRequiringGesture(id: string) {
-    this.callTracker_.methodCalled('saveDangerousRequiringGesture', id);
   }
 
   saveSuspiciousRequiringGesture(id: string) {

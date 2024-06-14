@@ -17,16 +17,11 @@ class DownloadItem;
 }
 
 // Prompts the user for whether to Keep a dangerous DownloadItem using native
-// UI. This prompt is invoked by the DownloadsDOMHandler when the user wants to
-// accept a dangerous download. Having a native dialog intervene during the this
-// workflow means that the chrome://downloads page no longer has the privilege
-// to accept a dangerous download from script without user intervention. This
-// step is necessary to prevent a malicious script form abusing such a
-// privilege.
-// After ImprovedDownloadPageWarnings:
-// This is only used for extensions API downloads. The chrome://downloads page
-// prompt is implemented in WebUI.
-// TODO(chlily): Clean up this comment.
+// UI. Having a native dialog intervene during the this workflow means that the
+// extension renderer no longer has the privilege to accept a dangerous download
+// from script without user intervention. This step is necessary to prevent a
+// malicious script form abusing such a privilege. This is only used for
+// extensions API downloads.
 class DownloadDangerPrompt {
  public:
   // Actions resulting from showing the danger prompt.
@@ -42,15 +37,14 @@ class DownloadDangerPrompt {
 
   // Return a new self-deleting DownloadDangerPrompt. The returned
   // DownloadDangerPrompt* is only used for testing. The caller does not own the
-  // object and receives no guarantees about lifetime. If |show_context|, then
-  // the prompt message will contain some information about the download and its
-  // danger; otherwise it won't. |done| is a callback called when the ACCEPT,
-  // CANCEL or DISMISS action is invoked. |done| may be called with the CANCEL
-  // action even when |item| is either no longer dangerous or no longer in
-  // progress, or if the tab corresponding to |web_contents| is closing.
+  // object and receives no guarantees about lifetime. The prompt message will
+  // contain some information about the download and its danger. |done| is a
+  // callback called when the ACCEPT, CANCEL or DISMISS action is invoked.
+  // |done| may be called with the CANCEL action even when |item| is either no
+  // longer dangerous or no longer in progress, or if the tab corresponding to
+  // |web_contents| is closing.
   static DownloadDangerPrompt* Create(download::DownloadItem* item,
                                       content::WebContents* web_contents,
-                                      bool show_context,
                                       OnDone done);
 
   // Only to be used by tests. Subclasses must override to manually call the

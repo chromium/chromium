@@ -70,7 +70,6 @@ class DownloadsDOMHandler : public content::WebContentsObserver,
   void GetDownloads(const std::vector<std::string>& search_terms) override;
   void OpenFileRequiringGesture(const std::string& id) override;
   void Drag(const std::string& id) override;
-  void SaveDangerousRequiringGesture(const std::string& id) override;
   void SaveSuspiciousRequiringGesture(const std::string& id) override;
   void RecordOpenBypassWarningPrompt(const std::string& id) override;
   void SaveDangerousFromPromptRequiringGesture(const std::string& id) override;
@@ -119,18 +118,6 @@ class DownloadsDOMHandler : public content::WebContentsObserver,
   // Convenience method to call |original_notifier_->GetManager()| while
   // null-checking |original_notifier_|.
   content::DownloadManager* GetOriginalNotifierManager() const;
-
-  // Displays a native prompt asking the user for confirmation after accepting
-  // the dangerous download specified by |dangerous|. The function returns
-  // immediately, and will invoke DangerPromptAccepted() asynchronously if the
-  // user accepts the dangerous download. The native prompt will observe
-  // |dangerous| until either the dialog is dismissed or |dangerous| is no
-  // longer an in-progress dangerous download.
-  virtual void ShowDangerPrompt(download::DownloadItem* dangerous);
-
-  // Conveys danger acceptance from the DownloadDangerPrompt to the
-  // DownloadItem.
-  void DangerPromptDone(int download_id, DownloadDangerPrompt::Action action);
 
   // Launches a HaTS survey for a download warning that is heeded, bypassed, or
   // ignored (if all preconditions are met).

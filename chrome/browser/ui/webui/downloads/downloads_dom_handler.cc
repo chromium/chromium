@@ -84,9 +84,7 @@ enum DownloadsDOMEvent {
   DOWNLOADS_DOM_EVENT_GET_DOWNLOADS = 0,
   DOWNLOADS_DOM_EVENT_OPEN_FILE = 1,
   DOWNLOADS_DOM_EVENT_DRAG = 2,
-  // This is obsoleted by ImprovedDownloadPageWarnings.
-  // TODO(chlily): Clean up the value.
-  DOWNLOADS_DOM_EVENT_SAVE_DANGEROUS = 3,
+  // Obsolete: DOWNLOADS_DOM_EVENT_SAVE_DANGEROUS = 3,
   DOWNLOADS_DOM_EVENT_DISCARD_DANGEROUS = 4,
   DOWNLOADS_DOM_EVENT_SHOW = 5,
   DOWNLOADS_DOM_EVENT_PAUSE = 6,
@@ -280,23 +278,6 @@ void DownloadsDOMHandler::Drag(const std::string& id) {
     // Enable nested tasks during DnD, while |DragDownload()| blocks.
     base::CurrentThread::ScopedAllowApplicationTasksInNativeNestedLoop allow;
     DragDownloadItem(file, icon, view);
-  }
-}
-
-void DownloadsDOMHandler::SaveDangerousRequiringGesture(const std::string& id) {
-  if (!GetWebUIWebContents()->HasRecentInteraction()) {
-    LOG(ERROR) << "SaveDangerousRequiringGesture received without recent "
-                  "user interaction";
-    return;
-  }
-
-  CountDownloadsDOMEvents(DOWNLOADS_DOM_EVENT_SAVE_DANGEROUS);
-  download::DownloadItem* file = GetDownloadByStringId(id);
-  if (file) {
-    DownloadItemWarningData::AddWarningActionEvent(
-        file, DownloadItemWarningData::WarningSurface::DOWNLOADS_PAGE,
-        DownloadItemWarningData::WarningAction::KEEP);
-    ShowDangerPrompt(file);
   }
 }
 
@@ -765,54 +746,6 @@ void DownloadsDOMHandler::FinalizeRemovals() {
       }
     }
   }
-}
-
-// TODO(chlily): This is obsoleted by ImprovedDownloadPageWarnings. Clean this
-// up.
-void DownloadsDOMHandler::ShowDangerPrompt(
-    download::DownloadItem* dangerous_item) {
-  DownloadDangerPrompt* danger_prompt = DownloadDangerPrompt::Create(
-      dangerous_item, GetWebUIWebContents(), false,
-      base::BindOnce(&DownloadsDOMHandler::DangerPromptDone,
-                     weak_ptr_factory_.GetWeakPtr(), dangerous_item->GetId()));
-  // danger_prompt will delete itself.
-  DCHECK(danger_prompt);
-}
-
-// TODO(chlily): This is obsoleted by ImprovedDownloadPageWarnings. Clean this
-// up.
-void DownloadsDOMHandler::DangerPromptDone(
-    int download_id,
-    DownloadDangerPrompt::Action action) {
-  if (action != DownloadDangerPrompt::ACCEPT) {
-    return;
-  }
-  download::DownloadItem* item = nullptr;
-  if (GetMainNotifierManager()) {
-    item = GetMainNotifierManager()->GetDownload(download_id);
-  }
-  if (!item && GetOriginalNotifierManager()) {
-    item = GetOriginalNotifierManager()->GetDownload(download_id);
-  }
-  if (!item || item->IsDone()) {
-    return;
-  }
-  CountDownloadsDOMEvents(DOWNLOADS_DOM_EVENT_SAVE_DANGEROUS);
-
-  // If a download is insecure, validate that first. Is most cases, insecure
-  // download warnings will occur first, but in the worst case scenario, we show
-  // a dangerous warning twice. That's better than showing an insecure download
-  // warning, then dismissing the dangerous download warning. Since insecure
-  // downloads triggering the UI are temporary and rare to begin with, this
-  // should very rarely occur.
-  if (item->IsInsecure()) {
-    item->ValidateInsecureDownload();
-    return;
-  }
-
-  RecordDownloadsPageValidatedHistogram(item);
-
-  item->ValidateDangerousDownload();
 }
 
 void DownloadsDOMHandler::MaybeTriggerDownloadWarningHatsSurvey(

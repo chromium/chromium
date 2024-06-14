@@ -269,7 +269,7 @@ chromium-metrics-reviews@google.com.
   <int value="0" label="GetDownloads"/>
   <int value="1" label="OpenFile"/>
   <int value="2" label="Drag"/>
-  <int value="3" label="SaveDangerous"/>
+  <int value="3" label="SaveDangerous (obsolete)"/>
   <int value="4" label="DiscardDangerous"/>
   <int value="5" label="Show"/>
   <int value="6" label="Pause"/>

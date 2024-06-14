@@ -1092,10 +1092,9 @@ export class DownloadsItemElement extends DownloadsItemElementBase {
   }
 
   private onSaveDangerousClick_() {
+    // TODO(chlily): Remove this branch. It is only reachable in tests while
+    // cleanup is in progress.
     if (!this.improvedDownloadWarningsUx_) {
-      // TODO(chlily): Clean up old paths that show the DownloadDangerPrompt.
-      assert(!!this.mojoHandler_);
-      this.mojoHandler_.saveDangerousRequiringGesture(this.data.id);
       return;
     }
 

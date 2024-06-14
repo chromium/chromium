@@ -2404,37 +2404,13 @@ are declared in tools/grit/grit_rule.gni.
                desc="Title for the confirmation dialog asking whether the user really meant to keep a dangerous download">
         Confirm download
       </message>
-      <message name="IDS_KEEP_DANGEROUS_DOWNLOAD_TITLE"
-               desc="Title for the confirmation dialog asking whether the user really meant to keep a dangerous download">
-        Keep dangerous file?
-      </message>
-      <message name="IDS_KEEP_UNCOMMON_DOWNLOAD_TITLE"
-               desc="Title for the confirmation dialog asking whether the user really meant to keep an uncommon download">
-        Keep file?
-      </message>
-      <message name="IDS_PROMPT_CONFIRM_KEEP_DANGEROUS_DOWNLOAD"
-               desc="Prompt text for the confirmation dialog asking whether the user really meant to keep a dangerous download">
-        This file may be harmful for your computer.
-      </message>
-      <message name="IDS_PROMPT_CONFIRM_KEEP_MALICIOUS_DOWNLOAD_BODY"
-               desc="Body prompt text for the confirmation dialog asking whether the user really meant to keep a download">
-        Even if you have downloaded files from this site before, the site may be temporarily unsafe (hacked). Try downloading this file later.
-      </message>
       <if expr="use_titlecase">
-        <message name="IDS_CONFIRM_DOWNLOAD_AGAIN"
-                 desc="In Title Case: Text for the button used to confirm the dialog asking whether the user really meant to keep dangerous download.">
-          Keep Anyway
-        </message>
         <message name="IDS_CONFIRM_DOWNLOAD"
                  desc="In Title Case: Text for the button used to validate the downloading of a dangerous download on download shelf.">
           Keep
         </message>
       </if>
       <if expr="not use_titlecase">
-        <message name="IDS_CONFIRM_DOWNLOAD_AGAIN"
-                 desc="Text for the button used to confirm the dialog asking whether the user really meant to keep dangerous download.">
-          Keep anyway
-        </message>
         <message name="IDS_CONFIRM_DOWNLOAD"
                  desc="Text for the button used to validate the downloading of a dangerous download on download shelf.">
           Keep

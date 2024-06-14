@@ -130,11 +130,6 @@ interface PageHandler {
   OpenFileRequiringGesture(string id);
   Drag(string id);
 
-  // This shows the DownloadDangerPrompt (native UI dialog) and is obsoleted by
-  // the following four methods.
-  // TODO(chlily): Remove this when cleaning up ImprovedDownloadPageWarnings.
-  SaveDangerousRequiringGesture(string id);
-
   // Called when "Download suspicious file" is clicked from the
   // chrome://downloads overflow menu, for suspicious/unverified files. Does not
   // show a prompt.
