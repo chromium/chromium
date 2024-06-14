@@ -284,31 +284,6 @@ export class OverlayShimmerCanvasElement extends PolymerElement {
 
     this.canvas = this.$.shaderCanvas.transferControlToOffscreen();
     this.context = this.canvas.getContext('2d')!;
-
-    // Create the circles.
-    const centerXOffsetInt = STEADY_STATE_CENTER_X_PERCENT_OFFSET;
-    const centerYOffsetInt = STEADY_STATE_CENTER_Y_PERCENT_OFFSET;
-
-    // Create a circle for each color rgb string defined.
-    this.circles = this.shaderLayerRgbaColors.map((colorRgbaString: string) => {
-      return {
-        colorRgba: colorRgbaString,
-        steadyStateCenter: {
-          x: 50 - centerXOffsetInt * (Math.random() * 2 - 1),
-          y: 50 - centerYOffsetInt * (Math.random() * 2 - 1),
-        },
-        blur: STEADY_STATE_CIRCLE_BLUR,
-        radius: INVOCATION_RADIUS_PERCENT,
-        center:
-            {x: INVOCATION_CENTER_X_PERCENT, y: INVOCATION_CENTER_Y_PERCENT},
-        centerXAmpPercent: INVOCATION_CENTER_X_AMPLITUDE_PERCENT,
-        centerYAmpPercent: INVOCATION_CENTER_Y_AMPLITUDE_PERCENT,
-        radiusAmpPercent: INVOCATION_RADIUS_AMPLITUDE_PERCENT,
-        radiusWiggle: new Wiggle(STEADY_STATE_FREQ_VAL),
-        centerXWiggle: new Wiggle(STEADY_STATE_FREQ_VAL),
-        centerYWiggle: new Wiggle(STEADY_STATE_FREQ_VAL),
-      };
-    });
   }
 
   override connectedCallback() {
@@ -346,6 +321,33 @@ export class OverlayShimmerCanvasElement extends PolymerElement {
     // Draw invocation state.
     this.context.globalAlpha = INVOCATION_OPACITY_PERCENT;
     this.shimmerState = ShimmerState.INVOCATION;
+
+    // Create a circle for each color rgb string defined. We do this when the
+    // invocation animation is started to make sure we grab the latest set
+    // overlay theme.
+    const centerXOffsetInt = STEADY_STATE_CENTER_X_PERCENT_OFFSET;
+    const centerYOffsetInt = STEADY_STATE_CENTER_Y_PERCENT_OFFSET;
+    this.circles = this.shaderLayerRgbaColors.map((colorRgbaString: string) => {
+      return {
+        colorRgba: colorRgbaString,
+        steadyStateCenter: {
+          x: 50 - centerXOffsetInt * (Math.random() * 2 - 1),
+          y: 50 - centerYOffsetInt * (Math.random() * 2 - 1),
+        },
+        blur: STEADY_STATE_CIRCLE_BLUR,
+        radius: INVOCATION_RADIUS_PERCENT,
+        center:
+            {x: INVOCATION_CENTER_X_PERCENT, y: INVOCATION_CENTER_Y_PERCENT},
+        centerXAmpPercent: INVOCATION_CENTER_X_AMPLITUDE_PERCENT,
+        centerYAmpPercent: INVOCATION_CENTER_Y_AMPLITUDE_PERCENT,
+        radiusAmpPercent: INVOCATION_RADIUS_AMPLITUDE_PERCENT,
+        radiusWiggle: new Wiggle(STEADY_STATE_FREQ_VAL),
+        centerXWiggle: new Wiggle(STEADY_STATE_FREQ_VAL),
+        centerYWiggle: new Wiggle(STEADY_STATE_FREQ_VAL),
+      };
+    });
+
+    // Start the animation.
     requestAnimationFrame((timeMs: number) => {
       this.stepAnimation(timeMs);
       this.transitionToSteadyState();
