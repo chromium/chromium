@@ -8,6 +8,7 @@
 #include <vector>
 
 #include "base/barrier_callback.h"
+#include "base/check_deref.h"
 #include "components/affiliations/core/browser/affiliation_service.h"
 #include "components/affiliations/core/browser/affiliation_utils.h"
 #include "components/plus_addresses/features.h"
@@ -22,8 +23,8 @@ using affiliations::FacetURI;
 PlusAddressAffiliationMatchHelper::PlusAddressAffiliationMatchHelper(
     PlusAddressService* plus_address_service,
     affiliations::AffiliationService* affiliation_service)
-    : plus_address_service_(*plus_address_service),
-      affiliation_service_(*affiliation_service) {}
+    : plus_address_service_(CHECK_DEREF(plus_address_service)),
+      affiliation_service_(CHECK_DEREF(affiliation_service)) {}
 
 PlusAddressAffiliationMatchHelper::~PlusAddressAffiliationMatchHelper() =
     default;
