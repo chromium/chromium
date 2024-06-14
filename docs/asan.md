@@ -7,7 +7,7 @@ Additional info on the tool itself is available at
 https://clang.llvm.org/docs/AddressSanitizer.html.
 
 For the memory leak detector built into ASan, see
-[LeakSanitizer](https://sites.google.com/a/chromium.org/dev/developers/testing/leaksanitizer).
+[LeakSanitizer](https://www.chromium.org/developers/testing/leaksanitizer).
 If you want to debug memory leaks, please refer to the instructions on that page
 instead.
 
@@ -93,7 +93,7 @@ in order to enable the `--verify-heap` command line flag for v8 in Release build
 that is compatible with the sandbox. However, this is not compatible with
 LeakSanitizer. If you want to debug memory leaks, please use the instructions on
 the
-[LeakSanitizer](https://sites.google.com/a/chromium.org/dev/developers/testing/leaksanitizer)
+[LeakSanitizer](https://www.chromium.org/developers/testing/leaksanitizer)
 page instead.
 
 Now, check that the tool works. Run the following:
