@@ -23,6 +23,8 @@
 
 namespace ash {
 
+class MahiNudgeController;
+
 // Implementation of `MahiManager`.
 class MahiManagerImpl : public chromeos::MahiManager, public SessionObserver {
  public:
@@ -54,8 +56,7 @@ class MahiManagerImpl : public chromeos::MahiManager, public SessionObserver {
       const base::UnguessableToken media_app_client_id) override;
   std::optional<base::UnguessableToken> GetMediaAppPDFClientId() const override;
 
-  // Notifies the panel that refresh is available or not for the corresponding
-  // surface.
+  // Called when availability for a refresh changes based on the shown content.
   void NotifyRefreshAvailability(bool available);
 
   // SessionObserver:
@@ -127,6 +128,8 @@ class MahiManagerImpl : public chromeos::MahiManager, public SessionObserver {
   MahiUiController ui_controller_;
 
   std::unique_ptr<MahiCacheManager> cache_manager_;
+
+  std::unique_ptr<MahiNudgeController> mahi_nudge_controller_;
 
   // If true, tries to get content from MediaAppContentManager instead.
   bool media_app_pdf_focused_ = false;

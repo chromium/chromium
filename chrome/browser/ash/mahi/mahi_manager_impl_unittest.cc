@@ -10,6 +10,8 @@
 #include "ash/constants/ash_pref_names.h"
 #include "ash/constants/ash_switches.h"
 #include "ash/shell.h"
+#include "ash/system/mahi/mahi_constants.h"
+#include "ash/system/toast/anchored_nudge_manager_impl.h"
 #include "ash/test/ash_test_base.h"
 #include "base/auto_reset.h"
 #include "base/command_line.h"
@@ -29,9 +31,11 @@
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/gfx/image/image_skia.h"
+#include "ui/lottie/resource.h"
 #include "ui/views/widget/widget.h"
 
 namespace {
+
 using ::testing::IsNull;
 
 constexpr char kFakeSummary[] = "Fake summary";
@@ -56,6 +60,12 @@ class FakeMahiProvider : public manta::MahiProvider {
  private:
   int num_summarize_call_ = 0;
 };
+
+bool IsMahiNudgeShown() {
+  return ash::Shell::Get()->anchored_nudge_manager()->IsNudgeShown(
+      ash::mahi_constants::kMahiNudgeId);
+}
+
 }  // namespace
 
 namespace ash {
@@ -64,7 +74,14 @@ class MahiManagerImplTest : public NoSessionAshTestBase {
  public:
   MahiManagerImplTest()
       : NoSessionAshTestBase(
-            base::test::TaskEnvironment::TimeSource::MOCK_TIME) {}
+            base::test::TaskEnvironment::TimeSource::MOCK_TIME) {
+    // Sets the default functions for the test to create image with the lottie
+    // resource id. Otherwise there's no `g_parse_lottie_as_still_image_` set in
+    // the `ResourceBundle`.
+    ui::ResourceBundle::SetLottieParsingFunctions(
+        &lottie::ParseLottieAsStillImage,
+        &lottie::ParseLottieAsThemedStillImage);
+  }
 
   MahiManagerImplTest(const MahiManagerImplTest&) = delete;
   MahiManagerImplTest& operator=(const MahiManagerImplTest&) = delete;
@@ -90,7 +107,7 @@ class MahiManagerImplTest : public NoSessionAshTestBase {
     NoSessionAshTestBase::TearDown();
   }
 
-  void SetUserPref(bool enabled) {
+  void SetMahiEnabledByUserPref(bool enabled) {
     Shell::Get()->session_controller()->GetActivePrefService()->SetBoolean(
         ash::prefs::kMahiEnabled, enabled);
   }
@@ -113,6 +130,10 @@ class MahiManagerImplTest : public NoSessionAshTestBase {
 
   MahiCacheManager* GetCacheManager() {
     return mahi_manager_impl_->cache_manager_.get();
+  }
+
+  void NotifyRefreshAvailability(bool available) {
+    mahi_manager_impl_->NotifyRefreshAvailability(available);
   }
 
   void RequestSummary() {
@@ -185,7 +206,7 @@ TEST_F(MahiManagerImplTest, TurnOffSettingsClearCache) {
   EXPECT_EQ(GetCacheManager()->size(), 1);
 
   // Cache must be empty after user turn off the settings.
-  SetUserPref(false);
+  SetMahiEnabledByUserPref(false);
   EXPECT_EQ(GetCacheManager()->size(), 0);
 }
 
@@ -194,14 +215,14 @@ TEST_F(MahiManagerImplTest, SetMahiPrefOnLogin) {
   // true or false.
   for (bool mahi_enabled : {false, true}) {
     // Sets the pref for the default user.
-    SetUserPref(mahi_enabled);
+    SetMahiEnabledByUserPref(mahi_enabled);
     ASSERT_EQ(IsEnabled(), mahi_enabled);
     const AccountId user1_account_id =
         Shell::Get()->session_controller()->GetActiveAccountId();
 
     // Sets the pref for the second user.
     SimulateUserLogin("other@user.test");
-    SetUserPref(!mahi_enabled);
+    SetMahiEnabledByUserPref(!mahi_enabled);
     EXPECT_EQ(IsEnabled(), !mahi_enabled);
 
     // Switching back to the previous user will update to correct pref.
@@ -216,9 +237,29 @@ TEST_F(MahiManagerImplTest, SetMahiPrefOnLogin) {
 
 TEST_F(MahiManagerImplTest, OnPreferenceChanged) {
   for (bool mahi_enabled : {false, true, false}) {
-    SetUserPref(mahi_enabled);
+    SetMahiEnabledByUserPref(mahi_enabled);
     EXPECT_EQ(IsEnabled(), mahi_enabled);
   }
+}
+
+// Tests that the Mahi educational nudge is shown when the user visits eligible
+// content and they have not opted in to the feature.
+TEST_F(MahiManagerImplTest, ShowEducationalNudge) {
+  SetMahiEnabledByUserPref(false);
+
+  EXPECT_FALSE(IsMahiNudgeShown());
+
+  // Notifying that a refresh is not available should have no effect.
+  NotifyRefreshAvailability(/*available=*/false);
+  EXPECT_FALSE(IsMahiNudgeShown());
+
+  // Notifying that a refresh is available should show the nudge.
+  NotifyRefreshAvailability(/*available=*/true);
+  EXPECT_TRUE(IsMahiNudgeShown());
+
+  // Notifying that a refresh is not available should have no effect.
+  NotifyRefreshAvailability(/*available=*/false);
+  EXPECT_TRUE(IsMahiNudgeShown());
 }
 
 class MahiManagerImplFeatureKeyTest : public NoSessionAshTestBase {

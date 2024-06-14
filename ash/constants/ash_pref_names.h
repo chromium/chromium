@@ -58,6 +58,12 @@ inline constexpr char kManagedOrcaEnabled[] =
 // A boolean pref of whether mahi is enabled.
 inline constexpr char kMahiEnabled[] = "settings.mahi_enabled";
 
+// An integer pref that stores the times the Mahi nudge has been shown.
+inline constexpr char kMahiNudgeShownCount[] = "mahi.nudge_shown_count";
+
+// A time pref that stores the time the Mahi nudge was last shown.
+inline constexpr char kMahiNudgeLastShownTime[] = "mahi.nudge_last_shown";
+
 // An integer pref which indicates the HMR (Quick answers and Mahi) consent
 // status from the user.
 inline constexpr char kHMRConsentStatus[] = "settings.hmr.consent_status";

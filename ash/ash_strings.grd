@@ -5288,6 +5288,12 @@ No devices connected.
       <message name="IDS_ASH_MAHI_RETRY_LINK_LABEL_TEXT" desc="Text for the link that user can retry their previous Mahi request">
         Try again
       </message>
+      <message name="IDS_ASH_MAHI_EDUCATIONAL_NUDGE_TITLE" desc="Title for the educational nudge used to discover the Mahi feature">
+        Right-click to summarize
+      </message>
+      <message name="IDS_ASH_MAHI_EDUCATIONAL_NUDGE_BODY" desc="Body for the educational nudge used to discover the Mahi feature">
+        Use Help me read to quickly summarize content or ask questions
+      </message>
 
       <!-- Multi-profiles intro dialog -->
       <message name="IDS_ASH_MULTIPROFILES_INTRO_HEADLINE" desc="Describes which feature multi-profiles intro dialog presents.">

@@ -620,6 +620,7 @@ chromium-metrics-reviews@google.com.
   <int value="100291" label="iOSAddressPromoLastImpressionTimestamp"/>
   <int value="100292" label="iOSAddressPromoImpressionsCounter"/>
   <int value="100293" label="iOSAddressPromoOptOut"/>
+  <int value="100294" label="MahiNudgeShownCount"/>
 <!-- LINT.ThenChange(/chrome/browser/sync/prefs/chrome_syncable_prefs_database.cc:ChromeSyncablePref)-->
 
 <!-- LINT.IfChange(IosSyncablePref) -->

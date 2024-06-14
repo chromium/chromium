@@ -63,6 +63,7 @@
       <structure type="lottie" name="IDR_BIRCH_RELEASE_NOTES_ICON" file="unscaled_resources/birch_release_notes_icon.json" compress="gzip" />
       <!-- Mahi -->
       <structure type="lottie" name="IDR_MAHI_GENERAL_ERROR_STATUS_IMAGE" file="unscaled_resources/mahi_general_error_status_image.json" compress="gzip" />
+      <structure type="lottie" name="IDR_MAHI_EDUCATIONAL_NUDGE_IMAGE" file="unscaled_resources/mahi_educational_nudge_image.json" compress="gzip" />
       <!-- Magic Boost -->
       <structure type="lottie" name="IDR_MAGIC_BOOST_DISCLAIMER_ILLUSTRATION" file="unscaled_resources/magic_boost_disclaimer_image.json" compress="gzip" />
       <!-- Shortcut Nudge -->

@@ -5,6 +5,7 @@
 #ifndef ASH_SYSTEM_MAHI_MAHI_CONSTANTS_H_
 #define ASH_SYSTEM_MAHI_MAHI_CONSTANTS_H_
 
+#include "base/time/time.h"
 #include "ui/gfx/geometry/insets.h"
 #include "ui/gfx/geometry/size.h"
 #include "ui/views/highlight_border.h"
@@ -72,6 +73,11 @@ inline constexpr int kPanelCornerRadius = 16;
 inline constexpr int kFakeMahiManagerLoadAnswerDelaySeconds = 3;
 inline constexpr int kFakeMahiManagerLoadSummaryDelaySeconds = 4;
 inline constexpr int kFakeMahiManagerLoadOutlinesDelaySeconds = 6;
+
+// Nudge constants
+inline constexpr char kMahiNudgeId[] = "mahi.nudge";
+inline constexpr base::TimeDelta kNudgeTimeBetweenShown = base::Hours(24);
+inline constexpr int kNudgeMaxShownCount = 3;
 
 // Metrics
 // Contains the types of button existed in Mahi Panel widget. Note: this should

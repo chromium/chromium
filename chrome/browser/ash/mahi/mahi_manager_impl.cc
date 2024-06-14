@@ -13,6 +13,7 @@
 
 #include "ash/constants/ash_pref_names.h"
 #include "ash/shell.h"
+#include "ash/system/mahi/mahi_nudge_controller.h"
 #include "ash/system/mahi/mahi_ui_controller.h"
 #include "ash/webui/settings/public/constants/routes.mojom.h"
 #include "ash/webui/settings/public/constants/setting.mojom.h"
@@ -108,7 +109,8 @@ std::unique_ptr<manta::MahiProvider> CreateProvider() {
 namespace ash {
 
 MahiManagerImpl::MahiManagerImpl()
-    : cache_manager_(std::make_unique<MahiCacheManager>()) {
+    : cache_manager_(std::make_unique<MahiCacheManager>()),
+      mahi_nudge_controller_(std::make_unique<MahiNudgeController>()) {
   session_observation_.Observe(Shell::Get()->session_controller());
   PrefService* last_active_user_pref_service =
       Shell::Get()->session_controller()->GetLastActiveUserPrefService();
@@ -434,6 +436,11 @@ std::optional<base::UnguessableToken> MahiManagerImpl::GetMediaAppPDFClientId()
 void MahiManagerImpl::NotifyRefreshAvailability(bool available) {
   if (ui_controller_.IsMahiPanelOpen()) {
     ui_controller_.NotifyRefreshAvailabilityChanged(available);
+  }
+
+  // Attempt showing an educational nudge when users visit eligible content.
+  if (available) {
+    mahi_nudge_controller_->MaybeShowNudge();
   }
 }
 

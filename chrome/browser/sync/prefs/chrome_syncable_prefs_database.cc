@@ -350,6 +350,7 @@ enum {
   kDesktopToiOSAddressPromoLastImpressionTimestamp = 100291,
   kDesktopToiOSAddressPromoImpressionsCounter = 100292,
   kDesktopToiOSAddressPromoOptOut = 100293,
+  kMahiNudgeShownCount = 100294,
   // See components/sync_preferences/README.md about adding new entries here.
   // vvvvv IMPORTANT! vvvvv
   // Note to the reviewer: IT IS YOUR RESPONSIBILITY to ensure that new syncable
@@ -1177,6 +1178,10 @@ constexpr auto kChromeSyncablePrefsAllowlist = base::MakeFixedFlatMap<
      {syncable_prefs_ids::kShelfMallAppPinRolls, syncer::OS_PREFERENCES,
       sync_preferences::PrefSensitivity::kNone,
       sync_preferences::MergeBehavior::kMergeableListWithRewriteOnUpdate}},
+    {ash::prefs::kMahiNudgeShownCount,
+     {syncable_prefs_ids::kMahiNudgeShownCount, syncer::OS_PREFERENCES,
+      sync_preferences::PrefSensitivity::kNone,
+      sync_preferences::MergeBehavior::kNone}},
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
     {performance_manager::user_tuning::prefs::kTabDiscardingExceptions,
      {syncable_prefs_ids::kTabDiscardingExceptions, syncer::PREFERENCES,
