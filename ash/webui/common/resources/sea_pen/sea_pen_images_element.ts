@@ -15,6 +15,7 @@ import 'chrome://resources/ash/common/sea_pen/surface_effects/sparkle_placeholde
 import 'chrome://resources/ash/common/cr_elements/cr_auto_img/cr_auto_img.js';
 import 'chrome://resources/ash/common/cr_elements/cr_icon_button/cr_icon_button.js';
 import 'chrome://resources/ash/common/cr_elements/icons.html.js';
+import './sea_pen_error_element.js';
 import './sea_pen_feedback_element.js';
 import './sea_pen_image_loading_element.js';
 import './sea_pen_zero_state_svg_element.js';
@@ -172,30 +173,6 @@ export class SeaPenImagesElement extends WithSeaPenStore {
   private computeShowError_(
       statusCode: MantaStatusCode|null, thumbnailsLoading: boolean): boolean {
     return !!statusCode && !thumbnailsLoading;
-  }
-
-  private getErrorMessage_(statusCode: MantaStatusCode|null): string {
-    switch (statusCode) {
-      case MantaStatusCode.kNoInternetConnection:
-        return this.i18n('seaPenErrorNoInternet');
-      case MantaStatusCode.kPerUserQuotaExceeded:
-      case MantaStatusCode.kResourceExhausted:
-        return this.i18n('seaPenErrorResourceExhausted');
-      default:
-        return this.i18n('seaPenErrorGeneric');
-    }
-  }
-
-  private getErrorIllo_(statusCode: MantaStatusCode|null): string {
-    switch (statusCode) {
-      case MantaStatusCode.kNoInternetConnection:
-        return 'personalization-shared-illo:network_error';
-      case MantaStatusCode.kPerUserQuotaExceeded:
-      case MantaStatusCode.kResourceExhausted:
-        return 'personalization-shared-illo:resource_error';
-      default:
-        return 'personalization-shared-illo:generic_error';
-    }
   }
 
   private getPoweredByGoogleMessage_(): string {

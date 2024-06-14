@@ -5,7 +5,7 @@
 import 'chrome://personalization/strings.m.js';
 import 'chrome://webui-test/chromeos/mojo_webui_test_support.js';
 
-import {SeaPenImageLoadingElement, SeaPenImagesElement, SeaPenRouterElement, SeaPenZeroStateSvgElement, setSeaPenThumbnailsAction, setSelectedRecentSeaPenImageAction, setTransitionsEnabled, SparklePlaceholderElement, WallpaperGridItemElement} from 'chrome://personalization/js/personalization_app.js';
+import {SeaPenErrorElement, SeaPenImageLoadingElement, SeaPenImagesElement, SeaPenRouterElement, SeaPenZeroStateSvgElement, setSeaPenThumbnailsAction, setSelectedRecentSeaPenImageAction, setTransitionsEnabled, SparklePlaceholderElement, WallpaperGridItemElement} from 'chrome://personalization/js/personalization_app.js';
 import {CrIconButtonElement} from 'chrome://resources/ash/common/cr_elements/cr_icon_button/cr_icon_button.js';
 import {PromiseResolver} from 'chrome://resources/ash/common/promise_resolver.js';
 import {MantaStatusCode, SeaPenThumbnail} from 'chrome://resources/ash/common/sea_pen/sea_pen.mojom-webui.js';
@@ -239,85 +239,7 @@ suite('SeaPenImagesElementTest', function() {
     assertTrue(feedbackButtons.length > 0);
   });
 
-  test('display no network error state', async () => {
-    personalizationStore.data.wallpaper.seaPen.thumbnailResponseStatusCode =
-        MantaStatusCode.kNoInternetConnection;
 
-    seaPenImagesElement = initElement(SeaPenImagesElement);
-    await waitAfterNextRender(seaPenImagesElement);
-
-    const errorMessage = seaPenImagesElement.shadowRoot!.querySelector(
-                             '.error-message') as HTMLElement;
-    assertTrue(!!errorMessage);
-    assertEquals(
-        seaPenImagesElement.i18n('seaPenErrorNoInternet'),
-        errorMessage!.innerText);
-    const imageHeading = seaPenImagesElement.shadowRoot!.querySelector(
-                             '.wallpaper-collections-heading') as HTMLElement;
-    assertFalse(
-        !!imageHeading,
-        'image heading should not be displayed when an error is present');
-  });
-
-  test('display resource exhausted error state', async () => {
-    personalizationStore.data.wallpaper.seaPen.thumbnailResponseStatusCode =
-        MantaStatusCode.kResourceExhausted;
-
-    seaPenImagesElement = initElement(SeaPenImagesElement);
-    await waitAfterNextRender(seaPenImagesElement);
-
-    const errorMessage = seaPenImagesElement.shadowRoot!.querySelector(
-                             '.error-message') as HTMLElement;
-    assertTrue(!!errorMessage, 'an error message should be displayed');
-    assertEquals(
-        seaPenImagesElement.i18n('seaPenErrorResourceExhausted'),
-        errorMessage!.innerText);
-    const imageHeading = seaPenImagesElement.shadowRoot!.querySelector(
-                             '.wallpaper-collections-heading') as HTMLElement;
-    assertFalse(
-        !!imageHeading,
-        'image heading should not be displayed when an error is present');
-  });
-
-  test('display user quota exceeded error state', async () => {
-    personalizationStore.data.wallpaper.seaPen.thumbnailResponseStatusCode =
-        MantaStatusCode.kPerUserQuotaExceeded;
-
-    seaPenImagesElement = initElement(SeaPenImagesElement);
-    await waitAfterNextRender(seaPenImagesElement);
-
-    const errorMessage = seaPenImagesElement.shadowRoot!.querySelector(
-                             '.error-message') as HTMLElement;
-    assertTrue(!!errorMessage, 'an error message should be displayed');
-    assertEquals(
-        seaPenImagesElement.i18n('seaPenErrorResourceExhausted'),
-        errorMessage!.innerText);
-    const imageHeading = seaPenImagesElement.shadowRoot!.querySelector(
-                             '.wallpaper-collections-heading') as HTMLElement;
-    assertFalse(
-        !!imageHeading,
-        'image heading should not be displayed when an error is present');
-  });
-
-  test('display generic error state', async () => {
-    personalizationStore.data.wallpaper.seaPen.thumbnailResponseStatusCode =
-        MantaStatusCode.kGenericError;
-
-    seaPenImagesElement = initElement(SeaPenImagesElement);
-    await waitAfterNextRender(seaPenImagesElement);
-
-    const errorMessage = seaPenImagesElement.shadowRoot!.querySelector(
-                             '.error-message') as HTMLElement;
-    assertTrue(!!errorMessage, 'an error message should be displayed');
-    assertEquals(
-        seaPenImagesElement.i18n('seaPenErrorGeneric'),
-        errorMessage!.innerText);
-    const imageHeading = seaPenImagesElement.shadowRoot!.querySelector(
-                             '.wallpaper-collections-heading') as HTMLElement;
-    assertFalse(
-        !!imageHeading,
-        'image heading should not be displayed when an error is present');
-  });
 
   test('hide error state on success', async () => {
     personalizationStore.data.wallpaper.seaPen.thumbnailResponseStatusCode =
@@ -326,9 +248,9 @@ suite('SeaPenImagesElementTest', function() {
     seaPenImagesElement = initElement(SeaPenImagesElement);
     await waitAfterNextRender(seaPenImagesElement);
 
-    const errorMessage =
-        seaPenImagesElement.shadowRoot!.querySelector('.error-message');
-    assertFalse(!!errorMessage, 'error messages should be hidden on success');
+    const errorState =
+        seaPenImagesElement.shadowRoot!.querySelector(SeaPenErrorElement.is);
+    assertFalse(!!errorState, 'error state should be hidden on success');
   });
 
   test('hide error state while loading', async () => {
@@ -339,10 +261,9 @@ suite('SeaPenImagesElementTest', function() {
     seaPenImagesElement = initElement(SeaPenImagesElement);
     await waitAfterNextRender(seaPenImagesElement);
 
-    const errorMessage =
-        seaPenImagesElement.shadowRoot!.querySelector('.error-message');
-    assertFalse(
-        !!errorMessage, 'error messages should be hidden while loading');
+    const errorState =
+        seaPenImagesElement.shadowRoot!.querySelector(SeaPenErrorElement.is);
+    assertFalse(!!errorState, 'error state should be hidden while loading');
   });
 
   test('switching templates while loading resets loading state', async () => {

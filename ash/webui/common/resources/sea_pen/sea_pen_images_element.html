@@ -105,40 +105,6 @@
     right: 0;
   }
 
-  .error-container,
-  .zero-state-container {
-    align-items: center;
-    display: flex;
-    flex-flow: column nowrap;
-    height: 100%;
-    justify-content: center;
-    text-align: center;
-    width: 100%;
-  }
-
-  iron-icon[icon^='personalization-shared-illo:'] {
-    --iron-icon-width: 400px;
-    --iron-icon-height: 177px;
-    top: -24px;
-  }
-
-  .error-message,
-  .zero-state-message {
-    color: var(--cros-sys-on_surface);
-    font: var(--cros-title-1-font);
-    margin: 0 12px 0 12px;
-    max-width: 420px;
-    position: relative;
-    top: -25px;
-    white-space: pre-line;
-  }
-
-  .error-message {
-    max-width: 316px;
-    top: -9px;
-  }
-
-
   wallpaper-grid-item[data-sea-pen-image],
   div.loading-placeholder {
     position: absolute;
@@ -174,15 +140,6 @@
     }
   }
 
-  wallpaper-grid-item[data-sea-pen-image],
-  .error-container {
-    animation-direction: normal;
-    animation-duration: 900ms;
-    animation-iteration-count: 1;
-    animation-name: fade-in;
-    animation-timing-function: ease-in-out;
-  }
-
   .sea-pen-image[aria-selected='true']::part(ironIcon) {
     --iron-icon-height: 24px;
     --iron-icon-width: 24px;
@@ -191,17 +148,13 @@
   }
 </style>
 <template is="dom-if" if="[[showError_]]" restamp>
-  <div class="error-container">
-    <!-- TODO(b/319171051): Add other error images when available. -->
-    <iron-icon icon$="[[getErrorIllo_(thumbnailResponseStatusCode_)]]"></iron-icon>
-    <p id="error" class="error-message" aria-live="polite">[[getErrorMessage_(thumbnailResponseStatusCode_)]]</p>
-  </div>
+  <sea-pen-error thumbnail-response-status-code="[[thumbnailResponseStatusCode_]]"></sea-pen-error>
 </template>
 <template is="dom-if" if="[[!showError_]]" restamp>
   <template is="dom-if" if="[[shouldShowZeroState_(thumbnailsLoading_, thumbnails_)]]">
-    <div class="zero-state-container" aria-live="polite">
+    <div class="illustration-container" aria-live="polite">
       <sea-pen-zero-state-svg></sea-pen-zero-state-svg>
-      <p class="zero-state-message">[[i18n('seaPenZeroStateMessage')]]</p>
+      <p class="zero-state-message illustration-message">[[i18n('seaPenZeroStateMessage')]]</p>
     </div>
   </template>
   <template is="dom-if" if="[[shouldShowImageThumbnails_(thumbnailsLoading_, thumbnails_)]]" restamp>

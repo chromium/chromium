@@ -4,6 +4,7 @@
 
 import 'chrome://resources/ash/common/personalization/wallpaper_grid_item_element.js';
 import 'chrome://resources/ash/common/personalization/wallpaper.css.js';
+import 'chrome://resources/ash/common/sea_pen/sea_pen_error_element.js';
 import 'chrome://resources/ash/common/sea_pen/sea_pen_images_element.js';
 import 'chrome://resources/ash/common/sea_pen/sea_pen_input_query_element.js';
 import 'chrome://resources/ash/common/sea_pen/sea_pen_recent_wallpapers_element.js';
