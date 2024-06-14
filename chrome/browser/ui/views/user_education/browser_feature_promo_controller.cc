@@ -75,6 +75,12 @@ ui::ElementContext BrowserFeaturePromoController::GetAnchorContext() const {
 
 bool BrowserFeaturePromoController::CanShowPromoForElement(
     ui::TrackedElement* anchor_element) const {
+  // Trying to show an IPH while the browser is closing can cause problems;
+  // see crbug.com/346461762 for an example.
+  if (browser_view_->browser()->IsBrowserClosing()) {
+    return false;
+  }
+
   auto* const profile = browser_view_->GetProfile();
 
   // Turn off IPH while a required privacy interstitial is visible or pending.
