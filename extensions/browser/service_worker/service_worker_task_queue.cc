@@ -645,6 +645,10 @@ void ServiceWorkerTaskQueue::DidRegisterServiceWorker(
     RegistrationReason reason,
     base::Time start_time,
     blink::ServiceWorkerStatusCode status_code) {
+  const bool success = status_code == blink::ServiceWorkerStatusCode::kOk;
+  base::UmaHistogramBoolean(
+      "Extensions.ServiceWorkerBackground.WorkerRegistrationState", success);
+
   ExtensionRegistry* registry = ExtensionRegistry::Get(browser_context_);
   const ExtensionId& extension_id = context_id.extension_id;
   DCHECK(registry);
@@ -659,9 +663,6 @@ void ServiceWorkerTaskQueue::DidRegisterServiceWorker(
 
   WorkerState* worker_state = GetWorkerState(context_id);
   DCHECK(worker_state);
-  const bool success = status_code == blink::ServiceWorkerStatusCode::kOk;
-  base::UmaHistogramBoolean(
-      "Extensions.ServiceWorkerBackground.WorkerRegistrationState", success);
 
   if (reason == RegistrationReason::RE_REGISTER_ON_STATE_MISMATCH) {
     UMA_HISTOGRAM_BOOLEAN(

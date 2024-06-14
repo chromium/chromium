@@ -4676,18 +4676,6 @@ of interesting buckets, such as "internal + external".
   </summary>
 </histogram>
 
-<histogram name="Extensions.ServiceWorkerBackground.RegistrationStatus"
-    enum="Boolean" expires_after="2024-10-01">
-  <owner>jlulejian@chromium.org</owner>
-  <owner>extensions-core@chromium.org</owner>
-  <summary>
-    Tracks whether background service worker registration succeeded or not.
-
-    Note: this histogram expired between 2023-06 and 2024-04, it will be missing
-    data between those dates.
-  </summary>
-</histogram>
-
 <histogram name="Extensions.ServiceWorkerBackground.RegistrationTime"
     units="ms" expires_after="2022-10-01">
   <owner>lazyboy@chromium.org</owner>
@@ -4808,6 +4796,16 @@ of interesting buckets, such as "internal + external".
     The count of active workers registered in the extension ProcessManager for a
     given service worker-based extension. Reported immediately after a worker
     for the extension is removed from the active set.
+  </summary>
+</histogram>
+
+<histogram name="Extensions.ServiceWorkerBackground.WorkerRegistrationState"
+    enum="Boolean" expires_after="2024-10-01">
+  <owner>jlulejian@chromium.org</owner>
+  <owner>extensions-core@chromium.org</owner>
+  <summary>
+    Tracks whether background service worker registration succeeded or not. It
+    is emitted whenever an extension is enabled (including updates).
   </summary>
 </histogram>
 
