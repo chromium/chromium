@@ -116,6 +116,7 @@
 #include "components/open_from_clipboard/clipboard_recent_content.h"
 #include "components/password_manager/core/browser/features/password_features.h"
 #include "components/password_manager/core/browser/features/password_manager_features_util.h"
+#include "components/password_manager/core/browser/password_manager_metrics_util.h"
 #include "components/password_manager/core/browser/password_store/password_store_interface.h"
 #include "components/password_manager/core/browser/password_store/smart_bubble_stats_store.h"
 #include "components/payments/content/payment_manifest_web_data_service.h"
@@ -971,6 +972,12 @@ void ChromeBrowsingDataRemoverDelegate::RemoveEmbedderData(
     browsing_data::RemoveFederatedSiteSettingsData(delete_begin_, delete_end_,
                                                    website_settings_filter,
                                                    host_content_settings_map_);
+
+    // Record that a password removal action happened for the profile store.
+    AddPasswordRemovalReason(
+        profile_->GetPrefs(), password_manager::IsAccountStore(false),
+        password_manager::metrics_util::PasswordManagerCredentialRemovalReason::
+            kClearBrowsingData);
   }
 
   if (remove_mask & constants::DATA_TYPE_ACCOUNT_PASSWORDS) {
@@ -995,6 +1002,12 @@ void ChromeBrowsingDataRemoverDelegate::RemoveEmbedderData(
           CreateTaskCompletionClosure(TracingDataType::kAccountPasswords),
           std::move(sync_completion));
     }
+
+    // Record that a password removal action happened for the account store.
+    AddPasswordRemovalReason(
+        profile_->GetPrefs(), password_manager::IsAccountStore(true),
+        password_manager::metrics_util::PasswordManagerCredentialRemovalReason::
+            kClearBrowsingData);
   }
 
   CHECK(deferred_disable_passwords_auto_signin_cb_.is_null(),
