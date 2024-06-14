@@ -47,6 +47,7 @@
 #include "chrome/browser/web_applications/commands/web_app_icon_diagnostic_command.h"
 #include "chrome/browser/web_applications/commands/web_app_uninstall_command.h"
 #include "chrome/browser/web_applications/isolated_web_apps/check_isolated_web_app_bundle_installability_command.h"
+#include "chrome/browser/web_applications/isolated_web_apps/cleanup_orphaned_isolated_web_apps_command.h"
 #include "chrome/browser/web_applications/isolated_web_apps/get_controlled_frame_partition_command.h"
 #include "chrome/browser/web_applications/isolated_web_apps/get_isolated_web_app_browsing_data_command.h"
 #include "chrome/browser/web_applications/isolated_web_apps/install_isolated_web_app_command.h"
@@ -270,6 +271,15 @@ void WebAppCommandScheduler::InstallIsolatedWebApp(
               url_info, provider_->web_contents_manager().CreateDataRetriever(),
               IsolatedWebAppInstallCommandHelper::
                   CreateDefaultResponseReaderFactory(*profile_))),
+      call_location);
+}
+
+void WebAppCommandScheduler::CleanupOrphanedIsolatedApps(
+    CleanupOrphanedIsolatedWebAppsCallback callback,
+    const base::Location& call_location) {
+  provider_->command_manager().ScheduleCommand(
+      std::make_unique<CleanupOrphanedIsolatedWebAppsCommand>(
+          *profile_, std::move(callback)),
       call_location);
 }
 

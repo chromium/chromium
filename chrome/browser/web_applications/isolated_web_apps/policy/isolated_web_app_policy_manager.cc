@@ -20,6 +20,7 @@
 #include "base/files/scoped_temp_file.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
+#include "base/functional/callback_helpers.h"
 #include "base/functional/overloaded.h"
 #include "base/i18n/time_formatting.h"
 #include "base/lazy_instance.h"
@@ -488,6 +489,9 @@ void IsolatedWebAppPolicyManager::Start(base::OnceClosure on_started_callback) {
       prefs::kIsolatedWebAppInstallForceList,
       base::BindRepeating(&IsolatedWebAppPolicyManager::ProcessPolicy,
                           weak_ptr_factory_.GetWeakPtr()));
+
+  // TODO(b/344920405): Delay this call in case the startup procedure is broken.
+  CleanupOrphanedBundles();
   ProcessPolicy();
   if (!on_started_callback_.is_null()) {
     std::move(on_started_callback_).Run();
@@ -793,6 +797,7 @@ void IsolatedWebAppPolicyManager::OnAllInstallTasksCompleted(
 
   if (any_task_failed) {
     install_retry_backoff_entry_.InformOfRequest(/*succeeded=*/false);
+    CleanupOrphanedBundles();
   } else {
     install_retry_backoff_entry_.Reset();
     return;
@@ -832,6 +837,12 @@ void IsolatedWebAppPolicyManager::OnPolicyProcessed() {
   }
   // TODO (peletskyi): Check policy compliance here as in theory
   // more race conditions are possible.
+}
+
+void IsolatedWebAppPolicyManager::CleanupOrphanedBundles() {
+  provider_->scheduler().CleanupOrphanedIsolatedApps(
+      // TODO(b/345249996): Report metrics.
+      base::DoNothing());
 }
 
 IsolatedWebAppPolicyManager::ProcessLogs::ProcessLogs() = default;
