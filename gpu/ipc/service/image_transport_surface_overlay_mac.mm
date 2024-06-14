@@ -46,7 +46,7 @@ BASE_FEATURE(kAVFoundationOverlays,
 // Use CVDisplayLink timing for PresentationFeedback timestamps.
 BASE_FEATURE(kNewPresentationFeedbackTimeStamps,
              "NewPresentationFeedbackTimeStamps",
-             base::FEATURE_DISABLED_BY_DEFAULT);
+             base::FEATURE_ENABLED_BY_DEFAULT);
 #endif  // BUILDFLAG(IS_MAC)
 }  // namespace
 
