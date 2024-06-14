@@ -345,22 +345,28 @@ IN_PROC_BROWSER_TEST_F(HeadlessBrowserTest, DefaultSizes) {
   HeadlessBrowser::Options::Builder builder;
   const HeadlessBrowser::Options kDefaultOptions = builder.Build();
 
+  const int expected_width = kDefaultOptions.window_size.width();
+  const int expected_height = kDefaultOptions.window_size.height();
+
+  // The screen size on macOS appears to be set to the actual desktop size, not
+  // the headless default window size as it is on other platforms. See
+  // https://crbug.com/347324963
 #if !BUILDFLAG(IS_MAC)
-  // On Mac headless does not override the screen dimensions, so they are
-  // left with the actual screen values.
-  EXPECT_THAT(
-      EvaluateScript(web_contents, "screen.width"),
-      DictHasValue("result.result.value", kDefaultOptions.window_size.width()));
+  EXPECT_THAT(EvaluateScript(web_contents, "screen.width"),
+              DictHasValue("result.result.value", expected_width));
   EXPECT_THAT(EvaluateScript(web_contents, "screen.height"),
-              DictHasValue("result.result.value",
-                           kDefaultOptions.window_size.height()));
-#endif  // !BUILDFLAG(IS_MAC)
-  EXPECT_THAT(
-      EvaluateScript(web_contents, "window.innerWidth"),
-      DictHasValue("result.result.value", kDefaultOptions.window_size.width()));
+              DictHasValue("result.result.value", expected_height));
+#endif
+
+  EXPECT_THAT(EvaluateScript(web_contents, "window.outerWidth"),
+              DictHasValue("result.result.value", expected_width));
+  EXPECT_THAT(EvaluateScript(web_contents, "window.outerHeight"),
+              DictHasValue("result.result.value", expected_height));
+
+  EXPECT_THAT(EvaluateScript(web_contents, "window.innerWidth"),
+              DictHasValue("result.result.value", expected_width));
   EXPECT_THAT(EvaluateScript(web_contents, "window.innerHeight"),
-              DictHasValue("result.result.value",
-                           kDefaultOptions.window_size.height()));
+              DictHasValue("result.result.value", expected_height));
 }
 
 // TODO(skyostil): This test currently relies on being able to run a shell
