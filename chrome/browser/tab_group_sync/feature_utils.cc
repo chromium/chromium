@@ -33,27 +33,13 @@ bool IsTabGroupSyncEnabled(PrefService* pref_service) {
     return false;
   }
 
-  // Enabled the feature if both of the following condition is true:
-  // 1. If kTabGroupSyncAndroid is enabled, or kSyncableTabGroups is on.
-  // 2. And kTabGroupSyncForceOff is disabled.
-  // kTabGroupSyncForceOff will turn off the feature on the current device, so
-  // tab groups will not be synced.
-  if (base::FeatureList::IsEnabled(tab_groups::kTabGroupSyncForceOff)) {
-    return false;
-  }
+  // Clear the legacy synced boolean pref to its default value (false) that
+  // enables syncing across devices even when the feature isn't enabled on the
+  // current device but is enabled on one of the remote devices. We will
+  // deprecate this after a milestone.
+  pref_service->ClearPref(tab_groups::prefs::kSyncableTabGroups);
 
-  if (base::FeatureList::IsEnabled(tab_groups::kTabGroupSyncAndroid)) {
-    // The user is in an experiment group that enables the feature, push
-    // kSyncableTabGroups preference to other devices so that the feature can
-    // work on those devices too for the same user..
-    pref_service->SetBoolean(tab_groups::prefs::kSyncableTabGroups, true);
-    return true;
-  }
-
-  // If kSyncableTabGroups is true, the feature is enabled for the user on
-  // another device through experiments. Enable the feature on the current
-  // device too.
-  return pref_service->GetBoolean(tab_groups::prefs::kSyncableTabGroups);
+  return base::FeatureList::IsEnabled(tab_groups::kTabGroupSyncAndroid);
 #else
   return false;
 #endif  // BUILDFLAG(IS_ANDROID)
