@@ -127,6 +127,7 @@ class LocalFilesMigrationManagerFactory : public ProfileKeyedServiceFactory {
   ~LocalFilesMigrationManagerFactory() override;
 
   // BrowserContextKeyedServiceFactory overrides:
+  bool ServiceIsNULLWhileTesting() const override;
   std::unique_ptr<KeyedService> BuildServiceInstanceForBrowserContext(
       content::BrowserContext* context) const override;
 };

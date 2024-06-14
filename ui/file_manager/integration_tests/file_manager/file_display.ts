@@ -1111,6 +1111,8 @@ export async function fileDisplayFileSystemDisabled() {
   await sendTestMessage({name: 'setLocalFilesEnabled', enabled: false});
   // Disable drive.
   await sendTestMessage({name: 'setDriveEnabled', enabled: false});
+  // Skip SkyVault migration to immediately remove My Files.
+  await sendTestMessage({name: 'skipSkyVaultMigration'});
 
   // Open Files app without specifying the initial directory/root.
   const appId = await remoteCall.openNewWindow(null, null);

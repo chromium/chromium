@@ -36,6 +36,7 @@
 #include "chrome/browser/ash/file_manager/snapshot_manager.h"
 #include "chrome/browser/ash/file_manager/volume_manager_factory.h"
 #include "chrome/browser/ash/file_manager/volume_manager_observer.h"
+#include "chrome/browser/ash/policy/skyvault/local_files_migration_manager.h"
 #include "chrome/browser/ash/policy/skyvault/policy_utils.h"
 #include "chrome/browser/ash/profiles/profile_helper.h"
 #include "chrome/browser/media_galleries/fileapi/mtp_device_map_service.h"
@@ -271,6 +272,10 @@ bool IsArcEnabled(Profile* profile) {
          arc::IsArcAllowedForProfile(profile);
 }
 
+bool IsSkyVaultV2Enabled() {
+  return base::FeatureList::IsEnabled(features::kSkyVaultV2);
+}
+
 }  // namespace
 
 int VolumeManager::counter_ = 0;
@@ -326,6 +331,15 @@ void VolumeManager::Initialize() {
     OnLocalUserFilesEnabled();
   } else {
     OnLocalUserFilesDisabled();
+  }
+  // For GA, also subscribe to SkyVault LocalFilesMigrationManager.
+  if (IsSkyVaultV2Enabled()) {
+    if (policy::local_user_files::
+            LocalFilesMigrationManager* migration_manager =
+                policy::local_user_files::LocalFilesMigrationManagerFactory::
+                    GetForBrowserContext(profile_)) {
+      migration_manager->AddObserver(this);
+    }
   }
 
   // Subscribe to DriveIntegrationService.
@@ -410,6 +424,16 @@ void VolumeManager::Shutdown() {
 
   UnsubscribeFromArcEvents();
   ui::ClipboardMonitor::GetInstance()->RemoveObserver(this);
+
+  // If GA, unsubscribe from SkyVault LocalFilesMigrationManager.
+  if (IsSkyVaultV2Enabled()) {
+    if (policy::local_user_files::
+            LocalFilesMigrationManager* migration_manager =
+                policy::local_user_files::LocalFilesMigrationManagerFactory::
+                    GetForBrowserContext(profile_)) {
+      migration_manager->RemoveObserver(this);
+    }
+  }
 }
 
 void VolumeManager::AddObserver(VolumeManagerObserver* observer) {
@@ -1385,6 +1409,10 @@ void VolumeManager::RemoveSmbFsVolume(const base::FilePath& mount_point) {
   DoUnmountEvent(*Volume::CreateForSmb(mount_point, ""));
 }
 
+void VolumeManager::OnMigrationSucceededForTesting() {
+  OnMigrationSucceeded();
+}
+
 void VolumeManager::OnDiskMountManagerRefreshed(bool success) {
   if (!success) {
     LOG(ERROR) << "Cannot refresh disk mount manager";
@@ -1721,12 +1749,22 @@ void VolumeManager::OnLocalUserFilesDisabled() {
   CHECK(!policy::local_user_files::LocalUserFilesAllowed());
   UnsubscribeAndUnmountArc();
   UnmountDownloadsVolume();
-  if (base::FeatureList::IsEnabled(features::kSkyVaultV2) &&
-      read_only_local_folders_) {
+  if (IsSkyVaultV2Enabled() && read_only_local_folders_) {
     // Keep the volume in GA version. It will be removed after migration.
     // TODO(aidazolic): Do not mount if the local files migration succeeded.
-    MountDownloadsVolume(true);
+    MountDownloadsVolume(/*read_only=*/true);
   }
+}
+
+void VolumeManager::OnMigrationSucceeded() {
+  if (policy::local_user_files::LocalUserFilesAllowed()) {
+    LOG(ERROR)
+        << "OnMigrationSucceeded() called but local files allowed, ignoring.";
+    return;
+  }
+
+  read_only_local_folders_ = false;
+  OnLocalUserFilesDisabled();
 }
 
 }  // namespace file_manager

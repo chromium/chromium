@@ -3492,6 +3492,12 @@ void FileManagerBrowserTestBase::OnCommand(const std::string& name,
     return;
   }
 
+  if (name == "skipSkyVaultMigration") {
+    file_manager::VolumeManager* volume_manager = VolumeManager::Get(profile());
+    volume_manager->OnMigrationSucceededForTesting();
+    return;
+  }
+
   if (name == "setDefaultLocation") {
     const std::string* defaultLocation = value.FindString("defaultLocation");
     ASSERT_TRUE(defaultLocation &&

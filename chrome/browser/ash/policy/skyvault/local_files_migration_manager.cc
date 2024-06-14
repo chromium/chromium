@@ -184,6 +184,10 @@ LocalFilesMigrationManagerFactory::LocalFilesMigrationManagerFactory()
 LocalFilesMigrationManagerFactory::~LocalFilesMigrationManagerFactory() =
     default;
 
+bool LocalFilesMigrationManagerFactory::ServiceIsNULLWhileTesting() const {
+  return true;
+}
+
 std::unique_ptr<KeyedService>
 LocalFilesMigrationManagerFactory::BuildServiceInstanceForBrowserContext(
     content::BrowserContext* context) const {
