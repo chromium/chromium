@@ -110,7 +110,7 @@ GURL GetWebstoreReportAbuseUrl(const extensions::ExtensionId& extension_id,
 
 GURL GetNewWebstoreItemRecommendationsUrl(
     const extensions::ExtensionId& extension_id) {
-  return GURL(base::StringPrintf("%s/detail/%s/related-recommendations",
+  return GURL(base::StringPrintf("%sdetail/%s/related-recommendations",
                                  GetNewWebstoreLaunchURL().spec().c_str(),
                                  extension_id.c_str()));
 }
