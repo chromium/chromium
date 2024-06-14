@@ -478,11 +478,14 @@ bool IsMagicBoostEnabled() {
 #endif
 }
 
+// Sparkly depends on Mahi, so we turn on Mahi if the sparky flag is enabled.
+// Sparky doesn't work on LACROS so that case is ignored.
 bool IsMahiEnabled() {
 #if BUILDFLAG(IS_CHROMEOS_LACROS)
   return chromeos::BrowserParamsProxy::Get()->IsMahiEnabled();
 #else
-  return base::FeatureList::IsEnabled(kMahi);
+  return base::FeatureList::IsEnabled(kMahi) ||
+         base::FeatureList::IsEnabled(kSparky);
 #endif
 }
 

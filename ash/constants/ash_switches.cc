@@ -57,6 +57,11 @@ constexpr char kModifierSplitHashKey[] =
 // Whether checking the mahi secret key is ignored.
 bool g_ignore_modifier_split_secret_key = false;
 
+// The hash value for the secret key of the sparky feature.
+constexpr char kSparkyHashKey[] =
+    "\x3b\xcc\x52\x86\xf0\x4d\xfd\xd2\xcf\xd7\x05\xe0\xcc\x97\x95\xfd\x8a\x78"
+    "\x44\x77";
+
 }  // namespace
 
 // Please keep the order of these switches synchronized with the header file
@@ -895,6 +900,9 @@ const char kDisableDisallowLacros[] = "disable-disallow-lacros";
 // Supply secret key for the mahi feature.
 const char kMahiFeatureKey[] = "mahi-feature-key";
 
+// Supply secret key for the sparky feature.
+const char kSparkyFeatureKey[] = "sparky-feature-key";
+
 // Specifies the user that the browser data migration should happen for.
 const char kBrowserDataMigrationForUser[] = "browser-data-migration-for-user";
 
@@ -1447,6 +1455,22 @@ bool IsMahiSecretKeyMatched() {
 
 base::AutoReset<bool> SetIgnoreMahiSecretKeyForTest() {
   return {&g_ignore_mahi_secret_key, true};
+}
+
+bool IsSparkySecretKeyMatched() {
+  // Commandline looks like:
+  //  out/Default/chrome --user-data-dir=/tmp/tmp123
+  //  --sparky-feature-key="INSERT KEY HERE" --enable-features=Sparky
+  const std::string provided_key_hash = base::SHA1HashString(
+      base::CommandLine::ForCurrentProcess()->GetSwitchValueASCII(
+          kSparkyFeatureKey));
+
+  bool sparky_key_matched = (provided_key_hash == kSparkyHashKey);
+  if (!sparky_key_matched) {
+    LOG(ERROR) << "Provided secret key does not match with the expected one.";
+  }
+
+  return sparky_key_matched;
 }
 
 bool IsModifierSplitSecretKeyMatched() {

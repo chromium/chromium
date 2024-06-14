@@ -156,8 +156,7 @@ void UserSessionInitializer::OnUserProfileLoaded(const AccountId& account_id) {
     InitializePrimaryProfileServices(profile, user);
 
     FamilyUserMetricsServiceFactory::GetForBrowserContext(profile);
-    if (chromeos::features::IsMahiEnabled() &&
-        chromeos::features::IsSparkyEnabled()) {
+    if (chromeos::features::IsSparkyEnabled()) {
       ash::SparkyManagerServiceFactory::GetForProfile(profile);
     }
   }

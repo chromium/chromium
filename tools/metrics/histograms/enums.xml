@@ -19317,6 +19317,7 @@ from previous Chrome versions.
       label="DesktopPWAsFlashAppNameInsteadOfOrigin:disabled"/>
   <int value="-496879081" label="disable-ip-privacy-proxy"/>
   <int value="-496551818" label="ReadAloudPlayback:enabled"/>
+  <int value="-496351912" label="sparky-feature-key:enabled"/>
   <int value="-496119023" label="WebXR:enabled"/>
   <int value="-495991146" label="CustomizeChromeSidePanel:disabled"/>
   <int value="-495585885" label="enable-spdy-proxy-dev-auth-origin"/>
@@ -24612,6 +24613,7 @@ from previous Chrome versions.
   <int value="1790111294" label="CustomizeChromeColorExtraction:enabled"/>
   <int value="1790384966" label="StylusRichGestures:enabled"/>
   <int value="1790721876" label="ArcSwitchToKeyMintOnTOverride:enabled"/>
+  <int value="1791693211" label="sparky-feature-key:disabled"/>
   <int value="1792609232" label="NTPShortcuts:enabled"/>
   <int value="1793023585"
       label="ClickToCallContextMenuForSelectedText:disabled"/>

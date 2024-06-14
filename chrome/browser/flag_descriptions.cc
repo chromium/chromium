@@ -7399,6 +7399,10 @@ const char kContinuousOverviewScrollAnimationDescription[] =
 const char kSparkyName[] = "Sparky feature";
 const char kSparkyDescription[] = "Enable Sparky feature on ChromeOS.";
 
+const char kSparkyFeatureKeyName[] = "Feature key for Sparky feature";
+const char kSparkyFeatureKeyDescription[] =
+    "Feature key to use the Sparky feature on ChromeOS.";
+
 const char kSpectreVariant2MitigationName[] = "Spectre variant 2 mitigation";
 const char kSpectreVariant2MitigationDescription[] =
     "Controls whether Spectre variant 2 mitigation is enabled when "

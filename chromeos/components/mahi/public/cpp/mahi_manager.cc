@@ -57,7 +57,9 @@ bool MahiManager::IsSupportedWithCorrectFeatureKey() {
     return true;
   }
 
-  return ash::switches::IsMahiSecretKeyMatched();
+  // TODO(b/345644229): Remove this when sparky is deprecated.
+  return ash::switches::IsMahiSecretKeyMatched() ||
+         ash::switches::IsSparkySecretKeyMatched();
 #else
   return chromeos::BrowserParamsProxy::Get()
       ->IsMahiSupportedWithCorrectFeatureKey();
