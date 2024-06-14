@@ -15,7 +15,6 @@
 #include "base/files/file_path.h"
 #include "base/functional/callback_forward.h"
 #include "base/memory/raw_ptr.h"
-#include "base/memory/raw_ptr_exclusion.h"
 #include "base/test/bind.h"
 #include "base/test/gmock_move_support.h"
 #include "base/test/metrics/histogram_tester.h"
@@ -320,18 +319,10 @@ class CustomizeChromePageHandlerTest : public testing::Test {
   std::unique_ptr<TestingProfile> profile_;
   testing::NiceMock<MockNtpCustomBackgroundService>
       mock_ntp_custom_background_service_;
-  // This field is not a raw_ptr<> because it was filtered by the rewriter for:
-  // #addr-of
-  RAW_PTR_EXCLUSION NtpCustomBackgroundServiceObserver*
-      ntp_custom_background_service_observer_;
   raw_ptr<MockNtpBackgroundService> mock_ntp_background_service_;
   content::TestWebContentsFactory web_contents_factory_;
   raw_ptr<content::WebContents> web_contents_;
   testing::NiceMock<MockPage> mock_page_;
-  // This field is not a raw_ptr<> because it was filtered by the rewriter for:
-  // #addr-of
-  RAW_PTR_EXCLUSION NtpBackgroundServiceObserver*
-      ntp_background_service_observer_;
   raw_ptr<MockThemeService> mock_theme_service_;
   base::test::ScopedFeatureList scoped_feature_list_;
   std::unique_ptr<Browser> browser_;
@@ -339,6 +330,9 @@ class CustomizeChromePageHandlerTest : public testing::Test {
   base::HistogramTester histogram_tester_;
   base::UserActionTester user_action_tester_;
   std::unique_ptr<CustomizeChromePageHandler> handler_;
+  raw_ptr<NtpCustomBackgroundServiceObserver>
+    ntp_custom_background_service_observer_;
+  raw_ptr<NtpBackgroundServiceObserver> ntp_background_service_observer_;
 };
 
 TEST_F(CustomizeChromePageHandlerTest, SetMostVisitedSettings) {
