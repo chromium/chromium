@@ -3915,13 +3915,6 @@ public class StripLayoutHelper implements StripLayoutTabDelegate, StripLayoutGro
                         ? calculateTabGroupThreshold(mStripTabs.length - 1, true, true)
                         : 0f);
 
-        // As the tab being dragged into the group from the tab group's end immediately swaps
-        // positions with the second-to-last tab, we need to manually clear the tab's trailing
-        // margin.
-        if (mStripTabs.length > 1) {
-            mStripTabs[mStripTabs.length - 2].setTrailingMargin(0.f);
-        }
-
         // 2. Adjust the scroll offset accordingly to prevent the interacting tab from shifting away
         // from where the user long-pressed.
         if (autoScroll && !mAnimationsDisabledForTesting) {
@@ -4495,11 +4488,14 @@ public class StripLayoutHelper implements StripLayoutTabDelegate, StripLayoutGro
             } else {
                 // Update strip start and end margins to create more space for first tab or last tab
                 // to drag out of group.
-                // TODO(crbug.com/339705781) Clear last tab trailing margin when removing the group.
                 if ((curIndex == 0 || curIndex >= mStripTabs.length - 2)
                         && mTabGroupModelFilter.isTabInTabGroup(
                                 getTabById(mInteractingTab.getId()))) {
                     computeAndUpdateStartAndEndMargins(false, null);
+                }
+                // Manually reset last tab's trailing margin after the tab group is removed.
+                if (mStripTabs.length > 1) {
+                    mStripTabs[mStripTabs.length - 2].setTrailingMargin(0f);
                 }
             }
 
