@@ -574,6 +574,7 @@ void AudioDetailedView::OnInputStyleTransferTogglePressed() {
   const bool new_state = !audio_handler->GetStyleTransferState();
   audio_handler->SetStyleTransferState(new_state);
   style_transfer_button_->SetIsOn(new_state);
+  style_transfer_view_->RequestFocus();
 }
 
 void AudioDetailedView::OnSettingsButtonClicked() {

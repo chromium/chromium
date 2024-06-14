@@ -229,9 +229,10 @@ class UnifiedAudioDetailedViewControllerTest : public AshTestBase {
   }
 
   // Toggles the style transfer button.
-  void ToggleStyleTransfer() {
-    GetAudioDetailedView()->HandleViewClicked(
-        GetAudioDetailedView()->style_transfer_view_);
+  void ToggleStyleTransfer(AudioDetailedView* audio_detailed_view = nullptr) {
+    AudioDetailedView* view =
+        audio_detailed_view ? audio_detailed_view : GetAudioDetailedView();
+    view->HandleViewClicked(view->style_transfer_view_);
   }
 
  protected:
@@ -730,6 +731,33 @@ TEST_F(UnifiedAudioDetailedViewControllerTest,
   // The style transfer button updates the pref correctly.
   EXPECT_FALSE(style_transfer_button()->GetIsOn());
   EXPECT_FALSE(audio_pref_handler_->GetStyleTransferState());
+}
+
+TEST_F(UnifiedAudioDetailedViewControllerTest,
+       StyleTransferViewHasFocusWhenPressed) {
+  fake_cras_audio_client()->SetAudioNodesAndNotifyObserversForTesting(
+      GenerateAudioNodeList({kInternalMicStyleTransfer}));
+  fake_cras_audio_client()->SetStyleTransferSupported(true);
+  cras_audio_handler_->RequestStyleTransferSupported(base::DoNothing());
+
+  auto internal_mic = AudioDevice(GenerateAudioNode(kInternalMicStyleTransfer));
+  cras_audio_handler_->SwitchToDevice(internal_mic, true,
+                                      DeviceActivateType::kActivateByUser);
+
+  // A widget is required to make `HasFocus` take effect.
+  std::unique_ptr<views::Widget> widget = CreateFramelessTestWidget();
+  std::unique_ptr<views::View> audio_detailed_view =
+      audio_detailed_view_controller_->CreateView();
+  widget->SetContentsView(audio_detailed_view.get());
+
+  ASSERT_EQ(1u, style_transfer_toggles_map_.size());
+  EXPECT_FALSE(style_transfer_toggles_map_.begin()->second->HasFocus());
+
+  ToggleStyleTransfer(
+      static_cast<AudioDetailedView*>(audio_detailed_view.get()));
+
+  ASSERT_EQ(1u, style_transfer_toggles_map_.size());
+  EXPECT_TRUE(style_transfer_toggles_map_.begin()->second->HasFocus());
 }
 
 TEST_F(UnifiedAudioDetailedViewControllerTest, ToggleLiveCaption) {
