@@ -26,7 +26,7 @@ void CapToMaxSize(base::circular_deque<T>& deque) {
   if (deque.size() <= kMaxDequeSize) {
     return;
   }
-  int to_be_erased = kMaxDequeSize - deque.size();
+  int to_be_erased = deque.size() - kMaxDequeSize;
   deque.erase(deque.begin(), deque.begin() + to_be_erased);
 }
 
