@@ -17,7 +17,7 @@ import {OutputCustomEvent} from '../output/output_types.js';
 
 import {EditableLine} from './editable_line.js';
 
-const AutomationIntent = chrome.automation.AutomationIntent;
+type AutomationIntent = chrome.automation.AutomationIntent;
 const IntentCommandType = chrome.automation.IntentCommandType;
 const IntentTextBoundaryType = chrome.automation.IntentTextBoundaryType;
 const RoleType = chrome.automation.RoleType;
@@ -26,12 +26,11 @@ const RoleType = chrome.automation.RoleType;
 export class IntentHandler {
   /**
    * Called when intents are received from an AutomationEvent.
-   * @param {!Array<AutomationIntent>} intents
-   * @param {!EditableLine} cur The current line.
-   * @param {EditableLine} prev The previous line.
-   * @return {boolean} Whether intents are handled.
+   * @return Whether intents are handled.
    */
-  static onIntents(intents, cur, prev) {
+  static onIntents(
+      intents: AutomationIntent[], cur: EditableLine, prev?: EditableLine)
+      : boolean {
     if (intents.length === 0) {
       return false;
     }
@@ -48,12 +47,11 @@ export class IntentHandler {
 
   /**
    * Called when an intent is received.
-   * @param {!AutomationIntent} intent
-   * @param {!EditableLine} cur The current line.
-   * @param {EditableLine} prev The previous line.
-   * @return {boolean} Whether the intent was handled.
+   * @return Whether the intent was handled.
    */
-  static onIntent(intent, cur, prev) {
+  static onIntent(
+      intent: AutomationIntent, cur: EditableLine, prev?: EditableLine)
+      : boolean {
     switch (intent.command) {
       case IntentCommandType.MOVE_SELECTION:
         return IntentHandler.onMoveSelection(intent, cur, prev);
@@ -76,20 +74,19 @@ export class IntentHandler {
 
   /**
    * Called when the text selection moves.
-   * @param {!AutomationIntent} intent A move selection
-   *     intent.
-   * @param {!EditableLine} cur The current line.
-   * @param {EditableLine} prev The previous line.
-   * @return {boolean} Whether the intent was handled.
+   * @return Whether the intent was handled.
    */
-  static onMoveSelection(intent, cur, prev) {
+  static onMoveSelection(
+      intent: AutomationIntent, cur: EditableLine, prev?: EditableLine)
+      : boolean {
     switch (intent.textBoundary) {
       case IntentTextBoundaryType.CHARACTER:
         return IntentHandler.onCharacterMoveSelection_(intent, cur, prev);
       case IntentTextBoundaryType.LINE_END:
       case IntentTextBoundaryType.LINE_START:
       case IntentTextBoundaryType.LINE_START_OR_END:
-        cur.speakLine(prev);
+        // TODO(b/314203187): Not null asserted, check that this is correct.
+        cur.speakLine(prev!);
         return true;
       case IntentTextBoundaryType.PARAGRAPH_START:
         return IntentHandler.onParagraphStartMoveSelection_(intent, cur, prev);
@@ -120,17 +117,14 @@ export class IntentHandler {
 
   /**
    * Called when the text selection moves with a boundary type of CHARACTER.
-   * @param {!AutomationIntent} intent A move selection
-   *     intent.
-   * @param {!EditableLine} cur The current line.
-   * @param {EditableLine} prev The previous line.
-   * @return {boolean} Whether the intent was handled.
-   * @private
+   * @return Whether the intent was handled.
    */
-  static onCharacterMoveSelection_(intent, cur, prev) {
+  private static onCharacterMoveSelection_(
+      _intent: AutomationIntent, cur: EditableLine, prev?: EditableLine)
+      : boolean {
     // Read character to the right of the cursor by building a character
     // range.
-    let prevRange = null;
+    let prevRange = undefined;
     if (prev) {
       prevRange = prev.createCharRange();
     }
@@ -155,7 +149,8 @@ export class IntentHandler {
         const ancestors = enteredAncestors.concat(exitedAncestors);
         while ((ancestor = ancestors.pop()) &&
                !AutomationPredicate.rootOrEditableRoot(ancestor)) {
-          const roleInfo = OutputRoleInfo[ancestor.role];
+          // TODO(b/314203187): Not null asserted, check that this is correct.
+          const roleInfo = OutputRoleInfo[ancestor.role!];
           if (roleInfo && roleInfo['inherits'] === 'abstractSpan') {
             // Let the caller handle this case.
             return false;
@@ -182,17 +177,15 @@ export class IntentHandler {
   /**
    * Called when the text selection moves with a boundary type of
    * PARAGRAPH_START.
-   * @param {!AutomationIntent} intent A move selection
-   *     intent.
-   * @param {!EditableLine} cur The current line.
-   * @param {EditableLine} prev The previous line.
-   * @return {boolean} Whether the intent was handled.
-   * @private
+   * @return Whether the intent was handled.
    */
-  static onParagraphStartMoveSelection_(intent, cur, prev) {
+  private static onParagraphStartMoveSelection_(
+      _intent: AutomationIntent, cur: EditableLine, _prev?: EditableLine)
+      : boolean {
     let node = cur.startContainer;
 
-    if (node.role === RoleType.LINE_BREAK) {
+    // TODO(b/314203187): Not null asserted, check that this is correct.
+    if (node!.role === RoleType.LINE_BREAK) {
       return false;
     }
 
@@ -206,7 +199,7 @@ export class IntentHandler {
 
     new Output()
         .withRichSpeech(
-            CursorRange.fromNode(node), null, OutputCustomEvent.NAVIGATE)
+            CursorRange.fromNode(node), undefined, OutputCustomEvent.NAVIGATE)
         .go();
     return true;
   }
@@ -214,15 +207,12 @@ export class IntentHandler {
   /**
    * Called when the text selection moves with a boundary type of WORD_START or
    * WORD_END.
-   * @param {!AutomationIntent} intent A move selection
-   *     intent.
-   * @param {!EditableLine} cur The current line.
-   * @param {EditableLine} prev The previous line.
-   * @return {boolean} Whether the intent was handled.
-   * @private
+   * @return Whether the intent was handled.
    */
-  static onWordMoveSelection_(intent, cur, prev) {
-    let prevRange = null;
+  private static onWordMoveSelection_(
+      intent: AutomationIntent, cur: EditableLine, prev?: EditableLine)
+      : boolean {
+    let prevRange = undefined;
     if (prev) {
       prevRange = prev.createWordRange(false);
     }
