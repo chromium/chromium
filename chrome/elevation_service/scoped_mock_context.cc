@@ -63,8 +63,8 @@ ScopedMockContext::ScopedMockContext() {
   // We set the call context to a mock object that implements IServerSecurity.
   // This allows for the production code that calls ::CoImpersonateClient() to
   // succeed.
-  auto hresult =
-      ::CoSwitchCallContext(mock_call_context.Get(), &original_call_context_);
+  auto hresult = ::CoSwitchCallContext(
+      mock_call_context.Get(), &original_call_context_.AsEphemeralRawAddr());
   EXPECT_HRESULT_SUCCEEDED(hresult);
   if (FAILED(hresult))
     return;
@@ -80,7 +80,7 @@ ScopedMockContext::~ScopedMockContext() {
 
   IUnknown* this_call_context = nullptr;
   EXPECT_HRESULT_SUCCEEDED(
-      ::CoSwitchCallContext(original_call_context_, &this_call_context));
+      ::CoSwitchCallContext(original_call_context_.get(), &this_call_context));
   EXPECT_EQ(this_call_context, mock_call_context_.Get())
       << "CoSwitchCallContext switched out someone else's context.";
 }
