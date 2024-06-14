@@ -70,6 +70,8 @@ class ContextualPanelTabHelper
   void PageLoaded(
       web::WebState* web_state,
       web::PageLoadCompletionStatus load_completion_status) override;
+  void WasShown(web::WebState* web_state) override;
+  void WasHidden(web::WebState* web_state) override;
 
  protected:
   // Protected to allow test overriding.

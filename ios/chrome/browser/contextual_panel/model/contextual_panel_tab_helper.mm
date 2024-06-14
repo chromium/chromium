@@ -130,6 +130,18 @@ void ContextualPanelTabHelper::PageLoaded(
   DCHECK_EQ(web_state_, web_state);
 }
 
+void ContextualPanelTabHelper::WasShown(web::WebState* web_state) {
+  if (IsContextualPanelCurrentlyOpened()) {
+    [contextual_sheet_handler_ showContextualSheetUIIfActive];
+  }
+}
+
+void ContextualPanelTabHelper::WasHidden(web::WebState* web_state) {
+  if (IsContextualPanelCurrentlyOpened()) {
+    [contextual_sheet_handler_ hideContextualSheet];
+  }
+}
+
 #pragma mark - Private
 
 void ContextualPanelTabHelper::QueryModels() {

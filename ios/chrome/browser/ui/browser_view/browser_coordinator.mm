@@ -2128,11 +2128,7 @@ enum class ToolbarKind {
       ContextualPanelTabHelper::FromWebState(activeWebState);
   contextualPanelTabHelper->OpenContextualPanel();
 
-  _contextualSheetCoordinator = [[ContextualSheetCoordinator alloc]
-      initWithBaseViewController:self.viewController
-                         browser:self.browser];
-  _contextualSheetCoordinator.presenter = self.viewController;
-  [_contextualSheetCoordinator start];
+  [self showContextualSheetUIIfActive];
 }
 
 - (void)closeContextualSheet {
@@ -2143,6 +2139,26 @@ enum class ToolbarKind {
     contextualPanelTabHelper->CloseContextualPanel();
   }
 
+  [self hideContextualSheet];
+}
+
+- (void)showContextualSheetUIIfActive {
+  web::WebState* activeWebState = self.activeWebState;
+  DCHECK(activeWebState);
+  ContextualPanelTabHelper* contextualPanelTabHelper =
+      ContextualPanelTabHelper::FromWebState(activeWebState);
+  if (!contextualPanelTabHelper->IsContextualPanelCurrentlyOpened()) {
+    return;
+  }
+
+  _contextualSheetCoordinator = [[ContextualSheetCoordinator alloc]
+      initWithBaseViewController:self.viewController
+                         browser:self.browser];
+  _contextualSheetCoordinator.presenter = self.viewController;
+  [_contextualSheetCoordinator start];
+}
+
+- (void)hideContextualSheet {
   [_contextualSheetCoordinator stop];
   _contextualSheetCoordinator = nil;
 }

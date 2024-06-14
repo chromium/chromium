@@ -8,11 +8,18 @@
 // Commands related to contextual sheet
 @protocol ContextualSheetCommands
 
-// Opens the contextual sheet.
+// Opens the contextual sheet, activating it for the current tab.
 - (void)openContextualSheet;
 
-// Closes the contextual sheet.
+// Closes the contextual sheet, deactivating it for the current tab.
 - (void)closeContextualSheet;
+
+// Shows the contextual sheet UI if it is active for the current tab.
+- (void)showContextualSheetUIIfActive;
+
+// Hides the contextual sheet but does not deactivate it for the current tab.
+// This could be used, for example, when switching tabs.
+- (void)hideContextualSheet;
 
 @end
 
