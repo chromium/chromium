@@ -822,18 +822,6 @@
             ],
             "experiments": [
                 {
-                    "name": "HATS_Survey_Finding",
-                    "params": {
-                        "prob": "0.025",
-                        "survey_cycle_length": "7",
-                        "survey_start_date_ms": "1717064595",
-                        "trigger_id": "G3Fdon7fh0jBnuKU19R0XRX1udZS"
-                    },
-                    "enable_features": [
-                        "HappinessTrackingLauncherAppsFinding"
-                    ]
-                },
-                {
                     "name": "HATS_Survey_Needing",
                     "params": {
                         "prob": "0.075",
@@ -843,6 +831,27 @@
                     },
                     "enable_features": [
                         "HappinessTrackingLauncherAppsNeeding"
+                    ]
+                }
+            ]
+        }
+    ],
+    "AppsCollectionsHATSFinding": [
+        {
+            "platforms": [
+                "chromeos"
+            ],
+            "experiments": [
+                {
+                    "name": "HATS_Survey_Finding",
+                    "params": {
+                        "prob": "0.025",
+                        "survey_cycle_length": "7",
+                        "survey_start_date_ms": "1717064595",
+                        "trigger_id": "G3Fdon7fh0jBnuKU19R0XRX1udZS"
+                    },
+                    "enable_features": [
+                        "HappinessTrackingLauncherAppsFinding"
                     ]
                 }
             ]
