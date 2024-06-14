@@ -713,8 +713,8 @@ void ServiceWorkerTaskQueue::DidUnregisterServiceWorker(
     return;
   }
 
-  // TODO(lazyboy): Handle success = false case.
   if (!success) {
+    // TODO(crbug.com/346732739): Handle this case.
     LOG(ERROR) << "Failed to unregister service worker!";
   }
 }
