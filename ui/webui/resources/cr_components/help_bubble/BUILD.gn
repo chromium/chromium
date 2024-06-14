@@ -39,6 +39,7 @@ build_webui("build") {
 
   html_to_wrapper_template = "detect"
 
+  ts_tsconfig_base = "//tools/typescript/tsconfig_base_lit.json"
   ts_out_dir = "$root_gen_dir/ui/webui/resources/tsc/cr_components/help_bubble"
   ts_composite = true
   ts_deps = [

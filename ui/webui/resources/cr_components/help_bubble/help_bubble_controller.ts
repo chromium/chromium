@@ -293,18 +293,4 @@ export class HelpBubbleController {
       this.anchor_.scrollIntoView(HELP_BUBBLE_SCROLL_ANCHOR_OPTIONS);
     }
   }
-
-  /**
-   * Gets the immediate ancestor element of `element` in the DOM, or null if
-   * none. This steps out of shadow DOMs as it finds them.
-   */
-  private static getImmediateAncestor(element: Element): Element|null {
-    if (element.parentElement) {
-      return element.parentElement;
-    }
-    if (element.parentNode instanceof ShadowRoot) {
-      return (element.parentNode as ShadowRoot).host;
-    }
-    return null;
-  }
 }
