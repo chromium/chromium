@@ -6,8 +6,8 @@
  * #type=style-lit
  * #import=chrome://resources/cr_elements/cr_icons_lit.css.js
  * #import=chrome://resources/cr_elements/cr_shared_vars.css.js
- * #import=chrome://resources/cr_elements/mwb_shared_icons.html.js
  * #import=chrome://resources/cr_elements/mwb_shared_style_lit.css.js
+ * #import=./icons.html.js
  * #import=./tab_organization_shared_style_lit.css.js
  * #scheme=relative
  * #include=mwb-shared-style-lit tab-organization-shared-style-lit cr-icons-lit

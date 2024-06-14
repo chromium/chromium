@@ -4,7 +4,6 @@
 
 import 'chrome://resources/cr_elements/cr_expand_button/cr_expand_button.js';
 import 'chrome://resources/cr_elements/cr_icon/cr_icon.js';
-import 'chrome://resources/cr_elements/mwb_shared_icons.html.js';
 import './infinite_list.js';
 import './strings.m.js';
 import './tab_search_group_item.js';

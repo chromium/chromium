@@ -12,7 +12,7 @@ export function getHtml(this: TabSearchPageElement) {
 <div id="tabSearchPage">
   <div id="searchField" @keydown="${this.onSearchKeyDown_}"
       clear-label="$i18n{clearSearch}">
-    <cr-icon id="searchIcon" icon="mwb16:search"></cr-icon>
+    <cr-icon id="searchIcon" icon="tab-search:search"></cr-icon>
     <div id="searchWrapper">
       <label id="searchLabel" for="searchInput" aria-hidden="true">
         <span>$i18n{searchTabs}</span>
