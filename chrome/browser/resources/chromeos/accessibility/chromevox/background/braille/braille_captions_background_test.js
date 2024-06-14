@@ -11,9 +11,9 @@ ChromeVoxBrailleCaptionsBackgroundTest = class extends ChromeVoxE2ETest {
   async setUpDeferred() {
     await super.setUpDeferred();
 
-    this.listener = new class extends BrailleCaptionsListener {
+    /** @implements BrailleCaptionsListener */
+    this.listener = new class {
       constructor() {
-        super();
         this.captionsChangedCount = 0;
       }
 

@@ -3,6 +3,8 @@
 // found in the LICENSE file.
 
 /**
+ * Modified for MV2.
+ *
  * @fileoverview Definitions for chrome.brailleDisplayPrivate API
  * Generated from: chrome/common/extensions/api/braille_display_private.idl
  * run `tools/json_schema_compiler/compiler.py
@@ -50,7 +52,8 @@ declare global {
         cellSize?: number;
       }
 
-      export function getDisplayState(): Promise<DisplayState>;
+      type DisplayStateCallback = (state: DisplayState) => void;
+      export function getDisplayState(callback: DisplayStateCallback): void;
 
       export function writeDots(
           cells: ArrayBuffer, columns: number, rows: number): void;

@@ -28,12 +28,10 @@ type TextToDisplay = [text: string, braille: string];
 
 /**
  * Interface that allows clients to listen for changes to the braille captions.
- * TODO(anastasi): convert this to an interface once all implementers are in
- *     TypeScript.
  */
-export abstract class BrailleCaptionsListener {
+export interface BrailleCaptionsListener {
   /** Called when the braille captions state changes. */
-  abstract onBrailleCaptionsStateChanged(): void;
+  onBrailleCaptionsStateChanged(): void;
 }
 
 export class BrailleCaptionsBackground {
@@ -200,5 +198,4 @@ const PREF_KEY = 'brailleCaptions';
  */
 const BRAILLE_UNICODE_BLOCK_START = 0x2800;
 
-TestImportManager.exportForTesting(
-    BrailleCaptionsBackground, BrailleCaptionsListener);
+TestImportManager.exportForTesting(BrailleCaptionsBackground);

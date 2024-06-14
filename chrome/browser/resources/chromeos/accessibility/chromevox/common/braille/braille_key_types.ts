@@ -40,19 +40,7 @@ enum DomKeyCode {
 }
 
 /** The set of commands sent from a braille display. */
-export enum BrailleKeyCommand {
-  PAN_LEFT = 'pan_left',
-  PAN_RIGHT = 'pan_right',
-  LINE_UP = 'line_up',
-  LINE_DOWN = 'line_down',
-  TOP = 'top',
-  BOTTOM = 'bottom',
-  ROUTING = 'routing',
-  SECONDARY_ROUTING = 'secondary_routing',
-  DOTS = 'dots',
-  CHORD = 'chord',
-  STANDARD_KEY = 'standard_key',
-}
+export import BrailleKeyCommand = chrome.brailleDisplayPrivate.KeyCommand;
 
 /**
  * Represents a key event from a braille display.
@@ -70,16 +58,7 @@ export enum BrailleKeyCommand {
  * ctrlKey Whether the control key was pressed.
  * shiftKey Whether the shift key was pressed.
  */
-export interface BrailleKeyEvent {
-  command: BrailleKeyCommand;
-  displayPosition?: number;
-  brailleDots?: number;
-  standardKeyCode?: string;
-  standardKeyChar?: string;
-  altKey?: boolean;
-  ctrlKey?: boolean;
-  shiftKey?: boolean;
-}
+export type BrailleKeyEvent = chrome.brailleDisplayPrivate.KeyEvent;
 
 export namespace BrailleKeyEvent {
   /**

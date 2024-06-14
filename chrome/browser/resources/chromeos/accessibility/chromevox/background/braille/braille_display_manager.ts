@@ -15,54 +15,45 @@ import {BrailleCaptionsBackground, BrailleCaptionsListener} from './braille_capt
 import {BrailleTranslatorManager} from './braille_translator_manager.js';
 import {ExpandingBrailleTranslator} from './expanding_braille_translator.js';
 import {PanStrategy} from './pan_strategy.js';
-import {ValueSpan} from './spans.js';
 
-export class BrailleDisplayManager extends BrailleCaptionsListener {
+interface StateWithMaxCellHeight {
+  rows: number;
+  columns: number;
+  cellWidth: number;
+  cellHeight: number;
+  maxCellHeight: number;
+}
+
+type CommandListener = (event: BrailleKeyEvent, content: NavBraille) => void;
+
+export class BrailleDisplayManager implements BrailleCaptionsListener {
+  private blinkerId_?: number;
+  private content_ = new NavBraille({});
+  private commandListener_: CommandListener = () => {};
+  /**
+   * Current display state to show in the Virtual Braille Captions display.
+   * This is different from realDisplayState_ if the braille captions feature
+   * is enabled and there is no hardware display connected.  Otherwise, it is
+   * the same object as realDisplayState_.
+   */
+  private displayState_: BrailleDisplayState =
+      {available: false, textRowCount: 0, textColumnCount: 0, cellSize: 0};
+  private expansionType_ = ExpandingBrailleTranslator.ExpansionType.SELECTION;
+  private panStrategy_ = new PanStrategy();
+  /**
+   * State reported from the chrome api, reflecting a real hardware
+   * display.
+   */
+  private realDisplayState_: BrailleDisplayState = this.displayState_;
+
+  static instance: BrailleDisplayManager;
+
   constructor() {
-    super();
-
-    /** @private {number|undefined} */
-    this.blinkerId_;
-
-    /** @private {!NavBraille} */
-    this.content_ = new NavBraille({});
-
-    /** @private {function(!BrailleKeyEvent, !NavBraille)} */
-    this.commandListener_ = function() {};
-
-    /**
-     * Current display state to show in the Virtual Braille Captions display.
-     * This is different from realDisplayState_ if the braille captions feature
-     * is enabled and there is no hardware display connected.  Otherwise, it is
-     * the same object as realDisplayState_.
-     * @private {!BrailleDisplayState}
-     */
-    this.displayState_ =
-        {available: false, textRowCount: 0, textColumnCount: 0, cellSize: 0};
-
-    /** @private {!ExpandingBrailleTranslator.ExpansionType} valueExpansion */
-    this.expansionType_ = ExpandingBrailleTranslator.ExpansionType.SELECTION;
-
-    /** @private {PanStrategy} */
-    this.panStrategy_ = new PanStrategy();
-
-    /**
-     * State reported from the chrome api, reflecting a real hardware
-     * display.
-     * @private {!BrailleDisplayState}
-     */
-    this.realDisplayState_ = this.displayState_;
-
-    this.init_();
-  }
-
-  /** @private */
-  init_() {
     BrailleTranslatorManager.instance.addChangeListener(
         () => this.translateContent_(this.content_, this.expansionType_));
 
     SettingsManager.addListenerForKey(
-        'brailleWordWrap', wrap => this.updatePanStrategy_(wrap));
+        'brailleWordWrap', (wrap: boolean) => this.updatePanStrategy_(wrap));
     SettingsManager.addListenerForKey(
         'virtualBrailleRows', () => this.onBrailleCaptionsStateChanged());
     SettingsManager.addListenerForKey(
@@ -72,13 +63,14 @@ export class BrailleDisplayManager extends BrailleCaptionsListener {
 
     BrailleCaptionsBackground.init(this);
     if (chrome.brailleDisplayPrivate !== undefined) {
-      const onDisplayStateChanged = newState =>
-          this.refreshDisplayState_(newState);
+      const onDisplayStateChanged =
+          (newState: chrome.brailleDisplayPrivate.DisplayState): void =>
+              this.refreshDisplayState_(newState);
       chrome.brailleDisplayPrivate.getDisplayState(onDisplayStateChanged);
       chrome.brailleDisplayPrivate.onDisplayStateChanged.addListener(
           onDisplayStateChanged);
       chrome.brailleDisplayPrivate.onKeyEvent.addListener(
-          event => this.onKeyEvent_(event));
+          (event: BrailleKeyEvent) => this.onKeyEvent_(event));
     } else {
       // Get the initial captions state since we won't refresh the display
       // state in an API callback in this case.
@@ -86,7 +78,7 @@ export class BrailleDisplayManager extends BrailleCaptionsListener {
     }
   }
 
-  static init() {
+  static init(): void {
     if (BrailleDisplayManager.instance) {
       throw new Error('Cannot create two BrailleDisplayManager instances');
     }
@@ -95,12 +87,13 @@ export class BrailleDisplayManager extends BrailleCaptionsListener {
 
   /**
    * Takes an image, in the form of a data url, and converts it to braille.
-   * @param {string} imageUrl The image, in the form of a data url.
-   * @param {!BrailleDisplayState} displayState
-   * @return {!Promise<!ArrayBuffer>} The image, encoded in binary form,
-   *     suitable for writing to a braille display.
+   * @param imageUrl The image, in the form of a data url.
+   * @return The image, encoded in binary form, suitable for writing to a
+   *     braille display.
    */
-  static async convertImageDataUrlToBraille(imageUrl, displayState) {
+  static async convertImageDataUrlToBraille(
+      imageUrl: string, displayState: BrailleDisplayState)
+      : Promise<ArrayBuffer> {
     // The number of dots in a braille cell.
     // All known displays have a cell width of 2.
     const cellWidth = 2;
@@ -121,12 +114,13 @@ export class BrailleDisplayManager extends BrailleCaptionsListener {
     const columns = displayState.textColumnCount;
     const imageDataUrl = imageUrl;
 
-    return new Promise(resolve => {
+    return new Promise<ArrayBuffer>((resolve: (buf: ArrayBuffer) => void) => {
       const imgElement = document.createElement('img');
       imgElement.src = imageDataUrl;
       imgElement.onload = () => {
         const canvas = document.createElement('canvas');
-        const context = canvas.getContext('2d');
+        // TODO(b/314203187): Not null asserted, check that this is correct.
+        const context = canvas.getContext('2d')!;
         canvas.width = columns * cellWidth;
         canvas.height = rows * cellHeight;
         context.drawImage(imgElement, 0, 0, canvas.width, canvas.height);
@@ -141,22 +135,19 @@ export class BrailleDisplayManager extends BrailleCaptionsListener {
   }
 
   /**
-   * @param {!Uint8ClampedArray} data Encodes pixel data p_1, ..., p_n in
-   *     groupings of RGBA. For example, for pixel 1, p_1_r, p_1_g, p_1_b,
-   *     p_1_a. 1 ... n go from left to right, top to bottom.
+   * @param data Encodes pixel data p_1, ..., p_n in groupings of RGBA. For
+   *     example, for pixel 1, p_1_r, p_1_g, p_1_b, p_1_a. 1 ... n go from left
+   *     to right, top to bottom.
    *
-   * The array looks like:
-   * [p_1_r, p_1_g, p_1_b, p_1_a, ... p_n_r, p_n_g, p_n_b, p_n_a].
-   * @param {{rows: number,
-   *          columns: number,
-   *          cellWidth: number,
-   *          cellHeight: number,
-   *          maxCellHeight: number}} state Dimensions of the braille display in
-   * cell units (number of rows, columns) and dot units (cell*).
-   * @return {!ArrayBuffer} a buffer encoding the braille dots according to that
-   *     expected by BRLTTY.
+   *     The array looks like:
+   *     [p_1_r, p_1_g, p_1_b, p_1_a, ... p_n_r, p_n_g, p_n_b, p_n_a].
+   * @param state Dimensions of the braille display in cell units (number of
+   *     rows, columns) and dot units (cell*).
+   * @return a buffer encoding the braille dots according to that expected by
+   *     BRLTTY.
    */
-  static convertImageDataToBraille(data, state) {
+  static convertImageDataToBraille(
+      data: Uint8ClampedArray, state: StateWithMaxCellHeight): ArrayBuffer {
     const {rows, columns, cellWidth, cellHeight, maxCellHeight} = state;
     const outputData = [];
 
@@ -181,15 +172,14 @@ export class BrailleDisplayManager extends BrailleCaptionsListener {
       // Show braille pin if the alpha is greater than the threshold and
       // the luminance is less than the threshold.
       const show =
-          (alpha >= BrailleDisplayManager.ALPHA_THRESHOLD_ &&
-           luminance < BrailleDisplayManager.LUMINANCE_THRESHOLD_);
+          (alpha >= ALPHA_THRESHOLD &&
+           luminance < LUMINANCE_THRESHOLD);
       outputData.push(show);
     }
 
     // Pick the mapping for the given cell height (default to 6-dot).
-    const DOT_MAP = cellHeight === 4 ?
-        BrailleDisplayManager.COORDS_TO_BRAILLE_8DOT_ :
-        BrailleDisplayManager.COORDS_TO_BRAILLE_6DOT_;
+    const DOT_MAP =
+        cellHeight === 4 ? COORDS_TO_BRAILLE_8DOT : COORDS_TO_BRAILLE_6DOT;
 
     // Convert black-and-white array to the proper encoding for Braille
     // cells.
@@ -217,29 +207,30 @@ export class BrailleDisplayManager extends BrailleCaptionsListener {
   }
 
   /**
-   * @param {!NavBraille} content Content to send to the braille display.
-   * @param {!ExpandingBrailleTranslator.ExpansionType} expansionType
-   *     If the text has a {@code ValueSpan}, this indicates how that part
-   *     of the display content is expanded when translating to braille.
-   *     (See {@code ExpandingBrailleTranslator}).
+   * @param content Content to send to the braille display.
+   * @param expansionType If the text has a {@code ValueSpan}, this indicates
+   *     how that part of the display content is expanded when translating to
+   *     braille. (See {@code ExpandingBrailleTranslator}).
    */
-  setContent(content, expansionType) {
+  setContent(
+      content: NavBraille,
+      expansionType: ExpandingBrailleTranslator.ExpansionType): void {
     this.translateContent_(content, expansionType);
   }
 
   /**
    * Takes an image, in the form of a data url, and displays it in braille
    * onto the physical braille display and the virtual braille captions display.
-   * @param {!string} imageUrl The image, in the form of a data url.
+   * @param imageUrl The image, in the form of a data url.
    */
-  setImageContent(imageUrl) {
+  setImageContent(imageUrl: string): void {
     if (!this.displayState_.available) {
       return;
     }
 
     BrailleDisplayManager
         .convertImageDataUrlToBraille(imageUrl, this.displayState_)
-        .then((brailleBuf) => {
+        .then((brailleBuf: ArrayBuffer) => {
           if (this.realDisplayState_.available) {
             chrome.brailleDisplayPrivate.writeDots(
                 brailleBuf, this.displayState_.textColumnCount,
@@ -260,32 +251,28 @@ export class BrailleDisplayManager extends BrailleCaptionsListener {
    * content is guaranteed to be identical to an object previously used as the
    * parameter to BrailleDisplayManager.setContent, or null if no content was
    * set.
-   * @param {function(!BrailleKeyEvent, !NavBraille)} func The listener.
    */
-  setCommandListener(func) {
+  setCommandListener(func: CommandListener): void {
     this.commandListener_ = func;
   }
 
-  /**
-   * @return {!BrailleDisplayState} The current display state.
-   */
-  getDisplayState() {
+  /** @return The current display state. */
+  getDisplayState(): BrailleDisplayState {
     return this.displayState_;
   }
 
   /**
-   * @param {{available: boolean, textRowCount: (number|undefined),
-   *     textColumnCount: (number|undefined)}} newState Display state reported
-   *     by the extension API. Note that the type is almost the same as
-   *     BrailleDisplayState except that the extension API allows
-   *     some fields to be undefined, while BrailleDisplayState does not.
-   * @private
+   * @param newState Display state reported by the extension API. Note that the
+   *     type is almost the same as BrailleDisplayState except that the
+   *     extension API allows some fields to be undefined, while
+   *     BrailleDisplayState does not.
    */
-  refreshDisplayState_(newState) {
+  private refreshDisplayState_(
+      newState: chrome.brailleDisplayPrivate.DisplayState): void {
     const oldColumnCount = this.displayState_.textColumnCount || 0;
     const oldRowCount = this.displayState_.textRowCount || 0;
     const oldCellSize = this.displayState_.cellSize || 0;
-    const processDisplayState = displayState => {
+    const processDisplayState = (displayState: BrailleDisplayState): void => {
       this.displayState_ = displayState;
       const newColumnCount = displayState.textColumnCount || 0;
       const newRowCount = displayState.textRowCount || 0;
@@ -308,7 +295,7 @@ export class BrailleDisplayManager extends BrailleCaptionsListener {
     if (newState.available) {
       // Update the dimensions of the virtual braille captions display to those
       // of a real physical display when one is plugged in.
-      processDisplayState(newState);
+      processDisplayState(newState as BrailleDisplayState);
       SettingsManager.set('menuBrailleCommands', true);
     } else {
       processDisplayState(BrailleCaptionsBackground.getVirtualDisplayState());
@@ -317,10 +304,10 @@ export class BrailleDisplayManager extends BrailleCaptionsListener {
   }
 
   /**
+   * BrailleCaptionsListener implementation.
    * Called when the state of braille captions changes.
-   * @override
    */
-  onBrailleCaptionsStateChanged() {
+  onBrailleCaptionsStateChanged(): void {
     // Force reevaluation of the display state based on our stored real
     // hardware display state, meaning that if a real display is connected,
     // that takes precedence over the state from the captions 'virtual' display.
@@ -330,9 +317,8 @@ export class BrailleDisplayManager extends BrailleCaptionsListener {
   /**
    * Refreshes what is shown on the physical braille display and the virtual
    * braille captions display.
-   * @private
    */
-  refresh_() {
+  private refresh_(): void {
     if (this.blinkerId_ !== undefined) {
       clearInterval(this.blinkerId_);
     }
@@ -353,11 +339,8 @@ export class BrailleDisplayManager extends BrailleCaptionsListener {
     }, BrailleDisplayManager.CURSOR_BLINK_TIME_MS);
   }
 
-  /**
-   * @param {boolean} showCursor Whether to show the cursor.
-   * @private
-   */
-  refreshInternal_(showCursor) {
+  /** @param showCursor Whether to show the cursor. */
+  private refreshInternal_(showCursor: boolean): void {
     if (!this.displayState_.available) {
       return;
     }
@@ -378,14 +361,16 @@ export class BrailleDisplayManager extends BrailleCaptionsListener {
   }
 
   /**
-   * @param {!NavBraille} newContent New display content.
-   * @param {ExpandingBrailleTranslator.ExpansionType} newExpansionType
-   *     How the value part of of the new content should be expanded
-   *     with regards to contractions.
-   * @private
+   * @param newContent New display content.
+   * @param newExpansionType How the value part of of the new content should be
+   *     expanded with regards to contractions.
    */
-  translateContent_(newContent, newExpansionType) {
-    const writeTranslatedContent = (cells, textToBraille, brailleToText) => {
+  private translateContent_(
+      newContent: NavBraille,
+      newExpansionType: ExpandingBrailleTranslator.ExpansionType): void {
+    const writeTranslatedContent = (
+        cells: ArrayBuffer, textToBraille: number[], brailleToText: number[])
+        : void => {
       this.content_ = newContent;
       this.expansionType_ = newExpansionType;
       const startIndex = this.content_.startIndex;
@@ -436,11 +421,7 @@ export class BrailleDisplayManager extends BrailleCaptionsListener {
     }
   }
 
-  /**
-   * @param {BrailleKeyEvent} event The key event.
-   * @private
-   */
-  onKeyEvent_(event) {
+  private onKeyEvent_(event: BrailleKeyEvent): void {
     switch (event.command) {
       case BrailleKeyCommand.PAN_LEFT:
         this.panLeft();
@@ -462,14 +443,12 @@ export class BrailleDisplayManager extends BrailleCaptionsListener {
    * Sends the appropriate command if the display is already at the leftmost
    * position.
    */
-  panLeft() {
+  panLeft(): void {
     if (this.panStrategy_.previous()) {
       this.refresh_();
     } else {
       this.commandListener_(
-          /** @type {!BrailleKeyEvent} */ (
-              {command: BrailleKeyCommand.PAN_LEFT}),
-          this.content_);
+          {command: BrailleKeyCommand.PAN_LEFT}, this.content_);
     }
   }
 
@@ -478,24 +457,22 @@ export class BrailleDisplayManager extends BrailleCaptionsListener {
    * refreshes the content.  Sends the appropriate command if the display is
    * already at its rightmost position.
    */
-  panRight() {
+  panRight(): void {
     if (this.panStrategy_.next()) {
       this.refresh_();
     } else {
       this.commandListener_(
-          /** @type {!BrailleKeyEvent} */ (
-              {command: BrailleKeyCommand.PAN_RIGHT}),
-          this.content_);
+          {command: BrailleKeyCommand.PAN_RIGHT}, this.content_);
     }
   }
 
   /**
    * Moves the cursor to the given braille position.
-   * @param {number|undefined} braillePosition The 0-based position relative to
-   *     the start of the currently displayed text. The position is given in
-   *     braille cells, not text cells.
+   * @param braillePosition The 0-based position relative to the start of the
+   *     currently displayed text. The position is given in braille cells, not
+   *     text cells.
    */
-  route(braillePosition) {
+  route(braillePosition?: number): void {
     if (braillePosition === undefined) {
       return;
     }
@@ -504,19 +481,17 @@ export class BrailleDisplayManager extends BrailleCaptionsListener {
         this.panStrategy_.viewPort.firstRow *
             this.panStrategy_.displaySize.columns);
     this.commandListener_(
-        /** @type {!BrailleKeyEvent} */ (
-            {command: BrailleKeyCommand.ROUTING, displayPosition}),
-        this.content_);
+        {command: BrailleKeyCommand.ROUTING, displayPosition}, this.content_);
   }
 
   /**
    * Sets a cursor within translated content.
-   * @param {ArrayBuffer} buffer Buffer to add cursor to.
-   * @param {number} startIndex The start index to place the cursor.
-   * @param {number} endIndex The end index to place the cursor (exclusive).
-   * @private
+   * @param buffer Buffer to add cursor to.
+   * @param startIndex The start index to place the cursor.
+   * @param endIndex The end index to place the cursor (exclusive).
    */
-  setCursor_(buffer, startIndex, endIndex) {
+  private setCursor_(
+      buffer: ArrayBuffer, startIndex: number, endIndex: number): void {
     if (startIndex < 0 || startIndex >= buffer.byteLength ||
         endIndex < startIndex || endIndex > buffer.byteLength) {
       this.panStrategy_.setCursor(-1, -1);
@@ -531,12 +506,11 @@ export class BrailleDisplayManager extends BrailleCaptionsListener {
   /**
    * Returns the text position corresponding to an absolute braille position,
    * that is not accounting for the current pan position.
-   * @private
-   * @param {number} braillePosition Braille position relative to the startof
+   * @param braillePosition Braille position relative to the startof
    *        the translated content.
-   * @return {number} The mapped position in code units.
+   * @return The mapped position in code units.
    */
-  brailleToTextPosition_(braillePosition) {
+  private brailleToTextPosition_(braillePosition: number): number {
     const mapping = this.panStrategy_.brailleToText;
     if (braillePosition < 0) {
       // This shouldn't happen.
@@ -552,63 +526,51 @@ export class BrailleDisplayManager extends BrailleCaptionsListener {
     }
   }
 
-  /**
-   * @param {boolean} wordWrap
-   * @private
-   */
-  updatePanStrategy_(wordWrap) {
+  private updatePanStrategy_(wordWrap: boolean): void {
     this.panStrategy_.setPanStrategy(wordWrap);
     this.refresh_();
   }
 }
+
+export namespace BrailleDisplayManager {
+  /**
+   * Time elapsed before a cursor changes state. This results in a blinking
+   * effect.
+   */
+  export const CURSOR_BLINK_TIME_MS = 1000;
+}
+
+// Local to module.
 
 /**
  * Alpha threshold for a pixel to be possibly displayed as a raised dot when
  * converting an image to braille, where 255 means only fully-opaque
  * pixels can be raised (if their luminance passes the luminance threshold),
  * and 0 means that alpha is effectively ignored and only luminance matters.
- * @const
- * @private
  */
-BrailleDisplayManager.ALPHA_THRESHOLD_ = 255;
+const ALPHA_THRESHOLD = 255;
 
 
 /**
  * Luminance threshold for a pixel to be displayed as a raised dot when
  * converting an image to braille, on a scale of 0 (black) to 255 (white).
  * A pixel whose luminance is less than the given threshold will be raised.
- * @const
- * @private
  */
-BrailleDisplayManager.LUMINANCE_THRESHOLD_ = 128;
+const LUMINANCE_THRESHOLD = 128;
 
 /**
  * Array mapping an index in a 6-dot braille cell, in column-first order,
  * to its corresponding bit mask in the standard braille cell encoding.
- * @const
- * @private
  */
-BrailleDisplayManager.COORDS_TO_BRAILLE_6DOT_ =
+const COORDS_TO_BRAILLE_6DOT =
     [0x1, 0x2, 0x4, 0x8, 0x10, 0x20];
 
 
 /**
  * Array mapping an index in an 8-dot braille cell, in column-first order,
  * to its corresponding bit mask in the standard braille cell encoding.
- * @const
- * @private
  */
-BrailleDisplayManager.COORDS_TO_BRAILLE_8DOT_ =
+const COORDS_TO_BRAILLE_8DOT =
     [0x1, 0x2, 0x4, 0x40, 0x8, 0x10, 0x20, 0x80];
-
-/**
- * Time elapsed before a cursor changes state. This results in a blinking
- * effect.
- * @const {number}
- */
-BrailleDisplayManager.CURSOR_BLINK_TIME_MS = 1000;
-
-/** @type {BrailleDisplayManager} */
-BrailleDisplayManager.instance;
 
 TestImportManager.exportForTesting(BrailleDisplayManager);
