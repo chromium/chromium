@@ -1040,12 +1040,11 @@ HRESULT CoreAudioUtil::GetPreferredAudioParameters(const std::string& device_id,
   if (!client.Get())
     return E_FAIL;
 
-  if (is_offload_stream) {
-    EnableOffloadForClient(client.Get());
-  }
+  bool attempt_audio_offload =
+      is_offload_stream && EnableOffloadForClient(client.Get());
 
   HRESULT hr = GetPreferredAudioParametersInternal(
-      client.Get(), is_output_device, params, is_offload_stream);
+      client.Get(), is_output_device, params, attempt_audio_offload);
   if (FAILED(hr) || is_output_device || !params->IsValid()) {
     return hr;
   }

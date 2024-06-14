@@ -173,6 +173,21 @@ bool WASAPIAudioOutputStream::Open() {
   DCHECK(!audio_client_.Get());
   DCHECK(!audio_render_client_.Get());
 
+  enable_audio_offload_ = params_.RequireOffload();
+  if (enable_audio_offload_ &&
+      (params_.latency_tag() != AudioLatency::Type::kPlayback ||
+       params_.IsBitstreamFormat())) {
+    // Fail fast for audio offload request on latency-senstive streams, so
+    // they can switch to non-offload mode immediately. Also we must avoid
+    // audio offload for bitstream formats. AudioRendererImpl has already
+    // guaranteed this, the check here is just for extra safety.
+    SendLogMessage(
+        "%s => (INFO: Not enrolling into audio offload for stream without "
+        "latency tag set to kPlayback, or the stream is in bitstream format.",
+        __func__);
+    return false;
+  }
+
   const bool communications_device =
       device_id_.empty() ? (device_role_ == eCommunications) : false;
 
@@ -185,7 +200,6 @@ bool WASAPIAudioOutputStream::Open() {
   }
 
   HRESULT hr = S_FALSE;
-  enable_audio_offload_ = params_.RequireOffload();
 
   if (share_mode_ == AUDCLNT_SHAREMODE_SHARED && enable_audio_offload_) {
     enable_audio_offload_ =

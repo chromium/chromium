@@ -604,6 +604,11 @@ void AudioRendererImpl::OnDeviceInfoReceived(
                                 AudioParameters::MULTIZONE);
 
   audio_parameters_.set_latency_tag(AudioLatency::Type::kPlayback);
+  if (!audio_parameters_.IsBitstreamFormat()) {
+    // Requesting audio offload if it is supported on output.
+    media::AudioParameters::HardwareCapabilities hardware_caps(0, 0, 0, true);
+    audio_parameters_.set_hardware_capabilities(hardware_caps);
+  }
 
   audio_decoder_stream_ = std::make_unique<AudioDecoderStream>(
       std::make_unique<AudioDecoderStream::StreamTraits>(
