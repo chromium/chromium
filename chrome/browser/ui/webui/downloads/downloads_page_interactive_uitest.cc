@@ -37,10 +37,7 @@ using ::testing::Eq;
 class DownloadsPageInteractiveUitest
     : public InteractiveBrowserTestT<DownloadTestBase> {
  public:
-  DownloadsPageInteractiveUitest() {
-    feature_list_.InitAndEnableFeature(
-        safe_browsing::kImprovedDownloadPageWarnings);
-  }
+  DownloadsPageInteractiveUitest() = default;
   ~DownloadsPageInteractiveUitest() override = default;
 
   void SetUp() override {
@@ -179,9 +176,6 @@ class DownloadsPageInteractiveUitest
                           {"/", DownloadTestBase::kDownloadTest1Path})));
     }));
   }
-
- private:
-  base::test::ScopedFeatureList feature_list_;
 };
 
 IN_PROC_BROWSER_TEST_F(DownloadsPageInteractiveUitest, DownloadItemsAppear) {

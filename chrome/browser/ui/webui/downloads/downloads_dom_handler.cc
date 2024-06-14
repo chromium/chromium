@@ -304,8 +304,6 @@ void DownloadsDOMHandler::SaveDangerousRequiringGesture(const std::string& id) {
 // downloads of certain danger types.
 void DownloadsDOMHandler::SaveSuspiciousRequiringGesture(
     const std::string& id) {
-  CHECK(base::FeatureList::IsEnabled(
-      safe_browsing::kImprovedDownloadPageWarnings));
   if (!GetWebUIWebContents()->HasRecentInteraction()) {
     LOG(ERROR) << "SaveSuspiciousRequiringGesture received without recent "
                   "user interaction";
@@ -343,9 +341,6 @@ void DownloadsDOMHandler::SaveSuspiciousRequiringGesture(
 }
 
 void DownloadsDOMHandler::RecordOpenBypassWarningPrompt(const std::string& id) {
-  CHECK(base::FeatureList::IsEnabled(
-      safe_browsing::kImprovedDownloadPageWarnings));
-
   CountDownloadsDOMEvents(DOWNLOADS_DOM_EVENT_OPEN_BYPASS_WARNING_PROMPT);
   download::DownloadItem* file = GetDownloadByStringId(id);
   if (!file || !file->IsDangerous() || file->IsDone()) {
@@ -360,8 +355,6 @@ void DownloadsDOMHandler::RecordOpenBypassWarningPrompt(const std::string& id) {
 
 void DownloadsDOMHandler::SaveDangerousFromPromptRequiringGesture(
     const std::string& id) {
-  CHECK(base::FeatureList::IsEnabled(
-      safe_browsing::kImprovedDownloadPageWarnings));
   if (!GetWebUIWebContents()->HasRecentInteraction()) {
     LOG(ERROR) << "SaveDangerousFromPromptRequiringGesture received without "
                   "recent user interaction";
@@ -391,9 +384,6 @@ void DownloadsDOMHandler::SaveDangerousFromPromptRequiringGesture(
 
 void DownloadsDOMHandler::RecordCancelBypassWarningPrompt(
     const std::string& id) {
-  CHECK(base::FeatureList::IsEnabled(
-      safe_browsing::kImprovedDownloadPageWarnings));
-
   CountDownloadsDOMEvents(DOWNLOADS_DOM_EVENT_CANCEL_BYPASS_WARNING_PROMPT);
   download::DownloadItem* file = GetDownloadByStringId(id);
   if (!file || !file->IsDangerous() || file->IsDone()) {
@@ -664,14 +654,9 @@ void DownloadsDOMHandler::BypassDeepScanRequiringGesture(
     }
     DownloadItemModel model(download);
     DownloadCommands commands(model.GetWeakPtr());
-    // Under ImprovedDownloadPageWarnings, the button says "Download suspicious
-    // file" which does not imply opening the file. In the old behavior, the
-    // button says "Open anyway" so we should open the file.
-    commands.ExecuteCommand(
-        base::FeatureList::IsEnabled(
-            safe_browsing::kImprovedDownloadPageWarnings)
-            ? DownloadCommands::BYPASS_DEEP_SCANNING
-            : DownloadCommands::BYPASS_DEEP_SCANNING_AND_OPEN);
+    // The button says "Download suspicious file" which does not imply opening
+    // the file.
+    commands.ExecuteCommand(DownloadCommands::BYPASS_DEEP_SCANNING);
   }
 }
 

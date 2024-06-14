@@ -318,19 +318,7 @@ TEST_F(DownloadsDOMHandlerWithFakeSafeBrowsingTest,
                   .empty());
 }
 
-class DownloadsDOMHandlerTestImprovedDownloadPageWarnings
-    : public DownloadsDOMHandlerWithFakeSafeBrowsingTest {
- public:
-  DownloadsDOMHandlerTestImprovedDownloadPageWarnings() {
-    feature_list_.InitAndEnableFeature(
-        safe_browsing::kImprovedDownloadPageWarnings);
-  }
-
- private:
-  base::test::ScopedFeatureList feature_list_;
-};
-
-TEST_F(DownloadsDOMHandlerTestImprovedDownloadPageWarnings,
+TEST_F(DownloadsDOMHandlerWithFakeSafeBrowsingTest,
        SaveSuspiciousRequiringGesture) {
   SetUpDangerousDownload();
 
@@ -358,7 +346,7 @@ TEST_F(DownloadsDOMHandlerTestImprovedDownloadPageWarnings,
                 ->serialized_download_report());
 }
 
-TEST_F(DownloadsDOMHandlerTestImprovedDownloadPageWarnings,
+TEST_F(DownloadsDOMHandlerWithFakeSafeBrowsingTest,
        SaveSuspiciousRequiringGesture_InsecureDownload) {
   SetUpInsecureDownload();
 
@@ -376,7 +364,7 @@ TEST_F(DownloadsDOMHandlerTestImprovedDownloadPageWarnings,
                   .empty());
 }
 
-TEST_F(DownloadsDOMHandlerTestImprovedDownloadPageWarnings,
+TEST_F(DownloadsDOMHandlerWithFakeSafeBrowsingTest,
        SaveSuspiciousRequiringGesture_NoRecentInteraction) {
   SetUpDangerousDownload();
 
@@ -387,7 +375,7 @@ TEST_F(DownloadsDOMHandlerTestImprovedDownloadPageWarnings,
   handler.SaveSuspiciousRequiringGesture("1");
 }
 
-TEST_F(DownloadsDOMHandlerTestImprovedDownloadPageWarnings,
+TEST_F(DownloadsDOMHandlerWithFakeSafeBrowsingTest,
        SaveDangerousFromPromptRequiringGesture) {
   SetUpDangerousDownload();
 
@@ -415,7 +403,7 @@ TEST_F(DownloadsDOMHandlerTestImprovedDownloadPageWarnings,
                 ->serialized_download_report());
 }
 
-TEST_F(DownloadsDOMHandlerTestImprovedDownloadPageWarnings,
+TEST_F(DownloadsDOMHandlerWithFakeSafeBrowsingTest,
        SaveDangerousFromPromptRequiringGesture_NoRecentInteraction) {
   SetUpDangerousDownload();
 
@@ -426,7 +414,7 @@ TEST_F(DownloadsDOMHandlerTestImprovedDownloadPageWarnings,
   handler.SaveDangerousFromPromptRequiringGesture("1");
 }
 
-TEST_F(DownloadsDOMHandlerTestImprovedDownloadPageWarnings,
+TEST_F(DownloadsDOMHandlerWithFakeSafeBrowsingTest,
        RecordCancelBypassWarningPrompt) {
   SetUpDangerousDownload();
 
@@ -445,10 +433,8 @@ TEST_F(DownloadsDOMHandlerTestImprovedDownloadPageWarnings,
 class DownloadsDOMHandlerWithFakeSafeBrowsingTestTrustSafetySentimentService
     : public DownloadsDOMHandlerWithFakeSafeBrowsingTest {
  public:
-  DownloadsDOMHandlerWithFakeSafeBrowsingTestTrustSafetySentimentService() {
-    feature_list_.InitAndEnableFeature(
-        safe_browsing::kImprovedDownloadPageWarnings);
-  }
+  DownloadsDOMHandlerWithFakeSafeBrowsingTestTrustSafetySentimentService() =
+      default;
 
   void ExpectTrustSafetySentimentServiceCall(
       DownloadItemWarningData::WarningSurface surface,
@@ -463,7 +449,6 @@ class DownloadsDOMHandlerWithFakeSafeBrowsingTestTrustSafetySentimentService
   }
 
  private:
-  base::test::ScopedFeatureList feature_list_;
   raw_ptr<MockTrustSafetySentimentService> mock_sentiment_service_;
 };
 

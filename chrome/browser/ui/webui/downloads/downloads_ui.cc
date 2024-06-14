@@ -188,8 +188,9 @@ content::WebUIDataSource* CreateAndAddDownloadsUIHTMLSource(Profile* profile) {
       base::FeatureList::IsEnabled(safe_browsing::kDownloadsPageReferrerUrl));
   // New chrome://downloads icons, colors, strings, etc. to be consistent with
   // download bubble.
-  bool improved_download_warnings_ux = base::FeatureList::IsEnabled(
-      safe_browsing::kImprovedDownloadPageWarnings);
+  // TODO(chlily): Temporarily hardcoding true in order to remove base::Feature
+  // and references. This will be cleaned up shortly.
+  bool improved_download_warnings_ux = true;
   source->AddBoolean("improvedDownloadWarningsUX",
                      improved_download_warnings_ux);
   source->AddLocalizedString("dangerFileDesc",

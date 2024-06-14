@@ -185,10 +185,6 @@ BASE_FEATURE(kHashPrefixRealTimeLookupsFasterOhttpKeyRotation,
              "SafeBrowsingHashPrefixRealTimeLookupsFasterOhttpKeyRotation",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
-BASE_FEATURE(kImprovedDownloadPageWarnings,
-             "ImprovedDownloadPageWarnings",
-             base::FEATURE_ENABLED_BY_DEFAULT);
-
 BASE_FEATURE(kDownloadsPageReferrerUrl,
              "DownloadsPageReferrerUrl",
              base::FEATURE_ENABLED_BY_DEFAULT);
@@ -404,7 +400,6 @@ constexpr struct {
     {&kExtensionTelemetryTabsExecuteScriptSignal, true},
     {&kHashPrefixRealTimeLookups, true},
     {&kHashPrefixRealTimeLookupsFasterOhttpKeyRotation, true},
-    {&kImprovedDownloadPageWarnings, true},
     {&kLogAccountEnhancedProtectionStateInProtegoPings, true},
     {&kMmapSafeBrowsingDatabase, true},
     {&kNestedArchives, true},
