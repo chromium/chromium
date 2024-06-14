@@ -146,6 +146,7 @@ public class HistorySyncRenderTest {
 
         buildHistorySyncCoordinator(orientation);
 
+        onViewWaiting(withId(R.id.button_primary));
         mRenderTestRule.render(mHistorySyncCoordinator.getView(), "history_sync");
     }
 
@@ -158,6 +159,12 @@ public class HistorySyncRenderTest {
             boolean nightModeEnabled, int orientation) throws IOException {
         mSigninTestRule.addAccountThenSignin(AccountManagerTestRule.AADC_MINOR_ACCOUNT);
         buildHistorySyncCoordinator(orientation);
+
+        if (orientation == Configuration.ORIENTATION_PORTRAIT) {
+            onViewWaiting(withId(R.id.button_primary_minor_mode));
+        } else {
+            onViewWaiting(withId(R.id.button_primary));
+        }
 
         mRenderTestRule.render(
                 mHistorySyncCoordinator.getView(), "history_sync_with_minor_mode_enabled");
@@ -181,6 +188,5 @@ public class HistorySyncRenderTest {
                             .setContentView(mHistorySyncCoordinator.getView());
                 });
         ViewUtils.waitForVisibleView(allOf(withId(R.id.history_sync_illustration), isDisplayed()));
-        onViewWaiting(withId(R.id.button_secondary));
     }
 }

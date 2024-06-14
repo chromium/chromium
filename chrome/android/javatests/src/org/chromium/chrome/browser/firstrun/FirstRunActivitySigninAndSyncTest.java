@@ -587,7 +587,7 @@ public class FirstRunActivitySigninAndSyncTest {
         completeAutoDeviceLockIfNeeded();
         waitUntilCurrentPageIs(HistorySyncFirstRunFragment.class);
 
-        clickButton(R.id.button_secondary);
+        clickButton(R.id.button_secondary_minor_mode);
 
         ApplicationTestUtils.waitForActivityState(mFirstRunActivity, Stage.DESTROYED);
 

@@ -58,12 +58,33 @@ public final class DualControlLayout extends ViewGroup {
         int APART = 2;
     }
 
-    @IntDef({ButtonType.PRIMARY_FILLED, ButtonType.PRIMARY_TEXT, ButtonType.SECONDARY})
+    @IntDef({
+        ButtonType.PRIMARY_FILLED,
+        ButtonType.PRIMARY_TEXT,
+        ButtonType.SECONDARY,
+        ButtonType.PRIMARY_OUTLINED,
+        ButtonType.SECONDARY_OUTLINED
+    })
     @Retention(RetentionPolicy.SOURCE)
     public @interface ButtonType {
+        // Buttons will have the primary button ID with a filled container.
         int PRIMARY_FILLED = 0;
+
+        //  Buttons will have the primary button ID without an outlined border or a filled container
         int PRIMARY_TEXT = 1;
-        int SECONDARY = 2;
+
+        // Buttons will have the primary button ID with an outlined border but without a filled
+        // container.
+        int PRIMARY_OUTLINED = 2;
+
+        // Buttons will have the secondary button ID without an outlined border or a filled
+        // container (same style as PRIMARY_TEXT)
+        // TODO(crbug.com/346943346) Rename ButtonType.SECONDARY to ButtonType.SECONDARY_TEXT
+        int SECONDARY = 3;
+
+        // Buttons will have the secondary button ID with an outlined border but without a filled
+        // container (same style as PRIMARY_OUTLINED)
+        int SECONDARY_OUTLINED = 4;
     }
 
     /**
@@ -80,6 +101,14 @@ public final class DualControlLayout extends ViewGroup {
         button.setId(getButtonId(buttonType));
         button.setOnClickListener(listener);
         button.setText(text);
+
+        if (buttonType == ButtonType.PRIMARY_OUTLINED
+                || buttonType == ButtonType.SECONDARY_OUTLINED) {
+            // TODO(crbug.com/346931122) By default R.style.OutlinedButton capitalizes the text
+            // labels.
+            button.setAllCaps(false);
+        }
+
         return button;
     }
 
@@ -88,9 +117,11 @@ public final class DualControlLayout extends ViewGroup {
             case ButtonType.PRIMARY_FILLED:
                 return R.style.FilledButtonThemeOverlay_Flat;
             case ButtonType.PRIMARY_TEXT:
-                return R.style.TextButtonThemeOverlay;
             case ButtonType.SECONDARY:
                 return R.style.TextButtonThemeOverlay;
+            case ButtonType.PRIMARY_OUTLINED:
+            case ButtonType.SECONDARY_OUTLINED:
+                return R.style.OutlinedButton;
             default:
                 throw new IllegalArgumentException("Unknown button type");
         }
@@ -99,10 +130,11 @@ public final class DualControlLayout extends ViewGroup {
     private static @IdRes int getButtonId(@ButtonType int buttonType) {
         switch (buttonType) {
             case ButtonType.PRIMARY_FILLED:
-                return R.id.button_primary;
             case ButtonType.PRIMARY_TEXT:
+            case ButtonType.PRIMARY_OUTLINED:
                 return R.id.button_primary;
             case ButtonType.SECONDARY:
+            case ButtonType.SECONDARY_OUTLINED:
                 return R.id.button_secondary;
             default:
                 throw new IllegalArgumentException("Unknown button type");
