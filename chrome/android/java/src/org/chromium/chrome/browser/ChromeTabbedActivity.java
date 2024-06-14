@@ -902,6 +902,11 @@ public class ChromeTabbedActivity extends ChromeActivity<ChromeActivityComponent
                 mModuleRegistrySupplier);
     }
 
+    /** Returns the supplier for the {@link HubManager} for testing. */
+    public OneshotSupplier<HubManager> getHubManagerSupplierForTesting() {
+        return mHubManagerSupplier;
+    }
+
     private void initHub() {
         if (!HubFieldTrial.isHubEnabled()) return;
 

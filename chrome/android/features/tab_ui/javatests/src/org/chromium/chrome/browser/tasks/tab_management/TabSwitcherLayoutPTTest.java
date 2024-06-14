@@ -5,9 +5,16 @@
 package org.chromium.chrome.browser.tasks.tab_management;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 
+import static org.chromium.base.GarbageCollectionTestUtils.canBeGarbageCollected;
 import static org.chromium.base.test.transit.TransitAsserts.assertFinalDestination;
+
+import android.graphics.Bitmap;
+import android.graphics.drawable.BitmapDrawable;
+import android.widget.ImageView;
 
 import androidx.test.filters.MediumTest;
 
@@ -45,9 +52,12 @@ import org.chromium.chrome.test.transit.hub.HubNewTabGroupDialogFacility;
 import org.chromium.chrome.test.util.ChromeRenderTestRule;
 import org.chromium.components.embedder_support.util.UrlConstants;
 import org.chromium.components.tab_groups.TabGroupColorId;
+import org.chromium.content_public.browser.test.util.TestThreadUtils;
 import org.chromium.net.test.EmbeddedTestServer;
+import org.chromium.ui.test.util.DisableAnimationsTestRule;
 
 import java.io.IOException;
+import java.lang.ref.WeakReference;
 import java.util.concurrent.ExecutionException;
 
 /** Tests for the {@link TabSwitcherLayout}. */
@@ -79,6 +89,7 @@ public class TabSwitcherLayoutPTTest {
     private static EmbeddedTestServer sTestServer;
 
     private PageStation mStartPage;
+    private WeakReference<Bitmap> mBitmap;
 
     @Before
     public void setUp() throws ExecutionException {
@@ -238,5 +249,148 @@ public class TabSwitcherLayoutPTTest {
 
         PageStation previousPage = tabSwitcher.leaveHubToPreviousTabViaBack();
         assertFinalDestination(previousPage);
+    }
+
+    @Test
+    @MediumTest
+    @DisableAnimationsTestRule.EnsureAnimationsOn
+    public void testTabToGridAndBack_NoReset() {
+        PageStation page = mInitialStateRule.startOnBlankPage();
+        page =
+                roundtripToHTSWithThumbnailChecks(
+                        page, () -> {}, /* canGarbageCollectBitmaps= */ false);
+        assertFinalDestination(page);
+    }
+
+    @Test
+    @MediumTest
+    @DisableAnimationsTestRule.EnsureAnimationsOn
+    public void testTabToGridAndBack_SoftCleanup() {
+        PageStation page = mInitialStateRule.startOnBlankPage();
+        ChromeTabbedActivity cta = sActivityTestRule.getActivity();
+        Runnable resetHTSStateOnUiThread =
+                () -> {
+                    var tabSwitcherPane =
+                            (TabSwitcherPaneBase)
+                                    cta.getHubManagerSupplierForTesting()
+                                            .get()
+                                            .getPaneManager()
+                                            .getFocusedPaneSupplier()
+                                            .get();
+                    tabSwitcherPane.softCleanupForTesting();
+                };
+        page =
+                roundtripToHTSWithThumbnailChecks(
+                        page, resetHTSStateOnUiThread, /* canGarbageCollectBitmaps= */ true);
+        assertFinalDestination(page);
+    }
+
+    @Test
+    @MediumTest
+    @DisableAnimationsTestRule.EnsureAnimationsOn
+    public void testTabToGridAndBack_SoftCleanup_Ntp() {
+        WebPageStation page = mInitialStateRule.startOnBlankPage();
+        NewTabPageStation ntp = page.openRegularTabAppMenu().openNewTab();
+        ChromeTabbedActivity cta = sActivityTestRule.getActivity();
+        Runnable resetHTSStateOnUiThread =
+                () -> {
+                    var tabSwitcherPane =
+                            (TabSwitcherPaneBase)
+                                    cta.getHubManagerSupplierForTesting()
+                                            .get()
+                                            .getPaneManager()
+                                            .getFocusedPaneSupplier()
+                                            .get();
+                    tabSwitcherPane.softCleanupForTesting();
+                };
+        PageStation destination =
+                roundtripToHTSWithThumbnailChecks(
+                        ntp, resetHTSStateOnUiThread, /* canGarbageCollectBitmaps= */ true);
+        assertFinalDestination(destination);
+    }
+
+    @Test
+    @MediumTest
+    @DisableAnimationsTestRule.EnsureAnimationsOn
+    public void testTabToGridAndBack_HardCleanup() {
+        PageStation page = mInitialStateRule.startOnBlankPage();
+        ChromeTabbedActivity cta = sActivityTestRule.getActivity();
+        Runnable resetHTSStateOnUiThread =
+                () -> {
+                    var tabSwitcherPane =
+                            (TabSwitcherPaneBase)
+                                    cta.getHubManagerSupplierForTesting()
+                                            .get()
+                                            .getPaneManager()
+                                            .getFocusedPaneSupplier()
+                                            .get();
+                    tabSwitcherPane.softCleanupForTesting();
+                    tabSwitcherPane.hardCleanupForTesting();
+                };
+        page =
+                roundtripToHTSWithThumbnailChecks(
+                        page, resetHTSStateOnUiThread, /* canGarbageCollectBitmaps= */ true);
+        assertFinalDestination(page);
+    }
+
+    @Test
+    @MediumTest
+    @DisableAnimationsTestRule.EnsureAnimationsOn
+    public void testTabToGridAndBack_NoCoordinator() {
+        PageStation page = mInitialStateRule.startOnBlankPage();
+        ChromeTabbedActivity cta = sActivityTestRule.getActivity();
+        Runnable resetHTSStateOnUiThread =
+                () -> {
+                    var tabSwitcherPane =
+                            (TabSwitcherPaneBase)
+                                    cta.getHubManagerSupplierForTesting()
+                                            .get()
+                                            .getPaneManager()
+                                            .getFocusedPaneSupplier()
+                                            .get();
+                    tabSwitcherPane.softCleanupForTesting();
+                    tabSwitcherPane.hardCleanupForTesting();
+                    tabSwitcherPane.destroyCoordinatorForTesting();
+                };
+        page =
+                roundtripToHTSWithThumbnailChecks(
+                        page, resetHTSStateOnUiThread, /* canGarbageCollectBitmaps= */ true);
+        assertFinalDestination(page);
+    }
+
+    private PageStation roundtripToHTSWithThumbnailChecks(
+            PageStation page, Runnable resetHTSStateOnUiThread, boolean canGarbageCollectBitmaps) {
+        HubTabSwitcherStation tabSwitcher =
+                enterHTSWithThumbnailChecking(page, HubTabSwitcherStation.class);
+
+        // TODO(crbug.com/324919909): Migrate this to a HubTabSwitcherCardFacility with a tab
+        // thumbnail as a view element.
+        TestThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    ImageView view =
+                            (ImageView)
+                                    sActivityTestRule
+                                            .getActivity()
+                                            .findViewById(R.id.tab_thumbnail);
+                    mBitmap =
+                            new WeakReference<>(((BitmapDrawable) view.getDrawable()).getBitmap());
+                    assertNotNull(mBitmap.get());
+                });
+
+        page = tabSwitcher.leaveHubToPreviousTabViaBack();
+
+        TestThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    resetHTSStateOnUiThread.run();
+                });
+
+        if (canGarbageCollectBitmaps) {
+            assertTrue(canBeGarbageCollected(mBitmap));
+        } else {
+            assertFalse(canBeGarbageCollected(mBitmap));
+        }
+
+        tabSwitcher = enterHTSWithThumbnailChecking(page, HubTabSwitcherStation.class);
+        return tabSwitcher.leaveHubToPreviousTabViaBack();
     }
 }

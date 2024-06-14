@@ -404,6 +404,8 @@ public class TabSwitcherLayoutTest {
                 "1_tab_group_GTS_card_item_color_icon");
     }
 
+    // TODO(crbug/324919909): Delete this test once Hub is launched. A variant is migrated to
+    // TabSwitcherLayoutPTTest.java.
     @Test
     @MediumTest
     @DisableFeatures(ChromeFeatureList.TAB_TO_GTS_ANIMATION)
@@ -421,6 +423,8 @@ public class TabSwitcherLayoutTest {
         testTabToGrid(mUrl);
     }
 
+    // TODO(crbug/324919909): Delete this test once Hub is launched. A variant is migrated to
+    // TabSwitcherLayoutPTTest.java.
     @Test
     @MediumTest
     @EnableFeatures(ChromeFeatureList.TAB_TO_GTS_ANIMATION + "<Study")
@@ -434,6 +438,8 @@ public class TabSwitcherLayoutTest {
         testTabToGrid(mUrl);
     }
 
+    // TODO(crbug/324919909): Delete this test once Hub is launched. A variant is migrated to
+    // TabSwitcherLayoutPTTest.java.
     @Test
     @MediumTest
     @DisableFeatures(ChromeFeatureList.TAB_TO_GTS_ANIMATION)
@@ -450,6 +456,8 @@ public class TabSwitcherLayoutTest {
         testTabToGrid(mUrl);
     }
 
+    // TODO(crbug/324919909): Delete this test once Hub is launched. A variant is migrated to
+    // TabSwitcherLayoutPTTest.java.
     @Test
     @MediumTest
     @EnableFeatures(ChromeFeatureList.TAB_TO_GTS_ANIMATION + "<Study")
@@ -462,6 +470,8 @@ public class TabSwitcherLayoutTest {
         testTabToGrid(mUrl);
     }
 
+    // TODO(crbug/324919909): Delete this test once Hub is launched. A variant is migrated to
+    // TabSwitcherLayoutPTTest.java.
     @Test
     @MediumTest
     @DisableFeatures(ChromeFeatureList.TAB_TO_GTS_ANIMATION)
@@ -473,6 +483,8 @@ public class TabSwitcherLayoutTest {
         testTabToGrid(mUrl);
     }
 
+    // TODO(crbug/324919909): Delete this test once Hub is launched. A variant is migrated to
+    // TabSwitcherLayoutPTTest.java.
     @Test
     @MediumTest
     @EnableFeatures(ChromeFeatureList.TAB_TO_GTS_ANIMATION + "<Study")
@@ -485,6 +497,8 @@ public class TabSwitcherLayoutTest {
         testTabToGrid(mUrl);
     }
 
+    // TODO(crbug/324919909): Delete this test once Hub is launched. A variant is migrated to
+    // TabSwitcherLayoutPTTest.java.
     @Test
     @MediumTest
     @EnableFeatures({ChromeFeatureList.TAB_TO_GTS_ANIMATION + "<Study"})

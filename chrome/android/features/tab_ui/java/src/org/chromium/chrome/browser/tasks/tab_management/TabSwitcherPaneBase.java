@@ -585,4 +585,16 @@ public abstract class TabSwitcherPaneBase implements Pane, TabSwitcherResetHandl
         if (coordinator == null) return;
         coordinator.openInvitationModal(invitationId);
     }
+
+    void softCleanupForTesting() {
+        mSoftCleanupRunnable.run();
+    }
+
+    void hardCleanupForTesting() {
+        mHardCleanupRunnable.run();
+    }
+
+    void destroyCoordinatorForTesting() {
+        mDestroyCoordinatorRunnable.run();
+    }
 }
