@@ -26,11 +26,15 @@
 #include "mojo/public/cpp/platform/platform_channel_endpoint.h"
 #include "third_party/ipcz/include/ipcz/ipcz.h"
 
+#define SHARED_MEMORY_SERVICE_REQUIRED()                                \
+  BUILDFLAG(IS_POSIX) && !BUILDFLAG(IS_NACL) && !BUILDFLAG(IS_APPLE) && \
+      !BUILDFLAG(IS_ANDROID)
+
 namespace mojo::core::ipcz_driver {
 
 namespace {
 
-#if BUILDFLAG(IS_POSIX) && !BUILDFLAG(IS_NACL) && !BUILDFLAG(IS_APPLE)
+#if SHARED_MEMORY_SERVICE_REQUIRED()
 
 void CreateBrokerHostOnIOThread(PlatformChannelEndpoint endpoint) {
   // Self-owned. Note that a valid remote process handle is only needed by
@@ -104,7 +108,7 @@ void WaitForClientConnection(ScopedIpczHandle portal) {
 
 Broker* g_client = nullptr;
 
-#endif  // BUILDFLAG(IS_POSIX) && !BUILDFLAG(IS_NACL) && !BUILDFLAG(IS_APPLE)
+#endif  // SHARED_MEMORY_SERVICE_REQUIRED()
 
 base::WritableSharedMemoryRegion CreateWritableSharedMemoryRegion(size_t size) {
   return BaseSharedMemoryService::CreateWritableRegion(size);
@@ -138,14 +142,14 @@ base::UnsafeSharedMemoryRegion CreateUnsafeSharedMemoryRegion(size_t size) {
 
 // static
 void BaseSharedMemoryService::CreateService(ScopedIpczHandle portal) {
-#if BUILDFLAG(IS_POSIX) && !BUILDFLAG(IS_NACL) && !BUILDFLAG(IS_APPLE)
+#if SHARED_MEMORY_SERVICE_REQUIRED()
   WaitForClientConnection(std::move(portal));
 #endif
 }
 
 // static
 void BaseSharedMemoryService::CreateClient(ScopedIpczHandle portal) {
-#if BUILDFLAG(IS_POSIX) && !BUILDFLAG(IS_NACL) && !BUILDFLAG(IS_APPLE)
+#if SHARED_MEMORY_SERVICE_REQUIRED()
   PlatformChannel channel;
 
   ScopedIpczHandle box{Transport::Box(Transport::Create(
@@ -172,7 +176,7 @@ void BaseSharedMemoryService::InstallHooks() {
 // static
 base::WritableSharedMemoryRegion BaseSharedMemoryService::CreateWritableRegion(
     size_t size) {
-#if BUILDFLAG(IS_POSIX) && !BUILDFLAG(IS_NACL) && !BUILDFLAG(IS_APPLE)
+#if SHARED_MEMORY_SERVICE_REQUIRED()
   if (!g_client) {
     return {};
   }
