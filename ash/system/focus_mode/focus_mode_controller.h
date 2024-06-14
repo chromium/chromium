@@ -97,9 +97,11 @@ class ASH_EXPORT FocusModeController
     return current_session_;
   }
   const std::string& selected_task_list_id() const {
-    return selected_task_.task_list_id;
+    return selected_task_.task_id.list_id;
   }
-  const std::string& selected_task_id() const { return selected_task_.task_id; }
+  const std::string& selected_task_id() const {
+    return selected_task_.task_id.id;
+  }
   const std::string& selected_task_title() const {
     return selected_task_.title;
   }

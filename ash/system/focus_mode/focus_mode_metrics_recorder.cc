@@ -136,7 +136,7 @@ void RecordSessionDurationHistogram(const int time_elapsed) {
 // Return true if the current selected task is the task selected in the
 // previous focus session.
 bool IsPreviouslySelectedTask(const PrefService* active_user_prefs,
-                              const std::string& current_selected_task_id) {
+                              const TaskId& current_selected_task_id) {
   const auto& selected_task_dict =
       active_user_prefs->GetDict(prefs::kFocusModeSelectedTask);
 
@@ -146,11 +146,19 @@ bool IsPreviouslySelectedTask(const PrefService* active_user_prefs,
 
   const auto* previously_selected_task_id =
       selected_task_dict.FindString(focus_mode_util::kTaskIdKey);
-  return previously_selected_task_id &&
-         (*previously_selected_task_id == current_selected_task_id);
+  const auto* previously_selected_task_list_id =
+      selected_task_dict.FindString(focus_mode_util::kTaskListIdKey);
+
+  TaskId previous_id = {
+      .list_id = previously_selected_task_list_id
+                     ? *previously_selected_task_list_id
+                     : "",
+      .id = previously_selected_task_id ? *previously_selected_task_id : ""};
+
+  return current_selected_task_id == previous_id;
 }
 
-void RecordStartedWithTaskHistogram(const std::string& selected_task_id) {
+void RecordStartedWithTaskHistogram(const TaskId& selected_task_id) {
   if (selected_task_id.empty()) {
     base::UmaHistogramEnumeration(
         /*name=*/focus_mode_histogram_names::
@@ -208,7 +216,7 @@ void FocusModeMetricsRecorder::OnQuietModeChanged(bool in_quiet_mode) {
 
 void FocusModeMetricsRecorder::RecordHistogramsOnStart(
     focus_mode_histogram_names::ToggleSource source,
-    const std::string& selected_task_id) {
+    const TaskId& selected_task_id) {
   RecordInitialDurationHistogram(
       /*session_duration=*/initial_session_duration_);
   RecordStartSessionSourceHistogram(source);

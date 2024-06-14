@@ -200,8 +200,7 @@ TEST_F(FocusModeTrayTest, MarkTaskAsCompleted) {
       ui::ScopedAnimationDurationScaleMode::NON_ZERO_DURATION);
 
   FocusModeTask task;
-  task.task_list_id = "default";
-  task.task_id = "task1";
+  task.task_id = {.list_id = "default", .id = "task1"};
   task.title = "make a travel plan";
   task.updated = base::Time::Now();
 
@@ -309,8 +308,7 @@ TEST_F(FocusModeTrayTest, BubbleTabbingAndAccessibility) {
   controller->SetInactiveSessionDuration(session_duration);
 
   FocusModeTask task;
-  task.task_list_id = "default";
-  task.task_id = "task1";
+  task.task_id = {.list_id = "default", .id = "task1"};
   task.title = task_name;
   task.updated = base::Time::Now();
 

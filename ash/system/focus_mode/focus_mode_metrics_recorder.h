@@ -7,6 +7,7 @@
 
 #include "ash/ash_export.h"
 #include "ash/system/focus_mode/focus_mode_histogram_names.h"
+#include "ash/system/focus_mode/focus_mode_tasks_provider.h"
 #include "base/time/time.h"
 #include "ui/message_center/message_center_observer.h"
 
@@ -28,7 +29,7 @@ class ASH_EXPORT FocusModeMetricsRecorder
   void OnQuietModeChanged(bool in_quiet_mode) override;
 
   void RecordHistogramsOnStart(focus_mode_histogram_names::ToggleSource source,
-                               const std::string& selected_task_id);
+                               const TaskId& selected_task_id);
 
   // Called by `FocusModeController::ResetFocusSession` to record the data on a
   // session completing.

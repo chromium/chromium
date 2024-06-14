@@ -21,6 +21,7 @@
 #include "ash/system/focus_mode/focus_mode_histogram_names.h"
 #include "ash/system/focus_mode/focus_mode_metrics_recorder.h"
 #include "ash/system/focus_mode/focus_mode_session.h"
+#include "ash/system/focus_mode/focus_mode_tasks_provider.h"
 #include "ash/system/focus_mode/focus_mode_tray.h"
 #include "ash/system/focus_mode/focus_mode_util.h"
 #include "ash/system/focus_mode/sounds/focus_mode_sounds_controller.h"
@@ -412,8 +413,8 @@ bool FocusModeController::HasSelectedTask() const {
 
 void FocusModeController::CompleteTask(bool update) {
   if (update && !selected_task_.empty() && !selected_task_.title.empty()) {
-    tasks_provider_.UpdateTask(selected_task_.task_list_id,
-                               selected_task_.task_id, selected_task_.title,
+    tasks_provider_.UpdateTask(selected_task_.task_id.list_id,
+                               selected_task_.task_id.id, selected_task_.title,
                                /*completed=*/true, base::DoNothing());
   }
   SetSelectedTask({});
@@ -572,10 +573,10 @@ void FocusModeController::UpdateSelectedTaskFromUserPrefs() {
     // TODO(b/339914681): call the API to populate the rest of the
     // `selected_task_` data. This will also verify if the task has already been
     // completed or not.
-    selected_task_.task_list_id =
-        *(selected_task_dict.FindString(focus_mode_util::kTaskListIdKey));
-    selected_task_.task_id =
-        *(selected_task_dict.FindString(focus_mode_util::kTaskIdKey));
+    selected_task_.task_id = {
+        .list_id =
+            *(selected_task_dict.FindString(focus_mode_util::kTaskListIdKey)),
+        .id = *(selected_task_dict.FindString(focus_mode_util::kTaskIdKey))};
   }
 }
 
@@ -599,9 +600,9 @@ void FocusModeController::SaveSelectedTaskSettingsToUserPrefs() {
     // `task_id`; otherwise, we will store an empty dict.
     if (HasSelectedTask()) {
       selected_task_dict.Set(focus_mode_util::kTaskListIdKey,
-                             selected_task_.task_list_id);
+                             selected_task_.task_id.list_id);
       selected_task_dict.Set(focus_mode_util::kTaskIdKey,
-                             selected_task_.task_id);
+                             selected_task_.task_id.id);
     }
     active_user_prefs->SetDict(prefs::kFocusModeSelectedTask,
                                std::move(selected_task_dict));

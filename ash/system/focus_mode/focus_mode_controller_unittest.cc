@@ -278,8 +278,7 @@ TEST_F(FocusModeControllerMultiUserTest, TasksFlow) {
   AddFakeTask(tasks_client, task_list_id, task_id, title);
 
   FocusModeTask task;
-  task.task_list_id = task_list_id;
-  task.task_id = task_id;
+  task.task_id = {.list_id = task_list_id, .id = task_id};
   task.title = title;
   task.updated = base::Time::Now();
 
@@ -465,8 +464,7 @@ TEST_F(FocusModeControllerMultiUserTest, CheckHasSelectedTaskHistogram) {
 
   // 2. Start a focus session with a selected task.
   FocusModeTask task;
-  task.task_list_id = "abc";
-  task.task_id = "1";
+  task.task_id = {.list_id = "abc", .id = "1"};
   task.title = "Focus Task";
   task.updated = base::Time::Now();
 
@@ -495,8 +493,7 @@ TEST_F(FocusModeControllerMultiUserTest, CheckTasksSelectedHistogram) {
 
   // Select a task during the session.
   FocusModeTask task;
-  task.task_list_id = "abc";
-  task.task_id = "1";
+  task.task_id = {.list_id = "abc", .id = "1"};
   task.title = "Focus Task";
   task.updated = base::Time::Now();
 
@@ -506,8 +503,7 @@ TEST_F(FocusModeControllerMultiUserTest, CheckTasksSelectedHistogram) {
   // Remove the task and select a new one.
   controller->SetSelectedTask({});
 
-  task.task_list_id = "abc";
-  task.task_id = "2";
+  task.task_id = {.list_id = "abc", .id = "2"};
   task.title = "A New Focus Task";
   task.updated = base::Time::Now();
   controller->SetSelectedTask(task);
@@ -738,13 +734,12 @@ TEST_F(FocusModeControllerMultiUserTest, CheckTasksCompletedHistogram) {
   auto& tasks_client = CreateFakeTasksClient(GetUser1AccountId());
 
   FocusModeTask task;
-  task.task_list_id = "list0";
-  task.task_id = "task0";
+  task.task_id = {.list_id = "list0", .id = "task0"};
   task.title = "Focus Task";
   task.updated = base::Time::Now();
 
-  AddFakeTaskList(tasks_client, task.task_list_id);
-  AddFakeTask(tasks_client, task.task_list_id, task.task_id, task.title);
+  AddFakeTaskList(tasks_client, task.task_id.list_id);
+  AddFakeTask(tasks_client, task.task_id.list_id, task.task_id.id, task.title);
 
   controller->SetSelectedTask(task);
   controller->CompleteTask();
@@ -755,13 +750,12 @@ TEST_F(FocusModeControllerMultiUserTest, CheckTasksCompletedHistogram) {
   controller->ToggleFocusMode();
   EXPECT_TRUE(controller->in_focus_session());
 
-  task.task_list_id = "list1";
-  task.task_id = "task1";
+  task.task_id = {.list_id = "list1", .id = "task1"};
   task.title = "A New Focus Task";
   task.updated = base::Time::Now();
 
-  AddFakeTaskList(tasks_client, task.task_list_id);
-  AddFakeTask(tasks_client, task.task_list_id, task.task_id, task.title);
+  AddFakeTaskList(tasks_client, task.task_id.list_id);
+  AddFakeTask(tasks_client, task.task_id.list_id, task.task_id.id, task.title);
 
   controller->SetSelectedTask(task);
   EXPECT_TRUE(controller->HasSelectedTask());
@@ -770,13 +764,12 @@ TEST_F(FocusModeControllerMultiUserTest, CheckTasksCompletedHistogram) {
   controller->CompleteTask();
 
   // Select a new task during this session.
-  task.task_list_id = "list2";
-  task.task_id = "task2";
+  task.task_id = {.list_id = "list2", .id = "task2"};
   task.title = "A New Focus Task";
   task.updated = base::Time::Now();
 
-  AddFakeTaskList(tasks_client, task.task_list_id);
-  AddFakeTask(tasks_client, task.task_list_id, task.task_id, task.title);
+  AddFakeTaskList(tasks_client, task.task_id.list_id);
+  AddFakeTask(tasks_client, task.task_id.list_id, task.task_id.id, task.title);
 
   controller->SetSelectedTask(task);
 
@@ -881,13 +874,12 @@ TEST_F(FocusModeControllerMultiUserTest, CheckStartedWithTaskHistogram) {
   auto& tasks_client = CreateFakeTasksClient(GetUser1AccountId());
 
   FocusModeTask task;
-  task.task_list_id = "list0";
-  task.task_id = "task0";
+  task.task_id = {.list_id = "list0", .id = "task0"};
   task.title = "Focus Task";
   task.updated = base::Time::Now();
 
-  AddFakeTaskList(tasks_client, task.task_list_id);
-  AddFakeTask(tasks_client, task.task_list_id, task.task_id, task.title);
+  AddFakeTaskList(tasks_client, task.task_id.list_id);
+  AddFakeTask(tasks_client, task.task_id.list_id, task.task_id.id, task.title);
   controller->SetSelectedTask(task);
 
   controller->ToggleFocusMode();
@@ -901,13 +893,12 @@ TEST_F(FocusModeControllerMultiUserTest, CheckStartedWithTaskHistogram) {
 
   // Mark this selected task as completed, and select a new task during this
   // session. Don't finish this selected task until the next session.
-  task.task_list_id = "list1";
-  task.task_id = "task1";
+  task.task_id = {.list_id = "list1", .id = "task1"};
   task.title = "A New Focus Task";
   task.updated = base::Time::Now();
 
-  AddFakeTaskList(tasks_client, task.task_list_id);
-  AddFakeTask(tasks_client, task.task_list_id, task.task_id, task.title);
+  AddFakeTaskList(tasks_client, task.task_id.list_id);
+  AddFakeTask(tasks_client, task.task_id.list_id, task.task_id.id, task.title);
 
   controller->SetSelectedTask(task);
   controller->ToggleFocusMode();

@@ -5,6 +5,7 @@
 #ifndef ASH_SYSTEM_FOCUS_MODE_FOCUS_MODE_TASKS_PROVIDER_H_
 #define ASH_SYSTEM_FOCUS_MODE_FOCUS_MODE_TASKS_PROVIDER_H_
 
+#include <compare>
 #include <string>
 #include <vector>
 
@@ -22,6 +23,20 @@ struct Task;
 
 class TaskFetcher;
 
+// Encapsulate information required to uniquely identify a task. Tasks are
+// expected to be referenced within a list. However, we treat tasks as a flat
+// collection so the list id needs to be retained.
+struct TaskId {
+  bool empty() const { return id.empty() || list_id.empty(); }
+
+  std::strong_ordering operator<=>(const TaskId& other) const;
+  bool operator==(const TaskId& other) const = default;
+  bool operator<(const TaskId& other) const = default;
+
+  std::string list_id;
+  std::string id;
+};
+
 // Represents a task.
 struct ASH_EXPORT FocusModeTask {
   FocusModeTask();
@@ -32,10 +47,9 @@ struct ASH_EXPORT FocusModeTask {
   FocusModeTask& operator=(FocusModeTask&&);
 
   // TODO: Replace the condition below with `FocusModeTask::IsValid()`.
-  bool empty() const { return task_list_id.empty(); }
+  bool empty() const { return task_id.empty(); }
 
-  std::string task_list_id;
-  std::string task_id;
+  TaskId task_id;
   std::string title;
 
   bool completed;
@@ -133,11 +147,11 @@ class ASH_EXPORT FocusModeTasksProvider {
 
   // Holds a set of tasks that have been created or updated during the lifetime
   // of the provider. These tasks are pushed to the front of the sort order.
-  base::flat_set<std::string> created_task_ids_;
+  base::flat_set<TaskId> created_task_ids_;
 
   // Holds a set of tasks that have been deleted during the lifetime of the
   // provider.
-  base::flat_set<std::string> deleted_task_ids_;
+  base::flat_set<TaskId> deleted_task_ids_;
 
   // Populated when the provider is requesting tasks from the API, otherwise
   // empty.

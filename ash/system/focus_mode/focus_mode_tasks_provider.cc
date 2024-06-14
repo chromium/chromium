@@ -69,10 +69,20 @@ struct TaskComparator {
   }
 
   base::Time now;
-  raw_ref<base::flat_set<std::string>> created_task_ids;
+  raw_ref<base::flat_set<TaskId>> created_task_ids;
 };
 
 }  // namespace
+
+std::strong_ordering TaskId::operator<=>(const TaskId& other) const {
+  if (list_id < other.list_id || (list_id == other.list_id && id < other.id)) {
+    return std::strong_ordering::less;
+  }
+  if (list_id > other.list_id || (list_id == other.list_id && id > other.id)) {
+    return std::strong_ordering::greater;
+  }
+  return std::strong_ordering::equivalent;
+}
 
 FocusModeTask::FocusModeTask() = default;
 FocusModeTask::~FocusModeTask() = default;
@@ -162,8 +172,7 @@ class TaskFetcher {
           continue;
         }
         FocusModeTask& task = tasks_.emplace_back();
-        task.task_list_id = list_id;
-        task.task_id = api_task->id;
+        task.task_id = {.list_id = list_id, .id = api_task->id};
         task.title = api_task->title;
         task.updated = api_task->updated;
         task.due = api_task->due;
@@ -250,9 +259,10 @@ void FocusModeTasksProvider::UpdateTask(const std::string& task_list_id,
                                         bool completed,
                                         OnTaskSavedCallback callback) {
   CHECK(!task_id.empty());
+  CHECK(!task_list_id.empty());
 
   if (completed) {
-    deleted_task_ids_.insert(task_id);
+    deleted_task_ids_.insert({.list_id = task_list_id, .id = task_id});
   }
 
   api::TasksController::Get()->tasks_delegate()->UpdateTask(
@@ -290,8 +300,7 @@ void FocusModeTasksProvider::OnTasksFetchedForTask(
     // it's completed and update the state if the task is found in `api_tasks`.
     // TODO: Can we actually verify that the task is complete instead of making
     // this assumption?
-    task.task_list_id = task_list_id;
-    task.task_id = task_id;
+    task.task_id = {.list_id = task_list_id, .id = task_id};
     task.completed = true;
 
     for (const auto& api_task : *api_tasks) {
@@ -315,17 +324,16 @@ void FocusModeTasksProvider::OnTaskSaved(const std::string& task_list_id,
   FocusModeTask task;
 
   if (api_task) {
-    created_task_ids_.insert(api_task->id);
-
-    task.task_list_id = task_list_id;
-    task.task_id = api_task->id;
+    TaskId created_id = {.list_id = task_list_id, .id = api_task->id};
+    created_task_ids_.insert(created_id);
+    task.task_id = created_id;
     task.title = api_task->title;
     task.updated = api_task->updated;
   } else {
     // If there's an error, we clear the cache.
     task_fetch_time_ = {};
     if (completed) {
-      deleted_task_ids_.erase(task_id);
+      deleted_task_ids_.erase({.list_id = task_list_id, .id = task_id});
     }
   }
 
@@ -341,9 +349,8 @@ std::vector<FocusModeTask> FocusModeTasksProvider::GetSortedTasksImpl() {
   }
 
   base::ranges::sort(
-      result,
-      TaskComparator{base::Time::Now(),
-                     raw_ref<base::flat_set<std::string>>(created_task_ids_)});
+      result, TaskComparator{base::Time::Now(), raw_ref<base::flat_set<TaskId>>(
+                                                    created_task_ids_)});
 
   return result;
 }
