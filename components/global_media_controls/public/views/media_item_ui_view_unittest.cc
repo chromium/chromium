@@ -56,8 +56,7 @@ class MediaItemUIViewTest : public views::ViewsTestBase {
     views::ViewsTestBase::SetUp();
     item_ = std::make_unique<
         NiceMock<media_message_center::test::MockMediaNotificationItem>>();
-    widget_ =
-        CreateTestWidget(views::Widget::InitParams::WIDGET_OWNS_NATIVE_WIDGET);
+    widget_ = CreateTestWidget(views::Widget::InitParams::CLIENT_OWNS_WIDGET);
 
     auto footer = std::make_unique<NiceMock<test::MockMediaItemUIFooter>>();
     footer_ = footer.get();
@@ -82,7 +81,7 @@ class MediaItemUIViewTest : public views::ViewsTestBase {
 
   void TearDown() override {
     item_ui_->RemoveObserver(observer_.get());
-    widget_.reset();
+    widget_->Close();
     ViewsTestBase::TearDown();
   }
 

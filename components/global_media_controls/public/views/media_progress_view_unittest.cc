@@ -5,7 +5,7 @@
 #include "components/global_media_controls/public/views/media_progress_view.h"
 
 #include "base/i18n/rtl.h"
-#include "base/time/time.h"
+#include "base/timer/mock_timer.h"
 #include "services/media_session/public/mojom/media_session.mojom.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -31,8 +31,7 @@ class MediaProgressViewTest : public views::ViewsTestBase {
 
   void SetUp() override {
     ViewsTestBase::SetUp();
-    widget_ =
-        CreateTestWidget(views::Widget::InitParams::WIDGET_OWNS_NATIVE_WIDGET);
+    widget_ = CreateTestWidget(views::Widget::InitParams::CLIENT_OWNS_WIDGET);
     // This test just needs to construct a progress view, without caring about
     // what specific color IDs are used, so just use an arbitrary value.
     ui::ColorId id = ui::kUiColorsStart;
@@ -50,17 +49,24 @@ class MediaProgressViewTest : public views::ViewsTestBase {
 
     widget_->SetBounds(gfx::Rect(500, 500));
     widget_->Show();
+
+    auto mock_timer = std::make_unique<base::MockOneShotTimer>();
+    timer_ = mock_timer.get();
+    view_->set_timer_for_testing(std::move(mock_timer));
+
     default_locale_ = base::i18n::GetConfiguredLocale();
   }
 
   void TearDown() override {
+    timer_ = nullptr;
     view_ = nullptr;
-    widget_.reset();
+    widget_->Close();
     base::i18n::SetICUDefaultLocale(default_locale_);
     ViewsTestBase::TearDown();
   }
 
   MediaProgressView* view() const { return view_; }
+  base::MockOneShotTimer* timer() const { return timer_; }
 
   MOCK_METHOD1(OnProgressDragStateChange, void(DragState));
   MOCK_METHOD1(OnPlaybackStateChangeForProgressDrag,
@@ -71,6 +77,7 @@ class MediaProgressViewTest : public views::ViewsTestBase {
  private:
   std::unique_ptr<views::Widget> widget_;
   raw_ptr<MediaProgressView> view_ = nullptr;
+  raw_ptr<base::MockOneShotTimer> timer_ = nullptr;
   std::string default_locale_;
 };
 
@@ -84,6 +91,7 @@ TEST_F(MediaProgressViewTest, MediaPlaying) {
   EXPECT_NEAR(view()->current_value_for_testing(), 0.5, 0.001);
   EXPECT_FALSE(view()->is_paused_for_testing());
   EXPECT_FALSE(view()->is_live_for_testing());
+  EXPECT_TRUE(timer()->IsRunning());
 }
 
 TEST_F(MediaProgressViewTest, MediaPaused) {
@@ -96,6 +104,7 @@ TEST_F(MediaProgressViewTest, MediaPaused) {
   EXPECT_NEAR(view()->current_value_for_testing(), 0.25, 0.001);
   EXPECT_TRUE(view()->is_paused_for_testing());
   EXPECT_FALSE(view()->is_live_for_testing());
+  EXPECT_FALSE(timer()->IsRunning());
 }
 
 TEST_F(MediaProgressViewTest, MouseEventSeekTo) {

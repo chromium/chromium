@@ -48,8 +48,7 @@ class MediaItemUIListViewTest : public views::ViewsTestBase,
                                        UseUpdatedUI());
 #endif
 
-    widget_ =
-        CreateTestWidget(views::Widget::InitParams::WIDGET_OWNS_NATIVE_WIDGET);
+    widget_ = CreateTestWidget(views::Widget::InitParams::CLIENT_OWNS_WIDGET);
 
     list_view_ =
         widget_->SetContentsView(std::make_unique<MediaItemUIListView>());
@@ -60,7 +59,7 @@ class MediaItemUIListViewTest : public views::ViewsTestBase,
   }
 
   void TearDown() override {
-    widget_.reset();
+    widget_->Close();
     views::ViewsTestBase::TearDown();
   }
 

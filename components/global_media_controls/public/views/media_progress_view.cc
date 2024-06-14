@@ -344,7 +344,7 @@ void MediaProgressView::UpdateProgress(
     const media_session::MediaPosition& media_position) {
   // Always stop the timer since it may have been triggered by an old media
   // position and the timer will be re-started if needed.
-  update_progress_timer_.Stop();
+  update_progress_timer_->Stop();
 
   bool is_paused = media_position.playback_rate() == 0;
   if (is_paused_ != is_paused) {
@@ -383,7 +383,7 @@ void MediaProgressView::UpdateProgress(
       OnPropertyChanged(&phase_offset_, views::kPropertyEffectsPaint);
     }
 
-    update_progress_timer_.Start(
+    update_progress_timer_->Start(
         FROM_HERE, kProgressUpdateFrequency,
         base::BindOnce(&MediaProgressView::UpdateProgress,
                        base::Unretained(this), media_position));
@@ -464,6 +464,11 @@ bool MediaProgressView::is_paused_for_testing() const {
 
 bool MediaProgressView::is_live_for_testing() const {
   return is_live_;
+}
+
+void MediaProgressView::set_timer_for_testing(
+    std::unique_ptr<base::OneShotTimer> test_timer) {
+  update_progress_timer_ = std::move(test_timer);
 }
 
 BEGIN_METADATA(MediaProgressView)

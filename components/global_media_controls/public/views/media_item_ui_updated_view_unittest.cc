@@ -45,8 +45,7 @@ class MediaItemUIUpdatedViewTest : public views::ViewsTestBase {
     views::ViewsTestBase::SetUp();
 
     item_ = std::make_unique<NiceMock<MockMediaNotificationItem>>();
-    widget_ =
-        CreateTestWidget(views::Widget::InitParams::WIDGET_OWNS_NATIVE_WIDGET);
+    widget_ = CreateTestWidget(views::Widget::InitParams::CLIENT_OWNS_WIDGET);
     auto device_selector =
         std::make_unique<NiceMock<MockMediaItemUIDeviceSelector>>();
     device_selector_ = device_selector.get();
@@ -63,7 +62,7 @@ class MediaItemUIUpdatedViewTest : public views::ViewsTestBase {
     view_->RemoveObserver(observer_.get());
     device_selector_ = nullptr;
     view_ = nullptr;
-    widget_.reset();
+    widget_->Close();
     views::ViewsTestBase::TearDown();
   }
 

@@ -95,6 +95,7 @@ class COMPONENT_EXPORT(GLOBAL_MEDIA_CONTROLS) MediaProgressView
   double current_value_for_testing() const;
   bool is_paused_for_testing() const;
   bool is_live_for_testing() const;
+  void set_timer_for_testing(std::unique_ptr<base::OneShotTimer> test_timer);
 
  private:
   // Fires an accessibility event if the progress has changed.
@@ -151,7 +152,8 @@ class COMPONENT_EXPORT(GLOBAL_MEDIA_CONTROLS) MediaProgressView
   gfx::SlideAnimation slide_animation_;
 
   // Timer to continuously update the progress value if the media is playing.
-  base::OneShotTimer update_progress_timer_;
+  std::unique_ptr<base::OneShotTimer> update_progress_timer_ =
+      std::make_unique<base::OneShotTimer>();
 
   // True if the media is paused.
   bool is_paused_ = true;
