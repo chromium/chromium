@@ -264,6 +264,16 @@ void ClientSideDetectionService::StartClientReportPhishingRequest(
     return;
   }
 
+  // Record that we made a request. Logged before the request is made
+  // to ensure it gets recorded. If this returns false due to being at ping cap
+  // or prefs are null, abandon the request.
+  if (!AddPhishingReport(base::Time::Now())) {
+    if (!callback.is_null()) {
+      std::move(callback).Run(GURL(request->url()), false, std::nullopt);
+    }
+    return;
+  }
+
   std::string request_data;
   request->SerializeToString(&request_data);
 
@@ -318,10 +328,6 @@ void ClientSideDetectionService::StartClientReportPhishingRequest(
   resource_request->url = GetClientReportUrl(kClientReportPhishingUrl);
   resource_request->method = "POST";
   resource_request->load_flags = net::LOAD_DISABLE_CACHE;
-
-  // Record that we made a request. Logged before the request is made
-  // to ensure it gets recorded.
-  AddPhishingReport(base::Time::Now());
 
   auto loader = network::SimpleURLLoader::Create(std::move(resource_request),
                                                  traffic_annotation);
@@ -456,9 +462,7 @@ int ClientSideDetectionService::GetPhishingNumReports() {
   return phishing_report_times_.size();
 }
 
-void ClientSideDetectionService::AddPhishingReport(base::Time timestamp) {
-  phishing_report_times_.push_back(timestamp);
-
+bool ClientSideDetectionService::AddPhishingReport(base::Time timestamp) {
   base::Time cutoff = base::Time::Now() - base::Days(kReportsIntervalDays);
 
   // Erase items older than cutoff because we will never care about them again.
@@ -467,11 +471,26 @@ void ClientSideDetectionService::AddPhishingReport(base::Time timestamp) {
     phishing_report_times_.pop_front();
   }
 
+  // We should not be adding a report when we are at the limit when this
+  // function calls, but in case it does, we want to track how far back the
+  // last report was prior to the current report and exit the function early.
+  // Each classification request is made on the tab level, which may not have
+  // had |phishing_report_times_| updated because the service class, that's on
+  // the profile level, was processing a different request. Therefore, we check
+  // one last time before we log the request.
+  if (AtPhishingReportLimit()) {
+    base::UmaHistogramMediumTimes("SBClientPhishing.TimeSinceLastReportAtLimit",
+                                  timestamp - phishing_report_times_.back());
+    return false;
+  }
+
   if (!delegate_ || !delegate_->GetPrefs()) {
     base::UmaHistogramBoolean("SBClientPhishing.AddPhishingReportSuccessful",
                               false);
-    return;
+    return false;
   }
+
+  phishing_report_times_.push_back(timestamp);
 
   base::Value::List time_list;
   for (const base::Time& report_time : phishing_report_times_) {
@@ -481,6 +500,8 @@ void ClientSideDetectionService::AddPhishingReport(base::Time timestamp) {
                                  std::move(time_list));
   base::UmaHistogramBoolean("SBClientPhishing.AddPhishingReportSuccessful",
                             true);
+
+  return true;
 }
 
 bool ClientSideDetectionService::LoadPhishingReportTimesFromPrefs() {

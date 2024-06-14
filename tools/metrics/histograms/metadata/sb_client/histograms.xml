@@ -880,6 +880,16 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="SBClientPhishing.TimeSinceLastReportAtLimit" units="ms"
+    expires_after="2025-06-12">
+  <owner>andysjlim@chromium.org</owner>
+  <owner>chrome-counter-abuse-alerts@google.com</owner>
+  <summary>
+    When CSD service hits the ping limit and we are adding another entry, record
+    the time since last record.
+  </summary>
+</histogram>
+
 <histogram name="SBClientPhishing.VerdictParseSuccessful" enum="BooleanSuccess"
     expires_after="2024-12-21">
   <owner>andysjlim@chromium.org</owner>

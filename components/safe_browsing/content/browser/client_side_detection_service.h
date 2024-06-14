@@ -263,9 +263,10 @@ class ClientSideDetectionService
   // Get the number of phishing reports that we have sent over kReportsInterval.
   int GetPhishingNumReports();
 
-  // Adds a phishing report to |phishing_report_times_| and stores the result in
-  // prefs.
-  void AddPhishingReport(base::Time timestamp);
+  // Returns true if we can successfully add a phishing report to
+  // |phishing_report_times_| and stores the result in prefs. Returns false if
+  // we're at the ping limit or prefs is null.
+  bool AddPhishingReport(base::Time timestamp);
 
   // Populates |phishing_report_times_| with the data stored in local prefs.
   // Return bool value represents whether the load was successful or not.
