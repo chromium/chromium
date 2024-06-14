@@ -3,7 +3,6 @@
 // found in the LICENSE file.
 
 #include "components/autofill/core/browser/autofill_manager.h"
-#include <functional>
 
 #include "base/check_deref.h"
 #include "base/command_line.h"

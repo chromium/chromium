@@ -156,7 +156,7 @@
 
 #if BUILDFLAG(ENABLE_COMPOSE)
 #include "chrome/browser/compose/chrome_compose_client.h"
-#include "components/compose/core/browser/compose_manager.h"  // nogncheck
+#include "components/compose/core/browser/compose_manager.h"
 #endif
 
 #if BUILDFLAG(BUILD_WITH_TFLITE_LIB)
