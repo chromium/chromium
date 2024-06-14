@@ -10,7 +10,7 @@ source_set("side_panel_enums") {
   sources = [ "side_panel_enums.h" ]
 }
 
-static_library("side_panel") {
+source_set("side_panel") {
   sources = [
     "bookmarks/bookmarks_side_panel_coordinator.cc",
     "bookmarks/bookmarks_side_panel_coordinator.h",

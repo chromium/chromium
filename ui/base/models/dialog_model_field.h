@@ -527,7 +527,7 @@ class COMPONENT_EXPORT(UI_BASE) DialogModelCustomField
 class COMPONENT_EXPORT(UI_BASE) DialogModelSection final
     : public DialogModelField {
  public:
-  class Builder final {
+  class COMPONENT_EXPORT(UI_BASE) Builder final {
    public:
     Builder();
     Builder(const Builder&) = delete;
