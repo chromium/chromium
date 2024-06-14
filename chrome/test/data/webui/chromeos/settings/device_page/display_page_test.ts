@@ -435,6 +435,26 @@ suite('<settings-display>', () => {
           1,
           displaySettingsProvider.getDisplayMirrorModeStatusHistogram().get(
               /*mirror_mode_status=*/ true));
+
+      // When revamp wayfinding is enabled, clicking on the row should toggle
+      // mirror mode, too.
+      if (isRevampWayfindingEnabled) {
+        const mirrorDisplayRow =
+            displayPage.shadowRoot!.querySelector<HTMLElement>(
+                '#mirrorDisplayToggleButton');
+        assertTrue(!!mirrorDisplayRow);
+        mirrorDisplayRow.click();
+
+        // Verify histogram count for mirror mode setting.
+        assertEquals(
+            2,
+            displayHistogram.get(
+                displaySettingsProviderMojom.DisplaySettingsType.kMirrorMode));
+        assertEquals(
+            1,
+            displaySettingsProvider.getDisplayMirrorModeStatusHistogram().get(
+                /*mirror_mode_status=*/ false));
+      }
     });
 
     test('unified mode', () => {

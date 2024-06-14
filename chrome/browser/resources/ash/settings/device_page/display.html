@@ -1,5 +1,13 @@
 <style include="cr-shared-style settings-shared md-select iron-flex
   iron-flex-alignment">
+  #arrangement-section {
+    border-top: none;
+  }
+
+  #arrangement-section-main {
+    padding: 0 var(--cr-section-padding);
+  }
+
   .indented {
     align-self: stretch;
     margin-inline-start: var(--cr-section-indent-padding);
@@ -39,9 +47,9 @@
   }
 
   #mirrorDisplayToggleButton {
-    display: flex;
     align-self: stretch;
-    margin-bottom: 20px;
+    border-top: none;
+    display: flex;
   }
 
   #brightnessSliderWrapper {
@@ -68,26 +76,28 @@
 <!-- Arrangement section -->
 <template is="dom-if"
     if="[[shouldShowArrangementSection(displays)]]" restamp>
-  <div class="settings-box first layout vertical self-stretch underbar"
-      id="arrangement-section">
-    <h2 class="layout self-start">
-      $i18n{displayArrangementTitle}
-    </h2>
-    <div class="secondary layout self-start"
-        hidden="[[isMirrored(displays)]]">
-      $i18n{displayArrangementText}
+  <div class="underbar" id="arrangement-section">
+    <div class="layout vertical self-stretch" id="arrangement-section-main">
+      <h2 class="layout self-start">
+        $i18n{displayArrangementTitle}
+      </h2>
+      <div class="secondary layout self-start"
+          hidden="[[isMirrored(displays)]]">
+        $i18n{displayArrangementText}
+      </div>
+      <display-layout id="displayLayout"
+          selected-display="[[selectedDisplay]]"
+          on-select-display="onSelectDisplay_"
+          deep-link-focus-id$="[[Setting.kDisplayArrangement]]">
+      </display-layout>
     </div>
-    <display-layout id="displayLayout"
-        selected-display="[[selectedDisplay]]"
-        on-select-display="onSelectDisplay_"
-        deep-link-focus-id$="[[Setting.kDisplayArrangement]]">
-    </display-layout>
 
     <template is="dom-if"
         if="[[showMirror(unifiedDesktopMode_, displays)]]" restamp>
       <!-- Mirror display toggle button -->
       <template is="dom-if" if="[[isRevampWayfindingEnabled_]]">
-        <div id="mirrorDisplayToggleButton" class="text-area">
+        <div id="mirrorDisplayToggleButton" class="settings-box"
+            on-click="onMirroredClick_" actionable-row>
           <div id="mirrorDisplayToggleLabel" class="start">
             [[getDisplayMirrorText_(displays)]]
           </div>
