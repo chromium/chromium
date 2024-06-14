@@ -12,6 +12,7 @@
 #include "third_party/blink/renderer/core/css/stuck_query_scroll_snapshot.h"
 #include "third_party/blink/renderer/core/css/style_recalc_context.h"
 #include "third_party/blink/renderer/core/dom/document.h"
+#include "third_party/blink/renderer/core/dom/flat_tree_traversal.h"
 #include "third_party/blink/renderer/core/dom/node_computed_style.h"
 #include "third_party/blink/renderer/core/style/computed_style.h"
 
@@ -114,13 +115,22 @@ ContainerQueryEvaluator::ContainerQueryEvaluator(Element& container) {
 }
 
 // static
+Element* ContainerQueryEvaluator::ParentContainerCandidateElement(
+    Element& element) {
+  if (RuntimeEnabledFeatures::CSSFlatTreeContainerEnabled()) {
+    return FlatTreeTraversal::ParentElement(element);
+  }
+  return element.ParentOrShadowHostElement();
+}
+
+// static
 Element* ContainerQueryEvaluator::FindContainer(
     Element* starting_element,
     const ContainerSelector& container_selector,
     const TreeScope* selector_tree_scope) {
   // TODO(crbug.com/1213888): Cache results.
   for (Element* element = starting_element; element;
-       element = element->ParentOrShadowHostElement()) {
+       element = ParentContainerCandidateElement(*element)) {
     if (const ComputedStyle* style = element->GetComputedStyle()) {
       if (style->StyleType() == kPseudoIdNone) {
         if (Matches(*style, container_selector, selector_tree_scope)) {

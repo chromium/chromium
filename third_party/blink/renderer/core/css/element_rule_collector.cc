@@ -593,7 +593,8 @@ bool ElementRuleCollector::CollectMatchingRulesForListInternal(
         if (!style_container_candidate) {
           if (pseudo_style_request_.pseudo_id == kPseudoIdNone) {
             style_container_candidate =
-                context_.GetElement().ParentOrShadowHostElement();
+                ContainerQueryEvaluator::ParentContainerCandidateElement(
+                    context_.GetElement());
           } else {
             style_container_candidate = &context_.GetElement();
           }

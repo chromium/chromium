@@ -68,7 +68,8 @@ std::optional<double> FindSizeForContainerAxis(
            context_element, selector, tree_scope);
        container;
        container = ContainerQueryEvaluator::FindContainer(
-           container->ParentOrShadowHostElement(), selector, tree_scope)) {
+           ContainerQueryEvaluator::ParentContainerCandidateElement(*container),
+           selector, tree_scope)) {
     ContainerQueryEvaluator& evaluator =
         container->EnsureContainerQueryEvaluator();
     evaluator.SetReferencedByUnit();

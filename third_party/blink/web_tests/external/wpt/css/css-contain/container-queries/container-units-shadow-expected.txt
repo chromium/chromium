@@ -1,7 +1,0 @@
-This is a testharness.js-based test.
-[FAIL] Direct slotted child queries flat tree
-  assert_equals: expected "15px" but got "100px"
-[FAIL] Nondirect slotted child queries flat tree ancestors
-  assert_equals: expected "1.5px" but got "10px"
-Harness: the test ran to completion.
-

@@ -1968,8 +1968,8 @@ Element* StyleResolver::FindContainerForElement(
     const TreeScope* selector_tree_scope) {
   DCHECK(element);
   return ContainerQueryEvaluator::FindContainer(
-      element->ParentOrShadowHostElement(), container_selector,
-      selector_tree_scope);
+      ContainerQueryEvaluator::ParentContainerCandidateElement(*element),
+      container_selector, selector_tree_scope);
 }
 
 RuleIndexList* StyleResolver::PseudoCSSRulesForElement(

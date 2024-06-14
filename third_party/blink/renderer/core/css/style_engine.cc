@@ -3409,7 +3409,8 @@ void StyleEngine::UpdateStyleForNonEligibleContainer(Element& container) {
       DCHECK(cq_data->SkippedStyleRecalc());
       break;
     case ContainerQueryEvaluator::Change::kNearestContainer:
-      if (!IsShadowHost(container)) {
+      if (RuntimeEnabledFeatures::CSSFlatTreeContainerEnabled() ||
+          !IsShadowHost(container)) {
         change = change.ForceRecalcSizeContainer();
         break;
       }
@@ -3470,7 +3471,8 @@ void StyleEngine::UpdateStyleAndLayoutTreeForContainer(
       }
       break;
     case ContainerQueryEvaluator::Change::kNearestContainer:
-      if (!IsShadowHost(container)) {
+      if (RuntimeEnabledFeatures::CSSFlatTreeContainerEnabled() ||
+          !IsShadowHost(container)) {
         change = change.ForceRecalcSizeContainer();
         break;
       }

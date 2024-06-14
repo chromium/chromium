@@ -25,6 +25,7 @@
 #include "third_party/blink/public/mojom/use_counter/metrics/web_feature.mojom-blink.h"
 #include "third_party/blink/renderer/core/animation/css/css_animations.h"
 #include "third_party/blink/renderer/core/core_probes_inl.h"
+#include "third_party/blink/renderer/core/css/container_query_evaluator.h"
 #include "third_party/blink/renderer/core/css/css_light_dark_value_pair.h"
 #include "third_party/blink/renderer/core/css/css_property_value_set.h"
 #include "third_party/blink/renderer/core/dom/node.h"
@@ -72,9 +73,11 @@ StyleResolverState::StyleResolverState(
       element_type_(style_request.IsPseudoStyleRequest()
                         ? ElementType::kPseudoElement
                         : ElementType::kElement),
-      container_unit_context_(style_recalc_context
-                                  ? style_recalc_context->container
-                                  : element.ParentOrShadowHostElement()),
+      container_unit_context_(
+          style_recalc_context
+              ? style_recalc_context->container
+              : ContainerQueryEvaluator::ParentContainerCandidateElement(
+                    element)),
       anchor_evaluator_(style_recalc_context
                             ? style_recalc_context->anchor_evaluator
                             : nullptr),

@@ -31,8 +31,8 @@ class CORE_EXPORT ContainerQueryEvaluator final
  public:
   explicit ContainerQueryEvaluator(Element& container);
 
-  // Look for a container query container in the shadow-including inclusive
-  // ancestor chain of 'starting_element'.
+  // Look for a container query container in the flat tree inclusive ancestor
+  // chain of 'starting_element'.
   static Element* FindContainer(Element* starting_element,
                                 const ContainerSelector&,
                                 const TreeScope* selector_tree_scope);
@@ -41,6 +41,12 @@ class CORE_EXPORT ContainerQueryEvaluator final
                          const ContainerQuery&,
                          ContainerSelectorCache&,
                          MatchResult&);
+
+  // Get the parent container candidate for container queries. Either the flat
+  // tree parent or the shadow-including parent based on a runtime flag due to a
+  // spec change.
+  // To be removed when the CSSFlatTreeContainer flag is removed.
+  static Element* ParentContainerCandidateElement(Element& element);
 
   // Width/Height are used by container relative units (qi, qb, etc).
   //
