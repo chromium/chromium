@@ -20,7 +20,12 @@ build_webui("build") {
     "browser_switch_proxy.ts",
     "internals/browser_switch_internals_proxy.ts",
   ]
-  css_files = [ "app.css" ]
+  css_files = [
+    "app.css",
+    "internals/app.css",
+  ]
+
+  html_to_wrapper_template = "detect"
 
   ts_definitions = [ "//tools/typescript/definitions/chrome_send.d.ts" ]
   ts_deps = [
