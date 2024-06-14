@@ -539,4 +539,31 @@ const GURL mockURL("http://not-a-real-site.test/");
       assertWithMatcher:grey_nil()];
 }
 
+// Tests that if there is no data available for deletion of the selected data
+// types, that the placeholder summary for no data is shown.
+- (void)testNoDataForDeletion {
+  // Make sure there isn't any history items.
+  [ChromeEarlGrey clearBrowsingHistory];
+
+  // Set pref to keep browsing history.
+  [ChromeEarlGrey setBoolValue:false
+                   forUserPref:browsing_data::prefs::kDeleteBrowsingHistory];
+
+  [self openQuickDeleteFromThreeDotMenu];
+
+  // Check that Quick Delete is presented.
+  [[EarlGrey selectElementWithMatcher:[self quickDeleteTitle]]
+      assertWithMatcher:grey_notNil()];
+
+  // Check that the browsing data row is presented with the placeholder summary
+  // for no data.
+  [[EarlGrey selectElementWithMatcher:grey_text(l10n_util::GetNSString(
+                                          IDS_IOS_DELETE_BROWSING_DATA_TITLE))]
+      assertWithMatcher:grey_sufficientlyVisible()];
+  [[EarlGrey selectElementWithMatcher:
+                 grey_text(l10n_util::GetNSString(
+                     IDS_IOS_DELETE_BROWSING_DATA_SUMMARY_NO_DATA))]
+      assertWithMatcher:grey_nil()];
+}
+
 @end

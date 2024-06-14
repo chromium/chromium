@@ -175,8 +175,10 @@ TEST_F(BrowsingDataMediatorTest, TestBrowsingHistorySummary) {
         bool sync_enabled;
         NSString* expected_output;
     } kTestCases[] = {
-        {0, true, @""},
-        {0, false, @""},
+        {0, true, l10n_util::GetNSString(
+                   IDS_IOS_DELETE_BROWSING_DATA_SUMMARY_NO_DATA)},
+        {0, false, l10n_util::GetNSString(
+                   IDS_IOS_DELETE_BROWSING_DATA_SUMMARY_NO_DATA)},
         {1, true, l10n_util::GetPluralNSStringF(
                    IDS_IOS_DELETE_BROWSING_DATA_SUMMARY_SITES_SYNCED, 1)},
         {1, false, l10n_util::GetPluralNSStringF(
@@ -228,8 +230,10 @@ TEST_F(BrowsingDataMediatorTest, TestPasswordsSummary) {
         bool sync_enabled;
         NSString* expected_output;
     } kTestCases[] = {
-        {0, 0, true, @""},
-        {0, 0, false, @""},
+        {0, 0, true, l10n_util::GetNSString(
+                   IDS_IOS_DELETE_BROWSING_DATA_SUMMARY_NO_DATA)},
+        {0, 0, false, l10n_util::GetNSString(
+                   IDS_IOS_DELETE_BROWSING_DATA_SUMMARY_NO_DATA)},
         {1, 1, true, l10n_util::GetPluralNSStringF(
                    IDS_IOS_DELETE_BROWSING_DATA_SUMMARY_PASSWORDS_SYNCED,
                    2)},
@@ -280,8 +284,10 @@ TEST_F(BrowsingDataMediatorTest, TestAddressesSummary) {
         bool sync_enabled;
         NSString* expected_output;
     } kTestCases[] = {
-        {0, true, @""},
-        {0, false, @""},
+        {0, true, l10n_util::GetNSString(
+                   IDS_IOS_DELETE_BROWSING_DATA_SUMMARY_NO_DATA)},
+        {0, false, l10n_util::GetNSString(
+                   IDS_IOS_DELETE_BROWSING_DATA_SUMMARY_NO_DATA)},
         {1, true, l10n_util::GetPluralNSStringF(
                    IDS_IOS_DELETE_BROWSING_DATA_SUMMARY_ADRESSES_SYNCED, 1)},
         {1, false, l10n_util::GetPluralNSStringF(
@@ -324,8 +330,10 @@ TEST_F(BrowsingDataMediatorTest, TestCardsSummary) {
         bool sync_enabled;
         NSString* expected_output;
     } kTestCases[] = {
-        {0, true, @""},
-        {0, false, @""},
+        {0, true, l10n_util::GetNSString(
+                   IDS_IOS_DELETE_BROWSING_DATA_SUMMARY_NO_DATA)},
+        {0, false, l10n_util::GetNSString(
+                   IDS_IOS_DELETE_BROWSING_DATA_SUMMARY_NO_DATA)},
         {1, true, l10n_util::GetPluralNSStringF(
                    IDS_IOS_DELETE_BROWSING_DATA_SUMMARY_CARDS_SYNCED, 1)},
         {1, false, l10n_util::GetPluralNSStringF(
@@ -369,8 +377,10 @@ TEST_F(BrowsingDataMediatorTest, TestSuggestionsSummary) {
         bool sync_enabled;
         NSString* expected_output;
     } kTestCases[] = {
-        {0, true, @""},
-        {0, false, @""},
+        {0, true, l10n_util::GetNSString(
+                   IDS_IOS_DELETE_BROWSING_DATA_SUMMARY_NO_DATA)},
+        {0, false, l10n_util::GetNSString(
+                   IDS_IOS_DELETE_BROWSING_DATA_SUMMARY_NO_DATA)},
         {1, true, l10n_util::GetPluralNSStringF(
                    IDS_IOS_DELETE_BROWSING_DATA_SUMMARY_SUGGESTIONS_SYNCED,
                    1)},

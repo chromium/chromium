@@ -219,8 +219,12 @@
     }
   }
 
-  // TODO(crbug.com/342373508): Use a placeholder string if `[summaryItems
-  // count]` == 0, i.e. the summary is empty.
+  if (!summaryItems.count) {
+    [_consumer setBrowsingDataSummary:
+                   l10n_util::GetNSString(
+                       IDS_IOS_DELETE_BROWSING_DATA_SUMMARY_NO_DATA)];
+    return;
+  }
 
   // TODO(crbug.com/342185075): Check if the comma is translated correctly for
   // right to left languages, e.g. arabic.

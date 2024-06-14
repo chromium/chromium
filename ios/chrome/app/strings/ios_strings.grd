@@ -1328,6 +1328,9 @@ See your search engine’s instructions for deleting your search history, if app
           =1 {1 Card (synced)}
           other {# Cards (synced)}}**
       </message>
+      <message name="IDS_IOS_DELETE_BROWSING_DATA_SUMMARY_NO_DATA" translateable="false" desc="Placeholder for the browsing data summary when there is no browsing data to delete. [iOS only]">
+        **None**
+      </message>
       <message name="IDS_IOS_DELETE_BROWSING_DATA_SUMMARY_PASSWORDS" translateable="false" desc="Summary of the passwords to be deleted when deleting browsing data. [iOS only]">
        **{COUNT, plural,
           =1 {1 Password}
