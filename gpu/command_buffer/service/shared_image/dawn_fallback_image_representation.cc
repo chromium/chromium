@@ -267,24 +267,21 @@ bool DawnFallbackImageRepresentation::UploadToBacking() {
        plane_index < static_cast<int>(staging_buffers.size()); ++plane_index) {
     const auto& staging_buffer_entry = staging_buffers[plane_index];
 
-    MapCallbackData map_callback_data;
-    staging_buffer_entry.buffer.MapAsync(
+    bool success = false;
+    wgpu::FutureWaitInfo wait_info = {staging_buffer_entry.buffer.MapAsync(
         wgpu::MapMode::Read, 0, wgpu::kWholeMapSize,
-        [](WGPUBufferMapAsyncStatus status, void* void_userdata) {
-          MapCallbackData* userdata =
-              static_cast<MapCallbackData*>(void_userdata);
-          userdata->status = status;
-          userdata->map_complete.Set();
+        wgpu::CallbackMode::WaitAnyOnly,
+        [](wgpu::MapAsyncStatus status, const char*, bool* success) {
+          *success = status == wgpu::MapAsyncStatus::Success;
         },
-        &map_callback_data);
+        &success)};
 
-    // Poll for the map to complete.
-    while (!map_callback_data.map_complete.IsSet()) {
-      base::PlatformThread::Sleep(base::Milliseconds(1));
-      device_.Tick();
+    if (device_.GetAdapter().GetInstance().WaitAny(1, &wait_info, UINT64_MAX) !=
+        wgpu::WaitStatus::Success) {
+      return false;
     }
 
-    if (map_callback_data.status != WGPUBufferMapAsyncStatus_Success) {
+    if (!wait_info.completed || !success) {
       return false;
     }
 
