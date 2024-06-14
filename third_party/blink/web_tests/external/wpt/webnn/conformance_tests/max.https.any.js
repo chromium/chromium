@@ -10,6 +10,4 @@
 
 // https://webmachinelearning.github.io/webnn/#api-mlgraphbuilder-binary
 
-runWebNNConformanceTests(
-    ['add', 'sub', 'mul', 'div', 'max', 'min', 'pow'],
-    buildOperationWithTwoInputs);
+runWebNNConformanceTests('max', buildOperationWithTwoInputs);

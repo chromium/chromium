@@ -116,5 +116,3 @@ crbug.com/1457275 [ Linux ] external/wpt/dom/ranges/Range-surroundContents.html 
 
 # Gardener 2024-04-04
 crbug.com/331926164 [ Linux ] http/tests/inspector-protocol/accessibility/accessibility-query-axtree.js [ Crash ]
-crbug.com/331926164 [ Linux ] virtual/webnn-service-on-cpu/external/wpt/webnn/conformance_tests/elementwise_binary.https.any.html?cpu [ Timeout ]
-crbug.com/331926164 [ Linux ] virtual/webnn-service-on-cpu/external/wpt/webnn/conformance_tests/elementwise_binary.https.any.worker.html?cpu [ Timeout ]

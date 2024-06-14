@@ -549,15 +549,39 @@ const checkResults = (operationName, namedOutputOperands, outputs, resources) =>
     // the outputs of split() or gru() is a sequence
     for (let operandName in namedOutputOperands) {
       const suboutputResource = getNamedResource(expected, operandName);
-      assert_array_equals(namedOutputOperands[operandName].shape(), suboutputResource.shape ?? []);
       outputData = outputs[operandName];
+      // If data is scalar and shape is not, it means it's expecting to be
+      // filled by the scalar value. Also limit the array size so it doesn't
+      // timeout.
+      if (typeof (suboutputResource.data) === 'number' &&
+          suboutputResource.shape && sizeOfShape(suboutputResource.shape) > 1) {
+        const size = Math.min(
+            kMaximumIndexToValidate, sizeOfShape(suboutputResource.shape));
+        suboutputResource.data = [
+          new Array(size).fill(suboutputResource.data), suboutputResource.type
+        ];
+        outputData = outputData.subarray(0, kMaximumIndexToValidate);
+      }
+      assert_array_equals(
+          namedOutputOperands[operandName].shape(),
+          suboutputResource.shape ?? []);
       tolerance = getPrecisonTolerance(operationName, metricType, resources);
       doAssert(operationName, outputData, suboutputResource.data, tolerance, suboutputResource.type, metricType)
     }
   } else {
     assert_array_equals(namedOutputOperands[expected.name].shape(), expected.shape ?? []);
     outputData = outputs[expected.name];
+    // If data is scalar and shape is not, it means it's expecting to be filled
+    // by the scalar value. Also limit the array size so it doesn't timeout.
+    if (typeof (expected.data) === 'number' && expected.shape &&
+        sizeOfShape(expected.shape) > 1) {
+      const size =
+          Math.min(kMaximumIndexToValidate, sizeOfShape(expected.shape));
+      expected.data = new Array(size).fill(expected.data);
+      outputData = outputData.subarray(0, kMaximumIndexToValidate);
+    }
     expectedData = expected.data;
+
     operandType = expected.type;
     tolerance = getPrecisonTolerance(operationName, metricType, resources);
     doAssert(operationName, outputData, expectedData, tolerance, operandType, metricType)
