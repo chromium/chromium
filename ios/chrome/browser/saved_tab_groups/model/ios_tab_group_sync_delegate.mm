@@ -39,31 +39,25 @@ void IOSTabGroupSyncDelegate::CreateLocalTabGroup(
   std::set<Browser*> all_browsers = browser_list->AllRegularBrowsers();
   CHECK(all_browsers.size() > 0);
 
-  // Get the first browser to get the app state.
-  Browser* first_browser = *all_browsers.begin();
-  AppState* app_state = first_browser->GetSceneState().appState;
-
-  SceneState* scene_to_use = nil;
-  for (SceneState* scene_state in app_state.connectedScenes) {
-    if (scene_to_use &&
-        scene_to_use.activationLevel < scene_state.activationLevel) {
+  Browser* browser = nullptr;
+  for (Browser* browser_to_check : all_browsers) {
+    // The pointer to the scene state is weak, so it could be nil. In that case,
+    // the activation level will be 0 (lowest).
+    if (browser && browser->GetSceneState().activationLevel >=
+                       browser_to_check->GetSceneState().activationLevel) {
       continue;
     }
-    Browser* scene_browser =
-        scene_state.browserProviderInterface.mainBrowserProvider.browser;
-    if (scene_browser && scene_browser->GetBrowserState() == browser_state_) {
-      scene_to_use = scene_state;
-      if (scene_to_use.activationLevel ==
-          SceneActivationLevelForegroundActive) {
-        break;
-      }
+    browser = browser_to_check;
+    if (browser_to_check->GetSceneState().activationLevel ==
+        SceneActivationLevelForegroundActive) {
+      break;
     }
   }
 
-  if (scene_to_use) {
-    // TODO(crbug.com/329640329): use the scene_to_use->GetWebStateList(); to
-    // automatically open the new group.
+  if (!browser) {
+    return;
   }
+  // TODO(crbug.com/329640329): open the new group.
 }
 
 void IOSTabGroupSyncDelegate::CloseLocalTabGroup(

@@ -93,6 +93,7 @@
 #import "ios/chrome/browser/omaha/model/omaha_service.h"
 #import "ios/chrome/browser/passwords/model/password_manager_util_ios.h"
 #import "ios/chrome/browser/promos_manager/model/promos_manager_factory.h"
+#import "ios/chrome/browser/saved_tab_groups/model/tab_group_sync_service_factory.h"
 #import "ios/chrome/browser/screenshot/model/screenshot_metrics_recorder.h"
 #import "ios/chrome/browser/search_engines/model/extension_search_engine_data_updater.h"
 #import "ios/chrome/browser/search_engines/model/search_engines_util.h"
@@ -737,6 +738,11 @@ SEQUENCE_CHECKER(_sequenceChecker);
           ContentSettingsType::REQUEST_DESKTOP_SITE, CONTENT_SETTING_ALLOW);
       browserState->GetPrefs()->SetBoolean(prefs::kUserAgentWasChanged, true);
     }
+  }
+
+  if (IsTabGroupSyncEnabled()) {
+    // Ensure that the tab group sync services are created to observe updates.
+    tab_groups::TabGroupSyncServiceFactory::GetForBrowserState(browserState);
   }
 }
 
