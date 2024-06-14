@@ -520,6 +520,8 @@ chromium-metrics-reviews@google.com.
       summary="IPH for tab groups surface after hiding a tab group while on
                the GTS"/>
   <variant name="IPH_TabGroupsTapToSeeAnotherTab" summary="tab strip"/>
+  <variant name="IPH_TabGroupSyncOnStrip"
+      summary="For tab group sync on tab strip."/>
   <variant name="IPH_TabGroupsYourTabsTogether"
       summary="tab switcher cards with multiple tab thumbnails"/>
   <variant name="IPH_TabOrganizationSuccess"

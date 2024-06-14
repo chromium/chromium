@@ -77,6 +77,7 @@ const base::Feature* const kAllFeatures[] = {
     &kIPHShoppingListSaveFlowFeature,
     &kIPHTabGroupsQuicklyComparePagesFeature,
     &kIPHTabGroupsTapToSeeAnotherTabFeature,
+    &kIPHTabGroupSyncOnStripFeature,
     &kIPHTabGroupsYourTabsAreTogetherFeature,
     &kIPHTabGroupsDragAndDropFeature,
     &kIPHTabGroupsSurfaceFeature,

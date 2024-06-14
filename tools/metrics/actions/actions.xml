@@ -43642,6 +43642,7 @@ should be able to be added at any place in this file.
   <suffix name="TabGroupsSurfaceOnHide"
       label="For tab group surface after hiding a tab group while on the GTS."/>
   <suffix name="TabGroupsTapToSeeAnotherTab" label="For tab strip."/>
+  <suffix name="TabGroupSyncOnStrip" label="For tab group sync on tab strip."/>
   <suffix name="TabGroupsYourTabsTogether"
       label="For tab switcher with tab groups."/>
   <suffix name="TabOrganizationSuccess"

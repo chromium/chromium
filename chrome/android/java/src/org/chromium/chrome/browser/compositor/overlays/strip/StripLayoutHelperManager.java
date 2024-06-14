@@ -513,7 +513,8 @@ public class StripLayoutHelperManager
                         mTabDragSource,
                         toolbarContainerView,
                         windowAndroid,
-                        actionConfirmationManager);
+                        actionConfirmationManager,
+                        toolbarManager.getTabStripHeightSupplier().get());
         mIncognitoHelper =
                 new StripLayoutHelper(
                         context,
@@ -525,7 +526,8 @@ public class StripLayoutHelperManager
                         mTabDragSource,
                         toolbarContainerView,
                         windowAndroid,
-                        actionConfirmationManager);
+                        actionConfirmationManager,
+                        toolbarManager.getTabStripHeightSupplier().get());
 
         tabHoverCardViewStub.setOnInflateListener(
                 (viewStub, view) -> {

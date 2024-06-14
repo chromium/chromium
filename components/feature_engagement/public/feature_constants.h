@@ -154,6 +154,7 @@ BASE_DECLARE_FEATURE(kIPHShoppingListMenuItemFeature);
 BASE_DECLARE_FEATURE(kIPHShoppingListSaveFlowFeature);
 BASE_DECLARE_FEATURE(kIPHTabGroupsQuicklyComparePagesFeature);
 BASE_DECLARE_FEATURE(kIPHTabGroupsTapToSeeAnotherTabFeature);
+BASE_DECLARE_FEATURE(kIPHTabGroupSyncOnStripFeature);
 BASE_DECLARE_FEATURE(kIPHTabGroupsYourTabsAreTogetherFeature);
 BASE_DECLARE_FEATURE(kIPHTabGroupsDragAndDropFeature);
 BASE_DECLARE_FEATURE(kIPHTabGroupsSurfaceFeature);

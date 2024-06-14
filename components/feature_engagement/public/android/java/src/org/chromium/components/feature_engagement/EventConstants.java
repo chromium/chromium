@@ -197,6 +197,8 @@ public final class EventConstants {
 
     public static final String RESTORE_TABS_PROMO_USED = "restore_tabs_promo_used";
 
+    public static final String TAB_GROUP_SYNC_ON_STRIP_USED = "tab_group_sync_on_strip_used";
+
     /** Do not instantiate. */
     private EventConstants() {}
 }

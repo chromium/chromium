@@ -149,6 +149,8 @@ DEFINE_VARIATION_PARAM(kIPHTabGroupsQuicklyComparePagesFeature,
                        "IPH_TabGroupsQuicklyComparePages");
 DEFINE_VARIATION_PARAM(kIPHTabGroupsTapToSeeAnotherTabFeature,
                        "IPH_TabGroupsTapToSeeAnotherTab");
+DEFINE_VARIATION_PARAM(kIPHTabGroupSyncOnStripFeature,
+                       "IPH_TabGroupSyncOnStrip");
 DEFINE_VARIATION_PARAM(kIPHTabGroupsYourTabsAreTogetherFeature,
                        "IPH_TabGroupsYourTabsTogether");
 DEFINE_VARIATION_PARAM(kIPHTabGroupsDragAndDropFeature,
