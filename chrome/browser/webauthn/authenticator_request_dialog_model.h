@@ -202,7 +202,9 @@ class AuthenticatorRequestDialogController;
   AUTHENTICATOR_REQUEST_EVENT_1(OnReauthComplete, std::string)                \
   /* Called just before the model is destructed. */                           \
   AUTHENTICATOR_REQUEST_EVENT_1(OnModelDestroyed,                             \
-                                AuthenticatorRequestDialogModel*)
+                                AuthenticatorRequestDialogModel*)             \
+  /* Called when make credential flow ended with passkey being saved. */      \
+  AUTHENTICATOR_REQUEST_EVENT_0(OnPasskeySaved)
 
 // Each Step defines a unique UI state. Setting a Step causes the matching
 // dialog, bubble, or window to appear.
@@ -769,6 +771,7 @@ class AuthenticatorRequestDialogController
       base::RepeatingClosure bluetooth_adapter_power_on_callback);
   void SetRequestBlePermissionCallback(BlePermissionCallback callback);
   void OnHavePIN(std::u16string pin) override;
+  void OnPasskeySaved() override;
 
   // Called when the user needs to retry user verification with the number of
   // |attempts| remaining.

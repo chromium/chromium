@@ -521,6 +521,12 @@ void ManagePasswordsUIController::OnKeychainError() {
 #endif
 }
 
+void ManagePasswordsUIController::OnPasskeySaved() {
+  passwords_data_.OnPasskeySaved();
+  bubble_status_ = BubbleStatus::SHOULD_POP_UP;
+  UpdateBubbleAndIconVisibility();
+}
+
 void ManagePasswordsUIController::OnAddUsernameSaveClicked(
     const std::u16string& username,
     const password_manager::PasswordForm& form_to_update) {

@@ -27,6 +27,7 @@
 #include "chrome/browser/ui/views/passwords/post_save_compromised_bubble_view.h"
 #include "chrome/browser/ui/views/passwords/shared_passwords_notification_view.h"
 #include "chrome/browser/ui/views/toolbar/toolbar_view.h"
+#include "chrome/browser/ui/views/webauthn/passkey_saved_confirmation_view.h"
 #include "chrome/grit/generated_resources.h"
 #include "components/password_manager/core/browser/features/password_features.h"
 #include "components/password_manager/core/browser/password_form.h"
@@ -143,6 +144,9 @@ PasswordBubbleViewBase* PasswordBubbleViewBase::CreateBubble(
   } else if (model_state ==
              password_manager::ui::PASSWORD_STORE_CHANGED_BUBBLE_STATE) {
     view = new PasswordDefaultStoreChangedView(web_contents, anchor_view);
+  } else if (model_state ==
+             password_manager::ui::PASSKEY_SAVED_CONFIRMATION_STATE) {
+    view = new PasskeySavedConfirmationView(web_contents, anchor_view);
   } else {
     NOTREACHED_NORETURN();
   }

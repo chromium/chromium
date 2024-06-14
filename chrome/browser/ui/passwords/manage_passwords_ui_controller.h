@@ -119,6 +119,7 @@ class ManagePasswordsUIController
       const std::u16string& username,
       const password_manager::PasswordForm& form_to_update) override;
   void OnKeychainError() override;
+  void OnPasskeySaved() override;
 
   virtual void NotifyUnsyncedCredentialsWillBeDeleted(
       std::vector<password_manager::PasswordForm> unsynced_credentials);

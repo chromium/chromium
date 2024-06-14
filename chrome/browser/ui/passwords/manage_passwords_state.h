@@ -97,6 +97,9 @@ class ManagePasswordsState {
   // Move to KEYCHAIN_ERROR_STATE.
   void OnKeychainError();
 
+  // Move to PASSKEY_SAVED_CONFIRMATION_STATE.
+  void OnPasskeySaved();
+
   // Move to MOVE_CREDENTIAL_AFTER_LOG_IN_STATE. Triggers a bubble to move the
   // just submitted form to the user's account store.
   void OnPasswordMovable(

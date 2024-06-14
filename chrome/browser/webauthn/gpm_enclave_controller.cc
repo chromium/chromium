@@ -1241,9 +1241,12 @@ void GPMEnclaveController::OnPasskeyCreated(
   webauthn::PasskeyModel* passkey_model =
       PasskeyModelFactory::GetInstance()->GetForProfile(GetProfile());
   passkey_model->CreatePasskey(passkey);
-  // TODO(enclave): consider whether we're going to have this step in the
-  // future. If not, `authenticator_request_bubble.cc` can be dropped.
+  // TODO(b/345242100): Remove `Step::kGPMPasskeySaved` and
+  // `authenticator_request_bubble.cc`.
   // model_->SetStep(Step::kGPMPasskeySaved);
+  if (device::kWebAuthnGpmPin.Get()) {
+    model_->OnPasskeySaved();
+  }
 }
 
 bool GPMEnclaveController::GetFailedPINAttemptCount() {

@@ -117,6 +117,10 @@ class PasswordsClientUIDelegate {
   // available.
   virtual void OnKeychainError() = 0;
 
+  // Called when a passkey has just been saved to display a confirmation of that
+  // to the user.
+  virtual void OnPasskeySaved() = 0;
+
  protected:
   virtual ~PasswordsClientUIDelegate() = default;
 };

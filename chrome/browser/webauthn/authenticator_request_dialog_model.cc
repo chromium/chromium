@@ -31,6 +31,7 @@
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/signin/identity_manager_factory.h"
 #include "chrome/browser/signin/signin_ui_util.h"
+#include "chrome/browser/ui/passwords/passwords_client_ui_delegate.h"
 #include "chrome/browser/ui/webauthn/authenticator_request_bubble.h"
 #include "chrome/browser/ui/webauthn/authenticator_request_dialog.h"
 #include "chrome/browser/ui/webauthn/authenticator_request_window.h"
@@ -1543,6 +1544,19 @@ void AuthenticatorRequestDialogController::SetPriorityPhoneIndex(
     model_->priority_phone_name.reset();
   }
   priority_phone_index_ = index;
+}
+
+void AuthenticatorRequestDialogController::OnPasskeySaved() {
+  content::WebContents* web_contents = model_->GetWebContents();
+  if (!web_contents) {
+    return;
+  }
+
+  PasswordsClientUIDelegate* manage_passwords_ui_controller =
+      PasswordsClientUIDelegateFromWebContents(web_contents);
+  if (manage_passwords_ui_controller) {
+    manage_passwords_ui_controller->OnPasskeySaved();
+  }
 }
 
 void AuthenticatorRequestDialogController::StartTransportFlowForTesting(

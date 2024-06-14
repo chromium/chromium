@@ -240,6 +240,11 @@ void ManagePasswordsState::OnKeychainError() {
   SetState(password_manager::ui::KEYCHAIN_ERROR_STATE);
 }
 
+void ManagePasswordsState::OnPasskeySaved() {
+  ClearData();
+  SetState(password_manager::ui::PASSKEY_SAVED_CONFIRMATION_STATE);
+}
+
 void ManagePasswordsState::TransitionToState(
     password_manager::ui::State state) {
   CHECK_NE(password_manager::ui::INACTIVE_STATE, state_);
