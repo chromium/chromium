@@ -123,8 +123,9 @@ found in the LICENSE file.
 
 <!-- Powerwash confirmation dialog (depends on powerwash mode) -->
 <oobe-modal-dialog should-hide-backdrop id="confirmationDialog"
-    on-close="onDialogClosed">
-  <div slot="title">[[confirmationDialogTitle_]]</div>
+    on-close="onDialogClosed" role="dialog">
+  <div slot="title" aria-label="[[confirmationDialogTitle_]]"
+      aria-live="polite">[[confirmationDialogTitle_]]</div>
   <div slot="content">[[confirmationDialogText_]]</div>
   <div slot="buttons">
     <oobe-text-button id="cancelButton" border on-click="onDialogCancelClick"
