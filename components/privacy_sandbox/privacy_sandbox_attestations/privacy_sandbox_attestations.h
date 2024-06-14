@@ -120,7 +120,8 @@ class PrivacySandboxAttestations {
   // file has a newer version. This function also validates the existing version
   // and attestations map are in valid states.
   void LoadAttestations(base::Version version,
-                        base::FilePath installed_file_path);
+                        base::FilePath installed_file_path,
+                        bool is_pre_installed);
 
   // Override the site to be attested for all the Privacy Sandbox APIs, even if
   // it is not officially enrolled. This allows developers to test Privacy
@@ -170,6 +171,12 @@ class PrivacySandboxAttestations {
 
   bool attestations_file_checked() const { return attestations_file_checked_; }
 
+  void SetIsPreInstalled(bool is_pre_installed) {
+    is_pre_installed_ = is_pre_installed;
+  }
+
+  bool is_pre_installed() const { return is_pre_installed_; }
+
  private:
   friend class base::NoDestructor<PrivacySandboxAttestations>;
 
@@ -201,6 +208,7 @@ class PrivacySandboxAttestations {
   // map and its version. Also notifies the observers the attestations map has
   // been loaded / updated.
   void OnAttestationsParsed(base::Version version,
+                            bool is_pre_installed,
                             base::expected<PrivacySandboxAttestationsMap,
                                            ParsingStatus> attestations_map);
 
@@ -249,6 +257,9 @@ class PrivacySandboxAttestations {
 
   // Whether the component installer has checked the attestations file.
   bool attestations_file_checked_ = false;
+
+  // Whether the attestation map is parsed from a pre-installed file.
+  bool is_pre_installed_ = false;
 
   base::ObserverList<content::PrivacySandboxAttestationsObserver> observers_;
 

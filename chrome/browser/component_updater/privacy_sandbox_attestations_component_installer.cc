@@ -131,6 +131,8 @@ void PrivacySandboxAttestationsComponentInstallerPolicy::ComponentReady(
     return;
   }
 
+  bool is_pre_installed = manifest.FindBool("pre_installed").value_or(false);
+
   // Record the time taken for the downloaded attestations file to be detected.
   startup_metric_utils::GetBrowser().RecordPrivacySandboxAttestationsFirstReady(
       base::TimeTicks::Now());
@@ -142,7 +144,8 @@ void PrivacySandboxAttestationsComponentInstallerPolicy::ComponentReady(
       std::move(version),
       /*installed_file_path=*/
       PrivacySandboxAttestationsComponentInstallerPolicy::GetInstalledFilePath(
-          install_dir));
+          install_dir),
+      is_pre_installed);
 }
 
 base::FilePath
@@ -209,11 +212,13 @@ void RegisterPrivacySandboxAttestationsComponent(ComponentUpdateService* cus) {
   auto policy =
       std::make_unique<PrivacySandboxAttestationsComponentInstallerPolicy>(
           /*on_attestations_ready=*/base::BindRepeating(
-              [](base::Version version, base::FilePath install_dir) {
+              [](base::Version version, base::FilePath install_dir,
+                 bool is_pre_installed) {
                 VLOG(1) << "Received privacy sandbox attestations file";
                 privacy_sandbox::PrivacySandboxAttestations::GetInstance()
                     ->LoadAttestations(std::move(version),
-                                       std::move(install_dir));
+                                       std::move(install_dir),
+                                       is_pre_installed);
               }));
 
   base::MakeRefCounted<ComponentInstaller>(

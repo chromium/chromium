@@ -73,7 +73,7 @@ class PrivacySandboxAttestationsTestBase : public testing::Test {
         ->SetLoadAttestationsDoneCallbackForTesting(run_loop.QuitClosure());
 
     PrivacySandboxAttestations::GetInstance()->LoadAttestations(
-        version, attestations_file_path);
+        version, attestations_file_path, /*is_pre_installed=*/false);
     run_loop.Run();
   }
 
@@ -97,7 +97,7 @@ class PrivacySandboxAttestationsTestBase : public testing::Test {
             run_loop.QuitClosure());
 
     PrivacySandboxAttestations::GetInstance()->LoadAttestations(
-        version, attestations_file_path);
+        version, attestations_file_path, /*is_pre_installed=*/false);
     run_loop.Run();
   }
 
@@ -173,6 +173,7 @@ TEST_P(PrivacySandboxAttestationsFeatureEnabledTest,
   histogram_tester().ExpectTotalCount(kAttestationStatusUMA, 1);
   histogram_tester().ExpectBucketCount(
       kAttestationStatusUMA, Status::kAttestationsFileNotYetChecked, 1);
+  histogram_tester().ExpectTotalCount(kAttestationsFileSource, 0);
 }
 
 TEST_P(PrivacySandboxAttestationsFeatureEnabledTest,
@@ -262,7 +263,7 @@ TEST_P(PrivacySandboxAttestationsFeatureEnabledTest,
 
   // Call the parsing function with a non-existent file.
   PrivacySandboxAttestations::GetInstance()->LoadAttestations(
-      base::Version("0.0.1"), base::FilePath());
+      base::Version("0.0.1"), base::FilePath(), /*is_pre_installed=*/false);
   run_loop.Run();
 
   // The parsing should fail.
@@ -285,7 +286,7 @@ TEST_P(PrivacySandboxAttestationsFeatureEnabledTest,
 
   // Call the parsing function with a non-existent file.
   PrivacySandboxAttestations::GetInstance()->LoadAttestations(
-      base::Version("0.0.1"), base::FilePath());
+      base::Version("0.0.1"), base::FilePath(), /*is_pre_installed=*/false);
   first_attempt.Run();
 
   // The parsing should fail.
@@ -300,7 +301,7 @@ TEST_P(PrivacySandboxAttestationsFeatureEnabledTest,
   PrivacySandboxAttestations::GetInstance()
       ->SetLoadAttestationsDoneCallbackForTesting(second_attempt.QuitClosure());
   PrivacySandboxAttestations::GetInstance()->LoadAttestations(
-      base::Version("0.0.1"), base::FilePath());
+      base::Version("0.0.1"), base::FilePath(), /*is_pre_installed=*/false);
   second_attempt.Run();
 
   // The parsing should fail again, without crashes.
@@ -388,6 +389,9 @@ TEST_P(PrivacySandboxAttestationsFeatureEnabledTest, LoadAttestationsFile) {
   histogram_tester().ExpectTotalCount(kAttestationStatusUMA, 2);
   histogram_tester().ExpectBucketCount(kAttestationStatusUMA, Status::kAllowed,
                                        1);
+  histogram_tester().ExpectTotalCount(kAttestationsFileSource, 1);
+  histogram_tester().ExpectBucketCount(kAttestationsFileSource,
+                                       FileSource::kDownloaded, 1);
   // For API not in the attestations list, the result should be
   // `kAttestationFailed`.
   EXPECT_EQ(PrivacySandboxAttestations::GetInstance()->IsSiteAttested(
@@ -397,6 +401,9 @@ TEST_P(PrivacySandboxAttestationsFeatureEnabledTest, LoadAttestationsFile) {
   histogram_tester().ExpectTotalCount(kAttestationStatusUMA, 3);
   histogram_tester().ExpectBucketCount(kAttestationStatusUMA,
                                        Status::kAttestationFailed, 1);
+  histogram_tester().ExpectTotalCount(kAttestationsFileSource, 2);
+  histogram_tester().ExpectBucketCount(kAttestationsFileSource,
+                                       FileSource::kDownloaded, 2);
 
   // Add attestation for Protected Audience.
   site_attestation.add_attested_apis(PROTECTED_AUDIENCE);
@@ -433,6 +440,9 @@ TEST_P(PrivacySandboxAttestationsFeatureEnabledTest, LoadAttestationsFile) {
   histogram_tester().ExpectTotalCount(kAttestationStatusUMA, 5);
   histogram_tester().ExpectBucketCount(kAttestationStatusUMA, Status::kAllowed,
                                        3);
+  histogram_tester().ExpectTotalCount(kAttestationsFileSource, 4);
+  histogram_tester().ExpectBucketCount(kAttestationsFileSource,
+                                       FileSource::kDownloaded, 4);
 }
 
 TEST_P(PrivacySandboxAttestationsFeatureEnabledTest,
@@ -695,7 +705,8 @@ TEST_P(PrivacySandboxAttestationsFeatureEnabledTest,
       ->SetLoadAttestationsDoneCallbackForTesting(run_loop.QuitClosure());
 
   PrivacySandboxAttestations::GetInstance()->LoadAttestations(
-      base::Version("2023.1.23.0"), attestations_file_path);
+      base::Version("2023.1.23.0"), attestations_file_path,
+      /*is_pre_installed=*/false);
   run_loop.Run();
 
   histogram_tester().ExpectTotalCount(kAttestationsFileParsingStatusUMA, 1);
@@ -778,7 +789,8 @@ TEST_P(PrivacySandboxAttestationsSentinelTest,
 
   // Load an attestations file that is invalid.
   PrivacySandboxAttestations::GetInstance()->LoadAttestations(
-      base::Version("0.0.1"), invalid_attestations_file_path);
+      base::Version("0.0.1"), invalid_attestations_file_path,
+      /*is_pre_installed=*/false);
   parsing_invalid_attestations.Run();
 
   // The parsing should fail.
@@ -832,7 +844,8 @@ TEST_P(PrivacySandboxAttestationsSentinelTest,
       ->SetLoadAttestationsDoneCallbackForTesting(
           parsing_valid_attestations_with_sentinel.QuitClosure());
   PrivacySandboxAttestations::GetInstance()->LoadAttestations(
-      base::Version("0.0.1"), valid_attestations_file_path);
+      base::Version("0.0.1"), valid_attestations_file_path,
+      /*is_pre_installed=*/false);
   parsing_valid_attestations_with_sentinel.Run();
 
   // If sentinel feature is enabled, the parsing should be aborted and the
@@ -870,7 +883,8 @@ TEST_P(PrivacySandboxAttestationsSentinelTest,
   ASSERT_FALSE(
       base::PathExists(new_version_dir.GetPath().Append(kSentinelFileName)));
   PrivacySandboxAttestations::GetInstance()->LoadAttestations(
-      base::Version("0.0.2"), new_version_file_path);
+      base::Version("0.0.2"), new_version_file_path,
+      /*is_pre_installed=*/false);
   parsing_new_version.Run();
 
   // The new version should be loaded successfully.
@@ -927,7 +941,7 @@ TEST_P(PrivacySandboxAttestationsSentinelTest,
 
     // Load an attestations file that is invalid.
     PrivacySandboxAttestations::GetInstance()->LoadAttestations(
-        test_case.version, attestations_file_path);
+        test_case.version, attestations_file_path, /*is_pre_installed=*/false);
     parsing_invalid_attestations.Run();
 
     // The parsing should fail. A sentinel file is created if the feature is
@@ -947,7 +961,7 @@ TEST_P(PrivacySandboxAttestationsSentinelTest,
             parsing_invalid_attestations_again.QuitClosure());
 
     PrivacySandboxAttestations::GetInstance()->LoadAttestations(
-        test_case.version, attestations_file_path);
+        test_case.version, attestations_file_path, /*is_pre_installed=*/false);
     parsing_invalid_attestations_again.Run();
 
     // If feature is enabled, the sentinel file should prevent parsing. The

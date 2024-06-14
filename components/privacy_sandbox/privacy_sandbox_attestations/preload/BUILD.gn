@@ -1,0 +1,24 @@
+# Copyright 2024 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+privacy_sandbox_attestations_resources = [
+  "manifest.json",
+  "privacy-sandbox-attestations.dat",
+]
+
+privacy_sandbox_attestations_component = "PrivacySandboxAttestationsPreloaded"
+
+copy("component") {
+  sources = privacy_sandbox_attestations_resources
+
+  outputs = [ "$root_out_dir/$privacy_sandbox_attestations_component/{{source_file_part}}" ]
+}
+
+if (is_mac) {
+  bundle_data("component_bundle") {
+    sources = privacy_sandbox_attestations_resources
+
+    outputs = [ "{{bundle_contents_dir}}/Libraries/$privacy_sandbox_attestations_component/{{source_file_part}}" ]
+  }
+}

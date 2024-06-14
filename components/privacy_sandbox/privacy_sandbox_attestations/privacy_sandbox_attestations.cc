@@ -298,8 +298,15 @@ PrivacySandboxSettingsImpl::Status PrivacySandboxAttestations::IsSiteAttested(
                  kDefaultAllowPrivacySandboxAttestations)
                  ? PrivacySandboxSettingsImpl::Status::kAllowed
                  : status;
-    default:
+    default: {
+      // Record whether the attestation map is parsed from the pre-installed or
+      // downloaded file.
+      base::UmaHistogramEnumeration(kAttestationsFileSource,
+                                    is_pre_installed()
+                                        ? FileSource::kPreInstalled
+                                        : FileSource::kDownloaded);
       return status;
+    }
   }
 }
 
@@ -371,7 +378,8 @@ PrivacySandboxAttestations::IsSiteAttestedInternal(
 
 void PrivacySandboxAttestations::LoadAttestations(
     base::Version version,
-    base::FilePath installed_file_path) {
+    base::FilePath installed_file_path,
+    bool is_pre_installed) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   // `LoadAttestations` is invoked by `ComponentReady`, which is always run on
   // the UI thread.
@@ -414,7 +422,7 @@ void PrivacySandboxAttestations::LoadAttestations(
       base::BindOnce(&LoadAttestationsInternal, std::move(installed_file_path),
                      version),
       base::BindOnce(&PrivacySandboxAttestations::OnAttestationsParsed,
-                     base::Unretained(this), version));
+                     base::Unretained(this), version, is_pre_installed));
 }
 
 void PrivacySandboxAttestations::AddOverride(const net::SchemefulSite& site) {
@@ -487,6 +495,7 @@ void PrivacySandboxAttestations::RunComponentRegistrationCallbackForTesting() {
 
 void PrivacySandboxAttestations::OnAttestationsParsed(
     base::Version version,
+    bool is_pre_installed,
     base::expected<PrivacySandboxAttestationsMap, ParsingStatus>
         attestations_map) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
@@ -506,6 +515,7 @@ void PrivacySandboxAttestations::OnAttestationsParsed(
     attestations_map_ = std::move(attestations_map.value());
   }
 
+  SetIsPreInstalled(is_pre_installed);
   attestations_parse_progress_ = Progress::kFinished;
 
   // Do not remove. There is an internal test that depends on the loggings.

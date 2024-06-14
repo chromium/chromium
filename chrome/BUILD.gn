@@ -376,6 +376,7 @@ if (!is_android && !is_mac) {
 
       data_deps += [
         "//chrome/browser/resources/media/mei_preload:component",
+        "//components/privacy_sandbox/privacy_sandbox_attestations/preload:component",
         "//third_party/widevine/cdm",
       ]
       if (invoker.collect_inputs_only) {
@@ -1208,6 +1209,7 @@ if (is_win) {
       ":swiftshader_binaries",
       ":widevine_cdm_library",
       "//chrome/browser/resources/media/mei_preload:component_bundle",
+      "//components/privacy_sandbox/privacy_sandbox_attestations/preload:component_bundle",
     ]
 
     if (is_chrome_branded) {

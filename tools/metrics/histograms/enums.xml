@@ -29404,6 +29404,11 @@ Called by update_net_error_codes.py.-->
   <int value="6" label="CannotParseFile"/>
 </enum>
 
+<enum name="PrivacySandboxAttestationsFileSource">
+  <int value="0" label="Pre-installed"/>
+  <int value="1" label="Downloaded"/>
+</enum>
+
 <enum name="PrivacySandboxPrivateAggregationBudgeterBudgetValidityStatus2">
   <int value="0" label="Valid"/>
   <int value="1" label="Valid but empty; no budget data stored"/>

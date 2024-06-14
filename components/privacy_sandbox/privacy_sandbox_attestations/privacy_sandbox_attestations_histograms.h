@@ -20,12 +20,20 @@ enum class ParsingStatus {
   kMaxValue = kCannotParseFile,
 };
 
+enum class FileSource {
+  kPreInstalled = 0,
+  kDownloaded = 1,
+  kMaxValue = kDownloaded,
+};
+
 inline constexpr char kAttestationStatusUMA[] =
     "PrivacySandbox.Attestations.IsSiteAttestedStatus";
 inline constexpr char kAttestationFirstCheckTimeUMA[] =
     "PrivacySandbox.Attestations.IsSiteAttested.FirstCheckTime";
 inline constexpr char kAttestationsFileParsingStatusUMA[] =
     "PrivacySandbox.Attestations.Parsing.Status";
+inline constexpr char kAttestationsFileSource[] =
+    "PrivacySandbox.Attestations.IsSiteAttested.FileSource";
 inline constexpr char kSentinelVersionUMA[] =
     "PrivacySandbox.Attestations.Parsing.SentinelVersion";
 inline constexpr char kAttestationsFileParsingTimeUMA[] =

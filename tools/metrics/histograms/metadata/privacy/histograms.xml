@@ -984,6 +984,18 @@ reviewer.
   </summary>
 </histogram>
 
+<histogram name="PrivacySandbox.Attestations.IsSiteAttested.FileSource"
+    enum="PrivacySandboxAttestationsFileSource" expires_after="2024-11-03">
+  <owner>shivanisha@chromium.org</owner>
+  <owner>xiaochenzh@chromium.org</owner>
+  <summary>
+    This histogram is recorded each time a Privacy Sandbox API attestation is
+    checked. It records whether the in-memory attestation map, which is used as
+    the source of truth for the incoming attestation check, is obtained by
+    parsing a pre-installed or downloaded attestation list file.
+  </summary>
+</histogram>
+
 <histogram name="PrivacySandbox.Attestations.IsSiteAttested.FirstCheckTime"
     units="ms" expires_after="2024-11-03">
   <owner>shivanisha@chromium.org</owner>

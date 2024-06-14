@@ -12,6 +12,7 @@
 #include "base/run_loop.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
+#include "base/test/scoped_path_override.h"
 #include "base/threading/thread_restrictions.h"
 #include "base/version.h"
 #include "chrome/browser/browser_process.h"
@@ -83,7 +84,11 @@ IN_PROC_BROWSER_TEST_F(
   site_attestation.add_attested_apis(TOPICS);
   (*proto.mutable_site_attestations())[site] = site_attestation;
 
-  base::Version version("0.0.0.1");
+  // There is a pre-installed attestations component. Choose a version number
+  // that is sure to be higher than the pre-installed one. This makes sure that
+  // the component installer will choose the attestations file in the user-wide
+  // component directory.
+  base::Version version("12345.0.0.0");
 
   ASSERT_TRUE(
       component_updater::InstallPrivacySandboxAttestationsComponentForTesting(
@@ -110,6 +115,10 @@ IN_PROC_BROWSER_TEST_F(
       PrivacySandboxAttestations::GetInstance()->IsSiteAttested(
           net::SchemefulSite(GURL(site)),
           PrivacySandboxAttestationsGatedAPI::kTopics)));
+
+  histogram_tester().ExpectTotalCount(kAttestationsFileSource, 1);
+  histogram_tester().ExpectBucketCount(kAttestationsFileSource,
+                                       FileSource::kDownloaded, 1);
 }
 
 // When parsing fails or crashes, a sentinel file is left in the installation
@@ -121,7 +130,11 @@ IN_PROC_BROWSER_TEST_F(PrivacySandboxAttestationsBrowserTest,
   // Allow blocking for file IO.
   base::ScopedAllowBlockingForTesting allow_blocking;
 
-  base::Version version("0.0.0.1");
+  // There is a pre-installed attestations component. Choose a version number
+  // that is sure to be higher than the pre-installed one. This makes sure that
+  // the component installer will choose the attestations file in the user-wide
+  // component directory.
+  base::Version version("12345.0.0.0");
 
   ASSERT_TRUE(
       component_updater::InstallPrivacySandboxAttestationsComponentForTesting(
@@ -195,7 +208,7 @@ IN_PROC_BROWSER_TEST_F(PrivacySandboxAttestationsBrowserTest,
                 PrivacySandboxAttestationsGatedAPI::kTopics));
   EXPECT_TRUE(base::PathExists(install_dir.Append(kSentinelFileName)));
 
-  base::Version newer_version("0.0.0.2");
+  base::Version newer_version("12345.0.0.1");
 
   // Install newer version attestations.
   ASSERT_TRUE(
@@ -228,7 +241,7 @@ IN_PROC_BROWSER_TEST_F(PrivacySandboxAttestationsBrowserTest,
                 net::SchemefulSite(GURL(site)),
                 PrivacySandboxAttestationsGatedAPI::kTopics));
   EXPECT_EQ(PrivacySandboxAttestations::GetInstance()->GetVersionForTesting(),
-            base::Version("0.0.0.2"));
+            base::Version("12345.0.0.1"));
 
   // Component updater should delete the old version directory, see
   // `ComponentInstaller::DeleteUnselectedComponentVersions`.
@@ -240,6 +253,17 @@ IN_PROC_BROWSER_TEST_F(PrivacySandboxAttestationsBrowserTest,
 // histogram buckets.
 IN_PROC_BROWSER_TEST_F(PrivacySandboxAttestationsBrowserTest,
                        DifferentHistogramAfterAttestationsFileCheck) {
+  // Allow blocking for file IO.
+  base::ScopedAllowBlockingForTesting allow_blocking;
+
+  // Override the pre-install component directory and its alternative directory
+  // so that the component update will not find the pre-installed attestations
+  // file.
+  base::ScopedPathOverride preinstalled_dir_override(
+      component_updater::DIR_COMPONENT_PREINSTALLED);
+  base::ScopedPathOverride preinstalled_alt_dir_override(
+      component_updater::DIR_COMPONENT_PREINSTALLED_ALT);
+
   std::string site = "https://example.com";
   EXPECT_FALSE(PrivacySandboxSettingsImpl::IsAllowed(
       PrivacySandboxAttestations::GetInstance()->IsSiteAttested(
@@ -276,6 +300,44 @@ IN_PROC_BROWSER_TEST_F(PrivacySandboxAttestationsBrowserTest,
   histogram_tester().ExpectBucketCount(
       kAttestationStatusUMA,
       PrivacySandboxSettingsImpl::Status::kAttestationsFileNotPresent, 1);
+}
+
+// If there is no attestation list in user directory, the pre-installed version
+// should be used.
+IN_PROC_BROWSER_TEST_F(PrivacySandboxAttestationsBrowserTest,
+                       PreinstalledAttestationListPresent) {
+  // Allow blocking for file IO.
+  base::ScopedAllowBlockingForTesting allow_blocking;
+
+  // Override the user-wide component directory to make sure there is no
+  // downloaded attestation list.
+  base::ScopedPathOverride user_dir_override(
+      component_updater::DIR_COMPONENT_USER);
+
+  base::RunLoop run_loop;
+  PrivacySandboxAttestations::GetInstance()
+      ->SetLoadAttestationsDoneCallbackForTesting(run_loop.QuitClosure());
+
+  // Register the privacy sandbox attestations component, which should detect
+  // the pre-installed attestations file on disk and start parsing.
+  RegisterPrivacySandboxAttestationsComponent(
+      g_browser_process->component_updater());
+
+  // Wait until the attestations parsing is done.
+  run_loop.Run();
+
+  EXPECT_TRUE(PrivacySandboxAttestations::GetInstance()
+                  ->GetVersionForTesting()
+                  .IsValid());
+
+  // Make an attestation check to verify the data point is recorded to the
+  // correct histogram bucket.
+  PrivacySandboxAttestations::GetInstance()->IsSiteAttested(
+      net::SchemefulSite(GURL("https://example.com")),
+      PrivacySandboxAttestationsGatedAPI::kTopics);
+  histogram_tester().ExpectTotalCount(kAttestationsFileSource, 1);
+  histogram_tester().ExpectBucketCount(kAttestationsFileSource,
+                                       FileSource::kPreInstalled, 1);
 }
 
 }  // namespace privacy_sandbox
