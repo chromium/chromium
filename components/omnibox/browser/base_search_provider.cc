@@ -15,6 +15,7 @@
 #include "base/functional/bind.h"
 #include "base/i18n/case_conversion.h"
 #include "base/memory/scoped_refptr.h"
+#include "base/ranges/algorithm.h"
 #include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversions.h"
 #include "components/omnibox/browser/actions/omnibox_action_in_suggest.h"
@@ -213,16 +214,27 @@ AutocompleteMatch BaseSearchProvider::CreateSearchSuggestion(
   match.transition = suggestion.from_keyword() ? ui::PAGE_TRANSITION_KEYWORD
                                                : ui::PAGE_TRANSITION_GENERATED;
 
+  bool is_google = search::TemplateURLIsGoogle(template_url, search_terms_data);
   // Attach Actions in Suggest to the newly created match on Android if Google
   // is the default search engine.
-  if ((is_android || is_ios) &&
-      search::TemplateURLIsGoogle(template_url, search_terms_data)) {
+  if ((is_android || is_ios) && is_google) {
     for (const omnibox::ActionInfo& action_info :
          suggestion.entity_info().action_suggestions()) {
       match.actions.emplace_back(CreateActionInSuggest(action_info, search_url,
                                                        *match.search_terms_args,
                                                        search_terms_data));
     }
+  }
+
+  if (is_android && is_google && suggestion.answer_template()) {
+    base::ranges::transform(
+        suggestion.answer_template()->enhancements().enhancements(),
+        std::back_inserter(match.actions),
+        [&](const omnibox::SuggestionEnhancement& enhancement) {
+          return CreateAnswerAction(enhancement, search_url,
+                                    *match.search_terms_args, search_terms_data,
+                                    suggestion.answer_type());
+        });
   }
 
   match.navigational_intent = suggestion.navigational_intent();

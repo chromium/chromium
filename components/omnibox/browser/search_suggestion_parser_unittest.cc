@@ -800,7 +800,7 @@ TEST(SearchSuggestionParserTest, ParseSuggestionTemplateInfo) {
         "google:suggestdetail": [
           {
             "ansb": "8",
-            "google:templateInfo": ")" +
+            "google:templateinfo": ")" +
         SerializeAndEncodeRichSuggestTemplate(suggest_template) +
         R"("
           },
@@ -918,7 +918,7 @@ TEST(SearchSuggestionParserTest, ParseSuggestionTemplateInfo) {
                 "t": [{"t": "68F", "tt": 18}]}}]
             },
             "ansb": "8",
-            "google:templateInfo": "<< invalid format >>"
+            "google:templateinfo": "<< invalid format >>"
           },
           {},
           {}

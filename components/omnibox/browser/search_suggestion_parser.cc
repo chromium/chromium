@@ -879,7 +879,7 @@ bool SearchSuggestionParser::ParseSuggestResults(
           // TemplateInfo should only exist if the server-side flag enabling
           // its creation is enabled.
           const auto* answer_template_string =
-              suggestion_detail.FindString("google:templateInfo");
+              suggestion_detail.FindString("google:templateinfo");
           bool template_parsed_successfully = false;
           // Check that answer type string can be mapped to
           // SuggestionAnswer::AnswerType.
