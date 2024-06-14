@@ -104,7 +104,6 @@ ts_library("library") {
     "//chrome/browser/resources/app_service_internals:build_ts",
     "//chrome/browser/resources/app_settings:build_ts",
     "//chrome/browser/resources/bookmarks:build_ts",
-    "//chrome/browser/resources/browser_switch:build_ts",
     "//chrome/browser/resources/commerce/product_specifications:build_ts",
     "//chrome/browser/resources/compose:build_ts",
     "//chrome/browser/resources/discards:build_ts",

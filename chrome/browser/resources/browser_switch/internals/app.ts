@@ -52,7 +52,6 @@ export class AppElement extends AppElementBase {
       nextFetch_: {type: String},
       urlCheckerInput_: {type: String},
       urlCheckerOutput_: {type: Array},
-      browserName_: {type: String},
       greyListRules_: {type: Array},
       siteListRules_: {type: Array},
       xmlSiteLists_: {type: Array},
@@ -61,11 +60,10 @@ export class AppElement extends AppElementBase {
 
   protected isBrowserSwitcherEnabled_: boolean = true;
   protected showSearch_: boolean = false;
-  private browserName_: string = getBrowserName();
   protected greyListRules_: RuleItem[] = [];
   protected siteListRules_: RuleItem[] = [];
   protected xmlSiteLists_: XmlSiteListItem[] = [];
-  protected urlCheckerInput_: string;
+  protected urlCheckerInput_: string = '';
   protected urlCheckerOutput_: string[] = [];
   protected lastFetch_: string = '';
   protected nextFetch_: string = '';
@@ -117,10 +115,10 @@ export class AppElement extends AppElementBase {
 
     for (const [rulesetName, ruleset] of Object.entries(rulesets)) {
       for (const [listName, rules] of Object.entries(ruleset as RuleSet)) {
-        listNameToProperty[listName].push(...rules.map((rule: string) => ({
-                                                         rulesetName,
-                                                         rule,
-                                                       })));
+        listNameToProperty[listName]!.push(...rules.map((rule: string) => ({
+                                                          rulesetName,
+                                                          rule,
+                                                        })));
       }
     }
   }
@@ -224,7 +222,7 @@ export class AppElement extends AppElementBase {
             .map(([prefName, url]) => ({
                    // Hacky name guessing
                    policyName: 'BrowserSwitcher' +
-                       snakeCaseToUpperCamelCase(prefName.split('.')[1]),
+                       snakeCaseToUpperCamelCase(prefName.split('.')[1]!),
                    url: url || this.i18n('notConfigured'),
                  }));
   }
