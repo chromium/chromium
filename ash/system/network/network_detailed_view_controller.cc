@@ -249,4 +249,8 @@ void NetworkDetailedViewController::OnPropertiesUpdated(
   }
 }
 
+void NetworkDetailedViewController::ShutDown() {
+  network_list_view_controller_.reset();
+}
+
 }  // namespace ash

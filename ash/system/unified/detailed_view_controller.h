@@ -26,6 +26,8 @@ class DetailedViewController {
   virtual std::unique_ptr<views::View> CreateView() = 0;
 
   virtual std::u16string GetAccessibleName() const = 0;
+
+  virtual void ShutDown() {}
 };
 
 }  // namespace ash

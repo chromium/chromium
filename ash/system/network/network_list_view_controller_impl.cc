@@ -67,7 +67,7 @@ constexpr auto kWifiGroupLabelPadding = gfx::Insets::TLBR(8, 22, 8, 4);
 // Helper function to remove `*view` from its view hierarchy, delete the view,
 // and reset the value of `*view` to be `nullptr`.
 template <class T>
-void RemoveAndResetViewIfExists(T** view) {
+void RemoveAndResetViewIfExists(raw_ptr<T>* view) {
   DCHECK(view);
 
   if (!*view) {
@@ -77,8 +77,7 @@ void RemoveAndResetViewIfExists(T** view) {
   views::View* parent = (*view)->parent();
 
   if (parent) {
-    parent->RemoveChildViewT(*view);
-    *view = nullptr;
+    parent->RemoveChildViewT(view->ExtractAsDangling());
   }
 }
 
@@ -685,7 +684,7 @@ size_t NetworkListViewControllerImpl::CreateWifiGroupHeader(
 }
 
 size_t NetworkListViewControllerImpl::CreateConfigureNetworkEntry(
-    HoverHighlightView** configure_network_entry_ptr,
+    raw_ptr<HoverHighlightView>* configure_network_entry_ptr,
     NetworkType type,
     size_t index) {
   if (*configure_network_entry_ptr) {
@@ -895,7 +894,7 @@ void NetworkListViewControllerImpl::UpdateMobileToggleAndSetStatusMessage() {
 
 void NetworkListViewControllerImpl::CreateInfoLabelIfMissingAndUpdate(
     int message_id,
-    TrayInfoLabel** info_label_ptr) {
+    raw_ptr<TrayInfoLabel>* info_label_ptr) {
   DCHECK(message_id);
   DCHECK(info_label_ptr);
 

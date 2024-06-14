@@ -449,6 +449,8 @@ void UnifiedSystemTrayController::ShowDetailedView(
   showing_audio_detailed_view_ = false;
   showing_display_detailed_view_ = false;
   bubble_->UpdateBubbleHeight(/*is_showing_detiled_view=*/true);
+
+  ShutDownDetailedViewController();
   quick_settings_view_->SetDetailedView(controller->CreateView());
 
   detailed_view_controller_ = std::move(controller);
@@ -478,6 +480,12 @@ void UnifiedSystemTrayController::UpdateBubble() {
 bool UnifiedSystemTrayController::ShouldShowDeferredUpdateDialog() const {
   return Shell::Get()->system_tray_model()->update_model()->update_deferred() ==
          DeferredUpdateState::kShowDialog;
+}
+
+void UnifiedSystemTrayController::ShutDownDetailedViewController() {
+  if (detailed_view_controller_) {
+    detailed_view_controller_->ShutDown();
+  }
 }
 
 }  // namespace ash

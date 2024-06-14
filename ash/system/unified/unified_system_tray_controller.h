@@ -180,6 +180,8 @@ class ASH_EXPORT UnifiedSystemTrayController
     media_view_controller_ = std::move(test_controller);
   }
 
+  void ShutDownDetailedViewController();
+
  private:
   friend class AccessibilityFeaturePodControllerTest;
   friend class SystemTrayTestApi;

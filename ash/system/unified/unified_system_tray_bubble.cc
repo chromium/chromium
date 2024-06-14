@@ -96,6 +96,7 @@ UnifiedSystemTrayBubble::~UnifiedSystemTrayBubble() {
   // Remove child views synchronously to ensure they don't try to access
   // `controller_` after `this` goes out of scope.
   if (bubble_view_) {
+    controller_->ShutDownDetailedViewController();
     bubble_view_->RemoveAllChildViews();
     quick_settings_view_ = nullptr;
     bubble_view_->ResetDelegate();
