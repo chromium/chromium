@@ -83,6 +83,8 @@ source_set("permissions") {
     "permission_decision_auto_blocker.h",
     "permission_hats_trigger_helper.cc",
     "permission_hats_trigger_helper.h",
+    "permission_indicators_tab_data.cc",
+    "permission_indicators_tab_data.h",
     "permission_manager.cc",
     "permission_manager.h",
     "permission_prompt.h",

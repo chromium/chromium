@@ -16,6 +16,7 @@
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/browser/ui/tabs/tab_strip_model_delegate.h"
 #include "components/browsing_topics/browsing_topics_service.h"
+#include "components/permissions/permission_indicators_tab_data.h"
 
 namespace tabs {
 
@@ -63,6 +64,10 @@ void TabFeatures::Init(TabInterface* tab, Profile* profile) {
                 profile)) {
       browsing_topics_service->ValidateCalculationSchedule();
     }
+
+    permission_indicators_tab_data_ =
+        std::make_unique<permissions::PermissionIndicatorsTabData>(
+            tab->GetContents());
   }
 }
 
