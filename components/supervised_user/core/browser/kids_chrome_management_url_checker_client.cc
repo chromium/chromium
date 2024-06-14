@@ -75,6 +75,13 @@ std::unique_ptr<ProtoFetcher<kidsmanagement::ClassifyUrlResponse>> ClassifyURL(
 }
 
 FetcherConfig GetFetcherConfig() {
+  // Currently we only support 3 of the 4 possible combinations of the flags
+  // below. We don't anticipate a need for having BestEffort and
+  // WaitUntilAvailable at this time.
+  if (base::FeatureList::IsEnabled(
+          kUncredentialedFilteringFallbackForSupervisedUsers)) {
+    return kClassifyUrlConfigBestEffort;
+  }
   if (base::FeatureList::IsEnabled(
           kWaitUntilAccessTokenAvailableForClassifyUrl)) {
     return kClassifyUrlConfigWaitUntilAccessTokenAvailable;

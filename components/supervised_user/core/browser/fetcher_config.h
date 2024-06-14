@@ -127,10 +127,6 @@ inline constexpr FetcherConfig kClassifyUrlConfig = {
         {
             .credentials_requirement =
                 AccessTokenConfig::CredentialsRequirement::kStrict,
-            // Fail the fetch right away when access token is not immediately
-            // available.
-            // TODO(b/301931929): consider using `kWaitUntilAvailable` to
-            // improve reliability.
             .mode = signin::PrimaryAccountAccessTokenFetcher::Mode::kImmediate,
             // TODO(b/284523446): Refer to GaiaConstants rather than literal.
             .oauth2_scope = "https://www.googleapis.com/auth/kid.permission",
@@ -156,6 +152,22 @@ inline constexpr FetcherConfig kClassifyUrlConfigWaitUntilAccessTokenAvailable =
                     "https://www.googleapis.com/auth/kid.permission",
             },
         .request_priority = net::IDLE,
+};
+
+inline constexpr FetcherConfig kClassifyUrlConfigBestEffort = {
+    .service_path = "/kidsmanagement/v1/people/me:classifyUrl",
+    .method = FetcherConfig::Method::kPost,
+    .histogram_basename = "FamilyLinkUser.ClassifyUrlRequest",
+    .traffic_annotation = annotations::ClassifyUrlTag,
+    .access_token_config =
+        {
+            .credentials_requirement =
+                AccessTokenConfig::CredentialsRequirement::kBestEffort,
+            .mode = signin::PrimaryAccountAccessTokenFetcher::Mode::kImmediate,
+            // TODO(b/284523446): Refer to GaiaConstants rather than literal.
+            .oauth2_scope = "https://www.googleapis.com/auth/kid.permission",
+        },
+    .request_priority = net::IDLE,
 };
 
 inline constexpr FetcherConfig kListFamilyMembersConfig{

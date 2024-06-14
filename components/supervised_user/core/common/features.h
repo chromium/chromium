@@ -61,6 +61,10 @@ BASE_DECLARE_FEATURE(kCustomWebSignInInterceptForSupervisedUsers);
 BASE_DECLARE_FEATURE(kHideGuestModeForSupervisedUsers);
 #endif
 
+// Fallback to sending un-credentialed filtering requests for supervised users
+// if they do not have a valid access token.
+BASE_DECLARE_FEATURE(kUncredentialedFilteringFallbackForSupervisedUsers);
+
 // Updates usages of Profile.isChild() in Profile.java to use the account
 // capability to determine if account is supervised.
 #if BUILDFLAG(IS_ANDROID)
