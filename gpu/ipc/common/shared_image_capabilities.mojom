@@ -17,5 +17,5 @@ struct SharedImageCapabilities {
   bool shared_image_swap_chain;
 
   [EnableIf=is_mac]
-  uint32 macos_specific_texture_target;
+  uint32 texture_target_for_io_surfaces;
 };

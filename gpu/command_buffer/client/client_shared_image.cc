@@ -78,7 +78,7 @@ uint32_t ComputeTextureTargetForSharedImage(
                             (metadata.usage & usages_requiring_native_buffer);
 
   return uses_native_buffer
-             ? sii->GetCapabilities().macos_specific_texture_target
+             ? sii->GetCapabilities().texture_target_for_io_surfaces
              : GL_TEXTURE_2D;
 #else  // Ozone
   // Check for external sampling being used.

@@ -23,7 +23,7 @@ bool StructTraits<gpu::mojom::SharedImageCapabilitiesDataView,
   out->shared_image_swap_chain = data.shared_image_swap_chain();
 
 #if BUILDFLAG(IS_MAC)
-  out->macos_specific_texture_target = data.macos_specific_texture_target();
+  out->texture_target_for_io_surfaces = data.texture_target_for_io_surfaces();
 #endif
 
   return true;

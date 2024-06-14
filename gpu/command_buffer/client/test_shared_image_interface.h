@@ -120,8 +120,8 @@ class TestSharedImageInterface : public SharedImageInterface {
   }
 
 #if BUILDFLAG(IS_MAC)
-  void set_macos_specific_texture_target(uint32_t target) {
-    shared_image_capabilities_.macos_specific_texture_target = target;
+  void set_texture_target_for_io_surfaces(uint32_t target) {
+    shared_image_capabilities_.texture_target_for_io_surfaces = target;
   }
 #endif
 

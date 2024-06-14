@@ -1235,7 +1235,7 @@ SkiaOutputSurfaceImpl::CreateGrSurfaceCharacterizationRenderPass(
     backend_format = GrBackendFormats::MakeGL(
         GrBackendFormats::AsGLFormatEnum(backend_format),
 #if BUILDFLAG(IS_MAC)
-        gpu::GetMacOSSpecificTextureTargetForCurrentGLImplementation());
+        gpu::GetTextureTargetForIOSurfaces());
 #else
         GL_TEXTURE_2D);
 #endif
@@ -1284,9 +1284,9 @@ SkiaOutputSurfaceImpl::CreateGrSurfaceCharacterizationCurrentFrame(
   // For root render pass, IOSurface will be used. Hence, we need to ensure that
   // we are using the correct texture target for IOSurfaces, which depends on
   // the GL implementation.
-  backend_format = GrBackendFormats::MakeGL(
-      GrBackendFormats::AsGLFormatEnum(backend_format),
-      gpu::GetMacOSSpecificTextureTargetForCurrentGLImplementation());
+  backend_format =
+      GrBackendFormats::MakeGL(GrBackendFormats::AsGLFormatEnum(backend_format),
+                               gpu::GetTextureTargetForIOSurfaces());
 #endif
   DCHECK(backend_format.isValid())
       << "GrBackendFormat is invalid for color_type: " << color_type;

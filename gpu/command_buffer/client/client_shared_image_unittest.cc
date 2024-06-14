@@ -162,17 +162,17 @@ TEST(ClientSharedImageTest,
 
 // When the client provides a native buffer with a single-plane format,
 // GL_TEXTURE_2D should be used as the texture target on all platforms other
-// than Mac, where the MacOS-specific target for native buffers should be used.
+// than Mac, where the target for IO surfaces should be used.
 TEST(ClientSharedImageTest,
      GetTextureTarget_SinglePlaneFormats_ClientNativeBuffer) {
   auto sii = base::MakeRefCounted<TestSharedImageInterface>();
   sii->emulate_client_provided_native_buffer();
 
 #if BUILDFLAG(IS_MAC)
-  // Explicitly set the MacOS-specific texture target to a target other than
+  // Explicitly set the texture target for IO surfaces to a target other than
   // GL_TEXTURE_2D to ensure that the test is meaningful on Mac.
-  const uint32_t kMacOSSpecificTarget = GL_TEXTURE_RECTANGLE_ARB;
-  sii->set_macos_specific_texture_target(kMacOSSpecificTarget);
+  const uint32_t kTargetForIOSurfaces = GL_TEXTURE_RECTANGLE_ARB;
+  sii->set_texture_target_for_io_surfaces(kTargetForIOSurfaces);
 #endif
 
   const gfx::Size kSize(256, 256);
@@ -191,7 +191,7 @@ TEST(ClientSharedImageTest,
     auto client_si = sii->CreateSharedImage(si_info, kNullSurfaceHandle);
 
 #if BUILDFLAG(IS_MAC)
-    const uint32_t expected_texture_target = kMacOSSpecificTarget;
+    const uint32_t expected_texture_target = kTargetForIOSurfaces;
 #else
     const uint32_t expected_texture_target = GL_TEXTURE_2D;
 #endif
@@ -200,16 +200,16 @@ TEST(ClientSharedImageTest,
 }
 
 // When the client asks for SCANOUT usage, GL_TEXTURE_2D should be used as the
-// texture target on all platforms other than Mac, where the MacOS-specific
-// target for native buffers should be used.
+// texture target on all platforms other than Mac, where the target for IO
+// surfaces should be used.
 TEST(ClientSharedImageTest, GetTextureTarget_ScanoutUsage) {
   auto sii = base::MakeRefCounted<TestSharedImageInterface>();
 
 #if BUILDFLAG(IS_MAC)
-  // Explicitly set the MacOS-specific texture target to a target other than
+  // Explicitly set the texture target for IO surfaces to a target other than
   // GL_TEXTURE_2D to ensure that the test is meaningful on Mac.
-  const uint32_t kMacOSSpecificTarget = GL_TEXTURE_RECTANGLE_ARB;
-  sii->set_macos_specific_texture_target(kMacOSSpecificTarget);
+  const uint32_t kTargetForIOSurfaces = GL_TEXTURE_RECTANGLE_ARB;
+  sii->set_texture_target_for_io_surfaces(kTargetForIOSurfaces);
 #endif
 
   const gfx::Size kSize(256, 256);
@@ -237,7 +237,7 @@ TEST(ClientSharedImageTest, GetTextureTarget_ScanoutUsage) {
     auto client_si = sii->CreateSharedImage(si_info, kNullSurfaceHandle);
 
 #if BUILDFLAG(IS_MAC)
-    const uint32_t expected_texture_target = kMacOSSpecificTarget;
+    const uint32_t expected_texture_target = kTargetForIOSurfaces;
 #else
     const uint32_t expected_texture_target = GL_TEXTURE_2D;
 #endif
@@ -246,16 +246,16 @@ TEST(ClientSharedImageTest, GetTextureTarget_ScanoutUsage) {
 }
 
 // When the client asks for WEBGPU usage, GL_TEXTURE_2D should be used as the
-// texture target on all platforms other than Mac, where the MacOS-specific
-// target for native buffers should be used.
+// texture target on all platforms other than Mac, where the target for IO
+// surfaces should be used.
 TEST(ClientSharedImageTest, GetTextureTarget_WebGPUUsage) {
   auto sii = base::MakeRefCounted<TestSharedImageInterface>();
 
 #if BUILDFLAG(IS_MAC)
-  // Explicitly set the MacOS-specific texture target to a target other than
+  // Explicitly set the texture target for IO surfaces to a target other than
   // GL_TEXTURE_2D to ensure that the test is meaningful on Mac.
-  const uint32_t kMacOSSpecificTarget = GL_TEXTURE_RECTANGLE_ARB;
-  sii->set_macos_specific_texture_target(kMacOSSpecificTarget);
+  const uint32_t kTargetForIOSurfaces = GL_TEXTURE_RECTANGLE_ARB;
+  sii->set_texture_target_for_io_surfaces(kTargetForIOSurfaces);
 #endif
 
   // Test all single-plane formats as well as multiplane formats for which
@@ -285,7 +285,7 @@ TEST(ClientSharedImageTest, GetTextureTarget_WebGPUUsage) {
       auto client_si = sii->CreateSharedImage(si_info, kNullSurfaceHandle);
 
 #if BUILDFLAG(IS_MAC)
-      const uint32_t expected_texture_target = kMacOSSpecificTarget;
+      const uint32_t expected_texture_target = kTargetForIOSurfaces;
 #else
       const uint32_t expected_texture_target = GL_TEXTURE_2D;
 #endif

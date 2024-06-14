@@ -221,7 +221,7 @@ class GPU_GLES2_EXPORT SharedImageFactory {
   bool supported_gmb_configurations_inited_ = false;
   gpu::GpuPreferences gpu_preferences_;
 #if BUILDFLAG(IS_MAC)
-  uint32_t macos_specific_texture_target_;
+  uint32_t texture_target_for_io_surfaces_;
 #endif
   gpu::GpuDriverBugWorkarounds workarounds_;
 

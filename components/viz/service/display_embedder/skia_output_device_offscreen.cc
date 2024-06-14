@@ -98,7 +98,7 @@ void SkiaOutputDeviceOffscreen::EnsureBackbuffer() {
     // the textureType mismatch.
     backend_format = GrBackendFormats::MakeGL(
         GrBackendFormats::AsGLFormatEnum(backend_format),
-        gpu::GetMacOSSpecificTextureTargetForCurrentGLImplementation());
+        gpu::GetTextureTargetForIOSurfaces());
 #endif
     DCHECK(backend_format.isValid())
         << "GrBackendFormat is invalid for color_type: " << sk_color_type_;

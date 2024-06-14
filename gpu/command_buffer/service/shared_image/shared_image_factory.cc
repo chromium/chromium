@@ -233,8 +233,7 @@ SharedImageFactory::SharedImageFactory(
                                       : GrContextType::kNone),
       gpu_preferences_(gpu_preferences),
 #if BUILDFLAG(IS_MAC)
-      macos_specific_texture_target_(
-          GetMacOSSpecificTextureTargetForCurrentGLImplementation()),
+      texture_target_for_io_surfaces_(GetTextureTargetForIOSurfaces()),
 #endif
       workarounds_(workarounds) {
 #if defined(USE_OZONE)
@@ -413,7 +412,7 @@ SharedImageFactory::SharedImageFactory(
             gr_context_type_, context_state_->GetMaxTextureSize(),
             feature_info.get(), context_state_->progress_reporter(),
 #if BUILDFLAG(IS_MAC)
-            macos_specific_texture_target_);
+            texture_target_for_io_surfaces_);
 #else
             GL_TEXTURE_2D);
 #endif
@@ -943,8 +942,8 @@ gpu::SharedImageCapabilities SharedImageFactory::MakeCapabilities() {
   }
 
 #if BUILDFLAG(IS_MAC)
-  shared_image_caps.macos_specific_texture_target =
-      macos_specific_texture_target_;
+  shared_image_caps.texture_target_for_io_surfaces =
+      texture_target_for_io_surfaces_;
 #endif
 
 #if BUILDFLAG(IS_WIN)

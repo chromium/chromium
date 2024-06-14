@@ -13,7 +13,7 @@ namespace gpu {
 
 #if BUILDFLAG(IS_MAC)
 SharedImageCapabilities::SharedImageCapabilities()
-    :  // Initialize `macos_specific_texture_target` to a value that is valid
+    :  // Initialize `texture_target_for_io_surfaces` to a value that is valid
        // for ClientSharedImage to use, as unittests broadly create and use
        // SharedImageCapabilities instances without initializing this field. The
        // specific value is chosen to match the historical default value that
@@ -24,7 +24,7 @@ SharedImageCapabilities::SharedImageCapabilities()
        // NOTE: We do this here rather than in the header file due to needing to
        // include the GLES2 headers, which causes compile issues when put in the
        // header files.
-      macos_specific_texture_target(GL_TEXTURE_RECTANGLE_ARB) {}
+      texture_target_for_io_surfaces(GL_TEXTURE_RECTANGLE_ARB) {}
 #else
 SharedImageCapabilities::SharedImageCapabilities() = default;
 #endif

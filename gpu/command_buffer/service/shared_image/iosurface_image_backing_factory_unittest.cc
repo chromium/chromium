@@ -61,7 +61,7 @@ class IOSurfaceImageBackingFactoryTest : public SharedImageTestBase {
         context_state_->gr_context_type(), context_state_->GetMaxTextureSize(),
         context_state_->feature_info(), /*progress_reporter=*/nullptr,
 #if BUILDFLAG(IS_MAC)
-        GetMacOSSpecificTextureTargetForCurrentGLImplementation());
+        GetTextureTargetForIOSurfaces());
 #else
         GL_TEXTURE_2D);
 #endif
@@ -136,7 +136,7 @@ TEST_F(IOSurfaceImageBackingFactoryTest, GL_SkiaGL) {
 
   GLenum expected_target =
 #if BUILDFLAG(IS_MAC)
-      GetMacOSSpecificTextureTargetForCurrentGLImplementation();
+      GetTextureTargetForIOSurfaces();
 #else
       GL_TEXTURE_2D;
 #endif
@@ -487,7 +487,7 @@ TEST_P(IOSurfaceImageBackingFactoryDawnTest, GL_Dawn_Skia_UnclearTexture) {
             factory_ref->mailbox());
     GLenum expected_target =
 #if BUILDFLAG(IS_MAC)
-        GetMacOSSpecificTextureTargetForCurrentGLImplementation();
+        GetTextureTargetForIOSurfaces();
 #else
         GL_TEXTURE_2D;
 #endif
@@ -790,7 +790,7 @@ class IOSurfaceImageBackingFactoryParameterizedTestBase
         context_state_->gr_context_type(), context_state_->GetMaxTextureSize(),
         context_state_->feature_info(), &progress_reporter_,
 #if BUILDFLAG(IS_MAC)
-        GetMacOSSpecificTextureTargetForCurrentGLImplementation());
+        GetTextureTargetForIOSurfaces());
 #else
         GL_TEXTURE_2D);
 #endif
@@ -1030,7 +1030,7 @@ TEST_P(IOSurfaceImageBackingFactoryScanoutTest, InitialData) {
   EXPECT_TRUE(shared_image);
   GLenum expected_target =
 #if BUILDFLAG(IS_MAC)
-      GetMacOSSpecificTextureTargetForCurrentGLImplementation();
+      GetTextureTargetForIOSurfaces();
 #else
       GL_TEXTURE_2D;
 #endif

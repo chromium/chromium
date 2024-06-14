@@ -356,7 +356,7 @@ bool MSAAIsSlow(const GpuDriverBugWorkarounds& workarounds) {
 }  // namespace gles2
 
 #if BUILDFLAG(IS_MAC)
-uint32_t GetMacOSSpecificTextureTargetForCurrentGLImplementation() {
+uint32_t GetTextureTargetForIOSurfaces() {
   // On MacOS, the default texture target for native GpuMemoryBuffers is
   // GL_TEXTURE_RECTANGLE_ARB. This is due to CGL's requirements for creating
   // a GL surface. However, when ANGLE is used on top of SwiftShader or Metal,
