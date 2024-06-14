@@ -252,14 +252,7 @@ IN_PROC_BROWSER_TEST_P(DumpAccessibilityTreeTest, AccessibilityCSSFontFamily) {
   RunCSSTest(FILE_PATH_LITERAL("font-family.html"));
 }
 
-// TODO(crbug.com/345718507): Consistently failing on Android.
-#if BUILDFLAG(IS_ANDROID)
-#define MAYBE_AccessibilityCSSFontSize DISABLED_AccessibilityCSSFontSize
-#else
-#define MAYBE_AccessibilityCSSFontSize AccessibilityCSSFontSize
-#endif
-IN_PROC_BROWSER_TEST_P(DumpAccessibilityTreeTest,
-                       MAYBE_AccessibilityCSSFontSize) {
+IN_PROC_BROWSER_TEST_P(DumpAccessibilityTreeTest, AccessibilityCSSFontSize) {
   RunCSSTest(FILE_PATH_LITERAL("font-size.html"));
 }
 
@@ -2990,14 +2983,8 @@ IN_PROC_BROWSER_TEST_P(DumpAccessibilityTreeTest,
   RunHtmlTest(FILE_PATH_LITERAL("offscreen-scroll.html"));
 }
 
-// TODO(b/345567344): test fail on android-automotive-12l-x64-rel-tests
-#if BUILDFLAG(IS_ANDROID)
-#define MAYBE_AccessibilityOffscreenSelect DISABLED_AccessibilityOffscreenSelect
-#else
-#define MAYBE_AccessibilityOffscreenSelect AccessibilityOffscreenSelect
-#endif
 IN_PROC_BROWSER_TEST_P(DumpAccessibilityTreeTest,
-                       MAYBE_AccessibilityOffscreenSelect) {
+                       AccessibilityOffscreenSelect) {
   RunHtmlTest(FILE_PATH_LITERAL("offscreen-select.html"));
 }
 
@@ -3320,29 +3307,13 @@ IN_PROC_BROWSER_TEST_P(YieldingParserDumpAccessibilityTreeTest,
   RunHtmlTest(FILE_PATH_LITERAL("svg-elements-not-mapped.html"));
 }
 
-// TODO(b/345567344): test fail on android-automotive-12l-x64-rel-tests
-#if BUILDFLAG(IS_ANDROID)
-#define MAYBE_AccessibilitySvgTextAlternativeComputation \
-  DISABLED_AccessibilitySvgTextAlternativeComputation
-#else
-#define MAYBE_AccessibilitySvgTextAlternativeComputation \
-  AccessibilitySvgTextAlternativeComputation
-#endif
 IN_PROC_BROWSER_TEST_P(DumpAccessibilityTreeTest,
-                       MAYBE_AccessibilitySvgTextAlternativeComputation) {
+                       AccessibilitySvgTextAlternativeComputation) {
   RunHtmlTest(FILE_PATH_LITERAL("svg-text-alternative-computation.html"));
 }
 
-// TODO(b/345567344): test fail on android-automotive-12l-x64-rel-tests
-#if BUILDFLAG(IS_ANDROID)
-#define MAYBE_AccessibilitySvgTextAlternativeComputation \
-  DISABLED_AccessibilitySvgTextAlternativeComputation
-#else
-#define MAYBE_AccessibilitySvgTextAlternativeComputation \
-  AccessibilitySvgTextAlternativeComputation
-#endif
 IN_PROC_BROWSER_TEST_P(YieldingParserDumpAccessibilityTreeTest,
-                       MAYBE_AccessibilitySvgTextAlternativeComputation) {
+                       AccessibilitySvgTextAlternativeComputation) {
   RunHtmlTest(FILE_PATH_LITERAL("svg-text-alternative-computation.html"));
 }
 

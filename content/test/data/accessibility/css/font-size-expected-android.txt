@@ -1,4 +1,4 @@
-android.webkit.WebView focusable focused scrollable
+android.webkit.WebView focusable focused
 ++android.widget.TextView name='10.2340920823px'
 ++android.widget.TextView name='10px'
 ++android.widget.TextView name='11px'
