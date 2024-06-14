@@ -166,7 +166,7 @@ class SigninView extends LinearLayout {
             case ScreenMode.RESTRICTED:
             case ScreenMode.DEADLINED:
                 MinorModeHelper.recordButtonClicked(
-                        MinorModeHelper.SyncButtonClicked.SYNC_OPT_IN_EQUAL_WEIGHTED);
+                        SigninMetricsUtils.SyncButtonClicked.SYNC_OPT_IN_EQUAL_WEIGHTED);
                 break;
             case ScreenMode.UNRESTRICTED:
                 MinorModeHelper.recordButtonClicked(
@@ -184,11 +184,11 @@ class SigninView extends LinearLayout {
             case ScreenMode.RESTRICTED:
             case ScreenMode.DEADLINED:
                 MinorModeHelper.recordButtonClicked(
-                        MinorModeHelper.SyncButtonClicked.SYNC_CANCEL_EQUAL_WEIGHTED);
+                        SigninMetricsUtils.SyncButtonClicked.SYNC_CANCEL_EQUAL_WEIGHTED);
                 break;
             case ScreenMode.UNRESTRICTED:
                 MinorModeHelper.recordButtonClicked(
-                        MinorModeHelper.SyncButtonClicked.SYNC_CANCEL_NOT_EQUAL_WEIGHTED);
+                        SigninMetricsUtils.SyncButtonClicked.SYNC_CANCEL_NOT_EQUAL_WEIGHTED);
                 break;
             default:
                 // Button not present
@@ -199,16 +199,16 @@ class SigninView extends LinearLayout {
         switch (mScreenMode) {
             case ScreenMode.PENDING:
                 MinorModeHelper.recordButtonClicked(
-                        MinorModeHelper.SyncButtonClicked.SYNC_SETTINGS_UNKNOWN_WEIGHTED);
+                        SigninMetricsUtils.SyncButtonClicked.SYNC_SETTINGS_UNKNOWN_WEIGHTED);
                 break;
             case ScreenMode.RESTRICTED:
             case ScreenMode.DEADLINED:
                 MinorModeHelper.recordButtonClicked(
-                        MinorModeHelper.SyncButtonClicked.SYNC_SETTINGS_EQUAL_WEIGHTED);
+                        SigninMetricsUtils.SyncButtonClicked.SYNC_SETTINGS_EQUAL_WEIGHTED);
                 break;
             case ScreenMode.UNRESTRICTED:
                 MinorModeHelper.recordButtonClicked(
-                        MinorModeHelper.SyncButtonClicked.SYNC_SETTINGS_NOT_EQUAL_WEIGHTED);
+                        SigninMetricsUtils.SyncButtonClicked.SYNC_SETTINGS_NOT_EQUAL_WEIGHTED);
                 break;
         }
     }

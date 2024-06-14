@@ -39,6 +39,21 @@ public class SigninMetricsUtils {
         int NUM_STATES = 6;
     }
 
+    @IntDef({
+        SyncButtonClicked.SYNC_OPT_IN_EQUAL_WEIGHTED,
+        SyncButtonClicked.SYNC_CANCEL_EQUAL_WEIGHTED,
+        SyncButtonClicked.SYNC_SETTINGS_EQUAL_WEIGHTED,
+        SyncButtonClicked.SYNC_OPT_IN_NOT_EQUAL_WEIGHTED,
+        SyncButtonClicked.SYNC_CANCEL_NOT_EQUAL_WEIGHTED,
+        SyncButtonClicked.SYNC_SETTINGS_NOT_EQUAL_WEIGHTED,
+        SyncButtonClicked.HISTORY_SYNC_OPT_IN_EQUAL_WEIGHTED,
+        SyncButtonClicked.HISTORY_SYNC_CANCEL_EQUAL_WEIGHTED,
+        SyncButtonClicked.HISTORY_SYNC_OPT_IN_NOT_EQUAL_WEIGHTED,
+        SyncButtonClicked.HISTORY_SYNC_CANCEL_NOT_EQUAL_WEIGHTED,
+        SyncButtonClicked.SYNC_SETTINGS_UNKNOWN_WEIGHTED,
+        SyncButtonClicked.NUM_ENTRIES,
+    })
+    @Retention(RetentionPolicy.SOURCE)
     public @interface SyncButtonClicked {
         // These values are persisted to logs. Entries should not be renumbered and
         // numeric values should never be reused.
@@ -52,7 +67,8 @@ public class SigninMetricsUtils {
         int HISTORY_SYNC_CANCEL_EQUAL_WEIGHTED = 7;
         int HISTORY_SYNC_OPT_IN_NOT_EQUAL_WEIGHTED = 8;
         int HISTORY_SYNC_CANCEL_NOT_EQUAL_WEIGHTED = 9;
-        int NUM_ENTRIES = 8;
+        int SYNC_SETTINGS_UNKNOWN_WEIGHTED = 10;
+        int NUM_ENTRIES = 11;
     };
 
     /**

@@ -79,6 +79,16 @@ public class MinorModeHelper implements IdentityManager.Observer {
     private static final String BUTTONS_SHOWN_HISTOGRAM_NAME = "Signin.SyncButtons.Shown";
     private static final String BUTTON_CLICKED_HISTOGRAM_NAME = "Signin.SyncButtons.Clicked";
 
+    @IntDef({
+        SyncButtonsType.SYNC_EQUAL_WEIGHTED_DEPRECATED,
+        SyncButtonsType.SYNC_NOT_EQUAL_WEIGHTED,
+        SyncButtonsType.HISTORY_SYNC_EQUAL_WEIGHTED,
+        SyncButtonsType.HISTORY_SYNC_NOT_EQUAL_WEIGHTED,
+        SyncButtonsType.SYNC_EQUAL_WEIGHTED_FROM_DEADLINE,
+        SyncButtonsType.SYNC_EQUAL_WEIGHTED_FROM_CAPABILITY,
+        SyncButtonsType.NUM_ENTRIES,
+    })
+    @Retention(RetentionPolicy.SOURCE)
     public @interface SyncButtonsType {
         // These values are persisted to logs. Entries should not be renumbered and
         // numeric values should never be reused.
@@ -89,23 +99,6 @@ public class MinorModeHelper implements IdentityManager.Observer {
         int SYNC_EQUAL_WEIGHTED_FROM_DEADLINE = 4;
         int SYNC_EQUAL_WEIGHTED_FROM_CAPABILITY = 5;
         int NUM_ENTRIES = 6;
-    };
-
-    public @interface SyncButtonClicked {
-        // These values are persisted to logs. Entries should not be renumbered and
-        // numeric values should never be reused.
-        int SYNC_OPT_IN_EQUAL_WEIGHTED = 0;
-        int SYNC_CANCEL_EQUAL_WEIGHTED = 1;
-        int SYNC_SETTINGS_EQUAL_WEIGHTED = 2;
-        int SYNC_OPT_IN_NOT_EQUAL_WEIGHTED = 3;
-        int SYNC_CANCEL_NOT_EQUAL_WEIGHTED = 4;
-        int SYNC_SETTINGS_NOT_EQUAL_WEIGHTED = 5;
-        int HISTORY_SYNC_OPT_IN_EQUAL_WEIGHTED = 6;
-        int HISTORY_SYNC_CANCEL_EQUAL_WEIGHTED = 7;
-        int HISTORY_SYNC_OPT_IN_NOT_EQUAL_WEIGHTED = 8;
-        int HISTORY_SYNC_CANCEL_NOT_EQUAL_WEIGHTED = 9;
-        int SYNC_SETTINGS_UNKNOWN_WEIGHTED = 10;
-        int NUM_ENTRIES = 11;
     };
 
     private static boolean sDisableHistorySyncOptInTimeoutForTesting;
@@ -167,9 +160,9 @@ public class MinorModeHelper implements IdentityManager.Observer {
      * Records which buttons (accept or decline) were clicked on sync screen and history sync and
      * whether the buttons were equally weighted.
      *
-     * @param type See {@link SyncButtonClicked}
+     * @param type See {@link SigninMetricsUtils.SyncButtonClicked}
      */
-    public static void recordButtonClicked(@SyncButtonClicked int type) {
+    public static void recordButtonClicked(@SigninMetricsUtils.SyncButtonClicked int type) {
         SigninMetricsUtils.recordButtonTypeClicked(type);
     }
 
