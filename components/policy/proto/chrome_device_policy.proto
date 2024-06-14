@@ -1842,7 +1842,7 @@ message ExtendedFkeysModifierProto {
 }
 
 message ChromeDeviceSettingsProto {
-  reserved 61, 71, 90;
+  reserved 61, 71, 90, 1194;
   optional DevicePolicyRefreshRateProto device_policy_refresh_rate = 1;
   optional UserWhitelistProto user_whitelist = 2;
   optional GuestModeEnabledProto guest_mode_enabled = 3;
@@ -2053,4 +2053,5 @@ message ChromeDeviceSettingsProto {
   optional DeviceFlexHwDataForProductImprovementEnabledProto
       device_flex_hw_data_for_product_improvement_enabled = 157;
   optional BooleanPolicyProto DeviceHardwareVideoDecodingEnabled = 1185;
+  optional BooleanPolicyProto DeviceExtendedAutoUpdateEnabled = 1195;
 }

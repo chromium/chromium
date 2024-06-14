@@ -1184,6 +1184,16 @@ policies:
   1183: DeskAPIDeskSaveAndShareEnabled
   1184: OopPrintDriversAllowed
   1185: DeviceHardwareVideoDecodingEnabled
+  1186: ''
+  1187: ''
+  1188: ''
+  1189: ''
+  1190: ''
+  1191: ''
+  1192: ''
+  1193: ''
+  1194: ''
+  1195: DeviceExtendedAutoUpdateEnabled
 atomic_groups:
   1: Homepage
   2: RemoteAccess

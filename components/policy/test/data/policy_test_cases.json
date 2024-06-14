@@ -14279,6 +14279,9 @@
   "DeviceDisplayResolution": {
     "reason_for_missing_test": "Maps into CrosSettings"
   },
+  "DeviceExtendedAutoUpdateEnabled": {
+    "reason_for_missing_test": "Maps into CrosSettings"
+  },
   "ChromeOsReleaseChannel": {
     "reason_for_missing_test": "Maps into CrosSettings"
   },
