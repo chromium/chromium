@@ -198,10 +198,16 @@ void AddCustomAPNListToRecommended(base::Value::Dict& cellular_fields) {
 }
 
 void FillInCellularDefaultsInOncObject(const OncValueSignature& signature,
-                                       base::Value::Dict& onc_object) {
+                                       base::Value::Dict& onc_object,
+                                       bool allow_apn_modification) {
   if (&signature == &kCellularSignature) {
+    if (allow_apn_modification) {
+      AddCustomAPNListToRecommended(onc_object);
+    } else {
+      onc_object.Set(::onc::cellular::kCustomAPNList, base::Value::List());
+    }
     SetAPNDictAndRecommendedIfNone(onc_object);
-    AddCustomAPNListToRecommended(onc_object);
+
     return;
   }
 
@@ -219,17 +225,21 @@ void FillInCellularDefaultsInOncObject(const OncValueSignature& signature,
     }
 
     FillInCellularDefaultsInOncObject(*field_signature->value_signature,
-                                      it.second.GetDict());
+                                      it.second.GetDict(),
+                                      allow_apn_modification);
   }
 }
 
-// Adds "CustomAPNList" as a recommended field by default, and creates an APN
-// dict with nested recommended field in cellular entries lacking an APN dict in
-// |network_configs| list.
-void FillInCellularDefaultsInNetworks(base::Value::List& network_configs) {
+// Creates an APN dict with nested recommended field in cellular entries lacking
+// an APN dict in |network_configs| list. If |allow_apn_modification| is true,
+// "CustomAPNList" is added as a recommended field to the cellular config,
+// otherwise, the CustomAPNList field is set to an empty list.
+void FillInCellularDefaultsInNetworks(base::Value::List& network_configs,
+                                      bool allow_apn_modification) {
   for (auto& network : network_configs) {
     FillInCellularDefaultsInOncObject(kNetworkConfigurationSignature,
-                                      network.GetDict());
+                                      network.GetDict(),
+                                      allow_apn_modification);
   }
 }
 
@@ -957,11 +967,25 @@ bool ParseAndValidateOncForImport(const std::string& onc_blob,
   base::Value::List* validated_networks_list = validated_toplevel_onc->FindList(
       ::onc::toplevel_config::kNetworkConfigurations);
 
+  base::Value::Dict* validated_global_config = validated_toplevel_onc->FindDict(
+      ::onc::toplevel_config::kGlobalNetworkConfiguration);
+
   const IdToAPNMap id_to_apn_map = BuildIdToAPNMap(
       validated_toplevel_onc->FindList(::onc::toplevel_config::kAdminAPNList));
+
   if (validated_networks_list) {
     FillInHexSSIDFieldsInNetworks(*validated_networks_list);
-    FillInCellularDefaultsInNetworks(*validated_networks_list);
+
+    bool allow_apn_modification = true;
+    if (validated_global_config) {
+      allow_apn_modification =
+          (validated_global_config->FindBool(
+               ::onc::global_network_config::kAllowAPNModification))
+              .value_or(allow_apn_modification);
+    }
+
+    FillInCellularDefaultsInNetworks(*validated_networks_list,
+                                     allow_apn_modification);
 
     // Sets the CustomAPNList for cellular networks if an AdminAPNList and
     // AdminAssignedAPNIds have been specified for a cellular network.
@@ -990,10 +1014,6 @@ bool ParseAndValidateOncForImport(const std::string& onc_blob,
   }
 
   if (global_network_config) {
-    base::Value::Dict* validated_global_config =
-        validated_toplevel_onc->FindDict(
-            ::onc::toplevel_config::kGlobalNetworkConfiguration);
-
     if (validated_global_config) {
       // Constructs and sets the PSIMAdminAssignedAPNs global network
       // configuration field if an AdminAPNList and PSIMAdminAssignedAPNIds have

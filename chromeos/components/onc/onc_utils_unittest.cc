@@ -447,6 +447,71 @@ TEST(ONCUtils, ParseAndValidateOncForImport_CustomApnListRecommendedByDefault) {
   EXPECT_EQ(expected_recommended, *recommended);
 }
 
+TEST(
+    ONCUtils,
+    ParseAndValidateOncForImport_CustomApnListRecommendedWhenApnModificationNotProvided) {
+  const auto onc_blob = test_utils::ReadTestData(
+      "managed_cellular_no_recommended_allow_apn_modification_not_provided."
+      "onc");
+  base::Value::List network_configs;
+  base::Value::Dict global_network_config;
+  base::Value::List certificates;
+
+  ASSERT_TRUE(ParseAndValidateOncForImport(
+      onc_blob, ::onc::ONCSource::ONC_SOURCE_DEVICE_POLICY, std::string(),
+      &network_configs, &global_network_config, &certificates));
+
+  const auto* recommended =
+      network_configs[0].GetDict().FindByDottedPath("Cellular.Recommended");
+  ASSERT_NE(nullptr, recommended);
+
+  base::Value::List expected_recommended =
+      base::Value::List().Append(::onc::cellular::kCustomAPNList);
+
+  EXPECT_EQ(expected_recommended, *recommended);
+}
+
+TEST(
+    ONCUtils,
+    ParseAndValidateOncForImport_CustomApnListRecommendedWhenApnModificationAllowed) {
+  const auto onc_blob = test_utils::ReadTestData(
+      "managed_cellular_no_recommended_allow_apn_modification_true.onc");
+  base::Value::List network_configs;
+  base::Value::Dict global_network_config;
+  base::Value::List certificates;
+
+  ASSERT_TRUE(ParseAndValidateOncForImport(
+      onc_blob, ::onc::ONCSource::ONC_SOURCE_DEVICE_POLICY, std::string(),
+      &network_configs, &global_network_config, &certificates));
+
+  const auto* recommended =
+      network_configs[0].GetDict().FindByDottedPath("Cellular.Recommended");
+  ASSERT_NE(nullptr, recommended);
+
+  base::Value::List expected_recommended =
+      base::Value::List().Append(::onc::cellular::kCustomAPNList);
+
+  EXPECT_EQ(expected_recommended, *recommended);
+}
+
+TEST(
+    ONCUtils,
+    ParseAndValidateOncForImport_CustomApnListNotRecommendeWhenApnModificationProhibited) {
+  const auto onc_blob = test_utils::ReadTestData(
+      "managed_cellular_no_recommended_allow_apn_modification_false.onc");
+  base::Value::List network_configs;
+  base::Value::Dict global_network_config;
+  base::Value::List certificates;
+
+  ASSERT_TRUE(ParseAndValidateOncForImport(
+      onc_blob, ::onc::ONCSource::ONC_SOURCE_DEVICE_POLICY, std::string(),
+      &network_configs, &global_network_config, &certificates));
+
+  const auto* recommended =
+      network_configs[0].GetDict().FindByDottedPath("Cellular.Recommended");
+  EXPECT_EQ(nullptr, recommended);
+}
+
 TEST(ONCUtils, ParseAndValidateOncForImport_AdminApnProvided) {
   const auto onc_blob = test_utils::ReadTestData(
       "managed_toplevel_with_multiple_cellular_and_admin_apns.onc");
