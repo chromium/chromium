@@ -242,8 +242,7 @@ class UserManagerTest : public testing::Test {
                 .Set(kAccountsPrefDeviceLocalAccountsKeyKioskAppId, ""))));
   }
 
-  // Should be used to setup device local accounts of `TYPE_PUBLIC_SESSION` and
-  // `TYPE_SAML_PUBLIC_SESSION` types.
+  // Should be used to setup device local accounts of `TYPE_PUBLIC_SESSION`.
   void SetDeviceLocalPublicAccount(
       const std::string& account_id,
       policy::DeviceLocalAccountType type,
@@ -380,25 +379,6 @@ TEST_F(UserManagerTest, IsEphemeralAccountIdTrueForPublicAccountId) {
   const AccountId public_accout_id = CreateDeviceLocalAccountId(
       kDeviceLocalAccountId, policy::DeviceLocalAccountType::kPublicSession);
   EXPECT_TRUE(IsEphemeralAccountId(public_accout_id));
-}
-
-// Tests that `IsEphemeralAccountId(account_id)` returns true when `account_id`
-// is a SAML public account id.
-TEST_F(UserManagerTest, IsEphemeralAccountIdTrueForSamlPublicAccountId) {
-  // Set all ephemeral related policies to `false` to make sure that policies
-  // don't affect ephemeral mode of the SAML public account.
-  SetDeviceSettings(
-      /* ephemeral_users_enabled= */ false,
-      /* owner= */ kOwnerAccountId.GetUserEmail());
-  SetDeviceLocalPublicAccount(
-      kDeviceLocalAccountId, policy::DeviceLocalAccountType::kSamlPublicSession,
-      policy::DeviceLocalAccount::EphemeralMode::kDisable);
-  RetrieveTrustedDevicePolicies();
-
-  const AccountId saml_public_accout_id = CreateDeviceLocalAccountId(
-      kDeviceLocalAccountId,
-      policy::DeviceLocalAccountType::kSamlPublicSession);
-  EXPECT_TRUE(IsEphemeralAccountId(saml_public_accout_id));
 }
 
 // Tests that `UserManager` correctly parses device-wide ephemeral users policy

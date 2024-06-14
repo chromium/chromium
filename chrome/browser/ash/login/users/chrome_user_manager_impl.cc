@@ -330,26 +330,6 @@ void ChromeUserManagerImpl::OnDeviceLocalAccountsChanged() {
   // handled via the kAccountsPrefDeviceLocalAccounts device setting observer.
 }
 
-void ChromeUserManagerImpl::LoadDeviceLocalAccounts(
-    std::set<AccountId>* device_local_accounts_set) {
-  const base::Value::List& prefs_device_local_accounts =
-      GetLocalState()->GetList(prefs::kDeviceLocalAccountsWithSavedData);
-  std::vector<AccountId> device_local_accounts;
-  ParseUserList(prefs_device_local_accounts, std::set<AccountId>(),
-                &device_local_accounts, device_local_accounts_set);
-  for (const AccountId& account_id : device_local_accounts) {
-    auto type = policy::GetDeviceLocalAccountType(account_id.GetUserEmail());
-    if (!type.has_value()) {
-      NOTREACHED_IN_MIGRATION();
-      continue;
-    }
-
-    user_storage_.push_back(
-        CreateUserFromDeviceLocalAccount(account_id, *type));
-    users_.push_back(user_storage_.back().get());
-  }
-}
-
 void ChromeUserManagerImpl::RetrieveTrustedDevicePolicies() {
   // Local state may not be initialized in unit_tests.
   if (!GetLocalState()) {
@@ -554,8 +534,13 @@ bool ChromeUserManagerImpl::UpdateAndCleanUpDeviceLocalAccounts(
             active_user->GetAccountId()) {
       users_.insert(users_.begin(), active_user);
     } else {
-      user_storage_.push_back(CreateUserFromDeviceLocalAccount(
-          AccountId::FromUserEmail(account.user_id), account.type));
+      auto user_type =
+          chrome_user_manager_util::DeviceLocalAccountTypeToUserType(
+              account.type);
+      CHECK(user_type.has_value());
+      // Using `new` to access a non-public constructor.
+      user_storage_.push_back(base::WrapUnique(new user_manager::User(
+          AccountId::FromUserEmail(account.user_id), *user_type)));
       users_.insert(users_.begin(), user_storage_.back().get());
     }
     if (account.type == policy::DeviceLocalAccountType::kPublicSession ||
@@ -652,30 +637,6 @@ void ChromeUserManagerImpl::OnProfileWillBeDestroyed(Profile* profile) {
 
 void ChromeUserManagerImpl::OnProfileManagerDestroying() {
   profile_manager_observation_.Reset();
-}
-
-std::unique_ptr<user_manager::User>
-ChromeUserManagerImpl::CreateUserFromDeviceLocalAccount(
-    const AccountId& account_id,
-    const policy::DeviceLocalAccountType type) const {
-  std::unique_ptr<user_manager::User> user;
-  switch (type) {
-    case policy::DeviceLocalAccountType::kPublicSession:
-      user.reset(user_manager::User::CreatePublicAccountUser(account_id));
-      break;
-    case policy::DeviceLocalAccountType::kSamlPublicSession:
-      user.reset(user_manager::User::CreatePublicAccountUser(
-          account_id, /*is_using_saml=*/true));
-      break;
-    case policy::DeviceLocalAccountType::kKioskApp:
-      user.reset(user_manager::User::CreateKioskAppUser(account_id));
-      break;
-    case policy::DeviceLocalAccountType::kWebKioskApp:
-      user.reset(user_manager::User::CreateWebKioskAppUser(account_id));
-      break;
-  }
-
-  return user;
 }
 
 }  // namespace ash

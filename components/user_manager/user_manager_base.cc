@@ -23,6 +23,7 @@
 #include "base/functional/callback_helpers.h"
 #include "base/location.h"
 #include "base/logging.h"
+#include "base/memory/ptr_util.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/ranges/algorithm.h"
@@ -1228,6 +1229,27 @@ void UserManagerBase::EnsureUsersLoaded() {
 
   for (auto& observer : observer_list_) {
     observer.OnUserListLoaded();
+  }
+}
+
+void UserManagerBase::LoadDeviceLocalAccounts(
+    std::set<AccountId>* device_local_accounts_set) {
+  const base::Value::List& prefs_device_local_accounts =
+      GetLocalState()->GetList(prefs::kDeviceLocalAccountsWithSavedData);
+  std::vector<AccountId> device_local_accounts;
+  ParseUserList(prefs_device_local_accounts, std::set<AccountId>(),
+                &device_local_accounts, device_local_accounts_set);
+  for (const AccountId& account_id : device_local_accounts) {
+    auto type =
+        delegate_->GetDeviceLocalAccountUserType(account_id.GetUserEmail());
+    if (!type.has_value()) {
+      NOTREACHED_IN_MIGRATION();
+      continue;
+    }
+
+    // Using `new` to access a non-public constructor.
+    user_storage_.push_back(base::WrapUnique(new User(account_id, *type)));
+    users_.push_back(user_storage_.back().get());
   }
 }
 

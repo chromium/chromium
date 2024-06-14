@@ -12,8 +12,10 @@
 #include "base/files/file_path.h"
 #include "base/functional/bind.h"
 #include "base/logging.h"
+#include "base/notreached.h"
 #include "base/path_service.h"
 #include "chrome/browser/ash/login/session/user_session_manager.h"
+#include "chrome/browser/ash/login/users/chrome_user_manager_util.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/profiles/profile_attributes_storage.h"
 #include "chrome/browser/profiles/profile_manager.h"
@@ -21,7 +23,9 @@
 #include "chromeos/ash/components/cryptohome/cryptohome_parameters.h"
 #include "chromeos/ash/components/dbus/cryptohome/UserDataAuth.pb.h"
 #include "chromeos/ash/components/dbus/userdataauth/userdataauth_client.h"
+#include "components/policy/core/common/device_local_account_type.h"
 #include "components/user_manager/user.h"
+#include "components/user_manager/user_type.h"
 #include "content/public/common/content_switches.h"
 
 namespace ash {
@@ -54,6 +58,16 @@ void UserManagerDelegateImpl::OverrideDirHome(
 
 bool UserManagerDelegateImpl::IsUserSessionRestoreInProgress() {
   return UserSessionManager::GetInstance()->UserSessionsRestoreInProgress();
+}
+
+std::optional<user_manager::UserType>
+UserManagerDelegateImpl::GetDeviceLocalAccountUserType(std::string_view email) {
+  auto type = policy::GetDeviceLocalAccountType(email);
+  if (!type.has_value()) {
+    NOTREACHED_IN_MIGRATION();
+    return std::nullopt;
+  }
+  return chrome_user_manager_util::DeviceLocalAccountTypeToUserType(*type);
 }
 
 // If we don't have a mounted profile directory we're in trouble.

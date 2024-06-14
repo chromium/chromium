@@ -10,6 +10,7 @@
 #include <optional>
 #include <set>
 #include <string>
+#include <string_view>
 #include <vector>
 
 #include "base/callback_list.h"
@@ -85,6 +86,10 @@ class USER_MANAGER_EXPORT UserManagerBase : public UserManager {
 
     // Returns whether user session restore is in progress.
     virtual bool IsUserSessionRestoreInProgress() = 0;
+
+    // Returns UserType for the DeviceLocalAccount of the given `email`.
+    virtual std::optional<UserType> GetDeviceLocalAccountUserType(
+        std::string_view email) = 0;
 
     // Verifies the Profile's state for the given `user` on login.
     virtual void CheckProfileOnLogin(const User& user) = 0;
@@ -263,8 +268,7 @@ class USER_MANAGER_EXPORT UserManagerBase : public UserManager {
 
   // Loads device local accounts from the Local state and fills in
   // |device_local_accounts_set|.
-  virtual void LoadDeviceLocalAccounts(
-      std::set<AccountId>* device_local_accounts_set) = 0;
+  void LoadDeviceLocalAccounts(std::set<AccountId>* device_local_accounts_set);
 
   // Notifies observers that active user has changed.
   void NotifyActiveUserChanged(User* active_user);

@@ -77,7 +77,6 @@ class ChromeUserManagerImpl
   void OnProfileWillBeDestroyed(Profile* profile) override;
 
  protected:
-  void LoadDeviceLocalAccounts(std::set<AccountId>* users_set) override;
   void RemoveNonCryptohomeData(const AccountId& account_id) override;
 
  private:
@@ -118,11 +117,6 @@ class ChromeUserManagerImpl
 
   // Update the number of users.
   void UpdateNumberOfUsers();
-
-  // Creates a user for the given device local account.
-  std::unique_ptr<user_manager::User> CreateUserFromDeviceLocalAccount(
-      const AccountId& account_id,
-      const policy::DeviceLocalAccountType type) const;
 
   void UpdateOwnerId();
 

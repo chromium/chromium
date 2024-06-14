@@ -114,8 +114,6 @@ class USER_MANAGER_EXPORT FakeUserManager : public UserManagerBase {
       const AccountId& account_id) const override;
 
   // UserManagerBase overrides:
-  void LoadDeviceLocalAccounts(
-      std::set<AccountId>* device_local_accounts_set) override {}
   bool IsDeviceLocalAccountMarkedForRemoval(
       const AccountId& account_id) const override;
   void SetUserAffiliated(const AccountId& account_id,

@@ -527,11 +527,6 @@ void FakeChromeUserManager::SimulateUserProfileLoad(
   }
 }
 
-void FakeChromeUserManager::LoadDeviceLocalAccounts(
-    std::set<AccountId>* users_set) {
-  NOTREACHED_IN_MIGRATION();
-}
-
 bool FakeChromeUserManager::IsDeviceLocalAccountMarkedForRemoval(
     const AccountId& account_id) const {
   return false;
