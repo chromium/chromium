@@ -271,7 +271,10 @@ int ResourceRequestSender::SendAsync(
   // somewhere?
   if (!(request->is_outermost_main_frame &&
         IsRequestDestinationFrame(request->destination))) {
-    if (request->has_user_gesture) {
+    // Having the favicon request extend user gesture carryover doesn't make
+    // sense and causes flakiness in tests when the async favicon request
+    // unexpectedly extends the navigation chain.
+    if (request->has_user_gesture && !request->is_favicon) {
       resource_load_info_notifier_wrapper
           ->NotifyUpdateUserGestureCarryoverInfo();
     }

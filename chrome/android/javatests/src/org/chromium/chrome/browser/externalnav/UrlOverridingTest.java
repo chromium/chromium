@@ -1629,7 +1629,6 @@ public class UrlOverridingTest {
 
     @Test
     @LargeTest
-    @DisabledTest(message = "b/343495970")
     public void testExternalNavigationMessage() throws Exception {
         mActivityTestRule.startMainActivityOnBlankPage();
 
