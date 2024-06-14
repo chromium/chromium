@@ -40,6 +40,9 @@ const char kMockClassNameForNullResponse[] =
 const char kMockClassNameForUnparsableResponse[] =
     "org.chromium.components.ip_protection_auth.mock_service."
     "ConstantResponseService$Unparsable";
+const char kMockClassNameForSynchronousError[] =
+    "org.chromium.components.ip_protection_auth.mock_service."
+    "ConstantResponseService$SynchronousError";
 
 }  // namespace
 
@@ -355,6 +358,56 @@ static void JNI_IpProtectionAuthTestNatives_TestUnparsableResponse(
   ip_protection::android::IpProtectionAuthClient::
       CreateConnectedInstanceForTesting(
           kMockPackageName, kMockClassNameForUnparsableResponse,
+          base::BindPostTask(
+              base::SequencedTaskRunner::GetCurrentDefault(),
+              base::BindLambdaForTesting(
+                  [&run_loop](
+                      base::expected<
+                          std::unique_ptr<ip_protection::android::
+                                              IpProtectionAuthClientInterface>,
+                          std::string> client) {
+                    CHECK(client.has_value()) << client.error();
+
+                    (*client)->GetInitialData(
+                        privacy::ppn::GetInitialDataRequest(),
+                        base::BindLambdaForTesting(
+                            [&run_loop](
+                                base::expected<
+                                    privacy::ppn::GetInitialDataResponse,
+                                    ip_protection::android::AuthRequestError>
+                                    initial_data_response) {
+                              CHECK(!initial_data_response.has_value());
+                              CHECK(initial_data_response.error() ==
+                                    ip_protection::android::AuthRequestError::
+                                        kOther);
+                              run_loop.Quit();
+                            }));
+
+                    (*client)->AuthAndSign(
+                        privacy::ppn::AuthAndSignRequest(),
+                        base::BindLambdaForTesting(
+                            [&run_loop](
+                                base::expected<
+                                    privacy::ppn::AuthAndSignResponse,
+                                    ip_protection::android::AuthRequestError>
+                                    auth_and_sign_response) {
+                              CHECK(!auth_and_sign_response.has_value());
+                              CHECK(auth_and_sign_response.error() ==
+                                    ip_protection::android::AuthRequestError::
+                                        kOther);
+                              run_loop.Quit();
+                            }));
+                  })));
+  run_loop.Run();
+}
+
+static void JNI_IpProtectionAuthTestNatives_TestSynchronousError(JNIEnv* env) {
+  base::test::SingleThreadTaskEnvironment task_environment;
+  base::RunLoop run_loop;
+
+  ip_protection::android::IpProtectionAuthClient::
+      CreateConnectedInstanceForTesting(
+          kMockPackageName, kMockClassNameForSynchronousError,
           base::BindPostTask(
               base::SequencedTaskRunner::GetCurrentDefault(),
               base::BindLambdaForTesting(

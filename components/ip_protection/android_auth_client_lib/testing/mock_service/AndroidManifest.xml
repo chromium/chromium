@@ -16,6 +16,8 @@
           android:exported="true" />
     <service android:name="org.chromium.components.ip_protection_auth.mock_service.ConstantResponseService$Unparsable"
           android:exported="true" />
+    <service android:name="org.chromium.components.ip_protection_auth.mock_service.ConstantResponseService$SynchronousError"
+          android:exported="true" />
     <service android:name="org.chromium.components.ip_protection_auth.mock_service.IpProtectionAuthServiceMock"
           android:exported="true" />
     <service android:name="org.chromium.components.ip_protection_auth.mock_service.NullBindingService"

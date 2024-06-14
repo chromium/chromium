@@ -131,4 +131,18 @@ public abstract class ConstantResponseService extends Service {
             callback.reportResult("unparsable non-proto gibberish".getBytes());
         }
     }
+
+    public static class SynchronousError extends ConstantResponseService {
+        @Override
+        protected void handleGetInitialData(IIpProtectionGetInitialDataCallback callback)
+                throws RemoteException {
+            throw new SecurityException("Intentional security exception for testing");
+        }
+
+        @Override
+        protected void handleAuthAndSign(IIpProtectionAuthAndSignCallback callback)
+                throws RemoteException {
+            throw new SecurityException("Intentional security exception for testing");
+        }
+    }
 }

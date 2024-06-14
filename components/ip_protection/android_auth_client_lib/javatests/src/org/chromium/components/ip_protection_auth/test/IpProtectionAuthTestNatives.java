@@ -30,6 +30,8 @@ public final class IpProtectionAuthTestNatives {
         void testNullResponse();
 
         void testUnparsableResponse();
+
+        void testSynchronousError();
     }
 
     public static void createConnectedInstanceForTesting() {
@@ -62,5 +64,9 @@ public final class IpProtectionAuthTestNatives {
 
     public static void testUnparsableResponse() {
         IpProtectionAuthTestNativesJni.get().testUnparsableResponse();
+    }
+
+    public static void testSynchronousError() {
+        IpProtectionAuthTestNativesJni.get().testSynchronousError();
     }
 }

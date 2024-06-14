@@ -240,8 +240,9 @@ public final class IpProtectionAuthClient implements AutoCloseable {
                 new IIpProtectionGetInitialDataCallbackStub(callback);
         try {
             mService.getInitialData(request, callbackStub);
-        } catch (RemoteException ex) {
-            // TODO(abhijithnair): Handle this case correctly.
+        } catch (RuntimeException | RemoteException ex) {
+            Log.e(TAG, "error calling getInitialData", ex);
+            callback.onError(AuthRequestError.OTHER);
         }
     }
 
@@ -256,8 +257,9 @@ public final class IpProtectionAuthClient implements AutoCloseable {
                 new IIpProtectionAuthAndSignCallbackStub(callback);
         try {
             mService.authAndSign(request, callbackStub);
-        } catch (RemoteException ex) {
-            // TODO(abhijithnair): Handle this case correctly.
+        } catch (RuntimeException | RemoteException ex) {
+            Log.e(TAG, "error calling authAndSign", ex);
+            callback.onError(AuthRequestError.OTHER);
         }
     }
 

@@ -314,4 +314,9 @@ public final class IpProtectionAuthTest {
     public void nativeUnparsableResponseTest() throws Exception {
         IpProtectionAuthTestNatives.testUnparsableResponse();
     }
+
+    @Test
+    public void nativeSynchronousErrorTest() throws Exception {
+        IpProtectionAuthTestNatives.testSynchronousError();
+    }
 }
