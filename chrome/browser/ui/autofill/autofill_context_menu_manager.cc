@@ -420,6 +420,11 @@ void AutofillContextMenuManager::MaybeAddAutofillManualFallbackItems() {
         IDS_PLUS_ADDRESS_FALLBACK_LABEL_CONTEXT_MENU,
         ui::ImageModel::FromVectorIcon(kPlusAddressLogoIcon, ui::kColorIcon,
                                        kContextMenuIconSize));
+    menu_model_->SetIsNewFeatureAt(
+        menu_model_->GetItemCount() - 1,
+        UserEducationService::MaybeShowNewBadge(
+            delegate_->GetBrowserContext(),
+            plus_addresses::features::kPlusAddressFallbackFromContextMenu));
   }
 
   const bool select_passwords_option_shown =
@@ -686,6 +691,9 @@ void AutofillContextMenuManager::ExecuteFallbackForPlusAddressesCommand(
       AutofillSuggestionTriggerSource::kManualFallbackPlusAddresses);
   LogManualFallbackContextMenuEntryAccepted(autofill_driver,
                                             FillingProduct::kPlusAddresses);
+  UserEducationService::MaybeNotifyPromoFeatureUsed(
+      delegate_->GetBrowserContext(),
+      plus_addresses::features::kPlusAddressFallbackFromContextMenu);
 }
 
 void AutofillContextMenuManager::ExecuteFallbackForPaymentsCommand(

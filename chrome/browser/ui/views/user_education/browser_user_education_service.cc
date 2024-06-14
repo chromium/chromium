@@ -48,6 +48,7 @@
 #include "components/compose/core/browser/compose_features.h"
 #include "components/feature_engagement/public/feature_constants.h"
 #include "components/lens/lens_features.h"
+#include "components/plus_addresses/features.h"
 #include "components/safe_browsing/core/common/safebrowsing_referral_methods.h"
 #include "components/saved_tab_groups/features.h"
 #include "components/strings/grit/components_strings.h"
@@ -1392,6 +1393,13 @@ void MaybeRegisterChromeNewBadges(user_education::NewBadgeRegistry& registry) {
           "Shown in the autofill section of the context menu for address and "
           "credit card autofill entries when autofill for unclassified fields "
           "is enabled.")));
+
+  registry.RegisterFeature(user_education::NewBadgeSpecification(
+      plus_addresses::features::kPlusAddressFallbackFromContextMenu,
+      user_education::Metadata(
+          128, "jkeitel@google.com",
+          "Shown in the autofill section of the context menu where manual "
+          "fallback for plus addresses is offered.")));
 }
 
 std::unique_ptr<BrowserFeaturePromoController> CreateUserEducationResources(
