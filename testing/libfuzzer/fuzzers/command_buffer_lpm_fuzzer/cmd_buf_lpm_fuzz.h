@@ -126,8 +126,6 @@ class CmdBufFuzz : public base::TestSuite {
   GpuPreferences gpu_preferences_;
   std::unique_ptr<viz::TestGpuServiceHolder> gpu_service_holder_;
   std::unique_ptr<WebGPUInProcessContext> webgpu_context_;
-  raw_ptr<gl::GLDisplay> gl_display_;
-  scoped_refptr<gl::GLSurface> surface_;
   // std::unique_ptr<CommandBufferDirect> command_buffer_;
   raw_ptr<InProcessCommandBuffer> command_buffer_ = nullptr;
   std::unique_ptr<CommandBufferService> command_buffer_service_;
