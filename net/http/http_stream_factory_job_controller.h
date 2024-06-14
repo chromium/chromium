@@ -105,6 +105,11 @@ class HttpStreamFactory::JobController
       const ProxyInfo& used_proxy_info,
       std::unique_ptr<WebSocketHandshakeStreamBase> stream) override;
 
+  // Invoked when a QUIC job finished a DNS resolution.
+  void OnQuicHostResolution(const url::SchemeHostPort& destination,
+                            base::TimeTicks dns_resolution_start_time,
+                            base::TimeTicks dns_resolution_end_time) override;
+
   // Invoked when |job| fails to create a stream.
   void OnStreamFailed(Job* job, int status) override;
 

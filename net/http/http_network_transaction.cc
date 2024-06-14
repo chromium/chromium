@@ -515,6 +515,21 @@ bool HttpNetworkTransaction::GetLoadTimingInfo(
   if (!stream_ || !stream_->GetLoadTimingInfo(load_timing_info))
     return false;
 
+  // If `dns_resolution_{start/end}_time_override_` are set, and they are older
+  // than `domain_lookup_{start/end}` of the `stream_`, use the overrides.
+  // TODO(crbug.com/40812426): Remove this when we launch Happy Eyeballs v3.
+  if (!dns_resolution_start_time_override_.is_null() &&
+      !dns_resolution_end_time_override_.is_null() &&
+      (dns_resolution_start_time_override_ <
+       load_timing_info->connect_timing.domain_lookup_start) &&
+      (dns_resolution_end_time_override_ <
+       load_timing_info->connect_timing.domain_lookup_end)) {
+    load_timing_info->connect_timing.domain_lookup_start =
+        dns_resolution_start_time_override_;
+    load_timing_info->connect_timing.domain_lookup_end =
+        dns_resolution_end_time_override_;
+  }
+
   load_timing_info->proxy_resolve_start =
       proxy_info_.proxy_resolve_start_time();
   load_timing_info->proxy_resolve_end = proxy_info_.proxy_resolve_end_time();
@@ -635,6 +650,12 @@ void HttpNetworkTransaction::OnStreamReady(const ProxyInfo& used_proxy_info,
   response_.was_fetched_via_spdy =
       stream_request_->negotiated_protocol() == kProtoHTTP2;
   response_.dns_aliases = stream_->GetDnsAliases();
+
+  dns_resolution_start_time_override_ =
+      stream_request_->dns_resolution_start_time_override();
+  dns_resolution_end_time_override_ =
+      stream_request_->dns_resolution_end_time_override();
+
   SetProxyInfoInResponse(used_proxy_info, &response_);
   OnIOComplete(OK);
 }

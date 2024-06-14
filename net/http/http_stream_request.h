@@ -184,6 +184,17 @@ class NET_EXPORT_PRIVATE HttpStreamRequest {
 
   bool completed() const { return completed_; }
 
+  void SetDnsResolutionTimeOverrides(
+      base::TimeTicks dns_resolution_start_time_override,
+      base::TimeTicks dns_resolution_end_time_override);
+
+  base::TimeTicks dns_resolution_start_time_override() const {
+    return dns_resolution_start_time_override_;
+  }
+  base::TimeTicks dns_resolution_end_time_override() const {
+    return dns_resolution_end_time_override_;
+  }
+
  private:
   // Unowned. The helper must not be destroyed before this object is.
   raw_ptr<Helper> helper_;
@@ -201,6 +212,9 @@ class NET_EXPORT_PRIVATE HttpStreamRequest {
       AlternateProtocolUsage::ALTERNATE_PROTOCOL_USAGE_UNSPECIFIED_REASON;
   ConnectionAttempts connection_attempts_;
   const StreamType stream_type_;
+
+  base::TimeTicks dns_resolution_start_time_override_;
+  base::TimeTicks dns_resolution_end_time_override_;
 };
 
 }  // namespace net

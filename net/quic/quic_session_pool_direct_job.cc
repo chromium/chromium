@@ -220,7 +220,8 @@ void QuicSessionPool::DirectJob::OnResolveHostComplete(int rv) {
   rv = DoLoop(rv);
 
   for (QuicSessionRequest* request : requests()) {
-    request->OnHostResolutionComplete(rv);
+    request->OnHostResolutionComplete(rv, dns_resolution_start_time_,
+                                      dns_resolution_end_time_);
   }
 
   if (rv != ERR_IO_PENDING && !callback_.is_null()) {

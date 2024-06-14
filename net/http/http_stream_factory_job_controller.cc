@@ -375,6 +375,24 @@ void HttpStreamFactory::JobController::OnWebSocketHandshakeStreamReady(
                                              std::move(stream));
 }
 
+void HttpStreamFactory::JobController::OnQuicHostResolution(
+    const url::SchemeHostPort& destination,
+    base::TimeTicks dns_resolution_start_time,
+    base::TimeTicks dns_resolution_end_time) {
+  if (!request_) {
+    return;
+  }
+  if (destination != url::SchemeHostPort(origin_url_)) {
+    // Ignores different destination alternative job's DNS resolution time.
+    return;
+  }
+  // QUIC jobs (ALTERNATIVE, DNS_ALPN_H3) are started before the non-QUIC (MAIN)
+  // job. So we set the DNS resolution overrides to use the DNS timing of the
+  // QUIC jobs.
+  request_->SetDnsResolutionTimeOverrides(dns_resolution_start_time,
+                                          dns_resolution_end_time);
+}
+
 void HttpStreamFactory::JobController::OnStreamFailed(Job* job, int status) {
   DCHECK_NE(OK, status);
   if (job->job_type() == MAIN) {

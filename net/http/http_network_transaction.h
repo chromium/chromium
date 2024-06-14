@@ -498,6 +498,11 @@ class NET_EXPORT_PRIVATE HttpNetworkTransaction
 
   // Set to true when the server required HTTP/1.1 fallback.
   bool http_1_1_was_required_ = false;
+
+  // If set, these values are used as DNS resolution times, rather than
+  // using DNS times coming from the established stream.
+  base::TimeTicks dns_resolution_start_time_override_;
+  base::TimeTicks dns_resolution_end_time_override_;
 };
 
 }  // namespace net

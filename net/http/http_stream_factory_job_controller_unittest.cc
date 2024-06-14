@@ -6249,4 +6249,171 @@ TEST_F(HttpStreamFactoryJobControllerDnsHttpsAlpnTest,
   EXPECT_TRUE(HttpStreamFactoryPeer::IsJobControllerDeleted(factory_));
 }
 
+TEST_F(HttpStreamFactoryJobControllerDnsHttpsAlpnTest,
+       DnsResolutionTimeOverridesFromAlpnH3Job) {
+  const base::TimeDelta kDnsDelay = base::Milliseconds(10);
+  EnableOndemandHostResolver();
+  PrepareForMainJob();
+  session_deps_.host_resolver->rules()->AddRule(
+      "www.example.org", IPAddress::IPv4Localhost().ToString());
+  Initialize(HttpRequestInfo());
+  request_ = CreateJobControllerAndStart(CreateTestHttpRequestInfo());
+  CheckJobsStatus(/*main_job_exists=*/true, /*alternative_job_exists=*/false,
+                  /*dns_alpn_h3_job_exists=*/true,
+                  "Main job and DNS ALPN job must be created.");
+
+  // Simulate the delay of DNS resolution.
+  FastForwardBy(kDnsDelay);
+
+  // Resolve the host resolve request from `dns_alpn_h3_job`.
+  session_deps_.host_resolver->ResolveAllPending();
+
+  // `main_job` must be resumed.
+  EXPECT_TRUE(job_controller_->main_job()->is_waiting());
+  base::RunLoop().RunUntilIdle();
+  EXPECT_FALSE(job_controller_->main_job()->is_waiting());
+
+  // DnsResolutionTimeOverrides must be set.
+  EXPECT_EQ(kDnsDelay, request_->dns_resolution_end_time_override() -
+                           request_->dns_resolution_start_time_override());
+
+  MakeMainJobSucceed(/*expect_stream_ready=*/true);
+  request_.reset();
+  EXPECT_TRUE(HttpStreamFactoryPeer::IsJobControllerDeleted(factory_));
+}
+
+TEST_F(HttpStreamFactoryJobControllerDnsHttpsAlpnTest,
+       DnsResolutionTimeOverridesFromAlternativeJob) {
+  const base::TimeDelta kDnsDelay = base::Milliseconds(10);
+  EnableOndemandHostResolver();
+  PrepareForMainJob();
+  PrepareForFirstQuicJobFailure();
+  session_deps_.host_resolver->rules()->AddRule(
+      "www.example.org", IPAddress::IPv4Localhost().ToString());
+  Initialize(HttpRequestInfo());
+
+  // Register the same destination alternative service.
+  HttpRequestInfo request_info = CreateTestHttpRequestInfo();
+  url::SchemeHostPort server(request_info.url);
+  AlternativeService alternative_service(kProtoQUIC, "www.example.org", 443);
+  SetAlternativeService(request_info, alternative_service);
+
+  request_ = CreateJobControllerAndStart(request_info);
+
+  CheckJobsStatus(/*main_job_exists=*/true, /*alternative_job_exists=*/true,
+                  /*dns_alpn_h3_job_exists=*/false,
+                  "Main job and alternative job are created.");
+
+  // Simulate the delay of DNS resolution.
+  FastForwardBy(kDnsDelay);
+
+  // Resolve the host resolve request from `alternative_job`.
+  session_deps_.host_resolver->ResolveAllPending();
+
+  // `main_job` must be resumed.
+  EXPECT_TRUE(job_controller_->main_job()->is_waiting());
+  base::RunLoop().RunUntilIdle();
+  EXPECT_FALSE(job_controller_->main_job()->is_waiting());
+
+  // DnsResolutionTimeOverrides must be set by the `alternative_job`.
+  EXPECT_EQ(kDnsDelay, request_->dns_resolution_end_time_override() -
+                           request_->dns_resolution_start_time_override());
+
+  // Make |dns_alpn_h3_job| fail.
+  quic_data_->Resume();
+
+  MakeMainJobSucceed(/*expect_stream_ready=*/true);
+
+  request_.reset();
+  EXPECT_TRUE(HttpStreamFactoryPeer::IsJobControllerDeleted(factory_));
+}
+
+TEST_F(HttpStreamFactoryJobControllerDnsHttpsAlpnTest,
+       DnsResolutionTimeOverridesNotFromDifferentAlternativeJob) {
+  const base::TimeDelta kDnsDelay1 = base::Milliseconds(10);
+  const base::TimeDelta kDnsDelay2 = base::Milliseconds(20);
+
+  HttpRequestInfo request_info = CreateTestHttpRequestInfo();
+
+  EnableOndemandHostResolver();
+  PrepareForMainJob();
+  PrepareForFirstQuicJobFailure();
+
+  session_deps_.host_resolver->rules()->AddRule(
+      "www.example.org", IPAddress::IPv4Localhost().ToString());
+  session_deps_.host_resolver->rules()->AddRule(
+      "alt.example.org", IPAddress::IPv4Localhost().ToString());
+
+  Initialize(HttpRequestInfo());
+
+  // Register a different destination alternative service.
+  url::SchemeHostPort server(request_info.url);
+  AlternativeService alternative_service(kProtoQUIC, "alt.example.org", 443);
+  SetAlternativeService(request_info, alternative_service);
+
+  request_ = CreateJobControllerAndStart(request_info);
+
+  CheckJobsStatus(/*main_job_exists=*/true, /*alternative_job_exists=*/true,
+                  /*dns_alpn_h3_job_exists=*/true,
+                  "All types of jobs are created.");
+
+  // `main_job` is blocked until host resolves.
+  base::RunLoop().RunUntilIdle();
+  EXPECT_TRUE(job_controller_->main_job()->is_waiting());
+
+  EXPECT_EQ(2u, session_deps_.host_resolver->last_id());
+  EXPECT_EQ("alt.example.org", session_deps_.host_resolver->request_host(1));
+  EXPECT_EQ("www.example.org", session_deps_.host_resolver->request_host(2));
+
+  // Simulate the delay of DNS resolution.
+  FastForwardBy(kDnsDelay1);
+
+  // Resolves the DNS request for "alt.example.org".
+  session_deps_.host_resolver->ResolveNow(1);
+
+  // `main_job` must be resumed.
+  EXPECT_TRUE(job_controller_->main_job()->is_waiting());
+  base::RunLoop().RunUntilIdle();
+  EXPECT_FALSE(job_controller_->main_job()->is_waiting());
+
+  // DnsResolutionTimeOverrides must not be set for the different destination's
+  // alternative job's DNS resolution time.
+  EXPECT_TRUE(request_->dns_resolution_end_time_override().is_null());
+  EXPECT_TRUE(request_->dns_resolution_start_time_override().is_null());
+
+  CheckJobsStatus(/*main_job_exists=*/true, /*alternative_job_exists=*/true,
+                  /*dns_alpn_h3_job_exists=*/true,
+                  "All types of jobs must alive.");
+
+  // Make `alternative_job` fail.
+  quic_data_->Resume();
+  base::RunLoop().RunUntilIdle();
+  CheckJobsStatus(/*main_job_exists=*/true, /*alternative_job_exists=*/false,
+                  /*dns_alpn_h3_job_exists=*/true,
+                  "Alternative job be deleted.");
+
+  // Simulate the delay of DNS resolution.
+  FastForwardBy(kDnsDelay2);
+
+  // Resolves the DNS request for "www.example.org".
+  session_deps_.host_resolver->ResolveAllPending();
+  base::RunLoop().RunUntilIdle();
+
+  // DnsResolutionTimeOverrides must be set.
+  EXPECT_EQ(kDnsDelay1 + kDnsDelay2,
+            request_->dns_resolution_end_time_override() -
+                request_->dns_resolution_start_time_override());
+
+  EXPECT_FALSE(job_controller_->main_job()->is_waiting());
+  // `dns_alpn_h3_job` must not fail when there is a valid supported alpn.
+  CheckJobsStatus(/*main_job_exists=*/true, /*alternative_job_exists=*/false,
+                  /*dns_alpn_h3_job_exists=*/false,
+                  "Only main job must be alive");
+
+  MakeMainJobSucceed(/*expect_stream_ready=*/true);
+
+  request_.reset();
+  EXPECT_TRUE(HttpStreamFactoryPeer::IsJobControllerDeleted(factory_));
+}
+
 }  // namespace net::test

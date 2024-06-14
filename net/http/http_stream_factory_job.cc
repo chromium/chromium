@@ -900,6 +900,11 @@ int HttpStreamFactory::Job::DoInitConnectionImplQuic(
 void HttpStreamFactory::Job::OnQuicHostResolution(int result) {
   DCHECK(expect_on_quic_host_resolution_);
   expect_on_quic_host_resolution_ = false;
+
+  delegate_->OnQuicHostResolution(destination_,
+                                  quic_request_.dns_resolution_start_time(),
+                                  quic_request_.dns_resolution_end_time());
+
   // If no `OnQuicSessionCreated` call is expected, then consider the
   // connection "initialized" and inform the delegate. Note that
   // `OnQuicHostResolution` is actually called somewhat _after_ host resolution

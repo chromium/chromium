@@ -83,6 +83,12 @@ class HttpStreamFactory::Job
         const ProxyInfo& used_proxy_info,
         std::unique_ptr<WebSocketHandshakeStreamBase> stream) = 0;
 
+    // Invoked when a QUIC job finished a DNS resolution.
+    virtual void OnQuicHostResolution(
+        const url::SchemeHostPort& destination,
+        base::TimeTicks dns_resolution_start_time,
+        base::TimeTicks dns_resolution_end_time) = 0;
+
     // Invoked when |job| fails to create a stream.
     virtual void OnStreamFailed(Job* job, int status) = 0;
 

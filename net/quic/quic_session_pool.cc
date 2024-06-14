@@ -269,9 +269,14 @@ void QuicSessionRequest::ExpectOnHostResolution() {
   expect_on_host_resolution_ = true;
 }
 
-void QuicSessionRequest::OnHostResolutionComplete(int rv) {
+void QuicSessionRequest::OnHostResolutionComplete(
+    int rv,
+    base::TimeTicks dns_resolution_start_time,
+    base::TimeTicks dns_resolution_end_time) {
   DCHECK(expect_on_host_resolution_);
   expect_on_host_resolution_ = false;
+  dns_resolution_start_time_ = dns_resolution_start_time;
+  dns_resolution_end_time_ = dns_resolution_end_time;
   if (!host_resolution_callback_.is_null()) {
     std::move(host_resolution_callback_).Run(rv);
   }
