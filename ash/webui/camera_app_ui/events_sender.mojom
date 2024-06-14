@@ -249,6 +249,7 @@ enum PerfEventType {
   kPortraitModeCapturePostProcessing,
   kTimelapseCapturePostProcessing,
   kVideoCapturePostProcessing,
+  kSnapshotTaking,
 };
 
 struct PerfEventParams {

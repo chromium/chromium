@@ -232,6 +232,9 @@ export enum PerfEvent {
   PHOTO_CAPTURE_SHUTTER = 'photo-capture-shutter',
   PORTRAIT_MODE_CAPTURE_POST_PROCESSING =
       'portrait-mode-capture-post-processing',
+  // In Video mode, the duration between clicking the video snapshot button and
+  // the file is being saved.
+  SNAPSHOT_TAKING = 'snapshot-taking',
   TIME_LAPSE_CAPTURE_POST_PROCESSING = 'time-lapse-capture-post-processing',
   VIDEO_CAPTURE_POST_PROCESSING = 'video-capture-post-processing',
 }

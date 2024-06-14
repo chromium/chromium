@@ -24,6 +24,7 @@ import {ChromeHelper} from '../../mojo/chrome_helper.js';
 import {DeviceOperator} from '../../mojo/device_operator.js';
 import {CrosImageCapture} from '../../mojo/image_capture.js';
 import {StorageMonitorStatus} from '../../mojo/type.js';
+import {PerfLogger} from '../../perf.js';
 import * as sound from '../../sound.js';
 import * as state from '../../state.js';
 import * as toast from '../../toast.js';
@@ -37,6 +38,7 @@ import {
   Metadata,
   NoChunkError,
   NoFrameError,
+  PerfEvent,
   PreviewVideo,
   Resolution,
   VideoType,
@@ -326,6 +328,9 @@ export class Video extends ModeBase {
         return;
       }
       state.set(state.State.SNAPSHOTTING, true);
+      const perfLogger = PerfLogger.getInstance();
+      perfLogger.start(PerfEvent.SNAPSHOT_TAKING);
+      let hasError = true;
       try {
         const timestamp = Date.now();
         let blob: Blob;
@@ -352,7 +357,13 @@ export class Video extends ModeBase {
           timestamp,
           metadata,
         });
+        hasError = false;
       } finally {
+        perfLogger.stop(PerfEvent.SNAPSHOT_TAKING, {
+          resolution: this.captureResolution,
+          facing: this.facing,
+          hasError,
+        });
         state.set(state.State.SNAPSHOTTING, false);
       }
     });

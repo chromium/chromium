@@ -1135,6 +1135,7 @@
     <variant value="9">PORTRAIT_MODE_CAPTURE_POST_PROCESSING</variant>
     <variant value="10">TIMELAPSE_CAPTURE_POST_PROCESSING</variant>
     <variant value="11">VIDEO_CAPTURE_POST_PROCESSING</variant>
+    <variant value="12">SNAPSHOT_TAKING</variant>
   </enum>
 
   <enum name="CameraAppOcrEventType">
