@@ -85,6 +85,10 @@ IN_PROC_BROWSER_TEST_F(CrElementsTest, CrLazyRender) {
   RunTest("cr_elements/cr_lazy_render_test.js", "mocha.run()");
 }
 
+IN_PROC_BROWSER_TEST_F(CrElementsTest, CrLazyRenderLit) {
+  RunTest("cr_elements/cr_lazy_render_lit_test.js", "mocha.run()");
+}
+
 IN_PROC_BROWSER_TEST_F(CrElementsTest, CrLinkRow) {
   RunTest("cr_elements/cr_link_row_test.js", "mocha.run()");
 }

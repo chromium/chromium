@@ -83,6 +83,7 @@ build_webui("build") {
       "cr_input/cr_input.html.ts",
       "cr_input/cr_input.ts",
       "cr_lazy_render/cr_lazy_render.ts",
+      "cr_lazy_render/cr_lazy_render_lit.ts",
       "cr_link_row/cr_link_row.ts",
       "cr_link_row/cr_link_row.html.ts",
       "cr_loading_gradient/cr_loading_gradient.ts",
