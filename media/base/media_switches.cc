@@ -867,7 +867,7 @@ BASE_FEATURE(kVideoBlitColorAccuracy,
 // TODO(crbug.com/346197746): Remove post-safe rollout.
 BASE_FEATURE(kVideoFrameUseClientSITextureTarget,
              "VideoFrameUseClientSITextureTarget",
-             base::FEATURE_DISABLED_BY_DEFAULT);
+             base::FEATURE_ENABLED_BY_DEFAULT);
 
 // Displays a minimize button on video picture-in-picture windows.
 BASE_FEATURE(kVideoPictureInPictureMinimizeButton,
