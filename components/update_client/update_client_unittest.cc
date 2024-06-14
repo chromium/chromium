@@ -2117,7 +2117,7 @@ TEST_F(UpdateClientTest, OneCrxInstallError) {
       EXPECT_EQ("jebgalgnebhfojomionfpkfelancnnkf", ping_data[0].id);
       EXPECT_EQ(base::Version("0.9"), ping_data[0].previous_version);
       EXPECT_EQ(base::Version("1.0"), ping_data[0].next_version);
-      EXPECT_EQ(6,
+      EXPECT_EQ(7,
                 static_cast<int>(ping_data[0].error_category));  // kInstaller.
       EXPECT_EQ(9, ping_data[0].error_code);  // kInstallerError.
     }
@@ -7035,7 +7035,7 @@ TEST_F(UpdateClientTest, OneCrxCachedUpdate) {
       EXPECT_EQ("jebgalgnebhfojomionfpkfelancnnkf", ping_data[0].id);
       EXPECT_EQ(base::Version("0.9"), ping_data[0].previous_version);
       EXPECT_EQ(base::Version("1.0"), ping_data[0].next_version);
-      EXPECT_EQ(6,
+      EXPECT_EQ(7,
                 static_cast<int>(ping_data[0].error_category));  // kInstaller.
       EXPECT_EQ(9, ping_data[0].error_code);  // kInstallerError.
       EXPECT_EQ("jebgalgnebhfojomionfpkfelancnnkf", ping_data[1].id);

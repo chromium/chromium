@@ -106,7 +106,8 @@ class UpdateService : public base::RefCountedThreadSafe<UpdateService> {
     kInstall = 3,
     kService = 4,
     kUpdateCheck = 5,
-    kInstaller = 6,
+    // kUnknown = 6, defined in `updater_service.mojom`.
+    kInstaller = 7,
     // Update EnumTraits<UpdateService::ErrorCategory> when adding new values.
   };
 

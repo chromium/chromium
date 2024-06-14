@@ -26,12 +26,13 @@ enum class Error {
 // the enums below; the order must be kept stable.
 enum class ErrorCategory {
   kNone = 0,
-  kDownload,
-  kUnpack,
-  kInstall,
-  kService,  // Runtime errors which occur in the service itself.
-  kUpdateCheck,
-  kInstaller,
+  kDownload = 1,
+  kUnpack = 2,
+  kInstall = 3,
+  kService = 4,  // Runtime errors which occur in the service itself.
+  kUpdateCheck = 5,
+  // kUnknown = 6, defined in `updater_service.mojom`.
+  kInstaller = 7,
 };
 
 // These errors are returned with the `kDownload` error category. This category
