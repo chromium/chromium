@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#import "ios/chrome/browser/ui/context_menu/context_menu_configuration_provider.h"
-#import "ios/chrome/browser/ui/context_menu/context_menu_configuration_provider+Testing.h"
+#import "ios/chrome/browser/context_menu/ui_bundled/context_menu_configuration_provider.h"
+#import "ios/chrome/browser/context_menu/ui_bundled/context_menu_configuration_provider+Testing.h"
 
 #import "base/test/scoped_feature_list.h"
 #import "base/test/task_environment.h"

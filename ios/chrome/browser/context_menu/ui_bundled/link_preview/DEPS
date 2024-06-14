@@ -1,0 +1,4 @@
+include_rules = [
+  "+ios/chrome/browser/history/model/history_tab_helper.h",
+  "+ios/chrome/browser/tabs/model/tab_helper_util.h",
+]

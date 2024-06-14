@@ -2,12 +2,12 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#import "ios/chrome/browser/ui/context_menu/link_preview/link_preview_view_controller.h"
+#import "ios/chrome/browser/context_menu/ui_bundled/link_preview/link_preview_view_controller.h"
 
 #import <MaterialComponents/MaterialProgressView.h>
 
 #import "ios/chrome/browser/shared/ui/util/uikit_ui_util.h"
-#import "ios/chrome/browser/ui/context_menu/link_preview/link_preview_constants.h"
+#import "ios/chrome/browser/context_menu/ui_bundled/link_preview/link_preview_constants.h"
 #import "ios/chrome/common/ui/colors/semantic_color_names.h"
 #import "ui/gfx/ios/uikit_util.h"
 

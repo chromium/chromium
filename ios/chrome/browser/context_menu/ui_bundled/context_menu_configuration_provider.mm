@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#import "ios/chrome/browser/ui/context_menu/context_menu_configuration_provider.h"
+#import "ios/chrome/browser/context_menu/ui_bundled/context_menu_configuration_provider.h"
 
 #import "base/ios/ios_util.h"
 #import "base/metrics/histogram_functions.h"
@@ -36,8 +36,8 @@
 #import "ios/chrome/browser/shared/ui/util/image/image_saver.h"
 #import "ios/chrome/browser/shared/ui/util/pasteboard_util.h"
 #import "ios/chrome/browser/shared/ui/util/url_with_title.h"
-#import "ios/chrome/browser/ui/context_menu/context_menu_configuration_provider+Testing.h"
-#import "ios/chrome/browser/ui/context_menu/context_menu_utils.h"
+#import "ios/chrome/browser/context_menu/ui_bundled/context_menu_configuration_provider+Testing.h"
+#import "ios/chrome/browser/context_menu/ui_bundled/context_menu_utils.h"
 #import "ios/chrome/browser/ui/incognito_reauth/incognito_reauth_commands.h"
 #import "ios/chrome/browser/ui/incognito_reauth/incognito_reauth_scene_agent.h"
 #import "ios/chrome/browser/ui/lens/lens_availability.h"

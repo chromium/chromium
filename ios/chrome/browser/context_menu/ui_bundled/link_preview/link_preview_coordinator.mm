@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#import "ios/chrome/browser/ui/context_menu/link_preview/link_preview_coordinator.h"
+#import "ios/chrome/browser/context_menu/ui_bundled/link_preview/link_preview_coordinator.h"
 
 #import "base/metrics/field_trial_params.h"
 #import "base/strings/sys_string_conversions.h"
@@ -12,8 +12,8 @@
 #import "ios/chrome/browser/shared/model/browser_state/chrome_browser_state.h"
 #import "ios/chrome/browser/shared/model/web_state_list/web_state_list.h"
 #import "ios/chrome/browser/tabs/model/tab_helper_util.h"
-#import "ios/chrome/browser/ui/context_menu/link_preview/link_preview_mediator.h"
-#import "ios/chrome/browser/ui/context_menu/link_preview/link_preview_view_controller.h"
+#import "ios/chrome/browser/context_menu/ui_bundled/link_preview/link_preview_mediator.h"
+#import "ios/chrome/browser/context_menu/ui_bundled/link_preview/link_preview_view_controller.h"
 #import "ios/chrome/browser/ui/ntp/new_tab_page_feature.h"
 #import "ios/web/public/navigation/navigation_manager.h"
 #import "ios/web/public/web_state.h"

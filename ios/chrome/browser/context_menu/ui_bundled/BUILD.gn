@@ -2,14 +2,14 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
-source_set("context_menu") {
+source_set("coordinator") {
   sources = [
     "context_menu_configuration_provider+Testing.h",
     "context_menu_configuration_provider.h",
     "context_menu_configuration_provider.mm",
   ]
   deps = [
-    ":context_menu_ui",
+    ":ui",
     "//base",
     "//components/search_engines",
     "//ios/chrome/app/strings",
@@ -32,7 +32,7 @@ source_set("context_menu") {
     "//ios/chrome/browser/shared/ui/util",
     "//ios/chrome/browser/shared/ui/util:url_with_title",
     "//ios/chrome/browser/shared/ui/util/image:web",
-    "//ios/chrome/browser/ui/context_menu/link_preview",
+    "//ios/chrome/browser/context_menu/ui_bundled/link_preview",
     "//ios/chrome/browser/ui/incognito_reauth:incognito_reauth_commands",
     "//ios/chrome/browser/ui/incognito_reauth:incognito_reauth_scene_agent",
     "//ios/chrome/browser/ui/lens:lens_availability",
@@ -50,7 +50,7 @@ source_set("context_menu") {
   ]
 }
 
-source_set("context_menu_ui") {
+source_set("ui") {
   sources = [
     "context_menu_utils.h",
     "context_menu_utils.mm",
@@ -73,8 +73,8 @@ source_set("unit_tests") {
     "context_menu_utils_unittest.mm",
   ]
   deps = [
-    ":context_menu",
-    ":context_menu_ui",
+    ":coordinator",
+    ":ui",
     "//base",
     "//base/test:test_support",
     "//components/signin/public/identity_manager:test_support",
