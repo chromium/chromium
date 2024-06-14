@@ -8,7 +8,6 @@
 #include <memory>
 #include <optional>
 
-#include "base/functional/callback_forward.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/observer_list.h"
@@ -66,10 +65,18 @@ class LocalFilesMigrationManager : public LocalUserFilesPolicyObserver,
   //    * SkyVault policies are set.
   bool ShouldStart();
 
-  // Initiates the file migration to the cloud if conditions are met.
-  void MaybeMigrateFiles(base::OnceClosure callback);
+  // If conditions are met, schedules the file migration to the cloud in 24
+  // hours. The migration starts automatically after the delay elapses. If the
+  // user chooses to skip the delay (via the info dialog), the migration starts
+  // immediately.
+  void MaybeMigrateFiles();
 
-  void StartMigration(base::OnceClosure callback);
+  // Bypasses the migration delay and initiates the upload process immediately.
+  // Called when the user clicks the "Upload now" button in the info dialog.
+  void SkipMigrationDelay();
+
+  // Starts the migration process.
+  void StartMigration();
 
   // Handles the completion of the migration process (success or failure).
   void OnMigrationDone();

@@ -10,6 +10,7 @@
 #include "base/files/file_path.h"
 #include "base/functional/callback_forward.h"
 #include "base/memory/weak_ptr.h"
+#include "base/time/time.h"
 
 namespace policy::local_user_files {
 
@@ -18,6 +19,12 @@ class MigrationNotificationManager {
  public:
   MigrationNotificationManager();
   ~MigrationNotificationManager();
+
+  // Shows a dialog informing the user that the migration will happen after
+  // `migration_delay` (e.g. 24 h or 1 h). From the dialog, the user can select
+  // to start the migration immediately which executes the `migration_callback`.
+  void ShowMigrationInfoDialog(base::TimeDelta migration_delay,
+                               base::OnceClosure migration_callback);
 
   // Shows the migration in progress notification.
   void ShowMigrationProgressNotification();

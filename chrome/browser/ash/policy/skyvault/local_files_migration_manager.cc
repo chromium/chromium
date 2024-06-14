@@ -5,21 +5,16 @@
 #include "chrome/browser/ash/policy/skyvault/local_files_migration_manager.h"
 
 #include <memory>
-#include <optional>
 #include <string>
 
 #include "base/feature_list.h"
 #include "base/files/file_path.h"
 #include "base/functional/bind.h"
-#include "base/functional/callback.h"
-#include "base/functional/callback_helpers.h"
 #include "base/location.h"
 #include "base/logging.h"
-#include "base/metrics/histogram_macros.h"
 #include "base/no_destructor.h"
 #include "base/time/time.h"
 #include "base/timer/wall_clock_timer.h"
-#include "chrome/browser/ash/policy/skyvault/local_user_files_policy_observer.h"
 #include "chrome/browser/ash/policy/skyvault/migration_notification_manager.h"
 #include "chrome/browser/ash/policy/skyvault/policy_utils.h"
 #include "chrome/browser/browser_process.h"
@@ -85,9 +80,7 @@ void LocalFilesMigrationManager::OnLocalUserFilesPolicyChanged() {
           local_user_files_migration_enabled) {
     local_user_files_allowed_ = local_user_files_allowed;
     local_user_files_migration_enabled_ = local_user_files_migration_enabled;
-    MaybeMigrateFiles(
-        base::BindOnce(&LocalFilesMigrationManager::OnMigrationDone,
-                       weak_factory_.GetWeakPtr()));
+    MaybeMigrateFiles();
   }
 }
 
@@ -128,22 +121,32 @@ bool LocalFilesMigrationManager::ShouldStart() {
   return true;
 }
 
-void LocalFilesMigrationManager::MaybeMigrateFiles(base::OnceClosure callback) {
+void LocalFilesMigrationManager::MaybeMigrateFiles() {
   if (!ShouldStart()) {
     return;
   }
-  // TODO(aidazolic): Show the dialog.
+  notification_manager_->ShowMigrationInfoDialog(
+      kMigrationTimeout,
+      base::BindOnce(&LocalFilesMigrationManager::SkipMigrationDelay,
+                     weak_factory_.GetWeakPtr()));
   start_delay_timer_->Start(
       FROM_HERE, base::Time::Now() + kMigrationTimeout,
       base::BindOnce(&LocalFilesMigrationManager::StartMigration,
-                     weak_factory_.GetWeakPtr(), std::move(callback)));
+                     weak_factory_.GetWeakPtr()));
 }
 
-void LocalFilesMigrationManager::StartMigration(base::OnceClosure callback) {
+void LocalFilesMigrationManager::SkipMigrationDelay() {
+  if (start_delay_timer_->IsRunning()) {
+    start_delay_timer_->Stop();
+  }
+  StartMigration();
+}
+
+void LocalFilesMigrationManager::StartMigration() {
   in_progress_ = true;
   notification_manager_->ShowMigrationProgressNotification();
   // TODO(aidazolic): Upload everything under My files.
-  std::move(callback).Run();
+  OnMigrationDone();
 }
 
 void LocalFilesMigrationManager::OnMigrationDone() {

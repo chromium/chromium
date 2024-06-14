@@ -54,6 +54,12 @@ MigrationNotificationManager::MigrationNotificationManager() = default;
 
 MigrationNotificationManager::~MigrationNotificationManager() = default;
 
+void MigrationNotificationManager::ShowMigrationInfoDialog(
+    base::TimeDelta migration_delay,
+    base::OnceClosure migration_callback) {
+  // TODO(aidazolic): Create a dialog.
+}
+
 void MigrationNotificationManager::ShowMigrationProgressNotification() {
   // TODO(aidazolic): Use i18n strings.
   // TODO(aidazolic): Use FileSaveDestination.
