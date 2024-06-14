@@ -54,9 +54,6 @@ FetchOptions FetchOptions::CreateDefaultFetchOptionsForTabResumption() {
           URLVisitAggregatesTransformType::kHistoryVisibilityScoreFilter,
 #endif
           URLVisitAggregatesTransformType::kBookmarkData,
-#if !BUILDFLAG(IS_IOS)
-          URLVisitAggregatesTransformType::kShoppingData,
-#endif
       });
 }
 
