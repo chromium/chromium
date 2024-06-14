@@ -2,8 +2,8 @@
 # Copyright 2023 The Chromium Authors
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
-"""Given a .build_config.json file, generates a .classpath file that can be
-used with the "Language Support for Java™ by Red Hat" Visual Studio Code
+"""Given a .build_config.json file, generates an Eclipse JDT project that can
+be used with the "Language Support for Java™ by Red Hat" Visual Studio Code
 extension. See //docs/vscode.md for details.
 """
 
@@ -82,10 +82,11 @@ def _ProcessBuildConfigFile(output_dir, build_config_path, source_dirs, libs,
       logging.debug('Found lib `%s', lib_path)
       libs.add(lib_path)
 
-  source_dirs.add(
-      os.path.join(output_dir,
-                   _WithoutSuffix(build_config_path, '.build_config.json'),
-                   'generated_java', 'input_srcjars'))
+  input_srcjars = os.path.join(output_dir,
+    _WithoutSuffix(build_config_path, '.build_config.json'),
+    'generated_java', 'input_srcjars')
+  if os.path.exists(input_srcjars):
+    source_dirs.add(input_srcjars)
 
   android = build_config.get('android')
   if android is not None:
@@ -115,27 +116,45 @@ def _ProcessBuildConfigFile(output_dir, build_config_path, source_dirs, libs,
 def _GenerateClasspathEntry(kind, path):
   classpathentry = xml.etree.ElementTree.Element('classpathentry')
   classpathentry.set('kind', kind)
-  classpathentry.set('path', f'_/{path}')
+  classpathentry.set('path', path)
   return classpathentry
 
 
-def _GenerateClasspathFile(source_dirs, libs):
+def _GenerateProject(source_dirs, libs, output_dir):
   classpath = xml.etree.ElementTree.Element('classpath')
   for source_dir in sorted(source_dirs):
     classpath.append(_GenerateClasspathEntry('src', source_dir))
   for lib in sorted(libs):
     classpath.append(_GenerateClasspathEntry('lib', lib))
+  classpath.append(
+    _GenerateClasspathEntry('output', os.path.join(output_dir, 'jdt_output')))
 
-  xml.etree.ElementTree.ElementTree(classpath).write(sys.stdout,
-                                                     encoding='unicode')
+  xml.etree.ElementTree.ElementTree(classpath).write(
+    '.classpath', encoding='unicode')
+  print('Generated .classpath', file=sys.stderr)
+
+  with open('.project', 'w') as f:
+    f.write("""<?xml version="1.0" encoding="UTF-8"?>
+<projectDescription>
+  <name>chromium</name>
+  <buildSpec>
+    <buildCommand>
+      <name>org.eclipse.jdt.core.javabuilder</name>
+      <arguments />
+    </buildCommand>
+  </buildSpec>
+  <natures><nature>org.eclipse.jdt.core.javanature</nature></natures>
+</projectDescription>
+""")
+  print('Generated .project', file=sys.stderr)
 
 
 def _ParseArguments(argv):
   parser = argparse.ArgumentParser(
       description=
-      'Given Chromium Java build config files, dumps an Eclipse JDT classpath '
-      'file to standard output that can be used with the "Language Support for '
-      'Java™ by Red Hat" Visual Studio Code extension. See //docs/vscode.md '
+      'Given Chromium Java build config files, generates an Eclipse JDT '
+      'project that can be used with the "Language Support for Java™ by '
+      'Red Hat" Visual Studio Code extension. See //docs/vscode.md '
       'for details.')
   parser.add_argument(
       '--output-dir',
@@ -152,6 +171,9 @@ def _ParseArguments(argv):
 
 def main(argv):
   build_utils.InitLogging('GENERATE_VSCODE_CLASSPATH_DEBUG')
+
+  assert os.path.exists('.gn'), 'This script must be run from the src directory'
+
   args = _ParseArguments(argv)
   output_dir = args.output_dir
 
@@ -168,7 +190,7 @@ def main(argv):
   logging.info('Done processing %d build config files',
                len(already_processed_build_config_files))
 
-  _GenerateClasspathFile(source_dirs, libs)
+  _GenerateProject(source_dirs, libs, output_dir)
 
 
 if __name__ == '__main__':
