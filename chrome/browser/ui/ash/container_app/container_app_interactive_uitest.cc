@@ -27,12 +27,15 @@
 #include "base/strings/strcat.h"
 #include "base/strings/string_util.h"
 #include "base/test/scoped_feature_list.h"
+#include "base/test/test_future.h"
+#include "base/types/expected.h"
 #include "chrome/browser/ash/app_list/app_list_client_impl.h"
 #include "chrome/browser/ash/app_restore/full_restore_app_launch_handler.h"
 #include "chrome/browser/ash/file_manager/app_id.h"
 #include "chrome/browser/ash/login/test/guest_session_mixin.h"
 #include "chrome/browser/ash/login/test/logged_in_user_mixin.h"
 #include "chrome/browser/ash/system_web_apps/system_web_app_manager.h"
+#include "chrome/browser/chromeos/echo/echo_util.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_element_identifiers.h"
 #include "chrome/browser/ui/browser_finder.h"
@@ -319,10 +322,20 @@ class ContainerAppInteractiveUiTestBase
         web_app::WebAppProvider::GetForTest(profile));
     AppListClientImpl::GetInstance()->UpdateProfile();
 
+    // Fetch `device_info` from echo.
+    base::test::TestFuture<
+        base::expected</*oobe_timestamp*/ std::string, /*error=*/std::string>>
+        oobe_timestamp_or_error;
+    chromeos::echo_util::GetOobeTimestamp(
+        oobe_timestamp_or_error.GetCallback());
+    ASSERT_TRUE(oobe_timestamp_or_error.Wait());
+    ASSERT_TRUE(oobe_timestamp_or_error.Get().has_value());
+    web_app::DeviceInfo device_info;
+    device_info.oobe_timestamp = oobe_timestamp_or_error.Get().value();
+
     // Cache install info for the container app.
     container_app_install_info_ =
-        web_app::GetConfigForContainer(/*device_info=*/std::nullopt)
-            .app_info_factory.Run();
+        web_app::GetConfigForContainer(device_info).app_info_factory.Run();
   }
 
  private:
@@ -431,13 +444,7 @@ INSTANTIATE_TEST_SUITE_P(
 IN_PROC_BROWSER_TEST_P(ContainerAppInteractiveUiTest, PRE_LaunchFromAppList) {}
 
 // Verifies that the container app can be launched from the app list.
-// TODO(b/345344156): Failing on ChromeOS.
-#if BUILDFLAG(IS_CHROMEOS_ASH)
-#define MAYBE_LaunchFromAppList DISABLED_LaunchFromAppList
-#else
-#define MAYBE_LaunchFromAppList LaunchFromAppList
-#endif
-IN_PROC_BROWSER_TEST_P(ContainerAppInteractiveUiTest, MAYBE_LaunchFromAppList) {
+IN_PROC_BROWSER_TEST_P(ContainerAppInteractiveUiTest, LaunchFromAppList) {
   // Views.
   raw_ptr<ash::AppsGridView> apps_grid_view = nullptr;
   raw_ptr<ash::AppListItemView> container_app = nullptr;
@@ -530,13 +537,7 @@ IN_PROC_BROWSER_TEST_P(ContainerAppInteractiveUiTest, MAYBE_LaunchFromAppList) {
 IN_PROC_BROWSER_TEST_P(ContainerAppInteractiveUiTest, PRE_LaunchFromShelf) {}
 
 // Verifies that the container app can be launched from the shelf.
-// TODO(b/345344156): Failing on ChromeOS.
-#if BUILDFLAG(IS_CHROMEOS_ASH)
-#define MAYBE_LaunchFromShelf DISABLED_LaunchFromShelf
-#else
-#define MAYBE_LaunchFromShelf LaunchFromShelf
-#endif
-IN_PROC_BROWSER_TEST_P(ContainerAppInteractiveUiTest, MAYBE_LaunchFromShelf) {
+IN_PROC_BROWSER_TEST_P(ContainerAppInteractiveUiTest, LaunchFromShelf) {
   // Views.
   raw_ptr<ash::ShelfAppButton> chrome_app = nullptr;
   raw_ptr<ash::ShelfAppButton> container_app = nullptr;
