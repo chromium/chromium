@@ -28,7 +28,10 @@ enum class SwapResult {
   // SWAP_SKIPPED.
   SWAP_SKIPPED,
   SWAP_NAK_RECREATE_BUFFERS,
-  SWAP_RESULT_LAST = SWAP_NAK_RECREATE_BUFFERS,
+  // This swap result identifies cases when flipping non-simple overlay planes
+  // fails.
+  SWAP_NON_SIMPLE_OVERLAYS_FAILED,
+  SWAP_RESULT_LAST = SWAP_NON_SIMPLE_OVERLAYS_FAILED,
 };
 
 struct SwapTimings {
