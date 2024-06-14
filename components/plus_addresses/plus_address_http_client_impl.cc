@@ -10,6 +10,7 @@
 #include <string>
 #include <utility>
 
+#include "base/check_deref.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
 #include "base/json/json_writer.h"
@@ -203,7 +204,7 @@ base::OnceCallback<void(const T&)> WrapAsAutorunCallback(
 PlusAddressHttpClientImpl::PlusAddressHttpClientImpl(
     signin::IdentityManager* identity_manager,
     scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory)
-    : identity_manager_(identity_manager),
+    : identity_manager_(CHECK_DEREF(identity_manager)),
       url_loader_factory_(std::move(url_loader_factory)),
       server_url_(ValidateAndGetUrl()),
       scopes_({features::kEnterprisePlusAddressOAuthScope.Get()}) {}
@@ -470,10 +471,11 @@ void PlusAddressHttpClientImpl::GetAuthToken(TokenReadyCallback callback) {
   }
   access_token_fetcher_ =
       std::make_unique<signin::PrimaryAccountAccessTokenFetcher>(
-          /*consumer_name=*/"PlusAddressHttpClientImpl", identity_manager_, scopes_,
+          /*consumer_name=*/"PlusAddressHttpClientImpl",
+          &identity_manager_.get(), scopes_,
           base::BindOnce(&PlusAddressHttpClientImpl::OnTokenFetched,
                          // It is safe to use base::Unretained as
-                         // |this| owns |access_token_fetcher_|.
+                         // `this` owns `access_token_fetcher_`.
                          base::Unretained(this), std::move(callback)),
           // Use WaitUntilAvailable to defer getting an OAuth token until
           // the user is signed in. We can switch to kImmediate once we

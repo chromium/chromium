@@ -107,7 +107,7 @@ class PlusAddressHttpClientImpl : public PlusAddressHttpClient {
                       signin::AccessTokenInfo access_token_info);
 
   // The IdentityManager instance for the current profile.
-  const raw_ptr<signin::IdentityManager> identity_manager_;
+  const raw_ref<signin::IdentityManager> identity_manager_;
 
   // Used to make HTTP requests.
   const scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory_;
