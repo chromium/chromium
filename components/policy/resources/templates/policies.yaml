@@ -956,7 +956,7 @@ policies:
   955: WebHidAllowDevicesWithHidUsagesForUrls
   956: SecondaryGoogleAccountUsage
   957: DeviceEncryptedReportingPipelineEnabled
-  958: IsolatedAppsDeveloperModeAllowed
+  958: ''
   959: FloatingWorkspaceEnabled
   960: WindowPlacementAllowedForUrls
   961: WindowPlacementBlockedForUrls

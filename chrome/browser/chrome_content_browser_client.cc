@@ -1606,8 +1606,6 @@ void ChromeContentBrowserClient::RegisterProfilePrefs(
       static_cast<int>(
           embedder_support::UserAgentReductionEnterprisePolicyState::kDefault));
   registry->RegisterBooleanPref(prefs::kOriginAgentClusterDefaultEnabled, true);
-  registry->RegisterBooleanPref(
-      policy::policy_prefs::kIsolatedAppsDeveloperModeAllowed, true);
 
   registry->RegisterBooleanPref(
       prefs::kStrictMimetypeCheckForWorkerScriptsEnabled, true);

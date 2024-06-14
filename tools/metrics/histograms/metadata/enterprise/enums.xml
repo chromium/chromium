@@ -1828,7 +1828,6 @@ chromium-metrics-reviews@google.com.
   <int value="955" label="WebHidAllowDevicesWithHidUsagesForUrls"/>
   <int value="956" label="SecondaryGoogleAccountUsage"/>
   <int value="957" label="DeviceEncryptedReportingPipelineEnabled"/>
-  <int value="958" label="IsolatedAppsDeveloperModeAllowed"/>
   <int value="959" label="FloatingWorkspaceEnabled"/>
   <int value="960" label="WindowPlacementAllowedForUrls"/>
   <int value="961" label="WindowPlacementBlockedForUrls"/>
