@@ -62,7 +62,9 @@ def host_triple(rustc_path):
   return known_vars["host"]
 
 
-RUSTC_CFG_LINE = re.compile("cargo:rustc-cfg=(.*)")
+# Before 1.77, the format was `cargo:rustc-cfg=`. As of 1.77 the format is now
+# `cargo::rustc-cfg=`.
+RUSTC_CFG_LINE = re.compile("cargo::?rustc-cfg=(.*)")
 
 
 def main():
