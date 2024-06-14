@@ -43,8 +43,10 @@ void ThrottledGaiaAuthFetcher::CreateAndStartGaiaFetcher(
     const net::NetworkTrafficAnnotationTag& traffic_annotation) {
   if ((IsListAccountsUrl(gaia_gurl) || IsMultiloginUrl(gaia_gurl)) &&
       credentials_mode == network::mojom::CredentialsMode::kInclude &&
-      GoogleURLLoaderThrottle::ShouldDeferRequestForBoundSession(
-          gaia_gurl, bound_session_throttler_params_)) {
+      GoogleURLLoaderThrottle::GetRequestBoundSessionStatus(
+          gaia_gurl, bound_session_throttler_params_) ==
+          GoogleURLLoaderThrottle::RequestBoundSessionStatus::
+              kCoveredWithMissingCookie) {
     bound_session_request_throttled_handler_->HandleRequestBlockedOnCookie(
         gaia_gurl,
         base::BindOnce(

@@ -39,14 +39,8 @@ const char kCCTClientDataHeader[] = "X-CCT-Client-Data";
 #endif
 
 #if BUILDFLAG(ENABLE_BOUND_SESSION_CREDENTIALS)
-// Elements of these enum are ordered in such a way that two independent
-// statuses can be merged together using `std::max()` function to get an
-// aggregate status.
-enum class RequestBoundSessionStatus {
-  kNotCovered = 0,
-  kCoveredWithFreshCookie = 1,
-  kCoveredWithMissingCookie = 2
-};
+using RequestBoundSessionStatus =
+    GoogleURLLoaderThrottle::RequestBoundSessionStatus;
 
 RequestBoundSessionStatus GetRequestSingleBoundSessionStatus(
     const GURL& request_url,
@@ -74,20 +68,6 @@ RequestBoundSessionStatus GetRequestSingleBoundSessionStatus(
 
   // Short lived cookie has expired.
   return RequestBoundSessionStatus::kCoveredWithMissingCookie;
-}
-
-RequestBoundSessionStatus GetRequestBoundSessionStatus(
-    const GURL& request_url,
-    const std::vector<chrome::mojom::BoundSessionThrottlerParamsPtr>&
-        bound_session_throttler_params) {
-  RequestBoundSessionStatus status = RequestBoundSessionStatus::kNotCovered;
-
-  for (const auto& throttler_params : bound_session_throttler_params) {
-    status = std::max(status, GetRequestSingleBoundSessionStatus(
-                                  request_url, throttler_params.get()));
-  }
-
-  return status;
 }
 
 bool IsCoveredRequestBoundSessionStatus(RequestBoundSessionStatus status) {
@@ -149,13 +129,18 @@ GoogleURLLoaderThrottle::~GoogleURLLoaderThrottle() = default;
 
 #if BUILDFLAG(ENABLE_BOUND_SESSION_CREDENTIALS)
 // static
-bool GoogleURLLoaderThrottle::ShouldDeferRequestForBoundSession(
+RequestBoundSessionStatus GoogleURLLoaderThrottle::GetRequestBoundSessionStatus(
     const GURL& request_url,
     const std::vector<chrome::mojom::BoundSessionThrottlerParamsPtr>&
         bound_session_throttler_params) {
-  RequestBoundSessionStatus status =
-      GetRequestBoundSessionStatus(request_url, bound_session_throttler_params);
-  return status == RequestBoundSessionStatus::kCoveredWithMissingCookie;
+  RequestBoundSessionStatus status = RequestBoundSessionStatus::kNotCovered;
+
+  for (const auto& throttler_params : bound_session_throttler_params) {
+    status = std::max(status, GetRequestSingleBoundSessionStatus(
+                                  request_url, throttler_params.get()));
+  }
+
+  return status;
 }
 #endif  // BUILDFLAG(ENABLE_BOUND_SESSION_CREDENTIALS)
 

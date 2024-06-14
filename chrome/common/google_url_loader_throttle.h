@@ -41,7 +41,16 @@ class GoogleURLLoaderThrottle final : public blink::URLLoaderThrottle {
       network::mojom::NetworkContextParams* params);
 
 #if BUILDFLAG(ENABLE_BOUND_SESSION_CREDENTIALS)
-  static bool ShouldDeferRequestForBoundSession(
+  // Elements of these enum are ordered in such a way that two independent
+  // statuses can be merged together using `std::max()` function to get an
+  // aggregate status.
+  enum class RequestBoundSessionStatus {
+    kNotCovered = 0,
+    kCoveredWithFreshCookie = 1,
+    kCoveredWithMissingCookie = 2
+  };
+
+  static RequestBoundSessionStatus GetRequestBoundSessionStatus(
       const GURL& request_url,
       const std::vector<chrome::mojom::BoundSessionThrottlerParamsPtr>&
           bound_session_throttler_params);

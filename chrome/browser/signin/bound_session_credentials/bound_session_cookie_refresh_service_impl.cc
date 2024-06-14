@@ -24,6 +24,7 @@
 #include "chrome/browser/signin/bound_session_credentials/bound_session_params_storage.h"
 #include "chrome/browser/signin/bound_session_credentials/bound_session_params_util.h"
 #include "chrome/browser/signin/bound_session_credentials/bound_session_registration_fetcher_impl.h"
+#include "chrome/common/google_url_loader_throttle.h"
 #include "chrome/common/renderer_configuration.mojom.h"
 #include "components/signin/public/base/signin_switches.h"
 #include "content/public/browser/storage_partition.h"
@@ -227,15 +228,52 @@ void BoundSessionCookieRefreshServiceImpl::HandleRequestBlockedOnCookie(
     return;
   }
 
-  // TODO(http://b/325450696): figure out which controllers are blocking for the
-  // request and pass the callback only to them.
+  std::vector<BoundSessionCookieController*> blocking_controllers;
+  bool request_covered_by_at_least_one_session = false;
+  if (!base::FeatureList::IsEnabled(kMultipleBoundSessionsEnabled)) {
+    blocking_controllers.push_back(cookie_controller());
+    // Assume by default that the only controller covers all incoming requests.
+    request_covered_by_at_least_one_session = true;
+  } else {
+    for (const auto& [key, controller] : cookie_controllers_) {
+      std::vector<chrome::mojom::BoundSessionThrottlerParamsPtr>
+          throttler_params;
+      throttler_params.push_back(controller->bound_session_throttler_params());
+      GoogleURLLoaderThrottle::RequestBoundSessionStatus status =
+          GoogleURLLoaderThrottle::GetRequestBoundSessionStatus(
+              untrusted_request_url, throttler_params);
+      switch (status) {
+        case GoogleURLLoaderThrottle::RequestBoundSessionStatus::
+            kCoveredWithMissingCookie:
+          blocking_controllers.push_back(controller.get());
+          [[fallthrough]];
+        case GoogleURLLoaderThrottle::RequestBoundSessionStatus::
+            kCoveredWithFreshCookie:
+          request_covered_by_at_least_one_session = true;
+          break;
+        case GoogleURLLoaderThrottle::RequestBoundSessionStatus::kNotCovered:
+          break;
+      }
+    }
+  }
+
+  if (blocking_controllers.empty()) {
+    std::move(resume_blocked_request)
+        .Run(request_covered_by_at_least_one_session
+                 ? chrome::mojom::ResumeBlockedRequestsTrigger::
+                       kCookieAlreadyFresh
+                 : chrome::mojom::ResumeBlockedRequestsTrigger::
+                       kShutdownOrSessionTermination);
+    return;
+  }
+
   base::RepeatingCallback<void(chrome::mojom::ResumeBlockedRequestsTrigger)>
       barrier_callback =
           base::BarrierCallback<chrome::mojom::ResumeBlockedRequestsTrigger>(
-              cookie_controllers_.size(),
+              blocking_controllers.size(),
               base::BindOnce(&AggregateMultipleTriggers)
                   .Then(std::move(resume_blocked_request)));
-  for (auto& [key, controller] : cookie_controllers_) {
+  for (BoundSessionCookieController* controller : blocking_controllers) {
     controller->HandleRequestBlockedOnCookie(barrier_callback);
   }
 }

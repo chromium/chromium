@@ -32,6 +32,8 @@ namespace {
 
 using chrome::mojom::BoundSessionThrottlerParams;
 using chrome::mojom::BoundSessionThrottlerParamsPtr;
+using RequestBoundSessionStatus =
+    GoogleURLLoaderThrottle::RequestBoundSessionStatus;
 
 enum class RequestAction { kWillStartRequest, kWillRedirectRequest };
 
@@ -215,176 +217,192 @@ class GoogleURLLoaderThrottleTest
       std::make_unique<base::HistogramTester>();
 };
 
-TEST_F(GoogleURLLoaderThrottleTest,
-       ShouldDeferRequestForBoundSessionNullParams) {
-  EXPECT_FALSE(GoogleURLLoaderThrottle::ShouldDeferRequestForBoundSession(
-      kTestGoogleURL, {}));
+TEST_F(GoogleURLLoaderThrottleTest, GetRequestBoundSessionStatusNullParams) {
+  EXPECT_EQ(
+      GoogleURLLoaderThrottle::GetRequestBoundSessionStatus(kTestGoogleURL, {}),
+      RequestBoundSessionStatus::kNotCovered);
+}
+
+TEST_F(GoogleURLLoaderThrottleTest, GetRequestBoundSessionStatusEmptyParams) {
+  EXPECT_EQ(GoogleURLLoaderThrottle::GetRequestBoundSessionStatus(
+                kTestGoogleURL, ToVector(BoundSessionThrottlerParams::New(
+                                    "", "", base::Time::Now()))),
+            RequestBoundSessionStatus::kNotCovered);
+}
+
+TEST_F(GoogleURLLoaderThrottleTest, GetRequestBoundSessionStatusCookieFresh) {
+  EXPECT_EQ(GoogleURLLoaderThrottle::GetRequestBoundSessionStatus(
+                kTestGoogleURL,
+                ToVector(BoundSessionThrottlerParams::New(
+                    "google.com", "/", base::Time::Now() + base::Minutes(10)))),
+            RequestBoundSessionStatus::kCoveredWithFreshCookie);
 }
 
 TEST_F(GoogleURLLoaderThrottleTest,
-       ShouldDeferRequestForBoundSessionEmptyParams) {
-  EXPECT_FALSE(GoogleURLLoaderThrottle::ShouldDeferRequestForBoundSession(
-      kTestGoogleURL,
-      ToVector(BoundSessionThrottlerParams::New("", "", base::Time::Now()))));
+       GetRequestBoundSessionStatusNotInBoundSession) {
+  EXPECT_EQ(GoogleURLLoaderThrottle::GetRequestBoundSessionStatus(
+                GURL("https://youtube.com"),
+                ToVector(BoundSessionThrottlerParams::New("google.com", "/",
+                                                          base::Time::Min()))),
+            RequestBoundSessionStatus::kNotCovered);
+}
+
+TEST_F(GoogleURLLoaderThrottleTest, GetRequestBoundSessionStatusCookieExpired) {
+  EXPECT_EQ(GoogleURLLoaderThrottle::GetRequestBoundSessionStatus(
+                kTestGoogleURL, ToVector(BoundSessionThrottlerParams::New(
+                                    "google.com", "/", base::Time::Min()))),
+            RequestBoundSessionStatus::kCoveredWithMissingCookie);
 }
 
 TEST_F(GoogleURLLoaderThrottleTest,
-       ShouldDeferRequestForBoundSessionCookieFresh) {
-  EXPECT_FALSE(GoogleURLLoaderThrottle::ShouldDeferRequestForBoundSession(
-      kTestGoogleURL,
-      ToVector(BoundSessionThrottlerParams::New(
-          "google.com", "/", base::Time::Now() + base::Minutes(10)))));
+       GetRequestBoundSessionStatusCookieExpiresNow) {
+  EXPECT_EQ(GoogleURLLoaderThrottle::GetRequestBoundSessionStatus(
+                kTestGoogleURL, ToVector(BoundSessionThrottlerParams::New(
+                                    "google.com", "/", base::Time::Now()))),
+            RequestBoundSessionStatus::kCoveredWithMissingCookie);
 }
 
 TEST_F(GoogleURLLoaderThrottleTest,
-       ShouldDeferRequestForBoundSessionNotInBoundSession) {
-  EXPECT_FALSE(GoogleURLLoaderThrottle::ShouldDeferRequestForBoundSession(
-      GURL("https://youtube.com"), ToVector(BoundSessionThrottlerParams::New(
-                                       "google.com", "/", base::Time::Min()))));
+       GetRequestBoundSessionStatusCookieExpiredDomainWithLeadingDot) {
+  EXPECT_EQ(GoogleURLLoaderThrottle::GetRequestBoundSessionStatus(
+                kTestGoogleURL, ToVector(BoundSessionThrottlerParams::New(
+                                    ".google.com", "/", base::Time::Min()))),
+            RequestBoundSessionStatus::kCoveredWithMissingCookie);
+}
+
+TEST_F(GoogleURLLoaderThrottleTest, GetRequestBoundSessionStatusSubdomainUrl) {
+  EXPECT_EQ(
+      GoogleURLLoaderThrottle::GetRequestBoundSessionStatus(
+          kGoogleSubdomainURL, ToVector(BoundSessionThrottlerParams::New(
+                                   "google.com", "/", base::Time::Min()))),
+      RequestBoundSessionStatus::kCoveredWithMissingCookie);
 }
 
 TEST_F(GoogleURLLoaderThrottleTest,
-       ShouldDeferRequestForBoundSessionCookieExpired) {
-  EXPECT_TRUE(GoogleURLLoaderThrottle::ShouldDeferRequestForBoundSession(
-      kTestGoogleURL, ToVector(BoundSessionThrottlerParams::New(
-                          "google.com", "/", base::Time::Min()))));
+       GetRequestBoundSessionStatusParentDomainUrl) {
+  EXPECT_EQ(
+      GoogleURLLoaderThrottle::GetRequestBoundSessionStatus(
+          kTestGoogleURL, ToVector(BoundSessionThrottlerParams::New(
+                              "accounts.google.com", "/", base::Time::Min()))),
+      RequestBoundSessionStatus::kNotCovered);
+}
+
+TEST_F(GoogleURLLoaderThrottleTest, GetRequestBoundSessionStatusUrlWithPath) {
+  EXPECT_EQ(GoogleURLLoaderThrottle::GetRequestBoundSessionStatus(
+                GURL("https://google.com/foo/bar.html"),
+                ToVector(BoundSessionThrottlerParams::New("google.com", "/",
+                                                          base::Time::Now()))),
+            RequestBoundSessionStatus::kCoveredWithMissingCookie);
+}
+
+TEST_F(GoogleURLLoaderThrottleTest, GetRequestBoundSessionStatusPathEmpty) {
+  EXPECT_EQ(GoogleURLLoaderThrottle::GetRequestBoundSessionStatus(
+                kTestGoogleURL, ToVector(BoundSessionThrottlerParams::New(
+                                    "google.com", "", base::Time::Now()))),
+            RequestBoundSessionStatus::kCoveredWithMissingCookie);
 }
 
 TEST_F(GoogleURLLoaderThrottleTest,
-       ShouldDeferRequestForBoundSessionCookieExpiresNow) {
-  EXPECT_TRUE(GoogleURLLoaderThrottle::ShouldDeferRequestForBoundSession(
-      kTestGoogleURL, ToVector(BoundSessionThrottlerParams::New(
-                          "google.com", "/", base::Time::Now()))));
+       GetRequestBoundSessionStatusUrlNotOnBoundSessionPath) {
+  EXPECT_EQ(GoogleURLLoaderThrottle::GetRequestBoundSessionStatus(
+                kTestGoogleURL, ToVector(BoundSessionThrottlerParams::New(
+                                    "google.com", "/test", base::Time::Now()))),
+            RequestBoundSessionStatus::kNotCovered);
 }
 
 TEST_F(GoogleURLLoaderThrottleTest,
-       ShouldDeferRequestForBoundSessionCookieExpiredDomainWithLeadingDot) {
-  EXPECT_TRUE(GoogleURLLoaderThrottle::ShouldDeferRequestForBoundSession(
-      kTestGoogleURL, ToVector(BoundSessionThrottlerParams::New(
-                          ".google.com", "/", base::Time::Min()))));
+       GetRequestBoundSessionStatusUrlWithPathOnBoundSessionPath) {
+  EXPECT_EQ(GoogleURLLoaderThrottle::GetRequestBoundSessionStatus(
+                GURL("https://google.com/test/foo/bar.html"),
+                ToVector(BoundSessionThrottlerParams::New("google.com", "/test",
+                                                          base::Time::Now()))),
+            RequestBoundSessionStatus::kCoveredWithMissingCookie);
 }
 
 TEST_F(GoogleURLLoaderThrottleTest,
-       ShouldDeferRequestForBoundSessionSubdomainUrl) {
-  EXPECT_TRUE(GoogleURLLoaderThrottle::ShouldDeferRequestForBoundSession(
-      kGoogleSubdomainURL, ToVector(BoundSessionThrottlerParams::New(
-                               "google.com", "/", base::Time::Min()))));
+       GetRequestBoundSessionStatusSubdomainUrlWithPathOnBoundSessionPath) {
+  EXPECT_EQ(GoogleURLLoaderThrottle::GetRequestBoundSessionStatus(
+                GURL("https://accounts.google.com/test/foo/bar.html"),
+                ToVector(BoundSessionThrottlerParams::New("google.com", "/test",
+                                                          base::Time::Now()))),
+            RequestBoundSessionStatus::kCoveredWithMissingCookie);
 }
 
 TEST_F(GoogleURLLoaderThrottleTest,
-       ShouldDeferRequestForBoundSessionParentDomainUrl) {
-  EXPECT_FALSE(GoogleURLLoaderThrottle::ShouldDeferRequestForBoundSession(
-      kTestGoogleURL, ToVector(BoundSessionThrottlerParams::New(
-                          "accounts.google.com", "/", base::Time::Min()))));
+       GetRequestBoundSessionStatusNonOverlappingParams) {
+  EXPECT_EQ(GoogleURLLoaderThrottle::GetRequestBoundSessionStatus(
+                GURL("https://accounts.youtube.com/index.html"),
+                ToVector(BoundSessionThrottlerParams::New("google.com", "/",
+                                                          base::Time::Now()),
+                         BoundSessionThrottlerParams::New("youtube.com", "/",
+                                                          base::Time::Now()))),
+            RequestBoundSessionStatus::kCoveredWithMissingCookie);
 }
 
 TEST_F(GoogleURLLoaderThrottleTest,
-       ShouldDeferRequestForBoundSessionUrlWithPath) {
-  EXPECT_TRUE(GoogleURLLoaderThrottle::ShouldDeferRequestForBoundSession(
-      GURL("https://google.com/foo/bar.html"),
-      ToVector(BoundSessionThrottlerParams::New("google.com", "/",
-                                                base::Time::Now()))));
+       GetRequestBoundSessionStatusNonOverlappingParamsHit) {
+  EXPECT_EQ(GoogleURLLoaderThrottle::GetRequestBoundSessionStatus(
+                GURL("https://youtube.com/index.html"),
+                ToVector(BoundSessionThrottlerParams::New("google.com", "/",
+                                                          base::Time::Now()),
+                         BoundSessionThrottlerParams::New("youtube.com", "/",
+                                                          base::Time::Now()))),
+            RequestBoundSessionStatus::kCoveredWithMissingCookie);
 }
 
 TEST_F(GoogleURLLoaderThrottleTest,
-       ShouldDeferRequestForBoundSessionPathEmpty) {
-  EXPECT_TRUE(GoogleURLLoaderThrottle::ShouldDeferRequestForBoundSession(
-      kTestGoogleURL, ToVector(BoundSessionThrottlerParams::New(
-                          "google.com", "", base::Time::Now()))));
+       GetRequestBoundSessionStatusNonOverlappingParamsHitSwapped) {
+  EXPECT_EQ(GoogleURLLoaderThrottle::GetRequestBoundSessionStatus(
+                GURL("https://youtube.com/index.html"),
+                ToVector(BoundSessionThrottlerParams::New("youtube.com", "/",
+                                                          base::Time::Now()),
+                         BoundSessionThrottlerParams::New("google.com", "/",
+                                                          base::Time::Now()))),
+            RequestBoundSessionStatus::kCoveredWithMissingCookie);
 }
 
 TEST_F(GoogleURLLoaderThrottleTest,
-       ShouldDeferRequestForBoundSessionUrlNotOnBoundSessionPath) {
-  EXPECT_FALSE(GoogleURLLoaderThrottle::ShouldDeferRequestForBoundSession(
-      kTestGoogleURL, ToVector(BoundSessionThrottlerParams::New(
-                          "google.com", "/test", base::Time::Now()))));
+       GetRequestBoundSessionStatusNonOverlappingParamsMiss) {
+  EXPECT_EQ(GoogleURLLoaderThrottle::GetRequestBoundSessionStatus(
+                GURL("https://example.org/index.html"),
+                ToVector(BoundSessionThrottlerParams::New("google.com", "/",
+                                                          base::Time::Now()),
+                         BoundSessionThrottlerParams::New("youtube.com", "/",
+                                                          base::Time::Now()))),
+            RequestBoundSessionStatus::kNotCovered);
 }
 
 TEST_F(GoogleURLLoaderThrottleTest,
-       ShouldDeferRequestForBoundSessionUrlWithPathOnBoundSessionPath) {
-  EXPECT_TRUE(GoogleURLLoaderThrottle::ShouldDeferRequestForBoundSession(
-      GURL("https://google.com/test/foo/bar.html"),
-      ToVector(BoundSessionThrottlerParams::New("google.com", "/test",
-                                                base::Time::Now()))));
-}
-
-TEST_F(
-    GoogleURLLoaderThrottleTest,
-    ShouldDeferRequestForBoundSessionSubdomainUrlWithPathOnBoundSessionPath) {
-  EXPECT_TRUE(GoogleURLLoaderThrottle::ShouldDeferRequestForBoundSession(
-      GURL("https://accounts.google.com/test/foo/bar.html"),
-      ToVector(BoundSessionThrottlerParams::New("google.com", "/test",
-                                                base::Time::Now()))));
+       GetRequestBoundSessionStatusOverlappingParamsBothExpired) {
+  EXPECT_EQ(GoogleURLLoaderThrottle::GetRequestBoundSessionStatus(
+                GURL("https://accounts.google.com/index.html"),
+                ToVector(BoundSessionThrottlerParams::New(
+                             "accounts.google.com", "/", base::Time::Now()),
+                         BoundSessionThrottlerParams::New("google.com", "/",
+                                                          base::Time::Now()))),
+            RequestBoundSessionStatus::kCoveredWithMissingCookie);
 }
 
 TEST_F(GoogleURLLoaderThrottleTest,
-       ShouldDeferRequestForBoundSessionNonOverlappingParams) {
-  EXPECT_TRUE(GoogleURLLoaderThrottle::ShouldDeferRequestForBoundSession(
-      GURL("https://accounts.youtube.com/index.html"),
-      ToVector(BoundSessionThrottlerParams::New("google.com", "/",
-                                                base::Time::Now()),
-               BoundSessionThrottlerParams::New("youtube.com", "/",
-                                                base::Time::Now()))));
+       GetRequestBoundSessionStatusOverlappingParamsOneExpired) {
+  EXPECT_EQ(GoogleURLLoaderThrottle::GetRequestBoundSessionStatus(
+                GURL("https://accounts.google.com/index.html"),
+                ToVector(BoundSessionThrottlerParams::New(
+                             "accounts.google.com", "/", base::Time::Now()),
+                         BoundSessionThrottlerParams::New("google.com", "/",
+                                                          base::Time::Min()))),
+            RequestBoundSessionStatus::kCoveredWithMissingCookie);
 }
 
 TEST_F(GoogleURLLoaderThrottleTest,
-       ShouldDeferRequestForBoundSessionNonOverlappingParamsHit) {
-  EXPECT_TRUE(GoogleURLLoaderThrottle::ShouldDeferRequestForBoundSession(
-      GURL("https://youtube.com/index.html"),
-      ToVector(BoundSessionThrottlerParams::New("google.com", "/",
-                                                base::Time::Now()),
-               BoundSessionThrottlerParams::New("youtube.com", "/",
-                                                base::Time::Now()))));
-}
-
-TEST_F(GoogleURLLoaderThrottleTest,
-       ShouldDeferRequestForBoundSessionNonOverlappingParamsHitSwapped) {
-  EXPECT_TRUE(GoogleURLLoaderThrottle::ShouldDeferRequestForBoundSession(
-      GURL("https://youtube.com/index.html"),
-      ToVector(BoundSessionThrottlerParams::New("youtube.com", "/",
-                                                base::Time::Now()),
-               BoundSessionThrottlerParams::New("google.com", "/",
-                                                base::Time::Now()))));
-}
-
-TEST_F(GoogleURLLoaderThrottleTest,
-       ShouldDeferRequestForBoundSessionNonOverlappingParamsMiss) {
-  EXPECT_FALSE(GoogleURLLoaderThrottle::ShouldDeferRequestForBoundSession(
-      GURL("https://example.org/index.html"),
-      ToVector(BoundSessionThrottlerParams::New("google.com", "/",
-                                                base::Time::Now()),
-               BoundSessionThrottlerParams::New("youtube.com", "/",
-                                                base::Time::Now()))));
-}
-
-TEST_F(GoogleURLLoaderThrottleTest,
-       ShouldDeferRequestForBoundSessionOverlappingParamsBothExpired) {
-  EXPECT_TRUE(GoogleURLLoaderThrottle::ShouldDeferRequestForBoundSession(
-      GURL("https://accounts.google.com/index.html"),
-      ToVector(BoundSessionThrottlerParams::New("accounts.google.com", "/",
-                                                base::Time::Now()),
-               BoundSessionThrottlerParams::New("google.com", "/",
-                                                base::Time::Now()))));
-}
-
-TEST_F(GoogleURLLoaderThrottleTest,
-       ShouldDeferRequestForBoundSessionOverlappingParamsOneExpired) {
-  EXPECT_TRUE(GoogleURLLoaderThrottle::ShouldDeferRequestForBoundSession(
-      GURL("https://accounts.google.com/index.html"),
-      ToVector(BoundSessionThrottlerParams::New("accounts.google.com", "/",
-                                                base::Time::Now()),
-               BoundSessionThrottlerParams::New("google.com", "/",
-                                                base::Time::Min()))));
-}
-
-TEST_F(GoogleURLLoaderThrottleTest,
-       ShouldDeferRequestForBoundSessionOverlappingParamsOneExpiredSwapped) {
-  EXPECT_TRUE(GoogleURLLoaderThrottle::ShouldDeferRequestForBoundSession(
-      GURL("https://accounts.google.com/index.html"),
-      ToVector(BoundSessionThrottlerParams::New("accounts.google.com", "/",
-                                                base::Time::Min()),
-               BoundSessionThrottlerParams::New("google.com", "/",
-                                                base::Time::Now()))));
+       GetRequestBoundSessionStatusOverlappingParamsOneExpiredSwapped) {
+  EXPECT_EQ(GoogleURLLoaderThrottle::GetRequestBoundSessionStatus(
+                GURL("https://accounts.google.com/index.html"),
+                ToVector(BoundSessionThrottlerParams::New(
+                             "accounts.google.com", "/", base::Time::Min()),
+                         BoundSessionThrottlerParams::New("google.com", "/",
+                                                          base::Time::Now()))),
+            RequestBoundSessionStatus::kCoveredWithMissingCookie);
 }
 
 TEST_P(GoogleURLLoaderThrottleTest, NullBoundSessionThrottlerParams) {
