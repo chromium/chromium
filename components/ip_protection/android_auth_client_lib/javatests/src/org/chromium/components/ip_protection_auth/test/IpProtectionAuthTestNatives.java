@@ -24,6 +24,12 @@ public final class IpProtectionAuthTestNatives {
         void testTransientError();
 
         void testPersistentError();
+
+        void testIllegalErrorCode();
+
+        void testNullResponse();
+
+        void testUnparsableResponse();
     }
 
     public static void createConnectedInstanceForTesting() {
@@ -44,5 +50,17 @@ public final class IpProtectionAuthTestNatives {
 
     public static void testPersistentError() {
         IpProtectionAuthTestNativesJni.get().testPersistentError();
+    }
+
+    public static void testIllegalErrorCode() {
+        IpProtectionAuthTestNativesJni.get().testIllegalErrorCode();
+    }
+
+    public static void testNullResponse() {
+        IpProtectionAuthTestNativesJni.get().testNullResponse();
+    }
+
+    public static void testUnparsableResponse() {
+        IpProtectionAuthTestNativesJni.get().testUnparsableResponse();
     }
 }

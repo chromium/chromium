@@ -14,10 +14,19 @@ namespace ip_protection::android {
 
 // Errors codes which may be passed to GetInitialData and AuthAndSign response
 // callbacks.
+//
+// These values must be kept in sync with AuthRequestError in
+// IpProtectionAuthClient.java
 enum class AuthRequestError {
+  // Service explicitly signaled a transient failure, hinting that the operation
+  // can be retried.
   kTransient = 0,
+  // Service explicitly signaled a persistent failure, hinting that the
+  // operation should not be retried.
   kPersistent = 1,
-  // TODO(b/328780742): Add an "other" code for IPC-layer errors.
+  // There was some failure not explicitly communicated by the service, such as
+  // a breakdown in the IPC or an API contract violation.
+  kOther = 2,
 };
 
 // Used to return a GetInitialDataResponse or error to the user.

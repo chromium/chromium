@@ -299,4 +299,19 @@ public final class IpProtectionAuthTest {
     public void nativePersistentErrorTest() throws Exception {
         IpProtectionAuthTestNatives.testPersistentError();
     }
+
+    @Test
+    public void nativeIllegalErrorCodeTest() throws Exception {
+        IpProtectionAuthTestNatives.testIllegalErrorCode();
+    }
+
+    @Test
+    public void nativeNullResponseTest() throws Exception {
+        IpProtectionAuthTestNatives.testNullResponse();
+    }
+
+    @Test
+    public void nativeUnparsableResponseTest() throws Exception {
+        IpProtectionAuthTestNatives.testUnparsableResponse();
+    }
 }

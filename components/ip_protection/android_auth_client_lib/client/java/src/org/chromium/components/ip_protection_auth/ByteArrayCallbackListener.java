@@ -4,6 +4,8 @@
 
 package org.chromium.components.ip_protection_auth;
 
+import androidx.annotation.NonNull;
+
 import org.jni_zero.CalledByNative;
 import org.jni_zero.JNINamespace;
 import org.jni_zero.NativeMethods;
@@ -14,16 +16,16 @@ final class ByteArrayCallbackListener implements IpProtectionByteArrayCallback {
     private long mNativeListener;
 
     @Override
-    public void onResult(byte[] response) {
+    public void onResult(@NonNull byte[] response) {
         assert mNativeListener != 0;
         ByteArrayCallbackListenerJni.get().onResult(mNativeListener, response);
         mNativeListener = 0;
     }
 
     @Override
-    public void onError(int errorCode) {
+    public void onError(int authRequestError) {
         assert mNativeListener != 0;
-        ByteArrayCallbackListenerJni.get().onError(mNativeListener, errorCode);
+        ByteArrayCallbackListenerJni.get().onError(mNativeListener, authRequestError);
         mNativeListener = 0;
     }
 
@@ -36,6 +38,6 @@ final class ByteArrayCallbackListener implements IpProtectionByteArrayCallback {
     interface Natives {
         void onResult(long nativeByteArrayCallbackListener, byte[] response);
 
-        void onError(long nativeByteArrayCallbackListener, int error);
+        void onError(long nativeByteArrayCallbackListener, int authRequestError);
     }
 }

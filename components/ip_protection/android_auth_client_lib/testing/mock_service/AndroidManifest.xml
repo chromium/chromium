@@ -10,6 +10,12 @@
           android:exported="true" />
     <service android:name="org.chromium.components.ip_protection_auth.mock_service.ConstantResponseService$TransientError"
           android:exported="true" />
+    <service android:name="org.chromium.components.ip_protection_auth.mock_service.ConstantResponseService$IllegalErrorCode"
+          android:exported="true" />
+    <service android:name="org.chromium.components.ip_protection_auth.mock_service.ConstantResponseService$Null"
+          android:exported="true" />
+    <service android:name="org.chromium.components.ip_protection_auth.mock_service.ConstantResponseService$Unparsable"
+          android:exported="true" />
     <service android:name="org.chromium.components.ip_protection_auth.mock_service.IpProtectionAuthServiceMock"
           android:exported="true" />
     <service android:name="org.chromium.components.ip_protection_auth.mock_service.NullBindingService"

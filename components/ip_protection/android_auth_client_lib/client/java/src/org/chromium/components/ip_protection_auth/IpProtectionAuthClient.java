@@ -12,6 +12,7 @@ import android.content.pm.PackageManager;
 import android.os.IBinder;
 import android.os.RemoteException;
 
+import androidx.annotation.IntDef;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
@@ -20,10 +21,15 @@ import org.jni_zero.CalledByNativeForTesting;
 import org.jni_zero.JNINamespace;
 
 import org.chromium.base.ContextUtils;
+import org.chromium.base.Log;
 import org.chromium.base.ThreadUtils;
+import org.chromium.components.ip_protection_auth.common.IErrorCode;
 import org.chromium.components.ip_protection_auth.common.IIpProtectionAuthAndSignCallback;
 import org.chromium.components.ip_protection_auth.common.IIpProtectionAuthService;
 import org.chromium.components.ip_protection_auth.common.IIpProtectionGetInitialDataCallback;
+
+import java.lang.annotation.Retention;
+import java.lang.annotation.RetentionPolicy;
 
 /**
  * Client interface for the IP Protection Auth service.
@@ -33,8 +39,36 @@ import org.chromium.components.ip_protection_auth.common.IIpProtectionGetInitial
  */
 @JNINamespace("ip_protection::android")
 public final class IpProtectionAuthClient implements AutoCloseable {
+    private static final String TAG = "IppAuthClient";
+
     private static final String IP_PROTECTION_AUTH_ACTION =
             "android.net.http.IpProtectionAuthService";
+
+    // These values must be kept in sync with AuthRequestError in
+    // ip_protection_auth_client_interface.h
+    @Retention(RetentionPolicy.SOURCE)
+    @IntDef({AuthRequestError.TRANSIENT, AuthRequestError.PERSISTENT, AuthRequestError.OTHER})
+    public @interface AuthRequestError {
+        int TRANSIENT = 0;
+        int PERSISTENT = 1;
+        int OTHER = 2;
+    }
+
+    /**
+     * Convert IErrorCode value to AuthRequestError value.
+     *
+     * <p>Invalid values are mapped to AuthRequestError.OTHER.
+     */
+    private static int convertErrorCodeToAuthRequestError(int errorCode) {
+        switch (errorCode) {
+            case IErrorCode.IP_PROTECTION_AUTH_SERVICE_TRANSIENT_ERROR:
+                return AuthRequestError.TRANSIENT;
+            case IErrorCode.IP_PROTECTION_AUTH_SERVICE_PERSISTENT_ERROR:
+                return AuthRequestError.PERSISTENT;
+            default:
+                return AuthRequestError.OTHER;
+        }
+    }
 
     // mService being null signifies that the object has been closed by calling close().
     @Nullable private IIpProtectionAuthService mService;
@@ -86,12 +120,17 @@ public final class IpProtectionAuthClient implements AutoCloseable {
 
         @Override
         public void reportResult(byte[] bytes) {
+            if (bytes == null) {
+                Log.e(TAG, "null getInitialData response");
+                mCallback.onError(AuthRequestError.OTHER);
+                return;
+            }
             mCallback.onResult(bytes);
         }
 
         @Override
         public void reportError(int errorCode) {
-            mCallback.onError(errorCode);
+            mCallback.onError(convertErrorCodeToAuthRequestError(errorCode));
         }
     }
 
@@ -105,12 +144,17 @@ public final class IpProtectionAuthClient implements AutoCloseable {
 
         @Override
         public void reportResult(byte[] bytes) {
+            if (bytes == null) {
+                Log.e(TAG, "null authAndSign response");
+                mCallback.onError(AuthRequestError.OTHER);
+                return;
+            }
             mCallback.onResult(bytes);
         }
 
         @Override
         public void reportError(int errorCode) {
-            mCallback.onError(errorCode);
+            mCallback.onError(convertErrorCodeToAuthRequestError(errorCode));
         }
     }
 

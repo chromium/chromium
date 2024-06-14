@@ -89,4 +89,46 @@ public abstract class ConstantResponseService extends Service {
             callback.reportError(IErrorCode.IP_PROTECTION_AUTH_SERVICE_PERSISTENT_ERROR);
         }
     }
+
+    public static class IllegalErrorCode extends ConstantResponseService {
+        @Override
+        protected void handleGetInitialData(IIpProtectionGetInitialDataCallback callback)
+                throws RemoteException {
+            callback.reportError(-1);
+        }
+
+        @Override
+        protected void handleAuthAndSign(IIpProtectionAuthAndSignCallback callback)
+                throws RemoteException {
+            callback.reportError(-1);
+        }
+    }
+
+    public static class Null extends ConstantResponseService {
+        @Override
+        protected void handleGetInitialData(IIpProtectionGetInitialDataCallback callback)
+                throws RemoteException {
+            callback.reportResult(null);
+        }
+
+        @Override
+        protected void handleAuthAndSign(IIpProtectionAuthAndSignCallback callback)
+                throws RemoteException {
+            callback.reportResult(null);
+        }
+    }
+
+    public static class Unparsable extends ConstantResponseService {
+        @Override
+        protected void handleGetInitialData(IIpProtectionGetInitialDataCallback callback)
+                throws RemoteException {
+            callback.reportResult("unparsable non-proto gibberish".getBytes());
+        }
+
+        @Override
+        protected void handleAuthAndSign(IIpProtectionAuthAndSignCallback callback)
+                throws RemoteException {
+            callback.reportResult("unparsable non-proto gibberish".getBytes());
+        }
+    }
 }

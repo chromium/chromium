@@ -7,6 +7,7 @@
 #include "base/android/jni_array.h"
 #include "base/android/jni_string.h"
 #include "base/android/scoped_java_ref.h"
+#include "base/logging.h"
 #include "components/ip_protection/android_auth_client_lib/cpp/bind_callback_listener.h"
 #include "components/ip_protection/android_auth_client_lib/cpp/byte_array_callback_listener.h"
 #include "components/ip_protection/android_auth_client_lib/cpp/ip_protection_auth_client_interface.h"
@@ -16,33 +17,27 @@ namespace ip_protection::android {
 
 namespace {
 
-// Must match the AIDL constant defined in
-// org.chromium.components.ip_protection_auth.common.IErrorCode.
-const int kIpProtectionAuthServiceTransientError = 0;
-
-AuthRequestError IntToAuthRequestError(int errorCode) {
-  if (errorCode == kIpProtectionAuthServiceTransientError) {
-    return AuthRequestError::kTransient;
-  } else {
-    // Includes any nonsense errorCodes.
-    return AuthRequestError::kPersistent;
-  }
-}
-
 template <typename T>
-base::OnceCallback<void(base::expected<std::string, int>)> ConvertProtoCallback(
+base::OnceCallback<void(base::expected<std::string, AuthRequestError>)>
+ConvertProtoCallback(
     base::OnceCallback<void(base::expected<T, AuthRequestError>)> callback) {
   return base::BindOnce(
       [](base::OnceCallback<void(base::expected<T, AuthRequestError>)> callback,
-         base::expected<std::string, int> response) {
+         base::expected<std::string, AuthRequestError> response) {
         if (!response.has_value()) {
-          const AuthRequestError error =
-              IntToAuthRequestError(std::move(response).error());
-          std::move(callback).Run(base::unexpected(error));
+          std::move(callback).Run(
+              base::unexpected(std::move(response).error()));
         } else {
           T response_proto;
-          response_proto.ParseFromString(*response);
-          std::move(callback).Run(std::move(response_proto));
+          const bool parseSuccessful =
+              response_proto.ParseFromString(*response);
+          if (parseSuccessful) {
+            std::move(callback).Run(std::move(response_proto));
+          } else {
+            DLOG(ERROR)
+                << "ip_protection_auth_client: could not parse response proto";
+            std::move(callback).Run(base::unexpected(AuthRequestError::kOther));
+          }
         }
       },
       std::move(callback));

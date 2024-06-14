@@ -10,6 +10,7 @@
 #include "base/android/jni_android.h"
 #include "base/functional/callback.h"
 #include "base/types/expected.h"
+#include "components/ip_protection/android_auth_client_lib/cpp/ip_protection_auth_client_interface.h"
 
 namespace ip_protection::android {
 
@@ -19,20 +20,23 @@ namespace ip_protection::android {
 class ByteArrayCallbackListener {
  public:
   static base::android::ScopedJavaLocalRef<jobject> Create(
-      base::OnceCallback<void(base::expected<std::string, int>)> callback);
+      base::OnceCallback<void(base::expected<std::string, AuthRequestError>)>
+          callback);
 
   // Called by Java.
   void OnResult(JNIEnv* env, jni_zero::JavaParamRef<jbyteArray> response);
 
   // Called by Java.
-  void OnError(JNIEnv* env, jint errorCode);
+  void OnError(JNIEnv* env, jint authRequestError);
 
  private:
   explicit ByteArrayCallbackListener(
-      base::OnceCallback<void(base::expected<std::string, int>)> callback);
+      base::OnceCallback<void(base::expected<std::string, AuthRequestError>)>
+          callback);
   ~ByteArrayCallbackListener();
 
-  base::OnceCallback<void(base::expected<std::string, int>)> callback_;
+  base::OnceCallback<void(base::expected<std::string, AuthRequestError>)>
+      callback_;
 };
 
 }  // namespace ip_protection::android
