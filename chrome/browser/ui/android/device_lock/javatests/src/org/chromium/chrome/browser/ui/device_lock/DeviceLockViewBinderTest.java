@@ -275,6 +275,7 @@ public class DeviceLockViewBinderTest extends BlankUiTestActivityTestCase {
     @Test
     @UiThreadTest
     @SmallTest
+    @DisabledTest(message = "crbug.com/347020821")
     public void testDeviceLockView_dismissButtonClicked_triggersOnClick() {
         mDismissButtonClicked.set(false);
 
