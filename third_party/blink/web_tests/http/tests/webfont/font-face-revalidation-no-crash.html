@@ -1,0 +1,24 @@
+<!DOCTYPE html>
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+<script>
+async function loadFont(tag) {
+  const font_url =
+      './resources/no-cache-not-modified-font.php?tag=' + tag;
+  const font = new FontFace("font", `url(${font_url})`);
+  await font.load();
+}
+
+promise_test(async () => {
+  const tag = Math.random();
+  // The first request.
+  await loadFont(tag);
+  // The second request should be successfully revalidated.
+  await loadFont(tag);
+  // The third request should be successfully revalidated again. And this should
+  // not cause crash. (https://crbug.com/346742837)
+  await loadFont(tag);
+}, '304 Not Modified responses should not cause a crash');
+</script>
+</body>
+</html>

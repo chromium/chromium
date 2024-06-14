@@ -791,6 +791,20 @@ void ResourceLoader::DidReceiveResponse(
   if (!IsLoading()) {
     return;
   }
+  if (resource_->HasSuccessfulRevalidation()) {
+    // When we succeeded the revalidation, the response is a 304 Not Modified.
+    // The body of the 304 Not Modified response must be empty.
+    //   RFC9110: https://www.rfc-editor.org/rfc/rfc9110.html#section-6.4.1-8
+    //     All 1xx (Informational), 204 (No Content), and 304 (Not Modified)
+    //     responses do not include content.
+    // net::HttpStreamParser::CalculateResponseBodySize() is skipping loading
+    // the body of 304 Not Modified response. And Blink don't fetch the
+    // revalidating request when the page is controlled by a service worker.
+    // So, We don't need to handle the body for 304 Not Modified responses.
+    CHECK(!absl::holds_alternative<SegmentedBuffer>(body) ||
+          absl::get<SegmentedBuffer>(body).empty());
+    return;
+  }
   if (absl::holds_alternative<SegmentedBuffer>(body)) {
     DidReceiveDataImpl(std::move(absl::get<SegmentedBuffer>(body)));
     return;
