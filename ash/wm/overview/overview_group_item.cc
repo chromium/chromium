@@ -346,6 +346,14 @@ std::vector<OverviewFocusableView*> OverviewGroupItem::GetFocusableViews()
   return focusable_views;
 }
 
+std::vector<views::Widget*> OverviewGroupItem::GetFocusableWidgets() {
+  std::vector<views::Widget*> focusable_widgets;
+  for (const auto& overview_item : overview_items_) {
+    focusable_widgets.push_back(overview_item->item_widget());
+  }
+  return focusable_widgets;
+}
+
 views::View* OverviewGroupItem::GetBackDropView() const {
   return overview_group_container_view_;
 }

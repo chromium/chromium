@@ -226,8 +226,9 @@ class ASH_EXPORT OverviewItemBase : public EventHandlerDelegate {
   // Ensures that a possibly minimized window becomes visible after restore.
   virtual void EnsureVisible() = 0;
 
-  // Returns the focusable views contained in `this`.
+  // Returns the focusable views/widgets contained in `this`.
   virtual std::vector<OverviewFocusableView*> GetFocusableViews() const = 0;
+  virtual std::vector<views::Widget*> GetFocusableWidgets() = 0;
 
   // Returns the backdrop view of `this`.
   virtual views::View* GetBackDropView() const = 0;

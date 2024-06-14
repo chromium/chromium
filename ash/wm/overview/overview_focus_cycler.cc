@@ -141,9 +141,9 @@ void OverviewFocusCycler::MoveFocus(bool reverse) {
   // here since it's not an overview UI.
   if ((reverse && previous_index == 0) ||
       (!reverse && previous_index == size - 1)) {
-    bool ignore_activations = overview_session_->ignore_activations();
+    const bool ignore_activations = overview_session_->ignore_activations();
     overview_session_->set_ignore_activations(true);
-    bool focused_toast =
+    const bool focused_toast =
         DesksController::Get()->RequestFocusOnUndoDeskRemovalToast();
     overview_session_->set_ignore_activations(ignore_activations);
     if (focused_toast) {
@@ -241,7 +241,10 @@ std::vector<views::Widget*> OverviewFocusCycler::GetTraversableWidgets(
 
   for (const auto& grid : overview_session_->grid_list()) {
     for (const auto& item : grid->window_list()) {
-      maybe_add_widget(item->item_widget());
+      // There may be two widgets if the item is a snap group item.
+      for (views::Widget* item_widget : item->GetFocusableWidgets()) {
+        maybe_add_widget(item_widget);
+      }
     }
     maybe_add_widget(grid->desks_widget());
     maybe_add_widget(grid->save_desk_button_container_widget());

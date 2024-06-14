@@ -669,6 +669,10 @@ std::vector<OverviewFocusableView*> OverviewItem::GetFocusableViews() const {
              : std::vector<OverviewFocusableView*>{};
 }
 
+std::vector<views::Widget*> OverviewItem::GetFocusableWidgets() {
+  return {item_widget_.get()};
+}
+
 views::View* OverviewItem::GetBackDropView() const {
   return overview_item_view_->backdrop_view();
 }

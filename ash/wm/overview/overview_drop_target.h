@@ -53,6 +53,7 @@ class OverviewDropTarget : public OverviewItemBase {
   void ScaleUpSelectedItem(OverviewAnimationType animation_type) override;
   void EnsureVisible() override;
   std::vector<OverviewFocusableView*> GetFocusableViews() const override;
+  std::vector<views::Widget*> GetFocusableWidgets() override;
   views::View* GetBackDropView() const override;
   bool ShouldHaveShadow() const override;
   void UpdateRoundedCornersAndShadow() override;

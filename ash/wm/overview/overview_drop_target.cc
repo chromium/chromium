@@ -153,6 +153,10 @@ std::vector<OverviewFocusableView*> OverviewDropTarget::GetFocusableViews()
   return {};
 }
 
+std::vector<views::Widget*> OverviewDropTarget::GetFocusableWidgets() {
+  return {};
+}
+
 views::View* OverviewDropTarget::GetBackDropView() const {
   return nullptr;
 }

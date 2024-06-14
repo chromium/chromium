@@ -119,6 +119,7 @@ class ASH_EXPORT OverviewItem : public OverviewItemBase,
   gfx::RectF GetTargetBoundsWithInsets() const override;
   gfx::RectF GetTransformedBounds() const override;
   std::vector<OverviewFocusableView*> GetFocusableViews() const override;
+  std::vector<views::Widget*> GetFocusableWidgets() override;
   views::View* GetBackDropView() const override;
   bool ShouldHaveShadow() const override;
   void UpdateRoundedCornersAndShadow() override;
