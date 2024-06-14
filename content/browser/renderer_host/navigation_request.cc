@@ -4026,11 +4026,24 @@ UrlInfo NavigationRequest::GetUrlInfo() {
   // haven't received the response yet and don't have the final
   // `policy_container_builder_`, and if the state of the kOrigin flag changes,
   // we'll detect the change and recompute the target SiteInstance elsewhere.
-  // Note: We don't try to process-isolate about:blank URLs since that would
-  // prevent the parent frame from interacting with them, and they would be
-  // stuck as empty content.
+  //
+  // In general, about:blank documents should stay in their initiator's process.
+  // If neither the initiator or about:blank is sandboxed, or if both are, then
+  // the about:blank should stay in its parent's process, if only to avoid
+  // needing an extra process that only shows the empty frame (if the parent and
+  // about:blank are sandboxed, they parent cannot script the about:blank
+  // frame). If the initiator is not sandboxed but the about:blank document is
+  // (e.g., due to iframe attributes), then nothing else will be able to script
+  // the empty about:blank document and it is safe to leave it in the same
+  // process. (It is not possible for the initiator to be sandboxed and the
+  // about:blank to not be sandboxed, because about:blank inherits the
+  // sandboxing of its initiator.)
+  bool is_eligible_for_sandboxing =
+      !GetURL().IsAboutBlank() ||
+      (source_site_instance_ &&
+       source_site_instance_->GetSiteInfo().is_sandboxed());
   if (SiteIsolationPolicy::AreIsolatedSandboxedIframesEnabled() &&
-      !GetURL().IsAboutBlank()) {
+      is_eligible_for_sandboxing) {
     // Determine if the frame has the sandbox flag or not.
     bool has_origin_restricted_sandbox_flag = false;
     if (policy_container_builder_->HasComputedPolicies()) {
@@ -4050,7 +4063,15 @@ UrlInfo NavigationRequest::GetUrlInfo() {
           network::mojom::WebSandboxFlags::kOrigin;
     }
 
-    if (has_origin_restricted_sandbox_flag) {
+    // It's possible that a sandbox attribute can disappear from a frame that
+    // still contains a sandboxed initiator, meaning we won't have sandbox
+    // flags here, but should still respect the sandbox of the initiator.
+    bool should_inherit_initiators_sandbox =
+        GetURL().IsAboutBlank() && source_site_instance_ &&
+        source_site_instance_->GetSiteInfo().is_sandboxed();
+
+    if (has_origin_restricted_sandbox_flag ||
+        should_inherit_initiators_sandbox) {
       // If the URL under consideration wouldn't qualify for a dedicated process
       // without the sandbox flags, then it shouldn't qualify even with the
       // sandbox flag. This is most likely to occur when site isolation is only

@@ -1071,6 +1071,109 @@ IN_PROC_BROWSER_TEST_P(SitePerProcessIsolatedSandboxedIframeTest,
                    .is_sandboxed());
 }
 
+// Verify that a navigation from a sandboxed iframe, with an origin distinct
+// from its parent, to about:blank succeeds.
+IN_PROC_BROWSER_TEST_P(SitePerProcessIsolatedSandboxedIframeTest,
+                       SandboxedNavigationToAboutBlank) {
+  GURL main_url(embedded_test_server()->GetURL("a.com", "/title1.html"));
+  EXPECT_TRUE(NavigateToURL(shell(), main_url));
+
+  // Create sandboxed child frame to a different site.
+  GURL child_url(embedded_test_server()->GetURL("b.com", "/title1.html"));
+  {
+    std::string js_str = base::StringPrintf(
+        "var frame = document.createElement('iframe'); "
+        "frame.id = 'test_frame'; "
+        "frame.sandbox = 'allow-scripts'; "
+        "frame.src = '%s'; "
+        "document.body.appendChild(frame);",
+        child_url.spec().c_str());
+    TestNavigationObserver iframe_observer(shell()->web_contents());
+    EXPECT_TRUE(ExecJs(shell(), js_str));
+    iframe_observer.Wait();
+    EXPECT_TRUE(iframe_observer.last_navigation_succeeded());
+  }
+
+  // Get child's FrameTreeNode.
+  FrameTreeNode* root = static_cast<WebContentsImpl*>(shell()->web_contents())
+                            ->GetPrimaryFrameTree()
+                            .root();
+  ASSERT_EQ(1U, root->child_count());
+  FrameTreeNode* child = root->child_at(0);
+  scoped_refptr<SiteInstanceImpl> original_child_site_instance =
+      child->current_frame_host()->GetSiteInstance();
+  EXPECT_TRUE(original_child_site_instance->GetSiteInfo().is_sandboxed());
+
+  {
+    TestNavigationObserver iframe_observer(shell()->web_contents());
+    EXPECT_TRUE(ExecJs(child, "location.href = 'about:blank';"));
+    iframe_observer.Wait();
+    EXPECT_TRUE(iframe_observer.last_navigation_succeeded());
+  }
+
+  // Verify that child origin is correct. This also helps validate that the
+  // navigation didn't crash.
+  EXPECT_EQ("null", EvalJs(child, "window.origin").ExtractString());
+  // The child should remain in the same SiteInstance.
+  EXPECT_EQ(original_child_site_instance,
+            child->current_frame_host()->GetSiteInstance());
+}
+
+// Verify that a navigation from a sandboxed iframe, with an origin distinct
+// from its parent, to about:blank succeeds. This is a variation on
+// SandboxedNavigationToAboutBlank in which the parent removes the sandbox flag
+// after B has loaded, and before it navigates to about:blank.
+IN_PROC_BROWSER_TEST_P(SitePerProcessIsolatedSandboxedIframeTest,
+                       SandboxedNavigationToAboutBlank_SandboxRevokedByParent) {
+  GURL main_url(embedded_test_server()->GetURL("a.com", "/title1.html"));
+  EXPECT_TRUE(NavigateToURL(shell(), main_url));
+
+  // Create sandboxed child frame to a different site.
+  GURL child_url(embedded_test_server()->GetURL("b.com", "/title1.html"));
+  {
+    std::string js_str = base::StringPrintf(
+        "var frame = document.createElement('iframe'); "
+        "frame.id = 'test_frame'; "
+        "frame.sandbox = 'allow-scripts'; "
+        "frame.src = '%s'; "
+        "document.body.appendChild(frame);",
+        child_url.spec().c_str());
+    TestNavigationObserver iframe_observer(shell()->web_contents());
+    EXPECT_TRUE(ExecJs(shell(), js_str));
+    iframe_observer.Wait();
+    EXPECT_TRUE(iframe_observer.last_navigation_succeeded());
+  }
+
+  // Get child's FrameTreeNode.
+  FrameTreeNode* root = static_cast<WebContentsImpl*>(shell()->web_contents())
+                            ->GetPrimaryFrameTree()
+                            .root();
+  ASSERT_EQ(1U, root->child_count());
+  FrameTreeNode* child = root->child_at(0);
+  scoped_refptr<SiteInstanceImpl> original_child_site_instance =
+      child->current_frame_host()->GetSiteInstance();
+  EXPECT_TRUE(original_child_site_instance->GetSiteInfo().is_sandboxed());
+
+  // The parent removes the iframe's sandbox attribute before the child
+  // self-navigates to about:blank.
+  EXPECT_TRUE(ExecJs(
+      root, "document.querySelector('iframe').removeAttribute('sandbox');"));
+
+  {
+    TestNavigationObserver iframe_observer(shell()->web_contents());
+    EXPECT_TRUE(ExecJs(child, "location.href = 'about:blank';"));
+    iframe_observer.Wait();
+    EXPECT_TRUE(iframe_observer.last_navigation_succeeded());
+  }
+
+  // Verify that child origin is correct. This also helps validate that the
+  // navigation didn't crash.
+  EXPECT_EQ("null", EvalJs(child, "window.origin").ExtractString());
+  // The child should remain in the same SiteInstance.
+  EXPECT_EQ(original_child_site_instance,
+            child->current_frame_host()->GetSiteInstance());
+}
+
 // Test to make sure that an iframe with a data:url is appropriately sandboxed.
 IN_PROC_BROWSER_TEST_P(SitePerProcessIsolatedSandboxedIframeTest,
                        SandboxedIframeWithDataURL) {
