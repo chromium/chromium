@@ -32,7 +32,6 @@
 #include "chrome/browser/signin/identity_manager_factory.h"
 #include "chrome/browser/signin/signin_ui_util.h"
 #include "chrome/browser/ui/passwords/passwords_client_ui_delegate.h"
-#include "chrome/browser/ui/webauthn/authenticator_request_bubble.h"
 #include "chrome/browser/ui/webauthn/authenticator_request_dialog.h"
 #include "chrome/browser/ui/webauthn/authenticator_request_window.h"
 #include "chrome/browser/webauthn/authenticator_reference.h"
@@ -92,8 +91,6 @@ enum class StepUIType {
   NONE,
   // A Chromium captive dialog.
   DIALOG,
-  // A Google Password Manager bubble.
-  BUBBLE,
   // A top-level window.
   WINDOW,
 };
@@ -421,9 +418,6 @@ StepUIType step_ui_type(AuthenticatorRequestDialogModel::Step step) {
     case AuthenticatorRequestDialogModel::Step::kGPMReauthForPinReset:
       return StepUIType::WINDOW;
 
-    case AuthenticatorRequestDialogModel::Step::kGPMPasskeySaved:
-      return StepUIType::BUBBLE;
-
     default:
       return StepUIType::DIALOG;
   }
@@ -510,10 +504,6 @@ void AuthenticatorRequestDialogModel::SetStep(Step step) {
         ShowAuthenticatorRequestDialog(web_contents, this);
         break;
 
-      case StepUIType::BUBBLE:
-        ShowAuthenticatorRequestBubble(web_contents, this);
-        break;
-
       case StepUIType::WINDOW:
         ShowAuthenticatorRequestWindow(web_contents, this);
         break;
@@ -543,10 +533,6 @@ content::RenderFrameHost* AuthenticatorRequestDialogModel::GetRenderFrameHost()
 
 bool AuthenticatorRequestDialogModel::should_dialog_be_closed() const {
   return step_ui_type(step_) != StepUIType::DIALOG;
-}
-
-bool AuthenticatorRequestDialogModel::should_bubble_be_closed() const {
-  return step_ui_type(step_) != StepUIType::BUBBLE;
 }
 
 #define AUTHENTICATOR_REQUEST_EVENT_0(name)      \
@@ -1197,9 +1183,7 @@ void AuthenticatorRequestDialogController::OnRequestComplete() {
           ->NotifyWebAuthnRequestAborted();
     }
   }
-  if (model_->step() != Step::kGPMPasskeySaved) {
-    SetCurrentStep(Step::kClosed);
-  }
+  SetCurrentStep(Step::kClosed);
 }
 
 void AuthenticatorRequestDialogController::OnRequestTimeout() {

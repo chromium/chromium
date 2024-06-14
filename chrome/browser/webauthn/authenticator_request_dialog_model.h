@@ -120,14 +120,14 @@ class AuthenticatorRequestDialogController;
   /* Called when the user accepts the create passkey sheet. */                \
   /* (But not the GPM one.) */                                                \
   AUTHENTICATOR_REQUEST_EVENT_0(OnCreatePasskeyAccepted)                      \
-  /* Called when the user accepts passkey creation in the GPM bubble. */      \
+  /* Called when the user accepts passkey creation dialog. */                 \
   /* TODO(enclave): Add transition to authentication or bootstrapping  */     \
   /* device. */                                                               \
   AUTHENTICATOR_REQUEST_EVENT_0(OnGPMCreatePasskey)                           \
   /* Called when the user accepts the warning dialog for creating a GPM */    \
   /* passkey in incognito mode.*/                                             \
   AUTHENTICATOR_REQUEST_EVENT_0(OnGPMConfirmOffTheRecordCreate)               \
-  /* Called when the user accepts a bubble confirming that they want to */    \
+  /* Called when the user accepts a dialog confirming that they want to */    \
   /* start using passkeys. */                                                 \
   AUTHENTICATOR_REQUEST_EVENT_0(OnGPMOnboardingAccepted)                      \
   /* Called when the user clicks "Forgot PIN" during UV. */                   \
@@ -207,7 +207,7 @@ class AuthenticatorRequestDialogController;
   AUTHENTICATOR_REQUEST_EVENT_0(OnPasskeySaved)
 
 // Each Step defines a unique UI state. Setting a Step causes the matching
-// dialog, bubble, or window to appear.
+// dialog or window to appear.
 #define STEPS                                                                  \
   /* The UX flow has not started yet, the dialog should still be hidden. */    \
   F(kNotStarted)                                                               \
@@ -316,7 +316,6 @@ class AuthenticatorRequestDialogController;
   F(kGPMOnboarding)                                                            \
   F(kGPMCreatePasskey)                                                         \
   F(kGPMConfirmOffTheRecordCreate)                                             \
-  F(kGPMPasskeySaved)                                                          \
   F(kCreatePasskey)                                                            \
   F(kGPMError)                                                                 \
   F(kGPMConnecting)                                                            \
@@ -465,8 +464,6 @@ struct AuthenticatorRequestDialogModel {
   // that either the request has finished, or that the current step
   // has no UI, or a different style of UI.
   bool should_dialog_be_closed() const;
-  // Similar to above, but for bubbles.
-  bool should_bubble_be_closed() const;
 
   const std::optional<content::GlobalRenderFrameHostId> frame_host_id;
   device::FidoRequestType request_type = device::FidoRequestType::kGetAssertion;
