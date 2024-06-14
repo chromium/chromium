@@ -440,6 +440,8 @@ public class FirstRunIntegrationTest {
 
     @Test
     @MediumTest
+    // TODO(crbug.com/346755013): Add a corresponding test for the case where the flag is enabled.
+    @Features.DisableFeatures(ChromeFeatureList.REPLACE_SYNC_PROMOS_WITH_SIGN_IN_PROMOS)
     public void testFirstRunPages_NoCctPolicy_OnBackPressed() throws Exception {
         initializePreferences(new FirstRunPagesTestCase().withSearchPromo().withSigninPromo());
 
@@ -465,6 +467,8 @@ public class FirstRunIntegrationTest {
 
     @Test
     @MediumTest
+    // TODO(crbug.com/346755013): Add a corresponding test for the case where the flag is enabled.
+    @Features.DisableFeatures(ChromeFeatureList.REPLACE_SYNC_PROMOS_WITH_SIGN_IN_PROMOS)
     public void testFirstRunPages_WithCctPolicy_OnBackPressed() throws Exception {
         initializePreferences(
                 new FirstRunPagesTestCase()
@@ -547,6 +551,8 @@ public class FirstRunIntegrationTest {
 
     @Test
     @MediumTest
+    // TODO(crbug.com/346755013): Add a corresponding test for the case where the flag is enabled.
+    @Features.DisableFeatures(ChromeFeatureList.REPLACE_SYNC_PROMOS_WITH_SIGN_IN_PROMOS)
     public void testFirstRunPages_ProgressHistogramRecordedOnlyOnce() throws Exception {
         HistogramWatcher histograms =
                 HistogramWatcher.newBuilder()
@@ -908,6 +914,8 @@ public class FirstRunIntegrationTest {
 
     @Test
     @MediumTest
+    // TODO(crbug.com/346755013): Add a corresponding test for the case where the flag is enabled.
+    @Features.DisableFeatures(ChromeFeatureList.REPLACE_SYNC_PROMOS_WITH_SIGN_IN_PROMOS)
     public void testPrefsUpdated_allPagesAlreadyShown() throws Exception {
         FirstRunPagesTestCase testCase = FirstRunPagesTestCase.createWithShowAllPromos();
         initializePreferences(testCase);
@@ -965,6 +973,8 @@ public class FirstRunIntegrationTest {
 
     @Test
     @MediumTest
+    // TODO(crbug.com/346755013): Add a corresponding test for the case where the flag is enabled.
+    @Features.DisableFeatures(ChromeFeatureList.REPLACE_SYNC_PROMOS_WITH_SIGN_IN_PROMOS)
     public void testPrefsUpdated_searchEnginePromoDisableAfterPromoShown() throws Exception {
         FirstRunPagesTestCase testCase = FirstRunPagesTestCase.createWithShowAllPromos();
         initializePreferences(testCase);
@@ -997,6 +1007,8 @@ public class FirstRunIntegrationTest {
 
     @Test
     @MediumTest
+    // TODO(crbug.com/346755013): Add a corresponding test for the case where the flag is enabled.
+    @Features.DisableFeatures(ChromeFeatureList.REPLACE_SYNC_PROMOS_WITH_SIGN_IN_PROMOS)
     public void testPrefsUpdated_searchEnginePromoDisableWhilePromoShown() throws Exception {
         FirstRunPagesTestCase testCase = FirstRunPagesTestCase.createWithShowAllPromos();
         initializePreferences(testCase);
@@ -1063,6 +1075,8 @@ public class FirstRunIntegrationTest {
 
     @Test
     @MediumTest
+    // TODO(crbug.com/346755013): Add a corresponding test for the case where the flag is enabled.
+    @Features.DisableFeatures(ChromeFeatureList.REPLACE_SYNC_PROMOS_WITH_SIGN_IN_PROMOS)
     public void testPrefsUpdated_signinPromoPromoDisableWhilePromoShown() throws Exception {
         FirstRunPagesTestCase testCase = FirstRunPagesTestCase.createWithShowAllPromos();
         initializePreferences(testCase);
