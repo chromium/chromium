@@ -163,6 +163,14 @@ uint64_t ContentRendererClient::VisitedLinkHash(
   return 0;
 }
 
+uint64_t ContentRendererClient::PartitionedVisitedLinkFingerprint(
+    std::string_view canonical_link_url,
+    const net::SchemefulSite& top_level_site,
+    const url::Origin& frame_origin) {
+  // Return the null-fingerprint value.
+  return 0;
+}
+
 bool ContentRendererClient::IsLinkVisited(uint64_t link_hash) {
   return false;
 }

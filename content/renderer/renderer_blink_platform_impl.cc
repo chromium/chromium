@@ -83,6 +83,7 @@
 #include "media/webrtc/webrtc_features.h"
 #include "mojo/public/cpp/base/big_buffer.h"
 #include "mojo/public/cpp/system/platform_handle.h"
+#include "net/base/schemeful_site.h"
 #include "ppapi/buildflags/buildflags.h"
 #include "services/network/public/cpp/features.h"
 #include "services/network/public/cpp/shared_url_loader_factory.h"
@@ -289,6 +290,14 @@ bool RendererBlinkPlatformImpl::sandboxEnabled() {
 uint64_t RendererBlinkPlatformImpl::VisitedLinkHash(
     std::string_view canonical_url) {
   return GetContentClient()->renderer()->VisitedLinkHash(canonical_url);
+}
+
+uint64_t RendererBlinkPlatformImpl::PartitionedVisitedLinkFingerprint(
+    std::string_view canonical_link_url,
+    const net::SchemefulSite& top_level_site,
+    const blink::WebSecurityOrigin& frame_origin) {
+  return GetContentClient()->renderer()->PartitionedVisitedLinkFingerprint(
+      canonical_link_url, top_level_site, frame_origin);
 }
 
 bool RendererBlinkPlatformImpl::IsLinkVisited(uint64_t link_hash) {

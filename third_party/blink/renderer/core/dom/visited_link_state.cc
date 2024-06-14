@@ -30,11 +30,13 @@
 
 #include "third_party/blink/renderer/core/dom/visited_link_state.h"
 
+#include "third_party/blink/public/common/features.h"
 #include "third_party/blink/public/platform/platform.h"
 #include "third_party/blink/renderer/core/dom/document.h"
 #include "third_party/blink/renderer/core/dom/element_traversal.h"
 #include "third_party/blink/renderer/core/dom/shadow_root.h"
 #include "third_party/blink/renderer/core/execution_context/security_context.h"
+#include "third_party/blink/renderer/core/frame/local_dom_window.h"
 #include "third_party/blink/renderer/core/frame/local_frame.h"
 #include "third_party/blink/renderer/core/html/html_anchor_element.h"
 #include "third_party/blink/renderer/core/html_names.h"
@@ -42,6 +44,16 @@
 #include "third_party/blink/renderer/core/svg/svg_uri_reference.h"
 
 namespace blink {
+
+static inline const SecurityOrigin* CalculateFrameOrigin(
+    const Document& document) {
+  // Obtain the SecurityOrigin for our Document as a url::Origin.
+  // NOTE: for all Documents which have a valid VisitedLinkState, we should not
+  // ever encounter an invalid `window` or `security_origin`.
+  const LocalDOMWindow* window = document.domWindow();
+  DCHECK(window);
+  return window->GetSecurityOrigin();
+}
 
 static inline const AtomicString& LinkAttribute(const Element& element) {
   DCHECK(element.IsLink());
@@ -51,15 +63,52 @@ static inline const AtomicString& LinkAttribute(const Element& element) {
   return SVGURIReference::LegacyHrefString(To<SVGElement>(element));
 }
 
-static inline LinkHash LinkHashForElement(
+static inline LinkHash UnpartitionedLinkHashForElement(
     const Element& element,
-    const AtomicString& attribute = AtomicString()) {
-  DCHECK(attribute.IsNull() || LinkAttribute(element) == attribute);
+    const AtomicString& attribute) {
   if (auto* anchor = DynamicTo<HTMLAnchorElement>(element))
     return anchor->VisitedLinkHash();
   return VisitedLinkHash(
       element.GetDocument().BaseURL(),
       attribute.IsNull() ? LinkAttribute(element) : attribute);
+}
+
+static inline LinkHash PartitionedLinkHashForElement(
+    const Element& element,
+    const AtomicString& attribute) {
+  if (auto* anchor = DynamicTo<HTMLAnchorElement>(element)) {
+    return anchor->PartitionedVisitedLinkFingerprint();
+  }
+  // Obtain the parameters of our triple-partition key.
+  // (1) Link URL (base and relative).
+  const KURL base_link_url = element.GetDocument().BaseURL();
+  const AtomicString relative_link_url =
+      attribute.IsNull() ? LinkAttribute(element) : attribute;
+  // (2) Top-Level Site.
+  // NOTE: for all Documents which have a valid VisitedLinkState, we should not
+  // ever encounter an invalid GetFrame() or an invalid TopFrameOrigin().
+  DCHECK(element.GetDocument().TopFrameOrigin());
+  const net::SchemefulSite top_level_site(
+      element.GetDocument().TopFrameOrigin()->ToUrlOrigin());
+  // (3) Frame Origin.
+  const SecurityOrigin* frame_origin =
+      CalculateFrameOrigin(element.GetDocument());
+
+  // Calculate the fingerprint for this :visited link and return its value.
+  // NOTE: In third_party/blink/renderer/ code, this fingerprint value will
+  // sometimes be referred to as a LinkHash.
+  return PartitionedVisitedLinkFingerprint(base_link_url, relative_link_url,
+                                           top_level_site, frame_origin);
+}
+
+static inline LinkHash LinkHashForElement(
+    const Element& element,
+    const AtomicString& attribute = AtomicString()) {
+  DCHECK(attribute.IsNull() || LinkAttribute(element) == attribute);
+  return base::FeatureList::IsEnabled(
+             blink::features::kPartitionVisitedLinkDatabase)
+             ? PartitionedLinkHashForElement(element, attribute)
+             : UnpartitionedLinkHashForElement(element, attribute);
 }
 
 VisitedLinkState::VisitedLinkState(const Document& document)
@@ -101,8 +150,9 @@ static void InvalidateStyleForLinkRecursively(Node& root_node,
       To<Element>(node).PseudoStateChanged(CSSSelector::kPseudoWebkitAnyLink);
       To<Element>(node).PseudoStateChanged(CSSSelector::kPseudoAnyLink);
     }
-    if (ShadowRoot* root = node.GetShadowRoot())
+    if (ShadowRoot* root = node.GetShadowRoot()) {
       InvalidateStyleForLinkRecursively(*root, link_hash);
+    }
   }
 }
 
@@ -113,18 +163,9 @@ void VisitedLinkState::InvalidateStyleForLink(LinkHash link_hash) {
 }
 
 void VisitedLinkState::UpdateSalt(uint64_t visited_link_salt) {
-  // Obtain the SecurityOrigin for our Document.
-  // NOTE: for all Documents which have a valid VisitedLinkState, we should not
-  // ever encounter an invalid `frame`, `context`, or `security_origin`.
-  const LocalFrame* frame = GetDocument().GetFrame();
-  DCHECK(frame);
-  const SecurityContext* context = frame->GetSecurityContext();
-  DCHECK(context);
-  const SecurityOrigin* security_origin = context->GetSecurityOrigin();
-  DCHECK(security_origin);
   // Inform VisitedLinkReader in our corresponding process of new salt value.
   Platform::Current()->AddOrUpdateVisitedLinkSalt(
-      security_origin->ToUrlOrigin(), visited_link_salt);
+      CalculateFrameOrigin(GetDocument())->ToUrlOrigin(), visited_link_salt);
 }
 
 EInsideLink VisitedLinkState::DetermineLinkStateSlowCase(
@@ -147,8 +188,9 @@ EInsideLink VisitedLinkState::DetermineLinkStateSlowCase(
 
   if (LinkHash hash = LinkHashForElement(element, attribute)) {
     links_checked_for_visited_state_.insert(hash);
-    if (Platform::Current()->IsLinkVisited(hash))
+    if (Platform::Current()->IsLinkVisited(hash)) {
       return EInsideLink::kInsideVisitedLink;
+    }
   }
 
   return EInsideLink::kInsideUnvisitedLink;

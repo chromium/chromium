@@ -39,6 +39,14 @@ class VisitedLinkReader : public VisitedLinkCommon,
     salts_[origin] = salt;
   }
 
+  // Determines the per-origin salt required to hash this triple-partition key
+  // and returns the resulting fingerprint. If a valid fingerprint cannot be
+  // computed, returns 0 ("the null fingerprint").
+  uint64_t ComputePartitionedFingerprint(
+      std::string_view canonical_link_url,
+      const net::SchemefulSite& top_level_site,
+      const url::Origin& frame_origin);
+
   // mojom::VisitedLinkNotificationSink overrides.
   void UpdateVisitedLinks(
       base::ReadOnlySharedMemoryRegion table_region) override;

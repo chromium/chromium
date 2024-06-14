@@ -269,6 +269,10 @@ class CONTENT_EXPORT ContentRendererClient {
 
   // See blink::Platform.
   virtual uint64_t VisitedLinkHash(std::string_view canonical_url);
+  virtual uint64_t PartitionedVisitedLinkFingerprint(
+      std::string_view canonical_link_url,
+      const net::SchemefulSite& top_level_site,
+      const url::Origin& frame_origin);
   virtual bool IsLinkVisited(uint64_t link_hash);
   virtual void AddOrUpdateVisitedLinkSalt(const url::Origin& origin,
                                           uint64_t salt);

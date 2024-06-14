@@ -80,6 +80,10 @@ class CONTENT_EXPORT RendererBlinkPlatformImpl : public BlinkPlatformImpl {
   blink::WebSandboxSupport* GetSandboxSupport() override;
   virtual bool sandboxEnabled();
   uint64_t VisitedLinkHash(std::string_view canonical_url) override;
+  uint64_t PartitionedVisitedLinkFingerprint(
+      std::string_view canonical_link_url,
+      const net::SchemefulSite& top_level_site,
+      const blink::WebSecurityOrigin& frame_origin) override;
   bool IsLinkVisited(uint64_t linkHash) override;
   void AddOrUpdateVisitedLinkSalt(const url::Origin& origin,
                                   uint64_t salt) override;

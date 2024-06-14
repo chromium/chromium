@@ -30,6 +30,21 @@ VisitedLinkReader::GetBindCallback() {
                              weak_factory_.GetWeakPtr());
 }
 
+uint64_t VisitedLinkReader::ComputePartitionedFingerprint(
+    std::string_view canonical_link_url,
+    const net::SchemefulSite& top_level_site,
+    const url::Origin& frame_origin) {
+  // Determine the per-origin salt used for this fingerprint.
+  auto it = salts_.find(frame_origin);
+  if (it != salts_.end()) {
+    return VisitedLinkCommon::ComputePartitionedFingerprint(
+        GURL(canonical_link_url), top_level_site, frame_origin, it->second);
+  }
+  // If we cannot determine the per-origin salt, we cannot read the hashtable,
+  // so we must return the null fingerprint.
+  return 0;
+}
+
 // Initializes the table with the given shared memory handle. This memory is
 // mapped into the process.
 void VisitedLinkReader::UpdateVisitedLinks(

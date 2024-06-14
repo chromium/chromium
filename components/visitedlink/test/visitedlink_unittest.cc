@@ -676,6 +676,8 @@ class PartitionedVisitedLinkTest : public testing::Test {
     return result;
   }
 
+  void TearDown() override { g_readers.clear(); }
+
   std::unique_ptr<PartitionedVisitedLinkWriter> partitioned_writer_;
   TestVisitedLinkDelegate delegate_;
   content::BrowserTaskEnvironment task_environment_;
@@ -722,6 +724,101 @@ TEST_F(PartitionedVisitedLinkTest, BuildPartitionedTable) {
         cur, net::SchemefulSite(cur), url::Origin::Create(cur), salt.value());
     EXPECT_TRUE(found) << "Partitioned link " << i << "not found in writer.";
   }
+}
+
+TEST_F(PartitionedVisitedLinkTest, NotVisitedEmptyDB) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndEnableFeature(
+      blink::features::kPartitionVisitedLinkDatabase);
+
+  ASSERT_TRUE(InitVisited(true, 0));
+  ASSERT_EQ(partitioned_writer_->GetUsedCount(), 0);
+
+  // Create a reader and copy the hashtable.
+  VisitedLinkReader reader;
+  reader.UpdateVisitedLinks(
+      partitioned_writer_->GetMappedTableMemoryForTesting().region.Duplicate());
+  g_readers.push_back(&reader);
+
+  // Test a visited link that has not been added to the VisitedLinkDatabase.
+  const url::Origin origin = url::Origin::Create(TestURL(0));
+  const VisitedLink link_0 = {TestURL(0), net::SchemefulSite(TestURL(0)),
+                              origin};
+  const std::optional<uint64_t> salt =
+      partitioned_writer_->GetOrAddOriginSalt(origin);
+  ASSERT_TRUE(salt.has_value());
+  // Ensure that we do not find this link in the writer's or reader's
+  // hashtables.
+  EXPECT_FALSE(partitioned_writer_->IsVisited(link_0, salt.value()));
+  EXPECT_FALSE(reader.IsVisited(link_0, salt.value()));
+}
+
+TEST_F(PartitionedVisitedLinkTest, NotVisitedSomeFieldsMatch) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndEnableFeature(
+      blink::features::kPartitionVisitedLinkDatabase);
+
+  // Add a link to the mock VisitedLinkDatabase. This needs to be done before we
+  // initialize the visited link hashtable.
+  const GURL url_0 = GURL("http://example.com");
+  const net::SchemefulSite site_0 = net::SchemefulSite(url_0);
+  const url::Origin origin_0 = url::Origin::Create(url_0);
+  const VisitedLink link_0 = {url_0, site_0, origin_0};
+  delegate_.AddVisitedLinkForRebuild(link_0);
+
+  // Initialize the visited link hashtable. This will load from history.
+  ASSERT_TRUE(InitVisited(false, 0));
+  ASSERT_EQ(partitioned_writer_->GetUsedCount(), 1);
+
+  // Create a reader and copy the hashtable.
+  VisitedLinkReader reader;
+  reader.UpdateVisitedLinks(
+      partitioned_writer_->GetMappedTableMemoryForTesting().region.Duplicate());
+  g_readers.push_back(&reader);
+
+  // Test visited links that have not been added to the VisitedLinkDatabase.
+  const std::optional<uint64_t> salt_0 =
+      partitioned_writer_->GetOrAddOriginSalt(origin_0);
+  ASSERT_TRUE(salt_0.has_value());
+
+  // Prepare cross-site, cross-origin values.
+  const GURL url_1 = GURL("https://google.com");
+  const net::SchemefulSite site_1 = net::SchemefulSite(url_1);
+  const url::Origin origin_1 = url::Origin::Create(TestURL(1));
+  const std::optional<uint64_t> salt_1 =
+      partitioned_writer_->GetOrAddOriginSalt(origin_1);
+  ASSERT_TRUE(salt_1.has_value());
+
+  // Test visited links that have not been added to the VisitedLinkDatabase.
+  std::map<VisitedLink, std::optional<uint64_t>> links = {
+      // Create a link where no fields match the added partition key.
+      {{url_1, site_1, origin_1}, salt_1},
+      // Create a link where only link_url matches.
+      {{url_0, site_1, origin_1}, salt_1},
+      // Create a link where only top_level_site matches.
+      {{url_1, site_0, origin_1}, salt_1},
+      // Create a link where only the frame_origin matches.
+      {{url_1, site_1, origin_0}, salt_0},
+      // Create a link where link_url and top_level_site match.
+      {{url_0, site_0, origin_1}, salt_1},
+      // Create a link where link_url and frame_origin match.
+      {{url_0, site_1, origin_0}, salt_0},
+      // Create a link where top_level_site and frame_origin match.
+      {{url_1, site_0, origin_0}, salt_0},
+      // Create a link where the salt does not match frame_origin.
+      {{url_0, site_0, origin_0}, salt_1}};
+
+  for (const auto& [cur_link, cur_salt] : links) {
+    // Ensure that we do not find this link in the writer's or reader's
+    // hashtables.
+    EXPECT_FALSE(partitioned_writer_->IsVisited(cur_link, cur_salt.value()));
+    EXPECT_FALSE(reader.IsVisited(cur_link, cur_salt.value()));
+  }
+
+  // Ensure that we can find the original link in the writer's and reader's
+  // hashtables.
+  EXPECT_TRUE(partitioned_writer_->IsVisited(link_0, salt_0.value()));
+  EXPECT_TRUE(reader.IsVisited(link_0, salt_0.value()));
 }
 
 TEST_F(PartitionedVisitedLinkTest, AddAndDelete) {
@@ -780,6 +877,58 @@ TEST_F(PartitionedVisitedLinkTest, DeleteWithCollisions) {
   for (int i = 0; i < kInitialSize; i++) {
     EXPECT_EQ(kZeroFingerprint, partitioned_writer_->hash_table_[i])
         << "Hash table has values in it.";
+  }
+}
+
+TEST_F(PartitionedVisitedLinkTest, DeleteAll) {
+  // Initialize the table with partitioning enabled.
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndEnableFeature(
+      blink::features::kPartitionVisitedLinkDatabase);
+  ASSERT_TRUE(InitVisited(true, 0));
+
+  // Create a reader instance and populate its hashtable.
+  {
+    VisitedLinkReader reader;
+    reader.UpdateVisitedLinks(
+        partitioned_writer_->GetMappedTableMemoryForTesting()
+            .region.Duplicate());
+    g_readers.push_back(&reader);
+
+    // Add the test links.
+    for (int i = 0; i < kTestCount; i++) {
+      const VisitedLink link = {TestURL(i), net::SchemefulSite(TestURL(i)),
+                                url::Origin::Create(TestURL(i))};
+      partitioned_writer_->AddVisitedLink(link);
+      ASSERT_EQ(i + 1, partitioned_writer_->GetUsedCount());
+    }
+    partitioned_writer_->DebugValidate();
+
+    // Make sure the reader received the added links via IPC.
+    for (int i = 0; i < kTestCount; i++) {
+      const url::Origin origin = url::Origin::Create(TestURL(i));
+      const VisitedLink link = {TestURL(i), net::SchemefulSite(TestURL(i)),
+                                origin};
+      const std::optional<uint64_t> salt =
+          partitioned_writer_->GetOrAddOriginSalt(origin);
+      ASSERT_TRUE(salt.has_value());
+      EXPECT_TRUE(reader.IsVisited(link, salt.value()));
+    }
+
+    // Clear the table and make sure the reader clears its hashtable as well.
+    partitioned_writer_->DeleteAllVisitedLinks();
+    EXPECT_EQ(0, partitioned_writer_->GetUsedCount());
+    for (int i = 0; i < kTestCount; i++) {
+      const url::Origin origin = url::Origin::Create(TestURL(i));
+      const VisitedLink link = {TestURL(i), net::SchemefulSite(TestURL(i)),
+                                origin};
+      const std::optional<uint64_t> salt =
+          partitioned_writer_->GetOrAddOriginSalt(origin);
+      ASSERT_TRUE(salt.has_value());
+      // Ensure that neither the writer nor the reader contain this link now.
+      EXPECT_FALSE(partitioned_writer_->IsVisited(link, salt.value()));
+      EXPECT_FALSE(reader.IsVisited(link, salt.value()));
+    }
   }
 }
 

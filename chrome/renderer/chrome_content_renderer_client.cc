@@ -1484,6 +1484,14 @@ uint64_t ChromeContentRendererClient::VisitedLinkHash(
       canonical_url);
 }
 
+uint64_t ChromeContentRendererClient::PartitionedVisitedLinkFingerprint(
+    std::string_view canonical_link_url,
+    const net::SchemefulSite& top_level_site,
+    const url::Origin& frame_origin) {
+  return chrome_observer_->visited_link_reader()->ComputePartitionedFingerprint(
+      canonical_link_url, top_level_site, frame_origin);
+}
+
 bool ChromeContentRendererClient::IsLinkVisited(uint64_t link_hash) {
   return chrome_observer_->visited_link_reader()->IsVisited(link_hash);
 }

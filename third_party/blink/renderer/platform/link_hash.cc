@@ -33,7 +33,9 @@
 #include <string_view>
 
 #include "third_party/blink/public/platform/platform.h"
+#include "third_party/blink/public/platform/web_security_origin.h"
 #include "third_party/blink/renderer/platform/weborigin/kurl.h"
+#include "third_party/blink/renderer/platform/weborigin/security_origin.h"
 #include "third_party/blink/renderer/platform/wtf/text/string_utf8_adaptor.h"
 #include "url/url_util.h"
 
@@ -66,6 +68,28 @@ LinkHash VisitedLinkHash(const KURL& base, const AtomicString& relative) {
 
   return Platform::Current()->VisitedLinkHash(
       std::string_view(buffer.data(), buffer.length()));
+}
+
+LinkHash PartitionedVisitedLinkFingerprint(
+    const KURL& base_link_url,
+    const AtomicString& relative_link_url,
+    const net::SchemefulSite& top_level_site,
+    const SecurityOrigin* frame_origin) {
+  // If there is no relative URL, we return the null-fingerprint.
+  if (relative_link_url.IsNull()) {
+    return 0;
+  }
+  url::RawCanonOutput<2048> buffer;
+  // Resolving the base and relative parts of the link_url into a single
+  // std::string_view via the URL Canonicalizer. If we are unable to resolve the
+  // two parts of the URL, we return the null-fingerprint.
+  if (!ResolveRelative(base_link_url, relative_link_url.GetString(), &buffer)) {
+    return 0;
+  }
+  std::string_view link_url = std::string_view(buffer.data(), buffer.length());
+
+  return Platform::Current()->PartitionedVisitedLinkFingerprint(
+      link_url, top_level_site, WebSecurityOrigin(frame_origin));
 }
 
 }  // namespace blink

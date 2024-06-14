@@ -27,6 +27,8 @@
 #define THIRD_PARTY_BLINK_RENDERER_PLATFORM_LINK_HASH_H_
 
 #include "base/check_op.h"
+#include "net/base/schemeful_site.h"
+#include "third_party/blink/public/platform/web_security_origin.h"
 #include "third_party/blink/renderer/platform/platform_export.h"
 #include "third_party/blink/renderer/platform/wtf/allocator/allocator.h"
 #include "third_party/blink/renderer/platform/wtf/forward.h"
@@ -50,6 +52,15 @@ struct LinkHashHashTraits : GenericHashTraits<LinkHash> {
 PLATFORM_EXPORT LinkHash VisitedLinkHash(const KURL& base,
                                          const AtomicString& attribute_url);
 
+// Returns the fingerprint representing this triple-partition key that will be
+// used for visited link coloring. It will return the special value of 0 ("the
+// null fingerprint") if the key has invalid elements or a fingerprint could not
+// be computed.
+PLATFORM_EXPORT LinkHash
+PartitionedVisitedLinkFingerprint(const KURL& base_link_url,
+                                  const AtomicString& relative_link_url,
+                                  const net::SchemefulSite& top_level_site,
+                                  const SecurityOrigin* frame_origin);
 }  // namespace blink
 
 #endif  // THIRD_PARTY_BLINK_RENDERER_PLATFORM_LINK_HASH_H_

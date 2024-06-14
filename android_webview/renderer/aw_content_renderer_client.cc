@@ -223,6 +223,15 @@ uint64_t AwContentRendererClient::VisitedLinkHash(
   return visited_link_reader_->ComputeURLFingerprint(canonical_url);
 }
 
+uint64_t AwContentRendererClient::PartitionedVisitedLinkFingerprint(
+    std::string_view canonical_link_url,
+    const net::SchemefulSite& top_level_site,
+    const url::Origin& frame_origin) {
+  // Android WebView does not support partitioned :visited links, so we return
+  // the null fingerprint value for all queries.
+  return 0;
+}
+
 bool AwContentRendererClient::IsLinkVisited(uint64_t link_hash) {
   return visited_link_reader_->IsVisited(link_hash);
 }

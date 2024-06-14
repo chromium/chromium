@@ -40,7 +40,8 @@ namespace blink {
 
 class Document;
 
-class VisitedLinkState final : public GarbageCollected<VisitedLinkState> {
+class CORE_EXPORT VisitedLinkState final
+    : public GarbageCollected<VisitedLinkState> {
  public:
   explicit VisitedLinkState(const Document&);
 

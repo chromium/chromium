@@ -15,10 +15,13 @@
 #include "third_party/blink/public/common/features.h"
 #include "third_party/blink/public/platform/platform.h"
 #include "third_party/blink/public/platform/web_encoding_data.h"
+#include "third_party/blink/public/platform/web_security_origin.h"
 #include "third_party/blink/public/platform/web_string.h"
+#include "third_party/blink/renderer/core/dom/visited_link_state.h"
 #include "third_party/blink/renderer/core/frame/frame_test_helpers.h"
 #include "third_party/blink/renderer/core/frame/local_dom_window.h"
 #include "third_party/blink/renderer/core/frame/web_local_frame_impl.h"
+#include "third_party/blink/renderer/core/html/html_iframe_element.h"
 #include "third_party/blink/renderer/core/inspector/console_message.h"
 #include "third_party/blink/renderer/core/page/page.h"
 #include "third_party/blink/renderer/core/testing/scoped_fake_plugin_registry.h"
@@ -26,6 +29,7 @@
 #include "third_party/blink/renderer/core/testing/sim/sim_test.h"
 #include "third_party/blink/renderer/platform/loader/fetch/url_loader/url_loader_client.h"
 #include "third_party/blink/renderer/platform/loader/static_data_navigation_body_loader.h"
+#include "third_party/blink/renderer/platform/network/blink_schemeful_site.h"
 #include "third_party/blink/renderer/platform/storage/blink_storage_key.h"
 #include "third_party/blink/renderer/platform/testing/testing_platform_support.h"
 #include "third_party/blink/renderer/platform/testing/unit_test_helpers.h"
@@ -105,17 +109,79 @@ class BodyLoaderTestDelegate : public URLLoaderTestDelegate {
   StaticDataNavigationBodyLoader* body_loader_raw_;
 };
 
-// To test the abiltity to obtain and store the per-origin salt used in
-// partitioning visited links, we need to override the Platform::Current() used
-// in this test. Our platform will obtain and store the per-origin salt values
-// locally in `salts_`.
-class VisitedLinkSaltPlatform : public TestingPlatformSupport {
+// This struct contains the three elements of the :visited links
+// triple-parititon key for storage and comparison in this test.
+struct TestVisitedLink {
+  GURL link_url;
+  net::SchemefulSite top_level_site;
+  url::Origin frame_origin;
+
+  friend bool operator<(const TestVisitedLink& lhs,
+                        const TestVisitedLink& rhs) {
+    return std::tie(lhs.link_url, lhs.frame_origin, lhs.top_level_site) <
+           std::tie(rhs.link_url, rhs.frame_origin, rhs.top_level_site);
+  }
+};
+
+// To test (1) the abiltity to obtain and store the per-origin salt used in
+// partitioning visited links and (2) the ability of VisitedLinkState to query
+// for partitioned visited links using those salts, we need to override the
+// Platform::Current() used in this test. Our platform will obtain and store the
+// per-origin salt values locally in `salts_` and mock out calls to the
+// partitioned hashtable stored in VisitedLinkReader via
+// `partitioned_hashtable_`.
+class VisitedLinkPlatform : public TestingPlatformSupport {
  public:
-  // Override which stores our per-origin salts locally.
+  // An override which stores our per-origin salts locally.
   void AddOrUpdateVisitedLinkSalt(const url::Origin& origin,
                                   uint64_t salt) override {
     salts_[origin] = salt;
   }
+
+  // An override which returns the mock-fingerprint associated with the provided
+  // unpartitioned link. In our mock code, we convert to an origin for ease of
+  // comparison in a limited test environment, but in the production code,
+  // comparison is still made via URL. If an entry is not found in the
+  // mock-hashtable, 0, or the null fingerprint is returned.
+  uint64_t VisitedLinkHash(std::string_view canonical_url) override {
+    // Then we check whether our mock-hashtable has an entry for the provided
+    // visited link.
+    const url::Origin origin = url::Origin::Create(GURL(canonical_url));
+    auto it = unpartitioned_hashtable_.find(origin);
+    if (it != unpartitioned_hashtable_.end()) {
+      return it->second;
+    }
+    // We do not have a corresponding entry in mock_hashtable_.
+    return 0;
+  }
+
+  // An override which returns the mock-fingerprint associated with the provided
+  // partitioned visited link. If an entry is not found in the mock-hashtable,
+  // 0, the null fingerprint value is returned.
+  uint64_t PartitionedVisitedLinkFingerprint(
+      std::string_view canonical_link_url,
+      const net::SchemefulSite& top_level_site,
+      const WebSecurityOrigin& frame_origin) override {
+    // First we mock a salt check, as VisitedLinkReader will return the null
+    // fingerprint if we have not obtained a corresponding per-origin salt.
+    if (!GetVisitedLinkSaltForOrigin(frame_origin).has_value()) {
+      return 0;
+    }
+
+    // Then we check whether our mock-hashtable has an entry for the provided
+    // visited link.
+    const TestVisitedLink link = {GURL(canonical_link_url), top_level_site,
+                                  url::Origin(frame_origin)};
+    auto it = partitioned_hashtable_.find(link);
+    if (it != partitioned_hashtable_.end()) {
+      return it->second;
+    }
+    // We do not have a corresponding entry in mock_hashtable_.
+    return 0;
+  }
+
+  // Override which returns true as long as a non-null fingerprint is provided.
+  bool IsLinkVisited(uint64_t link_hash) override { return link_hash != 0; }
 
   // Test cases can query whether we obtained a salt for a specific origin.
   std::optional<uint64_t> GetVisitedLinkSaltForOrigin(
@@ -128,8 +194,40 @@ class VisitedLinkSaltPlatform : public TestingPlatformSupport {
     return std::nullopt;
   }
 
+  void AddPartitionedVisitedLinkToMockHashtable(const KURL& link_url,
+                                                const KURL& top_level_url,
+                                                const KURL& frame_url) {
+    uint64_t mock_fingerprint = base::RandUint64();
+    // Zero represents the null fingerprint in our production code, and when we
+    // actually generate hashed fingerprints, producing a 0 is not possible.
+    // However, in the mocked environment, we could generate a random 0, so we
+    // should re-generate the random fingerprint if that occurs.
+    while (mock_fingerprint == 0) {
+      mock_fingerprint = base::RandUint64();
+    }
+    const TestVisitedLink link = {GURL(link_url),
+                                  net::SchemefulSite(GURL(top_level_url)),
+                                  url::Origin::Create(GURL(frame_url))};
+    partitioned_hashtable_.insert({link, mock_fingerprint});
+  }
+
+  void AddUnpartitionedVisitedLinkToMockHashtable(const KURL& url) {
+    uint64_t mock_fingerprint = base::RandUint64();
+    // Zero represents the null fingerprint in our production code, and when we
+    // actually generate hashed fingerprints, producing a 0 is not possible.
+    // However, in the mocked environment, we could generate a random 0, so we
+    // should re-generate the random fingerprint if that occurs.
+    while (mock_fingerprint == 0) {
+      mock_fingerprint = base::RandUint64();
+    }
+    unpartitioned_hashtable_.insert(
+        {url::Origin::Create(GURL(url)), mock_fingerprint});
+  }
+
  private:
   std::map<url::Origin, uint64_t> salts_;
+  std::map<TestVisitedLink, uint64_t> partitioned_hashtable_;
+  std::map<url::Origin, uint64_t> unpartitioned_hashtable_;
 };
 
 class DocumentLoaderTest : public testing::TestWithParam<bool> {
@@ -198,7 +296,7 @@ class DocumentLoaderTest : public testing::TestWithParam<bool> {
 
   WebLocalFrameImpl* MainFrame() { return web_view_helper_.LocalMainFrame(); }
 
-  ScopedTestingPlatformSupport<VisitedLinkSaltPlatform> platform_;
+  ScopedTestingPlatformSupport<VisitedLinkPlatform> platform_;
   test::TaskEnvironment task_environment_;
   frame_test_helpers::WebViewHelper web_view_helper_;
   base::test::ScopedFeatureList scoped_feature_list_;
@@ -913,6 +1011,53 @@ TEST_P(DocumentLoaderTest, VisitedLinkSalt) {
   if (result_salt.has_value()) {
     EXPECT_EQ(result_salt.value(), kSalt);
   }
+}
+
+TEST_P(DocumentLoaderTest, PartitionedVisitedLinksMainFrame) {
+  // Generate the constants.
+  const uint64_t kSalt = base::RandUint64();
+  const KURL kUrl("https://www.example.com/foo.html");
+  const KURL kCrossSiteUrl("https://www.foo.com/bar.html");
+
+  // Mock a previous navigation to the kCrossSiteUrl via kUrl.
+  platform_->AddUnpartitionedVisitedLinkToMockHashtable(kCrossSiteUrl);
+  platform_->AddPartitionedVisitedLinkToMockHashtable(kCrossSiteUrl, kUrl,
+                                                      kUrl);
+
+  // Load a blank slate.
+  const WebViewImpl* web_view_impl =
+      web_view_helper_.InitializeAndLoad("about:blank");
+
+  // Create params for the URL we will navigate to next.
+  std::unique_ptr<WebNavigationParams> params =
+      WebNavigationParams::CreateWithEmptyHTMLForTesting(kUrl);
+  params->visited_link_salt = kSalt;
+
+  // Perform the navigation and provide an empty vector for visited link state.
+  const LocalFrame* local_frame =
+      To<LocalFrame>(web_view_impl->GetPage()->MainFrame());
+  local_frame->Loader().CommitNavigation(std::move(params), nullptr);
+
+  // Obtain the Document we just navigated to.
+  Document* document =
+      To<LocalFrame>(web_view_impl->GetPage()->MainFrame())->GetDocument();
+  // Prepare a mock Link Element to check if we have visited.
+  Element* visited_link = document->CreateRawElement(html_names::kATag);
+  visited_link->setAttribute(html_names::kHrefAttr, kCrossSiteUrl.GetString());
+
+  // Check if our mock Link Element would be styled as visited.
+  EInsideLink result =
+      document->GetVisitedLinkState().DetermineLinkState(*visited_link);
+  EXPECT_EQ(result, EInsideLink::kInsideVisitedLink);
+
+  // Prepare a mock Link Element that we haven't visited.
+  Element* unvisited_link = document->CreateRawElement(html_names::kATag);
+  unvisited_link->setAttribute(html_names::kHrefAttr,
+                               AtomicString("https://bar.com"));
+
+  // Check if our mock Link Element would not be styled as visited.
+  result = document->GetVisitedLinkState().DetermineLinkState(*unvisited_link);
+  EXPECT_NE(result, EInsideLink::kInsideVisitedLink);
 }
 
 }  // namespace
