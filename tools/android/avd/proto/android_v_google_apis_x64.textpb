@@ -19,9 +19,9 @@ system_image_name: "system-images;android-VanillaIceCream;google_apis;x86_64"
 
 avd_package {
   package_name: "chromium/third_party/android_sdk/public/avds/android-vanillaicecream/google_apis/x86_64"
-  # Created in https://ci.chromium.org/ui/b/8747199066191845233
-  # Patched gmscore version 24.08.12 in https://crrev.com/c/5398140
-  version: "eu3ApdnqxAMlcBzBfnvLezsC4nKi-Bg5QPh3uzQIuWUC"
+  # Created in https://ci.chromium.org/ui/b/8745207620310895505
+  # Patched gmscore version 24.22.13 in https://crrev.com/c/5621345
+  version: "DmvbXLXp6s7Dk8ED6RgYCLbm8ajBzyIGPDLXSP3vCdsC"
   dest_path: "android_v_google_apis_x64"
 }
 avd_name: "android_v_google_apis_x64"
