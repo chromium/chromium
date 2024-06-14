@@ -4,8 +4,11 @@
 
 #include "ui/ozone/platform/wayland/host/zwp_text_input_wrapper_v1.h"
 
+#include <sys/mman.h>
+
 #include <string_view>
 
+#include "base/files/file_util.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/ozone/platform/wayland/host/wayland_connection.h"
@@ -51,11 +54,15 @@ class TestZWPTextInputWrapperClient : public ZWPTextInputWrapperClient {
   void OnConfirmPreedit(bool keep_selection) override {}
   void OnInputPanelState(uint32_t state) override {}
   void OnModifiersMap(std::vector<std::string> modifiers_map) override {}
-  void OnInsertImage(const GURL& src) override {}
+  void OnInsertImage(const GURL& src) override {
+    last_inserted_image_url_ = src;
+  }
 
+  GURL last_inserted_image_url() const { return last_inserted_image_url_; }
   uint32_t last_keysym_time() const { return last_keysym_time_; }
 
  private:
+  GURL last_inserted_image_url_;
   uint32_t last_keysym_time_;
 };
 
@@ -161,6 +168,38 @@ TEST_F(ZWPTextInputWrapperV1Test, OnKeySym_TimestampPropagated) {
   });
 
   ASSERT_EQ(test_time, test_client_.last_keysym_time());
+}
+
+TEST_F(ZWPTextInputWrapperV1Test, OnInsertImageWithLargeURL) {
+  std::string mime_type = "image/jpeg";
+  std::string charset = "";
+  std::string raw_bytes = "[fake image binary]";
+
+  base::ScopedFD memfd(memfd_create("inserting_image", MFD_CLOEXEC));
+  if (!memfd.get()) {
+    LOG(ERROR) << "Failed to create memfd";
+    return;
+  }
+
+  if (!base::WriteFileDescriptor(memfd.get(), raw_bytes)) {
+    LOG(ERROR) << "Failed to write into memfd";
+    return;
+  }
+
+  if (lseek(memfd.get(), 0, SEEK_SET) != 0) {
+    LOG(ERROR) << "Failed to reset file descriptor";
+    return;
+  }
+
+  PostToServerAndWait([&mime_type, &charset, &raw_bytes,
+                       &memfd](wl::TestWaylandServerThread* server) {
+    zcr_extended_text_input_v1_send_insert_image_with_large_url(
+        server->text_input_extension_v1()->extended_text_input()->resource(),
+        mime_type.c_str(), charset.c_str(), memfd.get(), raw_bytes.size());
+  });
+
+  GURL src("data:image/jpeg;base64,W2Zha2UgaW1hZ2UgYmluYXJ5XQ==");
+  ASSERT_EQ(src, test_client_.last_inserted_image_url().spec());
 }
 
 }  // namespace ui

@@ -10,10 +10,12 @@
 #include <string_view>
 #include <utility>
 
+#include "base/base64.h"
 #include "base/check.h"
 #include "base/files/file_util.h"
 #include "base/location.h"
 #include "base/logging.h"
+#include "base/strings/strcat.h"
 #include "base/strings/string_split.h"
 #include "base/time/time.h"
 #include "ui/base/wayland/wayland_client_input_types.h"
@@ -136,6 +138,7 @@ ZWPTextInputWrapperV1::ZWPTextInputWrapperV1(
               &OnSetVirtualKeyboardOccludedBounds,
           .confirm_preedit = &OnConfirmPreedit,
           .insert_image = &OnInsertImage,
+          .insert_image_with_large_url = &OnInsertImageWithLargeURL,
       };
 
   obj_ = wl::Object<zwp_text_input_v1>(
@@ -563,6 +566,41 @@ void ZWPTextInputWrapperV1::OnInsertImage(
     void* data,
     struct zcr_extended_text_input_v1* extended_text_input,
     const char* src) {
+  auto* self = static_cast<ZWPTextInputWrapperV1*>(data);
+  self->client_->OnInsertImage(GURL(src));
+}
+
+// static
+void ZWPTextInputWrapperV1::OnInsertImageWithLargeURL(
+    void* data,
+    struct zcr_extended_text_input_v1* extended_text_input,
+    const char* mime_type,
+    const char* charset,
+    const int32_t raw_fd,
+    const uint32_t size) {
+  // Read raw data from fd.
+  std::string raw_data;
+  raw_data.resize(size);
+  base::ScopedFD fd(raw_fd);
+  if (!base::ReadFromFD(fd.get(), raw_data)) {
+    LOG(ERROR) << "Failed to read file descriptor for image insertion";
+    return;
+  }
+
+  // Re-construct data url.
+  std::string src = "data:";
+  if (mime_type) {
+    base::StrAppend(&src, {mime_type});
+  }
+  if (charset && strlen(charset) > 0) {
+    base::StrAppend(&src, {";charset=", charset});
+  }
+  base::StrAppend(&src, {";base64,"});
+  base::Base64EncodeAppend(
+      base::make_span((const unsigned char*)(raw_data.data()), raw_data.size()),
+      &src);
+
+  // Dispatch image insertion request.
   auto* self = static_cast<ZWPTextInputWrapperV1*>(data);
   self->client_->OnInsertImage(GURL(src));
 }

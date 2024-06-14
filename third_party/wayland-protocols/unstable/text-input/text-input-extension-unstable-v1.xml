@@ -24,7 +24,7 @@
     DEALINGS IN THE SOFTWARE.
   </copyright>
 
-  <interface name="zcr_text_input_extension_v1" version="13">
+  <interface name="zcr_text_input_extension_v1" version="14">
     <description summary="extends text_input to support richer operations">
       Allows a text_input to sends more variation of operations to support
       richer features, such as set_preedit_region.
@@ -57,7 +57,7 @@
 
   </interface>
 
-  <interface name="zcr_extended_text_input_v1" version="13">
+  <interface name="zcr_extended_text_input_v1" version="14">
     <description summary="extension of text_input protocol">
       The zcr_extended_text_input_v1 interface extends the text_input interface
       to support more rich operations on text_input.
@@ -436,6 +436,22 @@
         ignored.
       </description>
       <arg name="src" type="string" />
+    </event>
+
+    <!-- Version 14 -->
+
+    <event name="insert_image_with_large_url" since="14">
+      <description summary="Inserts image of large data URL">
+        Almost as same as text_input::insert_image. However, this takes
+        mime type, charset and file descriptor for actual data instead of
+        string in order to avoid the limit of the size.
+
+        |size| is the image data size in number of bytes to be read from fd.
+      </description>
+      <arg name="mime_type" type="string"/>
+      <arg name="charset" type="string"/>
+      <arg name="raw_fd" type="fd"/>
+      <arg name="size" type="uint"/>
     </event>
 
   </interface>

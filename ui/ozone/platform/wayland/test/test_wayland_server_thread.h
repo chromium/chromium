@@ -59,7 +59,7 @@ enum class EnableAuraShellProtocol { kEnabled, kDisabled };
 
 struct ServerConfig {
   TestZcrTextInputExtensionV1::Version text_input_extension_version =
-      TestZcrTextInputExtensionV1::Version::kV12;
+      TestZcrTextInputExtensionV1::Version::kV14;
   TestCompositor::Version compositor_version = TestCompositor::Version::kV4;
   PrimarySelectionProtocol primary_selection_protocol =
       PrimarySelectionProtocol::kNone;
