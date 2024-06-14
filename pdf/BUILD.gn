@@ -184,6 +184,8 @@ if (enable_pdf) {
 
     if (is_linux || is_chromeos) {
       sources += [
+        "pdfium/pdfium_font_helpers.cc",
+        "pdfium/pdfium_font_helpers.h",
         "pdfium/pdfium_font_linux.cc",
         "pdfium/pdfium_font_linux.h",
       ]
