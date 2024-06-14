@@ -30,7 +30,7 @@ source_set("sample_native_side") {
 }
 
 shared_library_with_jni("libjni_zero_sample") {
-  if (allow_jni_multiplexing) {
+  if (enable_jni_multiplexing) {
     _linker_script = "sample_lib_multiplexing_version_script.txt"
   } else {
     _linker_script = "sample_lib_version_script.txt"

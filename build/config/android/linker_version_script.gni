@@ -29,7 +29,7 @@ template("generate_linker_version_script") {
     if (defined(invoker.testonly) && invoker.testonly) {
       args += [ "--export-fortesting-java-symbols" ]
     }
-    if (allow_jni_multiplexing) {
+    if (enable_jni_multiplexing) {
       args += [ "--jni-multiplexing" ]
     }
 

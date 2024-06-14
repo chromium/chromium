@@ -98,7 +98,6 @@ template("chrome_feature_module") {
                              "add_view_trace_events",
                              "base_module_target",
                              "custom_assertion_handler",
-                             "enable_jni_multiplexing",
                              "expected_android_manifest",
                              "expected_android_manifest_base",
                              "expected_android_manifest_library_version_offset",
