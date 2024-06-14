@@ -53,6 +53,7 @@
 #include "ui/views/style/typography.h"
 #include "ui/views/view_class_properties.h"
 #include "ui/views/widget/widget.h"
+
 #if BUILDFLAG(GOOGLE_CHROME_BRANDING)
 #include "components/plus_addresses/resources/vector_icons.h"
 #endif
@@ -73,15 +74,14 @@ const int kPlusAddressRefreshColumnWidth = 48;
 const gfx::VectorIcon& kGoogleGLogoIcon = vector_icons::kGoogleGLogoIcon;
 const gfx::VectorIcon& kDarkGoogleGLogoIcon =
     vector_icons::kGoogleGLogoMonochromeIcon;
-const gfx::VectorIcon& kPlusAddressLogoIcon =
-    plus_addresses::kPlusAddressesLogoIcon;
-const gfx::VectorIcon& kPlusAddressLogoLargeIcon =
-    vector_icons::kPlusAddressLogoLargeIcon;
+const gfx::VectorIcon& kLogoIcon = plus_addresses::kPlusAddressesLogoIcon;
+const gfx::VectorIcon& kLogoLargeIcon =
+    plus_addresses::kPlusAddressLogoLargeIcon;
 #else
 const gfx::VectorIcon& kGoogleGLogoIcon = vector_icons::kProductIcon;
 const gfx::VectorIcon& kDarkGoogleGLogoIcon = vector_icons::kProductIcon;
-const gfx::VectorIcon& kPlusAddressLogoIcon = vector_icons::kProductIcon;
-const gfx::VectorIcon& kPlusAddressLogoLargeIcon = vector_icons::kProductIcon;
+const gfx::VectorIcon& kLogoIcon = vector_icons::kProductIcon;
+const gfx::VectorIcon& kLogoLargeIcon = vector_icons::kProductIcon;
 #endif
 
 int GetPlusAddressLabelVerticalMargin() {
@@ -147,11 +147,10 @@ PlusAddressCreationDialogDelegate::PlusAddressCreationDialogDelegate(
         views::kMarginsKey,
         gfx::Insets::VH(GetPlusAddressLabelVerticalMargin(), 0));
   } else {
-    logo_image =
-        views::Builder<views::ImageView>()
-            .SetImage(ui::ImageModel::FromVectorIcon(
-                kPlusAddressLogoIcon, ui::kColorIcon, kPlusAddressLogoWidth))
-            .Build();
+    logo_image = views::Builder<views::ImageView>()
+                     .SetImage(ui::ImageModel::FromVectorIcon(
+                         kLogoIcon, ui::kColorIcon, kPlusAddressLogoWidth))
+                     .Build();
   }
   primary_view->AddChildView(std::move(logo_image));
 
@@ -293,9 +292,8 @@ PlusAddressCreationDialogDelegate::PlusAddressCreationDialogDelegate(
   if (add_plus_address_icon) {
     plus_address_label_container_->AddChildView(
         views::Builder<views::ImageView>()
-            .SetImage(ui::ImageModel::FromVectorIcon(kPlusAddressLogoLargeIcon,
-                                                     ui::kColorIcon,
-                                                     kPlusAddressIconWidth))
+            .SetImage(ui::ImageModel::FromVectorIcon(
+                kLogoLargeIcon, ui::kColorIcon, kPlusAddressIconWidth))
             .Build());
   }
 
