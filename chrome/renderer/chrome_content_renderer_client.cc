@@ -108,8 +108,8 @@
 #include "components/safe_browsing/buildflags.h"
 #include "components/safe_browsing/content/renderer/threat_dom_details.h"
 #include "components/spellcheck/spellcheck_buildflags.h"
+#include "components/subresource_filter/content/renderer/safe_browsing_unverified_ruleset_dealer.h"
 #include "components/subresource_filter/content/renderer/subresource_filter_agent.h"
-#include "components/subresource_filter/content/renderer/unverified_ruleset_dealer.h"
 #include "components/subresource_filter/core/common/common_features.h"
 #include "components/variations/net/variations_http_headers.h"
 #include "components/variations/variations_switches.h"
@@ -456,8 +456,8 @@ void ChromeContentRendererClient::RenderThreadStarted() {
     InitSpellCheck();
 #endif
 
-  subresource_filter_ruleset_dealer_ =
-      std::make_unique<subresource_filter::UnverifiedRulesetDealer>();
+  subresource_filter_ruleset_dealer_ = std::make_unique<
+      subresource_filter::SafeBrowsingUnverifiedRulesetDealer>();
 
   phishing_model_setter_ =
       std::make_unique<safe_browsing::PhishingModelSetterImpl>();
@@ -725,7 +725,7 @@ void ChromeContentRendererClient::RenderFrameCreated(
 
   // Owned by |render_frame|.
   new page_load_metrics::MetricsRenderFrameObserver(render_frame);
-  // There is no render thread, thus no UnverifiedRulesetDealer in
+  // There is no render thread, thus no SafeBrowsingUnverifiedRulesetDealer in
   // ChromeRenderViewTests.
   if (subresource_filter_ruleset_dealer_) {
     auto* subresource_filter_agent =

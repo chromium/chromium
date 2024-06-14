@@ -201,6 +201,7 @@ static_library("renderer") {
     "//components/security_interstitials/core/common/mojom:",
     "//components/spellcheck:buildflags",
     "//components/subresource_filter/content/renderer",
+    "//components/subresource_filter/content/shared/renderer",
     "//components/subresource_filter/core/common",
     "//components/supervised_user/core/common:buildflags",
     "//components/translate/content/renderer",

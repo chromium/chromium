@@ -4,6 +4,7 @@
 
 #include "components/subresource_filter/content/shared/browser/ruleset_publisher_impl.h"
 
+#include <string>
 #include <utility>
 
 #include "base/check.h"
@@ -112,7 +113,8 @@ void RulesetPublisherImpl::SendRulesetToRenderProcess(
   mojo::AssociatedRemote<mojom::SubresourceFilterRulesetObserver>
       subresource_filter;
   rph->GetChannel()->GetRemoteAssociatedInterface(&subresource_filter);
-  subresource_filter->SetRulesetForProcess(file->Duplicate());
+  subresource_filter->SetRulesetForProcess(
+      std::string(ruleset_service_->config().filter_tag), file->Duplicate());
 }
 
 }  // namespace subresource_filter

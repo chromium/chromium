@@ -4,15 +4,16 @@
 
 static_library("renderer") {
   sources = [
+    "safe_browsing_unverified_ruleset_dealer.cc",
+    "safe_browsing_unverified_ruleset_dealer.h",
     "subresource_filter_agent.cc",
     "subresource_filter_agent.h",
-    "unverified_ruleset_dealer.cc",
-    "unverified_ruleset_dealer.h",
   ]
   configs += [ "//build/config/compiler:wexit_time_destructors" ]
   public_deps = [
     "//base",
     "//components/subresource_filter/content/mojom",
+    "//components/subresource_filter/content/shared/renderer",
     "//components/subresource_filter/core/common",
     "//components/subresource_filter/core/mojom",
     "//components/url_pattern_index/proto:url_pattern_index",
@@ -22,7 +23,7 @@ static_library("renderer") {
   ]
   deps = [
     "//components/subresource_filter/content/shared/common",
-    "//components/subresource_filter/content/shared/renderer",
+    "//components/subresource_filter/core/browser",
     "//content/public/common",
     "//ipc",
     "//third_party/blink/public:blink",
