@@ -908,8 +908,6 @@ void SafeBrowsingNavigationObserverManager::RecordNotificationNavigationEvent(
           std::move(nav_event);
   UMA_HISTOGRAM_BOOLEAN(
       "SafeBrowsing.NavigationObserver.NotificationNavigationEventAdded", true);
-  base::UmaHistogramBoolean("SafeBrowsing.NavigationObserver.IsScriptUrlValid",
-                            script_url.is_valid());
 }
 
 void SafeBrowsingNavigationObserverManager::MaybeAddToReferrerChain(
