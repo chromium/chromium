@@ -8,9 +8,196 @@
 
 namespace media {
 
+namespace {
+constexpr int kPrimaryReferenceNone = 7;
+}  // namespace
+
 AV1BitstreamBuilder::AV1BitstreamBuilder() = default;
 AV1BitstreamBuilder::~AV1BitstreamBuilder() = default;
 AV1BitstreamBuilder::AV1BitstreamBuilder(AV1BitstreamBuilder&&) = default;
+
+AV1BitstreamBuilder AV1BitstreamBuilder::BuildSequenceHeaderOBU(
+    const SequenceHeader& seq_hdr) {
+  AV1BitstreamBuilder ret;
+  ret.Write(seq_hdr.profile, 3);
+  ret.WriteBool(false);  // Still picture default 0.
+  ret.WriteBool(false);  // Disable reduced still picture.
+  ret.WriteBool(false);  // No timing info present.
+  ret.WriteBool(false);  // No initial display delay.
+  ret.Write(0, 5);       // No operating point.
+  ret.Write(0, 12);  // No scalability information (operating_point_idc[0] = 0)
+  ret.Write(seq_hdr.level, 5);
+  if (seq_hdr.level > 7) {
+    ret.WriteBool(seq_hdr.tier);
+  }
+
+  ret.Write(seq_hdr.frame_width_bits_minus_1, 4);
+  ret.Write(seq_hdr.frame_height_bits_minus_1, 4);
+  ret.Write(seq_hdr.width - 1, seq_hdr.frame_width_bits_minus_1 + 1);
+  ret.Write(seq_hdr.height - 1, seq_hdr.frame_height_bits_minus_1 + 1);
+  ret.WriteBool(false);  // No frame id numbers present.
+  ret.WriteBool(seq_hdr.use_128x128_superblock);
+  ret.WriteBool(seq_hdr.enable_filter_intra);
+  ret.WriteBool(seq_hdr.enable_intra_edge_filter);
+  ret.WriteBool(seq_hdr.enable_interintra_compound);
+  ret.WriteBool(seq_hdr.enable_masked_compound);
+  ret.WriteBool(seq_hdr.enable_warped_motion);
+  ret.WriteBool(seq_hdr.enable_dual_filter);
+  ret.WriteBool(seq_hdr.enable_order_hint);
+  if (seq_hdr.enable_order_hint) {
+    ret.WriteBool(seq_hdr.enable_jnt_comp);
+    ret.WriteBool(seq_hdr.enable_ref_frame_mvs);
+  }
+
+  ret.WriteBool(true);   // Enable sequence choose screen content tools.
+  ret.WriteBool(false);  // Disable sequence choose integer MV.
+  ret.WriteBool(false);  // Disable sequence force integer MV.
+  if (seq_hdr.enable_order_hint) {
+    ret.Write(seq_hdr.order_hint_bits_minus_1, 3);
+  }
+  ret.WriteBool(seq_hdr.enable_superres);
+  ret.WriteBool(seq_hdr.enable_cdef);
+  ret.WriteBool(seq_hdr.enable_restoration);
+
+  ret.WriteBool(false);  // Disable high bitdepth.
+
+  ret.WriteBool(false);  // Disable monochrome.
+  ret.WriteBool(false);  // Disable color description present.
+  ret.WriteBool(false);  // No color range.
+  ret.Write(0, 2);       // Chroma sample position = 0.
+
+  ret.WriteBool(true);   // Separate uv delta q.
+  ret.WriteBool(false);  // No film grain parameters present.
+
+  ret.PutTrailingBits();
+  return ret;
+}
+
+AV1BitstreamBuilder AV1BitstreamBuilder::BuildFrameHeaderOBU(
+    const SequenceHeader& seq_hdr,
+    const FrameHeader& pic_hdr) {
+  AV1BitstreamBuilder ret;
+  ret.WriteBool(false);  // For a frame OBU, the show_existing_frame flag is
+                         // always set to 0.
+  ret.Write(pic_hdr.frame_type, 2);
+  ret.WriteBool(true);  // If this frame needs to be immediately output once
+                        // decoded, show_frame flag should be true.
+  if (pic_hdr.frame_type != libgav1::FrameType::kFrameKey) {
+    ret.WriteBool(pic_hdr.error_resilient_mode);
+  }
+  ret.WriteBool(pic_hdr.disable_cdf_update);
+  ret.WriteBool(false);  // Disable allow screen content tools.
+  ret.WriteBool(false);  // Disable frame size override flag.
+  ret.Write(pic_hdr.order_hint, seq_hdr.order_hint_bits_minus_1 + 1);
+
+  if (pic_hdr.frame_type != libgav1::FrameType::kFrameKey) {
+    if (!pic_hdr.error_resilient_mode) {
+      ret.Write(pic_hdr.primary_ref_frame, 3);
+    }
+    ret.Write(pic_hdr.refresh_frame_flags, 8);
+
+    if (pic_hdr.error_resilient_mode && seq_hdr.enable_order_hint) {
+      // Set order hint for each reference frame.
+      for (uint32_t order_hint : pic_hdr.ref_order_hint) {
+        ret.Write(order_hint, seq_hdr.order_hint_bits_minus_1 + 1);
+      }
+    }
+    if (seq_hdr.enable_order_hint) {
+      ret.WriteBool(false);  // Disable frame reference short signaling.
+    }
+    for (uint8_t ref_idx : pic_hdr.ref_frame_idx) {
+      ret.Write(ref_idx, 3);
+    }
+    ret.WriteBool(false);  // Render and frame size are the same.
+    ret.WriteBool(false);  // No allow high precision MV.
+    ret.WriteBool(false);  // Filter not switchable.
+    ret.Write(0, 2);       // Set interpolation filter to 0.
+    ret.WriteBool(false);  // Motion not switchable.
+  } else {
+    ret.WriteBool(false);  // Render and frame size are the same.
+  }
+  if (!pic_hdr.disable_cdf_update) {
+    ret.WriteBool(pic_hdr.disable_frame_end_update_cdf);
+  }
+  // Pack tile info
+  ret.WriteBool(true);   // Uniform tile spacing.
+  ret.WriteBool(false);  // Don't increment log2 of tile cols.
+  ret.WriteBool(false);  // Don't increment log2 of tile rows.
+
+  // Pack quantization parameters.
+  ret.Write(pic_hdr.base_qindex, 8);
+  ret.WriteBool(false);  // No DC Y delta Q.
+  ret.WriteBool(false);  // No UV delta Q.
+  ret.WriteBool(false);  // No DC U delta Q.
+  ret.WriteBool(false);  // No AC U delta Q.
+  ret.WriteBool(false);  // No Qmatrix.
+
+  // Pack segmentation parameters.
+  ret.WriteBool(pic_hdr.segmentation_enabled);
+  if (pic_hdr.segmentation_enabled) {
+    if (pic_hdr.primary_ref_frame != kPrimaryReferenceNone) {
+      ret.WriteBool(pic_hdr.segmentation_update_map);
+      ret.WriteBool(pic_hdr.segmentation_temporal_update);
+      ret.WriteBool(pic_hdr.segmentation_update_data);
+    }
+    for (uint32_t i = 0; i < libgav1::kMaxSegments; i++) {
+      for (uint32_t j = 0; j < libgav1::kSegmentFeatureMax; j++) {
+        bool feature_enabled = (i < pic_hdr.segment_number &&
+                                (pic_hdr.feature_mask[i] & (1u << j)));
+        ret.WriteBool(feature_enabled);
+        if (feature_enabled) {
+          int delta_q = pic_hdr.feature_data[i][j];
+          ret.WriteBool(delta_q < 0);  // Sign bit.
+          if (delta_q < 0) {
+            delta_q += 2 * (1 << 8);
+          }
+          ret.Write(delta_q, 8);  // Write the unsigned value.
+        }
+      }
+    }
+  }
+
+  if (pic_hdr.base_qindex > 0) {
+    ret.WriteBool(false);  // No delta q present.
+  }
+
+  // Pack loop filter parameters.
+  ret.Write(pic_hdr.filter_level[0], 6);
+  ret.Write(pic_hdr.filter_level[1], 6);
+  if (pic_hdr.filter_level[0] || pic_hdr.filter_level[1]) {
+    ret.Write(pic_hdr.filter_level_u, 6);
+    ret.Write(pic_hdr.filter_level_v, 6);
+  }
+  ret.Write(pic_hdr.sharpness_level, 3);
+  ret.WriteBool(pic_hdr.loop_filter_delta_enabled);
+
+  // Pack CDEF parameters.
+  if (seq_hdr.enable_cdef) {
+    uint8_t num_planes = 3;  // mono_chrome not supported.
+    ret.Write(2, 2);         // Set CDEF damping minus 3 to 5 - 3.
+    ret.Write(3, 2);         // Set cdef_bits to 3.
+    for (size_t i = 0; i < (1 << num_planes); i++) {
+      ret.Write(pic_hdr.cdef_y_pri_strength[i], 4);
+      ret.Write(pic_hdr.cdef_y_sec_strength[i], 2);
+      ret.Write(pic_hdr.cdef_uv_pri_strength[i], 4);
+      ret.Write(pic_hdr.cdef_uv_sec_strength[i], 2);
+    }
+  }
+  ret.WriteBool(true);  // TxMode TX_MODE_SELECT.
+  if (pic_hdr.frame_type != libgav1::FrameType::kFrameKey) {
+    ret.WriteBool(false);  // Disable reference select.
+  }
+  ret.WriteBool(pic_hdr.reduced_tx_set);
+
+  if (pic_hdr.frame_type != libgav1::FrameType::kFrameKey) {
+    for (int i = 1 /*LAST_FRAME*/; i <= 7 /*ALTREF_FRAME*/; i++) {
+      ret.WriteBool(false);  // Set is_global to all zeros.
+    }
+  }
+
+  ret.PutAlignBits();
+  return ret;
+}
 
 void AV1BitstreamBuilder::Write(uint64_t val, int num_bits) {
   queued_writes_.emplace_back(val, num_bits);
