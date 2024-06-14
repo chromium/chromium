@@ -32668,14 +32668,6 @@ Called by update_net_error_codes.py.-->
   <int value="2" label="Upsampling request error"/>
 </enum>
 
-<enum name="SupervisedUserProtoFetcherStatus">
-  <int value="0" label="NoError"/>
-  <int value="1" label="AuthError"/>
-  <int value="2" label="HttpStatusOrNetError"/>
-  <int value="3" label="ParseError"/>
-  <int value="4" label="DataError"/>
-</enum>
-
 <enum name="SuspendAttempt">
   <int value="0" label="Attempted"/>
 </enum>

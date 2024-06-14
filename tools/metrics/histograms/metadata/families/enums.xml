@@ -445,6 +445,32 @@ chromium-metrics-reviews@google.com.
   <int value="5" label="Incorrect Parent Password Error"/>
 </enum>
 
+<!-- LINT.IfChange(SupervisedUserProtoFetcherStatus) -->
+
+<enum name="SupervisedUserProtoFetcherStatus">
+  <int value="0" label="NoError"/>
+  <int value="1" label="AuthError">
+    The request failed due to an error fetching the access token. The
+    {RequestType}.AuthError histogram contains more fine-grained error details.
+
+    This value is not output if the access token fetch failed, but the request
+    was still performed due to credentials being &quot;BestEffort&quot; on this
+    endpoint.
+  </int>
+  <int value="2" label="HttpStatusOrNetError">
+    The request was performed, but network or http returned errors.
+  </int>
+  <int value="3" label="ParseError">
+    The request was performed without error, but the response could not be
+    processed or was unexpected.
+  </int>
+  <int value="4" label="DataError">
+    The request was parsed, but did not contain all required data.
+  </int>
+</enum>
+
+<!-- LINT.ThenChange(//components/supervised_user/core/browser/proto_fetcher.h:State) -->
+
 <enum name="SupervisedUserSafetyFilterResult">
   <int value="100" label="LINK_ALLOWED">Link; Allowed as safe</int>
   <int value="101" label="TYPED_ALLOWED">Typed URL; Allowed as safe</int>

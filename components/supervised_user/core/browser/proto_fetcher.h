@@ -66,28 +66,25 @@ namespace supervised_user {
 
 // Holds the status of the fetch. The callback's response will be set iff the
 // status is ok.
-// These values are persisted to logs. Entries should not be renumbered and
-// numeric values should never be reused.
 class ProtoFetcherStatus {
  public:
   using HttpStatusOrNetErrorType =
       base::StrongAlias<class HttpStatusOrNetErrorTag, int>;
 
+  // These values are persisted to logs. Entries should not be renumbered and
+  // numeric values should never be reused.
+  //
+  // LINT.IfChange(State)
   enum State {
     OK = 0,
-    GOOGLE_SERVICE_AUTH_ERROR = 1,  // Error occurred during the access token
-                                    // fetching phase. See
-                                    // GetGoogleServiceAuthError for details.
-    HTTP_STATUS_OR_NET_ERROR =
-        2,  // The request was performed, but network or http returned errors.
-            // This is default chromium approach to combine those two domains.
-    INVALID_RESPONSE = 3,  // The request was performed without error, but http
-                           // response could not be processed or was unexpected.
-    DATA_ERROR = 4,  // The request was parsed, but did not contain all required
-                     // data. Not signalled by this fetcher itself, but might be
-                     // used by consumers to indicate data problem.
+    GOOGLE_SERVICE_AUTH_ERROR = 1,
+    HTTP_STATUS_OR_NET_ERROR = 2,
+    INVALID_RESPONSE = 3,
+    DATA_ERROR = 4,  //  Not signalled by this fetcher itself, but might be used
+                     //  by consumers to indicate data problem.
     kMaxValue = DATA_ERROR,  // keep last, required for metrics.
   };
+  // LINT.ThenChange(//tools/metrics/histograms/metadata/families/enums.xml:SupervisedUserProtoFetcherStatus)
 
   // Status might be used in base::expected context as possible error, since it
   // contains two error-enabled attributes which are copyable / assignable.
