@@ -24,7 +24,6 @@ BASE_DECLARE_FEATURE(kAndroidAppIntegration);
 BASE_DECLARE_FEATURE(kAndroidElegantTextHeight);
 BASE_DECLARE_FEATURE(kAndroidGoogleSansText);
 BASE_DECLARE_FEATURE(kAndroidHatsRefactor);
-BASE_DECLARE_FEATURE(kAndroidHub);
 BASE_DECLARE_FEATURE(kAndroidHubFloatingActionButton);
 BASE_DECLARE_FEATURE(kAndroidHubV2);
 BASE_DECLARE_FEATURE(kAndroidImprovedBookmarks);

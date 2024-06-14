@@ -12,7 +12,6 @@ import static org.hamcrest.Matchers.allOf;
 import static org.hamcrest.Matchers.greaterThan;
 import static org.hamcrest.Matchers.lessThan;
 import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertTrue;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.spy;
@@ -22,8 +21,6 @@ import static org.mockito.hamcrest.MockitoHamcrest.intThat;
 
 import static org.chromium.chrome.browser.tasks.tab_management.TabUiTestHelper.areAnimatorsEnabled;
 
-import android.content.res.ColorStateList;
-import android.graphics.drawable.ColorDrawable;
 import android.view.View;
 import android.widget.FrameLayout;
 import android.widget.ImageView;
@@ -44,14 +41,10 @@ import org.chromium.base.test.util.Batch;
 import org.chromium.base.test.util.CallbackHelper;
 import org.chromium.base.test.util.Criteria;
 import org.chromium.base.test.util.CriteriaHelper;
-import org.chromium.base.test.util.Features.DisableFeatures;
 import org.chromium.base.test.util.Features.EnableFeatures;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
-import org.chromium.chrome.browser.theme.ThemeUtils;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
 import org.chromium.chrome.test.R;
-import org.chromium.components.browser_ui.styles.ChromeColors;
-import org.chromium.components.browser_ui.styles.SemanticColorUtils;
 import org.chromium.content_public.browser.test.util.TestThreadUtils;
 import org.chromium.ui.modelutil.PropertyModel;
 import org.chromium.ui.modelutil.PropertyModelChangeProcessor;
@@ -198,49 +191,6 @@ public class TabListContainerViewBinderTest extends BlankUiTestActivityTestCase 
     @Test
     @MediumTest
     @EnableFeatures(ChromeFeatureList.TAB_TO_GTS_ANIMATION)
-    // TODO(b/335250391): This test and its properties can be deleted when Hub is launched.
-    @DisableFeatures(ChromeFeatureList.ANDROID_HUB)
-    public void testShowWithAnimation_showShadow() {
-        mShouldShowShadow = true;
-        TestThreadUtils.runOnUiThreadBlocking(
-                () -> {
-                    mContainerModel.set(TabListContainerProperties.IS_INCOGNITO, false);
-                    mContainerModel.set(
-                            TabListContainerProperties.VISIBILITY_LISTENER,
-                            mMockVisibilityListener);
-                    mContainerModel.set(
-                            TabListContainerProperties.ANIMATE_VISIBILITY_CHANGES, true);
-                    mContainerModel.set(TabListContainerProperties.IS_VISIBLE, true);
-                });
-
-        ImageView shadowImage = mRecyclerView.getShadowImageViewForTesting();
-        int toolbarHairlineColor =
-                ThemeUtils.getToolbarHairlineColor(
-                        mRecyclerView.getContext(),
-                        ChromeColors.getPrimaryBackgroundColor(mRecyclerView.getContext(), false),
-                        false);
-        assertEquals(
-                "Toolbar hairline color for the regular tab model should match.",
-                ColorStateList.valueOf(toolbarHairlineColor),
-                shadowImage.getImageTintList());
-
-        // Switch to incognito, shadow image color should update.
-        TestThreadUtils.runOnUiThreadBlocking(
-                () -> mContainerModel.set(TabListContainerProperties.IS_INCOGNITO, true));
-        toolbarHairlineColor =
-                ThemeUtils.getToolbarHairlineColor(
-                        mRecyclerView.getContext(),
-                        ChromeColors.getPrimaryBackgroundColor(mRecyclerView.getContext(), true),
-                        true);
-        assertEquals(
-                "Toolbar hairline color for the incognito tab model should match.",
-                ColorStateList.valueOf(toolbarHairlineColor),
-                shadowImage.getImageTintList());
-    }
-
-    @Test
-    @MediumTest
-    @EnableFeatures(ChromeFeatureList.TAB_TO_GTS_ANIMATION)
     public void testHidesWithAnimation() {
         TestThreadUtils.runOnUiThreadBlocking(
                 () -> {
@@ -298,45 +248,6 @@ public class TabListContainerViewBinderTest extends BlankUiTestActivityTestCase 
         assertThat(mRecyclerView.getAlpha(), equalTo(0.0f));
         assertThat(mRecyclerView.getVisibility(), equalTo(View.INVISIBLE));
         assertThat(mFinishedHidingCallback.getCallCount(), equalTo(1));
-    }
-
-    @Test
-    @MediumTest
-    @UiThreadTest
-    // TODO(b/335250391): This test and its properties can be deleted when Hub is launched.
-    @DisableFeatures(ChromeFeatureList.ANDROID_HUB)
-    public void testIsIncognitoSetsBackgroundAndToolbarHairlineColor() {
-        mContainerModel.set(TabListContainerProperties.IS_INCOGNITO, true);
-        assertTrue(
-                "View background should be an instance of ColorDrawable.",
-                mRecyclerView.getBackground() instanceof ColorDrawable);
-        assertEquals(
-                "View background color for the incognito tab model should match.",
-                ((ColorDrawable) mRecyclerView.getBackground()).getColor(),
-                mRecyclerView.getContext().getColor(R.color.default_bg_color_dark));
-        assertEquals(
-                "View toolbar hairline drawable color for the incognito tab model should match.",
-                ThemeUtils.getToolbarHairlineColor(
-                        mRecyclerView.getContext(),
-                        ChromeColors.getPrimaryBackgroundColor(mRecyclerView.getContext(), true),
-                        true),
-                mRecyclerView.getToolbarHairlineColorForTesting());
-
-        mContainerModel.set(TabListContainerProperties.IS_INCOGNITO, false);
-        assertTrue(
-                "View background should be an instance of ColorDrawable.",
-                mRecyclerView.getBackground() instanceof ColorDrawable);
-        assertEquals(
-                "View background color for the regular tab model should match.",
-                ((ColorDrawable) mRecyclerView.getBackground()).getColor(),
-                SemanticColorUtils.getDefaultBgColor(mRecyclerView.getContext()));
-        assertEquals(
-                "View toolbar hairline drawable color for the regular tab model should match.",
-                ThemeUtils.getToolbarHairlineColor(
-                        mRecyclerView.getContext(),
-                        ChromeColors.getPrimaryBackgroundColor(mRecyclerView.getContext(), false),
-                        false),
-                mRecyclerView.getToolbarHairlineColorForTesting());
     }
 
     @Test
