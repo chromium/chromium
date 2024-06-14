@@ -1305,6 +1305,9 @@ See your search engine’s instructions for deleting your search history, if app
       <message name="IDS_IOS_DELETE_BROWSING_DATA_CANCEL" translateable="false" desc="Label for the option to cancel and dismiss deleting browsing data. [iOS only]">
         **Cancel**
       </message>
+      <message name="IDS_IOS_DELETE_BROWSING_DATA_FOOTER" translateable="false" desc="Footer message in the delete browsing data bottom sheet which informs the user they can seperately delete their search history and/or other forms of activity at the 2 links provided.">
+        **<ph name="BEGIN_LINK">BEGIN_LINK</ph>Search history<ph name="END_LINK">END_LINK</ph> and <ph name="BEGIN_LINK">BEGIN_LINK</ph>other forms of activity<ph name="END_LINK">END_LINK</ph> may be saved in your Google Account.**
+      </message>
       <message name="IDS_IOS_DELETE_BROWSING_DATA_SUMMARY_ADRESSES" translateable="false" desc="Summary of the addresses to be deleted when deleting browsing data. [iOS only]">
        **{COUNT, plural,
           =1 {1 Address}

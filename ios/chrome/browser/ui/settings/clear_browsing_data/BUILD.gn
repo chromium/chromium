@@ -17,8 +17,6 @@ source_set("clear_browsing_data") {
     "clear_browsing_data_manager.mm",
     "clear_browsing_data_table_view_controller.h",
     "clear_browsing_data_table_view_controller.mm",
-    "clear_browsing_data_ui_constants.h",
-    "clear_browsing_data_ui_constants.mm",
     "clear_browsing_data_ui_delegate.h",
     "pop_up_menu_control.h",
     "pop_up_menu_control.mm",
@@ -34,6 +32,7 @@ source_set("clear_browsing_data") {
     "time_range_selector_table_view_controller.mm",
   ]
   deps = [
+    ":clear_browsing_data_ui_constants",
     "//components/browsing_data/core",
     "//components/feature_engagement/public",
     "//components/history/core/browser",
@@ -85,6 +84,13 @@ source_set("clear_browsing_data") {
     "//ios/public/provider/chrome/browser/branded_images:branded_images_api",
     "//ui/base",
     "//ui/strings",
+  ]
+}
+
+source_set("clear_browsing_data_ui_constants") {
+  sources = [
+    "clear_browsing_data_ui_constants.h",
+    "clear_browsing_data_ui_constants.mm",
   ]
 }
 
@@ -162,12 +168,14 @@ source_set("eg2_tests") {
     "quick_delete_egtest.mm",
   ]
   deps = [
+    ":clear_browsing_data_ui_constants",
     ":features",
     "//base/test:test_support",
     "//components/browsing_data/core",
     "//components/strings",
     "//components/sync/base",
     "//ios/chrome/app/strings",
+    "//ios/chrome/browser/metrics/model:eg_test_support+eg2",
     "//ios/chrome/browser/shared/ui/elements:constants",
     "//ios/chrome/browser/shared/ui/elements:eg_test_support+eg2",
     "//ios/chrome/browser/signin/model:fake_system_identity",
@@ -180,6 +188,7 @@ source_set("eg2_tests") {
     "//ios/chrome/test/earl_grey:eg_test_support+eg2",
     "//ios/testing/earl_grey:eg_test_support+eg2",
     "//net",
+    "//net:test_support",
     "//ui/base",
   ]
   frameworks = [ "UIKit.framework" ]

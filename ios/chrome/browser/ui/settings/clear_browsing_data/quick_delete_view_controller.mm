@@ -8,10 +8,13 @@
 
 #import "base/check.h"
 #import "components/browsing_data/core/browsing_data_utils.h"
+#import "ios/chrome/browser/net/model/crurl.h"
+#import "ios/chrome/browser/shared/model/url/chrome_url_constants.h"
 #import "ios/chrome/browser/shared/ui/bottom_sheet/table_view_bottom_sheet_view_controller+subclassing.h"
 #import "ios/chrome/browser/shared/ui/list_model/list_model.h"
 #import "ios/chrome/browser/shared/ui/symbols/symbols.h"
 #import "ios/chrome/browser/shared/ui/table_view/cells/table_view_detail_text_item.h"
+#import "ios/chrome/browser/shared/ui/table_view/cells/table_view_link_header_footer_item.h"
 #import "ios/chrome/browser/shared/ui/table_view/table_view_utils.h"
 #import "ios/chrome/browser/ui/settings/cells/clear_browsing_data_constants.h"
 #import "ios/chrome/browser/ui/settings/clear_browsing_data/browsing_data_mutator.h"
@@ -51,6 +54,7 @@ constexpr CGFloat kTableViewCornerRadius = 10;
 typedef NS_ENUM(NSInteger, SectionIdentifier) {
   SectionIdentifierTimeRange = kSectionIdentifierEnumZero,
   SectionIdentifierBrowsingData,
+  SectionIdentifierFooter,
 };
 
 // Item identifiers in Quick Delete's table view.
@@ -61,8 +65,10 @@ typedef NS_ENUM(NSInteger, ItemIdentifier) {
 
 }  // namespace
 
-@interface QuickDeleteViewController () <ConfirmationAlertActionHandler,
-                                         UITableViewDelegate> {
+@interface QuickDeleteViewController () <
+    ConfirmationAlertActionHandler,
+    UITableViewDelegate,
+    TableViewLinkHeaderFooterItemDelegate> {
   UITableViewDiffableDataSource<NSNumber*, NSNumber*>* _dataSource;
   UITableView* _tableView;
   browsing_data::TimePeriod _timeRange;
@@ -163,6 +169,56 @@ typedef NS_ENUM(NSInteger, ItemIdentifier) {
   // TODO(crbug.com/335387869): Deal with tap on Browing Data row.
 }
 
+- (UIView*)tableView:(UITableView*)tableView
+    viewForFooterInSection:(NSInteger)section {
+  SectionIdentifier sectionIdentifier = static_cast<SectionIdentifier>(
+      [_dataSource sectionIdentifierForIndex:section].integerValue);
+  switch (sectionIdentifier) {
+    case SectionIdentifierFooter: {
+      // TODO(crbug.com/341898146): Conditionally show the footer based on
+      // sign-in status and DSE.
+      TableViewLinkHeaderFooterView* footer =
+          DequeueTableViewHeaderFooter<TableViewLinkHeaderFooterView>(
+              _tableView);
+      footer.accessibilityIdentifier = kQuickDeleteFooterIdentifier;
+      footer.delegate = self;
+      footer.urls = @[
+        [[CrURL alloc]
+            initWithGURL:GURL(kClearBrowsingDataDSESearchUrlInFooterURL)],
+        [[CrURL alloc]
+            initWithGURL:GURL(kClearBrowsingDataDSEMyActivityUrlInFooterURL)]
+      ];
+      [footer
+            setText:l10n_util::GetNSString(IDS_IOS_DELETE_BROWSING_DATA_FOOTER)
+          withColor:[UIColor colorNamed:kTextSecondaryColor]];
+      return footer;
+    }
+    case SectionIdentifierTimeRange:
+    case SectionIdentifierBrowsingData: {
+      return nil;
+    }
+  }
+  NOTREACHED_NORETURN();
+}
+
+- (CGFloat)tableView:(UITableView*)tableView
+    heightForFooterInSection:(NSInteger)section {
+  SectionIdentifier sectionIdentifier = static_cast<SectionIdentifier>(
+      [_dataSource sectionIdentifierForIndex:section].integerValue);
+  if (sectionIdentifier == SectionIdentifierFooter) {
+    return UITableViewAutomaticDimension;
+  }
+  return kSectionFooterHeight;
+}
+
+#pragma mark - TableViewLinkHeaderFooterItemDelegate
+
+- (void)view:(TableViewLinkHeaderFooterView*)view didTapLinkURL:(CrURL*)url {
+  DCHECK(url.gurl == kClearBrowsingDataDSESearchUrlInFooterURL ||
+         url.gurl == kClearBrowsingDataDSEMyActivityUrlInFooterURL);
+  [self.presentationHandler openMyActivityURL:url.gurl];
+}
+
 #pragma mark - BrowsingDataConsumer
 
 - (void)setTimeRange:(browsing_data::TimePeriod)timeRange {
@@ -247,11 +303,13 @@ typedef NS_ENUM(NSInteger, ItemIdentifier) {
 
   RegisterTableViewCell<TableViewPopUpCell>(_tableView);
   RegisterTableViewCell<TableViewDetailTextCell>(_tableView);
+  RegisterTableViewHeaderFooter<TableViewLinkHeaderFooterView>(_tableView);
 
   NSDiffableDataSourceSnapshot* snapshot =
       [[NSDiffableDataSourceSnapshot alloc] init];
   [snapshot appendSectionsWithIdentifiers:@[
-    @(SectionIdentifierTimeRange), @(SectionIdentifierBrowsingData)
+    @(SectionIdentifierTimeRange), @(SectionIdentifierBrowsingData),
+    @(SectionIdentifierFooter)
   ]];
   [snapshot appendItemsWithIdentifiers:@[ @(ItemIdentifierTimeRange) ]
              intoSectionWithIdentifier:@(SectionIdentifierTimeRange)];

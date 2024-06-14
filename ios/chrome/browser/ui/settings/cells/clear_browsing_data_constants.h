@@ -20,4 +20,7 @@ extern NSString* const kClearAutofillCellAccessibilityIdentifier;
 // The accessibility identifier for the button inside a pop-up cell.
 extern NSString* const kQuickDeletePopUpButtonIdentifier;
 
+// The accessibility identifier for the footer string.
+extern NSString* const kQuickDeleteFooterIdentifier;
+
 #endif  // IOS_CHROME_BROWSER_UI_SETTINGS_CELLS_CLEAR_BROWSING_DATA_CONSTANTS_H_

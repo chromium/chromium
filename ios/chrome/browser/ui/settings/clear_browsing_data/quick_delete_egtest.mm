@@ -4,15 +4,18 @@
 
 #import <XCTest/XCTest.h>
 
+#import "base/test/metrics/histogram_tester.h"
 #import "components/browsing_data/core/browsing_data_utils.h"
 #import "components/browsing_data/core/pref_names.h"
 #import "components/strings/grit/components_strings.h"
 #import "components/sync/base/command_line_switches.h"
+#import "ios/chrome/browser/metrics/model/metrics_app_interface.h"
 #import "ios/chrome/browser/signin/model/fake_system_identity.h"
 #import "ios/chrome/browser/ui/authentication/signin_earl_grey.h"
 #import "ios/chrome/browser/ui/authentication/signin_earl_grey_ui_test_util.h"
 #import "ios/chrome/browser/ui/autofill/autofill_app_interface.h"
 #import "ios/chrome/browser/ui/settings/cells/clear_browsing_data_constants.h"
+#import "ios/chrome/browser/ui/settings/clear_browsing_data/clear_browsing_data_ui_constants.h"
 #import "ios/chrome/browser/ui/settings/clear_browsing_data/features.h"
 #import "ios/chrome/browser/ui/settings/password/password_settings_app_interface.h"
 #import "ios/chrome/common/ui/confirmation_alert/constants.h"
@@ -23,6 +26,7 @@
 #import "ios/chrome/test/earl_grey/chrome_test_case.h"
 #import "ios/testing/earl_grey/earl_grey_test.h"
 #import "net/base/apple/url_conversions.h"
+#import "net/test/embedded_test_server/embedded_test_server.h"
 #import "ui/base/l10n/l10n_util_mac.h"
 
 namespace {
@@ -38,6 +42,9 @@ constexpr base::TimeDelta kSyncOperationTimeout = base::Seconds(10);
 // GURL inserted into the history service to mock history entries.
 const GURL mockURL("http://not-a-real-site.test/");
 
+// Link for my activity page.
+const char kMyActivityURL[] = "myactivity.google.com";
+
 }  // namespace
 
 // Tests the Quick Delete UI, the new version of Delete Browsing Data.
@@ -52,6 +59,9 @@ const GURL mockURL("http://not-a-real-site.test/");
   [PasswordSettingsAppInterface clearPasswordStores];
   [ChromeEarlGrey clearBrowsingHistory];
   [ChromeEarlGrey resetBrowsingDataPrefs];
+  GREYAssertNil([MetricsAppInterface setupHistogramTester],
+                @"Cannot setup histogram tester.");
+  [MetricsAppInterface overrideMetricsAndCrashReportingForTesting];
 }
 
 - (void)tearDown {
@@ -59,6 +69,10 @@ const GURL mockURL("http://not-a-real-site.test/");
   [PasswordSettingsAppInterface clearPasswordStores];
   [ChromeEarlGrey clearBrowsingHistory];
   [ChromeEarlGrey resetBrowsingDataPrefs];
+  [MetricsAppInterface stopOverridingMetricsAndCrashReportingForTesting];
+  GREYAssertNil([MetricsAppInterface releaseHistogramTester],
+                @"Cannot reset histogram tester.");
+
   [super tearDown];
 }
 
@@ -127,6 +141,43 @@ const GURL mockURL("http://not-a-real-site.test/");
 - (id<GREYMatcher>)popupCellWithTimeRange:(NSString*)timeRange {
   return grey_allOf(grey_accessibilityID(kQuickDeletePopUpButtonIdentifier),
                     grey_text(timeRange), nil);
+}
+
+// Matcher for Search history link in the footer.
+id<GREYMatcher> SearchHistoryLink() {
+  return grey_allOf(
+      // The link is within the security footer with ID
+      // `kQuickDeleteFooterIdentifier`.
+      grey_ancestor(grey_accessibilityID(kQuickDeleteFooterIdentifier)),
+      grey_accessibilityLabel(@"Search history"),
+      // UIKit instantiates a `UIAccessibilityLinkSubelement` for the link
+      // element in the label with attributed string.
+      grey_kindOfClassName(@"UIAccessibilityLinkSubelement"),
+      grey_accessibilityTrait(UIAccessibilityTraitLink), nil);
+}
+
+// Matcher for other forms of activity link in footer.
+id<GREYMatcher> OtherFormsOfActivityLink() {
+  return grey_allOf(
+      // The link is within the security footer with ID
+      // `kQuickDeleteFooterIdentifier`.
+      grey_ancestor(grey_accessibilityID(kQuickDeleteFooterIdentifier)),
+      grey_accessibilityLabel(@"other forms of activity"),
+      // UIKit instantiates a `UIAccessibilityLinkSubelement` for the link
+      // element in the label with attributed string.
+      grey_kindOfClassName(@"UIAccessibilityLinkSubelement"),
+      grey_accessibilityTrait(UIAccessibilityTraitLink), nil);
+}
+
+// Expects my activity histogram entries for `navigation`.
+void ExpectClearBrowsingDataNavigationHistograms(
+    MyActivityNavigation navigation) {
+  GREYAssertNil(
+      [MetricsAppInterface
+           expectCount:1
+             forBucket:static_cast<int>(navigation)
+          forHistogram:@"Settings.ClearBrowsingData.OpenMyActivity"],
+      @"Settings.ClearBrowsingData.OpenMyActivity histogram not logged.");
 }
 
 // Tests if the Quick Delete UI is shown correctly from Privacy settings.
@@ -564,6 +615,69 @@ const GURL mockURL("http://not-a-real-site.test/");
                  grey_text(l10n_util::GetNSString(
                      IDS_IOS_DELETE_BROWSING_DATA_SUMMARY_NO_DATA))]
       assertWithMatcher:grey_nil()];
+}
+
+// Tests the footer search history link is opened correctly and metrics are
+// recorded in the corrresponding histogram bucket.
+- (void)testOpenSearchHistoryMyActivityFooterLink {
+  GREYAssertTrue(self.testServer->Start(), @"Test server failed to start.");
+  [ChromeEarlGrey loadURL:self.testServer->GetURL("/")];
+
+  // Open Quick Delete bottom sheet.
+  [self openQuickDeleteFromThreeDotMenu];
+
+  // Check that Quick Delete is presented.
+  [[EarlGrey selectElementWithMatcher:[self quickDeleteTitle]]
+      assertWithMatcher:grey_notNil()];
+
+  // Check that the footer is presented.
+  [[EarlGrey selectElementWithMatcher:grey_accessibilityID(
+                                          kQuickDeleteFooterIdentifier)]
+      assertWithMatcher:grey_sufficientlyVisible()];
+
+  // Tap on the "Search history" link.
+  [[EarlGrey selectElementWithMatcher:SearchHistoryLink()]
+      performAction:grey_tap()];
+
+  // Check that my activity link was opened.
+  GREYAssertEqual(std::string(kMyActivityURL),
+                  [ChromeEarlGrey webStateVisibleURL].host(),
+                  @"Did not navigate to the search activity url.");
+
+  // Validate histogram entry for search history is recorded.
+  ExpectClearBrowsingDataNavigationHistograms(
+      MyActivityNavigation::kSearchHistory);
+}
+
+// Tests the footer other forms of activity link is opened correctly and metrics
+// are recorded in the corrresponding histogram bucket.
+- (void)testOpenOtherFormsOfActivityMyActivityFooterLink {
+  GREYAssertTrue(self.testServer->Start(), @"Test server failed to start.");
+  [ChromeEarlGrey loadURL:self.testServer->GetURL("/")];
+
+  // Open Quick Delete bottom sheet.
+  [self openQuickDeleteFromThreeDotMenu];
+
+  // Check that Quick Delete is presented.
+  [[EarlGrey selectElementWithMatcher:[self quickDeleteTitle]]
+      assertWithMatcher:grey_notNil()];
+
+  // Check that the footer is presented.
+  [[EarlGrey selectElementWithMatcher:grey_accessibilityID(
+                                          kQuickDeleteFooterIdentifier)]
+      assertWithMatcher:grey_sufficientlyVisible()];
+
+  // Tap on the "Search history" link.
+  [[EarlGrey selectElementWithMatcher:OtherFormsOfActivityLink()]
+      performAction:grey_tap()];
+
+  // Check that my activity link was opened.
+  GREYAssertEqual(std::string(kMyActivityURL),
+                  [ChromeEarlGrey webStateVisibleURL].host(),
+                  @"Did not navigate to the search activity url.");
+
+  // Validate histogram entry for top level is recorded.
+  ExpectClearBrowsingDataNavigationHistograms(MyActivityNavigation::kTopLevel);
 }
 
 @end

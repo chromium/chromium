@@ -12,6 +12,10 @@
 // 'Cancel' button or by dragging the view down.
 - (void)dismissQuickDelete;
 
+// Opens the provided My Activity `URL` in a new tap and dismissed the Quick
+// Delete bottom sheet.
+- (void)openMyActivityURL:(const GURL&)URL;
+
 @end
 
 #endif  // IOS_CHROME_BROWSER_UI_SETTINGS_CLEAR_BROWSING_DATA_QUICK_DELETE_PRESENTATION_COMMANDS_H_

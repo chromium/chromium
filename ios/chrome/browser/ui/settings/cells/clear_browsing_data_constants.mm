@@ -20,3 +20,5 @@ NSString* const kClearAutofillCellAccessibilityIdentifier =
 
 NSString* const kQuickDeletePopUpButtonIdentifier =
     @"kQuickDeletePopUpButtonIdentifier";
+
+NSString* const kQuickDeleteFooterIdentifier = @"kQuickDeleteFooterIdentifier";
