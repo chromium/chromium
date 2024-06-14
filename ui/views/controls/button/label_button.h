@@ -283,8 +283,10 @@ class VIEWS_EXPORT LabelButton : public Button,
   gfx::FontList cached_default_button_font_list_;
 
   // The image models and colors for each button state.
-  std::optional<ui::ImageModel> button_state_image_models_[STATE_COUNT] = {};
-  absl::variant<SkColor, ui::ColorId> button_state_colors_[STATE_COUNT] = {};
+  std::array<std::optional<ui::ImageModel>, STATE_COUNT>
+      button_state_image_models_;
+  std::array<absl::variant<SkColor, ui::ColorId>, STATE_COUNT>
+      button_state_colors_;
 
   // Used to track whether SetTextColor() has been invoked.
   std::array<bool, STATE_COUNT> explicitly_set_colors_ = {};

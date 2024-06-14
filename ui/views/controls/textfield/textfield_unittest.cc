@@ -2,12 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#if defined(UNSAFE_BUFFERS_BUILD)
-// TODO(https://crbug.com/344639839): fix the unsafe buffer errors in this file,
-// then remove this pragma.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "ui/views/controls/textfield/textfield_unittest.h"
 
 #include <stddef.h>
@@ -1408,25 +1402,27 @@ TEST_F(TextfieldTest, InsertionDeletionTest) {
 
 // Test that deletion operations behave correctly with an active selection.
 TEST_F(TextfieldTest, DeletionWithSelection) {
-  struct {
+  struct TestCase {
     ui::KeyboardCode key;
     bool shift;
-  } cases[] = {
+  };
+
+  constexpr auto kTestCases = std::to_array<TestCase>({
       {ui::VKEY_BACK, false},
       {ui::VKEY_BACK, true},
       {ui::VKEY_DELETE, false},
       {ui::VKEY_DELETE, true},
-  };
+  });
 
   InitTextfield();
   // [Ctrl] ([Alt] on Mac) + [Delete]/[Backspace] should delete the active
   // selection, regardless of [Shift].
-  for (size_t i = 0; i < std::size(cases); ++i) {
+  for (size_t i = 0; i < kTestCases.size(); ++i) {
     SCOPED_TRACE(base::StringPrintf("Testing cases[%" PRIuS "]", i));
     textfield_->SetText(u"one two three");
     textfield_->SetSelectedRange(gfx::Range(2, 6));
     // Make selection as - on|e tw|o three.
-    SendWordEvent(cases[i].key, cases[i].shift);
+    SendWordEvent(kTestCases[i].key, kTestCases[i].shift);
     // Verify state is on|o three.
     EXPECT_EQ(u"ono three", textfield_->GetText());
     EXPECT_EQ(gfx::Range(2), textfield_->GetSelectedRange());
@@ -1435,27 +1431,29 @@ TEST_F(TextfieldTest, DeletionWithSelection) {
 
 // Test that deletion operations behave correctly with multiple selections.
 TEST_F(TextfieldTest, DeletionWithMultipleSelections) {
-  struct {
+  struct TestCase {
     ui::KeyboardCode key;
     bool shift;
-  } cases[] = {
+  };
+
+  constexpr auto kTestCases = std::to_array<TestCase>({
       {ui::VKEY_BACK, false},
       {ui::VKEY_BACK, true},
       {ui::VKEY_DELETE, false},
       {ui::VKEY_DELETE, true},
-  };
+  });
 
   InitTextfield();
   // [Ctrl] ([Alt] on Mac) + [Delete]/[Backspace] should delete the active
   // selection, regardless of [Shift].
-  for (size_t i = 0; i < std::size(cases); ++i) {
+  for (size_t i = 0; i < kTestCases.size(); ++i) {
     SCOPED_TRACE(base::StringPrintf("Testing cases[%" PRIuS "]", i));
     textfield_->SetText(u"one two three");
     // Select: o[ne] [two] th[re]e
     textfield_->SetSelectedRange(gfx::Range(4, 7));
     textfield_->AddSecondarySelectedRange(gfx::Range(10, 12));
     textfield_->AddSecondarySelectedRange(gfx::Range(1, 3));
-    SendWordEvent(cases[i].key, cases[i].shift);
+    SendWordEvent(kTestCases[i].key, kTestCases[i].shift);
     EXPECT_EQ(u"o  the", textfield_->GetText());
     EXPECT_EQ(gfx::Range(2), textfield_->GetSelectedRange());
     EXPECT_EQ(0U,
@@ -1465,23 +1463,25 @@ TEST_F(TextfieldTest, DeletionWithMultipleSelections) {
 
 // Test deletions not covered by other tests with key events.
 TEST_F(TextfieldTest, DeletionWithEditCommands) {
-  struct {
+  struct TestCase {
     ui::TextEditCommand command;
     const char16_t* expected;
-  } cases[] = {
+  };
+
+  constexpr auto kTestCases = std::to_array<TestCase>({
       {ui::TextEditCommand::DELETE_TO_BEGINNING_OF_LINE, u"two three"},
       {ui::TextEditCommand::DELETE_TO_BEGINNING_OF_PARAGRAPH, u"two three"},
       {ui::TextEditCommand::DELETE_TO_END_OF_LINE, u"one "},
       {ui::TextEditCommand::DELETE_TO_END_OF_PARAGRAPH, u"one "},
-  };
+  });
 
   InitTextfield();
-  for (size_t i = 0; i < std::size(cases); ++i) {
+  for (size_t i = 0; i < kTestCases.size(); ++i) {
     SCOPED_TRACE(base::StringPrintf("Testing cases[%" PRIuS "]", i));
     textfield_->SetText(u"one two three");
     textfield_->SetSelectedRange(gfx::Range(4));
-    GetTextfieldTestApi().ExecuteTextEditCommand(cases[i].command);
-    EXPECT_EQ(cases[i].expected, textfield_->GetText());
+    GetTextfieldTestApi().ExecuteTextEditCommand(kTestCases[i].command);
+    EXPECT_EQ(kTestCases[i].expected, textfield_->GetText());
   }
 }
 
@@ -3128,7 +3128,8 @@ TEST_F(TextfieldTest, HitInsideTextAreaTest) {
   cursor_bounds.push_back(bound);
 
   // Expected cursor position when clicking left and right of each character.
-  size_t cursor_pos_expected[] = {0, 1, 1, 2, 4, 3, 3, 2};
+  constexpr auto cursor_pos_expected =
+      std::to_array<size_t>({0, 1, 1, 2, 4, 3, 3, 2});
 
   int index = 0;
   for (size_t i = 0; i < cursor_bounds.size() - 1; ++i) {
@@ -3351,7 +3352,7 @@ TEST_F(TextfieldTest, GetCompositionCharacterBoundsTest) {
 TEST_F(TextfieldTest, GetCompositionCharacterBounds_ComplexText) {
   InitTextfield();
 
-  const char16_t kUtf16Chars[] = {
+  constexpr auto kUtf16Chars = std::to_array<char16_t>({
       // U+0020 SPACE
       0x0020,
       // U+1F408 (CAT) as surrogate pair
@@ -3366,17 +3367,17 @@ TEST_F(TextfieldTest, GetCompositionCharacterBounds_ComplexText) {
       0xFE0F,
       // U+0020 SPACE
       0x0020,
-  };
-  const size_t kUtf16CharsCount = std::size(kUtf16Chars);
+  });
 
   ui::CompositionText composition;
-  composition.text.assign(kUtf16Chars, kUtf16Chars + kUtf16CharsCount);
+  composition.text.assign(kUtf16Chars.data(), kUtf16Chars.size());
   textfield_->SetCompositionText(composition);
 
   // Make sure GetCompositionCharacterBounds never fails for index.
-  gfx::Rect rects[kUtf16CharsCount];
-  for (uint32_t i = 0; i < kUtf16CharsCount; ++i)
+  std::array<gfx::Rect, kUtf16Chars.size()> rects;
+  for (uint32_t i = 0; i < kUtf16Chars.size(); ++i) {
     EXPECT_TRUE(textfield_->GetCompositionCharacterBounds(i, &rects[i]));
+  }
 
   // Here we might expect the following results but it actually depends on how
   // Uniscribe or HarfBuzz treats them with given font.
@@ -5155,10 +5156,12 @@ TEST_F(TextfieldTest, WordOffsets) {
 }
 
 TEST_F(TextfieldTest, AccessibleGraphemeOffsets) {
-  struct {
+  struct TestCase {
     std::u16string text;
     std::vector<int32_t> expected_offsets;
-  } cases[] = {
+  };
+
+  const auto kTestCases = std::to_array<TestCase>({
       {std::u16string(), {}},
       // LTR.
       {u"asdfghkl:/", {0, 10, 20, 30, 40, 50, 60, 70, 80, 90, 100}},
@@ -5180,7 +5183,7 @@ TEST_F(TextfieldTest, AccessibleGraphemeOffsets) {
       // LTR ab, 𝄞 'MUSICAL SYMBOL G CLEF' U+1D11E (surrogate pair), LTR cd.
       // Windows requires wide strings for \Unnnnnnnn universal character names.
       {u"ab\U0001D11Ecd", {0, 10, 20, 30, 40, 50}},
-  };
+  });
 
   base::test::ScopedFeatureList scoped_feature_list;
   scoped_feature_list.InitAndEnableFeature(::features::kUiaProvider);
@@ -5195,15 +5198,15 @@ TEST_F(TextfieldTest, AccessibleGraphemeOffsets) {
   GetTextfieldTestApi().GetRenderText()->SetDisplayRect(
       gfx::Rect(0, 0, 20 * kGlyphWidth, 100));
 
-  for (size_t i = 0; i < std::size(cases); i++) {
+  for (size_t i = 0; i < kTestCases.size(); i++) {
     SCOPED_TRACE(base::StringPrintf("Testing cases[%" PRIuS "]", i));
-    textfield_->SetText(cases[i].text);
+    textfield_->SetText(kTestCases[i].text);
 
     ui::AXNodeData node_data;
     textfield_->GetViewAccessibility().GetAccessibleNodeData(&node_data);
     EXPECT_EQ(node_data.GetIntListAttribute(
                   ax::mojom::IntListAttribute::kCharacterOffsets),
-              cases[i].expected_offsets);
+              kTestCases[i].expected_offsets);
   }
 }
 

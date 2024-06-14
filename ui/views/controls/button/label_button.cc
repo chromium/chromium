@@ -2,12 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#if defined(UNSAFE_BUFFERS_BUILD)
-// TODO(https://crbug.com/344639839): fix the unsafe buffer errors in this file,
-// then remove this pragma.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "ui/views/controls/button/label_button.h"
 
 #include <stddef.h>
@@ -670,9 +664,9 @@ void LabelButton::VisualStateChanged() {
 
 void LabelButton::ResetColorsFromNativeTheme() {
   // Since this is a LabelButton, use the label colors.
-  ui::ColorId color_ids[STATE_COUNT] = {
-      ui::kColorLabelForeground, ui::kColorLabelForeground,
-      ui::kColorLabelForeground, ui::kColorLabelForegroundDisabled};
+  constexpr std::array<ui::ColorId, STATE_COUNT> color_ids{
+      {ui::kColorLabelForeground, ui::kColorLabelForeground,
+       ui::kColorLabelForeground, ui::kColorLabelForegroundDisabled}};
 
   label_->SetBackground(nullptr);
   label_->SetAutoColorReadabilityEnabled(false);

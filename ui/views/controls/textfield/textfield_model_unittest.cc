@@ -2,12 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#if defined(UNSAFE_BUFFERS_BUILD)
-// TODO(https://crbug.com/344639839): fix the unsafe buffer errors in this file,
-// then remove this pragma.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "ui/views/controls/textfield/textfield_model.h"
 
 #include <stddef.h>
@@ -2405,14 +2399,15 @@ TEST_F(TextfieldModelTest, Clipboard_WhiteSpaceStringTest) {
 }
 
 TEST_F(TextfieldModelTest, Transpose) {
-  const std::u16string ltr = u"12";
-  const std::u16string rtl = u"\x0634\x0632";
-  const std::u16string ltr_transposed = u"21";
-  const std::u16string rtl_transposed = u"\x0632\x0634";
+  constexpr std::u16string ltr = u"12";
+  constexpr std::u16string rtl = u"\x0634\x0632";
+  constexpr std::u16string ltr_transposed = u"21";
+  constexpr std::u16string rtl_transposed = u"\x0632\x0634";
 
   // This is a string with an 'a' between two emojis.
   const std::u16string surrogate_pairs({0xD83D, 0xDE07, 'a', 0xD83D, 0xDE0E});
-  const std::u16string test_strings[] = {ltr, rtl, surrogate_pairs};
+  const auto test_strings =
+      std::to_array<std::u16string>({ltr, rtl, surrogate_pairs});
 
   struct TestCase {
     gfx::Range range;
