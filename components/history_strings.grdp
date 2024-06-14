@@ -121,57 +121,50 @@
     Unknown device
   </message>
 
-  <!-- TODO(b/328300718): Replace strings and mark as translateable. -->
-  <message name="IDS_HISTORY_EMBEDDINGS_DISCLAIMER" desc="On the history page, the text displayed explaining the history embeddings feature." translateable="false">
-    Some text explaining what data is collected.
+  <message name="IDS_HISTORY_EMBEDDINGS_DISCLAIMER" desc="On the history page, the persistent disclaimer text shown below the search box indicating what content is sent to Google for the history search feature.">
+    Your searches, best matches, and their page contents are sent to Google and may be seen by human reviewers to improve this feature.
   </message>
-  <message name="IDS_HISTORY_EMBEDDINGS_PROMO_HEADING" desc="On the history page, the heading of the promo for history embeddings." translateable="false">
-    Search through history
+  <message name="IDS_HISTORY_EMBEDDINGS_PROMO_HEADING" desc="On the history page, the heading of the promo for history search powered by AI.">
+    Search your history, powered by AI
   </message>
-  <message name="IDS_HISTORY_EMBEDDINGS_PROMO_BODY" desc="On the history page, the body text of the promo for history embeddings." translateable="false">
-    Enter a search query to search through history. Here is some more placeholder text about how to search History and what data is available. Here is some more text to make this placeholder longer. View more in <ph name="BEGIN_LINK">&lt;a target="_blank" href="$1"&gt;</ph>Settings<ph name="END_LINK">&lt;/a&gt;</ph>.
+  <message name="IDS_HISTORY_EMBEDDINGS_PROMO_BODY" desc="On the history page, the body text of the promo for history search powered by AI.">
+    Using everyday language, you can search your browsing history using phrases like "pizza places near me" or “family-friendly parks downtown". Your searches, best matches, and their page contents are sent to Google and may be seen by human reviewers to improve this feature. <ph name="BEGIN_LINK">&lt;a target="_blank" href="$1"&gt;</ph>Manage your history search setting<ph name="END_LINK">&lt;/a&gt;</ph>
   </message>
-  <message name="IDS_HISTORY_EMBEDDINGS_SHOW_BY_DATE" desc="On the history page, the label on the option to show history results grouped by date." translateable="false">
+  <message name="IDS_HISTORY_EMBEDDINGS_SHOW_BY_DATE" desc="On the history page, the label on the option to show history results grouped by date.">
     Show by date
   </message>
-  <message name="IDS_HISTORY_EMBEDDINGS_SHOW_BY_GROUP" desc="On the history page, the label on the option to show history results grouped by history clusters." translateable="false">
+  <message name="IDS_HISTORY_EMBEDDINGS_SHOW_BY_GROUP" desc="On the history page, the label on the option to show history results grouped by history clusters.">
     Show by group
   </message>
-  <message name="IDS_HISTORY_EMBEDDINGS_SUGGESTION_1" desc="On the history page, the text inside of a suggestion chip that a user can click to update their search to show results from yesterday" translateable="false">
+  <message name="IDS_HISTORY_EMBEDDINGS_SUGGESTION_1" desc="On the history page, the text inside of a suggestion chip that a user can click to update their search to show results from yesterday">
     Yesterday
   </message>
-  <message name="IDS_HISTORY_EMBEDDINGS_SUGGESTION_2" desc="On the history page, the text inside of a suggestion chip that a user can click to update their search to show results from last 7 days" translateable="false">
+  <message name="IDS_HISTORY_EMBEDDINGS_SUGGESTION_2" desc="On the history page, the text inside of a suggestion chip that a user can click to update their search to show results from last 7 days">
     Last 7 days
   </message>
-  <message name="IDS_HISTORY_EMBEDDINGS_SUGGESTION_3" desc="On the history page, the text inside of a suggestion chip that a user can click to update their search to show results from last 30 days" translateable="false">
+  <message name="IDS_HISTORY_EMBEDDINGS_SUGGESTION_3" desc="On the history page, the text inside of a suggestion chip that a user can click to update their search to show results from last 30 days">
     Last 30 days
   </message>
-  <message name="IDS_HISTORY_EMBEDDINGS_SUGGESTION_1_ARIA_LABEL" desc="On the history page, the accessibility label for a suggestion chip that a user can click to update their search to show results from yesterday" translateable="false">
+  <message name="IDS_HISTORY_EMBEDDINGS_SUGGESTION_1_ARIA_LABEL" desc="On the history page, the accessibility label for a suggestion chip that a user can click to update their search to show results from yesterday">
     Show results from yesterday
   </message>
-  <message name="IDS_HISTORY_EMBEDDINGS_SUGGESTION_2_ARIA_LABEL" desc="On the history page, the accessibility label for a suggestion chip that a user can click to update their search to show results from last 7 days" translateable="false">
+  <message name="IDS_HISTORY_EMBEDDINGS_SUGGESTION_2_ARIA_LABEL" desc="On the history page, the accessibility label for a suggestion chip that a user can click to update their search to show results from last 7 days">
     Show results from last 7 days
   </message>
-  <message name="IDS_HISTORY_EMBEDDINGS_SUGGESTION_3_ARIA_LABEL" desc="On the history page, the accessibility label for a suggestion chip that a user can click to update their search to show results from last 30 days" translateable="false">
+  <message name="IDS_HISTORY_EMBEDDINGS_SUGGESTION_3_ARIA_LABEL" desc="On the history page, the accessibility label for a suggestion chip that a user can click to update their search to show results from last 30 days">
     Show results from last 30 days
   </message>
-  <message name="IDS_HISTORY_EMBEDDINGS_HEADING" desc="Heading for history embeddings results." translateable="false">
-    Results for "<ph name="SEARCH_QUERY"><ex>pizza</ex>$1</ph>"
+  <message name="IDS_HISTORY_EMBEDDINGS_HEADING" desc="Heading for history search results powered by AI showing the best matches for a search query.">
+    Best matches for "<ph name="SEARCH_QUERY"><ex>pizza</ex>$1</ph>"
   </message>
-  <message name="IDS_HISTORY_EMBEDDINGS_HEADING_LOADING" desc="Heading for history embeddings results while loading." translateable="false">
+  <message name="IDS_HISTORY_EMBEDDINGS_HEADING_LOADING" desc="Heading for history search results powered by AI while loading.">
     Searching for "<ph name="SEARCH_QUERY"><ex>pizza</ex>$1</ph>"
   </message>
-  <message name="IDS_HISTORY_EMBEDDINGS_FOOTER" desc="Footer text for history embeddings." translateable="false">
-    Some text explaining the feature.
+  <message name="IDS_HISTORY_EMBEDDINGS_FOOTER" desc="Footer text for history search results powered by AI.">
+    This is an experimental feature and won’t always get it right.
   </message>
-  <message name="IDS_HISTORY_EMBEDDINGS_THUMBS_UP" desc="Alternative text to the thumbs up icon under history embeddings results." translateable="false">
-    Thumbs up
-  </message>
-  <message name="IDS_HISTORY_EMBEDDINGS_THUMBS_DOWN" desc="Alternative text to the thumbs up icon under history embeddings results." translateable="false">
-    Thumbs down
-  </message>
-  <message name="IDS_HISTORY_EMBEDDINGS_FEEDBACK_PLACEHOLDER" desc="Placeholder text in feedback from for history search" translateable="false">
-    Send feedback for history search
+  <message name="IDS_HISTORY_EMBEDDINGS_FEEDBACK_PLACEHOLDER" desc="Placeholder text in feedback from for history search">
+    Send feedback for history search powered by AI
   </message>
 
   <!-- For Product Specifications -->

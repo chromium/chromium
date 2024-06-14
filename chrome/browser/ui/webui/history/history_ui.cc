@@ -197,8 +197,8 @@ content::WebUIDataSource* CreateAndAddHistoryUIHTMLSource(Profile* profile) {
        IDS_HISTORY_EMBEDDINGS_HEADING_LOADING},
       {"historyEmbeddingsFooter", IDS_HISTORY_EMBEDDINGS_FOOTER},
       {"learnMore", IDS_LEARN_MORE},
-      {"thumbsUp", IDS_HISTORY_EMBEDDINGS_THUMBS_UP},
-      {"thumbsDown", IDS_HISTORY_EMBEDDINGS_THUMBS_DOWN},
+      {"thumbsUp", IDS_THUMBS_UP_RESULTS_A11Y_LABEL},
+      {"thumbsDown", IDS_THUMBS_DOWN_OPENS_FEEDBACK_FORM_A11Y_LABEL},
   };
   source->AddLocalizedStrings(kHistoryEmbeddingsStrings);
   source->AddString("historyEmbeddingsPromoBody",
