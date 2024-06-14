@@ -135,22 +135,12 @@ class ASH_EXPORT LoginUnlockThroughputRecorder : public LoginState::Observer {
   // This is called when the list of shelf icons is updated.
   void UpdateShelfIconList(const ShelfModel* model);
 
-  // This is called when ARC++ becomes enabled.
-  void OnArcOptedIn();
-
-  // This is called when list of ARC++ apps is updated.
-  void OnArcAppListReady();
-
   // This is called when cryptohome was successfully created/unlocked.
   void OnAuthSuccess();
 
   // This is called when ash-chrome is restarted (i.e. on start up procedure
   // of restoring).
   void OnAshRestart();
-
-  // This is true if we need to report Ash.ArcAppInitialAppsInstallDuration
-  // histogram in this session but it has not been reported yet.
-  bool NeedReportArcAppListReady() const;
 
   void ResetScopedThroughputReporterBlockerForTesting();
 
@@ -231,13 +221,9 @@ class ASH_EXPORT LoginUnlockThroughputRecorder : public LoginState::Observer {
 
   bool shelf_animation_finished_ = false;
 
-  bool arc_app_list_ready_reported_ = false;
-
   bool login_animation_throughput_received_ = false;
 
   bool login_finished_reported_ = false;
-
-  std::optional<base::TimeTicks> arc_opt_in_time_;
 
   base::WeakPtr<ui::TotalAnimationThroughputReporter>
       login_animation_throughput_reporter_;

@@ -21,7 +21,6 @@
 #include "ash/constants/ash_features.h"
 #include "ash/constants/ash_pref_names.h"
 #include "ash/constants/ash_switches.h"
-#include "ash/metrics/login_unlock_throughput_recorder.h"
 #include "ash/shell.h"
 #include "base/check.h"
 #include "base/containers/contains.h"
@@ -47,6 +46,7 @@
 #include "chrome/browser/ash/app_list/arc/arc_pai_starter.h"
 #include "chrome/browser/ash/arc/arc_util.h"
 #include "chrome/browser/ash/arc/policy/arc_policy_util.h"
+#include "chrome/browser/ash/arc/session/arc_initial_optin_metrics_recorder.h"
 #include "chrome/browser/ash/arc/session/arc_session_manager.h"
 #include "chrome/browser/ash/login/demo_mode/demo_session.h"
 #include "chrome/browser/ash/login/session/user_session_manager.h"
@@ -393,12 +393,6 @@ void MaybeRemoveDeprecatedPackagePrefs(arc::ArcAppScopedPrefUpdate&& update) {
   update.Get().Remove(kDeprecatePackagePrefsSystem);
 }
 
-ash::LoginUnlockThroughputRecorder* GetLoginRecorder() {
-  return ash::Shell::HasInstance()
-             ? ash::Shell::Get()->login_unlock_throughput_recorder()
-             : nullptr;
-}
-
 // Validate |locale_tag| based on IETF BCP 47 language tag.
 bool IsLocaleTagValid(const std::string& locale_tag) {
   UErrorCode error = U_ZERO_ERROR;
@@ -437,9 +431,10 @@ void OnArcAppListRefreshed(Profile* profile) {
   if (!arc::IsArcPlayStoreEnabledForProfile(profile))
     return;
 
-  ash::LoginUnlockThroughputRecorder* throughput_recorder = GetLoginRecorder();
-  if (!throughput_recorder || !throughput_recorder->NeedReportArcAppListReady())
+  if (!arc::ArcInitialOptInMetricsRecorder::GetForProfile(profile)
+           ->NeedReportArcAppListReady()) {
     return;
+  }
 
   DCHECK_EQ(ProfileManager::GetPrimaryUserProfile(), profile);
   auto* prefs = ArcAppListPrefs::Get(profile);
@@ -462,8 +457,10 @@ void OnArcAppListRefreshed(Profile* profile) {
       ++error;
     }
   }
-  if (ready + error >= launchable)
-    throughput_recorder->OnArcAppListReady();
+  if (ready + error >= launchable) {
+    arc::ArcInitialOptInMetricsRecorder::GetForProfile(profile)
+        ->OnArcAppListReady();
+  }
 }
 }  // namespace
 

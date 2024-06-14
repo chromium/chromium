@@ -25,7 +25,6 @@
 #include "base/debug/stack_trace.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
-#include "base/metrics/histogram_functions.h"
 #include "base/ranges/algorithm.h"
 #include "base/trace_event/trace_event.h"
 #include "chromeos/ash/components/login/login_state/login_state.h"
@@ -384,32 +383,6 @@ void LoginUnlockThroughputRecorder::OnCompositorAnimationFinished(
 
   login_animation_throughput_received_ = true;
   MaybeReportLoginFinished();
-}
-
-void LoginUnlockThroughputRecorder::OnArcOptedIn() {
-  arc_opt_in_time_ = base::TimeTicks::Now();
-}
-
-void LoginUnlockThroughputRecorder::OnArcAppListReady() {
-  if (arc_app_list_ready_reported_)
-    return;
-
-  // |Ash.ArcAppInitialAppsInstallDuration| histogram is only reported for
-  // the first user session after they opted into the ARC++.
-  // |arc_opt_in_time_| will only have value if user opted in into the ARC++
-  // in this session (in this browser instance).
-  if (arc_opt_in_time_.has_value()) {
-    const auto duration = base::TimeTicks::Now() - arc_opt_in_time_.value();
-    UmaHistogramCustomTimes("Ash.ArcAppInitialAppsInstallDuration", duration,
-                            base::Seconds(1) /* min */,
-                            base::Hours(1) /* max */, 100 /* buckets */);
-  }
-
-  arc_app_list_ready_reported_ = true;
-}
-
-bool LoginUnlockThroughputRecorder::NeedReportArcAppListReady() const {
-  return arc_opt_in_time_.has_value() && !arc_app_list_ready_reported_;
 }
 
 void LoginUnlockThroughputRecorder::ScheduleWaitForShelfAnimationEndIfNeeded() {
