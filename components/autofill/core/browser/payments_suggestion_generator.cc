@@ -273,14 +273,13 @@ Suggestion CreateManagePaymentMethodsEntry(SuggestionType suggestion_type,
 
 }  // namespace
 
-PaymentsSuggestionGenerator::PaymentsSuggestionGenerator(
-    const AutofillClient& autofill_client)
-    : autofill_client_(autofill_client) {}
+PaymentsSuggestionGenerator::PaymentsSuggestionGenerator() = default;
 
 PaymentsSuggestionGenerator::~PaymentsSuggestionGenerator() = default;
 
 std::vector<Suggestion>
 PaymentsSuggestionGenerator::GetSuggestionsForCreditCards(
+    const AutofillClient& client,
     const FormFieldData& trigger_field,
     FieldType trigger_field_type,
     AutofillSuggestionTriggerSource trigger_source,
@@ -292,11 +291,11 @@ PaymentsSuggestionGenerator::GetSuggestionsForCreditCards(
       GroupTypeOfFieldType(trigger_field_type) != FieldTypeGroup::kCreditCard;
 
   std::map<std::string, AutofillOfferData*> card_linked_offers_map =
-      GetCardLinkedOffers(*autofill_client_);
+      GetCardLinkedOffers(client);
   summary.with_offer = !card_linked_offers_map.empty();
 
   std::vector<CreditCard> cards_to_suggest = GetOrderedCardsToSuggest(
-      *autofill_client_, trigger_field, trigger_field_type,
+      client, trigger_field, trigger_field_type,
       /*suppress_disused_cards=*/
       SanitizeCreditCardFieldValue(trigger_field.value()).empty() &&
           trigger_source !=
@@ -322,7 +321,7 @@ PaymentsSuggestionGenerator::GetSuggestionsForCreditCards(
       base::FeatureList::IsEnabled(
           features::kAutofillForUnclassifiedFieldsAvailable)) {
     return GetSuggestionsForCreditCards(
-        trigger_field, UNKNOWN_TYPE, trigger_source,
+        client, trigger_field, UNKNOWN_TYPE, trigger_source,
         should_show_scan_credit_card, should_show_cards_from_account, summary);
   }
 
@@ -331,7 +330,7 @@ PaymentsSuggestionGenerator::GetSuggestionsForCreditCards(
   std::vector<Suggestion> suggestions;
   for (const CreditCard& credit_card : cards_to_suggest) {
     suggestions.push_back(CreateCreditCardSuggestion(
-        credit_card, *autofill_client_, trigger_field_type,
+        credit_card, client, trigger_field_type,
         credit_card.record_type() == CreditCard::RecordType::kVirtualCard,
         base::Contains(card_linked_offers_map, credit_card.guid()),
         summary.metadata_logging_context));
@@ -354,6 +353,7 @@ PaymentsSuggestionGenerator::GetSuggestionsForCreditCards(
 
 std::vector<Suggestion>
 PaymentsSuggestionGenerator::GetSuggestionsForVirtualCardStandaloneCvc(
+    const AutofillClient& client,
     const FormFieldData& trigger_field,
     autofill_metrics::CardMetadataLoggingContext& metadata_logging_context,
     base::flat_map<std::string, VirtualCardUsageData::VirtualCardLastFour>&
@@ -362,7 +362,7 @@ PaymentsSuggestionGenerator::GetSuggestionsForVirtualCardStandaloneCvc(
   // duplicate logic to helper functions.
   std::vector<Suggestion> suggestions;
   std::vector<CreditCard> cards_to_suggest = GetOrderedCardsToSuggest(
-      *autofill_client_, trigger_field, CREDIT_CARD_VERIFICATION_CODE,
+      client, trigger_field, CREDIT_CARD_VERIFICATION_CODE,
       /*suppress_disused_cards=*/true, /*prefix_match=*/false,
       /*include_virtual_cards=*/false);
   metadata_logging_context =
@@ -381,10 +381,9 @@ PaymentsSuggestionGenerator::GetSuggestionsForVirtualCardStandaloneCvc(
     suggestion.payload = Suggestion::Guid(credit_card.guid());
     suggestion.feature_for_iph =
         &feature_engagement::kIPHAutofillVirtualCardCVCSuggestionFeature;
-    SetCardArtURL(
-        suggestion, credit_card,
-        autofill_client_->GetPersonalDataManager()->payments_data_manager(),
-        /*virtual_card_option=*/true);
+    SetCardArtURL(suggestion, credit_card,
+                  client.GetPersonalDataManager()->payments_data_manager(),
+                  /*virtual_card_option=*/true);
     // TODO(crbug.com/41483863): Create translation string for standalone CVC
     // suggestion which includes spacing.
     const std::u16string main_text =
@@ -422,13 +421,14 @@ PaymentsSuggestionGenerator::GetSuggestionsForVirtualCardStandaloneCvc(
 
 std::vector<CreditCard>
 PaymentsSuggestionGenerator::GetTouchToFillCardsToSuggest(
+    const AutofillClient& client,
     const FormFieldData& trigger_field,
     FieldType trigger_field_type) {
   // TouchToFill actually has a trigger field which must be classified in some
   // way, but we intentionally fetch suggestions irrelevant of them.
   std::vector<CreditCard> cards_to_suggest =
       PaymentsSuggestionGenerator::GetOrderedCardsToSuggest(
-          *autofill_client_, trigger_field, trigger_field_type,
+          client, trigger_field, trigger_field_type,
           /*suppress_disused_cards=*/true, /*prefix_match=*/false,
           /*include_virtual_cards=*/true);
   return base::ranges::any_of(cards_to_suggest,

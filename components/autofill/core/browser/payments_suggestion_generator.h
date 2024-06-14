@@ -47,7 +47,7 @@ class PaymentsSuggestionGenerator {
     // Contains card metadata related information used for metrics logging.
     autofill_metrics::CardMetadataLoggingContext metadata_logging_context;
   };
-  explicit PaymentsSuggestionGenerator(const AutofillClient& autofill_client);
+  PaymentsSuggestionGenerator();
   ~PaymentsSuggestionGenerator();
   PaymentsSuggestionGenerator(const PaymentsSuggestionGenerator&) = delete;
   PaymentsSuggestionGenerator& operator=(const PaymentsSuggestionGenerator&) =
@@ -57,6 +57,7 @@ class PaymentsSuggestionGenerator {
   // `trigger_field_type`, `trigger_field` and `trigger_source`.
   // `summary` contains metadata about the returned suggestions.
   std::vector<Suggestion> GetSuggestionsForCreditCards(
+      const AutofillClient& client,
       const FormFieldData& trigger_field,
       FieldType trigger_field_type,
       AutofillSuggestionTriggerSource trigger_source,
@@ -68,6 +69,7 @@ class PaymentsSuggestionGenerator {
   // virtual cards that are saved on file to a merchant. In these cases,
   // we only display the virtual card option and do not show FPAN option.
   std::vector<Suggestion> GetSuggestionsForVirtualCardStandaloneCvc(
+      const AutofillClient& client,
       const FormFieldData& trigger_field,
       autofill_metrics::CardMetadataLoggingContext& metadata_logging_context,
       base::flat_map<std::string, VirtualCardUsageData::VirtualCardLastFour>&
@@ -75,6 +77,7 @@ class PaymentsSuggestionGenerator {
 
   // Returns the credit cards to be shown in touch to fill suggestions.
   std::vector<CreditCard> GetTouchToFillCardsToSuggest(
+      const AutofillClient& client,
       const FormFieldData& trigger_field,
       FieldType trigger_field_type);
 
@@ -235,10 +238,6 @@ class PaymentsSuggestionGenerator {
   // `card`, false otherwise.
   bool ShouldShowVirtualCardOptionForServerCard(const CreditCard& card,
                                                 const AutofillClient& client);
-
-  // autofill_client_ and the generator are both one per tab, and have the same
-  // lifecycle.
-  const raw_ref<const AutofillClient> autofill_client_;
 };
 
 }  // namespace autofill

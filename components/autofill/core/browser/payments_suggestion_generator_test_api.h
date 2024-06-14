@@ -21,41 +21,41 @@ class PaymentsSuggestionGeneratorTestApi {
       : suggestion_generator_(suggestion_generator) {}
 
   std::vector<CreditCard> GetOrderedCardsToSuggest(
+      const AutofillClient& client,
       const FormFieldData& trigger_field,
       FieldType trigger_field_type,
       bool suppress_disused_cards,
       bool prefix_match,
       bool include_virtual_cards) {
     return suggestion_generator_->GetOrderedCardsToSuggest(
-        *suggestion_generator_->autofill_client_, trigger_field,
-        trigger_field_type, suppress_disused_cards, prefix_match,
-        include_virtual_cards);
+        client, trigger_field, trigger_field_type, suppress_disused_cards,
+        prefix_match, include_virtual_cards);
   }
 
   Suggestion CreateCreditCardSuggestion(
       const CreditCard& credit_card,
+      const AutofillClient& client,
       FieldType trigger_field_type,
       bool virtual_card_option,
       bool card_linked_offer_available,
       url::Origin origin = url::Origin()) const {
     autofill_metrics::CardMetadataLoggingContext metadata_logging_context;
     return suggestion_generator_->CreateCreditCardSuggestion(
-        credit_card, *suggestion_generator_->autofill_client_,
-        trigger_field_type, virtual_card_option, card_linked_offer_available,
-        metadata_logging_context);
+        credit_card, client, trigger_field_type, virtual_card_option,
+        card_linked_offer_available, metadata_logging_context);
   }
 
   Suggestion CreateCreditCardSuggestionWithMetadataContext(
       const CreditCard& credit_card,
+      const AutofillClient& client,
       FieldType trigger_field_type,
       bool virtual_card_option,
       bool card_linked_offer_available,
       autofill_metrics::CardMetadataLoggingContext& metadata_logging_context,
       url::Origin origin = url::Origin()) const {
     return suggestion_generator_->CreateCreditCardSuggestion(
-        credit_card, *suggestion_generator_->autofill_client_,
-        trigger_field_type, virtual_card_option, card_linked_offer_available,
-        metadata_logging_context);
+        credit_card, client, trigger_field_type, virtual_card_option,
+        card_linked_offer_available, metadata_logging_context);
   }
 
   // TODO(b/326950201): Remove and use GetOrderedCardsToSuggest instead.

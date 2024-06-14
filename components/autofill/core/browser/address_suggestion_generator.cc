@@ -763,13 +763,12 @@ std::optional<Suggestion> GetSuggestionForTestAddresses(
 
 }  // namespace
 
-AddressSuggestionGenerator::AddressSuggestionGenerator(
-    const AutofillClient& autofill_client)
-    : autofill_client_(autofill_client) {}
+AddressSuggestionGenerator::AddressSuggestionGenerator() = default;
 
 AddressSuggestionGenerator::~AddressSuggestionGenerator() = default;
 
 std::vector<Suggestion> AddressSuggestionGenerator::GetSuggestionsForProfiles(
+    const AutofillClient& client,
     const FieldTypeSet& field_types,
     const FormFieldData& trigger_field,
     FieldType trigger_field_type,
@@ -777,7 +776,7 @@ std::vector<Suggestion> AddressSuggestionGenerator::GetSuggestionsForProfiles(
     AutofillSuggestionTriggerSource trigger_source) {
   std::vector<raw_ptr<const AutofillProfile, VectorExperimental>>
       profiles_to_suggest = GetProfilesToSuggest(
-          autofill_client_->GetPersonalDataManager()->address_data_manager(),
+          client.GetPersonalDataManager()->address_data_manager(),
           trigger_field_type, trigger_field.value(),
           trigger_field.is_autofilled(), field_types,
           GetProfilesToSuggestOptions(trigger_field_type, trigger_field.value(),
@@ -798,26 +797,23 @@ std::vector<Suggestion> AddressSuggestionGenerator::GetSuggestionsForProfiles(
           AutofillSuggestionTriggerSource::kManualFallbackAddress &&
       base::FeatureList::IsEnabled(
           features::kAutofillForUnclassifiedFieldsAvailable)) {
-    return GetSuggestionsForProfiles({UNKNOWN_TYPE}, trigger_field,
+    return GetSuggestionsForProfiles(client, {UNKNOWN_TYPE}, trigger_field,
                                      UNKNOWN_TYPE, suggestion_type,
                                      trigger_source);
   }
   std::vector<Suggestion> suggestions = CreateSuggestionsFromProfiles(
       profiles_to_suggest, field_types, suggestion_type, trigger_field_type,
-      trigger_field.max_length(), autofill_client_->IsOffTheRecord(),
-      autofill_client_->GetPersonalDataManager()
-          ->address_data_manager()
-          .app_locale());
+      trigger_field.max_length(), client.IsOffTheRecord(),
+      client.GetPersonalDataManager()->address_data_manager().app_locale());
 
   // Add devtools test addresses suggestion if it exists. A suggestion will
   // exist if devtools is open and therefore test addresses were set.
   if (IsAddressType(trigger_field_type)) {
     if (std::optional<Suggestion> test_addresses_suggestion =
-            GetSuggestionForTestAddresses(
-                autofill_client_->GetTestAddresses(),
-                autofill_client_->GetPersonalDataManager()
-                    ->address_data_manager()
-                    .app_locale())) {
+            GetSuggestionForTestAddresses(client.GetTestAddresses(),
+                                          client.GetPersonalDataManager()
+                                              ->address_data_manager()
+                                              .app_locale())) {
       suggestions.insert(suggestions.begin(),
                          std::move(*test_addresses_suggestion));
     }

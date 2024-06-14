@@ -178,8 +178,7 @@ class PaymentsSuggestionGeneratorTest : public testing::Test {
     autofill_client_.SetPrefs(test::PrefServiceForTesting());
     payments_data().SetPrefService(autofill_client_.GetPrefs());
     payments_data().SetSyncServiceForTest(&sync_service_);
-    suggestion_generator_ =
-        std::make_unique<PaymentsSuggestionGenerator>(autofill_client_);
+    suggestion_generator_ = std::make_unique<PaymentsSuggestionGenerator>();
     autofill_client_.set_autofill_offer_manager(
         std::make_unique<AutofillOfferManager>(
             autofill_client_.GetPersonalDataManager(),
@@ -359,7 +358,7 @@ class AutofillCreditCardBenefitsLabelTest
     autofill_metrics::CardMetadataLoggingContext metadata_logging_context;
     test_api(suggestion_generator())
         .CreateCreditCardSuggestionWithMetadataContext(
-            card(), CREDIT_CARD_NUMBER,
+            card(), *autofill_client(), CREDIT_CARD_NUMBER,
             /*virtual_card_option=*/false,
             /*card_linked_offer_available=*/false, metadata_logging_context);
 
@@ -389,7 +388,8 @@ INSTANTIATE_TEST_SUITE_P(
 TEST_P(AutofillCreditCardBenefitsLabelTest, BenefitSuggestionLabel_Fpan) {
   EXPECT_THAT(
       test_api(suggestion_generator())
-          .CreateCreditCardSuggestion(card(), CREDIT_CARD_NUMBER,
+          .CreateCreditCardSuggestion(card(), *autofill_client(),
+                                      CREDIT_CARD_NUMBER,
                                       /*virtual_card_option=*/false,
                                       /*card_linked_offer_available=*/false)
           .labels,
@@ -404,26 +404,26 @@ TEST_P(AutofillCreditCardBenefitsLabelTest, BenefitSuggestionLabel_Fpan) {
 // FPAN suggestions with benefits labels.
 TEST_P(AutofillCreditCardBenefitsLabelTest,
        BenefitSuggestionFeatureForIph_Fpan) {
-  EXPECT_EQ(
-      test_api(suggestion_generator())
-          .CreateCreditCardSuggestion(card(), CREDIT_CARD_NUMBER,
-                                      /*virtual_card_option=*/false,
-                                      /*card_linked_offer_available=*/false)
-          .feature_for_iph,
-      &feature_engagement::kIPHAutofillCreditCardBenefitFeature);
+  EXPECT_EQ(test_api(suggestion_generator())
+                .CreateCreditCardSuggestion(
+                    card(), *autofill_client(), CREDIT_CARD_NUMBER,
+                    /*virtual_card_option=*/false,
+                    /*card_linked_offer_available=*/false)
+                .feature_for_iph,
+            &feature_engagement::kIPHAutofillCreditCardBenefitFeature);
 }
 
 // Checks that feature_for_iph is set to display the virtual card IPH for
 // virtual card suggestions with benefits labels.
 TEST_P(AutofillCreditCardBenefitsLabelTest,
        BenefitSuggestionFeatureForIph_VirtualCard) {
-  EXPECT_EQ(
-      test_api(suggestion_generator())
-          .CreateCreditCardSuggestion(card(), CREDIT_CARD_NUMBER,
-                                      /*virtual_card_option=*/true,
-                                      /*card_linked_offer_available=*/false)
-          .feature_for_iph,
-      &feature_engagement::kIPHAutofillVirtualCardSuggestionFeature);
+  EXPECT_EQ(test_api(suggestion_generator())
+                .CreateCreditCardSuggestion(
+                    card(), *autofill_client(), CREDIT_CARD_NUMBER,
+                    /*virtual_card_option=*/true,
+                    /*card_linked_offer_available=*/false)
+                .feature_for_iph,
+            &feature_engagement::kIPHAutofillVirtualCardSuggestionFeature);
 }
 
 // Checks that for virtual cards suggestion the benefit description is shown
@@ -432,7 +432,8 @@ TEST_P(AutofillCreditCardBenefitsLabelTest,
        BenefitSuggestionLabel_VirtualCard) {
   EXPECT_THAT(
       test_api(suggestion_generator())
-          .CreateCreditCardSuggestion(card(), CREDIT_CARD_NUMBER,
+          .CreateCreditCardSuggestion(card(), *autofill_client(),
+                                      CREDIT_CARD_NUMBER,
                                       /*virtual_card_option=*/true,
                                       /*card_linked_offer_available=*/false)
           .labels,
@@ -476,7 +477,8 @@ TEST_P(AutofillCreditCardBenefitsLabelTest,
   // Merchant benefit description is not returned.
   EXPECT_THAT(
       test_api(suggestion_generator())
-          .CreateCreditCardSuggestion(card(), CREDIT_CARD_NUMBER,
+          .CreateCreditCardSuggestion(card(), *autofill_client(),
+                                      CREDIT_CARD_NUMBER,
                                       /*virtual_card_option=*/false,
                                       /*card_linked_offer_available=*/false)
           .labels,
@@ -503,7 +505,8 @@ TEST_P(AutofillCreditCardBenefitsLabelTest,
   // Category benefit description is not returned.
   EXPECT_THAT(
       test_api(suggestion_generator())
-          .CreateCreditCardSuggestion(card(), CREDIT_CARD_NUMBER,
+          .CreateCreditCardSuggestion(card(), *autofill_client(),
+                                      CREDIT_CARD_NUMBER,
                                       /*virtual_card_option=*/false,
                                       /*card_linked_offer_available=*/false)
           .labels,
@@ -524,7 +527,8 @@ TEST_P(AutofillCreditCardBenefitsLabelTest,
   // Benefit description is not returned.
   EXPECT_THAT(
       test_api(suggestion_generator())
-          .CreateCreditCardSuggestion(card(), CREDIT_CARD_NUMBER,
+          .CreateCreditCardSuggestion(card(), *autofill_client(),
+                                      CREDIT_CARD_NUMBER,
                                       /*virtual_card_option=*/false,
                                       /*card_linked_offer_available=*/false)
           .labels,
@@ -553,7 +557,7 @@ TEST_F(PaymentsSuggestionGeneratorTest,
   PaymentsSuggestionGenerator::CreditCardSuggestionSummary summary;
   std::vector<Suggestion> suggestions =
       suggestion_generator().GetSuggestionsForCreditCards(
-          FormFieldData(), CREDIT_CARD_NAME_FULL,
+          *autofill_client(), FormFieldData(), CREDIT_CARD_NAME_FULL,
           AutofillSuggestionTriggerSource::kManualFallbackPayments,
           /*should_show_scan_credit_card=*/false,
           /*should_show_cards_from_account=*/false, summary);
@@ -568,7 +572,7 @@ TEST_F(PaymentsSuggestionGeneratorTest,
               ContainsCreditCardFooterSuggestions(/*with_gpay_logo=*/false));
 
   suggestions = suggestion_generator().GetSuggestionsForCreditCards(
-      FormFieldData(), CREDIT_CARD_VERIFICATION_CODE,
+      *autofill_client(), FormFieldData(), CREDIT_CARD_VERIFICATION_CODE,
       AutofillSuggestionTriggerSource::kManualFallbackPayments,
       /*should_show_scan_credit_card=*/false,
       /*should_show_cards_from_account=*/false, summary);
@@ -612,7 +616,8 @@ TEST_F(PaymentsSuggestionGeneratorTest,
   std::vector<CreditCard> cards_to_suggest =
       test_api(suggestion_generator())
           .GetOrderedCardsToSuggest(
-              FormFieldData(), UNKNOWN_TYPE, /*suppress_disused_cards=*/true,
+              *autofill_client(), FormFieldData(), UNKNOWN_TYPE,
+              /*suppress_disused_cards=*/true,
               /*prefix_match=*/false, /*include_virtual_cards=*/false);
 
   // Expect that only the last card (disused, expired and local) is removed.
@@ -642,7 +647,7 @@ TEST_F(PaymentsSuggestionGeneratorTest,
     FormFieldData field;
     field.set_value(std::move(field_value));
     return test_api(suggestion_generator())
-        .GetOrderedCardsToSuggest(field, CREDIT_CARD_NUMBER,
+        .GetOrderedCardsToSuggest(*autofill_client(), field, CREDIT_CARD_NUMBER,
                                   /*suppress_disused_cards=*/false,
                                   /*prefix_match=*/true,
                                   /*include_virtual_cards=*/false);
@@ -675,7 +680,8 @@ TEST_F(PaymentsSuggestionGeneratorTest,
     FormFieldData field;
     field.set_value(std::move(field_value));
     return test_api(suggestion_generator())
-        .GetOrderedCardsToSuggest(field, CREDIT_CARD_VERIFICATION_CODE,
+        .GetOrderedCardsToSuggest(*autofill_client(), field,
+                                  CREDIT_CARD_VERIFICATION_CODE,
                                   /*suppress_disused_cards=*/false,
                                   /*prefix_match=*/true,
                                   /*include_virtual_cards=*/false);
@@ -698,7 +704,7 @@ TEST_F(PaymentsSuggestionGeneratorTest,
   PaymentsSuggestionGenerator::CreditCardSuggestionSummary summary;
   std::vector<Suggestion> suggestions =
       suggestion_generator().GetSuggestionsForCreditCards(
-          FormFieldData(), UNKNOWN_TYPE,
+          *autofill_client(), FormFieldData(), UNKNOWN_TYPE,
           AutofillSuggestionTriggerSource::kManualFallbackPayments,
           /*should_show_scan_credit_card=*/false,
           /*should_show_cards_from_account=*/false, summary);
@@ -757,7 +763,8 @@ TEST_F(PaymentsSuggestionGeneratorTest,
   PaymentsSuggestionGenerator::CreditCardSuggestionSummary summary;
   std::vector<Suggestion> suggestions =
       suggestion_generator().GetSuggestionsForCreditCards(
-          FormFieldData(), CREDIT_CARD_NUMBER, kDefaultTriggerSource,
+          *autofill_client(), FormFieldData(), CREDIT_CARD_NUMBER,
+          kDefaultTriggerSource,
           /*should_show_scan_credit_card=*/false,
           /*should_show_cards_from_account=*/false, summary);
 
@@ -793,7 +800,7 @@ TEST_F(PaymentsSuggestionGeneratorTest,
   autofill_metrics::CardMetadataLoggingContext metadata_logging_context;
   std::vector<Suggestion> suggestions =
       suggestion_generator().GetSuggestionsForVirtualCardStandaloneCvc(
-          FormFieldData(), metadata_logging_context,
+          *autofill_client(), FormFieldData(), metadata_logging_context,
           virtual_card_guid_to_last_four_map);
 
   ASSERT_EQ(suggestions.size(), 3U);
@@ -816,7 +823,8 @@ TEST_F(PaymentsSuggestionGeneratorTest,
   field.set_is_autofilled(true);
   std::vector<Suggestion> suggestions =
       suggestion_generator().GetSuggestionsForVirtualCardStandaloneCvc(
-          field, metadata_logging_context, virtual_card_guid_to_last_four_map);
+          *autofill_client(), field, metadata_logging_context,
+          virtual_card_guid_to_last_four_map);
 
   EXPECT_THAT(
       suggestions,
@@ -836,7 +844,8 @@ TEST_F(PaymentsSuggestionGeneratorTest, GetCardSuggestionsWithCvc) {
   PaymentsSuggestionGenerator::CreditCardSuggestionSummary summary;
   std::vector<Suggestion> suggestions =
       suggestion_generator().GetSuggestionsForCreditCards(
-          FormFieldData(), CREDIT_CARD_NUMBER, kDefaultTriggerSource,
+          *autofill_client(), FormFieldData(), CREDIT_CARD_NUMBER,
+          kDefaultTriggerSource,
           /*should_show_scan_credit_card=*/false,
           /*should_show_cards_from_account=*/false, summary);
 
@@ -861,7 +870,8 @@ TEST_F(PaymentsSuggestionGeneratorTest, ShouldDisplayGpayLogo) {
     PaymentsSuggestionGenerator::CreditCardSuggestionSummary summary;
     std::vector<Suggestion> suggestions =
         suggestion_generator().GetSuggestionsForCreditCards(
-            FormFieldData(), CREDIT_CARD_NUMBER, kDefaultTriggerSource,
+            *autofill_client(), FormFieldData(), CREDIT_CARD_NUMBER,
+            kDefaultTriggerSource,
             /*should_show_scan_credit_card=*/false,
             /*should_show_cards_from_account=*/false, summary);
 
@@ -887,7 +897,8 @@ TEST_F(PaymentsSuggestionGeneratorTest, ShouldDisplayGpayLogo) {
     PaymentsSuggestionGenerator::CreditCardSuggestionSummary summary;
     std::vector<Suggestion> suggestions =
         suggestion_generator().GetSuggestionsForCreditCards(
-            FormFieldData(), CREDIT_CARD_NUMBER, kDefaultTriggerSource,
+            *autofill_client(), FormFieldData(), CREDIT_CARD_NUMBER,
+            kDefaultTriggerSource,
             /*should_show_scan_credit_card=*/false,
             /*should_show_cards_from_account=*/false, summary);
 
@@ -915,7 +926,8 @@ TEST_F(PaymentsSuggestionGeneratorTest, ShouldDisplayGpayLogo) {
     PaymentsSuggestionGenerator::CreditCardSuggestionSummary summary;
     std::vector<Suggestion> suggestions =
         suggestion_generator().GetSuggestionsForCreditCards(
-            FormFieldData(), CREDIT_CARD_NUMBER, kDefaultTriggerSource,
+            *autofill_client(), FormFieldData(), CREDIT_CARD_NUMBER,
+            kDefaultTriggerSource,
             /*should_show_scan_credit_card=*/false,
             /*should_show_cards_from_account=*/false, summary);
 
@@ -931,7 +943,7 @@ TEST_F(PaymentsSuggestionGeneratorTest, NoSuggestionsWhenNoUserData) {
   PaymentsSuggestionGenerator::CreditCardSuggestionSummary summary;
   std::vector<Suggestion> suggestions =
       suggestion_generator().GetSuggestionsForCreditCards(
-          field, CREDIT_CARD_NUMBER, kDefaultTriggerSource,
+          *autofill_client(), field, CREDIT_CARD_NUMBER, kDefaultTriggerSource,
           /*should_show_scan_credit_card=*/true,
           /*should_show_cards_from_account=*/true, summary);
 
@@ -943,7 +955,8 @@ TEST_F(PaymentsSuggestionGeneratorTest, ShouldShowScanCreditCard) {
   PaymentsSuggestionGenerator::CreditCardSuggestionSummary summary;
   std::vector<Suggestion> suggestions =
       suggestion_generator().GetSuggestionsForCreditCards(
-          FormFieldData(), CREDIT_CARD_NUMBER, kDefaultTriggerSource,
+          *autofill_client(), FormFieldData(), CREDIT_CARD_NUMBER,
+          kDefaultTriggerSource,
           /*should_show_scan_credit_card=*/true,
           /*should_show_cards_from_account=*/false, summary);
 
@@ -964,7 +977,8 @@ TEST_F(PaymentsSuggestionGeneratorTest, ShouldShowCardsFromAccount) {
   PaymentsSuggestionGenerator::CreditCardSuggestionSummary summary;
   std::vector<Suggestion> suggestions =
       suggestion_generator().GetSuggestionsForCreditCards(
-          FormFieldData(), CREDIT_CARD_NUMBER, kDefaultTriggerSource,
+          *autofill_client(), FormFieldData(), CREDIT_CARD_NUMBER,
+          kDefaultTriggerSource,
           /*should_show_scan_credit_card=*/false,
           /*should_show_cards_from_account=*/true, summary);
 
@@ -989,7 +1003,7 @@ TEST_F(PaymentsSuggestionGeneratorTest,
   PaymentsSuggestionGenerator::CreditCardSuggestionSummary summary;
   std::vector<Suggestion> suggestions =
       suggestion_generator().GetSuggestionsForCreditCards(
-          field, CREDIT_CARD_NUMBER, kDefaultTriggerSource,
+          *autofill_client(), field, CREDIT_CARD_NUMBER, kDefaultTriggerSource,
           /*should_show_scan_credit_card=*/false,
           /*should_show_cards_from_account=*/false, summary);
 
@@ -1424,7 +1438,8 @@ TEST_F(AutofillCreditCardSuggestionContentTest,
   // Name field suggestion for virtual cards.
   Suggestion virtual_card_name_field_suggestion =
       test_api(suggestion_generator())
-          .CreateCreditCardSuggestion(server_card, CREDIT_CARD_NAME_FULL,
+          .CreateCreditCardSuggestion(server_card, *autofill_client(),
+                                      CREDIT_CARD_NAME_FULL,
                                       /*virtual_card_option=*/true,
                                       /*card_linked_offer_available=*/false);
 
@@ -1488,7 +1503,8 @@ TEST_F(AutofillCreditCardSuggestionContentTest,
   // Card number field suggestion for virtual cards.
   Suggestion virtual_card_number_field_suggestion =
       test_api(suggestion_generator())
-          .CreateCreditCardSuggestion(server_card, CREDIT_CARD_NUMBER,
+          .CreateCreditCardSuggestion(server_card, *autofill_client(),
+                                      CREDIT_CARD_NUMBER,
                                       /*virtual_card_option=*/true,
                                       /*card_linked_offer_available=*/false);
 
@@ -1537,7 +1553,8 @@ TEST_F(AutofillCreditCardSuggestionContentTest,
   // Name field suggestion for non-virtual cards.
   Suggestion real_card_name_field_suggestion =
       test_api(suggestion_generator())
-          .CreateCreditCardSuggestion(server_card, CREDIT_CARD_NAME_FULL,
+          .CreateCreditCardSuggestion(server_card, *autofill_client(),
+                                      CREDIT_CARD_NAME_FULL,
                                       /*virtual_card_option=*/false,
                                       /*card_linked_offer_available=*/false);
 
@@ -1578,7 +1595,8 @@ TEST_F(AutofillCreditCardSuggestionContentTest,
   // Card number field suggestion for non-virtual cards.
   Suggestion real_card_number_field_suggestion =
       test_api(suggestion_generator())
-          .CreateCreditCardSuggestion(server_card, CREDIT_CARD_NUMBER,
+          .CreateCreditCardSuggestion(server_card, *autofill_client(),
+                                      CREDIT_CARD_NUMBER,
                                       /*virtual_card_option=*/false,
                                       /*card_linked_offer_available=*/false);
 
@@ -1616,7 +1634,8 @@ TEST_F(AutofillCreditCardSuggestionContentTest,
 
   Suggestion server_card_suggestion =
       test_api(suggestion_generator())
-          .CreateCreditCardSuggestion(server_card, UNKNOWN_TYPE,
+          .CreateCreditCardSuggestion(server_card, *autofill_client(),
+                                      UNKNOWN_TYPE,
                                       /*virtual_card_option=*/false,
                                       /*card_linked_offer_available=*/false);
 
@@ -1647,7 +1666,8 @@ TEST_F(AutofillCreditCardSuggestionContentTest,
 
   Suggestion enrolled_card_suggestion =
       test_api(suggestion_generator())
-          .CreateCreditCardSuggestion(enrolled_card, UNKNOWN_TYPE,
+          .CreateCreditCardSuggestion(enrolled_card, *autofill_client(),
+                                      UNKNOWN_TYPE,
                                       /*virtual_card_option=*/true,
                                       /*card_linked_offer_available=*/false);
 
@@ -1667,7 +1687,8 @@ TEST_F(AutofillCreditCardSuggestionContentTest,
 
   Suggestion enrolled_card_suggestion =
       test_api(suggestion_generator())
-          .CreateCreditCardSuggestion(enrolled_card, UNKNOWN_TYPE,
+          .CreateCreditCardSuggestion(enrolled_card, *autofill_client(),
+                                      UNKNOWN_TYPE,
                                       /*virtual_card_option=*/true,
                                       /*card_linked_offer_available=*/false);
 
@@ -1698,7 +1719,8 @@ TEST_F(
 
   Suggestion enrolled_card_suggestion =
       test_api(suggestion_generator())
-          .CreateCreditCardSuggestion(enrolled_card, UNKNOWN_TYPE,
+          .CreateCreditCardSuggestion(enrolled_card, *autofill_client(),
+                                      UNKNOWN_TYPE,
                                       /*virtual_card_option=*/true,
                                       /*card_linked_offer_available=*/false);
 
@@ -1713,7 +1735,8 @@ TEST_F(AutofillCreditCardSuggestionContentTest,
 
   Suggestion server_card_suggestion =
       test_api(suggestion_generator())
-          .CreateCreditCardSuggestion(server_card, UNKNOWN_TYPE,
+          .CreateCreditCardSuggestion(server_card, *autofill_client(),
+                                      UNKNOWN_TYPE,
                                       /*virtual_card_option=*/false,
                                       /*card_linked_offer_available=*/false);
 
@@ -1761,7 +1784,8 @@ TEST_F(
 
   Suggestion server_card_suggestion =
       test_api(suggestion_generator())
-          .CreateCreditCardSuggestion(credit_card, UNKNOWN_TYPE,
+          .CreateCreditCardSuggestion(credit_card, *autofill_client(),
+                                      UNKNOWN_TYPE,
                                       /*virtual_card_option=*/false,
                                       /*card_linked_offer_available=*/false);
 
@@ -1797,7 +1821,8 @@ TEST_F(
 
   Suggestion server_card_suggestion =
       test_api(suggestion_generator())
-          .CreateCreditCardSuggestion(credit_card, UNKNOWN_TYPE,
+          .CreateCreditCardSuggestion(credit_card, *autofill_client(),
+                                      UNKNOWN_TYPE,
                                       /*virtual_card_option=*/false,
                                       /*card_linked_offer_available=*/false);
 
@@ -1822,7 +1847,8 @@ TEST_F(AutofillCreditCardSuggestionContentTest,
 
   Suggestion server_card_suggestion =
       test_api(suggestion_generator())
-          .CreateCreditCardSuggestion(server_card, UNKNOWN_TYPE,
+          .CreateCreditCardSuggestion(server_card, *autofill_client(),
+                                      UNKNOWN_TYPE,
                                       /*virtual_card_option=*/false,
                                       /*card_linked_offer_available=*/false);
 
@@ -1858,7 +1884,7 @@ TEST_F(AutofillCreditCardSuggestionContentTest,
   PaymentsSuggestionGenerator::CreditCardSuggestionSummary summary;
   std::vector<Suggestion> suggestions =
       suggestion_generator().GetSuggestionsForCreditCards(
-          field_data, UNKNOWN_TYPE,
+          *autofill_client(), field_data, UNKNOWN_TYPE,
           AutofillSuggestionTriggerSource::kManualFallbackPayments,
           /*should_show_scan_credit_card=*/false,
           /*should_show_cards_from_account=*/false, summary);
@@ -1885,7 +1911,8 @@ TEST_F(AutofillCreditCardSuggestionContentTest,
   PaymentsSuggestionGenerator::CreditCardSuggestionSummary summary;
   const std::vector<Suggestion> suggestions =
       suggestion_generator().GetSuggestionsForCreditCards(
-          FormFieldData(), CREDIT_CARD_VERIFICATION_CODE, kDefaultTriggerSource,
+          *autofill_client(), FormFieldData(), CREDIT_CARD_VERIFICATION_CODE,
+          kDefaultTriggerSource,
           /*should_show_scan_credit_card=*/false,
           /*should_show_cards_from_account=*/false, summary);
 
@@ -1918,7 +1945,8 @@ TEST_F(AutofillCreditCardSuggestionContentTest,
   PaymentsSuggestionGenerator::CreditCardSuggestionSummary summary;
   const std::vector<Suggestion> suggestions =
       suggestion_generator().GetSuggestionsForCreditCards(
-          FormFieldData(), CREDIT_CARD_VERIFICATION_CODE, kDefaultTriggerSource,
+          *autofill_client(), FormFieldData(), CREDIT_CARD_VERIFICATION_CODE,
+          kDefaultTriggerSource,
           /*should_show_scan_credit_card=*/false,
           /*should_show_cards_from_account=*/false, summary);
 
@@ -1941,7 +1969,8 @@ TEST_F(AutofillCreditCardSuggestionContentTest,
   PaymentsSuggestionGenerator::CreditCardSuggestionSummary summary;
   const std::vector<Suggestion> suggestions =
       suggestion_generator().GetSuggestionsForCreditCards(
-          FormFieldData(), CREDIT_CARD_VERIFICATION_CODE, kDefaultTriggerSource,
+          *autofill_client(), FormFieldData(), CREDIT_CARD_VERIFICATION_CODE,
+          kDefaultTriggerSource,
           /*should_show_scan_credit_card=*/false,
           /*should_show_cards_from_account=*/false, summary);
 
@@ -1978,7 +2007,8 @@ TEST_F(AutofillCreditCardSuggestionContentTest,
   PaymentsSuggestionGenerator::CreditCardSuggestionSummary summary;
   const std::vector<Suggestion> suggestions =
       suggestion_generator().GetSuggestionsForCreditCards(
-          FormFieldData(), CREDIT_CARD_VERIFICATION_CODE, kDefaultTriggerSource,
+          *autofill_client(), FormFieldData(), CREDIT_CARD_VERIFICATION_CODE,
+          kDefaultTriggerSource,
           /*should_show_scan_credit_card=*/false,
           /*should_show_cards_from_account=*/false, summary);
 
@@ -2010,7 +2040,8 @@ TEST_F(AutofillCreditCardSuggestionContentTest,
 
   Suggestion card_number_field_suggestion =
       test_api(suggestion_generator())
-          .CreateCreditCardSuggestion(server_card, CREDIT_CARD_NUMBER,
+          .CreateCreditCardSuggestion(server_card, *autofill_client(),
+                                      CREDIT_CARD_NUMBER,
                                       /*virtual_card_option=*/false,
                                       /*card_linked_offer_available=*/false);
 
@@ -2021,7 +2052,8 @@ TEST_F(AutofillCreditCardSuggestionContentTest,
 
   card_number_field_suggestion =
       test_api(suggestion_generator())
-          .CreateCreditCardSuggestion(server_card, CREDIT_CARD_NAME_FULL,
+          .CreateCreditCardSuggestion(server_card, *autofill_client(),
+                                      CREDIT_CARD_NAME_FULL,
                                       /*virtual_card_option=*/false,
                                       /*card_linked_offer_available=*/false);
 
@@ -2033,7 +2065,8 @@ TEST_F(AutofillCreditCardSuggestionContentTest,
 
   card_number_field_suggestion =
       test_api(suggestion_generator())
-          .CreateCreditCardSuggestion(server_card, CREDIT_CARD_EXP_MONTH,
+          .CreateCreditCardSuggestion(server_card, *autofill_client(),
+                                      CREDIT_CARD_EXP_MONTH,
                                       /*virtual_card_option=*/false,
                                       /*card_linked_offer_available=*/false);
 
@@ -2046,7 +2079,8 @@ TEST_F(AutofillCreditCardSuggestionContentTest,
   server_card.set_record_type(CreditCard::RecordType::kVirtualCard);
   card_number_field_suggestion =
       test_api(suggestion_generator())
-          .CreateCreditCardSuggestion(server_card, CREDIT_CARD_NUMBER,
+          .CreateCreditCardSuggestion(server_card, *autofill_client(),
+                                      CREDIT_CARD_NUMBER,
                                       /*virtual_card_option=*/true,
                                       /*card_linked_offer_available=*/false);
 
@@ -2094,7 +2128,8 @@ TEST_P(AutofillCreditCardSuggestionIOSObfuscationLengthContentTest,
   // Name field suggestion.
   Suggestion card_name_field_suggestion =
       test_api(suggestion_generator())
-          .CreateCreditCardSuggestion(server_card, CREDIT_CARD_NAME_FULL,
+          .CreateCreditCardSuggestion(server_card, *autofill_client(),
+                                      CREDIT_CARD_NAME_FULL,
                                       /*virtual_card_option=*/false,
                                       /*card_linked_offer_available=*/false);
 
@@ -2105,7 +2140,8 @@ TEST_P(AutofillCreditCardSuggestionIOSObfuscationLengthContentTest,
   // Card number field suggestion.
   Suggestion card_number_field_suggestion =
       test_api(suggestion_generator())
-          .CreateCreditCardSuggestion(server_card, CREDIT_CARD_NUMBER,
+          .CreateCreditCardSuggestion(server_card, *autofill_client(),
+                                      CREDIT_CARD_NUMBER,
                                       /*virtual_card_option=*/false,
                                       /*card_linked_offer_available=*/false);
 
@@ -2162,7 +2198,8 @@ TEST_P(
   // Name field suggestion for virtual cards.
   Suggestion virtual_card_name_field_suggestion =
       test_api(suggestion_generator())
-          .CreateCreditCardSuggestion(server_card, CREDIT_CARD_NAME_FULL,
+          .CreateCreditCardSuggestion(server_card, *autofill_client(),
+                                      CREDIT_CARD_NAME_FULL,
                                       /*virtual_card_option=*/true,
                                       /*card_linked_offer_available=*/false);
 
@@ -2199,7 +2236,8 @@ TEST_P(
   // Card number field suggestion for virtual cards.
   Suggestion virtual_card_number_field_suggestion =
       test_api(suggestion_generator())
-          .CreateCreditCardSuggestion(server_card, CREDIT_CARD_NUMBER,
+          .CreateCreditCardSuggestion(server_card, *autofill_client(),
+                                      CREDIT_CARD_NUMBER,
                                       /*virtual_card_option=*/true,
                                       /*card_linked_offer_available=*/false);
 
@@ -2262,7 +2300,8 @@ TEST_P(PaymentsSuggestionGeneratorTestForMetadata,
 
   Suggestion virtual_card_suggestion =
       test_api(suggestion_generator())
-          .CreateCreditCardSuggestion(server_card, CREDIT_CARD_NUMBER,
+          .CreateCreditCardSuggestion(server_card, *autofill_client(),
+                                      CREDIT_CARD_NUMBER,
                                       /*virtual_card_option=*/true,
                                       /*card_linked_offer_available=*/false);
 
@@ -2277,7 +2316,8 @@ TEST_P(PaymentsSuggestionGeneratorTestForMetadata,
 
   Suggestion real_card_suggestion =
       test_api(suggestion_generator())
-          .CreateCreditCardSuggestion(server_card, CREDIT_CARD_NUMBER,
+          .CreateCreditCardSuggestion(server_card, *autofill_client(),
+                                      CREDIT_CARD_NUMBER,
                                       /*virtual_card_option=*/false,
                                       /*card_linked_offer_available=*/false);
 
@@ -2297,7 +2337,8 @@ TEST_P(PaymentsSuggestionGeneratorTestForMetadata,
 
   Suggestion real_card_suggestion =
       test_api(suggestion_generator())
-          .CreateCreditCardSuggestion(local_card, CREDIT_CARD_NUMBER,
+          .CreateCreditCardSuggestion(local_card, *autofill_client(),
+                                      CREDIT_CARD_NUMBER,
                                       /*virtual_card_option=*/false,
                                       /*card_linked_offer_available=*/false);
 
@@ -2327,7 +2368,8 @@ TEST_P(PaymentsSuggestionGeneratorTestForMetadata,
 
   Suggestion virtual_card_suggestion =
       test_api(suggestion_generator())
-          .CreateCreditCardSuggestion(local_card, CREDIT_CARD_NUMBER,
+          .CreateCreditCardSuggestion(local_card, *autofill_client(),
+                                      CREDIT_CARD_NUMBER,
                                       /*virtual_card_option=*/true,
                                       /*card_linked_offer_available=*/false);
 
@@ -2342,7 +2384,8 @@ TEST_P(PaymentsSuggestionGeneratorTestForMetadata,
 
   Suggestion real_card_suggestion =
       test_api(suggestion_generator())
-          .CreateCreditCardSuggestion(local_card, CREDIT_CARD_NUMBER,
+          .CreateCreditCardSuggestion(local_card, *autofill_client(),
+                                      CREDIT_CARD_NUMBER,
                                       /*virtual_card_option=*/false,
                                       /*card_linked_offer_available=*/false);
 
@@ -2369,7 +2412,8 @@ TEST_P(PaymentsSuggestionGeneratorTestForMetadata,
 
     PaymentsSuggestionGenerator::CreditCardSuggestionSummary summary;
     suggestion_generator().GetSuggestionsForCreditCards(
-        FormFieldData(), CREDIT_CARD_NUMBER, kDefaultTriggerSource,
+        *autofill_client(), FormFieldData(), CREDIT_CARD_NUMBER,
+        kDefaultTriggerSource,
         /*should_show_scan_credit_card=*/false,
         /*should_show_cards_from_account=*/false, summary);
 
@@ -2402,7 +2446,8 @@ TEST_P(PaymentsSuggestionGeneratorTestForMetadata,
 
     PaymentsSuggestionGenerator::CreditCardSuggestionSummary summary;
     suggestion_generator().GetSuggestionsForCreditCards(
-        FormFieldData(), CREDIT_CARD_NUMBER, kDefaultTriggerSource,
+        *autofill_client(), FormFieldData(), CREDIT_CARD_NUMBER,
+        kDefaultTriggerSource,
         /*should_show_scan_credit_card=*/false,
         /*should_show_cards_from_account=*/false, summary);
 
@@ -2447,7 +2492,8 @@ TEST_P(PaymentsSuggestionGeneratorTestForMetadata,
   PaymentsSuggestionGenerator::CreditCardSuggestionSummary summary;
   std::vector<Suggestion> suggestions =
       suggestion_generator().GetSuggestionsForCreditCards(
-          FormFieldData(), CREDIT_CARD_NUMBER, kDefaultTriggerSource,
+          *autofill_client(), FormFieldData(), CREDIT_CARD_NUMBER,
+          kDefaultTriggerSource,
           /*should_show_scan_credit_card=*/false,
           /*should_show_cards_from_account=*/false, summary);
 
@@ -2523,7 +2569,8 @@ TEST_P(PaymentsSuggestionGeneratorTestForOffer,
 
   Suggestion virtual_card_suggestion =
       test_api(suggestion_generator())
-          .CreateCreditCardSuggestion(server_card1, CREDIT_CARD_NUMBER,
+          .CreateCreditCardSuggestion(server_card1, *autofill_client(),
+                                      CREDIT_CARD_NUMBER,
                                       /*virtual_card_option=*/true,
                                       /*card_linked_offer_available=*/true);
 
@@ -2536,7 +2583,8 @@ TEST_P(PaymentsSuggestionGeneratorTestForOffer,
 
   Suggestion real_card_suggestion =
       test_api(suggestion_generator())
-          .CreateCreditCardSuggestion(server_card1, CREDIT_CARD_NUMBER,
+          .CreateCreditCardSuggestion(server_card1, *autofill_client(),
+                                      CREDIT_CARD_NUMBER,
                                       /*virtual_card_option=*/false,
                                       /*card_linked_offer_available=*/true);
 
@@ -2575,7 +2623,8 @@ TEST_P(PaymentsSuggestionGeneratorTestForOffer,
 
   Suggestion virtual_card_suggestion =
       test_api(suggestion_generator())
-          .CreateCreditCardSuggestion(server_card1, CREDIT_CARD_NUMBER,
+          .CreateCreditCardSuggestion(server_card1, *autofill_client(),
+                                      CREDIT_CARD_NUMBER,
                                       /*virtual_card_option=*/true,
                                       /*card_linked_offer_available=*/true);
 
@@ -2598,7 +2647,8 @@ TEST_P(PaymentsSuggestionGeneratorTestForOffer,
 
   Suggestion real_card_suggestion =
       test_api(suggestion_generator())
-          .CreateCreditCardSuggestion(server_card1, CREDIT_CARD_NUMBER,
+          .CreateCreditCardSuggestion(server_card1, *autofill_client(),
+                                      CREDIT_CARD_NUMBER,
                                       /*virtual_card_option=*/false,
                                       /*card_linked_offer_available=*/true);
 

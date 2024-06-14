@@ -626,9 +626,9 @@ BrowserAutofillManager::BrowserAutofillManager(AutofillDriver* driver,
       external_delegate_(std::make_unique<AutofillExternalDelegate>(this)),
       app_locale_(app_locale),
       address_suggestion_generator_(
-          std::make_unique<AddressSuggestionGenerator>(client())),
+          std::make_unique<AddressSuggestionGenerator>()),
       payments_suggestion_generator_(
-          std::make_unique<PaymentsSuggestionGenerator>(client())),
+          std::make_unique<PaymentsSuggestionGenerator>()),
       form_filler_(
           std::make_unique<FormFiller>(*this, log_manager(), app_locale)) {
   address_form_event_logger_ =
@@ -2681,8 +2681,8 @@ std::vector<Suggestion> BrowserAutofillManager::GetProfileSuggestions(
   }();
 
   return address_suggestion_generator_->GetSuggestionsForProfiles(
-      field_types, trigger_field, trigger_field_type, current_suggestion_type,
-      trigger_source);
+      client(), field_types, trigger_field, trigger_field_type,
+      current_suggestion_type, trigger_source);
 }
 
 std::vector<Suggestion> BrowserAutofillManager::GetCreditCardSuggestions(
@@ -2728,16 +2728,17 @@ std::vector<Suggestion> BrowserAutofillManager::GetCreditCardSuggestions(
               GetVirtualCreditCardsForStandaloneCvcField(
                   trigger_field.origin());
       if (!virtual_card_guid_to_last_four_map.empty()) {
-        suggestions = payments_suggestion_generator_
-                          ->GetSuggestionsForVirtualCardStandaloneCvc(
-                              trigger_field, summary.metadata_logging_context,
-                              virtual_card_guid_to_last_four_map);
+        suggestions =
+            payments_suggestion_generator_
+                ->GetSuggestionsForVirtualCardStandaloneCvc(
+                    client(), trigger_field, summary.metadata_logging_context,
+                    virtual_card_guid_to_last_four_map);
         is_virtual_card_standalone_cvc_field = true;
       }
     } else {
       suggestions =
           payments_suggestion_generator_->GetSuggestionsForCreditCards(
-              trigger_field, trigger_field_type, trigger_source,
+              client(), trigger_field, trigger_field_type, trigger_source,
               ShouldShowScanCreditCard(form, trigger_field),
               ShouldShowCardsFromAccountOption(form, trigger_field,
                                                trigger_source),

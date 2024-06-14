@@ -29,7 +29,7 @@ class FormFieldData;
 // address profile Autofill.
 class AddressSuggestionGenerator {
  public:
-  explicit AddressSuggestionGenerator(const AutofillClient& autofill_client);
+  AddressSuggestionGenerator();
   ~AddressSuggestionGenerator();
   AddressSuggestionGenerator(const AddressSuggestionGenerator&) = delete;
   AddressSuggestionGenerator& operator=(const AddressSuggestionGenerator&) =
@@ -40,6 +40,7 @@ class AddressSuggestionGenerator {
   // returns one suggestion per remaining profile.
   // `field_types` are the relevant types for the current suggestions.
   std::vector<Suggestion> GetSuggestionsForProfiles(
+      const AutofillClient& client,
       const FieldTypeSet& field_types,
       const FormFieldData& trigger_field,
       FieldType trigger_field_type,
@@ -151,10 +152,6 @@ class AddressSuggestionGenerator {
   // suggestions in the Autofill popup. `is_autofilled` is used to conditionally
   // add suggestion for clearing all autofilled fields.
   std::vector<Suggestion> GetAddressFooterSuggestions(bool is_autofilled);
-
-  // autofill_client_ and the generator are both one per tab, and have the same
-  // lifecycle.
-  const raw_ref<const AutofillClient> autofill_client_;
 };
 
 }  // namespace autofill

@@ -163,8 +163,8 @@ TouchToFillDelegateAndroidImpl::DryRunForCreditCard(
   // Valid = unexpired with valid number format.
   // TODO(b/40227496): `*field` must contain the updated field information.
   std::vector<CreditCard> cards_to_suggest =
-      PaymentsSuggestionGenerator(manager_->client())
-          .GetTouchToFillCardsToSuggest(field, field.Type().GetStorableType());
+      PaymentsSuggestionGenerator().GetTouchToFillCardsToSuggest(
+          manager_->client(), field, field.Type().GetStorableType());
   return cards_to_suggest.empty()
              ? DryRunResult(TriggerOutcome::kNoValidPaymentMethods, {})
              : DryRunResult(TriggerOutcome::kShown,
@@ -408,7 +408,7 @@ std::vector<bool> TouchToFillDelegateAndroidImpl::GetCardAcceptabilities(
     base::span<const CreditCard> credit_cards) {
   std::vector<bool> card_acceptabilities;
   card_acceptabilities.reserve(credit_cards.size());
-  PaymentsSuggestionGenerator autofill_suggestion_generator(manager_->client());
+  PaymentsSuggestionGenerator autofill_suggestion_generator;
 
   std::transform(
       credit_cards.begin(), credit_cards.end(),

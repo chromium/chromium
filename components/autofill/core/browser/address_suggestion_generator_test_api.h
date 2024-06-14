@@ -22,6 +22,7 @@ class AddressSuggestionGeneratorTestApi {
 
   std::vector<raw_ptr<const AutofillProfile, VectorExperimental>>
   GetProfilesToSuggest(
+      const AddressDataManager& address_data,
       FieldType trigger_field_type,
       const std::u16string& field_contents,
       bool field_is_autofilled,
@@ -29,9 +30,8 @@ class AddressSuggestionGeneratorTestApi {
       AutofillSuggestionTriggerSource trigger_source =
           AutofillSuggestionTriggerSource::kFormControlElementClicked) {
     return suggestion_generator_->GetProfilesToSuggest(
-        suggestion_generator_->autofill_client_->GetPersonalDataManager()
-            ->address_data_manager(),
-        trigger_field_type, field_contents, field_is_autofilled, field_types,
+        address_data, trigger_field_type, field_contents, field_is_autofilled,
+        field_types,
         suggestion_generator_->GetProfilesToSuggestOptions(
             trigger_field_type, field_contents, field_is_autofilled,
             trigger_source));
@@ -43,14 +43,12 @@ class AddressSuggestionGeneratorTestApi {
       const FieldTypeSet& field_types,
       SuggestionType suggestion_type,
       FieldType trigger_field_type,
-      uint64_t trigger_field_max_length) {
+      uint64_t trigger_field_max_length,
+      bool is_off_the_record = false,
+      const std::string& app_locale = "en-US") {
     return suggestion_generator_->CreateSuggestionsFromProfiles(
         profiles, field_types, suggestion_type, trigger_field_type,
-        trigger_field_max_length,
-        suggestion_generator_->autofill_client_->IsOffTheRecord(),
-        suggestion_generator_->autofill_client_->GetPersonalDataManager()
-            ->address_data_manager()
-            .app_locale());
+        trigger_field_max_length, is_off_the_record, app_locale);
   }
 
  private:
