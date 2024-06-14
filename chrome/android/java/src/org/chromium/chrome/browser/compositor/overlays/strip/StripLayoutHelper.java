@@ -2606,6 +2606,7 @@ public class StripLayoutHelper implements StripLayoutTabDelegate, StripLayoutGro
         assert isCollapsed == groupTitle.isCollapsed();
 
         mTabGroupModelFilter.setTabGroupCollapsed(rootId, !isCollapsed);
+        RecordHistogram.recordBooleanHistogram("Android.TabStrip.TabGroupCollapsed", !isCollapsed);
     }
 
     private Animator updateTabCollapsed(StripLayoutTab tab, boolean isCollapsed, boolean animate) {
