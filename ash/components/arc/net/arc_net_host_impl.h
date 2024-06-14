@@ -98,12 +98,8 @@ class ArcNetHostImpl : public KeyedService,
   void UpdateWifiNetwork(const std::string& guid,
                          mojom::WifiConfigurationPtr cfg,
                          UpdateWifiNetworkCallback callback) override;
-  // TODO(b/329552433): Delete this method after pi-arc is removed.
-  // Deprecated. ArcWifiHostImpl::StartConnect() should be used.
   void StartConnect(const std::string& guid,
                     StartConnectCallback callback) override;
-  // TODO(b/329552433): Delete this method after pi-arc is removed.
-  // Deprecated. ArcWifiHostImpl::StartDisconnect() should be used.
   void StartDisconnect(const std::string& guid,
                        StartDisconnectCallback callback) override;
   void AndroidVpnConnected(mojom::AndroidVpnConfigurationPtr cfg) override;
@@ -159,7 +155,6 @@ class ArcNetHostImpl : public KeyedService,
   // class keeps a local cache of the path->guid mapping as a fallback.
   // This is sufficient to pass CTS but it might not handle multiple
   // successive Create operations (crbug.com/631646).
-  // TODO(b/329552433): Delete this method after pi-arc is removed.
   bool GetNetworkPathFromGuid(const std::string& guid, std::string* path);
 
   // Get active layer 3 network connections for ARC. This function will run

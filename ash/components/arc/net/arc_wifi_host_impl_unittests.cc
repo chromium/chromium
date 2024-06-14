@@ -243,44 +243,5 @@ TEST_F(ArcWifiHostImplTest, GetConfiguredWifiServices) {
   EXPECT_TRUE(found);
 }
 
-TEST_F(ArcWifiHostImplTest, StartConnect) {
-  base::test::TestFuture<const std::string&> create_network_future;
-  base::test::TestFuture<arc::mojom::NetworkResult> start_connect_future;
-  base::test::TestFuture<arc::mojom::NetworkResult> start_disconnect_future;
-
-  // Test that StartConnect() and StartDisconnect() call will return FAILURE
-  // when guid is invalid.
-  service()->StartConnect(kInvalidGuid, start_connect_future.GetCallback());
-  EXPECT_EQ(start_connect_future.Take(), arc::mojom::NetworkResult::FAILURE);
-  service()->StartDisconnect(kInvalidGuid,
-                             start_disconnect_future.GetCallback());
-  EXPECT_EQ(start_disconnect_future.Take(), arc::mojom::NetworkResult::FAILURE);
-
-  // Create a network for testing
-  auto config = CreateWifiConfigWithoutEAP();
-  service()->CreateNetwork(std::move(config),
-                           create_network_future.GetCallback());
-  auto target_guid = create_network_future.Take();
-  EXPECT_FALSE(target_guid.empty());
-
-  // Test that the network can be connected successfully.
-  service()->StartConnect(target_guid, start_connect_future.GetCallback());
-  EXPECT_EQ(start_connect_future.Take(), arc::mojom::NetworkResult::SUCCESS);
-
-  // Test that the network cannot be connected again if already connected.
-  service()->StartConnect(target_guid, start_connect_future.GetCallback());
-  EXPECT_EQ(start_connect_future.Take(), arc::mojom::NetworkResult::FAILURE);
-
-  // Test that the network can be disconnected successfully.
-  service()->StartDisconnect(target_guid,
-                             start_disconnect_future.GetCallback());
-  EXPECT_EQ(start_disconnect_future.Take(), arc::mojom::NetworkResult::SUCCESS);
-
-  // Test that disconnected network cannot be disconnected again if already
-  // disconnected.
-  service()->StartDisconnect(target_guid,
-                             start_disconnect_future.GetCallback());
-  EXPECT_EQ(start_disconnect_future.Take(), arc::mojom::NetworkResult::FAILURE);
-}
 }  // namespace
 }  // namespace arc

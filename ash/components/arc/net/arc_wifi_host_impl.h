@@ -61,10 +61,6 @@ class ArcWifiHostImpl : public KeyedService,
                          UpdateWifiNetworkCallback callback) override;
   void GetConfiguredWifiServices(
       GetConfiguredWifiServicesCallback callback) override;
-  void StartConnect(const std::string& guid,
-                    StartConnectCallback callback) override;
-  void StartDisconnect(const std::string& guid,
-                       StartDisconnectCallback callback) override;
 
   static void EnsureFactoryBuilt();
 

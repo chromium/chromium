@@ -12,7 +12,6 @@
 #include "base/memory/singleton.h"
 #include "chromeos/ash/components/login/login_state/login_state.h"
 #include "chromeos/ash/components/network/network_configuration_handler.h"
-#include "chromeos/ash/components/network/network_connection_handler.h"
 #include "chromeos/ash/components/network/network_event_log.h"
 #include "chromeos/ash/components/network/network_handler.h"
 #include "chromeos/ash/components/network/network_state_handler.h"
@@ -35,10 +34,6 @@ ash::TechnologyStateController* GetTechnologyStateController() {
 
 ash::ManagedNetworkConfigurationHandler* GetManagedConfigurationHandler() {
   return ash::NetworkHandler::Get()->managed_network_configuration_handler();
-}
-
-ash::NetworkConnectionHandler* GetNetworkConnectionHandler() {
-  return ash::NetworkHandler::Get()->network_connection_handler();
 }
 
 void ForgetNetworkSuccessCallback(
@@ -602,55 +597,6 @@ void ArcWifiHostImpl::GetScanResults(GetScanResultsCallback callback) {
       kGetScanResultsListLimit, &network_states);
 
   std::move(callback).Run(net_utils::TranslateScanResults(network_states));
-}
-
-void ArcWifiHostImpl::StartConnect(const std::string& guid,
-                                   StartConnectCallback callback) {
-  auto path = GetNetworkPathFromGuid(guid);
-  if (!path) {
-    NET_LOG(ERROR) << __func__ << ": Could not retrieve Service path from GUID "
-                   << guid;
-    std::move(callback).Run(mojom::NetworkResult::FAILURE);
-    return;
-  }
-
-  auto split_callback = base::SplitOnceCallback(std::move(callback));
-  GetNetworkConnectionHandler()->ConnectToNetwork(
-      std::string(*path),
-      base::BindOnce(std::move(split_callback.first),
-                     arc::mojom::NetworkResult::SUCCESS),
-      base::BindOnce(
-          [](base::OnceCallback<void(arc::mojom::NetworkResult)> callback,
-             const std::string& error_name) {
-            NET_LOG(ERROR) << __func__ << ": " << error_name;
-            std::move(callback).Run(arc::mojom::NetworkResult::FAILURE);
-          },
-          std::move(split_callback.second)),
-      false /* check_error_state */, ash::ConnectCallbackMode::ON_STARTED);
-}
-
-void ArcWifiHostImpl::StartDisconnect(const std::string& guid,
-                                      StartDisconnectCallback callback) {
-  auto path = GetNetworkPathFromGuid(guid);
-  if (!path) {
-    NET_LOG(ERROR) << __func__ << ": Could not retrieve Service path from GUID "
-                   << guid;
-    std::move(callback).Run(mojom::NetworkResult::FAILURE);
-    return;
-  }
-
-  auto split_callback = base::SplitOnceCallback(std::move(callback));
-  GetNetworkConnectionHandler()->DisconnectNetwork(
-      std::string(*path),
-      base::BindOnce(std::move(split_callback.first),
-                     arc::mojom::NetworkResult::SUCCESS),
-      base::BindOnce(
-          [](base::OnceCallback<void(arc::mojom::NetworkResult)> callback,
-             const std::string& error_name) {
-            NET_LOG(ERROR) << __func__ << ": " << error_name;
-            std::move(callback).Run(arc::mojom::NetworkResult::FAILURE);
-          },
-          std::move(split_callback.second)));
 }
 
 }  // namespace arc

@@ -89,14 +89,6 @@ interface ArcWifiHost {
 
   // Sends a request to get currently configured WiFi networks.
   GetConfiguredWifiServices@8() => (array<NetworkConfiguration> services);
-
-  // Initiates a network connection.  If called when connected to a different
-  // network, it will drop the current connection first.
-  StartConnect@9(string guid) => (NetworkResult status);
-
-  // Disconnects from network |guid|.
-  StartDisconnect@10(string guid) => (NetworkResult status);
-
 };
 
 // Next Method ID: 4
