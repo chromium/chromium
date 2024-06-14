@@ -1754,16 +1754,6 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="History.Embeddings.Embedder.EmbeddingsGenerationDuration"
-    units="ms" expires_after="2024-12-31">
-  <owner>sophiechang@chromium.org</owner>
-  <owner>zekunjiang@google.com</owner>
-  <summary>
-    The number of milliseconds spent to generate one embeddings vector. Logged
-    each time an embeddings generation succeeds.
-  </summary>
-</histogram>
-
 <histogram name="History.Embeddings.Embedder.EmbeddingsGenerationSucceeded"
     enum="Boolean" expires_after="2024-12-31">
   <owner>sophiechang@chromium.org</owner>
@@ -1771,18 +1761,6 @@ chromium-metrics-reviews@google.com.
   <summary>
     Whether an attempt to generate embeddings was successful. Logged each time
     the embedder attempts to generate embeddings.
-  </summary>
-</histogram>
-
-<histogram
-    name="History.Embeddings.Embedder.EmbeddingsGenerationThreadDuration"
-    units="ms" expires_after="2024-12-31">
-  <owner>sophiechang@chromium.org</owner>
-  <owner>zekunjiang@google.com</owner>
-  <summary>
-    The number of milliseconds spent to generate one embeddings vector, measured
-    in thread time. Logged each time an embeddings generation succeeds if
-    ThreadTicks measurement is supported.
   </summary>
 </histogram>
 
@@ -1827,6 +1805,29 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram
+    name="History.Embeddings.Embedder.PassageEmbeddingsGenerationDuration"
+    units="ms" expires_after="2024-12-31">
+  <owner>sophiechang@chromium.org</owner>
+  <owner>zekunjiang@google.com</owner>
+  <summary>
+    The number of milliseconds spent to generate embeddings for a passage.
+    Logged each time embeddings generation succeeds for a passage.
+  </summary>
+</histogram>
+
+<histogram
+    name="History.Embeddings.Embedder.PassageEmbeddingsGenerationThreadDuration"
+    units="ms" expires_after="2024-12-31">
+  <owner>sophiechang@chromium.org</owner>
+  <owner>zekunjiang@google.com</owner>
+  <summary>
+    The number of milliseconds spent to generate embeddings for a passage,
+    measured in thread time. Logged each time embeddings generation succeeds for
+    a passage, if ThreadTicks measurement is supported.
+  </summary>
+</histogram>
+
 <histogram name="History.Embeddings.Embedder.PassageTokenCount" units="tokens"
     expires_after="2024-12-31">
   <owner>sophiechang@chromium.org</owner>
@@ -1834,6 +1835,29 @@ chromium-metrics-reviews@google.com.
   <summary>
     The length of the token array that each passage is encoded into. Logged each
     time an input tokenization succeeds.
+  </summary>
+</histogram>
+
+<histogram name="History.Embeddings.Embedder.QueryEmbeddingsGenerationDuration"
+    units="ms" expires_after="2024-12-31">
+  <owner>sophiechang@chromium.org</owner>
+  <owner>zekunjiang@google.com</owner>
+  <summary>
+    The number of milliseconds spent to generate one embeddings vector for a
+    user query. Logged each time embeddings generation succeeds for a user
+    query.
+  </summary>
+</histogram>
+
+<histogram
+    name="History.Embeddings.Embedder.QueryEmbeddingsGenerationThreadDuration"
+    units="ms" expires_after="2024-12-31">
+  <owner>sophiechang@chromium.org</owner>
+  <owner>zekunjiang@google.com</owner>
+  <summary>
+    The number of milliseconds spent to generate one embeddings vector for a
+    user query, measured in thread time. Logged each time embeddings generation
+    succeeds for a user query, if ThreadTicks measurement is supported.
   </summary>
 </histogram>
 

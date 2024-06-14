@@ -12,6 +12,34 @@
 #include "components/optimization_guide/core/tflite_op_resolver.h"
 #include "third_party/sentencepiece/src/src/sentencepiece_model.pb.h"
 
+namespace {
+void RecordEmbeddingsDurationMetrics(
+    bool is_passive,
+    base::TimeDelta elapsed_time,
+    std::optional<base::TimeDelta> elapsed_thread_time) {
+  if (is_passive) {
+    if (elapsed_thread_time.has_value()) {
+      base::UmaHistogramMediumTimes(
+          "History.Embeddings.Embedder."
+          "PassageEmbeddingsGenerationThreadDuration",
+          *elapsed_thread_time);
+    }
+    base::UmaHistogramMediumTimes(
+        "History.Embeddings.Embedder.PassageEmbeddingsGenerationDuration",
+        elapsed_time);
+  } else {
+    if (elapsed_thread_time.has_value()) {
+      base::UmaHistogramMediumTimes(
+          "History.Embeddings.Embedder.QueryEmbeddingsGenerationThreadDuration",
+          *elapsed_thread_time);
+    }
+    base::UmaHistogramMediumTimes(
+        "History.Embeddings.Embedder.QueryEmbeddingsGenerationDuration",
+        elapsed_time);
+  }
+}
+}  // namespace
+
 namespace passage_embeddings {
 
 PassageEmbedder::PassageEmbedder(
@@ -219,14 +247,12 @@ void PassageEmbedder::GenerateEmbeddings(
       std::move(callback).Run({});
       return;
     }
-    if (execute_thread_timer.is_supported()) {
-      base::UmaHistogramMediumTimes(
-          "History.Embeddings.Embedder.EmbeddingsGenerationThreadDuration",
-          execute_thread_timer.Elapsed());
-    }
-    base::UmaHistogramMediumTimes(
-        "History.Embeddings.Embedder.EmbeddingsGenerationDuration",
-        execute_timer.Elapsed());
+
+    RecordEmbeddingsDurationMetrics(
+        priority == mojom::PassagePriority::kPassive, execute_timer.Elapsed(),
+        execute_thread_timer.is_supported()
+            ? std::optional<base::TimeDelta>(execute_thread_timer.Elapsed())
+            : std::nullopt);
 
     result->embeddings = *embeddings;
     embeddings_cache_.Put({input, *embeddings});

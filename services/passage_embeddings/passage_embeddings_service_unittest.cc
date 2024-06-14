@@ -187,5 +187,39 @@ TEST_F(PassageEmbeddingsServiceTest, CacheHits) {
   histogram_tester_.ExpectBucketCount(kCacheHitMetricName, false, 3);
 }
 
+TEST_F(PassageEmbeddingsServiceTest, RecordsDurationHistogramsWithPriority) {
+  mojom::PassageEmbeddingsLoadModelsParamsPtr params =
+      MakeParams(embeddings_path_, sp_path_, kInputWindowSize);
+  mojo::Remote<mojom::PassageEmbedder> embedder_remote;
+
+  base::test::TestFuture<bool> load_models_future;
+  service()->LoadModels(std::move(params),
+                        embedder_remote.BindNewPipeAndPassReceiver(),
+                        load_models_future.GetCallback());
+  std::ignore = load_models_future.Take();
+
+  base::test::TestFuture<std::vector<mojom::PassageEmbeddingsResultPtr>>
+      execute_future;
+  embedder_remote->GenerateEmbeddings({"hello", "world"},
+                                      mojom::PassagePriority::kPassive,
+                                      execute_future.GetCallback());
+  std::ignore = execute_future.Take();
+
+  embedder_remote->GenerateEmbeddings({"foo"},
+                                      mojom::PassagePriority::kUserInitiated,
+                                      execute_future.GetCallback());
+  std::ignore = execute_future.Take();
+
+  histogram_tester_.ExpectTotalCount(
+      "History.Embeddings.Embedder.PassageEmbeddingsGenerationDuration", 2);
+  histogram_tester_.ExpectTotalCount(
+      "History.Embeddings.Embedder.PassageEmbeddingsGenerationThreadDuration",
+      2);
+  histogram_tester_.ExpectTotalCount(
+      "History.Embeddings.Embedder.QueryEmbeddingsGenerationDuration", 1);
+  histogram_tester_.ExpectTotalCount(
+      "History.Embeddings.Embedder.QueryEmbeddingsGenerationThreadDuration", 1);
+}
+
 }  // namespace
 }  // namespace passage_embeddings
