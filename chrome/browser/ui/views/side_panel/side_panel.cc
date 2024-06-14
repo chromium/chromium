@@ -224,10 +224,57 @@ END_METADATA
 
 }  // namespace
 
+// Ensures immediate children of the SidePanel have their layers clipped to
+// their visible bounds to prevent incorrect clipping during animation.
+// TODO: 344626785 - Remove this once WebView layer behavior has been fixed.
+class SidePanel::VisibleBoundsViewClipper : public views::ViewObserver {
+ public:
+  explicit VisibleBoundsViewClipper(SidePanel* side_panel)
+      : side_panel_(side_panel) {
+    view_observations_.AddObservation(side_panel);
+  }
+  VisibleBoundsViewClipper(const VisibleBoundsViewClipper&) = delete;
+  VisibleBoundsViewClipper& operator=(const VisibleBoundsViewClipper&) = delete;
+  ~VisibleBoundsViewClipper() override = default;
+
+  // views::ViewObserver:
+  void OnChildViewAdded(View* observed_view, View* child) override {
+    if (observed_view == side_panel_) {
+      view_observations_.AddObservation(child);
+    }
+  }
+  void OnViewBoundsChanged(views::View* observed_view) override {
+    ui::Layer* layer = observed_view->layer();
+    if (observed_view != side_panel_ && layer) {
+      gfx::Rect clip_bounds = observed_view->GetVisibleBounds();
+      // Let side panel grow slightly taller so that it overlaps the divider
+      // into the toolbar or bookmarks bar above it.
+      // TODO: Explore extending the side panel bounds directly in
+      // BrowserViewLayout.
+      clip_bounds.Inset(
+          gfx::Insets::TLBR(-views::Separator::kThickness, 0, 0, 0));
+      layer->SetClipRect(clip_bounds);
+      layer->SetVisible(clip_bounds.width() != 0);
+    }
+  }
+  void OnViewIsDeleting(views::View* observed_view) override {
+    view_observations_.RemoveObservation(observed_view);
+  }
+
+ private:
+  // Owns this.
+  const raw_ptr<SidePanel> side_panel_;
+
+  base::ScopedMultiSourceObservation<views::View, views::ViewObserver>
+      view_observations_{this};
+};
+
 SidePanel::SidePanel(BrowserView* browser_view,
                      HorizontalAlignment horizontal_alignment)
     : views::AnimationDelegateViews(this),
       browser_view_(browser_view),
+      visible_bounds_view_clipper_(
+          std::make_unique<VisibleBoundsViewClipper>(this)),
       horizontal_alignment_(horizontal_alignment) {
   std::unique_ptr<BorderView> border_view =
       std::make_unique<BorderView>(browser_view);
