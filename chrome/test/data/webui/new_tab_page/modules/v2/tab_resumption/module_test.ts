@@ -123,17 +123,12 @@ suite('NewTabPageModulesTabResumptionModuleTest', () => {
 
     test('Header dismiss button dispatches dismiss module event', async () => {
       // Arrange.
-      const moduleElement = await initializeModule(createSampleTabs(6));
+      const moduleElement = await initializeModule(createSampleTabs(1));
 
       // Assert.
       assertTrue(!!moduleElement);
       const headerElement = $$(moduleElement, 'ntp-module-header-v2');
       assertTrue(!!headerElement);
-      assertEquals(
-          5,
-          $$<HTMLElement>(moduleElement, '#tabs')
-              ?.querySelectorAll('.tab')
-              .length);
       const waitForDismissEvent =
           eventToPromise('dismiss-module-instance', moduleElement);
       headerElement!.dispatchEvent(new Event('dismiss-button-click'));
@@ -141,7 +136,6 @@ suite('NewTabPageModulesTabResumptionModuleTest', () => {
       const dismissEvent: DismissModuleInstanceEvent =
           await waitForDismissEvent;
       assertEquals(`Tabs hidden`, dismissEvent.detail.message);
-      assertEquals(6, handler.getArgs('dismissModule')[0].length);
 
       // Act.
       const restoreCallback = dismissEvent.detail.restoreCallback!;

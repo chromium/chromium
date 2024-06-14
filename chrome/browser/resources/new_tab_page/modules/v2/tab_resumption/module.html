@@ -171,7 +171,7 @@
     [[i18n('modulesTabResumptionTitle')]]
 </ntp-module-header>
 <div id="tabs">
-  <template id="tabRepeat" is="dom-repeat" items="[[getVisibleTabs_(tabs)]]">
+  <template id="tabRepeat" is="dom-repeat" items="[[tabs]]">
     <a class="tab" href="[[item.url.url]]" on-click="onTabClick_">
       <div id="hover-layer"></div>
       <page-favicon class="icon" url="[[item.url]]"
