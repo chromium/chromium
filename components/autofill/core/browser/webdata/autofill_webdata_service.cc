@@ -22,8 +22,6 @@
 #include "components/webdata/common/web_database_backend.h"
 #include "components/webdata/common/web_database_service.h"
 
-using base::Time;
-
 namespace autofill {
 
 AutofillWebDataService::AutofillWebDataService(
@@ -82,7 +80,8 @@ WebDataServiceBase::Handle AutofillWebDataService::GetFormValuesForElementName(
 }
 
 void AutofillWebDataService::RemoveFormElementsAddedBetween(
-    const Time& delete_begin, const Time& delete_end) {
+    const base::Time& delete_begin,
+    const base::Time& delete_end) {
   wdbs_->ScheduleDBTask(
       FROM_HERE,
       base::BindOnce(
@@ -139,8 +138,10 @@ WebDataServiceBase::Handle AutofillWebDataService::GetAutofillProfiles(
 }
 
 WebDataServiceBase::Handle
-    AutofillWebDataService::GetCountOfValuesContainedBetween(
-        const Time& begin, const Time& end, WebDataServiceConsumer* consumer) {
+AutofillWebDataService::GetCountOfValuesContainedBetween(
+    const base::Time& begin,
+    const base::Time& end,
+    WebDataServiceConsumer* consumer) {
   return wdbs_->ScheduleDBTaskWithResult(
       FROM_HERE,
       base::BindOnce(
@@ -353,8 +354,8 @@ void AutofillWebDataService::UpdateServerCardMetadata(
 }
 
 void AutofillWebDataService::RemoveAutofillDataModifiedBetween(
-    const Time& delete_begin,
-    const Time& delete_end) {
+    const base::Time& delete_begin,
+    const base::Time& delete_end) {
   wdbs_->ScheduleDBTask(
       FROM_HERE,
       base::BindOnce(
@@ -363,7 +364,8 @@ void AutofillWebDataService::RemoveAutofillDataModifiedBetween(
 }
 
 void AutofillWebDataService::RemoveOriginURLsModifiedBetween(
-    const Time& delete_begin, const Time& delete_end) {
+    const base::Time& delete_begin,
+    const base::Time& delete_end) {
   wdbs_->ScheduleDBTask(
       FROM_HERE,
       base::BindOnce(

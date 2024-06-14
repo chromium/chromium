@@ -71,8 +71,6 @@
 #include "components/autofill/android/main_autofill_jni_headers/AutofillProfile_jni.h"
 #endif  // BUILDFLAG(IS_ANDROID)
 
-using base::ASCIIToUTF16;
-using base::UTF16ToUTF8;
 using ::i18n::addressinput::AddressData;
 using ::i18n::addressinput::AddressField;
 
@@ -531,7 +529,7 @@ bool AutofillProfile::IsEmpty(const std::string& app_locale) const {
 }
 
 bool AutofillProfile::IsPresentButInvalid(FieldType type) const {
-  std::string country = UTF16ToUTF8(GetRawInfo(ADDRESS_HOME_COUNTRY));
+  std::string country = base::UTF16ToUTF8(GetRawInfo(ADDRESS_HOME_COUNTRY));
   std::u16string data = GetRawInfo(type);
   if (data.empty())
     return false;
@@ -966,7 +964,7 @@ std::u16string AutofillProfile::ConstructInferredLabel(
 
   const std::u16string& profile_region_code =
       GetInfo(AutofillType(HtmlFieldType::kCountryCode), app_locale);
-  std::string address_region_code = UTF16ToUTF8(profile_region_code);
+  std::string address_region_code = base::UTF16ToUTF8(profile_region_code);
 
   // A copy of |this| pruned down to contain only data for the address fields in
   // |included_fields|.

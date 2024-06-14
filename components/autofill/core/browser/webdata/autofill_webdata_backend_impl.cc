@@ -37,8 +37,6 @@
 #include "components/sync/base/model_type.h"
 #include "components/webdata/common/web_database_backend.h"
 
-using base::Time;
-
 namespace autofill {
 
 namespace {

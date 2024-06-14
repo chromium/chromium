@@ -17,9 +17,6 @@
 #include "components/autofill/core/common/autofill_features.h"
 #include "components/sync/protocol/entity_data.h"
 
-using autofill::data_util::TruncateUTF8;
-using base::UTF16ToUTF8;
-using base::UTF8ToUTF16;
 using sync_pb::AutofillProfileSpecifics;
 using syncer::EntityData;
 
@@ -107,23 +104,23 @@ std::unique_ptr<EntityData> CreateEntityDataFromAutofillProfile(
   specifics->set_use_count(entry.use_count());
   specifics->set_use_date(entry.use_date().ToTimeT());
   specifics->set_address_home_language_code(
-      TruncateUTF8(entry.language_code()));
+      data_util::TruncateUTF8(entry.language_code()));
 
   // Set name-related values.
   specifics->add_name_first(
-      TruncateUTF8(UTF16ToUTF8(entry.GetRawInfo(NAME_FIRST))));
-  specifics->add_name_middle(
-      TruncateUTF8(UTF16ToUTF8(entry.GetRawInfo(NAME_MIDDLE))));
+      data_util::TruncateUTF8(base::UTF16ToUTF8(entry.GetRawInfo(NAME_FIRST))));
+  specifics->add_name_middle(data_util::TruncateUTF8(
+      base::UTF16ToUTF8(entry.GetRawInfo(NAME_MIDDLE))));
   specifics->add_name_last(
-      TruncateUTF8(UTF16ToUTF8(entry.GetRawInfo(NAME_LAST))));
-  specifics->add_name_last_first(
-      TruncateUTF8(UTF16ToUTF8(entry.GetRawInfo(NAME_LAST_FIRST))));
-  specifics->add_name_last_second(
-      TruncateUTF8(UTF16ToUTF8(entry.GetRawInfo(NAME_LAST_SECOND))));
-  specifics->add_name_last_conjunction(
-      TruncateUTF8(UTF16ToUTF8(entry.GetRawInfo(NAME_LAST_CONJUNCTION))));
+      data_util::TruncateUTF8(base::UTF16ToUTF8(entry.GetRawInfo(NAME_LAST))));
+  specifics->add_name_last_first(data_util::TruncateUTF8(
+      base::UTF16ToUTF8(entry.GetRawInfo(NAME_LAST_FIRST))));
+  specifics->add_name_last_second(data_util::TruncateUTF8(
+      base::UTF16ToUTF8(entry.GetRawInfo(NAME_LAST_SECOND))));
+  specifics->add_name_last_conjunction(data_util::TruncateUTF8(
+      base::UTF16ToUTF8(entry.GetRawInfo(NAME_LAST_CONJUNCTION))));
   specifics->add_name_full(
-      TruncateUTF8(UTF16ToUTF8(entry.GetRawInfo(NAME_FULL))));
+      data_util::TruncateUTF8(base::UTF16ToUTF8(entry.GetRawInfo(NAME_FULL))));
   // Set address-related statuses.
   specifics->add_name_first_status(ConvertProfileToSpecificsVerificationStatus(
       entry.GetVerificationStatus(NAME_FIRST)));
@@ -144,90 +141,91 @@ std::unique_ptr<EntityData> CreateEntityDataFromAutofillProfile(
       entry.GetVerificationStatus(NAME_FULL)));
 
   // Set email, phone and company values.
-  specifics->add_email_address(
-      TruncateUTF8(UTF16ToUTF8(entry.GetRawInfo(EMAIL_ADDRESS))));
-  specifics->add_phone_home_whole_number(
-      TruncateUTF8(UTF16ToUTF8(entry.GetRawInfo(PHONE_HOME_WHOLE_NUMBER))));
-  specifics->set_company_name(
-      TruncateUTF8(UTF16ToUTF8(entry.GetRawInfo(COMPANY_NAME))));
+  specifics->add_email_address(data_util::TruncateUTF8(
+      base::UTF16ToUTF8(entry.GetRawInfo(EMAIL_ADDRESS))));
+  specifics->add_phone_home_whole_number(data_util::TruncateUTF8(
+      base::UTF16ToUTF8(entry.GetRawInfo(PHONE_HOME_WHOLE_NUMBER))));
+  specifics->set_company_name(data_util::TruncateUTF8(
+      base::UTF16ToUTF8(entry.GetRawInfo(COMPANY_NAME))));
 
   // Set address-related values.
-  specifics->set_address_home_city(
-      TruncateUTF8(UTF16ToUTF8(entry.GetRawInfo(ADDRESS_HOME_CITY))));
-  specifics->set_address_home_state(
-      TruncateUTF8(UTF16ToUTF8(entry.GetRawInfo(ADDRESS_HOME_STATE))));
-  specifics->set_address_home_zip(
-      TruncateUTF8(UTF16ToUTF8(entry.GetRawInfo(ADDRESS_HOME_ZIP))));
-  specifics->set_address_home_sorting_code(
-      TruncateUTF8(UTF16ToUTF8(entry.GetRawInfo(ADDRESS_HOME_SORTING_CODE))));
-  specifics->set_address_home_dependent_locality(TruncateUTF8(
-      UTF16ToUTF8(entry.GetRawInfo(ADDRESS_HOME_DEPENDENT_LOCALITY))));
-  specifics->set_address_home_country(
-      TruncateUTF8(UTF16ToUTF8(entry.GetRawInfo(ADDRESS_HOME_COUNTRY))));
+  specifics->set_address_home_city(data_util::TruncateUTF8(
+      base::UTF16ToUTF8(entry.GetRawInfo(ADDRESS_HOME_CITY))));
+  specifics->set_address_home_state(data_util::TruncateUTF8(
+      base::UTF16ToUTF8(entry.GetRawInfo(ADDRESS_HOME_STATE))));
+  specifics->set_address_home_zip(data_util::TruncateUTF8(
+      base::UTF16ToUTF8(entry.GetRawInfo(ADDRESS_HOME_ZIP))));
+  specifics->set_address_home_sorting_code(data_util::TruncateUTF8(
+      base::UTF16ToUTF8(entry.GetRawInfo(ADDRESS_HOME_SORTING_CODE))));
+  specifics->set_address_home_dependent_locality(data_util::TruncateUTF8(
+      base::UTF16ToUTF8(entry.GetRawInfo(ADDRESS_HOME_DEPENDENT_LOCALITY))));
+  specifics->set_address_home_country(data_util::TruncateUTF8(
+      base::UTF16ToUTF8(entry.GetRawInfo(ADDRESS_HOME_COUNTRY))));
   if (base::FeatureList::IsEnabled(
           features::kAutofillEnableSupportForAddressOverflow)) {
-    specifics->set_address_home_overflow(
-        TruncateUTF8(UTF16ToUTF8(entry.GetRawInfo(ADDRESS_HOME_OVERFLOW))));
+    specifics->set_address_home_overflow(data_util::TruncateUTF8(
+        base::UTF16ToUTF8(entry.GetRawInfo(ADDRESS_HOME_OVERFLOW))));
   }
   if (base::FeatureList::IsEnabled(
           features::kAutofillEnableSupportForLandmark)) {
-    specifics->set_address_home_landmark(
-        TruncateUTF8(UTF16ToUTF8(entry.GetRawInfo(ADDRESS_HOME_LANDMARK))));
+    specifics->set_address_home_landmark(data_util::TruncateUTF8(
+        base::UTF16ToUTF8(entry.GetRawInfo(ADDRESS_HOME_LANDMARK))));
   }
   if (base::FeatureList::IsEnabled(
           features::kAutofillEnableSupportForBetweenStreetsOrLandmark)) {
     specifics->set_address_home_between_streets_or_landmark(
-        TruncateUTF8(UTF16ToUTF8(
+        data_util::TruncateUTF8(base::UTF16ToUTF8(
             entry.GetRawInfo(ADDRESS_HOME_BETWEEN_STREETS_OR_LANDMARK))));
   }
   if (base::FeatureList::IsEnabled(
           features::kAutofillEnableSupportForAddressOverflowAndLandmark)) {
-    specifics->set_address_home_overflow_and_landmark(TruncateUTF8(
-        UTF16ToUTF8(entry.GetRawInfo(ADDRESS_HOME_OVERFLOW_AND_LANDMARK))));
+    specifics->set_address_home_overflow_and_landmark(
+        data_util::TruncateUTF8(base::UTF16ToUTF8(
+            entry.GetRawInfo(ADDRESS_HOME_OVERFLOW_AND_LANDMARK))));
   }
   if (base::FeatureList::IsEnabled(
           features::kAutofillEnableSupportForBetweenStreets)) {
-    specifics->set_address_home_between_streets(TruncateUTF8(
-        UTF16ToUTF8(entry.GetRawInfo(ADDRESS_HOME_BETWEEN_STREETS))));
-    specifics->set_address_home_between_streets_1(TruncateUTF8(
-        UTF16ToUTF8(entry.GetRawInfo(ADDRESS_HOME_BETWEEN_STREETS_1))));
-    specifics->set_address_home_between_streets_2(TruncateUTF8(
-        UTF16ToUTF8(entry.GetRawInfo(ADDRESS_HOME_BETWEEN_STREETS_2))));
+    specifics->set_address_home_between_streets(data_util::TruncateUTF8(
+        base::UTF16ToUTF8(entry.GetRawInfo(ADDRESS_HOME_BETWEEN_STREETS))));
+    specifics->set_address_home_between_streets_1(data_util::TruncateUTF8(
+        base::UTF16ToUTF8(entry.GetRawInfo(ADDRESS_HOME_BETWEEN_STREETS_1))));
+    specifics->set_address_home_between_streets_2(data_util::TruncateUTF8(
+        base::UTF16ToUTF8(entry.GetRawInfo(ADDRESS_HOME_BETWEEN_STREETS_2))));
   }
   if (base::FeatureList::IsEnabled(
           features::kAutofillEnableSupportForAdminLevel2)) {
-    specifics->set_address_home_admin_level_2(
-        TruncateUTF8(UTF16ToUTF8(entry.GetRawInfo(ADDRESS_HOME_ADMIN_LEVEL2))));
+    specifics->set_address_home_admin_level_2(data_util::TruncateUTF8(
+        base::UTF16ToUTF8(entry.GetRawInfo(ADDRESS_HOME_ADMIN_LEVEL2))));
   }
-  specifics->set_address_home_street_address(
-      TruncateUTF8(UTF16ToUTF8(entry.GetRawInfo(ADDRESS_HOME_STREET_ADDRESS))));
-  specifics->set_address_home_line1(
-      TruncateUTF8(UTF16ToUTF8(entry.GetRawInfo(ADDRESS_HOME_LINE1))));
-  specifics->set_address_home_line2(
-      TruncateUTF8(UTF16ToUTF8(entry.GetRawInfo(ADDRESS_HOME_LINE2))));
+  specifics->set_address_home_street_address(data_util::TruncateUTF8(
+      base::UTF16ToUTF8(entry.GetRawInfo(ADDRESS_HOME_STREET_ADDRESS))));
+  specifics->set_address_home_line1(data_util::TruncateUTF8(
+      base::UTF16ToUTF8(entry.GetRawInfo(ADDRESS_HOME_LINE1))));
+  specifics->set_address_home_line2(data_util::TruncateUTF8(
+      base::UTF16ToUTF8(entry.GetRawInfo(ADDRESS_HOME_LINE2))));
   specifics->set_address_home_thoroughfare_name(
-      UTF16ToUTF8(entry.GetRawInfo(ADDRESS_HOME_STREET_NAME)));
+      base::UTF16ToUTF8(entry.GetRawInfo(ADDRESS_HOME_STREET_NAME)));
   specifics->set_address_home_thoroughfare_number(
-      UTF16ToUTF8(entry.GetRawInfo(ADDRESS_HOME_HOUSE_NUMBER)));
+      base::UTF16ToUTF8(entry.GetRawInfo(ADDRESS_HOME_HOUSE_NUMBER)));
   specifics->set_address_home_thoroughfare_number_and_apt(
-      UTF16ToUTF8(entry.GetRawInfo(ADDRESS_HOME_HOUSE_NUMBER_AND_APT)));
+      base::UTF16ToUTF8(entry.GetRawInfo(ADDRESS_HOME_HOUSE_NUMBER_AND_APT)));
   specifics->set_address_home_street_location(
-      UTF16ToUTF8(entry.GetRawInfo(ADDRESS_HOME_STREET_LOCATION)));
+      base::UTF16ToUTF8(entry.GetRawInfo(ADDRESS_HOME_STREET_LOCATION)));
   specifics->set_address_home_subpremise_name(
-      UTF16ToUTF8(entry.GetRawInfo(ADDRESS_HOME_SUBPREMISE)));
+      base::UTF16ToUTF8(entry.GetRawInfo(ADDRESS_HOME_SUBPREMISE)));
   if (base::FeatureList::IsEnabled(
           features::kAutofillEnableSupportForApartmentNumbers)) {
     specifics->set_address_home_apt(
-        UTF16ToUTF8(entry.GetRawInfo(ADDRESS_HOME_APT)));
+        base::UTF16ToUTF8(entry.GetRawInfo(ADDRESS_HOME_APT)));
     specifics->set_address_home_apt_num(
-        UTF16ToUTF8(entry.GetRawInfo(ADDRESS_HOME_APT_NUM)));
+        base::UTF16ToUTF8(entry.GetRawInfo(ADDRESS_HOME_APT_NUM)));
     specifics->set_address_home_apt_type(
-        UTF16ToUTF8(entry.GetRawInfo(ADDRESS_HOME_APT_TYPE)));
+        base::UTF16ToUTF8(entry.GetRawInfo(ADDRESS_HOME_APT_TYPE)));
   }
   specifics->set_address_home_floor(
-      UTF16ToUTF8(entry.GetRawInfo(ADDRESS_HOME_FLOOR)));
+      base::UTF16ToUTF8(entry.GetRawInfo(ADDRESS_HOME_FLOOR)));
   if (base::FeatureList::IsEnabled(features::kAutofillUseINAddressModel)) {
-    specifics->set_address_home_street_location_and_locality(UTF16ToUTF8(
+    specifics->set_address_home_street_location_and_locality(base::UTF16ToUTF8(
         entry.GetRawInfo(ADDRESS_HOME_STREET_LOCATION_AND_LOCALITY)));
   }
 
@@ -363,8 +361,8 @@ std::unique_ptr<AutofillProfile> CreateAutofillProfileFromSpecifics(
 
   profile->SetRawInfoWithVerificationStatus(
       NAME_FIRST,
-      UTF8ToUTF16(specifics.name_first_size() ? specifics.name_first(0)
-                                              : std::string()),
+      base::UTF8ToUTF16(specifics.name_first_size() ? specifics.name_first(0)
+                                                    : std::string()),
       ConvertSpecificsToProfileVerificationStatus(
           specifics.name_first_status_size()
               ? specifics.name_first_status(0)
@@ -373,8 +371,8 @@ std::unique_ptr<AutofillProfile> CreateAutofillProfileFromSpecifics(
 
   profile->SetRawInfoWithVerificationStatus(
       NAME_MIDDLE,
-      UTF8ToUTF16(specifics.name_middle_size() ? specifics.name_middle(0)
-                                               : std::string()),
+      base::UTF8ToUTF16(specifics.name_middle_size() ? specifics.name_middle(0)
+                                                     : std::string()),
       ConvertSpecificsToProfileVerificationStatus(
           specifics.name_middle_status_size()
               ? specifics.name_middle_status(0)
@@ -383,8 +381,8 @@ std::unique_ptr<AutofillProfile> CreateAutofillProfileFromSpecifics(
 
   profile->SetRawInfoWithVerificationStatus(
       NAME_LAST,
-      UTF8ToUTF16(specifics.name_last_size() ? specifics.name_last(0)
-                                             : std::string()),
+      base::UTF8ToUTF16(specifics.name_last_size() ? specifics.name_last(0)
+                                                   : std::string()),
       ConvertSpecificsToProfileVerificationStatus(
           specifics.name_last_status_size()
               ? specifics.name_last_status(0)
@@ -393,9 +391,9 @@ std::unique_ptr<AutofillProfile> CreateAutofillProfileFromSpecifics(
 
   profile->SetRawInfoWithVerificationStatus(
       NAME_LAST_FIRST,
-      UTF8ToUTF16(specifics.name_last_first_size()
-                      ? specifics.name_last_first(0)
-                      : std::string()),
+      base::UTF8ToUTF16(specifics.name_last_first_size()
+                            ? specifics.name_last_first(0)
+                            : std::string()),
       ConvertSpecificsToProfileVerificationStatus(
           specifics.name_last_first_status_size()
               ? specifics.name_last_first_status(0)
@@ -404,9 +402,9 @@ std::unique_ptr<AutofillProfile> CreateAutofillProfileFromSpecifics(
 
   profile->SetRawInfoWithVerificationStatus(
       NAME_LAST_CONJUNCTION,
-      UTF8ToUTF16(specifics.name_last_conjunction_size()
-                      ? specifics.name_last_conjunction(0)
-                      : std::string()),
+      base::UTF8ToUTF16(specifics.name_last_conjunction_size()
+                            ? specifics.name_last_conjunction(0)
+                            : std::string()),
       ConvertSpecificsToProfileVerificationStatus(
           specifics.name_last_conjunction_status_size()
               ? specifics.name_last_conjunction_status(0)
@@ -415,9 +413,9 @@ std::unique_ptr<AutofillProfile> CreateAutofillProfileFromSpecifics(
 
   profile->SetRawInfoWithVerificationStatus(
       NAME_LAST_SECOND,
-      UTF8ToUTF16(specifics.name_last_second_size()
-                      ? specifics.name_last_second(0)
-                      : std::string()),
+      base::UTF8ToUTF16(specifics.name_last_second_size()
+                            ? specifics.name_last_second(0)
+                            : std::string()),
       ConvertSpecificsToProfileVerificationStatus(
           specifics.name_last_second_status_size()
               ? specifics.name_last_second_status(0)
@@ -428,7 +426,7 @@ std::unique_ptr<AutofillProfile> CreateAutofillProfileFromSpecifics(
   // in this case.
   if (specifics.name_full_size() > 0) {
     profile->SetRawInfoWithVerificationStatus(
-        NAME_FULL, UTF8ToUTF16(specifics.name_full(0)),
+        NAME_FULL, base::UTF8ToUTF16(specifics.name_full(0)),
         ConvertSpecificsToProfileVerificationStatus(
             specifics.name_full_status_size()
                 ? specifics.name_full_status(0)
@@ -436,55 +434,57 @@ std::unique_ptr<AutofillProfile> CreateAutofillProfileFromSpecifics(
                       AutofillProfileSpecifics_VerificationStatus_VERIFICATION_STATUS_UNSPECIFIED));
   }
 
+  profile->SetRawInfo(EMAIL_ADDRESS,
+                      base::UTF8ToUTF16(specifics.email_address_size()
+                                            ? specifics.email_address(0)
+                                            : std::string()));
   profile->SetRawInfo(
-      EMAIL_ADDRESS,
-      UTF8ToUTF16(specifics.email_address_size() ? specifics.email_address(0)
-                                                 : std::string()));
-  profile->SetRawInfo(PHONE_HOME_WHOLE_NUMBER,
-                      UTF8ToUTF16(specifics.phone_home_whole_number_size()
-                                      ? specifics.phone_home_whole_number(0)
-                                      : std::string()));
+      PHONE_HOME_WHOLE_NUMBER,
+      base::UTF8ToUTF16(specifics.phone_home_whole_number_size()
+                            ? specifics.phone_home_whole_number(0)
+                            : std::string()));
 
   // Set simple single-valued fields.
-  profile->SetRawInfo(COMPANY_NAME, UTF8ToUTF16(specifics.company_name()));
+  profile->SetRawInfo(COMPANY_NAME,
+                      base::UTF8ToUTF16(specifics.company_name()));
 
   profile->SetRawInfoWithVerificationStatus(
-      ADDRESS_HOME_CITY, UTF8ToUTF16(specifics.address_home_city()),
+      ADDRESS_HOME_CITY, base::UTF8ToUTF16(specifics.address_home_city()),
       ConvertSpecificsToProfileVerificationStatus(
           specifics.address_home_city_status()));
 
   profile->SetRawInfoWithVerificationStatus(
-      ADDRESS_HOME_STATE, UTF8ToUTF16(specifics.address_home_state()),
+      ADDRESS_HOME_STATE, base::UTF8ToUTF16(specifics.address_home_state()),
       ConvertSpecificsToProfileVerificationStatus(
           specifics.address_home_state_status()));
 
   profile->SetRawInfoWithVerificationStatus(
-      ADDRESS_HOME_ZIP, UTF8ToUTF16(specifics.address_home_zip()),
+      ADDRESS_HOME_ZIP, base::UTF8ToUTF16(specifics.address_home_zip()),
       ConvertSpecificsToProfileVerificationStatus(
           specifics.address_home_zip_status()));
 
   profile->SetRawInfoWithVerificationStatus(
       ADDRESS_HOME_SORTING_CODE,
-      UTF8ToUTF16(specifics.address_home_sorting_code()),
+      base::UTF8ToUTF16(specifics.address_home_sorting_code()),
       ConvertSpecificsToProfileVerificationStatus(
           specifics.address_home_sorting_code_status()));
 
   profile->SetRawInfoWithVerificationStatus(
       ADDRESS_HOME_DEPENDENT_LOCALITY,
-      UTF8ToUTF16(specifics.address_home_dependent_locality()),
+      base::UTF8ToUTF16(specifics.address_home_dependent_locality()),
       ConvertSpecificsToProfileVerificationStatus(
           specifics.address_home_dependent_locality_status()));
 
-
   profile->SetRawInfoWithVerificationStatus(
-      ADDRESS_HOME_COUNTRY, UTF8ToUTF16(country_code),
+      ADDRESS_HOME_COUNTRY, base::UTF8ToUTF16(country_code),
       ConvertSpecificsToProfileVerificationStatus(
           specifics.address_home_country_status()));
 
   if (base::FeatureList::IsEnabled(
           features::kAutofillEnableSupportForAddressOverflow)) {
     profile->SetRawInfoWithVerificationStatus(
-        ADDRESS_HOME_OVERFLOW, UTF8ToUTF16(specifics.address_home_overflow()),
+        ADDRESS_HOME_OVERFLOW,
+        base::UTF8ToUTF16(specifics.address_home_overflow()),
         ConvertSpecificsToProfileVerificationStatus(
             specifics.address_home_overflow_status()));
   }
@@ -493,7 +493,7 @@ std::unique_ptr<AutofillProfile> CreateAutofillProfileFromSpecifics(
           features::kAutofillEnableSupportForBetweenStreetsOrLandmark)) {
     profile->SetRawInfoWithVerificationStatus(
         ADDRESS_HOME_BETWEEN_STREETS_OR_LANDMARK,
-        UTF8ToUTF16(specifics.address_home_between_streets_or_landmark()),
+        base::UTF8ToUTF16(specifics.address_home_between_streets_or_landmark()),
         ConvertSpecificsToProfileVerificationStatus(
             specifics.address_home_between_streets_or_landmark_status()));
   }
@@ -502,7 +502,7 @@ std::unique_ptr<AutofillProfile> CreateAutofillProfileFromSpecifics(
           features::kAutofillEnableSupportForAddressOverflowAndLandmark)) {
     profile->SetRawInfoWithVerificationStatus(
         ADDRESS_HOME_OVERFLOW_AND_LANDMARK,
-        UTF8ToUTF16(specifics.address_home_overflow_and_landmark()),
+        base::UTF8ToUTF16(specifics.address_home_overflow_and_landmark()),
         ConvertSpecificsToProfileVerificationStatus(
             specifics.address_home_overflow_and_landmark_status()));
   }
@@ -510,7 +510,8 @@ std::unique_ptr<AutofillProfile> CreateAutofillProfileFromSpecifics(
   if (base::FeatureList::IsEnabled(
           features::kAutofillEnableSupportForLandmark)) {
     profile->SetRawInfoWithVerificationStatus(
-        ADDRESS_HOME_LANDMARK, UTF8ToUTF16(specifics.address_home_landmark()),
+        ADDRESS_HOME_LANDMARK,
+        base::UTF8ToUTF16(specifics.address_home_landmark()),
         ConvertSpecificsToProfileVerificationStatus(
             specifics.address_home_landmark_status()));
   }
@@ -519,17 +520,17 @@ std::unique_ptr<AutofillProfile> CreateAutofillProfileFromSpecifics(
           features::kAutofillEnableSupportForBetweenStreets)) {
     profile->SetRawInfoWithVerificationStatus(
         ADDRESS_HOME_BETWEEN_STREETS,
-        UTF8ToUTF16(specifics.address_home_between_streets()),
+        base::UTF8ToUTF16(specifics.address_home_between_streets()),
         ConvertSpecificsToProfileVerificationStatus(
             specifics.address_home_between_streets_status()));
     profile->SetRawInfoWithVerificationStatus(
         ADDRESS_HOME_BETWEEN_STREETS_1,
-        UTF8ToUTF16(specifics.address_home_between_streets_1()),
+        base::UTF8ToUTF16(specifics.address_home_between_streets_1()),
         ConvertSpecificsToProfileVerificationStatus(
             specifics.address_home_between_streets_1_status()));
     profile->SetRawInfoWithVerificationStatus(
         ADDRESS_HOME_BETWEEN_STREETS_2,
-        UTF8ToUTF16(specifics.address_home_between_streets_2()),
+        base::UTF8ToUTF16(specifics.address_home_between_streets_2()),
         ConvertSpecificsToProfileVerificationStatus(
             specifics.address_home_between_streets_2_status()));
   }
@@ -538,7 +539,7 @@ std::unique_ptr<AutofillProfile> CreateAutofillProfileFromSpecifics(
           features::kAutofillEnableSupportForAdminLevel2)) {
     profile->SetRawInfoWithVerificationStatus(
         ADDRESS_HOME_ADMIN_LEVEL2,
-        UTF8ToUTF16(specifics.address_home_admin_level_2()),
+        base::UTF8ToUTF16(specifics.address_home_admin_level_2()),
         ConvertSpecificsToProfileVerificationStatus(
             specifics.address_home_admin_level_2_status()));
   }
@@ -549,71 +550,74 @@ std::unique_ptr<AutofillProfile> CreateAutofillProfileFromSpecifics(
   if (specifics.has_address_home_street_address()) {
     profile->SetRawInfoWithVerificationStatus(
         ADDRESS_HOME_STREET_ADDRESS,
-        UTF8ToUTF16(specifics.address_home_street_address()),
+        base::UTF8ToUTF16(specifics.address_home_street_address()),
         ConvertSpecificsToProfileVerificationStatus(
             specifics.address_home_street_address_status()));
   } else {
     profile->SetRawInfo(ADDRESS_HOME_LINE1,
-                        UTF8ToUTF16(specifics.address_home_line1()));
+                        base::UTF8ToUTF16(specifics.address_home_line1()));
     profile->SetRawInfo(ADDRESS_HOME_LINE2,
-                        UTF8ToUTF16(specifics.address_home_line2()));
+                        base::UTF8ToUTF16(specifics.address_home_line2()));
   }
 
   profile->SetRawInfoWithVerificationStatus(
       ADDRESS_HOME_STREET_NAME,
-      UTF8ToUTF16(specifics.address_home_thoroughfare_name()),
+      base::UTF8ToUTF16(specifics.address_home_thoroughfare_name()),
       ConvertSpecificsToProfileVerificationStatus(
           specifics.address_home_thoroughfare_name_status()));
 
   profile->SetRawInfoWithVerificationStatus(
       ADDRESS_HOME_HOUSE_NUMBER,
-      UTF8ToUTF16(specifics.address_home_thoroughfare_number()),
+      base::UTF8ToUTF16(specifics.address_home_thoroughfare_number()),
       ConvertSpecificsToProfileVerificationStatus(
           specifics.address_home_thoroughfare_number_status()));
 
   profile->SetRawInfoWithVerificationStatus(
       ADDRESS_HOME_HOUSE_NUMBER_AND_APT,
-      UTF8ToUTF16(specifics.address_home_thoroughfare_number_and_apt()),
+      base::UTF8ToUTF16(specifics.address_home_thoroughfare_number_and_apt()),
       ConvertSpecificsToProfileVerificationStatus(
           specifics.address_home_thoroughfare_number_and_apt_status()));
 
   profile->SetRawInfoWithVerificationStatus(
       ADDRESS_HOME_STREET_LOCATION,
-      UTF8ToUTF16(specifics.address_home_street_location()),
+      base::UTF8ToUTF16(specifics.address_home_street_location()),
       ConvertSpecificsToProfileVerificationStatus(
           specifics.address_home_street_location_status()));
 
   profile->SetRawInfoWithVerificationStatus(
       ADDRESS_HOME_SUBPREMISE,
-      UTF8ToUTF16(specifics.address_home_subpremise_name()),
+      base::UTF8ToUTF16(specifics.address_home_subpremise_name()),
       ConvertSpecificsToProfileVerificationStatus(
           specifics.address_home_subpremise_name_status()));
 
   if (base::FeatureList::IsEnabled(
           features::kAutofillEnableSupportForApartmentNumbers)) {
     profile->SetRawInfoWithVerificationStatus(
-        ADDRESS_HOME_APT, UTF8ToUTF16(specifics.address_home_apt()),
+        ADDRESS_HOME_APT, base::UTF8ToUTF16(specifics.address_home_apt()),
         ConvertSpecificsToProfileVerificationStatus(
             specifics.address_home_apt_status()));
     profile->SetRawInfoWithVerificationStatus(
-        ADDRESS_HOME_APT_NUM, UTF8ToUTF16(specifics.address_home_apt_num()),
+        ADDRESS_HOME_APT_NUM,
+        base::UTF8ToUTF16(specifics.address_home_apt_num()),
         ConvertSpecificsToProfileVerificationStatus(
             specifics.address_home_apt_num_status()));
     profile->SetRawInfoWithVerificationStatus(
-        ADDRESS_HOME_APT_TYPE, UTF8ToUTF16(specifics.address_home_apt_type()),
+        ADDRESS_HOME_APT_TYPE,
+        base::UTF8ToUTF16(specifics.address_home_apt_type()),
         ConvertSpecificsToProfileVerificationStatus(
             specifics.address_home_apt_type_status()));
   }
 
   profile->SetRawInfoWithVerificationStatus(
-      ADDRESS_HOME_FLOOR, UTF8ToUTF16(specifics.address_home_floor()),
+      ADDRESS_HOME_FLOOR, base::UTF8ToUTF16(specifics.address_home_floor()),
       ConvertSpecificsToProfileVerificationStatus(
           specifics.address_home_floor_status()));
 
   if (base::FeatureList::IsEnabled(features::kAutofillUseINAddressModel)) {
     profile->SetRawInfoWithVerificationStatus(
         ADDRESS_HOME_STREET_LOCATION_AND_LOCALITY,
-        UTF8ToUTF16(specifics.address_home_street_location_and_locality()),
+        base::UTF8ToUTF16(
+            specifics.address_home_street_location_and_locality()),
         ConvertSpecificsToProfileVerificationStatus(
             specifics.address_home_street_location_and_locality_status()));
   }

@@ -28,7 +28,6 @@
 #include "components/sync/model/sync_metadata_store_change_list.h"
 #include "components/sync/protocol/entity_data.h"
 
-using base::Time;
 using sync_pb::AutofillSpecifics;
 using syncer::ClientTagBasedModelTypeProcessor;
 using syncer::EntityChange;
@@ -122,8 +121,9 @@ AutocompleteEntry CreateAutocompleteEntry(
 
   auto [date_created_iter, date_last_used_iter] =
       std::minmax_element(timestamps.begin(), timestamps.end());
-  return AutocompleteEntry(key, Time::FromInternalValue(*date_created_iter),
-                           Time::FromInternalValue(*date_last_used_iter));
+  return AutocompleteEntry(key,
+                           base::Time::FromInternalValue(*date_created_iter),
+                           base::Time::FromInternalValue(*date_last_used_iter));
 }
 
 // This is used to respond to ApplyIncrementalSyncChanges() and
@@ -244,7 +244,8 @@ class SyncDifferenceTracker {
     if (!InitializeIfNeeded()) {
       return false;
     }
-    auto iter = unique_to_local_.find(AutocompleteEntry(key, Time(), Time()));
+    auto iter = unique_to_local_.find(
+        AutocompleteEntry(key, base::Time(), base::Time()));
     if (iter != unique_to_local_.end()) {
       *entry = *iter;
     }

@@ -27,8 +27,6 @@
 #include "components/sync/model/sync_metadata_store_change_list.h"
 #include "components/sync/protocol/entity_data.h"
 
-using base::UTF16ToUTF8;
-using std::optional;
 using sync_pb::AutofillProfileSpecifics;
 using syncer::EntityData;
 using syncer::MetadataChangeList;
@@ -40,9 +38,9 @@ namespace {
 
 // Simplify checking for optional errors and returning only when present.
 #undef RETURN_IF_ERROR
-#define RETURN_IF_ERROR(x)                \
-  if (optional<ModelError> ret_val = x) { \
-    return ret_val;                       \
+#define RETURN_IF_ERROR(x)                     \
+  if (std::optional<ModelError> ret_val = x) { \
+    return ret_val;                            \
   }
 
 // Address to this variable used as the user data key.
@@ -99,7 +97,7 @@ AutofillProfileSyncBridge::CreateMetadataChangeList() {
                           change_processor()->GetWeakPtr()));
 }
 
-optional<syncer::ModelError> AutofillProfileSyncBridge::MergeFullSyncData(
+std::optional<syncer::ModelError> AutofillProfileSyncBridge::MergeFullSyncData(
     std::unique_ptr<MetadataChangeList> metadata_change_list,
     syncer::EntityChangeList entity_data) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
@@ -132,7 +130,8 @@ optional<syncer::ModelError> AutofillProfileSyncBridge::MergeFullSyncData(
   return std::nullopt;
 }
 
-optional<ModelError> AutofillProfileSyncBridge::ApplyIncrementalSyncChanges(
+std::optional<ModelError>
+AutofillProfileSyncBridge::ApplyIncrementalSyncChanges(
     std::unique_ptr<MetadataChangeList> metadata_change_list,
     syncer::EntityChangeList entity_changes) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);

@@ -24,8 +24,6 @@
 #include "components/autofill/core/common/autofill_l10n_util.h"
 #include "third_party/libphonenumber/phonenumber_api.h"
 
-using base::UTF16ToUTF8;
-using base::UTF8ToUTF16;
 using i18n::phonenumbers::PhoneNumberUtil;
 
 namespace autofill {
@@ -620,7 +618,7 @@ bool AutofillProfileComparator::MergePhoneNumbers(
   // Figure out a country code hint.
   // TODO(crbug.com/40221178) |GetNonEmptyOf()| prefers |p1| in case both are
   // non empty.
-  std::string region = UTF16ToUTF8(
+  std::string region = base::UTF16ToUTF8(
       GetNonEmptyOf(p1, p2, AutofillType(HtmlFieldType::kCountryCode)));
   if (region.empty())
     region = AutofillCountry::CountryCodeForLocale(app_locale_);
@@ -629,13 +627,13 @@ bool AutofillProfileComparator::MergePhoneNumbers(
   PhoneNumberUtil* phone_util = PhoneNumberUtil::GetInstance();
 
   ::i18n::phonenumbers::PhoneNumber n1;
-  if (phone_util->ParseAndKeepRawInput(UTF16ToUTF8(s1), region, &n1) !=
+  if (phone_util->ParseAndKeepRawInput(base::UTF16ToUTF8(s1), region, &n1) !=
       PhoneNumberUtil::NO_PARSING_ERROR) {
     return false;
   }
 
   ::i18n::phonenumbers::PhoneNumber n2;
-  if (phone_util->ParseAndKeepRawInput(UTF16ToUTF8(s2), region, &n2) !=
+  if (phone_util->ParseAndKeepRawInput(base::UTF16ToUTF8(s2), region, &n2) !=
       PhoneNumberUtil::NO_PARSING_ERROR) {
     return false;
   }
@@ -702,7 +700,7 @@ bool AutofillProfileComparator::MergePhoneNumbers(
     new_number = new_number.substr(offset);
   }
 
-  phone_number.SetRawInfo(kWholePhoneNumber, UTF8ToUTF16(new_number));
+  phone_number.SetRawInfo(kWholePhoneNumber, base::UTF8ToUTF16(new_number));
   return true;
 }
 

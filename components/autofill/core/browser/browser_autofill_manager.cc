@@ -152,7 +152,6 @@ namespace autofill {
 
 using FillingProductSet = DenseSet<FillingProduct>;
 
-using base::TimeTicks;
 using mojom::SubmissionSource;
 
 namespace {
@@ -1115,7 +1114,7 @@ void BrowserAutofillManager::ProcessPendingFormForUpload() {
 void BrowserAutofillManager::OnTextFieldDidChangeImpl(
     const FormData& form,
     const FieldGlobalId& field_id,
-    const TimeTicks timestamp) {
+    const base::TimeTicks timestamp) {
   const FormFieldData* field = form.FindFieldByGlobalId(field_id);
   if (!field) {
     return;
@@ -1814,7 +1813,7 @@ void BrowserAutofillManager::OnSelectControlDidChangeImpl(
 
 void BrowserAutofillManager::OnDidFillAutofillFormDataImpl(
     const FormData& form,
-    const TimeTicks timestamp) {
+    const base::TimeTicks timestamp) {
   UpdatePendingForm(form);
 
   // Find the FormStructure that corresponds to |form|. Use default form type if
@@ -2373,13 +2372,13 @@ void BrowserAutofillManager::Reset() {
   credit_card_form_ = FormData();
   credit_card_field_ = FormFieldData();
   last_unlocked_credit_card_cvc_.clear();
-  initial_interaction_timestamp_ = TimeTicks();
+  initial_interaction_timestamp_ = base::TimeTicks();
   fetched_credit_card_trigger_source_ = std::nullopt;
   if (touch_to_fill_delegate_) {
     touch_to_fill_delegate_->Reset();
   }
   form_filler_->Reset();
-  form_submitted_timestamp_ = TimeTicks();
+  form_submitted_timestamp_ = base::TimeTicks();
   four_digit_combinations_in_dom_.clear();
 }
 
@@ -2871,7 +2870,7 @@ void BrowserAutofillManager::OnFormProcessed(
 }
 
 void BrowserAutofillManager::UpdateInitialInteractionTimestamp(
-    const TimeTicks& interaction_timestamp) {
+    const base::TimeTicks& interaction_timestamp) {
   if (initial_interaction_timestamp_.is_null() ||
       interaction_timestamp < initial_interaction_timestamp_) {
     initial_interaction_timestamp_ = interaction_timestamp;
