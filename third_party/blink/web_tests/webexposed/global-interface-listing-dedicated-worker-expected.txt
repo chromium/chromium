@@ -3794,6 +3794,7 @@ Starting worker: resources/global-interface-listing-worker.js
 [Worker]     setter onmessage
 [Worker] interface WorkerGlobalScope : EventTarget
 [Worker]     attribute @@toStringTag
+[Worker]     getter ai
 [Worker]     getter caches
 [Worker]     getter crossOriginEmbedderPolicy
 [Worker]     getter crossOriginIsolated
@@ -3802,6 +3803,7 @@ Starting worker: resources/global-interface-listing-worker.js
 [Worker]     getter indexedDB
 [Worker]     getter isSecureContext
 [Worker]     getter location
+[Worker]     getter model
 [Worker]     getter navigator
 [Worker]     getter onerror
 [Worker]     getter onlanguagechange
@@ -3827,6 +3829,8 @@ Starting worker: resources/global-interface-listing-worker.js
 [Worker]     method setInterval
 [Worker]     method setTimeout
 [Worker]     method structuredClone
+[Worker]     setter ai
+[Worker]     setter model
 [Worker]     setter onerror
 [Worker]     setter onlanguagechange
 [Worker]     setter onrejectionhandled
@@ -4015,7 +4019,6 @@ Starting worker: resources/global-interface-listing-worker.js
 [Worker] [GLOBAL OBJECT]
 [Worker]     attribute globalThis
 [Worker]     attribute internals
-[Worker]     getter ai
 [Worker]     getter name
 [Worker]     getter onmessage
 [Worker]     getter onmessageerror
@@ -4028,7 +4031,6 @@ Starting worker: resources/global-interface-listing-worker.js
 [Worker]     method webkitRequestFileSystemSync
 [Worker]     method webkitResolveLocalFileSystemSyncURL
 [Worker]     method webkitResolveLocalFileSystemURL
-[Worker]     setter ai
 [Worker]     setter name
 [Worker]     setter onmessage
 [Worker]     setter onmessageerror

@@ -4,9 +4,10 @@
 
 // TODO(crbug.com/343126579): Add link to spec/explainer.
 [
+    Exposed=(Window,Worker),
     ImplementedAs=DOMAI,
     RuntimeEnabled=ModelExecutionAPI
-] partial interface Window {
+] partial interface mixin WindowOrWorkerGlobalScope {
     [
       Replaceable
     ]

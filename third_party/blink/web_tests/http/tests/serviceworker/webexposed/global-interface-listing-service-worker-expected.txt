@@ -3390,6 +3390,7 @@ interface WindowClient : Client
     method navigate
 interface WorkerGlobalScope : EventTarget
     attribute @@toStringTag
+    getter ai
     getter caches
     getter crossOriginEmbedderPolicy
     getter crossOriginIsolated
@@ -3398,6 +3399,7 @@ interface WorkerGlobalScope : EventTarget
     getter indexedDB
     getter isSecureContext
     getter location
+    getter model
     getter navigator
     getter onerror
     getter onlanguagechange
@@ -3423,6 +3425,8 @@ interface WorkerGlobalScope : EventTarget
     method setInterval
     method setTimeout
     method structuredClone
+    setter ai
+    setter model
     setter onerror
     setter onlanguagechange
     setter onrejectionhandled

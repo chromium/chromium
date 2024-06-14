@@ -25,6 +25,7 @@
 #include "content/public/browser/permission_controller.h"
 #include "content/public/browser/render_process_host.h"
 #include "content/public/browser/storage_partition.h"
+#include "content/public/common/content_client.h"
 #include "content/public/common/origin_util.h"
 #include "mojo/public/cpp/bindings/message.h"
 #include "storage/browser/blob/blob_url_store_impl.h"
@@ -102,8 +103,7 @@ void ServiceWorkerHost::GetSandboxedFileSystemForBucket(
     const std::vector<std::string>& directory_path_components,
     blink::mojom::FileSystemAccessManager::GetSandboxedFileSystemCallback
         callback) {
-  auto* process =
-      RenderProcessHost::FromID(version_->embedded_worker()->process_id());
+  auto* process = GetProcessHost();
   if (process) {
     process->GetSandboxedFileSystemForBucket(bucket.ToBucketLocator(),
                                              directory_path_components,
@@ -163,8 +163,8 @@ StoragePartition* ServiceWorkerHost::GetStoragePartition() const {
   // before we had the opportunity to Detach because the disconnect handler
   // wasn't run yet. In such cases it is is safe to ignore these messages since
   // we are about to stop the service worker.
-  auto* process =
-      RenderProcessHost::FromID(version_->embedded_worker()->process_id());
+  auto* process = GetProcessHost();
+
   if (process == nullptr) {
     return nullptr;
   }
@@ -252,8 +252,8 @@ blink::StorageKey ServiceWorkerHost::GetBucketStorageKey() {
 
 blink::mojom::PermissionStatus ServiceWorkerHost::GetPermissionStatus(
     blink::PermissionType permission_type) {
-  auto* process =
-      RenderProcessHost::FromID(version_->embedded_worker()->process_id());
+  auto* process = GetProcessHost();
+
   if (!process) {
     return blink::mojom::PermissionStatus::DENIED;
   }
@@ -275,6 +275,19 @@ GlobalRenderFrameHostId ServiceWorkerHost::GetAssociatedRenderFrameHostId()
     const {
   // For `ServiceWorkerHost` there is no associated `RenderFrameHost`.
   return GlobalRenderFrameHostId();
+}
+
+RenderProcessHost* ServiceWorkerHost::GetProcessHost() const {
+  return RenderProcessHost::FromID(version_->embedded_worker()->process_id());
+}
+
+void ServiceWorkerHost::BindAIManager(
+    mojo::PendingReceiver<blink::mojom::AIManager> receiver) {
+  auto* process = GetProcessHost();
+  if (process) {
+    GetContentClient()->browser()->BindAIManager(process->GetBrowserContext(),
+                                                 std::move(receiver));
+  }
 }
 
 }  // namespace content

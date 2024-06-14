@@ -139,7 +139,11 @@ class CONTENT_EXPORT ServiceWorkerHost : public BucketContext {
           callback) override;
   GlobalRenderFrameHostId GetAssociatedRenderFrameHostId() const override;
 
+  void BindAIManager(mojo::PendingReceiver<blink::mojom::AIManager> receiver);
+
  private:
+  RenderProcessHost* GetProcessHost() const;
+
   int worker_process_id_ = ChildProcessHost::kInvalidUniqueID;
 
   // The service worker being hosted. Raw pointer is safe because the version
