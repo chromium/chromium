@@ -1326,6 +1326,7 @@ public class SigninFirstRunFragmentTest {
 
     @Test
     @MediumTest
+    @DisabledTest(message = "crbug.com/347291782")
     public void testShowsTitleAndSubtitleWhenNativeInitializationFinished() {
         TestThreadUtils.runOnUiThreadBlocking(
                 () -> {
