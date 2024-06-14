@@ -2164,6 +2164,7 @@ static_library("ui") {
       "//chrome/browser/ui/webui/tab_strip:mojo_bindings",
       "//chrome/browser/ui/webui/web_app_internals:mojo_bindings",
       "//chrome/browser/web_applications",
+      "//chrome/browser:lcp_critical_path_predictor_proto",
       "//chrome/common:buildflags",
       "//chrome/common:version_header",
       "//chrome/common/accessibility:mojo_bindings",
