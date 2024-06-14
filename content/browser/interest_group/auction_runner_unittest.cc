@@ -4214,6 +4214,79 @@ TEST_F(AuctionRunnerTest, WorkletServiceGetNextSellerWorkletThreadIndex) {
   EXPECT_EQ(auction_worklet_service1->GetNextSellerWorkletThreadIndex(), 3u);
 }
 
+TEST_F(AuctionRunnerTest, BidderThreadPoolExpanded) {
+  mojo::PendingRemote<auction_worklet::mojom::AuctionWorkletService>
+      auction_worklet_service_remote;
+  mojo::PendingReceiver<auction_worklet::mojom::AuctionWorkletService>
+      auction_worklet_service_receiver =
+          auction_worklet_service_remote.InitWithNewPipeAndPassReceiver();
+
+  auto auction_worklet_service =
+      auction_worklet::AuctionWorkletServiceImpl::CreateForService(
+          std::move(auction_worklet_service_receiver));
+
+  network::TestURLLoaderFactory test_url_loader_factory;
+
+  auction_worklet::TestAuctionNetworkEventsHandler
+      auction_network_events_handler;
+
+  mojo::Remote<auction_worklet::mojom::BidderWorklet> bidder_worklet1;
+  mojo::PendingReceiver<auction_worklet::mojom::BidderWorklet>
+      worklet_receiver1 = bidder_worklet1.BindNewPipeAndPassReceiver();
+
+  mojo::PendingRemote<network::mojom::URLLoaderFactory> url_loader_factory1;
+  test_url_loader_factory.Clone(
+      url_loader_factory1.InitWithNewPipeAndPassReceiver());
+
+  std::vector<
+      mojo::PendingRemote<auction_worklet::mojom::AuctionSharedStorageHost>>
+      shared_storage_hosts1(10);
+
+  auction_worklet_service->LoadBidderWorklet(
+      std::move(worklet_receiver1), std::move(shared_storage_hosts1),
+      /*should_pause_on_start=*/false, std::move(url_loader_factory1),
+      auction_network_events_handler.CreateRemote(),
+      /*script_source_url=*/GURL("https://ad1.com"),
+      /*bidding_wasm_helper_url=*/{}, /*trusted_bidding_signals_url=*/{},
+      /*trusted_bidding_signals_slot_size_param=*/{},
+      /*top_window_origin=*/url::Origin::Create(GURL("https://ad1.com")),
+      auction_worklet::mojom::AuctionWorkletPermissionsPolicyState::New(
+          /*private_aggregation_allowed=*/false,
+          /*shared_storage_allowed=*/false),
+      /*experiment_group_id=*/{});
+
+  // There are 10 bidder threads and 1 seller thread.
+  EXPECT_EQ(auction_worklet_service->AuctionV8HelpersForTesting().size(), 11u);
+
+  mojo::Remote<auction_worklet::mojom::BidderWorklet> bidder_worklet2;
+  mojo::PendingReceiver<auction_worklet::mojom::BidderWorklet>
+      worklet_receiver2 = bidder_worklet2.BindNewPipeAndPassReceiver();
+
+  mojo::PendingRemote<network::mojom::URLLoaderFactory> url_loader_factory2;
+  test_url_loader_factory.Clone(
+      url_loader_factory2.InitWithNewPipeAndPassReceiver());
+
+  std::vector<
+      mojo::PendingRemote<auction_worklet::mojom::AuctionSharedStorageHost>>
+      shared_storage_hosts2(20);
+
+  auction_worklet_service->LoadBidderWorklet(
+      std::move(worklet_receiver2), std::move(shared_storage_hosts2),
+      /*should_pause_on_start=*/false, std::move(url_loader_factory2),
+      auction_network_events_handler.CreateRemote(),
+      /*script_source_url=*/GURL("https://ad1.com"),
+      /*bidding_wasm_helper_url=*/{}, /*trusted_bidding_signals_url=*/{},
+      /*trusted_bidding_signals_slot_size_param=*/{},
+      /*top_window_origin=*/url::Origin::Create(GURL("https://ad1.com")),
+      auction_worklet::mojom::AuctionWorkletPermissionsPolicyState::New(
+          /*private_aggregation_allowed=*/false,
+          /*shared_storage_allowed=*/false),
+      /*experiment_group_id=*/{});
+
+  // There are 20 bidder threads and 1 seller thread.
+  EXPECT_EQ(auction_worklet_service->AuctionV8HelpersForTesting().size(), 21u);
+}
+
 TEST_F(AuctionRunnerTest, PauseBidder) {
   pause_worklet_url_ = kBidder2Url;
 
@@ -12659,6 +12732,130 @@ TEST_F(AuctionRunnerTest, ExecutionModeGroupByOrigin) {
   ASSERT_TRUE(result_.winning_group_id);
   EXPECT_THAT(result_.report_urls,
               testing::ElementsAre(GURL("https://adplatform.com/metrics/6")));
+}
+
+// With a scaling factor of 1.0, and with 9 interest groups, one thread will be
+// requested for the bidder worklet.
+TEST_F(AuctionRunnerTest, SmallInterestGroupsCount_OneBidderThreadRequested) {
+  base::test::ScopedFeatureList feature_list;
+  base::FieldTrialParams params;
+  params["bidder_worklet_thread_pool_size_logarithmic_scaling_factor"] = "1.0";
+  feature_list.InitAndEnableFeatureWithParameters(
+      features::kFledgeBidderWorkletThreadPool, params);
+
+  UseMockWorkletService();
+
+  // The `MockBidderWorklet` does not support testing multiple calls to
+  // `BeginGenerateBid()`. Thus, disable that code path, but still allow testing
+  // other auction functions.
+  mock_auction_process_manager_->SetSkipGenerateBid();
+
+  const char kScript[] = R"(
+    if (!('count' in globalThis))
+      globalThis.count = 1;
+    function generateBid() {
+      ++count;
+      return {ad: ["ad"], bid:count, render:"https://response.test/"};
+    }
+    function reportWin(auctionSignals, perBuyerSignals, sellerSignals,
+                       browserSignals) {}
+  )";
+
+  const char kSellerScript[] = R"(
+    function scoreAd(adMetadata, bid, auctionConfig, trustedScoringSignals,
+                     browserSignals) {
+      return {desirability: bid,
+              ad: adMetadata};
+    }
+    function reportResult() {}
+  )";
+
+  auction_worklet::AddJavascriptResponse(&url_loader_factory_, kBidder1Url,
+                                         kScript);
+  auction_worklet::AddJavascriptResponse(&url_loader_factory_, kSellerUrl,
+                                         kSellerScript);
+
+  std::vector<StorageInterestGroup> bidders;
+  for (int i = 0; i < 9; ++i) {
+    StorageInterestGroup ig = MakeInterestGroup(
+        kBidder1, kBidder1Name + base::NumberToString(i), kBidder1Url,
+        /* trusted_bidding_signals_url=*/std::nullopt,
+        /* trusted_bidding_signals_keys=*/{}, GURL("https://response.test/"));
+    ig.joining_origin = url::Origin::Create(GURL("https://sports.example.org"));
+    ig.interest_group.execution_mode =
+        blink::InterestGroup::ExecutionMode::kFrozenContext;
+    bidders.push_back(std::move(ig));
+  }
+
+  StartAuction(kSellerUrl, std::move(bidders));
+  auction_run_loop_->Run();
+
+  EXPECT_EQ(mock_auction_process_manager_->load_bidder_worklet_count(), 1u);
+  EXPECT_EQ(
+      mock_auction_process_manager_->last_load_bidder_worklet_threads_count(),
+      1u);
+}
+
+// with a scaling factor of 1.0, and with 10 interest groups, two threads will
+// be requested for the bidder worklet.
+TEST_F(AuctionRunnerTest, LargeInterestGroupsCount_TwoBidderThreadsRequested) {
+  base::test::ScopedFeatureList feature_list;
+  base::FieldTrialParams params;
+  params["bidder_worklet_thread_pool_size_logarithmic_scaling_factor"] = "1.0";
+  feature_list.InitAndEnableFeatureWithParameters(
+      features::kFledgeBidderWorkletThreadPool, params);
+
+  UseMockWorkletService();
+
+  // The `MockBidderWorklet` does not support testing multiple calls to
+  // `BeginGenerateBid()`. Thus, disable that code path, but still allow testing
+  // other auction functions.
+  mock_auction_process_manager_->SetSkipGenerateBid();
+
+  const char kScript[] = R"(
+    if (!('count' in globalThis))
+      globalThis.count = 1;
+    function generateBid() {
+      ++count;
+      return {ad: ["ad"], bid:count, render:"https://response.test/"};
+    }
+    function reportWin(auctionSignals, perBuyerSignals, sellerSignals,
+                       browserSignals) {}
+  )";
+
+  const char kSellerScript[] = R"(
+    function scoreAd(adMetadata, bid, auctionConfig, trustedScoringSignals,
+                     browserSignals) {
+      return {desirability: bid,
+              ad: adMetadata};
+    }
+    function reportResult() {}
+  )";
+
+  auction_worklet::AddJavascriptResponse(&url_loader_factory_, kBidder1Url,
+                                         kScript);
+  auction_worklet::AddJavascriptResponse(&url_loader_factory_, kSellerUrl,
+                                         kSellerScript);
+
+  std::vector<StorageInterestGroup> bidders;
+  for (int i = 0; i < 10; ++i) {
+    StorageInterestGroup ig = MakeInterestGroup(
+        kBidder1, kBidder1Name + base::NumberToString(i), kBidder1Url,
+        /* trusted_bidding_signals_url=*/std::nullopt,
+        /* trusted_bidding_signals_keys=*/{}, GURL("https://response.test/"));
+    ig.joining_origin = url::Origin::Create(GURL("https://sports.example.org"));
+    ig.interest_group.execution_mode =
+        blink::InterestGroup::ExecutionMode::kFrozenContext;
+    bidders.push_back(std::move(ig));
+  }
+
+  StartAuction(kSellerUrl, std::move(bidders));
+  auction_run_loop_->Run();
+
+  EXPECT_EQ(mock_auction_process_manager_->load_bidder_worklet_count(), 1u);
+  EXPECT_EQ(
+      mock_auction_process_manager_->last_load_bidder_worklet_threads_count(),
+      2u);
 }
 
 // Test the case where the only bidder times out due to the

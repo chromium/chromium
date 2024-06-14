@@ -241,6 +241,19 @@ BASE_FEATURE(kFledgeSellerWorkletThreadPool,
 const base::FeatureParam<int> kFledgeSellerWorkletThreadPoolSize{
     &kFledgeSellerWorkletThreadPool, "seller_worklet_thread_pool_size", 1};
 
+// Enables multi-threaded bidder worklet.
+BASE_FEATURE(kFledgeBidderWorkletThreadPool,
+             "FledgeBidderWorkletThreadPool",
+             base::FEATURE_ENABLED_BY_DEFAULT);
+
+// The scaling factor for calculating the number of bidder worklet threads based
+// on the number of Interest Groups.
+// Formula: #threads = 1 + scaling_factor * log10(#IGs)
+const base::FeatureParam<double>
+    kFledgeBidderWorkletThreadPoolSizeLogarithmicScalingFactor{
+        &kFledgeBidderWorkletThreadPool,
+        "bidder_worklet_thread_pool_size_logarithmic_scaling_factor", 0};
+
 // This is a kill switch for focusing the RenderWidgetHostViewAndroid on
 // ActionDown on every touch sequence if not focused already, please see
 // b/340824076. We are adding this to confirm the hypothesis that root view,

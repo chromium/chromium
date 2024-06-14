@@ -92,7 +92,12 @@ class AuctionWorkletManager::WorkletOwner
   // Attempts to immediately create a worklet. If that fails, the WorkletOwner
   // will immediately start waiting for a process to be available, and once one
   // is, create a worklet, informing all associated WorkletHandles.
-  WorkletOwner(AuctionWorkletManager* worklet_manager, WorkletKey worklet_info);
+  //
+  // If this is for a bidder workelt, `number_of_bidder_threads` specifies
+  // the number of threads to allocate to the bidder.
+  WorkletOwner(AuctionWorkletManager* worklet_manager,
+               WorkletKey worklet_info,
+               size_t number_of_bidder_threads);
 
   // Registers/unregisters a WorkletHandle for the worklet `this` owns.
   void RegisterHandle(HandleKey handle);
@@ -146,8 +151,10 @@ class AuctionWorkletManager::WorkletOwner
   void WorkletNoLongerUsable();
 
   // Called once the AuctionProcessManager provides a process to load a worklet
-  // in. Immediately loads the worklet and informs WorkletHandles.
-  void OnProcessAssigned();
+  // in. Immediately loads the worklet and informs WorkletHandles. If this is
+  // for a bidder workelt, `number_of_bidder_threads` specifies
+  // the number of threads to allocate to the bidder.
+  void OnProcessAssigned(size_t number_of_bidder_threads);
 
   // Mojo disconnect with reason handler. If there's a description, it's a load
   // error. Otherwise, it's a crash. Passes error information on to all
@@ -202,7 +209,8 @@ class AuctionWorkletManager::WorkletOwner
 
 AuctionWorkletManager::WorkletOwner::WorkletOwner(
     AuctionWorkletManager* worklet_manager,
-    WorkletKey worklet_info)
+    WorkletKey worklet_info,
+    size_t number_of_bidder_threads)
     : worklet_manager_(worklet_manager),
       worklet_info_(std::move(worklet_info)),
       split_up_notifications_(
@@ -213,8 +221,8 @@ AuctionWorkletManager::WorkletOwner::WorkletOwner(
           &process_handle_,
           base::BindOnce(
               &AuctionWorkletManager::WorkletOwner::OnProcessAssigned,
-              base::Unretained(this)))) {
-    OnProcessAssigned();
+              base::Unretained(this), number_of_bidder_threads))) {
+    OnProcessAssigned(number_of_bidder_threads);
   }
 }
 
@@ -350,7 +358,8 @@ void AuctionWorkletManager::WorkletOwner::WorkletNoLongerUsable() {
   }
 }
 
-void AuctionWorkletManager::WorkletOwner::OnProcessAssigned() {
+void AuctionWorkletManager::WorkletOwner::OnProcessAssigned(
+    size_t number_of_bidder_threads) {
   DCHECK(!bidder_worklet_.is_bound());
   DCHECK(!seller_worklet_.is_bound());
 
@@ -389,15 +398,30 @@ void AuctionWorkletManager::WorkletOwner::OnProcessAssigned() {
     case WorkletType::kBidder: {
       mojo::PendingReceiver<auction_worklet::mojom::BidderWorklet>
           worklet_receiver = bidder_worklet_.BindNewPipeAndPassReceiver();
-      worklet_debugs_.push_back(base::WrapUnique(new DebuggableAuctionWorklet(
-          delegate->GetFrame(), process_handle_, worklet_info_.script_url,
-          bidder_worklet_.get())));
+
+      std::vector<
+          mojo::PendingRemote<auction_worklet::mojom::AuctionSharedStorageHost>>
+          shared_storage_hosts;
+
+      for (size_t i = 0; i < number_of_bidder_threads; ++i) {
+        worklet_debugs_.emplace_back(new DebuggableAuctionWorklet(
+            delegate->GetFrame(), process_handle_, worklet_info_.script_url,
+            bidder_worklet_.get(),
+            /*thread_index=*/i));
+
+        // For `DebuggableAuctionWorklet` created synchronously for the same
+        // frame, they should have the same `should_pause_on_start()` state.
+        CHECK_EQ(worklet_debugs_[i]->should_pause_on_start(),
+                 worklet_debugs_[0]->should_pause_on_start());
+
+        shared_storage_hosts.push_back(
+            worklet_manager_->MaybeBindAuctionSharedStorageHost(
+                delegate->GetFrame(),
+                url::Origin::Create(worklet_info_.script_url)));
+      }
 
       process_handle_.GetService()->LoadBidderWorklet(
-          std::move(worklet_receiver),
-          worklet_manager_->MaybeBindAuctionSharedStorageHost(
-              delegate->GetFrame(),
-              url::Origin::Create(worklet_info_.script_url)),
+          std::move(worklet_receiver), std::move(shared_storage_hosts),
           worklet_debugs_[0]->should_pause_on_start(),
           std::move(url_loader_factory),
           std::move(auction_network_events_handler), worklet_info_.script_url,
@@ -424,17 +448,15 @@ void AuctionWorkletManager::WorkletOwner::OnProcessAssigned() {
            i < static_cast<size_t>(
                    features::kFledgeSellerWorkletThreadPoolSize.Get());
            ++i) {
-        worklet_debugs_.push_back(base::WrapUnique(new DebuggableAuctionWorklet(
+        worklet_debugs_.emplace_back(new DebuggableAuctionWorklet(
             delegate->GetFrame(), process_handle_, worklet_info_.script_url,
             seller_worklet_.get(),
-            /*thread_index=*/i)));
+            /*thread_index=*/i));
 
         // For `DebuggableAuctionWorklet` created synchronously for the same
         // frame, they should have the same `should_pause_on_start()` state.
-        if (i > 0) {
-          CHECK_EQ(worklet_debugs_[i]->should_pause_on_start(),
-                   worklet_debugs_[i - 1]->should_pause_on_start());
-        }
+        CHECK_EQ(worklet_debugs_[i]->should_pause_on_start(),
+                 worklet_debugs_[0]->should_pause_on_start());
 
         shared_storage_hosts.push_back(
             worklet_manager_->MaybeBindAuctionSharedStorageHost(
@@ -716,7 +738,8 @@ void AuctionWorkletManager::RequestBidderWorklet(
                        needs_cors_for_additional_bid, experiment_group_id,
                        trusted_bidding_signals_slot_size_param),
       std::move(devtools_auction_id), std::move(worklet_available_callback),
-      std::move(fatal_error_callback), out_worklet_handle);
+      std::move(fatal_error_callback), out_worklet_handle,
+      /*number_of_bidder_threads=*/1);
 }
 
 void AuctionWorkletManager::RequestSellerWorklet(
@@ -736,7 +759,8 @@ void AuctionWorkletManager::RequestSellerWorklet(
                           /*trusted_bidding_signals_slot_size_param=*/"");
   RequestWorkletByKey(std::move(worklet_info), std::move(devtools_auction_id),
                       std::move(worklet_available_callback),
-                      std::move(fatal_error_callback), out_worklet_handle);
+                      std::move(fatal_error_callback), out_worklet_handle,
+                      /*number_of_bidder_threads=*/0);
 }
 
 void AuctionWorkletManager::RequestWorkletByKey(
@@ -744,7 +768,8 @@ void AuctionWorkletManager::RequestWorkletByKey(
     std::string devtools_auction_id,
     base::OnceClosure worklet_available_callback,
     FatalErrorCallback fatal_error_callback,
-    std::unique_ptr<WorkletHandle>& out_worklet_handle) {
+    std::unique_ptr<WorkletHandle>& out_worklet_handle,
+    size_t number_of_bidder_threads) {
   DCHECK(!out_worklet_handle);
   auto worklet_it = worklets_.find(worklet_info);
   scoped_refptr<WorkletOwner> worklet;
@@ -753,7 +778,8 @@ void AuctionWorkletManager::RequestWorkletByKey(
   } else {
     // Can't just insert in the map and put a reference in `worklet_it`, since
     // need to keep a live reference.
-    worklet = base::MakeRefCounted<WorkletOwner>(this, worklet_info);
+    worklet = base::MakeRefCounted<WorkletOwner>(this, worklet_info,
+                                                 number_of_bidder_threads);
     worklets_.emplace(std::pair(std::move(worklet_info), worklet.get()));
   }
   out_worklet_handle.reset(new WorkletHandle(

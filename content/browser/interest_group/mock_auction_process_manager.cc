@@ -43,8 +43,10 @@ namespace content {
 MockBidderWorklet::MockBidderWorklet(
     mojo::PendingReceiver<auction_worklet::mojom::BidderWorklet>
         pending_receiver,
-    const std::map<std::string, base::TimeDelta>& expected_per_buyer_timeouts)
-    : expected_per_buyer_timeouts_(expected_per_buyer_timeouts),
+    const std::map<std::string, base::TimeDelta>& expected_per_buyer_timeouts,
+    bool skip_generate_bid)
+    : skip_generate_bid_(skip_generate_bid),
+      expected_per_buyer_timeouts_(expected_per_buyer_timeouts),
       receiver_(this, std::move(pending_receiver)) {
   receiver_.set_disconnect_handler(
       base::BindOnce(&MockBidderWorklet::OnPipeClosed, base::Unretained(this)));
@@ -87,6 +89,10 @@ void MockBidderWorklet::BeginGenerateBid(
         generate_bid_client,
     mojo::PendingAssociatedReceiver<
         auction_worklet::mojom::GenerateBidFinalizer> bid_finalizer) {
+  if (skip_generate_bid_) {
+    return;
+  }
+
   generate_bid_called_ = true;
   // While the real BidderWorklet implementation supports multiple pending
   // callbacks, this class does not.
@@ -530,8 +536,9 @@ bool MockAuctionProcessManager::TryUseSharedProcess(
 void MockAuctionProcessManager::LoadBidderWorklet(
     mojo::PendingReceiver<auction_worklet::mojom::BidderWorklet>
         bidder_worklet_receiver,
-    mojo::PendingRemote<auction_worklet::mojom::AuctionSharedStorageHost>
-        shared_storage_host_remote,
+    std::vector<
+        mojo::PendingRemote<auction_worklet::mojom::AuctionSharedStorageHost>>
+        shared_storage_hosts,
     bool pause_for_debugger_on_start,
     mojo::PendingRemote<network::mojom::URLLoaderFactory>
         pending_url_loader_factory,
@@ -545,6 +552,9 @@ void MockAuctionProcessManager::LoadBidderWorklet(
     auction_worklet::mojom::AuctionWorkletPermissionsPolicyStatePtr
         permissions_policy_state,
     std::optional<uint16_t> experiment_group_id) {
+  load_bidder_worklet_count_++;
+  last_load_bidder_worklet_threads_count_ = shared_storage_hosts.size();
+
   // Make sure this request came over the right pipe.
   url::Origin owner = url::Origin::Create(script_source_url);
   EXPECT_EQ(receiver_display_name_map_[receiver_set_.current_receiver()],
@@ -553,9 +563,9 @@ void MockAuctionProcessManager::LoadBidderWorklet(
 
   EXPECT_EQ(0u, bidder_worklets_.count(script_source_url));
   bidder_worklets_.emplace(
-      script_source_url,
-      std::make_unique<MockBidderWorklet>(std::move(bidder_worklet_receiver),
-                                          expected_per_buyer_timeouts_));
+      script_source_url, std::make_unique<MockBidderWorklet>(
+                             std::move(bidder_worklet_receiver),
+                             expected_per_buyer_timeouts_, skip_generate_bid_));
   MaybeQuitWaitForWorkletsRunLoop();
 }
 

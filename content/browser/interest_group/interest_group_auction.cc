@@ -1196,6 +1196,26 @@ class InterestGroupAuction::BuyerHelper
     num_outstanding_bidding_signals_received_calls_ = num_outstanding_bids_;
     start_generating_bids_time_ = base::TimeTicks::Now();
 
+    // Determine the number of threads to allocate to the bidders. Generally,
+    // use more threads for larger `bid_states_`. The size of `bid_states_`
+    // correlates with the expected number of GenerateBid() calls, and thus, it
+    // guides the multi-threading decision.
+    //
+    // Note: `number_of_bidder_threads` only applies when `RequestWorkletByKey`
+    // ends up creating a new worklet; existing worklets retain their own
+    // threading configuration.
+    size_t number_of_bidder_threads = 1;
+    if (num_outstanding_bids_ > 0) {
+      number_of_bidder_threads += static_cast<int>(
+          features::kFledgeBidderWorkletThreadPoolSizeLogarithmicScalingFactor
+              .Get() *
+          std::log10(num_outstanding_bids_));
+    }
+
+    // Limit thread count to 10. With log10, it's unlikely to get ridiculously
+    // large, but enforce a maximum for safety.
+    number_of_bidder_threads = std::min<size_t>(number_of_bidder_threads, 10);
+
     // Request processes for all bidder worklets.
     for (auto& bid_state : bid_states_) {
       auto worklet_key = auction_->BidderWorkletKey(*bid_state);
@@ -1206,7 +1226,7 @@ class InterestGroupAuction::BuyerHelper
                          base::Unretained(this), bid_state.get()),
           base::BindOnce(&BuyerHelper::OnBidderWorkletGenerateBidFatalError,
                          base::Unretained(this), bid_state.get()),
-          bid_state->worklet_handle);
+          bid_state->worklet_handle, number_of_bidder_threads);
     }
   }
 

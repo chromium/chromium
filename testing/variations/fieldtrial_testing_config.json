@@ -17352,6 +17352,29 @@
             ]
         }
     ],
+    "ProtectedAudienceMultiThreadedBidderWorklet": [
+        {
+            "platforms": [
+                "android",
+                "chromeos",
+                "chromeos_lacros",
+                "linux",
+                "mac",
+                "windows"
+            ],
+            "experiments": [
+                {
+                    "name": "TwoThreads",
+                    "params": {
+                        "bidder_worklet_thread_pool_size_logarithmic_scaling_factor": "1.0"
+                    },
+                    "enable_features": [
+                        "FledgeBidderWorkletThreadPool"
+                    ]
+                }
+            ]
+        }
+    ],
     "ProtectedAudienceMultiThreadedSellerWorklet": [
         {
             "platforms": [

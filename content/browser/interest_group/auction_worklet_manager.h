@@ -295,11 +295,19 @@ class CONTENT_EXPORT AuctionWorkletManager {
       base::OnceClosure worklet_available_callback,
       FatalErrorCallback fatal_error_callback,
       std::unique_ptr<WorkletHandle>& out_worklet_handle);
+
+  // Requests a worklet with the specified `worklet_info`. This method handles
+  // the creation of a new worklet if no existing instance matches the specified
+  // `worklet_info`.
+  //
+  // If a new bidder worklet ends up being created, `number_of_bidder_threads`
+  // specifies the number of threads to allocate to the bidder.
   void RequestWorkletByKey(WorkletKey worklet_info,
                            std::string devtools_auction_id,
                            base::OnceClosure worklet_available_callback,
                            FatalErrorCallback fatal_error_callback,
-                           std::unique_ptr<WorkletHandle>& out_worklet_handle);
+                           std::unique_ptr<WorkletHandle>& out_worklet_handle,
+                           size_t number_of_bidder_threads);
 
  private:
   void OnWorkletNoLongerUsable(WorkletOwner* worklet);

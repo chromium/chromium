@@ -59,8 +59,8 @@ class CONTENT_EXPORT AuctionWorkletServiceImpl
   // mojom::AuctionWorkletService implementation:
   void LoadBidderWorklet(
       mojo::PendingReceiver<mojom::BidderWorklet> bidder_worklet_receiver,
-      mojo::PendingRemote<mojom::AuctionSharedStorageHost>
-          shared_storage_host_remote,
+      std::vector<mojo::PendingRemote<mojom::AuctionSharedStorageHost>>
+          shared_storage_hosts,
       bool pause_for_debugger_on_start,
       mojo::PendingRemote<network::mojom::URLLoaderFactory>
           pending_url_loader_factory,
@@ -106,11 +106,13 @@ class CONTENT_EXPORT AuctionWorkletServiceImpl
   void DisconnectBidderWorklet(mojo::ReceiverId receiver_id,
                                const std::string& reason);
 
+  ProcessModel process_model_;
+
   // These should be before `bidder_worklets_` and `seller_worklets_` as they
   // need to be destroyed after them, as the actual destruction of
   // V8HelperHolder may need to block to get V8 shutdown cleanly, which is
   // helped by worklets not being around to produce more work.
-  scoped_refptr<V8HelperHolder> auction_bidder_v8_helper_holder_;
+  std::vector<scoped_refptr<V8HelperHolder>> auction_bidder_v8_helper_holders_;
   std::vector<scoped_refptr<V8HelperHolder>> auction_seller_v8_helper_holders_;
 
   // This is bound when created via CreateForService(); in case of

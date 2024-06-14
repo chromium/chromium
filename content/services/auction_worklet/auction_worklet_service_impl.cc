@@ -57,13 +57,22 @@ class AuctionWorkletServiceImpl::V8HelperHolder
   };
 
   static scoped_refptr<V8HelperHolder> BidderInstance(
-      ProcessModel process_model) {
-    if (!g_bidder_instance) {
-      g_bidder_instance =
-          new V8HelperHolder(process_model, WorkletType::kBidder);
+      ProcessModel process_model,
+      size_t thread_index) {
+    if (!g_bidder_instances) {
+      g_bidder_instances = new std::vector<V8HelperHolder*>();
     }
-    DCHECK_CALLED_ON_VALID_SEQUENCE(g_bidder_instance->sequence_checker_);
-    return g_bidder_instance;
+
+    while (g_bidder_instances->size() <= thread_index) {
+      g_bidder_instances->push_back(
+          new V8HelperHolder(process_model, WorkletType::kBidder,
+                             /*thread_index=*/g_bidder_instances->size()));
+    }
+
+    DCHECK_CALLED_ON_VALID_SEQUENCE(
+        g_bidder_instances->at(thread_index)->sequence_checker_);
+
+    return g_bidder_instances->at(thread_index);
   }
 
   static scoped_refptr<V8HelperHolder> SellerInstance(
@@ -110,7 +119,7 @@ class AuctionWorkletServiceImpl::V8HelperHolder
     DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
     if (worklet_type_ == WorkletType::kBidder) {
-      DCHECK_EQ(g_bidder_instance, nullptr);
+      DCHECK_EQ(g_bidder_instances->size(), thread_index_);
     } else {
       DCHECK_EQ(g_seller_instances->size(), thread_index_);
     }
@@ -129,8 +138,18 @@ class AuctionWorkletServiceImpl::V8HelperHolder
     }
 
     if (worklet_type_ == WorkletType::kBidder) {
-      DCHECK_EQ(g_bidder_instance, this);
-      g_bidder_instance = nullptr;
+      DCHECK_EQ(g_bidder_instances->at(thread_index_), this);
+      g_bidder_instances->at(thread_index_) = nullptr;
+
+      size_t alive_instances_count =
+          std::count_if(g_bidder_instances->begin(), g_bidder_instances->end(),
+                        [](V8HelperHolder* instance) { return !!instance; });
+
+      if (alive_instances_count == 0) {
+        g_bidder_instances->clear();
+        delete g_bidder_instances;
+        g_bidder_instances = nullptr;
+      }
     } else {
       DCHECK_EQ(g_seller_instances->at(thread_index_), this);
       g_seller_instances->at(thread_index_) = nullptr;
@@ -156,7 +175,7 @@ class AuctionWorkletServiceImpl::V8HelperHolder
     wait_for_v8_shutdown_.Signal();
   }
 
-  static V8HelperHolder* g_bidder_instance;
+  static std::vector<V8HelperHolder*>* g_bidder_instances;
   static std::vector<V8HelperHolder*>* g_seller_instances;
 
   scoped_refptr<AuctionV8Helper> auction_v8_helper_;
@@ -168,8 +187,8 @@ class AuctionWorkletServiceImpl::V8HelperHolder
   SEQUENCE_CHECKER(sequence_checker_);
 };
 
-AuctionWorkletServiceImpl::V8HelperHolder*
-    AuctionWorkletServiceImpl::V8HelperHolder::g_bidder_instance = nullptr;
+std::vector<AuctionWorkletServiceImpl::V8HelperHolder*>*
+    AuctionWorkletServiceImpl::V8HelperHolder::g_bidder_instances = nullptr;
 
 std::vector<AuctionWorkletServiceImpl::V8HelperHolder*>*
     AuctionWorkletServiceImpl::V8HelperHolder::g_seller_instances = nullptr;
@@ -195,9 +214,7 @@ AuctionWorkletServiceImpl::CreateForService(
 AuctionWorkletServiceImpl::AuctionWorkletServiceImpl(
     ProcessModel process_model,
     mojo::PendingReceiver<mojom::AuctionWorkletService> receiver)
-    : auction_bidder_v8_helper_holder_(
-          V8HelperHolder::BidderInstance(process_model)),
-      receiver_(this, std::move(receiver)) {
+    : process_model_(process_model), receiver_(this, std::move(receiver)) {
   for (size_t i = 0;
        i <
        static_cast<size_t>(features::kFledgeSellerWorkletThreadPoolSize.Get());
@@ -212,7 +229,9 @@ AuctionWorkletServiceImpl::~AuctionWorkletServiceImpl() = default;
 std::vector<scoped_refptr<AuctionV8Helper>>
 AuctionWorkletServiceImpl::AuctionV8HelpersForTesting() {
   std::vector<scoped_refptr<AuctionV8Helper>> result;
-  result.push_back(auction_bidder_v8_helper_holder_->V8Helper());
+  for (const auto& v8_helper_holder : auction_bidder_v8_helper_holders_) {
+    result.push_back(v8_helper_holder->V8Helper());
+  }
   for (const auto& v8_helper_holder : auction_seller_v8_helper_holders_) {
     result.push_back(v8_helper_holder->V8Helper());
   }
@@ -221,8 +240,8 @@ AuctionWorkletServiceImpl::AuctionV8HelpersForTesting() {
 
 void AuctionWorkletServiceImpl::LoadBidderWorklet(
     mojo::PendingReceiver<mojom::BidderWorklet> bidder_worklet_receiver,
-    mojo::PendingRemote<mojom::AuctionSharedStorageHost>
-        shared_storage_host_remote,
+    std::vector<mojo::PendingRemote<mojom::AuctionSharedStorageHost>>
+        shared_storage_hosts,
     bool pause_for_debugger_on_start,
     mojo::PendingRemote<network::mojom::URLLoaderFactory>
         pending_url_loader_factory,
@@ -235,14 +254,21 @@ void AuctionWorkletServiceImpl::LoadBidderWorklet(
     const url::Origin& top_window_origin,
     mojom::AuctionWorkletPermissionsPolicyStatePtr permissions_policy_state,
     std::optional<uint16_t> experiment_group_id) {
-  std::vector<mojo::PendingRemote<mojom::AuctionSharedStorageHost>>
-      shared_storage_hosts;
-  shared_storage_hosts.push_back(std::move(shared_storage_host_remote));
+  // If needed, expand the thread pool to match the number of threads requested.
+  for (size_t i = auction_bidder_v8_helper_holders_.size();
+       i < shared_storage_hosts.size(); ++i) {
+    auction_bidder_v8_helper_holders_.push_back(
+        V8HelperHolder::BidderInstance(process_model_, /*thread_index=*/i));
+  }
+
+  std::vector<scoped_refptr<AuctionV8Helper>> v8_helpers;
+  for (size_t i = 0; i < shared_storage_hosts.size(); ++i) {
+    v8_helpers.push_back(auction_bidder_v8_helper_holders_[i]->V8Helper());
+  }
 
   auto bidder_worklet = std::make_unique<BidderWorklet>(
-      std::vector{auction_bidder_v8_helper_holder_->V8Helper()},
-      std::move(shared_storage_hosts), pause_for_debugger_on_start,
-      std::move(pending_url_loader_factory),
+      std::move(v8_helpers), std::move(shared_storage_hosts),
+      pause_for_debugger_on_start, std::move(pending_url_loader_factory),
       std::move(auction_network_events_handler), script_source_url,
       wasm_helper_url, trusted_bidding_signals_url,
       trusted_bidding_signals_slot_size_param, top_window_origin,

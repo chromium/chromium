@@ -18087,6 +18087,69 @@ IN_PROC_BROWSER_TEST_F(InterestGroupBrowserTest, DeprecatedURNToURLValidURN) {
   EXPECT_FALSE(HasServerSeenUrl(kTestCases[0].report_url));
 }
 
+IN_PROC_BROWSER_TEST_F(InterestGroupBrowserTest, ExecutionModeCompatibility) {
+  const char kScript[] = R"(
+    if (!('count' in globalThis))
+      globalThis.count = 0;
+    function generateBid() {
+      ++count;
+      return {ad: ["ad"], bid:count, render:$1 + count};
+    }
+    function reportWin(auctionSignals, perBuyerSignals, sellerSignals,
+                       browserSignals) {
+    }
+  )";
+
+  const int kNumGroups = 10;  // as many ads in each group, too.
+  GURL test_url =
+      embedded_https_test_server().GetURL("a.test", "/page_with_iframe.html");
+  ASSERT_TRUE(NavigateToURL(shell(), test_url));
+  url::Origin test_origin = url::Origin::Create(test_url);
+
+  std::vector<GURL> ad_urls;
+  for (int i = 0; i < kNumGroups; ++i) {
+    ad_urls.push_back(embedded_https_test_server().GetURL(
+        "c.test", "/echo?" + base::NumberToString(i + 1)));
+  }
+
+  network_responder_->RegisterNetworkResponse(
+      "/interest_group/bidding_logic.js",
+      JsReplace(kScript,
+                embedded_https_test_server().GetURL("c.test", "/echo?")),
+      "application/javascript");
+
+  std::vector<blink::InterestGroup::Ad> ads;
+  for (const GURL& ad_url : ad_urls) {
+    ads.emplace_back(ad_url, /*metadata=*/std::nullopt);
+  }
+
+  for (int i = 0; i < kNumGroups; ++i) {
+    EXPECT_EQ(
+        kSuccess,
+        JoinInterestGroupAndVerify(
+            blink::TestInterestGroupBuilder(
+                /*owner=*/test_origin,
+                /*name=*/"cars" + base::NumberToString(i))
+                .SetExecutionMode(
+                    blink::InterestGroup::ExecutionMode::kCompatibilityMode)
+                .SetBiddingUrl(embedded_https_test_server().GetURL(
+                    test_url.host(), "/interest_group/bidding_logic.js"))
+                .SetAds(ads)
+                .Build()));
+  }
+
+  EXPECT_EQ(embedded_https_test_server().GetURL("c.test", "/echo?1"),
+            RunAuctionAndWaitForUrl(JsReplace(
+                R"({
+                  seller: $1,
+                  decisionLogicURL: $2,
+                  interestGroupBuyers: [$1],
+                })",
+                test_origin,
+                embedded_https_test_server().GetURL(
+                    "a.test", "/interest_group/decision_logic.js"))));
+}
+
 IN_PROC_BROWSER_TEST_F(InterestGroupBrowserTest, ExecutionModeGroupByOrigin) {
   const char kScript[] = R"(
     if (!('count' in globalThis))
@@ -18123,40 +18186,45 @@ IN_PROC_BROWSER_TEST_F(InterestGroupBrowserTest, ExecutionModeGroupByOrigin) {
     ads.emplace_back(ad_url, /*metadata=*/std::nullopt);
   }
 
-  for (auto execution_mode :
-       {blink::InterestGroup::ExecutionMode::kCompatibilityMode,
-        blink::InterestGroup::ExecutionMode::kGroupedByOriginMode}) {
-    for (int i = 0; i < kNumGroups; ++i) {
-      EXPECT_EQ(
-          kSuccess,
-          JoinInterestGroupAndVerify(
-              blink::TestInterestGroupBuilder(
-                  /*owner=*/test_origin,
-                  /*name=*/"cars" + base::NumberToString(i))
-                  .SetExecutionMode(execution_mode)
-                  .SetBiddingUrl(embedded_https_test_server().GetURL(
-                      test_url.host(), "/interest_group/bidding_logic.js"))
-                  .SetAds(ads)
-                  .Build()));
-    }
-
+  for (int i = 0; i < kNumGroups; ++i) {
     EXPECT_EQ(
-        embedded_https_test_server().GetURL(
-            "c.test",
-            execution_mode ==
-                    blink::InterestGroup::ExecutionMode::kCompatibilityMode
-                ? "/echo?1"
-                : "/echo?10"),
-        RunAuctionAndWaitForUrl(JsReplace(
-            R"({
-                    seller: $1,
-                    decisionLogicURL: $2,
-                    interestGroupBuyers: [$1],
-                  })",
-            test_origin,
-            embedded_https_test_server().GetURL(
-                "a.test", "/interest_group/decision_logic.js"))));
+        kSuccess,
+        JoinInterestGroupAndVerify(
+            blink::TestInterestGroupBuilder(
+                /*owner=*/test_origin,
+                /*name=*/"cars" + base::NumberToString(i))
+                .SetExecutionMode(
+                    blink::InterestGroup::ExecutionMode::kGroupedByOriginMode)
+                .SetBiddingUrl(embedded_https_test_server().GetURL(
+                    test_url.host(), "/interest_group/bidding_logic.js"))
+                .SetAds(ads)
+                .Build()));
   }
+
+  int number_of_bidder_threads =
+      1 +
+      static_cast<int>(
+          features::kFledgeBidderWorkletThreadPoolSizeLogarithmicScalingFactor
+              .Get() *
+          std::log10(kNumGroups));
+
+  // With existing field trial configuration, only 1-2 threads are possible.
+  // With 2 threads, expect result "/echo?5", as generateBid() is called 5 times
+  // on each context.
+  CHECK(number_of_bidder_threads == 1 || number_of_bidder_threads == 2);
+
+  EXPECT_EQ(
+      embedded_https_test_server().GetURL(
+          "c.test", (number_of_bidder_threads == 1) ? "/echo?10" : "/echo?5"),
+      RunAuctionAndWaitForUrl(JsReplace(
+          R"({
+                  seller: $1,
+                  decisionLogicURL: $2,
+                  interestGroupBuyers: [$1],
+                })",
+          test_origin,
+          embedded_https_test_server().GetURL(
+              "a.test", "/interest_group/decision_logic.js"))));
 }
 
 enum FetchMethod {

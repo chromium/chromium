@@ -55,9 +55,10 @@ interface AuctionWorkletService {
   // `bidder_worklet` The pipe to communicate with the BidderWorklet. Closing
   //  the pipe will abort any in-progress loads and destroy the worklet.
   //
-  // `shared_storage_host` The pipe for the BidderWorklet to send shared storage
-  // requests to the browser process. Will be null if the `kSharedStorageAPI`
-  // feature or the "shared-storage" permissions policy is disabled.
+  // `shared_storage_hosts` The pipes for the BidderWorklet threads to send
+  // shared storage requests to the browser process. Will all be null if the
+  // `kSharedStorageAPI` feature or the "shared-storage" permissions policy is
+  // disabled.
   //
   // `pause_for_debugger_on_start` If this is true, the worklet should not
   //  commence any work until it gets a Runtime.runIfWaitingForDebugger debugger
@@ -92,7 +93,7 @@ interface AuctionWorkletService {
   // server.
   LoadBidderWorklet(
       pending_receiver<BidderWorklet> bidder_worklet,
-      pending_remote<AuctionSharedStorageHost>? shared_storage_host,
+      array<pending_remote<AuctionSharedStorageHost>?> shared_storage_hosts,
       bool pause_for_debugger_on_start,
       pending_remote<network.mojom.URLLoaderFactory> url_loader_factory,
       pending_remote<AuctionNetworkEventsHandler> auction_network_events_handler,

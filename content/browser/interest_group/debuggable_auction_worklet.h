@@ -78,7 +78,8 @@ class CONTENT_EXPORT DebuggableAuctionWorklet {
       RenderFrameHostImpl* owning_frame,
       AuctionProcessManager::ProcessHandle& process_handle,
       const GURL& url,
-      auction_worklet::mojom::BidderWorklet* bidder_worklet);
+      auction_worklet::mojom::BidderWorklet* bidder_worklet,
+      size_t thread_index);
   DebuggableAuctionWorklet(
       RenderFrameHostImpl* owning_frame,
       AuctionProcessManager::ProcessHandle& process_handle,
