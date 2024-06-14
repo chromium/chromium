@@ -108,9 +108,12 @@ function draw(state: State, overlay: HTMLCanvasElement) {
   }
 }
 
-function getCameraStream(): Promise<MediaStream> {
+function getCameraStream(): Promise<MediaStream | null> {
   return navigator.mediaDevices.getUserMedia({
     video: true,
     audio: false,
+  }).catch((error) => {
+    console.error('Failed to get camera stream:', error);
+    return null;
   });
 }
