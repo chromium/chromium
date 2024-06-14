@@ -5,7 +5,7 @@ found in the LICENSE file.
 -->
 
 <!--
-This file is used to generate a comprehensive list of ModelExecution histograms
+This file is used to generate a comprehensive list of AI histograms
 along with a detailed description for each histogram.
 
 For best practices on writing histogram descriptions, see
@@ -23,73 +23,72 @@ chromium-metrics-reviews@google.com.
 <histograms>
 
 <variants name="SessionType">
-  <variant name="Generic" summary="Generic model execution session"/>
+  <variant name="Text" summary="AI text session"/>
 </variants>
 
-<histogram name="ModelExecution.Session.{SessionType}.ExecutionRequestSize"
-    units="bytes" expires_after="2024-09-29">
+<histogram name="AI.Session.{SessionType}.PromptRequestSize" units="bytes"
+    expires_after="2024-12-11">
   <owner>leimy@chromium.org</owner>
   <owner>fergal@chromium.org</owner>
   <summary>
-    Measures the size of the model execution request in bytes. This is recorded
-    each time when the model is executed.
+    Measures the size of the prompt request in bytes. This is recorded each time
+    when the model is executed.
   </summary>
   <token key="SessionType" variants="SessionType"/>
 </histogram>
 
-<histogram
-    name="ModelExecution.Session.{SessionType}.ExecutionResponseCallbackCount"
-    units="times" expires_after="2024-07-29">
+<histogram name="AI.Session.{SessionType}.PromptResponseCallbackCount"
+    units="times" expires_after="2024-12-11">
   <owner>leimy@chromium.org</owner>
   <owner>fergal@chromium.org</owner>
   <summary>
-    Measures the number of times that the callback is triggered in one model
-    execution. This is recorded each time when the model execution completes.
+    Measures the number of times that the callback is triggered in one prompt
+    request. This is recorded each time when the model execution completes.
   </summary>
   <token key="SessionType" variants="SessionType"/>
 </histogram>
 
-<histogram name="ModelExecution.Session.{SessionType}.ExecutionResponseSize"
-    units="bytes" expires_after="2024-07-29">
+<histogram name="AI.Session.{SessionType}.PromptResponseSize" units="bytes"
+    expires_after="2024-12-11">
   <owner>leimy@chromium.org</owner>
   <owner>fergal@chromium.org</owner>
   <summary>
-    Measures the size of the model execution response in bytes. This is recorded
-    each time when the model execution completes.
+    Measures the size of the prompt response in bytes. This is recorded each
+    time when the model execution completes.
   </summary>
   <token key="SessionType" variants="SessionType"/>
 </histogram>
 
-<histogram name="ModelExecution.Session.{SessionType}.ExecutionResponseStatus"
-    enum="ModelExecutionResponseStatus" expires_after="2024-09-29">
+<histogram name="AI.Session.{SessionType}.PromptResponseStatus"
+    enum="AIModelStreamingResponseStatus" expires_after="2024-12-11">
   <owner>leimy@chromium.org</owner>
   <owner>fergal@chromium.org</owner>
   <summary>
-    Records the final response status for each model execution call. This is
-    recorded each time when the stream completes or encounters errors.
+    Records the final response status for each prompt request. This is recorded
+    each time when the stream completes or encounters errors.
   </summary>
   <token key="SessionType" variants="SessionType"/>
 </histogram>
 
-<histogram name="ModelExecution.{SessionType}.APIUsage"
-    enum="ModelExecutionAPI" expires_after="2024-09-29">
+<histogram name="AI.{SessionType}.APIUsage" enum="AIAPI"
+    expires_after="2024-12-11">
   <owner>leimy@chromium.org</owner>
   <owner>fergal@chromium.org</owner>
   <summary>
-    This is recorded each time when the model execution JavaScript API is
-    invoked. This can be used to measure the number of calls of each API within
-    a particular time period.
+    This is recorded each time when the prompt JavaScript API is invoked. This
+    can be used to measure the number of calls of each API within a particular
+    time period.
   </summary>
   <token key="SessionType" variants="SessionType"/>
 </histogram>
 
-<histogram name="ModelExecution.{SessionType}.Availability"
-    enum="ModelExecutionAvailability" expires_after="2024-09-29">
+<histogram name="AI.{SessionType}.Availability" enum="AIModelAvailability"
+    expires_after="2024-12-11">
   <owner>leimy@chromium.org</owner>
   <owner>fergal@chromium.org</owner>
   <summary>
-    Records the availability of model execution as returned in
-    `model.canCreateGenericSession()`.
+    Records the availability of model execution as returned in methods like
+    `ai.canCreateTextSession()`.
   </summary>
   <token key="SessionType" variants="SessionType"/>
 </histogram>

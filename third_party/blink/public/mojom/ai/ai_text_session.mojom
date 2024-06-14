@@ -43,7 +43,7 @@ enum ModelStreamingResponseStatus {
   kErrorSessionDestroyed = 13,
   // Append new items here.
 };
-// LINT.ThenChange(//tools/metrics/histograms/metadata/model_execution/enums.xml:ModelExecutionResponseStatus)
+// LINT.ThenChange(//tools/metrics/histograms/metadata/ai/enums.xml:AIModelStreamingResponseStatus)
 
 // The responder provides methods for the session to return the execution
 // response in a streaming manner.

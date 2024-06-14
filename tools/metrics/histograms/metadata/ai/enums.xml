@@ -26,14 +26,14 @@ chromium-metrics-reviews@google.com.
 
 <enums>
 
-<enum name="ModelExecutionAPI">
-  <int value="0" label="model.canCreateSession"/>
-  <int value="1" label="model.createSession"/>
-  <int value="2" label="session.execute"/>
-  <int value="3" label="session.executeStreaming"/>
+<enum name="AIAPI">
+  <int value="0" label="ai.canCreateSession"/>
+  <int value="1" label="ai.createSession"/>
+  <int value="2" label="ai.prompt"/>
+  <int value="3" label="ai.promptStreaming"/>
 </enum>
 
-<enum name="ModelExecutionAvailability">
+<enum name="AIModelAvailability">
   <int value="0" label="Readily">
     The model is available on-device and so creating will happen quickly.
   </int>
@@ -44,9 +44,9 @@ chromium-metrics-reviews@google.com.
   <int value="2" label="No">The model is not available for this device.</int>
 </enum>
 
-<!-- LINT.IfChange(ModelExecutionResponseStatus) -->
+<!-- LINT.IfChange(AIModelStreamingResponseStatus) -->
 
-<enum name="ModelExecutionResponseStatus">
+<enum name="AIModelStreamingResponseStatus">
   <int value="0" label="Ongoing">
     There response is not fully streamed back yet, and the interface will remain
     open.
