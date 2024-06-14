@@ -3325,7 +3325,7 @@
   {
     "name": "enable-isolated-sandboxed-iframes",
     "owners": [ "wjmaclean@chromium.org", "alexmos@chromium.org", "creis@chromium.org" ],
-    "expiry_milestone": 128
+    "expiry_milestone": 133
   },
   {
     "name": "enable-isolated-web-app-automatic-updates",
