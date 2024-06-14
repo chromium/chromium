@@ -72,6 +72,10 @@ class MODULES_EXPORT SharedStorageWorklet final : public ScriptWrappable {
   HeapMojoAssociatedRemote<mojom::blink::SharedStorageWorkletHost>
       worklet_host_{nullptr};
 
+  // Set to the script origin when addModule() was called and passed early
+  // renderer checks (i.e. initialized along with `worklet_host_`).
+  url::Origin shared_storage_origin_;
+
   bool keep_alive_after_operation_ = true;
 
   bool cross_origin_script_allowed_ = false;
