@@ -346,7 +346,8 @@ suite('AppearanceHandler', function() {
 
   test('show side panel options', function() {
     createAppearancePage();
-    assertTrue(!!appearancePage.shadowRoot!.querySelector('#side-panel'));
+    assertTrue(
+        !!appearancePage.shadowRoot!.querySelector('#sidePanelPosition'));
   });
 
   test('ShowSavedTabGroupsToggleVisible', async function() {

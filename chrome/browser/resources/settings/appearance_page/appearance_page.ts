@@ -218,6 +218,24 @@ export class SettingsAppearancePageElement extends
       },
 
       showManagedThemeDialog_: Boolean,
+
+      sidePanelOptions_: {
+        readOnly: true,
+        type: Array,
+        value() {
+          return [
+            {
+              value: 'true',
+              name: loadTimeData.getString('uiFeatureAlignRight'),
+            },
+            {
+              value: 'false',
+              name: loadTimeData.getString('uiFeatureAlignLeft'),
+            },
+          ];
+        },
+      },
+
     };
   }
 
@@ -255,6 +273,7 @@ export class SettingsAppearancePageElement extends
   // </if>
 
   private showManagedThemeDialog_: boolean;
+  private sidePanelOptions_: DropdownMenuOptionList;
   private appearanceBrowserProxy_: AppearanceBrowserProxy =
       AppearanceBrowserProxyImpl.getInstance();
   private colorSchemeModeHandler_: CustomizeColorSchemeModeHandlerInterface =

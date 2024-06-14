@@ -395,13 +395,13 @@
   <message name="IDS_SETTINGS_SHOW_HOVER_CARD_MEMORY_USAGE_STANDALONE" desc="Label for the toggle which enables or disables showing tabs' memory usage in tab hovercards. This longer string is shown when then toggle is in it's own row without a title to indicate the setting is to do with tab hovercards.">
     Show memory usage on tab hover preview card
   </message>
-  <message name="IDS_SETTINGS_SIDE_PANEL" desc="Title for the side panel section. Allows the user to toggle which side the side panel is displayed on.">
-    Side panel
+  <message name="IDS_SETTINGS_SIDE_PANEL_POSITION" desc="Title for the side panel section. Allows the user to toggle which side the side panel is displayed on.">
+    Side panel position
   </message>
-  <message name="IDS_SETTINGS_SIDE_PANEL_ALIGN_LEFT" desc="Label for the button that allows the side panel to appear on the left side of the browser. Translate this verbatim, do not localize for RTL languages.">
+  <message name="IDS_SETTINGS_UI_FEATURE_ALIGN_LEFT" desc="Label for the button that configures a feature to appear on the left side of the browser. Translate this verbatim, do not localize for RTL languages.">
     Show on left
   </message>
-  <message name="IDS_SETTINGS_SIDE_PANEL_ALIGN_RIGHT" desc="Label for the button that allows the side panel to appear on the right side of the browser. Translate this verbatim, do not localize for RTL languages.">
+  <message name="IDS_SETTINGS_UI_FEATURE_ALIGN_RIGHT" desc="Label for the button that configures a feature to appear on the right side of the browser. Translate this verbatim, do not localize for RTL languages.">
     Show on right
   </message>
   <message name="IDS_SETTINGS_HOME_PAGE_NTP" desc="Description of the New Tab Page when set as the home page.">
