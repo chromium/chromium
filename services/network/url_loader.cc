@@ -2745,7 +2745,7 @@ URLLoader::BlockResponseForOrbResult URLLoader::BlockResponseForOrb() {
   // Send empty body to the real URLLoaderClient. This preserves "ORB v0.1"
   // behaviour and will also go away once
   // OpaqueResponseBlockingErrorsForAllFetches is perma-enabled.
-  if (blocked_error_code == net::OK || blocked_error_code == net::ERR_ABORTED) {
+  if (blocked_error_code == net::OK) {
     mojo::ScopedDataPipeProducerHandle producer_handle;
     mojo::ScopedDataPipeConsumerHandle consumer_handle;
     MojoResult result = mojo::CreateDataPipe(kBlockedBodyAllocationSize,
