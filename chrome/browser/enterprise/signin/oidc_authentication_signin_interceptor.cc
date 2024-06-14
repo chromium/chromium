@@ -203,6 +203,7 @@ void OidcAuthenticationSigninInterceptor::Reset() {
   interception_bubble_handle_.reset();
   interception_in_progress_ = false;
   client_for_testing_ = nullptr;
+  preset_profile_id_.clear();
 }
 
 void OidcAuthenticationSigninInterceptor::StartOidcRegistration() {
@@ -218,7 +219,7 @@ void OidcAuthenticationSigninInterceptor::StartOidcRegistration() {
           ->GetProfileIdWithGuidAndDeviceId(preset_profile_guid, device_id);
 
   if (preset_profile_id == std::nullopt || preset_profile_id.value().empty()) {
-    VLOG_POLICY(2, OIDC_ENROLLMENT)
+    LOG_POLICY(ERROR, OIDC_ENROLLMENT)
         << "Failed to create a preset profile ID for the new profile";
 
     Reset();
@@ -373,7 +374,7 @@ void OidcAuthenticationSigninInterceptor::OnNewSignedInProfileCreated(
   if (!new_profile) {
     RecordOidcProfileCreationResult(
         OidcProfileCreationResult::kFailedToCreateProfile, dasher_based_);
-    VLOG_POLICY(1, OIDC_ENROLLMENT) << "Failed to create new profile";
+    LOG_POLICY(ERROR, OIDC_ENROLLMENT) << "Failed to create new profile";
     Reset();
     return;
   }
@@ -398,7 +399,25 @@ void OidcAuthenticationSigninInterceptor::OnNewSignedInProfileCreated(
 
   // Generate a color theme for new profiles
   if (!switch_to_entry_) {
-    CHECK_NE(SkColor(), profile_color_);
+    VLOG_POLICY(2, OIDC_ENROLLMENT)
+        << "Created new OIDC-managed profile with preset profile ID: "
+        << preset_profile_id_;
+    std::optional<std::string> new_profile_id =
+        ProfileIdServiceFactory::GetForProfile(new_profile.get())
+            ->GetProfileId();
+    if (new_profile_id == std::nullopt) {
+      LOG_POLICY(ERROR, OIDC_ENROLLMENT)
+          << "Failed to retrieve profile ID for the new OIDC-managed profile";
+      RecordOidcProfileCreationResult(
+          OidcProfileCreationResult::kMismatchingProfileId, dasher_based_);
+    } else if (new_profile_id.value() != preset_profile_id_) {
+      LOG_POLICY(ERROR, OIDC_ENROLLMENT)
+          << "New profile's ID " << new_profile_id.value()
+          << " mismatches with the preset value";
+      RecordOidcProfileCreationResult(
+          OidcProfileCreationResult::kMismatchingProfileId, dasher_based_);
+    }
+
     ThemeServiceFactory::GetForProfile(new_profile.get())
         ->SetUserColorAndBrowserColorVariant(
             profile_color_, ui::mojom::BrowserColorVariant::kTonalSpot);
@@ -409,11 +428,6 @@ void OidcAuthenticationSigninInterceptor::OnNewSignedInProfileCreated(
   policy::UserPolicyOidcSigninService* policy_service =
       policy::UserPolicyOidcSigninServiceFactory::GetForProfile(
           new_profile.get());
-
-  CHECK_EQ(ProfileIdServiceFactory::GetForProfile(new_profile.get())
-               ->GetProfileId()
-               .value(),
-           preset_profile_id_);
 
   VLOG_POLICY(2, OIDC_ENROLLMENT)
       << "Starting policy fetch process for OIDC-managed profile";

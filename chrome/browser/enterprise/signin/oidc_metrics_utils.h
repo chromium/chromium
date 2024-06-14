@@ -56,7 +56,8 @@ enum class OidcProfileCreationResult {
   kFailedToCreateProfile = 2,
   kFailedToFetchPolicy = 3,
   kFailedToAddPrimaryAccount = 4,
-  kMaxValue = kFailedToAddPrimaryAccount,
+  kMismatchingProfileId = 5,
+  kMaxValue = kMismatchingProfileId,
 };
 
 void RecordOidcInterceptionFunnelStep(OidcInterceptionFunnelStep step);

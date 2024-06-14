@@ -35,6 +35,7 @@
 #include "chrome/test/base/fake_profile_manager.h"
 #include "chrome/test/base/testing_browser_process.h"
 #include "chrome/test/base/testing_profile.h"
+#include "components/enterprise/browser/controller/fake_browser_dm_token_storage.h"
 #include "components/enterprise/browser/identifiers/profile_id_service.h"
 #include "components/policy/core/common/cloud/cloud_external_data_manager.h"
 #include "components/policy/core/common/cloud/mock_cloud_policy_client.h"
@@ -80,6 +81,8 @@ const char kOidcProfileCreationSuffix[] = ".ProfileCreation";
 
 const char kOidcFunnelSuffix[] = ".Funnel";
 const char kOidcResultSuffix[] = ".Result";
+
+constexpr char kFakeDeviceID[] = "fake-id";
 
 // Fake OIDC policy sign in service that simulates policy fetch success/failure.
 class FakeUserPolicyOidcSigninService
@@ -128,10 +131,12 @@ class FakeUserPolicyOidcSigninService
   bool will_policy_fetch_succeed_;
 };
 
-std::unique_ptr<KeyedService> CreateProfileIDService(
+std::unique_ptr<KeyedService> CreateMalfunctionProfileIdService(
     content::BrowserContext* context) {
-  static constexpr char kFakeProfileID[] = "fake-profile-id";
-  return std::make_unique<enterprise::ProfileIdService>(kFakeProfileID);
+  // Intentionally return a wrong profile ID.
+  std::string fake_profile_id =
+      base::Uuid::GenerateRandomV4().AsLowercaseString();
+  return std::make_unique<enterprise::ProfileIdService>(fake_profile_id);
 }
 
 std::unique_ptr<KeyedService> BuildMockInterceptor(
@@ -153,10 +158,13 @@ std::unique_ptr<KeyedService> BuildMockInterceptor(
 class UnittestProfileManager : public FakeProfileManager {
  public:
   explicit UnittestProfileManager(const base::FilePath& user_data_dir,
-                                  bool will_policy_fetch_succeed_on_new_profile)
+                                  bool will_policy_fetch_succeed_on_new_profile,
+                                  bool will_id_service_succeed_on_new_profile)
       : FakeProfileManager(user_data_dir),
         will_policy_fetch_succeed_on_new_profile_(
-            will_policy_fetch_succeed_on_new_profile) {}
+            will_policy_fetch_succeed_on_new_profile),
+        will_id_service_succeed_on_new_profile_(
+            will_id_service_succeed_on_new_profile) {}
 
   std::unique_ptr<TestingProfile> BuildTestingProfile(
       const base::FilePath& path,
@@ -177,10 +185,11 @@ class UnittestProfileManager : public FakeProfileManager {
         OidcAuthenticationSigninInterceptorFactory::GetInstance(),
         base::BindRepeating(&BuildMockInterceptor,
                             std::move(number_of_windows_)));
-
-    builder.AddTestingFactory(
-        enterprise::ProfileIdServiceFactory::GetInstance(),
-        base::BindRepeating(&CreateProfileIDService));
+    if (!will_id_service_succeed_on_new_profile_) {
+      builder.AddTestingFactory(
+          enterprise::ProfileIdServiceFactory::GetInstance(),
+          base::BindRepeating(&CreateMalfunctionProfileIdService));
+    }
 
     return IdentityTestEnvironmentProfileAdaptor::
         CreateProfileForIdentityTestEnvironment(builder);
@@ -198,6 +207,7 @@ class UnittestProfileManager : public FakeProfileManager {
  private:
   std::unique_ptr<UserCloudPolicyManager> policy_manager_;
   bool will_policy_fetch_succeed_on_new_profile_;
+  bool will_id_service_succeed_on_new_profile_;
   int number_of_windows_;
 };
 
@@ -237,24 +247,26 @@ class OidcAuthenticationSigninInterceptorTest
     kFailure,
   };
 
-  OidcAuthenticationSigninInterceptorTest() {
+  OidcAuthenticationSigninInterceptorTest(bool will_policy_fetch_succeed = true,
+                                          bool will_id_service_succeed = true) {
     scoped_feature_list_.InitWithFeatureState(
         profile_management::features::kOidcAuthProfileManagement, true);
-  }
-
-  explicit OidcAuthenticationSigninInterceptorTest(
-      bool will_policy_fetch_succeed)
-      : OidcAuthenticationSigninInterceptorTest() {
     will_policy_fetch_succeed_ = will_policy_fetch_succeed;
+    will_id_service_succeed_ = will_id_service_succeed;
   }
 
   ~OidcAuthenticationSigninInterceptorTest() override = default;
 
   void SetUp() override {
+    // Without setting test dm token storage, the profile ID service will fail
+    // to retrieve client ID hence failing the service.
+    policy::BrowserDMTokenStorage::SetForTesting(&storage_);
+    storage_.SetClientId(kFakeDeviceID);
+
     auto profile_path = base::MakeAbsoluteFilePath(
         base::CreateUniqueTempDirectoryScopedToTest());
     auto profile_manager_unique = std::make_unique<UnittestProfileManager>(
-        profile_path, will_policy_fetch_succeed_);
+        profile_path, will_policy_fetch_succeed_, will_id_service_succeed_);
     unit_test_profile_manager_ = profile_manager_unique.get();
     SetUpProfileManager(profile_path, std::move(profile_manager_unique));
     BrowserWithTestWindowTest::SetUp();
@@ -275,12 +287,6 @@ class OidcAuthenticationSigninInterceptorTest
     added_profile_ = nullptr;
     unit_test_profile_manager_ = nullptr;
     BrowserWithTestWindowTest::TearDown();
-  }
-
-  // BrowserWithTestWindowTest overrides.
-  TestingProfile::TestingFactories GetTestingFactories() override {
-    return {{enterprise::ProfileIdServiceFactory::GetInstance(),
-             base::BindRepeating(&CreateProfileIDService)}};
   }
 
   // If the 3P identity is not synced to Google, the interceptor should follow
@@ -473,12 +479,12 @@ class OidcAuthenticationSigninInterceptorTest
 
     if (std::holds_alternative<OidcInterceptionResult>(
             expected_enrollment_result)) {
-      histogram_tester_->ExpectUniqueSample(
+      histogram_tester_->ExpectBucketCount(
           base::StrCat({kOidcEnrollmentHistogramName, kOidcInterceptionSuffix,
                         kOidcResultSuffix}),
           std::get<OidcInterceptionResult>(expected_enrollment_result), 1);
     } else {
-      histogram_tester_->ExpectUniqueSample(
+      histogram_tester_->ExpectBucketCount(
           base::StrCat({kOidcEnrollmentHistogramName,
                         kOidcProfileCreationSuffix, kOidcResultSuffix,
                         GetIdentitySuffix()}),
@@ -503,6 +509,13 @@ class OidcAuthenticationSigninInterceptorTest
           1);
     }
 
+    // Preset profile GUID should be either unused or working properly.
+    histogram_tester_->ExpectBucketCount(
+        base::StrCat({kOidcEnrollmentHistogramName, kOidcProfileCreationSuffix,
+                      kOidcResultSuffix, GetIdentitySuffix()}),
+        OidcProfileCreationResult::kMismatchingProfileId,
+        (will_id_service_succeed_) ? 0 : 1);
+
     histogram_tester_.reset();
     histogram_tester_ = std::make_unique<base::HistogramTester>();
   }
@@ -519,10 +532,13 @@ class OidcAuthenticationSigninInterceptorTest
   raw_ptr<MockDelegate> delegate_ = nullptr;  // Owned by `interceptor_`
 
   base::test::ScopedFeatureList scoped_feature_list_;
-  bool will_policy_fetch_succeed_ = true;
+  bool will_policy_fetch_succeed_;
+  bool will_id_service_succeed_;
 
   raw_ptr<Profile> added_profile_;
   raw_ptr<UnittestProfileManager> unit_test_profile_manager_;
+
+  policy::FakeBrowserDMTokenStorage storage_;
 };
 
 TEST_P(OidcAuthenticationSigninInterceptorTest, ProfileCreationThenSwitch) {
@@ -646,14 +662,17 @@ INSTANTIATE_TEST_SUITE_P(All,
                          /*enable_oidc_interception=*/testing::Bool());
 
 // Extra test class for cases when policy fetch fails.
-class OidcAuthenticationSigninInterceptorFailureTest
+class OidcAuthenticationSigninInterceptorFetchFailureTest
     : public OidcAuthenticationSigninInterceptorTest {
  public:
-  OidcAuthenticationSigninInterceptorFailureTest()
-      : OidcAuthenticationSigninInterceptorTest(false) {}
+  OidcAuthenticationSigninInterceptorFetchFailureTest()
+      : OidcAuthenticationSigninInterceptorTest(
+            /*will_policy_fetch_succeed=*/false,
+            /*will_id_service_succeed=*/true) {}
 };
 
-TEST_P(OidcAuthenticationSigninInterceptorFailureTest, PolicyFetchFailure) {
+TEST_P(OidcAuthenticationSigninInterceptorFetchFailureTest,
+       PolicyFetchFailure) {
   TestProfileCreationOrSwitch(
       kExampleOidcTokens, kExampleIssuerIdentifier, kExampleSubjectIdentifier,
       /*expect_profile_created=*/true, /*expected_number_of_windows=*/1,
@@ -664,5 +683,26 @@ TEST_P(OidcAuthenticationSigninInterceptorFailureTest, PolicyFetchFailure) {
 }
 
 INSTANTIATE_TEST_SUITE_P(All,
-                         OidcAuthenticationSigninInterceptorFailureTest,
+                         OidcAuthenticationSigninInterceptorFetchFailureTest,
+                         /*enable_oidc_interception=*/testing::Bool());
+
+// Extra test class for cases when profile id service fails.
+class OidcAuthenticationSigninInterceptorIdFailureTest
+    : public OidcAuthenticationSigninInterceptorTest {
+ public:
+  OidcAuthenticationSigninInterceptorIdFailureTest()
+      : OidcAuthenticationSigninInterceptorTest(
+            /*will_policy_fetch_succeed=*/true,
+            /*will_id_service_succeed=*/false) {}
+};
+
+TEST_P(OidcAuthenticationSigninInterceptorIdFailureTest, DeviceIdFailure) {
+  TestProfileCreationOrSwitch(
+      kExampleOidcTokens, kExampleIssuerIdentifier, kExampleSubjectIdentifier,
+      /*expect_profile_created=*/true,
+      /*expected_number_of_windows=*/1, GetLastFunnelStepForSuccess());
+}
+
+INSTANTIATE_TEST_SUITE_P(All,
+                         OidcAuthenticationSigninInterceptorIdFailureTest,
                          /*enable_oidc_interception=*/testing::Bool());
