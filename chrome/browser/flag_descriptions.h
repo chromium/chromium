@@ -971,6 +971,12 @@ extern const char kIPHExtensionsRequestAccessButtonFeatureDescription[];
 extern const char kExtensionManifestV2DeprecationWarningName[];
 extern const char kExtensionManifestV2DeprecationWarningDescription[];
 
+extern const char kExtensionsToolbarZeroStateName[];
+extern const char kExtensionsToolbarZeroStateDescription[];
+extern const char kExtensionsToolbarZeroStateChoicesDisabled[];
+extern const char kExtensionsToolbarZeroStateVistWebStore[];
+extern const char kExtensionsToolbarZeroStateExploreExtensionsByCategory[];
+
 extern const char kWebAuthFlowInBrowserTabName[];
 extern const char kWebAuthFlowInBrowserTabDescription[];
 

@@ -134,6 +134,12 @@ BASE_DECLARE_FEATURE(kExtensionsMenuAccessControl);
 // where user could set permitted sites.
 BASE_DECLARE_FEATURE(kExtensionsMenuAccessControlWithPermittedSites);
 
+// If enabled, guide users with zero extensions installed to explore the
+// benefits of extensions.
+// Displays an IPH anchored to the Extensions Toolbar Button, and replaces the
+// extensions submenu with an alternative submenu to recommend extensions.
+BASE_DECLARE_FEATURE(kExtensionsToolbarZeroState);
+
 // Forces requests to go through WebRequestProxyingURLLoaderFactory.
 BASE_DECLARE_FEATURE(kForceWebRequestProxyForTest);
 

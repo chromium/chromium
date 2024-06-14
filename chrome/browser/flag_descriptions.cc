@@ -1724,6 +1724,17 @@ const char kSafetyCheckExtensionsDescription[] =
     "desktop. The module will be shown if there are potentially unsafe "
     "extensions to review.";
 
+const char kExtensionsToolbarZeroStateName[] = "Extensions Toolbar Zero State";
+const char kExtensionsToolbarZeroStateDescription[] =
+    "When enabled, show an IPH to prompt users with zero extensions installed "
+    "to interact with the Extensions Toolbar Button. Upon the user clicking "
+    "the toolbar button, display a submenu that suggests exploring the Chrome "
+    "Web Store.";
+const char kExtensionsToolbarZeroStateChoicesDisabled[] = "Disabled";
+const char kExtensionsToolbarZeroStateVistWebStore[] = "Visit Chrome Web Store";
+const char kExtensionsToolbarZeroStateExploreExtensionsByCategory[] =
+    "Explore CWS extensions by category";
+
 #if BUILDFLAG(IS_CHROMEOS)
 const char kExtensionWebFileHandlersName[] = "Extensions Web File Handlers";
 const char kExtensionWebFileHandlersDescription[] =

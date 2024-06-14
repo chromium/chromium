@@ -460,6 +460,18 @@ const FeatureEntry::Choice kUseAngleChoicesMac[] = {
      gl::kANGLEImplementationMetalName}};
 #endif
 
+#if BUILDFLAG(ENABLE_EXTENSIONS)
+const FeatureEntry::Choice kExtensionsToolbarZeroStateChoices[] = {
+    {flag_descriptions::kExtensionsToolbarZeroStateChoicesDisabled, "", ""},
+    {flag_descriptions::kExtensionsToolbarZeroStateVistWebStore,
+     switches::kExtensionsToolbarZeroStateVariation,
+     switches::kExtensionsToolbarZeroStateSingleWebStoreLink},
+    {flag_descriptions::kExtensionsToolbarZeroStateExploreExtensionsByCategory,
+     switches::kExtensionsToolbarZeroStateVariation,
+     switches::kExtensionsToolbarZeroStateExploreExtensionsByCategory},
+};
+#endif  // ENABLE_EXTENSIONS
+
 #if BUILDFLAG(IS_WIN)
 const FeatureEntry::FeatureParam kDXGIWaitableSwapChain1Frame = {
     "DXGIWaitableSwapChainMaxQueuedFrames", "1"};
@@ -9557,6 +9569,11 @@ const FeatureEntry kFeatureEntries[] = {
      flag_descriptions::kExtensionsMenuAccessControlName,
      flag_descriptions::kExtensionsMenuAccessControlDescription, kOsDesktop,
      FEATURE_VALUE_TYPE(extensions_features::kExtensionsMenuAccessControl)},
+
+    {"extensions-toolbar-zero-state-variation",
+     flag_descriptions::kExtensionsToolbarZeroStateName,
+     flag_descriptions::kExtensionsToolbarZeroStateDescription, kOsDesktop,
+     MULTI_VALUE_TYPE(kExtensionsToolbarZeroStateChoices)},
 
     {"iph-extensions-menu-feature",
      flag_descriptions::kIPHExtensionsMenuFeatureName,

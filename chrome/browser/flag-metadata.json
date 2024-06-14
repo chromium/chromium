@@ -4409,6 +4409,13 @@
     "expiry_milestone": -1
   },
   {
+    "name": "extensions-toolbar-zero-state-variation",
+    "owners": [
+      "chrome-web-store-consumer-eng-team@google.com"
+    ],
+    "expiry_milestone": 130
+  },
+  {
     "name": "external-navigation-debug-logs",
     "owners": [ "mthiesse@chromium.org", "yfriedman@chromium.org" ],
     // Used by developers for debugging why Chrome fails to launch their app, by

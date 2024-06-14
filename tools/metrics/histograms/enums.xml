@@ -21193,6 +21193,7 @@ from previous Chrome versions.
   <int value="317128092"
       label="kUnifiedPasswordManagerLocalPasswordsAndroidNoMigration:enabled"/>
   <int value="317432596" label="DisplayLocking:disabled"/>
+  <int value="317880711" label="extensions-toolbar-zero-state-variation"/>
   <int value="317889969" label="AutofillAddressProfileSavePrompt:disabled"/>
   <int value="318277328" label="WebViewAppsPackageNamesAllowlist:enabled"/>
   <int value="318704417" label="LensStandalone:enabled"/>

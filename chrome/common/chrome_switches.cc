@@ -305,6 +305,25 @@ const char kExtensionsInstallVerification[] = "extensions-install-verification";
 // be treated as not from the webstore when doing install verification.
 const char kExtensionsNotWebstore[] = "extensions-not-webstore";
 
+// Specifies the variation of Zero State extensions toolbar recommendation to
+// show.
+// When a user with zero extensions installed clicks on the extensions puzzle
+// piece in the Chrome toolbar, Chrome displays a submenu suggesting the user
+// to explore the Chrome Web Store.
+const char kExtensionsToolbarZeroStateVariation[] =
+    "extensions-toolbar-zero-state-variation";
+
+// This variation of the Zero State extensions toolbar recommendation presents
+// the user with a single link to the Chrome Web Store home page.
+const char kExtensionsToolbarZeroStateSingleWebStoreLink[] =
+    "extensions-toolbar-zero-state-single-web-store-link";
+
+// This variation of the Zero State extensions toolbar recommendation suggests
+// extension categories the user can explore in the Chrome Web Store.
+// (e.g. find coupons, increase productivity)
+const char kExtensionsToolbarZeroStateExploreExtensionsByCategory[] =
+    "extensions-toolbar-zero-state-explore-extensions-by-category";
+
 // Forces application mode. This hides certain system UI elements and forces
 // the app to be installed if it hasn't been already.
 const char kForceAppMode[] = "force-app-mode";
