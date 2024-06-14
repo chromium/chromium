@@ -151,14 +151,7 @@ void FormTracker::TextFieldDidChange(const WebFormControlElement& element) {
   if (!element.Focused()) {
     return;
   }
-  // Return early for textarea elements unless kAutofillTextAreaChangeEvents is
-  // enabled.
-  if (!base::FeatureList::IsEnabled(features::kAutofillTextAreaChangeEvents)) {
-    const WebInputElement input_element = element.DynamicTo<WebInputElement>();
-    if (input_element.IsNull()) {
-      return;
-    }
-  }
+
   if (!unsafe_render_frame()) {
     return;
   }

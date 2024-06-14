@@ -47,10 +47,9 @@ interface AutofillDriver {
   // Similarly to JavaScript's "input" event, and unlike JavaScript's "change"
   // event, it's fired for each individual alteration of the field.
   //
-  // Fired (only) for text-type input elements, except if
-  // - kAutofillTextAreaChangeEvents is enabled: then also for textareas;
-  // - kAutofillContentEditableChangeEvents is enabled: then also for
-  //   contenteditables.
+  // Fired (only) for text-type input elements and textareas. If
+  // kAutofillContentEditableChangeEvents is enabled, then it is also fired for
+  // contenteditables.
   //
   // `field_id` must identify a field of `form`. This is enforced by
   // ContentAutofillDriver.

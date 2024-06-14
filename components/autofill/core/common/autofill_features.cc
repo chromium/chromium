@@ -649,12 +649,6 @@ BASE_FEATURE(kAutofillSilentProfileUpdateForInsufficientImport,
              "AutofillSilentProfileUpdateForInsufficientImport",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
-// Sends text change events for textarea elements. When this is off, only input
-// elements and maybe contenteditable elements send text change events.
-BASE_FEATURE(kAutofillTextAreaChangeEvents,
-             "AutofillTextAreaChangeEvents",
-             base::FEATURE_ENABLED_BY_DEFAULT);
-
 // Sends text change events for contenteditable elements. When this is off,
 // only input elements and maybe textarea elements send text change events.
 // Enabled by default for Mac and Windows platforms.
