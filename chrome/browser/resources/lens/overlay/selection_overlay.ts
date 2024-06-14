@@ -248,6 +248,12 @@ export class SelectionOverlayElement extends SelectionOverlayElementBase {
           this.textSelectionEndIndex = e.detail.selectionEndIndex;
         });
     this.eventTracker_.add(
+        document, 'restore-selected-text-context-menu', () => {
+          // show-selected-text-context-menu must be triggered first so that
+          // instance variables are set.
+          this.showSelectedTextContextMenu = true;
+        });
+    this.eventTracker_.add(
         document, 'show-detected-text-context-menu', (e: CustomEvent) => {
           this.showDetectedTextContextMenu = true;
           this.contextMenuX = e.detail.left;
@@ -459,6 +465,11 @@ export class SelectionOverlayElement extends SelectionOverlayElementBase {
       return;
     }
 
+    if (event.button === 2 /* right button */) {
+      this.$.textSelectionLayer.handleRightClick(event);
+      return;
+    }
+
     this.dispatchEvent(new CustomEvent(
         'selection-overlay-clicked', {bubbles: true, composed: true}));
     this.addDragListeners();
@@ -620,8 +631,8 @@ export class SelectionOverlayElement extends SelectionOverlayElementBase {
         elementsAtPoint.includes(this.$.detectedTextContextMenu)) {
       return true;
     }
-    // Ignore multi touch events and none left click events.
-    return !event.isPrimary || event.button !== 0;
+    // Ignore multi touch events and non-left/right click events.
+    return !event.isPrimary || (event.button !== 0 && event.button !== 2);
   }
 
   // Returns whether the current gesture event is a drag.
@@ -653,6 +664,7 @@ export class SelectionOverlayElement extends SelectionOverlayElementBase {
       bubbles: true,
       composed: true,
     }));
+    this.showSelectedTextContextMenu = false;
   }
 
   private handleSelectText() {
@@ -665,6 +677,7 @@ export class SelectionOverlayElement extends SelectionOverlayElementBase {
     BrowserProxyImpl.getInstance().handler.issueTranslateSelectionRequest(
         this.highlightedText, this.contentLanguage,
         this.textSelectionStartIndex, this.textSelectionEndIndex);
+    this.showSelectedTextContextMenu = false;
     recordLensOverlayInteraction(INVOCATION_SOURCE, UserAction.TRANSLATE_TEXT);
   }
 
@@ -713,8 +726,16 @@ export class SelectionOverlayElement extends SelectionOverlayElementBase {
     return this.showDetectedTextContextMenu;
   }
 
+  getShowSelectedTextContextMenuForTesting() {
+    return this.showSelectedTextContextMenu;
+  }
+
   handleSelectTextForTesting() {
     this.handleSelectText();
+  }
+
+  handleTranslateForTesting() {
+    this.handleTranslate();
   }
 }
 

@@ -6,11 +6,12 @@ import type {Point} from '//resources/mojo/ui/gfx/geometry/mojom/geometry.mojom-
 import type {SelectionOverlayElement} from 'chrome-untrusted://lens/selection_overlay.js';
 import {flushTasks} from 'chrome-untrusted://webui-test/polymer_test_util.js';
 
-function createPointerEvent(eventType: string, point: Point): PointerEvent {
+function createPointerEvent(
+    eventType: string, point: Point, button = 0): PointerEvent {
   return new PointerEvent(eventType, {
     pointerId: 1,
     bubbles: true,
-    button: 0,
+    button,
     clientX: point.x,
     clientY: point.y,
     isPrimary: true,
@@ -23,9 +24,10 @@ export function getImageBoundingRect(
 }
 
 export function simulateClick(
-    selectionOverlayElement: SelectionOverlayElement, point: Point) {
-  const pointerDownEvent = createPointerEvent('pointerdown', point);
-  const pointerUpEvent = createPointerEvent('pointerup', point);
+    selectionOverlayElement: SelectionOverlayElement, point: Point,
+    button = 0) {
+  const pointerDownEvent = createPointerEvent('pointerdown', point, button);
+  const pointerUpEvent = createPointerEvent('pointerup', point, button);
 
   selectionOverlayElement.dispatchEvent(pointerDownEvent);
   selectionOverlayElement.dispatchEvent(pointerUpEvent);

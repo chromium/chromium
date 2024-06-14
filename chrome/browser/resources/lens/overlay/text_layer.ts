@@ -59,6 +59,12 @@ function getTextSeparator(word: Word): string {
       ' ';
 }
 
+// Returns true if index is in the range [start, end]. End index may be lesser
+// than start index.
+function isInRange(index: number, start: number, end: number): boolean {
+  return (index >= start && index <= end) || (index >= end && index <= start);
+}
+
 export interface TextLayerElement {
   $: {
     wordsContainer: DomRepeat,
@@ -248,6 +254,20 @@ export class TextLayerElement extends PolymerElement {
     this.selectionEndIndex = wordIndex;
     this.isSelectingText = true;
     return true;
+  }
+
+  handleRightClick(event: PointerEvent) {
+    // If the user right-clicks a highlighted word, restore the selected text
+    // context menu.
+    const wordIndex = this.wordIndexFromPoint(event.clientX, event.clientY);
+    if (wordIndex !== null &&
+        isInRange(
+            wordIndex, this.selectionStartIndex, this.selectionEndIndex)) {
+      this.dispatchEvent(new CustomEvent('restore-selected-text-context-menu', {
+        bubbles: true,
+        composed: true,
+      }));
+    }
   }
 
   handleDragGesture(event: GestureEvent) {
