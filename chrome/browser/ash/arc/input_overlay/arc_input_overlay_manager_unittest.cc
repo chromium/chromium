@@ -328,6 +328,34 @@ TEST_P(VersionArcInputOverlayManagerTest, TestWindowFocusChange) {
   EXPECT_TRUE(!GetRegisteredWindow() && !GetDisplayOverlayController());
 }
 
+// This simulates the test for crash in b/344665489 to test focus change with
+// a window without a widget.
+TEST_P(VersionArcInputOverlayManagerTest, TestWindowFocusChangeWithNullWidget) {
+  if (!IsBetaVersion()) {
+    return;
+  }
+
+  auto arc_window = CreateArcWindowSyncAndWait(
+      task_environment(), ash::Shell::GetPrimaryRootWindow(), window_bounds,
+      kEnabledPackageName);
+  std::unique_ptr<aura::test::TestWindowDelegate> test_window_delegate =
+      std::make_unique<aura::test::TestWindowDelegate>();
+  test_window_delegate->set_window_component(HTCAPTION);
+  std::unique_ptr<aura::Window> window_no_widget(
+      CreateTestWindowInShellWithDelegateAndType(
+          test_window_delegate.get(), aura::client::WINDOW_TYPE_NORMAL, 0,
+          gfx::Rect(100, 100)));
+  EXPECT_FALSE(views::Widget::GetWidgetForNativeWindow(window_no_widget.get()));
+
+  // Focus on the window without widget.
+  aura::client::GetFocusClient(ash::Shell::GetPrimaryRootWindow())
+      ->FocusWindow(window_no_widget.get());
+  // Close the focused window.
+  window_no_widget.reset();
+  // Focus is updated to `arc_window`.
+  EXPECT_EQ(arc_window->GetNativeWindow(), GetRegisteredWindow());
+}
+
 TEST_P(VersionArcInputOverlayManagerTest, TestTabletMode) {
   // Launch app in tablet mode and switch to desktop mode.
   ash::TabletModeControllerTestApi().EnterTabletMode();
