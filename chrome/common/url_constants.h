@@ -524,6 +524,11 @@ inline constexpr char16_t kSyncLearnMoreURL[] =
 inline constexpr char kComposeLearnMorePageURL[] =
     "https://support.google.com/chrome?p=help_me_write";
 
+// The URL for the "Learn more" links for pages related to History search.
+// TODO(crbug.com/328300718): Update help article URL.
+inline constexpr char kHistorySearchLearnMorePageURL[] =
+    "https://support.google.com/chrome";
+
 // The URL for the "Learn more" link in the enterprise disclaimer for managed
 // profile in the Signin Intercept bubble.
 inline constexpr char kSigninInterceptManagedDisclaimerLearnMoreURL[] =

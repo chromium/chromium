@@ -1656,6 +1656,8 @@ void AddPeopleStrings(content::WebUIDataSource* html_source, Profile* profile) {
        IDS_SETTINGS_HISTORY_SEARCH_CONSIDER_BULLET_ONE},
       {"historySearchConsiderBulletTwo",
        IDS_SETTINGS_HISTORY_SEARCH_CONSIDER_BULLET_TWO},
+      {"historySearchLearnMoreA11yLabel",
+       IDS_SETTINGS_HISTORY_SEARCH_LEARN_MORE_A11Y_LABEL},
   };
   html_source->AddLocalizedStrings(kLocalizedStrings);
 
@@ -1668,13 +1670,8 @@ void AddPeopleStrings(content::WebUIDataSource* html_source, Profile* profile) {
           .spec());
   html_source->AddBoolean("profileShortcutsEnabled",
                           ProfileShortcutManager::IsFeatureEnabled());
-  // TODO(b/328300718): Update help article link.
-  html_source->AddString(
-      "historySearchLearnMore",
-      l10n_util::GetStringFUTF16(
-          IDS_SETTINGS_HISTORY_SEARCH_LEARN_MORE, u"https://google.com",
-          l10n_util::GetStringUTF16(
-              IDS_SETTINGS_HISTORY_SEARCH_LEARN_MORE_A11Y_LABEL)));
+  html_source->AddString("historySearchLearnMoreUrl",
+                         chrome::kHistorySearchLearnMorePageURL);
 
 #if BUILDFLAG(ENABLE_DICE_SUPPORT)
   auto* profile_entry =
