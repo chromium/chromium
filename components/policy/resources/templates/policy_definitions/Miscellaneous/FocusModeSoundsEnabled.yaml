@@ -7,7 +7,7 @@ desc: |-
 
   Setting the policy to Enabled will allow access to all sounds in Focus Mode.
 
-  Setting the policy to FocusSounds only will enable the sound feature with just Focus Sounds.
+  Setting the policy to EnabledFocusSoundsOnly will enable the sound feature with just Focus Sounds.
 
   Setting the policy to Disabled will disable sounds in Focus Mode.
 example_value: focus-sounds
