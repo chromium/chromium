@@ -1956,7 +1956,6 @@ struct ExtensionsGL {
   bool b_GL_ARB_texture_multisample;
   bool b_GL_ARB_texture_swizzle;
   bool b_GL_ARB_timer_query;
-  bool b_GL_ARB_transform_feedback2;
   bool b_GL_ARB_vertex_array_object;
   bool b_GL_CHROMIUM_bind_uniform_location;
   bool b_GL_CHROMIUM_copy_texture;

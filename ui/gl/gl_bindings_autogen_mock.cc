@@ -5273,9 +5273,8 @@ MockGLInterface::GetGLProcAddress(const char* name) {
     return reinterpret_cast<GLFunctionPointerType>(Mock_glClientWaitSync);
   if (strcmp(name, "glClientWaitSyncAPPLE") == 0)
     return reinterpret_cast<GLFunctionPointerType>(Mock_glClientWaitSyncAPPLE);
-  if (strcmp(name, "glClipControlEXT") == 0) {
+  if (strcmp(name, "glClipControlEXT") == 0)
     return reinterpret_cast<GLFunctionPointerType>(Mock_glClipControlEXT);
-  }
   if (strcmp(name, "glColorMask") == 0)
     return reinterpret_cast<GLFunctionPointerType>(Mock_glColorMask);
   if (strcmp(name, "glColorMaski") == 0)
@@ -6133,15 +6132,13 @@ MockGLInterface::GetGLProcAddress(const char* name) {
     return reinterpret_cast<GLFunctionPointerType>(Mock_glPointParameteri);
   if (strcmp(name, "glPolygonMode") == 0)
     return reinterpret_cast<GLFunctionPointerType>(Mock_glPolygonMode);
-  if (strcmp(name, "glPolygonModeANGLE") == 0) {
+  if (strcmp(name, "glPolygonModeANGLE") == 0)
     return reinterpret_cast<GLFunctionPointerType>(Mock_glPolygonModeANGLE);
-  }
   if (strcmp(name, "glPolygonOffset") == 0)
     return reinterpret_cast<GLFunctionPointerType>(Mock_glPolygonOffset);
-  if (strcmp(name, "glPolygonOffsetClampEXT") == 0) {
+  if (strcmp(name, "glPolygonOffsetClampEXT") == 0)
     return reinterpret_cast<GLFunctionPointerType>(
         Mock_glPolygonOffsetClampEXT);
-  }
   if (strcmp(name, "glPopDebugGroup") == 0)
     return reinterpret_cast<GLFunctionPointerType>(Mock_glPopDebugGroup);
   if (strcmp(name, "glPopDebugGroupKHR") == 0)
