@@ -100,7 +100,7 @@ TEST_F(ScreenAshTest, TestNoCrashesOnGettingPrimaryDisplayOnDisplayRemoved) {
   UpdateDisplay("400x500,300x200");
 
   TestDisplayRemoveObserver observer;
-  display_manager()->AddObserver(&observer);
+  display_manager()->AddDisplayObserver(&observer);
 
   // Enter Unified Mode.
   display_manager()->SetUnifiedDesktopEnabled(true);
@@ -116,7 +116,7 @@ TEST_F(ScreenAshTest, TestNoCrashesOnGettingPrimaryDisplayOnDisplayRemoved) {
   EXPECT_EQ(observer.added_displays(), 3);
   EXPECT_EQ(observer.removed_displays(), 3);
 
-  display_manager()->RemoveObserver(&observer);
+  display_manager()->RemoveDisplayObserver(&observer);
 }
 
 }  // namespace ash

@@ -18,7 +18,7 @@ ScreenProjectionChangeMonitor::ScreenProjectionChangeMonitor(
   // ScopedObservation here. Manually manage the observer lifetimes.
   // Shell::Get() and CastConfigController::Get() might be null in tests.
   if (Shell::HasInstance()) {
-    Shell::Get()->display_manager()->AddObserver(this);
+    Shell::Get()->display_manager()->AddDisplayObserver(this);
     Shell::Get()->system_tray_notifier()->AddScreenSecurityObserver(this);
   }
 
@@ -34,7 +34,7 @@ ScreenProjectionChangeMonitor::~ScreenProjectionChangeMonitor() {
 
   if (Shell::HasInstance()) {
     Shell::Get()->system_tray_notifier()->RemoveScreenSecurityObserver(this);
-    Shell::Get()->display_manager()->RemoveObserver(this);
+    Shell::Get()->display_manager()->RemoveDisplayObserver(this);
   }
 }
 

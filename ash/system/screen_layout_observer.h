@@ -12,15 +12,15 @@
 #include <string>
 
 #include "ash/ash_export.h"
-#include "ash/display/window_tree_host_manager.h"
 #include "base/gtest_prod_util.h"
+#include "ui/display/manager/display_manager_observer.h"
 #include "ui/display/manager/managed_display_info.h"
 
 namespace ash {
 
 // ScreenLayoutObserver is responsible to send notification to users when screen
 // resolution changes or screen rotation changes.
-class ASH_EXPORT ScreenLayoutObserver : public WindowTreeHostManager::Observer {
+class ASH_EXPORT ScreenLayoutObserver : public display::DisplayManagerObserver {
  public:
   ScreenLayoutObserver();
 
@@ -31,8 +31,8 @@ class ASH_EXPORT ScreenLayoutObserver : public WindowTreeHostManager::Observer {
 
   static const char kNotificationId[];
 
-  // WindowTreeHostManager::Observer:
-  void OnDisplayConfigurationChanged() override;
+  // display::DisplayManagerObserver:
+  void OnDidApplyDisplayChanges() override;
 
   // No notification will be shown only for the next ui scale change for the
   // display with |display_id|. This state will be consumed and subsequent

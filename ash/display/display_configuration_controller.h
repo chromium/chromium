@@ -12,6 +12,7 @@
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "ui/display/display.h"
+#include "ui/display/manager/display_manager_observer.h"
 #include "ui/display/unified_desktop_utils.h"
 
 namespace display {
@@ -30,7 +31,7 @@ class ScreenRotationAnimator;
 // * Provides a single interface for UI and API classes.
 // * TODO: Forwards display configuration changed events to UI and API classes.
 class ASH_EXPORT DisplayConfigurationController
-    : public WindowTreeHostManager::Observer {
+    : public display::DisplayManagerObserver {
  public:
   // Use SYNC if it is important to rotate immediately after the
   // |SetDisplayRotation()|. As a side effect, the animation is less smooth.
@@ -91,8 +92,8 @@ class ASH_EXPORT DisplayConfigurationController
   // This should only be called when Unified Desktop mode is active.
   display::Display GetPrimaryMirroringDisplayForUnifiedDesktop() const;
 
-  // WindowTreeHostManager::Observer
-  void OnDisplayConfigurationChanged() override;
+  // display::DisplayManagerObserver
+  void OnDidApplyDisplayChanges() override;
 
   static void DisableAnimatorForTest();
 

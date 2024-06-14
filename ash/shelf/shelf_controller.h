@@ -9,7 +9,6 @@
 #include <string>
 
 #include "ash/ash_export.h"
-#include "ash/display/window_tree_host_manager.h"
 #include "ash/public/cpp/session/session_observer.h"
 #include "ash/public/cpp/shelf_model.h"
 #include "ash/public/cpp/shelf_model_observer.h"
@@ -18,6 +17,8 @@
 #include "components/services/app_service/public/cpp/app_registry_cache.h"
 #include "components/services/app_service/public/cpp/app_update.h"
 #include "ui/display/display_observer.h"
+#include "ui/display/manager/display_manager_observer.h"
+#include "ui/display/tablet_state.h"
 
 class PrefChangeRegistrar;
 class PrefRegistrySimple;
@@ -34,7 +35,7 @@ class LauncherNudgeController;
 // ChromeShelfController and related classes largely manage the ShelfModel.
 class ASH_EXPORT ShelfController : public SessionObserver,
                                    public display::DisplayObserver,
-                                   public WindowTreeHostManager::Observer,
+                                   public display::DisplayManagerObserver,
                                    public apps::AppRegistryCache::Observer,
                                    public ShelfModelObserver {
  public:
@@ -67,8 +68,8 @@ class ASH_EXPORT ShelfController : public SessionObserver,
   // display::DisplayObserver:
   void OnDisplayTabletStateChanged(display::TabletState state) override;
 
-  // WindowTreeHostManager::Observer:
-  void OnDisplayConfigurationChanged() override;
+  // display::DisplayManagerObserver:
+  void OnDidApplyDisplayChanges() override;
 
   // apps::AppRegistryCache::Observer:
   void OnAppUpdate(const apps::AppUpdate& update) override;

@@ -601,7 +601,7 @@ void DisplayManager::SetLayoutForCurrentDisplays(
 
   layout_store_->RegisterLayoutForDisplayIdList(list, std::move(layout));
   if (delegate_) {
-    delegate_->PreDisplayConfigurationChange(false);
+    NotifyWillApplyDisplayChanges(false);
   }
 
   // TODO(oshima): Call UpdateDisplays instead.
@@ -620,7 +620,7 @@ void DisplayManager::SetLayoutForCurrentDisplays(
   }
 
   if (delegate_) {
-    delegate_->PostDisplayConfigurationChange();
+    NotifyDidApplyDisplayChanges();
   }
 }
 
@@ -916,12 +916,12 @@ void DisplayManager::RegisterDisplayRotationProperties(
     bool rotation_lock,
     Display::Rotation rotation) {
   if (delegate_) {
-    delegate_->PreDisplayConfigurationChange(false);
+    NotifyWillApplyDisplayChanges(false);
   }
   registered_internal_display_rotation_lock_ = rotation_lock;
   registered_internal_display_rotation_ = rotation;
   if (delegate_) {
-    delegate_->PostDisplayConfigurationChange();
+    NotifyDidApplyDisplayChanges();
   }
 }
 
@@ -1314,7 +1314,7 @@ void DisplayManager::UpdateDisplaysWith(
       !removed_displays.empty() &&
       !(removed_displays.size() == 1 && added_display_indices.size() == 1);
   if (delegate_) {
-    delegate_->PreDisplayConfigurationChange(clear_focus);
+    NotifyWillApplyDisplayChanges(clear_focus);
   }
 
   std::vector<size_t> updated_indices;
@@ -1434,7 +1434,7 @@ void DisplayManager::UpdateDisplaysWith(
   UpdateInfoForRestoringMirrorMode();
 
   if (delegate_) {
-    delegate_->PostDisplayConfigurationChange();
+    NotifyDidApplyDisplayChanges();
   }
 
   // Populate the pending change structure.
@@ -2610,6 +2610,7 @@ void DisplayManager::NotifyDisplayAdded(const Display& display) {
     display_observer.OnDisplayAdded(display);
   }
 }
+
 void DisplayManager::NotifyWillRemoveDisplays(const Displays& displays) {
   for (auto& display_observer : display_observers_) {
     display_observer.OnWillRemoveDisplays(displays);
@@ -2619,6 +2620,12 @@ void DisplayManager::NotifyWillRemoveDisplays(const Displays& displays) {
 void DisplayManager::NotifyDisplaysRemoved(const Displays& displays) {
   for (auto& display_observer : display_observers_) {
     display_observer.OnDisplaysRemoved(displays);
+  }
+}
+
+void DisplayManager::NotifyDisplaysInitialized() {
+  for (auto& manager_observer : manager_observers_) {
+    manager_observer.OnDisplaysInitialized();
   }
 }
 
@@ -2640,19 +2647,35 @@ void DisplayManager::NotifyDidProcessDisplayChanges(
   }
 }
 
-void DisplayManager::AddObserver(DisplayObserver* display_observer) {
+void DisplayManager::NotifyWillApplyDisplayChanges(bool clear_focus) {
+  delegate_->PreDisplayConfigurationChange(clear_focus);
+  for (auto& manager_observer : manager_observers_) {
+    manager_observer.OnWillApplyDisplayChanges();
+  }
+}
+
+void DisplayManager::NotifyDidApplyDisplayChanges() {
+  delegate_->PostDisplayConfigurationChange();
+  for (auto& manager_observer : manager_observers_) {
+    manager_observer.OnDidApplyDisplayChanges();
+  }
+}
+
+void DisplayManager::AddDisplayObserver(DisplayObserver* display_observer) {
   display_observers_.AddObserver(display_observer);
 }
 
-void DisplayManager::RemoveObserver(DisplayObserver* display_observer) {
+void DisplayManager::RemoveDisplayObserver(DisplayObserver* display_observer) {
   display_observers_.RemoveObserver(display_observer);
 }
 
-void DisplayManager::AddObserver(DisplayManagerObserver* manager_observer) {
+void DisplayManager::AddDisplayManagerObserver(
+    DisplayManagerObserver* manager_observer) {
   manager_observers_.AddObserver(manager_observer);
 }
 
-void DisplayManager::RemoveObserver(DisplayManagerObserver* manager_observer) {
+void DisplayManager::RemoveDisplayManagerObserver(
+    DisplayManagerObserver* manager_observer) {
   manager_observers_.RemoveObserver(manager_observer);
 }
 

@@ -15,7 +15,7 @@
 #include "base/ranges/algorithm.h"
 #include "base/task/single_thread_task_runner.h"
 #include "ui/aura/window_tree_host.h"
-#include "ui/display/manager/touch_device_manager.h"
+#include "ui/display/manager/display_manager.h"
 #include "ui/display/screen.h"
 #include "ui/events/devices/device_data_manager.h"
 #include "ui/events/event.h"
@@ -86,7 +86,7 @@ TouchCalibratorController::~TouchCalibratorController() {
   StopCalibrationAndResetParams();
 }
 
-void TouchCalibratorController::OnDisplayConfigurationChanged() {
+void TouchCalibratorController::OnDidApplyDisplayChanges() {
   touch_calibrator_widgets_.clear();
   StopCalibrationAndResetParams();
 }
@@ -116,7 +116,7 @@ void TouchCalibratorController::StartCalibration(
 
   // If this is a native touch calibration, then initialize the UX for it.
   if (state_ == CalibrationState::kNativeCalibration) {
-    Shell::Get()->window_tree_host_manager()->AddObserver(this);
+    Shell::Get()->display_manager()->AddDisplayManagerObserver(this);
 
     // Reset the calibration data.
     touch_point_quad_.fill(std::make_pair(gfx::Point(0, 0), gfx::Point(0, 0)));
@@ -140,7 +140,7 @@ void TouchCalibratorController::StartCalibration(
 void TouchCalibratorController::StopCalibrationAndResetParams() {
   if (!IsCalibrating())
     return;
-  Shell::Get()->window_tree_host_manager()->RemoveObserver(this);
+  Shell::Get()->display_manager()->RemoveDisplayManagerObserver(this);
 
   Shell::Get()->touch_transformer_controller()->SetForCalibration(false);
 

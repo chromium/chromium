@@ -6,8 +6,8 @@
 #define ASH_DISPLAY_DISPLAY_HIGHLIGHT_CONTROLLER_H_
 
 #include "ash/ash_export.h"
-#include "ash/display/window_tree_host_manager.h"
 #include "ash/public/cpp/session/session_observer.h"
+#include "ui/display/manager/display_manager_observer.h"
 #include "ui/views/widget/widget.h"
 
 namespace ash {
@@ -18,7 +18,7 @@ namespace ash {
 // TODO(1091497): Consider combining DisplayHighlightController and
 // DisplayAlignmentController.
 class ASH_EXPORT DisplayHighlightController
-    : public WindowTreeHostManager::Observer,
+    : public display::DisplayManagerObserver,
       public SessionObserver {
  public:
   DisplayHighlightController();
@@ -31,8 +31,8 @@ class ASH_EXPORT DisplayHighlightController
   views::Widget* GetWidgetForTesting() { return highlight_widget_.get(); }
 
  private:
-  // WindowTreeHostManager::Observer:
-  void OnDisplayConfigurationChanged() override;
+  // display::DisplayManagerObserver:
+  void OnDidApplyDisplayChanges() override;
   void OnDisplaysInitialized() override;
 
   // SessionObserver:

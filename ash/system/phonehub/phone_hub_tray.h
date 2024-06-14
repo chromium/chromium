@@ -6,7 +6,6 @@
 #define ASH_SYSTEM_PHONEHUB_PHONE_HUB_TRAY_H_
 
 #include "ash/ash_export.h"
-#include "ash/display/window_tree_host_manager.h"
 #include "ash/session/session_controller_impl.h"
 #include "ash/system/phonehub/onboarding_view.h"
 #include "ash/system/phonehub/phone_hub_content_view.h"
@@ -26,6 +25,7 @@
 #include "chromeos/ash/components/phonehub/phone_hub_manager.h"
 #include "ui/base/metadata/metadata_header_macros.h"
 #include "ui/base/models/simple_menu_model.h"
+#include "ui/display/manager/display_manager_observer.h"
 #include "ui/events/event.h"
 #include "ui/views/controls/button/image_button.h"
 
@@ -55,7 +55,7 @@ class ASH_EXPORT PhoneHubTray : public TrayBackgroundView,
                                 public PhoneHubUiController::Observer,
                                 public ui::SimpleMenuModel::Delegate,
                                 public SessionObserver,
-                                public WindowTreeHostManager::Observer,
+                                public display::DisplayManagerObserver,
                                 public phonehub::AppStreamManager::Observer {
   METADATA_HEADER(PhoneHubTray, TrayBackgroundView)
 
@@ -90,8 +90,8 @@ class ASH_EXPORT PhoneHubTray : public TrayBackgroundView,
   void HideStatusHeaderView() override;
   bool IsPhoneHubIconClickedWhenNudgeVisible() override;
 
-  // WindowTreeHostManager::Observer
-  void OnDisplayConfigurationChanged() override;
+  // display::DisplayManagerObserver
+  void OnDidApplyDisplayChanges() override;
 
   // AppStreamManager::Observer:
   void OnAppStreamUpdate(

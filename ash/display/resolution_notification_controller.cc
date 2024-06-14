@@ -66,11 +66,11 @@ ResolutionNotificationController::ResolutionChangeInfo::
     ~ResolutionChangeInfo() = default;
 
 ResolutionNotificationController::ResolutionNotificationController() {
-  Shell::Get()->window_tree_host_manager()->AddObserver(this);
+  Shell::Get()->display_manager()->AddDisplayManagerObserver(this);
 }
 
 ResolutionNotificationController::~ResolutionNotificationController() {
-  Shell::Get()->window_tree_host_manager()->RemoveObserver(this);
+  Shell::Get()->display_manager()->RemoveDisplayManagerObserver(this);
 }
 
 bool ResolutionNotificationController::PrepareNotificationAndSetDisplayMode(
@@ -250,7 +250,7 @@ void ResolutionNotificationController::OnDisplaysRemoved(
   }
 }
 
-void ResolutionNotificationController::OnDisplayConfigurationChanged() {
+void ResolutionNotificationController::OnDidApplyDisplayChanges() {
   if (!change_info_) {
     return;
   }
@@ -263,6 +263,5 @@ void ResolutionNotificationController::OnDisplayConfigurationChanged() {
 
   CreateOrReplaceModalDialog();
 }
-
 
 }  // namespace ash

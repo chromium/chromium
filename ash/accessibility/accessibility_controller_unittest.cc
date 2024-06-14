@@ -17,6 +17,7 @@
 #include "ash/constants/ash_features.h"
 #include "ash/constants/ash_pref_names.h"
 #include "ash/display/cursor_window_controller.h"
+#include "ash/display/window_tree_host_manager.h"
 #include "ash/keyboard/ui/keyboard_util.h"
 #include "ash/public/cpp/test/test_system_tray_client.h"
 #include "ash/root_window_controller.h"

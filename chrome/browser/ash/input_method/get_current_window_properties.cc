@@ -14,6 +14,7 @@
 #include "chrome/browser/ui/browser_finder.h"
 #include "chrome/browser/ui/browser_window.h"
 #include "components/exo/wm_helper.h"
+#include "ui/aura/window.h"
 #include "url/gurl.h"
 
 namespace ash {

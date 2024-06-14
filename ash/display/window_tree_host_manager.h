@@ -54,22 +54,10 @@ class ASH_EXPORT WindowTreeHostManager
       public ui::ImeKeyEventDispatcher,
       public AshWindowTreeHostDelegate {
  public:
-  // TODO(oshima): Consider moving this to display::DisplayObserver.
+  // TODO(oshima): Remove this observer.
   class ASH_EXPORT Observer {
    public:
     virtual ~Observer() {}
-
-    // Invoked only once after all displays are initialized
-    // after startup.
-    virtual void OnDisplaysInitialized() {}
-
-    // Invoked when the display configuration change is requested,
-    // but before the change is applied to aura/ash.
-    virtual void OnDisplayConfigurationChanging() {}
-
-    // Invoked when the all display configuration changes
-    // have been applied.
-    virtual void OnDisplayConfigurationChanged() {}
 
     // Invoked in WindowTreeHostManager::Shutdown().
     virtual void OnWindowTreeHostManagerShutdown() {}

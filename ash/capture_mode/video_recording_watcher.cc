@@ -18,6 +18,7 @@
 #include "ash/capture_mode/capture_mode_util.h"
 #include "ash/capture_mode/recording_overlay_controller.h"
 #include "ash/constants/ash_features.h"
+#include "ash/display/window_tree_host_manager.h"
 #include "ash/shell.h"
 #include "ash/style/ash_color_id.h"
 #include "ash/style/color_util.h"

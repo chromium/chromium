@@ -7,6 +7,7 @@
 #include "ash/test/ash_test_base.h"
 #include "ash/test/pixel/ash_pixel_differ.h"
 #include "ash/test/pixel/ash_pixel_test_init_params.h"
+#include "ui/display/manager/display_manager.h"
 #include "ui/message_center/message_center.h"
 
 namespace ash {

@@ -15,6 +15,7 @@
 #include "components/exo/wayland/wayland_display_observer.h"
 #include "components/exo/wayland/wayland_display_output.h"
 #include "ui/display/display.h"
+#include "ui/display/display_observer.h"
 
 namespace exo::wayland {
 

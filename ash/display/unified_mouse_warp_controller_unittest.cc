@@ -9,6 +9,7 @@
 #include "ash/display/display_util.h"
 #include "ash/display/mirror_window_controller.h"
 #include "ash/display/mouse_cursor_event_filter.h"
+#include "ash/display/window_tree_host_manager.h"
 #include "ash/host/ash_window_tree_host.h"
 #include "ash/shell.h"
 #include "ash/test/ash_test_base.h"

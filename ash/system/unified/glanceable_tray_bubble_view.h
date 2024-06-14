@@ -73,7 +73,7 @@ class ASH_EXPORT GlanceableTrayBubbleView
   void OnWidgetClosing(views::Widget* widget) override;
 
   // ScreenLayoutObserver:
-  void OnDisplayConfigurationChanged() override;
+  void OnDidApplyDisplayChanges() override;
 
   // GlanceablesTimeManagementBubbleView::Observer:
   void OnExpandStateChanged(

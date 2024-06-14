@@ -8,11 +8,12 @@
 #include <map>
 
 #include "ash/ash_export.h"
-#include "ash/display/window_tree_host_manager.h"
 #include "base/gtest_prod_util.h"
 #include "base/time/time.h"
 #include "ui/display/display.h"
+#include "ui/display/manager/display_manager_observer.h"
 #include "ui/display/manager/managed_display_info.h"
+#include "ui/display/manager/touch_device_manager.h"
 #include "ui/events/devices/touchscreen_device.h"
 #include "ui/events/event_handler.h"
 #include "ui/gfx/geometry/transform.h"
@@ -36,7 +37,7 @@ class TouchCalibratorView;
 // any given time.
 class ASH_EXPORT TouchCalibratorController
     : public ui::EventHandler,
-      public WindowTreeHostManager::Observer {
+      public display::DisplayManagerObserver {
  public:
   using CalibrationPointPairQuad =
       display::TouchCalibrationData::CalibrationPointPairQuad;
@@ -56,8 +57,8 @@ class ASH_EXPORT TouchCalibratorController
   void OnKeyEvent(ui::KeyEvent* event) override;
   void OnTouchEvent(ui::TouchEvent* event) override;
 
-  // WindowTreeHostManager::Observer
-  void OnDisplayConfigurationChanged() override;
+  // display::DisplayManagerObserver
+  void OnDidApplyDisplayChanges() override;
 
   // Starts the calibration process for the given |target_display|.
   // |opt_callback| is an optional callback that if provided is executed

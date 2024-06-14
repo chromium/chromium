@@ -28,6 +28,7 @@
 #include "ui/compositor/layer_observer.h"
 #include "ui/compositor/layer_tree_owner.h"
 #include "ui/compositor/throughput_tracker.h"
+#include "ui/display/manager/display_manager_observer.h"
 #include "ui/display/screen.h"
 #include "ui/events/devices/input_device_event_observer.h"
 #include "ui/gfx/geometry/vector3d_f.h"
@@ -67,7 +68,7 @@ class ASH_EXPORT TabletModeController
       public chromeos::PowerManagerClient::Observer,
       public TabletMode,
       public ShellObserver,
-      public WindowTreeHostManager::Observer,
+      public display::DisplayManagerObserver,
       public SessionObserver,
       public ui::InputDeviceEventObserver,
       public ui::LayerAnimationObserver,
@@ -144,8 +145,8 @@ class ASH_EXPORT TabletModeController
   // ShellObserver:
   void OnShellInitialized() override;
 
-  // WindowTreeHostManager::Observer:
-  void OnDisplayConfigurationChanged() override;
+  // display::DisplayManagerObserver:
+  void OnDidApplyDisplayChanges() override;
 
   // SessionObserver:
   void OnChromeTerminating() override;

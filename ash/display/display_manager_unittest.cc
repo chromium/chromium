@@ -5461,8 +5461,8 @@ TEST_F(DisplayManagerTest, DisplayManagerObserverNestedChangesOrdering) {
                                        gfx::Insets::TLBR(13, 12, 11, 10));
   }));
   ChangeOrderingObserver observer_2;
-  display_manager()->AddObserver(&observer_1);
-  display_manager()->AddObserver(&observer_2);
+  display_manager()->AddDisplayManagerObserver(&observer_1);
+  display_manager()->AddDisplayManagerObserver(&observer_2);
   UpdateDisplay("800x600,800x600");
 }
 

@@ -110,7 +110,7 @@ void NotificationCenterBubble::UpdateBubbleBounds() {
       notification_center_tray_->shelf()->GetSystemTrayAnchorRect());
 }
 
-void NotificationCenterBubble::OnDisplayConfigurationChanged() {
+void NotificationCenterBubble::OnDidApplyDisplayChanges() {
   UpdateBubbleBounds();
 }
 

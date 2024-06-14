@@ -914,7 +914,7 @@ void EcheTray::UpdateEcheSizeAndBubbleBounds() {
       shelf()->GetSystemTrayAnchorRect());
 }
 
-void EcheTray::OnDisplayConfigurationChanged() {
+void EcheTray::OnDidApplyDisplayChanges() {
   UpdateEcheSizeAndBubbleBounds();
 }
 

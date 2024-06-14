@@ -9,12 +9,13 @@
 
 #include "ash/ash_export.h"
 #include "ash/display/display_change_dialog.h"
-#include "ash/display/window_tree_host_manager.h"
 #include "base/functional/callback.h"
 #include "base/gtest_prod_util.h"
 #include "base/memory/weak_ptr.h"
 #include "chromeos/crosapi/mojom/cros_display_config.mojom.h"
 #include "ui/display/display_observer.h"
+#include "ui/display/manager/display_manager_observer.h"
+#include "ui/display/manager/managed_display_info.h"
 #include "ui/gfx/geometry/size.h"
 
 namespace ash {
@@ -25,7 +26,7 @@ FORWARD_DECLARE_TEST(DisplayPrefsTest, PreventStore);
 // the display configuration has been changed.
 class ASH_EXPORT ResolutionNotificationController
     : public display::DisplayObserver,
-      public WindowTreeHostManager::Observer {
+      public display::DisplayManagerObserver {
  public:
   ResolutionNotificationController();
 
@@ -93,8 +94,8 @@ class ASH_EXPORT ResolutionNotificationController
   // display::DisplayObserver overrides:
   void OnDisplaysRemoved(const display::Displays& removed_displays) override;
 
-  // WindowTreeHostManager::Observer overrides:
-  void OnDisplayConfigurationChanged() override;
+  // display::DisplayManagerObserver overrides:
+  void OnDidApplyDisplayChanges() override;
 
   std::unique_ptr<ResolutionChangeInfo> change_info_;
 

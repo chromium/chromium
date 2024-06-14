@@ -26,6 +26,7 @@
 #include "chromeos/ash/components/login/auth/auth_events_recorder.h"
 #include "ui/base/accelerators/accelerator.h"
 #include "ui/compositor/scoped_animation_duration_scale_mode.h"
+#include "ui/display/manager/display_manager.h"
 
 namespace ash {
 

@@ -86,10 +86,8 @@ DisplaySettingsProvider::DisplaySettingsProvider()
     TabletMode::Get()->AddObserver(this);
   }
   if (Shell::HasInstance() && Shell::Get()->display_manager()) {
-    Shell::Get()->display_manager()->AddObserver(
-        static_cast<display::DisplayManagerObserver*>(this));
-    Shell::Get()->display_manager()->AddObserver(
-        static_cast<display::DisplayObserver*>(this));
+    Shell::Get()->display_manager()->AddDisplayManagerObserver(this);
+    Shell::Get()->display_manager()->AddDisplayObserver(this);
   }
   if (features::IsBrightnessControlInSettingsEnabled()) {
     chromeos::PowerManagerClient* power_manager_client =
@@ -105,10 +103,8 @@ DisplaySettingsProvider::~DisplaySettingsProvider() {
     TabletMode::Get()->RemoveObserver(this);
   }
   if (Shell::HasInstance() && Shell::Get()->display_manager()) {
-    Shell::Get()->display_manager()->RemoveObserver(
-        static_cast<display::DisplayManagerObserver*>(this));
-    Shell::Get()->display_manager()->RemoveObserver(
-        static_cast<display::DisplayObserver*>(this));
+    Shell::Get()->display_manager()->RemoveDisplayManagerObserver(this);
+    Shell::Get()->display_manager()->RemoveDisplayObserver(this);
   }
   if (features::IsBrightnessControlInSettingsEnabled()) {
     chromeos::PowerManagerClient* power_manager_client =

@@ -698,7 +698,7 @@ TEST_P(AppListControllerImplTest,
   EnterOverview();
 
   // Trigger a display configuration change, this simulates screen rotation.
-  Shell::Get()->app_list_controller()->OnDisplayConfigurationChanged();
+  Shell::Get()->app_list_controller()->OnDidApplyDisplayChanges();
 
   // End overview mode, the home launcher should be visible.
   ExitOverview();
