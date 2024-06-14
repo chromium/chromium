@@ -12,6 +12,7 @@ import android.content.Context;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.ViewParent;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.VisibleForTesting;
@@ -30,6 +31,7 @@ import org.chromium.chrome.browser.tasks.tab_management.MessageCardViewPropertie
 import org.chromium.chrome.browser.tasks.tab_management.MessageService.MessageType;
 import org.chromium.chrome.browser.tasks.tab_management.TabListCoordinator.TabListMode;
 import org.chromium.chrome.browser.tasks.tab_management.TabListModel.CardProperties.ModelType;
+import org.chromium.chrome.browser.tasks.tab_management.TabSwitcherMessageManager.MessageUpdateObserver;
 import org.chromium.chrome.browser.ui.messages.snackbar.SnackbarManager;
 import org.chromium.ui.modelutil.PropertyModel;
 import org.chromium.ui.modelutil.PropertyModelChangeProcessor;
@@ -38,7 +40,7 @@ import java.util.concurrent.TimeUnit;
 
 /** A message service to surface information about archived tabs. */
 public class ArchivedTabsMessageService extends MessageService
-        implements CustomMessageCardProvider {
+        implements CustomMessageCardProvider, MessageUpdateObserver {
 
     static class ArchivedTabsMessageData implements MessageService.CustomMessageData {
         private CustomMessageCardProvider mProvider;
@@ -163,6 +165,18 @@ public class ArchivedTabsMessageService extends MessageService
     @Override
     public void setIsIncognito(boolean isIncognito) {
         // No-op
+    }
+
+    // MessageUpdateObserver implementation.
+
+    @Override
+    public void onRemoveAllAppendedMessage() {
+        if (mCustomCardView == null) return;
+        // When messages are removed, detach the custom view.
+        ViewParent parent = mCustomCardView.getParent();
+        if (parent != null) {
+            ((ViewGroup) parent).removeView(mCustomCardView);
+        }
     }
 
     // Private methods.

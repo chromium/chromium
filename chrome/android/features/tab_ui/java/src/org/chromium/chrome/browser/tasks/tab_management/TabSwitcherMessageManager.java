@@ -271,6 +271,7 @@ public class TabSwitcherMessageManager implements PriceWelcomeMessageController 
                             mTabListMode,
                             mRootView,
                             mSnackbarManager);
+            addObserver(mArchivedTabsMessageService);
             mMessageCardProviderCoordinator.subscribeMessageService(mArchivedTabsMessageService);
         }
 

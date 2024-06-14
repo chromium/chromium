@@ -5,6 +5,8 @@
 package org.chromium.chrome.browser.tasks.tab_management;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNull;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.doReturn;
@@ -155,5 +157,14 @@ public class ArchivedTabsMessageServiceUnitTest {
                 mArchivedTabsMessageService.getCustomCardModelForTesting();
         customCardPropertyModel.get(CLICK_HANDLER).run();
         verify(mArchivedTabsDialogCoordinator).show();
+    }
+
+    @Test
+    public void testCustomViewDetached() {
+        mRootView.addView(mArchivedTabsMessageService.getCustomView());
+        assertNotNull(mArchivedTabsMessageService.getCustomView().getParent());
+
+        mArchivedTabsMessageService.onRemoveAllAppendedMessage();
+        assertNull(mArchivedTabsMessageService.getCustomView().getParent());
     }
 }
