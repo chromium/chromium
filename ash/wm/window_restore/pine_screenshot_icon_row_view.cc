@@ -58,6 +58,9 @@ PineScreenshotIconRowView::PineScreenshotIconRowView(
   SetInsideBorderInsets(kIconRowInsets);
   SetBackground(
       views::CreateThemedSolidBackground(kColorAshShieldAndBaseOpaque));
+  // Do not flip this view in RTL, since the cutout in `PineContentsView` is not
+  // flipped.
+  SetMirrored(false);
 
   const int elements_size = static_cast<int>(apps_infos.size());
   const bool one_browser_window =
