@@ -446,6 +446,18 @@ TEST_F(InputDeviceSettingsMetricsManagerTest, RecordMouseSettings) {
                          key_event_for_mouse->get_key_event()->vkey),
       /*expected_count=*/1u);
 
+  // Total number of devices remapped button.
+  histogram_tester.ExpectTotalCount(
+      "ChromeOS.Settings.Device.ButtonRemapping.DeviceTypeOfRemappedButton",
+      /*expected_count=*/1u);
+  // Number of mice remapped mouse button.
+  histogram_tester.ExpectBucketCount(
+      "ChromeOS.Settings.Device.ButtonRemapping.DeviceTypeOfRemappedButton",
+      /*sample=*/
+      InputDeviceSettingsMetricsManager::PeripheralCustomizationMetricsType::
+          kMouse,
+      /*expected_count=*/1u);
+
   // Call RecordMouseInitialMetrics with the same user and same mouse,
   // ExpectTotalCount for mouse metric won't increase.
   manager_.get()->RecordMouseInitialMetrics(mouse);
@@ -466,6 +478,18 @@ TEST_F(InputDeviceSettingsMetricsManagerTest, RecordMouseSettings) {
       /*expected_count=*/1u);
   histogram_tester.ExpectTotalCount(
       "ChromeOS.Settings.Device.Mouse.ButtonRemapping.KeyEvent.Initial",
+      /*expected_count=*/1u);
+
+  // Total number of devices remapped button.
+  histogram_tester.ExpectTotalCount(
+      "ChromeOS.Settings.Device.ButtonRemapping.DeviceTypeOfRemappedButton",
+      /*expected_count=*/1u);
+  // Number of mice remapped mouse button.
+  histogram_tester.ExpectBucketCount(
+      "ChromeOS.Settings.Device.ButtonRemapping.DeviceTypeOfRemappedButton",
+      /*sample=*/
+      InputDeviceSettingsMetricsManager::PeripheralCustomizationMetricsType::
+          kMouse,
       /*expected_count=*/1u);
 
   // Call RecordMouseInitialMetrics with the different user but same
@@ -489,6 +513,18 @@ TEST_F(InputDeviceSettingsMetricsManagerTest, RecordMouseSettings) {
       /*expected_count=*/2u);
   histogram_tester.ExpectTotalCount(
       "ChromeOS.Settings.Device.Mouse.ButtonRemapping.KeyEvent.Initial",
+      /*expected_count=*/2u);
+
+  // Total number of devices remapped buttons.
+  histogram_tester.ExpectTotalCount(
+      "ChromeOS.Settings.Device.ButtonRemapping.DeviceTypeOfRemappedButton",
+      /*expected_count=*/2u);
+  // Number of mice remapped mouse buttons.
+  histogram_tester.ExpectBucketCount(
+      "ChromeOS.Settings.Device.ButtonRemapping.DeviceTypeOfRemappedButton",
+      /*sample=*/
+      InputDeviceSettingsMetricsManager::PeripheralCustomizationMetricsType::
+          kMouse,
       /*expected_count=*/2u);
 
   // Call record changed settings metrics.
@@ -791,6 +827,18 @@ TEST_F(InputDeviceSettingsMetricsManagerTest, RecordGraphicsTabletSettings) {
       /*sample=*/mojom::StaticShortcutAction::kCopy,
       /*expected_count=*/0u);
 
+  // Total number of devices remapped button.
+  histogram_tester.ExpectTotalCount(
+      "ChromeOS.Settings.Device.ButtonRemapping.DeviceTypeOfRemappedButton",
+      /*expected_count=*/1u);
+  // Number of graphics tablets remapped graphics tablet button.
+  histogram_tester.ExpectBucketCount(
+      "ChromeOS.Settings.Device.ButtonRemapping.DeviceTypeOfRemappedButton",
+      /*sample=*/
+      InputDeviceSettingsMetricsManager::PeripheralCustomizationMetricsType::
+          kGraphicsTablet,
+      /*expected_count=*/1u);
+
   // Call RecordGraphicsTabletInitialMetrics with the same user and same
   // graphics tablet, ExpectTotalCount for the metric won't increase.
   manager_.get()->RecordGraphicsTabletInitialMetrics(graphics_tablet);
@@ -805,6 +853,18 @@ TEST_F(InputDeviceSettingsMetricsManagerTest, RecordGraphicsTabletSettings) {
   histogram_tester.ExpectTotalCount(
       "ChromeOS.Settings.Device.GraphicsTablet.ButtonRemapping."
       "StaticShortcutAction.Initial",
+      /*expected_count=*/1u);
+
+  // Total number of devices remapped button.
+  histogram_tester.ExpectTotalCount(
+      "ChromeOS.Settings.Device.ButtonRemapping.DeviceTypeOfRemappedButton",
+      /*expected_count=*/1u);
+  // Number of graphics tablets remapped graphics tablet button.
+  histogram_tester.ExpectBucketCount(
+      "ChromeOS.Settings.Device.ButtonRemapping.DeviceTypeOfRemappedButton",
+      /*sample=*/
+      InputDeviceSettingsMetricsManager::PeripheralCustomizationMetricsType::
+          kGraphicsTablet,
       /*expected_count=*/1u);
 
   // Call RecordGraphicsTabletInitialMetrics with the different user but same
@@ -822,6 +882,18 @@ TEST_F(InputDeviceSettingsMetricsManagerTest, RecordGraphicsTabletSettings) {
   histogram_tester.ExpectTotalCount(
       "ChromeOS.Settings.Device.GraphicsTablet.ButtonRemapping."
       "StaticShortcutAction.Initial",
+      /*expected_count=*/2u);
+
+  // Total number of devices remapped buttons.
+  histogram_tester.ExpectTotalCount(
+      "ChromeOS.Settings.Device.ButtonRemapping.DeviceTypeOfRemappedButton",
+      /*expected_count=*/2u);
+  // Number of graphics tablets remapped graphics tablet buttons.
+  histogram_tester.ExpectBucketCount(
+      "ChromeOS.Settings.Device.ButtonRemapping.DeviceTypeOfRemappedButton",
+      /*sample=*/
+      InputDeviceSettingsMetricsManager::PeripheralCustomizationMetricsType::
+          kGraphicsTablet,
       /*expected_count=*/2u);
 
   // Call RecordGraphicsTabletInitialMetrics with the same user but
@@ -857,6 +929,18 @@ TEST_F(InputDeviceSettingsMetricsManagerTest, RecordGraphicsTabletSettings) {
       "DefaultRemapping.Vkey",
       /*sample=*/66,
       /*expected_count=*/1u);
+
+  // Total number of graphics tablets which remapped buttons doesn't change
+  // since there is no button remapping for default graphics tablets.
+  histogram_tester.ExpectTotalCount(
+      "ChromeOS.Settings.Device.ButtonRemapping.DeviceTypeOfRemappedButton",
+      /*expected_count=*/2u);
+  histogram_tester.ExpectBucketCount(
+      "ChromeOS.Settings.Device.ButtonRemapping.DeviceTypeOfRemappedButton",
+      /*sample=*/
+      InputDeviceSettingsMetricsManager::PeripheralCustomizationMetricsType::
+          kGraphicsTablet,
+      /*expected_count=*/2u);
 
   // Call record changed settings metrics.
   auto old_setting = graphics_tablet.settings->Clone();
@@ -1006,6 +1090,18 @@ TEST_F(InputDeviceSettingsMetricsManagerTest, RecordGraphicsTabletPenSettings) {
       /*sample=*/mojom::StaticShortcutAction::kPaste,
       /*expected_count=*/0u);
 
+  // Total number of devices remapped button.
+  histogram_tester.ExpectTotalCount(
+      "ChromeOS.Settings.Device.ButtonRemapping.DeviceTypeOfRemappedButton",
+      /*expected_count=*/1u);
+  // Number of graphics tablets remapped graphics tablet pen button.
+  histogram_tester.ExpectBucketCount(
+      "ChromeOS.Settings.Device.ButtonRemapping.DeviceTypeOfRemappedButton",
+      /*sample=*/
+      InputDeviceSettingsMetricsManager::PeripheralCustomizationMetricsType::
+          kGraphicsTabletPen,
+      /*expected_count=*/1u);
+
   // Call RecordGraphicsTabletInitialMetrics with the same user and same
   // graphics tablet, ExpectTotalCount for the metric won't increase.
   manager_.get()->RecordGraphicsTabletInitialMetrics(graphics_tablet);
@@ -1020,6 +1116,18 @@ TEST_F(InputDeviceSettingsMetricsManagerTest, RecordGraphicsTabletPenSettings) {
   histogram_tester.ExpectTotalCount(
       "ChromeOS.Settings.Device.GraphicsTabletPen.ButtonRemapping."
       "StaticShortcutAction.Initial",
+      /*expected_count=*/1u);
+
+  // Total number of devices remapped button.
+  histogram_tester.ExpectTotalCount(
+      "ChromeOS.Settings.Device.ButtonRemapping.DeviceTypeOfRemappedButton",
+      /*expected_count=*/1u);
+  // Number of graphics tablets remapped graphics tablet pen button.
+  histogram_tester.ExpectBucketCount(
+      "ChromeOS.Settings.Device.ButtonRemapping.DeviceTypeOfRemappedButton",
+      /*sample=*/
+      InputDeviceSettingsMetricsManager::PeripheralCustomizationMetricsType::
+          kGraphicsTabletPen,
       /*expected_count=*/1u);
 
   // Call RecordGraphicsTabletInitialMetrics with the different user but same
@@ -1037,6 +1145,18 @@ TEST_F(InputDeviceSettingsMetricsManagerTest, RecordGraphicsTabletPenSettings) {
   histogram_tester.ExpectTotalCount(
       "ChromeOS.Settings.Device.GraphicsTabletPen.ButtonRemapping."
       "StaticShortcutAction.Initial",
+      /*expected_count=*/2u);
+
+  // Total number of devices remapped buttons.
+  histogram_tester.ExpectTotalCount(
+      "ChromeOS.Settings.Device.ButtonRemapping.DeviceTypeOfRemappedButton",
+      /*expected_count=*/2u);
+  // Number of graphics tablets remapped graphics tablet pen buttons.
+  histogram_tester.ExpectBucketCount(
+      "ChromeOS.Settings.Device.ButtonRemapping.DeviceTypeOfRemappedButton",
+      /*sample=*/
+      InputDeviceSettingsMetricsManager::PeripheralCustomizationMetricsType::
+          kGraphicsTabletPen,
       /*expected_count=*/2u);
 
   // Call record changed settings metrics.

@@ -613,6 +613,14 @@ void RecordKeyPresenseMetrics(const mojom::Keyboard& keyboard) {
   }
 }
 
+void RecordDeviceTypeOfRemappedButton(
+    InputDeviceSettingsMetricsManager::PeripheralCustomizationMetricsType
+        peripheral_kind) {
+  base::UmaHistogramEnumeration(
+      "ChromeOS.Settings.Device.ButtonRemapping.DeviceTypeOfRemappedButton",
+      peripheral_kind);
+}
+
 }  // namespace
 
 InputDeviceSettingsMetricsManager::InputDeviceSettingsMetricsManager() =
@@ -824,10 +832,19 @@ void InputDeviceSettingsMetricsManager::RecordMouseInitialMetrics(
       "ChromeOS.Settings.Device.Mouse.SwapPrimaryButtons.Initial",
       mouse.settings->swap_right);
 
+  bool user_remapped_mouse_button = false;
   for (const auto& button_remapping : mouse.settings->button_remappings) {
+    if (button_remapping->remapping_action) {
+      user_remapped_mouse_button = true;
+    }
     RecordInitialButtonRemappingAction(
         button_remapping, InputDeviceSettingsMetricsManager::
                               PeripheralCustomizationMetricsType::kMouse);
+  }
+
+  if (user_remapped_mouse_button) {
+    RecordDeviceTypeOfRemappedButton(
+        PeripheralCustomizationMetricsType::kMouse);
   }
 }
 
@@ -1116,19 +1133,38 @@ void InputDeviceSettingsMetricsManager::RecordGraphicsTabletInitialMetrics(
   }
   recorded_graphics_tablets_[account_id].insert(graphics_tablet.device_key);
 
+  bool user_remapped_pen_button = false;
   for (const auto& button_remapping :
        graphics_tablet.settings->pen_button_remappings) {
+    if (button_remapping->remapping_action) {
+      user_remapped_pen_button = true;
+    }
     RecordInitialButtonRemappingAction(
         button_remapping,
         InputDeviceSettingsMetricsManager::PeripheralCustomizationMetricsType::
             kGraphicsTabletPen);
   }
+
+  if (user_remapped_pen_button) {
+    RecordDeviceTypeOfRemappedButton(
+        PeripheralCustomizationMetricsType::kGraphicsTabletPen);
+  }
+
+  bool user_remapped_tablet_button = false;
   for (const auto& button_remapping :
        graphics_tablet.settings->tablet_button_remappings) {
+    if (button_remapping->remapping_action) {
+      user_remapped_tablet_button = true;
+    }
     RecordInitialButtonRemappingAction(
         button_remapping,
         InputDeviceSettingsMetricsManager::PeripheralCustomizationMetricsType::
             kGraphicsTablet);
+  }
+
+  if (user_remapped_tablet_button) {
+    RecordDeviceTypeOfRemappedButton(
+        PeripheralCustomizationMetricsType::kGraphicsTablet);
   }
 }
 

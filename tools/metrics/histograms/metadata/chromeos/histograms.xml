@@ -3091,6 +3091,18 @@ and mapped to the variant by `StatisticNameToMachineStatisticVariant()` -->
   </summary>
 </histogram>
 
+<histogram
+    name="ChromeOS.Settings.Device.ButtonRemapping.DeviceTypeOfRemappedButton"
+    enum="PeripheralCustomizationMetricsType" expires_after="2025-03-22">
+  <owner>dpad@google.com</owner>
+  <owner>wangdanny@google.com</owner>
+  <owner>cros-peripherals@google.com</owner>
+  <summary>
+    Records the device type for users who remapped buttons when the device is
+    initialized to know overall feature usage.
+  </summary>
+</histogram>
+
 <histogram name="ChromeOS.Settings.Device.ButtonRemapping.Pressed"
     enum="PeripheralCustomizationMetricsType" expires_after="2025-03-22">
   <owner>dpad@google.com</owner>
