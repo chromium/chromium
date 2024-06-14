@@ -45,8 +45,13 @@ _MAC_VENDOR_NAME_REGEX = re.compile(r'sppci_vendor_([a-z]+)$')
 
 # The format of Qualcomm device IDs retrieved via WMI is different from what
 # Chrome extracts. This table translates to what Chrome produces.
+# 043a = older Adreno 680/685/690 GPUs (such as Surface Pro X, Dell trybots)
+# 0636 = Adreno 690 GPU (such as Surface Pro 9 5G)
+# 0c36 = Adreno 741 GPU (such as Surface Pro 11th Edition)
 _QUALCOMM_DEVICE_MAP = {
     '043a': '41333430',
+    '0636': '36333630',
+    '0c36': '36334330',
 }
 
 _Gpu = collections.namedtuple('Gpu', ['vendor_id', 'device_id'])

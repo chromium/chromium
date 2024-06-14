@@ -29,10 +29,15 @@ VENDOR_SUBSTITUTIONS = {
 DEVICE_SUBSTITUTIONS = {
     'm1': '0',
     'm2': '0',
-    # Qualcomm Adreno 690 on Windows arm64. The approach swarming uses to find
-    # GPUs (looking for all Win32_VideoController WMI objects) results in
-    # different output than what Chrome does.
+    # Qualcomm Adreno 680/685/690 and 741 on Windows arm64. The approach
+    # swarming uses to find GPUs (looking for all Win32_VideoController WMI
+    # objects) results in different output than what Chrome sees.
+    # 043a = Adreno 680/685/690 GPU (such as Surface Pro X, Dell trybots)
+    # 0636 = Adreno 690 GPU (such as Surface Pro 9 5G)
+    # 0c36 = Adreno 741 GPU (such as Surface Pro 11th Edition)
     '043a': '41333430',
+    '0636': '36333630',
+    '0c36': '36334330',
 }
 
 

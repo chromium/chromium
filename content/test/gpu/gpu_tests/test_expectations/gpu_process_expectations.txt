@@ -37,7 +37,7 @@
 #         intel intel-gen-9 intel-gen-12 intel-0xa2e intel-0xd26 intel-0xa011
 #             intel-0x3e92 intel-0x3e9b intel-0x4680 intel-0x5912 intel-0x9bc5
 #         nvidia nvidia-0xfe9 nvidia-0x1cb3 nvidia-0x2184
-#         qualcomm qualcomm-0x41333430 ]
+#         qualcomm qualcomm-0x41333430 qualcomm-0x36333630 qualcomm-0x36334330 ]
 # Architecture
 # tags: [ mac-arm64 mac-x86_64 ]
 # Decoder
@@ -115,6 +115,8 @@ crbug.com/1448964 [ mac angle-metal ] GpuProcess_mac_webgl_terminated_high_perfo
 
 # SwiftShader is not supported on arm64.
 [ win qualcomm-0x41333430 ] GpuProcess_swiftshader_for_webgl [ Skip ]
+[ win qualcomm-0x36333630 ] GpuProcess_swiftshader_for_webgl [ Skip ]
+[ win qualcomm-0x36334330 ] GpuProcess_swiftshader_for_webgl [ Skip ]
 
 # Software Compositing is not supported on ChromeOS.
 crbug.com/1084796 [ chromeos ] GpuProcess_readback_webgl_gpu_process [ Skip ]

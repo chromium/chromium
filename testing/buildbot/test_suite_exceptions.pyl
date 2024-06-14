@@ -4948,9 +4948,23 @@
           '--jobs=2',
         ],
       },
+      'Win11 FYI arm64 Release (Qualcomm Adreno 690)': {
+        'args': [
+          # These devices have issues running these tests in parallel.
+          # TODO(crbug.com/346406092): Once addressed, remove this block.
+          '--jobs=1',
+        ],
+      },
     },
     'replacements': {
       'Win10 FYI x64 Experimental Release (Intel)': {
+        'args': {
+          # Magic substitution happens after regular replacement, so remove it
+          # now since we are manually applying the number of jobs above.
+          '$$MAGIC_SUBSTITUTION_GPUParallelJobs': None,
+        },
+      },
+      'Win11 FYI arm64 Release (Qualcomm Adreno 690)': {
         'args': {
           # Magic substitution happens after regular replacement, so remove it
           # now since we are manually applying the number of jobs above.

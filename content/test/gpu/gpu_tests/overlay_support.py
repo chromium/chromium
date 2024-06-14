@@ -465,6 +465,16 @@ OVERLAY_CONFIGS = {
                         VideoRotation.ROT180])\
                     .WithZeroCopyConfig(ZeroCopyConfig(
                         supports_scaled_video=True)),
+        0x36333630: BasicDirectCompositionConfig()\
+                    .WithHardwareNV12Support(supported_rotations=[
+                        VideoRotation.ROT180])\
+                    .WithZeroCopyConfig(ZeroCopyConfig(
+                        supports_scaled_video=True)),
+        0x36334330: BasicDirectCompositionConfig()\
+                    .WithHardwareNV12Support(supported_rotations=[
+                        VideoRotation.ROT180])\
+                    .WithZeroCopyConfig(ZeroCopyConfig(
+                        supports_scaled_video=True)),
     },
 }
 
