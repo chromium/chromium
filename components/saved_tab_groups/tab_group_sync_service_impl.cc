@@ -356,7 +356,11 @@ void TabGroupSyncServiceImpl::HandleTabGroupAdded(const base::Uuid& guid,
                                                   TriggerSource source) {
   VLOG(2) << __func__;
   const SavedTabGroup* saved_tab_group = model_->Get(guid);
-  CHECK(saved_tab_group);
+
+  if (!saved_tab_group) {
+    return;
+  }
+
   if (saved_tab_group->saved_tabs().empty()) {
     // Wait for another sync update with tabs before notifying the UI.
     empty_groups_.emplace(guid);
@@ -374,7 +378,10 @@ void TabGroupSyncServiceImpl::HandleTabGroupUpdated(
     TriggerSource source) {
   VLOG(2) << __func__;
   const SavedTabGroup* saved_tab_group = model_->Get(group_guid);
-  CHECK(saved_tab_group);
+
+  if (!saved_tab_group) {
+    return;
+  }
 
   if (saved_tab_group->saved_tabs().empty()) {
     return;
