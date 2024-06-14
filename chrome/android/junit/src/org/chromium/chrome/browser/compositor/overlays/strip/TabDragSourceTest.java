@@ -1024,6 +1024,19 @@ public class TabDragSourceTest {
         histogramExpectation.assertExpected();
     }
 
+    /** Tests fix for crash reported in crbug.com/327449234. */
+    @Test
+    public void test_onDrag_nullClipDescription() {
+        // Mock drag event with null ClipDescription.
+        DragEvent event = mockDragEvent(DragEvent.ACTION_DRAG_STARTED, POS_X, mPosY);
+        when(event.getClipDescription()).thenReturn(null);
+
+        // No exception should be thrown when #onDragStart is invoked.
+        assertFalse(
+                "#onDragStart should not be handled when ClipDescription is null.",
+                mSourceInstance.onDrag(mTabsToolbarView, event));
+    }
+
     private void invokeDropInDestinationStrip(boolean dragEndRes) {
         new DragEventInvoker()
                 .dragExit(mSourceInstance)
