@@ -263,7 +263,7 @@ std::vector<ProfileValueDifference> GetProfileDifferenceForUi(
     const AutofillProfile& first_profile,
     const AutofillProfile& second_profile,
     const std::string& app_locale) {
-  static constexpr FieldType kTypeToCompare[] = {
+  static constexpr auto kTypeToCompare = std::array{
       NAME_FULL, ADDRESS_HOME_ADDRESS, EMAIL_ADDRESS, PHONE_HOME_WHOLE_NUMBER};
 
   base::flat_map<FieldType, std::pair<std::u16string, std::u16string>>
