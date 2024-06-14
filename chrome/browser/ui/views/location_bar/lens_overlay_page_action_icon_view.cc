@@ -135,7 +135,12 @@ gfx::Size LensOverlayPageActionIconView::CalculatePreferredSize(
   // based on the available space.
   const gfx::Size full_size =
       PageActionIconView::CalculatePreferredSize(available_size);
-  const gfx::Size reduced_size = GetSizeForLabelWidth(0);
+  // TODO(tluk): Update GetSizeForLabelWidth() to correctly calculate padding
+  // for empty label widths and replace the calculation below.
+  const gfx::Insets view_insets = GetInsets();
+  const gfx::Size reduced_size =
+      image_container_view()->GetPreferredSize() +
+      gfx::Size(view_insets.left() * 2, view_insets.height());
   return available_size.width() < full_size.width() ? reduced_size : full_size;
 }
 

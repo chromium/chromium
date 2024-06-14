@@ -87,7 +87,7 @@ void LocationBarLayout::AddDecoration(int y,
       edge_item_padding, view));
 }
 
-void LocationBarLayout::LayoutPass1(int* entry_width) {
+void LocationBarLayout::LayoutPass1(int* entry_width, int reserved_width) {
   bool first_item = true;
   for (const auto& decoration : decorations_) {
     // Autocollapsing decorations are ignored in this pass.
@@ -102,7 +102,8 @@ void LocationBarLayout::LayoutPass1(int* entry_width) {
       // TODO: tluk - Remove this after merge.
       const auto available_size =
           lens::features::IsOmniboxEntryPointEnabled()
-              ? views::SizeBounds(*entry_width, decoration->height)
+              ? views::SizeBounds(*entry_width - reserved_width,
+                                  decoration->height)
               : views::SizeBounds();
       decoration->computed_width =
           decoration->view->GetPreferredSize(available_size).width();
