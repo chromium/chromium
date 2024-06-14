@@ -65,6 +65,7 @@ export interface ComposeAppElement {
     acceptButton: CrButtonElement,
     loading: HTMLElement,
     undoButton: CrButtonElement,
+    undoButtonRefined: CrButtonElement,
     redoButton: CrButtonElement,
     refreshButton: HTMLElement,
     resultContainer: HTMLElement,
@@ -93,7 +94,9 @@ enum TriggerElement {
   TONE,
   LENGTH,
   MODIFIER,
-  REFRESH
+  REFRESH,
+  UNDO,
+  REDO,
 }
 
 export class ComposeAppElement extends ComposeAppElementBase {
@@ -733,6 +736,16 @@ export class ComposeAppElement extends ComposeAppElementBase {
       case TriggerElement.MODIFIER:
         this.$.modifierMenu.focus({ preventScroll: true });
         break;
+      case TriggerElement.UNDO:
+        if (this.enableUiRefinements) {
+          this.$.undoButtonRefined.focus();
+        } else {
+          this.$.undoButton.focus();
+        }
+        break;
+      case TriggerElement.REDO:
+        this.$.redoButton.focus();
+        break;
     }
   }
 
@@ -915,7 +928,14 @@ export class ComposeAppElement extends ComposeAppElementBase {
       }
 
       this.updateWithNewState_(state);
-      this.$.undoButton.focus();
+      // If UI Refinements is enabled, then focus is moved from the undo button
+      // to the redo button if undo is disabled in the new state. Otherwise, the
+      // undo button always keeps focus.
+      if (this.undoEnabled_ || !this.enableUiRefinements) {
+        this.lastTriggerElement_ = TriggerElement.UNDO;
+      } else {
+        this.lastTriggerElement_ = TriggerElement.REDO;
+      }
     } catch (error) {
       // Error (e.g., disconnected mojo pipe) from a rejected Promise. Allow the
       // user to try again as there should be a valid state to restore.
@@ -951,7 +971,12 @@ export class ComposeAppElement extends ComposeAppElementBase {
       }
 
       this.updateWithNewState_(state);
-      this.$.redoButton.focus();
+      // If redo is disabled, then give focus to the undo button by default.
+      if (this.redoEnabled_) {
+        this.lastTriggerElement_ = TriggerElement.REDO;
+      } else {
+        this.lastTriggerElement_ = TriggerElement.UNDO;
+      }
     } catch (error) {
       // Error (e.g., disconnected mojo pipe) from a rejected Promise. Allow the
       // user to try again as there should be a valid state to restore.
