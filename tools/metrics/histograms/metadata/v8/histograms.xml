@@ -445,6 +445,18 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="V8.ExecuteMicroSeconds.Cumulative.Interactive"
+    units="microseconds" expires_after="2024-12-08">
+  <owner>marja@chromium.org</owner>
+  <owner>v8-runtime@google.com</owner>
+  <summary>
+    Aggregated time spent in executing JavaScript (all compiler tiers) until the
+    page turned interactive. Emitted when the page turns interactive.
+
+    Includes samples only from clients with a high-resolution clock.
+  </summary>
+</histogram>
+
 <histogram name="V8.ExternalPointerTableCompactionOutcome"
     enum="V8ExternalPointerTableCompactionOutcome" expires_after="2024-09-30">
   <owner>saelo@chromium.org</owner>

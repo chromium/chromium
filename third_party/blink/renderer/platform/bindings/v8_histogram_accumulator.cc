@@ -32,6 +32,9 @@ void* V8HistogramAccumulator::RegisterHistogram(base::HistogramBase* histogram,
              name == "V8.CompileDeserializeMicroSeconds.BackgroundThread") {
     histogram_and_sum = std::make_unique<HistogramAndSum>(
         histogram, &compile_background_sum_microseconds_);
+  } else if (name == "V8.ExecuteMicroSeconds") {
+    histogram_and_sum = std::make_unique<HistogramAndSum>(
+        histogram, &execute_sum_microseconds_);
   } else {
     histogram_and_sum = std::make_unique<HistogramAndSum>(histogram);
   }
@@ -57,6 +60,8 @@ void V8HistogramAccumulator::GenerateDataInteractive() {
       base::Microseconds(compile_foreground_sum_microseconds_.load()));
   compile_background_.interactive_histogram->AddTimeMicrosecondsGranularity(
       base::Microseconds(compile_background_sum_microseconds_.load()));
+  execute_.interactive_histogram->AddTimeMicrosecondsGranularity(
+      base::Microseconds(execute_sum_microseconds_.load()));
 }
 V8HistogramAccumulator::V8HistogramAccumulator() {
   // Create accumulating histograms.
@@ -70,6 +75,10 @@ V8HistogramAccumulator::V8HistogramAccumulator() {
   compile_background_.interactive_histogram = base::Histogram::FactoryGet(
       "V8.CompileBackgroundMicroSeconds.Cumulative.Interactive", min, max,
       buckets, base::Histogram::kUmaTargetedHistogramFlag);
+
+  execute_.interactive_histogram = base::Histogram::FactoryGet(
+      "V8.ExecuteMicroSeconds.Cumulative.Interactive", min, max, buckets,
+      base::Histogram::kUmaTargetedHistogramFlag);
 }
 
 }  // namespace blink

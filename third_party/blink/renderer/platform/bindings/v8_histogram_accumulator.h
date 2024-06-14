@@ -60,9 +60,11 @@ class PLATFORM_EXPORT V8HistogramAccumulator {
 
   AccumulatingHistograms compile_foreground_;
   AccumulatingHistograms compile_background_;
+  AccumulatingHistograms execute_;
 
   std::atomic<int> compile_foreground_sum_microseconds_ = 0;
   std::atomic<int> compile_background_sum_microseconds_ = 0;
+  std::atomic<int> execute_sum_microseconds_ = 0;
 
   WTF::Vector<std::unique_ptr<HistogramAndSum>> histogram_and_sums_;
 
