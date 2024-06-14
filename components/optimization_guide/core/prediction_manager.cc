@@ -774,11 +774,11 @@ void PredictionManager::MaybeInitializeModelDownloads(
 void PredictionManager::OnPredictionModelOverrideLoaded(
     proto::OptimizationTarget optimization_target,
     std::unique_ptr<proto::PredictionModel> prediction_model) {
+  const bool is_available = prediction_model != nullptr;
   OnLoadPredictionModel(optimization_target,
                         /*record_availability_metrics=*/false,
                         std::move(prediction_model));
-  RecordModelAvailableAtRegistration(optimization_target,
-                                     prediction_model != nullptr);
+  RecordModelAvailableAtRegistration(optimization_target, is_available);
 }
 
 void PredictionManager::LoadPredictionModels(
