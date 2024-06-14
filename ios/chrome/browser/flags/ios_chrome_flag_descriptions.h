@@ -1038,11 +1038,6 @@ extern const char kTabResumption2Description[];
 extern const char kUndoMigrationOfSyncingUserToSignedInName[];
 extern const char kUndoMigrationOfSyncingUserToSignedInDescription[];
 
-// Title and description for the flag to enable the use of a single
-// BookmarkModel instance per BrowserState (instead of having two).
-extern const char kUnifiedBookmarkModelName[];
-extern const char kUnifiedBookmarkModelDescription[];
-
 // Title and description for the flag to control the maximum wait time (in
 // seconds) for a response from the Account Capabilities API.
 extern const char kWaitThresholdMillisecondsForCapabilitiesApiName[];

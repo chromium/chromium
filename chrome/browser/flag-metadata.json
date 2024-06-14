@@ -8624,11 +8624,6 @@
     "expiry_milestone": 130
   },
   {
-    "name": "unified-bookmark-model",
-    "owners": [ "mastiz@chromium.org", "arthurmilchior@chromium.org" ],
-    "expiry_milestone": 130
-  },
-  {
     "name": "unsafely-treat-insecure-origin-as-secure",
     "owners": [ "security-dev@chromium.org" ],
     // This flag is supported for bypassing security restrictions on HTTP pages,
