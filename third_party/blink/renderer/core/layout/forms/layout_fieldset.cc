@@ -149,8 +149,6 @@ void LayoutFieldset::UpdateAnonymousChildStyle(
   child_style_builder.SetUnicodeBidi(StyleRef().GetUnicodeBidi());
 
   // scroll-start
-  child_style_builder.SetScrollStartBlock(StyleRef().ScrollStartBlock());
-  child_style_builder.SetScrollStartInline(StyleRef().ScrollStartInline());
   child_style_builder.SetScrollStartX(StyleRef().ScrollStartX());
   child_style_builder.SetScrollStartY(StyleRef().ScrollStartY());
 }

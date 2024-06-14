@@ -5013,38 +5013,6 @@
       computable: false,
     },
     {
-      name: "scroll-start-block",
-      property_methods: ["ParseSingleValue"],
-      field_group: "*->start",
-      field_template: "external",
-      include_paths: ["third_party/blink/renderer/core/style/scroll_start_data.h"],
-      default_value: "blink::ScrollStartData()",
-      type_name: "ScrollStartData",
-      logical_property_group : {
-        name: "scroll-start",
-        resolver: "block"
-      },
-      keywords: ["auto", "start", "end", "center", "top", "bottom", "left", "right"],
-      typedom_types: ["Keyword", "Length", "Percentage"],
-      runtime_flag: "CSSScrollStart",
-    },
-    {
-      name: "scroll-start-inline",
-      property_methods: ["ParseSingleValue"],
-      field_group: "*->start",
-      field_template: "external",
-      include_paths: ["third_party/blink/renderer/core/style/scroll_start_data.h"],
-      default_value: "blink::ScrollStartData()",
-      type_name: "ScrollStartData",
-      logical_property_group : {
-        name: "scroll-start",
-        resolver: "inline"
-      },
-      keywords: ["auto", "start", "end", "center", "top", "bottom", "left", "right"],
-      typedom_types: ["Keyword", "Length", "Percentage"],
-      runtime_flag: "CSSScrollStart",
-    },
-    {
       name: "scroll-start-x",
       property_methods: ["ParseSingleValue", "CSSValueFromComputedStyleInternal"],
       field_group: "*->start",
@@ -5072,36 +5040,6 @@
         name: "scroll-start",
         resolver: "vertical"
       },
-      runtime_flag: "CSSScrollStart",
-    },
-    {
-      name: "scroll-start-target-block",
-      property_methods: ["ParseSingleValue"],
-      field_group: "*->target",
-      field_template: "keyword",
-      default_value: "none",
-      type_name: "EScrollStartTarget",
-      logical_property_group: {
-        name: "scroll-start-target",
-        resolver: "block",
-      },
-      keywords: ["none", "auto"],
-      typedom_types: ["Keyword"],
-      runtime_flag: "CSSScrollStart",
-    },
-    {
-      name: "scroll-start-target-inline",
-      property_methods: ["ParseSingleValue"],
-      field_group: "*->target",
-      field_template: "keyword",
-      default_value: "none",
-      type_name: "EScrollStartTarget",
-      logical_property_group: {
-        name: "scroll-start-target",
-        resolver: "inline",
-      },
-      keywords: ["none", "auto"],
-      typedom_types: ["Keyword"],
       runtime_flag: "CSSScrollStart",
     },
     {
@@ -7106,6 +7044,42 @@
       },
       typedom_types: ["Length", "Percentage"],
       valid_for_page_context: true,
+    },
+    {
+      name: "scroll-start-block",
+      property_methods: ["ParseSingleValue"],
+      logical_property_group : {
+        name: "scroll-start",
+        resolver: "block"
+      },
+      runtime_flag: "CSSScrollStart",
+    },
+    {
+      name: "scroll-start-inline",
+      property_methods: ["ParseSingleValue"],
+      logical_property_group : {
+        name: "scroll-start",
+        resolver: "inline"
+      },
+      runtime_flag: "CSSScrollStart",
+    },
+    {
+      name: "scroll-start-target-block",
+      property_methods: ["ParseSingleValue"],
+      logical_property_group: {
+        name: "scroll-start-target",
+        resolver: "block",
+      },
+      runtime_flag: "CSSScrollStart",
+    },
+    {
+      name: "scroll-start-target-inline",
+      property_methods: ["ParseSingleValue"],
+      logical_property_group: {
+        name: "scroll-start-target",
+        resolver: "inline",
+      },
+      runtime_flag: "CSSScrollStart",
     },
     {
       name: "border-inline-start-width",
