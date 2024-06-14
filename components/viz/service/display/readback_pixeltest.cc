@@ -710,10 +710,8 @@ TEST_P(ReadbackPixelTestRGBAWithBlit, ExecutesCopyRequestWithBlit) {
         request.set_result_selection(result_selection);
 
         request.set_blit_request(BlitRequest(
-            destination_subregion.origin(), GetLetterboxingBehavior(),
-            {gpu::MailboxHolder(mailbox, gpu::SyncToken(), 0),
-             gpu::MailboxHolder(), gpu::MailboxHolder()},
-            populates_gpu_memory_buffer()));
+            destination_subregion.origin(), GetLetterboxingBehavior(), mailbox,
+            gpu::SyncToken(), populates_gpu_memory_buffer()));
       }));
 
   // Check that a result was produced and is of the expected rect/size.
@@ -1045,7 +1043,8 @@ TEST_P(ReadbackPixelTestNV12WithBlit, ExecutesCopyRequestWithBlit) {
 
         request.set_blit_request(BlitRequest(
             destination_subregion.origin(), GetLetterboxingBehavior(),
-            mailbox_holder, populates_gpu_memory_buffer()));
+            mailbox_holder.mailbox, mailbox_holder.sync_token,
+            populates_gpu_memory_buffer()));
       }));
 
   // Check that a result was produced and is of the expected rect/size.

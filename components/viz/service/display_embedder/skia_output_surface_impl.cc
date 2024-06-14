@@ -1074,10 +1074,9 @@ void SkiaOutputSurfaceImpl::CopyOutput(
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
   if (request->has_blit_request()) {
-    for (const auto& mailbox_holder : request->blit_request().mailboxes()) {
-      if (mailbox_holder.sync_token.HasData()) {
-        resource_sync_tokens_.push_back(mailbox_holder.sync_token);
-      }
+    const auto& sync_token = request->blit_request().sync_token();
+    if (sync_token.HasData()) {
+      resource_sync_tokens_.push_back(sync_token);
     }
   }
 

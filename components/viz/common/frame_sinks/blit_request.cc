@@ -29,26 +29,16 @@ std::string BlendBitmap::ToString() const {
                             destination_region_.ToString().c_str());
 }
 
-BlitRequest::BlitRequest(
-    const gfx::Point& destination_region_offset,
-    LetterboxingBehavior letterboxing_behavior,
-    const std::array<gpu::MailboxHolder, CopyOutputResult::kMaxPlanes>&
-        mailboxes,
-    bool populates_gpu_memory_buffer)
-    : destination_region_offset_(destination_region_offset),
-      letterboxing_behavior_(letterboxing_behavior),
-      mailboxes_(mailboxes),
-      populates_gpu_memory_buffer_(populates_gpu_memory_buffer) {}
-
 BlitRequest::BlitRequest(const gfx::Point& destination_region_offset,
                          LetterboxingBehavior letterboxing_behavior,
-                         const gpu::MailboxHolder& mailbox,
+                         const gpu::Mailbox& mailbox,
+                         const gpu::SyncToken& sync_token,
                          bool populates_gpu_memory_buffer)
     : destination_region_offset_(destination_region_offset),
       letterboxing_behavior_(letterboxing_behavior),
-      populates_gpu_memory_buffer_(populates_gpu_memory_buffer) {
-  mailboxes_[0] = mailbox;
-}
+      mailbox_(mailbox),
+      sync_token_(sync_token),
+      populates_gpu_memory_buffer_(populates_gpu_memory_buffer) {}
 
 BlitRequest::BlitRequest(BlitRequest&& other) = default;
 BlitRequest& BlitRequest::operator=(BlitRequest&& other) = default;

@@ -219,12 +219,10 @@ std::unique_ptr<CopyOutputRequest> SurfaceSavedFrame::CreateCopyRequestIfNeeded(
           gpu::kNullSurfaceHandle);
     }
     request->set_result_selection(gfx::Rect(draw_data.size));
-    request->set_blit_request(
-        BlitRequest(gfx::Point(), LetterboxingBehavior::kDoNotLetterbox,
-                    {gpu::MailboxHolder(shared_image->mailbox(),
-                                        shared_image->creation_sync_token(),
-                                        GL_TEXTURE_2D)},
-                    /*populates_gpu_memory_buffer=*/false));
+    request->set_blit_request(BlitRequest(
+        gfx::Point(), LetterboxingBehavior::kDoNotLetterbox,
+        shared_image->mailbox(), shared_image->creation_sync_token(),
+        /*populates_gpu_memory_buffer=*/false));
   }
   return request;
 }

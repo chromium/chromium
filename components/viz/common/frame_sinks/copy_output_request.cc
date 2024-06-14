@@ -117,29 +117,7 @@ void CopyOutputRequest::set_blit_request(BlitRequest blit_request) {
     DCHECK_EQ(blit_request.destination_region_offset().y() % 2, 0);
   }
 
-#if DCHECK_IS_ON()
-  {
-    const auto first_zeroed_mailbox_it =
-        base::ranges::find_if(blit_request.mailboxes(), &gpu::Mailbox::IsZero,
-                              &gpu::MailboxHolder::mailbox);
-
-    size_t num_nonzeroed_mailboxes = static_cast<size_t>(
-        first_zeroed_mailbox_it - blit_request.mailboxes().begin());
-
-    switch (result_format()) {
-      case ResultFormat::RGBA:
-        DCHECK_EQ(num_nonzeroed_mailboxes, CopyOutputResult::kRGBAMaxPlanes);
-        break;
-      case ResultFormat::NV12:
-        DCHECK_EQ(num_nonzeroed_mailboxes,
-                  CopyOutputResult::kNV12MultiplaneMaxPlanes);
-        break;
-      case ResultFormat::I420_PLANES:
-        DCHECK_EQ(num_nonzeroed_mailboxes, CopyOutputResult::kI420MaxPlanes);
-        break;
-    }
-  }
-#endif
+  CHECK(!blit_request.mailbox().IsZero());
 
   blit_request_ = std::move(blit_request);
 }

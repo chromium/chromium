@@ -968,8 +968,7 @@ void SkiaOutputSurfaceImplOnGpu::CopyOutputRGBAInTexture(
   std::unique_ptr<gpu::SkiaImageRepresentation> representation;
   // If has blit request, import texture from request.
   if (request->has_blit_request()) {
-    const auto& blit_request = request->blit_request();
-    const gpu::Mailbox& mailbox = blit_request.mailbox(0).mailbox;
+    const gpu::Mailbox& mailbox = request->blit_request().mailbox();
 
     // Should never happen, mailboxes are validated when setting blit
     // request on a CopyOutputResult.
@@ -1078,7 +1077,7 @@ void SkiaOutputSurfaceImplOnGpu::CopyOutputRGBAInTexture(
 
     readback_context = std::make_unique<ReadbackContextTexture>(
         weak_ptr_, std::move(request), geometry.result_selection,
-        request->blit_request().mailbox(0).mailbox, color_space);
+        request->blit_request().mailbox(), color_space);
   }
 
   bool flush_succeeded = false;
@@ -1230,7 +1229,7 @@ bool SkiaOutputSurfaceImplOnGpu::CreateDestinationImageIfNeededAndBeginAccess(
   std::unique_ptr<gpu::SkiaImageRepresentation> representation;
   // If has blit request, import texture from request.
   if (request->has_blit_request()) {
-    const gpu::Mailbox& mailbox = request->blit_request().mailbox(0).mailbox;
+    const gpu::Mailbox& mailbox = request->blit_request().mailbox();
 
     // Should never happen, mailboxes are validated when setting blit
     // request on a CopyOutputResult.
