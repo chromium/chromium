@@ -370,7 +370,7 @@ found in the LICENSE file.
     </style>
 
     <!-- Misc text appearance styles -->
-    <style name="TextAppearance.SearchEngineRecentTitle" parent="TextAppearance.RobotoMediumStyle">
+    <style name="TextAppearance.SearchEngineRecentTitle" parent="TextAppearance.MediumStyle">
         <item name="android:textColor">@macro/default_text_color_link</item>
     </style>
     <!-- TODO(crbug.com/40691622): Replace with a standard text appearance. -->

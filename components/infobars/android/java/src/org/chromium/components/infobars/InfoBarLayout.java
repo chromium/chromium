@@ -14,7 +14,6 @@ import android.text.SpannableString;
 import android.text.SpannableStringBuilder;
 import android.text.Spanned;
 import android.text.TextUtils;
-import android.util.TypedValue;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
@@ -29,7 +28,6 @@ import androidx.core.widget.ImageViewCompat;
 
 import org.chromium.components.browser_ui.widget.DualControlLayout;
 import org.chromium.components.browser_ui.widget.DualControlLayout.ButtonType;
-import org.chromium.ui.UiUtils;
 import org.chromium.ui.text.NoUnderlineClickableSpan;
 import org.chromium.ui.widget.ButtonCompat;
 import org.chromium.ui.widget.ChromeImageButton;
@@ -77,8 +75,6 @@ public final class InfoBarLayout extends ViewGroup implements View.OnClickListen
 
     private final int mSmallIconSize;
     private final int mSmallIconMargin;
-    private final int mBigIconSize;
-    private final int mBigIconMargin;
     private final int mMarginAboveButtonGroup;
     private final int mMarginAboveControlGroups;
     private final int mPadding;
@@ -126,8 +122,6 @@ public final class InfoBarLayout extends ViewGroup implements View.OnClickListen
         Resources res = getResources();
         mSmallIconSize = res.getDimensionPixelSize(R.dimen.infobar_small_icon_size);
         mSmallIconMargin = res.getDimensionPixelSize(R.dimen.infobar_small_icon_margin);
-        mBigIconSize = res.getDimensionPixelSize(R.dimen.infobar_big_icon_size);
-        mBigIconMargin = res.getDimensionPixelSize(R.dimen.infobar_big_icon_margin);
         mMarginAboveButtonGroup =
                 res.getDimensionPixelSize(R.dimen.infobar_margin_above_button_row);
         mMarginAboveControlGroups =
@@ -270,24 +264,9 @@ public final class InfoBarLayout extends ViewGroup implements View.OnClickListen
                         .getDimensionPixelSize(R.dimen.infobar_margin_between_stacked_buttons));
 
         mButtonRowLayout.addView(primaryButton);
-        if (secondaryView != null) mButtonRowLayout.addView(secondaryView);
-    }
-
-    /** Adjusts styling to account for the big icon layout. */
-    public void setIsUsingBigIcon() {
-        if (mIconView == null) return;
-
-        LayoutParams lp = (LayoutParams) mIconView.getLayoutParams();
-        lp.width = mBigIconSize;
-        lp.height = mBigIconSize;
-        lp.endMargin = mBigIconMargin;
-
-        Resources res = getContext().getResources();
-        float textSize = res.getDimension(R.dimen.infobar_big_icon_message_size);
-        mMessageTextView.setTypeface(UiUtils.createRobotoMediumTypeface());
-        mMessageTextView.setMaxLines(1);
-        mMessageTextView.setEllipsize(TextUtils.TruncateAt.END);
-        mMessageTextView.setTextSize(TypedValue.COMPLEX_UNIT_PX, textSize);
+        if (secondaryView != null) {
+            mButtonRowLayout.addView(secondaryView);
+        }
     }
 
     /** Returns the primary button, or null if it doesn't exist. */

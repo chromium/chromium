@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+Copyright 2024 The Chromium Authors
+Use of this source code is governed by a BSD-style license that can be
+found in the LICENSE file.
+-->
+
+<font-family
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    tools:ignore="FontValidationError,FontValidationWarning,UnusedResources"
+    app:fontProviderAuthority="com.google.android.gms.fonts"
+    app:fontProviderCerts="@array/ui_com_google_android_gms_fonts_certs"
+    app:fontProviderFetchStrategy="async"
+    app:fontProviderPackage="com.google.android.gms"
+    app:fontProviderQuery="Google Sans Text:500"
+    app:fontProviderSystemFontFamily="google-sans-text-medium"/>

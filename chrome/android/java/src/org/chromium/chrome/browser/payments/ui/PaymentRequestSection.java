@@ -43,7 +43,6 @@ import org.chromium.components.browser_ui.widget.DualControlLayout;
 import org.chromium.components.browser_ui.widget.DualControlLayout.ButtonType;
 import org.chromium.components.browser_ui.widget.TintedDrawable;
 import org.chromium.ui.HorizontalListDividerDrawable;
-import org.chromium.ui.UiUtils;
 import org.chromium.ui.base.ViewUtils;
 import org.chromium.ui.interpolators.Interpolators;
 
@@ -1037,7 +1036,6 @@ public abstract class PaymentRequestSection extends LinearLayout implements View
                             labelView, R.style.TextAppearance_EditorDialogSectionAddButton);
                     labelView.setMinimumHeight(buttonHeight);
                     labelView.setGravity(Gravity.CENTER_VERTICAL);
-                    labelView.setTypeface(UiUtils.createRobotoMediumTypeface());
                 } else if (mRowType == OPTION_ROW_TYPE_DESCRIPTION) {
                     // The description spans all the columns.
                     columnStart = 0;

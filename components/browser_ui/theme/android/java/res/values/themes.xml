@@ -63,6 +63,7 @@ found in the LICENSE file.
 
         <item name="android:elegantTextHeight">false</item>
         <item name="defaultFontFamily">@font/default_font</item>
+        <item name="defaultMediumFontFamily">@string/sans_serif_medium_fontFamily</item>
 
         <item name="actionBarSize">@dimen/default_action_bar_height</item>
 
@@ -173,6 +174,7 @@ found in the LICENSE file.
 
         <item name="android:elegantTextHeight">false</item>
         <item name="defaultFontFamily">@font/default_font</item>
+        <item name="defaultMediumFontFamily">@string/sans_serif_medium_fontFamily</item>
     </style>
     <style name="Theme.BrowserUI.DialogWhenLarge.V35" parent="Theme.BrowserUI.DialogWhenLarge" />
     <!-- Overridden by night mode. -->
@@ -255,6 +257,7 @@ found in the LICENSE file.
 
         <item name="android:elegantTextHeight">false</item>
         <item name="defaultFontFamily">@font/default_font</item>
+        <item name="defaultMediumFontFamily">@string/sans_serif_medium_fontFamily</item>
     </style>
     <style name="Theme.BrowserUI.AlertDialog.NoActionBar.V35" parent="Theme.BrowserUI.AlertDialog.NoActionBar" />
     <!-- Overridden by night mode. -->
@@ -288,8 +291,10 @@ found in the LICENSE file.
         <item name="android:elegantTextHeight">true</item>
     </style>
 
-    <!-- TODO(https://crbug.com/41492214): Replace with Google Sans Text -->
+    <!-- TODO(https://crbug.com/346850440): Simplify once flag guarding is removed. -->
+    <!-- Overridden downstream to reference Google Sans Text and Google Sans Text Medium. -->
     <style name="ThemeOverlay.BrowserUI.DefaultFontFamilyThemeOverlay" parent="">
-        <item name="defaultFontFamily">@font/accent_font</item>
+        <item name="defaultFontFamily">@font/default_font</item>
+        <item name="defaultMediumFontFamily">@string/sans_serif_medium_fontFamily</item>
     </style>
 </resources>

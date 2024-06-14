@@ -223,9 +223,11 @@ found in the LICENSE file.
         <item name="android:textSize">@dimen/text_size_large</item>
         <item name="android:textStyle">bold</item>
     </style>
+    <!-- TextMedium.Link styling w/ sans-serif-medium or google-sans-text-medium font family -->
     <style name="TextAppearance.EditorDialogSectionAddButton"
-        parent="TextAppearance.TextMedium.Link">
+        parent="TextAppearance.TextMediumThick">
         <item name="android:textAllCaps">true</item>
+        <item name="android:textColor">@color/default_text_color_link_tint_list</item>
     </style>
 
     <!-- Disabled text styles -->

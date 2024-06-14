@@ -11,6 +11,7 @@ android_resources("java_resources") {
     "java/res/values-night/themes.xml",
     "java/res/values/attrs.xml",
     "java/res/values/colors.xml",
+    "java/res/values/fonts.xml",
     "java/res/values/themes.xml",
   ]
   deps = [

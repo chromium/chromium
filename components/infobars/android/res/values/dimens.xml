@@ -24,8 +24,6 @@ found in the LICENSE file.
     <dimen name="infobar_control_margin_between_columns">32dp</dimen>
     <!-- Text size of the infobar message and other controls. -->
     <dimen name="infobar_text_size">16sp</dimen>
-    <!-- Text size of the infobar message when a big icon is shown. -->
-    <dimen name="infobar_big_icon_message_size">20sp</dimen>
     <!-- Margin between stacked buttons in an infobar. -->
     <dimen name="infobar_margin_between_stacked_buttons">24dp</dimen>
     <!-- Padding surrounding the infobar. -->
@@ -37,7 +35,6 @@ found in the LICENSE file.
     <dimen name="infobar_small_icon_size">24dp</dimen>
     <dimen name="infobar_small_icon_margin">8dp</dimen>
     <dimen name="infobar_big_icon_size">48dp</dimen>
-    <dimen name="infobar_big_icon_margin">16dp</dimen>
 
     <!-- Vertical margin applied between groups of controls. -->
     <dimen name="infobar_margin_above_control_groups">24dp</dimen>

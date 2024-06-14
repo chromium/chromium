@@ -9,4 +9,7 @@ found in the LICENSE file.
   <style name="TextAppearance" parent="android:TextAppearance" tools:ignore="UnusedResources">
       <item name="android:fontFamily">?attr/defaultFontFamily</item>
   </style>
+  <style name="TextAppearance.MediumStyle" tools:ignore="UnusedResources">
+    <item name="android:fontFamily">?attr/defaultMediumFontFamily</item>
+  </style>
 </resources>

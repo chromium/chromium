@@ -70,11 +70,15 @@ found in the LICENSE file.
         <item name="android:fontFamily">sans-serif</item>
     </style>
     <!-- Used by Chrome and Content -->
+    <!-- TODO: Remove RobotoMediumStyle once downstream CL making use of it lands. -->
     <style name="TextAppearance.RobotoMediumStyle" tools:ignore="UnusedResources">
         <item name="android:fontFamily">sans-serif-medium</item>
     </style>
+    <style name="TextAppearance.MediumStyle" tools:ignore="UnusedResources">
+        <item name="android:fontFamily">sans-serif-medium</item>
+    </style>
     <!-- This style is overridden downstream to set accent_font_medium as the font family. -->
-    <style name="TextAppearance.AccentMediumStyle" parent="TextAppearance.RobotoMediumStyle" />
+    <style name="TextAppearance.AccentMediumStyle" parent="TextAppearance.MediumStyle" />
 
     <!-- Base Text Styles -->
     <!--
@@ -107,7 +111,7 @@ found in the LICENSE file.
     <style name="TextAppearance.TextAccentLarge" parent="TextAppearance.TextLarge">
         <item name="android:fontFamily">@font/accent_font</item>
     </style>
-    <style name="TextAppearance.TextMediumThick" parent="TextAppearance.RobotoMediumStyle">
+    <style name="TextAppearance.TextMediumThick" parent="TextAppearance.MediumStyle">
         <item name="android:textSize">@dimen/text_size_medium</item>
         <item name="leading">@dimen/text_size_medium_leading</item>
     </style>

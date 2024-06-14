@@ -169,6 +169,8 @@ if (current_toolchain == default_toolchain) {
       "java/res_base/font/chrome_google_sans.xml",
       "java/res_base/font/chrome_google_sans_bold.xml",
       "java/res_base/font/chrome_google_sans_medium.xml",
+      "java/res_base/font/chrome_google_sans_text.xml",
+      "java/res_base/font/chrome_google_sans_text_medium.xml",
       "java/res_base/values/ic_launcher_alias.xml",
       "java/res_base/values/ic_launcher_round_alias.xml",
       "java/res_base/values/values.xml",

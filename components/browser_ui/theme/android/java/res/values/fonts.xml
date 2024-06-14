@@ -6,6 +6,7 @@ found in the LICENSE file.
 -->
 
 <resources>
-  <attr name="defaultFontFamily" format="reference" />
-  <attr name="defaultMediumFontFamily" format="reference" />
+  <string name="sans_serif_medium_fontFamily" translatable="false">
+    sans-serif-medium
+  </string>
 </resources>
