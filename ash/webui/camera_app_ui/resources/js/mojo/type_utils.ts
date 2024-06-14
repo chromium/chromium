@@ -355,10 +355,6 @@ export function convertPerfEventTypeToMojo(perfEventType: PerfEvent):
   switch (perfEventType) {
     case PerfEvent.CAMERA_SWITCHING:
       return mojoType.PerfEventType.kCameraSwitching;
-    case PerfEvent.DOCUMENT_CAPTURE_POST_PROCESSING:
-      return mojoType.PerfEventType.kDocumentCapturePostProcessing;
-    case PerfEvent.DOCUMENT_PDF_SAVING:
-      return mojoType.PerfEventType.kDocumentPdfSaving;
     case PerfEvent.GIF_CAPTURE_POST_PROCESSING:
       return mojoType.PerfEventType.kGifCapturePostProcessing;
     case PerfEvent.LAUNCHING_FROM_LAUNCH_APP_COLD:
@@ -369,8 +365,6 @@ export function convertPerfEventTypeToMojo(perfEventType: PerfEvent):
       return mojoType.PerfEventType.kLaunchingFromWindowCreation;
     case PerfEvent.MODE_SWITCHING:
       return mojoType.PerfEventType.kModeSwitching;
-    case PerfEvent.OCR_SCANNING:
-      return mojoType.PerfEventType.kOcrScanning;
     case PerfEvent.PHOTO_CAPTURE_POST_PROCESSING:
       return mojoType.PerfEventType.kPhotoCapturePostProcessing;
     case PerfEvent.PHOTO_CAPTURE_SHUTTER:

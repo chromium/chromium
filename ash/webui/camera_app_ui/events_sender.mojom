@@ -238,14 +238,11 @@ struct BarcodeDetectedEventParams {
 
 enum PerfEventType {
   kCameraSwitching,
-  kDocumentCapturePostProcessing,
-  kDocumentPdfSaving,
   kGifCapturePostProcessing,
   kLaunchingFromLaunchAppCold,
   kLaunchingFromLaunchAppWarm,
   kLaunchingFromWindowCreation,
   kModeSwitching,
-  kOcrScanning,
   kPhotoCapturePostProcessing,
   kPhotoCaptureShutter,
   kPhotoTakingDeprecated, // Deprecated
@@ -264,8 +261,6 @@ struct PerfEventParams {
   Facing facing;
   int32 resolution_width;
   int32 resolution_height;
-  // Only for kDocumentPdfaving
-  uint32 page_count;
 };
 
 enum UserBehavior {

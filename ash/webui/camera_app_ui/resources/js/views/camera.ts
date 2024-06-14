@@ -627,14 +627,10 @@ export class Camera extends View implements CameraViewUI {
   async onDocumentCaptureDone(pendingPhotoResult: Promise<PhotoResult>):
       Promise<void> {
     nav.open(ViewName.FLASH);
-    this.perfLogger.start(PerfEvent.DOCUMENT_CAPTURE_POST_PROCESSING);
     let enterInFixMode = false;
-    let hasError = false;
-    let resolution: Resolution|undefined;
     try {
-      const photoResult = await this.checkPhotoResult(pendingPhotoResult);
-      const blob = photoResult.blob;
-      resolution = photoResult.resolution;
+      const {blob, resolution} =
+          await this.checkPhotoResult(pendingPhotoResult);
       const helper = ChromeHelper.getInstance();
       let corners = await helper.scanDocumentCorners(blob);
       if (corners === null) {
@@ -654,15 +650,7 @@ export class Camera extends View implements CameraViewUI {
         aspectRatioSet: this.cameraManager.getAspectRatioSet(resolution),
         zoomRatio: this.cameraManager.getZoomRatio(),
       });
-    } catch (e) {
-      hasError = true;
-      throw e;
     } finally {
-      this.perfLogger.stop(PerfEvent.DOCUMENT_CAPTURE_POST_PROCESSING, {
-        hasError,
-        facing: this.getFacing(),
-        resolution,
-      });
       nav.close(ViewName.FLASH);
     }
     await this.reviewDocument(enterInFixMode);
