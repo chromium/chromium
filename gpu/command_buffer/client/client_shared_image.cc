@@ -346,6 +346,12 @@ void ClientSharedImage::OnMemoryDump(
 
 // static
 scoped_refptr<ClientSharedImage> ClientSharedImage::CreateForTesting() {
+  return CreateForTesting(GL_TEXTURE_2D);
+}
+
+// static
+scoped_refptr<ClientSharedImage> ClientSharedImage::CreateForTesting(
+    uint32_t texture_target) {
   SharedImageMetadata metadata;
   metadata.format = viz::SinglePlaneFormat::kRGBA_8888;
   metadata.color_space = gfx::ColorSpace::CreateSRGB();
@@ -354,7 +360,7 @@ scoped_refptr<ClientSharedImage> ClientSharedImage::CreateForTesting() {
   metadata.usage = 0;
 
   return ImportUnowned(ExportedSharedImage(Mailbox::Generate(), metadata,
-                                           SyncToken(), GL_TEXTURE_2D));
+                                           SyncToken(), texture_target));
 }
 
 ExportedSharedImage::ExportedSharedImage() = default;

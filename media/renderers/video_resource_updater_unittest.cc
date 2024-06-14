@@ -319,7 +319,7 @@ class VideoResourceUpdaterTest : public testing::Test {
     gfx::Size size(kDimension, kDimension);
 
     scoped_refptr<gpu::ClientSharedImage> shared_image =
-        gpu::ClientSharedImage::CreateForTesting();
+        gpu::ClientSharedImage::CreateForTesting(target);
     scoped_refptr<VideoFrame> video_frame = VideoFrame::WrapSharedImage(
         format, shared_image, kMailboxSyncToken, target,
         base::BindOnce(&VideoResourceUpdaterTest::SetReleaseSyncToken,
@@ -362,7 +362,7 @@ class VideoResourceUpdaterTest : public testing::Test {
 
     scoped_refptr<gpu::ClientSharedImage> shared_images[VideoFrame::kMaxPlanes];
     for (size_t i = 0; i < num_textures; ++i) {
-      shared_images[i] = gpu::ClientSharedImage::CreateForTesting();
+      shared_images[i] = gpu::ClientSharedImage::CreateForTesting(target);
     }
     scoped_refptr<VideoFrame> video_frame = VideoFrame::WrapSharedImages(
         format, shared_images, kMailboxSyncToken, target,
