@@ -55,7 +55,7 @@ ChildAccountServiceFactory::ChildAccountServiceFactory()
   DependsOn(IdentityManagerFactory::GetInstance());
   DependsOn(SyncServiceFactory::GetInstance());
   DependsOn(SupervisedUserServiceFactory::GetInstance());
-  DependsOn(supervised_user::ListFamilyMembersServiceFactory::GetInstance());
+  DependsOn(ListFamilyMembersServiceFactory::GetInstance());
 }
 
 ChildAccountServiceFactory::~ChildAccountServiceFactory() = default;
@@ -66,8 +66,7 @@ KeyedService* ChildAccountServiceFactory::BuildServiceInstanceFor(
 
   CHECK(profile->GetPrefs());
   CHECK(SupervisedUserServiceFactory::GetForProfile(profile));
-  CHECK(
-      supervised_user::ListFamilyMembersServiceFactory::GetForProfile(profile));
+  CHECK(ListFamilyMembersServiceFactory::GetForProfile(profile));
 
   return new supervised_user::ChildAccountService(
       *profile->GetPrefs(),
@@ -76,6 +75,5 @@ KeyedService* ChildAccountServiceFactory::BuildServiceInstanceFor(
       profile->GetURLLoaderFactory(),
       base::BindRepeating(&CreatePermissionCreator, profile),
       base::BindOnce(&supervised_user::AssertChildStatusOfTheUser, profile),
-      *supervised_user::ListFamilyMembersServiceFactory::GetForProfile(
-          profile));
+      *ListFamilyMembersServiceFactory::GetForProfile(profile));
 }

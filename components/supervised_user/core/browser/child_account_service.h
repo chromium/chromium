@@ -100,12 +100,9 @@ class ChildAccountService : public KeyedService,
 
   bool active_{false};
 
-  // Enables or disables scheduled fetch of family members list.
-  const raw_ref<ListFamilyMembersService> list_family_members_service_;
-
-  // Subscription to binding between list_family_members_service_ and
-  // family_preferences_service_.
-  base::CallbackListSubscription set_family_members_subscription_;
+  // Subscription to set custodian preferences from successful fetch of
+  // ListFamilyMembersService.
+  base::CallbackListSubscription set_custodian_prefs_subscription_;
 
   const raw_ptr<signin::IdentityManager> identity_manager_;
 

@@ -48,18 +48,17 @@ ChildAccountService::ChildAccountService(
         permission_creator_callback,
     base::OnceCallback<void(bool)> check_user_child_status_callback,
     ListFamilyMembersService& list_family_members_service)
-    : list_family_members_service_(list_family_members_service),
-      identity_manager_(identity_manager),
+    : identity_manager_(identity_manager),
       user_prefs_(user_prefs),
       supervised_user_service_(supervised_user_service),
       url_loader_factory_(url_loader_factory),
       permission_creator_callback_(std::move(permission_creator_callback)),
       check_user_child_status_callback_(
           std::move(check_user_child_status_callback)) {
-  set_family_members_subscription_ =
-      list_family_members_service_->SubscribeToSuccessfulFetches(BindRepeating(
+  set_custodian_prefs_subscription_ =
+      list_family_members_service.SubscribeToSuccessfulFetches(BindRepeating(
           &RegisterFamilyPrefs,
-          std::ref(user_prefs)));  // list_family_members_service_ is
+          std::ref(user_prefs)));  // list_family_members_service is
                                    // an instance of a keyed service
                                    // and PrefService outlives it.
 }
@@ -89,8 +88,6 @@ bool ChildAccountService::IsChildAccountStatusKnown() {
 }
 
 void ChildAccountService::Shutdown() {
-  list_family_members_service_->Cancel();
-
   identity_manager_->RemoveObserver(this);
   supervised_user_service_->SetDelegate(nullptr);
   DCHECK(!active_);
@@ -135,15 +132,12 @@ void ChildAccountService::SetActive(bool active) {
   }
   active_ = active;
   if (active_) {
-    list_family_members_service_->Start();
     CHECK(permission_creator_callback_);
     std::unique_ptr<supervised_user::PermissionRequestCreator>
         permission_creator = permission_creator_callback_.Run();
     CHECK(permission_creator);
     supervised_user_service_->remote_web_approvals_manager()
         .AddApprovalRequestCreator(std::move(permission_creator));
-  } else {
-    list_family_members_service_->Cancel();
   }
 }
 

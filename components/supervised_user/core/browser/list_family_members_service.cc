@@ -48,16 +48,69 @@ ListFamilyMembersService::SubscribeToSuccessfulFetches(
   return successful_fetch_repeating_consumers_.Add(callback);
 }
 
-void ListFamilyMembersService::Start() {
+void ListFamilyMembersService::Init() {
+  identity_manager_observer_.Observe(identity_manager_);
+  AccountInfo primary_account_info = identity_manager_->FindExtendedAccountInfo(
+      identity_manager_->GetPrimaryAccountInfo(signin::ConsentLevel::kSignin));
+
+  if (!primary_account_info.IsEmpty()) {
+    OnExtendedAccountInfoUpdated(primary_account_info);
+  }
+}
+
+void ListFamilyMembersService::Shutdown() {
+  identity_manager_observer_.Reset();
+  StopFetch();
+}
+
+void ListFamilyMembersService::StartRepeatedFetch() {
+  if (fetcher_) {
+    return;
+  }
   fetcher_ = FetchListFamilyMembers(
       *identity_manager_, url_loader_factory_,
       base::BindOnce(&ListFamilyMembersService::OnResponse,
                      base::Unretained(this)));
 }
 
-void ListFamilyMembersService::Cancel() {
+void ListFamilyMembersService::StopFetch() {
+  if (!fetcher_) {
+    return;
+  }
   fetcher_.reset();
   timer_.Stop();
+}
+
+void ListFamilyMembersService::OnExtendedAccountInfoUpdated(
+    const AccountInfo& info) {
+  CoreAccountId auth_account_id =
+      identity_manager_->GetPrimaryAccountId(signin::ConsentLevel::kSignin);
+  if (info.account_id != auth_account_id) {
+    return;
+  }
+  switch (info.capabilities.is_subject_to_parental_controls()) {
+    case signin::Tribool::kTrue: {
+      StartRepeatedFetch();
+      break;
+    }
+    case signin::Tribool::kFalse: {
+      StopFetch();
+      break;
+    }
+    case signin::Tribool::kUnknown: {
+      break;
+    }
+  }
+}
+
+void ListFamilyMembersService::OnPrimaryAccountChanged(
+    const signin::PrimaryAccountChangeEvent& event_details) {
+  signin::PrimaryAccountChangeEvent::Type event_type =
+      event_details.GetEventTypeFor(signin::ConsentLevel::kSignin);
+  if (event_type == signin::PrimaryAccountChangeEvent::Type::kCleared) {
+    StopFetch();
+    // TODO(b/281999451): Notify consumers with empty response.
+  }
 }
 
 void ListFamilyMembersService::OnResponse(
@@ -82,7 +135,9 @@ void ListFamilyMembersService::OnResponse(
 }
 
 void ListFamilyMembersService::ScheduleNextUpdate(base::TimeDelta delay) {
-  timer_.Start(FROM_HERE, delay, this, &ListFamilyMembersService::Start);
+  fetcher_.reset();
+  timer_.Start(FROM_HERE, delay, this,
+               &ListFamilyMembersService::StartRepeatedFetch);
 }
 
 }  // namespace supervised_user

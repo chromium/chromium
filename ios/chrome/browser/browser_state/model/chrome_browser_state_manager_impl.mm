@@ -40,6 +40,7 @@
 #import "ios/chrome/browser/signin/model/account_reconcilor_factory.h"
 #import "ios/chrome/browser/signin/model/identity_manager_factory.h"
 #import "ios/chrome/browser/supervised_user/model/child_account_service_factory.h"
+#import "ios/chrome/browser/supervised_user/model/list_family_members_service_factory.h"
 #import "ios/chrome/browser/supervised_user/model/supervised_user_service_factory.h"
 #import "ios/chrome/browser/unified_consent/model/unified_consent_service_factory.h"
 
@@ -280,6 +281,7 @@ void ChromeBrowserStateManagerImpl::DoFinalInitForServices(
 
   ChildAccountServiceFactory::GetForBrowserState(browser_state)->Init();
   SupervisedUserServiceFactory::GetForBrowserState(browser_state)->Init();
+  ListFamilyMembersServiceFactory::GetForBrowserState(browser_state)->Init();
 
   // The AboutThisSiteService needs to be created at startup in order to
   // register its OptimizationType with OptimizationGuideDecider.
