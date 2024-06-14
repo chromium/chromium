@@ -6,7 +6,9 @@
 
 #include "ash/public/cpp/image_downloader.h"
 #include "ash/system/input_device_settings/device_image.h"
+#include "ash/system/input_device_settings/input_device_settings_metadata.h"
 #include "base/strings/string_util.h"
+#include "base/strings/stringprintf.h"
 #include "components/account_id/account_id.h"
 #include "net/traffic_annotation/network_traffic_annotation.h"
 #include "url/gurl.h"
@@ -57,30 +59,41 @@ constexpr net::NetworkTrafficAnnotationTag kTrafficAnnotation =
   }
 )");
 
-GURL GetResourceUrlFromDeviceKey(const std::string& device_key) {
-  CHECK(!device_key.empty());
-
-  // Format the device key for the URL:
-  // Image filenames use underscores instead of colons.
-  std::string formatted_key = device_key;
-  base::ReplaceChars(formatted_key, ":", "_", &formatted_key);
-
-  // Construct the full resource URL:
-  // Combine the base URL, formatted device key, and the file format extension.
-  const std::string url = kGstaticBaseURL + formatted_key + kFileFormat;
-  return GURL(url);
-}
-
 }  // namespace
 
 DeviceImageDownloader::DeviceImageDownloader() = default;
 DeviceImageDownloader::~DeviceImageDownloader() = default;
 
+GURL DeviceImageDownloader::GetResourceUrlFromDeviceKey(
+    const std::string& device_key,
+    DeviceImageDestination destination) {
+  CHECK(!device_key.empty());
+
+  std::string formatted_key = device_key;
+  std::replace(formatted_key.begin(), formatted_key.end(), ':', '_');
+
+  // Format strings for building image URLs based on destination.
+  // Example URLs:
+  // - Settings image: gstatic/chromeos/peripherals/0111_185a_icon.png
+  // - Notification image: gstatic/chromeos/peripherals/0111_185a.png
+  const std::string kSettingsIconFormatStr = "%s%s_icon%s";
+  const std::string kNotificationFormatStr = "%s%s%s";
+
+  // Select the appropriate format string based on the image destination.
+  const std::string format_str =
+      destination == DeviceImageDestination::kSettings ? kSettingsIconFormatStr
+                                                       : kNotificationFormatStr;
+  const std::string url = base::StringPrintf(
+      format_str.c_str(), kGstaticBaseURL, formatted_key.c_str(), kFileFormat);
+  return GURL(url);
+}
+
 void DeviceImageDownloader::DownloadImage(
     const std::string& device_key,
     const AccountId& account_id,
+    DeviceImageDestination destination,
     base::OnceCallback<void(const DeviceImage& image)> callback) {
-  const auto url = GetResourceUrlFromDeviceKey(device_key);
+  const auto url = GetResourceUrlFromDeviceKey(device_key, destination);
   ImageDownloader::Get()->Download(
       url, kTrafficAnnotation, account_id,
       base::BindOnce(&DeviceImageDownloader::OnImageDownloaded,

@@ -3975,6 +3975,7 @@ test("ash_unittests") {
     "system/human_presence/snooping_protection_notification_blocker_unittest.cc",
     "system/ime/ime_feature_pod_controller_unittest.cc",
     "system/ime_menu/ime_menu_tray_unittest.cc",
+    "system/input_device_settings/device_image_downloader_unittest.cc",
     "system/input_device_settings/input_device_duplicate_id_finder_unittest.cc",
     "system/input_device_settings/input_device_key_alias_manager_unittest.cc",
     "system/input_device_settings/input_device_notifier_unittest.cc",

@@ -9,12 +9,14 @@
 #include "base/functional/callback.h"
 #include "base/memory/weak_ptr.h"
 #include "ui/gfx/image/image_skia.h"
+#include "url/gurl.h"
 
 class AccountId;
 
 namespace ash {
 
 class DeviceImage;
+enum class DeviceImageDestination;
 
 class ASH_EXPORT DeviceImageDownloader {
  public:
@@ -26,7 +28,11 @@ class ASH_EXPORT DeviceImageDownloader {
   void DownloadImage(
       const std::string& device_key,
       const AccountId& account_id,
+      DeviceImageDestination destination,
       base::OnceCallback<void(const DeviceImage& image)> callback);
+
+  GURL GetResourceUrlFromDeviceKey(const std::string& device_key,
+                                   DeviceImageDestination destination);
 
  private:
   void OnImageDownloaded(

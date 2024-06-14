@@ -78,7 +78,7 @@ void InputDeviceSettingsMetadataManager::GetDeviceImagePreferringCache(
   }
   device_callback_map_[device_key] = std::move(callback);
   image_downloader_->DownloadImage(
-      device_key, account_id,
+      device_key, account_id, destination,
       base::BindOnce(&InputDeviceSettingsMetadataManager::OnDeviceImageFetched,
                      weak_ptr_factory_.GetWeakPtr(), destination));
 }
