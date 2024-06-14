@@ -104,16 +104,10 @@ class ModelTypeSyncBridge {
 
   // Asynchronously retrieve the corresponding sync data for `storage_keys`.
   // `callback` should be invoked if the operation is successful, otherwise
-  // the processor's ReportError method should be called.
-  // Deprecated: implement/use GetDataForCommit().
-  virtual void GetData(StorageKeyList storage_keys, DataCallback callback);
-
-  // Asynchronously retrieve the corresponding sync data for `storage_keys`.
-  // `callback` should be invoked if the operation is successful, otherwise
   // the processor's ReportError method should be called. Used only to commit
   // the data.
   virtual void GetDataForCommit(StorageKeyList storage_keys,
-                                DataCallback callback);
+                                DataCallback callback) = 0;
 
   // Asynchronously retrieve all of the local sync data. `callback` should be
   // invoked if the operation is successful, otherwise the processor's

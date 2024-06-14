@@ -117,9 +117,9 @@ void PlusAddressSettingSyncBridge::ApplyDisableSyncChanges(
   settings_.clear();
 }
 
-void PlusAddressSettingSyncBridge::GetData(StorageKeyList storage_keys,
-                                           DataCallback callback) {
-  // PLUS_ADDRESS_SETTING is read-only, so `GetData()` is not needed.
+void PlusAddressSettingSyncBridge::GetDataForCommit(StorageKeyList storage_keys,
+                                                    DataCallback callback) {
+  // PLUS_ADDRESS_SETTING is read-only, so `GetDataForCommit()` is not needed.
   NOTREACHED();
 }
 

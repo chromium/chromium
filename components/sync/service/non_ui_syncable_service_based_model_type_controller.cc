@@ -51,8 +51,8 @@ class FakeSyncableServiceBasedBridge : public ModelTypeSyncBridge {
     NOTREACHED_IN_MIGRATION();
     return {};
   }
-  void GetData(StorageKeyList /*storage_keys*/,
-               DataCallback /*callback*/) override {
+  void GetDataForCommit(StorageKeyList /*storage_keys*/,
+                        DataCallback /*callback*/) override {
     NOTREACHED_IN_MIGRATION();
   }
   void GetAllDataForDebugging(DataCallback /*callback*/) override {

@@ -61,8 +61,8 @@ std::string FloatingSsoSyncBridge::GetClientTag(
   return "";
 }
 
-void FloatingSsoSyncBridge::GetData(StorageKeyList storage_keys,
-                                    DataCallback callback) {
+void FloatingSsoSyncBridge::GetDataForCommit(StorageKeyList storage_keys,
+                                             DataCallback callback) {
   // TODO: b/346354248 - implement.
   NOTIMPLEMENTED();
 }

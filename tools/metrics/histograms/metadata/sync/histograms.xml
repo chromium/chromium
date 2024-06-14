@@ -1006,7 +1006,7 @@ chromium-metrics-reviews@google.com.
   <token key="Operation">
     <variant name="GetData"
         summary="This happens as a result of missing data in response from
-                 GetData() call."/>
+                 GetDataForCommit() call."/>
     <variant name="ModelReadyToSync"
         summary="This happens as a result of a ModelReadyToSync() call with
                  metadata batch containing entities with duplicate
