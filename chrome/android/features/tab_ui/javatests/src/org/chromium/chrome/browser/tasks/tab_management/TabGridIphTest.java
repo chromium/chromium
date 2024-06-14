@@ -304,9 +304,9 @@ public class TabGridIphTest {
     @Feature({"RenderTest"})
     public void testRenderIphDialog_Landscape() throws IOException {
         ChromeTabbedActivity cta = mActivityTestRule.getActivity();
+        ActivityTestUtils.rotateActivityToOrientation(cta, Configuration.ORIENTATION_LANDSCAPE);
 
         enterTabSwitcher(cta);
-        ActivityTestUtils.rotateActivityToOrientation(cta, Configuration.ORIENTATION_LANDSCAPE);
         CriteriaHelper.pollUiThread(TabSwitcherMessageManager::hasAppendedMessagesForTesting);
         // Scroll to the position of the IPH entrance so that it is completely showing for Espresso
         // click.
@@ -316,7 +316,10 @@ public class TabGridIphTest {
                                         withId(TabUiTestHelper.getTabSwitcherAncestorId(cta))),
                                 withId(R.id.tab_list_recycler_view)))
                 .perform(RecyclerViewActions.scrollToPosition(1));
-        onView(allOf(withId(R.id.action_button), withParent(withId(R.id.tab_grid_message_item))))
+        onViewWaiting(
+                        allOf(
+                                withId(R.id.action_button),
+                                withParent(withId(R.id.tab_grid_message_item))))
                 .perform(click());
         verifyIphDialogShowing(cta);
 
