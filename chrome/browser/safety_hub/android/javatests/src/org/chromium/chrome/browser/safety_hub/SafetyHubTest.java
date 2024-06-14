@@ -233,6 +233,44 @@ public final class SafetyHubTest {
         onView(withText(NOTIFICATION_PERMISSIONS_1.getPrimaryPattern())).check(doesNotExist());
     }
 
+    @Test
+    @LargeTest
+    @Feature({"SafetyHubNotifications"})
+    public void testBlockAllNotifications() {
+        mNotificationPermissionReviewBridge.setNotificationPermissionsForReview(
+                new NotificationPermissions[] {
+                    NOTIFICATION_PERMISSIONS_1, NOTIFICATION_PERMISSIONS_2
+                });
+        mSafetyHubFragmentTestRule.startSettingsActivity();
+
+        // Verify the notifications module is displaying the warning state.
+        String notificationsTitle =
+                mSafetyHubFragmentTestRule
+                        .getActivity()
+                        .getResources()
+                        .getQuantityString(
+                                R.plurals.safety_hub_notifications_review_warning_title, 2, 2);
+        onView(withText(notificationsTitle)).check(matches(isDisplayed()));
+
+        // Open the notifications subpage.
+        onView(withText(notificationsTitle)).perform(click());
+
+        // Verify that 2 sites are displayed.
+        onView(withText(NOTIFICATION_PERMISSIONS_1.getPrimaryPattern()))
+                .check(matches(isDisplayed()));
+        onView(withText(NOTIFICATION_PERMISSIONS_2.getPrimaryPattern()))
+                .check(matches(isDisplayed()));
+
+        // Click the button at the bottom of the page.
+        onView(withText(R.string.safety_hub_notifications_block_all_button)).perform(click());
+
+        // Verify tha the notifications subpage has been dismissed and the state of the
+        // notifications
+        // module has changed.
+        onViewWaiting(withText(R.string.safety_hub_notifications_review_ok_title))
+                .check(matches(isDisplayed()));
+    }
+
     private void clickOnButtonNextToText(String text) {
         onViewWaiting(allOf(withId(R.id.button), withParent(hasSibling(withChild(withText(text))))))
                 .perform(click());

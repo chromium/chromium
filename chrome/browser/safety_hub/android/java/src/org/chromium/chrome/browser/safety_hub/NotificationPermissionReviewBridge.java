@@ -70,6 +70,19 @@ public class NotificationPermissionReviewBridge {
         notifyNotificationPermissionsChanged();
     }
 
+    /**
+     * Blocks the notification permission for several origins in bulk and notifies the observers at
+     * the end.
+     */
+    void bulkBlockNotificationPermissions() {
+        for (NotificationPermissions notificationPermissions : getNotificationPermissions()) {
+            NotificationPermissionReviewBridgeJni.get()
+                    .blockNotificationPermissionForOrigin(
+                            mProfile, notificationPermissions.getPrimaryPattern());
+        }
+        notifyNotificationPermissionsChanged();
+    }
+
     /** Allows the notification permission for the given origin. */
     void allowNotificationPermissionForOrigin(String origin) {
         NotificationPermissionReviewBridgeJni.get()

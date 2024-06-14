@@ -1721,6 +1721,9 @@ Your Google account may have other forms of browsing history like searches and a
       <message name="IDS_SAFETY_HUB_DESCRIPTION" translateable="false">
         Chrome regularly checks to make sure your browser has the safest settings. We'll let you know if anything needs review.
       </message>
+      <message name="IDS_SAFETY_HUB_NOTIFICATIONS_BLOCK_ALL_BUTTON" translateable="false">
+        Block all
+      </message>
 
        <!-- Safe Browsing preferences -->
       <message name="IDS_PREFS_SAFE_BROWSING_TITLE" desc="Title for the Safe Browsing preferences. [CHAR_LIMIT=32]">

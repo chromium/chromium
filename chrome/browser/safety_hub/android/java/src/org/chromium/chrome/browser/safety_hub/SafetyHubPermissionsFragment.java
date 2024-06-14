@@ -22,7 +22,6 @@ public class SafetyHubPermissionsFragment extends SafetyHubSubpageFragment
         implements Preference.OnPreferenceClickListener, UnusedSitePermissionsBridge.Observer {
     private UnusedSitePermissionsBridge mUnusedSitePermissionsBridge;
     private LargeIconBridge mLargeIconBridge;
-    private boolean mPermissionsRevocationConfirmed;
 
     @Override
     public void onCreatePreferences(@Nullable Bundle bundle, @Nullable String s) {
@@ -41,7 +40,7 @@ public class SafetyHubPermissionsFragment extends SafetyHubSubpageFragment
             mLargeIconBridge.destroy();
         }
 
-        if (mPermissionsRevocationConfirmed) {
+        if (mBulkActionConfirmed) {
             PermissionsData[] permissionsDataList =
                     mUnusedSitePermissionsBridge.getRevokedPermissions();
             mUnusedSitePermissionsBridge.clearRevokedPermissionsReviewList();
@@ -118,8 +117,7 @@ public class SafetyHubPermissionsFragment extends SafetyHubSubpageFragment
     }
 
     @Override
-    protected void onBottomButtonClicked() {
-        mPermissionsRevocationConfirmed = true;
-        getActivity().finish();
+    protected int getButtonTextId() {
+        return R.string.got_it;
     }
 }

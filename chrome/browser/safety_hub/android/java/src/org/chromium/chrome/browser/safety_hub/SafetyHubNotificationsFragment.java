@@ -29,6 +29,16 @@ public class SafetyHubNotificationsFragment extends SafetyHubSubpageFragment
     }
 
     @Override
+    public void onDestroy() {
+        super.onDestroy();
+        mNotificationPermissionReviewBridge.removeObserver(this);
+
+        if (mBulkActionConfirmed) {
+            mNotificationPermissionReviewBridge.bulkBlockNotificationPermissions();
+        }
+    }
+
+    @Override
     public void notificationPermissionsChanged() {
         updatePreferenceList();
     }
@@ -82,7 +92,7 @@ public class SafetyHubNotificationsFragment extends SafetyHubSubpageFragment
     }
 
     @Override
-    protected void onBottomButtonClicked() {
-        // TODO(crbug.com/324562205): React to the 'Got it' button being clicked.
+    protected int getButtonTextId() {
+        return R.string.safety_hub_notifications_block_all_button;
     }
 }
