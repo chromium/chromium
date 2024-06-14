@@ -145,6 +145,15 @@ struct SearchInfo {
   bool completed = false;
 };
 
+struct UrlPassagesEmbeddings {
+  UrlPassagesEmbeddings(history::URLID url_id,
+                        history::VisitID visit_id,
+                        base::Time visit_time);
+
+  UrlPassages url_passages;
+  UrlEmbeddings url_embeddings;
+};
+
 // This base class decouples storage classes and inverts the dependency so that
 // a vector database can work with a SQLite database, simple in-memory storage,
 // flat files, or whatever kinds of storage will work efficiently.

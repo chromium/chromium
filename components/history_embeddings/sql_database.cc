@@ -218,6 +218,64 @@ std::optional<proto::PassagesValue> SqlDatabase::GetPassages(
   return std::nullopt;
 }
 
+std::optional<UrlPassagesEmbeddings> SqlDatabase::GetUrlData(
+    history::URLID url_id) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+
+  if (!LazyInit()) {
+    return {};
+  }
+
+  history::VisitID visit_id = 0;
+  base::Time visit_time;
+  std::optional<proto::PassagesValue> passages;
+  {
+    constexpr char kSqlSelectVisitIdAndPassages[] =
+        "SELECT visit_id, visit_time, passages_blob FROM passages WHERE url_id "
+        "= ?";
+    DCHECK(db_.IsSQLValid(kSqlSelectVisitIdAndPassages));
+    sql::Statement statement(
+        db_.GetCachedStatement(SQL_FROM_HERE, kSqlSelectVisitIdAndPassages));
+    statement.BindInt64(0, url_id);
+
+    if (statement.Step()) {
+      visit_id = statement.ColumnInt64(0);
+      visit_time = statement.ColumnTime(1);
+      passages = PassagesBlobToProto(statement.ColumnBlob(2), *encryptor_);
+    }
+  }
+  if (!passages.has_value() || visit_id == 0) {
+    return {};
+  }
+
+  UrlPassagesEmbeddings url_data(url_id, visit_id, visit_time);
+  url_data.url_passages.passages = std::move(passages.value());
+  {
+    constexpr char kSqlSelectEmbeddings[] =
+        "SELECT embeddings_blob FROM embeddings "
+        "WHERE visit_id = ?";
+    DCHECK(db_.IsSQLValid(kSqlSelectEmbeddings));
+    sql::Statement statement(
+        db_.GetCachedStatement(SQL_FROM_HERE, kSqlSelectEmbeddings));
+    statement.BindInt64(0, visit_id);
+
+    if (statement.Step()) {
+      base::span<const uint8_t> blob = statement.ColumnBlob(0);
+
+      proto::EmbeddingsValue value;
+      if (!value.ParseFromArray(blob.data(), blob.size())) {
+        return url_data;
+      }
+      for (const proto::EmbeddingVector& vector : value.vectors()) {
+        url_data.url_embeddings.embeddings.emplace_back(
+            std::vector(vector.floats().cbegin(), vector.floats().cend()),
+            vector.passage_word_count());
+      }
+    }
+  }
+  return url_data;
+}
+
 std::vector<UrlPassages> SqlDatabase::GetUrlPassagesWithoutEmbeddings() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 

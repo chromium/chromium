@@ -352,4 +352,47 @@ TEST_F(HistoryEmbeddingsSqlDatabaseTest, DeleteAllData) {
   EXPECT_EQ(GetEmbeddingCount(sql_database.get()), 0U);
 }
 
+TEST_F(HistoryEmbeddingsSqlDatabaseTest, GetUrlData) {
+  auto sql_database = std::make_unique<SqlDatabase>(history_dir_.GetPath());
+  sql_database->SetEmbedderMetadata({kEmbeddingsVersion, kEmbeddingsSize},
+                                    GetEncryptorInstance());
+
+  // Store passages.
+  UrlPassages url_passages(1, 1, base::Time::Now());
+  url_passages.passages.add_passages("fake passage 1");
+  url_passages.passages.add_passages("fake passage 2");
+  url_passages.passages.add_passages("fake passage 3");
+  EXPECT_TRUE(sql_database->InsertOrReplacePassages(url_passages));
+
+  UrlPassagesEmbeddings data = sql_database->GetUrlData(1).value();
+
+  // There are passages, but no embeddings stored yet.
+  CHECK_EQ(data.url_passages.url_id, 1);
+  CHECK_EQ(data.url_passages.visit_id, 1);
+  CHECK_EQ(data.url_passages.passages.passages_size(), 3);
+  CHECK_EQ(data.url_embeddings.embeddings.size(), 0u);
+
+  // Store embeddings.
+  UrlEmbeddings url_embeddings(url_passages);
+  url_embeddings.embeddings.push_back(FakeEmbedding());
+  url_embeddings.embeddings.push_back(FakeEmbedding());
+  url_embeddings.embeddings.push_back(FakeEmbedding());
+  sql_database->AddUrlEmbeddings(url_embeddings);
+
+  // There are passages and embeddings now.
+  data = sql_database->GetUrlData(1).value();
+  CHECK_EQ(data.url_passages.url_id, 1);
+  CHECK_EQ(data.url_passages.visit_id, 1);
+  CHECK_EQ(data.url_passages.passages.passages_size(), 3);
+  EXPECT_EQ(data.url_passages.passages.passages(0), "fake passage 1");
+  EXPECT_EQ(data.url_passages.passages.passages(1), "fake passage 2");
+  EXPECT_EQ(data.url_passages.passages.passages(2), "fake passage 3");
+  CHECK_EQ(data.url_embeddings.url_id, 1);
+  CHECK_EQ(data.url_embeddings.visit_id, 1);
+  CHECK_EQ(data.url_embeddings.embeddings.size(), 3u);
+
+  // Absent `url_id` returns std::nullopt.
+  EXPECT_FALSE(sql_database->GetUrlData(2).has_value());
+}
+
 }  // namespace history_embeddings

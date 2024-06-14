@@ -52,6 +52,9 @@ class SqlDatabase : public VectorDatabase {
   // nothing available.
   std::optional<proto::PassagesValue> GetPassages(history::URLID url_id);
 
+  // Gets passages and embeddings for given `url_id` if data is found.
+  std::optional<UrlPassagesEmbeddings> GetUrlData(history::URLID url_id);
+
   // Gets all rows from passages where a corresponding row in embeddings
   // does not exist, keyed on url_id.
   std::vector<UrlPassages> GetUrlPassagesWithoutEmbeddings();

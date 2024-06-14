@@ -31,8 +31,7 @@
 HistoryEmbeddingsTabHelper::HistoryEmbeddingsTabHelper(
     content::WebContents* web_contents)
     : content::WebContentsObserver(web_contents),
-      content::WebContentsUserData<HistoryEmbeddingsTabHelper>(*web_contents),
-      loading_tab_count_(0) {
+      content::WebContentsUserData<HistoryEmbeddingsTabHelper>(*web_contents) {
   resource_coordinator::TabLoadTracker::Get()->AddObserver(this);
 }
 
@@ -78,23 +77,27 @@ void HistoryEmbeddingsTabHelper::DidFinishLoad(
   VLOG(3) << "Tabs Loading: "
           << resource_coordinator::TabLoadTracker::Get()->GetLoadingTabCount();
 
-  ScheduleExtraction(render_frame_host->GetWeakDocumentPtr());
+  if (!ScheduleExtraction(render_frame_host->GetWeakDocumentPtr())) {
+    history_embeddings::RecordExtractionCancelled(
+        history_embeddings::ExtractionCancelled::TAB_HELPER_DID_FINISH_LOAD);
+    VLOG(3) << "Extraction cancelled in DidFinishLoad";
+  }
 }
 
 void HistoryEmbeddingsTabHelper::OnLoadingStateChange(
     content::WebContents* web_contents,
     LoadingState old_loading_state,
     LoadingState new_loading_state) {
-  loading_tab_count_ =
+  size_t loading_tab_count =
       resource_coordinator::TabLoadTracker::Get()->GetLoadingTabCount();
   VLOG(3) << "Loading state changed for '" << web_contents->GetTitle()
-          << "' with " << loading_tab_count_ << " tabs now loading.";
+          << "' with " << loading_tab_count << " tabs now loading.";
 }
 
-void HistoryEmbeddingsTabHelper::ScheduleExtraction(
+bool HistoryEmbeddingsTabHelper::ScheduleExtraction(
     content::WeakDocumentPtr weak_render_frame_host) {
   if (!weak_render_frame_host.AsRenderFrameHostIfValid()) {
-    return;
+    return false;
   }
   // Schedule a new delayed task with a fresh weak pointer.
   base::SingleThreadTaskRunner::GetCurrentDefault()->PostDelayedTask(
@@ -102,19 +105,33 @@ void HistoryEmbeddingsTabHelper::ScheduleExtraction(
       base::BindOnce(&HistoryEmbeddingsTabHelper::ExtractPassages,
                      weak_ptr_factory_.GetWeakPtr(), weak_render_frame_host),
       base::Milliseconds(history_embeddings::kPassageExtractionDelay.Get()));
+  return true;
 }
 
 void HistoryEmbeddingsTabHelper::ExtractPassages(
     content::WeakDocumentPtr weak_render_frame_host) {
   if (!history_url_.has_value()) {
+    history_embeddings::RecordExtractionCancelled(
+        history_embeddings::ExtractionCancelled::
+            TAB_HELPER_EXTRACT_PASSAGES_URL);
+    VLOG(3) << "Extraction cancelled; no history_url_ value.";
     return;
   }
 
-  if (loading_tab_count_ > 0) {
+  size_t loading_tab_count =
+      resource_coordinator::TabLoadTracker::Get()->GetLoadingTabCount();
+  if (loading_tab_count > 0) {
     // Not ready yet. Try again after the delay.
-    ScheduleExtraction(weak_render_frame_host);
-    VLOG(3) << "Extraction rescheduled; " << loading_tab_count_
-            << " tabs still loading.";
+    if (!ScheduleExtraction(weak_render_frame_host)) {
+      history_embeddings::RecordExtractionCancelled(
+          history_embeddings::ExtractionCancelled::
+              TAB_HELPER_EXTRACT_PASSAGES_RESCHEDULE);
+      VLOG(3) << "Extraction cancelled; " << loading_tab_count
+              << " tabs still loading.";
+    } else {
+      VLOG(3) << "Extraction rescheduled; " << loading_tab_count
+              << " tabs still loading.";
+    }
     return;
   }
 
@@ -137,6 +154,9 @@ void HistoryEmbeddingsTabHelper::ExtractPassagesWithHistoryData(
   // visit being added to the DB, e.g. navigations to
   // "chrome://" URLs.
   if (!result.success || result.visits.empty()) {
+    history_embeddings::RecordExtractionCancelled(
+        history_embeddings::ExtractionCancelled::
+            TAB_HELPER_EXTRACT_PASSAGES_WITH_HISTORY_DATA_RESULTS);
     return;
   }
   const history::URLRow& url_row = result.row;
@@ -148,6 +168,9 @@ void HistoryEmbeddingsTabHelper::ExtractPassagesWithHistoryData(
   // navigation by comparing the visit_times.
   if (!history_visit_time_.has_value() ||
       latest_visit.visit_time != *history_visit_time_) {
+    history_embeddings::RecordExtractionCancelled(
+        history_embeddings::ExtractionCancelled::
+            TAB_HELPER_EXTRACT_PASSAGES_WITH_HISTORY_DATA_TIME);
     return;
   }
   // Make sure the latest visit (the first one in the array) is
@@ -158,12 +181,17 @@ void HistoryEmbeddingsTabHelper::ExtractPassagesWithHistoryData(
   // a problem, consider implementing a
   // GetMostRecent*Local*VisitsForURL().
   if (!latest_visit.originator_cache_guid.empty()) {
+    history_embeddings::RecordExtractionCancelled(
+        history_embeddings::ExtractionCancelled::
+            TAB_HELPER_EXTRACT_PASSAGES_WITH_HISTORY_DATA_GUID);
     return;
   }
 
   if (history_embeddings::HistoryEmbeddingsService* embeddings_service =
           GetHistoryEmbeddingsService()) {
-    embeddings_service->RetrievePassages(latest_visit, weak_render_frame_host);
+    embeddings_service->RetrievePassages(
+        latest_visit.url_id, latest_visit.visit_id, latest_visit.visit_time,
+        weak_render_frame_host);
   }
 
   // Clear the data. It isn't reused and will be set anew by later navigation.

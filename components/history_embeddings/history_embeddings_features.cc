@@ -92,4 +92,9 @@ const base::FeatureParam<bool> kRebuildEmbeddings(&kHistoryEmbeddings,
                                                   "RebuildEmbeddings",
                                                   true);
 
+const base::FeatureParam<bool> kUseDatabaseBeforeEmbedder(
+    &kHistoryEmbeddings,
+    "UseDatabaseBeforeEmbedder",
+    true);
+
 }  // namespace history_embeddings
