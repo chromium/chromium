@@ -117,7 +117,7 @@
 <translation id="1584648915421894279">這部裝置儲存的密碼目前無法跨 Chrome 版本使用。自 Chrome 125 起，系統會合併裝置儲存的 Chrome 和 <ph name="CHROME_CHANNEL" />密碼，屆時這兩個應用程式將可使用彼此儲存的密碼。</translation>
 <translation id="1592864538817356322">標準防護：</translation>
 <translation id="1594635596540195766">下列清單中有 <ph name="SUGGESTIONS_COUNT" /> 個建議項目。</translation>
-<translation id="1598163867407640634">透過 <ph name="SITE_ETLD_PLUS_ONE" /> 支付 <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> 費用</translation>
+<translation id="1598163867407640634">透過 <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> 使用 <ph name="SITE_ETLD_PLUS_ONE" /></translation>
 <translation id="1628019612362412531">{NUM_SELECTED,plural, =1{移除 1 個選取的項目}other{移除 # 個選取的項目}}</translation>
 <translation id="1641113438599504367">安全瀏覽</translation>
 <translation id="164269334534774161">您目前瀏覽的是這個網頁的離線複本 (建立時間：<ph name="CREATION_TIME" />)</translation>
@@ -560,7 +560,7 @@
 <translation id="4024768890073681126">瀏覽器由家長管理</translation>
 <translation id="4034817413553209278">{HOURS,plural, =1{# 小時}other{# 小時}}</translation>
 <translation id="4035877632587724847">不允許</translation>
-<translation id="4042941173059740150">繼續使用 <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> 支付 <ph name="SITE_ETLD_PLUS_ONE" /> 費用</translation>
+<translation id="4042941173059740150">繼續透過 <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> 使用 <ph name="SITE_ETLD_PLUS_ONE" /></translation>
 <translation id="404352903042073578">未命名的群組</translation>
 <translation id="4044708993631234325">底部功能表</translation>
 <translation id="405365679581583349">更新 Google Play 服務</translation>

@@ -798,7 +798,7 @@
 <translation id="1596286373007273895">可用</translation>
 <translation id="1596709061955594992">藍牙功能已關閉。如要查看可用裝置，請開啟藍牙功能。</translation>
 <translation id="1596780725094407793">- 包括子網域</translation>
-<translation id="1598163867407640634">透過 <ph name="SITE_ETLD_PLUS_ONE" /> 支付 <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> 費用</translation>
+<translation id="1598163867407640634">透過 <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> 使用 <ph name="SITE_ETLD_PLUS_ONE" /></translation>
 <translation id="1598233202702788831">您的管理員停用了更新功能。</translation>
 <translation id="1600541617401655593">協助改善 ChromeOS Flex 的功能與效能。我們會匯總並妥善保護資料。</translation>
 <translation id="1600857548979126453">存取網頁偵錯工具後端</translation>
@@ -1540,7 +1540,7 @@
 <translation id="2133857665503360653">重新嘗試下載「<ph name="FILE_NAME" />」</translation>
 <translation id="2134905185275441536">系統 CA</translation>
 <translation id="21354425047973905">隱藏 PIN 碼</translation>
-<translation id="2135456203358955318">停駐放大鏡</translation>
+<translation id="2135456203358955318">置頂放大鏡</translation>
 <translation id="2135787500304447609">繼續(&amp;R)</translation>
 <translation id="2136476978468204130">你輸入的通關密語不正確</translation>
 <translation id="2137128126782078222">不允許接收來自 <ph name="WEBSITE" /> 的通知</translation>
@@ -4081,7 +4081,7 @@
 <translation id="4040041015953651705">原文語言</translation>
 <translation id="4042660782729322247">你正在分享螢幕畫面</translation>
 <translation id="4042863763121826131">{NUM_PAGES,plural, =1{離開網頁}other{離開網頁}}</translation>
-<translation id="4042941173059740150">繼續使用 <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> 支付 <ph name="SITE_ETLD_PLUS_ONE" /> 費用</translation>
+<translation id="4042941173059740150">繼續透過 <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> 使用 <ph name="SITE_ETLD_PLUS_ONE" /></translation>
 <translation id="4043267180218562935">游標大小</translation>
 <translation id="4043620984511647481">手動新增印表機</translation>
 <translation id="4044612648082411741">輸入您的憑證密碼</translation>

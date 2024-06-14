@@ -6899,7 +6899,7 @@ Behörigheter som du redan har gett webbplatser och appar kan gälla för det h�
 <translation id="6231881193380278751">Lägg till en frågeparameter i webbadressen för att automatiskt uppdatera sidan: chrome://device-log/?refresh=&lt;sec&gt;</translation>
 <translation id="6232017090690406397">Batteri</translation>
 <translation id="6232116551750539448">Anslutningen till <ph name="NAME" /> har brutits</translation>
-<translation id="623261264391834964">Högerklicka i en textruta för att använda Hjälp mig att skriva</translation>
+<translation id="623261264391834964">Högerklicka i en textruta för att använda Hjälp mig skriva</translation>
 <translation id="6233154960150021497">Använd rösten i stället för tangentbordet som standard</translation>
 <translation id="6234108445915742946">Chromes användarvillkor ändras den 31 mars</translation>
 <translation id="6234474535228214774">Väntar på att installeras</translation>
@@ -7550,7 +7550,7 @@ Det finns # utsatta lösenord till. Du rekommenderas av Google Lösenordshanteri
 <translation id="6758056191028427665">Berätta hur vi sköter oss.</translation>
 <translation id="6759193508432371551">Återställ standardinställningar</translation>
 <translation id="6760354150216532978">Varning! Den här webbplatsen kan se ändringar du gör</translation>
-<translation id="6761209758867628753">Verktyg: Hjälp mig att skriva</translation>
+<translation id="6761209758867628753">Verktyg: Hjälp mig skriva</translation>
 <translation id="676158322851696513"><ph name="EXTENSION_NAME" /></translation>
 <translation id="6761623907967804682">Webbplatsdata på enheten tillåts inte</translation>
 <translation id="6762833852331690540">På</translation>
@@ -8418,7 +8418,7 @@ Det finns # utsatta lösenord till. Du rekommenderas av Google Lösenordshanteri
 <translation id="7423807071740419372">Behörighet krävs för att köra <ph name="APP_NAME" /></translation>
 <translation id="7424153922653300265">Energisparläget har aktiverats</translation>
 <translation id="7424818322350938336">Nätverket har lagts till</translation>
-<translation id="7425037327577270384">Hjälp mig att skriva</translation>
+<translation id="7425037327577270384">Hjälp mig skriva</translation>
 <translation id="7427315069950454694">dina minnen i dag</translation>
 <translation id="7427348830195639090">Bakgrundssida: <ph name="BACKGROUND_PAGE_URL" /></translation>
 <translation id="7427798576651127129">Ring från <ph name="DEVICE_NAME" /></translation>

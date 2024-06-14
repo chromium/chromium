@@ -5611,7 +5611,7 @@ Mulai <ph name="PRODUCT_NAME" /> versi 92, kebijakan ini juga didukung dalam mod
       <ph name="IMAGE_THUMBNAIL" />,
       <ph name="IMAGE_THUMBNAIL_BASE64" />.</translation>
 <translation id="5369937289900051171">Khusus pencetakan warna</translation>
-<translation id="5370279767682621504">Aktifkan dukungan HTTP/0.9 pada porta non-default</translation>
+<translation id="5370279767682621504">Aktifkan dukungan HTTP/0.9 pada port non-default</translation>
 <translation id="5370765433640162225">Jika kebijakan ini disetel ke benar (true), pembersihan otomatis akan dijalankan selama login untuk memastikan tersedia ruang disk kosong yang cukup.
       Pembersihan hanya akan dijalankan jika diperlukan, tetapi akan tetap memengaruhi waktu login.
       Menyetel kebijakan ke salah (false) (default) memastikan waktu login tidak terpengaruh.</translation>

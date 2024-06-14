@@ -280,7 +280,7 @@
 <translation id="2421798028054665193">Bild <ph name="CURRENT_PAGE" /> av <ph name="TOTAL_PAGES" /></translation>
 <translation id="2446553403094072641">Flyttalsprecision</translation>
 <translation id="2448312741937722512">Typ</translation>
-<translation id="2472215337771558851">Använd Hjälp mig att skriva för att skapa ett utkast eller finjustera befintligt arbete (med hjälp av Googles AI)</translation>
+<translation id="2472215337771558851">Använd Hjälp mig skriva för att skapa ett utkast eller finjustera befintligt arbete (med hjälp av Googles AI)</translation>
 <translation id="2480572840229215612">krabbor</translation>
 <translation id="248546197012830854">Enheten är offline. Anslut till ett wifi-nätverk för att se hjälpinnehåll.</translation>
 <translation id="2486301288428798846">trä</translation>
@@ -911,7 +911,7 @@
 <translation id="6235460611964961764">Återställ dataanvändningen manuellt</translation>
 <translation id="6243280677745499710">Nuvarande</translation>
 <translation id="6250316632541035980">bacon och ägg</translation>
-<translation id="6255213378196499011">Inställningar för Hjälp mig att skriva</translation>
+<translation id="6255213378196499011">Inställningar för Hjälp mig skriva</translation>
 <translation id="6265268291107409527">Tangenten <ph name="KEYS" /> har valts. <ph name="ASSIGN_INSTRUCTION" /></translation>
 <translation id="6275224645089671689">Högerpiltangenten</translation>
 <translation id="6278428485366576908">Tema</translation>
@@ -1145,7 +1145,7 @@
 <translation id="7401543881546089382">Ta bort genväg</translation>
 <translation id="741244894080940828">Räkna om</translation>
 <translation id="7415801143053185905">Mycket hög HTTS-latens</translation>
-<translation id="7425037327577270384">Hjälp mig att skriva</translation>
+<translation id="7425037327577270384">Hjälp mig skriva</translation>
 <translation id="7427315641433634153">MSCHAP</translation>
 <translation id="7438298994385592770">Det gick inte att inaktivera eller ta bort detta APN. Se till att aktiverade <ph name="ATTACH" />-APN inaktiveras eller tas bort.</translation>
 <translation id="7458970041932198923">Anslut till ett nätverk och läs in sidan igen för att visa och ställa in avatarer.</translation>

@@ -798,7 +798,7 @@ Los permisos que hayas dado a aplicaciones se pueden aplicar a esta cuenta. Pued
 <translation id="1596286373007273895">Disponible</translation>
 <translation id="1596709061955594992">El Bluetooth está desactivado. Para ver los dispositivos disponibles, activa el Bluetooth.</translation>
 <translation id="1596780725094407793">(subdominios incluidos)</translation>
-<translation id="1598163867407640634">Usa <ph name="SITE_ETLD_PLUS_ONE" /> con <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /></translation>
+<translation id="1598163867407640634">Usar <ph name="SITE_ETLD_PLUS_ONE" /> con <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /></translation>
 <translation id="1598233202702788831">El administrador ha inhabilitado las actualizaciones.</translation>
 <translation id="1600541617401655593">Ayuda a mejorar las funciones y el rendimiento de ChromeOS Flex. Los datos se agregan y están muy protegidos.</translation>
 <translation id="1600857548979126453">Acceder al servidor de depuración de página</translation>

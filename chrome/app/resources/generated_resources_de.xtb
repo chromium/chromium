@@ -22,7 +22,7 @@
 <translation id="1010833424573920260">{NUM_PAGES,plural, =1{Seite reagiert nicht}other{Seiten reagieren nicht}}</translation>
 <translation id="1011003645819296594">Gespeicherte Geräte</translation>
 <translation id="1011355516189274711">Lautstärke der Sprachausgabe</translation>
-<translation id="1012794136286421601">Deine Dateien aus Google Docs, Google Tabellen, Google Präsentationen und Google Zeichnungen werden synchronisiert. Öffne die Google Drive App, um online oder offline auf die Dateien zuzugreifen.</translation>
+<translation id="1012794136286421601">Deine Dateien aus Google Docs, Google Sheets, Google Präsentationen und Google Zeichnungen werden synchronisiert. Öffne die Google Drive App, um online oder offline auf die Dateien zuzugreifen.</translation>
 <translation id="1012876632442809908">USB-C-Gerät (Port vorne)</translation>
 <translation id="1015041505466489552">TrackPoint</translation>
 <translation id="1015318665228971643">Ordnernamen bearbeiten</translation>
@@ -681,7 +681,7 @@ Berechtigungen, die du Apps bereits gewährt hast, gelten möglicherweise für d
 <translation id="1515163294334130951">Starten</translation>
 <translation id="1517467582299994451">Wenn du mit einem Code streamen möchtest, musst du die Synchronisierungseinstellungen des Chrome-Browsers aktivieren</translation>
 <translation id="1521442365706402292">Zertifikate verwalten</translation>
-<translation id="1521655867290435174">Google Tabellen</translation>
+<translation id="1521655867290435174">Google Sheets</translation>
 <translation id="1521774566618522728">Heute aktiv</translation>
 <translation id="1521933835545997395">Mit Android-Smartphone verbunden</translation>
 <translation id="1523279371236772909">Im letzten Monat angesehen</translation>
@@ -2583,7 +2583,7 @@ Diese Aktion wirkt sich nicht auf Lesezeichen, Passwörter und den Verlauf aus.<
 <translation id="289695669188700754">Schlüssel-ID: <ph name="KEY_ID" /></translation>
 <translation id="2897713966423243833">Diese benutzerdefinierte Einstellung wird entfernt, wenn du alle deine Inkognitofenster schließt</translation>
 <translation id="2897878306272793870">Möchtest du wirklich <ph name="TAB_COUNT" /> Tabs öffnen?</translation>
-<translation id="2900247416110050639">Für Google Docs, Google Tabellen und Google Präsentationen müssen Dateien in Google Drive gespeichert sein. Lokale Dateien werden verschoben und Dateien von anderen Speicherorten werden kopiert. Du findest deine Dateien im Google Drive-Ordner in der App „Dateien“.</translation>
+<translation id="2900247416110050639">Für Google Docs, Google Sheets und Google Präsentationen müssen Dateien in Google Drive gespeichert sein. Lokale Dateien werden verschoben und Dateien von anderen Speicherorten werden kopiert. Du findest deine Dateien im Google Drive-Ordner in der App „Dateien“.</translation>
 <translation id="290105521672621980">Datei verwendet nicht unterstützte Funktionen</translation>
 <translation id="2901348420151309559">Letzte Fotos und Apps</translation>
 <translation id="2902127500170292085"><ph name="EXTENSION_NAME" /> konnte nicht mit diesem Drucker kommunizieren. Vergewissere dich, dass der Drucker angeschlossen ist, und versuche es dann erneut.</translation>
@@ -7578,7 +7578,7 @@ Du hast # weitere kompromittierte Passwörter. Der Google Passwortmanager empfi
 <translation id="6789592661892473991">Horizontal teilen</translation>
 <translation id="6789834167207639931">Gib das Passwort für dein Google-Konto auf dem nächsten Bildschirm noch einmal ein, um die Wiederherstellung abzuschließen</translation>
 <translation id="6790428901817661496">Wiedergabe</translation>
-<translation id="6790497603648687708"><ph name="EXTENSION_NAME" /> wurde per Remotezugriff hinzugefügt</translation>
+<translation id="6790497603648687708"><ph name="EXTENSION_NAME" /> wurde per Remote-Zugriff hinzugefügt</translation>
 <translation id="6790820461102226165">Person hinzufügen...</translation>
 <translation id="6793879402816827484">↓ <ph name="STATUS" /></translation>
 <translation id="6794511157503068">Wenn sich dein Passkey für <ph name="APP_NAME" /> auf einem USB-Sicherheitsschlüssel befindet, steck ihn jetzt an und berühre ihn</translation>
