@@ -21,11 +21,13 @@ TEST(PrivilegedHelperTest, VerifyUpdaterSignature) {
       VerifyUpdaterSignature(src_dir.Append("third_party")
                                  .Append("updater")
                                  .Append("chrome_mac_universal_prod")
+                                 .Append("cipd")
                                  .Append(PRODUCT_FULLNAME_STRING ".app")));
   ASSERT_FALSE(
       VerifyUpdaterSignature(src_dir.Append("third_party")
                                  .Append("updater")
                                  .Append("chrome_mac_universal")
+                                 .Append("cipd")
                                  .Append(PRODUCT_FULLNAME_STRING "_test.app")));
 }
 

@@ -455,6 +455,7 @@ void PrivilegedHelperInstall(UpdaterScope scope) {
   ASSERT_TRUE(CopyDir(src_dir.Append("third_party")
                           .Append("updater")
                           .Append("chrome_mac_universal_prod")
+                          .Append("cipd")
                           .Append(PRODUCT_FULLNAME_STRING ".app"),
                       helpers_dir, false));
   ASSERT_TRUE(
