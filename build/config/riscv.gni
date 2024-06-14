@@ -27,5 +27,9 @@ if (current_cpu == "riscv64" || v8_current_cpu == "riscv64" ||
     riscv_use_zba = false
     riscv_use_zbb = false
     riscv_use_zbs = false
+
+    # RISCV Svpbmt Standard Extension for Page-Based Memory Types
+    # RISCV SV39 compilation flag.
+    riscv_use_sv39 = false
   }
 }
