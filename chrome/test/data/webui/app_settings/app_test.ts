@@ -4,12 +4,11 @@
 
 import 'chrome://app-settings/web_app_settings.js';
 
-import type {App, AppManagementPermissionItemElement, AppManagementSupportedLinksItemElement, AppManagementSupportedLinksOverlappingAppsDialogElement, PermissionTypeIndex, ToggleRowElement, WebAppSettingsAppElement} from 'chrome://app-settings/web_app_settings.js';
+import type {App, AppManagementSupportedLinksItemElement, AppManagementSupportedLinksOverlappingAppsDialogElement, PermissionItemElement, PermissionTypeIndex, ToggleRowElement, WebAppSettingsAppElement} from 'chrome://app-settings/web_app_settings.js';
 import {AppType, BrowserProxy, createTriStatePermission, getPermissionValueBool, InstallReason, InstallSource, PermissionType, RunOnOsLoginMode, TriState, WindowMode} from 'chrome://app-settings/web_app_settings.js';
 import type {CrRadioButtonElement} from 'chrome://resources/cr_elements/cr_radio_button/cr_radio_button.js';
 import {assertEquals, assertFalse, assertNull, assertTrue} from 'chrome://webui-test/chai_assert.js';
-import {flushTasks, waitAfterNextRender} from 'chrome://webui-test/polymer_test_util.js';
-import {eventToPromise} from 'chrome://webui-test/test_util.js';
+import {eventToPromise, microtasksFinished} from 'chrome://webui-test/test_util.js';
 
 import {TestAppManagementBrowserProxy} from './test_app_management_browser_proxy.js';
 
@@ -96,7 +95,7 @@ suite('AppSettingsAppTest', () => {
     document.body.innerHTML = window.trustedTypes!.emptyHTML;
     appSettingsApp = document.createElement('web-app-settings-app');
     document.body.appendChild(appSettingsApp);
-    await waitAfterNextRender(appSettingsApp);
+    await microtasksFinished();
   }
 
   setup(async () => {
@@ -107,7 +106,7 @@ suite('AppSettingsAppTest', () => {
     document.body.innerHTML = window.trustedTypes!.emptyHTML;
     appSettingsApp = document.createElement('web-app-settings-app');
     document.body.appendChild(appSettingsApp);
-    await waitAfterNextRender(appSettingsApp);
+    await microtasksFinished();
   });
 
   test('Elements are present', function() {
@@ -179,9 +178,10 @@ suite('AppSettingsAppTest', () => {
     const permsisionTypes: PermissionTypeIndex[] =
         ['kNotifications', 'kLocation', 'kCamera', 'kMicrophone'];
     for (const permissionType of permsisionTypes) {
-      const permissionItem = appSettingsApp.shadowRoot!.querySelector<
-          AppManagementPermissionItemElement>(
-          `app-management-permission-item[permission-type=${permissionType}]`)!;
+      const permissionItem =
+          appSettingsApp.shadowRoot!.querySelector<PermissionItemElement>(
+              `app-management-permission-item[permission-type=${
+                  permissionType}]`)!;
       assertTrue(!!permissionItem);
       assertFalse(getPermissionValueBool(permissionItem.app, permissionType));
 
@@ -218,7 +218,7 @@ suite('AppSettingsAppTest', () => {
     assertTrue(!!browserRadioButton);
     await browserRadioButton.click();
     await fakeHandler().whenCalled('setPreferredApp');
-    await flushTasks();
+    await microtasksFinished();
 
     const selectedApp = await fakeHandler().getApp('app1');
     assertTrue(!!selectedApp.app);
@@ -253,7 +253,7 @@ suite('AppSettingsAppTest', () => {
     assertTrue(!!preferredRadioButton);
     await preferredRadioButton.click();
     await fakeHandler().whenCalled('setPreferredApp');
-    await flushTasks();
+    await microtasksFinished();
 
     const selectedApp = await fakeHandler().getApp('app1');
     assertTrue(!!selectedApp.app);
@@ -297,7 +297,7 @@ suite('AppSettingsAppTest', () => {
     await preferredRadioButton.click();
     await promise;
     await fakeHandler().flushPipesForTesting();
-    await flushTasks();
+    await microtasksFinished();
     assertTrue(!!getSupportedLinksElement()!.shadowRoot!.querySelector(
         '#overlapDialog'));
 
@@ -310,7 +310,7 @@ suite('AppSettingsAppTest', () => {
     overlapDialog.$.dialog.close();
     await promise;
     await fakeHandler().flushPipesForTesting();
-    await flushTasks();
+    await microtasksFinished();
 
     assertNull(getSupportedLinksElement()!.shadowRoot!.querySelector(
         '#overlapDialog'));

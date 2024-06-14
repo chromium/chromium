@@ -5,18 +5,18 @@
 /** @fileoverview Test suite for app-manageemnt-permission-item. */
 import 'chrome://app-settings/permission_item.js';
 
-import type {AppManagementPermissionItemElement} from 'chrome://app-settings/permission_item.js';
+import type {PermissionItemElement} from 'chrome://app-settings/permission_item.js';
 import {TriState} from 'chrome://resources/cr_components/app_management/app_management.mojom-webui.js';
 import {BrowserProxy} from 'chrome://resources/cr_components/app_management/browser_proxy.js';
 import {AppManagementUserAction} from 'chrome://resources/cr_components/app_management/constants.js';
 import {getPermissionValueBool} from 'chrome://resources/cr_components/app_management/util.js';
 import {assertEquals, assertFalse} from 'chrome://webui-test/chai_assert.js';
-import {waitAfterNextRender} from 'chrome://webui-test/polymer_test_util.js';
+import {microtasksFinished} from 'chrome://webui-test/test_util.js';
 
 import {createTestApp, TestAppManagementBrowserProxy} from './app_management_test_support.js';
 
 suite('AppManagementPermissionItemTest', function() {
-  let permissionItem: AppManagementPermissionItemElement;
+  let permissionItem: PermissionItemElement;
   let testProxy: TestAppManagementBrowserProxy;
 
   setup(async function() {
@@ -29,7 +29,7 @@ suite('AppManagementPermissionItemTest', function() {
     permissionItem.app = app;
     permissionItem.permissionType = 'kLocation';
     document.body.appendChild(permissionItem);
-    await waitAfterNextRender(permissionItem);
+    await microtasksFinished();
   });
 
   test('Toggle permission', async function() {

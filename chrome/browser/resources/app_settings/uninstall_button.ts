@@ -6,7 +6,6 @@ import '//resources/cr_elements/cr_button/cr_button.js';
 import '//resources/cr_elements/policy/cr_tooltip_icon.js';
 import '//resources/cr_elements/icons_lit.html.js';
 
-import {AppType} from 'chrome://resources/cr_components/app_management/app_management.mojom-webui.js';
 import type {App} from 'chrome://resources/cr_components/app_management/app_management.mojom-webui.js';
 import {BrowserProxy} from 'chrome://resources/cr_components/app_management/browser_proxy.js';
 import {AppManagementUserAction, InstallReason} from 'chrome://resources/cr_components/app_management/constants.js';
@@ -15,6 +14,7 @@ import {CrLitElement} from 'chrome://resources/lit/v3_0/lit.rollup.js';
 
 import {getCss} from './uninstall_button.css.js';
 import {getHtml} from './uninstall_button.html.js';
+import {createDummyApp} from './web_app_settings_utils.js';
 
 export class UninstallButtonElement extends CrLitElement {
   static get is() {
@@ -37,38 +37,7 @@ export class UninstallButtonElement extends CrLitElement {
     };
   }
 
-  app: App = {
-    id: '',
-    type: AppType.kUnknown,
-    title: '',
-    description: '',
-    version: '',
-    size: '',
-    installReason: InstallReason.kUnknown,
-    permissions: {},
-    hideMoreSettings: false,
-    hidePinToShelf: false,
-    isPreferredApp: false,
-    windowMode: 0,
-    hideWindowMode: false,
-    resizeLocked: false,
-    hideResizeLocked: true,
-    supportedLinks: [],
-    runOnOsLogin: null,
-    fileHandlingState: null,
-    installSource: 0,
-    appSize: '',
-    dataSize: '',
-    publisherId: '',
-    formattedOrigin: '',
-    scopeExtensions: [],
-    supportedLocales: [],
-    isPinned: null,
-    isPolicyPinned: null,
-    selectedLocale: null,
-    showSystemNotificationsSettingsLink: false,
-    allowUninstall: false,
-  };
+  app: App = createDummyApp();
   uninstallLabel: string;
   policyLabel: string;
 

@@ -29,11 +29,15 @@ build_webui("build") {
     "window_mode_item.ts",
   ]
 
-  non_web_component_files = [ "web_app_settings.ts" ]
+  non_web_component_files = [
+    "web_app_settings.ts",
+    "web_app_settings_utils.ts",
+  ]
 
   css_files = [
     "app_management_shared_style.css",
     "app_management_shared_style_lit.css",
+    "permission_item.css",
     "shared_vars.css",
     "toggle_row.css",
     "uninstall_button.css",
