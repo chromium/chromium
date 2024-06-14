@@ -477,6 +477,25 @@ void AutocompleteController::ExtendMatchSubtypes(
   }
 }
 
+// static
+int AutocompleteController::ApplyPiecewiseScoringTransform(
+    double ml_score,
+    std::vector<std::pair<double, int>> break_points) {
+  // Start and end points for the line segment whose domain contains `ml_score`.
+  std::pair<double, int> start;
+  std::pair<double, int> end;
+  for (size_t i = 0; i < break_points.size() - 1; i++) {
+    start = break_points[i];
+    end = break_points[i + 1];
+    if (ml_score <= end.first) {
+      double m = (end.second - start.second) / (end.first - start.first);
+      double b = end.second - m * end.first;
+      return m * ml_score + b;
+    }
+  }
+  return 0;
+}
+
 AutocompleteController::AutocompleteController(
     std::unique_ptr<AutocompleteProviderClient> provider_client,
     int provider_types,
@@ -2190,24 +2209,6 @@ void AutocompleteController::RunBatchUrlScoringModelMappedSearchBlending(
   for (Observer& obs : observers_) {
     obs.OnMlScored(this, internal_result_);
   }
-}
-
-int AutocompleteController::ApplyPiecewiseScoringTransform(
-    double ml_score,
-    std::vector<std::pair<double, int>> break_points) {
-  // Start and end points for the line segment whose domain contains `ml_score`.
-  std::pair<double, int> start;
-  std::pair<double, int> end;
-  for (size_t i = 0; i < break_points.size() - 1; i++) {
-    start = break_points[i];
-    end = break_points[i + 1];
-    if (ml_score <= end.first) {
-      double m = (end.second - start.second) / (end.first - start.first);
-      double b = end.second - m * end.first;
-      return m * ml_score + b;
-    }
-  }
-  return 0;
 }
 
 void AutocompleteController::

@@ -1065,41 +1065,42 @@ TEST_F(AutocompleteControllerTest, MlRanking) {
 }
 
 TEST_F(AutocompleteControllerTest, MlRanking_ApplyPiecewiseScoringTransform) {
-  OmniboxFieldTrial::ScopedMLConfigForTesting scoped_ml_config;
-  scoped_ml_config.GetMLConfig().ml_url_scoring = true;
-  scoped_ml_config.GetMLConfig().url_scoring_model = true;
-  scoped_ml_config.GetMLConfig().piecewise_mapped_search_blending = true;
-
-  float ml_score = 0;
   const std::vector<std::pair<double, int>> break_points = {
       {0, 500}, {0.25, 1000}, {0.75, 1300}, {1, 1500}};
 
-  ml_score = 0;
-  EXPECT_EQ(controller_.ApplyPiecewiseScoringTransform(ml_score, break_points),
+  float ml_score = 0;
+  EXPECT_EQ(AutocompleteController::ApplyPiecewiseScoringTransform(
+                ml_score, break_points),
             500);
 
   ml_score = 0.186;
-  EXPECT_EQ(controller_.ApplyPiecewiseScoringTransform(ml_score, break_points),
+  EXPECT_EQ(AutocompleteController::ApplyPiecewiseScoringTransform(
+                ml_score, break_points),
             872);
 
   ml_score = 0.25;
-  EXPECT_EQ(controller_.ApplyPiecewiseScoringTransform(ml_score, break_points),
+  EXPECT_EQ(AutocompleteController::ApplyPiecewiseScoringTransform(
+                ml_score, break_points),
             1000);
 
   ml_score = 0.473;
-  EXPECT_EQ(controller_.ApplyPiecewiseScoringTransform(ml_score, break_points),
+  EXPECT_EQ(AutocompleteController::ApplyPiecewiseScoringTransform(
+                ml_score, break_points),
             1133);
 
   ml_score = 0.75;
-  EXPECT_EQ(controller_.ApplyPiecewiseScoringTransform(ml_score, break_points),
+  EXPECT_EQ(AutocompleteController::ApplyPiecewiseScoringTransform(
+                ml_score, break_points),
             1300);
 
   ml_score = 0.914;
-  EXPECT_EQ(controller_.ApplyPiecewiseScoringTransform(ml_score, break_points),
+  EXPECT_EQ(AutocompleteController::ApplyPiecewiseScoringTransform(
+                ml_score, break_points),
             1431);
 
   ml_score = 1;
-  EXPECT_EQ(controller_.ApplyPiecewiseScoringTransform(ml_score, break_points),
+  EXPECT_EQ(AutocompleteController::ApplyPiecewiseScoringTransform(
+                ml_score, break_points),
             1500);
 }
 

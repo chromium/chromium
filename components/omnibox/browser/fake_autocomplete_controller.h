@@ -92,7 +92,6 @@ class FakeAutocompleteController : public AutocompleteController {
   using AutocompleteController::OldResult;
 
   // AutocompleteController (methods):
-  using AutocompleteController::ApplyPiecewiseScoringTransform;
   using AutocompleteController::MaybeRemoveCompanyEntityImages;
   using AutocompleteController::ShouldRunProvider;
   using AutocompleteController::UpdateResult;

@@ -147,6 +147,13 @@ class AutocompleteController : public AutocompleteProviderListener,
       const AutocompleteMatch& match,
       base::flat_set<omnibox::SuggestSubtype>* subtypes);
 
+  // Given an `ml_score` in the range [0, 1], computes the corresponding
+  // relevance score using the piecewise function described by the given
+  // `break_points`.
+  static int ApplyPiecewiseScoringTransform(
+      double ml_score,
+      std::vector<std::pair<double, int>> break_points);
+
   // `provider_types` is a bitmap containing AutocompleteProvider::Type values
   // that will (potentially, depending on platform, flags, etc.) be
   // instantiated. `provider_client` is passed to all those providers, and
@@ -428,13 +435,6 @@ class AutocompleteController : public AutocompleteProviderListener,
   bool ShouldRunProvider(AutocompleteProvider* provider) const;
 
 #if BUILDFLAG(BUILD_WITH_TFLITE_LIB)
-  // Given an `ml_score` in the range [0, 1], computes the corresponding
-  // relevance score using the piecewise function described by the given
-  // `break_points`.
-  int ApplyPiecewiseScoringTransform(
-      double ml_score,
-      std::vector<std::pair<double, int>> break_points);
-
   // Runs the batch scoring for all the eligible matches in `results_.matches_`.
   void RunBatchUrlScoringModel(OldResult& old_result);
   void RunBatchUrlScoringModelMappedSearchBlending(OldResult& old_result);
