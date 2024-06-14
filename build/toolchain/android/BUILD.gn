@@ -143,7 +143,7 @@ clang_toolchain("robolectric_$host_cpu") {
       # Forwarding this value from the primary toolchain to the secondary
       # robolectric toolchain, since the default depends on is_component_build
       # which can be different between primary and robolectric.
-      enable_jni_multiplexing = enable_jni_multiplexing
+      allow_jni_multiplexing = allow_jni_multiplexing
     }
   }
 
