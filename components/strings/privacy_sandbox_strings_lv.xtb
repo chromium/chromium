@@ -1,9 +1,11 @@
 <?xml version="1.0" ?>
 <!DOCTYPE translationbundle>
 <translationbundle lang="lv">
+<translation id="2252052615723281030">Ja esat pierakstījies pārlūkā Chrome, šis iestatījums palīdz aizsargāt jūsu IP adreses konfidencialitāti. Ja pārlūkā Chrome tiek noteikts, ka kādā vietnē, iespējams, jūs izseko, daļa jūsu datplūsmas var tikt sūtīta, izmantojot konfidencialitātes serverus.</translation>
 <translation id="33479675708419823">Ja esat pierakstījies pārlūkā Chrome, šis iestatījums palīdz aizsargāt jūsu IP adreses konfidencialitāti. Ja pārlūkā Chrome tiek noteikts, ka kāda saite, iespējams, jūs izseko, daļa jūsu datplūsmas tiks nosūtīta, izmantojot konfidencialitātes serverus. Uzziniet vairāk par to, <ph name="LINK_BEGIN" />kā darbojas IP aizsardzība<ph name="LINK_END" />.</translation>
 <translation id="3529311220178827364">Uzzināt vairāk par IP adreses paslēpšanu</translation>
 <translation id="4301151630239508244">Reklāmu tēmas ir tikai viena no daudzām funkcijām, ko vietnē var izmantot reklāmu personalizēšanai. Pat bez reklāmu tēmām vietnēs joprojām var tikt rādītas reklāmas, taču tās var būt mazāk personalizētas. Uzziniet vairāk par <ph name="BEGIN_LINK_1" />reklāmu konfidencialitātes pārvaldību<ph name="END_LINK_1" />.</translation>
 <translation id="4598427486995631491">Paslēpt IP adresi</translation>
 <translation id="6371812158043974664">Ja esat pierakstījies pārlūkā Chromium, šis iestatījums palīdz aizsargāt jūsu IP adreses konfidencialitāti. Ja pārlūkā Chromium tiek noteikts, ka kāda saite, iespējams, jūs izseko, daļa jūsu datplūsmas tiks nosūtīta, izmantojot konfidencialitātes serverus. Uzziniet vairāk par to, <ph name="LINK_BEGIN" />kā darbojas IP aizsardzība<ph name="LINK_END" />.</translation>
+<translation id="7040031291654706261">Uzziniet, <ph name="BEGIN_LINK" />kā darbojas IP adreses aizsardzība<ph name="END_LINK" />.</translation>
 </translationbundle>

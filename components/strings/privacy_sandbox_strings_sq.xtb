@@ -1,9 +1,11 @@
 <?xml version="1.0" ?>
 <!DOCTYPE translationbundle>
 <translationbundle lang="sq">
+<translation id="2252052615723281030">Kur je i identifikuar në Chrome, ky cilësim ndihmon për ta mbajtur private adresën tënde IP. Nëse Chrome dyshon se një sajt mund të jetë duke të të gjurmuar, një pjesë e trafikut tënd mund të dërgohet nëpërmjet serverëve privatë.</translation>
 <translation id="33479675708419823">Kur je i identifikuar në Chrome, ky cilësim ndihmon për ta mbajtur private adresën tënde IP. Nëse Chrome dyshon se një sajt mund të jetë duke të të gjurmuar, një pjesë e trafikut tënd mund të dërgohet nëpërmjet serverëve privatë. Mëso më shumë <ph name="LINK_BEGIN" />se si funksionon "Mbrojtja e IP-së"<ph name="LINK_END" /></translation>
 <translation id="3529311220178827364">Mëso më shumë rreth fshehjes së adresës sate IP</translation>
 <translation id="4301151630239508244">Temat e reklamave janë vetëm një nga shumë gjëra që mund të përdorë një sajt për personalizimin e reklamave. Edhe pa temat e reklamave, sajtet mund të të shfaqin përsëri reklama, por ato mund të jenë më pak të personalizuara. Mëso më shumë rreth <ph name="BEGIN_LINK_1" />menaxhimit të privatësisë së reklamave<ph name="END_LINK_1" />.</translation>
 <translation id="4598427486995631491">Fshih adresën tënde IP</translation>
 <translation id="6371812158043974664">Kur je i identifikuar në Chromium, ky cilësim ndihmon për ta mbajtur private adresën tënde IP. Nëse Chromium dyshon se një sajt mund të jetë duke të të gjurmuar, një pjesë e trafikut tënd mund të dërgohet nëpërmjet serverëve privatë. Mëso më shumë <ph name="LINK_BEGIN" />se si funksionon "Mbrojtja e IP-së"<ph name="LINK_END" /></translation>
+<translation id="7040031291654706261">Mëso <ph name="BEGIN_LINK" />se si funksionon "Mbrojtja e IP-së"<ph name="END_LINK" /></translation>
 </translationbundle>

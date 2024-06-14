@@ -121,6 +121,7 @@
 <translation id="1383876407941801731">ძიება</translation>
 <translation id="1391102559483454063">ჩართვა</translation>
 <translation id="1394698770495054737">სრული გაბუნდოვნება</translation>
+<translation id="1395878931462960119">{DAYS,plural, =1{1 დღის წინ}other{# დღის წინ}}</translation>
 <translation id="1404963891829069586">ფოკუსირების რეჟიმის ხმები</translation>
 <translation id="1407069428457324124">მუქი თემა</translation>
 <translation id="1410568680128842168"><ph name="DATE_CELL_TOOL_TIP" />. თარიღებს შორის ნავიგაციისთვის გამოიყენეთ ისრებიანი კლავიშები.</translation>
@@ -180,6 +181,7 @@
 <translation id="1611993646327628135">ჩართული</translation>
 <translation id="1620510694547887537">კამერა</translation>
 <translation id="1623768535032616219">Google Classroom-ის ჩაკეცვა</translation>
+<translation id="163032029566320584"><ph name="UNAVAILABLE_DLC" /> მიუწვდომელია.</translation>
 <translation id="1632985212731562677">გადამრთველით წვდომის გათიშვა შესაძლებელია აქ: პარამეტრები &gt; მარტივი წვდომა.</translation>
 <translation id="1637505162081889933"><ph name="NUM_DEVICES" /> მოწყობილობა</translation>
 <translation id="1639239467298939599">იტვირთება</translation>
@@ -210,6 +212,7 @@
 <translation id="174102739345480129">მარკერი გამორთულია.</translation>
 <translation id="1743570585616704562">არ არის ამოცნობილი</translation>
 <translation id="1743927604032653654">შეტყობინების „<ph name="NOTIFICATION_TITLE" />“ ჩაკეცვა</translation>
+<translation id="1744435831291625602">{HOURS,plural, =0{1 საათის განმავლობაში}=1{1 საათის წინ}other{# საათის წინ}}</translation>
 <translation id="1746730358044914197">შეყვანის მეთოდები კონფიგურირებულია თქვენი ადმინისტრატორის მიერ.</translation>
 <translation id="1747336645387973286">შესრულების ბოლო ვადა: <ph name="DUE_DATE" /></translation>
 <translation id="1747827819627189109">ეკრანული კლავიატურა ჩართულია</translation>
@@ -347,6 +350,7 @@
 <translation id="2359808026110333948">გაგრძელება</translation>
 <translation id="2360398059912971776">ბატარეა</translation>
 <translation id="2361210043495191221">Wi-Fi-ს გადართვა. <ph name="STATE" />.</translation>
+<translation id="236574664504281623">გამოგზავნილია <ph name="SESSION_NAME" />-დან</translation>
 <translation id="2367186422933365202">თქვენს Chromebook-ში შესვლა ვერ მოხერხდა</translation>
 <translation id="2367972762794486313">პროგრამების ჩვენება</translation>
 <translation id="2368828502825385061">მიკვლევა</translation>
@@ -509,6 +513,7 @@
 <translation id="2963773877003373896">mod3</translation>
 <translation id="2965227184985674128">გსურთ, ჩართოთ მიკროფონზე წვდომა?</translation>
 <translation id="296762781903199866"><ph name="LANGUAGE" /> მეტყველების ფაილები ვერ ჩამოიტვირთა</translation>
+<translation id="2968761508099987738">თქვენი მიმდინარე მდებარეობა ამჟამად არ არის მხარდაჭერილი.</translation>
 <translation id="2970920913501714344">აპების, გაფართოებებისა და თემების ინსტალაცია</translation>
 <translation id="2977598380246111477">შემდეგი ციფრი</translation>
 <translation id="2985148236010982088">ყველა აპის ნახვა</translation>
@@ -723,6 +728,7 @@
 <translation id="3702846122927433391">ნიგერიის მოსახლეობა</translation>
 <translation id="3705722231355495246">-</translation>
 <translation id="3706423975342040244">გართობა</translation>
+<translation id="3707093869106077605"><ph name="UNAVAILABLE_DLC_ONE" /> და <ph name="UNAVAILABLE_DLC_TWO" /> მიუწვდომელია.</translation>
 <translation id="3708186454126126312">ადრე დაკავშირებული</translation>
 <translation id="3712143870407382523">არჩიეთ ფანჯარა ამ მხარისთვის</translation>
 <translation id="371370241367527062">წინა მიკროფონი</translation>
@@ -984,6 +990,7 @@
 <translation id="468293128311738995">აპები თქვენი ტელეფონიდან</translation>
 <translation id="4690510401873698237">თარო მდებარეობს ქვედა ნაწილში</translation>
 <translation id="4696813013609194136">განბლოკეთ მოწყობილობა მშობლის კოდით</translation>
+<translation id="4697357603686181098">ვერ დაგეხმარებით. სცადეთ სხვა მოთხოვნა.</translation>
 <translation id="4702647871202761252">კონფიდენციალურობის ეკრანი გამორთულია</translation>
 <translation id="4706121060329443414">ჩამოტვირთვას მოგვიანებთ შევეცდებით. ამჟამად მეტყველება გაეგზავნება Google-ს დასამუშავებლად.</translation>
 <translation id="470644585772471629">ფერთა ინვერსია</translation>
@@ -995,6 +1002,7 @@
 <translation id="4733161265940833579"><ph name="BATTERY_PERCENTAGE" />% (მარცხენა)</translation>
 <translation id="4734965478015604180">ჰორიზონტალური</translation>
 <translation id="4735944890391795473">სამუშაო მაგიდა 12</translation>
+<translation id="4736732123074402682">შეამოწმეთ კავშირი და ცადეთ ხელახლა.</translation>
 <translation id="473775607612524610">განახლება</translation>
 <translation id="4740516757091333363">გსურთ, წაშალოთ შენახული სამუშაო მაგიდა?</translation>
 <translation id="4746798685375253449">{0,plural, =1{დააბრუნეთ მოწყობილობის წინა ვერსია ერთი დღის განმავლობაში}other{დააბრუნეთ მოწყობილობის წინა ვერსია # დღის განმავლობაში}}</translation>
@@ -1328,6 +1336,7 @@
 <translation id="588258955323874662">სრული ეკრანი</translation>
 <translation id="5887954372087850114">ფანჯარა <ph name="WINDOW_TITLE" /> მიმაგრებულია სამუშაო მაგიდაზე <ph name="DESK_TITLE" />, ხოლო დანარჩენი სამუშაო მაგიდებისთვის მიმაგრება გაუქმებულია</translation>
 <translation id="588817334757907802">ფაილის გახსნა Chrome ბრაუზერში</translation>
+<translation id="5892014525522223653">თქვენ ხაზგარეშე რეჟიმში ხართ.</translation>
 <translation id="5895138241574237353">გადატვირთვა</translation>
 <translation id="589817443623831496">წერტილოვანი სკანირება</translation>
 <translation id="5901316534475909376">Shift+Esc</translation>
@@ -1387,6 +1396,7 @@
 <translation id="6095425951508823973"><ph name="PROVIDER" />-თან კავშირის დამატება</translation>
 <translation id="6099678161144790572">თვის განმავლობაში რედაქტირებული</translation>
 <translation id="6103838137565245112">სისტემა</translation>
+<translation id="610395411842312282">ორი მომიჯნავე ფანჯრის დაჯგუფება</translation>
 <translation id="6108952804512516814">შექმენით ხელოვნური ინტელექტის მეშვეობით</translation>
 <translation id="6114505516289286752"><ph name="LANGUAGE" /> მეტყველების ფაილები ჩამოიტვირთა</translation>
 <translation id="6119360623251949462"><ph name="CHARGING_STATE" />. <ph name="BATTERY_SAVER_STATE" /></translation>
@@ -1394,6 +1404,7 @@
 <translation id="6121838516699723042">დაადასტურეთ ჩამოტვირთვა <ph name="FILENAME" /></translation>
 <translation id="612734058257491180">Google ასისტენტი მიუწვდომელია სტუმრის სესიაში.</translation>
 <translation id="6127370444807669747">პერსონალიზებული დასაკრავი სიებისა და ფოკუსირებისთვის სხვა მუსიკის მოსაძებნად გამოიყენეთ YouTube Music Premium</translation>
+<translation id="6127395413317891856">თქვენ ხაზგარეშე რეჟიმში ხართ. შეამოწმეთ კავშირი და ცადეთ ხელახლა.</translation>
 <translation id="6129953537138746214">ინტერვალი</translation>
 <translation id="6137566720514957455"><ph name="USER_EMAIL_ADDRESS" />-ის ამოშლის დიალოგის გახსნა</translation>
 <translation id="6141205840878048728">რაზე გსურთ ფოკუსირება?</translation>
@@ -1896,6 +1907,7 @@
 <translation id="7982878511129296052">მიმდინარეობს გამორთვა...</translation>
 <translation id="7984197416080286869">დაფიქსირდა თითის ანაბეჭდის გამოყენების მეტისმეტად ბევრი მცდელობა</translation>
 <translation id="798779949890829624">ამ პარამეტრს მართავს თქვენი ადმინისტრატორი</translation>
+<translation id="7989206653429884947">ხშირად გახსნილი</translation>
 <translation id="799296642788192631">შეგიძლიათ ჩაამაგროთ მნიშვნელოვანი ფაილები. ჩასამაგრებლად გადაატარეთ კურსორი სასურველ ერთეულს, ან გახსენით Files აპი და დააწკაპუნეთ ერთეულზე მარჯვენა კლავიშით.</translation>
 <translation id="7994370417837006925">ერთდროული შესვლა სისტემაში</translation>
 <translation id="7995804128062002838">ეკრანის აღბეჭდვა ვერ მოხერხდა</translation>
@@ -1967,6 +1979,7 @@
 <translation id="8257510091797044096">თქვენი მოწყობილობის დაყენება</translation>
 <translation id="8261506727792406068">წაშლა</translation>
 <translation id="8262312463845990408">დაკვრის გადართვა</translation>
+<translation id="8268302343625273732">ყველა დავალების Google Classroom-ში ნახვა</translation>
 <translation id="8277261673056602147">ტექსტის გამოყოფა თქვენს ეკრანზე</translation>
 <translation id="8287009018010202411">პროდუქტიულობა</translation>
 <translation id="828708037801473432">გამორთვა</translation>
@@ -2081,6 +2094,7 @@
 <translation id="8747464587821437069"><ph name="CAMERA_AND_MICROPHONE_ACCESS_STATUS" />,
         <ph name="SCREEN_SHARE_STATUS" /></translation>
 <translation id="8749787185286745219">დრო ამოიწურა! მშვენიერია! 🎉</translation>
+<translation id="8753368202781196133">ეს ენა ამჟამად არ არის მხარდაჭერილი.</translation>
 <translation id="8755498163081687682">დაადასტურეთ ვინაობა: <ph name="ORIGIN_NAME" /> ითხოვს თქვენი ვინაობის დადასტურებას</translation>
 <translation id="875593634123171288">VPN-ის პარამეტრების ჩვენება</translation>
 <translation id="8756799553341497810">ამ ხედიდან გასვლის შემდეგ შეგიძლიათ აპების განლაგების მორგების დაწყება.</translation>

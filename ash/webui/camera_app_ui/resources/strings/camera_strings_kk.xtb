@@ -36,12 +36,15 @@
 <translation id="2320741269052147773">Солға жылжыту</translation>
 <translation id="2360840973209616515">Камера қолданбасын әкімшіңіз басқарады.
         Толық мәлімет алу үшін әкімшіге хабарласыңыз.</translation>
+<translation id="2442754296994859145">Мазмұнын тексеру үшін мәтінді көшіріңіз немесе сканерлеуді тоқтату үшін жайыңыз.</translation>
+<translation id="2486151619109781620">Диалогтік терезені жию және сканерлеуді бастау</translation>
 <translation id="2501278716633472235">Артқа қайту</translation>
 <translation id="2501853267655415902">Бейнеге түсіру тоқтатылды</translation>
 <translation id="2517472476991765520">Іздеу</translation>
 <translation id="2549985041256363841">Бейнеге түсіруді бастау</translation>
 <translation id="2577915835281444458">Жазу жақын арада тоқтатылады. Орын босату үшін құрылғы жадына өтіңіз.</translation>
 <translation id="2599796128805996109">Артқы камера</translation>
+<translation id="2654491636277477479">Анықталған мәтінді көшіру</translation>
 <translation id="2759905922487820242"><ph name="CURRENT" />/<ph name="MAXIMAL" /> с</translation>
 <translation id="2761536921376153655">Сканерлеу түрі</translation>
 <translation id="28682968802727151">Айна көрінісін алдын ала көру</translation>
@@ -49,6 +52,7 @@
 <translation id="3067436040345934772">Оңға жылжыту</translation>
 <translation id="3081586908890909590">Бейне жазуға ауысу</translation>
 <translation id="313467653172006084">30 кадр/сек</translation>
+<translation id="3157038259444425153">Енді фотосуреттегі мәтінді тікелей көшіруге болады.</translation>
 <translation id="3158534262962737808">"<ph name="WIFINAME" />" желісіне қосылу</translation>
 <translation id="3227137524299004712">Микрофон</translation>
 <translation id="3240426699337459095">Сілтеме көшірілді</translation>
@@ -93,6 +97,7 @@
 <translation id="5317780077021120954">Сақтау</translation>
 <translation id="5320594929574852403">Солға қарай жылжыту</translation>
 <translation id="5374917190292010970">4K (2160p)</translation>
+<translation id="5634947914995388399">Диалогтік терезені жаю және сканерлеуді тоқтату</translation>
 <translation id="5662366948659129155"><ph name="COUNT" />-бет сканерленуде.</translation>
 <translation id="5671277269877808209">Шаршы</translation>
 <translation id="574392208103952083">Орташа</translation>
@@ -117,11 +122,13 @@
 <translation id="6519884562954018934"><ph name="WIFINAME" /> желісіне қосылу</translation>
 <translation id="6527303717912515753">Бөлісу</translation>
 <translation id="6586509689874700895">Алдымен ұлғайту үшін <ph name="BUTTON_NAME" /> түймесін басыңыз. Содан соң суретке түсіргеннен кейін, дұрысталған бөліктерді көресіз.</translation>
+<translation id="659539649712855529"><ph name="CONTENT" /> көшірілді.</translation>
 <translation id="6617916774429601017">Барлық ажыратымдылықтарды көрсету</translation>
 <translation id="6631515515009660915">Айна көрінісін өшіру</translation>
 <translation id="6652737148136672975">Бұрышты бағыт пернелерімен жылжытыңыз.</translation>
 <translation id="667999046851023355">Құжат</translation>
 <translation id="6681668084120808868">Фотосуретке түсіру</translation>
+<translation id="6692092766759105707">Мазмұнын тексеру үшін мәтінді көшіріңіз.</translation>
 <translation id="6778482348691154169">Фотосуретке түсірілмеді.</translation>
 <translation id="6888362557094394345">Төмен қарай жылжыту</translation>
 <translation id="695140971690006676">Барлығын бастапқы күйге қайтару</translation>

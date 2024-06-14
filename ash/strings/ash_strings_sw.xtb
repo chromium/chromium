@@ -180,6 +180,7 @@ Vifuatavyo ni vitu unavyoweza kujaribu ili uanze.</translation>
 <translation id="1611993646327628135">Kimewashwa</translation>
 <translation id="1620510694547887537">Kamera</translation>
 <translation id="1623768535032616219">Kunja Google Darasani</translation>
+<translation id="163032029566320584"><ph name="UNAVAILABLE_DLC" /> hayapatikani.</translation>
 <translation id="1632985212731562677">Unaweza kuzima Kipengele cha Kufikia Kupitia Swichi katika Mipangilio &gt; Ufikivu.</translation>
 <translation id="1637505162081889933">Vifaa <ph name="NUM_DEVICES" /></translation>
 <translation id="1639239467298939599">Inapakia</translation>
@@ -251,6 +252,7 @@ Vifuatavyo ni vitu unavyoweza kujaribu ili uanze.</translation>
 <translation id="1915307458270490472">Kata simu</translation>
 <translation id="1918022425394817322">Onyesho la kukagua kamera limelinganishwa kwenye kona ya juu kulia</translation>
 <translation id="1923539912171292317">Mibofyo ya kiotomatiki</translation>
+<translation id="1925320505152357008">chini ya dak 1</translation>
 <translation id="1928739107511554905">Ili usasishe, tumia skrini ya kugusa kuwasha Chromebook yako upya huku kibodi ikiwa imeunganishwa.</translation>
 <translation id="1948405482892809935">Badilisha uende kwa mtumiaji anayefuata</translation>
 <translation id="1951012854035635156">Mratibu</translation>
@@ -606,6 +608,7 @@ Vifaa <ph name="DEVICECOUNT" /> vimeunganishwa.</translation>
 <translation id="334927402682780278">Tafuta maandishi kuanzia kwenye kiteuzi hadi mwisho wa mstari</translation>
 <translation id="3349345708646875009">Fungua kidhibiti cha shughuli kwenye Chrome</translation>
 <translation id="3364721542077212959">Zana za stylus</translation>
+<translation id="3365281428003534650">Weka kipima muda, jukumu na muziki</translation>
 <translation id="3365977133351922112">Simu yako iko mbali mno. Leta simu yako karibu.</translation>
 <translation id="3368922792935385530">Umeunganishwa</translation>
 <translation id="3369111525500416043">Unazopaswa kulipia hivi karibuni</translation>
@@ -721,6 +724,7 @@ Chomeka kifaa chako kwenye umeme.</translation>
 <translation id="3702846122927433391">Idadi ya watu nchini Nigeria</translation>
 <translation id="3705722231355495246">-</translation>
 <translation id="3706423975342040244">Burudani</translation>
+<translation id="3707093869106077605"><ph name="UNAVAILABLE_DLC_ONE" /> na <ph name="UNAVAILABLE_DLC_TWO" /> havipatikani.</translation>
 <translation id="3708186454126126312">Vilivyounganishwa awali</translation>
 <translation id="3712143870407382523">Chagua dirisha la upande huu</translation>
 <translation id="371370241367527062">Maikrofoni ya mbele</translation>
@@ -908,6 +912,7 @@ Baadhi ya vipengele vimedhibitiwa ili kuongeza muda wa matumizi ya betri.</trans
 <translation id="4406883609789734330">Manukuu Papo Hapo</translation>
 <translation id="4412698727486357573">Kituo cha usaidizi</translation>
 <translation id="4412944820643904175"><ph name="FEATURE_NAME" /> kimezimwa.</translation>
+<translation id="4417647906073317561">Mipangilio ya hali ya kumakinika. Weka kipima muda, jukumu na muziki ili uongeze ufanisi.</translation>
 <translation id="4424159417645388645">Eneokazi la tano</translation>
 <translation id="4430019312045809116">Kiwango cha sauti</translation>
 <translation id="4441283832827406317">Programu zimepangwa kwa majina</translation>
@@ -992,6 +997,7 @@ Kifaa 1 kimeunganishwa.</translation>
 <translation id="4733161265940833579"><ph name="BATTERY_PERCENTAGE" />% (Kushoto)</translation>
 <translation id="4734965478015604180">Kimlalo</translation>
 <translation id="4735944890391795473">Eneokazi la 12</translation>
+<translation id="4736732123074402682">Kagua muunganisho wako kisha ujaribu tena.</translation>
 <translation id="473775607612524610">Sasisha</translation>
 <translation id="4740516757091333363">Ungependa kufuta eneokazi lililohifadhiwa?</translation>
 <translation id="4746798685375253449">{0,plural, =1{Sasisha kifaa utumie toleo la awali ndani ya siku moja}other{Sasisha kifaa utumie toleo la awali ndani ya siku #}}</translation>
@@ -1133,6 +1139,7 @@ Unaweza pia kutumia mikato ya kibodi. Kwanza, angazia maandishi, kisha ubonyeze 
 <translation id="5208059991603368177">Yamewashwa</translation>
 <translation id="5216991270656129561">Itazimwa hadi <ph name="TIME" /></translation>
 <translation id="5222676887888702881">Ondoka</translation>
+<translation id="5228195526683428788">Kitenganishi cha kugawa skrini</translation>
 <translation id="5229343007215035173">Washa au uzime skrini ya faragha</translation>
 <translation id="5230516054153933099">Dirisha</translation>
 <translation id="5234764350956374838">Ondoa</translation>
@@ -1324,6 +1331,7 @@ Hakuna vifaa vilivyounganishwa.</translation>
 <translation id="588258955323874662">Skrini nzima</translation>
 <translation id="5887954372087850114">Dirisha la <ph name="WINDOW_TITLE" /> limewekwa kwenye <ph name="DESK_TITLE" /> na limeondolewa kwenye maeneokazi mengine yote</translation>
 <translation id="588817334757907802">Fungua faili katika kivinjari cha Chrome</translation>
+<translation id="5892014525522223653">Uko nje ya mtandao.</translation>
 <translation id="5895138241574237353">Zima na uwashe</translation>
 <translation id="589817443623831496">Uchanganuzi wa pointi</translation>
 <translation id="5901316534475909376">Shift+Esc</translation>
@@ -1383,6 +1391,7 @@ Hakuna vifaa vilivyounganishwa.</translation>
 <translation id="6095425951508823973">Weka muunganisho na <ph name="PROVIDER" /></translation>
 <translation id="6099678161144790572">Ilibadilishwa mwezi uliopita</translation>
 <translation id="6103838137565245112">mfumo</translation>
+<translation id="610395411842312282">Weka pamoja madirisha mawili ya upande kwa upande</translation>
 <translation id="6108952804512516814">Kutayarisha kwa kutumia AI</translation>
 <translation id="6114505516289286752">Faili za matamshi za <ph name="LANGUAGE" /> zimepakuliwa</translation>
 <translation id="6119360623251949462"><ph name="CHARGING_STATE" />. <ph name="BATTERY_SAVER_STATE" /></translation>
@@ -1390,6 +1399,7 @@ Hakuna vifaa vilivyounganishwa.</translation>
 <translation id="6121838516699723042">Thibitisha upakuaji <ph name="FILENAME" /></translation>
 <translation id="612734058257491180">Programu ya Mratibu wa Google haipatikani katika kipindi cha mgeni.</translation>
 <translation id="6127370444807669747">Ili upate orodha zinazokufaa na muziki zaidi wa kuangazia, jaribu YouTube Music Premium</translation>
+<translation id="6127395413317891856">Uko nje ya mtandao. Kagua muunganisho wako kisha ujaribu tena.</translation>
 <translation id="6129953537138746214">Nafasi</translation>
 <translation id="6137566720514957455">Fungua kidirisha cha kuondoa <ph name="USER_EMAIL_ADDRESS" /></translation>
 <translation id="6141205840878048728">Je, ungependa kuangazia nini?</translation>
@@ -1519,6 +1529,7 @@ Imesakinishwa hivi karibuni</translation>
 <translation id="6613765291890844037">Nafasi ya hifadhi ya <ph name="STORAGE_IN_USE_SIZE" /> inatumika | jumla ya nafasi ya hifadhi <ph name="STORAGE_TOTAL_SIZE" /></translation>
 <translation id="6614169507485700968">Skrini ya faragha imewashwa</translation>
 <translation id="6622679827379792051">Weka mipangilio ya kuangalia programu za simu yako</translation>
+<translation id="662279009180869175">Tumia vishale vya kushoto na kulia ili ubadilishe ukubwa wa skrini iliyogawanywa</translation>
 <translation id="6624493541160101248">Eneokazi la sasa: <ph name="DESK_NAME" />. Eneokazi la <ph name="DESK_INDEX" /> kati ya <ph name="DESK_COUNT" />.</translation>
 <translation id="6625718907317144388">Arifa za <ph name="APP_1_TITLE" />, <ph name="APP_2_TITLE" /> na nyinginezo zimefichwa kwa sababu ulinzi wa utazamaji umewashwa</translation>
 <translation id="6627638273713273709">Tafuta+Shift+K</translation>
@@ -1537,6 +1548,7 @@ Imesakinishwa hivi karibuni</translation>
 <translation id="6670153871843998651">Eneokazi la 3</translation>
 <translation id="6671495933530132209">Nakili picha</translation>
 <translation id="6671661918848783005">Imeshindwa kufungua Chromebook yako</translation>
+<translation id="6676552993057022464">Tumia vishale vya juu na chini ili ubadilishe ukubwa wa skrini iliyogawanywa</translation>
 <translation id="6682029141988159141">Bandika maudhui kwenye ubao wa kunakili</translation>
 <translation id="6683022854667115063">Vipokea sauti vya kichwani</translation>
 <translation id="6686023075541098243">Weka mipangilio ya kuangalia arifa za simu yako</translation>
@@ -1857,6 +1869,7 @@ Arifa, madirisha na vidirisha vya baadaye vitagawanywa kati ya maeneo-kazi.</tra
         <ph name="MANAGED" />
         <ph name="IME" />
         <ph name="LOCALE" /></translation>
+<translation id="7899977217122813285">Arifa huzimwa hadi <ph name="TIME" /> kipengele cha kumakinika kinapokuwa kimewashwa</translation>
 <translation id="7901190436359881020">Badilisha madirisha</translation>
 <translation id="7901405293566323524">Kitovu cha Simu</translation>
 <translation id="7902625623987030061">Gusa kitambua alama ya kidole</translation>
@@ -1961,6 +1974,7 @@ Arifa, madirisha na vidirisha vya baadaye vitagawanywa kati ya maeneo-kazi.</tra
 <translation id="8257510091797044096">Weka mipangilio ya kifaa chako</translation>
 <translation id="8261506727792406068">Futa</translation>
 <translation id="8262312463845990408">Kipengele cha kuwasha uchezaji</translation>
+<translation id="8268302343625273732">Angalia mazoezi yote kwenye Google Darasani</translation>
 <translation id="8277261673056602147">Angazia maandishi kwenye skrini yako</translation>
 <translation id="8287009018010202411">Tija</translation>
 <translation id="828708037801473432">Imezimwa</translation>

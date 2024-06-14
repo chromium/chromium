@@ -547,6 +547,7 @@
 <translation id="2003709556000175978">Скіньце свой пароль</translation>
 <translation id="2003775180883135320">Чатыры дзіркі зверху</translation>
 <translation id="2004697686368036666">На некаторых сайтах можа не працаваць частка функцый</translation>
+<translation id="2005042463110681802">Гэта папярэджанне паказана вам, бо гэты сайт не падтрымлівае HTTPS і ў вас уключаны рэжым інкогніта. <ph name="BEGIN_LEARN_MORE_LINK" />Даведацца больш<ph name="END_LEARN_MORE_LINK" /></translation>
 <translation id="2009942480257059311">Кнопка "Стварыць падзею". Каб хутка стварыць новую падзею ў Google Календары, націсніце яе.</translation>
 <translation id="201174227998721785">Кіруйце дазволамі і данымі, якія захоўваюцца на сайтах, праз налады Chrome</translation>
 <translation id="2012276282211112603">Тэм пакуль няма</translation>
@@ -567,13 +568,13 @@
 <translation id="2036983605131262583">Альтэрнатыўны рулон</translation>
 <translation id="2040463897538655645">Здымнае сховішча</translation>
 <translation id="2040894699575719559">Доступ да месцазнаходжання заблакіраваны</translation>
+<translation id="2041788246978549610">Выкарыстоўваць даступныя мікрафоны (<ph name="MICS_COUNT" />)</translation>
 <translation id="2042213636306070719">Латок 7</translation>
 <translation id="204357726431741734">Каб выкарыстоўваць захаваныя ва Уліковым запісе Google паролі, увайдзіце ў яго</translation>
 <translation id="2045871135676061132">Канверт Personal</translation>
 <translation id="2046951263634619614">Кнігарні</translation>
 <translation id="2048261947532620704">Ідзе пераклад старонкі</translation>
 <translation id="2053111141626950936">Старонкі на мове <ph name="LANGUAGE" /> не будуць перакладацца.</translation>
-<translation id="2055461225779831292">Выкарыстоўваць і перамяшчаць камеры (<ph name="CAMERAS_COUNT" />)</translation>
 <translation id="2056492565825767809">Блакіраваць паказальнік мышы</translation>
 <translation id="2056658168519009885">Сайты могуць запытваць у браўзера Chrome інфармацыю, якая дапаможа персаналізаваць для вас рэкламу.</translation>
 <translation id="2059166748188874810">Муніцыпальная акруга</translation>
@@ -651,7 +652,6 @@
 <translation id="2170417331417184438">Картка захавана толькі на прыладзе</translation>
 <translation id="2172089022819052306">Рамонт і абслугоўванне аўтамабіляў</translation>
 <translation id="2175630235841878061">Файлы памерам больш за 100 МБ спампоўваць нельга</translation>
-<translation id="2176198174348007293">Выкарыстоўваць камеры (<ph name="CAMERAS_COUNT" />)</translation>
 <translation id="2176974405772725904">Захаваць адрас ва ўліковым запісе</translation>
 <translation id="2178665390943006934">Кнопка "Абнавіць Chrome". Каб абнавіць браўзер Chrome праз яго налады, націсніце яе.</translation>
 <translation id="2181821976797666341">Палітыкі</translation>
@@ -891,6 +891,7 @@
 <translation id="2655752832536625875">Ванны пакой</translation>
 <translation id="2657637947725373811">{0,plural, =1{Перанесці канфідэнцыяльны файл?}one{Перанесці канфідэнцыяльныя файлы?}few{Перанесці канфідэнцыяльныя файлы?}many{Перанесці канфідэнцыяльныя файлы?}other{Перанесці канфідэнцыяльныя файлы?}}</translation>
 <translation id="2658843814961855121">Працоўнае заканадаўства</translation>
+<translation id="2658944305627908367">Трансакцыі на суму, якая перавышае баланс, не будуць апрацоўвацца</translation>
 <translation id="2660779039299703961">Падзея</translation>
 <translation id="2664887757054927933">{COUNT,plural, =0{Няма}=1{1 пароль (для даменаў <ph name="DOMAIN_LIST" />)}=2{2 паролі (для даменаў <ph name="DOMAIN_LIST" />)}one{# пароль (для даменаў <ph name="DOMAIN_LIST" />)}few{# паролі (для даменаў <ph name="DOMAIN_LIST" />)}many{# пароляў (для даменаў <ph name="DOMAIN_LIST" />)}other{# пароля (для даменаў <ph name="DOMAIN_LIST" />)}}</translation>
 <translation id="2666092431469916601">Зверху</translation>
@@ -1088,6 +1089,7 @@
 <translation id="3090667236485488075">Шкло</translation>
 <translation id="3095940652251934233">Statement</translation>
 <translation id="3098513225387949945">Ігнаруецца, бо спіс "Адключана" змяшчае шаблон, раўназначны сімвалу падстаноўкі "*", што азначае адключэнне палітыкі.</translation>
+<translation id="3099619114405539473">Выкарыстоўваць даступныя камеры (<ph name="CAMERAS_COUNT" />)</translation>
 <translation id="3102312643185441063">Ашчадны рахунак</translation>
 <translation id="3103188521861412364">Акцыі і аблігацыі</translation>
 <translation id="3105172416063519923">Ідэнтыфікатар аб'екта ўласнасці:</translation>
@@ -1363,6 +1365,7 @@
 <translation id="3583757800736429874">&amp;Узнавіць перамяшчэнне</translation>
 <translation id="3584299510153766161">Дзве дзіркі знізу</translation>
 <translation id="3584755835709800788">Фантастычныя і фэнтэзі-фільмы</translation>
+<translation id="3585455899094692781">Выкарыстоўваць і перамяшчаць даступныя камеры (<ph name="CAMERAS_COUNT" />)</translation>
 <translation id="3586833803451155175">Вільготная плёнка</translation>
 <translation id="3586931643579894722">Схаваць падрабязнасці</translation>
 <translation id="3587738293690942763">Сярэдні</translation>
@@ -1484,6 +1487,7 @@
 <translation id="3799805948399000906">Запытаны шрыфт</translation>
 <translation id="3801265110651850478">Адпраўляць запыт Do Not Track пры праглядзе старонак у інтэрнэце</translation>
 <translation id="380329542618494757">Імя</translation>
+<translation id="3803801106042434208">Пошукавыя сістэмы, папулярныя ў вашым рэгіёне</translation>
 <translation id="3806932344025766608">На сайце, які вы спрабуеце наведаць, дзейнічаюць зламыснікі. Яны могуць падманам прымусіць вас усталяваць праграмнае забеспячэнне або раскрыць асабістую інфармацыю, напрыклад пароль, нумар тэлефона ці крэдытнай карткі. Chrome настойліва рэкамендуе вярнуцца на бяспечную старонку. <ph name="BEGIN_LEARN_MORE_LINK" />Даведацца больш<ph name="END_LEARN_MORE_LINK" /></translation>
 <translation id="3807366285948165054">Зрух відарыса па восі X</translation>
 <translation id="3807709094043295184">Класічны рок і старыя хіты</translation>
@@ -3630,7 +3634,6 @@
 <translation id="7947813448670013867"><ph name="SEE_CHROME_TIPS_FOCUSED_FRIENDLY_MATCH_TEXT" />. Каб даведацца пра функцыі браўзера Chrome, націсніце Tab, затым Enter</translation>
 <translation id="7949135979217012031">Антывірусы і інструменты барацьбы са шкоднымі праграмамі</translation>
 <translation id="7950027195171824198">Кіруйце параметрамі файлаў cookie праз налады Chrome</translation>
-<translation id="7950440490184876634">Выкарыстоўваць мікрафоны (<ph name="MICS_COUNT" />)</translation>
 <translation id="7951415247503192394">(32-бітная версія)</translation>
 <translation id="7952192831285741665">European EDP</translation>
 <translation id="7952250633095257243">Укажыце хуткую каманду</translation>
@@ -4287,6 +4290,7 @@
 <translation id="920643408853370361">Турыстычнае страхаванне</translation>
 <translation id="9207861905230894330">Не ўдалося дадаць артыкул.</translation>
 <translation id="9210825002219699214">Авіяпералёты</translation>
+<translation id="9211461151375991073">Увядзіце @ для пошуку на <ph name="FEATURED_SEARCH_LIST" /></translation>
 <translation id="9213433120051936369">Наладжванне выгляду</translation>
 <translation id="9215416866750762878">Нейкая праграма не дае браўзеру Chrome устанавіць бяспечнае падключэнне да гэтага сайта</translation>
 <translation id="92178312226016010">Вы адсочваеце гэты прадукт.</translation>

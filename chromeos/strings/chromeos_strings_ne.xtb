@@ -13,6 +13,7 @@
 <translation id="1049663189809099096">प्यास्टेल पहेँलो</translation>
 <translation id="1056898198331236512">चेतावनी</translation>
 <translation id="1059913517121127803">स्क्यान गर्ने प्रक्रिया सुरु गर्न सकिएन</translation>
+<translation id="1061864016440983342">लोकेसन प्रयोग गर्ने अनुमति नदिइकन प्रयोग गर्नुहोस्</translation>
 <translation id="1062823486781306604"><ph name="COUNT" /> मध्ये <ph name="INDEX" />, <ph name="NAME" />।</translation>
 <translation id="1070066693520972135">WEP</translation>
 <translation id="1071587090247825784">फायरवाल पत्ता लाग्यो</translation>
@@ -217,6 +218,7 @@
 <translation id="2080070583977670716">थप सेटिङहरू</translation>
 <translation id="2082932131694554252">असाइन गरिएको किबोर्डको की</translation>
 <translation id="2085089206770112532">डिस्प्लेको चमक घटाउने की</translation>
+<translation id="2086091080968010660">समयका आधारमा गरिने परिवर्तनहरू सटीक नहुन सक्छन्। सेटिङमा गई सिस्टमको लोकेसन प्रयोग गर्ने अनुमति दिनुहोस्।</translation>
 <translation id="2102231663024125441">टेक्स्ट एडिटिङ</translation>
 <translation id="2105810540595158374">यो डिभाइस गेम कन्ट्रोलर हो।</translation>
 <translation id="2119172414412204879"><ph name="BOARD_NAME" />, संस्करण <ph name="MILESTONE_VERSION" /></translation>
@@ -258,6 +260,7 @@
 <translation id="2279051792571591988">डिफल्ट सेटिङ रिस्टोर गर्नुहोस्</translation>
 <translation id="2286454467119466181">सरल</translation>
 <translation id="2287186687001756809">कुनै पनि फोटो छैन। तपाईं फोटो हाल्न चाहनुहुन्छ भने <ph name="LINK" /> मा जानुहोस्</translation>
+<translation id="2294577623958216786">हालको समयतालिका <ph name="SUNRISE" /> देखि <ph name="SUNSET" /> सम्म तोकिएको छ। सूर्यास्त र सूर्योदयको समयतालिका स्वतः परिवर्तन गर्न सिस्टमको लोकेसन प्रयोग गर्ने अनुमति दिनुहोस्।</translation>
 <translation id="2305172810646967500">ब्ल्याक</translation>
 <translation id="2307344026739914387">हालको किपेयर प्रयोग गर्नुहोस्</translation>
 <translation id="2308243864813041101">अपडेट गर्ने प्रक्रिया जारी राख्न <ph name="DEVICE_NAME" /> को USB केबल निकाल्नुहोस्</translation>
@@ -961,6 +964,7 @@
 <translation id="6411934471898487866">किबोर्डको ब्याकलाइटको चमक</translation>
 <translation id="6412715219990689313">अन्तर्निर्मित किबोर्ड</translation>
 <translation id="6417265370957905582">Google सहायक</translation>
+<translation id="6419454453018688975">सिस्टमको लोकेसन प्रयोग गर्ने अनुमति दिनुहोस्</translation>
 <translation id="6423239382391657905">खुल्लाVPN</translation>
 <translation id="6439505561246192797">कमजोर (<ph name="SIGNAL_STRENGTH" />)</translation>
 <translation id="6447630859861661624">खाताका सेटिङमा जानुहोस्</translation>

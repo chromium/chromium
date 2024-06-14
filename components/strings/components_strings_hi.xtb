@@ -47,6 +47,7 @@
 <translation id="1082026381988252344">शेयर किए गए आपके टैब के कॉन्टेंट को स्क्रोल और ज़ूम करें</translation>
 <translation id="1089439967362294234">पासवर्ड बदलें</translation>
 <translation id="1090629319939036170">वीआर मेन्यू</translation>
+<translation id="1091779689406092804">स्क्रीनशॉट</translation>
 <translation id="1094777233105318927">आपके ब्राउज़र, ओएस, डिवाइस, इंस्टॉल किए गए सॉफ़्टवेयर, और फ़ाइलों की जानकारी</translation>
 <translation id="1096545575934602868">इस फ़ाइल में <ph name="MAX_ITEMS_LIMIT" /> से ज़्यादा एंट्री नहीं हो सकती. इसके बाद की सभी एंट्री खारिज हो जाएंगी.</translation>
 <translation id="1097803577928227769">क्षेत्रीय पार्क और बगीचे</translation>
@@ -473,6 +474,7 @@
 <translation id="1840009953725035797">होम थिएटर सिस्टम</translation>
 <translation id="1842969606798536927">पैसे चुकाएं</translation>
 <translation id="1846432862466000825">प्लास्टिक (आर्काइवल)</translation>
+<translation id="1848640291751752317">डाउनलोड की गई फ़ाइलें</translation>
 <translation id="1848982255014129637">फ़ोटो (हाई-ग्लॉस)</translation>
 <translation id="1853392626017747777">वर्चुअल कार्ड का रजिस्ट्रेशन बंद किया गया</translation>
 <translation id="1854180393107901205">कास्ट करना रोकें</translation>
@@ -546,6 +548,7 @@
 <translation id="2003709556000175978">अपना पासवर्ड अभी रीसेट करें</translation>
 <translation id="2003775180883135320">सबसे ऊपर क्वाड पंच</translation>
 <translation id="2004697686368036666">हो सकता है कि कुछ साइटों पर खास सुविधाएं काम न करें</translation>
+<translation id="2005042463110681802">आपको यह चेतावनी इसलिए दिख रही है, क्योंकि यह साइट एचटीटीपीएस पर काम नहीं करती है. साथ ही, आपकी डिवाइस पर गुप्त मोड चालू है. <ph name="BEGIN_LEARN_MORE_LINK" />ज़्यादा जानें<ph name="END_LEARN_MORE_LINK" /></translation>
 <translation id="2009942480257059311">'इवेंट बनाएं' बटन, Google Calendar में फटाफट कोई नया इवेंट बनाने के लिए इसे चालू करें</translation>
 <translation id="201174227998721785">Chrome की सेटिंग में अलग-अलग साइटों पर सेव डेटा और अनुमतियों को मैनेज करें</translation>
 <translation id="2012276282211112603">इस समय दिखाने के लिए कोई विषय नहीं है</translation>
@@ -572,7 +575,6 @@
 <translation id="2046951263634619614">किताबों के खुदरा दुकानदार</translation>
 <translation id="2048261947532620704">पेज का अनुवाद किया जा रहा है</translation>
 <translation id="2053111141626950936"><ph name="LANGUAGE" /> भाषा के पेजों का अनुवाद नहीं किया जाएगा.</translation>
-<translation id="2055461225779831292">कैमरे इस्तेमाल करना और उन्हें मूव करना (<ph name="CAMERAS_COUNT" />)</translation>
 <translation id="2056492565825767809">अपना माउस पॉइंटर लॉक करें</translation>
 <translation id="2056658168519009885">आपको दिखने वाले विज्ञापनों को आपके हिसाब से बनाने के लिए साइटें, Chrome से जानकारी मांग सकती हैं.</translation>
 <translation id="2059166748188874810">नगरपालिका</translation>
@@ -650,7 +652,6 @@
 <translation id="2170417331417184438">कार्ड की जानकारी सिर्फ़ डिवाइस में सेव है</translation>
 <translation id="2172089022819052306">वाहन की मरम्मत और रखरखाव</translation>
 <translation id="2175630235841878061">100 एमबी से बड़ी फ़ाइलें डाउनलोड नहीं की जा सकतीं</translation>
-<translation id="2176198174348007293">अपने (<ph name="CAMERAS_COUNT" />) कैमरों का ऐक्सेस दें</translation>
 <translation id="2176974405772725904">खाते में पता सेव करें</translation>
 <translation id="2178665390943006934">'Chrome अपडेट करें' बटन, Chrome की सेटिंग से Chrome को अपडेट करने के लिए इसे चालू करें</translation>
 <translation id="2181821976797666341">नीतियां</translation>
@@ -755,6 +756,7 @@
 <translation id="2366689192918515749">मांस और सी-फ़ूड</translation>
 <translation id="2367567093518048410">स्तर</translation>
 <translation id="23703388716193220">गॉल्फ़ इक्विपमेंट</translation>
+<translation id="2370368710215137370">अपलोड की जाने वाली फ़ाइल का टाइप</translation>
 <translation id="2374629208601905275">आपके देश/इलाके के कानून के मुताबिक, Chrome आपसे अपना डिफ़ॉल्ट सर्च इंजन चुनने के लिए कहता है. ये सर्च इंजन आपके देश/इलाके में लोकप्रिय हैं और बिना किसी खास क्रम में दिखाए जाते हैं.</translation>
 <translation id="2377241607395428273">ग्राफ़िक और ऐनिमेशन सॉफ़्टवेयर</translation>
 <translation id="2378084239755710604">कार्ड सेव करने की सुविधा बंद हो गई है.</translation>
@@ -1422,6 +1424,7 @@
 <translation id="3682094733650754138">पता भरने का विकल्प चुना गया</translation>
 <translation id="3687920599421452763">वैन और मिनीवैन</translation>
 <translation id="3693327506115126094">अपनी पहचान की पुष्टि करने का तरीका चुनें</translation>
+<translation id="3698353241727597930">आपके एडमिन ने, एंटरप्राइज़ से मैनेज किए जाने वाले आपके <ph name="CLOUD_STORAGE" /> स्टोरेज में <ph name="FILES" /> को सेव करने के लिए उन्हें कॉन्फ़िगर किया है. इन फ़ाइलों की निगरानी की जा सकती है, इन्हें ऑडिट किया जा सकता है, और मिटाए जाने के बाद भी इनकी कॉपी सेव रहेगी.</translation>
 <translation id="3698629142018988477">'साइट बनाएं' बटन, Google Sites में जल्दी से नई साइट बनाने के लिए इसे चालू करें</translation>
 <translation id="3701325639446035885">इवेंट के टिकट की बिक्री</translation>
 <translation id="3701427423622901115">रीसेट स्वीकार किया गया.</translation>
@@ -1480,6 +1483,7 @@
 <translation id="3799805948399000906">फ़ॉन्ट का अनुरोध किया गया</translation>
 <translation id="3801265110651850478">अपने ब्राउज़िंग ट्रैफ़िक के साथ “Do Not Track” अनुरोध भेजें</translation>
 <translation id="380329542618494757">नाम</translation>
+<translation id="3803801106042434208">ये सर्च इंजन आपके देश/इलाके में लोकप्रिय हैं</translation>
 <translation id="3806932344025766608">ऐसा हो सकता है कि जिस साइट पर विज़िट किया जा रहा हो वहां हमलावर आपसे धोखे से नुकसान पहुंचाने वाले सॉफ़्टवेयर इंस्टॉल करवा दें या आपसे पासवर्ड या फ़ोन या क्रेडिट कार्ड नंबर जैसी जानकारी ज़ाहिर करवा दें. Chrome आपको उस साइट को छोड़ने का सुझाव देता है. <ph name="BEGIN_LEARN_MORE_LINK" />ज़्यादा जानें<ph name="END_LEARN_MORE_LINK" /></translation>
 <translation id="3807366285948165054">इमेज X शिफ़्ट</translation>
 <translation id="3807709094043295184">क्लासिक रॉक और ओल्डीज़</translation>
@@ -1497,6 +1501,7 @@
 <translation id="3826050100957962900">तीसरे पक्ष की मदद से साइन-इन</translation>
 <translation id="3827112369919217609">पूरा</translation>
 <translation id="3828924085048779000">खाली 'पासफ़्रेज़' की अनुमति नहीं है.</translation>
+<translation id="3830139096297532361">इस PDF को ऐक्सेस नहीं किया जा सकता. टेक्स्ट एक्स्ट्रैक्ट करने के लिए उपलब्ध फ़ाइलें डाउनलोड नहीं की जा सकीं. कृपया बाद में कोशिश करें.</translation>
 <translation id="3830470485672984938">किसी दूसरी पासकी का इस्तेमाल करें</translation>
 <translation id="3831065134033923230">अपने सेव किए गए पासवर्ड की जांच करें</translation>
 <translation id="3831915413245941253"><ph name="ENROLLMENT_DOMAIN" /> ने और सुविधाओं के लिए एक्सटेंशन इंस्टॉल किया है. एक्सटेंशन आपका कुछ डेटा ऐक्सेस कर सकते हैं.</translation>
@@ -1671,6 +1676,7 @@
 <translation id="4202554117186904723">पांचवां रोल</translation>
 <translation id="4203769790323223880">कैमरा ऐक्सेस करने की अनुमति नहीं है</translation>
 <translation id="4203896806696719780"><ph name="BEGIN_LINK" />फ़ायरवॉल और एंटीवायरस कॉन्फ़िगरेशन की जाँच करें<ph name="END_LINK" /></translation>
+<translation id="4207195957038009075">Google Drive</translation>
 <translation id="4209092469652827314">बड़ा</translation>
 <translation id="4210602799576081649">पुष्टि करने वाले कोड की समयसीमा खत्म हो गई, नए कोड के लिए अनुरोध करें</translation>
 <translation id="421066178035138955">वर्चुअल रिएलिटी वाले डिवाइस और डेटा इस्तेमाल करें</translation>
@@ -2731,6 +2737,7 @@
 <translation id="6270066318535733958">बोटिंग</translation>
 <translation id="6272088941196661550">अपने 'Chrome इतिहास' में काम की गतिविधि देखने के लिए, फिर से शुरू करें</translation>
 <translation id="6272383483618007430">Google अपडेट</translation>
+<translation id="6278015583149890680">Google Drive और OneDrive</translation>
 <translation id="6280223929691119688">इस पते पर वितरित नहीं किया जा सकता. कोई दूसरा पता चुनें.</translation>
 <translation id="6284292079994426700">26 x 38 इंच</translation>
 <translation id="6284449872909111707">टेक्स्ट और फटाफट मैसेज सेवा</translation>
@@ -3169,6 +3176,7 @@
 <translation id="7119063404975271297">टीवी ड्रामा</translation>
 <translation id="7119371694555167493">कॉपी करने का समय खत्म हो गया</translation>
 <translation id="7119414471315195487">दूसरे टैब या प्रोग्राम बंद करें</translation>
+<translation id="7120588595737538743">डाउनलोड की गई फ़ाइलें और स्क्रीनशॉट</translation>
 <translation id="7124354851782353862">अपना सीवीसी डालें</translation>
 <translation id="7129409597930077180">इस पते पर शिप नहीं किया जा सकता. कोई दूसरा पता चुनें.</translation>
 <translation id="7129809579943936035"><ph name="VALUE_PROP" /> <ph name="DETAILS" /></translation>
@@ -3368,6 +3376,7 @@
 <translation id="7483863401933039889"><ph name="CHROME_TIP" />, Chrome से जुड़ी सलाह को खारिज करने के लिए, Tab और फिर Enter दबाएं.</translation>
 <translation id="7485085230273446323">कारोबार और औद्योगिक</translation>
 <translation id="7485870689360869515">कोई डेटा नहीं मिला</translation>
+<translation id="7486880426035242089">OneDrive</translation>
 <translation id="7489392576326061356">शैम्पू और कंडिशनर</translation>
 <translation id="7495528107193238112">इस कॉन्टेंट को ब्लॉक कर दिया गया है. समस्या को ठीक करने के लिए, साइट के मालिक से संपर्क करें.</translation>
 <translation id="749865518782565832">प्लंबिंग</translation>
@@ -3620,7 +3629,6 @@
 <translation id="7947813448670013867"><ph name="SEE_CHROME_TIPS_FOCUSED_FRIENDLY_MATCH_TEXT" />, Chrome की सुविधाओं के बारे में जानने के लिए, पहले Tab दबाएं और फिर Enter दबाएं</translation>
 <translation id="7949135979217012031">एंटीवायरस और मैलवेयर</translation>
 <translation id="7950027195171824198">Chrome की सेटिंग में कुकी की सेटिंग मैनेज करें</translation>
-<translation id="7950440490184876634">अपने (<ph name="MICS_COUNT" />) माइक्रोफ़ोन का ऐक्सेस दें</translation>
 <translation id="7951415247503192394">(32-बिट)</translation>
 <translation id="7952192831285741665">यूरोपियन ईडीपी</translation>
 <translation id="7952250633095257243">शॉर्टकट वाला फ़ील्ड खाली नहीं छोड़ा जा सकता</translation>

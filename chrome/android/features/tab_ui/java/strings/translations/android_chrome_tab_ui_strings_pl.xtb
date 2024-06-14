@@ -11,6 +11,7 @@
 <translation id="1273910660700874265">Opcje grupy kart <ph name="TITLE_OF_GROUP" /></translation>
 <translation id="1322824555808364080">Zaproś osoby</translation>
 <translation id="1419023007528516122">Spowoduje to trwałe usunięcie grupy z urządzenia</translation>
+<translation id="1486715732399361704">Tutaj znajdziesz wszystkie grupy kart</translation>
 <translation id="149054111719651807">{NUM_MINS,plural, =1{Utworzono <ph name="NUM_MINS_ONE" /> minutę temu}few{Utworzono <ph name="NUM_MINS_MANY" /> minuty temu}many{Utworzono <ph name="NUM_MINS_MANY" /> minut temu}other{Utworzono <ph name="NUM_MINS_MANY" /> minuty temu}}</translation>
 <translation id="1499635324672558517">Zamknąć wszystkie karty incognito?</translation>
 <translation id="1501480321619201731">Usuń grupę</translation>

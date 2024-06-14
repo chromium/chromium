@@ -180,6 +180,7 @@ Hier sind ein paar Dinge, die du tun kannst, um loszulegen.</translation>
 <translation id="1611993646327628135">An</translation>
 <translation id="1620510694547887537">Kamera</translation>
 <translation id="1623768535032616219">Google Classroom minimieren</translation>
+<translation id="163032029566320584"><ph name="UNAVAILABLE_DLC" /> ist nicht verfügbar.</translation>
 <translation id="1632985212731562677">Der Schalterzugriff kann unter "Einstellungen" &gt; "Bedienungshilfen" deaktiviert werden.</translation>
 <translation id="1637505162081889933"><ph name="NUM_DEVICES" /> Geräte</translation>
 <translation id="1639239467298939599">Wird geladen</translation>
@@ -251,6 +252,7 @@ Hier sind ein paar Dinge, die du tun kannst, um loszulegen.</translation>
 <translation id="1915307458270490472">Auflegen</translation>
 <translation id="1918022425394817322">Kamera ist an der oberen rechten Ecke angepinnt</translation>
 <translation id="1923539912171292317">Automatische Klicks</translation>
+<translation id="1925320505152357008">weniger als 1 Min.</translation>
 <translation id="1928739107511554905">Du kannst das Update vornehmen, indem du den Touchscreen verwendest, um dein Chromebook mit angeschlossener Tastatur neu zu starten.</translation>
 <translation id="1948405482892809935">Zum nächsten Nutzer wechseln</translation>
 <translation id="1951012854035635156">Assistant</translation>
@@ -309,6 +311,7 @@ Hier sind ein paar Dinge, die du tun kannst, um loszulegen.</translation>
 <translation id="2208323208084708176">Unified Desktop-Modus</translation>
 <translation id="2220572644011485463">PIN oder Passwort</translation>
 <translation id="2222841058024245321">Desktop 7</translation>
+<translation id="2223384056430485343">In einem Splitscreen</translation>
 <translation id="2224075387478458881">Die Bildschirmaufzeichnung ist blockiert, wenn geschützte Inhalte sichtbar sind</translation>
 <translation id="2227179592712503583">Vorschlag entfernen</translation>
 <translation id="2248634276911611268">Link auf neuem Tab öffnen und zu diesem wechseln</translation>
@@ -605,6 +608,7 @@ Hier sind ein paar Dinge, die du tun kannst, um loszulegen.</translation>
 <translation id="334927402682780278">Text von Cursor bis Zeilenende auswählen</translation>
 <translation id="3349345708646875009">Task-Manager öffnen</translation>
 <translation id="3364721542077212959">Eingabestift-Tools</translation>
+<translation id="3365281428003534650">Timer und Aufgabe festlegen</translation>
 <translation id="3365977133351922112">Dein Smartphone ist zu weit weg. Hole es näher heran.</translation>
 <translation id="3368922792935385530">Verbunden</translation>
 <translation id="3369111525500416043">Demnächst fällig</translation>
@@ -720,6 +724,7 @@ Schließe dein Gerät an eine Steckdose an.</translation>
 <translation id="3702846122927433391">Einwohnerzahl von Nigeria</translation>
 <translation id="3705722231355495246">-</translation>
 <translation id="3706423975342040244">Unterhaltung</translation>
+<translation id="3707093869106077605"><ph name="UNAVAILABLE_DLC_ONE" /> und <ph name="UNAVAILABLE_DLC_TWO" /> sind nicht verfügbar.</translation>
 <translation id="3708186454126126312">Zuletzt verbundene Geräte</translation>
 <translation id="3712143870407382523">Wähle ein Fenster für diese Seite</translation>
 <translation id="371370241367527062">Mikrofon auf der Vorderseite</translation>
@@ -907,6 +912,7 @@ Einige Funktionen sind eingeschränkt, um die Akkulaufzeit zu verlängern.</tran
 <translation id="4406883609789734330">Automatische Untertitel</translation>
 <translation id="4412698727486357573">Hilfe</translation>
 <translation id="4412944820643904175"><ph name="FEATURE_NAME" /> ist deaktiviert.</translation>
+<translation id="4417647906073317561">Einstellungen für den Konzentrationsmodus Stelle einen Timer, eine Aufgabe und Musik ein, um zu beginnen.</translation>
 <translation id="4424159417645388645">Desktop 5</translation>
 <translation id="4430019312045809116">Lautstärke</translation>
 <translation id="4441283832827406317">Apps wurden nach Name sortiert</translation>
@@ -991,6 +997,7 @@ Einige Funktionen sind eingeschränkt, um die Akkulaufzeit zu verlängern.</tran
 <translation id="4733161265940833579"><ph name="BATTERY_PERCENTAGE" /> % (links)</translation>
 <translation id="4734965478015604180">Horizontal</translation>
 <translation id="4735944890391795473">Desktop 12</translation>
+<translation id="4736732123074402682">Prüfe deine Verbindung und versuche es dann noch einmal.</translation>
 <translation id="473775607612524610">Aktualisieren</translation>
 <translation id="4740516757091333363">Gespeicherten Desktop löschen?</translation>
 <translation id="4746798685375253449">{0,plural, =1{Innerhalb von einem Tag Rollback des Geräts auf eine frühere Version durchführen}other{Innerhalb von # Tagen Rollback des Geräts auf eine frühere Version durchführen}}</translation>
@@ -1101,7 +1108,7 @@ Einige Funktionen sind eingeschränkt, um die Akkulaufzeit zu verlängern.</tran
 <translation id="5095136268899496849">In den Einstellungen kannst du dein <ph name="PRODUCT_NAME" /> anpassen und personalisieren. Ändere beispielsweise deinen Hintergrund oder lege einen Bildschirmschoner fest.</translation>
 <translation id="5096125376090473584">Wenn du dir Text vorlesen lassen möchtest, wähle unten auf dem Bildschirm das Symbol „Vorlesen“ aus und markiere dann den Text.
 
-Du kannst auch die entsprechende Tastenkombination verwenden. Markiere zuerst den Text und drücke dann <ph name="MODIFIER" /> + s.</translation>
+Du kannst auch die entsprechende Tastenkombination verwenden. Markiere dazu zuerst den Text und drücke dann <ph name="MODIFIER" /> + s.</translation>
 <translation id="509790653408515442">Wenn du Apps von deinem Smartphone streamst, werden sie hier angezeigt</translation>
 <translation id="5098537242461068432">Desktop und Fenster wieder geöffnet</translation>
 <translation id="5103975065730779239">Bis <ph name="END_TIME_EXPRESSION" /></translation>
@@ -1132,6 +1139,7 @@ Du kannst auch die entsprechende Tastenkombination verwenden. Markiere zuerst de
 <translation id="5208059991603368177">An</translation>
 <translation id="5216991270656129561">Deaktiviert bis <ph name="TIME" /></translation>
 <translation id="5222676887888702881">Abmelden</translation>
+<translation id="5228195526683428788">Bildschirmteiler</translation>
 <translation id="5229343007215035173">Privatsphärefunktion aktivieren/deaktivieren</translation>
 <translation id="5230516054153933099">Fenster</translation>
 <translation id="5234764350956374838">Schließen</translation>
@@ -1323,6 +1331,7 @@ Keine Geräte verbunden.</translation>
 <translation id="588258955323874662">Vollbild</translation>
 <translation id="5887954372087850114">Das Fenster „<ph name="WINDOW_TITLE" />“ wurde „<ph name="DESK_TITLE" />“ zugewiesen und von allen anderen Desktops entfernt</translation>
 <translation id="588817334757907802">Datei in Chrome öffnen</translation>
+<translation id="5892014525522223653">Du bist offline.</translation>
 <translation id="5895138241574237353">Neu starten</translation>
 <translation id="589817443623831496">Punktscannen</translation>
 <translation id="5901316534475909376">Umschalttaste + Esc</translation>
@@ -1382,6 +1391,7 @@ Keine Geräte verbunden.</translation>
 <translation id="6095425951508823973">Verbindung mit <ph name="PROVIDER" /> hinzufügen</translation>
 <translation id="6099678161144790572">Im letzten Monat bearbeitet</translation>
 <translation id="6103838137565245112">System</translation>
+<translation id="610395411842312282">Zwei nebeneinander liegende Fenster gruppieren</translation>
 <translation id="6108952804512516814">Mit KI erstellen</translation>
 <translation id="6114505516289286752">Sprachdateien auf <ph name="LANGUAGE" /> heruntergeladen</translation>
 <translation id="6119360623251949462"><ph name="CHARGING_STATE" />. <ph name="BATTERY_SAVER_STATE" />.</translation>
@@ -1389,6 +1399,7 @@ Keine Geräte verbunden.</translation>
 <translation id="6121838516699723042">Download bestätigen: <ph name="FILENAME" /></translation>
 <translation id="612734058257491180">In Gastsitzungen ist Google Assistant nicht verfügbar.</translation>
 <translation id="6127370444807669747">Für personalisierte Playlists und mehr Musik zum Konzentieren, probiere YouTube Music Premium aus</translation>
+<translation id="6127395413317891856">Du bist offline. Prüfe deine Verbindung und versuche es dann noch einmal.</translation>
 <translation id="6129953537138746214">Leertaste</translation>
 <translation id="6137566720514957455">Dialog „Entfernen“ für <ph name="USER_EMAIL_ADDRESS" /> öffnen</translation>
 <translation id="6141205840878048728">Worauf möchtest du dich konzentrieren?</translation>
@@ -1518,6 +1529,7 @@ Neuinstallation</translation>
 <translation id="6613765291890844037"><ph name="STORAGE_IN_USE_SIZE" /> Speicher verwendet | <ph name="STORAGE_TOTAL_SIZE" /> insgesamt</translation>
 <translation id="6614169507485700968">Der Datenschutzbildschirm ist momentan aktiviert</translation>
 <translation id="6622679827379792051">Anzeige der Apps auf deinem Smartphone einrichten</translation>
+<translation id="662279009180869175">Verwende die Links- und Rechtspfeile, um die Größe des geteilten Bildschirms anzupassen</translation>
 <translation id="6624493541160101248">Aktueller Desktop: <ph name="DESK_NAME" />. Desktop <ph name="DESK_INDEX" /> von <ph name="DESK_COUNT" />.</translation>
 <translation id="6625718907317144388">Benachrichtigungen von <ph name="APP_1_TITLE" />, <ph name="APP_2_TITLE" /> und weiteren Apps wurden ausgeblendet, da der Spionageschutz aktiviert ist</translation>
 <translation id="6627638273713273709">Suchtaste + Umschalttaste + K</translation>
@@ -1536,6 +1548,7 @@ Neuinstallation</translation>
 <translation id="6670153871843998651">Desktop 3</translation>
 <translation id="6671495933530132209">Bild kopieren</translation>
 <translation id="6671661918848783005">Chromebook kann nicht entsperrt werden</translation>
+<translation id="6676552993057022464">Verwende den Auf- und Abwärtspfeil, um die Größe des geteilten Bildschirms anzupassen</translation>
 <translation id="6682029141988159141">Inhalt aus Zwischenablage einfügen</translation>
 <translation id="6683022854667115063">Kopfhörer</translation>
 <translation id="6686023075541098243">Anzeige der Benachrichtigungen auf deinem Smartphone einrichten</translation>
@@ -1855,6 +1868,7 @@ Halte zum Herunterfahren des Geräts die Ein-/Aus-Taste noch einmal gedrückt.</
         <ph name="MANAGED" />
         <ph name="IME" />
         <ph name="LOCALE" /></translation>
+<translation id="7899977217122813285">Benachrichtigungen sind bis <ph name="TIME" /> stummgeschaltet, während du dich konzentrierst</translation>
 <translation id="7901190436359881020">Fenster tauschen</translation>
 <translation id="7901405293566323524">Phone Hub</translation>
 <translation id="7902625623987030061">Fingerabdrucksensor berühren</translation>
@@ -1959,6 +1973,7 @@ Halte zum Herunterfahren des Geräts die Ein-/Aus-Taste noch einmal gedrückt.</
 <translation id="8257510091797044096">Gerät einrichten</translation>
 <translation id="8261506727792406068">Löschen</translation>
 <translation id="8262312463845990408">Wiedergabe aktivieren/deaktivieren</translation>
+<translation id="8268302343625273732">Alle Aufgaben in Google Classroom ansehen</translation>
 <translation id="8277261673056602147">Text auf dem Bildschirm markieren</translation>
 <translation id="8287009018010202411">Produktivität</translation>
 <translation id="828708037801473432">Aus</translation>

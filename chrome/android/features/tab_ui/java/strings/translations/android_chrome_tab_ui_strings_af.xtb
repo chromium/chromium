@@ -11,6 +11,7 @@
 <translation id="1273910660700874265"><ph name="TITLE_OF_GROUP" />-oortjiegroepopsies</translation>
 <translation id="1322824555808364080">Nooi mense</translation>
 <translation id="1419023007528516122">Dit sal die groep permanent van jou toestel af uitvee</translation>
+<translation id="1486715732399361704">Jy kan al jou oortjiegroepe hier kry</translation>
 <translation id="149054111719651807">{NUM_MINS,plural, =1{<ph name="NUM_MINS_ONE" /> minuut gelede geskep}other{<ph name="NUM_MINS_MANY" /> minute gelede geskep}}</translation>
 <translation id="1499635324672558517">Maak alle Incognito-oortjies toe?</translation>
 <translation id="1501480321619201731">Vee groep uit</translation>
@@ -55,6 +56,7 @@
 <translation id="3882834874697329510">Skakel kennisgewings in Instellings aan om 'n kennisgewing te kry wanneer daar 'n laer prys in 'n oop oortjie is.</translation>
 <translation id="3940195383040445971">Spoor pryse na in oortjies</translation>
 <translation id="3954615705217314756">{TABS_COUNT,plural, =1{Groepeer oortjie}other{Groepeer oortjies}}</translation>
+<translation id="395587619114760247">{TABS_COUNT,plural, =1{<ph name="TABS_COUNT_ONE" /> onaktiewe oortjie}other{<ph name="TABS_COUNT_MANY" /> onaktiewe oortjies}}</translation>
 <translation id="3969565576924904454">Maak <ph name="TITLE_OF_GROUP" /> oop</translation>
 <translation id="3996880007329611795">Word in kennis gestel</translation>
 <translation id="4009732926939031387">{NUM_DAYS,plural, =1{<ph name="NUM_DAYS_ONE" /> dag gelede geskep}other{<ph name="NUM_DAYS_MANY" /> dae gelede geskep}}</translation>
@@ -98,6 +100,7 @@
 <translation id="6054741997831917303">Hierdie item se prys het onlangs van <ph name="PREVIOUS_PRICE" /> na <ph name="NEW_PRICE" /> gedaal</translation>
 <translation id="6193448654517602979">Kies oortjies</translation>
 <translation id="6228793724645064692">(winkelgradering)</translation>
+<translation id="6271513594716432922">Maak alle onaktiewe oortjies toe</translation>
 <translation id="6333260925957816943">Inligting oor hierdie winkel</translation>
 <translation id="6381032505162537930">Jy sal jou oortjiegroepe hier kry</translation>
 <translation id="639823877092900621">{TABS_COUNT,plural, =1{Ongroepeer <ph name="TABS_COUNT_ONE" /> geselekteerde oortjie}other{Ongroepeer <ph name="TABS_COUNT_MANY" /> geselekteerde oortjies}}</translation>

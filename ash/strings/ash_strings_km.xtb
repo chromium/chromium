@@ -121,6 +121,7 @@
 <translation id="1383876407941801731">ស្វែងរក</translation>
 <translation id="1391102559483454063">បើក</translation>
 <translation id="1394698770495054737">ព្រាល​ទាំងស្រុង</translation>
+<translation id="1395878931462960119">{DAYS,plural, =1{1 ថ្ងៃមុន}other{# ថ្ងៃមុន}}</translation>
 <translation id="1404963891829069586">សំឡេងមុខងារផ្ដោតអារម្មណ៍</translation>
 <translation id="1407069428457324124">​រចនាប័ទ្ម​ងងឹត</translation>
 <translation id="1410568680128842168"><ph name="DATE_CELL_TOOL_TIP" />។ ប្រើគ្រាប់ចុចព្រួញ ដើម្បី​រុករករវាង​កាលបរិច្ឆេទ។</translation>
@@ -180,6 +181,7 @@
 <translation id="1611993646327628135">បើក</translation>
 <translation id="1620510694547887537">កាមេរ៉ា</translation>
 <translation id="1623768535032616219">បង្រួម Google ថ្នាក់រៀន</translation>
+<translation id="163032029566320584">មិនអាច​ប្រើ <ph name="UNAVAILABLE_DLC" /> បានទេ។</translation>
 <translation id="1632985212731562677">អាចបិទ​ការប្រើប៊ូតុងចុច​នៅក្នុងការកំណត់ &gt; ភាពងាយស្រួល។</translation>
 <translation id="1637505162081889933">ឧបករណ៍ <ph name="NUM_DEVICES" /> គ្រឿង</translation>
 <translation id="1639239467298939599">កំពុងដំណើរការ</translation>
@@ -210,6 +212,7 @@
 <translation id="174102739345480129">ហ្វឺត​ត្រូវបានបិទ។</translation>
 <translation id="1743570585616704562">មិន​ស្គាល់ទេ</translation>
 <translation id="1743927604032653654">បង្រួម​ការជូនដំណឹង​អំពី <ph name="NOTIFICATION_TITLE" /></translation>
+<translation id="1744435831291625602">{HOURS,plural, =0{ក្នុង​រយៈពេល 1 ម៉ោង}=1{1 ម៉ោង​មុន}other{# ម៉ោង​មុន}}</translation>
 <translation id="1746730358044914197">វិធីសាស្ត្រ​បញ្ចូលត្រូវ​បានកំណត់​រចនាសម្ព័ន្ធ​ដោយ​អ្នកគ្រប់គ្រង​របស់អ្នក។</translation>
 <translation id="1747336645387973286">ថ្ងៃ​ផុត​កំណត់ ថ្ងៃ<ph name="DUE_DATE" /></translation>
 <translation id="1747827819627189109">ក្តារចុចលើអេក្រង់បានបើកដំណើរការ</translation>
@@ -251,6 +254,7 @@
 <translation id="1915307458270490472">បញ្ចប់​ការ​សន្ទនា</translation>
 <translation id="1918022425394817322">បានតម្រៀប​កាមេរ៉ាទៅ​ជ្រុងខាងស្ដាំ​ផ្នែកខាងលើ</translation>
 <translation id="1923539912171292317">ចុចដោយស្វ័យប្រវត្តិ</translation>
+<translation id="1925320505152357008">តិចជាង 1 នាទី</translation>
 <translation id="1928739107511554905">ដើម្បី​ទទួល​បាន​កំណែថ្មី សូម​ប្រើ​អេក្រង់ចុច ដើម្បី​ចាប់ផ្តើម Chromebook របស់អ្នក​ឡើងវិញ​ដោយប្រើក្តារចុច​ដែល​ភ្ជាប់​មក​ជាមួយ។</translation>
 <translation id="1948405482892809935">ប្ដូរ​ទៅ​អ្នកប្រើប្រាស់​បន្ទាប់</translation>
 <translation id="1951012854035635156">ជំនួយ​ការ</translation>
@@ -346,6 +350,7 @@
 <translation id="2359808026110333948">បន្ត</translation>
 <translation id="2360398059912971776">ថ្ម</translation>
 <translation id="2361210043495191221">បិទ/បើក Wi-Fi។ <ph name="STATE" />។</translation>
+<translation id="236574664504281623">បានផ្ញើ​ពី <ph name="SESSION_NAME" /></translation>
 <translation id="2367186422933365202">មិនអាច​ចូល Chromebook របស់អ្នក​បានទេ</translation>
 <translation id="2367972762794486313">បង្ហាញកម្មវិធី</translation>
 <translation id="2368828502825385061">កំណត់ទីតាំង</translation>
@@ -508,6 +513,7 @@
 <translation id="2963773877003373896">mod3</translation>
 <translation id="2965227184985674128">បើក​សិទ្ធិចូលប្រើប្រាស់​មីក្រូហ្វូនឬ?</translation>
 <translation id="296762781903199866">មិនអាច​ទាញយក​ឯកសារនៃ​ការនិយាយ​ជាភាសា<ph name="LANGUAGE" />បានទេ</translation>
+<translation id="2968761508099987738">មិនអាចប្រើ​មុខងារនេះ​នៅទីតាំង​បច្ចុប្បន្ន​របស់អ្នក​នៅពេលនេះ​បានទេ។</translation>
 <translation id="2970920913501714344">ដំឡើង​កម្មវិធី កម្មវិធីបន្ថែម និងរចនាប័ទ្ម</translation>
 <translation id="2977598380246111477">លេខបន្ទាប់</translation>
 <translation id="2985148236010982088">មើលកម្មវិធីទាំងអស់</translation>
@@ -606,6 +612,7 @@
 <translation id="334927402682780278">ជ្រើសរើស​អក្សរ​ពី​ទស្សន៍ទ្រនិច​​ដល់​ចុង​បន្ទាត់</translation>
 <translation id="3349345708646875009">បើក​កម្មវិធីគ្រប់គ្រងកិច្ចការ</translation>
 <translation id="3364721542077212959">ឧបករណ៍ប៊ិច</translation>
+<translation id="3365281428003534650">កំណត់ម៉ោង កិច្ចការ និងតន្ត្រី</translation>
 <translation id="3365977133351922112">ទូរសព្ទរបស់អ្នកនៅឆ្ងាយពេក។ សូមដាក់ទូរសព្ទរបស់អ្នកឱ្យជិតជាងនេះ។</translation>
 <translation id="3368922792935385530">បានភ្ជាប់</translation>
 <translation id="3369111525500416043">ដល់​ពេល​កំណត់​ឆាប់ៗ​នេះ</translation>
@@ -721,6 +728,7 @@
 <translation id="3702846122927433391">ចំនួនប្រជាជននៅប្រទេសនីហ្សេរីយ៉ា</translation>
 <translation id="3705722231355495246">-</translation>
 <translation id="3706423975342040244">កម្សាន្ត</translation>
+<translation id="3707093869106077605">មិនអាច​ប្រើ <ph name="UNAVAILABLE_DLC_ONE" /> និង <ph name="UNAVAILABLE_DLC_TWO" /> បានទេ។</translation>
 <translation id="3708186454126126312">បាន​ភ្ជាប់​ពីមុន​</translation>
 <translation id="3712143870407382523">ជ្រើសរើស​វិនដូ​សម្រាប់​ចំហៀងនេះ</translation>
 <translation id="371370241367527062">មីក្រូហ្វូន​ខាងមុខ</translation>
@@ -908,6 +916,7 @@
 <translation id="4406883609789734330">អក្សររត់​ក្នុងពេល​ជាក់ស្ដែង</translation>
 <translation id="4412698727486357573">មជ្ឈមណ្ឌល​ជំនួយ</translation>
 <translation id="4412944820643904175"><ph name="FEATURE_NAME" /> បានបិទ។</translation>
+<translation id="4417647906073317561">ការកំណត់​មុខងារ​ផ្ដោត​អារម្មណ៍។ កំណត់​មុខងារ​កំណត់ម៉ោង កិច្ចការ និង​តន្ត្រី ដើម្បី​ផ្ចង់អារម្មណ៍។</translation>
 <translation id="4424159417645388645">តុទី 5</translation>
 <translation id="4430019312045809116">សម្លេង</translation>
 <translation id="4441283832827406317">កម្មវិធីត្រូវបាន​តម្រៀបតាមឈ្មោះ</translation>
@@ -981,6 +990,7 @@
 <translation id="468293128311738995">កម្មវិធីពីទូរសព្ទរបស់​អ្នក</translation>
 <translation id="4690510401873698237">ធ្នើនៅ​ខាងក្រោម</translation>
 <translation id="4696813013609194136">ដោះ​សោ​ឧបករណ៍​ដោយ​ប្រើ​កូដ​សម្រាប់​មាតា​បិតា</translation>
+<translation id="4697357603686181098">មិនអាច​ជួយពាក់ព័ន្ធនឹង​សំណើនេះ​បានទេ។ សូម​សាកល្បងដាក់​សំណើ​ផ្សេង។</translation>
 <translation id="4702647871202761252">អេក្រង់​ឯកជនភាព​ត្រូវបានបិទ</translation>
 <translation id="4706121060329443414">នឹងព្យាយាម​ទាញយក​នៅពេលក្រោយ។ ការនិយាយ​នឹងត្រូវបានផ្ញើទៅ Google ដើម្បីដំណើរការ​សម្រាប់ពេលនេះ។</translation>
 <translation id="470644585772471629">ការបញ្ច្រាស​ពណ៌</translation>
@@ -992,6 +1002,7 @@
 <translation id="4733161265940833579"><ph name="BATTERY_PERCENTAGE" />% (ឆ្វេង)</translation>
 <translation id="4734965478015604180">ផ្ដេក​</translation>
 <translation id="4735944890391795473">តុទី 12</translation>
+<translation id="4736732123074402682">សូមពិនិត្យមើលការតភ្ជាប់របស់អ្នក រួចព្យាយាមម្ដងទៀត។</translation>
 <translation id="473775607612524610">ធ្វើបច្ចុប្បន្នភាព</translation>
 <translation id="4740516757091333363">លុប​តុដែលបាន​រក្សាទុក​ឬ?</translation>
 <translation id="4746798685375253449">{0,plural, =1{ប្ដូរកំណែ​ឧបករណ៍​ទៅកំណែមុន​ក្នុងរយៈពេល​មួយថ្ងៃ}other{ប្ដូរកំណែ​ឧបករណ៍​ទៅកំណែមុន​ក្នុងរយៈពេល # ថ្ងៃ}}</translation>
@@ -1325,6 +1336,7 @@
 <translation id="588258955323874662">ពេញអេក្រង់</translation>
 <translation id="5887954372087850114">បានកំណត់​វិនដូ <ph name="WINDOW_TITLE" /> សម្រាប់ <ph name="DESK_TITLE" /> និង​បានឈប់កំណត់​ពីតុទាំងអស់​ផ្សេងទៀត</translation>
 <translation id="588817334757907802">បើក​ឯកសារ​នៅក្នុង​កម្មវិធីរុករកតាម​អ៊ីនធឺណិត Chrome</translation>
+<translation id="5892014525522223653">អ្នកគ្មានអ៊ីនធឺណិតទេ។</translation>
 <translation id="5895138241574237353">ចាប់ផ្តើមឡើងវិញ</translation>
 <translation id="589817443623831496">ការស្កេនលក្ខណៈចំណុច</translation>
 <translation id="5901316534475909376">Shift+Esc</translation>
@@ -1384,6 +1396,7 @@
 <translation id="6095425951508823973">បញ្ចូលការតភ្ជាប់ជាមួយ <ph name="PROVIDER" /></translation>
 <translation id="6099678161144790572">បានកែ​កាលពីខែមុន</translation>
 <translation id="6103838137565245112">ប្រព័ន្ធ</translation>
+<translation id="610395411842312282">ដាក់​វិនដូ​ទន្ទឹម​គ្នាពីរ​ជាក្រុម</translation>
 <translation id="6108952804512516814">បង្កើតដោយប្រើ AI</translation>
 <translation id="6114505516289286752">បានទាញយក​ឯកសារនៃការនិយាយ​ជាភាសា<ph name="LANGUAGE" /></translation>
 <translation id="6119360623251949462"><ph name="CHARGING_STATE" />។ <ph name="BATTERY_SAVER_STATE" /></translation>
@@ -1391,6 +1404,7 @@
 <translation id="6121838516699723042">បញ្ជាក់​ការទាញយក <ph name="FILENAME" /></translation>
 <translation id="612734058257491180">​មិន​អាចប្រើ​ Google ជំនួយការនៅក្នុង​វេនភ្ញៀវ​បានទេ។</translation>
 <translation id="6127370444807669747">ដើម្បីទទួលបានកម្រងវីដេអូដែលមានលក្ខណៈផ្ទាល់ខ្លួន និងតន្ត្រីផ្ដោតអារម្មណ៍ច្រើនទៀត សូមសាកល្បងប្រើ YouTube Music Premium</translation>
+<translation id="6127395413317891856">អ្នកគ្មានអ៊ីនធឺណិតទេ។ សូមពិនិត្យមើលការតភ្ជាប់របស់អ្នក រួចព្យាយាមម្ដងទៀត។</translation>
 <translation id="6129953537138746214">ដកឃ្លា</translation>
 <translation id="6137566720514957455">បើក "ប្រអប់លុប​គណនី" សម្រាប់ <ph name="USER_EMAIL_ADDRESS" /></translation>
 <translation id="6141205840878048728">តើអ្នកចង់ផ្ដោតអារម្មណ៍លើអ្វី?</translation>
@@ -1858,6 +1872,7 @@
         <ph name="MANAGED" />
         <ph name="IME" />
         <ph name="LOCALE" /></translation>
+<translation id="7899977217122813285">ការជូនដំណឹង​ត្រូវបាន​បិទ​រហូតដល់​ម៉ោង <ph name="TIME" /> នៅពេល​ផ្ដោតអារម្មណ៍</translation>
 <translation id="7901190436359881020">ប្ដូរ​វិនដូ</translation>
 <translation id="7901405293566323524">Phone Hub</translation>
 <translation id="7902625623987030061">ប៉ះ​សេនស័រចាប់ស្នាមម្រាមដៃ</translation>
@@ -1891,6 +1906,7 @@
 <translation id="7982878511129296052">កំពុង​បិទ...</translation>
 <translation id="7984197416080286869">ព្យាយាមដោះសោ​តាមរយៈស្នាមម្រាមដៃច្រើនដងពេក</translation>
 <translation id="798779949890829624">ការកំណត់នេះ​ត្រូវបានគ្រប់គ្រង​ដោយអ្នកគ្រប់គ្រង​របស់អ្នក</translation>
+<translation id="7989206653429884947">បើក​ញឹកញាប់</translation>
 <translation id="799296642788192631">អ្នកអាចខ្ទាស់ឯកសារសំខាន់ៗបាន។ ដើម្បីខ្ទាស់ សូមដាក់ព្រួញនៅលើធាតុមួយ ឬបើក Files រួចចុចកណ្ដុរខាងស្ដាំលើធាតុមួយ។</translation>
 <translation id="7994370417837006925">ការចូលច្រើន</translation>
 <translation id="7995804128062002838">មិនអាច​ថតអេក្រង់បានទេ</translation>
@@ -1962,6 +1978,7 @@
 <translation id="8257510091797044096">រៀបចំឧបករណ៍របស់អ្នក</translation>
 <translation id="8261506727792406068">លុប</translation>
 <translation id="8262312463845990408">បិទ/បើកការចាក់</translation>
+<translation id="8268302343625273732">មើល​កិច្ចការ​ទាំងអស់​នៅក្នុង Google ថ្នាក់រៀន</translation>
 <translation id="8277261673056602147">រំលេចអក្សរនៅលើអេក្រង់របស់អ្នក</translation>
 <translation id="8287009018010202411">ផលិតភាព</translation>
 <translation id="828708037801473432">បិទ</translation>
@@ -2076,6 +2093,7 @@
 <translation id="8747464587821437069"><ph name="CAMERA_AND_MICROPHONE_ACCESS_STATUS" />,
 <ph name="SCREEN_SHARE_STATUS" /></translation>
 <translation id="8749787185286745219">អស់ម៉ោង។ ធ្វើ​បាន​ល្អ​ណាស់! 🎉</translation>
+<translation id="8753368202781196133">មិនអាចប្រើ​ភាសានេះ​នៅពេលនេះ​បានទេ។</translation>
 <translation id="8755498163081687682">ផ្ទៀងផ្ទាត់អត្តសញ្ញាណ​របស់អ្នក៖ <ph name="ORIGIN_NAME" /> ចង់បញ្ជាក់​ថាជាអ្នក</translation>
 <translation id="875593634123171288">បង្ហាញ​ការកំណត់​ VPN</translation>
 <translation id="8756799553341497810">អ្នកអាចចាប់ផ្តើមប្ដូរប្លង់​កម្មវិធីរបស់អ្នកតាមបំណង នៅពេលអ្នកចាកចេញពីទិដ្ឋភាពនេះ។</translation>

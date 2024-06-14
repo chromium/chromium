@@ -1,9 +1,11 @@
 <?xml version="1.0" ?>
 <!DOCTYPE translationbundle>
 <translationbundle lang="ca">
+<translation id="2252052615723281030">Si tens la sessió iniciada a Chrome, aquesta opció de configuració t'ajudarà a mantenir l'adreça IP privada. En cas que Chrome sospiti que un lloc web podria estar fent un seguiment de la teva activitat, és possible que part del teu trànsit s'enviï a través de servidors de privadesa.</translation>
 <translation id="33479675708419823">Si tens la sessió iniciada a Chrome, aquesta opció de configuració t'ajudarà a mantenir l'adreça IP privada. En cas que Chrome sospiti que un lloc web podria estar fent un seguiment de la teva activitat, és possible que part del teu trànsit s'enviï a través de servidors de privadesa. Més informació sobre <ph name="LINK_BEGIN" />com funciona la protecció d'IP<ph name="LINK_END" /></translation>
 <translation id="3529311220178827364">Més informació sobre com pots amagar l'adreça IP</translation>
 <translation id="4301151630239508244">Els temes d'anunci només són un dels molts elements que un lloc web pot utilitzar per personalitzar anuncis. Encara que no hi hagi temes d'anunci, els llocs web podran continuar mostrant-te anuncis, però pot ser que estiguin menys personalitzats. Obtén més informació sobre com pots <ph name="BEGIN_LINK_1" />gestionar la privadesa d'anuncis<ph name="END_LINK_1" />.</translation>
 <translation id="4598427486995631491">Amaga l'adreça IP</translation>
 <translation id="6371812158043974664">Si tens la sessió iniciada a Chromium, aquesta opció de configuració t'ajudarà a mantenir l'adreça IP privada. En cas que Chromium sospiti que un lloc web podria estar fent un seguiment de la teva activitat, és possible que part del teu trànsit s'enviï a través de servidors de privadesa. Més informació sobre <ph name="LINK_BEGIN" />com funciona la protecció d'IP<ph name="LINK_END" /></translation>
+<translation id="7040031291654706261">Obtén informació sobre <ph name="BEGIN_LINK" />com funciona la protecció d'IP<ph name="END_LINK" /></translation>
 </translationbundle>

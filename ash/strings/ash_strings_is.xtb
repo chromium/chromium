@@ -180,6 +180,7 @@ Hér eru nokkrir hlutir sem þú getur prófað til að byrja með.</translation
 <translation id="1611993646327628135">Kveikt</translation>
 <translation id="1620510694547887537">Myndavél</translation>
 <translation id="1623768535032616219">Draga saman Google Classroom</translation>
+<translation id="163032029566320584"><ph name="UNAVAILABLE_DLC" /> er ekki tiltækt.</translation>
 <translation id="1632985212731562677">Hægt er að slökkva á rofaaðgangi í Stillingar &gt; Aðgengi.</translation>
 <translation id="1637505162081889933"><ph name="NUM_DEVICES" /> tæki</translation>
 <translation id="1639239467298939599">Hleður</translation>
@@ -251,6 +252,7 @@ Hér eru nokkrir hlutir sem þú getur prófað til að byrja með.</translation
 <translation id="1915307458270490472">Leggja á</translation>
 <translation id="1918022425394817322">Myndavél fest við efra horn hægra megin</translation>
 <translation id="1923539912171292317">Sjálfvirkir smellir</translation>
+<translation id="1925320505152357008">styttri en 1 mín.</translation>
 <translation id="1928739107511554905">Til að fá uppfærsluna skaltu nota snertiskjáinn til að endurræsa Chromebook með lyklaborðið tengt.</translation>
 <translation id="1948405482892809935">Skipta yfir í næsta notanda</translation>
 <translation id="1951012854035635156">Hjálpari</translation>
@@ -606,6 +608,7 @@ Hér eru nokkrir hlutir sem þú getur prófað til að byrja með.</translation
 <translation id="334927402682780278">Velja texta frá bendli að enda línu</translation>
 <translation id="3349345708646875009">Opna verkstjórn</translation>
 <translation id="3364721542077212959">Pennaverkfæri</translation>
+<translation id="3365281428003534650">Stilltu tíma og veldu verkefni og tónlist</translation>
 <translation id="3365977133351922112">Síminn þinn er of langt í burtu. Færðu símann nær.</translation>
 <translation id="3368922792935385530">Tengt</translation>
 <translation id="3369111525500416043">Skiladagur nálgast</translation>
@@ -721,6 +724,7 @@ Tengdu tækið við rafmagn.</translation>
 <translation id="3702846122927433391">Íbúafjöldi í Nígeríu</translation>
 <translation id="3705722231355495246">–</translation>
 <translation id="3706423975342040244">Afþreying</translation>
+<translation id="3707093869106077605"><ph name="UNAVAILABLE_DLC_ONE" /> og <ph name="UNAVAILABLE_DLC_TWO" /> eru ekki tiltæk.</translation>
 <translation id="3708186454126126312">Áður tengt</translation>
 <translation id="3712143870407382523">Veldu glugga fyrir þessa hlið</translation>
 <translation id="371370241367527062">Fremri hljóðnemi</translation>
@@ -908,6 +912,7 @@ Tilteknir eiginleikar verða takmarkaðir til að lengja rafhlöðuendingu.</tra
 <translation id="4406883609789734330">Skjátextar í rauntíma</translation>
 <translation id="4412698727486357573">Hjálparmiðstöð</translation>
 <translation id="4412944820643904175">Slökkt er á <ph name="FEATURE_NAME" />.</translation>
+<translation id="4417647906073317561">Einbeitingarstillingar. Stilltu tíma og veldu verkefni og tónlist til að komast í gírinn.</translation>
 <translation id="4424159417645388645">Skrifborð 5</translation>
 <translation id="4430019312045809116">Hljóðstyrkur</translation>
 <translation id="4441283832827406317">Forritum er raðað eftir heiti</translation>
@@ -992,6 +997,7 @@ Eitt tæki er tengt.</translation>
 <translation id="4733161265940833579"><ph name="BATTERY_PERCENTAGE" />% (vinstri)</translation>
 <translation id="4734965478015604180">Lárétt</translation>
 <translation id="4735944890391795473">Skrifborð 12</translation>
+<translation id="4736732123074402682">Athugaðu nettenginguna og reyndu aftur.</translation>
 <translation id="473775607612524610">Uppfæra</translation>
 <translation id="4740516757091333363">Viltu eyða vistuðu skrifborði?</translation>
 <translation id="4746798685375253449">{0,plural, =1{Uppfæra verður tækið í fyrri útgáfu innan eins dags}one{Uppfæra verður tækið í fyrri útgáfu innan # dags}other{Uppfæra verður tækið í fyrri útgáfu innan # daga}}</translation>
@@ -1133,6 +1139,7 @@ Eitt tæki er tengt.</translation>
 <translation id="5208059991603368177">Kveikt</translation>
 <translation id="5216991270656129561">Slökkt til kl. <ph name="TIME" /></translation>
 <translation id="5222676887888702881">Skrá út</translation>
+<translation id="5228195526683428788">Skilrúm skjáskiptingar</translation>
 <translation id="5229343007215035173">Kveikja/slökkva á persónuverndarskjá</translation>
 <translation id="5230516054153933099">Gluggi</translation>
 <translation id="5234764350956374838">Hunsa</translation>
@@ -1324,6 +1331,7 @@ Engin tæki eru tengd.</translation>
 <translation id="588258955323874662">Allur skjárinn</translation>
 <translation id="5887954372087850114">Glugganum <ph name="WINDOW_TITLE" /> er úthlutað á <ph name="DESK_TITLE" /> og er ekki úthlutað á önnur skrifborð</translation>
 <translation id="588817334757907802">Opna skrá í Chrome-vafra</translation>
+<translation id="5892014525522223653">Þú ert ekki á netinu.</translation>
 <translation id="5895138241574237353">Endurræsa</translation>
 <translation id="589817443623831496">Punktaskönnun</translation>
 <translation id="5901316534475909376">Shift+Esc</translation>
@@ -1383,6 +1391,7 @@ Engin tæki eru tengd.</translation>
 <translation id="6095425951508823973">Bæta við tengingu við <ph name="PROVIDER" /></translation>
 <translation id="6099678161144790572">Breytt í liðnum mánuði</translation>
 <translation id="6103838137565245112">kerfi</translation>
+<translation id="610395411842312282">Skipaðu saman tvo samhliða glugga</translation>
 <translation id="6108952804512516814">Búa til með gervigreind</translation>
 <translation id="6114505516289286752">Talskrár sóttar fyrir: <ph name="LANGUAGE" /></translation>
 <translation id="6119360623251949462"><ph name="CHARGING_STATE" />. <ph name="BATTERY_SAVER_STATE" /></translation>
@@ -1390,6 +1399,7 @@ Engin tæki eru tengd.</translation>
 <translation id="6121838516699723042">Staðfesta niðurhal <ph name="FILENAME" /></translation>
 <translation id="612734058257491180">Google hjálparinn er ekki í boði í gestalotu.</translation>
 <translation id="6127370444807669747">Prófaðu YouTube Music Premium til að fá sérsniðna spilunarlista og tónlist sem auðveldar þér að einbeita þér</translation>
+<translation id="6127395413317891856">Þú ert ekki á netinu. Athugaðu nettenginguna og reyndu aftur.</translation>
 <translation id="6129953537138746214">Bil</translation>
 <translation id="6137566720514957455">Opna fjarlægingarglugga fyrir <ph name="USER_EMAIL_ADDRESS" /></translation>
 <translation id="6141205840878048728">Hverju viltu einbeita þér að?</translation>
@@ -1519,6 +1529,7 @@ Ný uppsetning</translation>
 <translation id="6613765291890844037"><ph name="STORAGE_IN_USE_SIZE" /> af geymslurými í notkun | <ph name="STORAGE_TOTAL_SIZE" /> alls</translation>
 <translation id="6614169507485700968">Kveikt er á persónuverndarskjá</translation>
 <translation id="6622679827379792051">Setja upp skoðun forrita símans</translation>
+<translation id="662279009180869175">Notaðu vinstri og hægri örvatakkana til að breyta stærðinni á skiptum skjá.</translation>
 <translation id="6624493541160101248">Núverandi skrifborð: <ph name="DESK_NAME" />. Skrifborð <ph name="DESK_INDEX" /> af <ph name="DESK_COUNT" />.</translation>
 <translation id="6625718907317144388"><ph name="APP_1_TITLE" />, <ph name="APP_2_TITLE" /> og fleiri tilkynningar eru faldar vegna þess að kveikt er á gægjuvörn</translation>
 <translation id="6627638273713273709">Leit+shift+K</translation>
@@ -1537,6 +1548,7 @@ Ný uppsetning</translation>
 <translation id="6670153871843998651">Skrifborð 3</translation>
 <translation id="6671495933530132209">Afrita mynd</translation>
 <translation id="6671661918848783005">Ekki er hægt að taka Chromebook úr lás</translation>
+<translation id="6676552993057022464">Notaðu takkana fyrir ör upp og ör niður til að breyta stærðinni á skiptum skjá.</translation>
 <translation id="6682029141988159141">Líma efni af klippiborði</translation>
 <translation id="6683022854667115063">Heyrnartól</translation>
 <translation id="6686023075541098243">Setja upp að skoða tilkynningar símans</translation>
@@ -1856,6 +1868,7 @@ Til að slökkva á tækinu skaltu halda aflrofa tækisins inni aftur.</translat
         <ph name="MANAGED" />
         <ph name="IME" />
         <ph name="LOCALE" /></translation>
+<translation id="7899977217122813285">Tilkynningar eru þaggaðar til <ph name="TIME" /> á meðan einbeitingar er þörf</translation>
 <translation id="7901190436359881020">Víxla gluggum</translation>
 <translation id="7901405293566323524">Phone Hub</translation>
 <translation id="7902625623987030061">Snertu fingrafaralesarann</translation>
@@ -1960,6 +1973,7 @@ Til að slökkva á tækinu skaltu halda aflrofa tækisins inni aftur.</translat
 <translation id="8257510091797044096">Settu tækið upp</translation>
 <translation id="8261506727792406068">Eyða</translation>
 <translation id="8262312463845990408">Slökkva/kveikja á spilun</translation>
+<translation id="8268302343625273732">Sjá öll verkefni í Google Classroom</translation>
 <translation id="8277261673056602147">Yfirstrika texta á skjánum</translation>
 <translation id="8287009018010202411">Afköst</translation>
 <translation id="828708037801473432">Slökkt</translation>

@@ -361,6 +361,7 @@
 <translation id="3017079585324758401">Arrière-plan</translation>
 <translation id="3027578600144895987">Fermer la caméra</translation>
 <translation id="3031560714565892478">L'appareil est une caméra.</translation>
+<translation id="3051968340259309715">Cela permet aux services système d'utiliser la précision de la localisation pour déterminer votre position. La précision de la localisation utilise des informations concernant les signaux sans fil (points d'accès Wi-Fi, tours de réseau mobile et GPS, par exemple) ainsi que des données provenant des capteurs de l'appareil (accéléromètre et gyroscope, par exemple) pour estimer la position de l'appareil. Vous pouvez désactiver la localisation dans Paramètres &gt; Confidentialité et sécurité &gt; Paramètres de confidentialité &gt; Accès à la position. <ph name="LINK_BEGIN" />En savoir plus<ph name="LINK_END" /></translation>
 <translation id="3054177598518735801"><ph name="CURRENT_VALUE" /> mA</translation>
 <translation id="3056720590588772262">Point de terminaison</translation>
 <translation id="3060579846059757016">Grandes lignes</translation>

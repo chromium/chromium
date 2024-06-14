@@ -180,6 +180,7 @@
 <translation id="1611993646327628135">Күйүк</translation>
 <translation id="1620510694547887537">Камера</translation>
 <translation id="1623768535032616219">Google Классты жыйыштыруу</translation>
+<translation id="163032029566320584"><ph name="UNAVAILABLE_DLC" /> жеткиликтүү эмес.</translation>
 <translation id="1632985212731562677">Switch Access функциясын Параметрлер &gt; Атайын мүмкүнчүлүктөр бөлүмүнөн өчүрүүгө болот.</translation>
 <translation id="1637505162081889933"><ph name="NUM_DEVICES" /> түзмөк</translation>
 <translation id="1639239467298939599">Жүктөлүүдө</translation>
@@ -251,6 +252,7 @@
 <translation id="1915307458270490472">Жогоруда кадоо</translation>
 <translation id="1918022425394817322">Камера жогорку оң бурчка кадалды</translation>
 <translation id="1923539912171292317">Автоматтык чыкылдатуулар</translation>
+<translation id="1925320505152357008">1 мүнөткө жетпейт</translation>
 <translation id="1928739107511554905">Жаңыртуу үчүн, туташкан баскычтопту үзбөй туруп, сенсордук экрандын жардамы менен, Chromebook'ту өчүрүп-күйгүзүңүз.</translation>
 <translation id="1948405482892809935">Кийинки колдонуучуга которуу</translation>
 <translation id="1951012854035635156">Жардамчы</translation>
@@ -606,6 +608,7 @@
 <translation id="334927402682780278">Текстти курсордон баштап саптын аягына чейин тандоо</translation>
 <translation id="3349345708646875009">Маселелерди башкаргычты ачуу</translation>
 <translation id="3364721542077212959">Стилус куралдары</translation>
+<translation id="3365281428003534650">Таймер, иш жана музыканы коюу</translation>
 <translation id="3365977133351922112">Телефонуңуз өтө алыс жерде. Аны жакыныраак алып келиңиз.</translation>
 <translation id="3368922792935385530">Туташты</translation>
 <translation id="3369111525500416043">Тапшыруу мөөнөтү жакындап калды</translation>
@@ -721,6 +724,7 @@
 <translation id="3702846122927433391">Нигерия калкынын саны</translation>
 <translation id="3705722231355495246">-</translation>
 <translation id="3706423975342040244">Көңүл ачуу</translation>
+<translation id="3707093869106077605"><ph name="UNAVAILABLE_DLC_ONE" /> жана <ph name="UNAVAILABLE_DLC_TWO" /> жеткиликсиз.</translation>
 <translation id="3708186454126126312">Буга чейин туташкан түзмөктөр</translation>
 <translation id="3712143870407382523">Бул тарапка терезе тандаңыз</translation>
 <translation id="371370241367527062">Маңдайкы микрофон</translation>
@@ -908,6 +912,7 @@
 <translation id="4406883609789734330">Ыкчам коштомо жазуулар</translation>
 <translation id="4412698727486357573">Жардам борбору</translation>
 <translation id="4412944820643904175"><ph name="FEATURE_NAME" /> өчүк.</translation>
+<translation id="4417647906073317561">Ынтаа коюу режиминин параметрлери. Ишке киришүү үчүн таймерди, ишти жана музыканы коюңуз.</translation>
 <translation id="4424159417645388645">5-иш такта</translation>
 <translation id="4430019312045809116">Үндүн катуулугу</translation>
 <translation id="4441283832827406317">Колдонмолор аталышы боюнча иргелет</translation>
@@ -992,6 +997,7 @@
 <translation id="4733161265940833579"><ph name="BATTERY_PERCENTAGE" />% (cол)</translation>
 <translation id="4734965478015604180">Туурасынан</translation>
 <translation id="4735944890391795473">12-иш такта</translation>
+<translation id="4736732123074402682">Байланышты текшерип, кайталап көрүңүз.</translation>
 <translation id="473775607612524610">Жаңыртуу</translation>
 <translation id="4740516757091333363">Сакталган иш тактаны өчүрөсүзбү?</translation>
 <translation id="4746798685375253449">{0,plural, =1{Түзмөктү бир күндүн ичинде мурунку версияга кайтарыңыз}other{Түзмөктү # күндүн ичинде мурунку версияга кайтарыңыз}}</translation>
@@ -1325,6 +1331,7 @@
 <translation id="588258955323874662">Толук экран</translation>
 <translation id="5887954372087850114"><ph name="WINDOW_TITLE" /> терезеси <ph name="DESK_TITLE" /> иш тактасына дайындалып, башка иш такталардын баарына дайындоо жокко чыгарылды</translation>
 <translation id="588817334757907802">Файлды Chrome серепчисинде ачуу</translation>
+<translation id="5892014525522223653">Офлайн режиминдесиз.</translation>
 <translation id="5895138241574237353">Өчүрүп күйгүзүү</translation>
 <translation id="589817443623831496">Чекиттик скандоо</translation>
 <translation id="5901316534475909376">Shift + Esc</translation>
@@ -1384,6 +1391,7 @@
 <translation id="6095425951508823973"><ph name="PROVIDER" /> менен байланышты кошуу</translation>
 <translation id="6099678161144790572">Мурунку айда түзөтүлгөн</translation>
 <translation id="6103838137565245112">тутум</translation>
+<translation id="610395411842312282">Жанаша турган эки терезени топтоштуруу</translation>
 <translation id="6108952804512516814">ЖИ менен түзүү</translation>
 <translation id="6114505516289286752"><ph name="LANGUAGE" /> тилиндеги кеп файлдары жүктөлүп алынды</translation>
 <translation id="6119360623251949462"><ph name="CHARGING_STATE" />. <ph name="BATTERY_SAVER_STATE" /></translation>
@@ -1391,6 +1399,7 @@
 <translation id="6121838516699723042"><ph name="FILENAME" /> жүктөп алууну ырастаңыз</translation>
 <translation id="612734058257491180">Google Жардамчысы конок сеансында жеткиликсиз.</translation>
 <translation id="6127370444807669747">Жекелештирилген ойнотмо тизмелерин жана башка мүмкүнчүлүктөрдү алуу үчүн, YouTube Music Premium'ду колдонуп көрүңүз</translation>
+<translation id="6127395413317891856">Офлайн режиминдесиз. Байланышты текшерип, кайталап көрүңүз.</translation>
 <translation id="6129953537138746214">Боштук</translation>
 <translation id="6137566720514957455"><ph name="USER_EMAIL_ADDRESS" /> аккаунтун өчүрүү диалогун ачуу</translation>
 <translation id="6141205840878048728">Кайсы жасалчу иштин үстүнөн иштейсиз?</translation>
@@ -1859,6 +1868,7 @@
         <ph name="MANAGED" />
         <ph name="IME" />
         <ph name="LOCALE" /></translation>
+<translation id="7899977217122813285">Ынтаа коюу режиминде билдирмелер <ph name="TIME" /> чейин өчүрүлөт</translation>
 <translation id="7901190436359881020">Терезелерди алмаштыруу</translation>
 <translation id="7901405293566323524">Phone Hub</translation>
 <translation id="7902625623987030061">Манжа изинин сенсорун басыңыз</translation>
@@ -1963,6 +1973,7 @@
 <translation id="8257510091797044096">Түзмөгүңүздү тууралап алыңыз</translation>
 <translation id="8261506727792406068">Жок кылуу</translation>
 <translation id="8262312463845990408">Ойнотууну өчүрүү/күйгүзүү</translation>
+<translation id="8268302343625273732">Google Класстагы бардык тапшырмаларды көрүү</translation>
 <translation id="8277261673056602147">Экрандагы текстти бөлүп көрсөтүү</translation>
 <translation id="8287009018010202411">Майнаптуулук</translation>
 <translation id="828708037801473432">Өчүк</translation>

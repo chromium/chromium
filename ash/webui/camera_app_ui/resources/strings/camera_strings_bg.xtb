@@ -36,12 +36,15 @@
 <translation id="2320741269052147773">Панорамно придвижване наляво</translation>
 <translation id="2360840973209616515">Приложението за камера се управлява от администратора ви.
         За подробности се обърнете към него.</translation>
+<translation id="2442754296994859145">Копирайте, за да потвърдите съдържанието, или разгънете прозореца, за да спрете сканирането.</translation>
+<translation id="2486151619109781620">Свиване на диалоговия прозорец и стартиране на сканирането</translation>
 <translation id="2501278716633472235">Назад</translation>
 <translation id="2501853267655415902">Записването спря</translation>
 <translation id="2517472476991765520">Сканиране</translation>
 <translation id="2549985041256363841">Старт на записа</translation>
 <translation id="2577915835281444458">Записването скоро ще спре. Отворете хранилището на устройството, за да освободите място.</translation>
 <translation id="2599796128805996109">Задна камера</translation>
+<translation id="2654491636277477479">Копиране на открития текст</translation>
 <translation id="2759905922487820242"><ph name="CURRENT" />/<ph name="MAXIMAL" /> сек</translation>
 <translation id="2761536921376153655">Тип сканиране</translation>
 <translation id="28682968802727151">Визуализация на огледалното обръщане</translation>
@@ -49,6 +52,7 @@
 <translation id="3067436040345934772">Панорамно придвижване надясно</translation>
 <translation id="3081586908890909590">Превключване към режима за запис на видеоклипове</translation>
 <translation id="313467653172006084">30 кдр/сек</translation>
+<translation id="3157038259444425153">Вече можете да копирате текст директно от снимката</translation>
 <translation id="3158534262962737808">Присъединяване към <ph name="WIFINAME" /></translation>
 <translation id="3227137524299004712">Микрофон</translation>
 <translation id="3240426699337459095">Връзката е копирана</translation>
@@ -93,6 +97,7 @@
 <translation id="5317780077021120954">Запазване</translation>
 <translation id="5320594929574852403">Премества се наляво</translation>
 <translation id="5374917190292010970">4K (2160p)</translation>
+<translation id="5634947914995388399">Разгъване на диалоговия прозорец и спиране на сканирането</translation>
 <translation id="5662366948659129155">Сканира се страница <ph name="COUNT" /></translation>
 <translation id="5671277269877808209">Квадрат</translation>
 <translation id="574392208103952083">Среден</translation>
@@ -117,11 +122,13 @@
 <translation id="6519884562954018934">Присъединяване към <ph name="WIFINAME" /></translation>
 <translation id="6527303717912515753">Споделяне</translation>
 <translation id="6586509689874700895">Първо натиснете <ph name="BUTTON_NAME" /> за приближаване. След това направете снимката и ще видите подобрените детайли.</translation>
+<translation id="659539649712855529">Копирахте <ph name="CONTENT" /></translation>
 <translation id="6617916774429601017">Показване на всички разделителни способности</translation>
 <translation id="6631515515009660915">Изключване на огледалното обръщане</translation>
 <translation id="6652737148136672975">Позиционирайте ъгъла чрез клавишите със стрелки</translation>
 <translation id="667999046851023355">Документ</translation>
 <translation id="6681668084120808868">Снимане</translation>
+<translation id="6692092766759105707">Копирайте, за да потвърдите съдържанието.</translation>
 <translation id="6778482348691154169">Не може да се направи снимка</translation>
 <translation id="6888362557094394345">Премества се надолу</translation>
 <translation id="695140971690006676">Повторно задаване на всичко</translation>

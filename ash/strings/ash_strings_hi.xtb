@@ -180,6 +180,7 @@
 <translation id="1611993646327628135">चालू है</translation>
 <translation id="1620510694547887537">कैमरा</translation>
 <translation id="1623768535032616219">Google Classroom को छोटा करें</translation>
+<translation id="163032029566320584"><ph name="UNAVAILABLE_DLC" /> की सुविधा उपलब्ध नहीं है.</translation>
 <translation id="1632985212731562677">ऐक्सेस करने का तरीका बदलने की सुविधा को सेटिंग &gt; सुलभता में जाकर, बंद किया जा सकता है.</translation>
 <translation id="1637505162081889933"><ph name="NUM_DEVICES" /> डिवाइस</translation>
 <translation id="1639239467298939599">लोड हो रही है</translation>
@@ -251,6 +252,7 @@
 <translation id="1915307458270490472">कॉल खत्म करें</translation>
 <translation id="1918022425394817322">कैमरा इनपुट की झलक, अब ऊपर दाएं कोने में दिखेगी</translation>
 <translation id="1923539912171292317">अपने-आप क्‍लिक</translation>
+<translation id="1925320505152357008">एक मिनट से कम</translation>
 <translation id="1928739107511554905">अपडेट पाने के लिए, अटैच किए गए कीबोर्ड से अपने Chromebook को रीस्टार्ट करने के लिए टचस्क्रीन का इस्तेमाल करें.</translation>
 <translation id="1948405482892809935">अगले उपयोगकर्ता पर स्विच करने के लिए</translation>
 <translation id="1951012854035635156">Assistant</translation>
@@ -606,6 +608,7 @@
 <translation id="334927402682780278">कर्सर जहां मौजूद है, वहां से लेकर लाइन के आखिर तक का टेक्स्ट चुनें</translation>
 <translation id="3349345708646875009">टास्क मैनेजर खोलने के लिए</translation>
 <translation id="3364721542077212959">स्टाइलस टूल</translation>
+<translation id="3365281428003534650">टाइमर, टास्क, संगीत सेट करें</translation>
 <translation id="3365977133351922112">आपका फ़ोन बहुत दूर है. फ़ोन को नज़दीक लाएं.</translation>
 <translation id="3368922792935385530">कनेक्ट है</translation>
 <translation id="3369111525500416043">असाइनमेंट पूरा करने की तारीख आने वाली है</translation>
@@ -721,6 +724,7 @@
 <translation id="3702846122927433391">नाइजीरिया की जनसंख्या बताओ</translation>
 <translation id="3705722231355495246">-</translation>
 <translation id="3706423975342040244">मनोरंजन</translation>
+<translation id="3707093869106077605"><ph name="UNAVAILABLE_DLC_ONE" /> और <ph name="UNAVAILABLE_DLC_TWO" /> की सुविधा उपलब्ध नहीं है.</translation>
 <translation id="3708186454126126312">पहले कनेक्ट किए गए डिवाइस</translation>
 <translation id="3712143870407382523">चुनें कि इस तरफ़ कौनसी विंडो दिखेगी</translation>
 <translation id="371370241367527062">सामने वाला माइक्रोफ़ोन</translation>
@@ -909,6 +913,7 @@
 <translation id="4406883609789734330">लाइव कैप्शन</translation>
 <translation id="4412698727486357573">सहायता केंद्र</translation>
 <translation id="4412944820643904175"><ph name="FEATURE_NAME" /> बंद है.</translation>
+<translation id="4417647906073317561">फ़ोकस मोड की सेटिंग. इस सेटिंग को आज़माने के लिए, टाइमर, टास्क, और संगीत सेट करें.</translation>
 <translation id="4424159417645388645">डेस्क 5</translation>
 <translation id="4430019312045809116">आवाज़</translation>
 <translation id="4441283832827406317">ऐप्लिकेशन को नाम के हिसाब से क्रम में लगाया गया है</translation>
@@ -993,6 +998,7 @@
 <translation id="4733161265940833579">बाएं वायरलेस बड में <ph name="BATTERY_PERCENTAGE" />% बैटरी बची है</translation>
 <translation id="4734965478015604180">हॉरिजेंटल व्यू</translation>
 <translation id="4735944890391795473">डेस्क 12</translation>
+<translation id="4736732123074402682">अपने इंटरनेट कनेक्शन की जांच करें और दोबारा कोशिश करें.</translation>
 <translation id="473775607612524610">अपडेट करें</translation>
 <translation id="4740516757091333363">सेव किया गया डेस्क मिटाना है?</translation>
 <translation id="4746798685375253449">{0,plural, =1{डिवाइस को एक दिन के अंदर पिछले वर्शन पर अपडेट करें}one{डिवाइस को # दिन के अंदर पिछले वर्शन पर अपडेट करें}other{डिवाइस को # दिनों के अंदर पिछले वर्शन पर अपडेट करें}}</translation>
@@ -1134,6 +1140,7 @@
 <translation id="5208059991603368177">चालू करें</translation>
 <translation id="5216991270656129561">यह सुविधा <ph name="TIME" /> तक बंद रहेगी</translation>
 <translation id="5222676887888702881">साइन आउट करें</translation>
+<translation id="5228195526683428788">स्प्लिट स्क्रीन डिवाइडर</translation>
 <translation id="5229343007215035173">निजता स्क्रीन चालू/बंद करें</translation>
 <translation id="5230516054153933099">विंडो</translation>
 <translation id="5234764350956374838">खारिज करें</translation>
@@ -1325,6 +1332,7 @@
 <translation id="588258955323874662">पूर्णस्‍क्रीन</translation>
 <translation id="5887954372087850114"><ph name="WINDOW_TITLE" /> विंडो, <ph name="DESK_TITLE" /> को असाइन किया गया. साथ ही, इसे अन्य सभी डेस्क से हटाया गया</translation>
 <translation id="588817334757907802">फ़ाइल को Chrome ब्राउज़र में खोलें</translation>
+<translation id="5892014525522223653">आप ऑफ़लाइन हैं.</translation>
 <translation id="5895138241574237353">फिर से प्रारंभ करें</translation>
 <translation id="589817443623831496">पॉइंट स्कैनिंग</translation>
 <translation id="5901316534475909376">Shift+Esc</translation>
@@ -1384,6 +1392,7 @@
 <translation id="6095425951508823973"><ph name="PROVIDER" /> के साथ कनेक्ट करें</translation>
 <translation id="6099678161144790572">इसमें, पिछले महीने बदलाव किया गया था</translation>
 <translation id="6103838137565245112">सिस्टम</translation>
+<translation id="610395411842312282">अगल-बगल की दो विंडो का ग्रुप बनाएं</translation>
 <translation id="6108952804512516814">एआई की मदद से बनाएं</translation>
 <translation id="6114505516289286752"><ph name="LANGUAGE" /> स्पीच फ़ाइलें डाउनलोड हो गई हैं</translation>
 <translation id="6119360623251949462"><ph name="CHARGING_STATE" />. <ph name="BATTERY_SAVER_STATE" /></translation>
@@ -1391,6 +1400,7 @@
 <translation id="6121838516699723042"><ph name="FILENAME" /> डाउनलोड की पुष्टि करें</translation>
 <translation id="612734058257491180">Google Assistant की सुविधा मेहमान के तौर पर ब्राउज़ करने के सेशन में उपलब्ध नहीं है.</translation>
 <translation id="6127370444807669747">अपनी पसंद के हिसाब से प्लेलिस्ट बनाने और ज़्यादा फ़ोकस करने वाले संगीत सुनने के लिए, YouTube Music Premium का इस्तेमाल करें</translation>
+<translation id="6127395413317891856">आप ऑफ़लाइन हैं. अपने इंटरनेट कनेक्शन की जांच करें और दोबारा कोशिश करें.</translation>
 <translation id="6129953537138746214">Space</translation>
 <translation id="6137566720514957455"><ph name="USER_EMAIL_ADDRESS" /> के लिए, खाता हटाएं वाला डायलॉग खोलें</translation>
 <translation id="6141205840878048728">आपको किस काम पर फ़ोकस करना है?</translation>
@@ -1520,6 +1530,7 @@
 <translation id="6613765291890844037"><ph name="STORAGE_IN_USE_SIZE" /> स्टोरेज इस्तेमाल किया जा रहा है | कुल <ph name="STORAGE_TOTAL_SIZE" /></translation>
 <translation id="6614169507485700968">निजता स्क्रीन चालू है</translation>
 <translation id="6622679827379792051">अपने फ़ोन में मौजूद ऐप्लिकेशन को देखने की सुविधा सेट अप करें</translation>
+<translation id="662279009180869175">स्प्लिट स्क्रीन का साइज़ बदलने के लिए, लेफ़्ट और राइट ऐरो बटन का इस्तेमाल करें</translation>
 <translation id="6624493541160101248">मौजूदा डेस्क: <ph name="DESK_NAME" />. <ph name="DESK_COUNT" /> में से <ph name="DESK_INDEX" /> डेस्क.</translation>
 <translation id="6625718907317144388">व्यूइंग प्रोटेक्शन चालू होने की वजह से, <ph name="APP_1_TITLE" /> और <ph name="APP_2_TITLE" /> से मिलने वाली सूचनाओं के साथ-साथ अन्य सूचनाओं को छिपाया गया है</translation>
 <translation id="6627638273713273709">Search+Shift+K</translation>
@@ -1538,6 +1549,7 @@
 <translation id="6670153871843998651">डेस्क 3</translation>
 <translation id="6671495933530132209">इमेज की कॉपी बनाएं</translation>
 <translation id="6671661918848783005">आपका Chromebook अनलॉक नहीं किया जा सका</translation>
+<translation id="6676552993057022464">स्प्लिट स्क्रीन का साइज़ बदलने के लिए, अप और डाउन ऐरो बटन का इस्तेमाल करें</translation>
 <translation id="6682029141988159141">क्लिपबोर्ड से कॉन्टेंट चिपकाएं</translation>
 <translation id="6683022854667115063">हेडफ़ोन</translation>
 <translation id="6686023075541098243">अपने फ़ोन की सूचनाओं को देखने की सुविधा सेट अप करें</translation>
@@ -1857,6 +1869,7 @@
         <ph name="MANAGED" />
         <ph name="IME" />
         <ph name="LOCALE" /></translation>
+<translation id="7899977217122813285">फ़ोकस मोड चालू होने की वजह से, सूचनाएं <ph name="TIME" /> तक म्यूट हैं</translation>
 <translation id="7901190436359881020">विंडो स्वैप करें</translation>
 <translation id="7901405293566323524">फ़ोन हब</translation>
 <translation id="7902625623987030061">फ़िंगरप्रिंट सेंसर को छुएं</translation>
@@ -1961,6 +1974,7 @@
 <translation id="8257510091797044096">अपना डिवाइस सेट अप करें</translation>
 <translation id="8261506727792406068">मिटाएं</translation>
 <translation id="8262312463845990408">'चुनें और सुनें' सुविधा को रोकें या चालू करें</translation>
+<translation id="8268302343625273732">सभी असाइनमेंट Google Classroom में देखें</translation>
 <translation id="8277261673056602147">अपनी स्क्रीन पर मौजूद टेक्स्ट को हाइलाइट करें</translation>
 <translation id="8287009018010202411">प्रोडक्टिविटी</translation>
 <translation id="828708037801473432">बंद है</translation>

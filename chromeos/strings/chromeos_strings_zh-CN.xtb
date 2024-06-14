@@ -361,6 +361,7 @@
 <translation id="3017079585324758401">背景</translation>
 <translation id="3027578600144895987">关闭摄像头</translation>
 <translation id="3031560714565892478">设备类型是摄像机。</translation>
+<translation id="3051968340259309715">这将允许系统服务使用“位置信息精确度”设置来确定您的位置。“位置信息精确度”设置会使用无线信号（例如 Wi-Fi 接入点、移动网络塔和 GPS）的相关信息以及设备传感器数据（例如加速度计和陀螺仪）来估算设备位置。您可依次前往“设置”&gt;“隐私和安全”&gt;“隐私控制”&gt;“位置信息使用权”，关闭位置信息服务。<ph name="LINK_BEGIN" />了解详情<ph name="LINK_END" /></translation>
 <translation id="3054177598518735801"><ph name="CURRENT_VALUE" />mA</translation>
 <translation id="3056720590588772262">端点</translation>
 <translation id="3060579846059757016">概要</translation>

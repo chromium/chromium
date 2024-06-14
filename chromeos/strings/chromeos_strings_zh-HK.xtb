@@ -361,7 +361,7 @@
 <translation id="3017079585324758401">背景</translation>
 <translation id="3027578600144895987">閂相機</translation>
 <translation id="3031560714565892478">裝置類型係攝影機。</translation>
-<translation id="3051968340259309715">系統服務將可使用「定位精確度」判斷你的位置。「定位精確度」會根據 Wi-Fi 存取點、行動網路基地台和 GPS 等無線訊號相關資訊，並搭配加速計和陀螺儀等裝置感應器資料估算出裝置位置。如要關閉定位功能，請依序前往「設定」&gt;「隱私權和安全性」&gt;「隱私權控制項」&gt;「位置資訊存取權」。<ph name="LINK_BEGIN" />瞭解詳情<ph name="LINK_END" /></translation>
+<translation id="3051968340259309715">此操作會允許系統服務使用「定位精確度」以判斷你的位置。「定位精確度」會使用 Wi-Fi 存取點、流動網絡發射塔和 GPS 等無線訊號相關資料，以及加速計和陀螺儀等裝置感應器資料。如要關閉位置，請前往 [設定] &gt; [私隱與安全] &gt; [私隱權設定] &gt; [位置資料存取權]。<ph name="LINK_BEGIN" />瞭解詳情<ph name="LINK_END" /></translation>
 <translation id="3054177598518735801"><ph name="CURRENT_VALUE" />mA</translation>
 <translation id="3056720590588772262">端點</translation>
 <translation id="3060579846059757016">概要</translation>

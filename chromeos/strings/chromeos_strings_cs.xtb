@@ -361,6 +361,7 @@
 <translation id="3017079585324758401">Pozadí</translation>
 <translation id="3027578600144895987">Zavřete fotoaparát</translation>
 <translation id="3031560714565892478">Zařízení je videokamera.</translation>
+<translation id="3051968340259309715">Systémové služby budou moct k určení vaší polohy používat funkci Přesnost určování polohy. Funkce Přesnost určování polohy využívá k odhadu polohy informace o bezdrátových signálech, jako jsou přístupové body Wi-Fi, vysílače mobilní sítě a GPS, spolu s údaji ze senzorů zařízení, jako je akcelerometr a gyroskop. Přístup k poloze můžete vypnout v Nastavení &gt; Ochrana soukromí a zabezpečení &gt; Nastavení ochrany soukromí &gt; Přístup k poloze. <ph name="LINK_BEGIN" />Další informace<ph name="LINK_END" /></translation>
 <translation id="3054177598518735801"><ph name="CURRENT_VALUE" /> mA</translation>
 <translation id="3056720590588772262">Koncový bod</translation>
 <translation id="3060579846059757016">Osnova</translation>

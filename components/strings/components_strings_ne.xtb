@@ -547,6 +547,7 @@
 <translation id="2003709556000175978">अहिले आफ्नो पासवर्ड रिसेट गर्नुहोस्</translation>
 <translation id="2003775180883135320">सिरानमा चार प्वाल</translation>
 <translation id="2004697686368036666">केही साइटका सुविधाहरूले काम नगर्न सक्छन्</translation>
+<translation id="2005042463110681802">यो साइटमा HTTPS नचल्ने भएकाले र तपाईंले इन्कोग्निटो मोड प्रयोग गर्नुभएकाले तपाईंलाई यो चेतावनी देखाइएको हो। <ph name="BEGIN_LEARN_MORE_LINK" />थप जान्नुहोस्<ph name="END_LEARN_MORE_LINK" /></translation>
 <translation id="2009942480257059311">कार्यक्रम बनाउने बटन, Google पात्रो प्रयोग गरी तुरुन्तै नयाँ कार्यक्रम बनाउन यो बटन थिच्नुहोस्</translation>
 <translation id="201174227998721785">Chrome का सेटिङमा गई अनुमति तथा विभिन्न साइटहरूमा भण्डारण गरिएका डेटा व्यवस्थापन गर्नुहोस्</translation>
 <translation id="2012276282211112603">यस बखत देखाउनका लागि कुनै पनि विषय छैन</translation>
@@ -567,13 +568,13 @@
 <translation id="2036983605131262583">वैकल्पिक रोल</translation>
 <translation id="2040463897538655645">हटाउन मिल्ने भण्डारण</translation>
 <translation id="2040894699575719559">लोकेसन हेर्न रोक लगाइएको छ</translation>
+<translation id="2041788246978549610">उपलब्ध माइक्रोफोन (<ph name="MICS_COUNT" /> वटा) प्रयोग गर्न</translation>
 <translation id="2042213636306070719">ट्रे ७</translation>
 <translation id="204357726431741734">आफ्नो Google खातामा सुरक्षित गरिएका पासवर्डहरू प्रयोग गर्न साइन इन गर्नुहोस्</translation>
 <translation id="2045871135676061132">Envelope Personal</translation>
 <translation id="2046951263634619614">पुस्तकका खुद्रा बिक्रेताहरू</translation>
 <translation id="2048261947532620704">पेज अनुवाद गरिँदै छ</translation>
 <translation id="2053111141626950936"><ph name="LANGUAGE" /> भाषाका पृष्ठहरू अनुवाद गरिने छैनन्।</translation>
-<translation id="2055461225779831292">तपाईंको डिभाइसका क्यामेराहरू (<ph name="CAMERAS_COUNT" />) प्रयोग गर्न र यताउता सार्न</translation>
 <translation id="2056492565825767809">तपाईंको माउस पोइन्टर लक गर्ने</translation>
 <translation id="2056658168519009885">साइटहरूले तपाईंलाई देखाइने विज्ञापनहरू पर्सनलाइज गर्न Chrome सँग जानकारी माग्न सक्छन्।</translation>
 <translation id="2059166748188874810">नगरपालिका</translation>
@@ -651,7 +652,6 @@
 <translation id="2170417331417184438">कार्ड डिभाइसमा मात्र सेभ गरियो</translation>
 <translation id="2172089022819052306">सवारी साधनको मर्मतसम्भार</translation>
 <translation id="2175630235841878061">१०० एम.बि. भन्दा ठुला फाइल डाउनलोड गर्न मिल्दैन</translation>
-<translation id="2176198174348007293">क्यामेरा (<ph name="CAMERAS_COUNT" />) प्रयोग गर्नुहोस्</translation>
 <translation id="2176974405772725904">यो ठेगाना खातामा सेभ गर्नुहोस्</translation>
 <translation id="2178665390943006934">Chrome अपडेट गर्ने बटन, Chrome का सेटिङमा गई Chrome अपडेट गर्न यो बटन थिच्नुहोस्</translation>
 <translation id="2181821976797666341">नीतिहरू</translation>
@@ -890,6 +890,7 @@
 <translation id="2655752832536625875">बाथरुम</translation>
 <translation id="2657637947725373811">{0,plural, =1{गोप्य फाइल ट्रान्स्फर गर्ने हो?}other{गोप्य फाइलहरू ट्रान्स्फर गर्ने हो?}}</translation>
 <translation id="2658843814961855121">श्रम र रोजगार कानुन</translation>
+<translation id="2658944305627908367">तपाईंले आफ्नो खातामा भएको रकमभन्दा बढी रकम भुक्तानी गर्नुभयो भने उक्त भुक्तानी प्रोसेस गरिने छैन</translation>
 <translation id="2660779039299703961">घटना</translation>
 <translation id="2664887757054927933">{COUNT,plural, =0{कुनै पनि होइन}=1{<ph name="DOMAIN_LIST" /> को १ पासवर्ड}=2{<ph name="DOMAIN_LIST" /> का २ पासवर्डहरू}other{<ph name="DOMAIN_LIST" /> का # पासवर्डहरू}}</translation>
 <translation id="2666092431469916601">शीर्ष</translation>
@@ -1087,6 +1088,7 @@
 <translation id="3090667236485488075">ग्लास</translation>
 <translation id="3095940652251934233">वक्तव्य</translation>
 <translation id="3098513225387949945">अफ गर्नु पर्ने कुराहरूको सूचीमा '*' को समतुल्य प्याटर्न समावेश छ। यो प्याटर्न समावेश गर्नु भनेको नीति अफ गरे बराबर भएको हुनाले यो नीति बेवास्ता गरिएको छ।</translation>
+<translation id="3099619114405539473">उपलब्ध क्यामेरा (<ph name="CAMERAS_COUNT" /> वटा) प्रयोग गर्न</translation>
 <translation id="3102312643185441063">बचत</translation>
 <translation id="3103188521861412364">सेयर तथा बचतपत्र</translation>
 <translation id="3105172416063519923">सम्पत्ति ID:</translation>
@@ -1360,6 +1362,7 @@
 <translation id="3583757800736429874">&amp;रिडु सार्ने</translation>
 <translation id="3584299510153766161">फेदमा दुई प्वाल</translation>
 <translation id="3584755835709800788">साइन्स फिक्सन तथा फ्यान्टसी चलचित्रहरू</translation>
+<translation id="3585455899094692781">उपलब्ध क्यामेरा (<ph name="CAMERAS_COUNT" /> वटा) प्रयोग गर्न र यताउता सार्न</translation>
 <translation id="3586833803451155175">वेट फिल्म</translation>
 <translation id="3586931643579894722">विवरणहरू लुकाउनुहोस्</translation>
 <translation id="3587738293690942763">मध्य भाग</translation>
@@ -1481,6 +1484,7 @@
 <translation id="3799805948399000906">मागिएको फन्ट</translation>
 <translation id="3801265110651850478">आफ्नो ब्राउजिङ ट्राफिक समावेश गरी “Do Not Track” अनुरोध पठाउनुहोस्</translation>
 <translation id="380329542618494757">नाम</translation>
+<translation id="3803801106042434208">तपाईंको क्षेत्रमा यी सर्च इन्जिनहरू लोकप्रिय छन्</translation>
 <translation id="3806932344025766608">तपाईंले खोल्न प्रयास गरिरहनुभएको वेबसाइटमा ह्याकरहरू तपाईंलाई झुक्याएर सफ्टवेयर इन्स्टल गर्ने वा तपाईंको पासवर्ड, फोन नम्बर वा क्रेडिट कार्डको नम्बर जस्ता कुराहरू खुलाउने प्रयास गर्न सक्छन्। सुरक्षाका लागि Chrome ले तपाईंलाई उक्त साइटबाट बाहिरिन जोडदार सिफारिस गर्छ। <ph name="BEGIN_LEARN_MORE_LINK" />थप जान्नुहोस्<ph name="END_LEARN_MORE_LINK" /></translation>
 <translation id="3807366285948165054">छविको X सिफ्ट</translation>
 <translation id="3807709094043295184">क्लासिक रक तथा ओल्डिज</translation>
@@ -3627,7 +3631,6 @@
 <translation id="7947813448670013867"><ph name="SEE_CHROME_TIPS_FOCUSED_FRIENDLY_MATCH_TEXT" />, Chrome का सुविधाहरूका बारेमा जान्न Tab थिच्नुहोस् अनि Enter थिच्नुहोस्</translation>
 <translation id="7949135979217012031">एन्टिभाइरस तथा वालवेयर</translation>
 <translation id="7950027195171824198">Chrome का सेटिङमा गई कुकीसम्बन्धी आफ्ना प्राथमिकताहरू व्यवस्थापन गर्नुहोस्</translation>
-<translation id="7950440490184876634">माइक्रोफोन (<ph name="MICS_COUNT" />) प्रयोग गर्नुहोस्</translation>
 <translation id="7951415247503192394">(32-बिट)</translation>
 <translation id="7952192831285741665">European EDP</translation>
 <translation id="7952250633095257243">सर्टकटको नाम खाली छाड्न मिल्दैन</translation>
@@ -4284,6 +4287,7 @@
 <translation id="920643408853370361">यात्रा बीमा</translation>
 <translation id="9207861905230894330">लेख थप्न असफल भयो।</translation>
 <translation id="9210825002219699214">हवाई यात्रा</translation>
+<translation id="9211461151375991073"><ph name="FEATURED_SEARCH_LIST" /> खोज्न @ टाइप गर्नुहोस्</translation>
 <translation id="9213433120051936369">आफूले चाहेअनुसारको रूप बनाउनुहोस्</translation>
 <translation id="9215416866750762878">कुनै एपले Chrome लाई सुरक्षित रूपमा यो साइटमा जडान हुनबाट रोकिरहेको छ</translation>
 <translation id="92178312226016010">तपाईं यो उत्पादन ट्र्याक गर्दै हुनुहुन्छ।</translation>

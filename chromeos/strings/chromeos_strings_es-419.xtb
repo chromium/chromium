@@ -361,6 +361,7 @@
 <translation id="3017079585324758401">Imagen de fondo</translation>
 <translation id="3027578600144895987">Cerrar la cámara</translation>
 <translation id="3031560714565892478">El dispositivo es una videocámara.</translation>
+<translation id="3051968340259309715">Esto permite que los servicios del sistema usen la Precisión de la ubicación para determinar dónde te encuentras. La Precisión de la ubicación usa la información sobre señales inalámbricas, como los puntos de acceso de Wi-Fi, las torres de redes móviles y el GPS, junto con los datos de sensores del dispositivo, como el acelerómetro y el giroscopio, para calcular la ubicación del dispositivo. Puedes desactivar la ubicación en Configuración &gt; Privacidad y seguridad &gt; Controles de privacidad &gt; Acceso a la ubicación. <ph name="LINK_BEGIN" />Más información<ph name="LINK_END" /></translation>
 <translation id="3054177598518735801"><ph name="CURRENT_VALUE" /> mA</translation>
 <translation id="3056720590588772262">Extremo</translation>
 <translation id="3060579846059757016">Puntos destacados</translation>

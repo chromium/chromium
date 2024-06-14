@@ -186,7 +186,6 @@
 <translation id="194449685234099560">You can find all your open tabs here.</translation>
 <translation id="1956138802718275401">Get to passwords from the home screen</translation>
 <translation id="1959441496380398824">Touch &amp; hold a date.</translation>
-<translation id="1959679933317802873">Waiting for content</translation>
 <translation id="1962348300797608157"><ph name="BEGIN_BOLD" /><ph name="FULL_NAME" /><ph name="END_BOLD" /> has shared a password with you for <ph name="WEBSITE" /></translation>
 <translation id="1967461193809857427">{count,plural, =1{Pick up the tab you left on Android?}other{Pick up the tabs you left on Android?}}</translation>
 <translation id="1972325230031091483">You’ll browse faster because content is proactively loaded based on your current web page visit</translation>
@@ -445,7 +444,6 @@ See your search engine’s instructions for deleting your search history, if app
 <translation id="3245429137663807393">If you also share Chrome usage reports, those reports include the URLs that you visit</translation>
 <translation id="3245744387817103524">Your change couldn't be saved.</translation>
 <translation id="3264775633254836593">Auto-fill passwords</translation>
-<translation id="3265534588625245297">Manage the sites that you follow</translation>
 <translation id="3268451620468152448">Open tabs</translation>
 <translation id="3272527697863656322">Cancel</translation>
 <translation id="3277021493514034324">Site address copied</translation>
@@ -560,7 +558,6 @@ See your search engine’s instructions for deleting your search history, if app
 <translation id="385051799172605136">Back</translation>
 <translation id="3851938967634752633">Passwords for <ph name="WEBSITE" />, <ph name="SECOND_WEBSITE" /> and <ph name="NUMBER_OF_ACCOUNTS" /> others will be deleted. Your accounts won't be deleted.</translation>
 <translation id="3858860766373142691">Name</translation>
-<translation id="3861486700625780712">Unfollow</translation>
 <translation id="3861908220442487587">This address is only saved on this device. To use it on your other devices, move it to your Google Account, <ph name="USER_EMAIL" /></translation>
 <translation id="3863769054730344136">Send to Your Devices</translation>
 <translation id="3888863481921783344">This will be used to show you possible invitees to your event.</translation>
@@ -619,7 +616,6 @@ See your search engine’s instructions for deleting your search history, if app
 <translation id="417442848889487144">Label created. Date pending</translation>
 <translation id="418156467088430727">View Offline Version in New Tab</translation>
 <translation id="4181841719683918333">Languages</translation>
-<translation id="4187450337729239226">Paste and search</translation>
 <translation id="4197456013861852807">{count,plural, =1{{count} item is saved only to this device. To use it on your other devices, save it in your Google Account, {email}.}other{{count} items are saved only to this device. To use them on your other devices, save them in your Google Account, {email}.}}</translation>
 <translation id="4216918546378735658">Cancel</translation>
 <translation id="422474357428465195">You have several password issues that could put your security at risk.</translation>
@@ -757,7 +753,6 @@ See your search engine’s instructions for deleting your search history, if app
 <translation id="4833786495304741580">Automatically sends usage statistics and crash reports to Google.</translation>
 <translation id="4840495572919996524">Your bookmarks, history, passwords and more will no longer be synced to your Google Account.</translation>
 <translation id="484280513275854557">You were signed out; browsing data was deleted</translation>
-<translation id="4844899002472726590">See and edit the topics that you're interested in</translation>
 <translation id="4848999860252535517">Delete password for <ph name="WEBSITE" />?</translation>
 <translation id="4850886885716139402">View</translation>
 <translation id="4854345657858711387">Set a passcode</translation>
@@ -822,7 +817,6 @@ See your search engine’s instructions for deleting your search history, if app
 <translation id="5177141896043341906">You have <ph name="NUMBER_OF_PASSWORDS" /> weak passwords that could put your security at risk.</translation>
 <translation id="5181140330217080051">Downloading</translation>
 <translation id="5186185447130319458">Private</translation>
-<translation id="5186634140793586141">Manage the topics and searches that you're interested in</translation>
 <translation id="5188482106078495165">Your cookies setting applies to all tabs. To apply a new setting to an open tab, reload the tab.</translation>
 <translation id="5190835502935405962">Bookmarks Bar</translation>
 <translation id="519530786644929958">Download failed and cannot be retried.</translation>
@@ -856,9 +850,8 @@ See your search engine’s instructions for deleting your search history, if app
 <translation id="5345660046352249607">{COUNT,plural, =1{Track this package?}other{Track {COUNT} packages?}}</translation>
 <translation id="5348775987281903912">You can share this page here from the share button.</translation>
 <translation id="536067926684072644">Show bookmarks</translation>
-<translation id="5360976571138293719">For more settings that relate to privacy, security and data collection, see <ph name="BEGIN_LINK" />Google Services<ph name="END_LINK" />.</translation>
+<translation id="537853552771686272">Manage the topics and sites that you're interested in</translation>
 <translation id="5379352933722332597">{count,plural, =1{Bookmark saved to ‘{title}’. It is saved only to this device.}other{{count} Bookmarks saved to ‘{title}’. They are saved only to this device.}}</translation>
-<translation id="5386314158584363703">You'll find your followed sites here</translation>
 <translation id="5388358297987318779">Open image</translation>
 <translation id="5395707839134961196">Hide search engine details</translation>
 <translation id="5396950905475481456">Invite family members</translation>
@@ -940,6 +933,7 @@ Handoff must also be enabled in the General section of Settings, and your device
 <translation id="5758631781033351321">You'll find your reading list here</translation>
 <translation id="5765456154762864099">Menu → Settings → Default browser</translation>
 <translation id="5777888488419460501">Save in account</translation>
+<translation id="5778292857689789362">Tab group, <ph name="GROUP_TITLE" />, <ph name="TABS_NUMBER" /> tabs.</translation>
 <translation id="5782227691023083829">Translating...</translation>
 <translation id="5791632441210678828">Sort button for Following feed.</translation>
 <translation id="5793373065989412701">Checking your family members…</translation>
@@ -1228,7 +1222,6 @@ While in Incognito, sites can't use cookies to see your browsing activity across
 <translation id="7101580180124131336">You'll now see content from and about <ph name="CHANNEL_NAME" /> in Following.</translation>
 <translation id="7102005569666697658">Downloading… <ph name="FILE_SIZE" /></translation>
 <translation id="7108338896283013870">Hide</translation>
-<translation id="7108762695052995889">Visit site</translation>
 <translation id="713215255510512027"><ph name="FILENAME" /> (<ph name="FILESIZE" />)</translation>
 <translation id="7133798577887235672">Full Name</translation>
 <translation id="7136892417564438900">Camera is unavailable</translation>
@@ -1294,7 +1287,6 @@ While in Incognito, sites can't use cookies to see your browsing activity across
 <translation id="7491131399623468277">Go to Settings…</translation>
 <translation id="749854780843431406">You can open a new tab from the <ph name="NEW_TAB_BUTTON_ACCESSIBILITY_LABEL" /> button.</translation>
 <translation id="750149195207506638">Bookmarks are hidden</translation>
-<translation id="750228856503700085">Updates unavailable</translation>
 <translation id="750493650310597496">0 selected</translation>
 <translation id="7506817096924591340"><ph name="FILENAME" /> (<ph name="FILESIZE" />).</translation>
 <translation id="7508728395076009983">To lock your incognito tabs, set up touch ID, face ID or a passcode.</translation>

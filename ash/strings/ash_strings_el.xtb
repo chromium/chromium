@@ -180,6 +180,7 @@
 <translation id="1611993646327628135">Ενεργό</translation>
 <translation id="1620510694547887537">Κάμερα</translation>
 <translation id="1623768535032616219">Σύμπτυξη του Google Classroom</translation>
+<translation id="163032029566320584">Η λειτουργία <ph name="UNAVAILABLE_DLC" /> δεν είναι διαθέσιμη.</translation>
 <translation id="1632985212731562677">Η πρόσβαση με διακόπτη μπορεί να απενεργοποιηθεί από τις Ρυθμίσεις &gt; Προσβασιμότητα.</translation>
 <translation id="1637505162081889933"><ph name="NUM_DEVICES" /> συσκευές</translation>
 <translation id="1639239467298939599">Φόρτωση</translation>
@@ -251,6 +252,7 @@
 <translation id="1915307458270490472">Τερματισμός κλήσης</translation>
 <translation id="1918022425394817322">Η προεπισκόπηση κάμερας τοποθετήθηκε στην επάνω δεξιά γωνία</translation>
 <translation id="1923539912171292317">Αυτόματα κλικ</translation>
+<translation id="1925320505152357008">λιγότερο από 1 λεπτό</translation>
 <translation id="1928739107511554905">Για να λάβετε την ενημέρωση, χρησιμοποιήστε την οθόνη αφής για να επανεκκινήσετε το Chromebook με το συνδεδεμένο πληκτρολόγιο.</translation>
 <translation id="1948405482892809935">Εναλλαγή στον επόμενο χρήστη</translation>
 <translation id="1951012854035635156">Βοηθός</translation>
@@ -606,6 +608,7 @@
 <translation id="334927402682780278">Επιλογή κειμένου από τον δείκτη έως στο τέλος της γραμμής</translation>
 <translation id="3349345708646875009">Άνοιγμα Διαχείρισης Εργασιών</translation>
 <translation id="3364721542077212959">Εργαλεία γραφίδας</translation>
+<translation id="3365281428003534650">Ρυθμίστε χρον., εργ. και μουσ.</translation>
 <translation id="3365977133351922112">Το τηλέφωνό σας είναι πάρα πολύ μακριά. Πλησιάστε περισσότερο το τηλέφωνό σας.</translation>
 <translation id="3368922792935385530">Σε σύνδεση</translation>
 <translation id="3369111525500416043">Λήγουν σύντομα</translation>
@@ -721,6 +724,7 @@
 <translation id="3702846122927433391">Πληθυσμός της Νιγηρίας</translation>
 <translation id="3705722231355495246">-</translation>
 <translation id="3706423975342040244">Ψυχαγωγία</translation>
+<translation id="3707093869106077605">Τα τμήματα περιεχομένου <ph name="UNAVAILABLE_DLC_ONE" /> και <ph name="UNAVAILABLE_DLC_TWO" /> δεν είναι διαθέσιμα.</translation>
 <translation id="3708186454126126312">Συνδέθηκαν στο παρελθόν</translation>
 <translation id="3712143870407382523">Επιλέξτε ένα παράθυρο για αυτή την πλευρά</translation>
 <translation id="371370241367527062">Μπροστινό μικρόφωνο</translation>
@@ -908,6 +912,7 @@
 <translation id="4406883609789734330">Ζωντανοί υπότιτλοι</translation>
 <translation id="4412698727486357573">Κέντρο βοήθειας</translation>
 <translation id="4412944820643904175">Η λειτουργία <ph name="FEATURE_NAME" /> είναι απενεργοποιημένη.</translation>
+<translation id="4417647906073317561">Ρυθμίσεις λειτουργίας συγκέντρωσης. Ορίστε το χρονόμετρο, την εργασία και τη μουσική που επιθυμείτε και μπείτε στη ροή.</translation>
 <translation id="4424159417645388645">Γραφείο 5</translation>
 <translation id="4430019312045809116">Ένταση</translation>
 <translation id="4441283832827406317">Οι εφαρμογές ταξινομούνται κατά όνομα</translation>
@@ -992,6 +997,7 @@
 <translation id="4733161265940833579"><ph name="BATTERY_PERCENTAGE" />% (Αριστερό)</translation>
 <translation id="4734965478015604180">Οριζόντια περιστροφή</translation>
 <translation id="4735944890391795473">Γραφείο 12</translation>
+<translation id="4736732123074402682">Ελέγξτε τη σύνδεσή σας και δοκιμάστε ξανά.</translation>
 <translation id="473775607612524610">Ενημέρωση</translation>
 <translation id="4740516757091333363">Διαγραφή αποθηκευμένου γραφείου;</translation>
 <translation id="4746798685375253449">{0,plural, =1{Επαναφορά της έκδοσης της συσκευής σε προηγούμενη εντός μίας ημέρας}other{Επαναφορά της έκδοσης της συσκευής σε προηγούμενη εντός # ημερών}}</translation>
@@ -1325,6 +1331,7 @@
 <translation id="588258955323874662">Πλήρης οθόνη</translation>
 <translation id="5887954372087850114">Το παράθυρο <ph name="WINDOW_TITLE" /> εκχωρήθηκε στο γραφείο <ph name="DESK_TITLE" /> και η εκχώρησή του καταργήθηκε από τα άλλα γραφεία</translation>
 <translation id="588817334757907802">Άνοιγμα αρχείου στο πρόγραμμα περιήγησης Chrome</translation>
+<translation id="5892014525522223653">Είστε εκτός σύνδεσης.</translation>
 <translation id="5895138241574237353">Επανεκκίνηση</translation>
 <translation id="589817443623831496">Σάρωση σημείων</translation>
 <translation id="5901316534475909376">Shift+Esc</translation>
@@ -1384,6 +1391,7 @@
 <translation id="6095425951508823973">Προσθήκη σύνδεσης με <ph name="PROVIDER" /></translation>
 <translation id="6099678161144790572">Έγινε επεξεργασία τον προηγούμενο μήνα</translation>
 <translation id="6103838137565245112">σύστημα</translation>
+<translation id="610395411842312282">Ομαδοποίηση δύο διπλανών παραθύρων</translation>
 <translation id="6108952804512516814">Δημιουργία με AI</translation>
 <translation id="6114505516289286752">Έγινε λήψη των αρχείων ομιλίας στα <ph name="LANGUAGE" /></translation>
 <translation id="6119360623251949462"><ph name="CHARGING_STATE" />. <ph name="BATTERY_SAVER_STATE" />.</translation>
@@ -1391,6 +1399,7 @@
 <translation id="6121838516699723042">Επιβεβαίωση λήψης <ph name="FILENAME" /></translation>
 <translation id="612734058257491180">Ο Βοηθός Google δεν είναι διαθέσιμος σε περιόδους σύνδεσης επισκέπτη.</translation>
 <translation id="6127370444807669747">Για εξατομικευμένα playlist και περισσότερη μουσική για συγκέντρωση, δοκιμάστε το YouTube Music Premium</translation>
+<translation id="6127395413317891856">Είστε εκτός σύνδεσης. Ελέγξτε τη σύνδεσή σας και δοκιμάστε ξανά.</translation>
 <translation id="6129953537138746214">Κενό</translation>
 <translation id="6137566720514957455">Άνοιγμα παραθύρου διαλόγου κατάργησης για το <ph name="USER_EMAIL_ADDRESS" /></translation>
 <translation id="6141205840878048728">Σε τι θέλετε να συγκεντρωθείτε;</translation>
@@ -1859,6 +1868,7 @@
         <ph name="MANAGED" />
         <ph name="IME" />
         <ph name="LOCALE" /></translation>
+<translation id="7899977217122813285">Οι ειδοποιήσεις τίθενται σε σίγαση έως τις <ph name="TIME" /> κατά τη συγκέντρωση</translation>
 <translation id="7901190436359881020">Εναλλαγή παραθύρων</translation>
 <translation id="7901405293566323524">Phone Hub</translation>
 <translation id="7902625623987030061">Αγγίξτε τον αισθητήρα δακτυλικών αποτυπωμάτων.</translation>
@@ -1963,6 +1973,7 @@
 <translation id="8257510091797044096">Ρύθμιση της συσκευής</translation>
 <translation id="8261506727792406068">Διαγραφή</translation>
 <translation id="8262312463845990408">Εναλλαγή αναπαραγωγής</translation>
+<translation id="8268302343625273732">Προβολή όλων των εργασιών στο Google Classroom</translation>
 <translation id="8277261673056602147">Επισήμανση κειμένου στην οθόνη</translation>
 <translation id="8287009018010202411">Παραγωγικότητα</translation>
 <translation id="828708037801473432">Ανενεργό</translation>

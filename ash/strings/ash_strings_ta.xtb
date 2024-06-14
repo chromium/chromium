@@ -72,6 +72,7 @@
 <translation id="1235458158152011030">தெரிந்த நெட்வொர்க்குகள்autof</translation>
 <translation id="1239161794459865856"><ph name="FEATURE_NAME" /> இணைக்கப்பட்டது.</translation>
 <translation id="1240638468526743569">ஆப்ஸ்</translation>
+<translation id="1242198791279543032">அறிவிப்புகள் முடக்கப்பட்டுள்ளன</translation>
 <translation id="1242883863226959074">சாதனத்தில்</translation>
 <translation id="1245644940275736236">Assistantடைத் திற</translation>
 <translation id="124678866338384709">தற்போதைய தாவலை மூடும்</translation>
@@ -179,6 +180,7 @@
 <translation id="1611993646327628135">இயக்கு</translation>
 <translation id="1620510694547887537">கேமரா</translation>
 <translation id="1623768535032616219">Google Classroomமைச் சுருக்கும்</translation>
+<translation id="163032029566320584"><ph name="UNAVAILABLE_DLC" /> கிடைக்கவில்லை.</translation>
 <translation id="1632985212731562677">அமைப்புகள் &gt; அணுகலம்சங்கள் என்பதற்குச் சென்று சுவிட்ச் அணுகலை முடக்கலாம்.</translation>
 <translation id="1637505162081889933"><ph name="NUM_DEVICES" /> சாதனங்கள்</translation>
 <translation id="1639239467298939599">ஏற்றுகிறது</translation>
@@ -250,6 +252,7 @@
 <translation id="1915307458270490472">மூடுக</translation>
 <translation id="1918022425394817322">கேமரா மாதிரிக்காட்சி மேல் வலது மூலையில் பொருத்தப்பட்டது</translation>
 <translation id="1923539912171292317">தன்னியக்க கிளிக்குகள்</translation>
+<translation id="1925320505152357008">1 நிமிடத்திற்கும் குறைவு</translation>
 <translation id="1928739107511554905">புதுப்பிப்பைப் பெற, டச்ஸ்கிரீனைப் பயன்படுத்தி, கீபோர்டு இணைக்கப்பட்ட உங்கள் Chromebookஐ மீண்டும் தொடங்கவும்.</translation>
 <translation id="1948405482892809935">அடுத்த பயனருக்கு மாற்று</translation>
 <translation id="1951012854035635156">Assistant</translation>
@@ -308,6 +311,7 @@
 <translation id="2208323208084708176">ஒன்றிணைந்த டெஸ்க்டாப் பயன்முறை</translation>
 <translation id="2220572644011485463">பின் அல்லது கடவுச்சொல்</translation>
 <translation id="2222841058024245321">டெஸ்க் 7</translation>
+<translation id="2223384056430485343">திரைப் பிரிப்பில்</translation>
 <translation id="2224075387478458881">பாதுகாக்கப்பட்ட உள்ளடக்கம் காட்டப்படும்போது ஸ்கிரீன் ரெக்கார்டிங் அனுமதிக்கப்படாது</translation>
 <translation id="2227179592712503583">பரிந்துரையை அகற்று</translation>
 <translation id="2248634276911611268">இணைப்பைப் புதிய பக்கத்தில் திறந்து அந்தப் புதிய பக்கத்திற்கு மாறும்</translation>
@@ -604,6 +608,7 @@
 <translation id="334927402682780278">கர்சரிலிருந்து வரியின் இறுதிவரை தேர்ந்தெடுக்கும்</translation>
 <translation id="3349345708646875009">செயல் நிர்வாகியைத் திற</translation>
 <translation id="3364721542077212959">ஸ்டைலஸ் கருவிகள்</translation>
+<translation id="3365281428003534650">டைமர், பணி, இசையை அமையுங்கள்</translation>
 <translation id="3365977133351922112">உங்கள் மொபைல் தூரமாக உள்ளது. அதை அருகில் கொண்டுவரவும்.</translation>
 <translation id="3368922792935385530">இணைக்கப்பட்டது</translation>
 <translation id="3369111525500416043">விரைவில் முடிக்க வேண்டியவை</translation>
@@ -719,6 +724,7 @@
 <translation id="3702846122927433391">நைஜீரியாவின் மக்கள் தொகை</translation>
 <translation id="3705722231355495246">-</translation>
 <translation id="3706423975342040244">பொழுதுபோக்கு</translation>
+<translation id="3707093869106077605"><ph name="UNAVAILABLE_DLC_ONE" /> மற்றும் <ph name="UNAVAILABLE_DLC_TWO" />ஐப் பதிவிறக்க முடியவில்லை.</translation>
 <translation id="3708186454126126312">ஏற்கெனவே இணைத்தவை</translation>
 <translation id="3712143870407382523">இந்தப் பக்கத்திற்கான சாளரத்தைத் தேர்வுசெய்யவும்</translation>
 <translation id="371370241367527062">முன்பக்க மைக்ரோஃபோன்</translation>
@@ -906,6 +912,7 @@
 <translation id="4406883609789734330">உடனடி வசனம்</translation>
 <translation id="4412698727486357573">உதவி மையம்</translation>
 <translation id="4412944820643904175"><ph name="FEATURE_NAME" /> முடக்கப்பட்டுள்ளது.</translation>
+<translation id="4417647906073317561">ஃபோகஸ் பயன்முறை அமைப்புகள். டைமர், பணி, இசை ஆகியவற்றை அமைத்து உங்கள் செயல்களைத் திறம்பட நிர்வகிக்கலாம்.</translation>
 <translation id="4424159417645388645">டெஸ்க் 5</translation>
 <translation id="4430019312045809116">அளவு</translation>
 <translation id="4441283832827406317">பெயரின்படி ஆப்ஸ் வரிசைப்படுத்தப்பட்டுள்ளன</translation>
@@ -990,6 +997,7 @@
 <translation id="4733161265940833579"><ph name="BATTERY_PERCENTAGE" />% (இடதுபக்கம்)</translation>
 <translation id="4734965478015604180">கிடைமட்டம்</translation>
 <translation id="4735944890391795473">டெஸ்க் 12</translation>
+<translation id="4736732123074402682">உங்கள் இணைப்பைச் சரிபார்த்துவிட்டு மீண்டும் முயலவும்.</translation>
 <translation id="473775607612524610">புதுப்பி</translation>
 <translation id="4740516757091333363">சேமிக்கப்பட்ட டெஸ்க்கை நீக்கவா?</translation>
 <translation id="4746798685375253449">{0,plural, =1{ஒரு நாளுக்குள் சாதனத்தை முந்தைய பதிப்பிற்கு மாற்றுங்கள்}other{# நாட்களுக்குள் சாதனத்தை முந்தைய பதிப்பிற்கு மாற்றுங்கள்}}</translation>
@@ -1098,9 +1106,9 @@
 <translation id="5092436659250499817">கீபோர்டு பேக்லைட்டை இயக்கு/முடக்கு</translation>
 <translation id="5094577350232361255">அறிமுகம்</translation>
 <translation id="5095136268899496849">அமைப்புகளுக்குச் சென்று உங்கள் <ph name="PRODUCT_NAME" /> சாதனத்தைப் பிரத்தியேகமாக்கலாம். வால்பேப்பரை மாற்றலாம் அல்லது ஸ்கிரீன் சேவரை அமைக்கலாம்.</translation>
-<translation id="5096125376090473584">வார்த்தை உரக்கப் படிக்கப்படுவதைக் கேட்க, திரையின் கீழ்ப்பகுதியில் உள்ள பேசும் திரை ஐகானைத் தேர்ந்தெடுத்தபின் வார்த்தையை ஹைலைட் செய்யவும்.
+<translation id="5096125376090473584">வார்த்தைகளை உரக்கப் படிக்க, திரையின் கீழ்ப்பகுதியில் உள்ள பேசும் திரை ஐகானைத் தேர்ந்தெடுத்தபின் வார்த்தைகளை ஹைலைட் செய்யவும்.
 
-கீபோர்டு ஷார்ட்கட்டையும் நீங்கள் பயன்படுத்தலாம். முதலில் வார்த்தையை ஹைலைட் செய்து, பின்பு <ph name="MODIFIER" /> + s பட்டனை அழுத்தவும்.</translation>
+கீபோர்டு ஷார்ட்கட்டையும் நீங்கள் பயன்படுத்தலாம். முதலில் வார்த்தைகளை ஹைலைட் செய்து, பின்பு <ph name="MODIFIER" /> + s பட்டனை அழுத்தவும்.</translation>
 <translation id="509790653408515442">நீங்கள் ஸ்ட்ரீம் செய்யும் மொபைல் ஆப்ஸ் இங்கே காட்டப்படும்</translation>
 <translation id="5098537242461068432">டெஸ்க் மற்றும் சாளரங்கள் மீண்டும் திறக்கப்பட்டன</translation>
 <translation id="5103975065730779239"><ph name="END_TIME_EXPRESSION" /> வரை</translation>
@@ -1131,6 +1139,7 @@
 <translation id="5208059991603368177">இயக்கு</translation>
 <translation id="5216991270656129561"><ph name="TIME" /> வரை இயங்காது</translation>
 <translation id="5222676887888702881">வெளியேறு</translation>
+<translation id="5228195526683428788">திரைப் பிரிப்பு டிவைடர்</translation>
 <translation id="5229343007215035173">தனிப்பட்ட திரையை இயக்கு/முடக்கு</translation>
 <translation id="5230516054153933099">விண்டோ</translation>
 <translation id="5234764350956374838">நிராகரி</translation>
@@ -1322,6 +1331,7 @@
 <translation id="588258955323874662">முழுத்திரை</translation>
 <translation id="5887954372087850114"><ph name="WINDOW_TITLE" /> சாளர ஒதுக்கீடு பிற டெஸ்க்குகளில் இருந்து அகற்றப்பட்டு <ph name="DESK_TITLE" />க்கு வழங்கப்பட்டுள்ளது</translation>
 <translation id="588817334757907802">ஃபைலை Chrome உலாவியில் திற</translation>
+<translation id="5892014525522223653">ஆஃப்லைனில் உள்ளீர்கள்.</translation>
 <translation id="5895138241574237353">மறுதொடக்கம்</translation>
 <translation id="589817443623831496">பாயிண்ட் ஸ்கேனிங்</translation>
 <translation id="5901316534475909376">Shift+Esc</translation>
@@ -1381,6 +1391,7 @@
 <translation id="6095425951508823973"><ph name="PROVIDER" /> மூலம் இணைப்பைச் சேர்க்கும்</translation>
 <translation id="6099678161144790572">கடந்த மாதம் திருத்தப்பட்டது</translation>
 <translation id="6103838137565245112">சிஸ்டம்</translation>
+<translation id="610395411842312282">அருகருகே உள்ள இரண்டு சாளரங்களைக் குழுவாக்கும்</translation>
 <translation id="6108952804512516814">AI மூலம் உருவாக்கு</translation>
 <translation id="6114505516289286752"><ph name="LANGUAGE" /> மொழிக்கான பேச்சு அறிதல் ஃபைல்கள் பதிவிறக்கப்பட்டன</translation>
 <translation id="6119360623251949462"><ph name="CHARGING_STATE" />. <ph name="BATTERY_SAVER_STATE" /></translation>
@@ -1388,6 +1399,7 @@
 <translation id="6121838516699723042"><ph name="FILENAME" /> ஃபைலைப் பதிவிறக்குவதை உறுதிப்படுத்து</translation>
 <translation id="612734058257491180">கெஸ்ட் அமர்வில் Google அசிஸ்டண்ட்டைப் பயன்படுத்த இயலாது.</translation>
 <translation id="6127370444807669747">பிரத்தியேகமான பிளேலிஸ்ட்டுகளைப் பெறவும் கவனம் செலுத்துவதற்கேற்ற இசையை அதிகம் கேட்கவும், YouTube Music Premium பயன்படுத்திப் பாருங்கள்</translation>
+<translation id="6127395413317891856">ஆஃப்லைனில் உள்ளீர்கள். உங்கள் இணைப்பைச் சரிபார்த்துவிட்டு மீண்டும் முயலவும்.</translation>
 <translation id="6129953537138746214">இடைவெளி</translation>
 <translation id="6137566720514957455"><ph name="USER_EMAIL_ADDRESS" /> என்ற கணக்கை அகற்றுவதற்கான உரையாடலைத் திறக்கும்</translation>
 <translation id="6141205840878048728">எந்தப் பணியில் கவனம் செலுத்த விரும்புகிறீர்கள்?</translation>
@@ -1517,6 +1529,7 @@
 <translation id="6613765291890844037"><ph name="STORAGE_TOTAL_SIZE" /> மொத்தச் சேமிப்பகத்தில் <ph name="STORAGE_IN_USE_SIZE" /> பயன்படுத்தப்பட்டுள்ளது</translation>
 <translation id="6614169507485700968">தனிப்பட்ட திரை இயக்கப்பட்டுள்ளது</translation>
 <translation id="6622679827379792051">மொபைலில் உள்ள ஆப்ஸைப் பார்க்கும்படி அமைக்கும்</translation>
+<translation id="662279009180869175">திரைப் பிரிப்பின் அளவை மாற்ற வலது மற்றும் இடது அம்புக்குறிகளைப் பயன்படுத்தவும்</translation>
 <translation id="6624493541160101248">தற்போதைய டெஸ்க்: <ph name="DESK_NAME" />. டெஸ்க் <ph name="DESK_INDEX" />/<ph name="DESK_COUNT" />.</translation>
 <translation id="6625718907317144388">பார்ப்பதற்கான கட்டுப்பாடு இயக்கத்தில் உள்ளதால் <ph name="APP_1_TITLE" />, <ph name="APP_2_TITLE" /> மற்றும் பிறவற்றின் அறிவிப்புகள் மறைக்கப்பட்டுள்ளன</translation>
 <translation id="6627638273713273709">தேடல்+Shift+K</translation>
@@ -1535,6 +1548,7 @@
 <translation id="6670153871843998651">மேசை 3</translation>
 <translation id="6671495933530132209">படத்தை நகலெடு</translation>
 <translation id="6671661918848783005">Chromebookகை அன்லாக் செய்ய முடியவில்லை</translation>
+<translation id="6676552993057022464">திரைப் பிரிப்பின் அளவை மாற்ற மேல் மற்றும் கீழ் அம்புக்குறிகளைப் பயன்படுத்தவும்</translation>
 <translation id="6682029141988159141">கிளிப்போர்டில் உள்ள உள்ளடக்கத்தை ஒட்டும்</translation>
 <translation id="6683022854667115063">ஹெட்ஃபோன்கள்</translation>
 <translation id="6686023075541098243">மொபைலில் உள்ள அறிவிப்புகளைப் பார்க்கும்படி அமைக்கும்</translation>
@@ -1854,6 +1868,7 @@
         <ph name="MANAGED" />
         <ph name="IME" />
         <ph name="LOCALE" /></translation>
+<translation id="7899977217122813285">ஃபோகஸ் பயன்முறையின்போது அறிவிப்புகள் <ph name="TIME" /> வரை ஒலியடக்கப்படும்</translation>
 <translation id="7901190436359881020">சாளரங்களை மாற்றும்</translation>
 <translation id="7901405293566323524">மொபைல் ஹப்</translation>
 <translation id="7902625623987030061">கைரேகை சென்சாரைத் தொடுக</translation>
@@ -1958,6 +1973,7 @@
 <translation id="8257510091797044096">சாதனத்தை அமைத்தல்</translation>
 <translation id="8261506727792406068">நீக்கு</translation>
 <translation id="8262312463845990408">பிளேபேக்கை இடைநிறுத்தும்/மீண்டும் தொடங்கும்</translation>
+<translation id="8268302343625273732">Google Classroomமில் உள்ள எல்லா வீட்டுப்பாடங்களையும் பாருங்கள்</translation>
 <translation id="8277261673056602147">திரையில் உள்ள வார்த்தைகளை ஹைலைட் செய்யும்</translation>
 <translation id="8287009018010202411">பணிச் செயல்திறன்</translation>
 <translation id="828708037801473432">முடக்கப்பட்டுள்ளது</translation>

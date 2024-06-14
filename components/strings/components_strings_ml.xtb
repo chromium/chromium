@@ -547,6 +547,7 @@
 <translation id="2003709556000175978">നിങ്ങളുടെ പാസ്‌വേഡ് ഇപ്പോൾ തന്നെ റീസെറ്റ് ചെയ്യുക</translation>
 <translation id="2003775180883135320">മുകളിൽ നാല് തവണ പഞ്ച് ചെയ്യുക</translation>
 <translation id="2004697686368036666">ചില സൈറ്റുകളിലെ ഫീച്ചറുകൾ പ്രവർത്തിച്ചേക്കില്ല</translation>
+<translation id="2005042463110681802">ഈ സൈറ്റ് HTTPS പിന്തുണയ്‌ക്കാത്തതിനാലാണ് നിങ്ങൾ ഈ മുന്നറിയിപ്പ് കാണുന്നത്, കൂടാതെ നിങ്ങൾ അദൃശ്യ മോഡിലാണ്. <ph name="BEGIN_LEARN_MORE_LINK" />കൂടുതലറിയുക<ph name="END_LEARN_MORE_LINK" /></translation>
 <translation id="2009942480257059311">'ഇവന്റ് സൃഷ്ടിക്കുക' ബട്ടൺ, Google Calendar-ൽ പുതിയൊരു ഇവന്റ് വേഗത്തിൽ സൃഷ്ടിക്കാൻ സജീവമാക്കുക</translation>
 <translation id="201174227998721785">Chrome ക്രമീകരണത്തിൽ സൈറ്റുകളിലുടനീളം സംഭരിച്ചിരിക്കുന്ന അനുമതികളും ഡാറ്റയും മാനേജ് ചെയ്യുക</translation>
 <translation id="2012276282211112603">ഇപ്പോൾ കാണിക്കാൻ വിഷയങ്ങളൊന്നുമില്ല</translation>
@@ -567,13 +568,13 @@
 <translation id="2036983605131262583">ഇതര റോൾ</translation>
 <translation id="2040463897538655645">നീക്കംചെയ്യാവുന്ന സ്റ്റോറേജ്</translation>
 <translation id="2040894699575719559">ലൊക്കേഷൻ ബ്ലോക്ക് ചെയ്‌തു</translation>
+<translation id="2041788246978549610">ലഭ്യമായ മൈക്രോഫോണുകൾ ഉപയോഗിക്കുക (<ph name="MICS_COUNT" />)</translation>
 <translation id="2042213636306070719">ട്രേ 7</translation>
 <translation id="204357726431741734">നിങ്ങളുടെ Google അക്കൗണ്ടിൽ സംരക്ഷിച്ചിട്ടുള്ള പാസ്‌വേഡുകൾ ഉപയോഗിക്കാൻ സൈൻ ഇൻ ചെയ്യുക</translation>
 <translation id="2045871135676061132">Envelope Personal</translation>
 <translation id="2046951263634619614">പുസ്തകങ്ങളുടെ ചില്ലറവ്യാപാരികൾ</translation>
 <translation id="2048261947532620704">പേജ് വിവർത്തനം ചെയ്യുന്നു</translation>
 <translation id="2053111141626950936"><ph name="LANGUAGE" /> ഭാഷയിലുള്ള പേജുകൾ വിവർത്തനം ചെയ്യില്ല.</translation>
-<translation id="2055461225779831292">നിങ്ങളുടെ ക്യാമറകൾ ഉപയോഗിക്കുകയും ചലിപ്പിക്കുകയും ചെയ്യുക (<ph name="CAMERAS_COUNT" />)</translation>
 <translation id="2056492565825767809">നിങ്ങളുടെ മൗസ് പോയിന്റർ ലോക്ക് ചെയ്യുക</translation>
 <translation id="2056658168519009885">നിങ്ങൾ കാണുന്ന പരസ്യങ്ങൾ വ്യക്തിപരമാക്കാൻ സഹായിക്കുന്നതിന്, സൈറ്റുകൾക്ക് Chrome-നോട് വിവരങ്ങൾ ആവശ്യപ്പെടാം.</translation>
 <translation id="2059166748188874810">മുൻസിപ്പാലിറ്റി</translation>
@@ -651,7 +652,6 @@
 <translation id="2170417331417184438">കാർഡ് ഉപകരണത്തിൽ മാത്രം സംരക്ഷിച്ചു</translation>
 <translation id="2172089022819052306">വാഹന റിപ്പയറും അറ്റകുറ്റപ്പണിയും</translation>
 <translation id="2175630235841878061">100MB-യിൽ കൂടുതൽ വലുപ്പമുള്ള ഫയലുകൾ ഡൗൺലോഡ് ചെയ്യാൻ ലഭ്യമല്ല</translation>
-<translation id="2176198174348007293">നിങ്ങളുടെ ക്യാമറകൾ ഉപയോഗിക്കുക (<ph name="CAMERAS_COUNT" />)</translation>
 <translation id="2176974405772725904">വിലാസം അക്കൗണ്ടിൽ സംരക്ഷിക്കുക</translation>
 <translation id="2178665390943006934">'Chrome അപ്ഡേറ്റ് ചെയ്യുക' ബട്ടൺ, നിങ്ങളുടെ Chrome ക്രമീകരണത്തിൽ Chrome അപ്ഡേറ്റ് ചെയ്യാൻ സജീവമാക്കുക</translation>
 <translation id="2181821976797666341">നയങ്ങൾ</translation>
@@ -890,6 +890,7 @@
 <translation id="2655752832536625875">ബാത്ത്റൂം</translation>
 <translation id="2657637947725373811">{0,plural, =1{രഹസ്യാത്മക ഫയൽ കൈമാറണോ?}other{രഹസ്യാത്മക ഫയലുകൾ കൈമാറണോ?}}</translation>
 <translation id="2658843814961855121">തൊഴിൽ, തൊഴിൽ നിയമം</translation>
+<translation id="2658944305627908367">നിങ്ങളുടെ ബാലൻസിനേക്കാൾ കൂടിയ തുകയ്ക്കുള്ള ഇടപാടുകൾ പ്രോസസ് ചെയ്യില്ല</translation>
 <translation id="2660779039299703961">ഇവന്റ്</translation>
 <translation id="2664887757054927933">{COUNT,plural, =0{ഒന്നുമില്ല}=1{<ph name="DOMAIN_LIST" /> എന്നതിനുള്ള ഒരു പാസ്‌വേഡ്}=2{<ph name="DOMAIN_LIST" /> എന്നതിനുള്ള 2 പാസ്‌വേഡുകൾ}other{<ph name="DOMAIN_LIST" /> എന്നതിനുള്ള # പാസ്‌വേഡുകൾ}}</translation>
 <translation id="2666092431469916601">മുകളിലേക്ക്</translation>
@@ -1087,6 +1088,7 @@
 <translation id="3090667236485488075">ഗ്ലാസ്</translation>
 <translation id="3095940652251934233">പ്രസ്‌താവന</translation>
 <translation id="3098513225387949945">പ്രവർത്തനരഹിതമാക്കൽ ലിസ്റ്റിൽ '*' എന്നതിന് സമമായ ഒരു പാറ്റേൺ ഉള്ളതിനാൽ അവഗണിച്ചു, ഇത് നയം പ്രവർത്തനരഹിതമാക്കുന്നതിന് തുല്യമാണ്.</translation>
+<translation id="3099619114405539473">ലഭ്യമായ ക്യാമറകൾ ഉപയോഗിക്കുക (<ph name="CAMERAS_COUNT" />)</translation>
 <translation id="3102312643185441063">സേവിംഗ്‌സ് അക്കൗണ്ട്</translation>
 <translation id="3103188521861412364">സ്റ്റോക്കുകളും ബോണ്ടുകളും</translation>
 <translation id="3105172416063519923">അസറ്റ് ഐഡി:</translation>
@@ -1362,6 +1364,7 @@
 <translation id="3583757800736429874">&amp;നീക്കുന്നത് വീണ്ടും ചെയ്യുക</translation>
 <translation id="3584299510153766161">താഴെ ഇരട്ട പഞ്ച് ചെയ്യുക</translation>
 <translation id="3584755835709800788">സയൻസ് ഫിക്ഷൻ, ഫാന്റസി സിനിമകൾ</translation>
+<translation id="3585455899094692781">ലഭ്യമായ ക്യാമറകൾ ഉപയോഗിക്കുക, ചലിപ്പിക്കുക (<ph name="CAMERAS_COUNT" />)</translation>
 <translation id="3586833803451155175">വെറ്റ് ഫിലിം</translation>
 <translation id="3586931643579894722">വിശദാംശങ്ങൾ മറയ്‌ക്കുക‍‌</translation>
 <translation id="3587738293690942763">മദ്ധ്യം</translation>
@@ -1483,6 +1486,7 @@
 <translation id="3799805948399000906">അഭ്യർത്ഥിച്ച ഫോണ്ട്</translation>
 <translation id="3801265110651850478">നിങ്ങളുടെ ബ്രൗസിംഗ് ട്രാഫിക്ക് ഉപയോഗിച്ച് ഒരു “Do Not Track" അഭ്യർത്ഥന അയയ്ക്കുക</translation>
 <translation id="380329542618494757">പേര്</translation>
+<translation id="3803801106042434208">നിങ്ങളുടെ പ്രദേശത്ത് ജനപ്രിയമായ തിരയൽ എഞ്ചിനുകൾ ഇവയാണ്</translation>
 <translation id="3806932344025766608">നിങ്ങൾ സന്ദർശിക്കാൻ ശ്രമിക്കുന്ന സൈറ്റിലെ ആക്രമണകാരികൾ സോഫ്‌റ്റ്‌വെയർ ഇൻസ്റ്റാൾ ചെയ്യാൻ ആവശ്യപ്പെട്ടുകൊണ്ടോ നിങ്ങളുടെ പാസ്‌വേഡ്, ഫോൺ അല്ലെങ്കിൽ ക്രെഡിറ്റ് കാർഡ് നമ്പർ പോലുള്ള കാര്യങ്ങൾ വെളിപ്പെടുത്താൻ ആവശ്യപ്പെട്ടുകൊണ്ടോ നിങ്ങളെ കബളിപ്പിച്ചേക്കാം. സുരക്ഷിതമായിരിക്കാൻ തിരികെ മടങ്ങുന്നതിന് Chrome ശക്തമായി നിർദ്ദേശിക്കുന്നു. <ph name="BEGIN_LEARN_MORE_LINK" />കൂടുതലറിയുക<ph name="END_LEARN_MORE_LINK" /></translation>
 <translation id="3807366285948165054">ചിത്രം X ഷിഫ്റ്റ്</translation>
 <translation id="3807709094043295184">ക്ലാസിക് റോക്കുകളും പഴയ ഗാനങ്ങളും</translation>
@@ -3626,7 +3630,6 @@
 <translation id="7947813448670013867"><ph name="SEE_CHROME_TIPS_FOCUSED_FRIENDLY_MATCH_TEXT" />, Chrome ഫീച്ചറുകളെ കുറിച്ച് കൂടുതലറിയാൻ Tab അമർത്തുക, തുടർന്ന് Enter അമർത്തുക</translation>
 <translation id="7949135979217012031">ആന്റിവൈറസും മാൽവെയറും</translation>
 <translation id="7950027195171824198">Chrome ക്രമീകരണത്തിൽ നിങ്ങളുടെ കുക്കി മുൻഗണനകൾ മാനേജ് ചെയ്യുക</translation>
-<translation id="7950440490184876634">നിങ്ങളുടെ മൈക്രോഫോണുകൾ ഉപയോഗിക്കുക (<ph name="MICS_COUNT" />)</translation>
 <translation id="7951415247503192394">(32-ബിറ്റ്)</translation>
 <translation id="7952192831285741665">യൂറോപ്യൻ EDP</translation>
 <translation id="7952250633095257243">കുറുക്കുവഴി ശൂന്യമായിടാനാകില്ല</translation>

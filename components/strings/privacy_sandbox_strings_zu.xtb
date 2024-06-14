@@ -1,9 +1,11 @@
 <?xml version="1.0" ?>
 <!DOCTYPE translationbundle>
 <translationbundle lang="zu">
+<translation id="2252052615723281030">Uma ungene ngemvume kuChrome, leli sethingi lisiza ukugcina ikheli lasesizindeni se-intanethi liyimfihlo. Uma iChrome isola ukuthi isayithi lingase likulandele, enye yethrafikhi yakho ingase ithunyelwe ngamaseva obumfihlo.</translation>
 <translation id="33479675708419823">Uma ungene ngemvume kuChrome, leli sethingi lisiza ukugcina ikheli lasesizindeni se-intanethi liyimfihlo. Uma iChrome isola ukuthi isayithi lingase likulandele, enye yethrafikhi yakho ingase ithunyelwe ngamaseva obumfihlo. Funda kabanzi mayelana <ph name="LINK_BEGIN" />nendlela ukuvikela i-IP okusebenza ngayo<ph name="LINK_END" /></translation>
 <translation id="3529311220178827364">Funda kabanzi mayelana nokufihla ikheli lakho lasesizindeni se-inthanethi</translation>
 <translation id="4301151630239508244">Izihloko zesikhangiso zingenye yezinto eziningi isayithi elingazisebenzisa ukuqondanisa izikhangiso nomuntu siqu. Nangaphandle kwezihloko zesikhangiso, amasayithi asengakubonisa izikhangiso eziqondaniswe nomuntu siqu kancane. Funda kabanzi mayelana <ph name="BEGIN_LINK_1" />nokuphatha ubumfihlo bezikhangiso zakho<ph name="END_LINK_1" />.</translation>
 <translation id="4598427486995631491">Fihla ikheli lakho lasesizindeni se-inthanethi</translation>
 <translation id="6371812158043974664">Uma ungene ngemvume kuChromium, leli sethingi lisiza ukugcina ikheli lakho lasesizindeni se-inthanethi liyimfihlo. Uma iChromium isola ukuthi isayithi lingase likulandele, enye yethrafikhi yakho ingase ithunyelwe ngamaseva obumfihlo. Funda kabanzi mayelana <ph name="LINK_BEGIN" />nendlela ukuvikela i-IP okusebenza ngayo<ph name="LINK_END" /></translation>
+<translation id="7040031291654706261">Funda <ph name="BEGIN_LINK" />indlela ukuvikela kwe-IP okusebenza ngayo<ph name="END_LINK" /></translation>
 </translationbundle>

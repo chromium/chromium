@@ -11,6 +11,7 @@
 <translation id="1273910660700874265">Opcije grupe kartica <ph name="TITLE_OF_GROUP" /></translation>
 <translation id="1322824555808364080">Pozovite ljude</translation>
 <translation id="1419023007528516122">Ovim ćete trajno izbrisati grupu sa uređaja</translation>
+<translation id="1486715732399361704">Ovde možete da pronađete sve grupe kartica</translation>
 <translation id="149054111719651807">{NUM_MINS,plural, =1{Napravljeno je pre <ph name="NUM_MINS_ONE" /> minut}one{Napravljeno je pre <ph name="NUM_MINS_MANY" /> minut}few{Napravljeno je pre <ph name="NUM_MINS_MANY" /> minuta}other{Napravljeno je pre <ph name="NUM_MINS_MANY" /> minuta}}</translation>
 <translation id="1499635324672558517">Želite da zatvorite sve kartice bez arhiviranja?</translation>
 <translation id="1501480321619201731">Izbriši grupu</translation>
@@ -55,6 +56,7 @@
 <translation id="3882834874697329510">Da biste dobili obaveštenje kada postoji niža cena na otvorenoj kartici, uključite obaveštenja u Podešavanjima.</translation>
 <translation id="3940195383040445971">Prati cene na karticama</translation>
 <translation id="3954615705217314756">{TABS_COUNT,plural, =1{Grupiši karticu}one{Grupiši kartice}few{Grupiši kartice}other{Grupiši kartice}}</translation>
+<translation id="395587619114760247">{TABS_COUNT,plural, =1{<ph name="TABS_COUNT_ONE" /> neaktivna kartica}one{<ph name="TABS_COUNT_MANY" /> neaktivna kartica}few{<ph name="TABS_COUNT_MANY" /> neaktivne kartice}other{<ph name="TABS_COUNT_MANY" /> neaktivnih kartica}}</translation>
 <translation id="3969565576924904454">Otvorite <ph name="TITLE_OF_GROUP" /></translation>
 <translation id="3996880007329611795">Obaveštavaj me</translation>
 <translation id="4009732926939031387">{NUM_DAYS,plural, =1{Napravljeno je pre <ph name="NUM_DAYS_ONE" /> dan}one{Napravljeno je pre <ph name="NUM_DAYS_MANY" /> dan}few{Napravljeno je pre <ph name="NUM_DAYS_MANY" /> dana}other{Napravljeno je pre <ph name="NUM_DAYS_MANY" /> dana}}</translation>
@@ -98,6 +100,7 @@
 <translation id="6054741997831917303">Cena ove stavke je nedavno snižena sa <ph name="PREVIOUS_PRICE" /> na <ph name="NEW_PRICE" /></translation>
 <translation id="6193448654517602979">Izaberite kartice</translation>
 <translation id="6228793724645064692">(ocena prodavnice)</translation>
+<translation id="6271513594716432922">Zatvori sve neaktivne kartice</translation>
 <translation id="6333260925957816943">Informacije o ovoj prodavnici</translation>
 <translation id="6381032505162537930">Ovde ćete pronaći grupe kartica</translation>
 <translation id="639823877092900621">{TABS_COUNT,plural, =1{Opozovite grupisanje za <ph name="TABS_COUNT_ONE" /> izabranu karticu}one{Opozovite grupisanje za <ph name="TABS_COUNT_MANY" /> izabranu karticu}few{Opozovite grupisanje za <ph name="TABS_COUNT_MANY" /> izabrane kartice}other{Opozovite grupisanje za <ph name="TABS_COUNT_MANY" /> izabranih kartica}}</translation>

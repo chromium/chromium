@@ -11,6 +11,7 @@
 <translation id="1273910660700874265">ជម្រើសក្រុមផ្ទាំង <ph name="TITLE_OF_GROUP" /></translation>
 <translation id="1322824555808364080">អញ្ជើញ​មនុស្ស</translation>
 <translation id="1419023007528516122">ការធ្វើបែបនេះ​នឹងលុប​ក្រុមនេះ​ចេញពី​ឧបករណ៍​របស់អ្នក​ជាអចិន្ត្រៃយ៍</translation>
+<translation id="1486715732399361704">អ្នកអាច​រកឃើញ​ក្រុមផ្ទាំង​ទាំងអស់​របស់អ្នក​នៅទីនេះ</translation>
 <translation id="149054111719651807">{NUM_MINS,plural, =1{បានបង្កើត <ph name="NUM_MINS_ONE" /> នាទីមុន}other{បានបង្កើត <ph name="NUM_MINS_MANY" /> នាទីមុន}}</translation>
 <translation id="1499635324672558517">បិទ​ផ្ទាំងឯកជន​ទាំងអស់ឬ?</translation>
 <translation id="1501480321619201731">លុបក្រុម</translation>
@@ -55,6 +56,7 @@
 <translation id="3882834874697329510">ដើម្បី​ទទួលបាន​ការជូនដំណឹង នៅពេល​មានតម្លៃទាបជាងមុន​នៅក្នុងផ្ទាំងដែល​កំពុងបើក សូមបើក​ការជូនដំណឹង​នៅក្នុងការកំណត់។</translation>
 <translation id="3940195383040445971">តាមដានតម្លៃនៅក្នុងផ្ទាំង</translation>
 <translation id="3954615705217314756">{TABS_COUNT,plural, =1{ដាក់​​ផ្ទាំងជាក្រុម}other{ដាក់ផ្ទាំងជាក្រុម}}</translation>
+<translation id="395587619114760247">{TABS_COUNT,plural, =1{ផ្ទាំង​អសកម្ម <ph name="TABS_COUNT_ONE" />}other{ផ្ទាំង​អសកម្ម <ph name="TABS_COUNT_MANY" />}}</translation>
 <translation id="3969565576924904454">បើក <ph name="TITLE_OF_GROUP" /></translation>
 <translation id="3996880007329611795">ទទួល​ការជូន​ដំណឹង</translation>
 <translation id="4009732926939031387">{NUM_DAYS,plural, =1{បានបង្កើត <ph name="NUM_DAYS_ONE" /> ថ្ងៃមុន}other{បានបង្កើត <ph name="NUM_DAYS_MANY" /> ថ្ងៃមុន}}</translation>
@@ -98,6 +100,7 @@
 <translation id="6054741997831917303">តម្លៃទំនិញនេះ​បានធ្លាក់ចុះ​ថ្មីៗនេះ​ពី <ph name="PREVIOUS_PRICE" /> ទៅ <ph name="NEW_PRICE" /></translation>
 <translation id="6193448654517602979">ជ្រើសរើសផ្ទាំង</translation>
 <translation id="6228793724645064692">(ការវាយ​តម្លៃហាង)</translation>
+<translation id="6271513594716432922">បិទ​ផ្ទាំង​អសកម្ម​ទាំងអស់</translation>
 <translation id="6333260925957816943">ព័ត៌មានអំពី​ហាងនេះ</translation>
 <translation id="6381032505162537930">អ្នកនឹងឃើញក្រុមផ្ទាំងរបស់អ្នកនៅទីនេះ</translation>
 <translation id="639823877092900621">{TABS_COUNT,plural, =1{បំបែក​ក្រុម​ផ្ទាំង​ដែល​បាន​ជ្រើសរើស <ph name="TABS_COUNT_ONE" />}other{បំបែកក្រុម​ផ្ទាំង​ដែល​បាន​ជ្រើសរើស <ph name="TABS_COUNT_MANY" />}}</translation>

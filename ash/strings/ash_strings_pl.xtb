@@ -180,6 +180,7 @@ Oto kilka rzeczy, które możesz wypróbować na początek.</translation>
 <translation id="1611993646327628135">Włączono</translation>
 <translation id="1620510694547887537">Kamera</translation>
 <translation id="1623768535032616219">Zwiń Google Classroom</translation>
+<translation id="163032029566320584">Funkcja <ph name="UNAVAILABLE_DLC" /> jest niedostępna.</translation>
 <translation id="1632985212731562677">Funkcję Switch Access możesz wyłączyć, otwierając Ustawienia &gt; Ułatwienia dostępu.</translation>
 <translation id="1637505162081889933">Urządzenia: <ph name="NUM_DEVICES" /></translation>
 <translation id="1639239467298939599">Wczytuję</translation>
@@ -723,6 +724,7 @@ Podłącz urządzenie do zasilania.</translation>
 <translation id="3702846122927433391">Populacja Nigerii</translation>
 <translation id="3705722231355495246">-</translation>
 <translation id="3706423975342040244">Rozrywka</translation>
+<translation id="3707093869106077605"><ph name="UNAVAILABLE_DLC_ONE" /> i <ph name="UNAVAILABLE_DLC_TWO" /> są niedostępne.</translation>
 <translation id="3708186454126126312">Wcześniej połączone</translation>
 <translation id="3712143870407382523">Wybierz okno dla tej strony</translation>
 <translation id="371370241367527062">Przedni mikrofon</translation>
@@ -995,6 +997,7 @@ Połączono 1 urządzenie.</translation>
 <translation id="4733161265940833579"><ph name="BATTERY_PERCENTAGE" />% (lewa)</translation>
 <translation id="4734965478015604180">Poziomo</translation>
 <translation id="4735944890391795473">Biurko 12</translation>
+<translation id="4736732123074402682">Sprawdź połączenie i spróbuj jeszcze raz.</translation>
 <translation id="473775607612524610">Aktualizuj</translation>
 <translation id="4740516757091333363">Usunąć zapisane biurko?</translation>
 <translation id="4746798685375253449">{0,plural, =1{Zaktualizuj urządzenie do poprzedniej wersji systemu operacyjnego w ciągu 1 dnia}few{Zaktualizuj urządzenie do poprzedniej wersji systemu operacyjnego w ciągu # dni}many{Zaktualizuj urządzenie do poprzedniej wersji systemu operacyjnego w ciągu # dni}other{Zaktualizuj urządzenie do poprzedniej wersji systemu operacyjnego w ciągu # dnia}}</translation>
@@ -1328,6 +1331,7 @@ Brak połączonych urządzeń.</translation>
 <translation id="588258955323874662">Pełny ekran</translation>
 <translation id="5887954372087850114">Okno <ph name="WINDOW_TITLE" /> zostało przypisane do biurka <ph name="DESK_TITLE" />, a jego przypisanie do innych biurek zostało anulowane</translation>
 <translation id="588817334757907802">Otwórz plik w przeglądarce Chrome</translation>
+<translation id="5892014525522223653">Jesteś offline.</translation>
 <translation id="5895138241574237353">Uruchom ponownie</translation>
 <translation id="589817443623831496">Skanowanie punktowe</translation>
 <translation id="5901316534475909376">Shift+Esc</translation>
@@ -1387,6 +1391,7 @@ Brak połączonych urządzeń.</translation>
 <translation id="6095425951508823973">Dodaj połączenie, korzystając z programu <ph name="PROVIDER" /></translation>
 <translation id="6099678161144790572">Edytowane w zeszłym miesiącu</translation>
 <translation id="6103838137565245112">system</translation>
+<translation id="610395411842312282">Połącz 2 sąsiednie okna w grupę</translation>
 <translation id="6108952804512516814">Utwórz przy pomocy AI</translation>
 <translation id="6114505516289286752">Pliki z mową w języku: <ph name="LANGUAGE" /> zostały pobrane</translation>
 <translation id="6119360623251949462"><ph name="CHARGING_STATE" />. <ph name="BATTERY_SAVER_STATE" /></translation>
@@ -1394,6 +1399,7 @@ Brak połączonych urządzeń.</translation>
 <translation id="6121838516699723042">Potwierdź pobieranie pliku <ph name="FILENAME" /></translation>
 <translation id="612734058257491180">Asystent Google jest niedostępny w sesji gościa.</translation>
 <translation id="6127370444807669747">Aby słuchać spersonalizowanych playlist i muzyki do skupienia, użyj YouTube Music Premium</translation>
+<translation id="6127395413317891856">Jesteś offline. Sprawdź połączenie i spróbuj jeszcze raz.</translation>
 <translation id="6129953537138746214">Spacja</translation>
 <translation id="6137566720514957455">Otwórz okno usuwania konta <ph name="USER_EMAIL_ADDRESS" /></translation>
 <translation id="6141205840878048728">Na czym chcesz się skupić?</translation>
@@ -1966,6 +1972,7 @@ Aby wyłączyć urządzenie, ponownie naciśnij i przytrzymaj na nim przycisk z
 <translation id="8257510091797044096">Skonfiguruj urządzenie</translation>
 <translation id="8261506727792406068">Usuń</translation>
 <translation id="8262312463845990408">Włącz lub wyłącz odtwarzanie</translation>
+<translation id="8268302343625273732">Zobacz wszystkie projekty w Google Classroom</translation>
 <translation id="8277261673056602147">Zaznacz tekst na ekranie</translation>
 <translation id="8287009018010202411">Produktywność</translation>
 <translation id="828708037801473432">Wyłączono</translation>

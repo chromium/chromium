@@ -180,6 +180,7 @@
 <translation id="1611993646327628135">Укључено</translation>
 <translation id="1620510694547887537">Камера</translation>
 <translation id="1623768535032616219">Скупи Google учионицу</translation>
+<translation id="163032029566320584">Функција <ph name="UNAVAILABLE_DLC" /> није доступна</translation>
 <translation id="1632985212731562677">Приступ помоћу прекидача може да се онемогући у одељку Подешавања &gt; Приступачност.</translation>
 <translation id="1637505162081889933"><ph name="NUM_DEVICES" /> уређаја</translation>
 <translation id="1639239467298939599">Учитава се</translation>
@@ -251,6 +252,7 @@
 <translation id="1915307458270490472">Прекини везу</translation>
 <translation id="1918022425394817322">Камера је уклопљена у горњи десни угао</translation>
 <translation id="1923539912171292317">Аутоматски кликови</translation>
+<translation id="1925320505152357008">мање од 1 мин</translation>
 <translation id="1928739107511554905">Да бисте преузели ажурирање, рестартујте Chromebook са прикљученом тастатуром на додирном екрану.</translation>
 <translation id="1948405482892809935">Пређите на следећег корисника</translation>
 <translation id="1951012854035635156">Помоћник</translation>
@@ -606,6 +608,7 @@
 <translation id="334927402682780278">Изабери текст од курсора до краја реда</translation>
 <translation id="3349345708646875009">Отвори менаџер задатака</translation>
 <translation id="3364721542077212959">Алатке за писаљку</translation>
+<translation id="3365281428003534650">Подесите тајмер, задатак и музику</translation>
 <translation id="3365977133351922112">Телефон је превише далеко. Приближите га.</translation>
 <translation id="3368922792935385530">Повезан</translation>
 <translation id="3369111525500416043">Рок ускоро истиче</translation>
@@ -721,6 +724,7 @@
 <translation id="3702846122927433391">Популација Нигерије</translation>
 <translation id="3705722231355495246">-</translation>
 <translation id="3706423975342040244">Забава</translation>
+<translation id="3707093869106077605">Функције <ph name="UNAVAILABLE_DLC_ONE" /> и <ph name="UNAVAILABLE_DLC_TWO" /> нису доступне</translation>
 <translation id="3708186454126126312">Претходно повезани</translation>
 <translation id="3712143870407382523">Одаберите прозор за ову страну</translation>
 <translation id="371370241367527062">Предњи микрофон</translation>
@@ -909,6 +913,7 @@
 <translation id="4406883609789734330">Титл уживо</translation>
 <translation id="4412698727486357573">Центар за помоћ</translation>
 <translation id="4412944820643904175">Функција <ph name="FEATURE_NAME" /> је искључена.</translation>
+<translation id="4417647906073317561">Подешавања фокуса. Подесите тајмер, задатак и музику да бисте се фокусирали.</translation>
 <translation id="4424159417645388645">Радна површина 5</translation>
 <translation id="4430019312045809116">Јачина звука</translation>
 <translation id="4441283832827406317">Апликације су сортиране према називу</translation>
@@ -993,6 +998,7 @@
 <translation id="4733161265940833579"><ph name="BATTERY_PERCENTAGE" />% (лева)</translation>
 <translation id="4734965478015604180">Хоризонтално</translation>
 <translation id="4735944890391795473">Радна површина 12</translation>
+<translation id="4736732123074402682">Проверите везу и пробајте поново.</translation>
 <translation id="473775607612524610">Ажурирај</translation>
 <translation id="4740516757091333363">Желите да избришете сачувану радну површину?</translation>
 <translation id="4746798685375253449">{0,plural, =1{Промените верзију уређаја у претходну верзију у року од једног дана}one{Промените верзију уређаја у претходну верзију у року од # дана}few{Промените верзију уређаја у претходну верзију у року од # дана}other{Промените верзију уређаја у претходну верзију у року од # дана}}</translation>
@@ -1326,6 +1332,7 @@
 <translation id="588258955323874662">Цеo екран</translation>
 <translation id="5887954372087850114">Прозор <ph name="WINDOW_TITLE" /> је додељен радној површини <ph name="DESK_TITLE" /> и његово додељивање је опозвано са свих других радних површина</translation>
 <translation id="588817334757907802">Отвори фајл у Chrome прегледачу</translation>
+<translation id="5892014525522223653">Офлајн сте.</translation>
 <translation id="5895138241574237353">Покрени поново</translation>
 <translation id="589817443623831496">Скенирање садржаја по тачкама</translation>
 <translation id="5901316534475909376">Shift+Esc</translation>
@@ -1385,6 +1392,7 @@
 <translation id="6095425951508823973">Додајте везу са добављачем <ph name="PROVIDER" /></translation>
 <translation id="6099678161144790572">Измењено протеклог месеца</translation>
 <translation id="6103838137565245112">систем</translation>
+<translation id="610395411842312282">Групишите два упоредна прозора</translation>
 <translation id="6108952804512516814">Правите помоћу вештачке интелигенције</translation>
 <translation id="6114505516289286752">Преузети су фајлови са говором на језику <ph name="LANGUAGE" /></translation>
 <translation id="6119360623251949462"><ph name="CHARGING_STATE" />. <ph name="BATTERY_SAVER_STATE" /></translation>
@@ -1392,6 +1400,7 @@
 <translation id="6121838516699723042">Потврдите преузимање фајла <ph name="FILENAME" /></translation>
 <translation id="612734058257491180">Google помоћник није доступан у сесији госта.</translation>
 <translation id="6127370444807669747">Ако желите персонализоване плејлисте и више фокусиране музике, испробајте YouTube Music Premium</translation>
+<translation id="6127395413317891856">Офлајн сте. Проверите везу и пробајте поново.</translation>
 <translation id="6129953537138746214">Размак</translation>
 <translation id="6137566720514957455">Отвара налог за уклањање за корисника <ph name="USER_EMAIL_ADDRESS" /></translation>
 <translation id="6141205840878048728">На шта желите да се фокусирате?</translation>
@@ -1861,6 +1870,7 @@
         <ph name="MANAGED" />
         <ph name="IME" />
         <ph name="LOCALE" /></translation>
+<translation id="7899977217122813285">Обавештења су искључена до <ph name="TIME" /> док се фокусирате</translation>
 <translation id="7901190436359881020">Замени прозор</translation>
 <translation id="7901405293566323524">Phone Hub</translation>
 <translation id="7902625623987030061">Додирните сензор за отисак прста</translation>
@@ -1965,6 +1975,7 @@
 <translation id="8257510091797044096">Подесите уређај</translation>
 <translation id="8261506727792406068">Избриши</translation>
 <translation id="8262312463845990408">Укључите/искључите репродукцију</translation>
+<translation id="8268302343625273732">Погледајте све задатке у Google учионици</translation>
 <translation id="8277261673056602147">Истакните текст на екрану</translation>
 <translation id="8287009018010202411">Продуктивност</translation>
 <translation id="828708037801473432">Искључено</translation>

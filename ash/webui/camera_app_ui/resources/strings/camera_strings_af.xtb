@@ -36,12 +36,15 @@
 <translation id="2320741269052147773">Swenk links</translation>
 <translation id="2360840973209616515">Die kamera-app word deur jou administrateur bestuur.
         Kontak die administrateur vir besonderhede.</translation>
+<translation id="2442754296994859145">Kopieer om die inhoud te verifieer of vou uit om op te hou skandeer.</translation>
+<translation id="2486151619109781620">Vou dialoog in en begin skandeer</translation>
 <translation id="2501278716633472235">Gaan terug</translation>
 <translation id="2501853267655415902">Opname is gestop</translation>
 <translation id="2517472476991765520">Skandeer</translation>
 <translation id="2549985041256363841">Begin opname</translation>
 <translation id="2577915835281444458">Opname sal binnekort stop. Gaan na toestelberging om spasie beskikbaar te maak.</translation>
 <translation id="2599796128805996109">Agterste kamera</translation>
+<translation id="2654491636277477479">Kopieer bespeurde teks</translation>
 <translation id="2759905922487820242"><ph name="CURRENT" /> / <ph name="MAXIMAL" />s</translation>
 <translation id="2761536921376153655">Soort skandering</translation>
 <translation id="28682968802727151">Spieëlvoorskou</translation>
@@ -49,6 +52,7 @@
 <translation id="3067436040345934772">Swenk regs</translation>
 <translation id="3081586908890909590">Skakel oor na opneem van video</translation>
 <translation id="313467653172006084">30 FPS</translation>
+<translation id="3157038259444425153">Jy kan nou teks direk in jou foto kopieer</translation>
 <translation id="3158534262962737808">Sluit aan by “<ph name="WIFINAME" />”</translation>
 <translation id="3227137524299004712">Mikrofoon</translation>
 <translation id="3240426699337459095">Skakel gekopieer</translation>
@@ -93,6 +97,7 @@
 <translation id="5317780077021120954">Berg</translation>
 <translation id="5320594929574852403">Beweeg tans na links</translation>
 <translation id="5374917190292010970">4K (2160 p)</translation>
+<translation id="5634947914995388399">Vou dialoog uit en hou op skandeer</translation>
 <translation id="5662366948659129155">Skandeer tans bladsy <ph name="COUNT" /></translation>
 <translation id="5671277269877808209">Vierkant</translation>
 <translation id="574392208103952083">Medium</translation>
@@ -117,11 +122,13 @@ As jou terugvoer oor prent- of videogehalte gaan, moet jy asseblief 'n voorbeeld
 <translation id="6519884562954018934">Sluit aan by <ph name="WIFINAME" /></translation>
 <translation id="6527303717912515753">Deel</translation>
 <translation id="6586509689874700895">Druk eerstens <ph name="BUTTON_NAME" /> om in te zoem. Jy sal dan verbeterde besonderhede sien nadat jy ’n foto geneem het.</translation>
+<translation id="659539649712855529"><ph name="CONTENT" /> is gekopieer</translation>
 <translation id="6617916774429601017">Wys alle resolusies</translation>
 <translation id="6631515515009660915">Spieël af</translation>
 <translation id="6652737148136672975">Beweeg hoekposisie met pylsleutels</translation>
 <translation id="667999046851023355">Dokument</translation>
 <translation id="6681668084120808868">Neem foto</translation>
+<translation id="6692092766759105707">Kopieer om die inhoud te verifieer.</translation>
 <translation id="6778482348691154169">Kan nie foto neem nie</translation>
 <translation id="6888362557094394345">Beweeg tans na onder</translation>
 <translation id="695140971690006676">Stel alles terug</translation>

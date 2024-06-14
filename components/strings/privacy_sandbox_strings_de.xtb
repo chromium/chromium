@@ -1,9 +1,11 @@
 <?xml version="1.0" ?>
 <!DOCTYPE translationbundle>
 <translationbundle lang="de">
+<translation id="2252052615723281030">Diese Einstellung kann helfen, deine IP‑Adresse geheim zu halten, wenn du in Chrome angemeldet bist. Stellt Chrome fest, dass du möglicherweise von einer Website getrackt wirst, kann ein Teil deines Traffics durch einen Datenschutzserver geleitet werden.</translation>
 <translation id="33479675708419823">Diese Einstellung kann helfen, deine IP‑Adresse geheim zu halten, wenn du in Chrome angemeldet bist. Stellt Chrome fest, dass du möglicherweise von einer Website getrackt wirst, kann ein Teil deines Traffics durch einen Datenschutzserver geleitet werden. <ph name="LINK_BEGIN" />Weitere Informationen zur Funktionsweise des IP‑Schutzes<ph name="LINK_END" /></translation>
 <translation id="3529311220178827364">Weitere Informationen zum Verbergen der IP‑Adresse</translation>
 <translation id="4301151630239508244">Werbethemen sind nur eine von vielen Möglichkeiten, um Werbung auf einer Website zu personalisieren. Websites können dir auch ohne Werbethemen Werbung zeigen. Diese ist aber möglicherweise weniger relevant für dich. <ph name="BEGIN_LINK_1" />Weitere Informationen zum Verwalten des Datenschutzes bei Werbung<ph name="END_LINK_1" /></translation>
 <translation id="4598427486995631491">IP‑Adresse verbergen</translation>
 <translation id="6371812158043974664">Diese Einstellung kann helfen, deine IP‑Adresse geheim zu halten, wenn du in Chromium angemeldet bist. Stellt Chromium fest, dass du möglicherweise von einer Website getrackt wirst, kann ein Teil deines Traffics durch einen Datenschutzserver geleitet werden. <ph name="LINK_BEGIN" />Weitere Informationen zur Funktionsweise des IP‑Schutzes<ph name="LINK_END" /></translation>
+<translation id="7040031291654706261"><ph name="BEGIN_LINK" />Informationen zur Funktionsweise des IP‑Schutzes<ph name="END_LINK" /></translation>
 </translationbundle>

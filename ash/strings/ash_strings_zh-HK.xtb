@@ -180,6 +180,7 @@
 <translation id="1611993646327628135">開啟</translation>
 <translation id="1620510694547887537">相機</translation>
 <translation id="1623768535032616219">收合 Google Classroom</translation>
+<translation id="163032029566320584">「<ph name="UNAVAILABLE_DLC" />」無法使用。</translation>
 <translation id="1632985212731562677">您可在 [設定] &gt; [無障礙功能] 中停用「按鈕控制」。</translation>
 <translation id="1637505162081889933"><ph name="NUM_DEVICES" /> 部裝置</translation>
 <translation id="1639239467298939599">載入中</translation>
@@ -251,6 +252,7 @@
 <translation id="1915307458270490472">結束通話</translation>
 <translation id="1918022425394817322">攝錄機已經對齊右上角</translation>
 <translation id="1923539912171292317">自動按一下</translation>
+<translation id="1925320505152357008">不到 1 分鐘</translation>
 <translation id="1928739107511554905">如要下載更新，請連接鍵盤並使用觸控螢幕重新啟動 Chromebook。</translation>
 <translation id="1948405482892809935">切換至下一位使用者</translation>
 <translation id="1951012854035635156">助理</translation>
@@ -309,7 +311,7 @@
 <translation id="2208323208084708176">統一桌面模式</translation>
 <translation id="2220572644011485463">PIN 或密碼</translation>
 <translation id="2222841058024245321">桌面 7</translation>
-<translation id="2223384056430485343">在分割畫面中</translation>
+<translation id="2223384056430485343">喺分割螢幕</translation>
 <translation id="2224075387478458881">當畫面上有受保護的內容時，就無法使用螢幕畫面錄影功能</translation>
 <translation id="2227179592712503583">移除建議</translation>
 <translation id="2248634276911611268">在新分頁中開啟連結並切換至此新分頁</translation>
@@ -606,6 +608,7 @@
 <translation id="334927402682780278">選取從游標到該行末之間的文字</translation>
 <translation id="3349345708646875009">開啟工作管理員</translation>
 <translation id="3364721542077212959">觸控筆工具</translation>
+<translation id="3365281428003534650">設定計時器、工作和音樂</translation>
 <translation id="3365977133351922112">您的手機距離太遠，請將手機移近。</translation>
 <translation id="3368922792935385530">已連線</translation>
 <translation id="3369111525500416043">即將截止</translation>
@@ -721,6 +724,7 @@
 <translation id="3702846122927433391">尼日利亞嘅人口</translation>
 <translation id="3705722231355495246">-</translation>
 <translation id="3706423975342040244">娛樂</translation>
+<translation id="3707093869106077605">「<ph name="UNAVAILABLE_DLC_ONE" />」和「<ph name="UNAVAILABLE_DLC_TWO" />」無法使用。</translation>
 <translation id="3708186454126126312">之前已連接的裝置</translation>
 <translation id="3712143870407382523">選擇這側的視窗</translation>
 <translation id="371370241367527062">前置麥克風</translation>
@@ -908,6 +912,7 @@
 <translation id="4406883609789734330">即時字幕</translation>
 <translation id="4412698727486357573">說明中心</translation>
 <translation id="4412944820643904175"><ph name="FEATURE_NAME" />功能已關閉。</translation>
+<translation id="4417647906073317561">「專注模式」設定。你可設定計時器、工作和音樂來提升效率。</translation>
 <translation id="4424159417645388645">桌面 5</translation>
 <translation id="4430019312045809116">音量</translation>
 <translation id="4441283832827406317">應用程式已按名稱排序</translation>
@@ -992,6 +997,7 @@
 <translation id="4733161265940833579"><ph name="BATTERY_PERCENTAGE" />% (左邊)</translation>
 <translation id="4734965478015604180">橫向</translation>
 <translation id="4735944890391795473">桌面 12</translation>
+<translation id="4736732123074402682">請檢查連線，然後再試。</translation>
 <translation id="473775607612524610">更新</translation>
 <translation id="4740516757091333363">要刪除已儲存的桌面嗎？</translation>
 <translation id="4746798685375253449">{0,plural, =1{在 1 天內將裝置更新為先前的版本}other{在 # 天內將裝置更新為先前的版本}}</translation>
@@ -1132,7 +1138,7 @@
 <translation id="5208059991603368177">開啟</translation>
 <translation id="5216991270656129561">關閉，直到<ph name="TIME" /></translation>
 <translation id="5222676887888702881">登出</translation>
-<translation id="5228195526683428788">分割畫面分隔線</translation>
+<translation id="5228195526683428788">分割螢幕分隔線</translation>
 <translation id="5229343007215035173">開啟/關閉私隱保護畫面</translation>
 <translation id="5230516054153933099">視窗</translation>
 <translation id="5234764350956374838">關閉</translation>
@@ -1324,6 +1330,7 @@
 <translation id="588258955323874662">全螢幕</translation>
 <translation id="5887954372087850114">「<ph name="WINDOW_TITLE" />」視窗已指派給「<ph name="DESK_TITLE" />」，並取消指派給所有其他桌面</translation>
 <translation id="588817334757907802">在 Chrome 瀏覽器中開啟檔案</translation>
+<translation id="5892014525522223653">你已離線。</translation>
 <translation id="5895138241574237353">重新啟動</translation>
 <translation id="589817443623831496">點掃瞄</translation>
 <translation id="5901316534475909376">Shift + Esc 鍵</translation>
@@ -1383,6 +1390,7 @@
 <translation id="6095425951508823973">新增 <ph name="PROVIDER" /> 嘅連線</translation>
 <translation id="6099678161144790572">上個月編輯過</translation>
 <translation id="6103838137565245112">系統</translation>
+<translation id="610395411842312282">將兩個並排視窗設定為同一組</translation>
 <translation id="6108952804512516814">以 AI 製作</translation>
 <translation id="6114505516289286752">已下載<ph name="LANGUAGE" />語音檔案</translation>
 <translation id="6119360623251949462"><ph name="CHARGING_STATE" />。<ph name="BATTERY_SAVER_STATE" /></translation>
@@ -1390,6 +1398,7 @@
 <translation id="6121838516699723042">確認下載 <ph name="FILENAME" /></translation>
 <translation id="612734058257491180">「Google 助理」不適用於訪客工作階段。</translation>
 <translation id="6127370444807669747">如要聆聽個人化播放清單和其他專注模式音樂，請試用 YouTube Music Premium</translation>
+<translation id="6127395413317891856">您已離線。請檢查連線，然後再試。</translation>
 <translation id="6129953537138746214">空格</translation>
 <translation id="6137566720514957455">打開移除 <ph name="USER_EMAIL_ADDRESS" /> 嘅對話框</translation>
 <translation id="6141205840878048728">你想專心處理什麼？</translation>
@@ -1518,7 +1527,7 @@
 <translation id="6613765291890844037">已使用 <ph name="STORAGE_IN_USE_SIZE" /> 的儲存空間 | 共 <ph name="STORAGE_TOTAL_SIZE" /></translation>
 <translation id="6614169507485700968">已啟用私隱保護畫面</translation>
 <translation id="6622679827379792051">設定睇手機嘅應用程式</translation>
-<translation id="662279009180869175">使用向左和向右鍵調整分割畫面大小</translation>
+<translation id="662279009180869175">用左同右箭嘴調整分割螢幕大細</translation>
 <translation id="6624493541160101248">目前的桌面：<ph name="DESK_NAME" />。第 <ph name="DESK_INDEX" /> 個桌面，共 <ph name="DESK_COUNT" /> 個。</translation>
 <translation id="6625718907317144388">檢視保護功能已開啟，因此系統已隱藏 <ph name="APP_1_TITLE" />、<ph name="APP_2_TITLE" /> 和其他應用程式的通知</translation>
 <translation id="6627638273713273709">搜尋鍵 + Shift + K 鍵</translation>
@@ -1537,7 +1546,7 @@
 <translation id="6670153871843998651">桌面 3</translation>
 <translation id="6671495933530132209">複製圖片</translation>
 <translation id="6671661918848783005">無法解鎖 Chromebook</translation>
-<translation id="6676552993057022464">使用向上和向下鍵調整分割畫面大小</translation>
+<translation id="6676552993057022464">用上同下箭嘴調整分割螢幕大細</translation>
 <translation id="6682029141988159141">貼上剪貼簿中的內容</translation>
 <translation id="6683022854667115063">耳機</translation>
 <translation id="6686023075541098243">設定睇手機嘅通知</translation>
@@ -1857,6 +1866,7 @@
         <ph name="MANAGED" />
         <ph name="IME" />
         <ph name="LOCALE" /></translation>
+<translation id="7899977217122813285">「專注模式」已開啟，系統會在 <ph name="TIME" />前忽略通知</translation>
 <translation id="7901190436359881020">切換左右視窗位置</translation>
 <translation id="7901405293566323524">Phone Hub</translation>
 <translation id="7902625623987030061">請輕觸指紋感應器</translation>
@@ -1961,6 +1971,7 @@
 <translation id="8257510091797044096">設定你的裝置</translation>
 <translation id="8261506727792406068">刪除</translation>
 <translation id="8262312463845990408">切換播放</translation>
+<translation id="8268302343625273732">查看 Google Classroom 的所有作業</translation>
 <translation id="8277261673056602147">突顯畫面上的文字</translation>
 <translation id="8287009018010202411">生產力</translation>
 <translation id="828708037801473432">已關閉</translation>

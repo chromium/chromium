@@ -180,6 +180,7 @@ Tu je nekaj stvari, ki jih lahko poskusite za začetek.</translation>
 <translation id="1611993646327628135">Vklopljeno</translation>
 <translation id="1620510694547887537">Kamera</translation>
 <translation id="1623768535032616219">Strnitev Učilnice Google</translation>
+<translation id="163032029566320584"><ph name="UNAVAILABLE_DLC" /> ni na voljo.</translation>
 <translation id="1632985212731562677">Stikalni dostop lahko onemogočite v »Nastavitve &gt; Dostopnost«.</translation>
 <translation id="1637505162081889933">Št. naprav: <ph name="NUM_DEVICES" /></translation>
 <translation id="1639239467298939599">Nalaganje</translation>
@@ -251,6 +252,7 @@ Tu je nekaj stvari, ki jih lahko poskusite za začetek.</translation>
 <translation id="1915307458270490472">Prekini</translation>
 <translation id="1918022425394817322">Fotoaparat je pripet v zgornji desni kot</translation>
 <translation id="1923539912171292317">Samodejni kliki</translation>
+<translation id="1925320505152357008">manj kot 1 min</translation>
 <translation id="1928739107511554905">Če želite prejeti posodobitev, uporabite zaslon na dotik, da znova zaženete Chromebook s priklopljeno tipkovnico.</translation>
 <translation id="1948405482892809935">Preklop na naslednjega uporabnika</translation>
 <translation id="1951012854035635156">Pomočnik</translation>
@@ -606,6 +608,7 @@ Povezanih je toliko naprav: <ph name="DEVICECOUNT" />.</translation>
 <translation id="334927402682780278">Izbira besedila od kazalca do konca vrstice</translation>
 <translation id="3349345708646875009">Odpiranje upravitelja opravil</translation>
 <translation id="3364721542077212959">Orodja pisala</translation>
+<translation id="3365281428003534650">Nastavite časovnik, opravilo, glasbo</translation>
 <translation id="3365977133351922112">Telefon je predaleč. Približajte ga.</translation>
 <translation id="3368922792935385530">Povezano</translation>
 <translation id="3369111525500416043">Rok se bliža</translation>
@@ -721,6 +724,7 @@ Priklopite napravo v vir napajanja.</translation>
 <translation id="3702846122927433391">Število prebivalcev v Nigeriji</translation>
 <translation id="3705722231355495246">–</translation>
 <translation id="3706423975342040244">Razvedrilo</translation>
+<translation id="3707093869106077605"><ph name="UNAVAILABLE_DLC_ONE" /> in <ph name="UNAVAILABLE_DLC_TWO" /> nista na voljo.</translation>
 <translation id="3708186454126126312">Predhodno povezane naprave</translation>
 <translation id="3712143870407382523">Izberite okno za to stran</translation>
 <translation id="371370241367527062">Sprednji mikrofon</translation>
@@ -908,6 +912,7 @@ Nekatere funkcije so omejene za podaljšanje časa delovanja baterije.</translat
 <translation id="4406883609789734330">Samodejni podnapisi</translation>
 <translation id="4412698727486357573">Center za pomoč</translation>
 <translation id="4412944820643904175">Funkcija <ph name="FEATURE_NAME" /> je izklopljena.</translation>
+<translation id="4417647906073317561">Nastavitve Osredotočenosti. Nastavite časovnik, opravilo in glasbo za boljšo koncentracijo.</translation>
 <translation id="4424159417645388645">Namizje 5</translation>
 <translation id="4430019312045809116">Glasnost</translation>
 <translation id="4441283832827406317">Aplikacije so razvrščene po imenu</translation>
@@ -992,6 +997,7 @@ Nekatere funkcije so omejene za podaljšanje časa delovanja baterije.</translat
 <translation id="4733161265940833579"><ph name="BATTERY_PERCENTAGE" /> % (leva)</translation>
 <translation id="4734965478015604180">Vodoravno</translation>
 <translation id="4735944890391795473">Namizje 12</translation>
+<translation id="4736732123074402682">Preverite povezavo in poskusite znova.</translation>
 <translation id="473775607612524610">Posodobi</translation>
 <translation id="4740516757091333363">Želite izbrisati shranjeno namizje?</translation>
 <translation id="4746798685375253449">{0,plural, =1{Posodobite napravo na prejšnjo različico v enem dnevu}one{Posodobite napravo na prejšnjo različico v # dnevu}two{Posodobite napravo na prejšnjo različico v # dnevih}few{Posodobite napravo na prejšnjo različico v # dneh}other{Posodobite napravo na prejšnjo različico v # dneh}}</translation>
@@ -1325,6 +1331,7 @@ Nobena naprava ni povezana.</translation>
 <translation id="588258955323874662">Celozaslonsko</translation>
 <translation id="5887954372087850114">Okno <ph name="WINDOW_TITLE" /> je dodeljeno namizju <ph name="DESK_TITLE" /> in njegova dodelitev je preklicana za vsa druga namizja.</translation>
 <translation id="588817334757907802">Odpiranje datoteke v brskalniku Chrome</translation>
+<translation id="5892014525522223653">Nimate vzpostavljene povezave.</translation>
 <translation id="5895138241574237353">Znova zaženi</translation>
 <translation id="589817443623831496">Točkovno iskanje</translation>
 <translation id="5901316534475909376">Shift + Esc</translation>
@@ -1384,6 +1391,7 @@ Nobena naprava ni povezana.</translation>
 <translation id="6095425951508823973">Dodajanje povezavo s ponudnikom <ph name="PROVIDER" /></translation>
 <translation id="6099678161144790572">Urejeno v preteklem mesecu</translation>
 <translation id="6103838137565245112">sistem</translation>
+<translation id="610395411842312282">Združiteh dveh oken drugega ob drugem</translation>
 <translation id="6108952804512516814">Ustvarjanje z umetno inteligenco</translation>
 <translation id="6114505516289286752">Datoteke za govor v jeziku <ph name="LANGUAGE" /> so bile prenesene</translation>
 <translation id="6119360623251949462"><ph name="CHARGING_STATE" />. <ph name="BATTERY_SAVER_STATE" />.</translation>
@@ -1391,6 +1399,7 @@ Nobena naprava ni povezana.</translation>
 <translation id="6121838516699723042">Potrditev prenosa datoteke <ph name="FILENAME" /></translation>
 <translation id="612734058257491180">Pomočnik Google ni na voljo v gostujoči seji.</translation>
 <translation id="6127370444807669747">Če želite osebno prilagojene sezname predvajanja in več glasbe za osredotočanje, preizkusite YouTube Music Premium</translation>
+<translation id="6127395413317891856">Nimate vzpostavljene povezave. Preverite povezavo in poskusite znova.</translation>
 <translation id="6129953537138746214">Presledek</translation>
 <translation id="6137566720514957455">Odpri pogovorno okno za odstranjevanje za <ph name="USER_EMAIL_ADDRESS" /></translation>
 <translation id="6141205840878048728">Na kaj se želite osredotočiti?</translation>
@@ -1859,6 +1868,7 @@ Nova namestitev</translation>
         <ph name="MANAGED" />,
         <ph name="IME" />,
         <ph name="LOCALE" /></translation>
+<translation id="7899977217122813285">Obvestila so med osredotočanjem utišana do <ph name="TIME" /></translation>
 <translation id="7901190436359881020">Zamenjava oken</translation>
 <translation id="7901405293566323524">Središče za telefone</translation>
 <translation id="7902625623987030061">Dotaknite se tipala prstnih odtisov.</translation>
@@ -1963,6 +1973,7 @@ Nova namestitev</translation>
 <translation id="8257510091797044096">Nastavitev naprave</translation>
 <translation id="8261506727792406068">Izbriši</translation>
 <translation id="8262312463845990408">Preklop predvajanja</translation>
+<translation id="8268302343625273732">Ogled vseh nalog v Učilnici Google</translation>
 <translation id="8277261673056602147">Označevanje besedila na zaslonu</translation>
 <translation id="8287009018010202411">Storilnost</translation>
 <translation id="828708037801473432">Izklopljeno</translation>

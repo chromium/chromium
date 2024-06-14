@@ -278,6 +278,7 @@
 <translation id="5690795753582697420">Камерата е исклучена во поставките за Android</translation>
 <translation id="5691080386278724773"><ph name="SITE" /> може да ги користи вашите податоци додека прелистувате</translation>
 <translation id="5700761515355162635">Колачињата од трети страни се дозволени</translation>
+<translation id="5705383358494210886"><ph name="HOST_NAME" /> <ph name="SEPARATOR1" /> <ph name="RECENCY" /></translation>
 <translation id="5706552988683188916">Ова ги брише колачињата и другите податоците од сајтот за <ph name="WEBSITE" /></translation>
 <translation id="5723967018671998714">Колачињата од трети страни се блокирани во режим инкогнито</translation>
 <translation id="5740126560802162366">Сајтовите може да зачуваат податоци на вашиот уред</translation>

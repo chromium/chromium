@@ -11,6 +11,7 @@
 <translation id="1273910660700874265">Opsionet e grupit të skedave "<ph name="TITLE_OF_GROUP" />"</translation>
 <translation id="1322824555808364080">Fto njerëz</translation>
 <translation id="1419023007528516122">Kjo do të fshijë përgjithmonë grupin nga pajisja jote</translation>
+<translation id="1486715732399361704">Mund t'i gjesh të gjitha grupet e skedave këtu</translation>
 <translation id="149054111719651807">{NUM_MINS,plural, =1{Krijuar <ph name="NUM_MINS_ONE" /> minutë më parë}other{Krijuar <ph name="NUM_MINS_MANY" /> minuta më parë}}</translation>
 <translation id="1499635324672558517">Të mbyllen të gjitha skedat "e fshehta"?</translation>
 <translation id="1501480321619201731">Fshi grupin</translation>
@@ -23,6 +24,7 @@
 <translation id="1869137256605757565">{TABS_COUNT,plural, =1{<ph name="TABS_COUNT_ONE" /> skedë}other{<ph name="TABS_COUNT_MANY" /> skeda}}</translation>
 <translation id="2050597508048557928">{TABS_COUNT,plural, =1{Shto te faqeshënuesit <ph name="TABS_COUNT_ONE" /> skedë të zgjedhur}other{Shto te faqeshënuesit <ph name="TABS_COUNT_MANY" /> skeda të zgjedhura}}</translation>
 <translation id="2118649612461486615">Informacione për dyqanin</translation>
+<translation id="2123073051266141035">{INCOGNITO_TABS_COUNT,plural, =1{Skedat dhe grupet e tua të mbyllura mund të hapen përsëri nga seksioni "Skedat e fundit" dhe seksioni "Grupet e skedave". Skeda "e fshehtë" nuk do të ofrohet.}other{Skedat dhe grupet e tua të mbyllura mund të hapen përsëri nga seksioni "Skedat e fundit" dhe seksioni "Grupet e skedave". # skedat "e fshehta" nuk do të ofrohen.}}</translation>
 <translation id="2162620598375156287">Tani <ph name="CURRENT_PRICE" /> te <ph name="SOURCE_WEBSITE" /></translation>
 <translation id="22623456902492423">{TABS_COUNT,plural, =1{Anulo grupimin e skedës}other{Anulo grupimin e skedave}}</translation>
 <translation id="2271452184061378400">Grupet e skedave ruhen këtu</translation>
@@ -54,6 +56,7 @@
 <translation id="3882834874697329510">Për të marrë një alarm sinjalizues kur ka një çmim më të ulët në një skedë të hapur, aktivizo njoftimet te "Cilësimet".</translation>
 <translation id="3940195383040445971">Monitoro çmimet në skeda</translation>
 <translation id="3954615705217314756">{TABS_COUNT,plural, =1{Grupo skedën}other{Grupo skedat}}</translation>
+<translation id="395587619114760247">{TABS_COUNT,plural, =1{<ph name="TABS_COUNT_ONE" /> skedë joaktive}other{<ph name="TABS_COUNT_MANY" /> skeda joaktive}}</translation>
 <translation id="3969565576924904454">Hap "<ph name="TITLE_OF_GROUP" />"</translation>
 <translation id="3996880007329611795">Merr njoftime</translation>
 <translation id="4009732926939031387">{NUM_DAYS,plural, =1{Krijuar <ph name="NUM_DAYS_ONE" /> ditë më parë}other{Krijuar <ph name="NUM_DAYS_MANY" /> ditë më parë}}</translation>
@@ -97,6 +100,7 @@
 <translation id="6054741997831917303">Çmimi i artikullit ra së fundi nga <ph name="PREVIOUS_PRICE" /> në <ph name="NEW_PRICE" /></translation>
 <translation id="6193448654517602979">Zgjidh skedat</translation>
 <translation id="6228793724645064692">(vlerësimi i dyqanit)</translation>
+<translation id="6271513594716432922">Mbyll të gjitha skedat joaktive</translation>
 <translation id="6333260925957816943">Informacioni për këtë dyqan</translation>
 <translation id="6381032505162537930">Grupet e skedave do t'i gjesh këtu</translation>
 <translation id="639823877092900621">{TABS_COUNT,plural, =1{Anulo grupimin për <ph name="TABS_COUNT_ONE" /> skedë të zgjedhur}other{Anulo grupimin për <ph name="TABS_COUNT_MANY" /> skeda të zgjedhura}}</translation>

@@ -36,15 +36,15 @@
 <translation id="2320741269052147773">Pomičite ulijevo</translation>
 <translation id="2360840973209616515">Aplikacijom kamere upravlja administrator.
         Za detalje kontaktirajte administratora.</translation>
-<translation id="2442754296994859145">Kopirajte da biste potvrdili sadržaj ili proširite da biste zaustavili skeniranje.</translation>
-<translation id="2486151619109781620">Sažmite dijaloški okvir i pokrenite skeniranje</translation>
+<translation id="2442754296994859145">Kopirajte da potvrdite sadržaj ili proširite da zaustavite skeniranje.</translation>
+<translation id="2486151619109781620">Suzi dijaloški okvir i pokreni skeniranje</translation>
 <translation id="2501278716633472235">Nazad</translation>
 <translation id="2501853267655415902">Snimanje je zaustavljeno</translation>
 <translation id="2517472476991765520">Skeniraj</translation>
 <translation id="2549985041256363841">Započni snimanje</translation>
 <translation id="2577915835281444458">Snimanje će se uskoro zaustaviti. Idite u pohranu na uređaju da oslobodite prostor.</translation>
 <translation id="2599796128805996109">Zadnja kamera</translation>
-<translation id="2654491636277477479">Kopirajte otkriveni tekst</translation>
+<translation id="2654491636277477479">Kopiraj otkriveni tekst</translation>
 <translation id="2759905922487820242"><ph name="CURRENT" />/<ph name="MAXIMAL" /> s</translation>
 <translation id="2761536921376153655">Vrsta skeniranja</translation>
 <translation id="28682968802727151">Pregled preslikavanja</translation>
@@ -52,7 +52,7 @@
 <translation id="3067436040345934772">Pomičite udesno</translation>
 <translation id="3081586908890909590">Prebaci na snimanje videozapisa</translation>
 <translation id="313467653172006084">30 fps</translation>
-<translation id="3157038259444425153">Sada možete izravno kopirati tekst na fotografiji</translation>
+<translation id="3157038259444425153">Sada možete direktno kopirati tekst na fotografiji</translation>
 <translation id="3158534262962737808">Pridružite se mreži "<ph name="WIFINAME" />"</translation>
 <translation id="3227137524299004712">Mikrofon</translation>
 <translation id="3240426699337459095">Link je kopiran</translation>
@@ -97,7 +97,7 @@
 <translation id="5317780077021120954">Sačuvaj</translation>
 <translation id="5320594929574852403">Pomjeranje ulijevo</translation>
 <translation id="5374917190292010970">4K (2160 p)</translation>
-<translation id="5634947914995388399">Proširite dijaloški okvir i zaustavite skeniranje</translation>
+<translation id="5634947914995388399">Proširi dijaloški okvir i zaustavi skeniranje</translation>
 <translation id="5662366948659129155">Skeniranje <ph name="COUNT" />. stranice</translation>
 <translation id="5671277269877808209">Kvadrat</translation>
 <translation id="574392208103952083">Srednje</translation>
@@ -122,13 +122,13 @@ Ako se vaše povratne informacije odnose na kvalitet slike ili videozapisa, pril
 <translation id="6519884562954018934">Pridružite se mreži <ph name="WIFINAME" /></translation>
 <translation id="6527303717912515753">Dijeli</translation>
 <translation id="6586509689874700895">Prvo pritisnite <ph name="BUTTON_NAME" /> da uvećate. Nakon što snimite fotografiju, vidjet ćete poboljšane detalje.</translation>
-<translation id="659539649712855529">Kopiran je tekst <ph name="CONTENT" /></translation>
+<translation id="659539649712855529">Kopirano: <ph name="CONTENT" /></translation>
 <translation id="6617916774429601017">Prikaži sve rezolucije</translation>
 <translation id="6631515515009660915">Preslikavanje je isključeno</translation>
 <translation id="6652737148136672975">Pomjeranje položaja ugla tipkama sa strelicama</translation>
 <translation id="667999046851023355">Dokument</translation>
 <translation id="6681668084120808868">Snimi fotografiju</translation>
-<translation id="6692092766759105707">Kopirajte da biste potvrdili sadržaj.</translation>
+<translation id="6692092766759105707">Kopirajte da potvrdite sadržaj.</translation>
 <translation id="6778482348691154169">Nije moguće snimiti fotografiju</translation>
 <translation id="6888362557094394345">Pomjeranje nadolje</translation>
 <translation id="695140971690006676">Vrati sve na zadano</translation>

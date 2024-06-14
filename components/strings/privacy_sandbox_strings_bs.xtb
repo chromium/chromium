@@ -1,9 +1,11 @@
 <?xml version="1.0" ?>
 <!DOCTYPE translationbundle>
 <translationbundle lang="bs">
+<translation id="2252052615723281030">Kada ste prijavljeni u Chrome, ova postavka pomaže da vaša IP adresa ostane privatna. Ako Chrome posumnja da vas neka web lokacija možda prati, određeni dio vašeg saobraćaja će se možda slati putem servera za zaštitu privatnosti.</translation>
 <translation id="33479675708419823">Kada ste prijavljeni u Chrome, ova postavka pomaže da vaša IP adresa ostane privatna. Ako Chrome posumnja da vas neka web lokacija možda prati, određeni dio vašeg saobraćaja će se možda slati putem servera za zaštitu privatnosti. Saznajte više o <ph name="LINK_BEGIN" />funkcioniranju zaštite IP-a<ph name="LINK_END" /></translation>
 <translation id="3529311220178827364">Više informacija o sakrivanju IP adrese</translation>
 <translation id="4301151630239508244">Teme oglasa su samo jedna od mnogih mogućnosti koje web lokacija može koristiti da personalizira oglase. Čak i bez tema oglasa, web lokacije i dalje mogu prikazivati oglase, ali će možda biti manje personalizirani. Saznajte više o <ph name="BEGIN_LINK_1" />upravljanju privatnošću pri izloženosti oglasima<ph name="END_LINK_1" />.</translation>
 <translation id="4598427486995631491">Sakrivanje IP adrese</translation>
 <translation id="6371812158043974664">Kada ste prijavljeni u Chromium, ova postavka pomaže da vaša IP adresa ostane privatna. Ako Chromium posumnja da vas neka web lokacija možda prati, određeni dio vašeg saobraćaja će se možda slati putem servera za zaštitu privatnosti. Saznajte više o <ph name="LINK_BEGIN" />funkcioniranju zaštite IP-a<ph name="LINK_END" /></translation>
+<translation id="7040031291654706261">Saznajte <ph name="BEGIN_LINK" />kako zaštita IP-a funkcionira<ph name="END_LINK" /></translation>
 </translationbundle>
