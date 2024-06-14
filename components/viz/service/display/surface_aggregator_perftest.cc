@@ -87,7 +87,6 @@ class SurfaceAggregatorPerfTest : public VizPerfTest {
   void RunTest(int num_surfaces,
                int num_textures,
                float opacity,
-               bool optimize_damage,
                bool full_damage,
                const std::string& story,
                ExpectedOutput expected_output) {
@@ -100,8 +99,7 @@ class SurfaceAggregatorPerfTest : public VizPerfTest {
       child_tokens[i] = base::UnguessableToken::Create();
     }
     aggregator_ = std::make_unique<SurfaceAggregator>(
-        manager_.surface_manager(), resource_provider_.get(), optimize_damage,
-        true);
+        manager_.surface_manager(), resource_provider_.get(), true);
     for (int i = 0; i < num_surfaces; i++) {
       LocalSurfaceId local_surface_id(i + 1, child_tokens[i]);
 
@@ -286,7 +284,7 @@ class SurfaceAggregatorPerfTest : public VizPerfTest {
                                        &render_pass_list);
 
     aggregator_ = std::make_unique<SurfaceAggregator>(
-        manager_.surface_manager(), resource_provider_.get(), true, true);
+        manager_.surface_manager(), resource_provider_.get(), true);
 
     auto root_support = std::make_unique<CompositorFrameSinkSupport>(
         nullptr, &manager_, root_frame_sink_id, /*is_root=*/true);
@@ -390,7 +388,7 @@ class SurfaceAggregatorPerfTest : public VizPerfTest {
     }
 
     aggregator_ = std::make_unique<SurfaceAggregator>(
-        manager_.surface_manager(), resource_provider_.get(), true, true);
+        manager_.surface_manager(), resource_provider_.get(), true);
 
     base::HistogramBase* aggregate_histogram =
         base::Histogram::FactoryMicrosecondsTimeGet(
@@ -508,56 +506,55 @@ class SurfaceAggregatorPerfTest : public VizPerfTest {
 };
 
 TEST_F(SurfaceAggregatorPerfTest, ManySurfacesOpaque) {
-  RunTest(20, 100, 1.f, false, true, "many_surfaces_opaque",
-          ExpectedOutput(1, 2000));
+  RunTest(20, 100, 1.f, true, "many_surfaces_opaque", ExpectedOutput(1, 2000));
 }
 
 TEST_F(SurfaceAggregatorPerfTest, ManySurfacesOpaque_100) {
-  RunTest(100, 1, 1.f, true, false, "100_surfaces_1_quad_each",
+  RunTest(100, 1, 1.f, false, "100_surfaces_1_quad_each",
           ExpectedOutput(1, 100));
 }
 
 TEST_F(SurfaceAggregatorPerfTest, ManySurfacesOpaque_300) {
-  RunTest(300, 1, 1.f, true, false, "300_surfaces_1_quad_each",
+  RunTest(300, 1, 1.f, false, "300_surfaces_1_quad_each",
           ExpectedOutput(1, 300));
 }
 
 TEST_F(SurfaceAggregatorPerfTest, ManySurfacesManyQuadsOpaque_100) {
-  RunTest(100, 100, 1.f, true, false, "100_surfaces_100_quads_each",
+  RunTest(100, 100, 1.f, false, "100_surfaces_100_quads_each",
           ExpectedOutput(1, 5000));
 }
 
 TEST_F(SurfaceAggregatorPerfTest, ManySurfacesManyQuadsOpaque_300) {
-  RunTest(300, 100, 1.f, true, false, "300_surfaces_100_quads_each",
+  RunTest(300, 100, 1.f, false, "300_surfaces_100_quads_each",
           ExpectedOutput(1, 15000));
 }
 
 TEST_F(SurfaceAggregatorPerfTest, ManySurfacesTransparent) {
-  RunTest(20, 100, .5f, false, true, "many_surfaces_transparent",
+  RunTest(20, 100, .5f, true, "many_surfaces_transparent",
           ExpectedOutput(20, 2019));
 }
 
 TEST_F(SurfaceAggregatorPerfTest, FewSurfaces) {
-  RunTest(3, 20, 1.f, false, true, "few_surfaces", ExpectedOutput(1, 60));
+  RunTest(3, 20, 1.f, true, "few_surfaces", ExpectedOutput(1, 60));
 }
 
 TEST_F(SurfaceAggregatorPerfTest, ManySurfacesOpaqueDamageCalc) {
-  RunTest(20, 100, 1.f, true, true, "many_surfaces_opaque_damage_calc",
+  RunTest(20, 100, 1.f, true, "many_surfaces_opaque_damage_calc",
           ExpectedOutput(1, 2000));
 }
 
 TEST_F(SurfaceAggregatorPerfTest, ManySurfacesTransparentDamageCalc) {
-  RunTest(20, 100, .5f, true, true, "many_surfaces_transparent_damage_calc",
+  RunTest(20, 100, .5f, true, "many_surfaces_transparent_damage_calc",
           ExpectedOutput(20, 2019));
 }
 
 TEST_F(SurfaceAggregatorPerfTest, FewSurfacesDamageCalc) {
-  RunTest(3, 1000, 1.f, true, true, "few_surfaces_damage_calc",
+  RunTest(3, 1000, 1.f, true, "few_surfaces_damage_calc",
           ExpectedOutput(1, 3000));
 }
 
 TEST_F(SurfaceAggregatorPerfTest, FewSurfacesAggregateDamaged) {
-  RunTest(3, 1000, 1.f, true, false, "few_surfaces_aggregate_damaged",
+  RunTest(3, 1000, 1.f, false, "few_surfaces_aggregate_damaged",
           ExpectedOutput(1, 1500));
 }
 

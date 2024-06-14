@@ -38,7 +38,6 @@ class DisplayDamageTrackerTest : public testing::Test {
                            &sync_point_manager_),
         aggregator_(manager_.surface_manager(),
                     &resource_provider_,
-                    false,
                     false),
         root_client_(&manager_, kRootFrameSinkId),
         task_runner_(base::MakeRefCounted<base::NullTaskRunner>()),

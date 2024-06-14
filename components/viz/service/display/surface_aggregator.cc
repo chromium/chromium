@@ -177,24 +177,6 @@ void MoveMatchingRequests(
   copy_requests->erase(request_range.first, request_range.second);
 }
 
-// Returns true if the damage rect is valid.
-bool CalculateQuadSpaceDamageRect(
-    const gfx::Transform& quad_to_target_transform,
-    const gfx::Transform& target_to_root_transform,
-    const gfx::Rect& root_damage_rect,
-    gfx::Rect* quad_space_damage_rect) {
-  gfx::Transform quad_to_root_transform =
-      target_to_root_transform * quad_to_target_transform;
-  gfx::Transform inverse_transform;
-  bool inverse_valid = quad_to_root_transform.GetInverse(&inverse_transform);
-  if (!inverse_valid)
-    return false;
-
-  *quad_space_damage_rect = cc::MathUtil::ProjectEnclosingClippedRect(
-      inverse_transform, root_damage_rect);
-  return true;
-}
-
 // Create a clip rect for an aggregated quad from the original clip rect and
 // the clip rect from the surface it's on.
 std::optional<gfx::Rect> CalculateClipRect(
@@ -451,13 +433,11 @@ struct SurfaceAggregator::PrewalkResult {
 SurfaceAggregator::SurfaceAggregator(
     SurfaceManager* manager,
     DisplayResourceProvider* provider,
-    bool aggregate_only_damaged,
     bool needs_surface_damage_rect_list,
     ExtraPassForReadbackOption extra_pass_option,
     bool prevent_merging_surfaces_to_root_pass)
     : manager_(manager),
       provider_(provider),
-      aggregate_only_damaged_(aggregate_only_damaged),
       needs_surface_damage_rect_list_(needs_surface_damage_rect_list),
       extra_pass_for_readback_option_(extra_pass_option),
       prevent_merging_surfaces_to_root_pass_(
@@ -796,9 +776,6 @@ void SurfaceAggregator::HandleSurfaceQuad(
     const std::optional<gfx::Rect> added_clip_rect,
     const std::optional<gfx::Rect> dest_root_target_clip_rect,
     AggregatedRenderPass* dest_pass,
-    bool ignore_undamaged,
-    gfx::Rect* damage_rect_in_quad_space,
-    bool* damage_rect_in_quad_space_valid,
     const MaskFilterInfoExt& mask_filter_info) {
   DCHECK(target_transform.Preserves2dAxisAlignment());
 
@@ -876,8 +853,7 @@ void SurfaceAggregator::HandleSurfaceQuad(
   EmitSurfaceContent(*resolved_frame, parent_device_scale_factor, surface_quad,
                      embedder_client_namespace_id, target_transform,
                      surface_clip_rect, combined_clip_rect, dest_pass,
-                     ignore_undamaged, damage_rect_in_quad_space,
-                     damage_rect_in_quad_space_valid, mask_filter_info);
+                     mask_filter_info);
 }
 
 void SurfaceAggregator::EmitSurfaceContent(
@@ -889,9 +865,6 @@ void SurfaceAggregator::EmitSurfaceContent(
     const std::optional<gfx::Rect> added_clip_rect,
     const std::optional<gfx::Rect> dest_root_target_clip_rect,
     AggregatedRenderPass* dest_pass,
-    bool ignore_undamaged,
-    gfx::Rect* damage_rect_in_quad_space,
-    bool* damage_rect_in_quad_space_valid,
     const MaskFilterInfoExt& mask_filter_info) {
   Surface* surface = resolved_frame.surface();
 
@@ -942,19 +915,6 @@ void SurfaceAggregator::EmitSurfaceContent(
                            StepName::STEP_SURFACE_AGGREGATION);
         data->set_display_trace_id(trace_id);
       });
-
-  const gfx::Rect& surface_quad_visible_rect = surface_quad->visible_rect;
-  if (ignore_undamaged) {
-    gfx::Transform quad_to_target_transform =
-        target_transform * surface_quad_sqs->quad_to_target_transform;
-    *damage_rect_in_quad_space_valid = CalculateQuadSpaceDamageRect(
-        quad_to_target_transform, dest_pass->transform_to_root_target,
-        root_damage_rect_, damage_rect_in_quad_space);
-    if (*damage_rect_in_quad_space_valid &&
-        !damage_rect_in_quad_space->Intersects(surface_quad_visible_rect)) {
-      return;
-    }
-  }
 
   // A map keyed by RenderPass id.
   Surface::CopyRequestsMap copy_requests;
@@ -1146,7 +1106,7 @@ void SurfaceAggregator::EmitSurfaceContent(
     //   this so that |quad_visible_rect| is in the render pass's content
     //   space.
     gfx::Rect quad_visible_rect(gfx::ScaleToEnclosingRect(
-        surface_quad_visible_rect, inverse_extra_content_scale_x,
+        surface_quad->visible_rect, inverse_extra_content_scale_x,
         inverse_extra_content_scale_y));
 
     // |tex_coord_rect| - A rectangle representing the bounds of the texture
@@ -1443,34 +1403,6 @@ void SurfaceAggregator::CopyQuadsToPass(
   const QuadList& source_quad_list = source_pass.quad_list;
   const SharedQuadState* last_copied_source_shared_quad_state = nullptr;
 
-  // If the current frame has copy requests or cached render passes, then
-  // aggregate the entire thing, as otherwise parts of the copy requests may be
-  // ignored and we could cache partially drawn render pass.
-  // If there are pixel-moving backdrop filters then the damage rect might be
-  // expanded later, so we can't drop quads that are outside the current damage
-  // rect safely.
-  // If overlay/underlay is enabled then the underlay rect might be added to the
-  // damage rect later. We are not able to predict right here which draw quad
-  // candidate will be promoted to overlay/underlay. Also, we might drop quads
-  // which are on top of an underlay and cause the overlay processor to
-  // present the quad as an overlay instead of an underlay.
-  const bool ignore_undamaged =
-      aggregate_only_damaged_ && !has_copy_requests_ &&
-      !has_pixel_moving_backdrop_filter_ &&
-      !resolved_pass.aggregation().in_cached_render_pass &&
-      !resolved_pass.aggregation().in_pixel_moving_filter_pass &&
-      !RenderPassNeedsFullDamage(resolved_pass);
-  // TODO(kylechar): For copy render passes we only need to draw all quads if
-  // those attributes are set on the current render pass' aggregation data. The
-  // complication is if a SurfaceDrawQuad is dropped and that surface has a copy
-  // request on it then we still need to draw the surface.
-
-  // Damage rect in the quad space of the current shared quad state.
-  // TODO(jbauman): This rect may contain unnecessary area if
-  // transform isn't axis-aligned.
-  gfx::Rect damage_rect_in_quad_space;
-  bool damage_rect_in_quad_space_valid = false;
-
 #if DCHECK_IS_ON()
   const SharedQuadStateList& source_shared_quad_state_list =
       source_pass.shared_quad_state_list;
@@ -1543,8 +1475,6 @@ void SurfaceAggregator::CopyQuadsToPass(
       HandleSurfaceQuad(source_pass, surface_quad, client_namespace_id,
                         parent_device_scale_factor, target_transform, clip_rect,
                         new_dest_root_target_clip_rect, dest_pass,
-                        ignore_undamaged, &damage_rect_in_quad_space,
-                        &damage_rect_in_quad_space_valid,
                         new_mask_filter_info_ext);
     } else {
       // Here we output the optional quad's |per_quad_damage| to the
@@ -1578,18 +1508,6 @@ void SurfaceAggregator::CopyQuadsToPass(
         }
 
         last_copied_source_shared_quad_state = quad->shared_quad_state;
-        if (ignore_undamaged) {
-          damage_rect_in_quad_space_valid = CalculateQuadSpaceDamageRect(
-              dest_shared_quad_state->quad_to_target_transform,
-              dest_pass->transform_to_root_target, root_damage_rect_,
-              &damage_rect_in_quad_space);
-        }
-      }
-
-      if (ignore_undamaged) {
-        if (damage_rect_in_quad_space_valid &&
-            !damage_rect_in_quad_space.Intersects(quad->visible_rect))
-          continue;
       }
 
       DrawQuad* dest_quad = nullptr;

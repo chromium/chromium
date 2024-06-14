@@ -90,7 +90,6 @@ class VideoDetectorTest : public testing::Test {
   VideoDetectorTest()
       : surface_aggregator_(frame_sink_manager_.surface_manager(),
                             &resource_provider_,
-                            false,
                             false) {}
 
   VideoDetectorTest(const VideoDetectorTest&) = delete;

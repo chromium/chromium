@@ -65,7 +65,6 @@ class VIZ_SERVICE_EXPORT SurfaceAggregator : public SurfaceObserver {
 
   SurfaceAggregator(SurfaceManager* manager,
                     DisplayResourceProvider* provider,
-                    bool aggregate_only_damaged,
                     bool needs_surface_damage_rect_list,
                     ExtraPassForReadbackOption extra_pass_option =
                         ExtraPassForReadbackOption::kNone,
@@ -173,9 +172,6 @@ class VIZ_SERVICE_EXPORT SurfaceAggregator : public SurfaceObserver {
       const std::optional<gfx::Rect> added_clip_rect,
       const std::optional<gfx::Rect> dest_root_target_clip_rect,
       AggregatedRenderPass* dest_pass,
-      bool ignore_undamaged,
-      gfx::Rect* damage_rect_in_quad_space,
-      bool* damage_rect_in_quad_space_valid,
       const MaskFilterInfoExt& mask_filter_info_pair);
 
   void EmitSurfaceContent(
@@ -187,9 +183,6 @@ class VIZ_SERVICE_EXPORT SurfaceAggregator : public SurfaceObserver {
       const std::optional<gfx::Rect> added_clip_rect,
       const std::optional<gfx::Rect> dest_root_target_clip_rect,
       AggregatedRenderPass* dest_pass,
-      bool ignore_undamaged,
-      gfx::Rect* damage_rect_in_quad_space,
-      bool* damage_rect_in_quad_space_valid,
       const MaskFilterInfoExt& mask_filter_info_pair);
 
   void EmitDefaultBackgroundColorQuad(
@@ -356,8 +349,6 @@ class VIZ_SERVICE_EXPORT SurfaceAggregator : public SurfaceObserver {
 
   const raw_ptr<SurfaceManager> manager_;
   const raw_ptr<DisplayResourceProvider> provider_;
-
-  const bool aggregate_only_damaged_;
 
   // If true, per-surface damage rect list will be produced.
   const bool needs_surface_damage_rect_list_;

@@ -194,7 +194,7 @@ class DisplaySchedulerTest : public testing::Test {
         resource_provider_(&shared_bitmap_manager_,
                            &shared_image_manager_,
                            &sync_point_manager_),
-        aggregator_(&surface_manager_, &resource_provider_, false, false),
+        aggregator_(&surface_manager_, &resource_provider_, false),
         damage_tracker_(
             std::make_unique<TestDisplayDamageTracker>(&surface_manager_,
                                                        &aggregator_)),

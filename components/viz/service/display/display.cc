@@ -81,12 +81,6 @@ namespace viz {
 
 namespace {
 
-// Try turning off aggregate only damaged everywhere to verify it doesn't cause
-// performance problems.
-BASE_FEATURE(kUseAggregateOnlyDamaged,
-             "UseAggregateOnlyDamaged",
-             base::FEATURE_DISABLED_BY_DEFAULT);
-
 #if !BUILDFLAG(IS_MAC)
 constexpr base::TimeDelta kAllowedDeltaFromFuture = base::Milliseconds(16);
 #endif
@@ -480,14 +474,6 @@ void Display::InitializeRenderer(bool enable_shared_images) {
   renderer_->Initialize();
   renderer_->SetVisible(visible_);
 
-  // Outputting a partial list of quads might not work in cases where contents
-  // outside the damage rect might be needed by the renderer.
-  bool output_partial_list =
-      base::FeatureList::IsEnabled(kUseAggregateOnlyDamaged) &&
-      renderer_->use_partial_swap() &&
-      output_surface_->capabilities().only_invalidates_damage_rect &&
-      !overlay_processor_->IsOverlaySupported();
-
   SurfaceAggregator::ExtraPassForReadbackOption extra_pass_option =
       SurfaceAggregator::ExtraPassForReadbackOption::kNone;
   if (output_surface_->capabilities().root_is_vulkan_secondary_command_buffer) {
@@ -505,7 +491,7 @@ void Display::InitializeRenderer(bool enable_shared_images) {
   const bool prevent_merging_surfaces_to_root_pass = false;
 #endif
   aggregator_ = std::make_unique<SurfaceAggregator>(
-      surface_manager_, resource_provider_.get(), output_partial_list,
+      surface_manager_, resource_provider_.get(),
       overlay_processor_->NeedsSurfaceDamageRectList(), extra_pass_option,
       prevent_merging_surfaces_to_root_pass);
 
