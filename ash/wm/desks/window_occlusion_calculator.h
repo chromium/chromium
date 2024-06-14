@@ -98,11 +98,17 @@ class ASH_EXPORT WindowOcclusionCalculator : public aura::WindowObserver {
       base::flat_map<raw_ptr<aura::Window>, aura::Window::OcclusionState>;
 
   // aura::WindowObserver:
+  void OnWindowAdded(aura::Window* window) override;
   void OnWindowDestroyed(aura::Window* window) override;
+  void OnWindowPropertyChanged(aura::Window* window,
+                               const void* key,
+                               intptr_t old) override;
 
   void SetOcclusionState(aura::Window* window,
                          aura::Window::OcclusionState occlusion_state);
   void TrackOcclusionChangesForAllDescendants(aura::Window* window);
+  void ObserveWindow(aura::Window* window);
+  void ExcludeWindowFromOcclusionCalculation(aura::Window* window);
 
   // Holds the current occlusion state for all tracked windows. This includes
   // parent windows being observed and their descendants.
@@ -123,10 +129,21 @@ class ASH_EXPORT WindowOcclusionCalculator : public aura::WindowObserver {
   base::flat_map<raw_ptr<aura::Window>, std::unique_ptr<ObservationState>>
       occlusion_change_observers_;
 
-  // Only for monitoring when a tracked `aura::Window` gets destroyed. See
-  // `OnWindowDestroyed()` implementation.
+  // All parents windows of interest and their descendants (including those in
+  // `exluded_windows_`) are observed for changes to the
+  // `kHideInDeskMiniViewKey` property and to clean up on window destruction.
   base::ScopedMultiSourceObservation<aura::Window, aura::WindowObserver>
-      tracked_window_observations_{this};
+      all_window_observations_{this};
+
+  // Windows with the `kHideInDeskMiniViewKey` property. Since they're hidden in
+  // in the mini view, they should be ignored when determining which desk
+  // windows are visible.
+  //
+  // Must be destroyed before `occlusion_tracker_` since the `ScopedExclude`
+  // instances hold a raw pointer to the `occlusion_tracker_`.
+  base::flat_map<raw_ptr<aura::Window>,
+                 std::unique_ptr<aura::WindowOcclusionTracker::ScopedExclude>>
+      excluded_windows_;
 
   base::WeakPtrFactory<WindowOcclusionCalculator> weak_ptr_factory_{this};
 };

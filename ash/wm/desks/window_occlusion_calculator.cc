@@ -7,6 +7,7 @@
 #include <memory>
 #include <utility>
 
+#include "ash/public/cpp/window_properties.h"
 #include "base/check.h"
 #include "base/logging.h"
 #include "base/notreached.h"
@@ -123,6 +124,11 @@ WindowOcclusionCalculator::~WindowOcclusionCalculator() = default;
 
 aura::Window::OcclusionState WindowOcclusionCalculator::GetOcclusionState(
     aura::Window* window) const {
+  if (excluded_windows_.contains(window)) {
+    // Regardless of what `aura::WindowOcclusionTracker` says, this should
+    // always be `HIDDEN` for desk bar purposes.
+    return aura::Window::OcclusionState::HIDDEN;
+  }
   auto iter = occlusion_map_.find(window);
   return iter == occlusion_map_.end() ? aura::Window::OcclusionState::UNKNOWN
                                       : iter->second;
@@ -150,7 +156,7 @@ void WindowOcclusionCalculator::AddObserver(
       occlusion_change_observers_.try_emplace(
           parent_window.get(), std::make_unique<ObservationState>(
                                    parent_window, &occlusion_tracker_));
-      if (!tracked_window_observations_.IsObservingSource(parent_window)) {
+      if (!all_window_observations_.IsObservingSource(parent_window)) {
         TrackOcclusionChangesForAllDescendants(parent_window.get());
       }
     }
@@ -183,11 +189,15 @@ void WindowOcclusionCalculator::RemoveObserver(Observer* observer) {
   }
 }
 
+void WindowOcclusionCalculator::OnWindowAdded(aura::Window* window) {
+  ObserveWindow(window);
+}
+
 // Note `aura::WindowOcclusionTracker` automatically updates all of its
 // bookkeeping internally when a tracked window gets destroyed. So this only
 // has to do bookkeeping for `WindowOcclusionCalculator` specific things.
 void WindowOcclusionCalculator::OnWindowDestroyed(aura::Window* window) {
-  tracked_window_observations_.RemoveObservation(window);
+  all_window_observations_.RemoveObservation(window);
   // Erasure makes `GetOcclusionState()` return `UNKNOWN` if the caller happens
   // to request the occlusion state of a window that was being tracked
   // but got destroyed.
@@ -195,6 +205,32 @@ void WindowOcclusionCalculator::OnWindowDestroyed(aura::Window* window) {
   // Prevents use-after-free in `SetOcclusionState()` when iterating through
   // `occlusion_change_observers_`.
   occlusion_change_observers_.erase(window);
+  // Prevents dangling `raw_ptr<aura::Window>` failures.
+  excluded_windows_.erase(window);
+}
+
+void WindowOcclusionCalculator::OnWindowPropertyChanged(aura::Window* window,
+                                                        const void* key,
+                                                        intptr_t old) {
+  if (key != kHideInDeskMiniViewKey) {
+    return;
+  }
+
+  if (window->GetProperty(kHideInDeskMiniViewKey)) {
+    ExcludeWindowFromOcclusionCalculation(window);
+    // Theoretically, we should "untrack" the `window` in the
+    // `occlusion_tracker_` here if it's already being tracked, but an API
+    // doesn't exist to do so. It's not necessary in practice though because
+    // `aura::WindowOcclusionTracker` allows windows that are both tracked and
+    // excluded. `GetOcclusionState()` will ultimately return the correct value
+    // for `kHideInDeskMiniViewKey` windows regardless of how the
+    // `occlusion_tracker_` treats these cases.
+  } else {
+    excluded_windows_.erase(window);
+    // This is a cheap no-op internally if `occlusion_tracker_` is already
+    // tracking the `window`.
+    occlusion_tracker_.Track(window);
+  }
 }
 
 void WindowOcclusionCalculator::SetOcclusionState(
@@ -225,13 +261,37 @@ void WindowOcclusionCalculator::SetOcclusionState(
 
 void WindowOcclusionCalculator::TrackOcclusionChangesForAllDescendants(
     aura::Window* window) {
-  CHECK(!tracked_window_observations_.IsObservingSource(window));
-  tracked_window_observations_.AddObservation(window);
-  occlusion_tracker_.Track(window);
+  ObserveWindow(window);
   // Order in which children are tracked does not matter here.
   for (const auto& child : window->children()) {
     TrackOcclusionChangesForAllDescendants(child.get());
   }
+}
+
+void WindowOcclusionCalculator::ObserveWindow(aura::Window* window) {
+  // This method must gracefully handle windows that are already being observed
+  // and be a no-op in such cases.
+  if (!all_window_observations_.IsObservingSource(window)) {
+    all_window_observations_.AddObservation(window);
+  }
+
+  if (window->GetProperty(kHideInDeskMiniViewKey)) {
+    ExcludeWindowFromOcclusionCalculation(window);
+  } else {
+    // This is a cheap no-op internally if `occlusion_tracker_` is already
+    // tracking the `window`.
+    occlusion_tracker_.Track(window);
+  }
+}
+
+void WindowOcclusionCalculator::ExcludeWindowFromOcclusionCalculation(
+    aura::Window* window) {
+  if (excluded_windows_.contains(window)) {
+    return;
+  }
+  excluded_windows_[window] =
+      std::make_unique<aura::WindowOcclusionTracker::ScopedExclude>(
+          window, &occlusion_tracker_);
 }
 
 }  // namespace ash
