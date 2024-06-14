@@ -16382,12 +16382,6 @@ Please help our engineers fix this problem. Tell us what happened right before y
       <message name="IDS_WEBAUTHN_SAVE_ANOTHER_WAY" desc="Text link that appears on a button to save the passkey another way. For example, in their iCloud Keychain account or by using Windows Hello.">
         Save another way
       </message>
-      <message name="IDS_WEBAUTHN_GPM_START_SAVING_TITLE" desc="This string appears in a dialog users see after they choose to create a sign-in method called a passkey on a website for the first time. It means the user can start saving passkeys with Google Password Manager. Refer to Glossary for the meaning of 'passkey'; do not translate it as 'password'.">
-        Start saving passkeys with Google Password Manager
-      </message>
-      <message name="IDS_WEBAUTHN_GPM_START_SAVING_DESC" desc="This string appears in a dialog users see after they choose to create a sign-in method called a passkey on a website. It means that the passkey will be saved to Google Password Manager for the Google email address they are using. Refer to Glossary for the meaning of 'passkey'; do not translate it as 'password'.">
-        This passkey will be saved to Google Password Manager for <ph name="ACCOUNT_NAME">$1<ex>example@gmail.com</ex></ph>
-      </message>
       <message name="IDS_WEBAUTHN_GPM_AVAILABLE_ACROSS_DEVICES" desc="This string appears in a dialog users see after they choose to create a sign-in method called a passkey on a website. It means passkeys are available on all of the user’s devices.">
         Available across your devices
       </message>

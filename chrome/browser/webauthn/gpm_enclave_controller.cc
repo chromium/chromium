@@ -949,11 +949,6 @@ void GPMEnclaveController::OnTrustThisComputer() {
   model_->SetStep(Step::kRecoverSecurityDomain);
 }
 
-void GPMEnclaveController::OnGPMOnboardingAccepted() {
-  DCHECK_EQ(model_->step(), Step::kGPMOnboarding);
-  model_->SetStep(Step::kGPMCreatePin);
-}
-
 void GPMEnclaveController::OnGPMPinOptionChanged(bool is_arbitrary) {
   if (changing_gpm_pin_) {
     CHECK(model_->step() == Step::kGPMChangePin ||

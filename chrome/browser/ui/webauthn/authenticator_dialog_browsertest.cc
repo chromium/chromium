@@ -746,9 +746,6 @@ class GPMPasskeysAuthenticatorDialogTest : public AuthenticatorDialogTest {
           device::AuthenticatorAttachment::kAny;
       controller_->SetCurrentStepForTesting(
           AuthenticatorRequestDialogModel::Step::kGPMTouchID);
-    } else if (name == "gpm_onboarding") {
-      controller_->SetCurrentStepForTesting(
-          AuthenticatorRequestDialogModel::Step::kGPMOnboarding);
     } else if (name == "gpm_change_pin") {
       controller_->SetCurrentStepForTesting(
           AuthenticatorRequestDialogModel::Step::kGPMChangePin);
@@ -856,11 +853,6 @@ IN_PROC_BROWSER_TEST_F(GPMPasskeysAuthenticatorDialogTest,
 
 IN_PROC_BROWSER_TEST_F(GPMPasskeysAuthenticatorDialogTest,
                        InvokeUi_gpm_create_passkey) {
-  ShowAndVerifyUi();
-}
-
-IN_PROC_BROWSER_TEST_F(GPMPasskeysAuthenticatorDialogTest,
-                       InvokeUi_gpm_onboarding) {
   ShowAndVerifyUi();
 }
 

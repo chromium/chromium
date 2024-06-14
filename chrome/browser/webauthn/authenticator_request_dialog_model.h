@@ -127,9 +127,6 @@ class AuthenticatorRequestDialogController;
   /* Called when the user accepts the warning dialog for creating a GPM */    \
   /* passkey in incognito mode.*/                                             \
   AUTHENTICATOR_REQUEST_EVENT_0(OnGPMConfirmOffTheRecordCreate)               \
-  /* Called when the user accepts a dialog confirming that they want to */    \
-  /* start using passkeys. */                                                 \
-  AUTHENTICATOR_REQUEST_EVENT_0(OnGPMOnboardingAccepted)                      \
   /* Called when the user clicks "Forgot PIN" during UV. */                   \
   AUTHENTICATOR_REQUEST_EVENT_0(OnForgotGPMPinPressed)                        \
   /* Called when the user clicks “Manage Devices” to manage their */      \
@@ -312,8 +309,6 @@ class AuthenticatorRequestDialogController;
   F(kGPMTouchID)                                                               \
                                                                                \
   /* GPM passkey creation. */                                                  \
-  /* TODO(enclave): Remove onboarding step and its views. */                   \
-  F(kGPMOnboarding)                                                            \
   F(kGPMCreatePasskey)                                                         \
   F(kGPMConfirmOffTheRecordCreate)                                             \
   F(kCreatePasskey)                                                            \

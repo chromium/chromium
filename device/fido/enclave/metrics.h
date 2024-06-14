@@ -12,6 +12,8 @@ namespace device::enclave {
 // A list of enclave-related events that are reported to UMA. Do not renumber
 // as the values are persisted.
 enum class Event {
+  // TODO(enclave): Decide whether onboarding events should be recorded in the
+  // GPM pin onboarding view since the original onboarding view was removed.
   kOnboarding = 0,
   kOnboardingRejected = 1,
   kOnboardingAccepted = 2,

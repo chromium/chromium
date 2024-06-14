@@ -15,7 +15,6 @@
 #include "chrome/browser/ui/views/webauthn/authenticator_client_pin_entry_sheet_view.h"
 #include "chrome/browser/ui/views/webauthn/authenticator_create_user_sheet_view.h"
 #include "chrome/browser/ui/views/webauthn/authenticator_gpm_arbitrary_pin_sheet_view.h"
-#include "chrome/browser/ui/views/webauthn/authenticator_gpm_onboarding_sheet_view.h"
 #include "chrome/browser/ui/views/webauthn/authenticator_gpm_pin_sheet_view.h"
 #include "chrome/browser/ui/views/webauthn/authenticator_multi_source_picker_sheet_view.h"
 #include "chrome/browser/ui/views/webauthn/authenticator_paask_sheet_view.h"
@@ -411,10 +410,6 @@ std::unique_ptr<AuthenticatorRequestSheetView> CreateSheetViewForCurrentStepOf(
       sheet_view = std::make_unique<AuthenticatorRequestSheetView>(
           std::make_unique<AuthenticatorGpmIncognitoCreateSheetModel>(
               dialog_model));
-      break;
-    case Step::kGPMOnboarding:
-      sheet_view = std::make_unique<AuthenticatorGpmOnboardingSheetView>(
-          std::make_unique<AuthenticatorGpmOnboardingSheetModel>(dialog_model));
       break;
     case Step::kGPMTouchID:
 #if BUILDFLAG(IS_MAC)

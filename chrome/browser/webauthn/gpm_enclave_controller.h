@@ -181,7 +181,6 @@ class GPMEnclaveController : AuthenticatorRequestDialogModel::Observer,
 
   // AuthenticatorRequestDialogModel::Observer:
   void OnTrustThisComputer() override;
-  void OnGPMOnboardingAccepted() override;
   void OnGPMPinOptionChanged(bool is_arbitrary) override;
   void OnGPMCreatePasskey() override;
   void OnGPMConfirmOffTheRecordCreate() override;
