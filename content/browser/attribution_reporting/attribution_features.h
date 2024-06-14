@@ -17,8 +17,6 @@ namespace content {
 
 CONTENT_EXPORT BASE_DECLARE_FEATURE(kAttributionVerboseDebugReporting);
 
-CONTENT_EXPORT BASE_DECLARE_FEATURE(kAttributionHeaderErrorDetails);
-
 CONTENT_EXPORT BASE_DECLARE_FEATURE(kAttributionReportDeliveryRetryDelays);
 CONTENT_EXPORT extern const base::FeatureParam<base::TimeDelta>
     kAttributionReportDeliveryFirstRetryDelay;

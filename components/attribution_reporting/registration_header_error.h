@@ -15,10 +15,6 @@
 #include "components/attribution_reporting/trigger_registration_error.mojom-forward.h"
 #include "third_party/abseil-cpp/absl/types/variant.h"
 
-namespace base {
-class Value;
-}  // namespace base
-
 namespace attribution_reporting {
 
 using OsSourceRegistrationError =
@@ -46,8 +42,6 @@ struct COMPONENT_EXPORT(ATTRIBUTION_REPORTING) RegistrationHeaderError {
       : header_value(header_value), error_details(error_details) {}
 
   std::string_view HeaderName() const;
-
-  base::Value ErrorDetails() const;
 
   friend bool operator==(const RegistrationHeaderError&,
                          const RegistrationHeaderError&) = default;

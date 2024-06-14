@@ -8,7 +8,6 @@
 
 #include <optional>
 
-#include "base/test/scoped_feature_list.h"
 #include "base/test/values_test_util.h"
 #include "base/time/time.h"
 #include "components/attribution_reporting/os_registration.h"
@@ -19,7 +18,6 @@
 #include "components/attribution_reporting/suitable_origin.h"
 #include "components/attribution_reporting/trigger_registration_error.mojom.h"
 #include "content/browser/attribution_reporting/attribution_config.h"
-#include "content/browser/attribution_reporting/attribution_features.h"
 #include "content/browser/attribution_reporting/attribution_input_event.h"
 #include "content/browser/attribution_reporting/attribution_test_utils.h"
 #include "content/browser/attribution_reporting/attribution_trigger.h"
@@ -1164,7 +1162,6 @@ TEST(AttributionDebugReportTest, RegistrationHeaderErrorDebugReports) {
     base::FunctionRef<bool(const url::Origin&)> is_operation_allowed =
         operation_allowed;
     const char* expected_body;
-    const char* expected_body_with_details;
   } kTestCases[] = {
       {
           .name = "source",
@@ -1175,17 +1172,6 @@ TEST(AttributionDebugReportTest, RegistrationHeaderErrorDebugReports) {
               "context_site": "https://c.test",
               "header": "Attribution-Reporting-Register-Source",
               "value": "!!!"
-            },
-            "type": "header-parsing-error"
-          }])json",
-          .expected_body_with_details = R"json([{
-            "body": {
-              "context_site": "https://c.test",
-              "header": "Attribution-Reporting-Register-Source",
-              "value": "!!!",
-              "error": {
-                "msg": "invalid JSON"
-              }
             },
             "type": "header-parsing-error"
           }])json",
@@ -1202,17 +1188,6 @@ TEST(AttributionDebugReportTest, RegistrationHeaderErrorDebugReports) {
             },
             "type": "header-parsing-error"
           }])json",
-          .expected_body_with_details = R"json([{
-            "body": {
-              "context_site": "https://c.test",
-              "header": "Attribution-Reporting-Register-Trigger",
-              "value": "!!!",
-              "error": {
-                "msg": "invalid JSON"
-              }
-            },
-            "type": "header-parsing-error"
-          }])json",
       },
       {
           .name = "os_source",
@@ -1223,17 +1198,6 @@ TEST(AttributionDebugReportTest, RegistrationHeaderErrorDebugReports) {
               "context_site": "https://c.test",
               "header": "Attribution-Reporting-Register-OS-Source",
               "value": "!!!"
-            },
-            "type": "header-parsing-error"
-          }])json",
-          .expected_body_with_details = R"json([{
-            "body": {
-              "context_site": "https://c.test",
-              "header": "Attribution-Reporting-Register-OS-Source",
-              "value": "!!!",
-              "error": {
-                "msg": "must be a list of URLs"
-              }
             },
             "type": "header-parsing-error"
           }])json",
@@ -1250,17 +1214,6 @@ TEST(AttributionDebugReportTest, RegistrationHeaderErrorDebugReports) {
             },
             "type": "header-parsing-error"
           }])json",
-          .expected_body_with_details = R"json([{
-            "body": {
-              "context_site": "https://c.test",
-              "header": "Attribution-Reporting-Register-OS-Trigger",
-              "value": "!!!",
-              "error": {
-                "msg": "must be a list of URLs"
-              }
-            },
-            "type": "header-parsing-error"
-          }])json",
       },
       {
           .name = "within_fenced_frame",
@@ -1268,7 +1221,6 @@ TEST(AttributionDebugReportTest, RegistrationHeaderErrorDebugReports) {
               kInvalidJson,
           .is_within_fenced_frame = true,
           .expected_body = nullptr,
-          .expected_body_with_details = nullptr,
       },
       {
           .name = "operation_prohibited",
@@ -1276,18 +1228,8 @@ TEST(AttributionDebugReportTest, RegistrationHeaderErrorDebugReports) {
               kInvalidJson,
           .is_operation_allowed = operation_allowed_if_not_reporting_origin,
           .expected_body = nullptr,
-          .expected_body_with_details = nullptr,
       },
   };
-
-  for (const bool feature_enabled : {false, true}) {
-    SCOPED_TRACE(feature_enabled);
-    base::test::ScopedFeatureList scoped_feature_list;
-    if (feature_enabled) {
-      scoped_feature_list.InitAndEnableFeature(kAttributionHeaderErrorDetails);
-    } else {
-      scoped_feature_list.InitAndDisableFeature(kAttributionHeaderErrorDetails);
-    }
 
     for (const auto& test_case : kTestCases) {
       SCOPED_TRACE(test_case.name);
@@ -1298,15 +1240,12 @@ TEST(AttributionDebugReportTest, RegistrationHeaderErrorDebugReports) {
                                       test_case.details),
               context_origin, test_case.is_within_fenced_frame,
               test_case.is_operation_allowed);
-      const char* expected_body = feature_enabled
-                                      ? test_case.expected_body_with_details
-                                      : test_case.expected_body;
-      EXPECT_EQ(report.has_value(), expected_body != nullptr);
-      if (expected_body) {
-        EXPECT_EQ(report->ReportBody(), base::test::ParseJson(expected_body));
+      EXPECT_EQ(report.has_value(), test_case.expected_body != nullptr);
+      if (test_case.expected_body) {
+        EXPECT_EQ(report->ReportBody(),
+                  base::test::ParseJson(test_case.expected_body));
       }
     }
-  }
 }
 
 }  // namespace

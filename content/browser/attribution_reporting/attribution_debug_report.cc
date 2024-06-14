@@ -448,13 +448,6 @@ std::optional<AttributionDebugReport> AttributionDebugReport::Create(
   data_body.Set("header", error.HeaderName());
   data_body.Set("value", error.header_value);
 
-  if (base::FeatureList::IsEnabled(kAttributionHeaderErrorDetails)) {
-    if (base::Value error_details = error.ErrorDetails();
-        !error_details.is_none()) {
-      data_body.Set("error", std::move(error_details));
-    }
-  }
-
   const DebugDataType data_type = DebugDataType::kHeaderParsingError;
 
   base::Value::List report_body;
