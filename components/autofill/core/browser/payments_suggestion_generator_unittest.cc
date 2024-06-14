@@ -1017,10 +1017,12 @@ TEST_F(PaymentsSuggestionGeneratorTest, ShouldShowVirtualCardOption) {
       CreateLocalCard(/*guid=*/"00000000-0000-0000-0000-000000000002");
 
   // If all prerequisites are met, it should return true.
-  EXPECT_TRUE(test_api(suggestion_generator())
-                  .ShouldShowVirtualCardOption(&server_card));
-  EXPECT_TRUE(test_api(suggestion_generator())
-                  .ShouldShowVirtualCardOption(&local_card));
+  EXPECT_TRUE(
+      test_api(suggestion_generator())
+          .ShouldShowVirtualCardOption(&server_card, *autofill_client()));
+  EXPECT_TRUE(
+      test_api(suggestion_generator())
+          .ShouldShowVirtualCardOption(&local_card, *autofill_client()));
 }
 
 // Test that the virtual card option is shown when the autofill optimization
@@ -1040,10 +1042,12 @@ TEST_F(PaymentsSuggestionGeneratorTest,
       CreateLocalCard(/*guid=*/"00000000-0000-0000-0000-000000000002");
 
   // If all prerequisites are met, it should return true.
-  EXPECT_TRUE(test_api(suggestion_generator())
-                  .ShouldShowVirtualCardOption(&server_card));
-  EXPECT_TRUE(test_api(suggestion_generator())
-                  .ShouldShowVirtualCardOption(&local_card));
+  EXPECT_TRUE(
+      test_api(suggestion_generator())
+          .ShouldShowVirtualCardOption(&server_card, *autofill_client()));
+  EXPECT_TRUE(
+      test_api(suggestion_generator())
+          .ShouldShowVirtualCardOption(&local_card, *autofill_client()));
 }
 
 // Test that the virtual card option is shown even if the merchant is opted-out
@@ -1064,8 +1068,9 @@ TEST_F(PaymentsSuggestionGeneratorTest,
               autofill_client()->GetAutofillOptimizationGuide()),
           ShouldBlockFormFieldSuggestion)
       .WillByDefault(testing::Return(true));
-  EXPECT_TRUE(test_api(suggestion_generator())
-                  .ShouldShowVirtualCardOption(&server_card));
+  EXPECT_TRUE(
+      test_api(suggestion_generator())
+          .ShouldShowVirtualCardOption(&server_card, *autofill_client()));
 }
 
 // Test that the virtual card option is not shown if the merchant is opted-out
@@ -1092,10 +1097,12 @@ TEST_F(PaymentsSuggestionGeneratorTest,
   ON_CALL(*static_cast<MockAutofillOptimizationGuide*>(optimization_guide),
           ShouldBlockFormFieldSuggestion)
       .WillByDefault(testing::Return(true));
-  EXPECT_FALSE(test_api(suggestion_generator())
-                   .ShouldShowVirtualCardOption(&server_card));
-  EXPECT_FALSE(test_api(suggestion_generator())
-                   .ShouldShowVirtualCardOption(&local_card));
+  EXPECT_FALSE(
+      test_api(suggestion_generator())
+          .ShouldShowVirtualCardOption(&server_card, *autofill_client()));
+  EXPECT_FALSE(
+      test_api(suggestion_generator())
+          .ShouldShowVirtualCardOption(&local_card, *autofill_client()));
 }
 
 // Test that the virtual card option is not shown if the server card we might be
@@ -1115,10 +1122,12 @@ TEST_F(PaymentsSuggestionGeneratorTest,
 
   // For server card not enrolled, both local and server card should return
   // false.
-  EXPECT_FALSE(test_api(suggestion_generator())
-                   .ShouldShowVirtualCardOption(&server_card));
-  EXPECT_FALSE(test_api(suggestion_generator())
-                   .ShouldShowVirtualCardOption(&local_card));
+  EXPECT_FALSE(
+      test_api(suggestion_generator())
+          .ShouldShowVirtualCardOption(&server_card, *autofill_client()));
+  EXPECT_FALSE(
+      test_api(suggestion_generator())
+          .ShouldShowVirtualCardOption(&local_card, *autofill_client()));
 }
 
 // Test that the virtual card option is not shown for a local card with no
@@ -1130,8 +1139,9 @@ TEST_F(PaymentsSuggestionGeneratorTest,
       CreateLocalCard(/*guid=*/"00000000-0000-0000-0000-000000000002");
 
   // The local card does not have a server duplicate, should return false.
-  EXPECT_FALSE(test_api(suggestion_generator())
-                   .ShouldShowVirtualCardOption(&local_card));
+  EXPECT_FALSE(
+      test_api(suggestion_generator())
+          .ShouldShowVirtualCardOption(&local_card, *autofill_client()));
 }
 
 TEST_F(PaymentsSuggestionGeneratorTest, GetLocalIbanSuggestions) {

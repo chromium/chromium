@@ -93,6 +93,11 @@ AutofillOfferManager* AutofillClient::GetAutofillOfferManager() {
   return nullptr;
 }
 
+const AutofillOfferManager* AutofillClient::GetAutofillOfferManager() const {
+  return const_cast<const AutofillOfferManager*>(
+      const_cast<AutofillClient*>(this)->GetAutofillOfferManager());
+}
+
 GeoIpCountryCode AutofillClient::GetVariationConfigCountryCode() const {
   return GeoIpCountryCode(std::string());
 }

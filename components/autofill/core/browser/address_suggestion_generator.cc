@@ -19,6 +19,7 @@
 #include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversions.h"
 #include "build/build_config.h"
+#include "components/autofill/core/browser/address_data_manager.h"
 #include "components/autofill/core/browser/autofill_browser_util.h"
 #include "components/autofill/core/browser/autofill_client.h"
 #include "components/autofill/core/browser/autofill_data_util.h"
@@ -763,7 +764,7 @@ std::optional<Suggestion> GetSuggestionForTestAddresses(
 }  // namespace
 
 AddressSuggestionGenerator::AddressSuggestionGenerator(
-    AutofillClient& autofill_client)
+    const AutofillClient& autofill_client)
     : autofill_client_(autofill_client) {}
 
 AddressSuggestionGenerator::~AddressSuggestionGenerator() = default;
@@ -776,6 +777,7 @@ std::vector<Suggestion> AddressSuggestionGenerator::GetSuggestionsForProfiles(
     AutofillSuggestionTriggerSource trigger_source) {
   std::vector<raw_ptr<const AutofillProfile, VectorExperimental>>
       profiles_to_suggest = GetProfilesToSuggest(
+          autofill_client_->GetPersonalDataManager()->address_data_manager(),
           trigger_field_type, trigger_field.value(),
           trigger_field.is_autofilled(), field_types,
           GetProfilesToSuggestOptions(trigger_field_type, trigger_field.value(),
@@ -802,14 +804,20 @@ std::vector<Suggestion> AddressSuggestionGenerator::GetSuggestionsForProfiles(
   }
   std::vector<Suggestion> suggestions = CreateSuggestionsFromProfiles(
       profiles_to_suggest, field_types, suggestion_type, trigger_field_type,
-      trigger_field.max_length());
+      trigger_field.max_length(), autofill_client_->IsOffTheRecord(),
+      autofill_client_->GetPersonalDataManager()
+          ->address_data_manager()
+          .app_locale());
 
   // Add devtools test addresses suggestion if it exists. A suggestion will
   // exist if devtools is open and therefore test addresses were set.
   if (IsAddressType(trigger_field_type)) {
     if (std::optional<Suggestion> test_addresses_suggestion =
-            GetSuggestionForTestAddresses(autofill_client_->GetTestAddresses(),
-                                          address_data().app_locale())) {
+            GetSuggestionForTestAddresses(
+                autofill_client_->GetTestAddresses(),
+                autofill_client_->GetPersonalDataManager()
+                    ->address_data_manager()
+                    .app_locale())) {
       suggestions.insert(suggestions.begin(),
                          std::move(*test_addresses_suggestion));
     }
@@ -827,7 +835,7 @@ AddressSuggestionGenerator::GetProfilesToSuggestOptions(
     FieldType trigger_field_type,
     const std::u16string& trigger_field_contents,
     bool trigger_field_is_autofilled,
-    AutofillSuggestionTriggerSource trigger_source) const {
+    AutofillSuggestionTriggerSource trigger_source) {
   // By default, disused profiles are excluded only if the normalized field
   // value is empty. However, triggering suggestions via manual fallback should
   // allow the user to access all their profiles, which is why this option is
@@ -873,6 +881,7 @@ AddressSuggestionGenerator::GetProfilesToSuggestOptions(
 
 std::vector<raw_ptr<const AutofillProfile, VectorExperimental>>
 AddressSuggestionGenerator::GetProfilesToSuggest(
+    const AddressDataManager& address_data,
     FieldType trigger_field_type,
     const std::u16string& field_contents,
     bool field_is_autofilled,
@@ -880,10 +889,10 @@ AddressSuggestionGenerator::GetProfilesToSuggest(
     ProfilesToSuggestOptions options) {
   // Get the profiles to suggest, which are already sorted.
   std::vector<const AutofillProfile*> sorted_profiles =
-      address_data().GetProfilesToSuggest();
+      address_data.GetProfilesToSuggest();
   if (options.require_non_empty_value_on_trigger_field) {
     std::erase_if(sorted_profiles, [&](const AutofillProfile* profile) {
-      return GetProfileSuggestionMainText(*profile, address_data().app_locale(),
+      return GetProfileSuggestionMainText(*profile, address_data.app_locale(),
                                           trigger_field_type)
           .empty();
     });
@@ -894,12 +903,12 @@ AddressSuggestionGenerator::GetProfilesToSuggest(
     profiles_to_suggest = GetPrefixMatchedProfiles(
         sorted_profiles, trigger_field_type, field_contents,
         NormalizeForComparisonForType(field_contents, trigger_field_type),
-        field_is_autofilled);
+        field_is_autofilled, address_data.app_locale());
   }
   if (options.exclude_disused_addresses) {
     RemoveDisusedSuggestions(profiles_to_suggest);
   }
-  const AutofillProfileComparator comparator(address_data().app_locale());
+  const AutofillProfileComparator comparator(address_data.app_locale());
   // It is important that deduplication is the last filtering strategy to be
   // executed, otherwise some profiles could be deduplicated in favor of another
   // profile that is later removed by another filtering strategy.
@@ -922,14 +931,15 @@ AddressSuggestionGenerator::CreateSuggestionsFromProfiles(
     const FieldTypeSet& field_types,
     SuggestionType suggestion_type,
     FieldType trigger_field_type,
-    uint64_t trigger_field_max_length) {
+    uint64_t trigger_field_max_length,
+    bool is_off_the_record,
+    const std::string& app_locale) {
   // TODO(crbug.com/40274514): Remove when launching
   // AutofillGranularFillingAvailable.
   if (profiles.empty()) {
     return {};
   }
   std::vector<Suggestion> suggestions;
-  std::string app_locale = address_data().app_locale();
   std::vector<std::vector<Suggestion::Text>> labels =
       CreateSuggestionLabelsWithGranularFillingDetails(
           profiles, field_types, suggestion_type, trigger_field_type,
@@ -1022,7 +1032,8 @@ AddressSuggestionGenerator::CreateSuggestionsFromProfiles(
       // TODO(crbug.com/40942505): Make the granular filling options vary
       // depending on the locale.
       AddAddressGranularFillingChildSuggestions(trigger_field_type, *profile,
-                                                suggestions.back());
+                                                suggestions.back(),
+                                                is_off_the_record, app_locale);
     }
   }
 
@@ -1039,7 +1050,7 @@ AddressSuggestionGenerator::DeduplicatedProfilesForSuggestions(
   std::vector<std::u16string> suggestion_main_text;
   for (const AutofillProfile* profile : matched_profiles) {
     suggestion_main_text.push_back(GetProfileSuggestionMainText(
-        *profile, address_data().app_locale(), trigger_field_type));
+        *profile, comparator.app_locale(), trigger_field_type));
   }
   std::vector<raw_ptr<const AutofillProfile, VectorExperimental>>
       unique_matched_profiles;
@@ -1099,7 +1110,8 @@ AddressSuggestionGenerator::GetPrefixMatchedProfiles(
     FieldType trigger_field_type,
     const std::u16string& raw_field_contents,
     const std::u16string& field_contents_canon,
-    bool field_is_autofilled) {
+    bool field_is_autofilled,
+    const std::string& app_locale) {
   std::vector<raw_ptr<const AutofillProfile, VectorExperimental>>
       matched_profiles;
   for (const AutofillProfile* profile : profiles) {
@@ -1117,8 +1129,8 @@ AddressSuggestionGenerator::GetPrefixMatchedProfiles(
       continue;
     }
 #endif  // BUILDFLAG(IS_ANDROID)
-    std::u16string main_text = GetProfileSuggestionMainText(
-        *profile, address_data().app_locale(), trigger_field_type);
+    std::u16string main_text =
+        GetProfileSuggestionMainText(*profile, app_locale, trigger_field_type);
     // Discard profiles that do not have a value for the trigger field.
     if (main_text.empty()) {
       continue;
@@ -1134,8 +1146,7 @@ AddressSuggestionGenerator::GetPrefixMatchedProfiles(
 }
 
 void AddressSuggestionGenerator::RemoveDisusedSuggestions(
-    std::vector<raw_ptr<const AutofillProfile, VectorExperimental>>& profiles)
-    const {
+    std::vector<raw_ptr<const AutofillProfile, VectorExperimental>>& profiles) {
   const base::Time min_last_used =
       AutofillClock::Now() - kDisusedDataModelTimeDelta;
   auto is_profile_disused =
@@ -1166,10 +1177,11 @@ void AddressSuggestionGenerator::RemoveDisusedSuggestions(
 void AddressSuggestionGenerator::AddAddressGranularFillingChildSuggestions(
     FieldType trigger_field_type,
     const AutofillProfile& profile,
-    Suggestion& suggestion) const {
+    Suggestion& suggestion,
+    bool is_off_the_record,
+    const std::string& app_locale) {
   const FieldTypeGroup trigger_field_type_group =
       GroupTypeOfFieldType(trigger_field_type);
-  const std::string app_locale = address_data().app_locale();
   // The "Fill everything" suggestion is added at the top (even if the filling
   // mode is full form filling), in its own section of the sub-menu, if
   // `features::kAutofillGranularFillingAvailableWithFillEverythingAtTheBottomParam`
@@ -1195,8 +1207,8 @@ void AddressSuggestionGenerator::AddAddressGranularFillingChildSuggestions(
                              suggestion);
   AddContactChildSuggestions(trigger_field_type, profile, app_locale,
                              suggestion);
-  AddFooterChildSuggestions(profile, trigger_field_type,
-                            autofill_client_->IsOffTheRecord(), suggestion);
+  AddFooterChildSuggestions(profile, trigger_field_type, is_off_the_record,
+                            suggestion);
   // In incognito mode we do not have edit and deleting options. In this
   // situation there is a chance that no footer suggestions exist, which could
   // lead to a leading `kSeparator` suggestion.
@@ -1243,7 +1255,7 @@ Suggestion AddressSuggestionGenerator::CreateClearFormSuggestion() {
 }
 
 std::vector<Suggestion> AddressSuggestionGenerator::GetAddressFooterSuggestions(
-    bool is_autofilled) const {
+    bool is_autofilled) {
   std::vector<Suggestion> footer_suggestions;
 
   footer_suggestions.push_back(CreateSeparator());

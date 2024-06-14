@@ -413,9 +413,9 @@ std::vector<bool> TouchToFillDelegateAndroidImpl::GetCardAcceptabilities(
   std::transform(
       credit_cards.begin(), credit_cards.end(),
       std::back_inserter(card_acceptabilities),
-      [&autofill_suggestion_generator](const CreditCard& credit_card) {
+      [this, &autofill_suggestion_generator](const CreditCard& credit_card) {
         return autofill_suggestion_generator.IsCardAcceptable(
-            credit_card,
+            credit_card, manager_->client(),
             /*is_manual_fallback=*/false);
       });
   return card_acceptabilities;

@@ -412,6 +412,7 @@ class AutofillClient {
   // Gets an AutofillOfferManager instance (can be null for unsupported
   // platforms).
   virtual AutofillOfferManager* GetAutofillOfferManager();
+  const AutofillOfferManager* GetAutofillOfferManager() const;
 
   // Returns the last committed url of the primary main frame.
   virtual const GURL& GetLastCommittedPrimaryMainFrameURL() const = 0;

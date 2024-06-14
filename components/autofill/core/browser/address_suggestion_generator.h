@@ -29,7 +29,7 @@ class FormFieldData;
 // address profile Autofill.
 class AddressSuggestionGenerator {
  public:
-  explicit AddressSuggestionGenerator(AutofillClient& autofill_client);
+  explicit AddressSuggestionGenerator(const AutofillClient& autofill_client);
   ~AddressSuggestionGenerator();
   AddressSuggestionGenerator(const AddressSuggestionGenerator&) = delete;
   AddressSuggestionGenerator& operator=(const AddressSuggestionGenerator&) =
@@ -72,7 +72,7 @@ class AddressSuggestionGenerator {
       FieldType trigger_field_type,
       const std::u16string& trigger_field_contents,
       bool trigger_field_is_autofilled,
-      AutofillSuggestionTriggerSource trigger_source) const;
+      AutofillSuggestionTriggerSource trigger_source);
 
   // Returns a list of profiles that will be displayed as suggestions to the
   // user, sorted by their relevance. This involves many steps from fetching the
@@ -81,7 +81,8 @@ class AddressSuggestionGenerator {
   // `options` defines what strategies to follow by the function in order to
   // filter the list or returned profiles.
   std::vector<raw_ptr<const AutofillProfile, VectorExperimental>>
-  GetProfilesToSuggest(FieldType trigger_field_type,
+  GetProfilesToSuggest(const AddressDataManager& address_data,
+                       FieldType trigger_field_type,
                        const std::u16string& field_contents,
                        bool field_is_autofilled,
                        const FieldTypeSet& field_types,
@@ -98,7 +99,9 @@ class AddressSuggestionGenerator {
       const FieldTypeSet& field_types,
       SuggestionType suggestion_type,
       FieldType trigger_field_type,
-      uint64_t trigger_field_max_length);
+      uint64_t trigger_field_max_length,
+      bool is_off_the_record,
+      const std::string& app_locale);
 
   // Dedupes the given profiles based on if one is a subset of the other for
   // suggestions represented by `field_types`. The function returns at most
@@ -121,7 +124,8 @@ class AddressSuggestionGenerator {
                            FieldType trigger_field_type,
                            const std::u16string& raw_field_contents,
                            const std::u16string& field_contents_canon,
-                           bool field_is_autofilled);
+                           bool field_is_autofilled,
+                           const std::string& app_locale);
 
   // Removes profiles that haven't been used after `kDisusedDataModelTimeDelta`
   // from `profiles`. Note that the goal of this filtering strategy is only to
@@ -130,8 +134,8 @@ class AddressSuggestionGenerator {
   // filtering out all profiles, leading to no suggestions being shown. The
   // relative ordering of `profiles` is maintained.
   void RemoveDisusedSuggestions(
-      std::vector<raw_ptr<const AutofillProfile, VectorExperimental>>& profiles)
-      const;
+      std::vector<raw_ptr<const AutofillProfile, VectorExperimental>>&
+          profiles);
 
   // Creates nested/child suggestions for `suggestion` with the `profile`
   // information. Uses `trigger_field_type` to define what group filling
@@ -139,21 +143,18 @@ class AddressSuggestionGenerator {
   // suggestions defines whether the autofill popup will have submenus.
   void AddAddressGranularFillingChildSuggestions(FieldType trigger_field_type,
                                                  const AutofillProfile& profile,
-                                                 Suggestion& suggestion) const;
+                                                 Suggestion& suggestion,
+                                                 bool is_off_the_record,
+                                                 const std::string& app_locale);
 
   // Returns non address suggestions which are displayed below address
   // suggestions in the Autofill popup. `is_autofilled` is used to conditionally
   // add suggestion for clearing all autofilled fields.
-  std::vector<Suggestion> GetAddressFooterSuggestions(bool is_autofilled) const;
-
-  const AddressDataManager& address_data() const {
-    // The PDM outlives the ASG, hence this is safe.
-    return autofill_client_->GetPersonalDataManager()->address_data_manager();
-  }
+  std::vector<Suggestion> GetAddressFooterSuggestions(bool is_autofilled);
 
   // autofill_client_ and the generator are both one per tab, and have the same
   // lifecycle.
-  raw_ref<AutofillClient> autofill_client_;
+  const raw_ref<const AutofillClient> autofill_client_;
 };
 
 }  // namespace autofill

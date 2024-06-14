@@ -27,7 +27,8 @@ class PaymentsSuggestionGeneratorTestApi {
       bool prefix_match,
       bool include_virtual_cards) {
     return suggestion_generator_->GetOrderedCardsToSuggest(
-        trigger_field, trigger_field_type, suppress_disused_cards, prefix_match,
+        *suggestion_generator_->autofill_client_, trigger_field,
+        trigger_field_type, suppress_disused_cards, prefix_match,
         include_virtual_cards);
   }
 
@@ -39,8 +40,9 @@ class PaymentsSuggestionGeneratorTestApi {
       url::Origin origin = url::Origin()) const {
     autofill_metrics::CardMetadataLoggingContext metadata_logging_context;
     return suggestion_generator_->CreateCreditCardSuggestion(
-        credit_card, trigger_field_type, virtual_card_option,
-        card_linked_offer_available, metadata_logging_context);
+        credit_card, *suggestion_generator_->autofill_client_,
+        trigger_field_type, virtual_card_option, card_linked_offer_available,
+        metadata_logging_context);
   }
 
   Suggestion CreateCreditCardSuggestionWithMetadataContext(
@@ -51,13 +53,16 @@ class PaymentsSuggestionGeneratorTestApi {
       autofill_metrics::CardMetadataLoggingContext& metadata_logging_context,
       url::Origin origin = url::Origin()) const {
     return suggestion_generator_->CreateCreditCardSuggestion(
-        credit_card, trigger_field_type, virtual_card_option,
-        card_linked_offer_available, metadata_logging_context);
+        credit_card, *suggestion_generator_->autofill_client_,
+        trigger_field_type, virtual_card_option, card_linked_offer_available,
+        metadata_logging_context);
   }
 
   // TODO(b/326950201): Remove and use GetOrderedCardsToSuggest instead.
-  bool ShouldShowVirtualCardOption(const CreditCard* candidate_card) {
-    return suggestion_generator_->ShouldShowVirtualCardOption(candidate_card);
+  bool ShouldShowVirtualCardOption(const CreditCard* candidate_card,
+                                   const AutofillClient& client) {
+    return suggestion_generator_->ShouldShowVirtualCardOption(candidate_card,
+                                                              client);
   }
 
  private:
