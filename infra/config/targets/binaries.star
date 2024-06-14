@@ -1689,6 +1689,22 @@ targets.binaries.generated_script(
     ),
 )
 
+targets.binaries.generated_script(
+    name = "trichrome_webview_wpt_64",
+    label = "//android_webview/test:trichrome_webview_wpt_64",
+    results_handler = "layout tests",
+    args = [
+        "--results-directory",
+        "${ISOLATED_OUTDIR}",
+    ],
+    merge = targets.merge(
+        script = "//third_party/blink/tools/merge_web_test_results.py",
+        args = [
+            "--verbose",
+        ],
+    ),
+)
+
 targets.binaries.script(
     name = "telemetry_gpu_integration_test",
     label = "//chrome/test:telemetry_gpu_integration_test",

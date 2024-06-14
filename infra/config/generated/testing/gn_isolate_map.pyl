@@ -1722,6 +1722,14 @@
     "label": "//chrome/android:trichrome_chrome_bundle_smoke_test",
     "type": "console_test_launcher",
   },
+  "trichrome_webview_wpt_64": {
+    "label": "//android_webview/test:trichrome_webview_wpt_64",
+    "type": "generated_script",
+    "args": [
+      "--results-directory",
+      "${ISOLATED_OUTDIR}",
+    ],
+  },
   "ui_android_unittests": {
     "label": "//ui/android:ui_android_unittests",
     "type": "console_test_launcher",

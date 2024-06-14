@@ -5530,6 +5530,33 @@
         'experiment_percentage': 100,
       },
     },
+
+    'wpt_web_tests_android': {
+      'chrome_public_wpt': {
+        'results_handler': 'layout tests',
+        'swarming': {
+          'shards': 4,
+        },
+        'merge': {
+          'script': '//third_party/blink/tools/merge_web_test_results.py',
+          'args': [
+            '--verbose',
+          ],
+        },
+      },
+      'trichrome_webview_wpt_64': {
+        'results_handler': 'layout tests',
+        'swarming': {
+          'shards': 4,
+        },
+        'merge': {
+          'script': '//third_party/blink/tools/merge_web_test_results.py',
+          'args': [
+            '--verbose',
+          ],
+        },
+      },
+    },
   },
 
   'compound_suites': {

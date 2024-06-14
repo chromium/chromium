@@ -128,6 +128,10 @@ script_test("trichrome_webview_wpt") {
     "--additional-apk",
     "@WrappedPath(apks/TrichromeLibrary.apk)",
   ]
+  data = [
+    "//third_party/blink/web_tests/platform/webview/",
+    "//third_party/blink/web_tests/MobileTestExpectations",
+  ]
   data_deps = [
     "//android_webview:trichrome_webview_apk",
     "//android_webview/tools/system_webview_shell:system_webview_shell_layout_test_apk",
@@ -154,6 +158,10 @@ if (android_64bit_target_cpu) {
       "@WrappedPath(apks/SystemWebViewShell.apk)",
       "--additional-apk",
       "@WrappedPath(apks/TrichromeLibrary64.apk)",
+    ]
+    data = [
+      "//third_party/blink/web_tests/platform/webview/",
+      "//third_party/blink/web_tests/MobileTestExpectations",
     ]
     data_deps = [
       "//android_webview:trichrome_webview_64_apk",

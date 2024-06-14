@@ -2033,6 +2033,10 @@ targets.tests.isolated_script_test(
     name = "system_webview_wpt",
 )
 
+targets.tests.isolated_script_test(
+    name = "trichrome_webview_wpt_64",
+)
+
 targets.tests.gtest_test(
     name = "tab_capture_end2end_tests",
     binary = "browser_tests",
