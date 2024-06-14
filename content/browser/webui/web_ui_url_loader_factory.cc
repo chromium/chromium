@@ -126,16 +126,15 @@ void ReadData(
       &options, pipe_producer_handle, pipe_consumer_handle);
   CHECK_EQ(create_result, MOJO_RESULT_OK);
 
-  void* buffer = nullptr;
-  size_t num_bytes = output_size;
+  base::span<uint8_t> buffer;
   MojoResult result = pipe_producer_handle->BeginWriteData(
-      &buffer, &num_bytes, MOJO_WRITE_DATA_FLAG_NONE);
+      output_size, MOJO_WRITE_DATA_FLAG_NONE, buffer);
   CHECK_EQ(result, MOJO_RESULT_OK);
-  CHECK_GE(num_bytes, output_size);
+  CHECK_GE(buffer.size(), output_size);
   CHECK_LE(output_offset + output_size, bytes->size());
 
-  base::ranges::copy(base::span(*bytes).subspan(output_offset, output_size),
-                     static_cast<char*>(buffer));
+  buffer.first(output_size)
+      .copy_from(base::span(*bytes).subspan(output_offset, output_size));
   result = pipe_producer_handle->EndWriteData(output_size);
   CHECK_EQ(result, MOJO_RESULT_OK);
 

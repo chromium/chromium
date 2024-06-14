@@ -4,6 +4,7 @@
 
 #include "content/browser/preloading/prefetch/prefetch_data_pipe_tee.h"
 
+#include "base/containers/span.h"
 #include "mojo/public/cpp/system/string_data_source.h"
 #include "services/network/public/cpp/features.h"
 
@@ -106,20 +107,18 @@ void PrefetchDataPipeTee::OnReadable(MojoResult result,
       return;
   }
 
-  const void* read_data = nullptr;
-  size_t num_bytes = 0;
-  MojoResult rv =
-      source_->BeginReadData(&read_data, &num_bytes, MOJO_READ_DATA_FLAG_NONE);
+  base::span<const uint8_t> read_data;
+  MojoResult rv = source_->BeginReadData(MOJO_READ_DATA_FLAG_NONE, read_data);
   if (rv == MOJO_RESULT_OK) {
     switch (state_) {
       case State::kLoading:
         CHECK_LE(buffer_.size(), buffer_limit_);
-        if (buffer_.size() + num_bytes <= buffer_limit_) {
-          buffer_.append(static_cast<const char*>(read_data), num_bytes);
+        if (buffer_.size() + read_data.size() <= buffer_limit_) {
+          buffer_.append(base::as_string_view(read_data));
           if (target_.first) {
-            WriteData(
-                ResetTarget({}),  //
-                std::string_view(buffer_).substr(buffer_.size() - num_bytes));
+            WriteData(ResetTarget({}),  //
+                      std::string_view(buffer_).substr(buffer_.size() -
+                                                       read_data.size()));
           }
           break;
         }
@@ -127,8 +126,8 @@ void PrefetchDataPipeTee::OnReadable(MojoResult result,
         // If there are no targets yet, stop reading and keep `buffer_` (== the
         // whole data read so far) until the first target is added.
         if (!target_.first) {
-          num_bytes = buffer_limit_ - buffer_.size();
-          buffer_.append(static_cast<const char*>(read_data), num_bytes);
+          read_data = read_data.first(buffer_limit_ - buffer_.size());
+          buffer_.append(base::as_string_view(read_data));
           state_ = State::kSizeExceededNoTarget;
           break;
         }
@@ -148,7 +147,7 @@ void PrefetchDataPipeTee::OnReadable(MojoResult result,
           break;
         }
 
-        buffer_.append(static_cast<const char*>(read_data), num_bytes);
+        buffer_.append(base::as_string_view(read_data));
         WriteData(ResetTarget({}), buffer_);
         break;
       case State::kSizeExceededNoTarget:
@@ -156,7 +155,7 @@ void PrefetchDataPipeTee::OnReadable(MojoResult result,
         NOTREACHED_IN_MIGRATION();
         break;
     }
-    source_->EndReadData(num_bytes);
+    source_->EndReadData(read_data.size());
     source_watcher_.ArmOrNotify();
   } else if (rv == MOJO_RESULT_FAILED_PRECONDITION) {
     switch (state_) {

@@ -475,13 +475,12 @@ TEST_F(SpeechRecognizerImplTest, StopWithData) {
     while (true) {
       base::RunLoop().RunUntilIdle();
 
-      const void* buffer;
-      size_t num_bytes;
-      MojoResult result = consumer_handle->BeginReadData(
-          &buffer, &num_bytes, MOJO_READ_DATA_FLAG_NONE);
+      base::span<const uint8_t> buffer;
+      MojoResult result =
+          consumer_handle->BeginReadData(MOJO_READ_DATA_FLAG_NONE, buffer);
       if (result == MOJO_RESULT_OK) {
-        data.append(static_cast<const char*>(buffer), num_bytes);
-        consumer_handle->EndReadData(num_bytes);
+        data.append(base::as_string_view(buffer));
+        consumer_handle->EndReadData(buffer.size());
         continue;
       }
       if (result == MOJO_RESULT_SHOULD_WAIT) {

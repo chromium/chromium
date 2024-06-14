@@ -8,6 +8,7 @@
 #include <utility>
 
 #include "base/containers/queue.h"
+#include "base/containers/span.h"
 #include "base/files/file.h"
 #include "base/functional/bind.h"
 #include "base/memory/ptr_util.h"
@@ -489,16 +490,20 @@ void MHTMLGenerationManager::Job::WriteMHTMLToDisk(
   DCHECK(download::GetDownloadTaskRunner()->RunsTasksInCurrentSequence());
   DCHECK_NE(result, MOJO_RESULT_FAILED_PRECONDITION);
   // Begin consumer data pipe handle read and file write loop.
-  char buffer[1024];
-  size_t num_bytes = sizeof(buffer);
+  std::vector<uint8_t> buffer(1024, 0x00);
+  size_t actually_read_bytes;
   while (result == MOJO_RESULT_OK && state.readable()) {
-    result = mhtml_data_consumer_->ReadData(&buffer, &num_bytes,
-                                            MOJO_READ_DATA_FLAG_NONE);
+    result = mhtml_data_consumer_->ReadData(MOJO_READ_DATA_FLAG_NONE,
+                                            base::as_writable_byte_span(buffer),
+                                            actually_read_bytes);
     if (result == MOJO_RESULT_OK) {
+      std::string_view read_chars =
+          base::as_string_view(buffer).substr(0, actually_read_bytes);
       if (secure_hash_)
-        secure_hash_->Update(&buffer, num_bytes);
+        secure_hash_->Update(read_chars.data(), read_chars.size());
       if (browser_file_.WriteAtCurrentPos(
-              buffer, base::checked_cast<int>(num_bytes)) < 0) {
+              read_chars.data(), base::checked_cast<int>(read_chars.size())) <
+          0) {
         DLOG(ERROR) << "Error writing to file handle.";
         OnWriteComplete(std::move(callback),
                         mojom::MhtmlSaveStatus::kFileWritingError);

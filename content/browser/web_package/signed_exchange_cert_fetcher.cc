@@ -4,6 +4,7 @@
 
 #include "content/browser/web_package/signed_exchange_cert_fetcher.h"
 
+#include "base/containers/span.h"
 #include "base/feature_list.h"
 #include "base/format_macros.h"
 #include "base/functional/bind.h"
@@ -184,21 +185,20 @@ void SignedExchangeCertFetcher::Abort() {
 void SignedExchangeCertFetcher::OnHandleReady(MojoResult result) {
   TRACE_EVENT0(TRACE_DISABLED_BY_DEFAULT("loading"),
                "SignedExchangeCertFetcher::OnHandleReady");
-  const void* buffer = nullptr;
-  size_t num_bytes = 0;
-  MojoResult rv =
-      body_->BeginReadData(&buffer, &num_bytes, MOJO_READ_DATA_FLAG_NONE);
+  base::span<const uint8_t> buffer;
+  MojoResult rv = body_->BeginReadData(MOJO_READ_DATA_FLAG_NONE, buffer);
   if (rv == MOJO_RESULT_OK) {
-    if (body_string_.size() + num_bytes > g_max_cert_size_for_signed_exchange) {
-      body_->EndReadData(num_bytes);
+    if (body_string_.size() + buffer.size() >
+        g_max_cert_size_for_signed_exchange) {
+      body_->EndReadData(buffer.size());
       signed_exchange_utils::ReportErrorAndTraceEvent(
           devtools_proxy_,
           "The response body size of certificate message exceeds the limit.");
       Abort();
       return;
     }
-    body_string_.append(static_cast<const char*>(buffer), num_bytes);
-    body_->EndReadData(num_bytes);
+    body_string_.append(base::as_string_view(buffer));
+    body_->EndReadData(buffer.size());
   } else if (rv == MOJO_RESULT_FAILED_PRECONDITION) {
     OnDataComplete();
   } else {

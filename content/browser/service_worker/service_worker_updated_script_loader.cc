@@ -282,12 +282,17 @@ void ServiceWorkerUpdatedScriptLoader::OnClientWritable(MojoResult) {
 
   // Cap the buffer size up to |kReadBufferSize|. The remaining will be written
   // next time.
-  size_t bytes_newly_sent =
-      std::min<size_t>(kReadBufferSize, data_length_ - bytes_sent_to_client_);
+  base::span<const uint8_t> bytes_to_send =
+      base::as_bytes(data_to_send_->span());
+  bytes_to_send = bytes_to_send.first(
+      std::min(bytes_to_send.size(), base::checked_cast<size_t>(data_length_)));
+  bytes_to_send = bytes_to_send.subspan(bytes_sent_to_client_);
+  bytes_to_send = bytes_to_send.first(
+      std::min<size_t>(bytes_to_send.size(), kReadBufferSize));
 
-  MojoResult result =
-      client_producer_->WriteData(data_to_send_->data() + bytes_sent_to_client_,
-                                  &bytes_newly_sent, MOJO_WRITE_DATA_FLAG_NONE);
+  size_t actually_sent_bytes = 0;
+  MojoResult result = client_producer_->WriteData(
+      bytes_to_send, MOJO_WRITE_DATA_FLAG_NONE, actually_sent_bytes);
 
   if (result == MOJO_RESULT_SHOULD_WAIT) {
     // No data was written to |client_producer_| because the pipe was full.
@@ -304,7 +309,7 @@ void ServiceWorkerUpdatedScriptLoader::OnClientWritable(MojoResult) {
     return;
   }
 
-  bytes_sent_to_client_ += bytes_newly_sent;
+  bytes_sent_to_client_ += actually_sent_bytes;
   if (bytes_sent_to_client_ != data_length_) {
     // Not all data is sent. Send the rest in another task.
     client_producer_watcher_.ArmOrNotify();
@@ -398,15 +403,18 @@ void ServiceWorkerUpdatedScriptLoader::OnNetworkDataAvailable(MojoResult) {
 void ServiceWorkerUpdatedScriptLoader::WriteData(
     scoped_refptr<network::MojoToNetPendingBuffer> pending_buffer,
     uint32_t bytes_available) {
-  // Cap the buffer size up to |kReadBufferSize|. The remaining will be written
-  // next time.
-  size_t bytes_written = std::min<size_t>(kReadBufferSize, bytes_available);
-
   auto buffer = base::MakeRefCounted<WrappedIOBuffer>(
       pending_buffer ? pending_buffer->buffer() : nullptr,
       pending_buffer ? pending_buffer->size() : 0);
+
+  // Cap the buffer size up to |kReadBufferSize|. The remaining will be written
+  // next time.
+  base::span<const uint8_t> bytes = base::as_bytes(buffer->span());
+  bytes = bytes.first(std::min(kReadBufferSize, size_t{bytes_available}));
+
+  size_t actually_written_bytes = 0;
   MojoResult result = client_producer_->WriteData(
-      buffer->data(), &bytes_written, MOJO_WRITE_DATA_FLAG_NONE);
+      bytes, MOJO_WRITE_DATA_FLAG_NONE, actually_written_bytes);
   switch (result) {
     case MOJO_RESULT_OK:
       break;
@@ -432,21 +440,21 @@ void ServiceWorkerUpdatedScriptLoader::WriteData(
   }
 
   // Write the buffer in the service worker script storage up to the size we
-  // successfully wrote to the data pipe (i.e., |bytes_written|).
-  // A null buffer and zero |bytes_written| are passed when this is the end of
-  // the body.
+  // successfully wrote to the data pipe (i.e., |actually_written_bytes|).  A
+  // null buffer and zero |actually_written_bytes| are passed when this is the
+  // end of the body.
   net::Error error = cache_writer_->MaybeWriteData(
-      buffer.get(), bytes_written,
+      buffer.get(), actually_written_bytes,
       base::BindOnce(&ServiceWorkerUpdatedScriptLoader::OnWriteDataComplete,
                      weak_factory_.GetWeakPtr(), pending_buffer,
-                     bytes_written));
+                     actually_written_bytes));
   if (error == net::ERR_IO_PENDING) {
     // OnWriteDataComplete() will be called asynchronously.
     return;
   }
   // MaybeWriteData() doesn't run the callback if it finishes synchronously, so
   // explicitly call it here.
-  OnWriteDataComplete(std::move(pending_buffer), bytes_written, error);
+  OnWriteDataComplete(std::move(pending_buffer), actually_written_bytes, error);
 }
 
 void ServiceWorkerUpdatedScriptLoader::OnWriteDataComplete(

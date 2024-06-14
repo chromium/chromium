@@ -8,6 +8,7 @@
 #include <memory>
 #include <optional>
 
+#include "base/containers/span.h"
 #include "base/functional/callback.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/memory/weak_ptr.h"
@@ -1150,10 +1151,11 @@ TEST_P(PrefetchURLLoaderInterceptorBecomeNotServableTest, DISABLE_ASAN(Basic)) {
     CHECK_EQ(
         mojo::CreateDataPipe(content.size(), producer_handle, consumer_handle),
         MOJO_RESULT_OK);
-    size_t bytes_written = content.size();
+    size_t actually_written_bytes = 0;
     CHECK_EQ(MOJO_RESULT_OK,
-             producer_handle->WriteData(content.data(), &bytes_written,
-                                        MOJO_WRITE_DATA_FLAG_ALL_OR_NONE));
+             producer_handle->WriteData(base::as_byte_span(content),
+                                        MOJO_WRITE_DATA_FLAG_ALL_OR_NONE,
+                                        actually_written_bytes));
     pending_request.client->OnReceiveResponse(
         network::mojom::URLResponseHead::New(), std::move(consumer_handle),
         std::nullopt);
@@ -1525,10 +1527,11 @@ TEST_P(PrefetchURLLoaderInterceptorTest,
     CHECK_EQ(
         mojo::CreateDataPipe(content.size(), producer_handle, consumer_handle),
         MOJO_RESULT_OK);
-    size_t bytes_written = content.size();
+    size_t actually_written_bytes = 0;
     CHECK_EQ(MOJO_RESULT_OK,
-             producer_handle->WriteData(content.data(), &bytes_written,
-                                        MOJO_WRITE_DATA_FLAG_ALL_OR_NONE));
+             producer_handle->WriteData(base::as_byte_span(content),
+                                        MOJO_WRITE_DATA_FLAG_ALL_OR_NONE,
+                                        actually_written_bytes));
     pending_request.client->OnReceiveResponse(
         network::mojom::URLResponseHead::New(), std::move(consumer_handle),
         std::nullopt);
@@ -1599,10 +1602,11 @@ TEST_P(PrefetchURLLoaderInterceptorTest,
     CHECK_EQ(
         mojo::CreateDataPipe(content.size(), producer_handle, consumer_handle),
         MOJO_RESULT_OK);
-    size_t bytes_written = content.size();
+    size_t actually_written_bytes = 0;
     CHECK_EQ(MOJO_RESULT_OK,
-             producer_handle->WriteData(content.data(), &bytes_written,
-                                        MOJO_WRITE_DATA_FLAG_ALL_OR_NONE));
+             producer_handle->WriteData(base::as_byte_span(content),
+                                        MOJO_WRITE_DATA_FLAG_ALL_OR_NONE,
+                                        actually_written_bytes));
     pending_request.client->OnReceiveResponse(
         network::mojom::URLResponseHead::New(), std::move(consumer_handle),
         std::nullopt);

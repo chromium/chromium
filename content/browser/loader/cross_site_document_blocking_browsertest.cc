@@ -8,6 +8,7 @@
 
 #include "base/base64.h"
 #include "base/command_line.h"
+#include "base/containers/span.h"
 #include "base/feature_list.h"
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
@@ -204,16 +205,17 @@ class RequestInterceptor {
 
  private:
   void ReadBody(base::OnceClosure completion_callback) {
-    char buffer[128];
-    size_t num_bytes = sizeof(buffer);
+    std::string buffer(128, '\0');
+    size_t actually_read_bytes = 0;
     MojoResult result = test_client_.response_body().ReadData(
-        buffer, &num_bytes, MOJO_READ_DATA_FLAG_NONE);
+        MOJO_READ_DATA_FLAG_NONE, base::as_writable_byte_span(buffer),
+        actually_read_bytes);
 
     bool got_all_data = false;
     switch (result) {
       case MOJO_RESULT_OK:
-        if (num_bytes != 0) {
-          body_ += std::string(buffer, num_bytes);
+        if (actually_read_bytes != 0) {
+          body_ += buffer.substr(0, actually_read_bytes);
           got_all_data = false;
         } else {
           got_all_data = true;
@@ -317,10 +319,12 @@ class RequestInterceptor {
       original_client_->OnReceiveResponse(
           std::move(response_head), std::move(consumer_handle), std::nullopt);
 
-      size_t num_bytes = response_body.size();
+      size_t actually_written_bytes = 0;
       EXPECT_EQ(MOJO_RESULT_OK,
-                producer_handle->WriteData(response_body.data(), &num_bytes,
-                                           MOJO_WRITE_DATA_FLAG_ALL_OR_NONE));
+                producer_handle->WriteData(base::as_byte_span(response_body),
+                                           MOJO_WRITE_DATA_FLAG_ALL_OR_NONE,
+                                           actually_written_bytes));
+      // `actually_written_bytes` can be ignored because of `...ALL_OR_NONE`.
     }
     original_client_->OnComplete(status);
 

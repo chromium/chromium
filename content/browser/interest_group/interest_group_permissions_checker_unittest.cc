@@ -6,6 +6,7 @@
 
 #include <string>
 
+#include "base/containers/span.h"
 #include "base/functional/callback.h"
 #include "base/run_loop.h"
 #include "base/test/task_environment.h"
@@ -435,10 +436,12 @@ TEST_P(InterestGroupPermissionsCheckerParamaterizedTest,
     mojo::ScopedDataPipeConsumerHandle body;
     ASSERT_EQ(mojo::CreateDataPipe(response_body.size(), producer_handle, body),
               MOJO_RESULT_OK);
-    size_t bytes_written = response_body.size();
+    size_t actually_written_bytes = 0;
     ASSERT_EQ(MOJO_RESULT_OK,
-              producer_handle->WriteData(response_body.data(), &bytes_written,
-                                         MOJO_WRITE_DATA_FLAG_ALL_OR_NONE));
+              producer_handle->WriteData(base::as_byte_span(response_body),
+                                         MOJO_WRITE_DATA_FLAG_ALL_OR_NONE,
+                                         actually_written_bytes));
+    // `actually_written_bytes` can be ignored because of `...ALL_OR_NONE`.
 
     pending_request.client->OnReceiveResponse(std::move(head), std::move(body),
                                               std::nullopt);

@@ -878,11 +878,11 @@ void ServiceWorkerUpdateCheckTestUtils::
     // Create a data pipe which has the new block sent from the network.
     ASSERT_EQ(MOJO_RESULT_OK, mojo::CreateDataPipe(nullptr, *out_body_handle,
                                                    network_consumer));
-    size_t written_size = diff_data_block.size();
+    size_t written_size = 0;
     ASSERT_EQ(MOJO_RESULT_OK,
               (*out_body_handle)
-                  ->WriteData(diff_data_block.c_str(), &written_size,
-                              MOJO_WRITE_DATA_FLAG_ALL_OR_NONE));
+                  ->WriteData(base::as_byte_span(diff_data_block),
+                              MOJO_WRITE_DATA_FLAG_ALL_OR_NONE, written_size));
     ASSERT_EQ(diff_data_block.size(), written_size);
     base::RunLoop().RunUntilIdle();
 
@@ -971,10 +971,8 @@ void ReadDataPipeInternal(mojo::DataPipeConsumerHandle handle,
                           std::string* result,
                           base::OnceClosure quit_closure) {
   while (true) {
-    size_t num_bytes;
-    const void* buffer = nullptr;
-    MojoResult rv =
-        handle.BeginReadData(&buffer, &num_bytes, MOJO_READ_DATA_FLAG_NONE);
+    base::span<const uint8_t> buffer;
+    MojoResult rv = handle.BeginReadData(MOJO_READ_DATA_FLAG_NONE, buffer);
     switch (rv) {
       case MOJO_RESULT_BUSY:
       case MOJO_RESULT_INVALID_ARGUMENT:
@@ -989,12 +987,12 @@ void ReadDataPipeInternal(mojo::DataPipeConsumerHandle handle,
                                       std::move(quit_closure)));
         return;
       case MOJO_RESULT_OK:
-        EXPECT_NE(nullptr, buffer);
-        EXPECT_GT(num_bytes, 0u);
-        uint32_t before_size = result->size();
-        result->append(static_cast<const char*>(buffer), num_bytes);
-        uint32_t read_size = result->size() - before_size;
-        EXPECT_EQ(num_bytes, read_size);
+        EXPECT_NE(nullptr, buffer.data());
+        EXPECT_GT(buffer.size(), 0u);
+        size_t before_size = result->size();
+        result->append(base::as_string_view(buffer));
+        size_t read_size = result->size() - before_size;
+        EXPECT_EQ(buffer.size(), read_size);
         rv = handle.EndReadData(read_size);
         EXPECT_EQ(MOJO_RESULT_OK, rv);
         break;

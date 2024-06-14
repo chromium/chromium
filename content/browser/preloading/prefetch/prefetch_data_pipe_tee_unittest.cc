@@ -4,6 +4,7 @@
 
 #include "content/browser/preloading/prefetch/prefetch_data_pipe_tee.h"
 
+#include "base/containers/span.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/test/task_environment.h"
 #include "mojo/public/cpp/system/string_data_source.h"
@@ -54,12 +55,13 @@ class DataPipeReader {
   void OnDataAvailable(MojoResult result) {
     DCHECK_LT(data_.size(), size_);
     size_t size = size_ - data_.size();
-    std::vector<char> buffer(size, 0);
+    size_t actually_read_bytes = 0;
+    std::string buffer(size, '\0');
     MojoResult read_result = consumer_handle_->ReadData(
-        buffer.data(), &size, MOJO_READ_DATA_FLAG_NONE);
+        MOJO_READ_DATA_FLAG_NONE, base::as_writable_byte_span(buffer),
+        actually_read_bytes);
     if (read_result == MOJO_RESULT_OK) {
-      std::copy(buffer.begin(), buffer.begin() + size,
-                std::back_inserter(data_));
+      data_.append(std::string_view(buffer).substr(0, actually_read_bytes));
       if (data_.size() >= size_) {
         on_read_done_.Run();
       }

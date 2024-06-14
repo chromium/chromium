@@ -11,6 +11,7 @@
 
 #include <utility>
 
+#include "base/containers/span.h"
 #include "base/functional/bind.h"
 #include "base/memory/ref_counted.h"
 #include "base/task/sequenced_task_runner.h"
@@ -44,13 +45,15 @@ class ServiceWorkerInstalledScriptReader::MetaDataSender {
   void OnWritable(MojoResult) {
     // It isn't necessary to handle MojoResult here since WriteDataRaw()
     // returns an equivalent error.
-    size_t size = meta_data_->size() - bytes_sent_;
+    base::span<const uint8_t> bytes_to_write =
+        base::as_bytes(meta_data_->span()).subspan(bytes_sent_);
+    size_t actually_written_bytes = 0;
     TRACE_EVENT2(
         "ServiceWorker",
         "ServiceWorkerInstalledScriptReader::MetaDataSender::OnWritable",
         "meta_data size", meta_data_->size(), "bytes_sent_", bytes_sent_);
-    MojoResult rv = handle_->WriteData(meta_data_->data() + bytes_sent_, &size,
-                                       MOJO_WRITE_DATA_FLAG_NONE);
+    MojoResult rv = handle_->WriteData(
+        bytes_to_write, MOJO_WRITE_DATA_FLAG_NONE, actually_written_bytes);
     switch (rv) {
       case MOJO_RESULT_INVALID_ARGUMENT:
       case MOJO_RESULT_OUT_OF_RANGE:
@@ -69,7 +72,7 @@ class ServiceWorkerInstalledScriptReader::MetaDataSender {
         OnCompleted(false);
         return;
     }
-    bytes_sent_ += size;
+    bytes_sent_ += actually_written_bytes;
     TRACE_EVENT2(
         "ServiceWorker",
         "ServiceWorkerInstalledScriptReader::MetaDataSender::OnWritable",

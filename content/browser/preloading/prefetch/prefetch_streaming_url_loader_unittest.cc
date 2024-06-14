@@ -4,6 +4,7 @@
 
 #include "content/browser/preloading/prefetch/prefetch_streaming_url_loader.h"
 
+#include "base/containers/span.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
@@ -86,9 +87,12 @@ class TestURLLoaderFactory : public network::mojom::URLLoaderFactory {
   void SimulateReceiveData(const std::string& data,
                            bool expected_successful = true) {
     ASSERT_TRUE(producer_handle_);
-    size_t bytes_written = data.size();
-    auto write_result = producer_handle_->WriteData(
-        data.data(), &bytes_written, MOJO_WRITE_DATA_FLAG_ALL_OR_NONE);
+    size_t actually_written_bytes = 0;
+    MojoResult write_result = producer_handle_->WriteData(
+        base::as_byte_span(data), MOJO_WRITE_DATA_FLAG_ALL_OR_NONE,
+        actually_written_bytes);
+    // Ok to ignore `actually_written_bytes` because of `...ALL_OR_NONE`.
+
     if (expected_successful) {
       EXPECT_EQ(write_result, MOJO_RESULT_OK);
     } else {

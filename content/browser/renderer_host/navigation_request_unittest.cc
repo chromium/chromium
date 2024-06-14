@@ -1332,9 +1332,9 @@ class NavigationRequestResponseBodyTest : public NavigationRequestTest {
 TEST_F(NavigationRequestResponseBodyTest, Received) {
   auto navigation = CreateNavigationSimulator();
   std::string response = "response-body-content";
-  size_t write_size = response.size();
-  ASSERT_EQ(MOJO_RESULT_OK, mojo::CreateDataPipe(write_size, producer_handle_,
-                                                 consumer_handle_));
+  ASSERT_EQ(MOJO_RESULT_OK,
+            mojo::CreateDataPipe(response.size(), producer_handle_,
+                                 consumer_handle_));
   navigation->SetResponseBody(std::move(consumer_handle_));
 
   navigation->ReadyToCommit();
@@ -1344,10 +1344,12 @@ TEST_F(NavigationRequestResponseBodyTest, Received) {
   EXPECT_FALSE(was_callback_called());
   EXPECT_EQ(std::string(), response_body());
 
+  size_t actually_written_bytes = 0;
   ASSERT_EQ(MOJO_RESULT_OK,
-            producer_handle_->WriteData(response.c_str(), &write_size,
-                                        MOJO_WRITE_DATA_FLAG_NONE));
-  EXPECT_EQ(write_size, response.size());
+            producer_handle_->WriteData(base::as_byte_span(response),
+                                        MOJO_WRITE_DATA_FLAG_NONE,
+                                        actually_written_bytes));
+  EXPECT_EQ(actually_written_bytes, response.size());
 
   navigation->Wait();
   EXPECT_EQ(
@@ -1374,11 +1376,12 @@ TEST_F(NavigationRequestResponseBodyTest, PartiallyReceived) {
   EXPECT_EQ(std::string(), response_body());
 
   std::string response = "response-body-content";
-  size_t write_size = response.size();
+  size_t actually_written_bytes = 0;
   ASSERT_EQ(MOJO_RESULT_OK,
-            producer_handle_->WriteData(response.c_str(), &write_size,
-                                        MOJO_WRITE_DATA_FLAG_NONE));
-  EXPECT_EQ(write_size, pipe_size);
+            producer_handle_->WriteData(base::as_byte_span(response),
+                                        MOJO_WRITE_DATA_FLAG_NONE,
+                                        actually_written_bytes));
+  EXPECT_EQ(actually_written_bytes, pipe_size);
 
   navigation->Wait();
   EXPECT_EQ(

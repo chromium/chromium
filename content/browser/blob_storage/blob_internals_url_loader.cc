@@ -4,6 +4,7 @@
 
 #include "content/browser/blob_storage/blob_internals_url_loader.h"
 
+#include "base/containers/span.h"
 #include "content/browser/blob_storage/blob_internals_url_loader.h"
 #include "content/browser/blob_storage/chrome_blob_storage_context.h"
 #include "mojo/public/cpp/bindings/remote.h"
@@ -33,15 +34,17 @@ void StartBlobInternalsURLLoader(
       mojo::CreateDataPipe(output.size(), producer_handle, consumer_handle),
       MOJO_RESULT_OK);
 
-  void* buffer = nullptr;
-  size_t num_bytes = output.size();
+  base::span<uint8_t> buffer;
+  size_t size_hint = output.size();
   MojoResult result = producer_handle->BeginWriteData(
-      &buffer, &num_bytes, MOJO_BEGIN_WRITE_DATA_FLAG_ALL_OR_NONE);
+      size_hint, MOJO_BEGIN_WRITE_DATA_FLAG_ALL_OR_NONE, buffer);
   CHECK_EQ(result, MOJO_RESULT_OK);
-  CHECK_GE(num_bytes, output.size());
 
-  memcpy(buffer, output.c_str(), output.size());
-  result = producer_handle->EndWriteData(num_bytes);
+  CHECK_GE(buffer.size(), output.size());
+  buffer = buffer.first(output.size());
+
+  buffer.copy_from(base::as_byte_span(output));
+  result = producer_handle->EndWriteData(buffer.size());
   CHECK_EQ(result, MOJO_RESULT_OK);
 
   client->OnReceiveResponse(std::move(resource_response),

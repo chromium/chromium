@@ -11,6 +11,7 @@
 #include <vector>
 
 #include "base/command_line.h"
+#include "base/containers/span.h"
 #include "base/files/file.h"
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
@@ -681,21 +682,23 @@ class FileURLLoader : public network::mojom::URLLoader {
       // Write any data we read for MIME sniffing, constraining by range where
       // applicable. This will always fit in the pipe (see DCHECK above, and
       // assertions near network::features::GetDataPipeDefaultAllocationSize()).
-      size_t write_size = std::min(
-          base::checked_cast<size_t>(initial_read_size - first_byte_to_send),
-          base::checked_cast<size_t>(total_bytes_to_send));
-      const size_t expected_write_size = write_size;
-      MojoResult result =
-          producer_handle->WriteData(&initial_read_buffer[first_byte_to_send],
-                                     &write_size, MOJO_WRITE_DATA_FLAG_NONE);
-      if (result != MOJO_RESULT_OK || write_size != expected_write_size) {
+      base::span<const uint8_t> bytes_to_write =
+          base::as_byte_span(initial_read_buffer).subspan(first_byte_to_send);
+      bytes_to_write = bytes_to_write.first(
+          std::min(bytes_to_write.size(),
+                   base::checked_cast<size_t>(total_bytes_to_send)));
+      size_t actually_written_bytes = 0;
+      MojoResult result = producer_handle->WriteData(
+          bytes_to_write, MOJO_WRITE_DATA_FLAG_NONE, actually_written_bytes);
+      if (result != MOJO_RESULT_OK ||
+          actually_written_bytes != bytes_to_write.size()) {
         OnFileWritten(std::move(observer), result);
         return;
       }
 
       // Discount the bytes we just sent from the total range.
       first_byte_to_send = initial_read_size;
-      total_bytes_to_send -= write_size;
+      total_bytes_to_send -= actually_written_bytes;
     }
 
     if (!net::GetMimeTypeFromFile(full_path, &head->mime_type)) {

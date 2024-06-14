@@ -1038,11 +1038,12 @@ class PrefetchServiceTest : public RenderViewHostTestHarness {
     ASSERT_TRUE(producer_handle_for_gurl_.count(request->request.url));
     ASSERT_TRUE(producer_handle_for_gurl_[request->request.url]);
 
-    size_t bytes_written = body.size();
-    EXPECT_EQ(
-        producer_handle_for_gurl_[request->request.url]->WriteData(
-            body.data(), &bytes_written, MOJO_WRITE_DATA_FLAG_ALL_OR_NONE),
-        MOJO_RESULT_OK);
+    size_t actually_written_bytes = 0;
+    EXPECT_EQ(producer_handle_for_gurl_[request->request.url]->WriteData(
+                  base::as_byte_span(body), MOJO_WRITE_DATA_FLAG_ALL_OR_NONE,
+                  actually_written_bytes),
+              MOJO_RESULT_OK);
+    // Ok to ignore `actually_written_bytes` because of `...ALL_OR_NONE`.
     task_environment()->RunUntilIdle();
   }
 

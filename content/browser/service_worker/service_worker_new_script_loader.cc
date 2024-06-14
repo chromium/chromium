@@ -7,6 +7,7 @@
 #include <memory>
 #include <vector>
 
+#include "base/containers/span.h"
 #include "base/feature_list.h"
 #include "base/functional/bind.h"
 #include "base/memory/ptr_util.h"
@@ -592,15 +593,18 @@ void ServiceWorkerNewScriptLoader::OnNetworkDataAvailable(MojoResult) {
 void ServiceWorkerNewScriptLoader::WriteData(
     scoped_refptr<network::MojoToNetPendingBuffer> pending_buffer,
     uint32_t bytes_available) {
-  // Cap the buffer size up to |kReadBufferSize|. The remaining will be written
-  // next time.
-  size_t bytes_written = std::min<size_t>(kReadBufferSize, bytes_available);
-
   auto buffer = base::MakeRefCounted<WrappedIOBuffer>(
       pending_buffer ? pending_buffer->buffer() : nullptr,
       pending_buffer ? pending_buffer->size() : 0);
+
+  // Cap the buffer size up to |kReadBufferSize|. The remaining will be written
+  // next time.
+  base::span<const uint8_t> bytes = base::as_bytes(buffer->span());
+  bytes = bytes.first(std::min<size_t>(kReadBufferSize, bytes_available));
+
+  size_t bytes_written = 0;
   MojoResult result = client_producer_->WriteData(
-      buffer->data(), &bytes_written, MOJO_WRITE_DATA_FLAG_NONE);
+      bytes, MOJO_WRITE_DATA_FLAG_NONE, bytes_written);
   TRACE_EVENT_WITH_FLOW1("ServiceWorker",
                          "ServiceWorkerNewScriptLoader::WriteData",
                          TRACE_ID_WITH_SCOPE(kServiceWorkerNewScriptLoaderScope,

@@ -801,7 +801,7 @@ TEST_F(ServiceWorkerMainResourceLoaderTest, StreamResponse) {
   base::HistogramTester histogram_tester;
 
   // Construct the Stream to respond with.
-  const char kResponseBody[] = "Here is sample text for the Stream.";
+  const std::string_view kResponseBody = "Here is sample text for the Stream.";
   mojo::Remote<blink::mojom::ServiceWorkerStreamCallback> stream_callback;
   mojo::ScopedDataPipeProducerHandle producer_handle;
   mojo::ScopedDataPipeConsumerHandle consumer_handle;
@@ -821,11 +821,12 @@ TEST_F(ServiceWorkerMainResourceLoaderTest, StreamResponse) {
   EXPECT_FALSE(version_->HasNoWork());
 
   // Write the body stream.
-  size_t written_bytes = sizeof(kResponseBody) - 1;
+  size_t actually_written_bytes = 0;
   MojoResult mojo_result = producer_handle->WriteData(
-      kResponseBody, &written_bytes, MOJO_WRITE_DATA_FLAG_NONE);
+      base::as_byte_span(kResponseBody), MOJO_WRITE_DATA_FLAG_NONE,
+      actually_written_bytes);
   ASSERT_EQ(MOJO_RESULT_OK, mojo_result);
-  EXPECT_EQ(sizeof(kResponseBody) - 1, written_bytes);
+  EXPECT_EQ(kResponseBody.size(), actually_written_bytes);
   stream_callback->OnCompleted();
   producer_handle.reset();
 
@@ -853,7 +854,7 @@ TEST_F(ServiceWorkerMainResourceLoaderTest, StreamResponse_Abort) {
   base::HistogramTester histogram_tester;
 
   // Construct the Stream to respond with.
-  const char kResponseBody[] = "Here is sample text for the Stream.";
+  const std::string_view kResponseBody = "Here is sample text for the Stream.";
   mojo::Remote<blink::mojom::ServiceWorkerStreamCallback> stream_callback;
   mojo::ScopedDataPipeProducerHandle producer_handle;
   mojo::ScopedDataPipeConsumerHandle consumer_handle;
@@ -871,11 +872,12 @@ TEST_F(ServiceWorkerMainResourceLoaderTest, StreamResponse_Abort) {
   ExpectResponseInfo(*info, *CreateResponseInfoFromServiceWorker());
 
   // Start writing the body stream, then abort before finishing.
-  size_t written_bytes = sizeof(kResponseBody) - 1;
+  size_t actually_written_bytes = 0;
   MojoResult mojo_result = producer_handle->WriteData(
-      kResponseBody, &written_bytes, MOJO_WRITE_DATA_FLAG_NONE);
+      base::as_byte_span(kResponseBody), MOJO_WRITE_DATA_FLAG_NONE,
+      actually_written_bytes);
   ASSERT_EQ(MOJO_RESULT_OK, mojo_result);
-  EXPECT_EQ(sizeof(kResponseBody) - 1, written_bytes);
+  EXPECT_EQ(kResponseBody.size(), actually_written_bytes);
   stream_callback->OnAborted();
   producer_handle.reset();
 
@@ -907,7 +909,7 @@ TEST_F(ServiceWorkerMainResourceLoaderTest, StreamResponseAndCancel) {
   base::HistogramTester histogram_tester;
 
   // Construct the Stream to respond with.
-  const char kResponseBody[] = "Here is sample text for the Stream.";
+  const std::string_view kResponseBody = "Here is sample text for the Stream.";
   mojo::Remote<blink::mojom::ServiceWorkerStreamCallback> stream_callback;
   mojo::ScopedDataPipeProducerHandle producer_handle;
   mojo::ScopedDataPipeConsumerHandle consumer_handle;
@@ -926,11 +928,12 @@ TEST_F(ServiceWorkerMainResourceLoaderTest, StreamResponseAndCancel) {
 
   // Start writing the body stream, then break the Mojo connection to the loader
   // before finishing.
-  size_t written_bytes = sizeof(kResponseBody) - 1;
+  size_t actually_written_bytes = 0;
   MojoResult mojo_result = producer_handle->WriteData(
-      kResponseBody, &written_bytes, MOJO_WRITE_DATA_FLAG_NONE);
+      base::as_byte_span(kResponseBody), MOJO_WRITE_DATA_FLAG_NONE,
+      actually_written_bytes);
   ASSERT_EQ(MOJO_RESULT_OK, mojo_result);
-  EXPECT_EQ(sizeof(kResponseBody) - 1, written_bytes);
+  EXPECT_EQ(kResponseBody.size(), actually_written_bytes);
   EXPECT_TRUE(producer_handle.is_valid());
   loader_remote_.reset();
   base::RunLoop().RunUntilIdle();
@@ -939,8 +942,9 @@ TEST_F(ServiceWorkerMainResourceLoaderTest, StreamResponseAndCancel) {
   // on connection error, the URLLoaderClient still exists. In this test, it is
   // |client_| which owns the data pipe, so it's still valid to write data to
   // it.
-  mojo_result = producer_handle->WriteData(kResponseBody, &written_bytes,
-                                           MOJO_WRITE_DATA_FLAG_NONE);
+  mojo_result = producer_handle->WriteData(base::as_byte_span(kResponseBody),
+                                           MOJO_WRITE_DATA_FLAG_NONE,
+                                           actually_written_bytes);
   // TODO(falken): This should probably be an error.
   EXPECT_EQ(MOJO_RESULT_OK, mojo_result);
 

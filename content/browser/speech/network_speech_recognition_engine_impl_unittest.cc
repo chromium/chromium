@@ -590,14 +590,14 @@ void NetworkSpeechRecognitionEngineImplTest::ProvideMockProtoResultDownstream(
 
   std::string response_string = SerializeProtobufResponse(result);
   response_buffer_.append(response_string);
-  size_t written = 0;
-  while (written < response_string.size()) {
-    size_t write_bytes = response_string.size() - written;
+  base::span<const uint8_t> bytes_to_write =
+      base::as_byte_span(response_string);
+  while (!bytes_to_write.empty()) {
+    size_t actually_written_bytes = 0;
     MojoResult mojo_result = downstream_data_pipe_->WriteData(
-        response_string.data() + written, &write_bytes,
-        MOJO_WRITE_DATA_FLAG_NONE);
+        bytes_to_write, MOJO_WRITE_DATA_FLAG_NONE, actually_written_bytes);
     if (mojo_result == MOJO_RESULT_OK) {
-      written += write_bytes;
+      bytes_to_write = bytes_to_write.subspan(actually_written_bytes);
       continue;
     }
     if (mojo_result == MOJO_RESULT_SHOULD_WAIT) {
@@ -743,13 +743,12 @@ std::string NetworkSpeechRecognitionEngineImplTest::ConsumeChunkedUploadData() {
   while (true) {
     base::RunLoop().RunUntilIdle();
 
-    const void* data;
-    size_t num_bytes;
-    MojoResult mojo_result = upstream_data_pipe_->BeginReadData(
-        &data, &num_bytes, MOJO_READ_DATA_FLAG_NONE);
+    base::span<const uint8_t> data;
+    MojoResult mojo_result =
+        upstream_data_pipe_->BeginReadData(MOJO_READ_DATA_FLAG_NONE, data);
     if (mojo_result == MOJO_RESULT_OK) {
-      out.append(static_cast<const char*>(data), num_bytes);
-      upstream_data_pipe_->EndReadData(num_bytes);
+      out.append(base::as_string_view(data));
+      upstream_data_pipe_->EndReadData(data.size());
       continue;
     }
     if (mojo_result == MOJO_RESULT_SHOULD_WAIT)

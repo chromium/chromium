@@ -203,17 +203,17 @@ TEST_P(WebUIURLLoaderFactoryTest, RangeRequest) {
   if (loader_client.completion_status().error_code == net::OK) {
     ASSERT_TRUE(loader_client.response_body().is_valid());
     size_t response_size;
-    ASSERT_EQ(loader_client.response_body().ReadData(nullptr, &response_size,
-                                                     MOJO_READ_DATA_FLAG_QUERY),
-              MOJO_RESULT_OK);
+    ASSERT_EQ(
+        loader_client.response_body().ReadData(
+            MOJO_READ_DATA_FLAG_QUERY, base::span<uint8_t>(), response_size),
+        MOJO_RESULT_OK);
     ASSERT_EQ(response_size, GetParam().expected_size);
 
     if (response_size > 0u) {
       std::vector<uint8_t> response(response_size);
-      ASSERT_EQ(
-          loader_client.response_body().ReadData(
-              response.data(), &response_size, MOJO_READ_DATA_FLAG_ALL_OR_NONE),
-          MOJO_RESULT_OK);
+      ASSERT_EQ(loader_client.response_body().ReadData(
+                    MOJO_READ_DATA_FLAG_ALL_OR_NONE, response, response_size),
+                MOJO_RESULT_OK);
 
       std::vector<unsigned char> expected_resource =
           TestWebUIDataSource::GetResource(GetParam().resource_size);

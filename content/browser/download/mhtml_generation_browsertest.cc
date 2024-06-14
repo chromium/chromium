@@ -6,6 +6,7 @@
 
 #include <memory>
 
+#include "base/containers/span.h"
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
 #include "base/files/scoped_temp_dir.h"
@@ -112,7 +113,7 @@ class FindTrackingDelegate : public WebContentsDelegate {
 // static
 int FindTrackingDelegate::global_request_id = 0;
 
-const char kTestData[] =
+const std::string_view kTestData =
     "Sample Text to write on a generated MHTML "
     "file for tests to validate whether the implementation is able to access "
     "and write to the file.";
@@ -139,15 +140,16 @@ class MockWriterBase : public mojom::MhtmlFileWriter {
 
   void WriteDataToDestinationFile(base::File& destination_file) {
     base::ScopedAllowBlockingForTesting allow_blocking;
-    destination_file.WriteAtCurrentPos(kTestData, strlen(kTestData));
+    destination_file.WriteAtCurrentPos(base::as_byte_span(kTestData));
     destination_file.Close();
   }
 
   void WriteDataToProducerPipe(
       mojo::ScopedDataPipeProducerHandle producer_pipe) {
     base::ScopedAllowBlockingForTesting allow_blocking;
-    size_t size = strlen(kTestData);
-    producer_pipe->WriteData(kTestData, &size, MOJO_WRITE_DATA_FLAG_NONE);
+    size_t actually_written_bytes = 0;
+    producer_pipe->WriteData(base::as_byte_span(kTestData),
+                             MOJO_WRITE_DATA_FLAG_NONE, actually_written_bytes);
     producer_pipe.reset();
   }
 

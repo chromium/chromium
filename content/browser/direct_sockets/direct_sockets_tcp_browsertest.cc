@@ -12,6 +12,7 @@
 #include <optional>
 #include <string>
 
+#include "base/containers/span.h"
 #include "base/run_loop.h"
 #include "base/strings/strcat.h"
 #include "base/test/bind.h"
@@ -130,10 +131,9 @@ class ReadWriteWaiter {
     while (true) {
       DCHECK(receive_stream_.is_valid());
       DCHECK_LT(bytes_received_, required_receive_bytes_);
-      const void* buffer = nullptr;
-      size_t num_bytes = 0;
-      MojoResult mojo_result = receive_stream_->BeginReadData(
-          &buffer, &num_bytes, MOJO_READ_DATA_FLAG_NONE);
+      base::span<const uint8_t> buffer;
+      MojoResult mojo_result =
+          receive_stream_->BeginReadData(MOJO_READ_DATA_FLAG_NONE, buffer);
       if (mojo_result == MOJO_RESULT_SHOULD_WAIT) {
         read_watcher_->ArmOrNotify();
         return;
@@ -141,17 +141,14 @@ class ReadWriteWaiter {
       DCHECK_EQ(mojo_result, MOJO_RESULT_OK);
 
       // This is guaranteed by Mojo.
-      DCHECK_GT(num_bytes, 0u);
+      DCHECK_GT(buffer.size(), 0u);
 
-      const unsigned char* current = static_cast<const unsigned char*>(buffer);
-      const unsigned char* const end = current + num_bytes;
-      while (current < end) {
-        EXPECT_EQ(*current, bytes_received_ % 256);
-        ++current;
+      for (uint8_t current : buffer) {
+        EXPECT_EQ(current, bytes_received_ % 256);
         ++bytes_received_;
       }
 
-      mojo_result = receive_stream_->EndReadData(num_bytes);
+      mojo_result = receive_stream_->EndReadData(buffer.size());
       DCHECK_EQ(mojo_result, MOJO_RESULT_OK);
 
       if (bytes_received_ == required_receive_bytes_) {
@@ -167,10 +164,10 @@ class ReadWriteWaiter {
     while (true) {
       DCHECK(send_stream_.is_valid());
       DCHECK_LT(bytes_sent_, required_send_bytes_);
-      void* buffer = nullptr;
-      size_t num_bytes = required_send_bytes_ - bytes_sent_;
+      base::span<uint8_t> buffer;
+      size_t size_hint = required_send_bytes_ - bytes_sent_;
       MojoResult mojo_result = send_stream_->BeginWriteData(
-          &buffer, &num_bytes, MOJO_WRITE_DATA_FLAG_NONE);
+          size_hint, MOJO_WRITE_DATA_FLAG_NONE, buffer);
       if (mojo_result == MOJO_RESULT_SHOULD_WAIT) {
         write_watcher_->ArmOrNotify();
         return;
@@ -178,19 +175,17 @@ class ReadWriteWaiter {
       DCHECK_EQ(mojo_result, MOJO_RESULT_OK);
 
       // This is guaranteed by Mojo.
-      DCHECK_GT(num_bytes, 0u);
+      DCHECK_GT(buffer.size(), 0u);
 
-      num_bytes = std::min(num_bytes, required_send_bytes_ - bytes_sent_);
+      buffer = buffer.first(
+          std::min(buffer.size(), required_send_bytes_ - bytes_sent_));
 
-      unsigned char* current = static_cast<unsigned char*>(buffer);
-      unsigned char* const end = current + num_bytes;
-      while (current != end) {
-        *current = bytes_sent_ % 256;
-        ++current;
+      for (char& c : base::as_writable_chars(buffer)) {
+        c = bytes_sent_ % 256;
         ++bytes_sent_;
       }
 
-      mojo_result = send_stream_->EndWriteData(num_bytes);
+      mojo_result = send_stream_->EndWriteData(buffer.size());
       DCHECK_EQ(mojo_result, MOJO_RESULT_OK);
 
       if (bytes_sent_ == required_send_bytes_) {

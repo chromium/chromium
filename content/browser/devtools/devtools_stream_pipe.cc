@@ -5,6 +5,7 @@
 #include "content/browser/devtools/devtools_stream_pipe.h"
 
 #include "base/base64.h"
+#include "base/containers/span.h"
 #include "base/functional/bind.h"
 #include "base/task/sequenced_task_runner.h"
 
@@ -76,10 +77,8 @@ void DevToolsStreamPipe::OnPipeSignalled(
     return;
   }
   while (!read_requests_.empty()) {
-    const void* pipe_bytes = nullptr;
-    size_t bytes_available = 0;
-    MojoResult res = pipe_->BeginReadData(&pipe_bytes, &bytes_available,
-                                          MOJO_READ_DATA_FLAG_NONE);
+    base::span<const uint8_t> pipe_bytes;
+    MojoResult res = pipe_->BeginReadData(MOJO_READ_DATA_FLAG_NONE, pipe_bytes);
     if (res == MOJO_RESULT_FAILED_PRECONDITION) {
       DCHECK(state.peer_closed());
       DispatchEOFOrError(state.peer_closed());
@@ -88,7 +87,7 @@ void DevToolsStreamPipe::OnPipeSignalled(
     DCHECK_EQ(MOJO_RESULT_OK, res);
     auto& request = read_requests_.front();
     const size_t bytes_to_read =
-        std::min(bytes_available, size_t{request.max_size} - buffer_.size());
+        std::min(pipe_bytes.size(), size_t{request.max_size} - buffer_.size());
     // Dispatch available bytes (but no more than requested), when there are
     // multiple requests pending. If we just have a single read request, it's
     // more efficient (and easier for client) to only dispatch when enough bytes
@@ -96,14 +95,15 @@ void DevToolsStreamPipe::OnPipeSignalled(
     const bool fulfill_entire_request = read_requests_.size() == 1ul;
     if (fulfill_entire_request)
       buffer_.reserve(request.max_size);
-    buffer_.append(static_cast<const char*>(pipe_bytes), bytes_to_read);
+    buffer_.append(base::as_string_view(pipe_bytes.first(bytes_to_read)));
     pipe_->EndReadData(bytes_to_read);
     DCHECK_LE(buffer_.size(), request.max_size);
     if (buffer_.size() < request.max_size && fulfill_entire_request)
       break;
     DispatchResponse();
-    if (bytes_to_read == bytes_available)
+    if (bytes_to_read == pipe_bytes.size()) {
       break;
+    }
   }
   if (!read_requests_.empty())
     pipe_watcher_.ArmOrNotify();

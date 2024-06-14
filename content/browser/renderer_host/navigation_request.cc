@@ -13,6 +13,7 @@
 #include "base/auto_reset.h"
 #include "base/command_line.h"
 #include "base/containers/contains.h"
+#include "base/containers/span.h"
 #include "base/debug/alias.h"
 #include "base/debug/dump_without_crashing.h"
 #include "base/feature_list.h"
@@ -10411,20 +10412,23 @@ bool NavigationRequest::IsDeferred() {
 }
 
 void NavigationRequest::OnResponseBodyReady(MojoResult) {
-  size_t num_bytes = 0;
-  MojoResult result =
-      response_body().ReadData(nullptr, &num_bytes, MOJO_READ_DATA_FLAG_QUERY);
+  size_t available_bytes = 0;
+  MojoResult result = response_body().ReadData(
+      MOJO_READ_DATA_FLAG_QUERY, base::span<uint8_t>(), available_bytes);
   CHECK_EQ(result, MOJO_RESULT_OK);
 
-  std::string response_body_contents(num_bytes, '\0');
-  result = response_body().ReadData(response_body_contents.data(), &num_bytes,
-                                    MOJO_READ_DATA_FLAG_PEEK);
+  std::string response_body_contents(available_bytes, '\0');
+  size_t actually_read_bytes = 0;
+  result = response_body().ReadData(
+      MOJO_READ_DATA_FLAG_PEEK,
+      base::as_writable_byte_span(response_body_contents), actually_read_bytes);
   switch (result) {
     case MOJO_RESULT_OK:
       // The watcher is reset before calling the callback since the callback may
       // resume the throttle. If the watcher is still active, resumption via
       // callback results in running the OnceCallback twice.
       response_body_watcher_.reset();
+      response_body_contents.resize(actually_read_bytes);
       std::move(response_body_callback_).Run(std::move(response_body_contents));
       break;
     case MOJO_RESULT_SHOULD_WAIT:
