@@ -581,9 +581,6 @@ Style notes:
       <message name="IDS_ASH_STATUS_TRAY_CAST_CAST_DESKTOP_ACCESSIBILITY_STOP" desc="Stop button accessibility label used in the tray popup to tell the user to stop a cast to the desktop.">
         Stop casting screen to <ph name="RECEIVER_NAME">$1<ex>Living Room</ex></ph>
       </message>
-      <message name="IDS_ASH_STATUS_TRAY_CAST_CAST_DESKTOP_NOTIFICATION_MESSAGE" desc="The notification message to tell the user we are casting the desktop.">
-        You are currently casting your screen.
-      </message>
       <message name="IDS_ASH_STATUS_TRAY_CAST_CAST_TAB" desc="The title label used in the tray popup to tell the user we are casting a tab.">
         <ph name="ROUTE_TITLE">$1<ex>YouTube</ex></ph> on <ph name="RECEIVER_NAME">$2<ex>Living Room</ex></ph>
       </message>
@@ -598,18 +595,6 @@ Style notes:
       </message>
       <message name="IDS_ASH_STATUS_TRAY_CAST_DESKTOP" desc="The label used in the tray popup to notify that desktop may be cast.">
         Cast devices available
-      </message>
-      <message name="IDS_ASH_STATUS_TRAY_CAST_NOTIFICATION_MESSAGE_PAUSED" desc="The notification message to tell the user that casting is paused.">
-        Casting is currently paused. You can resume casting or stop casting at any time.
-      </message>
-      <message name="IDS_ASH_STATUS_TRAY_CAST_NOTIFICATION_MESSAGE_SCREEN_CAN_PAUSE" desc="Notification message to tell the user that we are casting the desktop screen, and that the casting session may be paused.">
-        You are casting your screen. You can pause or stop casting your screen at any time.
-      </message>
-      <message name="IDS_ASH_STATUS_TRAY_CAST_NOTIFICATION_MESSAGE_SCREEN_PAUSED" desc="Notification message to tell the user that we are casting the desktop screen, and that the casting session is currently paused.">
-        Casting is currently paused. You can resume casting or stop casting your screen at any time.
-      </message>
-      <message name="IDS_ASH_STATUS_TRAY_CAST_NOTIFICATION_MESSAGE_TAB_CAN_PAUSE" desc="Notification message to tell the user that we are casting a tab, and that the casting session may be paused.">
-        You are casting a tab. You can pause or stop casting at any time.
       </message>
       <message name="IDS_ASH_STATUS_TRAY_CAST_STOP" desc="The label used in the tray popup to stop casting.">
         Stop

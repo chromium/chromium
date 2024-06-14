@@ -6,6 +6,7 @@
 
 #include "ash/constants/notifier_catalogs.h"
 #include "ash/public/cpp/notification_utils.h"
+#include "ash/public/cpp/system_notification_builder.h"
 #include "ash/resources/vector_icons/vector_icons.h"
 #include "ash/root_window_controller.h"
 #include "ash/shelf/shelf.h"
@@ -50,46 +51,7 @@ std::u16string GetNotificationTitle(const CastSink& sink,
   }
 }
 
-std::u16string GetNotificationMessage(const CastRoute& route) {
-  if (route.freeze_info.is_frozen) {
-    // Casting is paused.
-    switch (route.content_source) {
-      case ContentSource::kUnknown:
-      case ContentSource::kTab:
-        return l10n_util::GetStringUTF16(
-            IDS_ASH_STATUS_TRAY_CAST_NOTIFICATION_MESSAGE_PAUSED);
-      case ContentSource::kDesktop:
-        return l10n_util::GetStringUTF16(
-            IDS_ASH_STATUS_TRAY_CAST_NOTIFICATION_MESSAGE_SCREEN_PAUSED);
-    }
-  } else if (route.freeze_info.can_freeze) {
-    // Casting is not paused, but it is pausable.
-    switch (route.content_source) {
-      case ContentSource::kUnknown:
-        return std::u16string();
-      case ContentSource::kTab:
-        return l10n_util::GetStringUTF16(
-            IDS_ASH_STATUS_TRAY_CAST_NOTIFICATION_MESSAGE_TAB_CAN_PAUSE);
-      case ContentSource::kDesktop:
-        return l10n_util::GetStringUTF16(
-            IDS_ASH_STATUS_TRAY_CAST_NOTIFICATION_MESSAGE_SCREEN_CAN_PAUSE);
-    }
-  } else {
-    // The cast session is not pausable.
-    switch (route.content_source) {
-      case ContentSource::kUnknown:
-        return std::u16string();
-      case ContentSource::kTab:
-        return base::UTF8ToUTF16(route.title);
-      case ContentSource::kDesktop:
-        return l10n_util::GetStringUTF16(
-            IDS_ASH_STATUS_TRAY_CAST_CAST_DESKTOP_NOTIFICATION_MESSAGE);
-    }
-  }
-}
-
 const char kNotificationId[] = "chrome://cast";
-const char kNotifierId[] = "ash.cast";
 
 }  // namespace
 
@@ -129,34 +91,61 @@ void CastNotificationController::OnDevicesUpdated(
     displayed_route_id_ = route.id;
 
     message_center::RichNotificationData data;
+    data.pinned = true;
 
     if (route.freeze_info.can_freeze) {
       displayed_route_is_frozen_ = route.freeze_info.is_frozen;
-      data.buttons.emplace_back(message_center::ButtonInfo(
-          displayed_route_is_frozen_
-              ? l10n_util::GetStringUTF16(IDS_ASH_STATUS_TRAY_CAST_RESUME)
-              : l10n_util::GetStringUTF16(IDS_ASH_STATUS_TRAY_CAST_PAUSE)));
+
+      // The new pinned notification UI uses icon instead of label buttons.
+      if (features::AreOngoingProcessesEnabled()) {
+        data.buttons.emplace_back(
+            displayed_route_is_frozen_
+                ? message_center::ButtonInfo(
+                      /*vector_icon=*/&kNotificationPlayIcon,
+                      /*accessible_name=*/l10n_util::GetStringUTF16(
+                          IDS_ASH_STATUS_TRAY_CAST_RESUME))
+                : message_center::ButtonInfo(
+                      /*vector_icon=*/&kNotificationPauseIcon,
+                      /*accessible_name=*/l10n_util::GetStringUTF16(
+                          IDS_ASH_STATUS_TRAY_CAST_PAUSE)));
+      } else {
+        data.buttons.emplace_back(message_center::ButtonInfo(
+            displayed_route_is_frozen_
+                ? l10n_util::GetStringUTF16(IDS_ASH_STATUS_TRAY_CAST_RESUME)
+                : l10n_util::GetStringUTF16(IDS_ASH_STATUS_TRAY_CAST_PAUSE)));
+      }
+
       freeze_button_index_ = data.buttons.size() - 1;
     }
 
-    data.buttons.emplace_back(message_center::ButtonInfo(
-        l10n_util::GetStringUTF16(IDS_ASH_STATUS_TRAY_CAST_STOP)));
+    // The new pinned notification UI uses icon instead of label buttons.
+    if (features::AreOngoingProcessesEnabled()) {
+      data.buttons.emplace_back(message_center::ButtonInfo(
+          /*vector_icon=*/&kNotificationStopIcon,
+          /*accessible_name=*/l10n_util::GetStringUTF16(
+              IDS_ASH_STATUS_TRAY_CAST_STOP)));
+    } else {
+      data.buttons.emplace_back(message_center::ButtonInfo(
+          l10n_util::GetStringUTF16(IDS_ASH_STATUS_TRAY_CAST_STOP)));
+    }
 
-    std::unique_ptr<Notification> notification = CreateSystemNotificationPtr(
-        message_center::NOTIFICATION_TYPE_SIMPLE, kNotificationId,
-        GetNotificationTitle(sink, route), GetNotificationMessage(route),
-        std::u16string() /* display_source */, GURL(),
-        message_center::NotifierId(
-            message_center::NotifierType::SYSTEM_COMPONENT, kNotifierId,
-            NotificationCatalogName::kCast),
-        data,
-        base::MakeRefCounted<message_center::HandleNotificationClickDelegate>(
-            base::BindRepeating(&CastNotificationController::PressedCallback,
-                                weak_ptr_factory_.GetWeakPtr())),
-        displayed_route_is_frozen_ ? kSystemMenuCastPausedIcon
-                                   : kSystemMenuCastIcon,
-        message_center::SystemNotificationWarningLevel::NORMAL);
-    notification->set_pinned(true);
+    std::unique_ptr<Notification> notification =
+        ash::SystemNotificationBuilder()
+            .SetId(kNotificationId)
+            .SetCatalogName(NotificationCatalogName::kCast)
+            .SetTitle(GetNotificationTitle(sink, route))
+            .SetOptionalFields(data)
+            .SetDelegate(base::MakeRefCounted<
+                         message_center::HandleNotificationClickDelegate>(
+                base::BindRepeating(
+                    &CastNotificationController::PressedCallback,
+                    weak_ptr_factory_.GetWeakPtr())))
+            .SetSmallImage(displayed_route_is_frozen_
+                               ? kSystemMenuCastPausedIcon
+                               : kSystemMenuCastIcon)
+            .BuildPtr(
+                /*keep_timestamp=*/false);
+
     MessageCenter::Get()->AddNotification(std::move(notification));
 
     break;
