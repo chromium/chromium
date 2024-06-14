@@ -30,7 +30,6 @@
 #include "base/no_destructor.h"
 #include "base/strings/stringprintf.h"
 #include "base/strings/sys_string_conversions.h"
-#include "base/task/single_thread_task_runner.h"
 #include "base/types/expected.h"
 #include "base/types/expected_macros.h"
 #include "chrome/browser/app_controller_mac.h"
@@ -1585,25 +1584,15 @@ void AppShimManager::OnProfileMarkedForPermanentDeletion(Profile* profile) {
     app_lifetime_monitor->RemoveObserver(this);
   }
 
-  // Close app shims that were kept alive only for this profile. Note that this
-  // must be done as a posted task because closing shims may result in closing
-  // windows midway through BrowserList::TryToCloseBrowserList, which does not
-  // expect that behavior, and may result in crashes.
-  auto close_shims_lambda = [](base::WeakPtr<AppShimManager> manager) {
-    if (!manager)
-      return;
-    for (auto iter_app = manager->apps_.begin();
-         iter_app != manager->apps_.end();) {
-      AppState* app_state = iter_app->second.get();
-      if (app_state->ShouldDeleteAppState())
-        iter_app = manager->apps_.erase(iter_app);
-      else
-        ++iter_app;
+  // Close app shims that were kept alive only for this profile.
+  for (auto iter_app = apps_.begin(); iter_app != apps_.end();) {
+    AppState* app_state = iter_app->second.get();
+    if (app_state->ShouldDeleteAppState()) {
+      iter_app = apps_.erase(iter_app);
+    } else {
+      ++iter_app;
     }
-  };
-  base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
-      FROM_HERE,
-      base::BindOnce(close_shims_lambda, weak_factory_.GetWeakPtr()));
+  }
 }
 
 void AppShimManager::OnAppStart(content::BrowserContext* context,
