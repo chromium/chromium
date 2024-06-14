@@ -128,18 +128,6 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="GCM.PendingConnectionEventsAtShutdown" units="events"
-    expires_after="M98">
-  <owner>peter@chromium.org</owner>
-  <owner>knollr@chromium.org</owner>
-  <summary>
-    Number of connection events which have not been sent to GCM. This is
-    recorded only at the time of shutdown to capture the events which are being
-    lost due to shutdown. Because this is recorded at shutdown, this is not
-    guaranteed to be complete and should be treated as a best effort record.
-  </summary>
-</histogram>
-
 <histogram name="GCM.RegistrationCacheStatus" enum="GCMRegistrationCacheStatus"
     expires_after="2023-04-16">
   <owner>nator@chromium.org</owner>
