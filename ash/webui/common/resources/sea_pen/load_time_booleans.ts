@@ -33,3 +33,7 @@ export function isSeaPenEnterpriseEnabled() {
 export function isLacrosEnabled() {
   return loadTimeData.getBoolean('isLacrosEnabled');
 }
+
+export function isVcResizeThumbnailEnabled() {
+  return loadTimeData.getBoolean('isVcResizeThumbnailEnabled');
+}

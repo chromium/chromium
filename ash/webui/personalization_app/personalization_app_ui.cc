@@ -564,6 +564,7 @@ void PersonalizationAppUI::AddBooleans(content::WebUIDataSource* source) {
                          ::ash::features::IsSeaPenEnterpriseEnabled());
   source->AddBoolean("isLacrosEnabled",
                      ::crosapi::lacros_startup_state::IsLacrosEnabled());
+  source->AddBoolean("isVcResizeThumbnailEnabled", false);
 }
 
 void PersonalizationAppUI::AddIntegers(content::WebUIDataSource* source) {

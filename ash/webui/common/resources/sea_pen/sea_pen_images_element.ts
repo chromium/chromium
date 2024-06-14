@@ -22,7 +22,7 @@ import './sea_pen_zero_state_svg_element.js';
 import {afterNextRender} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {QUERY, Query, SeaPenImageId} from './constants.js';
-import {isLacrosEnabled} from './load_time_booleans.js';
+import {isLacrosEnabled, isVcResizeThumbnailEnabled} from './load_time_booleans.js';
 import {MantaStatusCode, SeaPenThumbnail} from './sea_pen.mojom-webui.js';
 import {clearSeaPenThumbnails, openFeedbackDialog, selectSeaPenThumbnail} from './sea_pen_controller.js';
 import {SeaPenTemplateId} from './sea_pen_generated.mojom-webui.js';
@@ -35,6 +35,55 @@ import {isNonEmptyArray, isPersonalizationApp, isSeaPenImageId} from './sea_pen_
 const kLoadingPlaceholderCount = 8;
 
 type Tile = 'loading'|SeaPenThumbnail;
+
+let cameraAspectRatio: number|null = null;
+(function() {
+// Try to set aspect ratio if it is not set yet.
+// We only need this when it is not Wallpaper, not Lacros, and aspectRatio
+// is not set.
+if (!isPersonalizationApp() && !isLacrosEnabled() &&
+    isVcResizeThumbnailEnabled()) {
+  if (navigator.mediaDevices.getUserMedia) {
+    navigator.mediaDevices.getUserMedia({video: true})
+        .then((stream: MediaStream) => {
+          const videoTracks = stream.getVideoTracks();
+          if (videoTracks.length > 0) {
+            cameraAspectRatio =
+                stream.getVideoTracks()[0]?.getSettings()?.aspectRatio ?? null;
+          }
+          // Stop all tracks.
+          stream.getTracks().forEach(track => track.stop());
+        })
+        .catch((err) => {
+          console.log(err);
+        });
+  }
+}
+})();
+
+// This function resets the img.style.width and img.style.height so that the img
+// can be perfectly aligned with the camera.
+function calculateAndSetAspectRatio(img: HTMLImageElement) {
+  const imgAspectRatio: number = img.naturalWidth / img.naturalHeight;
+
+  if (imgAspectRatio > cameraAspectRatio!) {
+    // Larger imgAspectRatio means the image is too wide for the camera, thus,
+    // we keep the height as 100% and set the width as more than 100%. This
+    // will crop the left and right side of the image and thus align with the
+    // camera.
+    img.style.width =
+        ((imgAspectRatio / cameraAspectRatio!) * 100).toFixed(4) + '%';
+    img.style.height = '100%';
+  } else {
+    // Smaller imgAspectRatio means the image is too tall for the camera,
+    // thus, we keep the width as 100% and set the height as more than 100%.
+    // This will crop the top and bottom side of the image and thus align with
+    // the camera.
+    img.style.height =
+        ((cameraAspectRatio! / imgAspectRatio) * 100).toFixed(4) + '%';
+    img.style.width = '100%';
+  }
+}
 
 export class SeaPenImagesElement extends WithSeaPenStore {
   static get is() {
@@ -216,6 +265,23 @@ export class SeaPenImagesElement extends WithSeaPenStore {
     afterNextRender(this, () => {
       window.scrollTo(0, 0);
       this.shadowRoot!.querySelector<HTMLElement>('.sea-pen-image')?.focus();
+
+      // Resize images if cameraAspectRatio is set.
+      // This only happens when it is not wallpaper, not lacros.
+      if (cameraAspectRatio) {
+        // Handle each sea-pen-image element.
+        this.shadowRoot!.querySelectorAll<HTMLElement>('.sea-pen-image')
+            .forEach((gridItem: HTMLElement) => {
+              const img: HTMLImageElement =
+                  gridItem.shadowRoot!.querySelector<HTMLImageElement>('img')!;
+
+              if (img.complete) {
+                calculateAndSetAspectRatio(img);
+              } else {
+                img.onload = () => calculateAndSetAspectRatio(img);
+              }
+            });
+      }
     });
   }
 
@@ -239,7 +305,7 @@ export class SeaPenImagesElement extends WithSeaPenStore {
     }
     let cameraFeed: HTMLVideoElement|null = document.createElement('video');
     // Stretch camera stream to fit into the image.
-    cameraFeed.style.objectFit = 'contain';
+    cameraFeed.style.objectFit = 'cover';
     // Align camera feed with the clicked image.
     cameraFeed.style.position = 'relative';
     // Flip left and right so that camera matches with the image.
