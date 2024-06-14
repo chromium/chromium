@@ -70,6 +70,7 @@ class AvatarToolbarButtonDelegate : public signin::IdentityManager::Observer {
       const ui::ColorProvider* const color_provider) const;
   SkColor GetHighlightTextColor(
       const ui::ColorProvider* const color_provider) const;
+  std::optional<std::u16string> GetAccessibilityLabel() const;
   std::u16string GetAvatarTooltipText() const;
   std::pair<ChromeColorIds, ChromeColorIds> GetInkdropColors() const;
   ui::ImageModel GetAvatarIcon(int icon_size, SkColor icon_color) const;
@@ -77,7 +78,8 @@ class AvatarToolbarButtonDelegate : public signin::IdentityManager::Observer {
   void PaintIcon(gfx::Canvas* canvas, const gfx::Rect& icon_bounds) const;
 
   [[nodiscard]] base::ScopedClosureRunner ShowExplicitText(
-      const std::u16string& text);
+      const std::u16string& text,
+      std::optional<std::u16string> accessibility_label);
 
   // Called by the AvatarToolbarButton to notify the delegate about events.
   void OnThemeChanged(const ui::ColorProvider* color_provider);

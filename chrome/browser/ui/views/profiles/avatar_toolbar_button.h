@@ -62,7 +62,8 @@ class AvatarToolbarButton : public ToolbarButton {
   // Expands the pill to show the intercept text.
   // Returns a callback to be used when the shown text should be hidden.
   [[nodiscard]] base::ScopedClosureRunner ShowExplicitText(
-      const std::u16string& text);
+      const std::u16string& text,
+      std::optional<std::u16string> accessibility_label);
 
   // Changes the button pressed action.
   // Returns a callback to be used when the new action should stop being used.
@@ -141,6 +142,8 @@ class AvatarToolbarButton : public ToolbarButton {
 
   // Used as a callback to reset the explicit button action.
   void ResetButtonAction();
+
+  void UpdateAccessibilityLabel();
 
   // Lists of observers.
   base::ObserverList<Observer, true> observer_list_;
