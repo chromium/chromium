@@ -52,7 +52,7 @@ void SetConfigurationTitle(UIButton* button, NSString* newString) {
     NSMutableAttributedString* attributedString =
         [[NSMutableAttributedString alloc]
             initWithAttributedString:buttonConfiguration.attributedTitle];
-    [attributedString.mutableString setString:newString];
+    [attributedString.mutableString setString:newString ? newString : @""];
     buttonConfiguration.attributedTitle = attributedString;
     button.configuration = buttonConfiguration;
   }

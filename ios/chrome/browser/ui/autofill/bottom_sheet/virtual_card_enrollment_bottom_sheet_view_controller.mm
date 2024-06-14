@@ -87,8 +87,7 @@ CGFloat const kCreditCardCellHeight = 64;
 }
 
 - (void)showLoadingState {
-  // TODO(crbug.com/339887700): Implement an activity indicator for the loading
-  // state.
+  self.isLoading = YES;
 }
 
 #pragma mark - ConfirmationAlertActionHandler

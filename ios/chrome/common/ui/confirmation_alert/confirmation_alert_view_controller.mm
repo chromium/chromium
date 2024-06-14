@@ -50,6 +50,19 @@ const CGFloat kFaviconSideLength = 30;
 // Length of each side of the favicon badge.
 const CGFloat kFaviconBadgeSideLength = 24;
 
+// Sets the activity indicator of the button in the button configuration.
+void SetConfigurationActivityIndicator(UIButton* button,
+                                       BOOL showsActivityIndicator,
+                                       UIColor* activityIndicatorColor) {
+  UIButtonConfiguration* buttonConfiguration = button.configuration;
+  buttonConfiguration.showsActivityIndicator = showsActivityIndicator;
+  buttonConfiguration.activityIndicatorColorTransformer =
+      ^UIColor*(UIColor* _) {
+        return activityIndicatorColor;
+      };
+  button.configuration = buttonConfiguration;
+}
+
 }  // namespace
 
 @interface ConfirmationAlertViewController () <UIScrollViewDelegate>
@@ -86,6 +99,7 @@ const CGFloat kFaviconBadgeSideLength = 24;
     _dismissBarButtonSystemItem = UIBarButtonSystemItemDone;
     _shouldFillInformationStack = NO;
     _actionStackBottomMargin = kDefaultActionsBottomMargin;
+    _activityIndicatorColor = [UIColor colorNamed:kSolidWhiteColor];
   }
   return self;
 }
@@ -321,6 +335,14 @@ const CGFloat kFaviconBadgeSideLength = 24;
         constraintEqualToAnchor:self.imageView.heightAnchor
                      multiplier:imageAspectRatio];
     self.imageViewAspectRatioConstraint.active = YES;
+  }
+  [self updateLoadingState];
+}
+
+- (void)setIsLoading:(BOOL)isLoading {
+  if (_isLoading != isLoading) {
+    _isLoading = isLoading;
+    [self updateLoadingState];
   }
 }
 
@@ -891,6 +913,20 @@ const CGFloat kFaviconBadgeSideLength = 24;
       CreateOpaqueButtonPointerStyleProvider();
 
   return tertiaryActionButton;
+}
+
+// Applies an activity indicator to the primary button and disables buttons when
+// loading is true; otherwise, applies button labels and enables buttons.
+- (void)updateLoadingState {
+  _primaryActionButton.enabled = !_isLoading;
+  UpdateButtonColorOnEnableDisable(_primaryActionButton);
+  SetConfigurationActivityIndicator(_primaryActionButton, _isLoading,
+                                    _activityIndicatorColor);
+  SetConfigurationTitle(_primaryActionButton,
+                        _isLoading ? @"" : _primaryActionString);
+
+  _secondaryActionButton.enabled = !_isLoading;
+  _tertiaryActionButton.enabled = !_isLoading;
 }
 
 @end
