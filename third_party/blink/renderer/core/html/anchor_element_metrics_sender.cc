@@ -688,34 +688,12 @@ void AnchorElementMetricsSender::UpdateMetrics(TimerBase* /*timer*/) {
     WTF::EraseIf(
         metrics_,
         [&present](const mojom::blink::AnchorElementMetricsPtr& metric) {
-          // TODO(https://crbug.com/331043758): Dump to investigate crash.
-          // Once resolved, this can just use `HashMap::at`.
-          const auto present_it = present.find(metric->anchor_id);
-          DUMP_WILL_BE_CHECK(present_it != present.end())
-              << present.size() << " " << metric->anchor_id;
-          if (present_it == present.end()) {
-            return false;
-          }
-          return !present_it->value;
+          return !present.at(metric->anchor_id);
         });
-    WTF::EraseIf(
-        metrics_removed_anchors_, [&present, &newly_removed](AnchorId id) {
-          // TODO(https://crbug.com/331043758): Dump to investigate
-          // crash. Once resolved, these can just use `HashMap::at`.
-          const auto newly_removed_it = newly_removed.find(id);
-          DUMP_WILL_BE_CHECK(newly_removed_it != newly_removed.end())
-              << newly_removed.size() << " " << id;
-          if (newly_removed_it == newly_removed.end()) {
-            return false;
-          }
-          const auto present_it = present.find(id);
-          DUMP_WILL_BE_CHECK(present_it != present.end())
-              << present.size() << " " << id;
-          if (present_it == present.end()) {
-            return false;
-          }
-          return !newly_removed_it->value || present_it->value;
-        });
+    WTF::EraseIf(metrics_removed_anchors_,
+                 [&present, &newly_removed](AnchorId id) {
+                   return !newly_removed.at(id) || present.at(id);
+                 });
 
     metrics_host_->ReportNewAnchorElements(std::move(metrics_),
                                            std::move(metrics_removed_anchors_));
