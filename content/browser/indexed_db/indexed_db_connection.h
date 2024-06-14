@@ -75,7 +75,15 @@ class CONTENT_EXPORT IndexedDBConnection : public blink::mojom::IDBDatabase {
     return transactions_;
   }
 
+  // Unfortunately, for historical reasons, this version of `IsConnected()` is
+  // not the same as whether `this` is connected via Mojo.
   bool IsConnected() const;
+
+  // Since `this` is a self-owned mojo receiver (see
+  // `MakeSelfOwnedReceiverAndBindRemote()`, this accessor is required to
+  // determine whether the mojo connection is inactive, which is synonymous with
+  // whether `this` is being destroyed.
+  bool is_shutting_down() const { return is_shutting_down_; }
 
   IndexedDBTransaction* CreateVersionChangeTransaction(
       int64_t id,
@@ -239,6 +247,8 @@ class CONTENT_EXPORT IndexedDBConnection : public blink::mojom::IDBDatabase {
   base::UnguessableToken client_token_;
 
   SEQUENCE_CHECKER(sequence_checker_);
+
+  bool is_shutting_down_ = false;
 
   base::WeakPtrFactory<IndexedDBConnection> weak_factory_{this};
 };

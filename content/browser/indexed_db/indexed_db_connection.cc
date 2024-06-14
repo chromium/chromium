@@ -75,7 +75,7 @@ IndexedDBConnection::IndexedDBConnection(
 
 IndexedDBConnection::~IndexedDBConnection() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  leveldb::Status status;
+  is_shutting_down_ = true;
   if (!IsConnected()) {
     return;
   }

@@ -884,11 +884,24 @@ IndexedDBDatabase::GetAllResultSinkWrapper::~GetAllResultSinkWrapper() {
 
   if (transaction_) {
     transaction_->IncrementNumErrorsSent();
+    // If we're reaching this line because the IndexedDBConnection has been
+    // disconnected from its remote, then `result_sink_` won't have been
+    // successfully associated, and invoking any methods on it will CHECK.
+    // See crbug.com/346955148.
+    // TODO(crbug.com/347047640): remove this workaround when 347047640 is
+    // fixed.
+    if (!transaction_->connection()->is_shutting_down()) {
+      IndexedDBDatabaseError error(
+          blink::mojom::IDBException::kIgnorableAbortError,
+          "Backend aborted error");
+      Get()->OnError(
+          blink::mojom::IDBError::New(error.code(), error.message()));
+    }
+  } else {
+    // Make sure `callback_` is invoked because the Mojo client is waiting for a
+    // response.
+    Get();
   }
-
-  IndexedDBDatabaseError error(blink::mojom::IDBException::kIgnorableAbortError,
-                               "Backend aborted error");
-  Get()->OnError(blink::mojom::IDBError::New(error.code(), error.message()));
 }
 
 mojo::AssociatedRemote<blink::mojom::IDBDatabaseGetAllResultSink>&

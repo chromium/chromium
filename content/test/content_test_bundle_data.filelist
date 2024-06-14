@@ -6657,6 +6657,8 @@ data/indexeddb/bug_109187.html
 data/indexeddb/bug_109187.js
 data/indexeddb/bug_1203335.html
 data/indexeddb/bug_1203335.js
+data/indexeddb/bug_346955148.html
+data/indexeddb/bug_346955148.js
 data/indexeddb/bug_84933.html
 data/indexeddb/bug_84933.js
 data/indexeddb/bug_90635.html

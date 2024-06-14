@@ -570,6 +570,10 @@ IN_PROC_BROWSER_TEST_F(IndexedDBBrowserTestWithGCExposed,
   SimpleTest(GetTestUrl("indexeddb", "database_callbacks_first.html"));
 }
 
+IN_PROC_BROWSER_TEST_F(IndexedDBBrowserTestWithGCExposed, Bug346955148Test) {
+  SimpleTest(GetTestUrl("indexeddb", "bug_346955148.html"));
+}
+
 struct BlobModificationTime {
   base::FilePath relative_blob_path;
   base::Time time;
