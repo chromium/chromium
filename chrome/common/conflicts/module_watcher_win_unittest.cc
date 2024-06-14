@@ -10,6 +10,7 @@
 
 #include "base/functional/bind.h"
 #include "base/test/task_environment.h"
+#include "build/build_config.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 class ModuleWatcherTest : public testing::Test {
@@ -86,7 +87,13 @@ TEST_F(ModuleWatcherTest, SingleModuleWatcherOnly) {
   EXPECT_FALSE(mw2.get());
 }
 
-TEST_F(ModuleWatcherTest, ModuleEvents) {
+// TODO: crbug.com/347201817 - Fix ODR violation.
+#if BUILDFLAG(IS_WIN) && defined(ADDRESS_SANITIZER)
+#define MAYBE_ModuleEvents DISABLED_ModuleEvents
+#else
+#define MAYBE_ModuleEvents ModuleEvents
+#endif
+TEST_F(ModuleWatcherTest, MAYBE_ModuleEvents) {
   // Create the module watcher. This should immediately enumerate all already
   // loaded modules on a background task.
   std::unique_ptr<ModuleWatcher> mw(Create());
