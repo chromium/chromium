@@ -415,6 +415,14 @@ void FillSparseAttributes(AXObject& ax_object,
                        CreateValue(is_busy, AXValueTypeEnum::Boolean)));
   }
 
+  if (node_data.HasStringAttribute(ax::mojom::blink::StringAttribute::kUrl)) {
+    const auto url =
+        node_data.GetStringAttribute(ax::mojom::blink::StringAttribute::kUrl);
+    properties.emplace_back(CreateProperty(
+        AXPropertyNameEnum::Url,
+        CreateValue(WTF::String(url.c_str()), AXValueTypeEnum::String)));
+  }
+
   if (node_data.HasStringAttribute(
           ax::mojom::blink::StringAttribute::kKeyShortcuts)) {
     const auto key_shortcuts = node_data.GetStringAttribute(

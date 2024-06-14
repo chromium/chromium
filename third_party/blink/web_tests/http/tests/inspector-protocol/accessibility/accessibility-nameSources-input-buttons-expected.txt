@@ -1135,6 +1135,13 @@ Tests name sources in input[type=button].
                 value : true
             }
         }
+        [2] : {
+            name : url
+            value : {
+                type : string
+                value : http://127.0.0.1:8000/inspector-protocol/resources/resources/cake.png
+            }
+        }
     ]
     role : {
         type : role
@@ -1225,6 +1232,13 @@ Tests name sources in input[type=button].
             value : {
                 type : booleanOrUndefined
                 value : true
+            }
+        }
+        [2] : {
+            name : url
+            value : {
+                type : string
+                value : http://127.0.0.1:8000/inspector-protocol/resources/resources/cake.png
             }
         }
     ]
@@ -1322,6 +1336,13 @@ Tests name sources in input[type=button].
             value : {
                 type : booleanOrUndefined
                 value : true
+            }
+        }
+        [2] : {
+            name : url
+            value : {
+                type : string
+                value : http://127.0.0.1:8000/inspector-protocol/resources/resources/cake.png
             }
         }
     ]
@@ -1425,6 +1446,13 @@ Tests name sources in input[type=button].
                 value : true
             }
         }
+        [2] : {
+            name : url
+            value : {
+                type : string
+                value : http://127.0.0.1:8000/inspector-protocol/resources/resources/cake.png
+            }
+        }
     ]
     role : {
         type : role
@@ -1526,6 +1554,13 @@ Tests name sources in input[type=button].
             value : {
                 type : booleanOrUndefined
                 value : true
+            }
+        }
+        [2] : {
+            name : url
+            value : {
+                type : string
+                value : http://127.0.0.1:8000/inspector-protocol/resources/resources/cake.png
             }
         }
     ]
