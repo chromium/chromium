@@ -37,7 +37,8 @@ void PreserveNearIntegralBounds(gfx::RectF& bounds) {
 }  // anonymous namespace
 
 PendingLayer::PendingLayer(const PaintArtifact& artifact,
-                           const PaintChunk& first_chunk)
+                           const PaintChunk& first_chunk,
+                           CompositingType compositing_type)
     : bounds_(first_chunk.bounds),
       rect_known_to_be_opaque_(first_chunk.rect_known_to_be_opaque),
       has_text_(first_chunk.has_text),
@@ -49,6 +50,7 @@ PendingLayer::PendingLayer(const PaintArtifact& artifact,
       chunks_(artifact, first_chunk),
       property_tree_state_(
           first_chunk.properties.GetPropertyTreeState().Unalias()),
+      compositing_type_(compositing_type),
       hit_test_opaqueness_(first_chunk.hit_test_opaqueness) {
   DCHECK(!ChunkRequiresOwnLayer() || first_chunk.size() <= 1u);
   // Though text_known_to_be_on_opaque_background is only meaningful when
@@ -63,6 +65,11 @@ PendingLayer::PendingLayer(const PaintArtifact& artifact,
     }
   }
   rect_known_to_be_opaque_.Intersect(bounds_);
+  if (compositing_type == kOther && first_chunk.hit_test_data &&
+      first_chunk.hit_test_data->scroll_translation) {
+    non_composited_scroll_translations_.push_back(
+        first_chunk.hit_test_data->scroll_translation.get());
+  }
 }
 
 void PendingLayer::Trace(Visitor* visitor) const {
@@ -356,6 +363,8 @@ bool PendingLayer::Merge(const PendingLayer& guest,
   change_of_decomposited_transforms_ = std::max(
       ChangeOfDecompositedTransforms(), guest.ChangeOfDecompositedTransforms());
   hit_test_opaqueness_ = merged_hit_test_opaqueness;
+  non_composited_scroll_translations_.AppendVector(
+      guest.non_composited_scroll_translations_);
   return true;
 }
 
@@ -370,8 +379,33 @@ std::optional<PropertyTreeState> PendingLayer::CanUpcastWith(
   if (&GetPropertyTreeState().Effect() != &guest_state.Effect()) {
     return std::nullopt;
   }
-  return GetPropertyTreeState().CanUpcastWith(guest_state,
-                                              is_composited_scroll);
+  std::optional<PropertyTreeState> result =
+      GetPropertyTreeState().CanUpcastWith(guest_state, is_composited_scroll);
+  if (!result || !RuntimeEnabledFeatures::HitTestOpaquenessEnabled()) {
+    return result;
+  }
+
+  // In HitTestOpaqueness, additionally check scroll translations to ensure
+  // they will be covered by the NonFastScrollableRegion of the merged layer if
+  // either of the scroll translations is not composited.
+  const auto& home_scroll_translation =
+      property_tree_state_.Transform().NearestScrollTranslationNode();
+  const auto& guest_scroll_translation =
+      guest.property_tree_state_.Transform().NearestScrollTranslationNode();
+  if (&home_scroll_translation == &guest_scroll_translation) {
+    return result;
+  }
+  const auto& lca_scroll_translation =
+      result->Transform().NearestScrollTranslationNode();
+  if ((&guest_scroll_translation == &lca_scroll_translation ||
+       non_composited_scroll_translations_.Contains(
+           &guest_scroll_translation)) &&
+      (&home_scroll_translation == &lca_scroll_translation ||
+       guest.non_composited_scroll_translations_.Contains(
+           &home_scroll_translation))) {
+    return result;
+  }
+  return std::nullopt;
 }
 
 bool PendingLayer::CanMergeWithDecompositedBlendMode(
@@ -654,6 +688,9 @@ void PendingLayer::UpdateCompositedLayer(PendingLayer* old_pending_layer,
                                          cc::LayerSelection& layer_selection,
                                          bool tracks_raster_invalidations,
                                          cc::LayerTreeHost* layer_tree_host) {
+  // This is used during PaintArifactCompositor::CollectPendingLayers() only.
+  non_composited_scroll_translations_.clear();
+
   switch (compositing_type_) {
     case PendingLayer::kForeignLayer:
       UpdateForeignLayer();
