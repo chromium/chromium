@@ -99,16 +99,14 @@ void VideoEffectsProcessorWebGpu::OnRequestAdapter(
         }
       },
       weak_ptr_factory_.GetWeakPtr());
-  wgpu::DeviceDescriptor descriptor = {
-      .label = "VideoEffectsProcessor",
-      .requiredLimits = &limits,
-      .defaultQueue =
-          {
-              .label = "VideoEffectsProcessorDefaultQueue",
-          },
-      .deviceLostCallback = device_lost_callback->UnboundCallback(),
-      .deviceLostUserdata = device_lost_callback->AsUserdata(),
+  wgpu::DeviceDescriptor descriptor;
+  descriptor.label = "VideoEffectsProcessor";
+  descriptor.requiredLimits = &limits;
+  descriptor.defaultQueue = {
+      .label = "VideoEffectsProcessorDefaultQueue",
   };
+  descriptor.deviceLostCallback = device_lost_callback->UnboundCallback();
+  descriptor.deviceLostUserdata = device_lost_callback->AsUserdata();
 
   auto* request_device_callback = gpu::webgpu::BindWGPUOnceCallback(
       [](base::WeakPtr<VideoEffectsProcessorWebGpu> processor,
