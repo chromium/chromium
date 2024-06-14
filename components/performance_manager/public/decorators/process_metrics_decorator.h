@@ -25,8 +25,7 @@ class SystemNode;
 // The ProcessMetricsDecorator is responsible for adorning process nodes with
 // performance metrics.
 class ProcessMetricsDecorator
-    : public GraphOwned,
-      public GraphRegisteredImpl<ProcessMetricsDecorator>,
+    : public GraphOwnedAndRegistered<ProcessMetricsDecorator>,
       public NodeDataDescriberDefaultImpl {
  public:
   ProcessMetricsDecorator();

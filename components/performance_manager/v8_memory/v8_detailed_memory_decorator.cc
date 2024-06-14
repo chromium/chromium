@@ -668,8 +668,6 @@ void V8DetailedMemoryDecorator::OnPassedToGraph(Graph* graph) {
   DCHECK_EQ(nullptr, graph_);
   graph_ = graph;
 
-  graph->RegisterObject(this);
-
   // Iterate over the existing process nodes to put them under observation.
   for (const ProcessNode* process_node : graph->GetAllProcessNodes()) {
     OnProcessNodeAdded(process_node);
@@ -689,7 +687,6 @@ void V8DetailedMemoryDecorator::OnTakenFromGraph(Graph* graph) {
 
   graph->GetNodeDataDescriberRegistry()->UnregisterDescriber(this);
   graph->RemoveProcessNodeObserver(this);
-  graph->UnregisterObject(this);
   graph_ = nullptr;
 }
 

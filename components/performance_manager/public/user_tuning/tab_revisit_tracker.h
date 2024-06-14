@@ -19,11 +19,10 @@ namespace performance_manager {
 // A GraphOwned object that tracks tab transitions to/from
 // active/background/closed/discarded states and records timing information
 // about these states.
-class TabRevisitTracker : public GraphOwned,
-                          public GraphRegisteredImpl<TabRevisitTracker>,
-                          public TabPageObserver,
+class TabRevisitTracker : public TabPageObserver,
                           public PageLiveStateObserverDefaultImpl,
-                          public PageNode::ObserverDefaultImpl {
+                          public PageNode::ObserverDefaultImpl,
+                          public GraphOwnedAndRegistered<TabRevisitTracker> {
  public:
   static constexpr char kTimeToRevisitHistogramName[] =
       "PerformanceManager.TabRevisitTracker.TimeToRevisit2";

@@ -84,7 +84,6 @@ void ProcessMetricsDecorator::OnPassedToGraph(Graph* graph) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   CHECK_EQ(state_, State::kStopped);
   graph_ = graph;
-  graph_->RegisterObject(this);
   graph_->GetNodeDataDescriberRegistry()->RegisterDescriber(
       this, "ProcessMetricsDecorator");
 }
@@ -94,7 +93,6 @@ void ProcessMetricsDecorator::OnTakenFromGraph(Graph* graph) {
   CHECK_EQ(graph, graph_);
   StopTimer();
   graph_->GetNodeDataDescriberRegistry()->UnregisterDescriber(this);
-  graph_->UnregisterObject(this);
   graph_ = nullptr;
   CHECK_EQ(state_, State::kStopped);
 }

@@ -28,8 +28,7 @@
 namespace performance_manager::user_tuning {
 
 class CpuHealthTracker
-    : public performance_manager::GraphOwned,
-      public performance_manager::GraphRegisteredImpl<CpuHealthTracker> {
+    : public performance_manager::GraphOwnedAndRegistered<CpuHealthTracker> {
  public:
   using ResourceType = PerformanceDetectionManager::ResourceType;
   using HealthLevel = PerformanceDetectionManager::HealthLevel;
@@ -49,7 +48,6 @@ class CpuHealthTracker
 
   // performance_manager::GraphOwned:
   void OnPassedToGraph(performance_manager::Graph* graph) override;
-  void OnTakenFromGraph(performance_manager::Graph* graph) override;
 
  private:
   friend class CpuHealthTrackerTestHelper;

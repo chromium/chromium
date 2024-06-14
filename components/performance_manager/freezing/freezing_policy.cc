@@ -276,7 +276,6 @@ bool FreezingPolicy::HasCannotFreezeReason(
 }
 
 void FreezingPolicy::OnPassedToGraph(Graph* graph) {
-  graph->RegisterObject(this);
   graph->AddPageNodeObserver(this);
   graph->AddFrameNodeObserver(this);
   graph->GetNodeDataDescriberRegistry()->RegisterDescriber(this, "Freezing");
@@ -286,7 +285,6 @@ void FreezingPolicy::OnTakenFromGraph(Graph* graph) {
   graph->GetNodeDataDescriberRegistry()->UnregisterDescriber(this);
   graph->RemoveFrameNodeObserver(this);
   graph->RemovePageNodeObserver(this);
-  graph->UnregisterObject(this);
 }
 
 void FreezingPolicy::OnPageNodeAdded(const PageNode* page_node) {

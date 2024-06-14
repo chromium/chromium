@@ -241,7 +241,6 @@ void QueryScheduler::OnPassedToGraph(Graph* graph) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   CHECK_EQ(graph_, nullptr);
   graph_ = graph;
-  graph_->RegisterObject(this);
   memory_provider_.emplace(graph);
   graph->GetNodeDataDescriberRegistry()->RegisterDescriber(
       base::OptionalToPtr(memory_provider_), "ResourceAttr.Memory");
@@ -253,7 +252,6 @@ void QueryScheduler::OnPassedToGraph(Graph* graph) {
 void QueryScheduler::OnTakenFromGraph(Graph* graph) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   CHECK_EQ(graph_, graph);
-  graph_->UnregisterObject(this);
   graph_ = nullptr;
   SchedulerTaskRunner::GetInstance()->OnSchedulerTakenFromGraph(graph);
   graph->GetNodeDataDescriberRegistry()->UnregisterDescriber(&cpu_monitor_);

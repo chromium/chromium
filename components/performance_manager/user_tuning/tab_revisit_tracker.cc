@@ -176,11 +176,9 @@ void TabRevisitTracker::OnPassedToGraph(Graph* graph) {
   tab_page_decorator->AddObserver(this);
 
   graph->AddPageNodeObserver(this);
-  graph->RegisterObject(this);
 }
 
 void TabRevisitTracker::OnTakenFromGraph(Graph* graph) {
-  graph->UnregisterObject(this);
   TabPageDecorator* tab_page_decorator =
       graph->GetRegisteredObjectAs<TabPageDecorator>();
   if (tab_page_decorator) {

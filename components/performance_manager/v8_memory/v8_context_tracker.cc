@@ -369,7 +369,6 @@ void V8ContextTracker::OnPassedToGraph(Graph* graph) {
   DCHECK_ON_GRAPH_SEQUENCE(graph);
 
   graph->AddProcessNodeObserver(this);
-  graph->RegisterObject(this);
   graph->GetNodeDataDescriberRegistry()->RegisterDescriber(this,
                                                            "V8ContextTracker");
   auto* registry =
@@ -388,7 +387,6 @@ void V8ContextTracker::OnTakenFromGraph(Graph* graph) {
   registry->RemoveObserver(this);
 
   graph->GetNodeDataDescriberRegistry()->UnregisterDescriber(this);
-  graph->UnregisterObject(this);
   graph->RemoveProcessNodeObserver(this);
 }
 

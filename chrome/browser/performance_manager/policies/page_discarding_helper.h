@@ -99,9 +99,9 @@ class PageNodeSortProxy {
 //
 // This is a GraphRegistered object and should be accessed via
 // PageDiscardingHelper::GetFromGraph(graph()).
-class PageDiscardingHelper : public GraphOwned,
-                             public GraphRegisteredImpl<PageDiscardingHelper>,
-                             public NodeDataDescriberDefaultImpl {
+class PageDiscardingHelper
+    : public GraphOwnedAndRegistered<PageDiscardingHelper>,
+      public NodeDataDescriberDefaultImpl {
  public:
   enum class CanDiscardResult {
     // Discarding eligible nodes is hard to notice for user.

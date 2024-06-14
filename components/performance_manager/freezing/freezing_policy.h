@@ -54,13 +54,12 @@ namespace performance_manager {
 //   - Mirrored;
 //   - Capturing window;
 //   - Capturing display;
-class FreezingPolicy : public GraphOwnedDefaultImpl,
-                       public GraphRegisteredImpl<FreezingPolicy>,
-                       public PageNode::ObserverDefaultImpl,
+class FreezingPolicy : public PageNode::ObserverDefaultImpl,
                        public FrameNode::ObserverDefaultImpl,
                        public PageLiveStateObserverDefaultImpl,
-                       public NodeDataDescriberDefaultImpl,
-                       public resource_attribution::QueryResultObserver {
+                       public resource_attribution::QueryResultObserver,
+                       public GraphOwnedAndRegistered<FreezingPolicy>,
+                       public NodeDataDescriberDefaultImpl {
  public:
   FreezingPolicy();
   FreezingPolicy(const FreezingPolicy&) = delete;

@@ -64,12 +64,7 @@ CpuHealthTracker::HealthLevel CpuHealthTracker::GetHealthLevelForTesting() {
 }
 
 void CpuHealthTracker::OnPassedToGraph(performance_manager::Graph* graph) {
-  graph->RegisterObject(this);
   graph_ = graph;
-}
-
-void CpuHealthTracker::OnTakenFromGraph(performance_manager::Graph* graph) {
-  graph->UnregisterObject(this);
 }
 
 base::OnceCallback<void(CpuHealthTracker::ActionableTabsResult)>

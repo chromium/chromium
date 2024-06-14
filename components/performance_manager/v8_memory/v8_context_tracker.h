@@ -41,10 +41,9 @@ class V8ContextTrackerDataStore;
 // added to the Graph.
 class V8ContextTracker final
     : public execution_context::ExecutionContextObserverDefaultImpl,
-      public GraphOwned,
-      public GraphRegisteredImpl<V8ContextTracker>,
-      public NodeDataDescriberDefaultImpl,
-      public ProcessNode::ObserverDefaultImpl {
+      public ProcessNode::ObserverDefaultImpl,
+      public GraphOwnedAndRegistered<V8ContextTracker>,
+      public NodeDataDescriberDefaultImpl {
  public:
   using DataStore = internal::V8ContextTrackerDataStore;
 

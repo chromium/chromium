@@ -34,8 +34,7 @@ class QueryParams;
 // QueryScheduler keeps track of all queries for a particular resource type and
 // owns the machinery that performs measurements.
 class QueryScheduler
-    : public performance_manager::GraphRegisteredImpl<QueryScheduler>,
-      public performance_manager::GraphOwned {
+    : public performance_manager::GraphOwnedAndRegistered<QueryScheduler> {
  public:
   QueryScheduler();
   ~QueryScheduler() override;

@@ -151,13 +151,11 @@ void TabPageDecorator::OnTypeChanged(const PageNode* page_node,
 }
 
 void TabPageDecorator::OnPassedToGraph(Graph* graph) {
-  graph->RegisterObject(this);
   graph->AddPageNodeObserver(this);
 }
 
 void TabPageDecorator::OnTakenFromGraph(Graph* graph) {
   graph->RemovePageNodeObserver(this);
-  graph->UnregisterObject(this);
 }
 
 }  // namespace performance_manager

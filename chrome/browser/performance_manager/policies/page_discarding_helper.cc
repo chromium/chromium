@@ -302,7 +302,6 @@ void PageDiscardingHelper::RemovesDiscardAttemptMarkerForTesting(
 void PageDiscardingHelper::OnPassedToGraph(Graph* graph) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   graph_ = graph;
-  graph->RegisterObject(this);
   graph->GetNodeDataDescriberRegistry()->RegisterDescriber(this,
                                                            kDescriberName);
 }
@@ -310,7 +309,6 @@ void PageDiscardingHelper::OnPassedToGraph(Graph* graph) {
 void PageDiscardingHelper::OnTakenFromGraph(Graph* graph) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   graph->GetNodeDataDescriberRegistry()->UnregisterDescriber(this);
-  graph->UnregisterObject(this);
   graph_ = nullptr;
 }
 

@@ -33,9 +33,8 @@ class V8DetailedMemoryRequestQueue;
 // decorator is in
 // //components/performance_manager/public/v8_detailed_memory.h.
 class V8DetailedMemoryDecorator
-    : public GraphOwned,
-      public GraphRegisteredImpl<V8DetailedMemoryDecorator>,
-      public ProcessNode::ObserverDefaultImpl,
+    : public ProcessNode::ObserverDefaultImpl,
+      public GraphOwnedAndRegistered<V8DetailedMemoryDecorator>,
       public NodeDataDescriberDefaultImpl {
  public:
   V8DetailedMemoryDecorator();
