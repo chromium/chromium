@@ -113,7 +113,7 @@ class ASH_EXPORT PickerView : public views::WidgetDelegateView,
   PickerZeroStateView& zero_state_view_for_testing() {
     return *zero_state_view_;
   }
-  PickerEmojiBarView& emoji_bar_view_for_testing() { return *emoji_bar_view_; }
+  PickerEmojiBarView* emoji_bar_view_for_testing() { return emoji_bar_view_; }
 
  private:
   // Starts a search with `query`, with search results being returned to

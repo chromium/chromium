@@ -28,6 +28,7 @@
 #include "ash/public/cpp/picker/picker_search_result.h"
 #include "ash/strings/grit/ash_strings.h"
 #include "base/check.h"
+#include "base/containers/contains.h"
 #include "base/functional/bind.h"
 #include "base/strings/utf_string_conversions.h"
 #include "build/branding_buildflags.h"
@@ -184,7 +185,10 @@ PickerView::PickerView(PickerViewDelegate* delegate,
                   gfx::Insets::VH(kVerticalPaddingBetweenPickerContainers, 0));
 
   AddMainContainerView(layout_type);
-  AddEmojiBarView();
+  if (base::Contains(delegate_->GetAvailableCategories(),
+                     PickerCategory::kExpressions)) {
+    AddEmojiBarView();
+  }
 
   // Automatically focus on the search field.
   SetInitiallyFocusedView(search_field_view_);
@@ -386,7 +390,9 @@ void PickerView::StartSearch(const std::u16string& query) {
 }
 
 void PickerView::PublishEmojiResults(std::vector<PickerSearchResult> results) {
-  emoji_bar_view_->SetSearchResults(std::move(results));
+  if (emoji_bar_view_ != nullptr) {
+    emoji_bar_view_->SetSearchResults(std::move(results));
+  }
 }
 
 void PickerView::PublishSearchResults(
@@ -549,6 +555,12 @@ void PickerView::SetActivePage(PickerPageView* page_view) {
 
 void PickerView::AdvanceActivePseudoFocusHandler(
     PseudoFocusDirection direction) {
+  if (emoji_bar_view_ == nullptr) {
+    main_container_view_->active_page()->GainPseudoFocus(direction);
+    active_pseudo_focus_handler_ = main_container_view_->active_page();
+    return;
+  }
+
   if (active_pseudo_focus_handler_ == emoji_bar_view_) {
     emoji_bar_view_->LosePseudoFocus();
     main_container_view_->active_page()->GainPseudoFocus(direction);
@@ -567,6 +579,10 @@ void PickerView::OnSearchBackButtonPressed() {
 }
 
 void PickerView::ResetEmojiBarToZeroState() {
+  if (emoji_bar_view_ == nullptr) {
+    return;
+  }
+
   if (delegate_ == nullptr) {
     emoji_bar_view_->ClearSearchResults();
     return;
