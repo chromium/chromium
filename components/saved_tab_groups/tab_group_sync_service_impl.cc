@@ -179,8 +179,8 @@ void TabGroupSyncServiceImpl::AddTab(const LocalTabGroupID& group_id,
                            /*saved_tab_guid=*/std::nullopt, tab_id);
   new_tab.SetCreatorCacheGuid(saved_bridge_.GetLocalCacheGuid());
 
-  model_->AddTabToGroupLocally(group->saved_guid(), std::move(new_tab));
   UpdateAttributions(group_id);
+  model_->AddTabToGroupLocally(group->saved_guid(), std::move(new_tab));
   LogEvent(TabGroupEvent::kTabAdded, group_id, std::nullopt);
 }
 
@@ -210,8 +210,8 @@ void TabGroupSyncServiceImpl::UpdateTab(const LocalTabGroupID& group_id,
     updated_tab.SetPosition(position.value());
   }
 
-  model_->UpdateTabInGroup(group->saved_guid(), std::move(updated_tab));
   UpdateAttributions(group_id, tab_id);
+  model_->UpdateTabInGroup(group->saved_guid(), std::move(updated_tab));
   LogEvent(TabGroupEvent::kTabNavigated, group_id, tab_id);
 }
 
@@ -229,9 +229,9 @@ void TabGroupSyncServiceImpl::RemoveTab(const LocalTabGroupID& group_id,
   }
 
   base::Uuid sync_id = group->saved_guid();
+  UpdateAttributions(group_id);
   LogEvent(TabGroupEvent::kTabRemoved, group_id, tab_id);
   model_->RemoveTabFromGroupLocally(sync_id, tab->saved_tab_guid());
-  UpdateAttributions(group_id);
 
   // The group might have deleted if this was the last tab, hence we should
   // delete it from mapping store too.
@@ -254,9 +254,9 @@ void TabGroupSyncServiceImpl::MoveTab(const LocalTabGroupID& group_id,
     return;
   }
 
+  UpdateAttributions(group_id);
   model_->MoveTabInGroupTo(group->saved_guid(), tab->saved_tab_guid(),
                            new_group_index);
-  UpdateAttributions(group_id);
   LogEvent(TabGroupEvent::kTabGroupTabsReordered, group_id, std::nullopt);
 }
 
