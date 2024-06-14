@@ -40,7 +40,7 @@ VideoCaptureOverlay::VideoCaptureOverlay(
     : frame_source_(frame_source), receiver_(this, std::move(receiver)) {
   receiver_.set_disconnect_handler(
       base::BindOnce(&FrameSource::OnOverlayConnectionLost,
-                     base::Unretained(&*frame_source_), this));
+                     base::Unretained(frame_source_), this));
 }
 
 VideoCaptureOverlay::~VideoCaptureOverlay() = default;
