@@ -118,6 +118,19 @@ Chrome will ship patches on iOS to mitigate issues in Webkit. In the event of a
 Chrome on iOS specific security flaw, Chrome will note the fix in the release
 notes for the corresponding desktop release.
 
+**My product includes one of Chrome's components (such as V8 or WebRTC). How
+can I absorb security fixes?** As with Chrome itself, you should assume that
+all security fixes are important and arrange to include them in your product.
+We recommend tracking Chrome's "stable" branch - more recent branches may have
+a higher density of ephemeral security bugs which we will fix before shipping
+to stable. For some of Chrome's components (such as WebRTC) security bugs are
+relatively infrequent and it may be possible to manually absorb new versions
+as necessary by monitoring Chrome release notes. For others (such as V8)
+security bugs are so frequent that the better strategy is to absorb a new
+version of the component every week. For these components, Chrome does not
+support making update decisions based upon the exact security content of the
+release - instead, just take a new version each week.
+
 [release-cycle]: https://chromium.googlesource.com/chromium/src/+/main/docs/process/release_cycle.md
 [ent-rel-notes]: https://support.google.com/chrome/a/answer/7679408
 [update-strategy]: https://support.google.com/chrome/a/answer/9982578
