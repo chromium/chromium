@@ -1585,8 +1585,9 @@ std::optional<FeatureConfig> GetClientSideFeatureConfig(
         EventConfig("restore_tabs_promo_trigger", Comparator(EQUAL, 0), 7, 14);
     config->used =
         EventConfig("restore_tabs_promo_used", Comparator(EQUAL, 0), 14, 14);
-    config->event_configs.insert(EventConfig(
-        "restore_tabs_on_first_run_show_promo", Comparator(EQUAL, 1), 14, 14));
+    config->event_configs.insert(
+        EventConfig("restore_tabs_on_first_run_show_promo",
+                    Comparator(GREATER_THAN_OR_EQUAL, 1), 14, 14));
     return config;
   }
 
