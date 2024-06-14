@@ -33,6 +33,9 @@ class SVGContentContainer {
   const gfx::RectF& DecoratedBoundingBox() const {
     return decorated_bounding_box_;
   }
+  void MarkBoundsDirtyFromRemovedChild() {
+    bounds_dirty_from_removed_child_ = true;
+  }
 
   bool ComputeHasNonIsolatedBlendingDescendants() const;
   gfx::RectF ComputeStrokeBoundingBox() const;
@@ -51,6 +54,7 @@ class SVGContentContainer {
   gfx::RectF decorated_bounding_box_;
 
   bool object_bounding_box_valid_ = false;
+  bool bounds_dirty_from_removed_child_ = false;
 };
 
 }  // namespace blink

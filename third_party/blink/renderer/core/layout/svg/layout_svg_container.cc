@@ -155,6 +155,8 @@ void LayoutSVGContainer::RemoveChild(LayoutObject* child) {
   NOT_DESTROYED();
   LayoutSVGModelObject::RemoveChild(child);
 
+  content_.MarkBoundsDirtyFromRemovedChild();
+
   bool had_non_isolated_descendants =
       (child->IsBlendingAllowed() && child->StyleRef().HasBlendMode()) ||
       child->HasNonIsolatedBlendingDescendants();

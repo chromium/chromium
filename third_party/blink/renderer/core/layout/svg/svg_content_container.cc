@@ -106,6 +106,9 @@ bool SVGContentContainer::IsChildAllowed(const LayoutObject& child) {
 
 SVGLayoutResult SVGContentContainer::Layout(const SVGLayoutInfo& layout_info) {
   SVGLayoutResult result;
+  result.bounds_changed =
+      std::exchange(bounds_dirty_from_removed_child_, false);
+
   for (LayoutObject* child = children_.FirstChild(); child;
        child = child->NextSibling()) {
     bool force_child_layout = layout_info.force_layout;
