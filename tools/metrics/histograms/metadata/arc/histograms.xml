@@ -1859,6 +1859,40 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Arc.Policy.SecondaryAccountAllowedInArc.Status"
+    enum="SecureConnectPolicyApiStatus" expires_after="2024-12-12">
+  <owner>mhasank@google.com</owner>
+  <owner>arc-commercial@google.com</owner>
+  <summary>
+    Records the result of secure connect api call made to download the value for
+    SecondaryAccountAllowedInArc policy. This is recorded when a user account is
+    added as a secondary account (in-session).
+  </summary>
+</histogram>
+
+<histogram name="Arc.Policy.SecondaryAccountAllowedInArc.TimeDelta" units="ms"
+    expires_after="2024-12-12">
+  <owner>mhasank@google.com</owner>
+  <owner>arc-commercial@google.com</owner>
+  <summary>
+    Latency of a SecondaryAccountAllowedInArc policy fetch request. This
+    measures the amount of time required to fetch the policy value of
+    SecondaryAccountAllowedInArc from the Secure Connect API. This is recorded
+    when a user account is added as a secondary account (in-session).
+  </summary>
+</histogram>
+
+<histogram name="Arc.Policy.SecondaryAccountAllowedInArc.Value" enum="Boolean"
+    expires_after="2024-12-12">
+  <owner>mhasank@google.com</owner>
+  <owner>arc-commercial@google.com</owner>
+  <summary>
+    Records the value of SecondaryAccountAllowedInArc policy. This is recorded
+    when a user account is added as a secondary account (in-session). Only
+    recorded on successful policy fetch.
+  </summary>
+</histogram>
+
 <histogram name="Arc.PrintPreview.PreviewEvent" enum="PrintPreviewHelperEvents"
     expires_after="2025-02-18">
   <owner>bmgordon@chromium.org</owner>

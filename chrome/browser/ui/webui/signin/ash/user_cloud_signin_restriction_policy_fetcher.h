@@ -91,8 +91,7 @@ class UserCloudSigninRestrictionPolicyFetcher
   // Callback invoked when SecondaryAccountAllowedInArc policy value
   // is fetched. `policy` is the fetched policy value.
   using PolicyInfoCallbackForArc =
-      base::OnceCallback<void(Status status,
-                              std::optional<std::string> policy)>;
+      base::OnceCallback<void(Status status, std::optional<bool> policy)>;
 
   // `email` can be a raw email (abc.123.4@gmail.com) or a canonicalized email
   // (abc1234@gmail.com). It's used to skip API requests for domains such as

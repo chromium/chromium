@@ -26,7 +26,12 @@ namespace {
 
 constexpr char kSecondaryGoogleAccountUsageLatencyHistogramName[] =
     "Enterprise.SecondaryGoogleAccountUsage.PolicyFetch.ResponseLatency";
-
+constexpr char kSecondaryAccountAllowedInArcLatencyHistogramName[] =
+    "Arc.Policy.SecondaryAccountAllowedInArc.TimeDelta";
+constexpr char kSecondaryAccountAllowedInArcStatusHistogramName[] =
+    "Arc.Policy.SecondaryAccountAllowedInArc.Status";
+constexpr char kSecondaryAccountAllowedInArcValueHistogramName[] =
+    "Arc.Policy.SecondaryAccountAllowedInArc.Value";
 const char kAuthorizationHeaderFormat[] = "Bearer %s";
 const char kSecureConnectApiGetSecondaryGoogleAccountUsageUrl[] =
     "https://secureconnect-pa.clients6.google.com/"
@@ -237,7 +242,15 @@ void UserCloudSigninRestrictionPolicyFetcher::FinalizeResult(
   }
 
   if (IsFetchingArcPolicy()) {
-    std::move(callback_for_arc_).Run(status, policy);
+    std::optional<bool> policy_value = std::nullopt;
+    if (policy) {
+      policy_value = policy.value() == "true";
+      base::UmaHistogramBoolean(kSecondaryAccountAllowedInArcValueHistogramName,
+                                policy_value.value());
+    }
+    base::UmaHistogramEnumeration(
+        kSecondaryAccountAllowedInArcStatusHistogramName, status);
+    std::move(callback_for_arc_).Run(status, policy_value);
   } else {
     std::move(callback_).Run(status, policy, hosted_domain_);
   }
@@ -246,11 +259,11 @@ void UserCloudSigninRestrictionPolicyFetcher::FinalizeResult(
 void UserCloudSigninRestrictionPolicyFetcher::
     OnSecondaryGoogleAccountUsageResult(
         std::unique_ptr<std::string> response_body) {
-  if (!IsFetchingArcPolicy()) {
-    base::UmaHistogramMediumTimes(
-        kSecondaryGoogleAccountUsageLatencyHistogramName,
-        base::TimeTicks::Now() - policy_fetch_start_time_);
-  }
+  const char* histogram_name =
+      IsFetchingArcPolicy() ? kSecondaryAccountAllowedInArcLatencyHistogramName
+                            : kSecondaryGoogleAccountUsageLatencyHistogramName;
+  base::UmaHistogramMediumTimes(
+      histogram_name, base::TimeTicks::Now() - policy_fetch_start_time_);
   std::optional<std::string> restriction;
   const std::string policy_name = IsFetchingArcPolicy()
                                       ? "SecondaryAccountAllowedInArcPolicy"
