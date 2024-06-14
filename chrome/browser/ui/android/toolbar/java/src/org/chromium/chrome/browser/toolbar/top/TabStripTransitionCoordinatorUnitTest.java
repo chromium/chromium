@@ -64,6 +64,7 @@ import org.chromium.ui.resources.dynamics.ViewResourceAdapter;
 import java.util.concurrent.TimeUnit;
 
 /** Unit test for {@link TabStripTransitionCoordinator}. */
+// TODO (crbug.com/345849359): Move this to a new package to encapsulate strip transition code.
 @RunWith(BaseRobolectricTestRunner.class)
 @Config(qualifiers = "w600dp-h800dp", shadows = ShadowLooper.class)
 @DisableFeatures(ChromeFeatureList.TAB_STRIP_LAYOUT_OPTIMIZATION)
@@ -266,12 +267,12 @@ public class TabStripTransitionCoordinatorUnitTest {
     }
 
     @Test
-    public void hideTabStripDisabledByTabStripLayoutOptimizations() {
-        ToolbarFeatures.setIsTabStripLayoutOptimizationEnabledForTesting(true);
+    public void hideTabStripDisabledInDesktopWindow() {
+        mAppHeaderState = new AppHeaderState(new Rect(), new Rect(), /* isInDesktopWindow= */ true);
         setDeviceWidthDp(NARROW_WINDOW_WIDTH);
         Assert.assertEquals(
-                "Hide transition is disabled when TabStripLayoutOptimizations enabled.",
-                TEST_TAB_STRIP_HEIGHT,
+                "Height transition to hide strip is disabled in a desktop window.",
+                NOTHING_OBSERVED,
                 mObserver.heightRequested);
     }
 
@@ -583,7 +584,7 @@ public class TabStripTransitionCoordinatorUnitTest {
     }
 
     @Test
-    public void useDesktopWindowStateProvider_IncreaseHeight() {
+    public void enterDesktopWindow_IncreaseHeight() {
         ToolbarFeatures.setIsTabStripLayoutOptimizationEnabledForTesting(true);
         // Simulate a rect update.
         int newHeight = 10 + TEST_TAB_STRIP_HEIGHT;
@@ -606,7 +607,7 @@ public class TabStripTransitionCoordinatorUnitTest {
     }
 
     @Test
-    public void useDesktopWindowStateProvider_DecreasedHeight() {
+    public void enterDesktopWindow_DecreaseHeight() {
         ToolbarFeatures.setIsTabStripLayoutOptimizationEnabledForTesting(true);
         // Simulate a rect update that has a smaller height.
         int newHeight = TEST_TAB_STRIP_HEIGHT - 10;
@@ -630,7 +631,7 @@ public class TabStripTransitionCoordinatorUnitTest {
     }
 
     @Test
-    public void useDesktopWindowStateProvider_DecreasedWidth() {
+    public void enterDesktopWindow_DecreaseWidth() {
         ToolbarFeatures.setIsTabStripLayoutOptimizationEnabledForTesting(true);
         // Simulate a rect update that has a smaller width.
         int newHeight = TEST_TAB_STRIP_HEIGHT + 10;
@@ -646,7 +647,7 @@ public class TabStripTransitionCoordinatorUnitTest {
     }
 
     @Test
-    public void useDesktopWindowStateProvider_InitialWidth() {
+    public void enterDesktopWindow_InitialWidth() {
         ToolbarFeatures.setIsTabStripLayoutOptimizationEnabledForTesting(true);
         // Simulate a rect update that has a smaller width.
         int newHeight = TEST_TAB_STRIP_HEIGHT + 10;
@@ -664,7 +665,7 @@ public class TabStripTransitionCoordinatorUnitTest {
     }
 
     @Test
-    public void useDesktopWindowStateProvider_WithouControlContainerLayout() {
+    public void enterDesktopWindow_WithouControlContainerLayout() {
         ToolbarFeatures.setIsTabStripLayoutOptimizationEnabledForTesting(true);
         // Simulate a rect update that has a smaller width.
         int newHeight = TEST_TAB_STRIP_HEIGHT + 10;
