@@ -1058,24 +1058,6 @@ void RenderFrameHostManager::UnloadOldFrame(
   TRACE_EVENT1("navigation", "RenderFrameHostManager::UnloadOldFrame",
                "FrameTreeNode id", frame_tree_node_->frame_tree_node_id());
 
-  // Now close any modal dialogs that would prevent us from unloading the frame.
-  // This must be done separately from Unload(), so that the
-  // ScopedPageLoadDeferrer is no longer on the stack when we send the
-  // mojo::FrameNavigationControl::Unload message. Prerendering pages cannot
-  // create modal dialogs and unloading a prerendering RFH should not cause
-  // existing dialogs to close.
-  // To prevent the cancellation be used as a channel from fenced frames to
-  // the primary main frame, we won't cancel modal dialogs for fenced frame
-  // navigations.
-  // TODO(crbug.com/40791259): Update CancelModalDialogsForRenderManager
-  // to take a RFH/RPH and only clear relevant dialogs instead of all dialogs in
-  // the WebContents.
-  if (current_frame_host()->GetLifecycleState() !=
-          RenderFrameHost::LifecycleState::kPrerendering &&
-      !current_frame_host()->IsNestedWithinFencedFrame()) {
-    delegate_->CancelModalDialogsForRenderManager();
-  }
-
   // If the old RFH is not live, just return as there is no further work to do.
   // It will be deleted and there will be no proxy created.
   if (!old_render_frame_host->IsRenderFrameLive())
@@ -4655,6 +4637,33 @@ void RenderFrameHostManager::CommitPending(
          prev_state == RenderFrameHostImpl::LifecycleStateImpl::kPrerendering ||
          prev_state ==
              RenderFrameHostImpl::LifecycleStateImpl::kInBackForwardCache);
+
+  // Now close any modal dialogs that would prevent us from unloading the old
+  // frame. This must be done separately from RenderFrameHost::Unload(), so that
+  // the ScopedPageLoadDeferrer is no longer on the stack when we send the
+  // mojo::FrameNavigationControl::Unload message. Note that this is
+  // intentionally done before updating the RenderFrameHost below, as this may
+  // trigger far-reaching code that updates UI in the embedder, which could end
+  // up looking up properties of the current RenderFrameHost, and those
+  // properties won't be fully initialized for `pending_rfh` until later, after
+  // UnloadOldFrame(). See https://crbug.com/346386726.
+  //
+  // Prerendering pages cannot create modal dialogs, so unloading a prerendering
+  // RFH should not cause existing dialogs to close. (Subtle: `pending_rfh` is
+  // still in pending-commit state at this point, and its lifecycle would only
+  // be updated to kPrerendering as part of SetRenderFrameHost() further below,
+  // so the check for prerendering is done via the frame tree instead.) To
+  // prevent the cancellation from being used as a channel from fenced frames to
+  // the primary main frame, also don't cancel modal dialogs for fenced frame
+  // navigations.
+  //
+  // TODO(crbug.com/40791259): Update CancelModalDialogsForRenderManager to take
+  // a RFH/RPH and only clear relevant dialogs instead of all dialogs in the
+  // WebContents.
+  if (!frame_tree_node_->frame_tree().is_prerendering() &&
+      !pending_rfh->IsNestedWithinFencedFrame()) {
+    delegate_->CancelModalDialogsForRenderManager();
+  }
 
   // Swap in the new frame and make it active. Also ensure the FrameTree
   // stays in sync.
