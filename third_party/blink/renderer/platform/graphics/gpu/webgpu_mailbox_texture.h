@@ -53,6 +53,7 @@ class PLATFORM_EXPORT WebGPUMailboxTexture
       const gpu::SyncToken& sync_token,
       gpu::webgpu::MailboxFlags mailbox_flags =
           gpu::webgpu::WEBGPU_MAILBOX_NONE,
+      wgpu::TextureUsage additional_internal_usage = wgpu::TextureUsage::None,
       base::OnceCallback<void(const gpu::SyncToken&)> finished_access_callback =
           {});
 
@@ -91,6 +92,7 @@ class PLATFORM_EXPORT WebGPUMailboxTexture
       const gpu::Mailbox& mailbox,
       const gpu::SyncToken& sync_token,
       gpu::webgpu::MailboxFlags mailbox_flags,
+      wgpu::TextureUsage additional_internal_usage,
       base::OnceCallback<void(const gpu::SyncToken&)> finished_access_callback,
       std::unique_ptr<RecyclableCanvasResource> recyclable_canvas_resource);
 

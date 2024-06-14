@@ -224,7 +224,7 @@ scoped_refptr<WebGPUMailboxTexture> WebGPUSwapBufferProvider::GetNewTexture(
           current_swap_buffer_->shared_image->mailbox(),
           // Wait on the last usage of this swap buffer.
           current_swap_buffer_->access_finished_token,
-          gpu::webgpu::WEBGPU_MAILBOX_DISCARD,
+          gpu::webgpu::WEBGPU_MAILBOX_DISCARD, wgpu::TextureUsage::None,
           // When the mailbox texture is dissociated, set the access finished
           // token back on the swap buffer for the next time it is used.
           base::BindOnce(
