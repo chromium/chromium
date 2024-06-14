@@ -44,6 +44,7 @@ PASS oldChildWindow.navigator.connection.onchange is newChildWindow.navigator.co
 PASS oldChildWindow.navigator.connection.rtt is newChildWindow.navigator.connection.rtt
 PASS oldChildWindow.navigator.connection.saveData is newChildWindow.navigator.connection.saveData
 PASS oldChildWindow.navigator.cookieEnabled is newChildWindow.navigator.cookieEnabled
+PASS oldChildWindow.navigator.deprecatedRunAdAuctionEnforcesKAnonymity is newChildWindow.navigator.deprecatedRunAdAuctionEnforcesKAnonymity
 PASS oldChildWindow.navigator.deviceMemory is newChildWindow.navigator.deviceMemory
 PASS oldChildWindow.navigator.doNotTrack is newChildWindow.navigator.doNotTrack
 PASS oldChildWindow.navigator.gpu.wgslLanguageFeatures.size is newChildWindow.navigator.gpu.wgslLanguageFeatures.size

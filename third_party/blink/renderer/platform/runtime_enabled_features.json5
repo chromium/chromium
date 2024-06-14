@@ -265,6 +265,7 @@
     {
       // Interest Group JS API/runtimeflag.
       name: "AdInterestGroupAPI",
+      status: "stable",
       origin_trial_feature_name: "AdInterestGroupAPI",
       implied_by: ["Fledge", "Parakeet"],
       public: true,
@@ -1767,6 +1768,7 @@
     },
     {
       name: "Fledge",
+      status: "stable",
       base_feature: "none",
       origin_trial_feature_name: "PrivacySandboxAdsAPIs",
       origin_trial_allows_third_party: true,

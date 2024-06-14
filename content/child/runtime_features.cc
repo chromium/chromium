@@ -384,7 +384,7 @@ void SetRuntimeFeaturesFromChromiumFeatures() {
            kSetOnlyIfOverridden},
           {"FencedFramesLocalUnpartitionedDataAccess",
            raw_ref(blink::features::kFencedFramesLocalUnpartitionedDataAccess)},
-          {"Fledge", raw_ref(blink::features::kFledge), kSetOnlyIfOverridden},
+          {"Fledge", raw_ref(blink::features::kFledge)},
           {"Fledge", raw_ref(features::kPrivacySandboxAdsAPIsOverride),
            kSetOnlyIfOverridden},
           {"Fledge", raw_ref(features::kPrivacySandboxAdsAPIsM1Override),

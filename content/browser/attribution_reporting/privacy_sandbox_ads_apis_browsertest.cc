@@ -195,15 +195,9 @@ IN_PROC_BROWSER_TEST_F(PrivacySandboxAdsAPIsAllEnabledBrowserTest,
   EXPECT_EQ(false, EvalJs(shell(),
                           "document.featurePolicy.features().includes('"
                           "browsing-topics')"));
-  EXPECT_EQ(false, EvalJs(shell(),
-                          "document.featurePolicy.features().includes('"
-                          "join-ad-interest-group')"));
 
   EXPECT_EQ(true, ExecJs(shell(), "window.sharedStorage === undefined"));
   EXPECT_EQ(true, EvalJs(shell(), "document.browsingTopics === undefined"));
-  EXPECT_EQ(true, EvalJs(shell(), "navigator.runAdAuction === undefined"));
-  EXPECT_EQ(true,
-            EvalJs(shell(), "navigator.joinAdInterestGroup === undefined"));
 
   EXPECT_TRUE(ExecJs(root(), kAddFencedFrameScript));
   EXPECT_EQ(0U, root()->child_count());
@@ -535,15 +529,9 @@ IN_PROC_BROWSER_TEST_F(PrivacySandboxAdsAPIsDisabledBrowserTest,
   EXPECT_EQ(false, EvalJs(shell(),
                           "document.featurePolicy.features().includes('"
                           "browsing-topics')"));
-  EXPECT_EQ(false, EvalJs(shell(),
-                          "document.featurePolicy.features().includes('"
-                          "join-ad-interest-group')"));
 
   EXPECT_EQ(true, ExecJs(shell(), "window.sharedStorage === undefined"));
   EXPECT_EQ(true, EvalJs(shell(), "document.browsingTopics === undefined"));
-  EXPECT_EQ(true, EvalJs(shell(), "navigator.runAdAuction === undefined"));
-  EXPECT_EQ(true,
-            EvalJs(shell(), "navigator.joinAdInterestGroup === undefined"));
 
   EXPECT_TRUE(ExecJs(root(), kAddFencedFrameScript));
   EXPECT_EQ(0U, root()->child_count());

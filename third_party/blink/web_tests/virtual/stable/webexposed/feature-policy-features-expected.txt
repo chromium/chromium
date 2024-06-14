@@ -43,6 +43,7 @@ hid
 identity-credentials-get
 idle-detection
 interest-cohort
+join-ad-interest-group
 keyboard-map
 local-fonts
 magnetometer
@@ -56,6 +57,7 @@ private-state-token-issuance
 private-state-token-redemption
 publickey-credentials-create
 publickey-credentials-get
+run-ad-auction
 screen-wake-lock
 serial
 shared-storage

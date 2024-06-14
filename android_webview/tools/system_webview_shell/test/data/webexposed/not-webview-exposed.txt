@@ -297,3 +297,20 @@ interface SharedStorage
 interface FencedFrameConfig
 interface HTMLFencedFrameElement : HTMLElement
 interface Fence
+interface Navigator
+    method canLoadAdAuctionFencedFrame
+
+# Protected Audiences (formerly FLEDGE) is not implemented in WebView
+interface Navigator
+    getter deprecatedRunAdAuctionEnforcesKAnonymity
+    getter protectedAudience
+    method adAuctionComponents
+    method canLoadAdAuctionFencedFrame
+    method clearOriginJoinedAdInterestGroups
+    method createAuctionNonce
+    method deprecatedReplaceInURN
+    method deprecatedURNToURL
+    method joinAdInterestGroup
+    method leaveAdInterestGroup
+    method runAdAuction
+    method updateAdInterestGroups

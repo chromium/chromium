@@ -20213,20 +20213,6 @@ IN_PROC_BROWSER_TEST_F(AdsAPIsOriginTrialBrowserTest,
 
 IN_PROC_BROWSER_TEST_F(
     AdsAPIsOriginTrialBrowserTest,
-    NotInAdsAPIsOriginTrial_AdAuctionHeadersNotAllowedForFetch) {
-  EXPECT_TRUE(NavigateToURL(
-      shell(), GURL("https://example.test/page_with_ba_server_ot.html")));
-
-  EXPECT_TRUE(
-      ExecJs(shell()->web_contents(),
-             content::JsReplace("fetch($1, {adAuctionHeaders: true})",
-                                GURL("https://example.test/empty.html"))));
-
-  EXPECT_FALSE(last_request_is_ad_auction_header_request());
-}
-
-IN_PROC_BROWSER_TEST_F(
-    AdsAPIsOriginTrialBrowserTest,
     AdsAPIsOriginTrial_NoFetchParam_AdAuctionHeadersNotAllowedForFetch) {
   EXPECT_TRUE(NavigateToURL(
       shell(), GURL("https://example.test/page_with_ads_apis_ot.html")));
