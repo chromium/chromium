@@ -8,6 +8,7 @@ import android.content.Context;
 import android.content.res.Resources;
 import android.graphics.RectF;
 import android.util.FloatProperty;
+import android.view.MotionEvent;
 
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.compositor.overlays.strip.StripLayoutView;
@@ -305,10 +306,12 @@ public class CompositorButton extends StripLayoutView {
      * @param x The x offset of the event.
      * @param y The y offset of the event.
      * @param fromMouse Whether the event originates from a mouse.
-     * @return Whether or not the close button was selected.
+     * @param buttons State of all buttons that were pressed when onDown was invoked.
+     * @return Whether or not the button was hit.
      */
-    public boolean onDown(float x, float y, boolean fromMouse) {
-        if (checkClickedOrHovered(x, y)) {
+    public boolean onDown(float x, float y, boolean fromMouse, int buttons) {
+        if (checkClickedOrHovered(x, y)
+                && (!fromMouse || (buttons & MotionEvent.BUTTON_PRIMARY) != 0)) {
             setPressed(true, fromMouse);
             return true;
         }
@@ -316,12 +319,15 @@ public class CompositorButton extends StripLayoutView {
     }
 
     /**
-     * @param x     The x offset of the event.
-     * @param y     The y offset of the event.
-     * @return      If the button was clicked or not.
+     * @param x The x offset of the event.
+     * @param y The y offset of the event.
+     * @param fromMouse Whether the event originates from a mouse.
+     * @param buttons State of all buttons that were pressed when onDown was invoked.
+     * @return Whether or not the button was clicked.
      */
-    public boolean click(float x, float y) {
-        if (checkClickedOrHovered(x, y)) {
+    public boolean click(float x, float y, boolean fromMouse, int buttons) {
+        if (checkClickedOrHovered(x, y)
+                && (!fromMouse || (buttons & MotionEvent.BUTTON_PRIMARY) != 0)) {
             setPressed(false, false);
             return true;
         }

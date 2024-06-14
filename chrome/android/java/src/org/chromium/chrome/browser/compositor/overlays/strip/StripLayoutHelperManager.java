@@ -232,7 +232,7 @@ public class StripLayoutHelperManager
             if (DragDropGlobalState.hasValue()) {
                 return;
             }
-            if (mModelSelectorButton.onDown(x, y, fromMouse)) {
+            if (mModelSelectorButton.onDown(x, y, fromMouse, buttons)) {
                 return;
             }
             getActiveStripLayoutHelper().onDown(time(), x, y, fromMouse, buttons);
@@ -264,7 +264,7 @@ public class StripLayoutHelperManager
                 return;
             }
             long time = time();
-            if (mModelSelectorButton.click(x, y)) {
+            if (mModelSelectorButton.click(x, y, fromMouse, buttons)) {
                 mModelSelectorButton.handleClick(time);
                 return;
             }

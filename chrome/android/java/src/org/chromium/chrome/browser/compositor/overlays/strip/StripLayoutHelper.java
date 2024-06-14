@@ -1895,7 +1895,7 @@ public class StripLayoutHelper implements StripLayoutTabDelegate, StripLayoutGro
     protected void onDownInternal(long time, float x, float y, boolean fromMouse, int buttons) {
         resetResizeTimeout(false);
 
-        if (mNewTabButton.onDown(x, y, fromMouse)) {
+        if (mNewTabButton.onDown(x, y, fromMouse, buttons)) {
             mRenderHost.requestRender();
             return;
         }
@@ -2273,7 +2273,7 @@ public class StripLayoutHelper implements StripLayoutTabDelegate, StripLayoutGro
     public void click(long time, float x, float y, boolean fromMouse, int buttons) {
         resetResizeTimeout(false);
 
-        if (mNewTabButton.click(x, y)) {
+        if (mNewTabButton.click(x, y, fromMouse, buttons)) {
             RecordUserAction.record("MobileToolbarNewTab");
             mNewTabButton.handleClick(time);
             return;
