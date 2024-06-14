@@ -215,4 +215,9 @@ void AwFieldTrials::RegisterFeatureOverrides(base::FeatureList* feature_list) {
   // WebView.
   // TODO(b/344852824): Enable the feature for WebView
   aw_feature_overrides.DisableFeature(::features::kDIPS);
+
+  // Async Safe Browsing check will be rolled out together with
+  // kHashPrefixRealTimeLookups on WebView.
+  aw_feature_overrides.DisableFeature(
+      safe_browsing::kSafeBrowsingAsyncRealTimeCheck);
 }

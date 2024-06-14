@@ -18654,21 +18654,6 @@
             ]
         }
     ],
-    "SafeBrowsingAsyncRealTimeCheck": [
-        {
-            "platforms": [
-                "android"
-            ],
-            "experiments": [
-                {
-                    "name": "Enabled",
-                    "enable_features": [
-                        "SafeBrowsingAsyncRealTimeCheck"
-                    ]
-                }
-            ]
-        }
-    ],
     "SafeBrowsingDeepScanningPromptRemoval": [
         {
             "platforms": [
