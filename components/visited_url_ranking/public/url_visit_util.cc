@@ -102,14 +102,11 @@ scoped_refptr<InputContext> AsInputContext(
     // value.
     auto value = ProcessedValue::FromFloat(-1);
     switch (field_schema.signal) {
-      case kTimeSinceLastModifiedSec:
-        if (tab_data) {
-          base::TimeDelta time_since_last_modified =
-              base::Time::Now() - tab_data->last_active_tab.visit.last_modified;
-          value =
-              ProcessedValue::FromFloat(time_since_last_modified.InSeconds());
-        }
-        break;
+      case kTimeSinceLastModifiedSec: {
+        base::TimeDelta time_since_last_modified =
+            base::Time::Now() - url_visit_aggregate.GetLastVisitTime();
+        value = ProcessedValue::FromFloat(time_since_last_modified.InSeconds());
+      } break;
       case kTimeSinceLastActiveSec:
         if (tab_data && !tab_data->last_active.is_null()) {
           base::TimeDelta time_since_last_active =

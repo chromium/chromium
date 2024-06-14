@@ -16,6 +16,7 @@
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
 #include "base/location.h"
+#include "base/logging.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/metrics/field_trial_params.h"
 #include "base/rand_util.h"
@@ -123,6 +124,12 @@ void SortScoredAggregatesAndCallback(
     // Sort such that higher scored entries precede lower scored entries.
     return c1.score > c2.score;
   });
+  if (VLOG_IS_ON(2)) {
+    for (const auto& visit : scored_visits) {
+      VLOG(2) << "visited_url_ranking: Ordered ranked visit: " << visit.url_key
+              << " " << *visit.score;
+    }
+  }
   std::move(callback).Run(ResultStatus::kSuccess, std::move(scored_visits));
 }
 
@@ -194,6 +201,8 @@ void VisitedURLRankingServiceImpl::RecordAction(
     ScoredURLUserAction action,
     const std::string& visit_id,
     segmentation_platform::TrainingRequestId visit_request_id) {
+  VLOG(2) << "visited_url_ranking: RecordAction for " << visit_id << " "
+          << static_cast<int>(action);
   DCHECK(!visit_id.empty());
 
   const char* event_name = EventNameForAction(action);
