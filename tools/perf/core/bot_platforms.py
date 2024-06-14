@@ -677,12 +677,12 @@ LINUX_PGO = PerfPlatform('linux-perf-pgo',
                          executables=_LINUX_EXECUTABLE_CONFIGS,
                          pinpoint_only=True)
 LINUX_REL = PerfPlatform(
-    'linux-perf-rel',
-    'Ubuntu-18.04, 8 core, NVIDIA Quadro P400',
-    _CHROME_HEALTH_BENCHMARK_CONFIGS_DESKTOP,
-    2,
-    'linux',
-    executables=_LINUX_EXECUTABLE_CONFIGS)
+    'linux-perf-rel', 'Ubuntu-18.04, 8 core, NVIDIA Quadro P400',
+    _CHROME_HEALTH_BENCHMARK_CONFIGS_DESKTOP, 2,
+    'linux', executables=_LINUX_EXECUTABLE_CONFIGS)
+LINUX_R350 = PerfPlatform('linux-r350-perf', 'Ubuntu-22.04, 16 core',
+  _LINUX_BENCHMARK_CONFIGS_WITH_NOMINORMS_PREDICTABLE, 30,
+  'linux', executables=_LINUX_EXECUTABLE_CONFIGS)
 
 # Mac
 MAC_HIGH_END_LAPTOP = PerfPlatform(
