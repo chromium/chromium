@@ -328,37 +328,8 @@ TEST_F(PasswordSuggestionGeneratorTest, PasswordSuggestions_FromProfileStore) {
 }
 
 #if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
-// Verify that suggestion for account store credential receives a different
-// `SuggestionType` and trailing icon.
-// TODO crbug/40943570: Remove after feature is fully rolled out.
-TEST_F(PasswordSuggestionGeneratorTest,
-       PasswordSuggestions_FromAccountStore_ButterFollowupDisabled) {
-  base::test::ScopedFeatureList feature_list;
-  feature_list.InitAndDisableFeature(
-      password_manager::features::kButterOnDesktopFollowup);
-  PasswordFormFillData fill_data = password_form_fill_data();
-  fill_data.preferred_login.uses_account_store = true;
-
-  std::vector<Suggestion> suggestions = generator().GetSuggestionsForDomain(
-      fill_data, favicon(), /*username_filter=*/u"", OffersGeneration(false),
-      ShowPasswordSuggestions(true), ShowWebAuthnCredentials(false));
-
-  EXPECT_THAT(suggestions,
-              ElementsAre(EqualsDomainPasswordSuggestion(
-                              SuggestionType::kAccountStoragePasswordEntry,
-                              u"username", password_label(8u),
-                              /*realm_label=*/u"", favicon(),
-                              Suggestion::Icon::kGoogle),
-                          EqualsSuggestion(SuggestionType::kSeparator),
-                          EqualsManagePasswordsSuggestion()));
-}
-
-// Verify that the trailing icon is not set for the account store credential if
-// the `kButterOnDesktopFollowup` is enabled.
+// Verify that the trailing icon is not set for the account store credential.
 TEST_F(PasswordSuggestionGeneratorTest, PasswordSuggestions_FromAccountStore) {
-  base::test::ScopedFeatureList feature_list;
-  feature_list.InitAndEnableFeature(
-      password_manager::features::kButterOnDesktopFollowup);
   PasswordFormFillData fill_data = password_form_fill_data();
   fill_data.preferred_login.uses_account_store = true;
 
@@ -402,9 +373,7 @@ TEST_F(PasswordSuggestionGeneratorTest,
 #if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
   base::test::ScopedFeatureList feature_list;
   feature_list.InitWithFeatureStates(
-      {{syncer::kSyncWebauthnCredentials, false},
-       {password_manager::features::kButterOnDesktopFollowup, true}});
-
+      {{syncer::kSyncWebauthnCredentials, false}});
 #endif  // !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
   PasswordFormFillData fill_data = password_form_fill_data();
   PasswordAndMetadata additional_login;

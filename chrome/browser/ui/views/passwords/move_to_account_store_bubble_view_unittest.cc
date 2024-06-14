@@ -58,10 +58,6 @@ void MoveToAccountStoreBubbleViewTest::TearDown() {
 }
 
 TEST_F(MoveToAccountStoreBubbleViewTest, HasTwoButtons) {
-  // TODO crbug/40943570: Remove after feature is fully rolled out.
-  base::test::ScopedFeatureList feature_list;
-  feature_list.InitAndEnableFeature(
-      password_manager::features::kButterOnDesktopFollowup);
   CreateViewAndShow();
   ASSERT_TRUE(view_->GetOkButton());
   ASSERT_TRUE(view_->GetCancelButton());
@@ -74,10 +70,6 @@ TEST_F(MoveToAccountStoreBubbleViewTest, HasTwoButtons) {
 }
 
 TEST_F(MoveToAccountStoreBubbleViewTest, HasDescription) {
-  // TODO crbug/40943570: Remove after feature is fully rolled out.
-  base::test::ScopedFeatureList feature_list;
-  feature_list.InitAndEnableFeature(
-      password_manager::features::kButterOnDesktopFollowup);
   CreateViewAndShow();
 
   ASSERT_EQ(view_->children().size(), 2u);

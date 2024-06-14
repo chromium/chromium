@@ -645,10 +645,6 @@ TEST_F(PasswordsPrivateDelegateImplTest, AddPassword) {
 }
 
 TEST_F(PasswordsPrivateDelegateImplTest, AddPasswordUpdatesDefaultStore) {
-  // TODO crbug/40943570: Remove after feature is fully rolled out.
-  base::test::ScopedFeatureList feature_list;
-  feature_list.InitAndEnableFeature(
-      password_manager::features::kButterOnDesktopFollowup);
   std::unique_ptr<content::WebContents> web_contents = CreateWebContents();
   auto* client =
       MockPasswordManagerClient::CreateForWebContentsAndGet(web_contents.get());
@@ -678,17 +674,12 @@ TEST_F(PasswordsPrivateDelegateImplTest, AddPasswordUpdatesDefaultStore) {
                                      web_contents.get()));
 }
 
-TEST_F(PasswordsPrivateDelegateImplTest,
-       AddPasswordDoesNotUpdateDefaultStoreIsFeatureFlagEnabled) {
-  base::test::ScopedFeatureList scoped_feature_list(
-      password_manager::features::kButterOnDesktopFollowup);
+TEST_F(PasswordsPrivateDelegateImplTest, AddPasswordDoesNotUpdateDefaultStore) {
   std::unique_ptr<content::WebContents> web_contents = CreateWebContents();
   auto* client =
       MockPasswordManagerClient::CreateForWebContentsAndGet(web_contents.get());
   auto delegate = CreateDelegate();
 
-  // Don't update the default store if kButterOnDesktopFollowup feature is
-  // enabled.
   ON_CALL(*(client->GetPasswordFeatureManager()), IsOptedInForAccountStorage)
       .WillByDefault(Return(true));
   EXPECT_CALL(*(client->GetPasswordFeatureManager()), SetDefaultPasswordStore)
@@ -710,32 +701,6 @@ TEST_F(PasswordsPrivateDelegateImplTest,
 
   delegate->SetPorterForTesting(std::move(mock_porter));
 
-  // NOT update default store if not opted-in for account storage.
-  ON_CALL(*(client->GetPasswordFeatureManager()), IsOptedInForAccountStorage)
-      .WillByDefault(Return(false));
-  EXPECT_CALL(*(client->GetPasswordFeatureManager()), SetDefaultPasswordStore)
-      .Times(0);
-  EXPECT_CALL(*mock_porter_ptr, Import).Times(1);
-  delegate->ImportPasswords(api::passwords_private::PasswordStoreSet::kDevice,
-                            base::DoNothing(), web_contents.get());
-}
-
-TEST_F(PasswordsPrivateDelegateImplTest,
-       ImportPasswordsDoesNotUpdateDefaultStoreIfFeatureFlagEnabled) {
-  base::test::ScopedFeatureList scoped_feature_list(
-      password_manager::features::kButterOnDesktopFollowup);
-  std::unique_ptr<content::WebContents> web_contents = CreateWebContents();
-  auto* client =
-      MockPasswordManagerClient::CreateForWebContentsAndGet(web_contents.get());
-  auto delegate = CreateDelegate();
-
-  auto mock_porter = std::make_unique<MockPasswordManagerPorter>();
-  auto* mock_porter_ptr = mock_porter.get();
-
-  delegate->SetPorterForTesting(std::move(mock_porter));
-
-  // Don't update the default store if kButterOnDesktopFollowup feature is
-  // enabled.
   ON_CALL(*(client->GetPasswordFeatureManager()), IsOptedInForAccountStorage)
       .WillByDefault(Return(true));
   EXPECT_CALL(*(client->GetPasswordFeatureManager()), SetDefaultPasswordStore)
@@ -747,11 +712,6 @@ TEST_F(PasswordsPrivateDelegateImplTest,
 
 TEST_F(PasswordsPrivateDelegateImplTest,
        ImportPasswordsDoesntUpdateDefaultStore) {
-  // TODO crbug/40943570: Remove after feature is fully rolled out.
-  base::test::ScopedFeatureList feature_list;
-  feature_list.InitAndEnableFeature(
-      password_manager::features::kButterOnDesktopFollowup);
-
   std::unique_ptr<content::WebContents> web_contents = CreateWebContents();
   auto* client =
       MockPasswordManagerClient::CreateForWebContentsAndGet(web_contents.get());
@@ -1104,33 +1064,7 @@ TEST_F(PasswordsPrivateDelegateImplTest,
 }
 
 TEST_F(PasswordsPrivateDelegateImplTest,
-       TestShouldNotReauthForOptOutAndShouldResetPref) {
-  base::test::ScopedFeatureList scoped_feature_list;
-  scoped_feature_list.InitAndDisableFeature(
-      password_manager::features::kButterOnDesktopFollowup);
-
-  std::unique_ptr<content::WebContents> web_contents = CreateWebContents();
-  auto* client =
-      MockPasswordManagerClient::CreateForWebContentsAndGet(web_contents.get());
-  password_manager::MockPasswordFeatureManager* feature_manager =
-      client->GetPasswordFeatureManager();
-  ON_CALL(*feature_manager, IsOptedInForAccountStorage)
-      .WillByDefault(Return(true));
-
-  EXPECT_CALL(*client,
-              TriggerReauthForPrimaryAccount(
-                  signin_metrics::ReauthAccessPoint::kPasswordSettings, _))
-      .Times(0);
-  EXPECT_CALL(*feature_manager, OptOutOfAccountStorageAndClearSettings);
-
-  auto delegate = CreateDelegate();
-  delegate->SetAccountStorageOptIn(false, web_contents.get());
-}
-
-TEST_F(PasswordsPrivateDelegateImplTest,
        TestShouldNotReauthForOptOutAndShouldSetPref) {
-  base::test::ScopedFeatureList scoped_feature_list(
-      password_manager::features::kButterOnDesktopFollowup);
   std::unique_ptr<content::WebContents> web_contents = CreateWebContents();
   auto* client =
       MockPasswordManagerClient::CreateForWebContentsAndGet(web_contents.get());
@@ -1366,46 +1300,7 @@ TEST_F(PasswordsPrivateDelegateImplTest, IsAccountStoreDefault) {
   EXPECT_FALSE(delegate->IsAccountStoreDefault(web_contents.get()));
 }
 
-TEST_F(PasswordsPrivateDelegateImplTest,
-       TestMovePasswordsToAccountStoreWithButterFollowupDisabled) {
-  base::test::ScopedFeatureList scoped_feature_list;
-  scoped_feature_list.InitAndDisableFeature(
-      password_manager::features::kButterOnDesktopFollowup);
-
-  std::unique_ptr<content::WebContents> web_contents = CreateWebContents();
-  auto* client =
-      MockPasswordManagerClient::CreateForWebContentsAndGet(web_contents.get());
-  ON_CALL(*(client->GetPasswordFeatureManager()), IsOptedInForAccountStorage)
-      .WillByDefault(Return(true));
-
-  auto delegate = CreateDelegate();
-  PasswordForm form1 = CreateSampleForm(PasswordForm::Store::kProfileStore);
-  PasswordForm form2 = form1;
-  form2.username_value = u"different_username";
-
-  SetUpPasswordStores({form1, form2});
-
-  int first_id =
-      delegate->GetIdForCredential(password_manager::CredentialUIEntry(form1));
-  int second_id =
-      delegate->GetIdForCredential(password_manager::CredentialUIEntry(form2));
-
-  delegate->MovePasswordsToAccount({first_id, second_id}, web_contents.get());
-  base::RunLoop().RunUntilIdle();
-
-  histogram_tester().ExpectUniqueSample(
-      "PasswordManager.AccountStorage.MoveToAccountStoreFlowAccepted2",
-      password_manager::metrics_util::MoveToAccountStoreTrigger::
-          kExplicitlyTriggeredForMultiplePasswordsInSettings,
-      1);
-}
-
-TEST_F(PasswordsPrivateDelegateImplTest,
-       TestMovePasswordsToAccountStoreWithButterFollowupEnabled) {
-  base::test::ScopedFeatureList scoped_feature_list(
-      password_manager::features::kButterOnDesktopFollowup);
-
-
+TEST_F(PasswordsPrivateDelegateImplTest, TestMovePasswordsToAccountStore) {
   std::unique_ptr<content::WebContents> web_contents = CreateWebContents();
   auto* client =
       MockPasswordManagerClient::CreateForWebContentsAndGet(web_contents.get());

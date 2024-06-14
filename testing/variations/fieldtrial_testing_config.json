@@ -3412,21 +3412,6 @@
             ]
         }
     ],
-    "ButterOnDesktopFollowup": [
-        {
-            "platforms": [
-                "chromeos_lacros"
-            ],
-            "experiments": [
-                {
-                    "name": "Enabled",
-                    "enable_features": [
-                        "ButterOnDesktopFollowup"
-                    ]
-                }
-            ]
-        }
-    ],
     "CCTGoogleBottomBar": [
         {
             "platforms": [
