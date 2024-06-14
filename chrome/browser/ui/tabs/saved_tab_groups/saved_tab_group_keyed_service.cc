@@ -64,7 +64,7 @@ CreateChangeProcessor() {
 
 SavedTabGroupKeyedService::SavedTabGroupKeyedService(Profile* profile)
     : profile_(profile),
-      listener_(model(), profile),
+      listener_(this, profile),
       bridge_(model(),
               GetStoreFactory(),
               CreateChangeProcessor(),
