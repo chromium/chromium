@@ -355,23 +355,28 @@ export class ReadAnythingElement extends ReadAnythingElementBase {
   // resetting speech right after starting it.
   private willDrawAgainSoon_: boolean = false;
 
+  // TODO: b/346868764- firstUtteranceSpoken shouldn't be public just for tests.
   // After the first utterance has been spoken, we should assume that the
   // speech engine has loaded, and we shouldn't adjust the play / pause
   // disabled state based on the message.onStart callback to avoid flickering.
-  private firstUtteranceSpoken = false;
+  firstUtteranceSpoken = false;
 
   synth = window.speechSynthesis;
 
-  private selectedVoice: SpeechSynthesisVoice|undefined;
+  // TODO(b/346868764): Longer term, selectedVoice shouldn't be public just
+  // for tests.
+  selectedVoice: SpeechSynthesisVoice|undefined;
   // The set of languages currently enabled for use by Read Aloud. This
   // includes user-enabled languages and auto-downloaded languages. The former
   // are stored in preferences. The latter are not.
   enabledLangs: string[] = [];
 
+  // TODO(b/346868764): Longer term, availableVoices and availableLangs
+  // should not be public just for the sake of tests.
   // All possible available voices for the current speech engine.
-  private availableVoices: SpeechSynthesisVoice[];
+  availableVoices: SpeechSynthesisVoice[];
   // A set of availableLangs derived from availableVoices
-  private availableLangs: string[] = [];
+  availableLangs: string[] = [];
   // If a preview is playing, this is set to the voice the preview is playing.
   // Otherwise, this is undefined.
   private previewVoicePlaying: SpeechSynthesisVoice|null;
@@ -383,8 +388,10 @@ export class ReadAnythingElement extends ReadAnythingElementBase {
   private voiceStatusLocalState:
       {[language: string]: VoiceClientSideStatusCode} = {};
 
+  // TODO(b/346868764): Longer term, voicePackInstallServerResponses shouldn't
+  // be public just for tests.
   // Cache of responses from LanguagePackManager
-  private voicePackInstallStatusServerResponses:
+  voicePackInstallStatusServerResponses:
       {[language: string]: VoicePackStatus} = {};
 
   // Set of languages of the browser and/or of the pages navigated to that we
@@ -946,7 +953,7 @@ export class ReadAnythingElement extends ReadAnythingElementBase {
 
     if (isVoicePackStatusError(newVoicePackStatus)) {
       // Keep the server responses.
-      this.setVoicePackServerStatus_(lang, newVoicePackStatus);
+      this.setVoicePackServerStatus(lang, newVoicePackStatus);
 
       // Update application state.
       this.updateApplicationState(lang, newVoicePackStatus, oldVoicePackStatus);
@@ -979,7 +986,7 @@ export class ReadAnythingElement extends ReadAnythingElementBase {
     const oldVoicePackStatus = this.getVoicePackServerStatus_(lang);
 
     // Keep the server responses
-    this.setVoicePackServerStatus_(lang, newVoicePackStatus);
+    this.setVoicePackServerStatus(lang, newVoicePackStatus);
 
     // Update application state
     this.updateApplicationState(lang, newVoicePackStatus, oldVoicePackStatus);
@@ -999,12 +1006,12 @@ export class ReadAnythingElement extends ReadAnythingElementBase {
           // as a language that should be installed
           if (this.languagesForVoiceDownloads.has(lang)) {
             // Don't re-send install request if it's already been sent
-            if (this.getVoicePackLocalStatus_(lang) !==
+            if (this.getVoicePackLocalStatus(lang) !==
                 VoiceClientSideStatusCode.SENT_INSTALL_REQUEST) {
               this.forceInstallRequest(lang, /* isRetry = */ false);
             }
           } else {
-            this.setVoicePackLocalStatus_(
+            this.setVoicePackLocalStatus(
                 lang, VoiceClientSideStatusCode.NOT_INSTALLED);
           }
           break;
@@ -1022,7 +1029,7 @@ export class ReadAnythingElement extends ReadAnythingElementBase {
           // the language is newly downloaded.
           if ((!oldVoicePackStatus &&
                isWaitingForInstallLocally(
-                   this.getVoicePackLocalStatus_(lang))) ||
+                   this.getVoicePackLocalStatus(lang))) ||
               (oldVoicePackStatus &&
                oldVoicePackStatus.code !==
                    VoicePackServerStatusSuccessCode.INSTALLED)) {
@@ -1059,7 +1066,7 @@ export class ReadAnythingElement extends ReadAnythingElementBase {
           // If natural voices are currently available for the language or the
           // language does not support natural voices, set the status to
           // available. Otherwise, set the status to install and unavailabled.
-          this.setVoicePackLocalStatus_(
+          this.setVoicePackLocalStatus(
               lang,
               voicesForLanguageAreAvailable ?
                   VoiceClientSideStatusCode.AVAILABLE :
@@ -1078,11 +1085,11 @@ export class ReadAnythingElement extends ReadAnythingElementBase {
         case VoicePackServerStatusErrorCode.WRONG_ID:
         case VoicePackServerStatusErrorCode.NEED_REBOOT:
         case VoicePackServerStatusErrorCode.UNSUPPORTED_PLATFORM:
-          this.setVoicePackLocalStatus_(
+          this.setVoicePackLocalStatus(
               lang, VoiceClientSideStatusCode.ERROR_INSTALLING);
           break;
         case VoicePackServerStatusErrorCode.ALLOCATION:
-          this.setVoicePackLocalStatus_(
+          this.setVoicePackLocalStatus(
               lang, VoiceClientSideStatusCode.INSTALL_ERROR_ALLOCATION);
           break;
         default:
@@ -1091,7 +1098,7 @@ export class ReadAnythingElement extends ReadAnythingElementBase {
       }
     } else {
       // Couldn't parse the response
-      this.setVoicePackLocalStatus_(
+      this.setVoicePackLocalStatus(
           lang, VoiceClientSideStatusCode.ERROR_INSTALLING);
     }
   }
@@ -1270,7 +1277,8 @@ export class ReadAnythingElement extends ReadAnythingElementBase {
     return null;
   }
 
-  private getVoices(refresh: boolean = false): SpeechSynthesisVoice[] {
+  // TODO(b/346868764): Longer term, this shouldn't be public just for tests.
+  getVoices(refresh: boolean = false): SpeechSynthesisVoice[] {
     if (!this.availableVoices || refresh) {
       let availableVoices = this.synth.getVoices();
       if (availableVoices.some(({localService}) => localService)) {
@@ -1448,7 +1456,8 @@ export class ReadAnythingElement extends ReadAnythingElementBase {
     }
   }
 
-  private logSpeechPlaySession() {
+  // TODO(b/346868764): Longer term, this shouldn't be public just for tests.
+  logSpeechPlaySession() {
     // Don't log a playback session just in case something has gotten out of
     // sync and we call stopSpeech before playSpeech.
     if (this.playSessionStartTime > 0) {
@@ -2307,7 +2316,8 @@ export class ReadAnythingElement extends ReadAnythingElementBase {
     }
   }
 
-  private resetPreviousHighlight() {
+  // TODO(b/346868764): Longer term, this shouldn't be public just for tests.
+  resetPreviousHighlight() {
     this.previousHighlights_.forEach((element) => {
       if (element) {
         element.classList.add(previousReadHighlightClass);
@@ -2748,7 +2758,7 @@ export class ReadAnythingElement extends ReadAnythingElementBase {
 
   private forceInstallRequest(
       langCodeForVoicePackManager: string, isRetry: boolean) {
-    this.setVoicePackLocalStatus_(
+    this.setVoicePackLocalStatus(
         langCodeForVoicePackManager,
         isRetry ? VoiceClientSideStatusCode.SENT_INSTALL_REQUEST_ERROR_RETRY :
                   VoiceClientSideStatusCode.SENT_INSTALL_REQUEST);
@@ -2768,14 +2778,14 @@ export class ReadAnythingElement extends ReadAnythingElementBase {
     return this.voicePackInstallStatusServerResponses[voicePackLanguage];
   }
 
-  private getVoicePackLocalStatus_(lang: string): VoiceClientSideStatusCode
-      |undefined {
+  // TODO(b/346868764): Longer term, getters and setters for voice pack
+  // status shouldn't be public just for tests.
+  getVoicePackLocalStatus(lang: string): VoiceClientSideStatusCode|undefined {
     const voicePackLanguage = getVoicePackConvertedLangIfExists(lang);
     return this.voiceStatusLocalState[voicePackLanguage];
   }
 
-  private setVoicePackLocalStatus_(
-      lang: string, status: VoiceClientSideStatusCode) {
+  setVoicePackLocalStatus(lang: string, status: VoiceClientSideStatusCode) {
     const voicePackLanguage = getVoicePackConvertedLangIfExists(lang);
     this.voiceStatusLocalState = {
       ...this.voiceStatusLocalState,
@@ -2783,7 +2793,8 @@ export class ReadAnythingElement extends ReadAnythingElementBase {
     };
   }
 
-  private setVoicePackServerStatus_(lang: string, status: VoicePackStatus) {
+  // TODO(b/346868764): Longer term, this shouldn't be public just for tests.
+  setVoicePackServerStatus(lang: string, status: VoicePackStatus) {
     // Convert the language string to ensure consistency across
     // languages and locales when setting the status.
     const voicePackLanguage = getVoicePackConvertedLangIfExists(lang);

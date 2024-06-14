@@ -20,19 +20,10 @@ suite('UpdateVoicePack', () => {
   function getVoicePackServerInstallStatus(lang: string): VoicePackStatus {
     const convertedLang: string|undefined =
         convertLangOrLocaleForVoicePackManager(lang);
-    // @ts-ignore
-    return app.voicePackInstallStatusServerResponses[convertedLang!];
-  }
-
-  function getVoicePackLocalStatus(lang: string): VoiceClientSideStatusCode {
-    // @ts-ignore
-    return app.getVoicePackLocalStatus_(lang);
-  }
-
-
-  function setAvailableVoices(voices: SpeechSynthesisVoice[]) {
-    // @ts-ignore
-    app.availableVoices = voices;
+    const serverStatus =
+        app.voicePackInstallStatusServerResponses[convertedLang!];
+    assertFalse(serverStatus === undefined);
+    return serverStatus!;
   }
 
   function addNaturalVoicesForLang(lang: string) {
@@ -43,7 +34,6 @@ suite('UpdateVoicePack', () => {
           {lang: lang, name: 'Andy (Natural)'} as SpeechSynthesisVoice,
       );
     };
-    // @ts-ignore
     app.getVoices(true);
   }
 
@@ -137,10 +127,7 @@ suite('UpdateVoicePack', () => {
       // existing status
       app.updateVoicePackStatus(lang, 'kInstalled');
       // then we request install
-      // Bypass Typescript compiler to allow us to set a private readonly
-      // property
-      // @ts-ignore
-      app.setVoicePackLocalStatus_(
+      app.setVoicePackLocalStatus(
           lang, VoiceClientSideStatusCode.SENT_INSTALL_REQUEST);
       app.updateVoicePackStatus(lang, 'kInstalling');
       // install completes
@@ -179,7 +166,7 @@ suite('UpdateVoicePack', () => {
         assertEquals(
             getVoicePackServerInstallStatus(lang).id, 'Successful response');
         assertEquals(
-            getVoicePackLocalStatus(lang),
+            app.getVoicePackLocalStatus(lang),
             VoiceClientSideStatusCode.INSTALLED_AND_UNAVAILABLE);
       });
 
@@ -196,7 +183,7 @@ suite('UpdateVoicePack', () => {
             getVoicePackServerInstallStatus(lang).code,
             VoicePackServerStatusSuccessCode.INSTALLED);
         assertEquals(
-            getVoicePackLocalStatus(lang),
+            app.getVoicePackLocalStatus(lang),
             VoiceClientSideStatusCode.INSTALLED_AND_UNAVAILABLE);
       });
 
@@ -211,7 +198,7 @@ suite('UpdateVoicePack', () => {
     assertEquals(
         getVoicePackServerInstallStatus(lang).id, 'Successful response');
     assertEquals(
-        getVoicePackLocalStatus(lang),
+        app.getVoicePackLocalStatus(lang),
         VoiceClientSideStatusCode.INSTALLED_AND_UNAVAILABLE);
   });
 
@@ -219,9 +206,9 @@ suite('UpdateVoicePack', () => {
       'available if non-natural voices are unsupported this lang and voices available',
       () => {
         const lang = 'yue';
-        setAvailableVoices([
+        app.availableVoices = [
           {lang: 'yue-hk', name: 'Cantonese'} as SpeechSynthesisVoice,
-        ]);
+        ];
 
         app.updateVoicePackStatus(lang, 'kInstalled');
 
@@ -231,7 +218,8 @@ suite('UpdateVoicePack', () => {
         assertEquals(
             getVoicePackServerInstallStatus(lang).id, 'Successful response');
         assertEquals(
-            getVoicePackLocalStatus(lang), VoiceClientSideStatusCode.AVAILABLE);
+            app.getVoicePackLocalStatus(lang),
+            VoiceClientSideStatusCode.AVAILABLE);
       });
 
   test(
@@ -247,7 +235,7 @@ suite('UpdateVoicePack', () => {
         assertEquals(
             getVoicePackServerInstallStatus(lang).id, 'Successful response');
         assertEquals(
-            getVoicePackLocalStatus(lang),
+            app.getVoicePackLocalStatus(lang),
             VoiceClientSideStatusCode.INSTALLED_AND_UNAVAILABLE);
       });
 
@@ -272,10 +260,9 @@ suite('UpdateVoicePack', () => {
         assertEquals(
             getVoicePackServerInstallStatus(lang).id, 'Successful response');
         assertEquals(
-            getVoicePackLocalStatus(lang), VoiceClientSideStatusCode.AVAILABLE);
-        // @ts-ignore
+            app.getVoicePackLocalStatus(lang),
+            VoiceClientSideStatusCode.AVAILABLE);
         assertTrue(app.getVoices().some(v => v.lang.toLowerCase() === lang));
-        // @ts-ignore
         assertEquals(app.selectedVoice, undefined);
       });
 
@@ -285,7 +272,6 @@ suite('UpdateVoicePack', () => {
         const lang = 'en-us';
         chrome.readingMode.isLanguagePackDownloadingEnabled = true;
         chrome.readingMode.baseLanguageForSpeech = lang;
-        // @ts-ignore
         app.selectedVoice = app.synth.getVoices()[0];
         app.$.toolbar.updateFonts = () => {};
         chrome.readingMode.isAutoVoiceSwitchingEnabled = true;
@@ -299,9 +285,8 @@ suite('UpdateVoicePack', () => {
         addNaturalVoicesForLang(lang);
         app.updateVoicePackStatus(lang, 'kInstalled');
 
-        // @ts-ignore
+        assertTrue(!!app.selectedVoice);
         assertEquals(app.selectedVoice.lang, lang);
-        // @ts-ignore
         assertTrue(app.selectedVoice.name.includes('Natural'));
       });
 
@@ -315,7 +300,6 @@ suite('UpdateVoicePack', () => {
           name: 'Portuguese voice 1',
           lang: chrome.readingMode.baseLanguageForSpeech,
         } as SpeechSynthesisVoice;
-        // @ts-ignore
         app.selectedVoice = currentVoice;
         app.$.toolbar.updateFonts = () => {};
         chrome.readingMode.isAutoVoiceSwitchingEnabled = true;
@@ -329,7 +313,6 @@ suite('UpdateVoicePack', () => {
         app.updateVoicePackStatus(lang, 'kInstalled');
 
         // The selected voice should stay the same as it was.
-        // @ts-ignore
         assertEquals(app.selectedVoice, currentVoice);
       });
 
@@ -343,7 +326,7 @@ suite('UpdateVoicePack', () => {
         getVoicePackServerInstallStatus(lang).id, 'Unsuccessful response');
 
     assertEquals(
-        getVoicePackLocalStatus(lang),
+        app.getVoicePackLocalStatus(lang),
         VoiceClientSideStatusCode.ERROR_INSTALLING);
   });
 
@@ -357,15 +340,15 @@ suite('UpdateVoicePack', () => {
       });
 
       test('and no other voices for language, disables language', () => {
-        setAvailableVoices([]);
+        app.availableVoices = [];
         app.updateVoicePackStatusFromInstallResponse(lang, 'kOther');
         assertFalse(app.enabledLangs.includes(lang));
       });
 
       test('and only eSpeak voices for language, disables language', () => {
-        setAvailableVoices([
+        app.availableVoices = [
           {lang: lang, name: 'eSpeak Portuguese'} as SpeechSynthesisVoice,
-        ]);
+        ];
 
         app.updateVoicePackStatusFromInstallResponse(lang, 'kOther');
 
@@ -377,7 +360,7 @@ suite('UpdateVoicePack', () => {
               'still disables language',
           () => {
             app.enabledLangs.push('it-it');
-            setAvailableVoices([]);
+            app.availableVoices = [];
 
             app.updateVoicePackStatusFromInstallResponse('it', 'kOther');
 
@@ -389,9 +372,9 @@ suite('UpdateVoicePack', () => {
               'e-speak voices, still disables language',
           () => {
             app.enabledLangs.push('it-it');
-            setAvailableVoices([
+            app.availableVoices = [
               {lang: 'it', name: 'eSpeak Italian '} as SpeechSynthesisVoice,
-            ]);
+            ];
 
             app.updateVoicePackStatusFromInstallResponse('it', 'kOther');
 
@@ -401,12 +384,12 @@ suite('UpdateVoicePack', () => {
       test(
           'and has other Google voices for language, keeps language enabled',
           () => {
-            setAvailableVoices([
+            app.availableVoices = [
               {lang: lang, name: 'ChromeOS Portuguese 1'} as
                   SpeechSynthesisVoice,
               {lang: lang, name: 'ChromeOS Portuguese 2'} as
                   SpeechSynthesisVoice,
-            ]);
+            ];
             app.updateVoicePackStatusFromInstallResponse(lang, 'kOther');
 
             assertTrue(app.enabledLangs.includes(lang));

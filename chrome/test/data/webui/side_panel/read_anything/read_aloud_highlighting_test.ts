@@ -69,7 +69,6 @@ suite('ReadAloudHighlight', () => {
     chrome.readingMode.setContentForTesting(axTree, leafIds);
 
     // No need to attempt to log a speech session in tests.
-    // @ts-ignore
     app.logSpeechPlaySession = () => {};
   });
 

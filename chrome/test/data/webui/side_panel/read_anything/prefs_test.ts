@@ -5,7 +5,7 @@
 import {flush} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 import {BrowserProxy} from 'chrome-untrusted://read-anything-side-panel.top-chrome/read_anything.js';
 import type {ReadAnythingElement} from 'chrome-untrusted://read-anything-side-panel.top-chrome/read_anything.js';
-import {assertArrayEquals, assertEquals} from 'chrome-untrusted://webui-test/chai_assert.js';
+import {assertArrayEquals, assertEquals, assertTrue} from 'chrome-untrusted://webui-test/chai_assert.js';
 
 import {suppressInnocuousErrors} from './common.js';
 import {FakeReadingMode} from './fake_reading_mode.js';
@@ -38,13 +38,29 @@ suite('PrefsTest', () => {
       const langs = ['si', 'km', 'th'];
 
       setup(() => {
-        // @ts-ignore
         app.availableVoices = [
-          {lang: langs[0]!, name: ''},
-          {lang: langs[1]!, name: ''},
-          {lang: langs[2]!, name: ''},
+          {
+            lang: langs[0]!,
+            name: '',
+            default: true,
+            localService: true,
+            voiceURI: '',
+          },
+          {
+            lang: langs[1]!,
+            name: '',
+            default: false,
+            localService: true,
+            voiceURI: '',
+          },
+          {
+            lang: langs[2]!,
+            name: '',
+            default: false,
+            localService: true,
+            voiceURI: '',
+          },
         ];
-        // @ts-ignore
         app.availableLangs = langs;
       });
 
@@ -97,14 +113,7 @@ suite('PrefsTest', () => {
         secondVoiceWithLang2,
       ];
 
-      function selectedVoice(): SpeechSynthesisVoice {
-        // Bypass Typescript compiler to allow us to set a private property
-        // @ts-ignore
-        return app.selectedVoice;
-      }
-
       setup(() => {
-        // @ts-ignore
         app.availableVoices = voices;
         flush();
       });
@@ -112,7 +121,7 @@ suite('PrefsTest', () => {
       test('to the stored voice for this language if there is one', () => {
         chrome.readingMode.getStoredVoice = () => otherVoice.name;
         app.restoreSettingsFromPrefs();
-        assertEquals(selectedVoice(), otherVoice);
+        assertEquals(app.selectedVoice, otherVoice);
       });
 
       test('to a default voice if the stored voice is invalid', () => {
@@ -120,7 +129,7 @@ suite('PrefsTest', () => {
         chrome.readingMode.getStoredVoice = () => 'Matt';
         app.enabledLangs = [langForDefaultVoice];
         app.restoreSettingsFromPrefs();
-        assertEquals(selectedVoice(), defaultVoice);
+        assertEquals(app.selectedVoice, defaultVoice);
       });
 
       suite('when there is no stored voice for this language', () => {
@@ -134,17 +143,16 @@ suite('PrefsTest', () => {
           });
 
           test('to the current voice if there is one', () => {
-            // @ts-ignore
             app.selectedVoice = otherVoice;
             app.enabledLangs = [otherVoice.lang];
             app.restoreSettingsFromPrefs();
-            assertEquals(selectedVoice(), otherVoice);
+            assertEquals(app.selectedVoice, otherVoice);
           });
 
           test('to the device default if there\'s no current voice', () => {
             app.enabledLangs = [langForDefaultVoice, otherVoice.lang];
             app.restoreSettingsFromPrefs();
-            assertEquals(selectedVoice(), defaultVoice);
+            assertEquals(app.selectedVoice, defaultVoice);
           });
         });
 
@@ -152,7 +160,7 @@ suite('PrefsTest', () => {
           app.enabledLangs = [lang1];
           app.speechSynthesisLanguage = lang1;
           app.restoreSettingsFromPrefs();
-          assertEquals(selectedVoice(), defaultVoiceWithLang1);
+          assertEquals(app.selectedVoice, defaultVoiceWithLang1);
         });
 
         test(
@@ -161,8 +169,10 @@ suite('PrefsTest', () => {
               app.enabledLangs = [lang2];
               app.speechSynthesisLanguage = lang2;
               app.restoreSettingsFromPrefs();
-              assertEquals(selectedVoice().name, firstVoiceWithLang2.name);
-              assertEquals(selectedVoice().lang, firstVoiceWithLang2.lang);
+              const currentSelectedVoice = app.selectedVoice;
+              assertTrue(!!currentSelectedVoice);
+              assertEquals(currentSelectedVoice.name, firstVoiceWithLang2.name);
+              assertEquals(currentSelectedVoice.lang, firstVoiceWithLang2.lang);
             });
       });
     });

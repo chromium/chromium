@@ -84,7 +84,6 @@ suite('Speech', () => {
     app.highlightNodes = () => {};
     // No need to attempt to log a speech session while using the fake
     // synthesis.
-    // @ts-ignore
     app.logSpeechPlaySession = () => {};
     chrome.readingMode.setContentForTesting(axTree, leafIds);
     speechSynthesis = new FakeSpeechSynthesis();

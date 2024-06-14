@@ -45,8 +45,13 @@ suite('UpdateContent', () => {
         .build(readingMode);
 
     app.enabledLangs = ['en-US'];
-    // @ts-ignore
-    app.selectedVoice = {lang: 'en', name: 'Kristi'} as SpeechSynthesisVoice;
+    app.selectedVoice = {
+      lang: 'en',
+      name: 'Kristi',
+      default: false,
+      localService: true,
+      voiceURI: '',
+    };
     app.getSpeechSynthesisVoice();
   });
 

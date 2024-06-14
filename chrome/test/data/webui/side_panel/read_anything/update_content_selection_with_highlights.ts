@@ -66,12 +66,6 @@ suite('UpdateContentSelectionWithHighlights', () => {
     app.updateContent();
   });
 
-  function markHighlightedNodesPrevious() {
-    // Bypass Typescript compiler to allow us to get a private property
-    // @ts-ignore
-    app.resetPreviousHighlight();
-  }
-
   function highlightNode(id: number) {
     // highlight the previous nodes
     let i = 0;
@@ -80,7 +74,7 @@ suite('UpdateContentSelectionWithHighlights', () => {
       app.highlightNodes([textNodeIds[i]!]);
       i++;
     }
-    markHighlightedNodesPrevious();
+    app.resetPreviousHighlight();
 
     // highlight given node
     fakeTree.highlightNode(id);
@@ -96,7 +90,7 @@ suite('UpdateContentSelectionWithHighlights', () => {
       app.highlightNodes([textNodeIds[i]!]);
       i++;
     }
-    markHighlightedNodesPrevious();
+    app.resetPreviousHighlight();
 
     // highlight given nodes
     fakeTree.setReadingHighlight(fromId, fromOffset, toId, toOffset);

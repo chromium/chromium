@@ -260,8 +260,7 @@ suite('AppReceivesToolbarChanges', () => {
       suite('when the previous install of the language failed', () => {
         const lang = 'en-us';
         setup(() => {
-          // @ts-ignore
-          app.setVoicePackServerStatus_(lang, {
+          app.setVoicePackServerStatus(lang, {
             id: 'Unsuccessful response',
             code: VoicePackServerStatusErrorCode.OTHER,
           });
@@ -274,8 +273,7 @@ suite('AppReceivesToolbarChanges', () => {
 
               assertEquals(sentInstallRequestFor, lang);
               assertEquals(
-                  // @ts-ignore
-                  app.getVoicePackLocalStatus_(lang),
+                  app.getVoicePackLocalStatus(lang),
                   VoiceClientSideStatusCode.SENT_INSTALL_REQUEST_ERROR_RETRY);
             });
       });
@@ -292,8 +290,7 @@ suite('AppReceivesToolbarChanges', () => {
       suite('when the language status is uninstalled', () => {
         const lang = 'en-us';
         setup(() => {
-          // @ts-ignore
-          app.setVoicePackServerStatus_(lang, {
+          app.setVoicePackServerStatus(lang, {
             id: 'Successful response',
             code: VoicePackServerStatusSuccessCode.NOT_INSTALLED,
           });
