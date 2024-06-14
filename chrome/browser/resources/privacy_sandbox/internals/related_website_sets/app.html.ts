@@ -8,9 +8,9 @@ import type {RelatedWebsiteSetsAppElement} from './app.js';
 
 export function getHtml(this: RelatedWebsiteSetsAppElement) {
   return html`
-<related-website-sets-toolbar
-  id="toolbar"
-  .pageName="${this.pageTitle_}"
-  .narrow="${this.narrow_}">
-</related-website-sets-toolbar>`;
+<div>Input something</div>
+<cr-input id="input" .value="${this.myValue}"
+    ?disabled="${this.disabled}"
+    @value-changed="${this.onInputValueChanged_}">
+</cr-input>`;
 }

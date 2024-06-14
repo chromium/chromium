@@ -24,13 +24,21 @@ export class RelatedWebsiteSetsAppElement extends CrLitElement {
 
   static override get properties() {
     return {
-      pageTitle_: {type: String},
-      narrow_: {type: Boolean},
+      disabled: {
+        type: Boolean,
+        reflect: true,
+      },
+      myValue: {type: String},
     };
   }
 
-  protected pageTitle_: string = 'Related Website Sets';
-  protected narrow_: boolean = true;
+  disabled: boolean = false;
+  myValue: string = 'This element is made in lit!';
+
+  // Referenced from the template, so must be protected (not private).
+  protected onInputValueChanged_(e: CustomEvent<{value: string}>) {
+    this.myValue = e.detail.value;
+  }
 }
 
 declare global {

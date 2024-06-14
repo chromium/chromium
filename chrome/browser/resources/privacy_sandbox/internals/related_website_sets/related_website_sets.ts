@@ -3,5 +3,3 @@
 // found in the LICENSE file.
 
 import './app.js';
-
-export {RelatedWebsiteSetsToolbarElement} from './toolbar.js';

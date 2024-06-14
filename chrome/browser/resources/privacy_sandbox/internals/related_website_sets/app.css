@@ -7,8 +7,11 @@
  * #scheme=relative
  * #css_wrapper_metadata_end */
 
-@media (prefers-color-scheme: dark) {
-  :host {
-    color: var(--google-grey-200);
-  }
+#input {
+  background-color: blue;
+  --cr-input-error-display: none;
+}
+
+:host([disabled]) #input {
+  background-color: gray;
 }
