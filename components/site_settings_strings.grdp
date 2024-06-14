@@ -230,10 +230,10 @@
     insecure content
   </message>
   <message name="IDS_SITE_SETTINGS_TYPE_KEYBOARD_LOCK" desc="The label used for the keyboard lock site settings controls.">
-    Keyboard lock
+    Keyboard lock and use
   </message>
-  <message name="IDS_SITE_SETTINGS_TYPE_KEYBOARD_LOCK_MID_SENTENCE" desc="The label used for the keyboard lock site settings controls when used mid-sentence.">
-    keyboard lock
+  <message name="IDS_SITE_SETTINGS_TYPE_KEYBOARD_LOCK_MID_SENTENCE" desc="The label used for the keyboard lock site settings controls when used mid-sentence, e.g. 'Automatically blocked keyboard lock and use'.">
+    keyboard lock and use
   </message>
   <message name="IDS_SITE_SETTINGS_TYPE_PAYMENT_HANDLER" desc="The label used for the payment handler site settings controls.">
     Payment handlers
@@ -244,11 +244,11 @@
   <message name="IDS_SITE_SETTINGS_TYPE_PDF_DOCUMENTS" desc="The label used for the PDF documents site settings controls.">
     PDF documents
   </message>
-  <message name="IDS_SITE_SETTINGS_TYPE_POINTER_LOCK" desc="The label used for the pointer lock site settings controls.">
-    Pointer lock
+  <message name="IDS_SITE_SETTINGS_TYPE_POINTER_LOCK" desc="The label used for the mouse lock (pointer lock) site settings controls.">
+    Mouse lock and use
   </message>
-  <message name="IDS_SITE_SETTINGS_TYPE_POINTER_LOCK_MID_SENTENCE" desc="The label used for the pointer lock site settings controls when used mid-sentence.">
-    pointer lock
+  <message name="IDS_SITE_SETTINGS_TYPE_POINTER_LOCK_MID_SENTENCE" desc="The label used for the mouse lock (pointer lock) site settings controls when used mid-sentence, e.g. 'Automatically blocked mouse lock and use'.">
+    mouse lock and use
   </message>
   <message name="IDS_SITE_SETTINGS_TYPE_SERIAL_PORTS" desc="The label used for the serial ports site settings controls.">
     Serial ports

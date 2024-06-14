@@ -2972,19 +2972,19 @@
     Not allowed to use V8 optimizer
   </message>
   <message name="IDS_SETTINGS_SITE_SETTINGS_KEYBOARD_LOCK_DESCRIPTION" desc="Description of the keyboard lock content setting.">
-    Sites use keyboard lock to capture keyboard input that would otherwise be handled by the browser or the operating system.
+    Sites use this feature to capture and use the input of your keyboard, like for games or remote desktop apps
   </message>
   <message name="IDS_SETTINGS_SITE_SETTINGS_KEYBOARD_LOCK_ALLOWED" desc="Label for the enabled option of the keyboard lock content setting.">
-    Sites can ask to lock your keyboard
+    Sites can ask to capture and use your keyboard input
   </message>
   <message name="IDS_SETTINGS_SITE_SETTINGS_KEYBOARD_LOCK_BLOCKED" desc="Label for the disabled option of the keyboard lock content setting.">
-    Don't allow sites to lock your keyboard
+    Don't allow sites to capture and use your keyboard input
   </message>
   <message name="IDS_SETTINGS_SITE_SETTINGS_KEYBOARD_LOCK_ALLOWED_EXCEPTIONS" desc="Label for the allowed exceptions site list of the keyboard lock content setting.">
-    Allowed to lock your keyboard
+    Allowed to capture and use your keyboard input
   </message>
   <message name="IDS_SETTINGS_SITE_SETTINGS_KEYBOARD_LOCK_BLOCKED_EXCEPTIONS" desc="Label for the blocked exceptions site list of the keyboard lock content setting.">
-    Not allowed to lock your keyboard
+    Not allowed to capture and use your keyboard input
   </message>
   <message name="IDS_SETTINGS_SITE_SETTINGS_LOCATION_DESCRIPTION" desc="Description of the location content setting.">
     Sites usually use your location for relevant features or info, like local news or nearby shops
@@ -3113,19 +3113,19 @@
     Download PDFs
   </message>
   <message name="IDS_SETTINGS_SITE_SETTINGS_POINTER_LOCK_DESCRIPTION" desc="Description of the pointer lock content setting.">
-    Sites use pointer lock to hide the mouse pointer and prevent it from leaving the page.
+    Sites use this feature to capture and use the input of your mouse, like for games or remote desktop apps
   </message>
     <message name="IDS_SETTINGS_SITE_SETTINGS_POINTER_LOCK_ALLOWED" desc="Label for the enabled option of the pointer lock content setting.">
-    Sites can ask to lock your mouse pointer
+    Sites can ask to capture and use your mouse input
   </message>
     <message name="IDS_SETTINGS_SITE_SETTINGS_POINTER_LOCK_BLOCKED" desc="Label for the disabled option of the pointer lock content setting.">
-    Don't allow sites to lock your pointer
+    Don't allow sites to capture and use your mouse input
   </message>
   <message name="IDS_SETTINGS_SITE_SETTINGS_POINTER_LOCK_ALLOWED_EXCEPTIONS" desc="Label for the allowed exceptions site list of the pointer lock content setting.">
-    Allowed to lock your pointer
+    Allowed to capture and use your mouse input
   </message>
   <message name="IDS_SETTINGS_SITE_SETTINGS_POINTER_LOCK_BLOCKED_EXCEPTIONS" desc="Label for the blocked exceptions site list of the pointer lock content setting.">
-    Not allowed to lock your pointer
+    Not allowed to capture and use your mouse input
   </message>
   <message name="IDS_SETTINGS_SITE_SETTINGS_POPUPS_DESCRIPTION" desc="Description of the pop-ups content setting.">
     Sites might send pop-ups to show ads, or use redirects to lead you to websites you may not want to visit
