@@ -117,10 +117,10 @@ void Label::SetText(const std::u16string& new_text) {
   if (GetViewAccessibility().GetCachedName().empty() ||
       GetViewAccessibility().GetCachedName() == current_text) {
     if (new_text.empty()) {
-      SetAccessibleName(new_text,
-                        ax::mojom::NameFrom::kAttributeExplicitlyEmpty);
+      GetViewAccessibility().SetName(
+          new_text, ax::mojom::NameFrom::kAttributeExplicitlyEmpty);
     } else {
-      SetAccessibleName(new_text);
+      GetViewAccessibility().SetName(new_text);
     }
   }
 

@@ -21,6 +21,7 @@
 #include "ui/color/color_provider.h"
 #include "ui/gfx/canvas.h"
 #include "ui/gfx/font_list.h"
+#include "ui/views/accessibility/view_accessibility.h"
 #include "ui/views/border.h"
 #include "ui/views/controls/button/checkbox.h"
 #include "ui/views/controls/combobox/combobox.h"
@@ -146,7 +147,7 @@ Combobox* TextExample::AddCombobox(View* parent,
   combobox->SetProperty(kTableColAndRowSpanKey, gfx::Size(kNumColumns - 1, 1));
   combobox->SetCallback(
       base::BindRepeating(combobox_callback, base::Unretained(this)));
-  combobox->SetAccessibleName(name);
+  combobox->GetViewAccessibility().SetName(name);
   return combobox;
 }
 

@@ -77,7 +77,7 @@ void ImageViewBase::SetTooltipText(const std::u16string& tooltip) {
 
   if (GetViewAccessibility().GetCachedName().empty() ||
       GetViewAccessibility().GetCachedName() == current_tooltip) {
-    SetAccessibleName(tooltip);
+    GetViewAccessibility().SetName(tooltip);
   }
 
   TooltipTextChanged();

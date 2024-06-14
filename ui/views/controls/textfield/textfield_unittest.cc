@@ -4118,7 +4118,7 @@ TEST_F(TextfieldTest, SetAccessibleNameNotifiesAccessibilityEvent) {
   std::u16string test_tooltip_text = u"Test Accessible Name";
   test::AXEventCounter counter(views::AXEventManager::Get());
   EXPECT_EQ(0, counter.GetCount(ax::mojom::Event::kTextChanged));
-  textfield_->SetAccessibleName(test_tooltip_text);
+  textfield_->GetViewAccessibility().SetName(test_tooltip_text);
   EXPECT_EQ(1, counter.GetCount(ax::mojom::Event::kTextChanged));
   EXPECT_EQ(test_tooltip_text,
             textfield_->GetViewAccessibility().GetCachedName());
@@ -4141,8 +4141,8 @@ TEST_F(TextfieldTest, AccessibleNameFromLabel) {
   const std::u16string label_text = u"Some label";
   View label;
   label.GetViewAccessibility().SetRole(ax::mojom::Role::kStaticText);
-  label.SetAccessibleName(label_text);
-  textfield_->SetAccessibleName(&label);
+  label.GetViewAccessibility().SetName(label_text);
+  textfield_->GetViewAccessibility().SetName(label);
 
   // Use `ViewAccessibility::GetAccessibleNodeData` so that we can get the
   // label's accessible id to compare with the textfield's labelled-by id.

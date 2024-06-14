@@ -597,7 +597,7 @@ void LabelButton::StateChanged(ButtonState old_state) {
 }
 
 void LabelButton::SetTextInternal(const std::u16string& text) {
-  SetAccessibleName(text);
+  GetViewAccessibility().SetName(text);
   label_->SetText(text);
 
   // Setting text cancels ShrinkDownThenClearText().

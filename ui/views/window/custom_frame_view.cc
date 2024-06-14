@@ -25,6 +25,7 @@
 #include "ui/gfx/geometry/rect.h"
 #include "ui/gfx/image/image.h"
 #include "ui/strings/grit/ui_strings.h"
+#include "ui/views/accessibility/view_accessibility.h"
 #include "ui/views/controls/button/image_button.h"
 #include "ui/views/resources/grit/views_resources.h"
 #include "ui/views/views_delegate.h"
@@ -554,7 +555,8 @@ ImageButton* CustomFrameView::InitWindowCaptionButton(
   ImageButton* button =
       AddChildView(std::make_unique<ImageButton>(std::move(callback)));
   button->SetFocusBehavior(FocusBehavior::ACCESSIBLE_ONLY);
-  button->SetAccessibleName(l10n_util::GetStringUTF16(accessibility_string_id));
+  button->GetViewAccessibility().SetName(
+      l10n_util::GetStringUTF16(accessibility_string_id));
   button->SetImageModel(
       Button::STATE_NORMAL,
       ui::ImageModel::FromImage(rb.GetImageNamed(normal_image_id)));

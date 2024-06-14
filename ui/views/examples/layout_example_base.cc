@@ -15,6 +15,7 @@
 #include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/color/color_id.h"
 #include "ui/color/color_provider.h"
+#include "ui/views/accessibility/view_accessibility.h"
 #include "ui/views/border.h"
 #include "ui/views/controls/button/checkbox.h"
 #include "ui/views/controls/button/md_text_button.h"
@@ -81,7 +82,7 @@ std::unique_ptr<Textfield> CreateCommonTextfieldWithAXName(
     TextfieldController* container,
     std::u16string name) {
   auto text_field = CreateCommonTextfield(container);
-  text_field->SetAccessibleName(name);
+  text_field->GetViewAccessibility().SetName(name);
   return text_field;
 }
 
@@ -256,7 +257,7 @@ Combobox* LayoutExampleBase::CreateAndAddCombobox(
   auto* const combobox = row->AddChildView(std::make_unique<Combobox>(
       std::make_unique<ExampleComboboxModel>(items)));
   combobox->SetCallback(std::move(combobox_callback));
-  combobox->SetAccessibleName(label_text);
+  combobox->GetViewAccessibility().SetName(label_text);
   return combobox;
 }
 
@@ -268,7 +269,7 @@ Textfield* LayoutExampleBase::CreateAndAddTextfield(
       kLayoutExampleVerticalSpacing));
   auto* label = row->AddChildView(std::make_unique<Label>(label_text));
   auto* text_field = row->AddChildView(CreateCommonTextfield(this));
-  text_field->SetAccessibleName(label);
+  text_field->GetViewAccessibility().SetName(*label);
   return text_field;
 }
 

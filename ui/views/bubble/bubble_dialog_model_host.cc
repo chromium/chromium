@@ -147,7 +147,7 @@ class CheckboxControl : public Checkbox {
 
     // TODO(accessibility): There is no `SetAccessibilityProperties` which takes
     // a labelling view to set the accessible name.
-    SetAccessibleName(label.get());
+    GetViewAccessibility().SetName(*label.get());
 
     AddChildView(std::move(label));
   }
@@ -431,9 +431,10 @@ class BubbleDialogModelHostContentsView final : public DialogModelSectionHost {
     // TODO(pbos): Handle updating existing field.
 
     auto combobox = std::make_unique<Combobox>(model_field->combobox_model());
-    combobox->SetAccessibleName(model_field->accessible_name().empty()
-                                    ? model_field->label()
-                                    : model_field->accessible_name());
+    combobox->GetViewAccessibility().SetName(
+        model_field->accessible_name().empty()
+            ? model_field->label()
+            : model_field->accessible_name());
     combobox->SetCallback(base::BindRepeating(
         [](ui::DialogModelCombobox* model_field,
            base::PassKey<DialogModelFieldHost> pass_key,
@@ -489,9 +490,10 @@ class BubbleDialogModelHostContentsView final : public DialogModelSectionHost {
     // TODO(pbos): Support updates to the existing model.
 
     auto textfield = std::make_unique<Textfield>();
-    textfield->SetAccessibleName(model_field->accessible_name().empty()
-                                     ? model_field->label()
-                                     : model_field->accessible_name());
+    textfield->GetViewAccessibility().SetName(
+        model_field->accessible_name().empty()
+            ? model_field->label()
+            : model_field->accessible_name());
     textfield->SetText(model_field->text());
 
     // If this textfield is initially focused the text should be initially

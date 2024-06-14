@@ -16,6 +16,7 @@
 #include "ui/gfx/canvas.h"
 #include "ui/gfx/image/image_skia_operations.h"
 #include "ui/gfx/scoped_canvas.h"
+#include "ui/views/accessibility/view_accessibility.h"
 #include "ui/views/animation/ink_drop.h"
 #include "ui/views/background.h"
 #include "ui/views/controls/highlight_path_generator.h"
@@ -201,7 +202,7 @@ std::unique_ptr<ImageButton> ImageButton::CreateIconButton(
           },
           icon_button.get()));
 
-  icon_button->SetAccessibleName(accessible_name);
+  icon_button->GetViewAccessibility().SetName(accessible_name);
   icon_button->SetTooltipText(accessible_name);
 
   return icon_button;

@@ -29,6 +29,7 @@
 #include "ui/gfx/geometry/point.h"
 #include "ui/gfx/geometry/rect.h"
 #include "ui/gfx/geometry/size.h"
+#include "ui/views/accessibility/view_accessibility.h"
 #include "ui/views/actions/action_view_controller.h"
 #include "ui/views/border.h"
 #include "ui/views/controls/button/checkbox.h"
@@ -309,7 +310,7 @@ void ActionsExample::CreateExampleView(View* container) {
             Builder<Combobox>(std::make_unique<Combobox>(std::move(model)))
                 .CopyAddressTo(&combobox))
         .BuildChildren();
-    combobox->SetAccessibleName(label->GetText());
+    combobox->GetViewAccessibility().SetName(label->GetText());
     return {row, combobox};
   };
 
@@ -362,7 +363,7 @@ void ActionsExample::CreateExampleView(View* container) {
         .AfterBuild(base::BindOnce(
             [](Textfield** textfield, Label** label, BoxLayoutView* row) {
               row->SetFlexForView(*textfield, 1);
-              (*textfield)->SetAccessibleName((*label)->GetText());
+              (*textfield)->GetViewAccessibility().SetName((*label)->GetText());
             },
             &textfield, &label))
         .BuildChildren();

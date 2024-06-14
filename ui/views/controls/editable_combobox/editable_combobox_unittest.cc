@@ -216,7 +216,7 @@ void EditableComboboxTest::InitEditableCombobox(
           show_on_empty));
   combobox_->SetCallback(base::BindRepeating(
       &EditableComboboxTest::OnContentChanged, base::Unretained(this)));
-  combobox_->SetAccessibleName(u"abc");
+  combobox_->GetViewAccessibility().SetName(u"abc");
   combobox_->SetBoundsRect(kComboboxBounds);
 
   dummy_focusable_view_ = container->AddChildView(std::make_unique<View>());
@@ -898,7 +898,7 @@ TEST_F(EditableComboboxTest, AccessibleNameAndRole) {
   EXPECT_EQ(combobox_->GetViewAccessibility().GetCachedName(), u"abc");
 
   data = ui::AXNodeData();
-  combobox_->SetAccessibleName(u"New name");
+  combobox_->GetViewAccessibility().SetName(u"New name");
   combobox_->GetViewAccessibility().GetAccessibleNodeData(&data);
   EXPECT_EQ(data.GetString16Attribute(ax::mojom::StringAttribute::kName),
             u"New name");

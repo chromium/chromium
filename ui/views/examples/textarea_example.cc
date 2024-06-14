@@ -9,6 +9,7 @@
 
 #include "base/strings/utf_string_conversions.h"
 #include "ui/base/l10n/l10n_util.h"
+#include "ui/views/accessibility/view_accessibility.h"
 #include "ui/views/controls/textarea/textarea.h"
 #include "ui/views/examples/grit/views_examples_resources.h"
 #include "ui/views/layout/fill_layout.h"
@@ -31,7 +32,8 @@ void TextareaExample::CreateExampleView(View* container) {
       u"culpa qui officia deserunt mollit anim id est laborum.";
   auto textarea = std::make_unique<Textarea>();
   textarea->SetText(kLongText);
-  textarea->SetAccessibleName(l10n_util::GetStringUTF16(IDS_TEXTAREA_NAME));
+  textarea->GetViewAccessibility().SetName(
+      l10n_util::GetStringUTF16(IDS_TEXTAREA_NAME));
   container->SetLayoutManager(std::make_unique<views::FillLayout>());
   container->AddChildView(std::move(textarea));
 }

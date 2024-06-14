@@ -691,7 +691,7 @@ TEST_F(LabelTest, Accessibility) {
 
   // Setting a custom accessible name overrides the displayed text in
   // screen reader announcements.
-  label()->SetAccessibleName(accessible_name);
+  label()->GetViewAccessibility().SetName(accessible_name);
 
   node_data = ui::AXNodeData();
   label()->GetViewAccessibility().GetAccessibleNodeData(&node_data);
@@ -712,7 +712,7 @@ TEST_F(LabelTest, Accessibility) {
 
   // Clearing the accessible name will cause the screen reader to default to
   // verbalizing the displayed text.
-  label()->SetAccessibleName(u"");
+  label()->GetViewAccessibility().SetName(u"");
 
   node_data = ui::AXNodeData();
   label()->GetViewAccessibility().GetAccessibleNodeData(&node_data);
@@ -739,7 +739,7 @@ TEST_F(LabelTest, SetTextNotifiesAccessibilityEvent) {
 
   // Changing the text when it doesn't affect the accessible name should not
   // notify.
-  label()->SetAccessibleName(u"Name");
+  label()->GetViewAccessibility().SetName(u"Name");
   EXPECT_EQ(2, counter.GetCount(ax::mojom::Event::kTextChanged));
   label()->SetText(u"Example2");
   EXPECT_EQ(u"Name", label()->GetViewAccessibility().GetCachedName());

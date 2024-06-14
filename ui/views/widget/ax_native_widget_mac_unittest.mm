@@ -2,10 +2,10 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include <memory>
-
 #import <Accessibility/Accessibility.h>
 #import <Cocoa/Cocoa.h>
+
+#include <memory>
 
 #include "base/mac/mac_util.h"
 #include "base/strings/sys_string_conversions.h"
@@ -19,6 +19,7 @@
 #include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/base/models/combobox_model.h"
 #import "ui/gfx/mac/coordinate_conversion.h"
+#include "ui/views/accessibility/view_accessibility.h"
 #include "ui/views/controls/button/label_button.h"
 #include "ui/views/controls/combobox/combobox.h"
 #include "ui/views/controls/label.h"
@@ -155,7 +156,8 @@ class AXNativeWidgetMacTest : public test::WidgetTest {
   Textfield* AddChildTextfield(const gfx::Size& size) {
     Textfield* textfield = new Textfield;
     textfield->SetText(base::SysNSStringToUTF16(kTestStringValue));
-    textfield->SetAccessibleName(base::SysNSStringToUTF16(kTestTitle));
+    textfield->GetViewAccessibility().SetName(
+        base::SysNSStringToUTF16(kTestTitle));
     textfield->SetSize(size);
     widget()->GetContentsView()->AddChildView(textfield);
     return textfield;
@@ -420,9 +422,10 @@ TEST_F(AXNativeWidgetMacTest, TextfieldGenericAttributes) {
   // * accessibilityLabel() returns a short description of the accessibility
   //   element.
   // Textfield::SetAssociatedLabel() is what should be used if the textfield
-  // has a visible label. Because AddChildTextfield() uses SetAccessibleName()
-  // to set the accessible name to a flat string, the title should be exposed
-  // via accessibilityLabel() instead of accessibilityTitle();
+  // has a visible label. Because AddChildTextfield() uses
+  // GetViewAccessibility().SetName() to set the accessible name to a
+  // flat string, the title should be exposed via accessibilityLabel() instead
+  // of accessibilityTitle();
   EXPECT_NSEQ(@"", ax_obj.accessibilityTitle);
   EXPECT_NSEQ(kTestTitle, ax_obj.accessibilityLabel);
   EXPECT_NSEQ(kTestStringValue, ax_obj.accessibilityValue);

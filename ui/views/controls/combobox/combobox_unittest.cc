@@ -886,8 +886,10 @@ TEST_F(ComboboxTest, SetTooltipTextNotifiesAccessibilityEvent) {
   // `SetTooltipTextAndAccessibleName` does two things:
   // 1. sets the tooltip text on the arrow button. `Button::SetTooltipText`
   //    fires a text-changed event.
-  // 2. if the accessible name is empty, calls `View::SetAccessibleName`
-  //    on the combobox. `SetAccessibleName` fires a text-changed event.
+  // 2. if the accessible name is empty, calls
+  // `View::GetViewAccessibility().SetName`
+  //    on the combobox. `GetViewAccessibility().SetName` fires a
+  //    text-changed event.
   combobox()->SetTooltipTextAndAccessibleName(test_tooltip_text);
   EXPECT_EQ(test_tooltip_text, combobox()->GetTooltipTextAndAccessibleName());
   EXPECT_EQ(1, counter.GetCount(ax::mojom::Event::kTextChanged,

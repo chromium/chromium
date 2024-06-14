@@ -138,7 +138,7 @@ std::u16string MessageView::CreateAccessibleName(
 
 void MessageView::UpdateWithNotification(const Notification& notification) {
   pinned_ = notification.pinned();
-  SetAccessibleName(CreateAccessibleName(notification));
+  GetViewAccessibility().SetName(CreateAccessibleName(notification));
   slide_out_controller_.set_slide_mode(CalculateSlideMode());
 }
 

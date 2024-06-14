@@ -27,6 +27,7 @@
 #include "ui/base/models/simple_menu_model.h"
 #include "ui/base/ui_base_types.h"
 #include "ui/gfx/range/range.h"
+#include "ui/views/accessibility/view_accessibility.h"
 #include "ui/views/bubble/bubble_dialog_delegate_view.h"
 #include "ui/views/controls/button/button.h"
 #include "ui/views/controls/button/label_button.h"
@@ -317,7 +318,7 @@ TEST_P(InteractionTestUtilViewsTest, SelectDropdownItem_Combobox) {
 
   auto* const box = contents_->AddChildView(
       std::make_unique<Combobox>(CreateComboboxModel()));
-  box->SetAccessibleName(u"Combobox");
+  box->GetViewAccessibility().SetName(u"Combobox");
   widget_->LayoutRootViewIfNecessary();
   auto* const box_el =
       views::ElementTrackerViews::GetInstance()->GetElementForView(box, true);
@@ -341,7 +342,7 @@ TEST_P(InteractionTestUtilViewsTest, SelectDropdownItem_EditableCombobox) {
 
   auto* const box = contents_->AddChildView(
       std::make_unique<EditableCombobox>(CreateComboboxModel()));
-  box->SetAccessibleName(u"Editable Combobox");
+  box->GetViewAccessibility().SetName(u"Editable Combobox");
   widget_->LayoutRootViewIfNecessary();
   auto* const box_el =
       views::ElementTrackerViews::GetInstance()->GetElementForView(box, true);
@@ -366,7 +367,7 @@ TEST_P(InteractionTestUtilViewsTest, SelectDropdownItem_Combobox_NoArrow) {
   auto* const box = contents_->AddChildView(
       std::make_unique<Combobox>(CreateComboboxModel()));
   box->SetShouldShowArrow(false);
-  box->SetAccessibleName(u"Combobox");
+  box->GetViewAccessibility().SetName(u"Combobox");
   widget_->LayoutRootViewIfNecessary();
   auto* const box_el =
       views::ElementTrackerViews::GetInstance()->GetElementForView(box, true);
@@ -399,7 +400,7 @@ TEST_P(InteractionTestUtilViewsTest,
   auto* const box = contents_->AddChildView(std::make_unique<EditableCombobox>(
       CreateComboboxModel(), false, true, EditableCombobox::kDefaultTextContext,
       EditableCombobox::kDefaultTextStyle, /* display_arrow =*/false));
-  box->SetAccessibleName(u"Editable Combobox");
+  box->GetViewAccessibility().SetName(u"Editable Combobox");
   auto* const box_el =
       views::ElementTrackerViews::GetInstance()->GetElementForView(box, true);
   EXPECT_EQ(ui::test::ActionResult::kSucceeded,
@@ -446,7 +447,7 @@ TEST_F(InteractionTestUtilViewsTest, EnterText_Textfield) {
 TEST_F(InteractionTestUtilViewsTest, EnterText_EditableCombobox) {
   auto* const box = contents_->AddChildView(
       std::make_unique<EditableCombobox>(CreateComboboxModel()));
-  box->SetAccessibleName(u"Editable Combobox");
+  box->GetViewAccessibility().SetName(u"Editable Combobox");
   widget_->LayoutRootViewIfNecessary();
 
   auto* const box_el =

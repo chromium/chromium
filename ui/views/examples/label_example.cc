@@ -14,6 +14,7 @@
 #include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/gfx/geometry/insets.h"
 #include "ui/gfx/geometry/vector2d.h"
+#include "ui/views/accessibility/view_accessibility.h"
 #include "ui/views/background.h"
 #include "ui/views/border.h"
 #include "ui/views/controls/button/checkbox.h"
@@ -195,7 +196,7 @@ void LabelExample::AddCustomLabel(View* container) {
       u"this custom label.");
   textfield_->SetEditableSelectionRange(gfx::Range());
   textfield_->set_controller(this);
-  textfield_->SetAccessibleName(content_label);
+  textfield_->GetViewAccessibility().SetName(*content_label);
 
   alignment_ = AddCombobox(table, u"Alignment: ", kAlignments,
                            &LabelExample::AlignmentChanged);
@@ -239,7 +240,7 @@ Combobox* LabelExample::AddCombobox(View* parent,
   auto* combobox = parent->AddChildView(std::make_unique<Combobox>(
       std::make_unique<ExampleComboboxModel>(items)));
   combobox->SetSelectedIndex(0);
-  combobox->SetAccessibleName(name);
+  combobox->GetViewAccessibility().SetName(name);
   combobox->SetCallback(base::BindRepeating(function, base::Unretained(this)));
   return parent->AddChildView(std::move(combobox));
 }

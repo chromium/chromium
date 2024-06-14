@@ -398,7 +398,7 @@ std::unique_ptr<Textfield> CreateTextfield() {
   // Focusable views must have an accessible name in order to pass the
   // accessibility paint checks. The name can be literal text, placeholder
   // text or an associated label.
-  textfield->SetAccessibleName(u"Foo");
+  textfield->GetViewAccessibility().SetName(u"Foo");
   return textfield;
 }
 

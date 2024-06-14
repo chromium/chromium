@@ -9,6 +9,7 @@
 
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/gtest_util.h"
+#include "ui/views/accessibility/view_accessibility.h"
 #include "ui/views/controls/button/image_button.h"
 #include "ui/views/test/views_test_base.h"
 #include "ui/views/view.h"
@@ -36,12 +37,12 @@ TEST_F(AccessibilityPaintChecksTest, VerifyAccessibilityCheckerFailAndPass) {
 
   // Accessibility test should pass as it is focusable but has a name.
   button->SetFocusBehavior(View::FocusBehavior::ALWAYS);
-  button->SetAccessibleName(u"Some name");
+  button->GetViewAccessibility().SetName(u"Some name");
   RunAccessibilityPaintChecks(&widget);
 
   // Accessibility test should pass as it has no name but is not focusable.
   button->SetFocusBehavior(View::FocusBehavior::NEVER);
-  button->SetAccessibleName(u"");
+  button->GetViewAccessibility().SetName(u"");
   RunAccessibilityPaintChecks(&widget);
 
   // Accessibility test should fail as it has no name and is focusable.
@@ -49,7 +50,7 @@ TEST_F(AccessibilityPaintChecksTest, VerifyAccessibilityCheckerFailAndPass) {
   EXPECT_DCHECK_DEATH_WITH(RunAccessibilityPaintChecks(&widget), "name");
 
   // Restore the name of the button so that it is not the source of failure.
-  button->SetAccessibleName(u"Some name");
+  button->GetViewAccessibility().SetName(u"Some name");
 
   // Accessibility test should fail if the focusable view lacks a valid role.
   auto* generic_view =

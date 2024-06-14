@@ -79,7 +79,7 @@ TEST_F(CheckboxTest, AccessibilityTest) {
   const std::u16string label_text = u"Some label";
   StyledLabel label;
   label.SetText(label_text);
-  checkbox()->SetAccessibleName(&label);
+  checkbox()->GetViewAccessibility().SetName(label);
 
   // Use `ViewAccessibility::GetAccessibleNodeData` so that we can get the
   // label's accessible id to compare with the checkbox's labelled-by id.

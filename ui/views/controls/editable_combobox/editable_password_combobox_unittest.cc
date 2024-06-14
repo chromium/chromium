@@ -22,6 +22,7 @@
 #include "ui/events/types/event_type.h"
 #include "ui/gfx/geometry/point.h"
 #include "ui/gfx/render_text.h"
+#include "ui/views/accessibility/view_accessibility.h"
 #include "ui/views/controls/button/button.h"
 #include "ui/views/controls/button/image_button.h"
 #include "ui/views/controls/editable_combobox/editable_combobox.h"
@@ -96,7 +97,7 @@ void EditablePasswordComboboxTest::SetUp() {
       Button::PressedCallback(eye_callback_.Get()));
   // Set dummy tooltips and name to avoid running into a11y-related DCHECKs.
   combobox->SetPasswordIconTooltips(u"Show password", u"Hide password");
-  combobox->SetAccessibleName(u"Password field");
+  combobox->GetViewAccessibility().SetName(u"Password field");
   combobox->SetID(kComboboxId);
 
   widget_ = new Widget();

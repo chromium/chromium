@@ -418,9 +418,9 @@ void EditableCombobox::SelectRange(const gfx::Range& range) {
 }
 
 void EditableCombobox::OnAccessibleNameChanged(const std::u16string& new_name) {
-  textfield_->SetAccessibleName(new_name);
+  textfield_->GetViewAccessibility().SetName(new_name);
   if (arrow_) {
-    arrow_->SetAccessibleName(new_name);
+    arrow_->GetViewAccessibility().SetName(new_name);
   }
 }
 

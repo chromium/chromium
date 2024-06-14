@@ -249,7 +249,7 @@ void Combobox::SetTooltipTextAndAccessibleName(
     const std::u16string& tooltip_text) {
   arrow_button_->SetTooltipText(tooltip_text);
   if (GetViewAccessibility().GetCachedName().empty()) {
-    SetAccessibleName(tooltip_text);
+    GetViewAccessibility().SetName(tooltip_text);
   }
 }
 

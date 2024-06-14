@@ -156,7 +156,7 @@ TEST_P(ImageViewTest, SetAccessibleNameNotifiesAccessibilityEvent) {
   std::u16string test_tooltip_text = u"Test Tooltip Text";
   test::AXEventCounter counter(views::AXEventManager::Get());
   EXPECT_EQ(0, counter.GetCount(ax::mojom::Event::kTextChanged));
-  image_view()->SetAccessibleName(test_tooltip_text);
+  image_view()->GetViewAccessibility().SetName(test_tooltip_text);
   EXPECT_EQ(1, counter.GetCount(ax::mojom::Event::kTextChanged));
   EXPECT_EQ(test_tooltip_text,
             image_view()->GetViewAccessibility().GetCachedName());
@@ -199,7 +199,7 @@ TEST_P(ImageViewTest, AccessibleNameFromTooltipText) {
   // from the tooltip text.
   data = ui::AXNodeData();
   std::u16string accessible_name = u"Accessible Name";
-  image_view()->SetAccessibleName(accessible_name);
+  image_view()->GetViewAccessibility().SetName(accessible_name);
   image_view()->GetViewAccessibility().GetAccessibleNodeData(&data);
   EXPECT_EQ(data.GetString16Attribute(ax::mojom::StringAttribute::kName),
             accessible_name);
@@ -212,7 +212,7 @@ TEST_P(ImageViewTest, AccessibleNameFromTooltipText) {
   // Setting the accessible name to an empty string should cause the tooltip
   // text to be used as the name.
   data = ui::AXNodeData();
-  image_view()->SetAccessibleName(std::u16string());
+  image_view()->GetViewAccessibility().SetName(std::u16string());
   image_view()->GetViewAccessibility().GetAccessibleNodeData(&data);
   EXPECT_EQ(data.GetString16Attribute(ax::mojom::StringAttribute::kName),
             tooltip_text);

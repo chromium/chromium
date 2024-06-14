@@ -25,6 +25,7 @@
 #include "ui/gfx/color_palette.h"
 #include "ui/gfx/geometry/insets.h"
 #include "ui/gfx/paint_vector_icon.h"
+#include "ui/views/accessibility/view_accessibility.h"
 #include "ui/views/border.h"
 #include "ui/views/controls/button/md_text_button.h"
 #include "ui/views/controls/editable_combobox/editable_combobox.h"
@@ -94,7 +95,7 @@ class VectorIconGallery : public View, public TextfieldController {
                                                    icon_dir.end())));
     editable_combobox->SetPlaceholderText(
         GetStringUTF16(IDS_VECTOR_FILE_SELECT_LABEL));
-    editable_combobox->SetAccessibleName(u"Editable Combobox");
+    editable_combobox->GetViewAccessibility().SetName(u"Editable Combobox");
 
     auto file_container = std::make_unique<View>();
     BoxLayout* file_box =

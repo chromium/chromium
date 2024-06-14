@@ -30,6 +30,7 @@
 #include "ui/accessibility/platform/ax_platform_node_win.h"
 #include "ui/gfx/render_text_test_api.h"
 #include "ui/views/accessibility/test_list_grid_view.h"
+#include "ui/views/accessibility/view_accessibility.h"
 #include "ui/views/controls/label.h"
 #include "ui/views/controls/scroll_view.h"
 #include "ui/views/controls/textfield/textfield.h"
@@ -117,7 +118,7 @@ TEST_F(ViewAXPlatformNodeDelegateWinTest, TextfieldAccessibility) {
   View* content = widget->SetContentsView(std::make_unique<View>());
 
   Textfield* textfield = new Textfield;
-  textfield->SetAccessibleName(u"Name");
+  textfield->GetViewAccessibility().SetName(u"Name");
   textfield->SetText(u"Value");
   content->AddChildView(textfield);
 
@@ -167,7 +168,7 @@ TEST_F(ViewAXPlatformNodeDelegateWinTest, TextfieldAssociatedLabel) {
   Label* label = new Label(u"Label");
   content->AddChildView(label);
   Textfield* textfield = new Textfield;
-  textfield->SetAccessibleName(label);
+  textfield->GetViewAccessibility().SetName(*label);
   content->AddChildView(textfield);
 
   ComPtr<IAccessible> content_accessible(content->GetNativeViewAccessible());

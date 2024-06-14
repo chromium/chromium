@@ -282,7 +282,7 @@ TEST_F(AccessiblePaneViewTest, MAYBE_DoesntCrashOnEscapeWithRemovedView) {
 
 TEST_F(AccessiblePaneViewTest, AccessibleProperties) {
   std::unique_ptr<TestBarView> test_view = std::make_unique<TestBarView>();
-  test_view->SetAccessibleName(u"Name");
+  test_view->GetViewAccessibility().SetName(u"Name");
   test_view->GetViewAccessibility().SetDescription(u"Description");
   EXPECT_EQ(test_view->GetViewAccessibility().GetCachedName(), u"Name");
   EXPECT_EQ(test_view->GetViewAccessibility().GetCachedDescription(),

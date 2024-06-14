@@ -154,7 +154,7 @@ TEST_F(LinkTest, AccessibleProperties) {
   // from the link text.
   data = ui::AXNodeData();
   std::u16string accessible_name = u"Accessible Name";
-  link()->SetAccessibleName(accessible_name);
+  link()->GetViewAccessibility().SetName(accessible_name);
   link()->GetViewAccessibility().GetAccessibleNodeData(&data);
   EXPECT_EQ(data.GetString16Attribute(ax::mojom::StringAttribute::kName),
             accessible_name);
@@ -165,7 +165,7 @@ TEST_F(LinkTest, AccessibleProperties) {
   // Setting the accessible name to an empty string should cause the link text
   // to be used as the name.
   data = ui::AXNodeData();
-  link()->SetAccessibleName(std::u16string());
+  link()->GetViewAccessibility().SetName(std::u16string());
   link()->GetViewAccessibility().GetAccessibleNodeData(&data);
   EXPECT_EQ(data.GetString16Attribute(ax::mojom::StringAttribute::kName),
             u"TestLink");

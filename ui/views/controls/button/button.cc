@@ -202,7 +202,7 @@ void Button::SetTooltipText(const std::u16string& tooltip_text) {
 
   if (GetViewAccessibility().GetCachedName().empty() ||
       GetViewAccessibility().GetCachedName() == tooltip_text_) {
-    SetAccessibleName(tooltip_text);
+    GetViewAccessibility().SetName(tooltip_text);
   }
 
   tooltip_text_ = tooltip_text;

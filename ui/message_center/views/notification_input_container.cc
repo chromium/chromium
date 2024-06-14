@@ -15,6 +15,7 @@
 #include "ui/message_center/vector_icons.h"
 #include "ui/message_center/views/notification_view_util.h"
 #include "ui/strings/grit/ui_strings.h"
+#include "ui/views/accessibility/view_accessibility.h"
 #include "ui/views/animation/ink_drop.h"
 #include "ui/views/background.h"
 #include "ui/views/border.h"
@@ -71,7 +72,7 @@ void NotificationInputContainer::Init() {
   SetSendButtonHighlightPath();
   button_->SetImageHorizontalAlignment(views::ImageButton::ALIGN_CENTER);
   button_->SetImageVerticalAlignment(views::ImageButton::ALIGN_MIDDLE);
-  button_->SetAccessibleName(
+  button_->GetViewAccessibility().SetName(
       l10n_util::GetStringUTF16(GetDefaultAccessibleNameStringId()));
   button_->SetTooltipText(
       l10n_util::GetStringUTF16(GetDefaultAccessibleNameStringId()));

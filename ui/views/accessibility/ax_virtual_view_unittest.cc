@@ -70,7 +70,7 @@ class AXVirtualViewTest : public ViewsTestBase {
     widget_->Init(std::move(params));
     auto button = std::make_unique<TestButton>();
     button->SetSize(gfx::Size(20, 20));
-    button->SetAccessibleName(u"Button");
+    button->GetViewAccessibility().SetName(u"Button");
     button_ = widget_->GetContentsView()->AddChildView(std::move(button));
     auto virtual_label = std::make_unique<AXVirtualView>();
     virtual_label->GetCustomData().role = ax::mojom::Role::kStaticText;
