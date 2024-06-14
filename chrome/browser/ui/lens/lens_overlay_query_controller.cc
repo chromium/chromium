@@ -384,6 +384,15 @@ void LensOverlayQueryController::SendTextOnlyQuery(
   additional_search_query_params =
       AddStartTimeQueryParam(additional_search_query_params);
 
+  // The visual search interaction log data should be added as late as possible,
+  // so that is_parent_query can be accurately set if the user issues multiple
+  // interactions in quick succession.
+  if (lens::features::SendVisualSearchInteractionParamForLensTextQueries() &&
+      text_only_query_type == TextOnlyQueryType::kLensTextSelection) {
+    additional_search_query_params = AddVisualSearchInteractionLogData(
+        additional_search_query_params, lens::SELECT_TEXT_HIGHLIGHT);
+  }
+
   lens::proto::LensOverlayUrlResponse lens_overlay_url_response;
   lens_overlay_url_response.set_url(
       lens::BuildTextOnlySearchURL(

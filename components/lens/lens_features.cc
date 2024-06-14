@@ -119,6 +119,10 @@ const base::FeatureParam<double> kDynamicThemeMinPopulationPct{
 const base::FeatureParam<double> kDynamicThemeMinChroma{
     &kLensOverlay, "use-dynamic-theme-min-chroma", 3.0f};
 
+const base::FeatureParam<bool>
+    kSendVisualSearchInteractionParamForLensTextQueries{
+        &kLensOverlay, "send-vsint-for-text-selections", true};
+
 constexpr base::FeatureParam<std::string> kLensOverlayEndpointUrl{
     &kLensOverlay, "endpoint-url",
     "https://lensfrontend-pa.googleapis.com/v1/crupload"};
@@ -400,6 +404,10 @@ double DynamicThemeMinPopulationPct() {
 
 double DynamicThemeMinChroma() {
   return kDynamicThemeMinChroma.Get();
+}
+
+bool SendVisualSearchInteractionParamForLensTextQueries() {
+  return kSendVisualSearchInteractionParamForLensTextQueries.Get();
 }
 
 double GetLensOverlaySelectTextOverRegionTriggerThreshold() {

@@ -483,7 +483,7 @@ TEST_F(LensOverlayQueryControllerTest,
       std::make_optional<std::string>(kTestPageTitle));
   task_environment_.RunUntilIdle();
 
-  query_controller.SendTextOnlyQuery("", TextOnlyQueryType::kSearchBoxQuery,
+  query_controller.SendTextOnlyQuery("", TextOnlyQueryType::kLensTextSelection,
                                      additional_search_query_params);
   task_environment_.RunUntilIdle();
   query_controller.EndQuery();
@@ -501,6 +501,8 @@ TEST_F(LensOverlayQueryControllerTest,
   ASSERT_TRUE(full_image_response_future.IsReady());
   ASSERT_TRUE(url_response_future.IsReady());
   ASSERT_FALSE(interaction_data_response_future.IsReady());
+  ASSERT_EQ(GetSelectionTypeFromUrl(url_response_future.Get().url()),
+            lens::SELECT_TEXT_HIGHLIGHT);
   ASSERT_EQ(actual_encoded_search_context, kTestEncodedSearchContext);
   ASSERT_TRUE(has_start_time);
 }

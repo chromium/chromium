@@ -347,6 +347,11 @@ extern double DynamicThemeMinPopulationPct();
 COMPONENT_EXPORT(LENS_FEATURES)
 extern double DynamicThemeMinChroma();
 
+// Returns whether or not to send the visual search interaction param with
+// Lens text selection queries.
+COMPONENT_EXPORT(LENS_FEATURES)
+extern bool SendVisualSearchInteractionParamForLensTextQueries();
+
 // Returns the minimum intersection over union between region and text to serve
 // as a threshold for triggering select text chip over region search.
 COMPONENT_EXPORT(LENS_FEATURES)
