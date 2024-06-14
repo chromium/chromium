@@ -29,6 +29,9 @@ chromium-metrics-reviews@google.com.
   <variant name="Compose"
       summary="For Compose feature; shown in web context menu."/>
   <variant name="ComposeNudge"
+      summary="For Compose feature; shown on autofill popup when there is
+               saved state to resume.."/>
+  <variant name="ComposeProactiveNudge"
       summary="For Compose feature; shown on autofill popup."/>
   <variant name="LensOverlay"
       summary="Lens Overlay entry points in app and web context menus."/>

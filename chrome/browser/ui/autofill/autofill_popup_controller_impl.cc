@@ -27,7 +27,6 @@
 #include "chrome/browser/ui/autofill/autofill_suggestion_controller_utils.h"
 #include "chrome/browser/ui/autofill/next_idle_time_ticks.h"
 #include "chrome/browser/ui/autofill/popup_controller_common.h"
-#include "chrome/browser/user_education/user_education_service.h"
 #include "components/autofill/core/browser/autofill_manager.h"
 #include "components/autofill/core/browser/filling_product.h"
 #include "components/autofill/core/browser/metrics/autofill_metrics.h"
@@ -395,10 +394,6 @@ void AutofillPopupControllerImpl::AcceptSuggestion(int index) {
     Hide(SuggestionHidingReason::kMouseLocked);
     return;
   }
-
-  UserEducationService::MaybeNotifyPromoFeatureUsed(
-      web_contents_->GetBrowserContext(),
-      compose::features::kEnableComposeSavedStateNudge);
 
   // Use a copy instead of a reference here. Under certain circumstances,
   // `DidAcceptSuggestion()` can call `SetSuggestions()` and invalidate the

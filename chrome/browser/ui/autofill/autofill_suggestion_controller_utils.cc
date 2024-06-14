@@ -15,12 +15,18 @@
 #include "components/autofill/core/common/autofill_features.h"
 #include "components/autofill/core/common/dense_set.h"
 #include "components/autofill/core/common/form_field_data.h"
+#include "components/compose/core/browser/compose_features.h"
 #include "components/feature_engagement/public/feature_constants.h"
 #include "components/feature_engagement/public/tracker.h"
 #include "components/password_manager/content/browser/content_password_manager_driver.h"
 #include "content/public/browser/render_frame_host.h"
 #include "content/public/browser/render_widget_host_view.h"
 #include "content/public/browser/web_contents.h"
+
+#if !BUILDFLAG(IS_ANDROID)
+// UserEducationService is not implemented on Android.
+#include "chrome/browser/user_education/user_education_service.h"
+#endif  // !BUILDFLAG(IS_ANDROID)
 
 namespace autofill {
 
@@ -162,6 +168,17 @@ void NotifyIphAboutAcceptedSuggestion(content::BrowserContext* browser_context,
     feature_engagement::TrackerFactory::GetForBrowserContext(browser_context)
         ->NotifyEvent("autofill_external_account_profile_suggestion_accepted");
   }
+#if !BUILDFLAG(IS_ANDROID)
+  if (suggestion.type == SuggestionType::kComposeSavedStateNotification ||
+      suggestion.type == SuggestionType::kComposeResumeNudge) {
+    UserEducationService::MaybeNotifyPromoFeatureUsed(
+        browser_context, compose::features::kEnableComposeSavedStateNudge);
+  }
+  if (suggestion.type == SuggestionType::kComposeProactiveNudge) {
+    UserEducationService::MaybeNotifyPromoFeatureUsed(
+        browser_context, compose::features::kEnableComposeProactiveNudge);
+  }
+#endif  // !BUILDFLAG(IS_ANDROID)
 }
 
 std::vector<Suggestion> UpdateSuggestionsFromDataList(

@@ -89,6 +89,10 @@
 
 namespace {
 
+using Platforms = user_education::Metadata::Platforms;
+constexpr std::initializer_list<Platforms> kComposePlatforms{
+    Platforms::kWindows, Platforms::kMac, Platforms::kLinux};
+
 const char kTabGroupTutorialMetricPrefix[] = "TabGroup";
 const char kSavedTabGroupTutorialMetricPrefix[] = "SavedTabGroup";
 const char kCustomizeChromeTutorialMetricPrefix[] = "CustomizeChromeSidePanel";
@@ -1370,10 +1374,22 @@ void MaybeRegisterChromeNewBadges(user_education::NewBadgeRegistry& registry) {
                                "Used to test \"New\" Badge logic.")));
 
   registry.RegisterFeature(user_education::NewBadgeSpecification(
-      compose::features::kEnableCompose, user_education::Metadata()));
+      compose::features::kEnableCompose,
+      user_education::Metadata(124, "dewittj@chromium.org",
+                               "Shown in Help Me Write context menu item.", {},
+                               kComposePlatforms)));
   registry.RegisterFeature(user_education::NewBadgeSpecification(
       compose::features::kEnableComposeSavedStateNudge,
-      user_education::Metadata()));
+      user_education::Metadata(124, "dewittj@chromium.org",
+                               "Shown in autofill-style suggestion UI to "
+                               "resume an ongoing Compose session.",
+                               {}, kComposePlatforms)));
+  registry.RegisterFeature(user_education::NewBadgeSpecification(
+      compose::features::kEnableComposeProactiveNudge,
+      user_education::Metadata(126, "dewittj@chromium.org",
+                               "Shown in autofill-style suggestion UI when "
+                               "Compose proactive nudge is shown.",
+                               {}, kComposePlatforms)));
 
   registry.RegisterFeature(user_education::NewBadgeSpecification(
       lens::features::kLensOverlay,

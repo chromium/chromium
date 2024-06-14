@@ -609,12 +609,18 @@ std::unique_ptr<PopupRowView> CreatePopupRowView(
           CreatePasswordPopupRowContentView(suggestion, std::move(filter_match),
                                             favicon_loader));
     case SuggestionType::kComposeResumeNudge:
-    case SuggestionType::kComposeProactiveNudge: {
-      // Todo (http://b/340147177): Confirm that both Compose popups should use
-      // the same feature for a new badge and update feature name.
+    case SuggestionType::kComposeSavedStateNotification: {
       const auto show_new_badge = UserEducationService::MaybeShowNewBadge(
           controller->GetWebContents()->GetBrowserContext(),
           compose::features::kEnableComposeSavedStateNudge);
+      return std::make_unique<PopupRowView>(
+          a11y_selection_delegate, selection_delegate, controller, line_number,
+          CreateComposePopupRowContentView(suggestion, show_new_badge));
+    }
+    case SuggestionType::kComposeProactiveNudge: {
+      const auto show_new_badge = UserEducationService::MaybeShowNewBadge(
+          controller->GetWebContents()->GetBrowserContext(),
+          compose::features::kEnableComposeProactiveNudge);
       return std::make_unique<PopupRowView>(
           a11y_selection_delegate, selection_delegate, controller, line_number,
           CreateComposePopupRowContentView(suggestion, show_new_badge));
