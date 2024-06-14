@@ -122,7 +122,7 @@ Note: `iron-` and `paper-` elements are
 
 |POLYMER LIBRARY ELEMENT|RECOMMENDED APPROACH|
 |-----------------------|--------------------|
-|`iron-list`|Consider using a simple `items.map(...)` pattern. If you have a very large number of elements and need `iron-list` for its re-use of nodes, currently you will need to use `iron-list` itself (and consequently pull in Polymer, ~90kb).|
+|`iron-list`|Consider using a simple `items.map(...)` pattern. If you have a very large number of elements and need `iron-list` for its re-use of nodes, currently you will need to use `iron-list` itself (and consequently pull in Polymer, ~90kb). See also later section on migrating `iron-list` clients.|
 |`iron-icon`|Use `cr-icon`.|
 |`iron-collapse`|Use `cr-collapse`.|
 |`paper-spinner`|Style `throbber.svg` with CSS as needed.|
@@ -707,6 +707,58 @@ protected shouldShowImageUrl_(_url: string, index: number): boolean {
 
 protected shouldShowFolderImages_(): boolean {
   return this.size !== CrUrlListItemSize.COMPACT;
+}
+```
+
+### Migrating iron-list clients
+Currently, there is no Lit alternative for the `iron-list` element. For cases
+where `iron-list` is used that do not require a virtual list (i.e., number of
+list items is not very large), `iron-list` may be replaced with a `map()`
+pattern, as described above for `dom-repeat`.
+
+For cases that need a virtual list, note the following:
+
+1. `iron-list`'s parent element *must* be a Polymer element, because
+   `iron-list` accepts a `<template>`. Lit data bindings do not work inside
+   `<template>`s.
+2. Elements that are used as children in an `iron-list` may be migrated to Lit,
+   but due to differences in rendering timing between Polymer and Lit, it is
+   important to manually fire an `iron-resize` event from the child's
+   `updated()` lifecycle callback whenever any property that impacts the height
+   of the child element has changed. See example below:
+
+From the `list_parent.html` template (must be Polymer)
+```
+<iron-list id="list" items="[[listItems_]]" as="item">
+  <template>
+    <custom-item description="[[item.description]]" name="[[item.name]]"
+        on-click="onListItemClick_">
+    </custom-item>
+  </template>
+</iron-list>
+```
+
+From the child `custom_item.html.ts` template:
+```
+<div class="name">${this.name}</div>
+<div class="description" ?hidden="${!this.description}">
+  ${this.description}
+</div>
+```
+
+In this case, the value of `description` impacts the height of the child
+item. If `iron-list` is not notified of when the child is done with rendering
+a change to this property, it may compute the child's height incorrectly, and
+display gaps or overlap in the list. To prevent this, the child item should
+fire `iron-resize` in `updated()` if its `description` property changes.
+
+From `custom_item.ts`:
+```
+override updated(changedProperties: PropertyValues<this>) {
+  super.updated(changedProperties);
+  if (changedProperties.has('description')) {
+    this.fire('iron-resize');
+  }
 }
 ```
 
