@@ -11,6 +11,7 @@ import android.provider.Browser;
 
 import androidx.test.filters.MediumTest;
 import androidx.test.filters.SmallTest;
+import androidx.test.platform.app.InstrumentationRegistry;
 import androidx.test.runner.lifecycle.Stage;
 
 import com.google.common.collect.Lists;
@@ -23,6 +24,7 @@ import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
+import org.chromium.base.GarbageCollectionTestUtils;
 import org.chromium.base.IntentUtils;
 import org.chromium.base.test.util.ApplicationTestUtils;
 import org.chromium.base.test.util.Batch;
@@ -33,6 +35,7 @@ import org.chromium.base.test.util.DisabledTest;
 import org.chromium.base.test.util.Features.EnableFeatures;
 import org.chromium.base.test.util.HistogramWatcher;
 import org.chromium.base.test.util.MinAndroidSdkLevel;
+import org.chromium.base.test.util.RequiresRestart;
 import org.chromium.chrome.browser.device.DeviceClassManager;
 import org.chromium.chrome.browser.document.ChromeLauncherActivity;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
@@ -52,6 +55,7 @@ import org.chromium.content_public.browser.test.util.TestThreadUtils;
 import org.chromium.ui.base.PageTransition;
 import org.chromium.url.JUnitTestGURLs;
 
+import java.lang.ref.WeakReference;
 import java.util.ArrayList;
 import java.util.concurrent.ExecutionException;
 
@@ -411,5 +415,24 @@ public class ChromeTabbedActivityTest {
                 ChromeTabbedActivity.class,
                 Stage.CREATED,
                 () -> mActivity.getApplicationContext().startActivity(intent));
+    }
+
+    @Test
+    @MediumTest
+    // Intentionally not batched due to recreating activity.
+    @RequiresRestart
+    @DisabledTest(message = "crbug.com/1187320 This doesn't work with FeedV2 and crbug.com/1096295")
+    public void testActivityCanBeGarbageCollectedAfterFinished() {
+        WeakReference<ChromeTabbedActivity> activityRef =
+                new WeakReference<>(sActivityTestRule.getActivity());
+
+        ChromeTabbedActivity activity =
+                ApplicationTestUtils.recreateActivity(sActivityTestRule.getActivity());
+        InstrumentationRegistry.getInstrumentation().waitForIdleSync();
+
+        sActivityTestRule.setActivity(activity);
+
+        CriteriaHelper.pollUiThread(
+                () -> GarbageCollectionTestUtils.canBeGarbageCollected(activityRef));
     }
 }

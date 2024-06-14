@@ -84,7 +84,6 @@ import org.junit.runner.RunWith;
 import org.chromium.base.Callback;
 import org.chromium.base.GarbageCollectionTestUtils;
 import org.chromium.base.metrics.RecordHistogram;
-import org.chromium.base.test.util.ApplicationTestUtils;
 import org.chromium.base.test.util.CallbackHelper;
 import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.base.test.util.Criteria;
@@ -531,6 +530,9 @@ public class TabSwitcherLayoutTest {
         }
     }
 
+    // TODO(crbug/324919909): Delete this test once Hub is launched. The "testTabToGrid" category of
+    // tests is covered in HubLayoutPublicTransitTest. Also many of the cases here don't contribute
+    // much to coverage as the status of the selected tab should be irrelevant to the transition.
     @Test
     @MediumTest
     @EnableFeatures({ChromeFeatureList.TAB_TO_GTS_ANIMATION + "<Study"})
@@ -539,6 +541,9 @@ public class TabSwitcherLayoutTest {
         testGridToTab(false, false);
     }
 
+    // TODO(crbug/324919909): Delete this test once Hub is launched. The "testTabToGrid" category of
+    // tests is covered in HubLayoutPublicTransitTest. Also many of the cases here don't contribute
+    // much to coverage as the status of the selected tab should be irrelevant to the transition.
     @Test
     @MediumTest
     @EnableFeatures({ChromeFeatureList.TAB_TO_GTS_ANIMATION + "<Study"})
@@ -547,6 +552,9 @@ public class TabSwitcherLayoutTest {
         testGridToTab(true, false);
     }
 
+    // TODO(crbug/324919909): Delete this test once Hub is launched. The "testTabToGrid" category of
+    // tests is covered in HubLayoutPublicTransitTest. Also many of the cases here don't contribute
+    // much to coverage as the status of the selected tab should be irrelevant to the transition.
     @Test
     @MediumTest
     @DisableFeatures(ChromeFeatureList.TAB_TO_GTS_ANIMATION)
@@ -574,6 +582,8 @@ public class TabSwitcherLayoutTest {
                 || "google_sdk".equals(Build.PRODUCT);
     }
 
+    // TODO(crbug/324919909): Delete this test once Hub is launched. Thumbnail capture is no longer
+    // controlled by the tab switcher and HubLayout has separate tests for this.
     /**
      * Test that even if there are tabs with stuck pending thumbnail readback, it doesn't block
      * thumbnail readback for the current tab.
@@ -621,6 +631,9 @@ public class TabSwitcherLayoutTest {
         TabUiTestHelper.checkThumbnailsExist(cta.getTabModelSelector().getCurrentTab());
     }
 
+    // TODO(crbug/324919909): Delete this test once Hub is launched. The "testTabToGrid" category of
+    // tests is covered in HubLayoutPublicTransitTest. Also many of the cases here don't contribute
+    // much to coverage as the status of the selected tab should be irrelevant to the transition.
     @Test
     @MediumTest
     @EnableFeatures(ChromeFeatureList.TAB_TO_GTS_ANIMATION + "<Study")
@@ -632,6 +645,9 @@ public class TabSwitcherLayoutTest {
         testGridToTab(false, false);
     }
 
+    // TODO(crbug/324919909): Delete this test once Hub is launched. The "testTabToGrid" category of
+    // tests is covered in HubLayoutPublicTransitTest. Also many of the cases here don't contribute
+    // much to coverage as the status of the selected tab should be irrelevant to the transition.
     @Test
     @MediumTest
     @DisableFeatures(ChromeFeatureList.TAB_TO_GTS_ANIMATION)
@@ -643,6 +659,9 @@ public class TabSwitcherLayoutTest {
         testGridToTab(true, false);
     }
 
+    // TODO(crbug/324919909): Delete this test once Hub is launched. The "testTabToGrid" category of
+    // tests is covered in HubLayoutPublicTransitTest. Also many of the cases here don't contribute
+    // much to coverage as the status of the selected tab should be irrelevant to the transition.
     @Test
     @MediumTest
     @EnableFeatures(ChromeFeatureList.TAB_TO_GTS_ANIMATION + "<Study")
@@ -654,6 +673,9 @@ public class TabSwitcherLayoutTest {
         testGridToTab(true, false);
     }
 
+    // TODO(crbug/324919909): Delete this test once Hub is launched. The "testTabToGrid" category of
+    // tests is covered in HubLayoutPublicTransitTest. Also many of the cases here don't contribute
+    // much to coverage as the status of the selected tab should be irrelevant to the transition.
     @Test
     @MediumTest
     @DisableFeatures(ChromeFeatureList.TAB_TO_GTS_ANIMATION)
@@ -702,6 +724,8 @@ public class TabSwitcherLayoutTest {
         }
     }
 
+    // TODO(crbug/324919909): Delete this test once Hub is launched. Thumbnail fetching is tested
+    // by a variety of unit tests and in TabSwitcherLayoutPTTest.
     @Test
     @MediumTest
     @EnableFeatures({ChromeFeatureList.TAB_TO_GTS_ANIMATION + "<Study"})
@@ -721,6 +745,8 @@ public class TabSwitcherLayoutTest {
         assertEquals(0, mTabListDelegate.getBitmapFetchCountForTesting() - oldCount);
     }
 
+    // TODO(crbug/324919909): Delete this test once Hub is launched. This behavior is no longer
+    // possible post-Hub as the UI is torn down and observers are unregistered.
     @Test
     @MediumTest
     @EnableFeatures({ChromeFeatureList.TAB_TO_GTS_ANIMATION + "<Study"})
@@ -741,6 +767,8 @@ public class TabSwitcherLayoutTest {
         assertEquals(0, mTabListDelegate.getBitmapFetchCountForTesting() - count);
     }
 
+    // TODO(crbug/324919909): Delete this test once Hub is launched. This behavior is no longer
+    // possible post-Hub as the UI is torn down and observers are unregistered.
     @Test
     @MediumTest
     @EnableFeatures({ChromeFeatureList.TAB_TO_GTS_ANIMATION + "<Study"})
@@ -768,6 +796,8 @@ public class TabSwitcherLayoutTest {
         assertEquals(0, mTabListDelegate.getBitmapFetchCountForTesting() - count);
     }
 
+    // TODO(crbug/324919909): Delete this test once Hub is launched. This behavior is no longer
+    // possible post-Hub as the UI is torn down and observers are unregistered.
     @Test
     @MediumTest
     @EnableFeatures({ChromeFeatureList.TAB_TO_GTS_ANIMATION + "<Study"})
@@ -795,6 +825,8 @@ public class TabSwitcherLayoutTest {
         assertEquals(0, mTabListDelegate.getBitmapFetchCountForTesting() - count);
     }
 
+    // TODO(crbug/324919909): Delete this test once Hub is launched. Covered by
+    // HubLayoutPublicTransitTest and TabSwitcherLayoutPTTest.
     @Test
     @MediumTest
     @EnableFeatures({ChromeFeatureList.TAB_TO_GTS_ANIMATION + "<Study"})
@@ -817,6 +849,7 @@ public class TabSwitcherLayoutTest {
         onView(tabSwitcherViewMatcher()).check(TabCountAssertion.havingTabCount(1));
     }
 
+    // TODO(crbug/324919909): Delete this test once Hub is launched. This is covered by unit tests.
     @Test
     @MediumTest
     @EnableFeatures({ChromeFeatureList.TAB_TO_GTS_ANIMATION + "<Study"})
@@ -840,6 +873,8 @@ public class TabSwitcherLayoutTest {
         leaveGTSAndVerifyThumbnailsAreReleased();
     }
 
+    // TODO(crbug/324919909): Delete this test once Hub is launched. Bitmap fetching is covered by
+    // integration testing and incognito toggle is covered by HubLayoutPublicTransitTest.
     @Test
     @MediumTest
     @CommandLineFlags.Add({BASE_PARAMS})
@@ -1212,6 +1247,8 @@ public class TabSwitcherLayoutTest {
         }
     }
 
+    // TODO(crbug/324919909): Delete this test once Hub is launched. This is covered by
+    // TabSwitcherListEditorPTTest.
     @Test
     @MediumTest
     @DisableFeatures(ChromeFeatureList.TAB_TO_GTS_ANIMATION)
@@ -1237,6 +1274,8 @@ public class TabSwitcherLayoutTest {
         onViewWaiting(withText("2 tabs grouped"));
     }
 
+    // TODO(crbug/324919909): Delete this test once Hub is launched. This is covered by
+    // TabSwitcherListEditorPTTest.
     @Test
     @MediumTest
     @EnableFeatures(ChromeFeatureList.TAB_TO_GTS_ANIMATION)
@@ -1252,29 +1291,6 @@ public class TabSwitcherLayoutTest {
         // Pressing system back should dismiss the selection editor.
         Espresso.pressBack();
         robot.resultRobot.verifyTabListEditorIsHidden();
-    }
-
-    @Test
-    @MediumTest
-    @EnableFeatures({ChromeFeatureList.TAB_TO_GTS_ANIMATION + "<Study"})
-    @DisabledTest(message = "crbug.com/1187320 This doesn't work with FeedV2 and crbug.com/1096295")
-    public void testActivityCanBeGarbageCollectedAfterFinished() {
-        prepareTabs(1, 0, "about:blank");
-
-        WeakReference<ChromeTabbedActivity> activityRef =
-                new WeakReference<>(mActivityTestRule.getActivity());
-
-        ChromeTabbedActivity activity =
-                ApplicationTestUtils.recreateActivity(mActivityTestRule.getActivity());
-        InstrumentationRegistry.getInstrumentation().waitForIdleSync();
-
-        mTabSwitcherLayout = null;
-        mTabListDelegate = null;
-        mActivityTestRule.setActivity(activity);
-
-        // A longer timeout is needed. Achieve that by using the CriteriaHelper.pollUiThread.
-        CriteriaHelper.pollUiThread(
-                () -> GarbageCollectionTestUtils.canBeGarbageCollected(activityRef));
     }
 
     @Test

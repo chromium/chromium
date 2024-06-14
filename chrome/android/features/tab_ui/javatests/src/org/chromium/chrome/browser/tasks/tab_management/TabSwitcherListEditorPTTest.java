@@ -46,6 +46,19 @@ public class TabSwitcherListEditorPTTest {
 
     @Test
     @MediumTest
+    public void testLeaveEditorViaBackPress() {
+        WebPageStation firstPage = mInitialStateRule.startOnBlankPage();
+        HubTabSwitcherStation tabSwitcher = firstPage.openHub(HubTabSwitcherStation.class);
+        HubTabSwitcherListEditorFacility editor = tabSwitcher.openAppMenu().clickSelectTabs();
+        editor.pressBackToExit();
+
+        // Go back to PageStation for InitialStateRule to reset
+        PageStation previousPage = tabSwitcher.leaveHubToPreviousTabViaBack();
+        assertFinalDestination(previousPage);
+    }
+
+    @Test
+    @MediumTest
     public void testCreateTabGroupOf1() {
         WebPageStation firstPage = mInitialStateRule.startOnBlankPage();
         int firstTabId = firstPage.getLoadedTab().getId();
