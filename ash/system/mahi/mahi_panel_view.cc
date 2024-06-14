@@ -813,6 +813,7 @@ std::unique_ptr<views::View> MahiPanelView::CreateHeaderRow() {
                                       weak_ptr_factory_.GetWeakPtr()))
               .SetProperty(views::kFlexBehaviorKey,
                            views::FlexSpecification(
+                               views::LayoutOrientation::kHorizontal,
                                views::MinimumFlexSizeRule::kPreferred,
                                views::MaximumFlexSizeRule::kUnbounded)
                                .WithAlignment(views::LayoutAlignment::kEnd)))
