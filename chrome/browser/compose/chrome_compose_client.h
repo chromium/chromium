@@ -12,10 +12,8 @@
 #include "base/containers/flat_map.h"
 #include "base/gtest_prod_util.h"
 #include "base/token.h"
-#include "chrome/browser/compose/compose_enabling.h"
 #include "chrome/browser/compose/compose_session.h"
 #include "chrome/browser/compose/proactive_nudge_tracker.h"
-#include "chrome/browser/compose/proto/compose_optimization_guide.pb.h"
 #include "chrome/browser/optimization_guide/optimization_guide_keyed_service.h"
 #include "chrome/common/compose/compose.mojom.h"
 #include "components/autofill/content/browser/scoped_autofill_managers_observation.h"
@@ -41,6 +39,8 @@ namespace content {
 class Page;
 class WebContents;
 }  // namespace content
+
+class ComposeEnabling;
 
 // An implementation of `ComposeClient` for Desktop and Android.
 class ChromeComposeClient
@@ -183,10 +183,6 @@ class ChromeComposeClient
   // compose::ProactiveNudgeTracker implementation.
   void ShowProactiveNudge(autofill::FormGlobalId form,
                           autofill::FieldGlobalId field) override;
-
-  // This API gets optimization guidance for a web site.  We use this
-  // to guide our decision to enable the feature and trigger the nudge.
-  compose::ComposeHintDecision GetOptimizationGuidanceForUrl(const GURL& url);
 
   ComposeEnabling& GetComposeEnabling();
 
