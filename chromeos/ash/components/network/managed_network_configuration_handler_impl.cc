@@ -581,9 +581,9 @@ void ManagedNetworkConfigurationHandlerImpl::
     ApplyDisconnectWiFiOnEthernetPolicy() {
   const std::string* disconnect_wifi_policy = FindGlobalPolicyString(
       ::onc::global_network_config::kDisconnectWiFiOnEthernet);
-  base::Value shill_property_value =
-      base::Value(shill::kDisconnectWiFiOnEthernetOff);
   if (disconnect_wifi_policy) {
+    base::Value shill_property_value =
+        base::Value(shill::kDisconnectWiFiOnEthernetOff);
     if (*disconnect_wifi_policy ==
         ::onc::global_network_config::kDisconnectWiFiOnEthernetWhenConnected) {
       shill_property_value =
@@ -594,10 +594,9 @@ void ManagedNetworkConfigurationHandlerImpl::
       shill_property_value =
           base::Value(shill::kDisconnectWiFiOnEthernetOnline);
     }
+    network_configuration_handler_->SetManagerProperty(
+        shill::kDisconnectWiFiOnEthernetProperty, shill_property_value);
   }
-  network_configuration_handler_->SetManagerProperty(
-      shill::kDisconnectWiFiOnEthernetProperty, shill_property_value);
-  return;
 }
 
 bool ManagedNetworkConfigurationHandlerImpl::IsAnyPolicyApplicationRunning()

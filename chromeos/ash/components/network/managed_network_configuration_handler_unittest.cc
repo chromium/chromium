@@ -2053,10 +2053,11 @@ TEST_F(ManagedNetworkConfigurationHandlerTest, DisconnectWiFiOnEthernet) {
   EXPECT_EQ(*properties.FindString(shill::kDisconnectWiFiOnEthernetProperty),
             std::string(shill::kDisconnectWiFiOnEthernetConnected));
 
+  // Unknown policy value should reset property value to Off.
   const char* const onc_policy_invalid = R"(
       {
         "GlobalNetworkConfiguration": {
-          "DisconnectWiFiOnEthernet": "InvalidValue"
+          "DisconnectWiFiOnEthernet": "Unknown"
         },
         "Type": "UnencryptedConfiguration"
       })";
@@ -2089,6 +2090,7 @@ TEST_F(ManagedNetworkConfigurationHandlerTest, DisconnectWiFiOnEthernet) {
   EXPECT_EQ(*properties.FindString(shill::kDisconnectWiFiOnEthernetProperty),
             std::string(shill::kDisconnectWiFiOnEthernetOnline));
 
+  // Field not existing in policy should leave property value unchanged.
   const char* const onc_policy_off = R"(
       {
         "GlobalNetworkConfiguration": {},
@@ -2103,7 +2105,7 @@ TEST_F(ManagedNetworkConfigurationHandlerTest, DisconnectWiFiOnEthernet) {
   EXPECT_NE(properties.FindString(shill::kDisconnectWiFiOnEthernetProperty),
             nullptr);
   EXPECT_EQ(*properties.FindString(shill::kDisconnectWiFiOnEthernetProperty),
-            std::string(shill::kDisconnectWiFiOnEthernetOff));
+            std::string(shill::kDisconnectWiFiOnEthernetOnline));
 }
 
 TEST_F(ManagedNetworkConfigurationHandlerTest,
