@@ -15,6 +15,7 @@
 #include "content/public/common/content_client.h"
 #include "device/gamepad/public/mojom/gamepad.mojom.h"
 #include "media/mojo/mojom/media_player.mojom.h"
+#include "media/mojo/mojom/webrtc_video_perf.mojom.h"
 #include "services/network/public/mojom/restricted_cookie_manager.mojom.h"
 #include "third_party/blink/public/mojom/blob/blob_url_store.mojom.h"
 #include "third_party/blink/public/mojom/broadcastchannel/broadcast_channel.mojom.h"
@@ -100,6 +101,11 @@ void RegisterNonAssociatedPolicies(MojoBinderPolicyMap& map,
   // since we wait for a response from code cache when loading resources.
   map.SetNonAssociatedPolicy<blink::mojom::CodeCacheHost>(
       MojoBinderNonAssociatedPolicy::kGrant);
+
+  // Grant this for Media Capabilities APIs. This should be safe as the APIs
+  // just query encoding / decoding information.
+  map.SetNonAssociatedPolicy<media::mojom::WebrtcVideoPerfHistory>(
+      content::MojoBinderNonAssociatedPolicy::kGrant);
 
 #if BUILDFLAG(IS_MAC)
   // Set policy to Grant for TextInputHost.
