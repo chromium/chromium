@@ -280,7 +280,6 @@ const base::Feature* const kFeaturesExposedToJava[] = {
     &kStopAppIndexingReport,
     &kSuppressToolbarCaptures,
     &kTabDragDropAndroid,
-    &kTabGroupPaneAndroid,
     &kTabGroupParityAndroid,
     &kTabIdMapAndroid,
     &kTabletTabSwitcherLongPressMenu,
@@ -374,6 +373,8 @@ const base::Feature* const kFeaturesExposedToJava[] = {
     &syncer::kWebApkBackupAndRestoreBackend,
     &tab_groups::kAndroidTabGroupStableIds,
     &tab_groups::kTabGroupSyncAndroid,
+    &tab_groups::kTabGroupPaneAndroid,
+    &tab_groups::kTabGroupSyncAutoOpenKillSwitch,
     &webapps::features::kPwaUniversalInstallUi,
     &visited_url_ranking::features::kVisitedURLRankingService,
     &webapps::features::kWebApkInstallFailureNotification,
@@ -880,10 +881,6 @@ BASE_FEATURE(kSuppressToolbarCaptures,
 
 BASE_FEATURE(kTabDragDropAndroid,
              "TabDragDropAndroid",
-             base::FEATURE_DISABLED_BY_DEFAULT);
-
-BASE_FEATURE(kTabGroupPaneAndroid,
-             "TabGroupPaneAndroid",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
 BASE_FEATURE(kTabGroupParityAndroid,
