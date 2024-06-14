@@ -621,7 +621,7 @@
     {
       // https://www.w3.org/TR/cssom-view-1/#dom-document-caretpositionfrompoint
       name: "CaretPositionFromPoint",
-      status: "test",
+      status: "stable",
     },
     {
       // Kill switch for changes to RenderFrameMetadataObserverImpl in connection with Engagement

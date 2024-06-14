@@ -1098,6 +1098,12 @@ interface CaptureController : EventTarget
     attribute @@toStringTag
     method constructor
     method setFocusBehavior
+interface CaretPosition
+    attribute @@toStringTag
+    getter offset
+    getter offsetNode
+    method constructor
+    method getClientRect
 interface ChannelMergerNode : AudioNode
     attribute @@toStringTag
     method constructor
@@ -1784,6 +1790,7 @@ interface Document : Node
     method append
     method browsingTopics
     method captureEvents
+    method caretPositionFromPoint
     method caretRangeFromPoint
     method clear
     method close
