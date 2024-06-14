@@ -195,6 +195,11 @@ class CC_EXPORT CompositorFrameReportingController {
   std::map<base::TimeTicks, CompositorFrameReporter::SmoothThread>
       smooth_thread_history_;
 
+  // Must outlive `reporters_` and `submitted_compositor_frames_` (which also
+  // have reporters), since destroying the reporters can flush frames to
+  // `global_trackers_`.
+  GlobalMetricsTrackers global_trackers_;
+
   // The latency reporter passed to each CompositorFrameReporter. Owned here
   // because it must be common among all reporters.
   // DO NOT reorder this line and the ones below. The latency_ukm_reporter_
@@ -231,8 +236,6 @@ class CC_EXPORT CompositorFrameReportingController {
 
   raw_ptr<const base::TickClock> tick_clock_ =
       base::DefaultTickClock::GetInstance();
-
-  GlobalMetricsTrackers global_trackers_;
 
   // When a frame with events metrics fails to be presented, its events metrics
   // will be added to this map. The first following presented frame will get
