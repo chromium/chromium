@@ -27,7 +27,9 @@ TEST(PrintBackendWinTest, GetPrintableAreaSamePaper) {
 
   std::string printer_name;
   mojom::ResultCode result = backend->GetDefaultPrinterName(printer_name);
-  ASSERT_EQ(mojom::ResultCode::kSuccess, result);
+  if (result != mojom::ResultCode::kSuccess || printer_name.empty()) {
+    GTEST_SKIP() << "Printing with real drivers not available";
+  }
 
   PrinterSemanticCapsAndDefaults caps;
   EXPECT_EQ(mojom::ResultCode::kSuccess,
@@ -53,7 +55,9 @@ TEST(PrintBackendWinTest, GetPrintableAreaDifferentPaper) {
 
   std::string printer_name;
   mojom::ResultCode result = backend->GetDefaultPrinterName(printer_name);
-  ASSERT_EQ(mojom::ResultCode::kSuccess, result);
+  if (result != mojom::ResultCode::kSuccess || printer_name.empty()) {
+    GTEST_SKIP() << "Printing with real drivers not available";
+  }
 
   PrinterSemanticCapsAndDefaults caps;
   EXPECT_EQ(mojom::ResultCode::kSuccess,
