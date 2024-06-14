@@ -67,6 +67,7 @@ namespace {
 
 // See make_dafsa.py for documentation of the generated dafsa byte array.
 
+// These are mutable so that they can be overridden for testing.
 const unsigned char* g_graph = kDafsa;
 size_t g_graph_length = sizeof(kDafsa);
 
