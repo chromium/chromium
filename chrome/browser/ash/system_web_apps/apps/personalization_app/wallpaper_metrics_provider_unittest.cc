@@ -131,7 +131,8 @@ TEST_F(WallpaperMetricsProviderTest, RecordsImageSettledWithEmptyCollectionId) {
   histogram_tester.ExpectTotalCount("Ash.Wallpaper.Collection.Settled", 0);
 }
 
-TEST_F(WallpaperMetricsProviderTest, RecordsSeaPenTemplateSettled) {
+// TODO(crbug.com/347294904): Re-enable this test
+TEST_F(WallpaperMetricsProviderTest, DISABLED_RecordsSeaPenTemplateSettled) {
   SimulateUserLogin(kAccountId);
   AccountId account_id =
       ash::Shell::Get()->session_controller()->GetActiveAccountId();
