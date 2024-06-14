@@ -17,6 +17,7 @@ group("webview_ui_test_app") {
 android_apk("webview_ui_test_app_apk") {
   apk_name = "WebViewUiTestApp"
   android_manifest = "java/AndroidManifest.xml"
+  never_incremental = true
   deps = [
     ":webview_ui_test_app_apk_resources",
     ":webview_ui_test_app_java",
