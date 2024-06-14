@@ -2827,6 +2827,7 @@ config("symbols") {
   # Compress debug on 32-bit ARM to stay under 4GB file size limit.
   # https://b/243982712, https://crbug.com/1354616, https://crbug.com/334073642
   if (symbol_level == 2 && !use_debug_fission && !is_nacl &&
+      (is_chromeos_device || is_android) &&
       (current_cpu == "arm" || current_cpu == "x86")) {
     configs += [ "//build/config:compress_debug_sections" ]
   }
