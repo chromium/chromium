@@ -181,6 +181,8 @@ component("fido") {
         "enclave/types.h",
         "enclave/verify/amd.cc",
         "enclave/verify/amd.h",
+        "enclave/verify/attestation_report.cc",
+        "enclave/verify/attestation_report.h",
         "enclave/verify/claim.cc",
         "enclave/verify/claim.h",
         "enclave/verify/endorsement.cc",
