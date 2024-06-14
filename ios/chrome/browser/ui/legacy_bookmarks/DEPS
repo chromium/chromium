@@ -1,6 +1,6 @@
 include_rules = [
   "+ios/chrome/browser/ui/keyboard",
-  "+ios/chrome/browser/ui/bookmarks",
+  "+ios/chrome/browser/bookmarks/ui_bundled",
   "+ios/chrome/browser/ui/menu",
   "+ios/chrome/browser/ui/authentication",
   "+ios/chrome/browser/ui/incognito_reauth",

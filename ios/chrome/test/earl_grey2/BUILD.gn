@@ -47,9 +47,9 @@ chrome_ios_eg2_test("ios_chrome_bookmarks_eg2tests_module") {
   xcode_test_application_name = "ios_chrome_eg2tests"
 
   deps = [
-    "//ios/chrome/browser/ui/bookmarks:eg2_tests",
-    "//ios/chrome/browser/ui/bookmarks/folder_chooser:eg2_tests",
-    "//ios/chrome/browser/ui/bookmarks/home:eg2_tests",
+    "//ios/chrome/browser/bookmarks/ui_bundled:eg2_tests",
+    "//ios/chrome/browser/bookmarks/ui_bundled/folder_chooser:eg2_tests",
+    "//ios/chrome/browser/bookmarks/ui_bundled/home:eg2_tests",
   ]
   data_deps = [ ":ios_chrome_eg2tests" ]
 }
@@ -289,9 +289,9 @@ source_set("eg2_tests") {
 
   deps = [
     "//ios/chrome/app/strings",
+    "//ios/chrome/browser/bookmarks/ui_bundled:eg_test_support+eg2",
     "//ios/chrome/browser/shared/model/prefs:pref_names",
     "//ios/chrome/browser/shared/public/features",
-    "//ios/chrome/browser/ui/bookmarks:eg_test_support+eg2",
     "//ios/chrome/browser/ui/settings:settings_root_constants",
     "//ios/chrome/browser/ui/settings/password:eg_test_support+eg2",
     "//ios/chrome/browser/ui/settings/password:password_constants",
