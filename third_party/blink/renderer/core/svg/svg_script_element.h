@@ -116,7 +116,9 @@ class SVGScriptElement final : public SVGElement,
 
   bool have_fired_load_ = false;
 
+  // https://w3c.github.io/trusted-types/dist/spec/#script-scripttext
   ParkableString script_text_internal_slot_;
+  bool children_changed_by_api_ = false;
 
   Member<ScriptLoader> loader_;
 };
