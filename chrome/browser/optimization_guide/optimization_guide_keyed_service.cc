@@ -59,6 +59,7 @@
 #include "components/optimization_guide/core/optimization_guide_navigation_data.h"
 #include "components/optimization_guide/core/optimization_guide_prefs.h"
 #include "components/optimization_guide/core/optimization_guide_store.h"
+#include "components/optimization_guide/core/optimization_guide_switches.h"
 #include "components/optimization_guide/core/optimization_guide_util.h"
 #include "components/optimization_guide/core/prediction_manager.h"
 #include "components/optimization_guide/core/tab_url_provider.h"
@@ -205,8 +206,15 @@ class OnDeviceModelComponentStateManagerDelegate
 
   void GetFreeDiskSpace(const base::FilePath& path,
                         base::OnceCallback<void(int64_t)> callback) override {
+    base::TaskTraits traits = {base::MayBlock(),
+                               base::TaskPriority::BEST_EFFORT};
+    if (optimization_guide::switches::
+            ShouldGetFreeDiskSpaceWithUserVisiblePriorityTask()) {
+      traits.UpdatePriority(base::TaskPriority::USER_VISIBLE);
+    }
+
     base::ThreadPool::PostTaskAndReplyWithResult(
-        FROM_HERE, {base::MayBlock(), base::TaskPriority::BEST_EFFORT},
+        FROM_HERE, traits,
         base::BindOnce(&base::SysInfo::AmountOfFreeDiskSpace, path),
         std::move(callback));
   }

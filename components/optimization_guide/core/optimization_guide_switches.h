@@ -68,6 +68,8 @@ COMPONENT_EXPORT(OPTIMIZATION_GUIDE_FEATURES)
 extern const char kModelQualityServiceAPIKey[];
 COMPONENT_EXPORT(OPTIMIZATION_GUIDE_FEATURES)
 extern const char kEnableModelQualityDogfoodLogging[];
+COMPONENT_EXPORT(OPTIMIZATION_GUIDE_FEATURES)
+extern const char kGetFreeDiskSpaceWithUserVisiblePriorityTask[];
 
 // The API key for the ModelQualityLoggingService.
 COMPONENT_EXPORT(OPTIMIZATION_GUIDE_FEATURES)
@@ -159,6 +161,12 @@ std::optional<base::FilePath> GetOnDeviceValidationWriteToFile();
 // Returns true if debug logs are enabled for the optimization guide.
 COMPONENT_EXPORT(OPTIMIZATION_GUIDE_FEATURES)
 bool IsDebugLogsEnabled();
+
+// Returns whether to get free disk space with base::TaskPriority::USER_VISIBLE
+// task. This is about the freediskspace check in the context of the on-device
+// model eligibility check.
+COMPONENT_EXPORT(OPTIMIZATION_GUIDE_FEATURES)
+bool ShouldGetFreeDiskSpaceWithUserVisiblePriorityTask();
 
 }  // namespace switches
 }  // namespace optimization_guide
