@@ -34,6 +34,7 @@
 #include "base/metrics/histogram_macros.h"
 #include "base/numerics/safe_conversions.h"
 #include "base/task/single_thread_task_runner.h"
+#include "third_party/blink/public/common/features.h"
 #include "third_party/blink/public/common/loader/referrer_utils.h"
 #include "third_party/blink/public/mojom/fetch/fetch_api_request.mojom-blink.h"
 #include "third_party/blink/public/platform/platform.h"
@@ -105,12 +106,9 @@ scoped_refptr<SharedBuffer> GetDataForTransparentPlaceholderImageIndex(
 
 void MarkKnownTransparentPlaceholderResourceRequestIfNeeded(
     ResourceRequest& resource_request) {
-  static const bool transparent_image_optimization_enabled =
-      base::FeatureList::IsEnabled(
-          features::kSimplifyLoadingTransparentPlaceholderImage);
-
-  if (transparent_image_optimization_enabled) {
-    wtf_size_t index = FindTransparentPlaceholderIndex(resource_request.Url());
+  KURL url = resource_request.Url();
+  if (url.ProtocolIsData()) {
+    wtf_size_t index = FindTransparentPlaceholderIndex(url);
     if (index != kNotFound) {
       resource_request.SetKnownTransparentPlaceholderImageIndex(index);
     }
@@ -121,6 +119,7 @@ ImageResource* CreateResourceForTransparentPlaceholderImage(
     const ResourceRequest& request,
     const ResourceLoaderOptions& options) {
   const wtf_size_t index = request.GetKnownTransparentPlaceholderImageIndex();
+  CHECK(blink::features::IsSimplifyLoadingTransparentPlaceholderImageEnabled());
   CHECK_NE(index, kNotFound);
   CHECK(index >= 0 && index < 2);
   scoped_refptr<SharedBuffer> data =
@@ -279,7 +278,9 @@ class ImageResource::ImageResourceFactory : public NonTextResourceFactory {
 
   Resource* Create(const ResourceRequest& request,
                    const ResourceLoaderOptions& options) const override {
-    if (request.GetKnownTransparentPlaceholderImageIndex() != kNotFound) {
+    if (blink::features::
+            IsSimplifyLoadingTransparentPlaceholderImageEnabled() &&
+        (request.GetKnownTransparentPlaceholderImageIndex() != kNotFound)) {
       return CreateResourceForTransparentPlaceholderImage(request, options);
     }
 
