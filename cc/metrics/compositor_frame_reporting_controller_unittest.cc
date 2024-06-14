@@ -319,7 +319,6 @@ class CompositorFrameReportingControllerTest : public testing::Test {
   // before and destroyed after that.
   base::SimpleTestTickClock test_tick_clock_;
 
-  TestCompositorFrameReportingController reporting_controller_;
   viz::BeginFrameArgs args_;
   viz::BeginFrameId current_id_;
   viz::BeginFrameId last_activated_id_;
@@ -334,6 +333,7 @@ class CompositorFrameReportingControllerTest : public testing::Test {
   viz::FrameTokenGenerator current_token_;
   DroppedFrameCounter dropped_counter_;
   TotalFrameCounter total_frame_counter_;
+  TestCompositorFrameReportingController reporting_controller_;
   ::base::test::TracingEnvironment tracing_environment_;
 };
 
