@@ -68,8 +68,7 @@ arc::mojom::NetworkType TranslateNetworkType(const std::string& type);
 std::vector<arc::mojom::NetworkConfigurationPtr> TranslateNetworkStates(
     const std::string& arc_vpn_path,
     const ash::NetworkStateHandler::NetworkStateList& network_states,
-    const std::map<std::string, base::Value::Dict>& shill_network_properties =
-        {});
+    const std::map<std::string, base::Value::Dict>& shill_network_properties);
 
 // Translates a vector of NetworkStates to a vector of ScanResults.
 // For each state, fill the fields in ScanResult.
@@ -105,19 +104,6 @@ TranslateSocketConnectionEvent(const mojom::SocketConnectionEventPtr& mojom);
 bool AreConfigurationsEquivalent(
     std::vector<arc::mojom::NetworkConfigurationPtr>& latest_networks,
     std::vector<arc::mojom::NetworkConfigurationPtr>& cached_networks);
-
-// Set up proxy configuration. If proxy auto discovery PAC URL is available,
-// we set up proxy auto discovery PAC URL, otherwise we set up host, port and
-// exclusion list. These are only two settings Android supports.
-base::Value::Dict TranslateProxyConfiguration(
-    const mojom::ArcProxyInfo& http_proxy);
-
-// Convert a vector of strings, |string_list|, to a base::Value::List that can
-// be added to an ONC dictionary.  This is used for fields like NameServers,
-// SearchDomains, etc.
-base::Value::List TranslateStringListToValue(
-    const std::vector<std::string>& string_list);
-
 }  // namespace arc::net_utils
 
 #endif  // ASH_COMPONENTS_ARC_NET_ARC_NET_UTILS_H_
