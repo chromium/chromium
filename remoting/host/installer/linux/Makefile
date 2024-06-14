@@ -5,7 +5,9 @@
 # This Makefile is used by debhelper, which supplies the appropriate value of
 # variables not defined here, such as DESTDIR.
 
-SRC_DIR = ../../../..
+ifndef SRC_DIR
+  SRC_DIR = ../../../..
+endif
 ifndef BUILD_DIR
   BUILD_DIR = $(SRC_DIR)/out/Release
 endif
