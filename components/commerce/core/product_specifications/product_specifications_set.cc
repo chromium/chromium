@@ -39,17 +39,17 @@ ProductSpecificationsSet ProductSpecificationsSet::FromProto(
     urls.emplace_back(data.url());
   }
   return ProductSpecificationsSet(
-      specifics.uuid(), specifics.creation_time_unix_epoch_micros(),
-      specifics.update_time_unix_epoch_micros(), urls, specifics.name());
+      specifics.uuid(), specifics.creation_time_unix_epoch_millis(),
+      specifics.update_time_unix_epoch_millis(), urls, specifics.name());
 }
 
 sync_pb::ProductComparisonSpecifics ProductSpecificationsSet::ToProto() const {
   sync_pb::ProductComparisonSpecifics specifics;
   specifics.set_uuid(uuid_.AsLowercaseString());
   specifics.set_name(name_);
-  specifics.set_creation_time_unix_epoch_micros(
+  specifics.set_creation_time_unix_epoch_millis(
       creation_time_.InMillisecondsSinceUnixEpoch());
-  specifics.set_update_time_unix_epoch_micros(
+  specifics.set_update_time_unix_epoch_millis(
       update_time_.InMillisecondsSinceUnixEpoch());
   for (const GURL& url : urls_) {
     sync_pb::ComparisonData* data = specifics.add_data();

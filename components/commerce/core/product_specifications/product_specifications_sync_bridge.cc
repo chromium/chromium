@@ -25,8 +25,8 @@ const sync_pb::ProductComparisonSpecifics TrimSpecificsForCaching(
   sync_pb::ProductComparisonSpecifics trimmed_comparison_data =
       sync_pb::ProductComparisonSpecifics(comparison_specifics);
   trimmed_comparison_data.clear_uuid();
-  trimmed_comparison_data.clear_creation_time_unix_epoch_micros();
-  trimmed_comparison_data.clear_update_time_unix_epoch_micros();
+  trimmed_comparison_data.clear_creation_time_unix_epoch_millis();
+  trimmed_comparison_data.clear_update_time_unix_epoch_millis();
   trimmed_comparison_data.clear_name();
   trimmed_comparison_data.clear_data();
   return trimmed_comparison_data;
@@ -84,8 +84,8 @@ ProductSpecificationsSyncBridge::ApplyIncrementalSyncChanges(
         if (local_specifics != entries_.end()) {
           sync_pb::ProductComparisonSpecifics before = local_specifics->second;
           // Overwrite if specifics from sync are more recent.
-          if (specifics.update_time_unix_epoch_micros() >
-              local_specifics->second.update_time_unix_epoch_micros()) {
+          if (specifics.update_time_unix_epoch_millis() >
+              local_specifics->second.update_time_unix_epoch_millis()) {
             entries_[change->storage_key()] = specifics;
             batch->WriteData(change->storage_key(),
                              specifics.SerializeAsString());
@@ -168,8 +168,8 @@ ProductSpecificationsSyncBridge::AddProductSpecifications(
   sync_pb::ProductComparisonSpecifics specifics;
   specifics.set_uuid(base::Uuid::GenerateRandomV4().AsLowercaseString());
   int64_t time_now = base::Time::Now().InMillisecondsSinceUnixEpoch();
-  specifics.set_creation_time_unix_epoch_micros(time_now);
-  specifics.set_update_time_unix_epoch_micros(time_now);
+  specifics.set_creation_time_unix_epoch_millis(time_now);
+  specifics.set_update_time_unix_epoch_millis(time_now);
   specifics.set_name(name);
   for (const GURL& url : urls) {
     sync_pb::ComparisonData* comparison_data = specifics.add_data();
@@ -202,7 +202,7 @@ ProductSpecificationsSyncBridge::UpdateProductSpecificationsSet(
 
   sync_pb::ProductComparisonSpecifics before = it->second;
   sync_pb::ProductComparisonSpecifics& specifics = it->second;
-  specifics.set_update_time_unix_epoch_micros(
+  specifics.set_update_time_unix_epoch_millis(
       base::Time::Now().InMillisecondsSinceUnixEpoch());
   specifics.set_name(product_specs_set.name());
 
@@ -359,10 +359,10 @@ ProductSpecificationsSyncBridge::CreateEntityData(
   *entity_specifics = GetPossiblyTrimmedPasswordSpecificsData(specifics.uuid());
 
   entity_specifics->set_uuid(specifics.uuid());
-  entity_specifics->set_creation_time_unix_epoch_micros(
-      specifics.creation_time_unix_epoch_micros());
-  entity_specifics->set_update_time_unix_epoch_micros(
-      specifics.update_time_unix_epoch_micros());
+  entity_specifics->set_creation_time_unix_epoch_millis(
+      specifics.creation_time_unix_epoch_millis());
+  entity_specifics->set_update_time_unix_epoch_millis(
+      specifics.update_time_unix_epoch_millis());
   entity_specifics->set_name(specifics.name());
 
   for (const sync_pb::ComparisonData& data_to_copy : specifics.data()) {

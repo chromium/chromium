@@ -30,8 +30,8 @@ const char kName[] = "name";
 const char kNewName[] = "my_new_name";
 const std::vector<std::string> kUrls = {"https://product_one.com/",
                                         "https://product_two.com/"};
-const int64_t kCreationTimeEpochMicros = 1712162260;
-const int64_t kUpdateTimeEpochMicros = 1713162260;
+const int64_t kCreationTimeEpochMillis = 1712162260;
+const int64_t kUpdateTimeEpochMillis = 1713162260;
 using testing::UnorderedElementsAre;
 
 void FillInSpecifics(
@@ -41,10 +41,10 @@ void FillInSpecifics(
     const std::vector<std::string>& urls) {
   product_comparison_specifics->set_uuid(uuid);
   product_comparison_specifics->set_name(name);
-  product_comparison_specifics->set_creation_time_unix_epoch_micros(
-      base::Time::Now().ToDeltaSinceWindowsEpoch().InMicroseconds());
-  product_comparison_specifics->set_update_time_unix_epoch_micros(
-      base::Time::Now().ToDeltaSinceWindowsEpoch().InMicroseconds());
+  product_comparison_specifics->set_creation_time_unix_epoch_millis(
+      base::Time::Now().ToDeltaSinceWindowsEpoch().InMilliseconds());
+  product_comparison_specifics->set_update_time_unix_epoch_millis(
+      base::Time::Now().ToDeltaSinceWindowsEpoch().InMilliseconds());
   for (const std::string& url : urls) {
     sync_pb::ComparisonData* data = product_comparison_specifics->add_data();
     data->set_url(url);
@@ -86,8 +86,8 @@ class SingleClientProductSpecificationsSyncTest : public SyncTest {
     fake_server_->InjectEntity(
         syncer::PersistentUniqueClientEntity::CreateFromSpecificsForTesting(
             kNonUniqueName, kUuid, specifics,
-            /*creation_time=*/kCreationTimeEpochMicros,
-            /*last_modified_time=*/kUpdateTimeEpochMicros));
+            /*creation_time=*/kCreationTimeEpochMillis,
+            /*last_modified_time=*/kUpdateTimeEpochMillis));
   }
 
   commerce::ProductSpecificationsService* GetService() {

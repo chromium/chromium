@@ -40,8 +40,8 @@ ProductSpecificationsService::GetAllProductSpecifications() {
       urls.emplace_back(data.url());
     }
     product_specifications.emplace_back(
-        entry.second.uuid(), entry.second.creation_time_unix_epoch_micros(),
-        entry.second.update_time_unix_epoch_micros(), urls,
+        entry.second.uuid(), entry.second.creation_time_unix_epoch_millis(),
+        entry.second.update_time_unix_epoch_millis(), urls,
         entry.second.name());
   }
   return product_specifications;

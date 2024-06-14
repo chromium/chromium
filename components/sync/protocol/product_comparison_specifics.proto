@@ -21,11 +21,11 @@ message ProductComparisonSpecifics {
   // The primary key for local storage.
   optional string uuid = 1;
 
-  // Tracks when this entity was created.
-  optional int64 creation_time_unix_epoch_micros = 2;
+  // Tracks when this entity was created (milliseconds since epoch).
+  optional int64 creation_time_unix_epoch_millis = 2;
 
-  // Tracks when this entity was last modified.
-  optional int64 update_time_unix_epoch_micros = 3;
+  // Tracks when this entity was last modified (milliseconds since epoch).
+  optional int64 update_time_unix_epoch_millis = 3;
 
   // The name of the comparison group.
   optional string name = 4;

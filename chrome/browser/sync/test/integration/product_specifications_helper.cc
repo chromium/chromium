@@ -27,10 +27,10 @@ bool ProductSpecificationsChecker::IsExitConditionSatisfied(std::ostream* os) {
   *os << "    uuid: " << product_comparison_specifics_->uuid() << "\n";
   *os << "    name: " << product_comparison_specifics_->name() << "\n";
   *os << "    creation_time: "
-      << product_comparison_specifics_->creation_time_unix_epoch_micros()
+      << product_comparison_specifics_->creation_time_unix_epoch_millis()
       << "\n";
   *os << "    update_time: "
-      << product_comparison_specifics_->update_time_unix_epoch_micros() << "\n";
+      << product_comparison_specifics_->update_time_unix_epoch_millis() << "\n";
   std::vector<std::string> urls;
   for (const sync_pb::ComparisonData& comparison_data :
        product_comparison_specifics_->data()) {
@@ -54,11 +54,11 @@ bool ProductSpecificationsChecker::IsSpecificsAvailableAndEqual() {
         product_specifications_set.creation_time() ==
             base::Time::FromMillisecondsSinceUnixEpoch(
                 product_comparison_specifics_
-                    ->creation_time_unix_epoch_micros()) &&
+                    ->creation_time_unix_epoch_millis()) &&
         product_specifications_set.update_time() ==
             base::Time::FromMillisecondsSinceUnixEpoch(
                 product_comparison_specifics_
-                    ->update_time_unix_epoch_micros()) &&
+                    ->update_time_unix_epoch_millis()) &&
         product_specifications_set.urls() == specifics_urls) {
       return true;
     }

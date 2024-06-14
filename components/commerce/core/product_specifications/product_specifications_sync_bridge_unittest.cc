@@ -56,9 +56,9 @@ void VerifySpecificsAgainstIndex(
   EXPECT_EQ(kInitUuid[idx], product_comparison_specifics->uuid());
   EXPECT_EQ(kInitName[idx], product_comparison_specifics->name());
   EXPECT_EQ(kCreationTime[idx],
-            product_comparison_specifics->creation_time_unix_epoch_micros());
+            product_comparison_specifics->creation_time_unix_epoch_millis());
   EXPECT_EQ(kUpdateTime[idx],
-            product_comparison_specifics->update_time_unix_epoch_micros());
+            product_comparison_specifics->update_time_unix_epoch_millis());
   int j = 0;
   for (auto& data : product_comparison_specifics->data()) {
     EXPECT_EQ(kProductComparisonUrls[idx][j], data.url());
@@ -73,14 +73,14 @@ std::string GetName(uint64_t idx) {
 
 sync_pb::ProductComparisonSpecifics BuildProductComparisonSpecifics(
     std::string uuid,
-    int64_t creation_time_micros_epoch,
-    int64_t update_time_micros_epoch,
+    int64_t creation_time_millis_epoch,
+    int64_t update_time_millis_epoch,
     std::string name,
     const std::vector<std::string>& urls) {
   sync_pb::ProductComparisonSpecifics specifics;
   specifics.set_uuid(uuid);
-  specifics.set_creation_time_unix_epoch_micros(creation_time_micros_epoch);
-  specifics.set_update_time_unix_epoch_micros(update_time_micros_epoch);
+  specifics.set_creation_time_unix_epoch_millis(creation_time_millis_epoch);
+  specifics.set_update_time_unix_epoch_millis(update_time_millis_epoch);
   specifics.set_name(name);
 
   for (auto& url : urls) {
@@ -133,10 +133,10 @@ syncer::EntityData MakeEntityData(
 void VerifyCompareSpecifics(const sync_pb::ProductComparisonSpecifics& expected,
                             const sync_pb::ProductComparisonSpecifics& actual) {
   EXPECT_EQ(expected.uuid(), actual.uuid());
-  EXPECT_EQ(expected.creation_time_unix_epoch_micros(),
-            actual.creation_time_unix_epoch_micros());
-  EXPECT_EQ(expected.update_time_unix_epoch_micros(),
-            actual.update_time_unix_epoch_micros());
+  EXPECT_EQ(expected.creation_time_unix_epoch_millis(),
+            actual.creation_time_unix_epoch_millis());
+  EXPECT_EQ(expected.update_time_unix_epoch_millis(),
+            actual.update_time_unix_epoch_millis());
   EXPECT_EQ(expected.name(), actual.name());
   for (int i = 0; i < expected.data_size(); i++) {
     EXPECT_EQ(expected.data()[i].url(), actual.data()[i].url());
@@ -174,9 +174,9 @@ class ProductSpecificationsSyncBridgeTest : public testing::Test {
       sync_pb::ProductComparisonSpecifics product_comparison_specifics;
       product_comparison_specifics.set_uuid(kInitUuid[i]);
       product_comparison_specifics.set_name(kInitName[i]);
-      product_comparison_specifics.set_creation_time_unix_epoch_micros(
+      product_comparison_specifics.set_creation_time_unix_epoch_millis(
           kCreationTime[i]);
-      product_comparison_specifics.set_update_time_unix_epoch_micros(
+      product_comparison_specifics.set_update_time_unix_epoch_millis(
           kUpdateTime[i]);
       for (auto& compare_url : kProductComparisonUrls[i]) {
         sync_pb::ComparisonData* compare_data =
@@ -405,8 +405,8 @@ TEST_F(ProductSpecificationsSyncBridgeTest, TestApplyUpdateLaterTimestamp) {
   sync_pb::ProductComparisonSpecifics earlier_specifics =
       entries().begin()->second;
   sync_pb::ProductComparisonSpecifics later_specifics = earlier_specifics;
-  later_specifics.set_update_time_unix_epoch_micros(
-      later_specifics.update_time_unix_epoch_micros() +
+  later_specifics.set_update_time_unix_epoch_millis(
+      later_specifics.update_time_unix_epoch_millis() +
       base::Time::kMillisecondsPerDay);
 
   update_changes.push_back(syncer::EntityChange::CreateUpdate(
@@ -430,8 +430,8 @@ TEST_F(ProductSpecificationsSyncBridgeTest, TestApplyUpdateEarlierTimestamp) {
       entries().begin()->second;
   sync_pb::ProductComparisonSpecifics earlier_specifics =
       entries().begin()->second;
-  earlier_specifics.set_update_time_unix_epoch_micros(
-      earlier_specifics.update_time_unix_epoch_micros() -
+  earlier_specifics.set_update_time_unix_epoch_millis(
+      earlier_specifics.update_time_unix_epoch_millis() -
       base::Time::kMillisecondsPerDay);
 
   update_changes.push_back(syncer::EntityChange::CreateUpdate(
@@ -499,8 +499,8 @@ TEST_F(ProductSpecificationsSyncBridgeTest, TestUpdate) {
   urls.emplace_back(GURL("http://example.com/additional_url"));
 
   ProductSpecificationsSet set(
-      specifics.uuid(), specifics.creation_time_unix_epoch_micros(),
-      specifics.update_time_unix_epoch_micros(), urls, "new name");
+      specifics.uuid(), specifics.creation_time_unix_epoch_millis(),
+      specifics.update_time_unix_epoch_millis(), urls, "new name");
 
   EXPECT_TRUE(UpdateProductSpecificationsSet(set).has_value());
   base::RunLoop().RunUntilIdle();
@@ -541,9 +541,9 @@ TEST_F(ProductSpecificationsSyncBridgeTest,
   EXPECT_TRUE(entity_specifics.mutable_product_comparison()->has_uuid());
   EXPECT_TRUE(entity_specifics.mutable_product_comparison()->has_name());
   EXPECT_TRUE(entity_specifics.mutable_product_comparison()
-                  ->has_creation_time_unix_epoch_micros());
+                  ->has_creation_time_unix_epoch_millis());
   EXPECT_TRUE(entity_specifics.mutable_product_comparison()
-                  ->has_update_time_unix_epoch_micros());
+                  ->has_update_time_unix_epoch_millis());
   EXPECT_EQ(kInitCompareSpecifics[0].data_size(),
             entity_specifics.mutable_product_comparison()->data_size());
 
@@ -552,9 +552,9 @@ TEST_F(ProductSpecificationsSyncBridgeTest,
   EXPECT_FALSE(trimmed.product_comparison().has_uuid());
   EXPECT_FALSE(trimmed.product_comparison().has_name());
   EXPECT_FALSE(
-      trimmed.product_comparison().has_creation_time_unix_epoch_micros());
+      trimmed.product_comparison().has_creation_time_unix_epoch_millis());
   EXPECT_FALSE(
-      trimmed.product_comparison().has_update_time_unix_epoch_micros());
+      trimmed.product_comparison().has_update_time_unix_epoch_millis());
   EXPECT_EQ(0, trimmed.product_comparison().data_size());
 }
 

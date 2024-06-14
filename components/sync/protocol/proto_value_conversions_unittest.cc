@@ -356,8 +356,8 @@ TEST(ProtoValueConversionsTest, ClientToServerResponseToValue) {
 TEST(ProtoValueConversionsTest, CompareSpecificsData) {
   sync_pb::ProductComparisonSpecifics specifics;
   specifics.set_uuid("my_uuid");
-  specifics.set_creation_time_unix_epoch_micros(1708532099);
-  specifics.set_update_time_unix_epoch_micros(1708642103);
+  specifics.set_creation_time_unix_epoch_millis(1708532099);
+  specifics.set_update_time_unix_epoch_millis(1708642103);
   specifics.set_name("my_name");
   specifics.add_data();
   specifics.mutable_data(0)->set_url("https://www.foo.com");
@@ -369,12 +369,12 @@ TEST(ProtoValueConversionsTest, CompareSpecificsData) {
   EXPECT_FALSE(value.empty());
   EXPECT_TRUE(value.FindString("uuid"));
   EXPECT_STREQ("my_uuid", value.FindString("uuid")->c_str());
-  EXPECT_TRUE(value.FindString("creation_time_unix_epoch_micros"));
+  EXPECT_TRUE(value.FindString("creation_time_unix_epoch_millis"));
   EXPECT_STREQ("1708532099",
-               value.FindString("creation_time_unix_epoch_micros")->c_str());
-  EXPECT_TRUE(value.FindString("update_time_unix_epoch_micros"));
+               value.FindString("creation_time_unix_epoch_millis")->c_str());
+  EXPECT_TRUE(value.FindString("update_time_unix_epoch_millis"));
   EXPECT_STREQ("1708642103",
-               value.FindString("update_time_unix_epoch_micros")->c_str());
+               value.FindString("update_time_unix_epoch_millis")->c_str());
   EXPECT_TRUE(value.FindString("name"));
   EXPECT_STREQ("my_name", value.FindString("name")->c_str());
   const base::Value::List* data_list = value.FindList("data");

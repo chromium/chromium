@@ -33,14 +33,14 @@ const char kProductSpecsName[] = "name";
 
 sync_pb::ProductComparisonSpecifics BuildProductComparisonSpecifics(
     const std::string& uuid,
-    int64_t creation_time_micros_epoch,
-    int64_t update_time_micros_epoch,
+    int64_t creation_time_millis_epoch,
+    int64_t update_time_millis_epoch,
     const std::string& name,
     std::vector<std::string> urls) {
   sync_pb::ProductComparisonSpecifics specifics;
   specifics.set_uuid(uuid);
-  specifics.set_creation_time_unix_epoch_micros(creation_time_micros_epoch);
-  specifics.set_update_time_unix_epoch_micros(update_time_micros_epoch);
+  specifics.set_creation_time_unix_epoch_millis(creation_time_millis_epoch);
+  specifics.set_update_time_unix_epoch_millis(update_time_millis_epoch);
   specifics.set_name(name);
 
   for (auto& url : urls) {
@@ -56,10 +56,10 @@ void CheckSpecsAgainstSpecifics(
   EXPECT_EQ(base::Uuid::ParseLowercase(specifics.uuid()),
             specifications.uuid());
   EXPECT_EQ(base::Time::FromMillisecondsSinceUnixEpoch(
-                specifics.creation_time_unix_epoch_micros()),
+                specifics.creation_time_unix_epoch_millis()),
             specifications.creation_time());
   EXPECT_EQ(base::Time::FromMillisecondsSinceUnixEpoch(
-                specifics.update_time_unix_epoch_micros()),
+                specifics.update_time_unix_epoch_millis()),
             specifications.update_time());
   EXPECT_EQ(specifics.name(), specifications.name());
   std::vector<GURL> urls;
@@ -113,10 +113,10 @@ MATCHER_P(HasAllProductSpecs, product_comparison_specifics, "") {
              product_comparison_specifics.uuid() &&
          arg.creation_time() == base::Time::FromMillisecondsSinceUnixEpoch(
                                     product_comparison_specifics
-                                        .creation_time_unix_epoch_micros()) &&
+                                        .creation_time_unix_epoch_millis()) &&
          arg.update_time() == base::Time::FromMillisecondsSinceUnixEpoch(
                                   product_comparison_specifics
-                                      .update_time_unix_epoch_micros()) &&
+                                      .update_time_unix_epoch_millis()) &&
          arg.name() == product_comparison_specifics.name() &&
          arg.urls() == specifics_urls;
 }
@@ -421,8 +421,8 @@ TEST_F(ProductSpecificationsServiceTest, TestObserverUpdateSpecifics) {
       kProductComparisonSpecifics[0];
   sync_pb::ComparisonData* new_specifics_data = new_specifics.add_data();
   new_specifics_data->set_url("https://newurl.com/");
-  new_specifics.set_update_time_unix_epoch_micros(
-      new_specifics.update_time_unix_epoch_micros() +
+  new_specifics.set_update_time_unix_epoch_millis(
+      new_specifics.update_time_unix_epoch_millis() +
       base::Time::kMillisecondsPerDay);
   update_changes.push_back(syncer::EntityChange::CreateUpdate(
       new_specifics.uuid(), MakeEntityData(new_specifics)));

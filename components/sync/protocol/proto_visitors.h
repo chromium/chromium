@@ -352,8 +352,8 @@ VISIT_PROTO_FIELDS(const sync_pb::ComparisonData& proto) {
 
 VISIT_PROTO_FIELDS(const sync_pb::ProductComparisonSpecifics& proto) {
   VISIT(uuid);
-  VISIT(creation_time_unix_epoch_micros);
-  VISIT(update_time_unix_epoch_micros);
+  VISIT(creation_time_unix_epoch_millis);
+  VISIT(update_time_unix_epoch_millis);
   VISIT(name);
   VISIT_REP(data);
 }
