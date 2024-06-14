@@ -24,6 +24,7 @@
 #include "net/third_party/quiche/src/quiche/quic/core/http/quic_spdy_client_session_base.h"
 #include "net/third_party/quiche/src/quiche/quic/core/http/quic_spdy_client_stream.h"
 #include "net/third_party/quiche/src/quiche/quic/core/http/spdy_utils.h"
+#include "net/third_party/quiche/src/quiche/quic/core/quic_server_id.h"
 #include "net/third_party/quiche/src/quiche/quic/core/quic_utils.h"
 #include "net/third_party/quiche/src/quiche/quic/test_tools/crypto_test_utils.h"
 #include "net/third_party/quiche/src/quiche/quic/test_tools/quic_config_peer.h"
@@ -186,8 +187,8 @@ class QuicChromiumClientStreamTest
     stream_ = new QuicChromiumClientStream(
         quic::test::GetNthClientInitiatedBidirectionalStreamId(
             version_.transport_version, 0),
-        &session_, quic::BIDIRECTIONAL, NetLogWithSource(),
-        TRAFFIC_ANNOTATION_FOR_TESTS);
+        &session_, quic::QuicServerId(), quic::BIDIRECTIONAL,
+        NetLogWithSource(), TRAFFIC_ANNOTATION_FOR_TESTS);
     session_.ActivateStream(base::WrapUnique(stream_.get()));
     handle_ = stream_->CreateHandle();
     helper_.AdvanceTime(quic::QuicTime::Delta::FromSeconds(1));
@@ -852,8 +853,8 @@ TEST_P(QuicChromiumClientStreamTest, HeadersBeforeHandle) {
   // stream.
   quic::QuicStreamId stream_id = GetNthServerInitiatedUnidirectionalStreamId(0);
   QuicChromiumClientStream* stream2 = new QuicChromiumClientStream(
-      stream_id, &session_, quic::READ_UNIDIRECTIONAL, NetLogWithSource(),
-      TRAFFIC_ANNOTATION_FOR_TESTS);
+      stream_id, &session_, quic::QuicServerId(), quic::READ_UNIDIRECTIONAL,
+      NetLogWithSource(), TRAFFIC_ANNOTATION_FOR_TESTS);
   session_.ActivateStream(base::WrapUnique(stream2));
 
   InitializeHeaders();
@@ -876,8 +877,8 @@ TEST_P(QuicChromiumClientStreamTest, HeadersAndDataBeforeHandle) {
   // stream.
   quic::QuicStreamId stream_id = GetNthServerInitiatedUnidirectionalStreamId(0);
   QuicChromiumClientStream* stream2 = new QuicChromiumClientStream(
-      stream_id, &session_, quic::READ_UNIDIRECTIONAL, NetLogWithSource(),
-      TRAFFIC_ANNOTATION_FOR_TESTS);
+      stream_id, &session_, quic::QuicServerId(), quic::READ_UNIDIRECTIONAL,
+      NetLogWithSource(), TRAFFIC_ANNOTATION_FOR_TESTS);
   session_.ActivateStream(base::WrapUnique(stream2));
 
   InitializeHeaders();

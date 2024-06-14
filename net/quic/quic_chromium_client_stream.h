@@ -28,6 +28,7 @@
 #include "net/http/http_stream.h"
 #include "net/log/net_log_with_source.h"
 #include "net/third_party/quiche/src/quiche/quic/core/http/quic_spdy_stream.h"
+#include "net/third_party/quiche/src/quiche/quic/core/quic_server_id.h"
 #include "net/third_party/quiche/src/quiche/spdy/core/http2_header_block.h"
 #include "net/traffic_annotation/network_traffic_annotation.h"
 
@@ -244,12 +245,14 @@ class NET_EXPORT_PRIVATE QuicChromiumClientStream
   QuicChromiumClientStream(
       quic::QuicStreamId id,
       quic::QuicSpdyClientSessionBase* session,
+      quic::QuicServerId server_id,
       quic::StreamType type,
       const NetLogWithSource& net_log,
       const NetworkTrafficAnnotationTag& traffic_annotation);
   QuicChromiumClientStream(
       quic::PendingStream* pending,
       quic::QuicSpdyClientSessionBase* session,
+      quic::QuicServerId server_id,
       const NetLogWithSource& net_log,
       const NetworkTrafficAnnotationTag& traffic_annotation);
 
@@ -353,6 +356,7 @@ class NET_EXPORT_PRIVATE QuicChromiumClientStream
   bool initial_headers_sent_ = false;
 
   raw_ptr<quic::QuicSpdyClientSessionBase> session_;
+  const quic::QuicServerId server_id_;
   quic::QuicTransportVersion quic_version_;
 
   // Set to false if this stream should not be migrated to a cellular network

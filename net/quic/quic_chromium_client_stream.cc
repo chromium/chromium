@@ -17,6 +17,7 @@
 #include "base/task/single_thread_task_runner.h"
 #include "net/base/io_buffer.h"
 #include "net/base/net_errors.h"
+#include "net/base/url_util.h"
 #include "net/http/http_status_code.h"
 #include "net/log/net_log_event_type.h"
 #include "net/quic/quic_chromium_client_session.h"
@@ -544,22 +545,26 @@ QuicChromiumClientStream::Handle::GetGuaranteedLargestMessagePayload() const {
 QuicChromiumClientStream::QuicChromiumClientStream(
     quic::QuicStreamId id,
     quic::QuicSpdyClientSessionBase* session,
+    quic::QuicServerId server_id,
     quic::StreamType type,
     const NetLogWithSource& net_log,
     const NetworkTrafficAnnotationTag& traffic_annotation)
     : quic::QuicSpdyStream(id, session, type),
       net_log_(net_log),
       session_(session),
+      server_id_(std::move(server_id)),
       quic_version_(session->connection()->transport_version()) {}
 
 QuicChromiumClientStream::QuicChromiumClientStream(
     quic::PendingStream* pending,
     quic::QuicSpdyClientSessionBase* session,
+    quic::QuicServerId server_id,
     const NetLogWithSource& net_log,
     const NetworkTrafficAnnotationTag& traffic_annotation)
     : quic::QuicSpdyStream(pending, session),
       net_log_(net_log),
       session_(session),
+      server_id_(std::move(server_id)),
       quic_version_(session->connection()->transport_version()) {}
 
 QuicChromiumClientStream::~QuicChromiumClientStream() {
@@ -573,6 +578,18 @@ void QuicChromiumClientStream::OnInitialHeadersComplete(
     const quic::QuicHeaderList& header_list) {
   DCHECK(!initial_headers_arrived_);
   quic::QuicSpdyStream::OnInitialHeadersComplete(fin, frame_len, header_list);
+
+  if (header_decoding_delay().has_value()) {
+    const int64_t delay_in_milliseconds =
+        header_decoding_delay()->ToMilliseconds();
+    base::UmaHistogramTimes("Net.QuicChromiumClientStream.HeaderDecodingDelay",
+                            base::Milliseconds(delay_in_milliseconds));
+    if (IsGoogleHost(server_id_.host())) {
+      base::UmaHistogramTimes(
+          "Net.QuicChromiumClientStream.HeaderDecodingDelayGoogle",
+          base::Milliseconds(delay_in_milliseconds));
+    }
+  }
 
   spdy::Http2HeaderBlock header_block;
   int64_t length = -1;

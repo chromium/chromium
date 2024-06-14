@@ -2316,6 +2316,22 @@ chromium-metrics-reviews@google.com.
   <summary>Log the stream error code when QUIC stream handle closes.</summary>
 </histogram>
 
+<histogram name="Net.QuicChromiumClientStream.HeaderDecodingDelay{ServerType}"
+    units="ms" expires_after="2025-06-07">
+  <owner>bnc@chromium.org</owner>
+  <owner>src/net/quic/OWNERS</owner>
+  <summary>
+    The delay in decoding received headers due to having to wait for dynamic
+    table entries to arrive on the QPACK encoder stream. Zero if header block
+    could be decoded as soon as it was received. This is recorded for
+    connections made to {ServerType}.
+  </summary>
+  <token key="ServerType">
+    <variant name="" summary="all QUIC servers"/>
+    <variant name="Google" summary="Google servers"/>
+  </token>
+</histogram>
+
 <histogram
     name="Net.QuicChromiumClientStream.Http3DatagramDroppedOnWriteConnectUdpPayload"
     enum="BooleanSuccess" expires_after="2024-12-04">
