@@ -4,6 +4,7 @@
 
 #include "chrome/browser/ui/views/desktop_capture/screen_capture_permission_checker_mac.h"
 
+#include "base/mac/mac_util.h"
 #include "base/metrics/histogram_functions.h"
 #include "content/public/browser/browser_thread.h"
 #include "ui/base/cocoa/permissions_utils.h"
@@ -40,7 +41,8 @@ std::unique_ptr<ScreenCapturePermissionCheckerMac>
 ScreenCapturePermissionCheckerMac::MaybeCreate(
     base::RepeatingCallback<void(bool)> callback) {
   if (base::FeatureList::IsEnabled(
-          kDesktopCapturePermissionCheckerKillSwitch)) {
+          kDesktopCapturePermissionCheckerKillSwitch) &&
+      base::mac::MacOSMajorVersion() >= 13) {
     return std::make_unique<ScreenCapturePermissionCheckerMac>(callback);
   }
   return nullptr;
