@@ -892,6 +892,7 @@ TEST_F(SigninUiUtilWithUnoDesktopTest, ShowExtensionSigninPrompt) {
       tab->GetVisibleURL().spec(),
       GaiaUrls::GetInstance()->signin_chrome_sync_dice().spec(),
       base::CompareCase::INSENSITIVE_ASCII));
+  EXPECT_NE(tab->GetVisibleURL().query().find("flow=promo"), std::string::npos);
 }
 
 TEST_F(SigninUiUtilWithUnoDesktopTest, ShowExtensionSigninPromptReauth) {
