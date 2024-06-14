@@ -10,14 +10,15 @@
 
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
-#include "components/content_settings/core/browser/host_content_settings_map.h"
 #include "components/content_settings/core/common/content_settings.h"
 #include "components/fingerprinting_protection_filter/browser/fingerprinting_protection_filter_constants.h"
 #include "components/fingerprinting_protection_filter/browser/fingerprinting_protection_filter_features.h"
 #include "components/fingerprinting_protection_filter/browser/fingerprinting_protection_profile_interaction_manager.h"
 #include "components/fingerprinting_protection_filter/browser/fingerprinting_protection_web_contents_helper.h"
+#include "components/fingerprinting_protection_filter/browser/test_support.h"
+#include "components/privacy_sandbox/privacy_sandbox_features.h"
 #include "components/subresource_filter/core/common/activation_decision.h"
-#include "components/subresource_filter/core/mojom/subresource_filter.mojom-shared.h"
+#include "components/subresource_filter/core/mojom/subresource_filter.mojom.h"
 #include "components/sync_preferences/testing_pref_service_syncable.h"
 #include "components/ukm/content/source_url_recorder.h"
 #include "components/ukm/test_ukm_recorder.h"
@@ -94,25 +95,19 @@ class FingerprintingProtectionPageActivationThrottleTest
   ~FingerprintingProtectionPageActivationThrottleTest() override = default;
 
   void SetUp() override {
-    content::RenderViewHostTestHarness::SetUp();
-    auto* contents = RenderViewHostTestHarness::web_contents();
-    mock_nav_handle_ =
-        std::make_unique<content::MockNavigationHandle>(contents);
+    RenderViewHostTestHarness::SetUp();
+    mock_nav_handle_ = std::make_unique<content::MockNavigationHandle>(
+        RenderViewHostTestHarness::web_contents());
   }
 
   void TearDown() override {
     scoped_feature_list_.Reset();
-    content::RenderViewHostTestHarness::TearDown();
-  }
-
-  content::MockNavigationHandle* navigation_handle() {
-    return mock_nav_handle_.get();
+    RenderViewHostTestHarness::TearDown();
   }
 
  protected:
   base::test::ScopedFeatureList scoped_feature_list_;
-
- private:
+  TestSupport test_support_;
   std::unique_ptr<content::MockNavigationHandle> mock_nav_handle_;
 };
 
@@ -121,21 +116,18 @@ TEST_F(FingerprintingProtectionPageActivationThrottleTest,
   base::HistogramTester histograms;
 
   ukm::InitializeSourceUrlRecorderForWebContents(
-      navigation_handle()->GetWebContents());
+      mock_nav_handle_->GetWebContents());
   ukm::TestAutoSetUkmRecorder test_ukm_recorder;
 
   // Disable the feature.
   scoped_feature_list_.InitAndDisableFeature(
       features::kEnableFingerprintingProtectionFilter);
 
-  // Initialize the WebContentsHelper and Throttle to be tested.
-  FingerprintingProtectionWebContentsHelper::CreateForWebContents(
-      navigation_handle()->GetWebContents(), /*pref_service=*/nullptr,
-      /*tracking_protection_settings=*/nullptr);
   // Use a mock throttle to test GetActivationDecision() by making EXPECT_CALL
   // on public function.
   auto mock_throttle = MockFingerprintingProtectionPageActivationThrottle(
-      navigation_handle(), nullptr);
+      /*dealer_handle_=*/nullptr, test_support_.tracking_protection_settings(),
+      test_support_.prefs());
 
   // Expect that NotifyResult is called with UNKNOWN ActivationDecision.
   EXPECT_CALL(mock_throttle,
@@ -146,7 +138,8 @@ TEST_F(FingerprintingProtectionPageActivationThrottleTest,
 
   // Initialize a real throttle to test histograms are emitted as expected.
   auto throttle = FingerprintingProtectionPageActivationThrottle(
-      navigation_handle(), nullptr);
+      mock_nav_handle_.get(), test_support_.tracking_protection_settings(),
+      test_support_.prefs());
 
   throttle.WillProcessResponse();
 
@@ -162,20 +155,19 @@ TEST_F(FingerprintingProtectionPageActivationThrottleTest,
   base::HistogramTester histograms;
 
   ukm::InitializeSourceUrlRecorderForWebContents(
-      navigation_handle()->GetWebContents());
+      mock_nav_handle_->GetWebContents());
   ukm::TestAutoSetUkmRecorder test_ukm_recorder;
   // Enable the feature with default params, i.e. activation_level = enabled.
-  scoped_feature_list_.InitAndEnableFeature(
-      features::kEnableFingerprintingProtectionFilter);
+  scoped_feature_list_.InitWithFeatures(
+      {features::kEnableFingerprintingProtectionFilter,
+       privacy_sandbox::kFingerprintingProtectionSetting},
+      {});
 
-  // Initialize the WebContentsHelper and Throttle to be tested.
-  FingerprintingProtectionWebContentsHelper::CreateForWebContents(
-      navigation_handle()->GetWebContents(), /*pref_service=*/nullptr,
-      /*tracking_protection_settings=*/nullptr);
   // Use a mock throttle to test GetActivationDecision() by making EXPECT_CALL
   // on public function.
   auto mock_throttle = MockFingerprintingProtectionPageActivationThrottle(
-      navigation_handle(), nullptr);
+      /*dealer_handle_=*/nullptr, test_support_.tracking_protection_settings(),
+      test_support_.prefs());
 
   // Expect NotifyResult is called with ACTIVATED ActivationDecision.
   EXPECT_CALL(mock_throttle,
@@ -186,7 +178,8 @@ TEST_F(FingerprintingProtectionPageActivationThrottleTest,
 
   // Initialize a real throttle to test histograms are emitted as expected.
   auto throttle = FingerprintingProtectionPageActivationThrottle(
-      navigation_handle(), nullptr);
+      mock_nav_handle_.get(), test_support_.tracking_protection_settings(),
+      test_support_.prefs());
 
   throttle.WillProcessResponse();
 
@@ -217,22 +210,21 @@ TEST_F(FingerprintingProtectionPageActivationThrottleTest,
   base::HistogramTester histograms;
 
   ukm::InitializeSourceUrlRecorderForWebContents(
-      navigation_handle()->GetWebContents());
+      mock_nav_handle_->GetWebContents());
   ukm::TestAutoSetUkmRecorder test_ukm_recorder;
 
   // Enable the feature with dry_run params: activation_level = dry_run.
-  scoped_feature_list_.InitAndEnableFeatureWithParameters(
-      features::kEnableFingerprintingProtectionFilter,
-      {{"activation_level", "dry_run"}});
+  scoped_feature_list_.InitWithFeaturesAndParameters(
+      {{features::kEnableFingerprintingProtectionFilter,
+        {{"activation_level", "dry_run"}}},
+       {privacy_sandbox::kFingerprintingProtectionSetting, {}}},
+      {});
 
-  // Initialize the WebContentsHelper and Throttle to be tested.
-  FingerprintingProtectionWebContentsHelper::CreateForWebContents(
-      navigation_handle()->GetWebContents(), /*pref_service=*/nullptr,
-      /*tracking_protection_settings=*/nullptr);
   // Use a mock throttle to test GetActivationDecision() by making EXPECT_CALL
   // on public function.
   auto mock_throttle = MockFingerprintingProtectionPageActivationThrottle(
-      navigation_handle(), nullptr);
+      /*dealer_handle_=*/nullptr, test_support_.tracking_protection_settings(),
+      test_support_.prefs());
 
   // Expect that NotifyResult is called with ACTIVATED ActivationDecision.
   EXPECT_CALL(mock_throttle,
@@ -243,7 +235,8 @@ TEST_F(FingerprintingProtectionPageActivationThrottleTest,
 
   // Initialize a real throttle to test histograms are emitted as expected.
   auto throttle = FingerprintingProtectionPageActivationThrottle(
-      navigation_handle(), nullptr);
+      mock_nav_handle_.get(), test_support_.tracking_protection_settings(),
+      test_support_.prefs());
 
   throttle.WillProcessResponse();
 
@@ -274,22 +267,21 @@ TEST_F(FingerprintingProtectionPageActivationThrottleTest,
   base::HistogramTester histograms;
 
   ukm::InitializeSourceUrlRecorderForWebContents(
-      navigation_handle()->GetWebContents());
+      mock_nav_handle_->GetWebContents());
   ukm::TestAutoSetUkmRecorder test_ukm_recorder;
 
   // Enable the feature with disabling params, i.e. activation_level = disabled.
-  scoped_feature_list_.InitAndEnableFeatureWithParameters(
-      features::kEnableFingerprintingProtectionFilter,
-      {{"activation_level", "disabled"}});
+  scoped_feature_list_.InitWithFeaturesAndParameters(
+      {{features::kEnableFingerprintingProtectionFilter,
+        {{"activation_level", "disabled"}}},
+       {privacy_sandbox::kFingerprintingProtectionSetting, {}}},
+      {});
 
-  // Initialize the WebContentsHelper.
-  FingerprintingProtectionWebContentsHelper::CreateForWebContents(
-      navigation_handle()->GetWebContents(), /*pref_service=*/nullptr,
-      /*tracking_protection_settings=*/nullptr);
   // Use a mock throttle to test GetActivationDecision() by making EXPECT_CALL
   // on public function.
   auto mock_throttle = MockFingerprintingProtectionPageActivationThrottle(
-      navigation_handle(), nullptr);
+      /*dealer_handle_=*/nullptr, test_support_.tracking_protection_settings(),
+      test_support_.prefs());
 
   // Expect that NotifyResult is called with ACTIVATION_DISABLED
   // ActivationDecision.
@@ -302,7 +294,8 @@ TEST_F(FingerprintingProtectionPageActivationThrottleTest,
 
   // Initialize a real throttle to test histograms are emitted as expected.
   auto throttle = FingerprintingProtectionPageActivationThrottle(
-      navigation_handle(), nullptr);
+      mock_nav_handle_.get(), test_support_.tracking_protection_settings(),
+      test_support_.prefs());
 
   throttle.WillProcessResponse();
 
@@ -335,38 +328,22 @@ TEST_F(FingerprintingProtectionPageActivationThrottleTest,
   base::HistogramTester histograms;
 
   ukm::InitializeSourceUrlRecorderForWebContents(
-      navigation_handle()->GetWebContents());
+      mock_nav_handle_->GetWebContents());
   ukm::TestAutoSetUkmRecorder test_ukm_recorder;
 
   // Enable the feature with disabling params, i.e. activation_level = disabled.
   scoped_feature_list_.InitAndEnableFeature(
       features::kEnableFingerprintingProtectionFilter);
 
-  // Initialize the WebContentsHelper with a test-environment version of
-  // tracking_protection_settings.
-  sync_preferences::TestingPrefServiceSyncable prefs;
-  HostContentSettingsMap::RegisterProfilePrefs(prefs.registry());
-  privacy_sandbox::tracking_protection::RegisterProfilePrefs(prefs.registry());
-  scoped_refptr<HostContentSettingsMap> host_content_settings_map =
-      base::MakeRefCounted<HostContentSettingsMap>(
-          &prefs, /*is_off_the_record=*/false, /*store_last_modified=*/false,
-          /*restore_session=*/false,
-          /*should_record_metrics=*/false);
-  privacy_sandbox::TrackingProtectionSettings tracking_protection_settings =
-      privacy_sandbox::TrackingProtectionSettings(
-          &prefs, host_content_settings_map.get(),
-          /*onboarding_service=*/nullptr,
-          /*is_incognito=*/false);
-  FingerprintingProtectionWebContentsHelper::CreateForWebContents(
-      navigation_handle()->GetWebContents(), /*pref_service=*/&prefs,
-      /*tracking_protection_settings=*/&tracking_protection_settings);
-
   // Initialize a real throttle to test histograms are emitted as expected.
-  navigation_handle()->set_url(GURL("http://cool.things.com"));
+  mock_nav_handle_->set_url(GURL("http://cool.things.com"));
   FakeProfileInteractionManager fake_delegate;
   fake_delegate.AllowlistInCurrentWebContents(GURL("http://cool.things.com"));
   auto throttle = FingerprintingProtectionPageActivationThrottle(
-      navigation_handle(), &fake_delegate);
+      mock_nav_handle_.get(), test_support_.tracking_protection_settings(),
+      test_support_.prefs());
+  throttle.profile_interaction_manager_ =
+      std::make_unique<FakeProfileInteractionManager>(fake_delegate);
 
   throttle.WillProcessResponse();
 
@@ -391,9 +368,6 @@ TEST_F(FingerprintingProtectionPageActivationThrottleTest,
         entry, ukm::builders::FingerprintingProtection::kAllowlistSourceName,
         static_cast<int64_t>(content_settings::SettingSource::kUser));
   }
-
-  host_content_settings_map->ShutdownOnUIThread();
-  tracking_protection_settings.Shutdown();
 }
 
 }  // namespace fingerprinting_protection_filter

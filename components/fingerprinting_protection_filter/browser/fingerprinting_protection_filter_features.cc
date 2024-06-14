@@ -29,6 +29,6 @@ const base::FeatureParam<subresource_filter::mojom::ActivationLevel>
                      &kActivationLevelOptions};
 
 const base::FeatureParam<bool> kEnableOn3pcBlocked{
-    &kEnableFingerprintingProtectionFilter, "enable_on_3pc_blocked", true};
+    &kEnableFingerprintingProtectionFilter, "enable_on_3pc_blocked", false};
 
 }  // namespace fingerprinting_protection_filter::features

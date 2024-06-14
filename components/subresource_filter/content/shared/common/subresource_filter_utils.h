@@ -25,6 +25,18 @@ namespace subresource_filter {
 // themselves.
 bool ShouldInheritActivation(const GURL& url);
 
+// If |navigation_handle| is for a special url that did not go through the
+// network stack or if the initial (attempted) load wasn't committed, the
+// frame's activation will not have been set. It should instead be inherited
+// from its same-origin opener (if any).
+bool ShouldInheritOpenerActivation(content::NavigationHandle* navigation_handle,
+                                   content::RenderFrameHost* frame_host);
+
+// Checks that the navigation has a valid, committed parent navigation and is
+// handled by the network stack.
+bool ShouldInheritParentActivation(
+    content::NavigationHandle* navigation_handle);
+
 // Returns true if the navigation is happening in the main frame of a page
 // considered a subresource filter root (i.e. one that may create a new
 // ThrottleManager). These navigations are not themselves able to be filtered

@@ -49,53 +49,6 @@
 
 namespace subresource_filter {
 
-namespace {
-
-bool ShouldInheritOpenerActivation(content::NavigationHandle* navigation_handle,
-                                   content::RenderFrameHost* frame_host) {
-  // TODO(bokan): Add and use GetOpener associated with `frame_host`'s Page.
-  // https://crbug.com/1230153.
-  if (!navigation_handle->IsInPrimaryMainFrame()) {
-    return false;
-  }
-
-  // If this navigation is for a special url that did not go through the network
-  // stack or if the initial (attempted) load wasn't committed, the frame's
-  // activation will not have been set. It should instead be inherited from its
-  // same-origin opener (if any). See ShouldInheritParentActivation() for
-  // subframes.
-  content::RenderFrameHost* opener_rfh =
-      navigation_handle->GetWebContents()->GetOpener();
-  if (!opener_rfh) {
-    return false;
-  }
-
-  if (!frame_host->GetLastCommittedOrigin().IsSameOriginWith(
-          opener_rfh->GetLastCommittedOrigin())) {
-    return false;
-  }
-
-  return ShouldInheritActivation(navigation_handle->GetURL()) ||
-         !navigation_handle->HasCommitted();
-}
-
-bool ShouldInheritParentActivation(
-    content::NavigationHandle* navigation_handle) {
-  // TODO(crbug.com/40202987): Investigate if this should apply to fenced frames
-  // as well, or if we can default them to unactivated initially.
-  if (navigation_handle->IsInMainFrame()) {
-    return false;
-  }
-  CHECK(navigation_handle->GetParentFrame(), base::NotFatalUntil::M129);
-
-  // As with ShouldInheritSameOriginOpenerActivation() except that we inherit
-  // from the parent frame as we are a subframe.
-  return ShouldInheritActivation(navigation_handle->GetURL()) ||
-         !navigation_handle->HasCommitted();
-}
-
-}  // namespace
-
 // static
 const int ContentSubresourceFilterThrottleManager::kUserDataKey;
 

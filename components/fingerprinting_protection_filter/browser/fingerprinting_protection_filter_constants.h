@@ -26,6 +26,17 @@ const char ActivationDecisionHistogramName[] =
 const char ActivationLevelHistogramName[] =
     "FingerprintingProtection.PageLoad.ActivationLevel";
 
+// Console messages
+// ----------------
+
+// Console message to be displayed on activation.
+constexpr char kActivationConsoleMessage[] =
+    "Fingerprinting protection active on the current page.";
+
+// Console message to be displayed on disallowing subframe.
+constexpr char kDisallowChildFrameConsoleMessageFormat[] =
+    "Blocking resource: %s";
+
 }  // namespace fingerprinting_protection_filter
 
 #endif  // COMPONENTS_FINGERPRINTING_PROTECTION_FILTER_BROWSER_FINGERPRINTING_PROTECTION_FILTER_CONSTANTS_H_
