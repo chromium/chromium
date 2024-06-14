@@ -455,6 +455,10 @@ TEST_P(PreloadingDeciderPointerEventHeuristicsTest,
       blink::mojom::SpeculationAction::kPrefetch, "/candidate4.html?a=1",
       network::mojom::NoVarySearch::New(
           network::mojom::SearchParamsVariance::NewNoVaryParams({"a"}), true)));
+  candidates.push_back(create_candidate(
+      blink::mojom::SpeculationAction::kPrerender, "/candidate5.html?a=1",
+      network::mojom::NoVarySearch::New(
+          network::mojom::SearchParamsVariance::NewNoVaryParams({"a"}), true)));
 
   preloading_decider->UpdateSpeculationCandidates(candidates);
   // It should not pass kModerate or kConservative candidates directly
@@ -493,6 +497,15 @@ TEST_P(PreloadingDeciderPointerEventHeuristicsTest,
     EXPECT_EQ(2u, GetPrefetchService()->prefetches_.size());
     EXPECT_EQ(1u, prerenderer.Get()->prerenders_.size());
 
+    // It should prerender if there is a prerender candidate matching by
+    // No-Vary-Search hint.
+    call_pointer_event_handler(GetSameOriginUrl("/candidate5.html"));
+    EXPECT_FALSE(
+        preconnect_delegate->Target().has_value());  // Shouldn't preconnect
+    EXPECT_EQ(2u,
+              GetPrefetchService()->prefetches_.size());   // Shouldn't prefetch
+    EXPECT_EQ(2u, prerenderer.Get()->prerenders_.size());  // Should prerender
+
     call_pointer_event_handler(GetSameOriginUrl("/candidate3.html"));
     // It should preconnect if the target is not safe to prerender nor safe to
     // prefetch and it is a `kPointerDown` event.
@@ -505,7 +518,7 @@ TEST_P(PreloadingDeciderPointerEventHeuristicsTest,
         break;
     }
     EXPECT_EQ(2u, GetPrefetchService()->prefetches_.size());
-    EXPECT_EQ(1u, prerenderer.Get()->prerenders_.size());
+    EXPECT_EQ(2u, prerenderer.Get()->prerenders_.size());
   } else {
     call_pointer_event_handler(GetSameOriginUrl("/candidate1.html"));
     // It should preconnect if the target is not safe to prerender nor safe to
