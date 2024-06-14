@@ -9,10 +9,12 @@ import {flush} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 import {PLAY_PAUSE_EVENT} from 'chrome-untrusted://read-anything-side-panel.top-chrome/read_anything.js';
 import type {ReadAnythingToolbarElement} from 'chrome-untrusted://read-anything-side-panel.top-chrome/read_anything.js';
 import {assertEquals, assertFalse, assertStringContains, assertTrue} from 'chrome-untrusted://webui-test/chai_assert.js';
+import {isVisible} from 'chrome-untrusted://webui-test/test_util.js';
 
 import {suppressInnocuousErrors} from './common.js';
 import {FakeReadingMode} from './fake_reading_mode.js';
 import {TestColorUpdaterBrowserProxy} from './test_color_updater_browser_proxy.js';
+
 
 suite('PlayPause', () => {
   let toolbar: ReadAnythingToolbarElement;
@@ -42,52 +44,47 @@ suite('PlayPause', () => {
     document.addEventListener(PLAY_PAUSE_EVENT, () => clickEmitted = true);
   });
 
-  function toolbarPaused(paused: boolean) {
-    // Bypass Typescript compiler to allow us to get a private property
-    // @ts-ignore
-    toolbar.paused = paused;
-  }
+  test('on click emits play event', () => {
+    playPauseButton.click();
+    assertTrue(clickEmitted);
 
-  suite('on click', () => {
-    test('emits play event', () => {
-      playPauseButton.click();
-      assertTrue(clickEmitted);
-
-      clickEmitted = false;
-      playPauseButton.click();
-      assertTrue(clickEmitted);
-    });
+    clickEmitted = false;
+    playPauseButton.click();
+    assertTrue(clickEmitted);
   });
 
   suite('when playing', () => {
     setup(() => {
-      toolbarPaused(false);
+      toolbar.paused = false;
     });
 
     test('button indicates speech is playing', () => {
-      assertEquals(playPauseButton.ironIcon, 'read-anything-20:pause');
-      assertStringContains(playPauseButton.title.toLowerCase(), 'pause');
-      assertStringContains(playPauseButton.ariaLabel!.toLowerCase(), 'pause');
+      assertEquals('read-anything-20:pause', playPauseButton.ironIcon);
+      assertStringContains('pause (k)', playPauseButton.title.toLowerCase());
+      assertStringContains(
+          'pause keyboard shortcut k',
+          playPauseButton.ariaLabel!.toLowerCase());
     });
 
     test('granularity menu buttons show', () => {
-      assertFalse(granularityContainer.hidden);
+      assertTrue(isVisible(granularityContainer));
     });
   });
 
   suite('when paused', () => {
     setup(() => {
-      toolbarPaused(true);
+      toolbar.paused = true;
     });
 
     test('button indicates speech is paused', () => {
-      assertEquals(playPauseButton.ironIcon, 'read-anything-20:play');
-      assertStringContains(playPauseButton.title.toLowerCase(), 'play');
-      assertStringContains(playPauseButton.ariaLabel!.toLowerCase(), 'play');
+      assertEquals('read-anything-20:play', playPauseButton.ironIcon);
+      assertStringContains('play (k)', playPauseButton.title.toLowerCase());
+      assertStringContains(
+          'play keyboard shortcut k', playPauseButton.ariaLabel!.toLowerCase());
     });
 
     test('granularity menu buttons hidden', () => {
-      assertTrue(granularityContainer.hidden);
+      assertFalse(isVisible(granularityContainer));
     });
   });
 });

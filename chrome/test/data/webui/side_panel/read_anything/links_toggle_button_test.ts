@@ -21,12 +21,6 @@ suite('LinksToggle', () => {
   let menuButton: CrIconButtonElement;
   let linksToggled: boolean;
 
-  function toolbarPaused(paused: boolean) {
-    // Bypass Typescript compiler to allow us to get a private property
-    // @ts-ignore
-    toolbar.paused = paused;
-  }
-
   setup(() => {
     suppressInnocuousErrors();
     testBrowserProxy = new TestColorUpdaterBrowserProxy();
@@ -46,9 +40,9 @@ suite('LinksToggle', () => {
 
   suite('by default', () => {
     test('links are on', () => {
-      assertEquals(menuButton.ironIcon, LINKS_ENABLED_ICON);
-      assertEquals(chrome.readingMode.linksEnabled, true);
-      assertStringContains(menuButton.title.toLowerCase(), 'disable');
+      assertEquals(LINKS_ENABLED_ICON, menuButton.ironIcon);
+      assertTrue(chrome.readingMode.linksEnabled);
+      assertStringContains('disable links', menuButton.title.toLowerCase());
     });
 
     test('button is enabled', () => {
@@ -62,9 +56,9 @@ suite('LinksToggle', () => {
     });
 
     test('links are turned off', () => {
-      assertEquals(menuButton.ironIcon, LINKS_DISABLED_ICON);
+      assertEquals(LINKS_DISABLED_ICON, menuButton.ironIcon);
       assertEquals(chrome.readingMode.linksEnabled, false);
-      assertStringContains(menuButton.title.toLowerCase(), 'enable');
+      assertStringContains('enable links', menuButton.title.toLowerCase());
     });
 
     test('event is propagated', () => {
@@ -72,12 +66,12 @@ suite('LinksToggle', () => {
     });
 
     test('when unpaused, button is disabled', () => {
-      toolbarPaused(false);
+      toolbar.paused = false;
       assertTrue(menuButton.disabled);
     });
 
     test('when paused, button is enabled', () => {
-      toolbarPaused(true);
+      toolbar.paused = true;
       assertFalse(menuButton.disabled);
     });
 
@@ -87,9 +81,9 @@ suite('LinksToggle', () => {
       });
 
       test('links are turned back on', () => {
-        assertEquals(menuButton.ironIcon, LINKS_ENABLED_ICON);
-        assertEquals(chrome.readingMode.linksEnabled, true);
-        assertStringContains(menuButton.title.toLowerCase(), 'disable');
+        assertEquals(LINKS_ENABLED_ICON, menuButton.ironIcon);
+        assertTrue(chrome.readingMode.linksEnabled);
+        assertStringContains('disable links', menuButton.title.toLowerCase());
       });
 
       test('event is propagated', () => {
@@ -97,12 +91,12 @@ suite('LinksToggle', () => {
       });
 
       test('when unpaused, button is disabled', () => {
-        toolbarPaused(false);
+        toolbar.paused = false;
         assertTrue(menuButton.disabled);
       });
 
       test('when paused, button is enabled', () => {
-        toolbarPaused(true);
+        toolbar.paused = true;
         assertFalse(menuButton.disabled);
       });
     });

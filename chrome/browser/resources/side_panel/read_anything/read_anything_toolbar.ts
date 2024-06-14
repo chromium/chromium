@@ -383,7 +383,12 @@ export class ReadAnythingToolbarElement extends ReadAnythingToolbarElementBase {
 
   // If Read Aloud is in the paused state. This is set from the parent element
   // via one way data binding.
-  private readonly paused: boolean;
+  paused: boolean;
+
+  // If speech is actually playing. Due to latency with the TTS engine, there
+  // can be a delay between when the user presses play and speech actually
+  // plays.
+  private speechActuallyPlaying: boolean;
 
   private hideSpinner: boolean = true;
 
@@ -636,18 +641,16 @@ export class ReadAnythingToolbarElement extends ReadAnythingToolbarElementBase {
         `${item}\u00A0${this.i18n('readingModeFontLoadingText')}`;
   }
 
-  private playPauseButtonAriaLabel_(paused: boolean) {
-    return paused ? loadTimeData.getString('playLabel') :
-                    loadTimeData.getString('pauseLabel');
+  private playPauseButtonAriaLabel_() {
+    return loadTimeData.getString(this.paused ? 'playLabel' : 'pauseLabel');
   }
 
-  private playPauseButtonTitle_(paused: boolean) {
-    return paused ? loadTimeData.getString('playTooltip') :
-                    loadTimeData.getString('pauseTooltip');
+  private playPauseButtonTitle_() {
+    return loadTimeData.getString(this.paused ? 'playTooltip' : 'pauseTooltip');
   }
 
-  private playPauseButtonIronIcon_(paused: boolean) {
-    return paused ? 'read-anything-20:play' : 'read-anything-20:pause';
+  private playPauseButtonIronIcon_() {
+    return this.paused ? 'read-anything-20:play' : 'read-anything-20:pause';
   }
 
   private closeMenus_() {
@@ -1028,8 +1031,7 @@ export class ReadAnythingToolbarElement extends ReadAnythingToolbarElementBase {
   }
 
 
-  private onSpeechPlayingStateChanged_(
-      paused: boolean, speechActuallyPlaying: boolean) {
+  private onSpeechPlayingStateChanged_() {
     // Use a debouncer to reduce glitches. Even when audio is fast to respond to
     // the play button, there are still milliseconds of delay. To prevent the
     // spinner from quickly appearing and disappearing, we use a debouncer. If
@@ -1040,11 +1042,7 @@ export class ReadAnythingToolbarElement extends ReadAnythingToolbarElementBase {
     // immediately when speech starts playing, or when the paused button is hit.
     this.debouncer_ = Debouncer.debounce(
         this.debouncer_, timeOut.after(spinnerDebounceTimeout), () => {
-          if (paused) {
-            this.hideSpinner = true;
-          } else {
-            this.hideSpinner = speechActuallyPlaying;
-          }
+          this.hideSpinner = this.paused || this.speechActuallyPlaying;
         });
   }
 
