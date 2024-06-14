@@ -1,0 +1,40 @@
+# Copyright 2024 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+import("//build/config/chromeos/ui_mode.gni")
+
+assert(is_chromeos_ash)
+
+source_set("wallpaper") {
+  sources = [
+    "wallpaper_drivefs_delegate_impl.cc",
+    "wallpaper_drivefs_delegate_impl.h",
+    "wallpaper_enumerator.cc",
+    "wallpaper_enumerator.h",
+  ]
+
+  deps = [
+    "//ash/public/cpp",
+    "//base",
+    "//chromeos/ash/components/drivefs",
+    "//chromeos/ash/components/drivefs/mojom",
+    "//google_apis/common",
+  ]
+}
+
+source_set("browser_tests") {
+  testonly = true
+
+  defines = [ "HAS_OUT_OF_PROC_TEST_RUNNER" ]
+
+  sources = [ "wallpaper_drivefs_delegate_impl_browsertest.cc" ]
+
+  deps = [
+    ":wallpaper",
+    "//ash",
+    "//base",
+    "//chrome/browser/ash:test_support",
+    "//chromeos/ash/components/drivefs:test_support",
+  ]
+}
