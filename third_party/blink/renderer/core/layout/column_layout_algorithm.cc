@@ -920,9 +920,10 @@ const LayoutResult* ColumnLayoutAlgorithm::LayoutRow(
       LayoutUnit containing_block_adjustment = -TotalColumnBlockSize();
 
       OutOfFlowLayoutPart::ColumnBalancingInfo column_balancing_info;
+      FragmentBuilder::ChildrenVector columns;
       for (wtf_size_t i = 0; i < new_columns.size(); i++) {
         auto& new_column = new_columns[i];
-        column_balancing_info.columns.push_back(
+        columns.push_back(
             LogicalFragmentLink{&new_column.Fragment(), new_column.offset});
 
         // Because the current set of columns haven't been added to the builder
@@ -939,8 +940,10 @@ const LayoutResult* ColumnLayoutAlgorithm::LayoutRow(
       }
       DCHECK(column_balancing_info.HasOutOfFlowFragmentainerDescendants());
 
-      OutOfFlowLayoutPart(Node(), GetConstraintSpace(), &container_builder_)
-          .HandleFragmentation(&column_balancing_info);
+      OutOfFlowLayoutPart oof_part(Node(), GetConstraintSpace(),
+                                   &container_builder_);
+      oof_part.SetColumnBalancingInfo(&column_balancing_info, &columns);
+      oof_part.HandleFragmentation();
       actual_column_count += column_balancing_info.num_new_columns;
       if (column_balancing_info.minimal_space_shortage > LayoutUnit()) {
         UpdateMinimalSpaceShortage(column_balancing_info.minimal_space_shortage,

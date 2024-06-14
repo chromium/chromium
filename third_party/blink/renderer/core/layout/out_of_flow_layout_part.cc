@@ -517,8 +517,7 @@ void OutOfFlowLayoutPart::Run() {
   LayoutCandidates(&candidates);
 }
 
-void OutOfFlowLayoutPart::HandleFragmentation(
-    ColumnBalancingInfo* column_balancing_info) {
+void OutOfFlowLayoutPart::HandleFragmentation() {
   // OOF fragmentation depends on LayoutBox data being up-to-date, which isn't
   // the case if side-effects are disabled. So we cannot safely do anything
   // here.
@@ -526,14 +525,15 @@ void OutOfFlowLayoutPart::HandleFragmentation(
     return;
   }
 
-  if (!column_balancing_info &&
+  if (!column_balancing_info_ &&
       (!container_builder_->IsBlockFragmentationContextRoot() ||
-       has_block_fragmentation_))
+       has_block_fragmentation_)) {
     return;
+  }
 
   if (container_builder_->Node().IsPaginatedRoot()) {
     // Column balancing only affects multicols.
-    DCHECK(!column_balancing_info);
+    DCHECK(!column_balancing_info_);
 
     LogicalOffset offset_adjustment;
     for (wtf_size_t i = 0; i < ChildCount(); i++) {
@@ -566,15 +566,10 @@ void OutOfFlowLayoutPart::HandleFragmentation(
     }
   }
 
-#if DCHECK_IS_ON()
-  if (column_balancing_info) {
-    DCHECK(!column_balancing_info->columns.empty());
-    DCHECK(
-        !column_balancing_info->out_of_flow_fragmentainer_descendants.empty());
-  }
-#endif
-  base::AutoReset<ColumnBalancingInfo*> balancing_scope(&column_balancing_info_,
-                                                        column_balancing_info);
+  DCHECK(!child_fragment_storage_ || !child_fragment_storage_->empty());
+  DCHECK(
+      !column_balancing_info_ ||
+      !column_balancing_info_->out_of_flow_fragmentainer_descendants.empty());
 
   auto ShouldContinue = [&]() -> bool {
     if (column_balancing_info_)

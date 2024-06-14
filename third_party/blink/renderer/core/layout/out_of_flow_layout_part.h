@@ -64,8 +64,6 @@ class CORE_EXPORT OutOfFlowLayoutPart {
 
     void PropagateSpaceShortage(LayoutUnit space_shortage);
 
-    // The list of columns to balance.
-    FragmentBuilder::ChildrenVector columns;
     // The list of OOF fragmentainer descendants of |columns|.
     HeapVector<LogicalOofNodeForFragmentation>
         out_of_flow_fragmentainer_descendants;
@@ -84,17 +82,34 @@ class CORE_EXPORT OutOfFlowLayoutPart {
     bool has_violating_break = false;
 
     void Trace(Visitor* visitor) const {
-      visitor->Trace(columns);
       visitor->Trace(out_of_flow_fragmentainer_descendants);
     }
   };
 
-  // Handle the layout of any OOF elements in a fragmentation context. If
-  // |column_balancing_info| is set, perform layout on the column and OOF
-  // members of |column_balancing_info| rather than of the builder, and keep
-  // track of any info needed for the OOF children to affect column balancing.
-  void HandleFragmentation(
-      ColumnBalancingInfo* column_balancing_info = nullptr);
+  // Specify a vector where child fragments are stored, rather than using the
+  // fragment builder (the default). In some cases, what OutOfFlowLayoutPart
+  // produces, isn't the final results, which means that they cannot be written
+  // directly to the fragment builder.
+  void SetChildFragmentStorage(
+      FragmentBuilder::ChildrenVector* child_fragment_storage) {
+    child_fragment_storage_ = child_fragment_storage;
+  }
+
+  // When handling fragmentation, perform layout on the column and OOF members
+  // of |column_balancing_info| and |child_fragment_storage| rather than
+  // directly on the builder, and keep track of any info needed for the OOF
+  // children to affect column balancing.
+  void SetColumnBalancingInfo(
+      ColumnBalancingInfo* column_balancing_info,
+      FragmentBuilder::ChildrenVector* child_fragment_storage) {
+    DCHECK(column_balancing_info);
+    DCHECK(child_fragment_storage);
+    column_balancing_info_ = column_balancing_info;
+    SetChildFragmentStorage(child_fragment_storage);
+  }
+
+  // Handle the layout of any OOF elements in a fragmentation context.
+  void HandleFragmentation();
 
   // Information needed to position descendant within a containing block.
   // Geometry expressed here is complicated:
@@ -383,8 +398,8 @@ class CORE_EXPORT OutOfFlowLayoutPart {
 
   const FragmentBuilder::ChildrenVector& FragmentationContextChildren() const {
     DCHECK(container_builder_->IsBlockFragmentationContextRoot());
-    return column_balancing_info_ ? column_balancing_info_->columns
-                                  : container_builder_->Children();
+    return child_fragment_storage_ ? *child_fragment_storage_
+                                   : container_builder_->Children();
   }
 
   // Get the child / descendant fragment at the specified index. These are
@@ -401,8 +416,8 @@ class CORE_EXPORT OutOfFlowLayoutPart {
 
   void AddFragmentainer(const PhysicalBoxFragment& fragmentainer,
                         LogicalOffset fragmentainer_offset) {
-    if (column_balancing_info_) {
-      column_balancing_info_->columns.push_back(
+    if (child_fragment_storage_) {
+      child_fragment_storage_->push_back(
           LogicalFragmentLink{fragmentainer, fragmentainer_offset});
     } else {
       container_builder_->AddChild(fragmentainer, fragmentainer_offset);
@@ -434,6 +449,11 @@ class CORE_EXPORT OutOfFlowLayoutPart {
   // will affect column balancing, if any, without actually adding the OOFs to
   // the associated columns.
   ColumnBalancingInfo* column_balancing_info_ = nullptr;
+
+  // When set, child fragments will be stored in this vector, rather than in the
+  // fragment builder.
+  FragmentBuilder::ChildrenVector* child_fragment_storage_ = nullptr;
+
   // The consumed block size of previous fragmentainers. This is accumulated and
   // used as we add OOF elements to fragmentainers.
   LayoutUnit fragmentainer_consumed_block_size_;
