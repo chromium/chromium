@@ -860,6 +860,15 @@ BASE_FEATURE(kVideoBlitColorAccuracy,
              "video-blit-color-accuracy",
              base::FEATURE_ENABLED_BY_DEFAULT);
 
+// Controls whether VideoFrames created by WrapSharedImage(s) get the
+// texture target to use from the ClientSharedImage(s) that they are passed
+// rather than the explicit texture target parameter(s) that they are passed.
+// Serves as a killswitch while we roll out this change.
+// TODO(crbug.com/346197746): Remove post-safe rollout.
+BASE_FEATURE(kVideoFrameUseClientSITextureTarget,
+             "VideoFrameUseClientSITextureTarget",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 // Displays a minimize button on video picture-in-picture windows.
 BASE_FEATURE(kVideoPictureInPictureMinimizeButton,
              "VideoPictureInPictureMinimizeButton",

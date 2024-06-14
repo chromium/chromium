@@ -26,6 +26,7 @@
 #include "media/base/color_plane_layout.h"
 #include "media/base/format_utils.h"
 #include "media/base/limits.h"
+#include "media/base/media_switches.h"
 #include "media/base/timestamp_constants.h"
 #include "media/base/video_util.h"
 #include "ui/gfx/buffer_format_util.h"
@@ -524,7 +525,10 @@ scoped_refptr<VideoFrame> VideoFrame::WrapSharedImages(
   for (size_t i = 0; i < kMaxPlanes; ++i) {
     if (shared_images[i]) {
       frame->mailbox_holders_[i] = gpu::MailboxHolder(
-          shared_images[i]->mailbox(), sync_token, texture_target);
+          shared_images[i]->mailbox(), sync_token,
+          base::FeatureList::IsEnabled(kVideoFrameUseClientSITextureTarget)
+              ? shared_images[i]->GetTextureTarget()
+              : texture_target);
       frame->shared_images_[i] = shared_images[i]->MakeUnowned();
     }
   }
@@ -555,8 +559,11 @@ scoped_refptr<VideoFrame> VideoFrame::WrapSharedImage(
   }
 
   if (shared_image) {
-    frame->mailbox_holders_[0] =
-        gpu::MailboxHolder(shared_image->mailbox(), sync_token, texture_target);
+    frame->mailbox_holders_[0] = gpu::MailboxHolder(
+        shared_image->mailbox(), sync_token,
+        base::FeatureList::IsEnabled(kVideoFrameUseClientSITextureTarget)
+            ? shared_image->GetTextureTarget()
+            : texture_target);
     frame->shared_images_[0] = shared_image->MakeUnowned();
   }
   frame->mailbox_holders_and_gmb_release_cb_ =
