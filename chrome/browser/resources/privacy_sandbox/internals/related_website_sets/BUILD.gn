@@ -14,10 +14,16 @@ build_webui("build") {
   non_web_component_files = [
     "app.ts",
     "app.html.ts",
-    "related_website_sets.ts"
+    "related_website_sets.ts",
+    "toolbar.html.ts",
+    "toolbar.ts",
   ]
 
-  css_files = [ "app.css" ]
+  css_files = [
+    "app.css",
+    "toolbar.css",
+    "shared_vars.css",
+  ]
 
   ts_deps = [
     "//third_party/lit/v3_0:build_ts",
