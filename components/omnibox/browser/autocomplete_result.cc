@@ -418,9 +418,14 @@ void AutocompleteResult::SortAndCull(
       } else if (omnibox::IsNTPPage(page_classification)) {
         // IPH is shown for NTP ZPS in the Omnibox only.  If it is shown, reduce
         // the limit of the normal NTP ZPS Section to make room for the IPH.
+        auto has_iph_match = [](auto matches) {
+          return base::ranges::any_of(
+              matches, [](auto match) { return match.IsIPHSuggestion(); });
+        };
         bool add_iph_section =
             OmniboxFieldTrial::IsStarterPackIPHEnabled() &&
-            page_classification != OmniboxEventProto::NTP_REALBOX;
+            page_classification != OmniboxEventProto::NTP_REALBOX &&
+            has_iph_match(matches_);
         sections.push_back(std::make_unique<DesktopNTPZpsSection>(
             suggestion_groups_map_, add_iph_section ? 7u : 8u));
         if (add_iph_section) {
