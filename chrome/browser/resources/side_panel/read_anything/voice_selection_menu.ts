@@ -60,6 +60,12 @@ export class VoiceSelectionMenuElement extends VoiceSelectionMenuElementBase {
   private readonly voicePackInstallStatus:
       {[language: string]: VoiceClientSideStatusCode};
   private voicePlayingWhenMenuOpened_: boolean = false;
+  private enabledVoices_: SpeechSynthesisVoice[];
+  private selectedVoice: SpeechSynthesisVoice;
+  private localeToDisplayName: {[lang: string]: string};
+  private previewVoicePlaying: SpeechSynthesisVoice|null;
+  private availableVoices: SpeechSynthesisVoice[];
+  private enabledLangs: string[];
 
   static get is() {
     return 'voice-selection-menu';
@@ -112,39 +118,33 @@ export class VoiceSelectionMenuElement extends VoiceSelectionMenuElementBase {
     });
   }
 
-  private computeEnabledVoices_(
-      availableVoices: SpeechSynthesisVoice[],
-      enabledLangs: string[]): SpeechSynthesisVoice[] {
-    if (!availableVoices || !enabledLangs) {
+  private computeEnabledVoices_(): SpeechSynthesisVoice[] {
+    if (!this.availableVoices || !this.enabledLangs) {
       return [];
     }
     const enablesLangsLowerCase: Set<string> =
-        new Set(enabledLangs.map(lang => lang.toLowerCase()));
-    return availableVoices.filter(
+        new Set(this.enabledLangs.map(lang => lang.toLowerCase()));
+    return this.availableVoices.filter(
         ({lang}) => enablesLangsLowerCase.has(lang.toLowerCase()));
   }
 
-  private computeVoiceDropdown_(
-      selectedVoice: SpeechSynthesisVoice,
-      enabledVoices: SpeechSynthesisVoice[],
-      previewVoicePlaying: SpeechSynthesisVoice|null,
-      localeToDisplayName: {[lang: string]: string}): VoiceDropdownGroup[] {
-    if (!enabledVoices) {
+  private computeVoiceDropdown_(): VoiceDropdownGroup[] {
+    if (!this.enabledVoices_) {
       return [];
     }
     const languageToVoices =
-        enabledVoices.reduce((languageToDropdownItems, voice) => {
+        this.enabledVoices_.reduce((languageToDropdownItems, voice) => {
           const dropdownItem: VoiceDropdownItem = {
             title: voice.name,
             voice,
             id: this.stringToHtmlTestId_(voice.name),
-            selected: areVoicesEqual(selectedVoice, voice),
-            previewPlaying: areVoicesEqual(previewVoicePlaying, voice),
+            selected: areVoicesEqual(this.selectedVoice, voice),
+            previewPlaying: areVoicesEqual(this.previewVoicePlaying, voice),
           };
 
-          const lang =
-              (localeToDisplayName && voice.lang in localeToDisplayName) ?
-              localeToDisplayName[voice.lang] :
+          const lang = (this.localeToDisplayName &&
+                        voice.lang in this.localeToDisplayName) ?
+              this.localeToDisplayName[voice.lang] :
               voice.lang;
 
           if (languageToDropdownItems[lang]) {
@@ -292,10 +292,8 @@ export class VoiceSelectionMenuElement extends VoiceSelectionMenuElementBase {
     }
   }
 
-  private computeDownloadingMessages_(
-      voicePackInstallStatus: {[language: string]: VoiceClientSideStatusCode}):
-      string[] {
-    return Object.entries(voicePackInstallStatus)
+  private computeDownloadingMessages_(): string[] {
+    return Object.entries(this.voicePackInstallStatus)
         .filter(
             ([_, status]) => status ===
                     VoiceClientSideStatusCode.INSTALLED_AND_UNAVAILABLE ||

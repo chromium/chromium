@@ -211,20 +211,15 @@ export class LanguageMenuElement extends LanguageMenuElementBase {
 
   // TODO(b/40927698): Investigate removing currentNotifications as a
   // dependency.
-  private computeAvailableLanguages_(
-      availableVoices: SpeechSynthesisVoice[],
-      localeToDisplayName: {[lang: string]: string},
-      currentNotifications: {[language: string]: VoiceClientSideStatusCode},
-      selectedLang: string|undefined, languageSearchValue: string|undefined,
-      enabledLangs: string[]): LanguageDropdownItem[] {
-    if (!availableVoices) {
+  private computeAvailableLanguages_(): LanguageDropdownItem[] {
+    if (!this.availableVoices) {
       return [];
     }
 
     // Ensure this is cleared each time we recompute available languages.
     this.nonGoogleLanguages = [];
 
-    const selectedLangLowerCase = selectedLang?.toLowerCase();
+    const selectedLangLowerCase = this.selectedLang?.toLowerCase();
     // Ensure we've added the available pack manager supported languages to
     // the language menu first, only on ChromeOS.
     const langsAndReadableLangs: Array<[string, string]> =
@@ -232,18 +227,19 @@ export class LanguageMenuElement extends LanguageMenuElementBase {
             chrome.readingMode.isChromeOsAsh ?
         Array.from(
             this.baseLanguages,
-            (key) => [key, this.getDisplayName(localeToDisplayName, key)]) :
+            (key) =>
+                [key, this.getDisplayName(this.localeToDisplayName, key)]) :
         [];
 
     // Next, add any other supported languages to the menu, if they don't
     // already exist.
-    availableVoices.forEach((voice) => {
+    this.availableVoices.forEach((voice) => {
       const lang = voice.lang;
       if (!langsAndReadableLangs.some(
               ([key, _]) => key === lang.toLowerCase())) {
         langsAndReadableLangs.push([
           lang.toLowerCase(),
-          this.getDisplayName(localeToDisplayName, lang),
+          this.getDisplayName(this.localeToDisplayName, lang),
         ]);
 
         if (chrome.readingMode.isLanguagePackDownloadingEnabled) {
@@ -259,37 +255,40 @@ export class LanguageMenuElement extends LanguageMenuElementBase {
 
     return langsAndReadableLangs
         .filter(([lang, readableLang]) => {
-          if (languageSearchValue) {
+          if (this.languageSearchValue_) {
             // In addition to matching the readable language, also allow
             // the search term to extend to the language code to make
             // searching for specific languages easier. e.g. 'pt-br' will
             // match with Portugues (Brasil)
             return readableLang.toLowerCase().includes(
-                       languageSearchValue.toLowerCase()) ||
-                lang.includes(languageSearchValue.toLowerCase());
+                       this.languageSearchValue_.toLowerCase()) ||
+                lang.includes(this.languageSearchValue_.toLowerCase());
           } else {
             return true;
           }
         })
-        .map(([lang, readableLang]) => ({
-               readableLanguage: readableLang,
-               checked: enabledLangs && enabledLangs.includes(lang),
-               languageCode: lang,
-               notification: {
-                 isError: this.isNotificationError(lang, currentNotifications),
-                 text: this.getNotificationText(lang, currentNotifications),
-               },
-               disabled: enabledLangs && enabledLangs.includes(lang) &&
-                   (lang.toLowerCase() === selectedLangLowerCase),
-               callback: () =>
-                   this.dispatchEvent(new CustomEvent(LANGUAGE_TOGGLE_EVENT, {
-                     bubbles: true,
-                     composed: true,
-                     detail: {
-                       language: lang,
-                     },
-                   })),
-             }));
+        .map(
+            ([lang, readableLang]) => ({
+              readableLanguage: readableLang,
+              checked: this.enabledLangs && this.enabledLangs.includes(lang),
+              languageCode: lang,
+              notification: {
+                isError:
+                    this.isNotificationError(lang, this.currentNotifications_),
+                text:
+                    this.getNotificationText(lang, this.currentNotifications_),
+              },
+              disabled: this.enabledLangs && this.enabledLangs.includes(lang) &&
+                  (lang.toLowerCase() === selectedLangLowerCase),
+              callback: () =>
+                  this.dispatchEvent(new CustomEvent(LANGUAGE_TOGGLE_EVENT, {
+                    bubbles: true,
+                    composed: true,
+                    detail: {
+                      language: lang,
+                    },
+                  })),
+            }));
   }
 
   private isNotificationError(
@@ -401,13 +400,12 @@ export class LanguageMenuElement extends LanguageMenuElementBase {
     this.$.languageMenu.showModal();
   }
 
-  private searchHasLanguages(
-      availableLanguages: LanguageDropdownItem[],
-      languageSearchValue: string): boolean {
+  private searchHasLanguages(): boolean {
     // We should only show the "No results" string when there are no available
     // languages and there is a valid search term.
-    return (availableLanguages.length > 0) || (!languageSearchValue) ||
-        (languageSearchValue.trim().length === 0);
+    return (this.availableLanguages_.length > 0) ||
+        (!this.languageSearchValue_) ||
+        (this.languageSearchValue_.trim().length === 0);
   }
 }
 
