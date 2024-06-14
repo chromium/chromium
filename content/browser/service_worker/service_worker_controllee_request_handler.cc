@@ -512,8 +512,9 @@ void ServiceWorkerControlleeRequestHandler::ContinueWithActivatedVersion(
           FROM_HERE,
           base::BindOnce(
               &ServiceWorkerControlleeRequestHandler::MaybeStartServiceWorker,
-              weak_factory_.GetWeakPtr(), std::move(active_version),
-              ServiceWorkerMetrics::EventType::SKIP_EMPTY_FETCH_HANDLER),
+              std::move(active_version),
+              ServiceWorkerMetrics::EventType::SKIP_EMPTY_FETCH_HANDLER,
+              reinterpret_cast<uintptr_t>(this)),
           base::Milliseconds(GetServiceWorkerForEmptyFetchHandlerDurationMs()));
       return;
     }
@@ -552,10 +553,11 @@ void ServiceWorkerControlleeRequestHandler::CreateLoaderAndStartRequest(
 }
 
 void ServiceWorkerControlleeRequestHandler::DidStartWorker(
+    uintptr_t trace_id,
     blink::ServiceWorkerStatusCode status) {
   TRACE_EVENT_WITH_FLOW1(
       "ServiceWorker", "ServiceWorkerControlleeRequestHandler::DidStartWorker",
-      TRACE_ID_LOCAL(this),
+      TRACE_ID_LOCAL(trace_id),
       TRACE_EVENT_FLAG_FLOW_IN | TRACE_EVENT_FLAG_FLOW_OUT, "Status",
       blink::ServiceWorkerStatusToString(status));
 }
@@ -661,7 +663,8 @@ void ServiceWorkerControlleeRequestHandler::CompleteWithoutLoader() {
 
 void ServiceWorkerControlleeRequestHandler::MaybeStartServiceWorker(
     scoped_refptr<ServiceWorkerVersion> active_version,
-    ServiceWorkerMetrics::EventType event_type) {
+    ServiceWorkerMetrics::EventType event_type,
+    uintptr_t trace_id) {
   // Start service worker if it is not running so that we run the code
   // written in the top level.
   if (active_version->running_status() ==
@@ -671,7 +674,7 @@ void ServiceWorkerControlleeRequestHandler::MaybeStartServiceWorker(
   active_version->StartWorker(
       event_type,
       base::BindOnce(&ServiceWorkerControlleeRequestHandler::DidStartWorker,
-                     weak_factory_.GetWeakPtr()));
+                     trace_id));
 }
 
 int ServiceWorkerControlleeRequestHandler::

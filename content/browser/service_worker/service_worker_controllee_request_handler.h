@@ -154,15 +154,17 @@ class CONTENT_EXPORT ServiceWorkerControlleeRequestHandler final {
   void MaybeScheduleUpdate();
 
   // Runs service worker if not running.
-  void MaybeStartServiceWorker(
+  static void MaybeStartServiceWorker(
       scoped_refptr<ServiceWorkerVersion> active_version,
-      ServiceWorkerMetrics::EventType event_type);
+      ServiceWorkerMetrics::EventType event_type,
+      uintptr_t trace_id);
 
   // Runs after ServiceWorker has started.
   // Normally ServiceWorker starts before dispatching the main resource request,
   // but if the browser handles an empty fetch handler, this runs after the
   // service worker starts.
-  void DidStartWorker(blink::ServiceWorkerStatusCode status);
+  static void DidStartWorker(uintptr_t trace_id,
+                             blink::ServiceWorkerStatusCode status);
 
   int GetServiceWorkerForEmptyFetchHandlerDurationMs();
 
