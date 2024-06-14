@@ -383,10 +383,6 @@ std::unique_ptr<HttpStream>
 WebSocketBasicHandshakeStream::RenewStreamForAuth() {
   DCHECK(IsResponseBodyComplete());
   DCHECK(!parser()->IsMoreDataBuffered());
-  // The HttpStreamParser object still has a pointer to the connection. Just to
-  // be extra-sure it doesn't touch the connection again, delete it here rather
-  // than leaving it until the destructor is called.
-  state_.DeleteParser();
 
   auto handshake_stream = std::make_unique<WebSocketBasicHandshakeStream>(
       state_.ReleaseConnection(), connect_delegate_,
@@ -409,9 +405,6 @@ std::string_view WebSocketBasicHandshakeStream::GetAcceptChViaAlps() const {
 }
 
 std::unique_ptr<WebSocketStream> WebSocketBasicHandshakeStream::Upgrade() {
-  // The HttpStreamParser object has a pointer to our ClientSocketHandle. Make
-  // sure it does not touch it again before it is destroyed.
-  state_.DeleteParser();
   WebSocketTransportClientSocketPool::UnlockEndpoint(
       state_.connection(), websocket_endpoint_lock_manager_);
   std::unique_ptr<WebSocketStream> basic_stream =

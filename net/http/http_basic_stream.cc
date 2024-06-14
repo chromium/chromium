@@ -99,10 +99,6 @@ void HttpBasicStream::Close(bool not_reusable) {
 std::unique_ptr<HttpStream> HttpBasicStream::RenewStreamForAuth() {
   DCHECK(IsResponseBodyComplete());
   DCHECK(!parser()->IsMoreDataBuffered());
-  // The HttpStreamParser object still has a pointer to the connection. Just to
-  // be extra-sure it doesn't touch the connection again, delete it here rather
-  // than leaving it until the destructor is called.
-  state_.DeleteParser();
   return std::make_unique<HttpBasicStream>(state_.ReleaseConnection(),
                                            state_.is_for_get_to_http_proxy());
 }

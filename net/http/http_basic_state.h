@@ -46,9 +46,6 @@ class NET_EXPORT_PRIVATE HttpBasicState {
   // Returns true if this request is a non-tunneled HTTP request via a proxy.
   bool is_for_get_to_http_proxy() const { return is_for_get_to_http_proxy_; }
 
-  // Deletes |parser_| and sets it to NULL.
-  void DeleteParser();
-
   ClientSocketHandle* connection() const { return connection_.get(); }
 
   std::unique_ptr<ClientSocketHandle> ReleaseConnection();

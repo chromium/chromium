@@ -42,14 +42,16 @@ void HttpBasicState::Initialize(const HttpRequestInfo* request_info,
 }
 
 std::unique_ptr<ClientSocketHandle> HttpBasicState::ReleaseConnection() {
+  // The HttpStreamParser object still has a pointer to the connection. Just to
+  // be extra-sure it doesn't touch the connection again, delete it here rather
+  // than leaving it until the destructor is called.
+  parser_.reset();
   return std::move(connection_);
 }
 
 scoped_refptr<GrowableIOBuffer> HttpBasicState::read_buf() const {
   return read_buf_;
 }
-
-void HttpBasicState::DeleteParser() { parser_.reset(); }
 
 std::string HttpBasicState::GenerateRequestLine() const {
   return HttpUtil::GenerateRequestLine(parser_->method(), parser_->url(),
