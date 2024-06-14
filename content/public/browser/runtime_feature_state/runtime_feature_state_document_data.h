@@ -37,6 +37,12 @@ class CONTENT_EXPORT RuntimeFeatureStateDocumentData
   RuntimeFeatureStateDocumentData(
       RenderFrameHost* rfh,
       const blink::RuntimeFeatureStateReadContext& read_context);
+  // Use of this constructor is discouraged - callers of
+  // RuntimeFeatureStateDocumentData should construct or inherit the
+  // RuntimeFeatureStateReadContext at the callsite.
+  // TODO(crbug.com/347186599): Determine the root cause of nullptr
+  // RFSDocumentData and remove this constructor once fixed.
+  RuntimeFeatureStateDocumentData(RenderFrameHost* rfh);
 
   friend DocumentUserData;
   DOCUMENT_USER_DATA_KEY_DECL();
