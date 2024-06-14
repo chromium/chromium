@@ -502,7 +502,7 @@ AutoUnlockMaybeEventsDisallowed::~AutoUnlockMaybeEventsDisallowed() {
 }
 
 bool DependencyGraphEnabled() {
-  return IsReplaying() && FeatureEnabled("dependency-graph");
+  return IsReplaying() && FeatureEnabled("dependency-graph", "chromium");
 }
 
 int NewDependencyGraphNode(const char* json) {
