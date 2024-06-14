@@ -4,7 +4,6 @@
 
 #include "chrome/browser/ui/views/profiles/signin_view_controller_delegate_views.h"
 
-#include "base/check_deref.h"
 #include "base/feature_list.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback_helpers.h"
@@ -15,17 +14,15 @@
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/profiles/profile_avatar_icon_util.h"
 #include "chrome/browser/profiles/profile_manager.h"
-#include "chrome/browser/search_engine_choice/search_engine_choice_dialog_service.h"
-#include "chrome/browser/search_engine_choice/search_engine_choice_dialog_service_factory.h"
 #include "chrome/browser/signin/reauth_result.h"
 #include "chrome/browser/signin/signin_promo.h"
 #include "chrome/browser/sync/sync_service_factory.h"
 #include "chrome/browser/ui/browser.h"
+#include "chrome/browser/ui/browser_list.h"
 #include "chrome/browser/ui/browser_tabstrip.h"
 #include "chrome/browser/ui/browser_window.h"
 #include "chrome/browser/ui/color/chrome_color_id.h"
 #include "chrome/browser/ui/profiles/profile_picker.h"
-#include "chrome/browser/ui/search_engine_choice/search_engine_choice_tab_helper.h"
 #include "chrome/browser/ui/signin/signin_view_controller.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/browser/ui/ui_features.h"
@@ -90,14 +87,6 @@ void CloseModalSigninInBrowser(
     return;
 
   browser->signin_view_controller()->CloseModalSignin();
-
-  SearchEngineChoiceDialogService* search_engine_choice_dialog_service =
-      SearchEngineChoiceDialogServiceFactory::GetForProfile(browser->profile());
-  if (search_engine_choice_dialog_service &&
-      search_engine_choice_dialog_service->CanShowDialog(
-          CHECK_DEREF(browser.get()))) {
-    ShowSearchEngineChoiceDialog(*browser);
-  }
 
   if (show_profile_switch_iph) {
     browser->window()->MaybeShowProfileSwitchIPH();
