@@ -169,6 +169,14 @@
           'shards': 2,
         },
       },
+      'android-14-x64-rel': {
+        'args': [
+          '--emulator-debug-tags=all',
+        ],
+        'swarming': {
+          'shards': 2,
+        },
+      },
       'android-code-coverage-native': {
         'swarming': {
           'shards': 2,

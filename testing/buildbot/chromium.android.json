@@ -13543,6 +13543,7 @@
         "args": [
           "--test-launcher-batch-limit=1",
           "--avd-config=../../tools/android/avd/proto/android_34_google_apis_x64.textpb",
+          "--emulator-debug-tags=all",
           "--gs-results-bucket=chromium-result-details",
           "--recover-devices"
         ],
@@ -13581,7 +13582,8 @@
               "caches": "android_34_google_apis_x64"
             }
           },
-          "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
+          "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com",
+          "shards": 2
         },
         "test": "android_sync_integration_tests",
         "test_id_prefix": "ninja://chrome/test:android_sync_integration_tests/"
