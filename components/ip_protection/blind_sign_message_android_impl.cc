@@ -97,7 +97,8 @@ void BlindSignMessageAndroidImpl::SendRequest(
       get_initial_data_request_proto.ParseFromString(body);
       ip_protection_auth_client_->GetInitialData(
           get_initial_data_request_proto,
-          base::BindOnce(&BlindSignMessageAndroidImpl::OnGetInitialDataComplete,
+          base::BindOnce(&BlindSignMessageAndroidImpl::OnSendRequestComplete<
+                             privacy::ppn::GetInitialDataResponse>,
                          weak_ptr_factory_.GetWeakPtr(), std::move(callback)));
       break;
     }
@@ -106,7 +107,8 @@ void BlindSignMessageAndroidImpl::SendRequest(
       auth_and_sign_request_proto.ParseFromString(body);
       ip_protection_auth_client_->AuthAndSign(
           auth_and_sign_request_proto,
-          base::BindOnce(&BlindSignMessageAndroidImpl::OnAuthAndSignComplete,
+          base::BindOnce(&BlindSignMessageAndroidImpl::OnSendRequestComplete<
+                             privacy::ppn::AuthAndSignResponse>,
                          weak_ptr_factory_.GetWeakPtr(), std::move(callback)));
       break;
     }
@@ -115,43 +117,35 @@ void BlindSignMessageAndroidImpl::SendRequest(
   }
 }
 
-// TODO(b/328780742): Add support for persistent and transient error handling.
-void BlindSignMessageAndroidImpl::OnGetInitialDataComplete(
-    quiche::BlindSignMessageCallback callback,
-    base::expected<privacy::ppn::GetInitialDataResponse,
-                   ip_protection::android::AuthRequestError> response) {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  if (!response.has_value()) {
-    std::move(callback)(absl::InternalError(
-        "Failed call to Android IP Protection Service for GetInitialData."));
-    return;
-  }
-
-  OnSendRequestComplete(std::move(callback), response->SerializeAsString());
-}
-
-// TODO(b/328780742): Add support for persistent and transient error handling.
-void BlindSignMessageAndroidImpl::OnAuthAndSignComplete(
-    quiche::BlindSignMessageCallback callback,
-    base::expected<privacy::ppn::AuthAndSignResponse,
-                   ip_protection::android::AuthRequestError> response) {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  if (!response.has_value()) {
-    std::move(callback)(absl::InternalError(
-        "Failed call to Android IP Protection Service for AuthAndSign."));
-    return;
-  }
-
-  OnSendRequestComplete(std::move(callback), response->SerializeAsString());
-}
-
-// TODO(b/328780742): Implement response code mappings for error handling in
-// GMSCore.
+template <typename ResponseType>
 void BlindSignMessageAndroidImpl::OnSendRequestComplete(
     quiche::BlindSignMessageCallback callback,
-    std::string response_body) {
-  quiche::BlindSignMessageResponse bsa_response(absl::StatusCode::kOk,
-                                                std::move(response_body));
-
-  std::move(callback)(std::move(bsa_response));
+    base::expected<ResponseType, ip_protection::android::AuthRequestError>
+        response) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  if (response.has_value()) {
+    quiche::BlindSignMessageResponse bsa_response(
+        absl::StatusCode::kOk, response->SerializeAsString());
+    std::move(callback)(std::move(bsa_response));
+  } else {
+    switch (response.error()) {
+      case ip_protection::android::AuthRequestError::kPersistent: {
+        std::move(callback)(absl::FailedPreconditionError(
+            "Persistent error when making request to the service implementing "
+            "IP Protection."));
+        break;
+      }
+      case ip_protection::android::AuthRequestError::kTransient: {
+        std::move(callback)(
+            absl::UnavailableError("Transient error when making request to the "
+                                   "service implementing IP Protection"));
+        break;
+      }
+      case ip_protection::android::AuthRequestError::kOther:
+        std::move(callback)(absl::UnavailableError(
+            "An error that is not expliclity communicated when making request "
+            "to the service implementing IP Protection."));
+        break;
+    }
+  }
 }

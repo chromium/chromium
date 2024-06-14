@@ -22,8 +22,22 @@
 #include "net/third_party/quiche/src/quiche/blind_sign_auth/proto/auth_and_sign.pb.h"
 #include "net/third_party/quiche/src/quiche/blind_sign_auth/proto/get_initial_data.pb.h"
 
-// Uses the IpProtectionAuthClient to make IPC calls to Service implementing IP
-// Protection.
+// Uses the IpProtectionAuthClient to make IPC calls to service implementing IP
+// Protection for async requests in BlindSignAuth. DoRequest makes an IPC
+// request for either GetInitialData or AuthAndSign and if successful, receives
+// a response body which is returned in a BlindSignMessageResponse along with a
+// status_code of `absl::StatusCode::kOk`. An AuthRequestError is returned if
+// otherwise and is mapped to an `absl::Status`.
+//
+// AuthRequestError will either be transient, persistent, or other (some failure
+// not explicitly communicated by the service). AuthRequestError::kTransient
+// maps to absl::Unavailable given that the client can retry the failing call.
+// AuthRequestError::kPersistent maps to absl::FailedPreconditionError
+// indicating that the request cannot be retried. AuthRequestError::kOther
+// is for all other errors that are unexpected and therefore maps to
+// absl::Unavailable so the request can be retried with backoff.
+//
+// See go/canonical-codes for more information on error codes.
 class BlindSignMessageAndroidImpl : public quiche::BlindSignMessageInterface {
  public:
   BlindSignMessageAndroidImpl();
@@ -72,8 +86,11 @@ class BlindSignMessageAndroidImpl : public quiche::BlindSignMessageInterface {
       base::expected<privacy::ppn::AuthAndSignResponse,
                      ip_protection::android::AuthRequestError> response);
 
-  void OnSendRequestComplete(quiche::BlindSignMessageCallback callback,
-                             std::string response);
+  template <typename ResponseType>
+  void OnSendRequestComplete(
+      quiche::BlindSignMessageCallback callback,
+      base::expected<ResponseType, ip_protection::android::AuthRequestError>
+          response);
 
   // Set the `ip_protection_auth_client_` for testing.
   void SetIpProtectionAuthClientForTesting(
