@@ -45,6 +45,8 @@ public class ArchivedTabsDialogCoordinatorTest {
     public final ChromeTabbedActivityTestRule mActivityTestRule =
             new ChromeTabbedActivityTestRule();
 
+    private final TabListEditorTestingRobot mRobot = new TabListEditorTestingRobot();
+
     private ArchivedTabsDialogCoordinator mCoordinator;
     private Profile mProfile;
     private ArchivedTabModelOrchestrator mArchivedTabModelOrchestrator;
@@ -97,6 +99,13 @@ public class ArchivedTabsDialogCoordinatorTest {
         addArchivedTab(new GURL("https://google.com"), "test 1");
         showDialog();
         onView(withText("1 inactive tab")).check(matches(isDisplayed()));
+        mRobot.resultRobot.verifyTabListEditorIsVisible().verifyAdapterHasItemCount(1);
+
+        mRobot.actionRobot.clickToolbarMenuButton();
+        mRobot.resultRobot
+                .verifyToolbarMenuItemState("Restore all", true)
+                .verifyToolbarMenuItemState("Select tabs", true)
+                .verifyToolbarMenuItemState("Settings", true);
     }
 
     @Test

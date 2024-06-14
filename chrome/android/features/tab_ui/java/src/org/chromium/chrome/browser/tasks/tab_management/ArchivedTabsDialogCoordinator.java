@@ -25,9 +25,40 @@ import org.chromium.chrome.browser.tasks.tab_management.TabListEditorCoordinator
 import org.chromium.chrome.browser.tasks.tab_management.TabProperties.TabActionState;
 import org.chromium.chrome.browser.ui.messages.snackbar.SnackbarManager;
 
+import java.util.ArrayList;
 import java.util.List;
 
 public class ArchivedTabsDialogCoordinator {
+
+    /** Interface exposing functionality to the menu items for the archived tabs dialog */
+    public interface ArchiveDelegate {
+        /** Restore all archived tabs. */
+        void restoreAllArchivedTabs();
+
+        /** Open the archive settings page. */
+        void openArchiveSettings();
+
+        /** Start tab selection process. */
+        void startTabSelection();
+    }
+
+    private final ArchiveDelegate mArchiveDelegate =
+            new ArchiveDelegate() {
+                @Override
+                public void restoreAllArchivedTabs() {
+                    // TODO(crbug.com/345010580): Implement this.
+                }
+
+                @Override
+                public void openArchiveSettings() {
+                    // TODO(crbug.com/345011191): Implement this.
+                }
+
+                @Override
+                public void startTabSelection() {
+                    // TODO(crbug.com/345011130): Implement this.
+                }
+            };
 
     private final NavigationProvider mNavigationProvider =
             new NavigationProvider() {
@@ -120,6 +151,14 @@ public class ArchivedTabsDialogCoordinator {
         // TODO(crbug.com/345789067): Also configure the menu items that are shown.
 
         mTabListEditorCoordinator.getController().setNavigationProvider(mNavigationProvider);
+
+        List<TabListEditorAction> actions = new ArrayList<>();
+        actions.add(
+                TabListEditorRestoreAllArchivedTabsAction.createAction(mContext, mArchiveDelegate));
+        actions.add(TabListEditorSelectTabsAction.createAction(mContext, mArchiveDelegate));
+        actions.add(TabListEditorArchiveSettingsAction.createAction(mContext, mArchiveDelegate));
+        mTabListEditorCoordinator.getController().configureToolbarWithMenuItems(actions);
+
         updateTitle();
     }
 
