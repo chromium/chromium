@@ -1239,6 +1239,72 @@ TEST_F(ClientControlledStateTest, DragCaptionToSnap) {
   }
 }
 
+// Tests that drag-caption-to-unsnap works for client-controlled windows. The
+// order of emitted drag events and state change events matters for a client so
+// this test strictly verifies the order of events.
+TEST_F(ClientControlledStateTest, DragCaptionToUnsnap) {
+  auto* const event_generator = GetEventGenerator();
+
+  widget_delegate()->EnableSnap();
+  ASSERT_TRUE(window_state()->CanResize());
+  ASSERT_TRUE(window_state()->CanSnap());
+
+  // Snap `window()` to left.
+  const WindowSnapWMEvent snap_primary(WM_EVENT_SNAP_PRIMARY);
+  window_state()->OnWMEvent(&snap_primary);
+  state()->EnterNextState(window_state(), delegate()->new_state());
+  ApplyPendingRequestedBounds();
+
+  // Start dragging in the center of the header.
+  auto* const header_view = GetHeaderView();
+  gfx::Point next_cursor_point = header_view->GetBoundsInScreen().CenterPoint();
+  event_generator->set_current_screen_location(next_cursor_point);
+  event_generator->PressLeftButton();
+
+  // Keep slightly (5px) dragging...
+  delegate()->set_bounds_request_callback(
+      base::BindLambdaForTesting([&](const gfx::Rect& bounds) {
+        // When any new bounds is requested, `OnDragStarted()` should be
+        // called already.
+        EXPECT_TRUE(window_state_delegate()->drag_in_progress());
+        EXPECT_TRUE(window_state()->drag_details()->bounds_change &
+                    WindowResizer::kBoundsChange_Repositions);
+      }));
+  next_cursor_point.Offset(5, 0);
+  event_generator->MoveMouseTo(next_cursor_point);
+  // The following drag info is used by client to determine how to handle the
+  // bounds change.
+  EXPECT_TRUE(window_state_delegate()->drag_in_progress());
+  EXPECT_TRUE(window_state()->drag_details()->bounds_change &
+              WindowResizer::kBoundsChange_Repositions);
+  ApplyPendingRequestedBounds();
+  delegate()->set_bounds_request_callback(base::NullCallback());
+
+  // Drag it to the center of the screen.
+  const auto work_area =
+      display::Screen::GetScreen()->GetPrimaryDisplay().work_area();
+  next_cursor_point = work_area.CenterPoint();
+  event_generator->MoveMouseTo(next_cursor_point);
+  delegate()->set_window_state_request_callback(
+      base::BindLambdaForTesting([&](WindowStateType new_state) {
+        if (new_state != chromeos::WindowStateType::kPrimarySnapped) {
+          return;
+        }
+        // When a new state (i.e., normal) is requested, `OnDragFinished()`
+        // should be called already.
+        EXPECT_FALSE(window_state_delegate()->drag_in_progress());
+      }));
+  event_generator->ReleaseLeftButton();
+  // The following drag info is used by client to determine how to handle the
+  // bounds change.
+  EXPECT_FALSE(window_state_delegate()->drag_in_progress());
+
+  // Accept the restore request.
+  state()->EnterNextState(window_state(), delegate()->new_state());
+  ApplyPendingRequestedBounds();
+  EXPECT_EQ(chromeos::WindowStateType::kNormal, window_state()->GetStateType());
+}
+
 // Tests that swapping snapped windows works for client-controlled windows
 TEST_F(ClientControlledStateTest, SwapSnappedWindows) {
   ShellTestApi().SetTabletModeEnabledForTest(true);
