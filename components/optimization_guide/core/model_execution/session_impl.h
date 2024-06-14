@@ -85,8 +85,8 @@ class SessionImpl : public OptimizationGuideModelExecutor::Session,
   // These values are persisted to logs. Entries should not be renumbered and
   // numeric values should never be reused.
   enum class ExecuteModelResult {
-    // The server was used.
-    kUsedServer = 0,
+    // On-device was not used.
+    kOnDeviceNotUsed = 0,
     // On-device was used, and it completed successfully.
     kUsedOnDevice = 1,
     // Failed constructing message, and used server.
@@ -182,7 +182,7 @@ class SessionImpl : public OptimizationGuideModelExecutor::Session,
 
    private:
     const ModelBasedCapabilityKey feature_;
-    ExecuteModelResult result_ = ExecuteModelResult::kUsedServer;
+    ExecuteModelResult result_ = ExecuteModelResult::kOnDeviceNotUsed;
   };
 
   // Captures all state used for the on device model.

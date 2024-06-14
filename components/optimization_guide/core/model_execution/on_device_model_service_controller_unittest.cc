@@ -2455,7 +2455,7 @@ TEST_F(OnDeviceModelServiceControllerTest, AddContextInvalidConfig) {
     ExecuteModel(*session, "2");
     histogram_tester.ExpectUniqueSample(
         "OptimizationGuide.ModelExecution.OnDeviceExecuteModelResult.Compose",
-        ExecuteModelResult::kUsedServer, 1);
+        ExecuteModelResult::kOnDeviceNotUsed, 1);
   }
   EXPECT_TRUE(remote_execute_called_);
   // The execute call never made it to on-device, so we shouldn't have created a

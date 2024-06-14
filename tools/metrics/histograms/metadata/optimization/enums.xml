@@ -286,7 +286,9 @@ chromium-metrics-reviews@google.com.
 </enum>
 
 <enum name="OptimizationGuideOnDeviceExecuteModelResult">
-  <int value="0" label="Used Server"/>
+  <int value="0" label="On-device not used">
+    Session was not eligible for on-device and the on-device model was not used.
+  </int>
   <int value="1" label="Used on-device">
     On-device model was used and it completed successfully.
   </int>
