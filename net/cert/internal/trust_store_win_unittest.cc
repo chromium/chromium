@@ -17,7 +17,6 @@
 #include "net/base/features.h"
 #include "net/cert/cert_net_fetcher.h"
 #include "net/cert/internal/test_helpers.h"
-#include "net/cert/internal/trust_store_features.h"
 #include "net/cert/x509_certificate.h"
 #include "net/cert/x509_util.h"
 #include "net/cert/x509_util_win.h"
@@ -56,13 +55,8 @@ namespace {
   return ::testing::AssertionSuccess();
 }
 
-class TrustStoreWinTest : public testing::TestWithParam<bool> {
+class TrustStoreWinTest : public testing::Test {
  public:
-  TrustStoreWinTest()
-      : scoped_enforce_local_anchor_constraints_(
-            ExpectedEnforceLocalAnchorConstraintsEnabled()) {
-  }
-
   void SetUp() override {
     ASSERT_TRUE(ParseCertFromFile("multi-root-A-by-B.pem", &a_by_b_));
     ASSERT_TRUE(ParseCertFromFile("multi-root-B-by-C.pem", &b_by_c_));
@@ -74,15 +68,10 @@ class TrustStoreWinTest : public testing::TestWithParam<bool> {
     ASSERT_TRUE(ParseCertFromFile("multi-root-F-by-E.pem", &f_by_e_));
   }
 
-  bool ExpectedEnforceLocalAnchorConstraintsEnabled() const {
-    return GetParam();
-  }
-
   bssl::CertificateTrust ExpectedTrustForAnchor() const {
     return bssl::CertificateTrust::ForTrustAnchorOrLeaf()
         .WithEnforceAnchorExpiry()
-        .WithEnforceAnchorConstraints(
-            ExpectedEnforceLocalAnchorConstraintsEnabled())
+        .WithEnforceAnchorConstraints()
         .WithRequireLeafSelfSigned();
   }
 
@@ -135,13 +124,9 @@ class TrustStoreWinTest : public testing::TestWithParam<bool> {
 
   std::shared_ptr<const bssl::ParsedCertificate> a_by_b_, b_by_c_, b_by_f_,
       c_by_d_, c_by_e_, d_by_d_, e_by_e_, f_by_e_;
-
- private:
-  ScopedLocalAnchorConstraintsEnforcementForTesting
-      scoped_enforce_local_anchor_constraints_;
 };
 
-TEST_P(TrustStoreWinTest, GetTrustInitializationError) {
+TEST_F(TrustStoreWinTest, GetTrustInitializationError) {
   // Simulate an initialization error by using null stores.
   std::unique_ptr<TrustStoreWin> trust_store_win =
       TrustStoreWin::CreateForTesting(
@@ -152,7 +137,7 @@ TEST_P(TrustStoreWinTest, GetTrustInitializationError) {
             trust.ToDebugString());
 }
 
-TEST_P(TrustStoreWinTest, GetTrust) {
+TEST_F(TrustStoreWinTest, GetTrust) {
   ASSERT_TRUE(AddToStore(stores_.roots.get(), d_by_d_));
   ASSERT_TRUE(AddToStore(stores_.intermediates.get(), c_by_d_));
   ASSERT_TRUE(AddToStore(stores_.trusted_people.get(), a_by_b_));
@@ -189,7 +174,7 @@ TEST_P(TrustStoreWinTest, GetTrust) {
 // - kMultiRootEByE: only has szOID_PKIX_KP_CLIENT_AUTH set
 // - kMultiRootCByE: only has szOID_ANY_ENHANCED_KEY_USAGE set
 // - kMultiRootCByD: no EKU usages set
-TEST_P(TrustStoreWinTest, GetTrustRestrictedEKU) {
+TEST_F(TrustStoreWinTest, GetTrustRestrictedEKU) {
   ASSERT_TRUE(AddToStoreWithEKURestriction(stores_.roots.get(), d_by_d_,
                                            szOID_PKIX_KP_SERVER_AUTH));
   ASSERT_TRUE(AddToStoreWithEKURestriction(stores_.roots.get(), e_by_e_,
@@ -227,7 +212,7 @@ TEST_P(TrustStoreWinTest, GetTrustRestrictedEKU) {
 }
 
 // Same as GetTrustRestrictedEKU but for the Trusted People store.
-TEST_P(TrustStoreWinTest, GetTrustTrustedPeopleRestrictedEKU) {
+TEST_F(TrustStoreWinTest, GetTrustTrustedPeopleRestrictedEKU) {
   ASSERT_TRUE(AddToStoreWithEKURestriction(stores_.trusted_people.get(),
                                            d_by_d_, szOID_PKIX_KP_SERVER_AUTH));
   ASSERT_TRUE(AddToStoreWithEKURestriction(stores_.trusted_people.get(),
@@ -271,7 +256,7 @@ TEST_P(TrustStoreWinTest, GetTrustTrustedPeopleRestrictedEKU) {
 // - kMultiRootDByD: only has szOID_PKIX_KP_CLIENT_AUTH EKU set
 // - kMultiRootDByD (dupe): only has szOID_PKIX_KP_SERVER_AUTH set
 // - kMultiRootDByD (dupe 2): no EKU usages set
-TEST_P(TrustStoreWinTest, GetTrustRestrictedEKUDuplicateCerts) {
+TEST_F(TrustStoreWinTest, GetTrustRestrictedEKUDuplicateCerts) {
   ASSERT_TRUE(AddToStoreWithEKURestriction(stores_.roots.get(), d_by_d_,
                                            szOID_PKIX_KP_CLIENT_AUTH));
   ASSERT_TRUE(AddToStoreWithEKURestriction(stores_.roots.get(), d_by_d_,
@@ -288,7 +273,7 @@ TEST_P(TrustStoreWinTest, GetTrustRestrictedEKUDuplicateCerts) {
 }
 
 // Test that disallowed certs will be distrusted regardless of EKU settings.
-TEST_P(TrustStoreWinTest, GetTrustDisallowedCerts) {
+TEST_F(TrustStoreWinTest, GetTrustDisallowedCerts) {
   ASSERT_TRUE(AddToStore(stores_.roots.get(), d_by_d_));
   ASSERT_TRUE(AddToStore(stores_.roots.get(), e_by_e_));
   ASSERT_TRUE(AddToStore(stores_.trusted_people.get(), f_by_e_));
@@ -322,7 +307,7 @@ MATCHER_P(ParsedCertEq, expected_cert, "") {
          base::ranges::equal(arg->der_cert(), expected_cert->der_cert());
 }
 
-TEST_P(TrustStoreWinTest, GetIssuersInitializationError) {
+TEST_F(TrustStoreWinTest, GetIssuersInitializationError) {
   // Simulate an initialization error by using null stores.
   std::unique_ptr<TrustStoreWin> trust_store_win =
       TrustStoreWin::CreateForTesting(
@@ -333,7 +318,7 @@ TEST_P(TrustStoreWinTest, GetIssuersInitializationError) {
   ASSERT_EQ(0U, issuers.size());
 }
 
-TEST_P(TrustStoreWinTest, GetIssuers) {
+TEST_F(TrustStoreWinTest, GetIssuers) {
   ASSERT_TRUE(AddToStore(stores_.roots.get(), d_by_d_));
 
   ASSERT_TRUE(AddToStore(stores_.intermediates.get(), c_by_d_));
@@ -378,15 +363,6 @@ TEST_P(TrustStoreWinTest, GetIssuers) {
                                                        ParsedCertEq(c_by_e_)));
   }
 }
-
-INSTANTIATE_TEST_SUITE_P(
-    All,
-    TrustStoreWinTest,
-    testing::Bool(),
-    [](const testing::TestParamInfo<TrustStoreWinTest::ParamType>& info) {
-      return info.param ? "EnforceLocalAnchorConstraints"
-                        : "NoLocalAnchorConstraints";
-    });
 
 }  // namespace
 }  // namespace net

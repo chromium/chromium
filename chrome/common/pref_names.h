@@ -3758,12 +3758,6 @@ inline constexpr char kCACertificateManagementAllowed[] =
     "ca_certificate_management_allowed";
 #endif
 
-#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX) || \
-    BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_ANDROID)
-inline constexpr char kEnforceLocalAnchorConstraintsEnabled[] =
-    "enforce_local_anchor_constraints_enabled";
-#endif
-
 inline constexpr char kSharingVapidKey[] = "sharing.vapid_key";
 inline constexpr char kSharingFCMRegistration[] = "sharing.fcm_registration";
 inline constexpr char kSharingLocalSharingInfo[] = "sharing.local_sharing_info";

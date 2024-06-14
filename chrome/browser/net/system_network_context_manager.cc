@@ -66,7 +66,6 @@
 #include "mojo/public/cpp/bindings/receiver_set.h"
 #include "mojo/public/cpp/bindings/self_owned_receiver.h"
 #include "net/base/features.h"
-#include "net/cert/internal/trust_store_features.h"
 #include "net/cookies/cookie_util.h"
 #include "net/net_buildflags.h"
 #include "net/third_party/uri_template/uri_template.h"
@@ -609,17 +608,6 @@ SystemNetworkContextManager::SystemNetworkContextManager(
       true, base::DoNothing());
 #endif
 
-#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX) || \
-    BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_ANDROID)
-  pref_change_registrar_.Add(
-      prefs::kEnforceLocalAnchorConstraintsEnabled,
-      base::BindRepeating(&SystemNetworkContextManager::
-                              UpdateEnforceLocalAnchorConstraintsEnabled,
-                          base::Unretained(this)));
-  // Call the update function immediately to set the initial value, if any.
-  UpdateEnforceLocalAnchorConstraintsEnabled();
-#endif
-
   if (content::IsOutOfProcessNetworkService() &&
       base::FeatureList::IsEnabled(
           features::kRestartNetworkServiceUnsandboxedForFailedLaunch)) {
@@ -687,14 +675,6 @@ void SystemNetworkContextManager::RegisterPrefs(PrefRegistrySimple* registry) {
   registry->RegisterBooleanPref(prefs::kQuickCheckEnabled, true);
 
   registry->RegisterIntegerPref(prefs::kMaxConnectionsPerProxy, -1);
-
-#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX) || \
-    BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_ANDROID)
-  // Note that the default value is not relevant because the pref is only
-  // evaluated when it is managed.
-  registry->RegisterBooleanPref(prefs::kEnforceLocalAnchorConstraintsEnabled,
-                                true);
-#endif
 
   registry->RegisterListPref(prefs::kExplicitlyAllowedNetworkPorts);
 
@@ -1055,25 +1035,6 @@ void SystemNetworkContextManager::UpdateExplicitlyAllowedNetworkPorts() {
   content::GetNetworkService()->SetExplicitlyAllowedPorts(
       ConvertExplicitlyAllowedNetworkPortsPref(local_state_));
 }
-
-#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX) || \
-    BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_ANDROID)
-void SystemNetworkContextManager::UpdateEnforceLocalAnchorConstraintsEnabled() {
-  const PrefService::Preference* enforce_local_anchor_constraints_enabled_pref =
-      local_state_->FindPreference(
-          prefs::kEnforceLocalAnchorConstraintsEnabled);
-  if (enforce_local_anchor_constraints_enabled_pref->IsManaged()) {
-    // This depends on the CertVerifierService running in the browser process.
-    // If that changes, this would need to become a mojo message.
-    net::SetLocalAnchorConstraintsEnforcementEnabled(
-        enforce_local_anchor_constraints_enabled_pref->GetValue()->GetBool());
-  } else {
-    net::SetLocalAnchorConstraintsEnforcementEnabled(
-        base::FeatureList::IsEnabled(
-            net::features::kEnforceLocalAnchorConstraints));
-  }
-}
-#endif
 
 void SystemNetworkContextManager::UpdateReferrersEnabled() {
   GetContext()->SetEnableReferrers(enable_referrers_.GetValue());

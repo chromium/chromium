@@ -31,7 +31,6 @@
 #include "net/base/features.h"
 #include "net/base/hash_value.h"
 #include "net/base/network_notification_thread_mac.h"
-#include "net/cert/internal/trust_store_features.h"
 #include "net/cert/test_keychain_search_list_mac.h"
 #include "net/cert/x509_util.h"
 #include "net/cert/x509_util_apple.h"
@@ -1070,11 +1069,9 @@ bssl::CertificateTrust TrustStoreMac::GetTrust(
       // depend on the context the certificate is encountered in.
       bssl::CertificateTrust trust =
           bssl::CertificateTrust::ForTrustAnchorOrLeaf()
-              .WithEnforceAnchorExpiry();
-      if (IsLocalAnchorConstraintsEnforcementEnabled()) {
-        trust = trust.WithEnforceAnchorConstraints()
-                    .WithRequireAnchorBasicConstraints();
-      }
+              .WithEnforceAnchorExpiry()
+              .WithEnforceAnchorConstraints()
+              .WithRequireAnchorBasicConstraints();
       return trust;
     }
     case TrustStatus::DISTRUSTED:

@@ -19,7 +19,6 @@
 #include "base/strings/string_number_conversions.h"
 #include "base/threading/scoped_blocking_call.h"
 #include "net/base/features.h"
-#include "net/cert/internal/trust_store_features.h"
 #include "net/cert/x509_util.h"
 #include "net/third_party/mozilla_win/cert/win_util.h"
 #include "third_party/boringssl/src/pki/cert_errors.h"
@@ -330,8 +329,7 @@ class TrustStoreWin::Impl {
           // anchors or trusted leafs (if self-signed).
           return bssl::CertificateTrust::ForTrustAnchorOrLeaf()
               .WithEnforceAnchorExpiry()
-              .WithEnforceAnchorConstraints(
-                  IsLocalAnchorConstraintsEnforcementEnabled())
+              .WithEnforceAnchorConstraints()
               .WithRequireLeafSelfSigned();
         }
       }

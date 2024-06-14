@@ -232,13 +232,6 @@ class SystemNetworkContextManager {
   // the network process.
   void UpdateExplicitlyAllowedNetworkPorts();
 
-#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX) || \
-    BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_ANDROID)
-  // Applies the current value of the kEnforceLocalAnchorConstraintsEnabled
-  // pref to the enforcement state.
-  void UpdateEnforceLocalAnchorConstraintsEnabled();
-#endif
-
   void UpdateIPv6ReachabilityOverrideEnabled();
 
   // The PrefService to retrieve all the pref values.

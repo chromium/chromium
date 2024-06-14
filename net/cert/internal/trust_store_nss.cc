@@ -29,7 +29,6 @@
 #include "crypto/nss_util_internal.h"
 #include "crypto/scoped_nss_types.h"
 #include "net/base/features.h"
-#include "net/cert/internal/trust_store_features.h"
 #include "net/cert/scoped_nss_types.h"
 #include "net/cert/x509_util.h"
 #include "net/cert/x509_util_nss.h"
@@ -454,11 +453,9 @@ bssl::CertificateTrust TrustStoreNSS::GetTrustIgnoringSystemTrust(
           return bssl::CertificateTrust::ForTrustedLeaf();
         case CKT_NSS_TRUSTED_DELEGATOR: {
           DVLOG(1) << "CKT_NSS_TRUSTED_DELEGATOR -> trust anchor";
-          const bool enforce_anchor_constraints =
-              IsLocalAnchorConstraintsEnforcementEnabled();
           return bssl::CertificateTrust::ForTrustAnchor()
-              .WithEnforceAnchorConstraints(enforce_anchor_constraints)
-              .WithEnforceAnchorExpiry(enforce_anchor_constraints);
+              .WithEnforceAnchorConstraints()
+              .WithEnforceAnchorExpiry();
         }
         case CKT_NSS_MUST_VERIFY_TRUST:
         case CKT_NSS_VALID_DELEGATOR:
@@ -492,30 +489,21 @@ bssl::CertificateTrust TrustStoreNSS::GetTrustForNSSTrust(
     return bssl::CertificateTrust::ForDistrusted();
   }
 
-  bool is_trusted_ca = false;
-  bool is_trusted_leaf = false;
-  const bool enforce_anchor_constraints =
-      IsLocalAnchorConstraintsEnforcementEnabled();
-
   // Determine if the certificate is a trust anchor.
-  if ((trust_flags & CERTDB_TRUSTED_CA) == CERTDB_TRUSTED_CA) {
-    is_trusted_ca = true;
-  }
+  bool is_trusted_ca = (trust_flags & CERTDB_TRUSTED_CA) == CERTDB_TRUSTED_CA;
 
   constexpr unsigned int kTrustedPeerBits =
       CERTDB_TERMINAL_RECORD | CERTDB_TRUSTED;
-  if ((trust_flags & kTrustedPeerBits) == kTrustedPeerBits) {
-    is_trusted_leaf = true;
-  }
+  bool is_trusted_leaf = (trust_flags & kTrustedPeerBits) == kTrustedPeerBits;
 
   if (is_trusted_ca && is_trusted_leaf) {
     return bssl::CertificateTrust::ForTrustAnchorOrLeaf()
-        .WithEnforceAnchorConstraints(enforce_anchor_constraints)
-        .WithEnforceAnchorExpiry(enforce_anchor_constraints);
+        .WithEnforceAnchorConstraints()
+        .WithEnforceAnchorExpiry();
   } else if (is_trusted_ca) {
     return bssl::CertificateTrust::ForTrustAnchor()
-        .WithEnforceAnchorConstraints(enforce_anchor_constraints)
-        .WithEnforceAnchorExpiry(enforce_anchor_constraints);
+        .WithEnforceAnchorConstraints()
+        .WithEnforceAnchorExpiry();
   } else if (is_trusted_leaf) {
     return bssl::CertificateTrust::ForTrustedLeaf();
   }
