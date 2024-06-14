@@ -229,11 +229,10 @@ class ImageCarouselView : public views::View {
   }
 
   void AddedToWidget() override {
-    const display::Screen* const screen = display::Screen::GetScreen();
-
     float current_scale =
-        screen->GetDisplayNearestView(GetWidget()->GetNativeView())
-            .device_scale_factor();
+        display::Screen::GetScreen()
+            ->GetPreferredScaleFactorForView(GetWidget()->GetNativeView())
+            .value_or(1.0f);
     for (size_t i = 0; i < screenshots_.size(); i++) {
       image_views_[i]->SetImage(
           ui::ImageModel::FromImageSkia(gfx::ImageSkia::CreateFromBitmap(

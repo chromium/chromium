@@ -273,7 +273,7 @@ void DownloadsDOMHandler::Drag(const std::string& id) {
   gfx::NativeView view = web_contents->GetNativeView();
   gfx::Image* icon = g_browser_process->icon_manager()->LookupIconFromFilepath(
       file->GetTargetFilePath(), IconLoader::NORMAL,
-      screen->GetDisplayNearestView(view).device_scale_factor());
+      screen->GetPreferredScaleFactorForView(view).value_or(1.0f));
   {
     // Enable nested tasks during DnD, while |DragDownload()| blocks.
     base::CurrentThread::ScopedAllowApplicationTasksInNativeNestedLoop allow;

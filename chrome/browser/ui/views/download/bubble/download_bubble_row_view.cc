@@ -266,9 +266,10 @@ void DownloadBubbleRowView::UpdateRow(bool initial_setup) {
 }
 
 void DownloadBubbleRowView::AddedToWidget() {
-  const display::Screen* const screen = display::Screen::GetScreen();
-  current_scale_ = screen->GetDisplayNearestView(GetWidget()->GetNativeView())
-                       .device_scale_factor();
+  current_scale_ =
+      display::Screen::GetScreen()
+          ->GetPreferredScaleFactorForView(GetWidget()->GetNativeView())
+          .value_or(1.0);
   SetIcon();
   auto* focus_manager = GetFocusManager();
   if (focus_manager) {
