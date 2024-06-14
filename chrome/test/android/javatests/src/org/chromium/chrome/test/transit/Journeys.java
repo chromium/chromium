@@ -41,6 +41,7 @@ public class Journeys {
                 PageStation.newPageStationBuilder()
                         .withIsOpeningTabs(0)
                         .withTabAlreadySelected(currentTab)
+                        .withPath(url)
                         .build();
         PageStation station = startingStation.loadPageProgramatically(pageStation, url);
         // One tab already exists.
@@ -69,6 +70,7 @@ public class Journeys {
                             .withIsOpeningTabs(1)
                             .withIsSelectingTabs(1)
                             .withIncognito(isIncognito)
+                            .withPath(url)
                             .build();
             startingStation =
                     startingStation.travelToSync(

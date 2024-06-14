@@ -334,6 +334,7 @@ public class PageStation extends Station {
                         .initFrom(this)
                         .withIsOpeningTabs(0)
                         .withTabAlreadySelected(getLoadedTab())
+                        .withPath(url)
                         .build();
 
         return loadPageProgramatically(destination, url);
