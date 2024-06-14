@@ -78,7 +78,7 @@ void SerializeSourceKeysIfNotEmpty(base::Value::Dict& dict,
   if (keys.empty())
     return;
 
-  base::Value::List list;
+  auto list = base::Value::List::with_capacity(keys.size());
   for (const std::string& key : keys) {
     list.Append(key);
   }

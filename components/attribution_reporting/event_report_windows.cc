@@ -297,7 +297,7 @@ void EventReportWindows::Serialize(base::Value::Dict& dict) const {
 
   windows_dict.Set(kStartTime, static_cast<int>(start_time_.InSeconds()));
 
-  base::Value::List list;
+  auto list = base::Value::List::with_capacity(end_times_.size());
   for (const auto& end_time : end_times_) {
     list.Append(static_cast<int>(end_time.InSeconds()));
   }

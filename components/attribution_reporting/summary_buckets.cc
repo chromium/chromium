@@ -127,8 +127,7 @@ SummaryBuckets::SummaryBuckets(SummaryBuckets&&) = default;
 SummaryBuckets& SummaryBuckets::operator=(SummaryBuckets&&) = default;
 
 void SummaryBuckets::Serialize(base::Value::Dict& dict) const {
-  base::Value::List list;
-  list.reserve(starts_.size());
+  auto list = base::Value::List::with_capacity(starts_.size());
   for (uint32_t start : starts_) {
     list.Append(Uint32ToJson(start));
   }

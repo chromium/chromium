@@ -158,7 +158,7 @@ base::expected<FilterValues, FilterValuesError> ParseFilterValuesFromJSON(
 base::Value::Dict FilterValuesToJson(const FilterValues& filter_values) {
   base::Value::Dict dict;
   for (const auto& [key, values] : filter_values) {
-    base::Value::List list;
+    auto list = base::Value::List::with_capacity(values.size());
     for (const auto& value : values) {
       list.Append(value);
     }
@@ -453,7 +453,7 @@ base::expected<FiltersDisjunction, TriggerRegistrationError> FiltersFromJSON(
 }
 
 base::Value::List ToJson(const FiltersDisjunction& filters) {
-  base::Value::List list;
+  auto list = base::Value::List::with_capacity(filters.size());
   for (const auto& filter_config : filters) {
     base::Value::Dict dict = FilterValuesToJson(filter_config.filter_values());
     if (filter_config.lookback_window().has_value()) {

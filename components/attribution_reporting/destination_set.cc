@@ -139,7 +139,7 @@ base::Value DestinationSet::ToJson() const {
     return base::Value(destinations_.begin()->Serialize());
   }
 
-  base::Value::List list;
+  auto list = base::Value::List::with_capacity(destinations_.size());
   for (const auto& destination : destinations_) {
     list.Append(destination.Serialize());
   }

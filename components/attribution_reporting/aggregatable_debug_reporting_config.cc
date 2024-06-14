@@ -195,7 +195,7 @@ void SerializeConfig(base::Value::Dict& dict,
   }
 
   if (!config.debug_data.empty()) {
-    base::Value::List list;
+    auto list = base::Value::List::with_capacity(config.debug_data.size());
     for (const auto& [type, contribution] : config.debug_data) {
       CHECK(base::IsValueInRangeForNumericType<int>(contribution.value()));
 

@@ -333,8 +333,7 @@ const TriggerSpec* TriggerSpecs::SingleSharedSpec() const {
 }
 
 base::Value::List TriggerSpecs::ToJson() const {
-  base::Value::List spec_list;
-  spec_list.reserve(specs_.size());
+  auto spec_list = base::Value::List::with_capacity(specs_.size());
 
   for (const auto& spec : specs_) {
     spec_list.Append(spec.ToJson().Set(kTriggerData, base::Value::List()));

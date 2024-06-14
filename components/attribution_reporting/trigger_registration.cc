@@ -41,7 +41,7 @@ void SerializeListIfNotEmpty(base::Value::Dict& dict,
     return;
   }
 
-  base::Value::List list;
+  auto list = base::Value::List::with_capacity(vec.size());
   for (const auto& value : vec) {
     list.Append(value.ToJson());
   }
