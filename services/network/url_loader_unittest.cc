@@ -7452,9 +7452,12 @@ TEST_F(URLLoaderTest, CookieSettingOverridesCopiedToURLRequest) {
   net::CookieSettingOverrides cookie_setting_overrides =
       net::CookieSettingOverrides::All();
   // The overrides are not allowed to start out with the
-  // `kStorageAccessGrantEligible` override present.
+  // `kStorageAccessGrantEligible` or `kStorageAccessGrantEligibleViaHeader`
+  // overrides present.
   cookie_setting_overrides.Remove(
       net::CookieSettingOverride::kStorageAccessGrantEligible);
+  cookie_setting_overrides.Remove(
+      net::CookieSettingOverride::kStorageAccessGrantEligibleViaHeader);
 
   set_cookie_setting_overrides(cookie_setting_overrides);
   bool was_intercepted = false;
