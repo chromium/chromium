@@ -1271,23 +1271,15 @@ TEST_F(HistoryServiceTest, GetDomainDiversityLocalVsSynced) {
   query_time =
       std::max(query_time.LocalMidnight() + base::Minutes(10), query_time);
 
-  // Add a regular local visit.
+  // Add a local visit.
   history->AddPage(GURL("https://www.local.com/"),
                    GetTimeInThePast(query_time, /*days_back=*/1,
                                     /*hours_since_midnight=*/12),
                    0, 0, GURL(), history::RedirectList(),
                    ui::PAGE_TRANSITION_LINK, history::SOURCE_BROWSED, false);
 
-  // Add a legacy-style synced visit, as it would be created by TYPED_URLS sync.
-  // This has SOURCE_SYNCED but otherwise looks mostly like a local visit.
-  history->AddPage(GURL("https://www.synced-legacy.com/"),
-                   GetTimeInThePast(query_time, /*days_back=*/1,
-                                    /*hours_since_midnight=*/13),
-                   0, 0, GURL(), history::RedirectList(),
-                   ui::PAGE_TRANSITION_LINK, history::SOURCE_SYNCED, false);
-
-  // Add a new-style synced visit, as it would be created by HISTORY sync. The
-  // API to do this isn't exposed in HistoryService (only HistoryBackend).
+  // Add a synced visit, as it would be created by HISTORY sync. The API to do
+  // this isn't exposed in HistoryService (only HistoryBackend).
   {
     VisitRow visit;
     visit.visit_time = GetTimeInThePast(query_time, /*days_back=*/1,
@@ -1316,8 +1308,8 @@ TEST_F(HistoryServiceTest, GetDomainDiversityLocalVsSynced) {
 
   // The "local" result should only count the local visit.
   TestDomainMetricSet(local_res[0], 1, -1, -1);
-  // The "all" result should also include synced visits.
-  TestDomainMetricSet(all_res[0], 3, -1, -1);
+  // The "all" result should also include the synced visit.
+  TestDomainMetricSet(all_res[0], 2, -1, -1);
 }
 
 TEST_F(HistoryServiceTest, GetMostRecentVisitsForGurl) {

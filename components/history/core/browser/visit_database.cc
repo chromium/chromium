@@ -673,9 +673,7 @@ bool VisitDatabase::GetSomeForeignVisits(VisitID max_visit_id,
   visits->clear();
 
   // Exactly all foreign visits (i.e. coming from a different device) have an
-  // `originator_cache_guid` set. (This does *not* include legacy TypedURL
-  // visits though - those have SOURCE_SYNCED but are otherwise not considered
-  // "foreign".)
+  // `originator_cache_guid` set.
   sql::Statement statement(GetDB().GetCachedStatement(
       SQL_FROM_HERE,
       "SELECT" HISTORY_VISIT_ROW_FIELDS
