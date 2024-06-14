@@ -130,20 +130,36 @@ suite('CategoriesTest', () => {
     assertEquals(1, handler.getCallCount('setDefaultColor'));
   });
 
-  test('clicking upload image creates dialog and sends event', async () => {
-    await setInitialSettings(0);
-    handler.setResultFor('chooseLocalCustomBackground', Promise.resolve({
-      success: true,
-    }));
+  test(
+      'clicking upload image creates dialog, sends event, and announces',
+      async () => {
+        // Arrange.
+        loadTimeData.overrideValues({
+          updatedToUploadedImage: 'Theme updated to uploaded image',
+        });
+        await setInitialSettings(0);
+        handler.setResultFor('chooseLocalCustomBackground', Promise.resolve({
+          success: true,
+        }));
+        const eventPromise =
+            eventToPromise('local-image-upload', categoriesElement);
+        const announcementPromise =
+            eventToPromise('cr-a11y-announcer-messages-sent', document.body);
 
-    const eventPromise =
-        eventToPromise('local-image-upload', categoriesElement);
-    categoriesElement.$.uploadImageTile.click();
-    const event = await eventPromise;
-    assertTrue(!!event);
-    assertEquals(1, handler.getCallCount('chooseLocalCustomBackground'));
-    assertEquals(1, metrics.count('NTPRicherPicker.Backgrounds.UploadClicked'));
-  });
+        // Act.
+        categoriesElement.$.uploadImageTile.click();
+        const event = await eventPromise;
+        const announcement = await announcementPromise;
+
+        // Assert.
+        assertTrue(!!event);
+        assertTrue(!!announcement);
+        assertTrue(announcement.detail.messages.includes(
+            'Theme updated to uploaded image'));
+        assertEquals(1, handler.getCallCount('chooseLocalCustomBackground'));
+        assertEquals(
+            1, metrics.count('NTPRicherPicker.Backgrounds.UploadClicked'));
+      });
 
   test('clicking Chrome Web Store tile opens Chrome Web Store', async () => {
     await setInitialSettings(0);

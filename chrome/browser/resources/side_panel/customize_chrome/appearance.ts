@@ -11,6 +11,8 @@ import 'chrome://resources/cr_components/managed_dialog/managed_dialog.js';
 import 'chrome://resources/cr_elements/cr_button/cr_button.js';
 import 'chrome://resources/cr_elements/cr_toggle/cr_toggle.js';
 
+import type {CrA11yAnnouncerElement} from 'chrome://resources/cr_elements/cr_a11y_announcer/cr_a11y_announcer.js';
+import {getInstance as getAnnouncerInstance} from 'chrome://resources/cr_elements/cr_a11y_announcer/cr_a11y_announcer.js';
 import type {CrToggleElement} from 'chrome://resources/cr_elements/cr_toggle/cr_toggle.js';
 import {I18nMixinLit} from 'chrome://resources/cr_elements/i18n_mixin_lit.js';
 import {assert} from 'chrome://resources/js/assert.js';
@@ -150,6 +152,24 @@ export class AppearanceElement extends AppearanceElementBase {
     }
 
     this.showBottomDivider_ = this.computeShowBottomDivider_();
+  }
+
+  override updated(changedProperties: PropertyValues<this>) {
+    super.updated(changedProperties);
+
+    const changedPrivateProperties =
+        changedProperties as Map<PropertyKey, unknown>;
+
+    // Announce when theme is set to Classic Chrome.
+    // This should only be triggered if the classic chrome's button is hidden
+    // after the initial theme value has already been set.
+    if (changedPrivateProperties.has('theme_') &&
+        changedPrivateProperties.has('showClassicChromeButton_') &&
+        !!changedPrivateProperties.get('theme_') &&
+        !this.showClassicChromeButton_) {
+      const announcer = getAnnouncerInstance() as CrA11yAnnouncerElement;
+      announcer.announce(this.i18n('updatedToClassicChrome'));
+    }
   }
 
   focusOnThemeButton() {

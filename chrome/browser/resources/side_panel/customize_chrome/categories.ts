@@ -12,6 +12,9 @@ import './wallpaper_search/wallpaper_search_tile.js';
 
 import type {SpHeadingElement} from 'chrome://customize-chrome-side-panel.top-chrome/shared/sp_heading.js';
 import {HelpBubbleMixinLit} from 'chrome://resources/cr_components/help_bubble/help_bubble_mixin_lit.js';
+import type {CrA11yAnnouncerElement} from 'chrome://resources/cr_elements/cr_a11y_announcer/cr_a11y_announcer.js';
+import {getInstance as getAnnouncerInstance} from 'chrome://resources/cr_elements/cr_a11y_announcer/cr_a11y_announcer.js';
+import {I18nMixinLit} from 'chrome://resources/cr_elements/i18n_mixin_lit.js';
 import {FocusOutlineManager} from 'chrome://resources/js/focus_outline_manager.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
 import {CrLitElement} from 'chrome://resources/lit/v3_0/lit.rollup.js';
@@ -43,7 +46,7 @@ export interface SelectedCategory {
   collectionId?: string;
 }
 
-const CategoriesElementBase = HelpBubbleMixinLit(CrLitElement);
+const CategoriesElementBase = I18nMixinLit(HelpBubbleMixinLit(CrLitElement));
 
 export interface CategoriesElement {
   $: {
@@ -222,6 +225,8 @@ export class CategoriesElement extends CategoriesElementBase {
         'NTPRicherPicker.Backgrounds.UploadClicked');
     const {success} = await this.pageHandler_.chooseLocalCustomBackground();
     if (success) {
+      const announcer = getAnnouncerInstance() as CrA11yAnnouncerElement;
+      announcer.announce(this.i18n('updatedToUploadedImage'));
       this.dispatchEvent(new Event('local-image-upload'));
     }
   }

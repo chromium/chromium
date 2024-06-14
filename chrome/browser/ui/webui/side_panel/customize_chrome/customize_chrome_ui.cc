@@ -115,6 +115,10 @@ CustomizeChromeUI::CustomizeChromeUI(content::WebUI* web_ui)
       {"yourSearchedImage", IDS_NTP_CUSTOMIZE_YOUR_SEARCHED_IMAGE_LABEL},
       {"resetToClassicChrome",
        IDS_NTP_CUSTOMIZE_CHROME_RESET_TO_CLASSIC_CHROME_LABEL},
+      {"updatedToClassicChrome",
+       IDS_NTP_CUSTOMIZE_CHROME_RESET_TO_CLASSIC_CHROME_COMPLETE},
+      {"updatedToUploadedImage",
+       IDS_NTP_CUSTOMIZE_CHROME_RESET_TO_UPLOADED_IMAGE_COMPLETE},
       {"followThemeToggle", IDS_NTP_CUSTOMIZE_CHROME_FOLLOW_THEME_LABEL},
       {"refreshDaily", IDS_NTP_CUSTOM_BG_DAILY_REFRESH},
       // Shortcut strings.

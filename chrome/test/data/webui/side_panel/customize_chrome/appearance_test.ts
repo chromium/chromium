@@ -77,6 +77,91 @@ suite('AppearanceTest', () => {
     assertEquals(1, handler.getCallCount('setDefaultColor'));
   });
 
+  test('announce default theme starting with non-default theme', async () => {
+    loadTimeData.overrideValues({
+      updatedToClassicChrome: 'Theme updated to Classic Chrome',
+    });
+
+    // Add listener to count announcements.
+    let announcementCount = 0;
+    const updateAnnouncementCount = () => {
+      announcementCount += 1;
+    };
+    document.body.addEventListener(
+        'cr-a11y-announcer-messages-sent', updateAnnouncementCount);
+    const announcementPromise =
+        eventToPromise('cr-a11y-announcer-messages-sent', document.body);
+
+    // Set non-classic chrome theme.
+    let theme = createTheme();
+    theme.backgroundImage = createBackgroundImage('chrome://theme/foo');
+
+    callbackRouterRemote.setTheme(theme);
+    await callbackRouterRemote.$.flushForTesting();
+
+    // Set classic chrome. This should announce.
+    theme = createTheme();
+
+    callbackRouterRemote.setTheme(theme);
+    await callbackRouterRemote.$.flushForTesting();
+
+    const announcement = await announcementPromise;
+    assertEquals(announcementCount, 1);
+    assertTrue(!!announcement);
+    assertTrue(announcement.detail.messages.includes(
+        'Theme updated to Classic Chrome'));
+
+    // Cleanup event listener.
+    document.body.removeEventListener(
+        'cr-a11y-announcer-messages-sent', updateAnnouncementCount);
+  });
+
+  test('announce default theme starting with default theme', async () => {
+    loadTimeData.overrideValues({
+      updatedToClassicChrome: 'Theme updated to Classic Chrome',
+    });
+
+    // Add listener to count announcements.
+    let announcementCount = 0;
+    const updateAnnouncementCount = () => {
+      announcementCount += 1;
+    };
+    document.body.addEventListener(
+        'cr-a11y-announcer-messages-sent', updateAnnouncementCount);
+    const announcementPromise =
+        eventToPromise('cr-a11y-announcer-messages-sent', document.body);
+
+    // Set initial classic chrome, which should not announce, since
+    // it is the initial theme.
+    let theme = createTheme();
+
+    callbackRouterRemote.setTheme(theme);
+    await callbackRouterRemote.$.flushForTesting();
+
+    // Set non-classic chrome theme.
+    theme = createTheme();
+    theme.backgroundImage = createBackgroundImage('chrome://theme/foo');
+
+    callbackRouterRemote.setTheme(theme);
+    await callbackRouterRemote.$.flushForTesting();
+
+    // Set classic chrome. This should announce.
+    theme = createTheme();
+
+    callbackRouterRemote.setTheme(theme);
+    await callbackRouterRemote.$.flushForTesting();
+
+    const announcement = await announcementPromise;
+    assertEquals(announcementCount, 1);
+    assertTrue(!!announcement);
+    assertTrue(announcement.detail.messages.includes(
+        'Theme updated to Classic Chrome'));
+
+    // Cleanup event listener.
+    document.body.removeEventListener(
+        'cr-a11y-announcer-messages-sent', updateAnnouncementCount);
+  });
+
   test('1P view shows when 3P theme info not set', async () => {
     const theme = createTheme();
 

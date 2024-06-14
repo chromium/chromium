@@ -7860,6 +7860,12 @@ Keep your key file in a safe place. You will need it to create new versions of y
       <message name="IDS_NTP_CUSTOMIZE_CHROME_RESET_TO_CLASSIC_CHROME_LABEL" desc="The label for the button for resetting theme back to default chrome in the New Tab Page customize chrome side panel.">
         Reset to Default Chrome
       </message>
+      <message name="IDS_NTP_CUSTOMIZE_CHROME_RESET_TO_CLASSIC_CHROME_COMPLETE" desc="Text for a screenreader to read aloud when the user's theme has finished changing to classic chrome in the Customize Chrome side panel.">
+        Theme updated to Default Chrome
+      </message>
+      <message name="IDS_NTP_CUSTOMIZE_CHROME_RESET_TO_UPLOADED_IMAGE_COMPLETE" desc="Text for a screenreader to read aloud when the user's theme has finished changing to an uploaded image in the Customize Chrome side panel.">
+        Theme updated to uploaded image
+      </message>
       <message name="IDS_NTP_CUSTOMIZE_CHROME_FOLLOW_THEME_LABEL" desc="The label for the toggle to use the system color scheme instead of that from the browser.">
         Follow device colors
       </message>
