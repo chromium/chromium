@@ -194,6 +194,7 @@ void MahiContentExtractionDelegate::OnGetContent(
 void MahiContentExtractionDelegate::OnScreenAIServiceInitialized(
     bool successful) {
   if (!successful) {
+    LOG(ERROR) << "ScreenAI service unsuccessfuly initialized.";
     return;
   }
 
