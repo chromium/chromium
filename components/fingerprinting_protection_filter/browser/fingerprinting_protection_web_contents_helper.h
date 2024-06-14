@@ -25,7 +25,9 @@ class WebContents;
 }  // namespace content
 
 namespace subresource_filter {
-enum class ActivationDecision;
+namespace mojom {
+class ActivationState;
+}  // namespace mojom
 enum class LoadPolicy;
 }  // namespace subresource_filter
 
@@ -67,7 +69,7 @@ class FingerprintingProtectionWebContentsHelper
   // throttles created in MaybeAppendNavigationThrottles().
   void NotifyPageActivationComputed(
       content::NavigationHandle* navigation_handle,
-      const subresource_filter::ActivationDecision& activation_decision);
+      const subresource_filter::mojom::ActivationState& activation_state);
 
   // Called in WillStartRequest or WillRedirectRequest stage from a
   // ChildFrameNavigationFilteringThrottle.

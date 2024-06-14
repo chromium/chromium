@@ -175,11 +175,11 @@ void FingerprintingProtectionWebContentsHelper::WillDestroyThrottleManager(
 
 void FingerprintingProtectionWebContentsHelper::NotifyPageActivationComputed(
     content::NavigationHandle* navigation_handle,
-    const subresource_filter::ActivationDecision& activation_decision) {
+    const subresource_filter::mojom::ActivationState& activation_state) {
   if (ThrottleManager* throttle_manager =
           GetThrottleManager(*navigation_handle)) {
     throttle_manager->OnPageActivationComputed(navigation_handle,
-                                               activation_decision);
+                                               activation_state);
   }
 }
 

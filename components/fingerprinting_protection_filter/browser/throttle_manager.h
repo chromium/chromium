@@ -150,7 +150,7 @@ class ThrottleManager : public base::SupportsUserData::Data {
   // Similar to above, called from the WebContentsHelper.
   void OnPageActivationComputed(
       content::NavigationHandle* navigation_handle,
-      const subresource_filter::ActivationDecision& activation_decision);
+      const subresource_filter::mojom::ActivationState& activation_state);
 
  private:
   friend FingerprintingProtectionWebContentsHelper;

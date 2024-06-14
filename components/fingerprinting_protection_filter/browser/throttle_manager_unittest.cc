@@ -19,7 +19,6 @@
 #include "components/privacy_sandbox/privacy_sandbox_features.h"
 #include "components/subresource_filter/content/shared/browser/child_frame_navigation_test_utils.h"
 #include "components/subresource_filter/core/browser/verified_ruleset_dealer.h"
-#include "components/subresource_filter/core/common/activation_decision.h"
 #include "components/subresource_filter/core/common/test_ruleset_creator.h"
 #include "components/subresource_filter/core/common/test_ruleset_utils.h"
 #include "components/subresource_filter/core/mojom/subresource_filter.mojom.h"
@@ -41,7 +40,6 @@ namespace fingerprinting_protection_filter {
 
 namespace {
 
-using ::subresource_filter::ActivationDecision;
 using ::subresource_filter::SimulateCommitAndGetResult;
 using ::subresource_filter::SimulateFailedNavigation;
 using ::subresource_filter::SimulateRedirectAndGetResult;
@@ -111,32 +109,14 @@ class MockPageActivationThrottle : public content::NavigationThrottle {
   }
 
  private:
-  ActivationDecision GetActivationDecisionFromState(
-      const subresource_filter::mojom::ActivationState& activation_state) {
-    if (activation_state.activation_level ==
-            subresource_filter::mojom::ActivationLevel::kEnabled ||
-        activation_state.activation_level ==
-            subresource_filter::mojom::ActivationLevel::kDryRun) {
-      if (activation_state.filtering_disabled_for_document) {
-        return ActivationDecision::URL_ALLOWLISTED;
-      }
-      return ActivationDecision::ACTIVATED;
-    } else {
-      return ActivationDecision::ACTIVATION_DISABLED;
-    }
-  }
-
   content::NavigationThrottle::ThrottleCheckResult MaybeNotifyActivation(
       PageActivationNotificationTiming throttle_state) {
     if (throttle_state == activation_throttle_state_) {
       auto it = mock_page_activations_.find(navigation_handle()->GetURL());
       if (it != mock_page_activations_.end()) {
-        // The throttle manager does not use the activation decision.
         FingerprintingProtectionWebContentsHelper::FromWebContents(
             navigation_handle()->GetWebContents())
-            ->NotifyPageActivationComputed(
-                navigation_handle(),
-                GetActivationDecisionFromState(it->second));
+            ->NotifyPageActivationComputed(navigation_handle(), it->second);
       }
     }
     return content::NavigationThrottle::PROCEED;

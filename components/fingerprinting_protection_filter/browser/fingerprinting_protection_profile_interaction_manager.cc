@@ -45,10 +45,14 @@ ActivationLevel ProfileInteractionManager::OnPageActivationComputed(
   if (*decision == ActivationDecision::UNKNOWN) {
     return ActivationLevel::kDisabled;
   }
-
   // If we don't have access to `TrackingProtectionSettings`, we don't have a
   // basis to modify the initial activation level anyway.
   if (!tracking_protection_settings_) {
+    return initial_activation_level;
+  }
+  // dry_run mode will skip the check for user opt-in, since it is not visible
+  // to the user.
+  if (initial_activation_level == ActivationLevel::kDryRun) {
     return initial_activation_level;
   }
 
@@ -56,7 +60,6 @@ ActivationLevel ProfileInteractionManager::OnPageActivationComputed(
   // in settings.
   bool enable_fp =
       tracking_protection_settings_->IsFingerprintingProtectionEnabled();
-
   if (features::kEnableOn3pcBlocked.Get()) {
     // The value of prefs::kCookieControlsMode reflects the state of third-party
     // cookies being disabled, i.e. 3PCD is on or user blocks 3PC.

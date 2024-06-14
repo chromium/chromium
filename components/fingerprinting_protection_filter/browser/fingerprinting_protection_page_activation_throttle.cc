@@ -81,9 +81,11 @@ void FingerprintingProtectionPageActivationThrottle::NotifyResult(
     activation_level = profile_interaction_manager_->OnPageActivationComputed(
         navigation_handle(), activation_level, &decision);
   }
+  subresource_filter::mojom::ActivationState activation_state;
+  activation_state.activation_level = activation_level;
   FingerprintingProtectionWebContentsHelper::FromWebContents(
       navigation_handle()->GetWebContents())
-      ->NotifyPageActivationComputed(navigation_handle(), decision);
+      ->NotifyPageActivationComputed(navigation_handle(), activation_state);
 
   LogMetricsOnChecksComplete(decision, activation_level);
 }

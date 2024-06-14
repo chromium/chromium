@@ -21,6 +21,9 @@ class TrackingProtectionSettings;
 
 namespace subresource_filter {
 enum class ActivationDecision;
+namespace mojom {
+enum class ActivationLevel;
+}  // namespace mojom
 }  // namespace subresource_filter
 
 namespace fingerprinting_protection_filter {

@@ -261,7 +261,7 @@ void ThrottleManager::OnPageCreated(content::Page& page) {
 // activation for that page load.
 void ThrottleManager::OnPageActivationComputed(
     content::NavigationHandle* navigation_handle,
-    const ActivationDecision& activation_decision) {
+    const subresource_filter::mojom::ActivationState& activation_state) {
   CHECK(IsInSubresourceFilterRoot(navigation_handle));
   CHECK(!navigation_handle->HasCommitted());
 
@@ -271,21 +271,15 @@ void ThrottleManager::OnPageActivationComputed(
     return;
   }
 
-  subresource_filter::mojom::ActivationState activation_state;
-  activation_state.activation_level =
-      subresource_filter::mojom::ActivationLevel::kEnabled;
-  switch (activation_decision) {
-    case ActivationDecision::ACTIVATED:
-    case ActivationDecision::FORCED_ACTIVATION:
-      break;
-    default:
-      // If the activation level is disabled, we do not want to run any portion
-      // of the filter on this navigation/frame. By deleting the activation
-      // throttle handle, we prevent an associated DocumentSubresourceFilter
-      // from being created at commit time.
-      ChildActivationThrottleHandle::DeleteForNavigationHandle(
-          *navigation_handle);
-      return;
+  if (activation_state.activation_level ==
+      subresource_filter::mojom::ActivationLevel::kDisabled) {
+    // If the activation level is disabled, we do not want to run any portion
+    // of the filter on this navigation/frame. By deleting the activation
+    // throttle handle, we prevent an associated DocumentSubresourceFilter
+    // from being created at commit time.
+    ChildActivationThrottleHandle::DeleteForNavigationHandle(
+        *navigation_handle);
+    return;
   }
 
   if (ruleset_handle_) {
