@@ -12,10 +12,12 @@ import android.view.LayoutInflater;
 import android.view.View;
 
 import androidx.annotation.IntDef;
+import androidx.annotation.Nullable;
 import androidx.annotation.VisibleForTesting;
 import androidx.appcompat.content.res.AppCompatResources;
 
 import org.chromium.base.Callback;
+import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.hub.PaneManager;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.profiles.ProfileProvider;
@@ -96,7 +98,10 @@ public class TabGroupListCoordinator {
         Profile profile = profileProvider.getOriginalProfile();
         BiConsumer<GURL, Callback<Drawable>> faviconResolver =
                 buildFaviconResolver(context, profile);
-        TabGroupSyncService tabGroupSyncService = TabGroupSyncServiceFactory.getForProfile(profile);
+        @Nullable TabGroupSyncService tabGroupSyncService = null;
+        if (ChromeFeatureList.isEnabled(ChromeFeatureList.TAB_GROUP_SYNC_ANDROID)) {
+            tabGroupSyncService = TabGroupSyncServiceFactory.getForProfile(profile);
+        }
         ActionConfirmationManager actionConfirmationManager =
                 new ActionConfirmationManager(profile, context, filter, modalDialogManager);
         SyncService syncService = SyncServiceFactory.getForProfile(profile);
