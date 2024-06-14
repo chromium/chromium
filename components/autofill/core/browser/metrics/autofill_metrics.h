@@ -795,6 +795,10 @@ class AutofillMetrics {
   AutofillMetrics(const AutofillMetrics&) = delete;
   AutofillMetrics& operator=(const AutofillMetrics&) = delete;
 
+  // Classifies the autocomplete state of `field`.
+  static AutocompleteState AutocompleteStateForSubmittedField(
+      const AutofillField& field);
+
   static void LogSubmittedCardStateMetric(SubmittedCardStateMetric metric);
 
   // If a credit card that matches a server card (unmasked or not) was submitted

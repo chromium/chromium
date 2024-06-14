@@ -135,6 +135,279 @@ TEST_F(QualityMetricsFillingTest,
   histogram_tester_.ExpectUniqueSample(kUmaAutomationRate, 100, 1);
 }
 
+// Tests that no Autofill.DataUtilization* metric is emitted for a field with
+// possible types {UNKNOWN_TYPE}.
+TEST_F(QualityMetricsFillingTest, DataUtilizationNotEmittedForUnknownType) {
+  std::unique_ptr<FormStructure> form_structure =
+      GetFormStructure({.fields = {{}}});
+  form_structure->field(0)->set_possible_types({UNKNOWN_TYPE});
+
+  LogFillingQualityMetrics(*form_structure);
+
+  // Autofill.DataUtilization.AllFieldTypes.Aggregate is always recorded if any
+  // data utilization metric is recorded so it suffices to check that it's not
+  // emitted here.
+  EXPECT_TRUE(
+      histogram_tester_
+          .GetAllSamples("Autofill.DataUtilization.AllFieldTypes.Aggregate")
+          .empty());
+}
+
+// Tests that no Autofill.DataUtilization* metric is emitted for a field with
+// possible types {EMPTY_TYPE}.
+TEST_F(QualityMetricsFillingTest, DataUtilizationNotEmittedForEmptyType) {
+  std::unique_ptr<FormStructure> form_structure =
+      GetFormStructure({.fields = {{}}});
+  form_structure->field(0)->set_possible_types({EMPTY_TYPE});
+
+  LogFillingQualityMetrics(*form_structure);
+
+  // Autofill.DataUtilization.AllFieldTypes.Aggregate is always recorded if any
+  // data utilization metric is recorded so it suffices to check that it's not
+  // emitted here.
+  EXPECT_TRUE(
+      histogram_tester_
+          .GetAllSamples("Autofill.DataUtilization.AllFieldTypes.Aggregate")
+          .empty());
+}
+
+// Tests that no Autofill.DataUtilization* metric is emitted for a field with
+// an unchanged initial value.
+TEST_F(QualityMetricsFillingTest,
+       DataUtilizationNotEmittedForUnchangedPreFilledFields) {
+  std::unique_ptr<FormStructure> form_structure =
+      GetFormStructure({.fields = {{}}});
+  form_structure->field(0)->set_possible_types({NAME_FIRST});
+  form_structure->field(0)->set_initial_value_changed(false);
+
+  LogFillingQualityMetrics(*form_structure);
+
+  // Autofill.DataUtilization.AllFieldTypes.Aggregate is always recorded if any
+  // data utilization metric is recorded so it suffices to check that it's not
+  // emitted here.
+  EXPECT_TRUE(
+      histogram_tester_
+          .GetAllSamples("Autofill.DataUtilization.AllFieldTypes.Aggregate")
+          .empty());
+}
+
+// Tests that all "Autofill.DataUtilization*" variants, except for
+// "*HadPrediction", are recorded for a fillable, non-numeric field type with
+// autocomplete="garbage".
+TEST_F(QualityMetricsFillingTest,
+       DataUtilizationEmittedWithVariantsGarbageAndNoPrediction) {
+  std::unique_ptr<FormStructure> form_structure =
+      GetFormStructure({.fields = {{.autocomplete_attribute = "garbage"}}});
+  form_structure->field(0)->set_possible_types({NAME_FIRST});
+  form_structure->field(0)->set_initial_value_changed(true);
+
+  LogFillingQualityMetrics(*form_structure);
+
+  histogram_tester_.ExpectUniqueSample(
+      "Autofill.DataUtilization.AllFieldTypes.Aggregate",
+      AutofillDataUtilization::kNotAutofilled, 1);
+  histogram_tester_.ExpectUniqueSample(
+      "Autofill.DataUtilization.SelectedFieldTypes.Aggregate",
+      AutofillDataUtilization::kNotAutofilled, 1);
+
+  histogram_tester_.ExpectUniqueSample(
+      "Autofill.DataUtilization.AllFieldTypes.Garbage",
+      AutofillDataUtilization::kNotAutofilled, 1);
+  histogram_tester_.ExpectUniqueSample(
+      "Autofill.DataUtilization.SelectedFieldTypes.Garbage",
+      AutofillDataUtilization::kNotAutofilled, 1);
+
+  histogram_tester_.ExpectUniqueSample(
+      "Autofill.DataUtilization.AllFieldTypes.NoPrediction",
+      AutofillDataUtilization::kNotAutofilled, 1);
+  histogram_tester_.ExpectUniqueSample(
+      "Autofill.DataUtilization.SelectedFieldTypes.NoPrediction",
+      AutofillDataUtilization::kNotAutofilled, 1);
+
+  EXPECT_TRUE(
+      histogram_tester_
+          .GetAllSamples("Autofill.DataUtilization.AllFieldTypes.HadPrediction")
+          .empty());
+  EXPECT_TRUE(
+      histogram_tester_
+          .GetAllSamples(
+              "Autofill.DataUtilization.SelectedFieldTypes.HadPrediction")
+          .empty());
+
+  EXPECT_TRUE(
+      histogram_tester_
+          .GetAllSamples(
+              "Autofill.DataUtilization.AllFieldTypes.GarbageHadPrediction")
+          .empty());
+  EXPECT_TRUE(histogram_tester_
+                  .GetAllSamples("Autofill.DataUtilization.SelectedFieldTypes."
+                                 "GarbageHadPrediction")
+                  .empty());
+}
+
+// Tests that metrics "Autofill.DataUtilization.*.{Aggregate, HadPrediction}"
+// are recorded for a field with a `NAME_FIRST` field type prediction.
+TEST_F(QualityMetricsFillingTest,
+       DataUtilizationEmittedWithVariantHasPrediction) {
+  std::unique_ptr<FormStructure> form_structure =
+      GetFormStructure({.fields = {{.is_autofilled = true}}});
+  form_structure->field(0)->set_possible_types({NAME_FIRST});
+  form_structure->field(0)->SetTypeTo(AutofillType(NAME_FIRST));
+
+  LogFillingQualityMetrics(*form_structure);
+
+  histogram_tester_.ExpectUniqueSample(
+      "Autofill.DataUtilization.AllFieldTypes.Aggregate",
+      AutofillDataUtilization::kAutofilled, 1);
+  histogram_tester_.ExpectUniqueSample(
+      "Autofill.DataUtilization.SelectedFieldTypes.Aggregate",
+      AutofillDataUtilization::kAutofilled, 1);
+
+  histogram_tester_.ExpectUniqueSample(
+      "Autofill.DataUtilization.AllFieldTypes.HadPrediction",
+      AutofillDataUtilization::kAutofilled, 1);
+  histogram_tester_.ExpectUniqueSample(
+      "Autofill.DataUtilization.SelectedFieldTypes.HadPrediction",
+      AutofillDataUtilization::kAutofilled, 1);
+
+  EXPECT_TRUE(
+      histogram_tester_
+          .GetAllSamples("Autofill.DataUtilization.AllFieldTypes.Garbage")
+          .empty());
+  EXPECT_TRUE(
+      histogram_tester_
+          .GetAllSamples("Autofill.DataUtilization.SelectedFieldTypes.Garbage")
+          .empty());
+
+  EXPECT_TRUE(
+      histogram_tester_
+          .GetAllSamples("Autofill.DataUtilization.AllFieldTypes.NoPrediction")
+          .empty());
+  EXPECT_TRUE(
+      histogram_tester_
+          .GetAllSamples(
+              "Autofill.DataUtilization.SelectedFieldTypes.NoPrediction")
+          .empty());
+
+  EXPECT_TRUE(
+      histogram_tester_
+          .GetAllSamples(
+              "Autofill.DataUtilization.AllFieldTypes.GarbageHadPrediction")
+          .empty());
+  EXPECT_TRUE(histogram_tester_
+                  .GetAllSamples("Autofill.DataUtilization.SelectedFieldTypes."
+                                 "GarbageHadPrediction")
+                  .empty());
+}
+
+// Tests that no "SelectedFieldTypes" variants are recorded for a field with
+// possible types {CREDIT_CARD_EXP_MONTH}.
+TEST_F(QualityMetricsFillingTest,
+       DataUtilizationEmittedForAllFieldTypesVariantOnlyWhenTypeIsNumeric) {
+  std::unique_ptr<FormStructure> form_structure =
+      GetFormStructure({.fields = {{}}});
+  form_structure->field(0)->set_possible_types({CREDIT_CARD_EXP_MONTH});
+
+  LogFillingQualityMetrics(*form_structure);
+
+  histogram_tester_.ExpectUniqueSample(
+      "Autofill.DataUtilization.AllFieldTypes.Aggregate",
+      AutofillDataUtilization::kNotAutofilled, 1);
+
+  histogram_tester_.ExpectUniqueSample(
+      "Autofill.DataUtilization.AllFieldTypes.NoPrediction",
+      AutofillDataUtilization::kNotAutofilled, 1);
+
+  EXPECT_TRUE(
+      histogram_tester_
+          .GetAllSamples("Autofill.DataUtilization.AllFieldTypes.Garbage")
+          .empty());
+
+  EXPECT_TRUE(
+      histogram_tester_
+          .GetAllSamples("Autofill.DataUtilization.AllFieldTypes.HadPrediction")
+          .empty());
+
+  // No "SelectedFieldTypes" variant emitted.
+  EXPECT_TRUE(histogram_tester_
+                  .GetAllSamples(
+                      "Autofill.DataUtilization.SelectedFieldTypes.Aggregate")
+                  .empty());
+  EXPECT_TRUE(
+      histogram_tester_
+          .GetAllSamples(
+              "Autofill.DataUtilization.SelectedFieldTypes.NoPrediction")
+          .empty());
+  EXPECT_TRUE(
+      histogram_tester_
+          .GetAllSamples(
+              "Autofill.DataUtilization.SelectedFieldTypes.HadPrediction")
+          .empty());
+  EXPECT_TRUE(
+      histogram_tester_
+          .GetAllSamples("Autofill.DataUtilization.SelectedFieldTypes.Garbage")
+          .empty());
+  EXPECT_TRUE(
+      histogram_tester_
+          .GetAllSamples(
+              "Autofill.DataUtilization.AllFieldTypes.GarbageHadPrediction")
+          .empty());
+  EXPECT_TRUE(histogram_tester_
+                  .GetAllSamples("Autofill.DataUtilization.SelectedFieldTypes."
+                                 "GarbageHadPrediction")
+                  .empty());
+}
+
+// Tests that "GarbageHadPrediction" variants are recorded for a NAME_FIRST
+// field with autocomplete=garbage.
+TEST_F(QualityMetricsFillingTest,
+       DataUtilizationEmittedWithVariantGarbageHadPrediction) {
+  std::unique_ptr<FormStructure> form_structure =
+      GetFormStructure({.fields = {{.autocomplete_attribute = "garbage"}}});
+  form_structure->field(0)->set_possible_types({NAME_FIRST});
+  form_structure->field(0)->SetTypeTo(AutofillType(NAME_FIRST));
+
+  LogFillingQualityMetrics(*form_structure);
+
+  histogram_tester_.ExpectUniqueSample(
+      "Autofill.DataUtilization.AllFieldTypes.Aggregate",
+      AutofillDataUtilization::kNotAutofilled, 1);
+  histogram_tester_.ExpectUniqueSample(
+      "Autofill.DataUtilization.SelectedFieldTypes.Aggregate",
+      AutofillDataUtilization::kNotAutofilled, 1);
+
+  histogram_tester_.ExpectUniqueSample(
+      "Autofill.DataUtilization.AllFieldTypes.HadPrediction",
+      AutofillDataUtilization::kNotAutofilled, 1);
+  histogram_tester_.ExpectUniqueSample(
+      "Autofill.DataUtilization.SelectedFieldTypes.HadPrediction",
+      AutofillDataUtilization::kNotAutofilled, 1);
+
+  histogram_tester_.ExpectUniqueSample(
+      "Autofill.DataUtilization.AllFieldTypes.Garbage",
+      AutofillDataUtilization::kNotAutofilled, 1);
+  histogram_tester_.ExpectUniqueSample(
+      "Autofill.DataUtilization.SelectedFieldTypes.Garbage",
+      AutofillDataUtilization::kNotAutofilled, 1);
+
+  histogram_tester_.ExpectUniqueSample(
+      "Autofill.DataUtilization.AllFieldTypes.GarbageHadPrediction",
+      AutofillDataUtilization::kNotAutofilled, 1);
+  histogram_tester_.ExpectUniqueSample(
+      "Autofill.DataUtilization.SelectedFieldTypes.GarbageHadPrediction",
+      AutofillDataUtilization::kNotAutofilled, 1);
+
+  EXPECT_TRUE(
+      histogram_tester_
+          .GetAllSamples("Autofill.DataUtilization.AllFieldTypes.NoPrediction")
+          .empty());
+  EXPECT_TRUE(
+      histogram_tester_
+          .GetAllSamples(
+              "Autofill.DataUtilization.SelectedFieldTypes.NoPrediction")
+          .empty());
+}
+
 }  // namespace
 
 }  // namespace autofill::autofill_metrics

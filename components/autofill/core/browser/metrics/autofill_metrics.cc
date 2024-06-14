@@ -828,6 +828,32 @@ void LogPredictionQualityMetrics(
 const int kMaxBucketsCount = 50;
 
 // static
+AutofillMetrics::AutocompleteState
+AutofillMetrics::AutocompleteStateForSubmittedField(
+    const AutofillField& field) {
+  // An unparsable autocomplete attribute is treated like kNone.
+  auto autocomplete_state = AutofillMetrics::AutocompleteState::kNone;
+  // autocomplete=on is ignored as well. But for the purposes of metrics we care
+  // about cases where the developer tries to disable autocomplete.
+  if (field.autocomplete_attribute() != "on" &&
+      ShouldIgnoreAutocompleteAttribute(field.autocomplete_attribute())) {
+    autocomplete_state = AutofillMetrics::AutocompleteState::kOff;
+  } else if (field.parsed_autocomplete()) {
+    autocomplete_state =
+        field.parsed_autocomplete()->field_type != HtmlFieldType::kUnrecognized
+            ? AutofillMetrics::AutocompleteState::kValid
+            : AutofillMetrics::AutocompleteState::kGarbage;
+
+    if (field.autocomplete_attribute() == "new-password" ||
+        field.autocomplete_attribute() == "current-password") {
+      autocomplete_state = AutofillMetrics::AutocompleteState::kPassword;
+    }
+  }
+
+  return autocomplete_state;
+}
+
+// static
 void AutofillMetrics::LogSubmittedCardStateMetric(
     SubmittedCardStateMetric metric) {
   DCHECK_LT(metric, NUM_SUBMITTED_CARD_STATE_METRICS);

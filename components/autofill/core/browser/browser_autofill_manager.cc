@@ -399,30 +399,6 @@ void LogLanguageMetrics(const translate::LanguageState* language_state) {
   }
 }
 
-AutofillMetrics::AutocompleteState AutocompleteStateForSubmittedField(
-    const AutofillField& field) {
-  // An unparsable autocomplete attribute is treated like kNone.
-  auto autocomplete_state = AutofillMetrics::AutocompleteState::kNone;
-  // autocomplete=on is ignored as well. But for the purposes of metrics we care
-  // about cases where the developer tries to disable autocomplete.
-  if (field.autocomplete_attribute() != "on" &&
-      ShouldIgnoreAutocompleteAttribute(field.autocomplete_attribute())) {
-    autocomplete_state = AutofillMetrics::AutocompleteState::kOff;
-  } else if (field.parsed_autocomplete()) {
-    autocomplete_state =
-        field.parsed_autocomplete()->field_type != HtmlFieldType::kUnrecognized
-            ? AutofillMetrics::AutocompleteState::kValid
-            : AutofillMetrics::AutocompleteState::kGarbage;
-
-    if (field.autocomplete_attribute() == "new-password" ||
-        field.autocomplete_attribute() == "current-password") {
-      autocomplete_state = AutofillMetrics::AutocompleteState::kPassword;
-    }
-  }
-
-  return autocomplete_state;
-}
-
 void LogAutocompletePredictionCollisionTypeMetrics(
     const FormStructure& form_structure) {
   for (size_t i = 0; i < form_structure.field_count(); i++) {
@@ -439,7 +415,8 @@ void LogAutocompletePredictionCollisionTypeMetrics(
       prediction_state = AutofillMetrics::PredictionState::kServer;
     }
 
-    auto autocomplete_state = AutocompleteStateForSubmittedField(*field);
+    auto autocomplete_state =
+        AutofillMetrics::AutocompleteStateForSubmittedField(*field);
     AutofillMetrics::LogAutocompletePredictionCollisionState(
         prediction_state, autocomplete_state);
     AutofillMetrics::LogAutocompletePredictionCollisionTypes(
@@ -3098,7 +3075,7 @@ void BrowserAutofillManager::ProcessFieldLogEventsInForm(
     if (should_upload_ukm) {
       form_interactions_ukm_logger()->LogAutofillFieldInfoAtFormRemove(
           form_structure, *autofill_field,
-          AutocompleteStateForSubmittedField(*autofill_field));
+          AutofillMetrics::AutocompleteStateForSubmittedField(*autofill_field));
     }
 
     // Clear log events.

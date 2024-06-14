@@ -1729,6 +1729,47 @@ chromium-metrics-reviews@google.com.
   <token key="CardType" variants="Autofill.PaymentsRpcCardType"/>
 </histogram>
 
+<histogram name="Autofill.DataUtilization.{FieldTypesSelection}.{FieldState}"
+    enum="AutofillDataUtilization" expires_after="2024-12-12">
+  <owner>battre@chromium.org</owner>
+  <owner>bwolfgang@google.com</owner>
+  <owner>mlerman@google.com</owner>
+  <owner>chrome-autofill-alerts@google.com</owner>
+  <summary>
+    Records, for fields that were submitted with values that were found in the
+    user's stored address profiles / credit cards, whether the field value was
+    autofilled or manually entered by the user. Note that fields that were
+    autofilled and then edited by the user or JavaScript count as &quot;manually
+    entered&quot;. Note that fields that were submitted with a prefilled value
+    don't get recorded. Emitted on form submission.
+  </summary>
+  <token key="FieldTypesSelection">
+    <variant name="AllFieldTypes"
+        summary="Metrics are recorded for all field types."/>
+    <variant name="SelectedFieldTypes"
+        summary="Metrics are recorded for field types whose associated values
+                 typically are not small numbers, i.e. less than 100."/>
+  </token>
+  <token key="FieldState">
+    <variant name="Aggregate"
+        summary="Aggregated data of all fields (within in the selection of
+                 field types)."/>
+    <variant name="Garbage"
+        summary="Metrics are recorded if the autocomplete attribute is
+                 unrecognized."/>
+    <variant name="GarbageHadPrediction"
+        summary="Metrics are recorded if the autocomplete attribute is
+                 unrecognized and if AutofillField::Type() returns a known
+                 type."/>
+    <variant name="HadPrediction"
+        summary="Metrics are recorded if AutofillField::Type() returns a
+                 known type."/>
+    <variant name="NoPrediction"
+        summary="Metrics are recorded if AutofillField::Type() returns an
+                 unknown type."/>
+  </token>
+</histogram>
+
 <histogram name="Autofill.DaysSinceLastUse.CreditCard" units="days"
     expires_after="2024-12-12">
   <owner>battre@chromium.org</owner>

@@ -343,6 +343,11 @@ chromium-metrics-reviews@google.com.
       label="CVC auth temporarily failed due to the card being expired"/>
 </enum>
 
+<enum name="AutofillDataUtilization">
+  <int value="0" label="Not autofilled"/>
+  <int value="1" label="Autofilled"/>
+</enum>
+
 <enum name="AutofillDeveloperEngagement">
   <int value="0" label="Fillable form parsed without type hints"/>
   <int value="1" label="Fillable form parsed with type hints"/>
