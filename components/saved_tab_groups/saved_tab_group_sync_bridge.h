@@ -196,6 +196,11 @@ class SavedTabGroupSyncBridge : public syncer::ModelTypeSyncBridge,
   void OnAndroidLocalIdMigrationComplete(
       const std::optional<syncer::ModelError>& error);
 
+  // Called to update the cache guid of groups and tabs with latest cache guid
+  // and subsequently writes the updated data to storage.
+  void UpdateLocalCacheGuidForGroups(
+      syncer::ModelTypeStore::WriteBatch* write_batch);
+
   // The ModelTypeStore used for local storage.
   std::unique_ptr<syncer::ModelTypeStore> store_;
 

@@ -545,10 +545,13 @@ void SavedTabGroupModel::ReorderGroupFromSync(const base::Uuid& id,
   }
 }
 
-std::set<base::Uuid> SavedTabGroupModel::UpdateLocalCacheGuid(
+std::pair<std::set<base::Uuid>, std::set<base::Uuid>>
+SavedTabGroupModel::UpdateLocalCacheGuid(
     std::optional<std::string> old_cache_guid,
     std::optional<std::string> new_cache_guid) {
   std::set<base::Uuid> updated_group_ids;
+  std::set<base::Uuid> updated_tab_ids;
+  // Update the group cache guids.
   for (auto& saved_group : saved_tab_groups_) {
     if (saved_group.creator_cache_guid() != old_cache_guid) {
       continue;
@@ -558,7 +561,20 @@ std::set<base::Uuid> SavedTabGroupModel::UpdateLocalCacheGuid(
     updated_group_ids.insert(saved_group.saved_guid());
   }
 
-  return updated_group_ids;
+  for (auto& saved_group : saved_tab_groups_) {
+    // Update the tabs in the group with the new cache guid.
+    for (auto& saved_tab : saved_group.saved_tabs()) {
+      if (saved_tab.creator_cache_guid() != old_cache_guid) {
+        continue;
+      }
+
+      saved_tab.SetCreatorCacheGuid(new_cache_guid);
+      updated_tab_ids.insert(saved_tab.saved_tab_guid());
+    }
+  }
+
+  return std::make_pair<>(std::move(updated_group_ids),
+                          std::move(updated_tab_ids));
 }
 
 void SavedTabGroupModel::LoadStoredEntries(

@@ -149,7 +149,7 @@ class SavedTabGroupModel {
 
   // Update the creator cache guid for all saved groups that have
   // `old_cache_guid`, to `new_cache_guid`.
-  std::set<base::Uuid> UpdateLocalCacheGuid(
+  std::pair<std::set<base::Uuid>, std::set<base::Uuid>> UpdateLocalCacheGuid(
       std::optional<std::string> old_cache_guid,
       std::optional<std::string> new_cache_guid);
 
