@@ -5,8 +5,61 @@
 module viz.mojom;
 
 import "cc/mojom/element_id.mojom";
+import "cc/mojom/layer_type.mojom";
+import "skia/public/mojom/skcolor4f.mojom";
 import "ui/gfx/geometry/mojom/geometry.mojom";
 import "ui/gfx/mojom/transform.mojom";
+
+// Details about a cc::LayerImpl that has been added to a tree or modified in
+// some interesting way since a prior tree update.
+struct Layer {
+  // The layer's assigned ID. This is an arbitrary integer value which is
+  // guaranteed to be (a) unique across all layers currently in the tree and
+  // (b) consistent for the lifetime of each layer. When a LayerTreeUpdate
+  // contains a Layer with a previously unseen ID, the Layer is being added to
+  // the tree; otherwise an existing layer's properties are changing.
+  int64 id;
+
+  // The type of this layer. If this structure is updating an existing layer,
+  // the type here must match that of the existing layer.
+  cc.mojom.LayerType type;
+
+  // Bounds of the layer, generally in layer space. If this is the root layer,
+  // bounds are in viewport space, including device scale factor.
+  gfx.mojom.Size bounds;
+
+  // Optimization hints indicating whether the layer is fully opaque, or at
+  // least opaque wherever text is drawn.
+  bool contents_opaque;
+  bool contents_opaque_for_text;
+
+  // Indicates whether the layer produces any visual output for the compositor.
+  bool is_drawable;
+
+  // The background color (and safe opaque background color) used by this Layer.
+  // See comments for equivalent fields on cc::Layer.
+  skia.mojom.SkColor4f background_color;
+  skia.mojom.SkColor4f safe_opaque_background_color;
+
+  // Optional stable identifier that may be referenced in property trees and
+  // animations. Identifies a client-side object which can be represented by
+  // multiple layers over time but only by a single layer at once.
+  cc.mojom.ElementId? element_id;
+
+  // Current cumulative dirty rect for the layer since last update, in layer
+  // space.
+  gfx.mojom.Rect update_rect;
+
+  // The post-transform position of this layer.
+  gfx.mojom.Vector2dF offset_to_transform_parent;
+
+  // Property tree node IDs. Each of these IDs is bound to the range [0, N) for
+  // a property tree with N nodes.
+  int32 transform_tree_index;
+  int32 clip_tree_index;
+  int32 effect_tree_index;
+  int32 scroll_tree_index;
+};
 
 // Details about a new or updated node within a transform property tree.
 struct TransformNode {

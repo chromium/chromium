@@ -13,6 +13,16 @@ import "ui/gfx/geometry/mojom/geometry.mojom";
 // Metadata and contents of a service-side display tree to be updated each time
 // the corresponding client layer tree activates.
 //
+// Note for this structure and its constituent fields: dimensions of viewports,
+// layer bounds, clipping rectangles, etc, are used as inputs to a drawing
+// subsystem which produces CompositorFrames on behalf of the client. Those
+// frames are themselves subjected to authoritative frame hierarchy constraints
+// set by the Viz host (i.e. the browser.) Such fields therefore do not require
+// additional validation on the service side. Clients are free to describe any
+// visual geometry they like, but this does not allow them to escape their
+// assigned clipping rectangle on the display, nor their place within the frame
+// hierarchy as it pertains to visual layering or input targeting.
+//
 // TODO(https://crbug.com/40902503): Split less frequently updated fields out
 // into an optional substructure to reduce serialization load.
 struct LayerTreeUpdate {
@@ -40,6 +50,15 @@ struct LayerTreeUpdate {
   int32 inner_scroll;
   int32 outer_clip;
   int32 outer_scroll;
+
+  // Changes to the root layer since last update, if any.
+  Layer? root_layer;
+
+  // Any other layers added or modified since the last update.
+  array<Layer> layers;
+
+  // IDs of any layers removed since the last update.
+  array<int32> removed_layers;
 
   // Nodes added or modified on any property tree since the last update.
   array<TransformNode> transform_nodes;

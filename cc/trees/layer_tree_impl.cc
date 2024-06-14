@@ -946,8 +946,12 @@ void LayerTreeImpl::MoveChangeTrackingToLayers() {
   // onto the layers.
   property_trees_.UpdateChangeTracking();
   for (auto* layer : *this) {
-    if (layer->LayerPropertyChangedFromPropertyTrees())
-      layer->NoteLayerPropertyChangedFromPropertyTrees();
+    if (layer->LayerPropertyChanged()) {
+      if (layer->LayerPropertyChangedFromPropertyTrees()) {
+        layer->NoteLayerPropertyChangedFromPropertyTrees();
+      }
+      updated_layers_.insert(layer);
+    }
   }
   EffectTree& effect_tree = property_trees_.effect_tree_mutable();
   for (int id = kContentsRootPropertyNodeId;
@@ -1815,12 +1819,15 @@ void LayerTreeImpl::ClearLayersThatShouldPushProperties() {
 void LayerTreeImpl::RegisterLayer(LayerImpl* layer) {
   DCHECK(!LayerById(layer->id()));
   layer_id_map_[layer->id()] = layer;
+  updated_layers_.insert(layer);
 }
 
 void LayerTreeImpl::UnregisterLayer(LayerImpl* layer) {
   DCHECK(LayerById(layer->id()));
   layers_that_should_push_properties_.erase(layer);
   layer_id_map_.erase(layer->id());
+  updated_layers_.erase(layer);
+  unregistered_layers_.push_back(layer->id());
 }
 
 void LayerTreeImpl::AddLayer(std::unique_ptr<LayerImpl> layer) {
@@ -2915,6 +2922,8 @@ bool LayerTreeImpl::TakeForceSendMetadataRequest() {
 }
 
 void LayerTreeImpl::ResetAllChangeTracking() {
+  updated_layers_.clear();
+  unregistered_layers_.clear();
   layers_that_should_push_properties_.clear();
   // Iterate over all layers, including masks.
   for (auto* layer : *this)
@@ -2966,6 +2975,32 @@ bool LayerTreeImpl::HasViewTransitionSaveRequest() const {
   }
 
   return false;
+}
+
+std::unordered_set<LayerImpl*> LayerTreeImpl::TakeUpdatedLayers() {
+  std::unordered_set<LayerImpl*> layers;
+  layers.swap(updated_layers_);
+  return layers;
+}
+
+std::vector<int> LayerTreeImpl::TakeUnregisteredLayers() {
+  std::vector<int> layers;
+  layers.swap(unregistered_layers_);
+  return layers;
+}
+
+size_t LayerTreeImpl::RemoveLayers(base::span<int> layer_ids) {
+  if (layer_ids.empty() || LayerListIsEmpty()) {
+    return 0;
+  }
+
+  std::unordered_set<int> ids{layer_ids.begin(), layer_ids.end()};
+  const auto removed =
+      std::remove_if(std::next(layer_list_.begin()), layer_list_.end(),
+                     [&ids](auto& layer) { return ids.erase(layer->id()); });
+  const size_t num_removed = layer_list_.end() - removed;
+  layer_list_.erase(removed, layer_list_.end());
+  return num_removed;
 }
 
 bool LayerTreeImpl::IsReadyToActivate() const {

@@ -5,10 +5,12 @@
 #include "cc/mojo_embedder/viz_layer_context.h"
 
 #include <cstdint>
+#include <unordered_set>
 #include <utility>
 #include <vector>
 
 #include "base/numerics/safe_conversions.h"
+#include "cc/layers/layer_impl.h"
 #include "cc/trees/layer_tree_impl.h"
 #include "cc/trees/property_tree.h"
 #include "services/viz/public/mojom/compositing/layer.mojom.h"
@@ -173,6 +175,33 @@ void VizLayerContext::UpdateDisplayTreeFrom(LayerTreeImpl& tree) {
   update->inner_scroll = property_ids.inner_scroll;
   update->outer_clip = property_ids.outer_clip;
   update->outer_scroll = property_ids.outer_scroll;
+
+  LayerImpl* const root = tree.root_layer();
+  std::unordered_set<LayerImpl*> updated_layers = tree.TakeUpdatedLayers();
+  for (LayerImpl* layer : updated_layers) {
+    auto wire = viz::mojom::Layer::New();
+    wire->id = layer->id();
+    wire->type = layer->GetLayerType();
+    wire->bounds = layer->bounds();
+    wire->is_drawable = layer->draws_content();
+    wire->contents_opaque = layer->contents_opaque();
+    wire->contents_opaque_for_text = layer->contents_opaque_for_text();
+    wire->background_color = layer->background_color();
+    wire->safe_opaque_background_color = layer->safe_opaque_background_color();
+    wire->update_rect = layer->update_rect();
+    wire->offset_to_transform_parent = layer->offset_to_transform_parent();
+    wire->transform_tree_index = layer->transform_tree_index();
+    wire->clip_tree_index = layer->clip_tree_index();
+    wire->effect_tree_index = layer->effect_tree_index();
+    wire->scroll_tree_index = layer->scroll_tree_index();
+    if (layer == root) {
+      DCHECK(!update->root_layer);
+      update->root_layer = std::move(wire);
+    } else {
+      update->layers.push_back(std::move(wire));
+    }
+  }
+  update->removed_layers = tree.TakeUnregisteredLayers();
 
   // TODO(rockot): Granular change tracking for property trees, so we aren't
   // diffing every time.

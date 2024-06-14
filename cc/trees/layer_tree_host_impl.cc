@@ -2926,8 +2926,10 @@ void LayerTreeHostImpl::UpdateDisplayTree(FrameData& frame) {
   DCHECK(use_layer_context_for_display_);
   DCHECK(layer_context_);
 
-  bool ok = active_tree()->UpdateDrawProperties();
-  DCHECK(ok) << "UpdateDrawProperties failed during display tree update";
+  if (!active_tree()->LayerListIsEmpty()) {
+    bool ok = active_tree()->UpdateDrawProperties();
+    DCHECK(ok) << "UpdateDrawProperties failed during display tree update";
+  }
 
   tile_manager_.PrepareToDraw();
   layer_context_->UpdateDisplayTreeFrom(*active_tree());

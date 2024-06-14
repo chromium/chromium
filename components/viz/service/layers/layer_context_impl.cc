@@ -4,13 +4,19 @@
 
 #include "components/viz/service/layers/layer_context_impl.h"
 
+#include <memory>
 #include <string>
 #include <utility>
+#include <vector>
 
 #include "base/notimplemented.h"
 #include "base/notreached.h"
+#include "base/strings/strcat.h"
+#include "base/strings/string_number_conversions.h"
 #include "base/types/expected_macros.h"
 #include "cc/debug/rendering_stats_instrumentation.h"
+#include "cc/layers/layer_impl.h"
+#include "cc/layers/solid_color_layer_impl.h"
 #include "cc/trees/layer_tree_host_impl.h"
 #include "cc/trees/layer_tree_impl.h"
 #include "cc/trees/layer_tree_settings.h"
@@ -34,6 +40,19 @@ cc::LayerListSettings GetDisplayTreeSettings() {
   cc::LayerListSettings settings;
   settings.is_display_tree = true;
   return settings;
+}
+
+std::unique_ptr<cc::LayerImpl> CreateLayer(cc::LayerTreeImpl& tree,
+                                           cc::mojom::LayerType type,
+                                           int id) {
+  switch (type) {
+    case cc::mojom::LayerType::kLayer:
+      return cc::LayerImpl::Create(&tree, id);
+
+    default:
+      // TODO(rockot): Support other layer types.
+      return cc::SolidColorLayerImpl::Create(&tree, id);
+  }
 }
 
 template <typename TreeType>
@@ -169,6 +188,72 @@ base::expected<bool, std::string> UpdatePropertyTree(
     RETURN_IF_ERROR(UpdatePropertyTreeNode(trees, node, *wire));
   }
   return changed_anything;
+}
+
+base::expected<void, std::string> AddOrUpdateLayer(
+    cc::LayerTreeImpl& tree,
+    mojom::Layer& wire,
+    cc::LayerImpl* existing_layer) {
+  cc::LayerImpl* layer;
+  if (existing_layer) {
+    // TODO(rockot): Also validate existing layer type here. We don't yet fully
+    // honor the type given by the client, so validation doesn't make sense yet.
+    if (existing_layer->id() != wire.id) {
+      return base::unexpected("Layer ID mismatch");
+    }
+    layer = existing_layer;
+  } else {
+    auto new_layer = CreateLayer(tree, wire.type, wire.id);
+    layer = new_layer.get();
+    tree.AddLayer(std::move(new_layer));
+  }
+
+  DCHECK(layer);
+  layer->SetBounds(wire.bounds);
+  layer->SetContentsOpaque(wire.contents_opaque);
+  layer->SetContentsOpaqueForText(wire.contents_opaque_for_text);
+  layer->SetDrawsContent(wire.is_drawable);
+  layer->SetBackgroundColor(wire.background_color);
+  layer->SetSafeOpaqueBackgroundColor(wire.safe_opaque_background_color);
+  layer->SetElementId(wire.element_id);
+  layer->UnionUpdateRect(wire.update_rect);
+  layer->SetOffsetToTransformParent(wire.offset_to_transform_parent);
+
+  const cc::PropertyTrees& property_trees = *tree.property_trees();
+  if (!IsPropertyTreeIndexValid(property_trees.transform_tree(),
+                                wire.transform_tree_index)) {
+    return base::unexpected(
+        base::StrCat({"Invalid transform tree ID: ",
+                      base::NumberToString(wire.transform_tree_index)}));
+  }
+
+  if (!IsPropertyTreeIndexValid(property_trees.clip_tree(),
+                                wire.clip_tree_index)) {
+    return base::unexpected(
+        base::StrCat({"Invalid clip tree ID: ",
+                      base::NumberToString(wire.clip_tree_index)}));
+  }
+
+  if (!IsPropertyTreeIndexValid(property_trees.effect_tree(),
+                                wire.effect_tree_index)) {
+    return base::unexpected(
+        base::StrCat({"Invalid effect tree ID: ",
+                      base::NumberToString(wire.effect_tree_index)}));
+  }
+
+  if (!IsPropertyTreeIndexValid(property_trees.scroll_tree(),
+                                wire.scroll_tree_index)) {
+    return base::unexpected(
+        base::StrCat({"Invalid scroll tree ID: ",
+                      base::NumberToString(wire.scroll_tree_index)}));
+  }
+
+  layer->SetTransformTreeIndex(wire.transform_tree_index);
+  layer->SetClipTreeIndex(wire.clip_tree_index);
+  layer->SetEffectTreeIndex(wire.effect_tree_index);
+  layer->SetScrollTreeIndex(wire.scroll_tree_index);
+  layer->UpdateScrollable();
+  return base::ok();
 }
 
 base::expected<void, std::string> UpdateViewportPropertyIds(
@@ -447,10 +532,35 @@ base::expected<void, std::string> LayerContextImpl::DoUpdateDisplayTree(
       UpdatePropertyTree(property_trees, property_trees.scroll_tree_mutable(),
                          update->scroll_nodes, update->num_scroll_nodes));
 
+  if (layers.RemoveLayers(update->removed_layers) !=
+      update->removed_layers.size()) {
+    return base::unexpected("Invalid layer removal");
+  }
+
+  if (update->root_layer) {
+    RETURN_IF_ERROR(
+        AddOrUpdateLayer(layers, *update->root_layer, layers.root_layer()));
+  } else if (!layers.root_layer() && !update->layers.empty()) {
+    return base::unexpected(
+        "Initial non-empty tree update missing root layer.");
+  }
+
+  for (auto& wire : update->layers) {
+    RETURN_IF_ERROR(
+        AddOrUpdateLayer(layers, *wire, layers.LayerById(wire->id)));
+  }
+
+  if (update->local_surface_id_from_parent) {
+    host_impl_->SetTargetLocalSurfaceId(*update->local_surface_id_from_parent);
+  }
+
   layers.set_background_color(update->background_color);
   layers.set_source_frame_number(update->source_frame_number);
   layers.set_trace_id(update->trace_id);
   layers.SetDeviceViewportRect(update->device_viewport);
+  if (update->device_scale_factor <= 0) {
+    return base::unexpected("Invalid device scale factor");
+  }
   layers.SetDeviceScaleFactor(update->device_scale_factor);
   if (update->local_surface_id_from_parent) {
     layers.SetLocalSurfaceIdFromParent(*update->local_surface_id_from_parent);
@@ -467,6 +577,15 @@ base::expected<void, std::string> LayerContextImpl::DoUpdateDisplayTree(
       effect_changed || property_trees.effect_tree().needs_update());
   property_trees.set_changed(transform_changed || clip_changed ||
                              effect_changed || scroll_changed);
+
+  std::vector<std::unique_ptr<cc::RenderSurfaceImpl>> old_render_surfaces;
+  property_trees.effect_tree_mutable().TakeRenderSurfaces(&old_render_surfaces);
+  const bool render_surfaces_changed =
+      property_trees.effect_tree_mutable().CreateOrReuseRenderSurfaces(
+          &old_render_surfaces, &layers);
+  if (render_surfaces_changed) {
+    layers.set_needs_update_draw_properties();
+  }
 
   compositor_sink_->SetLayerContextWantsBeginFrames(true);
   return base::ok();
