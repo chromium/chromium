@@ -5,6 +5,8 @@
 import("//services/screen_ai/buildflags/features.gni")
 import("//third_party/protobuf/proto_library.gni")
 
+assert(enable_screen_ai_service)
+
 source_set("screen_ai") {
   sources = [
     "screen_ai_ax_tree_serializer.cc",
@@ -31,8 +33,8 @@ source_set("screen_ai") {
   deps = [
     "//mojo/public/cpp/bindings",
     "//sandbox/policy",
-    "//services/metrics/public/cpp:ukm_builders",
     "//services/metrics/public/cpp:metrics_cpp",
+    "//services/metrics/public/cpp:ukm_builders",
     "//services/screen_ai/buildflags",
     "//services/screen_ai/proto",
     "//services/screen_ai/public/cpp:utilities",
@@ -72,9 +74,7 @@ group("test_support_data") {
 
   data = [ "$root_gen_dir/services/screen_ai/proto/view_hierarchy.descriptor" ]
 
-  deps = [
-    "//services/screen_ai/proto:view_hierarchy_proto_descriptor",
-  ]
+  deps = [ "//services/screen_ai/proto:view_hierarchy_proto_descriptor" ]
 }
 
 source_set("unit_tests") {
@@ -98,9 +98,7 @@ source_set("unit_tests") {
     "//ui/accessibility:test_support",
   ]
 
-  data_deps = [
-    ":test_support_data",
-  ]
+  data_deps = [ ":test_support_data" ]
 }
 
 source_set("test_support") {

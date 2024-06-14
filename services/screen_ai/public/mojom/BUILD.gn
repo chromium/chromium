@@ -3,6 +3,9 @@
 # found in the LICENSE file.
 
 import("//mojo/public/tools/bindings/mojom.gni")
+import("//services/screen_ai/buildflags/features.gni")
+
+assert(enable_screen_ai_service)
 
 mojom("mojom") {
   sources = [ "screen_ai_service.mojom" ]

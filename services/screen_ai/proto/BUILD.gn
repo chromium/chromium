@@ -2,7 +2,10 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
+import("//services/screen_ai/buildflags/features.gni")
 import("//third_party/protobuf/proto_library.gni")
+
+assert(enable_screen_ai_service)
 
 proto_library("proto") {
   sources = [
