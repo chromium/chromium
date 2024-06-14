@@ -63,6 +63,10 @@
 #include <windows.h>
 #endif
 
+#if BUILDFLAG(IS_MAC)
+#include "ui/gfx/font_list.h"
+#endif
+
 using blink::web_pref::WebPreferences;
 using content::WebContents;
 
@@ -110,11 +114,13 @@ ALL_FONT_SCRIPTS(WEBKIT_WEBPREFS_FONTS_STANDARD)
 }
 #endif  // !BUILDFLAG(IS_ANDROID)
 
-#if BUILDFLAG(IS_WIN)
+#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC)
 // Resolves the comma-separated font list to the first available font in the
 // default value. crbug.com/41323186.
 BASE_FEATURE(kPrefsFontList, "PrefsFontList", base::FEATURE_ENABLED_BY_DEFAULT);
+#endif
 
+#if BUILDFLAG(IS_WIN)
 // On Windows with antialiasing we want to use an alternate fixed font like
 // Consolas, which looks much better than Courier New.
 bool ShouldUseAlternateDefaultFixedFont(const std::string& script) {
@@ -441,6 +447,15 @@ void PrefsTabHelper::RegisterProfilePrefs(
           base::FeatureList::IsEnabled(kPrefsFontList)) {
         value = FirstAvailableFont(value);
       }
+#elif BUILDFLAG(IS_MAC)
+      if (value.starts_with(',') &&
+          base::FeatureList::IsEnabled(kPrefsFontList)) {
+        value = gfx::FontList::FirstAvailableOrFirst(value);
+      }
+#else
+      DCHECK(!value.starts_with(','))
+          << "This platform doesn't support default font lists. "
+          << pref.pref_name << "=" << value;
 #endif
       registry->RegisterStringPref(pref.pref_name, value);
       fonts_with_defaults.insert(pref.pref_name);
